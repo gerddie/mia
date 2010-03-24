@@ -1,0 +1,95 @@
+/* -*- mia-c++  -*-
+ *
+ * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Max-Planck-Institute for Human Cognitive and Brain Science
+ * Max-Planck-Institute for Evolutionary Anthropology
+ * BIT, ETSI Telecomunicacion, UPM
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+#define BOOST_TEST_DYN_LINK
+#include <ostream>
+#include <iostream>
+#include <climits>
+
+#include <boost/test/unit_test_suite.hpp>
+#include <boost/test/unit_test.hpp>
+
+#include <mia/core/streamredir.hh>
+#include <mia/core/msgstream.hh>
+
+using namespace mia;
+using namespace std;
+using namespace boost::unit_test;
+
+class Cstreamredir: public streamredir {
+public:
+	Cstreamredir(ostringstream& output);
+	~Cstreamredir();
+private:
+	virtual void do_put_buffer(const char *begin, const char *end);
+	ostringstream& _M_output;
+};
+
+Cstreamredir::Cstreamredir(ostringstream& output):
+	_M_output(output)
+{
+}
+
+Cstreamredir::~Cstreamredir()
+{
+	sync();
+}
+
+void Cstreamredir::do_put_buffer(const char *begin, const char *end)
+{
+	while (begin != end)
+		_M_output << *begin++;
+}
+
+BOOST_AUTO_TEST_CASE( test_streamredir )
+{
+	ostringstream test;
+
+	Cstreamredir *s = new Cstreamredir(test);
+	ostream test_output(s);
+
+	test_output << "test\n";
+	cvdebug() << "test string >>" << test.str() << "<<\n";
+
+	streambuf *os = test_output.rdbuf(0);
+	BOOST_CHECK_EQUAL((void*)os, (void *)s);
+	delete os;
+
+
+	BOOST_CHECK(test.str() == "test");
+}
+
+BOOST_AUTO_TEST_CASE( test_streamredir_overflow )
+{
+	ostringstream test;
+
+	Cstreamredir *s = new Cstreamredir(test);
+	ostream test_output(s);
+
+	for (size_t i = 0; i < 2000; ++i) {
+		test_output << i;
+	}
+
+	streambuf *os = test_output.rdbuf(0);
+	delete os;
+}

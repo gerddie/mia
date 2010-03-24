@@ -1,0 +1,208 @@
+/* -*- mia-c++  -*-
+ *
+ * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Max-Planck-Institute for Human Cognitive and Brain Science
+ * Max-Planck-Institute for Evolutionary Anthropology
+ * BIT, ETSI Telecomunicacion, UPM
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+#include <iostream>
+#include <string>
+#include <stdexcept>
+#include <sstream>
+#include <iomanip>
+
+
+#include <mia/3d/3dimageio.hh>
+#include <mia/2d/2dimageio.hh>
+#include <mia/core.hh>
+
+using namespace mia;
+
+enum EDirection {dir_unkown, dir_xy, dir_xz, dir_yz};
+
+const TDictMap<EDirection>::Table GDirectionmapTable[] = {
+	{"xy", dir_xy},
+	{"axial", dir_xy},
+	{"xz", dir_xz},
+	{"coronal", dir_xz},
+	{"yz", dir_yz},
+	{"saggital", dir_yz},
+	{NULL, dir_unkown}
+};
+
+const TDictMap<EDirection> GDirectionmap(GDirectionmapTable);
+
+using namespace std;
+NS_MIA_USE;
+
+template <typename T, EDirection s_dir>
+struct __dispatch {
+};
+
+template <typename T>
+struct __dispatch<T, dir_xy> {
+	static size_t get_end(size_t start, size_t n, const C3DBounds& size) {
+		size_t end = n > 0 ? start + n : start + size.z;
+		return ( end < size.z ) ? end : size.z;
+	}
+	static T2DImage<T> get_slice(size_t i, const T3DImage<T>& image) {
+		return image.get_data_plane_xy(i);
+	}
+};
+
+template <typename T>
+struct __dispatch<T, dir_xz> {
+	static size_t get_end(size_t start, size_t n, const C3DBounds& size) {
+		size_t end = n > 0 ? start + n : start + size.y;
+		return ( end < size.z ) ? end : size.y;
+	}
+	static T2DImage<T> get_slice(size_t i, const T3DImage<T>& image) {
+		return image.get_data_plane_xz(i);
+	}
+};
+
+template <typename T>
+struct __dispatch<T, dir_yz> {
+	static size_t get_end(size_t start, size_t n, const C3DBounds& size) {
+		size_t end = n > 0 ? start + n : start + size.x;
+		return ( end < size.z ) ? end : size.x;
+	}
+	static T2DImage<T> get_slice(size_t i, const T3DImage<T>& image) {
+		return image.get_data_plane_yz(i);
+	}
+};
+
+
+template <EDirection s_dir>
+class TGetter : public TFilter<bool> {
+public:
+	TGetter(size_t start, size_t n, const string& fname, const string& type):
+		m_start(start),
+		m_n(n),
+		m_fname(fname),
+		m_type(type)
+	{
+	}
+
+	template <typename T>
+	bool operator ()(const T3DImage<T>& image) const
+	{
+		const C2DImageIOPluginHandler::Instance& imageio2d = C2DImageIOPluginHandler::instance();
+
+		size_t end  = __dispatch<T, s_dir>::get_end(m_start, m_n, image.get_size());
+
+		bool retval = true;
+		for(size_t i = m_start; i < end; ++i) {
+			C2DImageVector out_images;
+			P2DImage pimage(new  T2DImage<T>(__dispatch<T, s_dir>::get_slice(i, image)));
+			out_images.push_back(pimage);
+
+			stringstream out_name;
+			out_name << m_fname << setw(4) << setfill('0') << i << "." << m_type;
+
+			retval &= imageio2d.save(m_type, out_name.str(), out_images);
+		}
+		return retval;
+	}
+private:
+	size_t m_start;
+	size_t m_n;
+	string m_fname;
+	string m_type;
+};
+
+int main( int argc, const char *argv[] )
+{
+
+	string in_filename;
+	string out_filename;
+	string out_type("png");
+	size_t start_slice = 0;
+	size_t slice_number = 0;
+	EDirection direction = dir_xy;
+
+	try {
+		const C3DImageIOPluginHandler::Instance& imageio3d = C3DImageIOPluginHandler::instance();
+		const C2DImageIOPluginHandler::Instance& imageio2d = C2DImageIOPluginHandler::instance();
+
+		CCmdOptionList options;
+		options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", "input", true));
+		options.push_back(make_opt( out_filename, "out-file", 'o', "output image(s) that have been filtered", "output", true));
+		options.push_back(make_opt( out_type, imageio2d.get_set(), "type", 't',"output file type" , "type", false));
+		options.push_back(make_opt( start_slice, "start", 's',"start slice number" , "start", false));
+		options.push_back(make_opt( slice_number, "number", 'n',"number of slices (all=0)" , "number", false));
+		options.push_back(make_opt( direction, GDirectionmap, "dir", 'd', "slice direction (xy=axial, xz=coronal, yz=saggital)", "dir", false));
+
+
+		options.parse(argc, argv);
+
+		if ( !options.get_remaining().empty())
+			throw invalid_argument("Unknown options given");
+
+		if ( in_filename.empty() )
+			throw runtime_error("'--in-image' ('i') option required");
+
+		if ( out_filename.empty() )
+			throw runtime_error("'--out-image' ('o') option required");
+
+		// read image
+		C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio3d.load(in_filename);
+
+		if (out_type.empty())
+			out_type = in_image_list->get_source_format();
+
+
+		bool result = false;
+                if (in_image_list.get() && in_image_list->size()) {
+			switch (direction) {
+			case dir_xy:
+				result = mia::filter(TGetter<dir_xy>(start_slice, slice_number, out_filename, out_type), **in_image_list->begin());
+				break;
+			case dir_xz:
+				result = mia::filter(TGetter<dir_xz>(start_slice, slice_number, out_filename, out_type), **in_image_list->begin());
+				break;
+			case dir_yz:
+				result = mia::filter(TGetter<dir_yz>(start_slice, slice_number, out_filename, out_type), **in_image_list->begin());
+				break;
+			default:
+				assert(!"impossible slice direction");
+				throw invalid_argument( "impossible slice direction");
+			}
+		}
+
+		return result ? EXIT_SUCCESS : EXIT_FAILURE;
+
+	}
+	catch (const runtime_error &e){
+		cerr << argv[0] << " runtime: " << e.what() << endl;
+	}
+	catch (const invalid_argument &e){
+		cerr << argv[0] << " error: " << e.what() << endl;
+	}
+	catch (const exception& e){
+		cerr << argv[0] << " error: " << e.what() << endl;
+	}
+	catch (...){
+		cerr << argv[0] << " unknown exception" << endl;
+	}
+
+	return EXIT_FAILURE;
+}
+
+

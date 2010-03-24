@@ -1,0 +1,222 @@
+/* -*- mia-c++  -*-
+ * Copyright (c) 2007 Gert Wollny <gert dot wollny at acm dot org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+#include <climits>
+#define BOOST_TEST_DYN_LINK
+
+#include <boost/filesystem/convenience.hpp>
+#include <boost/filesystem/path.hpp>
+
+#include <boost/test/unit_test_suite.hpp>
+#include <boost/test/unit_test.hpp>
+
+#include <mia/2d/2dimageio.hh>
+#include <mia/2d/2dimageiotest.hh>
+
+#include <mia/2d/2dvfio.hh>
+
+
+#include <mia/3d/3dimageio.hh>
+#include <mia/3d/3dimageiotest.hh>
+
+#include <mia/3d/3dvfio.hh>
+#include <mia/3d/3dvfiotest.hh>
+
+#include "vista4mia.hh"
+
+
+NS_MIA_USE
+using namespace std; 
+using namespace boost; 
+using namespace boost::unit_test;
+namespace bfs = ::boost::filesystem; 
+
+template <typename T> 
+void check_value(CAttributeMap& attr_map, const string& key,  T value)
+{
+	const PAttribute pattr = attr_map[key]; 
+	cvdebug() << "check_value(" << key << ") = '" << value << "'\n"; 
+	const TAttribute<T> * attr = dynamic_cast<const TAttribute<T> *>(pattr.get()); 
+	BOOST_REQUIRE(attr); 
+	T v = *attr; 
+	BOOST_CHECK(v == value); 
+}
+
+template <typename T> 
+void check_vattr_value(VAttrList list, const string& key,  T value)
+{
+	T lvalue; 
+	BOOST_REQUIRE(VGetAttr (list, key.c_str(), NULL, (VRepnKind)vista_repnkind<T>::value, &lvalue) == VAttrFound);
+	cvdebug() << "check_vattr_value: " << value << " vs. " << lvalue <<"\n"; 
+	BOOST_CHECK(lvalue == value); 
+}
+
+template <> 
+void check_vattr_value(VAttrList list, const string& key,  bool value)
+{
+	VBit lvalue; 
+	BOOST_REQUIRE(VGetAttr (list, key.c_str(), NULL, VBitRepn, &lvalue) == VAttrFound);
+	cvdebug() << "check_vattr_value: " << value << " vs. " << lvalue <<"\n"; 
+	bool llvalue = lvalue; 
+	BOOST_CHECK(llvalue == value); 
+}
+
+
+template <> 
+void check_vattr_value(VAttrList list, const string& key,  const string value)
+{
+	VString lvalue; 
+	BOOST_REQUIRE(VGetAttr (list, key.c_str(), NULL, (VRepnKind)vista_repnkind<string>::value, &lvalue) == VAttrFound);
+	BOOST_CHECK(string(lvalue) == value); 
+}
+
+void check_translation()
+{
+	VAttrList vista_list1 = VCreateAttrList(); 
+
+	bool bit_value = 1; 
+	unsigned char ubyte_value = 124; 
+	signed char  sbyte_value = -120; 
+	short short_value = -12120; 
+	int int_value = -12120871; 
+	float float_value = 1.3f; 
+	double double_value = 1.7; 
+	string string_value("a string"); 
+
+	CDoubleTranslator::register_for("double"); 
+	CFloatTranslator::register_for("float"); 
+	CUBTranslator::register_for("ubyte"); 
+	CSBTranslator::register_for("sbyte"); 
+	CSSTranslator::register_for("short"); 
+	CSITranslator::register_for("int"); 
+	CBitTranslator::register_for("bit");
+
+
+	VSetAttr(vista_list1, "bit", NULL, VBitRepn, bit_value);
+	VSetAttr(vista_list1, "ubyte", NULL, VUByteRepn, ubyte_value); 
+	VSetAttr(vista_list1, "sbyte", NULL, VSByteRepn, sbyte_value); 
+        VSetAttr(vista_list1, "short", NULL, VShortRepn, short_value); 
+        VSetAttr(vista_list1, "int", NULL, VLongRepn,  int_value);            
+        VSetAttr(vista_list1, "float", NULL, VFloatRepn, float_value);
+        VSetAttr(vista_list1, "double", NULL, VDoubleRepn, double_value);
+        VSetAttr(vista_list1, "string", NULL, VStringRepn, string_value.c_str());
+
+	CAttributeMap attr_map; 
+
+	copy_attr_list(attr_map, vista_list1);
+	
+        check_value(attr_map, "short",  short_value); 
+        check_value(attr_map, "int",   int_value);            
+        check_value(attr_map, "float",  float_value);
+        check_value(attr_map, "double", double_value);
+        check_value(attr_map, "string", string_value);
+	check_value(attr_map, "bit", bit_value); 
+	check_value(attr_map, "ubyte",  ubyte_value); 
+	check_value(attr_map, "sbyte",  sbyte_value); 
+
+
+	VAttrList vista_list2 = VCreateAttrList(); 
+	copy_attr_list(vista_list2, attr_map); 
+
+	
+        check_vattr_value(vista_list2,  "short",  short_value); 
+        check_vattr_value(vista_list2,  "int",    int_value);            
+        check_vattr_value(vista_list2,  "float",  float_value);
+        check_vattr_value(vista_list2,  "string", string_value);
+	check_vattr_value(vista_list2,  "bit",    bit_value); 
+	check_vattr_value(vista_list2,  "ubyte",  ubyte_value); 
+	check_vattr_value(vista_list2,  "sbyte",  sbyte_value); 
+        check_vattr_value(vista_list2,  "double", double_value);
+
+	VDestroyAttrList(vista_list1); 
+	VDestroyAttrList(vista_list2); 
+}
+
+static void handler_setup()
+{
+	std::list< bfs::path> searchpath; 
+	searchpath.push_back(bfs::path(".")); 
+	
+	C2DImageIOPluginHandler::set_search_path(searchpath);
+	C3DImageIOPluginHandler::set_search_path(searchpath);
+
+	C2DVFIOPluginHandler::set_search_path(searchpath);
+	C3DVFIOPluginHandler::set_search_path(searchpath);
+}
+
+
+
+static void test_3dimage_plugin_handler()
+{
+	const C3DImageIOPluginHandler::Instance& handler = C3DImageIOPluginHandler::instance(); 
+	BOOST_CHECK_EQUAL(handler.size(), 2); 
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(),  "datapool vista ");
+}
+
+
+
+static void test_2dimage_plugin_handler()
+{
+	const C2DImageIOPluginHandler::Instance& handler = C2DImageIOPluginHandler::instance(); 
+	BOOST_CHECK_EQUAL(handler.size(), 2); 
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "datapool vista ");
+}
+
+static void test_3dvf_plugin_handler()
+{
+	const C3DVFIOPluginHandler::Instance& handler = C3DVFIOPluginHandler::instance(); 
+	BOOST_CHECK_EQUAL(handler.size(), 2); 
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "datapool vista ");
+}
+
+
+static void test_2dvf_plugin_handler()
+{
+	const C2DVFIOPluginHandler::Instance& handler = C2DVFIOPluginHandler::instance(); 
+	BOOST_CHECK_EQUAL(handler.size(), 2); 
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "datapool vista ");
+}
+
+bool init_unit_test_suite( ) 
+{
+
+	handler_setup(); 
+	
+	test_suite *suite = &framework::master_test_suite(); 
+
+	suite->add( BOOST_TEST_CASE( &check_translation)); 
+	suite->add( BOOST_TEST_CASE( &test_2dimage_plugin_handler));
+	suite->add( BOOST_TEST_CASE( &test_2dimageio_plugins));
+
+	suite->add( BOOST_TEST_CASE( &test_3dimage_plugin_handler));
+	add_3dimageio_plugin_tests( suite );
+
+	suite->add( BOOST_TEST_CASE( &test_3dvf_plugin_handler )); 
+	suite->add( BOOST_TEST_CASE( &test_2dvf_plugin_handler )); 
+	add_2dvfio_tests( suite ); 
+
+	return true; 
+}
+
+int BOOST_TEST_CALL_DECL
+main( int argc, char* argv[] )
+{
+	CCmdOptionList().parse(argc, argv);
+	return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );
+}

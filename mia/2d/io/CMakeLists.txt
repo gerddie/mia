@@ -1,0 +1,34 @@
+
+OPTION(WITH_PNG "enable support for PNG" ${SEARCH_LIBS_DEFAULT})
+OPTION(WITH_TIFF "enable support for TIFF" ${SEARCH_LIBS_DEFAULT})
+
+SET(image2dio_path ${PLUGIN_INSTALL_PATH}/io/2dimage)
+SET(vf2dio_path ${PLUGIN_INSTALL_PATH}/io/2dvf)
+
+PLUGIN_PRE("2d" bmp "${MIA2DLIBS}" "${image2dio_path}")
+
+IF (WITH_PNG)
+  FIND_PACKAGE(PNG)
+  IF(PNG_FOUND)
+    SET(PNG_LINK_LIBS ${MIA2DLIBS} ${PNG_LIBRARIES})
+    PLUGIN_PRE("2d" png "${PNG_LINK_LIBS}" "${image2dio_path}")
+    INCLUDE_DIRECTORIES(${PNG_PNG_INCLUDE_DIR})
+  ELSEIF(STRICT_DEPENDECIES)
+    MESSAGE(FATAL_ERROR "PNG not found and strict dependencies enabled")
+  ENDIF(PNG_FOUND)
+ENDIF(WITH_PNG)
+
+IF(WITH_TIFF)
+  FIND_PACKAGE(TIFF)
+  IF(TIFF_FOUND)
+    SET(TIFF_LINK_LIBS ${MIA2DLIBS} ${TIFF_LIBRARIES})
+    PLUGIN_PRE("2d" tiff "${TIFF_LINK_LIBS}" "${image2dio_path}")
+    INCLUDE_DIRECTORIES(${TIFF_INCLUDE_DIR})
+  ELSEIF(STRICT_DEPENDECIES)
+    MESSAGE(FATAL_ERROR "TIFF not found and strict dependencies enabled")
+  ENDIF(TIFF_FOUND)
+ENDIF(WITH_TIFF)
+
+
+
+

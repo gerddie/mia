@@ -1,0 +1,69 @@
+/* -*- mia-c++  -*-
+ *
+ * Copyright (c) Leipzig, Madrid 2004 - 2010
+ *
+ * Max-Planck-Institute for Human Cognitive and Brain Science
+ * Max-Planck-Institute for Evolutionary Anthropology
+ * BIT, ETSI Telecomunicacion, UPM
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+#ifndef SegFrame_h
+#define SegFrame_h
+
+#include <vector>
+#include <mia/2d/SegStar.hh>
+#include <mia/2d/SegSection.hh>
+
+NS_MIA_BEGIN
+
+class CSegFrame {
+public:
+	typedef std::vector<CSegSection> Sections;
+
+	CSegFrame();
+
+	CSegFrame(const std::string& image, const CSegStar& star, const Sections& sections);
+
+	CSegFrame(const xmlpp::Node& node);
+
+	const std::string& get_imagename() const;
+	void set_imagename(const std::string& name);
+
+	const Sections& get_sections() const;
+
+	const CSegStar& get_star() const;
+
+	const C2DBoundingBox get_boundingbox() const;
+
+	void write(xmlpp::Node& node) const;
+
+	void shift(const C2DFVector& delta, const std::string& cropped_file);
+
+	float get_hausdorff_distance(const CSegFrame& other) const;
+
+private:
+	bool m_has_star; 
+	CSegStar m_star;
+	Sections m_sections;
+	std::string m_filename;
+};
+
+NS_MIA_END
+
+#endif
+

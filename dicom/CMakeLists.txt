@@ -1,0 +1,32 @@
+OPTION(WITH_DCMTK "enable support for DCMTK DICOM IO" ${SEARCH_LIBS_DEFAULT})
+
+
+SET(dicom4mia_SOURCES dicom4mia.cc)
+
+SET(image2dio_path ${PLUGIN_INSTALL_PATH}/io/2dimage)
+SET(image3dio_path ${PLUGIN_INSTALL_PATH}/io/3dimage)
+
+IF (WITH_DCMTK)
+  FIND_PACKAGE(DCMTKnew)
+  IF(DCMTK_FOUND)
+    ADD_LIBRARY(dicom4mia SHARED ${dicom4mia_SOURCES})
+    TARGET_LINK_LIBRARIES(dicom4mia mia2d ${DCMTK_LIBRARIES})
+    SET_TARGET_PROPERTIES(dicom4mia PROPERTIES VERSION ${LIBRARY_VERSION_INFO})
+    INSTALL_BASE(dicom4mia)
+
+    SET(DCMTK_LINK_LIBS_2D dicom4mia)
+    SET(DCMTK_LINK_LIBS_3D dicom4mia mia3d)
+    NEW_TEST(dicom4mia dicom4mia)
+
+    PLUGIN_WITH_TEST_AND_PREFIX("2d" dcm2d "${DCMTK_LINK_LIBS_2D}" "${image2dio_path}")
+    PLUGIN_WITH_TEST_AND_PREFIX("3d" dcm3d "${DCMTK_LINK_LIBS_3D}" "${image3dio_path}")
+    INCLUDE_DIRECTORIES(${DCMTK_INCLUDE_DIR})
+
+  ELSEIF(STRICT_DEPENDECIES)
+    MESSAGE(FATAL_ERROR "DCMTK not found and strict dependencies enabled")
+  ENDIF(DCMTK_FOUND)
+ENDIF(WITH_DCMTK)
+
+
+
+

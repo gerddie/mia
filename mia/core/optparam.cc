@@ -1,0 +1,90 @@
+/* -*- mia-c++  -*-
+ *
+ * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Max-Planck-Institute for Human Cognitive and Brain Science
+ * Max-Planck-Institute for Evolutionary Anthropology
+ * BIT, ETSI Telecomunicacion, UPM
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+#include <stdexcept>
+#include <sstream>
+
+#include <mia/core/optparam.hh>
+
+NS_MIA_BEGIN
+
+using namespace std;
+
+
+
+bool CParamList::has_key(const std::string& key) const
+{
+	return _M_params.find(key) != _M_params.end();
+}
+
+CParamList::PParameter& CParamList::operator [] (const std::string& key)
+{
+	return _M_params[key];
+}
+
+void CParamList::set(const CParsedOptions& options)
+{
+
+	for (CParsedOptions::const_iterator i = options.begin();
+	     i != options.end(); ++i) {
+		map<string, PParameter>::iterator p = _M_params.find(i->first);
+		if (p == _M_params.end()) {
+			stringstream msg;
+			msg << "unknown parameter '" << i->first << "'";
+			throw invalid_argument(msg.str());
+		}
+
+		if (!p->second->set(i->second))  {
+			stringstream msg;
+			msg << "Parameter '" << i->first << "' unable to interpret '" << i->second;
+			throw invalid_argument(msg.str());
+		}
+	}
+}
+
+
+void CParamList::check_required() const
+{
+	for (map<string, PParameter>::const_iterator i = _M_params.begin(); i != _M_params.end(); ++i) {
+		if (i->second->required_set()) {
+			stringstream msg;
+			msg << "parameter '" << i->first << "' required ";
+			throw invalid_argument(msg.str());
+		}
+	}
+}
+
+void CParamList::print_help(std::ostream& os) const
+{
+	// this should be sorted somehow ...
+	std::map<std::string, PParameter>::const_iterator i = _M_params.begin();
+	while ( i != _M_params.end() ) {
+		os  << "\t" << i->first;
+		i->second->descr(os);
+		os << "\n";
+		++i;
+	}
+}
+
+
+NS_MIA_END

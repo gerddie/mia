@@ -1,0 +1,13 @@
+Gert Wollny <gw.fossdev dot gmail dot com>
+
+Some code hase also been developed by 
+
+Marc Tittgemeyer <tittgemeyer at nf dot mpg dot de>
+Heike Jänicke    <jaenicke at informatik dot uni-leipzig dot de>
+
+Most of the "vistaio" code is derived from the Vista Library
+ (c) Art Pope, UBC Laboratory for Computational Intelligence
+ 
+The filter routines for splines and omoms is based on code by
+  Philippe Thevenaz http://bigwww.epfl.ch/thevenaz/interpolation/
+ 

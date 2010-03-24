@@ -1,0 +1,229 @@
+\section{Programs}
+\label{ch:prog}
+
+
+This chapter lists all the software tools provided by mia2D. 
+The descriptions follow a designated pattern: 
+
+\begin{description}
+\item [Program:]\emph{the command line program name}
+\item [Description:]A description of the program
+\item [Remarks:] additional notes
+\item [Options:] list of options
+
+\tabstart
+long name & short name & value type & description of the parameter & default value\\
+\hline
+\tabend
+
+\noindent 
+If no value type is given, then the option accepts no further parameter. 
+All programs support the following options: 
+
+\tabstart
+--help & -? & & Print out some help & \\\hline
+--usage & & & Print out a short help & \\\hline
+--version & -v & & Print out version information & \\\hline
+--copyright & & & Print out copyright information & \\\hline
+--verbose & -V & string & set the verbosity of the output out of \{ debug, message, warning, fail, error, fatal\} & error \\\hline
+\tabend
+\end{description}
+
+Input from and output to a variety of 2D and 3D file formats is implemented. Note, however, only binary and gray scale data is supported.
+
+\begin{table}[h]
+\caption{\label{tab:2dformats}2D image formats}
+\centering{
+\begin{tabular}{|l|l|c|}
+\hline
+File type description & on the web & suffix \\\hline
+OpenEXR HDR image format & http://www.openexr.com/ & exr \\\hline
+Portable Network Graphics & http://www.libpng.org & png \\\hline
+Tagged Image File format & http://www.remotesensing.org/libtiff/libtiff.html & tif \\\hline
+Windows Bitmap & http://www.daubnet.com/formats/BMP.html & bmp \\\hline
+\end{tabular}
+}	
+\end{table}
+
+\begin{table}[h]
+\caption{\label{tab:3dformats}3D image formats}
+\centering{
+\begin{tabular}{|l|l|c|}
+\hline
+File type description & on the web & suffix \\\hline
+INRIA 3D File format &http://foveaproject.free.fr/softwareEng.html & inria  \\\hline
+%%Medical Imaging NetCDF & http://www.bic.mni.mcgill.ca/software/minc/ & mnc \\\hline
+Sun TAAC Image File Format & & vff \\\hline
+Vista File Format & http://www.cs.ubc.ca/nest/lci/vista/vista.html & v \\\hline
+\end{tabular}
+}
+\end{table}
+
+\subsection{2D Image Conversion}
+
+\begin{description}
+\item [Program:]\emph{mia-raw2image}
+\item [Description:]A raw data to 2D image image conversion program. 
+\item [Options:] $\:$
+
+\tabstart
+\optinfile
+\optoutfile
+\opttypetwod
+--big-endian & -b & bool & input data is big-endian & false \\\hline
+--repn & -r & string & input pixel type (ubyte|sbyte|short|ushort|int|uint|float|double) & short \\\hline
+--scale & -f & vector of float & scale of input voxels FX,FY in real world units & 1.0,1.0 \\\hline
+--size & -s & vector of integer & size of input NX,NY & 1,1 \\\hline
+\tabend
+\item [Example:] Converting \emph{unsigned short} data in low-endian format of size $120\times130$ representing data 
+  of pixel size $2mm \times 2mm$ to a tif image:
+\begin{lstlisting}
+mia-raw2image -i input.raw -o output.tif -r ushort -s '<120,130>' -f '<2.0,2.0>' 
+\end{lstlisting}
+\end{description}
+
+
+\subsection{2D Image Filtering}
+
+\begin{description}
+\item [Program:]\emph{mia-2dimagefilter}
+\item [Description:]A 2D image filtering program. Supported filters are described in Subsection \ref{sec:2dfilters}. 
+\item [Options:] $\:$
+
+\tabstart
+\optinfile
+\optoutfile
+\opttypetwod
+\opthelpplugin
+\tabend
+\item [Example:] Filtering an \texttt{input.png} with a median filter and anisotropic filtering and writing the output to \texttt{output.bmp}, 
+		thus converting the image to the Microsoft bitmap format after filtering. 
+\begin{lstlisting}
+mia-2dimagefilter -i input.png -o output.bmp -t bmp \
+	median:w=3 aniso:iter=1000,psi=pm1
+\end{lstlisting}
+\end{description}
+
+\begin{description}
+\item [Program:]\emph{mia-2dimagefilterstack}
+\item [Description:]A 2D image filtering program that filters a series of images that are numbered consecutively. 
+              Supported filters are described in Subsection \ref{ch:plugins}. 
+\item [Options:] $\:$
+
+\tabstart
+\optinfile
+\optoutbase
+\opttypetwod
+\opthelpplugin
+\tabend
+\item [Example:] Filtering images of the pattern \texttt{input0000.png} with a median filter and anisotropic 
+                 filtering and writing the output to \texttt{outputXXXX.bmp}, thus converting the image to the Microsoft 
+                 bitmap format after filtering. 
+		 XXXX represents the slice numbers that correspond to the input image slice numbers. 
+                 The number of digits corresponds to the number of digits in the input image file names. 
+\begin{lstlisting}
+mia-2dimagefilterstack -i input0000.png -o output -t bmp \
+        median:w=3 aniso:iter=1000,psi=pm1
+\end{lstlisting}
+\end{description}
+
+
+\subsection{2D Non-Linear Image Registration}
+\label{sec:reg2d}
+
+\begin{description}
+\item [Program:]\emph{mia-2dnrreg}
+\item [Description:]voxel based 2D image registration software 
+\item [Options:] $\:$
+
+\tabstart
+\optinfile
+\optreffile
+\optoutfile
+--def-file & -d & string &  deformed inpout image & (none) \\\hline
+--regmodel & -m & string & registration model  & navier \\\hline
+--timestep & -t  & string & time step (fluid|direct) & fluid \\\hline
+--mgsize  & -s & integer & multigrid start size & 16 \\\hline       
+--max-iter & -n & maximum number of iterations & 200  \\\hline
+--cost & -c & cost function & ssd             \\\hline
+--interpolator & -p  & image interpolator (bspline2|bspline3|bspline4|bspline5|nn|omoms3|tri) & bspline3  \\\hline
+--epsilon & -e &  relative accuracy to stop registration at a multi-grid level & 0.01  \\\hline
+\tabend
+\item [Example:] Registration of two images by using the naviera kernel and standart parameters:
+\begin{lstlisting}
+   mia-2dnrreg -i src.png -r ref.png -o src-ref-field.vf -m naviera 
+\end{lstlisting}
+\end{description}
+
+
+\subsection{3D Image Conversion}
+
+\begin{description}
+\item [Program:]\emph{mia-raw2volume}
+\item [Description:]A raw data to 3D image image conversion program. 
+\item [Options:] $\:$
+
+\tabstart
+\optinfile
+\optoutfile
+\opttypetwod
+--big-endian & -b & bool & input data is big-endian & false \\\hline
+--repn & -r & string & input pixel type (ubyte|sbyte|short|ushort|int|uint|float|double) & short \\\hline
+--scale & -f & vector of float & scale of input voxels FX,FY,FZ in real world units & <1.0,1.0,1.0> \\\hline
+--size & -s & vector of integer & size of input NX,NY,NZ & <1,1,1> \\\hline
+\tabend
+\item [Example:] Converting \emph{unsigned short} data in low-endian format of size $120\times130\times64$ representing data 
+  of pixel size $2mm \times 2mm \times 1mm$ to a tif image:
+\begin{lstlisting}
+mia-raw2image -i input.raw -o output.tif -r ushort -s '<120,130,64>' -f '<2.0,2.0,1.0>'
+\end{lstlisting}
+\end{description}
+
+
+\begin{description}
+\item [Program:]\emph{mia-3dimagefilter}
+\item [Description:]A 3D image filtering program. Supported filters are described in Subsection \ref{sec:3dfilters}. 
+\item [Options:] $\:$
+
+\tabstart
+\optinfile
+\optoutfile
+\opttypetwod
+\opthelpplugin
+\tabend
+\item [Example:] Filtering an \texttt{input.png} with a median filter and anisotropic filtering and writing the output to \texttt{output.bmp}, 
+		thus converting the image to the Microsoft bitmap format after filtering. 
+\begin{lstlisting}
+mia-2dimagefilter -i input.png -o output.bmp -t bmp \
+	median:w=3
+\end{lstlisting}
+\end{description}
+
+
+\subsection{3D Non-Linear Image Registration}
+\label{sec:reg3d}
+
+\begin{description}
+\item [Program:]\emph{mia-2dnrreg}
+\item [Description:]voxel based 2D image registration software 
+\item [Options:] $\:$
+
+\tabstart
+\optinfile
+\optreffile
+\optoutfile
+--def-file & -d & string &  deformed inpout image & (none) \\\hline
+--regmodel & -m & string & registration model  & navier \\\hline
+--timestep & -t  & string & time step (fluid|direct) & fluid \\\hline
+--mgsize  & -s & integer & multigrid start size & 16 \\\hline       
+--max-iter & -n & maximum number of iterations & 200  \\\hline
+--cost & -c & cost function & ssd             \\\hline
+--interpolator & -p  & image interpolator (bspline2|bspline3|bspline4|bspline5|nn|omoms3|tri) & bspline3  \\\hline
+--epsilon & -e &  relative accuracy to stop registration at a multi-grid level & 0.01  \\\hline
+\tabend
+\item [Example:] Registration of two images by using the naviera kernel and standart parameters:
+\begin{lstlisting}
+   mia-3dnrreg -i src.png -r ref.png -o src-ref-field.vf -m naviera 
+\end{lstlisting}
+\end{description}
+

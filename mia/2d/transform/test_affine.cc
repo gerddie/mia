@@ -1,0 +1,205 @@
+/* -*- mia-c++  -*-
+ *
+ * Copyright (c) Leipzig, Madrid 2009 - 2010
+ *
+ * BIT, ETSI Telecomunicacion, UPM
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+#include <cmath>
+#include <mia/internal/autotest.hh>
+
+#include <mia/2d/transform/affine.hh>
+
+NS_MIA_USE
+
+using namespace std;
+using namespace ::boost;
+using namespace boost::unit_test;
+namespace bfs=boost::filesystem;
+
+struct TranslateTransFixture {
+	TranslateTransFixture():
+		size(60, 80),
+		rtrans(size, C2DAffineTransformation::op_trans)
+	{
+		rtrans.translate(1.0, 2.0);
+	}
+	C2DBounds size;
+	C2DAffineTransformation rtrans;
+};
+
+
+BOOST_FIXTURE_TEST_CASE(basics_TranslateTransFixture, TranslateTransFixture)
+{
+	C2DFVector x(33, 40);
+	BOOST_CHECK_EQUAL(rtrans.degrees_of_freedom(), 2);
+	BOOST_CHECK_EQUAL(C2DFVector(-1.0, -2.0),  rtrans.apply(x));
+}
+
+BOOST_FIXTURE_TEST_CASE(max_TranslateTransFixture, TranslateTransFixture)
+{
+	BOOST_CHECK_CLOSE(rtrans.get_max_transform(), sqrtf(5.0), 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(set_identity_TranslateTransFixture, TranslateTransFixture)
+{
+	rtrans.set_identity();
+
+	C2DAffineTransformation::const_iterator ti = rtrans.begin();
+
+	for (size_t y = 0; y < size.y; ++y)
+		for (size_t x = 0; x < size.x; ++x, ++ti) {
+			BOOST_CHECK_EQUAL(*ti, C2DFVector(x, y));
+		}
+}
+
+BOOST_FIXTURE_TEST_CASE(derivative_TranslateTransFixture, TranslateTransFixture)
+{
+	C2DFMatrix d = 	rtrans.derivative_at(10,10);
+	BOOST_CHECK_EQUAL(d.x.x, 1.0f);
+	BOOST_CHECK_EQUAL(d.x.y, 0.0f);
+	BOOST_CHECK_EQUAL(d.y.x, 0.0f);
+	BOOST_CHECK_EQUAL(d.y.y, 1.0f);
+}
+
+
+BOOST_AUTO_TEST_CASE(test_affine2d)
+{
+	C2DAffineTransformation t1(C2DBounds(10,20));
+
+	BOOST_CHECK_EQUAL(t1.degrees_of_freedom(), 6);
+
+	C2DFVector x0(1.0f, 2.0f);
+
+	C2DFVector y0 = t1.apply(x0);
+	BOOST_CHECK_EQUAL(y0, C2DFVector(0,0));
+
+	t1.scale(2.0f, 3.0f);
+
+	C2DFVector y1 = t1.apply(x0);
+	BOOST_CHECK_EQUAL(y1, x0 - C2DFVector(2.0f, 6.0f));
+
+	t1.translate(1.0f, 2.0f);
+	BOOST_CHECK_EQUAL(t1.apply(x0), x0 - C2DFVector(3.0f, 8.0f));
+
+
+	t1.rotate(M_PI / 2.0);
+	C2DFVector yr1 = t1.apply(x0);
+	BOOST_CHECK_CLOSE(yr1.x , x0.x + 8.0f, 0.1f);
+	BOOST_CHECK_CLOSE(yr1.y , x0.y - 3.0f, 0.1f);
+
+	C2DAffineTransformation t2(C2DBounds(10,20));
+	t2.rotate(M_PI / 2.0);
+	C2DFVector yr = t2.apply(x0);
+	BOOST_CHECK_CLOSE(yr.x , x0.x + 2.0f, 0.1f);
+	BOOST_CHECK_CLOSE(yr.y , x0.y - 1.0f, 0.1f);
+
+}
+
+BOOST_AUTO_TEST_CASE( test_affine2d_iterator )
+{
+	C2DBounds size(10,20);
+
+	C2DAffineTransformation t1(size);
+	C2DAffineTransformation::const_iterator ti = t1.begin();
+
+	for (size_t y = 0; y < size.y; ++y)
+		for (size_t x = 0; x < size.x; ++x, ++ti) {
+			BOOST_CHECK_EQUAL(*ti, C2DFVector(x, y));
+		}
+
+	BOOST_CHECK(ti == t1.end());
+}
+
+
+struct RotateTransFixture {
+	RotateTransFixture():
+		size(60, 80),
+		rtrans(size, C2DAffineTransformation::op_rotate),
+		rot_cos(cos(M_PI / 4.0)),
+		rot_sin(sin(M_PI / 4.0))
+	{
+		rtrans.rotate(M_PI / 4.0);
+
+	}
+	C2DBounds size;
+	C2DAffineTransformation rtrans;
+
+	float rot_cos;
+	float rot_sin;
+};
+
+
+BOOST_FIXTURE_TEST_CASE(basics_RotateTransFixture, RotateTransFixture)
+{
+	C2DFVector x(33, 40);
+	BOOST_CHECK_EQUAL(rtrans.degrees_of_freedom(), 1);
+	C2DFVector r  = rtrans.apply(x);
+
+	BOOST_CHECK_CLOSE(r.x, x.x - (rot_cos * x.x - rot_sin* x.y), 0.1);
+	BOOST_CHECK_CLOSE(r.y, x.y - (rot_cos * x.x + rot_sin* x.y), 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(max_RotateTransFixture, RotateTransFixture)
+{
+	C2DFVector x(60, 80);
+	BOOST_CHECK_CLOSE(rtrans.get_max_transform(), rtrans.apply(x).norm(), 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(set_identity_RotateTransFixture, RotateTransFixture)
+{
+	rtrans.set_identity();
+
+	C2DAffineTransformation::const_iterator ti = rtrans.begin();
+
+	for (size_t y = 0; y < size.y; ++y)
+		for (size_t x = 0; x < size.x; ++x, ++ti) {
+			BOOST_CHECK_EQUAL(*ti, C2DFVector(x, y));
+		}
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_affine_clone, TranslateTransFixture )
+{
+	P2DTransformation clone(rtrans.clone());
+
+	C2DAffineTransformation& spclone = dynamic_cast<C2DAffineTransformation&>(*clone);
+
+	BOOST_CHECK_EQUAL(spclone.get_size(), rtrans.get_size());
+
+	C2DAffineTransformation::const_iterator ic = spclone.begin();
+	C2DAffineTransformation::const_iterator ec = spclone.end();
+
+	C2DAffineTransformation::const_iterator io = rtrans.begin();
+
+	while (ic != ec ) {
+		BOOST_CHECK_EQUAL(*ic, *io);
+		++ic;
+		++io;
+	}
+}
+
+
+BOOST_FIXTURE_TEST_CASE(derivative_RotateTransFixture, RotateTransFixture)
+{
+	C2DFMatrix d = 	rtrans.derivative_at(10,10);
+	BOOST_CHECK_CLOSE(d.x.x, rot_cos, 0.1);
+	BOOST_CHECK_CLOSE(d.x.y, -rot_sin, 0.1);
+	BOOST_CHECK_CLOSE(d.y.x, rot_sin, 0.1);
+	BOOST_CHECK_CLOSE(d.y.y, rot_cos, 0.1);
+}

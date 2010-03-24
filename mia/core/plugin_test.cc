@@ -1,0 +1,84 @@
+/* -*- mia-c++  -*-
+ *
+ * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Max-Planck-Institute for Human Cognitive and Brain Science
+ * Max-Planck-Institute for Evolutionary Anthropology
+ * BIT, ETSI Telecomunicacion, UPM
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+#define VSTREAM_DOMAIN "PLUGIN TEST"
+
+#include <memory>
+#include <mia/core.hh>
+
+
+NS_MIA_USE
+using namespace std;
+
+bool uninstalled = false;
+bool passed = true;
+
+static void test_plugin(const char *modname)
+{
+
+	cvmsg() << "Testing '" << modname << "'\n";
+	auto_ptr<CPluginModule> module(new CPluginModule(modname));
+	CPluginBase *plugin = module->get_interface();
+	if (!plugin) {
+		cverr() <<"'"<< modname << "'  doesn't provide a plugin interface\n";
+		return;
+	}
+	do {
+		cvmsg() << "  '" << plugin->get_name() << "'\n";
+		if ( !plugin->test(uninstalled) ) {
+			cvfail() << "'"<< plugin->get_name() << "'  tests failed\n";
+			passed = false;
+		}
+		plugin = plugin->next_interface();
+	}while (plugin);
+	delete plugin;
+}
+
+int main(int argc, char *argv[])
+{
+	try {
+
+		CCmdOptionList options;
+
+		options.push_back(make_opt( uninstalled, "uninstalled", 'u', "test uninstalled plugin", NULL));
+		options.parse(argc, argv);
+
+		for_each(options.get_remaining().begin(),
+			 options.get_remaining().end(), test_plugin);
+
+		return passed ? EXIT_SUCCESS : EXIT_FAILURE;
+	}
+	catch (const runtime_error &e){
+		cerr << argv[0] << " runtime: " << e.what() << endl;
+	}
+	catch (const invalid_argument &e){
+		cerr << argv[0] << " error: " << e.what() << endl;
+	}
+	catch (const exception& e){
+		cerr << argv[0] << " error: " << e.what() << endl;
+	}
+	catch (...){
+		cerr << argv[0] << " unknown exception" << endl;
+	}
+	return EXIT_FAILURE;
+}

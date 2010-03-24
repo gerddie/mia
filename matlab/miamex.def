@@ -1,0 +1,8 @@
+; mexFunction.def : Declares the module parameters for the DLL.
+
+LIBRARY      "miamex"
+;DESCRIPTION  'MATLAB Interface to mia 2d registration library'
+
+EXPORTS
+    ; Explicit exports can go here
+    mexFunction

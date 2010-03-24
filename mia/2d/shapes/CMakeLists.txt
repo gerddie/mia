@@ -1,0 +1,8 @@
+SET(shape2d 
+	    2d-shapes
+)
+
+ADD_LIBRARY(2d-shapes MODULE basic_shapes.cc sphere.cc)
+TARGET_LINK_LIBRARIES(2d-shapes ${MIA2DLIBS})
+SET_TARGET_PROPERTIES(2d-shapes PROPERTIES PREFIX "")
+INSTALL(TARGETS 2d-shapes LIBRARY DESTINATION "${PLUGIN_INSTALL_PATH}/shape/2dimage")

@@ -1,0 +1,16 @@
+# libmia pkg-config source file
+
+prefix=@prefix@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/miacore-@LT_RELEASE@
+
+pluginroot=@PLUGIN_SEARCH_PATH@
+
+Name: libmiaph
+Description: A library providing interfaces to plugin handling
+Version: @LT_RELEASE@.@LT_CURRENT@.@LT_AGE@.@LT_REVISION@
+Conflicts:
+Requires: gmodule-2.0
+Libs: @mia_libs@
+Cflags: @mia_cflags@

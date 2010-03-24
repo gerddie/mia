@@ -1,0 +1,212 @@
+/* -*- mona-c++  -*-
+ * Copyright (c) Leipzig, Madrid 2004 - 2008 
+ * Max-Planck-Institute for Human Cognitive and Brain Science	
+ * Max-Planck-Institute for Evolutionary Anthropology 
+ * BIT, ETSI Telecomunicacion, UPM
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+/*! \brief basic type of a plugin handler 
+
+A 2D region growing that adds points based on the minimum gradient
+
+\file gauss_image3d_filter.hh
+\author Gert Wollny <wollny at eva.mpg.de>
+
+*/
+
+#include <queue>
+#include <stdexcept>
+#include <boost/type_traits.hpp>
+
+#include <mia/2d/2dfilter.hh>
+#include <libmona/filter.hh>
+
+#include <libmona/probmapio.hh>
+#include "rgg_tools.hh"	
+
+namespace rgg_2dimage_filter {
+
+	
+NS_MIA_USE;
+using namespace std; 
+
+static char const *plugin_name = "rgg";
+static const CStringOption param_map("map", "seed class map", "");
+static const CFloatOption param_seed("seed", "threshold for seed probability", 0.9f, 0.0f, 1.0f); 
+
+
+	
+class C2DRGG: public C2DFilter {
+	float _M_seed; 
+	CProbabilityVector _M_pv;
+	vector<T2DVector<int> >  _M_env;
+public:
+	C2DRGG(float seed,const CProbabilityVector& pv):
+		_M_seed(seed), 
+		_M_pv(pv)
+	{
+		_M_env.push_back(T2DVector<int>(-1,  0)); 
+		_M_env.push_back(T2DVector<int>( 1,  0)); 
+		_M_env.push_back(T2DVector<int>( 0, -1)); 
+		_M_env.push_back(T2DVector<int>( 0,  1)); 
+	}
+	
+	template <class T>
+	typename C2DRGG::result_type operator () (const T2DImage<T>& data) const ;
+
+};
+
+
+class C2DRGGImageFilter: public C2DImageFilterBase {
+	C2DRGG _M_filter; 
+public:
+	C2DRGGImageFilter(float seed,const CProbabilityVector& pv); 
+
+
+	virtual P2DImage do_filter(const C2DImage& image) const;
+};
+
+
+class C2DRGGImageFilterFactory: public C2DFilterPlugin {
+public: 
+	C2DRGGImageFilterFactory();
+	virtual C2DFilterPlugin::ProductPtr create(const CParsedOptions& options) const;
+	virtual const string do_get_descr()const; 
+};
+
+
+template <class T>
+typename C2DRGG::result_type C2DRGG::operator () (const T2DImage<T>& data) const
+{
+	
+//	const bool is_integral = ::boost::is_integral<T>::value; 
+	
+	C2DUBImage *result = new C2DUBImage(data.get_size()); 
+	
+	// find seed segmentation 
+	transform(data.begin(), data.end(), result->begin(), FMapClass(_M_seed, _M_pv)); 
+	
+	// evaluate all boundary pixels and get gradient
+	
+	C2DUBImage::iterator r = result->begin(); 
+	
+	vector<T2DVector<int> >::const_iterator ke = _M_env.end(); 
+	
+	priority_queue<Contact<C2DBounds,T> > contacts; 
+	
+	typename T2DImage<T>::const_iterator di = data.begin(); 
+	
+	for (size_t y = 0; y < data.get_size().y; ++y)
+		for (size_t x = 0; x < data.get_size().x; ++x, ++r, ++di) {
+			if (*r != undefined) {
+				vector<T2DVector<int> >::const_iterator kb = _M_env.begin(); 
+				while (kb != ke) {
+					size_t ix = kb->x + x; 
+					if (ix < data.get_size().x) {
+						size_t iy = kb->y + y;
+						if (iy < data.get_size().y) {
+							if ((*result)(ix, iy) == undefined) {
+								T p2 = data(ix, iy);
+								Contact<C2DBounds,T> c(C2DBounds(ix, iy), *r, p2, *di > p2 ? *di - p2 : p2 - *di, 0);
+								contacts.push(c);  
+								//cvdebug() << "contact: " << c << "\n";
+							}
+						}
+					}
+					++kb; 
+				}
+			}
+		}
+	
+	cvdebug() << "Have " << contacts.size() << " contact points\n"; 
+	
+        // run through the contacts, and add to the neighbor
+	while (!contacts.empty()) {
+		Contact<C2DBounds, T> c = contacts.top(); 
+		contacts.pop(); 
+		
+		C2DUBImage::value_type& r = (*result)(c.l); 
+		// it is possible, that this value is already set by a better neighbour
+		if (r != undefined) 
+			continue; 
+		
+		r = c.cl;
+	
+		vector<T2DVector<int> >::const_iterator kb = _M_env.begin(); 
+		while (kb != ke) {
+			size_t ix = kb->x + c.l.x; 
+			if (ix < data.get_size().x) {
+				size_t iy = kb->y + c.l.y;
+				if (iy < data.get_size().y) {
+					if ((*result)(ix, iy) == undefined) {
+						T p2 = data(ix, iy);
+						Contact<C2DBounds,T> c_new(C2DBounds(ix, iy), c.cl, p2, 
+									   c.value > p2 ? c.value - p2 : p2 - c.value, 0);
+						contacts.push(c_new);  
+						//cvdebug() << "contact: " << c_new << "\n"; 
+					}
+				}
+			}
+			++kb; 
+		}
+	}
+		
+	return P2DImage(result); 
+}
+
+C2DRGGImageFilter::C2DRGGImageFilter(float seed,const CProbabilityVector& pv):
+	_M_filter( seed, pv)
+{
+}
+
+P2DImage C2DRGGImageFilter::do_filter(const C2DImage& image) const
+{
+	return wrap_filter(_M_filter,image); 
+}
+
+C2DRGGImageFilterFactory::C2DRGGImageFilterFactory():
+	C2DFilterPlugin(plugin_name)
+{
+	add_help(param_map);
+	add_help(param_seed);
+}
+
+C2DFilterPlugin::ProductPtr C2DRGGImageFilterFactory::create(const CParsedOptions& options) const
+{
+	string map_name = param_map.get_value(options); 
+	float seed_thresh = param_seed.get_value(options); 
+	
+	CProbabilityVector pv = ::load_probability_map(map_name); 
+	if (pv.empty())
+		throw invalid_argument(string("Unable to load probability map from ") + map_name); 
+	
+	
+	
+	return C2DFilterPlugin::ProductPtr(new C2DRGGImageFilter(seed_thresh, pv));
+}
+
+const string C2DRGGImageFilterFactory::do_get_descr()const
+{
+	return "2D region growing with probability based stopping funtion"; 
+}
+
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new C2DRGGImageFilterFactory(); 
+}
+} // end namespace rgg_2dimage_filter

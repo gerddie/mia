@@ -1,0 +1,89 @@
+/* -*- mona-c++  -*-
+ *
+ * Copyright (c) Leipzig, Madrid 2004 - 2009
+ * Max-Planck-Institute for Human Cognitive and Brain Science	
+ * Max-Planck-Institute for Evolutionary Anthropology 
+ * BIT, ETSI Telecomunicacion, UPM
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <boost/static_assert.hpp>
+
+#include <string>
+#include <mia/core/shape.hh>
+#include <mia/core/handler.cxx>
+
+NS_MIA_BEGIN
+
+template <typename T>
+struct __adjust {
+	static void apply(T& p, const T& q) {
+		BOOST_STATIC_ASSERT(sizeof(T) == 0); 
+	}
+}; 
+
+template <template <typename> class  T, typename M>
+TShape<T,M>::TShape():
+	_M_shape(less_then<T<int> >())
+{
+	TRACE("TShape<T,M>::TShape()"); 
+}
+
+template <template <typename> class  T, typename M>
+typename TShape<T,M>::const_iterator TShape<T,M>::begin() const
+{
+	return _M_shape.begin(); 
+}
+
+template <template <typename> class  T, typename M>
+typename TShape<T,M>::const_iterator TShape<T,M>::end() const
+{
+	return _M_shape.end(); 
+}
+
+template <template <typename> class  T, typename M>
+typename TShape<T,M>::Size TShape<T,M>::get_size() const
+{
+	return typename TShape<T,M>::Size(_M_size); 
+}
+
+template <template <typename> class  T, typename M>
+void TShape<T,M>::insert(const T<int>& p)
+{
+	_M_shape.insert(p); 
+	__adjust<T<int> >::apply(_M_size,p);
+}
+
+template <template <typename> class  T, typename M>
+typename TShape<T,M>::Mask TShape<T,M>::get_mask()const
+{
+	typename TShape<T,M>::Mask result(get_size());
+	fill(result.begin(), result.end(), 0);  
+	
+	T<int> half_size = _M_size / 2; 
+		
+	for (const_iterator i = begin(), e = end(); i != e; ++i){
+		result(T<unsigned int>(*i + half_size)) = true;  
+	}
+	return result; 
+}
+
+NS_MIA_END

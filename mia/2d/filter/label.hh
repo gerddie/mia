@@ -1,0 +1,46 @@
+/* -*- mia-c++  -*-
+ * Copyright (c) 2007-2009 Gert Wollny <gert at die.upm.es>
+ * Biomedical Image Technologies, Universidad Politecnica de Madrid
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+/*! 
+A 2D conected component labeling filter 
+\file label.cc
+
+*/
+
+#include <mia/2d/2dfilter.hh>
+#include <mia/2d/shape.hh>
+
+
+#include <limits>
+
+NS_BEGIN(label_2dimage_filter)
+
+class CLabel: public mia::C2DFilter {
+public:	
+	CLabel(mia::P2DShape& _M_mask); 
+
+private: 
+	void grow_region(const mia::C2DBounds& loc, 
+			 const mia::C2DBitImage& input, mia::C2DUSImage& result, unsigned short label)const; 
+	CLabel::result_type do_filter(const mia::C2DImage& image) const;
+	mia::P2DShape _M_mask;
+}; 
+
+NS_END

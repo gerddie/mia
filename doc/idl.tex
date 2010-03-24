@@ -1,0 +1,130 @@
+\section{IDL Interface User Guide}
+
+If MIA is installed into \tw{<MIA-ROOT>} add \tw{<MIA-ROOT>/lib/mia-2.0/plugins/idl} to the \tw{IDL\_DLM} search path. 
+After doing so, IDL needs to be restarted. 
+
+\subsection{Supported Functions}
+
+All available functions of the MIA library are imported into IDL by using the DLM interface provided. 
+Calling 
+
+\lstset{language=bash}
+\begin{lstlisting}
+FUNCTION test_echo
+in = 10
+out = 20
+;---------------------------------------------------------
+out = MIA_ECHO(in)
+;---------------------------------------------------------
+IF ( in NE out ) THEN RETURN, 0
+RETURN, 1
+END
+\end{lstlisting}
+
+\noindent 
+Supported functions are  \tw{MIA\_ECHO}, \tw{MIA\_DEBUG}, \tw{MIA\_DEFORM2D}, \tw{MIA\_DEFORM3D}, \tw{MIA\_FILTER2D}, \tw{MIA\_FILTER3D}, \tw{MIA\_NRREG2D}, 
+  \tw{MIA\_NRREG3D}, and \tw{MIA\_READ2DIMAGE}. 
+
+\section{Function description}
+
+\subsubsection*{Set debug level}
+
+\begin{description}
+\item [Function:] MIA\_DEBUG
+\item [Description:] set the verbosity of the run algorithm.
+\item [Parameters:] verbosity given as string: fatal, error, fail, warning, message, debug (if mia is build without -DNDEBUG)
+\item [Example:] Set debug level to 'message'
+\begin{lstlisting}
+  dummy = MIA_DEBUG('message')
+\end{lstlisting}
+\end{description}
+
+
+\subsubsection*{Test function}
+
+\begin{description}
+\item [Function:] MIA\_ECHO
+\item [Description:] returns the input parameter
+\item [Parameters:] an abitrary parameter 
+\item [Example:] Echo the number 10 
+\begin{lstlisting}
+  result = MIA_ECHO(10)
+\end{lstlisting}
+\end{description}
+
+\subsubsection*{2D/3D image filters}
+
+\begin{description}
+\item [Function:] MIA\_FILTER2D, MIA\_FILTER2D
+\item [Description:] An 2D/3D image filter as described in section \ref{sec:2dfilters} and \ref{sec:3dfilters}, respectively.
+\item [Parameters:] filter, image
+\item [Example:] Filtering an 2D image \tw{image} with a median filter of width 3 and store the result in \tw{filtered}.
+\begin{lstlisting}
+  filtered = MIA_FILTER2D('median:w=3', image)
+\end{lstlisting}
+\end{description}
+
+\subsubsection*{2D/3D non-rigid image registration}
+
+\begin{description}
+\item [Function:] MIA\_NRREG2D, MIA\_NRREG3D
+\item [Description:] An 2D or 3D image registration algorithm, fluid dynamics and elastic
+\item [Parameters:] src, ref, method, soriter, cost, epsilon, startsize, niter
+
+\begin{tabular}{ll}
+src & source (floating) image \\
+ref & reference image \\
+model & registration model (navier|naviera)\\
+timestep & timestep (direct|fluid) \\
+cost & cost function \\
+epsilon & registration stopping criterion \\
+startsize & multigrid start size \\
+niter & number of external iterations  \\
+\end{tabular}
+\item [Example:] running a fluid synamic registration of a pair of 2D images, src and ref, using the sum of 
+  squared differences as criterion. The call is executed like follows:
+\begin{lstlisting}
+deform_field = MIA_NRREG2D(src, ref, 'naviera:iter=40', 'fluid', 'ssd', 0.001, 16, 100)
+\end{lstlisting}
+\end{description}
+
+\subsubsection*{2D/3D image deformation}
+
+\begin{description}
+\item [Function:] MIA\_DEFORM2D, MIA\_DEFORM3D
+\item [Description:] An 2D or 3D image deformation, Given a deformation field $\vu$ the deformed image is
+   evaulated from the source image $S(\vx)$ according to $D(\vx) := S(\vx - \vu(\vx))$. 
+\item [Parameters:] src, field, interp
+\item [Returns:] the deformed image
+
+\begin{tabular}{ll}
+src & source image  to be deformed \\
+field & deformation field $\vu$ \\
+interp & interpolator: nn (neares neighbor), tri (bi/tri-linear), bspline3, bspline4, bspline5, omoms3\\
+\end{tabular}
+\item [Example 1:] deforming a 3d image by using an input field and the tri-linear interpolator
+\begin{lstlisting}
+    defo = MIA_DEFORM3D(src_img, field, 'bspline3')
+\end{lstlisting}
+\end{description}
+
+
+\subsubsection*{2D image reader}
+
+\begin{description}
+\item [Function:] MIA\_READ2DIMAGE
+\item [Description:] Uses the interface of the MIA library to load an image
+\item [Parameters:] name
+\item [Returns:] the image
+
+\begin{tabular}{ll}
+name  & file name of the image to be loaded \\
+\end{tabular}
+\item [Example 1:] loading a ``BMP'' file 
+\begin{lstlisting}
+    image = MIA_READ2DIMAGE('image.bmp')
+\end{lstlisting}
+\end{description}
+
+
+

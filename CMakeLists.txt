@@ -1,0 +1,348 @@
+#
+# Copyright (c) Madrid 2008, 2009 
+# BIT, ETSI Telecomunicacion, UPM
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#
+#
+
+PROJECT("mia")
+
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4.7 FATAL_ERROR)
+
+if(COMMAND cmake_policy)
+  cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
+
+include(FindPkgConfig)
+include(CheckCXXSourceCompiles)
+
+# Making releases:
+#   MICRO_VERSION += 1;
+#   INTERFACE_AGE += 1;
+#   BINARY_AGE += 1;
+# if any functions have been added, set INTERFACE_AGE to 0.
+# if backwards compatibility has been broken,
+# set BINARY_AGE and INTERFACE_AGE to 0.
+
+
+SET(VENDOR "Gert Wollny")
+SET(PACKAGE_NAME "mia")
+SET(MAJOR_VERSION 2)
+SET(MINOR_VERSION 0)
+SET(MICRO_VERSION 2)
+SET(INTERFACE_AGE 0)
+SET(BINARY_AGE    0)
+SET(PACKAGE_VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}")
+SET(VERSION "${MAJOR_VERSION}.${MINOR_VERSION}")
+SET(MIA_NAME "${PACKAGE_NAME}-${VERSION}")
+SET(prefix ${CMAKE_INSTALL_PREFIX}) 
+SET(PLUGIN_OUTPUT "${CMAKE_BINARY_DIR}/plugins")
+
+SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+MATH(EXPR MIA_CURRENT "${MICRO_VERSION} - ${INTERFACE_AGE}")
+SET(MIA_REVISION ${MICRO_VERSION})
+MATH(EXPR MIA_AGE "${BINARY_AGE} - ${INTERFACE_AGE}")
+
+SET(LIBRARY_VERSION_INFO "${MIA_CURRENT}.${MIA_REVISION}.${MIA_AGE}")
+SET(LIBRARY_SOVERSION_INFO "${MAJOR_VERSION}")
+
+OPTION(STRICT_DEPENDECIES "require that all requested optinal dependencies are availabe" FALSE)
+#SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS true)
+
+
+INCLUDE (CheckIncludeFiles)
+INCLUDE (TestBigEndian)
+INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/macros.cmake)
+INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/pluginmacro.cmake)
+INCLUDE (CheckTypeSize)
+
+ASSERT_SIZE(char 1)
+ASSERT_SIZE(short 2)
+ASSERT_SIZE(int 4)
+ASSERT_SIZE(float 4)
+ASSERT_SIZE(double 8)
+
+SET(HAVE_INT64 "/* #undef HAVE_INT64 */")
+#
+# currently 64 bit integers are disabled, because most of the tests fail
+# and they are not used anyway
+#
+#CHECK_TYPE_SIZE(long  MIA_SIZEOF_LONG)
+#SET(HAVE_INT64 "#define HAVE_INT64")
+#IF(${MIA_SIZEOF_LONG} EQUAL 8)
+#  SET(INT64 long)
+#  SET(LONG_IS_INT64 "#define LONG_IS_INT64")
+#ELSE (${MIA_SIZEOF_LONG} EQUAL 8)
+#    SET(LONG_IS_INT64 "/*#undef LONG_IS_INT64 */")
+#  CHECK_TYPE_SIZE("long long"   MIA_SIZEOF_LONG_LONG)
+#  IF (HAVE_MIA_SIZEOF_LONG_LONG AND ${MIA_SIZEOF_LONG_LONG} EQUAL 8)
+#    SET(INT64 "long long")
+#  ELSE (HAVE_MIA_SIZEOF_LONG_LONG AND ${MIA_SIZEOF_LONG_LONG} EQUAL 8)
+#    CHECK_TYPE_SIZE("__int64"   MIA_SIZEOF_INT64)
+#    IF (HAVE_MIA_SIZEOF_INT64)
+#      SET(INT64 __int64)
+#    ELSE(HAVE_MIA_SIZEOF_INT64)
+#      SET(HAVE_INT64 "/* #undef HAVE_INT64 */")
+#    ENDIF(HAVE_MIA_SIZEOF_INT64)
+#  ENDIF(HAVE_MIA_SIZEOF_LONG_LONG AND ${MIA_SIZEOF_LONG_LONG} EQUAL 8)
+#ENDIF(${MIA_SIZEOF_LONG} EQUAL 8)
+
+
+TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
+CHECK_INCLUDE_FILES (unistd.h HAVE_UNISTD_H)
+
+# find additional packages
+#
+# With MSVC using pre-installed dynamic libraries is usually a pain because of 
+# the incompatibilities in the compiler flags
+# 
+IF (MSVC)
+  SET(SEARCH_LIBS_DEFAULT FALSE)
+ELSE(MSVC)
+  SET(SEARCH_LIBS_DEFAULT TRUE)
+ENDIF (MSVC)
+
+
+# Taken from ITK:
+# On Visual Studio 8 MS deprecated C. This removes all 1.276E1265 security
+# warnings
+IF(MSVC)
+  ADD_DEFINITIONS(
+    -D_CRT_FAR_MAPPINGS_NO_DEPRECATE
+    -D_CRT_IS_WCTYPE_NO_DEPRECATE
+    -D_CRT_MANAGED_FP_NO_DEPRECATE
+    -D_CRT_NONSTDC_NO_DEPRECATE
+    -D_CRT_SECURE_NO_DEPRECATE
+    -D_CRT_SECURE_NO_DEPRECATE_GLOBALS
+    -D_CRT_SETERRORMODE_BEEP_SLEEP_NO_DEPRECATE
+    -D_CRT_TIME_FUNCTIONS_NO_DEPRECATE
+    -D_CRT_VCCLRIT_NO_DEPRECATE
+    -D_SCL_SECURE_NO_DEPRECATE
+    -D_SECURE_SCL=0
+    )
+ENDIF(MSVC)
+
+SET(SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
+SET(LIB_ROOT_INSTALL_PATH "lib/${MIA_NAME}")
+SET(CONFIG_INSTALL_PATH "${LIB_ROOT_INSTALL_PATH}/config")
+SET(LIB_INCLUDE_INSTALL_PATH "${LIB_ROOT_INSTALL_PATH}/include")
+SET(PLUGIN_INSTALL_PATH "${LIB_ROOT_INSTALL_PATH}/plugins")
+SET(PLUGIN_SEARCH_PATH "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_PATH}")
+SET(DOC_INSTALL_PATH "shared/doc/${PACKAGE_NAME}-${PACKAGE_VERSION}")
+SET(BINARY_INSTALL_PATH "bin")
+SET(LIBRARY_INSTALL_PATH "lib")
+SET(INCLUDE_INSTALL_PATH "include/${MIA_NAME}")
+
+
+MACRO(GET_BOOST_LINKERFLAG VAR LIBNAMES)
+  FOREACH(L  ${LIBNAMES})
+    STRING(REGEX MATCH "boost_[-_a-z0-9]*" temp ${L})
+    SET(flags "${flags} -l${temp}")
+  ENDFOREACH(L  ${LIBNAMES})
+  SET(${VAR} "${flags}")
+ENDMACRO(GET_BOOST_LINKERFLAG)
+
+
+#
+# Handle BOOST 
+#
+#find essecial packages
+SET(BOOST_COMPONENTS   filesystem  regex  thread  unit_test_framework)
+IF (WIN32)
+  SET(BOOST_COMPONENTS  ${BOOST_COMPONENTS} date_time system)
+ENDIF(WIN32)
+
+FIND_PACKAGE( Boost 1.36.1 COMPONENTS 
+  ${BOOST_COMPONENTS}
+  REQUIRED)
+
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
+LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+
+#ADD_DEFINITIONS(-DBOOST_FILESYSTEM_NO_DEPRECATED)
+ADD_DEFINITIONS(-DBOOST_ALL_DYN_LINK)
+
+
+SET(BOOST_DEPS ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARIES}  ${Boost_FILESYSTEM_LIBRARY})
+SET(BOOST_UNITTEST  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+IF (WIN32 AND NOT UNIX)
+   FOREACH(l ${Boost_THREAD_LIBRARY} 
+       ${Boost_REGEX_LIBRARIES}  
+       ${Boost_FILESYSTEM_LIBRARY} 
+       ${Boost_SYSTEM} 
+       ${Boost_DATE_TIME}
+       )
+      STRING(REGEX MATCH "lib$" head ${l})
+      STRING(COMPARE EQUAL "xlib" "x${head}" islib)
+      IF (${islib})
+	  STRING(REGEX REPLACE "lib$" "dll" lDLL ${l})
+	  INSTALL(FILES ${lDLL} DESTINATION "bin")
+      ENDIF(${islib})
+   ENDFOREACH(l)
+ENDIF (WIN32 AND NOT UNIX)
+
+IF (MSYS OR MINGW)
+  SET(BASELIBS ${BOOST_DEPS}) 
+ENDIF (MSYS OR MINGW)
+
+IF(UNIX)
+  GET_BOOST_LINKERFLAG(BOOST_LIBFLAG "${BOOST_DEPS}")
+  SET(MIA_DEPEND_LIBRARIES "${BOOST_LIBFLAG} -lpthread -ldl -L${Boost_LIBRARY_DIRS}")
+ENDIF(UNIX)
+#
+# End Handle BOOST 
+#
+
+#
+# take care of modules loading infrastructure
+#
+
+IF(NOT WIN32)
+  FIND_LIBRARY(DL dl
+    PATH
+    /lib
+    /usr/lib
+    /opt/local/lib
+    /sw/lib
+  )
+  IF(DL_NOTDOUND) 
+    MESSAGE(FATAL_ERROR "non-windows systems without libdl.so are not yet supported")
+  ENDIF(DL_NOTDOUND) 
+  SET(BASELIBS  ${BOOST_DEPS} ${DL}) 
+ENDIF(NOT WIN32)
+
+#
+# maybe one should replace this with mia
+#
+
+IF (WIN32 AND NOT UNIX)
+  SET(PLUGSUFFIX ".dll")
+ELSE (WIN32 AND NOT UNIX)
+  SET(PLUGSUFFIX ".so")
+ENDIF (WIN32 AND NOT UNIX)
+
+
+OPTION(WARN_OLD_PLUGINSTYLE "Warn if plugins use old implementation style" OFF)
+
+
+#
+# optional global dependencies for the core libraries  
+#
+# Deal with FFT v3 Options
+OPTION(WITH_FFTW "Use FFTW" ${SEARCH_LIBS_DEFAULT})
+
+IF(WITH_FFTW) 
+  MARK_AS_ADVANCED(WITH_FFTWD)
+  OPTION(WITH_FFTWD "Use double precision FFTW if found" ON)
+  
+  MARK_AS_ADVANCED(WITH_FFTWF)
+  OPTION(WITH_FFTWF "Use single precision FFTW if found" ON)
+  
+  IF( WITH_FFTWD OR WITH_FFTWF )
+    FIND_PACKAGE( FFTW )
+    IF(FFTWF_FOUND AND WITH_FFTWF) 
+      SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} fftw3f")
+      MESSAGE(STATUS "use FFTWF")
+    ELSE(FFTWF_FOUND AND WITH_FFTWF)
+      MESSAGE(STATUS "no FFTWF found")
+    ENDIF(FFTWF_FOUND  AND WITH_FFTWF)
+    IF(FFTWD_FOUND AND WITH_FFTWD) 
+      SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} fftw3")
+      MESSAGE(STATUS "use FFTWD")
+    ENDIF(FFTWD_FOUND  AND WITH_FFTWD)
+  ENDIF( WITH_FFTWD OR WITH_FFTWF )
+  IF(WITH_FFTWD) 
+    OPTION(WITH_PWPDF "Use PWPDF for parzen windows PDF estimation" ${SEARCH_LIBS_DEFAULT})
+    IF(WITH_NFFT) 
+      pkg_check_modules(PWPDF libpwpdf)
+      IF (PWPDF_FOUND)
+	INCLUDE_DIRECTORIES(${PWPDF_INCLUDE_DIRS})
+	LINK_DIRECTORIES(${PWPDF_LIBRARY_DIRS})
+	SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} pwpdf")
+	MESSAGE(STATUS "found PWPDF libs ${PWPDF_LIBRARIES}")
+      ENDIF (PWPDF_FOUND)
+    ENDIF(WITH_NFFT)
+  ENDIF(WITH_FFTWD)
+ENDIF(WITH_FFTW)
+
+#
+# add xml library for some fun with segmentations
+#
+OPTION(WITH_XMLPP "Use XML++ for some additional features" ${SEARCH_LIBS_DEFAULT})
+IF(WITH_XMLPP) 
+  pkg_check_modules(XMLPP libxml++-2.6)
+  IF (XMLPP_FOUND)
+    INCLUDE_DIRECTORIES(${XMLPP_INCLUDE_DIRS})
+    LINK_DIRECTORIES(${XMLPP_LIBRARY_DIRS})
+    SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} libxml++-2.6")
+  ENDIF (XMLPP_FOUND)
+ENDIF(WITH_XMLPP) 
+
+#
+# at itpp for ICA 
+#
+
+OPTION(WITH_ITPP "Use IT++ for some additional features" ${SEARCH_LIBS_DEFAULT})
+IF(WITH_ITPP)
+  pkg_check_modules(ITPP itpp)
+  IF(ITPP_FOUND)
+    INCLUDE_DIRECTORIES(${ITPP_INCLUDE_DIRS})
+    LINK_DIRECTORIES(${ITPP_LIBRARY_DIRS})
+    SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} itpp")
+  ENDIF(ITPP_FOUND)
+ENDIF(WITH_ITPP)
+
+ADD_DEFINITIONS(-DHAVE_CONFIG_H)
+
+#add the root directory to the search path 
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+
+ENABLE_TESTING()
+
+ADD_SUBDIRECTORY(mia     )
+ADD_SUBDIRECTORY(vistaio )
+ADD_SUBDIRECTORY(OpenEXR )
+ADD_SUBDIRECTORY(dicom   )
+ADD_SUBDIRECTORY(src     )
+ADD_SUBDIRECTORY(testdata)
+ADD_SUBDIRECTORY(idl     )
+ADD_SUBDIRECTORY(matlab  )
+ADD_SUBDIRECTORY(gui  )
+ADD_SUBDIRECTORY(python  )
+
+ADD_SUBDIRECTORY(doc)
+
+IF(UNIX)
+  CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/mia.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/mia.pc)
+  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/mia.pc DESTINATION "lib/pkgconfig")
+ENDIF(UNIX)
+
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/miaconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/miaconfig.h)
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/miaconfig.h DESTINATION ${LIB_INCLUDE_INSTALL_PATH})
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README ${CMAKE_CURRENT_SOURCE_DIR}/COPYING 
+  DESTINATION ${DOC_INSTALL_PATH})
+
+INCLUDE(cmake/package.cmake)
+
+
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/UseMia.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/UseMia.cmake)
+INSTALL(EXPORT Mia DESTINATION ${CONFIG_INSTALL_PATH})
