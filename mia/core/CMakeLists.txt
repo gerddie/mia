@@ -162,9 +162,9 @@ ENDMACRO(CORE_TEST name)
 
 IF (UNIX)
 # probably should look for bash first 
-  ADD_CUSTOM_TARGET(revision.hh COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/revision.sh ${CMAKE_CURRENT_SOURCE_DIR})
+  ADD_CUSTOM_TARGET(revision.hh COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/revision.sh ${CMAKE_SOURCE_DIR})
 ELSEIF (WIN32)
-  ADD_CUSTOM_TARGET(revision.hh COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/revision.bat ${CMAKE_CURRENT_SOURCE_DIR})
+  ADD_CUSTOM_TARGET(revision.hh COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/revision.bat ${CMAKE_SOURCE_DIR})
 ELSE (UNIX)
   MESSAGE(FATAL_ERROR "Sorry, don't know how to create revision.hh in the build root directory using your OS") 
 ENDIF (UNIX)
