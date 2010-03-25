@@ -10,6 +10,7 @@ SET(MIA2D_SRC_BASE
   costbase.cc
   creator.cc
   distances.cc
+  imagecostbase.cc
   interpolator.cc 
   fatcost.cc
   filterchain.cc
@@ -80,6 +81,8 @@ SET(MIA2D_HEADERS_BASE
   fatcost.hh
   filterchain.hh
   fftkernel.hh
+  imagecostbase.hh
+  interpolator.hh
   matrix.hh
   model.hh
   modelsolverreg.hh
@@ -162,6 +165,7 @@ TEST_2DMIA(boundingbox)
 TEST_2DMIA(distances)
 
 TEST_2DMIA(costbase)
+TEST_2DMIA(imagecostbase)
 
 IF(ITPP_FOUND)
   TEST_2DMIA(ica)

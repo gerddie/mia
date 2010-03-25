@@ -105,9 +105,9 @@ float C2DTransformMock::get_jacobian(const C2DFVectorfield&, float delta) const
 	return delta;  
 }
 
-P2DImage C2DTransformMock::apply(const C2DImage&, const C2DInterpolatorFactory&) const
+P2DImage C2DTransformMock::apply(const C2DImage& src, const C2DInterpolatorFactory&) const
 {
-	return P2DImage(); 
+	return P2DImage(src.clone()); 
 }
 
 NS_MIA_END
