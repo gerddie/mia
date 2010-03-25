@@ -29,9 +29,14 @@ NS_MIA_BEGIN
 
 class C2DCostBase {
 public: 
+	C2DCostBase(float weight); 
+
 	double evaluate(const C2DTransformation& t, C2DFVectorfield& force) const; 
 private: 
 	virtual double do_evaluate(const C2DTransformation& t, C2DFVectorfield& force) const = 0; 
+	float _M_weight; 
 }; 
+
+
 
 NS_MIA_END

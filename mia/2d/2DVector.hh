@@ -300,7 +300,11 @@ namespace boost {
 		struct plain_return_type_2<arithmetic_action<multiply_action>, mia::C2DFVector, float> {
 			typedef mia::C2DFVector type;
 		};
-		
+		template<> 
+		struct plain_return_type_2<arithmetic_action<multiply_action>, float, mia::C2DFVector> {
+			typedef mia::C2DFVector type;
+		};
+
 	}
 }
 

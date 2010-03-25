@@ -56,6 +56,7 @@ private:
 
 struct C2DCostTest: public C2DCostBase {
 
+	C2DCostTest(float weight): C2DCostBase(weight){}
 private: 
 	double do_evaluate(const C2DTransformation& t, C2DFVectorfield& force) const; 
 	
@@ -65,7 +66,7 @@ private:
 BOOST_AUTO_TEST_CASE (test_costbase ) 
 {
 	const C2DBounds size(1,1); 
-	C2DCostTest cost; 
+	C2DCostTest cost(1.0); 
 	
 	C2DFVectorfield force(size); 
 	
@@ -75,6 +76,21 @@ BOOST_AUTO_TEST_CASE (test_costbase )
 	BOOST_CHECK_EQUAL(force(0,0), C2DFVector(1.2, 2.3));
 
 }
+
+BOOST_AUTO_TEST_CASE (test_costbase_with_weight ) 
+{
+	const C2DBounds size(1,1); 
+	C2DCostTest cost(2.0); 
+	
+	C2DFVectorfield force(size); 
+	
+	C2DTransformMock t(size); 
+	
+	BOOST_CHECK_EQUAL(cost.evaluate(t, force), 2.0);
+	BOOST_CHECK_EQUAL(force(0,0), C2DFVector(2.4, 4.6));
+
+}
+
 
 
 double C2DCostTest::do_evaluate(const C2DTransformation& t, C2DFVectorfield& force) const

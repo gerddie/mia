@@ -26,12 +26,29 @@
 #include <cassert>
 #include <mia/2d/costbase.hh>
 
+#include <boost/lambda/lambda.hpp>
+#include <algorithm>
+
 NS_MIA_BEGIN
+
+using boost::lambda::_1; 
+using boost::lambda::_2; 
+
+C2DCostBase::C2DCostBase(float weight):
+	_M_weight(weight)
+{
+	
+}
 
 double C2DCostBase::evaluate(const C2DTransformation& t, C2DFVectorfield& force) const
 {
 	assert(t.get_size() == force.get_size()); 
-	return do_evaluate(t,force); 
+	C2DFVectorfield f(force.get_size()); 
+	
+	const double result = _M_weight * do_evaluate(t, f); 
+	transform(f.begin(), f.end(), force.begin(), force.begin(),( _1 * _M_weight) + _2); 
+	
+	return result; 
 }
 
 NS_MIA_END
