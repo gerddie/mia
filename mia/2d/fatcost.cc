@@ -68,23 +68,18 @@ C2DBounds C2DImageFatCost::get_size() const
 	return get_src().get_size();
 }
 
-C2DFatCostPlugin::C2DFatCostPlugin(const char *name):
-	TFactory<C2DImageFatCost, C2DImage, fatcost_type>(name),
-	_M_weight(1.0f)
-{
-	add_parameter("weight", new CFloatParameter(_M_weight, 1e-10f, 1e+10f,
-						    false, "weight of cost function"));
-}
-
 C2DFatImageCostPlugin::C2DFatImageCostPlugin(const char *name):
-	C2DFatCostPlugin(name), 
-	_M_interpolator(ip_bspline3)
+	TFactory<C2DImageFatCost, C2DImage, fatcost_type>(name),
+	_M_interpolator(ip_bspline3),
+	_M_weight(1.0f)
+
 {
 	TRACE("C2DFatImageCostPlugin::C2DFatImageCostPlugin");
 	add_parameter("src", new CStringParameter(_M_src_name, true, "study image"));
 	add_parameter("ref", new CStringParameter(_M_ref_name, true, "reference image"));
 	add_parameter("interp", new CDictParameter<EInterpolation>(_M_interpolator, GInterpolatorTable, "image interpolator"));
-	
+	add_parameter("weight", new CFloatParameter(_M_weight, 1e-10f, 1e+10f,
+						    false, "weight of cost function"));
 }
 
 P2DImageFatCost C2DFatImageCostPlugin::create_directly( P2DImage src, P2DImage ref,
@@ -192,8 +187,8 @@ template class TFatCost<C2DTransformation, C2DFVectorfield>;
 template class TPlugin<C2DImage, fatcost_type>;
 template class TFactory<C2DImageFatCost, C2DImage, fatcost_type>;
 
-template class TPluginHandler<C2DFatCostPlugin>;
-template class TFactoryPluginHandler<C2DFatCostPlugin>;
-//template class THandlerSingleton<C2DFatCostPluginHandlerImpl>;
+template class TPluginHandler<C2DFatImageCostPlugin>;
+template class TFactoryPluginHandler<C2DFatImageCostPlugin>;
+template class THandlerSingleton<C2DFatImageCostPluginHandlerImpl>;
 
 NS_MIA_END

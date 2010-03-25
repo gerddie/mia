@@ -36,10 +36,7 @@ NS_MIA_BEGIN
 class C2DImageFatCost;
 typedef SHARED_PTR(C2DImageFatCost) P2DImageFatCost;
 
-typedef TFatCost<C2DTransformation, C2DFVectorfield> C2DFatCost; 
-typedef SHARED_PTR(C2DFatCost) P2DFatCost;
-
-class EXPORT_2D C2DImageFatCost: public C2DFatCost {
+class EXPORT_2D C2DImageFatCost: public TFatCost<C2DTransformation, C2DFVectorfield> {
 public:
 	C2DImageFatCost(P2DImage src, P2DImage ref, P2DInterpolatorFactory ipf, float weight);
 
@@ -50,17 +47,10 @@ private:
 	virtual P2DImageFatCost cloned(P2DImage src, P2DImage ref) const = 0;
 };
 
-class EXPORT_2D C2DFatCostPlugin:public TFactory<C2DFatCost, C2DImage, fatcost_type> {
-public: 
-	C2DFatCostPlugin(const char *name);
-private: 
-	float _M_weight;
-}; 
-
-class EXPORT_2D C2DFatImageCostPlugin: public C2DFatCostPlugin {
+class EXPORT_2D C2DFatImageCostPlugin: public TFactory<C2DImageFatCost, C2DImage, fatcost_type> {
 public:
 	C2DFatImageCostPlugin(const char *name);
-	P2DFatCost create_directly( P2DImage src, P2DImage ref,
+	P2DImageFatCost create_directly( P2DImage src, P2DImage ref,
 					 P2DInterpolatorFactory ipf,
 					 float weight);
 private:
@@ -72,6 +62,7 @@ private:
 	std::string _M_src_name;
 	std::string _M_ref_name;
 	EInterpolation _M_interpolator;
+	float _M_weight;
 };
 
 class EXPORT_2D C2DImageFatCostList : public std::vector<P2DImageFatCost> {
@@ -87,18 +78,15 @@ public:
 	void transform(const C2DTransformation& transform);
 };
 
-/*
-class EXPORT_2D C2DFatImageCostPluginHandlerImpl: public TFactoryPluginHandler<C2DFatCost> {
+class EXPORT_2D C2DFatImageCostPluginHandlerImpl: public TFactoryPluginHandler<C2DFatImageCostPlugin> {
 public:
 	C2DFatImageCostPluginHandlerImpl(const std::list<boost::filesystem::path>& searchpath);
 	P2DImageFatCost create_directly(const std::string& plugin, P2DImage src, P2DImage ref,
 					P2DInterpolatorFactory ipf,
 					float weight) const;
 };
-*/
 
-typedef TFactoryPluginHandler<C2DFatCost> C2DFatImageCostPluginHandlerImpl; 
-typedef THandlerSingleton<C2DFatCost> C2DFatImageCostPluginHandler;
+typedef THandlerSingleton<C2DFatImageCostPluginHandlerImpl> C2DFatImageCostPluginHandler;
 
 NS_MIA_END
 
