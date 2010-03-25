@@ -89,6 +89,7 @@ SET(MIA2D_HEADERS_BASE
   shape.hh
   timestep.hh
   transform.hh
+  transformmock.hh
   transformio.hh
   transformfactory.hh
   interpolator.hh interpolator.cxx
@@ -120,7 +121,14 @@ SET(MIA2DLIBS mia2d  ${LIBS})
 # because it doesen't resolve all
 # symbols, and in Windows, this is not supported
 # 
-ADD_LIBRARY(mia2dtest SHARED 2dimageiotest.cc 2dvfiotest.cc filtertest.cc imagetest.cc)
+ADD_LIBRARY(mia2dtest SHARED 
+  2dimageiotest.cc 
+  2dvfiotest.cc 
+  filtertest.cc 
+  imagetest.cc
+  transformmock.cc
+  )
+
 TARGET_LINK_LIBRARIES(mia2dtest ${MIA2DLIBS} ${BOOST_UNITTEST})
 SET_TARGET_PROPERTIES(mia2dtest PROPERTIES COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
 
@@ -133,9 +141,9 @@ IF(APPLE)
 ENDIF(APPLE)
 
 MACRO(TEST_2DMIA file)
-ADD_EXECUTABLE(test-2d-${file} test_${file}.cc)
-TARGET_LINK_LIBRARIES(test-2d-${file} mia2d ${BOOST_UNITTEST})
-ADD_TEST(2d-${file} test-2d-${file})
+  ADD_EXECUTABLE(test-2d-${file} test_${file}.cc)
+  TARGET_LINK_LIBRARIES(test-2d-${file} mia2dtest ${BOOST_UNITTEST})
+  ADD_TEST(2d-${file} test-2d-${file})
 ENDMACRO(TEST_2DMIA file)
 
 TEST_2DMIA(2dparam)
@@ -152,6 +160,7 @@ TEST_2DMIA(modelsolverreg)
 TEST_2DMIA(polygon)
 TEST_2DMIA(boundingbox)
 TEST_2DMIA(distances)
+
 TEST_2DMIA(costbase)
 
 IF(ITPP_FOUND)
