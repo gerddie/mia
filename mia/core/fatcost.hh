@@ -108,11 +108,11 @@ public:
 private:
 	virtual double do_value() const = 0;
 	virtual double do_evaluate_force(Force& force) const = 0;
-
-		const SHARED_PTR(Data)  _M_src;
-		const SHARED_PTR(Data)  _M_ref;
-		SHARED_PTR(Interpolator) _M_ipf;
-		SHARED_PTR(Data) _M_floating;
+	
+	const SHARED_PTR(Data)  _M_src;
+	const SHARED_PTR(Data)  _M_ref;
+	SHARED_PTR(Interpolator) _M_ipf;
+	SHARED_PTR(Data) _M_floating;
 	float _M_weight;
 	mutable double _M_cost;
 	mutable bool _M_cost_valid;
