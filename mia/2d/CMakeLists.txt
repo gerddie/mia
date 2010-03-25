@@ -7,6 +7,7 @@ SET(MIA2D_SRC_BASE
   2dvfio.cc
   BoundingBox.cc
   cost.cc
+  costbase.cc
   creator.cc
   distances.cc
   interpolator.cc 
@@ -71,6 +72,7 @@ SET(MIA2D_HEADERS_BASE
   2dvfio.hh
   BoundingBox.hh
   cost.hh
+  costbase.hh
   creator.hh
   distances.hh
   defines2d.hh
@@ -150,6 +152,7 @@ TEST_2DMIA(modelsolverreg)
 TEST_2DMIA(polygon)
 TEST_2DMIA(boundingbox)
 TEST_2DMIA(distances)
+TEST_2DMIA(costbase)
 
 IF(ITPP_FOUND)
   TEST_2DMIA(ica)
