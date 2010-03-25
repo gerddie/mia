@@ -29,6 +29,15 @@
 #include <boost/lambda/lambda.hpp>
 #include <algorithm>
 
+#ifdef WIN32
+#  define EXPORT_HANDLER __declspec(dllexport)
+#else
+#  define EXPORT_HANDLER
+#endif
+#include <mia/core/handler.cxx>
+#include <mia/core/plugin_base.cxx>
+
+
 NS_MIA_BEGIN
 
 using boost::lambda::_1; 
@@ -50,5 +59,13 @@ double C2DCostBase::evaluate(const C2DTransformation& t, C2DFVectorfield& force)
 	
 	return result; 
 }
+
+const char *cost_data2d_type::type_descr = "2d"; 
+
+template class EXPORT_HANDLER TPlugin<cost_data2d_type, cost_type>;
+template class EXPORT_HANDLER TFactory<C2DCostBase, cost_data2d_type, cost_type>;
+template class EXPORT_HANDLER TFactoryPluginHandler<C2DCostBasePlugin>;
+template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C2DCostBasePlugin> >;
+template class EXPORT_HANDLER TPluginHandler<C2DCostBasePlugin>;
 
 NS_MIA_END

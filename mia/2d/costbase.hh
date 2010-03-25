@@ -23,11 +23,17 @@
  */
 
 #include <mia/2d/transform.hh>
+#include <mia/core/cost.hh>
 
 
 NS_MIA_BEGIN
 
-class C2DCostBase {
+struct EXPORT_CORE cost_data2d_type {
+	static const char *type_descr;
+};
+
+
+class C2DCostBase : public CProductBase {
 public: 
 	C2DCostBase(float weight); 
 
@@ -37,6 +43,11 @@ private:
 	float _M_weight; 
 }; 
 
+
+typedef TFactory<C2DCostBase, cost_data2d_type, cost_type> C2DCostBasePlugin;
+typedef THandlerSingleton<TFactoryPluginHandler<C2DCostBasePlugin> > C2DCostBasePluginHandler;
+
+typedef SHARED_PTR(C2DCostBase) P2DCostBase;
 
 
 NS_MIA_END
