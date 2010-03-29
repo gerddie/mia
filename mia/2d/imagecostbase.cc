@@ -57,7 +57,7 @@ const C2DImage& C2DImageCostBase::get_src() const
 const C2DImage& C2DImageCostBase::get_ref() const
 {
 	if (!_M_ref)
-		_M_ref = get_from_key(_M_src_key); 
+		_M_ref = get_from_key(_M_ref_key); 
 	return *_M_ref; 
 }
 

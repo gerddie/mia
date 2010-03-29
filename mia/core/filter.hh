@@ -338,6 +338,67 @@ static typename F::result_type filter(const F& f, const A& a, const B& b)
 }
 
 
+
+template <typename F, typename A, typename B>
+static typename F::result_type _accumulate(F& f, const A& a, const B& b)
+{
+	typedef typename Binder<A>::Derived D;
+	switch (a.get_pixel_type()) {
+	case it_bit:   return f(DC(typename D::Dbool, a), b);
+	case it_sbyte: return f(DC(typename D::Dsc,   a), b);
+	case it_ubyte: return f(DC(typename D::Duc,   a), b);
+	case it_sshort:return f(DC(typename D::Dss,   a), b);
+	case it_ushort:return f(DC(typename D::Dus,   a), b);
+	case it_sint:  return f(DC(typename D::Dsi,   a), b);
+	case it_uint:	 return f(DC(typename D::Dui,   a), b);
+#ifdef HAVE_INT64
+	case it_slong: return f(DC(typename D::Dsl,   a), b);
+	case it_ulong: return f(DC(typename D::Dul,   a), b);
+#endif
+	case it_float: return f(DC(typename D::Dfloat,a), b);
+	case it_double:return f(DC(typename D::Ddouble,a), b);
+	default:
+		assert(!"unsupported pixel type in image");
+		throw invalid_argument("mia::filter: unsupported pixel type in image");
+	}
+}
+
+
+/**
+   A accumulatro type that handles data containers of different types.
+   The data container is provided by a pointer or reference to its type independedn base class.
+   Data type dependency is introduced by using a templated derivative.
+   Input objects can be of different types
+   \param f a filter to be applied to the data.
+   \param a input data to be filtered
+   \param b input data to be filtered
+   \returns whathever the filter \a f defines as return type and provides as a result of its operator ()
+*/
+template <typename F, typename A, typename B>
+static typename F::result_type accumulate(F& f, const A& a, const B& b)
+{
+	typedef typename Binder<B>::Derived D;
+	switch (b.get_pixel_type()) {
+	case it_bit:   return _accumulate(f, a, DC(typename D::Dbool,  b));
+	case it_sbyte: return _accumulate(f, a, DC(typename D::Dsc,    b));
+	case it_ubyte: return _accumulate(f, a, DC(typename D::Duc,    b));
+	case it_sshort:return _accumulate(f, a, DC(typename D::Dss,    b));
+	case it_ushort:return _accumulate(f, a, DC(typename D::Dus,    b));
+	case it_sint:  return _accumulate(f, a, DC(typename D::Dsi,    b));
+	case it_uint:	 return _accumulate(f, a, DC(typename D::Dui,    b));
+#ifdef HAVE_INT64
+	case it_slong: return _accumulate(f, a, DC(typename D::Dsl,    b));
+	case it_ulong: return _accumulate(f, a, DC(typename D::Dul,    b));
+#endif
+	case it_float: return _accumulate(f, a, DC(typename D::Dfloat, b));
+	case it_double:return _accumulate(f, a, DC(typename D::Ddouble,b));
+	default:
+		assert(!"unsupported pixel type in image");
+		throw invalid_argument("mia::accumulate: unsupported pixel type in image");
+	}
+}
+
+
 #undef DC
 #undef DV
 
