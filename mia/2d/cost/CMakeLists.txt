@@ -10,7 +10,7 @@ PLUGINGROUP_WITH_TEST_AND_PREFIX(2d-cost "${fatcostplugins2dNew}"
   "${MIA2DLIBS}" "${PLUGIN_INSTALL_PATH}/fatcost/2dimage"
   )
 
-SET(generalcostplugins2d ssd2)
+SET(generalcostplugins2d ssd2 divcurl)
 PLUGINGROUP_WITH_TEST_AND_PREFIX(2d-cost "${generalcostplugins2d}" 
   "${MIA2DLIBS}" "${PLUGIN_INSTALL_PATH}/cost/2d"
   )

@@ -25,3 +25,7 @@ reference.dox
 version.tex
 CMakeCache.txt
 *~
+GPATH
+GRTAGS
+GSYMS
+GTAGS
