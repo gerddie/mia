@@ -123,23 +123,34 @@ template <class I>
 typename TIOPluginHandler<I>::DataKey
 TIOPluginHandler<I>::load_to_pool(const std::string& fname) const
 {
-	const Interface *pp = prefered_plugin_ptr(fname); 
-	if (pp->has_property("pool-placeholder"))
-		return TDelayedParameter<PData>(fname); 
+	TDelayedParameter<PData> result(fname); 
+	
+	// load to pool reuses available copies. 
+	if (CDatapool::Instance().has_key(fname)) 
+		return result; 
 
+	const Interface *pp = prefered_plugin_ptr(fname); 
 	if (pp) {
+		// if the IO plugin signals, that the data will be loaded later
+		// just return the key 
+		if (pp->has_property("pool-placeholder"))
+			return result; 
+		
+		// try the preferred plugin to load the data 
+		// on sucess put it into the pool and return the key 
 		PData retval = pp->load(fname); 
 		if (retval.get()) {
 			CDatapool::Instance().add(fname, retval); 
-			return TDelayedParameter<PData>(fname); 
+			return result; 
 		}
 	}
 
+	// try all plugins if one fits the data on file 
 	for (const_iterator i = this->begin(); i != this->end(); ++i) {
 		PData retval = 	i->second->load(fname); 
 		if (retval.get()) {
 			CDatapool::Instance().add(fname, retval); 
-			return TDelayedParameter<PData>(fname); 
+			return result; 
 		}
 	}
 	throw std::runtime_error(std::string("unable to load from ") + fname);

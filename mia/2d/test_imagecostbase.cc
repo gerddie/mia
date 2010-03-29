@@ -27,10 +27,10 @@
 #include <mia/2d/transformmock.hh>
 
 struct C2DTestImageCost: public C2DImageCostBase {
-	C2DTestImageCost(P2DImage src, P2DImage ref, 
+	C2DTestImageCost(const C2DImageDataKey& src_key, const C2DImageDataKey& ref_key,
 			 P2DInterpolatorFactory ipf,
 			 float weight): 
-		C2DImageCostBase(src, ref, ipf, weight)
+		C2DImageCostBase(src_key, ref_key, ipf, weight)
 	{
 	}
 private: 
@@ -45,8 +45,14 @@ BOOST_AUTO_TEST_CASE ( test_imagecostbase )
 	const C2DBounds size(1,1); 
 	P2DImage src(new C2DUBImage(size)); 
 	P2DImage ref(new C2DUBImage(size)); 
+	string src_key("src");
+	string ref_key("ref");
+
+	CDatapool::Instance().add(src_key, create_image2d_vector(src));
+	CDatapool::Instance().add(ref_key, create_image2d_vector(ref));
+
 	P2DInterpolatorFactory ipf(create_2dinterpolation_factory(ip_bspline3)); 
-	C2DTestImageCost cost(src, ref, ipf, 1.0); 
+	C2DTestImageCost cost(src_key, ref_key, ipf, 1.0); 
 
 	C2DFVectorfield force(size); 
 	

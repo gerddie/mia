@@ -22,14 +22,14 @@
 
 
 #include <mia/2d/costbase.hh>
-#include <mia/2d/2DImage.hh>
+#include <mia/2d/2dimageio.hh>
 #include <mia/2d/interpolator.hh>
 
 NS_MIA_BEGIN
 
 class C2DImageCostBase: public C2DCostBase {
 public: 
-	C2DImageCostBase(P2DImage src, P2DImage ref, 
+	C2DImageCostBase(const C2DImageDataKey& src_key, const C2DImageDataKey& ref_key, 
 			 P2DInterpolatorFactory ipf,
 			 float weight); 
 
@@ -42,11 +42,25 @@ private:
 	virtual double do_evaluate_with_images(const C2DImage& floating, const C2DImage& ref, 
 					       C2DFVectorfield& force) const = 0; 
 
-	P2DImage _M_src;
-	P2DImage _M_ref; 
+	const C2DImageDataKey _M_src_key; 
+	const C2DImageDataKey _M_ref_key; 
+
+	mutable P2DImage _M_src;
+	mutable P2DImage _M_ref; 
 	P2DInterpolatorFactory _M_ipf; 
 }; 
 
-
+class C2DImageCostBasePlugin: public C2DCostBasePlugin {
+public: 
+	C2DImageCostBasePlugin(const char * const name); 
+protected: 
+	EInterpolation get_ipf() const; 
+	const C2DImageDataKey get_src_key() const; 
+	const C2DImageDataKey get_ref_key() const; 
+private: 
+	std::string _M_src_name; 
+	std::string _M_ref_name; 
+	EInterpolation _M_interpolator;
+}; 
 
 NS_MIA_END
