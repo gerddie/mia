@@ -197,4 +197,51 @@ BOOST_AUTO_TEST_CASE(  test_spline2_weight_at )
 	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0, 1) + 1.0, 1.0, 0.1);  
 	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1, 1)      ,-0.5, 0.1);  
 	BOOST_CHECK_CLOSE(kernel.get_weight_at( 2, 1) + 1.0, 1.0, 0.1);  
+
+	BOOST_CHECK_THROW(kernel.get_weight_at( 2, 2), invalid_argument); 
+}
+
+
+BOOST_AUTO_TEST_CASE(  test_bspline3_weight_at )
+{
+	CBSplineKernel3 kernel; 
+	
+	std::vector<double> weight(4); 
+	std::vector<int> index(4); 
+	kernel(-.5, weight, index); 
+
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-2.5, 0) + 1.0, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 2.5, 0) + 1.0, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-1.5, 0), weight[0], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-0.5, 0), weight[1], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0.5, 0), weight[2], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1.5, 0), weight[3], 0.1);  
+
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-2.5, 1) + 1.0, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 2.5, 1) + 1.0, 1.0, 0.1);  
+	
+	kernel.derivative(-0.5, weight, index); 
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-1.5, 1), weight[3], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-0.5, 1), weight[2], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0.5, 1), weight[1], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1.5, 1), weight[0], 0.1);  
+	
+
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-2.5, 2) + 1.0, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 2.5, 2) + 1.0, 1.0, 0.1);  
+	
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-1.5, 2), 0.5, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-0.5, 2), -0.5, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(   0, 2), -2.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0.5, 2), -0.5, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1.5, 2), 0.5, 0.1);  
+
+	BOOST_CHECK_THROW(kernel.get_weight_at( 2, 3), invalid_argument); 
+}
+
+
+BOOST_AUTO_TEST_CASE(  test_bspline3_integrate )
+{
+	CBSplineKernel3 kernel; 
+	BOOST_CHECK_CLOSE( kernel.integrate(6.0, 5.0, 1, 1, 12), 
 }

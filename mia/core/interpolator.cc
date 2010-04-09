@@ -29,6 +29,21 @@
 NS_MIA_BEGIN
 using namespace std; 
 
+template <int sd, int degree> 
+struct bspline {
+	static double apply(double x) {
+		THROW(invalid_argument, "Spline "<< sd << ":derivative degree " 
+		      <<  degree << " not supported for spline of degree 2"); 
+	}
+}; 
+
+template <> 
+struct bspline<0,0> {
+	static double apply(double x) {
+		return fabs(x < 0.5) ? 1.0 : 0.0; 
+	}
+}; 
+
 CBSplineKernel::CBSplineKernel(size_t degree, double shift):
 	_M_half_degree(degree >> 1),
 	_M_shift(shift),
@@ -58,11 +73,8 @@ int CBSplineKernel::get_indices(double x, std::vector<int>& index) const
 
 double CBSplineKernel::get_weight_at(double x, int degree) const
 {
-	if (degree > 0) {
-		THROW(invalid_argument, "derivative degree " <<  degree << " not supported"); 
-	}
-
-	return fabs(x < 0.5) ? 1.0 : 0.0; 
+	THROW(invalid_argument, "B-Spline: derivative degree " 
+	      <<  degree << " not supported" ); 
 }
 
 const std::vector<double>& CBSplineKernel::get_poles() const
@@ -82,6 +94,15 @@ void CBSplineKernel::derivative(double x, std::vector<double>& weight, std::vect
 	get_derivative_weights(x - ix, weight);
 }
 
+double CBSplineKernel::integrate(double s1, double s2, int deg1, int deg2, size_t L) const
+{
+	double sum = 0.0; 
+	for (size_t i = 0; i < L; ++i)
+		sum += get_weight_at(i - s1, deg1) * get_weight_at(i - s2, deg2);
+	return sum; 
+}
+
+
 CBSplineKernel2::CBSplineKernel2():
 	CBSplineKernel(2, 0.5)
 {
@@ -95,26 +116,39 @@ void CBSplineKernel2::get_weights(double x, std::vector<double>&  weight)const
 	weight[0] = 1.0 - weight[1] - weight[2];
 }
 
-
-double CBSplineKernel2::get_weight_at(double x, int degree) const
-{
-	if (degree > 1)  
-		THROW(invalid_argument, "derivative degree " <<  degree << " not supported for spline of degree 2"); 
-
-	if (degree == 0) {
+template <> 
+struct bspline<2,0> {
+	static double apply(double x) {
 		x=fabs(x);
 		if (x <= 0.5)
 			return 0.75-x*x;
 		if (x <= 1.5)
 			return (1.5-x)*(1.5-x) *0.5;
 		return 0.0;
-	}else {
+	}
+}; 
+
+template <> 
+struct bspline<2,1> {
+	static double apply(double x) {
 		double xa=fabs(x) ;
 		if (xa <= 0.5)
 			return -2.0*x;
 		if (xa <= 1.5)
 			return (x>0.0) ? xa-1.5 : 1.5-xa;
 		return 0.0;
+	}
+}; 
+
+
+double CBSplineKernel2::get_weight_at(double x, int degree) const
+{
+	switch (degree) {
+	case 0: return bspline<2,0>::apply(x); 
+	case 1: return bspline<2,1>::apply(x); 
+	default: 
+		THROW(invalid_argument, "B-Spline 2:derivative degree " 
+		      <<  degree << " not supported" ); 
 	}
 }
 
@@ -150,12 +184,66 @@ void CBSplineKernel3::get_derivative_weights(double x, std::vector<double>& weig
 }
 
 
+template <>
+struct bspline<3, 0> {
+	static double apply (double x) /* cubic */
+	{
+		const double onebysix = 1.0/6.0;
+		const double zwo = 2.0;
+		x=fabs(x);
+		if (x <= 1.0)
+			return zwo / 3.0 - x * x * ( 1 - 0.5 * x );
+
+		if (x < zwo) {
+
+			return (zwo-x)*(zwo-x)*(zwo-x) * onebysix;
+		}
+		return 0.0;
+	}
+};
+
+template <>
+struct bspline<3, 1> {
+	static double apply(double x) /* cubic, derivative */
+	{
+		double ax = fabs(x);
+		if (ax <= 1.0)
+			return (1.5 * ax - 2) * x;
+		if (ax <= 2.0)
+			return (x > 0.0 ? -0.5 : 0.5) * (2-ax) * (2-ax) ;
+		return 0.0;
+	}
+};
+
+template <>
+struct bspline<3, 2> {
+	static double apply(double x) /* cubic, second derivative */
+	{
+		x=fabs(x) ;
+		if (x>2.0) return 0.0 ;
+		if (x>1.0) return 2.0-x ;
+		return 3.0*x-2.0 ;
+	}
+};
+
+double CBSplineKernel3::get_weight_at(double x, int degree) const
+{
+	switch (degree) {
+	case 0: return bspline<3,0>::apply(x); 
+	case 1: return bspline<3,1>::apply(x); 
+	case 2: return bspline<3,2>::apply(x); 
+	default: 
+		THROW(invalid_argument, "B-Spline 3:derivative degree " 
+		      <<  degree << " not supported" ); 
+	}
+}
+
+
 CBSplineKernelOMoms3::CBSplineKernelOMoms3():
 	CBSplineKernel(3, 0.0)
 {
 	add_pole((sqrt(105.0) - 13.0)/8.0);
 }
-
 
 void CBSplineKernelOMoms3::get_weights(double x, std::vector<double>&  weight)const
 {
