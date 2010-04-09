@@ -67,6 +67,8 @@ public:
 	virtual void get_weights(double x, std::vector<double>& weight) const = 0;
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const = 0;
 
+	virtual double get_weight_at(double x, int degree) const; 
+
 	/**
 	   \returns the poles of the spline
 	 */
@@ -118,6 +120,7 @@ class EXPORT_CORE CBSplineKernel2: public  CBSplineKernel{
 	CBSplineKernel2();
 	virtual void get_weights(double x, std::vector<double>& weight)const;
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
+	virtual double get_weight_at(double x, int degree) const; 
 };
 
 /** implements a B-Spline kernel of degree 3 */

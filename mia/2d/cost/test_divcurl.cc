@@ -25,6 +25,8 @@ using namespace mia;
 using namespace mia_2dcost_divcurl; 
 
 
+
+
 struct DivcurlFixture {
 	
 }; 

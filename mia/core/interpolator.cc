@@ -24,8 +24,10 @@
 #include <cmath>
 #include <cassert>
 #include <mia/core/interpolator.hh>
+#include <mia/core/errormacro.hh>
 
 NS_MIA_BEGIN
+using namespace std; 
 
 CBSplineKernel::CBSplineKernel(size_t degree, double shift):
 	_M_half_degree(degree >> 1),
@@ -52,6 +54,15 @@ int CBSplineKernel::get_indices(double x, std::vector<int>& index) const
 	for (size_t k = 0; k < index.size(); ++k)
 		index[k] = i++;
 	return ix;
+}
+
+double CBSplineKernel::get_weight_at(double x, int degree) const
+{
+	if (degree > 0) {
+		THROW(invalid_argument, "derivative degree " <<  degree << " not supported"); 
+	}
+
+	return fabs(x < 0.5) ? 1.0 : 0.0; 
 }
 
 const std::vector<double>& CBSplineKernel::get_poles() const
@@ -82,6 +93,29 @@ void CBSplineKernel2::get_weights(double x, std::vector<double>&  weight)const
 	weight[1] = 0.75 - x * x;
 	weight[2] = 0.5 * (x - weight[1] + 1.0);
 	weight[0] = 1.0 - weight[1] - weight[2];
+}
+
+
+double CBSplineKernel2::get_weight_at(double x, int degree) const
+{
+	if (degree > 1)  
+		THROW(invalid_argument, "derivative degree " <<  degree << " not supported for spline of degree 2"); 
+
+	if (degree == 0) {
+		x=fabs(x);
+		if (x <= 0.5)
+			return 0.75-x*x;
+		if (x <= 1.5)
+			return (1.5-x)*(1.5-x) *0.5;
+		return 0.0;
+	}else {
+		double xa=fabs(x) ;
+		if (xa <= 0.5)
+			return -2.0*x;
+		if (xa <= 1.5)
+			return (x>0.0) ? xa-1.5 : 1.5-xa;
+		return 0.0;
+	}
 }
 
 void CBSplineKernel2::get_derivative_weights(double x, std::vector<double>& weight) const

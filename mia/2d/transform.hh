@@ -63,6 +63,8 @@ public:
 	virtual C2DFVector apply(const C2DFVector& x) const = 0;
 	virtual C2DFVector operator () (const C2DFVector& x) const = 0;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const = 0;
+	virtual float divergence() const = 0; 
+	virtual float curl() const = 0; 
 
 };
 

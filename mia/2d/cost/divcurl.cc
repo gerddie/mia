@@ -29,7 +29,6 @@ struct C2DDivCurlCostImpl {
 
 	C2DDivCurlCostImpl(float _divergence, float _curl); 
 	
-	
 	float divergence; 
 	float curl; 
 	

@@ -120,6 +120,30 @@ void C2DAffineTransformation::scale(float x, float y)
 	_M_t[3] *= y;  	_M_t[4] *= y; 	_M_t[5] *= y;
 }
 
+
+float C2DAffineTransformation::divergence() const
+{
+	return _M_t[0] + _M_t[1] + _M_t[3] + _M_t[4] - 2.0f;
+}
+
+float C2DAffineTransformation::grad_divergence() const
+{
+	return 0.0; 
+}
+
+
+float C2DAffineTransformation::grad_curl() const
+{
+	return 0.0; 
+}
+
+
+float C2DAffineTransformation::curl() const
+{
+	return _M_t[1] + _M_t[4] - _M_t[0] - _M_t[3];
+}
+
+
 void C2DAffineTransformation::translate(float x, float y)
 {
 	_M_t[2] += x;

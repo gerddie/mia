@@ -21,22 +21,17 @@
  *
  */
 
+#include <stdexcept>
 #include <climits>
 
-#define BOOST_TEST_DYN_LINK
+#include <mia/internal/autotest.hh>
 
 #include <boost/mpl/vector.hpp>
-#include <boost/test/unit_test_suite.hpp>
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
 #include <boost/test/test_case_template.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/filesystem/path.hpp>
 
 #include <mia/core/interpolator1d.hh>
-#include <mia/core/msgstream.hh>
-#include <mia/core/cmdlineparser.hh>
-
 
 using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem;
@@ -184,4 +179,22 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_derivatives, T, test_kernels)
 		double test = (pweights[i] - mweights[i]) / 0.0001;
 		BOOST_CHECK_CLOSE(weights[i], test, 0.01);
 	}
+}
+
+
+BOOST_AUTO_TEST_CASE(  test_spline2_weight_at )
+{
+	CBSplineKernel2 kernel; 
+	
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-2, 0) + 1.0, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-1, 0), 0.125, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0, 0), 0.75, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1, 0), 0.125, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 2, 0) + 1.0, 1.0, 0.1);  
+
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-2, 1) + 1.0, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-1, 1)      , 0.5, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0, 1) + 1.0, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1, 1)      ,-0.5, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 2, 1) + 1.0, 1.0, 0.1);  
 }

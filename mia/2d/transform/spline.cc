@@ -205,6 +205,42 @@ P2DImage C2DSplineTransformation::apply(const C2DImage& image,
 	return transform2d(image, ipf, *this);
 }
 
+float C2DSplineTransformation::divergence() const
+{
+	if (!_M_matrices_valid) 
+		evaluate_matrices(); 
+
+	return -1.0; 
+}
+
+float C2DSplineTransformation::curl() const
+{
+	if (!_M_matrices_valid) 
+		evaluate_matrices(); 
+
+	return -1.0; 
+}
+
+float C2DSplineTransformation::grad_divergence() const
+{
+	if (!_M_matrices_valid) 
+		evaluate_matrices(); 
+		
+	return -1.0; 
+}
+
+void C2DSplineTransformation::evaluate_matrices() const 
+{
+	
+}
+
+float C2DSplineTransformation::grad_curl() const
+{
+	if (!_M_matrices_valid) 
+		evaluate_matrices(); 
+	return -1.0; 
+}
+
 void C2DSplineTransformation::update(float step, const C2DFVectorfield& a)
 {
 	TRACE_FUNCTION;

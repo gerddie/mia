@@ -101,9 +101,12 @@ public:
 	virtual C2DFVector operator () (const C2DFVector& x) const;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
 	C2DFVector transform(const C2DFVector& x)const;
-
- private:
-
+	virtual float divergence() const; 
+	virtual float curl() const; 
+	float grad_divergence() const; 
+	float grad_curl() const; 
+private:
+	
 	std::vector<float> _M_t;
 	EOps _M_ops;
 	C2DBounds _M_size;

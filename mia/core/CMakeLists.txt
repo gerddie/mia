@@ -117,7 +117,6 @@ SET(MIACORETEST_SRC
   test_dictmap.cc
   test_fifofilter.cc
   test_probmap.cc
-  test_interpol.cc
 )
 
 IF(ITPP_FOUND)
@@ -236,6 +235,7 @@ NEW_TEST(slopestatistics miacore)
 NEW_TEST(slopeclassifier miacore)
 NEW_TEST(tools miacore)
 NEW_TEST(kmeans miacore)
+NEW_TEST(interpol miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)
