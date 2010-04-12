@@ -348,3 +348,13 @@ BOOST_AUTO_TEST_CASE(  test_bspline3_derivatives )
 }
 
 
+BOOST_AUTO_TEST_CASE(  test_bspline3_integrate ) 
+{
+	CBSplineKernel3 kernel;
+	
+	BOOST_CHECK_CLOSE(kernel.integrate(10, 10, 0, 2, 30), -1.0, 0.1); 
+	BOOST_CHECK_CLOSE(kernel.integrate(10, 10, 1, 1, 30),  0.5, 0.1); 
+	BOOST_CHECK_CLOSE(kernel.integrate(10, 10, 2, 0, 30), -1.0, 0.1); 
+
+
+}

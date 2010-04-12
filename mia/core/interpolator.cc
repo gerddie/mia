@@ -25,6 +25,7 @@
 #include <cassert>
 #include <mia/core/interpolator.hh>
 #include <mia/core/errormacro.hh>
+#include <mia/core/msgstream.hh>
 
 NS_MIA_BEGIN
 using namespace std; 
@@ -104,8 +105,35 @@ void CBSplineKernel::derivative(double x, std::vector<double>& weight, std::vect
 double CBSplineKernel::integrate(double s1, double s2, int deg1, int deg2, size_t L) const
 {
 	double sum = 0.0; 
-	for (size_t i = 0; i < L; ++i)
-		sum += get_weight_at(i - s1, deg1) * get_weight_at(i - s2, deg2);
+	vector<double> weight1(size()); 
+	vector<double> weight2(size()); 
+	vector<int> index1(size()); 
+	vector<int> index2(size()); 
+	derivative(s1, weight1, index1, deg1); 
+	derivative(s2, weight2, index2, deg2);
+
+	if (index1[0] > index2[0]) {
+		index1.swap(index2); 
+		weight1.swap(weight2); 
+	}
+	size_t k1= 0; 
+	size_t k2= 0; 
+	while (k1 < size() && k2 < size() && index1[k1] < index2[0]) 
+		++k1; 
+	
+	while (k1 < size() && k2 < size() && index1[k1] < 0) {
+		++k1; 
+		++k2; 
+	}
+		
+	cvdebug() << "k1, k2 = " << k1 << ", " << k2 
+		  << ", idx1 = " << index1[k1] 
+		  << ", idx2 = " << index1[k2]<< "\n" ; 
+	while (k1 < size() && k2 < size() && index1[k1] < L){
+		cvdebug() << "w1 = "<< weight1[k1] << ", " << "w2 = "<< weight2[k2] << "\n"; 
+		sum += weight1[k1++] * weight2[k2++];
+	}
+	
 	return sum; 
 }
 
