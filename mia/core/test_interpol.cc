@@ -182,6 +182,33 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_derivatives, T, test_kernels)
 }
 
 
+typedef bmpl::vector<CBSplineKernel3,
+		     CBSplineKernel4
+		     ,CBSplineKernel5
+		     > test_kernels2;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(test_derivatives2, T, test_kernels2)
+{
+	const double x = 0.2;
+	T kernel;
+	vector<double> weights(kernel.size());
+	vector<double> pweights(kernel.size());
+	vector<double> mweights(kernel.size());
+	vector<int> index(kernel.size()); 
+		
+	kernel.derivative(x, weights, index, 2); 
+	kernel.get_derivative_weights(x + 0.00005, pweights);
+	kernel.get_derivative_weights(x - 0.00005, mweights);
+
+	for (size_t i = 0; i < weights.size(); ++i) {
+		double test = (pweights[i] - mweights[i]) / 0.0001;
+		BOOST_CHECK_CLOSE(weights[i], test, 0.01);
+	}
+	
+}
+
+
+
 BOOST_AUTO_TEST_CASE(  test_spline2_weight_at )
 {
 	CBSplineKernel2 kernel; 
@@ -240,8 +267,82 @@ BOOST_AUTO_TEST_CASE(  test_bspline3_weight_at )
 }
 
 
-BOOST_AUTO_TEST_CASE(  test_bspline3_integrate )
+
+BOOST_AUTO_TEST_CASE(  test_bspline3_weight_at_b )
 {
 	CBSplineKernel3 kernel; 
-	BOOST_CHECK_CLOSE( kernel.integrate(6.0, 5.0, 1, 1, 12), 
+	
+	std::vector<double> weight(4); 
+	std::vector<int> index(4); 
+	kernel(1.75, weight, index); 
+
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( -1.25, 0), weight[3], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-0.25, 0), weight[2], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0.75, 0), weight[1], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1.75, 0), weight[0], 0.1);  
+
+
+	kernel.derivative(1.75, weight, index); 
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-1.25, 1), weight[3], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-0.25, 1), weight[2], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0.75, 1), weight[1], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1.75, 1), weight[0], 0.1);  
+
+	
 }
+
+
+
+BOOST_AUTO_TEST_CASE(  test_bspline2_derivatives )
+{
+	CBSplineKernel2 kernel; 
+	vector<double> weight(kernel.size()); 
+	vector<int>    index(kernel.size()); 
+	kernel.derivative(1.0, weight, index, 0); 
+	BOOST_CHECK_CLOSE(weight[0], 0.125, 0.1); 
+	BOOST_CHECK_CLOSE(weight[1], 0.75, 0.1); 
+	BOOST_CHECK_CLOSE(weight[2], 0.125, 0.1); 
+
+	kernel.derivative(1.0, weight, index, 1); 
+	BOOST_CHECK_CLOSE(weight[0],  -.5, 0.1); 
+	BOOST_CHECK_CLOSE(weight[1], 0.0, 0.1); 
+	BOOST_CHECK_CLOSE(weight[2],   .5, 0.1); 
+
+	kernel.derivative(1.0, weight, index, 2); 
+	BOOST_CHECK_CLOSE(weight[0],   1, 0.1); 
+	BOOST_CHECK_CLOSE(weight[1],  -2, 0.1); 
+	BOOST_CHECK_CLOSE(weight[2],   1, 0.1); 
+	
+}
+
+
+BOOST_AUTO_TEST_CASE(  test_bspline3_derivatives )
+{
+	CBSplineKernel3 kernel; 
+	vector<double> weight(kernel.size()); 
+	vector<int>    index(kernel.size()); 
+	kernel.derivative(0.5, weight, index, 0); 
+	BOOST_CHECK_CLOSE(weight[3], 0.020833, 0.1); 
+	BOOST_CHECK_CLOSE(weight[2], 0.47917, 0.1); 
+	BOOST_CHECK_CLOSE(weight[1], 0.47917, 0.1); 
+	BOOST_CHECK_CLOSE(weight[0], 0.020833, 0.1);
+	BOOST_CHECK_EQUAL(index[0], -1);  
+	BOOST_CHECK_EQUAL(index[1], 0); 
+	BOOST_CHECK_EQUAL(index[2], 1); 
+	BOOST_CHECK_EQUAL(index[3], 2); 
+
+	kernel.derivative(0.5, weight, index, 1); 
+	BOOST_CHECK_CLOSE(weight[3],   .125, 0.1); 
+	BOOST_CHECK_CLOSE(weight[2],  0.625, 0.1); 
+	BOOST_CHECK_CLOSE(weight[1], -0.625, 0.1); 
+	BOOST_CHECK_CLOSE(weight[0], -0.125, 0.1); 
+	
+	kernel.derivative(0.5, weight, index, 2); 
+	BOOST_CHECK_CLOSE(weight[3],    0.5, 0.1); 
+	BOOST_CHECK_CLOSE(weight[2],   -0.5, 0.1); 
+	BOOST_CHECK_CLOSE(weight[1],   -0.5, 0.1); 
+	BOOST_CHECK_CLOSE(weight[0],    0.5, 0.1); 
+	
+}
+
+

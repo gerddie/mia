@@ -94,6 +94,13 @@ void CBSplineKernel::derivative(double x, std::vector<double>& weight, std::vect
 	get_derivative_weights(x - ix, weight);
 }
 
+void CBSplineKernel::derivative(double x, std::vector<double>& weight, std::vector<int>& index, int degree)const
+{
+	assert(index.size() == _M_support_size);
+	int ix = get_indices(x, index);
+	get_derivative_weights(x - ix, weight, degree);
+}
+
 double CBSplineKernel::integrate(double s1, double s2, int deg1, int deg2, size_t L) const
 {
 	double sum = 0.0; 
@@ -159,6 +166,23 @@ void CBSplineKernel2::get_derivative_weights(double x, std::vector<double>& weig
 	weight[0] = - weight[1] - weight[2];
 }
 
+void CBSplineKernel2::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
+{
+	switch (degree) {
+	case 0: get_weights(x, weight); 
+		break; 
+	case 1: get_derivative_weights(x, weight); 
+		break; 
+	case 2: {
+		weight[1] =  - 2;
+		weight[2] = 1;
+		weight[0] = 1;
+	}break; 
+	default: 
+		weight[0] = weight[1] = weight[2] = 0.0; 
+	}
+}
+
 CBSplineKernel3::CBSplineKernel3():
 	CBSplineKernel(3, 0.0)
 {
@@ -183,6 +207,30 @@ void CBSplineKernel3::get_derivative_weights(double x, std::vector<double>& weig
 	weight[1] = - weight[0] - weight[2] - weight[3];
 }
 
+void CBSplineKernel3::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
+{
+	switch (degree) {
+	case 0: get_weights(x, weight); 
+		break; 
+	case 1: get_derivative_weights(x, weight); 
+		break; 
+	case 2: {
+		weight[3] = x;
+		weight[0] = 1 - weight[3];
+		weight[2] = weight[0] - 2.0 * weight[3];
+		weight[1] = - weight[0] - weight[2] - weight[3];
+	}break; 
+	case 3: {
+		weight[3] = 1;
+		weight[0] = - weight[3];
+		weight[2] = weight[0] - 2.0 * weight[3];
+		weight[1] = - weight[0] - weight[2] - weight[3];
+	}break; 
+	default: {
+		fill(weight.begin(), weight.end(), 0.0); 
+	}
+	}
+}
 
 template <>
 struct bspline<3, 0> {
@@ -268,6 +316,19 @@ void CBSplineKernelOMoms3::get_derivative_weights(double x, std::vector<double>&
 	weight[0] =  - weight[3] - weight[1] - weight[2];
 }
 
+void CBSplineKernelOMoms3::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
+{
+	switch (degree) {
+	case 0: get_weights(x, weight); 
+		break; 
+	case 1: get_derivative_weights(x, weight); 
+		break; 
+	default: 
+		fill(weight.begin(), weight.end(), 0.0); 
+	}
+}
+
+
 CBSplineKernel4::CBSplineKernel4():
 	CBSplineKernel(4, 0.5)
 {
@@ -311,6 +372,29 @@ void CBSplineKernel4::get_derivative_weights(double x, std::vector<double>& weig
 
 }
 
+void CBSplineKernel4::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
+{
+	switch (degree) {
+	case 0: get_weights(x, weight); 
+		break; 
+	case 1: get_derivative_weights(x, weight); 
+		break; 
+	case 2: {
+		weight[0] = 1.0 / 2.0 - x;
+		weight[0] *= weight[0] / 2.0;
+		const double t0 = x;
+		const double t1 = 0.5 - 2.0 * x * x ;
+		weight[1] = t1 + t0;
+		weight[3] = t1 - t0;
+		weight[4] = weight[0] + t0;
+		weight[2] = - weight[0] - weight[1] - weight[3] - weight[4];
+		
+	}break; 
+	default: 
+		fill(weight.begin(), weight.end(), 0.0); 
+	}
+}
+	
 CBSplineKernel5::CBSplineKernel5():
 	CBSplineKernel(5, 0.0)
 {
@@ -346,9 +430,9 @@ void CBSplineKernel5::get_derivative_weights(double x, std::vector<double>& weig
 	double h2 = 2.0 * x - 1.0;
 	w2 -= x;
 	double t = h2 * (2.0 * w2 - 3.0);
-	x -= 0.5;
 
 	weight[0] = (h2 + 2.0 * w2 * h2) / 24.0  - weight[5];
+	x -= 0.5;
 
 	double t0 =   h2 * (2.0 * w2 - 5.0) / 24.0;
 	double t1 = - 1.0 / 3.0 - (w2 * (w2 - 3.0)  + x * t) / 12.0;
@@ -362,7 +446,43 @@ void CBSplineKernel5::get_derivative_weights(double x, std::vector<double>& weig
 	weight[1] = t0 + t1;
 	weight[4] = t0 - t1;
 
+}
 
+void CBSplineKernel5::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
+{
+	switch (degree) {
+	case 0: get_weights(x, weight); 
+		break; 
+	case 1: get_derivative_weights(x, weight); 
+		break; 
+	case 2: {
+		weight[5] = (1.0 / 6.0) * x * x * x; 
+		
+		const double h2 = 2.0 * x - 1.0;
+		const double w2 = x * x - x;
+		const double h2w2 = 2 * h2 * w2; 
+		const double h2h22 = 2 * h2 * h2; 
+		const double t = 4 * w2  + h2h22 - 6; 
+
+
+		weight[0] = (t + 8.0) / 24.0  - weight[5];
+		
+		const double t0 = (t - 4.0 )/ 24.0;
+		const double xm = x - 0.5;
+		const double t1 = ( - 2.0 * h2w2 +  6 * h2 - xm * t) / 12; 
+		
+		weight[2] = t0 + t1;
+		weight[3] = t0 - t1;
+		
+		const double tt0 =  - t / 16.0;
+		const double tt1 = (2 * (h2w2 - h2) + xm * (t + 4)) / 24.0;
+		
+		weight[1] = tt0 + tt1;
+		weight[4] = tt0 - tt1;		
+	}break; 
+	default: 
+		fill(weight.begin(), weight.end(), 0.0); 
+	}
 }
 
 
