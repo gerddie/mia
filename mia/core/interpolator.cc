@@ -323,6 +323,15 @@ void CBSplineKernelOMoms3::get_derivative_weights(double x, std::vector<double>&
 		break; 
 	case 1: get_derivative_weights(x, weight); 
 		break; 
+	case 2: {
+		double x2 = 2.0;
+		double x3 = 6.0 * x;
+		
+		weight[1] =   x3 * 0.5 - x2;
+		weight[2] = - x3 * 0.5 + 0.5 * x2;
+		weight[3] =   x3 / 6.0;
+		weight[0] =  - weight[3] - weight[1] - weight[2];
+	}break; 
 	default: 
 		fill(weight.begin(), weight.end(), 0.0); 
 	}
@@ -463,7 +472,6 @@ void CBSplineKernel5::get_derivative_weights(double x, std::vector<double>& weig
 		const double h2w2 = 2 * h2 * w2; 
 		const double h2h22 = 2 * h2 * h2; 
 		const double t = 4 * w2  + h2h22 - 6; 
-
 
 		weight[0] = (t + 8.0) / 24.0  - weight[5];
 		

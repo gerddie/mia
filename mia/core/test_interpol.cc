@@ -161,6 +161,7 @@ BOOST_AUTO_TEST_CASE( test_types )
 
 typedef bmpl::vector<CBSplineKernel2,
 		     CBSplineKernel3,
+		     CBSplineKernelOMoms3, 
 		     CBSplineKernel4,
 		     CBSplineKernel5> test_kernels;
 
@@ -183,8 +184,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_derivatives, T, test_kernels)
 
 
 typedef bmpl::vector<CBSplineKernel3,
-		     CBSplineKernel4
-		     ,CBSplineKernel5
+		     CBSplineKernelOMoms3, 
+		     CBSplineKernel4,
+		     CBSplineKernel5
 		     > test_kernels2;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(test_derivatives2, T, test_kernels2)
