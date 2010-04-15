@@ -19,10 +19,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+  The spline kernels are based on code by 
+  Philippe Thevenaz http://bigwww.epfl.ch/thevenaz/interpolation/
+
  */
+
 
 #include <cmath>
 #include <cassert>
+#include <iomanip>
 #include <mia/core/interpolator.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/msgstream.hh>
@@ -72,7 +77,7 @@ int CBSplineKernel::get_indices(double x, std::vector<int>& index) const
 	return ix;
 }
 
-double CBSplineKernel::get_weight_at(double x, int degree) const
+double CBSplineKernel::get_weight_at(double /*x*/, int degree) const
 {
 	THROW(invalid_argument, "B-Spline: derivative degree " 
 	      <<  degree << " not supported" ); 
@@ -102,39 +107,55 @@ void CBSplineKernel::derivative(double x, std::vector<double>& weight, std::vect
 	get_derivative_weights(x - ix, weight, degree);
 }
 
+double CBSplineKernel::get_nonzero_radius() const
+{
+	return _M_support_size / 2.0;  
+}
+
 double CBSplineKernel::integrate(double s1, double s2, int deg1, int deg2, size_t L) const
 {
 	double sum = 0.0; 
-	vector<double> weight1(size()); 
-	vector<double> weight2(size()); 
-	vector<int> index1(size()); 
-	vector<int> index2(size()); 
-	derivative(s1, weight1, index1, deg1); 
-	derivative(s2, weight2, index2, deg2);
 
-	if (index1[0] > index2[0]) {
-		index1.swap(index2); 
-		weight1.swap(weight2); 
-	}
-	size_t k1= 0; 
-	size_t k2= 0; 
-	while (k1 < size() && k2 < size() && index1[k1] < index2[0]) 
-		++k1; 
+	double start_int = s1 - get_nonzero_radius(); 
+	double end_int = s1 + get_nonzero_radius(); 
+	if (start_int > s2 - get_nonzero_radius()) 
+		start_int = s2 - get_nonzero_radius(); 
+	if (start_int < 0) 
+		start_int = 0; 
+	if (end_int > s2 + get_nonzero_radius()) 
+		end_int = s2 + get_nonzero_radius(); 
+	if (end_int > L) 
+		end_int = L; 
 	
-	while (k1 < size() && k2 < size() && index1[k1] < 0) {
-		++k1; 
-		++k2; 
+	// plain rectangle summation, should be repaced by something better  
+	
+	if (end_int <= start_int) 
+		return sum; 
+	const size_t N = 100; 
+	double dx = (end_int - start_int) / N; 
+	
+	sum = get_weight_at(start_int - s1, deg1) * get_weight_at(start_int - s2, deg2); 
+	sum = get_weight_at(end_int - s1, deg1) * get_weight_at(end_int - s2, deg2); 
+	sum *= 0.5; 
+	
+	double x = start_int + dx; 
+	
+	cvdebug() << "Integrate (" << start_int << ", " << end_int << ")\n"; 
+
+	for (size_t ix = 1; ix < N-1; ++ix, x+=dx) {
+		const double w1 = get_weight_at(x - s1, deg1); 
+		const double w2 = get_weight_at(x - s2, deg2); 
+		sum += w1 * w2; 
+
 	}
-		
-	cvdebug() << "k1, k2 = " << k1 << ", " << k2 
-		  << ", idx1 = " << index1[k1] 
-		  << ", idx2 = " << index1[k2]<< "\n" ; 
-	while (k1 < size() && k2 < size() && index1[k1] < L){
-		cvdebug() << "w1 = "<< weight1[k1] << ", " << "w2 = "<< weight2[k2] << "\n"; 
-		sum += weight1[k1++] * weight2[k2++];
+	x = start_int + .5 * dx; 
+	for (size_t ix = 0; ix < N; ++ix, x+=dx) {
+		const double w1 = get_weight_at(x - s1, deg1); 
+		const double w2 = get_weight_at(x - s2, deg2); 
+		sum += 2 * w1 * w2; 
 	}
 	
-	return sum; 
+	return sum * dx / 3.0; 
 }
 
 
@@ -265,14 +286,13 @@ struct bspline<3, 0> {
 	static double apply (double x) /* cubic */
 	{
 		const double onebysix = 1.0/6.0;
-		const double zwo = 2.0;
 		x=fabs(x);
 		if (x <= 1.0)
-			return zwo / 3.0 - x * x * ( 1 - 0.5 * x );
+			return 2.0 / 3.0 - x * x * ( 1 - 0.5 * x );
 
-		if (x < zwo) {
-
-			return (zwo-x)*(zwo-x)*(zwo-x) * onebysix;
+		if (x < 2.0) {
+			const double dx =  2.0-x; 
+			return dx*dx*dx * onebysix;
 		}
 		return 0.0;
 	}
@@ -296,7 +316,7 @@ struct bspline<3, 2> {
 	static double apply(double x) /* cubic, second derivative */
 	{
 		x=fabs(x) ;
-		if (x>2.0) return 0.0 ;
+		if (x>2.0) return 0.0;
 		if (x>1.0) return 2.0-x ;
 		return 3.0*x-2.0 ;
 	}
@@ -365,6 +385,85 @@ void CBSplineKernelOMoms3::get_derivative_weights(double x, std::vector<double>&
 	}
 }
 
+template <>
+struct bspline<4, 0> {
+	static double apply (double x) /* cubic */
+	{
+		x=fabs(x);
+		if (x <= 0.5) {
+			const double f = 1.0 / 192.0; 
+			const double x2 = x * x; 
+			return   f * (115.0 + (48.0 * x2 - 120) * x2); 
+		}
+		if (x <= 1.5) {
+			const double f = 1.0 / 96.0; 
+			double ax = x - 1.0; 
+			return -f * ((((16 * ax - 16) * ax -24) * ax + 44)* ax - 19); 
+		}
+		if (x <= 2.5) {
+			double h = 2.5 - x;
+			h *= h; 
+			return h * h / 24.0; 
+		}
+		return 0.0;
+	}
+};
+
+template <>
+struct bspline<4, 1> {
+	static double apply(double x) /* cubic, derivative */
+	{
+		double ax=fabs(x);
+		if (ax <= 0.5) {
+			const double x2 = x * x; 
+			return   x * (x2  - 1.25); 
+		}
+		if (ax <= 1.5) {
+			const double f = x > 0 ? - 1.0 / 96.0 : 1.0 / 96.0; 
+			double bx =  ax - 1.0; 
+			return f * (64 * bx * bx * bx - 48 * bx * bx - 48 * bx + 44); 
+		}
+		if (ax <= 2.5) {
+			double h = x < 0 ? 2.5 - ax : ax - 2.5;
+			return h * h * h / 6.0; 
+		}
+		return 0.0;
+	}
+};
+
+template <>
+struct bspline<4, 2> {
+	static double apply(double x) /* cubic, second derivative */
+	{
+		double ax=fabs(x);
+		if (ax <= 0.5)
+			return   3 * x * x  - 1.25; 
+		if (ax <= 1.5) {
+			const double f = - 1.0 / 2.0; 
+			double bx =  ax - 1.0; 
+			return f * (4 * bx * bx - 2 * bx - 1); 
+		}
+		if (ax <= 2.5) {
+			double h = x > 0 ? 2.5 - ax : ax - 2.5;
+			return h * h / 2.0; 
+		}
+		return 0.0;
+	}
+};
+
+
+double CBSplineKernel4::get_weight_at(double x, int degree) const
+{
+	switch (degree) {
+	case 0: return bspline<4,0>::apply(x); 
+	case 1: return bspline<4,1>::apply(x); 
+	case 2: return bspline<4,2>::apply(x); 
+	default: 
+		THROW(invalid_argument, "B-Spline 3:derivative degree " 
+		      <<  degree << " not supported" ); 
+	}
+}
+
 
 CBSplineKernel4::CBSplineKernel4():
 	CBSplineKernel(4, 0.5)
@@ -425,7 +524,7 @@ void CBSplineKernel4::get_derivative_weights(double x, std::vector<double>& weig
 		weight[3] = t1 - t0;
 		weight[4] = weight[0] + t0;
 		weight[2] = - weight[0] - weight[1] - weight[3] - weight[4];
-		
+		cvdebug() << "weight[2] = " << fixed << weight[2] << "\n"; 
 	}break; 
 	default: 
 		fill(weight.begin(), weight.end(), 0.0); 

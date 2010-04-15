@@ -35,7 +35,7 @@ struct InterpolatorIDFixture  {
 	
 	double df(double x) const; 
 
-	void test_case(EInterpolation type, double tolerance = 1.0); 
+	void test_case(EInterpolation type, double tolerance = 0.1); 
 
 }; 
 
@@ -99,6 +99,7 @@ double InterpolatorIDFixture::df(double x) const
 {
 	return cos(x); 
 }
+
 
 void InterpolatorIDFixture::test_case(EInterpolation type, double tolerance)
 {
