@@ -84,6 +84,9 @@ class C2DDummyTransformation: public C2DTransformation {
 		return P2DImage(image.clone());
 	}
 
+	float divergence() const {return 0.0; }
+	float curl() const {return 0.0; } 
+
 };
 
 struct TimestepFixture {
