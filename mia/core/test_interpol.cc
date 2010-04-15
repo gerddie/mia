@@ -431,5 +431,33 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_weight_at )
 
 
 
-	BOOST_CHECK_THROW(kernel.get_weight_at( 2, 4), invalid_argument); 
+	BOOST_CHECK_THROW(kernel.get_weight_at( 2, 5), invalid_argument); 
+}
+
+BOOST_AUTO_TEST_CASE(  test_bspline4_weight_at_d3 )
+{
+	CBSplineKernel4 kernel; 
+	for (double x = -3.0; x < 3.0; x += 0.3) {
+		const double delta = (kernel.get_weight_at( x + 0.0001, 2) - 
+				      kernel.get_weight_at( x - 0.0001, 2)) / 0.0002; 
+		if (fabs(delta) < 0.001) 
+			BOOST_CHECK_CLOSE(kernel.get_weight_at(  x, 3) + 1, delta + 1, 0.1);  
+		else 
+			BOOST_CHECK_CLOSE(kernel.get_weight_at(  x, 3), delta, 0.1);  
+	}
+	
+}
+
+BOOST_AUTO_TEST_CASE(  test_bspline4_weight_at_d4 )
+{
+	CBSplineKernel4 kernel; 
+	for (double x = -3.0; x < 3.0; x += 0.4) {
+		const double delta = (kernel.get_weight_at( x + 0.0001, 3) - 
+				      kernel.get_weight_at( x - 0.0001, 3)) / 0.0002; 
+		if (fabs(delta) < 0.001) 
+			BOOST_CHECK_CLOSE(kernel.get_weight_at(  x, 4) + 1, delta + 1, 0.1);  
+		else 
+			BOOST_CHECK_CLOSE(kernel.get_weight_at(  x, 4), delta, 0.1);  
+	}
+	
 }

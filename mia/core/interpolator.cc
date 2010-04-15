@@ -387,7 +387,7 @@ void CBSplineKernelOMoms3::get_derivative_weights(double x, std::vector<double>&
 
 template <>
 struct bspline<4, 0> {
-	static double apply (double x) /* cubic */
+	static double apply (double x)
 	{
 		x=fabs(x);
 		if (x <= 0.5) {
@@ -411,7 +411,7 @@ struct bspline<4, 0> {
 
 template <>
 struct bspline<4, 1> {
-	static double apply(double x) /* cubic, derivative */
+	static double apply(double x)
 	{
 		double ax=fabs(x);
 		if (ax <= 0.5) {
@@ -433,7 +433,7 @@ struct bspline<4, 1> {
 
 template <>
 struct bspline<4, 2> {
-	static double apply(double x) /* cubic, second derivative */
+	static double apply(double x)
 	{
 		double ax=fabs(x);
 		if (ax <= 0.5)
@@ -452,18 +452,53 @@ struct bspline<4, 2> {
 };
 
 
+template <>
+struct bspline<4, 3> {
+	static double apply(double x)
+	{
+		double ax=fabs(x);
+		if (ax <= 0.5)
+			return   6 * x; 
+		if (ax <= 1.5) {
+			const double f = x > 0 ? -0.5: 0.5; 
+			double bx =  ax - 1.0; 
+			return f * (8 * bx - 2); 
+		}
+		if (ax <= 2.5) 
+			return  x < 0 ? 2.5 - ax : ax - 2.5;
+		return 0.0;
+	}
+};
+
+template <>
+struct bspline<4, 4> {
+	static double apply(double x)
+	{
+		double ax=fabs(x);
+		if (ax <= 0.5)
+			return  6; 
+		if (ax <= 1.5)
+			return  -4; 
+		if (ax <= 2.5)
+			return  1;
+		return 0.0;
+	}
+};
+
+
 double CBSplineKernel4::get_weight_at(double x, int degree) const
 {
 	switch (degree) {
 	case 0: return bspline<4,0>::apply(x); 
 	case 1: return bspline<4,1>::apply(x); 
 	case 2: return bspline<4,2>::apply(x); 
+	case 3: return bspline<4,3>::apply(x); 
+	case 4: return bspline<4,4>::apply(x); 
 	default: 
 		THROW(invalid_argument, "B-Spline 3:derivative degree " 
 		      <<  degree << " not supported" ); 
 	}
 }
-
 
 CBSplineKernel4::CBSplineKernel4():
 	CBSplineKernel(4, 0.5)
@@ -471,7 +506,6 @@ CBSplineKernel4::CBSplineKernel4():
 	add_pole(sqrt(664.0 - sqrt(438976.0)) + sqrt(304.0) - 19.0);
 	add_pole(sqrt(664.0 + sqrt(438976.0)) - sqrt(304.0) - 19.0);
 }
-
 
 void CBSplineKernel4::get_weights(double x, std::vector<double>&  weight)const
 {
