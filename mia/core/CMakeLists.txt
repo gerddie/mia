@@ -236,6 +236,7 @@ NEW_TEST(slopeclassifier miacore)
 NEW_TEST(tools miacore)
 NEW_TEST(kmeans miacore)
 NEW_TEST(interpol miacore)
+NEW_TEST(simpson miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)

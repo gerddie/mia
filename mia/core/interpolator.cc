@@ -116,6 +116,7 @@ double CBSplineKernel::integrate(double s1, double s2, int deg1, int deg2, size_
 {
 	double sum = 0.0; 
 
+	// evaluate interval to integrate over 
 	double start_int = s1 - get_nonzero_radius(); 
 	double end_int = s1 + get_nonzero_radius(); 
 	if (start_int > s2 - get_nonzero_radius()) 
@@ -127,7 +128,7 @@ double CBSplineKernel::integrate(double s1, double s2, int deg1, int deg2, size_
 	if (end_int > L) 
 		end_int = L; 
 	
-	// plain rectangle summation, should be repaced by something better  
+	// Simpson formula 
 	
 	if (end_int <= start_int) 
 		return sum; 
@@ -135,7 +136,7 @@ double CBSplineKernel::integrate(double s1, double s2, int deg1, int deg2, size_
 	double dx = (end_int - start_int) / N; 
 	
 	sum = get_weight_at(start_int - s1, deg1) * get_weight_at(start_int - s2, deg2); 
-	sum = get_weight_at(end_int - s1, deg1) * get_weight_at(end_int - s2, deg2); 
+	sum += get_weight_at(end_int - s1, deg1) * get_weight_at(end_int - s2, deg2); 
 	sum *= 0.5; 
 	
 	double x = start_int + dx; 
