@@ -76,21 +76,6 @@ float C2DCostBasePlugin::get_weight() const
 
 const char *cost_data2d_type::type_descr = "2d"; 
 
-
-C2DCostBasePlugin::C2DCostBasePlugin(char const * const  name): 
-	TFactory<C2DCostBase, cost_data2d_type, cost_type>(name),
-	_M_weigh(1.0)
-{
-	add_parameter("weight", 
-		      new CFloatParameter(_M_weigh, 0.0, std::numeric_limits<float>::max(),
-					  false, "cost weight")); 
-}
-
-float C2DCostBasePlugin::get_weight() const
-{
-	return _M_weight; 
-}
-
 template class EXPORT_HANDLER TPlugin<cost_data2d_type, cost_type>;
 template class EXPORT_HANDLER TFactory<C2DCostBase, cost_data2d_type, cost_type>;
 template class EXPORT_HANDLER TFactoryPluginHandler<C2DCostBasePlugin>;
