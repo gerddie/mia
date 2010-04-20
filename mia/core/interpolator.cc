@@ -31,6 +31,7 @@
 #include <mia/core/interpolator.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/simpson.hh>
 
 NS_MIA_BEGIN
 using namespace std; 
@@ -112,6 +113,20 @@ double CBSplineKernel::get_nonzero_radius() const
 	return _M_support_size / 2.0;  
 }
 
+struct KernelFunction {
+	KernelFunction(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2):
+		_M_spline(spline), _M_s1(s1), _M_s2(s2), _M_deg1(deg1), _M_deg2(deg2)
+		{
+		}
+	double operator() (double x) const {
+		return _M_spline.get_weight_at(x - _M_s1, _M_deg1) * 
+			_M_spline.get_weight_at(x - _M_s2, _M_deg2); 
+	}
+private: 
+	const CBSplineKernel& _M_spline; 
+	double _M_s1, _M_s2, _M_deg1, _M_deg2; 
+}; 
+
 double CBSplineKernel::integrate(double s1, double s2, int deg1, int deg2, size_t L) const
 {
 	double sum = 0.0; 
@@ -132,31 +147,9 @@ double CBSplineKernel::integrate(double s1, double s2, int deg1, int deg2, size_
 	
 	if (end_int <= start_int) 
 		return sum; 
-	const size_t N = 100; 
-	double dx = (end_int - start_int) / N; 
-	
-	sum = get_weight_at(start_int - s1, deg1) * get_weight_at(start_int - s2, deg2); 
-	sum += get_weight_at(end_int - s1, deg1) * get_weight_at(end_int - s2, deg2); 
-	sum *= 0.5; 
-	
-	double x = start_int + dx; 
-	
-	cvdebug() << "Integrate (" << start_int << ", " << end_int << ")\n"; 
-
-	for (size_t ix = 1; ix < N-1; ++ix, x+=dx) {
-		const double w1 = get_weight_at(x - s1, deg1); 
-		const double w2 = get_weight_at(x - s2, deg2); 
-		sum += w1 * w2; 
-
-	}
-	x = start_int + .5 * dx; 
-	for (size_t ix = 0; ix < N; ++ix, x+=dx) {
-		const double w1 = get_weight_at(x - s1, deg1); 
-		const double w2 = get_weight_at(x - s2, deg2); 
-		sum += 2 * w1 * w2; 
-	}
-	
-	return sum * dx / 3.0; 
+	const size_t intervals = size_t(4 * (end_int - start_int)); 
+	sum = simpson( start_int, end_int, intervals, KernelFunction(*this, s1, s2, deg1, deg2)); 
+	return sum; 
 }
 
 
