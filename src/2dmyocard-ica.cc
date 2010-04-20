@@ -68,7 +68,12 @@ unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean
 			if (min_cor < max_slope) {
 				min_cor = max_slope; 
 				components = i; 
+#ifndef __GXX_EXPERIMENTAL_CXX0X__
+				ica = l_ica; 
+#else
 				ica.swap(l_ica); 
+#endif
+				
 			}
 		}
 	}

@@ -74,6 +74,7 @@ public:
 	virtual T operator () (const double& x) const = 0;
 	virtual typename coeff_map<T>::coeff_type derivative_at (const double& x) const = 0;
 
+
 };
 
 
@@ -103,10 +104,8 @@ class EXPORT_CORE T1DNNInterpolator: public T1DDirectInterpolator<T> {
 public:
 	T1DNNInterpolator(const std::vector<T>& image);
 	T operator () (const double& x) const;
-	
 	virtual  typename coeff_map<T>::coeff_type 
 		derivative_at (const double& x) const;
-	
 };
 
 /**

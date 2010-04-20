@@ -53,6 +53,14 @@ template class EXPORT_2D TIOHandlerSingleton<C2DImageIOPPH>;
 template class EXPORT_2D TIOPluginHandler<C2DImageIOPlugin>;
 template class EXPORT_2D TPluginHandler<C2DImageIOPlugin>;
 
+
+P2DImageVector EXPORT_2D create_image2d_vector(P2DImage image)
+{
+	P2DImageVector out_list_ptr(new C2DImageIOPluginHandler::Instance::Data); 
+	out_list_ptr->push_back(image); 
+	return out_list_ptr; 
+}
+
 P2DImage load_image2d(const std::string& filename)
 {
 	C2DImageIOPluginHandler::Instance::PData  in_image_list =

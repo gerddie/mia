@@ -110,4 +110,20 @@ P2DImage C2DTransformMock::apply(const C2DImage& src, const C2DInterpolatorFacto
 	return P2DImage(src.clone()); 
 }
 
+float C2DTransformMock::divergence() const
+{
+	return 1.0f; 
+}
+
+float C2DTransformMock::curl() const
+{
+	return 2.0f; 
+}
+
+
+
+
+
+
+
 NS_MIA_END

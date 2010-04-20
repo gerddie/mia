@@ -256,12 +256,118 @@ float C2DGridTransformation::pertuberate(C2DFVectorfield& v) const
 			const C2DFVector ue = j * *iv;
 			*iv -= ue;
 			float gamma = iv->norm2();
-			if (gamma > max_gamma) {
+			if (gamma > max_gamma) 
 				max_gamma = gamma;
-			}
 		}
 	return sqrt(max_gamma);
 }
+
+C2DFVectorfield C2DGridTransformation::divergence_field() const
+{
+	C2DFVectorfield result(_M_field.get_size());
+
+	const int dx =  _M_field.get_size().x; 	
+	C2DFVectorfield::const_iterator iv = _M_field.begin() + dx + 1;
+	C2DFVectorfield::iterator ov = result.begin() + dx + 1;
+	for(size_t y = 1; y < _M_field.get_size().y - 1; ++y, iv += 2, ov += 2)
+		for(size_t x = 1; x < _M_field.get_size().x - 1; ++x, ++iv, ++ov) {
+			ov->x = 0.5 * (iv[1].x - iv[-1].x); 
+			ov->y = 0.5 * (iv[dx].y - iv[-dx].y); 
+		}
+	return result; 
+}
+
+float C2DGridTransformation::divergence() const
+{
+	float result = 0.0f; 
+	C2DFVectorfield::const_iterator iv = _M_field.begin() + _M_field.get_size().x + 1;
+	const int dx =  _M_field.get_size().x; 
+	for(size_t y = 1; y < _M_field.get_size().y - 1; ++y, iv += 2)
+		for(size_t x = 1; x < _M_field.get_size().x - 1; ++x, ++iv) {
+			const float dxx = iv[1].x - iv[-1].x; 
+			const float dyy = iv[dx].y - iv[-dx].y; 
+			result += dxx * dxx + dyy * dyy; 
+		}
+	return 0.25 * result / ( (_M_field.get_size().y - 2) * (_M_field.get_size().x - 2)); 
+}
+
+float C2DGridTransformation::curl() const
+{
+	float result = 0.0f; 
+	C2DFVectorfield::const_iterator iv = _M_field.begin() + _M_field.get_size().x + 1;
+	const int dx =  _M_field.get_size().x; 
+	for(size_t y = 1; y < _M_field.get_size().y - 1; ++y, iv += 2)
+		for(size_t x = 1; x < _M_field.get_size().x - 1; ++x, ++iv) {
+			const float dxy = iv[1].y - iv[-1].y; 
+			const float dyx = iv[dx].x - iv[-dx].x;
+			const float delta = dxy - dyx; 
+			result += delta * delta; 
+		}
+	return 0.25 * result / ( (_M_field.get_size().y - 2) * (_M_field.get_size().x - 2)); 
+}
+
+float C2DGridTransformation::grad_divergence() const
+{
+	const C2DFVectorfield div = divergence_field(); 
+	const int dx =  _M_field.get_size().x; 
+	C2DFVectorfield::const_iterator iv = div.begin() + dx + 1;
+	double result = 0.0f; 
+
+	for(size_t y = 1; y < _M_field.get_size().y - 1; ++y, iv += 2)
+		for(size_t x = 1; x < _M_field.get_size().x - 1; ++x, ++iv) {
+			const C2DFVector gdx = iv[1] - iv[-1]; 
+			const C2DFVector gdy = iv[dx] - iv[-dx]; 
+			
+			result += gdx.norm2() + gdy.norm2() + 
+				2 * (gdx.x * gdy.x + gdx.y * gdy.y)
+				; 
+		}
+	return 0.25 * result / ( (_M_field.get_size().y - 2) * (_M_field.get_size().x - 2)); 
+}
+
+
+C2DFVectorfield C2DGridTransformation::curl_field() const
+{
+	C2DFVectorfield result(_M_field.get_size()); 
+	const int dx = _M_field.get_size().x; 
+	C2DFVectorfield::const_iterator iv = _M_field.begin() + dx + 1;
+	C2DFVectorfield::iterator ov = result.begin() + dx + 1;
+	for(size_t y = 1; y < _M_field.get_size().y - 1; ++y, iv += 2, ov += 2)
+		for(size_t x = 1; x < _M_field.get_size().x - 1; ++x, ++iv, ++ov) {
+			ov->x =   0.5 * (iv[dx].x - iv[-dx].x);
+			ov->y = - 0.5 * (iv[1].y  - iv[-1].y ); 
+		}
+	return result; 
+}
+
+float C2DGridTransformation::grad_curl() const
+{
+	const C2DFVectorfield curl = curl_field(); 
+	const int dx =  _M_field.get_size().x; 
+	double result = 0.0;
+	C2DFVectorfield::const_iterator iv = curl.begin() + dx + 1;
+	
+	for(size_t y = 1; y < _M_field.get_size().y - 1; ++y, iv += 2)
+		for(size_t x = 1; x < _M_field.get_size().x - 1; ++x, ++iv) {
+			const double gdx_yx = iv[1].x - iv[-1].x; 
+			const double gdy_xx = iv[1].y - iv[-1].y; 
+			
+			const double gdx_yy = iv[dx].x - iv[-dx].x; 
+			const double gdy_xy = iv[dx].y - iv[-dx].y; 
+
+			result += 
+				gdx_yx * gdx_yx + 
+				gdx_yy * gdx_yy + 
+				gdy_xx * gdy_xx +  
+				gdy_xy * gdy_xy + 
+				- 2 * (gdx_yx * gdy_xx + gdx_yy * gdy_xy ); 
+		}
+	
+	return 0.25 * result / ( (_M_field.get_size().y - 2) * (_M_field.get_size().x - 2)); 
+
+}
+
+
 
 float C2DGridTransformation::get_jacobian(const C2DFVectorfield& v, float delta) const
 {

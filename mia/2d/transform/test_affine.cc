@@ -195,6 +195,17 @@ BOOST_FIXTURE_TEST_CASE( test_affine_clone, TranslateTransFixture )
 }
 
 
+BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_curl, RotateTransFixture )
+{
+	BOOST_CHECK_CLOSE(rtrans.grad_curl()+ 1.0, 1.0, 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_divergence, RotateTransFixture )
+{
+	BOOST_CHECK_CLOSE(rtrans.grad_divergence() + 1.0, 1.0, 0.1);
+}
+
+
 BOOST_FIXTURE_TEST_CASE(derivative_RotateTransFixture, RotateTransFixture)
 {
 	C2DFMatrix d = 	rtrans.derivative_at(10,10);

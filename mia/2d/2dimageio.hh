@@ -57,6 +57,10 @@ protected:
 };
 
 typedef TIOHandlerSingleton< C2DImageIOPPH > C2DImageIOPluginHandler;
+typedef C2DImageIOPluginHandler::Instance::DataKey C2DImageDataKey; 
+
+typedef C2DImageIOPluginHandler::Instance::PData P2DImageVector; 
+P2DImageVector EXPORT_2D create_image2d_vector(P2DImage image); 
 
 P2DImage load_image2d(const std::string& filename);
 bool save_image2d(const std::string& filename, P2DImage image);

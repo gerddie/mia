@@ -43,19 +43,17 @@ private:
 	float _M_weight; 
 }; 
 
-
 class C2DCostBasePlugin: public TFactory<C2DCostBase, cost_data2d_type, cost_type> {
 public: 
-	C2DCostBasePlugin(char const * const  name); 
+	C2DCostBasePlugin(const char *const name); 
 protected: 
 	float get_weight() const; 
 private: 
-	float _M_weight; 
+	float _M_weight;
 }; 
 
+
 typedef THandlerSingleton<TFactoryPluginHandler<C2DCostBasePlugin> > C2DCostBasePluginHandler;
-
 typedef SHARED_PTR(C2DCostBase) P2DCostBase;
-
 
 NS_MIA_END

@@ -60,6 +60,20 @@ double C2DCostBase::evaluate(const C2DTransformation& t, C2DFVectorfield& force)
 	return result; 
 }
 
+C2DCostBasePlugin::C2DCostBasePlugin(const char *const name):
+	TFactory<C2DCostBase, cost_data2d_type, cost_type>(name), 
+	_M_weight(1.0f)
+{
+	add_parameter("weight", new CFloatParameter(_M_weight, 0.0, 
+						    std::numeric_limits<float>::max(), false, 
+						    "cost function weight")); 
+}
+
+float C2DCostBasePlugin::get_weight() const
+{
+	return _M_weight; 
+}
+
 const char *cost_data2d_type::type_descr = "2d"; 
 
 

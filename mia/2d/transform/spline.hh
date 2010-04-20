@@ -86,6 +86,10 @@ public:
 	virtual float pertuberate(C2DFVectorfield& v) const;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
 	virtual C2DFVector operator () (const C2DFVector& x) const;
+	virtual float divergence() const; 
+	virtual float curl() const; 
+	float grad_divergence() const; 
+	float grad_curl() const; 
 private:
 	C2DBounds _M_range;
 	C2DFVectorfield _M_coefficients;
@@ -94,8 +98,24 @@ private:
 	mutable C2DFVector _M_inv_scale;
 	mutable bool _M_interpolator_valid;
 	mutable SHARED_PTR(T2DInterpolator<C2DFVector>)  _M_interpolator;
+	mutable bool _M_matrices_valid;
+	mutable vector<double> _M_R2020_X; 
+	mutable vector<double> _M_R2020_Y; 
+	mutable vector<double> _M_R0202_X; 
+	mutable vector<double> _M_R0202_Y; 
+	mutable vector<double> _M_R1111_X; 
+	mutable vector<double> _M_R1111_Y; 
+	mutable vector<double> _M_R2011_X; 
+	mutable vector<double> _M_R2011_Y; 
+	mutable vector<double> _M_R0211_X; 
+	mutable vector<double> _M_R0211_Y; 
+	mutable vector<double> _M_R1102_X; 
+	mutable vector<double> _M_R1102_Y; 
+	mutable vector<double> _M_R1120_X; 
+	mutable vector<double> _M_R1120_Y; 
 
-
+	void evaluate_matrices() const; 
+		
 
 };
 

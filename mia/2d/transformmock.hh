@@ -42,6 +42,9 @@ struct C2DTransformMock: public C2DTransformation {
 	virtual C2DFVector apply(const C2DFVector& x) const;
 	virtual C2DFVector operator () (const C2DFVector& x) const;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
+	virtual float divergence() const;
+	virtual float curl() const;
+
 private: 
         virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
 	C2DBounds m_size; 

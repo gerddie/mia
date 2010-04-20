@@ -21,22 +21,17 @@
  *
  */
 
+#include <stdexcept>
 #include <climits>
 
-#define BOOST_TEST_DYN_LINK
+#include <mia/internal/autotest.hh>
 
 #include <boost/mpl/vector.hpp>
-#include <boost/test/unit_test_suite.hpp>
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
 #include <boost/test/test_case_template.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/filesystem/path.hpp>
 
 #include <mia/core/interpolator1d.hh>
-#include <mia/core/msgstream.hh>
-#include <mia/core/cmdlineparser.hh>
-
 
 using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem;
@@ -166,6 +161,7 @@ BOOST_AUTO_TEST_CASE( test_types )
 
 typedef bmpl::vector<CBSplineKernel2,
 		     CBSplineKernel3,
+		     CBSplineKernelOMoms3, 
 		     CBSplineKernel4,
 		     CBSplineKernel5> test_kernels;
 
@@ -184,4 +180,284 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_derivatives, T, test_kernels)
 		double test = (pweights[i] - mweights[i]) / 0.0001;
 		BOOST_CHECK_CLOSE(weights[i], test, 0.01);
 	}
+}
+
+
+typedef bmpl::vector<CBSplineKernel3,
+		     CBSplineKernelOMoms3, 
+		     CBSplineKernel4,
+		     CBSplineKernel5
+		     > test_kernels2;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(test_derivatives2, T, test_kernels2)
+{
+	const double x = 0.2;
+	T kernel;
+	vector<double> weights(kernel.size());
+	vector<double> pweights(kernel.size());
+	vector<double> mweights(kernel.size());
+	vector<int> index(kernel.size()); 
+		
+	kernel.derivative(x, weights, index, 2); 
+	kernel.get_derivative_weights(x + 0.00005, pweights);
+	kernel.get_derivative_weights(x - 0.00005, mweights);
+
+	for (size_t i = 0; i < weights.size(); ++i) {
+		double test = (pweights[i] - mweights[i]) / 0.0001;
+		BOOST_CHECK_CLOSE(weights[i], test, 0.01);
+	}
+	
+}
+
+
+
+BOOST_AUTO_TEST_CASE(  test_spline2_weight_at )
+{
+	CBSplineKernel2 kernel; 
+	
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-2, 0) + 1.0, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-1, 0), 0.125, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0, 0), 0.75, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1, 0), 0.125, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 2, 0) + 1.0, 1.0, 0.1);  
+
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-2, 1) + 1.0, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-1, 1)      , 0.5, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0, 1) + 1.0, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1, 1)      ,-0.5, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 2, 1) + 1.0, 1.0, 0.1);  
+
+	BOOST_CHECK_THROW(kernel.get_weight_at( 2, 2), invalid_argument); 
+}
+
+
+BOOST_AUTO_TEST_CASE(  test_bspline3_weight_at )
+{
+	CBSplineKernel3 kernel; 
+	
+	std::vector<double> weight(4); 
+	std::vector<int> index(4); 
+	kernel(-.5, weight, index); 
+
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-2.5, 0) + 1.0, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 2.5, 0) + 1.0, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-1.5, 0), weight[0], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-0.5, 0), weight[1], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0.5, 0), weight[2], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1.5, 0), weight[3], 0.1);  
+
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-2.5, 1) + 1.0, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 2.5, 1) + 1.0, 1.0, 0.1);  
+	
+	kernel.derivative(-0.5, weight, index); 
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-1.5, 1), weight[3], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-0.5, 1), weight[2], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0.5, 1), weight[1], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1.5, 1), weight[0], 0.1);  
+	
+
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-2.5, 2) + 1.0, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 2.5, 2) + 1.0, 1.0, 0.1);  
+	
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-1.5, 2), 0.5, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-0.5, 2), -0.5, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(   0, 2), -2.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0.5, 2), -0.5, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1.5, 2), 0.5, 0.1);  
+
+	BOOST_CHECK_THROW(kernel.get_weight_at( 2, 3), invalid_argument); 
+}
+
+
+
+BOOST_AUTO_TEST_CASE(  test_bspline3_weight_at_b )
+{
+	CBSplineKernel3 kernel; 
+	
+	std::vector<double> weight(4); 
+	std::vector<int> index(4); 
+	kernel(1.75, weight, index); 
+
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( -1.25, 0), weight[3], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-0.25, 0), weight[2], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0.75, 0), weight[1], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1.75, 0), weight[0], 0.1);  
+
+
+	kernel.derivative(1.75, weight, index); 
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-1.25, 1), weight[3], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-0.25, 1), weight[2], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0.75, 1), weight[1], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1.75, 1), weight[0], 0.1);  
+
+	
+}
+
+
+
+BOOST_AUTO_TEST_CASE(  test_bspline2_derivatives )
+{
+	CBSplineKernel2 kernel; 
+	vector<double> weight(kernel.size()); 
+	vector<int>    index(kernel.size()); 
+	kernel.derivative(1.0, weight, index, 0); 
+	BOOST_CHECK_CLOSE(weight[0], 0.125, 0.1); 
+	BOOST_CHECK_CLOSE(weight[1], 0.75, 0.1); 
+	BOOST_CHECK_CLOSE(weight[2], 0.125, 0.1); 
+
+	kernel.derivative(1.0, weight, index, 1); 
+	BOOST_CHECK_CLOSE(weight[0],  -.5, 0.1); 
+	BOOST_CHECK_CLOSE(weight[1], 0.0, 0.1); 
+	BOOST_CHECK_CLOSE(weight[2],   .5, 0.1); 
+
+	kernel.derivative(1.0, weight, index, 2); 
+	BOOST_CHECK_CLOSE(weight[0],   1, 0.1); 
+	BOOST_CHECK_CLOSE(weight[1],  -2, 0.1); 
+	BOOST_CHECK_CLOSE(weight[2],   1, 0.1); 
+	
+}
+
+
+BOOST_AUTO_TEST_CASE(  test_bspline3_derivatives )
+{
+	CBSplineKernel3 kernel; 
+	vector<double> weight(kernel.size()); 
+	vector<int>    index(kernel.size()); 
+	kernel.derivative(0.5, weight, index, 0); 
+	BOOST_CHECK_CLOSE(weight[3], 0.020833, 0.1); 
+	BOOST_CHECK_CLOSE(weight[2], 0.47917, 0.1); 
+	BOOST_CHECK_CLOSE(weight[1], 0.47917, 0.1); 
+	BOOST_CHECK_CLOSE(weight[0], 0.020833, 0.1);
+	BOOST_CHECK_EQUAL(index[0], -1);  
+	BOOST_CHECK_EQUAL(index[1], 0); 
+	BOOST_CHECK_EQUAL(index[2], 1); 
+	BOOST_CHECK_EQUAL(index[3], 2); 
+
+	kernel.derivative(0.5, weight, index, 1); 
+	BOOST_CHECK_CLOSE(weight[3],   .125, 0.1); 
+	BOOST_CHECK_CLOSE(weight[2],  0.625, 0.1); 
+	BOOST_CHECK_CLOSE(weight[1], -0.625, 0.1); 
+	BOOST_CHECK_CLOSE(weight[0], -0.125, 0.1); 
+	
+	kernel.derivative(0.5, weight, index, 2); 
+	BOOST_CHECK_CLOSE(weight[3],    0.5, 0.1); 
+	BOOST_CHECK_CLOSE(weight[2],   -0.5, 0.1); 
+	BOOST_CHECK_CLOSE(weight[1],   -0.5, 0.1); 
+	BOOST_CHECK_CLOSE(weight[0],    0.5, 0.1); 
+	
+}
+
+
+BOOST_AUTO_TEST_CASE(  test_bspline3_integrate ) 
+{
+	CBSplineKernel3 kernel;
+	BOOST_CHECK_CLOSE(kernel.integrate(10, 10, 1, 1, 30),  2.0/ 3.0, 0.1); 
+	BOOST_CHECK_CLOSE(kernel.integrate(10, 10, 2, 0, 30),  -2.0/ 3.0, 0.1); 
+	BOOST_CHECK_CLOSE(kernel.integrate(10, 11, 2, 0, 30),  0.125, 0.1); 
+	BOOST_CHECK_CLOSE(kernel.integrate( 0,  1, 2, 0, 30),  0.1833, 2); 
+	BOOST_CHECK_CLOSE(kernel.integrate(29, 27, 0, 2, 30),  0.2, 2); 
+
+}
+
+
+BOOST_AUTO_TEST_CASE(  test_bspline4_weight_at )
+{
+	CBSplineKernel4 kernel; 
+	
+	std::vector<double> weight(5); 
+	std::vector<int> index(5); 
+	kernel(0.0, weight, index); 
+
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-3, 0) + 1.0, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 3, 0) + 1.0, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-2, 0), weight[0], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-1, 0), weight[1], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0, 0), weight[2], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1, 0), weight[3], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 2, 0), weight[4], 0.1);  
+
+	kernel(-0.2, weight, index); 
+
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-2.2, 0), weight[4], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-1.2, 0), weight[3], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-0.2, 0), weight[2], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0.8, 0), weight[1], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1.8, 0), weight[0], 0.1);  
+
+
+	kernel.derivative(0.0, weight, index); 
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-2.0, 1), weight[4], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-1.0, 1), weight[3], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0.0, 1)+1, weight[2]+1, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1.0, 1), weight[1], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 2.0, 1), weight[0], 0.1);  
+
+
+	kernel.derivative(-0.2, weight, index); 
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-2.2, 1), weight[4], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-1.2, 1), weight[3], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-0.2, 1), weight[2], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0.8, 1), weight[1], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1.8, 1), weight[0], 0.1);  
+	
+
+	kernel.derivative(0.0, weight, index, 2); 
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(-2.5, 2) + 1.0, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( 2.5, 2) + 1.0, 1.0, 0.1);  
+	
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( -2, 2), weight[4], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( -1, 2), weight[3], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(  0, 2), weight[2], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(  1, 2), weight[1], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(  2, 2), weight[0], 0.1);  
+
+	kernel.derivative(0.2, weight, index, 2); 
+	
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( -1.8, 2), weight[4], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( -0.8, 2), weight[3], 0.1);  
+
+
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(  0.2, 2), weight[2], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(  1.2, 2), weight[1], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(  2.2, 2), weight[0], 0.1);  
+
+	kernel.derivative(-0.2, weight, index, 2); 
+	
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( -2.2, 2), weight[4], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( -1.2, 2), weight[3], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at( -0.2, 2), weight[2], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(  0.8, 2), weight[1], 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(  1.8, 2), weight[0], 0.1);  
+
+
+
+	BOOST_CHECK_THROW(kernel.get_weight_at( 2, 5), invalid_argument); 
+}
+
+BOOST_AUTO_TEST_CASE(  test_bspline4_weight_at_d3 )
+{
+	CBSplineKernel4 kernel; 
+	for (double x = -3.0; x < 3.0; x += 0.3) {
+		const double delta = (kernel.get_weight_at( x + 0.0001, 2) - 
+				      kernel.get_weight_at( x - 0.0001, 2)) / 0.0002; 
+		if (fabs(delta) < 0.001) 
+			BOOST_CHECK_CLOSE(kernel.get_weight_at(  x, 3) + 1, delta + 1, 0.1);  
+		else 
+			BOOST_CHECK_CLOSE(kernel.get_weight_at(  x, 3), delta, 0.1);  
+	}
+	
+}
+
+BOOST_AUTO_TEST_CASE(  test_bspline4_weight_at_d4 )
+{
+	CBSplineKernel4 kernel; 
+	for (double x = -3.0; x < 3.0; x += 0.4) {
+		const double delta = (kernel.get_weight_at( x + 0.0001, 3) - 
+				      kernel.get_weight_at( x - 0.0001, 3)) / 0.0002; 
+		if (fabs(delta) < 0.001) 
+			BOOST_CHECK_CLOSE(kernel.get_weight_at(  x, 4) + 1, delta + 1, 0.1);  
+		else 
+			BOOST_CHECK_CLOSE(kernel.get_weight_at(  x, 4), delta, 0.1);  
+	}
+	
 }

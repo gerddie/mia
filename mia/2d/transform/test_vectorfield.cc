@@ -36,9 +36,10 @@ using namespace boost::unit_test;
 
 struct GridTransformFixture {
 	GridTransformFixture():
-		size(64, 128),
+		size(256, 128),
 		r(size.x - 1,size.y - 1),
-		field(size)
+		field(size), 
+		scale(2 * M_PI / r.x, 2 * M_PI / r.y)
 	{
 		C2DGridTransformation::field_iterator i = field.field_begin();
 		for (size_t y = 0; y < size.y; ++y)
@@ -57,6 +58,17 @@ protected:
 	float dfy_x(float x, float y);
 	float dfx_y(float x, float y);
 	float dfy_y(float x, float y);
+
+	float dfx_xx(float x, float y);
+	float dfx_xy(float x, float y);
+	float dfx_yx(float x, float y);
+	float dfx_yy(float x, float y);
+	float dfy_xx(float x, float y);
+	float dfy_xy(float x, float y);
+	float dfy_yx(float x, float y);
+	float dfy_yy(float x, float y);
+
+	C2DFVector scale; 
 };
 
 
@@ -172,8 +184,8 @@ BOOST_AUTO_TEST_CASE( test_gridtransform_add )
 
 BOOST_FIXTURE_TEST_CASE( test_gridtransform_max, GridTransformFixture )
 {
-	float fx0 = fx(48,64);
-	float fy0 = fy(48,64);
+	float fx0 = fx(0.75 * size.x,size.y / 2);
+	float fy0 = fy(0.75 * size.x,size.y / 2);
 
 	BOOST_CHECK_CLOSE(sqrt(fx0*fx0 + fy0*fy0), field.get_max_transform(),1);
 }
@@ -186,7 +198,7 @@ BOOST_FIXTURE_TEST_CASE( test_gridtransform_pertuberate, GridTransformFixture )
 
 	float gamma = field.pertuberate(v);
 
-	C2DFVector lmg(25, 53);
+	C2DFVector lmg(184, 107);
 	C2DFVector mg(vv.x - vv.x * dfx_x(lmg.x,lmg.y) - vv.y * dfx_y(lmg.x,lmg.y),
 		      vv.y - vv.x * dfy_x(lmg.x,lmg.y) - vv.y * dfy_y(lmg.x,lmg.y));
 	BOOST_CHECK_CLOSE(gamma, mg.norm(), 0.1);
@@ -204,12 +216,82 @@ BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_jacobian, GridTransformFixture )
 	C2DFVectorfield v(size);
 	fill(v.begin(), v.end(), C2DFVector(10.0,20.0));
 
-	C2DFVector lmg(16, 32);
+	C2DFVector lmg(64, 32);
 	float j = field.get_jacobian(v, 1.0);
 	C2DFMatrix J = field.derivative_at(lmg.x, lmg.y);
 
 	BOOST_CHECK_CLOSE(j, J.x.x * J.y.y - J.x.y * J.y.x, 0.1);
 }
+
+BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_curl, GridTransformFixture )
+{
+	double curl = 0.0; 
+	const double n = (size.y - 2 ) * (size.x - 2); 
+	for (size_t y = 1; y < size.y-1; ++y)
+		for (size_t x = 1; x < size.x-1; ++x) {
+			const float lcurl = dfx_y(x,y) - dfy_x(x,y); 
+			curl += lcurl * lcurl; 
+		}
+
+	BOOST_CHECK_CLOSE(field.curl(), curl / n, 2.0);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_divergence, GridTransformFixture )
+{
+	double div = 0.0; 
+	const double n = (size.y - 2 ) * (size.x - 2); 
+	for (size_t y = 1; y < size.y-1; ++y)
+		for (size_t x = 1; x < size.x-1; ++x) {
+			const float dfxx = dfx_x(x,y); 
+			const float dfyy = dfy_y(x,y); 
+			div += dfxx * dfxx + dfyy * dfyy; 
+		}
+
+	BOOST_CHECK_CLOSE(field.divergence(), div / n , 2.0);
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_grad_curl, GridTransformFixture )
+{
+	double gradcurl = 0.0; 
+	double n = (size.y - 2 ) * (size.x - 2); 
+	for (size_t y = 1; y < size.y-1; ++y)
+		for (size_t x = 1; x < size.x-1; ++x) {
+			const double gdfx_xy = dfx_xy(x,y); 
+			const double gdfx_yy = dfx_yy(x,y);
+			const double gdfy_xx = dfy_xx(x,y); 
+			const double gdfy_xy = dfy_xy(x,y);
+			gradcurl += gdfx_xy * gdfx_xy + gdfx_yy * gdfx_yy + 
+				gdfy_xx * gdfy_xx + gdfy_xy * gdfy_xy - 
+				2.0 * ( gdfx_xy * gdfy_xx + 
+					gdfx_yy * gdfy_xy ); 
+
+		}
+
+	BOOST_CHECK_CLOSE(field.grad_curl(), gradcurl / n, 1.0);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_grad_divergence, GridTransformFixture )
+{
+	double graddiv = 0.0; 
+	double n = (size.y - 2 ) * (size.x - 2); 
+	for (size_t y = 1; y < size.y-1; ++y)
+		for (size_t x = 1; x < size.x-1; ++x) {
+			const double gdfxx_x = dfx_xx(x,y); 
+			const double gdfxx_y = dfx_xy(x,y);
+			const double gdfyy_x = dfy_yx(x,y); 
+			const double gdfyy_y = dfy_yy(x,y);
+
+			graddiv += 
+				gdfxx_x * gdfxx_x + gdfxx_y * gdfxx_y + 
+				gdfyy_x * gdfyy_x + gdfyy_y * gdfyy_y 
+				+ 2.0 * ( gdfxx_x * gdfyy_x + gdfxx_y * gdfyy_y)
+				; 
+		}
+
+	BOOST_CHECK_CLOSE(field.grad_divergence(), graddiv / n , 1);
+}
+
 
 BOOST_FIXTURE_TEST_CASE( test_grid_clone, GridTransformFixture )
 {
@@ -235,44 +317,101 @@ BOOST_FIXTURE_TEST_CASE( test_grid_clone, GridTransformFixture )
 float GridTransformFixture::fx(float x, float y)
 {
 
-	x *= 2 * M_PI / r.x;
-	y *= 2 * M_PI / r.y;
+	x *= scale.x;
+	y *= scale.y;
 	return 	(1.0 + sinf(x - M_PI / 2.0)) * (1.0 + sinf(2 * y  - M_PI / 2.0));
 }
 
 float GridTransformFixture::fy(float x, float y)
 {
-	x *= 2 * M_PI / r.x;
-	y *= 2 * M_PI / r.y;
+	x *= scale.x;
+	y *= scale.y;
 	return (1.0 - cosf(2 * x)) * (1.0 - cosf(y));
 }
 
 
 float GridTransformFixture::dfx_x(float x, float y)
 {
-	x *= 2 * M_PI / r.x;
-	y *= 2 * M_PI / r.y;
-	return 2 * M_PI / r.x * cosf(x - M_PI / 2.0) * ( 1.0 + sinf(2 * y  - M_PI / 2.0));
+	x *= scale.x;
+	y *= scale.y;
+	return scale.x * cosf(x - M_PI / 2.0) * ( 1.0 + sinf(2 * y  - M_PI / 2.0));
 }
 
 float GridTransformFixture::dfx_y(float x, float y)
 {
-	x *= 2 * M_PI / r.x;
-	y *= 2 * M_PI / r.y;
+	x *= scale.x;
+	y *= scale.y;
 	return 4.0 * M_PI / r.y * (1.0 + sinf(x - M_PI / 2.0)) * cosf(2 * y  - M_PI / 2.0);
 }
 
 float GridTransformFixture::dfy_x(float x, float y)
 {
-	x *= 2 * M_PI / r.x;
-	y *= 2 * M_PI / r.y;
+	x *= scale.x;
+	y *= scale.y;
 	return 4 * M_PI / r.x * sinf(2 * x) * (1.0 - cosf(y));
 }
 
 float GridTransformFixture::dfy_y(float x, float y)
 {
-	x *= 2 * M_PI / r.x;
-	y *= 2 * M_PI / r.y;
-	return 2 * M_PI / r.y * (1.0 - cosf(2 * x)) * sinf(y);
+	x *= scale.x;
+	y *= scale.y;
+	return scale.y * (1.0 - cosf(2 * x)) * sinf(y);
 }
 
+
+float GridTransformFixture::dfx_xx(float x, float y)
+{
+	x *= scale.x;
+	y *= scale.y;
+	return - scale.x * scale.x * sinf(x - M_PI / 2.0) * ( 1.0 + sinf(2 * y  - M_PI / 2.0));
+}
+	
+float GridTransformFixture::dfx_xy(float x, float y)
+
+{
+	x *= scale.x;
+	y *= scale.y;
+	return 2.0 * scale.x * scale.y * cosf(x - M_PI / 2.0) * cosf(2 * y  - M_PI / 2.0);
+}
+
+float GridTransformFixture::dfx_yx(float x, float y)
+{
+	x *= scale.x;
+	y *= scale.y;
+	return 2.0 * scale.x * scale.y * cosf(x - M_PI / 2.0) * cosf(2 * y  - M_PI / 2.0);
+}
+
+float GridTransformFixture::dfx_yy(float x, float y)
+{
+	x *= scale.x;
+	y *= scale.y;
+	return -4.0 * scale.y * scale.y * (1.0 + sinf(x - M_PI / 2.0)) * sinf(2 * y  - M_PI / 2.0);
+}
+
+float GridTransformFixture::dfy_xx(float x, float y)
+{
+	x *= scale.x;
+	y *= scale.y;
+	return -4.0 * scale.x * scale.x * cosf(2 * x) * (1.0 - cosf(y));
+}
+
+float GridTransformFixture::dfy_xy(float x, float y)
+{
+	x *= scale.x;
+	y *= scale.y;
+	return -2.0 * scale.x * scale.y * sinf(2 * x) * sinf(y);
+}
+
+float GridTransformFixture::dfy_yx(float x, float y)
+{
+	x *= scale.x;
+	y *= scale.y;
+	return -2.0 * scale.y * scale.x * sinf(2 * x) * sinf(y);
+}
+
+float GridTransformFixture::dfy_yy(float x, float y)
+{
+	x *= scale.x;
+	y *= scale.y;
+	return - scale.y * scale.y * (1.0 - cosf(2 * x)) * cosf(y);
+}
