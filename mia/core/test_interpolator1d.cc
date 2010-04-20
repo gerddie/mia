@@ -50,7 +50,7 @@ BOOST_FIXTURE_TEST_CASE( test_linear, InterpolatorIDFixture)
 	for(size_t x = 0; x < 256; ++x) 
 		data[x] = f(M_PI * x / 511.0) ; 
 	
-	unique_ptr< T1DInterpolator<double>> interp(ipf->create(data)); 
+	unique_ptr< T1DInterpolator<double> > interp(ipf->create(data)); 
 	BOOST_CHECK_CLOSE( (*interp)(0) + 1, f(0.0) + 1, 1.0); 
 	for(size_t i = 20; i < 100; ++i) {
 		double x = M_PI * i / 511.0; 
@@ -109,7 +109,7 @@ void InterpolatorIDFixture::test_case(EInterpolation type, double tolerance)
 	for(size_t x = 0; x < 511; ++x) 
 		data[x] = f(M_PI * x / 511.0) ; 
 	
-	unique_ptr< T1DInterpolator<double>> interp(ipf->create(data)); 
+	unique_ptr< T1DInterpolator<double> > interp(ipf->create(data)); 
 	BOOST_CHECK_CLOSE( (*interp)(0) + 1, f(0.0) + 1, tolerance); 
 	for(size_t i = 20; i < 500; ++i) {
 		double x = M_PI * i / 511.0; 

@@ -4,7 +4,12 @@
 [ -e ~/.profile ] && . ~/.profile
 
 if [ -d $1/.git ]; then
-    rev=`git describe`
+    git describe >/dev/null 2>&1 
+    if [ "x$?" = "x128" ] ; then 
+	rev=`git show | grep commit | sed -e "s/commit//"` 
+    else 
+	rev=`git describe`    
+    fi 
     val="#define LIBMIA_REVISION "\"$rev\"
     echo $val >revision.hh.new
     if [ -e revision.hh ] ; then 
