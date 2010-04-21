@@ -113,46 +113,6 @@ double CBSplineKernel::get_nonzero_radius() const
 	return _M_support_size / 2.0;  
 }
 
-struct KernelFunction {
-	KernelFunction(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2):
-		_M_spline(spline), _M_s1(s1), _M_s2(s2), _M_deg1(deg1), _M_deg2(deg2)
-		{
-		}
-	double operator() (double x) const {
-		return _M_spline.get_weight_at(x - _M_s1, _M_deg1) * 
-			_M_spline.get_weight_at(x - _M_s2, _M_deg2); 
-	}
-private: 
-	const CBSplineKernel& _M_spline; 
-	double _M_s1, _M_s2, _M_deg1, _M_deg2; 
-}; 
-
-double CBSplineKernel::integrate(double s1, double s2, int deg1, int deg2, size_t L) const
-{
-	double sum = 0.0; 
-
-	// evaluate interval to integrate over 
-	double start_int = s1 - get_nonzero_radius(); 
-	double end_int = s1 + get_nonzero_radius(); 
-	if (start_int > s2 - get_nonzero_radius()) 
-		start_int = s2 - get_nonzero_radius(); 
-	if (start_int < 0) 
-		start_int = 0; 
-	if (end_int > s2 + get_nonzero_radius()) 
-		end_int = s2 + get_nonzero_radius(); 
-	if (end_int > L) 
-		end_int = L; 
-	
-	// Simpson formula 
-	
-	if (end_int <= start_int) 
-		return sum; 
-	const size_t intervals = size_t(4 * (end_int - start_int)); 
-	sum = simpson( start_int, end_int, intervals, KernelFunction(*this, s1, s2, deg1, deg2)); 
-	return sum; 
-}
-
-
 CBSplineKernel2::CBSplineKernel2():
 	CBSplineKernel(2, 0.5)
 {

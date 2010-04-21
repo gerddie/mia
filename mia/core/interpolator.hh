@@ -71,7 +71,6 @@ public:
 
 	virtual double get_weight_at(double x, int degree) const; 
 
-	double integrate(double s1, double s2, int deg1, int deg2, size_t L) const; 
 	/**
 	   \returns the poles of the spline
 	 */
@@ -83,7 +82,7 @@ public:
 	size_t size() const;
 
 	double get_nonzero_radius() const; 
-
+	
 protected:
 
 

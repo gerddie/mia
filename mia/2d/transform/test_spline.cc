@@ -496,6 +496,8 @@ BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_grad_curl, TransformSplineFixtur
 	BOOST_CHECK_CLOSE(stransf.grad_curl(), gradcurl/ ((range.x - 2) * (range.y-2)), 1.0);
 }
 
+
+
 BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_grad_divergence, TransformSplineFixture )
 {
 	double graddiv = 0.0; 

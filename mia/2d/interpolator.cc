@@ -31,6 +31,8 @@
 
 #include <mia/core/interpolator1d.hh>
 #include <mia/2d/interpolator.hh>
+#include <mia/core/unaryfunction.hh>
+#include <mia/core/simpson.hh>
 
 #include <mia/core/interpolator1d.cxx>
 #include <mia/2d/interpolator.cxx>
@@ -39,6 +41,46 @@
 NS_MIA_BEGIN
 
 using namespace boost;
+
+struct F2DKernelIntegrator: public FUnary {
+	F2DKernelIntegrator(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2):
+		_M_spline(spline), _M_s1(s1), _M_s2(s2), _M_deg1(deg1), _M_deg2(deg2)
+		{
+		}
+	virtual double operator() (double x) const {
+		return _M_spline.get_weight_at(x - _M_s1, _M_deg1) * 
+			_M_spline.get_weight_at(x - _M_s2, _M_deg2); 
+	}
+private: 
+	const CBSplineKernel& _M_spline; 
+	double _M_s1, _M_s2, _M_deg1, _M_deg2; 
+}; 
+
+
+double integrate(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2, size_t L)
+{
+	double sum = 0.0; 
+		
+	// evaluate interval to integrate over 
+	double start_int = s1 - spline.get_nonzero_radius(); 
+	double end_int = s1 + spline.get_nonzero_radius(); 
+	if (start_int > s2 - spline.get_nonzero_radius()) 
+		start_int = s2 - spline.get_nonzero_radius(); 
+	if (start_int < 0) 
+		start_int = 0; 
+	if (end_int > s2 + spline.get_nonzero_radius()) 
+		end_int = s2 + spline.get_nonzero_radius(); 
+	if (end_int > L) 
+		end_int = L; 
+	
+	// Simpson formula 
+	
+	if (end_int <= start_int) 
+		return sum; 
+	const size_t intervals = size_t(4 * (end_int - start_int)); 
+	sum = simpson( start_int, end_int, intervals, F2DKernelIntegrator(spline, s1, s2, deg1, deg2)); 
+	return sum; 
+}
 
 C2DInterpolator::~C2DInterpolator()
 {
