@@ -206,7 +206,7 @@ T2DInterpolator<T> *C2DInterpolatorFactory::create(const T2DDatafield<T>& src) c
 	return NULL;
 }
 
-double integrate(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2, size_t L); 
+double integrate2(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2, size_t L); 
 
 NS_MIA_END
 

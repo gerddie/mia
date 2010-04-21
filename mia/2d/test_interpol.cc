@@ -250,14 +250,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateOMoms3_type, T, test_types )
 	test_conv_interpolator<T>(data, SHARED_PTR(CBSplineKernel) (new CBSplineKernelOMoms3()));
 }
 
-
-
 BOOST_AUTO_TEST_CASE(  test_bspline3_integrate ) 
 {
 	CBSplineKernel3 kernel;
-	BOOST_CHECK_CLOSE(integrate(kernel, 10, 10, 1, 1, 30),  2.0/ 3.0, 0.1); 
-	BOOST_CHECK_CLOSE(integrate(kernel, 10, 10, 2, 0, 30),  -2.0/ 3.0, 0.1); 
-	BOOST_CHECK_CLOSE(integrate(kernel, 10, 11, 2, 0, 30),  0.125, 0.1); 
-	BOOST_CHECK_CLOSE(integrate(kernel,  0,  1, 2, 0, 30),  0.1833, 2); 
-	BOOST_CHECK_CLOSE(integrate(kernel, 29, 27, 0, 2, 30),  0.2, 2); 
+	BOOST_CHECK_CLOSE(integrate2(kernel, 10, 10, 1, 1, 30),  2.0/ 3.0, 0.1); 
+	BOOST_CHECK_CLOSE(integrate2(kernel, 10, 10, 2, 0, 30),  -2.0/ 3.0, 0.1); 
+	BOOST_CHECK_CLOSE(integrate2(kernel, 10, 11, 2, 0, 30),  0.125, 0.1); 
+	BOOST_CHECK_CLOSE(integrate2(kernel,  0,  1, 2, 0, 30),  0.1833, 2); 
+	BOOST_CHECK_CLOSE(integrate2(kernel, 29, 27, 0, 2, 30),  0.2, 2); 
 }
