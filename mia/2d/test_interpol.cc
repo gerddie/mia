@@ -259,3 +259,24 @@ BOOST_AUTO_TEST_CASE(  test_bspline3_integrate )
 	BOOST_CHECK_CLOSE(integrate2(kernel,  0,  1, 2, 0, 30),  0.1833, 2); 
 	BOOST_CHECK_CLOSE(integrate2(kernel, 29, 27, 0, 2, 30),  0.2, 2); 
 }
+
+struct CheckIPFKernelFixture {
+	template <class Kernel> 
+	void check(EInterpolation type, bool has_kernel)  {
+		SHARED_PTR(C2DInterpolatorFactory) ipf(create_2dinterpolation_factory(type));
+		if (has_kernel) 
+			BOOST_CHECK(dynamic_cast<const Kernel*>(ipf->get_kernel()));
+		else
+			BOOST_CHECK(!ipf->get_kernel());
+	}
+}; 
+
+BOOST_FIXTURE_TEST_CASE(check_ipf_kernels_linear, CheckIPFKernelFixture) 
+{
+	check<CBSplineKernel>(ip_nn, false); 
+	check<CBSplineKernel>(ip_linear, false); 
+	check<CBSplineKernel2>(ip_bspline2, true); 
+	check<CBSplineKernel3>(ip_bspline3, true); 
+	check<CBSplineKernel4>(ip_bspline4, true); 
+	check<CBSplineKernelOMoms3>(ip_omoms3, true); 
+}

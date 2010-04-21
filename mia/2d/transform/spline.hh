@@ -91,6 +91,8 @@ public:
 	float grad_divergence() const; 
 	float grad_curl() const; 
 private:
+	double get_grad_divergence_at(int x, int y) const; 
+	double get_grad_curl_at(int x, int y) const; 
 	C2DBounds _M_range;
 	C2DFVectorfield _M_coefficients;
 	P2DInterpolatorFactory _M_ipf;
@@ -99,21 +101,12 @@ private:
 	mutable bool _M_interpolator_valid;
 	mutable SHARED_PTR(T2DInterpolator<C2DFVector>)  _M_interpolator;
 	mutable bool _M_matrices_valid;
-	mutable vector<double> _M_R2020_X; 
-	mutable vector<double> _M_R2020_Y; 
-	mutable vector<double> _M_R0202_X; 
-	mutable vector<double> _M_R0202_Y; 
-	mutable vector<double> _M_R1111_X; 
-	mutable vector<double> _M_R1111_Y; 
-	mutable vector<double> _M_R2011_X; 
-	mutable vector<double> _M_R2011_Y; 
-	mutable vector<double> _M_R0211_X; 
-	mutable vector<double> _M_R0211_Y; 
-	mutable vector<double> _M_R1102_X; 
-	mutable vector<double> _M_R1102_Y; 
-	mutable vector<double> _M_R1120_X; 
-	mutable vector<double> _M_R1120_Y; 
-
+	mutable vector<double> _M_R20_X; 
+	mutable vector<double> _M_R20_Y; 
+	mutable vector<double> _M_R02_X; 
+	mutable vector<double> _M_R02_Y; 
+	mutable vector<double> _M_R11_X; 
+	mutable vector<double> _M_R11_Y; 
 	void evaluate_matrices() const; 
 		
 

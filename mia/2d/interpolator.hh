@@ -182,6 +182,8 @@ public:
 
 	template <class T>
 	T2DInterpolator<T> *create(const T2DDatafield<T>& src) const;
+	
+	const CBSplineKernel* get_kernel() const; 
 
 private:
 	EType _M_type;

@@ -26,8 +26,6 @@ NS_MIA_BEGIN
 template <class F>
 double simpson(double from, double to, size_t intervals, const F& function)
 {
-	cvdebug() << "simpson: Integrate (" << from << ", " << to << ") in "<<intervals<<" steps\n"; 
-
 	double sum = 0.0; 
 	double dx = (to - from) / intervals; 
 	

@@ -37,10 +37,10 @@ namespace bfs=boost::filesystem;
 
 struct TransformSplineFixture {
 	TransformSplineFixture():
-		size(30, 32),
+		size(48,72),
 		field(size),
 		ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
-					       SHARED_PTR(CBSplineKernel) (new CBSplineKernel4()))),
+					       SHARED_PTR(CBSplineKernel) (new CBSplineKernel3()))),
 		range(64, 128),
 		r(range.x - 1, range.y - 1),
 		stransf(range, ipf), 
@@ -99,45 +99,45 @@ private:
 float TransformSplineFixture::fx(float x, float y)
 {
 
-	x *= 2 * M_PI / r.x;
-	y *= 2 * M_PI / r.y;
+	x *= scale.x;
+	y *= scale.y;
 	return 	(1.0 + sinf(x - M_PI / 2.0)) * (1.0 + sinf(2 * y  - M_PI / 2.0));
 }
 
 float TransformSplineFixture::fy(float x, float y)
 {
-	x *= 2 * M_PI / r.x;
-	y *= 2 * M_PI / r.y;
+	x *= scale.x;
+	y *= scale.y;
 	return (1.0 - cosf(2 * x)) * (1.0 - cosf(y));
 }
 
 
 float TransformSplineFixture::dfx_x(float x, float y)
 {
-	x *= 2 * M_PI / r.x;
-	y *= 2 * M_PI / r.y;
-	return 2 * M_PI / r.x * cosf(x - M_PI / 2.0) * ( 1.0 + sinf(2 * y  - M_PI / 2.0));
+	x *= scale.x;
+	y *= scale.y;
+	return scale.x * cosf(x - M_PI / 2.0) * ( 1.0 + sinf(2 * y  - M_PI / 2.0));
 }
 
 float TransformSplineFixture::dfx_y(float x, float y)
 {
-	x *= 2 * M_PI / r.x;
-	y *= 2 * M_PI / r.y;
+	x *= scale.x;
+	y *= scale.y;
 	return 4.0 * M_PI / r.y * (1.0 + sinf(x - M_PI / 2.0)) * cosf(2 * y  - M_PI / 2.0);
 }
 
 float TransformSplineFixture::dfy_x(float x, float y)
 {
-	x *= 2 * M_PI / r.x;
-	y *= 2 * M_PI / r.y;
+	x *= scale.x;
+	y *= scale.y;
 	return 4 * M_PI / r.x * sinf(2 * x) * (1.0 - cosf(y));
 }
 
 float TransformSplineFixture::dfy_y(float x, float y)
 {
-	x *= 2 * M_PI / r.x;
-	y *= 2 * M_PI / r.y;
-	return 2 * M_PI / r.y * (1.0 - cosf(2 * x)) * sinf(y);
+	x *= scale.x;
+	y *= scale.y;
+	return scale.y * (1.0 - cosf(2 * x)) * sinf(y);
 }
 
 
@@ -166,7 +166,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 
 }
 
-
+#if 0 
 BOOST_FIXTURE_TEST_CASE( test_splines_transformation_curl, TransformSplineFixture )
 {
 	double curl = 0.0; 
@@ -191,6 +191,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation_divergence, TransformSpline
 
 	BOOST_CHECK_CLOSE(stransf.curl(), div / ((range.x - 2) * (range.y-2)), 0.1);
 }
+#endif
 
 BOOST_FIXTURE_TEST_CASE( test_splines_transformation_upscale, TransformSplineFixture )
 {
@@ -404,9 +405,9 @@ BOOST_FIXTURE_TEST_CASE( test_splines_pertuberate, TransformSplineFixture )
 	fill(v.begin(), v.end(), vv);
 
 	// this location is hand-picked and is not really the position ofthe maximun
-	// butonly an approximation
+	// but only an approximation
 	float gamma = stransf.pertuberate(v);
-	C2DFVector lmg(11* scalex, 13 * scaley);
+	C2DFVector lmg(18* scalex, 30 * scaley);
 	C2DFVector mg(vv.x - vv.x * dfx_x(lmg.x,lmg.y) - vv.y * dfx_y(lmg.x,lmg.y),
 		      vv.y - vv.x * dfy_x(lmg.x,lmg.y) - vv.y * dfy_y(lmg.x,lmg.y));
 
@@ -431,7 +432,10 @@ BOOST_FIXTURE_TEST_CASE( test_splines_get_jacobian, TransformSplineFixture )
 
 	// this is not the location of the minimal value, we onyl approximate
 	// by using the minimal value on the coefficient grid
-	C2DFVector lmg(15, 32);
+	float scalex = float(range.x - 1.0)  / (size.x - 1.0);
+	float scaley = float(range.y - 1.0)  / (size.y - 1.0);
+
+	C2DFVector lmg(12*scalex, 18*scaley);
 	float j = stransf.get_jacobian(v, 1.0);
 	C2DFMatrix J = stransf.derivative_at(lmg.x, lmg.y);
 
@@ -490,9 +494,11 @@ BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_grad_curl, TransformSplineFixtur
 				gdfy_xx * gdfy_xx + gdfy_xy * gdfy_xy - 
 				2.0 * ( gdfx_xy * gdfy_xx + 
 					gdfx_yy * gdfy_xy ); 
+			cvdebug() << "gradcurl = " << gradcurl << "\n"; 
 
 		}
 
+	
 	BOOST_CHECK_CLOSE(stransf.grad_curl(), gradcurl/ ((range.x - 2) * (range.y-2)), 1.0);
 }
 

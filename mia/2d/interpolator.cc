@@ -111,6 +111,11 @@ C2DInterpolatorFactory::~C2DInterpolatorFactory()
 {
 }
 
+const CBSplineKernel* C2DInterpolatorFactory::get_kernel() const
+{
+	return _M_kernel.get(); 
+}
+
 C2DInterpolatorFactory *create_2dinterpolation_factory(int type)
 {
 	SHARED_PTR(CBSplineKernel) kernel;
