@@ -1,9 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Max-Planck-Institute for Evolutionary Anthropology
- * BIT, ETSI Telecomunicacion, UPM
+ * Copyright (c) Madrid 2009-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -253,11 +250,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateOMoms3_type, T, test_types )
 BOOST_AUTO_TEST_CASE(  test_bspline3_integrate ) 
 {
 	CBSplineKernel3 kernel;
-	BOOST_CHECK_CLOSE(integrate2(kernel, 10, 10, 1, 1, 30),  2.0/ 3.0, 0.1); 
-	BOOST_CHECK_CLOSE(integrate2(kernel, 10, 10, 2, 0, 30),  -2.0/ 3.0, 0.1); 
-	BOOST_CHECK_CLOSE(integrate2(kernel, 10, 11, 2, 0, 30),  0.125, 0.1); 
-	BOOST_CHECK_CLOSE(integrate2(kernel,  0,  1, 2, 0, 30),  0.1833, 2); 
-	BOOST_CHECK_CLOSE(integrate2(kernel, 29, 27, 0, 2, 30),  0.2, 2); 
+	BOOST_CHECK_CLOSE(integrate2(kernel, 10, 10, 1, 1, 1, 0, 30),  2.0/ 3.0, 0.1); 
+	BOOST_CHECK_CLOSE(integrate2(kernel, 10, 10, 2, 0, 1, 0, 30),  -2.0/ 3.0, 0.1); 
+	BOOST_CHECK_CLOSE(integrate2(kernel, 10, 11, 2, 0, 1, 0, 30),  0.125, 0.1); 
+	BOOST_CHECK_CLOSE(integrate2(kernel,  0,  1, 2, 0, 1, 0, 30),  0.1833, 2); 
+	BOOST_CHECK_CLOSE(integrate2(kernel, 29, 27, 0, 2, 1, 0, 30),  0.2, 2); 
 }
 
 struct CheckIPFKernelFixture {
@@ -280,3 +277,5 @@ BOOST_FIXTURE_TEST_CASE(check_ipf_kernels_linear, CheckIPFKernelFixture)
 	check<CBSplineKernel4>(ip_bspline4, true); 
 	check<CBSplineKernelOMoms3>(ip_omoms3, true); 
 }
+
+

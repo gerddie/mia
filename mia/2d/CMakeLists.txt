@@ -163,6 +163,7 @@ TEST_2DMIA(modelsolverreg)
 TEST_2DMIA(polygon)
 TEST_2DMIA(boundingbox)
 TEST_2DMIA(distances)
+TEST_2DMIA(oldnewintegrate)
 
 TEST_2DMIA(costbase)
 TEST_2DMIA(imagecostbase)

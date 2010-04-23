@@ -37,7 +37,7 @@ namespace bfs=boost::filesystem;
 
 struct TransformSplineFixture {
 	TransformSplineFixture():
-		size(48,72),
+		size(32,64),
 		field(size),
 		ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
 					       SHARED_PTR(CBSplineKernel) (new CBSplineKernel3()))),
@@ -90,6 +90,7 @@ protected:
 	float dfy_yx(float x, float y);
 	float dfy_yy(float x, float y);
 
+	
 private: 
 	C2DFVector scale; 
 };
@@ -354,10 +355,10 @@ BOOST_FIXTURE_TEST_CASE( test_splines_gridpoint_derivative, TransformSplineFixtu
 	C2DFVector x(33,80);
 	C2DFMatrix dv =  stransf.derivative_at(33,80);
 
-	BOOST_CHECK_CLOSE(dv.x.x, 1.0f - dfx_x(x.x, x.y), 0.1);
-	BOOST_CHECK_CLOSE(dv.y.x,      - dfx_y(x.x, x.y), 0.1);
-	BOOST_CHECK_CLOSE(dv.x.y,      - dfy_x(x.x, x.y), 0.1);
-	BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(x.x, x.y), 0.1);
+	BOOST_CHECK_CLOSE(dv.x.x, 1.0f - dfx_x(x.x, x.y), 0.2);
+	BOOST_CHECK_CLOSE(dv.y.x,      - dfx_y(x.x, x.y), 0.2);
+	BOOST_CHECK_CLOSE(dv.x.y,      - dfy_x(x.x, x.y), 0.2);
+	BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(x.x, x.y), 0.2);
 }
 
 BOOST_FIXTURE_TEST_CASE(test_splines_gridpoint_derivative_new, TransformSplineFixture)
@@ -407,7 +408,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_pertuberate, TransformSplineFixture )
 	// this location is hand-picked and is not really the position ofthe maximun
 	// but only an approximation
 	float gamma = stransf.pertuberate(v);
-	C2DFVector lmg(18* scalex, 30 * scaley);
+	C2DFVector lmg(12* scalex, 27 * scaley);
 	C2DFVector mg(vv.x - vv.x * dfx_x(lmg.x,lmg.y) - vv.y * dfx_y(lmg.x,lmg.y),
 		      vv.y - vv.x * dfy_x(lmg.x,lmg.y) - vv.y * dfy_y(lmg.x,lmg.y));
 
@@ -435,7 +436,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_get_jacobian, TransformSplineFixture )
 	float scalex = float(range.x - 1.0)  / (size.x - 1.0);
 	float scaley = float(range.y - 1.0)  / (size.y - 1.0);
 
-	C2DFVector lmg(12*scalex, 18*scaley);
+	C2DFVector lmg(8*scalex, 16*scaley);
 	float j = stransf.get_jacobian(v, 1.0);
 	C2DFMatrix J = stransf.derivative_at(lmg.x, lmg.y);
 
@@ -484,22 +485,18 @@ BOOST_FIXTURE_TEST_CASE( test_splines_refine, TransformSplineFixture )
 BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_grad_curl, TransformSplineFixture )
 {
 	double gradcurl = 0.0; 
-	for (size_t y = 1; y < range.y-1; ++y)
-		for (size_t x = 1; x < range.x-1; ++x) {
+	for (size_t y = 0; y < range.y; ++y)
+		for (size_t x = 0; x < range.x; ++x) {
 			const double gdfx_xy = dfx_xy(x,y); 
 			const double gdfx_yy = dfx_yy(x,y);
 			const double gdfy_xx = dfy_xx(x,y); 
 			const double gdfy_xy = dfy_xy(x,y);
-			gradcurl += gdfx_xy * gdfx_xy + gdfx_yy * gdfx_yy + 
-				gdfy_xx * gdfy_xx + gdfy_xy * gdfy_xy - 
-				2.0 * ( gdfx_xy * gdfy_xx + 
-					gdfx_yy * gdfy_xy ); 
-			cvdebug() << "gradcurl = " << gradcurl << "\n"; 
-
+			const double v = gdfy_xx + gdfy_xy - gdfx_yy - gdfx_xy; 
+			gradcurl += v * v; 
 		}
 
 	
-	BOOST_CHECK_CLOSE(stransf.grad_curl(), gradcurl/ ((range.x - 2) * (range.y-2)), 1.0);
+	BOOST_CHECK_CLOSE(stransf.grad_curl(), gradcurl, 1.0);
 }
 
 
@@ -513,15 +510,11 @@ BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_grad_divergence, TransformSpline
 			const double gdfxx_y = dfx_xy(x,y);
 			const double gdfyy_x = dfy_yx(x,y); 
 			const double gdfyy_y = dfy_yy(x,y);
-
-			graddiv += 
-				gdfxx_x * gdfxx_x + gdfxx_y * gdfxx_y + 
-				gdfyy_x * gdfyy_x + gdfyy_y * gdfyy_y 
-				+ 2.0 * ( gdfxx_x * gdfyy_x + gdfxx_y * gdfyy_y)
-				; 
+			const double v = gdfxx_x + gdfxx_y + gdfyy_x + gdfyy_y; 
+			graddiv += v * v;
 		}
 
-	BOOST_CHECK_CLOSE(stransf.grad_divergence(), graddiv / ((range.x - 2) * (range.y-2)), 1);
+	BOOST_CHECK_CLOSE(stransf.grad_divergence(), graddiv, 1);
 }
 
 

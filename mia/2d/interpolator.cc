@@ -57,17 +57,19 @@ private:
 }; 
 
 
-double integrate2(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2, size_t L)
+double integrate2(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2, double n, double x0, double L)
 {
 	double sum = 0.0; 
+	x0 /= n; 
+	L  /= n; 
 		
 	// evaluate interval to integrate over 
 	double start_int = s1 - spline.get_nonzero_radius(); 
 	double end_int = s1 + spline.get_nonzero_radius(); 
 	if (start_int > s2 - spline.get_nonzero_radius()) 
 		start_int = s2 - spline.get_nonzero_radius(); 
-	if (start_int < 0) 
-		start_int = 0; 
+	if (start_int < x0) 
+		start_int = x0; 
 	if (end_int > s2 + spline.get_nonzero_radius()) 
 		end_int = s2 + spline.get_nonzero_radius(); 
 	if (end_int > L) 
@@ -79,7 +81,7 @@ double integrate2(const CBSplineKernel& spline, double s1, double s2, int deg1, 
 		return sum; 
 	const size_t intervals = size_t(4 * (end_int - start_int)); 
 	sum = simpson( start_int, end_int, intervals, F2DKernelIntegrator(spline, s1, s2, deg1, deg2)); 
-	return sum; 
+	return sum * n; 
 }
 
 C2DInterpolator::~C2DInterpolator()
