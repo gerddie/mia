@@ -90,9 +90,27 @@ public:
 	virtual float curl() const; 
 	float grad_divergence() const; 
 	float grad_curl() const; 
-private:
-	double get_grad_divergence_at(int x, int y) const; 
-	double get_grad_curl_at(int x, int y) const; 
+
+	struct DCKernel {
+		DCKernel(const vector<double>& R20_X, 
+			 const vector<double>& R20_Y, 
+			 const vector<double>& R11_X, 
+			 const vector<double>& R11_Y, 
+			 const vector<double>& R02_X, 
+			 const vector<double>& R02_Y); 
+		
+		virtual double operator () (int xc, int yc, const C2DFVector& ci, const C2DFVector& cj) const = 0; 
+	protected: 
+		const vector<double>& _M_R20_X; 
+		const vector<double>& _M_R20_Y; 
+		const vector<double>& _M_R11_X; 
+		const vector<double>& _M_R11_Y; 
+		const vector<double>& _M_R02_X; 
+		const vector<double>& _M_R02_Y; 
+	}; 
+
+private:	
+	double get_grad_kernel_at(int x, int y, const DCKernel& kern)const; 
 	C2DBounds _M_range;
 	C2DFVectorfield _M_coefficients;
 	P2DInterpolatorFactory _M_ipf;
