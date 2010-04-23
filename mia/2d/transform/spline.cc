@@ -323,6 +323,7 @@ double C2DSplineTransformation::get_grad_kernel_at(int x, int y, const DCKernel&
 			}
 		}
 	}
+	cvdebug() << "sum("<< x << ", "  << y << ")= " <<sum<<"\n"; 
 	return sum; 
 }
 
@@ -358,18 +359,23 @@ void C2DSplineTransformation::evaluate_matrices() const
 	_M_R02_Y.resize(support_size);
 	_M_R11_Y.resize(support_size);
 
+	const double Lx = _M_coefficients.get_size().x; 
+	const double Ly = _M_coefficients.get_size().y; 
+	const double nx = 1.0/_M_scale.x; 
+	const double ny = 1.0/_M_scale.y; 
+
 	size_t idx = 0; 
 	for (int x = 1-ksize; x < ksize; ++x, ++idx) {
-		_M_R20_X[idx] = integrate2(*spline_kernel, x, y, 2, 0, 1.0/_M_scale.x, 0,_M_coefficients.get_size().x); 
-		_M_R02_X[idx] = integrate2(*spline_kernel, x, y, 0, 2, 1.0/_M_scale.x, 0,_M_coefficients.get_size().x); 
-		_M_R11_X[idx] = integrate2(*spline_kernel, x, y, 1, 1, 1.0/_M_scale.x, 0,_M_coefficients.get_size().x); 
+		_M_R20_X[idx] = integrate2(*spline_kernel, x, y, 2, 0, nx, 0, Lx); 
+		_M_R02_X[idx] = integrate2(*spline_kernel, x, y, 0, 2, nx, 0, Lx); 
+		_M_R11_X[idx] = integrate2(*spline_kernel, x, y, 1, 1, nx, 0, Lx); 
 	}
-		
+	
 	idx = 0; 
 	for (int x = 1-ksize; x < ksize; ++x, ++idx) {
-		_M_R20_Y[idx] = integrate2(*spline_kernel, x, y, 2, 0, 1.0/_M_scale.y, 0,_M_coefficients.get_size().y); 
-		_M_R02_Y[idx] = integrate2(*spline_kernel, x, y, 0, 2, 1.0/_M_scale.y, 0,_M_coefficients.get_size().y); 
-		_M_R11_Y[idx] = integrate2(*spline_kernel, x, y, 1, 1, 1.0/_M_scale.y, 0,_M_coefficients.get_size().y); 
+		_M_R20_Y[idx] = integrate2(*spline_kernel, x, y, 2, 0, ny, 0, Ly); 
+		_M_R02_Y[idx] = integrate2(*spline_kernel, x, y, 0, 2, ny, 0, Ly); 
+		_M_R11_Y[idx] = integrate2(*spline_kernel, x, y, 1, 1, ny, 0, Ly); 
 	}
 	_M_matrices_valid = true; 
 }
@@ -384,7 +390,7 @@ float C2DSplineTransformation::grad_curl() const
 	for (size_t k = 0; k < _M_coefficients.get_size().x; ++k )
 		for (size_t l = 0; l < _M_coefficients.get_size().y; ++l)
 			sum += get_grad_kernel_at(k,l,kd); 
-	return sum / _M_coefficients.size() ; 
+	return sum / _M_coefficients.size(); 
 }
 
 void C2DSplineTransformation::update(float step, const C2DFVectorfield& a)

@@ -111,6 +111,8 @@ public:
 
 private:	
 	double get_grad_kernel_at(int x, int y, const DCKernel& kern)const; 
+	double get_grad_divergence_at(int x, int y) const; 
+	double get_grad_curl_at(int x, int y) const; 
 	C2DBounds _M_range;
 	C2DFVectorfield _M_coefficients;
 	P2DInterpolatorFactory _M_ipf;

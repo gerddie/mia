@@ -35,6 +35,16 @@ using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
+struct PathInitializer {
+	PathInitializer() {
+		list< bfs::path> kernelsearchpath;
+		kernelsearchpath.push_back(bfs::path("../../core/spacialkernel"));
+		C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
+	}
+}; 
+
+PathInitializer lala; 
+
 struct TransformSplineFixture {
 	TransformSplineFixture():
 		size(32,64),
@@ -58,9 +68,6 @@ struct TransformSplineFixture {
 
 		SHARED_PTR(T2DInterpolator<C2DFVector> ) source(ipf->create(field));
 
-		list< bfs::path> kernelsearchpath;
-		kernelsearchpath.push_back(bfs::path("../../core/spacialkernel"));
-		C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
 		stransf.set_coefficients(field);
 		stransf.reinit();
 	}
@@ -574,3 +581,128 @@ float TransformSplineFixture::dfy_yy(float x, float y)
 	y *= scale.y;
 	return - scale.y * scale.y * (1.0 - cosf(2 * x)) * cosf(y);
 }
+
+
+
+
+struct TransformSplineFixtureDivergence {
+	TransformSplineFixtureDivergence():
+		size(16,16),
+		field(size),
+		ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
+					       SHARED_PTR(CBSplineKernel) (new CBSplineKernel3()))),
+		range(16, 16),
+		stransf(range, ipf), 
+		scale(1.0 / range.x, 1.0 / range.y)
+	{
+		C2DFVectorfield::iterator i = field.begin();
+		for (int y = 0; y < (int)size.y; ++y)
+			for (int x = 0; x < (int)size.x; ++x, ++i) {
+				float sx = scale.x * (x - size.x / 2.0);
+				float sy = scale.y * (y - size.y / 2.0);
+				*i = C2DFVector( fx(sx, sy), fy(sx, sy)); 
+				cvdebug() <<"DIV[" << x << ", " << y 
+					  << "]:(" << sx << "," << sy << ")=" << *i << "\n"; ;
+			}
+
+		SHARED_PTR(T2DInterpolator<C2DFVector> ) source(ipf->create(field));
+
+		stransf.set_coefficients(field);
+		stransf.reinit();
+	}
+	C2DBounds size;
+	C2DFVectorfield field;
+	P2DInterpolatorFactory ipf;
+
+	C2DBounds range;
+	C2DSplineTransformation  stransf;
+
+protected:
+	float fx(float x, float y);
+	float fy(float x, float y);
+private: 
+	C2DFVector scale; 
+};
+
+
+BOOST_FIXTURE_TEST_CASE( test_gridtransform_constdivonly_get_grad_divcurl, TransformSplineFixtureDivergence )
+{
+	BOOST_CHECK_CLOSE(0.0, stransf.grad_curl(), 1.0);
+	BOOST_CHECK_CLOSE(0.0, stransf.grad_divergence(),  1);
+}
+
+
+
+float TransformSplineFixtureDivergence::fx(float x, float y)
+{
+	return x; 
+}
+
+float TransformSplineFixtureDivergence::fy(float  x, float y)
+{
+	return y; 
+}
+
+
+struct TransformSplineFixtureCurl {
+	TransformSplineFixtureCurl():
+		size(16,16),
+		field(size),
+		ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
+					       SHARED_PTR(CBSplineKernel) (new CBSplineKernel3()))),
+		range(16, 16),
+		stransf(range, ipf), 
+		scale(1.0 / range.x, 1.0 / range.y)
+	{
+		C2DFVectorfield::iterator i = field.begin();
+		for (int y = 0; y < (int)size.y; ++y)
+			for (int x = 0; x < (int)size.x; ++x, ++i) {
+				float sx = scale.x * (x - (int)size.x / 2);
+				float sy = scale.y * (y - (int)size.y / 2);
+				*i = C2DFVector( fx(sx, sy), fy(sx, sy));
+				cvdebug() <<"[" << x << ", " << y << "]:(" << sx << "," << sy << ")=" << *i << "\n"; 
+			}
+
+		SHARED_PTR(T2DInterpolator<C2DFVector> ) source(ipf->create(field));
+
+		stransf.set_coefficients(field);
+		stransf.reinit();
+	}
+	C2DBounds size;
+	C2DFVectorfield field;
+	P2DInterpolatorFactory ipf;
+
+	C2DBounds range;
+	C2DSplineTransformation  stransf;
+
+protected:
+	float fx(float x, float y);
+	float fy(float x, float y);
+private: 
+	C2DFVector scale; 
+};
+
+
+BOOST_FIXTURE_TEST_CASE( test_gridtransform_curlonly_get_grad_curl_div, TransformSplineFixtureCurl )
+{
+	BOOST_CHECK_CLOSE(1.0, stransf.grad_curl(), 1.0);
+	BOOST_CHECK_CLOSE(0.0, stransf.grad_divergence(), 1.0);
+}
+
+
+float TransformSplineFixtureCurl::fx(float x, float y)
+{
+	if (x == 0.0 && y == 0.0) 
+		return 0.0; 
+	
+	return -y/(y*y + x*x) / sqrt(y*y + x*x); 
+}
+
+float TransformSplineFixtureCurl::fy(float  x, float y)
+{
+	if (x == 0.0 && y == 0.0) 
+		return 0.0; 
+
+	return  x / (y*y + x*x) / sqrt(y*y + x*x); 
+}
+
