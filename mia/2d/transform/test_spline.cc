@@ -582,11 +582,8 @@ float TransformSplineFixture::dfy_yy(float x, float y)
 	return - scale.y * scale.y * (1.0 - cosf(2 * x)) * cosf(y);
 }
 
-
-
-
-struct TransformSplineFixtureDivergence {
-	TransformSplineFixtureDivergence():
+struct TransformSplineFixtureFieldBase {
+	TransformSplineFixtureFieldBase():
 		size(16,16),
 		field(size),
 		ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
@@ -595,6 +592,9 @@ struct TransformSplineFixtureDivergence {
 		stransf(range, ipf), 
 		scale(1.0 / range.x, 1.0 / range.y)
 	{
+
+	}
+	void init() {
 		C2DFVectorfield::iterator i = field.begin();
 		for (int y = 0; y < (int)size.y; ++y)
 			for (int x = 0; x < (int)size.x; ++x, ++i) {
@@ -618,91 +618,58 @@ struct TransformSplineFixtureDivergence {
 	C2DSplineTransformation  stransf;
 
 protected:
-	float fx(float x, float y);
-	float fy(float x, float y);
+	virtual float fx(float x, float y) = 0;
+	virtual float fy(float x, float y) = 0;
 private: 
 	C2DFVector scale; 
 };
 
+struct TransformSplineFixtureConstDivergence: public TransformSplineFixtureFieldBase {
+	virtual float fx(float x, float y);
+	virtual float fy(float x, float y);
+}; 
 
-BOOST_FIXTURE_TEST_CASE( test_gridtransform_constdivonly_get_grad_divcurl, TransformSplineFixtureDivergence )
+BOOST_FIXTURE_TEST_CASE( test_gridtransform_constdivonly_get_grad_divcurl, TransformSplineFixtureConstDivergence )
 {
+	init(); 
 	BOOST_CHECK_CLOSE(0.0, stransf.grad_curl(), 1.0);
 	BOOST_CHECK_CLOSE(0.0, stransf.grad_divergence(),  1);
 }
 
 
 
-float TransformSplineFixtureDivergence::fx(float x, float y)
+float TransformSplineFixtureConstDivergence::fx(float x, float /*y*/)
 {
 	return x; 
 }
 
-float TransformSplineFixtureDivergence::fy(float  x, float y)
+float TransformSplineFixtureConstDivergence::fy(float  /*x*/, float y)
 {
 	return y; 
 }
 
 
-struct TransformSplineFixtureCurl {
-	TransformSplineFixtureCurl():
-		size(16,16),
-		field(size),
-		ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
-					       SHARED_PTR(CBSplineKernel) (new CBSplineKernel3()))),
-		range(16, 16),
-		stransf(range, ipf), 
-		scale(1.0 / range.x, 1.0 / range.y)
-	{
-		C2DFVectorfield::iterator i = field.begin();
-		for (int y = 0; y < (int)size.y; ++y)
-			for (int x = 0; x < (int)size.x; ++x, ++i) {
-				float sx = scale.x * (x - (int)size.x / 2);
-				float sy = scale.y * (y - (int)size.y / 2);
-				*i = C2DFVector( fx(sx, sy), fy(sx, sy));
-				cvdebug() <<"[" << x << ", " << y << "]:(" << sx << "," << sy << ")=" << *i << "\n"; 
-			}
-
-		SHARED_PTR(T2DInterpolator<C2DFVector> ) source(ipf->create(field));
-
-		stransf.set_coefficients(field);
-		stransf.reinit();
-	}
-	C2DBounds size;
-	C2DFVectorfield field;
-	P2DInterpolatorFactory ipf;
-
-	C2DBounds range;
-	C2DSplineTransformation  stransf;
-
-protected:
-	float fx(float x, float y);
-	float fy(float x, float y);
-private: 
-	C2DFVector scale; 
-};
+struct TransformSplineFixtureConstCurl: public TransformSplineFixtureFieldBase {
+	virtual float fx(float x, float y);
+	virtual float fy(float x, float y);
+}; 
 
 
-BOOST_FIXTURE_TEST_CASE( test_gridtransform_curlonly_get_grad_curl_div, TransformSplineFixtureCurl )
+BOOST_FIXTURE_TEST_CASE( test_gridtransform_constcurlonly_get_grad_curl_div, TransformSplineFixtureConstCurl )
 {
-	BOOST_CHECK_CLOSE(1.0, stransf.grad_curl(), 1.0);
+	init(); 
+	BOOST_CHECK_CLOSE(0.0, stransf.grad_curl(), 1.0);
 	BOOST_CHECK_CLOSE(0.0, stransf.grad_divergence(), 1.0);
 }
 
 
-float TransformSplineFixtureCurl::fx(float x, float y)
+float TransformSplineFixtureConstCurl::fx(float /*x*/, float y)
 {
-	if (x == 0.0 && y == 0.0) 
-		return 0.0; 
-	
-	return -y/(y*y + x*x) / sqrt(y*y + x*x); 
+	return -y; 
 }
 
-float TransformSplineFixtureCurl::fy(float  x, float y)
+float TransformSplineFixtureConstCurl::fy(float  x, float /*y*/)
 {
-	if (x == 0.0 && y == 0.0) 
-		return 0.0; 
-
-	return  x / (y*y + x*x) / sqrt(y*y + x*x); 
+	return x; 
 }
 
