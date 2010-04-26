@@ -10,6 +10,7 @@ SET(MIA2D_SRC_BASE
   costbase.cc
   creator.cc
   distances.cc
+  divcurlmatrix.cc
   imagecostbase.cc
   interpolator.cc 
   fatcost.cc
@@ -75,9 +76,10 @@ SET(MIA2D_HEADERS_BASE
   cost.hh
   costbase.hh
   creator.hh
-  distances.hh
   defines2d.hh
   deformer.hh
+  distances.hh
+  divcurlmatrix.cc
   fatcost.hh
   filterchain.hh
   fftkernel.hh
@@ -167,6 +169,7 @@ TEST_2DMIA(oldnewintegrate)
 
 TEST_2DMIA(costbase)
 TEST_2DMIA(imagecostbase)
+TEST_2DMIA(divcurlmatrix)
 
 IF(ITPP_FOUND)
   TEST_2DMIA(ica)

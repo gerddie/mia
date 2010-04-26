@@ -314,11 +314,11 @@ double C2DSplineTransformation::get_grad_kernel_at(int x, int y, const DCKernel&
 		for (int k = xs,ki = xsd; k < xe; ++k, ++ki) {
 			for (int n = ys,ni = ysd; n < ye; ++n, ++ni) {
 				for (int m = xs, mi = xsd; m < xe; ++m,++mi) {
-					const C2DFVector ci = _M_coefficients(k,l); 
+					const C2DFVector ci = _M_coefficients(k,l);
 					const C2DFVector cj = _M_coefficients(m,n); 
 					const int xc = mi - ki + ssize - 1; 
 					const int yc = ni - li + ssize - 1; 
-					sum += kern(xc, yc, ci, cj); 
+					sum += kern(x + xc, y + yc, ci, cj); 
 				}
 			}
 		}
@@ -350,14 +350,13 @@ void C2DSplineTransformation::evaluate_matrices() const
 	const int ksize = spline_kernel->size(); 
 	const size_t support_size = 2 * ksize - 1;
 	
-	const size_t y = 0; 
-	_M_R20_X.resize(support_size); 
-	_M_R02_X.resize(support_size);
-	_M_R11_X.resize(support_size);
+	_M_R20_X.resize(_M_coefficients.size()); 
+	_M_R02_X.resize(_M_coefficients.size());
+	_M_R11_X.resize(_M_coefficients.size());
 
-	_M_R20_Y.resize(support_size); 
-	_M_R02_Y.resize(support_size);
-	_M_R11_Y.resize(support_size);
+	_M_R20_Y.resize(_M_coefficients.size()); 
+	_M_R02_Y.resize(_M_coefficients.size());
+	_M_R11_Y.resize(_M_coefficients.size());
 
 	const double Lx = _M_coefficients.get_size().x; 
 	const double Ly = _M_coefficients.get_size().y; 
@@ -365,17 +364,15 @@ void C2DSplineTransformation::evaluate_matrices() const
 	const double ny = 1.0/_M_scale.y; 
 
 	size_t idx = 0; 
-	for (int x = 1-ksize; x < ksize; ++x, ++idx) {
-		_M_R20_X[idx] = integrate2(*spline_kernel, x, y, 2, 0, nx, 0, Lx); 
-		_M_R02_X[idx] = integrate2(*spline_kernel, x, y, 0, 2, nx, 0, Lx); 
-		_M_R11_X[idx] = integrate2(*spline_kernel, x, y, 1, 1, nx, 0, Lx); 
-	}
-	
-	idx = 0; 
-	for (int x = 1-ksize; x < ksize; ++x, ++idx) {
-		_M_R20_Y[idx] = integrate2(*spline_kernel, x, y, 2, 0, ny, 0, Ly); 
-		_M_R02_Y[idx] = integrate2(*spline_kernel, x, y, 0, 2, ny, 0, Ly); 
-		_M_R11_Y[idx] = integrate2(*spline_kernel, x, y, 1, 1, ny, 0, Ly); 
+	for (int y = 0; y < support_size; ++y) {
+		for (int x = 0; x < support_size; ++x, ++idx) {
+			_M_R20_X[idx] = integrate2(*spline_kernel, x, y, 2, 0, nx, 0, Lx); 
+			_M_R02_X[idx] = integrate2(*spline_kernel, x, y, 0, 2, nx, 0, Lx); 
+			_M_R11_X[idx] = integrate2(*spline_kernel, x, y, 1, 1, nx, 0, Lx); 
+			_M_R20_Y[idx] = integrate2(*spline_kernel, x, y, 2, 0, ny, 0, Ly); 
+			_M_R02_Y[idx] = integrate2(*spline_kernel, x, y, 0, 2, ny, 0, Ly); 
+			_M_R11_Y[idx] = integrate2(*spline_kernel, x, y, 1, 1, ny, 0, Ly); 
+		}
 	}
 	_M_matrices_valid = true; 
 }
