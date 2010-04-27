@@ -33,6 +33,7 @@ public:
 	C2DDivCurlMatrix(const C2DBounds& field_size, const CBSplineKernel* kernel); 
 	~C2DDivCurlMatrix(); 
 	double multiply(const C2DFVectorfield& coefficients) const; 
+	int get_index(int n1, int n2, int size) const; 
 private: 
 	struct C2DDivCurlMatrixImpl* impl; 
 }; 

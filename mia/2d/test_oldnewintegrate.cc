@@ -55,6 +55,8 @@ BOOST_FIXTURE_TEST_CASE( test_integral, TestIntegral2DFixture)
 	check(0, 30, 0, 3, 30, 2, 0); 
 	check(0, 30, 0, 4, 30, 2, 0); 
 	check(0, 30, 0, 1, 15, 2, 0); 
+
+	check(0, 30, 28, 29, 1, 2, 0); 
 }
 
 void TestIntegral2DFixture::check(double x0, double xF, double s1, double s2, double n, int n1, int n2)

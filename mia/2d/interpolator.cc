@@ -80,6 +80,7 @@ double integrate2(const CBSplineKernel& spline, double s1, double s2, int deg1, 
 	if (end_int <= start_int) 
 		return sum; 
 	const size_t intervals = size_t(4 * (end_int - start_int)); 
+
 	sum = simpson( start_int, end_int, intervals, F2DKernelIntegrator(spline, s1, s2, deg1, deg2)); 
 	return sum * n; 
 }

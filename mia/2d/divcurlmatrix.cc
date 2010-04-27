@@ -31,7 +31,10 @@ struct C2DDivCurlMatrixImpl {
 	C2DDivCurlMatrixImpl(const C2DBounds& field_size, const CBSplineKernel* kernel); 
 
 	double multiply(const C2DFVectorfield& coefficients) const; 
+	int get_index(int n1, int n2, int size) const; 
 private: 
+
+	size_t ksize; 
 	vector<double> r20x; 
 	vector<double> r11x; 
 	vector<double> r02x; 
@@ -59,44 +62,79 @@ double C2DDivCurlMatrix::multiply(const C2DFVectorfield& coefficients) const
 	return impl->multiply(coefficients); 
 }
 
-C2DDivCurlMatrixImpl::C2DDivCurlMatrixImpl(const C2DBounds& field_size, const CBSplineKernel* kernel):
-	r20x(field_size.x * field_size.x), 
-	r11x(field_size.x * field_size.x), 
-	r02x(field_size.x * field_size.x), 
-	r20y(field_size.y * field_size.y), 
-	r11y(field_size.y * field_size.y),
-	r02y(field_size.y * field_size.y)
+int C2DDivCurlMatrix::get_index(int n1, int n2, int size) const
+{
+	return impl->get_index(n1, n2, size);
+}
+
+C2DDivCurlMatrixImpl::C2DDivCurlMatrixImpl(const C2DBounds& field_size, const CBSplineKernel* kernel)
 {
 	assert(kernel); 
 
-	const double Lx = field_size.x - 1; 
-	const double Ly = field_size.y - 1; 
+	ksize = 2*kernel->size() - 1; 
+	size_t fsize = ksize * ksize;
+
+	r20x.resize(fsize);
+	r11x.resize(fsize);
+	r02x.resize(fsize);
+	r20y.resize(fsize);
+	r11y.resize(fsize);
+	r02y.resize(fsize); 
+
+
 	double nx = 1.0; // field_size.x; 
 	double ny = 1.0; // field_size.y; 
 
 	size_t idx = 0; 
-	for(size_t y = 0; y < field_size.x; ++y) {
-		for(size_t x = 0; x < field_size.x; ++x, ++idx) {
-			r20x[idx] = integrate2(*kernel, x, y, 2, 0, nx, 0, Lx);
-			r11x[idx] = integrate2(*kernel, x, y, 1, 1, nx, 0, Lx);
-			r02x[idx] = integrate2(*kernel, x, y, 0, 2, nx, 0, Lx);
+	for(size_t y = 0; y < ksize; ++y) {
+		for(size_t x = 0; x < ksize; ++x, ++idx) {
+			r20x[idx] = integrate2(*kernel, x, y, 2, 0, nx, 0, ksize-1);
+			r11x[idx] = integrate2(*kernel, x, y, 1, 1, nx, 0, ksize-1);
+			r02x[idx] = integrate2(*kernel, x, y, 0, 2, nx, 0, ksize-1);
+			r20y[idx] = integrate2(*kernel, x, y, 2, 0, ny, 0, ksize-1);
+			r11y[idx] = integrate2(*kernel, x, y, 1, 1, ny, 0, ksize-1);
+			r02y[idx] = integrate2(*kernel, x, y, 0, 2, ny, 0, ksize-1);
 
+			cvdebug() << "(r20x,r20y):" << setw(10) << r20x[idx] << ", " << setw(10) << r20y[idx]
+				  << " (r02x,r02y):"<< setw(10) << r02x[idx] << ", " << setw(10) << r02y[idx] << "\n"; 
 		}
 	}
-	idx = 0; 
-	for(size_t y = 0; y < field_size.y; ++y) {
-		for(size_t x = 0; x < field_size.y; ++x, ++idx) {
-			r20y[idx] = integrate2(*kernel, x, y, 2, 0, ny, 0, Ly);
-			r11y[idx] = integrate2(*kernel, x, y, 1, 1, ny, 0, Ly);
-			r02y[idx] = integrate2(*kernel, x, y, 0, 2, ny, 0, Ly);
+	
+}
+
+int C2DDivCurlMatrixImpl::get_index(int n1, int n2, int size) const
+{
+	if (n2 < n1)
+		swap(n1, n2);
+	
+	int delta = n2 - n1;
+	
+	int hsize = (ksize - 1) / 2; 
+	if (delta > hsize) 
+		return -1; 
+	
+
+	int row = hsize;
+	if (n1 < hsize) {
+		row = n1;
+		return ksize * row + n1 + delta; 
+	} else {
+		int m2 = size - n2 - 1; 
+		if (m2 < hsize) {
+			row = m2;
+			return ksize * row + m2 + delta; 
 		}
 	}
-
+	return ksize * row + hsize + delta; 
 }
 
 double C2DDivCurlMatrixImpl::multiply(const C2DFVectorfield& coefficients) const
 {
 	double sum = 0.0; 
+	double sum11 = 0.0; 
+	double sum12 = 0.0; 
+	double sum22 = 0.0; 
+
 
 	C2DFVectorfield::const_iterator cmn = coefficients.begin();
 	for(size_t n = 0; n < coefficients.get_size().y; ++n) {
@@ -105,21 +143,30 @@ double C2DDivCurlMatrixImpl::multiply(const C2DFVectorfield& coefficients) const
 			for(size_t l = 0; l < coefficients.get_size().y; ++l)
 				for(size_t k = 0; k < coefficients.get_size().x; ++k, ++ckl) {
 
-					size_t km = k + coefficients.get_size().x * m;
-					size_t ln = l + coefficients.get_size().y * n;
-					const double q11 =      r20x[km] * r20y[ln] + r11x[km] * r11y[ln];
+					int km = get_index(k, m, coefficients.get_size().x);
+					int ln = get_index(l, n, coefficients.get_size().y);
+					if (km < 0 || ln < 0 ) 
+						continue; 
+					const double r1111 = r11x[km] * r11y[ln]; 
+					
+					const double q11 =      r20x[km] * r20y[ln] + r1111;
 					const double q12 = 2 * (r20x[km] * r11y[ln] + r11x[km] * r02y[ln]);
-					const double q22 =      r02x[km] * r02y[ln] + r11x[km] * r11y[ln];
+					const double q22 =      r02x[km] * r02y[ln] + r1111;
 
 					sum += cmn->x * ckl->x * q11; 
 					sum += cmn->x * ckl->y * q12; 
 					sum += cmn->y * ckl->y * q22;
 		
+					sum11 += q11; 
+					sum12 += q12; 
+					sum22 += q22; 
+
 				}
 		}
 
 	}
-	return sum / coefficients.size(); 
+	cvinfo() << "sump11=" << sum11 << ", sump12=" << sum12 << ", sump22=" << sum22 << "\n";  
+	return sum; 
 }
 
 NS_MIA_END
