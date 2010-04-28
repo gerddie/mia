@@ -26,9 +26,11 @@
 NS_MIA_USE; 
 
 
+const int dsize = 32; 
+const int dsize2 = dsize/2; 
 struct TransformSplineFixtureFieldBase {
 	TransformSplineFixtureFieldBase():
-		size(33,33),
+		size(dsize + 1,dsize + 1),
 		field(size),
 		ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
 					       SHARED_PTR(CBSplineKernel) (new CBSplineKernel3())))
@@ -39,8 +41,8 @@ struct TransformSplineFixtureFieldBase {
 		C2DFVectorfield::iterator i = field.begin();
 		for (int y = 0; y < (int)size.y; ++y)
 			for (int x = 0; x < (int)size.x; ++x, ++i) {
-				float sx = (x - size.x / 2.0)/16.0;
-				float sy = (y - size.y / 2.0)/16.0;
+				float sx = (x - dsize2)/dsize2;
+				float sy = (y - dsize2)/dsize2;
 				*i = C2DFVector( fx(sx, sy), fy(sx, sy)); 
 			}
 
@@ -90,7 +92,7 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_xsq_ysq_bspline3, TransformSplineFixtur
 {
 	init(); 
 	C2DDivCurlMatrix divcurl(size, ipf->get_kernel());
-	BOOST_CHECK_CLOSE(64, divcurl.multiply(field), 1.0);
+	BOOST_CHECK_CLOSE(16, divcurl.multiply(field), 1.0);
 }
 
 
@@ -139,7 +141,7 @@ private:
 	double r; 
 }; 
 
-BOOST_FIXTURE_TEST_CASE( test_divergence_Gauss_bspline3, TransformSplineFixtureInvSqField )
+BOOST_FIXTURE_TEST_CASE( test_divergence_InvSq_bspline3, TransformSplineFixtureInvSqField )
 {
 	init(); 
 	C2DDivCurlMatrix divcurl(size, ipf->get_kernel());
@@ -154,6 +156,16 @@ float TransformSplineFixtureInvSqField::fx(float x, float /*y*/)
 float TransformSplineFixtureInvSqField::fy(float /*x*/, float y)
 {
 	return 1.0 / (y*y + 1); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_get_index_symetry, TransformSplineFixtureInvSqField )
+{
+	C2DDivCurlMatrix divcurl(size, ipf->get_kernel());
+	for (size_t k = 0; k < 20; ++k) 
+		for (size_t l = 0; l < 20; ++l) {
+			BOOST_CHECK_EQUAL(divcurl.get_index(k,l,20), 
+					  divcurl.get_index(l,k,20)); 
+		}
 }
 
 BOOST_FIXTURE_TEST_CASE( test_get_index_Lower_boundary_bspline3, TransformSplineFixtureInvSqField )
