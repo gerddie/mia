@@ -30,9 +30,9 @@ NS_MIA_USE
 using namespace std;
 using namespace ::boost;
 
-struct FixturePointLineDistance {
+struct PointLineDistanceFixture {
 
-	FixturePointLineDistance();
+	PointLineDistanceFixture();
 
 	void check_point(const C2DFVector& point, float result);
 
@@ -40,51 +40,51 @@ struct FixturePointLineDistance {
 	C2DFVector b;
 };
 
-BOOST_FIXTURE_TEST_CASE( test_line_point_distance_on_end_point, FixturePointLineDistance )
+BOOST_FIXTURE_TEST_CASE( test_line_point_distance_on_end_point, PointLineDistanceFixture )
 {
 	check_point(a, 0.0f);
 	check_point(b, 0.0f);
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_line_point_distance_on_line, FixturePointLineDistance )
+BOOST_FIXTURE_TEST_CASE( test_line_point_distance_on_line, PointLineDistanceFixture )
 {
 	check_point(C2DFVector(7, 10), 5.0f);
 	check_point(C2DFVector(-2, -2), 5.0f);
 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_line_point_distance_on_segment, FixturePointLineDistance )
+BOOST_FIXTURE_TEST_CASE( test_line_point_distance_on_segment, PointLineDistanceFixture )
 {
 	check_point(C2DFVector(2.5, 4), 0.0f);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_line_point_distance_behind_a, FixturePointLineDistance )
+BOOST_FIXTURE_TEST_CASE( test_line_point_distance_behind_a, PointLineDistanceFixture )
 {
 	check_point(C2DFVector(1, 0), 2);
 	check_point(C2DFVector(1, 1), 1);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_line_point_distance_behind_b, FixturePointLineDistance )
+BOOST_FIXTURE_TEST_CASE( test_line_point_distance_behind_b, PointLineDistanceFixture )
 {
 	check_point(C2DFVector(4, 7), 1);
 	check_point(C2DFVector(5, 6), 1);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_line_point_distance_normal, FixturePointLineDistance )
+BOOST_FIXTURE_TEST_CASE( test_line_point_distance_normal, PointLineDistanceFixture )
 {
 	check_point(C2DFVector(1, 6), 2.4 );
 }
 
 
 
-FixturePointLineDistance::FixturePointLineDistance():
+PointLineDistanceFixture::PointLineDistanceFixture():
 	a(1,2),
 	b(4,6)
 {
 }
 
-void FixturePointLineDistance::check_point(const C2DFVector& point, float result)
+void PointLineDistanceFixture::check_point(const C2DFVector& point, float result)
 {
 	BOOST_CHECK_CLOSE(distance_point_line(point, a, b) + 1.0f, result + 1.0f, 0.1f);
 }

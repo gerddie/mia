@@ -158,7 +158,31 @@ float TransformSplineFixtureInvSqField::fy(float /*x*/, float y)
 	return 1.0 / (y*y + 1); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_get_index_symetry, TransformSplineFixtureInvSqField )
+
+struct TransformSplineFixtureexpm2Field: public TransformSplineFixtureFieldBase {
+	TransformSplineFixtureexpm2Field(){}
+	virtual float fx(float x, float y);
+	virtual float fy(float x, float y);
+}; 
+
+BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3, TransformSplineFixtureexpm2Field )
+{
+	init(); 
+	C2DDivCurlMatrix divcurl(size, ipf->get_kernel());
+	BOOST_CHECK_CLOSE(15.4381384257642, divcurl.multiply(field), 1.0);
+}
+
+float TransformSplineFixtureexpm2Field::fx(float x, float /*y*/)
+{
+	return exp(-x*x); 
+}
+
+float TransformSplineFixtureexpm2Field::fy(float /*x*/, float y)
+{
+	return exp(-y*y); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_get_index_symetry, TransformSplineFixtureConstDivergence )
 {
 	C2DDivCurlMatrix divcurl(size, ipf->get_kernel());
 	for (size_t k = 0; k < 20; ++k) 
@@ -168,7 +192,7 @@ BOOST_FIXTURE_TEST_CASE( test_get_index_symetry, TransformSplineFixtureInvSqFiel
 		}
 }
 
-BOOST_FIXTURE_TEST_CASE( test_get_index_Lower_boundary_bspline3, TransformSplineFixtureInvSqField )
+BOOST_FIXTURE_TEST_CASE( test_get_index_Lower_boundary_bspline3, TransformSplineFixtureConstDivergence )
 {
 
 	C2DDivCurlMatrix divcurl(size, ipf->get_kernel());	

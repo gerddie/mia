@@ -20,7 +20,7 @@
 
 #include <mia/2d/2dimageio.hh>
 
-NS_BEGIN(dicom_2dimageio)
+NS_BEGIN(IMAGEIO_2D_DICOM)
 
 class CDicom2DImageIOPlugin: public mia::C2DImageIOPlugin {
 public: 

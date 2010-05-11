@@ -27,7 +27,7 @@
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 
-NS_BEGIN(dicom_2dimageio)
+NS_BEGIN(IMAGEIO_2D_DICOM)
 
 NS_MIA_USE;
 

@@ -33,7 +33,7 @@
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 
-NS_BEGIN(dicom_3dimageio)
+NS_BEGIN(IMAGEIO_3D_DICOM)
 
 NS_MIA_USE;
 

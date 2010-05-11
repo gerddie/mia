@@ -24,7 +24,7 @@
 
 using namespace std; 
 NS_MIA_USE; 
-using namespace dicom_3dimageio; 
+using namespace IMAGEIO_3D_DICOM; 
 
 struct DicomLoaderFixture {
 	

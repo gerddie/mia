@@ -36,8 +36,8 @@ const size_t nx = 2;
 const size_t ny = 5;
 const C2DBounds size(nx, ny);
 
-struct FixtureICASeries {
-	FixtureICASeries();
+struct ICASeriesFixture {
+	ICASeriesFixture();
 
 protected:
 	vector<C2DFImage> image_set;
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE ( test_empty_initialization )
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean, ICASeriesFixture )
 {
 	C2DImageSeriesICA ica(image_set, false);
 
@@ -68,7 +68,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean, FixtureICASeries )
 	}
 }
 
-BOOST_FIXTURE_TEST_CASE( test_ica_imcomplete_mix, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_imcomplete_mix, ICASeriesFixture )
 {
 	C2DImageSeriesICA ica(image_set, false);
 	C2DImageSeriesICA::IndexSet skip;
@@ -90,7 +90,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_imcomplete_mix, FixtureICASeries )
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_ica_with_stripped_series_mean, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_with_stripped_series_mean, ICASeriesFixture )
 {
 	C2DImageSeriesICA ica(image_set, true);
 
@@ -107,7 +107,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_stripped_series_mean, FixtureICASeries )
 	}
 }
 
-BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp, ICASeriesFixture )
 {
 	C2DImageSeriesICA ica(image_set, true);
 
@@ -124,7 +124,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp, FixtureICASeries )
 	}
 }
 
-BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_stripped_and_normalized, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_stripped_and_normalized, ICASeriesFixture )
 {
 	C2DImageSeriesICA ica(image_set, true);
 
@@ -143,7 +143,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_stripped_and_normalized, 
 	}
 }
 
-BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized, ICASeriesFixture )
 {
 	C2DImageSeriesICA ica(image_set, false);
 
@@ -162,7 +162,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized, FixtureICASer
 	}
 }
 
-BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized2, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized2, ICASeriesFixture )
 {
 	C2DImageSeriesICA ica(image_set, false);
 
@@ -181,7 +181,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized2, FixtureICASe
 	}
 }
 
-BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_mix_normalized, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_mix_normalized, ICASeriesFixture )
 {
 	C2DImageSeriesICA ica(image_set, false);
 
@@ -198,7 +198,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_mix_normalized, FixtureIC
 	}
 }
 
-BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_none, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_none, ICASeriesFixture )
 {
 	C2DImageSeriesICA ica(image_set, false);
 
@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_CASE( test_ica_mean_substract )
 
 
 
-FixtureICASeries::FixtureICASeries():
+ICASeriesFixture::ICASeriesFixture():
 	mean(slices)
 {
 	float data_rows[slices][nx * ny] = {

@@ -30,8 +30,8 @@ using namespace ::boost::unit_test;
 using namespace downscale_2dimage_filter;
 namespace bfs=::boost::filesystem;
 
-struct Fixture {
-	Fixture() {
+struct C2DDownscaleFixture {
+	C2DDownscaleFixture() {
 		list< bfs::path> kernelsearchpath;
 		kernelsearchpath.push_back(bfs::path("..")/bfs::path("..")/
 					   bfs::path("core")/bfs::path("spacialkernel"));
@@ -44,7 +44,7 @@ struct Fixture {
 };
 
 
-BOOST_FIXTURE_TEST_CASE( test_downscale, Fixture )
+BOOST_FIXTURE_TEST_CASE( test_downscale, C2DDownscaleFixture )
 {
 	const short init[16] = {
 		0, 0, 1, 1, /**/ 0, 0, 1, 1, /**/ 2, 2, 3, 3, /**/ 2, 2, 3, 3,

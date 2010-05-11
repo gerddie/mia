@@ -40,7 +40,7 @@
 #include <mia/3d/io/analyze.hh>
 
 
-NS_BEGIN(analyze_3d_io)
+NS_BEGIN(IMAGEIO_3D_ANALYZE)
 
 NS_MIA_USE
 using namespace std; 

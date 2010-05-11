@@ -33,7 +33,7 @@
 #include <mia/2d/2dimageio.hh>
 
 
-NS_BEGIN(EXRIO)
+NS_BEGIN(IMAGEIO_2D_EXR)
 
 NS_MIA_USE;
 
@@ -134,13 +134,14 @@ private:
 };
 
 template <typename T>
-struct pixel_trait {
+struct pixel_trait_exr
+{
 	enum {pixel_size = 0 };
 	enum { supported = 0 };
 };
 
 template <>
-struct pixel_trait<float> {
+struct pixel_trait_exr<float> {
 	enum {pixel_size = 4 };
 	enum { supported = 1 };
 	static PixelType pt() {
@@ -149,7 +150,7 @@ struct pixel_trait<float> {
 };
 
 template <> 
-struct pixel_trait<unsigned int> {
+struct pixel_trait_exr<unsigned int> {
 	static PixelType pt() {
 		return Imf::UINT; 
 	}
@@ -158,7 +159,7 @@ struct pixel_trait<unsigned int> {
 };
 
 template <typename T, int supported>
-struct image_writer {
+struct image_writer_exr {
 	static bool apply (const T2DImage<T>& /*image*/, const string& /*fname*/) {
 		stringstream msg; 
 		msg << "Pixel type '" << CPixelTypeDict.get_name((EPixelType)pixel_type<T>::value) << "' not supported by 'exr' file format"; 
@@ -168,24 +169,24 @@ struct image_writer {
 };
 
 template <typename T>
-struct image_writer<T, 1>  {
+struct image_writer_exr<T, 1>  {
 	static bool apply (const T2DImage<T>& image, const string& fname) {
 		cvdebug() << "image_writer<T, 1>::apply image size ("<< 
 			image.get_size().x << ", " << image.get_size().y<<")\n"; 
 		
 		try {
 			Header header (image.get_size().x, image.get_size().y);
-			header.channels().insert ("Y", Channel (pixel_trait<T>::pt()));
+			header.channels().insert ("Y", Channel (pixel_trait_exr<T>::pt()));
 			
 			OutputFile file (fname.c_str(), header);
 			
 			FrameBuffer frameBuffer;
 			
 			frameBuffer.insert ("Y",                    // name
-					    Slice (pixel_trait<T>::pt(),               // type
+					    Slice (pixel_trait_exr<T>::pt(),               // type
 						   (char *) &image(0,0), // base
-						   pixel_trait<T>::pixel_size,           // xStride
-						   pixel_trait<T>::pixel_size * image.get_size().x));     // yStride
+						   pixel_trait_exr<T>::pixel_size,           // xStride
+						   pixel_trait_exr<T>::pixel_size * image.get_size().x));     // yStride
 			
 			file.setFrameBuffer (frameBuffer);
 			file.writePixels (image.get_size().y);
@@ -202,7 +203,7 @@ template <typename T>
 CImageSaver::result_type
 CImageSaver::operator()(const T2DImage<T>& image) const
 {
-	return image_writer<T, pixel_trait<T>::supported>::apply(image,_M_fname);
+	return image_writer_exr<T, pixel_trait_exr<T>::supported>::apply(image,_M_fname);
 }
 
 

@@ -17,12 +17,12 @@
  *
  */
 
-/*! \brief median 2D image filter using a squared support region 
+/*! \brief Filter for filtering in the dual space of the DCT
 
-A median filter 
+A filter that converts using the discrete cosine transform DCT applies a kernel and then 
+applies the inverse DCT
 
-\file median_2dimage_filter.cc
-\author Gert Wollny <gert.wollny at acm.org>
+\author Gert Wollny <gw.fossdev at gmail.com>
 
 */
 
@@ -37,7 +37,7 @@ NS_BEGIN(cst_2dimage_filter)
 
 class C2DCst : public mia::C2DFilter {
 public:
-	C2DCst(const mia::PCST2DImageKernel&  kernel); 
+        C2DCst(const mia::PCST2DImageKernel&  kernel); 
 
 	template <class T>
 	typename mia::C2DFilter::result_type operator () (const mia::T2DImage<T>& data) const ;

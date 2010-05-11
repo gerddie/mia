@@ -49,7 +49,7 @@
 #define snprintf _snprintf
 #endif
 
-NS_BEGIN(TIFFIO)
+NS_BEGIN(IMAGEIO_2D_TIFF)
 NS_MIA_USE
 using namespace std;
 using namespace boost;

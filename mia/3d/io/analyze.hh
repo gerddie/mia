@@ -26,7 +26,7 @@
 
 #include <mia/3d/3dimageio.hh>
 
-NS_BEGIN(analyze_3d_io)
+NS_BEGIN(IMAGEIO_3D_ANALYZE)
 
 struct analyze_image_dimension; 
 struct analyze_dsr; 

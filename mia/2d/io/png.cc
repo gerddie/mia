@@ -32,7 +32,7 @@
 
 
 
-NS_BEGIN(PNGIO)
+NS_BEGIN(IMAGEIO_2D_PNG)
 
 
 using namespace mia;

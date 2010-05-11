@@ -27,8 +27,8 @@ using namespace mia;
 
 using namespace ssd_2dimage_fatcost; 
 
-struct Fixture {
-	Fixture() {
+struct C2DSSDFixture {
+	C2DSSDFixture() {
 		cvdebug() << "Init fixture\n"; 
 		list< bfs::path> plugpath; 
 		plugpath.push_back(bfs::path("./"));
@@ -36,7 +36,7 @@ struct Fixture {
 	}
 }; 
 
-BOOST_FIXTURE_TEST_CASE( test_SSD2D_self, Fixture )
+BOOST_FIXTURE_TEST_CASE( test_SSD2D_self, C2DSSDFixture )
 {
 	const C2DBounds size(10,20); 
 	C2DUBImage *img = new C2DUBImage(size); 
@@ -64,7 +64,7 @@ BOOST_FIXTURE_TEST_CASE( test_SSD2D_self, Fixture )
 	}
 }
 
-BOOST_FIXTURE_TEST_CASE( test_SSD2D_simple, Fixture )
+BOOST_FIXTURE_TEST_CASE( test_SSD2D_simple, C2DSSDFixture )
 {
 	const C2DBounds size(10,20); 
 	C2DUBImage *psrc = new C2DUBImage(size); 

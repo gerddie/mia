@@ -20,7 +20,7 @@
 
 #include <mia/3d/3dimageio.hh>
 
-NS_BEGIN(dicom_3dimageio)
+NS_BEGIN(IMAGEIO_3D_DICOM)
 
 class CDicom3DImageIOPlugin: public mia::C3DImageIOPlugin {
 public: 

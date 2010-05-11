@@ -36,8 +36,8 @@ const size_t ny = 5;
 const size_t nz = 1;
 const C3DBounds size(nx, ny, nz);
 
-struct FixtureICASeries {
-	FixtureICASeries();
+struct ICA3DSeriesFixture {
+	ICA3DSeriesFixture();
 
 	
 	void check(const C3DFImage& mixed, const C3DFImage& expect); 
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE ( test_empty_initialization )
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean, ICA3DSeriesFixture )
 {
 	C3DImageSeriesICA ica(image_set, false);
 
@@ -64,7 +64,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean, FixtureICASeries )
 		check(ica.get_mix(i), image_set[i]); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_ica_imcomplete_mix, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_imcomplete_mix, ICA3DSeriesFixture )
 {
 	C3DImageSeriesICA ica(image_set, false);
 	C3DImageSeriesICA::IndexSet skip;
@@ -83,7 +83,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_imcomplete_mix, FixtureICASeries )
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_ica_with_stripped_series_mean, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_with_stripped_series_mean, ICA3DSeriesFixture )
 {
 	C3DImageSeriesICA ica(image_set, true);
 
@@ -93,7 +93,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_stripped_series_mean, FixtureICASeries )
 		check(ica.get_mix(i), image_set[i]); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp, ICA3DSeriesFixture )
 {
 	C3DImageSeriesICA ica(image_set, true);
 
@@ -103,7 +103,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp, FixtureICASeries )
 		check(ica.get_mix(i), image_set[i]); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_stripped_and_normalized, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_stripped_and_normalized, ICA3DSeriesFixture )
 {
 	C3DImageSeriesICA ica(image_set, true);
 
@@ -115,7 +115,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_stripped_and_normalized, 
 		check(ica.get_mix(i), image_set[i]); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized, ICA3DSeriesFixture )
 {
 	C3DImageSeriesICA ica(image_set, false);
 
@@ -127,7 +127,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized, FixtureICASer
 		check(ica.get_mix(i), image_set[i]);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized2, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized2, ICA3DSeriesFixture )
 {
 	C3DImageSeriesICA ica(image_set, false);
 
@@ -139,7 +139,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized2, FixtureICASe
 		check(ica.get_mix(i), image_set[i]);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_mix_normalized, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_mix_normalized, ICA3DSeriesFixture )
 {
 	C3DImageSeriesICA ica(image_set, false);
 
@@ -149,7 +149,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_mix_normalized, FixtureIC
 		check(ica.get_mix(i), image_set[i]); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_none, FixtureICASeries )
+BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_none, ICA3DSeriesFixture )
 {
 	C3DImageSeriesICA ica(image_set, false);
 
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE( test_ica_mean_substract )
 
 
 
-FixtureICASeries::FixtureICASeries():
+ICA3DSeriesFixture::ICA3DSeriesFixture():
 	mean(slices)
 {
 	float data_rows[slices][nx * ny] = {
@@ -205,7 +205,7 @@ FixtureICASeries::FixtureICASeries():
 		image_set.push_back(C3DFImage(size, data_rows[i]));
 }
 
-void FixtureICASeries::check(const C3DFImage& mixed, const C3DFImage& expect)
+void ICA3DSeriesFixture::check(const C3DFImage& mixed, const C3DFImage& expect)
 {
 	BOOST_CHECK_EQUAL(mixed.get_size(), expect.get_size());
 	BOOST_REQUIRE(mixed.get_size() == expect.get_size());
@@ -216,7 +216,7 @@ void FixtureICASeries::check(const C3DFImage& mixed, const C3DFImage& expect)
 				BOOST_CHECK_CLOSE(mixed(x,y,z), expect(x,y,z), 0.001);
 }
 
-void FixtureICASeries::check(const C3DFImage& mixed, float expect)
+void ICA3DSeriesFixture::check(const C3DFImage& mixed, float expect)
 {
 	for (size_t z = 0; z < nz; ++z)
 		for (size_t y = 0; y < ny; ++y)

@@ -50,8 +50,8 @@ BOOST_AUTO_TEST_CASE( test_psi_pm2 )
 }
 
 
-struct FixtureC2DAnisoDiffN4: public C2DAnisoDiff {
-	FixtureC2DAnisoDiffN4(): C2DAnisoDiff(1, 0.1, -1, psi_test, 4) {
+struct C2DAnisoDiffN4Fixture: public C2DAnisoDiff {
+	C2DAnisoDiffN4Fixture(): C2DAnisoDiff(1, 0.1, -1, psi_test, 4) {
 		const C2DBounds size(5,4);
 		const float init_data[20] = {
 			1, 2,  3, 5, 2,    // 1 1 2 3   // 2 2 7 3 1
@@ -66,7 +66,7 @@ struct FixtureC2DAnisoDiffN4: public C2DAnisoDiff {
 };
 
 
-BOOST_FIXTURE_TEST_CASE(test_C2DAnisoDiffN4, FixtureC2DAnisoDiffN4)
+BOOST_FIXTURE_TEST_CASE(test_C2DAnisoDiffN4, C2DAnisoDiffN4Fixture)
 {
 	BOOST_CHECK_CLOSE(estimate_MAD(src_image), 1.0f, 0.001);
 
@@ -77,7 +77,7 @@ BOOST_FIXTURE_TEST_CASE(test_C2DAnisoDiffN4, FixtureC2DAnisoDiffN4)
 	BOOST_CHECK_CLOSE(_M_gamma, 0.25f, 0.1);
 }
 
-BOOST_FIXTURE_TEST_CASE(test_C2DAnisoDiffN4_oneStep, FixtureC2DAnisoDiffN4)
+BOOST_FIXTURE_TEST_CASE(test_C2DAnisoDiffN4_oneStep, C2DAnisoDiffN4Fixture)
 {
 	const float test_data[20] = {
 		1, 2,  3, 5, 2,    // 1 1 2 3   // 2 2 7 3 1

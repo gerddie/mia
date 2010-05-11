@@ -31,7 +31,7 @@
 using namespace std;
 using namespace mia;
 
-struct FixtureClassifier {
+struct SlopeClassifierFixture {
 	typedef struct {
 		int periodic_idx;
 		int RV_idx;
@@ -44,7 +44,7 @@ struct FixtureClassifier {
 	void run(size_t length, size_t components, const float *data, const Result& r, bool mean_removed = false);
 };
 
-void FixtureClassifier::run(size_t length, size_t components, const float *data, const Result& result, bool mean_removed)
+void SlopeClassifierFixture::run(size_t length, size_t components, const float *data, const Result& result, bool mean_removed)
 {
 	CSlopeClassifier::Columns columns( components );
 
@@ -66,7 +66,7 @@ void FixtureClassifier::run(size_t length, size_t components, const float *data,
 	BOOST_CHECK_EQUAL(c.get_RV_peak(), result.RV_peak);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_classifier4, FixtureClassifier )
+BOOST_FIXTURE_TEST_CASE( test_classifier4, SlopeClassifierFixture )
 {
 	const size_t length = 10;
 	const size_t components = 4;
@@ -87,7 +87,7 @@ BOOST_FIXTURE_TEST_CASE( test_classifier4, FixtureClassifier )
 	run(length, components, init_Mix, result);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_classifier3, FixtureClassifier )
+BOOST_FIXTURE_TEST_CASE( test_classifier3, SlopeClassifierFixture )
 {
 	const size_t length = 10;
 	const size_t components = 3;
@@ -221,7 +221,8 @@ BOOST_FIXTURE_TEST_CASE( test_classifier_rd3 , FixtureClassifier )
 }
 #endif 
  
-BOOST_FIXTURE_TEST_CASE( test_classifier_rd5 , FixtureClassifier )
+BOOST_FIXTURE_TEST_CASE( test_classifier_rd5 , SlopeClassifierFixture
+ )
 {
 	const size_t rdlength2 = 58;
 	const size_t rdcomponents = 4;
@@ -302,7 +303,8 @@ BOOST_FIXTURE_TEST_CASE( test_classifier_rd5 , FixtureClassifier )
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_classifier_mean_removed_3_1 , FixtureClassifier )
+BOOST_FIXTURE_TEST_CASE( test_classifier_mean_removed_3_1 , SlopeClassifierFixture
+ )
 {
 	const size_t rdlength2 = 58;
 	const size_t rdcomponents = 3;
@@ -382,7 +384,8 @@ BOOST_FIXTURE_TEST_CASE( test_classifier_mean_removed_3_1 , FixtureClassifier )
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_classifier_mean_removed_4_1 , FixtureClassifier )
+BOOST_FIXTURE_TEST_CASE( test_classifier_mean_removed_4_1 , SlopeClassifierFixture
+ )
 {
 	const size_t rdlength2 = 58;
 	const size_t rdcomponents = 4;
@@ -461,7 +464,8 @@ BOOST_FIXTURE_TEST_CASE( test_classifier_mean_removed_4_1 , FixtureClassifier )
 	run( rdlength2, rdcomponents, init_real_data5,  r, true);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_classifier_mean_removed_4_2 , FixtureClassifier )
+BOOST_FIXTURE_TEST_CASE( test_classifier_mean_removed_4_2 , SlopeClassifierFixture
+ )
 {
 	const size_t rdlength2 = 58;
 	const size_t rdcomponents = 4;
@@ -541,7 +545,8 @@ BOOST_FIXTURE_TEST_CASE( test_classifier_mean_removed_4_2 , FixtureClassifier )
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_classifier_5_1 , FixtureClassifier )
+BOOST_FIXTURE_TEST_CASE( test_classifier_5_1 , SlopeClassifierFixture
+ )
 {
 	const size_t rdlength2 = 58;
 	const size_t rdcomponents = 5;
@@ -620,7 +625,8 @@ BOOST_FIXTURE_TEST_CASE( test_classifier_5_1 , FixtureClassifier )
 	run( rdlength2, rdcomponents, init_real_data5,  r, true);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_classifier_mean_removed_4_3 , FixtureClassifier )
+BOOST_FIXTURE_TEST_CASE( test_classifier_mean_removed_4_3 , SlopeClassifierFixture
+ )
 {
 	const size_t rdlength2 = 58;
 	const size_t rdcomponents = 4;

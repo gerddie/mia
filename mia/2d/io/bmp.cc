@@ -45,7 +45,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/2d/2dimageio.hh>
 
-NS_BEGIN(BMPIO)
+NS_BEGIN(IMAGEIO_2D_BMP)
 
 NS_MIA_USE
 using namespace std;
@@ -64,7 +64,7 @@ class CBMP2DImageIO: public C2DImageIOPlugin {
 public:
 	CBMP2DImageIO();
 
-	friend struct CImageSaver;
+	friend struct C2DBMPImageSaver;
 #pragma pack (1)
 	typedef struct {
 		unsigned char magic[2];
@@ -400,10 +400,10 @@ CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
 	return result;
 }
 
-struct CImageSaver {
+struct C2DBMPImageSaver {
 	typedef bool result_type;
 
-	CImageSaver(CFile& f):
+	C2DBMPImageSaver(CFile& f):
 		_M_f(f)
 	{
 	}
@@ -417,44 +417,46 @@ private:
 };
 
 template <typename Image2D>
-struct pixel_trait {
+struct TBMPIOPixelTrait
+ {
 	enum { pixel_size = 8 * sizeof(typename Image2D::value_type)};
 	enum { supported = 0 };
 };
 
 template <>
-struct pixel_trait<C2DBitImage> {
+struct TBMPIOPixelTrait<C2DBitImage> {
 	enum { pixel_size = 1 };
 	enum { supported = 1 };
 };
 
 template <>
-struct pixel_trait<C2DUIImage> {
+struct TBMPIOPixelTrait<C2DUIImage> {
 	enum { pixel_size = 24 };
 	enum { supported = 1 };
 };
 
 template <>
-struct pixel_trait<C2DUBImage> {
+struct TBMPIOPixelTrait<C2DUBImage> {
 	enum { pixel_size = 8 };
 	enum { supported = 1 };
 };
 
 template <>
-struct pixel_trait<C2DUSImage> {
+struct TBMPIOPixelTrait<C2DUSImage> {
 	enum { pixel_size = 16 };
 	enum { supported = 1 };
 };
 
 template <typename Image2D, int supported>
-struct image_writer {
+struct T2DBMPImageWriter
+{
 	static bool apply (const Image2D& /*image*/, FILE */*f*/) {
 		throw runtime_error("Pixel type not supported by file format");
 	}
 };
 
 template <typename Image2D>
-struct image_writer<Image2D, 1>  {
+struct T2DBMPImageWriter<Image2D, 1>  {
 	static bool apply (const Image2D& image, FILE *f) {
 		cvdebug() << "image_writer<Image2D, 1>::apply image size ("<< image.get_size().x << ", " << image.get_size().y<<")\n";
 
@@ -494,7 +496,7 @@ struct image_writer<Image2D, 1>  {
 };
 
 template <>
-struct image_writer<C2DBitImage, 1> {
+struct T2DBMPImageWriter<C2DBitImage, 1> {
 	enum { pixel_size = 1};
 	static bool apply (const C2DBitImage& image, FILE *f) {
 
@@ -529,7 +531,7 @@ struct image_writer<C2DBitImage, 1> {
 	}
 };
 
-bool CImageSaver::write_header(int bpp, int compression, const C2DBounds& size) const
+bool C2DBMPImageSaver::write_header(int bpp, int compression, const C2DBounds& size) const
 {
 	cvdebug() << "CImageSaver::write_header("<< bpp << ", "<< compression << ", " << "(" << size.x<< ", "<< size.y<< ") )\n";
 	CBMP2DImageIO::BMPHeader header;
@@ -585,13 +587,13 @@ bool CImageSaver::write_header(int bpp, int compression, const C2DBounds& size) 
 }
 
 template <typename Image2D>
-CImageSaver::result_type
-CImageSaver::operator()(const Image2D& image) const
+C2DBMPImageSaver::result_type
+C2DBMPImageSaver::operator()(const Image2D& image) const
 {
-	if (!write_header(pixel_trait<Image2D>::pixel_size, 0, image.get_size()))
+	if (!write_header(TBMPIOPixelTrait<Image2D>::pixel_size, 0, image.get_size()))
 		return false;
 
-	return image_writer<Image2D, pixel_trait<Image2D>::supported>::apply(image,_M_f);
+	return T2DBMPImageWriter<Image2D, TBMPIOPixelTrait<Image2D>::supported>::apply(image,_M_f);
 }
 
 
@@ -608,7 +610,8 @@ bool CBMP2DImageIO::do_save(string const& filename, const C2DImageVector& data) 
 		return false;
 	}
 
-	CImageSaver saver(f);
+	C2DBMPImageSaver
+	saver(f);
 
 	for (C2DImageVector::const_iterator iimg = data.begin(); iimg != data.end(); ++iimg)
 		filter(saver, **iimg);
