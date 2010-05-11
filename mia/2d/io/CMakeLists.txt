@@ -6,6 +6,7 @@ SET(image2dio_path ${PLUGIN_INSTALL_PATH}/io/2dimage)
 SET(vf2dio_path ${PLUGIN_INSTALL_PATH}/io/2dvf)
 
 PLUGIN_PRE("2d" bmp "${MIA2DLIBS}" "${image2dio_path}")
+PLUGIN_PRE("2d" raw "${MIA2DLIBS}" "${image2dio_path}")
 
 IF (WITH_PNG)
   FIND_PACKAGE(PNG)

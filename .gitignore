@@ -29,3 +29,8 @@ GPATH
 GRTAGS
 GSYMS
 GTAGS
+*.kdev4
+*.aux
+build
+*.wxm
+
