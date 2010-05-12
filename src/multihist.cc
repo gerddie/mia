@@ -27,6 +27,15 @@
 #include <mia/core.hh>
 #include <mia/2d.hh>
 
+/*! \brief Evalaute the histogram across multiple 2D images and write it to an output file 
+This Program evaluates the intensity histogram across a series of images. 
+The intensities are clamped to thegiven input range and the values are distributed across 
+a given number of bins. 
+
+
+\autor Gert Wollny <gw.fossdev at gmail.com> 
+*/
+
 NS_MIA_USE;
 using namespace std;
 

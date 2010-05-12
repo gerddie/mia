@@ -30,7 +30,7 @@ NS_MIA_USE
 using namespace std;
 using namespace ::boost;
 using namespace ::boost::unit_test;
-using namespace cst_2dimage_filter;
+using namespace filter_2dimage_cst;
 
 
 class CCST2DDummyKernel: public CCST2DImageKernel {

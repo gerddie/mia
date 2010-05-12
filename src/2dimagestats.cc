@@ -23,12 +23,9 @@
 
 // $Id: 2dimagefilter.cc,v 1.12 2006-07-12 13:44:23 wollny Exp $
 
-/*! \brief mia-2dimagefilter
+/*! \brief mia-2dimagestats Evaluate the histogram across various images. 
 
-\sa mia-2dimagefilter.cc
-
-\file mask.cc
-\author G. Wollny, wollny eva.mpg.de, 2005
+\author Gert Wollny <gw.fossdev at gmail.com> 
 */
 
 #include <sstream>

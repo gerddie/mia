@@ -27,7 +27,7 @@
 #include <mia/2d/filter/cst.hh>
 
 
-NS_BEGIN(cst_2dimage_filter)
+NS_BEGIN(filter_2dimage_cst)
 
 NS_MIA_USE;
 using namespace std; 

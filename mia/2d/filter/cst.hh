@@ -33,7 +33,7 @@ applies the inverse DCT
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/cstkernel.hh>
 
-NS_BEGIN(cst_2dimage_filter)
+NS_BEGIN(filter_2dimage_cst)
 
 class C2DCst : public mia::C2DFilter {
 public:
