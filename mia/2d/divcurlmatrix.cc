@@ -28,9 +28,10 @@ NS_MIA_BEGIN
 using namespace std; 
 
 struct C2DDivCurlMatrixImpl {
-	C2DDivCurlMatrixImpl(const C2DBounds& field_size, const CBSplineKernel* kernel); 
+	C2DDivCurlMatrixImpl(const CBSplineKernel* kernel); 
 
 	double multiply(const C2DFVectorfield& coefficients) const; 
+	C2DFVectorfield multiply_for_gradient(const C2DFVectorfield& coefficients) const; 
 	int get_index(int n1, int n2, int size) const; 
 private: 
 
@@ -46,8 +47,8 @@ private:
 
 
 
-C2DDivCurlMatrix::C2DDivCurlMatrix(const C2DBounds& field_size, const CBSplineKernel* kernel):
-	impl(new C2DDivCurlMatrixImpl(field_size, kernel))
+C2DDivCurlMatrix::C2DDivCurlMatrix(const CBSplineKernel* kernel):
+	impl(new C2DDivCurlMatrixImpl(kernel))
 {
 	
 }
@@ -62,12 +63,17 @@ double C2DDivCurlMatrix::multiply(const C2DFVectorfield& coefficients) const
 	return impl->multiply(coefficients); 
 }
 
+C2DFVectorfield C2DDivCurlMatrix::multiply_for_gradient(const C2DFVectorfield& coefficients) const
+{
+	return impl->multiply_for_gradient(coefficients); 
+}
+
 int C2DDivCurlMatrix::get_index(int n1, int n2, int size) const
 {
 	return impl->get_index(n1, n2, size);
 }
 
-C2DDivCurlMatrixImpl::C2DDivCurlMatrixImpl(const C2DBounds& field_size, const CBSplineKernel* kernel)
+C2DDivCurlMatrixImpl::C2DDivCurlMatrixImpl(const CBSplineKernel* kernel)
 {
 	assert(kernel); 
 
@@ -167,6 +173,42 @@ double C2DDivCurlMatrixImpl::multiply(const C2DFVectorfield& coefficients) const
 	}
 	cvinfo() << "sump11=" << sum11 << ", sump12=" << sum12 << ", sump22=" << sum22 << "\n";  
 	return sum; 
+}
+
+C2DFVectorfield C2DDivCurlMatrixImpl::multiply_for_gradient(const C2DFVectorfield& coefficients) const
+{
+
+	C2DFVectorfield result(coefficients.get_size()); 
+	
+	C2DFVectorfield::iterator r   = result.begin();
+	C2DFVectorfield::const_iterator cmn = coefficients.begin();
+	for(size_t n = 0; n < coefficients.get_size().y; ++n) {
+		for(size_t m = 0; m < coefficients.get_size().x; ++m, ++cmn, ++r) {
+			*r = C2DFVector(0,0); 
+			C2DFVectorfield::const_iterator ckl = coefficients.begin();
+			for(size_t l = 0; l < coefficients.get_size().y; ++l)
+				for(size_t k = 0; k < coefficients.get_size().x; ++k, ++ckl) {
+
+					int km = get_index(k, m, coefficients.get_size().x);
+					int ln = get_index(l, n, coefficients.get_size().y);
+					if (km < 0 || ln < 0 ) 
+						continue; 
+					const double r1111 = r11x[km] * r11y[ln]; 
+					
+					const double q11 =      r20x[km] * r20y[ln] + r1111;
+					const double q12 = 2 * (r20x[km] * r11y[ln] + r11x[km] * r02y[ln]);
+					const double q22 =      r02x[km] * r02y[ln] + r1111;
+
+					r->x += (n == l && m == k) ? 2 * ckl->x * q11 : ckl->x * q11; 
+					r->x += ckl->y * q12;
+					
+					r->y += ckl->x * q12;
+					r->y += (n == l && m == k) ? 2 * ckl->y * q11 : ckl->y * q22; 
+				}
+		}
+
+	}
+	return result; 
 }
 
 NS_MIA_END

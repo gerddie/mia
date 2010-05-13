@@ -33,4 +33,13 @@ GTAGS
 *.aux
 build
 *.wxm
+userguide.bbl
+*.blg
+*.log
+*.pdf
+*.toc
+libdoc
 
+bspline4.oct
+testbspline4.oct
+testoct.oct
