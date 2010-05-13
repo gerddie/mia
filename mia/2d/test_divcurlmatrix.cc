@@ -41,8 +41,8 @@ struct TransformSplineFixtureFieldBase {
 		C2DFVectorfield::iterator i = field.begin();
 		for (int y = 0; y < (int)size.y; ++y)
 			for (int x = 0; x < (int)size.x; ++x, ++i) {
-				float sx = (x - dsize2)/dsize2;
-				float sy = (y - dsize2)/dsize2;
+				float sx = (x - dsize2);
+				float sy = (y - dsize2);
 				*i = C2DFVector( fx(sx, sy), fy(sx, sy)); 
 			}
 
@@ -145,17 +145,17 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_InvSq_bspline3, TransformSplineFixtureI
 {
 	init(); 
 	C2DDivCurlMatrix divcurl(ipf->get_kernel());
-	BOOST_CHECK_CLOSE((15.0 * M_PI + 56.0)/ 10.0, divcurl.multiply(field), 1.0);
+	BOOST_CHECK_CLOSE(14.44161007839438, divcurl.multiply(field), 1.0);
 }
 
-float TransformSplineFixtureInvSqField::fx(float x, float /*y*/)
+float TransformSplineFixtureInvSqField::fx(float x, float y)
 {
-	return 1.0 / (x*x + 1); 
+	return 1.0 / (x*x + y * y + 1); 
 }
 
-float TransformSplineFixtureInvSqField::fy(float /*x*/, float y)
+float TransformSplineFixtureInvSqField::fy(float x, float y)
 {
-	return 1.0 / (y*y + 1); 
+	return 1.0 / (2 * x * x + 2 * y*y + 1); 
 }
 
 
