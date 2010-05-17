@@ -96,7 +96,8 @@ void save_feature_image(const string& base, const string& descr, int id, size_t 
 {
 	stringstream fname; 
 	if (id >= 0) {
-		fname << base << "-" << descr << "-" << max_comp << ".exr"; 
+		fname << base << "-" << descr << "-" << max_comp << ".exr";
+		cvinfo() << "save id=" << id << " as feature '" << descr << "'\n"; 
 		if (!save_image2d(fname.str(), ica.get_feature_image(id))) 
 			THROW(runtime_error, "unable to save " << fname.str() << "\n"); 
 	}else{
@@ -480,7 +481,8 @@ int do_main( int argc, const char *argv[] )
 		}
 		if ( cls.get_baseline_idx() >= 0) {
 			save_feature_image(feature_image_base, "baseline", cls.get_baseline_idx(), components, *ica);
-		}else if (strip_mean) 
+		}
+		if (strip_mean) 
 			save_feature_image(feature_image_base, "mean", -1, components, *ica);
 	}
 	if (!coefs_name.empty()) 
