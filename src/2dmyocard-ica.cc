@@ -465,9 +465,11 @@ int do_main( int argc, const char *argv[] )
 			save_feature_image(feature_image_base, "RV-LV", components, 
 					   ica->get_delta_feature(plus, minus) );
 		}
-		if ((strip_mean && components > 4) || (!strip_mean && components > 5)) {
+
+		if (cls.get_perfusion_idx() >= 0) {
 			save_feature_image(feature_image_base, "perfusion", cls.get_perfusion_idx(), 
 					   components, *ica);
+			
 			C2DImageSeriesICA::IndexSet plus; 
 			plus.insert(cls.get_RV_idx()); 
 			C2DImageSeriesICA::IndexSet minus; 
