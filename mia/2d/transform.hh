@@ -57,6 +57,8 @@ public:
 	virtual void set_identity() = 0;
 	virtual C2DFMatrix derivative_at(int x, int y) const = 0;
 	virtual C2DFVectorfield translate(const C2DFVectorfield& gradient) const = 0;
+	virtual std::vector<float> get_parameters() const = 0; 
+	virtual void set_parameters(const std::vector<float>& params) = 0; 
 	virtual float get_max_transform() const = 0;
 	virtual const C2DBounds& get_size() const = 0;
 	virtual float pertuberate(C2DFVectorfield& v) const = 0;

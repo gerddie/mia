@@ -82,6 +82,8 @@ public:
 	virtual C2DFVectorfield translate(const C2DFVectorfield& gradient) const;
 	virtual C2DFMatrix derivative_at(int x, int y) const;
 	virtual float get_max_transform() const;
+	virtual std::vector<float> get_parameters() const; 
+	virtual void set_parameters(const std::vector<float>& params); 
 	virtual void set_identity();
 	virtual float pertuberate(C2DFVectorfield& v) const;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;

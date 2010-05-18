@@ -127,6 +127,19 @@ const C2DBounds& C2DSplineTransformation::get_size() const
 	return _M_range;
 }
 
+vector<float> C2DSplineTransformation::get_parameters() const
+{
+	vector<float> result(_M_coefficients.size() * 2); 
+	memcpy(&result[0], &_M_coefficients(0,0),  result.size() * sizeof(float)); 
+	return result; 
+}
+
+void C2DSplineTransformation::set_parameters(const vector<float>& params)
+{
+	assert(2 * _M_coefficients.size() == params.size()); 
+	memcpy( &_M_coefficients(0,0), &params[0], params.size() * sizeof(float)); 
+}
+
 bool C2DSplineTransformation::save(const std::string& /*filename*/,
 				   const std::string& /*type*/) const
 {

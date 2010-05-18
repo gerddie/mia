@@ -27,13 +27,14 @@
 #include <boost/lambda/lambda.hpp>
 #include <mia/internal/autotest.hh>
 #include <mia/2d/timestep/fluid.hh>
+#include <mia/2d/transformmock.hh>
 
 NS_USE(fluid_timestep_2d);
 NS_MIA_USE;
 
 using namespace boost::lambda;
 
-class C2DDummyTransformation: public C2DTransformation {
+class C2DDummyTransformation: public C2DTransformMock {
 	virtual C2DTransformation *clone() const {
 		return new C2DDummyTransformation();
 	}

@@ -150,6 +150,19 @@ float C2DGridTransformation::get_max_transform() const
 }
 
 
+vector<float> C2DGridTransformation::get_parameters() const
+{
+	vector<float> result(_M_field.size() * 2); 
+	memcpy(&result[0], &_M_field(0,0),  result.size() * sizeof(float)); 
+	return result; 
+}
+
+void C2DGridTransformation::set_parameters(const vector<float>& params)
+{
+	assert(2 * _M_field.size() == params.size()); 
+	memcpy(&_M_field(0,0), &params[0],  params.size() * sizeof(float)); 
+}
+
 C2DGridTransformation::const_iterator& C2DGridTransformation::const_iterator::operator ++()
 {
 	++_M_current;

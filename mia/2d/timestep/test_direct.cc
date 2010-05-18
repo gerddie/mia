@@ -26,13 +26,15 @@
 */
 
 #include <mia/internal/autotest.hh>
-
 #include <mia/2d/timestep/direct.hh>
+#include <mia/2d/transformmock.hh>
 
 NS_USE(direct_timestep_2d);
 NS_MIA_USE;
 
-class C2DDummyTransformation: public C2DTransformation {
+class C2DDummyTransformation: public C2DTransformMock {
+
+	
 	virtual C2DTransformation *clone() const {
 		return new C2DDummyTransformation();
 	}

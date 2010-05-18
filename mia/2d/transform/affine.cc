@@ -120,6 +120,16 @@ void C2DAffineTransformation::scale(float x, float y)
 	_M_t[3] *= y;  	_M_t[4] *= y; 	_M_t[5] *= y;
 }
 
+std::vector<float> C2DAffineTransformation::get_parameters() const
+{
+	return _M_t; 
+}
+
+void C2DAffineTransformation::set_parameters(const std::vector<float>& params)
+{
+	assert(_M_t.size() == params.size()); 
+	copy(params.begin(), params.end(), _M_t.begin()); 
+}
 
 float C2DAffineTransformation::divergence() const
 {

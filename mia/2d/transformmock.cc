@@ -24,6 +24,10 @@
 
 NS_MIA_BEGIN
 
+C2DTransformMock::C2DTransformMock()
+{
+}
+
 C2DTransformMock::C2DTransformMock(const C2DBounds& size):
 	m_size(size)
 {
@@ -81,6 +85,20 @@ const C2DBounds& C2DTransformMock::get_size() const
 {
 	return m_size; 
 }
+
+vector<float> C2DTransformMock::get_parameters() const
+{
+	std::vector<float> result(2); 
+	result[0] = -1.2; 
+	result[1] = -2.3; 
+	return result; 
+}
+
+void C2DTransformMock::set_parameters(const vector<float>& params)
+{
+	
+}
+
 
 float C2DTransformMock::pertuberate(C2DFVectorfield&) const 
 {

@@ -25,7 +25,7 @@
 NS_MIA_BEGIN
 
 struct C2DTransformMock: public C2DTransformation {
-
+	C2DTransformMock(); 
 	C2DTransformMock(const C2DBounds& size); 
 	virtual C2DTransformation *clone() const;
 	virtual bool save(const std::string& filename, const std::string& type) const;
@@ -37,6 +37,8 @@ struct C2DTransformMock: public C2DTransformation {
 	virtual C2DFMatrix derivative_at(int x, int y) const;
 	virtual C2DFVectorfield translate(const C2DFVectorfield& gradient) const;
 	virtual float get_max_transform() const;
+	virtual std::vector<float> get_parameters() const; 
+	virtual void set_parameters(const std::vector<float>& params); 
 	virtual const C2DBounds& get_size() const;
 	virtual float pertuberate(C2DFVectorfield& v) const;
 	virtual C2DFVector apply(const C2DFVector& x) const;
