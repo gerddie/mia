@@ -143,7 +143,7 @@ private:
 
 	CParamList  _M_parameters;
 
-	std::set<std::string> _M_properties;
+	std::set<const char *> _M_properties;
 
 	PPluginModule  _M_module;
 };

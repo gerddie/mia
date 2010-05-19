@@ -149,7 +149,7 @@ bool CPluginBase::has_property(const char *property) const
 
 void CPluginBase::add_property(const char *property)
 {
-	_M_properties.insert(string(property));
+	_M_properties.insert(property);
 }
 
 void CPluginBase::set_module(const PPluginModule& module)

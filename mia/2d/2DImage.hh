@@ -212,7 +212,14 @@ inline bool operator != (const C2DImage& a, const C2DImage& b)
 	return ! (a == b );
 }
 
+
+/**
+   Evaluate the gradient of an image using finite differences 
+   \remark should be changed to use interpolator 
+ */
 EXPORT_2D C2DFVectorfield get_gradient(const C2DImage& image);
+
+
 
 typedef T2DImage<bool> C2DBitImage;
 typedef T2DImage<signed char> C2DSBImage;

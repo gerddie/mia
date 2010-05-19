@@ -36,6 +36,8 @@ class EXPORT_2D C2DRegTimeStep : public CProductBase {
 public:
 	C2DRegTimeStep(float min, float max);
 
+
+
 	virtual ~C2DRegTimeStep();
 
 	float calculate_pertuberation(C2DFVectorfield& io, const C2DTransformation& shift) const;

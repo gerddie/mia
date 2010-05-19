@@ -33,31 +33,25 @@ NS_MIA_BEGIN
    Base class for all optimizers 
 */
 
-template <template <typename, typename>  class C> 
-class TOptimizer {
+extern const char *opt_property_gradient; 
+
+class COptimizer {
 public: 
-	typedef C Cost; 
-	virtual ~TOptimizer(); 
-	typename C::Transform operator () (const typename C::Force& force) const; 
+	enum EOptimizerResults { or_failed=0,
+				 or_residum_low, 
+				 or_gradient_low,
+				 or_step_low, 
+				 or_keep_running }; 
+
+	virtual ~COptimizer(); 
+	EOptimizerResults run(CProblem& problem); 
 private: 
 
 	/**
 	   This one needs to be implemented to obtaine
 	*/
-	virtual typename C::Transform apply(const typename C::Force& force) const = 0;
+	virtual EOptimizerResults do_run(CProblem& problem) const = 0;
 }; 
-
-
-template <template <typename, typename>  class C> 
-TOptimizer<C>::~TOptimizer()
-{
-}
-
-template <template <typename, typename>  class C> 
-typename C::Transform TOptimizer<Cost>::operator () (const typename C::Force& force) const
-{
-	return apply(force); 
-}
 
 NS_MIA_END
 
