@@ -36,6 +36,7 @@
 #include <mia/core/defines.hh>
 #include <mia/core/module.hh>
 #include <mia/core/optparam.hh>
+#include <mia/core/property_flags.hh>
 
 #ifndef EXPORT_HANDLER
 #ifdef WIN32
@@ -143,7 +144,7 @@ private:
 
 	CParamList  _M_parameters;
 
-	std::set<const char *> _M_properties;
+	CPropertyFlagHolder _M_properties;
 
 	PPluginModule  _M_module;
 };

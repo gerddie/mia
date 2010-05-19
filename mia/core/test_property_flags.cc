@@ -1,7 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2009 - 2010
- *
+ * Copyright (c) Madrid 2009 - 2010
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,22 +19,29 @@
  *
  */
 
-#ifndef __mia_core_productbase_hh
-#define __mia_core_productbase_hh
+#include <mia/internal/autotest.hh>
 
-#include <mia/core/module.hh>
+#include <stdexcept>
+#include <cmath>
+#include <iomanip>
+
 #include <mia/core/property_flags.hh>
 
-NS_MIA_BEGIN
 
-class EXPORT_CORE CProductBase: public CPropertyFlagHolder {
-public:
-	~CProductBase();
-	void set_module(PPluginModule module);
-private:
-	PPluginModule _M_module;
-};
-NS_MIA_END
+using namespace std;
+using namespace mia;
 
+BOOST_AUTO_TEST_CASE( test_has_flag )
+{
+	const char *flag1 = "flag1"; 
+	const char *flag2 = "flag2"; 
 
-#endif
+	CPropertyFlagHolder holder; 
+	
+	holder.add(flag1); 
+	BOOST_CHECK(holder.has(flag1)); 
+	BOOST_CHECK(!holder.has(flag2)); 
+	holder.add(flag2); 
+	BOOST_CHECK(holder.has(flag2)); 
+}
+

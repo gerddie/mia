@@ -25,7 +25,8 @@
 #ifndef mia_core_optimizer_hh
 #define mia_core_optimizer_hh
 
-#include <mia/core/defines.hh>
+#include <mia/core/problem.hh>
+#include <mia/core/plugin_base.hh>
 
 NS_MIA_BEGIN
 
@@ -33,9 +34,7 @@ NS_MIA_BEGIN
    Base class for all optimizers 
 */
 
-extern const char *opt_property_gradient; 
-
-class COptimizer {
+class COptimizer : public CPluginBase{
 public: 
 	enum EOptimizerResults { or_failed=0,
 				 or_residum_low, 

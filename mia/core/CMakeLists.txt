@@ -27,6 +27,7 @@ SET(MIACORE_SRC_BASE
   module.cc
   msgstream.cc 
   noisegen.cc 
+  optimizer.cc 
   optionparser.cc 
   optparam.cc 
   parallel.cc 
@@ -34,6 +35,8 @@ SET(MIACORE_SRC_BASE
   pixeltype.cc 
   plugin_base.cc  
   product_base.cc
+  property_flags.cc
+  problem.cc
   probmap.cc
   regmodel.cc
   scale1d.cc
@@ -80,13 +83,16 @@ SET(MIACORE_HEADER_BASE
   module.hh
   msgstream.hh
   noisegen.hh
+  optimizer.hh
   optionparser.hh
   optparam.hh
   parallel.hh
   parameter.cxx parameter.hh
   pixeltype.hh
   plugin_base.cxx plugin_base.hh
+  problem.hh
   probmap.hh
+  property_flags.hh
   product_base.hh
   regmodel.hh
   shape.hh shape.cxx
@@ -237,6 +243,7 @@ NEW_TEST(tools miacore)
 NEW_TEST(kmeans miacore)
 NEW_TEST(interpol miacore)
 NEW_TEST(simpson miacore)
+NEW_TEST(property_flags  miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)

@@ -1,7 +1,8 @@
-/* -*- mia-c++  -*-
+/* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2009 - 2010
- *
+ * Copyright (c) Leipzig, Madrid 2004 - 2009
+ * Max-Planck-Institute for Human Cognitive and Brain Science	
+ * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,23 +20,35 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-#ifndef __mia_core_productbase_hh
-#define __mia_core_productbase_hh
-
-#include <mia/core/module.hh>
+#include <mia/core/errormacro.hh>
+#include <mia/core/optimizer.hh>
 #include <mia/core/property_flags.hh>
 
 NS_MIA_BEGIN
 
-class EXPORT_CORE CProductBase: public CPropertyFlagHolder {
-public:
-	~CProductBase();
-	void set_module(PPluginModule module);
-private:
-	PPluginModule _M_module;
-};
+using namespace std; 
+
+COptimizer::~COptimizer()
+{
+}
+
+COptimizer::EOptimizerResults COptimizer::run(CProblem& problem)
+{
+	EOptimizerResults result = or_failed;
+	
+	if (has_property(property_gradient) &&
+	    !problem.has_property(property_gradient)) {
+		THROW(invalid_argument, "Optimizer '" << get_name() 
+		      <<  "' requires a gradient, but the problem formulation '"
+		      << problem.get_name() << "' doesn't provide one"); 
+	}
+	
+	problem.setup(); 
+	result = do_run(problem); 
+	problem.finalize(); 
+	
+	return result; 
+}
+
+
 NS_MIA_END
-
-
-#endif

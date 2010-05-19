@@ -1,7 +1,6 @@
-/* -*- mia-c++  -*-
+/* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2009 - 2010
- *
+ * Copyright (c) Leipzig, Madrid 2010
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,22 +19,25 @@
  *
  */
 
-#ifndef __mia_core_productbase_hh
-#define __mia_core_productbase_hh
 
-#include <mia/core/module.hh>
-#include <mia/core/property_flags.hh>
+#ifndef mia_core_property_flags_hh
+#define mia_core_property_flags_hh
+
+#include <set>
+#include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
 
-class EXPORT_CORE CProductBase: public CPropertyFlagHolder {
-public:
-	~CProductBase();
-	void set_module(PPluginModule module);
-private:
-	PPluginModule _M_module;
-};
+extern const char *property_gradient; 
+
+class CPropertyFlagHolder {
+public: 
+	bool has(const char *property) const;
+	void add(const char *property);
+private: 
+	std::set<const char *> _M_properties;
+}; 
+
+
 NS_MIA_END
-
-
 #endif

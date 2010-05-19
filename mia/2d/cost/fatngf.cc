@@ -23,6 +23,7 @@
 
 
 #include <mia/2d/cost/fatngf.hh>
+#include <mia/core/property_flags.hh>
 
 using namespace std; 
 using namespace boost; 
@@ -164,6 +165,7 @@ CFatNFG2DImageCost::CFatNFG2DImageCost(P2DImage src, P2DImage ref, P2DInterpolat
 	FGetMinMax fgmm;
 	_M_intensity_scale = mia::filter(fgmm, *src) * mia::filter(fgmm, *ref); 
 	cvdebug() << "_M_intensity_scale = " << _M_intensity_scale << "\n"; 
+	add(property_gradient); 
 }
 
 P2DImageFatCost CFatNFG2DImageCost::cloned(P2DImage src, P2DImage ref) const

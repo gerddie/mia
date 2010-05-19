@@ -30,6 +30,7 @@ A generic SSD implementation for plugins
 
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/property_flags.hh>
 
 #include <numeric>
 #include <limits>
@@ -146,6 +147,7 @@ TSSDCostPlugin<CP,C>::TSSDCostPlugin():
 	CP("ssd")
 {
 	TRACE("TSSDCostPlugin<CP,C>::TSSDCostPlugin()"); 
+	this->add_property(::mia::property_gradient); 
 }
 
 /**

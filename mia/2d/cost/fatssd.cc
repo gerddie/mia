@@ -18,6 +18,7 @@
  */
 
 #include <mia/2d/cost/fatssd.hh>
+#include <mia/core/property_flags.hh>
 
 using namespace std; 
 using namespace boost; 
@@ -32,6 +33,7 @@ CFatSSD2DImageCost::CFatSSD2DImageCost(P2DImage src, P2DImage ref, P2DInterpolat
 C2DImageFatCost(src,  ref,  ipf, weight), 
 	_M_evaluator(C2DImageCostPluginHandler::instance().produce("ssd")) 
 {
+	add(property_gradient); 
 }
 
 P2DImageFatCost CFatSSD2DImageCost::cloned(P2DImage src, P2DImage ref) const

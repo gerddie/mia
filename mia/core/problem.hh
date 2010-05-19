@@ -1,8 +1,6 @@
-/* -*- mia-c++  -*-
+/* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2009 - 2010
- *
- * BIT, ETSI Telecomunicacion, UPM
+ * Copyright (c) Madrid 2010 BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,22 +18,27 @@
  *
  */
 
-#ifndef __mia_core_productbase_hh
-#define __mia_core_productbase_hh
 
-#include <mia/core/module.hh>
-#include <mia/core/property_flags.hh>
+#ifndef mia_core_problem_hh
+#define mia_core_problem_hh
+
+#include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
 
-class EXPORT_CORE CProductBase: public CPropertyFlagHolder {
-public:
-	~CProductBase();
-	void set_module(PPluginModule module);
-private:
-	PPluginModule _M_module;
-};
-NS_MIA_END
+class CProblem  {
+public: 
+	void setup(); 
+	void finalize();
+	bool has_property(const char *property) const; 
+	const char *get_name() const; 
+private: 
+	virtual void do_setup() = 0; 
+	virtual void do_finalize() = 0; 
+	virtual bool do_has_property(const char *property) const = 0; 
+	virtual const char *do_get_name() const = 0; 
+}; 
 
+NS_MIA_END
 
 #endif

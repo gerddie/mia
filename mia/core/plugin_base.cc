@@ -144,12 +144,12 @@ CPluginBase *CPluginBase::next_interface()
 
 bool CPluginBase::has_property(const char *property) const
 {
-	return _M_properties.find(property) != _M_properties.end();
+	return _M_properties.has(property);
 }
 
 void CPluginBase::add_property(const char *property)
 {
-	_M_properties.insert(property);
+	_M_properties.add(property);
 }
 
 void CPluginBase::set_module(const PPluginModule& module)
