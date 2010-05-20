@@ -45,3 +45,19 @@ BOOST_AUTO_TEST_CASE( test_has_flag )
 	BOOST_CHECK(holder.has(flag2)); 
 }
 
+
+BOOST_AUTO_TEST_CASE( test_has_all_flag )
+{
+	const char *flag1 = "flag1"; 
+	const char *flag2 = "flag2"; 
+
+	CPropertyFlagHolder holder1; 
+	holder1.add(flag1); 
+	holder1.add(flag2); 
+	
+	CPropertyFlagHolder holder2; 
+	holder2.add(flag1); 
+
+	BOOST_CHECK(holder1.has_all_in(holder2)); 
+	BOOST_CHECK(!holder2.has_all_in(holder1)); 
+}

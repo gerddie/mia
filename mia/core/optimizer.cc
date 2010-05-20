@@ -20,13 +20,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#include <mia/core/errormacro.hh>
+
+#define VSTREAM_DOMAIN "OPTIMIZER"
+
+#ifdef WIN32
+#  define EXPORT_HANDLER __declspec(dllexport)
+#else
+#  define EXPORT_HANDLER
+#endif
+
 #include <mia/core/optimizer.hh>
+
+#include <mia/core/plugin_base.cxx>
+#include <mia/core/handler.cxx>
+
+#include <mia/core/errormacro.hh>
 #include <mia/core/property_flags.hh>
 
 NS_MIA_BEGIN
 
 using namespace std; 
+
+const char *algorithm_type::value = "algorithm";
+const char *COptimizer::type_descr = "optimizer";
 
 COptimizer::~COptimizer()
 {
@@ -36,7 +52,7 @@ COptimizer::EOptimizerResults COptimizer::run(CProblem& problem)
 {
 	EOptimizerResults result = or_failed;
 	
-	if (has_property(property_gradient) &&
+	if (has(property_gradient) &&
 	    !problem.has_property(property_gradient)) {
 		THROW(invalid_argument, "Optimizer '" << get_name() 
 		      <<  "' requires a gradient, but the problem formulation '"
@@ -50,5 +66,16 @@ COptimizer::EOptimizerResults COptimizer::run(CProblem& problem)
 	return result; 
 }
 
+const char *COptimizer::get_name() const
+{
+	return do_get_name(); 
+}
+
+
+template class EXPORT_CORE TPlugin<COptimizer, algorithm_type>;
+template class EXPORT_CORE TFactory<COptimizer, COptimizer, algorithm_type>;
+template class EXPORT_CORE THandlerSingleton<TFactoryPluginHandler<COptimizerPlugin> >;
+template class EXPORT_CORE TFactoryPluginHandler<COptimizerPlugin>;
+template class EXPORT_CORE TPluginHandler<COptimizerPlugin>;
 
 NS_MIA_END

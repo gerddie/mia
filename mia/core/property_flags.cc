@@ -36,5 +36,15 @@ void CPropertyFlagHolder::add(const char *property)
 	_M_properties.insert(property); 
 }
 
+bool CPropertyFlagHolder::has_all_in(const CPropertyFlagHolder& testset) const
+{
+	for(std::set<const char *>::const_iterator ti = testset._M_properties.begin(); 
+	    ti != testset._M_properties.end(); ++ti) {
+		if (!has(*ti))
+			return false; 
+	}
+	return true; 
+}
+
 NS_MIA_END
 

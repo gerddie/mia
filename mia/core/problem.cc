@@ -43,4 +43,14 @@ const char *CProblem::get_name() const
 	return do_get_name(); 
 }
 
+double CProblem::get_criterion(std::vector<float>& gradient) const 
+{
+	return do_get_criterion(gradient); 
+}
+
+void CProblem::update_params(const std::vector<float>& delta)
+{
+	do_update_params(delta); 
+}
+
 NS_MIA_END

@@ -34,6 +34,8 @@ class CPropertyFlagHolder {
 public: 
 	bool has(const char *property) const;
 	void add(const char *property);
+
+	bool has_all_in(const CPropertyFlagHolder& testset)const; 
 private: 
 	std::set<const char *> _M_properties;
 }; 

@@ -22,21 +22,27 @@
 #ifndef mia_core_problem_hh
 #define mia_core_problem_hh
 
+#include <vector>
 #include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
 
-class CProblem  {
+class EXPORT_CORE CProblem  {
 public: 
 	void setup(); 
 	void finalize();
 	bool has_property(const char *property) const; 
 	const char *get_name() const; 
+	double get_criterion(std::vector<float>& gradient) const; 
+	void update_params(const std::vector<float>& delta); 
 private: 
 	virtual void do_setup() = 0; 
 	virtual void do_finalize() = 0; 
 	virtual bool do_has_property(const char *property) const = 0; 
 	virtual const char *do_get_name() const = 0; 
+	virtual double do_get_criterion(std::vector<float>& gradient) const = 0; 
+	virtual void do_update_params(const std::vector<float>& delta) = 0; 
+
 }; 
 
 NS_MIA_END

@@ -26,7 +26,8 @@
 #define mia_core_optimizer_hh
 
 #include <mia/core/problem.hh>
-#include <mia/core/plugin_base.hh>
+#include <mia/core/factory.hh>
+#include <mia/core/handler.hh>
 
 NS_MIA_BEGIN
 
@@ -34,23 +35,41 @@ NS_MIA_BEGIN
    Base class for all optimizers 
 */
 
-class COptimizer : public CPluginBase{
+struct EXPORT_CORE algorithm_type {
+	static const char *value;
+};
+
+
+
+class EXPORT_CORE COptimizer : public CProductBase {
 public: 
+
+	static const char *type_descr;
+	
 	enum EOptimizerResults { or_failed=0,
+				 or_converged, 
 				 or_residum_low, 
 				 or_gradient_low,
 				 or_step_low, 
+				 or_max_iter, 
 				 or_keep_running }; 
 
 	virtual ~COptimizer(); 
 	EOptimizerResults run(CProblem& problem); 
+	const char *get_name() const; 
+	
 private: 
 
 	/**
 	   This one needs to be implemented to obtaine
 	*/
 	virtual EOptimizerResults do_run(CProblem& problem) const = 0;
+	virtual const char *do_get_name() const = 0; 
 }; 
+
+typedef TFactory<COptimizer, COptimizer, algorithm_type> COptimizerPlugin;
+typedef THandlerSingleton<TFactoryPluginHandler<COptimizerPlugin> > COptimizerPluginPluginHandler;
+
 
 NS_MIA_END
 
