@@ -33,9 +33,9 @@ void CProblem::finalize()
 	do_finalize(); 
 }
 
-bool CProblem::has_property(const char *property) const
+bool CProblem::has_all_properties_in(const CPropertyFlagHolder& holder) const
 {
-	return do_has_property(property); 
+	return do_has_all_properties_in(holder); 
 }
 
 const char *CProblem::get_name() const

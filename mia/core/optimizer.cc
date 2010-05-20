@@ -52,11 +52,11 @@ COptimizer::EOptimizerResults COptimizer::run(CProblem& problem)
 {
 	EOptimizerResults result = or_failed;
 	
-	if (has(property_gradient) &&
-	    !problem.has_property(property_gradient)) {
+	if (!problem.has_all_properties_in(*this)) {
+		/// \todo get missing properties and add them to the message
 		THROW(invalid_argument, "Optimizer '" << get_name() 
-		      <<  "' requires a gradient, but the problem formulation '"
-		      << problem.get_name() << "' doesn't provide one"); 
+		      <<  "' requires properties that the problem formulation '"
+		      << problem.get_name() << "' doesn't provide."); 
 	}
 	
 	problem.setup(); 
@@ -70,7 +70,6 @@ const char *COptimizer::get_name() const
 {
 	return do_get_name(); 
 }
-
 
 template class EXPORT_CORE TPlugin<COptimizer, algorithm_type>;
 template class EXPORT_CORE TFactory<COptimizer, COptimizer, algorithm_type>;
