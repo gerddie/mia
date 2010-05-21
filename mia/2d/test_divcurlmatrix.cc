@@ -33,7 +33,7 @@ struct TransformSplineFixtureFieldBase {
 		size(dsize + 1,dsize + 1),
 		field(size),
 		ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
-					       SHARED_PTR(CBSplineKernel) (new CBSplineKernel4())))
+					       SHARED_PTR(CBSplineKernel) (new CBSplineKernel3())))
 	{
 
 	}
@@ -44,6 +44,9 @@ struct TransformSplineFixtureFieldBase {
 				float sx = (x - dsize2) / 2.0;
 				float sy = (y - dsize2) / 2.0;
 				*i = C2DFVector( fx(sx, sy), fy(sx, sy)); 
+				if (x == 16 && y == 16) 
+					cvdebug() << "value@("<<x<< "," << y << "~"<< sx << "," << sy << ")= " << *i << "\n"; 
+
 			}
 
 		SHARED_PTR(T2DInterpolator<C2DFVector> ) source(ipf->create(field));
@@ -68,7 +71,7 @@ struct TransformSplineFixtureConstDivergence: public TransformSplineFixtureField
 }; 
 
 
-
+#if 0
 BOOST_FIXTURE_TEST_CASE( test_divergence_X_x_Y_x_bspline3, TransformSplineFixtureConstDivergence )
 {
 	init(); 
@@ -92,7 +95,7 @@ struct TransformSplineFixtureDivergence2: public TransformSplineFixtureFieldBase
 }; 
 
 
-#if 0
+
 BOOST_FIXTURE_TEST_CASE( test_divergence_xsq_ysq_bspline3, TransformSplineFixtureDivergence2 )
 {
 	init(); 
@@ -179,6 +182,7 @@ struct TransformSplineFixtureexpm2Field: public TransformSplineFixtureFieldBase 
 	float dfy_yy(float x, float y);
 
 	float integrate_divcurl(float x1, float x2, float y1, float y2, int xinterv, int yinterv); 
+	double divcurl_value_at(float x, float y); 
 }; 
 
 BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3, TransformSplineFixtureexpm2Field )
@@ -189,14 +193,17 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3, TransformSplineFixturee
 	const double testvalue = 6.0 * M_PI; 
 
 	C2DDivCurlMatrix divcurl(ipf->get_kernel());
-	float spline = divcurl.multiply(field); 
+	
 	
 	// this test is just to compare the maxima value to a approximate integration 
-	// float manual = integrate_divcurl(-8, 8, -8, 8, 128, 128); 
-	// BOOST_CHECK_CLOSE(manual, testvalue, 0.1); 
+	float manual = integrate_divcurl(-8, 8, -8, 8, 127, 127); 
+	BOOST_CHECK_CLOSE(manual, testvalue, 0.1); 
 	
+
+	BOOST_CHECK_CLOSE(divcurl.value_at(field,16,16), divcurl_value_at(0, 0),0.1); 
 	
-	BOOST_CHECK_CLOSE(spline, testvalue,  1.0);
+	//float spline = divcurl.multiply(field); 
+	//BOOST_CHECK_CLOSE(spline, testvalue,  1.0);
 
 }
 
@@ -241,7 +248,19 @@ float TransformSplineFixtureexpm2Field::dfy_yy(float x, float y)
 	return (4 * y * y  - 2) * fy(x,y); 
 }
 
-float TransformSplineFixtureexpm2Field::integrate_divcurl(float x1, float x2, float y1, float y2, int xinterv, int yinterv)
+double TransformSplineFixtureexpm2Field::divcurl_value_at(float x, float y)
+{
+	double vfx_xx = dfx_xx(x,y); 
+	double vfx_xy = dfx_xy(x,y); 
+	
+	double vfy_xy = dfy_xy(x,y); 
+	double vfy_yy = dfy_yy(x,y); 
+	return  vfx_xx  + vfx_xy  + vfy_xy + vfy_yy; 
+			
+}
+
+float TransformSplineFixtureexpm2Field::integrate_divcurl(float x1, float x2, 
+							  float y1, float y2, int xinterv, int yinterv)
 {
 	float hx = (x2 - x1) / xinterv; 
 	float hy = (y2 - y1) / yinterv; 
@@ -249,13 +268,7 @@ float TransformSplineFixtureexpm2Field::integrate_divcurl(float x1, float x2, fl
 	double sum = 0.0; 
 	for (float y = y1 + hx / 2.0; y < y2; y += hy) 
 		for (float x = x1 + hx / 2.0; x < x2; x += hx) {
-			double vfx_xx = dfx_xx(x,y); 
-			double vfx_xy = dfx_xy(x,y); 
-
-			double vfy_xy = dfy_xy(x,y); 
-			double vfy_yy = dfy_yy(x,y); 
-			double v = vfx_xx  + vfx_xy  + vfy_xy + vfy_yy; 
-
+			double v = divcurl_value_at(x,y); 
 			sum += v * v; 
 		}
 	sum *= hx * hy; 

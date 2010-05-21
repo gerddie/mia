@@ -219,15 +219,15 @@ void CBSplineKernel3::get_derivative_weights(double x, std::vector<double>& weig
 		break; 
 	case 2: {
 		weight[3] = x;
-		weight[0] = 1 - weight[3];
-		weight[2] = weight[0] - 2.0 * weight[3];
-		weight[1] = - weight[0] - weight[2] - weight[3];
+		weight[0] = 1 - x;
+		weight[2] = 1 - 3.0 * x;
+		weight[1] = 3 * x - 2; 
 	}break; 
 	case 3: {
-		weight[3] = 1;
-		weight[0] = - weight[3];
-		weight[2] = weight[0] - 2.0 * weight[3];
-		weight[1] = - weight[0] - weight[2] - weight[3];
+		weight[3] =  1.0;
+		weight[0] = -1.0;
+		weight[2] = -3.0;
+		weight[1] =  3.0;
 	}break; 
 	default: {
 		fill(weight.begin(), weight.end(), 0.0); 
@@ -272,7 +272,7 @@ struct bspline<3, 2> {
 		x=fabs(x) ;
 		if (x>2.0) return 0.0;
 		if (x>1.0) return 2.0-x ;
-		return 3.0*x-2.0 ;
+		return 3.0*x-2.0;
 	}
 };
 
