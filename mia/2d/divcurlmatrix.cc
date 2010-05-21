@@ -153,7 +153,7 @@ double C2DDivCurlMatrixImpl::multiply(const C2DFVectorfield& coefficients) const
 					int ln = get_index(l, n, coefficients.get_size().y);
 					if (km < 0 || ln < 0 ) 
 						continue; 
-					const double r1111 = r11x[km] * r11y[ln]; 
+					const double r1111 = r11x[km] * r11y[ln];
 					
 					const double q11 =      r20x[km] * r20y[ln] + r1111;
 					const double q12 = 2 * (r20x[km] * r11y[ln] + r11x[km] * r02y[ln]);
@@ -166,7 +166,6 @@ double C2DDivCurlMatrixImpl::multiply(const C2DFVectorfield& coefficients) const
 					sum11 += q11; 
 					sum12 += q12; 
 					sum22 += q22; 
-
 				}
 		}
 

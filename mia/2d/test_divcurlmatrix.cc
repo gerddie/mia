@@ -255,15 +255,15 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3, TransformSplineFixturee
 	init(); 
 
 	// evaluated using maxima
-	const double testvalue = 4.0 * M_PI; 
+	const double testvalue = 6.0 * M_PI; 
 
 	C2DDivCurlMatrix divcurl(ipf->get_kernel());
 	float spline = divcurl.multiply(field); 
 	
-	/* this test is just to compare the maxima value to a approximate integration 
+	// this test is just to compare the maxima value to a approximate integration 
 	   float manual = integrate_divcurl(-8, 8, -8, 8, 128, 128); 
 	   BOOST_CHECK_CLOSE(manual, testvalue, 0.1); 
-	*/
+	
 	
 	BOOST_CHECK_CLOSE(spline, testvalue,  1.0);
 
@@ -292,7 +292,7 @@ float TransformSplineFixtureexpm2Field::dfx_xy(float x, float y)
 
 float TransformSplineFixtureexpm2Field::dfx_yy(float x, float y)
 {
-	return (4 * x * x  - 2) * fx(x,y); 
+	return (4 * y * y  - 2) * fx(x,y); 
 }
 
 float TransformSplineFixtureexpm2Field::dfy_xx(float x, float y)
@@ -323,9 +323,10 @@ float TransformSplineFixtureexpm2Field::integrate_divcurl(float x1, float x2, fl
 
 			double vfy_xy = dfy_xy(x,y); 
 			double vfy_yy = dfy_yy(x,y); 
-			
-			sum += vfx_xx * vfx_xx + vfy_yy * vfy_yy + 
-				vfx_xy * vfx_xy  + vfy_xy * vfy_xy; 
+			double v = vfx_xx  + vfx_xy  + vfy_xy + vfy_yy; 
+			double v2 =  4*(y+x-1)*(y+x+1)*exp(-y*y-x*x); 
+			cvinfo()<< x << "," << y << ":" << v << " vs "<< v2 << "\n"; 
+			sum += v * v; 
 		}
 	sum *= hx * hy; 
 	return sum; 
