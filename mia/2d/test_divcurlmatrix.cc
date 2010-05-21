@@ -33,7 +33,7 @@ struct TransformSplineFixtureFieldBase {
 		size(dsize + 1,dsize + 1),
 		field(size),
 		ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
-					       SHARED_PTR(CBSplineKernel) (new CBSplineKernel3())))
+					       SHARED_PTR(CBSplineKernel) (new CBSplineKernel4())))
 	{
 
 	}
@@ -44,7 +44,6 @@ struct TransformSplineFixtureFieldBase {
 				float sx = (x - dsize2) / 2.0;
 				float sy = (y - dsize2) / 2.0;
 				*i = C2DFVector( fx(sx, sy), fy(sx, sy)); 
-				cvdebug() << sx << ", " << sy << " = " << *i << "\n"; 
 			}
 
 		SHARED_PTR(T2DInterpolator<C2DFVector> ) source(ipf->create(field));
@@ -67,74 +66,6 @@ struct TransformSplineFixtureConstDivergence: public TransformSplineFixtureField
 	virtual float fx(float x, float y);
 	virtual float fy(float x, float y);
 }; 
-
-
-BOOST_FIXTURE_TEST_CASE( test_get_index_Lower_boundary_bspline3, TransformSplineFixtureConstDivergence )
-{
-
-	C2DDivCurlMatrix divcurl(ipf->get_kernel());	
-	BOOST_CHECK_EQUAL(divcurl.get_index(0,0,10), 0); 
-	BOOST_CHECK_EQUAL(divcurl.get_index(0,1,10), 1);
-	BOOST_CHECK_EQUAL(divcurl.get_index(0,2,10), 2); 
-	BOOST_CHECK_EQUAL(divcurl.get_index(0,3,10), 3);
-
-	BOOST_CHECK_EQUAL(divcurl.get_index(1,1,10), 8);
-	BOOST_CHECK_EQUAL(divcurl.get_index(1,2,10), 9);
-	BOOST_CHECK_EQUAL(divcurl.get_index(1,3,10), 10);
-	BOOST_CHECK_EQUAL(divcurl.get_index(1,4,10), 11);
-
-
-	BOOST_CHECK_EQUAL(divcurl.get_index(2,2,10), 16);
-	BOOST_CHECK_EQUAL(divcurl.get_index(2,3,10), 17);
-	BOOST_CHECK_EQUAL(divcurl.get_index(2,4,10), 18);
-	BOOST_CHECK_EQUAL(divcurl.get_index(2,5,10), 19);
-
-	BOOST_CHECK_EQUAL(divcurl.get_index(3,3,10), 24);
-	BOOST_CHECK_EQUAL(divcurl.get_index(3,4,10), 25);
-	BOOST_CHECK_EQUAL(divcurl.get_index(3,5,10), 26);
-	BOOST_CHECK_EQUAL(divcurl.get_index(3,6,10), 27);
-	BOOST_CHECK_EQUAL(divcurl.get_index(3,7,10), -1);
-	BOOST_CHECK_EQUAL(divcurl.get_index(3,8,10), -1);
-
-
-
-	BOOST_CHECK_EQUAL(divcurl.get_index(19,19,20), 0); 
-	BOOST_CHECK_EQUAL(divcurl.get_index(19,18,20), 1);
-	BOOST_CHECK_EQUAL(divcurl.get_index(19,17,20), 2); 
-	BOOST_CHECK_EQUAL(divcurl.get_index(19,16,20), 3);
-	BOOST_CHECK_EQUAL(divcurl.get_index(19,15,20), -1);
-
-	BOOST_CHECK_EQUAL(divcurl.get_index(18,18,20), 8);
-	BOOST_CHECK_EQUAL(divcurl.get_index(18,17,20), 9);
-	BOOST_CHECK_EQUAL(divcurl.get_index(18,16,20),10);
-	BOOST_CHECK_EQUAL(divcurl.get_index(18,15,20), 11);
-
-
-	BOOST_CHECK_EQUAL(divcurl.get_index(17,17,20), 16);
-	BOOST_CHECK_EQUAL(divcurl.get_index(17,16,20), 17);
-	BOOST_CHECK_EQUAL(divcurl.get_index(17,15,20), 18);
-	BOOST_CHECK_EQUAL(divcurl.get_index(17,14,20), 19);
-
-	BOOST_CHECK_EQUAL(divcurl.get_index(16,16,20), 24);
-	BOOST_CHECK_EQUAL(divcurl.get_index(16,15,20), 25);
-	BOOST_CHECK_EQUAL(divcurl.get_index(16,14,20), 26);
-	BOOST_CHECK_EQUAL(divcurl.get_index(16,13,20), 27);
-	BOOST_CHECK_EQUAL(divcurl.get_index(16,12,20), -1);
-
-
-	BOOST_CHECK_EQUAL(divcurl.get_index(31,31,32), 0);
-}
-
-
-BOOST_FIXTURE_TEST_CASE( test_get_index_symetry, TransformSplineFixtureConstDivergence )
-{
-	C2DDivCurlMatrix divcurl(ipf->get_kernel());
-	for (size_t k = 0; k < 20; ++k) 
-		for (size_t l = 0; l < 20; ++l) {
-			BOOST_CHECK_EQUAL(divcurl.get_index(k,l,20), 
-					  divcurl.get_index(l,k,20)); 
-		}
-}
 
 
 
@@ -261,8 +192,8 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3, TransformSplineFixturee
 	float spline = divcurl.multiply(field); 
 	
 	// this test is just to compare the maxima value to a approximate integration 
-	   float manual = integrate_divcurl(-8, 8, -8, 8, 128, 128); 
-	   BOOST_CHECK_CLOSE(manual, testvalue, 0.1); 
+	// float manual = integrate_divcurl(-8, 8, -8, 8, 128, 128); 
+	// BOOST_CHECK_CLOSE(manual, testvalue, 0.1); 
 	
 	
 	BOOST_CHECK_CLOSE(spline, testvalue,  1.0);
@@ -324,8 +255,7 @@ float TransformSplineFixtureexpm2Field::integrate_divcurl(float x1, float x2, fl
 			double vfy_xy = dfy_xy(x,y); 
 			double vfy_yy = dfy_yy(x,y); 
 			double v = vfx_xx  + vfx_xy  + vfy_xy + vfy_yy; 
-			double v2 =  4*(y+x-1)*(y+x+1)*exp(-y*y-x*x); 
-			cvinfo()<< x << "," << y << ":" << v << " vs "<< v2 << "\n"; 
+
 			sum += v * v; 
 		}
 	sum *= hx * hy; 

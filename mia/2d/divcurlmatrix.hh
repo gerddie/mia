@@ -34,7 +34,6 @@ public:
 	~C2DDivCurlMatrix(); 
 	double multiply(const C2DFVectorfield& coefficients) const; 
 	C2DFVectorfield multiply_for_gradient(const C2DFVectorfield& coefficients) const; 
-	int get_index(int n1, int n2, int size) const; 
 private: 
 	struct C2DDivCurlMatrixImpl* impl; 
 }; 
