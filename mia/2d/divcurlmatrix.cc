@@ -36,8 +36,12 @@ struct C2DDivCurlMatrixImpl {
 	double value_at(const C2DFVectorfield& coefficients, size_t m, size_t n)const; 
 private: 
 
-	size_t ksize;
+	int ksize;
 	int hsupport_size; 
+	vector<double> b2; 
+	vector<double> b1; 
+	vector<double> b0; 
+
 	vector<double> r20; 
 	vector<double> r11; 
 	vector<double> r02; 
@@ -77,48 +81,54 @@ C2DDivCurlMatrixImpl::C2DDivCurlMatrixImpl(const CBSplineKernel* kernel)
 {
 	assert(kernel); 
 
-	ksize = 2*kernel->size()-1; 
-	hsupport_size = kernel->size() - 1; 
+	ksize = kernel->size(); 
+	hsupport_size = (kernel->size() -1) / 2; 
 	
+	b0.resize(ksize); 
+	b1.resize(ksize); 
+	b2.resize(ksize); 
+
+	kernel->get_derivative_weights(0.0, b0, 0);
+	kernel->get_derivative_weights(0.0, b1, 1);
+	kernel->get_derivative_weights(0.0, b2, 2);
+
+
 	r20.resize(ksize); 
-	r11.resize(ksize); ; 
-	r02.resize(ksize); ; 
+	r11.resize(ksize); 
+	r02.resize(ksize); 
 
-	double nx = 1.0; // field_size.x; 
-	double ny = 1.0; // field_size.y; 
+	for (size_t i = 0; i < ksize; ++i) {
+		r20[i] = integrate2(*kernel, ksize, ksize + i, 2, 0, 1, 0, 3 * ksize); 
+		r11[i] = integrate2(*kernel, ksize, ksize + i, 1, 1, 1, 0, 3 * ksize); 
+		r02[i] = integrate2(*kernel, ksize, ksize + i, 0, 2, 1, 0, 3 * ksize); 
+		cvdebug()<< "R=" << r20[i] << " " 
+			  << r11[i] << " " 
+			  << r02[i] << "\n"; 
+				
 
-	size_t idx = 0; 
-
-	// this part is wrong 
-	for(size_t i = 0; i < ksize; ++i) {
-		r20[i] = integrate2(*kernel, ksize, ksize + i, 2, 0, nx, 0, 2*ksize);
-		r11[i] = integrate2(*kernel, ksize, ksize + i, 1, 1, nx, 0, 2*ksize);
-		r02[i] = integrate2(*kernel, ksize, ksize + i, 0, 2, nx, 0, 2*ksize);
-		cvdebug() << setw(15) << r20[i] 
-			  << setw(15) << r11[i] 
-			  << setw(15) << r02[i] << "\n"; 
 	}
-	
 }
 
 double C2DDivCurlMatrixImpl::value_at(const C2DFVectorfield& coefficients, size_t m, size_t n)const
 {
+	cvdebug() << m << ", " << n << "\n"; 
 	double v = 0.0;
-	for(int l = -hsupport_size; l <= hsupport_size; ++l) {
+	for(int l = -hsupport_size, wl=0; wl < ksize -1; ++l, ++wl) {
 		const size_t nl = l + n; 
 		if (nl >= coefficients.get_size().y) 
 			continue; 
-		for(int k = -hsupport_size; k <= hsupport_size; ++k) {
-			const size_t km = k + m; 
+		for(int k = -hsupport_size, wk=0; wk < ksize-1; ++k,++wk) {
+			const size_t km = k + m;
 			if (km < coefficients.get_size().x) {
 				const C2DFVector& cmn = coefficients(km,nl); 
-				const int hk = abs(k -l);
-				
-				cvdebug() << cmn << km << ", " << nl << ": " << hk << ": " << r20[hk] << ", " 
-					  << r11[hk] << ", " << r02[hk] << "\n"; 
-
-				v +=    cmn.x * (r20[hk] + r11[hk]) + 
-					cmn.y * (r02[hk] + r11[hk]); 
+				v +=  cmn.x * (b2[wk] * b0[wl]  + b1[wk] * b1[wl]); 
+			       	v +=  cmn.y * (b0[wk] * b2[wl]  + b1[wk] * b1[wl]); 
+				cvdebug() << km << ", " << nl << cmn 
+					  << setw(12) << v 
+					  << setw(12) << b2[wk] << " * " << setw(12) << b0[wl] 
+					  << setw(12) << b2[wl] << " * " << setw(12) << b0[wk]
+					  << setw(12) << b1[wk] << " * " << setw(12) << b1[wl] 
+					  << "\n"; 
 			}
 		}
 		

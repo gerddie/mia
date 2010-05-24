@@ -26,23 +26,25 @@
 NS_MIA_USE; 
 
 
-const int dsize = 32; 
-const int dsize2 = dsize/2; 
 struct TransformSplineFixtureFieldBase {
 	TransformSplineFixtureFieldBase():
-		size(dsize + 1,dsize + 1),
-		field(size),
+		
 		ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
 					       SHARED_PTR(CBSplineKernel) (new CBSplineKernel3())))
 	{
 
 	}
-	void init() {
+	void init(int dsize, float range) {
+		size = C2DBounds(dsize + 1,dsize + 1); 
+		int dsize2 = dsize/2; 
+		field = C2DFVectorfield(size); 
+		float scale = range / dsize2; 
+			
 		C2DFVectorfield::iterator i = field.begin();
 		for (int y = 0; y < (int)size.y; ++y)
 			for (int x = 0; x < (int)size.x; ++x, ++i) {
-				float sx = (x - dsize2) / 2.0;
-				float sy = (y - dsize2) / 2.0;
+				float sx = (x - dsize2) * scale;
+				float sy = (y - dsize2) * scale;
 				*i = C2DFVector( fx(sx, sy), fy(sx, sy)); 
 				if (x == 16 && y == 16) 
 					cvdebug() << "value@("<<x<< "," << y << "~"<< sx << "," << sy << ")= " << *i << "\n"; 
@@ -185,9 +187,33 @@ struct TransformSplineFixtureexpm2Field: public TransformSplineFixtureFieldBase 
 	double divcurl_value_at(float x, float y); 
 }; 
 
-BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3, TransformSplineFixtureexpm2Field )
+BOOST_FIXTURE_TEST_CASE( test_divergence__at, TransformSplineFixtureexpm2Field )
 {
-	init(); 
+	init(32,0.1); 
+	double h = 32.0 / 0.2; 
+
+	// evaluated using maxima
+	const double testvalue = 6.0 * M_PI; 
+
+	C2DDivCurlMatrix divcurl(ipf->get_kernel());
+	
+	
+	// this test is just to compare the maxima value to a approximate integration 
+//	float manual = integrate_divcurl(-8, 8, -8, 8, 127, 127); 
+//	BOOST_CHECK_CLOSE(manual, testvalue, 0.1); 
+	
+
+	BOOST_CHECK_CLOSE(h * h * divcurl.value_at(field,16,16), divcurl_value_at(0, 0),0.1); 
+	
+	//float spline = divcurl.multiply(field); 
+	//BOOST_CHECK_CLOSE(spline, testvalue,  1.0);
+
+}
+
+BOOST_FIXTURE_TEST_CASE( test_divergence_expm2, TransformSplineFixtureexpm2Field )
+{
+	init(128,8.0); 
+	double h = 8.0; 
 
 	// evaluated using maxima
 	const double testvalue = 6.0 * M_PI; 
@@ -200,12 +226,16 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3, TransformSplineFixturee
 	BOOST_CHECK_CLOSE(manual, testvalue, 0.1); 
 	
 
-	BOOST_CHECK_CLOSE(divcurl.value_at(field,16,16), divcurl_value_at(0, 0),0.1); 
+	//BOOST_CHECK_CLOSE(h * h * divcurl.value_at(field,16,16), divcurl_value_at(0, 0),0.1); 
 	
-	//float spline = divcurl.multiply(field); 
-	//BOOST_CHECK_CLOSE(spline, testvalue,  1.0);
+	float spline = h * h * divcurl.multiply(field); 
+
+	// the accuracy compared to the analytic solution is very dependend on the 
+	// number of spline nodes 
+	BOOST_CHECK_CLOSE(spline, testvalue,  3.0);
 
 }
+
 
 float TransformSplineFixtureexpm2Field::fx(float x, float y)
 {

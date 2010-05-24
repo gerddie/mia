@@ -76,7 +76,6 @@ double integrate2(const CBSplineKernel& spline, double s1, double s2, int deg1, 
 		end_int = L; 
 	
 	// Simpson formula 
-	
 	if (end_int <= start_int) 
 		return sum; 
 	const size_t intervals = size_t(4 * (end_int - start_int)); 

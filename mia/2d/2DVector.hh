@@ -44,6 +44,7 @@
 #include <cassert>
 #include <stdexcept>
 #include <ostream>
+#include <iomanip>
 #include <boost/lambda/lambda.hpp>
 
 // MIA specific
@@ -149,7 +150,7 @@ public:
 	}
 
 	void print(std::ostream& os) const {
-		os << "<" << x << "," << y << ">"; 
+		os << "<" << std::setw(15)<< x << "," << std::setw(15) << y << ">"; 
 	}
 	
 	void read(std::istream& is) {
