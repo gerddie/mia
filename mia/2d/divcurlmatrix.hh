@@ -35,6 +35,7 @@ public:
 	double multiply(const C2DFVectorfield& coefficients) const; 
 	C2DFVectorfield multiply_for_gradient(const C2DFVectorfield& coefficients) const; 
 	double value_at(const C2DFVectorfield& coefficients, size_t m, size_t n) const; 
+	C2DFVector derivative_at(const C2DFVectorfield& coefficients, size_t m, size_t n) const; 
 private: 
 	struct C2DDivCurlMatrixImpl* impl; 
 }; 

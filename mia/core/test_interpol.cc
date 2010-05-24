@@ -267,7 +267,7 @@ BOOST_AUTO_TEST_CASE(  test_bspline3_weight_at )
 	
 	BOOST_CHECK_CLOSE(kernel.get_weight_at(-1.5, 2), 0.5, 0.1);  
 	BOOST_CHECK_CLOSE(kernel.get_weight_at(-0.5, 2),-0.5, 0.1);  
-	BOOST_CHECK_CLOSE(kernel.get_weight_at(   0, 2) + 1, 1.0, 0.1);  
+	BOOST_CHECK_CLOSE(kernel.get_weight_at(   0, 2),-2.0, 0.1);  
 	BOOST_CHECK_CLOSE(kernel.get_weight_at( 0.5, 2),-0.5, 0.1);  
 	BOOST_CHECK_CLOSE(kernel.get_weight_at( 1.5, 2), 0.5, 0.1);  
 
@@ -426,6 +426,21 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_weight_at )
 
 
 	BOOST_CHECK_THROW(kernel.get_weight_at( 2, 5), invalid_argument); 
+}
+
+BOOST_AUTO_TEST_CASE(  test_bspline4_weights_d3 )
+{
+	CBSplineKernel4 kernel; 
+	
+	std::vector<double> weight(5); 
+	std::vector<int> index(5); 
+	kernel.derivative(0.0, weight, index, 3); 
+	BOOST_CHECK_CLOSE(weight[4], kernel.get_weight_at(-2.0, 3), 0.1); 	
+	BOOST_CHECK_CLOSE(weight[3], kernel.get_weight_at(-1.0, 3), 0.1); 	
+	BOOST_CHECK_CLOSE(weight[2], kernel.get_weight_at( 0.0, 3), 0.1); 
+	BOOST_CHECK_CLOSE(weight[1], kernel.get_weight_at( 1.0, 3), 0.1); 	
+	BOOST_CHECK_CLOSE(weight[0], kernel.get_weight_at( 2.0, 3), 0.1); 	
+
 }
 
 BOOST_AUTO_TEST_CASE(  test_bspline4_weight_at_d3 )

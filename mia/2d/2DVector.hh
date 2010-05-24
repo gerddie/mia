@@ -150,7 +150,7 @@ public:
 	}
 
 	void print(std::ostream& os) const {
-		os << "<" << std::setw(15)<< x << "," << std::setw(15) << y << ">"; 
+		os << "<"<< x << "," << y << ">"; 
 	}
 	
 	void read(std::istream& is) {

@@ -514,6 +514,15 @@ void CBSplineKernel4::get_derivative_weights(double x, std::vector<double>& weig
 		weight[2] = - weight[0] - weight[1] - weight[3] - weight[4];
 		cvdebug() << "weight[2] = " << fixed << weight[2] << "\n"; 
 	}break; 
+	case 3:{
+		weight[0] =  x - 1.0 / 2.0;
+		const double t0 = 1;
+		const double t1 = - 4.0 * x ;
+		weight[1] = t1 + t0;
+		weight[3] = t1 - t0;
+		weight[4] = weight[0] + t0;
+		weight[2] = - weight[0] - weight[1] - weight[3] - weight[4];
+	}break; 
 	default: 
 		fill(weight.begin(), weight.end(), 0.0); 
 	}
