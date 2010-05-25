@@ -155,7 +155,7 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_at_2, TransformSplineFixtureexpm2Field 
 {
 	size_t nx = 32; 
 
-	init(nx,0.1,ip_bspline5); 
+	init(nx,0.1,ip_bspline3); 
 	const int vx = 23; 
 	const int vy = 20; 
 
@@ -191,8 +191,8 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_at_2, TransformSplineFixtureexpm2Field 
 	
 	C2DFVector vt = divcurl_derivative_at(tx, ty); 
 
-	BOOST_CHECK_CLOSE( h0 * ( hxp - hxm) * dx, vt.x,1); 
-	BOOST_CHECK_CLOSE( h0 * ( hyp - hym) * dx, vt.y,1); 
+	BOOST_CHECK_CLOSE( h0 * ( hxp - hxm) / dx, vt.x,1); 
+	BOOST_CHECK_CLOSE( h0 * ( hyp - hym) / dx, vt.y,1); 
 
 	// derivative scale = pow(h,5)
 	

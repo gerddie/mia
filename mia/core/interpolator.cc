@@ -682,9 +682,36 @@ struct bspline<5, 3> {
 	}
 };
 
-#if 0
+
 template <>
 struct bspline<5, 4> {
+	static double apply(double x)
+	{
+		const double f = x > 0  ? -1 : 1; 
+		const double ax=fabs(x);
+		if (ax < 1.0) {
+			const double x2 = x * x; 
+			return f * ( 5.0 * x2 - 6 * ax); 
+		}
+		if (ax < 2.0) {
+			double h = 2.0 - ax; 
+			double h2 = h * h; 
+			return -f * ( 5 * h2 - 2.0  * h - 1) / 2.0; 
+		}
+		if (ax < 3.0) {
+			const double h = 3.0 - ax;
+			const double h2 =  h * h; 
+			return f * h2 / 2.0;
+		}
+		return 0.0;
+
+	}
+};
+
+#if 0
+
+template <>
+struct bspline<5, 5> {
 	static double apply(double x)
 	{
 		double ax=fabs(x);
@@ -697,7 +724,6 @@ struct bspline<5, 4> {
 		return 0.0;
 	}
 };
-
 #endif 
 
 void CBSplineKernel5::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
