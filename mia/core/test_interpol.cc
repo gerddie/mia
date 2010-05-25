@@ -210,6 +210,32 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_derivatives2, T, test_kernels2)
 }
 
 
+typedef bmpl::vector<CBSplineKernel3,
+		     CBSplineKernel4,
+		     CBSplineKernel5
+		     > test_kernels3;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(test_derivatives3, T, test_kernels3)
+{
+	const double x = 0.2;
+	T kernel;
+	vector<double> weights(kernel.size());
+	vector<double> pweights(kernel.size());
+	vector<double> mweights(kernel.size());
+	vector<int> index(kernel.size()); 
+		
+	kernel.derivative(x, weights, index, 3); 
+	kernel.get_derivative_weights(x + 0.00005, pweights, 2);
+	kernel.get_derivative_weights(x - 0.00005, mweights, 2);
+
+	for (size_t i = 0; i < weights.size(); ++i) {
+		double test = (pweights[i] - mweights[i]) / 0.0001;
+		BOOST_CHECK_CLOSE(weights[i], test, 0.01);
+	}
+	
+}
+
+
 
 BOOST_AUTO_TEST_CASE(  test_spline2_weight_at )
 {

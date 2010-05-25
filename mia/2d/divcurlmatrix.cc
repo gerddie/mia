@@ -96,6 +96,8 @@ C2DDivCurlMatrixImpl::C2DDivCurlMatrixImpl(const CBSplineKernel* kernel)
 	b2.resize(ksize); 
 	b3.resize(ksize); 
 
+	cvdebug() << "Kernel size = " << ksize << "\n"; 
+
 	kernel->get_derivative_weights(0.0, b0, 0);
 	kernel->get_derivative_weights(0.0, b1, 1);
 	kernel->get_derivative_weights(0.0, b2, 2);
@@ -119,11 +121,11 @@ double C2DDivCurlMatrixImpl::value_at(const C2DFVectorfield& coefficients, size_
 	// we can use < ksize-1, because the splines are evaluated centered around
 	// 0 thereby setting value [ksize-1] = 0
 	double v = 0.0;
-	for(int l = -hsupport_size, wl=0; wl < ksize -1; ++l, ++wl) {
+	for(int l = -hsupport_size, wl=0; wl < ksize; ++l, ++wl) {
 		const size_t nl = l + n; 
 		if (nl >= coefficients.get_size().y) 
 			continue; 
-		for(int k = -hsupport_size, wk=0; wk < ksize-1; ++k,++wk) {
+		for(int k = -hsupport_size, wk=0; wk < ksize; ++k,++wk) {
 			const size_t km = k + m;
 			if (km < coefficients.get_size().x) {
 				const C2DFVector& cmn = coefficients(km,nl); 
@@ -178,9 +180,12 @@ double C2DDivCurlMatrixImpl::multiply(const C2DFVectorfield& coefficients) const
 			sum += v*v; 
 		}
 	}
-	// there should be some scaling with the integration area here
 	return sum; 
 }
+
+/*
+  It seems that this gradient is _very_ approximate compared to the alaystic function 
+*/
 
 
 C2DFVectorfield C2DDivCurlMatrixImpl::multiply_for_gradient(const C2DFVectorfield& coefficients) const

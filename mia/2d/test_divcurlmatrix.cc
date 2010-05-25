@@ -27,14 +27,12 @@ NS_MIA_USE;
 
 
 struct TransformSplineFixtureFieldBase {
-	TransformSplineFixtureFieldBase():
-		
-		ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
-					       SHARED_PTR(CBSplineKernel) (new CBSplineKernel3())))
+	TransformSplineFixtureFieldBase()
 	{
 
 	}
-	void init(int dsize, float range) {
+	void init(int dsize, float range, EInterpolation type) {
+		ipf.reset(create_2dinterpolation_factory(type));
 		size = C2DBounds(dsize + 1,dsize + 1); 
 		int dsize2 = dsize/2; 
 		field = C2DFVectorfield(size); 
@@ -100,51 +98,62 @@ struct TransformSplineFixtureexpm2Field: public TransformSplineFixtureFieldBase 
 
 BOOST_FIXTURE_TEST_CASE( test_divergence__at, TransformSplineFixtureexpm2Field )
 {
-	init(32,0.1); 
+	init(32,0.1,ip_bspline3); 
 
-	double tx = (24.0-16) / h; 
-	double ty = (24.0-16) / h; 
-
-	cvdebug() << "h=" << h 
-		  << ", tx=" << tx
-		  << ", ty=" << ty
-		  << "\n"; 
-	// evaluated using maxima
 	const double testvalue = 6.0 * M_PI; 
 
 	C2DDivCurlMatrix divcurl(ipf->get_kernel());
 	BOOST_CHECK_CLOSE(h * h * divcurl.value_at(field,16,16), divcurl_value_at(0, 0), 1); 
 
+	
+	double tx = (24.0-16) / h; 
+	double ty = (24.0-16) / h; 
+	
+	cvdebug() << "h=" << h 
+		  << ", tx=" << tx
+		  << ", ty=" << ty
+		  << "\n"; 
+	// evaluated using maxima
+	
 	double h0 = h * h * divcurl.value_at(field,24,24); 
-	double hp = h * h * divcurl.value_at(field,25,24); 
-	double hm = h * h * divcurl.value_at(field,23,24); 
+	double hxp = h * h * divcurl.value_at(field,25,24); 
+	double hxm = h * h * divcurl.value_at(field,23,24); 
+	double hyp = h * h * divcurl.value_at(field,25,24); 
+	double hym = h * h * divcurl.value_at(field,23,24); 
 
+	
 	BOOST_CHECK_CLOSE(h0, divcurl_value_at(tx, ty),1); 
-	BOOST_CHECK_CLOSE(hm, divcurl_value_at(tx - 1.0/h, 0.05),1); 
-	BOOST_CHECK_CLOSE(hp, divcurl_value_at(ty + 1.0/h, 0.05),1); 
+	BOOST_CHECK_CLOSE(hxm, divcurl_value_at(tx - 1.0/h, ty),1); 
+	BOOST_CHECK_CLOSE(hxp, divcurl_value_at(tx + 1.0/h, ty),1); 
 
-
-	BOOST_CHECK_CLOSE( 2.0 * h0 * ( hp - hm) / (2.0 /h), 
+	BOOST_CHECK_CLOSE(hxm, divcurl_value_at(tx, ty - 1.0/h),1); 
+	BOOST_CHECK_CLOSE(hxp, divcurl_value_at(tx, ty + 1.0/h),1); 
+	
+	
+	BOOST_CHECK_CLOSE( 2.0 * h0 * ( hyp - hym) / (2.0 /h), 
 			   divcurl_derivative_at(tx, ty).x,1); 
 
+	BOOST_CHECK_CLOSE( 2.0 * h0 * ( hxp - hxm) / (2.0 /h), 
+			   divcurl_derivative_at(tx, ty).y,1); 
+
+	
 	C2DFVector sv = divcurl.derivative_at(field,16,16); 
 	C2DFVector tv = divcurl_derivative_at(0, 0); 
-
+	
 	BOOST_CHECK_CLOSE(h * h * h * sv.x + 1.0, tv.x + 1.0,1); 
 	BOOST_CHECK_CLOSE(h * h * h * sv.y + 1.0, tv.y + 1.0,1); 
-
+	
 	sv = divcurl.derivative_at(field,24,24); 
 	tv = divcurl_derivative_at(tx, ty); 
-
+	
 	BOOST_CHECK_CLOSE(h * h * h * h * h * sv.x, tv.x,0.1); 
 	BOOST_CHECK_CLOSE(h * h * h * h * h * sv.y, tv.y,0.1); 
 	
-
 }
 
 BOOST_FIXTURE_TEST_CASE( test_divergence_expm2, TransformSplineFixtureexpm2Field )
 {
-	init(128,8.0); 
+	init(128,8.0,ip_bspline4); 
 
 	// evaluated using maxima
 	const double testvalue = 6.0 * M_PI; 
