@@ -140,27 +140,26 @@ double C2DDivCurlMatrixImpl::value_at(const C2DFVectorfield& coefficients, size_
 
 C2DFVector C2DDivCurlMatrixImpl::derivative_at(const C2DFVectorfield& coefficients, size_t m, size_t n)const
 {
-	cvdebug() << m << ", " << n << "\n"; 
+	cvdebug() << m << ", " << n << "\n";
 	C2DFVector v(0.0, 0.0);
 	for(int l = -hsupport_size, wl=0; wl < ksize; ++l, ++wl) {
-		const size_t nl = l + n; 
-		if (nl >= coefficients.get_size().y) 
-			continue; 
+		const size_t nl = l + n;
+		if (nl >= coefficients.get_size().y)
+			continue;
 		for(int k = -hsupport_size, wk=0; wk < ksize; ++k,++wk) {
 			const size_t km = k + m;
 			if (km < coefficients.get_size().x) {
-				const C2DFVector& cmn = coefficients(km,nl); 
-				v.x +=  cmn.x * (b3[wk] * b0[wl]  + b2[wk] * b1[wl]) +  
-					cmn.y * (b1[wk] * b2[wl]  + b2[wk] * b1[wl]); 
+				const C2DFVector& cmn = coefficients(km,nl);
+				v.x +=  cmn.x * (b3[wk] * b0[wl]  + b2[wk] * b1[wl]) +
+					cmn.y * (b1[wk] * b2[wl]  + b2[wk] * b1[wl]);
 
-				v.y +=  cmn.x * (b2[wk] * b1[wl]  + b1[wk] * b2[wl]) +  
-					cmn.y * (b0[wk] * b3[wl]  + b1[wk] * b2[wl]); 
+				v.y +=  cmn.x * (b2[wk] * b1[wl]  + b1[wk] * b2[wl]) +
+					cmn.y * (b0[wk] * b3[wl]  + b1[wk] * b2[wl]);
 			}
 		}
-		
 	}
 	return 2.0 * value_at(coefficients, m, n) * v;
-} 
+}
 
 /*
   The spline approximation of this evaluation generally breaks if the function 

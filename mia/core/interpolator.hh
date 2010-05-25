@@ -154,6 +154,7 @@ public:
 	CBSplineKernel5();
 	virtual void get_weights(double x, std::vector<double>& weight)const;
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
+	virtual double get_weight_at(double x, int degree) const; 
 	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const; 
 };
 
