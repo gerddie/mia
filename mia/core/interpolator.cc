@@ -633,22 +633,25 @@ struct bspline<5, 1> {
 	}
 };
 
-#if 0
+
 template <>
 struct bspline<5, 2> {
 	static double apply(double x)
 	{
 		double ax=fabs(x);
-		if (ax <= 0.5)
-			return   3 * x * x  - 1.25; 
-		if (ax <= 1.5) {
-			const double f = - 1.0 / 2.0; 
-			double bx =  ax - 1.0; 
-			return f * (4 * bx * bx - 2 * bx - 1); 
+		if (ax < 1.0) {
+			const double x2 = x * x; 
+			return -( 5.0/3.0 * x2 * ax - 3 * x2 + 1); 
 		}
-		if (ax <= 2.5) {
-			double h = x > 0 ? 2.5 - ax : ax - 2.5;
-			return h * h / 2.0; 
+		if (ax < 2.0) {
+			double h = 2.0 - ax; 
+			double h2 = h * h; 
+			return -(5 * h2  * h - 3  * h2 - 3 * h  - 1 ) / 6.0; 
+		}
+		if (ax < 3.0) {
+			const double h = 3.0 - ax;
+			const double h2 =  h * h; 
+			return   h2 * h / 6.0; 
 		}
 		return 0.0;
 	}
@@ -659,20 +662,27 @@ template <>
 struct bspline<5, 3> {
 	static double apply(double x)
 	{
-		double ax=fabs(x);
-		if (ax <= 0.5)
-			return   6 * x; 
-		if (ax <= 1.5) {
-			const double f = x > 0 ? -0.5: 0.5; 
-			double bx =  ax - 1.0; 
-			return f * (8 * bx - 2); 
+		const double f = x > 0  ? -1 : 1; 
+		const double ax=fabs(x);
+		if (ax < 1.0) {
+			const double x2 = x * x; 
+			return f * ( 5.0 * x2 - 6 * ax); 
 		}
-		if (ax <= 2.5) 
-			return  x < 0 ? 2.5 - ax : ax - 2.5;
+		if (ax < 2.0) {
+			double h = 2.0 - ax; 
+			double h2 = h * h; 
+			return -f * ( 5 * h2 - 2.0  * h - 1) / 2.0; 
+		}
+		if (ax < 3.0) {
+			const double h = 3.0 - ax;
+			const double h2 =  h * h; 
+			return f * h2 / 2.0;
+		}
 		return 0.0;
 	}
 };
 
+#if 0
 template <>
 struct bspline<5, 4> {
 	static double apply(double x)
