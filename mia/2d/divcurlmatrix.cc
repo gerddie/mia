@@ -151,7 +151,7 @@ double C2DDivCurlMatrixImpl::value_at(const C2DFVectorfield& coefficients, size_
 	const C2DFVector& ckl = coefficients(m,n); 
 	for(int l = -ksize+1; l < ksize; ++l) {
 		const size_t nl = l + n; 
-		const size_t ln = abs(l-n); 
+		const size_t wl = abs(l); 
 		if (nl >= coefficients.get_size().y) 
 			continue; 
 		for(int k = -ksize+1; k < ksize; ++k) {
