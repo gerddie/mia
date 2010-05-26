@@ -103,7 +103,7 @@ C2DDivCurlMatrixImpl::C2DDivCurlMatrixImpl(const CBSplineKernel* kernel)
 	kernel->get_derivative_weights(0.0, b2, 2);
 	kernel->get_derivative_weights(0.0, b3, 3);
 
-#if 0
+#if 1
 	r20.resize(ksize); 
 	r11.resize(ksize); 
 	r02.resize(ksize); 
@@ -116,6 +116,7 @@ C2DDivCurlMatrixImpl::C2DDivCurlMatrixImpl(const CBSplineKernel* kernel)
 #endif
 }
 
+#if 0 
 double C2DDivCurlMatrixImpl::value_at(const C2DFVectorfield& coefficients, size_t m, size_t n)const
 {
 	// we can use < ksize-1, because the splines are evaluated centered around
@@ -137,7 +138,35 @@ double C2DDivCurlMatrixImpl::value_at(const C2DFVectorfield& coefficients, size_
 	}
 	return v; 	
 }
+#endif
 
+
+double C2DDivCurlMatrixImpl::value_at(const C2DFVectorfield& coefficients, size_t m, size_t n)const
+{
+	// we can use < ksize-1, because the splines are evaluated centered around
+	// 0 thereby setting value [ksize-1] = 0
+	double v = 0.0;
+	
+
+	const C2DFVector& ckl = coefficients(m,n); 
+	for(int l = -ksize+1; l < ksize; ++l) {
+		const size_t nl = l + n; 
+		const size_t ln = abs(l-n); 
+		if (nl >= coefficients.get_size().y) 
+			continue; 
+		for(int k = -ksize+1; k < ksize; ++k) {
+			const size_t km = k + m;
+			const size_t wk = abs(k); 
+			if (km < coefficients.get_size().x) {
+				const C2DFVector& cmn = coefficients(km,nl); 
+				v +=  ckl.x * cmn.x * (r20[wk] * r20[wl]  + r11[wk] * r11[wl]) ; 
+				v +=  2 * ckl.x * cmn.y * (r20[wk] * r11[wl]  + r11[wk] * r02[wl]) ; 
+			       	v +=  cmn.y * cmn.y * (r02[wk] * r02[wl]  + r11[wk] * r11[wl]); 
+			}
+		}
+	}
+	return v; 	
+}
 C2DFVector C2DDivCurlMatrixImpl::derivative_at(const C2DFVectorfield& coefficients, size_t m, size_t n)const
 {
 	cvdebug() << m << ", " << n << "\n";
@@ -169,6 +198,7 @@ C2DFVector C2DDivCurlMatrixImpl::derivative_at(const C2DFVectorfield& coefficien
   is normally also close to zero, 
 */
 
+#if 0 
 double C2DDivCurlMatrixImpl::multiply(const C2DFVectorfield& coefficients) const
 {
 	double sum = 0.0; 
@@ -177,6 +207,19 @@ double C2DDivCurlMatrixImpl::multiply(const C2DFVectorfield& coefficients) const
 		for(size_t m = 0; m < coefficients.get_size().x; ++m) {
 			double v = value_at(coefficients, m, n); 
 			sum += v*v; 
+		}
+	}
+	return sum; 
+}
+#endif
+
+double C2DDivCurlMatrixImpl::multiply(const C2DFVectorfield& coefficients) const
+{
+	double sum = 0.0; 
+
+	for(size_t n = 0; n < coefficients.get_size().y; ++n) {
+		for(size_t m = 0; m < coefficients.get_size().x; ++m) {
+			sum += value_at(coefficients, m, n); 
 		}
 	}
 	return sum; 

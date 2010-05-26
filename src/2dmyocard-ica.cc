@@ -258,6 +258,7 @@ C2DFilterPlugin::ProductPtr create_LV_cropper(const C2DImageSeriesICA& ica,
 		npixels = ::mia::filter(GetRegionSize(), *RV);
 		
 	} while (10 * npixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y && nc < 5); 
+	
 	if (nc == 5) 
 		throw runtime_error("Unable to get a usefull segmentation of the right ventricle"); 
 			

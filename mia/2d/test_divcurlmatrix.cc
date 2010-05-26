@@ -96,6 +96,7 @@ struct TransformSplineFixtureexpm2Field: public TransformSplineFixtureFieldBase 
 	C2DFVector divcurl_derivative_at(float x, float y); 
 }; 
 
+#if 0
 BOOST_FIXTURE_TEST_CASE( test_divergence_at, TransformSplineFixtureexpm2Field )
 {
 	init(32,0.1,ip_bspline5); 
@@ -209,10 +210,11 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_at_2, TransformSplineFixtureexpm2Field 
 	BOOST_CHECK_CLOSE(sv.y, tv.y, 0.1); 
 	
 }
+#endif
 
 BOOST_FIXTURE_TEST_CASE( test_divergence_expm2, TransformSplineFixtureexpm2Field )
 {
-	init(128,8.0,ip_bspline3); 
+	init(128 ,8.0,ip_bspline3); 
 
 	// evaluated using maxima
 	const double testvalue = 6.0 * M_PI; 
@@ -224,7 +226,7 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2, TransformSplineFixtureexpm2Field
 	float manual = integrate_divcurl(-8, 8, -8, 8, 127, 127); 
 	BOOST_CHECK_CLOSE(manual, testvalue, 0.1); 
 
-	float spline = h * h * divcurl.multiply(field); 
+	float spline = divcurl.multiply(field); 
 	BOOST_CHECK_CLOSE(spline, testvalue,  3.0);
 
 }
