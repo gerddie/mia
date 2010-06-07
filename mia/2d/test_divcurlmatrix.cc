@@ -214,12 +214,12 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_at_2, TransformSplineFixtureexpm2Field 
 
 BOOST_FIXTURE_TEST_CASE( test_divergence_expm2, TransformSplineFixtureexpm2Field )
 {
-	init(128 ,8.0,ip_bspline3); 
+	init(32,8.0,ip_bspline3); 
 
 	// evaluated using maxima
 	const double testvalue = 6.0 * M_PI; 
 
-	C2DDivCurlMatrix divcurl(ipf->get_kernel());
+	C2DDivCurlMatrix divcurl(field.get_size(), ipf->get_kernel());
 	
 	
 	// this test is just to compare the maxima value to a approximate integration 
@@ -228,6 +228,9 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2, TransformSplineFixtureexpm2Field
 
 	float spline = divcurl.multiply(field); 
 	BOOST_CHECK_CLOSE(spline, testvalue,  3.0);
+
+	cvdebug() <<""  << testvalue / spline 
+		  <<" sqrt= " << sqrt(testvalue / spline) << "\n"; 
 
 }
 

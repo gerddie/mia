@@ -206,16 +206,12 @@ private:
 
 typedef pair<float, size_t> element; 
 
-C2DFilterPlugin::ProductPtr create_LV_cropper(const C2DImageSeriesICA& ica, 
-					      const CSlopeClassifier& cls, 
+C2DFilterPlugin::ProductPtr create_LV_cropper(P2DImage rvlv_feature,
 					      float LV_mask_amplify, 
 					      const string& feature_image_base, 
 					      C2DBounds& crop_start
 					      )
 {
-	C2DImageSeriesICA::IndexSet plus; 
-	C2DImageSeriesICA::IndexSet minus; 
-	
 	const char *kmeans_filter_chain[] = {
 		"close:shape=[sphere:r=2]", 
 		"open:shape=[sphere:r=2]"
@@ -231,12 +227,6 @@ C2DFilterPlugin::ProductPtr create_LV_cropper(const C2DImageSeriesICA& ica,
 		"label", 
 	};
 
-	plus.insert(cls.get_RV_idx()); 
-	minus.insert(cls.get_LV_idx()); 
-	
-	
-	P2DImage rvlv_feature = ica.get_delta_feature(plus, minus); 
-	
 	P2DImage pre_kmeans = run_filter_chain(rvlv_feature, 2, kmeans_filter_chain); 
 	
 	P2DImage RV; 
@@ -260,7 +250,7 @@ C2DFilterPlugin::ProductPtr create_LV_cropper(const C2DImageSeriesICA& ica,
 	} while (10 * npixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y && nc < 5); 
 	
 	if (nc == 5) 
-		throw runtime_error("Unable to get a usefull segmentation of the right ventricle"); 
+		return C2DFilterPlugin::ProductPtr(); 
 			
 	
 	P2DImage LV_candidates = run_filter_chain(kmeans, 2, LVcandidate_filter_chain);
@@ -419,7 +409,30 @@ int do_main( int argc, const char *argv[] )
 	try {
 		// create crop filter and store source files too.
 		if (LV_mask > 0.0) {
-			cropper = create_LV_cropper(*ica, cls, LV_mask, feature_image_base, crop_start); 
+			C2DImageSeriesICA::IndexSet plus; 
+			C2DImageSeriesICA::IndexSet minus; 
+			
+			plus.insert(cls.get_RV_idx()); 
+			minus.insert(cls.get_LV_idx()); 
+			
+			P2DImage rvlv_feature = ica->get_delta_feature(plus, minus); 
+			cropper = create_LV_cropper(rvlv_feature, LV_mask, feature_image_base, crop_start); 
+			
+			// feature images do not work, try peak images
+			if (!cropper) {
+				int RV_peak = cls.get_RV_peak(); 
+				int LV_peak = cls.get_LV_peak();
+				if (RV_peak < 0 || LV_peak < 0)
+					throw std::runtime_error("Feature images doen't work, and peaks could not be identified");
+				C2DFImage *prvlv_diff = new C2DFImage(series[0].get_size()); 
+				P2DImage rvlv_feature(prvlv_diff); 
+
+				transform(series[RV_peak].begin(), series[RV_peak].end(), 
+					  series[LV_peak].begin(), prvlv_diff->begin(), _1 - _2); 
+				cropper = create_LV_cropper(rvlv_feature, LV_mask, feature_image_base, crop_start);
+			}
+			if (!cropper) 
+				throw std::runtime_error("Neither feature images nor peak images work"); 
 			ofstream crop_idx((crop_name + ".txt").c_str()); 
 			crop_idx << crop_start;  
 		}

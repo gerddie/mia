@@ -30,7 +30,7 @@ NS_MIA_BEGIN
 
 class C2DDivCurlMatrix {
 public: 
-	C2DDivCurlMatrix(const CBSplineKernel* kernel); 
+	C2DDivCurlMatrix(const C2DBounds& size, const CBSplineKernel* kernel); 
 	~C2DDivCurlMatrix(); 
 	double multiply(const C2DFVectorfield& coefficients) const; 
 	C2DFVectorfield multiply_for_gradient(const C2DFVectorfield& coefficients) const; 

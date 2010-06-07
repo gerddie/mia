@@ -28,7 +28,7 @@ NS_MIA_BEGIN
 using namespace std; 
 
 struct C2DDivCurlMatrixImpl {
-	C2DDivCurlMatrixImpl(const CBSplineKernel* kernel); 
+	C2DDivCurlMatrixImpl(const C2DBounds& size, const CBSplineKernel* kernel); 
 
 	double multiply(const C2DFVectorfield& coefficients) const; 
 	C2DFVectorfield multiply_for_gradient(const C2DFVectorfield& coefficients) const; 
@@ -44,17 +44,31 @@ private:
 	vector<double> b1; 
 	vector<double> b0; 
 
-	vector<double> r20; 
+	vector<double> r00; 
+	vector<double> r10; 
+	vector<double> r01; 
 	vector<double> r11; 
 	vector<double> r02; 
+	vector<double> r20; 
+	vector<double> r12; 
+	vector<double> r21; 
+	vector<double> r22; 
+
+
+
+	int _M_nodes; 
+	C2DDDatafield _M_p11; 
+	C2DDDatafield _M_p12; 
+	C2DDDatafield _M_p22; 
+
 	
 }; 
 
 
 
 
-C2DDivCurlMatrix::C2DDivCurlMatrix(const CBSplineKernel* kernel):
-	impl(new C2DDivCurlMatrixImpl(kernel))
+C2DDivCurlMatrix::C2DDivCurlMatrix(const C2DBounds& size, const CBSplineKernel* kernel):
+	impl(new C2DDivCurlMatrixImpl(size, kernel))
 {
 	
 }
@@ -84,7 +98,11 @@ C2DFVector C2DDivCurlMatrix::derivative_at(const C2DFVectorfield& coefficients, 
 	return impl->derivative_at(coefficients, m, n); 
 }
 
-C2DDivCurlMatrixImpl::C2DDivCurlMatrixImpl(const CBSplineKernel* kernel)
+C2DDivCurlMatrixImpl::C2DDivCurlMatrixImpl(const C2DBounds& size, const CBSplineKernel* kernel):
+	_M_nodes(size.x*size.y),
+	_M_p11(C2DBounds(_M_nodes, _M_nodes)), 
+	_M_p12(C2DBounds(_M_nodes, _M_nodes)), 
+	_M_p22(C2DBounds(_M_nodes, _M_nodes))
 {
 	assert(kernel); 
 
@@ -103,43 +121,61 @@ C2DDivCurlMatrixImpl::C2DDivCurlMatrixImpl(const CBSplineKernel* kernel)
 	kernel->get_derivative_weights(0.0, b2, 2);
 	kernel->get_derivative_weights(0.0, b3, 3);
 
-#if 1
+
+	r00.resize(ksize); 
+	
+	r01.resize(ksize); 
+	r10.resize(ksize); 
+
+	r02.resize(ksize); 
 	r20.resize(ksize); 
 	r11.resize(ksize); 
-	r02.resize(ksize); 
+	
+	r21.resize(ksize); 
+	r12.resize(ksize); 
+	
+	r22.resize(ksize); 
 
-	for (size_t i = 0; i < ksize; ++i) {
-		r20[i] = integrate2(*kernel, ksize, ksize + i, 2, 0, 1, 0, 3 * ksize); 
+	for (int i = 0; i < ksize; ++i) {
+
+		r00[i] = integrate2(*kernel, ksize, ksize + i, 0, 0, 1, 0, 3 * ksize); 
+
+		r01[i] = integrate2(*kernel, ksize, ksize + i, 0, 1, 1, 0, 3 * ksize); 
+		r10[i] = integrate2(*kernel, ksize, ksize + i, 1, 0, 1, 0, 3 * ksize); 
+
 		r11[i] = integrate2(*kernel, ksize, ksize + i, 1, 1, 1, 0, 3 * ksize); 
+		r20[i] = integrate2(*kernel, ksize, ksize + i, 2, 0, 1, 0, 3 * ksize); 
 		r02[i] = integrate2(*kernel, ksize, ksize + i, 0, 2, 1, 0, 3 * ksize); 
-	}
-#endif
-}
 
-#if 0 
-double C2DDivCurlMatrixImpl::value_at(const C2DFVectorfield& coefficients, size_t m, size_t n)const
-{
-	// we can use < ksize-1, because the splines are evaluated centered around
-	// 0 thereby setting value [ksize-1] = 0
-	double v = 0.0;
-	for(int l = -hsupport_size, wl=0; wl < ksize; ++l, ++wl) {
-		const size_t nl = l + n; 
-		if (nl >= coefficients.get_size().y) 
-			continue; 
-		for(int k = -hsupport_size, wk=0; wk < ksize; ++k,++wk) {
-			const size_t km = k + m;
-			if (km < coefficients.get_size().x) {
-				const C2DFVector& cmn = coefficients(km,nl); 
-				v +=  cmn.x * (b2[wk] * b0[wl]  + b1[wk] * b1[wl]); 
-			       	v +=  cmn.y * (b0[wk] * b2[wl]  + b1[wk] * b1[wl]); 
-			}
-		}
+		r12[i] = integrate2(*kernel, ksize, ksize + i, 1, 2, 1, 0, 3 * ksize); 
+		r21[i] = integrate2(*kernel, ksize, ksize + i, 2, 1, 1, 0, 3 * ksize); 
 		
-	}
-	return v; 	
-}
-#endif
+		r22[i] = integrate2(*kernel, ksize, ksize + i, 2, 2, 1, 0, 3 * ksize); 
 
+	}
+
+	C2DDDatafield::iterator ip11 = _M_p11.begin(); 
+	C2DDDatafield::iterator ip12 = _M_p12.begin(); 
+	C2DDDatafield::iterator ip22 = _M_p22.begin(); 
+
+	for (int y1 = 0; y1 < (int)size.y; ++y1) 
+		for (int x1 = 0; x1 < (int)size.x; ++x1) 
+			for (int y2 = 0; y2 < (int)size.y; ++y2) 
+				for (int x2 = 0; x2 < (int)size.x; ++x2, ++ip11, ++ip12, ++ip22) {
+					int dx = abs(x1 - x2); 
+					int dy = abs(y1 - y2);
+					if (dx < ksize && dy < ksize) {
+						*ip11 = r22[dx] * r00[dy] + r11[dx] * r11[dy] + 
+							2 * r21[dx] * r01[dy]; 
+						
+						*ip12 = 2 * (r10[dx] * r12[dy] + r20[dx] * r02[dy] + 
+							     r21[dx] * r01[dy] + r11[dx] * r11[dy]); 
+						
+						*ip22 = r00[dx] * r22[dy] + r11[dx] * r11[dy] + 
+							2 * r10[dx] * r12[dy];
+					}
+				}
+}
 
 double C2DDivCurlMatrixImpl::value_at(const C2DFVectorfield& coefficients, size_t m, size_t n)const
 {
@@ -198,30 +234,44 @@ C2DFVector C2DDivCurlMatrixImpl::derivative_at(const C2DFVectorfield& coefficien
   is normally also close to zero, 
 */
 
-#if 0 
-double C2DDivCurlMatrixImpl::multiply(const C2DFVectorfield& coefficients) const
-{
-	double sum = 0.0; 
-
-	for(size_t n = 0; n < coefficients.get_size().y; ++n) {
-		for(size_t m = 0; m < coefficients.get_size().x; ++m) {
-			double v = value_at(coefficients, m, n); 
-			sum += v*v; 
-		}
-	}
-	return sum; 
-}
-#endif
 
 double C2DDivCurlMatrixImpl::multiply(const C2DFVectorfield& coefficients) const
 {
 	double sum = 0.0; 
+	double sum_test = 0.0; 
+	const C2DBounds size = coefficients.get_size(); 
 
-	for(size_t n = 0; n < coefficients.get_size().y; ++n) {
-		for(size_t m = 0; m < coefficients.get_size().x; ++m) {
-			sum += value_at(coefficients, m, n); 
+	C2DFVectorfield::const_iterator ca = coefficients.begin(); 
+	C2DDDatafield::const_iterator ip11 = _M_p11.begin(); 
+	C2DDDatafield::const_iterator ip12 = _M_p12.begin(); 
+	C2DDDatafield::const_iterator ip22 = _M_p22.begin(); 
+
+	
+	for (int y1 = 0; y1 < (int)size.y; ++y1) 
+		for (int x1 = 0; x1 < (int)size.x; ++x1, ++ca) {
+			C2DFVectorfield::const_iterator cb = coefficients.begin(); 
+			for (int y2 = 0; y2 < (int)size.y; ++y2) 
+				for (int x2 = 0; x2 < (int)size.x; ++x2, ++cb, 
+					     ++ip11, ++ip12, ++ip22) {
+					int dx = abs(x1 - x2); 
+					int dy = abs(y1 - y2);
+					double v = ca->x * cb->x * *ip11 + 
+						ca->x * cb->y * *ip12 + 
+						ca->y * cb->y * *ip22; 
+					sum += v; 
+					
+					if (x1 == 16 && x2 == 16 && y1==16 && y2 == 16) {
+						cvdebug()<<"testpunkt:dx="<< dx 
+							 << " dy=" << dy << *ca << *cb << "p11= " << *ip11
+							 << " p12= " << *ip12
+							 << " p22= " << *ip22 
+							 << " v= " << v << "\n"; 
+					}
+					
+				}
 		}
-	}
+
+	cvinfo() << "sum = " << sum << ", sum_test = " << sum_test << "\n"; 
 	return sum; 
 }
 
