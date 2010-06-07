@@ -273,6 +273,10 @@ C2DFilterPlugin::ProductPtr create_LV_cropper(P2DImage rvlv_feature,
 	stringstream mask_lv;
 	crop_start = C2DBounds(int(LV_center.x - r), int(LV_center.y - r)); 
 
+	// this is ugly and should be replaced 
+	if (crop_start.x > LV_center.x ||crop_start.y > LV_center.y)
+		return C2DFilterPlugin::ProductPtr(); 
+
 	mask_lv << "crop:start=[" << crop_start
 		<< "],end=[" << C2DBounds(int(LV_center.x + r), int(LV_center.y + r)) << "]"; 
 	cvinfo() << "crop region = '" << mask_lv.str() << "'\n"; 
@@ -424,11 +428,13 @@ int do_main( int argc, const char *argv[] )
 				int LV_peak = cls.get_LV_peak();
 				if (RV_peak < 0 || LV_peak < 0)
 					throw std::runtime_error("Feature images doen't work, and peaks could not be identified");
+				
+				cvinfo() << "Using RV peaks =" << RV_peak << " and " << LV_peak << "\n"; 
 				C2DFImage *prvlv_diff = new C2DFImage(series[0].get_size()); 
 				P2DImage rvlv_feature(prvlv_diff); 
 
 				transform(series[RV_peak].begin(), series[RV_peak].end(), 
-					  series[LV_peak].begin(), prvlv_diff->begin(), _1 - _2); 
+					  series[LV_peak].begin(), prvlv_diff->begin(), _2 - _1); 
 				cropper = create_LV_cropper(rvlv_feature, LV_mask, feature_image_base, crop_start);
 			}
 			if (!cropper) 

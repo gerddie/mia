@@ -220,12 +220,14 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 	if (!(mean_stripped && n < 5)) {
 		// put the low range element at the end (it's the base line)
 		// doesn't exist if the mean was stripped
+		// and the high range elements at the beginning, these are the 
+		// RV-LV slopes
 		sort(stats.begin(), stats.end() - sort_skip, compare_range());
 		++sort_skip;
 	}
 
-	// sort according to first maximum
-	sort(stats.begin(), stats.end() - sort_skip, compare_perfusion_peak());
+	// sort first two elements according to first maximum
+	sort(stats.begin(), stats.begin() + 2, compare_perfusion_peak());
 
 	cvinfo() << "Sorted\n";
 	for(size_t i = 0; i < n; ++i) {
