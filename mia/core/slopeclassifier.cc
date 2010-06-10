@@ -251,8 +251,9 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 			if (k->first->get_mean_frequency() > rate) 
 				++sort_skip; 
 	}
+	
 	sort(stats.begin(), stats.end() - sort_skip, compare_perfusion_peak());
-
+	
 	cvinfo() << "Sorted\n";
 	for(size_t i = 0; i < n; ++i) {
 		cvinfo() << "Stats["<< stats[i].second << "]"
