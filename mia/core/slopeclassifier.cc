@@ -50,16 +50,15 @@ struct CSlopeClassifierImpl {
 	int Periodic_idx;
 	int Perfusion_idx;
 	int Baseline_idx;
-	float max_selfcorr; 
 	float max_slope_length_diff; 
+	CSlopeClassifier::SCorrelation  selfcorr; 
 
 	typedef vector<float>::const_iterator position;
 	typedef pair<position, position> extrems;
 	typedef pair<size_t, size_t> extrems_pos;
 	CSlopeClassifierImpl(const CSlopeClassifier::Columns& series, bool mean_stripped);
-
 private: 
-	float evaluate_selfcorr(const CSlopeClassifier::Columns& series); 
+	void evaluate_selfcorr(const CSlopeClassifier::Columns& series); 
 };
 
 
@@ -80,9 +79,9 @@ float CSlopeClassifier::get_max_slope_length_diff() const
 	return impl->max_slope_length_diff;
 }
 
-float CSlopeClassifier::max_selfcorrelation()const
+CSlopeClassifier::SCorrelation CSlopeClassifier::max_selfcorrelation()const
 {
-	return impl->max_selfcorr;
+	return impl->selfcorr;
 }
 
 int CSlopeClassifier::get_periodic_idx() const
@@ -121,6 +120,7 @@ int CSlopeClassifier::get_baseline_idx() const
 	return impl->Baseline_idx;
 }
 
+
 typedef pair<PSlopeStatistics, int> statmap;
 
 struct compare_length {
@@ -143,6 +143,15 @@ struct compare_perfusion_peak {
 		return  (a.first->get_perfusion_high_peak() < b.first->get_perfusion_high_peak());
 	}
 };
+
+struct compare_mean_freq {
+	bool operator () (const statmap& a, const statmap& b) const
+	{
+		return  (a.first->get_mean_frequency() < b.first->get_mean_frequency());
+	}
+};
+
+
 
 float correlation(const vector<float>& a, const vector<float>& b) 
 {
@@ -174,16 +183,17 @@ float correlation(const vector<float>& a, const vector<float>& b)
 	return (ssxy * ssxy) /  (ssxx * ssyy); 
 }
 
-float CSlopeClassifierImpl::evaluate_selfcorr(const CSlopeClassifier::Columns& series)
+void CSlopeClassifierImpl::evaluate_selfcorr(const CSlopeClassifier::Columns& series)
 {
-	float max_corr = 0.0; 
 	for (size_t i = 0; i < series.size(); ++i) 
 		for (size_t j = i+1; j < series.size(); ++j) {
 			const float corr = correlation(series[i], series[j]); 
-			if (max_corr < corr) 
-				max_corr = corr; 
+			if (selfcorr.corr < corr) {
+				selfcorr.row1 = i; 
+				selfcorr.row2 = j; 
+				selfcorr.corr = corr; 
+			}
 		}
-	return max_corr; 
 }
 
 
@@ -203,6 +213,18 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 		stats[i] = sm;
 	}
 
+	/* mechanics for classifying the mixing curves: 
+	   - first sort for curve length - longest is periodic component 
+	   - use a heuristic based on its mean frequency to decide whether this curve is actually periodic 
+	   - then sort the remaining curves by covered value range 
+	      * the cUrves that cover largest values should correspond to LV and RV enhancement 
+                (Remark: this is not save!!!) 
+		* remove last element from the serach range, it's baseline or perfusion 	
+	   - sort for minimal mean frequency, RV-LV slopes should have a low freq 
+           - 	
+           - sort these two curves by the order in which the high peaks appear to identify 
+             which is RV (peak comes first) and which LV 
+	*/
 	int sort_skip=0;
 
 	sort(stats.begin(), stats.end(), compare_length());
@@ -218,16 +240,18 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 	}
 
 	if (!(mean_stripped && n < 5)) {
-		// put the low range element at the end (it's the base line)
-		// doesn't exist if the mean was stripped
-		// and the high range elements at the beginning, these are the 
-		// RV-LV slopes
+		// put the low range curve at the end 
 		sort(stats.begin(), stats.end() - sort_skip, compare_range());
 		++sort_skip;
 	}
 
-	// sort first two elements according to first maximum
-	sort(stats.begin(), stats.begin() + 2, compare_perfusion_peak());
+	if (n > 4) {
+		sort(stats.begin(), stats.end() - sort_skip, compare_mean_freq());
+		for (auto k = stats.rbegin() + sort_skip; k != stats.rend(); ++k) 
+			if (k->first->get_mean_frequency() > rate) 
+				++sort_skip; 
+	}
+	sort(stats.begin(), stats.end() - sort_skip, compare_perfusion_peak());
 
 	cvinfo() << "Sorted\n";
 	for(size_t i = 0; i < n; ++i) {
@@ -268,7 +292,7 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 	RV_peak = stats[0].first->get_perfusion_high_peak().first;
 	LV_peak = stats[1].first->get_perfusion_high_peak().first;
 
-	max_selfcorr = evaluate_selfcorr(series); 
+	evaluate_selfcorr(series); 
 
 }
 

@@ -428,3 +428,42 @@ BOOST_AUTO_TEST_CASE( test_ica_access_failtures )
 }
 
 
+BOOST_AUTO_TEST_CASE( test_autorun )
+{
+	const int comps = 3;
+	const int rows = 10;
+	const int elms = 40;
+	double ic_rows[comps * elms] = 
+		{ 1.1, -0.9,  -1.9,  0.9,  2.1, 1.9,  6.1, -2.9,  0.9, 1.1,
+		  1.1,  1.9,  -1.1,  2.9,  3.1, 1.9,  0.1,  2.9,  1.9, 2.1,
+		  2.3, -1.7,  -2.7,  -2.7,  6.3, -3.7,  6.3, -2.7, -0.7, 2.3, 
+		  2.3, -2.7,   2.2,   2.6,  6.4, -3.8,  6.2, -2.5, -0.6, 2.2,
+		
+		  2.3, -1.7,  -2.7,  -2.7,  6.3, -3.7,  6.3, -2.7, -0.7, 2.3, 
+		  2.3, -2.7,  -2.2,  -2.6,  6.4, -3.8,  6.2, -2.5, -0.6, 2.2,
+		  2.3, -1.7,  -2.7,  -2.7,  6.3, -3.7,  6.3, -2.7, -0.7, 2.3, 
+		  2.3, -2.7,  -2.2,  -2.6,  6.4, -3.8,  6.2, -2.5, -0.6, 2.2 ,
+
+		  2.3, -1.7,  -2.7,  -2.7,  6.3, -3.7,  6.3, -2.7, -0.7, 2.3,
+		  2,   4.4,    -5,    6,    9,   -7,    5,   -4,   2,   2,
+		  1.1,  1.9,  -1.1,  2.9,  3.1, 1.9,  0.1,  2.9,  1.9, 2.1,
+		  2.1, 4.1,  -5.2,  6.4,  -9.2, -7.1,  -5.3, 4.4,  -2.1,  2.1 
+	};
+
+	CICAAnalysis ica(rows, elms);
+
+	for (int i = 0; i < rows; ++i) {
+		vector <float> input(elms); 
+		for (int j = 0; j < elms; ++j) 
+			for (int k = 0; k < comps; ++k)
+				input[j] += ic_rows[k * elms + j] * cos(i  +  k);
+		
+		ica.set_row(i, input.begin(), input.end());
+	}
+	ica.run_auto(6,2,0.9);
+	BOOST_CHECK_EQUAL(ica.get_ncomponents(), comps); 
+	
+
+}
+
+

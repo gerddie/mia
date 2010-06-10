@@ -52,6 +52,8 @@ unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean
 		if (ica_normalize) 
 			ica->normalize();
 	} else {
+		// maybe one can use the correlation and create an initial guess by combining 
+		// highly correlated curves. 
 		float min_cor = 0.0; 
 		for (int i = 7; i > 3; --i) {
 			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false)); 
@@ -62,7 +64,7 @@ unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean
 			if (ica_normalize) 
 				l_ica->normalize();
 			
-			CSlopeClassifier cls(l_ica->get_mixing_curves(), strip_mean); 
+			CSlopeClassifier cls(l_ica->get_mixing_curves(), strip_mean);
 			float max_slope = log2(i) * cls.get_max_slope_length_diff(); 
 			cvinfo() << "Components = " << i << " max_slope = " << max_slope << "\n"; 
 			if (min_cor < max_slope) {
@@ -77,6 +79,14 @@ unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean
 			}
 		}
 	}
+	return ica; 
+}
+
+
+unique_ptr<C2DImageSeriesICA> get_ica_auto(vector<C2DFImage>& series, size_t& max_components )
+{
+	unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(series, false)); 
+	max_components = ica->run_auto(max_components, 3, 0.7);
 	return ica; 
 }
 
@@ -333,7 +343,7 @@ int do_main( int argc, const char *argv[] )
 	string feature_image_base; 
 	string numbered_feature_image; 
 	float LV_mask = 0.0; // no mask 
-
+	bool auto_comp = false; 
 
 	CCmdOptionList options;
 	options.push_back(make_opt( src_name, "in-base", 'i', "input file name base", "input", false));
@@ -351,12 +361,15 @@ int do_main( int argc, const char *argv[] )
 				   false)); 
 	options.push_back(make_opt( ica_normalize, "ica_normalize", 'n', "ica_normalize feature images", 
 				    "ica_normalize", false)); 
-	options.push_back(make_opt( numbered_feature_image, "all-features", 'a', "save all feature images to",
+	options.push_back(make_opt( numbered_feature_image, "all-features", 0, "save all feature images to",
 				    "all", false)); 
 	
 	options.push_back(make_opt( LV_mask, "LV-crop-amp", 'L', "LV crop mask amplification, 0.0 = don't crop", 
 				    "LV-crop", false)); 
 
+	options.push_back(make_opt( auto_comp, "auto-components", 'a', 
+				    "automatic esitmation of number of components based on correlation."
+				    " Implies -m and -n", "auto-components", false)); 
 	options.parse(argc, argv);
 
 	size_t start_filenum = 0;
@@ -391,11 +404,13 @@ int do_main( int argc, const char *argv[] )
 
 	cvmsg()<< "Got series of " << series.size() << " images\n"; 
 	// always strip mean
-	unique_ptr<C2DImageSeriesICA> ica = get_ica(series, strip_mean, components, ica_normalize); 
+	unique_ptr<C2DImageSeriesICA> ica = auto_comp ? 
+		get_ica_auto(series, components ):
+		get_ica(series, strip_mean, components, ica_normalize); 
 	CSlopeClassifier::Columns curves = ica->get_mixing_curves(); 
 
 	CICAAnalysis::IndexSet component_set = skip_only_periodic ? 
-		get_all_without_periodic(curves, strip_mean): 
+		get_all_without_periodic(curves, strip_mean || auto_comp): 
 		get_LV_RV_Perfusion(curves); 
 	
 
@@ -502,7 +517,7 @@ int do_main( int argc, const char *argv[] )
 		if ( cls.get_baseline_idx() >= 0) {
 			save_feature_image(feature_image_base, "baseline", cls.get_baseline_idx(), components, *ica);
 		}
-		if (strip_mean) 
+		if (strip_mean||auto_comp)
 			save_feature_image(feature_image_base, "mean", -1, components, *ica);
 	}
 	if (!coefs_name.empty()) 

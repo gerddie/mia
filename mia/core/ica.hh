@@ -44,6 +44,8 @@ NS_MIA_BEGIN
 
 class CICAAnalysis {
 public:
+
+	typedef itpp::Vec<itpp::mat::value_type> itppvector;
 	/**
 	   Initialize an ICA based of predefined data - this is unly used for test cases. 
 	 */
@@ -82,6 +84,16 @@ public:
 	 */
 	void run(size_t nica);
 
+        /**
+	   Run the independed component analysis with an estimation of the optimal number 
+	   of components. 
+	   \param max_ica maximum number of independend components 
+	   \param min_ica minimum number of independend components 
+	   \param corr_thresh minimum absolute correation of the mixing signals to joins two components 
+	*/
+	void run_auto(int max_ica, int min_ica, float corr_thresh=0.9); 
+	
+		
 	/// \returns the feature vector of \a row 
 	std::vector<float> get_feature_row(size_t row)const;
 
@@ -138,9 +150,9 @@ public:
 
 	 */
 	std::vector<float> normalize_Mix();
-private:
-	typedef itpp::Vec<itpp::mat::value_type> itppvector;
 
+	size_t get_ncomponents() const; 
+private:
 	void set_row(int row, const itppvector&  buffer, double mean);
 
 	struct CICAAnalysisImpl *impl;

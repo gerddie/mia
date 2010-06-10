@@ -38,6 +38,12 @@ class CSlopeClassifier {
 public:
 	typedef std::vector<std::vector<float> > Columns;
 
+	typedef struct  {
+		float corr;
+		int row1; 
+		int row2; 
+	} SCorrelation; 
+
 	CSlopeClassifier(const Columns& m, bool mean_stripped=false);
 	~CSlopeClassifier();
 
@@ -53,8 +59,9 @@ public:
 	/// \returns the absolute difference between the length ofthe longest and second longest curve in the list
 	float get_max_slope_length_diff() const; 
 
-	/// \returns the maximum value of the correlation between the curves 
-	float max_selfcorrelation()const; 
+	/// \returns the maximum value of the correlation between the curves and the corresponding rows 
+	SCorrelation  max_selfcorrelation()const; 
+	
 private:
 	struct CSlopeClassifierImpl *impl;
 };

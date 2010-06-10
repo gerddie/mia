@@ -167,4 +167,11 @@ void  TDataSeriesICA<Data>::normalize_Mix()
 		  boost::lambda::_1 + boost::lambda::_2); 
 }
 
+template <class Data> 
+size_t TDataSeriesICA<Data>::run_auto(int nica, int min_ica, float corr_thresh)
+{
+	m_analysis.run_auto(nica, min_ica, corr_thresh); 
+	return m_analysis.get_ncomponents(); 
+}
+
 NS_MIA_END

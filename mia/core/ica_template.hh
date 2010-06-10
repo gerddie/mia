@@ -68,6 +68,10 @@ public:
 	  \param ncomponents retained components 
 	*/
 	void run(size_t ncomponents);
+
+
+	size_t run_auto(int nica, int min_ica, float corr_thresh); 
+	
 	/** Normalizes the ICs to the range of [-1,1] and correct the mixing matrix accordingly. 
 	    This operation does not change the output of a mix. 
 	 */
