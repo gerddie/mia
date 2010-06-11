@@ -75,6 +75,8 @@ INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
 
 IF(NOT ${CXX_HAS_CXX_0X_AUTO})
   MESSAGE(FATAL_ERROR "This source code requires the c++0x auto type feature,")
+ELSE(NOT ${CXX_HAS_CXX_0X_AUTO})
+  MESSAGE(STATUS "CXX_HAS_CXX_0X_AUTO=${CXX_HAS_CXX_0X_AUTO}")
 ENDIF(NOT ${CXX_HAS_CXX_0X_AUTO})
 
 

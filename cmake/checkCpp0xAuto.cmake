@@ -1,5 +1,5 @@
 #
-# check existence of _Complex type (c++0x)
+# check support for auto typing (c++0x)
 #
 
 CHECK_CXX_SOURCE_COMPILES(
