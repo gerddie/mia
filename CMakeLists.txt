@@ -71,6 +71,13 @@ INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/macros.cmake)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/pluginmacro.cmake)
 INCLUDE (CheckTypeSize)
 
+INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
+
+IF(NOT ${CXX_HAS_CXX_0X_AUTO})
+  MESSAGE(ERROR "This source code requires the c++0x auto type feature")
+ENDIF(NOT ${CXX_HAS_CXX_0X_AUTO})
+
+
 ASSERT_SIZE(char 1)
 ASSERT_SIZE(short 2)
 ASSERT_SIZE(int 4)
