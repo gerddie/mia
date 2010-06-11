@@ -73,9 +73,12 @@ INCLUDE (CheckTypeSize)
 
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
 
-IF(NOT ${CXX_HAS_CXX_0X_AUTO})
-  MESSAGE(FATAL_ERROR "This source code requires the c++0x auto type feature,")
-ENDIF(NOT ${CXX_HAS_CXX_0X_AUTO})
+IF(NOT "${CXX_HAS_CXX_0X_AUTO}")
+  MESSAGE(FATAL_ERROR "This source code requires the c++0x auto type feature. "
+    "If your compiler is supposed to support this feature, "
+    "please enable the appropriate flags.\n" 
+    "for g++ >= 4.4 this is '-std=c++0x'" )
+ENDIF(NOT "${CXX_HAS_CXX_0X_AUTO}")
 
 
 ASSERT_SIZE(char 1)
