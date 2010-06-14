@@ -28,6 +28,7 @@
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
+//#include <mia/core/errormacro.hh>
 #include <mia/2d/2dimageio.hh>
 
 
@@ -318,8 +319,11 @@ struct png_dispatch_write<bool> {
 template <typename T>
 CPngImageSaver::result_type CPngImageSaver::operator ()(const T2DImage<T>& image)const
 {
-	if (!pixel_trait<T>::supported)
-		throw invalid_argument("input pixel format not supported by png writer");
+	if (!pixel_trait<T>::supported ) {
+		THROW(invalid_argument, "input pixel format '" 
+		      << typeid(T).name()
+		      << "' not supported by png writer"); 
+	}
 
 	png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
 						      NULL, NULL, NULL);

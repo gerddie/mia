@@ -327,11 +327,28 @@ CICAAnalysis::IndexSet get_LV_RV_Perfusion(const CSlopeClassifier::Columns& curv
 	return result;
 }
 
+struct convert2byte {
+	unsigned char operator() (float x) const {
+		if ( x < 0) 
+			return 0; 
+		if ( x > 255) 
+			return 255; 
+		return (unsigned char)x; 
+	}
+}; 
+
+P2DImage convert_to_ubyte(const C2DFImage&  pref) 
+{
+	C2DUBImage *result = new C2DUBImage(pref.get_size()); 
+	transform(pref.begin(), pref.end(), result->begin(), convert2byte()); 
+	return P2DImage(result); 
+}
 
 int do_main( int argc, const char *argv[] )
 {
 	string src_name("data0000.exr"); 
 	string out_name("ref"); 
+	string out_type("exr"); 
 	string crop_name("crop"); 
 	string coefs_name; 
 	size_t first =  2;
@@ -345,10 +362,15 @@ int do_main( int argc, const char *argv[] )
 	float LV_mask = 0.0; // no mask 
 	bool auto_comp = false; 
 
+	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 	CCmdOptionList options;
 	options.push_back(make_opt( src_name, "in-base", 'i', "input file name base", "input", false));
 	options.push_back(make_opt( coefs_name, "coefs", 0, "output mixing coefficients to this file", "coefs", false)); 
 	options.push_back(make_opt( out_name, "out-base", 'o', "output file name base", "output", false)); 
+
+	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
+				    "output file type" , "image-type"));
+
 	options.push_back(make_opt( first, "skip", 's', "skip images at beginning of series", "skip", false));
 	options.push_back(make_opt( last, "end", 'e', "last image in series", "end", false));
 	options.push_back(make_opt( components, "components", 'c', "nr. of components, 0=estimate automatically", 
@@ -367,9 +389,11 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( LV_mask, "LV-crop-amp", 'L', "LV crop mask amplification, 0.0 = don't crop", 
 				    "LV-crop", false)); 
 
+
+
 	options.push_back(make_opt( auto_comp, "auto-components", 'a', 
 				    "automatic esitmation of number of components based on correlation."
-				    " Implies -m and -n", "auto-components", false)); 
+				    " Implies -m and -n (Experimental)", false)); 
 	options.parse(argc, argv);
 
 	size_t start_filenum = 0;
@@ -464,10 +488,16 @@ int do_main( int argc, const char *argv[] )
 	}
 
 	for (size_t i = start_filenum; i < end_filenum; ++i) {
-		P2DImage reference(new C2DFImage(ica->get_partial_mix(i - start_filenum, component_set)));
+		C2DFImage *pref = new C2DFImage(ica->get_partial_mix(i - start_filenum, component_set)); 
+		P2DImage reference(pref);
+
+		// this is a quick hack that should be improved
+		if (out_type == "png")
+			reference = convert_to_ubyte(*pref); 
+
 		if (LV_mask > 0.0) {
 			stringstream scrop_name; 
-			scrop_name << crop_name << setw(format_width) << setfill('0') << i << ".exr"; 
+			scrop_name << crop_name << setw(format_width) << setfill('0') << i << "." << out_type; 
 			string src_name = create_filename(src_basename.c_str(), i);
 			if (cropper) {
 				reference = cropper->filter(*reference); 
@@ -480,7 +510,7 @@ int do_main( int argc, const char *argv[] )
 			}
 		}
 		stringstream fname; 
-		fname << out_name << setw(format_width) << setfill('0') << i << ".exr"; 
+		fname << out_name << setw(format_width) << setfill('0') << i << "." << out_type; 
 
 		if (!save_image2d(fname.str(), reference)) 
 			THROW(runtime_error, "unable to save " << fname.str() << "\n"); 
