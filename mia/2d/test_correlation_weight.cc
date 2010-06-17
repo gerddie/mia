@@ -25,7 +25,7 @@
 
 
 #include <mia/2d/correlation_weight.hh>
-//#include <mia/2d/pseudo_ground_thruth.hh>
+#include <mia/2d/ground_truth_evaluator.hh>
 
 
 
@@ -65,18 +65,25 @@ BOOST_FIXTURE_TEST_CASE( test_correlation, PseudoGroundTruthFixture )
 
 }; 
 
-#if 0
 BOOST_FIXTURE_TEST_CASE( test_pseudo_ground_truth, PseudoGroundTruthFixture ) 
 {
 	const double alpha = 1.0; 
 	const double beta = 1.0; 
 	const double rho_th = 1.0; 
 	
-	CGroundThruthEvaluator gte(alpha, beta, rho_th); 
-	vector<P2DImage> pgt = gte(work_images); 
-	
+	C2DGroundTruthEvaluator gte(alpha, beta, rho_th); 
+	vector<P2DImage> pgt = gte(input_series); 
+
+	BOOST_CHECK_EQUAL(pgt.size(), N); 
+	BOOST_REQUIRE(pgt.size() == N); 
+			  
+	for (size_t i = 0; i < N; ++i) {
+		BOOST_CHECK_EQUAL(pgt[i]->get_size(), input_series[i]->get_size()); 
+		// what should the output look like ??
+	}
 }
-#endif
+
+
 
 PseudoGroundTruthFixture::PseudoGroundTruthFixture():
 	size(3,3),

@@ -15,6 +15,7 @@ SET(MIA2D_SRC_BASE
   imagecostbase.cc
   interpolator.cc 
   fatcost.cc
+  ground_truth_evaluator.cc
   filterchain.cc
   model.cc
   modelsolverreg.cc
@@ -85,6 +86,7 @@ SET(MIA2D_HEADERS_BASE
   fatcost.hh
   filterchain.hh
   fftkernel.hh
+  ground_truth_evaluator.hh
   imagecostbase.hh
   interpolator.hh
   matrix.hh
