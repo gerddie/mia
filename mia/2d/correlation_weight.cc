@@ -30,7 +30,7 @@ using boost::lambda::_2;
 struct CCorrelationEvaluatorImpl {
 	CCorrelationEvaluatorImpl(double thresh); 
 	
-	CCorrelationEvaluator::result_type run(const vector<C2DFImage>& images) const;
+	CCorrelationEvaluator::result_type run(const vector<P2DImage>& images) const;
 private: 
 
 	double m_thresh; 
@@ -72,7 +72,7 @@ CCorrelationEvaluator::~CCorrelationEvaluator()
 }
 
 
-CCorrelationEvaluator::result_type CCorrelationEvaluator::operator() (const vector<C2DFImage>& images) const
+CCorrelationEvaluator::result_type CCorrelationEvaluator::operator() (const vector<P2DImage>& images) const
 {
 	return impl->run(images); 
 }
@@ -83,12 +83,12 @@ CCorrelationEvaluatorImpl::CCorrelationEvaluatorImpl(double thresh):
 {
 }
 
-CCorrelationEvaluator::result_type CCorrelationEvaluatorImpl::run(const vector<C2DFImage>& images) const
+CCorrelationEvaluator::result_type CCorrelationEvaluatorImpl::run(const vector<P2DImage>& images) const
 {
 	// accumulate sums 
-	FCorrelationAccumulator acc(images[0].get_size(), m_thresh); 
+	FCorrelationAccumulator acc(images[0]->get_size(), m_thresh); 
 	for (auto i = images.begin(); i != images.end(); ++i) 
-		acc(*i);
+		mia::accumulate(acc,**i);
 
 	CCorrelationEvaluator::result_type result;
 	result.horizontal = acc.get_horizontal_corr();

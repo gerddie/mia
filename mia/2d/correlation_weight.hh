@@ -35,7 +35,7 @@ public:
 	CCorrelationEvaluator(double thresh); 
 	~CCorrelationEvaluator(); 
 	
-	result_type operator() (const std::vector<C2DFImage>& images) const; 
+	result_type operator() (const std::vector<P2DImage>& images) const; 
 	
 public: 
 	struct CCorrelationEvaluatorImpl *impl; 
