@@ -174,4 +174,12 @@ size_t TDataSeriesICA<Data>::run_auto(int nica, int min_ica, float corr_thresh)
 	return m_analysis.get_ncomponents(); 
 }
 
+
+template <class Data> 
+void TDataSeriesICA<Data>::set_max_iterations(int n)
+{
+	m_analysis.set_max_iterations(n); 
+}
+
+
 NS_MIA_END

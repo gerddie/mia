@@ -27,6 +27,8 @@
 #include <ostream>
 #include <fstream>
 #include <map>
+#include <ctime>
+#include <cstdlib>
 #include <boost/lambda/lambda.hpp>
 #include <mia/core.hh>
 #include <mia/core/fft1d_r2c.hh>
@@ -42,11 +44,15 @@ NS_MIA_USE;
 using boost::lambda::_1; 
 using boost::lambda::_2; 
 
-unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean, size_t& components, bool ica_normalize )
+unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean, 
+				      size_t& components, bool ica_normalize, int max_iterations)
 {
+	srand(time(NULL)); 
 	unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(series, false)); 
 	if (components > 0) {
+		ica->set_max_iterations(max_iterations); 
 		ica->run(components);
+		
 		if (strip_mean) 
 			ica->normalize_Mix();
 		if (ica_normalize) 
@@ -57,6 +63,7 @@ unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean
 		float min_cor = 0.0; 
 		for (int i = 7; i > 3; --i) {
 			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false)); 
+			ica->set_max_iterations(max_iterations); 
 			l_ica->run(i);
 			
 			if (strip_mean) 
@@ -70,11 +77,7 @@ unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean
 			if (min_cor < max_slope) {
 				min_cor = max_slope; 
 				components = i; 
-#ifndef __GXX_EXPERIMENTAL_CXX0X__
-				ica = l_ica; 
-#else
 				ica.swap(l_ica); 
-#endif
 				
 			}
 		}
@@ -361,6 +364,7 @@ int do_main( int argc, const char *argv[] )
 	string numbered_feature_image; 
 	float LV_mask = 0.0; // no mask 
 	bool auto_comp = false; 
+	int max_iterations = 0; 
 
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 	CCmdOptionList options;
@@ -381,6 +385,10 @@ int do_main( int argc, const char *argv[] )
 	
 	options.push_back(make_opt(skip_only_periodic,"strip_periodic",'p', "strip only periodic component", "periodic", 
 				   false)); 
+
+	options.push_back(make_opt(max_iterations,"max-ica-iterations",'x', "max ICA solver iterations", "iaxiter", 
+				   false)); 
+
 	options.push_back(make_opt( ica_normalize, "ica_normalize", 'n', "ica_normalize feature images", 
 				    "ica_normalize", false)); 
 	options.push_back(make_opt( numbered_feature_image, "all-features", 0, "save all feature images to",
@@ -430,7 +438,7 @@ int do_main( int argc, const char *argv[] )
 	// always strip mean
 	unique_ptr<C2DImageSeriesICA> ica = auto_comp ? 
 		get_ica_auto(series, components ):
-		get_ica(series, strip_mean, components, ica_normalize); 
+		get_ica(series, strip_mean, components, ica_normalize, max_iterations); 
 	CSlopeClassifier::Columns curves = ica->get_mixing_curves(); 
 
 	CICAAnalysis::IndexSet component_set = skip_only_periodic ? 

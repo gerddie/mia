@@ -8,6 +8,7 @@ SET(MIA2D_SRC_BASE
   BoundingBox.cc
   cost.cc
   costbase.cc
+  correlation_weight.cc 
   creator.cc
   distances.cc
   divcurlmatrix.cc
@@ -75,6 +76,7 @@ SET(MIA2D_HEADERS_BASE
   BoundingBox.hh
   cost.hh
   costbase.hh
+  correlation_weight.hh 
   creator.hh
   defines2d.hh
   deformer.hh
@@ -169,6 +171,8 @@ TEST_2DMIA(oldnewintegrate)
 
 TEST_2DMIA(costbase)
 TEST_2DMIA(imagecostbase)
+TEST_2DMIA(correlation_weight)
+
 TEST_2DMIA(divcurlmatrix)
 
 IF(ITPP_FOUND)

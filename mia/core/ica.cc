@@ -53,6 +53,8 @@ struct CICAAnalysisImpl {
 	size_t m_ncomponents;
 	size_t m_nlength;
 	size_t m_rows;
+
+	int m_max_iterations; 
 };
 
 
@@ -94,6 +96,9 @@ void CICAAnalysis::run(size_t nica)
 	fastICA.set_nrof_independent_components(nica);
 	fastICA.set_non_linearity(  FICA_NONLIN_TANH  );
 	fastICA.set_approach( FICA_APPROACH_DEFL );
+	if (impl->m_max_iterations > 0) 
+		fastICA.set_max_num_iterations(impl->m_max_iterations); 
+
 	fastICA.separate();
 
 	impl->m_ICs = fastICA.get_independent_components();
@@ -364,7 +369,8 @@ CICAAnalysisImpl::CICAAnalysisImpl(size_t rows, size_t length):
 	m_mean(rows),
 	m_ncomponents(0),
 	m_nlength(0),
-	m_rows(0)
+	m_rows(0),
+	m_max_iterations(0)
 {
 	cvdebug() << "Analyis of signal with " << rows << " data rows of " << length << " entries\n"; 
 }
@@ -376,7 +382,8 @@ CICAAnalysisImpl::CICAAnalysisImpl(const itpp::mat& ic, const itpp::mat& mix, co
 	m_mean(mean),
 	m_ncomponents(mix.cols()),
 	m_nlength(ic.cols()),
-	m_rows(mix.rows())
+	m_rows(mix.rows()),
+	m_max_iterations(0)
 {
 }
 
@@ -458,6 +465,12 @@ std::vector<float> CICAAnalysisImpl::normalize_Mix()
 			result[k] += mean * m_ICs(c, k);
 	}
 	return result; 
+}
+
+
+void CICAAnalysis::set_max_iterations(int n)
+{
+	impl->m_max_iterations = n; 
 }
 
 NS_MIA_END

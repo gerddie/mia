@@ -127,6 +127,13 @@ public:
 	   \param series new mixing data 
 	 */
 	void set_mixing_series(size_t index, const std::vector<float>& series);
+
+
+	/**
+	   sets the number of iterations in the ICA 
+	   \param n 
+	 */
+	void set_max_iterations(int n); 
 	
 
 	~TDataSeriesICA();

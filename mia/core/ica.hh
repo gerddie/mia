@@ -151,7 +151,15 @@ public:
 	 */
 	std::vector<float> normalize_Mix();
 
+
+	/// \returns the number of actual ICs
 	size_t get_ncomponents() const; 
+
+	/**
+	   sets the number of iterations in the ICA 
+	   \param n 
+	 */
+	void set_max_iterations(int n); 
 private:
 	void set_row(int row, const itppvector&  buffer, double mean);
 
