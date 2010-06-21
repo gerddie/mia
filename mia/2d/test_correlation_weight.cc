@@ -28,7 +28,6 @@
 #include <mia/2d/ground_truth_evaluator.hh>
 
 
-
 struct PseudoGroundTruthFixture {
 	PseudoGroundTruthFixture(); 
 
@@ -59,8 +58,7 @@ BOOST_FIXTURE_TEST_CASE( test_correlation, PseudoGroundTruthFixture )
 
 	// positive but below threshold
 	BOOST_CHECK_CLOSE(result.vertical(1,1)+1,   1.0,0.1); 
-
-
+	
 	BOOST_CHECK_CLOSE(result.vertical(0,1),   0.88659,0.1); 
 
 }; 
@@ -69,7 +67,7 @@ BOOST_FIXTURE_TEST_CASE( test_pseudo_ground_truth, PseudoGroundTruthFixture )
 {
 	const double alpha = 1.0; 
 	const double beta = 1.0; 
-	const double rho_th = 1.0; 
+	const double rho_th = 0.3; 
 	
 	C2DGroundTruthEvaluator gte(alpha, beta, rho_th); 
 	vector<P2DImage> pgt = gte(input_series); 
@@ -80,6 +78,12 @@ BOOST_FIXTURE_TEST_CASE( test_pseudo_ground_truth, PseudoGroundTruthFixture )
 	for (size_t i = 0; i < N; ++i) {
 		BOOST_CHECK_EQUAL(pgt[i]->get_size(), input_series[i]->get_size()); 
 		// what should the output look like ??
+		
+		cvdebug() << "image " << i << "\n"; 
+		const C2DFImage& img = dynamic_cast<const C2DFImage&>(*pgt[i]); 
+		for(auto pixel = img.begin(); pixel != img.end(); ++pixel) 
+			cverb  << " " << *pixel; 
+		cverb  << "\n";
 	}
 }
 
@@ -90,13 +94,12 @@ PseudoGroundTruthFixture::PseudoGroundTruthFixture():
 	N(4)
 {
 	const float init[4][3*3] = {
-		{ 0, 4, 0,  1, 1, 2,  3, 1, 0}, 
-		{ 0, 3, 0,  2, 2, 3,  3, 1, 0}, 
-		{ 0, 2, 0,  3, 3, 4,  4, 2, 0}, 
-		{ 0, 1, 0,  4, 4, 4,  7, 1, 0}
+		{ 0, 4, 0,  1, 1, 2,  3, 1, 1.1}, 
+		{ 0, 3, 0,  2, 2, 3,  3, 1, 1.2}, 
+		{ 0, 2, 0,  3, 3, 4,  4, 2, 1.3}, 
+		{ 0, 1, 0,  4, 4, 4,  7, 1, 1.4}
 	}; 
 	for (size_t i = 0; i < N; ++i) 
 		input_series.push_back(P2DImage(new C2DFImage(size, init[i]))); 
-
 	
 }

@@ -16,6 +16,7 @@ SET(MIA2D_SRC_BASE
   interpolator.cc 
   fatcost.cc
   ground_truth_evaluator.cc
+  groundtruthproblem.cc
   filterchain.cc
   model.cc
   modelsolverreg.cc
@@ -87,6 +88,7 @@ SET(MIA2D_HEADERS_BASE
   filterchain.hh
   fftkernel.hh
   ground_truth_evaluator.hh
+  groundtruthproblem.hh
   imagecostbase.hh
   interpolator.hh
   matrix.hh
@@ -174,6 +176,7 @@ TEST_2DMIA(oldnewintegrate)
 TEST_2DMIA(costbase)
 TEST_2DMIA(imagecostbase)
 TEST_2DMIA(correlation_weight)
+TEST_2DMIA(groundtruthproblem)
 
 TEST_2DMIA(divcurlmatrix)
 
