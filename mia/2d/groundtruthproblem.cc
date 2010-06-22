@@ -50,13 +50,13 @@ void GroundTruthProblem::evaluate_slice_gradient(DoubleVector::const_iterator ii
 		
 		// evaluate first row
 		for (size_t x = 0; x < m_slice_size.x - 1; ++x)
-			iout[x] += (ii[x+1] - ii[x]) * icorH[x]; 
+			iout[x] = (ii[x+1] - ii[x]) * icorH[x]; 
+		
 		for (size_t x = 1; x < m_slice_size.x; ++x)
 			iout[x] += (ii[x] - ii[x-1]) * icorH[x-1]; 
 
 		for (size_t x = 0; x < m_slice_size.x; ++x)
 			iout[x] += (ii[x+m_slice_size.x] - ii[x]) * icorV[x]; 
-
 	}
 	
 	for (size_t y = 1;  y < m_slice_size.y - 1; ++y)  {
@@ -68,15 +68,16 @@ void GroundTruthProblem::evaluate_slice_gradient(DoubleVector::const_iterator ii
 		auto icorVp = m_corr.vertical.begin_at(0,y); 
 
 		for (size_t x = 0; x < m_slice_size.x - 1; ++x)
-			iiout[x] += (iii[x+1] - iii[x]) * icorH[x]; 
+			iiout[x] = (iii[x+1] - iii[x]) * icorH[x]; 
 
 		for (size_t x = 1; x < m_slice_size.x; ++x)
 			iiout[x] += (iii[x] - iii[x-1]) * icorH[x-1]; 
 		
 		for (size_t x = 0; x < m_slice_size.x; ++x)
-			iiout[x] += (iii[x+m_slice_size.x] - iii[x])* icorVm[x]; 
+			iiout[x] += (iii[x+m_slice_size.x] - iii[x])* icorVp[x]; 
+		
 		for (size_t x = 0; x < m_slice_size.x; ++x)
-			iiout[x] += (iii[x] - iii[x-m_slice_size.x])* icorVp[x]; 
+			iiout[x] += (iii[x] - iii[x-m_slice_size.x])* icorVm[x]; 
 
 	}
 	{
@@ -87,11 +88,11 @@ void GroundTruthProblem::evaluate_slice_gradient(DoubleVector::const_iterator ii
 		auto icorVm = m_corr.vertical.begin_at(0,m_slice_size.y - 2); 
 	// evaluate last row
 		for (size_t x = 0; x < m_slice_size.x - 1; ++x) {
-			iiout[x] += (iii[x+1] - iii[x]) * icorH[x]; 
+			iiout[x] = (iii[x+1] - iii[x]) * icorH[x]; 
 		}
 		
 		for (size_t x = 0; x < m_slice_size.x; ++x)
-			iiout[x] += (iii[x] - iii[x-m_slice_size.x])* icorVm[x]; 
+			iiout[x] += (iii[x] - iii[x-m_slice_size.x]) * icorVm[x]; 
 		
 		for (size_t x = 1; x < m_slice_size.x; ++x) 
 			iiout[x] += (iii[x] - iii[x-1]) * icorH[x-1]; 

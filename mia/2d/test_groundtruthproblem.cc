@@ -52,17 +52,35 @@ BOOST_AUTO_TEST_CASE( test_time_gradient )
 		0, 2, 0,  3, 3, 4,  4, 2, 1, 
 		0, 1, 0,  4, 4, 4,  7, 1, 1
 	}; 
+	
+	float xgrad[4 * 6] = {
+		4, -4,   0, 0.5,  -1, 0,  
+		3, -3,   0, 0.5,  -1, 0, 
+		2, -2,   0, 0.5,  -1, 0, 
+		1, -1,   0, 0,    -3, 0
+	}; 
+
+	float ygrad[4 * 6] = {
+		0, -3, 2,  2,     0, -1,  
+		0, -1, 3,  0.5,-0.5, -2,
+		0,  1, 4,  0.5,-0.5, -3, 
+
+		0,  3, 4,  1.5,-1.5, -3
+	};
+	
 
 	double time_derivative[psize] = {
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 
 		0, 0, 0, 0, 0, 0,-1,-1, 0, 
-		0, 0, 0, 0, 0, 1,-2, 2, 0
+		0, 0, 0, 0, 0, 1,-2, 2, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0
 	}; 
 
 	double space_derivative[psize] = {
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 
-		0, 0, 0, 0, 0, 0,-1,-1, 0, 
-		0, 0, 0, 0, 0, 1,-2, 2, 0
+		4, -3, -2,   1, -2.5, 1.5,      0, -1, -1,
+		3, -1,  0, 0.5,   -1, 1.5,   -0.5, -1.5, -2,
+		2,  1,  2, 0.5,  1.0, 1.5,   -0.5,-1.5, -3,
+		1,  3,  3, 1.5,  1.5,   1,   -1.5, -4.5, -3
 	}; 
 	
 
@@ -80,6 +98,7 @@ BOOST_AUTO_TEST_CASE( test_time_gradient )
 	DoubleVector g(psize); 
 	gta.df(x, &gta, g);
 	gta.check_time_derivative(time_derivative); 
+	gta.check_spacial_gradient(space_derivative); 
 }
 
 
@@ -87,8 +106,12 @@ BOOST_AUTO_TEST_CASE( test_time_gradient )
 void GroundTruthAccess::check_vector_equal(const vector<double>& result, const double *test)
 {
 	BOOST_REQUIRE(psize == result.size()); 
-	for(auto sg = result.begin(), t = test; sg !=result.end(); ++t, ++ sg)
-	    BOOST_CHECK_CLOSE(*sg + 0.31, *t + 0.31, 0.1); 
+	size_t i = 0; 
+	for(auto sg = result.begin(), t = test; sg !=result.end(); ++t, ++sg, ++i) {
+		if (*sg != *t) 
+			cvfail() << i << "\n"; 
+		BOOST_CHECK_CLOSE(*sg, *t, 0.1); 
+	}
 }
 
 GroundTruthAccess::GroundTruthAccess(const DoubleVector& left_side,
