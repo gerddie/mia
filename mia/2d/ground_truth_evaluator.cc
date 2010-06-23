@@ -30,7 +30,7 @@ using namespace std;
 
 struct C2DGroundTruthEvaluatorImpl {
 	C2DGroundTruthEvaluatorImpl(double alpha, double beta, double rho); 
-	std::vector<P2DImage> run(const std::vector<P2DImage>& originals) const; 
+	void run(const std::vector<P2DImage>& originals, std::vector<P2DImage>& estimate) const; 
 private: 
 	double m_alpha;
 	double m_beta; 
@@ -48,9 +48,9 @@ C2DGroundTruthEvaluator::~C2DGroundTruthEvaluator()
 	delete impl; 
 }
 
-std::vector<P2DImage> C2DGroundTruthEvaluator::operator () (const std::vector<P2DImage>& originals) const
+void C2DGroundTruthEvaluator::operator () (const std::vector<P2DImage>& originals, std::vector<P2DImage>& estimate) const
 {
-	return impl->run(originals); 
+	impl->run(originals, estimate); 
 }
 
 C2DGroundTruthEvaluatorImpl::C2DGroundTruthEvaluatorImpl(double alpha, double beta, double rho):
@@ -76,7 +76,8 @@ private:
 
 	
 
-std::vector<P2DImage> C2DGroundTruthEvaluatorImpl::run(const std::vector<P2DImage>& originals) const
+void C2DGroundTruthEvaluatorImpl::run(const std::vector<P2DImage>& originals, 
+						       std::vector<P2DImage>& estimate) const
 {
 	CCorrelationEvaluator ce(m_rho); 
 	auto correlation = ce(originals); 
@@ -91,26 +92,38 @@ std::vector<P2DImage> C2DGroundTruthEvaluatorImpl::run(const std::vector<P2DImag
 	for (auto io = originals.begin(); io != originals.end(); ++io)
 		::mia::accumulate(dc, **io); 
 
+	gsl::DoubleVector output(n,false);
+	if (estimate.size() == originals.size()) {
+		DataCopy dc(output, slice_size);
+		for (auto io = estimate.begin(); io != estimate.end(); ++io)
+			::mia::accumulate(dc, **io); 
+	}else {
+		copy(input.begin(), input.end(), output.begin()); 
+		estimate.resize(originals.size()); 
+	}
+		
+		
+
 	gsl::CFDFMinimizer::PProblem gtp(new GroundTruthProblem(m_alpha, m_beta, originals[0]->get_size(), 
 					    originals.size(), input, correlation));
 
 	gsl::CFDFMinimizer minimizer(gtp,  gsl_multimin_fdfminimizer_vector_bfgs2);
 	
-	DoubleVector gt(input);
-	minimizer.run(gt); 
+	int min_status = minimizer.run(output); 
+	if (min_status != GSL_SUCCESS) {
+		cvwarn() << "C2DGroundTruthEvaluator: evaluation stopped with reason '"
+			 << gsl_strerror (min_status) << "'\n"; 
+	}
 	 
 	// copy back the result 
-	std::vector<P2DImage> result(originals.size()); 
-	auto igt = gt.begin(); 
+	auto igt = output.begin(); 
 
 	for(size_t i = 0; i < originals.size(); ++i) {
 		C2DFImage *image = new C2DFImage(originals[0]->get_size()); 
 		copy(igt, igt + slice_size, image->begin()); 
-		result[i] = P2DImage(image); 
+		estimate[i] = P2DImage(image); 
 		igt += slice_size; 
 	}
-	
-	return result; 
 }
 
 DataCopy::DataCopy(DoubleVector& target, size_t slice_size):

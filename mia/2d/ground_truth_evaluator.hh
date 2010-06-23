@@ -35,7 +35,8 @@ class C2DGroundTruthEvaluator {
 public: 
 	C2DGroundTruthEvaluator(double alpha, double beta, double rho); 
 	~C2DGroundTruthEvaluator(); 
-	std::vector<P2DImage> operator () (const std::vector<P2DImage>& originals) const; 
+	void operator () (const std::vector<P2DImage>& originals, 
+			  std::vector<P2DImage>& estimate) const; 
 private: 
 	struct C2DGroundTruthEvaluatorImpl *impl; 
 }; 

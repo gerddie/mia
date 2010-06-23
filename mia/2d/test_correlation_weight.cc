@@ -63,14 +63,20 @@ BOOST_FIXTURE_TEST_CASE( test_correlation, PseudoGroundTruthFixture )
 
 }; 
 
-BOOST_FIXTURE_TEST_CASE( test_pseudo_ground_truth, PseudoGroundTruthFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_pseudo_ground_truth_no_extra_gradients, PseudoGroundTruthFixture ) 
 {
-	const double alpha = 1.0; 
-	const double beta = 1.0; 
+	const double alpha = 0.0; 
+	const double beta = 0.0; 
 	const double rho_th = 0.3; 
 	
 	C2DGroundTruthEvaluator gte(alpha, beta, rho_th); 
-	vector<P2DImage> pgt = gte(input_series); 
+	
+	vector<P2DImage> pgt; 
+	for (size_t i = 0; i < N; ++i) 
+		pgt.push_back(P2DImage(new C2DFImage(size))); 
+
+	gte(input_series, pgt); 
+
 
 	BOOST_CHECK_EQUAL(pgt.size(), N); 
 	BOOST_REQUIRE(pgt.size() == N); 
@@ -78,12 +84,46 @@ BOOST_FIXTURE_TEST_CASE( test_pseudo_ground_truth, PseudoGroundTruthFixture )
 	for (size_t i = 0; i < N; ++i) {
 		BOOST_CHECK_EQUAL(pgt[i]->get_size(), input_series[i]->get_size()); 
 		// what should the output look like ??
+		const C2DFImage& res = dynamic_cast<const C2DFImage&>(*pgt[i]); 
+		const C2DFImage& inp = dynamic_cast<const C2DFImage&>(*input_series[i]); 
 		
-		cvdebug() << "image " << i << "\n"; 
-		const C2DFImage& img = dynamic_cast<const C2DFImage&>(*pgt[i]); 
-		for(auto pixel = img.begin(); pixel != img.end(); ++pixel) 
-			cverb  << " " << *pixel; 
-		cverb  << "\n";
+		BOOST_CHECK_EQUAL(res.get_size(), inp.get_size()); 
+		BOOST_REQUIRE(res.size() == inp.size()); 
+		
+		for(auto r = res.begin(), i = inp.begin(); r != res.end(); ++r, ++i) 
+			BOOST_CHECK_CLOSE(*r, *i, 0.1); 
+	}
+}
+
+BOOST_FIXTURE_TEST_CASE( test_pseudo_ground_truth_with_temp_gradients, PseudoGroundTruthFixture ) 
+{
+	const double alpha = 0.0; 
+	const double beta = 0.5; 
+	const double rho_th = 0.3; 
+	
+	C2DGroundTruthEvaluator gte(alpha, beta, rho_th); 
+	
+	vector<P2DImage> pgt; 
+	//	for (size_t i = 0; i < N; ++i) 
+	//	pgt.push_back(P2DImage(new C2DFImage(size))); 
+
+	gte(input_series, pgt); 
+
+
+	BOOST_CHECK_EQUAL(pgt.size(), N); 
+	BOOST_REQUIRE(pgt.size() == N); 
+			  
+	for (size_t i = 0; i < N; ++i) {
+		BOOST_CHECK_EQUAL(pgt[i]->get_size(), input_series[i]->get_size()); 
+		// what should the output look like ??
+		const C2DFImage& res = dynamic_cast<const C2DFImage&>(*pgt[i]); 
+		const C2DFImage& inp = dynamic_cast<const C2DFImage&>(*input_series[i]); 
+		
+		BOOST_CHECK_EQUAL(res.get_size(), inp.get_size()); 
+		BOOST_REQUIRE(res.size() == inp.size()); 
+		
+		for(auto r = res.begin(), i = inp.begin(); r != res.end(); ++r, ++i) 
+			BOOST_CHECK_CLOSE(*r, *i, 0.1); 
 	}
 }
 

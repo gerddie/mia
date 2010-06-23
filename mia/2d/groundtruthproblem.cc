@@ -18,6 +18,7 @@
 */
 
 
+#include <numeric>
 #include <mia/2d/groundtruthproblem.hh>
 
 NS_MIA_BEGIN
@@ -42,21 +43,32 @@ GroundTruthProblem::GroundTruthProblem(double a, double b,
 }
 
 
-void GroundTruthProblem::evaluate_slice_gradient(DoubleVector::const_iterator ii,  vector<double>::iterator iout) 
+double GroundTruthProblem::evaluate_slice_gradient(DoubleVector::const_iterator ii,  vector<double>::iterator iout) 
 {
+	double value = 0.0; 
 	{
 		auto icorH = m_corr.horizontal.begin(); 
 		auto icorV = m_corr.vertical.begin(); 
 		
 		// evaluate first row
-		for (size_t x = 0; x < m_slice_size.x - 1; ++x)
-			iout[x] = (ii[x+1] - ii[x]) * icorH[x]; 
-		
-		for (size_t x = 1; x < m_slice_size.x; ++x)
-			iout[x] += (ii[x] - ii[x-1]) * icorH[x-1]; 
+		for (size_t x = 0; x < m_slice_size.x; ++x) {
+			const double delta = ii[x] - ii[x+m_slice_size.x] ; 
+			iout[x] = 2 * delta * icorV[x]; 
+			value += delta * delta * icorV[x]; 
+		}
 
-		for (size_t x = 0; x < m_slice_size.x; ++x)
-			iout[x] += (ii[x+m_slice_size.x] - ii[x]) * icorV[x]; 
+		for (size_t x = 0; x < m_slice_size.x - 1; ++x) {
+			const double delta =  ii[x] - ii[x+1]; 
+			iout[x] += 2 * delta * icorH[x]; 
+			value += delta * delta * icorH[x];
+		}
+		
+		for (size_t x = 1; x < m_slice_size.x; ++x) {
+			const double delta = ii[x] - ii[x-1]; 
+			iout[x] += 2 * delta * icorH[x-1]; 
+			value += delta * delta * icorH[x - 1];
+		}
+
 	}
 	
 	for (size_t y = 1;  y < m_slice_size.y - 1; ++y)  {
@@ -67,18 +79,30 @@ void GroundTruthProblem::evaluate_slice_gradient(DoubleVector::const_iterator ii
 		auto icorVm = m_corr.vertical.begin_at(0,y-1); 
 		auto icorVp = m_corr.vertical.begin_at(0,y); 
 
-		for (size_t x = 0; x < m_slice_size.x - 1; ++x)
-			iiout[x] = (iii[x+1] - iii[x]) * icorH[x]; 
+		for (size_t x = 0; x < m_slice_size.x; ++x) {
+			double delta = iii[x] - iii[x+m_slice_size.x]; 
+			iiout[x] = 2 * delta * icorVp[x]; 
+			value += delta * delta * icorVp[x]; 
+		}
 
-		for (size_t x = 1; x < m_slice_size.x; ++x)
-			iiout[x] += (iii[x] - iii[x-1]) * icorH[x-1]; 
-		
-		for (size_t x = 0; x < m_slice_size.x; ++x)
-			iiout[x] += (iii[x+m_slice_size.x] - iii[x])* icorVp[x]; 
-		
-		for (size_t x = 0; x < m_slice_size.x; ++x)
-			iiout[x] += (iii[x] - iii[x-m_slice_size.x])* icorVm[x]; 
+		for (size_t x = 0; x < m_slice_size.x; ++x) {
+			double delta = iii[x] - iii[x - m_slice_size.x]; 
+			iiout[x] += 2 * delta * icorVm[x]; 
+			value += delta * delta * icorVm[x]; 
+		}			
 
+
+		for (size_t x = 0; x < m_slice_size.x - 1; ++x) {
+			double delta = iii[x] - iii[x+1]; 
+			iiout[x] += 2 * delta * icorH[x]; 
+			value += delta * delta * icorH[x]; 
+		}
+
+		for (size_t x = 1; x < m_slice_size.x; ++x) {
+			double delta = iii[x] - iii[x-1]; 
+			iiout[x] += 2 * delta * icorH[x-1]; 
+			value +=  delta * delta * icorH[x-1]; 
+		}
 	}
 	{
 		
@@ -87,66 +111,94 @@ void GroundTruthProblem::evaluate_slice_gradient(DoubleVector::const_iterator ii
 		auto icorH = m_corr.horizontal.begin_at(0,m_slice_size.y - 1); 
 		auto icorVm = m_corr.vertical.begin_at(0,m_slice_size.y - 2); 
 	// evaluate last row
+		
+		for (size_t x = 0; x < m_slice_size.x; ++x) {
+			double delta = iii[x] - iii[x-m_slice_size.x]; 
+			iiout[x] = 2 * delta * icorVm[x]; 
+			value +=  delta * delta * icorVm[x]; 
+		}
+
 		for (size_t x = 0; x < m_slice_size.x - 1; ++x) {
-			iiout[x] = (iii[x+1] - iii[x]) * icorH[x]; 
+			double delta = iii[x] - iii[x+1]; 
+			iiout[x] += 2 * delta * icorH[x]; 
+			value +=  delta * delta * icorH[x]; 
 		}
 		
-		for (size_t x = 0; x < m_slice_size.x; ++x)
-			iiout[x] += (iii[x] - iii[x-m_slice_size.x]) * icorVm[x]; 
-		
-		for (size_t x = 1; x < m_slice_size.x; ++x) 
-			iiout[x] += (iii[x] - iii[x-1]) * icorH[x-1]; 
+		for (size_t x = 1; x < m_slice_size.x; ++x) {
+			double delta = iii[x] - iii[x-1]; 
+			iiout[x] += 2 * delta * icorH[x-1]; 
+			value +=  delta * delta * icorH[x-1]; 
+		}
 	}
+	return value; 
 }
 
-void GroundTruthProblem::evaluate_spacial_gradients(const DoubleVector& x)
+double GroundTruthProblem::evaluate_spacial_gradients(const DoubleVector& x)
 {
+	double result = 0.0; 
 	m_spacial_gradient.resize(x.size()); 
 	
 	for(size_t f = 0; f < m_nframes; ++f) {
-		evaluate_slice_gradient(x.begin() + f *m_frame_size, 
-					m_spacial_gradient.begin() + f *m_frame_size); 
+		result += evaluate_slice_gradient(x.begin() + f *m_frame_size, 
+						  m_spacial_gradient.begin() + f *m_frame_size); 
 	}
+	cvinfo() << "evaluate_spacial_gradients=" << result << "\n"; 
+	return result; 
 }
 
-void GroundTruthProblem::evaluate_time_gradients(const DoubleVector& x)
+double  GroundTruthProblem::evaluate_time_gradients(const DoubleVector& x)
 {
+	double value = 0.0; 
 	m_time_derivative.resize(x.size()); 
-	
+
 	fill(m_time_derivative.begin(), m_time_derivative.begin() + m_frame_size, 0.0); 
 	auto im = x.begin(); 
 	auto ii = x.begin() + m_frame_size; 
 	auto ip = x.begin() + 2 * m_frame_size; 
 	
-	auto io = m_time_derivative.begin() + m_frame_size; 
+	auto ih = m_time_derivative.begin() + m_frame_size; 
 
 	for(size_t f = 1; f < m_nframes - 1; ++f) {
-		for (size_t k = 0; k < m_frame_size; ++k, ++io, ++ip, ++im, ++ii)
-			*io = 2* *ii - *im - *ip; 
+		cvdebug() << f << ":"; 
+		for (size_t k = 0; k < m_frame_size; ++k, ++ih, ++ip, ++im, ++ii) {
+			double v =  2 * *ii - *im - *ip; 
+			value += v * v; 
+			
+			*ih = 4 * v - 2 * *ii; 
+			if (f > 1) 
+				*ih += im[-m_frame_size]; 
+			if (f < m_nframes - 2)
+				*ih += ip[m_frame_size]; 
+			cverb <<"("<< value << ") " << *ih << " "; 
+			*ih *= -1; 
+		}
+		cverb << "\n"; 
 	}
-
-	fill(io, m_time_derivative.end(), 0.0);
+	fill(ih, m_time_derivative.end(), 0.0);
+	return value; 
 }
 
 
 double  GroundTruthProblem::do_f(const DoubleVector& x)
 {
+	double spacial_cost = evaluate_spacial_gradients(x); 
+	double temporal_cost = evaluate_time_gradients(x); 
+
 	double result = 0.0; 
 	for(auto ix = x.begin(), il = m_left_side.begin(); 
 	    ix != x.end(); ++ix, ++il) {
 		double v = *ix - *il; 
 		result += v*v; 
 	}
+	cvinfo() << "sum delta^2 = " << result << "\n"; 
 	
 	// inner product them with alpha 
-	for (auto i = m_spacial_gradient.begin(); i != m_spacial_gradient.end(); ++i) 
-		result += *i * *i * m_a; 
+	result += m_a * spacial_cost; 
 
-	// inner product then with beta 
-	for (auto i = m_time_derivative.begin(); i != m_time_derivative.end(); ++i) 
-		result += *i * *i * m_b; 
+	cvinfo() << "temporal_cost=" << temporal_cost << "\n"; 
+	result += temporal_cost * m_b; 
 
-	cvinfo() << "GroundTruthProblem::f = " << result << "\n"; 
+	cvinfo() << "GroundTruthProblem::f = " << 0.5 * result << "\n"; 
 	return result * 0.5; 
 }
 
@@ -161,9 +213,9 @@ void GroundTruthProblem::do_df(const DoubleVector&  x, DoubleVector&  g)
 	auto ddt = m_time_derivative.begin(); 
 	auto dds = m_spacial_gradient.begin(); 
 	
-	cvdebug() << " GroundTruthProblem::g = "; 
+	cvmsg() << " GroundTruthProblem::g = "; 
 	for (auto ig = g.begin(); ig != g.end(); ++ig, ++ix, ++ddt, ++dds, ++il) {
-		*ig =  *ix - *il + m_a * *dds + m_b * *ddt; 
+		*ig =  *ix - *il + m_a * *dds - m_b * *ddt; 
 		cverb << *ig << " "; 
 	}
 	cverb  << "\n"; 
@@ -172,8 +224,8 @@ void GroundTruthProblem::do_df(const DoubleVector&  x, DoubleVector&  g)
 
 double  GroundTruthProblem::do_fdf(const DoubleVector&  x, DoubleVector&  g)
 {
-	evaluate_spacial_gradients(x); 
-	evaluate_time_gradients(x); 
+	const double spacial_cost = evaluate_spacial_gradients(x); 
+	const double temporal_cost = evaluate_time_gradients(x); 
 
 	auto ix = x.begin(); 
 	auto il = m_left_side.begin(); 
@@ -193,14 +245,16 @@ double  GroundTruthProblem::do_fdf(const DoubleVector&  x, DoubleVector&  g)
 		result += v*v; 
 	}
 
-	for (auto i = m_spacial_gradient.begin(); i != m_spacial_gradient.end(); ++i) 
-		result += *i * *i * m_a; 
+	result += spacial_cost * m_a + m_b * temporal_cost; 
 
-	for (auto i = m_time_derivative.begin(); i != m_time_derivative.end(); ++i) 
-		result += *i * *i * m_b; 
-	
 	cvinfo() << "GroundTruthProblem::fdf = " << result << "\n"; 
 	return result * 0.5; 	
+}
+
+void GroundTruthProblem::set_alpha_beta(double a, double b)
+{
+	m_a = a; 
+	m_b = b;
 }
 
 const std::vector<double>& GroundTruthProblem::get_spacial_gradient() const

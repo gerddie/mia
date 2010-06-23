@@ -16,6 +16,8 @@ public:
 			   const gsl::DoubleVector& left_side, 
 			   const  CCorrelationEvaluator::result_type& corr); 
 
+	void set_alpha_beta(double a, double b); 
+
 protected: 
 	const std::vector<double>& get_spacial_gradient() const; 
 	const std::vector<double>& get_time_derivative() const; 
@@ -24,9 +26,9 @@ private:
 	virtual void    do_df(const gsl::DoubleVector&  x, gsl::DoubleVector&  g); 
 	virtual double  do_fdf(const gsl::DoubleVector&  x, gsl::DoubleVector&  g); 
 	
-	void evaluate_spacial_gradients(const gsl::DoubleVector& x); 
-	void evaluate_time_gradients(const gsl::DoubleVector& x); 
-	void evaluate_slice_gradient(gsl::DoubleVector::const_iterator ii,  std::vector<double>::iterator iout); 
+	double evaluate_spacial_gradients(const gsl::DoubleVector& x); 
+	double  evaluate_time_gradients(const gsl::DoubleVector& x); 
+	double evaluate_slice_gradient(gsl::DoubleVector::const_iterator ii,  std::vector<double>::iterator iout); 
 
 	std::vector<double> m_spacial_gradient; 
 	std::vector<double> m_time_derivative;
