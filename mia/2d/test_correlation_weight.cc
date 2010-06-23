@@ -95,17 +95,16 @@ BOOST_FIXTURE_TEST_CASE( test_pseudo_ground_truth_no_extra_gradients, PseudoGrou
 	}
 }
 
-BOOST_FIXTURE_TEST_CASE( test_pseudo_ground_truth_with_temp_gradients, PseudoGroundTruthFixture ) 
+
+BOOST_FIXTURE_TEST_CASE( test_run_pseudo_ground_truth_evaluation, PseudoGroundTruthFixture ) 
 {
-	const double alpha = 0.0; 
-	const double beta = 0.5; 
+	const double alpha = 1.0; 
+	const double beta = 1.0; 
 	const double rho_th = 0.3; 
 	
 	C2DGroundTruthEvaluator gte(alpha, beta, rho_th); 
 	
 	vector<P2DImage> pgt; 
-	//	for (size_t i = 0; i < N; ++i) 
-	//	pgt.push_back(P2DImage(new C2DFImage(size))); 
 
 	gte(input_series, pgt); 
 
@@ -121,13 +120,14 @@ BOOST_FIXTURE_TEST_CASE( test_pseudo_ground_truth_with_temp_gradients, PseudoGro
 		
 		BOOST_CHECK_EQUAL(res.get_size(), inp.get_size()); 
 		BOOST_REQUIRE(res.size() == inp.size()); 
-		
+
+		cvmsg() << "GTimg(" << i << ")=["; 
 		for(auto r = res.begin(), i = inp.begin(); r != res.end(); ++r, ++i) 
-			BOOST_CHECK_CLOSE(*r, *i, 0.1); 
+			cverb << *r << " "; 
+		cverb << "]\n"; 
+		
 	}
 }
-
-
 
 PseudoGroundTruthFixture::PseudoGroundTruthFixture():
 	size(3,3),

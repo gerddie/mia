@@ -43,7 +43,9 @@ GroundTruthProblem::GroundTruthProblem(double a, double b,
 }
 
 
-double GroundTruthProblem::evaluate_slice_gradient(DoubleVector::const_iterator ii,  vector<double>::iterator iout) 
+// this function can certainly be optimized 
+double GroundTruthProblem::evaluate_slice_gradient(DoubleVector::const_iterator ii,  
+						   vector<double>::iterator iout) 
 {
 	double value = 0.0; 
 	{
@@ -142,12 +144,17 @@ double GroundTruthProblem::evaluate_spacial_gradients(const DoubleVector& x)
 		result += evaluate_slice_gradient(x.begin() + f *m_frame_size, 
 						  m_spacial_gradient.begin() + f *m_frame_size); 
 	}
-	cvinfo() << "evaluate_spacial_gradients=" << result << "\n"; 
 	return result; 
 }
 
 double  GroundTruthProblem::evaluate_time_gradients(const DoubleVector& x)
 {
+	/*
+	  The finite difference test shows that in the first and in the last 
+	  slice the gradient needs the factor 5, while in the other slices a 
+	  factor 6 is used (the latter follows from a proper derivation)
+	 */
+
 	double value = 0.0; 
 	m_time_derivative.resize(x.size()); 
 
@@ -212,8 +219,10 @@ double  GroundTruthProblem::do_f(const DoubleVector& x)
 	// inner product them with alpha 
 	result += m_a * spacial_cost; 
 	result += m_b * temporal_cost; 
+	result *=  0.5; 
+	cvmsg() << "GroundTruthProblem::f = " << result << "\n"; 
 
-	return result * 0.5; 
+	return result; 
 }
 
 void GroundTruthProblem::do_df(const DoubleVector&  x, DoubleVector&  g)
@@ -225,13 +234,10 @@ void GroundTruthProblem::do_df(const DoubleVector&  x, DoubleVector&  g)
 	auto il = m_left_side.begin(); 
 	auto ddt = m_time_derivative.begin(); 
 	auto dds = m_spacial_gradient.begin(); 
-	
-	cvmsg() << " GroundTruthProblem::g = "; 
+
 	for (auto ig = g.begin(); ig != g.end(); ++ig, ++ix, ++ddt, ++dds, ++il) {
-		*ig =  *ix - *il + m_a * *dds + m_b * *ddt; 
-		cverb << *ig << " "; 
+		*ig =  (*ix - *il) + m_a * *dds + m_b * *ddt; 
 	}
-	cverb  << "\n"; 
 
 }
 
@@ -239,7 +245,6 @@ double  GroundTruthProblem::do_fdf(const DoubleVector&  x, DoubleVector&  g)
 {
 	const double spacial_cost = evaluate_spacial_gradients(x); 
 	const double temporal_cost = evaluate_time_gradients(x); 
-
 
 	double result = 0.0; 
 	for(auto ix = x.begin(), il = m_left_side.begin(); 
@@ -260,7 +265,10 @@ double  GroundTruthProblem::do_fdf(const DoubleVector&  x, DoubleVector&  g)
 		*ig =  *ix - *il + m_a * *dds + m_b * *ddt; 
 	}
 
-	return result * 0.5; 
+	result *=  0.5; 
+	cvmsg() << "GroundTruthProblem::f = " << result << "\n"; 
+
+	return result; 
 
 }
 

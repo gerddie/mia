@@ -45,7 +45,8 @@ struct FCorrelationAccumulator : public TFilter<bool> {
 
 	FCorrelationAccumulator(const C2DBounds & size); 
 
-	bool operator ()(const C2DFImage& image); 
+	template <typename T> 
+	bool operator ()(const T2DImage<T>& image); 
 
 	P2DImage get_horizontal_corr() const;
 	P2DImage get_vertical_corr() const;
@@ -228,21 +229,21 @@ bool FCorrelationAccumulator::operator ()(const T2DImage<T>& image)
 	return true; 
 }
 
-C2DFImage FCorrelationAccumulator::get_horizontal_corr() const
+P2DImage FCorrelationAccumulator::get_horizontal_corr() const
 {
 	if (!len) 
 		THROW(invalid_argument, "No input images"); 
 
 
-	C2DFImage resultC2DFImage(C2DBounds(size.x-1, size.y)); 
-	
+	C2DFImage *result = new C2DFImage(C2DBounds(size.x-1, size.y)); 
+	P2DImage presult(result); 
 	for (size_t y = 0; y < size.y; ++y) {
 		auto irow_xy = sxy_horizontal.begin_at(0,y); 
 		auto irow_xx = sx2.begin_at(0,y);
 		auto irow_yy = sx2.begin_at(1,y);
 		auto irow_x  = sx.begin_at(0,y);
 		auto irow_y  = sx.begin_at(1,y);
-		auto orow    = result.begin_at(0,y); 
+		auto orow    = result->begin_at(0,y); 
 
 		for (size_t x = 1; x < size.x; 
 		     ++x, ++irow_xy, ++irow_xx, ++irow_yy, ++irow_x, ++irow_y, ++orow) {
@@ -261,15 +262,16 @@ C2DFImage FCorrelationAccumulator::get_horizontal_corr() const
 		}
 		++irow_xy; ++irow_xx; ++irow_yy; ++irow_x; ++irow_y;
 	}
-	return result; 
+	return presult; 
 }
 
-C2DFImage FCorrelationAccumulator::get_vertical_corr() const
+P2DImage FCorrelationAccumulator::get_vertical_corr() const
 {
 	if (!len) 
 		THROW(invalid_argument, "No input images"); 
 
-	C2DFImage result(C2DBounds(size.x, size.y-1)); 
+	C2DFImage *result= new C2DFImage(C2DBounds(size.x, size.y-1)); 
+	P2DImage presult(result); 
 	
 	for (size_t y = 0; y < size.y-1; ++y) {
 		auto irow_xy = sxy_vertical.begin_at(0,y); 
@@ -277,7 +279,7 @@ C2DFImage FCorrelationAccumulator::get_vertical_corr() const
 		auto irow_yy = sx2.begin_at(0,y+1);
 		auto irow_x  = sx.begin_at(0,y);
 		auto irow_y  = sx.begin_at(0,y+1);
-		auto orow    = result.begin_at(0,y); 
+		auto orow    = result->begin_at(0,y); 
 
 		for (size_t x = 0; x < size.x; 
 		     ++x, ++irow_xy, ++irow_xx, ++irow_yy, ++irow_x, ++irow_y, ++orow) {
@@ -294,6 +296,6 @@ C2DFImage FCorrelationAccumulator::get_vertical_corr() const
 				*orow = (ssxy * ssxy) /  (ssxx * ssyy); 
 		}
 	}
-	return result; 	
+	return presult; 	
 }
 
