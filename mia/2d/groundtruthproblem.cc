@@ -151,30 +151,46 @@ double  GroundTruthProblem::evaluate_time_gradients(const DoubleVector& x)
 	double value = 0.0; 
 	m_time_derivative.resize(x.size()); 
 
-	fill(m_time_derivative.begin(), m_time_derivative.begin() + m_frame_size, 0.0); 
+	auto im2 = x.begin(); 
 	auto im = x.begin(); 
-	auto ii = x.begin() + m_frame_size; 
-	auto ip = x.begin() + 2 * m_frame_size; 
-	
-	auto ih = m_time_derivative.begin() + m_frame_size; 
+	auto ii = x.begin(); 
+	auto ip = x.begin() + m_frame_size; 
+	auto ip2 = x.begin() + 2*m_frame_size; 
+	auto ih = m_time_derivative.begin(); 
 
-	for(size_t f = 1; f < m_nframes - 1; ++f) {
-		cvdebug() << f << ":"; 
-		for (size_t k = 0; k < m_frame_size; ++k, ++ih, ++ip, ++im, ++ii) {
-			double v =  2 * *ii - *im - *ip; 
-			value += v * v; 
-			
-			*ih = 4 * v - 2 * *ii; 
-			if (f > 1) 
-				*ih += im[-m_frame_size]; 
-			if (f < m_nframes - 2)
-				*ih += ip[m_frame_size]; 
-			cverb <<"("<< value << ") " << *ih << " "; 
-			*ih *= -1; 
-		}
-		cverb << "\n"; 
+	for (size_t k = 0; k < m_frame_size; ++k, ++ih, ++ip, ++ii, ++ip2) {
+		double v =  2 * *ii - *ip; 
+		value += v * v; 
+		*ih = 4 * *ip - 5 * *ii - *ip2; 
 	}
-	fill(ih, m_time_derivative.end(), 0.0);
+
+	for (size_t k = 0; k < m_frame_size; ++k, ++ih, ++ip, ++ii, ++ip2, ++im) {
+		double v =  2 * *ii - *ip - *im; 
+		value += v * v; 
+		*ih = 4 * (*ip + *im) - 5 *  *ii -  *ip2; 
+	}
+
+	for(size_t f = 2; f < m_nframes - 2; ++f) {
+		for (size_t k = 0; k < m_frame_size; ++k, ++ih, ++ip, ++im, ++ii, ++ip2, ++im2) {
+			double v =  2 * *ii - *ip - *im; 
+			value += v * v; 
+			*ih = 4 * (*ip + *im) - 5 * *ii -  (*ip2 + *im2); 
+		}
+
+	}
+
+	for (size_t k = 0; k < m_frame_size; ++k, ++ih, ++im, ++ii, ++ip, ++im2) {
+		double v =  2 * *ii - *ip - *im; 
+		value += v * v; 
+		*ih = 4 * (*ip + *im) - 5 * *ii -  *im2; 
+	}
+
+	for (size_t k = 0; k < m_frame_size; ++k, ++ih, ++im, ++ii, ++im2) {
+		double v =  2 * *ii -  *im; 
+		value += v * v; 
+		*ih = 4 * *im - 5 * *ii -  *im2; 
+	}
+
 	return value; 
 }
 

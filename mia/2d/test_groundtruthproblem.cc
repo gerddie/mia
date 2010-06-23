@@ -28,9 +28,9 @@
 using namespace mia; 
 using gsl::DoubleVector; 
 
-const size_t N = 4; 
+const size_t N = 5; 
 const C2DBounds slice_size(3,3); 
-const size_t psize = 4 * 9; 
+const size_t psize = 5 * 9; 
 
 
 struct GroundTruthAccess: public GroundTruthProblem {
@@ -79,15 +79,15 @@ BOOST_FIXTURE_TEST_CASE( test_time_and_space_gradient, GroundTruthFixture )
 
 BOOST_FIXTURE_TEST_CASE( test_value, GroundTruthFixture ) 
 {
-	BOOST_CHECK_CLOSE(pgta->f(x, pgta.get()), 306.5, 0.01); 
+	BOOST_CHECK_CLOSE(pgta->f(x, pgta.get()), 458.5, 0.01); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_value_diff, GroundTruthFixture ) 
 {
 	x[4] += 0.1; 
-	BOOST_CHECK_CLOSE(pgta->f(x, pgta.get()), 305.94, 0.01); 
+	BOOST_CHECK_CLOSE(pgta->f(x, pgta.get()), 457.96, 0.01); 
 	x[4] -= 0.1; 
-	BOOST_CHECK_CLOSE(pgta->f(x, pgta.get()), 306.5, 0.01); 
+	BOOST_CHECK_CLOSE(pgta->f(x, pgta.get()), 458.5, 0.01); 
 }
 
 
@@ -132,12 +132,12 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_temporal_direct, GroundTruthFixture 
 	pgta->df(x, pgta.get(), g);
 
 	float grad[psize] = {
-		0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0,-5, 0, 0, 0,-2,-3,-5,-1,
-		0, 0, 0,-5,-5,-2,-13,5,-1,
-		0, 0, 0, 0, 0, 0, 0, 0, 0
+		0, 10, 0,  0,  0,  2, 7,  3,  2,
+		0, -8, 0, -2, -2, -5, -6, -6, -2,
+		0, -2, 0, -8, -8, -6,-17,  3,-2,
+		0,  0, 0, 10, 10,  7, 22, -2,  2,
+		0, -2, 0, -13, -13, -12, -24, -2, -3
 	}; 
-
 
 	for(size_t i = 0; i < psize; ++i) {
 		BOOST_CHECK_CLOSE(100 + g[i], 100 + grad[i], 0.1); 
@@ -156,20 +156,52 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_spacial_direct, GroundTruthFixture )
 		-8, 22, -12, -2, -7,  7,  4, -2,  -2,
 		-6, 14, -12, -1, -2,  11, 3, -3,  -4, 
 		-4,  6, -12, -1,  2,  15, 3, -3,  -6, 
-		-2,  -2,-10, -3,  9,  14, 9, -9,  -6
+		-2,  -2,-10, -3,  9,  14, 9, -9,  -6,
+		0, 0, 0,  0, 0, 0,  0, 0, 0
 	};
 
-	for(size_t i = 0; i < 27; ++i) {
-		
+	for(size_t i = 0; i < psize; ++i)
 		BOOST_CHECK_CLOSE(g[i], grad[i], 0.1); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_gradient_only_spacial_finite_diff, GroundTruthFixture ) 
+{
+	pgta->set_alpha_beta(1.0,0.0); 
+	
+	copy(x.begin(), x.end(), left_side.begin());
+	DoubleVector g(psize); 
+	pgta->df(x, pgta.get(), g);
+
+	const double h = 0.0001; 
+
+	// only test inside 
+	for(size_t i = 0; i < psize; ++i) {
+		DoubleVector xp(x); 
+		DoubleVector xm(x); 
+		
+		xp[i] += h; 
+		xm[i] -= h; 
+
+		// bug in g++ ? 
+		BOOST_REQUIRE(xp[i] == x[i] + h); 
+		BOOST_REQUIRE(xm[i] == x[i] - h); 
+
+		cvdebug() << x[i] << " xm = " << xm[i] << " xp= " << xp[i] << "\n"; 
+
+		double fp = pgta->f(xp, pgta.get());
+		double fm = pgta->f(xm, pgta.get());
+		double df = (fp - fm) / (2 * h); 
+
+		BOOST_CHECK_CLOSE(g[i], df, 0.1); 
 	}
+
 }
 
 
-#if 0
+#if 1
 // in theory this test should also run through, but maybe it needs a larger series 
 // to create the accuracy needed 
-BOOST_FIXTURE_TEST_CASE( test_gradient_only_temporal, GroundTruthFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_gradient_only_temporal_finite_diff, GroundTruthFixture ) 
 {
 	pgta->set_alpha_beta(0.0,1.0); 
 	
@@ -181,7 +213,7 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_temporal, GroundTruthFixture )
 	const double h = 0.0001; 
 
 	// only test inside 
-	for(size_t i = 9; i < psize-9; ++i) {
+	for(size_t i = 0; i < 9; ++i) {
 		DoubleVector xp(x); 
 		DoubleVector xm(x); 
 		
@@ -245,7 +277,8 @@ GroundTruthFixture::GroundTruthFixture():
 		0, 4, 0,  1, 1, 2,  3, 1, 1, 
 		0, 3, 0,  2, 2, 3,  3, 1, 1, 
 		0, 2, 0,  3, 3, 4,  4, 2, 1, 
-		0, 1, 0,  4, 4, 4,  7, 1, 1
+		0, 1, 0,  4, 4, 4,  7, 1, 1,
+		0, 0, 0,  0, 0, 0,  0, 0, 0
 	}; 
 
 	
