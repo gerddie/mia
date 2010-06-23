@@ -52,31 +52,6 @@ struct GroundTruthFixture {
 	unique_ptr<GroundTruthAccess> pgta; 
 }; 
 
-#if 0
-BOOST_FIXTURE_TEST_CASE( test_time_and_space_gradient, GroundTruthFixture ) 
-{
-	// manually evaluated gradients
-	double time_derivative[psize] = {
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 
-		0, 0, 0, 0, 0, 0,-1,-1, 0, 
-		0, 0, 0, 0, 0, 1,-2, 2, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0
-	}; 
-
-	double space_derivative[psize] = {
-		4, -3, -2,   1, -2.5, 1.5,      0, -1, -1,
-		3, -1,  0, 0.5,   -1, 1.5,   -0.5, -1.5, -2,
-		2,  1,  2, 0.5,  1.0, 1.5,   -0.5,-1.5, -3,
-		1,  3,  3, 1.5,  1.5,   1,   -1.5, -4.5, -3
-	}; 
-	
-	DoubleVector g(psize); 
-	pgta->df(x, pgta.get(), g);
-	pgta->check_time_derivative(time_derivative); 
-	pgta->check_spacial_gradient(space_derivative); 
-}
-#endif
-
 BOOST_FIXTURE_TEST_CASE( test_value, GroundTruthFixture ) 
 {
 	BOOST_CHECK_CLOSE(pgta->f(x, pgta.get()), 458.5, 0.01); 
@@ -123,27 +98,6 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_value, GroundTruthFixture )
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_gradient_only_temporal_direct, GroundTruthFixture ) 
-{
-	pgta->set_alpha_beta(0.0,1.0); 
-	
-	copy(x.begin(), x.end(), left_side.begin());
-	DoubleVector g(psize); 
-	pgta->df(x, pgta.get(), g);
-
-	float grad[psize] = {
-		0, 10, 0,  0,  0,  2, 7,  3,  2,
-		0, -8, 0, -2, -2, -5, -6, -6, -2,
-		0, -2, 0, -8, -8, -6,-17,  3,-2,
-		0,  0, 0, 10, 10,  7, 22, -2,  2,
-		0, -2, 0, -13, -13, -12, -24, -2, -3
-	}; 
-
-	for(size_t i = 0; i < psize; ++i) {
-		BOOST_CHECK_CLOSE(100 + g[i], 100 + grad[i], 0.1); 
-	}
-}
-
 BOOST_FIXTURE_TEST_CASE( test_gradient_only_spacial_direct, GroundTruthFixture ) 
 {
 	pgta->set_alpha_beta(1.0,0.0); 
@@ -163,6 +117,41 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_spacial_direct, GroundTruthFixture )
 	for(size_t i = 0; i < psize; ++i)
 		BOOST_CHECK_CLOSE(g[i], grad[i], 0.1); 
 }
+
+#if 1
+BOOST_FIXTURE_TEST_CASE( test_gradient_all_finite_diff, GroundTruthFixture ) 
+{
+	pgta->set_alpha_beta(1.0,1.0); 
+
+	
+	DoubleVector g(psize); 
+	pgta->df(x, pgta.get(), g);
+
+	const double h = 0.0001; 
+
+	// only test inside 
+	for(size_t i = 0; i < psize; ++i) {
+		DoubleVector xp(x); 
+		DoubleVector xm(x); 
+		
+		xp[i] += h; 
+		xm[i] -= h; 
+
+		// bug in g++ ? 
+		BOOST_REQUIRE(xp[i] == x[i] + h); 
+		BOOST_REQUIRE(xm[i] == x[i] - h); 
+
+		cvdebug() << x[i] << " xm = " << xm[i] << " xp= " << xp[i] << "\n"; 
+
+		double fp = pgta->f(xp, pgta.get());
+		double fm = pgta->f(xm, pgta.get());
+		double df = (fp - fm) / (2 * h); 
+
+		BOOST_CHECK_CLOSE(g[i], df, 0.1); 
+	}
+
+}
+#endif
 
 BOOST_FIXTURE_TEST_CASE( test_gradient_only_spacial_finite_diff, GroundTruthFixture ) 
 {
@@ -197,10 +186,27 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_spacial_finite_diff, GroundTruthFixt
 
 }
 
+BOOST_FIXTURE_TEST_CASE( test_gradient_only_temporal_direct, GroundTruthFixture ) 
+{
+	pgta->set_alpha_beta(0.0,1.0); 
+	
+	copy(x.begin(), x.end(), left_side.begin());
+	DoubleVector g(psize); 
+	pgta->df(x, pgta.get(), g);
 
-#if 1
-// in theory this test should also run through, but maybe it needs a larger series 
-// to create the accuracy needed 
+	float grad[psize] = {
+		0, 10, 0,  0,  0,  2, 7,  3,  2,
+		0, -5, 0,  0,  0, -2, -3, -5, -1,
+		0,  0, 0, -5, -5, -2,-13,  5, -1,
+		0,  1, 0, 14, 14, 11, 29, -1,  3,
+		0, -2, 0, -13, -13, -12, -24, -2, -3
+	}; 
+
+	for(size_t i = 0; i < psize; ++i) {
+		BOOST_CHECK_CLOSE(100 + g[i], 100 + grad[i], 0.1); 
+	}
+}
+
 BOOST_FIXTURE_TEST_CASE( test_gradient_only_temporal_finite_diff, GroundTruthFixture ) 
 {
 	pgta->set_alpha_beta(0.0,1.0); 
@@ -213,7 +219,7 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_temporal_finite_diff, GroundTruthFix
 	const double h = 0.0001; 
 
 	// only test inside 
-	for(size_t i = 0; i < 9; ++i) {
+	for(size_t i = 0; i < 36; ++i) {
 		DoubleVector xp(x); 
 		DoubleVector xm(x); 
 		
@@ -237,8 +243,6 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_temporal_finite_diff, GroundTruthFix
 		BOOST_CHECK_CLOSE(100 + g[i], 100 + df, 0.1); 
 	}
 }
-#endif
-
 
 void GroundTruthAccess::check_vector_equal(const vector<double>& result, const double *test)
 {

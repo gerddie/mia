@@ -159,36 +159,39 @@ double  GroundTruthProblem::evaluate_time_gradients(const DoubleVector& x)
 	auto ih = m_time_derivative.begin(); 
 
 	for (size_t k = 0; k < m_frame_size; ++k, ++ih, ++ip, ++ii, ++ip2) {
-		double v =  2 * *ii - *ip; 
+		const double v =  2 * *ii - *ip; 
 		value += v * v; 
-		*ih = 4 * *ip - 5 * *ii - *ip2; 
+		*ih = 5 * *ii + *ip2 - 4 * *ip; 
 	}
 
 	for (size_t k = 0; k < m_frame_size; ++k, ++ih, ++ip, ++ii, ++ip2, ++im) {
-		double v =  2 * *ii - *ip - *im; 
+		const double imp = *ip + *im; 
+		const double v =  2 * *ii - imp; 
 		value += v * v; 
-		*ih = 4 * (*ip + *im) - 5 *  *ii -  *ip2; 
+		*ih = 6 *  *ii +  *ip2 - 4 * imp; 
 	}
 
 	for(size_t f = 2; f < m_nframes - 2; ++f) {
 		for (size_t k = 0; k < m_frame_size; ++k, ++ih, ++ip, ++im, ++ii, ++ip2, ++im2) {
-			double v =  2 * *ii - *ip - *im; 
+			const double imp = *ip + *im; 
+			const double v =  2 * *ii - imp; 
 			value += v * v; 
-			*ih = 4 * (*ip + *im) - 5 * *ii -  (*ip2 + *im2); 
+			*ih = 6 * *ii +  (*ip2 + *im2)  - 4 * imp; 
 		}
 
 	}
 
 	for (size_t k = 0; k < m_frame_size; ++k, ++ih, ++im, ++ii, ++ip, ++im2) {
-		double v =  2 * *ii - *ip - *im; 
+		const double imp = *ip + *im; 
+		double v =  2 * *ii - imp; 
 		value += v * v; 
-		*ih = 4 * (*ip + *im) - 5 * *ii -  *im2; 
+		*ih = 6 * *ii +  *im2 - 4 * imp; 
 	}
 
 	for (size_t k = 0; k < m_frame_size; ++k, ++ih, ++im, ++ii, ++im2) {
 		double v =  2 * *ii -  *im; 
 		value += v * v; 
-		*ih = 4 * *im - 5 * *ii -  *im2; 
+		*ih = 5 * *ii +  *im2 - 4 * *im; 
 	}
 
 	return value; 
@@ -206,15 +209,10 @@ double  GroundTruthProblem::do_f(const DoubleVector& x)
 		double v = *ix - *il; 
 		result += v*v; 
 	}
-	cvinfo() << "sum delta^2 = " << result << "\n"; 
-	
 	// inner product them with alpha 
 	result += m_a * spacial_cost; 
+	result += m_b * temporal_cost; 
 
-	cvinfo() << "temporal_cost=" << temporal_cost << "\n"; 
-	result += temporal_cost * m_b; 
-
-	cvinfo() << "GroundTruthProblem::f = " << 0.5 * result << "\n"; 
 	return result * 0.5; 
 }
 
@@ -223,7 +221,6 @@ void GroundTruthProblem::do_df(const DoubleVector&  x, DoubleVector&  g)
 	evaluate_spacial_gradients(x); 
 	evaluate_time_gradients(x); 
 
-	
 	auto ix = x.begin(); 
 	auto il = m_left_side.begin(); 
 	auto ddt = m_time_derivative.begin(); 
@@ -231,7 +228,7 @@ void GroundTruthProblem::do_df(const DoubleVector&  x, DoubleVector&  g)
 	
 	cvmsg() << " GroundTruthProblem::g = "; 
 	for (auto ig = g.begin(); ig != g.end(); ++ig, ++ix, ++ddt, ++dds, ++il) {
-		*ig =  *ix - *il + m_a * *dds - m_b * *ddt; 
+		*ig =  *ix - *il + m_a * *dds + m_b * *ddt; 
 		cverb << *ig << " "; 
 	}
 	cverb  << "\n"; 
@@ -243,16 +240,6 @@ double  GroundTruthProblem::do_fdf(const DoubleVector&  x, DoubleVector&  g)
 	const double spacial_cost = evaluate_spacial_gradients(x); 
 	const double temporal_cost = evaluate_time_gradients(x); 
 
-	auto ix = x.begin(); 
-	auto il = m_left_side.begin(); 
-	auto ddt = m_time_derivative.begin(); 
-	auto dds = m_spacial_gradient.begin(); 
-	cvdebug() << " GroundTruthProblem::g = "; 
-	for (auto ig = g.begin(); ig != g.end(); ++ig, ++ix, ++ddt, ++dds, ++il) {
-		*ig =  *ix - *il + m_a * *dds + m_b * *ddt; 
-		cverb << *ig << " "; 
-	}
-	cverb << "\n"; 
 
 	double result = 0.0; 
 	for(auto ix = x.begin(), il = m_left_side.begin(); 
@@ -260,11 +247,21 @@ double  GroundTruthProblem::do_fdf(const DoubleVector&  x, DoubleVector&  g)
 		double v = *ix - *il; 
 		result += v*v; 
 	}
+       
+	result += m_a * spacial_cost; 
+	result += m_b * temporal_cost; 
 
-	result += spacial_cost * m_a + m_b * temporal_cost; 
+	auto ix = x.begin(); 
+	auto il = m_left_side.begin(); 
+	auto ddt = m_time_derivative.begin(); 
+	auto dds = m_spacial_gradient.begin(); 
+	
+	for (auto ig = g.begin(); ig != g.end(); ++ig, ++ix, ++ddt, ++dds, ++il) {
+		*ig =  *ix - *il + m_a * *dds + m_b * *ddt; 
+	}
 
-	cvinfo() << "GroundTruthProblem::fdf = " << result << "\n"; 
-	return result * 0.5; 	
+	return result * 0.5; 
+
 }
 
 void GroundTruthProblem::set_alpha_beta(double a, double b)
