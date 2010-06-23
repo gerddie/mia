@@ -97,7 +97,7 @@ int do_main( int argc, const char *argv[] )
 	for (size_t i = start_filenum; i < end_filenum; ++i) {	
 		stringstream fname; 
 		fname << out_name << setw(format_width) << setfill('0') << i << "." << out_type; 
-		if (!save_image2d(fname.str(), pgt[i]))
+		if (!save_image2d(fname.str(), pgt[i - start_filenum]))
 			THROW(runtime_error, "unable to save '"<< fname.str() << "'"); 
 	}
 	return EXIT_SUCCESS; 
