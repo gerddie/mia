@@ -166,16 +166,16 @@ double  GroundTruthProblem::evaluate_time_gradients(const DoubleVector& x)
 	auto ih = m_time_derivative.begin(); 
 
 	for (size_t k = 0; k < m_frame_size; ++k, ++ih, ++ip, ++ii, ++ip2) {
-		const double v =  2 * *ii - *ip; 
+		const double v =  2 * *ii - 2 * *ip ; 
 		value += v * v; 
-		*ih = 5 * *ii + *ip2 - 4 * *ip; 
+		*ih = 5 * *ii +  *ip2 - 6 * *ip; 
 	}
 
 	for (size_t k = 0; k < m_frame_size; ++k, ++ih, ++ip, ++ii, ++ip2, ++im) {
 		const double imp = *ip + *im; 
 		const double v =  2 * *ii - imp; 
 		value += v * v; 
-		*ih = 6 *  *ii +  *ip2 - 4 * imp; 
+		*ih = 9 *  *ii +  *ip2 - 6 * *im - 4 * *ip; 
 	}
 
 	for(size_t f = 2; f < m_nframes - 2; ++f) {
@@ -192,13 +192,13 @@ double  GroundTruthProblem::evaluate_time_gradients(const DoubleVector& x)
 		const double imp = *ip + *im; 
 		double v =  2 * *ii - imp; 
 		value += v * v; 
-		*ih = 6 * *ii +  *im2 - 4 * imp; 
+		*ih = 9 *  *ii +  *im2 - 6 * *ip - 4 * *im; 
 	}
 
 	for (size_t k = 0; k < m_frame_size; ++k, ++ih, ++im, ++ii, ++im2) {
-		double v =  2 * *ii -  *im; 
+		double v =  2 * *ii -  2 * *im; 
 		value += v * v; 
-		*ih = 5 * *ii +  *im2 - 4 * *im; 
+		*ih = 5 * *ii +  *im2 - 6 * *im; 
 	}
 
 	return value; 

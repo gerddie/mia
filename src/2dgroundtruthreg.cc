@@ -89,6 +89,10 @@ int do_main( int argc, const char *argv[] )
 			THROW(runtime_error, "image " << src_name << " not found");  
 		series.push_back(image);
 	}
+
+	if (series.size() < 5) {
+		THROW(runtime_error, "no input images found.");  
+	}
 	
 	C2DGroundTruthEvaluator gte(alpha, beta, rho_thresh); 
 	vector<P2DImage> pgt; 

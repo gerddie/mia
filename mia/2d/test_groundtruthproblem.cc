@@ -54,15 +54,15 @@ struct GroundTruthFixture {
 
 BOOST_FIXTURE_TEST_CASE( test_value, GroundTruthFixture ) 
 {
-	BOOST_CHECK_CLOSE(pgta->f(x, pgta.get()), 458.5, 0.01); 
+	BOOST_CHECK_CLOSE(pgta->f(x, pgta.get()), 598, 0.01); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_value_diff, GroundTruthFixture ) 
 {
 	x[4] += 0.1; 
-	BOOST_CHECK_CLOSE(pgta->f(x, pgta.get()), 457.96, 0.01); 
+	BOOST_CHECK_CLOSE(pgta->f(x, pgta.get()), 597.056, 0.01); 
 	x[4] -= 0.1; 
-	BOOST_CHECK_CLOSE(pgta->f(x, pgta.get()), 458.5, 0.01); 
+	BOOST_CHECK_CLOSE(pgta->f(x, pgta.get()), 598, 0.01); 
 }
 
 
@@ -118,7 +118,7 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_spacial_direct, GroundTruthFixture )
 		BOOST_CHECK_CLOSE(g[i], grad[i], 0.1); 
 }
 
-#if 1
+#if 0
 BOOST_FIXTURE_TEST_CASE( test_gradient_all_finite_diff, GroundTruthFixture ) 
 {
 	pgta->set_alpha_beta(1.0,1.0); 
@@ -195,11 +195,11 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_temporal_direct, GroundTruthFixture 
 	pgta->df(x, pgta.get(), g);
 
 	float grad[psize] = {
-		0, 10, 0,  0,  0,  2, 7,  3,  2,
-		0, -5, 0,  0,  0, -2, -3, -5, -1,
-		0,  0, 0, -5, -5, -2,-13,  5, -1,
-		0,  1, 0, 14, 14, 11, 29, -1,  3,
-		0, -2, 0, -13, -13, -12, -24, -2, -3
+		0,  4, 0,  -4, -4,  -4,  1,  1,   0,
+		0, -4, 0,   4,  4,   3,  0, -4,   0,
+		0,  0, 0,  -5, -5,  -2,-13,  5,  -1,
+		0,  4, 0,  26, 26,  23, 50,  2,  6,
+		0, -4, 0, -21,-21, -20, -38, -4, -5
 	}; 
 
 	for(size_t i = 0; i < psize; ++i) {
@@ -219,7 +219,7 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_temporal_finite_diff, GroundTruthFix
 	const double h = 0.0001; 
 
 	// only test inside 
-	for(size_t i = 0; i < 36; ++i) {
+	for(size_t i = 0; i < psize; ++i) {
 		DoubleVector xp(x); 
 		DoubleVector xm(x); 
 		
