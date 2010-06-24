@@ -57,33 +57,51 @@ CSegSet load_segmentation(const string& s)
 	return CSegSet(*parser.get_document());
 }
 
-
+static string get_number(const string& fname)
+{
+	bfs::path f(fname); 
+	string the_stem = f.stem(); 
+	auto rs = the_stem.rbegin(); 
+	string result; 
+	while (rs != the_stem.rend() && isdigit(*rs))
+		result.insert(0,1,*rs++); 
+	return result; 
+}
 
 int do_main(int argc, const char *args[])
 {
 	string src_filename;
 	string out_filename;
 	string shift_filename("crop"); 
-	size_t skip = 2; 
 	
-	C2DFVector shift; 
+	string shift_value_filebase("shift"); 
 
 	CCmdOptionList options;
 	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", "input", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o', "input segmentation set", "out", true));
 	options.push_back(make_opt( shift_filename, "image-file", 'g', "output image filename base", "image", false));
 	
-	options.push_back(make_opt(shift, "shift", 'S', "shift of segmentation", "shift", false));
-	options.push_back(make_opt(skip, "skip", 's', "skip frames at the begining", "skip", false)); 
+	options.push_back(make_opt(shift_value_filebase, "shift", 'S', "shift of segmentation - base name ", 
+				   "shift", true));
+
 	
 	options.parse(argc, args);
 
 	CSegSet src_segset = load_segmentation(src_filename);
+	CSegSet::Frames& frames = src_segset.get_frames();
+	
+	for (auto i = frames.begin(); i != frames.end(); ++i) {
+		string nr = get_number(i->get_imagename()); 
+		stringstream shift_file_name; 
+		shift_file_name << shift_value_filebase << nr << ".txt"; 
+		ifstream shift_file(shift_file_name.str()); 
+		C2DFVector shift; 
+		shift_file >> shift; 
+		i->shift(shift, i->get_imagename());
+	}
 
-	cvinfo() << "shift by " << shift << ", skip " << skip << " and rename to base " << shift_filename << "\n"; 
-	CSegSet shifted = src_segset.shift_and_rename(skip, shift, shift_filename); 
 
-	auto_ptr<xmlpp::Document> outset(shifted.write());
+	auto_ptr<xmlpp::Document> outset(src_segset.write());
 
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())

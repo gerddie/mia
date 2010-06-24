@@ -31,6 +31,7 @@ DEFEXE(2dmyocard-ica      mia2d )
 DEFEXE(2dmyocard-icaseries    mia2d )
 DEFCHKEXE(2dlerp mia2d )
 DEFCHKEXE(2dsegshift mia2d )
+DEFEXE(2dsegshiftperslice mia2d )
 
 
 DEFCHKEXE(3dlerp mia3d )
