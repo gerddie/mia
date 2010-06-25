@@ -307,14 +307,13 @@ BOOST_FIXTURE_TEST_CASE( test_splines_translate, TransformSplineFixture )
 	C2DFVectorfield gradient(C2DBounds(128,128));
 	fill(gradient.begin(), gradient.end(), C2DFVector(1.0, 2.0));
 
-	C2DFVectorfield force = stransf.translate(gradient);
+	gsl::DoubleVector force(2 * stransf.get_coeff_size().x * stransf.get_coeff_size().y); 
+	stransf.translate(gradient, force);
 
-	BOOST_CHECK_EQUAL(force.get_size(), stransf.get_coeff_size());
-
-	for(C2DFVectorfield::const_iterator i = force.begin();
-	    i != force.end(); ++i) {
-		BOOST_CHECK_CLOSE(i->x, 1.0f, 0.1);
-		BOOST_CHECK_CLOSE(i->y, 2.0f, 0.1);
+	auto  i = force.begin();
+	while ( i != force.end() ) {
+		BOOST_CHECK_CLOSE(*i++, 1.0f, 0.1);
+		BOOST_CHECK_CLOSE(*i++, 2.0f, 0.1);
 	}
 }
 

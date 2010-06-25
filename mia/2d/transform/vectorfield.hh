@@ -90,14 +90,14 @@ public:
 	virtual void add(const C2DTransformation& a);
 	virtual size_t degrees_of_freedom() const;
         virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
-	virtual C2DFVectorfield translate(const C2DFVectorfield& gradient) const;
+	virtual void translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const;
 	virtual void update(float step, const C2DFVectorfield& a);
 	virtual C2DFMatrix derivative_at(int x, int y) const;
 	virtual void set_identity();
 	virtual float get_max_transform() const;
 
-	virtual std::vector<float> get_parameters() const; 
-	virtual void set_parameters(const std::vector<float>& params); 
+	virtual gsl::DoubleVector get_parameters() const; 
+	virtual void set_parameters(const gsl::DoubleVector& params); 
 
 	virtual float pertuberate(C2DFVectorfield& v) const;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;

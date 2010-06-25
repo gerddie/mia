@@ -127,17 +127,23 @@ const C2DBounds& C2DSplineTransformation::get_size() const
 	return _M_range;
 }
 
-vector<float> C2DSplineTransformation::get_parameters() const
+gsl::DoubleVector C2DSplineTransformation::get_parameters() const
 {
-	vector<float> result(_M_coefficients.size() * 2); 
-	memcpy(&result[0], &_M_coefficients(0,0),  result.size() * sizeof(float)); 
+	gsl::DoubleVector result(_M_coefficients.size() * 2); 
+	for(auto f = _M_coefficients.begin(), r = result.begin(); f != _M_coefficients.end(); ++f) {
+		*r++ = f->x; 
+		*r++ = f->y;
+	}
 	return result; 
 }
 
-void C2DSplineTransformation::set_parameters(const vector<float>& params)
+void C2DSplineTransformation::set_parameters(const gsl::DoubleVector& params)
 {
 	assert(2 * _M_coefficients.size() == params.size()); 
-	memcpy( &_M_coefficients(0,0), &params[0], params.size() * sizeof(float)); 
+	for(auto f = _M_coefficients.begin(), r = params.begin(); f != _M_coefficients.end(); ++f) {
+		f->x = *r++; 
+		f->y = *r++;
+	}
 }
 
 bool C2DSplineTransformation::save(const std::string& /*filename*/,
@@ -470,34 +476,37 @@ C2DSplineTransformation::const_iterator C2DSplineTransformation::end() const
 	return const_iterator(*this, get_size());
 }
 
-C2DFVectorfield C2DSplineTransformation::translate(const C2DFVectorfield& gradient) const
+void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
 	TRACE_FUNCTION;
 	// downscale the field
+	assert(params.size() == _M_coefficients.size() * 2); 
+
 	P1DInterpolatorFactory ipf(create_1dinterpolation_factory(ip_bspline4));
 	C1DScalar scaler(ipf);
 
-	C2DFVectorfield tmp(C2DBounds(_M_coefficients.get_size().x, gradient.get_size().y));
+	C2DFVectorfield tmp(C2DBounds(gradient.get_size().x, _M_coefficients.get_size().y));
 
 	vector<C2DFVector> in_buffer;
-	vector<C2DFVector> out_buffer(_M_coefficients.get_size().x);
+	vector<C2DFVector> out_buffer(_M_coefficients.get_size().y);
 
-	for (size_t i = 0; i < gradient.get_size().y; ++i) {
-		gradient.get_data_line_x(i, in_buffer);
+	for (size_t i = 0; i < gradient.get_size().x; ++i) {
+		gradient.get_data_line_y(i, in_buffer);
 		scaler(in_buffer, out_buffer);
-		tmp.put_data_line_x(i, out_buffer);
+		tmp.put_data_line_y(i, out_buffer);
 	}
+	out_buffer.resize(_M_coefficients.get_size().x);
 
-	out_buffer.resize(_M_coefficients.get_size().y);
+	auto r = params.begin();
 
-	C2DFVectorfield result(_M_coefficients.get_size());
-
-	for (size_t i = 0; i < tmp.get_size().x; ++i) {
-		tmp.get_data_line_y(i, in_buffer);
+	for (size_t i = 0; i < tmp.get_size().y; ++i) {
+		tmp.get_data_line_x(i, in_buffer);
 		scaler(in_buffer, out_buffer);
-		result.put_data_line_y(i, out_buffer);
+		for(auto x = out_buffer.begin(); x != out_buffer.end(); ++x) {
+			*r++ = x->x; 
+			*r++ = x->y; 
+		}
 	}
-	return result;
 }
 
 float  C2DSplineTransformation::pertuberate(C2DFVectorfield& v) const

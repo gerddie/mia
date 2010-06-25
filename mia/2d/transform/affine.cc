@@ -26,6 +26,16 @@
 
 #include <mia/2d/transform/affine.hh>
 
+enum EParamPosition {
+	pp_translate_x = 0, 
+	pp_translate_y, 
+	pp_rotate, 
+	pp_scale_x, 
+	pp_scale_y,
+	pp_skew
+}; 
+	
+
 
 NS_MIA_BEGIN
 using namespace boost::lambda;
@@ -58,8 +68,10 @@ C2DFVector C2DAffineTransformation::transform(const C2DFVector& x)const
 C2DAffineTransformation::C2DAffineTransformation(const C2DBounds& size):
 	_M_t(6,0.0f),
 	_M_ops(op_all),
-	_M_size(size)
+	_M_size(size),
+	_M_params(6,true)
 {
+
 	_M_t[0] = _M_t[4] = 1.0f;
 }
 
@@ -67,8 +79,10 @@ C2DAffineTransformation::C2DAffineTransformation(const C2DBounds& size,
 						 C2DAffineTransformation::EOps ops):
 	_M_t(6,0.0f),
 	_M_ops(ops),
-	_M_size(size)
+	_M_size(size),
+	_M_params(6,true)
 {
+	_M_params[pp_scale_x] = _M_params[pp_scale_y] = 1.0; 
 	_M_t[0] = _M_t[4] = 1.0f;
 }
 
@@ -82,7 +96,8 @@ C2DAffineTransformation::C2DAffineTransformation(const C2DBounds& size,
 						 C2DAffineTransformation::EOps ops):
 	_M_t(transform),
 	_M_ops(ops),
-	_M_size(size)
+	_M_size(size),
+	_M_params(6,true)
 {
 	_M_t[0] = _M_t[4] = _M_t[8] = 1.0f;
 }
@@ -120,15 +135,18 @@ void C2DAffineTransformation::scale(float x, float y)
 	_M_t[3] *= y;  	_M_t[4] *= y; 	_M_t[5] *= y;
 }
 
-std::vector<float> C2DAffineTransformation::get_parameters() const
+gsl::DoubleVector C2DAffineTransformation::get_parameters() const
 {
-	return _M_t; 
+	return _M_params; 
 }
 
-void C2DAffineTransformation::set_parameters(const std::vector<float>& params)
+void C2DAffineTransformation::set_parameters(const gsl::DoubleVector& params)
 {
 	assert(_M_t.size() == params.size()); 
-	copy(params.begin(), params.end(), _M_t.begin()); 
+	copy(params.begin(), params.end(), _M_params.begin()); 
+	
+	// create transformation matrix from formula 
+
 }
 
 float C2DAffineTransformation::divergence() const
@@ -280,7 +298,7 @@ float C2DAffineTransformation::get_jacobian(const C2DFVectorfield& /*v*/, float 
 	assert(!"not implemented");
 }
 
-C2DFVectorfield C2DAffineTransformation::translate(const C2DFVectorfield& gradient) const
+void C2DAffineTransformation::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
 	assert(gradient.get_size() == _M_size);
 	assert(!"not implemented");

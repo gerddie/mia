@@ -23,11 +23,14 @@
 #ifndef mia_2d_transform_hh
 #define mia_2d_transform_hh
 
+#include <gsl++/vector.hh>
 #include <mia/core/transformation.hh>
 #include <mia/core/filter.hh>
 #include <mia/2d/matrix.hh>
 #include <mia/2d/2DImage.hh>
 #include <mia/2d/interpolator.hh>
+
+
 
 NS_MIA_BEGIN
 
@@ -112,17 +115,17 @@ public:
 	   Translate the input gradient to a vector field in the space of the transformation field 
 	   \remark this is too specialized and needs to be replaced by something 
 	 */
-	virtual C2DFVectorfield translate(const C2DFVectorfield& gradient) const = 0;
+	virtual void translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const = 0;
 
 	/**
 	   \returns the transformation parameters as a flat vector field 
 	 */
-	virtual std::vector<float> get_parameters() const = 0; 
+	virtual gsl::DoubleVector get_parameters() const = 0; 
 	
 	/**
 	   sets the transformation parameters from a flat vector field 
 	 */
-	virtual void set_parameters(const std::vector<float>& params) = 0; 
+	virtual void set_parameters(const gsl::DoubleVector& params) = 0; 
 	
 	/**
 	   \returns the (approximate) maximum absolute translation of the transformation over the whole domain 

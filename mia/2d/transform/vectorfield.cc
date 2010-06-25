@@ -150,17 +150,23 @@ float C2DGridTransformation::get_max_transform() const
 }
 
 
-vector<float> C2DGridTransformation::get_parameters() const
+gsl::DoubleVector C2DGridTransformation::get_parameters() const
 {
-	vector<float> result(_M_field.size() * 2); 
-	memcpy(&result[0], &_M_field(0,0),  result.size() * sizeof(float)); 
+	gsl::DoubleVector result(_M_field.size() * 2); 
+	for(auto f = _M_field.begin(), r = result.begin(); f != _M_field.end(); ++f) {
+		*r++ = f->x; 
+		*r++ = f->y;
+	}
 	return result; 
 }
 
-void C2DGridTransformation::set_parameters(const vector<float>& params)
+void C2DGridTransformation::set_parameters(const gsl::DoubleVector& params)
 {
 	assert(2 * _M_field.size() == params.size()); 
-	memcpy(&_M_field(0,0), &params[0],  params.size() * sizeof(float)); 
+	for(auto f = _M_field.begin(), r = params.begin(); f != _M_field.end(); ++f) {
+		f->x = *r++; 
+		f->y = *r++;
+	}
 }
 
 C2DGridTransformation::const_iterator& C2DGridTransformation::const_iterator::operator ++()
@@ -254,9 +260,14 @@ C2DGridTransformation::const_field_iterator C2DGridTransformation::field_end()co
 	return _M_field.end();
 }
 
-C2DFVectorfield C2DGridTransformation::translate(const C2DFVectorfield& gradient) const
+void C2DGridTransformation::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
-	return gradient;
+	assert(params.size() != 2 * gradient.size()); 
+	
+	for(auto f = gradient.begin(), r = params.begin(); f != gradient.end(); ++f) {
+		*r++ = f->x; 
+		*r++ = f->y;
+	}
 }
 
 float C2DGridTransformation::pertuberate(C2DFVectorfield& v) const

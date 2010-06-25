@@ -150,7 +150,9 @@ void CModelSolverRegistrationImpl::register_level(C2DImageFatCostList& cost, C2D
 		for (C2DFVectorfield::iterator i = gradient.begin(); i != gradient.end(); ++i)
 			*i *= force_scale;
 
-		C2DFVectorfield force = local->translate(gradient);
+		C2DFVectorfield force; 
+		assert(0 && "needs to be adapted to new optimization routines"); 
+		//C2DFVectorfield force = local->translate(gradient);
 
 		// solve for the force to get a velocity or deformation field
 		//v.clear();

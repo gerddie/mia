@@ -91,12 +91,12 @@ public:
 	virtual bool save(const std::string& filename, const std::string& type) const;
 	virtual P2DTransformation upscale(const C2DBounds& size) const;
 	virtual void add(const C2DTransformation& a);
-	virtual C2DFVectorfield translate(const C2DFVectorfield& gradient) const;
+	virtual void translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const;
 	virtual size_t degrees_of_freedom() const;
 	virtual void update(float step, const C2DFVectorfield& a);
 	virtual C2DFMatrix derivative_at(int x, int y) const;
-	virtual std::vector<float> get_parameters() const; 
-	virtual void set_parameters(const std::vector<float>& params); 
+	virtual gsl::DoubleVector get_parameters() const; 
+	virtual void set_parameters(const gsl::DoubleVector& params); 
 	virtual void set_identity();
 	virtual float get_max_transform() const;
 	virtual float pertuberate(C2DFVectorfield& v) const;
@@ -112,6 +112,7 @@ private:
 	std::vector<float> _M_t;
 	EOps _M_ops;
 	C2DBounds _M_size;
+	gsl::DoubleVector _M_params; 
 };
 
 NS_MIA_END

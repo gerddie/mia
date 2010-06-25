@@ -20,6 +20,8 @@
  *
  */
 
+#include <gsl++/vector.hh>
+
 #include <mia/2d/transformmock.hh>
 
 NS_MIA_BEGIN
@@ -71,9 +73,8 @@ C2DFMatrix C2DTransformMock::derivative_at(int, int) const
 	return C2DFMatrix(C2DFVector(1.0, 2.0), C2DFVector(3.0, 4.0)); 
 }
 
-C2DFVectorfield C2DTransformMock::translate(const C2DFVectorfield& gradient) const 
+void C2DTransformMock::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
-	return gradient; 
 }
 
 float C2DTransformMock::get_max_transform() const 
@@ -86,15 +87,16 @@ const C2DBounds& C2DTransformMock::get_size() const
 	return m_size; 
 }
 
-vector<float> C2DTransformMock::get_parameters() const
+
+gsl::DoubleVector  C2DTransformMock::get_parameters() const
 {
-	std::vector<float> result(2); 
+	gsl::DoubleVector result(2); 
 	result[0] = -1.2; 
 	result[1] = -2.3; 
 	return result; 
 }
 
-void C2DTransformMock::set_parameters(const vector<float>& params)
+void C2DTransformMock::set_parameters(const gsl::DoubleVector& params)
 {
 	
 }

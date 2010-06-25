@@ -152,7 +152,7 @@ void C2DMultiImageNonrigidRegisterImpl::register_level(C2DImageFatCostList& cost
 		cost.evaluate_force(gradient);
 		transform( gradient.begin(), gradient.end(), gradient.begin(), _1 * force_scale);
 
-		C2DFVectorfield force = result.translate(gradient);
+		C2DFVectorfield force; assert(0 && "change this");// = result.translate(gradient);
 		C2DFVectorfield v(force.get_size());
 		_M_model->solve(force, v);
 

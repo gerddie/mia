@@ -35,10 +35,10 @@ struct C2DTransformMock: public C2DTransformation {
 	virtual size_t degrees_of_freedom() const;
 	virtual void set_identity();
 	virtual C2DFMatrix derivative_at(int x, int y) const;
-	virtual C2DFVectorfield translate(const C2DFVectorfield& gradient) const;
+	virtual void translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const;
 	virtual float get_max_transform() const;
-	virtual std::vector<float> get_parameters() const; 
-	virtual void set_parameters(const std::vector<float>& params); 
+	virtual gsl::DoubleVector  get_parameters() const; 
+	virtual void set_parameters(const gsl::DoubleVector& params); 
 	virtual const C2DBounds& get_size() const;
 	virtual float pertuberate(C2DFVectorfield& v) const;
 	virtual C2DFVector apply(const C2DFVector& x) const;
