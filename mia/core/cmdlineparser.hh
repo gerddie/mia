@@ -33,6 +33,7 @@
 #include <mia/core/shared_ptr.hh>
 #include <mia/core/defines.hh>
 #include <mia/core/dictmap.hh>
+#include <mia/core/flagstring.hh>
 
 NS_MIA_BEGIN
 
@@ -194,6 +195,7 @@ public:
                    const char *short_help, bool required = false);
 
 private:
+
 	virtual bool do_set_value_really(const char *str_value);
 	virtual size_t do_get_needed_args() const;
 	virtual void do_write_value(std::ostream& os) const;
@@ -232,6 +234,35 @@ private:
 
 	T& _M_value;
 	const TDictMap<T> _M_map;
+};
+
+
+/** Command line option that translates a string to a set of flags. 
+*/
+
+class CCmdFlagOption: public  CCmdOptionValue{
+
+public:
+        /** Constructor of the command option
+	    \retval val variable to hold the parsed option value - pass in the default value -
+	    \param map the lookup table for the option
+	    \param short_opt short option name (or 0)
+	    \param long_opt long option name (must not be NULL)
+	    \param long_help long help string (must not be NULL)
+	    \param short_help short help string
+	    \param required if this is set to true, extra checking will be done weather
+	    the option is really set
+	*/
+	CCmdFlagOption(int& val, const CFlagString& map, char short_opt, const char *long_opt,
+                       const char *long_help, const char *short_help, bool required);
+private:
+	virtual bool do_set_value_really(const char *str_value);
+	virtual size_t do_get_needed_args() const;
+	virtual void do_write_value(std::ostream& os) const;
+	virtual void do_get_long_help_really(std::ostream& os) const;
+	virtual const std::string do_get_value_as_string() const;
+	int& _M_value; 
+	const CFlagString _M_map;
 };
 
 /** Command line option that supports only a limited number of values (given and interpreted as strings)
@@ -329,6 +360,23 @@ PCmdOption make_opt(T& value, const TDictMap<T>& map, const char *long_opt, char
 	return PCmdOption(new TCmdDictOption<T>(value, map, short_opt, long_opt,
                           long_help, short_help, required ));
 }
+
+/**
+   Convinience function: Create a flag lookup option
+   \retval val variable to hold the parsed and translated option value
+   \param map the lookup table for the option flags 
+   \param long_opt long option name (must not be NULL)
+   \param short_opt short option name (or 0)
+   \param long_help long help string (must not be NULL)
+   \param short_help short help string
+   \param required if this is set to true, extra checking will be done weather
+   the option is really set
+   \returns the option warped into a \a boost::shared_ptr
+ */
+
+PCmdOption make_opt(int& value, const CFlagString& map, const char *long_opt, char short_opt,
+		    const char *long_help, const char *short_help, bool required= false); 
+
 
 /**
    Convinience function: Create a set restricted option

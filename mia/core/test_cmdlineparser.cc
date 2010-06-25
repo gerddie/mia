@@ -201,6 +201,34 @@ BOOST_FIXTURE_TEST_CASE( test_dict_option, CmdlineParserFixture )
 	BOOST_CHECK(value == te_two);
 }
 
+BOOST_FIXTURE_TEST_CASE( test_flagstring_option, CmdlineParserFixture )
+{
+
+	CFlagString::Table table[] =	{
+		{'o', te_one},
+		{'t', te_two},
+		{'h', te_three},
+		{NULL, te_undefined}
+	};
+	CFlagString map(table);
+
+	int value = te_undefined;
+
+	CCmdOptionList olist;
+
+	olist.push_back(make_opt(value, map, "flags", 'f', "a flagstring option", "flags"));
+	vector<const char *> options;
+
+	options.push_back("self");
+	options.push_back("-f");
+	options.push_back("ot");
+	olist.parse(options.size(), &options[0]);
+
+	BOOST_CHECK( olist.get_remaining().size() == 0);
+	BOOST_CHECK(value == te_two || te_one);
+}
+
+
 BOOST_FIXTURE_TEST_CASE( test_parser, CmdlineParserFixture )
 {
 	vector<const char *> options;

@@ -19,6 +19,9 @@
  *
  */
 
+#ifndef mia_core_flagstring_hh
+#define mia_core_flagstring_hh
+
 #include <map>
 
 #include <mia/core/defines.hh>
@@ -38,6 +41,8 @@ public:
 	int get(const std::string& flags)const; 
 
 	const std::string get(int flags)const; 
+
+	const std::string get_flagnames()const; 
 	
 private: 
 	typedef std::map<char, int> TMap; 
@@ -49,3 +54,4 @@ private:
 }; 
 
 NS_MIA_END
+#endif

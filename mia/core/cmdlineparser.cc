@@ -609,5 +609,48 @@ bool CHelpOption::requested() const
 }
 
 
+CCmdFlagOption::CCmdFlagOption(int& val, const CFlagString& map, char short_opt, const char *long_opt,
+			       const char *long_help, const char *short_help, bool required):
+	CCmdOptionValue(short_opt, long_opt, long_help,short_help, required),
+	_M_value(val), 
+	_M_map(map)
+{
+}
+	
+void CCmdFlagOption::do_write_value(std::ostream& os) const
+{
+	os << _M_map.get(_M_value); 
+}
+
+void CCmdFlagOption::do_get_long_help_really(std::ostream& os) const
+{
+	os << " supported flags:(" <<_M_map.get_flagnames() << os << ")"; 
+}
+
+const std::string CCmdFlagOption::do_get_value_as_string() const
+{
+	return _M_map.get(_M_value); 
+}
+ 
+
+bool CCmdFlagOption::do_set_value_really(const char *str_value)
+{
+	_M_value = _M_map.get(str_value); 
+	return true; 
+}
+
+size_t CCmdFlagOption::do_get_needed_args() const
+{
+	return 1; 
+}
+
+PCmdOption make_opt(int& value, const CFlagString& map, const char *long_opt, char short_opt,
+		    const char *long_help, const char *short_help, bool required)
+{
+	return PCmdOption(new CCmdFlagOption(value, map, short_opt, long_opt,
+                          long_help, short_help, required ));
+}
+
+
 
 NS_MIA_END

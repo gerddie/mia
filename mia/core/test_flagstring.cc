@@ -60,6 +60,12 @@ BOOST_FIXTURE_TEST_CASE ( test_throw, FlagStringFixture )
 	BOOST_CHECK_THROW(flag_trans.get("x"), std::invalid_argument); 
 }
 
+BOOST_FIXTURE_TEST_CASE ( test_names, FlagStringFixture ) 
+{
+	BOOST_CHECK_EQUAL(flag_trans.get_flagnames(), "cfhot");
+}
+
+
 BOOST_FIXTURE_TEST_CASE ( test_backtranslate, FlagStringFixture ) 
 {
 	BOOST_CHECK_EQUAL(flag_trans.get(1), "o"); 

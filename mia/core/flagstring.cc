@@ -20,6 +20,8 @@
  */
 
 #define VSTREAM_DOMAIN "FlagString"
+
+#include <algorithm>
 #include <mia/core/flagstring.hh>
 
 NS_MIA_BEGIN
@@ -65,6 +67,15 @@ const string CFlagString::get(int flags)const
 			acc |= f->first;
 		}
 	}
+	return result; 
+}
+
+const string CFlagString::get_flagnames()const
+{
+	string result; 
+	for(auto f = m_map.begin(); f != m_map.end(); ++f)
+		result.push_back(f->first); 
+	sort(result.begin(), result.end()); 
 	return result; 
 }
 
