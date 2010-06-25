@@ -1,12 +1,15 @@
 INSTALLATION
 
 REQUIREMENTS: 
-  cmake >= 2.4.7
-  BOOST >= 1.34.0
-  ANSI C++ compiler -
-	GNU g++ >= 3.3
-        INTEL icpc >9.0 (tested) 
-        MS Visual C++ 2005  (tested) 
+  cmake >= 2.6.0
+  BOOST >= 1.40.0
+  gsl++ >= 0.0.1 (git repository at mia.git.sorceforge.net:/gitroot/mia/gslpp
+  ANSI C++ compiler that supports the auto keyword of the 
+            upcoming standard C++0x 
+	GNU g++ >= 4.4 (tested) 
+        MS Visual C++ 2010 
+
+
         
 SUPPORTED Platforms: 
 
@@ -16,6 +19,13 @@ OPTIONAL:
   OpenEXR 
   MatLab (7.1)
   IDL ( >= 6.0)
+  fftw 
+  libxml++-2.6  
+  it++-4.0.7
+  dcmtk
+  python 
+  nfft 
+  pwpdf 
   
 
 COMPILE: 

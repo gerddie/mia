@@ -17,6 +17,7 @@ SET(MIACORE_SRC_BASE
   file.cc 
   filetools.cc 
   filter.cc
+  flagstring.cc
   fullstats.cc
   history.cc
   info.cc
@@ -72,6 +73,7 @@ SET(MIACORE_HEADER_BASE
   file.hh
   filetools.hh
   filter.hh
+  flagstring.hh
   fullstats.hh
   handler.cxx handler.hh
   history.hh
@@ -244,6 +246,7 @@ NEW_TEST(kmeans miacore)
 NEW_TEST(interpol miacore)
 NEW_TEST(simpson miacore)
 NEW_TEST(property_flags  miacore)
+NEW_TEST(flagstring  miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)
