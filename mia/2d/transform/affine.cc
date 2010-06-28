@@ -42,7 +42,7 @@ P2DImage C2DAffineTransformation::apply(const C2DImage& image,
 
 C2DFVector C2DAffineTransformation::apply(const C2DFVector& x) const
 {
-	return x - transform(x);
+	return transform(x);
 }
 
 
@@ -215,9 +215,9 @@ void C2DAffineTransformation::set_identity()
 float C2DAffineTransformation::get_max_transform() const
 {
 	// check the corners
-	float m = apply(C2DFVector(get_size())).norm2();
-	float test0Y = apply(C2DFVector(0, get_size().y)).norm2();
-	float testX0 = apply(C2DFVector(get_size().x, 0)).norm2();
+	float m =      (C2DFVector(get_size()) -  apply(C2DFVector(get_size()))).norm2();
+	float test0Y = (C2DFVector(0, get_size().y) - apply(C2DFVector(0, get_size().y))).norm2();
+	float testX0 = (C2DFVector(get_size().x, 0) - apply(C2DFVector(get_size().x, 0))).norm2();
 	float test00 = apply(C2DFVector(0, 0)).norm2();
 
 	if (m < test0Y)
@@ -236,16 +236,17 @@ void C2DAffineTransformation::add(const C2DTransformation& other)
 	// *this  = other * *this
 	const C2DAffineTransformation& a = dynamic_cast<const C2DAffineTransformation&>(other);
 	
-	vector<double> h(_M_t); 
+	vector<double> h(_M_t.size()); 
 
-	_M_t[0] = a._M_t[0] * h[0] + a._M_t[1] * h[3]; 
-	_M_t[1] = a._M_t[0] * h[1] + a._M_t[1] * h[4]; 
-	_M_t[2] = a._M_t[0] * h[2] + a._M_t[1] * h[5] + a._M_t[2]; 
+	h[0] = a._M_t[0] * _M_t[0] + a._M_t[1] * _M_t[3]; 
+	h[1] = a._M_t[0] * _M_t[1] + a._M_t[1] * _M_t[4]; 
+	h[2] = a._M_t[0] * _M_t[2] + a._M_t[1] * _M_t[5] + a._M_t[2];
 
-	_M_t[3] = a._M_t[3] * h[0] + a._M_t[4] * h[3]; 
-	_M_t[4] = a._M_t[3] * h[1] + a._M_t[4] * h[4]; 
-	_M_t[5] = a._M_t[3] * h[2] + a._M_t[4] * h[5] + a._M_t[5];
-	
+	h[3] = a._M_t[3] * _M_t[0] + a._M_t[4] * _M_t[3]; 
+	h[4] = a._M_t[3] * _M_t[1] + a._M_t[4] * _M_t[4]; 
+	h[5] = a._M_t[3] * _M_t[2] + a._M_t[4] * _M_t[5] + a._M_t[5];
+
+	copy(h.begin(), h.end(), _M_t.begin()); 
 }
 
 C2DAffineTransformation::const_iterator::const_iterator():
