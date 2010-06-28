@@ -31,28 +31,28 @@
 
 NS_MIA_BEGIN
 
+
+
 class C2DAffineTransformation;
 class EXPORT_2D C2DAffineTransformation : public C2DTransformation {
 public:
-	enum EOps  {
-		op_rotate = 1,
-		op_trans  = 2,
-		op_rigid  = 3,
-		op_shear  = 4,
-		op_scale  = 8,
-		op_all    = 0xF
-	};
+	enum EParamPosition {
+		pp_translate_x = 0, 
+		pp_translate_y, 
+		pp_rotate, 
+		pp_scale_x, 
+		pp_scale_y,
+		pp_shear
+	}; 
+
 
 	C2DAffineTransformation(const C2DBounds& size);
-	C2DAffineTransformation(const C2DBounds& size,
-				std::vector<float> transform,
-				C2DAffineTransformation::EOps ops);
-	C2DAffineTransformation(const C2DBounds& size, EOps ops);
+	C2DAffineTransformation(const C2DBounds& size,std::vector<double> transform);
 
 	void scale(float x, float y);
 	void translate(float x, float y);
-
 	void rotate(float angle);
+	void shear(float v);
 
 	C2DFVector apply(const C2DFVector& x) const;
 
@@ -108,12 +108,13 @@ public:
 	float grad_divergence() const; 
 	float grad_curl() const; 
 private:
-	
-	std::vector<float> _M_t;
-	EOps _M_ops;
+	void evaluate_t() const; 
+	C2DAffineTransformation(const C2DAffineTransformation& other); 
+	C2DAffineTransformation& operator =(const C2DAffineTransformation& other); 
+	std::vector<double> _M_t;
 	C2DBounds _M_size;
-	gsl::DoubleVector _M_params; 
 };
+
 
 NS_MIA_END
 

@@ -33,12 +33,11 @@ using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
 struct TranslateTransFixture {
-	TranslateTransFixture():
-		size(60, 80),
-		rtrans(size, C2DAffineTransformation::op_trans)
-	{
-		rtrans.translate(1.0, 2.0);
-	}
+	TranslateTransFixture():size(60, 80),
+				rtrans(size)
+		{
+			rtrans.translate(1.0, 2.0);
+		}
 	C2DBounds size;
 	C2DAffineTransformation rtrans;
 };
@@ -47,7 +46,7 @@ struct TranslateTransFixture {
 BOOST_FIXTURE_TEST_CASE(basics_TranslateTransFixture, TranslateTransFixture)
 {
 	C2DFVector x(33, 40);
-	BOOST_CHECK_EQUAL(rtrans.degrees_of_freedom(), 2);
+	BOOST_CHECK_EQUAL(rtrans.degrees_of_freedom(), 6);
 	BOOST_CHECK_EQUAL(C2DFVector(-1.0, -2.0),  rtrans.apply(x));
 }
 
@@ -89,7 +88,7 @@ BOOST_AUTO_TEST_CASE(test_affine2d)
 	C2DFVector y0 = t1.apply(x0);
 	BOOST_CHECK_EQUAL(y0, C2DFVector(0,0));
 
-	t1.scale(2.0f, 3.0f);
+	t1.scale(std::log(2.0), std::log(3.0));
 
 	C2DFVector y1 = t1.apply(x0);
 	BOOST_CHECK_EQUAL(y1, x0 - C2DFVector(2.0f, 6.0f));
@@ -100,8 +99,8 @@ BOOST_AUTO_TEST_CASE(test_affine2d)
 
 	t1.rotate(M_PI / 2.0);
 	C2DFVector yr1 = t1.apply(x0);
-	BOOST_CHECK_CLOSE(yr1.x , x0.x + 8.0f, 0.1f);
-	BOOST_CHECK_CLOSE(yr1.y , x0.y - 3.0f, 0.1f);
+	BOOST_CHECK_CLOSE(yr1.x , 9.0, 0.1f);
+	BOOST_CHECK_CLOSE(yr1.y ,-1.0, 0.1f);
 
 	C2DAffineTransformation t2(C2DBounds(10,20));
 	t2.rotate(M_PI / 2.0);
@@ -110,6 +109,7 @@ BOOST_AUTO_TEST_CASE(test_affine2d)
 	BOOST_CHECK_CLOSE(yr.y , x0.y - 1.0f, 0.1f);
 
 }
+
 
 BOOST_AUTO_TEST_CASE( test_affine2d_iterator )
 {
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE( test_affine2d_iterator )
 struct RotateTransFixture {
 	RotateTransFixture():
 		size(60, 80),
-		rtrans(size, C2DAffineTransformation::op_rotate),
+		rtrans(size),
 		rot_cos(cos(M_PI / 4.0)),
 		rot_sin(sin(M_PI / 4.0))
 	{
@@ -148,7 +148,6 @@ struct RotateTransFixture {
 BOOST_FIXTURE_TEST_CASE(basics_RotateTransFixture, RotateTransFixture)
 {
 	C2DFVector x(33, 40);
-	BOOST_CHECK_EQUAL(rtrans.degrees_of_freedom(), 1);
 	C2DFVector r  = rtrans.apply(x);
 
 	BOOST_CHECK_CLOSE(r.x, x.x - (rot_cos * x.x - rot_sin* x.y), 0.1);
@@ -214,3 +213,48 @@ BOOST_FIXTURE_TEST_CASE(derivative_RotateTransFixture, RotateTransFixture)
 	BOOST_CHECK_CLOSE(d.y.x, rot_sin, 0.1);
 	BOOST_CHECK_CLOSE(d.y.y, rot_cos, 0.1);
 }
+
+
+struct AffineGrad2ParamFixtureAffine {
+	AffineGrad2ParamFixtureAffine(); 
+	
+
+	C2DBounds size;
+	C2DAffineTransformation trans;
+}; 
+
+BOOST_FIXTURE_TEST_CASE (test_grad2param_translation_translate, AffineGrad2ParamFixtureAffine) 
+{
+	C2DFVectorfield gradient(size); 
+	
+	gradient(0,0) = C2DFVector(3.0, -4.0); 
+	gradient(1,0) = C2DFVector(1.0,  3.0); 
+	gradient(0,1) = C2DFVector(3.0, -2.0); 
+	gradient(1,1) = C2DFVector(1.0,  1.0); 
+
+	
+	
+	gsl::DoubleVector params = trans.get_parameters(); 
+	
+		
+	trans.translate(gradient, params);
+
+	BOOST_CHECK_CLOSE(params[0], 0.5, 0.1); 
+	BOOST_CHECK_CLOSE(params[1], 1.0, 0.1); 
+	BOOST_CHECK_CLOSE(params[2], 2.0, 0.1); 
+
+	BOOST_CHECK_CLOSE(params[3], 1.0, 0.1); 
+	BOOST_CHECK_CLOSE(params[4],-0.25, 0.1); 
+	BOOST_CHECK_CLOSE(params[5],-0.5, 0.1); 
+}
+
+
+AffineGrad2ParamFixtureAffine::AffineGrad2ParamFixtureAffine():
+	size(2,2),
+	trans(size)
+{
+	trans.translate(-2, -4); 
+	trans.rotate(0.0); 
+	trans.scale(0.69314718, -0.69314718); 
+}
+
