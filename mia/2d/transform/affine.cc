@@ -194,7 +194,9 @@ P2DTransformation C2DAffineTransformation::upscale(const C2DBounds& size) const
 	float y_mult = float(size.y) / (float)get_size().y;
 
 	C2DAffineTransformation *result = new C2DAffineTransformation(*this);
-	result->scale(log(x_mult), log(y_mult));
+	result->_M_size = size; 
+	result->_M_t[3] *= x_mult; 
+	result->_M_t[5] *= y_mult; 
 
 	return P2DTransformation(result);
 }

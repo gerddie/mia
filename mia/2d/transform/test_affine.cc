@@ -264,6 +264,20 @@ BOOST_FIXTURE_TEST_CASE (test_add, AffineGrad2ParamFixtureAffine)
 	BOOST_CHECK_CLOSE(probe.y, test.y, 0.1); 
 }
 
+BOOST_FIXTURE_TEST_CASE (test_upscale, AffineGrad2ParamFixtureAffine) 
+{
+	C2DBounds x(4,4); 
+	P2DTransformation ups = trans.upscale(x); 
+	const C2DAffineTransformation& a = dynamic_cast<const C2DAffineTransformation&>(*ups);
+	BOOST_CHECK_EQUAL(a.get_size(), x); 
+
+	auto params = a.get_parameters(); 
+	
+
+	// test the remaining parameters
+	
+}
+
 AffineGrad2ParamFixtureAffine::AffineGrad2ParamFixtureAffine():
 	size(2,2),
 	trans(size)
