@@ -50,9 +50,9 @@ BOOST_FIXTURE_TEST_CASE(test_handler, HandlerTestFixture)
 {
 	const C2DTransformCreatorHandler::Instance& handler =
 		C2DTransformCreatorHandler::instance();
-	BOOST_CHECK_EQUAL(handler.size(), 3);
+	BOOST_CHECK_EQUAL(handler.size(), 4);
 	BOOST_CHECK_EQUAL(handler.get_plugin_names(),
-			  "affine spline vf ");
+			  "affine spline translate vf ");
 }
 
 
@@ -83,6 +83,16 @@ BOOST_FIXTURE_TEST_CASE(test_vf_creator, HandlerTestFixture)
 		C2DTransformCreatorHandler::instance();
 	P2DTransformationFactory affine_creater = handler.produce("vf");
 	P2DTransformation transform = affine_creater->create(C2DBounds(10,20));
+	BOOST_CHECK_EQUAL(transform->get_size(), C2DBounds(10,20));
+}
+
+
+BOOST_FIXTURE_TEST_CASE(test_transform_creator, HandlerTestFixture)
+{
+	const C2DTransformCreatorHandler::Instance& handler =
+		C2DTransformCreatorHandler::instance();
+	P2DTransformationFactory transform_creater = handler.produce("translate");
+	P2DTransformation transform = transform_creater->create(C2DBounds(10,20));
 	BOOST_CHECK_EQUAL(transform->get_size(), C2DBounds(10,20));
 }
 

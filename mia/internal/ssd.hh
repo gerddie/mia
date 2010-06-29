@@ -46,6 +46,8 @@ class CSSDCost: public TCost {
 public: 	
 	typedef typename TCost::Data Data; 
 	typedef typename TCost::Force Force; 
+
+	CSSDCost(); 
 private: 
 	virtual double do_value(const Data& a, const Data& b) const; 
 	virtual void do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const; 
@@ -76,6 +78,12 @@ struct FEvalSSD : public mia::TFilter<double> {
 /**
    This is the implementation of the cost function
 */
+template <typename TCost> 
+CSSDCost<TCost>::CSSDCost()
+{
+	this->add(::mia::property_gradient); 	
+}
+
 template <typename TCost> 
 double CSSDCost<TCost>::do_value(const Data& a, const Data& b) const
 {
