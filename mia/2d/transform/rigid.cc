@@ -286,21 +286,40 @@ void C2DRigidTransformation::translate(const C2DFVectorfield& gradient, gsl::Dou
 	
 	vector<double> r(params.size(), 0.0); 
 	
-	double cosa = cos(_M_rotation); 
-	double sina = sin(_M_rotation); 
-
 	auto g = gradient.begin(); 
 	for (size_t y = 0; y < _M_size.y; ++y) {
 		for (size_t x = 0; x < _M_size.x; ++x, ++g) {
 			r[0] += g->x; 
 			r[1] += g->y; 
-			r[2] += g->x - g->y; 
 		}
 	}
+	double gxx = 0.0; 
+	double gxy = 0.0; 
+	double gyx = 0.0; 
+	double gyy = 0.0; 
+	for (size_t y = 1; y < _M_size.y; ++y) {
+		auto g0 = gradient.begin_at(0,y); 
+		auto g1 = gradient.begin_at(0,y); 
+		for (size_t x = 1; x < _M_size.x; ++x, ++g) {
+			gxx += g1[1].x - g1[0].x; 
+			gyx += g1[1].y - g1[0].y; 
+			gxy += g1->x - g0->x; 
+			gyy += g1->y - g0->y; 
+		}
+	}
+
 	const double f = 1.0 / gradient.size(); 
 	params[0] = r[0] * f; 
 	params[1] = r[1] * f; 
-	params[2] = r[2] * f; // twice the parameter set 
+
+	double rot = gxy - gyx; 
+	double irot = gxx + gyy; 
+	cvdebug() << "rotation =" << rot << ", " << irot << "\n"; 
+
+	if (fabs(rot)  < 1e-5 * fabs(irot)) 
+		params[2] = 0; 
+	else 
+		params[2] = atan(rot/irot); 
 }
 
 C2DRigidTransformation::const_iterator C2DRigidTransformation::const_iterator::operator ++(int)
