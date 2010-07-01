@@ -152,6 +152,7 @@ void register_l(const C2DImage& model, const C2DImage& reference, C2DTransformat
 	else
 		register_level<gsl_multimin_fminimizer_type>::apply(model, reference, transf, cost, ipf, 
 								    minimizers[minimizer].fmin); 
+	cvmsg() << "\n"; 
 }
 
 int do_main( int argc, const char *argv[] )
@@ -212,7 +213,7 @@ int do_main( int argc, const char *argv[] )
 		else 
 			transform = tr_creator->create(ModelScale->get_size()); 
 		
-		cvinfo() << ModelScale->get_size() << " vs " << transform->get_size() << "\n"; 
+		cvmsg() << "register at " << ModelScale->get_size() << "\n"; 
 		
 		register_l(*ModelScale, *RefScale, *transform, *cost, *ipfactory, minimizer); 
 
@@ -287,7 +288,7 @@ double  CGradientProblem::do_f(const DoubleVector& x)
 {
 	P2DImage temp = apply(x); 
 	const double value = _M_cost.value(*temp, _M_reference); 
-	cvmsg() << "Cost = " << value << "\n"; 
+	cvmsg() << "\rCost = " << value; 
 	return value; 
 }
 
@@ -328,7 +329,7 @@ double  CRegProblem::do_f(const DoubleVector& x)
 	_M_transf.set_parameters(x); 
 	P2DImage test =  _M_transf(_M_model, _M_ipf);
 	const double value = _M_cost.value(*test, _M_reference); 
-	cvmsg() << "Cost = " << value << "\n"; 
+	cvmsg() << "\rCost = " << value; 
 	return value; 
 }
 

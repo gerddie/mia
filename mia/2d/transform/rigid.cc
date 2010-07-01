@@ -279,6 +279,8 @@ float C2DRigidTransformation::get_jacobian(const C2DFVectorfield& /*v*/, float /
 
 void C2DRigidTransformation::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
+	// 
+
 	assert(gradient.get_size() == _M_size);
 	assert(params.size() == degrees_of_freedom());
 	

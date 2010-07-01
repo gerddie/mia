@@ -63,13 +63,13 @@ C2DFVector C2DImage::get_pixel_size() const
 {
         const PAttribute attr = get_attribute("pixel");
         if (!attr) {
-                cvwarn() << "T2DDatafield<T>::get_pixel_size(): pixel size not defined\n";
+                cvinfo() << "C2DImage::get_pixel_size(): pixel size not defined\n";
                 return C2DFVector(1,1);
         }
 
         const TAttribute<C2DFVector> * vs = dynamic_cast<TAttribute<C2DFVector> *>(attr.get());
         if (!vs){
-                cvwarn() << "T2DDatafield<T>::get_pixel_size(): pixel size wrong type\n";
+                cvinfo() << "C2DImage::get_pixel_size(): pixel size wrong type\n";
                 return C2DFVector(1,1);
         }
 

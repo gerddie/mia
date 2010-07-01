@@ -228,9 +228,9 @@ BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, RigidGrad2ParamFixtureRigi
 	
 	trans.translate(gradient, params);
 
-	BOOST_CHECK_CLOSE(params[0], 0.5 * (1 + sa -  ca), 0.1); 
-	BOOST_CHECK_CLOSE(params[1], 0.5 * (1 - sa -  ca), 0.1); 
-	BOOST_CHECK_CLOSE(params[2], alpha, 0.1); 
+	BOOST_CHECK_CLOSE(params[0], -0.5 * (1 + sa -  ca), 0.1); 
+	BOOST_CHECK_CLOSE(params[1], -0.5 * (1 - sa -  ca), 0.1); 
+	BOOST_CHECK_CLOSE(params[2], -alpha, 0.1); 
 }
 
 BOOST_FIXTURE_TEST_CASE (test_upscale, RigidGrad2ParamFixtureRigid) 
