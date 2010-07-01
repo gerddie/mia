@@ -312,7 +312,7 @@ void C2DRigidTransformation::translate(const C2DFVectorfield& gradient, gsl::Dou
 	params[0] = r[0] * f; 
 	params[1] = r[1] * f; 
 
-	double rot = gxy - gyx; 
+	double rot = gyx - gxy; 
 	double irot = gxx + gyy; 
 	cvdebug() << "rotation =" << rot << ", " << irot << "\n"; 
 

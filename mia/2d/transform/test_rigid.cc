@@ -21,6 +21,7 @@
  */
 
 #include <cmath>
+#include <numeric>
 #include <mia/internal/autotest.hh>
 
 #include <mia/2d/transform/rigid.hh>
@@ -214,22 +215,23 @@ struct RigidGrad2ParamFixtureRigid {
 BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, RigidGrad2ParamFixtureRigid) 
 {
 	C2DFVectorfield gradient(size); 
-	const double alpha = 0.05; 
+	const double alpha = 0.2; 
 	const double ca = cos(alpha); 
 	const double sa = sin(alpha); 
 
-	gradient(0,0) = C2DFVector(      0,     0);
-	gradient(1,0) = C2DFVector( 1 - ca,  - sa); 
-	gradient(0,1) = C2DFVector(     sa,1 - ca); 
-	gradient(1,1) = C2DFVector( 1 - ca + sa, 1 - sa - ca); 
-
+	for (size_t y = 0; y < size.y; ++y)
+		for (size_t x = 0; x < size.x; ++x) 
+			gradient(x,y) = C2DFVector(x * ca - y * sa, x * sa + y * ca);
+	
 	
 	gsl::DoubleVector params = trans.get_parameters(); 
 	
+	C2DFVector t = accumulate(gradient.begin(), gradient.end(), C2DFVector(0,0)) / (float)gradient.size(); 
+
 	trans.translate(gradient, params);
 
-	BOOST_CHECK_CLOSE(params[0], 0.5 * (1 + sa -  ca), 0.1); 
-	BOOST_CHECK_CLOSE(params[1], 0.5 * (1 - sa -  ca), 0.1); 
+	BOOST_CHECK_CLOSE(params[0], t.x, 0.1); 
+	BOOST_CHECK_CLOSE(params[1], t.y, 0.1); 
 	BOOST_CHECK_CLOSE(params[2], alpha, 0.1); 
 }
 
@@ -248,7 +250,7 @@ BOOST_FIXTURE_TEST_CASE (test_upscale, RigidGrad2ParamFixtureRigid)
 }
 
 RigidGrad2ParamFixtureRigid::RigidGrad2ParamFixtureRigid():
-	size(2,2),
+	size(20,20),
 	trans(size)
 {
 	trans.translate(-1, -3); 
