@@ -33,6 +33,49 @@ NS_MIA_USE;
 using namespace std;
 using namespace gsl; 
 
+enum EMinimizers {
+	min_nmsimplex, 
+	min_cg_fr, 
+	min_cg_pr, 
+	min_bfgs, 
+	min_bfgs2, 
+	min_gd, 
+	min_undefined}; 
+
+const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
+	{"simplex", min_nmsimplex}, 
+	{"cg-fr", min_cg_fr}, 
+	{"cg-pr", min_cg_pr}, 
+	{"bfgs", min_bfgs}, 
+	{"bfgs2", min_bfgs2}, 
+	{"gd", min_gd},  
+	{NULL, min_undefined}
+}; 
+
+
+bool minimizer_need_gradient(EMinimizers m) 
+{
+	switch (m) {
+	case min_nmsimplex: return false; 
+	case min_undefined: throw invalid_argument("Try to use minimizer 'undefined'"); 
+	default: return true; 
+	}
+}
+
+struct  UMinimzer{
+		const gsl_multimin_fminimizer_type *fmin; 
+		const gsl_multimin_fdfminimizer_type *fdfmin; 
+}; 
+
+UMinimzer minimizers[min_undefined] = {
+	{ gsl_multimin_fminimizer_nmsimplex2, NULL }, 
+	{ NULL, gsl_multimin_fdfminimizer_conjugate_fr }, 
+	{ NULL, gsl_multimin_fdfminimizer_conjugate_pr }, 
+	{ NULL, gsl_multimin_fdfminimizer_vector_bfgs }, 
+	{ NULL, gsl_multimin_fdfminimizer_vector_bfgs2 }, 
+	{ NULL, gsl_multimin_fdfminimizer_steepest_descent }
+}; 
+
 class CGradientProblem: public gsl::CFDFMinimizer::Problem {
 public: 
 	CGradientProblem(const C2DImage& model, const C2DImage& reference, C2DTransformation& transf, 
@@ -67,26 +110,48 @@ typedef shared_ptr<CGradientProblem> PGradientProblem;
 typedef shared_ptr<CRegProblem> PRegProblem; 
 
 
-void register_level(const C2DImage& model, const C2DImage& reference, C2DTransformation& transf, 
-		    const C2DImageCost& cost, const C2DInterpolatorFactory& ipf, bool use_gradient)
-{
-	if (cost.has(property_gradient) && use_gradient) {
-		cvmsg() << "Use gradient based optimizer";  
+template <typename O> 
+struct register_level {
+	static void apply(const C2DImage& model, const C2DImage& reference, C2DTransformation& transf, 
+			  const C2DImageCost& cost, const C2DInterpolatorFactory& ipf, const O *optimizer)
+	{
+		if (!cost.has(property_gradient))
+			throw invalid_argument("requested optimizer needs gradient, but cost functions doesn't prvide one"); 
 		PGradientProblem gp(new CGradientProblem(model, reference, transf, cost, ipf)); 
-		CFDFMinimizer minimizer(gp, gsl_multimin_fdfminimizer_conjugate_fr );
+		CFDFMinimizer minimizer(gp, optimizer );
 		
 		auto x = transf.get_parameters(); 
 		minimizer.run(x); 
 		transf.set_parameters(x); 
-	}else {
+	}
+}; 
+
+template <> 
+struct register_level<gsl_multimin_fminimizer_type> {
+	static void apply(const C2DImage& model, const C2DImage& reference, C2DTransformation& transf, 
+			  const C2DImageCost& cost, const C2DInterpolatorFactory& ipf, 
+			  const gsl_multimin_fminimizer_type *optimizer)
+	{
 		PRegProblem gp(new CRegProblem(model, reference, transf, cost, ipf)); 
-		CFMinimizer minimizer(gp, gsl_multimin_fminimizer_nmsimplex2 );
+		CFMinimizer minimizer(gp, optimizer );
 		
 		auto x = transf.get_parameters(); 
 		minimizer.run(x); 
 		transf.set_parameters(x); 
 		
 	}
+}; 
+
+void register_l(const C2DImage& model, const C2DImage& reference, C2DTransformation& transf, 
+		const C2DImageCost& cost, const C2DInterpolatorFactory& ipf, EMinimizers minimizer)
+{
+	if (minimizer_need_gradient(minimizer))
+		register_level<gsl_multimin_fdfminimizer_type>::apply(model, reference, transf, cost, ipf, 
+								    minimizers[minimizer].fdfmin); 
+	
+	else
+		register_level<gsl_multimin_fminimizer_type>::apply(model, reference, transf, cost, ipf, 
+								    minimizers[minimizer].fmin); 
 }
 
 int do_main( int argc, const char *argv[] )
@@ -96,7 +161,7 @@ int do_main( int argc, const char *argv[] )
 	string out_filename; 
 	string trans_filename; 
 	string transform_type("translate"); 
-	bool use_gradient = false; 
+	EMinimizers minimizer = min_nmsimplex; 
 
 	size_t mg_levels = 3;
 	
@@ -106,7 +171,9 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( out_filename, "out", 'o', "registered output image", "output", true)); 
 	options.push_back(make_opt( trans_filename, "trans", 't', "transformation", "transformation", false)); 
 	options.push_back(make_opt( mg_levels, "levels", 'l', "multigrid levels", "levels", false));
-	options.push_back(make_opt( use_gradient, "gradient", 'g', "prefere gradient based optimizer", "grad", false));
+	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table), 
+				    "optimizer", 'O', "Optimizer used for minimization", "optimizer", false));
+	options.push_back(make_opt( transform_type, "transForm", 'f', "transformation typo", "transform", false));
 
 	options.parse(argc, argv); 
 	
@@ -146,7 +213,8 @@ int do_main( int argc, const char *argv[] )
 			transform = tr_creator->create(ModelScale->get_size()); 
 		
 		cvinfo() << ModelScale->get_size() << " vs " << transform->get_size() << "\n"; 
-		register_level(*ModelScale, *RefScale, *transform, *cost, *ipfactory, use_gradient); 
+		
+		register_l(*ModelScale, *RefScale, *transform, *cost, *ipfactory, minimizer); 
 
 		if (x_shift) 
 			x_shift--;  
@@ -157,7 +225,7 @@ int do_main( int argc, const char *argv[] )
 	
 	transform = transform ? transform->upscale(Model->get_size()): 
 		transform = tr_creator->create(Model->get_size()); 
-	register_level(*Model, *Reference, *transform, *cost, *ipfactory,use_gradient); 
+	register_l(*Model, *Reference, *transform, *cost, *ipfactory, minimizer); 
 
 	cvinfo() << Model->get_size() << " vs " << transform->get_size() << "\n"; 
 	P2DImage result = (*transform)(*Model, *ipfactory); 
@@ -219,7 +287,7 @@ double  CGradientProblem::do_f(const DoubleVector& x)
 {
 	P2DImage temp = apply(x); 
 	const double value = _M_cost.value(*temp, _M_reference); 
-	cvmsg() << "Cost = " << value << "\r"; 
+	cvmsg() << "Cost = " << value << "\n"; 
 	return value; 
 }
 
@@ -260,7 +328,7 @@ double  CRegProblem::do_f(const DoubleVector& x)
 	_M_transf.set_parameters(x); 
 	P2DImage test =  _M_transf(_M_model, _M_ipf);
 	const double value = _M_cost.value(*test, _M_reference); 
-	cvmsg() << "Cost = " << value << "\r"; 
+	cvmsg() << "Cost = " << value << "\n"; 
 	return value; 
 }
 
