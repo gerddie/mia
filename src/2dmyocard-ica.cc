@@ -51,12 +51,7 @@ unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean
 	unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(series, false)); 
 	if (components > 0) {
 		ica->set_max_iterations(max_iterations); 
-		ica->run(components);
-		
-		if (strip_mean) 
-			ica->normalize_Mix();
-		if (ica_normalize) 
-			ica->normalize();
+		ica->run(components, strip_mean, ica_normalize);
 	} else {
 		// maybe one can use the correlation and create an initial guess by combining 
 		// highly correlated curves. 
@@ -64,12 +59,7 @@ unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean
 		for (int i = 7; i > 3; --i) {
 			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false)); 
 			ica->set_max_iterations(max_iterations); 
-			l_ica->run(i);
-			
-			if (strip_mean) 
-				l_ica->normalize_Mix();
-			if (ica_normalize) 
-				l_ica->normalize();
+			l_ica->run(i, strip_mean, ica_normalize);
 			
 			CSlopeClassifier cls(l_ica->get_mixing_curves(), strip_mean);
 			float max_slope = log2(i) * cls.get_max_slope_length_diff(); 

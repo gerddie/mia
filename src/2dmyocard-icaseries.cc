@@ -43,27 +43,18 @@ NS_MIA_USE;
 using boost::lambda::_1; 
 using boost::lambda::_2; 
 
-auto_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean, size_t& components, bool ica_normalize )
+unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean, size_t& components, bool ica_normalize )
 {
-	auto_ptr<C2DImageSeriesICA> ica; 
+	unique_ptr<C2DImageSeriesICA> ica; 
 	if (components > 0) {
 		ica.reset(new C2DImageSeriesICA(series, false)); 
-		ica->run(components);
-		if (strip_mean) 
-			ica->normalize_Mix();
-		if (ica_normalize) 
-			ica->normalize();
+		ica->run(components, strip_mean, ica_normalize);
 		return ica; 
 	} else {
 		float min_cor = 0.0; 
 		for (int i = 6; i > 3; --i) {
-			auto_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false)); 
-			l_ica->run(i);
-			
-			if (strip_mean) 
-				l_ica->normalize_Mix();
-			if (ica_normalize) 
-				l_ica->normalize();
+			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false)); 
+			l_ica->run(i, strip_mean, ica_normalize);
 			
 			CSlopeClassifier cls(l_ica->get_mixing_curves(), strip_mean); 
 			float max_slope = i * cls.get_max_slope_length_diff(); 
@@ -71,7 +62,7 @@ auto_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean, 
 			if (min_cor < max_slope) {
 				min_cor = max_slope; 
 				components = i; 
-				ica = l_ica; 
+				ica.swap(l_ica);
 			}
 		}
 	}
@@ -257,7 +248,7 @@ int do_main( int argc, const char *argv[] )
 
 	cvmsg()<< "Got series of " << series.size() << " images\n"; 
 	// always strip mean
-	auto_ptr<C2DImageSeriesICA> ica = get_ica(series, strip_mean, components, ica_normalize); 
+	unique_ptr<C2DImageSeriesICA> ica = get_ica(series, strip_mean, components, ica_normalize); 
 	CSlopeClassifier::Columns curves = ica->get_mixing_curves(); 
 
 	CICAAnalysis::IndexSet component_set = get_all_without_periodic(curves, strip_mean); 
@@ -275,7 +266,7 @@ int do_main( int argc, const char *argv[] )
 		
 		CSegSetWithImages cropped_set = segset.crop(crop_start, crop_end, crop_name); 
 		
-		auto_ptr<xmlpp::Document> outset(cropped_set.write());
+		unique_ptr<xmlpp::Document> outset(cropped_set.write());
 		
 		ofstream outfile(out_name.c_str(), ios_base::out );
 		if (outfile.good())

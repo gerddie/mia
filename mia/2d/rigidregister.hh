@@ -42,8 +42,21 @@ enum EMinimizers {
 	min_undefined
 }; 
 
+/**
+   Class for registration without regularization - i.e. should only be used 
+   for affine, rigid and translation only registrations 
+*/
+
 class C2DRigidRegister {
 public: 
+	/**
+	   Constructor for the registration tool
+	   \param cost cost function model 
+	   \param minimizer GSL provided minimizer 
+	   \param transform_type string describing which transformation is supported
+	   \param ipf interpolator
+	 */
+
 	C2DRigidRegister(P2DImageCost cost, EMinimizers minimizer, 
 			 const string& transform_type, 
 			 const C2DInterpolatorFactory& ipf);
