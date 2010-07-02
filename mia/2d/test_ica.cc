@@ -55,7 +55,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean, ICASeriesFixture )
 {
 	C2DImageSeriesICA ica(image_set, false);
 
-	ica.run(3);
+	ica.run(3, false, false);
 
 	for (size_t i = 0; i < slices; ++i) {
 		C2DFImage mixed = ica.get_mix(i);
@@ -76,7 +76,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_imcomplete_mix, ICASeriesFixture )
 	skip.insert(1);
 	skip.insert(2);
 
-	ica.run(3);
+	ica.run(3, false, false);
 
 	for (size_t i = 0; i < slices; ++i) {
 		C2DFImage mixed = ica.get_incomplete_mix(i, skip);
@@ -94,7 +94,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_stripped_series_mean, ICASeriesFixture )
 {
 	C2DImageSeriesICA ica(image_set, true);
 
-	ica.run(3);
+	ica.run(3, false, false);
 
 	for (size_t i = 0; i < slices; ++i) {
 		C2DFImage mixed = ica.get_mix(i);
@@ -111,7 +111,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp, ICASeriesFixture )
 {
 	C2DImageSeriesICA ica(image_set, true);
 
-	ica.run(4);
+	ica.run(4, false, false);
 
 	for (size_t i = 0; i < slices; ++i) {
 		C2DFImage mixed = ica.get_mix(i);
@@ -128,9 +128,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_stripped_and_normalized, 
 {
 	C2DImageSeriesICA ica(image_set, true);
 
-	ica.run(4);
-	ica.normalize();
-	ica.normalize_Mix();
+	ica.run(4, true, true);
 
 	for (size_t i = 0; i < slices; ++i) {
 		C2DFImage mixed = ica.get_mix(i);
@@ -147,9 +145,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized, ICASeriesFixt
 {
 	C2DImageSeriesICA ica(image_set, false);
 
-	ica.run(4);
-	ica.normalize();
-	ica.normalize_Mix();
+	ica.run(4, true, true);
 
 	for (size_t i = 0; i < slices; ++i) {
 		C2DFImage mixed = ica.get_mix(i);
@@ -166,9 +162,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized2, ICASeriesFix
 {
 	C2DImageSeriesICA ica(image_set, false);
 
-	ica.run(4);
-	ica.normalize_Mix();
-	ica.normalize();
+	ica.run(4, true, true);
 
 	for (size_t i = 0; i < slices; ++i) {
 		C2DFImage mixed = ica.get_mix(i);
@@ -185,8 +179,8 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_mix_normalized, ICASeries
 {
 	C2DImageSeriesICA ica(image_set, false);
 
-	ica.run(4);
-	ica.normalize_Mix();
+	ica.run(4,  true, false);
+
 	for (size_t i = 0; i < slices; ++i) {
 		C2DFImage mixed = ica.get_mix(i);
 		BOOST_CHECK_EQUAL(mixed.get_size(), image_set[i].get_size());
@@ -202,7 +196,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_none, ICASeriesFixture )
 {
 	C2DImageSeriesICA ica(image_set, false);
 
-	ica.run(4);
+	ica.run(4, false, false);
 	for (size_t i = 0; i < slices; ++i) {
 		C2DFImage mixed = ica.get_mix(i);
 		BOOST_CHECK_EQUAL(mixed.get_size(), image_set[i].get_size());

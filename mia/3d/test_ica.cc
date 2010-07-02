@@ -58,7 +58,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean, ICA3DSeriesFixture )
 {
 	C3DImageSeriesICA ica(image_set, false);
 
-	ica.run(3);
+	ica.run(3,false,false);
 
 	for (size_t i = 0; i < slices; ++i)
 		check(ica.get_mix(i), image_set[i]);
@@ -72,7 +72,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_imcomplete_mix, ICA3DSeriesFixture )
 	skip.insert(1);
 	skip.insert(2);
 
-	ica.run(3);
+	ica.run(3,false,false);
 
 	for (size_t i = 0; i < slices; ++i) {
 		C3DFImage mixed = ica.get_incomplete_mix(i, skip);
@@ -87,7 +87,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_stripped_series_mean, ICA3DSeriesFixture 
 {
 	C3DImageSeriesICA ica(image_set, true);
 
-	ica.run(3);
+	ica.run(3,false,false);
 
 	for (size_t i = 0; i < slices; ++i)
 		check(ica.get_mix(i), image_set[i]);
@@ -97,7 +97,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp, ICA3DSeriesFixture )
 {
 	C3DImageSeriesICA ica(image_set, true);
 
-	ica.run(4);
+	ica.run(4, false, false);
 
 	for (size_t i = 0; i < slices; ++i)
 		check(ica.get_mix(i), image_set[i]);
@@ -107,9 +107,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_stripped_and_normalized, 
 {
 	C3DImageSeriesICA ica(image_set, true);
 
-	ica.run(4);
-	ica.normalize();
-	ica.normalize_Mix();
+	ica.run(4, true, true);
 
 	for (size_t i = 0; i < slices; ++i)
 		check(ica.get_mix(i), image_set[i]);
@@ -119,9 +117,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized, ICA3DSeriesFi
 {
 	C3DImageSeriesICA ica(image_set, false);
 
-	ica.run(4);
-	ica.normalize();
-	ica.normalize_Mix();
+	ica.run(4, true, true);
 
 	for (size_t i = 0; i < slices; ++i)
 		check(ica.get_mix(i), image_set[i]);
@@ -131,9 +127,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized2, ICA3DSeriesF
 {
 	C3DImageSeriesICA ica(image_set, false);
 
-	ica.run(4);
-	ica.normalize_Mix();
-	ica.normalize();
+	ica.run(4, true, true);
 
 	for (size_t i = 0; i < slices; ++i)
 		check(ica.get_mix(i), image_set[i]);
@@ -143,8 +137,8 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_mix_normalized, ICA3DSeri
 {
 	C3DImageSeriesICA ica(image_set, false);
 
-	ica.run(4);
-	ica.normalize_Mix();
+	ica.run(4, true, false);
+
 	for (size_t i = 0; i < slices; ++i)
 		check(ica.get_mix(i), image_set[i]);
 }
@@ -153,7 +147,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_none, ICA3DSeriesFixture 
 {
 	C3DImageSeriesICA ica(image_set, false);
 
-	ica.run(4);
+	ica.run(4, false, false);
 	for (size_t i = 0; i < slices; ++i)
 		check(ica.get_mix(i), image_set[i]);
 }
