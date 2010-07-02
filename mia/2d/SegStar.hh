@@ -30,7 +30,7 @@
 
 NS_MIA_BEGIN
 
-class CSegStar {
+class  EXPORT_2D CSegStar {
 public:
 	CSegStar();
 	CSegStar(const CSegPoint2D& center, float r, const CSegPoint2D& d1, const CSegPoint2D& d2, const CSegPoint2D& d3);

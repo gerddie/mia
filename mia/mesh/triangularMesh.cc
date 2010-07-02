@@ -30,9 +30,7 @@
 
 */
 
-#ifdef WIN32
-#define EXPORT_HANDLER __declspec(dllexport)
-#endif
+#include <mia/core/export_handler.hh>
 
 #define _USE_MATH_DEFINES
 #include <cmath>

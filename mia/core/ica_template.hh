@@ -25,6 +25,18 @@
 #include <mia/core/ica.hh>
 #include <vector>
 
+#ifndef EXPORT_TDataSeriesICA
+#ifdef WIN32
+#  define EXPORT_TDataSeriesICA __declspec(dllimport)
+#else
+# ifdef __GNUC__
+#   define EXPORT_TDataSeriesICA __attribute__((visibility("default")))
+# else
+#   define EXPORT_TDataSeriesICA
+# endif
+#endif
+#endif 
+
 NS_MIA_BEGIN
 
 /**
@@ -43,7 +55,7 @@ NS_MIA_BEGIN
 */
 
 template <class Data> 
-class TDataSeriesICA {
+class  EXPORT_TDataSeriesICA TDataSeriesICA {
 public:
 	/** a set of indices used for addressing a subset of the independend componsts 
 	 */

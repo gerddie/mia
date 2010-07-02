@@ -31,10 +31,11 @@ namespace xmlpp {
 };
 
 #include <mia/2d/2DVector.hh>
+#include <mia/2d/defines2d.hh>
 
 NS_MIA_BEGIN
 
-class CSegPoint2D: public C2DFVector {
+class  EXPORT_2D CSegPoint2D: public C2DFVector {
 public:
 	CSegPoint2D();
 	CSegPoint2D(float x, float y);

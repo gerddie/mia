@@ -28,9 +28,9 @@
 
 NS_MIA_BEGIN
 
-extern const char *property_gradient;
+extern EXPORT_CORE const char *property_gradient;
 
-class CPropertyFlagHolder {
+class  EXPORT_CORE CPropertyFlagHolder {
 public:
 	bool has(const char *property) const;
 	void add(const char *property);

@@ -34,7 +34,7 @@ namespace xmlpp {
 
 NS_MIA_BEGIN
 
-class CSegSet {
+class EXPORT_2D CSegSet {
 public:
 	typedef std::vector<CSegFrame> Frames;
 

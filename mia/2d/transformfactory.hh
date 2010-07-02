@@ -30,7 +30,7 @@
 NS_MIA_BEGIN
 
 
-class C2DTransformCreator: public CProductBase {
+class  EXPORT_2D C2DTransformCreator: public CProductBase {
 public:
 	C2DTransformCreator();
 

@@ -19,6 +19,15 @@
  *
  */
 
+#ifdef WIN32
+#  define EXPORT_TDataSeriesICA __declspec(dllexport)
+#else
+# ifdef __GNUC__
+#   define EXPORT_TDataSeriesICA __attribute__((visibility("default")))
+# else
+#   define EXPORT_TDataSeriesICA
+# endif
+#endif
 
 #include <mia/2d/ica.hh>
 #include <mia/core/ica_template.cxx>

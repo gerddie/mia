@@ -35,7 +35,7 @@ applies the inverse DCT
 
 NS_BEGIN(filter_2dimage_cst)
 
-class C2DCst : public mia::C2DFilter {
+class EXPORT_2D C2DCst : public mia::C2DFilter {
 public:
         C2DCst(const mia::PCST2DImageKernel&  kernel);
 
@@ -47,7 +47,7 @@ private:
 	mia::PCST2DImageKernel _M_kernel;
 };
 
-class C2DFilterPluginFactory: public mia::C2DFilterPlugin {
+class EXPORT_2D C2DFilterPluginFactory: public mia::C2DFilterPlugin {
 public:
 	C2DFilterPluginFactory();
 private:

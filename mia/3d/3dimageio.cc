@@ -50,7 +50,7 @@ P3DImageVector EXPORT_3D create_image3d_vector(P3DImage image)
 	return result;
 }
 
-P3DImage load_image3d(const std::string& filename)
+P3DImage  EXPORT_3D load_image3d(const std::string& filename)
 {
 	C3DImageIOPluginHandler::Instance::PData  in_image_list = C3DImageIOPluginHandler::instance().load(filename);
 	if (in_image_list.get() && !in_image_list->empty())
@@ -59,7 +59,7 @@ P3DImage load_image3d(const std::string& filename)
 		THROW(runtime_error, "unable to load 3D image from '" << filename << "'");
 }
 
-bool save_image3d(const std::string& filename, P3DImage image)
+bool EXPORT_3D  save_image3d(const std::string& filename, P3DImage image)
 {
 	C3DImageVector out_images;
 	out_images.push_back(image);

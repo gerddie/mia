@@ -34,7 +34,7 @@ namespace xmlpp {
 
 NS_MIA_BEGIN
 
-class CSegSetWithImages: public CSegSet {
+class EXPORT_2D CSegSetWithImages: public CSegSet {
 public:
 	CSegSetWithImages();
 	CSegSetWithImages(const std::string& filename, bool ignore_path);

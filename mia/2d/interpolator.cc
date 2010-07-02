@@ -57,7 +57,7 @@ private:
 };
 
 
-double integrate2(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2, double n, double x0, double L)
+double  EXPORT_2D integrate2(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2, double n, double x0, double L)
 {
 	double sum = 0.0;
 	x0 /= n;

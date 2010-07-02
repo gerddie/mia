@@ -30,7 +30,7 @@
 NS_MIA_BEGIN
 
 template <typename T>
-class T2DVectorfield: public T2DDatafield<T>, public CAttributedData {
+class EXPORT_2D T2DVectorfield: public T2DDatafield<T>, public CAttributedData {
 public:
 	T2DVectorfield(){};
 	T2DVectorfield(const C2DBounds& size):

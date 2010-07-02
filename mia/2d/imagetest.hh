@@ -30,7 +30,7 @@
 
 NS_MIA_BEGIN
 
-void test_image_equal(const C2DImage& A, const C2DImage& expect);
+void EXPORT_2D test_image_equal(const C2DImage& A, const C2DImage& expect);
 
 NS_MIA_END
 

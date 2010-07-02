@@ -32,7 +32,11 @@
 #define VISTA4MIA_EXPORT __declspec(dllimport)
 #endif
 #else
-#define VISTA4MIA_EXPORT
+#ifdef __GNUC__
+#    define VISTA4MIA_EXPORT __attribute__((visibility("default")))
+#else 
+#    define VISTA4MIA_EXPORT
+#endif
 #endif
 
 template <typename T>

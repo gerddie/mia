@@ -48,8 +48,8 @@ private:
 };
 
 
-P2DImage run_filter_chain(P2DImage image, size_t nfilters, const char *filters[]);
-P2DImage run_filter(const C2DImage& image, const char *filter);
+P2DImage  EXPORT_2D run_filter_chain(P2DImage image, size_t nfilters, const char *filters[]);
+P2DImage  EXPORT_2D run_filter(const C2DImage& image, const char *filter);
 
 double EXPORT_2D distance(const C2DImage& image1, const C2DImage& image2,  const C2DImageCombiner& measure);
 

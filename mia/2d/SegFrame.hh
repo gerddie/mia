@@ -31,7 +31,7 @@
 
 NS_MIA_BEGIN
 
-class CSegFrame {
+class  EXPORT_2D CSegFrame {
 public:
 	typedef std::vector<CSegSection> Sections;
 

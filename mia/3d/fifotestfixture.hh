@@ -31,7 +31,7 @@ NS_MIA_BEGIN
 
 typedef std::vector<P2DImage> C2DImageStack;
 
-struct fifof_Fixture  {
+struct EXPORT_3D fifof_Fixture  {
 	template <typename A, typename B>
 	void prepare(const A *input_data, const B *test_data, const C2DBounds& size, size_t slices);
 	void call_test( C2DImageFifoFilter& filter)const ;

@@ -28,12 +28,12 @@
 
 NS_MIA_BEGIN
 
-struct EXPORT_CORE cost_data2d_type {
+struct EXPORT_2D cost_data2d_type {
 	static const char *type_descr;
 };
 
 
-class C2DCostBase : public CProductBase {
+class EXPORT_2D C2DCostBase : public CProductBase {
 public:
 	C2DCostBase(float weight);
 
@@ -43,7 +43,7 @@ private:
 	float _M_weight;
 };
 
-class C2DCostBasePlugin: public TFactory<C2DCostBase, cost_data2d_type, cost_type> {
+class EXPORT_CORE C2DCostBasePlugin: public TFactory<C2DCostBase, cost_data2d_type, cost_type> {
 public:
 	C2DCostBasePlugin(const char *const name);
 protected:

@@ -24,7 +24,7 @@
 
 NS_MIA_BEGIN
 
-struct C2DTransformMock: public C2DTransformation {
+struct  EXPORT_2D C2DTransformMock: public C2DTransformation {
 	C2DTransformMock();
 	C2DTransformMock(const C2DBounds& size);
 	virtual C2DTransformation *clone() const;

@@ -31,7 +31,7 @@ NS_MIA_BEGIN
    MRI Using Pseudo Ground Truth", MICCAI 2009, pp 165-172
 */
 
-class C2DGroundTruthEvaluator {
+class  EXPORT_2D C2DGroundTruthEvaluator {
 public:
 	C2DGroundTruthEvaluator(double alpha, double beta, double rho);
 	~C2DGroundTruthEvaluator();

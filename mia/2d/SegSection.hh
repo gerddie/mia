@@ -35,7 +35,7 @@
 
 NS_MIA_BEGIN
 
-class CSegSection {
+class  EXPORT_2D CSegSection {
 public:
 	typedef std::vector<CSegPoint2D> Points;
 	CSegSection();

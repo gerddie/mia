@@ -374,8 +374,8 @@ PCmdOption make_opt(T& value, const TDictMap<T>& map, const char *long_opt, char
    \returns the option warped into a \a boost::shared_ptr
  */
 
-PCmdOption make_opt(int& value, const CFlagString& map, const char *long_opt, char short_opt,
-		    const char *long_help, const char *short_help, bool required= false);
+PCmdOption  EXPORT_CORE make_opt(int& value, const CFlagString& map, const char *long_opt, char short_opt,
+				 const char *long_help, const char *short_help, bool required= false);
 
 
 /**

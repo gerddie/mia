@@ -117,7 +117,7 @@ struct pattr_less {
     if a string-compare strcmp between the type descriptions returns -1.
  */
 template <typename T>
-class TAttribute : public CAttribute {
+class EXPORT_CORE TAttribute : public CAttribute {
 public:
 	//! \name Constructors
         //@{
@@ -155,7 +155,7 @@ private:
  */
 
 template <typename T>
-T get_attribute_as(const CAttribute& attr) {
+T EXPORT_CORE get_attribute_as(const CAttribute& attr) {
 	const TAttribute<T>& a = dynamic_cast<const TAttribute<T>&>(attr);
 	return a;
 }
@@ -199,7 +199,7 @@ typedef SHARED_PTR(CAttributeMap) PAttributeMap;
    \param data map of values
    \returns a reference to the output stream
  */
-std::ostream& operator << (std::ostream& os, const CAttributeMap& data);
+EXPORT_CORE  std::ostream& operator << (std::ostream& os, const CAttributeMap& data);
 
 
 /**
@@ -343,7 +343,7 @@ private:
  */
 
 template <typename T>
-void add_attribute(CAttributeMap& attributes, const std::string& key, T value)
+void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& key, T value)
 {
 	cvdebug() << "add attribute " << key << " of type " << typeid(T).name() << " and value '" << value << "'\n";
 	attributes[key] = PAttribute(new TAttribute<T>(value));
@@ -357,7 +357,7 @@ void add_attribute(CAttributeMap& attributes, const std::string& key, T value)
    \param value
  */
 template <>
-void add_attribute(CAttributeMap& attributes, const std::string& name, const char * value);
+void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& name, const char * value);
 
 
 /** \brief Generic string vs. attribute translator singleton
@@ -367,7 +367,7 @@ void add_attribute(CAttributeMap& attributes, const std::string& name, const cha
     can be accessed via CStringAttrTranslatorMap::instance()
  */
 template <typename T>
-class TTranslator: public CAttrTranslator {
+class EXPORT_CORE TTranslator: public CAttrTranslator {
 public:
 	/**
 	   Register this translator for attributed for the given \a key. The translator is handled as a

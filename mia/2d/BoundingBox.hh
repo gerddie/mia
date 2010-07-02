@@ -25,13 +25,14 @@
 #define __mia_2d_boundingbox_hh
 
 #include <mia/2d/2DVector.hh>
+#include <mia/2d/defines2d.hh>
 
 
 NS_MIA_BEGIN
 
 typedef T2DVector<int> C2DIVector;
 
-class C2DBoundingBox {
+class  EXPORT_2D C2DBoundingBox {
 public:
 	C2DBoundingBox();
 	C2DBoundingBox(const C2DFVector& begin, const C2DFVector& end);

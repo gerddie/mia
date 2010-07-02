@@ -24,7 +24,11 @@
 #ifdef WIN32
 #  define EXPORT_2DDATAFIELD __declspec(dllexport)
 #else
-#  define EXPORT_2DDATAFIELD
+#  ifdef __GNUC__
+#    define EXPORT_2DDATAFIELD  __attribute__((visibility("default")))
+#  else 
+#    define EXPORT_2DDATAFIELD 
+#  endif 
 #endif
 
 #include <mia/2d/2DVectorfield.hh>

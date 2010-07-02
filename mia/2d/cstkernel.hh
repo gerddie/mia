@@ -55,7 +55,7 @@ struct EXPORT_2D cst2d_image_kernel {
 };
 
 template <typename T>
-class TCST2DKernel :public CProductBase {
+class EXPORT_2D TCST2DKernel :public CProductBase {
 public:
 	typedef TCSTPlan<T> CPlan;
 	TCST2DKernel(fftwf_r2r_kind forward);

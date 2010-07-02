@@ -202,7 +202,7 @@ EXPORT_CORE const string get_plugin_root()
 	return result;
 }
 #else
-const string get_plugin_root()
+const string EXPORT_CORE get_plugin_root()
 {
 	// fixme: this should also go into some config file
 	return string(PLUGIN_SEARCH_PATH);

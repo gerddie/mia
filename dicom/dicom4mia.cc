@@ -504,7 +504,7 @@ CDicomReader::CDicomReader(struct CDicomReaderData *yeah):
 {
 }
 
-CDicomReader ugly_trick_writer_dcm_to_reader_dcm(CDicomWriter& writer)
+CDicomReader EXPORT_DICOM ugly_trick_writer_dcm_to_reader_dcm(CDicomWriter& writer)
 {
 	CDicomReaderData *yeah = new CDicomReaderData;
 	yeah->dcm =  writer.impl->dcm;
@@ -512,25 +512,25 @@ CDicomReader ugly_trick_writer_dcm_to_reader_dcm(CDicomWriter& writer)
 }
 
 
-const char * IDAcquisitionDate =   "AcquisitionDate";
-const char * IDAcquisitionNumber = "AcquisitionNumber";
-const char * IDImageType =         "ImageType";
-const char * IDInstanceNumber =    "InstanceNumber";
-const char * IDMediaStorageSOPClassUID= "MediaStorageSOPClassUID";
-const char * IDModality =          "Modality";
-const char * IDPatientOrientation ="PatientOrientation";
-const char * IDPatientPosition = "PatientPosition";
-const char * IDStudyDescription = "StudyDescription";
-const char * IDSamplesPerPixel = "IDSamplesPerPixel";
-const char * IDSeriesDescription = "SeriesDescription";
-const char * IDSeriesNumber = "SeriesNumber";
-const char * IDSliceLocation = "SliceLocation";
-const char * IDStudyID = "StudyID";
-const char * IDTestValue = "TestValue";
-const char * IDTransferSyntaxUID = "TransferSyntaxUID";
-const char * IDSOPClassUID = "SOPClassUID";
-const char * IDSmallestImagePixelValue = "SmallestImagePixelValue";
-const char * IDLargestImagePixelValue = "LargestImagePixelValue";
+EXPORT_DICOM const char * IDAcquisitionDate =   "AcquisitionDate";
+EXPORT_DICOM const char * IDAcquisitionNumber = "AcquisitionNumber";
+EXPORT_DICOM const char * IDImageType =         "ImageType";
+EXPORT_DICOM const char * IDInstanceNumber =    "InstanceNumber";
+EXPORT_DICOM const char * IDMediaStorageSOPClassUID= "MediaStorageSOPClassUID";
+EXPORT_DICOM const char * IDModality =          "Modality";
+EXPORT_DICOM const char * IDPatientOrientation ="PatientOrientation";
+EXPORT_DICOM const char * IDPatientPosition = "PatientPosition";
+EXPORT_DICOM const char * IDStudyDescription = "StudyDescription";
+EXPORT_DICOM const char * IDSamplesPerPixel = "IDSamplesPerPixel";
+EXPORT_DICOM const char * IDSeriesDescription = "SeriesDescription";
+EXPORT_DICOM const char * IDSeriesNumber = "SeriesNumber";
+EXPORT_DICOM const char * IDSliceLocation = "SliceLocation";
+EXPORT_DICOM const char * IDStudyID = "StudyID";
+EXPORT_DICOM const char * IDTestValue = "TestValue";
+EXPORT_DICOM const char * IDTransferSyntaxUID = "TransferSyntaxUID";
+EXPORT_DICOM const char * IDSOPClassUID = "SOPClassUID";
+EXPORT_DICOM const char * IDSmallestImagePixelValue = "SmallestImagePixelValue";
+EXPORT_DICOM const char * IDLargestImagePixelValue = "LargestImagePixelValue";
 
 
 NS_MIA_END

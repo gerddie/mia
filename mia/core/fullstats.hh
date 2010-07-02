@@ -31,7 +31,7 @@
 
 NS_MIA_BEGIN
 
-class CFullStats {
+class  EXPORT_CORE CFullStats {
 public:
 	template <typename InputIterator>
 	CFullStats(InputIterator begin, InputIterator end);

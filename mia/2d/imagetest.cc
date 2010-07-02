@@ -77,7 +77,7 @@ public:
 	}
 };
 
-void test_image_equal(const C2DImage& test, const C2DImage& expect)
+void  EXPORT_2D test_image_equal(const C2DImage& test, const C2DImage& expect)
 {
 	BOOST_CHECK_EQUAL(test.get_size(), expect.get_size());
 	BOOST_REQUIRE(test.get_size() == expect.get_size());

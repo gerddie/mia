@@ -174,7 +174,7 @@ struct compare_mean_freq {
 
 
 
-float correlation(const vector<float>& a, const vector<float>& b)
+float  EXPORT_CORE correlation(const vector<float>& a, const vector<float>& b)
 {
 	assert(a.size() > 0);
 	assert(a.size() == b.size());

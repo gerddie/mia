@@ -477,7 +477,7 @@ extern template class  EXPORT_3D T3DDatafield<short>;
 extern template class  EXPORT_3D T3DDatafield<unsigned short>;
 extern template class  EXPORT_3D T3DDatafield<unsigned char >;
 extern template class  EXPORT_3D T3DDatafield<signed char >;
-extern template class  EXPORT_3D T3DDatafield<bool>;
+extern template class  T3DDatafield<bool>;
 
 extern template class EXPORT_3D T2DDatafield<T3DVector<double> >;
 extern template class EXPORT_3D T2DDatafield<T3DVector<float> >;

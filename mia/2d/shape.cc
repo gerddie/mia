@@ -23,6 +23,16 @@
 
 
 #include <mia/core/export_handler.hh>
+#ifdef WIN32
+#  define EXPORT_SHAPE   __declspec(dllexport)
+#else
+#  ifdef __GNUC__
+#     define EXPORT_SHAPE __attribute__((visibility("default")))
+#  else
+#     define EXPORT_SHAPE 
+#  endif 
+#endif
+
 
 #include <mia/2d/shape.hh>
 #include <mia/core/plugin_base.cxx>

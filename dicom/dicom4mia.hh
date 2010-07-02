@@ -25,29 +25,34 @@
 #include <mia/core/msgstream.hh>
 #include <mia/2d/2DImage.hh>
 
+#ifdef __GNUC__
+#  define EXPORT_DICOM __attribute__((visibility("default")))
+#else 
+#  define EXPORT_DICOM
+#endif
 
 NS_MIA_BEGIN
 
-extern const char * IDAcquisitionDate;
-extern const char * IDAcquisitionNumber;
-extern const char * IDImageType;
-extern const char * IDInstanceNumber;
-extern const char * IDMediaStorageSOPClassUID;
-extern const char * IDModality;
-extern const char * IDPatientOrientation;
-extern const char * IDPatientPosition;
-extern const char * IDStudyDescription;
-extern const char * IDSamplesPerPixel;
-extern const char * IDSeriesDescription;
-extern const char * IDSeriesNumber;
-extern const char * IDSliceLocation;
-extern const char * IDStudyID;
-extern const char * IDTestValue;
-extern const char * IDSOPClassUID;
-extern const char * IDSmallestImagePixelValue;
-extern const char * IDLargestImagePixelValue;
+extern EXPORT_DICOM const char * IDAcquisitionDate;
+extern EXPORT_DICOM  const char * IDAcquisitionNumber;
+extern EXPORT_DICOM  const char * IDImageType;
+extern EXPORT_DICOM  const char * IDInstanceNumber;
+extern EXPORT_DICOM const char * IDMediaStorageSOPClassUID;
+extern EXPORT_DICOM const char * IDModality;
+extern EXPORT_DICOM const char * IDPatientOrientation;
+extern EXPORT_DICOM const char * IDPatientPosition;
+extern EXPORT_DICOM const char * IDStudyDescription;
+extern EXPORT_DICOM const char * IDSamplesPerPixel;
+extern EXPORT_DICOM const char * IDSeriesDescription;
+extern EXPORT_DICOM const char * IDSeriesNumber;
+extern EXPORT_DICOM const char * IDSliceLocation;
+extern EXPORT_DICOM const char * IDStudyID;
+extern EXPORT_DICOM const char * IDTestValue;
+extern EXPORT_DICOM const char * IDSOPClassUID;
+extern EXPORT_DICOM const char * IDSmallestImagePixelValue;
+extern EXPORT_DICOM const char * IDLargestImagePixelValue;
 
-class CDicomReader {
+class EXPORT_DICOM CDicomReader {
 public:
 	CDicomReader(const char *filename);
 
@@ -79,7 +84,7 @@ private:
 
 };
 
-class CDicomWriter {
+class EXPORT_DICOM CDicomWriter {
 public:
 	CDicomWriter(const C2DImage& image);
 	bool write(const char *filename) const;
@@ -90,7 +95,7 @@ private:
 };
 
 #ifdef ENABLE_TEST_HACKS
-CDicomReader ugly_trick_writer_dcm_to_reader_dcm(CDicomWriter& writer);
+CDicomReader EXPORT_DICOM ugly_trick_writer_dcm_to_reader_dcm(CDicomWriter& writer);
 #endif
 
 NS_MIA_END

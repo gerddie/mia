@@ -27,7 +27,7 @@
 
 NS_MIA_BEGIN
 
-class C2DImageCostBase: public C2DCostBase {
+class EXPORT_2D C2DImageCostBase: public C2DCostBase {
 public:
 	C2DImageCostBase(const C2DImageDataKey& src_key, const C2DImageDataKey& ref_key,
 			 P2DInterpolatorFactory ipf,
@@ -50,7 +50,7 @@ private:
 	P2DInterpolatorFactory _M_ipf;
 };
 
-class C2DImageCostBasePlugin: public C2DCostBasePlugin {
+class EXPORT_2D  C2DImageCostBasePlugin: public C2DCostBasePlugin {
 public:
 	C2DImageCostBasePlugin(const char * const name);
 protected:

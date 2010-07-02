@@ -28,7 +28,7 @@
 
 NS_MIA_BEGIN
 
-class C2DDivCurlMatrix {
+class  EXPORT_2D C2DDivCurlMatrix {
 public:
 	C2DDivCurlMatrix(const C2DBounds& size, const CBSplineKernel* kernel);
 	~C2DDivCurlMatrix();

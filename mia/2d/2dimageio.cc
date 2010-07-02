@@ -57,7 +57,7 @@ P2DImageVector EXPORT_2D create_image2d_vector(P2DImage image)
 	return out_list_ptr;
 }
 
-P2DImage load_image2d(const std::string& filename)
+P2DImage  EXPORT_2D load_image2d(const std::string& filename)
 {
 	C2DImageIOPluginHandler::Instance::PData  in_image_list =
 		C2DImageIOPluginHandler::instance().load(filename);
@@ -73,7 +73,7 @@ P2DImage load_image2d(const std::string& filename)
 	return *in_image_list->begin();
 }
 
-bool save_image2d(const std::string& filename, P2DImage image)
+bool  EXPORT_2D save_image2d(const std::string& filename, P2DImage image)
 {
 	C2DImageIOPluginHandler::Instance::Data out_image_list;
 	out_image_list.push_back(image);

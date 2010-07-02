@@ -42,7 +42,7 @@ NS_MIA_BEGIN
 
 */
 
-class CICAAnalysis {
+class  EXPORT_CORE CICAAnalysis {
 public:
 
 	typedef itpp::Vec<itpp::mat::value_type> itppvector;

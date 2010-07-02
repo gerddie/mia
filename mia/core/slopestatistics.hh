@@ -34,7 +34,7 @@ NS_MIA_BEGIN
    Evaluates some statistics about a one-dimensional mapping [0, 1,..., N-1] -> R.
  */
 
-class CSlopeStatistics {
+class  EXPORT_CORE CSlopeStatistics {
 public:
 	CSlopeStatistics(const std::vector<float>& series);
 	~CSlopeStatistics();

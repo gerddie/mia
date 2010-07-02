@@ -29,7 +29,7 @@
 
 NS_MIA_BEGIN
 
-class C2DFilterChain {
+class EXPORT_2D C2DFilterChain {
 public:
 	C2DFilterChain();
 	C2DFilterChain(const vector<const char *>& descr);

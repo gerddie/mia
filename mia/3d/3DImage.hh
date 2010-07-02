@@ -287,7 +287,7 @@ struct Binder<C3DImage> {
 
 
 template <typename T>
-class C3DValueAttribute : public CAttribute {
+class EXPORT_3D C3DValueAttribute : public CAttribute {
 public:
 	C3DValueAttribute(const T3DVector<T>& value);
 
@@ -304,7 +304,7 @@ private:
 };
 
 template <typename T>
-class C3DValueAttributeTranslator: public CAttrTranslator {
+class EXPORT_3D C3DValueAttributeTranslator: public CAttrTranslator {
 public:
 	static  void register_for(const std::string& key);
 private:

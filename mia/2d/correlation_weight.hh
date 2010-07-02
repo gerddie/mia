@@ -25,7 +25,7 @@
 
 NS_MIA_BEGIN
 
-class CCorrelationEvaluator {
+class EXPORT_2D CCorrelationEvaluator {
 public:
 	typedef struct {
 		C2DFImage horizontal;

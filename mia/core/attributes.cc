@@ -106,7 +106,7 @@ void CAttributedData::set_attribute(const std::string& name, PAttribute attr)
 	(*_M_attr)[name] = attr;
 }
 
-std::ostream& operator << (std::ostream& os, const CAttributeMap& data)
+EXPORT_CORE std::ostream&  operator << (std::ostream& os, const CAttributeMap& data)
 {
 	os << "attribute map: [ \n";
 	for (CAttributeMap::const_iterator i = data.begin();

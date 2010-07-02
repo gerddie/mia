@@ -25,6 +25,9 @@
 
 
 #include <mia/2d/rigidregister.hh>
+#include <mia/2d/transformfactory.hh>
+#include <mia/core/spacial_kernel.hh>
+#include <mia/2d/2dfilter.hh>
 
 
 NS_MIA_USE
@@ -33,9 +36,24 @@ namespace bfs=boost::filesystem;
 class PluginPathInitFixture {
 protected:
 	PluginPathInitFixture() {
-		list< bfs::path> searchpath;
-		searchpath.push_back(bfs::path("cost"));
-		C2DImageCostPluginHandler::set_search_path(searchpath);
+		list< bfs::path> costsearchpath;
+		costsearchpath.push_back(bfs::path("cost"));
+		C2DImageCostPluginHandler::set_search_path(costsearchpath);
+
+		list< bfs::path> transsearchpath;
+		transsearchpath.push_back(bfs::path("transform"));
+		C2DTransformCreatorHandler::set_search_path(transsearchpath);
+
+		list< bfs::path> kernelsearchpath;
+		kernelsearchpath.push_back(bfs::path("..")/
+					   bfs::path("core")/bfs::path("spacialkernel"));
+		C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
+
+		list< bfs::path> filterpath;
+		filterpath.push_back(bfs::path("filter"));
+		C2DFilterPluginHandler::set_search_path(filterpath);
+
+
 	}
 };
 

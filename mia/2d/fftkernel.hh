@@ -40,15 +40,16 @@ A basis for fft filter plugins
 #include <mia/core/defines.hh>
 #include <mia/core/factory.hh>
 #include <mia/core/spacial_kernel.hh>
+#include <mia/2d/defines2d.hh>
 #include <mia/2d/2DVector.hh>
 
 NS_MIA_BEGIN
 
-struct EXPORT_CORE fft2d_kernel_data {
+struct EXPORT_2D fft2d_kernel_data {
 	static const char *type_descr;
 };
 
-class CFFT2DKernel :public CProductBase {
+class EXPORT_2D CFFT2DKernel :public CProductBase {
 public:
 	CFFT2DKernel();
 	virtual ~CFFT2DKernel();

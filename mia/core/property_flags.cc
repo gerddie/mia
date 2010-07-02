@@ -24,7 +24,7 @@
 
 NS_MIA_BEGIN
 
-const char *property_gradient = "gradient";
+EXPORT_CORE const char *property_gradient = "gradient";
 
 bool CPropertyFlagHolder::has(const char *property) const
 {

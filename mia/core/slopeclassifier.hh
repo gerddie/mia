@@ -34,7 +34,7 @@ NS_MIA_BEGIN
    of series of perfusion images that are aquired usingfree breathing.
 */
 
-class CSlopeClassifier {
+class  EXPORT_CORE  CSlopeClassifier {
 public:
 	typedef std::vector<std::vector<float> > Columns;
 
@@ -72,7 +72,7 @@ private:
 };
 
 /// \returns Pearsons correlation cuefficient between two series
-float correlation(const std::vector<float>& a, const std::vector<float>& b);
+float  EXPORT_CORE correlation(const std::vector<float>& a, const std::vector<float>& b);
 
 NS_MIA_END
 

@@ -29,7 +29,7 @@
 
 NS_MIA_BEGIN
 
-class CFlagString {
+class  EXPORT_CORE CFlagString {
 public:
 	typedef struct {
 		char id;

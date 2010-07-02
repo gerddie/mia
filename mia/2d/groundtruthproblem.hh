@@ -8,7 +8,7 @@
 NS_MIA_BEGIN
 
 
-class GroundTruthProblem : public gsl::CFDFMinimizer::Problem {
+class  EXPORT_2D GroundTruthProblem : public gsl::CFDFMinimizer::Problem {
 public:
 	GroundTruthProblem(double a, double b, 
 			   const C2DBounds& slice_size, 

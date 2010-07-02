@@ -33,7 +33,7 @@ NS_MIA_BEGIN
 /**
    A class to interface  images with image IO plugins.
 */
-class C3DImageVector: public std::vector< SHARED_PTR(C3DImage)> ,
+class EXPORT_3D C3DImageVector: public std::vector< SHARED_PTR(C3DImage)> ,
 		      public CIOData {
 public:
 	C3DImageVector *clone() const;
@@ -52,8 +52,8 @@ typedef C3DImageIOPluginHandler::Instance::PData P3DImageVector;
 
 P3DImageVector EXPORT_3D create_image3d_vector(P3DImage image);
 
-P3DImage load_image3d(const std::string& filename);
-bool save_image3d(const std::string& filename, P3DImage image);
+P3DImage  EXPORT_3D load_image3d(const std::string& filename);
+bool  EXPORT_3D save_image3d(const std::string& filename, P3DImage image);
 
 
 NS_MIA_END
