@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2009,2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -30,7 +30,7 @@
 NS_MIA_BEGIN
 
 /**
-   Classify a set of curves. This class is mostly usefull for the analysis 
+   Classify a set of curves. This class is mostly usefull for the analysis
    of series of perfusion images that are aquired usingfree breathing.
 */
 
@@ -40,9 +40,9 @@ public:
 
 	typedef struct  {
 		float corr;
-		int row1; 
-		int row2; 
-	} SCorrelation; 
+		int row1;
+		int row2;
+	} SCorrelation;
 
 	CSlopeClassifier(const Columns& m, bool mean_stripped=false);
 	~CSlopeClassifier();
@@ -57,17 +57,17 @@ public:
 	int get_LV_peak() const;
 
 	/// \returns the absolute difference between the length ofthe longest and second longest curve in the list
-	float get_max_slope_length_diff() const; 
+	float get_max_slope_length_diff() const;
 
-	/// \returns the maximum value of the correlation between the curves and the corresponding rows 
-	SCorrelation  max_selfcorrelation()const; 
-	
+	/// \returns the maximum value of the correlation between the curves and the corresponding rows
+	SCorrelation  max_selfcorrelation()const;
+
 private:
 	struct CSlopeClassifierImpl *impl;
 };
 
-/// \returns Pearsons correlation cuefficient between two series 
-float correlation(const std::vector<float>& a, const std::vector<float>& b); 
+/// \returns Pearsons correlation cuefficient between two series
+float correlation(const std::vector<float>& a, const std::vector<float>& b);
 
 NS_MIA_END
 

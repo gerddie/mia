@@ -1,19 +1,19 @@
 /*
-** Copyright (C) 1999 Max-Planck-Institute of Cognitive Neurosience
+** Copyright (c) Leipzig, Madrid 1999-2010
 **                    Gert Wollny <wollny@cns.mpg.de>
-**  
+**
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
+** the Free Software Foundation; either version 3 of the License, or
 ** (at your option) any later version.
-** 
+**
 ** This program is distributed in the hope that it will be useful,
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ** GNU General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software 
+** along with this program; if not, write to the Free Software
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
@@ -55,14 +55,14 @@ class TFluidReg {
 	C2DFImage Ref;
 	C2DFImage Model;
 	C2DFImage Template;
-	SHARED_PTR(T2DInterpolator<float>)  target_interp; 
+	SHARED_PTR(T2DInterpolator<float>)  target_interp;
 
 
-	float min_stepsize; 
+	float min_stepsize;
 	C2DBounds Start,End;
 
-	bool final_level; 
-	float epsilon; 
+	bool final_level;
+	float epsilon;
 	float  	delta;  		// step size
 	float  	stepSize;		// step size
 	float  	lambda, mu;		// elasticity constants
@@ -70,29 +70,29 @@ class TFluidReg {
 	float  	a_,a, b, c, a_b,b_4;		// integration constants
 	float  regrid_thresh;
 public:
-	TFluidReg(const C2DFImage& _Ref, const C2DFImage& _Model, float __regrid_thresh, int level, 
+	TFluidReg(const C2DFImage& _Ref, const C2DFImage& _Model, float __regrid_thresh, int level,
 		  float __epsilon, float __lambda, float __mu);
 	~TFluidReg();
-	
 
-	float  solveAt(unsigned int x, unsigned int y); 
-	void	solvePDE(unsigned int nit); 
+
+	float  solveAt(unsigned int x, unsigned int y);
+	void	solvePDE(unsigned int nit);
 	//	void	solvePDE(C2DFVectorfield& v, const C2DFVectorfield& B, unsigned int nit);
 
 
 	C2DFVector  forceAt(const C2DFVector &p, float s);
 	void	calculateForces();
-	float  calculateMismatch(bool apply); 
+	float  calculateMismatch(bool apply);
 	bool	decreaseStep();
 	void	increaseStep();
 	void work(C2DFVectorfield *Shift, const C2DInterpolatorFactory& ipfac);
 
 private:
 
-float  perturbationAt(unsigned int x, unsigned int y); 
-float  calculatePerturbation(); 
-float  jacobianAt(unsigned int x, unsigned int y); 
-float  calculateJacobian(); 
+float  perturbationAt(unsigned int x, unsigned int y);
+float  calculatePerturbation();
+float  jacobianAt(unsigned int x, unsigned int y);
+float  calculateJacobian();
 
 
 
@@ -102,10 +102,10 @@ float  calculateJacobian();
 
 
 inline bool TFluidReg::decreaseStep()
-{ 
-	stepSize *= 0.5; 
+{
+	stepSize *= 0.5;
 	if (stepSize >= min_stepsize) {
-		return true; 
+		return true;
 	}else {
 		stepSize = min_stepsize;
 		return false;
@@ -114,9 +114,9 @@ inline bool TFluidReg::decreaseStep()
 
 inline void TFluidReg::increaseStep()
 {
-	stepSize *= 1.5; 
-	if (stepSize > MAX_STEP) 
-		stepSize = MAX_STEP; 
+	stepSize *= 1.5;
+	if (stepSize > MAX_STEP)
+		stepSize = MAX_STEP;
 }
 
 #endif

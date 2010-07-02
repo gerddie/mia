@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -42,9 +42,9 @@ NS_MIA_BEGIN
 
 /**
    \brief Base class of all attributes
-   CAttribute is the base class used for generric attributes of images and similar 
+   CAttribute is the base class used for generric attributes of images and similar
    entities. This class is abstract and most likely you want to use one of the provided specializations
-   of the class TAttribute or create your own specializations. 
+   of the class TAttribute or create your own specializations.
 */
 
 class EXPORT_CORE CAttribute {
@@ -61,15 +61,15 @@ public:
         */
 	bool is_equal(const CAttribute& other) const;
 
-	/** compare this attribute to another one for a strict ordering 
+	/** compare this attribute to another one for a strict ordering
 	    \param other other attribute to compare to
-	    \returns a result dependend on the actual implementation of the private virtual method 
+	    \returns a result dependend on the actual implementation of the private virtual method
 	    \a do_is_less
-	    
+
 	 */
 	bool is_less(const CAttribute& other) const;
 
-	/// \returns a descriptive name of the type 
+	/// \returns a descriptive name of the type
 	virtual const char *typedescr() const = 0;
 private:
 	virtual std::string do_as_string() const = 0;
@@ -107,14 +107,14 @@ struct pattr_less {
 };
 
 /** \brief Class of an attribute that holds data of type  \a T
-    
-    This class is the templated derivative of CAttribute that provides the container 
-    for most attributes you will come across. The value is stored read-only.  
+
+    This class is the templated derivative of CAttribute that provides the container
+    for most attributes you will come across. The value is stored read-only.
     It implements implements the abstract methods typedescr, do_as_string, do_is_equal, do_is_less
-    For this type, is_equal returns true if the \a other attribute has the same type and holds the 
-    same value. 
-    is_less returns true of either the type is equal and the value is less, or with different types 
-    if a string-compare strcmp between the type descriptions returns -1. 
+    For this type, is_equal returns true if the \a other attribute has the same type and holds the
+    same value.
+    is_less returns true of either the type is equal and the value is less, or with different types
+    if a string-compare strcmp between the type descriptions returns -1.
  */
 template <typename T>
 class TAttribute : public CAttribute {
@@ -128,14 +128,14 @@ public:
 	TAttribute(typename ::boost::reference_wrapper<T>::type value);
 	//@}
 
-	
+
 	/**
 	   provide a transparent conversion to the content type
 	   \remark should we really use this?
 	 */
 	operator T()const;
 
-	/// \returns typeid(T).name(), and is, therefore, dependend on the compiler  
+	/// \returns typeid(T).name(), and is, therefore, dependend on the compiler
 	virtual const char *typedescr() const;
 protected:
 	const T& get_value() const;
@@ -148,9 +148,9 @@ private:
 };
 
 /**
-   Helper function to get the value of an attribute. Thr function throws a bad_cast exception, 
-   if the attribute doesn't hold a value ofthe requested type T 
-   \tparam T target type 
+   Helper function to get the value of an attribute. Thr function throws a bad_cast exception,
+   if the attribute doesn't hold a value ofthe requested type T
+   \tparam T target type
    \param attr attribute to be read
  */
 
@@ -194,10 +194,10 @@ typedef SHARED_PTR(CAttributeMap) EXPORT_CORE PAttributeMap;
 
 
 /**
-   Facility to write an attribute map to a stream 
-   \param os output stream 
+   Facility to write an attribute map to a stream
+   \param os output stream
    \param data map of values
-   \returns a reference to the output stream 
+   \returns a reference to the output stream
  */
 std::ostream& operator << (std::ostream& os, const CAttributeMap& data);
 
@@ -254,7 +254,7 @@ public:
 	/// returns the requested attribute as string, returns an empty string if attribute doesn't exist
 	const std::string get_attribute_as_string(const std::string& key)const;
 
-	
+
 	template <typename T>
 	const T get_attribute_as(const std::string& key)const;
 
@@ -294,14 +294,14 @@ private:
 	virtual PAttribute do_from_string(const std::string& value) const = 0;
 protected:
 	CAttrTranslator();
-	
-	void do_register(const std::string& key); 
+
+	void do_register(const std::string& key);
 };
 
 /**
-   \brief A singelton class to translate strings to attributes based on keys. 
-   This class provides a singleton to translate strings to attributes. For the translation to take 
-   place for each attribute key a CAttrTranslator needs to be registered first. 
+   \brief A singelton class to translate strings to attributes based on keys.
+   This class provides a singleton to translate strings to attributes. For the translation to take
+   place for each attribute key a CAttrTranslator needs to be registered first.
 */
 class EXPORT_CORE CStringAttrTranslatorMap {
 public:
@@ -317,7 +317,7 @@ public:
 	/// \returns an instance to the translator map singleton
 	static CStringAttrTranslatorMap& instance();
 private:
-	friend class  CAttrTranslator; 
+	friend class  CAttrTranslator;
 	CStringAttrTranslatorMap();
 	/**
 	   Add a new translator to the map. If there is already another translator registered for the given \a key, then
@@ -325,21 +325,21 @@ private:
 	   \param key a key that is used to pick the translator
 	   \param t the translator object
 	 */
-	
+
 	void add(const std::string& key, const CAttrTranslator *  const t);
-	
+
 	typedef std::map<std::string, const CAttrTranslator *  const> CMap;
 	CMap _M_translators;
 };
 
 
 /**
-   convenience function to set an attribute in an attribute map: 
-   \remark review its use 
+   convenience function to set an attribute in an attribute map:
+   \remark review its use
    \tparam type of the attribute value to be added
-   \param attributes map to set the value in 
-   \param key 
-   \param value 
+   \param attributes map to set the value in
+   \param key
+   \param value
  */
 
 template <typename T>
@@ -350,30 +350,30 @@ void add_attribute(CAttributeMap& attributes, const std::string& key, T value)
 }
 
 /**
-   convenience function to set an string attribute from a C-string in an attribute map: 
+   convenience function to set an string attribute from a C-string in an attribute map:
    \tparam type of the attribute value to be added
-   \param attributes map to set the value in 
-   \param key 
-   \param value 
+   \param attributes map to set the value in
+   \param key
+   \param value
  */
 template <>
 void add_attribute(CAttributeMap& attributes, const std::string& name, const char * value);
 
 
-/** \brief Generic string vs. attribute translator singleton 
-    This class defines a generic translator between strings and a specific attribute type. 
-    All translaters are registered to a global map of type CStringAttrTranslatorMap 
-    that selects the conversion  based on a key. The global map is implemented as a singleton 
+/** \brief Generic string vs. attribute translator singleton
+    This class defines a generic translator between strings and a specific attribute type.
+    All translaters are registered to a global map of type CStringAttrTranslatorMap
+    that selects the conversion  based on a key. The global map is implemented as a singleton
     can be accessed via CStringAttrTranslatorMap::instance()
  */
 template <typename T>
 class TTranslator: public CAttrTranslator {
 public:
 	/**
-	   Register this translator for attributed for the given \a key. The translator is handled as a 
+	   Register this translator for attributed for the given \a key. The translator is handled as a
 	   singleton and is stateless.
 	   Any translator type can be registered multiple times but keys must be different
-	   if the target translation type is different. 
+	   if the target translation type is different.
 	 */
 	static  void register_for(const std::string& key);
 private:
@@ -594,11 +594,11 @@ PAttribute TTranslator<T>::do_from_string(const std::string& value) const
 template <typename T>
 const T CAttributedData::get_attribute_as(const std::string& key)const
 {
-	PAttribute attr = get_attribute(key); 
-	if (attr) 
+	PAttribute attr = get_attribute(key);
+	if (attr)
 		return dynamic_cast<const TAttribute<T>&>(*attr);
-	else 
-		THROW(std::invalid_argument, "CAttributedData: no attribute '" << key << "' found"); 
+	else
+		THROW(std::invalid_argument, "CAttributedData: no attribute '" << key << "' found");
 }
 
 

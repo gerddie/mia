@@ -1,11 +1,11 @@
 
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2007 Gert Wollny <gert dot wollny at acm dot org>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -28,13 +28,13 @@
 NS_BEGIN(fluid_timestep_2d)
 
 class C2DFluidRegTimeStep: public mia::C2DRegTimeStep {
-public: 
-	C2DFluidRegTimeStep(float min, float max); 
-private: 
+public:
+	C2DFluidRegTimeStep(float min, float max);
+private:
 	virtual float do_calculate_pertuberation(mia::C2DFVectorfield& io, const mia::C2DTransformation& shift) const;
-	virtual bool do_regrid_requested (const mia::C2DTransformation& b, const mia::C2DFVectorfield& v, float delta) 
-		const; 
-	virtual bool do_has_regrid () const; 
-}; 
+	virtual bool do_regrid_requested (const mia::C2DTransformation& b, const mia::C2DFVectorfield& v, float delta)
+		const;
+	virtual bool do_has_regrid () const;
+};
 
 NS_END

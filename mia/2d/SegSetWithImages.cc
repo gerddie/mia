@@ -1,7 +1,7 @@
 
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -9,7 +9,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -84,19 +84,19 @@ private:
 };
 
 
-CSegSetWithImages CSegSetWithImages::crop(const C2DIVector&  start, const C2DIVector&  end, 
+CSegSetWithImages CSegSetWithImages::crop(const C2DIVector&  start, const C2DIVector&  end,
 	const string& crop_filename_base)
 {
-	CSegSetWithImages result; 
+	CSegSetWithImages result;
 
 	stringstream mask_lv;
-	mask_lv << "crop:start=[" << start 
-		<< "],end=[" << end << "]"; 
-	cvinfo() << "crop region = '" << mask_lv.str() << "'\n"; 
-	C2DFilterPlugin::ProductPtr image_cropper = 
+	mask_lv << "crop:start=[" << start
+		<< "],end=[" << end << "]";
+	cvinfo() << "crop region = '" << mask_lv.str() << "'\n";
+	C2DFilterPlugin::ProductPtr image_cropper =
 		C2DFilterPluginHandler::instance().produce(mask_lv.str().c_str());
-	
-	CSegFrameCropper frame_cropper(start, image_cropper, crop_filename_base); 
+
+	CSegFrameCropper frame_cropper(start, image_cropper, crop_filename_base);
 
 	Frames::const_iterator iframe = get_frames().begin();
 	Frames::const_iterator eframe = get_frames().end();
@@ -110,7 +110,7 @@ CSegSetWithImages CSegSetWithImages::crop(const C2DIVector&  start, const C2DIVe
 		++iframe;
 		++iimages;
 	}
-	return result; 
+	return result;
 }
 
 

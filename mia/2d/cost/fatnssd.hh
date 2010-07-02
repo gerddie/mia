@@ -1,9 +1,9 @@
 /* -*- mia-c++  -*-
- * Copyright (c) 2007-2009 Wollny 
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -25,26 +25,26 @@
 NS_BEGIN(nssd_2dimage_fatcost)
 
 class CFatNSSD2DImageCost : public mia::C2DImageFatCost {
-public: 
+public:
 	CFatNSSD2DImageCost(mia::P2DImage src, mia::P2DImage ref,  mia::P2DInterpolatorFactory ipf, float weight);
-private: 	
-	virtual mia::P2DImageFatCost cloned(mia::P2DImage src, mia::P2DImage ref) const; 
-	virtual double do_value() const; 
+private:
+	virtual mia::P2DImageFatCost cloned(mia::P2DImage src, mia::P2DImage ref) const;
+	virtual double do_value() const;
 	virtual double do_evaluate_force(mia::C2DFVectorfield& force) const;
-	mia::C2DImageCostPlugin::ProductPtr _M_evaluator; 
-}; 
+	mia::C2DImageCostPlugin::ProductPtr _M_evaluator;
+};
 
 class C2DNSSDFatImageCostPlugin: public mia::C2DFatImageCostPlugin {
-public: 
-	C2DNSSDFatImageCostPlugin(); 
-private: 
-	virtual mia::C2DFatImageCostPlugin::ProductPtr do_create(mia::P2DImage src, 
+public:
+	C2DNSSDFatImageCostPlugin();
+private:
+	virtual mia::C2DFatImageCostPlugin::ProductPtr do_create(mia::P2DImage src,
 								 mia::P2DImage ref,  mia::P2DInterpolatorFactory ipf, float weight)const;
-	bool  do_test() const; 
-	void prepare_path() const; 
-	
-	const std::string do_get_descr()const; 
-	
-}; 
+	bool  do_test() const;
+	void prepare_path() const;
+
+	const std::string do_get_descr()const;
+
+};
 
 NS_END

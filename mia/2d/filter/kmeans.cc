@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2010, Madrid
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -52,12 +52,12 @@ typename C2DKMeans::result_type C2DKMeans::operator () (const T2DImage<T>& data)
 
 	C2DUBImage *tresult = new C2DUBImage(data.get_size(), data);
 	P2DImage result(tresult);
-	std::vector<double> classes(_M_classes); 
+	std::vector<double> classes(_M_classes);
 
-	kmeans(data.begin(), data.end(), tresult->begin(), classes); 
-	
-	// store class centers in attributes; 
-	tresult->set_attribute(ATTR_IMAGE_KMEANS_CLASSES, PAttribute(new CVDoubleAttribute(classes))); 
+	kmeans(data.begin(), data.end(), tresult->begin(), classes);
+
+	// store class centers in attributes;
+	tresult->set_attribute(ATTR_IMAGE_KMEANS_CLASSES, PAttribute(new CVDoubleAttribute(classes)));
 
 	cvdebug() << "C2DKMeans::operator () end\n";
 	return result;
@@ -72,7 +72,7 @@ P2DImage C2DKMeans::do_filter(const C2DImage& image) const
 C2DKMeansFilterPluginFactory::C2DKMeansFilterPluginFactory():
 	C2DFilterPlugin("kmeans")
 {
-	add_parameter("c", new CIntParameter(_M_classes, 0, numeric_limits<unsigned char>::max(), 
+	add_parameter("c", new CIntParameter(_M_classes, 0, numeric_limits<unsigned char>::max(),
 					     false, "number of classes"));
 }
 

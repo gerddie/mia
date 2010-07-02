@@ -1,14 +1,14 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
- * Max-Planck-Institute for Human Cognitive and Brain Science	
- * Max-Planck-Institute for Evolutionary Anthropology 
+ * Max-Planck-Institute for Human Cognitive and Brain Science
+ * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -33,40 +33,40 @@
 NS_MIA_BEGIN
 
 enum EMinimizers {
-	min_nmsimplex, 
-	min_cg_fr, 
-	min_cg_pr, 
-	min_bfgs, 
-	min_bfgs2, 
-	min_gd, 
+	min_nmsimplex,
+	min_cg_fr,
+	min_cg_pr,
+	min_bfgs,
+	min_bfgs2,
+	min_gd,
 	min_undefined
-}; 
+};
 
 /**
-   Class for registration without regularization - i.e. should only be used 
-   for affine, rigid and translation only registrations 
+   Class for registration without regularization - i.e. should only be used
+   for affine, rigid and translation only registrations
 */
 
 class C2DRigidRegister {
-public: 
+public:
 	/**
 	   Constructor for the registration tool
-	   \param cost cost function model 
-	   \param minimizer GSL provided minimizer 
+	   \param cost cost function model
+	   \param minimizer GSL provided minimizer
 	   \param transform_type string describing which transformation is supported
 	   \param ipf interpolator
 	 */
 
-	C2DRigidRegister(P2DImageCost cost, EMinimizers minimizer, 
-			 const string& transform_type, 
+	C2DRigidRegister(P2DImageCost cost, EMinimizers minimizer,
+			 const string& transform_type,
 			 const C2DInterpolatorFactory& ipf);
-	~C2DRigidRegister(); 
+	~C2DRigidRegister();
 
-	P2DTransformation  run(P2DImage src, P2DImage ref,  size_t mg_levels) const; 
+	P2DTransformation  run(P2DImage src, P2DImage ref,  size_t mg_levels) const;
 
-private: 
-	struct C2DRigidRegisterImpl *impl; 
-}; 
+private:
+	struct C2DRigidRegisterImpl *impl;
+};
 
 NS_MIA_END
 

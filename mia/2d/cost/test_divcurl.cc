@@ -1,9 +1,9 @@
 /* -*- mia-c++  -*-
- * Copyright (c) 2010 Gert Wollny 
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -21,19 +21,19 @@
 #include <mia/internal/autotest.hh>
 #include <mia/2d/cost/divcurl.hh>
 
-using namespace mia; 
-using namespace mia_2dcost_divcurl; 
+using namespace mia;
+using namespace mia_2dcost_divcurl;
 
 
 
 
 struct DivcurlFixture {
-	
-}; 
+
+};
 
 BOOST_FIXTURE_TEST_CASE( test_DIVCURL_simple, DivcurlFixture )
 {
-	C2DDivCurlCost divcurl(1.0, 1.0, 1.0); 
-	
-	
+	C2DDivCurlCost divcurl(1.0, 1.0, 1.0);
+
+
 }

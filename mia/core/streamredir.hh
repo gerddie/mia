@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -21,7 +21,7 @@
  *
  */
 
-// 
+//
 
 
 #ifndef mia_core_streamredir_hh
@@ -35,10 +35,10 @@
 NS_MIA_BEGIN
 
 /**
-   This class implements the abstract base class for stream output redirection 
-   to e.g. a text window or a console. 
-   The specialization must implement the do_put_buffer method, which writes out 
-   the characters from \a begin to \a end using a function of the output device. 
+   This class implements the abstract base class for stream output redirection
+   to e.g. a text window or a console.
+   The specialization must implement the do_put_buffer method, which writes out
+   the characters from \a begin to \a end using a function of the output device.
  */
 
 class EXPORT_CORE streamredir: public std::streambuf   {

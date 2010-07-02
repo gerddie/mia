@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2009 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -216,74 +216,74 @@ BOOST_FIXTURE_TEST_CASE(derivative_RotateTransFixture, RotateTransFixture)
 
 
 struct AffineGrad2ParamFixtureAffine {
-	AffineGrad2ParamFixtureAffine(); 
-	
+	AffineGrad2ParamFixtureAffine();
+
 
 	C2DBounds size;
 	C2DAffineTransformation trans;
-}; 
+};
 
-BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, AffineGrad2ParamFixtureAffine) 
+BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, AffineGrad2ParamFixtureAffine)
 {
-	C2DFVectorfield gradient(size); 
-	
-	gradient(0,0) = C2DFVector(3.0, -4.0); 
-	gradient(1,0) = C2DFVector(1.0,  3.0); 
-	gradient(0,1) = C2DFVector(3.0, -2.0); 
-	gradient(1,1) = C2DFVector(1.0,  1.0); 
+	C2DFVectorfield gradient(size);
 
-	
-	
-	gsl::DoubleVector params = trans.get_parameters(); 
-	
-		
+	gradient(0,0) = C2DFVector(3.0, -4.0);
+	gradient(1,0) = C2DFVector(1.0,  3.0);
+	gradient(0,1) = C2DFVector(3.0, -2.0);
+	gradient(1,1) = C2DFVector(1.0,  1.0);
+
+
+
+	gsl::DoubleVector params = trans.get_parameters();
+
+
 	trans.translate(gradient, params);
 
-	BOOST_CHECK_CLOSE(params[0], 0.5, 0.1); 
-	BOOST_CHECK_CLOSE(params[1], 1.0, 0.1); 
-	BOOST_CHECK_CLOSE(params[2], 2.0, 0.1); 
+	BOOST_CHECK_CLOSE(params[0], 0.5, 0.1);
+	BOOST_CHECK_CLOSE(params[1], 1.0, 0.1);
+	BOOST_CHECK_CLOSE(params[2], 2.0, 0.1);
 
-	BOOST_CHECK_CLOSE(params[3], 1.0, 0.1); 
-	BOOST_CHECK_CLOSE(params[4],-0.25, 0.1); 
-	BOOST_CHECK_CLOSE(params[5],-0.5, 0.1); 
+	BOOST_CHECK_CLOSE(params[3], 1.0, 0.1);
+	BOOST_CHECK_CLOSE(params[4],-0.25, 0.1);
+	BOOST_CHECK_CLOSE(params[5],-0.5, 0.1);
 }
 
 
-BOOST_FIXTURE_TEST_CASE (test_add, AffineGrad2ParamFixtureAffine) 
+BOOST_FIXTURE_TEST_CASE (test_add, AffineGrad2ParamFixtureAffine)
 {
 	C2DFVector test = trans.apply(C2DFVector(2,1));
-	cvinfo() << test << "\n"; 
-	test = trans.apply(test); 
-	cvinfo() << test << "\n"; 
-	trans.add(trans); 
-	
-	C2DFVector probe = trans.apply(C2DFVector(2,1)); 
+	cvinfo() << test << "\n";
+	test = trans.apply(test);
+	cvinfo() << test << "\n";
+	trans.add(trans);
 
-	cvinfo() << probe << "\n"; 
-	BOOST_CHECK_CLOSE(probe.x, test.x, 0.1); 
-	BOOST_CHECK_CLOSE(probe.y, test.y, 0.1); 
+	C2DFVector probe = trans.apply(C2DFVector(2,1));
+
+	cvinfo() << probe << "\n";
+	BOOST_CHECK_CLOSE(probe.x, test.x, 0.1);
+	BOOST_CHECK_CLOSE(probe.y, test.y, 0.1);
 }
 
-BOOST_FIXTURE_TEST_CASE (test_upscale, AffineGrad2ParamFixtureAffine) 
+BOOST_FIXTURE_TEST_CASE (test_upscale, AffineGrad2ParamFixtureAffine)
 {
-	C2DBounds x(4,4); 
-	P2DTransformation ups = trans.upscale(x); 
+	C2DBounds x(4,4);
+	P2DTransformation ups = trans.upscale(x);
 	const C2DAffineTransformation& a = dynamic_cast<const C2DAffineTransformation&>(*ups);
-	BOOST_CHECK_EQUAL(a.get_size(), x); 
+	BOOST_CHECK_EQUAL(a.get_size(), x);
 
-	auto params = a.get_parameters(); 
-	
+	auto params = a.get_parameters();
+
 
 	// test the remaining parameters
-	
+
 }
 
 AffineGrad2ParamFixtureAffine::AffineGrad2ParamFixtureAffine():
 	size(2,2),
 	trans(size)
 {
-	trans.translate(-1, -3); 
-//	trans.rotate(0.0); 
-//	trans.scale(0.69314718, -0.69314718); 
+	trans.translate(-1, -3);
+//	trans.rotate(0.0);
+//	trans.scale(0.69314718, -0.69314718);
 }
 

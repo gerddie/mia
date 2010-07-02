@@ -1,9 +1,9 @@
 /*  -*- mia-c++  -*-
- * Copyright (c) 2007 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -23,39 +23,39 @@
 
 #include <mia/core/cmdlineparser.hh>
 
-using namespace mia; 
+using namespace mia;
 using namespace boost::unit_test;
 
 
-extern void add_3dvector_tests(test_suite* suite); 
-extern void add_3ddatafield_tests(test_suite* suite); 
-extern void add_3dimage_tests(test_suite* suite); 
-extern void add_3dinterpol_tests(test_suite* suite); 
+extern void add_3dvector_tests(test_suite* suite);
+extern void add_3ddatafield_tests(test_suite* suite);
+extern void add_3dimage_tests(test_suite* suite);
+extern void add_3dinterpol_tests(test_suite* suite);
 
-//extern void add_3dimageio_tests(test_suite* suite); 
-//extern void add_3dvfio_tests(test_suite* test); 
-//extern void add_3dimagecost_tests(test_suite* suite); 
-//extern void add_3dfilter_plugin_tests(test_suite* suite); 
-//extern void add_3dshape_plugin_tests(test_suite* suite); 
-//extern void add_3dcombiner_plugin_tests(test_suite* suite); 
-//extern void add_regplugin_tests(test_suite* test); 
+//extern void add_3dimageio_tests(test_suite* suite);
+//extern void add_3dvfio_tests(test_suite* test);
+//extern void add_3dimagecost_tests(test_suite* suite);
+//extern void add_3dfilter_plugin_tests(test_suite* suite);
+//extern void add_3dshape_plugin_tests(test_suite* suite);
+//extern void add_3dcombiner_plugin_tests(test_suite* suite);
+//extern void add_regplugin_tests(test_suite* test);
 
-bool init_unit_test_suite( ) 
+bool init_unit_test_suite( )
 {
 
-	test_suite *suite = &framework::master_test_suite(); 
+	test_suite *suite = &framework::master_test_suite();
 
-	add_3dvector_tests(suite); 
-	add_3ddatafield_tests(suite); 
-	add_3dimage_tests(suite); 
-	add_3dinterpol_tests(suite); 
-//	add_3dvfio_tests(suite); 
-//	add_3dimageio_tests(suite); 
-//	add_3dfilter_plugin_tests(suite); 
+	add_3dvector_tests(suite);
+	add_3ddatafield_tests(suite);
+	add_3dimage_tests(suite);
+	add_3dinterpol_tests(suite);
+//	add_3dvfio_tests(suite);
+//	add_3dimageio_tests(suite);
+//	add_3dfilter_plugin_tests(suite);
 //	add_3dimagecost_tests(suite);
-//	add_3dshape_plugin_tests(suite); 
+//	add_3dshape_plugin_tests(suite);
 //	add_3dcombiner_plugin_tests(suite);
-//	add_regplugin_tests(suite); 
+//	add_regplugin_tests(suite);
 	return true;
 }
 

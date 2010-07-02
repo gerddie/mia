@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010, Gert Wollny
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -8,7 +8,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -34,23 +34,23 @@ struct EXPORT_CORE cost_data2d_type {
 
 
 class C2DCostBase : public CProductBase {
-public: 
-	C2DCostBase(float weight); 
+public:
+	C2DCostBase(float weight);
 
-	double evaluate(const C2DTransformation& t, C2DFVectorfield& force) const; 
-private: 
-	virtual double do_evaluate(const C2DTransformation& t, C2DFVectorfield& force) const = 0; 
-	float _M_weight; 
-}; 
+	double evaluate(const C2DTransformation& t, C2DFVectorfield& force) const;
+private:
+	virtual double do_evaluate(const C2DTransformation& t, C2DFVectorfield& force) const = 0;
+	float _M_weight;
+};
 
 class C2DCostBasePlugin: public TFactory<C2DCostBase, cost_data2d_type, cost_type> {
-public: 
-	C2DCostBasePlugin(const char *const name); 
-protected: 
-	float get_weight() const; 
-private: 
+public:
+	C2DCostBasePlugin(const char *const name);
+protected:
+	float get_weight() const;
+private:
 	float _M_weight;
-}; 
+};
 
 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DCostBasePlugin> > C2DCostBasePluginHandler;

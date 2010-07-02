@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2009 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -96,17 +96,17 @@ public:
 	virtual void set_identity();
 	virtual float get_max_transform() const;
 
-	virtual gsl::DoubleVector get_parameters() const; 
-	virtual void set_parameters(const gsl::DoubleVector& params); 
+	virtual gsl::DoubleVector get_parameters() const;
+	virtual void set_parameters(const gsl::DoubleVector& params);
 
 	virtual float pertuberate(C2DFVectorfield& v) const;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
 	C2DFVector operator ()(const  C2DFVector& x) const;
-	virtual float divergence() const; 
-	virtual float curl() const; 
+	virtual float divergence() const;
+	virtual float curl() const;
 
-	virtual float grad_divergence() const; 
-	virtual float grad_curl() const; 
+	virtual float grad_divergence() const;
+	virtual float grad_curl() const;
  private:
 	C2DFVectorfield divergence_field() const;
 	C2DFVectorfield curl_field() const;

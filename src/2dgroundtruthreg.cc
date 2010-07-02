@@ -1,14 +1,14 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
- * Max-Planck-Institute for Human Cognitive and Brain Science	
- * Max-Planck-Institute for Evolutionary Anthropology 
+ * Max-Planck-Institute for Human Cognitive and Brain Science
+ * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -36,25 +36,25 @@
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/ground_truth_evaluator.hh>
 
-using namespace std; 
-using namespace mia; 
+using namespace std;
+using namespace mia;
 
 
 int do_main( int argc, const char *argv[] )
 {
-	string src_name("data0000.exr"); 
-	string out_name("ref"); 
-	string out_type("exr"); 
+	string src_name("data0000.exr");
+	string out_name("ref");
+	string out_type("exr");
 	size_t first =  2;
 	size_t last  = 60;
-	double alpha = 1.0; 
-	double beta = 1.0; 
-	double rho_thresh = 0.5; 
-	
+	double alpha = 1.0;
+	double beta = 1.0;
+	double rho_thresh = 0.5;
+
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 	CCmdOptionList options;
 	options.push_back(make_opt( src_name, "in-base", 'i', "input file name base", "input", false));
-	options.push_back(make_opt( out_name, "out-base", 'o', "output file name base", "output", false)); 
+	options.push_back(make_opt( out_name, "out-base", 'o', "output file name base", "output", false));
 	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
 				    "output file type" , "image-type"));
 
@@ -74,44 +74,44 @@ int do_main( int argc, const char *argv[] )
 	string src_basename = get_filename_pattern_and_range(src_name, start_filenum, end_filenum, format_width);
 
 	if (start_filenum < first)
-		start_filenum = first; 
-	if (end_filenum > last) 
-		end_filenum = last; 
+		start_filenum = first;
+	if (end_filenum > last)
+		end_filenum = last;
 
 	if (end_filenum - start_filenum < 5)
-		throw invalid_argument ("This analysis doesnÄt make sense for series shorter then 5 images"); 
+		throw invalid_argument ("This analysis doesnÄt make sense for series shorter then 5 images");
 
-	vector<P2DImage> series; 
-	for (size_t i = start_filenum; i < end_filenum; ++i) {	
+	vector<P2DImage> series;
+	for (size_t i = start_filenum; i < end_filenum; ++i) {
 		string src_name = create_filename(src_basename.c_str(), i);
 		P2DImage image = load_image2d(src_name);
-		if (!image) 
-			THROW(runtime_error, "image " << src_name << " not found");  
+		if (!image)
+			THROW(runtime_error, "image " << src_name << " not found");
 		series.push_back(image);
 	}
 
 	if (series.size() < 5) {
-		THROW(runtime_error, "no input images found.");  
+		THROW(runtime_error, "no input images found.");
 	}
-	
-	C2DGroundTruthEvaluator gte(alpha, beta, rho_thresh); 
-	vector<P2DImage> pgt; 
-	gte(series, pgt); 
-	
-	for (size_t i = start_filenum; i < end_filenum; ++i) {	
-		stringstream fname; 
-		fname << out_name << setw(format_width) << setfill('0') << i << "." << out_type; 
+
+	C2DGroundTruthEvaluator gte(alpha, beta, rho_thresh);
+	vector<P2DImage> pgt;
+	gte(series, pgt);
+
+	for (size_t i = start_filenum; i < end_filenum; ++i) {
+		stringstream fname;
+		fname << out_name << setw(format_width) << setfill('0') << i << "." << out_type;
 		if (!save_image2d(fname.str(), pgt[i - start_filenum]))
-			THROW(runtime_error, "unable to save '"<< fname.str() << "'"); 
+			THROW(runtime_error, "unable to save '"<< fname.str() << "'");
 	}
-	return EXIT_SUCCESS; 
+	return EXIT_SUCCESS;
 }
 
 
 int main( int argc, const char *argv[] )
 {
 	try {
-		return do_main(argc, argv); 
+		return do_main(argc, argv);
 	}
 	catch (const runtime_error &e){
 		cerr << argv[0] << " runtime: " << e.what() << endl;

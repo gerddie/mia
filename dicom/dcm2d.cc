@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2007 Gert Wollny <gert dot wollny at acm dot org>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -31,49 +31,49 @@ NS_BEGIN(IMAGEIO_2D_DICOM)
 
 NS_MIA_USE;
 
-using namespace std; 
-using namespace boost; 
+using namespace std;
+using namespace boost;
 
 CDicom2DImageIOPlugin::CDicom2DImageIOPlugin():
 	C2DImageIOPlugin("dicom")
 {
 	add_supported_type(it_ushort);
 
-	TTranslator<float>::register_for("SliceLocation"); 
-	TTranslator<int>::register_for("SeriesNumber"); 
-	TTranslator<int>::register_for("AcquisitionNumber"); 
-	TTranslator<int>::register_for("InstanceNumber"); 
+	TTranslator<float>::register_for("SliceLocation");
+	TTranslator<int>::register_for("SeriesNumber");
+	TTranslator<int>::register_for("AcquisitionNumber");
+	TTranslator<int>::register_for("InstanceNumber");
 }
 
 void CDicom2DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
 {
-	map.insert(pair<string,string>(".dcm", get_name())); 
-	map.insert(pair<string,string>(".DCM", get_name())); 
+	map.insert(pair<string,string>(".dcm", get_name()));
+	map.insert(pair<string,string>(".DCM", get_name()));
 }
 
 C2DImageIOPlugin::PData CDicom2DImageIOPlugin::do_load(const string& fname) const
 {
-	TRACE_FUNCTION; 
-	PData result; 
+	TRACE_FUNCTION;
+	PData result;
 
-	CDicomReader reader(fname.c_str()); 
+	CDicomReader reader(fname.c_str());
 	if (!reader.good())
-		return result; 
-	
-	result.reset(new Data); 
-	result->push_back(reader.get_image()); 
-	return result; 
+		return result;
+
+	result.reset(new Data);
+	result->push_back(reader.get_image());
+	return result;
 }
 
 bool CDicom2DImageIOPlugin::do_save(const string& fname, const Data& data) const
 {
 	if (data.empty())
-		THROW(runtime_error, "CDicom2DImageIOPlugin: '" << fname 
-		      << "', no images to save"); 
-	
+		THROW(runtime_error, "CDicom2DImageIOPlugin: '" << fname
+		      << "', no images to save");
+
 	if (data.size() > 1)
-		THROW(runtime_error, "CDicom2DImageIOPlugin: '" << fname 
-		      << "' DICOM writer only supports one image per file"); 
+		THROW(runtime_error, "CDicom2DImageIOPlugin: '" << fname
+		      << "' DICOM writer only supports one image per file");
 
 	CDicomWriter writer(**data.begin());
 	return writer.write(fname.c_str());
@@ -81,11 +81,11 @@ bool CDicom2DImageIOPlugin::do_save(const string& fname, const Data& data) const
 
 const string CDicom2DImageIOPlugin::do_get_descr() const
 {
-	return "2D image io for DICOM"; 
+	return "2D image io for DICOM";
 }
 
 
-extern "C" EXPORT  CPluginBase *get_plugin_interface() 
+extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
 	return new CDicom2DImageIOPlugin();
 }

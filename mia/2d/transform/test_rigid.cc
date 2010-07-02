@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2009 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -205,55 +205,55 @@ BOOST_FIXTURE_TEST_CASE(derivative_RotateTransFixture, RotateTransFixture)
 }
 
 struct RigidGrad2ParamFixtureRigid {
-	RigidGrad2ParamFixtureRigid(); 
-	
+	RigidGrad2ParamFixtureRigid();
+
 
 	C2DBounds size;
 	C2DRigidTransformation trans;
-}; 
+};
 
-BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, RigidGrad2ParamFixtureRigid) 
+BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, RigidGrad2ParamFixtureRigid)
 {
-	C2DFVectorfield gradient(size); 
-	const double alpha = 0.2; 
-	const double ca = cos(alpha); 
-	const double sa = sin(alpha); 
+	C2DFVectorfield gradient(size);
+	const double alpha = 0.2;
+	const double ca = cos(alpha);
+	const double sa = sin(alpha);
 
 	for (size_t y = 0; y < size.y; ++y)
-		for (size_t x = 0; x < size.x; ++x) 
+		for (size_t x = 0; x < size.x; ++x)
 			gradient(x,y) = C2DFVector(x * ca - y * sa, x * sa + y * ca);
-	
-	
-	gsl::DoubleVector params = trans.get_parameters(); 
-	
-	C2DFVector t = accumulate(gradient.begin(), gradient.end(), C2DFVector(0,0)) / (float)gradient.size(); 
+
+
+	gsl::DoubleVector params = trans.get_parameters();
+
+	C2DFVector t = accumulate(gradient.begin(), gradient.end(), C2DFVector(0,0)) / (float)gradient.size();
 
 	trans.translate(gradient, params);
 
-	BOOST_CHECK_CLOSE(params[0], t.x, 0.1); 
-	BOOST_CHECK_CLOSE(params[1], t.y, 0.1); 
-	BOOST_CHECK_CLOSE(params[2], alpha, 0.1); 
+	BOOST_CHECK_CLOSE(params[0], t.x, 0.1);
+	BOOST_CHECK_CLOSE(params[1], t.y, 0.1);
+	BOOST_CHECK_CLOSE(params[2], alpha, 0.1);
 }
 
-BOOST_FIXTURE_TEST_CASE (test_upscale, RigidGrad2ParamFixtureRigid) 
+BOOST_FIXTURE_TEST_CASE (test_upscale, RigidGrad2ParamFixtureRigid)
 {
-	C2DBounds x(4,4); 
-	P2DTransformation ups = trans.upscale(x); 
+	C2DBounds x(4,4);
+	P2DTransformation ups = trans.upscale(x);
 	const C2DRigidTransformation& a = dynamic_cast<const C2DRigidTransformation&>(*ups);
-	BOOST_CHECK_EQUAL(a.get_size(), x); 
+	BOOST_CHECK_EQUAL(a.get_size(), x);
 
-	auto params = a.get_parameters(); 
-	
+	auto params = a.get_parameters();
+
 
 	// test the remaining parameters
-	
+
 }
 
 RigidGrad2ParamFixtureRigid::RigidGrad2ParamFixtureRigid():
 	size(20,20),
 	trans(size)
 {
-	trans.translate(-1, -3); 
-//	trans.rotate(0.0); 
+	trans.translate(-1, -3);
+//	trans.rotate(0.0);
 }
 

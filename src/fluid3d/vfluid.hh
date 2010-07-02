@@ -1,25 +1,25 @@
 /*
 ** copyright(C) 1999 Max-Planck-Institute of Cognitive Neurosience
 **                    Gert Wollny <wollny@cns.mpg.de>
-**  
+**
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
+** the Free Software Foundation; either version 3 of the License, or
 ** (at your option) any later version.
-** 
+**
 ** This program is distributed in the hope that it will be useful,
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ** GNU General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software 
+** along with this program; if not, write to the Free Software
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
   As an exception to this license, "NEC C&C Research Labs" may use
   this software under the terms of the GNU Lesser General Public License as
   published by the Free Software Foundation.
-   
+
 
 */
 
@@ -45,8 +45,8 @@ extern int STARTSIZE;
 #define OMEGA	1.0	// overrelaxation factor
 
 typedef struct {
-	mia::P3DImage source;       
-	mia::P3DImage reference;    
+	mia::P3DImage source;
+	mia::P3DImage reference;
 	float InitialStepsize;
 	float Lambda;
 	float My;
@@ -57,7 +57,7 @@ typedef struct {
 	bool useMutual;
 	bool checkerboard;
 	float matter_threshold;
-	mia::EInterpolation interp_type; 
+	mia::EInterpolation interp_type;
 } TFluidRegParams;
 
 typedef struct {
@@ -73,39 +73,39 @@ extern double g_start;
 
 
 mia::P3DFVectorfield fluid_transform(const TFluidRegParams& params,TLinEqnSolver *solver,
-				     bool use_multigrid, bool use_fullres,TMeasureList *measure_list, 
+				     bool use_multigrid, bool use_fullres,TMeasureList *measure_list,
 				     const mia::C3DInterpolatorFactory& ipf
-				); 
+				);
 
 extern mia::CWatch Clock;
 
 
 class TFluidReg  {
-	
-protected:	
+
+protected:
 	// Hmm, yeah, I know, bad style'n'stuff
-	
+
         mia::C3DFImage src;	// source image
 	mia::C3DFImage tmp;
         mia::C3DFImage ref;	// reference image
 	float  a, b, c;
 	float  lambda, my;     // elasticity constants
 	mia::C3DBounds Start,End;
-	mia::C3DBounds ROI;            // Size of Regin of Interest  
-	mia::C3DFVectorfield *u;        // Shiftfield 
-	float  delta;          // step size	
+	mia::C3DBounds ROI;            // Size of Regin of Interest
+	mia::C3DFVectorfield *u;        // Shiftfield
+	float  delta;          // step size
 	float mismatch;
-	float matter_threshold; 
-private:	
+	float matter_threshold;
+private:
 	mia::C3DFVectorfield *B;
 	mia::C3DFVectorfield *V;
-	TLinEqnSolver *solver; 
-	
+	TLinEqnSolver *solver;
+
 	float  initialStepsize;       // step size
-	std::auto_ptr<mia::C3DInterpolatorFactory> ipf; 
+	std::auto_ptr<mia::C3DInterpolatorFactory> ipf;
 
 	void  InitTemps();
-	void  DeleteTemps();	
+	void  DeleteTemps();
 	void  solvePDE();
 	float perturbationAt(int x, int y, int z);
 	float  calculateForces();
@@ -119,16 +119,16 @@ private:
 public:
         TFluidReg(const TFluidRegParams& params, TLinEqnSolver *solver);
 	~TFluidReg();
-	
+
 	float work(mia::P3DImage NewSource, mia::C3DFVectorfield& Shift);
-	
+
 	TMeasurement Measurement;
 };
 
 #endif
 
-/* Changes to this file 
-   
+/* Changes to this file
+
   $Log$
   Revision 1.4  2005/06/29 13:43:35  wollny
   cg removed and libmona-0.7
@@ -140,7 +140,7 @@ public:
   removed vistaio dependecy
 
   Revision 1.1.1.1  2005/02/21 15:00:37  wollny
-  initial import 
+  initial import
 
   Revision 1.13  2004/04/05 15:24:33  gerddie
   change filter allocation
@@ -156,6 +156,6 @@ public:
 
   Revision 1.9  2002/06/20 09:59:49  gerddie
   added cvs-log entry
- 
-  
+
+
 */

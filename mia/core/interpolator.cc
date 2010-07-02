@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
-  The spline kernels are based on code by 
+  The spline kernels are based on code by
   Philippe Thevenaz http://bigwww.epfl.ch/thevenaz/interpolation/
 
  */
@@ -34,22 +34,22 @@
 #include <mia/core/simpson.hh>
 
 NS_MIA_BEGIN
-using namespace std; 
+using namespace std;
 
-template <int sd, int degree> 
+template <int sd, int degree>
 struct bspline {
 	static double apply(double x) {
-		THROW(invalid_argument, "Spline "<< sd << ":derivative degree " 
-		      <<  degree << " not supported for spline of degree 2"); 
+		THROW(invalid_argument, "Spline "<< sd << ":derivative degree "
+		      <<  degree << " not supported for spline of degree 2");
 	}
-}; 
+};
 
-template <> 
+template <>
 struct bspline<0,0> {
 	static double apply(double x) {
-		return fabs(x < 0.5) ? 1.0 : 0.0; 
+		return fabs(x < 0.5) ? 1.0 : 0.0;
 	}
-}; 
+};
 
 CBSplineKernel::CBSplineKernel(size_t degree, double shift):
 	_M_half_degree(degree >> 1),
@@ -80,8 +80,8 @@ int CBSplineKernel::get_indices(double x, std::vector<int>& index) const
 
 double CBSplineKernel::get_weight_at(double /*x*/, int degree) const
 {
-	THROW(invalid_argument, "B-Spline: derivative degree " 
-	      <<  degree << " not supported" ); 
+	THROW(invalid_argument, "B-Spline: derivative degree "
+	      <<  degree << " not supported" );
 }
 
 const std::vector<double>& CBSplineKernel::get_poles() const
@@ -110,7 +110,7 @@ void CBSplineKernel::derivative(double x, std::vector<double>& weight, std::vect
 
 double CBSplineKernel::get_nonzero_radius() const
 {
-	return _M_support_size / 2.0;  
+	return _M_support_size / 2.0;
 }
 
 CBSplineKernel2::CBSplineKernel2():
@@ -126,7 +126,7 @@ void CBSplineKernel2::get_weights(double x, std::vector<double>&  weight)const
 	weight[0] = 1.0 - weight[1] - weight[2];
 }
 
-template <> 
+template <>
 struct bspline<2,0> {
 	static double apply(double x) {
 		x=fabs(x);
@@ -136,9 +136,9 @@ struct bspline<2,0> {
 			return (1.5-x)*(1.5-x) *0.5;
 		return 0.0;
 	}
-}; 
+};
 
-template <> 
+template <>
 struct bspline<2,1> {
 	static double apply(double x) {
 		double xa=fabs(x) ;
@@ -148,17 +148,17 @@ struct bspline<2,1> {
 			return (x>0.0) ? xa-1.5 : 1.5-xa;
 		return 0.0;
 	}
-}; 
+};
 
 
 double CBSplineKernel2::get_weight_at(double x, int degree) const
 {
 	switch (degree) {
-	case 0: return bspline<2,0>::apply(x); 
-	case 1: return bspline<2,1>::apply(x); 
-	default: 
-		THROW(invalid_argument, "B-Spline 2:derivative degree " 
-		      <<  degree << " not supported" ); 
+	case 0: return bspline<2,0>::apply(x);
+	case 1: return bspline<2,1>::apply(x);
+	default:
+		THROW(invalid_argument, "B-Spline 2:derivative degree "
+		      <<  degree << " not supported" );
 	}
 }
 
@@ -172,17 +172,17 @@ void CBSplineKernel2::get_derivative_weights(double x, std::vector<double>& weig
 void CBSplineKernel2::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
 {
 	switch (degree) {
-	case 0: get_weights(x, weight); 
-		break; 
-	case 1: get_derivative_weights(x, weight); 
-		break; 
+	case 0: get_weights(x, weight);
+		break;
+	case 1: get_derivative_weights(x, weight);
+		break;
 	case 2: {
 		weight[1] =  - 2;
 		weight[2] = 1;
 		weight[0] = 1;
-	}break; 
-	default: 
-		weight[0] = weight[1] = weight[2] = 0.0; 
+	}break;
+	default:
+		weight[0] = weight[1] = weight[2] = 0.0;
 	}
 }
 
@@ -213,24 +213,24 @@ void CBSplineKernel3::get_derivative_weights(double x, std::vector<double>& weig
 void CBSplineKernel3::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
 {
 	switch (degree) {
-	case 0: get_weights(x, weight); 
-		break; 
-	case 1: get_derivative_weights(x, weight); 
-		break; 
+	case 0: get_weights(x, weight);
+		break;
+	case 1: get_derivative_weights(x, weight);
+		break;
 	case 2: {
 		weight[3] = x;
 		weight[0] = 1 - x;
 		weight[2] = 1 - 3.0 * x;
-		weight[1] = 3 * x - 2; 
-	}break; 
+		weight[1] = 3 * x - 2;
+	}break;
 	case 3: {
 		weight[3] =  1.0;
 		weight[0] = -1.0;
 		weight[2] = -3.0;
 		weight[1] =  3.0;
-	}break; 
+	}break;
 	default: {
-		fill(weight.begin(), weight.end(), 0.0); 
+		fill(weight.begin(), weight.end(), 0.0);
 	}
 	}
 }
@@ -245,7 +245,7 @@ struct bspline<3, 0> {
 			return 2.0 / 3.0 - x * x * ( 1 - 0.5 * x );
 
 		if (x < 2.0) {
-			const double dx =  2.0-x; 
+			const double dx =  2.0-x;
 			return dx*dx*dx * onebysix;
 		}
 		return 0.0;
@@ -279,12 +279,12 @@ struct bspline<3, 2> {
 double CBSplineKernel3::get_weight_at(double x, int degree) const
 {
 	switch (degree) {
-	case 0: return bspline<3,0>::apply(x); 
-	case 1: return bspline<3,1>::apply(x); 
-	case 2: return bspline<3,2>::apply(x); 
-	default: 
-		THROW(invalid_argument, "B-Spline 3:derivative degree " 
-		      <<  degree << " not supported" ); 
+	case 0: return bspline<3,0>::apply(x);
+	case 1: return bspline<3,1>::apply(x);
+	case 2: return bspline<3,2>::apply(x);
+	default:
+		THROW(invalid_argument, "B-Spline 3:derivative degree "
+		      <<  degree << " not supported" );
 	}
 }
 
@@ -321,21 +321,21 @@ void CBSplineKernelOMoms3::get_derivative_weights(double x, std::vector<double>&
 void CBSplineKernelOMoms3::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
 {
 	switch (degree) {
-	case 0: get_weights(x, weight); 
-		break; 
-	case 1: get_derivative_weights(x, weight); 
-		break; 
+	case 0: get_weights(x, weight);
+		break;
+	case 1: get_derivative_weights(x, weight);
+		break;
 	case 2: {
 		double x2 = 2.0;
 		double x3 = 6.0 * x;
-		
+
 		weight[1] =   x3 * 0.5 - x2;
 		weight[2] = - x3 * 0.5 + 0.5 * x2;
 		weight[3] =   x3 / 6.0;
 		weight[0] =  - weight[3] - weight[1] - weight[2];
-	}break; 
-	default: 
-		fill(weight.begin(), weight.end(), 0.0); 
+	}break;
+	default:
+		fill(weight.begin(), weight.end(), 0.0);
 	}
 }
 
@@ -345,19 +345,19 @@ struct bspline<4, 0> {
 	{
 		x=fabs(x);
 		if (x <= 0.5) {
-			const double f = 1.0 / 192.0; 
-			const double x2 = x * x; 
-			return   f * (115.0 + (48.0 * x2 - 120) * x2); 
+			const double f = 1.0 / 192.0;
+			const double x2 = x * x;
+			return   f * (115.0 + (48.0 * x2 - 120) * x2);
 		}
 		if (x <= 1.5) {
-			const double f = 1.0 / 96.0; 
-			double ax = x - 1.0; 
-			return -f * ((((16 * ax - 16) * ax -24) * ax + 44)* ax - 19); 
+			const double f = 1.0 / 96.0;
+			double ax = x - 1.0;
+			return -f * ((((16 * ax - 16) * ax -24) * ax + 44)* ax - 19);
 		}
 		if (x <= 2.5) {
 			double h = 2.5 - x;
-			h *= h; 
-			return h * h / 24.0; 
+			h *= h;
+			return h * h / 24.0;
 		}
 		return 0.0;
 	}
@@ -369,17 +369,17 @@ struct bspline<4, 1> {
 	{
 		double ax=fabs(x);
 		if (ax <= 0.5) {
-			const double x2 = x * x; 
-			return   x * (x2  - 1.25); 
+			const double x2 = x * x;
+			return   x * (x2  - 1.25);
 		}
 		if (ax <= 1.5) {
-			const double f = x > 0 ? - 1.0 / 96.0 : 1.0 / 96.0; 
-			double bx =  ax - 1.0; 
-			return f * (64 * bx * bx * bx - 48 * bx * bx - 48 * bx + 44); 
+			const double f = x > 0 ? - 1.0 / 96.0 : 1.0 / 96.0;
+			double bx =  ax - 1.0;
+			return f * (64 * bx * bx * bx - 48 * bx * bx - 48 * bx + 44);
 		}
 		if (ax <= 2.5) {
 			double h = x < 0 ? 2.5 - ax : ax - 2.5;
-			return h * h * h / 6.0; 
+			return h * h * h / 6.0;
 		}
 		return 0.0;
 	}
@@ -391,15 +391,15 @@ struct bspline<4, 2> {
 	{
 		double ax=fabs(x);
 		if (ax <= 0.5)
-			return   3 * x * x  - 1.25; 
+			return   3 * x * x  - 1.25;
 		if (ax <= 1.5) {
-			const double f = - 1.0 / 2.0; 
-			double bx =  ax - 1.0; 
-			return f * (4 * bx * bx - 2 * bx - 1); 
+			const double f = - 1.0 / 2.0;
+			double bx =  ax - 1.0;
+			return f * (4 * bx * bx - 2 * bx - 1);
 		}
 		if (ax <= 2.5) {
 			double h = x > 0 ? 2.5 - ax : ax - 2.5;
-			return h * h / 2.0; 
+			return h * h / 2.0;
 		}
 		return 0.0;
 	}
@@ -412,13 +412,13 @@ struct bspline<4, 3> {
 	{
 		double ax=fabs(x);
 		if (ax <= 0.5)
-			return   6 * x; 
+			return   6 * x;
 		if (ax <= 1.5) {
-			const double f = x > 0 ? -0.5: 0.5; 
-			double bx =  ax - 1.0; 
-			return f * (8 * bx - 2); 
+			const double f = x > 0 ? -0.5: 0.5;
+			double bx =  ax - 1.0;
+			return f * (8 * bx - 2);
 		}
-		if (ax <= 2.5) 
+		if (ax <= 2.5)
 			return  x < 0 ? 2.5 - ax : ax - 2.5;
 		return 0.0;
 	}
@@ -430,9 +430,9 @@ struct bspline<4, 4> {
 	{
 		double ax=fabs(x);
 		if (ax <= 0.5)
-			return  6; 
+			return  6;
 		if (ax <= 1.5)
-			return  -4; 
+			return  -4;
 		if (ax <= 2.5)
 			return  1;
 		return 0.0;
@@ -443,14 +443,14 @@ struct bspline<4, 4> {
 double CBSplineKernel4::get_weight_at(double x, int degree) const
 {
 	switch (degree) {
-	case 0: return bspline<4,0>::apply(x); 
-	case 1: return bspline<4,1>::apply(x); 
-	case 2: return bspline<4,2>::apply(x); 
-	case 3: return bspline<4,3>::apply(x); 
-	case 4: return bspline<4,4>::apply(x); 
-	default: 
-		THROW(invalid_argument, "B-Spline 3:derivative degree " 
-		      <<  degree << " not supported" ); 
+	case 0: return bspline<4,0>::apply(x);
+	case 1: return bspline<4,1>::apply(x);
+	case 2: return bspline<4,2>::apply(x);
+	case 3: return bspline<4,3>::apply(x);
+	case 4: return bspline<4,4>::apply(x);
+	default:
+		THROW(invalid_argument, "B-Spline 3:derivative degree "
+		      <<  degree << " not supported" );
 	}
 }
 
@@ -499,10 +499,10 @@ void CBSplineKernel4::get_derivative_weights(double x, std::vector<double>& weig
 void CBSplineKernel4::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
 {
 	switch (degree) {
-	case 0: get_weights(x, weight); 
-		break; 
-	case 1: get_derivative_weights(x, weight); 
-		break; 
+	case 0: get_weights(x, weight);
+		break;
+	case 1: get_derivative_weights(x, weight);
+		break;
 	case 2: {
 		weight[0] = 1.0 / 2.0 - x;
 		weight[0] *= weight[0] / 2.0;
@@ -512,8 +512,8 @@ void CBSplineKernel4::get_derivative_weights(double x, std::vector<double>& weig
 		weight[3] = t1 - t0;
 		weight[4] = weight[0] + t0;
 		weight[2] = - weight[0] - weight[1] - weight[3] - weight[4];
-		cvdebug() << "weight[2] = " << fixed << weight[2] << "\n"; 
-	}break; 
+		cvdebug() << "weight[2] = " << fixed << weight[2] << "\n";
+	}break;
 	case 3:{
 		weight[0] =  x - 1.0 / 2.0;
 		const double t0 = 1;
@@ -522,12 +522,12 @@ void CBSplineKernel4::get_derivative_weights(double x, std::vector<double>& weig
 		weight[3] = t1 - t0;
 		weight[4] = weight[0] + t0;
 		weight[2] = - weight[0] - weight[1] - weight[3] - weight[4];
-	}break; 
-	default: 
-		fill(weight.begin(), weight.end(), 0.0); 
+	}break;
+	default:
+		fill(weight.begin(), weight.end(), 0.0);
 	}
 }
-	
+
 CBSplineKernel5::CBSplineKernel5():
 	CBSplineKernel(5, 0.0)
 {
@@ -586,24 +586,24 @@ template <>
 struct bspline<5, 0> {
 	static double apply (double x)
 	{
-		
-		const double ax = fabs(x); 
+
+		const double ax = fabs(x);
 		if (ax < 1.0) {
-			const double x2 = ax*ax; 
-			const double x4 = x2 * x2; 
-			const double x5 = x4 * ax; 
-			return -(5 * x5 - 15 * x4  + 30 * x2 - 33)/60; 
+			const double x2 = ax*ax;
+			const double x4 = x2 * x2;
+			const double x5 = x4 * ax;
+			return -(5 * x5 - 15 * x4  + 30 * x2 - 33)/60;
 		}
 		if (ax < 2.0) {
-			double h = 2.0 - ax; 
-			double h2 = h * h; 
-			return -(5 * h2 * h * h2 - 5 * h2 * h2 - 10 * h2 * h  - 10 * h2 - 5 * h - 1) / 120.0; 
+			double h = 2.0 - ax;
+			double h2 = h * h;
+			return -(5 * h2 * h * h2 - 5 * h2 * h2 - 10 * h2 * h  - 10 * h2 - 5 * h - 1) / 120.0;
 		}
 
 		if (ax < 3.0) {
 			const double h = 3.0 - ax;
-			const double h2 =  h * h; 
-			return h2 * h2 * h / 120.0; 
+			const double h2 =  h * h;
+			return h2 * h2 * h / 120.0;
 		}
 		return 0.0;
 	}
@@ -615,19 +615,19 @@ struct bspline<5, 1> {
 	{
 		double ax=fabs(x);
 		if (ax < 1.0) {
-			const double x2 = x * x; 
-			const double x4 = x2 * x2; 
-			return ( x > 0 ? -1 : 1) * ( 5.0/12.0 * x4 - ax * (x2 - 1.0)); 
+			const double x2 = x * x;
+			const double x4 = x2 * x2;
+			return ( x > 0 ? -1 : 1) * ( 5.0/12.0 * x4 - ax * (x2 - 1.0));
 		}
 		if (ax < 2.0) {
-			double h = 2.0 - ax; 
-			double h2 = h * h; 
-			return ( x > 0 ? 1 : -1) *(5 * h2  * h2 - 4 * h * h2 - 6 * h2  - 4 * h - 1 ) / 24.0; 
+			double h = 2.0 - ax;
+			double h2 = h * h;
+			return ( x > 0 ? 1 : -1) *(5 * h2  * h2 - 4 * h * h2 - 6 * h2  - 4 * h - 1 ) / 24.0;
 		}
 		if (ax < 3.0) {
 			const double h = 3.0 - ax;
-			const double h2 =  h * h; 
-			return ( x > 0 ? -1 : 1) *  h2 * h2 / 24.0; 
+			const double h2 =  h * h;
+			return ( x > 0 ? -1 : 1) *  h2 * h2 / 24.0;
 		}
 		return 0.0;
 	}
@@ -640,18 +640,18 @@ struct bspline<5, 2> {
 	{
 		double ax=fabs(x);
 		if (ax < 1.0) {
-			const double x2 = x * x; 
-			return -( 5.0/3.0 * x2 * ax - 3 * x2 + 1); 
+			const double x2 = x * x;
+			return -( 5.0/3.0 * x2 * ax - 3 * x2 + 1);
 		}
 		if (ax < 2.0) {
-			double h = 2.0 - ax; 
-			double h2 = h * h; 
-			return -(5 * h2  * h - 3  * h2 - 3 * h  - 1 ) / 6.0; 
+			double h = 2.0 - ax;
+			double h2 = h * h;
+			return -(5 * h2  * h - 3  * h2 - 3 * h  - 1 ) / 6.0;
 		}
 		if (ax < 3.0) {
 			const double h = 3.0 - ax;
-			const double h2 =  h * h; 
-			return   h2 * h / 6.0; 
+			const double h2 =  h * h;
+			return   h2 * h / 6.0;
 		}
 		return 0.0;
 	}
@@ -662,20 +662,20 @@ template <>
 struct bspline<5, 3> {
 	static double apply(double x)
 	{
-		const double f = x > 0  ? -1 : 1; 
+		const double f = x > 0  ? -1 : 1;
 		const double ax=fabs(x);
 		if (ax < 1.0) {
-			const double x2 = x * x; 
-			return f * ( 5.0 * x2 - 6 * ax); 
+			const double x2 = x * x;
+			return f * ( 5.0 * x2 - 6 * ax);
 		}
 		if (ax < 2.0) {
-			double h = 2.0 - ax; 
-			double h2 = h * h; 
-			return -f * ( 5 * h2 - 2.0  * h - 1) / 2.0; 
+			double h = 2.0 - ax;
+			double h2 = h * h;
+			return -f * ( 5 * h2 - 2.0  * h - 1) / 2.0;
 		}
 		if (ax < 3.0) {
 			const double h = 3.0 - ax;
-			const double h2 =  h * h; 
+			const double h2 =  h * h;
 			return f * h2 / 2.0;
 		}
 		return 0.0;
@@ -687,20 +687,20 @@ template <>
 struct bspline<5, 4> {
 	static double apply(double x)
 	{
-		const double f = x > 0  ? -1 : 1; 
+		const double f = x > 0  ? -1 : 1;
 		const double ax=fabs(x);
 		if (ax < 1.0) {
-			const double x2 = x * x; 
-			return f * ( 5.0 * x2 - 6 * ax); 
+			const double x2 = x * x;
+			return f * ( 5.0 * x2 - 6 * ax);
 		}
 		if (ax < 2.0) {
-			double h = 2.0 - ax; 
-			double h2 = h * h; 
-			return -f * ( 5 * h2 - 2.0  * h - 1) / 2.0; 
+			double h = 2.0 - ax;
+			double h2 = h * h;
+			return -f * ( 5 * h2 - 2.0  * h - 1) / 2.0;
 		}
 		if (ax < 3.0) {
 			const double h = 3.0 - ax;
-			const double h2 =  h * h; 
+			const double h2 =  h * h;
 			return f * h2 / 2.0;
 		}
 		return 0.0;
@@ -716,88 +716,88 @@ struct bspline<5, 5> {
 	{
 		double ax=fabs(x);
 		if (ax <= 0.5)
-			return  6; 
+			return  6;
 		if (ax <= 1.5)
-			return  -4; 
+			return  -4;
 		if (ax <= 2.5)
 			return  1;
 		return 0.0;
 	}
 };
-#endif 
+#endif
 
 void CBSplineKernel5::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
 {
 	switch (degree) {
-	case 0: get_weights(x, weight); 
-		break; 
-	case 1: get_derivative_weights(x, weight); 
-		break; 
+	case 0: get_weights(x, weight);
+		break;
+	case 1: get_derivative_weights(x, weight);
+		break;
 	case 2: {
-		weight[5] = (1.0 / 6.0) * x * x * x; 
-		
+		weight[5] = (1.0 / 6.0) * x * x * x;
+
 		const double h2 = 2.0 * x - 1.0;
 		const double w2 = x * x - x;
-		const double h2w2 = 2 * h2 * w2; 
-		const double h2h22 = 2 * h2 * h2; 
-		const double t = 4 * w2  + h2h22 - 6; 
+		const double h2w2 = 2 * h2 * w2;
+		const double h2h22 = 2 * h2 * h2;
+		const double t = 4 * w2  + h2h22 - 6;
 
 		weight[0] = (t + 8.0) / 24.0  - weight[5];
-		
+
 		const double t0 = (t - 4.0 )/ 24.0;
 		const double xm = x - 0.5;
-		const double t1 = ( - 2.0 * h2w2 +  6 * h2 - xm * t) / 12; 
-		
+		const double t1 = ( - 2.0 * h2w2 +  6 * h2 - xm * t) / 12;
+
 		weight[2] = t0 + t1;
 		weight[3] = t0 - t1;
-		
+
 		const double tt0 =  - t / 16.0;
 		const double tt1 = (2 * (h2w2 - h2) + xm * (t + 4)) / 24.0;
-		
+
 		weight[1] = tt0 + tt1;
-		weight[4] = tt0 - tt1;		
-	}break; 
+		weight[4] = tt0 - tt1;
+	}break;
 	case 3: {
-		weight[5] = (1.0 / 2.0) * x * x; 
-		
+		weight[5] = (1.0 / 2.0) * x * x;
+
 		const double h2 = 2.0 * x - 1.0;
 		const double w2 = x * x - x;
-		const double h2w2 = 2 * h2 * w2; 
-		const double h2h22 = 2 * h2 * h2; 
-		const double t = 12 * h2; 
+		const double h2w2 = 2 * h2 * w2;
+		const double h2h22 = 2 * h2 * h2;
+		const double t = 12 * h2;
 
 		weight[0] = h2 / 2.0  - weight[5];
-		
+
 		const double t0 = h2 / 2.0;
 		const double xm = x - 0.5;
-		const double t1 = -( 10 * w2 -1) / 2.0; 
-		
+		const double t1 = -( 10 * w2 -1) / 2.0;
+
 		weight[2] = t0 + t1;
 		weight[3] = t0 - t1;
-		
-		const double tt0 =  - t / 16.0;
-		const double tt1 = (10 * w2 + 1) / 4.0; 
-		
-		weight[1] = tt0 + tt1;
-		weight[4] = tt0 - tt1;		
-	}break; 
 
-	default: 
-		fill(weight.begin(), weight.end(), 0.0); 
+		const double tt0 =  - t / 16.0;
+		const double tt1 = (10 * w2 + 1) / 4.0;
+
+		weight[1] = tt0 + tt1;
+		weight[4] = tt0 - tt1;
+	}break;
+
+	default:
+		fill(weight.begin(), weight.end(), 0.0);
 	}
 }
 
 double CBSplineKernel5::get_weight_at(double x, int degree) const
 {
 	switch (degree) {
-	case 0: return bspline<5,0>::apply(x); 
-	case 1: return bspline<5,1>::apply(x); 
-	case 2: return bspline<5,2>::apply(x); 
-	case 3: return bspline<5,3>::apply(x); 
-	case 4: return bspline<5,4>::apply(x); 
-	default: 
-		THROW(invalid_argument, "B-Spline5:derivative degree " 
-		      <<  degree << " not supported" ); 
+	case 0: return bspline<5,0>::apply(x);
+	case 1: return bspline<5,1>::apply(x);
+	case 2: return bspline<5,2>::apply(x);
+	case 3: return bspline<5,3>::apply(x);
+	case 4: return bspline<5,4>::apply(x);
+	default:
+		THROW(invalid_argument, "B-Spline5:derivative degree "
+		      <<  degree << " not supported" );
 	}
 }
 

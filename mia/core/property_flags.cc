@@ -1,11 +1,11 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -28,22 +28,22 @@ const char *property_gradient = "gradient";
 
 bool CPropertyFlagHolder::has(const char *property) const
 {
-	return _M_properties.find(property) != _M_properties.end(); 
+	return _M_properties.find(property) != _M_properties.end();
 }
 
 void CPropertyFlagHolder::add(const char *property)
 {
-	_M_properties.insert(property); 
+	_M_properties.insert(property);
 }
 
 bool CPropertyFlagHolder::has_all_in(const CPropertyFlagHolder& testset) const
 {
-	for(std::set<const char *>::const_iterator ti = testset._M_properties.begin(); 
+	for(std::set<const char *>::const_iterator ti = testset._M_properties.begin();
 	    ti != testset._M_properties.end(); ++ti) {
 		if (!has(*ti))
-			return false; 
+			return false;
 	}
-	return true; 
+	return true;
 }
 
 NS_MIA_END

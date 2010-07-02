@@ -1,19 +1,19 @@
 /*
 ** Copyright Madrid (c) 2010 BIT ETSIT UPM
 **                    Gert Wollny <gw.fossdev @ gmail.com>
-**  
+**
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
+** the Free Software Foundation; either version 3 of the License, or
 ** (at your option) any later version.
-** 
+**
 ** This program is distributed in the hope that it will be useful,
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ** GNU General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software 
+** along with this program; if not, write to the Free Software
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 #include <boost/lambda/lambda.hpp>
@@ -21,60 +21,60 @@
 #include <mia/2d/correlation_weight.hh>
 
 NS_MIA_BEGIN
-using namespace std; 
+using namespace std;
 
-using boost::lambda::_1; 
-using boost::lambda::_2; 
+using boost::lambda::_1;
+using boost::lambda::_2;
 
 
 struct CCorrelationEvaluatorImpl {
-	CCorrelationEvaluatorImpl(double thresh); 
-	
-	CCorrelationEvaluator::result_type run(const vector<P2DImage>& images) const;
-private: 
+	CCorrelationEvaluatorImpl(double thresh);
 
-	double m_thresh; 
-}; 
+	CCorrelationEvaluator::result_type run(const vector<P2DImage>& images) const;
+private:
+
+	double m_thresh;
+};
 
 struct FCorrelationAccumulator : public TFilter<bool> {
 
-	FCorrelationAccumulator(const C2DBounds & size, double thresh); 
+	FCorrelationAccumulator(const C2DBounds & size, double thresh);
 
-	template <typename T> 
-	bool operator ()(const T2DImage<T>& image); 
+	template <typename T>
+	bool operator ()(const T2DImage<T>& image);
 
 	C2DFImage get_horizontal_corr() const;
 	C2DFImage get_vertical_corr() const;
 private:
-	float corr(double x, double y, double xx, double yy, double xy )const; 
+	float corr(double x, double y, double xx, double yy, double xy )const;
 
-	C2DDImage sx2; 
-	
-	C2DDImage sxy_horizontal; 
-	C2DDImage sxy_vertical; 
-	
-	C2DDImage sx; 
-	C2DDImage sy; 
-	C2DBounds size; 
-	double m_thresh; 
-	size_t len; 
-}; 
+	C2DDImage sx2;
+
+	C2DDImage sxy_horizontal;
+	C2DDImage sxy_vertical;
+
+	C2DDImage sx;
+	C2DDImage sy;
+	C2DBounds size;
+	double m_thresh;
+	size_t len;
+};
 
 
 CCorrelationEvaluator::CCorrelationEvaluator(double thresh):
 	impl(new CCorrelationEvaluatorImpl(thresh))
 {
 }
-	
+
 CCorrelationEvaluator::~CCorrelationEvaluator()
 {
-	delete impl; 
+	delete impl;
 }
 
 
 CCorrelationEvaluator::result_type CCorrelationEvaluator::operator() (const vector<P2DImage>& images) const
 {
-	return impl->run(images); 
+	return impl->run(images);
 }
 
 
@@ -85,126 +85,126 @@ CCorrelationEvaluatorImpl::CCorrelationEvaluatorImpl(double thresh):
 
 CCorrelationEvaluator::result_type CCorrelationEvaluatorImpl::run(const vector<P2DImage>& images) const
 {
-	// accumulate sums 
-	FCorrelationAccumulator acc(images[0]->get_size(), m_thresh); 
-	for (auto i = images.begin(); i != images.end(); ++i) 
+	// accumulate sums
+	FCorrelationAccumulator acc(images[0]->get_size(), m_thresh);
+	for (auto i = images.begin(); i != images.end(); ++i)
 		mia::accumulate(acc,**i);
 
 	CCorrelationEvaluator::result_type result;
 	result.horizontal = acc.get_horizontal_corr();
 	result.vertical = acc.get_vertical_corr();
-	return result; 
+	return result;
 }
 
 
 FCorrelationAccumulator::FCorrelationAccumulator(const C2DBounds & _size, double thresh):
-	sx2(_size), 
+	sx2(_size),
 	sxy_horizontal(_size),
-	sxy_vertical(_size), 
-	sx(_size), 
-	size(_size), 
-	m_thresh(thresh), 
+	sxy_vertical(_size),
+	sx(_size),
+	size(_size),
+	m_thresh(thresh),
 	len(0)
 {
 }
 
-template <typename T> 
+template <typename T>
 bool FCorrelationAccumulator::operator ()(const T2DImage<T>& image)
 {
-	if (image.get_size() != size) 
-		THROW(invalid_argument, "Input image size " << size << " expected, but got " << 
-		      image.get_size()); 
+	if (image.get_size() != size)
+		THROW(invalid_argument, "Input image size " << size << " expected, but got " <<
+		      image.get_size());
 	// sum x
-	transform(image.begin(), image.end(), sx.begin(), sx.begin(), _1 + _2); 
-	
-	// sum x^2 
-	transform(image.begin(), image.end(), sx2.begin(), sx2.begin(), _1 *_1 + _2); 
+	transform(image.begin(), image.end(), sx.begin(), sx.begin(), _1 + _2);
 
-	// sum horizontal 
+	// sum x^2
+	transform(image.begin(), image.end(), sx2.begin(), sx2.begin(), _1 *_1 + _2);
+
+	// sum horizontal
 	for (size_t y = 0; y < size.y; ++y) {
-		auto irow = image.begin_at(0,y); 
+		auto irow = image.begin_at(0,y);
 		auto orow = sxy_horizontal.begin_at(0,y);
 		for (size_t x = 0; x < size.x-1; ++x, ++irow, ++orow) {
-			*orow += irow[0] * irow[1]; 
+			*orow += irow[0] * irow[1];
 		}
 	}
 
 	// sum vertical
 	for (size_t y = 1; y < size.y; ++y) {
-		auto irow0 = image.begin_at(0,y-1); 
-		auto irow1 = image.begin_at(0,y); 
+		auto irow0 = image.begin_at(0,y-1);
+		auto irow1 = image.begin_at(0,y);
 		auto orow = sxy_vertical.begin_at(0,y-1);
 		for (size_t x = 0; x < size.x; ++x, ++irow0, ++irow1,++orow) {
-			*orow += *irow0 * *irow1; 
+			*orow += *irow0 * *irow1;
 		}
 	}
-	++len; 
-	return true; 
+	++len;
+	return true;
 }
 
 
 float FCorrelationAccumulator::corr(double x, double y, double xx, double yy, double xy )const
 {
-	const float ssxy = xy - x * y / len; 
-	const float ssxx = xx - x * x / len; 
-	const float ssyy = yy - y * y / len; 
-	
-	if (ssxx == 0 && ssyy == 0) 
-		return  1.0; 
-	else if (ssxx == 0 || ssyy == 0) 
-		return 0.0; 
+	const float ssxy = xy - x * y / len;
+	const float ssxx = xx - x * x / len;
+	const float ssyy = yy - y * y / len;
+
+	if (ssxx == 0 && ssyy == 0)
+		return  1.0;
+	else if (ssxx == 0 || ssyy == 0)
+		return 0.0;
 	else {
-		float v = ssxy /  sqrt(ssxx * ssyy); 
-		return v >= m_thresh ? v : 0.0f; 
+		float v = ssxy /  sqrt(ssxx * ssyy);
+		return v >= m_thresh ? v : 0.0f;
 	}
 }
 
 C2DFImage FCorrelationAccumulator::get_horizontal_corr() const
 {
-	if (!len) 
-		THROW(invalid_argument, "No input images"); 
+	if (!len)
+		THROW(invalid_argument, "No input images");
 
 
-	C2DFImage result(C2DBounds(size.x-1, size.y)); 
-	
+	C2DFImage result(C2DBounds(size.x-1, size.y));
+
 	for (size_t y = 0; y < size.y; ++y) {
-		auto irow_xy = sxy_horizontal.begin_at(0,y); 
+		auto irow_xy = sxy_horizontal.begin_at(0,y);
 		auto irow_xx = sx2.begin_at(0,y);
 		auto irow_yy = sx2.begin_at(1,y);
 		auto irow_x  = sx.begin_at(0,y);
 		auto irow_y  = sx.begin_at(1,y);
-		auto orow    = result.begin_at(0,y); 
+		auto orow    = result.begin_at(0,y);
 
-		for (size_t x = 1; x < size.x; 
+		for (size_t x = 1; x < size.x;
 		     ++x, ++irow_xy, ++irow_xx, ++irow_yy, ++irow_x, ++irow_y, ++orow) {
-			*orow = corr(*irow_x, *irow_y, *irow_xx, *irow_yy, *irow_xy ); 
+			*orow = corr(*irow_x, *irow_y, *irow_xx, *irow_yy, *irow_xy );
 		}
 		++irow_xy; ++irow_xx; ++irow_yy; ++irow_x; ++irow_y;
 	}
-	return result; 
+	return result;
 }
 
 C2DFImage FCorrelationAccumulator::get_vertical_corr() const
 {
-	if (!len) 
-		THROW(invalid_argument, "No input images"); 
+	if (!len)
+		THROW(invalid_argument, "No input images");
 
-	C2DFImage result(C2DBounds(size.x, size.y-1)); 
-	
+	C2DFImage result(C2DBounds(size.x, size.y-1));
+
 	for (size_t y = 0; y < size.y-1; ++y) {
-		auto irow_xy = sxy_vertical.begin_at(0,y); 
+		auto irow_xy = sxy_vertical.begin_at(0,y);
 		auto irow_xx = sx2.begin_at(0,y);
 		auto irow_yy = sx2.begin_at(0,y+1);
 		auto irow_x  = sx.begin_at(0,y);
 		auto irow_y  = sx.begin_at(0,y+1);
-		auto orow    = result.begin_at(0,y); 
+		auto orow    = result.begin_at(0,y);
 
-		for (size_t x = 0; x < size.x; 
+		for (size_t x = 0; x < size.x;
 		     ++x, ++irow_xy, ++irow_xx, ++irow_yy, ++irow_x, ++irow_y, ++orow) {
 			*orow = corr(*irow_x, *irow_y, *irow_xx, *irow_yy, *irow_xy );
 		}
 	}
-	return result; 	
+	return result;
 }
 
 

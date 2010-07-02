@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2009 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -50,15 +50,15 @@ struct CSlopeClassifierImpl {
 	int Periodic_idx;
 	int Perfusion_idx;
 	int Baseline_idx;
-	float max_slope_length_diff; 
-	CSlopeClassifier::SCorrelation  selfcorr; 
+	float max_slope_length_diff;
+	CSlopeClassifier::SCorrelation  selfcorr;
 
 	typedef vector<float>::const_iterator position;
 	typedef pair<position, position> extrems;
 	typedef pair<size_t, size_t> extrems_pos;
 	CSlopeClassifierImpl(const CSlopeClassifier::Columns& series, bool mean_stripped);
-private: 
-	void evaluate_selfcorr(const CSlopeClassifier::Columns& series); 
+private:
+	void evaluate_selfcorr(const CSlopeClassifier::Columns& series);
 };
 
 
@@ -153,45 +153,45 @@ struct compare_mean_freq {
 
 
 
-float correlation(const vector<float>& a, const vector<float>& b) 
+float correlation(const vector<float>& a, const vector<float>& b)
 {
-	assert(a.size() > 0); 
-	assert(a.size() == b.size()); 
+	assert(a.size() > 0);
+	assert(a.size() == b.size());
 
-	float sxx = 0.0; 
-	float syy = 0.0; 
-	float sxy = 0.0; 
-	float sx =  0.0; 
-	float sy =  0.0; 
+	float sxx = 0.0;
+	float syy = 0.0;
+	float sxy = 0.0;
+	float sx =  0.0;
+	float sy =  0.0;
 
 	for (size_t i = 0; i < a.size(); ++i) {
-		sx += a[i]; 
-		sy += b[i]; 
-		sxx += a[i] * a[i]; 
-		syy += b[i] * b[i]; 
-		sxy += a[i] * b[i]; 
+		sx += a[i];
+		sy += b[i];
+		sxx += a[i] * a[i];
+		syy += b[i] * b[i];
+		sxy += a[i] * b[i];
 	}
-	const float ssxy = sxy - sx * sy / a.size(); 
-	const float ssxx = sxx - sx * sx / a.size(); 
-	const float ssyy = syy - sy * sy / a.size(); 
-	if (sxx == 0 && syy == 0) 
-		return 1.0; 
-	
-	if (sxx == 0 || syy == 0) 
-		return 0.0; 
+	const float ssxy = sxy - sx * sy / a.size();
+	const float ssxx = sxx - sx * sx / a.size();
+	const float ssyy = syy - sy * sy / a.size();
+	if (sxx == 0 && syy == 0)
+		return 1.0;
 
-	return (ssxy * ssxy) /  (ssxx * ssyy); 
+	if (sxx == 0 || syy == 0)
+		return 0.0;
+
+	return (ssxy * ssxy) /  (ssxx * ssyy);
 }
 
 void CSlopeClassifierImpl::evaluate_selfcorr(const CSlopeClassifier::Columns& series)
 {
-	for (size_t i = 0; i < series.size(); ++i) 
+	for (size_t i = 0; i < series.size(); ++i)
 		for (size_t j = i+1; j < series.size(); ++j) {
-			const float corr = correlation(series[i], series[j]); 
+			const float corr = correlation(series[i], series[j]);
 			if (selfcorr.corr < corr) {
-				selfcorr.row1 = i; 
-				selfcorr.row2 = j; 
-				selfcorr.corr = corr; 
+				selfcorr.row1 = i;
+				selfcorr.row2 = j;
+				selfcorr.corr = corr;
 			}
 		}
 }
@@ -213,47 +213,47 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 		stats[i] = sm;
 	}
 
-	/* mechanics for classifying the mixing curves: 
-	   - first sort for curve length - longest is periodic component 
-	   - use a heuristic based on its mean frequency to decide whether this curve is actually periodic 
-	   - then sort the remaining curves by covered value range 
-	      * the cUrves that cover largest values should correspond to LV and RV enhancement 
-                (Remark: this is not save!!!) 
-		* remove last element from the serach range, it's baseline or perfusion 	
-	   - sort for minimal mean frequency, RV-LV slopes should have a low freq 
-           - 	
-           - sort these two curves by the order in which the high peaks appear to identify 
-             which is RV (peak comes first) and which LV 
+	/* mechanics for classifying the mixing curves:
+	   - first sort for curve length - longest is periodic component
+	   - use a heuristic based on its mean frequency to decide whether this curve is actually periodic
+	   - then sort the remaining curves by covered value range
+	      * the cUrves that cover largest values should correspond to LV and RV enhancement
+                (Remark: this is not save!!!)
+		* remove last element from the serach range, it's baseline or perfusion
+	   - sort for minimal mean frequency, RV-LV slopes should have a low freq
+           -
+           - sort these two curves by the order in which the high peaks appear to identify
+             which is RV (peak comes first) and which LV
 	*/
 	int sort_skip=0;
 
 	sort(stats.begin(), stats.end(), compare_length());
 	max_slope_length_diff = stats[n-1].first->get_curve_length() - stats[n-2].first->get_curve_length();
-	float rate = series[0].size() / 7.0f; 
-	bool has_periodic = stats[n-1].first->get_mean_frequency() > rate ; 
-	cvinfo() << stats[n-1].first->get_mean_frequency() << " vs " << rate << "=" << has_periodic << "\n";  
-	
+	float rate = series[0].size() / 7.0f;
+	bool has_periodic = stats[n-1].first->get_mean_frequency() > rate ;
+	cvinfo() << stats[n-1].first->get_mean_frequency() << " vs " << rate << "=" << has_periodic << "\n";
+
 	if (has_periodic && (mean_stripped || n > 3)) {
 		// put the periodic element at the end
-		cvinfo() << "identify periodic as " << stats[n-1].second << "\n"; 
+		cvinfo() << "identify periodic as " << stats[n-1].second << "\n";
 		++sort_skip;
 	}
 
 	if (!(mean_stripped && n < 5)) {
-		// put the low range curve at the end 
+		// put the low range curve at the end
 		sort(stats.begin(), stats.end() - sort_skip, compare_range());
 		++sort_skip;
 	}
 
 	if (n > 4) {
 		sort(stats.begin(), stats.end() - sort_skip, compare_mean_freq());
-		for (auto k = stats.rbegin() + sort_skip; k != stats.rend(); ++k) 
-			if (k->first->get_mean_frequency() > rate) 
-				++sort_skip; 
+		for (auto k = stats.rbegin() + sort_skip; k != stats.rend(); ++k)
+			if (k->first->get_mean_frequency() > rate)
+				++sort_skip;
 	}
-	
+
 	sort(stats.begin(), stats.end() - sort_skip, compare_perfusion_peak());
-	
+
 	cvinfo() << "Sorted\n";
 	for(size_t i = 0; i < n; ++i) {
 		cvinfo() << "Stats["<< stats[i].second << "]"
@@ -287,13 +287,13 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 		}
 	}
 	// was not really a periodic component
-	if (!has_periodic) 
-		Periodic_idx = -1; 
+	if (!has_periodic)
+		Periodic_idx = -1;
 
 	RV_peak = stats[0].first->get_perfusion_high_peak().first;
 	LV_peak = stats[1].first->get_perfusion_high_peak().first;
 
-	evaluate_selfcorr(series); 
+	evaluate_selfcorr(series);
 
 }
 

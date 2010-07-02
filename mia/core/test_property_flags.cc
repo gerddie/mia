@@ -1,11 +1,11 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2009 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -33,31 +33,31 @@ using namespace mia;
 
 BOOST_AUTO_TEST_CASE( test_has_flag )
 {
-	const char *flag1 = "flag1"; 
-	const char *flag2 = "flag2"; 
+	const char *flag1 = "flag1";
+	const char *flag2 = "flag2";
 
-	CPropertyFlagHolder holder; 
-	
-	holder.add(flag1); 
-	BOOST_CHECK(holder.has(flag1)); 
-	BOOST_CHECK(!holder.has(flag2)); 
-	holder.add(flag2); 
-	BOOST_CHECK(holder.has(flag2)); 
+	CPropertyFlagHolder holder;
+
+	holder.add(flag1);
+	BOOST_CHECK(holder.has(flag1));
+	BOOST_CHECK(!holder.has(flag2));
+	holder.add(flag2);
+	BOOST_CHECK(holder.has(flag2));
 }
 
 
 BOOST_AUTO_TEST_CASE( test_has_all_flag )
 {
-	const char *flag1 = "flag1"; 
-	const char *flag2 = "flag2"; 
+	const char *flag1 = "flag1";
+	const char *flag2 = "flag2";
 
-	CPropertyFlagHolder holder1; 
-	holder1.add(flag1); 
-	holder1.add(flag2); 
-	
-	CPropertyFlagHolder holder2; 
-	holder2.add(flag1); 
+	CPropertyFlagHolder holder1;
+	holder1.add(flag1);
+	holder1.add(flag2);
 
-	BOOST_CHECK(holder1.has_all_in(holder2)); 
-	BOOST_CHECK(!holder2.has_all_in(holder1)); 
+	CPropertyFlagHolder holder2;
+	holder2.add(flag1);
+
+	BOOST_CHECK(holder1.has_all_in(holder2));
+	BOOST_CHECK(!holder2.has_all_in(holder1));
 }

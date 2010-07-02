@@ -1,13 +1,13 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
- * Max-Planck-Institute for Human Cognitive and Brain Science	
- * Max-Planck-Institute for Evolutionary Anthropology 
+ * Copyright (c) Leipzig, Madrid 2004-2010
+ * Max-Planck-Institute for Human Cognitive and Brain Science
+ * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -29,142 +29,142 @@
 NS_MIA_BEGIN
 
 
-using namespace std; 
+using namespace std;
 struct CFFT1D_R2CImpl {
-	CFFT1D_R2CImpl(size_t n); 
-	~CFFT1D_R2CImpl(); 
-	
-	vector<CFFT1D_R2C::Complex> forward(const vector<CFFT1D_R2C::Real>& data) const; 
+	CFFT1D_R2CImpl(size_t n);
+	~CFFT1D_R2CImpl();
+
+	vector<CFFT1D_R2C::Complex> forward(const vector<CFFT1D_R2C::Real>& data) const;
 	vector<CFFT1D_R2C::Real>    backward(const vector<CFFT1D_R2C::Complex>& data) const;
 
-	void forward(vector<CFFT1D_R2C::Real>::const_iterator in_begin, 
-		     vector<CFFT1D_R2C::Real>::const_iterator in_end, 
-		     vector<CFFT1D_R2C::Complex>::iterator out_begin) const; 
+	void forward(vector<CFFT1D_R2C::Real>::const_iterator in_begin,
+		     vector<CFFT1D_R2C::Real>::const_iterator in_end,
+		     vector<CFFT1D_R2C::Complex>::iterator out_begin) const;
 
-	void backward(vector<CFFT1D_R2C::Complex>::const_iterator in_begin, 
-		      vector<CFFT1D_R2C::Complex>::const_iterator in_end, 
-		      vector<CFFT1D_R2C::Real>::iterator out_begin) const; 
-
-		
-	size_t _M_in_size; 
-	size_t _M_out_size; 
-
-	fftwf_plan _M_forward_plan; 
-	fftwf_plan _M_backward_plan; 
-
-	float *_M_in; 
-	fftwf_complex *_M_out; 
+	void backward(vector<CFFT1D_R2C::Complex>::const_iterator in_begin,
+		      vector<CFFT1D_R2C::Complex>::const_iterator in_end,
+		      vector<CFFT1D_R2C::Real>::iterator out_begin) const;
 
 
-}; 
+	size_t _M_in_size;
+	size_t _M_out_size;
+
+	fftwf_plan _M_forward_plan;
+	fftwf_plan _M_backward_plan;
+
+	float *_M_in;
+	fftwf_complex *_M_out;
+
+
+};
 
 CFFT1D_R2C::CFFT1D_R2C(size_t n)
 {
-	TRACE_FUNCTION; 
-	impl = new CFFT1D_R2CImpl(n); 
+	TRACE_FUNCTION;
+	impl = new CFFT1D_R2CImpl(n);
 }
-	
+
 CFFT1D_R2C::~CFFT1D_R2C()
 {
-	TRACE_FUNCTION; 
-	delete impl; 
+	TRACE_FUNCTION;
+	delete impl;
 }
 
 size_t CFFT1D_R2C::out_size() const
 {
-	return impl->_M_out_size; 
+	return impl->_M_out_size;
 }
 
 vector<CFFT1D_R2C::Complex> CFFT1D_R2C::forward(const vector<Real>& data) const
 {
-	TRACE_FUNCTION; 
-	return impl->forward(data); 
+	TRACE_FUNCTION;
+	return impl->forward(data);
 }
 
 vector<CFFT1D_R2C::Real>    CFFT1D_R2C::backward(const vector<Complex>& data) const
 {
-	TRACE_FUNCTION; 
-	return impl->backward(data); 
+	TRACE_FUNCTION;
+	return impl->backward(data);
 }
 
 
 CFFT1D_R2CImpl::CFFT1D_R2CImpl(size_t n):
-	_M_in_size(n), 
+	_M_in_size(n),
 	_M_out_size(n/2 + 1)
 {
-	TRACE_FUNCTION; 
-	string msg; 
-	_M_in = (float *) fftwf_malloc(sizeof(fftwf_complex) * _M_out_size); 
+	TRACE_FUNCTION;
+	string msg;
+	_M_in = (float *) fftwf_malloc(sizeof(fftwf_complex) * _M_out_size);
 	if (NULL == _M_in) {
-		msg = "unable to allocate FFTW data"; 
-		goto in_fail; 
+		msg = "unable to allocate FFTW data";
+		goto in_fail;
 	}
-	_M_out  = (fftwf_complex *) _M_in; 
+	_M_out  = (fftwf_complex *) _M_in;
 	_M_forward_plan  = fftwf_plan_dft_r2c_1d(_M_in_size, _M_in, _M_out, FFTW_ESTIMATE);
 	_M_backward_plan  = fftwf_plan_dft_c2r_1d(_M_in_size, _M_out, _M_in, FFTW_ESTIMATE);
-	return; 
+	return;
 
  in_fail:
-	throw runtime_error(msg); 
+	throw runtime_error(msg);
 
 }
 
 CFFT1D_R2CImpl::~CFFT1D_R2CImpl()
 {
-	fftwf_destroy_plan(_M_backward_plan); 
-	fftwf_destroy_plan(_M_forward_plan); 
-	fftwf_free(_M_in); 
+	fftwf_destroy_plan(_M_backward_plan);
+	fftwf_destroy_plan(_M_forward_plan);
+	fftwf_free(_M_in);
 }
 
-void CFFT1D_R2C::forward(vector<Real>::const_iterator in_begin, 
-			     vector<Real>::const_iterator in_end, 
+void CFFT1D_R2C::forward(vector<Real>::const_iterator in_begin,
+			     vector<Real>::const_iterator in_end,
 			     vector<Complex>::iterator out_begin) const
 {
-	impl->forward(in_begin, in_end, out_begin); 
+	impl->forward(in_begin, in_end, out_begin);
 }
 
-void CFFT1D_R2C::backward(vector<Complex>::const_iterator in_begin, 
-			      vector<Complex>::const_iterator in_end, 
+void CFFT1D_R2C::backward(vector<Complex>::const_iterator in_begin,
+			      vector<Complex>::const_iterator in_end,
 			      vector<Real>::iterator out_begin) const
 {
-	impl->backward(in_begin, in_end, out_begin); 
+	impl->backward(in_begin, in_end, out_begin);
 }
 
 vector<CFFT1D_R2C::Complex> CFFT1D_R2CImpl::forward(const vector<CFFT1D_R2C::Real>& data) const
 {
-	vector<CFFT1D_R2C::Complex> result(_M_out_size); 
-	forward(data.begin(), data.end(), result.begin()); 
-	return result; 
+	vector<CFFT1D_R2C::Complex> result(_M_out_size);
+	forward(data.begin(), data.end(), result.begin());
+	return result;
 }
 
 vector<CFFT1D_R2C::Real> CFFT1D_R2CImpl::backward(const vector<CFFT1D_R2C::Complex>& data) const
 {
-	vector<CFFT1D_R2C::Real> result(_M_in_size); 
-	backward(data.begin(), data.end(), result.begin()); 
-	return result; 
+	vector<CFFT1D_R2C::Real> result(_M_in_size);
+	backward(data.begin(), data.end(), result.begin());
+	return result;
 }
 
 
-void CFFT1D_R2CImpl::forward(vector<CFFT1D_R2C::Real>::const_iterator in_begin, 
-			     vector<CFFT1D_R2C::Real>::const_iterator in_end, 
+void CFFT1D_R2CImpl::forward(vector<CFFT1D_R2C::Real>::const_iterator in_begin,
+			     vector<CFFT1D_R2C::Real>::const_iterator in_end,
 			     vector<CFFT1D_R2C::Complex>::iterator out_begin) const
 {
-	copy(in_begin, in_end, _M_in); 
-	fftwf_execute( _M_forward_plan); 
-	copy(_M_out, _M_out + _M_out_size, out_begin); 
+	copy(in_begin, in_end, _M_in);
+	fftwf_execute( _M_forward_plan);
+	copy(_M_out, _M_out + _M_out_size, out_begin);
 }
 
-void CFFT1D_R2CImpl::backward(vector<CFFT1D_R2C::Complex>::const_iterator in_begin, 
-			      vector<CFFT1D_R2C::Complex>::const_iterator in_end, 
+void CFFT1D_R2CImpl::backward(vector<CFFT1D_R2C::Complex>::const_iterator in_begin,
+			      vector<CFFT1D_R2C::Complex>::const_iterator in_end,
 			      vector<CFFT1D_R2C::Real>::iterator out_begin) const
 {
-	assert((size_t)distance(in_begin, in_end) == _M_out_size); 
+	assert((size_t)distance(in_begin, in_end) == _M_out_size);
 	for (size_t i = 0; i < _M_out_size; ++i, ++in_begin) {
-		_M_out[i][0] = in_begin->real(); 
-		_M_out[i][1] = in_begin->imag(); 
+		_M_out[i][0] = in_begin->real();
+		_M_out[i][1] = in_begin->imag();
 	}
-	fftwf_execute( _M_backward_plan); 
-	copy(_M_in, _M_in + _M_in_size, out_begin); 
+	fftwf_execute( _M_backward_plan);
+	copy(_M_in, _M_in + _M_in_size, out_begin);
 }
 
 NS_MIA_END

@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2007 Gert Wollny <gert dot wollny at acm dot org>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -24,51 +24,51 @@
 
 NS_MIA_USE
 
-using namespace std; 
+using namespace std;
 
 class CLoloIOPlugin : public CTestIOPlugin {
-public: 
+public:
 	CLoloIOPlugin();
-private: 
+private:
 	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
-	const string do_get_descr() const; 
-	bool do_test()const; 
-}; 
+	const string do_get_descr() const;
+	bool do_test()const;
+};
 
 CLoloIOPlugin::CLoloIOPlugin():
 	CTestIOPlugin("lo")
 {
 }
-         
+
 void CLoloIOPlugin::do_add_suffixes(multimap<string, string>& map) const
 {
-	map.insert(pair<string,string>(".lo", get_name())); 
+	map.insert(pair<string,string>(".lo", get_name()));
 }
 
 CLoloIOPlugin::PData  CLoloIOPlugin::do_load(const string& /*fname*/) const
 {
-	return CLoloIOPlugin::PData(new CDummyType("lolo")); 
+	return CLoloIOPlugin::PData(new CDummyType("lolo"));
 }
 
 
 bool CLoloIOPlugin::do_save(const string& /*fname*/, const Data& /*data*/) const
 {
-	return true; 
+	return true;
 }
 
 const string CLoloIOPlugin::do_get_descr() const
 {
-	return "a dummy plugin to test io-plugin handling";  
+	return "a dummy plugin to test io-plugin handling";
 }
 
 bool CLoloIOPlugin::do_test()const
 {
-	return true; 
+	return true;
 }
 
-extern "C" EXPORT  CPluginBase *get_plugin_interface() 
+extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
 	return new CLoloIOPlugin();
 }

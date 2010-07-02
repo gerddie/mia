@@ -1,9 +1,9 @@
 /* -*- mia-c++  -*-
- * Copyright (c) 2007 Gert Wollny 
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -20,66 +20,66 @@
 #include <mia/2d/cost/fatssd.hh>
 #include <mia/core/property_flags.hh>
 
-using namespace std; 
-using namespace boost; 
-namespace bfs=::boost::filesystem; 
-using namespace mia; 
+using namespace std;
+using namespace boost;
+namespace bfs=::boost::filesystem;
+using namespace mia;
 
 NS_BEGIN(ssd_2dimage_fatcost)
 
 
 
 CFatSSD2DImageCost::CFatSSD2DImageCost(P2DImage src, P2DImage ref, P2DInterpolatorFactory ipf, float weight):
-C2DImageFatCost(src,  ref,  ipf, weight), 
-	_M_evaluator(C2DImageCostPluginHandler::instance().produce("ssd")) 
+C2DImageFatCost(src,  ref,  ipf, weight),
+	_M_evaluator(C2DImageCostPluginHandler::instance().produce("ssd"))
 {
-	add(property_gradient); 
+	add(property_gradient);
 }
 
 P2DImageFatCost CFatSSD2DImageCost::cloned(P2DImage src, P2DImage ref) const
 {
-	return P2DImageFatCost(new CFatSSD2DImageCost(src, ref,  get_ipf(), get_weight())); 
+	return P2DImageFatCost(new CFatSSD2DImageCost(src, ref,  get_ipf(), get_weight()));
 }
 
 double CFatSSD2DImageCost::do_value() const
 {
-	TRACE("CFatSSD2DImageCost::do_value"); 
+	TRACE("CFatSSD2DImageCost::do_value");
 
 	return _M_evaluator->value(get_floating(),get_ref());
 }
 double CFatSSD2DImageCost::do_evaluate_force(C2DFVectorfield& force) const
 {
-	TRACE("CFatSSD2DImageCost::do_evaluate_force"); 
+	TRACE("CFatSSD2DImageCost::do_evaluate_force");
 	_M_evaluator->evaluate_force(get_floating(), get_ref(), get_weight(), force);
-	return value(); 
+	return value();
 }
 
 C2DSSDFatImageCostPlugin::C2DSSDFatImageCostPlugin():
 	C2DFatImageCostPlugin("ssd")
 {
-	TRACE("C2DSSDFatImageCostPlugin::C2DSSDFatImageCostPlugin()"); 
+	TRACE("C2DSSDFatImageCostPlugin::C2DSSDFatImageCostPlugin()");
 }
 
-C2DFatImageCostPlugin::ProductPtr C2DSSDFatImageCostPlugin::do_create(P2DImage src, P2DImage ref, 
+C2DFatImageCostPlugin::ProductPtr C2DSSDFatImageCostPlugin::do_create(P2DImage src, P2DImage ref,
 								      P2DInterpolatorFactory ipf, float weight)const
 {
-	return C2DFatImageCostPlugin::ProductPtr(new CFatSSD2DImageCost(src, ref, ipf, weight)); 
+	return C2DFatImageCostPlugin::ProductPtr(new CFatSSD2DImageCost(src, ref, ipf, weight));
 }
 
 bool  C2DSSDFatImageCostPlugin::do_test() const
 {
-	return true; 
+	return true;
 }
 
 void C2DSSDFatImageCostPlugin::prepare_path() const
 {
-	TRACE("C2DSSDFatImageCostPlugin::prepare_path"); 
-	list< bfs::path> costsearchpath; 
-	costsearchpath.push_back( bfs::path(".")); 
+	TRACE("C2DSSDFatImageCostPlugin::prepare_path");
+	list< bfs::path> costsearchpath;
+	costsearchpath.push_back( bfs::path("."));
 	C2DImageCostPluginHandler::set_search_path(costsearchpath);
 
-	cvdebug() << "C2DImageCostPluginHandler::instance().size(): " << 
-		C2DImageCostPluginHandler::instance().size()<<"\n" ; 
+	cvdebug() << "C2DImageCostPluginHandler::instance().size(): " <<
+		C2DImageCostPluginHandler::instance().size()<<"\n" ;
 }
 
 const string C2DSSDFatImageCostPlugin::do_get_descr()const
@@ -90,7 +90,7 @@ const string C2DSSDFatImageCostPlugin::do_get_descr()const
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DSSDFatImageCostPlugin(); 
+	return new C2DSSDFatImageCostPlugin();
 }
 
 NS_END

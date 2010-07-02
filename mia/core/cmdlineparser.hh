@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -237,7 +237,7 @@ private:
 };
 
 
-/** Command line option that translates a string to a set of flags. 
+/** Command line option that translates a string to a set of flags.
 */
 
 class CCmdFlagOption: public  CCmdOptionValue{
@@ -261,7 +261,7 @@ private:
 	virtual void do_write_value(std::ostream& os) const;
 	virtual void do_get_long_help_really(std::ostream& os) const;
 	virtual const std::string do_get_value_as_string() const;
-	int& _M_value; 
+	int& _M_value;
 	const CFlagString _M_map;
 };
 
@@ -300,26 +300,26 @@ private:
 class EXPORT_CORE CHelpOption: public TCmdOption<bool> {
 public:
          /** Constructor of the command option
-	     \param callback to call when help option is requested 
+	     \param callback to call when help option is requested
 	     \param short_opt short option name (or 0)
 	     \param long_opt long option name (must not be NULL)
 	     \param long_help long help string (must not be NULL)
          */
-	
+
 	class CHelpCallback {
-	public: 
+	public:
 		virtual void print(std::ostream& os) const = 0;
-	}; 
+	};
 
 	CHelpOption(const CHelpCallback& cb, char short_opt, const char*long_opt, const char *long_help);
 	void print(std::ostream& os) const;
 
-	bool requested() const; 
+	bool requested() const;
 
-private: 
-	const CHelpCallback& _M_callback; 
-	bool _M_is_set; 
-}; 
+private:
+	const CHelpCallback& _M_callback;
+	bool _M_is_set;
+};
 
 /**
    Convinience function: Create a standard option
@@ -364,7 +364,7 @@ PCmdOption make_opt(T& value, const TDictMap<T>& map, const char *long_opt, char
 /**
    Convinience function: Create a flag lookup option
    \retval val variable to hold the parsed and translated option value
-   \param map the lookup table for the option flags 
+   \param map the lookup table for the option flags
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
    \param long_help long help string (must not be NULL)
@@ -375,7 +375,7 @@ PCmdOption make_opt(T& value, const TDictMap<T>& map, const char *long_opt, char
  */
 
 PCmdOption make_opt(int& value, const CFlagString& map, const char *long_opt, char short_opt,
-		    const char *long_help, const char *short_help, bool required= false); 
+		    const char *long_help, const char *short_help, bool required= false);
 
 
 /**

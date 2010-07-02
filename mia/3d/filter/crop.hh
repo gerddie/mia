@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
- * Copyright (c) 2009 Gert Wollny <gert at die.upm.es>
- * 
+ * Copyright (c) Leipzig, Madrid 2004-2010
+ *
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -26,26 +26,26 @@ NS_BEGIN(crop_3d_filter)
 class C3DCrop: public mia::C3DFilter {
 public:
 	C3DCrop(const mia::C3DBounds& begin, const mia::C3DBounds& end);
-	
+
 	template <typename T>
 	C3DCrop::result_type operator () (const mia::T3DImage<T>& data) const;
-private: 
+private:
 	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
 	const mia::C3DBounds _M_begin;
-	const mia::C3DBounds _M_end; 
+	const mia::C3DBounds _M_end;
 };
 
-/* The factory class - this is what the application gets first. This factory class is used to 
-   create the actual filter object. It also provides some filter testing routines. 
+/* The factory class - this is what the application gets first. This factory class is used to
+   create the actual filter object. It also provides some filter testing routines.
 */
 class C3DCropImageFilterFactory: public mia::C3DFilterPlugin {
-public: 
+public:
 	C3DCropImageFilterFactory();
 	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
-	virtual const std::string do_get_descr()const; 
-	virtual bool do_test()const {return true;}; 
-private: 
-	mia::C3DBounds _M_begin; 
+	virtual const std::string do_get_descr()const;
+	virtual bool do_test()const {return true;};
+private:
+	mia::C3DBounds _M_begin;
 	mia::C3DBounds _M_end;
 };
 

@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2010 Gert Wollny 
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -31,13 +31,13 @@ NS_BEGIN(mia_2dcost_divcurl)
 struct C2DDivCurlCostImpl;
 
 class C2DDivCurlCost: public mia::C2DCostBase {
-public: 
+public:
 	C2DDivCurlCost(float weight, float divergence, float curl);
 	~C2DDivCurlCost();
-private: 
-	virtual double do_evaluate(const mia::C2DTransformation& t, mia::C2DFVectorfield& force) const; 
-	struct C2DDivCurlCostImpl *impl; 
-}; 
+private:
+	virtual double do_evaluate(const mia::C2DTransformation& t, mia::C2DFVectorfield& force) const;
+	struct C2DDivCurlCostImpl *impl;
+};
 
 NS_END
 

@@ -1,9 +1,9 @@
 /*  -*- mia-c++  -*-
- * Copyright (c) 2007 Gert Wollny <gert.wollny at web de>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,35 +22,35 @@
 NS_MIA_USE
 using namespace std;
 using namespace ::boost::lambda;
-using namespace gauss_1d_folding_kernel; 
+using namespace gauss_1d_folding_kernel;
 
 C1DGaussFilterKernel::C1DGaussFilterKernel(int fsize):
 	C1DFoldingKernel(fsize)
 {
 	size_t n = size();
         assert(n > 0);
-	
+
         vec_mask tmp(n);
 
         (*this)[0] = 1.0;
         if (n < 2)
                 return;
-	
+
         (*this)[1] = 1.0;
-	
+
 	for (size_t i = 2; i < n; i++){
 		(*this)[i] = 1.0;
                 transform(begin(), begin() + i, begin() + 1, tmp.begin() + 1, _1 + _2);
                 copy(tmp.begin() + 1, tmp.begin()+i, begin() +1);
 	}
-	
+
 	const double norm = pow(2.0,n-1);
 	transform(begin(), end(), begin(), _1 / norm);
 
-	vec_mask::iterator ider    = dbegin(); 
-	vec_mask::iterator ikern   = begin(); 
+	vec_mask::iterator ider    = dbegin();
+	vec_mask::iterator ikern   = begin();
 	for (size_t i = 0; i < n; ++i, ++ider, ++ikern) {
-		*ider = 2.0 * (fsize - i) * *ikern; 
+		*ider = 2.0 * (fsize - i) * *ikern;
 	}
 }
 
@@ -73,7 +73,7 @@ C1DSpacialGaussKernelPlugin::ProductPtr C1DSpacialGaussKernelPlugin::do_create()
 std::vector<double> C1DGaussFilterKernel::do_apply(const std::vector<double>& data) const
 {
 	typedef std::vector<double> vec_t;
-	vec_t result(data.size(),0.0); 
+	vec_t result(data.size(),0.0);
 
 	C1DFoldingKernel::const_iterator  ek = end();
 
@@ -134,7 +134,7 @@ std::vector<double> C1DGaussFilterKernel::do_apply(const std::vector<double>& da
 
 		++start;
 	}
-	return result; 
+	return result;
 }
 
 bool C1DSpacialGaussKernelPlugin::do_test() const

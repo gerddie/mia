@@ -1,6 +1,6 @@
 #
 # The miacore build definitions
-# Copyright (c) 2007 Gert Wollny
+# Copyright (c) Leipzig, Madrid 2004-2010
 # Redistribution according to the GPL 
 #
 

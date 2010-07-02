@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -91,7 +91,7 @@ struct FTransform<T, true> {
 template <typename T>
 int C2DRegiongrowFifoFilter::operator ()( const T2DImage<T>& image)
 {
-	const bool is_float = is_floating_point<T>::value; 
+	const bool is_float = is_floating_point<T>::value;
 	transform(image.begin(), image.end(), _M_in_buffer.begin(),
 		  FTransform<T, is_float>(_M_probmap[_M_class]));
 

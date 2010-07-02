@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2009 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -39,7 +39,7 @@ class C2DTransformation;
 typedef SHARED_PTR(C2DTransformation) P2DTransformation;
 
 /**
-   generic base class for 2D transformations. 
+   generic base class for 2D transformations.
 */
 
 class EXPORT_2D C2DTransformation: public Transformation<C2DImage, C2DInterpolatorFactory> {
@@ -55,39 +55,39 @@ public:
 	C2DTransformation();
 
 	/**
-	   \returns a newly allocated copy of the actual transformation 
+	   \returns a newly allocated copy of the actual transformation
 	 */
 	virtual C2DTransformation *clone() const = 0;
 
 	/**
-	   Placeholder for transformations that might need special initializations 
-	   like the B-spline based transformation 
+	   Placeholder for transformations that might need special initializations
+	   like the B-spline based transformation
 	 */
 	virtual void reinit() const;
-	
+
 	/**
-	   Save the transformation to some file 
-	   \param filename name of the file to save to 
-	   \param type file type description 
-	   \returns \a true if saving was successfull and \a false if not 
+	   Save the transformation to some file
+	   \param filename name of the file to save to
+	   \param type file type description
+	   \returns \a true if saving was successfull and \a false if not
 	 */
 	virtual bool save(const std::string& filename, const std::string& type) const = 0;
 
 	/**
-	   Transforation upscaling to new image size 
-	   \param size new size of the transformation 
-	   \returns shared pointer to upscaled transformation 
+	   Transforation upscaling to new image size
+	   \param size new size of the transformation
+	   \returns shared pointer to upscaled transformation
 	 */
 	virtual P2DTransformation upscale(const C2DBounds& size) const = 0;
 
 	/**
-	   concat a transformation, 
-	   \param a the transformation to be added 
+	   concat a transformation,
+	   \param a the transformation to be added
 	 */
 	virtual void add(const C2DTransformation& a) = 0;
 
 	/**
-	   update a transformation by using a vector field 
+	   update a transformation by using a vector field
 	   \remark this is too specialized and should go away
 	 */
 	virtual void update(float step, const C2DFVectorfield& a) = 0;
@@ -101,83 +101,83 @@ public:
 	   set the transformation to be the identity transform
 	 */
 	virtual void set_identity() = 0;
-	
+
 	/**
-	   evaluate the derivative (Jacobian matrix) of the transformation at the given 
+	   evaluate the derivative (Jacobian matrix) of the transformation at the given
 	   grid coordinates
-	   \param x 
+	   \param x
 	   \param y
-	   \returns 2x2 matrix of the derivative 
+	   \returns 2x2 matrix of the derivative
 	 */
 	virtual C2DFMatrix derivative_at(int x, int y) const = 0;
 
 	/**
-	   Translate the input gradient to a vector field in the space of the transformation field 
-	   \remark this is too specialized and needs to be replaced by something 
+	   Translate the input gradient to a vector field in the space of the transformation field
+	   \remark this is too specialized and needs to be replaced by something
 	 */
 	virtual void translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const = 0;
 
 	/**
-	   \returns the transformation parameters as a flat vector field 
+	   \returns the transformation parameters as a flat vector field
 	 */
-	virtual gsl::DoubleVector get_parameters() const = 0; 
-	
+	virtual gsl::DoubleVector get_parameters() const = 0;
+
 	/**
-	   sets the transformation parameters from a flat vector field 
+	   sets the transformation parameters from a flat vector field
 	 */
-	virtual void set_parameters(const gsl::DoubleVector& params) = 0; 
-	
+	virtual void set_parameters(const gsl::DoubleVector& params) = 0;
+
 	/**
-	   \returns the (approximate) maximum absolute translation of the transformation over the whole domain 
+	   \returns the (approximate) maximum absolute translation of the transformation over the whole domain
 	 */
 	virtual float get_max_transform() const = 0;
 
 	/**
-	   \returns the upper range of where the transformation is defined 
+	   \returns the upper range of where the transformation is defined
 	 */
 	virtual const C2DBounds& get_size() const = 0;
 
 	/**
-	   evaluate the pertuberation of a vectorfield combined with this transformation 
-	   \retval v vectorfield to be pertuberated 
-	   \returns maximum value of the pertuberation 
-	   \remark this makes only sense for fluid dynamics registration and should be handled elsewhere 
+	   evaluate the pertuberation of a vectorfield combined with this transformation
+	   \retval v vectorfield to be pertuberated
+	   \returns maximum value of the pertuberation
+	   \remark this makes only sense for fluid dynamics registration and should be handled elsewhere
 	 */
 	virtual float pertuberate(C2DFVectorfield& v) const = 0;
 
 	/**
 	   \returns the displacement at coordinate x
-	   \remark rename the function to something that explains better whats going on 
+	   \remark rename the function to something that explains better whats going on
 	 */
 	virtual C2DFVector apply(const C2DFVector& x) const = 0;
-	
+
         /**
-	   apply the actual transformation to point x 
-	   \returns transformed point 
+	   apply the actual transformation to point x
+	   \returns transformed point
 	 */
 	virtual C2DFVector operator () (const C2DFVector& x) const = 0;
 
 	/**
-	   Evaluate the Jacobian of the transformation when updated with vector field v by factor delta 
-	   \returns Jacobian 
+	   Evaluate the Jacobian of the transformation when updated with vector field v by factor delta
+	   \returns Jacobian
 	   \remark this only is used for fluid dynamics registration and should probably be moved elsewhere
 	 */
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const = 0;
 
 	/**
-	   \remark placeholder 
+	   \remark placeholder
 	 */
-	virtual float divergence() const = 0; 
+	virtual float divergence() const = 0;
 
 	/**
-	   \remark placeholder 
+	   \remark placeholder
 	 */
-	virtual float curl() const = 0; 
+	virtual float curl() const = 0;
 
 };
 
 /**
-   Functor to evaluate a transformed image by applying a given transformation 
+   Functor to evaluate a transformed image by applying a given transformation
    and using the providedinterpolator type
 */
 
@@ -210,11 +210,11 @@ private:
 
 
 /**
-   Transform an image by a given transform using the provided interpolation method. 
+   Transform an image by a given transform using the provided interpolation method.
    \param image the image to be transformed
    \param ipf interpolator factory holding the information which interpolation method will be used
-   \param trans transformation 
-   \returns transformed image 
+   \param trans transformation
+   \returns transformed image
  */
 
 template <typename Transform>

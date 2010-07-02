@@ -1,19 +1,19 @@
 /*
 ** Copyright Madrid (c) 2010 BIT ETSIT UPM
 **                    Gert Wollny <gw.fossdev @ gmail.com>
-**  
+**
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 2 of the License, or
+** the Free Software Foundation; either version 3 of the License, or
 ** (at your option) any later version.
-** 
+**
 ** This program is distributed in the hope that it will be useful,
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ** GNU General Public License for more details.
-** 
+**
 ** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software 
+** along with this program; if not, write to the Free Software
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
@@ -25,15 +25,15 @@
 
 NS_MIA_BEGIN
 
-using gsl::DoubleVector; 
-using namespace std; 
+using gsl::DoubleVector;
+using namespace std;
 
 struct C2DGroundTruthEvaluatorImpl {
-	C2DGroundTruthEvaluatorImpl(double alpha, double beta, double rho); 
-	void run(const std::vector<P2DImage>& originals, std::vector<P2DImage>& estimate) const; 
-private: 
+	C2DGroundTruthEvaluatorImpl(double alpha, double beta, double rho);
+	void run(const std::vector<P2DImage>& originals, std::vector<P2DImage>& estimate) const;
+private:
 	double m_alpha;
-	double m_beta; 
+	double m_beta;
 	double m_rho;
 };
 
@@ -45,108 +45,108 @@ C2DGroundTruthEvaluator::C2DGroundTruthEvaluator(double alpha, double beta, doub
 
 C2DGroundTruthEvaluator::~C2DGroundTruthEvaluator()
 {
-	delete impl; 
+	delete impl;
 }
 
 void C2DGroundTruthEvaluator::operator () (const std::vector<P2DImage>& originals, std::vector<P2DImage>& estimate) const
 {
-	impl->run(originals, estimate); 
+	impl->run(originals, estimate);
 }
 
 C2DGroundTruthEvaluatorImpl::C2DGroundTruthEvaluatorImpl(double alpha, double beta, double rho):
-	m_alpha(alpha), 
-	m_beta(beta), 
+	m_alpha(alpha),
+	m_beta(beta),
 	m_rho(rho)
 
 {
 }
 
 struct DataCopy : public TFilter<void> {
-	DataCopy(gsl::DoubleVector& target, size_t ss); 
-	
-	template <typename T> 
-	void operator() (const T2DImage<T>& image); 
-	
-private: 
-	DoubleVector& m_target; 
-	DoubleVector::iterator i_target; 
-	size_t m_slice_size; 
-}; 
+	DataCopy(gsl::DoubleVector& target, size_t ss);
+
+	template <typename T>
+	void operator() (const T2DImage<T>& image);
+
+private:
+	DoubleVector& m_target;
+	DoubleVector::iterator i_target;
+	size_t m_slice_size;
+};
 
 
-	
 
-void C2DGroundTruthEvaluatorImpl::run(const std::vector<P2DImage>& originals, 
+
+void C2DGroundTruthEvaluatorImpl::run(const std::vector<P2DImage>& originals,
 						       std::vector<P2DImage>& estimate) const
 {
-	CCorrelationEvaluator ce(m_rho); 
-	auto correlation = ce(originals); 
+	CCorrelationEvaluator ce(m_rho);
+	auto correlation = ce(originals);
 
-	size_t slice_size = originals[0]->get_size().x * originals[0]->get_size().y; 
+	size_t slice_size = originals[0]->get_size().x * originals[0]->get_size().y;
 
-	size_t n = originals.size() * slice_size; 
-	
-	gsl::DoubleVector input(n, false); 
-	
+	size_t n = originals.size() * slice_size;
+
+	gsl::DoubleVector input(n, false);
+
 	DataCopy dc(input, slice_size);
 	for (auto io = originals.begin(); io != originals.end(); ++io)
-		::mia::accumulate(dc, **io); 
+		::mia::accumulate(dc, **io);
 
 	gsl::DoubleVector output(n,false);
 	if (estimate.size() == originals.size()) {
 		DataCopy dc(output, slice_size);
 		for (auto io = estimate.begin(); io != estimate.end(); ++io)
-			::mia::accumulate(dc, **io); 
+			::mia::accumulate(dc, **io);
 	}else {
-		copy(input.begin(), input.end(), output.begin()); 
-		estimate.resize(originals.size()); 
+		copy(input.begin(), input.end(), output.begin());
+		estimate.resize(originals.size());
 	}
-		
-		
 
-	gsl::CFDFMinimizer::PProblem gtp(new GroundTruthProblem(m_alpha, m_beta, originals[0]->get_size(), 
+
+
+	gsl::CFDFMinimizer::PProblem gtp(new GroundTruthProblem(m_alpha, m_beta, originals[0]->get_size(),
 					    originals.size(), input, correlation));
 
 	gsl::CFDFMinimizer minimizer(gtp,  gsl_multimin_fdfminimizer_vector_bfgs2);
-	
-	int min_status = minimizer.run(output); 
+
+	int min_status = minimizer.run(output);
 	if (min_status != GSL_SUCCESS) {
 		cvwarn() << "C2DGroundTruthEvaluator: evaluation stopped with reason '"
-			 << gsl_strerror (min_status) << "'\n"; 
+			 << gsl_strerror (min_status) << "'\n";
 	}
-	 
-	// copy back the result 
-	auto igt = output.begin(); 
+
+	// copy back the result
+	auto igt = output.begin();
 
 	for(size_t i = 0; i < originals.size(); ++i) {
-		C2DFImage *image = new C2DFImage(originals[0]->get_size()); 
-		copy(igt, igt + slice_size, image->begin()); 
-		estimate[i] = P2DImage(image); 
-		igt += slice_size; 
+		C2DFImage *image = new C2DFImage(originals[0]->get_size());
+		copy(igt, igt + slice_size, image->begin());
+		estimate[i] = P2DImage(image);
+		igt += slice_size;
 	}
 }
 
 DataCopy::DataCopy(DoubleVector& target, size_t slice_size):
-	m_target(target), 
-	i_target(target.begin()), 
+	m_target(target),
+	i_target(target.begin()),
 	m_slice_size(slice_size)
 {
-	assert( target.size() % m_slice_size == 0); 
+	assert( target.size() % m_slice_size == 0);
 
-	cvdebug() << "Image size =" << slice_size << "\n"; 
+	cvdebug() << "Image size =" << slice_size << "\n";
 }
 
-template <typename T> 
+template <typename T>
 void DataCopy::operator() (const T2DImage<T>& image)
 {
-	if (image.size() != m_slice_size) 
-		THROW(invalid_argument, __FILE__ << ": unexpected input image pixel number " 
-		      << image.size() << ", expect " << m_slice_size); 
+	if (image.size() != m_slice_size)
+		THROW(invalid_argument, __FILE__ << ": unexpected input image pixel number "
+		      << image.size() << ", expect " << m_slice_size);
 
-	assert(i_target != m_target.end()); 
+	assert(i_target != m_target.end());
 
-	copy(image.begin(), image.end(), i_target); 
-	i_target += m_slice_size; 
+	copy(image.begin(), image.end(), i_target);
+	i_target += m_slice_size;
 }
 
 

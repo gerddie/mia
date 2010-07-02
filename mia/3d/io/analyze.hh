@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2004-2009 Gert Wollny <gert at die.upm.es>
- * Max-Planck-Institute for Human Cognitive and Brain Science	
+ * Copyright (c) Leipzig, Madrid 2004-2010
+ * Max-Planck-Institute for Human Cognitive and Brain Science
  * Biomedical Image Technologies, Universidad Politecnica de Madrid
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -28,29 +28,29 @@
 
 NS_BEGIN(IMAGEIO_3D_ANALYZE)
 
-struct analyze_image_dimension; 
-struct analyze_dsr; 
+struct analyze_image_dimension;
+struct analyze_dsr;
 
 class CAnalyze3DImageIOPlugin : public mia::C3DImageIOPlugin {
 public:
 	CAnalyze3DImageIOPlugin();
-private: 
-	typedef mia::C3DImageIOPlugin::PData PData; 
-	typedef mia::C3DImageIOPlugin::Data Data; 
+private:
+	typedef mia::C3DImageIOPlugin::PData PData;
+	typedef mia::C3DImageIOPlugin::Data Data;
 
 	virtual PData do_load(const std::string&  filename) const;
 	virtual bool do_save(const std::string& fname, const Data& data) const;
 	virtual void do_add_suffixes(std::multimap<std::string, std::string>& map) const;
-	virtual const std::string do_get_descr() const; 
+	virtual const std::string do_get_descr() const;
 
-	void swap_hdr(analyze_dsr& hdr) const; 
+	void swap_hdr(analyze_dsr& hdr) const;
 
-	template <bool flipped> 
-	mia::C3DImage *read_image(const mia::C3DBounds& size, short datatype, mia::CInputFile& data_file)const; 
+	template <bool flipped>
+	mia::C3DImage *read_image(const mia::C3DBounds& size, short datatype, mia::CInputFile& data_file)const;
 
-	bool save_data(const std::string& fname, const Data& data, analyze_image_dimension& dime) const; 
-	const mia::TDictMap<mia::EPixelType> _M_type_table; 
-	mutable bool _M_swap_endian; 
+	bool save_data(const std::string& fname, const Data& data, analyze_image_dimension& dime) const;
+	const mia::TDictMap<mia::EPixelType> _M_type_table;
+	mutable bool _M_swap_endian;
 };
 
 NS_END

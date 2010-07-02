@@ -1,9 +1,9 @@
 /*  -*- mia-c++  -*-
- * Copyright (c) 2007 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -18,9 +18,9 @@
  */
 
 #ifdef WIN32
-#  define EXPORT_HANDLER __declspec(dllexport) 
+#  define EXPORT_HANDLER __declspec(dllexport)
 #else
-#  define EXPORT_HANDLER 
+#  define EXPORT_HANDLER
 #endif
 
 
@@ -36,43 +36,43 @@
 
 NS_MIA_BEGIN
 using namespace std;
-using namespace boost; 
+using namespace boost;
 
 C3DImageFatCost::C3DImageFatCost(P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight):
 	TFatCost<C3DTransformation, C3DFVectorfield>(src, ref, ipf, weight)
 {
 	if (src->get_size() != ref->get_size()) {
-		throw invalid_argument("C3DImageFatCost: input images must be of same size"); 
+		throw invalid_argument("C3DImageFatCost: input images must be of same size");
 	}
 }
 
 P3DImageFatCost C3DImageFatCost::get_downscaled(const C3DBounds& scale) const
 {
-	stringstream downscalerstr; 
-	downscalerstr << "downscale:bx=" << scale.x << ",by=" << scale.y << ",bz=" << scale.z; 
-	SHARED_PTR(C3DFilter) downscaler = C3DFilterPluginHandler::instance().produce(downscalerstr.str().c_str()); 
-	
-	P3DImage src_scaled = downscaler->filter(get_src()); 
+	stringstream downscalerstr;
+	downscalerstr << "downscale:bx=" << scale.x << ",by=" << scale.y << ",bz=" << scale.z;
+	SHARED_PTR(C3DFilter) downscaler = C3DFilterPluginHandler::instance().produce(downscalerstr.str().c_str());
+
+	P3DImage src_scaled = downscaler->filter(get_src());
 	P3DImage ref_scaled = downscaler->filter(get_ref());
-	return cloned(src_scaled, ref_scaled); 
+	return cloned(src_scaled, ref_scaled);
 }
 
 C3DBounds C3DImageFatCost::get_size() const
 {
-	return get_src().get_size(); 
+	return get_src().get_size();
 }
 
 C3DFatImageCostPlugin::C3DFatImageCostPlugin(const char *name):
-	TFactory<C3DImageFatCost, C3DImage, fatcost_type>(name), 
-	_M_weight(1.0f), 
+	TFactory<C3DImageFatCost, C3DImage, fatcost_type>(name),
+	_M_weight(1.0f),
 	_M_interpolator(ip_bspline3)
 {
-	TRACE("C3DFatImageCostPlugin::C3DFatImageCostPlugin"); 
-	add_parameter("src", new CStringParameter(_M_src_name, true, "study image")); 
-	add_parameter("ref", new CStringParameter(_M_ref_name, true, "reference image")); 
-	add_parameter("interp", new CDictParameter<EInterpolation>(_M_interpolator, GInterpolatorTable, "image interpolator")); 
-	add_parameter("weight", new CFloatParameter(_M_weight, 1e-10f, 1e+10f, 
-						    false, "weight of cost function")); 
+	TRACE("C3DFatImageCostPlugin::C3DFatImageCostPlugin");
+	add_parameter("src", new CStringParameter(_M_src_name, true, "study image"));
+	add_parameter("ref", new CStringParameter(_M_ref_name, true, "reference image"));
+	add_parameter("interp", new CDictParameter<EInterpolation>(_M_interpolator, GInterpolatorTable, "image interpolator"));
+	add_parameter("weight", new CFloatParameter(_M_weight, 1e-10f, 1e+10f,
+						    false, "weight of cost function"));
 }
 
 P3DImageFatCost C3DFatImageCostPlugin::create_directly( P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight)
@@ -82,34 +82,34 @@ P3DImageFatCost C3DFatImageCostPlugin::create_directly( P3DImage src, P3DImage r
 
 C3DFatImageCostPlugin::ProductPtr C3DFatImageCostPlugin::do_create()const
 {
-	TRACE("C3DFatImageCostPlugin::do_create"); 
+	TRACE("C3DFatImageCostPlugin::do_create");
 
-	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance(); 
-	typedef C3DImageIOPluginHandler::Instance::PData PImageVector; 
-	
-	
-        PImageVector reference = imageio.load(_M_ref_name); 
+	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
+	typedef C3DImageIOPluginHandler::Instance::PData PImageVector;
+
+
+        PImageVector reference = imageio.load(_M_ref_name);
         if (reference->empty()) {
-                stringstream msg; 
-                msg << "Unable to load images form " << _M_ref_name; 
-                throw invalid_argument(msg.str()); 
+                stringstream msg;
+                msg << "Unable to load images form " << _M_ref_name;
+                throw invalid_argument(msg.str());
         }
-        
-        PImageVector source    = imageio.load(_M_src_name); 
+
+        PImageVector source    = imageio.load(_M_src_name);
         if (source->empty()) {
-                stringstream msg; 
-                msg << "Unable to load images form " << _M_src_name; 
-                throw invalid_argument(msg.str()); 
+                stringstream msg;
+                msg << "Unable to load images form " << _M_src_name;
+                throw invalid_argument(msg.str());
 	}
-	
-	if (source->size() > 1) 
-		cvwarn() << "'" << _M_src_name << "' contains more then one image, using only first\n"; 
-	
-	if (reference->size() > 1) 
-		cvwarn() << "'" << _M_ref_name << "' contains more then one image, using only first\n"; 
-	
-	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(_M_interpolator)); 		
-	return do_create((*source)[0], (*reference)[0], ipf, _M_weight); 
+
+	if (source->size() > 1)
+		cvwarn() << "'" << _M_src_name << "' contains more then one image, using only first\n";
+
+	if (reference->size() > 1)
+		cvwarn() << "'" << _M_ref_name << "' contains more then one image, using only first\n";
+
+	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(_M_interpolator));
+	return do_create((*source)[0], (*reference)[0], ipf, _M_weight);
 }
 
 double C3DImageFatCostList::value() const
@@ -117,36 +117,36 @@ double C3DImageFatCostList::value() const
 	TRACE("C3DImageFatCostList::value");
 	double value = 0.0;
 	for (const_iterator i = begin(); i != end(); ++i)
-		value += (*i)->value(); 
-	return value; 
+		value += (*i)->value();
+	return value;
 }
-	
+
 double C3DImageFatCostList::evaluate_force(C3DFVectorfield& force) const
 {
 	TRACE("C3DImageFatCostList::evaluate_force");
 	double value = 0.0;
 	for (const_iterator i = begin(); i != end(); ++i)
-		value += (*i)->evaluate_force(force); 
-	return value; 
+		value += (*i)->evaluate_force(force);
+	return value;
 }
 
 C3DImageFatCostList C3DImageFatCostList::get_downscaled(const C3DBounds& scale) const
 {
-	C3DImageFatCostList result; 
-	
+	C3DImageFatCostList result;
+
 	for (const_iterator i = begin(); i != end(); ++i)
-		result.push_back((*i)->get_downscaled(scale)); 
-	
-	return result; 
+		result.push_back((*i)->get_downscaled(scale));
+
+	return result;
 }
 
 C3DBounds C3DImageFatCostList::get_size() const
 {
 	if (!empty())
-		return (*this)[0]->get_size(); 
-	return C3DBounds(0,0, 0); 
+		return (*this)[0]->get_size();
+	return C3DBounds(0,0, 0);
 }
-	
+
 void C3DImageFatCostList::transform(const C3DTransformation& transform)
 {
 	TRACE("C3DImageFatCostList::transform");
@@ -160,24 +160,24 @@ C3DFatImageCostPluginHandlerImpl::C3DFatImageCostPluginHandlerImpl(const std::li
 {
 }
 
-P3DImageFatCost C3DFatImageCostPluginHandlerImpl::create_directly(const std::string& plugin, P3DImage src, 
+P3DImageFatCost C3DFatImageCostPluginHandlerImpl::create_directly(const std::string& plugin, P3DImage src,
 								  P3DImage ref, P3DInterpolatorFactory ipf,
-								  float weight) const 
+								  float weight) const
 {
 	C3DFatImageCostPlugin *factory = this->plugin(plugin.c_str());
 	if (!factory)
-		throw invalid_argument(string("C3DFatImageCostPluginHandlerImpl::create_directly: '") + 
+		throw invalid_argument(string("C3DFatImageCostPluginHandlerImpl::create_directly: '") +
 				       plugin + "' unknown");
-	return factory->create_directly(src, ref, ipf, weight); 
+	return factory->create_directly(src, ref, ipf, weight);
 }
 
-template class TFatCost<C3DTransformation, C3DFVectorfield>; 
+template class TFatCost<C3DTransformation, C3DFVectorfield>;
 
-template class TPlugin<C3DImage, fatcost_type>; 
-template class TFactory<C3DImageFatCost, C3DImage, fatcost_type>; 
+template class TPlugin<C3DImage, fatcost_type>;
+template class TFactory<C3DImageFatCost, C3DImage, fatcost_type>;
 
-template class TPluginHandler<C3DFatImageCostPlugin>; 
-template class TFactoryPluginHandler<C3DFatImageCostPlugin>; 
+template class TPluginHandler<C3DFatImageCostPlugin>;
+template class TFactoryPluginHandler<C3DFatImageCostPlugin>;
 template class THandlerSingleton<C3DFatImageCostPluginHandlerImpl>;
 
 NS_MIA_END

@@ -1,11 +1,11 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2009 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -212,7 +212,7 @@ BOOST_AUTO_TEST_CASE( test_delta_ica_mix )
 	CICAAnalysis::IndexSet plus_components;
 	plus_components.insert(1);
 	plus_components.insert(2);
-	
+
 	CICAAnalysis::IndexSet minus_components;
 	minus_components.insert(0);
 
@@ -324,14 +324,14 @@ BOOST_AUTO_TEST_CASE( test_ica_with_some_mean_unknown_normalized_mix )
 	};
 
 	CICAAnalysis ica(rows, elms);
-	
+
 	for (int i = 0; i < rows; ++i)
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
 
 
 	ica.run(4);
 	vector<float>  mean = ica.normalize_Mix();
-	
+
 
 	for (int i = 0; i < rows; ++i) {
 		vector<float> mixed = ica.get_mix(i);
@@ -434,36 +434,36 @@ BOOST_AUTO_TEST_CASE( test_autorun )
 	const int comps = 3;
 	const int rows = 10;
 	const int elms = 40;
-	double ic_rows[comps * elms] = 
+	double ic_rows[comps * elms] =
 		{ 1.1, -0.9,  -1.9,  0.9,  2.1, 1.9,  6.1, -2.9,  0.9, 1.1,
 		  1.1,  1.9,  -1.1,  2.9,  3.1, 1.9,  0.1,  2.9,  1.9, 2.1,
-		  2.3, -1.7,  -2.7,  -2.7,  6.3, -3.7,  6.3, -2.7, -0.7, 2.3, 
+		  2.3, -1.7,  -2.7,  -2.7,  6.3, -3.7,  6.3, -2.7, -0.7, 2.3,
 		  2.3, -2.7,   2.2,   2.6,  6.4, -3.8,  6.2, -2.5, -0.6, 2.2,
-		
-		  2.3, -1.7,  -2.7,  -2.7,  6.3, -3.7,  6.3, -2.7, -0.7, 2.3, 
+
+		  2.3, -1.7,  -2.7,  -2.7,  6.3, -3.7,  6.3, -2.7, -0.7, 2.3,
 		  2.3, -2.7,  -2.2,  -2.6,  6.4, -3.8,  6.2, -2.5, -0.6, 2.2,
-		  2.3, -1.7,  -2.7,  -2.7,  6.3, -3.7,  6.3, -2.7, -0.7, 2.3, 
+		  2.3, -1.7,  -2.7,  -2.7,  6.3, -3.7,  6.3, -2.7, -0.7, 2.3,
 		  2.3, -2.7,  -2.2,  -2.6,  6.4, -3.8,  6.2, -2.5, -0.6, 2.2 ,
 
 		  2.3, -1.7,  -2.7,  -2.7,  6.3, -3.7,  6.3, -2.7, -0.7, 2.3,
 		  2,   4.4,    -5,    6,    9,   -7,    5,   -4,   2,   2,
 		  1.1,  1.9,  -1.1,  2.9,  3.1, 1.9,  0.1,  2.9,  1.9, 2.1,
-		  2.1, 4.1,  -5.2,  6.4,  -9.2, -7.1,  -5.3, 4.4,  -2.1,  2.1 
+		  2.1, 4.1,  -5.2,  6.4,  -9.2, -7.1,  -5.3, 4.4,  -2.1,  2.1
 	};
 
 	CICAAnalysis ica(rows, elms);
 
 	for (int i = 0; i < rows; ++i) {
-		vector <float> input(elms); 
-		for (int j = 0; j < elms; ++j) 
+		vector <float> input(elms);
+		for (int j = 0; j < elms; ++j)
 			for (int k = 0; k < comps; ++k)
 				input[j] += ic_rows[k * elms + j] * cos(i  +  k);
-		
+
 		ica.set_row(i, input.begin(), input.end());
 	}
 	ica.run_auto(6,2,0.9);
-	BOOST_CHECK_EQUAL(ica.get_ncomponents(), comps); 
-	
+	BOOST_CHECK_EQUAL(ica.get_ncomponents(), comps);
+
 
 }
 

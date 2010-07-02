@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2010, Gert Wollny
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -33,22 +33,22 @@ C2DTransformMock::C2DTransformMock()
 C2DTransformMock::C2DTransformMock(const C2DBounds& size):
 	m_size(size)
 {
-	
+
 }
 
-C2DTransformation *C2DTransformMock::clone() const 
+C2DTransformation *C2DTransformMock::clone() const
 {
-	return NULL; 
+	return NULL;
 }
 
-bool C2DTransformMock::save(const std::string& , const std::string& ) const 
+bool C2DTransformMock::save(const std::string& , const std::string& ) const
 {
-	return false; 
+	return false;
 }
 
-P2DTransformation C2DTransformMock::upscale(const C2DBounds&) const 
+P2DTransformation C2DTransformMock::upscale(const C2DBounds&) const
 {
-	return P2DTransformation(); 
+	return P2DTransformation();
 }
 
 void C2DTransformMock::add(const C2DTransformation&)
@@ -59,85 +59,85 @@ void C2DTransformMock::update(float, const C2DFVectorfield&)
 {
 }
 
-size_t C2DTransformMock::degrees_of_freedom() const 
+size_t C2DTransformMock::degrees_of_freedom() const
 {
-	return m_size.x * m_size.y; 
+	return m_size.x * m_size.y;
 }
 
 void C2DTransformMock::set_identity()
 {
 }
 
-C2DFMatrix C2DTransformMock::derivative_at(int, int) const 
+C2DFMatrix C2DTransformMock::derivative_at(int, int) const
 {
-	return C2DFMatrix(C2DFVector(1.0, 2.0), C2DFVector(3.0, 4.0)); 
+	return C2DFMatrix(C2DFVector(1.0, 2.0), C2DFVector(3.0, 4.0));
 }
 
 void C2DTransformMock::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
 }
 
-float C2DTransformMock::get_max_transform() const 
+float C2DTransformMock::get_max_transform() const
 {
-	return sqrt(1.2 * 1.2 +  2.3 * 2.3); 
+	return sqrt(1.2 * 1.2 +  2.3 * 2.3);
 }
 
-const C2DBounds& C2DTransformMock::get_size() const 
+const C2DBounds& C2DTransformMock::get_size() const
 {
-	return m_size; 
+	return m_size;
 }
 
 
 gsl::DoubleVector  C2DTransformMock::get_parameters() const
 {
-	gsl::DoubleVector result(2); 
-	result[0] = -1.2; 
-	result[1] = -2.3; 
-	return result; 
+	gsl::DoubleVector result(2);
+	result[0] = -1.2;
+	result[1] = -2.3;
+	return result;
 }
 
 void C2DTransformMock::set_parameters(const gsl::DoubleVector& params)
 {
-	
+
 }
 
 
-float C2DTransformMock::pertuberate(C2DFVectorfield&) const 
+float C2DTransformMock::pertuberate(C2DFVectorfield&) const
 {
-	return 1.1; 
+	return 1.1;
 }
 
-C2DFVector C2DTransformMock::apply(const C2DFVector& x) const 
+C2DFVector C2DTransformMock::apply(const C2DFVector& x) const
 {
-	if (x.x == 0.0 && x.y == 0.0) 
+	if (x.x == 0.0 && x.y == 0.0)
 		return C2DFVector(-1.2, -2.3);
-	else 
+	else
 		return C2DFVector(0.0, 0.0);
 }
 
-C2DFVector C2DTransformMock::operator () (const C2DFVector& x) const 
+C2DFVector C2DTransformMock::operator () (const C2DFVector& x) const
 {
-	return x - apply(x); 
+	return x - apply(x);
 }
 
-float C2DTransformMock::get_jacobian(const C2DFVectorfield&, float delta) const 
+float C2DTransformMock::get_jacobian(const C2DFVectorfield&, float delta) const
 {
-	return delta;  
+	return delta;
 }
 
 P2DImage C2DTransformMock::apply(const C2DImage& src, const C2DInterpolatorFactory&) const
 {
-	return P2DImage(src.clone()); 
+	return P2DImage(src.clone());
 }
 
 float C2DTransformMock::divergence() const
 {
-	return 1.0f; 
+	return 1.0f;
 }
 
 float C2DTransformMock::curl() const
 {
-	return 2.0f; 
+	return 2.0f;
 }
 
 

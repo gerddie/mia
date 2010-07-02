@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2009 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -82,39 +82,39 @@ public:
 	virtual void translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const;
 	virtual C2DFMatrix derivative_at(int x, int y) const;
 	virtual float get_max_transform() const;
-	virtual gsl::DoubleVector get_parameters() const; 
-	virtual void set_parameters(const gsl::DoubleVector& params); 
+	virtual gsl::DoubleVector get_parameters() const;
+	virtual void set_parameters(const gsl::DoubleVector& params);
 	virtual void set_identity();
 	virtual float pertuberate(C2DFVectorfield& v) const;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
 	virtual C2DFVector operator () (const C2DFVector& x) const;
-	virtual float divergence() const; 
-	virtual float curl() const; 
-	float grad_divergence() const; 
-	float grad_curl() const; 
+	virtual float divergence() const;
+	virtual float curl() const;
+	float grad_divergence() const;
+	float grad_curl() const;
 
 	struct DCKernel {
-		DCKernel(const vector<double>& R20_X, 
-			 const vector<double>& R20_Y, 
-			 const vector<double>& R11_X, 
-			 const vector<double>& R11_Y, 
-			 const vector<double>& R02_X, 
-			 const vector<double>& R02_Y); 
-		
-		virtual double operator () (int xc, int yc, const C2DFVector& ci, const C2DFVector& cj) const = 0; 
-	protected: 
-		const vector<double>& _M_R20_X; 
-		const vector<double>& _M_R20_Y; 
-		const vector<double>& _M_R11_X; 
-		const vector<double>& _M_R11_Y; 
-		const vector<double>& _M_R02_X; 
-		const vector<double>& _M_R02_Y; 
-	}; 
+		DCKernel(const vector<double>& R20_X,
+			 const vector<double>& R20_Y,
+			 const vector<double>& R11_X,
+			 const vector<double>& R11_Y,
+			 const vector<double>& R02_X,
+			 const vector<double>& R02_Y);
 
-private:	
-	double get_grad_kernel_at(int x, int y, const DCKernel& kern)const; 
-	double get_grad_divergence_at(int x, int y) const; 
-	double get_grad_curl_at(int x, int y) const; 
+		virtual double operator () (int xc, int yc, const C2DFVector& ci, const C2DFVector& cj) const = 0;
+	protected:
+		const vector<double>& _M_R20_X;
+		const vector<double>& _M_R20_Y;
+		const vector<double>& _M_R11_X;
+		const vector<double>& _M_R11_Y;
+		const vector<double>& _M_R02_X;
+		const vector<double>& _M_R02_Y;
+	};
+
+private:
+	double get_grad_kernel_at(int x, int y, const DCKernel& kern)const;
+	double get_grad_divergence_at(int x, int y) const;
+	double get_grad_curl_at(int x, int y) const;
 	C2DBounds _M_range;
 	C2DFVectorfield _M_coefficients;
 	P2DInterpolatorFactory _M_ipf;
@@ -123,14 +123,14 @@ private:
 	mutable bool _M_interpolator_valid;
 	mutable SHARED_PTR(T2DInterpolator<C2DFVector>)  _M_interpolator;
 	mutable bool _M_matrices_valid;
-	mutable vector<double> _M_R20_X; 
-	mutable vector<double> _M_R20_Y; 
-	mutable vector<double> _M_R02_X; 
-	mutable vector<double> _M_R02_Y; 
-	mutable vector<double> _M_R11_X; 
-	mutable vector<double> _M_R11_Y; 
-	void evaluate_matrices() const; 
-		
+	mutable vector<double> _M_R20_X;
+	mutable vector<double> _M_R20_Y;
+	mutable vector<double> _M_R02_X;
+	mutable vector<double> _M_R02_Y;
+	mutable vector<double> _M_R11_X;
+	mutable vector<double> _M_R11_Y;
+	void evaluate_matrices() const;
+
 
 };
 

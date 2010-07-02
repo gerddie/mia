@@ -1,11 +1,11 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -29,16 +29,16 @@
 NS_MIA_BEGIN
 
 class C2DDivCurlMatrix {
-public: 
-	C2DDivCurlMatrix(const C2DBounds& size, const CBSplineKernel* kernel); 
-	~C2DDivCurlMatrix(); 
-	double multiply(const C2DFVectorfield& coefficients) const; 
-	C2DFVectorfield multiply_for_gradient(const C2DFVectorfield& coefficients) const; 
-	double value_at(const C2DFVectorfield& coefficients, size_t m, size_t n) const; 
-	C2DFVector derivative_at(const C2DFVectorfield& coefficients, size_t m, size_t n) const; 
-private: 
-	struct C2DDivCurlMatrixImpl* impl; 
-}; 
+public:
+	C2DDivCurlMatrix(const C2DBounds& size, const CBSplineKernel* kernel);
+	~C2DDivCurlMatrix();
+	double multiply(const C2DFVectorfield& coefficients) const;
+	C2DFVectorfield multiply_for_gradient(const C2DFVectorfield& coefficients) const;
+	double value_at(const C2DFVectorfield& coefficients, size_t m, size_t n) const;
+	C2DFVector derivative_at(const C2DFVectorfield& coefficients, size_t m, size_t n) const;
+private:
+	struct C2DDivCurlMatrixImpl* impl;
+};
 
 NS_MIA_END
 

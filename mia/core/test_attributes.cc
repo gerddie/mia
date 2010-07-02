@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -418,13 +418,13 @@ BOOST_AUTO_TEST_CASE( test_attribute_as_map_key )
 
 BOOST_AUTO_TEST_CASE( test_get_attribute_as_non_existent )
 {
-	CAttributedData data; 
-	BOOST_CHECK_THROW(data.get_attribute_as<int>("dummy"), invalid_argument); 
+	CAttributedData data;
+	BOOST_CHECK_THROW(data.get_attribute_as<int>("dummy"), invalid_argument);
 }
 
 BOOST_AUTO_TEST_CASE( test_get_attribute_as_wrong_type )
 {
-	CAttributedData data; 
-	data.set_attribute("dummy", PAttribute(new CFloatAttribute(1.0f))); 
-	BOOST_CHECK_THROW(data.get_attribute_as<int>("dummy"), bad_cast); 
+	CAttributedData data;
+	data.set_attribute("dummy", PAttribute(new CFloatAttribute(1.0f)));
+	BOOST_CHECK_THROW(data.get_attribute_as<int>("dummy"), bad_cast);
 }

@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -83,7 +83,7 @@ const char  type_str_float[6] = "float";
 const char  type_str_string[7] = "string";
 const char  type_str_bool[5] = "bool";
 
-template class TRangeParameter<unsigned int, type_str_uint>; 
+template class TRangeParameter<unsigned int, type_str_uint>;
 template class TRangeParameter<int, type_str_int>;
 template class TRangeParameter<float, type_str_float>;
 template class CTParameter<string,type_str_string>;

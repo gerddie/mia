@@ -1,13 +1,13 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2009
- * Max-Planck-Institute for Human Cognitive and Brain Science	
- * Max-Planck-Institute for Evolutionary Anthropology 
+ * Copyright (c) Leipzig, Madrid 2004-2010
+ * Max-Planck-Institute for Human Cognitive and Brain Science
+ * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -32,7 +32,7 @@
 NS_MIA_BEGIN
 
 /**
-   Base class for all optimizers 
+   Base class for all optimizers
 */
 
 struct EXPORT_CORE algorithm_type {
@@ -42,30 +42,30 @@ struct EXPORT_CORE algorithm_type {
 
 
 class EXPORT_CORE COptimizer : public CProductBase {
-public: 
+public:
 
 	static const char *type_descr;
-	
-	enum EOptimizerResults { or_failed=0,
-				 or_converged, 
-				 or_residum_low, 
-				 or_gradient_low,
-				 or_step_low, 
-				 or_max_iter, 
-				 or_keep_running }; 
 
-	virtual ~COptimizer(); 
-	EOptimizerResults run(CProblem& problem); 
-	const char *get_name() const; 
-	
-private: 
+	enum EOptimizerResults { or_failed=0,
+				 or_converged,
+				 or_residum_low,
+				 or_gradient_low,
+				 or_step_low,
+				 or_max_iter,
+				 or_keep_running };
+
+	virtual ~COptimizer();
+	EOptimizerResults run(CProblem& problem);
+	const char *get_name() const;
+
+private:
 
 	/**
 	   This one needs to be implemented to obtaine
 	*/
 	virtual EOptimizerResults do_run(CProblem& problem) const = 0;
-	virtual const char *do_get_name() const = 0; 
-}; 
+	virtual const char *do_get_name() const = 0;
+};
 
 typedef TFactory<COptimizer, COptimizer, algorithm_type> COptimizerPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<COptimizerPlugin> > COptimizerPluginPluginHandler;

@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
- * Copyright (c) 2007 Gert Wollny
- * 
+ * Copyright (c) Leipzig, Madrid 2004-2010
+ *
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -18,7 +18,7 @@
  *
  */
 
-/*! \brief basic type of a plugin handler 
+/*! \brief basic type of a plugin handler
 
 \file ssh.hh
 \author Gert Wollny <wollny at eva.mpg.de>
@@ -36,7 +36,7 @@
 
 NS_MIA_BEGIN
 
-INSTANCIATE_Image_Creator(C3DImage); 
+INSTANCIATE_Image_Creator(C3DImage);
 
 NS_MIA_END
 

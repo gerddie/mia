@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2004-2009 Gert Wollny <gert at die.upm.es>
- * Max-Planck-Institute for Human Cognitive and Brain Science	
+ * Copyright (c) Leipzig, Madrid 2004-2010
+ * Max-Planck-Institute for Human Cognitive and Brain Science
  * Biomedical Image Technologies, Universidad Politecnica de Madrid
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -43,8 +43,8 @@
 NS_BEGIN(IMAGEIO_3D_ANALYZE)
 
 NS_MIA_USE
-using namespace std; 
-using namespace boost; 
+using namespace std;
+using namespace boost;
 
 #pragma pack(1)
 struct analyze_header_key        /* header key     */
@@ -127,14 +127,14 @@ struct analyze_dsr
 #define DT_ALL                       255
 
 enum EAnaOrientation {
-	ao_transverse_unflipped = 0, 
-	ao_coronal_unflipped, 
-	ao_saggital_unflipped, 
-	ao_transverse_flipped, 
-	ao_coronal_flipped, 
-	ao_saggital_flipped, 
+	ao_transverse_unflipped = 0,
+	ao_coronal_unflipped,
+	ao_saggital_unflipped,
+	ao_transverse_flipped,
+	ao_coronal_flipped,
+	ao_saggital_flipped,
 	ao_unknown
-}; 
+};
 
 typedef struct
 {
@@ -145,15 +145,15 @@ typedef struct
 const TDictMap<EPixelType>::Table analyze_type_table[] = {
 	{"UNKNOWN",  it_unknown},
 	{"BINARY",   it_bit},
-	{"CHAR",     it_ubyte}, 
-	{"SHORT",    it_sshort}, 
-	{"INT",      it_sint}, 
-	{"FLOAT",    it_float}, 
-	{"COMPLEX",  it_unknown}, 
-	{"DOUBLE",   it_double}, 
-	{"RGB",      it_unknown}, 
+	{"CHAR",     it_ubyte},
+	{"SHORT",    it_sshort},
+	{"INT",      it_sint},
+	{"FLOAT",    it_float},
+	{"COMPLEX",  it_unknown},
+	{"DOUBLE",   it_double},
+	{"RGB",      it_unknown},
         {0, it_unknown}
-}; 
+};
 
 
 
@@ -163,50 +163,50 @@ extern "C" EXPORT CPluginBase *get_plugin_interface()
 }
 
 CAnalyze3DImageIOPlugin::CAnalyze3DImageIOPlugin():
-	C3DImageIOPlugin("analyze"), 
+	C3DImageIOPlugin("analyze"),
 	_M_type_table(analyze_type_table)
 {
-//	add_supported_type(it_bit); 
-	add_supported_type(it_ubyte); 
+//	add_supported_type(it_bit);
+	add_supported_type(it_ubyte);
 	add_supported_type(it_sshort);
 	add_supported_type(it_sint);
 	add_supported_type(it_float);
 	add_supported_type(it_double);
 }
 
-template <typename T> 
-inline void swap_32(T& v) 
+template <typename T>
+inline void swap_32(T& v)
 {
-        
-	char outp[4]; 
-	const char *inp = reinterpret_cast<const char *>(&v); 
-	outp[3] = inp[0]; 
-	outp[2] = inp[1]; 
-	outp[1] = inp[2]; 
-	outp[0] = inp[3]; 
-        memcpy(&v, outp, 4); 
+
+	char outp[4];
+	const char *inp = reinterpret_cast<const char *>(&v);
+	outp[3] = inp[0];
+	outp[2] = inp[1];
+	outp[1] = inp[2];
+	outp[0] = inp[3];
+        memcpy(&v, outp, 4);
 }
 
-template <typename T> 
-inline void swap_64(T& v) 
+template <typename T>
+inline void swap_64(T& v)
 {
-        
-        char outp[8]; 
-        const char *inp = reinterpret_cast<const char *>(&v); 
-        outp[7] = inp[0]; 
-        outp[6] = inp[1]; 
-        outp[5] = inp[2]; 
-        outp[4] = inp[3]; 
-        outp[3] = inp[4]; 
-        outp[2] = inp[5]; 
-        outp[1] = inp[6]; 
-        outp[0] = inp[7]; 
-        memcpy(&v, outp, 8); 
+
+        char outp[8];
+        const char *inp = reinterpret_cast<const char *>(&v);
+        outp[7] = inp[0];
+        outp[6] = inp[1];
+        outp[5] = inp[2];
+        outp[4] = inp[3];
+        outp[3] = inp[4];
+        outp[2] = inp[5];
+        outp[1] = inp[6];
+        outp[0] = inp[7];
+        memcpy(&v, outp, 8);
 }
 
-inline void swap_int16(short& v) 
+inline void swap_int16(short& v)
 {
-	v = (v << 8 ) | ( ( v >> 8 ) & 0xFF); 
+	v = (v << 8 ) | ( ( v >> 8 ) & 0xFF);
 }
 
 void  CAnalyze3DImageIOPlugin::swap_hdr(analyze_dsr& hdr) const
@@ -246,114 +246,114 @@ void  CAnalyze3DImageIOPlugin::swap_hdr(analyze_dsr& hdr) const
 }
 
 
-template <typename Iterator, int size> 
-struct __swap_endian 
+template <typename Iterator, int size>
+struct __swap_endian
 {
 	static void apply(Iterator /*begin*/, Iterator /*end*/) {
 		// standard is do nothing
 	}
-}; 
+};
 
-template <typename Iterator> 
-struct __swap_endian<Iterator, 2> 
+template <typename Iterator>
+struct __swap_endian<Iterator, 2>
 {
 	static void apply(Iterator begin, Iterator end) {
 		while (begin != end)  {
-			*begin =  (*begin << 8 ) | ( ( *begin >> 8 ) & 0xFF); 
-			++begin; 
+			*begin =  (*begin << 8 ) | ( ( *begin >> 8 ) & 0xFF);
+			++begin;
 		}
 	}
-}; 
+};
 
-template <typename Iterator> 
-struct __swap_endian<Iterator, 4> 
+template <typename Iterator>
+struct __swap_endian<Iterator, 4>
 {
 	static void apply(Iterator begin, Iterator end) {
 		while (begin != end)  {
-			swap_32(*begin); 
-			++begin; 
+			swap_32(*begin);
+			++begin;
 		}
 	}
-}; 
+};
 
-template <typename Iterator> 
-struct __swap_endian<Iterator, 8> 
+template <typename Iterator>
+struct __swap_endian<Iterator, 8>
 {
 	static void apply(Iterator begin, Iterator end) {
 		while (begin != end)  {
-                        swap_64(*begin); 
-			++begin; 
+                        swap_64(*begin);
+			++begin;
 		}
 	}
-}; 
+};
 
-template <typename T> 
+template <typename T>
 void swap_endian(T3DImage<T>& image)
 {
-	__swap_endian<typename T3DImage<T>::iterator , sizeof(T)>::apply(image.begin(), image.end()); 
+	__swap_endian<typename T3DImage<T>::iterator , sizeof(T)>::apply(image.begin(), image.end());
 }
 
 
-template <typename T, bool flipped> 
+template <typename T, bool flipped>
 struct do_read_image {
 	static C3DImage * apply(const C3DBounds& size, CInputFile& data_file, bool do_swap_endian) {
-		T3DImage<T> *result = new T3DImage<T>(size); 
+		T3DImage<T> *result = new T3DImage<T>(size);
 		if (fread(&(*result)(0,0,0), sizeof(T), result->size(), data_file) != result->size())
-			throw runtime_error("Analyze: unable to read data"); 
+			throw runtime_error("Analyze: unable to read data");
 		if (do_swap_endian)
-			swap_endian(*result); 
-		return result; 
+			swap_endian(*result);
+		return result;
 	}
-}; 
+};
 
-template <typename T> 
+template <typename T>
 struct do_read_image<T, true> {
 	static C3DImage * apply(const C3DBounds& size, CInputFile& data_file, bool do_swap_endian) {
-		T3DImage<T> *result = new T3DImage<T>(size); 
+		T3DImage<T> *result = new T3DImage<T>(size);
 		for (size_t z = size.z; z > 0; --z)
 			if (fread(&(*result)(0,0,z - 1), sizeof(T), result->size(), data_file) != result->size())
-				throw runtime_error("Analyze: unable to read data"); 
+				throw runtime_error("Analyze: unable to read data");
 		if (do_swap_endian)
-			swap_endian(*result); 
-		return result; 
+			swap_endian(*result);
+		return result;
 	}
-}; 
+};
 
 
 #if 0
-template <> 
+template <>
 struct do_read_image<bool> {
 	static C3DImage * apply(const C3DBounds& size, CInputFile& data_file, bool swap_endian) const {
-		
-		
-		T3DImage<bool> *result = new T3DImage<bool>(size); 
+
+
+		T3DImage<bool> *result = new T3DImage<bool>(size);
 		if (fread(&(*result)(0,0,0), sizeof(T), result->size(), data_file) != result->size())
-			throw runtime_error("Analyze: unable to read data"); 
+			throw runtime_error("Analyze: unable to read data");
 		if (swap_endian)
-			swap_endian(*result); 
-		return result; 
+			swap_endian(*result);
+		return result;
 	}
-}; 
+};
 
 #endif
 
-template <bool flipped> 
-C3DImage *CAnalyze3DImageIOPlugin::read_image(const C3DBounds& size, short datatype, CInputFile& data_file) const 
+template <bool flipped>
+C3DImage *CAnalyze3DImageIOPlugin::read_image(const C3DBounds& size, short datatype, CInputFile& data_file) const
 {
-	if (datatype & 128) 
-		cvwarn() << "Got an RGB indicator but I will ignore it\n"; 
+	if (datatype & 128)
+		cvwarn() << "Got an RGB indicator but I will ignore it\n";
 
 	switch (datatype & 0xFF) {
-//	case DT_BINARY       :return do_read_image<bool>::apply(size, data_file, _M_swap_endian); 
-	case DT_UNSIGNED_CHAR:return do_read_image<unsigned char, flipped>::apply(size, data_file, _M_swap_endian); 
-	case DT_SIGNED_SHORT :return do_read_image<signed short, flipped>::apply(size, data_file, _M_swap_endian); 
-	case DT_SIGNED_INT   :return do_read_image<signed int, flipped>::apply(size, data_file, _M_swap_endian); 
-	case DT_FLOAT        :return do_read_image<float, flipped>::apply(size, data_file, _M_swap_endian); 
-	case DT_DOUBLE       :return do_read_image<double, flipped>::apply(size, data_file, _M_swap_endian); 
-	default: 
-		stringstream msg; 
-		msg << "Analyze: unsupported image type:" << datatype; 
-		throw invalid_argument(msg.str()); 
+//	case DT_BINARY       :return do_read_image<bool>::apply(size, data_file, _M_swap_endian);
+	case DT_UNSIGNED_CHAR:return do_read_image<unsigned char, flipped>::apply(size, data_file, _M_swap_endian);
+	case DT_SIGNED_SHORT :return do_read_image<signed short, flipped>::apply(size, data_file, _M_swap_endian);
+	case DT_SIGNED_INT   :return do_read_image<signed int, flipped>::apply(size, data_file, _M_swap_endian);
+	case DT_FLOAT        :return do_read_image<float, flipped>::apply(size, data_file, _M_swap_endian);
+	case DT_DOUBLE       :return do_read_image<double, flipped>::apply(size, data_file, _M_swap_endian);
+	default:
+		stringstream msg;
+		msg << "Analyze: unsupported image type:" << datatype;
+		throw invalid_argument(msg.str());
 	}
 }
 
@@ -361,33 +361,33 @@ C3DImage *CAnalyze3DImageIOPlugin::read_image(const C3DBounds& size, short datat
 void set_typeinfo(analyze_image_dimension& dime, EPixelType pixel_type)
 {
 	switch (pixel_type) {
-	case it_ubyte: 
-		dime.datatype = DT_UNSIGNED_CHAR; 
-		dime.bitpix   = 8; 
+	case it_ubyte:
+		dime.datatype = DT_UNSIGNED_CHAR;
+		dime.bitpix   = 8;
 		break;
 
-	case it_sshort: 
-		dime.datatype = DT_SIGNED_SHORT; 
-		dime.bitpix   = 16; 
-		break;
-		
-	case it_sint: 
-		dime.datatype = DT_SIGNED_INT; 
-		dime.bitpix   = 32; 
+	case it_sshort:
+		dime.datatype = DT_SIGNED_SHORT;
+		dime.bitpix   = 16;
 		break;
 
-	case it_float: 
-		dime.datatype = DT_FLOAT; 
-		dime.bitpix   = 32; 
+	case it_sint:
+		dime.datatype = DT_SIGNED_INT;
+		dime.bitpix   = 32;
 		break;
-		
-	case it_double: 
-		dime.datatype = DT_DOUBLE; 
-		dime.bitpix   = 64; 
+
+	case it_float:
+		dime.datatype = DT_FLOAT;
+		dime.bitpix   = 32;
 		break;
-		
-	default: 
-		throw invalid_argument("Analyze: input pixel type not suporrted"); 
+
+	case it_double:
+		dime.datatype = DT_DOUBLE;
+		dime.bitpix   = 64;
+		break;
+
+	default:
+		throw invalid_argument("Analyze: input pixel type not suporrted");
 	}
 }
 
@@ -396,228 +396,228 @@ CAnalyze3DImageIOPlugin::PData CAnalyze3DImageIOPlugin::do_load(const string&  f
 	CInputFile f(filename);
 	if (!f){
 		cvdebug() << filename << ":" << strerror(errno) << "\n";
-		return PData(); 
+		return PData();
 	}
 
-	analyze_dsr hdr; 
+	analyze_dsr hdr;
 	if (fread(&hdr, 1, sizeof(analyze_dsr), f) != sizeof(analyze_dsr)) {
 		cvdebug() << filename.c_str() << ":" << "unable to read analyze header\n";
-		return PData(); 
+		return PData();
 	}
 
 	if (hdr.dime.dim[0] < 0 || hdr.dime.dim[0] > 15) {
-		swap_hdr(hdr); 
+		swap_hdr(hdr);
 		_M_swap_endian = true;
 	}else
-		_M_swap_endian = false; 
-	
+		_M_swap_endian = false;
+
 	if (hdr.dime.dim[0] < 0 || hdr.dime.dim[0] > 15) {
 		cvdebug() << filename.c_str() << ":" << "not an analyze  header\n";
-		return PData(); 
+		return PData();
 	}
 
 	if ((unsigned int)hdr.hk.sizeof_hdr < sizeof(hdr)) {
 		cvdebug() << filename.c_str() << ":" << "not an analyze  header\n";
-		return PData(); 
+		return PData();
 	}
-	
+
 	if (hdr.dime.dim[0] < 3) {
 		cvdebug() << filename.c_str() << ":" << "not a supported analyze  header\n";
-		return PData(); 
+		return PData();
 	}
-	
-	// get the size
-	C3DBounds size(hdr.dime.dim[1], hdr.dime.dim[2], hdr.dime.dim[3]); 
-	C3DFVector voxel(hdr.dime.pixdim[1], hdr.dime.pixdim[2], hdr.dime.pixdim[3]); 
-	cvdebug() << "Analyze: got voxel size " << voxel << "\n"; 
 
-	size_t num_img = 1; 
-	
+	// get the size
+	C3DBounds size(hdr.dime.dim[1], hdr.dime.dim[2], hdr.dime.dim[3]);
+	C3DFVector voxel(hdr.dime.pixdim[1], hdr.dime.pixdim[2], hdr.dime.pixdim[3]);
+	cvdebug() << "Analyze: got voxel size " << voxel << "\n";
+
+	size_t num_img = 1;
+
 	for(short int i = 4; i<hdr.dime.dim[0] ; ++i ) {
-		num_img *= hdr.dime.dim[i]; 
+		num_img *= hdr.dime.dim[i];
 	}
 	// open data fiele
-	const string data_file_name = filename.substr(0, filename.length() - 3) + string("img"); 
+	const string data_file_name = filename.substr(0, filename.length() - 3) + string("img");
 	CInputFile data_file(data_file_name);
-	if (!data_file) 
-		throw runtime_error(string("Analyze: unable to find data file:") + data_file_name ); 
+	if (!data_file)
+		throw runtime_error(string("Analyze: unable to find data file:") + data_file_name );
 
-	// create output list	
+	// create output list
 	PData result(new C3DImageVector());
-	
+
         // read data
 	while (num_img > 0) {
-		--num_img; 
-		E3DImageOrientation orientation = ior_unknown; 
-		bool unflipped = false; 
+		--num_img;
+		E3DImageOrientation orientation = ior_unknown;
+		bool unflipped = false;
 		switch ( hdr.hist.orient ) {
-		case ao_transverse_unflipped: unflipped = true; 
+		case ao_transverse_unflipped: unflipped = true;
 		case ao_transverse_flipped: orientation = ior_axial;
-			break; 
+			break;
 		case ao_coronal_unflipped: unflipped = true;
-		case ao_coronal_flipped:    orientation = ior_coronal; 
-			break; 
+		case ao_coronal_flipped:    orientation = ior_coronal;
+			break;
 		case ao_saggital_unflipped: unflipped = true;
-		case ao_saggital_flipped:    orientation = ior_saggital; 
-			break; 
+		case ao_saggital_flipped:    orientation = ior_saggital;
+			break;
 		default:
 			unflipped = true;
-			orientation = ior_unknown; 
+			orientation = ior_unknown;
 		}
-		C3DImage *img = unflipped ?  
-			read_image<false>(size, hdr.dime.datatype , data_file) 
-			: 
-			read_image<true>(size, hdr.dime.datatype , data_file); 
-		
-		P3DImage image(img); 
+		C3DImage *img = unflipped ?
+			read_image<false>(size, hdr.dime.datatype , data_file)
+			:
+			read_image<true>(size, hdr.dime.datatype , data_file);
+
+		P3DImage image(img);
 		image->set_voxel_size(voxel);
-		image->set_orientation(orientation);  
-		result->push_back(image); 
+		image->set_orientation(orientation);
+		result->push_back(image);
 	}
-		
+
 	// clean up
-	return result; 
-	
+	return result;
+
 }
 
 template <typename T>
 struct __do_fwrite {
 	static size_t apply(const T3DImage<T>& image, size_t a, size_t b, FILE *f) {
-		return fwrite(&image(0,0,0), a,  b, f); 
+		return fwrite(&image(0,0,0), a,  b, f);
 	}
-}; 
+};
 
 template <>
 struct __do_fwrite<bool> {
 	static size_t apply(const T3DImage<bool>& /*image*/, size_t /*a*/, size_t /*b*/, FILE */*f*/) {
-		throw invalid_argument("Analyze:Saving boolen not yet supported"); 
+		throw invalid_argument("Analyze:Saving boolen not yet supported");
 	}
-}; 
+};
 
 class CSavefilter: public TFilter<bool> {
-public: 
-	CSavefilter(COutputFile& f, analyze_image_dimension& dime): 
-		_M_f(f), 
+public:
+	CSavefilter(COutputFile& f, analyze_image_dimension& dime):
+		_M_f(f),
 		_M_dime(dime)
 		{
 		}
-	
-	template <class T> 
+
+	template <class T>
 	bool operator ()(const T3DImage<T>& image) const {
 		if (__do_fwrite<T>::apply(image, sizeof(T), image.size(), _M_f)!= image.size()) {
-			throw runtime_error(string("Analyze: Error writing file") + strerror(errno)); 
+			throw runtime_error(string("Analyze: Error writing file") + strerror(errno));
 		}
-		pair<typename T3DImage<T>::const_iterator, typename T3DImage<T>::const_iterator> 
-			image_minmax = ::boost::minmax_element(image.begin(), image.end()); 
-		if ( (int)*image_minmax.first < _M_dime.glmin) 
-			_M_dime.glmin = (int) *image_minmax.first; 
-		if ( (int)*image_minmax.second > _M_dime.glmax) 
-			_M_dime.glmax = (int) *image_minmax.second; 
-		return true; 
+		pair<typename T3DImage<T>::const_iterator, typename T3DImage<T>::const_iterator>
+			image_minmax = ::boost::minmax_element(image.begin(), image.end());
+		if ( (int)*image_minmax.first < _M_dime.glmin)
+			_M_dime.glmin = (int) *image_minmax.first;
+		if ( (int)*image_minmax.second > _M_dime.glmax)
+			_M_dime.glmax = (int) *image_minmax.second;
+		return true;
 	}
-	
-private: 
-	COutputFile& _M_f; 
-	analyze_image_dimension& _M_dime; 
+
+private:
+	COutputFile& _M_f;
+	analyze_image_dimension& _M_dime;
 };
 
 
-bool CAnalyze3DImageIOPlugin::save_data(const string& fname, const Data& data, analyze_image_dimension& dime) const 
+bool CAnalyze3DImageIOPlugin::save_data(const string& fname, const Data& data, analyze_image_dimension& dime) const
 {
 	const string data_file_name = fname.substr(0, fname.length() - 3) + string("img");
-	COutputFile data_file(data_file_name); 
+	COutputFile data_file(data_file_name);
 
 	if (!data_file)
-		throw runtime_error(string("Analyze: unable to open '") + data_file_name + "' for writing"); 
+		throw runtime_error(string("Analyze: unable to open '") + data_file_name + "' for writing");
 
-	CSavefilter saver(data_file, dime); 
+	CSavefilter saver(data_file, dime);
 	for (Data::const_iterator k = data.begin(); k != data.end(); ++k) {
-		mia::filter(saver, **k); 
+		mia::filter(saver, **k);
 	}
 
-	return true; 
+	return true;
 }
 
 bool CAnalyze3DImageIOPlugin::do_save(const string& fname, const Data& data) const
 {
-	analyze_dsr hdr; 
-	memset(&hdr, 0, sizeof(hdr)); 
-	
-	hdr.hk.sizeof_hdr =  sizeof(hdr); 
-	hdr.dime.dim[0] = 4; 
-	hdr.dime.dim[4] = data.size(); 
+	analyze_dsr hdr;
+	memset(&hdr, 0, sizeof(hdr));
 
-	if (data.empty()) 
-		throw invalid_argument("Trying to save empty image list"); 
-	
-	Data::const_iterator k = data.begin(); 
+	hdr.hk.sizeof_hdr =  sizeof(hdr);
+	hdr.dime.dim[0] = 4;
+	hdr.dime.dim[4] = data.size();
 
-	C3DBounds size = (*k)->get_size(); 
-	C3DFVector voxel = (*k)->get_voxel_size(); 
-	EPixelType pixel_type = (*k)->get_pixel_type(); 
-	
-	E3DImageOrientation orient = (*k)->get_orientation(); 
+	if (data.empty())
+		throw invalid_argument("Trying to save empty image list");
+
+	Data::const_iterator k = data.begin();
+
+	C3DBounds size = (*k)->get_size();
+	C3DFVector voxel = (*k)->get_voxel_size();
+	EPixelType pixel_type = (*k)->get_pixel_type();
+
+	E3DImageOrientation orient = (*k)->get_orientation();
 
 	switch (orient) {
-	case ior_axial: 
-			hdr.hist.orient = ao_transverse_unflipped; 
-			break; 
-	case ior_coronal: 
+	case ior_axial:
+			hdr.hist.orient = ao_transverse_unflipped;
+			break;
+	case ior_coronal:
 			hdr.hist.orient = ao_coronal_unflipped;
-			break; 
+			break;
 	case ior_saggital:
 			hdr.hist.orient = ao_saggital_unflipped;
-			break; 
+			break;
 	default:
 		hdr.hist.orient = ao_unknown;
 	}
-	
+
 	while (k != data.end()) {
-		if (size != (*k)->get_size() || 
+		if (size != (*k)->get_size() ||
 		    pixel_type != (*k)->get_pixel_type() ||
 			voxel != (*k)->get_voxel_size() ) {
-			throw invalid_argument("analyze only support images series of same size and type"); 
+			throw invalid_argument("analyze only support images series of same size and type");
 		}
-		++k; 
+		++k;
 	}
-	
-	k = data.begin(); 
-	
-	hdr.dime.dim[1] = size.x; 
-	hdr.dime.dim[2] = size.y; 
-	hdr.dime.dim[3] = size.z; 
-	
-	hdr.dime.pixdim[1] = voxel.x; 
-	hdr.dime.pixdim[2] = voxel.y; 
-	hdr.dime.pixdim[3] = voxel.z; 
 
-	cvdebug() << voxel << "\n"; 
+	k = data.begin();
 
-	hdr.hk.extents = 16384; 
-	hdr.hk.regular = 'r'; 
-	set_typeinfo(hdr.dime, pixel_type); 
+	hdr.dime.dim[1] = size.x;
+	hdr.dime.dim[2] = size.y;
+	hdr.dime.dim[3] = size.z;
 
-	hdr.dime.glmin = numeric_limits<int>::max(); 
-	save_data(fname, data, hdr.dime); 
-	
-	COutputFile hdr_file(fname); 
-	
-	if (!hdr_file) 
+	hdr.dime.pixdim[1] = voxel.x;
+	hdr.dime.pixdim[2] = voxel.y;
+	hdr.dime.pixdim[3] = voxel.z;
+
+	cvdebug() << voxel << "\n";
+
+	hdr.hk.extents = 16384;
+	hdr.hk.regular = 'r';
+	set_typeinfo(hdr.dime, pixel_type);
+
+	hdr.dime.glmin = numeric_limits<int>::max();
+	save_data(fname, data, hdr.dime);
+
+	COutputFile hdr_file(fname);
+
+	if (!hdr_file)
 		throw runtime_error(string("Analyze: unable to open '") + fname + "' for writing");
-	
+
 	if (fwrite(&hdr, 1, sizeof(hdr), hdr_file) != sizeof(hdr))
 		throw runtime_error(string("Analyze: error writing header '") + fname);
-	return true; 
+	return true;
 }
 
 void CAnalyze3DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
 {
-	map.insert(pair<string,string>(".hdr", get_name())); 
+	map.insert(pair<string,string>(".hdr", get_name()));
 }
 
 const string CAnalyze3DImageIOPlugin::do_get_descr() const
 {
-	return "analyze image IO"; 
+	return "analyze image IO";
 }
 
 NS_END

@@ -1,11 +1,11 @@
 /*  -*- mia-c++ -*-
- * Copyright (c) 2004-2006
- * Max-Planck-Institute for Human Cognitive and Brain Science	
- * 2007 Gert Wollny 
+ * Copyright (c) Leipzig, Madrid 2004-2010
+ * Max-Planck-Institute for Human Cognitive and Brain Science
+ * 2007 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -48,45 +48,45 @@
 NS_BEGIN(ns_3d_io_inria)
 
 NS_MIA_USE
-using namespace std; 
-using namespace boost; 
+using namespace std;
+using namespace boost;
 
 enum EDataType {dt_float, dt_unsigned, dt_signed};
 
 struct SHeader {
-	C3DBounds size; 
-	C3DFVector voxel; 
-	int dim; 
-	EDataType type; 
-	int bpp; 
-	string scale; 
-	bool lowendian; 
+	C3DBounds size;
+	C3DFVector voxel;
+	int dim;
+	EDataType type;
+	int bpp;
+	string scale;
+	bool lowendian;
 	SHeader();
 };
 SHeader::SHeader():
-	size(0,0,0), 
+	size(0,0,0),
 	voxel(1.0,1.0,1.0),
-	dim(3), 
-	type(dt_unsigned), 
-	bpp(8), 
-	scale("1**0"), 
+	dim(3),
+	type(dt_unsigned),
+	bpp(8),
+	scale("1**0"),
 	lowendian(true)
 {
-	TRACE("SHeader::SHeader"); 
+	TRACE("SHeader::SHeader");
 }
 
 
 class CInria3DImageIOPlugin : public C3DImageIOPlugin {
 public:
 	CInria3DImageIOPlugin();
-private: 
+private:
 
 	virtual PData do_load(const string&  filename) const;
 	virtual bool do_save(const string& fname, const Data& data) const;
 	virtual void do_add_suffixes(multimap<string, string>& map) const;
-	virtual const string do_get_descr() const; 
+	virtual const string do_get_descr() const;
 };
-	
+
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
 	return new CInria3DImageIOPlugin();
@@ -99,8 +99,8 @@ CInria3DImageIOPlugin::CInria3DImageIOPlugin():
 
 //	add_property(io_plugin_property_canpipe);
 
-	add_supported_type(it_ubyte); 
- 	add_supported_type(it_sbyte); 
+	add_supported_type(it_ubyte);
+ 	add_supported_type(it_sbyte);
 	add_supported_type(it_ushort);
 	add_supported_type(it_sshort);
 	add_supported_type(it_uint);
@@ -116,73 +116,73 @@ typedef bool (*FTranslator)(const char *value, SHeader *h);
 static bool translate_xdim(const char *value, SHeader *h)
 {
 	h->size.x = atoi(value);
-	return h->size.x > 0; 
+	return h->size.x > 0;
 }
 
 static bool translate_ydim(const char *value, SHeader *h)
 {
 	h->size.y = atoi(value);
-	return h->size.y > 0; 
+	return h->size.y > 0;
 }
 
 static bool translate_zdim(const char *value, SHeader *h)
 {
 	h->size.z = atoi(value);
-	return h->size.z > 0; 
+	return h->size.z > 0;
 }
 
 static bool translate_vdim(const char *value, SHeader *h)
 {
 	h->dim = atoi(value);
-	return h->dim > 0; 
+	return h->dim > 0;
 }
 
 
 static bool translate_zvox(const char *value, SHeader *h)
 {
 	h->voxel.z = atof(value);
-	return h->voxel.z > 0; 
+	return h->voxel.z > 0;
 }
 
 static bool translate_xvox(const char *value, SHeader *h)
 {
 	h->voxel.x = atof(value);
-	return h->voxel.x > 0; 
+	return h->voxel.x > 0;
 }
 
 static bool translate_yvox(const char *value, SHeader *h)
 {
 	h->voxel.y = atof(value);
-	return h->voxel.y > 0; 
+	return h->voxel.y > 0;
 }
 
 static bool translate_type(const char *value, SHeader *h)
 {
 	if (!strncmp(value, "unsigned fixed",14)) {
-		h->type = dt_unsigned; 
-		return true; 
+		h->type = dt_unsigned;
+		return true;
 	}
 	if (!strncmp(value, "signed fixed",12)) {
-		h->type = dt_signed; 
-		return true; 
+		h->type = dt_signed;
+		return true;
 	}
 	if (!strncmp(value, "float",5)) {
-		h->type = dt_float; 
-		return true; 
+		h->type = dt_float;
+		return true;
 	}
-	return false; 
+	return false;
 }
 
 struct SluEndian {
-	const char *cpu; 
-	int size; 
-	bool lowendian; 
+	const char *cpu;
+	int size;
+	bool lowendian;
 };
 
 static bool translate_bpp(const char *value, SHeader *h)
 {
 	h->bpp = atoi(value);
-	return h->bpp > 0; 
+	return h->bpp > 0;
 }
 
 const SluEndian lu_endian[] ={
@@ -196,27 +196,27 @@ const SluEndian lu_endian[] ={
 
 
 
-static bool translate_endian(const char *value, SHeader *h)	
+static bool translate_endian(const char *value, SHeader *h)
 {
-	const SluEndian *lu = lu_endian; 
+	const SluEndian *lu = lu_endian;
 	while (lu->cpu) {
 		if (!strncmp(lu->cpu, value, lu->size)) {
-			h->lowendian = lu->lowendian; 
-			return true; 
+			h->lowendian = lu->lowendian;
+			return true;
 		}
-		++lu; 
+		++lu;
 	}
-	return false; 
+	return false;
 }
 
 static bool translate_scale(const char *value, SHeader *h)
 {
 	h->scale = string(value);
-	return true; 
+	return true;
 }
 
 struct Slut {
-	const char *key; 
+	const char *key;
 	FTranslator translate;
 };
 
@@ -235,17 +235,17 @@ const Slut lut[] = {
 	{ 0,0}
 };
 
-bool store_info(const char *key, const char *value, SHeader *h) 
+bool store_info(const char *key, const char *value, SHeader *h)
 {
-	assert(value); 
-	assert(h); 
-	const Slut *lu = lut; 
+	assert(value);
+	assert(h);
+	const Slut *lu = lut;
 	while (lu->key) {
 		if (!strcmp(lu->key, key))
 			return lu->translate(value, h);
-		++lu; 
+		++lu;
 	}
-	return false; 
+	return false;
 }
 
 template <class T>
@@ -253,14 +253,14 @@ bool load_image(T3DImage<T>& image, const C3DFVector& voxel, FILE *f)
 {
 	size_t load_size =  image.size();
 	image.set_voxel_size(voxel);
-	return load_size == fread(&image(0,0,0), sizeof(T), load_size, f); 
+	return load_size == fread(&image(0,0,0), sizeof(T), load_size, f);
 }
 
 static void swap(char& a, char& b)
 {
-	char c = a; 
-	a = b; 
-	b = c; 
+	char c = a;
+	a = b;
+	b = c;
 }
 
 
@@ -269,11 +269,11 @@ static bool my_endianess()
 	typedef union {
 		char c[2];
 		short s;
-	} helpme; 
-	
-	helpme test; 
-	
-	test.s = 0x0001; 
+	} helpme;
+
+	helpme test;
+
+	test.s = 0x0001;
 	return test.c[0];
 }
 
@@ -281,179 +281,179 @@ template <class Image>
 void handle_endian(Image& image, bool lowendian)
 {
 	if (lowendian == my_endianess())
-		return; 
-	
-	
+		return;
+
+
 	typename Image::iterator b = image.begin();
 	typename Image::iterator e = image.end();
-	
+
 	typedef union  {
 		char s[sizeof(typename Image::value_type)];
-		typename Image::value_type v; 
-	} shuffle; 
-	
-	
-	
+		typename Image::value_type v;
+	} shuffle;
+
+
+
 	switch (sizeof(typename Image::value_type)) {
 	case 16:
 		while (b != e) {
-			shuffle s; 
+			shuffle s;
 			s.v = *b;
 			swap(s.s[0], s.s[1]);
-			*b = s.v; 
+			*b = s.v;
 		}
-		break; 
-	case 32:		
+		break;
+	case 32:
 		while (b != e) {
-			shuffle s; 
+			shuffle s;
 			s.v = *b;
 			swap(s.s[0], s.s[3]);
 			swap(s.s[1], s.s[2]);
-			*b = s.v; 
-			++b; 
+			*b = s.v;
+			++b;
 		}
-		break; 
-	case 64:	
+		break;
+	case 64:
 		while (b != e) {
-			 
-			shuffle s; 
+
+			shuffle s;
 			s.v = *b;
-			
+
 			swap(s.s[0],s.s[7]);
 			swap(s.s[1],s.s[6]);
 			swap(s.s[2],s.s[5]);
 			swap(s.s[3],s.s[4]);
-			
-			*b = s.v; 
-			
-			++b; 
+
+			*b = s.v;
+
+			++b;
 		}
-		break; 
+		break;
 		// default:
 	}
 }
 
 CInria3DImageIOPlugin::PData CInria3DImageIOPlugin::do_load(const string&  filename)const
 {
-	SHeader image_info; 
+	SHeader image_info;
 	CInputFile f(filename);
 	if (!f){
 		cvdebug() << filename.c_str() << ":" << strerror(errno) << "\n";
-		return PData(); 
+		return PData();
 	}
-	
+
 	char header[256];
-	
+
 	if (fgets(header, 256, f) == NULL) {
 		perror(filename.c_str());
-		return PData(); 
+		return PData();
 	}
-	
-	if (strncmp(header, "#INRIMAGE-4#{", 13)) {
-		return PData(); 
-	}
-	
 
-		
+	if (strncmp(header, "#INRIMAGE-4#{", 13)) {
+		return PData();
+	}
+
+
+
 	while (fgets(header, 256, f)) {
 		char *split = strchr(header, '=');
 		if (split) {
-			*split = 0; 
-			++split; 
+			*split = 0;
+			++split;
 			if (!store_info(header, split, &image_info)) {
-				cverr() << "unknown component in header:" << header << ":" << split << "\n"; 
-				return PData(); 
+				cverr() << "unknown component in header:" << header << ":" << split << "\n";
+				return PData();
 			}
 		}else{
 			if ( !strncmp(header, "##}", 3 ) )
-				break; 
+				break;
 		}
 	}
 
 	if (image_info.dim != 1) {
-		cvdebug() << "Not a scalar image, try loading as vector field" << "\n"; 
-		return PData(); 
+		cvdebug() << "Not a scalar image, try loading as vector field" << "\n";
+		return PData();
 	}
-	
+
 	PData result(new C3DImageVector());
 
 	switch (image_info.type) {
 	case dt_signed:
-		cvdebug() << "INRIA: load signed \n"; 
+		cvdebug() << "INRIA: load signed \n";
 		switch (image_info.bpp) {
 		case  8: {
-			cvdebug() << " 8 bit \n"; 
+			cvdebug() << " 8 bit \n";
 			C3DSBImage *image = new C3DSBImage(image_info.size);
-			SHARED_PTR(C3DImage) pimage(image); 
+			SHARED_PTR(C3DImage) pimage(image);
 			if (load_image(*image, image_info.voxel, f))
 				result->push_back(pimage);
 		}break;
 		case 16:{
-			cvdebug() << " 16 bit \n"; 
+			cvdebug() << " 16 bit \n";
 			C3DSSImage *image = new C3DSSImage(image_info.size);
-			SHARED_PTR(C3DImage) pimage(image); 
+			SHARED_PTR(C3DImage) pimage(image);
 			if (load_image(*image, image_info.voxel, f)) {
 				handle_endian(*image, image_info.lowendian);
 				result->push_back(pimage);
 			}
-		}break; 
+		}break;
 		case 32: {
-			cvdebug() << " 32 bit \n"; 
+			cvdebug() << " 32 bit \n";
 			C3DSIImage *image = new C3DSIImage(image_info.size);
 			SHARED_PTR(C3DImage) pimage(image);
 			if (load_image(*image, image_info.voxel, f)) {
 				handle_endian(*image, image_info.lowendian);
 				result->push_back(pimage);
 			}
-		}break; 
+		}break;
 		default:
-			cverr() << image_info.bpp << " bit signed images not supported" << "\n"; 
-		} break; 
+			cverr() << image_info.bpp << " bit signed images not supported" << "\n";
+		} break;
 	case dt_unsigned:
 		switch (image_info.bpp) {
-			cvdebug() << "INRIA: load unsigned \n"; 
+			cvdebug() << "INRIA: load unsigned \n";
 		case  8: {
-			cvdebug() << " 8 bit \n"; 
+			cvdebug() << " 8 bit \n";
 			C3DUBImage *image = new C3DUBImage(image_info.size);
 			SHARED_PTR(C3DImage) pimage(image);
 			if (load_image(*image, image_info.voxel, f))
 				result->push_back(pimage);
 		}break;
 		case 16:{
-			cvdebug() << " 16 bit \n"; 
+			cvdebug() << " 16 bit \n";
 			C3DUSImage *image = new C3DUSImage(image_info.size);
 			SHARED_PTR(C3DImage) pimage(image);
 			if (load_image(*image, image_info.voxel, f)) {
 				handle_endian(*image, image_info.lowendian);
 				result->push_back(pimage);
 			}
-		}break; 
+		}break;
 		case 32: {
-			cvdebug() << " 32 bit \n"; 
+			cvdebug() << " 32 bit \n";
 			C3DUIImage *image = new C3DUIImage(image_info.size);
 			SHARED_PTR(C3DImage) pimage(image);
 			if (load_image(*image, image_info.voxel, f)) {
 				handle_endian(*image, image_info.lowendian);
 				result->push_back(pimage);
 			}
-		}break; 
+		}break;
 		default:
-			cverr() << image_info.bpp << " unsigned images not supported" << "\n"; 
-		} break; 
+			cverr() << image_info.bpp << " unsigned images not supported" << "\n";
+		} break;
 	case dt_float:
 		switch (image_info.bpp) {
 		case 32: {
-			cvdebug() << "INRIA: load float \n"; 
+			cvdebug() << "INRIA: load float \n";
 			C3DFImage *image = new C3DFImage(image_info.size);
 			SHARED_PTR(C3DImage) pimage(image);
 			if (load_image(*image, image_info.voxel, f)) {
 				handle_endian(*image, image_info.lowendian);
 				result->push_back(pimage);
 			}
-		}break; 
+		}break;
 
 		case 64:{
-			cvdebug() << "INRIA: load double \n"; 
+			cvdebug() << "INRIA: load double \n";
 			C3DDImage *image = new C3DDImage(image_info.size);
 			SHARED_PTR(C3DImage) pimage(image);
 			if (load_image(*image, image_info.voxel, f)) {
@@ -462,125 +462,125 @@ CInria3DImageIOPlugin::PData CInria3DImageIOPlugin::do_load(const string&  filen
 			}
 		}break;
 		default:
-			cverr() << image_info.bpp << " bit float images not supported" << "\n"; 
-		}break; 
+			cverr() << image_info.bpp << " bit float images not supported" << "\n";
+		}break;
 	default:
-		cverr() << "unknown image type" << "\n"; 
+		cverr() << "unknown image type" << "\n";
 	}
 
 	cvdebug() << " got " << result->size() <<" image(s)\n";
-	
+
 	if (result->size() > 0)
-		return result; 
-	
-	return PData(); 
+		return result;
+
+	return PData();
 }
 
 template <typename T>
 struct saver {
 	static bool apply(const T3DImage<T>& image, COutputFile& f) {
-		C3DFVector voxel = image.get_voxel_size(); 
-		
-		stringstream os; 
-		os << "#INRIMAGE-4#{" << "\n"; 
-		os << "XDIM=" << image.get_size().x << "\n"; 
-		os << "YDIM=" << image.get_size().y << "\n"; 
-		os << "ZDIM=" << image.get_size().z << "\n"; 		
-		os << "VDIM=1" << "\n"; 
-		os << "VX=" << voxel.x << "\n"; 
-		os << "VY=" << voxel.y << "\n"; 
+		C3DFVector voxel = image.get_voxel_size();
+
+		stringstream os;
+		os << "#INRIMAGE-4#{" << "\n";
+		os << "XDIM=" << image.get_size().x << "\n";
+		os << "YDIM=" << image.get_size().y << "\n";
+		os << "ZDIM=" << image.get_size().z << "\n";
+		os << "VDIM=1" << "\n";
+		os << "VX=" << voxel.x << "\n";
+		os << "VY=" << voxel.y << "\n";
 		os << "VZ=" << voxel.z << "\n";
-		
+
 // replace this by a template specialisation
 
 		if (typeid(T) == typeid(double)) {
-			os << "TYPE=float" << "\n";  
+			os << "TYPE=float" << "\n";
 		}else if (typeid(T) == typeid(float)) {
-			os << "TYPE=float" << "\n";  
+			os << "TYPE=float" << "\n";
 		}else if (typeid(T) == typeid(unsigned int)) {
-			os << "TYPE=unsigned fixed" << "\n";  
+			os << "TYPE=unsigned fixed" << "\n";
 		}else if (typeid(T) == typeid(signed int)) {
-			os << "TYPE=signed fixed" << "\n";  
+			os << "TYPE=signed fixed" << "\n";
 		}else if (typeid(T) == typeid(unsigned short)) {
-			os << "TYPE=unsigned fixed" << "\n";  
+			os << "TYPE=unsigned fixed" << "\n";
 		}else if (typeid(T) == typeid(signed short)) {
-			os << "TYPE=signed fixed" << "\n";  
+			os << "TYPE=signed fixed" << "\n";
 		}else if (typeid(T) == typeid(unsigned char)) {
-			os << "TYPE=unsigned fixed" << "\n";  
+			os << "TYPE=unsigned fixed" << "\n";
 		}else if (typeid(T) == typeid(signed char)) {
-			os << "TYPE=signed fixed" << "\n";  
+			os << "TYPE=signed fixed" << "\n";
 		}else {
-			os << "TYPE=signed fixed" << "\n";  
+			os << "TYPE=signed fixed" << "\n";
 
 		}
-		os << "PIXSIZE="<< 8 * sizeof(T) << "\n";  
-		os << "SCALE=2**0" << "\n"; 
+		os << "PIXSIZE="<< 8 * sizeof(T) << "\n";
+		os << "SCALE=2**0" << "\n";
 		os << "CPU=" << (my_endianess() ? "pc": "sgi") << "\n";
 
-		while (os.str().size() < 252) os << "\n"; 
-		os << "##}\n" << "\n"; 
-		
+		while (os.str().size() < 252) os << "\n";
+		os << "##}\n" << "\n";
+
 		if (fwrite(os.str().c_str(), 1, 256, f) != 256) {
-			cverr() << "CInriaSaver:" << strerror(errno) << "\n"; 
-			return false; 
+			cverr() << "CInriaSaver:" << strerror(errno) << "\n";
+			return false;
 		}
 		if (fwrite(&image[0],sizeof(T), image.size(), f) != image.size()) {
-			cverr() << "CInriaSaver:" << strerror(errno) << "\n"; 
-			return false; 
+			cverr() << "CInriaSaver:" << strerror(errno) << "\n";
+			return false;
 		}
-		return true; 
+		return true;
 
 	}
-}; 
+};
 
 template <>
 struct saver<bool> {
 	static bool apply(const T3DImage<bool>& /*image*/, COutputFile& /*f*/) {
-		throw invalid_argument("INRIA images don't support bit images\n"); 
+		throw invalid_argument("INRIA images don't support bit images\n");
 
 	}
-}; 
+};
 
 class CInriaSaver: public TFilter<bool> {
-public: 
-	CInriaSaver(COutputFile& f): 
+public:
+	CInriaSaver(COutputFile& f):
 		_M_f(f)
 	{
 	}
-	
-	template <class T> 
+
+	template <class T>
 	bool operator ()(const T3DImage<T>& image) const
 	{
-		return saver<T>::apply(image, _M_f); 
+		return saver<T>::apply(image, _M_f);
 	}
 
-	
-private: 
-	COutputFile& _M_f; 
+
+private:
+	COutputFile& _M_f;
 };
 
 bool CInria3DImageIOPlugin::do_save(string const&  filename, const C3DImageVector& data) const
 {
 	if (data.size() != 1) {
-		cverr() << "CInria3DImageIO::save: support only 1 image\n"; 
-		return false; 
+		cverr() << "CInria3DImageIO::save: support only 1 image\n";
+		return false;
 	}
-	
+
 	COutputFile f(filename);
-	
+
 	if (!f) {
 		cverr() << filename.c_str() << ":" << strerror(errno) << "\n";
-		return false; 
+		return false;
 	}
-	
+
 	CInriaSaver s(f);
-	
+
 	return filter(s, **data.begin());
 }
 
 void CInria3DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
 {
-	map.insert(pair<string,string>(".inr", get_name())); 
+	map.insert(pair<string,string>(".inr", get_name()));
 }
 
 const string  CInria3DImageIOPlugin::do_get_descr() const

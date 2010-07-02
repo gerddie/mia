@@ -1,9 +1,9 @@
 /* -*- mia-c++  -*-
- * Copyright (c) 2007 Gert Wollny <gert dot wollny at acm dot org>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -35,50 +35,50 @@
 #include <mia/2d/2dvfio.hh>
 
 NS_MIA_USE
-using namespace std; 
-using namespace boost; 
+using namespace std;
+using namespace boost;
 using namespace boost::unit_test;
-namespace bfs = ::boost::filesystem; 
+namespace bfs = ::boost::filesystem;
 
 static void handler_setup()
 {
-	std::list< bfs::path> searchpath; 
-	searchpath.push_back(bfs::path(".")); 
-	
+	std::list< bfs::path> searchpath;
+	searchpath.push_back(bfs::path("."));
+
 	C2DImageIOPluginHandler::set_search_path(searchpath);
 	C2DVFIOPluginHandler::set_search_path(searchpath);
 }
 
 static void test_2dimage_plugin_handler()
 {
-	const C2DImageIOPluginHandler::Instance& handler = C2DImageIOPluginHandler::instance(); 
-	BOOST_REQUIRE(handler.size() == 2); 
+	const C2DImageIOPluginHandler::Instance& handler = C2DImageIOPluginHandler::instance();
+	BOOST_REQUIRE(handler.size() == 2);
 	BOOST_REQUIRE(handler.get_plugin_names() == "datapool exr ");
 }
 
 static void test_2dvf_plugin_handler()
 {
-	const C2DVFIOPluginHandler::Instance& handler = C2DVFIOPluginHandler::instance(); 
-	BOOST_REQUIRE(handler.size() == 2); 
+	const C2DVFIOPluginHandler::Instance& handler = C2DVFIOPluginHandler::instance();
+	BOOST_REQUIRE(handler.size() == 2);
 	BOOST_REQUIRE(handler.get_plugin_names() == "datapool exr ");
 }
 
-extern void add_2dvfio_tests(test_suite* suite); 
+extern void add_2dvfio_tests(test_suite* suite);
 
-bool init_unit_test_suite( ) 
+bool init_unit_test_suite( )
 {
 
 
-	handler_setup(); 
-	
-	test_suite *suite = &framework::master_test_suite(); 
+	handler_setup();
+
+	test_suite *suite = &framework::master_test_suite();
 
 	suite->add( BOOST_TEST_CASE( &test_2dimage_plugin_handler));
-	suite->add( BOOST_TEST_CASE( &test_2dimageio_plugins)); 	
-	
-	suite->add( BOOST_TEST_CASE( &test_2dvf_plugin_handler )); 
+	suite->add( BOOST_TEST_CASE( &test_2dimageio_plugins));
+
+	suite->add( BOOST_TEST_CASE( &test_2dvf_plugin_handler ));
 	//add_2dvfio_tests(test);
-	return true; 
+	return true;
 }
 
 int BOOST_TEST_CALL_DECL

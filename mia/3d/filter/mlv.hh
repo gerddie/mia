@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
- * Copyright (c) 2007-2009 Gert Wollny <gert at die.upm.es>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Biomedical Image Technologies, Universidad Politecnica de Madrid
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -26,37 +26,37 @@
 NS_BEGIN(mlv_3dimage_filter)
 
 class C3DMLVImageFilter: public mia::C3DFilter {
-	int _M_l; 
-	int _M_kh; 
+	int _M_l;
+	int _M_kh;
 public:
 	C3DMLVImageFilter(int hw);
 
 	template <typename T>
 	typename mia::C3DFilter::result_type operator () (const mia::T3DImage<T>& data) const ;
 
-private: 
+private:
 	template <typename T>
-	T get(const mia::C3DFImage& mu, const mia::C3DFImage& sigma, 
+	T get(const mia::C3DFImage& mu, const mia::C3DFImage& sigma,
 					int x, int y, int z, T ref) const;
 
 	template <typename InputIterator>
-	void run_sub(InputIterator begin, InputIterator end,  int cy, int cz, 
-		     mia::C3DFImage& mu, mia::C3DFImage& sigma, 
-		     mia::C3DFImage& n, std::vector<float>& buffer, const std::vector<float>& eins)const; 
-		
+	void run_sub(InputIterator begin, InputIterator end,  int cy, int cz,
+		     mia::C3DFImage& mu, mia::C3DFImage& sigma,
+		     mia::C3DFImage& n, std::vector<float>& buffer, const std::vector<float>& eins)const;
+
 	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
 
 };
 
 class C3DMLVImageFilterFactory: public mia::C3DFilterPlugin {
-public: 
+public:
 	C3DMLVImageFilterFactory();
-private: 
+private:
 
 	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
-	virtual const std::string do_get_descr() const; 
+	virtual const std::string do_get_descr() const;
 	virtual bool  do_test() const;
-	int _M_hw; 
+	int _M_hw;
 };
 
 

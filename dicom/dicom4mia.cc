@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2007-2009 Gert Wollny <gert dot wollny at acm dot org>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -39,75 +39,75 @@
 
 NS_MIA_BEGIN
 
-using namespace std; 
+using namespace std;
 
-typedef struct { 
-	const char *const skey; 
+typedef struct {
+	const char *const skey;
 	DcmTagKey key;
-	bool ismetadata; 
-	bool required; 
-} SLookupInit; 
+	bool ismetadata;
+	bool required;
+} SLookupInit;
 
 const SLookupInit lookup_init[] = {
-	{IDStudyDescription, DCM_StudyDescription, false, true}, 
+	{IDStudyDescription, DCM_StudyDescription, false, true},
 	{IDSeriesDescription, DCM_SeriesDescription, false, true},
-	{IDModality, DCM_Modality, false, true}, 
-	{IDSeriesNumber, DCM_SeriesNumber, false, true}, 
-	{IDPatientPosition, DCM_PatientPosition, false, false}, 
-	{IDAcquisitionDate, DCM_AcquisitionDate, false, true}, 
-	{IDAcquisitionNumber, DCM_AcquisitionNumber, false, true}, 
-	{IDSmallestImagePixelValue, DCM_SmallestImagePixelValue, false, false}, 
-	{IDLargestImagePixelValue, DCM_LargestImagePixelValue, false, false}, 
-	{IDInstanceNumber, DCM_InstanceNumber, false, true}, 
-	{IDStudyID, DCM_StudyID, false, true}, 
-	{IDImageType, DCM_ImageType, false, true}, 
-	{IDSliceLocation, DCM_SliceLocation, false, true}, 
-	{IDPatientOrientation, DCM_PatientOrientation, false, false}, 
-	{IDMediaStorageSOPClassUID, DCM_MediaStorageSOPClassUID, true, true}, 
-	{IDSOPClassUID, DCM_SOPClassUID, false, false}, 
-	{IDTestValue, DcmTagKey(), false, false}, 
+	{IDModality, DCM_Modality, false, true},
+	{IDSeriesNumber, DCM_SeriesNumber, false, true},
+	{IDPatientPosition, DCM_PatientPosition, false, false},
+	{IDAcquisitionDate, DCM_AcquisitionDate, false, true},
+	{IDAcquisitionNumber, DCM_AcquisitionNumber, false, true},
+	{IDSmallestImagePixelValue, DCM_SmallestImagePixelValue, false, false},
+	{IDLargestImagePixelValue, DCM_LargestImagePixelValue, false, false},
+	{IDInstanceNumber, DCM_InstanceNumber, false, true},
+	{IDStudyID, DCM_StudyID, false, true},
+	{IDImageType, DCM_ImageType, false, true},
+	{IDSliceLocation, DCM_SliceLocation, false, true},
+	{IDPatientOrientation, DCM_PatientOrientation, false, false},
+	{IDMediaStorageSOPClassUID, DCM_MediaStorageSOPClassUID, true, true},
+	{IDSOPClassUID, DCM_SOPClassUID, false, false},
+	{IDTestValue, DcmTagKey(), false, false},
 	{NULL, DcmTagKey(), false, false}
-}; 
+};
 
 class LookupMap {
-public: 
-	typedef pair<DcmTagKey, bool> Key; 
+public:
+	typedef pair<DcmTagKey, bool> Key;
 
-	LookupMap(); 
-	Key find(const string& k) const; 
-	bool has_key(const string& k) const; 
-	
-	static const LookupMap& instance(); 
+	LookupMap();
+	Key find(const string& k) const;
+	bool has_key(const string& k) const;
 
-private: 
-	typedef map<string, Key > Map; 
-	Map _M_keylookup; 
-}; 
+	static const LookupMap& instance();
+
+private:
+	typedef map<string, Key > Map;
+	Map _M_keylookup;
+};
 
 
 struct CDicomReaderData {
 	DcmFileFormat dcm;
-	OFCondition status; 
-	
-	CDicomReaderData(); 
-	
-	Uint16 getUint16(const DcmTagKey &tagKey, bool required); 
-	
+	OFCondition status;
+
+	CDicomReaderData();
+
+	Uint16 getUint16(const DcmTagKey &tagKey, bool required);
+
 	string getAttribute(const string& key, bool required);
 
-	template <typename T> 
-	void getPixelData(T2DImage<T>& image); 
+	template <typename T>
+	void getPixelData(T2DImage<T>& image);
 
-	template <typename T> 
-	void getPixelData_LittleEndianImplicitTransfer(T2DImage<T>& image); 
+	template <typename T>
+	void getPixelData_LittleEndianImplicitTransfer(T2DImage<T>& image);
 
-	
-	C2DFVector getPixelSize(); 
-}; 
+
+	C2DFVector getPixelSize();
+};
 
 
 CDicomReader::CDicomReader(const char *filename):
-	impl(new CDicomReaderData()), 
+	impl(new CDicomReaderData()),
 	m_filename(filename)
 {
 	impl->status = impl->dcm.loadFile( filename );
@@ -115,49 +115,49 @@ CDicomReader::CDicomReader(const char *filename):
 
 CDicomReader::~CDicomReader()
 {
-	delete impl; 
+	delete impl;
 }
 
 bool CDicomReader::good() const
 {
-	return impl->status.good(); 
+	return impl->status.good();
 }
 
 int CDicomReader::rows() const
 {
-	return impl->getUint16(DCM_Rows, true); 
+	return impl->getUint16(DCM_Rows, true);
 }
 
 int CDicomReader::cols() const
 {
-	return impl->getUint16(DCM_Columns, true); 
+	return impl->getUint16(DCM_Columns, true);
 }
 
 C2DBounds CDicomReader::image_size()const
 {
-	return C2DBounds(impl->getUint16(DCM_Columns, true), 
-			 impl->getUint16(DCM_Rows, true)); 
-			 
+	return C2DBounds(impl->getUint16(DCM_Columns, true),
+			 impl->getUint16(DCM_Rows, true));
+
 }
 
 C2DFVector CDicomReader::get_pixel_size() const
 {
-	return impl->getPixelSize(); 
+	return impl->getPixelSize();
 }
 
 int CDicomReader::samples_per_pixel() const
 {
-	return impl->getUint16(DCM_SamplesPerPixel, true); 
+	return impl->getUint16(DCM_SamplesPerPixel, true);
 }
 
 int CDicomReader::bits_allocated() const
 {
-	return impl->getUint16(DCM_BitsAllocated, true); 
+	return impl->getUint16(DCM_BitsAllocated, true);
 }
 
 int CDicomReader::bits_used() const
 {
-	return impl->getUint16(DCM_BitsStored, true); 
+	return impl->getUint16(DCM_BitsStored, true);
 }
 
 string CDicomReader::get_attribute(const std::string& name, bool required)const
@@ -166,55 +166,55 @@ string CDicomReader::get_attribute(const std::string& name, bool required)const
 }
 
 
-void CDicomReader::add_attribute(C2DImage& image, const char *key, bool required) const 
+void CDicomReader::add_attribute(C2DImage& image, const char *key, bool required) const
 {
-	string value = get_attribute(key, required); 
+	string value = get_attribute(key, required);
 	if (!value.empty())
-		image.set_attribute(key, value); 
+		image.set_attribute(key, value);
 }
 
-template <typename T> 
-P2DImage CDicomReader::load_image()const 
+template <typename T>
+P2DImage CDicomReader::load_image()const
 {
-	C2DBounds size = this->image_size(); 
-	cvdebug() << "load slice of size " << size << "\n"; 
-	T2DImage<T> *result = new T2DImage<T>(size); 
-	P2DImage presult(result); 
-	
+	C2DBounds size = this->image_size();
+	cvdebug() << "load slice of size " << size << "\n";
+	T2DImage<T> *result = new T2DImage<T>(size);
+	P2DImage presult(result);
+
 	// get pixel data
-	impl->getPixelData(*result); 
+	impl->getPixelData(*result);
 
-	result->set_pixel_size(get_pixel_size()); 
+	result->set_pixel_size(get_pixel_size());
 
-	
-	const SLookupInit *attr_table = lookup_init; 
+
+	const SLookupInit *attr_table = lookup_init;
 	while (attr_table->skey) {
 		// copy some attributes
-		this->add_attribute(*result, attr_table->skey, attr_table->required); 
-		++attr_table; 
+		this->add_attribute(*result, attr_table->skey, attr_table->required);
+		++attr_table;
 	}
 
-	return presult; 
+	return presult;
 }
 
 P2DImage CDicomReader::get_image() const
 {
 	if (samples_per_pixel() != 1) {
 		THROW(invalid_argument, "CDicomReader: '"<< m_filename
-		      <<"' Image has more then one color channel"); 
+		      <<"' Image has more then one color channel");
 	}
-	int bbpa = bits_allocated(); 
-	int bbp  = bits_used(); 
+	int bbpa = bits_allocated();
+	int bbp  = bits_used();
 	if (bbp > bbpa) {
 		THROW(invalid_argument, "CDicomReader: '"<< m_filename
-		      <<"' Bogus image - more bits per pixel used then allocated"); 
+		      <<"' Bogus image - more bits per pixel used then allocated");
 	}
-	
+
 	if (bbpa == 16)
-		return load_image<unsigned short>(); 
-	
-	THROW(invalid_argument, "CDicomReader: '"<< m_filename 
-	      << "' don't support " << bbp << " bits per pixel (yet)"); 
+		return load_image<unsigned short>();
+
+	THROW(invalid_argument, "CDicomReader: '"<< m_filename
+	      << "' don't support " << bbp << " bits per pixel (yet)");
 }
 
 
@@ -225,38 +225,38 @@ CDicomReaderData::CDicomReaderData()
 
 Uint16 CDicomReaderData::getUint16(const DcmTagKey &tagKey, bool required)
 {
-	Uint16 value; 
+	Uint16 value;
 	OFCondition success = dcm.getDataset()->findAndGetUint16(tagKey, value);
-	
+
 	if (success.bad() && required){
-		THROW(runtime_error, "CDicom2DImageIOPlugin: unable to get value for '" 
-		      << tagKey << " ':" << status.text()); 
+		THROW(runtime_error, "CDicom2DImageIOPlugin: unable to get value for '"
+		      << tagKey << " ':" << status.text());
 	}
-	return value; 
+	return value;
 }
 
 string CDicomReaderData::getAttribute(const string& key, bool required)
 {
-	LookupMap::Key k = LookupMap::instance().find(key); 
-	
-	OFString value; 
-	OFCondition success = k.second  ? 
+	LookupMap::Key k = LookupMap::instance().find(key);
+
+	OFString value;
+	OFCondition success = k.second  ?
 		dcm.getMetaInfo()->findAndGetOFStringArray(k.first, value):
 		dcm.getDataset()->findAndGetOFStringArray(k.first, value);
-	
+
 	if (success.bad() && required) {
-		THROW(runtime_error, "DICOM read: Required value '" << key << "' not found"); 
+		THROW(runtime_error, "DICOM read: Required value '" << key << "' not found");
 	}
 
-	return string(value.data()); 
+	return string(value.data());
 }
 
-template <typename T> 
+template <typename T>
 void CDicomReaderData::getPixelData_LittleEndianImplicitTransfer(T2DImage<T>& image)
 {
 	OFCondition status = dcm.loadAllDataIntoMemory();
 	if (status.bad()) {
-		THROW(runtime_error, "DICOM: error loading pixel data:"<< status.text()); 
+		THROW(runtime_error, "DICOM: error loading pixel data:"<< status.text());
 	}
 
 	const Uint16 *values;
@@ -265,74 +265,74 @@ void CDicomReaderData::getPixelData_LittleEndianImplicitTransfer(T2DImage<T>& im
 	if (cnd.good()) {
 		if (image.size() != count) {
 			THROW(runtime_error, "bogus file, expect " << image.size() << " pixels, "
-			      << "but got data for " << count << " pixels"); 
+			      << "but got data for " << count << " pixels");
 		}
 		copy(values, values+count, image.begin());
 	}else {
-		THROW(runtime_error, "DICOM: required value PixelData:" << status.text()); 
-	}	
+		THROW(runtime_error, "DICOM: required value PixelData:" << status.text());
+	}
 }
 
-template <typename T> 
+template <typename T>
 void CDicomReaderData::getPixelData(T2DImage<T>& image)
 {
-	OFString of_transfer_syntax; 
+	OFString of_transfer_syntax;
 	OFCondition success = dcm.getMetaInfo()->findAndGetOFString(DCM_TransferSyntaxUID, of_transfer_syntax);
 	if (success.bad()) {
-		THROW(runtime_error, "Unable to determine transfer syntax"); 
+		THROW(runtime_error, "Unable to determine transfer syntax");
 	}
-	
-	string transfer_syntax(of_transfer_syntax.data()); 
-	
+
+	string transfer_syntax(of_transfer_syntax.data());
+
 	if (transfer_syntax == string(UID_LittleEndianImplicitTransferSyntax)) {
-		getPixelData_LittleEndianImplicitTransfer(image); 
+		getPixelData_LittleEndianImplicitTransfer(image);
 	}else if (transfer_syntax == string(UID_JPEGProcess14SV1TransferSyntax)) {
 		status = dcm.getDataset()->chooseRepresentation(EXS_LittleEndianExplicit, NULL);
 		OFCondition status = dcm.loadAllDataIntoMemory();
 		if (status.bad()) {
-			THROW(runtime_error, "DICOM: error loading pixel data:"<< status.text()); 
+			THROW(runtime_error, "DICOM: error loading pixel data:"<< status.text());
 		}
-		getPixelData_LittleEndianImplicitTransfer(image); 
+		getPixelData_LittleEndianImplicitTransfer(image);
 	}else {
-		THROW(invalid_argument, "Unsupported transfer syntax:'" << transfer_syntax << "'"); 
+		THROW(invalid_argument, "Unsupported transfer syntax:'" << transfer_syntax << "'");
 	}
 }
 
 C2DFVector CDicomReaderData::getPixelSize()
 {
-	OFString help; 
-	OFCondition success = dcm.getDataset()->findAndGetOFString(DCM_PixelSpacing, help, 0); 
+	OFString help;
+	OFCondition success = dcm.getDataset()->findAndGetOFString(DCM_PixelSpacing, help, 0);
 	if (success.bad()) {
-		THROW(runtime_error, "Required attribute 'PixelSpacing' not found"); 
+		THROW(runtime_error, "Required attribute 'PixelSpacing' not found");
 	}
-	C2DFVector result; 
-	
-	istringstream swidth(help.data());
-	swidth >> result.x; 
+	C2DFVector result;
 
-	success = dcm.getDataset()->findAndGetOFString(DCM_PixelSpacing, help, 1); 
+	istringstream swidth(help.data());
+	swidth >> result.x;
+
+	success = dcm.getDataset()->findAndGetOFString(DCM_PixelSpacing, help, 1);
 	if (success.bad()) {
-		THROW(runtime_error, "Required attribute 'PixelSpacing' not found"); 
+		THROW(runtime_error, "Required attribute 'PixelSpacing' not found");
 	}
-	istringstream sheight(help.data()); 
-	sheight >> result.y; 
-	
-	return result; 
+	istringstream sheight(help.data());
+	sheight >> result.y;
+
+	return result;
 }
 
 struct CDicomWriterData {
-	CDicomWriterData(const C2DImage& image); 
-	bool write(const char *filename); 
+	CDicomWriterData(const C2DImage& image);
+	bool write(const char *filename);
 	DcmFileFormat dcm;
-private: 
+private:
 	void setValueUint16(const DcmTagKey& key, int value);
-	void setValueString(const string& key, const string& value); 
-	void setValueString(const DcmTagKey& key, const string& value, bool meta); 
+	void setValueString(const string& key, const string& value);
+	void setValueString(const DcmTagKey& key, const string& value, bool meta);
 	void setSize(const C2DBounds& size);
-	void setPixelSpacing(const C2DFVector& value); 
-	void setValueStringIfKeyExists(const CAttributeMap::value_type& value); 
-	friend struct CDicomImageSaver; 
-}; 
+	void setPixelSpacing(const C2DFVector& value);
+	void setValueStringIfKeyExists(const CAttributeMap::value_type& value);
+	friend struct CDicomImageSaver;
+};
 
 struct CDicomImageSaver: public TFilter<bool> {
 	CDicomImageSaver(CDicomWriterData *_parent):
@@ -340,15 +340,15 @@ struct CDicomImageSaver: public TFilter<bool> {
 	{
 	}
 
-	template <typename T> 
+	template <typename T>
 	CDicomImageSaver::result_type operator ()(const T2DImage<T>& image)const;
-private: 
-	
-	CDicomWriterData *parent; 
+private:
+
+	CDicomWriterData *parent;
 };
 
 
-//add lowest and higest value 
+//add lowest and higest value
 
 template <typename T>
 struct pixel_trait {
@@ -356,7 +356,7 @@ struct pixel_trait {
 	enum { UseSize = 8 * sizeof(T)};
 	enum { supported = 0 };
 	static void copy_pixel_data(DcmDataset& /*dataset*/, const T2DImage<T>& /*image*/) {
-		assert(!"There is no code here"); 
+		assert(!"There is no code here");
 	}
 };
 
@@ -366,95 +366,95 @@ struct pixel_trait<unsigned short> {
 	enum { UseSize = 16};
 	enum { supported = 1};
 	static void copy_pixel_data(DcmDataset& dataset, const C2DUSImage& image) {
-		dataset.putAndInsertUint16Array(DCM_PixelData, (const Uint16*)&image(0,0), image.size()); 
+		dataset.putAndInsertUint16Array(DCM_PixelData, (const Uint16*)&image(0,0), image.size());
 	}
 };
 
-template <typename T> 
+template <typename T>
 CDicomImageSaver::result_type CDicomImageSaver::operator ()(const T2DImage<T>& image)const
 {
 	if (!pixel_trait<T>::supported) {
-		THROW(invalid_argument, "DICOM: unsupporrted pixel type"); 
+		THROW(invalid_argument, "DICOM: unsupporrted pixel type");
 	}
-	
-	parent->setValueUint16(DCM_BitsAllocated, pixel_trait<T>::AllocSize); 
-	parent->setValueUint16(DCM_BitsStored, pixel_trait<T>::UseSize); 
-	
-	pair<typename T2DImage<T>::const_iterator, typename T2DImage<T>::const_iterator> minmax = 
-		boost::minmax_element(image.begin(), image.end()); 
+
+	parent->setValueUint16(DCM_BitsAllocated, pixel_trait<T>::AllocSize);
+	parent->setValueUint16(DCM_BitsStored, pixel_trait<T>::UseSize);
+
+	pair<typename T2DImage<T>::const_iterator, typename T2DImage<T>::const_iterator> minmax =
+		boost::minmax_element(image.begin(), image.end());
 
 
-	parent->setValueUint16(DCM_SmallestImagePixelValue, *minmax.first); 
-	parent->setValueUint16(DCM_LargestImagePixelValue, *minmax.second); 
+	parent->setValueUint16(DCM_SmallestImagePixelValue, *minmax.first);
+	parent->setValueUint16(DCM_LargestImagePixelValue, *minmax.second);
 
 	pixel_trait<T>::copy_pixel_data(*parent->dcm.getDataset(), image);
-	return true; 
+	return true;
 }
 
 CDicomWriterData::CDicomWriterData(const C2DImage& image)
 {
-	setValueUint16(DCM_SamplesPerPixel, 1); 
+	setValueUint16(DCM_SamplesPerPixel, 1);
 	setSize(image.get_size());
-	setPixelSpacing(image.get_pixel_size()); 
-	
-	for(CAttributeMap::const_iterator i = image.get_attribute_list()->begin(); 
-	    i != image.get_attribute_list()->end(); ++i) 
+	setPixelSpacing(image.get_pixel_size());
+
+	for(CAttributeMap::const_iterator i = image.get_attribute_list()->begin();
+	    i != image.get_attribute_list()->end(); ++i)
 		setValueStringIfKeyExists(*i);
 
-	if (!image.has_attribute(IDMediaStorageSOPClassUID)) 
+	if (!image.has_attribute(IDMediaStorageSOPClassUID))
 		setValueString(IDMediaStorageSOPClassUID, "1.2.840.10008.5.1.4.1.1.4");
 
-	dcm.getMetaInfo()->putAndInsertString(DCM_TransferSyntaxUID, 
-					      UID_LittleEndianImplicitTransferSyntax); 
+	dcm.getMetaInfo()->putAndInsertString(DCM_TransferSyntaxUID,
+					      UID_LittleEndianImplicitTransferSyntax);
 
-	CDicomImageSaver saver(this); 
-	mia::filter(saver, image); 
-	
+	CDicomImageSaver saver(this);
+	mia::filter(saver, image);
+
 }
 
 void CDicomWriterData::setValueUint16(const DcmTagKey& key, int value)
 {
-	dcm.getDataset()->putAndInsertUint16(key, value); 
+	dcm.getDataset()->putAndInsertUint16(key, value);
 }
 
 void CDicomWriterData::setValueString(const DcmTagKey& key, const string& value, bool meta)
 {
-	if (meta) 
-		dcm.getMetaInfo()->putAndInsertString(key, value.c_str()); 
+	if (meta)
+		dcm.getMetaInfo()->putAndInsertString(key, value.c_str());
 	else
-		dcm.getDataset()->putAndInsertString(key, value.c_str()); 
+		dcm.getDataset()->putAndInsertString(key, value.c_str());
 }
 
 void CDicomWriterData::setValueString(const string& key, const string& value)
 {
-	LookupMap::Key k = LookupMap::instance().find(key); 
-	setValueString(k.first, value, k.second); 
+	LookupMap::Key k = LookupMap::instance().find(key);
+	setValueString(k.first, value, k.second);
 }
 
 void CDicomWriterData::setSize(const C2DBounds& size)
 {
-	setValueUint16(DCM_Rows, size.y); 
-	setValueUint16(DCM_Columns, size.x); 
+	setValueUint16(DCM_Rows, size.y);
+	setValueUint16(DCM_Columns, size.x);
 }
 
 void CDicomWriterData::setPixelSpacing(const C2DFVector& value)
 {
-	stringstream pixelspacing; 
-	pixelspacing << value.x << "\\" << value.y; 
-	setValueString(DCM_PixelSpacing, pixelspacing.str(), false);	
+	stringstream pixelspacing;
+	pixelspacing << value.x << "\\" << value.y;
+	setValueString(DCM_PixelSpacing, pixelspacing.str(), false);
 }
 
 void CDicomWriterData::setValueStringIfKeyExists(const CAttributeMap::value_type& value)
 {
-	if (LookupMap::instance().has_key(value.first)) 
-		setValueString(value.first, value.second->as_string()); 
+	if (LookupMap::instance().has_key(value.first))
+		setValueString(value.first, value.second->as_string());
 }
 
 bool CDicomWriterData::write(const char *filename)
 {
 	OFCondition status = dcm.saveFile(filename, EXS_LittleEndianImplicit,
 					  EET_UndefinedLength,EGL_withoutGL);
-	return status.good(); 
+	return status.good();
 }
 
 
@@ -465,72 +465,72 @@ CDicomWriter::CDicomWriter(const C2DImage& image):
 
 bool CDicomWriter::write(const char *filename) const
 {
-	return impl->write(filename); 
+	return impl->write(filename);
 }
 
 
 LookupMap::LookupMap()
 {
-	const SLookupInit *s = lookup_init; 
+	const SLookupInit *s = lookup_init;
 	while (s->skey) {
-		_M_keylookup[s->skey] = pair<DcmTagKey,bool>(s->key,s->ismetadata); 
-		++s; 
+		_M_keylookup[s->skey] = pair<DcmTagKey,bool>(s->key,s->ismetadata);
+		++s;
 	}
 }
 
 LookupMap::Key LookupMap::find(const string& k) const
 {
-	Map::const_iterator i = _M_keylookup.find(k); 
+	Map::const_iterator i = _M_keylookup.find(k);
 	// keys _must_ be in thelist, otherwise we have a problem
-	assert(i != _M_keylookup.end()); 	
-	return i->second; 
+	assert(i != _M_keylookup.end());
+	return i->second;
 }
 
 bool LookupMap::has_key(const string& k) const
 {
-	return _M_keylookup.find(k) != _M_keylookup.end(); 
+	return _M_keylookup.find(k) != _M_keylookup.end();
 }
 
 const LookupMap& LookupMap::instance()
 {
-	static LookupMap me; 
-	return me; 
+	static LookupMap me;
+	return me;
 }
 
 	// this is here only for testing
 CDicomReader::CDicomReader(struct CDicomReaderData *yeah):
-	impl(yeah), 
+	impl(yeah),
 	m_filename("internal")
 {
 }
 
 CDicomReader ugly_trick_writer_dcm_to_reader_dcm(CDicomWriter& writer)
 {
-	CDicomReaderData *yeah = new CDicomReaderData; 
-	yeah->dcm =  writer.impl->dcm; 
-	return CDicomReader(yeah); 
+	CDicomReaderData *yeah = new CDicomReaderData;
+	yeah->dcm =  writer.impl->dcm;
+	return CDicomReader(yeah);
 }
 
 
-const char * IDAcquisitionDate =   "AcquisitionDate"; 
-const char * IDAcquisitionNumber = "AcquisitionNumber"; 
-const char * IDImageType =         "ImageType"; 
-const char * IDInstanceNumber =    "InstanceNumber"; 
-const char * IDMediaStorageSOPClassUID= "MediaStorageSOPClassUID"; 
-const char * IDModality =          "Modality"; 
-const char * IDPatientOrientation ="PatientOrientation"; 
-const char * IDPatientPosition = "PatientPosition"; 
-const char * IDStudyDescription = "StudyDescription"; 
-const char * IDSamplesPerPixel = "IDSamplesPerPixel"; 
-const char * IDSeriesDescription = "SeriesDescription"; 
-const char * IDSeriesNumber = "SeriesNumber"; 
-const char * IDSliceLocation = "SliceLocation"; 
-const char * IDStudyID = "StudyID"; 
-const char * IDTestValue = "TestValue"; 
-const char * IDTransferSyntaxUID = "TransferSyntaxUID"; 
-const char * IDSOPClassUID = "SOPClassUID"; 
-const char * IDSmallestImagePixelValue = "SmallestImagePixelValue"; 
-const char * IDLargestImagePixelValue = "LargestImagePixelValue"; 
+const char * IDAcquisitionDate =   "AcquisitionDate";
+const char * IDAcquisitionNumber = "AcquisitionNumber";
+const char * IDImageType =         "ImageType";
+const char * IDInstanceNumber =    "InstanceNumber";
+const char * IDMediaStorageSOPClassUID= "MediaStorageSOPClassUID";
+const char * IDModality =          "Modality";
+const char * IDPatientOrientation ="PatientOrientation";
+const char * IDPatientPosition = "PatientPosition";
+const char * IDStudyDescription = "StudyDescription";
+const char * IDSamplesPerPixel = "IDSamplesPerPixel";
+const char * IDSeriesDescription = "SeriesDescription";
+const char * IDSeriesNumber = "SeriesNumber";
+const char * IDSliceLocation = "SliceLocation";
+const char * IDStudyID = "StudyID";
+const char * IDTestValue = "TestValue";
+const char * IDTransferSyntaxUID = "TransferSyntaxUID";
+const char * IDSOPClassUID = "SOPClassUID";
+const char * IDSmallestImagePixelValue = "SmallestImagePixelValue";
+const char * IDLargestImagePixelValue = "LargestImagePixelValue";
 
 
 NS_MIA_END

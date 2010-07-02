@@ -1,9 +1,9 @@
 /*  -*- mia-c++  -*-
- * Copyright (c) 2007 Gert Wollny <gert.wollny at acm.org>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -18,9 +18,9 @@
  */
 
 #ifdef WIN32
-#  define EXPORT_HANDLER __declspec(dllexport) 
+#  define EXPORT_HANDLER __declspec(dllexport)
 #else
-#  define EXPORT_HANDLER 
+#  define EXPORT_HANDLER
 #endif
 
 #include <mia/3d/cost.hh>
@@ -30,10 +30,10 @@
 
 NS_MIA_BEGIN
 
-template class EXPORT_HANDLER TCost<C3DImage, C3DFVectorfield>; 
+template class EXPORT_HANDLER TCost<C3DImage, C3DFVectorfield>;
 template class EXPORT_HANDLER TPlugin<C3DImage, cost_type>;
 template class EXPORT_HANDLER TFactory<C3DImageCost, C3DImage, cost_type>;
-template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin> >; 
+template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin> >;
 template class EXPORT_HANDLER TFactoryPluginHandler<C3DImageCostPlugin>;
 template class EXPORT_HANDLER TPluginHandler<C3DImageCostPlugin>;
 

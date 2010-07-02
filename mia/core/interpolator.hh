@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -69,7 +69,7 @@ public:
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const = 0;
 	virtual void get_derivative_weights(double x, std::vector<double>& weight, int degree) const = 0;
 
-	virtual double get_weight_at(double x, int degree) const; 
+	virtual double get_weight_at(double x, int degree) const;
 
 	/**
 	   \returns the poles of the spline
@@ -81,8 +81,8 @@ public:
 	*/
 	size_t size() const;
 
-	double get_nonzero_radius() const; 
-	
+	double get_nonzero_radius() const;
+
 protected:
 
 
@@ -124,7 +124,7 @@ class EXPORT_CORE CBSplineKernel2: public  CBSplineKernel{
 	CBSplineKernel2();
 	virtual void get_weights(double x, std::vector<double>& weight)const;
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	virtual double get_weight_at(double x, int degree) const; 
+	virtual double get_weight_at(double x, int degree) const;
 	virtual void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
 };
 
@@ -134,8 +134,8 @@ class EXPORT_CORE CBSplineKernel3: public  CBSplineKernel{
 	CBSplineKernel3();
 	virtual void get_weights(double x, std::vector<double>& weight)const;
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	virtual double get_weight_at(double x, int degree) const; 
-	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const; 
+	virtual double get_weight_at(double x, int degree) const;
+	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
 };
 
 /** implements a B-Spline kernel of degree 4 */
@@ -144,8 +144,8 @@ public:
 	CBSplineKernel4();
 	virtual void get_weights(double x, std::vector<double>& weight)const;
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	virtual double get_weight_at(double x, int degree) const; 
-	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const; 
+	virtual double get_weight_at(double x, int degree) const;
+	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
 };
 
 /** implements a B-Spline kernel of degree 5 */
@@ -154,8 +154,8 @@ public:
 	CBSplineKernel5();
 	virtual void get_weights(double x, std::vector<double>& weight)const;
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	virtual double get_weight_at(double x, int degree) const; 
-	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const; 
+	virtual double get_weight_at(double x, int degree) const;
+	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
 };
 
 /** implements a o-Moms kernel of degree 3 */
@@ -164,7 +164,7 @@ public:
 	CBSplineKernelOMoms3();
 	virtual void get_weights(double x, std::vector<double>& weight)const;
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const; 
+	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
 };
 
 NS_MIA_END

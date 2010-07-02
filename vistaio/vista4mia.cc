@@ -1,9 +1,9 @@
 /* -*- mia-c++  -*-
- * Copyright (c) 2007 Gert Wollny <gert dot wollny at acm dot org>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -23,12 +23,12 @@
 #include <stdexcept>
 
 
-using namespace std; 
-using namespace boost; 
+using namespace std;
+using namespace boost;
 
 
 NS_MIA_BEGIN
-void copy_attr_list(VAttrList target, const CAttributeMap& attributes); 
+void copy_attr_list(VAttrList target, const CAttributeMap& attributes);
 
 
 
@@ -55,7 +55,7 @@ VISTA4MIA_EXPORT void copy_attr_list(CAttributeMap& attributes, const VAttrList 
 	VFirstAttr(in_list, &pos);
 	while (VAttrExists(&pos)){
 		std::string name(VGetAttrName(&pos));
-		cvdebug() << "got " << name << " " << VGetAttrRepn(&pos) << "\n"; 
+		cvdebug() << "got " << name << " " << VGetAttrRepn(&pos) << "\n";
 		switch (VGetAttrRepn(&pos)) {
 		case VStringRepn:{
 			VString s;
@@ -75,25 +75,25 @@ VISTA4MIA_EXPORT void copy_attr_list(CAttributeMap& attributes, const VAttrList 
 		case VShortRepn:{
 			short f;
 			VGetAttrValue(&pos,NULL,VShortRepn,&f);
-			add_attribute(attributes, name, f); 
+			add_attribute(attributes, name, f);
 		}break;
 		case VLongRepn:{
-			long f; 
+			long f;
 			VGetAttrValue(&pos,NULL,VLongRepn,&f);
-			add_attribute(attributes, name, f); 
+			add_attribute(attributes, name, f);
 		}break;
 		case VUByteRepn:{
-			unsigned char f; 
+			unsigned char f;
 			VGetAttrValue(&pos,NULL,VUByteRepn,&f);
-			add_attribute(attributes, name, f); 
+			add_attribute(attributes, name, f);
 		}break;
 		case VSByteRepn:{
-			signed char f; 
+			signed char f;
 			VGetAttrValue(&pos,NULL,VSByteRepn,&f);
-			add_attribute(attributes, name, f); 
+			add_attribute(attributes, name, f);
 		}break;
 		case VBitRepn:{
-			VBit b; 
+			VBit b;
 			VGetAttrValue(&pos,NULL,VBitRepn,&b);
 			add_attribute(attributes, name, b);
 		}break;
@@ -107,9 +107,9 @@ VISTA4MIA_EXPORT void copy_attr_list(CAttributeMap& attributes, const VAttrList 
 
 VISTA4MIA_EXPORT void copy_attr_list(VAttrList target, const CAttributeMap& attributes)
 {
-	for (CAttributeMap::const_iterator i = attributes.begin(); 
+	for (CAttributeMap::const_iterator i = attributes.begin();
 	     i != attributes.end(); ++i) {
-		VSetAttr(target, i->first.c_str(), NULL, VStringRepn, i->second->as_string().c_str()); 
+		VSetAttr(target, i->first.c_str(), NULL, VStringRepn, i->second->as_string().c_str());
 	}
 }
 

@@ -1,10 +1,10 @@
 #
-# Copyright (c) Madrid 2008-2010 
+# Copyright (c) Leipzig, Madrid 2004-2010
 # BIT, ETSI Telecomunicacion, UPM
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -18,16 +18,16 @@
 #
 #
 
-SET(SCRIPTS 
-  mia-3dfft-get-reference.py  
+SET(SCRIPTS
+  mia-3dfft-get-reference.py
   mia-3dregister-to.py
   )
 
 
 SET(PYTHON_SRC mia_python.cc)
 
-INSTALL(FILES ${SCRIPTS} 
-  DESTINATION "bin" 
+INSTALL(FILES ${SCRIPTS}
+  DESTINATION "bin"
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
     )
 
@@ -40,7 +40,7 @@ if ( PYTHONLIBS_FOUND )
   FIND_PACKAGE(PythonInterp)
 
   INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
-  ADD_LIBRARY(mia MODULE ${PYTHON_SRC})  
+  ADD_LIBRARY(mia MODULE ${PYTHON_SRC})
   SET_TARGET_PROPERTIES(mia PROPERTIES PREFIX "")
   TARGET_LINK_LIBRARIES(mia ${mia3d}  ${Boost_PYTHON_LIBRARY} ${PYTHON_LIBRARIES} )
 

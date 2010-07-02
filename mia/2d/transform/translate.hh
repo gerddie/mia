@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -49,7 +49,7 @@ public:
 		const_iterator& operator ++();
 		const_iterator operator ++(int);
 
-		const C2DFVector operator *() const; 
+		const C2DFVector operator *() const;
 
 		friend EXPORT_2D bool operator == (const const_iterator& a, const const_iterator& b);
 		friend EXPORT_2D bool operator != (const const_iterator& a, const const_iterator& b);
@@ -78,20 +78,20 @@ public:
 	virtual size_t degrees_of_freedom() const;
 	virtual void update(float step, const C2DFVectorfield& a);
 	virtual C2DFMatrix derivative_at(int x, int y) const;
-	virtual gsl::DoubleVector get_parameters() const; 
-	virtual void set_parameters(const gsl::DoubleVector& params); 
+	virtual gsl::DoubleVector get_parameters() const;
+	virtual void set_parameters(const gsl::DoubleVector& params);
 	virtual void set_identity();
 	virtual float get_max_transform() const;
 	virtual float pertuberate(C2DFVectorfield& v) const;
 	virtual C2DFVector operator () (const C2DFVector& x) const;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
 	C2DFVector transform(const C2DFVector& x)const;
-	virtual float divergence() const; 
-	virtual float curl() const; 
-	float grad_divergence() const; 
-	float grad_curl() const; 
+	virtual float divergence() const;
+	virtual float curl() const;
+	float grad_divergence() const;
+	float grad_curl() const;
 private:
-	C2DFVector _M_transform; 
+	C2DFVector _M_transform;
 	C2DBounds _M_size;
 };
 

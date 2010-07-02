@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2010 Gert Wollny 
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -23,35 +23,35 @@
 
 NS_BEGIN(mia_2dcost_divcurl)
 
-using namespace mia; 
+using namespace mia;
 
 struct C2DDivCurlCostImpl {
 
-	C2DDivCurlCostImpl(float _divergence, float _curl); 
-	
-	float divergence; 
-	float curl; 
-	
-}; 
+	C2DDivCurlCostImpl(float _divergence, float _curl);
+
+	float divergence;
+	float curl;
+
+};
 
 C2DDivCurlCost::C2DDivCurlCost(float weight, float divergence, float curl):
 	C2DCostBase(weight)
 {
-	impl = new C2DDivCurlCostImpl(divergence, curl); 
+	impl = new C2DDivCurlCostImpl(divergence, curl);
 }
 
 C2DDivCurlCost::~C2DDivCurlCost()
 {
-	delete impl; 
+	delete impl;
 }
 
 double C2DDivCurlCost::do_evaluate(const C2DTransformation& t, C2DFVectorfield& force) const
 {
-	return 0.0; 
+	return 0.0;
 }
 
 C2DDivCurlCostImpl::C2DDivCurlCostImpl(float _divergence, float _curl):
-	divergence(_divergence), 
+	divergence(_divergence),
 	curl(_curl)
 {
 }

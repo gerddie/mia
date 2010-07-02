@@ -1,9 +1,9 @@
 /* -*- mia-c++  -*-
- * Copyright (c) 2007 Gert Wollny 
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -23,22 +23,22 @@
 NS_BEGIN(ngfnorm_2dimage_filter)
 
 class CNgfnorm: public mia::C2DFilter {
-public: 	
-	CNgfnorm(); 
+public:
+	CNgfnorm();
 
 	template <typename  T>
 	mia::C2DFilter::result_type operator () (const mia::T2DImage<T>& data) const;
 
-private: 
+private:
 	mia::C2DFilter::result_type do_filter(const mia::C2DImage& image) const;
 };
 
 
 class C2DNgfnormFilterPlugin: public mia::C2DFilterPlugin {
-public: 
+public:
 	C2DNgfnormFilterPlugin();
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
-	virtual const std::string do_get_descr()const; 
+	virtual const std::string do_get_descr()const;
 };
 
 NS_END

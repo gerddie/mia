@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2007 Gert Wollny <gert dot wollny at acm dot org>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -30,33 +30,33 @@
 NS_MIA_BEGIN
 
 /**
-   An interface class to put vector fields into something, IO plugins can understand. 
+   An interface class to put vector fields into something, IO plugins can understand.
 */
 
 class EXPORT_3D C3DIOVectorfield: public C3DFVectorfield, public CIOData {
-public: 
-	C3DIOVectorfield(); 
+public:
+	C3DIOVectorfield();
 
         /** Constructor to create empty Datafield if given size */
         C3DIOVectorfield(const C3DBounds& _Size);
-	
+
         /** copy - Constructor */
         C3DIOVectorfield(const C3DIOVectorfield& org);
 
 	/** copy from normal vectorfield constructor */
 	C3DIOVectorfield(const C3DFVectorfield& org);
 
-	C3DIOVectorfield *clone() const; 
+	C3DIOVectorfield *clone() const;
 
-}; 
+};
 
 struct io_3dvf_type {
 	typedef  C3DIOVectorfield type;
-	static const char *type_descr; 
-}; 
+	static const char *type_descr;
+};
 
 
-typedef TIOPlugin<io_3dvf_type> C3DVFIOPlugin; 
+typedef TIOPlugin<io_3dvf_type> C3DVFIOPlugin;
 typedef THandlerSingleton<TIOPluginHandler<C3DVFIOPlugin> > C3DVFIOPluginHandler;
 
 NS_MIA_END

@@ -1,9 +1,9 @@
 /* -*- mia-c++  -*-
- * Copyright (c) 2007-2009 Gert Wollny 
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -21,22 +21,22 @@
 NS_BEGIN(gradnorm_2dimage_filter)
 
 class CGradnorm: public mia::C2DFilter {
-public: 	
-	CGradnorm(); 
+public:
+	CGradnorm();
 
 	template <typename  T>
 	CGradnorm::result_type operator () (const mia::T2DImage<T>& data) const;
 
-private: 
+private:
 	CGradnorm::result_type do_filter(const mia::C2DImage& image) const;
 };
 
 
 class C2DGradnormFilterPlugin: public mia::C2DFilterPlugin {
-public: 
+public:
 	C2DGradnormFilterPlugin();
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
-	virtual const std::string do_get_descr()const; 
+	virtual const std::string do_get_descr()const;
 };
 
 NS_END

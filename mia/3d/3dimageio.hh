@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2007 Gert Wollny <gert dot wollny at acm dot org>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -31,26 +31,26 @@ NS_MIA_BEGIN
 
 
 /**
-   A class to interface  images with image IO plugins. 
+   A class to interface  images with image IO plugins.
 */
-class C3DImageVector: public std::vector< SHARED_PTR(C3DImage)> , 
+class C3DImageVector: public std::vector< SHARED_PTR(C3DImage)> ,
 		      public CIOData {
 public:
-	C3DImageVector *clone() const; 
-	
-}; 
+	C3DImageVector *clone() const;
+
+};
 
 struct EXPORT_3D io_3dimage_type {
 	typedef  C3DImageVector type;
-	static const char *type_descr; 
-}; 
+	static const char *type_descr;
+};
 
-typedef TIOPlugin<io_3dimage_type> C3DImageIOPlugin; 
+typedef TIOPlugin<io_3dimage_type> C3DImageIOPlugin;
 typedef TIOHandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> > C3DImageIOPluginHandler;
-typedef C3DImageIOPluginHandler::Instance::DataKey C3DImageDataKey; 
-typedef C3DImageIOPluginHandler::Instance::PData P3DImageVector; 
+typedef C3DImageIOPluginHandler::Instance::DataKey C3DImageDataKey;
+typedef C3DImageIOPluginHandler::Instance::PData P3DImageVector;
 
-P3DImageVector EXPORT_3D create_image3d_vector(P3DImage image); 
+P3DImageVector EXPORT_3D create_image3d_vector(P3DImage image);
 
 P3DImage load_image3d(const std::string& filename);
 bool save_image3d(const std::string& filename, P3DImage image);

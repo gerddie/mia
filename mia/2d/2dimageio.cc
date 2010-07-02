@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -56,9 +56,9 @@ template class EXPORT_2D TPluginHandler<C2DImageIOPlugin>;
 
 P2DImageVector EXPORT_2D create_image2d_vector(P2DImage image)
 {
-	P2DImageVector out_list_ptr(new C2DImageIOPluginHandler::Instance::Data); 
-	out_list_ptr->push_back(image); 
-	return out_list_ptr; 
+	P2DImageVector out_list_ptr(new C2DImageIOPluginHandler::Instance::Data);
+	out_list_ptr->push_back(image);
+	return out_list_ptr;
 }
 
 P2DImage load_image2d(const std::string& filename)

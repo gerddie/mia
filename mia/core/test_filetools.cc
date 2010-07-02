@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -44,55 +44,55 @@ BOOST_AUTO_TEST_CASE( test_get_filename_number_pattern_width )
 
 struct Fixture_filename_number_pattern {
 	void run(const string& name, const string& expect_base, const string& expect_suffix,
-		 size_t expect_width) const; 
-}; 
+		 size_t expect_width) const;
+};
 
 BOOST_FIXTURE_TEST_CASE( test_get_filename_number_pattern, Fixture_filename_number_pattern )
 {
-	run("data0000.png", "data", ".png", 4); 
-	run("ldata00000.v", "ldata", ".v", 5); 
-	run("ldata.v", "ldata", ".v", 0); 
-	run("ldata0.", "ldata", ".", 1); 
-	run("ldata0", "ldata", "", 1); 
-	
+	run("data0000.png", "data", ".png", 4);
+	run("ldata00000.v", "ldata", ".v", 5);
+	run("ldata.v", "ldata", ".v", 0);
+	run("ldata0.", "ldata", ".", 1);
+	run("ldata0", "ldata", "", 1);
+
 }
 
-void Fixture_filename_number_pattern::run(const string& name, const string& expect_base, 
+void Fixture_filename_number_pattern::run(const string& name, const string& expect_base,
 					  const string& expect_suffix, size_t expect_width) const
 {
-	string base; 
-	string suffix; 
-	size_t nwidth; 
-	nwidth = get_filename_number_pattern(name, base, suffix); 
-	BOOST_CHECK_EQUAL(nwidth, expect_width); 
-	BOOST_CHECK_EQUAL(base, expect_base); 
+	string base;
+	string suffix;
+	size_t nwidth;
+	nwidth = get_filename_number_pattern(name, base, suffix);
+	BOOST_CHECK_EQUAL(nwidth, expect_width);
+	BOOST_CHECK_EQUAL(base, expect_base);
 	BOOST_CHECK_EQUAL(suffix, expect_suffix);
 }
 
 
 struct Fixture_filename_split_pattern {
 	void run(const string& name, const string& expect_base, const string& expect_suffix,
-		 const string& expect_number) const; 
-}; 
+		 const string& expect_number) const;
+};
 
 BOOST_FIXTURE_TEST_CASE( test_split_filename_number_pattern, Fixture_filename_split_pattern )
 {
-	run("data0000.png", "data", ".png", "0000"); 
-	run("ldata00000.v", "ldata", ".v", "00000"); 
-	run("ldata.v", "ldata", ".v", ""); 
-	run("ldata0.", "ldata", ".", "0"); 
-	run("ldata0", "ldata", "", "0"); 
-	
+	run("data0000.png", "data", ".png", "0000");
+	run("ldata00000.v", "ldata", ".v", "00000");
+	run("ldata.v", "ldata", ".v", "");
+	run("ldata0.", "ldata", ".", "0");
+	run("ldata0", "ldata", "", "0");
+
 }
 
-void Fixture_filename_split_pattern::run(const string& name, const string& expect_base, 
+void Fixture_filename_split_pattern::run(const string& name, const string& expect_base,
 					  const string& expect_suffix, const string& expect_number) const
 {
-	string base; 
-	string suffix; 
-	string numbers; 
-	split_filename_number_pattern(name, base, suffix, numbers); 
-	BOOST_CHECK_EQUAL(numbers, expect_number); 
-	BOOST_CHECK_EQUAL(base, expect_base); 
+	string base;
+	string suffix;
+	string numbers;
+	split_filename_number_pattern(name, base, suffix, numbers);
+	BOOST_CHECK_EQUAL(numbers, expect_number);
+	BOOST_CHECK_EQUAL(base, expect_base);
 	BOOST_CHECK_EQUAL(suffix, expect_suffix);
 }

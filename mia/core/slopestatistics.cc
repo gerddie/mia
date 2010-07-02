@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2009 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -47,7 +47,7 @@ struct CSlopeStatisticsImpl {
 	std::pair<size_t, float>  get_first_peak() const;
 	std::pair<size_t, float>  get_second_peak() const;
 	std::pair<size_t, float>  get_perfusion_high_peak() const;
-	float get_mean_frequency() const; 
+	float get_mean_frequency() const;
 private:
 	void evaluate_curve_length() const;
 	void evaluate_range() const;
@@ -59,8 +59,8 @@ private:
 	mutable bool m_range_valid;
 	mutable bool m_perfusion_peak_valid;
 	mutable float m_range;
-	mutable float m_mean_freq; 
-	mutable bool m_mean_freq_valid; 
+	mutable float m_mean_freq;
+	mutable bool m_mean_freq_valid;
 
 	mutable std::pair<size_t, float>  m_first_peak;
 	mutable std::pair<size_t, float>  m_second_peak;
@@ -87,14 +87,14 @@ float CSlopeStatistics::get_curve_length() const
 
 float CSlopeStatistics::get_mean_frequency() const
 {
-	return impl->get_mean_frequency(); 
+	return impl->get_mean_frequency();
 }
 
 CSlopeStatisticsImpl::CSlopeStatisticsImpl(const vector<float>& series):
 	m_series(series),
 	m_curve_length_valid(false),
 	m_range_valid(false),
-	m_perfusion_peak_valid(false), 
+	m_perfusion_peak_valid(false),
 	m_mean_freq_valid(false)
 {
 }
@@ -150,22 +150,22 @@ std::pair<size_t, float>  CSlopeStatisticsImpl::get_perfusion_high_peak() const
 float CSlopeStatisticsImpl::get_mean_frequency() const
 {
 	if (!m_mean_freq_valid) {
-		m_mean_freq = 0.0; 
-		float sum_freq = 0.0; 
-		CFFT1D_R2C fft(m_series.size()); 
-		vector<CFFT1D_R2C::Complex> freq = fft.forward(m_series); 
-		int k = 1; 
-		for (vector<CFFT1D_R2C::Complex>::const_iterator i = 
+		m_mean_freq = 0.0;
+		float sum_freq = 0.0;
+		CFFT1D_R2C fft(m_series.size());
+		vector<CFFT1D_R2C::Complex> freq = fft.forward(m_series);
+		int k = 1;
+		for (vector<CFFT1D_R2C::Complex>::const_iterator i =
 			     freq.begin() + 1; i != freq.end(); ++i, ++k) {
-			const float n = norm<float>(*i); 
-			float snorm = sqrt(n); 
+			const float n = norm<float>(*i);
+			float snorm = sqrt(n);
 			m_mean_freq += k * snorm;
-			sum_freq += snorm; 
+			sum_freq += snorm;
 		}
-		m_mean_freq /= sum_freq; 
-		m_mean_freq_valid = true; 
+		m_mean_freq /= sum_freq;
+		m_mean_freq_valid = true;
 	}
-	return m_mean_freq; 
+	return m_mean_freq;
 }
 
 float CSlopeStatisticsImpl::get_range() const

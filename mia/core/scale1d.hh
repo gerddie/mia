@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -38,24 +38,24 @@ NS_MIA_BEGIN
 
 /**
    Class for scaling of one-dimensional arrays. For downscaling always a gaussian smoothing is used.
-   for upscaling, an interpolator is created by using the provided interpolator factory. 
+   for upscaling, an interpolator is created by using the provided interpolator factory.
 */
 
 class EXPORT_CORE C1DScalar {
 public:
-	/** 
-	    Create the scaler prividing the given interpolator factory. 
-	    \param ipf 
+	/**
+	    Create the scaler prividing the given interpolator factory.
+	    \param ipf
 	 */
 
 	C1DScalar(P1DInterpolatorFactory ipf);
 
 
 	/**
-	   Scaling operator. 
+	   Scaling operator.
 	   \param input input data
-	   \retval output when calling the function, the size of this vector mist be set to the requested  
-	   size. The path for down or upscaling is automatically selected. 
+	   \retval output when calling the function, the size of this vector mist be set to the requested
+	   size. The path for down or upscaling is automatically selected.
 	 */
 	template <typename T>
 	void operator () (const std::vector<T>& input, std::vector<T>& output) const;

@@ -1,9 +1,9 @@
 /* -*- mia-c++  -*-
- * Copyright (c) 2007-2010 Gert Wollny 
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -27,8 +27,8 @@
 
 #include <mia/2d/cost.hh>
 
-// the actual implementation is here, shared between 
-// 2d and 3d 
+// the actual implementation is here, shared between
+// 2d and 3d
 
 #define NS mia_2dcost_ssd
 
@@ -37,13 +37,13 @@
 NS_BEGIN(mia_2dcost_ssd)
 
 
-typedef CSSDCost<mia::C2DImageCost> C2DSSDCost; 
-template class CSSDCost<mia::C2DImageCost>; 
+typedef CSSDCost<mia::C2DImageCost> C2DSSDCost;
+template class CSSDCost<mia::C2DImageCost>;
 
 class C2DSSDCostPlugin: public TSSDCostPlugin<mia::C2DImageCostPlugin, C2DSSDCost> {
-private: 
-	virtual const std::string do_get_descr()const; 
-	virtual bool do_test() const; 
+private:
+	virtual const std::string do_get_descr()const;
+	virtual bool do_test() const;
 };
 
 NS_END

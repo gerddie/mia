@@ -1,11 +1,11 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -28,17 +28,17 @@
 
 NS_MIA_BEGIN
 
-extern const char *property_gradient; 
+extern const char *property_gradient;
 
 class CPropertyFlagHolder {
-public: 
+public:
 	bool has(const char *property) const;
 	void add(const char *property);
 
-	bool has_all_in(const CPropertyFlagHolder& testset)const; 
-private: 
+	bool has_all_in(const CPropertyFlagHolder& testset)const;
+private:
 	std::set<const char *> _M_properties;
-}; 
+};
 
 
 NS_MIA_END

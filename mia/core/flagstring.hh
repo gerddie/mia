@@ -1,11 +1,11 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -30,28 +30,28 @@
 NS_MIA_BEGIN
 
 class CFlagString {
-public: 
+public:
 	typedef struct {
-		char id; 
-		int  flag; 
-	} Table; 
-	
-	CFlagString(const Table table[]); 
+		char id;
+		int  flag;
+	} Table;
 
-	int get(const std::string& flags)const; 
+	CFlagString(const Table table[]);
 
-	const std::string get(int flags)const; 
+	int get(const std::string& flags)const;
 
-	const std::string get_flagnames()const; 
-	
-private: 
-	typedef std::map<char, int> TMap; 
-	typedef std::map<int, char> TBackMap; 
+	const std::string get(int flags)const;
 
-	TMap m_map; 
-	TBackMap m_backmap; 
-		
-}; 
+	const std::string get_flagnames()const;
+
+private:
+	typedef std::map<char, int> TMap;
+	typedef std::map<int, char> TBackMap;
+
+	TMap m_map;
+	TBackMap m_backmap;
+
+};
 
 NS_MIA_END
 #endif

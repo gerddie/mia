@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -30,7 +30,7 @@
 NS_MIA_BEGIN
 
 /**
-   given three points (0.0, y0), (1.0, y,1), (x, y2) evaluate  
+   given three points (0.0, y0), (1.0, y,1), (x, y2) evaluate
    \f$ r = arg(min (ax^2 + bx + c)) \forall r \in [min(0.0, x), max(1.0, x)] \f$
  */
 EXPORT_CORE double  min_ax2_bx_c(double x2, double y0, double y1, double y2);

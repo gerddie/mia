@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -39,9 +39,9 @@ const C3DBounds size(nx, ny, nz);
 struct ICA3DSeriesFixture {
 	ICA3DSeriesFixture();
 
-	
-	void check(const C3DFImage& mixed, const C3DFImage& expect); 
-	void check(const C3DFImage& mixed, float expect); 
+
+	void check(const C3DFImage& mixed, const C3DFImage& expect);
+	void check(const C3DFImage& mixed, float expect);
 protected:
 	vector<C3DFImage> image_set;
 	vector<float>     mean;
@@ -61,7 +61,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean, ICA3DSeriesFixture )
 	ica.run(3);
 
 	for (size_t i = 0; i < slices; ++i)
-		check(ica.get_mix(i), image_set[i]); 
+		check(ica.get_mix(i), image_set[i]);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_ica_imcomplete_mix, ICA3DSeriesFixture )
@@ -78,7 +78,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_imcomplete_mix, ICA3DSeriesFixture )
 		C3DFImage mixed = ica.get_incomplete_mix(i, skip);
 		BOOST_CHECK_EQUAL(mixed.get_size(), image_set[i].get_size());
 		BOOST_REQUIRE(mixed.get_size() ==image_set[i].get_size());
-		check(mixed, mean[i]); 		
+		check(mixed, mean[i]);
 	}
 }
 
@@ -89,8 +89,8 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_stripped_series_mean, ICA3DSeriesFixture 
 
 	ica.run(3);
 
-	for (size_t i = 0; i < slices; ++i) 
-		check(ica.get_mix(i), image_set[i]); 
+	for (size_t i = 0; i < slices; ++i)
+		check(ica.get_mix(i), image_set[i]);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp, ICA3DSeriesFixture )
@@ -99,8 +99,8 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp, ICA3DSeriesFixture )
 
 	ica.run(4);
 
-	for (size_t i = 0; i < slices; ++i) 		
-		check(ica.get_mix(i), image_set[i]); 
+	for (size_t i = 0; i < slices; ++i)
+		check(ica.get_mix(i), image_set[i]);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_stripped_and_normalized, ICA3DSeriesFixture )
@@ -108,11 +108,11 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_stripped_and_normalized, 
 	C3DImageSeriesICA ica(image_set, true);
 
 	ica.run(4);
-	ica.normalize(); 
-	ica.normalize_Mix(); 
+	ica.normalize();
+	ica.normalize_Mix();
 
-	for (size_t i = 0; i < slices; ++i) 
-		check(ica.get_mix(i), image_set[i]); 
+	for (size_t i = 0; i < slices; ++i)
+		check(ica.get_mix(i), image_set[i]);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized, ICA3DSeriesFixture )
@@ -120,10 +120,10 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized, ICA3DSeriesFi
 	C3DImageSeriesICA ica(image_set, false);
 
 	ica.run(4);
-	ica.normalize(); 
-	ica.normalize_Mix(); 
+	ica.normalize();
+	ica.normalize_Mix();
 
-	for (size_t i = 0; i < slices; ++i) 
+	for (size_t i = 0; i < slices; ++i)
 		check(ica.get_mix(i), image_set[i]);
 }
 
@@ -132,10 +132,10 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized2, ICA3DSeriesF
 	C3DImageSeriesICA ica(image_set, false);
 
 	ica.run(4);
-	ica.normalize_Mix(); 
-	ica.normalize(); 
+	ica.normalize_Mix();
+	ica.normalize();
 
-	for (size_t i = 0; i < slices; ++i) 
+	for (size_t i = 0; i < slices; ++i)
 		check(ica.get_mix(i), image_set[i]);
 }
 
@@ -144,9 +144,9 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_mix_normalized, ICA3DSeri
 	C3DImageSeriesICA ica(image_set, false);
 
 	ica.run(4);
-	ica.normalize_Mix(); 
-	for (size_t i = 0; i < slices; ++i) 
-		check(ica.get_mix(i), image_set[i]); 
+	ica.normalize_Mix();
+	for (size_t i = 0; i < slices; ++i)
+		check(ica.get_mix(i), image_set[i]);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_none, ICA3DSeriesFixture )
@@ -154,31 +154,31 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_none, ICA3DSeriesFixture 
 	C3DImageSeriesICA ica(image_set, false);
 
 	ica.run(4);
-	for (size_t i = 0; i < slices; ++i) 
+	for (size_t i = 0; i < slices; ++i)
 		check(ica.get_mix(i), image_set[i]);
 }
 
 
 
-BOOST_AUTO_TEST_CASE( test_ica_mean_substract ) 
+BOOST_AUTO_TEST_CASE( test_ica_mean_substract )
 {
-	C3DBounds size(2,3,1); 	
-	float init_image1[6] = {1, 2, 3, 4, 5, 6}; 
+	C3DBounds size(2,3,1);
+	float init_image1[6] = {1, 2, 3, 4, 5, 6};
 	float init_image2[6] = {7, 6, 5, 4, 3, 2};
-	
 
-	vector<C3DFImage> images; 
-	images.push_back(C3DFImage(size, init_image1)); 
-	images.push_back(C3DFImage(size, init_image2)); 
-	
-	C3DImageSeriesICA ica(images, true); 
 
-	const C3DFImage& mean = ica.get_mean_image(); 
-	
-	BOOST_CHECK_EQUAL(mean.get_size(), size); 
+	vector<C3DFImage> images;
+	images.push_back(C3DFImage(size, init_image1));
+	images.push_back(C3DFImage(size, init_image2));
 
-	for(C3DFImage::const_iterator m = mean.begin(); m != mean.end(); ++m) 
-		BOOST_CHECK_CLOSE(*m, 4.0, 0.001); 
+	C3DImageSeriesICA ica(images, true);
+
+	const C3DFImage& mean = ica.get_mean_image();
+
+	BOOST_CHECK_EQUAL(mean.get_size(), size);
+
+	for(C3DFImage::const_iterator m = mean.begin(); m != mean.end(); ++m)
+		BOOST_CHECK_CLOSE(*m, 4.0, 0.001);
 }
 
 

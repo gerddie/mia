@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010, Gert Wollny
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -8,7 +8,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -40,41 +40,41 @@
 
 NS_MIA_BEGIN
 
-using boost::lambda::_1; 
-using boost::lambda::_2; 
+using boost::lambda::_1;
+using boost::lambda::_2;
 
 C2DCostBase::C2DCostBase(float weight):
 	_M_weight(weight)
 {
-	
+
 }
 
 double C2DCostBase::evaluate(const C2DTransformation& t, C2DFVectorfield& force) const
 {
-	assert(t.get_size() == force.get_size()); 
-	C2DFVectorfield f(force.get_size()); 
-	
-	const double result = _M_weight * do_evaluate(t, f); 
-	transform(f.begin(), f.end(), force.begin(), force.begin(),( _1 * _M_weight) + _2); 
-	
-	return result; 
+	assert(t.get_size() == force.get_size());
+	C2DFVectorfield f(force.get_size());
+
+	const double result = _M_weight * do_evaluate(t, f);
+	transform(f.begin(), f.end(), force.begin(), force.begin(),( _1 * _M_weight) + _2);
+
+	return result;
 }
 
 C2DCostBasePlugin::C2DCostBasePlugin(const char *const name):
-	TFactory<C2DCostBase, cost_data2d_type, cost_type>(name), 
+	TFactory<C2DCostBase, cost_data2d_type, cost_type>(name),
 	_M_weight(1.0f)
 {
-	add_parameter("weight", new CFloatParameter(_M_weight, 0.0, 
-						    std::numeric_limits<float>::max(), false, 
-						    "cost function weight")); 
+	add_parameter("weight", new CFloatParameter(_M_weight, 0.0,
+						    std::numeric_limits<float>::max(), false,
+						    "cost function weight"));
 }
 
 float C2DCostBasePlugin::get_weight() const
 {
-	return _M_weight; 
+	return _M_weight;
 }
 
-const char *cost_data2d_type::type_descr = "2d"; 
+const char *cost_data2d_type::type_descr = "2d";
 
 template class EXPORT_HANDLER TPlugin<cost_data2d_type, cost_type>;
 template class EXPORT_HANDLER TFactory<C2DCostBase, cost_data2d_type, cost_type>;

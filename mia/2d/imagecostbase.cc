@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2010, Gert Wollny
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -26,23 +26,23 @@
 NS_MIA_BEGIN
 
 
-C2DImageCostBase::C2DImageCostBase(const C2DImageDataKey& src_key, const C2DImageDataKey& ref_key, 
+C2DImageCostBase::C2DImageCostBase(const C2DImageDataKey& src_key, const C2DImageDataKey& ref_key,
 				   P2DInterpolatorFactory ipf,
 				   float weight):
-	C2DCostBase(weight), 
-	_M_src_key(src_key), 
+	C2DCostBase(weight),
+	_M_src_key(src_key),
 	_M_ref_key(ref_key),
 	_M_ipf(ipf)
 {
 }
 
-P2DImage get_from_key(const C2DImageDataKey& key) 
+P2DImage get_from_key(const C2DImageDataKey& key)
 {
 	C2DImageIOPlugin::PData in_image_list = key.get();
-	
+
 	if (!in_image_list || in_image_list->empty())
-		throw invalid_argument("ImageCostBase: no image available in data pool"); 
-	
+		throw invalid_argument("ImageCostBase: no image available in data pool");
+
 	return (*in_image_list)[0];
 }
 
@@ -50,43 +50,43 @@ P2DImage get_from_key(const C2DImageDataKey& key)
 const C2DImage& C2DImageCostBase::get_src() const
 {
 	if (!_M_src)
-		_M_src = get_from_key(_M_src_key); 
-	return *_M_src; 
+		_M_src = get_from_key(_M_src_key);
+	return *_M_src;
 }
 
 const C2DImage& C2DImageCostBase::get_ref() const
 {
 	if (!_M_ref)
-		_M_ref = get_from_key(_M_ref_key); 
-	return *_M_ref; 
+		_M_ref = get_from_key(_M_ref_key);
+	return *_M_ref;
 }
 
 const C2DInterpolatorFactory& C2DImageCostBase::get_ipf() const
 {
-	return *_M_ipf; 
+	return *_M_ipf;
 }
 
 double C2DImageCostBase::do_evaluate(const C2DTransformation& t, C2DFVectorfield& force) const
 {
-	P2DImage floating = t(get_src(), get_ipf()); 
-	return do_evaluate_with_images(*floating, get_ref(), force); 
+	P2DImage floating = t(get_src(), get_ipf());
+	return do_evaluate_with_images(*floating, get_ref(), force);
 }
 
 
 C2DImageCostBasePlugin::C2DImageCostBasePlugin(const char * const name):
-	C2DCostBasePlugin(name), 
+	C2DCostBasePlugin(name),
 	_M_interpolator(ip_bspline3)
 {
 	add_parameter("src", new CStringParameter(_M_src_name, true, "study image"));
 	add_parameter("ref", new CStringParameter(_M_ref_name, true, "reference image"));
-	add_parameter("interp", new CDictParameter<EInterpolation>(_M_interpolator, 
+	add_parameter("interp", new CDictParameter<EInterpolation>(_M_interpolator,
 								   GInterpolatorTable, "image interpolator"));
 }
 
 
 EInterpolation C2DImageCostBasePlugin::get_ipf() const
 {
-	return _M_interpolator; 
+	return _M_interpolator;
 }
 
 const C2DImageDataKey C2DImageCostBasePlugin::get_src_key() const

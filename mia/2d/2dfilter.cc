@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -53,22 +53,22 @@ double distance(const C2DImage& a, const C2DImage& b,  const C2DImageCombiner& m
 
 P2DImage run_filter_chain(P2DImage image, size_t nfilters, const char *filters[])
 {
-	const C2DFilterPluginHandler::Instance& ff = C2DFilterPluginHandler::instance(); 
+	const C2DFilterPluginHandler::Instance& ff = C2DFilterPluginHandler::instance();
 	for (size_t i = 0; i < nfilters; ++i)  {
-		C2DFilterPlugin::ProductPtr f = ff.produce(filters[i]); 
-		if (!f) 
-			THROW(invalid_argument, "unable to create filter from '" <<filters[i]<<"'"); 
+		C2DFilterPlugin::ProductPtr f = ff.produce(filters[i]);
+		if (!f)
+			THROW(invalid_argument, "unable to create filter from '" <<filters[i]<<"'");
 		image = f->filter(*image);
 	}
-	return image; 
+	return image;
 }
 
 P2DImage run_filter(const C2DImage& image, const char *filter)
 {
-	C2DFilterPlugin::ProductPtr f = C2DFilterPluginHandler::instance().produce(filter); 
-	if (!f) 
-		THROW(invalid_argument, "unable to create filter from '" <<filter<<"'"); 
-	return f->filter(image); 
+	C2DFilterPlugin::ProductPtr f = C2DFilterPluginHandler::instance().produce(filter);
+	if (!f)
+		THROW(invalid_argument, "unable to create filter from '" <<filter<<"'");
+	return f->filter(image);
 }
 
 template class EXPORT_HANDLER TImageFilter<C2DImage>;

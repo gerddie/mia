@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2007 Gert Wollny <gert dot wollny at acm dot org>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -23,18 +23,18 @@
 NS_BEGIN(IMAGEIO_3D_DICOM)
 
 class CDicom3DImageIOPlugin: public mia::C3DImageIOPlugin {
-public: 
+public:
 	CDicom3DImageIOPlugin();
-	typedef mia::C3DImageIOPlugin::Data Data; 
-	typedef mia::C3DImageIOPlugin::PData PData; 
+	typedef mia::C3DImageIOPlugin::Data Data;
+	typedef mia::C3DImageIOPlugin::PData PData;
 
-private: 
-	
-	mia::C3DImageIOPlugin::PData get_images(const std::vector<mia::P2DImage>& candidates) const; 
+private:
+
+	mia::C3DImageIOPlugin::PData get_images(const std::vector<mia::P2DImage>& candidates) const;
 	void do_add_suffixes(std::multimap<std::string, std::string>& map) const;
 	PData do_load(const std::string& fname) const;
 	bool do_save(const std::string& fname, const Data& data) const;
-	const std::string do_get_descr() const; 
-}; 
+	const std::string do_get_descr() const;
+};
 
 NS_END

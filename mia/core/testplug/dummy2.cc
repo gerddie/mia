@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2007 Gert Wollny <gert dot wollny at acm dot org>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -25,12 +25,12 @@
 NS_MIA_USE
 
 class CDummy2 :public CTestPlugin {
-public: 
+public:
 	CDummy2();
-private: 
+private:
   	virtual const std::string do_get_descr() const;
-	virtual bool do_test() const; 
-}; 
+	virtual bool do_test() const;
+};
 
 CDummy2::CDummy2():
   CTestPlugin("dummy2")
@@ -39,41 +39,41 @@ CDummy2::CDummy2():
 
 const std::string CDummy2::do_get_descr() const
 {
-  return "test module with no data"; 
+  return "test module with no data";
 }
 
 bool CDummy2::do_test() const
 {
-	return false; 
+	return false;
 }
 
 class CDummy3 :public CTestPlugin {
-public: 
+public:
 	CDummy3();
-private: 
+private:
   	virtual const std::string do_get_descr() const;
-	virtual bool do_test() const; 
-}; 
+	virtual bool do_test() const;
+};
 
 CDummy3::CDummy3():
   CTestPlugin("dummy3")
 {
-	add_property(test_property); 
+	add_property(test_property);
 }
 
 const std::string CDummy3::do_get_descr() const
 {
-  return "test module with no data"; 
+  return "test module with no data";
 }
 
 bool CDummy3::do_test() const
 {
-	return false; 
+	return false;
 }
 
-extern "C" EXPORT CPluginBase *get_plugin_interface() 
+extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
 	CTestPlugin *d2 = new CDummy2();
-	d2->append_interface(new CDummy3()); 
-	return d2; 
+	d2->append_interface(new CDummy3());
+	return d2;
 }

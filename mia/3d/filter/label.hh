@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
- * Copyright (c) 2007-2009 Gert Wollny <gert at die.upm.es>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Biomedical Image Technologies, Universidad Politecnica de Madrid
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -28,25 +28,25 @@
 NS_BEGIN(label_3dimage_filter)
 
 class CLabel: public mia::C3DFilter {
-public:	
-	CLabel(mia::P3DShape& _M_mask); 
+public:
+	CLabel(mia::P3DShape& _M_mask);
 
-private: 
-	void grow_region(const mia::C3DBounds& loc, const mia::C3DBitImage& input, 
-			 mia::C3DUSImage& result, unsigned short label)const; 
+private:
+	void grow_region(const mia::C3DBounds& loc, const mia::C3DBitImage& input,
+			 mia::C3DUSImage& result, unsigned short label)const;
 	CLabel::result_type do_filter(const mia::C3DImage& image) const;
 	mia::P3DShape _M_mask;
-}; 
+};
 
 class C3DLabelFilterPlugin: public mia::C3DFilterPlugin {
-public: 
+public:
 	C3DLabelFilterPlugin();
-private: 
+private:
 	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
-	virtual const std::string do_get_descr()const; 
+	virtual const std::string do_get_descr()const;
 
-	virtual bool do_test() const; 
-	std::string _M_mask_descr; 
+	virtual bool do_test() const;
+	std::string _M_mask_descr;
 };
 
 NS_END

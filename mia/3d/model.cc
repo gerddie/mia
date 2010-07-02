@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2007 Gert Wollny <gert dot wollny at acm dot org>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -18,9 +18,9 @@
  *
  */
 #ifdef WIN32
-#  define EXPORT_HANDLER __declspec(dllexport) 
+#  define EXPORT_HANDLER __declspec(dllexport)
 #else
-#  define EXPORT_HANDLER 
+#  define EXPORT_HANDLER
 #endif
 
 
@@ -31,7 +31,7 @@
 
 NS_MIA_BEGIN
 
-template class TRegModel<C3DFVectorfield, C3DFVectorfield>; 
+template class TRegModel<C3DFVectorfield, C3DFVectorfield>;
 template class TPlugin<C3DImage, regmodel_type>;
 template class TFactory<C3DRegModel, C3DImage, regmodel_type>;
 template class THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin> >;

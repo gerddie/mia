@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2007 Gert Wollny <gert dot wollny at acm dot org>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -23,51 +23,51 @@
 #include <mia/core/dummyhandler.hh>
 
 NS_MIA_USE
-using namespace std; 
+using namespace std;
 
 class CLalaIOPlugin : public CTestIOPlugin {
-public: 
+public:
 	CLalaIOPlugin();
-private: 
+private:
 	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
-	const string do_get_descr() const; 
-	bool do_test()const; 
-}; 
+	const string do_get_descr() const;
+	bool do_test()const;
+};
 
 CLalaIOPlugin::CLalaIOPlugin():
 	CTestIOPlugin("la")
 {
 }
-         
+
 void CLalaIOPlugin::do_add_suffixes(multimap<string, string>& map) const
 {
-	map.insert(pair<string,string>(".la", get_name())); 
+	map.insert(pair<string,string>(".la", get_name()));
 }
 
 CLalaIOPlugin::PData  CLalaIOPlugin::do_load(const string& /*fname*/) const
 {
-	return CLalaIOPlugin::PData(new CDummyType("lala")); 
+	return CLalaIOPlugin::PData(new CDummyType("lala"));
 }
 
 
 bool CLalaIOPlugin::do_save(const string& /*fname*/, const Data& /*data*/) const
 {
-	return true; 
+	return true;
 }
 
 const string CLalaIOPlugin::do_get_descr() const
 {
-	return "a dummy plugin to test io-plugin handling";  
+	return "a dummy plugin to test io-plugin handling";
 }
 
 bool CLalaIOPlugin::do_test()const
 {
-	return true; 
+	return true;
 }
 
-extern "C" EXPORT  CPluginBase *get_plugin_interface() 
+extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
 	return new CLalaIOPlugin();
 }

@@ -1,9 +1,9 @@
 /* -*- mona-c++  -*-
- * Copyright (c) 2006-2007 Gert Wollny <gert.wollny at acm.org> 
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -30,7 +30,7 @@
 NS_BEGIN(filter_2dimage_cst)
 
 NS_MIA_USE;
-using namespace std; 
+using namespace std;
 
 C2DCst::C2DCst(const PCST2DImageKernel&  kernel):
 	_M_kernel(kernel)
@@ -40,66 +40,66 @@ C2DCst::C2DCst(const PCST2DImageKernel&  kernel):
 template <typename T, bool is_integral>
 struct FBackConvert {
 	FBackConvert(double scale):
-		_M_scale(scale) 
+		_M_scale(scale)
 		{
-			cvdebug() << "scale = " << _M_scale <<"\n"; 
+			cvdebug() << "scale = " << _M_scale <<"\n";
 		}
-	
+
 	T operator ()(double x) {
-		return T(x *_M_scale); 
+		return T(x *_M_scale);
 	}
-private: 
-	double _M_scale; 
+private:
+	double _M_scale;
 };
 
 template <typename T>
 struct FBackConvert<T, true> {
 	FBackConvert(double scale):
-		_M_scale(scale) 
+		_M_scale(scale)
 		{
-			cvdebug() << "scale = " << _M_scale <<"\n"; 
+			cvdebug() << "scale = " << _M_scale <<"\n";
 		}
-	
+
 	T operator ()(double x) {
-		double xc = x *_M_scale; 
-		return xc < numeric_limits<T>::min() ? numeric_limits<T>::min() : 
-			( xc < numeric_limits<T>::max() ?  T(xc) : numeric_limits<T>::max()); 
+		double xc = x *_M_scale;
+		return xc < numeric_limits<T>::min() ? numeric_limits<T>::min() :
+			( xc < numeric_limits<T>::max() ?  T(xc) : numeric_limits<T>::max());
 	}
-private: 
-	double _M_scale; 
+private:
+	double _M_scale;
 };
 
 
 template <typename T>
 struct __dispatch_fftw {
 	static void apply(const CCST2DImageKernel& kernel, const T2DImage<T>& in, T2DImage<T>& out) {
-		C2DFImage image(in.get_size()); 
-		copy(in.begin(), in.end(), image.begin()); 
-		kernel.apply(image, image); 
+		C2DFImage image(in.get_size());
+		copy(in.begin(), in.end(), image.begin());
+		kernel.apply(image, image);
 
 		const bool is_integral = ::boost::is_integral<T>::value;
 		FBackConvert<T, is_integral> convert(1.0);
-		transform(image.begin(), image.end(), out.begin(), convert); 
+		transform(image.begin(), image.end(), out.begin(), convert);
 	}
-}; 
+};
 
 template <>
 struct __dispatch_fftw<float> {
 	static void apply(const CCST2DImageKernel& kernel, const C2DFImage& in, C2DFImage& out) {
-		kernel.apply(in, out); 
+		kernel.apply(in, out);
 	}
-}; 
+};
 
 template <typename T>
 typename C2DCst::result_type C2DCst::operator () (const T2DImage<T>& image) const
 {
 	cvdebug() << "C2DCST::operator() begin\n";
-	
-	_M_kernel->prepare(image.get_size()); 
-	T2DImage<T> *result = new T2DImage<T>(image.get_size()); 
-	
-	__dispatch_fftw<T>::apply(*_M_kernel, image, *result); 
-	
+
+	_M_kernel->prepare(image.get_size());
+	T2DImage<T> *result = new T2DImage<T>(image.get_size());
+
+	__dispatch_fftw<T>::apply(*_M_kernel, image, *result);
+
 	return P2DImage(result);
 }
 
@@ -112,23 +112,23 @@ P2DImage C2DCst::do_filter(const C2DImage& image) const
 C2DFilterPluginFactory::C2DFilterPluginFactory():
 	C2DFilterPlugin("cst")
 {
-	add_parameter("k", new CStringParameter(_M_kernel, true, "filter kernel")); 
+	add_parameter("k", new CStringParameter(_M_kernel, true, "filter kernel"));
 }
 
 C2DFilterPluginFactory::ProductPtr C2DFilterPluginFactory::do_create()const
 {
-	PCST2DImageKernel k = CCST2DImgKernelPluginHandler::instance().produce(_M_kernel.c_str()); 
-	return C2DFilterPluginFactory::ProductPtr(new C2DCst(k)); 
+	PCST2DImageKernel k = CCST2DImgKernelPluginHandler::instance().produce(_M_kernel.c_str());
+	return C2DFilterPluginFactory::ProductPtr(new C2DCst(k));
 }
 
 const string C2DFilterPluginFactory::do_get_descr()const
 {
-	return "2D image cosinus/sinus transformation filter"; 
+	return "2D image cosinus/sinus transformation filter";
 }
-	
+
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DFilterPluginFactory(); 
+	return new C2DFilterPluginFactory();
 }
 
 NS_END // end namespace cst_2dimage_filter

@@ -1,9 +1,9 @@
 /* -*- mia-c++  -*-
- * Copyright (c) 2007 Gert Wollny <gert dot wollny at acm dot org>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -31,107 +31,107 @@ NS_BEGIN(vista_2dvf_io)
 
 NS_MIA_USE
 
-using namespace std; 
-using namespace boost; 
+using namespace std;
+using namespace boost;
 
 class CVista2DVFIOPlugin : public C2DVFIOPlugin {
-public: 
+public:
 	CVista2DVFIOPlugin();
-private: 
+private:
 	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
-	const string do_get_descr() const; 
-}; 
+	const string do_get_descr() const;
+};
 
 CVista2DVFIOPlugin::CVista2DVFIOPlugin():
 	C2DVFIOPlugin("vista")
 {
 	add_supported_type(it_float);
 }
-         
+
 void CVista2DVFIOPlugin::do_add_suffixes(multimap<string, string>& map) const
 {
-	map.insert(pair<string,string>(".v", get_name())); 
-	map.insert(pair<string,string>(".vf", get_name())); 
-	map.insert(pair<string,string>(".V", get_name())); 
-	map.insert(pair<string,string>(".VF", get_name())); 
+	map.insert(pair<string,string>(".v", get_name()));
+	map.insert(pair<string,string>(".vf", get_name()));
+	map.insert(pair<string,string>(".V", get_name()));
+	map.insert(pair<string,string>(".VF", get_name()));
 }
 
 CVista2DVFIOPlugin::PData  CVista2DVFIOPlugin::do_load(const string& fname) const
 {
 	CInputFile f(fname);
-	
+
 	VAttrList vlist = VReadFile(f,NULL);
-		
+
 	VResetProgressIndicator();
-		
+
 	if (!vlist)
-		return CVista2DVFIOPlugin::PData(); 
-	
-	CVista2DVFIOPlugin::PData result; 
-	VAttrListPosn posn; 
+		return CVista2DVFIOPlugin::PData();
+
+	CVista2DVFIOPlugin::PData result;
+	VAttrListPosn posn;
 
 	for (VFirstAttr(vlist, &posn); VAttrExists(&posn) && !result; VNextAttr(&posn)) {
-		if (VGetAttrRepn(&posn) != VField2DRepn) 
+		if (VGetAttrRepn(&posn) != VField2DRepn)
 			continue;
-		
-		VField2D field = NULL; 
-		VGetAttrValue(&posn, 0, VField2DRepn, &field); 
-		
+
+		VField2D field = NULL;
+		VGetAttrValue(&posn, 0, VField2DRepn, &field);
+
 		if (!field)
 			throw runtime_error(fname + "looked like a vector field, but is none");
-		
-		if (field->nsize_element != 2) 
+
+		if (field->nsize_element != 2)
 			throw runtime_error(fname + "is not a field of 2D vectors");
-		
+
 		if (field->repn != VFloatRepn) {
 			cvdebug() << "Skipping input field, which is not of type float\n";
-			continue; 
+			continue;
 		}
-		
-		result = CVista2DVFIOPlugin::PData(new C2DIOVectorfield(C2DBounds(field->x_dim, field->y_dim))); 
-		T2DVector<VFloat> * input  = (T2DVector<VFloat> *)field->p.data; 
-		copy(input, input + result->size(), result->begin()); 
-		copy_attr_list(*result->get_attribute_list(), field->attr); 
+
+		result = CVista2DVFIOPlugin::PData(new C2DIOVectorfield(C2DBounds(field->x_dim, field->y_dim)));
+		T2DVector<VFloat> * input  = (T2DVector<VFloat> *)field->p.data;
+		copy(input, input + result->size(), result->begin());
+		copy_attr_list(*result->get_attribute_list(), field->attr);
 	}
 
-	
-	VDestroyAttrList(vlist); 
-	return result; 
+
+	VDestroyAttrList(vlist);
+	return result;
 }
 
 
 bool CVista2DVFIOPlugin::do_save(const string& fname, const C2DIOVectorfield& data) const
 {
-	
+
 	COutputFile f(fname);
 
 	VAttrList vlist = VCreateAttrList();
-	VField2D out_field = VCreateField2D(data.get_size().x, 
-					    data.get_size().y, 
-					    2, 
-					    VFloatRepn); 
-	T2DVector<VFloat> * output  = (T2DVector<VFloat> *)out_field->p.data; 
-	copy(data.begin(), data.end(), output); 
+	VField2D out_field = VCreateField2D(data.get_size().x,
+					    data.get_size().y,
+					    2,
+					    VFloatRepn);
+	T2DVector<VFloat> * output  = (T2DVector<VFloat> *)out_field->p.data;
+	copy(data.begin(), data.end(), output);
 
-	copy_attr_list(out_field->attr, *data.get_attribute_list()); 		
-	VSetAttr(vlist, "2DFVectorfield", NULL, VField2DRepn, out_field); 
-	
+	copy_attr_list(out_field->attr, *data.get_attribute_list());
+	VSetAttr(vlist, "2DFVectorfield", NULL, VField2DRepn, out_field);
+
 	bool result = VWriteFile(f,vlist);
-	VDestroyAttrList(vlist); 
-	
-	return result; 
+	VDestroyAttrList(vlist);
+
+	return result;
 }
 
 const string CVista2DVFIOPlugin::do_get_descr() const
 {
-	return "a 2d vector field io plugin for vista";  
+	return "a 2d vector field io plugin for vista";
 }
 
-extern "C" EXPORT  CPluginBase *get_plugin_interface() 
+extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
-	TTranslator<C2DFVector>::register_for("pixel"); 
+	TTranslator<C2DFVector>::register_for("pixel");
 	return new CVista2DVFIOPlugin();
 }
 

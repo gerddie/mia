@@ -1,9 +1,9 @@
 /* -*- mia-c++  -*-
- * Copyright (c) 2010 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -37,16 +37,16 @@ using namespace mia_2dcost_ssd2;
 
 
 struct SSD2DFixture {
-	
-	SSD2DFixture(); 
 
-	C2DBounds size; 
+	SSD2DFixture();
+
+	C2DBounds size;
 	string src_key;
 	string ref_key;
-	P2DInterpolatorFactory ipf; 
+	P2DInterpolatorFactory ipf;
 	C2DFVectorfield force;
-	C2DTransformMock t; 
-}; 
+	C2DTransformMock t;
+};
 
 
 BOOST_FIXTURE_TEST_CASE( test_SSD_2D, SSD2DFixture )
@@ -70,11 +70,11 @@ BOOST_FIXTURE_TEST_CASE( test_SSD_2D_scaled, SSD2DFixture )
 
 
 SSD2DFixture::SSD2DFixture():
-	size(4,4), 
-	src_key("src"), 
-	ref_key("ref"), 
-	ipf(create_2dinterpolation_factory(ip_linear)), 
-	force(size), 
+	size(4,4),
+	src_key("src"),
+	ref_key("ref"),
+	ipf(create_2dinterpolation_factory(ip_linear)),
+	force(size),
 	t(size)
 {
 	const float src_data[16] = {

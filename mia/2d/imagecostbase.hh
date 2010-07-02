@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2010, Gert Wollny
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -28,40 +28,40 @@
 NS_MIA_BEGIN
 
 class C2DImageCostBase: public C2DCostBase {
-public: 
-	C2DImageCostBase(const C2DImageDataKey& src_key, const C2DImageDataKey& ref_key, 
+public:
+	C2DImageCostBase(const C2DImageDataKey& src_key, const C2DImageDataKey& ref_key,
 			 P2DInterpolatorFactory ipf,
-			 float weight); 
+			 float weight);
 
-protected: 
+protected:
 	const C2DImage& get_src() const;
 	const C2DImage& get_ref() const;
 	const C2DInterpolatorFactory& get_ipf() const;
-private: 
-	virtual double do_evaluate(const C2DTransformation& t, C2DFVectorfield& force) const; 
-	virtual double do_evaluate_with_images(const C2DImage& floating, const C2DImage& ref, 
-					       C2DFVectorfield& force) const = 0; 
+private:
+	virtual double do_evaluate(const C2DTransformation& t, C2DFVectorfield& force) const;
+	virtual double do_evaluate_with_images(const C2DImage& floating, const C2DImage& ref,
+					       C2DFVectorfield& force) const = 0;
 
-	const C2DImageDataKey _M_src_key; 
-	const C2DImageDataKey _M_ref_key; 
+	const C2DImageDataKey _M_src_key;
+	const C2DImageDataKey _M_ref_key;
 
 	mutable P2DImage _M_src;
-	mutable P2DImage _M_ref; 
-	P2DInterpolatorFactory _M_ipf; 
-}; 
+	mutable P2DImage _M_ref;
+	P2DInterpolatorFactory _M_ipf;
+};
 
 class C2DImageCostBasePlugin: public C2DCostBasePlugin {
-public: 
-	C2DImageCostBasePlugin(const char * const name); 
-protected: 
-	EInterpolation get_ipf() const; 
-	const C2DImageDataKey get_src_key() const; 
-	const C2DImageDataKey get_ref_key() const; 
-private: 
-	std::string _M_src_name; 
-	std::string _M_ref_name; 
+public:
+	C2DImageCostBasePlugin(const char * const name);
+protected:
+	EInterpolation get_ipf() const;
+	const C2DImageDataKey get_src_key() const;
+	const C2DImageDataKey get_ref_key() const;
+private:
+	std::string _M_src_name;
+	std::string _M_ref_name;
 	EInterpolation _M_interpolator;
-}; 
+};
 
 
 NS_MIA_END

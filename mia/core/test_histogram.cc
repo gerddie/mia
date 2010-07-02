@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -161,58 +161,58 @@ BOOST_AUTO_TEST_CASE( test_histogram3)
 
 struct FNormalDistribution {
 	FNormalDistribution(float mean, float sigma) :
-		_M_mean(mean), 
-		_M_sigma(sigma), 
-		_M_w1(1.0 / (2.0 * _M_sigma * _M_sigma)), 
+		_M_mean(mean),
+		_M_sigma(sigma),
+		_M_w1(1.0 / (2.0 * _M_sigma * _M_sigma)),
 		_M_w2(sqrt( _M_w1 / M_PI))
 
 	{
 
 	}
-	
+
 	float operator()(float x) const {
-		const float h = x - _M_mean; 
-		return _M_w2 * exp( - _M_w1 * h * h); 
+		const float h = x - _M_mean;
+		return _M_w2 * exp( - _M_w1 * h * h);
 	}
-	float _M_mean; 
-	float _M_sigma; 
-	float _M_w1; 
-	float _M_w2; 
-}; 
+	float _M_mean;
+	float _M_sigma;
+	float _M_w1;
+	float _M_w2;
+};
 
-BOOST_AUTO_TEST_CASE ( test_histogram_gauss_noise ) 
+BOOST_AUTO_TEST_CASE ( test_histogram_gauss_noise )
 {
-	const size_t size = 32000; 
+	const size_t size = 32000;
 
-	vector<double> data; 
+	vector<double> data;
 
 	list< bfs::path> noisesearchpath;
 	noisesearchpath.push_back(bfs::path("noise"));
 	CNoiseGeneratorPluginHandler::set_search_path(noisesearchpath);
-	
-	const CNoiseGeneratorPluginHandler::Instance&  ngp = CNoiseGeneratorPluginHandler::instance(); 
 
-	CNoiseGeneratorPlugin::ProductPtr ng[3]; 
-	ng[0] = ngp.produce("gauss:mu=127,sigma=16,seed=1"); 
+	const CNoiseGeneratorPluginHandler::Instance&  ngp = CNoiseGeneratorPluginHandler::instance();
 
-	FNormalDistribution n1(127, 16); 
+	CNoiseGeneratorPlugin::ProductPtr ng[3];
+	ng[0] = ngp.produce("gauss:mu=127,sigma=16,seed=1");
 
-	typedef CHistogram<CHistogramFeeder<double> > CDoubleHistogram; 
-	CDoubleHistogram histo(CHistogramFeeder<double>(0,256,64));	
-	
+	FNormalDistribution n1(127, 16);
+
+	typedef CHistogram<CHistogramFeeder<double> > CDoubleHistogram;
+	CDoubleHistogram histo(CHistogramFeeder<double>(0,256,64));
+
 	for (size_t k = 0; k < 1; ++k) {
-		const CNoiseGenerator& g = *ng[k]; 
+		const CNoiseGenerator& g = *ng[k];
 		size_t i = 0;
 		while ( i < size ) {
-			double h = g(); 
+			double h = g();
 			if ( h >= 0.0 && h < 256.0) {
-				histo.push(h); 
-				++i; 
+				histo.push(h);
+				++i;
 			}
 		}
 	}
 
-	BOOST_CHECK_CLOSE(histo.average(), 127.0 ,1); 
-	BOOST_CHECK_CLOSE(histo.deviation(), 16.0 ,1); 
+	BOOST_CHECK_CLOSE(histo.average(), 127.0 ,1);
+	BOOST_CHECK_CLOSE(histo.deviation(), 16.0 ,1);
 
 }

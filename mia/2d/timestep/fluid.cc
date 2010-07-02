@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2007 Gert Wollny <gert dot wollny at acm dot org>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -20,7 +20,7 @@
 
 
 /*
-  This plug-in implements the fluid time-step that translates a velocity field 
+  This plug-in implements the fluid time-step that translates a velocity field
   to a deformation. It also provides the means to test and suggest re-gridding.
  */
 #include <limits>
@@ -36,7 +36,7 @@ NS_BEGIN(fluid_timestep_2d)
 #undef min
 #undef max
 #endif
-	
+
 
 C2DFluidRegTimeStep::C2DFluidRegTimeStep(float min, float max):
 	C2DRegTimeStep(min, max)
@@ -45,7 +45,7 @@ C2DFluidRegTimeStep::C2DFluidRegTimeStep(float min, float max):
 
 float C2DFluidRegTimeStep::do_calculate_pertuberation(C2DFVectorfield& io, const C2DTransformation& shift) const
 {
-	return shift.pertuberate(io); 
+	return shift.pertuberate(io);
 }
 
 bool C2DFluidRegTimeStep::do_regrid_requested (const C2DTransformation& u, const C2DFVectorfield& v, float delta) const
@@ -53,19 +53,19 @@ bool C2DFluidRegTimeStep::do_regrid_requested (const C2DTransformation& u, const
 	return u.get_jacobian(v, delta) < 0.5;
 }
 
-bool C2DFluidRegTimeStep::do_has_regrid () const 
+bool C2DFluidRegTimeStep::do_has_regrid () const
 {
-	return true; 
+	return true;
 }
 
 class C2DFluidRegTimeStepPlugin : public C2DRegTimeStepPlugin {
-public: 
-	C2DFluidRegTimeStepPlugin(); 
-private: 
-	C2DRegTimeStepPlugin::ProductPtr do_create()const; 
-	bool do_test() const; 
-	const string do_get_descr()const; 
-}; 
+public:
+	C2DFluidRegTimeStepPlugin();
+private:
+	C2DRegTimeStepPlugin::ProductPtr do_create()const;
+	bool do_test() const;
+	const string do_get_descr()const;
+};
 
 
 C2DFluidRegTimeStepPlugin::C2DFluidRegTimeStepPlugin():
@@ -75,22 +75,22 @@ C2DFluidRegTimeStepPlugin::C2DFluidRegTimeStepPlugin():
 
 C2DRegTimeStepPlugin::ProductPtr C2DFluidRegTimeStepPlugin::do_create()const
 {
-	return C2DRegTimeStepPlugin::ProductPtr(new C2DFluidRegTimeStep(get_min_timestep(), get_max_timestep())); 
+	return C2DRegTimeStepPlugin::ProductPtr(new C2DFluidRegTimeStep(get_min_timestep(), get_max_timestep()));
 }
 
 bool C2DFluidRegTimeStepPlugin::do_test() const
 {
-	return true; 
+	return true;
 }
 
 const string C2DFluidRegTimeStepPlugin::do_get_descr()const
 {
-	return "a fluidly applied time step operator"; 
+	return "a fluidly applied time step operator";
 }
 
 extern "C"  EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DFluidRegTimeStepPlugin(); 
+	return new C2DFluidRegTimeStepPlugin();
 }
 
 

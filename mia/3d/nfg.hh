@@ -1,9 +1,9 @@
 /*  -*- mia-c++  -*-
- * Copyright (c) 2007 Gert Wollny <gert.wollny at web de>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -20,8 +20,8 @@
 #include <mia/3d/3DImage.hh>
 
 /*
-  This code implements the functions needed to support the NFG cost function. 
-  
+  This code implements the functions needed to support the NFG cost function.
+
 
 */
 
@@ -29,11 +29,11 @@
 
 NS_MIA_BEGIN
 
-EXPORT_3D float get_noise_level(const C3DImage& image); 
-EXPORT_3D float get_jump_level(const C3DImage& image); 
-EXPORT_3D float get_jump_level(const C3DImage& image, float noise_level); 
-EXPORT_3D C3DFVectorfield get_nfg_n(const C3DImage& image,  float noise_level); 
-EXPORT_3D C3DFVectorfield get_nfg_j(const C3DImage& image,  float jump_level2); 
-EXPORT_3D C3DFVectorfield get_nfg(const C3DImage& image); 
+EXPORT_3D float get_noise_level(const C3DImage& image);
+EXPORT_3D float get_jump_level(const C3DImage& image);
+EXPORT_3D float get_jump_level(const C3DImage& image, float noise_level);
+EXPORT_3D C3DFVectorfield get_nfg_n(const C3DImage& image,  float noise_level);
+EXPORT_3D C3DFVectorfield get_nfg_j(const C3DImage& image,  float jump_level2);
+EXPORT_3D C3DFVectorfield get_nfg(const C3DImage& image);
 
 NS_MIA_END

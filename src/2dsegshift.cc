@@ -1,12 +1,12 @@
 
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2009 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -63,25 +63,25 @@ int do_main(int argc, const char *args[])
 {
 	string src_filename;
 	string out_filename;
-	string shift_filename("crop"); 
-	size_t skip = 2; 
-	
-	C2DFVector shift; 
+	string shift_filename("crop");
+	size_t skip = 2;
+
+	C2DFVector shift;
 
 	CCmdOptionList options;
 	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", "input", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o', "input segmentation set", "out", true));
 	options.push_back(make_opt( shift_filename, "image-file", 'g', "output image filename base", "image", false));
-	
+
 	options.push_back(make_opt(shift, "shift", 'S', "shift of segmentation", "shift", false));
-	options.push_back(make_opt(skip, "skip", 's', "skip frames at the begining", "skip", false)); 
-	
+	options.push_back(make_opt(skip, "skip", 's', "skip frames at the begining", "skip", false));
+
 	options.parse(argc, args);
 
 	CSegSet src_segset = load_segmentation(src_filename);
 
-	cvinfo() << "shift by " << shift << ", skip " << skip << " and rename to base " << shift_filename << "\n"; 
-	CSegSet shifted = src_segset.shift_and_rename(skip, shift, shift_filename); 
+	cvinfo() << "shift by " << shift << ", skip " << skip << " and rename to base " << shift_filename << "\n";
+	CSegSet shifted = src_segset.shift_and_rename(skip, shift, shift_filename);
 
 	auto_ptr<xmlpp::Document> outset(shifted.write());
 

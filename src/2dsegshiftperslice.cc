@@ -1,12 +1,12 @@
 
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2009 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -59,44 +59,44 @@ CSegSet load_segmentation(const string& s)
 
 static string get_number(const string& fname)
 {
-	bfs::path f(fname); 
-	string the_stem = f.stem(); 
-	auto rs = the_stem.rbegin(); 
-	string result; 
+	bfs::path f(fname);
+	string the_stem = f.stem();
+	auto rs = the_stem.rbegin();
+	string result;
 	while (rs != the_stem.rend() && isdigit(*rs))
-		result.insert(0,1,*rs++); 
-	return result; 
+		result.insert(0,1,*rs++);
+	return result;
 }
 
 int do_main(int argc, const char *args[])
 {
 	string src_filename;
 	string out_filename;
-	string shift_filename("crop"); 
-	
-	string shift_value_filebase("shift"); 
+	string shift_filename("crop");
+
+	string shift_value_filebase("shift");
 
 	CCmdOptionList options;
 	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", "input", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o', "input segmentation set", "out", true));
 	options.push_back(make_opt( shift_filename, "image-file", 'g', "output image filename base", "image", false));
-	
-	options.push_back(make_opt(shift_value_filebase, "shift", 'S', "shift of segmentation - base name ", 
+
+	options.push_back(make_opt(shift_value_filebase, "shift", 'S', "shift of segmentation - base name ",
 				   "shift", true));
 
-	
+
 	options.parse(argc, args);
 
 	CSegSet src_segset = load_segmentation(src_filename);
 	CSegSet::Frames& frames = src_segset.get_frames();
-	
+
 	for (auto i = frames.begin(); i != frames.end(); ++i) {
-		string nr = get_number(i->get_imagename()); 
-		stringstream shift_file_name; 
-		shift_file_name << shift_value_filebase << nr << ".txt"; 
-		ifstream shift_file(shift_file_name.str()); 
-		C2DFVector shift; 
-		shift_file >> shift; 
+		string nr = get_number(i->get_imagename());
+		stringstream shift_file_name;
+		shift_file_name << shift_value_filebase << nr << ".txt";
+		ifstream shift_file(shift_file_name.str());
+		C2DFVector shift;
+		shift_file >> shift;
 		i->shift(shift, i->get_imagename());
 	}
 

@@ -1,11 +1,11 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2007-2009 Gert Wollny <gert at die.upm.es>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Biomedical Image Technologies, Universidad Politecnica de Madrid
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -27,7 +27,7 @@
 NS_BEGIN(median_3dimage_filter)
 
 class C3DMedianFilter: public mia::C3DFilter {
-	int _M_width; 
+	int _M_width;
 public:
 	C3DMedianFilter(int hwidth);
 
@@ -39,7 +39,7 @@ private:
 
 
 class C3DSaltAndPepperFilter: public mia::C3DFilter {
-	int _M_width; 
+	int _M_width;
 	float _M_thresh;
 public:
 	C3DSaltAndPepperFilter(int hwidth, float thresh);
@@ -53,26 +53,26 @@ private:
 };
 
 class C3DMedianFilterFactory: public mia::C3DFilterPlugin {
-public: 
+public:
 	C3DMedianFilterFactory();
-private: 
+private:
 	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
-	virtual const std::string  do_get_descr() const; 
-	virtual bool do_test() const; 
-	int _M_hw; 
+	virtual const std::string  do_get_descr() const;
+	virtual bool do_test() const;
+	int _M_hw;
 };
 
 
 
 class C3DSaltAndPepperFilterFactory: public mia::C3DFilterPlugin {
-public: 
+public:
 	C3DSaltAndPepperFilterFactory();
-private: 
+private:
 	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
-	virtual const std::string  do_get_descr() const; 
-	virtual bool do_test() const; 
-	int _M_hw; 
-	float _M_thresh; 
+	virtual const std::string  do_get_descr() const;
+	virtual bool do_test() const;
+	int _M_hw;
+	float _M_thresh;
 };
 
 

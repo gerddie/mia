@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Madrid 2008 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -64,7 +64,7 @@ C2DImage *C2DMorphFifoFilter<Compare>::operator()(const T3DImage<T>& input) cons
 	TRACE("C2DMorphFifoFilter<Compare>::operator()(const T3DImage<T>& input) const");
 	T2DImage<T> *result = new T2DImage<T>(_M_slice_size);
 	size_t read_slice = _M_shape->get_size().z / 2;
-	const bool is_float = is_floating_point<T>::value; 
+	const bool is_float = is_floating_point<T>::value;
 	typedef Compare<T, is_float> cmp;
 
 	typename T2DImage<T>::iterator i = result->begin();

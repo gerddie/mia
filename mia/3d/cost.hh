@@ -1,9 +1,9 @@
 /*  -*- mia-c++  -*-
- * Copyright (c) 2007 Gert Wollny <gert.wollny at acm.org>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -25,9 +25,9 @@
 
 NS_MIA_BEGIN
 
-typedef TCost<C3DImage, C3DFVectorfield> C3DImageCost; 
-typedef SHARED_PTR(C3DImageCost) P3DImageCost; 
-typedef TFactory<C3DImageCost, C3DImage, cost_type> C3DImageCostPlugin; 
+typedef TCost<C3DImage, C3DFVectorfield> C3DImageCost;
+typedef SHARED_PTR(C3DImageCost) P3DImageCost;
+typedef TFactory<C3DImageCost, C3DImage, cost_type> C3DImageCostPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin> > C3DImageCostPluginHandler;
 
 NS_MIA_END

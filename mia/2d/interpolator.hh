@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -182,8 +182,8 @@ public:
 
 	template <class T>
 	T2DInterpolator<T> *create(const T2DDatafield<T>& src) const;
-	
-	const CBSplineKernel* get_kernel() const; 
+
+	const CBSplineKernel* get_kernel() const;
 
 private:
 	EType _M_type;
@@ -208,7 +208,7 @@ T2DInterpolator<T> *C2DInterpolatorFactory::create(const T2DDatafield<T>& src) c
 	return NULL;
 }
 
-double integrate2(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2, double n, double x0, double L); 
+double integrate2(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2, double n, double x0, double L);
 
 NS_MIA_END
 

@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -250,27 +250,27 @@ EXPORT_CORE size_t get_filename_number_pattern_width(std::string const& in_filen
 
 EXPORT_CORE size_t get_filename_number_pattern(std::string const& in_filename, string& base, string& suffix)
 {
-	bfs::path p(in_filename); 
-	suffix = p.extension(); 
+	bfs::path p(in_filename);
+	suffix = p.extension();
 
-	string rest = p.stem(); 
+	string rest = p.stem();
 
-	size_t nwidth = 0; 
-	string::const_reverse_iterator r = rest.rbegin(); 
+	size_t nwidth = 0;
+	string::const_reverse_iterator r = rest.rbegin();
 	while (isdigit(*r)) {
-		++r; 
-		++nwidth; 
+		++r;
+		++nwidth;
 	}
-	base = rest.substr(0, rest.size() - nwidth); 
-	return nwidth; 
+	base = rest.substr(0, rest.size() - nwidth);
+	return nwidth;
 }
 
-EXPORT_CORE void split_filename_number_pattern(std::string const& in_filename, std::string& base, 
+EXPORT_CORE void split_filename_number_pattern(std::string const& in_filename, std::string& base,
 					       std::string& suffix, std::string& number)
 {
-	bfs::path p(in_filename); 
-	size_t nwidth = get_filename_number_pattern(in_filename, base, suffix); 
-	number = p.stem().substr(p.stem().size() - nwidth);  
+	bfs::path p(in_filename);
+	size_t nwidth = get_filename_number_pattern(in_filename, base, suffix);
+	number = p.stem().substr(p.stem().size() - nwidth);
 }
 
 NS_MIA_END

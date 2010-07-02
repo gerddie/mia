@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -8,7 +8,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -50,7 +50,7 @@ public:
 	Frames& get_frames();
 	const C2DBoundingBox get_boundingbox() const;
 
-	CSegSet  shift_and_rename(size_t skip, const C2DFVector&  shift, const std::string& new_filename_base)const; 
+	CSegSet  shift_and_rename(size_t skip, const C2DFVector&  shift, const std::string& new_filename_base)const;
 private:
 	void read(const xmlpp::Document& node);
 	Frames m_frames;

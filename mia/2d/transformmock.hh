@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2010, Gert Wollny
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -25,8 +25,8 @@
 NS_MIA_BEGIN
 
 struct C2DTransformMock: public C2DTransformation {
-	C2DTransformMock(); 
-	C2DTransformMock(const C2DBounds& size); 
+	C2DTransformMock();
+	C2DTransformMock(const C2DBounds& size);
 	virtual C2DTransformation *clone() const;
 	virtual bool save(const std::string& filename, const std::string& type) const;
 	virtual P2DTransformation upscale(const C2DBounds& size) const;
@@ -37,8 +37,8 @@ struct C2DTransformMock: public C2DTransformation {
 	virtual C2DFMatrix derivative_at(int x, int y) const;
 	virtual void translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const;
 	virtual float get_max_transform() const;
-	virtual gsl::DoubleVector  get_parameters() const; 
-	virtual void set_parameters(const gsl::DoubleVector& params); 
+	virtual gsl::DoubleVector  get_parameters() const;
+	virtual void set_parameters(const gsl::DoubleVector& params);
 	virtual const C2DBounds& get_size() const;
 	virtual float pertuberate(C2DFVectorfield& v) const;
 	virtual C2DFVector apply(const C2DFVector& x) const;
@@ -47,10 +47,10 @@ struct C2DTransformMock: public C2DTransformation {
 	virtual float divergence() const;
 	virtual float curl() const;
 
-private: 
+private:
         virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
-	C2DBounds m_size; 
+	C2DBounds m_size;
 
-}; 
+};
 
 NS_MIA_END

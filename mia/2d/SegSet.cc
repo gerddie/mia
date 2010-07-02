@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -8,7 +8,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -111,27 +111,27 @@ void CSegSet::read(const xmlpp::Document& node)
 	}
 }
 
-CSegSet  CSegSet::shift_and_rename(size_t skip, const C2DFVector&  shift, const std::string& new_filename_base) const 
+CSegSet  CSegSet::shift_and_rename(size_t skip, const C2DFVector&  shift, const std::string& new_filename_base) const
 {
-	CSegSet result; 
+	CSegSet result;
 	Frames::const_iterator iframe = get_frames().begin();
 	Frames::const_iterator eframe = get_frames().end();
-	
-	while (skip-- && iframe != eframe) 
-		++iframe; 
+
+	while (skip-- && iframe != eframe)
+		++iframe;
 
 	while (iframe != eframe ) {
-		string base, suffix, number; 
-		split_filename_number_pattern(iframe->get_imagename(), base, suffix, number); 
-		stringstream fname; 
-		fname << new_filename_base << number << suffix; 
+		string base, suffix, number;
+		split_filename_number_pattern(iframe->get_imagename(), base, suffix, number);
+		stringstream fname;
+		fname << new_filename_base << number << suffix;
 		CSegFrame rframe = *iframe;
 		rframe.shift(shift, fname.str());
-		
+
 		result.add_frame(rframe);
-		++iframe; 
+		++iframe;
 	}
-	return result; 
+	return result;
 }
 
 NS_MIA_END

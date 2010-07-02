@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -48,40 +48,40 @@ struct F2DKernelIntegrator: public FUnary {
 		{
 		}
 	virtual double operator() (double x) const {
-		return _M_spline.get_weight_at(x - _M_s1, _M_deg1) * 
-			_M_spline.get_weight_at(x - _M_s2, _M_deg2); 
+		return _M_spline.get_weight_at(x - _M_s1, _M_deg1) *
+			_M_spline.get_weight_at(x - _M_s2, _M_deg2);
 	}
-private: 
-	const CBSplineKernel& _M_spline; 
-	double _M_s1, _M_s2, _M_deg1, _M_deg2; 
-}; 
+private:
+	const CBSplineKernel& _M_spline;
+	double _M_s1, _M_s2, _M_deg1, _M_deg2;
+};
 
 
 double integrate2(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2, double n, double x0, double L)
 {
-	double sum = 0.0; 
-	x0 /= n; 
-	L  /= n; 
-		
-	// evaluate interval to integrate over 
-	double start_int = s1 - spline.get_nonzero_radius(); 
-	double end_int = s1 + spline.get_nonzero_radius(); 
-	if (start_int > s2 - spline.get_nonzero_radius()) 
-		start_int = s2 - spline.get_nonzero_radius(); 
-	if (start_int < x0) 
-		start_int = x0; 
-	if (end_int > s2 + spline.get_nonzero_radius()) 
-		end_int = s2 + spline.get_nonzero_radius(); 
-	if (end_int > L) 
-		end_int = L; 
-	
-	// Simpson formula 
-	if (end_int <= start_int) 
-		return sum; 
-	const size_t intervals = size_t(4 * (end_int - start_int)); 
+	double sum = 0.0;
+	x0 /= n;
+	L  /= n;
 
-	sum = simpson( start_int, end_int, intervals, F2DKernelIntegrator(spline, s1, s2, deg1, deg2)); 
-	return sum * n; 
+	// evaluate interval to integrate over
+	double start_int = s1 - spline.get_nonzero_radius();
+	double end_int = s1 + spline.get_nonzero_radius();
+	if (start_int > s2 - spline.get_nonzero_radius())
+		start_int = s2 - spline.get_nonzero_radius();
+	if (start_int < x0)
+		start_int = x0;
+	if (end_int > s2 + spline.get_nonzero_radius())
+		end_int = s2 + spline.get_nonzero_radius();
+	if (end_int > L)
+		end_int = L;
+
+	// Simpson formula
+	if (end_int <= start_int)
+		return sum;
+	const size_t intervals = size_t(4 * (end_int - start_int));
+
+	sum = simpson( start_int, end_int, intervals, F2DKernelIntegrator(spline, s1, s2, deg1, deg2));
+	return sum * n;
 }
 
 C2DInterpolator::~C2DInterpolator()
@@ -115,7 +115,7 @@ C2DInterpolatorFactory::~C2DInterpolatorFactory()
 
 const CBSplineKernel* C2DInterpolatorFactory::get_kernel() const
 {
-	return _M_kernel.get(); 
+	return _M_kernel.get();
 }
 
 C2DInterpolatorFactory *create_2dinterpolation_factory(int type)

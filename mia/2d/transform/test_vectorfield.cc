@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2009 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -38,7 +38,7 @@ struct GridTransformFixture {
 	GridTransformFixture():
 		size(256, 128),
 		r(size.x - 1,size.y - 1),
-		field(size), 
+		field(size),
 		scale(2 * M_PI / r.x, 2 * M_PI / r.y)
 	{
 		C2DGridTransformation::field_iterator i = field.field_begin();
@@ -68,7 +68,7 @@ protected:
 	float dfy_yx(float x, float y);
 	float dfy_yy(float x, float y);
 
-	C2DFVector scale; 
+	C2DFVector scale;
 };
 
 
@@ -225,12 +225,12 @@ BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_jacobian, GridTransformFixture )
 
 BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_curl, GridTransformFixture )
 {
-	double curl = 0.0; 
-	const double n = (size.y - 2 ) * (size.x - 2); 
+	double curl = 0.0;
+	const double n = (size.y - 2 ) * (size.x - 2);
 	for (size_t y = 1; y < size.y-1; ++y)
 		for (size_t x = 1; x < size.x-1; ++x) {
-			const float lcurl = dfx_y(x,y) - dfy_x(x,y); 
-			curl += lcurl * lcurl; 
+			const float lcurl = dfx_y(x,y) - dfy_x(x,y);
+			curl += lcurl * lcurl;
 		}
 
 	BOOST_CHECK_CLOSE(field.curl(), curl / n, 2.0);
@@ -238,13 +238,13 @@ BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_curl, GridTransformFixture )
 
 BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_divergence, GridTransformFixture )
 {
-	double div = 0.0; 
-	const double n = (size.y - 2 ) * (size.x - 2); 
+	double div = 0.0;
+	const double n = (size.y - 2 ) * (size.x - 2);
 	for (size_t y = 1; y < size.y-1; ++y)
 		for (size_t x = 1; x < size.x-1; ++x) {
-			const float dfxx = dfx_x(x,y); 
-			const float dfyy = dfy_y(x,y); 
-			div += dfxx * dfxx + dfyy * dfyy; 
+			const float dfxx = dfx_x(x,y);
+			const float dfyy = dfy_y(x,y);
+			div += dfxx * dfxx + dfyy * dfyy;
 		}
 
 	BOOST_CHECK_CLOSE(field.divergence(), div / n , 2.0);
@@ -253,18 +253,18 @@ BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_divergence, GridTransformFixture
 
 BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_grad_curl, GridTransformFixture )
 {
-	double gradcurl = 0.0; 
-	double n = (size.y - 2 ) * (size.x - 2); 
+	double gradcurl = 0.0;
+	double n = (size.y - 2 ) * (size.x - 2);
 	for (size_t y = 1; y < size.y-1; ++y)
 		for (size_t x = 1; x < size.x-1; ++x) {
-			const double gdfx_xy = dfx_xy(x,y); 
+			const double gdfx_xy = dfx_xy(x,y);
 			const double gdfx_yy = dfx_yy(x,y);
-			const double gdfy_xx = dfy_xx(x,y); 
+			const double gdfy_xx = dfy_xx(x,y);
 			const double gdfy_xy = dfy_xy(x,y);
-			gradcurl += gdfx_xy * gdfx_xy + gdfx_yy * gdfx_yy + 
-				gdfy_xx * gdfy_xx + gdfy_xy * gdfy_xy - 
-				2.0 * ( gdfx_xy * gdfy_xx + 
-					gdfx_yy * gdfy_xy ); 
+			gradcurl += gdfx_xy * gdfx_xy + gdfx_yy * gdfx_yy +
+				gdfy_xx * gdfy_xx + gdfy_xy * gdfy_xy -
+				2.0 * ( gdfx_xy * gdfy_xx +
+					gdfx_yy * gdfy_xy );
 
 		}
 
@@ -273,20 +273,20 @@ BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_grad_curl, GridTransformFixture 
 
 BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_grad_divergence, GridTransformFixture )
 {
-	double graddiv = 0.0; 
-	double n = (size.y - 2 ) * (size.x - 2); 
+	double graddiv = 0.0;
+	double n = (size.y - 2 ) * (size.x - 2);
 	for (size_t y = 1; y < size.y-1; ++y)
 		for (size_t x = 1; x < size.x-1; ++x) {
-			const double gdfxx_x = dfx_xx(x,y); 
+			const double gdfxx_x = dfx_xx(x,y);
 			const double gdfxx_y = dfx_xy(x,y);
-			const double gdfyy_x = dfy_yx(x,y); 
+			const double gdfyy_x = dfy_yx(x,y);
 			const double gdfyy_y = dfy_yy(x,y);
 
-			graddiv += 
-				gdfxx_x * gdfxx_x + gdfxx_y * gdfxx_y + 
-				gdfyy_x * gdfyy_x + gdfyy_y * gdfyy_y 
+			graddiv +=
+				gdfxx_x * gdfxx_x + gdfxx_y * gdfxx_y +
+				gdfyy_x * gdfyy_x + gdfyy_y * gdfyy_y
 				+ 2.0 * ( gdfxx_x * gdfyy_x + gdfxx_y * gdfyy_y)
-				; 
+				;
 		}
 
 	BOOST_CHECK_CLOSE(field.grad_divergence(), graddiv / n , 1);
@@ -365,7 +365,7 @@ float GridTransformFixture::dfx_xx(float x, float y)
 	y *= scale.y;
 	return - scale.x * scale.x * sinf(x - M_PI / 2.0) * ( 1.0 + sinf(2 * y  - M_PI / 2.0));
 }
-	
+
 float GridTransformFixture::dfx_xy(float x, float y)
 
 {

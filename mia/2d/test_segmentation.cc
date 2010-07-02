@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010, Gert Wollny
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -8,7 +8,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -96,7 +96,7 @@ extern const char *testset_init;
 extern const char *testset_init2;
 extern const char *testset_init3;
 extern const char *testset_bboxtest;
-extern const char *testset_shift_and_rename; 
+extern const char *testset_shift_and_rename;
 
 struct SegStarFixture {
 	void init(const char *init_str);
@@ -422,24 +422,24 @@ BOOST_AUTO_TEST_CASE( test_segset_write )
 BOOST_FIXTURE_TEST_CASE( test_segset_shift_and_rename, SegSetReadFixture )
 {
 	init(testset_bboxtest);
-	C2DFVector shift(-3.0f, -10.0f); 
-	CSegSet result = segset.shift_and_rename(0, shift, "moved"); 
+	C2DFVector shift(-3.0f, -10.0f);
+	CSegSet result = segset.shift_and_rename(0, shift, "moved");
 	unique_ptr<xmlpp::Document> document(result.write());
 	const string xmldoc = document->write_to_string();
 	const string testdoc(testset_shift_and_rename);
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
 	BOOST_CHECK_EQUAL(xmldoc, testdoc);
 	if (xmldoc != testdoc) {
-		for ( string::const_iterator x = xmldoc.begin(), t = testdoc.begin(); 
+		for ( string::const_iterator x = xmldoc.begin(), t = testdoc.begin();
 		      x != xmldoc.end() && t != testdoc.end(); ++x, ++t ) {
 			if (*x != *t) {
-				cvfail() << "diff follows"; 
-				string::const_iterator xh = x; 
-				string::const_iterator th = t; 
-				for ( size_t i = 0; i < 3 && xh != xmldoc.begin(); ++i, --xh, --th); 
-				for ( size_t i = 0; i < 7 && xh != xmldoc.begin() && th != testdoc.end(); 
+				cvfail() << "diff follows";
+				string::const_iterator xh = x;
+				string::const_iterator th = t;
+				for ( size_t i = 0; i < 3 && xh != xmldoc.begin(); ++i, --xh, --th);
+				for ( size_t i = 0; i < 7 && xh != xmldoc.begin() && th != testdoc.end();
 				      ++xh, ++th)
-					cvfail() << "'" << *xh << "' vs '"<< *th << "'" << endl; 
+					cvfail() << "'" << *xh << "' vs '"<< *th << "'" << endl;
 			}
 		}
 	}
@@ -652,7 +652,7 @@ const char *testset_init3 = "<?xml version=\"1.0\"?>\n<workset>"
 	" </frame>"
 	"</workset>\n";
 
-const char *testset_bboxtest = 
+const char *testset_bboxtest =
 "<?xml version=\"1.0\"?>\n<workset>"
   "<frame image=\"data0000.png\">"
       "<star y=\"118\" x=\"109\" r=\"21\">"
@@ -686,7 +686,7 @@ const char *testset_bboxtest =
 
 
 
-const char *testset_shift_and_rename = 
+const char *testset_shift_and_rename =
 "<?xml version=\"1.0\"?>\n<workset>"
   "<frame image=\"moved0000.png\">"
       "<star y=\"128\" x=\"112\" r=\"21\">"

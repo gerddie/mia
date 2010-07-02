@@ -1,10 +1,10 @@
 /*  -*- mia-c++  -*-
- * Copyright (c) 2004 
- *   Max-Planck-Institute for Human Cognitive and Brain Science	
+ * Copyright (c) Leipzig, Madrid 2004-2010
+ *   Max-Planck-Institute for Human Cognitive and Brain Science
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -31,8 +31,8 @@
 
 #ifdef WIN32
 #  define EXPORT_2DDATAFIELD __declspec(dllexport)
-#else 
-#  define EXPORT_2DDATAFIELD 
+#else
+#  define EXPORT_2DDATAFIELD
 #endif
 
 
@@ -45,7 +45,7 @@ template <>
 T3DDatafield<bool>::value_type
 T3DDatafield<bool>::strip_avg()
 {
-	throw std::invalid_argument("strip_avg() doesn't make sense for boolean fields"); 
+	throw std::invalid_argument("strip_avg() doesn't make sense for boolean fields");
 }
 
 
@@ -71,26 +71,26 @@ T3DDatafield<bool>::get_trilin_interpol_val_at(const T3DVector<float >& p) const
 	a3 = (dx * (*this)(x  , y+1, z  ) + fx * (*this)(x+1, y+1, z  ));
 	a5 = (dx * (*this)(x  , y  , z+1) + fx * (*this)(x+1, y  , z+1));
 	a7 = (dx * (*this)(x  , y+1, z+1) + fx * (*this)(x+1, y+1, z+1));
-        
+
         register float b1 = dy * a1 + fy * a3;
         register float b2 = dy * a5 + fy * a7;
-        
+
 	return  (dz * b1 + fz * b2) > 0.5;
 }
 
 
 
-template class  EXPORT_3D T3DDatafield<double>; 
-template class  EXPORT_3D T3DDatafield<float>; 
-template class  EXPORT_3D T3DDatafield<unsigned int>; 
-template class  EXPORT_3D T3DDatafield<int>; 
+template class  EXPORT_3D T3DDatafield<double>;
+template class  EXPORT_3D T3DDatafield<float>;
+template class  EXPORT_3D T3DDatafield<unsigned int>;
+template class  EXPORT_3D T3DDatafield<int>;
 
 #ifdef HAVE_INT64
-template class  EXPORT_3D T3DDatafield<mia_int64>; 
-template class  EXPORT_3D T3DDatafield<mia_uint64>; 
+template class  EXPORT_3D T3DDatafield<mia_int64>;
+template class  EXPORT_3D T3DDatafield<mia_uint64>;
 #endif
-template class  EXPORT_3D T3DDatafield<short>; 
-template class  EXPORT_3D T3DDatafield<unsigned short>; 
+template class  EXPORT_3D T3DDatafield<short>;
+template class  EXPORT_3D T3DDatafield<unsigned short>;
 template class  EXPORT_3D T3DDatafield<unsigned char >;
 template class  EXPORT_3D T3DDatafield<signed char >;
 template class  EXPORT_3D T3DDatafield<bool>;

@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -39,7 +39,7 @@ NS_MIA_BEGIN
    that can be used to store some
    data temporarly like it would be stored on disk.
    Each IO plugin automatically defines an interface to store in and load
-   from this pool. The extension, by which this behaviour is triggered is ".datapool".  
+   from this pool. The extension, by which this behaviour is triggered is ".datapool".
    \todo add delete key function,
    \todo add automatic key generation
    \todo all plugins that load data should load to the pool first to enable

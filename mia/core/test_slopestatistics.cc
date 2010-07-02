@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2009 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -84,8 +84,8 @@ BOOST_AUTO_TEST_CASE( test_perfusion_mean_freq )
 	};
 	vector<float> curve(init_curve, init_curve + curve_length);
 	CSlopeStatistics stats(curve);
-	
-	BOOST_CHECK_CLOSE(stats.get_mean_frequency(),3.51f, 0.1); 
+
+	BOOST_CHECK_CLOSE(stats.get_mean_frequency(),3.51f, 0.1);
 
 }
 
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE( test_perfusion_mean_freq2 )
 	};
 	vector<float> curve(init_curve, init_curve + curve_length);
 	CSlopeStatistics stats(curve);
-	
-	BOOST_CHECK_CLOSE(stats.get_mean_frequency(), 5.23036051f, 0.1); 
+
+	BOOST_CHECK_CLOSE(stats.get_mean_frequency(), 5.23036051f, 0.1);
 
 }

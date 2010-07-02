@@ -1,13 +1,13 @@
 /*  -*- mia-c++ -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -88,8 +88,8 @@ void CRaw2DImageIO::do_add_suffixes(multimap<string, string>& map) const
 
 CRaw2DImageIO::PData CRaw2DImageIO::do_load(string const& /*filename*/)const
 {
-	cvwarn() << "CRaw2DImageIO::do_load:  raw image reading currently not supported\n"; 
-	return CRaw2DImageIO::PData(); 
+	cvwarn() << "CRaw2DImageIO::do_load:  raw image reading currently not supported\n";
+	return CRaw2DImageIO::PData();
 }
 
 struct C2DRawImageSaver {
@@ -101,7 +101,7 @@ struct C2DRawImageSaver {
 	}
 
 	template <typename T>
-	result_type operator()(const T2DImage<T>& image) const; 
+	result_type operator()(const T2DImage<T>& image) const;
 private:
 	CFile& _M_f;
 };
@@ -119,7 +119,7 @@ template <>
 struct T2DRawImageWriter<bool>  {
 	static bool apply (const C2DBitImage& image, FILE *f) {
 		vector<char> buf(image.size(), 0);
-		copy(image.begin(), image.end(), buf.begin()); 
+		copy(image.begin(), image.end(), buf.begin());
 		return buf.size() == fwrite(&buf[0],1, image.size(),  f);
 	}
 };
@@ -129,7 +129,7 @@ template <typename T>
 C2DRawImageSaver::result_type
 C2DRawImageSaver::operator()(const T2DImage<T>& image) const
 {
-	return T2DRawImageWriter<T>::apply(image, _M_f); 
+	return T2DRawImageWriter<T>::apply(image, _M_f);
 }
 
 ///

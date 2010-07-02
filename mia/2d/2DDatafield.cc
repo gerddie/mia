@@ -1,10 +1,10 @@
 /*  -*- mia-c++  -*-
- * Copyright (c) 2004 
- * Max-Planck-Institute for Human Cognitive and Brain Science	
+ * Copyright (c) Leipzig, Madrid 2004-2010
+ * Max-Planck-Institute for Human Cognitive and Brain Science
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -32,27 +32,27 @@ The class holds all types of data stored in two dimensional fields.
 
 #ifdef WIN32
 #  define EXPORT_2DDATAFIELD __declspec(dllexport)
-#else 
-#  define EXPORT_2DDATAFIELD 
+#else
+#  define EXPORT_2DDATAFIELD
 #endif
 
 #include <mia/2d/2DDatafield.cxx>
 
 NS_MIA_BEGIN
 
-template class EXPORT_2DDATAFIELD T2DDatafield<float>; 
+template class EXPORT_2DDATAFIELD T2DDatafield<float>;
 #ifdef HAVE_INT64
 template class EXPORT_2DDATAFIELD T2DDatafield<mia_int64>;
 template class EXPORT_2DDATAFIELD T2DDatafield<mia_uint64>;
 #endif
-template class EXPORT_2DDATAFIELD T2DDatafield<double>; 
+template class EXPORT_2DDATAFIELD T2DDatafield<double>;
 template class EXPORT_2DDATAFIELD T2DDatafield<unsigned int>;
 template class EXPORT_2DDATAFIELD T2DDatafield<signed int>;
 template class EXPORT_2DDATAFIELD T2DDatafield<unsigned short>;
 template class EXPORT_2DDATAFIELD T2DDatafield<signed short>;
-template class EXPORT_2DDATAFIELD T2DDatafield<bool>; 
+template class EXPORT_2DDATAFIELD T2DDatafield<bool>;
 template class EXPORT_2DDATAFIELD T2DDatafield<unsigned char>;
-template class EXPORT_2DDATAFIELD T2DDatafield<signed char>;	
+template class EXPORT_2DDATAFIELD T2DDatafield<signed char>;
 
 NS_MIA_END
 

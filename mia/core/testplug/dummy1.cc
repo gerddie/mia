@@ -1,10 +1,10 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) 2007 Gert Wollny <gert dot wollny at acm dot org>
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -23,15 +23,15 @@
 #include <mia/core/testplugin.hh>
 
 NS_MIA_USE
-using namespace std; 
+using namespace std;
 
 class CDummy1 :public CTestPlugin {
-public: 
+public:
 	CDummy1();
-private: 
-	virtual const string do_get_descr() const; 
-	virtual bool do_test() const; 
-}; 
+private:
+	virtual const string do_get_descr() const;
+	virtual bool do_test() const;
+};
 
 CDummy1::CDummy1():
   CTestPlugin("dummy1")
@@ -40,17 +40,17 @@ CDummy1::CDummy1():
 
 const string CDummy1::do_get_descr() const
 {
-	return "test module with no data"; 
+	return "test module with no data";
 }
 
 
 bool CDummy1::do_test() const
 {
-	return true; 
+	return true;
 }
 
 
-extern "C" EXPORT  CPluginBase *get_plugin_interface() 
+extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
 	return new CDummy1();
 }

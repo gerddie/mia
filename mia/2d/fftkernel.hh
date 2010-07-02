@@ -1,13 +1,13 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2009
- * Max-Planck-Institute for Human Cognitive and Brain Science	
- * Max-Planck-Institute for Evolutionary Anthropology 
+ * Copyright (c) Leipzig, Madrid 2004-2010
+ * Max-Planck-Institute for Human Cognitive and Brain Science
+ * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -23,9 +23,9 @@
 
 // $Id: fftkernel.hh,v 1.1 2006-03-01 19:14:13 wollny Exp $
 
-/*! \brief basic type of a plugin handler 
+/*! \brief basic type of a plugin handler
 
-A basis for fft filter plugins 
+A basis for fft filter plugins
 
 \author Gert Wollny <wollny at die.upm.es>
 
@@ -45,34 +45,34 @@ A basis for fft filter plugins
 NS_MIA_BEGIN
 
 struct EXPORT_CORE fft2d_kernel_data {
-	static const char *type_descr; 
-}; 
-
-class CFFT2DKernel :public CProductBase {
-public: 
-	CFFT2DKernel(); 
-	virtual ~CFFT2DKernel(); 
-	void apply() const; 
-	float *prepare(const C2DBounds& size); 
-private: 
-	void tear_down(); 
-	virtual void do_apply(const C2DBounds& _M_size, size_t _M_realsize_x, fftwf_complex *_M_cbuffer) const = 0; 
-
-	C2DBounds _M_size; 
-	fftwf_complex *_M_cbuffer; 
-	float   *_M_fbuffer; 
-	float _M_scale; 
-	fftwf_plan _M_forward_plan; 
-	fftwf_plan _M_backward_plan; 
-	
-	size_t _M_realsize_x; 
+	static const char *type_descr;
 };
 
-typedef  SHARED_PTR(CFFT2DKernel) PFFT2DKernel; 
+class CFFT2DKernel :public CProductBase {
+public:
+	CFFT2DKernel();
+	virtual ~CFFT2DKernel();
+	void apply() const;
+	float *prepare(const C2DBounds& size);
+private:
+	void tear_down();
+	virtual void do_apply(const C2DBounds& _M_size, size_t _M_realsize_x, fftwf_complex *_M_cbuffer) const = 0;
+
+	C2DBounds _M_size;
+	fftwf_complex *_M_cbuffer;
+	float   *_M_fbuffer;
+	float _M_scale;
+	fftwf_plan _M_forward_plan;
+	fftwf_plan _M_backward_plan;
+
+	size_t _M_realsize_x;
+};
+
+typedef  SHARED_PTR(CFFT2DKernel) PFFT2DKernel;
 
 
-typedef TFactory<CFFT2DKernel, fft2d_kernel_data, kernel_plugin_type> CFFT2DKernelPlugin; 
-typedef THandlerSingleton<TFactoryPluginHandler<CFFT2DKernelPlugin> > CFFT2DKernelPluginHandler; 
+typedef TFactory<CFFT2DKernel, fft2d_kernel_data, kernel_plugin_type> CFFT2DKernelPlugin;
+typedef THandlerSingleton<TFactoryPluginHandler<CFFT2DKernelPlugin> > CFFT2DKernelPluginHandler;
 
 NS_MIA_END
 

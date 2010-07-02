@@ -1,10 +1,10 @@
 #
-# Copyright (c) Madrid 2008, 2009 
+# Copyright (c) Leipzig, Madrid 2004-2010
 # BIT, ETSI Telecomunicacion, UPM
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -49,7 +49,7 @@ SET(BINARY_AGE    0)
 SET(PACKAGE_VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}")
 SET(VERSION "${MAJOR_VERSION}.${MINOR_VERSION}")
 SET(MIA_NAME "${PACKAGE_NAME}-${VERSION}")
-SET(prefix ${CMAKE_INSTALL_PREFIX}) 
+SET(prefix ${CMAKE_INSTALL_PREFIX})
 SET(PLUGIN_OUTPUT "${CMAKE_BINARY_DIR}/plugins")
 
 SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -76,7 +76,7 @@ INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
 IF(NOT "${CXX_HAS_CXX_0X_AUTO}")
   MESSAGE(FATAL_ERROR "This source code requires the c++0x auto type feature. "
     "If your compiler is supposed to support this feature, "
-    "please enable the appropriate flags.\n" 
+    "please enable the appropriate flags.\n"
     "for g++ >= 4.4 this is '-std=c++0x'" )
 ENDIF(NOT "${CXX_HAS_CXX_0X_AUTO}")
 
@@ -117,9 +117,9 @@ CHECK_INCLUDE_FILES (unistd.h HAVE_UNISTD_H)
 
 # find additional packages
 #
-# With MSVC using pre-installed dynamic libraries is usually a pain because of 
+# With MSVC using pre-installed dynamic libraries is usually a pain because of
 # the incompatibilities in the compiler flags
-# 
+#
 IF (MSVC)
   SET(SEARCH_LIBS_DEFAULT FALSE)
 ELSE(MSVC)
@@ -168,7 +168,7 @@ ENDMACRO(GET_BOOST_LINKERFLAG)
 
 
 #
-# Handle BOOST 
+# Handle BOOST
 #
 #find essecial packages
 SET(BOOST_COMPONENTS   filesystem  regex  thread  unit_test_framework)
@@ -176,7 +176,7 @@ IF (WIN32)
   SET(BOOST_COMPONENTS  ${BOOST_COMPONENTS} date_time system)
 ENDIF(WIN32)
 
-FIND_PACKAGE( Boost 1.36.1 COMPONENTS 
+FIND_PACKAGE( Boost 1.36.1 COMPONENTS
   ${BOOST_COMPONENTS}
   REQUIRED)
 
@@ -196,10 +196,10 @@ LINK_DIRECTORIES(${GSLPP_LIBRARY_DIRS})
 
 
 IF (WIN32 AND NOT UNIX)
-   FOREACH(l ${Boost_THREAD_LIBRARY} 
-       ${Boost_REGEX_LIBRARIES}  
-       ${Boost_FILESYSTEM_LIBRARY} 
-       ${Boost_SYSTEM} 
+   FOREACH(l ${Boost_THREAD_LIBRARY}
+       ${Boost_REGEX_LIBRARIES}
+       ${Boost_FILESYSTEM_LIBRARY}
+       ${Boost_SYSTEM}
        ${Boost_DATE_TIME}
        )
       STRING(REGEX MATCH "lib$" head ${l})
@@ -212,7 +212,7 @@ IF (WIN32 AND NOT UNIX)
 ENDIF (WIN32 AND NOT UNIX)
 
 IF (MSYS OR MINGW)
-  SET(BASELIBS ${BOOST_DEPS}) 
+  SET(BASELIBS ${BOOST_DEPS})
 ENDIF (MSYS OR MINGW)
 
 IF(UNIX)
@@ -220,7 +220,7 @@ IF(UNIX)
   SET(MIA_DEPEND_LIBRARIES "${BOOST_LIBFLAG} -lpthread -ldl -L${Boost_LIBRARY_DIRS}")
 ENDIF(UNIX)
 #
-# End Handle BOOST 
+# End Handle BOOST
 #
 
 #
@@ -235,10 +235,10 @@ IF(NOT WIN32)
     /opt/local/lib
     /sw/lib
   )
-  IF(DL_NOTDOUND) 
+  IF(DL_NOTDOUND)
     MESSAGE(FATAL_ERROR "non-windows systems without libdl.so are not yet supported")
-  ENDIF(DL_NOTDOUND) 
-  SET(BASELIBS  ${BOOST_DEPS} ${DL}) 
+  ENDIF(DL_NOTDOUND)
+  SET(BASELIBS  ${BOOST_DEPS} ${DL})
 ENDIF(NOT WIN32)
 
 
@@ -257,34 +257,34 @@ OPTION(WARN_OLD_PLUGINSTYLE "Warn if plugins use old implementation style" OFF)
 
 
 #
-# optional global dependencies for the core libraries  
+# optional global dependencies for the core libraries
 #
 # Deal with FFT v3 Options
 OPTION(WITH_FFTW "Use FFTW" ${SEARCH_LIBS_DEFAULT})
 
-IF(WITH_FFTW) 
+IF(WITH_FFTW)
   MARK_AS_ADVANCED(WITH_FFTWD)
   OPTION(WITH_FFTWD "Use double precision FFTW if found" ON)
-  
+
   MARK_AS_ADVANCED(WITH_FFTWF)
   OPTION(WITH_FFTWF "Use single precision FFTW if found" ON)
-  
+
   IF( WITH_FFTWD OR WITH_FFTWF )
     FIND_PACKAGE( FFTW )
-    IF(FFTWF_FOUND AND WITH_FFTWF) 
+    IF(FFTWF_FOUND AND WITH_FFTWF)
       SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} fftw3f")
       MESSAGE(STATUS "use FFTWF")
     ELSE(FFTWF_FOUND AND WITH_FFTWF)
       MESSAGE(STATUS "no FFTWF found")
     ENDIF(FFTWF_FOUND  AND WITH_FFTWF)
-    IF(FFTWD_FOUND AND WITH_FFTWD) 
+    IF(FFTWD_FOUND AND WITH_FFTWD)
       SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} fftw3")
       MESSAGE(STATUS "use FFTWD")
     ENDIF(FFTWD_FOUND  AND WITH_FFTWD)
   ENDIF( WITH_FFTWD OR WITH_FFTWF )
-  IF(WITH_FFTWD) 
+  IF(WITH_FFTWD)
     OPTION(WITH_PWPDF "Use PWPDF for parzen windows PDF estimation" ${SEARCH_LIBS_DEFAULT})
-    IF(WITH_NFFT) 
+    IF(WITH_NFFT)
       pkg_check_modules(PWPDF libpwpdf)
       IF (PWPDF_FOUND)
 	INCLUDE_DIRECTORIES(${PWPDF_INCLUDE_DIRS})
@@ -300,17 +300,17 @@ ENDIF(WITH_FFTW)
 # add xml library for some fun with segmentations
 #
 OPTION(WITH_XMLPP "Use XML++ for some additional features" ${SEARCH_LIBS_DEFAULT})
-IF(WITH_XMLPP) 
+IF(WITH_XMLPP)
   pkg_check_modules(XMLPP libxml++-2.6)
   IF (XMLPP_FOUND)
     INCLUDE_DIRECTORIES(${XMLPP_INCLUDE_DIRS})
     LINK_DIRECTORIES(${XMLPP_LIBRARY_DIRS})
     SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} libxml++-2.6")
   ENDIF (XMLPP_FOUND)
-ENDIF(WITH_XMLPP) 
+ENDIF(WITH_XMLPP)
 
 #
-# at itpp for ICA 
+# at itpp for ICA
 #
 
 OPTION(WITH_ITPP "Use IT++ for some additional features" ${SEARCH_LIBS_DEFAULT})
@@ -325,7 +325,7 @@ ENDIF(WITH_ITPP)
 
 ADD_DEFINITIONS(-DHAVE_CONFIG_H)
 
-#add the root directory to the search path 
+#add the root directory to the search path
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
@@ -353,7 +353,7 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/miaconfig.h.cmake ${CMAKE_CURRENT_BIN
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/miaconfig.h DESTINATION ${LIB_INCLUDE_INSTALL_PATH})
-INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README ${CMAKE_CURRENT_SOURCE_DIR}/COPYING 
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README ${CMAKE_CURRENT_SOURCE_DIR}/COPYING
   DESTINATION ${DOC_INSTALL_PATH})
 
 INCLUDE(cmake/package.cmake)

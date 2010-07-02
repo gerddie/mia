@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -129,8 +129,8 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_stripped_and_normalized, 
 	C2DImageSeriesICA ica(image_set, true);
 
 	ica.run(4);
-	ica.normalize(); 
-	ica.normalize_Mix(); 
+	ica.normalize();
+	ica.normalize_Mix();
 
 	for (size_t i = 0; i < slices; ++i) {
 		C2DFImage mixed = ica.get_mix(i);
@@ -148,8 +148,8 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized, ICASeriesFixt
 	C2DImageSeriesICA ica(image_set, false);
 
 	ica.run(4);
-	ica.normalize(); 
-	ica.normalize_Mix(); 
+	ica.normalize();
+	ica.normalize_Mix();
 
 	for (size_t i = 0; i < slices; ++i) {
 		C2DFImage mixed = ica.get_mix(i);
@@ -167,8 +167,8 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_normalized2, ICASeriesFix
 	C2DImageSeriesICA ica(image_set, false);
 
 	ica.run(4);
-	ica.normalize_Mix(); 
-	ica.normalize(); 
+	ica.normalize_Mix();
+	ica.normalize();
 
 	for (size_t i = 0; i < slices; ++i) {
 		C2DFImage mixed = ica.get_mix(i);
@@ -186,7 +186,7 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_mix_normalized, ICASeries
 	C2DImageSeriesICA ica(image_set, false);
 
 	ica.run(4);
-	ica.normalize_Mix(); 
+	ica.normalize_Mix();
 	for (size_t i = 0; i < slices; ++i) {
 		C2DFImage mixed = ica.get_mix(i);
 		BOOST_CHECK_EQUAL(mixed.get_size(), image_set[i].get_size());
@@ -216,28 +216,28 @@ BOOST_FIXTURE_TEST_CASE( test_ica_with_some_mean_4comp_none, ICASeriesFixture )
 
 
 
-BOOST_AUTO_TEST_CASE( test_ica_mean_substract ) 
+BOOST_AUTO_TEST_CASE( test_ica_mean_substract )
 {
-	C2DBounds size(2,3); 	
-	float init_image1[6] = {1, 2, 3, 4, 5, 6}; 
+	C2DBounds size(2,3);
+	float init_image1[6] = {1, 2, 3, 4, 5, 6};
 	float init_image2[6] = {7, 6, 5, 4, 3, 2};
-	
 
-	vector<C2DFImage> images; 
-	images.push_back(C2DFImage(size, init_image1)); 
-	images.push_back(C2DFImage(size, init_image2)); 
-	
-	C2DImageSeriesICA ica(images, true); 
 
-	const C2DFImage& mean = ica.get_mean_image(); 
-	
-	BOOST_CHECK_EQUAL(mean.get_size(), size); 
-	
-	for(size_t y = 0; y < size.y; ++y) 
+	vector<C2DFImage> images;
+	images.push_back(C2DFImage(size, init_image1));
+	images.push_back(C2DFImage(size, init_image2));
+
+	C2DImageSeriesICA ica(images, true);
+
+	const C2DFImage& mean = ica.get_mean_image();
+
+	BOOST_CHECK_EQUAL(mean.get_size(), size);
+
+	for(size_t y = 0; y < size.y; ++y)
 		for(size_t x = 0; x < size.x; ++x) {
-			BOOST_CHECK_CLOSE(mean(x,y), 4.0f, 0.1); 
+			BOOST_CHECK_CLOSE(mean(x,y), 4.0f, 0.1);
 		}
-	
+
 
 }
 

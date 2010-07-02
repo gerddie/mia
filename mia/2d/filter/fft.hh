@@ -1,13 +1,13 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2009
- * Max-Planck-Institute for Human Cognitive and Brain Science	
- * Max-Planck-Institute for Evolutionary Anthropology 
+ * Copyright (c) Leipzig, Madrid 2004-2010
+ * Max-Planck-Institute for Human Cognitive and Brain Science
+ * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -38,23 +38,23 @@ NS_BEGIN(fft_2dimage_filter)
 
 class C2DFft : public mia::C2DFilter {
 public:
-	C2DFft(const mia::PFFT2DKernel&  kernel); 
+	C2DFft(const mia::PFFT2DKernel&  kernel);
 
 	template <class T>
 	typename mia::C2DFilter::result_type operator () (const mia::T2DImage<T>& data) const ;
-private: 
+private:
 	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 
 	mia::PFFT2DKernel  _M_kernel;
 };
 
 class C2DFilterPluginFactory: public mia::C2DFilterPlugin {
-public: 
+public:
 	C2DFilterPluginFactory();
-private: 
+private:
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
-	virtual const std::string do_get_descr()const; 
-	std::string _M_kernel; 
+	virtual const std::string do_get_descr()const;
+	std::string _M_kernel;
 };
 
 NS_END

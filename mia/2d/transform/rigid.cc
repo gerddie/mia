@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2009 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -50,8 +50,8 @@ C2DFVector C2DRigidTransformation::apply(const C2DFVector& x) const
 C2DFVector C2DRigidTransformation::transform(const C2DFVector& x)const
 {
 	if (!_M_matrix_valid)
-		evaluate_matrix(); 
-	
+		evaluate_matrix();
+
 	return C2DFVector(
 		_M_t[0] * x.x + _M_t[1] * x.y + _M_t[2],
 		_M_t[3] * x.x + _M_t[4] * x.y + _M_t[5]
@@ -59,7 +59,7 @@ C2DFVector C2DRigidTransformation::transform(const C2DFVector& x)const
 }
 
 C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size):
-	_M_t(6), 
+	_M_t(6),
 	_M_size(size),
 	_M_translation(0.0, 0.0),
 	_M_rotation(0.0),
@@ -71,22 +71,22 @@ C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size):
 C2DRigidTransformation::C2DRigidTransformation(const C2DRigidTransformation& other):
 	_M_t(other._M_t),
 	_M_size(other._M_size),
-	_M_translation(other._M_translation), 
-	_M_rotation(other._M_rotation), 
+	_M_translation(other._M_translation),
+	_M_rotation(other._M_rotation),
 	_M_matrix_valid(_M_matrix_valid)
 {
 }
-	
+
 C2DTransformation *C2DRigidTransformation::clone()const
 {
 	return new C2DRigidTransformation(*this);
 }
 
-C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size,const C2DFVector& translation, 
+C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size,const C2DFVector& translation,
 					       float rotation):
-	_M_t(6), 
-	_M_size(size), 
-	_M_translation(translation), 
+	_M_t(6),
+	_M_size(size),
+	_M_translation(translation),
 	_M_rotation(rotation),
 	_M_matrix_valid(false)
 {
@@ -115,40 +115,40 @@ void C2DRigidTransformation::update(float /*step*/, const C2DFVectorfield& /*a*/
 
 void C2DRigidTransformation::translate(float x, float y)
 {
-	_M_matrix_valid = false; 
-	_M_translation.x +=  x; 
+	_M_matrix_valid = false;
+	_M_translation.x +=  x;
 	_M_translation.y +=  y;
 }
 
 void C2DRigidTransformation::rotate(float angle)
 {
-	_M_matrix_valid = false; 
-	_M_rotation += angle; 
-	const double sina = sin(angle); 
-	const double cosa = cos(angle); 
-	
-	const double tx      = cosa * _M_translation.x - sina * _M_translation.y; 
-	_M_translation.y = sina * _M_translation.x + cosa * _M_translation.y; 
-	_M_translation.x = tx; 
+	_M_matrix_valid = false;
+	_M_rotation += angle;
+	const double sina = sin(angle);
+	const double cosa = cos(angle);
+
+	const double tx      = cosa * _M_translation.x - sina * _M_translation.y;
+	_M_translation.y = sina * _M_translation.x + cosa * _M_translation.y;
+	_M_translation.x = tx;
 }
 
 gsl::DoubleVector C2DRigidTransformation::get_parameters() const
 {
-	gsl::DoubleVector result(degrees_of_freedom()); 
-	result[0] = _M_translation.x; 
-	result[1] = _M_translation.y; 
-	result[2] = _M_rotation; 
-	return result; 
+	gsl::DoubleVector result(degrees_of_freedom());
+	result[0] = _M_translation.x;
+	result[1] = _M_translation.y;
+	result[2] = _M_rotation;
+	return result;
 }
 
 void C2DRigidTransformation::set_parameters(const gsl::DoubleVector& params)
 {
-	assert(degrees_of_freedom() == params.size()); 
+	assert(degrees_of_freedom() == params.size());
 
-	_M_translation.x = params[0]; 
-	_M_translation.y = params[1]; 
-	_M_rotation = params[2]; 
-	_M_matrix_valid = false; 
+	_M_translation.x = params[0];
+	_M_translation.y = params[1];
+	_M_rotation = params[2];
+	_M_matrix_valid = false;
 }
 
 float C2DRigidTransformation::divergence() const
@@ -158,13 +158,13 @@ float C2DRigidTransformation::divergence() const
 
 float C2DRigidTransformation::grad_divergence() const
 {
-	return 0.0; 
+	return 0.0;
 }
 
 
 float C2DRigidTransformation::grad_curl() const
 {
-	return 0.0; 
+	return 0.0;
 }
 
 
@@ -182,15 +182,15 @@ const C2DBounds& C2DRigidTransformation::get_size() const
 
 P2DTransformation C2DRigidTransformation::upscale(const C2DBounds& size) const
 {
-	C2DFVector new_trans(float(size.x) / (float)get_size().x * _M_translation.x, 
-			     float(size.y) / (float)get_size().y * _M_translation.y); 
+	C2DFVector new_trans(float(size.x) / (float)get_size().x * _M_translation.x,
+			     float(size.y) / (float)get_size().y * _M_translation.y);
 	return P2DTransformation(new C2DRigidTransformation(size, new_trans, _M_rotation));
 }
 
 C2DFMatrix C2DRigidTransformation::derivative_at(int /*x*/, int /*y*/) const
 {
-	const double cosa = cos(_M_rotation); 
-	const double sina = sin(_M_rotation); 
+	const double cosa = cos(_M_rotation);
+	const double sina = sin(_M_rotation);
 
 	return C2DFMatrix(C2DFVector(cosa, -sina),
 			  C2DFVector(sina,  cosa));
@@ -198,23 +198,23 @@ C2DFMatrix C2DRigidTransformation::derivative_at(int /*x*/, int /*y*/) const
 
 void C2DRigidTransformation::set_identity()
 {
-	cvdebug() << "set identity\n"; 
-	_M_translation.x = _M_translation.y = _M_rotation = 0.0; 
+	cvdebug() << "set identity\n";
+	_M_translation.x = _M_translation.y = _M_rotation = 0.0;
 }
 
 void C2DRigidTransformation::evaluate_matrix() const
 {
-	const double cosa = cos(_M_rotation); 
-	const double sina = sin(_M_rotation); 
+	const double cosa = cos(_M_rotation);
+	const double sina = sin(_M_rotation);
 
-	_M_t[0] = cosa; 
-	_M_t[1] = -sina; 
-	_M_t[2] = _M_translation.x; 
-	_M_t[3] = sina; 
-	_M_t[4] = cosa; 
-	_M_t[5] = _M_translation.y; 
+	_M_t[0] = cosa;
+	_M_t[1] = -sina;
+	_M_t[2] = _M_translation.x;
+	_M_t[3] = sina;
+	_M_t[4] = cosa;
+	_M_t[5] = _M_translation.y;
 
-	_M_matrix_valid = true; 
+	_M_matrix_valid = true;
 }
 
 float C2DRigidTransformation::get_max_transform() const
@@ -239,7 +239,7 @@ float C2DRigidTransformation::get_max_transform() const
 void C2DRigidTransformation::add(const C2DTransformation& other)
 {
 	// *this  = other * *this
-	assert(0 && "not implemented"); 
+	assert(0 && "not implemented");
 }
 
 C2DRigidTransformation::const_iterator::const_iterator():
@@ -279,47 +279,47 @@ float C2DRigidTransformation::get_jacobian(const C2DFVectorfield& /*v*/, float /
 
 void C2DRigidTransformation::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
-	// 
+	//
 
 	assert(gradient.get_size() == _M_size);
 	assert(params.size() == degrees_of_freedom());
-	
-	vector<double> r(params.size(), 0.0); 
-	
-	auto g = gradient.begin(); 
+
+	vector<double> r(params.size(), 0.0);
+
+	auto g = gradient.begin();
 	for (size_t y = 0; y < _M_size.y; ++y) {
 		for (size_t x = 0; x < _M_size.x; ++x, ++g) {
-			r[0] += g->x; 
-			r[1] += g->y; 
+			r[0] += g->x;
+			r[1] += g->y;
 		}
 	}
-	double gxx = 0.0; 
-	double gxy = 0.0; 
-	double gyx = 0.0; 
-	double gyy = 0.0; 
+	double gxx = 0.0;
+	double gxy = 0.0;
+	double gyx = 0.0;
+	double gyy = 0.0;
 	for (size_t y = 1; y < _M_size.y; ++y) {
-		auto g0 = gradient.begin_at(0,y); 
-		auto g1 = gradient.begin_at(0,y); 
+		auto g0 = gradient.begin_at(0,y);
+		auto g1 = gradient.begin_at(0,y);
 		for (size_t x = 1; x < _M_size.x; ++x, ++g) {
-			gxx += g1[1].x - g1[0].x; 
-			gyx += g1[1].y - g1[0].y; 
-			gxy += g1->x - g0->x; 
-			gyy += g1->y - g0->y; 
+			gxx += g1[1].x - g1[0].x;
+			gyx += g1[1].y - g1[0].y;
+			gxy += g1->x - g0->x;
+			gyy += g1->y - g0->y;
 		}
 	}
 
-	const double f = 1.0 / gradient.size(); 
-	params[0] = r[0] * f; 
-	params[1] = r[1] * f; 
+	const double f = 1.0 / gradient.size();
+	params[0] = r[0] * f;
+	params[1] = r[1] * f;
 
-	double rot = gyx - gxy; 
-	double irot = gxx + gyy; 
-	cvdebug() << "rotation =" << rot << ", " << irot << "\n"; 
+	double rot = gyx - gxy;
+	double irot = gxx + gyy;
+	cvdebug() << "rotation =" << rot << ", " << irot << "\n";
 
-	if (fabs(rot)  < 1e-5 * fabs(irot)) 
-		params[2] = 0; 
-	else 
-		params[2] = atan(rot/irot); 
+	if (fabs(rot)  < 1e-5 * fabs(irot))
+		params[2] = 0;
+	else
+		params[2] = atan(rot/irot);
 }
 
 C2DRigidTransformation::const_iterator C2DRigidTransformation::const_iterator::operator ++(int)

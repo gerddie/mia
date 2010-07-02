@@ -1,12 +1,12 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2009 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -37,14 +37,14 @@ class C2DRigidTransformation;
 class EXPORT_2D C2DRigidTransformation : public C2DTransformation {
 public:
 	enum EParamPosition {
-		pp_translate_x = 0, 
-		pp_translate_y, 
-		pp_rotate, 
-	}; 
+		pp_translate_x = 0,
+		pp_translate_y,
+		pp_rotate,
+	};
 
 
 	C2DRigidTransformation(const C2DBounds& size);
-	C2DRigidTransformation(const C2DBounds& size,const C2DFVector& translation, 
+	C2DRigidTransformation(const C2DBounds& size,const C2DFVector& translation,
 					       float rotation);
 
 	void translate(float x, float y);
@@ -91,27 +91,27 @@ public:
 	virtual size_t degrees_of_freedom() const;
 	virtual void update(float step, const C2DFVectorfield& a);
 	virtual C2DFMatrix derivative_at(int x, int y) const;
-	virtual gsl::DoubleVector get_parameters() const; 
-	virtual void set_parameters(const gsl::DoubleVector& params); 
+	virtual gsl::DoubleVector get_parameters() const;
+	virtual void set_parameters(const gsl::DoubleVector& params);
 	virtual void set_identity();
 	virtual float get_max_transform() const;
 	virtual float pertuberate(C2DFVectorfield& v) const;
 	virtual C2DFVector operator () (const C2DFVector& x) const;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
 	C2DFVector transform(const C2DFVector& x)const;
-	virtual float divergence() const; 
-	virtual float curl() const; 
-	float grad_divergence() const; 
-	float grad_curl() const; 
+	virtual float divergence() const;
+	virtual float curl() const;
+	float grad_divergence() const;
+	float grad_curl() const;
 private:
-	void evaluate_matrix() const; 
-	C2DRigidTransformation(const C2DRigidTransformation& other); 
-	C2DRigidTransformation& operator =(const C2DRigidTransformation& other); 
+	void evaluate_matrix() const;
+	C2DRigidTransformation(const C2DRigidTransformation& other);
+	C2DRigidTransformation& operator =(const C2DRigidTransformation& other);
 	mutable std::vector<double> _M_t;
 	C2DBounds _M_size;
-	C2DFVector _M_translation; 
-	float _M_rotation; 
-	mutable bool _M_matrix_valid; 
+	C2DFVector _M_translation;
+	float _M_rotation;
+	mutable bool _M_matrix_valid;
 };
 
 

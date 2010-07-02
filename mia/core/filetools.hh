@@ -1,13 +1,13 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2010
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -98,10 +98,10 @@ EXPORT_CORE std::string create_filename(const char *cformat, size_t num);
 
 EXPORT_CORE size_t get_filename_number_pattern_width(std::string const& in_filename);
 
-EXPORT_CORE size_t get_filename_number_pattern(std::string const& in_filename, std::string& base, std::string& suffix); 
+EXPORT_CORE size_t get_filename_number_pattern(std::string const& in_filename, std::string& base, std::string& suffix);
 
-EXPORT_CORE void split_filename_number_pattern(std::string const& in_filename, std::string& base, 
-					       std::string& suffix, std::string& number); 
+EXPORT_CORE void split_filename_number_pattern(std::string const& in_filename, std::string& base,
+					       std::string& suffix, std::string& number);
 
 NS_MIA_END
 
