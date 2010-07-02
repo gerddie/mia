@@ -45,6 +45,10 @@ public:
 	} SCorrelation;
 
 	CSlopeClassifier(const Columns& m, bool mean_stripped=false);
+	CSlopeClassifier(const CSlopeClassifier& other);
+	
+	CSlopeClassifier& operator =(const CSlopeClassifier& other);
+
 	~CSlopeClassifier();
 
 	int get_periodic_idx() const;

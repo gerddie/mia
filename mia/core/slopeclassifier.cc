@@ -69,6 +69,21 @@ CSlopeClassifier::CSlopeClassifier(const CSlopeClassifier::Columns& m, bool mean
 	impl = new CSlopeClassifierImpl(m, mean_stripped);
 }
 
+CSlopeClassifier::CSlopeClassifier(const CSlopeClassifier& other):
+	impl(new CSlopeClassifierImpl(*other.impl)) 
+{
+}
+		     
+CSlopeClassifier& CSlopeClassifier::operator =(const CSlopeClassifier& other)
+{
+	if (this != &other) {
+		auto help = new CSlopeClassifierImpl(*other.impl); 
+		delete impl; 
+		impl = help; 
+	}
+	return *this;
+}
+
 CSlopeClassifier::~CSlopeClassifier()
 {
 	delete impl;
@@ -185,6 +200,7 @@ float correlation(const vector<float>& a, const vector<float>& b)
 
 void CSlopeClassifierImpl::evaluate_selfcorr(const CSlopeClassifier::Columns& series)
 {
+	selfcorr.corr = 0.0; 
 	for (size_t i = 0; i < series.size(); ++i)
 		for (size_t j = i+1; j < series.size(); ++j) {
 			const float corr = correlation(series[i], series[j]);

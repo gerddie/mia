@@ -85,8 +85,73 @@ BOOST_FIXTURE_TEST_CASE( test_classifier4, SlopeClassifierFixture )
 		-40,  5, -2, -14
 	};
 	const Result result = {1, 2, 3, 0, -1, 2, 7};
-	run(length, components, init_Mix, result);
+	
+	run(length, components, init_Mix, result, false); 
+
 }
+
+BOOST_FIXTURE_TEST_CASE( test_classifier4_copy, SlopeClassifierFixture )
+{
+	const size_t length = 10;
+	const size_t components = 4;
+
+	const float init_Mix[length * components ]  = {
+		-40, 10,  1, -1,
+		-38,  5, 12, -4,
+		-39,  0, 13, -4,
+		-38, -5,  9, -5,
+		-41,-10,  1, -14,
+		-40, -5,  0, -16,
+		-41,  0, -5, -16,
+		-40,  5, -6, -17,
+		-40, 10, -3, -14,
+		-40,  5, -2, -14
+	};
+	const Result result = {1, 2, 3, 0, -1, 2, 7};
+	CSlopeClassifier::Columns columns( components );
+
+	for (size_t c = 0; c < components; ++c)
+		columns[c].resize(length);
+
+	const float *i = init_Mix;
+	for (size_t r = 0; r < length; ++r)
+		for (size_t c = 0; c < components; ++c, ++i)
+			columns[c][r]  = *i;
+
+	CSlopeClassifier c(columns, false);
+
+	
+	BOOST_CHECK_EQUAL(c.get_periodic_idx(), result.periodic_idx);
+	BOOST_CHECK_EQUAL(c.get_RV_idx(), result.RV_idx);
+	BOOST_CHECK_EQUAL(c.get_LV_idx(), result.LV_idx);
+	BOOST_CHECK_EQUAL(c.get_perfusion_idx(), result.perfusion_idx);
+	BOOST_CHECK_EQUAL(c.get_baseline_idx(), result.baseline_idx);
+	BOOST_CHECK_EQUAL(c.get_RV_peak(), result.RV_peak);
+	BOOST_CHECK_EQUAL(c.get_LV_peak(), result.LV_peak);
+
+	CSlopeClassifier c2(c);
+	
+	BOOST_CHECK_EQUAL(c2.get_periodic_idx(), result.periodic_idx);
+	BOOST_CHECK_EQUAL(c2.get_RV_idx(), result.RV_idx);
+	BOOST_CHECK_EQUAL(c2.get_LV_idx(), result.LV_idx);
+	BOOST_CHECK_EQUAL(c2.get_perfusion_idx(), result.perfusion_idx);
+	BOOST_CHECK_EQUAL(c2.get_baseline_idx(), result.baseline_idx);
+	BOOST_CHECK_EQUAL(c2.get_RV_peak(), result.RV_peak);
+	BOOST_CHECK_EQUAL(c2.get_LV_peak(), result.LV_peak);
+
+	CSlopeClassifier c3(columns, true);
+
+	c3 = c; 
+	BOOST_CHECK_EQUAL(c2.get_periodic_idx(), result.periodic_idx);
+	BOOST_CHECK_EQUAL(c2.get_RV_idx(), result.RV_idx);
+	BOOST_CHECK_EQUAL(c2.get_LV_idx(), result.LV_idx);
+	BOOST_CHECK_EQUAL(c2.get_perfusion_idx(), result.perfusion_idx);
+	BOOST_CHECK_EQUAL(c2.get_baseline_idx(), result.baseline_idx);
+	BOOST_CHECK_EQUAL(c2.get_RV_peak(), result.RV_peak);
+	BOOST_CHECK_EQUAL(c2.get_LV_peak(), result.LV_peak);
+	
+}
+
 
 BOOST_FIXTURE_TEST_CASE( test_classifier3, SlopeClassifierFixture )
 {

@@ -22,6 +22,7 @@ SET(MIA2D_SRC_BASE
   modelsolverreg.cc
   nfg.cc
   nonrigidregister.cc 
+  perfusion.cc
   polygon.cc
   rigidregister.cc
   shape.cc
@@ -97,6 +98,7 @@ SET(MIA2D_HEADERS_BASE
   modelsolverreg.hh
   nonrigidregister.hh
   nfg.hh
+  perfusion.hh
   polygon.hh
   rigidregister.hh
   shape.hh
@@ -175,6 +177,7 @@ TEST_2DMIA(boundingbox)
 TEST_2DMIA(distances)
 TEST_2DMIA(oldnewintegrate)
 TEST_2DMIA(rigidregister)
+TEST_2DMIA(perfusion)
 
 TEST_2DMIA(costbase)
 TEST_2DMIA(imagecostbase)
