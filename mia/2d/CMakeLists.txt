@@ -23,6 +23,7 @@ SET(MIA2D_SRC_BASE
   nfg.cc
   nonrigidregister.cc 
   polygon.cc
+  rigidregister.cc
   shape.cc
   timestep.cc
   transform.cc
@@ -97,6 +98,7 @@ SET(MIA2D_HEADERS_BASE
   nonrigidregister.hh
   nfg.hh
   polygon.hh
+  rigidregister.hh
   shape.hh
   timestep.hh
   transform.hh
@@ -172,6 +174,7 @@ TEST_2DMIA(polygon)
 TEST_2DMIA(boundingbox)
 TEST_2DMIA(distances)
 TEST_2DMIA(oldnewintegrate)
+TEST_2DMIA(rigidregister)
 
 TEST_2DMIA(costbase)
 TEST_2DMIA(imagecostbase)
