@@ -46,6 +46,7 @@ public:
 
 	CSlopeClassifier(const Columns& m, bool mean_stripped=false);
 	CSlopeClassifier(const CSlopeClassifier& other);
+	CSlopeClassifier(); 
 	
 	CSlopeClassifier& operator =(const CSlopeClassifier& other);
 

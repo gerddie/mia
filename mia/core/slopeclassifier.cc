@@ -43,10 +43,10 @@ using namespace boost;
 
 
 struct CSlopeClassifierImpl {
-	size_t RV_peak;
-	size_t LV_peak;
-	size_t RV_idx;
-	size_t LV_idx;
+	int RV_peak;
+	int LV_peak;
+	int RV_idx;
+	int LV_idx;
 	int Periodic_idx;
 	int Perfusion_idx;
 	int Baseline_idx;
@@ -57,6 +57,7 @@ struct CSlopeClassifierImpl {
 	typedef pair<position, position> extrems;
 	typedef pair<size_t, size_t> extrems_pos;
 	CSlopeClassifierImpl(const CSlopeClassifier::Columns& series, bool mean_stripped);
+	CSlopeClassifierImpl(); 
 private:
 	void evaluate_selfcorr(const CSlopeClassifier::Columns& series);
 };
@@ -71,6 +72,10 @@ CSlopeClassifier::CSlopeClassifier(const CSlopeClassifier::Columns& m, bool mean
 
 CSlopeClassifier::CSlopeClassifier(const CSlopeClassifier& other):
 	impl(new CSlopeClassifierImpl(*other.impl)) 
+{
+}
+CSlopeClassifier::CSlopeClassifier():
+	impl(new CSlopeClassifierImpl())
 {
 }
 		     
@@ -91,6 +96,7 @@ CSlopeClassifier::~CSlopeClassifier()
 
 float CSlopeClassifier::get_max_slope_length_diff() const
 {
+	assert(impl); 
 	return impl->max_slope_length_diff;
 }
 
@@ -212,6 +218,22 @@ void CSlopeClassifierImpl::evaluate_selfcorr(const CSlopeClassifier::Columns& se
 		}
 }
 
+
+CSlopeClassifierImpl::CSlopeClassifierImpl():
+	RV_peak(-1), 
+	LV_peak(-1), 
+	RV_idx(-1), 
+	LV_idx(-1), 
+	Periodic_idx(-1), 
+	Perfusion_idx(-1), 
+	Baseline_idx(-1), 
+	max_slope_length_diff(0)
+{
+	selfcorr.row1 = 0;
+	selfcorr.row2 = 0;
+	selfcorr.corr = 0.0; 
+	
+}
 
 CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& series, bool mean_stripped):
 	Periodic_idx(-1),
