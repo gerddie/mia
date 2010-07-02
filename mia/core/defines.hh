@@ -68,7 +68,7 @@ NS_END
 #endif
 
 #ifdef _MSC_VER
-
+x1
 #pragma warning(disable: 4251) // class needs to have dll interface to be used ...
 #pragma warning(disable: 4231) // nonstandard extension used "extern" before explicit template instanciation
 #pragma warning(disable: 4275) // non-dll class used as base 
@@ -81,9 +81,16 @@ NS_END
 
 #else
 
-#define EXPORT
-#define EXPORT_CORE
+#  ifdef __GNUC__
+#    define EXPORT_CORE __attribute__((visibility("default")))
+#    define EXPORT __attribute__((visibility("default")))
+#  else
+#    define EXPORT_CORE
+#    define EXPORT __attribute__((visibility("default")))
+#  endif
+
 #define G_MODULE_SUFFIX "so"
+
 #endif
 
 #ifdef miacore_EXPORTS

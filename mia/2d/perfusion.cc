@@ -20,7 +20,6 @@
  *
  */
 
-
 #include <memory>
 #include <boost/lambda/lambda.hpp>
 #include <mia/2d/perfusion.hh>
@@ -32,9 +31,10 @@ using boost::lambda::_1;
 using boost::lambda::_2;
 
 
+/* Implementation class */
 struct C2DPerfusionAnalysisImpl {
 	C2DPerfusionAnalysisImpl(size_t components, bool normalize, 
-			     bool meanstrip); 
+				 bool meanstrip); 
 	
 	vector<C2DFImage> get_references() const; 
 	void run_ica(const vector<C2DFImage>& series);
@@ -57,6 +57,7 @@ private:
 };
 
 
+
 C2DPerfusionAnalysis::C2DPerfusionAnalysis(size_t components, bool normalize, 
 					   bool meanstrip):
 	impl(new C2DPerfusionAnalysisImpl(components, normalize,  meanstrip))
@@ -68,9 +69,31 @@ C2DPerfusionAnalysis::~C2DPerfusionAnalysis()
 	delete impl; 
 }
 
+C2DFilterPlugin::ProductPtr C2DPerfusionAnalysis::get_crop_filter(float scale, C2DBounds& crop_start) const
+{
+	return impl->get_crop_filter(scale, crop_start); 
+}
+
 void C2DPerfusionAnalysis::run(const vector<C2DFImage>& series)
 {
 	impl->run_ica(series); 
+}
+
+vector<C2DFImage> C2DPerfusionAnalysis::get_references() const
+{
+	return impl->get_references(); 
+}
+
+
+C2DPerfusionAnalysisImpl::C2DPerfusionAnalysisImpl(size_t components, 
+						   bool normalize, 
+						   bool meanstrip):
+	_M_components(components), 
+	_M_normalize(normalize), 
+	_M_meanstrip(meanstrip),
+	_M_max_iterations(100),
+	_M_length(0)
+{
 }
 
 C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::get_crop_filter(float scale, C2DBounds& crop_start) const
@@ -101,15 +124,7 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::get_crop_filter(float scal
 	return create_LV_cropper(rvlv_feature, scale, crop_start);
 }
 
-vector<C2DFImage> C2DPerfusionAnalysis::get_references() const
-{
-	return impl->get_references(); 
-}
 
-C2DFilterPlugin::ProductPtr C2DPerfusionAnalysis::get_crop_filter(float scale, C2DBounds& crop_start) const
-{
-	return impl->get_crop_filter(scale, crop_start); 
-}
 
 vector<C2DFImage> C2DPerfusionAnalysisImpl::get_references() const
 {
@@ -119,17 +134,6 @@ vector<C2DFImage> C2DPerfusionAnalysisImpl::get_references() const
 	for (size_t i = 0; i < _M_length; ++i) 
 		result[i] = _M_ica->get_partial_mix(i, component_set); 
 	return result; 
-}
-
-C2DPerfusionAnalysisImpl::C2DPerfusionAnalysisImpl(size_t components, 
-						   bool normalize, 
-						   bool meanstrip):
-	_M_components(components), 
-	_M_normalize(normalize), 
-	_M_meanstrip(meanstrip),
-	_M_max_iterations(100),
-	_M_length(0)
-{
 }
 
 void C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series) 
@@ -181,9 +185,6 @@ CICAAnalysis::IndexSet C2DPerfusionAnalysisImpl::get_all_without_periodic()const
 	}
 	return result;
 }
-
-
-
 
 class GetRegionCenter: public TFilter<C2DFVector> {
 public:

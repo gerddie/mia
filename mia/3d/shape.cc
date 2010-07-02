@@ -19,12 +19,17 @@
  */
 
 
+#include <mia/core/export_handler.hh>
+
+
 #ifdef WIN32
-#  define EXPORT_HANDLER __declspec(dllexport)
 #  define EXPORT_SHAPE   __declspec(dllexport)
 #else
-#  define EXPORT_HANDLER
-#  define EXPORT_SHAPE
+#  ifdef __GNUC__
+#     define EXPORT_SHAPE __attribute__((visibility("default")))
+#  else
+#     define EXPORT_SHAPE 
+#  endif 
 #endif
 
 

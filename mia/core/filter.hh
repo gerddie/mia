@@ -31,6 +31,8 @@
 #include <mia/core/product_base.hh>
 #include <mia/core/factory.hh>
 
+#include <mia/core/import_handler.hh>
+
 NS_MIA_BEGIN
 
 struct EXPORT_CORE combiner_type {
@@ -63,7 +65,7 @@ struct TFilter {
 
 
 template <class D>
-class TImageFilter: public TFilter< SHARED_PTR(D) >, public CProductBase {
+class EXPORT_HANDLER TImageFilter: public TFilter< SHARED_PTR(D) >, public CProductBase {
 public:
 	typedef typename TFilter< SHARED_PTR(D) >::result_type result_type;
 	virtual ~TImageFilter();
@@ -73,7 +75,7 @@ private:
 };
 
 template <class Image>
-class TImageFilterPlugin: public TFactory<TImageFilter<Image>, Image, filter_type> {
+class EXPORT_HANDLER TImageFilterPlugin: public TFactory<TImageFilter<Image>, Image, filter_type> {
 public:
 	TImageFilterPlugin(char const * const  name):
 		TFactory<TImageFilter<Image>, Image, filter_type>(name)

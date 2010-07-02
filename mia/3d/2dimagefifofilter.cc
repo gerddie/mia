@@ -32,11 +32,8 @@ A basis for filter plugins
 
 */
 
-#ifdef WIN32
-#  define EXPORT_HANDLER __declspec(dllexport)
-#else
-#  define EXPORT_HANDLER
-#endif
+#include <mia/core/export_handler.hh>
+
 
 #include <mia/core/plugin_base.hh>
 #include <mia/core/handler.hh>

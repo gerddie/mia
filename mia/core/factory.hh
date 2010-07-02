@@ -42,19 +42,13 @@
 #include <mia/core/product_base.hh>
 #include <mia/core/optionparser.hh>
 
-#ifndef EXPORT_HANDLER
-#  ifdef WIN32
-#    define EXPORT_HANDLER __declspec(dllimport)
-#  else 
-#    define EXPORT_HANDLER
-#  endif
-#endif   
+#include <mia/core/import_handler.hh>
 
 NS_MIA_BEGIN
 
 /** this is the class to load a certain plugin */
 template <typename P, typename D, typename T>
-class TFactory: public TPlugin<D,T> {
+class EXPORT_HANDLER TFactory: public TPlugin<D,T> {
 public: 
 	typedef P Product; 
 	typedef SHARED_PTR(P) ProductPtr; 
@@ -79,7 +73,7 @@ private:
 
 
 template <typename  P>
-class TFactoryPluginHandler: public  TPluginHandler< P > {
+class EXPORT_HANDLER TFactoryPluginHandler: public  TPluginHandler< P > {
 protected: 
 	//! \name Constructors
         //@{

@@ -40,7 +40,7 @@ private:
 	virtual void do_save(const std::string& fname) const = 0;
 };
 
-typedef EXPORT_CORE SHARED_PTR(CCombinerResult) PCombinerResult;
+typedef SHARED_PTR(CCombinerResult) PCombinerResult;
 
 NS_MIA_END
 

@@ -51,7 +51,7 @@ NS_MIA_BEGIN
    A templated class of a 3D data field.
 */
 template <class T>
-class  T3DDatafield {
+class  EXPORT_3D T3DDatafield {
 
         typedef SHARED_PTR(std::vector<T> )  ref_data_type;
 

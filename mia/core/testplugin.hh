@@ -51,7 +51,7 @@ public:
 };
 
 
-typedef THandlerSingleton<CTestPluginHandlerImpl> EXPORT_CORE CTestPluginHandler;
+typedef THandlerSingleton<CTestPluginHandlerImpl> CTestPluginHandler;
 NS_MIA_END
 
 

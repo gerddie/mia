@@ -22,14 +22,7 @@
  */
 
 
-#ifdef WIN32
-#  define EXPORT_HANDLER __declspec(dllexport)
-#  define EXPORT_SHAPE   __declspec(dllexport)
-#else
-#  define EXPORT_HANDLER
-#  define EXPORT_SHAPE
-#endif
-
+#include <mia/core/export_handler.hh>
 
 #include <mia/2d/shape.hh>
 #include <mia/core/plugin_base.cxx>

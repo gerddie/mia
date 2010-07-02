@@ -21,13 +21,7 @@
  *
  */
 
-#ifdef WIN32
-#  define EXPORT_HANDLER __declspec(dllexport)
-#else
-#  define EXPORT_HANDLER
-#endif
-
-
+#include <mia/core/export_handler.hh>
 
 #define VSTREAM_DOMAIN "NOISE_GENERATOR"
 
@@ -68,10 +62,10 @@ double CNoiseGenerator::ranf() const
 	return x / RAND_MAX;
 }
 
-template class EXPORT_CORE TPlugin<grayscale_noise_data, generator_type>;
-template class EXPORT_CORE TFactory<CNoiseGenerator, grayscale_noise_data, generator_type>;
-template class EXPORT_CORE THandlerSingleton<TFactoryPluginHandler<CNoiseGeneratorPlugin> >;
-template class EXPORT_CORE TFactoryPluginHandler<CNoiseGeneratorPlugin>;
-template class EXPORT_CORE TPluginHandler<CNoiseGeneratorPlugin>;
+template class EXPORT_HANDLER TPlugin<grayscale_noise_data, generator_type>;
+template class EXPORT_HANDLER TFactory<CNoiseGenerator, grayscale_noise_data, generator_type>;
+template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<CNoiseGeneratorPlugin> >;
+template class EXPORT_HANDLER TFactoryPluginHandler<CNoiseGeneratorPlugin>;
+template class EXPORT_HANDLER TPluginHandler<CNoiseGeneratorPlugin>;
 
 NS_MIA_END

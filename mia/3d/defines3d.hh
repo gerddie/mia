@@ -20,8 +20,13 @@
 #    define EXPORT_3DTEST __declspec(dllimport) 
 #  endif
 #else
-#  define EXPORT_3D
-#  define EXPORT_3DTEST
+#  ifdef __GNUC__
+#    define EXPORT_3D __attribute__((visibility("default")))
+#    define EXPORT_3DTEST __attribute__((visibility("default")))
+#  else
+#    define EXPORT_3D 
+#    define EXPORT_3DTEST 
+#  endif
 #endif
 
 #ifdef mia3d_EXPORTS

@@ -97,7 +97,7 @@ inline bool operator < (const CAttribute& a, const CAttribute& b)
 }
 
 /// define the shared pointer wrapped attribute pointer
-typedef SHARED_PTR(CAttribute) EXPORT_CORE PAttribute;
+typedef SHARED_PTR(CAttribute) PAttribute;
 
 struct pattr_less {
 	bool operator () (PAttribute const& a, PAttribute const& b)
@@ -184,13 +184,13 @@ typedef TAttribute<std::string> CStringAttribute;
 typedef TAttribute<std::vector<std::string> > CVStringAttribute;
 
 /// A name:attribute map
-typedef std::map<std::string, PAttribute> EXPORT_CORE CAttributeMap;
+typedef std::map<std::string, PAttribute> CAttributeMap;
 
 /// providing the possibility to nest attribute lists
 typedef TAttribute<CAttributeMap> CAttributeList;
 
 /// another pointer-usage easy maker
-typedef SHARED_PTR(CAttributeMap) EXPORT_CORE PAttributeMap;
+typedef SHARED_PTR(CAttributeMap) PAttributeMap;
 
 
 /**

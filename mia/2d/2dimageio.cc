@@ -21,11 +21,7 @@
  *
  */
 
-#ifdef WIN32
-#  define EXPORT_HANDLER __declspec(dllexport)
-#else
-#  define EXPORT_HANDLER
-#endif
+#include <mia/core/export_handler.hh>
 
 #include <mia/2d/2dimageio.hh>
 #include <mia/core/ioplugin.cxx>
@@ -47,11 +43,11 @@ C2DImageIOPPH::C2DImageIOPPH(const std::list< ::boost::filesystem::path>& search
 	C2DFVectorTranslator::register_for("pixel");
 }
 
-template class EXPORT_2D TIOPlugin<io_2dimage_type>;
-template class EXPORT_2D THandlerSingleton<C2DImageIOPPH>;
-template class EXPORT_2D TIOHandlerSingleton<C2DImageIOPPH>;
-template class EXPORT_2D TIOPluginHandler<C2DImageIOPlugin>;
-template class EXPORT_2D TPluginHandler<C2DImageIOPlugin>;
+template class EXPORT_HANDLER TIOPlugin<io_2dimage_type>;
+template class EXPORT_HANDLER THandlerSingleton<C2DImageIOPPH>;
+template class EXPORT_HANDLER TIOHandlerSingleton<C2DImageIOPPH>;
+template class EXPORT_HANDLER TIOPluginHandler<C2DImageIOPlugin>;
+template class EXPORT_HANDLER TPluginHandler<C2DImageIOPlugin>;
 
 
 P2DImageVector EXPORT_2D create_image2d_vector(P2DImage image)

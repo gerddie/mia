@@ -29,9 +29,7 @@
 
 */
 
-#ifdef WIN32
-#  define EXPORT_HANDLER __declspec(dllexport)
-#endif
+#include <mia/core/export_handler.hh>
 
 #include <mia/2d/creator.hh>
 #include <mia/core/handler.cxx>

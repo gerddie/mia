@@ -23,12 +23,7 @@
 
 #define VSTREAM_DOMAIN "SPACIAL KERNEL"
 
-#ifdef WIN32
-#  define EXPORT_HANDLER __declspec(dllexport)
-#else
-#  define EXPORT_HANDLER
-#endif
-
+#include <mia/core/export_handler.hh>
 #include <mia/core/spacial_kernel.hh>
 #include <mia/core/plugin_base.cxx>
 #include <mia/core/handler.cxx>
@@ -125,10 +120,10 @@ size_t C1DFoldingKernel::do_size()const
 }
 
 
-template class EXPORT_CORE TPlugin<spacial_kernel_data, kernel_plugin_type>;
-template class EXPORT_CORE TFactory<C1DFoldingKernel, spacial_kernel_data, kernel_plugin_type>;
-template class EXPORT_CORE THandlerSingleton<TFactoryPluginHandler<C1DSpacialKernelPlugin> >;
-template class EXPORT_CORE TFactoryPluginHandler<C1DSpacialKernelPlugin>;
-template class EXPORT_CORE TPluginHandler<C1DSpacialKernelPlugin>;
+template class EXPORT_HANDLER TPlugin<spacial_kernel_data, kernel_plugin_type>;
+template class EXPORT_HANDLER TFactory<C1DFoldingKernel, spacial_kernel_data, kernel_plugin_type>;
+template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C1DSpacialKernelPlugin> >;
+template class EXPORT_HANDLER TFactoryPluginHandler<C1DSpacialKernelPlugin>;
+template class EXPORT_HANDLER TPluginHandler<C1DSpacialKernelPlugin>;
 
 NS_MIA_END

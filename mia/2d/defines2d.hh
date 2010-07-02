@@ -37,8 +37,13 @@
 #    define EXPORT_2DTEST __declspec(dllimport) 
 #  endif
 #else
-#  define EXPORT_2D
-#  define EXPORT_2DTEST
+#  ifdef __GNUC__
+#    define EXPORT_2D __attribute__((visibility("default")))
+#    define EXPORT_2DTEST __attribute__((visibility("default")))
+#  else
+#    define EXPORT_2D 
+#    define EXPORT_2DTEST 
+#  endif
 #endif
 
 #ifdef mia2d_EXPORTS

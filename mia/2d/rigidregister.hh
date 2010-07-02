@@ -47,7 +47,7 @@ enum EMinimizers {
    for affine, rigid and translation only registrations
 */
 
-class C2DRigidRegister {
+class EXPORT_2D C2DRigidRegister {
 public:
 	/**
 	   Constructor for the registration tool
@@ -60,8 +60,18 @@ public:
 	C2DRigidRegister(P2DImageCost cost, EMinimizers minimizer,
 			 const string& transform_type,
 			 const C2DInterpolatorFactory& ipf);
+
+	
 	~C2DRigidRegister();
 
+	/**
+	   Run the registration of an image pair. 
+	   \param src source (moving) image 
+	   \param ref reference (fixed) image 
+	   \param mg_levels multigrisd levels to be used 
+	   \returns the transformation registering src to ref that minimizes the constructor given 
+	   cost function 
+	 */
 	P2DTransformation  run(P2DImage src, P2DImage ref,  size_t mg_levels) const;
 
 private:

@@ -21,13 +21,7 @@
  *
  */
 
-#ifdef WIN32
-#  define EXPORT_HANDLER __declspec(dllexport)
-#else
-#  ifdef __GNUC__
-#    define EXPORT_HANDLER __attribute((visibility("default")))
-#  endif
-#endif
+#include <mia/core/export_handler.hh>
 
 #include <mia/core/cost.hh>
 

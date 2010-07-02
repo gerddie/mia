@@ -23,17 +23,11 @@
 
 #define VSTREAM_DOMAIN "OPTIMIZER"
 
-#ifdef WIN32
-#  define EXPORT_HANDLER __declspec(dllexport)
-#else
-#  define EXPORT_HANDLER
-#endif
+#include <mia/core/export_handler.hh>
 
 #include <mia/core/optimizer.hh>
-
 #include <mia/core/plugin_base.cxx>
 #include <mia/core/handler.cxx>
-
 #include <mia/core/errormacro.hh>
 #include <mia/core/property_flags.hh>
 
@@ -71,10 +65,10 @@ const char *COptimizer::get_name() const
 	return do_get_name();
 }
 
-template class EXPORT_CORE TPlugin<COptimizer, algorithm_type>;
-template class EXPORT_CORE TFactory<COptimizer, COptimizer, algorithm_type>;
-template class EXPORT_CORE THandlerSingleton<TFactoryPluginHandler<COptimizerPlugin> >;
-template class EXPORT_CORE TFactoryPluginHandler<COptimizerPlugin>;
-template class EXPORT_CORE TPluginHandler<COptimizerPlugin>;
+template class EXPORT_HANDLER TPlugin<COptimizer, algorithm_type>;
+template class EXPORT_HANDLER TFactory<COptimizer, COptimizer, algorithm_type>;
+template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<COptimizerPlugin> >;
+template class EXPORT_HANDLER TFactoryPluginHandler<COptimizerPlugin>;
+template class EXPORT_HANDLER TPluginHandler<COptimizerPlugin>;
 
 NS_MIA_END

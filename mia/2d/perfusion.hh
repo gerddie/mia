@@ -31,17 +31,52 @@
 
 NS_MIA_BEGIN
 
-class C2DPerfusionAnalysis  {
+/**
+   This class provides the tools for ICA based 2D perfusion image series. This class is specifically 
+   designed for the analysis of free breathingly aquired myocardial perfusion images. 
+   
+*/
+
+class  EXPORT_2D C2DPerfusionAnalysis  {
 public: 
+
+	/**
+	   Constructor 
+	   \param components number of independend components, 0 = auto estimate from [3,4,5,6,7]
+	   \param normalize normalize feature images
+	   \param meanstrip strip mean from mixing time curves
+	 */
 	C2DPerfusionAnalysis(size_t components, bool normalize, 
 			     bool meanstrip);
+
+	
 	~C2DPerfusionAnalysis();
 	
+	/**
+	   Run the ICA analysis - keeps a copy of the image series 
+	   \param series image series should contain more images thennumber of requested components 
+	 */
+
 	void run(const std::vector<C2DFImage>& series); 
 
+
+	/**
+	   Evaluate an image cropping filter. This code is specifically designed to deal 
+	   with the segmentantion of the left heart ventricle in short axis heart MRI 
+	   The algorithm evaluates the centers of the LV and the RV and uses the distance 
+	   between both to estimata a bounding box. 
+	   Some heuristics are used to check whether the segmentation makes sense
+	   \param scale enlargement scale of the bounding box to create the cropping region 
+	   \retval crop_start returns the left upper corner of the cropping region that can be used  
+	   to adjust segmentations
+	   \returns the cropping filter or C2DFilterPlugin::ProductPtr() if the segmentation fails. 
+	 */
 	C2DFilterPlugin::ProductPtr get_crop_filter(float scale, C2DBounds& crop_start) const; 
 
 
+	/**
+	   Create uncropped reference images that try to omit the movement component in the image series.  
+	*/
 	std::vector<C2DFImage> get_references() const; 
 private: 
 	struct C2DPerfusionAnalysisImpl *impl; 

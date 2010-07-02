@@ -56,7 +56,12 @@ class for triangular meshes and some basic algorithms
 #    define EXPORT_MESH __declspec(dllimport)
 #  endif
 #else
-#  define EXPORT_MESH
+#  ifdef __GNUC__
+#    define EXPORT_MESH __attribute__((visibility("default")))
+#  else
+#    define EXPORT_MESH
+#  endif
+
 #endif
 
 

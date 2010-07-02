@@ -39,10 +39,6 @@
 #include <boost/test/parameterized_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 
-#ifdef WIN32
-#define EXPORT_HANDLER
-#endif
-
 #include <mia/2d/cost.hh>
 #include <mia/2d/fatcost.hh>
 #include <mia/2d/transform.hh>

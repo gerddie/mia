@@ -24,16 +24,11 @@
 
 
 #include <cassert>
-#include <mia/2d/costbase.hh>
-
 #include <boost/lambda/lambda.hpp>
 #include <algorithm>
 
-#ifdef WIN32
-#  define EXPORT_HANDLER __declspec(dllexport)
-#else
-#  define EXPORT_HANDLER
-#endif
+#include <mia/core/export_handler.hh>
+#include <mia/2d/costbase.hh>
 #include <mia/core/handler.cxx>
 #include <mia/core/plugin_base.cxx>
 

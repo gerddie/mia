@@ -30,10 +30,10 @@ NS_MIA_BEGIN;
 const char *io_2dtransform_type::type_descr = "transformio";
 
 
-template class EXPORT_2D TIOPlugin<io_2dtransform_type>;
-template class EXPORT_2D THandlerSingleton<TIOPluginHandler<C2DTransformIOPlugin> >;
-template class EXPORT_2D TIOPluginHandler<C2DTransformIOPlugin>;
-template class EXPORT_2D TPluginHandler<C2DTransformIOPlugin>;
+template class EXPORT_HANDLER TIOPlugin<io_2dtransform_type>;
+template class EXPORT_HANDLER THandlerSingleton<TIOPluginHandler<C2DTransformIOPlugin> >;
+template class EXPORT_HANDLER TIOPluginHandler<C2DTransformIOPlugin>;
+template class EXPORT_HANDLER TPluginHandler<C2DTransformIOPlugin>;
 
 
 NS_MIA_END

@@ -38,13 +38,7 @@
 #include <mia/core/optparam.hh>
 #include <mia/core/property_flags.hh>
 
-#ifndef EXPORT_HANDLER
-#ifdef WIN32
-#define EXPORT_HANDLER __declspec(dllimport)
-#else
-#define EXPORT_HANDLER
-#endif
-#endif
+#include <mia/core/import_handler.hh>
 
 NS_MIA_BEGIN
 

@@ -38,15 +38,10 @@
 #include <mia/core/module.hh>
 #include <mia/core/plugin_base.hh>
 
+#include <mia/core/import_handler.hh>
+
 NS_MIA_BEGIN
 
-#ifndef EXPORT_HANDLER
-#  if WIN32
-#    define EXPORT_HANDLER __declspec(dllimport) 
-#  else
-#    define EXPORT_HANDLER
-#  endif  
-#endif
 
 /** \class TPluginHandler
     \brief The basic %template of all plugin handlers
