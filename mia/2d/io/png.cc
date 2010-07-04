@@ -154,7 +154,7 @@ CPNG2DImageIOPlugin::PData  CPNG2DImageIOPlugin::do_load(const string& fname) co
 	int interlace_type;
 
 	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
-		     &interlace_type, int_p_NULL, int_p_NULL);
+		     &interlace_type, NULL, NULL);
 
 	if (color_type != PNG_COLOR_TYPE_GRAY && color_type != PNG_COLOR_TYPE_PALETTE) {
 		png_destroy_read_struct(&png_ptr, &info_ptr,&end_info);
@@ -334,7 +334,7 @@ CPngImageSaver::result_type CPngImageSaver::operator ()(const T2DImage<T>& image
 	png_infop info_ptr = png_create_info_struct(png_ptr);
 
 	if (!info_ptr) {
-		png_destroy_write_struct(&png_ptr,  png_infopp_NULL);
+		png_destroy_write_struct(&png_ptr,  NULL);
 		throw runtime_error("unable to create png info struct");
 	}
 
