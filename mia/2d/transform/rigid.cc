@@ -90,6 +90,7 @@ C2DTransformation *C2DRigidTransformation::invert()const
 	const double cosa = cos(_M_rotation); 
 	result->_M_translation.x = - cosa * _M_translation.x - sina * _M_translation.y; 
 	result->_M_translation.y =   sina * _M_translation.x - cosa * _M_translation.y; 
+	result->_M_matrix_valid = false; 
 	return result;
 }
 

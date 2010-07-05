@@ -287,3 +287,37 @@ AffineGrad2ParamFixtureAffine::AffineGrad2ParamFixtureAffine():
 //	trans.scale(0.69314718, -0.69314718);
 }
 
+
+BOOST_AUTO_TEST_CASE (test_invers)
+{
+	C2DBounds size(10,20); 
+	C2DAffineTransformation trans(size); 
+
+	auto params = trans.get_parameters(); 
+//	BOOST_REQUIRE(params.size()== 6); 
+
+	params[0] = 1.0; 
+	params[1] = 2.0; 
+	params[2] = 3.0; 
+
+	params[3] = 1.0; 
+	params[4] = 1.0; 
+	params[5] = 4.0; 
+	
+	trans.set_parameters(params); 
+	
+	unique_ptr<C2DTransformation> inverse( trans.invert()); 
+	BOOST_CHECK_EQUAL(inverse->get_size(), size);
+
+	params = inverse->get_parameters(); 
+	BOOST_REQUIRE(params.size()== 6); 
+
+	BOOST_CHECK_CLOSE(params[0], -1.0, 0.1); 
+	BOOST_CHECK_CLOSE(params[1],  2.0, 0.1); 
+	BOOST_CHECK_CLOSE(params[2], -5.0, 0.1); 
+	
+	BOOST_CHECK_CLOSE(params[3],  1.0, 0.1); 
+	BOOST_CHECK_CLOSE(params[4], -1.0, 0.1); 
+	BOOST_CHECK_CLOSE(params[5],  1.0, 0.1); 
+	
+}

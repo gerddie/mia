@@ -73,6 +73,28 @@ C2DTransformation *C2DAffineTransformation::clone()const
 	return new C2DAffineTransformation(*this);
 }
 
+C2DTransformation *C2DAffineTransformation::invert()const
+{
+	const double det = _M_t[0] * _M_t[4] - _M_t[1] * _M_t[3]; 
+	if (fabs(det) < 1e-6) 
+		THROW(invalid_argument, "C2DAffineTransformation::invert(): Matrix is singular"); 
+	
+	const double inv_det = 1.0 / det; 
+
+	C2DAffineTransformation *result = new C2DAffineTransformation(*this);
+	
+	result->_M_t[0] = _M_t[4] * inv_det; 
+	result->_M_t[1] = - _M_t[1] * inv_det; 
+	result->_M_t[2] = (_M_t[1] * _M_t[5] - _M_t[2] * _M_t[4])* inv_det; 
+
+	result->_M_t[3] = - _M_t[3] * inv_det; 
+	result->_M_t[4] = _M_t[0] * inv_det; 
+	result->_M_t[5] = (_M_t[2] * _M_t[3] - _M_t[0] * _M_t[5])* inv_det; 
+		
+	return result; 
+}
+
+
 C2DAffineTransformation::C2DAffineTransformation(const C2DBounds& size,
 						 std::vector<double> transform):
 	_M_t(transform),

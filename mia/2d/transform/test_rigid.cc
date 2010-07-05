@@ -275,6 +275,7 @@ BOOST_AUTO_TEST_CASE (test_inverse_rigid)
 	const double ca = cos(1.0); 
  	const double sa = sin(1.0); 
 	
+	BOOST_CHECK_EQUAL(inverse->get_size(), size);
 
 	BOOST_CHECK_EQUAL(b.size(), 3);
 	BOOST_CHECK_CLOSE(b[0], ca * 1 + sa * 3, 0.1);

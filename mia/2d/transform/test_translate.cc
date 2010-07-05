@@ -111,6 +111,8 @@ BOOST_FIXTURE_TEST_CASE(test_invert_params, TranslateTransformFixture)
 	a[1] = -1;
 	transf.set_parameters(a);
 	unique_ptr<C2DTransformation> inverse( transf.invert()); 
+
+	BOOST_CHECK_EQUAL(inverse->get_size(), size);
 	
 	auto b = inverse->get_parameters();
 	BOOST_CHECK_EQUAL(b.size(), 2);
