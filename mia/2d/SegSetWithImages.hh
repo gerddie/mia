@@ -55,6 +55,10 @@ public:
 	/// \returns a vector of the images 
 	const C2DImageSeries& get_images()const;
 
+	// sets the image series 
+	void set_images(const C2DImageSeries& series); 
+	
+
 	/** Run acropping on the inout images and correct the segmentation information accordingly 
 	    \param start upper left corner of the cropping reagion 
 	    \param end lower right corner  of the cropping reagion 

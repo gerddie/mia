@@ -26,7 +26,7 @@
 
 #include <mia/core/shared_ptr.hh>
 
-#include <mia/2d/SegSet.hh>
+#include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/BoundingBox.hh>
 #include <mia/2d/transformfactory.hh>
 
@@ -460,6 +460,24 @@ BOOST_AUTO_TEST_CASE( test_segset_rename_files )
 
 	BOOST_CHECK_EQUAL(segset.get_frames()[0].get_imagename(), "test000.png"); 
 	BOOST_CHECK_EQUAL(segset.get_frames()[1].get_imagename(), "test001.png"); 
+}
+
+BOOST_AUTO_TEST_CASE( test_segset_set_images ) 
+{
+	CSegStar star; 
+	CSegFrame::Sections sections; 
+	CSegSetWithImages segset; 
+	segset.add_frame(CSegFrame("image000.png", star, sections));
+	segset.add_frame(CSegFrame("image001.png", star, sections));
+
+	C2DImageSeries lala2(2); 
+	segset.set_images(lala2); 
+	
+	C2DImageSeries lala3(3); 
+
+	BOOST_CHECK_THROW(segset.set_images(lala3), invalid_argument); 
+	
+
 }
 
 /*

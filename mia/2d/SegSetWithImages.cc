@@ -23,11 +23,14 @@
  *
  */
 
+#include <stdexcept>
 #include <boost/filesystem.hpp>
+#include <mia/core/errormacro.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dfilter.hh>
-#include <boost/filesystem.hpp>
+
+
 
 namespace bfs=boost::filesystem;
 
@@ -63,6 +66,14 @@ CSegSetWithImages::CSegSetWithImages(const string& filename, bool ignore_path):
 		_M_images.push_back(load_image2d(input_image));
 		++iframe;
 	}
+}
+
+// sets the image series 
+void CSegSetWithImages::set_images(const C2DImageSeries& series)
+{
+	if (series.size() != get_frames().size()) 
+		THROW(invalid_argument, "image set and number of segmentation frames must have same number of images"); 
+	_M_images = series; 
 }
 
 const C2DImageSeries& CSegSetWithImages::get_images()const
