@@ -48,6 +48,7 @@ const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
 
 int do_main( int argc, const char *argv[] )
 {
+	string cost_function("ssd"); 
 	string src_filename;
 	string ref_filename;
 	string out_filename;
@@ -62,6 +63,7 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( ref_filename, "ref", 'r', "reference image", "input", true));
 	options.push_back(make_opt( out_filename, "out", 'o', "registered output image", "output", true));
 	options.push_back(make_opt( trans_filename, "trans", 't', "transformation", "transformation", false));
+	options.push_back(make_opt( cost_function, "cost", 'c', "cost function", "cost", false)); 
 	options.push_back(make_opt( mg_levels, "levels", 'l', "multigrid levels", "levels", false));
 	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
 				    "optimizer", 'O', "Optimizer used for minimization", "optimizer", false));
@@ -77,7 +79,7 @@ int do_main( int argc, const char *argv[] )
 		throw std::invalid_argument("Images have different size");
 	}
 
-	auto cost = C2DImageCostPluginHandler::instance().produce("ssd");
+	auto cost = C2DImageCostPluginHandler::instance().produce(cost_function);
 	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3));
 
 	C2DRigidRegister rr(cost, minimizer,  transform_type, *ipfactory);
