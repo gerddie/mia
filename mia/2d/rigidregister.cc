@@ -22,6 +22,8 @@
  *
  */
 
+#define VSTREAM_DOMAIN "rigidreg"
+
 #include <mia/2d/rigidregister.hh>
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/transformfactory.hh>
@@ -214,7 +216,12 @@ P2DTransformation C2DRigidRegisterImpl::run(P2DImage src, P2DImage ref,  size_t 
 
 		else
 			apply(*src_scaled, *ref_scaled, *transform, minimizers[_M_minimizer].fmin);
-		cvmsg() << "\n";
+
+		auto params = transform->get_parameters(); 
+		cvmsg() << "\nParams:";
+		for (auto i = params.begin(); i != params.end(); ++i) 
+			cverb << *i << " "; 
+		cverb << "\n"; 
 	}
 	return transform;
 }
@@ -233,10 +240,6 @@ C2DRegGradientProblem::C2DRegGradientProblem(const C2DImage& model, const C2DIma
 
 P2DImage C2DRegGradientProblem::apply(const DoubleVector& x)
 {
-	cvinfo() << "x= ";
-	for(size_t i = 0; i < x.size(); ++i)
-		cverb << x[i] << " ";
-	cverb << "\n";
 	_M_transf.set_parameters(x);
 	return _M_transf(_M_model, _M_ipf);
 }

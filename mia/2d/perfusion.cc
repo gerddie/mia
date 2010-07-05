@@ -309,7 +309,7 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper(P2DImage
 
 	mask_lv << "crop:start=[" << crop_start
 		<< "],end=[" << C2DBounds(int(LV_center.x + r), int(LV_center.y + r)) << "]";
-	cvinfo() << "crop region = '" << mask_lv.str() << "'\n";
+	cvmsg() << "crop region = '" << mask_lv.str() << "'\n";
 
 	return C2DFilterPluginHandler::instance().produce(mask_lv.str().c_str());
 }

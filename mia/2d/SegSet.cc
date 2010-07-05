@@ -119,8 +119,8 @@ void CSegSet::read(const xmlpp::Document& node)
 CSegSet  CSegSet::shift_and_rename(size_t skip, const C2DFVector&  shift, const std::string& new_filename_base) const
 {
 	CSegSet result;
-	Frames::const_iterator iframe = get_frames().begin();
-	Frames::const_iterator eframe = get_frames().end();
+	auto iframe = get_frames().begin();
+	auto eframe = get_frames().end();
 
 	while (skip-- && iframe != eframe)
 		++iframe;
@@ -137,6 +137,12 @@ CSegSet  CSegSet::shift_and_rename(size_t skip, const C2DFVector&  shift, const 
 		++iframe;
 	}
 	return result;
+}
+
+void CSegSet::transform(const C2DTransformation& t)
+{
+	for (auto i = get_frames().begin(); i != get_frames().end(); ++i) 
+		i->transform(t); 
 }
 
 NS_MIA_END

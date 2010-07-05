@@ -55,7 +55,7 @@ CSegFrame::CSegFrame(const Node& node):
 		else if ((*i)->get_name() == "section") {
 			m_sections.push_back(CSegSection(**i)); 
 		}else {
-			cvwarn() << "ignoring unsuported element '" << (*i)->get_name() << "'\n"; 
+			cvinfo() << "ignoring unsuported element '" << (*i)->get_name() << "'\n"; 
 		}
 	}
 }

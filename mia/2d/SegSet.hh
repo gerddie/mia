@@ -53,6 +53,8 @@ public:
 	void rename_base(const std::string& new_base); 
 
 	CSegSet  shift_and_rename(size_t skip, const C2DFVector&  shift, const std::string& new_filename_base)const;
+
+	void transform(const C2DTransformation& t);
 private:
 	void read(const xmlpp::Document& node);
 	Frames m_frames;

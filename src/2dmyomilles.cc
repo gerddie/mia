@@ -32,6 +32,7 @@
 #include <mia/2d/rigidregister.hh>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/SegSetWithImages.hh>
+#include <mia/2d/transformfactory.hh>
 
 using namespace std;
 using namespace mia;
@@ -109,6 +110,8 @@ int do_main( int argc, const char *argv[] )
 				    "image interpolator", NULL));
 	options.push_back(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels", "mg-levels", false));
 
+	options.push_back(make_opt( pass, "passes", 'P', "registration passes", "passes")); 
+
 
 	options.push_back(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
 	options.push_back(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
@@ -118,6 +121,8 @@ int do_main( int argc, const char *argv[] )
 				    "segment and scale the crop box around the LV (0=no segmentation)", "segscale"));
 	options.push_back(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
 				    "as they are of other modalities", "skip")); 
+
+
 	options.parse(argc, argv);
 
 	// prepare registration class
@@ -161,26 +166,41 @@ int do_main( int argc, const char *argv[] )
 		for (auto i = references.begin(); i != references.end(); ++i) 
 			*i = cropper->filter(**i); 
 
-		input_set.shift_and_rename(0, crop_start, "cropped"); 
+		auto tr_creator = C2DTransformCreatorHandler::instance().produce("translate");
+		P2DTransformation shift = tr_creator->create(C2DBounds(1,1)); 
+		auto p = shift->get_parameters(); 
+		p[0] = -(float)crop_start.x; 
+		p[1] = -(float)crop_start.y; 
+		shift->set_parameters(p); 
+		
+		input_set.transform(*shift); 
 	}
 	
+	{
+		unique_ptr<xmlpp::Document> test_cropset(input_set.write());
+		ofstream outfile("cropped.set", ios_base::out );
+		if (outfile.good())
+			outfile << test_cropset->write_to_string_formatted();
+	}
+	
+
 	CSegSetWithImages::Frames& frames = input_set.get_frames();
 
 	for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
 		cvmsg() << "Register 1st pass, frame " << i << "\n"; 
 		P2DTransformation transform = rigid_register.run(input_images[i + skip_images] , 
-							     references[i], 
-							     mg_levels); 
+							     references[i], mg_levels);
 		input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], *ipfactory);
 		P2DTransformation inverse(transform->invert()); 
-		frames[i + skip_images].transform(*inverse);  
+		frames[i + skip_images].transform(*inverse);
 	}
 	
 	while (++current_pass < pass) {
+		C2DPerfusionAnalysis ica2(components, !no_normalize, !no_meanstrip); 
 		transform(input_images.begin() + skip_images, 
 			  input_images.end(), series.begin(), Convert2Float()); 
-		ica.run(series); 
-		references_float = ica.get_references(); 
+		ica2.run(series); 
+		references_float = ica2.get_references(); 
 		transform(references_float.begin(), references_float.end(), 
 			  references.begin(), C2DFImage2PImage()); 
 			
@@ -194,15 +214,13 @@ int do_main( int argc, const char *argv[] )
 		}
 	}
 
-	// theoretically, the images should be of the input type ...
-	// now save the images 
-	
+
 	input_set.set_images(input_images); 
 	input_set.rename_base(registered_filebase); 
 
 	input_set.save_images(out_filename); 
 	
-	auto_ptr<xmlpp::Document> outset(input_set.write());
+	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())
 		outfile << outset->write_to_string_formatted();
