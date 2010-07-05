@@ -58,6 +58,8 @@ public:
 	// sets the image series 
 	void set_images(const C2DImageSeries& series); 
 	
+	// save the images to their give file names 
+	void save_images(const string& root) const; 
 
 	/** Run acropping on the inout images and correct the segmentation information accordingly 
 	    \param start upper left corner of the cropping reagion 

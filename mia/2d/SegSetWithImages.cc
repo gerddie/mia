@@ -53,8 +53,8 @@ CSegSetWithImages::CSegSetWithImages(const string& filename, bool ignore_path):
 	}
 
 
-	CSegSet::Frames::iterator iframe = get_frames().begin();
-	CSegSet::Frames::iterator eframe = get_frames().end();
+	auto iframe = get_frames().begin();
+	auto eframe = get_frames().end();
 
 	while (iframe != eframe) {
 		string input_image = iframe->get_imagename();
@@ -74,6 +74,26 @@ void CSegSetWithImages::set_images(const C2DImageSeries& series)
 	if (series.size() != get_frames().size()) 
 		THROW(invalid_argument, "image set and number of segmentation frames must have same number of images"); 
 	_M_images = series; 
+}
+
+void CSegSetWithImages::save_images(const string& filename) const
+{
+	bfs::path src_path(filename);
+	src_path.remove_filename();
+	
+	auto iframe = get_frames().begin();
+	auto eframe = get_frames().end();
+	auto iimage = _M_images.begin();
+
+	while (iframe != eframe) {
+		string image_name = iframe->get_imagename();
+		string filename = (image_name[0] == '/') ? 
+			image_name : (src_path / bfs::path(image_name)).directory_string(); 
+		if (!save_image2d(image_name, *iimage))
+			THROW(runtime_error, "unable to save image to " << image_name ); 
+		++iframe; 
+		++iimage; 
+	}
 }
 
 const C2DImageSeries& CSegSetWithImages::get_images()const

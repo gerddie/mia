@@ -481,7 +481,6 @@ BOOST_AUTO_TEST_CASE( test_segset_set_images )
 }
 
 /*
-input_set.set_images(input_images); 
 input_set.save_images(); 
 */
 
