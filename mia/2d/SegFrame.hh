@@ -54,6 +54,8 @@ public:
 
 	void shift(const C2DFVector& delta, const std::string& cropped_file);
 
+	void transform(const C2DTransformation& t);
+
 	float get_hausdorff_distance(const CSegFrame& other) const;
 
 private:

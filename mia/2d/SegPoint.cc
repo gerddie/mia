@@ -62,4 +62,11 @@ void CSegPoint2D::write(Node& node) const
 	point->set_attribute("x", to_string<float>(x));
 }
 
+void CSegPoint2D::transform(const C2DTransformation& t)
+{
+	const C2DFVector r =  t.apply(*this); 
+	x = r.x; 
+	y = r.y;
+}
+
 NS_MIA_END

@@ -32,6 +32,7 @@ namespace xmlpp {
 
 #include <mia/2d/2DVector.hh>
 #include <mia/2d/defines2d.hh>
+#include <mia/2d/transform.hh>
 
 NS_MIA_BEGIN
 
@@ -41,6 +42,7 @@ public:
 	CSegPoint2D(float x, float y);
 	CSegPoint2D(const xmlpp::Node& node);
 	void write(xmlpp::Node& node) const;
+	void transform(const C2DTransformation& t); 
 };
 
 NS_MIA_END

@@ -48,7 +48,7 @@ public:
 	void shift(const C2DFVector& delta);
 	float get_hausdorff_distance(const CSegSection& other) const;
 	void append_to(C2DPolygon& polygon)const;
-
+	void transform(const C2DTransformation& t); 
 private:
 	std::string m_id;
 	Points m_points;

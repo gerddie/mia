@@ -85,6 +85,11 @@ void CSegStar::shift(const C2DFVector& delta)
 	m_center -= delta;
 }
 
+void CSegStar::transform(const C2DTransformation& t)
+{
+	m_center.transform(t); 
+}
+
 void CSegStar::write(xmlpp::Node& node) const
 {
 	xmlpp::Element* nodeChild = node.add_child("star");

@@ -81,8 +81,17 @@ void CSegSection::shift(const C2DFVector& delta)
 		*ip -= delta;
 		++ip;
 	}
+}
 
+void CSegSection::transform(const C2DTransformation& t)
+{
+	Points::iterator ip = m_points.begin();
+	Points::iterator ep = m_points.end();
 
+	while (ip != ep) {
+		ip->transform(t);
+		++ip;
+	}
 }
 
 

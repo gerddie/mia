@@ -114,6 +114,15 @@ void CSegFrame::shift(const C2DFVector& delta, const std::string& cropped_file)
 	m_filename = cropped_file; 
 }
 
+void CSegFrame::transform(const C2DTransformation& t)
+{
+	if (m_has_star) 
+		m_star.transform(t); 
+	for (Sections::iterator i = m_sections.begin(); 
+	     i != m_sections.end(); ++i)
+		i->transform(t); 
+}
+
 float CSegFrame::get_hausdorff_distance(const CSegFrame& other) const
 {
 	C2DPolygon p1; 

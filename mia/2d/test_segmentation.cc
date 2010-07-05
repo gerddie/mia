@@ -28,9 +28,11 @@
 
 #include <mia/2d/SegSet.hh>
 #include <mia/2d/BoundingBox.hh>
+#include <mia/2d/transformfactory.hh>
 
 #include <libxml++/libxml++.h>
 
+namespace bfs=boost::filesystem;
 
 NS_MIA_USE
 using namespace std;
@@ -314,6 +316,40 @@ BOOST_FIXTURE_TEST_CASE(segframe_shift, FrameTestRead)
 
 
 }
+
+
+BOOST_FIXTURE_TEST_CASE(segframe_transform, FrameTestRead)
+{
+	list< bfs::path> kernelsearchpath;
+	kernelsearchpath.push_back(bfs::path("transform"));
+	C2DTransformCreatorHandler::set_search_path(kernelsearchpath);
+
+	P2DTransformationFactory transform_creater = C2DTransformCreatorHandler::instance().produce("translate");
+	P2DTransformation transform = transform_creater->create(C2DBounds(10,20));
+	auto params = transform->get_parameters(); 
+	params[0] = -1.0; 
+	params[1] = -2.0; 
+	transform->set_parameters(params); 
+	
+	init(testframe_init);
+	
+
+	frame.transform(*transform);
+	frame.set_imagename("newname"); 
+
+	xmlpp::Document document;
+	xmlpp::Element* nodeRoot = document.create_root_node("test");
+	frame.write(*nodeRoot);
+
+	const string xmldoc = document.write_to_string();
+	const string testdoc(testframe_shifted);
+
+	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
+	BOOST_CHECK_EQUAL(xmldoc, testdoc);
+
+
+}
+
 
 BOOST_AUTO_TEST_CASE(segframe_write)
 {
