@@ -34,13 +34,33 @@ namespace xmlpp {
 
 NS_MIA_BEGIN
 
+/**
+   A set of slices containing segmentationinformation as well as the images. 
+ */
+
+
 class EXPORT_2D CSegSetWithImages: public CSegSet {
 public:
+	
 	CSegSetWithImages();
+	/**
+	   Read the segmentation set and load the images 
+	   \param filename segmentation set 
+	   \param ignore_path if \a true the image reader will ignore the path 
+	   assosiated with the images, and use the base directory of the segmentation set.  
+	 */
+
 	CSegSetWithImages(const std::string& filename, bool ignore_path);
 
+	/// \returns a vector of the images 
 	const C2DImageSeries& get_images()const;
 
+	/** Run acropping on the inout images and correct the segmentation information accordingly 
+	    \param start upper left corner of the cropping reagion 
+	    \param end lower right corner  of the cropping reagion 
+	    \param crop_filename_base new file name base for the cropped images 
+	    \returns a new segmentation set with the cropped images and the corrected segmentation information
+	*/
 	CSegSetWithImages crop(const C2DIVector&  start, const C2DIVector&  end,
 			       const std::string& crop_filename_base);
 private:

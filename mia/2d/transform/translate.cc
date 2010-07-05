@@ -130,6 +130,13 @@ C2DTransformation *C2DTranslateTransformation::clone() const
 	return new C2DTranslateTransformation(*this);
 }
 
+C2DTransformation *C2DTranslateTransformation::invert() const
+{
+	C2DTranslateTransformation *result = new C2DTranslateTransformation(*this);
+	result->_M_transform.x = -_M_transform.x;
+	result->_M_transform.y = -_M_transform.y;
+	return result; 
+}
 
 P2DImage C2DTranslateTransformation::apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const
 {

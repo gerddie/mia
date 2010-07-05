@@ -103,3 +103,18 @@ BOOST_FIXTURE_TEST_CASE(test_set_params, TranslateTransformFixture)
 	BOOST_CHECK_EQUAL(b[0],a[0]);
 	BOOST_CHECK_EQUAL(b[1],a[1]);
 }
+
+BOOST_FIXTURE_TEST_CASE(test_invert_params, TranslateTransformFixture)
+{
+	auto a = transf.get_parameters();
+	a[0] = 2;
+	a[1] = -1;
+	transf.set_parameters(a);
+	unique_ptr<C2DTransformation> inverse( transf.invert()); 
+	
+	auto b = inverse->get_parameters();
+	BOOST_CHECK_EQUAL(b.size(), 2);
+	BOOST_CHECK_EQUAL(b[0],-a[0]);
+	BOOST_CHECK_EQUAL(b[1],-a[1]);
+}
+

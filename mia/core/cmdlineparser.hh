@@ -57,6 +57,9 @@ typedef std::map<std::string,  CCmdOption *> CLongoptionMap;
 
 /** The base class of all possible command line options. It defines the interface
     of the options as well as some basic functionality to create help strings
+    \todo "Add a start or set group command"
+    \todo "Add a parameter to the parse command that tells whether additional parameters 
+    are allowed. 
 */
 class EXPORT_CORE CCmdOption  {
  public:
