@@ -110,6 +110,13 @@ C2DTransformation *C2DSplineTransformation::clone()const
 	return new C2DSplineTransformation(*this);
 }
 
+C2DTransformation *C2DSplineTransformation::invert() const
+{
+	assert(0 && "not implemented"); 
+	return new C2DSplineTransformation(*this);
+}
+
+
 C2DFVector C2DSplineTransformation::operator () (const C2DFVector& x) const
 {
 	assert(_M_interpolator_valid && _M_interpolator);

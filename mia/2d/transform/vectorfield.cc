@@ -92,6 +92,13 @@ C2DTransformation *C2DGridTransformation::clone() const
 	return new C2DGridTransformation(*this);
 }
 
+C2DTransformation *C2DGridTransformation::invert() const
+{
+	assert(0 && "not implemented"); 
+	return new C2DGridTransformation(*this);
+}
+
+
 size_t C2DGridTransformation::degrees_of_freedom() const
 {
 	return 2 * _M_field.size();

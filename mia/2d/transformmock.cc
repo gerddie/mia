@@ -41,6 +41,12 @@ C2DTransformation *C2DTransformMock::clone() const
 	return NULL;
 }
 
+C2DTransformation *C2DTransformMock::invert() const
+{
+	return NULL;
+}
+
+
 bool C2DTransformMock::save(const std::string& , const std::string& ) const
 {
 	return false;

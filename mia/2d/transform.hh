@@ -60,6 +60,12 @@ public:
 	virtual C2DTransformation *clone() const = 0;
 
 	/**
+	   \returns a the inverse transform 
+	 */
+	virtual C2DTransformation *invert() const = 0;
+
+
+	/**
 	   Placeholder for transformations that might need special initializations
 	   like the B-spline based transformation
 	 */

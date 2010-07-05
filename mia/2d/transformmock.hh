@@ -28,6 +28,7 @@ struct  EXPORT_2D C2DTransformMock: public C2DTransformation {
 	C2DTransformMock();
 	C2DTransformMock(const C2DBounds& size);
 	virtual C2DTransformation *clone() const;
+	virtual C2DTransformation *invert() const;
 	virtual bool save(const std::string& filename, const std::string& type) const;
 	virtual P2DTransformation upscale(const C2DBounds& size) const;
 	virtual void add(const C2DTransformation& a);
