@@ -435,6 +435,37 @@ BOOST_FIXTURE_TEST_CASE( test_segset_cropbox, SegSetReadFixture )
 
 }
 
+BOOST_AUTO_TEST_CASE( test_frame_rename_files ) 
+{
+	CSegStar star; 
+	CSegFrame::Sections sections; 
+	
+	CSegFrame frame("image000.png", star, sections);
+	
+	frame.rename_base("test"); 
+
+	BOOST_CHECK_EQUAL(frame.get_imagename(), "test000.png"); 
+}
+
+
+BOOST_AUTO_TEST_CASE( test_segset_rename_files ) 
+{
+	CSegStar star; 
+	CSegFrame::Sections sections; 
+	CSegSet segset; 
+	segset.add_frame(CSegFrame("image000.png", star, sections));
+	segset.add_frame(CSegFrame("image001.png", star, sections));
+
+	segset.rename_base("test");
+
+	BOOST_CHECK_EQUAL(segset.get_frames()[0].get_imagename(), "test000.png"); 
+	BOOST_CHECK_EQUAL(segset.get_frames()[1].get_imagename(), "test001.png"); 
+}
+
+/*
+input_set.set_images(input_images); 
+input_set.save_images(); 
+*/
 
 BOOST_AUTO_TEST_CASE( test_segset_write )
 {
@@ -516,6 +547,8 @@ void SectionTestRead::check(const float *x_data, const float *y_data) const
 		BOOST_CHECK_EQUAL(points[i].y, y_data[i]);
 	}
 }
+
+
 
 const char *teststar_init  =
 	"<?xml version=\"1.0\"?>\n<test>"

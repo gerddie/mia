@@ -71,6 +71,11 @@ CSegSet::Frames& CSegSet::get_frames()
 	return m_frames;
 }
 
+void CSegSet::rename_base(const std::string& new_base)
+{
+	for (auto i = m_frames.begin(); i != m_frames.end(); ++i) 
+		i->rename_base(new_base);
+}
 
 const C2DBoundingBox CSegSet::get_boundingbox() const
 {

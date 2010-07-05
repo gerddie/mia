@@ -5,12 +5,15 @@
 #include <mia/core/msgstream.hh>
 
 #include <libxml++/libxml++.h>
+#include <boost/filesystem.hpp> 
 
 
 
 NS_MIA_BEGIN
 using namespace std; 
 using namespace xmlpp; 
+
+namespace bfs=boost::filesystem; 
 
 CSegFrame::CSegFrame():
 	m_has_star(false)
@@ -65,6 +68,21 @@ const std::string& CSegFrame::get_imagename() const
 void CSegFrame::set_imagename(const std::string& name)
 {
 	m_filename = name; 
+}
+
+void CSegFrame::rename_base(const std::string& new_base)
+{
+	bfs::path filename(m_filename); 
+	string suffix = filename.extension(); 
+	string name = filename.stem(); 
+	auto i = name.rbegin();
+	int k = 0; 
+	while (i != name.rend() && isdigit(*i) ) {
+		++i; 
+		++k; 
+	}
+	string number(name.end() - k, name.end()); 
+	m_filename = new_base + number + suffix; 
 }
 
 const CSegFrame::Sections& CSegFrame::get_sections()const

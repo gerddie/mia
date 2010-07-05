@@ -43,6 +43,7 @@ public:
 
 	const std::string& get_imagename() const;
 	void set_imagename(const std::string& name);
+	void rename_base(const std::string& new_base); 
 
 	const Sections& get_sections() const;
 

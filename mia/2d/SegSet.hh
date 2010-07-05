@@ -50,6 +50,8 @@ public:
 	Frames& get_frames();
 	const C2DBoundingBox get_boundingbox() const;
 
+	void rename_base(const std::string& new_base); 
+
 	CSegSet  shift_and_rename(size_t skip, const C2DFVector&  shift, const std::string& new_filename_base)const;
 private:
 	void read(const xmlpp::Document& node);
