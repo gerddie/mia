@@ -257,3 +257,28 @@ RigidGrad2ParamFixtureRigid::RigidGrad2ParamFixtureRigid():
 //	trans.rotate(0.0);
 }
 
+
+
+BOOST_AUTO_TEST_CASE (test_inverse_rigid)
+{
+	C2DBounds size(10,2);
+	C2DRigidTransformation trans(size);
+	auto a = trans.get_parameters();
+	a[0] = -1; 
+	a[1] = -3;
+	a[2] = 1.0; 
+	trans.set_parameters(a);
+	
+	unique_ptr<C2DTransformation> inverse( trans.invert()); 
+	
+	auto b = inverse->get_parameters();
+	const double ca = cos(1.0); 
+ 	const double sa = sin(1.0); 
+	
+
+	BOOST_CHECK_EQUAL(b.size(), 3);
+	BOOST_CHECK_CLOSE(b[0], ca * 1 + sa * 3, 0.1);
+	BOOST_CHECK_CLOSE(b[1],-sa * 1 + ca * 3, 0.1);
+	BOOST_CHECK_EQUAL(b[2],-1.0);
+
+}

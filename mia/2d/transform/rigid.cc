@@ -82,6 +82,18 @@ C2DTransformation *C2DRigidTransformation::clone()const
 	return new C2DRigidTransformation(*this);
 }
 
+C2DTransformation *C2DRigidTransformation::invert()const
+{
+	C2DRigidTransformation *result = new C2DRigidTransformation(*this); 
+	result->_M_rotation = -_M_rotation;  
+	const double sina = sin(_M_rotation); 
+	const double cosa = cos(_M_rotation); 
+	result->_M_translation.x = - cosa * _M_translation.x - sina * _M_translation.y; 
+	result->_M_translation.y =   sina * _M_translation.x - cosa * _M_translation.y; 
+	return result;
+}
+
+
 C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size,const C2DFVector& translation,
 					       float rotation):
 	_M_t(6),
