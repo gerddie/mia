@@ -42,7 +42,6 @@ struct C2DPerfusionAnalysisImpl {
 	void run_ica(const vector<C2DFImage>& series);
 	C2DFilterPlugin::ProductPtr get_crop_filter(float scale, C2DBounds& crop_start,
 						    const std::string& save_features) const; 
-private: 
 	C2DFilterPlugin::ProductPtr create_LV_cropper(P2DImage rvlv_feature,
 						      float LV_mask_amplify,
 						      C2DBounds& crop_start,
@@ -75,19 +74,28 @@ C2DPerfusionAnalysis::~C2DPerfusionAnalysis()
 	delete impl; 
 }
 
+void C2DPerfusionAnalysis::set_max_ica_iterations(size_t maxiter)
+{
+	assert(impl); 
+	impl->_M_max_iterations = maxiter; 
+}
+
 C2DFilterPlugin::ProductPtr C2DPerfusionAnalysis::get_crop_filter(float scale, C2DBounds& crop_start,
 								  const std::string& save_features) const
 {
+	assert(impl); 
 	return impl->get_crop_filter(scale, crop_start, save_features); 
 }
 
 void C2DPerfusionAnalysis::run(const vector<C2DFImage>& series)
 {
+	assert(impl); 
 	impl->run_ica(series); 
 }
 
 vector<C2DFImage> C2DPerfusionAnalysis::get_references() const
 {
+	assert(impl); 
 	return impl->get_references(); 
 }
 

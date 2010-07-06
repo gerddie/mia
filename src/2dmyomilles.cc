@@ -94,6 +94,7 @@ int do_main( int argc, const char *argv[] )
 	bool no_meanstrip = false; 
 	float box_scale = 1.4;
 	size_t skip_images = 0; 
+	size_t max_ica_iterations = 400; 
 
 	size_t current_pass = 0; 
 	size_t pass = 2; 
@@ -126,6 +127,9 @@ int do_main( int argc, const char *argv[] )
 				    "segment and scale the crop box around the LV (0=no segmentation)", "segscale"));
 	options.push_back(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
 				    "as they are of other modalities", "skip")); 
+	options.push_back(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA", 
+				    "ica-iter", false)); 
+
 
 
 	options.parse(argc, argv);
@@ -152,6 +156,8 @@ int do_main( int argc, const char *argv[] )
 
 	// run ICA
 	C2DPerfusionAnalysis ica(components, !no_normalize, !no_meanstrip); 
+	if (max_ica_iterations) 
+		ica.set_max_ica_iterations(max_ica_iterations); 
 	ica.run(series); 
 	vector<C2DFImage> references_float = ica.get_references(); 
 	
@@ -212,6 +218,9 @@ int do_main( int argc, const char *argv[] )
 	
 	while (++current_pass < pass) {
 		C2DPerfusionAnalysis ica2(components, !no_normalize, !no_meanstrip); 
+		if (max_ica_iterations) 
+			ica2.set_max_ica_iterations(max_ica_iterations); 
+	
 		transform(input_images.begin() + skip_images, 
 			  input_images.end(), series.begin(), Convert2Float()); 
 		ica2.run(series); 

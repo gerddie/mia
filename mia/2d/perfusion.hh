@@ -49,6 +49,8 @@ public:
 	C2DPerfusionAnalysis(size_t components, bool normalize, 
 			     bool meanstrip);
 
+
+	void set_max_ica_iterations(size_t maxiter); 
 	
 	~C2DPerfusionAnalysis();
 	
