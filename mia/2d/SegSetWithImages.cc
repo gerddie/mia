@@ -89,7 +89,8 @@ void CSegSetWithImages::save_images(const string& filename) const
 		string image_name = iframe->get_imagename();
 		string filename = (image_name[0] == '/') ? 
 			image_name : (src_path / bfs::path(image_name)).directory_string(); 
-		if (!save_image2d(image_name, *iimage))
+		
+		if (!save_image2d(filename, *iimage))
 			THROW(runtime_error, "unable to save image to " << image_name ); 
 		++iframe; 
 		++iimage; 

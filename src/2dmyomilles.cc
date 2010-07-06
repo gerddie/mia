@@ -26,6 +26,8 @@
 
 #include <fstream>
 #include <libxml++/libxml++.h>
+#include <boost/filesystem.hpp>
+
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
@@ -36,6 +38,8 @@
 
 using namespace std;
 using namespace mia;
+
+namespace bfs=boost::filesystem; 
 
 const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
 	{"simplex", min_nmsimplex},
@@ -75,6 +79,8 @@ int do_main( int argc, const char *argv[] )
 	string out_filename;
 	string registered_filebase("reg");
 
+	string cropped_filename;
+
 	// this parameter is currently not exported - reading the image data is 
 	// therefore done from the path given in the segmentation set 
 	bool override_src_imagepath = false;
@@ -102,6 +108,8 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels", 
 				    "registered", false)); 
 	
+	options.push_back(make_opt( cropped_filename, "save-cropped", 0, "save cropped set to this file", NULL)); 
+
 	options.push_back(make_opt( cost_function, "cost", 'c', "registration criterion", "cost", false)); 
 	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
 				    "optimizer", 'O', "Optimizer used for minimization", "optimizer", false));
@@ -173,14 +181,23 @@ int do_main( int argc, const char *argv[] )
 		p[1] = -(float)crop_start.y; 
 		shift->set_parameters(p); 
 		
-		input_set.transform(*shift); 
+		input_set.transform(*shift);
+		input_set.set_images(input_images);  
 	}
 	
-	{
+	if (!cropped_filename.empty()) {
+		bfs::path cf(cropped_filename);
+		cf.replace_extension(); 
+		input_set.rename_base(cf.filename()); 
+		input_set.save_images(cropped_filename);
+
 		unique_ptr<xmlpp::Document> test_cropset(input_set.write());
-		ofstream outfile("cropped.set", ios_base::out );
+		ofstream outfile(cropped_filename, ios_base::out );
 		if (outfile.good())
 			outfile << test_cropset->write_to_string_formatted();
+		else 
+			THROW(runtime_error, "unable to save to '" << cropped_filename << "'"); 
+
 	}
 	
 
