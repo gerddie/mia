@@ -83,7 +83,7 @@ int do_main( int argc, const char *argv[] )
 
 	// this parameter is currently not exported - reading the image data is 
 	// therefore done from the path given in the segmentation set 
-	bool override_src_imagepath = false;
+	bool override_src_imagepath = true;
 
 	// registration parameters
 	string cost_function("ssd"); 
