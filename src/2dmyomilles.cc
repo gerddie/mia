@@ -52,12 +52,6 @@ const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
 };
 
 
-class C2DImage2C2DFImage: public TFilter<C2DFImage> {
-public: 
-	template <typename T> 
-	C2DFImage operator () (const T2DImage<T>& image) const; 
-}; 
-
 class C2DFImage2PImage {
 public: 
 	P2DImage operator () (const C2DFImage& image) const {
@@ -69,7 +63,7 @@ class Convert2Float {
 public: 
 	C2DFImage operator () (P2DImage image) const; 
 private: 
-	C2DImage2C2DFImage _M_converter; 
+	FConvert2DImage2float _M_converter; 
 }; 
 
 int do_main( int argc, const char *argv[] )
@@ -79,7 +73,9 @@ int do_main( int argc, const char *argv[] )
 	string out_filename;
 	string registered_filebase("reg");
 
+	// debug options: save some intermediate steps 
 	string cropped_filename;
+	string save_crop_feature; 
 
 	// this parameter is currently not exported - reading the image data is 
 	// therefore done from the path given in the segmentation set 
@@ -109,6 +105,7 @@ int do_main( int argc, const char *argv[] )
 				    "registered", false)); 
 	
 	options.push_back(make_opt( cropped_filename, "save-cropped", 0, "save cropped set to this file", NULL)); 
+	options.push_back(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images", NULL)); 
 
 	options.push_back(make_opt( cost_function, "cost", 'c', "registration criterion", "cost", false)); 
 	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
@@ -147,6 +144,7 @@ int do_main( int argc, const char *argv[] )
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
 	C2DImageSeries input_images = input_set.get_images(); 
 	
+	cvmsg() << "skipping " << skip_images << " images\n"; 
 	vector<C2DFImage> series(input_images.size() - skip_images); 
 	transform(input_images.begin() + skip_images, input_images.end(), 
 		  series.begin(), Convert2Float()); 
@@ -163,7 +161,7 @@ int do_main( int argc, const char *argv[] )
 	// crop if requested
 	if (box_scale) {
 		C2DBounds crop_start; 
-		auto cropper = ica.get_crop_filter(box_scale, crop_start); 
+		auto cropper = ica.get_crop_filter(box_scale, crop_start, save_crop_feature); 
 		if (!cropper) {
 			THROW(runtime_error, "Cropping was requested, but segmentation failed"); 
 		}
@@ -270,16 +268,6 @@ int main( int argc, const char *argv[] )
 
 	return EXIT_FAILURE;
 }
-
-
-template <typename T> 
-C2DFImage C2DImage2C2DFImage::operator () (const T2DImage<T>& image) const
-{
-	C2DFImage result(image.get_size()); 
-	copy(image.begin(), image.end(), result.begin()); 
-	return result; 
-}
-
 
 inline C2DFImage Convert2Float::operator () (P2DImage image) const
 {

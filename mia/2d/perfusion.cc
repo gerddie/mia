@@ -21,9 +21,11 @@
  */
 
 #include <memory>
+#include <fstream>
 #include <boost/lambda/lambda.hpp>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/ica.hh>
+#include <mia/2d/2dimageio.hh>
 
 NS_MIA_BEGIN
 using namespace std; 
@@ -38,13 +40,17 @@ struct C2DPerfusionAnalysisImpl {
 	
 	vector<C2DFImage> get_references() const; 
 	void run_ica(const vector<C2DFImage>& series);
-	C2DFilterPlugin::ProductPtr get_crop_filter(float scale, C2DBounds& crop_start) const; 
+	C2DFilterPlugin::ProductPtr get_crop_filter(float scale, C2DBounds& crop_start,
+						    const std::string& save_features) const; 
 private: 
 	C2DFilterPlugin::ProductPtr create_LV_cropper(P2DImage rvlv_feature,
 						      float LV_mask_amplify,
-						      C2DBounds& crop_start)const; 
+						      C2DBounds& crop_start,
+						      const std::string& save_features)const; 
 
 	CICAAnalysis::IndexSet get_all_without_periodic()const; 
+	void save_feature(const string& base, const string& feature, const C2DImage& image)const; 
+	
 	size_t _M_components;
 	bool _M_normalize;  
 	bool _M_meanstrip; 
@@ -69,9 +75,10 @@ C2DPerfusionAnalysis::~C2DPerfusionAnalysis()
 	delete impl; 
 }
 
-C2DFilterPlugin::ProductPtr C2DPerfusionAnalysis::get_crop_filter(float scale, C2DBounds& crop_start) const
+C2DFilterPlugin::ProductPtr C2DPerfusionAnalysis::get_crop_filter(float scale, C2DBounds& crop_start,
+								  const std::string& save_features) const
 {
-	return impl->get_crop_filter(scale, crop_start); 
+	return impl->get_crop_filter(scale, crop_start, save_features); 
 }
 
 void C2DPerfusionAnalysis::run(const vector<C2DFImage>& series)
@@ -91,12 +98,13 @@ C2DPerfusionAnalysisImpl::C2DPerfusionAnalysisImpl(size_t components,
 	_M_components(components), 
 	_M_normalize(normalize), 
 	_M_meanstrip(meanstrip),
-	_M_max_iterations(100),
+	_M_max_iterations(0),
 	_M_length(0)
 {
 }
 
-C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::get_crop_filter(float scale, C2DBounds& crop_start) const
+C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::get_crop_filter(float scale, C2DBounds& crop_start,
+								      const std::string& save_features) const
 {
 	C2DImageSeriesICA::IndexSet plus;
 	C2DImageSeriesICA::IndexSet minus;
@@ -105,9 +113,10 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::get_crop_filter(float scal
 	minus.insert(_M_cls.get_LV_idx());
 	
 	P2DImage rvlv_feature = _M_ica->get_delta_feature(plus, minus);
-	
+	if (!save_features.empty()) 
+		save_feature(save_features, "RVLVica", *rvlv_feature); 
 
-	auto cropper = create_LV_cropper(rvlv_feature, scale, crop_start);
+	auto cropper = create_LV_cropper(rvlv_feature, scale, crop_start, save_features);
 	if (cropper)
 		return cropper; 
 
@@ -115,13 +124,19 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::get_crop_filter(float scal
 	const int LV_peak = _M_cls.get_LV_peak();
 	if (RV_peak < 0 || LV_peak < 0)
 		return C2DFilterPlugin::ProductPtr(); 
-	
+
 	C2DFImage *prvlv_diff= new C2DFImage(_M_image_size);
 	rvlv_feature.reset(prvlv_diff); 
-	
+
 	transform(_M_series[RV_peak].begin(), _M_series[RV_peak].end(),
-		  _M_series[LV_peak].begin(), prvlv_diff->begin(), _2 - _1);
-	return create_LV_cropper(rvlv_feature, scale, crop_start);
+		  _M_series[LV_peak].begin(), prvlv_diff->begin(), _1 - _2);
+	if (!save_features.empty()) {
+		save_feature(save_features, "RVpeak", _M_series[RV_peak]); 
+		save_feature(save_features, "LVpeak", _M_series[LV_peak]); 
+		save_feature(save_features, "RVLVdelta", *rvlv_feature); 
+	}
+
+	return create_LV_cropper(rvlv_feature, scale, crop_start, save_features);
 }
 
 
@@ -148,7 +163,8 @@ void C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 
 	unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(series, false));
 	if (_M_components > 0) {
-		ica->set_max_iterations(_M_max_iterations);
+		if (_M_max_iterations) 
+			ica->set_max_iterations(_M_max_iterations);
 		ica->run(_M_components, _M_meanstrip, _M_normalize);
 	} else {
 		// maybe one can use the correlation and create an initial guess by combining
@@ -156,7 +172,8 @@ void C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 		float min_cor = 0.0;
 		for (int i = 7; i > 3; --i) {
 			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
-			ica->set_max_iterations(_M_max_iterations);
+			if (_M_max_iterations) 
+				ica->set_max_iterations(_M_max_iterations);
 			l_ica->run(i, _M_meanstrip, _M_normalize);
 
 			CSlopeClassifier cls(l_ica->get_mixing_curves(), _M_meanstrip);
@@ -171,6 +188,12 @@ void C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 		}
 	}
 	_M_ica.swap(ica);
+
+	cvinfo() << "Periodic: " << _M_cls.get_periodic_idx() << "\n"; 
+	cvinfo() << "RV:       " << _M_cls.get_RV_idx() << "\n"; 
+	cvinfo() << "LV:       " << _M_cls.get_LV_idx() << "\n"; 
+	cvinfo() << "Baseline: " << _M_cls.get_baseline_idx() << "\n"; 
+	cvinfo() << "Perf    : " << _M_cls.get_perfusion_idx() << "\n"; 
 }
 
 CICAAnalysis::IndexSet C2DPerfusionAnalysisImpl::get_all_without_periodic()const 
@@ -210,17 +233,21 @@ public:
 
 class GetRegionSize: public TFilter<size_t> {
 public:
+	GetRegionSize(int label):_M_label(label) {
+	}
 	template <typename T>
 	size_t operator() (const T2DImage<T>& image) const {
 		size_t n = 0;
 		typename T2DImage<T>::const_iterator i = image.begin();
 		for (size_t y = 0; y < image.get_size().y; ++y)
 			for (size_t x = 0; x < image.get_size().x; ++x, ++i) {
-				if (*i)
+				if (*i == (T)_M_label)
 					++n;
 			}
 		return n;
 	};
+private: 
+	int _M_label; 
 };
 
 class GetClosestRegionLabel: public TFilter<int> {
@@ -239,9 +266,26 @@ private:
 
 typedef pair<float, size_t> element;
 
+static void save_coefs(const string&  coefs_name, const C2DImageSeriesICA& ica)
+{
+	CSlopeClassifier::Columns mix = ica.get_mixing_curves();
+	ofstream coef_file(coefs_name.c_str());
+
+	for (size_t r = 0; r < mix[0].size(); ++r) {
+		for (size_t c = 0; c < mix.size(); ++c) {
+			coef_file   << setw(10) << mix[c][r] << " ";
+		}
+		coef_file << "\n";
+	}
+	if (!coef_file.good())
+		THROW(runtime_error, "unable to save coefficients to " << coefs_name);
+}
+
+
 C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper(P2DImage rvlv_feature,
 									float LV_mask_amplify,
-									C2DBounds& crop_start)const 
+									C2DBounds& crop_start, 
+									const string& save_features)const 
 {
 	const char *kmeans_filter_chain[] = {
 		"close:shape=[sphere:r=2]",
@@ -275,18 +319,21 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper(P2DImage
 
 		RV = run_filter_chain(kmeans_binarized, 2, RV_filter_chain);
 
-		npixels = ::mia::filter(GetRegionSize(), *RV);
+		npixels = ::mia::filter(GetRegionSize(1), *RV);
 
 	} while (10 * npixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y && nc < 5);
 
 	if (nc == 5)
 		return C2DFilterPlugin::ProductPtr();
 
-
 	P2DImage LV_candidates = run_filter_chain(kmeans, 2, LVcandidate_filter_chain);
 
 	C2DFVector RV_center = ::mia::filter(GetRegionCenter(), *RV);
 	int label = ::mia::filter(GetClosestRegionLabel(RV_center), *LV_candidates);
+	size_t lv_pixels = ::mia::filter(GetRegionSize(label), *LV_candidates);
+
+	if (10 * lv_pixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y) 
+		return C2DFilterPlugin::ProductPtr();
 
 	stringstream binarize_lv;
 	binarize_lv << "binarize:min="<< label << ",max=" << label;
@@ -310,6 +357,14 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper(P2DImage
 	mask_lv << "crop:start=[" << crop_start
 		<< "],end=[" << C2DBounds(int(LV_center.x + r), int(LV_center.y + r)) << "]";
 	cvmsg() << "crop region = '" << mask_lv.str() << "'\n";
+
+	if (!save_features.empty()) {
+		save_feature(save_features, "kmeans", *kmeans); 
+		save_feature(save_features, "LV_candidates", *LV_candidates); 
+		save_feature(save_features, "LV", *LV); 
+		save_feature(save_features, "RV", *RV); 
+		save_coefs(save_features + ".txt", *_M_ica); 
+	}
 
 	return C2DFilterPluginHandler::instance().produce(mask_lv.str().c_str());
 }
@@ -352,5 +407,10 @@ int GetClosestRegionLabel::operator() (const T2DImage<T>& image) const
 	return label;
 };
 
+
+void C2DPerfusionAnalysisImpl::save_feature(const string& base, const string& feature, const C2DImage& image)const
+{
+	save_image2d(base + feature + ".png", run_filter(image, "convert")); 
+}
 
 NS_MIA_END

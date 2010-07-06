@@ -232,7 +232,6 @@ CSlopeClassifierImpl::CSlopeClassifierImpl():
 	selfcorr.row1 = 0;
 	selfcorr.row2 = 0;
 	selfcorr.corr = 0.0; 
-	
 }
 
 CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& series, bool mean_stripped):
@@ -255,7 +254,7 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 	   - first sort for curve length - longest is periodic component
 	   - use a heuristic based on its mean frequency to decide whether this curve is actually periodic
 	   - then sort the remaining curves by covered value range
-	      * the cUrves that cover largest values should correspond to LV and RV enhancement
+	      * the curves that cover largest values should correspond to LV and RV enhancement
                 (Remark: this is not save!!!)
 		* remove last element from the serach range, it's baseline or perfusion
 	   - sort for minimal mean frequency, RV-LV slopes should have a low freq
@@ -269,18 +268,30 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 	max_slope_length_diff = stats[n-1].first->get_curve_length() - stats[n-2].first->get_curve_length();
 	float rate = series[0].size() / 7.0f;
 	bool has_periodic = stats[n-1].first->get_mean_frequency() > rate ;
+	
+
 	cvinfo() << stats[n-1].first->get_mean_frequency() << " vs " << rate << "=" << has_periodic << "\n";
 
 	if (has_periodic && (mean_stripped || n > 3)) {
 		// put the periodic element at the end
 		cvinfo() << "identify periodic as " << stats[n-1].second << "\n";
 		++sort_skip;
-	}
+	}else
+		has_periodic = false; 
 
-	if (!(mean_stripped && n < 5)) {
-		// put the low range curve at the end
+	if (n > 3 || (n > 2 && !has_periodic ) ) {
+		cvdebug() << "range sort\n"; 
 		sort(stats.begin(), stats.end() - sort_skip, compare_range());
-		++sort_skip;
+		
+		// if the difference in range is very small, we can not rely on the sorting 
+		if (stats[n - 2 - sort_skip].first->get_range() - 
+		    stats[n - 1 - sort_skip].first->get_range() >
+		    0.1 * stats[n - 2 - sort_skip].first->get_range()) 
+			++sort_skip;
+		else
+			cvdebug() << "no range skip\n"; 
+	}else {
+		cvdebug() << "n=" << n << ", has_periodic=" << has_periodic<< "\n"; 
 	}
 
 	if (n > 4) {
@@ -290,6 +301,7 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 				++sort_skip;
 	}
 
+	cvdebug() << "sort skip = " << sort_skip << "\n"; 
 	sort(stats.begin(), stats.end() - sort_skip, compare_perfusion_peak());
 
 	cvinfo() << "Sorted\n";
