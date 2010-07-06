@@ -171,8 +171,7 @@ void C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 
 	unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(series, false));
 	if (_M_components > 0) {
-		if (_M_max_iterations) 
-			ica->set_max_iterations(_M_max_iterations);
+		ica->set_max_iterations(_M_max_iterations);
 		ica->run(_M_components, _M_meanstrip, _M_normalize);
 	} else {
 		// maybe one can use the correlation and create an initial guess by combining
@@ -180,8 +179,7 @@ void C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 		float min_cor = 0.0;
 		for (int i = 7; i > 3; --i) {
 			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
-			if (_M_max_iterations) 
-				ica->set_max_iterations(_M_max_iterations);
+			l_ica->set_max_iterations(_M_max_iterations);
 			l_ica->run(i, _M_meanstrip, _M_normalize);
 
 			CSlopeClassifier cls(l_ica->get_mixing_curves(), _M_meanstrip);

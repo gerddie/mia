@@ -56,7 +56,7 @@ unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean
 		float min_cor = 0.0;
 		for (int i = 7; i > 3; --i) {
 			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
-			ica->set_max_iterations(max_iterations);
+			l_ica->set_max_iterations(max_iterations);
 			l_ica->run(i, strip_mean, ica_normalize);
 
 			CSlopeClassifier cls(l_ica->get_mixing_curves(), strip_mean);

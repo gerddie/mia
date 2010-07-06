@@ -506,12 +506,12 @@ int CCmdOptionList::handle_shortargs(const char *arg, size_t /*argc*/, const cha
 	return 0;
 }
 
-void CCmdOptionList::parse(size_t argc, char *args[])
+void CCmdOptionList::parse(size_t argc, char *args[], bool has_additional)
 {
-	parse(argc, (const char **)args);
+	parse(argc, (const char **)args, has_additional);
 }
 
-void CCmdOptionList::parse(size_t argc, const char *args[])
+void CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
 {
 
 	size_t idx = 1;
@@ -520,25 +520,32 @@ void CCmdOptionList::parse(size_t argc, const char *args[])
 		const char *ccarg = cur_arg;
 		size_t remaining_args = argc - idx;
 
+		// if we don't scan an option, we deal with a left over argument
 		if (*ccarg != '-') {
 			_M_impl->remaining.push_back(cur_arg);
 			continue;
 		}
 
+		// we found a singular dash, this is also stored as a left over argument
 		++ccarg;
 		if (!*ccarg) {
 			_M_impl->remaining.push_back(cur_arg);
 			continue;
 		}
 
-		if( *ccarg == '-') { // long option
+		// now check if this is a long option 
+		if( *ccarg == '-') { 
 			++ccarg;
 			CCmdOption *opt = _M_impl->find_option(ccarg);
 			if (opt) {
 				size_t nargs = opt->get_needed_args();
-				if (remaining_args < nargs )
-					throw invalid_argument("insufficiente arguments given");
-
+				// currently onyl one argument value is supported
+				assert(nargs <= 1); 
+				if (remaining_args < nargs ) {
+					THROW(invalid_argument, opt->get_long_option() << ": requires " 
+					      << nargs << " arguments, but only " << nargs << " remaining.");
+				}
+				
 				opt->set_value(args[idx]);
 				idx += nargs;
 				continue;
@@ -550,7 +557,7 @@ void CCmdOptionList::parse(size_t argc, const char *args[])
 				continue;
 			}
 		}
-
+		// current option was not found
 		_M_impl->remaining.push_back(cur_arg);
 
 	}
@@ -567,6 +574,13 @@ void CCmdOptionList::parse(size_t argc, const char *args[])
 	}
 
 	cverb.set_verbosity(_M_impl->verbose);
+	if (!has_additional && !_M_impl->remaining.empty()) {
+		stringstream msg; 
+		msg << "Unknown options given: "; 
+		for (auto i = _M_impl->remaining.begin(); _M_impl->remaining.end() != i; ++i)
+			msg << " '" << *i << "' "; 
+		throw invalid_argument(msg.str());
+	}
 }
 
 const vector<const char *>& CCmdOptionList::get_remaining() const

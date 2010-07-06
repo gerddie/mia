@@ -303,12 +303,20 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors1, CmdlineParserFixture )
 	CCmdOptionList olist;
 	olist.push_back(make_opt(bool_value, "bool", 'H', "a bool option", "bool"));
 
-	try {
-		olist.parse(options.size(), &options[0]);
-		BOOST_FAIL("something should go wrong with this");
-	}
-	catch (invalid_argument& x) {
-		BOOST_MESSAGE(string("Caught:") + string(x.what()));
-	}
+	BOOST_CHECK_THROW(olist.parse(options.size(), &options[0]), invalid_argument); 
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_parser_errors2, CmdlineParserFixture )
+{
+	vector<const char *> options;
+	options.push_back("self1");
+	options.push_back("-H2u16");
+	bool bool_value = false;
+
+	CCmdOptionList olist;
+	olist.push_back(make_opt(bool_value, "bool", 'H', "a bool option", "bool"));
+
+	BOOST_CHECK_THROW(olist.parse(options.size(), &options[0], false), invalid_argument); 
 }
 

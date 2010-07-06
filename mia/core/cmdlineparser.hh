@@ -427,13 +427,13 @@ class EXPORT_CORE CCmdOptionList {
 	    \param argc number of arguments
 	    \param args array of arguments strings
         */
-	void parse(size_t argc, const char *args[]);
+	void parse(size_t argc, const char *args[], bool has_additional = true);
 
         /** the work routine, can take the arguemnts straight from \a main
 	    \param argc number of arguments
 	    \param args array of arguments strings
         */
-        void parse(size_t argc, char *args[]);
+        void parse(size_t argc, char *args[], bool has_additional = true);
 
         /// \returns a vector of the remaining arguments
 	const std::vector<const char *>& get_remaining() const;

@@ -132,7 +132,7 @@ int do_main( int argc, const char *argv[] )
 
 
 
-	options.parse(argc, argv);
+	options.parse(argc, argv, false);
 
 	// prepare registration class
 	
@@ -141,7 +141,7 @@ int do_main( int argc, const char *argv[] )
 					minimizer, transform_type, *ipfactory); 
 					
 					
-					
+	cvwarn() << "save_crop_feature:" << save_crop_feature << "\n"; 
 	
 	
 	// load input data set
