@@ -42,7 +42,18 @@ struct SlopeClassifierFixture {
 		int LV_peak;
 	} Result;
 	void run(size_t length, size_t components, const float *data, const Result& r, bool mean_removed = false);
+	void check_equal(int a, int b, const char *descr); 
 };
+
+#define BOOST_CHECK_EQUAL_DESCR( L, R, D )				\
+	BOOST_CHECK_WITH_ARGS_IMPL( ::boost::test_tools::tt_detail::equal_impl_frwd(), D, CHECK, CHECK_EQUAL, (L)(R) )
+
+
+void SlopeClassifierFixture::check_equal(int value, int expect, const char *descr)
+{
+	if (expect != -2) 
+		BOOST_CHECK_EQUAL_DESCR( value, expect, descr ); 
+}
 
 void SlopeClassifierFixture::run(size_t length, size_t components, const float *data, const Result& result, bool mean_removed)
 {
@@ -57,14 +68,14 @@ void SlopeClassifierFixture::run(size_t length, size_t components, const float *
 			columns[c][r]  = *i;
 
 	CSlopeClassifier c(columns, mean_removed);
-
-	BOOST_CHECK_EQUAL(c.get_periodic_idx(), result.periodic_idx);
-	BOOST_CHECK_EQUAL(c.get_RV_idx(), result.RV_idx);
-	BOOST_CHECK_EQUAL(c.get_LV_idx(), result.LV_idx);
-	BOOST_CHECK_EQUAL(c.get_perfusion_idx(), result.perfusion_idx);
-	BOOST_CHECK_EQUAL(c.get_baseline_idx(), result.baseline_idx);
-	BOOST_CHECK_EQUAL(c.get_RV_peak(), result.RV_peak);
-	BOOST_CHECK_EQUAL(c.get_LV_peak(), result.LV_peak);
+	check_equal(c.get_periodic_idx(), result.periodic_idx, "periodic index"); 
+	check_equal(c.get_RV_idx(), result.RV_idx, "RV index");
+	
+	check_equal(c.get_LV_idx(), result.LV_idx, "LV index");
+	check_equal(c.get_perfusion_idx(), result.perfusion_idx, "perfusion index");
+	check_equal(c.get_baseline_idx(), result.baseline_idx, "baseline index");
+	check_equal(c.get_RV_peak(), result.RV_peak, "RV peak");
+	check_equal(c.get_LV_peak(), result.LV_peak, "LV peak");
 }
 
 BOOST_FIXTURE_TEST_CASE( test_classifier4, SlopeClassifierFixture )
@@ -958,9 +969,12 @@ BOOST_FIXTURE_TEST_CASE( test_classifier_7 , SlopeClassifierFixture )
 	r.periodic_idx = 4;
 	r.RV_idx = 5;
 	r.LV_idx = 0;
-	// these two are not yet sure
-	r.baseline_idx = 6;
-	r.perfusion_idx = 2;
+	r.perfusion_idx = 1;
+
+	// -2 == not important 
+
+	r.baseline_idx = -2; 
+
 
 	r.RV_peak = 16;
 	r.LV_peak = 26;

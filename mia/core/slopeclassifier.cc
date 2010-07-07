@@ -279,26 +279,27 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 	}else
 		has_periodic = false; 
 
-	if (n > 3 || (n > 2 && !has_periodic ) ) {
-		cvdebug() << "range sort\n"; 
-		sort(stats.begin(), stats.end() - sort_skip, compare_range());
-		
-		// if the difference in range is very small, we can not rely on the sorting 
-		if (stats[n - 2 - sort_skip].first->get_range() - 
-		    stats[n - 1 - sort_skip].first->get_range() >
-		    0.1 * stats[n - 2 - sort_skip].first->get_range()) 
-			++sort_skip;
-		else
-			cvdebug() << "no range skip\n"; 
-	}else {
-		cvdebug() << "n=" << n << ", has_periodic=" << has_periodic<< "\n"; 
-	}
-
 	if (n > 4) {
 		sort(stats.begin(), stats.end() - sort_skip, compare_mean_freq());
 		for (auto k = stats.rbegin() + sort_skip; k != stats.rend(); ++k)
 			if (k->first->get_mean_frequency() > rate)
 				++sort_skip;
+	}
+
+
+	if (n > 3 || (n > 2 && !has_periodic ) ) {
+		cvdebug() << "range sort\n"; 
+		sort(stats.begin(), stats.end() - sort_skip, compare_range());
+		
+		// if the difference in range of the 2nd and 3rd component is very small, 
+                // we can not rely on the sorting 
+		if (stats[1].first->get_range() - stats[2].first->get_range() >
+		    0.1 * stats[1].first->get_range()) 
+			++sort_skip;
+		else
+			cvdebug() << "no range skip\n"; 
+	}else {
+		cvdebug() << "n=" << n << ", has_periodic=" << has_periodic<< "\n"; 
 	}
 
 	cvdebug() << "sort skip = " << sort_skip << "\n"; 

@@ -41,6 +41,7 @@ struct C2DPerfusionAnalysisImpl {
 	vector<C2DFImage> get_references() const; 
 	void run_ica(const vector<C2DFImage>& series);
 	C2DFilterPlugin::ProductPtr get_crop_filter(float scale, C2DBounds& crop_start,
+						    bool try_peak_diff_first, 
 						    const std::string& save_features) const; 
 	C2DFilterPlugin::ProductPtr create_LV_cropper(P2DImage rvlv_feature,
 						      float LV_mask_amplify,
@@ -49,6 +50,8 @@ struct C2DPerfusionAnalysisImpl {
 
 	CICAAnalysis::IndexSet get_all_without_periodic()const; 
 	void save_feature(const string& base, const string& feature, const C2DImage& image)const; 
+	P2DImage get_rvlv_delta_from_feature(const string& save_features)const; 
+	P2DImage get_rvlv_delta_from_peaks(const string& save_features)const; 
 	
 	size_t _M_components;
 	bool _M_normalize;  
@@ -81,10 +84,12 @@ void C2DPerfusionAnalysis::set_max_ica_iterations(size_t maxiter)
 }
 
 C2DFilterPlugin::ProductPtr C2DPerfusionAnalysis::get_crop_filter(float scale, C2DBounds& crop_start,
+								  bool try_peak_diff_first, 
 								  const std::string& save_features) const
+
 {
 	assert(impl); 
-	return impl->get_crop_filter(scale, crop_start, save_features); 
+	return impl->get_crop_filter(scale, crop_start, try_peak_diff_first, save_features); 
 }
 
 void C2DPerfusionAnalysis::run(const vector<C2DFImage>& series)
@@ -111,8 +116,7 @@ C2DPerfusionAnalysisImpl::C2DPerfusionAnalysisImpl(size_t components,
 {
 }
 
-C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::get_crop_filter(float scale, C2DBounds& crop_start,
-								      const std::string& save_features) const
+P2DImage C2DPerfusionAnalysisImpl::get_rvlv_delta_from_feature(const string& save_features) const 
 {
 	C2DImageSeriesICA::IndexSet plus;
 	C2DImageSeriesICA::IndexSet minus;
@@ -120,30 +124,56 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::get_crop_filter(float scal
 	plus.insert(_M_cls.get_RV_idx());
 	minus.insert(_M_cls.get_LV_idx());
 	
-	P2DImage rvlv_feature = _M_ica->get_delta_feature(plus, minus);
+	P2DImage result = _M_ica->get_delta_feature(plus, minus); 
 	if (!save_features.empty()) 
-		save_feature(save_features, "RVLVica", *rvlv_feature); 
+		save_feature(save_features, "RVLVica", *result); 
+	
+	return result; 
+}
+
+P2DImage C2DPerfusionAnalysisImpl::get_rvlv_delta_from_peaks(const string& save_features) const 
+{
+	const int RV_peak = _M_cls.get_RV_peak();
+	const int LV_peak = _M_cls.get_LV_peak();
+	
+	if (RV_peak < 0 || LV_peak < 0)
+		return P2DImage(); 
+
+	C2DFImage *prvlv_diff= new C2DFImage(_M_image_size);
+	P2DImage result(prvlv_diff); 
+
+	transform(_M_series[RV_peak].begin(), _M_series[RV_peak].end(),
+		  _M_series[LV_peak].begin(), prvlv_diff->begin(), _1 - _2);
+
+	if (!save_features.empty()) {
+		save_feature(save_features, "RVpeak", _M_series[RV_peak]); 
+		save_feature(save_features, "LVpeak", _M_series[LV_peak]); 
+		save_feature(save_features, "RVLVdelta", *result); 
+	}
+
+	return result; 
+}
+
+C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::get_crop_filter(float scale, C2DBounds& crop_start,
+								      bool try_peak_diff_first, 
+								      const string& save_features) const
+{
+	
+	P2DImage rvlv_feature = try_peak_diff_first ? 
+		get_rvlv_delta_from_peaks(save_features): 
+		get_rvlv_delta_from_feature(save_features); 
 
 	auto cropper = create_LV_cropper(rvlv_feature, scale, crop_start, save_features);
 	if (cropper)
 		return cropper; 
 
-	const int RV_peak = _M_cls.get_RV_peak();
-	const int LV_peak = _M_cls.get_LV_peak();
-	if (RV_peak < 0 || LV_peak < 0)
+	rvlv_feature = !try_peak_diff_first ? 
+		get_rvlv_delta_from_peaks(save_features): 
+		get_rvlv_delta_from_feature(save_features); 
+
+	if (!rvlv_feature) 
 		return C2DFilterPlugin::ProductPtr(); 
-
-	C2DFImage *prvlv_diff= new C2DFImage(_M_image_size);
-	rvlv_feature.reset(prvlv_diff); 
-
-	transform(_M_series[RV_peak].begin(), _M_series[RV_peak].end(),
-		  _M_series[LV_peak].begin(), prvlv_diff->begin(), _1 - _2);
-	if (!save_features.empty()) {
-		save_feature(save_features, "RVpeak", _M_series[RV_peak]); 
-		save_feature(save_features, "LVpeak", _M_series[LV_peak]); 
-		save_feature(save_features, "RVLVdelta", *rvlv_feature); 
-	}
-
+	
 	return create_LV_cropper(rvlv_feature, scale, crop_start, save_features);
 }
 
@@ -183,7 +213,7 @@ void C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 			l_ica->run(i, _M_meanstrip, _M_normalize);
 
 			CSlopeClassifier cls(l_ica->get_mixing_curves(), _M_meanstrip);
-			float max_slope = log2(i) * cls.get_max_slope_length_diff();
+			float max_slope = /*log2(i) * */ cls.get_max_slope_length_diff();
 			cvinfo() << "Components = " << i << " max_slope = " << max_slope << "\n";
 			if (min_cor < max_slope) {
 				min_cor = max_slope;

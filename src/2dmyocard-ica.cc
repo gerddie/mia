@@ -60,7 +60,7 @@ unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean
 			l_ica->run(i, strip_mean, ica_normalize);
 
 			CSlopeClassifier cls(l_ica->get_mixing_curves(), strip_mean);
-			float max_slope = log2(i) * cls.get_max_slope_length_diff();
+			float max_slope = /*log2(i) * */ cls.get_max_slope_length_diff();
 			cvinfo() << "Components = " << i << " max_slope = " << max_slope << "\n";
 			if (min_cor < max_slope) {
 				min_cor = max_slope;

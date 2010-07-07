@@ -73,7 +73,8 @@ public:
 	   to adjust segmentations
 	   \returns the cropping filter or C2DFilterPlugin::ProductPtr() if the segmentation fails. 
 	 */
-	C2DFilterPlugin::ProductPtr get_crop_filter(float scale, C2DBounds& crop_start, 
+	C2DFilterPlugin::ProductPtr get_crop_filter(float scale, C2DBounds& crop_start,
+						    bool try_peak_diff_first, 
 						    const std::string& save_features="") const; 
 
 
