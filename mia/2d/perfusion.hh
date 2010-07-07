@@ -26,6 +26,7 @@
 #define mia_2d_perfusion_hh
 
 #include <vector>
+#include <mia/core/dictmap.hh>
 #include <mia/2d/2DImage.hh>
 #include <mia/2d/2dfilter.hh>
 
@@ -39,7 +40,12 @@ NS_MIA_BEGIN
 
 class  EXPORT_2D C2DPerfusionAnalysis  {
 public: 
-
+	enum EBoxSegmentation {
+		bs_delta_feature, /*!< Segmentation based on the difference of the LV and RV feature images */
+		bs_delta_peak,    /*!< Segmentation based on the difference of the LV and RV peak enhancenemt images */
+		bs_features,      /*!< Segmentation based on the LV and RV feature images */
+		bs_unknown        /*!< place holder */
+	}; 
 	/**
 	   Constructor 
 	   \param components number of independend components, 0 = auto estimate from [3,4,5,6,7]
@@ -74,7 +80,7 @@ public:
 	   \returns the cropping filter or C2DFilterPlugin::ProductPtr() if the segmentation fails. 
 	 */
 	C2DFilterPlugin::ProductPtr get_crop_filter(float scale, C2DBounds& crop_start,
-						    bool try_peak_diff_first, 
+						    EBoxSegmentation approach, 
 						    const std::string& save_features="") const; 
 
 
@@ -82,6 +88,8 @@ public:
 	   Create uncropped reference images that try to omit the movement component in the image series.  
 	*/
 	std::vector<C2DFImage> get_references() const; 
+
+	static TDictMap<EBoxSegmentation> segmethod_dict; 
 private: 
 	struct C2DPerfusionAnalysisImpl *impl; 
 

@@ -95,7 +95,7 @@ int do_main( int argc, const char *argv[] )
 	float box_scale = 1.4;
 	size_t skip_images = 0; 
 	size_t max_ica_iterations = 400; 
-	bool try_peak_diff_first = false; 
+	C2DPerfusionAnalysis::EBoxSegmentation segmethod=C2DPerfusionAnalysis::bs_features; 
 
 	size_t current_pass = 0; 
 	size_t pass = 2; 
@@ -131,8 +131,8 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA", 
 				    "ica-iter", false)); 
 
-	options.push_back(make_opt( try_peak_diff_first, "peak-diff-first", 'E', "try first segmenting based on the"
-				    "LV-RV peak image difference, and use feature images only as fallback", "peak-first")); 
+	options.push_back(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
+				   "Segmentation method", "segmethod")); 
 				    
 
 	options.parse(argc, argv, false);
@@ -170,7 +170,7 @@ int do_main( int argc, const char *argv[] )
 	// crop if requested
 	if (box_scale) {
 		C2DBounds crop_start; 
-		auto cropper = ica.get_crop_filter(box_scale, crop_start, try_peak_diff_first, save_crop_feature); 
+		auto cropper = ica.get_crop_filter(box_scale, crop_start, segmethod, save_crop_feature); 
 		if (!cropper) {
 			THROW(runtime_error, "Cropping was requested, but segmentation failed"); 
 		}

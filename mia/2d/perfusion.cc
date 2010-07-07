@@ -33,6 +33,7 @@ using boost::lambda::_1;
 using boost::lambda::_2;
 
 
+
 /* Implementation class */
 struct C2DPerfusionAnalysisImpl {
 	C2DPerfusionAnalysisImpl(size_t components, bool normalize, 
@@ -41,18 +42,22 @@ struct C2DPerfusionAnalysisImpl {
 	vector<C2DFImage> get_references() const; 
 	void run_ica(const vector<C2DFImage>& series);
 	C2DFilterPlugin::ProductPtr get_crop_filter(float scale, C2DBounds& crop_start,
-						    bool try_peak_diff_first, 
+						    C2DPerfusionAnalysis::EBoxSegmentation approach, 
 						    const std::string& save_features) const; 
-	C2DFilterPlugin::ProductPtr create_LV_cropper(P2DImage rvlv_feature,
+	C2DFilterPlugin::ProductPtr create_LV_cropper_from_delta(P2DImage rvlv_feature,
 						      float LV_mask_amplify,
 						      C2DBounds& crop_start,
 						      const std::string& save_features)const; 
 
+	C2DFilterPlugin::ProductPtr create_LV_cropper_from_features(float LV_mask_amplify,
+								    C2DBounds& crop_start, 
+								    const string& save_features)const; 
+		
 	CICAAnalysis::IndexSet get_all_without_periodic()const; 
 	void save_feature(const string& base, const string& feature, const C2DImage& image)const; 
 	P2DImage get_rvlv_delta_from_feature(const string& save_features)const; 
 	P2DImage get_rvlv_delta_from_peaks(const string& save_features)const; 
-	
+
 	size_t _M_components;
 	bool _M_normalize;  
 	bool _M_meanstrip; 
@@ -84,12 +89,12 @@ void C2DPerfusionAnalysis::set_max_ica_iterations(size_t maxiter)
 }
 
 C2DFilterPlugin::ProductPtr C2DPerfusionAnalysis::get_crop_filter(float scale, C2DBounds& crop_start,
-								  bool try_peak_diff_first, 
+								  EBoxSegmentation approach, 
 								  const std::string& save_features) const
 
 {
 	assert(impl); 
-	return impl->get_crop_filter(scale, crop_start, try_peak_diff_first, save_features); 
+	return impl->get_crop_filter(scale, crop_start, approach, save_features); 
 }
 
 void C2DPerfusionAnalysis::run(const vector<C2DFImage>& series)
@@ -125,8 +130,11 @@ P2DImage C2DPerfusionAnalysisImpl::get_rvlv_delta_from_feature(const string& sav
 	minus.insert(_M_cls.get_LV_idx());
 	
 	P2DImage result = _M_ica->get_delta_feature(plus, minus); 
-	if (!save_features.empty()) 
+	if (!save_features.empty()) {
+		save_feature(save_features, "RVic", *_M_ica->get_feature_image(_M_cls.get_RV_idx())); 
+		save_feature(save_features, "LVic", *_M_ica->get_feature_image(_M_cls.get_LV_idx())); 
 		save_feature(save_features, "RVLVica", *result); 
+	}
 	
 	return result; 
 }
@@ -155,28 +163,23 @@ P2DImage C2DPerfusionAnalysisImpl::get_rvlv_delta_from_peaks(const string& save_
 }
 
 C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::get_crop_filter(float scale, C2DBounds& crop_start,
-								      bool try_peak_diff_first, 
+								      C2DPerfusionAnalysis::EBoxSegmentation approach, 
 								      const string& save_features) const
 {
-	
-	P2DImage rvlv_feature = try_peak_diff_first ? 
-		get_rvlv_delta_from_peaks(save_features): 
-		get_rvlv_delta_from_feature(save_features); 
-
-	auto cropper = create_LV_cropper(rvlv_feature, scale, crop_start, save_features);
-	if (cropper)
-		return cropper; 
-
-	rvlv_feature = !try_peak_diff_first ? 
-		get_rvlv_delta_from_peaks(save_features): 
-		get_rvlv_delta_from_feature(save_features); 
-
-	if (!rvlv_feature) 
-		return C2DFilterPlugin::ProductPtr(); 
-	
-	return create_LV_cropper(rvlv_feature, scale, crop_start, save_features);
+	switch (approach) {
+	case C2DPerfusionAnalysis::bs_delta_feature: 
+		return create_LV_cropper_from_delta(get_rvlv_delta_from_feature(save_features), 
+					     scale, crop_start, save_features);
+		break; 
+	case C2DPerfusionAnalysis::bs_delta_peak: 
+		return create_LV_cropper_from_delta(get_rvlv_delta_from_peaks(save_features), 
+						    scale, crop_start, save_features);
+	case C2DPerfusionAnalysis::bs_features: 
+		return create_LV_cropper_from_features(scale, crop_start, save_features);
+	default: 
+		throw invalid_argument("C2DPerfusionAnalysis::get_crop_filter: unkonwn segmentatoin method given");
+	}
 }
-
 
 
 vector<C2DFImage> C2DPerfusionAnalysisImpl::get_references() const
@@ -318,7 +321,7 @@ static void save_coefs(const string&  coefs_name, const C2DImageSeriesICA& ica)
 }
 
 
-C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper(P2DImage rvlv_feature,
+C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_delta(P2DImage rvlv_feature,
 									float LV_mask_amplify,
 									C2DBounds& crop_start, 
 									const string& save_features)const 
@@ -337,7 +340,6 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper(P2DImage
 		"binarize:min=0,max=0",
 		"label",
 	};
-
 	P2DImage pre_kmeans = run_filter_chain(rvlv_feature, 2, kmeans_filter_chain);
 
 	P2DImage RV;
@@ -362,9 +364,11 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper(P2DImage
 	if (nc == 5)
 		return C2DFilterPlugin::ProductPtr();
 
+	C2DFVector RV_center = ::mia::filter(GetRegionCenter(), *RV);
+
 	P2DImage LV_candidates = run_filter_chain(kmeans, 2, LVcandidate_filter_chain);
 
-	C2DFVector RV_center = ::mia::filter(GetRegionCenter(), *RV);
+
 	int label = ::mia::filter(GetClosestRegionLabel(RV_center), *LV_candidates);
 	size_t lv_pixels = ::mia::filter(GetRegionSize(label), *LV_candidates);
 
@@ -396,6 +400,77 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper(P2DImage
 
 	if (!save_features.empty()) {
 		save_feature(save_features, "kmeans", *kmeans); 
+		save_feature(save_features, "LV_candidates", *LV_candidates); 
+		save_feature(save_features, "LV", *LV); 
+		save_feature(save_features, "RV", *RV); 
+		save_coefs(save_features + ".txt", *_M_ica); 
+	}
+
+	return C2DFilterPluginHandler::instance().produce(mask_lv.str().c_str());
+}
+
+
+C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_features(float LV_mask_amplify,
+										      C2DBounds& crop_start, 
+										      const string& save_features)const 
+{
+	const char *segment_filter_chain[] = {
+		"close:shape=[sphere:r=2]",
+		"open:shape=[sphere:r=2]",
+		"kmeans:c=7",
+		"binarize:min=6,max=6", 
+		"label"
+	};
+
+	P2DImage RV_candidates = run_filter_chain(_M_ica->get_feature_image(_M_cls.get_RV_idx()),
+						  sizeof(segment_filter_chain)/sizeof(const char*), 
+						  segment_filter_chain);
+	
+	P2DImage RV = run_filter(*RV_candidates, "selectbig"); 
+	size_t npixels = ::mia::filter(GetRegionSize(1), *RV);
+	
+	if (10 * npixels > RV->get_size().x * RV->get_size().y)
+		return C2DFilterPlugin::ProductPtr();
+
+	C2DFVector RV_center = ::mia::filter(GetRegionCenter(), *RV);
+
+	P2DImage LV_candidates = run_filter_chain(_M_ica->get_feature_image(_M_cls.get_LV_idx()),
+						  sizeof(segment_filter_chain)/sizeof(const char*), 
+						  segment_filter_chain);
+
+	int label = ::mia::filter(GetClosestRegionLabel(RV_center), *LV_candidates);
+	size_t lv_pixels = ::mia::filter(GetRegionSize(label), *LV_candidates);
+
+	if (10 * lv_pixels > RV->get_size().x * RV->get_size().y)
+		return C2DFilterPlugin::ProductPtr();
+
+	stringstream binarize_lv;
+	binarize_lv << "binarize:min="<< label << ",max=" << label;
+	cvinfo() << "LV label=  " << label << "\n";
+	P2DImage LV = run_filter(*LV_candidates, binarize_lv.str().c_str());
+
+	C2DFVector LV_center = ::mia::filter(GetRegionCenter(), *LV);
+
+	cvinfo() << "RV center = " << RV_center << "\n";
+	cvinfo() << "LV center = " << LV_center << "\n";
+
+	float r = LV_mask_amplify * (LV_center - RV_center).norm();
+	cvinfo() << "r = " << r << "\n";
+	stringstream mask_lv;
+	crop_start = C2DBounds(int(LV_center.x - r), int(LV_center.y - r));
+
+	// this is ugly and should be replaced
+	if (crop_start.x > LV_center.x ||crop_start.y > LV_center.y)
+		return C2DFilterPlugin::ProductPtr();
+
+	mask_lv << "crop:start=[" << crop_start
+		<< "],end=[" << C2DBounds(int(LV_center.x + r), int(LV_center.y + r)) << "]";
+	cvmsg() << "crop region = '" << mask_lv.str() << "'\n";
+
+	if (!save_features.empty()) {
+		save_feature(save_features, "RVic", *_M_ica->get_feature_image(_M_cls.get_RV_idx())); 
+		save_feature(save_features, "LVic", *_M_ica->get_feature_image(_M_cls.get_LV_idx())); 
+		save_feature(save_features, "RV_candidates", *RV_candidates); 
 		save_feature(save_features, "LV_candidates", *LV_candidates); 
 		save_feature(save_features, "LV", *LV); 
 		save_feature(save_features, "RV", *RV); 
@@ -448,5 +523,14 @@ void C2DPerfusionAnalysisImpl::save_feature(const string& base, const string& fe
 {
 	save_image2d(base + feature + ".png", run_filter(image, "convert")); 
 }
+
+TDictMap<C2DPerfusionAnalysis::EBoxSegmentation>::Table segmethod_table[] ={
+	{"delta-feature", C2DPerfusionAnalysis::bs_delta_feature},
+	{"delta-peak", C2DPerfusionAnalysis::bs_delta_peak},
+	{"features", C2DPerfusionAnalysis::bs_features},      
+	{NULL, C2DPerfusionAnalysis::bs_unknown}
+};
+
+TDictMap<C2DPerfusionAnalysis::EBoxSegmentation> C2DPerfusionAnalysis::segmethod_dict(segmethod_table); 
 
 NS_MIA_END
