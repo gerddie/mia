@@ -285,16 +285,16 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 			if (k->first->get_mean_frequency() > rate)
 				++sort_skip;
 	}
+	int remaining = n - sort_skip; 
 
-
-	if (n > 3 || (n > 2 && !has_periodic ) ) {
+	if (remaining > 2 ) {
 		cvdebug() << "range sort\n"; 
 		sort(stats.begin(), stats.end() - sort_skip, compare_range());
 		
 		// if the difference in range of the 2nd and 3rd component is very small, 
                 // we can not rely on the sorting 
 		if (stats[1].first->get_range() - stats[2].first->get_range() >
-		    0.1 * stats[1].first->get_range()) 
+		    0.5 * stats[1].first->get_range()) 
 			++sort_skip;
 		else
 			cvdebug() << "no range skip\n"; 

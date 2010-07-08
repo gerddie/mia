@@ -85,7 +85,7 @@ void CICAAnalysis::set_row(int row, const itppvector&  buffer, double mean)
 	cvdebug() << "add row " << row << ", mean=" << mean << "\n";
 }
 
-void CICAAnalysis::run(size_t nica)
+bool CICAAnalysis::run(size_t nica)
 {
 	TRACE_FUNCTION;
 	assert(impl);
@@ -99,7 +99,7 @@ void CICAAnalysis::run(size_t nica)
 	if (impl->m_max_iterations > 0)
 		fastICA.set_max_num_iterations(impl->m_max_iterations);
 
-	fastICA.separate();
+	bool result = fastICA.separate();
 
 	impl->m_ICs = fastICA.get_independent_components();
 	impl->m_Mix = fastICA.get_mixing_matrix();
@@ -107,6 +107,7 @@ void CICAAnalysis::run(size_t nica)
 	impl->m_ncomponents = impl->m_Mix.cols();
 	impl->m_nlength     = impl->m_ICs.cols();
 	impl->m_rows        = impl->m_Mix.rows();
+	return result; 
 }
 
 

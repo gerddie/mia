@@ -28,271 +28,169 @@
 #include <fstream>
 #include <map>
 #include <boost/lambda/lambda.hpp>
-#include <mia/core.hh>
-#include <mia/core/fft1d_r2c.hh>
-#include <queue>
+#include <boost/filesystem.hpp>
 
+
+//#include <mia/core/fft1d_r2c.hh>
+#include <queue>
+#include <libxml++/libxml++.h>
+
+
+#include <mia/core.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/ica.hh>
 #include <mia/2d/SegSetWithImages.hh>
-#include <libxml++/libxml++.h>
-
+#include <mia/2d/perfusion.hh>
+#include <mia/2d/transformfactory.hh>
 NS_MIA_USE;
 
-using boost::lambda::_1;
-using boost::lambda::_2;
+namespace bfs=boost::filesystem; 
 
-unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean, size_t& components, bool ica_normalize )
-{
-	unique_ptr<C2DImageSeriesICA> ica;
-	if (components > 0) {
-		ica.reset(new C2DImageSeriesICA(series, false));
-		ica->run(components, strip_mean, ica_normalize);
-		return ica;
-	} else {
-		float min_cor = 0.0;
-		for (int i = 6; i > 3; --i) {
-			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
-			l_ica->run(i, strip_mean, ica_normalize);
-
-			CSlopeClassifier cls(l_ica->get_mixing_curves(), strip_mean);
-			float max_slope = i * cls.get_max_slope_length_diff();
-			cvinfo() << "Components = " << i << " max_slope = " << max_slope << "\n";
-			if (min_cor < max_slope) {
-				min_cor = max_slope;
-				components = i;
-				ica.swap(l_ica);
-			}
-		}
+class C2DFImage2PImage {
+public: 
+	P2DImage operator () (const C2DFImage& image) const {
+		return P2DImage(new C2DFImage(image)); 
 	}
-	return ica;
-}
+}; 
 
+class Convert2Float {
+public: 
+	C2DFImage operator () (P2DImage image) const; 
+private: 
+	FConvert2DImage2float _M_converter; 
+}; 
 
-
-void save_coefs(const string&  coefs_name, const C2DImageSeriesICA& ica)
-{
-	CSlopeClassifier::Columns mix = ica.get_mixing_curves();
-	ofstream coef_file(coefs_name.c_str());
-
-	for (size_t r = 0; r < mix[0].size(); ++r) {
-		for (size_t c = 0; c < mix.size(); ++c) {
-			coef_file   << setw(10) << mix[c][r] << " ";
-		}
-		coef_file << "\n";
-	}
-	if (!coef_file.good())
-		THROW(runtime_error, "unable to save coefficients to " << coefs_name);
-}
-
-CICAAnalysis::IndexSet get_all_without_periodic(const CSlopeClassifier::Columns& curves, bool strip_mean)
-{
-	CSlopeClassifier cls(curves, strip_mean);
-	int periodic_index = cls.get_periodic_idx();
-
-	CICAAnalysis::IndexSet result;
-	for (int i = 0; i < (int)curves.size(); ++i) {
-		if (i != periodic_index)
-			result.insert(i);
-	}
-	return result;
-}
-
-class GetRegionCenter: public TFilter<C2DFVector> {
-public:
-	template <typename T>
-	C2DFVector operator() (const T2DImage<T>& image) const {
-		C2DFVector result;
-		size_t n = 0;
-		typename T2DImage<T>::const_iterator i = image.begin();
-		for (size_t y = 0; y < image.get_size().y; ++y)
-			for (size_t x = 0; x < image.get_size().x; ++x, ++i) {
-				if (*i) {
-					result.x += x;
-					result.y += y;
-					++n;
-				}
-			}
-		if (!n)
-			THROW(invalid_argument, "GetRegionCenter: provided an empty region");
-		return result / float(n);
-	};
-};
-
-class GetClosestRegionLabel: public TFilter<int> {
-public:
-	GetClosestRegionLabel(const C2DFVector& point):m_point(point){}
-	template <typename T>
-	int operator() (const T2DImage<T>& image) const;
-private:
-	C2DFVector m_point;
-	struct Collector {
-		size_t size;
-		C2DFVector center;
-	};
-
-};
-
-typedef pair<float, size_t> element;
-
-
-C2DFilterPlugin::ProductPtr create_LV_cropper(const C2DImageSeriesICA& ica,
-					      const CSlopeClassifier& cls,
-					      float LV_mask_amplify,
-					      C2DIVector& crop_start,
-					      C2DIVector& crop_end
-					      )
-{
-	C2DImageSeriesICA::IndexSet plus;
-	C2DImageSeriesICA::IndexSet minus;
-
-	const char *kmeans_filter_chain[] = {
-		"close:shape=[sphere:r=2]",
-		"open:shape=[sphere:r=2]",
-		"kmeans:c=5"
-	};
-
-	const char *RV_filter_chain[] = {
-		"binarize:min=4,max=4",
-		"label",
-		"selectbig"
-	};
-
-	const char *LVcandidate_filter_chain[] = {
-		"binarize:min=0,max=0",
-		"label",
-	};
-
-	plus.insert(cls.get_RV_idx());
-	minus.insert(cls.get_LV_idx());
-
-
-	P2DImage rvlv_feature = ica.get_delta_feature(plus, minus);
-
-	P2DImage kmeans = run_filter_chain(rvlv_feature, 3, kmeans_filter_chain);
-
-	P2DImage RV = run_filter_chain(kmeans, 3, RV_filter_chain);
-	P2DImage LV_candidates = run_filter_chain(kmeans, 2, LVcandidate_filter_chain);
-
-	C2DFVector RV_center = ::mia::filter(GetRegionCenter(), *RV);
-	int label = ::mia::filter(GetClosestRegionLabel(RV_center), *LV_candidates);
-
-	stringstream binarize_lv;
-	binarize_lv << "binarize:min="<< label << ",max=" << label;
-	cvinfo() << "LV label=  " << label << "\n";
-	P2DImage LV = run_filter(*LV_candidates, binarize_lv.str().c_str());
-
-	C2DFVector LV_center = ::mia::filter(GetRegionCenter(), *LV);
-
-	cvinfo() << "RV center = " << RV_center << "\n";
-	cvinfo() << "LV center = " << LV_center << "\n";
-
-	float r = LV_mask_amplify * (LV_center - RV_center).norm();
-	cvinfo() << "r = " << r << "\n";
-	stringstream mask_lv;
-	crop_start = C2DBounds(int(LV_center.x - r), int(LV_center.y - r));
-	crop_end = C2DBounds(int(LV_center.x + r), int(LV_center.y + r));
-	mask_lv << "crop:start=[" << crop_start << "],end=[" << crop_end << "]";
-	cvinfo() << "crop region = '" << mask_lv.str() << "'\n";
-
-	return C2DFilterPluginHandler::instance().produce(mask_lv.str().c_str());
-}
 
 int do_main( int argc, const char *argv[] )
 {
-	string src_name("segment.set");
-	string out_name("cropped.set");
-	string crop_name("crop");
-	string coefs_name;
-	size_t first =  2;
-	size_t components = 0;
-	bool strip_mean = false;
-	bool ica_normalize = false;
-	float LV_mask = 2.0; // no mask
+	// IO parameters 
+	string in_filename;
+	string reference_filename; 
 
+	// debug options: save some intermediate steps 
+	string cropped_filename("cropped.set");
+	string save_crop_feature; 
+
+	// this parameter is currently not exported - reading the image data is 
+	// therefore done from the path given in the segmentation set 
+	bool override_src_imagepath = true;
+
+	// ICA parameters 
+	size_t components = 0;
+	bool no_normalize = false; 
+	bool no_meanstrip = false; 
+	float box_scale = 1.4;
+	size_t skip_images = 0; 
+	size_t max_ica_iterations = 400; 
+	C2DPerfusionAnalysis::EBoxSegmentation segmethod=C2DPerfusionAnalysis::bs_features; 
 
 	CCmdOptionList options;
-	options.push_back(make_opt( src_name, "in-set", 'i', "input segmentation set", "input", false));
-	options.push_back(make_opt( out_name, "out-set", 'o', "output segmentation set", "output", false));
-	options.push_back(make_opt( components, "components", 'c', "nr. of components, 0=estimate automatically",
-				    "components", false));
+	options.push_back(make_opt( in_filename, "in-file", 'i', "input perfusion data set", "input", true));
+	options.push_back(make_opt( reference_filename, "references", 'r', "file name base for refernces files", 
+				    "references", false)); 
+	
+	options.push_back(make_opt( cropped_filename, "save-cropped", 'c', "save cropped set to this file", "cropped", 
+				    false)); 
+	options.push_back(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images", NULL)); 
 
-	options.push_back(make_opt( crop_name, "crop-image-base", 'b', "image name base for cropped images",
-				    "crop-image-base", false));
+	options.push_back(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
+	options.push_back(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
+	options.push_back(make_opt( no_meanstrip, "no-meanstrip", 0, 
+				    "don't strip the mean from the mixing curves", NULL));
+	options.push_back(make_opt( box_scale, "segscale", 's', 
+				    "segment and scale the crop box around the LV (0=no segmentation)", "segscale"));
+	options.push_back(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
+				    "as they are of other modalities", "skip")); 
+	options.push_back(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA", 
+				    "ica-iter", false)); 
 
-	options.push_back(make_opt( strip_mean, "strip-mean", 'm', "strip mean image from series", "strip-mean", false));
-	options.push_back(make_opt( ica_normalize, "ica_normalize", 'n', "ica_normalize feature images",
-				    "ica_normalize", false));
+	options.push_back(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
+				   "Segmentation method", "segmethod")); 
+	options.parse(argc, argv, false);
+
+	// load input data set
+	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
+	C2DImageSeries input_images = input_set.get_images(); 
+	
+	vector<C2DFImage> series(input_images.size() - skip_images); 
+	transform(input_images.begin() + skip_images, input_images.end(), 
+		  series.begin(), Convert2Float()); 
+	
+
+	// run ICA
+	C2DPerfusionAnalysis ica(components, !no_normalize, !no_meanstrip); 
+	if (max_ica_iterations) 
+		ica.set_max_ica_iterations(max_ica_iterations); 
+	ica.run(series); 
+	vector<C2DFImage> references_float = ica.get_references(); 
+	
+	C2DImageSeries references(references_float.size() + skip_images); 
+	transform(references_float.begin(), references_float.end(), 
+		  references.begin() + skip_images, C2DFImage2PImage()); 
+	copy(input_images.begin(), input_images.begin() + skip_images, references.begin()); 
+
+	// crop if requested
+	if (box_scale > 0) {
+		C2DBounds crop_start; 
+		auto cropper = ica.get_crop_filter(box_scale, crop_start, segmethod, save_crop_feature); 
+		if (!cropper)
+			cropper = ica.get_crop_filter(box_scale, crop_start, 
+						      C2DPerfusionAnalysis::bs_delta_feature, save_crop_feature); 
+		if (cropper) {
+		
+			for(auto i = input_images.begin(); i != input_images.end(); ++i)
+				*i = cropper->filter(**i); 
+			
+			for (auto i = references.begin(); i != references.end(); ++i) 
+				*i = cropper->filter(**i); 
+			
+			auto tr_creator = C2DTransformCreatorHandler::instance().produce("translate");
+			P2DTransformation shift = tr_creator->create(C2DBounds(1,1)); 
+			auto p = shift->get_parameters(); 
+			p[0] = -(float)crop_start.x; 
+			p[1] = -(float)crop_start.y; 
+			shift->set_parameters(p); 
+			
+			input_set.transform(*shift);
+			input_set.set_images(input_images);  
+			
+		}else 
+			cverr() << "no crop box created\n"; 
+	}
 
 
-	options.push_back(make_opt( first, "skip", 's', "skip images at beginning of series", "skip", false));
-
-	options.push_back(make_opt( coefs_name, "coefs", 0, "output mixing coefficients to this file", "coefs", false));
-
-	options.push_back(make_opt( LV_mask, "LV-crop-amp", 'L', "LV crop mask amplification, 0.0 = don't crop",
-				    "LV-crop", false));
-
-	options.parse(argc, argv);
-
-
-	CSegSetWithImages  segset(src_name, "");
-
-	const C2DImageSeries& input_series = segset.get_images();
-
-	vector<C2DFImage> series;
-	FConvert2DImage2float converter;
-	for (size_t i = first; i < input_series.size(); ++i)
-		series.push_back(::mia::filter(converter, *input_series[i]));
-
-
-	cvmsg()<< "Got series of " << series.size() << " images\n";
-	// always strip mean
-	unique_ptr<C2DImageSeriesICA> ica = get_ica(series, strip_mean, components, ica_normalize);
-	CSlopeClassifier::Columns curves = ica->get_mixing_curves();
-
-	CICAAnalysis::IndexSet component_set = get_all_without_periodic(curves, strip_mean);
-
-	CSlopeClassifier cls(curves, strip_mean);
-
-	C2DFilterPlugin::ProductPtr cropper;
-
-	// create crop filter and store source files too.
-	if (LV_mask > 0.0) {
-		C2DIVector crop_start(0,0);
-		C2DIVector crop_end(0,0);
-
-		cropper = create_LV_cropper(*ica, cls, LV_mask, crop_start, crop_end);
-
-		CSegSetWithImages cropped_set = segset.crop(crop_start, crop_end, crop_name);
-
-		unique_ptr<xmlpp::Document> outset(cropped_set.write());
-
-		ofstream outfile(out_name.c_str(), ios_base::out );
+	if (!cropped_filename.empty()) {
+		bfs::path cf(cropped_filename);
+		cf.replace_extension(); 
+		input_set.rename_base(cf.filename()); 
+		input_set.save_images(cropped_filename);
+		
+		unique_ptr<xmlpp::Document> test_cropset(input_set.write());
+		ofstream outfile(cropped_filename, ios_base::out );
 		if (outfile.good())
-			outfile << outset->write_to_string_formatted();
-		else
-			THROW(runtime_error, "Unable to save " << out_name << "'");
+			outfile << test_cropset->write_to_string_formatted();
+		else 
+			THROW(runtime_error, "unable to save to '" << cropped_filename << "'"); 
 	}
-
-	for (size_t i = first; i < input_series.size(); ++i) {
-		P2DImage reference(new C2DFImage(ica->get_partial_mix(i - first, component_set)));
-		if (cropper)
-			reference = cropper->filter(*reference);
-
-		stringstream fname;
-		fname << out_name << setw(4) << setfill('0') << i << ".png";
-
-		if (!save_image2d(fname.str(), reference))
-			THROW(runtime_error, "unable to save " << fname.str() << "\n");
-		cvdebug() << "wrote '" << fname.str() << "\n";
+	
+	//
+	if (!reference_filename.empty()) {
+		bfs::path reff(reference_filename);
+		reff.replace_extension(); 
+		input_set.set_images(references);  
+		input_set.rename_base(reff.filename()); 
+		input_set.save_images(reference_filename);
+		
+		
+		unique_ptr<xmlpp::Document> test_regset(input_set.write());
+		ofstream outfile2(reference_filename, ios_base::out );
+		if (outfile2.good())
+			outfile2 << test_regset->write_to_string_formatted();
+		else 
+			THROW(runtime_error, "unable to save to '" << cropped_filename << "'"); 
 	}
-
-	if (!coefs_name.empty())
-		save_coefs(coefs_name, *ica);
-
-
-	return EXIT_SUCCESS;
+	return EXIT_SUCCESS; 
 
 };
 
@@ -319,40 +217,8 @@ int main( int argc, const char *argv[] )
 	return EXIT_FAILURE;
 }
 
-
-template <typename T>
-int GetClosestRegionLabel::operator() (const T2DImage<T>& image) const
+inline C2DFImage Convert2Float::operator () (P2DImage image) const
 {
-	map<int, Collector> collector_map;
-	typedef map<int, Collector>::iterator coll_iterator;
-	typename T2DImage<T>::const_iterator i = image.begin();
-	for (size_t y = 0; y < image.get_size().y; ++y)
-		for (size_t x = 0; x < image.get_size().x; ++x, ++i) {
-			if (!*i)
-				continue;
-			coll_iterator ic = collector_map.find(*i);
-			if (ic ==  collector_map.end()) {
-				Collector col;
-				col.size = 1;
-				col.center = C2DFVector(x,y);
-				collector_map[*i] = col;
-			} else {
-				++ic->second.size;
-				ic->second.center.x += x;
-				ic->second.center.y += y;
-			}
-		}
+	return ::mia::filter(_M_converter, *image); 
+}
 
-	float min_weighted_distance = numeric_limits<float>::max();
-	int label = 0;
-	for (coll_iterator i = collector_map.begin();
-	     i != collector_map.end(); ++i) {
-		i->second.center /= i->second.size;
-		float wdist = (i->second.center - m_point).norm() / i->second.size;
-		if ( min_weighted_distance > wdist ) {
-			min_weighted_distance = wdist;
-			label = i->first;
-		}
-	}
-	return label;
-};

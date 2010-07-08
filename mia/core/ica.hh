@@ -82,7 +82,7 @@ public:
 	   Run the independed component analysis using the given numbers of components
 	   \param nica number of indentepended components
 	 */
-	void run(size_t nica);
+	bool run(size_t nica);
 
         /**
 	   Run the independed component analysis with an estimation of the optimal number

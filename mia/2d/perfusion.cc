@@ -205,7 +205,8 @@ void C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 	unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(series, false));
 	if (_M_components > 0) {
 		ica->set_max_iterations(_M_max_iterations);
-		ica->run(_M_components, _M_meanstrip, _M_normalize);
+		if (!ica->run(_M_components, _M_meanstrip, _M_normalize)) 
+			THROW(runtime_error, "ICA did not converge, try another numer of components");  
 	} else {
 		// maybe one can use the correlation and create an initial guess by combining
 		// highly correlated curves.
@@ -213,10 +214,11 @@ void C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 		for (int i = 7; i > 3; --i) {
 			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
 			l_ica->set_max_iterations(_M_max_iterations);
-			l_ica->run(i, _M_meanstrip, _M_normalize);
+			if (!l_ica->run(i, _M_meanstrip, _M_normalize)) 
+				continue; 
 
 			CSlopeClassifier cls(l_ica->get_mixing_curves(), _M_meanstrip);
-			float max_slope = /*log2(i) * */ cls.get_max_slope_length_diff();
+			float max_slope = log2(i) * cls.get_max_slope_length_diff();
 			cvinfo() << "Components = " << i << " max_slope = " << max_slope << "\n";
 			if (min_cor < max_slope) {
 				min_cor = max_slope;
@@ -326,6 +328,7 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_del
 									C2DBounds& crop_start, 
 									const string& save_features)const 
 {
+	C2DFilterPlugin::ProductPtr result; 
 	const char *kmeans_filter_chain[] = {
 		"close:shape=[sphere:r=2]",
 		"open:shape=[sphere:r=2]"
@@ -361,8 +364,14 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_del
 
 	} while (10 * npixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y && nc < 5);
 
-	if (nc == 5)
-		return C2DFilterPlugin::ProductPtr();
+	if (!save_features.empty()) {
+		save_feature(save_features, "kmeans", *kmeans); 
+		save_coefs(save_features + ".txt", *_M_ica); 
+	}
+	if (nc == 5) {
+		cvmsg() << "RV classification failed\n"; 
+		return result; 
+	}
 
 	C2DFVector RV_center = ::mia::filter(GetRegionCenter(), *RV);
 
@@ -372,8 +381,10 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_del
 	int label = ::mia::filter(GetClosestRegionLabel(RV_center), *LV_candidates);
 	size_t lv_pixels = ::mia::filter(GetRegionSize(label), *LV_candidates);
 
-	if (10 * lv_pixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y) 
-		return C2DFilterPlugin::ProductPtr();
+	if (10 * lv_pixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y) {
+		cvmsg() << "LV classification failed\n"; 
+		return result;
+	}
 
 	stringstream binarize_lv;
 	binarize_lv << "binarize:min="<< label << ",max=" << label;
@@ -391,22 +402,22 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_del
 	crop_start = C2DBounds(int(LV_center.x - r), int(LV_center.y - r));
 
 	// this is ugly and should be replaced
-	if (crop_start.x > LV_center.x ||crop_start.y > LV_center.y)
-		return C2DFilterPlugin::ProductPtr();
+	if (crop_start.x > LV_center.x ||crop_start.y > LV_center.y) {
+		cvmsg() << "Directional assumtion failed\n"; 
+		return result;
+	}
 
 	mask_lv << "crop:start=[" << crop_start
 		<< "],end=[" << C2DBounds(int(LV_center.x + r), int(LV_center.y + r)) << "]";
 	cvmsg() << "crop region = '" << mask_lv.str() << "'\n";
 
 	if (!save_features.empty()) {
-		save_feature(save_features, "kmeans", *kmeans); 
 		save_feature(save_features, "LV_candidates", *LV_candidates); 
 		save_feature(save_features, "LV", *LV); 
 		save_feature(save_features, "RV", *RV); 
-		save_coefs(save_features + ".txt", *_M_ica); 
 	}
-
-	return C2DFilterPluginHandler::instance().produce(mask_lv.str().c_str());
+	result = C2DFilterPluginHandler::instance().produce(mask_lv.str().c_str());
+	return result; 
 }
 
 
@@ -441,8 +452,16 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_fea
 	int label = ::mia::filter(GetClosestRegionLabel(RV_center), *LV_candidates);
 	size_t lv_pixels = ::mia::filter(GetRegionSize(label), *LV_candidates);
 
-	if (10 * lv_pixels > RV->get_size().x * RV->get_size().y)
+	if (!save_features.empty()) {
+		save_feature(save_features, "RVic", *_M_ica->get_feature_image(_M_cls.get_RV_idx())); 
+		save_feature(save_features, "LVic", *_M_ica->get_feature_image(_M_cls.get_LV_idx())); 
+		save_coefs(save_features + ".txt", *_M_ica); 
+	}
+
+	if (10 * lv_pixels > RV->get_size().x * RV->get_size().y) {
+		cvmsg() << "RV segmentation failed\n"; 
 		return C2DFilterPlugin::ProductPtr();
+	}
 
 	stringstream binarize_lv;
 	binarize_lv << "binarize:min="<< label << ",max=" << label;
@@ -460,21 +479,20 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_fea
 	crop_start = C2DBounds(int(LV_center.x - r), int(LV_center.y - r));
 
 	// this is ugly and should be replaced
-	if (crop_start.x > LV_center.x ||crop_start.y > LV_center.y)
+	if (crop_start.x > LV_center.x ||crop_start.y > LV_center.y) {
+		cvmsg() << "LV segmentation failed\n"; 
 		return C2DFilterPlugin::ProductPtr();
+	}
 
 	mask_lv << "crop:start=[" << crop_start
 		<< "],end=[" << C2DBounds(int(LV_center.x + r), int(LV_center.y + r)) << "]";
 	cvmsg() << "crop region = '" << mask_lv.str() << "'\n";
 
 	if (!save_features.empty()) {
-		save_feature(save_features, "RVic", *_M_ica->get_feature_image(_M_cls.get_RV_idx())); 
-		save_feature(save_features, "LVic", *_M_ica->get_feature_image(_M_cls.get_LV_idx())); 
 		save_feature(save_features, "RV_candidates", *RV_candidates); 
 		save_feature(save_features, "LV_candidates", *LV_candidates); 
 		save_feature(save_features, "LV", *LV); 
 		save_feature(save_features, "RV", *RV); 
-		save_coefs(save_features + ".txt", *_M_ica); 
 	}
 
 	return C2DFilterPluginHandler::instance().produce(mask_lv.str().c_str());

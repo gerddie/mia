@@ -79,7 +79,7 @@ public:
 	  Runs the ICA 
 	  \param ncomponents retained components 
 	*/
-	void run(size_t ncomponents, bool strip_mean, bool ica_normalize);
+	bool run(size_t ncomponents, bool strip_mean, bool ica_normalize);
 
 
 	size_t run_auto(int nica, int min_ica, float corr_thresh); 

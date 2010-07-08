@@ -72,14 +72,17 @@ TDataSeriesICA<Data>::~TDataSeriesICA()
 }
 
 template <class Data> 
-void TDataSeriesICA<Data>::run(size_t ncomponents, bool strip_mean, bool ica_normalize)
+bool TDataSeriesICA<Data>::run(size_t ncomponents, bool strip_mean, bool ica_normalize)
 {
 	TRACE_FUNCTION; 
-	m_analysis.run(ncomponents);
-	if (strip_mean)
-		this->normalize_Mix();
-	if (ica_normalize) 
-		this->normalize();
+	bool result = m_analysis.run(ncomponents);
+	if (result) {
+		if (strip_mean)
+			this->normalize_Mix();
+		if (ica_normalize) 
+			this->normalize();
+	}
+	return result; 
 }
 
 template <class Data> 
