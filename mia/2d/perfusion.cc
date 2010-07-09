@@ -207,11 +207,12 @@ void C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 		ica->set_max_iterations(_M_max_iterations);
 		if (!ica->run(_M_components, _M_meanstrip, _M_normalize)) 
 			THROW(runtime_error, "ICA did not converge, try another numer of components");  
+		_M_cls = CSlopeClassifier(ica->get_mixing_curves(), _M_meanstrip);
 	} else {
 		// maybe one can use the correlation and create an initial guess by combining
 		// highly correlated curves.
 		float min_cor = 0.0;
-		for (int i = 7; i > 3; --i) {
+		for (int i = 5; i > 3; --i) {
 			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
 			l_ica->set_max_iterations(_M_max_iterations);
 			if (!l_ica->run(i, _M_meanstrip, _M_normalize)) 
