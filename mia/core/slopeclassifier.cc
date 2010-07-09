@@ -286,24 +286,23 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 				++sort_skip;
 	}
 	int remaining = n - sort_skip; 
+	cvdebug() << "remaining = " << remaining << "\n"; 
 
 	if (remaining > 2 ) {
 		cvdebug() << "range sort\n"; 
 		sort(stats.begin(), stats.end() - sort_skip, compare_range());
-		
-		// if the difference in range of the 2nd and 3rd component is very small, 
-                // we can not rely on the sorting 
-		if (stats[1].first->get_range() - stats[2].first->get_range() >
-		    0.5 * stats[1].first->get_range()) 
-			++sort_skip;
-		else
-			cvdebug() << "no range skip\n"; 
-	}else {
-		cvdebug() << "n=" << n << ", has_periodic=" << has_periodic<< "\n"; 
+
+		int of_interest = 2; 
+		double max_range = stats[0].first->get_range(); 
+		while (max_range - stats[of_interest].first->get_range() < 0.5 * max_range 
+		       && of_interest < remaining)
+			++of_interest; 
+			
+		remaining = of_interest; 
 	}
 
-	cvdebug() << "sort skip = " << sort_skip << "\n"; 
-	sort(stats.begin(), stats.end() - sort_skip, compare_perfusion_peak());
+	cvdebug() << "remaining = " << remaining << "\n"; 
+	sort(stats.begin(), stats.begin() + remaining, compare_perfusion_peak());
 
 	cvinfo() << "Sorted\n";
 	for(size_t i = 0; i < n; ++i) {
