@@ -65,7 +65,7 @@ public:
 	   \param series image series should contain more images thennumber of requested components 
 	 */
 
-	void run(const std::vector<C2DFImage>& series); 
+	bool run(const std::vector<C2DFImage>& series); 
 
 
 	/**
@@ -88,6 +88,7 @@ public:
 	   Create uncropped reference images that try to omit the movement component in the image series.  
 	*/
 	std::vector<C2DFImage> get_references() const; 
+
 
 	static TDictMap<EBoxSegmentation> segmethod_dict; 
 private: 

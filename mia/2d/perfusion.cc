@@ -40,7 +40,7 @@ struct C2DPerfusionAnalysisImpl {
 				 bool meanstrip); 
 	
 	vector<C2DFImage> get_references() const; 
-	void run_ica(const vector<C2DFImage>& series);
+	bool run_ica(const vector<C2DFImage>& series);
 	C2DFilterPlugin::ProductPtr get_crop_filter(float scale, C2DBounds& crop_start,
 						    C2DPerfusionAnalysis::EBoxSegmentation approach, 
 						    const std::string& save_features) const; 
@@ -97,10 +97,10 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysis::get_crop_filter(float scale, C
 	return impl->get_crop_filter(scale, crop_start, approach, save_features); 
 }
 
-void C2DPerfusionAnalysis::run(const vector<C2DFImage>& series)
+bool C2DPerfusionAnalysis::run(const vector<C2DFImage>& series)
 {
 	assert(impl); 
-	impl->run_ica(series); 
+	return impl->run_ica(series); 
 }
 
 vector<C2DFImage> C2DPerfusionAnalysis::get_references() const
@@ -192,7 +192,7 @@ vector<C2DFImage> C2DPerfusionAnalysisImpl::get_references() const
 	return result; 
 }
 
-void C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series) 
+bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series) 
 {
 	_M_series = series; 
 	_M_length = series.size(); 
@@ -201,22 +201,23 @@ void C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 
 	srand(time(NULL));
 	_M_image_size = series[0].get_size(); 
-
+	bool has_one = false; 
 	unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(series, false));
 	if (_M_components > 0) {
 		ica->set_max_iterations(_M_max_iterations);
-		if (!ica->run(_M_components, _M_meanstrip, _M_normalize)) 
-			THROW(runtime_error, "ICA did not converge, try another numer of components");  
+		if (!ica->run(_M_components, _M_meanstrip, _M_normalize))
+			return false; 
 		_M_cls = CSlopeClassifier(ica->get_mixing_curves(), _M_meanstrip);
 	} else {
-		// maybe one can use the correlation and create an initial guess by combining
-		// highly correlated curves.
+
 		float min_cor = 0.0;
 		for (int i = 5; i > 3; --i) {
 			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
 			l_ica->set_max_iterations(_M_max_iterations);
-			if (!l_ica->run(i, _M_meanstrip, _M_normalize)) 
+			if (!l_ica->run(i, _M_meanstrip, _M_normalize)) {
+				cvwarn() << "run_ica: " << i << " components didn't return a result\n"; 
 				continue; 
+			}
 
 			CSlopeClassifier cls(l_ica->get_mixing_curves(), _M_meanstrip);
 			float max_slope = log2(i) * cls.get_max_slope_length_diff();
@@ -227,6 +228,7 @@ void C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 				ica.swap(l_ica);
 				_M_cls = cls; 
 			}
+			has_one = true; 
 		}
 	}
 	_M_ica.swap(ica);
@@ -236,6 +238,7 @@ void C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 	cvinfo() << "LV:       " << _M_cls.get_LV_idx() << "\n"; 
 	cvinfo() << "Baseline: " << _M_cls.get_baseline_idx() << "\n"; 
 	cvinfo() << "Perf    : " << _M_cls.get_perfusion_idx() << "\n"; 
+	return has_one; 
 }
 
 CICAAnalysis::IndexSet C2DPerfusionAnalysisImpl::get_all_without_periodic()const 

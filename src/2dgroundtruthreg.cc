@@ -45,8 +45,7 @@ int do_main( int argc, const char *argv[] )
 	string src_name("data0000.exr");
 	string out_name("ref");
 	string out_type("exr");
-	size_t first =  2;
-	size_t last  = 60;
+	size_t first = 2; 
 	double alpha = 1.0;
 	double beta = 1.0;
 	double rho_thresh = 0.5;
@@ -59,11 +58,11 @@ int do_main( int argc, const char *argv[] )
 				    "output file type" , "image-type"));
 
 	options.push_back(make_opt( first, "skip", 's', "skip images at beginning of series", "skip", false));
-	options.push_back(make_opt( last, "end", 'e', "last image in series", "end", false));
 
 	options.push_back(make_opt( alpha, "alpha", 'a', "spacial neighborhood penalty weight", "alpha", false));
 	options.push_back(make_opt( beta, "beta", 'b', "temporal second derivative penalty weight", "beta", false));
-	options.push_back(make_opt( rho_thresh, "rho_thresh", 'r', "rorrelation threshhold for neighborhood analysis", "rho", false));
+	options.push_back(make_opt( rho_thresh, "rho_thresh", 'r', 
+				    "crorrelation threshhold for neighborhood analysis", "rho", false));
 
 	options.parse(argc, argv);
 
@@ -73,40 +72,45 @@ int do_main( int argc, const char *argv[] )
 
 	string src_basename = get_filename_pattern_and_range(src_name, start_filenum, end_filenum, format_width);
 
-	if (start_filenum < first)
-		start_filenum = first;
-	if (end_filenum > last)
-		end_filenum = last;
-
 	if (end_filenum - start_filenum < 5)
-		throw invalid_argument ("This analysis doesnÄt make sense for series shorter then 5 images");
+		throw invalid_argument ("This analysis doesn't make sense for series shorter then 5 images");
 
+	vector<P2DImage> keep_series;
 	vector<P2DImage> series;
 	for (size_t i = start_filenum; i < end_filenum; ++i) {
 		string src_name = create_filename(src_basename.c_str(), i);
 		P2DImage image = load_image2d(src_name);
 		if (!image)
 			THROW(runtime_error, "image " << src_name << " not found");
-		series.push_back(image);
+		if (i >= first) 
+			series.push_back(image);
+		else 
+			keep_series.push_back(image);
 	}
 
-	if (series.size() < 5) {
+	if (series.size() < 5) 
 		THROW(runtime_error, "no input images found.");
-	}
 
 	C2DGroundTruthEvaluator gte(alpha, beta, rho_thresh);
 	vector<P2DImage> pgt;
 	gte(series, pgt);
 
-	for (size_t i = start_filenum; i < end_filenum; ++i) {
+	for (size_t i = start_filenum; i < first; ++i) {
 		stringstream fname;
 		fname << out_name << setw(format_width) << setfill('0') << i << "." << out_type;
-		if (!save_image2d(fname.str(), pgt[i - start_filenum]))
+		if (!save_image2d(fname.str(), keep_series[i - start_filenum]))
 			THROW(runtime_error, "unable to save '"<< fname.str() << "'");
 	}
+	
+	for (size_t i = start_filenum + first; i < end_filenum; ++i) {
+		stringstream fname;
+		fname << out_name << setw(format_width) << setfill('0') << i << "." << out_type;
+		if (!save_image2d(fname.str(), pgt[i - start_filenum-first]))
+			THROW(runtime_error, "unable to save '"<< fname.str() << "'");
+	}
+	
 	return EXIT_SUCCESS;
 }
-
 
 int main( int argc, const char *argv[] )
 {

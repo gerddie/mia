@@ -122,7 +122,8 @@ int do_main( int argc, const char *argv[] )
 	C2DPerfusionAnalysis ica(components, !no_normalize, !no_meanstrip); 
 	if (max_ica_iterations) 
 		ica.set_max_ica_iterations(max_ica_iterations); 
-	ica.run(series); 
+	if (!ica.run(series)) 
+		throw runtime_error("ICA analysis didn't result in usable components"); 
 	vector<C2DFImage> references_float = ica.get_references(); 
 	
 	C2DImageSeries references(references_float.size() + skip_images); 
@@ -153,7 +154,7 @@ int do_main( int argc, const char *argv[] )
 			shift->set_parameters(p); 
 			
 			input_set.transform(*shift);
-			input_set.set_images(input_images);  
+			input_set.set_images(input_images);
 			
 		}else 
 			cverr() << "no crop box created\n"; 

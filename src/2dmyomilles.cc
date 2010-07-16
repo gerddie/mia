@@ -161,7 +161,8 @@ int do_main( int argc, const char *argv[] )
 	C2DPerfusionAnalysis ica(components, !no_normalize, !no_meanstrip); 
 	if (max_ica_iterations) 
 		ica.set_max_ica_iterations(max_ica_iterations); 
-	ica.run(series); 
+	if (!ica.run(series)) 
+		throw runtime_error("ICA analysis didn't result in usable components"); 
 	vector<C2DFImage> references_float = ica.get_references(); 
 	
 	C2DImageSeries references(references_float.size()); 
@@ -218,7 +219,9 @@ int do_main( int argc, const char *argv[] )
 		P2DTransformation inverse(transform->invert()); 
 		frames[i + skip_images].transform(*inverse);
 	}
-	
+
+	// run the specified number of passes 
+	// break early if ICA fails
 	while (++current_pass < pass) {
 		C2DPerfusionAnalysis ica2(components, !no_normalize, !no_meanstrip); 
 		if (max_ica_iterations) 
@@ -226,18 +229,23 @@ int do_main( int argc, const char *argv[] )
 	
 		transform(input_images.begin() + skip_images, 
 			  input_images.end(), series.begin(), Convert2Float()); 
-		ica2.run(series); 
-		references_float = ica2.get_references(); 
-		transform(references_float.begin(), references_float.end(), 
-			  references.begin(), C2DFImage2PImage()); 
+		if (ica2.run(series) ) {
+			references_float = ica2.get_references(); 
+			transform(references_float.begin(), references_float.end(), 
+				  references.begin(), C2DFImage2PImage()); 
 			
-		for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
-			cvmsg() << "Register " << current_pass + 1 <<  " pass, frame " << i << "\n"; 
-			P2DTransformation transform = rigid_register.run(input_images[i + skip_images] , 
-								     references[i], mg_levels); 
-			input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], *ipfactory);
-			P2DTransformation inverse(transform->invert()); 
-			frames[i + skip_images].transform(*inverse);
+			for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
+				cvmsg() << "Register " << current_pass + 1 <<  " pass, frame " << i << "\n"; 
+				P2DTransformation transform = rigid_register.run(input_images[i + skip_images] , 
+										 references[i], mg_levels); 
+				input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], *ipfactory);
+				P2DTransformation inverse(transform->invert()); 
+				frames[i + skip_images].transform(*inverse);
+			}
+		} else {
+			cvmsg() << "Stopping registration in pass " << current_pass 
+				<< " because ICA didn't return useful results\n"; 
+			break; 
 		}
 	}
 
