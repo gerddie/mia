@@ -209,6 +209,12 @@ template <typename T>
 T2DConvoluteInterpolator<T>::~T2DConvoluteInterpolator()
 {
 }
+
+template <typename T>
+const typename T2DConvoluteInterpolator<T>::TCoeff2D& T2DConvoluteInterpolator<T>::get_coefficients() const
+{
+	return _M_coeff; 
+}
 	
 template <typename T>
 void T2DConvoluteInterpolator<T>::filter_line(coeff_vector& coeff, 

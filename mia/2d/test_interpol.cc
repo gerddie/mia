@@ -257,6 +257,14 @@ BOOST_AUTO_TEST_CASE(  test_bspline3_integrate )
 	BOOST_CHECK_CLOSE(integrate2(kernel, 29, 27, 0, 2, 1, 0, 30),  0.2, 2);
 }
 
+BOOST_AUTO_TEST_CASE(  test_bspline4_integrate )
+{
+	CBSplineKernel4 kernel;
+	BOOST_CHECK_CLOSE(integrate2(kernel, 10, 10, 1, 1, 1, 0, 30),  0.4861, 0.1);
+	BOOST_CHECK_CLOSE(integrate2(kernel, 10, 10, 2, 0, 1, 0, 30),  -0.4861, 0.1);
+}
+
+
 struct CheckIPFKernelFixture {
 	template <class Kernel>
 	void check(EInterpolation type, bool has_kernel)  {

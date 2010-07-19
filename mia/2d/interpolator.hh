@@ -144,9 +144,11 @@ public:
 	T  operator () (const C2DFVector& x) const;
 	T2DVector<T> derivative_at(const C2DFVector& x) const;
 
+	typedef T2DDatafield< typename coeff_map< T >::coeff_type > TCoeff2D;
+
+	const TCoeff2D& get_coefficients() const; 
 
 protected:
-	typedef T2DDatafield< typename coeff_map< T >::coeff_type > TCoeff2D;
 	typedef std::vector< typename TCoeff2D::value_type > coeff_vector;
 private:
 

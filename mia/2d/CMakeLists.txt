@@ -24,6 +24,7 @@ SET(MIA2D_SRC_BASE
   nonrigidregister.cc 
   perfusion.cc
   polygon.cc
+  ppmatrix.cc
   rigidregister.cc
   shape.cc
   timestep.cc
@@ -100,6 +101,7 @@ SET(MIA2D_HEADERS_BASE
   nfg.hh
   perfusion.hh
   polygon.hh
+  ppmatrix.hh
   rigidregister.hh
   shape.hh
   timestep.hh
@@ -184,7 +186,7 @@ TEST_2DMIA(imagecostbase)
 TEST_2DMIA(correlation_weight)
 TEST_2DMIA(groundtruthproblem)
 
-TEST_2DMIA(divcurlmatrix)
+TEST_2DMIA(ppmatrix)
 
 IF(ITPP_FOUND)
   TEST_2DMIA(ica)
