@@ -604,3 +604,129 @@ BOOST_AUTO_TEST_CASE(  test_bspline5_weight_at )
 	BOOST_CHECK_THROW(kernel.get_weight_at( 2, 5), invalid_argument);
 #endif
 }
+
+BOOST_AUTO_TEST_CASE(  test_bspline3_integrate )
+{
+	CBSplineKernel3 kernel;
+	BOOST_CHECK_CLOSE(integrate2(kernel, 10, 10, 1, 1, 1, 0, 30),  2.0/ 3.0, 0.1);
+	BOOST_CHECK_CLOSE(integrate2(kernel, 10, 10, 2, 0, 1, 0, 30),  -2.0/ 3.0, 0.1);
+	BOOST_CHECK_CLOSE(integrate2(kernel, 10, 11, 2, 0, 1, 0, 30),  0.125, 0.1);
+	BOOST_CHECK_CLOSE(integrate2(kernel,  0,  1, 2, 0, 1, 0, 30),  0.1833, 2);
+	BOOST_CHECK_CLOSE(integrate2(kernel, 29, 27, 0, 2, 1, 0, 30),  0.2, 2);
+}
+
+BOOST_AUTO_TEST_CASE(  test_bspline4_integrate )
+{
+	CBSplineKernel4 kernel;
+	BOOST_CHECK_CLOSE(integrate2(kernel, 10, 10, 1, 1, 1, 0, 30),  0.4861, 0.1);
+	BOOST_CHECK_CLOSE(integrate2(kernel, 10, 10, 2, 0, 1, 0, 30),  -0.4861, 0.1);
+}
+
+BOOST_AUTO_TEST_CASE(  test_bspline3_native_integrate )
+{
+	CBSplineKernel3 kernel;
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(10, 10, 30, CBSplineKernel::integral_11), 2.0/ 3.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(11, 10, 30, CBSplineKernel::integral_11), -1.0/ 8.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(12, 10, 30, CBSplineKernel::integral_11), -1.0/ 5.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(13, 10, 30, CBSplineKernel::integral_11), -1.0/ 120.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(10, 11, 30, CBSplineKernel::integral_11), -1.0/ 8.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(10, 12, 30, CBSplineKernel::integral_11), -1.0/ 5.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(10, 13, 30, CBSplineKernel::integral_11), -1.0/ 120.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(-2, -2, 30, CBSplineKernel::integral_11) + 1.0, 1.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(-1, -1, 30, CBSplineKernel::integral_11), 1.0/20.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(0, 0, 30, CBSplineKernel::integral_11),   1.0/3.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(1, 1, 30, CBSplineKernel::integral_11),  37.0/60.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(2, 2, 30, CBSplineKernel::integral_11),   2.0/ 3.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(32, 32, 30, CBSplineKernel::integral_11)+1.0, 1.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(31, 31, 30, CBSplineKernel::integral_11), 1.0/20.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(30, 30, 30, CBSplineKernel::integral_11),   1.0/3.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(29, 29, 30, CBSplineKernel::integral_11),  37.0/60.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(28, 28, 30, CBSplineKernel::integral_11),   2.0/ 3.0, 0.1);	
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(-1, 0, 30, CBSplineKernel::integral_11), 7.0/120.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(-2, 0, 30, CBSplineKernel::integral_11) + 1.0, 1.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(-1, 1, 30, CBSplineKernel::integral_11),  -1.0/10.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int( 0, 1, 30, CBSplineKernel::integral_11),  -11.0/60.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(31, 30, 30, CBSplineKernel::integral_11), 7.0/120.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(31, 29, 30, CBSplineKernel::integral_11), -1.0/10.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(30, 29, 30, CBSplineKernel::integral_11),  -11.0/60.0, 0.1);
+	BOOST_CHECK_CLOSE(kernel.get_mult_int(30, 28, 30, CBSplineKernel::integral_11),   -1.0/5.0, 0.1);	
+}
+
+BOOST_AUTO_TEST_CASE(  test_bspline3_systematic_integrate_11 )
+{
+	CBSplineKernel3 kernel;
+	for (int s1 = -3; s1 < 34; ++s1) 
+		for (int s2 = -3; s2 < 34; ++s2) {
+			cvdebug()<< "do:" << s1 << ", " << s2 << "\n"; 
+			double fixed = kernel.get_mult_int(s1, s2, 30, CBSplineKernel::integral_11); 
+			double  simp = integrate2(kernel, s1, s2, 1, 1, 1, 0, 30); 
+
+			BOOST_CHECK_CLOSE(fixed, simp, 0.1); 
+		}
+
+}
+
+#if 0 
+BOOST_AUTO_TEST_CASE(  test_bspline3_systematic_integrate_20 )
+{
+	CBSplineKernel3 kernel;
+	for (int s1 = -3; s1 < 34; ++s1) 
+		for (int s2 = -3; s2 < 34; ++s2) {
+			cvdebug()<< "do:" << s1 << ", " << s2 << "\n"; 
+			double fixed = kernel.get_mult_int(s1, s2, 30, CBSplineKernel::integral_20); 
+			double  simp = integrate2(kernel, s1, s2, 1, 2, 0, 0, 30); 
+
+			BOOST_CHECK_CLOSE(fixed, simp, 0.1); 
+		}
+
+}
+#endif
+
+
+BOOST_AUTO_TEST_CASE(  test_bspline4_systematic_integrate_11 )
+{
+	CBSplineKernel4 kernel;
+	for (int s1 = -3; s1 < 34; ++s1) 
+		for (int s2 = -3; s2 < 34; ++s2) {
+			cvinfo() << "do:" << s1 << ", " << s2 << "\n"; 
+			double fixed = kernel.get_mult_int(s1, s2, 30, CBSplineKernel::integral_11); 
+			double  simp = integrate2(kernel, s1, s2, 1, 1, 1, 0, 30); 
+
+			BOOST_CHECK_CLOSE(fixed, simp, 0.3);
+		}
+
+}
+
+
+BOOST_AUTO_TEST_CASE(  test_bspline4_sum_integrate_11 )
+{
+
+	CBSplineKernel4 kernel;
+	
+	double d4a = integrate2(kernel, 10, 6, 1, 1, 1, 0, 30); 
+	double d3a = integrate2(kernel, 10, 7, 1, 1, 1, 0, 30); 
+	double d2a = integrate2(kernel, 10, 8, 1, 1, 1, 0, 30); 
+	double d1a = integrate2(kernel, 10, 9, 1, 1, 1, 0, 30); 
+	double d0 = integrate2(kernel, 10,10, 1, 1, 1, 0, 30); 
+	double d1b = integrate2(kernel, 10,11, 1, 1, 1, 0, 30); 
+	double d2b = integrate2(kernel, 10,12, 1, 1, 1, 0, 30); 
+	double d3b = integrate2(kernel, 10,13, 1, 1, 1, 0, 30); 
+	double d4b = integrate2(kernel, 10,14, 1, 1, 1, 0, 30); 
+	
+	cvdebug() << "d4a = " << d4a << "\n";  
+	cvdebug() << "d3a = " << d3a << "\n";  
+	cvdebug() << "d2a = " << d2a << "\n";  
+	cvdebug() << "d1a = " << d1a << "\n";  
+	cvdebug() << "d0  = " << d0  << "\n";  
+	cvdebug() << "d1b = " << d1b << "\n";  
+	cvdebug() << "d2b = " << d2b << "\n";  
+	cvdebug() << "d3b = " << d3b << "\n";  
+	cvdebug() << "d4b = " << d4b << "\n";  
+
+	double sum = d4a + d4b + d3a + d3b + d2a + d2b + d1a + d1b + d0; 
+
+	BOOST_CHECK_CLOSE(1.0 + sum, 1.0, 0.1); 
+}
+
+
+

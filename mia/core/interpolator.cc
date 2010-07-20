@@ -28,6 +28,7 @@
 #include <cmath>
 #include <cassert>
 #include <iomanip>
+#include <mia/core/unaryfunction.hh>
 #include <mia/core/interpolator.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/msgstream.hh>
@@ -113,6 +114,26 @@ double CBSplineKernel::get_nonzero_radius() const
 	return _M_support_size / 2.0;
 }
 
+double CBSplineKernel::get_mult_int(int s1, int s2, int range, EIntegralType type) const
+{
+	int deg1 = 0; 
+	int deg2 = 0; 
+	switch (type) {
+	case integral_11:
+		deg1 = deg2 = 1; 
+		break;
+	case integral_20:
+		deg1 = 2; 
+		break; 
+	case integral_02:
+		deg2 = 2; 
+		break; 
+	default:
+		assert(0 && "unknown integral type specified"); 
+	}
+	return integrate2(*this, s1, s2, deg1, deg2, 1, 0, range); 
+}
+
 CBSplineKernel2::CBSplineKernel2():
 	CBSplineKernel(2, 0.5)
 {
@@ -190,6 +211,64 @@ CBSplineKernel3::CBSplineKernel3():
 	CBSplineKernel(3, 0.0)
 {
 	add_pole(sqrt(3.0) - 2.0);
+}
+
+
+double CBSplineKernel3::get_mult_int(int s1, int s2, int range, EIntegralType type) const
+{
+	const double integral_11[4][4] = {
+		    // full integrals 
+		    {2.0/3.0, -1.0/8.0, -1.0/5.0, -1.0/120.0}, 
+		    // one skipped 
+		    { 37.0/60.0,  -11.0/60.0, -1.0/10.0,  0.0 },
+		    // two skipped 
+		    { 1.0/3.0,  7.0/120.0, 0.0,  0.0 },
+		    // three skipped
+		    { 1.0/20.0,  0.0, 0.0,  0.0 }
+		
+	}; 
+
+	const double integral_20[4][4] = {
+		// full integrals 
+		{ -2.0/3.0,   1.0/8.0,    1.0/5.0, 1/120 }, 
+		// one skipped 
+		{-7.0/10.0,  11.0/60.0, 13.0/60.0,   0.0 },
+		// two skipped 
+		{ -1.0/3.0,  11.0/40.0,       0.0,   0.0 },
+		// three skipped
+		{  1.0/30.0,       0.0,       0.0,   0.0 }
+	}; 
+
+	if (s2 < s1) 
+		swap(s1, s2); 
+	
+	const int delta = s2 - s1; 
+	if (delta > 3) 
+		return 0.0;
+	
+	const int dlow = 2 - s1; 
+	int skip = 0; 
+	if (dlow > 0) 
+		skip = 2 - s2; 
+	else {
+		const int dhigh = 2 + s2 - range; 
+		if (dhigh > 0) 
+			skip = 2 + s1 - range; 
+	}
+	if (skip > 3) 
+		return 0.0; 
+	if (skip < 0) 
+		skip = 0; 
+	cvdebug() << "skip= " << skip << ", delta=" << delta << "\n"; 
+	switch (type) {
+	case CBSplineKernel::integral_11:
+		return integral_11[skip][delta]; 
+	case CBSplineKernel::integral_20:
+	case CBSplineKernel::integral_02:
+		return integral_20[skip][delta]; 
+	default:
+		assert(0 && "unknown integral type specified"); 
+	}
 }
 
 void CBSplineKernel3::get_weights(double x, std::vector<double>&  weight)const
@@ -528,6 +607,80 @@ void CBSplineKernel4::get_derivative_weights(double x, std::vector<double>& weig
 	}
 }
 
+double CBSplineKernel4::get_mult_int(int s1, int s2, int range, EIntegralType type) const
+{
+	const double integral_11[6][5] = {
+		// full integrals 
+		{ 35.0/72.0,        -11.0/360.0, -17.0/90.0, -59.0/2520.0, -1.0/5040}, 
+		// one skipped 
+		{ 15678.0/32256.0, -263.0/5040.0, -883.0/5040.0, 59.0/5040.0,  -1.0/10080 },
+		// two skipped 
+		{ 433.0/1008.0,      -11.0/720.0, -23.0/1680.0,  -209.0/161280.0, 0.0 },
+		// three skipped
+		{ 35.0/144.0,       109.0/5040.0,  17.0/53760.0,                0.0, 0.0 },
+		// four skipped
+		{ 19.0/336.0,       169.0/161280.0,              0.0,                 0.0, 0.0 },
+		{ 1.0/32265.0,          0,              0.0,                 0.0, 0.0 }
+		
+	}; 
+
+	const double integral_20[5][6] = {
+		// full integrals 
+		{    -2737.0/5625.0, 1789.0/63000.0, 1299.0/7000.0, 59.0/2625.0, 5207.0/28476000.0 }, 
+		// one skipped 
+		{  -19267.0/39375.0,  11.0/60.0, 13.0/60.0,   0.0 },
+		// two skipped 
+		{ 164761.0/315000.0,  11.0/40.0,       0.0,   0.0 },
+		// three skipped
+		{  11489.0/315000.0,       0.0,       0.0,   0.0 },
+		{  12.0/4375.0     ,       0.0,       0.0,   0.0 },
+	}; 
+
+	const double integral_02[5][5] = {
+		// full integrals 
+		{    -2737.0/5625.0, 1789.0/63000.0, 1299.0/7000.0, 59.0/2625.0, 5207.0/28476000.0 }, 
+		// one skipped 
+		{  -19267.0/39375.0,  11.0/60.0, 13.0/60.0,   0.0 },
+		// two skipped 
+		{ 164761.0/315000.0,  11.0/40.0,       0.0,   0.0 },
+		// three skipped
+		{  11489.0/315000.0,       0.0,       0.0,   0.0 },
+		{  12.0/4375.0     ,       0.0,       0.0,   0.0 },
+	}; 
+
+	if (s2 < s1) 
+		swap(s1, s2); 
+	
+	const int delta = s2 - s1; 
+	if (delta > 4) 
+		return 0.0;
+	
+	const int dlow = 3 - s1; 
+	int skip = 0; 
+	if (dlow > 0) 
+		skip = 3 - s2; 
+	else {
+		const int dhigh = 3 + s2 - range; 
+		if (dhigh > 0) 
+			skip = 3 + s1 - range; 
+	}
+	if (skip > 5) 
+		return 0.0; 
+	if (skip < 0) 
+		skip = 0; 
+	cvdebug() << "skip= " << skip << ", delta=" << delta << "\n"; 
+	switch (type) {
+	case CBSplineKernel::integral_11:
+		return integral_11[skip][delta]; 
+	case CBSplineKernel::integral_20:
+	case CBSplineKernel::integral_02:
+		return integral_20[skip][delta]; 
+	default:
+		assert(0 && "unknown integral type specified"); 
+	}
+}
+
+
 CBSplineKernel5::CBSplineKernel5():
 	CBSplineKernel(5, 0.0)
 {
@@ -814,5 +967,50 @@ static TDictMap<EInterpolation>::Table InterpolationOptions[] = {
 };
 
 EXPORT_CORE TDictMap<EInterpolation> GInterpolatorTable(InterpolationOptions);
+
+
+struct F2DKernelIntegrator: public FUnary {
+	F2DKernelIntegrator(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2):
+		_M_spline(spline), _M_s1(s1), _M_s2(s2), _M_deg1(deg1), _M_deg2(deg2)
+		{
+		}
+	virtual double operator() (double x) const {
+		return _M_spline.get_weight_at(x - _M_s1, _M_deg1) *
+			_M_spline.get_weight_at(x - _M_s2, _M_deg2);
+	}
+private:
+	const CBSplineKernel& _M_spline;
+	double _M_s1, _M_s2, _M_deg1, _M_deg2;
+};
+
+
+double  EXPORT_CORE integrate2(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2, double n, double x0, double L)
+{
+	double sum = 0.0;
+	x0 /= n;
+	L  /= n;
+
+	// evaluate interval to integrate over
+	double start_int = s1 - spline.get_nonzero_radius();
+	double end_int = s1 + spline.get_nonzero_radius();
+	if (start_int < s2 - spline.get_nonzero_radius())
+		start_int = s2 - spline.get_nonzero_radius();
+	if (start_int < x0)
+		start_int = x0;
+	if (end_int > s2 + spline.get_nonzero_radius())
+		end_int = s2 + spline.get_nonzero_radius();
+	if (end_int > L)
+		end_int = L;
+
+	// Simpson formula
+	if (end_int <= start_int)
+		return sum;
+	const size_t intervals = size_t(8 * (end_int - start_int));
+	cvdebug() << "integrate(" << start_int << ", " << end_int << "\n"; 
+
+	sum = simpson( start_int, end_int, intervals, F2DKernelIntegrator(spline, s1, s2, deg1, deg2));
+	return sum * n;
+}
+
 
 NS_MIA_END

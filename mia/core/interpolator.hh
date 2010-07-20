@@ -38,6 +38,11 @@ extern EXPORT_CORE TDictMap<EInterpolation> GInterpolatorTable;
 
 class EXPORT_CORE CBSplineKernel {
 public:
+	enum EIntegralType { integral_11, 
+			     integral_20, 
+			     integral_02, 
+			     integral_unknown }; 
+			     
 
 	/**
 	   \param degree of the spline
@@ -70,6 +75,24 @@ public:
 	virtual void get_derivative_weights(double x, std::vector<double>& weight, int degree) const = 0;
 
 	virtual double get_weight_at(double x, int degree) const;
+
+
+	/**
+	   evaluate the integral 
+	   /f[
+	   * \int_0^\text{range}
+	   \frac{\partial^{p}}{\partial x}\beta(x-s_1) \frac{\partial^{q}}{\partial x}\beta(x-s_2) dx
+	   * /f]
+	   with q1 and q2 defined by \a type 
+	   \param s1
+	   \param s2
+	   \param range 
+	   \param type 
+	   \returns value of integral 
+	   \remark a simpson based integration is implemented for all spline classes, but normally, a 
+            spline class could provide precalculated values
+	 */
+	virtual double get_mult_int(int s1, int s2, int range, EIntegralType type) const;  
 
 	/**
 	   \returns the poles of the spline
@@ -136,6 +159,7 @@ class EXPORT_CORE CBSplineKernel3: public  CBSplineKernel{
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
 	virtual double get_weight_at(double x, int degree) const;
 	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
+	double get_mult_int(int s1, int s2, int range, EIntegralType type) const;  
 };
 
 /** implements a B-Spline kernel of degree 4 */
@@ -146,6 +170,7 @@ public:
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
 	virtual double get_weight_at(double x, int degree) const;
 	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
+	double get_mult_int(int s1, int s2, int range, EIntegralType type) const;  
 };
 
 /** implements a B-Spline kernel of degree 5 */
@@ -166,6 +191,9 @@ public:
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
 	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
 };
+
+double  EXPORT_CORE integrate2(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2, double n, double x0, double L);
+
 
 NS_MIA_END
 
