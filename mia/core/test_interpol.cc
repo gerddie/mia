@@ -750,7 +750,6 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_systematic_integrate_20_d0 )
 	}
 }
 
-#if 0
 BOOST_AUTO_TEST_CASE(  test_bspline4_systematic_integrate_20_d1 )
 {
 	CBSplineKernel4 kernel;
@@ -760,4 +759,3 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_systematic_integrate_20_d1 )
 		BOOST_CHECK_CLOSE(fixed, simp, 0.3);
 	}
 }
-#endif
