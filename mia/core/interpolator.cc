@@ -272,8 +272,9 @@ double CBSplineKernel3::get_mult_int(int s1, int s2, int range, EIntegralType ty
 	switch (type) {
 	case CBSplineKernel::integral_11:
 		return integral_11[3+skip][delta]; 
-	case CBSplineKernel::integral_20:
 	case CBSplineKernel::integral_02:
+		swapped = !swapped; 
+	case CBSplineKernel::integral_20:
 		if (swapped) 
 			return integral_20[3-skip][delta]; 
 		else
