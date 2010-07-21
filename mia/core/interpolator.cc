@@ -114,6 +114,11 @@ double CBSplineKernel::get_nonzero_radius() const
 	return _M_support_size / 2.0;
 }
 
+int CBSplineKernel::get_active_halfrange() const   
+{
+	return (_M_support_size  + 1) / 2;
+}
+
 double CBSplineKernel::get_mult_int(int s1, int s2, int range, EIntegralType type) const
 {
 	int deg1 = 0; 

@@ -106,7 +106,11 @@ public:
 
 	double get_nonzero_radius() const;
 
+	///\returns the number of the neighboring grind points used on one side of the center 
+	int get_active_halfrange()const; 
+
 protected:
+
 
 
 
