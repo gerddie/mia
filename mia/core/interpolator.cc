@@ -613,11 +613,11 @@ double CBSplineKernel4::get_mult_int(int s1, int s2, int range, EIntegralType ty
 		// full integrals 
 		{ 35.0/72.0,        -11.0/360.0, -17.0/90.0, -59.0/2520.0, -1.0/5040}, 
 		// one skipped 
-		{ 15678.0/32256.0, -263.0/5040.0, -883.0/5040.0, 59.0/5040.0,  -1.0/10080 },
+		{ 15678.0/32256.0, -1699.0/53760.0, -6103.0/32256.0, -1189.0/53760.0,  -1.0/10080 },
 		// two skipped 
-		{ 433.0/1008.0,      -11.0/720.0, -23.0/1680.0,  -209.0/161280.0, 0.0 },
+		{ 433.0/1008.0,     -1447.0/16128.0, -17.0/180.0,  -209.0/161280.0, 0.0 },
 		// three skipped
-		{ 35.0/144.0,       109.0/5040.0,  17.0/53760.0,                0.0, 0.0 },
+		{ 35.0/144.0,       4771.0/80640.0,  17.0/53760.0,                0.0, 0.0 },
 		// four skipped
 		{ 19.0/336.0,       169.0/161280.0,              0.0,                 0.0, 0.0 },
 		{ 1.0/32265.0,          0,              0.0,                 0.0, 0.0 }
@@ -668,7 +668,7 @@ double CBSplineKernel4::get_mult_int(int s1, int s2, int range, EIntegralType ty
 		return 0.0; 
 	if (skip < 0) 
 		skip = 0; 
-	cvdebug() << "skip= " << skip << ", delta=" << delta << "\n"; 
+	cvinfo() << "skip= " << skip << ", delta=" << delta << "\n"; 
 	switch (type) {
 	case CBSplineKernel::integral_11:
 		return integral_11[skip][delta]; 
