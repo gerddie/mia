@@ -671,10 +671,8 @@ BOOST_AUTO_TEST_CASE(  test_bspline3_systematic_integrate_20 )
 	CBSplineKernel3 kernel;
 	for (int s1 = -3; s1 < 34; ++s1) 
 		for (int s2 = -3; s2 < 34; ++s2) {
-			cvinfo()<< "do:" << s1 << ", " << s2 << "\n"; 
 			double fixed = kernel.get_mult_int(s1, s2, 30, CBSplineKernel::integral_20); 
 			double  simp = integrate2(kernel, s1, s2, 2, 0, 1, 0, 30); 
-
 			BOOST_CHECK_CLOSE(fixed, simp, 0.1); 
 		}
 
@@ -723,6 +721,5 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_sum_integrate_11 )
 
 	BOOST_CHECK_CLOSE(1.0 + sum, 1.0, 0.1); 
 }
-
 
 

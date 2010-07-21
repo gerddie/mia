@@ -232,27 +232,28 @@ double CBSplineKernel3::get_mult_int(int s1, int s2, int range, EIntegralType ty
 
 	const double integral_20[7][4] = {
 		{  1.0/30.0,       0.0,       0.0,   0.0 },
-		{ -1.0/3.0,   49.0/120.0,       0.0,   0.0 },
-		{ -7.0/10.0,   19.0/60.0, 13.0/60.0,   0.0 },
-		// full integrals 
+		{ -1.0/3.0,    11.0/40.0,    0.0,   0.0 },
+		{ -7.0/10.0,   11.0/60.0, 11.0/60.0,   0.0 },
+		// main row 
 		{ -2.0/3.0,   1.0/8.0,    1.0/5.0,  1.0/120.0 }, 
 		// one skipped 
-		{ -7.0/10.0,   19.0/60.0, 13.0/60.0,   0.0 },
-		// two skipped 
-		{ -1.0/3.0,   49.0/120.0,       0.0,   0.0 },
-		// three skipped
-		{  1.0/30.0,       0.0,       0.0,   0.0 }
+		{ -7.0/10.0,   -3.0/20.0, 1.0/60.0,   0.0 },
+		{ -1.0/3.0,    -7.0/120.0, 0.0,   0.0 },
+		{  1.0/30.0,     0.0,       0.0,   0.0 }
 	}; 
 
-	if (s2 < s1) 
+	bool swapped = false; 
+	if (s2 < s1) {
+		swapped = true; 
 		swap(s1, s2); 
+	}
 	
 	const int delta = s2 - s1; 
 	if (delta > 3) 
 		return 0.0;
 	
-	const int dlow = 2 - s1; 
 	int skip = 0; 
+	const int dlow = 2 - s1; 
 	if (dlow > 0) {
 		skip = s2 - 2;
 		if (skip > 0) 
@@ -267,13 +268,18 @@ double CBSplineKernel3::get_mult_int(int s1, int s2, int range, EIntegralType ty
 	if (abs(skip) > 3) 
 		return 0.0; 
 
-	cvinfo() << "skip= " << skip << ", delta=" << delta << "\n"; 
+	if (skip != 0) 
+		cvinfo() << "("<<s1<<"," << s2 << "@" << swapped <<") skip= " << skip << ", delta=" << delta <<"\n"; 
+
 	switch (type) {
 	case CBSplineKernel::integral_11:
 		return integral_11[3+skip][delta]; 
 	case CBSplineKernel::integral_20:
 	case CBSplineKernel::integral_02:
-		return integral_20[3+skip][delta]; 
+		if (swapped) 
+			return integral_20[3-skip][delta]; 
+		else
+			return integral_20[3+skip][delta]; 
 	default:
 		assert(0 && "unknown integral type specified"); 
 	}
