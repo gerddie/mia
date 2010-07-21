@@ -111,18 +111,19 @@ public:
 
 protected:
 
-
-
-
 	/** add a pole to the list of poles
 	    \param x
 	*/
 	void add_pole(double x);
+
+	double mult_int_from_table(int s1, int s2, int range, EIntegralType type) const; 
 private:
+	virtual double read_table(int skip, int delta, bool swapped, EIntegralType type) const; 
 	size_t _M_half_degree;
 	double _M_shift;
 	std::vector<double> _M_poles;
 	size_t _M_support_size;
+
 };
 
 typedef SHARED_PTR(CBSplineKernel) PSplineKernel;
@@ -164,6 +165,8 @@ class EXPORT_CORE CBSplineKernel3: public  CBSplineKernel{
 	virtual double get_weight_at(double x, int degree) const;
 	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
 	double get_mult_int(int s1, int s2, int range, EIntegralType type) const;  
+private: 
+	virtual double read_table(int skip, int delta, bool swapped, EIntegralType type) const; 
 };
 
 /** implements a B-Spline kernel of degree 4 */
@@ -175,6 +178,8 @@ public:
 	virtual double get_weight_at(double x, int degree) const;
 	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
 	double get_mult_int(int s1, int s2, int range, EIntegralType type) const;  
+private: 
+	virtual double read_table(int skip, int delta, bool swapped, EIntegralType type) const; 
 };
 
 /** implements a B-Spline kernel of degree 5 */

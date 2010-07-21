@@ -219,7 +219,7 @@ CBSplineKernel3::CBSplineKernel3():
 }
 
 
-double CBSplineKernel3::get_mult_int(int s1, int s2, int range, EIntegralType type) const
+double CBSplineKernel3::read_table(int skip, int delta, bool swapped, EIntegralType type) const
 {
 	// for simplicity this table is redundant 
 	// columns refere to the absolute difference |s1-s2|
@@ -245,35 +245,6 @@ double CBSplineKernel3::get_mult_int(int s1, int s2, int range, EIntegralType ty
 		{  1.0/30.0,        0.0,       0.0,       0.0 }
 	}; 
 
-	bool swapped = false; 
-	if (s2 < s1) {
-		swapped = true; 
-		swap(s1, s2); 
-	}
-	
-	const int delta = s2 - s1; 
-	if (delta > 3) 
-		return 0.0;
-	
-	int skip = 0; 
-	const int dlow = 2 - s1; 
-	if (dlow > 0) {
-		skip = s2 - 2;
-		if (skip > 0) 
-			skip = 0; 
-	} else {
-		const int dhigh = 2 + s2 - range; 
-		if (dhigh > 0) 
-			skip = 2 + s1 - range; 
-		if (skip < 0) 
-			skip = 0; 
-	}
-	if (abs(skip) > 3) 
-		return 0.0; 
-
-	if (skip != 0) 
-		cvinfo() << "("<<s1<<"," << s2 << "@" << swapped <<") skip= " << skip << ", delta=" << delta <<"\n"; 
-
 	switch (type) {
 	case CBSplineKernel::integral_11:
 		return integral_11[3+skip][delta]; 
@@ -287,6 +258,53 @@ double CBSplineKernel3::get_mult_int(int s1, int s2, int range, EIntegralType ty
 	default:
 		assert(0 && "unknown integral type specified"); 
 	}
+}
+
+double CBSplineKernel::mult_int_from_table(int s1, int s2, int range, EIntegralType type) const
+{
+	const int hr = get_active_halfrange(); 
+	const int max_skip = (size() + 1) & ~1; 
+	bool swapped = false; 
+	if (s2 < s1) {
+		swapped = true; 
+		swap(s1, s2); 
+	}
+	
+	const int delta = s2 - s1; 
+	if ( delta >= size() ) 
+		return 0.0;
+	
+	int skip = 0; 
+	const int dlow = hr - s1; 
+	if (dlow > 0) {
+		skip = s2 - hr;
+		if (skip > 0) 
+			skip = 0; 
+	} else {
+		const int dhigh = hr + s2 - range; 
+		if (dhigh > 0) 
+			skip = hr + s1 - range; 
+		if (skip < 0) 
+			skip = 0; 
+	}
+	if (abs(skip) >= max_skip) {
+		cvdebug()<< "skip because abs(skip = " << skip << ")>=" << size() << " delta="<< delta<<"\n";  
+		return 0.0; 
+	}
+	
+	if (skip) 
+		cvinfo() << "("<<s1<<"," << s2 << "@" << swapped <<") skip= " << skip << ", delta=" << delta <<"\n"; 
+	return read_table(skip, delta, swapped, type); 
+}
+
+double CBSplineKernel::read_table(int skip, int delta, bool swapped, EIntegralType type) const
+{
+	assert(0 && "read_table needs to be implemented together with get_mult_int"); 
+}
+
+double CBSplineKernel3::get_mult_int(int s1, int s2, int range, EIntegralType type) const
+{
+	return mult_int_from_table(s1, s2, range, type); 
 }
 
 void CBSplineKernel3::get_weights(double x, std::vector<double>&  weight)const
@@ -625,77 +643,55 @@ void CBSplineKernel4::get_derivative_weights(double x, std::vector<double>& weig
 	}
 }
 
-double CBSplineKernel4::get_mult_int(int s1, int s2, int range, EIntegralType type) const
+double CBSplineKernel4::read_table(int skip, int delta, bool swapped, EIntegralType type) const
 {
-	const double integral_11[6][5] = {
-		// full integrals 
-		{ 35.0/72.0,        -11.0/360.0, -17.0/90.0, -59.0/2520.0, -1.0/5040}, 
-		// one skipped 
-		{ 15678.0/32256.0, -1699.0/53760.0, -6103.0/32256.0, -1189.0/53760.0,  -1.0/10080 },
-		// two skipped 
-		{ 433.0/1008.0,     -1447.0/16128.0, -17.0/180.0,  -209.0/161280.0, 0.0 },
-		// three skipped
-		{ 35.0/144.0,       4771.0/80640.0,  17.0/53760.0,                0.0, 0.0 },
-		// four skipped
-		{ 19.0/336.0,       169.0/161280.0,              0.0,                 0.0, 0.0 },
-		{ 1.0/32265.0,          0,              0.0,                 0.0, 0.0 }
-		
+	const double integral_11[11][5] = {
+		/*-5*/{ 1.0/32265.0,          0,              0.0,                 0.0, 0.0 },
+		/*-4*/{ 19.0/336.0,       169.0/161280.0,              0.0,                 0.0, 0.0 },
+		/*-3*/{ 35.0/144.0,       4771.0/80640.0,  17.0/53760.0,                0.0, 0.0 },
+		/*-2*/{ 433.0/1008.0,     -1447.0/16128.0, -17.0/180.0,  -209.0/161280.0, 0.0 },
+		/*-1*/{ 15678.0/32256.0, -1699.0/53760.0, -6103.0/32256.0, -1189.0/53760.0,  -1.0/10080 },
+		/* 0*/{ 35.0/72.0,        -11.0/360.0, -17.0/90.0, -59.0/2520.0, -1.0/5040}, 
+		/* 1*/{ 15678.0/32256.0, -1699.0/53760.0, -6103.0/32256.0, -1189.0/53760.0,  -1.0/10080 },
+		/* 2*/{ 433.0/1008.0,     -1447.0/16128.0, -17.0/180.0,  -209.0/161280.0, 0.0 },
+		/* 3*/{ 35.0/144.0,       4771.0/80640.0,  17.0/53760.0,                0.0, 0.0 },
+		/* 4*/{ 19.0/336.0,       169.0/161280.0,              0.0,                 0.0, 0.0 },
+		/* 5*/{ 1.0/32265.0,          0,              0.0,                 0.0, 0.0 }
 	}; 
 
-	const double integral_20[5][6] = {
-		// full integrals 
+	const double integral_20[11][5] = {
+		{  -5,       0.0,       0.0,  0.0,       0.0 },
+		{  12.0/4375.0     ,       0.0,       0.0,   0.0,          0.0 },
+		{  11489.0/315000.0,       0.0,       0.0,   0.0,          0.0 },
+		{ 164761.0/315000.0,  11.0/40.0,       0.0,   0.0,         0.0 },
+		{  -19267.0/39375.0,  11.0/60.0, 13.0/60.0,   0.0,         0.0 },
 		{    -2737.0/5625.0, 1789.0/63000.0, 1299.0/7000.0, 59.0/2625.0, 5207.0/28476000.0 }, 
-		// one skipped 
-		{  -19267.0/39375.0,  11.0/60.0, 13.0/60.0,   0.0 },
-		// two skipped 
-		{ 164761.0/315000.0,  11.0/40.0,       0.0,   0.0 },
-		// three skipped
-		{  11489.0/315000.0,       0.0,       0.0,   0.0 },
-		{  12.0/4375.0     ,       0.0,       0.0,   0.0 },
+		{  -19267.0/39375.0,  11.0/60.0, 13.0/60.0,   0.0,         0.0 },
+		{ 164761.0/315000.0,  11.0/40.0,       0.0,   0.0,         0.0 },
+		{  11489.0/315000.0,       0.0,       0.0,   0.0,          0.0 },
+		{  12.0/4375.0     ,       0.0,       0.0,   0.0,          0.0 },
+		{  -5,       0.0,       0.0,  0.0,        0.0 }
 	}; 
 
-	const double integral_02[5][5] = {
-		// full integrals 
-		{    -2737.0/5625.0, 1789.0/63000.0, 1299.0/7000.0, 59.0/2625.0, 5207.0/28476000.0 }, 
-		// one skipped 
-		{  -19267.0/39375.0,  11.0/60.0, 13.0/60.0,   0.0 },
-		// two skipped 
-		{ 164761.0/315000.0,  11.0/40.0,       0.0,   0.0 },
-		// three skipped
-		{  11489.0/315000.0,       0.0,       0.0,   0.0 },
-		{  12.0/4375.0     ,       0.0,       0.0,   0.0 },
-	}; 
-
-	if (s2 < s1) 
-		swap(s1, s2); 
 	
-	const int delta = s2 - s1; 
-	if (delta > 4) 
-		return 0.0;
-	
-	const int dlow = 3 - s1; 
-	int skip = 0; 
-	if (dlow > 0) 
-		skip = 3 - s2; 
-	else {
-		const int dhigh = 3 + s2 - range; 
-		if (dhigh > 0) 
-			skip = 3 + s1 - range; 
-	}
-	if (skip > 5) 
-		return 0.0; 
-	if (skip < 0) 
-		skip = 0; 
 	switch (type) {
 	case CBSplineKernel::integral_11:
-		return integral_11[skip][delta]; 
-	case CBSplineKernel::integral_20:
+		return integral_11[5 + skip][delta]; 
 	case CBSplineKernel::integral_02:
-		cvinfo() << "skip= " << skip << ", delta=" << delta << "\n"; 
-		return integral_20[skip][delta]; 
+		swapped = !swapped; 
+	case CBSplineKernel::integral_20:
+		if (swapped) 
+			return integral_20[5 - skip][delta]; 
+		else 
+			return integral_20[5 + skip][delta]; 
 	default:
 		assert(0 && "unknown integral type specified"); 
 	}
+}
+
+double CBSplineKernel4::get_mult_int(int s1, int s2, int range, EIntegralType type) const
+{
+	return mult_int_from_table(s1, s2, range, type); 
 }
 
 
