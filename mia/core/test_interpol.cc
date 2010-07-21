@@ -698,18 +698,6 @@ BOOST_AUTO_TEST_CASE(  test_bspline3_systematic_integrate_02 )
 
 }
 
-
-BOOST_AUTO_TEST_CASE(  test_bspline4_systematic_integrate_11 )
-{
-	CBSplineKernel4 kernel;
-	for (int s1 = -6; s1 < 15; ++s1) 
-		for (int s2 = -6; s2 < 15; ++s2) {
-			double fixed = kernel.get_mult_int(s1, s2, 10, CBSplineKernel::integral_11); 
-			double  simp = integrate2(kernel, s1, s2, 1, 1, 1, 0, 10); 
-
-			BOOST_CHECK_CLOSE(fixed, simp, 0.3);
-		}
-}
 BOOST_AUTO_TEST_CASE(  test_bspline4_sum_integrate_11 )
 {
 
@@ -740,32 +728,137 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_sum_integrate_11 )
 	BOOST_CHECK_CLOSE(1.0 + sum, 1.0, 0.1); 
 }
 
-BOOST_AUTO_TEST_CASE(  test_bspline4_systematic_integrate_20_d0 )
+struct SplineIntegralFixture {
+	void run(const CBSplineKernel& kernel, int delta, CBSplineKernel::EIntegralType type); 
+}; 
+
+void SplineIntegralFixture::run(const CBSplineKernel& kernel, int delta, 
+				CBSplineKernel::EIntegralType type)
 {
-	CBSplineKernel4 kernel;
+	int deg1 = 0; 
+	int deg2 = 0; 
+	switch (type) {
+	case CBSplineKernel::integral_20: deg1 = 2; 
+		break; 
+	case CBSplineKernel::integral_02: deg2 = 2; 
+		break; 
+	case CBSplineKernel::integral_11: deg1 = deg2 = 1; 
+		break; 
+	default: 
+		assert(0 && "unknown integral type given"); 
+	}
 	for (int s1 = -6; s1 < 15; ++s1) {
-		double fixed = kernel.get_mult_int(s1, s1, 10, CBSplineKernel::integral_20); 
-		double  simp = integrate2(kernel, s1, s1, 2, 0, 1, 0, 10); 
+		double fixed = kernel.get_mult_int(s1, s1 + delta, 10, type); 
+		double  simp = integrate2(kernel, s1, s1 + delta, deg1, deg2, 1, 0, 10); 
 		BOOST_CHECK_CLOSE(fixed, simp, 0.3);
 	}
 }
 
-BOOST_AUTO_TEST_CASE(  test_bspline4_systematic_integrate_20_d1 )
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_20_d0, SplineIntegralFixture )
 {
-	CBSplineKernel4 kernel;
-	for (int s1 = -6; s1 < 15; ++s1) {
-		double fixed = kernel.get_mult_int(s1, s1 + 1, 10, CBSplineKernel::integral_20); 
-		double  simp = integrate2(kernel, s1, s1 + 1, 2, 0, 1, 0, 10); 
-		BOOST_CHECK_CLOSE(fixed, simp, 0.3);
-	}
+	run(CBSplineKernel4(), 0, CBSplineKernel::integral_20); 
 }
 
-BOOST_AUTO_TEST_CASE(  test_bspline4_systematic_integrate_20_d2 )
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_20_d1, SplineIntegralFixture )
 {
-	CBSplineKernel4 kernel;
-	for (int s1 = -6; s1 < 15; ++s1) {
-		double fixed = kernel.get_mult_int(s1, s1 + 2, 10, CBSplineKernel::integral_20); 
-		double  simp = integrate2(kernel, s1, s1 + 2, 2, 0, 1, 0, 10); 
-		BOOST_CHECK_CLOSE(fixed, simp, 0.3);
-	}
+	run(CBSplineKernel4(), 1, CBSplineKernel::integral_20); 
+	
 }
+
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_20_d2, SplineIntegralFixture )
+{
+	run(CBSplineKernel4(), 2, CBSplineKernel::integral_20); 
+	
+}
+
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_20_d3, SplineIntegralFixture )
+{
+	run(CBSplineKernel4(), 3, CBSplineKernel::integral_20); 
+	
+}
+
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_20_d4, SplineIntegralFixture )
+{
+	run(CBSplineKernel4(), 4, CBSplineKernel::integral_20); 
+	
+}
+
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_20_d5, SplineIntegralFixture )
+{
+	run(CBSplineKernel4(), 5, CBSplineKernel::integral_20); 
+	
+}
+
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_02_d0, SplineIntegralFixture )
+{
+	run(CBSplineKernel4(), 0, CBSplineKernel::integral_02); 
+}
+
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_02_d1, SplineIntegralFixture )
+{
+	run(CBSplineKernel4(), 1, CBSplineKernel::integral_02); 
+	
+}
+
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_02_d2, SplineIntegralFixture )
+{
+	run(CBSplineKernel4(), 2, CBSplineKernel::integral_02); 
+	
+}
+
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_02_d3, SplineIntegralFixture )
+{
+	run(CBSplineKernel4(), 3, CBSplineKernel::integral_02); 
+	
+}
+
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_02_d4, SplineIntegralFixture )
+{
+	run(CBSplineKernel4(), 4, CBSplineKernel::integral_02); 
+	
+}
+
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_02_d5, SplineIntegralFixture )
+{
+	run(CBSplineKernel4(), 5, CBSplineKernel::integral_02); 
+	
+}
+
+
+
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_11_d0, SplineIntegralFixture )
+{
+	run(CBSplineKernel4(), 0, CBSplineKernel::integral_11); 
+}
+
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_11_d1, SplineIntegralFixture )
+{
+	run(CBSplineKernel4(), 1, CBSplineKernel::integral_11); 
+	
+}
+
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_11_d2, SplineIntegralFixture )
+{
+	run(CBSplineKernel4(), 2, CBSplineKernel::integral_11); 
+	
+}
+
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_11_d3, SplineIntegralFixture )
+{
+	run(CBSplineKernel4(), 3, CBSplineKernel::integral_11); 
+	
+}
+
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_11_d4, SplineIntegralFixture )
+{
+	run(CBSplineKernel4(), 4, CBSplineKernel::integral_11); 
+	
+}
+
+BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_11_d5, SplineIntegralFixture )
+{
+	run(CBSplineKernel4(), 5, CBSplineKernel::integral_11); 
+	
+}
+
+
