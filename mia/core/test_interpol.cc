@@ -709,10 +709,7 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_systematic_integrate_11 )
 
 			BOOST_CHECK_CLOSE(fixed, simp, 0.3);
 		}
-
 }
-
-
 BOOST_AUTO_TEST_CASE(  test_bspline4_sum_integrate_11 )
 {
 
@@ -743,4 +740,24 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_sum_integrate_11 )
 	BOOST_CHECK_CLOSE(1.0 + sum, 1.0, 0.1); 
 }
 
+BOOST_AUTO_TEST_CASE(  test_bspline4_systematic_integrate_20_d0 )
+{
+	CBSplineKernel4 kernel;
+	for (int s1 = -6; s1 < 15; ++s1) {
+		double fixed = kernel.get_mult_int(s1, s1, 10, CBSplineKernel::integral_20); 
+		double  simp = integrate2(kernel, s1, s1, 2, 0, 1, 0, 10); 
+		BOOST_CHECK_CLOSE(fixed, simp, 0.3);
+	}
+}
 
+#if 0
+BOOST_AUTO_TEST_CASE(  test_bspline4_systematic_integrate_20_d1 )
+{
+	CBSplineKernel4 kernel;
+	for (int s1 = -6; s1 < 15; ++s1) {
+		double fixed = kernel.get_mult_int(s1, s1 + 1, 10, CBSplineKernel::integral_20); 
+		double  simp = integrate2(kernel, s1, s1 + 1, 2, 0, 1, 0, 10); 
+		BOOST_CHECK_CLOSE(fixed, simp, 0.3);
+	}
+}
+#endif
