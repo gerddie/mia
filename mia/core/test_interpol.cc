@@ -678,6 +678,19 @@ BOOST_AUTO_TEST_CASE(  test_bspline3_systematic_integrate_20 )
 
 }
 
+BOOST_AUTO_TEST_CASE(  test_bspline3_systematic_integrate_02 )
+{
+	CBSplineKernel3 kernel;
+	for (int s1 = -3; s1 < 34; ++s1) 
+		for (int s2 = -3; s2 < 34; ++s2) {
+			double fixed = kernel.get_mult_int(s1, s2, 30, CBSplineKernel::integral_02); 
+			double  simp = integrate2(kernel, s1, s2, 0, 2, 1, 0, 30); 
+			BOOST_CHECK_CLOSE(fixed, simp, 0.1); 
+		}
+
+}
+
+
 BOOST_AUTO_TEST_CASE(  test_bspline4_systematic_integrate_11 )
 {
 	CBSplineKernel4 kernel;
