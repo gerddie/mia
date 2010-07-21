@@ -216,25 +216,30 @@ CBSplineKernel3::CBSplineKernel3():
 
 double CBSplineKernel3::get_mult_int(int s1, int s2, int range, EIntegralType type) const
 {
-	const double integral_11[4][4] = {
-		    // full integrals 
-		    {2.0/3.0, -1.0/8.0, -1.0/5.0, -1.0/120.0}, 
-		    // one skipped 
-		    { 37.0/60.0,  -11.0/60.0, -1.0/10.0,  0.0 },
-		    // two skipped 
-		    { 1.0/3.0,  7.0/120.0, 0.0,  0.0 },
-		    // three skipped
-		    { 1.0/20.0,  0.0, 0.0,  0.0 }
-		
+	const double integral_11[7][4] = {
+		{ 1.0/20.0,  0.0, 0.0,  0.0 },
+		{ 1.0/3.0,  7.0/120.0, 0.0,  0.0 },
+		{ 37.0/60.0,  -11.0/60.0, -1.0/10.0,  0.0 },
+		// full integrals 
+		{2.0/3.0, -1.0/8.0, -1.0/5.0, -1.0/120.0}, 
+		// one skipped 
+		{ 37.0/60.0,  -11.0/60.0, -1.0/10.0,  0.0 },
+		// two skipped 
+		{ 1.0/3.0,  7.0/120.0, 0.0,  0.0 },
+		// three skipped
+		{ 1.0/20.0,  0.0, 0.0,  0.0 }
 	}; 
 
-	const double integral_20[4][4] = {
+	const double integral_20[7][4] = {
+		{  1.0/30.0,       0.0,       0.0,   0.0 },
+		{ -1.0/3.0,   49.0/120.0,       0.0,   0.0 },
+		{ -7.0/10.0,   19.0/60.0, 13.0/60.0,   0.0 },
 		// full integrals 
-		{ -2.0/3.0,   1.0/8.0,    1.0/5.0, 1/120 }, 
+		{ -2.0/3.0,   1.0/8.0,    1.0/5.0,  1.0/120.0 }, 
 		// one skipped 
-		{-7.0/10.0,  11.0/60.0, 13.0/60.0,   0.0 },
+		{ -7.0/10.0,   19.0/60.0, 13.0/60.0,   0.0 },
 		// two skipped 
-		{ -1.0/3.0,  11.0/40.0,       0.0,   0.0 },
+		{ -1.0/3.0,   49.0/120.0,       0.0,   0.0 },
 		// three skipped
 		{  1.0/30.0,       0.0,       0.0,   0.0 }
 	}; 
@@ -248,24 +253,27 @@ double CBSplineKernel3::get_mult_int(int s1, int s2, int range, EIntegralType ty
 	
 	const int dlow = 2 - s1; 
 	int skip = 0; 
-	if (dlow > 0) 
-		skip = 2 - s2; 
-	else {
+	if (dlow > 0) {
+		skip = s2 - 2;
+		if (skip > 0) 
+			skip = 0; 
+	} else {
 		const int dhigh = 2 + s2 - range; 
 		if (dhigh > 0) 
 			skip = 2 + s1 - range; 
+		if (skip < 0) 
+			skip = 0; 
 	}
-	if (skip > 3) 
+	if (abs(skip) > 3) 
 		return 0.0; 
-	if (skip < 0) 
-		skip = 0; 
-	cvdebug() << "skip= " << skip << ", delta=" << delta << "\n"; 
+
+	cvinfo() << "skip= " << skip << ", delta=" << delta << "\n"; 
 	switch (type) {
 	case CBSplineKernel::integral_11:
-		return integral_11[skip][delta]; 
+		return integral_11[3+skip][delta]; 
 	case CBSplineKernel::integral_20:
 	case CBSplineKernel::integral_02:
-		return integral_20[skip][delta]; 
+		return integral_20[3+skip][delta]; 
 	default:
 		assert(0 && "unknown integral type specified"); 
 	}
@@ -668,12 +676,12 @@ double CBSplineKernel4::get_mult_int(int s1, int s2, int range, EIntegralType ty
 		return 0.0; 
 	if (skip < 0) 
 		skip = 0; 
-	cvinfo() << "skip= " << skip << ", delta=" << delta << "\n"; 
 	switch (type) {
 	case CBSplineKernel::integral_11:
 		return integral_11[skip][delta]; 
 	case CBSplineKernel::integral_20:
 	case CBSplineKernel::integral_02:
+		cvinfo() << "skip= " << skip << ", delta=" << delta << "\n"; 
 		return integral_20[skip][delta]; 
 	default:
 		assert(0 && "unknown integral type specified"); 
@@ -1006,9 +1014,9 @@ double  EXPORT_CORE integrate2(const CBSplineKernel& spline, double s1, double s
 	if (end_int <= start_int)
 		return sum;
 	const size_t intervals = size_t(8 * (end_int - start_int));
-	cvdebug() << "integrate(" << start_int << ", " << end_int << "\n"; 
 
 	sum = simpson( start_int, end_int, intervals, F2DKernelIntegrator(spline, s1, s2, deg1, deg2));
+	cvdebug() << "integrate(" << start_int << ", " << end_int << ")[" << intervals <<"]="<< sum << "*" << n <<"\n"; 
 	return sum * n;
 }
 
