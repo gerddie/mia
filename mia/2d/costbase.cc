@@ -71,10 +71,11 @@ float C2DCostBasePlugin::get_weight() const
 
 const char *cost_data2d_type::type_descr = "2d";
 
-template class EXPORT_HANDLER TPlugin<cost_data2d_type, cost_type>;
-template class EXPORT_HANDLER TFactory<C2DCostBase, cost_data2d_type, cost_type>;
+template class TPlugin<cost_data2d_type, cost_type>;
+template class TFactory<C2DCostBase, cost_data2d_type, cost_type>;
+template class TPluginHandler<C2DCostBasePlugin>;
 template class EXPORT_HANDLER TFactoryPluginHandler<C2DCostBasePlugin>;
 template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C2DCostBasePlugin> >;
-template class EXPORT_HANDLER TPluginHandler<C2DCostBasePlugin>;
+
 
 NS_MIA_END

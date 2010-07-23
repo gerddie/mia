@@ -41,8 +41,7 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range,
 	_M_range(range),
 	_M_ipf(ipf),
 	_M_scale(1.0, 1.0),
-	_M_interpolator_valid(false),
-	_M_matrices_valid(false)
+	_M_interpolator_valid(false)
 {
 	TRACE_FUNCTION;
 	assert(_M_range.x > 0);
@@ -53,8 +52,7 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DSplineTransformation& 
 	_M_range(org._M_range),
 	_M_coefficients( org._M_coefficients),
 	_M_ipf(org._M_ipf),
-	_M_interpolator_valid(false),
-	_M_matrices_valid(false)
+	_M_interpolator_valid(false)
 {
 
 }
@@ -62,8 +60,7 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DSplineTransformation& 
 C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, P2DInterpolatorFactory ipf, const C2DFVector& c_rate):
 	_M_range(range),
 	_M_ipf(ipf),
-	_M_interpolator_valid(false),
-	_M_matrices_valid(false)
+	_M_interpolator_valid(false)
 {
 	TRACE_FUNCTION;
 	assert(_M_range.x > 0);
@@ -234,186 +231,6 @@ P2DImage C2DSplineTransformation::apply(const C2DImage& image,
 					const C2DInterpolatorFactory& ipf) const
 {
 	return transform2d(image, ipf, *this);
-}
-
-float C2DSplineTransformation::divergence() const
-{
-	if (!_M_matrices_valid)
-		evaluate_matrices();
-
-	return -1.0;
-}
-
-float C2DSplineTransformation::curl() const
-{
-	if (!_M_matrices_valid)
-		evaluate_matrices();
-
-	return -1.0;
-}
-
-C2DSplineTransformation::DCKernel::DCKernel(const vector<double>& R20_X,
-					    const vector<double>& R20_Y,
-					    const vector<double>& R11_X,
-					    const vector<double>& R11_Y,
-					    const vector<double>& R02_X,
-					    const vector<double>& R02_Y):
-	_M_R20_X(R20_X),
-	_M_R20_Y(R20_Y),
-	_M_R11_X(R11_X),
-	_M_R11_Y(R11_Y),
-	_M_R02_X(R02_X),
-	_M_R02_Y(R02_Y)
-{
-}
-
-struct KDivergence: public C2DSplineTransformation::DCKernel {
-	KDivergence(const vector<double>& R20_X,
-		    const vector<double>& R20_Y,
-		    const vector<double>& R11_X,
-		    const vector<double>& R11_Y,
-		    const vector<double>& R02_X,
-		    const vector<double>& R02_Y):
-		C2DSplineTransformation::DCKernel(R20_X, R20_Y, R11_X, R11_Y, R02_X, R02_Y)
-		{
-		}
-
-	double operator() (int xc, int yc, const C2DFVector& ci, const C2DFVector& cj) const {
-		const double r20x = _M_R20_X[xc];
-		const double r02x = _M_R02_X[xc];
-		const double r11x = _M_R11_X[xc];
-		const double r20y = _M_R20_Y[yc];
-		const double r11y = _M_R11_Y[yc];
-		const double r02y = _M_R02_Y[yc];
-		double sum = 0.0;
-		sum +=       (r11x * r11y + r20x * r20y) * ci.x * cj.x;
-		sum += 2.0 * (r20x * r11y + r11x * r20y) * ci.x * cj.y;
-		sum +=       (r02x * r02y + r11x * r11y) * ci.y * cj.y;
-		return sum;
-	}
-};
-
-
-struct KCurl: public C2DSplineTransformation::DCKernel {
-	KCurl(const vector<double>& R20_X,
-	      const vector<double>& R20_Y,
-	      const vector<double>& R11_X,
-	      const vector<double>& R11_Y,
-	      const vector<double>& R02_X,
-	      const vector<double>& R02_Y):
-		C2DSplineTransformation::DCKernel(R20_X, R20_Y, R11_X, R11_Y, R02_X, R02_Y)
-		{
-		}
-
-	double operator() (int xc, int yc, const C2DFVector& ci, const C2DFVector& cj) const {
-		const double r20x = _M_R20_X[xc];
-		const double r02x = _M_R02_X[xc];
-		const double r11x = _M_R11_X[xc];
-		const double r20y = _M_R20_Y[yc];
-		const double r11y = _M_R11_Y[yc];
-		const double r02y = _M_R02_Y[yc];
-		double sum = 0.0;
-		sum +=       (r11x * r11y + r20x * r20y) * ci.y * cj.y;
-		sum -= 2.0 * (r20x * r11y + r11x * r20y) * ci.x * cj.y;
-		sum +=       (r02x * r02y + r11x * r11y) * ci.x * cj.x;
-		return sum;
-	}
-};
-
-double C2DSplineTransformation::get_grad_kernel_at(int x, int y, const DCKernel& kern) const
-{
-	double sum = 0.0;
-	const CBSplineKernel *spline_kernel = _M_ipf->get_kernel();
-	const int ssize = spline_kernel->size();
-	const int hsize = ssize/2;
-	const int xsize = _M_coefficients.get_size().x;
-	const int ysize = _M_coefficients.get_size().y;
-	int ys = max(0, y-hsize);
-	int ye = min(y+hsize, ysize);
-	int ysd =  max(0,hsize-y);
-
-	int xs = max(0, x-hsize);
-	int xe = min(x+hsize, xsize);
-	int xsd =  max(0,hsize-x);
-
-	for (int l = ys, li = ysd; l < ye; ++l, ++li) {
-		for (int k = xs,ki = xsd; k < xe; ++k, ++ki) {
-			for (int n = ys,ni = ysd; n < ye; ++n, ++ni) {
-				for (int m = xs, mi = xsd; m < xe; ++m,++mi) {
-					const C2DFVector ci = _M_coefficients(k,l);
-					const C2DFVector cj = _M_coefficients(m,n);
-					const int xc = mi - ki + ssize - 1;
-					const int yc = ni - li + ssize - 1;
-					sum += kern(x + xc, y + yc, ci, cj);
-				}
-			}
-		}
-	}
-	cvdebug() << "sum("<< x << ", "  << y << ")= " <<sum<<"\n";
-	return sum;
-}
-
-float C2DSplineTransformation::grad_divergence() const
-{
-	if (!_M_matrices_valid)
-		evaluate_matrices();
-	double sum = 0.0;
-	KDivergence kd(_M_R20_X, _M_R20_Y, _M_R11_X, _M_R11_Y, _M_R02_X, _M_R02_Y);
-
-	for (size_t k = 0; k < _M_coefficients.get_size().x; ++k )
-		for (size_t l = 0; l < _M_coefficients.get_size().y; ++l)
-			sum += get_grad_kernel_at(k,l,kd);
-	return sum /_M_coefficients.size();
-}
-
-void C2DSplineTransformation::evaluate_matrices() const
-{
-	const CBSplineKernel *spline_kernel = _M_ipf->get_kernel();
-	if (!spline_kernel)
-		throw invalid_argument("C2DSplineTransformation: doesn't use a supported spline kernel");
-
-	// set size to number of coefficients
-	const int ksize = spline_kernel->size();
-	const size_t support_size = 2 * ksize - 1;
-
-	_M_R20_X.resize(_M_coefficients.size());
-	_M_R02_X.resize(_M_coefficients.size());
-	_M_R11_X.resize(_M_coefficients.size());
-
-	_M_R20_Y.resize(_M_coefficients.size());
-	_M_R02_Y.resize(_M_coefficients.size());
-	_M_R11_Y.resize(_M_coefficients.size());
-
-	const double Lx = _M_coefficients.get_size().x;
-	const double Ly = _M_coefficients.get_size().y;
-	const double nx = 1.0/_M_scale.x;
-	const double ny = 1.0/_M_scale.y;
-
-	size_t idx = 0;
-	for (int y = 0; y < support_size; ++y) {
-		for (int x = 0; x < support_size; ++x, ++idx) {
-			_M_R20_X[idx] = integrate2(*spline_kernel, x, y, 2, 0, nx, 0, Lx);
-			_M_R02_X[idx] = integrate2(*spline_kernel, x, y, 0, 2, nx, 0, Lx);
-			_M_R11_X[idx] = integrate2(*spline_kernel, x, y, 1, 1, nx, 0, Lx);
-			_M_R20_Y[idx] = integrate2(*spline_kernel, x, y, 2, 0, ny, 0, Ly);
-			_M_R02_Y[idx] = integrate2(*spline_kernel, x, y, 0, 2, ny, 0, Ly);
-			_M_R11_Y[idx] = integrate2(*spline_kernel, x, y, 1, 1, ny, 0, Ly);
-		}
-	}
-	_M_matrices_valid = true;
-}
-
-
-float C2DSplineTransformation::grad_curl() const
-{
-	if (!_M_matrices_valid)
-		evaluate_matrices();
-	double sum = 0.0;
-	KCurl kd(_M_R20_X, _M_R20_Y, _M_R11_X, _M_R11_Y, _M_R02_X, _M_R02_Y);
-	for (size_t k = 0; k < _M_coefficients.get_size().x; ++k )
-		for (size_t l = 0; l < _M_coefficients.get_size().y; ++l)
-			sum += get_grad_kernel_at(k,l,kd);
-	return sum / _M_coefficients.size();
 }
 
 void C2DSplineTransformation::update(float step, const C2DFVectorfield& a)

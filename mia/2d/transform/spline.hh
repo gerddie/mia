@@ -89,33 +89,7 @@ public:
 	virtual float pertuberate(C2DFVectorfield& v) const;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
 	virtual C2DFVector operator () (const C2DFVector& x) const;
-	virtual float divergence() const;
-	virtual float curl() const;
-	float grad_divergence() const;
-	float grad_curl() const;
-
-	struct DCKernel {
-		DCKernel(const vector<double>& R20_X,
-			 const vector<double>& R20_Y,
-			 const vector<double>& R11_X,
-			 const vector<double>& R11_Y,
-			 const vector<double>& R02_X,
-			 const vector<double>& R02_Y);
-
-		virtual double operator () (int xc, int yc, const C2DFVector& ci, const C2DFVector& cj) const = 0;
-	protected:
-		const vector<double>& _M_R20_X;
-		const vector<double>& _M_R20_Y;
-		const vector<double>& _M_R11_X;
-		const vector<double>& _M_R11_Y;
-		const vector<double>& _M_R02_X;
-		const vector<double>& _M_R02_Y;
-	};
-
 private:
-	double get_grad_kernel_at(int x, int y, const DCKernel& kern)const;
-	double get_grad_divergence_at(int x, int y) const;
-	double get_grad_curl_at(int x, int y) const;
 	C2DBounds _M_range;
 	C2DFVectorfield _M_coefficients;
 	P2DInterpolatorFactory _M_ipf;
@@ -123,15 +97,6 @@ private:
 	mutable C2DFVector _M_inv_scale;
 	mutable bool _M_interpolator_valid;
 	mutable SHARED_PTR(T2DInterpolator<C2DFVector>)  _M_interpolator;
-	mutable bool _M_matrices_valid;
-	mutable vector<double> _M_R20_X;
-	mutable vector<double> _M_R20_Y;
-	mutable vector<double> _M_R02_X;
-	mutable vector<double> _M_R02_Y;
-	mutable vector<double> _M_R11_X;
-	mutable vector<double> _M_R11_Y;
-	void evaluate_matrices() const;
-
 
 };
 

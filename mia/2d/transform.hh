@@ -170,16 +170,6 @@ public:
 	 */
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const = 0;
 
-	/**
-	   \remark placeholder
-	 */
-	virtual float divergence() const = 0;
-
-	/**
-	   \remark placeholder
-	 */
-	virtual float curl() const = 0;
-
 };
 
 /**

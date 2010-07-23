@@ -174,33 +174,6 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 
 }
 
-#if 0
-BOOST_FIXTURE_TEST_CASE( test_splines_transformation_curl, TransformSplineFixture )
-{
-	double curl = 0.0;
-	for (size_t y = 1; y < range.y-1; ++y)
-		for (size_t x = 1; x < range.x-1; ++x) {
-			const float lcurl = dfx_y(x,y) - dfy_x(x,y);
-			curl += lcurl * lcurl;
-		}
-
-	BOOST_CHECK_CLOSE(stransf.curl(), curl/ ((range.x - 2) * (range.y-2)), 0.1);
-}
-
-BOOST_FIXTURE_TEST_CASE( test_splines_transformation_divergence, TransformSplineFixture )
-{
-	double div = 0.0;
-	for (size_t y = 1; y < range.y-1; ++y)
-		for (size_t x = 1; x < range.x-1; ++x) {
-			const float dfxx = dfx_x(x,y);
-			const float dfyy = dfy_y(x,y);
-			div += dfxx * dfxx + dfyy * dfyy;
-		}
-
-	BOOST_CHECK_CLOSE(stransf.curl(), div / ((range.x - 2) * (range.y-2)), 0.1);
-}
-#endif
-
 BOOST_FIXTURE_TEST_CASE( test_splines_transformation_upscale, TransformSplineFixture )
 {
 	const C2DBounds scale(2.0, 3.0);
@@ -487,43 +460,6 @@ BOOST_FIXTURE_TEST_CASE( test_splines_refine, TransformSplineFixture )
 		}
 }
 
-
-BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_grad_curl, TransformSplineFixture )
-{
-	double gradcurl = 0.0;
-	for (size_t y = 0; y < range.y; ++y)
-		for (size_t x = 0; x < range.x; ++x) {
-			const double gdfx_xy = dfx_xy(x,y);
-			const double gdfx_yy = dfx_yy(x,y);
-			const double gdfy_xx = dfy_xx(x,y);
-			const double gdfy_xy = dfy_xy(x,y);
-			const double v = gdfy_xx + gdfy_xy - gdfx_yy - gdfx_xy;
-			gradcurl += v * v;
-		}
-
-
-	BOOST_CHECK_CLOSE(stransf.grad_curl(), gradcurl, 1.0);
-}
-
-
-
-BOOST_FIXTURE_TEST_CASE( test_gridtransform_get_grad_divergence, TransformSplineFixture )
-{
-	double graddiv = 0.0;
-	for (size_t y = 1; y < range.y-1; ++y)
-		for (size_t x = 1; x < range.x-1; ++x) {
-			const double gdfxx_x = dfx_xx(x,y);
-			const double gdfxx_y = dfx_xy(x,y);
-			const double gdfyy_x = dfy_yx(x,y);
-			const double gdfyy_y = dfy_yy(x,y);
-			const double v = gdfxx_x + gdfxx_y + gdfyy_x + gdfyy_y;
-			graddiv += v * v;
-		}
-
-	BOOST_CHECK_CLOSE(stransf.grad_divergence(), graddiv, 1);
-}
-
-
 float TransformSplineFixture::dfx_xx(float x, float y)
 {
 	x *= scale.x;
@@ -622,53 +558,4 @@ protected:
 private:
 	C2DFVector scale;
 };
-
-struct TransformSplineFixtureConstDivergence: public TransformSplineFixtureFieldBase {
-	virtual float fx(float x, float y);
-	virtual float fy(float x, float y);
-};
-
-BOOST_FIXTURE_TEST_CASE( test_gridtransform_constdivonly_get_grad_divcurl, TransformSplineFixtureConstDivergence )
-{
-	init();
-	BOOST_CHECK_CLOSE(0.0, stransf.grad_curl(), 1.0);
-	BOOST_CHECK_CLOSE(0.0, stransf.grad_divergence(),  1);
-}
-
-
-
-float TransformSplineFixtureConstDivergence::fx(float x, float /*y*/)
-{
-	return x;
-}
-
-float TransformSplineFixtureConstDivergence::fy(float  /*x*/, float y)
-{
-	return y;
-}
-
-
-struct TransformSplineFixtureConstCurl: public TransformSplineFixtureFieldBase {
-	virtual float fx(float x, float y);
-	virtual float fy(float x, float y);
-};
-
-
-BOOST_FIXTURE_TEST_CASE( test_gridtransform_constcurlonly_get_grad_curl_div, TransformSplineFixtureConstCurl )
-{
-	init();
-	BOOST_CHECK_CLOSE(0.0, stransf.grad_curl(), 1.0);
-	BOOST_CHECK_CLOSE(0.0, stransf.grad_divergence(), 1.0);
-}
-
-
-float TransformSplineFixtureConstCurl::fx(float /*x*/, float y)
-{
-	return -y;
-}
-
-float TransformSplineFixtureConstCurl::fy(float  x, float /*y*/)
-{
-	return x;
-}
 

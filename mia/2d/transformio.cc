@@ -32,8 +32,8 @@ const char *io_2dtransform_type::type_descr = "transformio";
 
 template class EXPORT_HANDLER TIOPlugin<io_2dtransform_type>;
 template class EXPORT_HANDLER THandlerSingleton<TIOPluginHandler<C2DTransformIOPlugin> >;
-template class EXPORT_HANDLER TIOPluginHandler<C2DTransformIOPlugin>;
-template class EXPORT_HANDLER TPluginHandler<C2DTransformIOPlugin>;
+template class TIOPluginHandler<C2DTransformIOPlugin>;
+template class TPluginHandler<C2DTransformIOPlugin>;
 
 
 NS_MIA_END
