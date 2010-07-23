@@ -159,7 +159,7 @@ C2DPPDivcurlMatrixImpl::C2DPPDivcurlMatrixImpl(const C2DBounds& size, const C2DF
 	
 	for (int l = 0, i=0; l < ny; ++l) {
 		for (int k = 0; k < nx; ++k, ++i) {
-			for (int n = max(0,l - kernel_range), ; n < min(l + kernel_range, ny); ++n) {
+			for (int n = max(0,l - kernel_range); n < min(l + kernel_range, ny); ++n) {
 				for (int m = max(0,k - kernel_range); m < min(k + kernel_range,nx); ++m) {
 					double r01x =  rc01.get( k, m, 0, 1,size.x); 
 					double r01y =  rc01.get( l, n, 0, 1,size.y); 
