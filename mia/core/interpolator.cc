@@ -270,7 +270,7 @@ double CBSplineKernel::mult_int_from_table(int s1, int s2, int range, EIntegralT
 		swap(s1, s2); 
 	}
 	
-	const int delta = s2 - s1; 
+	const size_t delta = s2 - s1; 
 	if ( delta >= size() ) 
 		return 0.0;
 	
@@ -292,8 +292,6 @@ double CBSplineKernel::mult_int_from_table(int s1, int s2, int range, EIntegralT
 		return 0.0; 
 	}
 	
-	if (skip) 
-		cvinfo() << "("<<s1<<"," << s2 << "@" << swapped <<") skip= " << skip << ", delta=" << delta <<"\n"; 
 	return read_table(skip, delta, swapped, type); 
 }
 

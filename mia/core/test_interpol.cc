@@ -861,4 +861,3 @@ BOOST_FIXTURE_TEST_CASE(  test_bspline4_systematic_integrate_11_d5, SplineIntegr
 	
 }
 
-
