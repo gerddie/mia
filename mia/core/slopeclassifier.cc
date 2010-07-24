@@ -282,8 +282,10 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 	if (n > 4) {
 		sort(stats.begin(), stats.end() - sort_skip, compare_mean_freq());
 		for (auto k = stats.rbegin() + sort_skip; k != stats.rend(); ++k)
-			if (k->first->get_mean_frequency() > rate)
+			if (k->first->get_mean_frequency() > rate) {
+				cvinfo() << "identify " << k->second << "as too periodic\n"; 
 				++sort_skip;
+			}
 	}
 	int remaining = n - sort_skip; 
 	cvdebug() << "remaining = " << remaining << "\n"; 
