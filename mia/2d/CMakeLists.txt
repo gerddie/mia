@@ -13,7 +13,6 @@ SET(MIA2D_SRC_BASE
   distances.cc
   divcurlmatrix.cc
   imagecostbase.cc
-  imagefullcost.cc
   interpolator.cc 
   fatcost.cc
   fullcost.cc
@@ -97,7 +96,6 @@ SET(MIA2D_HEADERS_BASE
   ground_truth_evaluator.hh
   groundtruthproblem.hh
   imagecostbase.hh
-  imagefullcost.hh
   interpolator.hh
   matrix.hh
   model.hh
@@ -183,7 +181,6 @@ TEST_2DMIA(distances)
 TEST_2DMIA(fullcost)
 TEST_2DMIA(groundtruthproblem)
 TEST_2DMIA(imagecostbase)
-TEST_2DMIA(imagefullcost)
 TEST_2DMIA(interpol)
 
 
@@ -231,6 +228,7 @@ ADD_SUBDIRECTORY(creator   )
 ADD_SUBDIRECTORY(io        )
 ADD_SUBDIRECTORY(filter    )
 ADD_SUBDIRECTORY(fft       )
+ADD_SUBDIRECTORY(fullcost  )
 ADD_SUBDIRECTORY(kernel    )
 ADD_SUBDIRECTORY(model     )
 #ADD_SUBDIRECTORY(reg2d     )

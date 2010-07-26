@@ -72,7 +72,16 @@ private:
 }; 
 typedef SHARED_PTR(C2DFullCost) P2DFullCost;
 
-typedef TFactory<C2DFullCost, C2DFullCost, C2DFullCost> C2DFullCostPlugin;
+
+class C2DFullCostPlugin: public TFactory<C2DFullCost, C2DFullCost, C2DFullCost> {
+public:
+	C2DFullCostPlugin(const char *name);
+private:
+	virtual C2DFullCostPlugin::ProductPtr do_create() const;
+	virtual C2DFullCostPlugin::ProductPtr do_create(float weight) const = 0;
+	float _M_weight;
+}; 
+
 typedef THandlerSingleton<TFactoryPluginHandler<C2DFullCostPlugin> > C2DFullCostPluginHandler;
 
 NS_MIA_END

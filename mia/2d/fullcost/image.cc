@@ -20,7 +20,7 @@
  *
  */
 
-#include <mia/2d/imagefullcost.hh>
+#include <mia/2d/fullcost/image.hh>
 #include <mia/2d/2dfilter.hh>
 
 NS_MIA_BEGIN
@@ -85,5 +85,49 @@ P2DImage C2DImageFullCost::get_from_pool(const C2DImageDataKey& key)
 	return (*in_image_list)[0];
 }
 
+
+// plugin implementation 
+class C2DImageFullCostPlugin: public C2DFullCostPlugin {
+public: 
+	C2DImageFullCostPlugin(); 
+private: 
+	C2DFullCostPlugin::ProductPtr do_create(float weight) const;
+	const std::string do_get_descr() const;
+	std::string _M_src_name;
+	std::string _M_ref_name;
+	std::string _M_cost_kernel;
+	EInterpolation _M_interpolator;
+}; 
+
+C2DImageFullCostPlugin::C2DImageFullCostPlugin():
+	C2DFullCostPlugin("image"), 
+	_M_src_name("src.@"), 
+	_M_ref_name("ref.@"), 
+	_M_cost_kernel("ssd"), 
+	_M_interpolator(ip_bspline3)
+{
+	add_parameter("src", new CStringParameter(_M_src_name, false, "Study image"));
+	add_parameter("ref", new CStringParameter(_M_ref_name, false, "Reference image"));
+	add_parameter("cost", new CStringParameter(_M_cost_kernel, false, "Cost function kernel"));
+	add_parameter("interp", new CDictParameter<EInterpolation>(_M_interpolator, 
+								   GInterpolatorTable, "image interpolator"));
+}
+
+C2DFullCostPlugin::ProductPtr C2DImageFullCostPlugin::do_create(float weight) const
+{
+	return C2DFullCostPlugin::ProductPtr(
+		new C2DImageFullCost(_M_src_name, _M_ref_name, 
+				     _M_cost_kernel, _M_interpolator, weight)); 
+}
+
+const std::string C2DImageFullCostPlugin::do_get_descr() const
+{
+	return "image similarity cost function"; 
+}
+
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new C2DImageFullCostPlugin();
+}
 
 NS_MIA_END

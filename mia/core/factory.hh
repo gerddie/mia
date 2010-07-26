@@ -65,7 +65,7 @@ public:
 	virtual ProductPtr create(const CParsedOptions& options);
 	
 private:
-	virtual bool do_test() const = 0; 
+	virtual bool do_test() const; 
 	virtual ProductPtr do_create() const = 0;
 };
 
@@ -147,6 +147,12 @@ typename P::ProductPtr TFactoryPluginHandler<P>::produce(char const *params)cons
 		return ProductPtr(); 
 }
 
+template <typename P, typename D, typename T>
+bool TFactory<P,D,T>::do_test() const
+{
+	cvfail() << "do_test() is obsolete\n"; 
+	return false; 
+}
 
 NS_MIA_END
 #endif

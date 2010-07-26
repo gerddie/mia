@@ -21,16 +21,21 @@
  */
 
 
-#include <mia/2d/imagefullcost.hh>
+#include <mia/2d/fullcost/image.hh>
 #include <mia/2d/transformmock.hh>
 #include <mia/2d/2dimageio.hh>
 
 #include <mia/internal/autotest.hh>
 
 NS_MIA_USE
+namespace bfs=::boost::filesystem;
 
 BOOST_AUTO_TEST_CASE( test_imagefullcost ) 
 {
+	list< bfs::path> plugpath;
+	plugpath.push_back(bfs::path("../cost"));
+	C2DImageCostPluginHandler::set_search_path(plugpath);
+
 	// create two images 
 	const float src_data[16] = {
 		0, 0, 0, 0,

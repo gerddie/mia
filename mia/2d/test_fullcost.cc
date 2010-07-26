@@ -24,11 +24,14 @@
 
 
 #include <mia/2d/multicost.hh>
+#include <mia/2d/cost.hh>
+#include <mia/2d/fullcost.hh>
 #include <mia/2d/transformmock.hh>
 
 #include <mia/internal/autotest.hh>
 
 NS_MIA_USE
+namespace bfs=::boost::filesystem; 
 
 
 class C2DFullCostMock: public C2DFullCost {
@@ -86,4 +89,19 @@ BOOST_AUTO_TEST_CASE( test_multicost )
 	BOOST_CHECK_EQUAL(gradient[1], 2.8);
 }
 
+BOOST_AUTO_TEST_CASE( test_load_plugins ) 
+{
+	list< bfs::path> cost_kernel_plugpath;
+	cost_kernel_plugpath.push_back(bfs::path("cost"));
+	C2DImageCostPluginHandler::set_search_path(cost_kernel_plugpath);
+	
+	list< bfs::path> cost_plugpath;
+	cost_plugpath.push_back(bfs::path("fullcost"));
+	C2DFullCostPluginHandler::set_search_path(cost_plugpath);
+	
+	const C2DFullCostPluginHandler::Instance& handler = C2DFullCostPluginHandler::instance(); 
+	BOOST_CHECK_EQUAL(handler.size(), 1); 
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "image ");
+}
+	
 
