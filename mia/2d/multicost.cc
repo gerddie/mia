@@ -1,0 +1,57 @@
+/* -*- mia-c++  -*-
+ *
+ * Copyright (c) Madrid 2010
+ *
+ * BIT, ETSI Telecomunicacion, UPM
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+#include <boost/lambda/lambda.hpp>
+#include <mia/2d/multicost.hh>
+
+NS_MIA_BEGIN
+using boost::lambda::_1; 
+using boost::lambda::_2; 
+
+
+C2DFullCostList::C2DFullCostList():
+	C2DFullCost(1.0)
+{
+}
+
+void C2DFullCostList::push(P2DFullCost cost)
+{
+	_M_costs.push_back(cost); 
+}
+
+double C2DFullCostList::do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const
+{
+	double  result = 0; 
+	gsl::DoubleVector tmp(gradient.size()); 
+	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i) {
+		result += (*i)->evaluate(t, tmp); 
+		transform(gradient.begin(), gradient.end(), tmp.begin(), gradient.begin(), _1 + _2); 
+	}
+	return result; 
+}
+
+void C2DFullCostList::do_set_size(){
+	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i) 
+		(*i)->set_size(get_current_size()); 
+}
+
+NS_MIA_END
