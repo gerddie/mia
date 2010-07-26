@@ -30,22 +30,21 @@
 
 NS_MIA_BEGIN
 
-struct EXPORT_2D fullcost_data2d_type {
-	static const char *type_descr;
-};
-
 
 /**
    Base class for a general cost function. 
  */
 
-class EXPORT_2D C2DFullCostBase {
+class EXPORT_2D C2DFullCost : public CProductBase {
 public: 
+	static const char *type_descr;
+	static const char *value;
+	
 	/**
 	   Initialize the cost function with a weight 
 	   \param weight 
 	 */
-	C2DFullCostBase(double weight);
+	C2DFullCost(double weight);
 
 
 	/**
@@ -73,6 +72,10 @@ private:
 	C2DBounds _M_current_size; 
 
 }; 
+typedef SHARED_PTR(C2DFullCost) P2DFullCost;
+
+typedef TFactory<C2DFullCost, C2DFullCost, C2DFullCost> C2DFullCostPlugin;
+typedef THandlerSingleton<TFactoryPluginHandler<C2DFullCostPlugin> > C2DFullCostPluginHandler;
 
 NS_MIA_END
 

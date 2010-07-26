@@ -23,22 +23,25 @@
  */
 
 #include <boost/lambda/lambda.hpp>
+#include <mia/core/export_handler.hh>
 #include <mia/2d/fullcost.hh>
 
+#include <mia/core/handler.cxx>
+#include <mia/core/plugin_base.cxx>
 
 NS_MIA_BEGIN
 using boost::lambda::_1; 
 
+const char *C2DFullCost::type_descr = "2d";
+const char *C2DFullCost::value = "fullcost";
 
-const char *fullcost_data2d_type::type_descr = "fullcost";
-
-C2DFullCostBase::C2DFullCostBase(double weight):
+C2DFullCost::C2DFullCost(double weight):
 	_M_weight(weight), 
 	_M_current_size(0,0)
 {
 }
 
-double C2DFullCostBase::evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const
+double C2DFullCost::evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const
 {
 	assert(_M_current_size == t.get_size()); 
 	
@@ -47,21 +50,28 @@ double C2DFullCostBase::evaluate(const C2DTransformation& t, gsl::DoubleVector& 
 	return result; 
 }
 
-double C2DFullCostBase::get_weight() const
+double C2DFullCost::get_weight() const
 {
 	return _M_weight; 
 }
 
-const C2DBounds& C2DFullCostBase::get_current_size() const
+const C2DBounds& C2DFullCost::get_current_size() const
 {
 	return _M_current_size; 
 }
 
-void C2DFullCostBase::set_size(const C2DBounds& size)
+void C2DFullCost::set_size(const C2DBounds& size)
 {
 	if (_M_current_size != size) {
 		_M_current_size = size; 
 		do_set_size(); 
 	}
 }
+
+template class EXPORT_HANDLER TPlugin<C2DFullCost, C2DFullCost>;
+template class EXPORT_HANDLER TFactory<C2DFullCost, C2DFullCost, C2DFullCost>;
+template class EXPORT_HANDLER TFactoryPluginHandler<C2DFullCostPlugin>;
+template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C2DFullCostPlugin> >;
+template class TPluginHandler<C2DFullCostPlugin>;
+
 NS_MIA_END

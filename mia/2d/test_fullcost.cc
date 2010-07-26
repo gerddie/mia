@@ -31,7 +31,7 @@
 NS_MIA_USE
 
 
-class C2DFullCostMock: public C2DFullCostBase {
+class C2DFullCostMock: public C2DFullCost {
 public: 
 	C2DFullCostMock(double weight); 
 private:
@@ -40,7 +40,7 @@ private:
 }; 
 
 C2DFullCostMock::C2DFullCostMock(double weight):
-	C2DFullCostBase(weight)
+	C2DFullCost(weight)
 {
 }
 
