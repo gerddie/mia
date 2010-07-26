@@ -32,6 +32,7 @@ public:
 	template <typename Field>
 	double multiply(const Field& coefficients) const; 
 	C2DBounds _M_size; 
+	double evaluate(const T2DDatafield<C2DDVector>& coefficients, gsl::DoubleVector& gradient) const; 
 private: 
 
 	size_t _M_nodes; 
@@ -65,6 +66,10 @@ double C2DPPDivcurlMatrix::operator * (const C2DFVectorfield& coefficients) cons
 double C2DPPDivcurlMatrix::operator * (const T2DDatafield<C2DDVector>& coefficients) const
 {
 	return impl->multiply(coefficients); 
+}
+double C2DPPDivcurlMatrix::evaluate(const T2DDatafield<C2DDVector>& coefficients, gsl::DoubleVector& gradient) const
+{
+	return impl->evaluate(coefficients, gradient); 
 }
 
 
@@ -127,12 +132,9 @@ double CIntegralCache::get(int s1, int s2, int deg1, int deg2, int range) const
 	
 	int index = skip * 2*_M_row_length + delta + _M_row_length;
 	auto pv = _M_values.find(index);
-	if (pv != _M_values.end()) {
-		cvmsg() << "cached: ("<< index << ") "<< pv->second <<" from " << s1 << " " << s2  << " " << range << "\n"; 
+	if (pv != _M_values.end())
 		return pv->second; 
-	}
 	double result = _M_values[index] = integrate2(_M_kernel, s1, s2, deg1, deg2, 1, 0,  range); 
-	cvmsg() << "evaluate: ("<< index << ") "<<result<<" from " << s1 << " " << s2  <<  " " << range << "\n"; 
 	return result; 
 }
 
@@ -212,6 +214,32 @@ double C2DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 		auto ci = coefficients[p->i]; 
 		auto cj = coefficients[p->j]; 
 		
+		result_1 += ci.x * cj.x * p->v11; 
+		result_2 += ci.x * cj.y * p->v12; 
+		result_3 += ci.y * cj.y * p->v22; 
+	}
+
+	return result_1 + result_2 + result_3; 
+}
+
+double C2DPPDivcurlMatrixImpl::evaluate(const T2DDatafield<C2DDVector>& coefficients, 
+					gsl::DoubleVector& gradient) const
+{
+	assert(coefficients.size() == _M_nodes); 
+	assert(gradient.size() == coefficients.size() * 2); 
+
+	double result_1 = 0.0; 
+	double result_2 = 0.0; 
+	double result_3 = 0.0; 
+	for (auto p = _M_P.begin(); p != _M_P.end();++p) {
+		auto ci = coefficients[p->i]; 
+		auto cj = coefficients[p->j]; 
+
+		gradient[2*p->i    ] +=                 2 * cj.x * p->v11 + cj.y * p->v12; 
+		gradient[2*p->i + 1] += cj.x * p->v12 + 2 * cj.y * p->v22; 
+
+		
+
 		result_1 += ci.x * cj.x * p->v11; 
 		result_2 += ci.x * cj.y * p->v12; 
 		result_3 += ci.y * cj.y * p->v22; 

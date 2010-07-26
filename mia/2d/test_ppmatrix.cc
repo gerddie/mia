@@ -149,6 +149,38 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_8_8, TransformSplineFixt
 
 }
 
+BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_grad, TransformSplineFixtureexpm2Field_44 )
+{
+	init(32, 2, ip_bspline4);
+
+	const T2DConvoluteInterpolator<C2DFVector>& interp = 
+		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+	
+	auto coeffs = interp.get_coefficients(); 
+	const double testvalue = 4.0 * M_PI;
+
+	C2DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
+
+
+	gsl::DoubleVector gradient(field.size() * 2, true); 
+	float spline = (div.evaluate(coeffs, gradient)); 
+	
+
+	BOOST_CHECK_CLOSE(spline, testvalue,  1);
+
+	auto ig = gradient.begin(); 
+	for(size_t y = 0; y < field.get_size().y; ++y) 
+		for(size_t x = 0; x < field.get_size().x; ++x, ig += 2) {
+			C2DFVector test_grad = div_derivative_at(scale.x * (x - 32.0), scale.y * (y - 32.0)); 
+			cvmsg() << "grad " << scale.x * (x - 32.0) << " " << scale.y * (y - 32.0) 
+				<< " " << test_grad.x << " " << test_grad.y 
+				<< " " << ig[0] << " " << ig[1] << 
+				"\n"; 
+			BOOST_CHECK_CLOSE(ig[0], test_grad.x, 1);
+			BOOST_CHECK_CLOSE(ig[1], test_grad.y, 1);
+		}
+}
+
 
 BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline4, TransformSplineFixtureexpm2Field_44 )
 {
@@ -161,24 +193,6 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline4_8_4, TransformSplineFixt
 	run(8, 4, ip_bspline4, 1.0);
 
 }
-
-
-/*
-BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_corr, TransformSplineFixtureexpm2Field_44 )
-{
-	run(16, 8, ip_bspline3, 1.0);
-	run(16, 4, ip_bspline3, 1.0);
-	run(16, 2, ip_bspline3, 1.0);
-}
-
-
-BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline4_corr, TransformSplineFixtureexpm2Field_44 )
-{
-	run(16, 8, ip_bspline4,  1.0); 
-	run(16, 4, ip_bspline4,  1.0);
-	run(16, 2, ip_bspline4,  1.0);
-}
-*/
 
 BOOST_FIXTURE_TEST_CASE( test_divergence_zero_x, TransformSplineFixtureConst )
 {
@@ -198,22 +212,6 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_zero_x, TransformSplineFixtureConst )
 	BOOST_CHECK_EQUAL(field.get_size(), div.get_size()); 
 }
 
-/*
-BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_4, TransformSplineFixtureexpm2Field_44 )
-{
-	run(16, 2.0, ip_bspline4);
-	run( 8, 2.0, ip_bspline4);
-	run( 4, 2.0, ip_bspline4);
-
-}
-
-BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline5, TransformSplineFixtureexpm2Field_44 )
-{
-	run(16, 2.0, ip_bspline5);
-	run( 8, 2.0, ip_bspline5);
-	run( 4, 2.0, ip_bspline5);
-}
-*/
 
 
 float TransformSplineFixtureexpm2Field::fx(float x, float y)
@@ -312,13 +310,23 @@ double TransformSplineFixtureexpm2Field::div_value_at(float x, float y)
 
 C2DFVector TransformSplineFixtureexpm2Field::div_derivative_at(float x, float y)
 {
-	assert(0 && "implementation is wrong"); 
-	double v = div_value_at(x,y);
-
-	return 2 * v * C2DFVector(
-		dfx_xxx(x,y) + dfx_xxy(x,y)  + dfx_xxy(x,y) + dfx_xyy(x,y),
-		dfy_xxy(x,y) + dfy_xyy(x,y)  + dfy_xyy(x,y) + dfy_yyy(x,y));
-
+	double fy_yyy = dfy_yyy(x,y); 
+	double fy_xyy = dfy_xyy(x,y); 
+	double fx_xyy = dfx_xyy(x,y); 
+	double fx_xxy = dfx_xxy(x,y); 
+	double fy_xxy = dfy_xxy(x,y);
+	double fx_xxx = dfx_xxx(x,y); 
+	double fy_yy =  dfy_yy(x,y); 
+	double fx_xx =  dfx_xx(x,y); 
+	double fx_xy =  dfx_xy(x,y); 
+	double fy_xy =  dfy_xy(x,y); 
+	
+	return C2DFVector(
+		2* (( fy_xyy + fx_xxy ) * ( fy_yy + fx_xy) + 
+		    ( fy_xy + fx_xx) * (fy_xxy + fx_xxx)), 
+		2* (( fy_yy + fx_xy) * (fy_yyy + fx_xyy) + 
+		    ( fy_xy + fx_xx) * (fy_xyy + fx_xxy))
+		); 
 }
 
 
