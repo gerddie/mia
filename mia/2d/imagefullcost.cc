@@ -50,9 +50,7 @@ double C2DImageFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVect
 	C2DFVectorfield force(get_current_size()); 
  	_M_cost_kernel->evaluate_force(*temp, *_M_ref, 1.0, force); 
 	t.translate(force, gradient); 
-	double result = _M_cost_kernel->value(*temp, *_M_ref); 
-	cvdebug() << "C2DImageFullCost::do_evaluate: " << result << "\n"; 
-	return result; 
+	return _M_cost_kernel->value(*temp, *_M_ref); 
 	
 }
 
@@ -74,6 +72,7 @@ void C2DImageFullCost::do_set_size()
 		_M_src = scaler->filter(*_M_src); 
 		_M_ref = scaler->filter(*_M_ref); 
 	}
+	_M_cost_kernel->prepare_reference(*_M_ref); 
 }
 
 P2DImage C2DImageFullCost::get_from_pool(const C2DImageDataKey& key)
@@ -85,5 +84,6 @@ P2DImage C2DImageFullCost::get_from_pool(const C2DImageDataKey& key)
 
 	return (*in_image_list)[0];
 }
+
 
 NS_MIA_END

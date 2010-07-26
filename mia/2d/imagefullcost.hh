@@ -31,13 +31,13 @@
 NS_MIA_BEGIN
 
 class EXPORT_2D C2DImageFullCost : public C2DFullCost {
- public: 
+public: 
 	C2DImageFullCost(const std::string& src, 
 			 const std::string& ref, 
 			 const std::string& cost, 
 			 EInterpolation ip_type, 
 			 double weight); 
- private: 
+private: 
 	double do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const;
 	void do_set_size(); 
 

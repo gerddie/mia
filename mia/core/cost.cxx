@@ -43,4 +43,10 @@ void TCost<T,V>::evaluate_force(const T& a, const T& b, float scale, V& force) c
 	do_evaluate_force(a, b, scale, force); 
 }
 
+template <typename T, typename V>
+void TCost<T,V>::prepare_reference(const T& ref)
+{
+	
+}
+
 NS_MIA_END

@@ -74,6 +74,7 @@ public:
 	 */
 	void evaluate_force(const T& a, const T& b, float scale, V& force) const;
 
+	virtual void prepare_reference(const T& ref); 
 private:
 	virtual double do_value(const T& a, const T& b) const = 0;
 	virtual void do_evaluate_force(const T& a, const T& b, float scale, V& force) const = 0;

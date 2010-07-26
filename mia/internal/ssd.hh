@@ -91,7 +91,6 @@ double CSSDCost<TCost>::do_value(const Data& a, const Data& b) const
 	return filter(essd, a, b); 
 }
 
-
 /**
    This is a force evaluation filter 
 */
