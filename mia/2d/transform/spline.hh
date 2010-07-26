@@ -25,6 +25,7 @@
 
 #include <mia/2d/interpolator.hh>
 #include <mia/2d/transform.hh>
+#include <mia/2d/ppmatrix.hh>
 
 NS_MIA_BEGIN
 
@@ -89,6 +90,8 @@ public:
 	virtual float pertuberate(C2DFVectorfield& v) const;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
 	virtual C2DFVector operator () (const C2DFVector& x) const;
+
+	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
 private:
 	C2DBounds _M_range;
 	C2DFVectorfield _M_coefficients;
@@ -97,6 +100,7 @@ private:
 	mutable C2DFVector _M_inv_scale;
 	mutable bool _M_interpolator_valid;
 	mutable SHARED_PTR(T2DInterpolator<C2DFVector>)  _M_interpolator;
+	mutable SHARED_PTR(C2DPPDivcurlMatrix) _M_divcurl_matrix; 
 
 };
 

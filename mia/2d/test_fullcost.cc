@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE( test_multicost )
 	costs.push(c1); 
 	costs.push(c2); 
 	
-		C2DTransformMock t(C2DBounds(2,1)); 
+	C2DTransformMock t(C2DBounds(2,1)); 
 	gsl::DoubleVector gradient(t.degrees_of_freedom()); 
 	costs.set_size(t.get_size()); 
 	

@@ -469,6 +469,21 @@ const C2DFVector *C2DSplineTransformation::const_iterator::operator ->() const
 	return &_M_value;
 }
 
+double C2DSplineTransformation::get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const
+{
+	reinit(); 
+	
+	// create PP matrices or adapt size 
+	if (!_M_divcurl_matrix || 
+	    _M_divcurl_matrix->get_size() != _M_coefficients.get_size()) 
+		_M_divcurl_matrix.reset(new C2DPPDivcurlMatrix(_M_coefficients.get_size(), 
+							       _M_range, *_M_ipf->get_kernel(), 
+							       wd, wr)); 
+	return 0.0; 
+//	return _M_divcurl_matrix->evaluate(_M_coefficients, gradient); 
+	
+}
+
 class C2DSplineTransformCreator: public C2DTransformCreator {
 public:
 	C2DSplineTransformCreator(EInterpolation ip, const C2DFVector& rates);

@@ -31,8 +31,9 @@ public:
 
 	template <typename Field>
 	double multiply(const Field& coefficients) const; 
-private: 
 	C2DBounds _M_size; 
+private: 
+
 	size_t _M_nodes; 
 	struct SMatrixCell {
 		double v11; 
@@ -217,6 +218,11 @@ double C2DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 	}
 
 	return result_1 + result_2 + result_3; 
+}
+
+const C2DBounds& C2DPPDivcurlMatrix::get_size() const
+{
+	return impl->_M_size; 
 }
 
 NS_MIA_END

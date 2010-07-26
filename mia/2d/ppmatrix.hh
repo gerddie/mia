@@ -58,6 +58,11 @@ public:
 	 */
 	double operator * (const C2DFVectorfield& coefficients) const; 
 	double operator * (const T2DDatafield<C2DDVector>& coefficients) const; 
+
+	/**
+	   \returns fild size this matrix was created for 
+	 */
+	const C2DBounds& get_size() const; 
 private: 
 	struct C2DPPDivcurlMatrixImpl *impl; 
 

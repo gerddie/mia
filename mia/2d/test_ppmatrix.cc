@@ -194,7 +194,8 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_zero_x, TransformSplineFixtureConst )
 	C2DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
 	float spline = div * coeffs;
 	BOOST_CHECK_CLOSE(spline + 1.0, testvalue + 1.0,  1);
-	
+
+	BOOST_CHECK_EQUAL(field.get_size(), div.get_size()); 
 }
 
 /*
