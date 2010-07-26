@@ -46,7 +46,7 @@ namespace bfs = ::boost::filesystem;
 int main( int argc, const char *argv[] )
 {
 
-	const char *b0poolkey = "b0.datapool";
+	const char *b0poolkey = "b0.@";
 	string in_filename;
 	string out_filename;
 	string out_type;

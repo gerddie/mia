@@ -34,14 +34,13 @@ TIOPluginHandler<I>::TIOPluginHandler(const std::list<bfs::path>& searchpath):
 	TPluginHandler<I>(searchpath), 
 	_M_pool_plugin(new CDatapoolPlugin())
 {
+	add_plugin(_M_pool_plugin); 
 	for (const_iterator i = this->begin(); i != this->end(); ++i) 
 		i->second->add_suffixes(_M_suffixmap);
 
 	_M_compress_sfx.insert(".Z"); 
 	_M_compress_sfx.insert(".gz"); 
 	_M_compress_sfx.insert(".bz2"); 
-
-	add_plugin(_M_pool_plugin); 
 }
 
 template <class I> 
@@ -200,7 +199,8 @@ template <class I>
 void TIOPluginHandler<I>::CDatapoolPlugin::do_add_suffixes(
         typename TIOPluginHandler<I>::CSuffixmap& map) const
 {
-	map.insert(pair<string,string>(".datapool", this->get_name())); 
+	cvdebug() << "Add pair" << "'.@' -> '" << this->get_name() << "'\n"; 
+	map.insert(pair<string,string>(".@", this->get_name())); 
 }
 
 template <class I> 
@@ -218,6 +218,7 @@ template <class I>
 bool TIOPluginHandler<I>::CDatapoolPlugin::do_save(const std::string& fname, 
 						   const typename Interface::Data& data) const
 {
+	// why do I need to clone this? Being a shared pointer should be sufficient
 	typename Interface::PData value = 
 		typename Interface::PData(data.clone()); 
 	CDatapool::Instance().add(fname, value);

@@ -157,7 +157,7 @@ void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
 				cvdebug() << "add plugin '" << p->get_name() << "'\n"; 
 				if (_M_plugins.find(p->get_name()) ==  _M_plugins.end()) {
 					p->set_module(*i);
-					_M_plugins[p->get_name()] = p;
+					add_plugin(p); 
 				} else {
 					cvwarn() << "Plugin with name '" << p->get_name() 
 						<< "' already loaded, ignoring new one.\n"; 
@@ -242,7 +242,8 @@ typename TPluginHandler<I>::Interface *TPluginHandler<I>::plugin(const char *plu
 	typename map<string, Interface*>::const_iterator p = _M_plugins.find(plugin); 
 	if (p == _M_plugins.end()) {
 		stringstream msg; 
-		msg << "Plugin '" << plugin << "' not found"; 
+		msg << "Plugin '" << plugin << "' in of '" 
+		    <<  I::PlugData::type_descr << "/" <<  I::PlugType::value << "' not found"; 
 		throw invalid_argument(msg.str()); 
 	}
 	return p->second; 

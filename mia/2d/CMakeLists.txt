@@ -13,6 +13,7 @@ SET(MIA2D_SRC_BASE
   distances.cc
   divcurlmatrix.cc
   imagecostbase.cc
+  imagefullcost.cc
   interpolator.cc 
   fatcost.cc
   fullcost.cc
@@ -96,6 +97,7 @@ SET(MIA2D_HEADERS_BASE
   ground_truth_evaluator.hh
   groundtruthproblem.hh
   imagecostbase.hh
+  imagefullcost.hh
   interpolator.hh
   matrix.hh
   model.hh
@@ -167,30 +169,36 @@ MACRO(TEST_2DMIA file)
   ADD_TEST(2d-${file} test-2d-${file})
 ENDMACRO(TEST_2DMIA file)
 
-TEST_2DMIA(2dparam)
-TEST_2DMIA(2dvector)
-TEST_2DMIA(vectorfield_interpolator)
 TEST_2DMIA(2ddatafield)
 TEST_2DMIA(2dimage)
-TEST_2DMIA(interpol)
-TEST_2DMIA(matrix)
-TEST_2DMIA(transformfactory)
-TEST_2DMIA(nonrigidregister)
-TEST_2DMIA(nfg)
-TEST_2DMIA(modelsolverreg)
-TEST_2DMIA(polygon)
-TEST_2DMIA(boundingbox)
-TEST_2DMIA(distances)
-TEST_2DMIA(oldnewintegrate)
-TEST_2DMIA(rigidregister)
-TEST_2DMIA(perfusion)
-TEST_2DMIA(fullcost)
-TEST_2DMIA(costbase)
-TEST_2DMIA(imagecostbase)
-TEST_2DMIA(correlation_weight)
-TEST_2DMIA(groundtruthproblem)
+TEST_2DMIA(2dparam)
+TEST_2DMIA(2dvector)
 
+TEST_2DMIA(boundingbox)
+
+TEST_2DMIA(correlation_weight)
+TEST_2DMIA(costbase)
+TEST_2DMIA(distances)
+
+TEST_2DMIA(fullcost)
+TEST_2DMIA(groundtruthproblem)
+TEST_2DMIA(imagecostbase)
+TEST_2DMIA(imagefullcost)
+TEST_2DMIA(interpol)
+
+
+TEST_2DMIA(matrix)
+TEST_2DMIA(modelsolverreg)
+TEST_2DMIA(nfg)
+TEST_2DMIA(nonrigidregister)
+
+TEST_2DMIA(oldnewintegrate)
+TEST_2DMIA(perfusion)
+TEST_2DMIA(polygon)
 TEST_2DMIA(ppmatrix)
+TEST_2DMIA(rigidregister)
+TEST_2DMIA(transformfactory)
+TEST_2DMIA(vectorfield_interpolator)
 
 IF(ITPP_FOUND)
   TEST_2DMIA(ica)

@@ -67,7 +67,7 @@ void C2DTransformMock::update(float, const C2DFVectorfield&)
 
 size_t C2DTransformMock::degrees_of_freedom() const
 {
-	return m_size.x * m_size.y;
+	return 2 * m_size.x * m_size.y;
 }
 
 void C2DTransformMock::set_identity()
@@ -81,6 +81,10 @@ C2DFMatrix C2DTransformMock::derivative_at(int, int) const
 
 void C2DTransformMock::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
+	for(auto f = gradient.begin(), r = params.begin(); f != gradient.end(); ++f) {
+		*r++ = f->x;
+		*r++ = f->y;
+	}
 }
 
 float C2DTransformMock::get_max_transform() const
@@ -93,12 +97,13 @@ const C2DBounds& C2DTransformMock::get_size() const
 	return m_size;
 }
 
-
 gsl::DoubleVector  C2DTransformMock::get_parameters() const
 {
-	gsl::DoubleVector result(2);
-	result[0] = -1.2;
-	result[1] = -2.3;
+	gsl::DoubleVector result(degrees_of_freedom());
+	if (degrees_of_freedom() > 2) 
+		result[1] = -2.3;
+	if (degrees_of_freedom() > 1) 
+		result[0] = -1.2;
 	return result;
 }
 
