@@ -39,7 +39,7 @@ struct EXPORT_2D fullcost_data2d_type {
    Base class for a general cost function. 
  */
 
-class C2DFullCostBase {
+class EXPORT_2D C2DFullCostBase {
 public: 
 	/**
 	   Initialize the cost function with a weight 
@@ -56,12 +56,21 @@ public:
 	   \returns weighted cost value 
 	 */
 	double evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const;
+	
+	/**
+	   Set the size of the cost function 
+	 */
+	void set_size(const C2DBounds& size); 
 protected: 
 	/** \returns cost function weight  */
 	double get_weight() const; 
+	const C2DBounds& get_current_size() const; 
 private:
 	virtual double do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const = 0;
+	virtual void do_set_size() = 0; 
+	
 	double _M_weight;
+	C2DBounds _M_current_size; 
 
 }; 
 

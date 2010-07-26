@@ -36,7 +36,7 @@ public:
 	C2DFullCostMock(double weight); 
 private:
 	double do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const;
-	
+	void do_set_size(); 
 }; 
 
 C2DFullCostMock::C2DFullCostMock(double weight):
@@ -50,12 +50,16 @@ double C2DFullCostMock::do_evaluate(const C2DTransformation& t, gsl::DoubleVecto
 	return 10.0; 
 }
 
+void C2DFullCostMock::do_set_size()
+{
+}
 
 BOOST_AUTO_TEST_CASE( test_fullcost ) 
 {
 	C2DFullCostMock c(0.5); 
 	C2DTransformMock t(C2DBounds(2,1)); 
 	gsl::DoubleVector gradient(t.degrees_of_freedom()); 
+	c.set_size(t.get_size()); 
 	
 	BOOST_CHECK_EQUAL(c.evaluate(t,gradient), 5.0);
 

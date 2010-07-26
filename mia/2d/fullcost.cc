@@ -33,13 +33,15 @@ using boost::lambda::_1;
 const char *fullcost_data2d_type::type_descr = "fullcost";
 
 C2DFullCostBase::C2DFullCostBase(double weight):
-	_M_weight(weight)
+	_M_weight(weight), 
+	_M_current_size(0,0)
 {
 }
 
-
 double C2DFullCostBase::evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const
 {
+	assert(_M_current_size == t.get_size()); 
+	
 	double result = _M_weight * do_evaluate(t, gradient); 
 	transform(gradient.begin(), gradient.end(), gradient.begin(), _M_weight * _1); 
 	return result; 
@@ -50,4 +52,16 @@ double C2DFullCostBase::get_weight() const
 	return _M_weight; 
 }
 
+const C2DBounds& C2DFullCostBase::get_current_size() const
+{
+	return _M_current_size; 
+}
+
+void C2DFullCostBase::set_size(const C2DBounds& size)
+{
+	if (_M_current_size != size) {
+		_M_current_size = size; 
+		do_set_size(); 
+	}
+}
 NS_MIA_END
