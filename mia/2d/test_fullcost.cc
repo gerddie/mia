@@ -23,7 +23,7 @@
  */
 
 
-#include <mia/2d/fullcost.hh>
+#include <mia/2d/multicost.hh>
 #include <mia/2d/transformmock.hh>
 
 #include <mia/internal/autotest.hh>
@@ -66,3 +66,24 @@ BOOST_AUTO_TEST_CASE( test_fullcost )
 	BOOST_CHECK_EQUAL(gradient[0], 2.0);
 	BOOST_CHECK_EQUAL(gradient[1], 2.0);
 }
+
+BOOST_AUTO_TEST_CASE( test_multicost ) 
+{
+	P2DFullCost c1(new C2DFullCostMock(0.5)); 
+	P2DFullCost c2(new C2DFullCostMock(0.2)); 
+	
+	C2DFullCostList costs; 
+	costs.push(c1); 
+	costs.push(c2); 
+	
+		C2DTransformMock t(C2DBounds(2,1)); 
+	gsl::DoubleVector gradient(t.degrees_of_freedom()); 
+	costs.set_size(t.get_size()); 
+	
+	BOOST_CHECK_EQUAL(costs.evaluate(t,gradient), 7.0);
+
+	BOOST_CHECK_EQUAL(gradient[0], 2.8);
+	BOOST_CHECK_EQUAL(gradient[1], 2.8);
+}
+
+

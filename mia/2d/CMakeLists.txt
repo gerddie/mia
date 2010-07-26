@@ -21,6 +21,7 @@ SET(MIA2D_SRC_BASE
   filterchain.cc
   model.cc
   modelsolverreg.cc
+  multicost.cc
   nfg.cc
   nonrigidregister.cc 
   perfusion.cc
@@ -99,6 +100,7 @@ SET(MIA2D_HEADERS_BASE
   matrix.hh
   model.hh
   modelsolverreg.hh
+  multicost.hh
   nonrigidregister.hh
   nfg.hh
   perfusion.hh
