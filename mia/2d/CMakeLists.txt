@@ -15,6 +15,7 @@ SET(MIA2D_SRC_BASE
   imagecostbase.cc
   interpolator.cc 
   fatcost.cc
+  fullcost.cc
   ground_truth_evaluator.cc
   groundtruthproblem.cc
   filterchain.cc
@@ -88,6 +89,7 @@ SET(MIA2D_HEADERS_BASE
   distances.hh
   divcurlmatrix.cc
   fatcost.hh
+  fullcost.hh
   filterchain.hh
   fftkernel.hh
   ground_truth_evaluator.hh
@@ -180,7 +182,7 @@ TEST_2DMIA(distances)
 TEST_2DMIA(oldnewintegrate)
 TEST_2DMIA(rigidregister)
 TEST_2DMIA(perfusion)
-
+TEST_2DMIA(fullcost)
 TEST_2DMIA(costbase)
 TEST_2DMIA(imagecostbase)
 TEST_2DMIA(correlation_weight)
