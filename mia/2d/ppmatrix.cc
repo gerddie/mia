@@ -238,8 +238,6 @@ double C2DPPDivcurlMatrixImpl::evaluate(const T2DDatafield<C2DDVector>& coeffici
 		gradient[2*p->i    ] +=                 2 * cj.x * p->v11 + cj.y * p->v12; 
 		gradient[2*p->i + 1] += cj.x * p->v12 + 2 * cj.y * p->v22; 
 
-		
-
 		result_1 += ci.x * cj.x * p->v11; 
 		result_2 += ci.x * cj.y * p->v12; 
 		result_3 += ci.y * cj.y * p->v22; 

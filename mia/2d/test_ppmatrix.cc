@@ -151,7 +151,7 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_8_8, TransformSplineFixt
 
 BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_grad, TransformSplineFixtureexpm2Field_44 )
 {
-	init(32, 2, ip_bspline4);
+	init(8, 4, ip_bspline4);
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
 		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
@@ -166,18 +166,30 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_grad, TransformSplineFix
 	float spline = (div.evaluate(coeffs, gradient)); 
 	
 
-	BOOST_CHECK_CLOSE(spline, testvalue,  1);
-
 	auto ig = gradient.begin(); 
+	auto ic = coeffs.begin(); 
 	for(size_t y = 0; y < field.get_size().y; ++y) 
-		for(size_t x = 0; x < field.get_size().x; ++x, ig += 2) {
-			C2DFVector test_grad = div_derivative_at(scale.x * (x - 32.0), scale.y * (y - 32.0)); 
-			cvmsg() << "grad " << scale.x * (x - 32.0) << " " << scale.y * (y - 32.0) 
-				<< " " << test_grad.x << " " << test_grad.y 
-				<< " " << ig[0] << " " << ig[1] << 
-				"\n"; 
-			BOOST_CHECK_CLOSE(ig[0], test_grad.x, 1);
-			BOOST_CHECK_CLOSE(ig[1], test_grad.y, 1);
+		for(size_t x = 0; x < field.get_size().x; ++x, ig += 2, ++ic) {
+			ic->x += 0.001; 
+			double graddivp = div * coeffs; 
+			ic->x -= 0.002; 
+			double graddivm = div * coeffs; 
+			ic->x += 0.001; 
+			double test_grad = (graddivp - graddivm)/ 0.002; 
+			cvdebug() << x << " " << y << " (x)\n"; 
+			if (abs(test_grad) > 0.0001)
+				BOOST_CHECK_CLOSE(ig[0], test_grad, 2);
+			
+			ic->y += 0.001; 
+			graddivp = div * coeffs; 
+			ic->y -= 0.002; 
+			graddivm = div * coeffs; 
+			ic->y += 0.001; 
+			test_grad = (graddivp - graddivm)/ 0.002; 
+			cvdebug() << x << " " << y << " (y)\n"; 
+			
+			if (abs(test_grad) > 0.0001)
+				BOOST_CHECK_CLOSE(ig[1], test_grad, 2);
 		}
 }
 
