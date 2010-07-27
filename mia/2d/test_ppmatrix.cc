@@ -193,6 +193,50 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_grad, TransformSplineFix
 		}
 }
 
+BOOST_FIXTURE_TEST_CASE( test_rotation_expm2_bspline3_grad, TransformSplineFixtureexpm2Field_44 )
+{
+	init(8, 4, ip_bspline4);
+
+	const T2DConvoluteInterpolator<C2DFVector>& interp = 
+		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+	
+	auto coeffs = interp.get_coefficients(); 
+	const double testvalue = 4.0 * M_PI;
+
+	C2DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
+
+
+	gsl::DoubleVector gradient(field.size() * 2, true); 
+	float spline = (rot.evaluate(coeffs, gradient)); 
+	
+
+	auto ig = gradient.begin(); 
+	auto ic = coeffs.begin(); 
+	for(size_t y = 0; y < field.get_size().y; ++y) 
+		for(size_t x = 0; x < field.get_size().x; ++x, ig += 2, ++ic) {
+			ic->x += 0.001; 
+			double graddivp = rot * coeffs; 
+			ic->x -= 0.002; 
+			double graddivm = rot * coeffs; 
+			ic->x += 0.001; 
+			double test_grad = (graddivp - graddivm)/ 0.002; 
+			cvdebug() << x << " " << y << " (x)\n"; 
+			if (abs(test_grad) > 0.0001)
+				BOOST_CHECK_CLOSE(ig[0], test_grad, 2);
+			
+			ic->y += 0.001; 
+			graddivp = rot * coeffs; 
+			ic->y -= 0.002; 
+			graddivm = rot * coeffs; 
+			ic->y += 0.001; 
+			test_grad = (graddivp - graddivm)/ 0.002; 
+			cvdebug() << x << " " << y << " (y)\n"; 
+			
+			if (abs(test_grad) > 0.0001)
+				BOOST_CHECK_CLOSE(ig[1], test_grad, 2);
+		}
+}
+
 
 BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline4, TransformSplineFixtureexpm2Field_44 )
 {
