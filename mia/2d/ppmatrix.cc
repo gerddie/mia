@@ -173,6 +173,9 @@ void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& rang
 	CIntegralCache rc22(kernel); 
 	CIntegralCache rc21(kernel); 
 	CIntegralCache rc01(kernel); 
+	CIntegralCache rc12(kernel); 
+	CIntegralCache rc10(kernel); 
+
 	CIntegralCache rc00(kernel); 
 	CIntegralCache rc11(kernel); 
 
@@ -181,8 +184,9 @@ void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& rang
 		for (int k = 0; k < nx; ++k, ++i) {
 			for (int n = max(0,l - kernel_range); n < min(l + kernel_range, ny); ++n) {
 				for (int m = max(0,k - kernel_range); m < min(k + kernel_range,nx); ++m) {
-					double r01x =  rc01.get( k, m, 0, 1,size.x); 
-					double r01y =  rc01.get( l, n, 0, 1,size.y); 
+					
+					double r01x = h.x *  rc01.get( k, m, 0, 1,size.x); 
+					double r01y = h.y *  rc01.get( l, n, 0, 1,size.y); 
 					
 					double r22x = h.x * rc22.get(k, m, 2, 2, size.x); 
 					double r22y = h.y * rc22.get(l, n, 2, 2, size.y); 
@@ -235,6 +239,7 @@ double C2DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 		result_2 += ci.x * cj.y * p->v12; 
 		result_3 += ci.y * cj.y * p->v22; 
 	}
+	cvmsg() << result_1 << " " << result_2 << " " << result_3 << "\n"; 
 
 	return result_1 + result_2 + result_3; 
 }

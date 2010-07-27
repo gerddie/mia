@@ -127,34 +127,6 @@ struct TransformSplineFixtureDivOnly: public TransformSplineFixtureFieldBase {
 	float fy(float x, float y);
 };
 
-float TransformSplineFixtureDivOnly::fx(float x, float y)
-{
-	return x * exp(-x*x-y*y);
-}
-
-float TransformSplineFixtureDivOnly::fy(float x, float y)
-{
-	return y * exp(-x*x-y*y);
-}
-
-BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3, TransformSplineFixtureDivOnly ) 
-{
-	init(8, 4, ip_bspline3);
-
-	const T2DConvoluteInterpolator<C2DFVector>& interp = 
-		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
-	
-	auto coeffs = interp.get_coefficients(); 
-
-	C2DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
-	
-	BOOST_CHECK_CLOSE( div * coeffs, 6 * M_PI, 0.1); 
-
-	C2DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
-	BOOST_CHECK_CLOSE( 1 + rot * coeffs, 1, 0.1); 
-
-}
-
 struct TransformSplineFixtureexpm2Field_44: public TransformSplineFixtureexpm2Field {
 	void run(int dsize, float range, EInterpolation type, double corr=1.0); 
 }; 
@@ -163,6 +135,23 @@ struct TransformSplineFixtureexpm2testInterp : public TransformSplineFixtureexpm
 	void run(int dsize, float range, EInterpolation type); 
 }; 
 
+
+BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3, TransformSplineFixtureDivOnly )
+{
+	init(16, 4, ip_bspline4);
+
+	const T2DConvoluteInterpolator<C2DFVector>& interp = 
+		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+	
+	auto coeffs = interp.get_coefficients(); 
+	const double testvalue = 6.0 * M_PI;
+
+	C2DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
+	BOOST_CHECK_CLOSE( div  * coeffs, testvalue, 0.1); 	
+	
+	C2DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
+	BOOST_CHECK_CLOSE( 1.0 + rot * coeffs, 1.0, 0.1); 	
+}
 
 // test whether the interpolation is "good enough" 
 BOOST_FIXTURE_TEST_CASE( test_interpolation_16_2_bspline3, TransformSplineFixtureexpm2testInterp ) 
@@ -301,6 +290,16 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_zero_x, TransformSplineFixtureConst )
 	BOOST_CHECK_EQUAL(field.get_size(), div.get_size()); 
 }
 
+
+float TransformSplineFixtureDivOnly::fx(float x, float y)
+{
+	return x * exp(-x*x-y*y);
+}
+
+float TransformSplineFixtureDivOnly::fy(float x, float y)
+{
+	return y * exp(-x*x-y*y);
+}
 
 
 float TransformSplineFixtureexpm2Field::fx(float x, float y)
