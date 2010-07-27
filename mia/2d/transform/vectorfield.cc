@@ -306,57 +306,34 @@ C2DFDatafield C2DGridTransformation::divergence_field() const
 	return result;
 }
 
-#if 0
-float C2DGridTransformation::divergence() const
-{
-	float result = 0.0f;
-	auto iv = _M_field.begin() + _M_field.get_size().x + 1;
-	const int dx =  _M_field.get_size().x;
-	for(size_t y = 1; y < _M_field.get_size().y - 1; ++y, iv += 2)
-		for(size_t x = 1; x < _M_field.get_size().x - 1; ++x, ++iv) {
-			const float dxx = iv[1].x - iv[-1].x;
-			const float dyy = iv[dx].y - iv[-dx].y;
-			result += dxx * dxx + dyy * dyy;
-		}
-	return 0.25 * result / ( (_M_field.get_size().y - 2) * (_M_field.get_size().x - 2));
-}
 
-float C2DGridTransformation::curl() const
-{
-	float result = 0.0f;
-	C2DFVectorfield::const_iterator iv = _M_field.begin() + _M_field.get_size().x + 1;
-	const int dx =  _M_field.get_size().x;
-	for(size_t y = 1; y < _M_field.get_size().y - 1; ++y, iv += 2)
-		for(size_t x = 1; x < _M_field.get_size().x - 1; ++x, ++iv) {
-			const float dxy = iv[1].y - iv[-1].y;
-			const float dyx = iv[dx].x - iv[-dx].x;
-			const float delta = dxy - dyx;
-			result += delta * delta;
-		}
-	return 0.25 * result / ( (_M_field.get_size().y - 2) * (_M_field.get_size().x - 2));
-}
-#endif
+
+
 
 float C2DGridTransformation::grad_divergence(double weight, gsl::DoubleVector& gradient) const
 {
-	const auto div = divergence_field();
 	const int dx =  _M_field.get_size().x;
-	auto iv = div.begin() + dx + 1;
+	auto iv = _M_field.begin() + dx + 1; 
 	auto ig = gradient.begin() + dx + 1; 
-	double result = 0.0f;
-
+	
+	double result = 0.0;
 	
 	for(size_t y = 1; y < _M_field.get_size().y - 1; ++y, iv += 2, ig += 4 )
 		for(size_t x = 1; x < _M_field.get_size().x - 1; ++x, ++iv, ig += 2) {
-			const double gdx = iv[1] - iv[-1];
-			const double gdy = iv[dx] - iv[-dx];
-
+			const double dfx_xx = iv[ 1].x + iv[- 1].x - 2 * iv[0].x;
+			const double dfy_yy = iv[dx].y + iv[-dx].y - 2 * iv[0].y;
+			const double dfy_xy = iv[dx].y + iv[-1].y -  iv[0].y - iv[dx-1].y;
+			const double dfx_xy = iv[1].x - iv[0].x - iv[1-dx].x + iv[-dx].x; 
+			
+			const double gdx = dfx_xx + dfy_xy;
+			const double gdy = dfy_yy + dfx_xy;
+			
 			result += gdx * gdx + gdy * gdy;
 
 			ig[0] += 2 * weight * gdx; 
 			ig[1] += 2 * weight * gdy; 
 		}
-	return 0.25 * weight * result / ( (_M_field.get_size().y - 2) * (_M_field.get_size().x - 2));
+	return weight * result;
 }
 
 
@@ -400,7 +377,7 @@ double C2DGridTransformation::get_divcurl_cost(double wd, double wr, gsl::Double
 	if (wd > 0) 
 		result += grad_divergence(wd, gradient); 
 	if (wr > 0) 
-		result += grad_divergence(wr, gradient); 
+		result += grad_curl(wr, gradient); 
 	return result; 
 }
 
