@@ -202,6 +202,13 @@ C2DPPDivcurlMatrixImpl::C2DPPDivcurlMatrixImpl(const C2DBounds& size, const C2DF
 	}
 }						
 
+void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& range, const CBSplineKernel& kernel, 
+				   double wd, double wr)
+{
+	if ( ( _M_size == size) && (wd == _M_wd) && (wr == _M_wr) && _M_range != range) && 
+		
+}
+
 template <typename Field>
 double C2DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 {

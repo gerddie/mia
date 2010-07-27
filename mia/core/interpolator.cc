@@ -52,15 +52,21 @@ struct bspline<0,0> {
 	}
 };
 
-CBSplineKernel::CBSplineKernel(size_t degree, double shift):
+CBSplineKernel::CBSplineKernel(size_t degree, double shift, EInterpolation type):
 	_M_half_degree(degree >> 1),
 	_M_shift(shift),
-	_M_support_size(degree + 1)
+	_M_support_size(degree + 1), 
+	_M_type(type)
 {
 }
 
 CBSplineKernel::~CBSplineKernel()
 {
+}
+
+EInterpolation CBSplineKernel::get_type() const
+{
+	return _M_type; 
 }
 
 void CBSplineKernel::operator () (double x, std::vector<double>& weight, std::vector<int>& index)const
@@ -140,7 +146,7 @@ double CBSplineKernel::get_mult_int(int s1, int s2, int range, EIntegralType typ
 }
 
 CBSplineKernel2::CBSplineKernel2():
-	CBSplineKernel(2, 0.5)
+	CBSplineKernel(2, 0.5, ip_bspline2)
 {
 	add_pole(sqrt(8.0) - 3.0);
 }
@@ -213,7 +219,7 @@ void CBSplineKernel2::get_derivative_weights(double x, std::vector<double>& weig
 }
 
 CBSplineKernel3::CBSplineKernel3():
-	CBSplineKernel(3, 0.0)
+	CBSplineKernel(3, 0.0, ip_bspline3)
 {
 	add_pole(sqrt(3.0) - 2.0);
 }
@@ -403,7 +409,7 @@ double CBSplineKernel3::get_weight_at(double x, int degree) const
 
 
 CBSplineKernelOMoms3::CBSplineKernelOMoms3():
-	CBSplineKernel(3, 0.0)
+	CBSplineKernel(3, 0.0, ip_omoms3)
 {
 	add_pole((sqrt(105.0) - 13.0)/8.0);
 }
@@ -566,7 +572,7 @@ double CBSplineKernel4::get_weight_at(double x, int degree) const
 }
 
 CBSplineKernel4::CBSplineKernel4():
-	CBSplineKernel(4, 0.5)
+	CBSplineKernel(4, 0.5, ip_bspline4)
 {
 	add_pole(sqrt(664.0 - sqrt(438976.0)) + sqrt(304.0) - 19.0);
 	add_pole(sqrt(664.0 + sqrt(438976.0)) - sqrt(304.0) - 19.0);
@@ -692,7 +698,7 @@ double CBSplineKernel4::get_mult_int(int s1, int s2, int range, EIntegralType ty
 
 
 CBSplineKernel5::CBSplineKernel5():
-	CBSplineKernel(5, 0.0)
+	CBSplineKernel(5, 0.0, ip_bspline5)
 {
 	add_pole((sqrt(270.0 - sqrt(70980.0)) + sqrt(105.0)- 13.0) / 2.0);
 	add_pole((sqrt(270.0 + sqrt(70980.0)) - sqrt(105.0)- 13.0) / 2.0);

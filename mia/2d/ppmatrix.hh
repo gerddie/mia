@@ -66,6 +66,12 @@ public:
 	   \returns fild size this matrix was created for 
 	 */
 	const C2DBounds& get_size() const; 
+
+	/**
+	   re-initialize the matrix (if the values are changed)
+	 */
+	void reset(const C2DBounds& size, const C2DFVector& range, const CBSplineKernel& kernel, 
+		   double wd, double wr); 
 private: 
 	struct C2DPPDivcurlMatrixImpl *impl; 
 

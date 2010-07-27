@@ -48,7 +48,7 @@ public:
 	   \param degree of the spline
 	   \param shift location shift of the input coordinate to obtain the proper support
 	 */
-	CBSplineKernel(size_t degree, double shift);
+	CBSplineKernel(size_t degree, double shift, EInterpolation type);
 
 	/**
 	   The virtual destructor is just here to avoid some warning
@@ -75,6 +75,8 @@ public:
 	virtual void get_derivative_weights(double x, std::vector<double>& weight, int degree) const = 0;
 
 	virtual double get_weight_at(double x, int degree) const;
+
+	EInterpolation get_type() const; 
 
 
 	/**
@@ -123,10 +125,10 @@ private:
 	double _M_shift;
 	std::vector<double> _M_poles;
 	size_t _M_support_size;
-
+	EInterpolation _M_type; 
 };
 
-typedef SHARED_PTR(CBSplineKernel) PSplineKernel;
+typedef std::shared_ptr<CBSplineKernel> PSplineKernel;
 
 enum ci_type {ci_bspline, ci_omoms};
 
