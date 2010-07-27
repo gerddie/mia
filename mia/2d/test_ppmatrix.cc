@@ -122,6 +122,39 @@ struct TransformSplineFixtureexpm2Field: public TransformSplineFixtureFieldBase 
 	C2DFVector div_derivative_at(float x, float y);
 };
 
+struct TransformSplineFixtureDivOnly: public TransformSplineFixtureFieldBase {
+	float fx(float x, float y);
+	float fy(float x, float y);
+};
+
+float TransformSplineFixtureDivOnly::fx(float x, float y)
+{
+	return x * exp(-x*x-y*y);
+}
+
+float TransformSplineFixtureDivOnly::fy(float x, float y)
+{
+	return y * exp(-x*x-y*y);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3, TransformSplineFixtureDivOnly ) 
+{
+	init(8, 4, ip_bspline3);
+
+	const T2DConvoluteInterpolator<C2DFVector>& interp = 
+		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+	
+	auto coeffs = interp.get_coefficients(); 
+
+	C2DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
+	
+	BOOST_CHECK_CLOSE( div * coeffs, 6 * M_PI, 0.1); 
+
+	C2DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
+	BOOST_CHECK_CLOSE( 1 + rot * coeffs, 1, 0.1); 
+
+}
+
 struct TransformSplineFixtureexpm2Field_44: public TransformSplineFixtureexpm2Field {
 	void run(int dsize, float range, EInterpolation type, double corr=1.0); 
 }; 
