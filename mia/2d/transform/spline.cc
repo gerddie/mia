@@ -474,14 +474,18 @@ double C2DSplineTransformation::get_divcurl_cost(double wd, double wr, gsl::Doub
 	reinit(); 
 	
 	// create PP matrices or adapt size 
-	if (!_M_divcurl_matrix || 
-	    _M_divcurl_matrix->get_size() != _M_coefficients.get_size()) 
-		_M_divcurl_matrix.reset(new C2DPPDivcurlMatrix(_M_coefficients.get_size(), 
-							       _M_range, *_M_ipf->get_kernel(), 
-							       wd, wr)); 
-	return 0.0; 
-//	return _M_divcurl_matrix->evaluate(_M_coefficients, gradient); 
+	if (!_M_divcurl_matrix) 
+		_M_divcurl_matrix.reset(new C2DPPDivcurlMatrix(_M_coefficients.get_size(), _M_range, 
+							       *_M_ipf->get_kernel(), wd, wr)); 
+	else 
+		_M_divcurl_matrix->reset(_M_coefficients.get_size(), _M_range, 
+					 *_M_ipf->get_kernel(), wd, wr); 
 	
+	// this will throw ifthe interpolator is not of the right type
+	const T2DConvoluteInterpolator<C2DFVector>& interp = 
+		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*_M_interpolator); 
+	
+	return _M_divcurl_matrix->evaluate(interp.get_coefficients(), gradient); 
 }
 
 class C2DSplineTransformCreator: public C2DTransformCreator {
@@ -502,8 +506,6 @@ C2DSplineTransformCreator::C2DSplineTransformCreator(EInterpolation ip, const C2
 
 P2DTransformation C2DSplineTransformCreator::do_create(const C2DBounds& size) const
 {
-
-
 	return P2DTransformation(new C2DSplineTransformation(size, _M_ipf, _M_rates));
 }
 

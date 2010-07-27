@@ -31,11 +31,17 @@ public:
 
 	template <typename Field>
 	double multiply(const Field& coefficients) const; 
-	C2DBounds _M_size; 
 	double evaluate(const T2DDatafield<C2DDVector>& coefficients, gsl::DoubleVector& gradient) const; 
+	void reset(const C2DBounds& size, const C2DFVector& range, const CBSplineKernel& kernel, 
+		   double wd, double wr); 
+	C2DBounds _M_size; 
 private: 
-
+	double _M_wd; 
+	double _M_wr; 
+	EInterpolation _M_type; 
+	C2DFVector _M_range; 
 	size_t _M_nodes; 
+	
 	struct SMatrixCell {
 		double v11; 
 		double v12; 
@@ -141,14 +147,25 @@ double CIntegralCache::get(int s1, int s2, int deg1, int deg2, int range) const
 
 C2DPPDivcurlMatrixImpl::C2DPPDivcurlMatrixImpl(const C2DBounds& size, const C2DFVector& range, 
 					       const CBSplineKernel& kernel,
-					       double wd, double wr):
-	_M_size(size),
-	_M_nodes(size.x*size.y)
+					       double wd, double wr)
 {
+	reset(size, range, kernel,  wd,  wr); 
+}						
+
+void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& range, const CBSplineKernel& kernel, 
+				   double wd, double wr)
+{
+	if (  _M_size == size && wd == _M_wd && wr == _M_wr && _M_range == range && kernel.get_type()  == _M_type)
+		return; 
+	_M_size = size;
+	_M_wd = wd; 
+	_M_wr = wr; 
+	_M_range = range; 
+	_M_type = kernel.get_type(); 
+	_M_nodes = size.x*size.y; 
+	_M_P.clear(); 
+
 	C2DFVector h((size.x-1)/range.x,(size.y-1)/range.y);
-	cvinfo() << "size=" << size 
-		 << " range=" << range
-		 << " h=" << h << "\n"; 
 	int ny = _M_size.y; 
 	int nx = _M_size.x; 
 	int kernel_range = kernel.size()+1; 
@@ -182,16 +199,16 @@ C2DPPDivcurlMatrixImpl::C2DPPDivcurlMatrixImpl(const C2DBounds& size, const C2DF
 					
 					SMatrixCell cell; 
 					cell.v11 = 
-					wd * (r22x * r00y + r11x * r11y) + 
-					wr * (r11x * r11y + r00x * r22y); 
+						wd * (r22x * r00y + r11x * r11y) + 
+						wr * (r11x * r11y + r00x * r22y); 
 					
 					cell.v12 = 2 *  (
 						wd * ( r21x * r01y + r01x * r21y) -
 						wr * ( r01x * r21y + r21x * r01y )); 
 					
 					cell.v22 = 
-					wd * (r00x * r22y + r11x * r11y) + 
-					wr * (r22x * r00y + r11x * r11y);
+						wd * (r00x * r22y + r11x * r11y) + 
+						wr * (r22x * r00y + r11x * r11y);
 					cell.i = i; 
 					cell.j = m + n * nx;  
 					if (cell.v11 != 0.0 || cell.v12 != 0.0 ||cell.v22 != 0.0) 
@@ -200,13 +217,6 @@ C2DPPDivcurlMatrixImpl::C2DPPDivcurlMatrixImpl(const C2DBounds& size, const C2DF
 			}
 		}
 	}
-}						
-
-void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& range, const CBSplineKernel& kernel, 
-				   double wd, double wr)
-{
-	if ( ( _M_size == size) && (wd == _M_wd) && (wr == _M_wr) && _M_range != range) && 
-		
 }
 
 template <typename Field>
@@ -257,5 +267,12 @@ const C2DBounds& C2DPPDivcurlMatrix::get_size() const
 {
 	return impl->_M_size; 
 }
+
+void C2DPPDivcurlMatrix::reset(const C2DBounds& size, const C2DFVector& range, const CBSplineKernel& kernel, 
+			       double wd, double wr)
+{
+	impl->reset(size, range, kernel, wd, wr); 
+}
+
 
 NS_MIA_END

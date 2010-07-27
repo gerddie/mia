@@ -103,14 +103,12 @@ public:
 	virtual float pertuberate(C2DFVectorfield& v) const;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
 	C2DFVector operator ()(const  C2DFVector& x) const;
-	virtual float divergence() const;
-	virtual float curl() const;
-
-	virtual float grad_divergence() const;
-	virtual float grad_curl() const;
- private:
-	C2DFVectorfield divergence_field() const;
-	C2DFVectorfield curl_field() const;
+	double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
+private:
+	C2DFDatafield divergence_field() const;
+	C2DFDatafield curl_field() const;
+	float grad_divergence(double weight, gsl::DoubleVector& gradient) const; 
+	double grad_curl(double weight, gsl::DoubleVector& gradient) const; 
 	virtual C2DFMatrix field_derivative_at(int x, int y) const;
 	C2DFVectorfield _M_field;
 };
