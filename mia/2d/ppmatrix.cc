@@ -57,29 +57,34 @@ C2DPPDivcurlMatrix::C2DPPDivcurlMatrix(const C2DBounds& size, const C2DFVector& 
 				       const CBSplineKernel& kernel, double wd, double wr):
 	impl(new C2DPPDivcurlMatrixImpl(size, range, kernel, wd, wr))
 {
+	TRACE_FUNCTION; 
 }
 	
 C2DPPDivcurlMatrix::~C2DPPDivcurlMatrix()
 {
+	TRACE_FUNCTION; 
 	delete impl; 
 }
 
 double C2DPPDivcurlMatrix::operator * (const C2DFVectorfield& coefficients) const
 {
+	TRACE_FUNCTION; 
 	return impl->multiply(coefficients); 
 }
 
 double C2DPPDivcurlMatrix::operator * (const T2DDatafield<C2DDVector>& coefficients) const
 {
+	TRACE_FUNCTION; 
 	return impl->multiply(coefficients); 
 }
 double C2DPPDivcurlMatrix::evaluate(const T2DDatafield<C2DDVector>& coefficients, gsl::DoubleVector& gradient) const
 {
+	TRACE_FUNCTION; 
 	return impl->evaluate(coefficients, gradient); 
 }
 
 
-/** helper class to evaluate value sonly once, should be re-done */
+/**\todo helper class to evaluate values only once, should be re-done and moved to the spline kernel */
 class CIntegralCache {
 public: 
 	CIntegralCache(const CBSplineKernel& kernel); 
@@ -239,8 +244,6 @@ double C2DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 		result_2 += ci.x * cj.y * p->v12; 
 		result_3 += ci.y * cj.y * p->v22; 
 	}
-	cvmsg() << result_1 << " " << result_2 << " " << result_3 << "\n"; 
-
 	return result_1 + result_2 + result_3; 
 }
 
@@ -270,12 +273,14 @@ double C2DPPDivcurlMatrixImpl::evaluate(const T2DDatafield<C2DDVector>& coeffici
 
 const C2DBounds& C2DPPDivcurlMatrix::get_size() const
 {
+	TRACE_FUNCTION; 
 	return impl->_M_size; 
 }
 
 void C2DPPDivcurlMatrix::reset(const C2DBounds& size, const C2DFVector& range, const CBSplineKernel& kernel, 
 			       double wd, double wr)
 {
+	TRACE_FUNCTION; 
 	impl->reset(size, range, kernel, wd, wr); 
 }
 

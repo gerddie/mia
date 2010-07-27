@@ -272,29 +272,6 @@ BOOST_AUTO_TEST_CASE( test_grid_divcurl )
 
 }
 
-/*
-BOOST_AUTO_TEST_CASE( test_grid_divcurl2 )
-{
-	C2DBounds size(65, 65); 
-	float scale = 8.0 / 32.0; 
-	float corr = 65.0/64.0 * 65.0/64.0;  
-
-	C2DGridTransformation field(size); 
-	
-	auto i = field.field_begin(); 
-	for (size_t y = 0; y < size.y; ++y) 
-		for (size_t x = 0; x < size.x; ++x, ++i) {
-			float fx = scale * (x-32); 
-			float fy = scale * (y-32); 
-			i->y = i->x = exp(-fx * fx - fy * fy); 
-		}
-	
-	gsl::DoubleVector gradient(field.degrees_of_freedom()); 
-	double divcost =  field.get_divcurl_cost(1.0, 0, gradient); 
-	BOOST_CHECK_CLOSE(corr *divcost, 4 * M_PI, 0.1); 
-}
-*/
-
 float GridTransformFixture::fx(float x, float y)
 {
 

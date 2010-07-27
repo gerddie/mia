@@ -104,6 +104,7 @@ public:
 	virtual float curl() const;
 	float grad_divergence() const;
 	float grad_curl() const;
+	double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
 private:
 	void evaluate_matrix() const;
 	C2DRigidTransformation(const C2DRigidTransformation& other);

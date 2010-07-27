@@ -187,6 +187,10 @@ float C2DRigidTransformation::curl() const
 	return _M_rotation;
 }
 
+double C2DRigidTransformation::get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const
+{
+	return 0.0; 
+}
 
 const C2DBounds& C2DRigidTransformation::get_size() const
 {

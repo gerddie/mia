@@ -182,6 +182,11 @@ void C2DAffineTransformation::set_parameters(const gsl::DoubleVector& params)
 
 }
 
+double C2DAffineTransformation::get_divcurl_cost(double, double, gsl::DoubleVector&) const
+{
+	return 0.0; 
+}
+
 float C2DAffineTransformation::divergence() const
 {
 	return _M_t[0] + _M_t[1] + _M_t[3] + _M_t[4] - 2.0f;
@@ -203,7 +208,6 @@ float C2DAffineTransformation::curl() const
 {
 	return _M_t[1] + _M_t[4] - _M_t[0] - _M_t[3];
 }
-
 
 const C2DBounds& C2DAffineTransformation::get_size() const
 {

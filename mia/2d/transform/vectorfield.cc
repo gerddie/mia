@@ -19,6 +19,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
 #include <limits>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/transform/vectorfield.hh>
@@ -422,6 +423,9 @@ EXPORT_2D C2DGridTransformation operator + (const C2DGridTransformation& a, cons
 	return result;
 }
 
+/**
+   Transformation creator 
+ */
 class C2DGridTransformCreator: public C2DTransformCreator {
 	virtual P2DTransformation do_create(const C2DBounds& size) const;
 };
@@ -431,6 +435,11 @@ P2DTransformation C2DGridTransformCreator::do_create(const C2DBounds& size) cons
 	return P2DTransformation(new C2DGridTransformation(size));
 }
 
+
+
+/**
+   Plugin class to create the creater.  
+ */
 class C2DGridTransformCreatorPlugin: public C2DTransformCreatorPlugin {
 public:
 	typedef C2DTransformCreatorPlugin::ProductPtr ProductPtr;
