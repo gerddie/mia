@@ -266,18 +266,39 @@ BOOST_AUTO_TEST_CASE( test_grid_div )
 			i->y = fy * help; 
 		}
 	
-	gsl::DoubleVector gradient(field.degrees_of_freedom()); 
-	double divcost =  field.get_divcurl_cost(1.0, 0, gradient); 
-	BOOST_CHECK_CLOSE(corr * corr * divcost, 6 * M_PI, 0.2); 
 
-	double divcurlcost =  field.get_divcurl_cost(1.0, 1.0, gradient); 
+	gsl::DoubleVector gradient(field.degrees_of_freedom(), true); 
+	double divcurlcost =  field.get_divcurl_cost(1.0, 0.0, gradient); 
 	BOOST_CHECK_CLOSE(corr * corr * divcurlcost, 6 * M_PI, 0.2); 
+	
+	#if 1
+	BOOST_FAIL("gradient implementation needs testing"); 
+	#else
+	auto ig = gradient.begin() + size.x + 1; 
+	for (int y = 1; y < (int)size.y-1; ++y, ig += 4) 
+		for (int x = 1; x < (int)size.x-1; ++x, ig+=2) {
+			float fx = scale * (x-dsize); 
+			float fy = scale * (y-dsize); 
+			float x2y2 = fx * fx + fy * fy; 
+			float help = -scale * 32 * (x2y2-2) * exp(-x2y2) * (2 * x2y2 * x2y2 - 7 * x2y2 + 2); 
+			float dx = fx * help; 
+			float dy = fy * help; 
+			cvdebug() << fx << " " << fy << ":" << help << "\n"; 
+			if (abs(dx) > 0.01 || abs(ig[0]) > 0.01) 
+				BOOST_CHECK_CLOSE(ig[0], dx, 0.1); 
+			if (abs(dy) > 0.01 || abs(ig[1]) > 0.01) 
+				BOOST_CHECK_CLOSE(ig[1], dy, 0.1); 
+		}
 
+	#endif
 	double curlcost =  field.get_divcurl_cost(0.0, 1.0, gradient); 
 	BOOST_CHECK_CLOSE(1.0 + corr * corr * curlcost, 1.0, 1); 
 
-	// gradient needs testing too!!!
 
+	double divcost =  field.get_divcurl_cost(1.0, 1.0, gradient); 
+	BOOST_CHECK_CLOSE(corr * corr * divcost, 6 * M_PI, 0.2); 
+
+	
 }
 
 ///\todo gradient of grid-divcurl needs testing too
