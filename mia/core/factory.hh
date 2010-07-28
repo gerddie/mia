@@ -62,7 +62,7 @@ public:
 	    \params options the options to initialise the plugin 
 	    \returns an instance of the requested object
 	*/
-	virtual ProductPtr create(const CParsedOptions& options);
+	virtual ProductPtr create(const CParsedOptions& options, char const *params);
 	
 private:
 	virtual bool do_test() const; 
@@ -85,7 +85,7 @@ public:
 	template <>				\
 	class FactoryTrait< F::Instance::ProductPtr >  {	\
 	public:					\
-	typedef F::Instance type;		\
+	typedef F type;		\
 	}; 
 
 template <typename  P>
@@ -118,13 +118,15 @@ TFactory<P,D,T>::TFactory(char const * const  name):
 }
 
 template <typename P, typename D, typename T>
-typename TFactory<P,D,T>::ProductPtr TFactory<P,D,T>::create(const CParsedOptions& options)
+typename TFactory<P,D,T>::ProductPtr TFactory<P,D,T>::create(const CParsedOptions& options, char const *params)
 {
 	this->set_parameters(options);
 	this->check_parameters();
 	ProductPtr product = this->do_create();
-	if (product) 
+	if (product) {
 		product->set_module(this->get_module()); 
+		product->set_init_string(params); 
+	}
 	return product; 
 }
 
@@ -138,7 +140,6 @@ TFactoryPluginHandler<P>::TFactoryPluginHandler(const std::list<boost::filesyste
 template <typename  P>
 typename P::ProductPtr TFactoryPluginHandler<P>::produce(char const *params)const
 {
-	typedef typename P::ProductPtr ProductPtr; 
 	CComplexOptionParser param_list(params);
 		
 	if (param_list.size() < 1) 
@@ -157,8 +158,8 @@ typename P::ProductPtr TFactoryPluginHandler<P>::produce(char const *params)cons
 	cvdebug() << "TFactoryPluginHandler<>::produce: Create plugin from '" << factory_name << "'\n"; 
 
 	P *factory = this->plugin(factory_name.c_str());
-	if (factory)
-		return factory->create(param_list.begin()->second);
+	if (factory) 
+		return factory->create(param_list.begin()->second,params);
 	else 
 		return ProductPtr(); 
 }

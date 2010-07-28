@@ -34,5 +34,16 @@ void CProductBase::set_module(PPluginModule module)
 	_M_module = module;
 }
 
+void CProductBase::set_init_string(const char *init)
+{
+	_M_init_string = init; 
+}
+
+const char *CProductBase::get_init_string() const
+{
+	return _M_init_string.c_str(); 
+}
+
+
 NS_MIA_END
 

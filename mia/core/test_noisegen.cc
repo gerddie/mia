@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE( test_plugins )
 
 BOOST_AUTO_TEST_CASE( test_factory_trait ) 
 {
-	FactoryTrait<CNoiseGeneratorPluginHandler::ProductPtr>::type help = 
+	FactoryTrait<CNoiseGeneratorPluginHandler::ProductPtr>::type::Instance help = 
 		CNoiseGeneratorPluginHandler::instance();
 	BOOST_CHECK(!help.empty()); 
 }

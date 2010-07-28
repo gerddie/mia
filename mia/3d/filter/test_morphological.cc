@@ -135,7 +135,7 @@ BOOST_FIXTURE_TEST_CASE( test_dilate, DilateTestFixture)
 
 	for (C3DShapePluginHandler::Instance::const_iterator shb = sh.begin();
 	     shb != sh.end(); ++shb) {
-		P3DShape shape = shb->second->create(options);
+		P3DShape shape = shb->second->create(options, "");
 
 		cvdebug() << "created shape " << shb->first << "\n";
 
@@ -251,7 +251,7 @@ BOOST_FIXTURE_TEST_CASE( test_erode, ErodeTestFixture)
 
 	for (C3DShapePluginHandler::Instance::const_iterator shb = sh.begin();
 	     shb != sh.end(); ++shb) {
-		P3DShape shape = shb->second->create(options);
+		P3DShape shape = shb->second->create(options, "");
 
 		cvdebug() << "created shape " << shb->first << "\n";
 

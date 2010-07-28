@@ -31,9 +31,12 @@ NS_MIA_BEGIN
 class EXPORT_CORE CProductBase: public CPropertyFlagHolder {
 public:
 	~CProductBase();
+	void set_init_string(const char *init); 
+	const char *get_init_string() const; 
 	void set_module(PPluginModule module);
 private:
 	PPluginModule _M_module;
+	std::string _M_init_string; 
 };
 NS_MIA_END
 
