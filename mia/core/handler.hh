@@ -87,6 +87,7 @@ public:
 	
 	/// \returns the behind-end  iterator to the plug-ins
 	const_iterator end()const; 
+
 protected: 
 	//! \name Constructors
         //@{
@@ -106,6 +107,7 @@ protected:
 	typename TPluginHandler<I>::Interface *plugin(const char *plugin) const;
 
 	void add_plugin(Interface *plugin); 
+
 
 private: 
 	void global_searchpath(list< ::boost::filesystem::path>& searchpath); 

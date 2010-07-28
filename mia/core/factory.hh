@@ -83,10 +83,12 @@ public:
 
 #define FACTORY_TRAIT(F)			\
 	template <>				\
-	class FactoryTrait< F::Instance::ProductPtr >  {	\
+	class FactoryTrait< F::Instance::ProductPtr::element_type >  {	\
 	public:					\
 	typedef F type;		\
 	}; 
+
+
 
 template <typename  P>
 class EXPORT_HANDLER TFactoryPluginHandler: public  TPluginHandler< P > {
@@ -96,11 +98,12 @@ protected:
         /*! \brief Initializes the plugin handler based on a given plugin search path list 
 	  \param searchpath list of directories to search for plugins 
 	*/
-	typedef typename P::ProductPtr ProductPtr; 
+
 	
 	TFactoryPluginHandler(const std::list<boost::filesystem::path>& searchpath); 
         //@}
 public: 	
+	typedef typename P::ProductPtr ProductPtr; 
 	typename P::ProductPtr produce(const char *plugindescr) const;
 
 	typename P::ProductPtr produce(const std::string& params)const {
@@ -140,6 +143,7 @@ TFactoryPluginHandler<P>::TFactoryPluginHandler(const std::list<boost::filesyste
 template <typename  P>
 typename P::ProductPtr TFactoryPluginHandler<P>::produce(char const *params)const
 {
+	assert(params); 
 	CComplexOptionParser param_list(params);
 		
 	if (param_list.size() < 1) 
