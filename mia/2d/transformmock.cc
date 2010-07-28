@@ -153,7 +153,9 @@ float C2DTransformMock::curl() const
 
 double C2DTransformMock::get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const
 {
-	return 0.0; 
+	gradient[0] = wd; 
+	gradient[1] = wr; 
+	return wd + wr; 
 }
 
 

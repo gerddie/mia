@@ -20,6 +20,9 @@
  *
  */
 
+#ifndef mia_2d_transformmock_hh
+#define mia_2d_transformmock_hh
+
 #include <mia/2d/transform.hh>
 
 NS_MIA_BEGIN
@@ -56,3 +59,5 @@ private:
 };
 
 NS_MIA_END
+
+#endif

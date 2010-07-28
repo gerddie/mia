@@ -31,10 +31,13 @@ NS_MIA_BEGIN
 
 class EXPORT_2D C2DDivCurlFullCost : public C2DFullCost {
 public: 
-	C2DDivCurlFullCost(double weight); 
+	C2DDivCurlFullCost(double weight_div, double weight_curl, double weight); 
 private: 
 	double do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const;
 	void do_set_size(); 
+
+	double _M_weight_div; 
+	double _M_weight_curl; 
 }; 
 
 NS_MIA_END
