@@ -1,6 +1,7 @@
-/* -*- mia-c++  -*-
+/* -*- mona-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2010
+ *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -21,184 +22,202 @@
  *
  */
 
-#define VSTREAM_DOMAIN "NONRIGID-REG"
+#define VSTREAM_DOMAIN "rigidreg"
 
-#include <boost/lambda/lambda.hpp>
 #include <mia/2d/nonrigidregister.hh>
+#include <mia/2d/2dfilter.hh>
+#include <mia/2d/2dimageio.hh>
+#include <mia/2d/transformfactory.hh>
+#include <gsl++/multimin.hh>
+
+
+
 NS_MIA_BEGIN
 
-using namespace boost::lambda;
+using namespace gsl;
+using namespace std;
 
-struct C2DMultiImageNonrigidRegisterImpl {
-	C2DMultiImageNonrigidRegisterImpl(size_t start_size,
-					  size_t max_iter,
-					  P2DRegModel model,
-					  P2DRegTimeStep time_step,
-					  P2DTransformationFactory trans_factory,
-					  float outer_epsilon);
-	P2DTransformation run(C2DImageFatCostList& cost);
+struct C2DNonrigidRegisterImpl {
+
+	C2DNonrigidRegisterImpl(C2DFullCostList& costs, EMinimizers minimizer,
+			     const string& transform_type,
+			     const C2DInterpolatorFactory& ipf);
+
+	P2DTransformation run(P2DImage src, P2DImage ref,  size_t mg_levels) const;
 private:
-	void register_level(C2DImageFatCostList& cost, C2DTransformation& result);
-	size_t _M_start_size;
-	size_t _M_max_iter;
-	P2DRegModel _M_model;
-	P2DRegTimeStep _M_time_step;
-	P2DTransformationFactory _M_trans_factory;
-	float _M_outer_epsilon;
+
+	void apply(C2DTransformation& transf, const gsl_multimin_fdfminimizer_type *optimizer)const ;
+
+
+	void apply(C2DTransformation& transf, const gsl_multimin_fminimizer_type *optimizer)const ;
+
+
+	C2DFullCostList& _M_costs;
+	EMinimizers _M_minimizer;
+	C2DInterpolatorFactory _M_ipf;
+	string _M_transform_type;
 };
 
-C2DMultiImageNonrigidRegister::C2DMultiImageNonrigidRegister(size_t start_size, size_t max_iter,
-						     P2DRegModel model,
-						     P2DRegTimeStep time_step,
-						     P2DTransformationFactory trans_factory,
-						     float outer_epsilon):
-	impl(new C2DMultiImageNonrigidRegisterImpl(start_size, max_iter,
-						   model,
-						   time_step,
-						   trans_factory,
-						   outer_epsilon))
+class C2DNonrigRegGradientProblem: public gsl::CFDFMinimizer::Problem {
+public:
+	C2DNonrigRegGradientProblem(const C2DFullCostList& costs, C2DTransformation& transf,
+			      const C2DInterpolatorFactory& _M_ipf);
+private:
+	double  do_f(const DoubleVector& x);
+	void    do_df(const DoubleVector& x, DoubleVector&  g);
+	double  do_fdf(const DoubleVector& x, DoubleVector&  g);
+
+	P2DImage apply(const DoubleVector& x);
+	const C2DFullCostList& _M_costs; 
+	C2DTransformation& _M_transf;
+	const C2DInterpolatorFactory& _M_ipf;
+};
+typedef shared_ptr<C2DNonrigRegGradientProblem> P2DGradientNonrigregProblem;
+
+C2DNonrigidRegister::C2DNonrigidRegister(C2DFullCostList& costs, EMinimizers minimizer,
+				   const string& transform_type,
+				   const C2DInterpolatorFactory& ipf):
+	impl(new C2DNonrigidRegisterImpl( costs, minimizer, transform_type, ipf))
 {
 }
 
-C2DMultiImageNonrigidRegister::~C2DMultiImageNonrigidRegister()
+
+C2DNonrigidRegister::~C2DNonrigidRegister()
 {
 	delete impl;
 }
 
-P2DTransformation C2DMultiImageNonrigidRegister::operator () (C2DImageFatCostList& cost)
+P2DTransformation C2DNonrigidRegister::run(P2DImage src, P2DImage ref,  size_t mg_levels) const
 {
-	return impl->run(cost);
+	return impl->run(src, ref, mg_levels);
 }
 
-
-C2DMultiImageNonrigidRegisterImpl::C2DMultiImageNonrigidRegisterImpl(size_t start_size,
-								     size_t max_iter,
-								     P2DRegModel model,
-								     P2DRegTimeStep time_step,
-								     P2DTransformationFactory trans_factory,
-								     float outer_epsilon):
-	_M_start_size(start_size),
-	_M_max_iter(max_iter),
-	_M_model(model),
-	_M_time_step(time_step),
-	_M_trans_factory(trans_factory),
-	_M_outer_epsilon(outer_epsilon)
+C2DNonrigidRegisterImpl::C2DNonrigidRegisterImpl(C2DFullCostList& costs, EMinimizers minimizer,
+					   const string& transform_type, const C2DInterpolatorFactory& ipf):
+	_M_costs(costs),
+	_M_minimizer(minimizer),
+	_M_ipf(ipf),
+	_M_transform_type(transform_type)
 {
 }
 
-P2DTransformation C2DMultiImageNonrigidRegisterImpl::run(C2DImageFatCostList& cost)
+static bool minimizer_need_gradient(EMinimizers m)
 {
-	TRACE_FUNCTION;
+	switch (m) {
+	case min_undefined: throw invalid_argument("Try to use minimizer 'undefined'");
+	default: return true;
+	}
+}
 
-	// downscale to start size
-	size_t x_shift = log2(cost.get_size().x / _M_start_size) + 1;
-	size_t y_shift = log2(cost.get_size().y / _M_start_size) + 1;
+struct  UMinimzer{
+		const gsl_multimin_fminimizer_type *fmin;
+		const gsl_multimin_fdfminimizer_type *fdfmin;
+};
 
-	P2DTransformation result;
+UMinimzer gradminimizers[min_undefined] = {
+	{ NULL, gsl_multimin_fdfminimizer_conjugate_fr },
+	{ NULL, gsl_multimin_fdfminimizer_conjugate_pr },
+	{ NULL, gsl_multimin_fdfminimizer_vector_bfgs },
+	{ NULL, gsl_multimin_fdfminimizer_vector_bfgs2 },
+	{ NULL, gsl_multimin_fdfminimizer_steepest_descent }
+};
 
-	while (x_shift || y_shift) {
 
+void C2DNonrigidRegisterImpl::apply(C2DTransformation& transf, const gsl_multimin_fdfminimizer_type *optimizer)const
+{
+	if (!_M_costs.has(property_gradient))
+		throw invalid_argument("requested optimizer needs gradient, but cost functions doesn't prvide one");
+	P2DGradientNonrigregProblem gp(new C2DNonrigRegGradientProblem( _M_costs, transf, _M_ipf));
+	CFDFMinimizer minimizer(gp, optimizer );
+
+	auto x = transf.get_parameters();
+	minimizer.run(x);
+	transf.set_parameters(x);
+}
+
+
+
+P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref,  size_t mg_levels) const
+{
+	assert(src);
+	assert(ref);
+	assert(src->get_size() == ref->get_size());
+
+	if (!minimizer_need_gradient(_M_minimizer))
+		throw invalid_argument("Non-gradient based optimization not supported\n"); 
+
+	auto tr_creator = C2DTransformCreatorHandler::instance().produce(_M_transform_type);
+
+	P2DTransformation transform;
+
+	C2DBounds global_size = src->get_size();
+
+	int x_shift = mg_levels + 1;
+	int y_shift = mg_levels + 1;
+
+	while (x_shift && y_shift) {
 		if (x_shift)
-			--x_shift;
+			x_shift--;
+
 		if (y_shift)
-			--y_shift;
+			y_shift--;
 
-		C2DBounds block_size(1 << x_shift, 1 << y_shift);
-		C2DImageFatCostList scaled_cost = cost.get_downscaled(block_size);
+		C2DBounds BlockSize(1 << x_shift, 1 << y_shift);
+		cvinfo() << "Blocksize = " << BlockSize.x << "x"<< BlockSize.y << "\n";
 
-		if (!result)
-			result = _M_trans_factory->create(scaled_cost.get_size());
+		stringstream downscale_descr;
+		downscale_descr << "downscale:bx=" << BlockSize.x << ",by=" << BlockSize.y;
+		C2DFilterPlugin::ProductPtr downscaler =
+			C2DFilterPluginHandler::instance().produce(downscale_descr.str().c_str());
+
+		P2DImage src_scaled = x_shift && y_shift ? downscaler->filter(*src) : src;
+		P2DImage ref_scaled = x_shift && y_shift ? downscaler->filter(*ref) : ref;
+
+		if (transform)
+			transform = transform->upscale(src_scaled->get_size());
 		else
-			result = result->upscale(scaled_cost.get_size());
+			transform = tr_creator->create(src_scaled->get_size());
 
-		register_level(scaled_cost, *result);
+		cvmsg() << "register at " << src_scaled->get_size() << "\n";
 
-	} ;
+		save_image2d("src.@", src_scaled);
+		save_image2d("ref.@", ref_scaled);
+		_M_costs.set_size(src_scaled->get_size()); 
+		
+		apply(*transform, gradminimizers[_M_minimizer].fdfmin);
 
-	return result;
+		auto params = transform->get_parameters(); 
+	}
+	return transform;
 }
 
-void C2DMultiImageNonrigidRegisterImpl::register_level(C2DImageFatCostList& cost, C2DTransformation& result)
+C2DNonrigRegGradientProblem::C2DNonrigRegGradientProblem(const C2DFullCostList& costs, C2DTransformation& transf, 
+					     const C2DInterpolatorFactory& ipf):
+	gsl::CFDFMinimizer::Problem(transf.degrees_of_freedom()),
+	_M_costs(costs),
+	_M_transf(transf),
+	_M_ipf(ipf)
 {
-	TRACE_FUNCTION;
 
-	size_t iter = 0;
-	size_t inertia = 5;
-
-	const char lend = cverb.get_level() == vstream::ml_debug ? '\n' : '\r';
-	// transform image
-	cost.transform(result);
-
-	double initial_cost;
-	double best_cost;
-	double new_cost = best_cost = initial_cost = cost.value();
-
-	P2DTransformation local_shift = _M_trans_factory->create(cost.get_size());
-	P2DTransformation best_local_shift;
-
-	local_shift->set_identity();
-
-	float force_scale = _M_model->get_force_scale();
-
-
-	C2DFVectorfield gradient(cost.get_size());
-
-	cvmsg() << cost.get_size() << "@" << iter << "|cost:" << new_cost << lend;
-
-	do {
-		++iter;
-		float cost_value = new_cost;
-
-		cost.evaluate_force(gradient);
-		transform( gradient.begin(), gradient.end(), gradient.begin(), _1 * force_scale);
-
-		C2DFVectorfield force; assert(0 && "change this");// = result.translate(gradient);
-		C2DFVectorfield v(force.get_size());
-		_M_model->solve(force, v);
-
-		float  maxshift = _M_time_step->calculate_pertuberation(v, *local_shift);
-		float  delta = _M_time_step->get_delta(maxshift);
-
-		if (_M_time_step->regrid_requested(*local_shift, v, delta)) {
-			result.add(*local_shift);
-			local_shift->set_identity();
-			best_local_shift.reset();
-		}
-
-		local_shift->update(delta, v);
-
-		auto_ptr<C2DTransformation> result_copy(result.clone());
-		result_copy->add(*local_shift);
-
-		cost.transform(*result_copy);
-
-		new_cost = cost.value();
-
-		if (new_cost < cost_value) {
-			inertia = 5;
-			if (new_cost < cost_value * 0.9) {
-				_M_time_step->increase();
-			}
-			best_cost = new_cost;
-			best_local_shift.reset(local_shift->clone());
-		} else {
-			if (!_M_time_step->decrease())
-				--inertia;
-		}
-
-		cvmsg() << iter << "@" << cost.get_size()
-			<< ": best ratio=" << best_cost / initial_cost
-			<< ", absolute cost=" << new_cost << "                     "
-			<< lend;
-
-	} while ( ((inertia > 0) || (new_cost < best_cost)) &&
-		  new_cost / initial_cost > _M_outer_epsilon && iter < _M_max_iter);
-
-	if (best_local_shift)
-		local_shift = best_local_shift;
-	result.add(*local_shift);
 }
 
+double  C2DNonrigRegGradientProblem::do_f(const DoubleVector& x)
+{
+	cvwarn() << "C2DNonrigRegGradientProblem::do_f implemented by means of C2DNonrigRegGradientProblem::do_fdf\n"; 
+	DoubleVector  g(x.size()); 
+	return do_fdf(x, g);
+}
+
+void    C2DNonrigRegGradientProblem::do_df(const DoubleVector& x, DoubleVector&  g)
+{
+	_M_transf.set_parameters(x);
+	_M_costs.evaluate(_M_transf, g);
+}
+
+double  C2DNonrigRegGradientProblem::do_fdf(const DoubleVector& x, DoubleVector&  g)
+{
+	_M_transf.set_parameters(x);
+	return _M_costs.evaluate(_M_transf, g);
+}
 
 NS_MIA_END
-

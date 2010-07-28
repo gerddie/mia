@@ -1,6 +1,7 @@
-/* -*- mia-c++  -*-
+/* -*- mona-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2010
+ *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -21,63 +22,61 @@
  *
  */
 
+
 #ifndef mia_2d_nonrigidregister_hh
 #define mia_2d_nonrigidregister_hh
 
-#include <mia/2d/model.hh>
-#include <mia/2d/timestep.hh>
-#include <mia/2d/fatcost.hh>
-#include <mia/2d/transformfactory.hh>
+
+#include <mia/2d/multicost.hh>
+#include <mia/2d/transform.hh>
 
 NS_MIA_BEGIN
 
-
-/**
-   The 2D non-rigid image registration class. Its usage is very simple:
-   Initialise it with the desired parameters and call it with the
-   source (template) and reference image to obtain a vector field
-   describing the registration.
-*/
-class EXPORT_2D C2DMultiImageNonrigidRegister {
-public:
-	/**
-	   The constructor:
-	   \param start_size an approximate size for the lowest
-	        resolution in the multi-resolution registration
-	   \param max_iter maximum number of times steps to be
-                used at each multi-grid level
-	   \param model the registration model (e.g.- navier for
-                linear elasticity operator)
-	   \param time_step the time step model (e.g. fluid to let
-                the model operator work on the velocity field instead
-                of the deformation field)
-	   \param trans_factory factory for creation of transformations
-           \param outer_epsilon a relative cost function value per
-                multi-grid level to stop registration
-	   \param save_steps save the deformed source image for each
-                registration step
-	*/
-	C2DMultiImageNonrigidRegister(size_t start_size, size_t max_iter,
-				      P2DRegModel model,
-				      P2DRegTimeStep time_step,
-				      P2DTransformationFactory trans_factory,
-				      float outer_epsilon);
-
-
-	~C2DMultiImageNonrigidRegister();
-	/**
-	   The registration operator that does the registration
-	   \param source the source or template image to be registered to the ...
-	   \param reference
-	   \returns a vector field describing the registration
-	 */
-	P2DTransformation operator () (C2DImageFatCostList& cost);
-private:
-	struct C2DMultiImageNonrigidRegisterImpl *impl;
+enum EMinimizers {
+	min_cg_fr,
+	min_cg_pr,
+	min_bfgs,
+	min_bfgs2,
+	min_gd,
+	min_undefined
 };
 
+/**
+   Class for registration without regularization - i.e. should only be used
+   for affine, rigid and translation only registrations
+*/
+
+class EXPORT_2D C2DNonrigidRegister {
+public:
+	/**
+	   Constructor for the registration tool
+	   \param cost cost function model
+	   \param minimizer GSL provided minimizer
+	   \param transform_type string describing which transformation is supported
+	   \param ipf interpolator
+	 */
+
+	C2DNonrigidRegister(C2DFullCostList& costs, EMinimizers minimizer,
+			 const string& transform_type,
+			 const C2DInterpolatorFactory& ipf);
+
+	
+	~C2DNonrigidRegister();
+
+	/**
+	   Run the registration of an image pair. 
+	   \param src source (moving) image 
+	   \param ref reference (fixed) image 
+	   \param mg_levels multigrisd levels to be used 
+	   \returns the transformation registering src to ref that minimizes the constructor given 
+	   cost function 
+	 */
+	P2DTransformation  run(P2DImage src, P2DImage ref,  size_t mg_levels) const;
+
+private:
+	struct C2DNonrigidRegisterImpl *impl;
+};
 
 NS_MIA_END
 
 #endif
-
