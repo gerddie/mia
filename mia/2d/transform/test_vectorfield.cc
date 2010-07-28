@@ -244,7 +244,7 @@ BOOST_FIXTURE_TEST_CASE( test_grid_clone, GridTransformFixture )
 }
 
 ///\todo gradient of grid-divcurl needs testing too
-BOOST_AUTO_TEST_CASE( test_grid_divcurl )
+BOOST_AUTO_TEST_CASE( test_grid_div )
 {
 	const int dsize = 128; 
 	const float  range = 4.0; 
@@ -261,16 +261,51 @@ BOOST_AUTO_TEST_CASE( test_grid_divcurl )
 		for (int x = 0; x < (int)size.x; ++x, ++i) {
 			float fx = scale * (x-dsize); 
 			float fy = scale * (y-dsize); 
-			i->y = i->x = exp(-fx * fx - fy * fy); 
+			float help = exp(-fx * fx - fy * fy); 
+			i->x = fx * help; 
+			i->y = fy * help; 
 		}
 	
 	gsl::DoubleVector gradient(field.degrees_of_freedom()); 
 	double divcost =  field.get_divcurl_cost(1.0, 0, gradient); 
-	BOOST_CHECK_CLOSE(corr * corr * divcost, 4 * M_PI, 0.1); 
+	BOOST_CHECK_CLOSE(corr * corr * divcost, 6 * M_PI, 0.2); 
 
 	// gradient needs testing too!!!
 
 }
+
+///\todo gradient of grid-divcurl needs testing too
+BOOST_AUTO_TEST_CASE( test_grid_curl )
+{
+	const int dsize = 128; 
+	const float  range = 4.0; 
+	C2DBounds size(2*dsize + 1, 2*dsize + 1); 
+	float scale = range / dsize; 
+	float corr = dsize /range; 
+
+	cvinfo() << size << "\n"; 
+
+	C2DGridTransformation field(size); 
+	
+	auto i = field.field_begin(); 
+	for (int y = 0; y < (int)size.y; ++y) 
+		for (int x = 0; x < (int)size.x; ++x, ++i) {
+			float fx = scale * (x-dsize); 
+			float fy = scale * (y-dsize); 
+			float help = exp(-fx * fx - fy * fy); ; 
+			i->x = fy * help; 
+			i->y = -fx * help; 
+
+		}
+	
+	gsl::DoubleVector gradient(field.degrees_of_freedom()); 
+	double curlcost =  field.get_divcurl_cost(0.0, 1.0, gradient); 
+	BOOST_CHECK_CLOSE(corr * corr * curlcost, 6 * M_PI, 0.2); 
+
+	// gradient needs testing too!!!
+
+}
+
 
 float GridTransformFixture::fx(float x, float y)
 {

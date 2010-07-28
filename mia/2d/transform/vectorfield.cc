@@ -353,23 +353,29 @@ C2DFDatafield C2DGridTransformation::curl_field() const
 
 double C2DGridTransformation::grad_curl(double weight, gsl::DoubleVector& gradient) const
 {
-	const auto curl = curl_field();
 	const int dx =  _M_field.get_size().x;
+	auto iv = _M_field.begin() + dx + 1; 
+	auto ig = gradient.begin() + dx + 1; 
+	
 	double result = 0.0;
-	auto iv = curl.begin() + dx + 1;
-	auto ig = gradient.begin()  + dx + 1;
-	for(size_t y = 1; y < _M_field.get_size().y - 1; ++y, iv += 2, ig+=4)
-		for(size_t x = 1; x < _M_field.get_size().x - 1; ++x, ++iv, ig +=2) {
-			const double gdx = iv[1] - iv[-1];
-			const double gdy = iv[dx] - iv[-dx];
+	
+	for(size_t y = 1; y < _M_field.get_size().y - 1; ++y, iv += 2, ig += 4 )
+		for(size_t x = 1; x < _M_field.get_size().x - 1; ++x, ++iv, ig += 2) {
+			const double dfy_xx = iv[ 1].y + iv[- 1].y - 2 * iv[0].y;
+			const double dfx_yy = iv[dx].x + iv[-dx].x - 2 * iv[0].x;
+			const double dfy_xy = iv[dx].y + iv[-1].y -  iv[0].y - iv[dx-1].y;
+			const double dfx_xy = iv[1].x - iv[0].x - iv[1-dx].x + iv[-dx].x; 
+			
+			const double gdx = dfy_xx - dfx_xy;
+			const double gdy = dfx_yy - dfy_xy;
 			
 			result += gdx * gdx + gdy * gdy;
-			ig[0] += 2 * weight * gdx;
-			ig[1] += 2 * weight * gdy;
+
+			ig[0] += 2 * weight * gdx; 
+			ig[1] += 2 * weight * gdy; 
 		}
-
-	return 0.25 * weight * result / ( (_M_field.get_size().y - 2) * (_M_field.get_size().x - 2));
-
+	return weight * result;
+	
 }
 
 double C2DGridTransformation::get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const
