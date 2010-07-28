@@ -30,7 +30,7 @@ C2DDivCurlFullCost::C2DDivCurlFullCost(double weight_div, double weight_curl, do
 	_M_weight_div(weight_div), 
 	_M_weight_curl(weight_curl)
 {
-
+	this->add(::mia::property_gradient); 
 }
 
 double C2DDivCurlFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const

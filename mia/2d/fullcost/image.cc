@@ -39,6 +39,11 @@ C2DImageFullCost::C2DImageFullCost(const std::string& src,
 	assert(_M_cost_kernel); 
 }
 
+bool C2DImageFullCost::do_has(const char *property) const
+{
+	return _M_cost_kernel->has(property); 
+}
+
 double C2DImageFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const
 {
 	assert(_M_src); 

@@ -37,6 +37,7 @@ public:
 
 	bool has_all_in(const CPropertyFlagHolder& testset)const;
 private:
+	virtual bool do_has(const char *property) const;
 	std::set<const char *> _M_properties;
 };
 

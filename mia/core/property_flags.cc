@@ -28,7 +28,9 @@ EXPORT_CORE const char *property_gradient = "gradient";
 
 bool CPropertyFlagHolder::has(const char *property) const
 {
-	return _M_properties.find(property) != _M_properties.end();
+	if (_M_properties.find(property) != _M_properties.end())
+		return true; 
+	return do_has(property); 
 }
 
 void CPropertyFlagHolder::add(const char *property)
@@ -44,6 +46,12 @@ bool CPropertyFlagHolder::has_all_in(const CPropertyFlagHolder& testset) const
 			return false;
 	}
 	return true;
+}
+
+bool CPropertyFlagHolder::do_has(const char *property) const
+{
+	// placeholder, derived classes may run some additional tests
+	return false; 
 }
 
 NS_MIA_END
