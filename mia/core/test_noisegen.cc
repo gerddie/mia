@@ -54,3 +54,10 @@ BOOST_AUTO_TEST_CASE( test_plugins )
 	     i != fh.end(); ++i)
 		BOOST_CHECK(i->second->test(true)); 
 }
+
+BOOST_AUTO_TEST_CASE( test_factory_trait ) 
+{
+	FactoryTrait<CNoiseGeneratorPluginHandler::ProductPtr>::type help = 
+		CNoiseGeneratorPluginHandler::instance();
+	BOOST_CHECK(!help.empty()); 
+}

@@ -59,7 +59,7 @@ private:
 
 typedef TFactory<CNoiseGenerator, grayscale_noise_data, generator_type> CNoiseGeneratorPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<CNoiseGeneratorPlugin> > CNoiseGeneratorPluginHandler;
-
+FACTORY_TRAIT(CNoiseGeneratorPluginHandler); 
 
 
 NS_MIA_END

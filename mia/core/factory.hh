@@ -70,7 +70,23 @@ private:
 };
 
 
+template <class T> 
+class FactoryTrait {
+	typedef void type; 
+}; 
 
+template <class T> 
+class FactoryTrait<std::shared_ptr<T> >  {
+public: 
+	typedef typename FactoryTrait<T>::type type; 
+}; 
+
+#define FACTORY_TRAIT(F)			\
+	template <>				\
+	class FactoryTrait< F::Instance::ProductPtr >  {	\
+	public:					\
+	typedef F::Instance type;		\
+	}; 
 
 template <typename  P>
 class EXPORT_HANDLER TFactoryPluginHandler: public  TPluginHandler< P > {
@@ -80,7 +96,7 @@ protected:
         /*! \brief Initializes the plugin handler based on a given plugin search path list 
 	  \param searchpath list of directories to search for plugins 
 	*/
-	
+	typedef typename P::ProductPtr ProductPtr; 
 	
 	TFactoryPluginHandler(const std::list<boost::filesystem::path>& searchpath); 
         //@}

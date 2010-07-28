@@ -64,8 +64,10 @@ double CNoiseGenerator::ranf() const
 
 template class EXPORT_HANDLER TPlugin<grayscale_noise_data, generator_type>;
 template class EXPORT_HANDLER TFactory<CNoiseGenerator, grayscale_noise_data, generator_type>;
-template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<CNoiseGeneratorPlugin> >;
-template class EXPORT_HANDLER TFactoryPluginHandler<CNoiseGeneratorPlugin>;
 template class EXPORT_HANDLER TPluginHandler<CNoiseGeneratorPlugin>;
+template class EXPORT_HANDLER TFactoryPluginHandler<CNoiseGeneratorPlugin>;
+template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<CNoiseGeneratorPlugin> >;
+
+
 
 NS_MIA_END

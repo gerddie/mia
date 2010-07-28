@@ -67,8 +67,10 @@ const char *COptimizer::get_name() const
 
 template class EXPORT_HANDLER TPlugin<COptimizer, algorithm_type>;
 template class EXPORT_HANDLER TFactory<COptimizer, COptimizer, algorithm_type>;
-template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<COptimizerPlugin> >;
-template class EXPORT_HANDLER TFactoryPluginHandler<COptimizerPlugin>;
 template class EXPORT_HANDLER TPluginHandler<COptimizerPlugin>;
+template class EXPORT_HANDLER TFactoryPluginHandler<COptimizerPlugin>;
+template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<COptimizerPlugin> >;
+
+
 
 NS_MIA_END

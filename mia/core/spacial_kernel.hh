@@ -138,6 +138,8 @@ private:
 typedef TFactory<C1DFoldingKernel, spacial_kernel_data, kernel_plugin_type> C1DSpacialKernelPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C1DSpacialKernelPlugin> > C1DSpacialKernelPluginHandler;
 
+FACTORY_TRAIT(C1DSpacialKernelPluginHandler); 
+
 NS_MIA_END
 
 #endif

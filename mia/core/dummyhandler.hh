@@ -26,6 +26,7 @@
 
 #include <mia/core/ioplugin.hh>
 #include <mia/core/iohandler.hh>
+#include <mia/core/factory.hh>
 
 NS_MIA_BEGIN
 
@@ -51,6 +52,7 @@ public:
 
 
 typedef TIOHandlerSingleton<TIOPluginHandler<CTestIOPlugin> > CTestIOPluginHandler;
+
 
 NS_MIA_END
 
