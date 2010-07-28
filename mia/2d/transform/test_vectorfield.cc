@@ -270,6 +270,12 @@ BOOST_AUTO_TEST_CASE( test_grid_div )
 	double divcost =  field.get_divcurl_cost(1.0, 0, gradient); 
 	BOOST_CHECK_CLOSE(corr * corr * divcost, 6 * M_PI, 0.2); 
 
+	double divcurlcost =  field.get_divcurl_cost(1.0, 1.0, gradient); 
+	BOOST_CHECK_CLOSE(corr * corr * divcurlcost, 6 * M_PI, 0.2); 
+
+	double curlcost =  field.get_divcurl_cost(0.0, 1.0, gradient); 
+	BOOST_CHECK_CLOSE(1.0 + corr * corr * curlcost, 1.0, 1); 
+
 	// gradient needs testing too!!!
 
 }
@@ -302,8 +308,14 @@ BOOST_AUTO_TEST_CASE( test_grid_curl )
 	double curlcost =  field.get_divcurl_cost(0.0, 1.0, gradient); 
 	BOOST_CHECK_CLOSE(corr * corr * curlcost, 6 * M_PI, 0.2); 
 
-	// gradient needs testing too!!!
 
+	double divcurlcost =  field.get_divcurl_cost(1.0, 1.0, gradient); 
+	BOOST_CHECK_CLOSE(corr * corr * divcurlcost, 6 * M_PI, 0.2); 
+
+	double divcost =  field.get_divcurl_cost(1.0, 0.0, gradient); 
+	BOOST_CHECK_CLOSE(1.0 + corr * corr * divcost, 1.0, 1); 
+
+	// gradient needs testing too!!!
 }
 
 
