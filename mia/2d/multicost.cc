@@ -38,6 +38,17 @@ void C2DFullCostList::push(P2DFullCost cost)
 	_M_costs.push_back(cost); 
 }
 
+bool C2DFullCostList::do_has(const char *property) const
+{
+	bool result = !_M_costs.empty(); 
+	auto ic = _M_costs.begin(); 
+	while (result && ic != _M_costs.end()) {
+		result &= (*ic)->has(property); 
+		++ic; 
+	}
+	return result; 
+}
+
 double C2DFullCostList::do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const
 {
 	double  result = 0; 

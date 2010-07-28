@@ -32,6 +32,8 @@ public:
 	
 	void push(P2DFullCost cost); 
 private: 
+	bool do_has(const char *property) const;
+
 	virtual double do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const;
 	virtual void do_set_size(); 
 	

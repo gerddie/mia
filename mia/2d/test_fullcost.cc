@@ -89,6 +89,27 @@ BOOST_AUTO_TEST_CASE( test_multicost )
 	BOOST_CHECK_EQUAL(gradient[1], 2.8);
 }
 
+BOOST_AUTO_TEST_CASE( test_multicost_property ) 
+{
+	P2DFullCost c1(new C2DFullCostMock(0.5)); 
+	P2DFullCost c2(new C2DFullCostMock(0.2)); 
+
+	const char *test_prop = "test_prop"; 
+	
+	C2DFullCostList costs; 
+	BOOST_CHECK(!costs.has(test_prop)); 
+	
+	costs.push(c1); 
+	costs.push(c2); 
+	
+	BOOST_CHECK(!costs.has(test_prop)); 
+	c1->add(test_prop); 
+	BOOST_CHECK(!costs.has(test_prop)); 
+	c2->add(test_prop); 
+	BOOST_CHECK(costs.has(test_prop)); 
+}
+
+
 BOOST_AUTO_TEST_CASE( test_load_plugins ) 
 {
 	list< bfs::path> cost_kernel_plugpath;
