@@ -100,8 +100,8 @@ BOOST_AUTO_TEST_CASE( test_load_plugins )
 	C2DFullCostPluginHandler::set_search_path(cost_plugpath);
 	
 	const C2DFullCostPluginHandler::Instance& handler = C2DFullCostPluginHandler::instance(); 
-	BOOST_CHECK_EQUAL(handler.size(), 1); 
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "image ");
+	BOOST_CHECK_EQUAL(handler.size(), 2); 
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "divcurl image ");
 }
 	
 

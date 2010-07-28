@@ -20,9 +20,10 @@
  *
  */
 
-
+#include <limits>
 #include <mia/2d/fullcost/divcurl.hh>
 NS_MIA_BEGIN
+using namespace std; 
 
 C2DDivCurlFullCost::C2DDivCurlFullCost(double weight_div, double weight_curl, double weight):
 	C2DFullCost(weight), 
@@ -43,11 +44,43 @@ void C2DDivCurlFullCost::do_set_size()
 }
 
 
+class C2DDivcurlFullCostPlugin: public C2DFullCostPlugin {
+public: 
+	C2DDivcurlFullCostPlugin(); 
+private: 
+	C2DFullCostPlugin::ProductPtr do_create(float weight) const;
+	const std::string do_get_descr() const;
+	float _M_div;
+	float _M_curl;
+}; 
 
-/*
-	add_parameter("div", new CFloatParameter(_M_div, 0.0, numeric_limits<float>::max(), 
+C2DDivcurlFullCostPlugin::C2DDivcurlFullCostPlugin():
+	C2DFullCostPlugin("divcurl"), 
+	_M_div(1.0), 
+	_M_curl(1.0)
+{
+	add_parameter("div", new CFloatParameter(_M_div, 0.0f, numeric_limits<float>::max(), 
 						 false, "penalty weight on divergence"));
-	add_parameter("curl", new CFloatParameter(_M_curl, false, "penalty weight on curl"));
-*/
+	add_parameter("curl", new CFloatParameter(_M_curl, 0.0f, numeric_limits<float>::max(), 
+						  false, "penalty weight on curl"));
+}
+
+C2DFullCostPlugin::ProductPtr C2DDivcurlFullCostPlugin::do_create(float weight) const
+{
+	return C2DFullCostPlugin::ProductPtr(new C2DDivCurlFullCost(_M_div,  _M_curl, weight)); 
+}
+
+const std::string C2DDivcurlFullCostPlugin::do_get_descr() const
+{
+	return "divcurl penalty cost function"; 
+}
+
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new C2DDivcurlFullCostPlugin();
+}
 
 NS_MIA_END
+
+
+

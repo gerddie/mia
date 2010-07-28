@@ -66,6 +66,11 @@ CPluginModule::~CPluginModule()
 
 }
 
+const std::string& CPluginModule::get_name() const
+{
+	return m_name; 
+}
+
 CPluginBase *CPluginModule::get_interface() const
 {
 	FPluginInterface f = reinterpret_cast<FPluginInterface>(_M_loader.get_function("get_plugin_interface"));

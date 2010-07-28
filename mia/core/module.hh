@@ -57,6 +57,9 @@ public:
 	*/
 	CPluginBase *get_interface() const;
 
+	///\returns the file name of the module
+	const std::string& get_name() const; 
+
 private:
 	CDLLoader _M_loader;
 	size_t m_refs;

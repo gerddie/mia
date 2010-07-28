@@ -121,10 +121,12 @@ void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
 			cvdebug() << "TPluginHandler<I>::initialise: scan '"<<dir->directory_string() <<"'\n"; 
 
 			while (di != dend) {
+				cvdebug() << "    candidate:'" << di->path().directory_string() << "'"; 
 				if (boost::regex_match(di->path().filename(), pat_expr)) {
 					candidates.push_back(*di); 
-					cvdebug() << "    add candidate:'" << di->path().directory_string() << "'\n"; 
-				}
+					cverb << " add\n";
+				}else
+					cverb << " discard\n";
 				++di; 
 			}
 		}
@@ -139,7 +141,10 @@ void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
 			_M_modules.push_back(PPluginModule(new CPluginModule(i->directory_string().c_str())));
 		}
 		catch (invalid_argument& ex) {
-			cerr << ex.what() << "\n"; 
+			cverr() << ex.what() << "\n"; 
+		}
+		catch (...) {
+			cverr() << "Loading module " << i->directory_string() << "failed for unknown reasons\n"; 
 		}
 	}
 
@@ -147,7 +152,9 @@ void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
 	for (vector<PPluginModule>::const_iterator i = _M_modules.begin(); 
 	     i != _M_modules.end(); ++i) {
 		CPluginBase *pp = (*i)->get_interface();
-		
+		if (!pp) 
+			cverr() << "Module '" << (*i)->get_name() << "' doesn't provide an interface\n"; 
+
 		while (pp) {
 			Interface *p = dynamic_cast<Interface*>(pp); 
 			CPluginBase *pold = pp; 
