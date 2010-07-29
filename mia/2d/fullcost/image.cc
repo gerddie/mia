@@ -65,11 +65,12 @@ double C2DImageFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVect
 	assert(_M_ref); 
 	
 	static int idx = 0; 
+	static auto  toubyte_converter = C2DFilterPluginHandler::instance().produce("convert:repn=ubyte"); 
 	P2DImage temp  = t(*_M_src, *_M_ipf);
 
 	stringstream fname; 
 	fname << "test" << setw(5) << setfill('0') << idx << ".png"; 
-	save_image2d(fname.str(), temp); 
+	save_image2d(fname.str(), toubyte_converter->filter(*temp)); 
 
 
 	double maxnorm = 0.0; 
@@ -79,16 +80,15 @@ double C2DImageFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVect
 		if (maxnorm  < n)
 			maxnorm = n;
 	}
-	maxnorm = log(maxnorm); 
 	cvinfo() << "maxnorm=" <<maxnorm<< "\n"; 
 
 	if (maxnorm > 0.0) {
-		C2DUBImage *tn = new C2DUBImage(t.get_size()); 
+		C2DFImage *tn = new C2DFImage(t.get_size()); 
 		P2DImage tnorm(tn); 
 		for (auto g = tn->begin(), i = transfparame.begin(); g != tn->end(); ++g, i+=2)
-			*g = 255 * log(i[0] * i[0] + i[1] * i[1]) / maxnorm; 
+			*g = sqrt(i[0] * i[0] + i[1] * i[1]); 
 		stringstream nname; 
-		nname << "tnorm" << setw(5) << setfill('0') << idx << ".png"; 
+		nname << "tnorm" << setw(5) << setfill('0') << idx << ".v"; 
 		save_image2d(nname.str(), tnorm); 
 	}	
 	

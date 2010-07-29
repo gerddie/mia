@@ -137,7 +137,6 @@ void C2DNonrigidRegisterImpl::apply(C2DTransformation& transf, const gsl_multimi
 }
 
 
-
 P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref,  size_t mg_levels) const
 {
 	assert(src);
@@ -148,6 +147,11 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref,  size
 		throw invalid_argument("Non-gradient based optimization not supported\n"); 
 
 	P2DTransformation transform;
+
+	// convert the images to float ans scale to range [-1,1]
+	auto tofloat_converter = C2DFilterPluginHandler::instance().produce("convert:repn=float"); 
+	src = tofloat_converter->filter(*src); 
+	ref = tofloat_converter->filter(*ref); 
 
 	C2DBounds global_size = src->get_size();
 
