@@ -40,8 +40,8 @@ using namespace std;
 struct C2DNonrigidRegisterImpl {
 
 	C2DNonrigidRegisterImpl(C2DFullCostList& costs, EMinimizers minimizer,
-			     const string& transform_type,
-			     const C2DInterpolatorFactory& ipf);
+				P2DTransformationFactory transform_creator,
+				const C2DInterpolatorFactory& ipf);
 
 	P2DTransformation run(P2DImage src, P2DImage ref,  size_t mg_levels) const;
 private:
@@ -55,7 +55,7 @@ private:
 	C2DFullCostList& _M_costs;
 	EMinimizers _M_minimizer;
 	C2DInterpolatorFactory _M_ipf;
-	string _M_transform_type;
+	P2DTransformationFactory _M_transform_creator;
 };
 
 class C2DNonrigRegGradientProblem: public gsl::CFDFMinimizer::Problem {
@@ -75,9 +75,9 @@ private:
 typedef shared_ptr<C2DNonrigRegGradientProblem> P2DGradientNonrigregProblem;
 
 C2DNonrigidRegister::C2DNonrigidRegister(C2DFullCostList& costs, EMinimizers minimizer,
-				   const string& transform_type,
-				   const C2DInterpolatorFactory& ipf):
-	impl(new C2DNonrigidRegisterImpl( costs, minimizer, transform_type, ipf))
+					 P2DTransformationFactory transform_creation,
+					 const C2DInterpolatorFactory& ipf):
+	impl(new C2DNonrigidRegisterImpl( costs, minimizer, transform_creation, ipf))
 {
 }
 
@@ -93,11 +93,12 @@ P2DTransformation C2DNonrigidRegister::run(P2DImage src, P2DImage ref,  size_t m
 }
 
 C2DNonrigidRegisterImpl::C2DNonrigidRegisterImpl(C2DFullCostList& costs, EMinimizers minimizer,
-					   const string& transform_type, const C2DInterpolatorFactory& ipf):
+						 P2DTransformationFactory transform_creation, 
+						 const C2DInterpolatorFactory& ipf):
 	_M_costs(costs),
 	_M_minimizer(minimizer),
 	_M_ipf(ipf),
-	_M_transform_type(transform_type)
+	_M_transform_creator(transform_creation)
 {
 }
 
@@ -146,8 +147,6 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref,  size
 	if (!minimizer_need_gradient(_M_minimizer))
 		throw invalid_argument("Non-gradient based optimization not supported\n"); 
 
-	auto tr_creator = C2DTransformCreatorHandler::instance().produce(_M_transform_type);
-
 	P2DTransformation transform;
 
 	C2DBounds global_size = src->get_size();
@@ -176,7 +175,7 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref,  size
 		if (transform)
 			transform = transform->upscale(src_scaled->get_size());
 		else
-			transform = tr_creator->create(src_scaled->get_size());
+			transform = _M_transform_creator->create(src_scaled->get_size());
 
 		cvmsg() << "register at " << src_scaled->get_size() << "\n";
 

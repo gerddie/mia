@@ -94,22 +94,29 @@ size_t TCmdFactoryOption<F>::do_get_needed_args() const
 template <typename F>
 void TCmdFactoryOption<F>::do_write_value(std::ostream& os) const
 {
-	os << do_get_value_as_string() << "\n"; 
+	os << "="; 
+	if (_M_value) 
+		os << "'" << _M_value->get_init_string()<< "'"; 
+	else
+		os << "NULL"; 
 }
 
 template <typename F>
 void TCmdFactoryOption<F>::do_get_long_help_really(std::ostream& os) const
 {
-	os << "toto:write plugin-help"; 
+	os << " set option to 'help' for more information."; 
 }
 
 template <typename F>
 const std::string TCmdFactoryOption<F>::do_get_value_as_string() const
 {
-	if (_M_value)
-		return _M_value->get_init_string(); 
+	if (_M_value) {
+		stringstream msg; 
+		msg << "'" << _M_value->get_init_string() << "'"; 
+		return msg.str();
+	}
 	else 
-		return ""; 
+		return "''"; 
 }
 
 template <typename T>

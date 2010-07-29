@@ -24,6 +24,7 @@
 #include <cmath>
 #include <mia/internal/autotest.hh>
 #include <mia/2d/transformfactory.hh>
+#include <mia/core/factorycmdlineoption.hh>
 
 
 NS_MIA_USE
@@ -96,3 +97,29 @@ BOOST_FIXTURE_TEST_CASE(test_transform_creator, HandlerTestFixture)
 	BOOST_CHECK_EQUAL(transform->get_size(), C2DBounds(10,20));
 }
 
+BOOST_FIXTURE_TEST_CASE(test_transform_creator_option, HandlerTestFixture)
+{
+	auto product = C2DTransformCreatorHandler::instance().produce("spline"); 
+	BOOST_CHECK_EQUAL(product->get_init_string(), "spline"); 
+	
+	PCmdOption option = make_opt(product, "spline", 's',"Some help", "help", false); 
+	
+	stringstream test; 
+	option->write_value(test); 
+	BOOST_CHECK_EQUAL(test.str(), "='spline'"); 
+	
+}
+
+BOOST_FIXTURE_TEST_CASE(test_transform_creator_option2, HandlerTestFixture)
+{
+	C2DTransformCreatorHandler::ProductPtr product; 
+	
+	PCmdOption option = make_opt(product, "transform", 't',"Some help", "help", false); 
+	
+	option->set_value("vf"); 
+	
+	stringstream test; 
+	option->write_value(test); 
+	BOOST_CHECK_EQUAL(test.str(), "='vf'"); 
+	
+}

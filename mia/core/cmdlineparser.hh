@@ -405,7 +405,8 @@ class EXPORT_CORE CCmdOptionList {
 	   Constructor creates the options list and adds some defaut options like
 	   --help, --verbose, --copyright, and --usage
         */
-	CCmdOptionList();
+	CCmdOptionList(const std::string& general_help);
+	CCmdOptionList()__attribute__((deprecated));
 
         /// cleanup
 	~CCmdOptionList();

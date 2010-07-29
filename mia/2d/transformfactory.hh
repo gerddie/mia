@@ -50,6 +50,7 @@ typedef SHARED_PTR(C2DTransformCreator) P2DTransformationFactory;
 
 typedef TFactory<C2DTransformCreator, C2DImage, C2DTransformation> C2DTransformCreatorPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin> > C2DTransformCreatorHandler;
+FACTORY_TRAIT(C2DTransformCreatorHandler); 
 
 NS_MIA_END
 

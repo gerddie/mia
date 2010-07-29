@@ -28,7 +28,7 @@
 
 
 #include <mia/2d/multicost.hh>
-#include <mia/2d/transform.hh>
+#include <mia/2d/transformfactory.hh>
 
 NS_MIA_BEGIN
 
@@ -57,7 +57,7 @@ public:
 	 */
 
 	C2DNonrigidRegister(C2DFullCostList& costs, EMinimizers minimizer,
-			 const string& transform_type,
+			 P2DTransformationFactory transform_creation,
 			 const C2DInterpolatorFactory& ipf);
 
 	

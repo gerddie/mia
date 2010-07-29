@@ -148,7 +148,7 @@ const char *CCmdOptionValue::get_short_help() const
 void CCmdOptionValue::do_print_short_help(std::ostream& /*os*/) const
 {
 	if ( get_short_option() && get_short_help() )
-		cout << '-' << get_short_option() << " " << get_short_help() << " ";
+		clog << '-' << get_short_option() << " " << get_short_help() << " ";
 }
 
 void CCmdOptionValue::do_get_long_help(std::ostream& os) const
@@ -232,9 +232,9 @@ struct CCmdOptionListData {
 	bool copyright;
 	vstream::Level verbose;
 
-	CCmdOptionListData();
+	CCmdOptionListData(const string& general_help);
 
-	void add(PCmdOption& opt);
+	void add(PCmdOption opt);
 	CHistoryRecord get_values() const;
 
 	void set_current_group(const string& name);
@@ -245,6 +245,9 @@ struct CCmdOptionListData {
 	void print_help() const;
 	void print_usage() const;
 
+	void write(size_t tab1, size_t width, const string& s)const; 
+
+	string _M_general_help; 
 };
 
 
@@ -293,17 +296,33 @@ const std::string CCmdSetOption::do_get_value_as_string() const
 	return _M_value;
 }
 
-CCmdOptionListData::CCmdOptionListData():
+const char *g_basic_copyright = 
+	"\n"
+	" This software is copyright (c) 2002-2010 Leipzig(Germany), Madrid(Spain).\n"
+	" It comes with  ABSOLUTELY NO WARRANTY and you may redistribute it\n"
+	" under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later).\n"
+	" For more information run the program with the option '--copyright'\n"; 
+
+CCmdOptionListData::CCmdOptionListData(const string& general_help):
 	help(false),
 	usage(false),
 	copyright(false),
-	verbose(vstream::ml_fail)
+	verbose(vstream::ml_fail), 
+	_M_general_help(general_help)
 {
 	options[""] = vector<PCmdOption>();
-	current_group = options.find("");
+
+	set_current_group("\nHelp & Info:");
+	add(make_opt(verbose, g_verbose_dict, "verbose",  'V',"verbosity of output", "verbose"));
+	add(make_opt(copyright,  "copyright", 0,"print copyright information", NULL));
+	add(make_opt(help,  "help", 'h',"print this help", "help"));
+	add(make_opt(usage,  "usage", '?',"print a short help", "usage"));
+	set_current_group("");
+
+	write(0, 80, g_basic_copyright); 
 }
 
-void CCmdOptionListData::add(PCmdOption& opt)
+void CCmdOptionListData::add(PCmdOption opt)
 {
 	opt->add_option(short_map, long_map);
 	current_group->second.push_back(opt);
@@ -349,23 +368,54 @@ CHistoryRecord CCmdOptionListData::get_values() const
 	return result;
 }
 
+
+void CCmdOptionListData::write(size_t tab1, size_t width, const string& s) const 
+{
+	auto is = s.begin(); 
+	auto es = s.end(); 
+	bool newline = false; 
+	size_t pos = 0; 
+	while (is != es) {
+		if (newline) {
+			if (tab1) 
+				clog << setw(tab1) << " "; 
+			newline = false; 
+			pos = tab1; 
+		}
+		if (*is == '\n' || 
+		    (pos >= width && isspace(*is))) {
+			clog << '\n'; 
+			newline = true; 
+		}else {
+			clog << *is; 
+		}
+		++is; 
+	}
+	clog << endl; 
+}
+
+/**
+   This help printing is a mess ...
+ */
 void CCmdOptionListData::print_help() const
 {
 	const size_t max_opt_width = 30;
+	// this should come from the terminal 
 	const size_t max_width = 70;
 
 	vector<string> opt_table;
 	vector<string> help_table;
+	
+	write(0, max_width, _M_general_help); 
 
 	size_t opt_size = 0;
-	cout << setiosflags(ios_base::left);
+	clog << setiosflags(ios_base::left);
 	for (COptionsMap::const_iterator i = options.begin();
 	     i != options.end(); ++i) {
 
 		stringstream group;
 		opt_table.push_back(i->first);
 		help_table.push_back("  ");
-
 
 		COptionsGroup::const_iterator g_i = i->second.begin();
 		COptionsGroup::const_iterator g_e = i->second.end();
@@ -391,48 +441,21 @@ void CCmdOptionListData::print_help() const
 	if (opt_size > max_opt_width)
 		opt_size = max_opt_width;
 
-	size_t width = max_width - opt_size - 1;
-
 	vector<string>::const_iterator  t  = opt_table.begin();
 
 	for (vector<string>::const_iterator i = help_table.begin();
 	     i != help_table.end(); ++i, ++t) {
-		cout << setw(opt_size) << *t << " ";
+		clog << setw(opt_size) << *t << " ";
 
-		if (i->size() < width) {
-			string::const_iterator sb = i->begin();
-			while (sb != i->end()) {
-				cout << ((*sb != '\n') ?  *sb : ' ');
-				++sb;
-			}
-		} else {
-			string::const_iterator sb = i->begin();
-			int w = width;
-			while (sb != i->end()) {
-				cout << *sb;
-				--w;
-				if (*sb == '\n') {
-					w = width;
-					cout << setw(opt_size) << " " << " ";
-				}
-				++sb;
-				if ( w < 0 && sb != i->end() && isspace(*sb)) {
-					cout << '\n' << setw(opt_size) << " " << " ";
-					++sb;
-					w = width;
-				}
-			}
-		}
-		cout << "\n";
+		write(opt_size+1, max_width, *i); 
 	}
-
-	cout << '\n' << setiosflags(ios_base::right);
+	clog << '\n' << setiosflags(ios_base::right);
 
 }
 
 void CCmdOptionListData::print_usage() const
 {
-	cout << "Usage: ";
+	clog << "Usage: ";
 	for (COptionsMap::const_iterator i = options.begin();
 	     i != options.end(); ++i) {
 		COptionsGroup::const_iterator g_i = i->second.begin();
@@ -441,23 +464,21 @@ void CCmdOptionListData::print_usage() const
 		while (g_i != g_e) {
 
 			const PCmdOption& k = *g_i;
-			k->print_short_help(cout);
+			k->print_short_help(clog);
 			++g_i;
 		}
 	}
-	cout << '\n';
+	clog << '\n';
+}
+
+CCmdOptionList::CCmdOptionList(const string& general_help):
+	_M_impl(new CCmdOptionListData(general_help))
+{
 }
 
 CCmdOptionList::CCmdOptionList():
-	_M_impl(new CCmdOptionListData)
+	_M_impl(new CCmdOptionListData("This MIA toolchain program supports the following options:"))
 {
-	_M_impl->set_current_group("Help & Info:");
-	push_back(make_opt(_M_impl->verbose, g_verbose_dict, "verbose",  'V',"verbosity of output", "verbose"));
-	push_back(make_opt(_M_impl->copyright,  "copyright", 0,"print copyright information", NULL));
-	push_back(make_opt(_M_impl->help,  "help", 'h',"print this help", "help"));
-	push_back(make_opt(_M_impl->usage,  "usage", '?',"print a short help", "usage"));
-
-	_M_impl->set_current_group("");
 }
 
 void CCmdOptionList::push_back(PCmdOption opt)
