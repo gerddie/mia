@@ -181,8 +181,7 @@ C2DGridTransformation::const_iterator& C2DGridTransformation::const_iterator::op
 {
 	++_M_current;
 	++_M_pos.x;
-
-	if (_M_pos.x >= _M_size.x) {
+	if (_M_pos.x >= _M_size.x && _M_pos.y < _M_size.y) {
 		_M_pos.x = 0;
 		++_M_pos.y;
 	}
@@ -198,6 +197,7 @@ C2DGridTransformation::const_iterator C2DGridTransformation::const_iterator::ope
 
 const C2DFVector C2DGridTransformation::const_iterator::operator *() const
 {
+	assert(_M_pos.x < _M_size.x && _M_pos.y < _M_size.y ); 
 	return C2DFVector(_M_pos) - *_M_current;
 }
 
@@ -270,11 +270,11 @@ C2DGridTransformation::const_field_iterator C2DGridTransformation::field_end()co
 
 void C2DGridTransformation::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
-	assert(params.size() != 2 * gradient.size());
+	assert(2 * params.size() != gradient.size());
 
-	for(auto f = gradient.begin(), r = params.begin(); f != gradient.end(); ++f) {
-		*r++ = f->x;
-		*r++ = f->y;
+	for(auto f = gradient.begin(), r = params.begin(); f != gradient.end(); ++f, r+=2) {
+		r[0] = f->x;
+		r[1] = f->y;
 	}
 }
 

@@ -92,7 +92,7 @@ int CFDFMinimizerImpl::run(DoubleVector& x)
 {
 	int iter = 0; 
 	int status; 
-	gsl_multimin_fdfminimizer_set (m_s, *m_problem, x, 0.01, 1e-4);
+	gsl_multimin_fdfminimizer_set (m_s, *m_problem, x, 0.01, 1e-3);
 	do {
 		++iter; 
 		status = gsl_multimin_fdfminimizer_iterate (m_s);

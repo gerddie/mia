@@ -20,10 +20,13 @@
  *
  */
 
+#include <boost/lambda/lambda.hpp>
 #include <mia/2d/fullcost/image.hh>
 #include <mia/2d/2dfilter.hh>
 
 NS_MIA_BEGIN
+
+using boost::lambda::_1; 
 
 C2DImageFullCost::C2DImageFullCost(const std::string& src, 
 				   const std::string& ref, 
@@ -46,6 +49,7 @@ bool C2DImageFullCost::do_has(const char *property) const
 
 double C2DImageFullCost::do_value(const C2DTransformation& t) const
 {
+	TRACE_FUNCTION; 
 	assert(_M_src); 
 	assert(_M_ref); 
 	P2DImage temp  = t(*_M_src, *_M_ipf);
@@ -56,15 +60,50 @@ double C2DImageFullCost::do_value(const C2DTransformation& t) const
 
 double C2DImageFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const
 {
+	TRACE_FUNCTION; 
 	assert(_M_src); 
 	assert(_M_ref); 
-
-
+	
+	static int idx = 0; 
 	P2DImage temp  = t(*_M_src, *_M_ipf);
+
+	stringstream fname; 
+	fname << "test" << setw(5) << setfill('0') << idx << ".png"; 
+	save_image2d(fname.str(), temp); 
+
+
+	double maxnorm = 0.0; 
+	auto transfparame = t.get_parameters(); 
+	for(auto i = transfparame.begin();i  != transfparame.end(); i+=2) {
+		double n = i[0] * i[0] + i[1] * i[1];
+		if (maxnorm  < n)
+			maxnorm = n;
+	}
+	maxnorm = log(maxnorm); 
+	cvinfo() << "maxnorm=" <<maxnorm<< "\n"; 
+
+	if (maxnorm > 0.0) {
+		C2DUBImage *tn = new C2DUBImage(t.get_size()); 
+		P2DImage tnorm(tn); 
+		for (auto g = tn->begin(), i = transfparame.begin(); g != tn->end(); ++g, i+=2)
+			*g = 255 * log(i[0] * i[0] + i[1] * i[1]) / maxnorm; 
+		stringstream nname; 
+		nname << "tnorm" << setw(5) << setfill('0') << idx << ".png"; 
+		save_image2d(nname.str(), tnorm); 
+	}	
 	
 	C2DFVectorfield force(get_current_size()); 
  	_M_cost_kernel->evaluate_force(*temp, *_M_ref, 1.0, force); 
+
+	
+	cvinfo() << get_current_size() << " gsize " << gradient.size() << "\n"; 
+	
 	t.translate(force, gradient); 
+
+
+	idx++; 	
+
+	transform(gradient.begin(), gradient.end(), gradient.begin(), -1 * _1); 
 	return _M_cost_kernel->value(*temp, *_M_ref); 
 	
 }

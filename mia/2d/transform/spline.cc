@@ -133,6 +133,7 @@ const C2DBounds& C2DSplineTransformation::get_size() const
 
 gsl::DoubleVector C2DSplineTransformation::get_parameters() const
 {
+	TRACE_FUNCTION;
 	gsl::DoubleVector result(_M_coefficients.size() * 2);
 	for(auto f = _M_coefficients.begin(), r = result.begin(); f != _M_coefficients.end(); ++f) {
 		*r++ = f->x;
@@ -143,11 +144,13 @@ gsl::DoubleVector C2DSplineTransformation::get_parameters() const
 
 void C2DSplineTransformation::set_parameters(const gsl::DoubleVector& params)
 {
+	TRACE_FUNCTION;
 	assert(2 * _M_coefficients.size() == params.size());
 	for(auto f = _M_coefficients.begin(), r = params.begin(); f != _M_coefficients.end(); ++f) {
 		f->x = *r++;
 		f->y = *r++;
 	}
+	_M_interpolator_valid = false; 
 }
 
 bool C2DSplineTransformation::save(const std::string& /*filename*/,
@@ -230,6 +233,7 @@ size_t C2DSplineTransformation::degrees_of_freedom() const
 P2DImage C2DSplineTransformation::apply(const C2DImage& image,
 					const C2DInterpolatorFactory& ipf) const
 {
+	TRACE_FUNCTION;
 	return transform2d(image, ipf, *this);
 }
 

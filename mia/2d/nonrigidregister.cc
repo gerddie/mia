@@ -22,7 +22,7 @@
  *
  */
 
-#define VSTREAM_DOMAIN "rigidreg"
+#define VSTREAM_DOMAIN "nonrigidreg"
 
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/2dfilter.hh>
@@ -185,7 +185,7 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref,  size
 		
 		apply(*transform, gradminimizers[_M_minimizer].fdfmin);
 
-		auto params = transform->get_parameters(); 
+		//auto params = transform->get_parameters(); 
 	}
 	return transform;
 }
@@ -204,19 +204,19 @@ double  C2DNonrigRegGradientProblem::do_f(const DoubleVector& x)
 {
 	_M_transf.set_parameters(x);
 	double result = _M_costs.cost_value(_M_transf);
-	cvmsg() << "cost = " << result << "\n"; 
+	cvmsg() << "cost = " << result << "   \r"; 
 	return result; 
 }
 
 void    C2DNonrigRegGradientProblem::do_df(const DoubleVector& x, DoubleVector&  g)
 {
-	_M_transf.set_parameters(x);
-	_M_costs.evaluate(_M_transf, g);
+	do_fdf(x,g); 
 }
 
 double  C2DNonrigRegGradientProblem::do_fdf(const DoubleVector& x, DoubleVector&  g)
 {
 	_M_transf.set_parameters(x);
+	fill(g.begin(), g.end(), 0.0); 
 	double result = _M_costs.evaluate(_M_transf, g);
 	cvmsg() << "cost (g) = " << result << "\n"; 
 	return result; 
