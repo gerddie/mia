@@ -92,6 +92,7 @@ public:
 	virtual C2DFVector operator () (const C2DFVector& x) const;
 
 	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
+	virtual double get_divcurl_cost(double wd, double wr) const; 
 private:
 	C2DBounds _M_range;
 	C2DFVectorfield _M_coefficients;

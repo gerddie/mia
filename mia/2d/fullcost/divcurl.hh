@@ -34,6 +34,7 @@ public:
 	C2DDivCurlFullCost(double weight_div, double weight_curl, double weight); 
 private: 
 	double do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const;
+	double do_value(const C2DTransformation& t) const;
 	void do_set_size(); 
 
 	double _M_weight_div; 

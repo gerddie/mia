@@ -109,6 +109,7 @@ public:
 	float grad_divergence() const;
 	float grad_curl() const;
 	double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
+	double get_divcurl_cost(double wd, double wr) const; 
 private:
 	void evaluate_t() const;
 	C2DAffineTransformation(const C2DAffineTransformation& other);

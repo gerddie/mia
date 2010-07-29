@@ -187,6 +187,12 @@ double C2DAffineTransformation::get_divcurl_cost(double, double, gsl::DoubleVect
 	return 0.0; 
 }
 
+double C2DAffineTransformation::get_divcurl_cost(double, double) const
+{
+	return 0.0; 
+}
+
+
 float C2DAffineTransformation::divergence() const
 {
 	return _M_t[0] + _M_t[1] + _M_t[3] + _M_t[4] - 2.0f;

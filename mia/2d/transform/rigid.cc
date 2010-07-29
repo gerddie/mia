@@ -192,6 +192,12 @@ double C2DRigidTransformation::get_divcurl_cost(double wd, double wr, gsl::Doubl
 	return 0.0; 
 }
 
+double C2DRigidTransformation::get_divcurl_cost(double wd, double wr) const
+{
+	return 0.0; 
+}
+
+
 const C2DBounds& C2DRigidTransformation::get_size() const
 {
 	return _M_size;

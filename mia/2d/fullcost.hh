@@ -53,6 +53,15 @@ public:
 	   \returns weighted cost value 
 	 */
 	double evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const;
+
+	/**
+	   Evaluate the weighted cost value 
+	   \param t tranformation to be applied 
+	   \returns weighted cost value 
+	 */
+	double cost_value(const C2DTransformation& t) const;
+
+		
 	
 	/**
 	   Set the size of the cost function 
@@ -64,6 +73,7 @@ protected:
 	const C2DBounds& get_current_size() const; 
 private:
 	virtual double do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const = 0;
+	virtual double do_value(const C2DTransformation& t) const = 0;
 	virtual void do_set_size() = 0; 
 	
 	double _M_weight;

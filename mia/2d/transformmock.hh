@@ -51,7 +51,7 @@ struct  EXPORT_2D C2DTransformMock: public C2DTransformation {
 	virtual float divergence() const;
 	virtual float curl() const;
 	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
-
+	double get_divcurl_cost(double wd, double wr) const; 
 private:
         virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
 	C2DBounds m_size;

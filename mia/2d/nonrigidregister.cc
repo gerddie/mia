@@ -202,9 +202,10 @@ C2DNonrigRegGradientProblem::C2DNonrigRegGradientProblem(const C2DFullCostList& 
 
 double  C2DNonrigRegGradientProblem::do_f(const DoubleVector& x)
 {
-	cvwarn() << "C2DNonrigRegGradientProblem::do_f implemented by means of C2DNonrigRegGradientProblem::do_fdf\n"; 
-	DoubleVector  g(x.size()); 
-	return do_fdf(x, g);
+	_M_transf.set_parameters(x);
+	double result = _M_costs.cost_value(_M_transf);
+	cvmsg() << "cost = " << result << "\n"; 
+	return result; 
 }
 
 void    C2DNonrigRegGradientProblem::do_df(const DoubleVector& x, DoubleVector&  g)
@@ -216,7 +217,9 @@ void    C2DNonrigRegGradientProblem::do_df(const DoubleVector& x, DoubleVector& 
 double  C2DNonrigRegGradientProblem::do_fdf(const DoubleVector& x, DoubleVector&  g)
 {
 	_M_transf.set_parameters(x);
-	return _M_costs.evaluate(_M_transf, g);
+	double result = _M_costs.evaluate(_M_transf, g);
+	cvmsg() << "cost (g) = " << result << "\n"; 
+	return result; 
 }
 
 NS_MIA_END

@@ -181,6 +181,15 @@ public:
 	 */
 	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const = 0; 
 
+	/**
+	   Evaluate the grad div ^2 + grad rot ^2 value for the transformtion 
+	   \param wd weight of the divergence
+	   \param wr weight of the rotation 
+	   \returns cost function value 
+	 */
+
+	virtual double get_divcurl_cost(double wd, double wr) const = 0; 
+
 };
 
 /**

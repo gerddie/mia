@@ -44,6 +44,16 @@ bool C2DImageFullCost::do_has(const char *property) const
 	return _M_cost_kernel->has(property); 
 }
 
+double C2DImageFullCost::do_value(const C2DTransformation& t) const
+{
+	assert(_M_src); 
+	assert(_M_ref); 
+	P2DImage temp  = t(*_M_src, *_M_ipf);
+	const double result = _M_cost_kernel->value(*temp, *_M_ref); 
+	cvdebug() << "C2DImageFullCost::value = " << result << "\n"; 
+	return result; 
+}
+
 double C2DImageFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const
 {
 	assert(_M_src); 

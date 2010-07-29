@@ -60,6 +60,15 @@ double C2DFullCostList::do_evaluate(const C2DTransformation& t, gsl::DoubleVecto
 	return result; 
 }
 
+double C2DFullCostList::do_value(const C2DTransformation& t) const
+{
+	double  result = 0; 
+	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i)
+		result += (*i)->cost_value(t); 
+	return result; 
+}
+
+
 void C2DFullCostList::do_set_size(){
 	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i) 
 		(*i)->set_size(get_current_size()); 

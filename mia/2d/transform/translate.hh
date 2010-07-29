@@ -92,6 +92,7 @@ public:
 	float grad_divergence() const;
 	float grad_curl() const;
 	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
+	virtual double get_divcurl_cost(double wd, double wr) const; 
 private:
 	C2DFVector _M_transform;
 	C2DBounds _M_size;

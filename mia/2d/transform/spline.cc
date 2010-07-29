@@ -488,6 +488,26 @@ double C2DSplineTransformation::get_divcurl_cost(double wd, double wr, gsl::Doub
 	return _M_divcurl_matrix->evaluate(interp.get_coefficients(), gradient); 
 }
 
+double C2DSplineTransformation::get_divcurl_cost(double wd, double wr) const
+{
+	reinit(); 
+	
+	// create PP matrices or adapt size 
+	if (!_M_divcurl_matrix) 
+		_M_divcurl_matrix.reset(new C2DPPDivcurlMatrix(_M_coefficients.get_size(), _M_range, 
+							       *_M_ipf->get_kernel(), wd, wr)); 
+	else 
+		_M_divcurl_matrix->reset(_M_coefficients.get_size(), _M_range, 
+					 *_M_ipf->get_kernel(), wd, wr); 
+	
+	// this will throw ifthe interpolator is not of the right type
+	const T2DConvoluteInterpolator<C2DFVector>& interp = 
+		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*_M_interpolator); 
+	
+	return *_M_divcurl_matrix * interp.get_coefficients(); 
+}
+
+
 class C2DSplineTransformCreator: public C2DTransformCreator {
 public:
 	C2DSplineTransformCreator(EInterpolation ip, const C2DFVector& rates);

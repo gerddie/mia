@@ -48,6 +48,12 @@ double C2DFullCost::evaluate(const C2DTransformation& t, gsl::DoubleVector& grad
 	return result; 
 }
 
+double C2DFullCost::cost_value(const C2DTransformation& t) const 
+{
+	return _M_weight * do_value(t); 
+}
+	
+
 double C2DFullCost::get_weight() const
 {
 	return _M_weight; 

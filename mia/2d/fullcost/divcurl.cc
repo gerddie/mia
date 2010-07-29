@@ -39,6 +39,11 @@ double C2DDivCurlFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVe
 	return t.get_divcurl_cost(_M_weight_div, _M_weight_curl, gradient); 
 }
 
+double C2DDivCurlFullCost::do_value(const C2DTransformation& t) const
+{
+	return t.get_divcurl_cost(_M_weight_div, _M_weight_curl); 
+}
+
 void C2DDivCurlFullCost::do_set_size()
 {
 }

@@ -261,6 +261,12 @@ double C2DTranslateTransformation::get_divcurl_cost(double wd, double wr, gsl::D
 	return 0.0;
 }
 
+double C2DTranslateTransformation::get_divcurl_cost(double wd, double wr) const
+{
+	return 0.0;
+}
+
+
 class C2DTranslateTransformCreator: public C2DTransformCreator {
 	virtual P2DTransformation do_create(const C2DBounds& size) const;
 };

@@ -158,6 +158,11 @@ double C2DTransformMock::get_divcurl_cost(double wd, double wr, gsl::DoubleVecto
 	return wd + wr; 
 }
 
+double C2DTransformMock::get_divcurl_cost(double wd, double wr) const
+{
+	return wd + wr; 
+}
+
 
 
 

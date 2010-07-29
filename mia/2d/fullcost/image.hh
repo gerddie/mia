@@ -44,6 +44,7 @@ private:
 	static P2DImage get_from_pool(const C2DImageDataKey& key); 
 
 	bool do_has(const char *property) const; 
+	double do_value(const C2DTransformation& t) const; 
 
 	C2DImageDataKey _M_src_key;
 	C2DImageDataKey _M_ref_key;
