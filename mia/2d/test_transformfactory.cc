@@ -106,7 +106,7 @@ BOOST_FIXTURE_TEST_CASE(test_transform_creator_option, HandlerTestFixture)
 	
 	stringstream test; 
 	option->write_value(test); 
-	BOOST_CHECK_EQUAL(test.str(), "='spline'"); 
+	BOOST_CHECK_EQUAL(test.str(), "=spline"); 
 	
 }
 
@@ -120,6 +120,6 @@ BOOST_FIXTURE_TEST_CASE(test_transform_creator_option2, HandlerTestFixture)
 	
 	stringstream test; 
 	option->write_value(test); 
-	BOOST_CHECK_EQUAL(test.str(), "='vf'"); 
+	BOOST_CHECK_EQUAL(test.str(), "=vf"); 
 	
 }

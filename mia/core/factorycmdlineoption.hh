@@ -94,11 +94,13 @@ size_t TCmdFactoryOption<F>::do_get_needed_args() const
 template <typename F>
 void TCmdFactoryOption<F>::do_write_value(std::ostream& os) const
 {
-	os << "="; 
 	if (_M_value) 
-		os << "'" << _M_value->get_init_string()<< "'"; 
-	else
-		os << "NULL"; 
+		os << "=" << _M_value->get_init_string(); 
+	else 
+		if (required())
+			os << "[required]"; 
+		else
+			os << "NULL"; 
 }
 
 template <typename F>

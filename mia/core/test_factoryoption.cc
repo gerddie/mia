@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE( test_a_factory_option )
 
 	stringstream test; 
 	option->write_value(test); 
-	BOOST_CHECK_EQUAL(test.str(), "='lala'"); 
+	BOOST_CHECK_EQUAL(test.str(), "=lala"); 
 }
 
 BOOST_AUTO_TEST_CASE( test_another_factory_option )
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE( test_another_factory_option )
 	
 	stringstream test; 
 	option->write_value(test); 
-	BOOST_CHECK_EQUAL(test.str(), "='lala'"); 
+	BOOST_CHECK_EQUAL(test.str(), "=lala"); 
 }
 
 

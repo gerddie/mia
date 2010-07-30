@@ -72,7 +72,7 @@ private:
 
 template <class T> 
 class FactoryTrait {
-	typedef void type; 
+	typedef typename T::must_create_trait_using_FACTORY_TRAIT type; 
 }; 
 
 template <class T> 
