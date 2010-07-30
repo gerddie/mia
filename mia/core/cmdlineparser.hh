@@ -407,6 +407,14 @@ PCmdOption make_help_opt(const char *long_opt, char short_opt, const char *long_
 			 CHelpOption::Callback* cb); 
 
 
+template <typename PluginHandler>
+class TPluginHandlerHelpCallback: public CHelpOption::Callback {
+	void print(std::ostream& os) const{
+		PluginHandler::instance().print_help(os);
+	}
+}; 
+
+
 /**
    The class to hold the list of options
 */

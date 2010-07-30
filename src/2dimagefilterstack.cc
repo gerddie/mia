@@ -57,6 +57,16 @@ size_t log10(size_t x)
 /* Revision string */
 const char revision[] = "not specified";
 
+static const char *program_info = 
+	"This program is used to filter and convert a consecutive numbered series\n"
+	"gray of scale images. File names must follow the pattern 'dataXXXX.png'\n"
+	"(X being digits), i.e. the numbering comes right before the dot.\n"
+	"\n"
+	"Basic usage:\n"
+	"  mia-2dimagefilter -i <input image> -o <output base> \\\n"
+	"                    -t <output type> [<plugin>]  [<plugin>] ...\n"; 
+
+
 int main( int argc, const char *argv[] )
 {
 
@@ -69,21 +79,20 @@ int main( int argc, const char *argv[] )
 	const C2DFilterPluginHandler::Instance& filter_plugins = C2DFilterPluginHandler::instance();
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 
-	stringstream filter_names;
+	stringstream filter_names(program_info);
 
 	filter_names << "filters in the order to be applied (out of: " << filter_plugins.get_plugin_names() << ")";
 
 
-	CCmdOptionList options;
+	CCmdOptionList options(program_info);
 	options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", "input", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o', "output file name base", "output", true));
-	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',"output file type (if not given deduct from output file name)" ,
-				    "image-type"));
-	options.push_back(make_opt( help_plugins, "help-plugins", 0, "give some help about the filter plugins", NULL));
-
+	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',"output file type","image-type", true));
+	
+	options.push_back(make_help_opt( "help-plugins", 0,
+					 "give some help about the filter plugins", 
+					 new TPluginHandlerHelpCallback<C2DFilterPluginHandler>)); 
 	try {
-
-
 		options.parse(argc, argv);
 
 		vector<const char *> filter_chain = options.get_remaining();

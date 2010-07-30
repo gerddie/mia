@@ -47,12 +47,6 @@ static const char *program_info =
 	"This program is used to filter and convert gray scale 3D images.\n"
 	"Basic usage:\n"
 	"  mia-3dimagefilter -i <input image> -o <output image> [<plugin>] ...\n"; 
-class CPluginHelpCallback: public CHelpOption::Callback {
-	void print(std::ostream& os) const{
-		C3DFilterPluginHandler::instance().print_help(os);
-	}
-}; 
-
 
 int main( int argc, const char *argv[] )
 {
@@ -79,7 +73,7 @@ int main( int argc, const char *argv[] )
 				    "output file type" , "type", false));
 	options.push_back(make_help_opt( "help-plugins", 0,
 					 "give some help about the filter plugins", 
-					 new CPluginHelpCallback)); 
+					 new TPluginHandlerHelpCallback<C3DFilterPluginHandler>)); 
 
 	options.parse(argc, argv);
 

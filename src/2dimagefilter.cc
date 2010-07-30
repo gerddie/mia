@@ -44,11 +44,6 @@ static const char *program_info =
 	"This program is used to filter and convert gray scale images.\n"
 	"Basic usage:\n"
 	"  mia-2dimagefilter -i <input image> -o <output image> [<plugin>] ...\n"; 
-class CPluginHelpCallback: public CHelpOption::Callback {
-	void print(std::ostream& os) const{
-		C2DFilterPluginHandler::instance().print_help(os);
-	}
-}; 
 
 int do_main( int argc, const char *argv[] )
 {
@@ -74,8 +69,8 @@ int do_main( int argc, const char *argv[] )
 				    "image-type"));
 	options.push_back(make_help_opt( "help-plugins", 0,
 					 "give some help about the filter plugins", 
-					 new CPluginHelpCallback)
-			  ); 
+					 new TPluginHandlerHelpCallback<C2DFilterPluginHandler>));
+	
 	options.parse(argc, argv);
 
 	vector<const char *> filter_chain = options.get_remaining();
