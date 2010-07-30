@@ -39,13 +39,24 @@
 NS_MIA_USE;
 using namespace std;
 
+
+static const char *program_info = 
+	"This program is used to filter and convert gray scale images.\n"
+	"Basic usage:\n"
+	"  mia-2dimagefilter -i <input image> -o <output image> [<plugin>] ...\n"; 
+class CPluginHelpCallback: public CHelpOption::Callback {
+	void print(std::ostream& os) const{
+		C2DFilterPluginHandler::instance().print_help(os);
+	}
+}; 
+
 int do_main( int argc, const char *argv[] )
 {
 
 	string in_filename;
 	string out_filename;
 	string out_type;
-	bool help_plugins = false;
+	; 
 
 	const C2DFilterPluginHandler::Instance& filter_plugins = C2DFilterPluginHandler::instance();
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
@@ -54,27 +65,23 @@ int do_main( int argc, const char *argv[] )
 
 	filter_names << "filters in the order to be applied (out of: " << filter_plugins.get_plugin_names() << ")";
 
-	CCmdOptionList options;
+	CCmdOptionList options(program_info);
 	options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", "input", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o',
 				    "output image(s) that have been filtered", "output", true));
 	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
 				    "output file type (if not given deduct from output file name)" ,
 				    "image-type"));
-	options.push_back(make_opt( help_plugins, "help-plugins", 0,
-				    "give some help about the filter plugins", NULL));
-
+	options.push_back(make_help_opt( "help-plugins", 0,
+					 "give some help about the filter plugins", 
+					 new CPluginHelpCallback)
+			  ); 
 	options.parse(argc, argv);
 
 	vector<const char *> filter_chain = options.get_remaining();
 
 	cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
 	cvdebug() << "supported filters: " << filter_plugins.get_plugin_names() << "\n";
-
-	if (help_plugins) {
-		filter_plugins.print_help(cout);
-		return EXIT_SUCCESS;
-	}
 
 	if ( filter_chain.empty() )
 		cvwarn() << "no filters given, just copy\n";

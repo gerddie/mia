@@ -307,9 +307,10 @@ const std::string CCmdSetOption::do_get_value_as_string() const
 	return _M_value;
 }
 
+const char *g_help_optiongroup="\nHelp & Info"; 
 const char *g_basic_copyright = 
-	"\n"
-	" This software is copyright (c) 2002-2010 Leipzig(Germany), Madrid(Spain).\n"
+        "\n"
+	" This software is copyright (c) Gert Wollny et al.\n"
 	" It comes with  ABSOLUTELY NO WARRANTY and you may redistribute it\n"
 	" under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later).\n"
 	" For more information run the program with the option '--copyright'\n"; 
@@ -323,7 +324,7 @@ CCmdOptionListData::CCmdOptionListData(const string& general_help):
 {
 	options[""] = vector<PCmdOption>();
 
-	set_current_group("\nHelp & Info:");
+	set_current_group(g_help_optiongroup);
 	add(make_opt(verbose, g_verbose_dict, "verbose",  'V',"verbosity of output", "verbose"));
 	add(make_opt(copyright,  "copyright", 0,"print copyright information", NULL));
 	add(make_opt(help,  "help", 'h',"print this help", "help"));
@@ -619,7 +620,8 @@ void CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
 		for (auto i = unset_but_required.begin(); unset_but_required.end() != i; ++i)
 			msg << " '--" << *i << "' "; 
 		msg << "\n"; 
-		msg << "run program with option --help for more information\n"; 
+		msg << "run '" << args[0] << " --help' for more information\n"; 
+		msg << g_basic_copyright; 
 		throw invalid_argument(msg.str());
 	}
 
@@ -647,23 +649,30 @@ CHistoryRecord CCmdOptionList::get_values() const
 	return _M_impl->get_values();
 }
 
-CHelpOption::CHelpOption(const CHelpCallback& cb, char short_opt, const char*long_opt, const char *long_help):
-	TCmdOption<bool>(_M_is_set, short_opt,long_opt, long_help, NULL, false),
-	_M_callback(cb),
-	_M_is_set(false)
+CHelpOption::CHelpOption(Callback *cb, char short_opt, const char*long_opt, const char *long_help):
+	CCmdOptionValue(short_opt, long_opt, long_help, NULL, false), 
+	_M_callback(cb)
 {
 }
 
 void CHelpOption::print(std::ostream& os) const
 {
-	_M_callback.print(os);
+	_M_callback->print(os);
 }
 
-bool CHelpOption::requested() const
+bool CHelpOption::do_set_value_really(const char */*str_value*/)
 {
-	return _M_is_set;
+	print(clog); 
+	exit(0); 
+}
+size_t CHelpOption::do_get_needed_args() const
+{
+	return 0; 
 }
 
+void CHelpOption::do_write_value(std::ostream& /*os*/) const
+{
+}
 
 CCmdFlagOption::CCmdFlagOption(int& val, const CFlagString& map, char short_opt, const char *long_opt,
 			       const char *long_help, const char *short_help, bool required):
@@ -705,6 +714,13 @@ PCmdOption make_opt(int& value, const CFlagString& map, const char *long_opt, ch
 {
 	return PCmdOption(new CCmdFlagOption(value, map, short_opt, long_opt,
                           long_help, short_help, required ));
+}
+
+
+PCmdOption make_help_opt(const char *long_opt, char short_opt, const char *long_help, 
+			 CHelpOption::Callback *cb)
+{
+	return PCmdOption(new CHelpOption(cb, short_opt, long_opt, long_help));
 }
 
 

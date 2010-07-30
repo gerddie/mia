@@ -173,6 +173,7 @@ private:
 };
 
 
+
 /** Templated implementation of a command line option to hold a value of type T.
     For type \a T, the operators
     "std::ostream& operator << (std::ostream& os, T x)" and
@@ -303,7 +304,7 @@ private:
 };
 
 
-class EXPORT_CORE CHelpOption: public TCmdOption<bool> {
+class EXPORT_CORE CHelpOption: public CCmdOptionValue {
 public:
          /** Constructor of the command option
 	     \param callback to call when help option is requested
@@ -312,19 +313,20 @@ public:
 	     \param long_help long help string (must not be NULL)
          */
 
-	class CHelpCallback {
+	class Callback {
 	public:
 		virtual void print(std::ostream& os) const = 0;
 	};
 
-	CHelpOption(const CHelpCallback& cb, char short_opt, const char*long_opt, const char *long_help);
+	CHelpOption(Callback *cb, char short_opt, const char*long_opt, const char *long_help);
 	void print(std::ostream& os) const;
 
-	bool requested() const;
-
 private:
-	const CHelpCallback& _M_callback;
-	bool _M_is_set;
+	std::unique_ptr<Callback> _M_callback;
+	virtual bool do_set_value_really(const char *str_value);
+	virtual size_t do_get_needed_args() const;
+	virtual void do_write_value(std::ostream& os) const;
+
 };
 
 /**
@@ -399,6 +401,10 @@ PCmdOption  EXPORT_CORE make_opt(int& value, const CFlagString& map, const char 
 PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>& set,
                                 const char *long_opt, char short_opt, const char *long_help,
                                 const char *short_help, bool required = false);
+
+
+PCmdOption make_help_opt(const char *long_opt, char short_opt, const char *long_help, 
+			 CHelpOption::Callback* cb); 
 
 
 /**
