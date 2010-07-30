@@ -68,7 +68,7 @@ C2DAffineTransformation::C2DAffineTransformation(const C2DAffineTransformation& 
 {
 }
 
-C2DTransformation *C2DAffineTransformation::clone()const
+C2DTransformation *C2DAffineTransformation::do_clone()const
 {
 	return new C2DAffineTransformation(*this);
 }

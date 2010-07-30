@@ -85,7 +85,6 @@ public:
 	virtual const C2DBounds& get_size() const;
 
 	virtual bool save(const std::string& filename, const std::string& type) const;
-	virtual C2DTransformation *clone() const;
 	virtual C2DTransformation *invert() const;
 	virtual P2DTransformation upscale(const C2DBounds& size) const;
 	virtual void add(const C2DTransformation& a);
@@ -106,6 +105,7 @@ public:
 	double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
 	double get_divcurl_cost(double wd, double wr) const; 
 private:
+	virtual C2DTransformation *do_clone() const;
 	float grad_divergence(double weight, gsl::DoubleVector& gradient) const; 
 	double grad_curl(double weight, gsl::DoubleVector& gradient) const; 
 	virtual C2DFMatrix field_derivative_at(int x, int y) const;

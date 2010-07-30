@@ -88,7 +88,7 @@ void C2DGridTransformation::update(float step, const C2DFVectorfield& a)
 
 }
 
-C2DTransformation *C2DGridTransformation::clone() const
+C2DTransformation *C2DGridTransformation::do_clone() const
 {
 	return new C2DGridTransformation(*this);
 }

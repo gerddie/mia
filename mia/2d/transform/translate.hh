@@ -69,7 +69,6 @@ public:
 	const_iterator end() const;
 
 	virtual const C2DBounds& get_size() const;
-	virtual C2DTransformation *clone() const;
 	virtual C2DTransformation *invert() const;
 	virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
 	virtual bool save(const std::string& filename, const std::string& type) const;
@@ -94,6 +93,7 @@ public:
 	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
 	virtual double get_divcurl_cost(double wd, double wr) const; 
 private:
+	virtual C2DTransformation *do_clone() const;
 	C2DFVector _M_transform;
 	C2DBounds _M_size;
 };

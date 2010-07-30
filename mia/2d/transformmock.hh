@@ -30,7 +30,6 @@ NS_MIA_BEGIN
 struct  EXPORT_2D C2DTransformMock: public C2DTransformation {
 	C2DTransformMock();
 	C2DTransformMock(const C2DBounds& size);
-	virtual C2DTransformation *clone() const;
 	virtual C2DTransformation *invert() const;
 	virtual bool save(const std::string& filename, const std::string& type) const;
 	virtual P2DTransformation upscale(const C2DBounds& size) const;
@@ -53,6 +52,7 @@ struct  EXPORT_2D C2DTransformMock: public C2DTransformation {
 	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
 	double get_divcurl_cost(double wd, double wr) const; 
 private:
+	virtual C2DTransformation *do_clone() const;
         virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
 	C2DBounds m_size;
 

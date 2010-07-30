@@ -55,9 +55,18 @@ public:
 	C2DTransformation();
 
 	/**
+	   Set the descrition string that was used to create this transformstion 
+	   \params s
+	 */
+	void set_creator_string(const std::string& s); 
+
+	/// \returns the description string used to create this transformations 
+	const std::string& get_creator_string()const; 
+
+	/**
 	   \returns a newly allocated copy of the actual transformation
 	 */
-	virtual C2DTransformation *clone() const = 0;
+	virtual C2DTransformation *clone() const;
 
 	/**
 	   \returns a the inverse transform 
@@ -124,12 +133,12 @@ public:
 	virtual void translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const = 0;
 
 	/**
-	   \returns the transformation parameters as a flat vector field
+	   \returns the transformation parameters as a flat value array
 	 */
 	virtual gsl::DoubleVector get_parameters() const = 0;
 
 	/**
-	   sets the transformation parameters from a flat vector field
+	   sets the transformation parameters from a flat value array
 	 */
 	virtual void set_parameters(const gsl::DoubleVector& params) = 0;
 
@@ -139,7 +148,8 @@ public:
 	virtual float get_max_transform() const = 0;
 
 	/**
-	   \returns the upper range of where the transformation is defined
+	   A transformation is defined on [0,X-1]x[0.Y-1]. 
+	   \returns the upper boundaries (X,Y) of this range 
 	 */
 	virtual const C2DBounds& get_size() const = 0;
 
@@ -190,11 +200,15 @@ public:
 
 	virtual double get_divcurl_cost(double wd, double wr) const = 0; 
 
+private: 
+	std::string _M_creator_string;  
+	virtual C2DTransformation *do_clone() const = 0;
+
 };
 
 /**
-   Functor to evaluate a transformed image by applying a given transformation
-   and using the providedinterpolator type
+   Helper Functor to evaluate a transformed image by applying a given 
+   transformation and using the provided interpolator type
 */
 
 template <typename Transform>

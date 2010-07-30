@@ -77,7 +77,7 @@ C2DRigidTransformation::C2DRigidTransformation(const C2DRigidTransformation& oth
 {
 }
 
-C2DTransformation *C2DRigidTransformation::clone()const
+C2DTransformation *C2DRigidTransformation::do_clone()const
 {
 	return new C2DRigidTransformation(*this);
 }

@@ -102,7 +102,7 @@ C2DFVector C2DSplineTransformation::apply ( const C2DFVector& x) const
 	return (*_M_interpolator)(scale(x) );
 }
 
-C2DTransformation *C2DSplineTransformation::clone()const
+C2DTransformation *C2DSplineTransformation::do_clone()const
 {
 	return new C2DSplineTransformation(*this);
 }

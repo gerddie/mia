@@ -36,7 +36,7 @@ C2DTransformMock::C2DTransformMock(const C2DBounds& size):
 
 }
 
-C2DTransformation *C2DTransformMock::clone() const
+C2DTransformation *C2DTransformMock::do_clone() const
 {
 	return NULL;
 }

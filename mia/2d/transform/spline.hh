@@ -74,7 +74,6 @@ public:
 	C2DSplineTransformation *refine(const C2DBounds& coeff_size) const;
 
 	virtual bool save(const std::string& filename, const std::string& type) const;
-	virtual C2DTransformation *clone() const;
 	virtual C2DTransformation *invert() const;
 	virtual P2DTransformation upscale(const C2DBounds& size) const;
 	virtual void add(const C2DTransformation& a);
@@ -94,6 +93,7 @@ public:
 	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
 	virtual double get_divcurl_cost(double wd, double wr) const; 
 private:
+	virtual C2DTransformation *do_clone() const;
 	C2DBounds _M_range;
 	C2DFVectorfield _M_coefficients;
 	P2DInterpolatorFactory _M_ipf;

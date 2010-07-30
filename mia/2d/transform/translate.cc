@@ -125,7 +125,7 @@ const C2DBounds& C2DTranslateTransformation::get_size() const
 	return _M_size;
 }
 
-C2DTransformation *C2DTranslateTransformation::clone() const
+C2DTransformation *C2DTranslateTransformation::do_clone() const
 {
 	return new C2DTranslateTransformation(*this);
 }

@@ -38,4 +38,24 @@ void C2DTransformation::reinit() const
 {
 }
 
+void C2DTransformation::set_creator_string(const std::string& s)
+{
+	_M_creator_string = s; 
+}
+
+
+const std::string& C2DTransformation::get_creator_string()const
+{
+	return _M_creator_string; 
+}
+
+C2DTransformation *C2DTransformation::clone() const
+{
+	C2DTransformation *result = do_clone(); 
+	if (result) 
+		result->set_creator_string(get_creator_string()); 
+	return result; 
+}
+
+
 NS_MIA_END
