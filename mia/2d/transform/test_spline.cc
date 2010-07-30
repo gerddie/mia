@@ -290,6 +290,45 @@ BOOST_FIXTURE_TEST_CASE( test_splines_translate, TransformSplineFixture )
 	}
 }
 
+BOOST_FIXTURE_TEST_CASE( test_splines_translate_2, TransformSplineFixture )
+{
+	C2DFVectorfield gradient(range);
+	auto ig = gradient.begin(); 
+	C2DFVector ivscale(float(range.x - 1) / (size.x - 1),
+			   float(range.y - 1) / (size.y - 1));
+	for (size_t y = 0; y < range.y; ++y) 
+		for (size_t x = 0; x < range.x; ++x) {
+			double sx = ivscale.x * x; 
+			double sy = ivscale.y * y; 
+			ig->x = 5 * fx(sx,sy); 
+			ig->y = 5 * fy(sx,sy); 
+			cvdebug() << sx << " " << sy << ":" << *ig << "\n"; 
+		}
+
+	gsl::DoubleVector force(2 * stransf.get_coeff_size().x * stransf.get_coeff_size().y);
+	stransf.translate(gradient, force);
+
+	stransf.set_parameters(force); 
+	
+	// now the spline should be more or less the same 
+	// as the original function 
+
+	auto is = stransf.begin(); 
+	ig = gradient.begin(); 
+	for (size_t y = 0; y < range.y; ++y)
+		for (size_t x = 0; x < range.x; ++x, ++is,++ig) {
+			if (abs(ig->x) > 0.1) 
+				BOOST_CHECK_CLOSE(is->x, x - ig->x, 1.0); 
+			else 
+				BOOST_CHECK_CLOSE(1.0 + is->x, 1.0 + x - ig->x, 1.0); 
+			if (abs(ig->y) > 0.1) 
+				BOOST_CHECK_CLOSE(is->y, y - ig->y, 1.0); 
+			else 
+				BOOST_CHECK_CLOSE(1.0 + is->y, 1.0 + y - ig->y, 1.0); 
+		}
+}
+
+
 BOOST_FIXTURE_TEST_CASE( test_splines_clone, TransformSplineFixture )
 {
 	P2DTransformation clone(stransf.clone());
