@@ -50,25 +50,17 @@ public:
 	//	C2DFVectorfield& field() __attribute__((deprecated)) ;
 	//	const C2DFVectorfield& field() const __attribute__((deprecated)) ;
 
-	class EXPORT_2D const_iterator  {
+	class EXPORT_2D iterator_impl: public C2DTransformation::iterator_impl  {
 	public:
-		const_iterator& operator ++();
-		const_iterator operator ++(int);
-
-		const C2DFVector operator *() const;
-
-		friend EXPORT_2D bool operator == (const const_iterator& a, const const_iterator& b);
-		friend EXPORT_2D bool operator != (const const_iterator& a, const const_iterator& b);
-		const_iterator();
-
-	private:
-		friend class C2DGridTransformation;
-		const_iterator(const C2DBounds& pos, const C2DBounds& size, C2DFVectorfield::const_iterator start);
-
-		C2DBounds _M_pos;
-		C2DBounds _M_size;
+		iterator_impl(const C2DBounds& pos, const C2DBounds& size, C2DFVectorfield::const_iterator start); 
+	private: 
+		virtual C2DTransformation::iterator_impl * clone() const; 
+		virtual const C2DFVector&  do_get_value()const; 
+		virtual void do_x_increment(); 
+		virtual void do_y_increment(); 
 
 		C2DFVectorfield::const_iterator _M_current;
+		C2DFVector _M_value; 
 
 	};
 

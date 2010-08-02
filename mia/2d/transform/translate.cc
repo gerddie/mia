@@ -52,71 +52,41 @@ C2DFVector C2DTranslateTransformation::apply(const C2DFVector& x) const
 }
 
 
-C2DTranslateTransformation::const_iterator&
-C2DTranslateTransformation::const_iterator::operator ++()
-{
-	if (_M_current.x < _M_size.x) {
-		++_M_current.x;
-		if (_M_current.x == _M_size.x) {
-			if (_M_current.y < _M_size.y)
-				++_M_current.y;
-			if (_M_current.y < _M_size.y)
-				_M_current.x = 0;
-		}
-	}
-	return *this;
-}
 
-C2DTranslateTransformation::const_iterator
-C2DTranslateTransformation::const_iterator::operator ++(int)
-{
-	const_iterator me = *this;
-	++(*this);
-	return me;
-}
-
-const C2DFVector C2DTranslateTransformation::const_iterator::operator *() const
-{
-	return C2DFVector(_M_current.x + _M_value.x, _M_current.y + _M_value.y);
-}
-
-EXPORT_2D bool operator == (const C2DTranslateTransformation::const_iterator& a,
-			    const C2DTranslateTransformation::const_iterator& b)
-{
-	assert(a._M_size == b._M_size);
-	return (a._M_current == b._M_current);
-}
-
-EXPORT_2D bool operator != (const C2DTranslateTransformation::const_iterator& a,
-			    const C2DTranslateTransformation::const_iterator& b)
-{
-	return !(a == b);
-}
-
-C2DTranslateTransformation::const_iterator::const_iterator():
-	_M_current(0,0),
-	_M_size(0,0),
-	_M_value(0,0)
-{
-}
-
-C2DTranslateTransformation::const_iterator::const_iterator(const C2DBounds& pos,
-							   const C2DBounds& size,
-							   const C2DFVector& value):
-	_M_current(pos),
-	_M_size(size),
+C2DTranslateTransformation::iterator_impl::iterator_impl(const C2DBounds& pos, const C2DBounds& size, 
+							 const C2DFVector& value):
+	C2DTransformation::iterator_impl(pos, size), 
 	_M_value(value)
 {
 }
 
-C2DTranslateTransformation::const_iterator C2DTranslateTransformation::begin() const
+C2DTransformation::iterator_impl * C2DTranslateTransformation::iterator_impl::clone() const 
 {
-	return const_iterator(C2DBounds(0,0), _M_size, _M_transform);
+	return new iterator_impl(get_pos(), get_size(), _M_value); 
 }
 
-C2DTranslateTransformation::const_iterator C2DTranslateTransformation::end() const
+const C2DFVector&  C2DTranslateTransformation::iterator_impl::do_get_value() const 
 {
-	return const_iterator(_M_size, _M_size, _M_transform);
+	return _M_value; 
+}
+
+void C2DTranslateTransformation::iterator_impl::do_x_increment()
+{
+}
+
+void C2DTranslateTransformation::iterator_impl::do_y_increment()
+{
+}
+
+C2DTransformation::const_iterator C2DTranslateTransformation::begin() const
+{
+	
+	return C2DTransformation::const_iterator(new iterator_impl(C2DBounds(0,0), _M_size, _M_transform));
+}
+
+C2DTransformation::const_iterator C2DTranslateTransformation::end() const
+{
+	return C2DTransformation::const_iterator(new iterator_impl(_M_size, _M_size, _M_transform));
 }
 
 

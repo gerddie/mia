@@ -164,6 +164,40 @@ double C2DTransformMock::get_divcurl_cost(double wd, double wr) const
 }
 
 
+C2DTransformation::const_iterator C2DTransformMock::begin() const
+{
+	return C2DTransformation::const_iterator(new iterator_impl(C2DBounds(0,0), m_size)); 
+}
+
+C2DTransformation::const_iterator C2DTransformMock::end() const
+{
+	return C2DTransformation::const_iterator(new iterator_impl(m_size, m_size)); 
+}
+
+C2DTransformation::iterator_impl *C2DTransformMock::iterator_impl::clone()const
+{
+	return new C2DTransformMock::iterator_impl(get_pos(), get_size()); 
+}
+
+C2DTransformMock::iterator_impl::iterator_impl(const C2DBounds& pos, const C2DBounds& size):
+	C2DTransformation::iterator_impl(pos, size), 
+	_M_value(-1.2, -2.3)
+{
+}
+
+const C2DFVector& C2DTransformMock::iterator_impl::do_get_value()const
+{
+	return _M_value; 
+}
+
+void C2DTransformMock::iterator_impl::do_x_increment()
+{
+}
+
+void C2DTransformMock::iterator_impl::do_y_increment()
+{
+}
+
 
 
 

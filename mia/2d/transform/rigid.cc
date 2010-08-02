@@ -265,31 +265,6 @@ void C2DRigidTransformation::add(const C2DTransformation& other)
 	assert(0 && "not implemented");
 }
 
-C2DRigidTransformation::const_iterator::const_iterator():
-	_M_current(0.0f, 0.0f),
-	_M_size(0.0f, 0.0f),
-	_M_value(0.0f, 0.0f),
-	_M_dx(0.0f, 0.0f)
-{
-}
-
-
-C2DRigidTransformation::const_iterator& C2DRigidTransformation::const_iterator::operator ++()
-{
-	if (_M_trans) {
-		++_M_current.x;
-		if (_M_current.x < _M_size.x) {
-			_M_value += _M_dx;
-		} else {
-			_M_current.x = 0;
-			++_M_current.y;
-			_M_value = _M_trans->transform(C2DFVector(_M_current));
-			_M_dx = _M_trans->transform(C2DFVector(_M_current.x + 1.0, _M_current.y)) - _M_value;
-		}
-	}
-	return *this;
-}
-
 C2DFVector C2DRigidTransformation::operator () (const C2DFVector& /*x*/) const
 {
 	assert(!"not implemented");
@@ -345,54 +320,52 @@ void C2DRigidTransformation::translate(const C2DFVectorfield& gradient, gsl::Dou
 		params[2] = atan(rot/irot);
 }
 
-C2DRigidTransformation::const_iterator C2DRigidTransformation::const_iterator::operator ++(int)
+
+
+C2DRigidTransformation::iterator_impl::iterator_impl(const C2DBounds& pos, const C2DBounds& size, 
+						      const C2DRigidTransformation& trans):
+	C2DTransformation::iterator_impl(pos, size),
+	_M_trans(trans), 
+	_M_value(trans.transform(C2DFVector(pos)))
 {
-	C2DRigidTransformation::const_iterator help(*this);
-	++(*this);
-	return help;
+	_M_dx = _M_trans.transform(C2DFVector(pos.x + 1.0, pos.y)) - _M_value;
 }
 
-const C2DFVector C2DRigidTransformation::const_iterator::operator *() const
+C2DTransformation::iterator_impl * C2DRigidTransformation::iterator_impl::clone() const
 {
-	return _M_value;
+	return new iterator_impl(get_pos(), get_size(), _M_trans); 
+}
+
+const C2DFVector&  C2DRigidTransformation::iterator_impl::do_get_value()const
+{
+	return _M_value; 
+}
+
+void C2DRigidTransformation::iterator_impl::do_x_increment()
+{
+	_M_value += _M_dx; 
+}
+
+void C2DRigidTransformation::iterator_impl::do_y_increment()
+{
+	_M_value = _M_trans.transform(C2DFVector(get_pos())); 
+	_M_dx = _M_trans.transform(C2DFVector(get_pos().x + 1.0, get_pos().y)) - _M_value;
 }
 
 
-C2DRigidTransformation::const_iterator::const_iterator(const C2DBounds& pos, const C2DBounds& size, const C2DRigidTransformation *trans):
-	_M_current(pos),
-	_M_size(size),
-	_M_trans(trans),
-	_M_value(trans->transform(C2DFVector(pos)))
+C2DTransformation::const_iterator C2DRigidTransformation::begin() const
 {
-	_M_dx = _M_trans->transform(C2DFVector(pos.x + 1.0, pos.y)) - _M_value;
+	return C2DTransformation::const_iterator(new iterator_impl(C2DBounds(0,0), get_size(), *this)); 
 }
 
-C2DRigidTransformation::const_iterator C2DRigidTransformation::begin() const
+C2DTransformation::const_iterator C2DRigidTransformation::end() const
 {
-	return const_iterator(C2DBounds(0,0), get_size(), this);
+	return C2DTransformation::const_iterator(new iterator_impl(get_size(), get_size(), *this)); 
 }
-
-C2DRigidTransformation::const_iterator C2DRigidTransformation::end() const
-{
-	return const_iterator(C2DBounds(0,get_size().y), get_size(), this);
-}
-
 
 float C2DRigidTransformation::pertuberate(C2DFVectorfield& /*v*/) const
 {
 	assert(!"not implemented");
-}
-
-EXPORT_2D bool operator == (const C2DRigidTransformation::const_iterator& a,
-		  const C2DRigidTransformation::const_iterator& b)
-{
-	return (a._M_current == b._M_current);
-}
-
-EXPORT_2D bool operator != (const C2DRigidTransformation::const_iterator& a,
-		  const C2DRigidTransformation::const_iterator& b)
-{
-	return !(a._M_current == b._M_current);
 }
 
 class C2DRigidTransformCreator: public C2DTransformCreator {

@@ -23,6 +23,9 @@
 #ifndef mia_2d_transform_hh
 #define mia_2d_transform_hh
 
+#include <iterator>
+#include <memory>
+
 #include <gsl++/vector.hh>
 #include <mia/core/transformation.hh>
 #include <mia/core/filter.hh>
@@ -46,6 +49,52 @@ class EXPORT_2D C2DTransformation: public Transformation<C2DImage, C2DInterpolat
 public:
 	typedef C2DImage Data;
 	typedef C2DInterpolatorFactory Interpolator;
+	
+protected: 
+	class iterator_impl  {
+	public: 
+		iterator_impl(); 
+		iterator_impl(const C2DBounds& pos, const C2DBounds& size); 
+
+		void increment(); 
+		const C2DFVector&  get_value() const;
+		virtual iterator_impl * clone() const = 0; 
+		
+		bool operator == (const iterator_impl& other) const; 
+		
+		const C2DBounds& get_pos()const; 
+		const C2DBounds& get_size()const; 
+	private:
+		virtual const C2DFVector& do_get_value()const = 0; 
+		virtual void do_y_increment() = 0; 
+		virtual void do_x_increment() = 0; 
+		
+		C2DBounds _M_pos; 
+		C2DBounds _M_size; 
+
+	}; 
+public: 
+	class const_iterator : public std::forward_iterator_tag {
+	public: 
+		const_iterator(); 
+		const_iterator(iterator_impl * holder); 
+
+		const_iterator& operator = (const const_iterator& other); 
+		const_iterator(const const_iterator& other); 
+
+		const_iterator& operator ++(); 
+		const_iterator operator ++(int); 
+
+		const C2DFVector& operator *() const;
+		const C2DFVector  *operator ->() const;
+
+	private: 
+		std::unique_ptr<iterator_impl> _M_holder;
+
+		friend EXPORT_2D bool operator == (const C2DTransformation::const_iterator& a, 
+						   const C2DTransformation::const_iterator& b); 
+
+	}; 
 
 	using Transformation<C2DImage, C2DInterpolatorFactory>::operator ();
 
@@ -73,6 +122,9 @@ public:
 	 */
 	virtual C2DTransformation *invert() const = 0;
 
+
+	virtual const_iterator begin() const = 0; 
+	virtual const_iterator end() const = 0; 
 
 	/**
 	   Placeholder for transformations that might need special initializations
@@ -205,6 +257,10 @@ private:
 	virtual C2DTransformation *do_clone() const = 0;
 
 };
+
+EXPORT_2D bool operator != (const C2DTransformation::const_iterator& a, 
+			    const C2DTransformation::const_iterator& b); 
+
 
 /**
    Helper Functor to evaluate a transformed image by applying a given 

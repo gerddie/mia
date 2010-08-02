@@ -51,6 +51,22 @@ struct  EXPORT_2D C2DTransformMock: public C2DTransformation {
 	virtual float curl() const;
 	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
 	double get_divcurl_cost(double wd, double wr) const; 
+
+	virtual C2DTransformation::const_iterator begin() const; 
+	virtual C2DTransformation::const_iterator end() const; 
+	
+protected: 
+	class iterator_impl:  public C2DTransformation::iterator_impl {
+		friend class C2DTransformMock; 
+		iterator_impl(const C2DBounds& pos, const C2DBounds& size);  
+
+		C2DTransformation::iterator_impl *clone()const; 
+		virtual const C2DFVector& do_get_value()const; 
+		virtual void do_x_increment(); 
+		virtual void do_y_increment(); 
+		C2DFVector _M_value; 
+	}; 
+
 private:
 	virtual C2DTransformation *do_clone() const;
         virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;

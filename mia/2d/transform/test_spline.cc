@@ -218,8 +218,8 @@ BOOST_FIXTURE_TEST_CASE( test_splinestransform_prefix_iterator, TransformSplineF
 
 	for (size_t y = 0; y < range.y; ++y)
 		for (size_t x = 0; x < range.x; ++x, ++i) {
-			BOOST_CHECK_CLOSE(1.0 + x - fx(x,y), 1.0 + i->x, 0.1);
-			BOOST_CHECK_CLOSE(1.0 + y - fy(x,y), 1.0 + i->y, 0.1);
+			BOOST_CHECK_CLOSE(1.0 + x - fx(x,y), 1.0 + (*i).x, 0.1);
+			BOOST_CHECK_CLOSE(1.0 + y - fy(x,y), 1.0 + (*i).y, 0.1);
 		}
 }
 

@@ -141,13 +141,13 @@ BOOST_AUTO_TEST_CASE( test_grid2d_iterator )
 		++i;
 	}
 
-	C2DGridTransformation::const_iterator k = gt.begin();
+	C2DTransformation::const_iterator k = gt.begin();
 
 	float n = 1.0f;
 	for (size_t y = 0; y < size.y; ++y)
 		for (size_t x = 0; x < size.x; ++x, ++k, n += 1.0f) {
-			BOOST_CHECK_CLOSE( (*k).x , (float)x - n * 0.12f, 0.1f );
-			BOOST_CHECK_CLOSE( (*k).y , (float)y - n * 0.32f, 0.1f );
+			BOOST_CHECK_CLOSE( k->x , (float)x - n * 0.12f, 0.1f );
+			BOOST_CHECK_CLOSE( k->y , (float)y - n * 0.32f, 0.1f );
 
 		}
 }

@@ -46,30 +46,26 @@ public:
 	virtual const C2DBounds& get_size() const;
 	const C2DBounds& get_coeff_size() const;
 
-	class EXPORT_2D const_iterator {
-		friend class C2DSplineTransformation;
-		const_iterator(const C2DSplineTransformation& trans, const C2DBounds& pos);
-	public:
-		const_iterator& operator ++();
-		const_iterator operator ++(int);
-		const C2DFVector& operator *() const;
-		const C2DFVector *operator ->() const;
-		const_iterator(const const_iterator&  other);
 
-		bool operator == (const const_iterator& o) const;
-		bool operator != (const const_iterator& o) const;
-	private:
-		const_iterator();
-		void update_value() const;
+	class EXPORT_2D iterator_impl: public C2DTransformation::iterator_impl  {
+	public:
+		iterator_impl(const C2DBounds& pos, const C2DBounds& size, 
+			      const C2DSplineTransformation& trans); 
+	private: 
+		virtual C2DTransformation::iterator_impl * clone() const; 
+		virtual const C2DFVector&  do_get_value()const; 
+		virtual void do_x_increment(); 
+		virtual void do_y_increment(); 
 
 		const C2DSplineTransformation& _M_trans;
-		C2DBounds  _M_pos;
 		mutable C2DFVector _M_value;
-		mutable bool _M_value_valid;
+		mutable bool _M_value_valid; 
+
 	};
 
-	const_iterator begin() const;
-	const_iterator end() const;
+
+	C2DTransformation::const_iterator begin() const;
+	C2DTransformation::const_iterator end() const;
 
 	C2DSplineTransformation *refine(const C2DBounds& coeff_size) const;
 
@@ -104,20 +100,6 @@ private:
 	mutable SHARED_PTR(C2DPPDivcurlMatrix) _M_divcurl_matrix; 
 
 };
-
-inline
-bool C2DSplineTransformation::const_iterator::operator ==
-   (const C2DSplineTransformation::const_iterator& o) const
-{
-	return _M_pos == o._M_pos;
-}
-
-inline
-bool C2DSplineTransformation::const_iterator::operator !=
-   (const C2DSplineTransformation::const_iterator& o) const
-{
-	return !(*this == o);
-}
 
 NS_MIA_END
 

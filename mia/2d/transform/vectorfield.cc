@@ -177,52 +177,35 @@ void C2DGridTransformation::set_parameters(const gsl::DoubleVector& params)
 	}
 }
 
-C2DGridTransformation::const_iterator& C2DGridTransformation::const_iterator::operator ++()
-{
-	++_M_current;
-	++_M_pos.x;
-	if (_M_pos.x >= _M_size.x && _M_pos.y < _M_size.y) {
-		_M_pos.x = 0;
-		++_M_pos.y;
-	}
-	return *this;
-}
 
-C2DGridTransformation::const_iterator C2DGridTransformation::const_iterator::operator ++(int)
-{
-	const_iterator help(*this);
-	++(*this);
-	return help;
-}
-
-const C2DFVector C2DGridTransformation::const_iterator::operator *() const
-{
-	assert(_M_pos.x < _M_size.x && _M_pos.y < _M_size.y ); 
-	return C2DFVector(_M_pos) - *_M_current;
-}
-
-EXPORT_2D bool operator == (const C2DGridTransformation::const_iterator& a, const C2DGridTransformation::const_iterator& b)
-{
-	return (a._M_current == b._M_current);
-}
-
-EXPORT_2D bool operator != (const C2DGridTransformation::const_iterator& a,
-			    const C2DGridTransformation::const_iterator& b)
-{
-	return !( a == b);
-}
-
-C2DGridTransformation::const_iterator::const_iterator():
-	_M_pos(0,0),
-	_M_size(0,0)
-{
-}
-
-C2DGridTransformation::const_iterator::const_iterator(const C2DBounds& pos, const C2DBounds& size, C2DFVectorfield::const_iterator start):
-	_M_pos(pos),
-	_M_size(size),
+C2DGridTransformation::iterator_impl::iterator_impl(const C2DBounds& pos, const C2DBounds& size, 
+						    C2DFVectorfield::const_iterator start):
+	C2DTransformation::iterator_impl(pos, size), 
 	_M_current(start)
 {
+	_M_value = C2DFVector(get_pos()) - *_M_current; 
+}
+
+C2DTransformation::iterator_impl * C2DGridTransformation::iterator_impl::clone() const
+{
+	return new C2DGridTransformation::iterator_impl(get_pos(), get_size(), _M_current); 
+}
+
+const C2DFVector&  C2DGridTransformation::iterator_impl::do_get_value()const
+{
+	return _M_value; 
+}
+
+void C2DGridTransformation::iterator_impl::do_x_increment()
+{
+	++_M_current; 
+	_M_value = C2DFVector(get_pos()) - *_M_current; 
+}
+
+void C2DGridTransformation::iterator_impl::do_y_increment()
+{
+	++_M_current; 
+	_M_value = C2DFVector(get_pos()) - *_M_current; 
 }
 
 
@@ -239,12 +222,14 @@ C2DFVector C2DGridTransformation::operator ()(const  C2DFVector& x) const
 
 C2DGridTransformation::const_iterator C2DGridTransformation::begin() const
 {
-	return const_iterator(C2DBounds(0,0), _M_field.get_size(), _M_field.begin());
+	return const_iterator(new iterator_impl(C2DBounds(0,0), 
+						_M_field.get_size(), _M_field.begin()));
 }
 
 C2DGridTransformation::const_iterator C2DGridTransformation::end() const
 {
-	return const_iterator(C2DBounds(0,_M_field.get_size().y), _M_field.get_size(), _M_field.end());
+	return const_iterator(new iterator_impl( _M_field.get_size(), _M_field.get_size(), 
+						 _M_field.end()));
 }
 
 

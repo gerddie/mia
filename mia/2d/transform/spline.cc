@@ -293,15 +293,15 @@ float C2DSplineTransformation::get_max_transform() const
 
 }
 
-C2DSplineTransformation::const_iterator C2DSplineTransformation::begin() const
+C2DTransformation::const_iterator C2DSplineTransformation::begin() const
 {
 	reinit();
-	return const_iterator(*this, C2DBounds(0,0));
+	return C2DTransformation::const_iterator(new iterator_impl(C2DBounds(0,0), get_size(), *this));
 }
 
-C2DSplineTransformation::const_iterator C2DSplineTransformation::end() const
+C2DTransformation::const_iterator C2DSplineTransformation::end() const
 {
-	return const_iterator(*this, get_size());
+	return C2DTransformation::const_iterator(new iterator_impl(get_size(), get_size(), *this));
 }
 
 void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
@@ -404,74 +404,39 @@ const C2DBounds& C2DSplineTransformation::get_coeff_size() const
 	return _M_coefficients.get_size();
 }
 
-C2DSplineTransformation::const_iterator::const_iterator(
-     const C2DSplineTransformation::const_iterator&  other):
-	_M_trans(other._M_trans),
-	_M_pos(other._M_pos),
-	_M_value(other._M_value),
-	_M_value_valid(other._M_value_valid)
-{
-}
 
-C2DSplineTransformation::const_iterator::const_iterator(const C2DSplineTransformation& trans,
-							const C2DBounds& pos):
-	_M_trans(trans),
-	_M_pos(pos),
-	_M_value(0,0),
+C2DSplineTransformation::iterator_impl::iterator_impl(const C2DBounds& pos, const C2DBounds& size, 
+						      const C2DSplineTransformation& trans):
+	C2DTransformation::iterator_impl(pos,size), 
+	_M_trans(trans), 
 	_M_value_valid(false)
 {
 }
-
-
-C2DSplineTransformation::const_iterator&
-C2DSplineTransformation::const_iterator::operator ++()
+ 
+C2DTransformation::iterator_impl * C2DSplineTransformation::iterator_impl::clone() const
 {
-	++_M_pos.x;
-	if (_M_pos.x == _M_trans.get_size().x) {
-		if (_M_pos.y < _M_trans.get_size().y) {
-			++_M_pos.y;
-			if (_M_pos.y < _M_trans.get_size().y)
-				_M_pos.x = 0;
-		}
+	return new C2DSplineTransformation::iterator_impl(get_pos(), get_size(), _M_trans); 
+}
+
+const C2DFVector&  C2DSplineTransformation::iterator_impl::do_get_value()const
+{
+	if (!_M_value_valid) {
+		cvdebug() << get_pos() << " -> " << _M_value << "\n"; 
+		_M_value = _M_trans(C2DFVector(get_pos()));
+		_M_value_valid = true; 
 	}
-	_M_value_valid = false;
-	return *this;
+	return _M_value; 
 }
 
-
-C2DSplineTransformation::const_iterator
-C2DSplineTransformation::const_iterator::operator ++(int)
+void C2DSplineTransformation::iterator_impl::do_x_increment()
 {
-	C2DSplineTransformation::const_iterator old = *this;
-	++(*this);
-	return old;
+	_M_value_valid = false; 
 }
-
-void C2DSplineTransformation::const_iterator::update_value() const
+void C2DSplineTransformation::iterator_impl::do_y_increment()
 {
-
-	if (_M_pos != _M_trans.get_size())  {
-		_M_value = C2DFVector(_M_pos) - _M_trans.apply(C2DFVector(_M_pos));
-		_M_value_valid = true;
-	}else {
-		assert(!"C2DSplineTransformation::const_iterator: try to access outside range");
-		throw logic_error("C2DSplineTransformation::const_iterator: try to access outside range");
-	}
+	_M_value_valid = false; 
 }
 
-const C2DFVector& C2DSplineTransformation::const_iterator::operator *() const
-{
-	if (!_M_value_valid)
-		update_value();
-	return _M_value;
-}
-
-const C2DFVector *C2DSplineTransformation::const_iterator::operator ->() const
-{
-	if (!_M_value_valid)
-		update_value();
-	return &_M_value;
-}
 
 double C2DSplineTransformation::get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const
 {
