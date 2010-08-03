@@ -244,8 +244,8 @@ BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, AffineGrad2ParamFixtureAff
 	BOOST_CHECK_CLOSE(params[2], 2.0, 0.1);
 
 	BOOST_CHECK_CLOSE(params[3], 1.0, 0.1);
-	BOOST_CHECK_CLOSE(params[4],-0.25, 0.1);
-	BOOST_CHECK_CLOSE(params[5],-0.5, 0.1);
+	BOOST_CHECK_CLOSE(params[4], -0.25, 0.1);
+	BOOST_CHECK_CLOSE(params[5], -0.5, 0.1);
 }
 
 

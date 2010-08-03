@@ -52,7 +52,7 @@ public:
 		virtual const C2DFVector&  do_get_value()const; 
 		virtual void do_x_increment(); 
 		virtual void do_y_increment(); 
-
+		C2DFVector _M_translate;
 		C2DFVector _M_value;
 	};
 
@@ -92,14 +92,4 @@ private:
 
 NS_MIA_END
 
-namespace std {
-	template <>
-	struct iterator_traits<mia::C2DTranslateTransformation::const_iterator> {
-		typedef input_iterator_tag iterator_category;
-		typedef mia::C2DFVector        value_type;
-		typedef mia::C2DBounds        difference_type;
-		typedef mia::C2DFVector*           pointer;
-		typedef mia::C2DFVector&          reference;
-	};
-}
 #endif

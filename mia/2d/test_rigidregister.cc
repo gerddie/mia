@@ -57,13 +57,19 @@ protected:
 	}
 };
 
+class RigidRegisterFixture : public PluginPathInitFixture {
+protected: 
+	RigidRegisterFixture(); 
+	void run(C2DTransformation& t, EMinimizers minimizer, double accuracy); 
+	const C2DBounds size;
+}; 
 
-BOOST_FIXTURE_TEST_CASE( test_instance, PluginPathInitFixture )
+void RigidRegisterFixture::run(C2DTransformation& t, EMinimizers minimizer, double accuracy)
 {
 	P2DImageCost cost = C2DImageCostPluginHandler::instance().produce("ssd");
 	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3));
 
-	C2DRigidRegister rr(cost, min_cg_pr, "translate", *ipfactory);
+	C2DRigidRegister rr(cost, minimizer, t.get_creator_string(), *ipfactory);
 
 
 	float src_image_init[10 * 10] = {
@@ -79,28 +85,77 @@ BOOST_FIXTURE_TEST_CASE( test_instance, PluginPathInitFixture )
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	};
 
-	float ref_image_init[10 * 10] = {
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0,10,30,30, 0, 0,
-		0, 0, 0, 0, 0,50,50,50, 0, 0,
-		0, 0, 0, 0, 0,50,50,50, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	};
-	const C2DBounds size(10,10);
+
 	P2DImage src(new C2DFImage(size, src_image_init));
-	P2DImage ref(new C2DFImage(size, ref_image_init));
+	P2DImage ref = t(*src, *ipfactory); 
 
 	P2DTransformation transform = rr.run(src, ref, 1);
 	auto params = transform->get_parameters();
+	auto orig_params = t.get_parameters();
 
-	BOOST_CHECK_EQUAL(params.size(), 2);
+	BOOST_CHECK_EQUAL(params.size(), orig_params.size());
 
-	BOOST_CHECK_CLOSE(params[0], -1.0, 0.1);
-	BOOST_CHECK_CLOSE(params[1], -1.0, 0.1);
-
+	for (size_t i = 0; i < params.size(); ++i) 
+		BOOST_CHECK_CLOSE(params[i], orig_params[i], accuracy);
+	
 }
+
+RigidRegisterFixture::RigidRegisterFixture():
+	size(10,10)
+{
+	
+}
+
+BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_nmsimplex, RigidRegisterFixture )
+{
+
+	auto tr_creator = C2DTransformCreatorHandler::instance().produce("translate");
+	auto transformation = tr_creator->create(size); 
+	auto params = transformation->get_parameters(); 
+	params[0] = 1.0;
+	params[1] = 1.0;
+	transformation->set_parameters(params); 
+
+	run(*transformation, min_nmsimplex, 1.0); 
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_gd, RigidRegisterFixture )
+{
+	auto tr_creator = C2DTransformCreatorHandler::instance().produce("translate");
+	auto transformation = tr_creator->create(size); 
+	auto params = transformation->get_parameters(); 
+	params[0] = 1.0;
+	params[1] = 1.0;
+	transformation->set_parameters(params); 
+
+	run(*transformation, min_gd, 0.1); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_rigidreg_rigid_simplex, RigidRegisterFixture )
+{
+	auto tr_creator = C2DTransformCreatorHandler::instance().produce("rigid");
+	auto transformation = tr_creator->create(size); 
+	auto params = transformation->get_parameters(); 
+	params[0] = 1.0;
+	params[1] = 1.0;
+	params[2] = 0.5;
+	transformation->set_parameters(params); 
+
+	run(*transformation, min_nmsimplex, 1.0); 
+}
+
+#ifdef THIS_TEST_NEEDS_A_BETTER_TEST_IMAGE
+BOOST_FIXTURE_TEST_CASE( test_rigidreg_rigid_gd, RigidRegisterFixture )
+{
+	auto tr_creator = C2DTransformCreatorHandler::instance().produce("rigid");
+	auto transformation = tr_creator->create(size); 
+	auto params = transformation->get_parameters(); 
+	params[0] = 1.0;
+	params[1] = 1.0;
+	params[2] = 0.5;
+	transformation->set_parameters(params); 
+
+	run(*transformation, min_cg_pr, 0.1); 
+}
+#endif

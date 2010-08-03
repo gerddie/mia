@@ -24,12 +24,16 @@
 
 #define VSTREAM_DOMAIN "nonrigidreg"
 
+#include <boost/lambda/lambda.hpp>
+
+
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/transformfactory.hh>
 #include <gsl++/multimin.hh>
 
+using boost::lambda::_1; 
 
 
 NS_MIA_BEGIN
@@ -222,7 +226,7 @@ double  C2DNonrigRegGradientProblem::do_fdf(const DoubleVector& x, DoubleVector&
 	_M_transf.set_parameters(x);
 	fill(g.begin(), g.end(), 0.0); 
 	double result = _M_costs.evaluate(_M_transf, g);
-	cvmsg() << "cost (g) = " << result << "\n"; 
+	transform(g.begin(), g.end(), g.begin(), _1 * -1); 
 	return result; 
 }
 

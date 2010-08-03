@@ -215,7 +215,7 @@ struct RigidGrad2ParamFixtureRigid {
 BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, RigidGrad2ParamFixtureRigid)
 {
 	C2DFVectorfield gradient(size);
-	const double alpha = 0.2;
+	const double alpha = 0.1;
 	const double ca = cos(alpha);
 	const double sa = sin(alpha);
 
@@ -232,7 +232,7 @@ BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, RigidGrad2ParamFixtureRigi
 
 	BOOST_CHECK_CLOSE(params[0], t.x, 0.1);
 	BOOST_CHECK_CLOSE(params[1], t.y, 0.1);
-	BOOST_CHECK_CLOSE(params[2], alpha, 0.1);
+	BOOST_CHECK_CLOSE(params[2], alpha, 3);
 }
 
 BOOST_FIXTURE_TEST_CASE (test_upscale, RigidGrad2ParamFixtureRigid)
@@ -250,7 +250,7 @@ BOOST_FIXTURE_TEST_CASE (test_upscale, RigidGrad2ParamFixtureRigid)
 }
 
 RigidGrad2ParamFixtureRigid::RigidGrad2ParamFixtureRigid():
-	size(20,20),
+	size(80,80),
 	trans(size)
 {
 	trans.translate(-1, -3);

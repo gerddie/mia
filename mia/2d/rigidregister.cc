@@ -257,7 +257,7 @@ void    C2DRegGradientProblem::do_df(const DoubleVector& x, DoubleVector&  g)
 	P2DImage temp = apply(x);
 
 	C2DFVectorfield gradient(_M_model.get_size());
-	_M_cost.evaluate_force(*temp, _M_reference, 1.0, gradient);
+	_M_cost.evaluate_force(*temp, _M_reference, -1.0, gradient);
 	_M_transf.translate(gradient, g);
 }
 
@@ -265,7 +265,7 @@ double  C2DRegGradientProblem::do_fdf(const DoubleVector& x, DoubleVector&  g)
 {
 	P2DImage temp = apply(x);
 	C2DFVectorfield gradient(_M_model.get_size());
-	_M_cost.evaluate_force(*temp, _M_reference, 1.0, gradient);
+	_M_cost.evaluate_force(*temp, _M_reference, -1.0, gradient);
 	_M_transf.translate(gradient, g);
 	return _M_cost.value(*temp, _M_reference);
 }

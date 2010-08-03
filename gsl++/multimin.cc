@@ -2,6 +2,11 @@
 #include <gsl++/multimin.hh>
 
 #include <stdexcept>
+#include <boost/lambda/lambda.hpp>
+#include <algorithm>
+
+using boost::lambda::_1; 
+using std::transform; 
 
 namespace gsl {
 

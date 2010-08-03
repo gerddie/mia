@@ -56,8 +56,9 @@ C2DFVector C2DTranslateTransformation::apply(const C2DFVector& x) const
 C2DTranslateTransformation::iterator_impl::iterator_impl(const C2DBounds& pos, const C2DBounds& size, 
 							 const C2DFVector& value):
 	C2DTransformation::iterator_impl(pos, size), 
-	_M_value(value)
+	_M_translate(value)
 {
+	_M_value = -1.0f * _M_translate; 
 }
 
 C2DTransformation::iterator_impl * C2DTranslateTransformation::iterator_impl::clone() const 
@@ -72,10 +73,12 @@ const C2DFVector&  C2DTranslateTransformation::iterator_impl::do_get_value() con
 
 void C2DTranslateTransformation::iterator_impl::do_x_increment()
 {
+	_M_value = C2DFVector(get_pos()) - _M_translate; 
 }
 
 void C2DTranslateTransformation::iterator_impl::do_y_increment()
 {
+	_M_value = C2DFVector(get_pos()) - _M_translate; 
 }
 
 C2DTransformation::const_iterator C2DTranslateTransformation::begin() const

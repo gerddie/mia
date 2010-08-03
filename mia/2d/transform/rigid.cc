@@ -161,6 +161,8 @@ void C2DRigidTransformation::set_parameters(const gsl::DoubleVector& params)
 	_M_translation.x = params[0];
 	_M_translation.y = params[1];
 	_M_rotation = params[2];
+	cvdebug() << "Rigid transform = (" << _M_translation << ", " << _M_rotation << ")\n"; 
+
 	_M_matrix_valid = false;
 }
 
@@ -291,18 +293,14 @@ void C2DRigidTransformation::translate(const C2DFVectorfield& gradient, gsl::Dou
 			r[1] += g->y;
 		}
 	}
-	double gxx = 0.0;
-	double gxy = 0.0;
-	double gyx = 0.0;
-	double gyy = 0.0;
+	double fx_dy = 0.0;
+	double fy_dx = 0.0;
 	for (size_t y = 1; y < _M_size.y; ++y) {
-		auto g0 = gradient.begin_at(0,y);
-		auto g1 = gradient.begin_at(0,y);
-		for (size_t x = 1; x < _M_size.x; ++x, ++g) {
-			gxx += g1[1].x - g1[0].x;
-			gyx += g1[1].y - g1[0].y;
-			gxy += g1->x - g0->x;
-			gyy += g1->y - g0->y;
+		auto g0 = gradient.begin_at(0,y-1); 
+		auto g1 = gradient.begin_at(0,y); 
+		for (size_t x = 1; x < _M_size.x; ++x, ++g1, ++g0) {
+			fy_dx += g1[1].y - g1[0].y; 
+			fx_dy += g1[0].x - g0[0].x; 
 		}
 	}
 
@@ -310,14 +308,9 @@ void C2DRigidTransformation::translate(const C2DFVectorfield& gradient, gsl::Dou
 	params[0] = r[0] * f;
 	params[1] = r[1] * f;
 
-	double rot = gyx - gxy;
-	double irot = gxx + gyy;
-	cvdebug() << "rotation =" << rot << ", " << irot << "\n";
+	double rot = fy_dx - fx_dy;
 
-	if (fabs(rot)  < 1e-5 * fabs(irot))
-		params[2] = 0;
-	else
-		params[2] = atan(rot/irot);
+	params[2] = asin(rot/ gradient.size()/2);
 }
 
 

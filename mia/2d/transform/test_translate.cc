@@ -120,3 +120,49 @@ BOOST_FIXTURE_TEST_CASE(test_invert_params, TranslateTransformFixture)
 	BOOST_CHECK_EQUAL(b[1],-a[1]);
 }
 
+BOOST_AUTO_TEST_CASE(test_shift_image)
+{
+	float src_image_init[10 * 9] = {
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0,10,30,30, 0, 0, 0,
+		0, 0, 0, 0,50,50,50, 0, 0, 0,
+		0, 0, 0, 0,50,50,50, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+	};
+
+	float ref_image_init[10 * 9] = {
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0,10,30,30, 0, 0,
+		0, 0, 0, 0, 0,50,50,50, 0, 0,
+		0, 0, 0, 0, 0,50,50,50, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	};
+	const C2DBounds size(10,9);
+	P2DImage src(new C2DFImage(size, src_image_init));
+	
+	C2DTranslateTransformation transform(size,  C2DFVector(1.0, 2.0));
+	
+	unique_ptr<C2DInterpolatorFactory> ipf(create_2dinterpolation_factory(ip_nn)); 
+
+	P2DImage result = transform.apply(*src, *ipf);
+	
+	const C2DFImage& r = dynamic_cast<const C2DFImage&>(*result); 
+	
+	BOOST_REQUIRE(r.get_size() == size); 
+	float *itest = ref_image_init; 
+	auto ir = r.begin(); 
+	for (size_t y = 0; y < size.y; ++y)
+		for (size_t x = 0; x < size.x; ++x, ++ir, ++itest)
+			BOOST_CHECK_EQUAL(*ir, *itest); 
+	
+	
+
+}; 
