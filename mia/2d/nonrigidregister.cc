@@ -226,6 +226,7 @@ double  C2DNonrigRegGradientProblem::do_fdf(const DoubleVector& x, DoubleVector&
 	_M_transf.set_parameters(x);
 	fill(g.begin(), g.end(), 0.0); 
 	double result = _M_costs.evaluate(_M_transf, g);
+	cvmsg() << "gcost = " << result << "   \r"; 
 	transform(g.begin(), g.end(), g.begin(), _1 * -1); 
 	return result; 
 }

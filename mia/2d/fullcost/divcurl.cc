@@ -28,7 +28,8 @@ using namespace std;
 C2DDivCurlFullCost::C2DDivCurlFullCost(double weight_div, double weight_curl, double weight):
 	C2DFullCost(weight), 
 	_M_weight_div(weight_div), 
-	_M_weight_curl(weight_curl)
+	_M_weight_curl(weight_curl), 
+	_M_size_scale(1.0)
 {
 	this->add(::mia::property_gradient); 
 }
@@ -36,16 +37,21 @@ C2DDivCurlFullCost::C2DDivCurlFullCost(double weight_div, double weight_curl, do
 double C2DDivCurlFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const
 {
 	assert(t.get_size() == get_current_size()); 
-	return t.get_divcurl_cost(_M_weight_div, _M_weight_curl, gradient); 
+	double result = t.get_divcurl_cost(_M_size_scale * _M_weight_div, _M_size_scale *_M_weight_curl, gradient); 
+	cvinfo() << "DivCurl=" << result << "\n"; 
+	return result; 
 }
 
 double C2DDivCurlFullCost::do_value(const C2DTransformation& t) const
 {
-	return t.get_divcurl_cost(_M_weight_div, _M_weight_curl); 
+	double result = t.get_divcurl_cost(_M_size_scale * _M_weight_div, _M_size_scale * _M_weight_curl); 
+	cvdebug() << "C2DImageFullCost::value = " << result << "\n"; 
+	return result; 
 }
 
 void C2DDivCurlFullCost::do_set_size()
 {
+	_M_size_scale = 1.0 / (get_current_size().x * get_current_size().y); 
 }
 
 

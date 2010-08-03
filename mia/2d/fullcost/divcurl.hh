@@ -39,6 +39,7 @@ private:
 
 	double _M_weight_div; 
 	double _M_weight_curl; 
+	double _M_size_scale; 
 }; 
 
 NS_MIA_END

@@ -73,34 +73,15 @@ double C2DImageFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVect
 	save_image2d(fname.str(), toubyte_converter->filter(*temp)); 
 
 
-	double maxnorm = 0.0; 
-	auto transfparame = t.get_parameters(); 
-	for(auto i = transfparame.begin();i  != transfparame.end(); i+=2) {
-		double n = i[0] * i[0] + i[1] * i[1];
-		if (maxnorm  < n)
-			maxnorm = n;
-	}
-	cvinfo() << "maxnorm=" <<maxnorm<< "\n"; 
-
-	if (maxnorm > 0.0) {
-		C2DFImage *tn = new C2DFImage(t.get_size()); 
-		P2DImage tnorm(tn); 
-		for (auto g = tn->begin(), i = transfparame.begin(); g != tn->end(); ++g, i+=2)
-			*g = sqrt(i[0] * i[0] + i[1] * i[1]); 
-		stringstream nname; 
-		nname << "tnorm" << setw(5) << setfill('0') << idx << ".v"; 
-		save_image2d(nname.str(), tnorm); 
-	}	
-	
 	C2DFVectorfield force(get_current_size()); 
  	_M_cost_kernel->evaluate_force(*temp, *_M_ref, 1.0, force); 
 
-	cvinfo() << get_current_size() << " gsize " << gradient.size() << "\n"; 
-	
 	t.translate(force, gradient); 
-	idx++; 	
+	idx++;
 
-	return _M_cost_kernel->value(*temp, *_M_ref); 
+	double result = _M_cost_kernel->value(*temp, *_M_ref); 
+	cvdebug() << "Image cost =" << result << "\n"; 
+	return result; 
 	
 }
 

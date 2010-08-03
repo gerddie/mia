@@ -421,7 +421,6 @@ C2DTransformation::iterator_impl * C2DSplineTransformation::iterator_impl::clone
 const C2DFVector&  C2DSplineTransformation::iterator_impl::do_get_value()const
 {
 	if (!_M_value_valid) {
-		cvdebug() << get_pos() << " -> " << _M_value << "\n"; 
 		_M_value = _M_trans(C2DFVector(get_pos()));
 		_M_value_valid = true; 
 	}
