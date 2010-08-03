@@ -76,33 +76,9 @@ void CBSplineKernel::operator () (double x, std::vector<double>& weight, std::ve
 	get_weights(x - ix, weight);
 }
 
-// code taken from http://www.stereopsis.com/FPU.html
-// Author: Michael Herf
-
-const double _double2fixmagic = 68719476736.0*1.5;     //2^36 * 1.5,  (52-_shiftamt=36) uses limited precisicion to floor
-const int    _shiftamt        = 16;                    //16.16 fixed point representation,
-
-#if BIGENDIAN_
-	#define iexp_				0
-	#define iman_				1
-#else
-	#define iexp_				1
-	#define iman_				0
-#endif //BigEndian_
-
-inline int fastfloor(double val)
-{
-	union {
-		double dval; 
-		int ival[2]; 
-	} v; 
-	v.dval = val + _double2fixmagic;
-	return v.ival[iman_] >> _shiftamt; 
-}
-
 int CBSplineKernel::get_indices(double x, std::vector<int>& index) const
 {
-	int ix = fastfloor(x + _M_shift);
+	int ix = (int)floor(x + _M_shift);
 	int i = ix - _M_half_degree;
 	for (size_t k = 0; k < index.size(); ++k)
 		index[k] = i++;

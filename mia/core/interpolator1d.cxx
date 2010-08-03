@@ -272,8 +272,8 @@ inline void mirror_boundary_conditions(std::vector<int>& index, size_t width,
 {
 	for (size_t k = 0; k < index.size(); k++) {
 		index[k] = (width == 1) ? (0) : ((index[k] < 0) ?
-			(-index[k] - width2 * ((-index[k]) / width2))
-			: (index[k] - width2 * (index[k] / width2)));
+						 (-index[k]) % width2
+						 : index[k] % width2);
 		if (width <= (size_t)index[k]) {
 			index[k] = width2 - index[k];
 		}

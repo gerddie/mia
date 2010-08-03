@@ -550,7 +550,7 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 	for (size_t y = 0; y < size.y; ++y)
 		for (size_t x = 0; x < size.x; ++x, ++ir, ++itest)
 			cvinfo() << x << "," << y << ", " << *ir << " ?= " <<*itest << "\n"; 
-			if (*itest > 0.0 || *ir > 0.001) 
+			if (*itest > 0.0001 || *ir > 0.0001) 
 				BOOST_CHECK_EQUAL(*ir, *itest); 
 	
 
