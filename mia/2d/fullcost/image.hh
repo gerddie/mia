@@ -36,7 +36,8 @@ public:
 			 const std::string& ref, 
 			 const std::string& cost, 
 			 EInterpolation ip_type, 
-			 double weight); 
+			 double weight, 
+			 bool debug); 
 private: 
 	double do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const;
 	void do_set_size(); 
@@ -54,6 +55,7 @@ private:
 
 	P2DImageCost _M_cost_kernel; 
 	P2DInterpolatorFactory _M_ipf; 
+	bool _M_debug;
 }; 
 
 NS_MIA_END

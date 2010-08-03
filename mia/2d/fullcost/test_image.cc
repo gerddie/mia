@@ -24,6 +24,7 @@
 #include <mia/2d/fullcost/image.hh>
 #include <mia/2d/transformmock.hh>
 #include <mia/2d/2dimageio.hh>
+#include <mia/2d/2dfilter.hh>
 
 #include <mia/internal/autotest.hh>
 
@@ -32,9 +33,14 @@ namespace bfs=::boost::filesystem;
 
 BOOST_AUTO_TEST_CASE( test_imagefullcost ) 
 {
-	list< bfs::path> plugpath;
-	plugpath.push_back(bfs::path("../cost"));
-	C2DImageCostPluginHandler::set_search_path(plugpath);
+	list< bfs::path> cost_plugpath;
+	cost_plugpath.push_back(bfs::path("../cost"));
+	C2DImageCostPluginHandler::set_search_path(cost_plugpath);
+
+	list< bfs::path> filter_plugpath;
+	filter_plugpath.push_back(bfs::path("../filter"));
+	C2DFilterPluginHandler::set_search_path(filter_plugpath);
+
 
 	// create two images 
 	const float src_data[16] = {
@@ -57,7 +63,7 @@ BOOST_AUTO_TEST_CASE( test_imagefullcost )
 	BOOST_REQUIRE(save_image2d("src.@", src)); 
 	BOOST_REQUIRE(save_image2d("ref.@", ref)); 
 
-	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0); 
+	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
 	cost.set_size(size);
 	C2DTransformMock t(size); 
 	
@@ -102,7 +108,7 @@ BOOST_AUTO_TEST_CASE( test_imagefullcost_2 )
 	BOOST_REQUIRE(save_image2d("src.@", src)); 
 	BOOST_REQUIRE(save_image2d("ref.@", ref)); 
 
-	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0); 
+	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
 	cost.set_size(size);
 	C2DTransformMock t(size); 
 	

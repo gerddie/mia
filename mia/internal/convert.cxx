@@ -20,6 +20,7 @@
 #include <limits>
 #include <boost/algorithm/minmax_element.hpp>
 #include <mia/core/msgstream.hh>
+#include <mia/core/meanvar.hh>
 
 NS_MIA_BEGIN
 
@@ -142,7 +143,14 @@ typename TConvert<Image>::result_type TConvert<Image>::convert(const Data<S>& sr
 		break; 
 	}
 	case pc_opt_stat: {
-		
+		const pair<T, T> trgt_minmax = get_minmax<T>::apply(); 
+		const double q_trgt_range = 0.25 * (trgt_minmax.second - trgt_minmax.first); 
+		const auto meanvar = mean_var(src.begin(), src.end()); 
+		if (meanvar.second > 0) 
+			a = q_trgt_range / meanvar.second; 
+		mx = -meanvar.first; 
+		my = 0.5 * (trgt_minmax.second + trgt_minmax.first);
+		break; 
 	}
 	default: 
 		a = _M_a; 
