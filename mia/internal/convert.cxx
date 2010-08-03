@@ -141,7 +141,9 @@ typename TConvert<Image>::result_type TConvert<Image>::convert(const Data<S>& sr
 		}
 		break; 
 	}
-
+	case pc_opt_stat: {
+		
+	}
 	default: 
 		a = _M_a; 
 		mx = 0.0f; 
