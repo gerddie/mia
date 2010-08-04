@@ -56,10 +56,8 @@ CSegSection::CSegSection(xmlpp::Node& node)
 
 	xmlpp::Node::NodeList points = node.get_children("point");
 
-	for (xmlpp::Node::NodeList::const_iterator i = points.begin();
-	     i != points.end(); ++i) {
+	for (auto i = points.begin(); i != points.end(); ++i)
 		m_points.push_back(CSegPoint2D(**i));
-	}
 }
 
 const string& CSegSection::get_id() const
@@ -85,13 +83,15 @@ void CSegSection::shift(const C2DFVector& delta)
 
 void CSegSection::transform(const C2DTransformation& t)
 {
-	Points::iterator ip = m_points.begin();
-	Points::iterator ep = m_points.end();
+	for(auto i = m_points.begin(); i != m_points.end(); ++i) 
+		i->transform(t);
+}
 
-	while (ip != ep) {
-		ip->transform(t);
-		++ip;
-	}
+
+void CSegSection::inv_transform(const C2DTransformation& t)
+{
+	for(auto i = m_points.begin(); i != m_points.end(); ++i) 
+		i->inv_transform(t);
 }
 
 
@@ -145,30 +145,3 @@ float CSegSection::get_hausdorff_distance(const CSegSection& other) const
 
 
 NS_MIA_END
-#if 0
-void CSegSection::transform(const MSplineSignalList& defo, const std::vector<REAL>& scale)
-{
-	// copy the points and scale them
-	KdataSplinesList p(m_points->size());
-
-	for (size_t i = 0; i < m_points->size(); ++i) {
-		PKdataSplines s = (*m_points)[i]->copy();
-		for (KdataSplines::iterator c = s->begin(); c != s->end(); ++c)
-			*c *= scale[i];
-		p.insertAt(i, s);
-	}
-
-	KdataSplinesList pres = defo.evalat(p, NULL);
-
-	for (size_t i = 0; i < m_points->size(); ++i) {
-		KdataSplines::const_iterator i_res = pres[i]->begin();
-		KdataSplines::const_iterator e_res = pres[i]->end();
-		KdataSplines::iterator i_pnt = (*m_points)[i]->begin();
-
-		while (i_res != e_res) {
-			*i_pnt++ -= *i_res++;
-
-		}
-	}
-}
-#endif

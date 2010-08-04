@@ -284,9 +284,9 @@ void C2DAffineTransformation::add(const C2DTransformation& other)
 }
 
 
-C2DFVector C2DAffineTransformation::operator () (const C2DFVector& /*x*/) const
+C2DFVector C2DAffineTransformation::operator () (const C2DFVector& x) const
 {
-	assert(!"not implemented");
+	return x - apply(x); 
 }
 
 float C2DAffineTransformation::get_jacobian(const C2DFVectorfield& /*v*/, float /*delta*/) const

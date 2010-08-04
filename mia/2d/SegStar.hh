@@ -41,6 +41,7 @@ public:
 	void shift(const C2DFVector& delta);
 
 	void transform(const C2DTransformation& t);
+	void inv_transform(const C2DTransformation& t);
 
 	CSegPoint2D m_center;
 	float m_radius;

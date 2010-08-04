@@ -196,7 +196,7 @@ float C2DTranslateTransformation::pertuberate(C2DFVectorfield& v) const
 
 C2DFVector C2DTranslateTransformation::operator () (const C2DFVector& x) const
 {
-	return _M_transform;
+	return x - _M_transform;
 }
 
 float C2DTranslateTransformation::get_jacobian(const C2DFVectorfield& v, float delta) const
