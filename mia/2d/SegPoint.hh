@@ -43,6 +43,7 @@ public:
 	CSegPoint2D(const xmlpp::Node& node);
 	void write(xmlpp::Node& node) const;
 	void transform(const C2DTransformation& t); 
+	void inv_transform(const C2DTransformation& t); 
 };
 
 NS_MIA_END

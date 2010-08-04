@@ -64,9 +64,25 @@ void CSegPoint2D::write(Node& node) const
 
 void CSegPoint2D::transform(const C2DTransformation& t)
 {
-	const C2DFVector r =  t.apply(*this); 
+	const C2DFVector r =  t(*this); 
 	x = r.x; 
 	y = r.y;
 }
+
+void CSegPoint2D::inv_transform(const C2DTransformation& t)
+{
+	C2DFVector r(x,y); 
+	cvinfo() << r << "\n"; 
+	int niter = 0; 
+	C2DFVector delta = t(r) - *this; 
+	while (delta.norm2() > 0.000001 && niter++ < 100) {
+		r -= 0.1 * delta; 
+		delta = t(r) - *this; 
+		cvinfo() << r << delta << "\n"; 
+	}
+	x = r.x; 
+	y = r.y; 
+}
+
 
 NS_MIA_END

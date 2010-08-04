@@ -65,7 +65,7 @@ int do_main( int argc, const char *argv[] )
 	cvdebug() << "auto transform_creator\n"; 
 	auto transform_creator = C2DTransformCreatorHandler::instance().produce("spline"); 
 	if (!transform_creator && transform_creator->get_init_string() != string("spline"))
-		cverr() << "smthgs wrong\n"; 
+		cverr() << "something's wrong\n"; 
 
 	size_t mg_levels = 3;
 
