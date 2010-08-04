@@ -53,18 +53,27 @@ double C2DFullCostList::do_evaluate(const C2DTransformation& t, gsl::DoubleVecto
 {
 	double  result = 0; 
 	gsl::DoubleVector tmp(gradient.size()); 
+	cvmsg() << "Cost: "; 
 	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i) {
-		result += (*i)->evaluate(t, tmp); 
+		double h = (*i)->evaluate(t, tmp); 
+		cverb << h << "("<< (*i)->get_init_string() << ") "; 
+		result += h; 
 		transform(gradient.begin(), gradient.end(), tmp.begin(), gradient.begin(), _1 + _2); 
 	}
+	cverb << " = " << result << "\n"; 
 	return result; 
 }
 
 double C2DFullCostList::do_value(const C2DTransformation& t) const
 {
 	double  result = 0; 
-	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i)
-		result += (*i)->cost_value(t); 
+	cvmsg() << "Cost: "; 
+	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i) {
+		double h = (*i)->cost_value(t); 
+		cverb << h << "("<< (*i)->get_init_string() << ") "; 
+		result += h; 
+	}
+	cverb << " = " << result << "\n"; 	
 	return result; 
 }
 

@@ -42,7 +42,6 @@ private:
 	virtual void do_set_size(); 
 	
 	std::vector<P2DFullCost> _M_costs; 
-
 }; 
 
 NS_MIA_END

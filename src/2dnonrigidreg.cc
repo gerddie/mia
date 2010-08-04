@@ -69,7 +69,7 @@ int do_main( int argc, const char *argv[] )
 
 	size_t mg_levels = 3;
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_general_help);
 	options.push_back(make_opt( src_filename, "in", 'i', "test image", "input", true));
 	options.push_back(make_opt( ref_filename, "ref", 'r', "reference image", "input", true));
 	options.push_back(make_opt( out_filename, "out", 'o', "registered output image", "output", true));

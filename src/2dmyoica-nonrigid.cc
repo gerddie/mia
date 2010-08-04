@@ -73,6 +73,25 @@ private:
 	FConvert2DImage2float _M_converter; 
 }; 
 
+C2DFullCostList create_costs(double divcurlweight, P2DFullCost cost_ssd)
+{
+	C2DFullCostList result; 
+	result.push(cost_ssd); 
+	stringstream divcurl_descr;  
+	divcurl_descr << "divcurl:weight=" << divcurlweight; 
+	result.push(C2DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
+	return result; 
+}
+
+P2DTransformationFactory create_transform_creator(size_t c_rate)
+{
+	stringstream transf; 
+	transf << "spline:rate=" << c_rate; 
+	return C2DTransformCreatorHandler::instance().produce(transf.str()); 
+}
+	
+
+
 int do_main( int argc, const char *argv[] )
 {
 	// IO parameters 
@@ -91,7 +110,9 @@ int do_main( int argc, const char *argv[] )
 	// registration parameters
 	string cost_function("ssd"); 
 	EMinimizers minimizer = min_cg_pr;
-		auto transform_creator = C2DTransformCreatorHandler::instance().produce("spline:rate=3");
+	int c_rate = 15; 
+	double divcurlweight = 0.1; 
+
 
 	EInterpolation interpolator = ip_bspline3;
 	size_t mg_levels = 3; 
@@ -119,7 +140,13 @@ int do_main( int argc, const char *argv[] )
 
 	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
 				    "optimizer", 'O', "Optimizer used for minimization", "optimizer", false));
-	options.push_back(make_opt( transform_creator, "transForm", 'f', "transformation type", "transform", false));
+	options.push_back(make_opt( c_rate, "start-c-rate", 'a', 
+				    "start coefficinet rate in spines, gets divided by two every pass", 
+				    "c-rate", false));
+
+	options.push_back(make_opt( divcurlweight, "start-divcurl", 'd',
+				    "start divcurl weight, gets divided by 5 every pass", 
+				    "divcurl", false)); 
 	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
 	options.push_back(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels", "mg-levels", false));
@@ -144,15 +171,13 @@ int do_main( int argc, const char *argv[] )
 
 	options.parse(argc, argv, false);
 
-	auto cost_descrs = options.get_remaining(); 
-	// prepare registration class
 
-	C2DFullCostList costs; 
-	costs.push(C2DFullCostPluginHandler::instance().produce("ssd"));
-	costs.push(C2DFullCostPluginHandler::instance().produce("divcurl:weight=0.01"));
+
+	// this cost will always be used 
+	P2DFullCost cost_ssd = C2DFullCostPluginHandler::instance().produce("image");
 
 	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(interpolator));
-	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory);
+
 
 	
 	// load input data set
@@ -215,22 +240,27 @@ int do_main( int argc, const char *argv[] )
 			THROW(runtime_error, "unable to save to '" << cropped_filename << "'"); 
 
 	}
-	
 
 	CSegSetWithImages::Frames& frames = input_set.get_frames();
+	{
+		auto costs  = create_costs(divcurlweight, cost_ssd); 
+		auto transform_creator = create_transform_creator(c_rate); 
+		C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory);
 
-	for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
-		cvmsg() << "Register 1st pass, frame " << i << "\n"; 
-		P2DTransformation transform = nrr.run(input_images[i + skip_images] , 
-						      references[i], mg_levels);
-		input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], *ipfactory);
-		P2DTransformation inverse(transform->invert()); 
-		frames[i + skip_images].transform(*inverse);
+		
+		for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
+			cvmsg() << "Register 1st pass, frame " << i << "\n"; 
+			P2DTransformation transform = nrr.run(input_images[i + skip_images] , 
+							      references[i], mg_levels);
+			input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], *ipfactory);
+			frames[i + skip_images].inv_transform(*transform);
+		}
 	}
-
+	
 	// run the specified number of passes 
 	// break early if ICA fails
 	while (++current_pass < pass) {
+		
 		C2DPerfusionAnalysis ica2(components, !no_normalize, !no_meanstrip); 
 		if (max_ica_iterations) 
 			ica2.set_max_ica_iterations(max_ica_iterations); 
@@ -238,14 +268,23 @@ int do_main( int argc, const char *argv[] )
 		transform(input_images.begin() + skip_images, 
 			  input_images.end(), series.begin(), Convert2Float()); 
 		if (ica2.run(series) ) {
+			divcurlweight /= 5.0; 
+			if (c_rate > 1) 
+				c_rate /= 2; 
+			auto costs  = create_costs(divcurlweight, cost_ssd); 
+			auto transform_creator = create_transform_creator(c_rate); 
+			C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory);
+			cvmsg() << "Run registration with divcurl=" << divcurlweight 
+				<< " and spline c-rate " << c_rate << "\n"; 
+			
 			references_float = ica2.get_references(); 
 			transform(references_float.begin(), references_float.end(), 
 				  references.begin(), C2DFImage2PImage()); 
 			
 			for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
 				cvmsg() << "Register " << current_pass + 1 <<  " pass, frame " << i << "\n"; 
-				P2DTransformation transform = nrr.run(input_images[i + skip_images] , 
-								      references[i], mg_levels); 
+				P2DTransformation transform = 
+					nrr.run(input_images[i + skip_images] , references[i], mg_levels); 
 				input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], *ipfactory);
 				frames[i + skip_images].inv_transform(*transform);
 			}
