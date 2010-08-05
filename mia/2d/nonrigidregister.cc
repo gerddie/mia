@@ -66,6 +66,8 @@ class C2DNonrigRegGradientProblem: public gsl::CFDFMinimizer::Problem {
 public:
 	C2DNonrigRegGradientProblem(const C2DFullCostList& costs, C2DTransformation& transf,
 			      const C2DInterpolatorFactory& _M_ipf);
+
+	void reset_counters(); 
 private:
 	double  do_f(const DoubleVector& x);
 	void    do_df(const DoubleVector& x, DoubleVector&  g);
@@ -75,6 +77,9 @@ private:
 	const C2DFullCostList& _M_costs; 
 	C2DTransformation& _M_transf;
 	const C2DInterpolatorFactory& _M_ipf;
+	size_t _M_func_evals; 
+	size_t _M_grad_evals; 
+
 };
 typedef shared_ptr<C2DNonrigRegGradientProblem> P2DGradientNonrigregProblem;
 
@@ -203,15 +208,24 @@ C2DNonrigRegGradientProblem::C2DNonrigRegGradientProblem(const C2DFullCostList& 
 	gsl::CFDFMinimizer::Problem(transf.degrees_of_freedom()),
 	_M_costs(costs),
 	_M_transf(transf),
-	_M_ipf(ipf)
+	_M_ipf(ipf), 
+	_M_func_evals(0),
+	_M_grad_evals(0)
 {
 
 }
 
+void C2DNonrigRegGradientProblem::reset_counters()
+{
+	_M_func_evals = _M_grad_evals = 0; 
+}
+
 double  C2DNonrigRegGradientProblem::do_f(const DoubleVector& x)
 {
+	_M_func_evals++; 
 	_M_transf.set_parameters(x);
 	double result = _M_costs.cost_value(_M_transf);
+	cvmsg() << "Cost[fe="<<_M_func_evals << "]=" << result << "\n"; 
 	return result; 
 }
 
@@ -222,10 +236,13 @@ void    C2DNonrigRegGradientProblem::do_df(const DoubleVector& x, DoubleVector& 
 
 double  C2DNonrigRegGradientProblem::do_fdf(const DoubleVector& x, DoubleVector&  g)
 {
+	_M_grad_evals++; 
+	
 	_M_transf.set_parameters(x);
 	fill(g.begin(), g.end(), 0.0); 
 	double result = _M_costs.evaluate(_M_transf, g);
 	transform(g.begin(), g.end(), g.begin(), _1 * -1); 
+	cvmsg() << "Cost[fg="<<_M_grad_evals << "]=" << result << "\n"; 
 	return result; 
 }
 
