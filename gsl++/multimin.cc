@@ -21,6 +21,9 @@ struct CFDFMinimizerImpl {
 	const gsl_multimin_fdfminimizer_type *m_optimizer_type; 
 
 	gsl_multimin_fdfminimizer *m_s; 
+	double m_gorth_tolerance; 
+	double m_stop_eps; 
+
 }; 
 
 CFDFMinimizer::CFDFMinimizer(PProblem problem, const gsl_multimin_fdfminimizer_type *ot):
@@ -81,7 +84,9 @@ CFDFMinimizer::Problem::operator gsl_multimin_function_fdf*()
 
 CFDFMinimizerImpl::CFDFMinimizerImpl(CFDFMinimizer::PProblem problem, const gsl_multimin_fdfminimizer_type *ot):
 	m_problem(problem), 
-	m_optimizer_type(ot)
+	m_optimizer_type(ot), 
+	m_gorth_tolerance(0.1),
+	m_stop_eps(0.01)
 {
 	m_s = gsl_multimin_fdfminimizer_alloc (m_optimizer_type, m_problem->size()); 	
 	if (!m_s) 
@@ -93,18 +98,30 @@ CFDFMinimizerImpl::~CFDFMinimizerImpl()
 	gsl_multimin_fdfminimizer_free (m_s);
 }
 
+
+void CFDFMinimizer::set_g_tol(double tol)
+{
+	impl->m_gorth_tolerance = tol;
+}
+
+void CFDFMinimizer::set_stop_eps(double tol)
+{
+	impl->m_stop_eps = tol; 
+}
+
+
 int CFDFMinimizerImpl::run(DoubleVector& x)
 {
 	int iter = 0; 
 	int status; 
-	gsl_multimin_fdfminimizer_set (m_s, *m_problem, x, 0.01, 1e-3);
+	gsl_multimin_fdfminimizer_set (m_s, *m_problem, x, 0.01, m_gorth_tolerance);
 	do {
 		++iter; 
 		status = gsl_multimin_fdfminimizer_iterate (m_s);
 		if (status) 
 			break; 
 		
-		status = gsl_multimin_test_gradient (m_s->gradient, 1e-3);
+		status = gsl_multimin_test_gradient (m_s->gradient, m_stop_eps);
 	} while (status == GSL_CONTINUE && iter < 100); 
 	
 	// copy best solution 
@@ -131,6 +148,7 @@ size_t CFMinimizer::Problem::size() const
 {
 	return 	m_func.n; 
 }
+
 
 struct CFMinimizerImpl {
 	CFMinimizerImpl(CFMinimizer::PProblem problem, const gsl_multimin_fminimizer_type *ot); 

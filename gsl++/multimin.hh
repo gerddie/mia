@@ -33,6 +33,7 @@ public:
 	class Problem {
 	public:
 		Problem(size_t n); 
+
 		static double f(const gsl_vector * x, void * params); 
 		static void df(const gsl_vector * x, void * params, gsl_vector * g); 
 		static void fdf(const gsl_vector * x, void * params, double * f, gsl_vector * g); 
@@ -50,6 +51,9 @@ public:
 
 	CFDFMinimizer(PProblem p, const gsl_multimin_fdfminimizer_type *ot); 
 	~CFDFMinimizer(); 
+
+	void set_g_tol(double tol); 
+	void set_stop_eps(double tol); 
 	
 	int run(DoubleVector& x); 
 	
