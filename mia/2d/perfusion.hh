@@ -69,6 +69,11 @@ public:
 
 
 	/**
+	   \returns \a true if a periodic component could be identified in the given series
+	 */
+	bool has_periodic() const; 
+
+	/**
 	   Evaluate an image cropping filter. This code is specifically designed to deal 
 	   with the segmentantion of the left heart ventricle in short axis heart MRI 
 	   The algorithm evaluates the centers of the LV and the RV and uses the distance 

@@ -243,6 +243,7 @@ int do_main( int argc, const char *argv[] )
 
 	CSegSetWithImages::Frames& frames = input_set.get_frames();
 	{
+		++current_pass; 
 		auto costs  = create_costs(divcurlweight, cost_ssd); 
 		auto transform_creator = create_transform_creator(c_rate); 
 		C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory);
@@ -257,10 +258,11 @@ int do_main( int argc, const char *argv[] )
 		}
 	}
 	
-	// run the specified number of passes 
-	// break early if ICA fails
-	while (++current_pass < pass) {
-		
+	// run the specified number of passes or until no periodic movement can be identified 
+	// break early if ICA fails 
+	bool do_continue = true; 
+	while (do_continue) {
+		++current_pass; 
 		C2DPerfusionAnalysis ica2(components, !no_normalize, !no_meanstrip); 
 		if (max_ica_iterations) 
 			ica2.set_max_ica_iterations(max_ica_iterations); 
@@ -293,6 +295,7 @@ int do_main( int argc, const char *argv[] )
 				<< " because ICA didn't return useful results\n"; 
 			break; 
 		}
+		do_continue =  (!pass || current_pass < pass) && ica2.has_periodic(); 
 	}
 
 
