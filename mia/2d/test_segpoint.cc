@@ -25,6 +25,8 @@
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/SegPoint.hh>
 
+namespace bfs=boost::filesystem;
+
 class SegPointSplineTransformFixture {
 protected: 
 	SegPointSplineTransformFixture(); 
@@ -56,6 +58,11 @@ BOOST_FIXTURE_TEST_CASE ( test_inv_transform, SegPointSplineTransformFixture )
 
 SegPointSplineTransformFixture::SegPointSplineTransformFixture()
 {
+
+	list< bfs::path> kernelsearchpath;
+	kernelsearchpath.push_back(bfs::path("transform"));
+	C2DTransformCreatorHandler::set_search_path(kernelsearchpath);
+
 	C2DBounds size(10,10); 
 	auto spline_creator = C2DTransformCreatorHandler::instance().produce("spline:rate=1"); 
 	t = spline_creator->create(size); 
