@@ -73,6 +73,12 @@ INCLUDE (CheckTypeSize)
 
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
 
+#make sure we get the c++0x standard 
+IF(CMAKE_COMPILER_IS_GNUCXX)
+  ADD_DEFINITIONS(-std=c++0x)
+ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+
+
 IF(NOT "${CXX_HAS_CXX_0X_AUTO}")
   MESSAGE(FATAL_ERROR "This source code requires the c++0x auto type feature. "
     "If your compiler is supposed to support this feature, "
@@ -145,6 +151,7 @@ IF(MSVC)
     -D_SECURE_SCL=0
     )
 ENDIF(MSVC)
+
 
 SET(SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 SET(LIB_ROOT_INSTALL_PATH "lib/${MIA_NAME}")

@@ -108,10 +108,11 @@ int do_main( int argc, const char *argv[] )
 	bool override_src_imagepath = true;
 
 	// registration parameters
-	string cost_function("ssd"); 
-	EMinimizers minimizer = min_cg_pr;
-	int c_rate = 15; 
-	double divcurlweight = 0.1; 
+	EMinimizers minimizer = min_gd;
+	int c_rate = 20; 
+	int c_rate_divider = 20; 
+	double divcurlweight = 10.0; 
+	double divcurlweight_divider = 10.0; 
 
 
 	EInterpolation interpolator = ip_bspline3;
@@ -127,7 +128,7 @@ int do_main( int argc, const char *argv[] )
 	C2DPerfusionAnalysis::EBoxSegmentation segmethod=C2DPerfusionAnalysis::bs_features; 
 
 	size_t current_pass = 0; 
-	size_t pass = 2; 
+	size_t pass = 3; 
 
 	CCmdOptionList options(g_general_help);
 	options.push_back(make_opt( in_filename, "in-file", 'i', "input perfusion data set", "input", true));
@@ -141,12 +142,21 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
 				    "optimizer", 'O', "Optimizer used for minimization", "optimizer", false));
 	options.push_back(make_opt( c_rate, "start-c-rate", 'a', 
-				    "start coefficinet rate in spines, gets divided by two every pass", 
+				    "start coefficinet rate in spines, gets divided by --c-rate-divider with every pass", 
+				    "c-rate", false));
+
+	options.push_back(make_opt( c_rate_divider, "c-rate-divider", 0, 
+				    "cofficient rate divider for ceah pass", 
 				    "c-rate", false));
 
 	options.push_back(make_opt( divcurlweight, "start-divcurl", 'd',
-				    "start divcurl weight, gets divided by 5 every pass", 
+				    "start divcurl weight, gets divided by --divcurl-divider with every pass", 
 				    "divcurl", false)); 
+	options.push_back(make_opt( divcurlweight_divider, "divcurl-divider", 0,
+				    "divcurl weight scaling with each new pass", 
+				    "divcurl", false)); 
+
+
 	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
 	options.push_back(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels", "mg-levels", false));
@@ -174,7 +184,7 @@ int do_main( int argc, const char *argv[] )
 
 
 	// this cost will always be used 
-	P2DFullCost cost_ssd = C2DFullCostPluginHandler::instance().produce("image");
+	P2DFullCost cost_ssd = C2DFullCostPluginHandler::instance().produce("image:weight=256.0");
 
 	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(interpolator));
 
@@ -218,8 +228,8 @@ int do_main( int argc, const char *argv[] )
 		auto tr_creator = C2DTransformCreatorHandler::instance().produce("translate");
 		P2DTransformation shift = tr_creator->create(C2DBounds(1,1)); 
 		auto p = shift->get_parameters(); 
-		p[0] = -(float)crop_start.x; 
-		p[1] = -(float)crop_start.y; 
+		p[0] = crop_start.x; 
+		p[1] = crop_start.y; 
 		shift->set_parameters(p); 
 		
 		input_set.transform(*shift);
@@ -261,6 +271,7 @@ int do_main( int argc, const char *argv[] )
 	// run the specified number of passes or until no periodic movement can be identified 
 	// break early if ICA fails 
 	bool do_continue = true; 
+	++current_pass; 
 	while (do_continue) {
 		++current_pass; 
 		C2DPerfusionAnalysis ica2(components, !no_normalize, !no_meanstrip); 
@@ -270,9 +281,9 @@ int do_main( int argc, const char *argv[] )
 		transform(input_images.begin() + skip_images, 
 			  input_images.end(), series.begin(), Convert2Float()); 
 		if (ica2.run(series) ) {
-			divcurlweight /= 5.0; 
+			divcurlweight /= divcurlweight_divider; 
 			if (c_rate > 1) 
-				c_rate /= 2; 
+				c_rate /= c_rate_divider; 
 			auto costs  = create_costs(divcurlweight, cost_ssd); 
 			auto transform_creator = create_transform_creator(c_rate); 
 			C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory);
