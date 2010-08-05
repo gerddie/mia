@@ -50,25 +50,17 @@ public:
 	//	C2DFVectorfield& field() __attribute__((deprecated)) ;
 	//	const C2DFVectorfield& field() const __attribute__((deprecated)) ;
 
-	class EXPORT_2D const_iterator  {
+	class EXPORT_2D iterator_impl: public C2DTransformation::iterator_impl  {
 	public:
-		const_iterator& operator ++();
-		const_iterator operator ++(int);
-
-		const C2DFVector operator *() const;
-
-		friend EXPORT_2D bool operator == (const const_iterator& a, const const_iterator& b);
-		friend EXPORT_2D bool operator != (const const_iterator& a, const const_iterator& b);
-		const_iterator();
-
-	private:
-		friend class C2DGridTransformation;
-		const_iterator(const C2DBounds& pos, const C2DBounds& size, C2DFVectorfield::const_iterator start);
-
-		C2DBounds _M_pos;
-		C2DBounds _M_size;
+		iterator_impl(const C2DBounds& pos, const C2DBounds& size, C2DFVectorfield::const_iterator start); 
+	private: 
+		virtual C2DTransformation::iterator_impl * clone() const; 
+		virtual const C2DFVector&  do_get_value()const; 
+		virtual void do_x_increment(); 
+		virtual void do_y_increment(); 
 
 		C2DFVectorfield::const_iterator _M_current;
+		C2DFVector _M_value; 
 
 	};
 
@@ -85,7 +77,6 @@ public:
 	virtual const C2DBounds& get_size() const;
 
 	virtual bool save(const std::string& filename, const std::string& type) const;
-	virtual C2DTransformation *clone() const;
 	virtual C2DTransformation *invert() const;
 	virtual P2DTransformation upscale(const C2DBounds& size) const;
 	virtual void add(const C2DTransformation& a);
@@ -104,7 +95,9 @@ public:
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
 	C2DFVector operator ()(const  C2DFVector& x) const;
 	double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
+	double get_divcurl_cost(double wd, double wr) const; 
 private:
+	virtual C2DTransformation *do_clone() const;
 	float grad_divergence(double weight, gsl::DoubleVector& gradient) const; 
 	double grad_curl(double weight, gsl::DoubleVector& gradient) const; 
 	virtual C2DFMatrix field_derivative_at(int x, int y) const;

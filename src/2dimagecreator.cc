@@ -32,46 +32,37 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
+static const char *program_info = 
+	"This program is used to create an image with some object.\n"
+	"Basic usage:\n"
+	"  mia-2dimagecreator <options>\n"; 
+
 
 int do_main(int argc, const char *args[])
 {
-	string object("sphere");
+	C2DImageCreatorPluginHandler::ProductPtr creator;
 	string out_filename;
 	string type;
 	EPixelType pixel_type = it_ubyte;
 	C2DBounds size(128,128);
 
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
-	const C2DImageCreatorPluginHandler::Instance& creator_ph = C2DImageCreatorPluginHandler::instance();
-	CCmdOptionList options;
+	CCmdOptionList options(program_info);
 
 	options.push_back(make_opt( out_filename, "out-file", 'o', "output file for create object", "output", true));
-	options.push_back(make_opt( type, imageio.get_set(), "type", 't', "Output file type", "filetype", false));
+	options.push_back(make_opt( type, imageio.get_set(), "type", 't', 
+				    "Output file type (normally deducted from output file name)", "filetype", false));
 	options.push_back(make_opt( size, "size", 's', "size of the object", "size", false));
 	options.push_back(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type ", "ubyte", false));
-	options.push_back(make_opt( object,  "object", 'j', "object to be created", "object", false));
+	options.push_back(make_opt( creator,  "object", 'j', "object to be created", "object", true));
 
-	options.parse(argc, args);
+	options.parse(argc, args, false);
 
-	if (!options.get_remaining().empty()) {
-		cverr() << "Unknown arguments: ";
-		for (vector<const char *>::const_iterator i = options.get_remaining().begin(); i !=  options.get_remaining().end();
-		     ++i)
-			cverb << *i << " ";
-		cverb << "\n";
-		return EXIT_FAILURE;
-	}
-
-	C2DImageCreatorPlugin::ProductPtr creator = creator_ph.produce(object.c_str());
-	if (!creator) {
-		std::stringstream error;
-		error << "Creator " << object << " not found";
-		throw invalid_argument(error.str());
-	}
 	P2DImage image = (*creator)(size, pixel_type);
 	if (!image) {
 		std::stringstream error;
-		error << "Creator " << object << " could not create object of size " << size << " and type " << CPixelTypeDict.get_name(pixel_type);
+		error << "Creator '" << creator->get_init_string() << "' could not create object of size " 
+		      << size << " and type " << CPixelTypeDict.get_name(pixel_type);
 		throw invalid_argument(error.str());
 	}
 
@@ -79,7 +70,6 @@ int do_main(int argc, const char *args[])
 	out_images.push_back(image);
 	return !imageio.save(type, out_filename, out_images);
 }
-
 
 int main(int argc, const char *argv[])
 {

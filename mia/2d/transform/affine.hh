@@ -56,27 +56,17 @@ public:
 
 	C2DFVector apply(const C2DFVector& x) const;
 
-
-	class EXPORT_2D const_iterator  {
+	class EXPORT_2D iterator_impl: public C2DTransformation::iterator_impl  {
 	public:
-		const_iterator& operator ++();
-		const_iterator operator ++(int);
+		iterator_impl(const C2DBounds& pos, const C2DBounds& size, 
+			      const C2DAffineTransformation& trans); 
+	private: 
+		virtual C2DTransformation::iterator_impl * clone() const; 
+		virtual const C2DFVector&  do_get_value()const; 
+		virtual void do_x_increment(); 
+		virtual void do_y_increment(); 
 
-		const C2DFVector operator *() const;
-
-		friend EXPORT_2D bool operator == (const const_iterator& a, const const_iterator& b);
-		friend EXPORT_2D bool operator != (const const_iterator& a, const const_iterator& b);
-
-		const_iterator();
-
-	private:
-		friend class C2DAffineTransformation;
-		const_iterator(const C2DBounds& pos, const C2DBounds& size, const C2DAffineTransformation *trans);
-
-		C2DBounds _M_current;
-		C2DBounds _M_size;
-
-		const C2DAffineTransformation *_M_trans;
+		const C2DAffineTransformation& _M_trans;
 		C2DFVector _M_value;
 		C2DFVector _M_dx;
 
@@ -86,7 +76,6 @@ public:
 	const_iterator end() const;
 
 	virtual const C2DBounds& get_size() const;
-	virtual C2DTransformation *clone() const;
 	virtual C2DTransformation *invert() const;
 	virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
 	virtual bool save(const std::string& filename, const std::string& type) const;
@@ -109,7 +98,9 @@ public:
 	float grad_divergence() const;
 	float grad_curl() const;
 	double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
+	double get_divcurl_cost(double wd, double wr) const; 
 private:
+	virtual C2DTransformation *do_clone() const;
 	void evaluate_t() const;
 	C2DAffineTransformation(const C2DAffineTransformation& other);
 	C2DAffineTransformation& operator =(const C2DAffineTransformation& other);
@@ -119,15 +110,4 @@ private:
 
 
 NS_MIA_END
-
-namespace std {
-	template <>
-	struct iterator_traits<mia::C2DAffineTransformation::const_iterator> {
-		typedef input_iterator_tag iterator_category;
-		typedef mia::C2DFVector        value_type;
-		typedef mia::C2DBounds        difference_type;
-		typedef mia::C2DFVector*           pointer;
-		typedef mia::C2DFVector&          reference;
-	};
-}
 #endif

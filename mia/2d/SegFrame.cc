@@ -45,7 +45,7 @@ CSegFrame::CSegFrame(const Node& node):
 	
 	Node::NodeList nodes = elm.get_children(); 
 	
-	for (Node::NodeList::const_iterator i = nodes.begin(); 
+	for (auto i = nodes.begin(); 
 	     i != nodes.end(); ++i) {
 
 		if ((*i)->get_name() == "star") {
@@ -106,7 +106,7 @@ void CSegFrame::write(Node& node) const
 	
 	if (m_has_star) 
 		m_star.write(*self);
-	for (Sections::const_iterator i = m_sections.begin(); 
+	for (auto i = m_sections.begin(); 
 	     i != m_sections.end(); ++i) {
 		i->write(*self); 
 	}
@@ -115,7 +115,7 @@ void CSegFrame::write(Node& node) const
 const C2DBoundingBox CSegFrame::get_boundingbox() const
 {
 	C2DBoundingBox result; 
-	for (Sections::const_iterator i = m_sections.begin(); 
+	for (auto i = m_sections.begin(); 
 	     i != m_sections.end(); ++i) {
 		result.unite(i->get_boundingbox()); 
 	}
@@ -126,7 +126,7 @@ void CSegFrame::shift(const C2DFVector& delta, const std::string& cropped_file)
 {
 	if (m_has_star) 
 		m_star.shift(delta); 
-	for (Sections::iterator i = m_sections.begin(); 
+	for (auto i = m_sections.begin(); 
 	     i != m_sections.end(); ++i)
 		i->shift(delta); 
 	m_filename = cropped_file; 
@@ -136,37 +136,35 @@ void CSegFrame::transform(const C2DTransformation& t)
 {
 	if (m_has_star) 
 		m_star.transform(t); 
-	for (Sections::iterator i = m_sections.begin(); 
+	for (auto i = m_sections.begin(); 
 	     i != m_sections.end(); ++i)
 		i->transform(t); 
 }
 
+void CSegFrame::inv_transform(const C2DTransformation& t)
+{
+	if (m_has_star) 
+		m_star.inv_transform(t); 
+	for (auto i = m_sections.begin(); i != m_sections.end(); ++i)
+		i->inv_transform(t); 
+}
+
+
 float CSegFrame::get_hausdorff_distance(const CSegFrame& other) const
 {
 	C2DPolygon p1; 
-	for(Sections::const_iterator s = m_sections.begin(); 
+	for(auto s = m_sections.begin(); 
 	    s != m_sections.end(); ++s) 
 		s->append_to(p1); 
 
 
 	C2DPolygon p2; 
-	for(Sections::const_iterator s = other.m_sections.begin(); 
+	for(auto s = other.m_sections.begin(); 
 	    s != other.m_sections.end(); ++s) 
 		s->append_to(p2); 
 
 	return p1.get_hausdorff_distance(p2); 
 }
 
-
-/*
-void CSegFrame::transform(const MSplineSignalList& defo, const vector<REAL>& scale)
-{
-	m_star.transform(defo, scale); 
-	for (Sections::iterator i = m_sections.begin(); 
-	     i != m_sections.end(); ++i) {
-		i->transform(defo, scale); 
-	}
-}
-*/
 
 NS_MIA_END

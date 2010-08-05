@@ -43,6 +43,11 @@
 using namespace std;
 NS_MIA_USE;
 
+static const char *program_info = 
+	"This program is used to filter and convert gray scale 3D images.\n"
+	"Basic usage:\n"
+	"  mia-3dimagefilter -i <input image> -o <output image> [<plugin>] ...\n"; 
+
 int main( int argc, const char *argv[] )
 {
 	bool help_plugins = false;
@@ -59,15 +64,16 @@ int main( int argc, const char *argv[] )
 
 	filter_names << "filters in the order to be applied (out of: " << filter_plugins.get_plugin_names() << ")";
 
-	CCmdOptionList options;
+	CCmdOptionList options(program_info);
 	options.push_back(make_opt( in_filename, "in-file", 'i',
 				    "input image(s) to be filtered", "input", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o',
 				    "output image(s) that have been filtered", "output", true));
 	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
 				    "output file type" , "type", false));
-	options.push_back(make_opt( help_plugins, "help-plugins", 0,
-				    "give some help about the filter plugins", NULL));
+	options.push_back(make_help_opt( "help-plugins", 0,
+					 "give some help about the filter plugins", 
+					 new TPluginHandlerHelpCallback<C3DFilterPluginHandler>)); 
 
 	options.parse(argc, argv);
 
@@ -75,11 +81,6 @@ int main( int argc, const char *argv[] )
 
 	cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
 	cvdebug() << "supported filters: " << filter_plugins.get_plugin_names() << "\n";
-
-	if (help_plugins) {
-		filter_plugins.print_help(cout);
-		return EXIT_SUCCESS;
-	}
 
 	if ( filter_chain.empty() )
 		cvwarn() << "no filters given, just copy\n";

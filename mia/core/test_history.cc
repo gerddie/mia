@@ -129,7 +129,7 @@ bool check_entry(const string& key, const string& val, const CHistoryRecord& hr)
 int main(int argc, const char *argv[])
 {
 
-	CCmdOptionList options;
+	CCmdOptionList options("Test History funcionallity");
 	options.push_back(make_opt( options::some_single_string, "string", 's', "some string option", "oldstring",true ));
 	options.push_back(make_opt( options::some_float, "float", 'f', "some float option", "-1.0",true ));
 	options.push_back(make_opt( options::some_int, "int", 'i', "some int option", "-1",true));

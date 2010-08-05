@@ -90,6 +90,11 @@ void CSegStar::transform(const C2DTransformation& t)
 	m_center.transform(t); 
 }
 
+void CSegStar::inv_transform(const C2DTransformation& t)
+{
+	m_center.inv_transform(t); 
+}
+
 void CSegStar::write(xmlpp::Node& node) const
 {
 	xmlpp::Element* nodeChild = node.add_child("star");

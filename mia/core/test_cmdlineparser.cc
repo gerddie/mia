@@ -188,7 +188,7 @@ BOOST_FIXTURE_TEST_CASE( test_dict_option, CmdlineParserFixture )
 
 	ETestEnums value = te_undefined;
 
-	CCmdOptionList olist;
+	CCmdOptionList olist("Synopis:Tests command line options.");
 
 	olist.push_back(make_opt(value, map, "dict", 'd', "a dictmap option", "dict"));
 	vector<const char *> options;
@@ -214,7 +214,7 @@ BOOST_FIXTURE_TEST_CASE( test_flagstring_option, CmdlineParserFixture )
 
 	int value = te_undefined;
 
-	CCmdOptionList olist;
+	CCmdOptionList olist("Synopis:Tests command line options.");
 
 	olist.push_back(make_opt(value, map, "flags", 'f', "a flagstring option", "flags"));
 	vector<const char *> options;
@@ -261,7 +261,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser, CmdlineParserFixture )
 	options.push_back("leftover2");
 
 
-	CCmdOptionList olist;
+	CCmdOptionList olist("Synopis:Tests command line options.");
 
 	olist.push_back(make_opt(int_value1,  "int1", 'i',"a int option", "int1"));
 	olist.push_back(make_opt(int_value2, "int2",  'k', "another int option", "int2"));
@@ -300,7 +300,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors1, CmdlineParserFixture )
 	options.push_back("-H2u16");
 	bool bool_value = false;
 
-	CCmdOptionList olist;
+	CCmdOptionList olist("Synopis:Tests command line options.");
 	olist.push_back(make_opt(bool_value, "bool", 'H', "a bool option", "bool"));
 
 	BOOST_CHECK_THROW(olist.parse(options.size(), &options[0]), invalid_argument); 
@@ -314,7 +314,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors2, CmdlineParserFixture )
 	options.push_back("-H2u16");
 	bool bool_value = false;
 
-	CCmdOptionList olist;
+	CCmdOptionList olist("Synopis:Tests command line options.");
 	olist.push_back(make_opt(bool_value, "bool", 'H', "a bool option", "bool"));
 
 	BOOST_CHECK_THROW(olist.parse(options.size(), &options[0], false), invalid_argument); 

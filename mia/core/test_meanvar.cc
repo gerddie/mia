@@ -1,9 +1,6 @@
-/* -*- mia-c++  -*-
+/* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
- *
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Max-Planck-Institute for Evolutionary Anthropology
+ * Copyright (c) Madrid 2010
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,33 +19,42 @@
  *
  */
 
-#ifndef SegStar_h
-#define SegStar_h
-
-#include <mia/2d/SegPoint.hh>
 #include <vector>
 
-NS_MIA_BEGIN
+#include <mia/internal/autotest.hh>
+#include <mia/core/meanvar.hh>
 
-class  EXPORT_2D CSegStar {
-public:
-	CSegStar();
-	CSegStar(const CSegPoint2D& center, float r, const CSegPoint2D& d1, const CSegPoint2D& d2, const CSegPoint2D& d3);
-	CSegStar(const xmlpp::Node& node);
+NS_MIA_USE;
+using namespace std; 
 
-	void write(xmlpp::Node& node) const;
+BOOST_AUTO_TEST_CASE( test_meanvar_0 )
+{
+	vector<double> data(0); 
+	auto r = mean_var(data.begin(), data.end()); 
 
-	void shift(const C2DFVector& delta);
+	BOOST_CHECK_EQUAL(r.first, 0.0); 
+	BOOST_CHECK_EQUAL(r.second, 0.0); 
+}
 
-	void transform(const C2DTransformation& t);
-	void inv_transform(const C2DTransformation& t);
+BOOST_AUTO_TEST_CASE( test_meanvar_1 )
+{
+	vector<double> data(1, 1.0); 
+	auto r = mean_var(data.begin(), data.end()); 
 
-	CSegPoint2D m_center;
-	float m_radius;
-	CSegPoint2D m_directions[3];
-};
+	BOOST_CHECK_EQUAL(r.first, 1.0); 
+	BOOST_CHECK_EQUAL(r.second, 0.0); 
+}
 
-NS_MIA_END
+BOOST_AUTO_TEST_CASE( test_meanvar_3 )
+{
+	vector<double> data(3); 
+	data[0] = 1.0; 
+	data[1] = 3.0; 
+	data[2] = 5.0; 
+	
+	auto r = mean_var(data.begin(), data.end()); 
 
+	BOOST_CHECK_EQUAL(r.first, 3.0); 
+	BOOST_CHECK_EQUAL(r.second, 2.0); 
+}
 
-#endif

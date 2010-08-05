@@ -34,7 +34,9 @@ C2DTransformCreator::C2DTransformCreator()
 
 P2DTransformation C2DTransformCreator::create(const C2DBounds& size) const
 {
-	return do_create(size);
+	P2DTransformation result = do_create(size);
+	result->set_creator_string(get_init_string()); 
+	return result; 
 }
 
 bool C2DTransformCreator::has_property(const char *property) const

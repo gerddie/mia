@@ -248,6 +248,7 @@ NEW_TEST(interpol miacore)
 NEW_TEST(simpson miacore)
 NEW_TEST(property_flags  miacore)
 NEW_TEST(flagstring  miacore)
+NEW_TEST(meanvar  miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)

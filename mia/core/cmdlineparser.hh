@@ -65,7 +65,7 @@ class EXPORT_CORE CCmdOption  {
 	    \param long_opt the long option name
 	    \param longh_help a long help string
         */
-	CCmdOption(const char *long_opt, const char *long_help);
+	CCmdOption(const char *long_opt, const char *long_help, bool required);
 
         /// ensure virtual destruction
 	virtual ~CCmdOption();
@@ -111,9 +111,13 @@ class EXPORT_CORE CCmdOption  {
 
         /// \returns the options value as string
 	const std::string get_value_as_string() const;
+
+	bool required() const; 
 protected:
         /// \returns the long help string
 	const char *long_help() const;
+
+	void clear_required(); 
 private:
 	virtual void do_add_option(CShortoptionMap& sm, CLongoptionMap& lm)  = 0;
 	virtual void do_set_value(const char *str_value) = 0;
@@ -127,6 +131,7 @@ private:
 
 	const char *_M_long_opt;
 	const char *_M_long_help;
+	bool _M_required;
 };
 
 /// a shared pointer definition of the Option
@@ -166,6 +171,7 @@ private:
 
 	struct CCmdOptionData *_M_impl;
 };
+
 
 
 /** Templated implementation of a command line option to hold a value of type T.
@@ -298,7 +304,7 @@ private:
 };
 
 
-class EXPORT_CORE CHelpOption: public TCmdOption<bool> {
+class EXPORT_CORE CHelpOption: public CCmdOptionValue {
 public:
          /** Constructor of the command option
 	     \param callback to call when help option is requested
@@ -307,19 +313,20 @@ public:
 	     \param long_help long help string (must not be NULL)
          */
 
-	class CHelpCallback {
+	class Callback {
 	public:
 		virtual void print(std::ostream& os) const = 0;
 	};
 
-	CHelpOption(const CHelpCallback& cb, char short_opt, const char*long_opt, const char *long_help);
+	CHelpOption(Callback *cb, char short_opt, const char*long_opt, const char *long_help);
 	void print(std::ostream& os) const;
 
-	bool requested() const;
-
 private:
-	const CHelpCallback& _M_callback;
-	bool _M_is_set;
+	std::unique_ptr<Callback> _M_callback;
+	virtual bool do_set_value_really(const char *str_value);
+	virtual size_t do_get_needed_args() const;
+	virtual void do_write_value(std::ostream& os) const;
+
 };
 
 /**
@@ -396,6 +403,18 @@ PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>&
                                 const char *short_help, bool required = false);
 
 
+PCmdOption make_help_opt(const char *long_opt, char short_opt, const char *long_help, 
+			 CHelpOption::Callback* cb); 
+
+
+template <typename PluginHandler>
+class TPluginHandlerHelpCallback: public CHelpOption::Callback {
+	void print(std::ostream& os) const{
+		PluginHandler::instance().print_help(os);
+	}
+}; 
+
+
 /**
    The class to hold the list of options
 */
@@ -405,7 +424,8 @@ class EXPORT_CORE CCmdOptionList {
 	   Constructor creates the options list and adds some defaut options like
 	   --help, --verbose, --copyright, and --usage
         */
-	CCmdOptionList();
+	CCmdOptionList(const std::string& general_help);
+	CCmdOptionList()__attribute__((deprecated));
 
         /// cleanup
 	~CCmdOptionList();
@@ -468,7 +488,7 @@ struct __dispatch_opt {
         static size_t size(const T /*value*/) {
                 return 1;
         }
-        static void apply(std::ostream& os, const T& value) {
+        static void apply(std::ostream& os, const T& value, bool /*required*/) {
                 os << "=" << value << " ";
         }
 
@@ -505,15 +525,19 @@ struct __dispatch_opt< std::vector<T> > {
                 return 1;
         }
 
-        static void apply(std::ostream& os, const std::vector<T>& value) {
+        static void apply(std::ostream& os, const std::vector<T>& value, bool required) {
 
                 os << "=";
-		for (typename std::vector<T>::const_iterator i = value.begin(); i != value.end(); ++i) {
-			if (i != value.begin())
-				os << ",";
-			os << *i;
+		if (value.empty() && required)
+			os << "[required] "; 
+		else {
+			for (typename std::vector<T>::const_iterator i = value.begin(); i != value.end(); ++i) {
+				if (i != value.begin())
+					os << ",";
+				os << *i;
+			}
+			os << " ";
 		}
-		os << " ";
         }
 
         static const std::string get_as_string(const std::vector<T>& value) {
@@ -540,7 +564,7 @@ struct __dispatch_opt<bool> {
         static size_t size(bool /*value*/) {
                 return 0;
         }
-        static void apply(std::ostream& /*os*/, bool /*value*/) {
+        static void apply(std::ostream& /*os*/, bool /*value*/, bool /*required*/) {
         }
         static const std::string get_as_string(const bool& value) {
                 return value ? "true" : "false";
@@ -560,13 +584,20 @@ struct __dispatch_opt<std::string> {
         static size_t size(std::string /*value*/) {
                 return 1;
         }
-        static void apply(std::ostream& os, const std::string& value) {
-                os << "='" << value << "' ";
+        static void apply(std::ostream& os, const std::string& value, bool required) {
+		if (value.empty()) 
+			if (required)
+				os << "[required] "; 
+			else
+				os << "=NULL ";
+		else 
+			os << "=" << value;
         }
         static const std::string get_as_string(const std::string& value) {
                 return value;
         }
 };
+
 
 //
 // Implementation of the standard option that holds a value
@@ -595,7 +626,7 @@ template <typename T>
 template <typename T>
 void TCmdOption<T>::do_write_value(std::ostream& os) const
 {
-        __dispatch_opt<T>::apply( os, _M_value);
+        __dispatch_opt<T>::apply( os, _M_value, required());
 }
 
 

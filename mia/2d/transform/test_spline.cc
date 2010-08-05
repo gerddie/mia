@@ -218,8 +218,8 @@ BOOST_FIXTURE_TEST_CASE( test_splinestransform_prefix_iterator, TransformSplineF
 
 	for (size_t y = 0; y < range.y; ++y)
 		for (size_t x = 0; x < range.x; ++x, ++i) {
-			BOOST_CHECK_CLOSE(1.0 + x - fx(x,y), 1.0 + i->x, 0.1);
-			BOOST_CHECK_CLOSE(1.0 + y - fy(x,y), 1.0 + i->y, 0.1);
+			BOOST_CHECK_CLOSE(1.0 + x - fx(x,y), 1.0 + (*i).x, 0.1);
+			BOOST_CHECK_CLOSE(1.0 + y - fy(x,y), 1.0 + (*i).y, 0.1);
 		}
 }
 
@@ -230,6 +230,7 @@ BOOST_FIXTURE_TEST_CASE( test_splinestransform_postfix_iterator, TransformSpline
 	for (size_t y = 0; y < range.y; ++y)
 		for (size_t x = 0; x < range.x; ++x) {
 			C2DFVector test = *i++;
+			cvdebug() << "splinestransform_postfix_iterator" << test << "\n"; 
 			BOOST_CHECK_CLOSE(1.0 + x - fx(x,y), 1.0 + test.x, 0.1);
 			BOOST_CHECK_CLOSE(1.0 + y - fy(x,y), 1.0 + test.y, 0.1);
 		}
@@ -289,6 +290,45 @@ BOOST_FIXTURE_TEST_CASE( test_splines_translate, TransformSplineFixture )
 		BOOST_CHECK_CLOSE(*i++, 2.0f, 0.1);
 	}
 }
+
+BOOST_FIXTURE_TEST_CASE( test_splines_translate_2, TransformSplineFixture )
+{
+	C2DFVectorfield gradient(range);
+	auto ig = gradient.begin(); 
+	C2DFVector ivscale(float(range.x - 1) / (size.x - 1),
+			   float(range.y - 1) / (size.y - 1));
+	for (size_t y = 0; y < range.y; ++y) 
+		for (size_t x = 0; x < range.x; ++x) {
+			double sx = ivscale.x * x; 
+			double sy = ivscale.y * y; 
+			ig->x = 5 * fx(sx,sy); 
+			ig->y = 5 * fy(sx,sy); 
+			cvdebug() << sx << " " << sy << ":" << *ig << "\n"; 
+		}
+
+	gsl::DoubleVector force(2 * stransf.get_coeff_size().x * stransf.get_coeff_size().y);
+	stransf.translate(gradient, force);
+
+	stransf.set_parameters(force); 
+	
+	// now the spline should be more or less the same 
+	// as the original function 
+
+	auto is = stransf.begin(); 
+	ig = gradient.begin(); 
+	for (size_t y = 0; y < range.y; ++y)
+		for (size_t x = 0; x < range.x; ++x, ++is,++ig) {
+			if (abs(ig->x) > 0.1) 
+				BOOST_CHECK_CLOSE(is->x, x - ig->x, 1.0); 
+			else 
+				BOOST_CHECK_CLOSE(1.0 + is->x, 1.0 + x - ig->x, 1.0); 
+			if (abs(ig->y) > 0.1) 
+				BOOST_CHECK_CLOSE(is->y, y - ig->y, 1.0); 
+			else 
+				BOOST_CHECK_CLOSE(1.0 + is->y, 1.0 + y - ig->y, 1.0); 
+		}
+}
+
 
 BOOST_FIXTURE_TEST_CASE( test_splines_clone, TransformSplineFixture )
 {
@@ -459,6 +499,63 @@ BOOST_FIXTURE_TEST_CASE( test_splines_refine, TransformSplineFixture )
 			BOOST_CHECK_CLOSE(1.0 + y - fy(x,y), 1.0 + i->y, 0.1);
 		}
 }
+
+
+BOOST_AUTO_TEST_CASE( test_splines_transform )
+{
+	float src_image_init[10 * 9] = {
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0,10,30,30, 0, 0, 0,
+		0, 0, 0, 0,50,50,50, 0, 0, 0,
+		0, 0, 0, 0,50,50,50, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+	};
+
+	float ref_image_init[10 * 9] = {
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0,10,30,30, 0, 0,
+		0, 0, 0, 0, 0,50,50,50, 0, 0,
+		0, 0, 0, 0, 0,50,50,50, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	};
+	const C2DBounds size(10,9);
+	
+	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
+							      SHARED_PTR(CBSplineKernel) (new CBSplineKernel3())));
+
+	C2DSplineTransformation trans(size, ipf);
+
+	P2DImage src(new C2DFImage(size, src_image_init));
+	C2DFVectorfield field(C2DBounds(5,4)); 
+
+	C2DFVector shift(1,2); 
+	fill(field.begin(), field.end(), shift); 
+	trans.set_coefficients(field);
+	
+	P2DImage result = trans.apply(*src, *ipf);
+	
+	const C2DFImage& r = dynamic_cast<const C2DFImage&>(*result); 
+	
+	BOOST_REQUIRE(r.get_size() == size); 
+	float *itest = ref_image_init; 
+	auto ir = r.begin(); 
+	for (size_t y = 0; y < size.y; ++y)
+		for (size_t x = 0; x < size.x; ++x, ++ir, ++itest)
+			cvinfo() << x << "," << y << ", " << *ir << " ?= " <<*itest << "\n"; 
+			if (*itest > 0.0001 || *ir > 0.0001) 
+				BOOST_CHECK_EQUAL(*ir, *itest); 
+	
+
+}
+
 
 float TransformSplineFixture::dfx_xx(float x, float y)
 {

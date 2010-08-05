@@ -28,6 +28,8 @@
 #include <mia/2d.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <gsl++/multimin.hh>
+#include <mia/2d/transformfactory.hh>
+#include <mia/core/factorycmdlineoption.hh>
 
 NS_MIA_USE;
 using namespace std;
@@ -44,6 +46,11 @@ const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
 };
 
 
+const char *g_general_help = 
+	"This program runs the non-rigid registration of two images using certain"
+	"cost measures and a given transformation model.\n"
+	"Basic usage: \n"
+	" mia-2dnonrigidreg [options] cost1 cost2 "; 
 
 int do_main( int argc, const char *argv[] )
 {
@@ -55,9 +62,14 @@ int do_main( int argc, const char *argv[] )
 	string transform_type("spline");
 	EMinimizers minimizer = min_bfgs2;
 
+	cvdebug() << "auto transform_creator\n"; 
+	auto transform_creator = C2DTransformCreatorHandler::instance().produce("spline"); 
+	if (!transform_creator && transform_creator->get_init_string() != string("spline"))
+		cverr() << "something's wrong\n"; 
+
 	size_t mg_levels = 3;
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_general_help);
 	options.push_back(make_opt( src_filename, "in", 'i', "test image", "input", true));
 	options.push_back(make_opt( ref_filename, "ref", 'r', "reference image", "input", true));
 	options.push_back(make_opt( out_filename, "out", 'o', "registered output image", "output", true));
@@ -65,27 +77,26 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( mg_levels, "levels", 'l', "multigrid levels", "levels", false));
 	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
 				    "optimizer", 'O', "Optimizer used for minimization", "optimizer", false));
-	options.push_back(make_opt( transform_type, "transForm", 'f', "transformation typo", "transform", false));
+	options.push_back(make_opt( transform_creator, "transForm", 'f', "transformation type", "transform", false));
 
 	options.parse(argc, argv);
 	
 	auto cost_descrs = options.get_remaining(); 
 
-	P2DImage Model = load_image2d(src_filename);
-	P2DImage Reference = load_image2d(ref_filename);
-
-	C2DBounds GlobalSize = Model->get_size();
-	if (GlobalSize != Reference->get_size()){
-		throw std::invalid_argument("Images have different size");
-	}
-
 	C2DFullCostList costs; 
 	for (auto i = cost_descrs.begin(); i != cost_descrs.end(); ++i)
 		costs.push(C2DFullCostPluginHandler::instance().produce(*i)); 
 
+	P2DImage Model = load_image2d(src_filename);
+	P2DImage Reference = load_image2d(ref_filename);
+
+	C2DBounds GlobalSize = Model->get_size();
+	if (GlobalSize != Reference->get_size())
+		throw std::invalid_argument("Images have different size");
+
 	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3));
 
-	C2DNonrigidRegister nrr(costs, minimizer,  transform_type, *ipfactory);
+	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory);
 
 	P2DTransformation transform = nrr.run(Model, Reference, mg_levels);
 	P2DImage result = (*transform)(*Model, *ipfactory);

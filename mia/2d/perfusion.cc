@@ -82,6 +82,11 @@ C2DPerfusionAnalysis::~C2DPerfusionAnalysis()
 	delete impl; 
 }
 
+bool C2DPerfusionAnalysis::has_periodic() const
+{
+	return impl->_M_cls.get_periodic_idx() > -1; 
+}
+
 void C2DPerfusionAnalysis::set_max_ica_iterations(size_t maxiter)
 {
 	assert(impl); 

@@ -44,32 +44,22 @@ public:
 	C2DFVector apply(const C2DFVector& x) const;
 
 
-	class EXPORT_2D const_iterator  {
+	class EXPORT_2D iterator_impl: public C2DTransformation::iterator_impl  {
 	public:
-		const_iterator& operator ++();
-		const_iterator operator ++(int);
-
-		const C2DFVector operator *() const;
-
-		friend EXPORT_2D bool operator == (const const_iterator& a, const const_iterator& b);
-		friend EXPORT_2D bool operator != (const const_iterator& a, const const_iterator& b);
-
-		const_iterator();
-
-	private:
-		friend class C2DTranslateTransformation;
-		const_iterator(const C2DBounds& pos, const C2DBounds& size, const C2DFVector& _M_value);
-
-		C2DBounds _M_current;
-		C2DBounds _M_size;
+		iterator_impl(const C2DBounds& pos, const C2DBounds& size, const C2DFVector& _M_value); 
+	private: 
+		virtual C2DTransformation::iterator_impl * clone() const; 
+		virtual const C2DFVector&  do_get_value()const; 
+		virtual void do_x_increment(); 
+		virtual void do_y_increment(); 
+		C2DFVector _M_translate;
 		C2DFVector _M_value;
 	};
 
-	const_iterator begin() const;
-	const_iterator end() const;
+	C2DTransformation::const_iterator begin() const;
+	C2DTransformation::const_iterator end() const;
 
 	virtual const C2DBounds& get_size() const;
-	virtual C2DTransformation *clone() const;
 	virtual C2DTransformation *invert() const;
 	virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
 	virtual bool save(const std::string& filename, const std::string& type) const;
@@ -92,7 +82,9 @@ public:
 	float grad_divergence() const;
 	float grad_curl() const;
 	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
+	virtual double get_divcurl_cost(double wd, double wr) const; 
 private:
+	virtual C2DTransformation *do_clone() const;
 	C2DFVector _M_transform;
 	C2DBounds _M_size;
 };
@@ -100,14 +92,4 @@ private:
 
 NS_MIA_END
 
-namespace std {
-	template <>
-	struct iterator_traits<mia::C2DTranslateTransformation::const_iterator> {
-		typedef input_iterator_tag iterator_category;
-		typedef mia::C2DFVector        value_type;
-		typedef mia::C2DBounds        difference_type;
-		typedef mia::C2DFVector*           pointer;
-		typedef mia::C2DFVector&          reference;
-	};
-}
 #endif

@@ -327,8 +327,8 @@ BOOST_FIXTURE_TEST_CASE(segframe_transform, FrameTestRead)
 	P2DTransformationFactory transform_creater = C2DTransformCreatorHandler::instance().produce("translate");
 	P2DTransformation transform = transform_creater->create(C2DBounds(10,20));
 	auto params = transform->get_parameters(); 
-	params[0] = -1.0; 
-	params[1] = -2.0; 
+	params[0] = 1.0; 
+	params[1] = 2.0; 
 	transform->set_parameters(params); 
 	
 	init(testframe_init);

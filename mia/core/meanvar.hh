@@ -1,9 +1,6 @@
-/* -*- mia-c++  -*-
+/* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
- *
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Max-Planck-Institute for Evolutionary Anthropology
+ * Copyright (c) Madrid 2010
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,33 +19,41 @@
  *
  */
 
-#ifndef SegStar_h
-#define SegStar_h
+#ifndef mia_core_meanvar_hh
+#define mia_core_meanvar_hh
 
-#include <mia/2d/SegPoint.hh>
-#include <vector>
+#include <map>
+#include <cmath>
+#include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
 
-class  EXPORT_2D CSegStar {
-public:
-	CSegStar();
-	CSegStar(const CSegPoint2D& center, float r, const CSegPoint2D& d1, const CSegPoint2D& d2, const CSegPoint2D& d3);
-	CSegStar(const xmlpp::Node& node);
+template <typename ForwardIterator>
+std::pair<double, double> mean_var(ForwardIterator begin, ForwardIterator end) 
+{
+	std::pair<double, double> result; 
+	result.first  = 0.0; 
+	result.second = 0.0; 
+	size_t n = 0; 
+	
+	while (begin != end)  {
+		const double help = *begin; 
+		result.first += help; 
+		result.second += help * help; 
+		++n; 
+		++begin; 
+	}
 
-	void write(xmlpp::Node& node) const;
+	if (n > 0)
+		result.first /= n; 
 
-	void shift(const C2DFVector& delta);
-
-	void transform(const C2DTransformation& t);
-	void inv_transform(const C2DTransformation& t);
-
-	CSegPoint2D m_center;
-	float m_radius;
-	CSegPoint2D m_directions[3];
-};
+	if (n > 1) 
+		result.second = sqrt((result.second - n * result.first * result.first) / (n - 1));
+	else 
+		result.second = 0.0; 
+	return result; 
+}
 
 NS_MIA_END
-
 
 #endif

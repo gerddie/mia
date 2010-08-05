@@ -33,7 +33,7 @@ namespace bfs=::boost::filesystem;
 
 BOOST_AUTO_TEST_CASE( test_divcurl_cost ) 
 {
-	C2DDivCurlFullCost  div(2.0, 3.0, 1.0); 
+	C2DDivCurlFullCost  div(4.0, 6.0, 1.0); 
 
 	C2DBounds size(1,2); 
 	C2DTransformMock t(size); 
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE( test_divcurl_cost )
 
 BOOST_AUTO_TEST_CASE( test_div_cost ) 
 {
-	C2DDivCurlFullCost  div(2.0, 0.0, 0.5); 
+	C2DDivCurlFullCost  div(4.0, 0.0, 0.5); 
 
 	C2DBounds size(1,2); 
 	C2DTransformMock t(size); 
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE( test_div_cost )
 
 BOOST_AUTO_TEST_CASE( test_curl_cost ) 
 {
-	C2DDivCurlFullCost  div(0.0, 2.0, 2.0); 
+	C2DDivCurlFullCost  div(0.0, 4.0, 2.0); 
 
 	C2DBounds size(1,2); 
 	C2DTransformMock t(size); 

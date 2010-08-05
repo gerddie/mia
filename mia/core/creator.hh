@@ -56,7 +56,8 @@ public:
 #define DEFINE_Image_Creator(TYPE) \
 	typedef TImageCreator<TYPE> TYPE##Creator; \
 	typedef TFactory<TImageCreator<TYPE>, TYPE, creator_type> TYPE##CreatorPlugin; \
-	typedef THandlerSingleton<TFactoryPluginHandler<TYPE##CreatorPlugin> > TYPE##CreatorPluginHandler;
+	typedef THandlerSingleton<TFactoryPluginHandler<TYPE##CreatorPlugin> > TYPE##CreatorPluginHandler;\
+	FACTORY_TRAIT(THandlerSingleton<TFactoryPluginHandler<TYPE##CreatorPlugin> >); 
 
 
 #define INSTANCIATE_Image_Creator(TYPE) \
@@ -65,7 +66,9 @@ public:
 	template class  TFactory<TImageCreator<TYPE>, TYPE, creator_type>; \
 	template class  TPluginHandler<TYPE##CreatorPlugin>;	\
         template class  TFactoryPluginHandler<TYPE##CreatorPlugin>;	\
-	template class  THandlerSingleton<TFactoryPluginHandler<TYPE##CreatorPlugin> >;
+	template class  THandlerSingleton<TFactoryPluginHandler<TYPE##CreatorPlugin> >; 
+
+
 NS_MIA_END
 
 #endif

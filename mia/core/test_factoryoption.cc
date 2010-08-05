@@ -83,6 +83,24 @@ BOOST_AUTO_TEST_CASE( test_a_factory_option )
 	
 	//option->set_value(NULL); 
 	//	BOOST_CHECK(!product); 
+
+	stringstream test; 
+	option->write_value(test); 
+	BOOST_CHECK_EQUAL(test.str(), "=lala"); 
+}
+
+BOOST_AUTO_TEST_CASE( test_another_factory_option )
+{
+
+	CFactoryHandlerMock::ProductPtr product = 
+		CFactoryHandlerMock::instance().produce("lala"); 
+	BOOST_CHECK_EQUAL(product->get_init_string(), "lala"); 
+	
+	PCmdOption option = make_opt(product, "lala", 'l',"Some help", "help", false); 
+	
+	stringstream test; 
+	option->write_value(test); 
+	BOOST_CHECK_EQUAL(test.str(), "=lala"); 
 }
 
 

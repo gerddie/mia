@@ -30,7 +30,6 @@ NS_MIA_BEGIN
 struct  EXPORT_2D C2DTransformMock: public C2DTransformation {
 	C2DTransformMock();
 	C2DTransformMock(const C2DBounds& size);
-	virtual C2DTransformation *clone() const;
 	virtual C2DTransformation *invert() const;
 	virtual bool save(const std::string& filename, const std::string& type) const;
 	virtual P2DTransformation upscale(const C2DBounds& size) const;
@@ -51,8 +50,25 @@ struct  EXPORT_2D C2DTransformMock: public C2DTransformation {
 	virtual float divergence() const;
 	virtual float curl() const;
 	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
+	double get_divcurl_cost(double wd, double wr) const; 
+
+	virtual C2DTransformation::const_iterator begin() const; 
+	virtual C2DTransformation::const_iterator end() const; 
+	
+protected: 
+	class iterator_impl:  public C2DTransformation::iterator_impl {
+		friend class C2DTransformMock; 
+		iterator_impl(const C2DBounds& pos, const C2DBounds& size);  
+
+		C2DTransformation::iterator_impl *clone()const; 
+		virtual const C2DFVector& do_get_value()const; 
+		virtual void do_x_increment(); 
+		virtual void do_y_increment(); 
+		C2DFVector _M_value; 
+	}; 
 
 private:
+	virtual C2DTransformation *do_clone() const;
         virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
 	C2DBounds m_size;
 

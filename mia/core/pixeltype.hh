@@ -48,7 +48,7 @@ enum EPixelType {it_bit,  /**< bit/bool pixels */
 		 it_unknown /**< unexpected type */
 };
 
-enum EPixelConversion {pc_copy, pc_linear, pc_range, pc_opt, pc_unknown};
+enum EPixelConversion {pc_copy, pc_linear, pc_range, pc_opt, pc_opt_stat, pc_unknown};
 
 EXPORT_CORE extern const TDictMap<EPixelType>::Table PixelTypeTable[];
 EXPORT_CORE extern const TDictMap<EPixelType> CPixelTypeDict;

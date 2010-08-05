@@ -36,9 +36,10 @@ extern void print_full_copyright(const char *name);
 NS_MIA_BEGIN
 using namespace std;
 
-CCmdOption::CCmdOption(const char *long_opt, const char *long_help):
+CCmdOption::CCmdOption(const char *long_opt, const char *long_help, bool required):
 	_M_long_opt(long_opt),
-	_M_long_help(long_help)
+	_M_long_help(long_help), 
+	_M_required(required)
 {
         assert(long_opt);
         assert(long_help);
@@ -79,6 +80,16 @@ const char *CCmdOption::get_long_option() const
 	return _M_long_opt;
 }
 
+void CCmdOption::clear_required()
+{
+	_M_required = false; 
+}
+
+bool CCmdOption::required() const
+{
+	return _M_required; 
+}
+
 void CCmdOption::do_get_long_help(std::ostream& /* os */) const
 {
 }
@@ -114,23 +125,22 @@ const std::string CCmdOption::do_get_value_as_string() const
 }
 
 struct CCmdOptionData {
-	CCmdOptionData(char short_opt, const char *short_help, bool required);
+	CCmdOptionData(char short_opt, const char *short_help);
 	char _M_short_opt;
 	const char *_M_long_opt;
 	const char *_M_short_help;
-	bool _M_required;
 };
 
-CCmdOptionData::CCmdOptionData(char short_opt, const char *short_help, bool required):
+CCmdOptionData::CCmdOptionData(char short_opt, const char *short_help):
 	_M_short_opt(short_opt),
-	_M_short_help(short_help),
-	_M_required(required)
+	_M_short_help(short_help)
 {
 }
 
-CCmdOptionValue::CCmdOptionValue(char short_opt, const char *long_opt, const char *long_help, const char *short_help, bool required):
-	CCmdOption(long_opt, long_help),
-	_M_impl(new CCmdOptionData(short_opt,  short_help, required))
+CCmdOptionValue::CCmdOptionValue(char short_opt, const char *long_opt, const char *long_help, 
+				 const char *short_help, bool required):
+	CCmdOption(long_opt, long_help, required),
+	_M_impl(new CCmdOptionData(short_opt,  short_help))
 {
 }
 
@@ -148,7 +158,7 @@ const char *CCmdOptionValue::get_short_help() const
 void CCmdOptionValue::do_print_short_help(std::ostream& /*os*/) const
 {
 	if ( get_short_option() && get_short_help() )
-		cout << '-' << get_short_option() << " " << get_short_help() << " ";
+		clog << '-' << get_short_option() << " " << get_short_help() << " ";
 }
 
 void CCmdOptionValue::do_get_long_help(std::ostream& os) const
@@ -194,7 +204,7 @@ void CCmdOptionValue::do_set_value(const char *str_value)
 				       string("' from input '") +
 				       string(str_value) + string("'"));
 	}
-	_M_impl->_M_required = false;
+	clear_required();
 }
 
 void CCmdOptionValue::do_add_option(CShortoptionMap& sm, CLongoptionMap& lm)
@@ -232,9 +242,9 @@ struct CCmdOptionListData {
 	bool copyright;
 	vstream::Level verbose;
 
-	CCmdOptionListData();
+	CCmdOptionListData(const string& general_help);
 
-	void add(PCmdOption& opt);
+	void add(PCmdOption opt);
 	CHistoryRecord get_values() const;
 
 	void set_current_group(const string& name);
@@ -245,6 +255,10 @@ struct CCmdOptionListData {
 	void print_help() const;
 	void print_usage() const;
 
+	vector<const char *> has_unset_required_options() const; 
+	void write(size_t tab1, size_t width, const string& s)const; 
+
+	string _M_general_help; 
 };
 
 
@@ -293,17 +307,33 @@ const std::string CCmdSetOption::do_get_value_as_string() const
 	return _M_value;
 }
 
-CCmdOptionListData::CCmdOptionListData():
+const char *g_help_optiongroup="\nHelp & Info"; 
+const char *g_basic_copyright = 
+        "\n"
+	" This software is copyright (c) Gert Wollny et al.\n"
+	" It comes with  ABSOLUTELY NO WARRANTY and you may redistribute it\n"
+	" under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later).\n"
+	" For more information run the program with the option '--copyright'\n"; 
+
+CCmdOptionListData::CCmdOptionListData(const string& general_help):
 	help(false),
 	usage(false),
 	copyright(false),
-	verbose(vstream::ml_fail)
+	verbose(vstream::ml_fail), 
+	_M_general_help(general_help)
 {
 	options[""] = vector<PCmdOption>();
-	current_group = options.find("");
+
+	set_current_group(g_help_optiongroup);
+	add(make_opt(verbose, g_verbose_dict, "verbose",  'V',"verbosity of output", "verbose"));
+	add(make_opt(copyright,  "copyright", 0,"print copyright information", NULL));
+	add(make_opt(help,  "help", 'h',"print this help", "help"));
+	add(make_opt(usage,  "usage", '?',"print a short help", "usage"));
+	set_current_group("");
+
 }
 
-void CCmdOptionListData::add(PCmdOption& opt)
+void CCmdOptionListData::add(PCmdOption opt)
 {
 	opt->add_option(short_map, long_map);
 	current_group->second.push_back(opt);
@@ -332,46 +362,73 @@ void CCmdOptionListData::set_current_group(const string& name)
 
 CHistoryRecord CCmdOptionListData::get_values() const
 {
-	COptionsMap::const_iterator o_i = options.begin();
-	COptionsMap::const_iterator o_e = options.end();
-
 	CHistoryRecord result;
-
-	while (o_i != o_e) {
-		COptionsGroup::const_iterator g_i = o_i->second.begin();
-		COptionsGroup::const_iterator g_e = o_i->second.end();
-		while (g_i != g_e) {
+	for(auto o_i = options.begin(); o_i != options.end(); ++o_i)
+		for(auto g_i = o_i->second.begin(); g_i != o_i->second.end(); ++g_i) 
 			result[(*g_i)->get_long_option()] = (*g_i)->get_value_as_string();
-			++g_i;
-		}
-		++o_i;
-	}
 	return result;
 }
 
+
+vector<const char *> CCmdOptionListData::has_unset_required_options() const  
+{
+	vector<const char *> result; 
+	for(auto o_i = options.begin(); o_i != options.end(); ++o_i)
+		for(auto g_i = o_i->second.begin(); g_i != o_i->second.end(); ++g_i)
+			if ((*g_i)->required())
+				result.push_back((*g_i)->get_long_option()); 
+	return result; 
+}
+
+
+void CCmdOptionListData::write(size_t tab1, size_t width, const string& s) const 
+{
+	auto is = s.begin(); 
+	auto es = s.end(); 
+	bool newline = false; 
+	size_t pos = 0; 
+	while (is != es) {
+		if (newline) {
+			if (tab1) 
+				clog << setw(tab1) << " "; 
+			newline = false; 
+			pos = tab1; 
+		}
+		if (*is == '\n' || 
+		    (pos >= width && isspace(*is))) {
+			clog << '\n'; 
+			newline = true; 
+		}else {
+			clog << *is; 
+		}
+		++is; 
+	}
+	clog << endl; 
+}
+
+/**
+   This help printing is a mess ...
+ */
 void CCmdOptionListData::print_help() const
 {
 	const size_t max_opt_width = 30;
+	// this should come from the terminal 
 	const size_t max_width = 70;
 
 	vector<string> opt_table;
 	vector<string> help_table;
+	
+	write(0, max_width, _M_general_help); 
 
 	size_t opt_size = 0;
-	cout << setiosflags(ios_base::left);
-	for (COptionsMap::const_iterator i = options.begin();
-	     i != options.end(); ++i) {
+	clog << setiosflags(ios_base::left);
+	for (auto i = options.begin(); i != options.end(); ++i) {
 
 		stringstream group;
 		opt_table.push_back(i->first);
 		help_table.push_back("  ");
-
-
-		COptionsGroup::const_iterator g_i = i->second.begin();
-		COptionsGroup::const_iterator g_e = i->second.end();
-
-		while (g_i != g_e) {
-
+		
+		for (auto g_i = i->second.begin(); g_i != i->second.end(); ++g_i) {
 			stringstream opt;
 			stringstream shelp;
 
@@ -385,54 +442,27 @@ void CCmdOptionListData::print_help() const
 
 			k->get_long_help(shelp);
 			help_table.push_back(shelp.str());
-			++g_i;
+
 		}
 	}
 	if (opt_size > max_opt_width)
 		opt_size = max_opt_width;
 
-	size_t width = max_width - opt_size - 1;
-
-	vector<string>::const_iterator  t  = opt_table.begin();
-
-	for (vector<string>::const_iterator i = help_table.begin();
-	     i != help_table.end(); ++i, ++t) {
-		cout << setw(opt_size) << *t << " ";
-
-		if (i->size() < width) {
-			string::const_iterator sb = i->begin();
-			while (sb != i->end()) {
-				cout << ((*sb != '\n') ?  *sb : ' ');
-				++sb;
-			}
-		} else {
-			string::const_iterator sb = i->begin();
-			int w = width;
-			while (sb != i->end()) {
-				cout << *sb;
-				--w;
-				if (*sb == '\n') {
-					w = width;
-					cout << setw(opt_size) << " " << " ";
-				}
-				++sb;
-				if ( w < 0 && sb != i->end() && isspace(*sb)) {
-					cout << '\n' << setw(opt_size) << " " << " ";
-					++sb;
-					w = width;
-				}
-			}
-		}
-		cout << "\n";
+	auto t  = opt_table.begin();
+	for (auto i = help_table.begin(); i != help_table.end(); ++i, ++t) {
+		clog << setw(opt_size) << *t << " ";
+		write(opt_size+1, max_width, *i); 
 	}
+	
+	write(0, 80, g_basic_copyright); 
+	clog << '\n' << setiosflags(ios_base::right);
 
-	cout << '\n' << setiosflags(ios_base::right);
 
 }
 
 void CCmdOptionListData::print_usage() const
 {
-	cout << "Usage: ";
+	clog << "Usage: ";
 	for (COptionsMap::const_iterator i = options.begin();
 	     i != options.end(); ++i) {
 		COptionsGroup::const_iterator g_i = i->second.begin();
@@ -441,23 +471,21 @@ void CCmdOptionListData::print_usage() const
 		while (g_i != g_e) {
 
 			const PCmdOption& k = *g_i;
-			k->print_short_help(cout);
+			k->print_short_help(clog);
 			++g_i;
 		}
 	}
-	cout << '\n';
+	clog << '\n';
+}
+
+CCmdOptionList::CCmdOptionList(const string& general_help):
+	_M_impl(new CCmdOptionListData(general_help))
+{
 }
 
 CCmdOptionList::CCmdOptionList():
-	_M_impl(new CCmdOptionListData)
+	_M_impl(new CCmdOptionListData("This MIA toolchain program supports the following options:"))
 {
-	_M_impl->set_current_group("Help & Info:");
-	push_back(make_opt(_M_impl->verbose, g_verbose_dict, "verbose",  'V',"verbosity of output", "verbose"));
-	push_back(make_opt(_M_impl->copyright,  "copyright", 0,"print copyright information", NULL));
-	push_back(make_opt(_M_impl->help,  "help", 'h',"print this help", "help"));
-	push_back(make_opt(_M_impl->usage,  "usage", '?',"print a short help", "usage"));
-
-	_M_impl->set_current_group("");
 }
 
 void CCmdOptionList::push_back(PCmdOption opt)
@@ -465,7 +493,7 @@ void CCmdOptionList::push_back(PCmdOption opt)
 	_M_impl->add(opt);
 }
 
-void CCmdOptionList::add(const std::string& table, PCmdOption opt)
+void CCmdOptionList::add(const std::string& /*table*/, PCmdOption opt)
 {
 	_M_impl->add(opt);
 }
@@ -581,6 +609,22 @@ void CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
 			msg << " '" << *i << "' "; 
 		throw invalid_argument(msg.str());
 	}
+	
+	auto unset_but_required = _M_impl->has_unset_required_options(); 
+	if (!unset_but_required.empty()) {
+		stringstream msg; 
+		if (unset_but_required.size() > 1) 
+			msg << "Some required options were not set:"; 
+		else
+			msg << "A required options was not set:"; 
+		for (auto i = unset_but_required.begin(); unset_but_required.end() != i; ++i)
+			msg << " '--" << *i << "' "; 
+		msg << "\n"; 
+		msg << "run '" << args[0] << " --help' for more information\n"; 
+		msg << g_basic_copyright; 
+		throw invalid_argument(msg.str());
+	}
+
 }
 
 const vector<const char *>& CCmdOptionList::get_remaining() const
@@ -605,23 +649,30 @@ CHistoryRecord CCmdOptionList::get_values() const
 	return _M_impl->get_values();
 }
 
-CHelpOption::CHelpOption(const CHelpCallback& cb, char short_opt, const char*long_opt, const char *long_help):
-	TCmdOption<bool>(_M_is_set, short_opt,long_opt, long_help, NULL, false),
-	_M_callback(cb),
-	_M_is_set(false)
+CHelpOption::CHelpOption(Callback *cb, char short_opt, const char*long_opt, const char *long_help):
+	CCmdOptionValue(short_opt, long_opt, long_help, NULL, false), 
+	_M_callback(cb)
 {
 }
 
 void CHelpOption::print(std::ostream& os) const
 {
-	_M_callback.print(os);
+	_M_callback->print(os);
 }
 
-bool CHelpOption::requested() const
+bool CHelpOption::do_set_value_really(const char */*str_value*/)
 {
-	return _M_is_set;
+	print(clog); 
+	exit(0); 
+}
+size_t CHelpOption::do_get_needed_args() const
+{
+	return 0; 
 }
 
+void CHelpOption::do_write_value(std::ostream& /*os*/) const
+{
+}
 
 CCmdFlagOption::CCmdFlagOption(int& val, const CFlagString& map, char short_opt, const char *long_opt,
 			       const char *long_help, const char *short_help, bool required):
@@ -663,6 +714,13 @@ PCmdOption make_opt(int& value, const CFlagString& map, const char *long_opt, ch
 {
 	return PCmdOption(new CCmdFlagOption(value, map, short_opt, long_opt,
                           long_help, short_help, required ));
+}
+
+
+PCmdOption make_help_opt(const char *long_opt, char short_opt, const char *long_help, 
+			 CHelpOption::Callback *cb)
+{
+	return PCmdOption(new CHelpOption(cb, short_opt, long_opt, long_help));
 }
 
 

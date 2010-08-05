@@ -182,6 +182,7 @@ TEST_2DMIA(fullcost)
 TEST_2DMIA(groundtruthproblem)
 TEST_2DMIA(imagecostbase)
 TEST_2DMIA(interpol)
+TEST_2DMIA(segpoint)
 
 
 TEST_2DMIA(matrix)

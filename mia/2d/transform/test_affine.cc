@@ -181,10 +181,10 @@ BOOST_FIXTURE_TEST_CASE( test_affine_clone, TranslateTransFixture )
 
 	BOOST_CHECK_EQUAL(spclone.get_size(), rtrans.get_size());
 
-	C2DAffineTransformation::const_iterator ic = spclone.begin();
-	C2DAffineTransformation::const_iterator ec = spclone.end();
+	C2DTransformation::const_iterator ic = spclone.begin();
+	C2DTransformation::const_iterator ec = spclone.end();
 
-	C2DAffineTransformation::const_iterator io = rtrans.begin();
+	C2DTransformation::const_iterator io = rtrans.begin();
 
 	while (ic != ec ) {
 		BOOST_CHECK_EQUAL(*ic, *io);
@@ -244,8 +244,8 @@ BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, AffineGrad2ParamFixtureAff
 	BOOST_CHECK_CLOSE(params[2], 2.0, 0.1);
 
 	BOOST_CHECK_CLOSE(params[3], 1.0, 0.1);
-	BOOST_CHECK_CLOSE(params[4],-0.25, 0.1);
-	BOOST_CHECK_CLOSE(params[5],-0.5, 0.1);
+	BOOST_CHECK_CLOSE(params[4], -0.25, 0.1);
+	BOOST_CHECK_CLOSE(params[5], -0.5, 0.1);
 }
 
 

@@ -22,14 +22,19 @@
  *
  */
 
-#define VSTREAM_DOMAIN "rigidreg"
+#define VSTREAM_DOMAIN "NR-REG"
+
+#include <boost/lambda/lambda.hpp>
+
 
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/transformfactory.hh>
 #include <gsl++/multimin.hh>
+#include <iomanip>
 
+using boost::lambda::_1; 
 
 
 NS_MIA_BEGIN
@@ -40,8 +45,8 @@ using namespace std;
 struct C2DNonrigidRegisterImpl {
 
 	C2DNonrigidRegisterImpl(C2DFullCostList& costs, EMinimizers minimizer,
-			     const string& transform_type,
-			     const C2DInterpolatorFactory& ipf);
+				P2DTransformationFactory transform_creator,
+				const C2DInterpolatorFactory& ipf);
 
 	P2DTransformation run(P2DImage src, P2DImage ref,  size_t mg_levels) const;
 private:
@@ -55,13 +60,15 @@ private:
 	C2DFullCostList& _M_costs;
 	EMinimizers _M_minimizer;
 	C2DInterpolatorFactory _M_ipf;
-	string _M_transform_type;
+	P2DTransformationFactory _M_transform_creator;
 };
 
 class C2DNonrigRegGradientProblem: public gsl::CFDFMinimizer::Problem {
 public:
 	C2DNonrigRegGradientProblem(const C2DFullCostList& costs, C2DTransformation& transf,
 			      const C2DInterpolatorFactory& _M_ipf);
+
+	void reset_counters(); 
 private:
 	double  do_f(const DoubleVector& x);
 	void    do_df(const DoubleVector& x, DoubleVector&  g);
@@ -71,13 +78,16 @@ private:
 	const C2DFullCostList& _M_costs; 
 	C2DTransformation& _M_transf;
 	const C2DInterpolatorFactory& _M_ipf;
+	size_t _M_func_evals; 
+	size_t _M_grad_evals; 
+
 };
 typedef shared_ptr<C2DNonrigRegGradientProblem> P2DGradientNonrigregProblem;
 
 C2DNonrigidRegister::C2DNonrigidRegister(C2DFullCostList& costs, EMinimizers minimizer,
-				   const string& transform_type,
-				   const C2DInterpolatorFactory& ipf):
-	impl(new C2DNonrigidRegisterImpl( costs, minimizer, transform_type, ipf))
+					 P2DTransformationFactory transform_creation,
+					 const C2DInterpolatorFactory& ipf):
+	impl(new C2DNonrigidRegisterImpl( costs, minimizer, transform_creation, ipf))
 {
 }
 
@@ -93,11 +103,12 @@ P2DTransformation C2DNonrigidRegister::run(P2DImage src, P2DImage ref,  size_t m
 }
 
 C2DNonrigidRegisterImpl::C2DNonrigidRegisterImpl(C2DFullCostList& costs, EMinimizers minimizer,
-					   const string& transform_type, const C2DInterpolatorFactory& ipf):
+						 P2DTransformationFactory transform_creation, 
+						 const C2DInterpolatorFactory& ipf):
 	_M_costs(costs),
 	_M_minimizer(minimizer),
 	_M_ipf(ipf),
-	_M_transform_type(transform_type)
+	_M_transform_creator(transform_creation)
 {
 }
 
@@ -127,14 +138,16 @@ void C2DNonrigidRegisterImpl::apply(C2DTransformation& transf, const gsl_multimi
 {
 	if (!_M_costs.has(property_gradient))
 		throw invalid_argument("requested optimizer needs gradient, but cost functions doesn't prvide one");
+
 	P2DGradientNonrigregProblem gp(new C2DNonrigRegGradientProblem( _M_costs, transf, _M_ipf));
 	CFDFMinimizer minimizer(gp, optimizer );
 
 	auto x = transf.get_parameters();
+	cvmsg() << "Start Registration of " << x.size() <<  " parameters\n"; 
 	minimizer.run(x);
 	transf.set_parameters(x);
+	cvmsg() << "\n"; 
 }
-
 
 
 P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref,  size_t mg_levels) const
@@ -146,9 +159,12 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref,  size
 	if (!minimizer_need_gradient(_M_minimizer))
 		throw invalid_argument("Non-gradient based optimization not supported\n"); 
 
-	auto tr_creator = C2DTransformCreatorHandler::instance().produce(_M_transform_type);
-
 	P2DTransformation transform;
+
+	// convert the images to float ans scale to range [-1,1]
+	auto tofloat_converter = C2DFilterPluginHandler::instance().produce("convert:repn=float"); 
+	src = tofloat_converter->filter(*src); 
+	ref = tofloat_converter->filter(*ref); 
 
 	C2DBounds global_size = src->get_size();
 
@@ -176,9 +192,9 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref,  size
 		if (transform)
 			transform = transform->upscale(src_scaled->get_size());
 		else
-			transform = tr_creator->create(src_scaled->get_size());
+			transform = _M_transform_creator->create(src_scaled->get_size());
 
-		cvmsg() << "register at " << src_scaled->get_size() << "\n";
+		cvinfo() << "register at " << src_scaled->get_size() << "\n";
 
 		save_image2d("src.@", src_scaled);
 		save_image2d("ref.@", ref_scaled);
@@ -186,7 +202,7 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref,  size
 		
 		apply(*transform, gradminimizers[_M_minimizer].fdfmin);
 
-		auto params = transform->get_parameters(); 
+		//auto params = transform->get_parameters(); 
 	}
 	return transform;
 }
@@ -196,28 +212,42 @@ C2DNonrigRegGradientProblem::C2DNonrigRegGradientProblem(const C2DFullCostList& 
 	gsl::CFDFMinimizer::Problem(transf.degrees_of_freedom()),
 	_M_costs(costs),
 	_M_transf(transf),
-	_M_ipf(ipf)
+	_M_ipf(ipf), 
+	_M_func_evals(0),
+	_M_grad_evals(0)
 {
 
+}
+
+void C2DNonrigRegGradientProblem::reset_counters()
+{
+	_M_func_evals = _M_grad_evals = 0; 
 }
 
 double  C2DNonrigRegGradientProblem::do_f(const DoubleVector& x)
 {
-	cvwarn() << "C2DNonrigRegGradientProblem::do_f implemented by means of C2DNonrigRegGradientProblem::do_fdf\n"; 
-	DoubleVector  g(x.size()); 
-	return do_fdf(x, g);
+	_M_func_evals++; 
+	_M_transf.set_parameters(x);
+	double result = _M_costs.cost_value(_M_transf);
+	cvmsg() << "Cost[fg="<<_M_grad_evals << ",fe="<<_M_func_evals<<"]=" << setw(20) << setprecision(15) << result << "\r"; 
+	return result; 
 }
 
 void    C2DNonrigRegGradientProblem::do_df(const DoubleVector& x, DoubleVector&  g)
 {
-	_M_transf.set_parameters(x);
-	_M_costs.evaluate(_M_transf, g);
+	do_fdf(x,g); 
 }
 
 double  C2DNonrigRegGradientProblem::do_fdf(const DoubleVector& x, DoubleVector&  g)
 {
+	_M_grad_evals++; 
+	
 	_M_transf.set_parameters(x);
-	return _M_costs.evaluate(_M_transf, g);
+	fill(g.begin(), g.end(), 0.0); 
+	double result = _M_costs.evaluate(_M_transf, g);
+	transform(g.begin(), g.end(), g.begin(), _1 * -1); 
+	cvmsg() << "Cost[fg="<<_M_grad_evals << ",fe="<<_M_func_evals<<"]=" << setw(20) << setprecision(15) << result << "\r"; 
+	return result; 
 }
 
 NS_MIA_END

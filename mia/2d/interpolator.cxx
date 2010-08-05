@@ -27,6 +27,10 @@
 
 #include <cmath>
 
+#if defined(__SSE2__)
+#include <emmintrin.h>
+#endif
+
 NS_MIA_BEGIN
 
 template <typename T>
@@ -315,6 +319,96 @@ struct add_2d {
 		return result; 
 	}
 };
+
+#if 0 //ned(__SSE2__) 
+
+#ifdef __GNUC__
+#define _mm_loadu_pd    __builtin_ia32_loadupd
+#define _mm_storeu_pd   __builtin_ia32_storeupd
+#define _mm_add_pd      __builtin_ia32_addpd
+#define _mm_mul_pd      __builtin_ia32_mulpd
+#define _mm_unpacklo_pd __builtin_ia32_unpcklpd
+#define _mm_unpackhi_pd __builtin_ia32_unpckhpd
+
+#endif
+
+template <>
+struct add_2d<T2DDatafield<double>,4> {
+	static double apply(const T2DDatafield<double>&  coeff, 
+			    const std::vector<double>& xweight, 
+			    const std::vector<double>& yweight,
+			    const std::vector<int>& xindex, 
+			    const std::vector<int>& yindex) 
+	{
+		typedef double v2df __attribute__ ((vector_size (16)));
+		
+		double wx[4] __attribute__((aligned(16))); 
+		double wy[4] __attribute__((aligned(16))); 
+		copy(xweight.begin(), xweight.end(), wx); 
+		copy(yweight.begin(), yweight.end(), wy); 
+		
+		const double *pp0 = &coeff(0, yindex[0]);
+		const double *pp1 = &coeff(0, yindex[1]);
+		const double *pp2 = &coeff(0, yindex[2]);
+		const double *pp3 = &coeff(0, yindex[3]);
+		
+		const double p0[4] __attribute__((aligned(16)))
+			=  {pp0[xindex[0]], pp0[xindex[1]], pp0[xindex[2]], pp0[xindex[3]]}; 
+		const double p1[4] __attribute__((aligned(16)))
+			=  {pp1[xindex[0]], pp1[xindex[1]], pp1[xindex[2]], pp1[xindex[3]]}; 
+		const double p2[4] __attribute__((aligned(16))) 
+			=  {pp2[xindex[0]], pp2[xindex[1]], pp2[xindex[2]], pp2[xindex[3]]}; 
+		const double p3[4] __attribute__((aligned(16)))  
+			 = {pp3[xindex[0]], pp3[xindex[1]], pp3[xindex[2]], pp3[xindex[3]]}; 
+		
+
+		const register v2df rwx01 = _mm_loadu_pd(&wx[0]); 
+		const register v2df rwx23 = _mm_loadu_pd(&wx[2]); 
+		
+		const register v2df rwy01 = _mm_loadu_pd(&wy[0]); 
+		const register v2df rwy23 = _mm_loadu_pd(&wy[2]); 
+		
+		register v2df rp001 =_mm_mul_pd(rwx01, &p0[0]); 
+		register v2df rp023 =_mm_mul_pd(rwx23, &p0[2]); 
+		register v2df rp101 =_mm_mul_pd(rwx01, &p1[0]); 
+		register v2df rp123 =_mm_mul_pd(rwx23, &p1[2]); 
+		register v2df rp201 =_mm_mul_pd(rwx01, &p2[0]); 
+		register v2df rp223 =_mm_mul_pd(rwx23, &p2[2]); 
+		register v2df rp301 =_mm_mul_pd(rwx01, &p3[0]); 
+		register v2df rp323 =_mm_mul_pd(rwx23, &p3[2]); 
+		
+		register v2df rs01_0 = _mm_unpacklo_pd(rp001, rp101); 
+		register v2df rs23_0 = _mm_unpacklo_pd(rp201, rp301); 
+		register v2df rs01_1 = _mm_unpackhi_pd(rp001, rp101); 
+		register v2df rs23_1 = _mm_unpackhi_pd(rp201, rp301); 
+
+		register v2df rs01_2 = _mm_unpacklo_pd(rp023, rp123); 
+		register v2df rs23_2 = _mm_unpacklo_pd(rp223, rp323); 
+		register v2df rs01_3 = _mm_unpackhi_pd(rp023, rp123); 
+		register v2df rs23_3 = _mm_unpackhi_pd(rp223, rp323); 
+
+		
+		register v2df s01_01 = _mm_add_pd(rs01_0, rs01_1); 
+		register v2df s01_23 = _mm_add_pd(rs01_2, rs01_3); 
+
+		register v2df s23_01 = _mm_add_pd(rs23_0, rs23_1); 
+		register v2df s23_23 = _mm_add_pd(rs23_2, rs23_3); 
+
+		register v2df s01_0123 =  _mm_add_pd(s01_01, s01_23); 
+		register v2df s23_0123 =  _mm_add_pd(s23_01, s23_23); 
+		
+		s01_0123 = _mm_mul_pd(rwy01, s01_0123); 
+		s23_0123 = _mm_mul_pd(rwy23, s23_0123); 
+		
+		register v2df sum2 = _mm_add_pd(s01_0123, s23_0123); 
+		
+		double s[2] __attribute__((aligned(16))); 
+		_mm_storeu_pd(s, sum2); 
+		return s[0] + s[1]; 
+	}
+};
+
+#endif // __SSE2__
 
 template <typename T>
 typename T2DConvoluteInterpolator<T>::TCoeff2D::value_type T2DConvoluteInterpolator<T>::evaluate() const

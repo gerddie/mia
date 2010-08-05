@@ -25,7 +25,7 @@
 #define mia_core_hh
 
 #include <mia/core/attributes.hh>
-#include <mia/core/cmdlineparser.hh>
+#include <mia/core/factorycmdlineoption.hh>
 #include <mia/core/slopestatistics.hh>
 #include <mia/core/file.hh>
 #include <mia/core/errormacro.hh>

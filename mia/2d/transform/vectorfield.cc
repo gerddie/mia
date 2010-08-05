@@ -88,7 +88,7 @@ void C2DGridTransformation::update(float step, const C2DFVectorfield& a)
 
 }
 
-C2DTransformation *C2DGridTransformation::clone() const
+C2DTransformation *C2DGridTransformation::do_clone() const
 {
 	return new C2DGridTransformation(*this);
 }
@@ -177,52 +177,35 @@ void C2DGridTransformation::set_parameters(const gsl::DoubleVector& params)
 	}
 }
 
-C2DGridTransformation::const_iterator& C2DGridTransformation::const_iterator::operator ++()
-{
-	++_M_current;
-	++_M_pos.x;
 
-	if (_M_pos.x >= _M_size.x) {
-		_M_pos.x = 0;
-		++_M_pos.y;
-	}
-	return *this;
-}
-
-C2DGridTransformation::const_iterator C2DGridTransformation::const_iterator::operator ++(int)
-{
-	const_iterator help(*this);
-	++(*this);
-	return help;
-}
-
-const C2DFVector C2DGridTransformation::const_iterator::operator *() const
-{
-	return C2DFVector(_M_pos) - *_M_current;
-}
-
-EXPORT_2D bool operator == (const C2DGridTransformation::const_iterator& a, const C2DGridTransformation::const_iterator& b)
-{
-	return (a._M_current == b._M_current);
-}
-
-EXPORT_2D bool operator != (const C2DGridTransformation::const_iterator& a,
-			    const C2DGridTransformation::const_iterator& b)
-{
-	return !( a == b);
-}
-
-C2DGridTransformation::const_iterator::const_iterator():
-	_M_pos(0,0),
-	_M_size(0,0)
-{
-}
-
-C2DGridTransformation::const_iterator::const_iterator(const C2DBounds& pos, const C2DBounds& size, C2DFVectorfield::const_iterator start):
-	_M_pos(pos),
-	_M_size(size),
+C2DGridTransformation::iterator_impl::iterator_impl(const C2DBounds& pos, const C2DBounds& size, 
+						    C2DFVectorfield::const_iterator start):
+	C2DTransformation::iterator_impl(pos, size), 
 	_M_current(start)
 {
+	_M_value = C2DFVector(get_pos()) - *_M_current; 
+}
+
+C2DTransformation::iterator_impl * C2DGridTransformation::iterator_impl::clone() const
+{
+	return new C2DGridTransformation::iterator_impl(get_pos(), get_size(), _M_current); 
+}
+
+const C2DFVector&  C2DGridTransformation::iterator_impl::do_get_value()const
+{
+	return _M_value; 
+}
+
+void C2DGridTransformation::iterator_impl::do_x_increment()
+{
+	++_M_current; 
+	_M_value = C2DFVector(get_pos()) - *_M_current; 
+}
+
+void C2DGridTransformation::iterator_impl::do_y_increment()
+{
+	++_M_current; 
+	_M_value = C2DFVector(get_pos()) - *_M_current; 
 }
 
 
@@ -239,12 +222,14 @@ C2DFVector C2DGridTransformation::operator ()(const  C2DFVector& x) const
 
 C2DGridTransformation::const_iterator C2DGridTransformation::begin() const
 {
-	return const_iterator(C2DBounds(0,0), _M_field.get_size(), _M_field.begin());
+	return const_iterator(new iterator_impl(C2DBounds(0,0), 
+						_M_field.get_size(), _M_field.begin()));
 }
 
 C2DGridTransformation::const_iterator C2DGridTransformation::end() const
 {
-	return const_iterator(C2DBounds(0,_M_field.get_size().y), _M_field.get_size(), _M_field.end());
+	return const_iterator(new iterator_impl( _M_field.get_size(), _M_field.get_size(), 
+						 _M_field.end()));
 }
 
 
@@ -270,11 +255,11 @@ C2DGridTransformation::const_field_iterator C2DGridTransformation::field_end()co
 
 void C2DGridTransformation::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
-	assert(params.size() != 2 * gradient.size());
+	assert(2 * params.size() != gradient.size());
 
-	for(auto f = gradient.begin(), r = params.begin(); f != gradient.end(); ++f) {
-		*r++ = f->x;
-		*r++ = f->y;
+	for(auto f = gradient.begin(), r = params.begin(); f != gradient.end(); ++f, r+=2) {
+		r[0] = f->x;
+		r[1] = f->y;
 	}
 }
 
@@ -358,6 +343,37 @@ double C2DGridTransformation::get_divcurl_cost(double wd, double wr, gsl::Double
 	
 	return result; 
 }
+
+double C2DGridTransformation::get_divcurl_cost(double wd, double wr) const
+{
+	double result = 0.0; 
+	// todo: if wd == wr run special case 
+	const int dx =  _M_field.get_size().x;
+	auto iv = _M_field.begin() + dx + 1; 
+	
+	for(size_t y = 1; y < _M_field.get_size().y - 1; ++y, iv += 2 )
+		for(size_t x = 1; x < _M_field.get_size().x - 1; ++x, ++iv) {
+			const double dfx_xx = iv[ 1].x + iv[- 1].x - 2 * iv[0].x;
+			const double dfy_yy = iv[dx].y + iv[-dx].y - 2 * iv[0].y;
+			const double dfy_xy = iv[dx].y + iv[-1].y -  iv[0].y - iv[dx-1].y;
+			const double dfx_xy = iv[1].x - iv[0].x - iv[1-dx].x + iv[-dx].x; 
+			const double dfy_xx = iv[ 1].y + iv[- 1].y - 2 * iv[0].y;
+			const double dfx_yy = iv[dx].x + iv[-dx].x - 2 * iv[0].x;
+			
+			const double dhx = dfy_xx - dfx_xy;
+			const double dhy = dfx_yy - dfy_xy;
+
+
+			const double dgx = dfx_xx + dfy_xy;
+			const double dgy = dfy_yy + dfx_xy;
+			
+
+			result += wr * (dhx * dhx + dhy * dhy) + 
+				wd * (dgx * dgx + dgy * dgy); 
+		}
+	return result; 
+}
+
 
 float C2DGridTransformation::get_jacobian(const C2DFVectorfield& v, float delta) const
 {
