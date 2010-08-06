@@ -170,17 +170,14 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 
 	C2DBounds global_size = src->get_size();
 
-	int x_shift = _M_mg_levels;
-	int y_shift = _M_mg_levels;
+	int shift = _M_mg_levels;
 
 	do {
-		if (x_shift)
-			x_shift--;
+		if (shift)
+			shift--;
 
-		if (y_shift)
-			y_shift--;
 
-		C2DBounds BlockSize(1 << x_shift, 1 << y_shift);
+		C2DBounds BlockSize(1 << shift, 1 << shift);
 		cvinfo() << "Blocksize = " << BlockSize.x << "x"<< BlockSize.y << "\n";
 
 		stringstream downscale_descr;
@@ -188,8 +185,8 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 		C2DFilterPlugin::ProductPtr downscaler =
 			C2DFilterPluginHandler::instance().produce(downscale_descr.str().c_str());
 
-		P2DImage src_scaled = x_shift || y_shift ? downscaler->filter(*src) : src;
-		P2DImage ref_scaled = x_shift || y_shift ? downscaler->filter(*ref) : ref;
+		P2DImage src_scaled = shift ? downscaler->filter(*src) : src;
+		P2DImage ref_scaled = shift ? downscaler->filter(*ref) : ref;
 
 		if (transform)
 			transform = transform->upscale(src_scaled->get_size());
@@ -204,13 +201,12 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 		
 		apply(*transform, gradminimizers[_M_minimizer].fdfmin);
 
-		/* // run the registration at refined splines 
-		  if (transform->refine())
-		          apply(*transform, gradminimizers[_M_minimizer].fdfmin);
-		 */
+		// run the registration at refined splines 
+		if (transform->refine())
+			apply(*transform, gradminimizers[_M_minimizer].fdfmin);
 
 		//auto params = transform->get_parameters(); 
-	} while (x_shift || y_shift); 
+	} while (shift); 
 	return transform;
 }
 

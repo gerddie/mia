@@ -178,6 +178,8 @@ int do_main( int argc, const char *argv[] )
 	size_t pass = 3; 
 
 	CCmdOptionList options(g_general_help);
+	
+	options.set_group("\nFile-IO"); 
 	options.push_back(make_opt( in_filename, "in-file", 'i', "input perfusion data set", "input", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o', "output perfusion data set", "output", true));
 	options.push_back(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels", 
@@ -186,31 +188,28 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( cropped_filename, "save-cropped", 0, "save cropped set to this file", NULL)); 
 	options.push_back(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images", NULL)); 
 
+	
+	options.set_group("\nRegistration"); 
 	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
 				    "optimizer", 'O', "Optimizer used for minimization", "optimizer", false));
 	options.push_back(make_opt( c_rate, "start-c-rate", 'a', 
 				    "start coefficinet rate in spines, gets divided by --c-rate-divider with every pass", 
 				    "c-rate", false));
-
 	options.push_back(make_opt( c_rate_divider, "c-rate-divider", 0, 
 				    "cofficient rate divider for ceah pass", 
 				    "c-rate", false));
-
 	options.push_back(make_opt( divcurlweight, "start-divcurl", 'd',
 				    "start divcurl weight, gets divided by --divcurl-divider with every pass", 
 				    "divcurl", false)); 
 	options.push_back(make_opt( divcurlweight_divider, "divcurl-divider", 0,
 				    "divcurl weight scaling with each new pass", 
 				    "divcurl", false)); 
-
-
 	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
 	options.push_back(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels", "mg-levels", false));
-
 	options.push_back(make_opt( pass, "passes", 'P', "registration passes", "passes")); 
 
-
+	options.set_group("\nICA"); 
 	options.push_back(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
 	options.push_back(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
 	options.push_back(make_opt( no_meanstrip, "no-meanstrip", 0, 

@@ -59,7 +59,8 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DSplineTransformation& 
 
 }
 
-C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, P2DInterpolatorFactory ipf, const C2DFVector& c_rate):
+C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, P2DInterpolatorFactory ipf, 
+						 const C2DFVector& c_rate):
 	_M_range(range),
 	_M_target_c_rate(c_rate),
 	_M_ipf(ipf),

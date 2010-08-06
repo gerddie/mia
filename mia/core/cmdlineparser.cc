@@ -498,6 +498,11 @@ void CCmdOptionList::add(const std::string& /*table*/, PCmdOption opt)
 	_M_impl->add(opt);
 }
 
+void CCmdOptionList::set_group(const std::string& group)
+{
+	_M_impl->set_current_group(group); 
+}
+
 int CCmdOptionList::handle_shortargs(const char *arg, size_t /*argc*/, const char *args[])
 {
 	bool bool_options_only = false;
