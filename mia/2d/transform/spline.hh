@@ -67,7 +67,7 @@ public:
 	C2DTransformation::const_iterator begin() const;
 	C2DTransformation::const_iterator end() const;
 
-	C2DSplineTransformation *refine(const C2DBounds& coeff_size) const;
+	bool refine();
 
 	virtual bool save(const std::string& filename, const std::string& type) const;
 	virtual C2DTransformation *invert() const;
@@ -91,6 +91,7 @@ public:
 private:
 	virtual C2DTransformation *do_clone() const;
 	C2DBounds _M_range;
+	C2DFVector _M_target_c_rate;
 	C2DFVectorfield _M_coefficients;
 	P2DInterpolatorFactory _M_ipf;
 	mutable C2DFVector _M_scale;

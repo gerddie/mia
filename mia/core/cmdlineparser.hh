@@ -460,6 +460,8 @@ class EXPORT_CORE CCmdOptionList {
 	    of changes on data worked on by \a mia
         */
 	CHistoryRecord get_values() const;
+
+	void set_group(const std::string& group); 
  private:
 	int handle_shortargs(const char *arg, size_t argc, const char *args[]);
 	struct CCmdOptionListData *_M_impl;
