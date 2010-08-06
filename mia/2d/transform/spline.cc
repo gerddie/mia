@@ -112,8 +112,9 @@ void C2DSplineTransformation::reinit() const
 C2DFVector C2DSplineTransformation::apply(const C2DFVector& x) const
 {
 	assert(_M_interpolator_valid && _M_interpolator);
-	C2DFVector result = (*_M_interpolator)(scale(x));
-	cvdebug() << "C2DSplineTransformation::apply(" << x << ")=" << result<<"\n"; 
+	const C2DFVector s = scale(x); 
+	const C2DFVector result = (*_M_interpolator)(scale(x));
+	cvdebug() << "C2DSplineTransformation::apply(" << x << "->" << s << ")=" << result<<"\n"; 
 	return result; 
 }
 
@@ -131,8 +132,7 @@ C2DTransformation *C2DSplineTransformation::invert() const
 
 C2DFVector C2DSplineTransformation::operator () (const C2DFVector& x) const
 {
-	assert(_M_interpolator_valid && _M_interpolator);
-	return x - (*_M_interpolator)(scale(x));
+	return x - apply(x);
 }
 
 C2DFVector C2DSplineTransformation::scale( const C2DFVector& x) const

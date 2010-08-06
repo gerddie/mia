@@ -47,10 +47,10 @@ PathInitializer lala;
 
 struct TransformSplineFixture {
 	TransformSplineFixture():
-		size(32,64),
+		size(33,65),
 		ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
 					       SHARED_PTR(CBSplineKernel) (new CBSplineKernel3()))),
-		range(64, 128),
+		range(65, 129),
 		r(range.x - 1, range.y - 1),
 		stransf(range, ipf),
 		scale(2 * M_PI / r.x, 2 * M_PI / r.y)
@@ -65,8 +65,8 @@ struct TransformSplineFixture {
 		C2DFVectorfield::iterator i = field.begin();
 		for (size_t y = 0; y < size.y; ++y)
 			for (size_t x = 0; x < size.x; ++x, ++i) {
-				float sx = ivscale.x * (x - shift);
-				float sy = ivscale.y * (y - shift);
+				float sx = ivscale.x * (float(x) - shift);
+				float sy = ivscale.y * (float(y) - shift);
 				*i = C2DFVector( fx(sx, sy), fy(sx, sy));
 			}
 
