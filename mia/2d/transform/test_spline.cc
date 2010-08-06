@@ -157,7 +157,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 {
 	BOOST_CHECK_EQUAL(stransf.degrees_of_freedom(), field.size() * 2);
 
-	C2DFVector testx(33.4, 100.8);
+	C2DFVector testx(34.4, 100.8);
 	C2DFVector result = stransf.apply(testx);
 
 	BOOST_CHECK_EQUAL(stransf.get_size(), range);
@@ -174,8 +174,6 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 	BOOST_CHECK_CLOSE(result.x, testx.x - fx(testx.x, testx.y), 0.1);
 	BOOST_CHECK_CLOSE(result.y, testx.y - fy(testx.x, testx.y), 0.1);
 
-
-
 }
 
 
@@ -184,15 +182,15 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation_upscale, TransformSplineFix
 	const C2DBounds scale(2.0, 3.0);
 	C2DBounds new_range = scale * range;
 
-	const C2DFVector fscale((new_range.x - 1.0) / (range.x - 1.0),
-				(new_range.y - 1.0) / (range.y - 1.0));
+	const C2DFVector fscale(float(new_range.x - 1.0) / (range.x - 1.0),
+				float(new_range.y - 1.0) / (range.y - 1.0));
 
 	cvdebug() << fscale << "\n";
 	P2DTransformation  stransf_upscaled = stransf.upscale(new_range);
 
 	stransf_upscaled->reinit();
 
-	C2DFVector test2(33.4, 90.3);
+	C2DFVector test2(34.4, 90.3);
 
 	C2DFVector result2 = stransf_upscaled->apply(fscale * test2);
 
@@ -229,7 +227,6 @@ BOOST_FIXTURE_TEST_CASE( test_splinestransform_prefix_iterator, TransformSplineF
 		}
 }
 
-#if 0 
 BOOST_FIXTURE_TEST_CASE( test_splinestransform_postfix_iterator, TransformSplineFixture )
 {
 	C2DSplineTransformation::const_iterator i = stransf.begin();
@@ -241,7 +238,6 @@ BOOST_FIXTURE_TEST_CASE( test_splinestransform_postfix_iterator, TransformSpline
 			BOOST_CHECK_CLOSE(1.0 + y - fy(x,y), 1.0 + test.y, 0.1);
 		}
 }
-#endif
 
 BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 {
@@ -374,7 +370,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_update, TransformSplineFixture )
 	BOOST_CHECK_CLOSE(result.y, fy(testx.x, testx.y) + 4.0f, 0.1);
 }
 
-#if 0 
+
 BOOST_FIXTURE_TEST_CASE( test_splines_gridpoint_derivative, TransformSplineFixture )
 {
 	C2DFVector x(33,80);
@@ -386,10 +382,9 @@ BOOST_FIXTURE_TEST_CASE( test_splines_gridpoint_derivative, TransformSplineFixtu
 	BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(x.x, x.y), 0.2);
 }
 
+#if 0 
 BOOST_FIXTURE_TEST_CASE(test_splines_gridpoint_derivative_new, TransformSplineFixture)
 {
-
-
 	for (size_t y = 0; y < size.y; ++y)
 		for (size_t x = 0; x < size.x; ++x) {
 			C2DFMatrix dv =  stransf.derivative_at(x, y);
@@ -398,7 +393,6 @@ BOOST_FIXTURE_TEST_CASE(test_splines_gridpoint_derivative_new, TransformSplineFi
 			BOOST_CHECK_CLOSE(1.0 + dv.y.x, 1.0 - dfx_y(x, y), 0.1);
 			BOOST_CHECK_CLOSE(1.0 + dv.y.y, 2.0 - dfy_y(x, y), 0.1);
 		}
-
 }
 #endif
 
@@ -444,7 +438,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_pertuberate, TransformSplineFixture )
 	for (size_t y = 0; y < size.y; ++y)
 		for (size_t x = 0; x < size.x; ++x) {
 			const C2DFVector& iv = v(x,y);
-x1			const float sx = x * scalex;
+			const float sx = x * scalex;
 			const float sy = y * scaley;
 
 			BOOST_CHECK_CLOSE(iv.x, vv.x - vv.x * dfx_x(sx,sy) - vv.y * dfx_y(sx,sy), 0.1);
@@ -492,7 +486,7 @@ BOOST_AUTO_TEST_CASE( test_spline_c_rate_create )
 
 }
 
-#if 0 
+
 BOOST_FIXTURE_TEST_CASE( test_splines_upscale, TransformSplineFixture )
 {
 	C2DFVector upscale(2, 3);
@@ -506,7 +500,6 @@ BOOST_FIXTURE_TEST_CASE( test_splines_upscale, TransformSplineFixture )
 			BOOST_CHECK_CLOSE(1.0 + y - fy(x/upscale.x,y/upscale.y)*upscale.y, 1.0 + i->y, 0.5);
 		}
 }
-
 
 BOOST_FIXTURE_TEST_CASE( test_splines_refine, TransformSplineFixture )
 {
@@ -526,7 +519,6 @@ BOOST_FIXTURE_TEST_CASE( test_splines_refine, TransformSplineFixture )
 			BOOST_CHECK_CLOSE(1.0 + y - fy(x/upscale.x,y/upscale.y)*upscale.y, 1.0 + i->y, 0.5);
 		}
 }
-#endif
 
 
 BOOST_AUTO_TEST_CASE( test_splines_transform )

@@ -90,8 +90,8 @@ void C2DSplineTransformation::set_coefficients(const C2DFVectorfield& field)
 	_M_coefficients = field;
 	_M_interpolator_valid = false;
 
-	_M_target_c_rate.x = float(_M_range.x) / field.get_size().x;
-	_M_target_c_rate.y = float(_M_range.y) / field.get_size().y;
+	_M_target_c_rate.x = float(_M_range.x) / (field.get_size().x - 2*_M_shift);
+	_M_target_c_rate.y = float(_M_range.y) / (field.get_size().y - 2*_M_shift);
 }
 
 void C2DSplineTransformation::reinit() const
@@ -192,14 +192,15 @@ bool C2DSplineTransformation::refine()
 	// \todo this should be done faster by a filter 
 	reinit();
 	C2DFVectorfield coeffs(csize);
-	C2DFVector dx((float)(_M_coefficients.get_size().x - 1) / (float)(csize.x - 1),
-		      (float)(_M_coefficients.get_size().y - 1) / (float)(csize.y - 1) );
+	C2DFVector dx((float)(_M_coefficients.get_size().x - 1 - 2 * _M_shift) / (float)(csize.x - 1 - 2 * _M_shift),
+		      (float)(_M_coefficients.get_size().y - 1 - 2 * _M_shift) / (float)(csize.y - 1 - 2 * _M_shift));
 
 	C2DFVectorfield::iterator ic = coeffs.begin();
 
 	for (size_t y = 0; y < csize.y; ++y)
 		for (size_t x = 0; x < csize.x; ++x, ++ic) {
-			*ic = (*_M_interpolator)(C2DFVector(dx.x * x, dx.y * y));
+			*ic = (*_M_interpolator)(C2DFVector(dx.x * (float(x) - _M_shift)+ _M_shift, 
+							    dx.y * (float(y) - _M_shift)+ _M_shift));
 		}
 
 	set_coefficients(coeffs);
@@ -211,8 +212,8 @@ bool C2DSplineTransformation::refine()
 P2DTransformation C2DSplineTransformation::upscale(const C2DBounds& size) const
 {
 	TRACE_FUNCTION;
-	C2DFVector mx((float)size.x / (float)_M_range.x     ,
-		      (float)size.y / (float)_M_range.y);
+	C2DFVector mx(((float)size.x - 1.0)/ ((float)_M_range.x - 1.0),
+		      ((float)size.y - 1.0)/ ((float)_M_range.y - 1.0));
 
 	C2DSplineTransformation *help = new C2DSplineTransformation(size, _M_ipf);
 	C2DFVectorfield new_coefs(_M_coefficients.get_size()); 
