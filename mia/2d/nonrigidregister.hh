@@ -54,11 +54,12 @@ public:
 	   \param minimizer GSL provided minimizer
 	   \param transform_type string describing which transformation is supported
 	   \param ipf interpolator
+	   \param mg_levels multigrisd levels to be used 
 	 */
 
 	C2DNonrigidRegister(C2DFullCostList& costs, EMinimizers minimizer,
 			 P2DTransformationFactory transform_creation,
-			 const C2DInterpolatorFactory& ipf);
+			 const C2DInterpolatorFactory& ipf,  size_t mg_levels);
 
 	
 	~C2DNonrigidRegister();
@@ -67,11 +68,10 @@ public:
 	   Run the registration of an image pair. 
 	   \param src source (moving) image 
 	   \param ref reference (fixed) image 
-	   \param mg_levels multigrisd levels to be used 
 	   \returns the transformation registering src to ref that minimizes the constructor given 
 	   cost function 
 	 */
-	P2DTransformation  run(P2DImage src, P2DImage ref,  size_t mg_levels) const;
+	P2DTransformation  run(P2DImage src, P2DImage ref) const;
 
 private:
 	struct C2DNonrigidRegisterImpl *impl;

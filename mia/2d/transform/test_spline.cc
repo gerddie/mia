@@ -484,19 +484,36 @@ BOOST_AUTO_TEST_CASE( test_spline_c_rate_create )
 }
 
 
+BOOST_FIXTURE_TEST_CASE( test_splines_upscale, TransformSplineFixture )
+{
+	C2DFVector upscale(2, 3);
+	C2DBounds new_range(range.x * upscale.x, range.y * upscale.y); 
+
+	P2DTransformation upscaled(stransf.upscale(new_range)); 
+	auto i = upscaled->begin();
+	for (size_t y = 0; y < new_range.y; ++y)
+		for (size_t x = 0; x < new_range.x; ++x, ++i) {
+			BOOST_CHECK_CLOSE(1.0 + x - fx(x/upscale.x,y/upscale.y)*upscale.x, 1.0 + i->x, 0.5);
+			BOOST_CHECK_CLOSE(1.0 + y - fy(x/upscale.x,y/upscale.y)*upscale.y, 1.0 + i->y, 0.5);
+		}
+}
+
 BOOST_FIXTURE_TEST_CASE( test_splines_refine, TransformSplineFixture )
 {
-	// decrease c-rate
-	C2DBounds new_size(40,50);
+	BOOST_CHECK(!stransf.refine()); 
 
-	auto_ptr<C2DSplineTransformation> refined(stransf.refine(new_size));
+	C2DFVector upscale(2, 3);
+	C2DBounds new_range(range.x * upscale.x, range.y * upscale.y); 
 
-	C2DSplineTransformation::const_iterator i = refined->begin();
+	P2DTransformation upscaled(stransf.upscale(new_range)); 
 
-	for (size_t y = 0; y < range.y; ++y)
-		for (size_t x = 0; x < range.x; ++x, ++i) {
-			BOOST_CHECK_CLOSE(1.0 + x - fx(x,y), 1.0 + i->x, 0.1);
-			BOOST_CHECK_CLOSE(1.0 + y - fy(x,y), 1.0 + i->y, 0.1);
+	BOOST_CHECK(upscaled->refine()); 
+	C2DSplineTransformation::const_iterator i = upscaled->begin();
+	
+	for (size_t y = 0; y < new_range.y; ++y)
+		for (size_t x = 0; x < new_range.x; ++x, ++i) {
+			BOOST_CHECK_CLOSE(1.0 + x - fx(x/upscale.x,y/upscale.y)*upscale.x, 1.0 + i->x, 0.5);
+			BOOST_CHECK_CLOSE(1.0 + y - fy(x/upscale.x,y/upscale.y)*upscale.y, 1.0 + i->y, 0.5);
 		}
 }
 

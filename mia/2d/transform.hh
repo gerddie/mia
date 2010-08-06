@@ -252,6 +252,13 @@ public:
 
 	virtual double get_divcurl_cost(double wd, double wr) const = 0; 
 
+	/**
+	   If applicaple the transformation model is refined (e.g. splines 
+	   are converted to a denser coefficient distribution. 
+	   \returns \a true if refinement was applied, and \a false otherwise
+	 */
+	virtual bool refine(); 
+
 private: 
 	std::string _M_creator_string;  
 	virtual C2DTransformation *do_clone() const = 0;

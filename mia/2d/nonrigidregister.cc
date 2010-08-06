@@ -46,9 +46,9 @@ struct C2DNonrigidRegisterImpl {
 
 	C2DNonrigidRegisterImpl(C2DFullCostList& costs, EMinimizers minimizer,
 				P2DTransformationFactory transform_creator,
-				const C2DInterpolatorFactory& ipf);
+				const C2DInterpolatorFactory& ipf,  size_t mg_levels);
 
-	P2DTransformation run(P2DImage src, P2DImage ref,  size_t mg_levels) const;
+	P2DTransformation run(P2DImage src, P2DImage ref) const;
 private:
 
 	void apply(C2DTransformation& transf, const gsl_multimin_fdfminimizer_type *optimizer)const ;
@@ -61,6 +61,7 @@ private:
 	EMinimizers _M_minimizer;
 	C2DInterpolatorFactory _M_ipf;
 	P2DTransformationFactory _M_transform_creator;
+	size_t _M_mg_levels; 
 };
 
 class C2DNonrigRegGradientProblem: public gsl::CFDFMinimizer::Problem {
@@ -86,8 +87,8 @@ typedef shared_ptr<C2DNonrigRegGradientProblem> P2DGradientNonrigregProblem;
 
 C2DNonrigidRegister::C2DNonrigidRegister(C2DFullCostList& costs, EMinimizers minimizer,
 					 P2DTransformationFactory transform_creation,
-					 const C2DInterpolatorFactory& ipf):
-	impl(new C2DNonrigidRegisterImpl( costs, minimizer, transform_creation, ipf))
+					 const C2DInterpolatorFactory& ipf, size_t mg_levels):
+	impl(new C2DNonrigidRegisterImpl( costs, minimizer, transform_creation, ipf, mg_levels))
 {
 }
 
@@ -97,18 +98,19 @@ C2DNonrigidRegister::~C2DNonrigidRegister()
 	delete impl;
 }
 
-P2DTransformation C2DNonrigidRegister::run(P2DImage src, P2DImage ref,  size_t mg_levels) const
+P2DTransformation C2DNonrigidRegister::run(P2DImage src, P2DImage ref) const
 {
-	return impl->run(src, ref, mg_levels);
+	return impl->run(src, ref);
 }
 
 C2DNonrigidRegisterImpl::C2DNonrigidRegisterImpl(C2DFullCostList& costs, EMinimizers minimizer,
 						 P2DTransformationFactory transform_creation, 
-						 const C2DInterpolatorFactory& ipf):
+						 const C2DInterpolatorFactory& ipf,size_t mg_levels):
 	_M_costs(costs),
 	_M_minimizer(minimizer),
 	_M_ipf(ipf),
-	_M_transform_creator(transform_creation)
+	_M_transform_creator(transform_creation), 
+	_M_mg_levels(mg_levels)
 {
 }
 
@@ -150,7 +152,7 @@ void C2DNonrigidRegisterImpl::apply(C2DTransformation& transf, const gsl_multimi
 }
 
 
-P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref,  size_t mg_levels) const
+P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 {
 	assert(src);
 	assert(ref);
@@ -168,10 +170,10 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref,  size
 
 	C2DBounds global_size = src->get_size();
 
-	int x_shift = mg_levels + 1;
-	int y_shift = mg_levels + 1;
+	int x_shift = _M_mg_levels;
+	int y_shift = _M_mg_levels;
 
-	while (x_shift && y_shift) {
+	do {
 		if (x_shift)
 			x_shift--;
 
@@ -186,8 +188,8 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref,  size
 		C2DFilterPlugin::ProductPtr downscaler =
 			C2DFilterPluginHandler::instance().produce(downscale_descr.str().c_str());
 
-		P2DImage src_scaled = x_shift && y_shift ? downscaler->filter(*src) : src;
-		P2DImage ref_scaled = x_shift && y_shift ? downscaler->filter(*ref) : ref;
+		P2DImage src_scaled = x_shift || y_shift ? downscaler->filter(*src) : src;
+		P2DImage ref_scaled = x_shift || y_shift ? downscaler->filter(*ref) : ref;
 
 		if (transform)
 			transform = transform->upscale(src_scaled->get_size());
@@ -202,8 +204,13 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref,  size
 		
 		apply(*transform, gradminimizers[_M_minimizer].fdfmin);
 
+		/* // run the registration at refined splines 
+		  if (transform->refine())
+		          apply(*transform, gradminimizers[_M_minimizer].fdfmin);
+		 */
+
 		//auto params = transform->get_parameters(); 
-	}
+	} while (x_shift || y_shift); 
 	return transform;
 }
 

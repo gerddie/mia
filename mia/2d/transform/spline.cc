@@ -39,6 +39,7 @@ using namespace boost::lambda;
 C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range,
 						 P2DInterpolatorFactory ipf):
 	_M_range(range),
+	_M_target_c_rate(1,1),
 	_M_ipf(ipf),
 	_M_scale(1.0, 1.0),
 	_M_interpolator_valid(false)
@@ -50,6 +51,7 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range,
 
 C2DSplineTransformation::C2DSplineTransformation(const C2DSplineTransformation& org):
 	_M_range(org._M_range),
+	_M_target_c_rate(org._M_target_c_rate),
 	_M_coefficients( org._M_coefficients),
 	_M_ipf(org._M_ipf),
 	_M_interpolator_valid(false)
@@ -59,6 +61,7 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DSplineTransformation& 
 
 C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, P2DInterpolatorFactory ipf, const C2DFVector& c_rate):
 	_M_range(range),
+	_M_target_c_rate(c_rate),
 	_M_ipf(ipf),
 	_M_interpolator_valid(false)
 {
@@ -79,6 +82,9 @@ void C2DSplineTransformation::set_coefficients(const C2DFVectorfield& field)
 	TRACE_FUNCTION;
 	_M_coefficients = field;
 	_M_interpolator_valid = false;
+
+	_M_target_c_rate.x = float(_M_range.x) / field.get_size().x;
+	_M_target_c_rate.y = float(_M_range.y) / field.get_size().y;
 }
 
 void C2DSplineTransformation::reinit() const
@@ -162,27 +168,34 @@ bool C2DSplineTransformation::save(const std::string& /*filename*/,
 }
 
 
-C2DSplineTransformation *C2DSplineTransformation::refine(const C2DBounds& coeff_size) const
+bool C2DSplineTransformation::refine()
 {
 	TRACE_FUNCTION;
-	C2DSplineTransformation *result =  new C2DSplineTransformation(_M_range, _M_ipf);
+	C2DBounds csize(size_t((_M_range.x + _M_target_c_rate.x - 1) / _M_target_c_rate.x),
+			size_t((_M_range.y + _M_target_c_rate.y - 1) / _M_target_c_rate.y));
+	
+	// no refinement necessary? 
+	if (csize.x <= _M_coefficients.get_size().x || 
+	    csize.y <= _M_coefficients.get_size().y) 
+		return false; 
+
+	// now interpolate the new coefficients 
+	// \todo this should be done faster by a filter 
 	reinit();
-
-	C2DFVectorfield coeffs(coeff_size);
-
-	C2DFVector dx((float)(_M_coefficients.get_size().x - 1) / (float)(coeff_size.x - 1),
-		      (float)(_M_coefficients.get_size().y - 1) / (float)(coeff_size.y - 1) );
+	C2DFVectorfield coeffs(csize);
+	C2DFVector dx((float)(_M_coefficients.get_size().x - 1) / (float)(csize.x - 1),
+		      (float)(_M_coefficients.get_size().y - 1) / (float)(csize.y - 1) );
 
 	C2DFVectorfield::iterator ic = coeffs.begin();
 
-	for (size_t y = 0; y < coeff_size.y; ++y)
-		for (size_t x = 0; x < coeff_size.x; ++x, ++ic) {
+	for (size_t y = 0; y < csize.y; ++y)
+		for (size_t x = 0; x < csize.x; ++x, ++ic) {
 			*ic = (*_M_interpolator)(C2DFVector(dx.x * x, dx.y * y));
 		}
 
-	result->set_coefficients(coeffs);
-	result->reinit();
-	return result;
+	set_coefficients(coeffs);
+	reinit();
+	return true; 
 }
 
 
@@ -192,16 +205,13 @@ P2DTransformation C2DSplineTransformation::upscale(const C2DBounds& size) const
 	C2DFVector mx((float)size.x / (float)_M_range.x     ,
 		      (float)size.y / (float)_M_range.y);
 
-	C2DBounds cmx((unsigned int)(mx.x * _M_coefficients.get_size().x),
-		      (unsigned int)(mx.y * _M_coefficients.get_size().y));
-
-	C2DSplineTransformation help(size, _M_ipf);
-	help._M_coefficients = C2DFVectorfield(_M_coefficients.get_size());
-	transform(_M_coefficients.begin(), _M_coefficients.end(),
-		  help._M_coefficients.begin(), mx * _1 );
-
-
-	return P2DTransformation(help.refine(cmx));
+	C2DSplineTransformation *help = new C2DSplineTransformation(size, _M_ipf);
+	C2DFVectorfield new_coefs(_M_coefficients.get_size()); 
+	
+	transform(_M_coefficients.begin(), _M_coefficients.end(), new_coefs.begin(), mx * _1 );
+	help->set_coefficients(new_coefs); 
+	help->_M_target_c_rate = _M_target_c_rate; 
+	return P2DTransformation(help);
 }
 
 void C2DSplineTransformation::add(const C2DTransformation& a)

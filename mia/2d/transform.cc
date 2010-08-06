@@ -170,5 +170,9 @@ const C2DFVector  *C2DTransformation::const_iterator::operator ->() const
 	return &_M_holder->get_value(); 
 }
 
+bool C2DTransformation::refine()
+{
+	return false; 
+}
 
 NS_MIA_END

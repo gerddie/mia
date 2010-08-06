@@ -91,6 +91,34 @@ P2DTransformationFactory create_transform_creator(size_t c_rate)
 }
 	
 
+void segment_and_crop_input(CSegSetWithImages&  input_set, const C2DPerfusionAnalysis& ica, 
+			    float box_scale, C2DPerfusionAnalysis::EBoxSegmentation segmethod, 
+			    C2DImageSeries& references, 
+			    const string& save_crop_feature)
+{
+	C2DBounds crop_start; 
+	auto cropper = ica.get_crop_filter(box_scale, crop_start, segmethod, save_crop_feature); 
+	if (!cropper) {
+		THROW(runtime_error, "Cropping was requested, but segmentation failed"); 
+	}
+	
+	C2DImageSeries input_images = input_set.get_images(); 
+	for(auto i = input_images.begin(); i != input_images.end(); ++i)
+		*i = cropper->filter(**i); 
+	
+	for (auto i = references.begin(); i != references.end(); ++i) 
+		*i = cropper->filter(**i); 
+	
+	auto tr_creator = C2DTransformCreatorHandler::instance().produce("translate");
+	P2DTransformation shift = tr_creator->create(C2DBounds(1,1)); 
+	auto p = shift->get_parameters(); 
+	p[0] = crop_start.x; 
+	p[1] = crop_start.y; 
+	shift->set_parameters(p); 
+	
+	input_set.transform(*shift);
+	input_set.set_images(input_images);  
+}
 
 int do_main( int argc, const char *argv[] )
 {
@@ -213,27 +241,8 @@ int do_main( int argc, const char *argv[] )
 
 	// crop if requested
 	if (box_scale) {
-		C2DBounds crop_start; 
-		auto cropper = ica.get_crop_filter(box_scale, crop_start, segmethod, save_crop_feature); 
-		if (!cropper) {
-			THROW(runtime_error, "Cropping was requested, but segmentation failed"); 
-		}
-		
-		for(auto i = input_images.begin(); i != input_images.end(); ++i)
-			*i = cropper->filter(**i); 
-
-		for (auto i = references.begin(); i != references.end(); ++i) 
-			*i = cropper->filter(**i); 
-
-		auto tr_creator = C2DTransformCreatorHandler::instance().produce("translate");
-		P2DTransformation shift = tr_creator->create(C2DBounds(1,1)); 
-		auto p = shift->get_parameters(); 
-		p[0] = crop_start.x; 
-		p[1] = crop_start.y; 
-		shift->set_parameters(p); 
-		
-		input_set.transform(*shift);
-		input_set.set_images(input_images);  
+		segment_and_crop_input(input_set, ica, box_scale, segmethod, references, save_crop_feature); 
+		input_images = input_set.get_images(); 
 	}
 	
 	if (!cropped_filename.empty()) {
@@ -256,13 +265,13 @@ int do_main( int argc, const char *argv[] )
 		++current_pass; 
 		auto costs  = create_costs(divcurlweight, cost_ssd); 
 		auto transform_creator = create_transform_creator(c_rate); 
-		C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory);
+		C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory, mg_levels);
 
 		
 		for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
 			cvmsg() << "Register 1st pass, frame " << i << "\n"; 
 			P2DTransformation transform = nrr.run(input_images[i + skip_images] , 
-							      references[i], mg_levels);
+							      references[i]);
 			input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], *ipfactory);
 			frames[i + skip_images].inv_transform(*transform);
 		}
@@ -286,7 +295,7 @@ int do_main( int argc, const char *argv[] )
 				c_rate /= c_rate_divider; 
 			auto costs  = create_costs(divcurlweight, cost_ssd); 
 			auto transform_creator = create_transform_creator(c_rate); 
-			C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory);
+			C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory, mg_levels);
 			cvmsg() << "Run registration with divcurl=" << divcurlweight 
 				<< " and spline c-rate " << c_rate << "\n"; 
 			
@@ -297,7 +306,7 @@ int do_main( int argc, const char *argv[] )
 			for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
 				cvmsg() << "Register " << current_pass + 1 <<  " pass, frame " << i << "\n"; 
 				P2DTransformation transform = 
-					nrr.run(input_images[i + skip_images] , references[i], mg_levels); 
+					nrr.run(input_images[i + skip_images] , references[i]); 
 				input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], *ipfactory);
 				frames[i + skip_images].inv_transform(*transform);
 			}

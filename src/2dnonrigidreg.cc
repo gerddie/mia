@@ -89,16 +89,13 @@ int do_main( int argc, const char *argv[] )
 
 	P2DImage Model = load_image2d(src_filename);
 	P2DImage Reference = load_image2d(ref_filename);
-
 	C2DBounds GlobalSize = Model->get_size();
 	if (GlobalSize != Reference->get_size())
 		throw std::invalid_argument("Images have different size");
 
 	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3));
-
-	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory);
-
-	P2DTransformation transform = nrr.run(Model, Reference, mg_levels);
+	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory, mg_levels);
+	P2DTransformation transform = nrr.run(Model, Reference);
 	P2DImage result = (*transform)(*Model, *ipfactory);
 
 	if (!trans_filename.empty()) {
