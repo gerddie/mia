@@ -241,7 +241,7 @@ void C2DSplineTransformation::add(const C2DTransformation& a)
 
 	for (size_t y = 0; y < _M_coefficients.get_size().y; ++y)  {
 		for (size_t x = 0; x < _M_coefficients.get_size().x; ++x, ++i)  {
-			C2DFVector v = C2DFVector(x,y) * _M_inv_scale;
+			C2DFVector v = C2DFVector(x - _M_shift, y - _M_shift) * _M_inv_scale;
 			C2DFVector u = a(v);
 			*i = v + apply(u) - u;
 		}
