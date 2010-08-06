@@ -73,13 +73,13 @@ private:
 	FConvert2DImage2float _M_converter; 
 }; 
 
-C2DFullCostList create_costs(double divcurlweight, P2DFullCost cost_ssd)
+C2DFullCostList create_costs(double divcurlweight)
 {
 	C2DFullCostList result; 
-	result.push(cost_ssd); 
 	stringstream divcurl_descr;  
 	divcurl_descr << "divcurl:weight=" << divcurlweight; 
 	result.push(C2DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
+	result.push(C2DFullCostPluginHandler::instance().produce("image:weight=256.0")); 
 	return result; 
 }
 
@@ -98,10 +98,8 @@ void segment_and_crop_input(CSegSetWithImages&  input_set, const C2DPerfusionAna
 {
 	C2DBounds crop_start; 
 	auto cropper = ica.get_crop_filter(box_scale, crop_start, segmethod, save_crop_feature); 
-	if (!cropper) {
+	if (!cropper)
 		THROW(runtime_error, "Cropping was requested, but segmentation failed"); 
-	}
-	
 	C2DImageSeries input_images = input_set.get_images(); 
 	for(auto i = input_images.begin(); i != input_images.end(); ++i)
 		*i = cropper->filter(**i); 
@@ -118,6 +116,27 @@ void segment_and_crop_input(CSegSetWithImages&  input_set, const C2DPerfusionAna
 	
 	input_set.transform(*shift);
 	input_set.set_images(input_images);  
+}
+
+void run_registration_pass(CSegSetWithImages&  input_set, const C2DImageSeries& references, 
+			   int skip_images, EMinimizers minimizer, 
+			   C2DInterpolatorFactory& ipfactory, size_t mg_levels, 
+			   double c_rate, double divcurlweight) 
+{
+	CSegSetWithImages::Frames& frames = input_set.get_frames();
+	C2DImageSeries input_images = input_set.get_images(); 
+	auto costs  = create_costs(divcurlweight); 
+	auto transform_creator = create_transform_creator(c_rate); 
+	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, ipfactory, mg_levels);
+
+	// this loop could be parallized 
+	for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
+		cvmsg() << "Register frame " << i << "\n"; 
+		P2DTransformation transform = nrr.run(input_images[i + skip_images], references[i]);
+		input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], ipfactory);
+		frames[i + skip_images].inv_transform(*transform);
+	}
+	input_set.set_images(input_images); 
 }
 
 int do_main( int argc, const char *argv[] )
@@ -137,8 +156,8 @@ int do_main( int argc, const char *argv[] )
 
 	// registration parameters
 	EMinimizers minimizer = min_gd;
-	int c_rate = 20; 
-	int c_rate_divider = 20; 
+	double c_rate = 20; 
+	double c_rate_divider = 20; 
 	double divcurlweight = 10.0; 
 	double divcurlweight_divider = 10.0; 
 
@@ -212,12 +231,9 @@ int do_main( int argc, const char *argv[] )
 
 
 	// this cost will always be used 
-	P2DFullCost cost_ssd = C2DFullCostPluginHandler::instance().produce("image:weight=256.0");
 
 	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(interpolator));
 
-
-	
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
 	C2DImageSeries input_images = input_set.get_images(); 
@@ -244,7 +260,8 @@ int do_main( int argc, const char *argv[] )
 		segment_and_crop_input(input_set, ica, box_scale, segmethod, references, save_crop_feature); 
 		input_images = input_set.get_images(); 
 	}
-	
+
+	// save cropped images if requested
 	if (!cropped_filename.empty()) {
 		bfs::path cf(cropped_filename);
 		cf.replace_extension(); 
@@ -260,56 +277,29 @@ int do_main( int argc, const char *argv[] )
 
 	}
 
-	CSegSetWithImages::Frames& frames = input_set.get_frames();
-	{
+	bool do_continue = ica.has_periodic(); 
+	while (do_continue){
 		++current_pass; 
-		auto costs  = create_costs(divcurlweight, cost_ssd); 
-		auto transform_creator = create_transform_creator(c_rate); 
-		C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory, mg_levels);
-
 		
-		for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
-			cvmsg() << "Register 1st pass, frame " << i << "\n"; 
-			P2DTransformation transform = nrr.run(input_images[i + skip_images] , 
-							      references[i]);
-			input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], *ipfactory);
-			frames[i + skip_images].inv_transform(*transform);
-		}
-	}
-	
-	// run the specified number of passes or until no periodic movement can be identified 
-	// break early if ICA fails 
-	bool do_continue = true; 
-	++current_pass; 
-	while (do_continue) {
-		++current_pass; 
+		run_registration_pass(input_set, references,  skip_images,  minimizer, 
+				      *ipfactory, mg_levels, c_rate, divcurlweight); 
+		
 		C2DPerfusionAnalysis ica2(components, !no_normalize, !no_meanstrip); 
 		if (max_ica_iterations) 
 			ica2.set_max_ica_iterations(max_ica_iterations); 
 	
-		transform(input_images.begin() + skip_images, 
-			  input_images.end(), series.begin(), Convert2Float()); 
+		transform(input_set.get_images().begin() + skip_images, 
+			  input_set.get_images().end(), series.begin(), Convert2Float()); 
+
 		if (ica2.run(series) ) {
 			divcurlweight /= divcurlweight_divider; 
 			if (c_rate > 1) 
 				c_rate /= c_rate_divider; 
-			auto costs  = create_costs(divcurlweight, cost_ssd); 
-			auto transform_creator = create_transform_creator(c_rate); 
-			C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory, mg_levels);
-			cvmsg() << "Run registration with divcurl=" << divcurlweight 
-				<< " and spline c-rate " << c_rate << "\n"; 
-			
 			references_float = ica2.get_references(); 
 			transform(references_float.begin(), references_float.end(), 
 				  references.begin(), C2DFImage2PImage()); 
-			
-			for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
-				cvmsg() << "Register " << current_pass + 1 <<  " pass, frame " << i << "\n"; 
-				P2DTransformation transform = 
-					nrr.run(input_images[i + skip_images] , references[i]); 
-				input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], *ipfactory);
-				frames[i + skip_images].inv_transform(*transform);
-			}
+			run_registration_pass(input_set, references,  skip_images,  minimizer, 
+					      *ipfactory, mg_levels, c_rate, divcurlweight); 
 		} else {
 			cvmsg() << "Stopping registration in pass " << current_pass 
 				<< " because ICA didn't return useful results\n"; 
@@ -318,10 +308,7 @@ int do_main( int argc, const char *argv[] )
 		do_continue =  (!pass || current_pass < pass) && ica2.has_periodic(); 
 	}
 
-
-	input_set.set_images(input_images); 
 	input_set.rename_base(registered_filebase); 
-
 	input_set.save_images(out_filename); 
 	
 	unique_ptr<xmlpp::Document> outset(input_set.write());
