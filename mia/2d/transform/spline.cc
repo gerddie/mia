@@ -43,10 +43,13 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range,
 	_M_ipf(ipf),
 	_M_scale(1.0, 1.0),
 	_M_interpolator_valid(false), 
-	_M_shift(0)
+	_M_shift(0), 
+	_M_enlarge(0)
 {
 	if (_M_ipf->get_kernel())
 		_M_shift = _M_ipf->get_kernel()->get_active_halfrange(); 
+	_M_enlarge = 2*_M_shift; 
+	
 	TRACE_FUNCTION;
 	assert(_M_range.x > 0);
 	assert(_M_range.y > 0);
@@ -58,7 +61,8 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DSplineTransformation& 
 	_M_coefficients( org._M_coefficients),
 	_M_ipf(org._M_ipf),
 	_M_interpolator_valid(false), 
-	_M_shift(org._M_shift)
+	_M_shift(org._M_shift),
+	_M_enlarge(org._M_enlarge)
 {
 }
 
@@ -77,9 +81,10 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, P2DInte
 
 	if (_M_ipf->get_kernel())
 		_M_shift = _M_ipf->get_kernel()->get_active_halfrange(); 
+	_M_enlarge = 2*_M_shift; 
 
-	C2DBounds csize(size_t((range.x + c_rate.x - 1) / c_rate.x) + 2 * _M_shift,
-			size_t((range.y + c_rate.y - 1) / c_rate.y) + 2 * _M_shift);
+	C2DBounds csize(size_t((range.x + c_rate.x - 1) / c_rate.x) + _M_enlarge,
+			size_t((range.y + c_rate.y - 1) / c_rate.y) + _M_enlarge);
 	_M_coefficients = C2DFVectorfield(csize);
 	reinit();
 }
@@ -90,8 +95,8 @@ void C2DSplineTransformation::set_coefficients(const C2DFVectorfield& field)
 	_M_coefficients = field;
 	_M_interpolator_valid = false;
 
-	_M_target_c_rate.x = float(_M_range.x) / (field.get_size().x - 2*_M_shift);
-	_M_target_c_rate.y = float(_M_range.y) / (field.get_size().y - 2*_M_shift);
+	_M_target_c_rate.x = float(_M_range.x) / (field.get_size().x - _M_enlarge);
+	_M_target_c_rate.y = float(_M_range.y) / (field.get_size().y - _M_enlarge);
 }
 
 void C2DSplineTransformation::reinit() const
@@ -99,10 +104,10 @@ void C2DSplineTransformation::reinit() const
 	TRACE_FUNCTION;
 	if (!_M_interpolator_valid) {
 		TRACE("C2DSplineTransformation::reinit applies");
-		_M_scale.x = float(_M_coefficients.get_size().x - 1 - 2*_M_shift) / (_M_range.x - 1);
-		_M_scale.y = float(_M_coefficients.get_size().y - 1 - 2*_M_shift) / (_M_range.y - 1);
-		_M_inv_scale.x = float(_M_range.x - 1) / (_M_coefficients.get_size().x - 1 - 2*_M_shift);
-		_M_inv_scale.y = float(_M_range.y - 1) / (_M_coefficients.get_size().y - 1 - 2*_M_shift);
+		_M_scale.x = float(_M_coefficients.get_size().x - 1 - _M_enlarge) / (_M_range.x - 1);
+		_M_scale.y = float(_M_coefficients.get_size().y - 1 - _M_enlarge) / (_M_range.y - 1);
+		_M_inv_scale.x = float(_M_range.x - 1) / (_M_coefficients.get_size().x - 1 - _M_enlarge);
+		_M_inv_scale.y = float(_M_range.y - 1) / (_M_coefficients.get_size().y - 1 - _M_enlarge);
 		_M_interpolator.reset(_M_ipf->create(_M_coefficients));
 		_M_interpolator_valid = true;
 		cvdebug() << "shift=" << _M_shift<< ", Scale: "<< _M_scale << "InvScale = " << _M_inv_scale << "\n";
@@ -180,8 +185,8 @@ bool C2DSplineTransformation::save(const std::string& /*filename*/,
 bool C2DSplineTransformation::refine()
 {
 	TRACE_FUNCTION;
-	C2DBounds csize(size_t((_M_range.x + _M_target_c_rate.x - 1) / _M_target_c_rate.x) + 2 * _M_shift,
-			size_t((_M_range.y + _M_target_c_rate.y - 1) / _M_target_c_rate.y) + 2 * _M_shift);
+	C2DBounds csize(size_t((_M_range.x + _M_target_c_rate.x - 1) / _M_target_c_rate.x) + _M_enlarge,
+			size_t((_M_range.y + _M_target_c_rate.y - 1) / _M_target_c_rate.y) + _M_enlarge);
 	
 	// no refinement necessary? 
 	if (csize.x <= _M_coefficients.get_size().x || 
@@ -192,8 +197,8 @@ bool C2DSplineTransformation::refine()
 	// \todo this should be done faster by a filter 
 	reinit();
 	C2DFVectorfield coeffs(csize);
-	C2DFVector dx((float)(_M_coefficients.get_size().x - 1 - 2 * _M_shift) / (float)(csize.x - 1 - 2 * _M_shift),
-		      (float)(_M_coefficients.get_size().y - 1 - 2 * _M_shift) / (float)(csize.y - 1 - 2 * _M_shift));
+	C2DFVector dx((float)(_M_coefficients.get_size().x - 1 - _M_enlarge) / (float)(csize.x - 1 - _M_enlarge),
+		      (float)(_M_coefficients.get_size().y - 1 - _M_enlarge) / (float)(csize.y - 1 - _M_enlarge));
 
 	C2DFVectorfield::iterator ic = coeffs.begin();
 
@@ -336,7 +341,7 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 	C2DFVectorfield tmp(C2DBounds(gradient.get_size().x, _M_coefficients.get_size().y));
 
 	vector<C2DFVector> in_buffer;
-	vector<C2DFVector> out_buffer(_M_coefficients.get_size().y - 2 * _M_shift);
+	vector<C2DFVector> out_buffer(_M_coefficients.get_size().y - _M_enlarge);
 	vector<C2DFVector> out_buffer2(_M_coefficients.get_size().y);
 
 	// run y direction downscale and mirror bondaries 
@@ -352,7 +357,7 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 
 	}
 	// run x direction downscale, mirror bondaries and copy into output 
-	out_buffer.resize(_M_coefficients.get_size().x - 2 * _M_shift);
+	out_buffer.resize(_M_coefficients.get_size().x - _M_enlarge);
 	auto r = params.begin();
 
 	for (size_t i = 0; i < tmp.get_size().y; ++i) {

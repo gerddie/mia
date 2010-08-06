@@ -95,6 +95,7 @@ private:
 	C2DFVectorfield _M_coefficients;
 	P2DInterpolatorFactory _M_ipf;
 	int _M_shift; 
+	int _M_enlarge; 
 	mutable C2DFVector _M_scale;
 	mutable C2DFVector _M_inv_scale;
 	mutable bool _M_interpolator_valid;
