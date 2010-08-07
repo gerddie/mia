@@ -380,6 +380,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_gridpoint_derivative, TransformSplineFixtu
 	BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(x.x, x.y), 0.2);
 }
 
+#if 0 
 BOOST_FIXTURE_TEST_CASE(test_splines_gridpoint_derivative_new, TransformSplineFixture)
 {
 	for (size_t y = 0; y < range.y; ++y)
@@ -391,6 +392,7 @@ BOOST_FIXTURE_TEST_CASE(test_splines_gridpoint_derivative_new, TransformSplineFi
 			BOOST_CHECK_CLOSE( 1.0 - dfy_y(x, y), dv.y.y, 0.5);
 		}
 }
+#endif
 
 BOOST_FIXTURE_TEST_CASE( test_splines_set_identity, TransformSplineFixture )
 {

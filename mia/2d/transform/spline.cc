@@ -350,8 +350,9 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 		gradient.get_data_line_y(i, in_buffer);
 		scaler(in_buffer, out_buffer);
 		for (size_t j = 0; j < _M_shift; ++j) {
-			out_buffer2[j] = out_buffer[_M_shift - j - 1]; 
-			out_buffer2[out_buffer2.size() - 1 - j] = out_buffer[out_buffer.size() - _M_shift + j]; 
+			out_buffer2[_M_shift - j - 1] = out_buffer[_M_shift - j - 1]; 
+			out_buffer2[out_buffer2.size() - 1 - j] = 
+				out_buffer[out_buffer.size() - _M_shift - j]; 
 		}
 		copy(out_buffer.begin(), out_buffer.end(), out_buffer2.begin() + _M_shift); 
 		tmp.put_data_line_y(i, out_buffer2); 
@@ -374,7 +375,8 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 			*r++ = x->y;
 		}
 		for (size_t i = 0; i < _M_shift; ++i) {
-			const C2DFVector& h = out_buffer[out_buffer.size() - _M_shift + i];
+			const C2DFVector& h = 
+				out_buffer[out_buffer.size() -  _M_shift - i];
 			*r++ = h.x;
 			*r++ = h.y;
 		}
