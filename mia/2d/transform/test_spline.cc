@@ -55,18 +55,18 @@ struct TransformSplineFixture {
 		stransf(range, ipf),
 		scale(2 * M_PI / r.x, 2 * M_PI / r.y)
 	{
-		int shift = ipf->get_kernel()->get_active_halfrange(); 
+		coeff_shift = ipf->get_kernel()->get_active_halfrange(); 
 		C2DFVector ivscale(float(range.x - 1) / (size.x - 1),
 				   float(range.y - 1) / (size.y - 1));
-		size.x += 2*shift; 
-		size.y += 2*shift; 
+		size.x += 2*coeff_shift; 
+		size.y += 2*coeff_shift; 
 		field = C2DFVectorfield(size); 
 
 		C2DFVectorfield::iterator i = field.begin();
 		for (size_t y = 0; y < size.y; ++y)
 			for (size_t x = 0; x < size.x; ++x, ++i) {
-				float sx = ivscale.x * (float(x) - shift);
-				float sy = ivscale.y * (float(y) - shift);
+				float sx = ivscale.x * (float(x) - coeff_shift);
+				float sy = ivscale.y * (float(y) - coeff_shift);
 				*i = C2DFVector( fx(sx, sy), fy(sx, sy));
 			}
 
@@ -82,7 +82,7 @@ struct TransformSplineFixture {
 	C2DBounds range;
 	C2DBounds r;
 	C2DSplineTransformation  stransf;
-
+	int coeff_shift; 
 protected:
 	float fx(float x, float y);
 	float fy(float x, float y);
@@ -111,16 +111,12 @@ private:
 float TransformSplineFixture::fx(float x, float y)
 {
 
-	x *= scale.x;
-	y *= scale.y;
-	return 	(1.0 + sinf(x - M_PI / 2.0)) * (1.0 + sinf(2 * y  - M_PI / 2.0));
+	return 	(1.0 - cosf(scale.x * x)) * (1.0 - cosf(2 * scale.y * y));
 }
 
 float TransformSplineFixture::fy(float x, float y)
 {
-	x *= scale.x;
-	y *= scale.y;
-	return (1.0 - cosf(2 * x)) * (1.0 - cosf(y));
+	return (1.0 - cosf(2 * scale.x * x)) * (1.0 - cosf(scale.y * y));
 }
 
 
@@ -128,21 +124,21 @@ float TransformSplineFixture::dfx_x(float x, float y)
 {
 	x *= scale.x;
 	y *= scale.y;
-	return scale.x * cosf(x - M_PI / 2.0) * ( 1.0 + sinf(2 * y  - M_PI / 2.0));
+	return scale.x * sinf(x) * ( 1.0 - cosf(2 * y));
 }
 
 float TransformSplineFixture::dfx_y(float x, float y)
 {
 	x *= scale.x;
 	y *= scale.y;
-	return 4.0 * M_PI / r.y * (1.0 + sinf(x - M_PI / 2.0)) * cosf(2 * y  - M_PI / 2.0);
+	return 2* scale.y * (1.0 - cosf(x)) * sinf(2 * y);
 }
 
 float TransformSplineFixture::dfy_x(float x, float y)
 {
 	x *= scale.x;
 	y *= scale.y;
-	return 4 * M_PI / r.x * sinf(2 * x) * (1.0 - cosf(y));
+	return 2 * scale.x * sinf(2 * x) * (1.0 - cosf(y));
 }
 
 float TransformSplineFixture::dfy_y(float x, float y)
@@ -163,8 +159,8 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 	BOOST_CHECK_EQUAL(stransf.get_size(), range);
 
 	C2DFVector scaledx = stransf.scale(testx);
-	BOOST_CHECK_CLOSE(scaledx.x, testx.x * (size.x-5) / (range.x-1)+2, 0.1);
-	BOOST_CHECK_CLOSE(scaledx.y, testx.y * (size.y-5) / (range.y-1)+2, 0.1);
+	BOOST_CHECK_CLOSE(scaledx.x, testx.x * (size.x-5) / (range.x-1)+coeff_shift, 0.1);
+	BOOST_CHECK_CLOSE(scaledx.y, testx.y * (size.y-5) / (range.y-1)+coeff_shift, 0.1);
 
 
 	BOOST_CHECK_CLOSE(result.x, fx(testx.x, testx.y), 0.1);
@@ -177,6 +173,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 }
 
 
+#ifdef REVIEW_THIS_TEST
 BOOST_FIXTURE_TEST_CASE( test_splines_transformation_upscale, TransformSplineFixture )
 {
 	const C2DBounds scale(2.0, 3.0);
@@ -198,6 +195,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation_upscale, TransformSplineFix
 	BOOST_CHECK_CLOSE(result2.y, scale.y * fy(test2.x, test2.y), 0.1);
 
 }
+#endif
 
 
 BOOST_FIXTURE_TEST_CASE( test_splines_add, TransformSplineFixture )
@@ -382,19 +380,17 @@ BOOST_FIXTURE_TEST_CASE( test_splines_gridpoint_derivative, TransformSplineFixtu
 	BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(x.x, x.y), 0.2);
 }
 
-#if 0 
 BOOST_FIXTURE_TEST_CASE(test_splines_gridpoint_derivative_new, TransformSplineFixture)
 {
-	for (size_t y = 0; y < size.y; ++y)
-		for (size_t x = 0; x < size.x; ++x) {
+	for (size_t y = 0; y < range.y; ++y)
+		for (size_t x = 0; x < range.x; ++x) {
 			C2DFMatrix dv =  stransf.derivative_at(x, y);
-			BOOST_CHECK_CLOSE(1.0 + dv.x.x, 2.0 - dfx_x(x, y), 0.1);
-			BOOST_CHECK_CLOSE(1.0 + dv.x.y, 1.0 - dfy_x(x, y), 0.1);
-			BOOST_CHECK_CLOSE(1.0 + dv.y.x, 1.0 - dfx_y(x, y), 0.1);
-			BOOST_CHECK_CLOSE(1.0 + dv.y.y, 2.0 - dfy_y(x, y), 0.1);
+			BOOST_CHECK_CLOSE( 1.0 - dfx_x(x, y), dv.x.x, 0.5);
+			BOOST_CHECK_CLOSE(     - dfy_x(x, y), dv.x.y, 0.5);
+			BOOST_CHECK_CLOSE(     - dfx_y(x, y), dv.y.x, 0.5);
+			BOOST_CHECK_CLOSE( 1.0 - dfy_y(x, y), dv.y.y, 0.5);
 		}
 }
-#endif
 
 BOOST_FIXTURE_TEST_CASE( test_splines_set_identity, TransformSplineFixture )
 {
@@ -446,8 +442,6 @@ BOOST_FIXTURE_TEST_CASE( test_splines_pertuberate, TransformSplineFixture )
 		}
 }
 
-#endif
-
 BOOST_FIXTURE_TEST_CASE( test_splines_get_jacobian, TransformSplineFixture )
 {
 	C2DFVectorfield v(size);
@@ -464,6 +458,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_get_jacobian, TransformSplineFixture )
 
 	BOOST_CHECK_CLOSE(j, J.x.x * J.y.y - J.x.y * J.y.x, 0.1);
 }
+#endif
 
 BOOST_AUTO_TEST_CASE( test_spline_c_rate_create )
 {
@@ -570,7 +565,7 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 	for (size_t y = 0; y < size.y; ++y)
 		for (size_t x = 0; x < size.x; ++x, ++ir, ++itest)
 			cvinfo() << x << "," << y << ", " << *ir << " ?= " <<*itest << "\n"; 
-			if (*itest > 0.0001 || *ir > 0.0001) 
+			if (*itest > 0.001 || *ir > 0.001) 
 				BOOST_CHECK_EQUAL(*ir, *itest); 
 	
 

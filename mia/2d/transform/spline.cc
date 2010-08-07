@@ -282,6 +282,7 @@ C2DFMatrix C2DSplineTransformation::derivative_at(int x, int y) const
 	assert(_M_interpolator_valid);
 	const C2DFVector l = scale(C2DFVector(x,y));
 	C2DFMatrix d = _M_interpolator->derivative_at(l);
+	cvinfo() << C2DFVector(x,y) << ":" << l << " = [" <<  d.x << d.y << "]\n"; 
 	d.x.x = 1.0f - d.x.x * _M_scale.x;
 	d.x.y =      - d.x.y * _M_scale.x;
 	d.y.x =      - d.y.x * _M_scale.y;
