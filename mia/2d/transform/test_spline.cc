@@ -55,7 +55,7 @@ struct TransformSplineFixture {
 		stransf(range, ipf),
 		scale(2 * M_PI / r.x, 2 * M_PI / r.y)
 	{
-		coeff_shift = ipf->get_kernel()->get_active_halfrange(); 
+		coeff_shift = ipf->get_kernel()->get_active_halfrange() - 1; 
 		C2DFVector ivscale(float(range.x - 1) / (size.x - 1),
 				   float(range.y - 1) / (size.y - 1));
 		size.x += 2*coeff_shift; 
@@ -159,8 +159,8 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 	BOOST_CHECK_EQUAL(stransf.get_size(), range);
 
 	C2DFVector scaledx = stransf.scale(testx);
-	BOOST_CHECK_CLOSE(scaledx.x, testx.x * (size.x-5) / (range.x-1)+coeff_shift, 0.1);
-	BOOST_CHECK_CLOSE(scaledx.y, testx.y * (size.y-5) / (range.y-1)+coeff_shift, 0.1);
+	BOOST_CHECK_CLOSE(scaledx.x, testx.x * (size.x-2*coeff_shift - 1) / (range.x-1)+coeff_shift, 0.1);
+	BOOST_CHECK_CLOSE(scaledx.y, testx.y * (size.y-2*coeff_shift - 1) / (range.y-1)+coeff_shift, 0.1);
 
 
 	BOOST_CHECK_CLOSE(result.x, fx(testx.x, testx.y), 0.1);

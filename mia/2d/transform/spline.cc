@@ -41,13 +41,13 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range,
 	_M_range(range),
 	_M_target_c_rate(1,1),
 	_M_ipf(ipf),
-	_M_scale(1.0, 1.0),
-	_M_interpolator_valid(false), 
 	_M_shift(0), 
-	_M_enlarge(0)
+	_M_enlarge(0), 
+	_M_scale(1.0, 1.0),
+	_M_interpolator_valid(false)
 {
 	if (_M_ipf->get_kernel())
-		_M_shift = _M_ipf->get_kernel()->get_active_halfrange(); 
+		_M_shift = _M_ipf->get_kernel()->get_active_halfrange() - 1; 
 	_M_enlarge = 2*_M_shift; 
 	
 	TRACE_FUNCTION;
@@ -60,9 +60,9 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DSplineTransformation& 
 	_M_target_c_rate(org._M_target_c_rate),
 	_M_coefficients( org._M_coefficients),
 	_M_ipf(org._M_ipf),
-	_M_interpolator_valid(false), 
 	_M_shift(org._M_shift),
-	_M_enlarge(org._M_enlarge)
+	_M_enlarge(org._M_enlarge),
+	_M_interpolator_valid(false)
 {
 }
 
@@ -80,7 +80,7 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, P2DInte
 	assert(c_rate.y >= 1.0);
 
 	if (_M_ipf->get_kernel())
-		_M_shift = _M_ipf->get_kernel()->get_active_halfrange(); 
+		_M_shift = _M_ipf->get_kernel()->get_active_halfrange() - 1; 
 	_M_enlarge = 2*_M_shift; 
 
 	C2DBounds csize(size_t((range.x + c_rate.x - 1) / c_rate.x) + _M_enlarge,
@@ -349,7 +349,7 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 	for (size_t i = 0; i < gradient.get_size().x; ++i) {
 		gradient.get_data_line_y(i, in_buffer);
 		scaler(in_buffer, out_buffer);
-		for (size_t j = 0; j < _M_shift; ++j) {
+		for (int j = 0; j < _M_shift; ++j) {
 			out_buffer2[_M_shift - j - 1] = out_buffer[_M_shift - j - 1]; 
 			out_buffer2[out_buffer2.size() - 1 - j] = 
 				out_buffer[out_buffer.size() - _M_shift - j]; 
@@ -365,7 +365,7 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 	for (size_t i = 0; i < tmp.get_size().y; ++i) {
 		tmp.get_data_line_x(i, in_buffer);
 		scaler(in_buffer, out_buffer);
-		for (size_t i = 0; i < _M_shift; ++i) {
+		for (int i = 0; i < _M_shift; ++i) {
 			const C2DFVector& h = out_buffer[_M_shift - i - 1];
 			*r++ = h.x;
 			*r++ = h.y;
@@ -374,7 +374,7 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 			*r++ = x->x;
 			*r++ = x->y;
 		}
-		for (size_t i = 0; i < _M_shift; ++i) {
+		for (int i = 0; i < _M_shift; ++i) {
 			const C2DFVector& h = 
 				out_buffer[out_buffer.size() -  _M_shift - i];
 			*r++ = h.x;
