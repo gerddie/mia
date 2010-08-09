@@ -298,12 +298,12 @@ BOOST_FIXTURE_TEST_CASE( test_splines_translate_2, TransformSplineFixture )
 	C2DFVector ivscale(float(range.x - 1) / (size.x - 1),
 			   float(range.y - 1) / (size.y - 1));
 	for (size_t y = 0; y < range.y; ++y) 
-		for (size_t x = 0; x < range.x; ++x) {
+		for (size_t x = 0; x < range.x; ++x, ++ig) {
 			double sx = ivscale.x * x; 
 			double sy = ivscale.y * y; 
-			ig->x = 5 * fx(sx,sy); 
-			ig->y = 5 * fy(sx,sy); 
-			cvdebug() << sx << " " << sy << ":" << *ig << "\n"; 
+			ig->x = fx(sx,sy); 
+			ig->y = fy(sx,sy); 
+			cvdebug() << "translate"<< sx << " " << sy << ":" << *ig << "\n"; 
 		}
 
 	gsl::DoubleVector force = stransf.get_parameters(); 
@@ -317,14 +317,15 @@ BOOST_FIXTURE_TEST_CASE( test_splines_translate_2, TransformSplineFixture )
 	ig = gradient.begin(); 
 	for (size_t y = 0; y < range.y; ++y)
 		for (size_t x = 0; x < range.x; ++x, ++is,++ig) {
+			cvdebug() << "translate_test " << *is << *ig << "\n"; 
 			if (abs(ig->x) > 0.1) 
-				BOOST_CHECK_CLOSE(is->x, x - ig->x, 1.0); 
+				BOOST_CHECK_CLOSE(x - is->x, ig->x, 10); 
 			else 
-				BOOST_CHECK_CLOSE(1.0 + is->x, 1.0 + x - ig->x, 1.0); 
+				BOOST_CHECK_CLOSE(1.0 + x - is->x, 1.0 + ig->x, 10); 
 			if (abs(ig->y) > 0.1) 
-				BOOST_CHECK_CLOSE(is->y, y - ig->y, 1.0); 
+				BOOST_CHECK_CLOSE(y -is->y,  ig->y, 10); 
 			else 
-				BOOST_CHECK_CLOSE(1.0 + is->y, 1.0 + y - ig->y, 1.0); 
+				BOOST_CHECK_CLOSE(1.0 + y - is->y, 1.0 + ig->y, 10); 
 		}
 }
 

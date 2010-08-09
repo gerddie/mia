@@ -207,7 +207,6 @@ private:
 	double _M_f; 
 };
 
-
 template <typename T>
 void T1DConvoluteInterpolator<T>::filter_line(coeff_vector& coeff, 
 					 const std::vector<double>& poles)
@@ -264,11 +263,12 @@ T1DConvoluteInterpolator<T>::initial_coeff(const coeff_vector& coeff,
 		zn *= pole;
 		z2n *= iz;
 	}
+	
 	return(sum / (1.0 - zn * zn));
 }
 
-inline void mirror_boundary_conditions(std::vector<int>& index, size_t width, 
-				       size_t width2)
+inline void mirror_boundary_conditions(std::vector<int>& index, int width, 
+				       int width2)
 {
 	// skip the cases where nothing happens
 	if (index[0] >= 0 && index[index.size()-1] < width)
@@ -277,7 +277,7 @@ inline void mirror_boundary_conditions(std::vector<int>& index, size_t width,
 		int idx = (index[k] < 0) ? -index[k] : index[k]; 
 		
 		idx = (width == 1) ? (0) : ((idx < width2) ? idx : idx % width2);
-		if (width <= (size_t)idx) {
+		if (width <= idx) {
 			idx = width2 - idx;
 		}
 		index[k] = idx; 
@@ -292,6 +292,7 @@ T1DConvoluteInterpolator<T>::initial_anti_coeff(const coeff_vector& coeff,
 	return((pole / (pole * pole - 1.0)) * 
 	       (pole * coeff[coeff.size() - 2] + coeff[coeff.size() - 1]));
 }
+
 
 template <class In, class Out>
 struct round_to {

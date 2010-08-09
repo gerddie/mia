@@ -345,40 +345,40 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 	vector<C2DFVector> out_buffer(_M_coefficients.get_size().y - _M_enlarge);
 	vector<C2DFVector> out_buffer2(_M_coefficients.get_size().y);
 
-	// run y direction downscale and mirror bondaries 
+	// run y direction downscale and guess a continuing gradient 
 	for (size_t i = 0; i < gradient.get_size().x; ++i) {
 		gradient.get_data_line_y(i, in_buffer);
 		scaler(in_buffer, out_buffer);
-		for (int j = 0; j < _M_shift; ++j) {
-			out_buffer2[_M_shift - j - 1] = out_buffer[_M_shift - j - 1]; 
-			out_buffer2[out_buffer2.size() - 1 - j] = 
-				out_buffer[out_buffer.size() - _M_shift - j]; 
-		}
 		copy(out_buffer.begin(), out_buffer.end(), out_buffer2.begin() + _M_shift); 
+
+		for (int j = 0; j < _M_shift; ++j) {
+			out_buffer2[_M_shift - j - 1] = out_buffer2[_M_shift - j] 
+				- (out_buffer[j + 1] - out_buffer[j]); 
+			out_buffer2[_M_shift + out_buffer.size() + j] = 
+				out_buffer2[_M_shift + out_buffer.size() + j - 1] 
+				- (out_buffer[out_buffer.size() - j - 1] - out_buffer[out_buffer.size() - j - 2]); 
+		}
 		tmp.put_data_line_y(i, out_buffer2); 
 
 	}
-	// run x direction downscale, mirror bondaries and copy into output 
 	out_buffer.resize(_M_coefficients.get_size().x - _M_enlarge);
+	out_buffer2.resize(_M_coefficients.get_size().x); 
 	auto r = params.begin();
 
 	for (size_t i = 0; i < tmp.get_size().y; ++i) {
 		tmp.get_data_line_x(i, in_buffer);
 		scaler(in_buffer, out_buffer);
-		for (int i = 0; i < _M_shift; ++i) {
-			const C2DFVector& h = out_buffer[_M_shift - i - 1];
-			*r++ = h.x;
-			*r++ = h.y;
+		copy(out_buffer.begin(), out_buffer.end(), out_buffer2.begin() + _M_shift); 
+		for (int j = 0; j < _M_shift; ++j) {
+			out_buffer2[_M_shift - j - 1] = out_buffer2[_M_shift - j] 
+				- (out_buffer[j + 1] - out_buffer[j]); 
+			out_buffer2[_M_shift + out_buffer.size() + j] = 
+				out_buffer2[_M_shift + out_buffer.size() + j - 1] 
+				- (out_buffer[out_buffer.size() - j - 1] - out_buffer[out_buffer.size() - j - 2]); 
 		}
-		for(auto x = out_buffer.begin(); x != out_buffer.end(); ++x) {
+		for(auto x = out_buffer2.begin(); x != out_buffer2.end(); ++x) {
 			*r++ = x->x;
 			*r++ = x->y;
-		}
-		for (int i = 0; i < _M_shift; ++i) {
-			const C2DFVector& h = 
-				out_buffer[out_buffer.size() -  _M_shift - i];
-			*r++ = h.x;
-			*r++ = h.y;
 		}
 	}
 }
