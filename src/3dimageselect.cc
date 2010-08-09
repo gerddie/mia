@@ -43,6 +43,12 @@
 using namespace std;
 NS_MIA_USE;
 
+
+static const char *program_info = 
+	"This program is used to select one 3D images from a multi-image file.\n"
+	"Basic usage:\n"
+	"  mia-3dimageselect -i <input image> -o <output image> [<options>] ...\n"; 
+
 int do_main( int argc, const char *argv[])
 {
 
@@ -54,7 +60,7 @@ int do_main( int argc, const char *argv[])
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 
 
-	CCmdOptionList options;
+	CCmdOptionList options(program_info);
 	options.push_back(make_opt( in_filename, "in-file", 'i',
 				    "input images", "input", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o',
@@ -65,12 +71,6 @@ int do_main( int argc, const char *argv[])
 				    "image number to be selected", false));
 
 	options.parse(argc, argv);
-
-	if ( in_filename.empty() )
-		throw runtime_error("'--in-image' ('i') option required");
-
-	if ( out_filename.empty() )
-		throw runtime_error("'--out-image' ('o') option required");
 
 	// read image
 	C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(in_filename);

@@ -36,6 +36,12 @@
 #include <mia/3d/2dimagefifofilter.hh>
 
 
+static const char *program_info = 
+	"This program is used to filter conscutive numbered 2D images in a 3D manner.\n"
+	"This is useful for out-of-core processing of large files.\n"
+	"Usage:\n"
+	"  mia-2dstackfilter -i <input> -o <output> -t <output-type> <plugin> [<plugin>] ...\n"; 
+
 using namespace std;
 using namespace mia;
 
@@ -112,19 +118,20 @@ int main(int argc, const char *args[])
 	const C2DFifoFilterPluginHandler::Instance& sfh = C2DFifoFilterPluginHandler::instance();
 
 
-	CCmdOptionList options;
+	CCmdOptionList options(program_info);
 	options.push_back(make_opt( in_filename, "in-file", 'i',
 				    "input image(s) to be filtered", "input", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o',
 				    "output file name base", "output", true));
 	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
 				    "output file type (if not given deduct from output file name)" ,
-				    "image-type"));
-	options.push_back(make_opt( help_plugins, "help-plugins", 0,
-				    "give some help about the filter plugins", NULL));
+				    "image-type", true));
+	options.push_back(make_help_opt( "help-plugins", 0,
+					 "give some help about the filter plugins", 
+					 new TPluginHandlerHelpCallback<C2DFifoFilterPluginHandler>)); 
 
 	try{
-		options.parse(argc, args);
+		options.parse(argc, args, true);
 		vector<const char *> filter_chain = options.get_remaining();
 
 		if (help_plugins) {
@@ -136,25 +143,6 @@ int main(int argc, const char *args[])
 		if (filter_chain.empty()) {
 			cvwarn() << "No filters given, will only copy files ";
 		}
-
-		if (in_filename.empty()) {
-			cverr() << "No input file given, run '" << args[0] << " --help' to get help\n";
-			return -1;
-		}
-
-		if (out_filename.empty()) {
-			cverr() << "No output filename given, run '" << args[0] << " --help' to get help\n";
-			return -1;
-		}
-
-		/*
-		bool use_src_format = out_type.empty();
-
-		if (!use_src_format && !imageio.find_plugin_by_name(out_type)) {
-			cvwarn() << "Output file format not supported, revert to input file format\n";
-			use_src_format = true;
-		}
-		*/
 
 		// now start the fun part
 		//first count the number of slices

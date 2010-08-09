@@ -32,6 +32,10 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
+static const char *g_description = 
+	"This program is used to create certain 3D image shapes\n"
+	"Basic usage:\n"
+	"  mia-raw2image [options] \n";
 
 int do_main(int argc, const char *args[])
 {
@@ -43,24 +47,16 @@ int do_main(int argc, const char *args[])
 
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 	const C3DImageCreatorPluginHandler::Instance& creator_ph = C3DImageCreatorPluginHandler::instance();
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output file for create object", "output", true));
+	options.push_back(make_opt( out_filename, "out-file", 'o', "output file for create object", 
+				    "output", true));
 	options.push_back(make_opt( type, imageio.get_set(), "type", 't', "Output file type", "filetype", false));
 	options.push_back(make_opt( size, "size", 's', "size of the object", "size", false));
 	options.push_back(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type ", "ubyte", false));
 	options.push_back(make_opt( object,  "object", 'j', "object to be created", "object", false));
 
-	options.parse(argc, args);
-
-	if (!options.get_remaining().empty()) {
-		cverr() << "Unknown arguments: ";
-		for (vector<const char *>::const_iterator i = options.get_remaining().begin(); i !=  options.get_remaining().end();
-		     ++i)
-			cverb << *i << " ";
-		cverb << "\n";
-		return EXIT_FAILURE;
-	}
+	options.parse(argc, args, false);
 
 	C3DImageCreatorPlugin::ProductPtr creator = creator_ph.produce(object.c_str());
 	if (!creator) {
@@ -71,7 +67,8 @@ int do_main(int argc, const char *args[])
 	P3DImage image = (*creator)(size, pixel_type);
 	if (!image) {
 		std::stringstream error;
-		error << "Creator " << object << " could not create object of size " << size << " and type " << CPixelTypeDict.get_name(pixel_type);
+		error << "Creator " << object << " could not create object of size " << size 
+		      << " and type " << CPixelTypeDict.get_name(pixel_type);
 		throw invalid_argument(error.str());
 	}
 

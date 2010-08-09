@@ -33,6 +33,13 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
+static const char *program_info = 
+	"This program is used to create an image comprising the pixel-wise norm\n"
+	"of the ggradient of a given cost function\n"
+	"Usage:\n"
+	"  mia-3dforce -i <input image> -t <reference image > -o <output> [options]\n";
+
+
 struct FVectorNorm {
 
 	FVectorNorm():_M_max_norm(0.0f) {
@@ -53,7 +60,7 @@ private:
 
 int do_main(int argc, const char **args)
 {
-	CCmdOptionList options;
+	CCmdOptionList options(program_info);
 	string src_filename;
 	string out_filename;
 	string ref_filename;
@@ -62,7 +69,7 @@ int do_main(int argc, const char **args)
 	options.push_back(make_opt( src_filename, "src-file", 'i', "input image", "template", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o', "reference image", "output", true));
 	options.push_back(make_opt( ref_filename, "ref-file", 'r', "output force norm image", "reference", true));
-	options.push_back(make_opt( cost_descr, "cost", 'c', "cost function to use", "cost", true));
+	options.push_back(make_opt( cost_descr, "cost", 'c', "cost function to use", "cost", false));
 
 
 	options.parse(argc, args);

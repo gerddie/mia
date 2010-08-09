@@ -34,6 +34,12 @@
 using namespace std;
 NS_MIA_USE;
 
+const char *program_info = 
+	"This program is used to combine two images using a given combiner\n"
+	"Basic usage:\n"
+	"  mia-3dimagecombine [options] \n"; 
+
+
 int do_main( int argc, const char *argv[] )
 {
 
@@ -46,19 +52,16 @@ int do_main( int argc, const char *argv[] )
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 	typedef C3DImageIOPluginHandler::Instance::PData PImageVector;
 
-	CCmdOptionList options;
+	CCmdOptionList options(program_info);
 	options.push_back(make_opt( in_image1, "image1", '1', "input image  1 to be combined", "image1", true));
 	options.push_back(make_opt( in_image2, "image2", '2', "input image  2 to be combined", "image2", true));
 	options.push_back(make_opt( combiner_descr, "combiner", 'c', "combiner operation", "combiner", true));
 	options.push_back(make_opt( out_filename, "out", 'o', "output file", NULL, true));
-	options.push_back(make_opt( help_plugins, "help-plugins", 'p', "give some help about the plugins", false));
 
-	options.parse(argc, argv);
-
-	if (help_plugins) {
-		C3DImageCombinerPluginHandler::instance().print_help(cout);
-		return EXIT_SUCCESS;
-	}
+	options.push_back(make_help_opt( "help-plugins", 0,
+					 "give some help about the filter plugins", 
+					 new TPluginHandlerHelpCallback<C3DImageCombinerPluginHandler>)); 
+	options.parse(argc, argv, false);
 
 	cvdebug() << "Load images from '" << in_image1 << "' and '" << in_image2 << "'\n";
 	PImageVector image1list = imageio.load(in_image1);

@@ -43,6 +43,13 @@ NS_MIA_USE
 using namespace std;
 namespace bfs = ::boost::filesystem;
 
+static const char *program_info = 
+	"This program is used to mask the brain in T1 MR images by using fuzzy c-means\n"
+	"combined with a series of other filters.\n"
+	"Basic usage:\n"
+	"  mia-3dimagefilter -i <input image> -o <output image> [<options>]\n"; 
+
+
 int main( int argc, const char *argv[] )
 {
 
@@ -59,11 +66,11 @@ int main( int argc, const char *argv[] )
 
 	try {
 
-		CCmdOptionList options;
+		CCmdOptionList options(program_info);
 		options.push_back(make_opt( in_filename, "in-file", 'i',
 					    "input image(s) to be segmenetd", "input", true));
 		options.push_back(make_opt( out_filename, "out-file", 'o',
-					    "brain mask", NULL ));
+					    "brain mask", NULL, true ));
 		options.push_back(make_opt( noOfClasses, "no-of-classes", 'n', "number of classes", "classes", false));
 		options.push_back(make_opt( wmclass,     "wm-class",      'w', "index of white matter", "wm", false));
 		options.push_back(make_opt( wmclassprob, "wm-prob", 'p',

@@ -36,6 +36,11 @@
 using namespace std;
 NS_MIA_USE;
 
+static const char *program_info = 
+	"Write the dimensions of the input 3d image to stdout.\n"
+	"Usage:\n"
+	"  mia-2dimagefilter -i <input image> \n"; 
+
 
 int main( int argc, const char *argv[] )
 {
@@ -43,7 +48,7 @@ int main( int argc, const char *argv[] )
 	try {
 		const C3DImageIOPluginHandler::Instance& imageio3d = C3DImageIOPluginHandler::instance();
 
-		CCmdOptionList options;
+		CCmdOptionList options(program_info);
 		options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", "input", true));
 
 		options.parse(argc, argv);

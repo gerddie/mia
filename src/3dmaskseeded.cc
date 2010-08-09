@@ -57,6 +57,17 @@
 #include <mia/3d/shape.hh>
 #include <mia/core.hh>
 
+const char *g_description = 
+	"3D image segmentation based on region growing from a seed point.\n"
+	"Neighboring points are added, either when their intensity is\n"
+	"equal or higher than that of the seed point, or of the intensity\n"
+	"is lower or equal then that of the neighoring point.\n"
+	"After region growing is finished, this mask is used to zero out\n"
+	"the region in the original image yielding the resulting image.\n"
+	"Basic use:\n"
+	"  mia-3dmaskseeded [options] -i <input> -o <outpu>"; 
+
+
 using namespace std;
 NS_MIA_USE;
 
@@ -150,7 +161,7 @@ int do_main(int argc, const char *argv[] )
 	const C3DImageIOPluginHandler::Instance& imageio =
 		C3DImageIOPluginHandler::instance();
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	options.push_back(make_opt( in_filename, "in-file", 'i',
 				    "input image(s) to be filtered", "input", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o',

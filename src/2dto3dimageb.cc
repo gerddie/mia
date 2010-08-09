@@ -32,6 +32,12 @@
 #include <mia/2d/2dimageio.hh>
 #include <mia/3d/3dimageio.hh>
 
+static const char *program_info = 
+	"This program is used to combine a series of 2D images of equal \n"
+	"size and type images to a 3D image.\n"
+	"Basic usage:\n"
+	"  mia-2dto3dimageb  -o <output image> <slice1> <slice2> ...\n"; 
+
 
 NS_MIA_USE
 using namespace std;
@@ -95,8 +101,8 @@ int main( int argc, const char *argv[] )
 	const C2DImageIOPluginHandler::Instance& image2dio = C2DImageIOPluginHandler::instance();
 	const C3DImageIOPluginHandler::Instance& image3dio = C3DImageIOPluginHandler::instance();
 
-	CCmdOptionList options;
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output file name", "3d"));
+	CCmdOptionList options(program_info);
+	options.push_back(make_opt( out_filename, "out-file", 'o', "output file name", "3d", true));
 	options.push_back(make_opt( out_type, image3dio.get_set(), "type", 't',"output file type" , "filetype"));
 
 	try {
@@ -105,9 +111,6 @@ int main( int argc, const char *argv[] )
 
 		if (options.get_remaining().empty())
 			throw runtime_error("no slices given ...");
-
-		if ( out_filename.empty() )
-			throw runtime_error("'--out-base' ('o') option required");
 
 
 		CHistory::instance().append(argv[0], revision, options);

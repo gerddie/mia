@@ -81,11 +81,6 @@ int do_main( int argc, const char *argv[] )
 	if ( filter_chain.empty() )
 		cvwarn() << "no filters given, just copy\n";
 
-	if (in_filename.empty())
-		throw invalid_argument("No input file given, abort");
-
-	if (out_filename.empty())
-		throw invalid_argument("No output file given, abort");
 
 	//CHistory::instance().append(argv[0], "unknown", options);
 

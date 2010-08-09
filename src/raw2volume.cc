@@ -39,6 +39,11 @@ inline bool am_big_endian()
 #endif
 }
 
+const char *g_description = 
+	"This program is used to convert raw data to 3D volumes\n"
+	"with apropriate metadata.\n"
+	"Basic usage:\n"
+	"  mia-raw2volume [options] \n"; 
 
 
 template <typename I>
@@ -149,7 +154,7 @@ int run(int argc, const char *args[])
 	if (imageio.get_set().empty())
 		throw runtime_error("Sorry, no 3D output formats supported");
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 
 	options.push_back(make_opt( in_filename, "in-file", 'i', "input file name", "input", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o', "output file name", "output", true));
@@ -159,17 +164,7 @@ int run(int argc, const char *args[])
 	options.push_back(make_opt( skip, "skip", 'k', "skip number of bytes from beginning of file", "skip", false));
 	options.push_back(make_opt( size, "size", 's', "size of input <NX,NY,NZ>", "size", true));
 	options.push_back(make_opt( type, imageio.get_set(), "type", 't', "Output file type", "fileformat", false));
-
-	options.parse(argc, args);
-
-	if (!options.get_remaining().empty()) {
-		cverr() << "Unknown arguments: ";
-		for (vector<const char *>::const_iterator i = options.get_remaining().begin(); i !=  options.get_remaining().end();
-		     ++i)
-			cverb << *i << " ";
-		cverb << "\n";
-		return -1;
-	}
+	options.parse(argc, args, false);
 
 	CInputFile in_file(in_filename);
 	if ( !in_file )

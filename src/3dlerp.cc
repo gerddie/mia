@@ -21,15 +21,6 @@
  *
  */
 
-/*
-  This program implements 2D gray scale image registration.
-  Depending on the available plug-ins it can accomodate various models and cost-functions.
-  So far input images can be given as PNG, TIF, BMP and OpenEXR (depending on the installed plug-ins)
-  The input images must be of the same dimensions and gray scale (whatever bit-depth).
-  The vector field will be saved as a EXR image with two frames of float values, one for the X
-  and one for the Y values of the vectors.
-  Other vector field output plug-ins might be supported depending on the installed plug-ins.
-*/
 
 #include <climits>
 #include <boost/test/unit_test_suite.hpp>
@@ -45,6 +36,12 @@
 NS_MIA_USE
 using namespace boost;
 using namespace std;
+
+const char *g_description = 
+	"This program is used to combine two 3D images by linear combination\n"
+	"Basic usage:\n"
+	"  mia-3dlerp [options] \n";
+
 
 struct FAddWeighted: public TFilter<P3DImage> {
 	FAddWeighted(float w):
@@ -140,7 +137,7 @@ private:
 int do_main(int argc, char **args)
 {
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	string src1_filename;
 	string src2_filename;
 	string out_filename;
@@ -154,12 +151,12 @@ int do_main(int argc, char **args)
 	options.push_back(make_opt( src1_filename, "first", '1', "first input image ", "first", true));
 	options.push_back(make_opt( src2_filename, "second", '2', "second input image ", "second", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o', "output vector field", "output", true));
-	options.push_back(make_opt( positions, "positions", 'p', "image series positions (first, target, second)", "pos", true));
-	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',"output file type (if not given deduct from output file name)",
+	options.push_back(make_opt( positions, "positions", 'p', 
+				    "image series positions (first, target, second)", "pos", true));
+	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
+				    "output file type (if not given deduct from output file name)",
 				    "image-type"));
-
 	options.push_back(make_opt( self_test, "self-test", 0, "run a self test of the tool", "selftest", false));
-
 
 	options.parse(argc, args);
 

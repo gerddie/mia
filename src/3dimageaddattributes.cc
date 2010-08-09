@@ -43,6 +43,12 @@
 using namespace std;
 NS_MIA_USE;
 
+const char *g_description = 
+	"This program is used to add metadata attributes to a 3D image file (if supported)\n"
+	"Basic usage:\n"
+	"  mia-3dimageaddattributes [options] \n"; 
+
+
 int main( int argc, const char *argv[] )
 {
 
@@ -56,7 +62,7 @@ int main( int argc, const char *argv[] )
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	options.push_back(make_opt( in_filename, "in-file", 'i',
 				    "input image(s) to be filtered", "input", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o',
@@ -69,12 +75,6 @@ int main( int argc, const char *argv[] )
 	options.parse(argc, argv);
 
 	cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
-
-	if ( in_filename.empty() )
-		throw runtime_error("'--in-image' ('i') option required");
-
-	if ( out_filename.empty() )
-		throw runtime_error("'--out-image' ('o') option required");
 
 	//CHistory::instance().append(argv[0], "unknown", options);
 

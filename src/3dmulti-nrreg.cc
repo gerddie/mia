@@ -42,11 +42,17 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
+const char *g_description = 
+	"This program implements non-rigid registration of 3D image\n"
+	" using multiple cost functions\n"
+	"Basic usage:\n"
+	"  mia-3dmulti-nrreg [options] <cost functions>\n";
+
 // set op the command line parameters and run the registration
 int do_main(int argc, const char **args)
 {
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	string out_filename;
 	string regmodel("navier");
 	string timestep("fluid");
@@ -64,7 +70,7 @@ int do_main(int argc, const char **args)
 					"image interpolator", "interpolator", false));
 	options.push_back(make_opt( epsilon, "epsilon", 'e', "relative accuracy to stop registration at a multi-grid level", NULL, false));
 
-	options.parse(argc, args);
+	options.parse(argc, args, true);
 
 	if (out_filename.empty()) {
 		cvfatal() << "No output filename given\n";

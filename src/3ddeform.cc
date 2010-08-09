@@ -26,6 +26,12 @@
 
 #include <mia/3d/deformer.hh>
 
+static const char *program_info = 
+	"This program is used to transform an 3D image by using a given transformation.\n"
+	"Basic usage:\n"
+	"  mia-3dimagefilter -i <input> -t <transformation> -o <output> [<plugin>]\n"; 
+
+
 NS_MIA_USE
 using namespace boost;
 using namespace std;
@@ -35,7 +41,7 @@ typedef SHARED_PTR(C3DFVectorfield) P3DFVectorfield;
 
 int do_main(int argc, const char **args)
 {
-	CCmdOptionList options;
+	CCmdOptionList options(program_info);
 
 	string src_filename;
 	string out_filename;
@@ -50,12 +56,6 @@ int do_main(int argc, const char **args)
 
 
 	options.parse(argc, args);
-
-
-	if (src_filename.empty() || vf_filename.empty() || out_filename.empty()) {
-		cerr << "input, transformation and output file names are required\n";
-		return EXIT_FAILURE;
-	}
 
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 	const C3DVFIOPluginHandler::Instance&  vfioh = C3DVFIOPluginHandler::instance();

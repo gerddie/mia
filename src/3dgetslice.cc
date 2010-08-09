@@ -34,6 +34,12 @@
 
 using namespace mia;
 
+static const char *program_info = 
+	"This program is used to extract 2D slices from a 3D data set and store them\n"
+	"in separate files. Output files will be numbered according to their slice index\n"
+	"Basic usage:\n"
+	"  mia-3dgetslince -i <input> -o <output-base> [options] ...\n"; 
+
 enum EDirection {dir_unkown, dir_xy, dir_xz, dir_yz};
 
 const TDictMap<EDirection>::Table GDirectionmapTable[] = {
@@ -141,44 +147,42 @@ int main( int argc, const char *argv[] )
 		const C3DImageIOPluginHandler::Instance& imageio3d = C3DImageIOPluginHandler::instance();
 		const C2DImageIOPluginHandler::Instance& imageio2d = C2DImageIOPluginHandler::instance();
 
-		CCmdOptionList options;
-		options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", "input", true));
-		options.push_back(make_opt( out_filename, "out-file", 'o', "output image(s) that have been filtered", "output", true));
-		options.push_back(make_opt( out_type, imageio2d.get_set(), "type", 't',"output file type" , "type", false));
+		CCmdOptionList options(program_info);
+		options.push_back(make_opt( in_filename, "in-file", 'i', 
+					    "input image(s) to be filtered", "input", true));
+		options.push_back(make_opt( out_filename, "out-file", 'o', 
+					    "output image(s) that have been filtered", "output", true));
+		options.push_back(make_opt( out_type, imageio2d.get_set(), "type", 't',
+					    "output file type" , "type", false));
 		options.push_back(make_opt( start_slice, "start", 's',"start slice number" , "start", false));
-		options.push_back(make_opt( slice_number, "number", 'n',"number of slices (all=0)" , "number", false));
-		options.push_back(make_opt( direction, GDirectionmap, "dir", 'd', "slice direction (xy=axial, xz=coronal, yz=saggital)", "dir", false));
+		options.push_back(make_opt( slice_number, "number", 'n',
+					    "number of slices (all=0)" , "number", false));
+		options.push_back(make_opt( direction, GDirectionmap, "dir", 'd', 
+					    "slice direction (xy=axial, xz=coronal, yz=saggital)", "dir", false));
 
-
-		options.parse(argc, argv);
-
-		if ( !options.get_remaining().empty())
-			throw invalid_argument("Unknown options given");
-
-		if ( in_filename.empty() )
-			throw runtime_error("'--in-image' ('i') option required");
-
-		if ( out_filename.empty() )
-			throw runtime_error("'--out-image' ('o') option required");
+		options.parse(argc, argv, false);
 
 		// read image
 		C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio3d.load(in_filename);
-
-		if (out_type.empty())
-			out_type = in_image_list->get_source_format();
 
 
 		bool result = false;
                 if (in_image_list.get() && in_image_list->size()) {
 			switch (direction) {
 			case dir_xy:
-				result = mia::filter(TGetter<dir_xy>(start_slice, slice_number, out_filename, out_type), **in_image_list->begin());
+				result = mia::filter(TGetter<dir_xy>(start_slice, slice_number, 
+								     out_filename, out_type), 
+						     **in_image_list->begin());
 				break;
 			case dir_xz:
-				result = mia::filter(TGetter<dir_xz>(start_slice, slice_number, out_filename, out_type), **in_image_list->begin());
+				result = mia::filter(TGetter<dir_xz>(start_slice, slice_number, 
+								     out_filename, out_type), 
+						     **in_image_list->begin());
 				break;
 			case dir_yz:
-				result = mia::filter(TGetter<dir_yz>(start_slice, slice_number, out_filename, out_type), **in_image_list->begin());
+				result = mia::filter(TGetter<dir_yz>(start_slice, slice_number, 
+								     out_filename, out_type), 
+						     **in_image_list->begin());
 				break;
 			default:
 				assert(!"impossible slice direction");

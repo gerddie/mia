@@ -38,6 +38,12 @@
 NS_MIA_USE;
 using namespace std;
 
+const char *program_info = 
+	"This program is used to evaluate certain image statistics\n"
+	"and print them out on the command line\n"
+	"Basic usage:\n"
+	"  mia-3dimagestats [options] [<filter1>] [<filter1>] ...\n";
+
 class CHistAccumulator : public TFilter<bool> {
 public:
 	CHistAccumulator(float min, float max, size_t bins, float thresh):
@@ -82,7 +88,7 @@ int main( int argc, const char *argv[] )
 		const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 
 
-		CCmdOptionList options;
+		CCmdOptionList options(program_info);
 		options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", "input", true));
 		options.push_back(make_opt( thresh, "thresh", 't', "intensity thresh to ignore", "thresh", false));
 

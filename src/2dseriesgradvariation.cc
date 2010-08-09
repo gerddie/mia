@@ -50,6 +50,12 @@ using namespace std;
 using namespace mia;
 using namespace boost::lambda;
 
+static const char *program_info = 
+	"This program is used to evaluate the temporal pixel wise gradient variation\n"
+	"of a set of images in temporal sucession\n"
+	"Usage:\n"
+	"  mia-2dseriesgradvariation -i <input set> -o <output image> [<options>]\n";
+
 template <typename T>
 struct fabsdelta {
 	T operator () (T x, T y) const {
@@ -139,10 +145,7 @@ int main( int argc, const char *argv[] )
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 
 
-
-
-
-	CCmdOptionList options;
+	CCmdOptionList options(program_info);
 	options.push_back(make_opt( in_filename, "in-file", 'i', "input segmentation set", "input", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o', "output file name", "output", true));
 	options.push_back(make_opt( skip, "skip", 'p', "Skip files at the beginning", "skip", false));

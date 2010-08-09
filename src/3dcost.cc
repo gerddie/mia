@@ -27,6 +27,12 @@
 #include <iomanip>
 #include <mia/3d/fatcost.hh>
 
+
+static const char *program_info = 
+	"This program is used to evaluate the combinde cost value as given.\n"
+	"Basic usage:\n"
+	"  mia-3dcost  <cost plugin> [<cost plugin>] ...\n"; 
+
 NS_MIA_USE
 using namespace boost;
 using namespace std;
@@ -35,9 +41,9 @@ using namespace std;
 int do_main(int argc, const char **args)
 {
 
-	CCmdOptionList options;
+	CCmdOptionList options(program_info);
 
-	options.parse(argc, args);
+	options.parse(argc, args, true);
 
 	vector<const char *> cost_chain = options.get_remaining();
 

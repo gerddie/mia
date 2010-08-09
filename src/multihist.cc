@@ -36,6 +36,12 @@ a given number of bins.
 \autor Gert Wollny <gw.fossdev at gmail.com>
 */
 
+const char *g_description = 
+	"This program evaluates the histogram over a series of\n"
+	"2D images\n"
+	"Basic usage:\n"
+	"  mia-multihist [options] <image-files>\n";
+
 NS_MIA_USE;
 using namespace std;
 
@@ -72,6 +78,8 @@ private:
 	CHistogram<CHistogramFeeder<float > > _M_histo;
 };
 
+
+
 int main( int argc, const char *argv[] )
 {
 	try {
@@ -82,7 +90,7 @@ int main( int argc, const char *argv[] )
 
 		string out_filename;
 
-		CCmdOptionList options;
+		CCmdOptionList options(g_description);
 		options.push_back(make_opt( out_filename, "out", 'o', "output file name", "out", true));
 		options.push_back(make_opt( hmin, "min", 0, "minimum of histogram range", "min", false));
 		options.push_back(make_opt( hmax, "max", 0, "maximum of histogram range", "max", false));

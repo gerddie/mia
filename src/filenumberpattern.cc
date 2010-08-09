@@ -36,10 +36,16 @@
 using namespace std;
 using namespace mia;
 
+const char *g_description = 
+	"This program is used to extract a extract the number pattern for \n"
+	"file012312.ext type file names\n"
+	"Basic usage:\n"
+	"  mia-filenumberpattern [options] \n";
+
 int main( int argc, const char *argv[] )
 {
 	string in_filename;
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	options.push_back(make_opt( in_filename, "in-file", 'i', "input image example name", "input", true));
 
 	options.parse(argc, argv);

@@ -81,8 +81,10 @@
 NS_MIA_USE
 using namespace std;
 
-
-
+static const char *program_info = 
+	"This program runs a fuzzy c-means segmentation of a 3D data set.\n"
+	"Basic usage:\n"
+	"  mia-3dimagefilter -i <input image> -c <output image> [<options>]\n"; 
 
 int main( int argc, const char *argv[] )
 {
@@ -98,13 +100,13 @@ int main( int argc, const char *argv[] )
 
 	try {
 
-		CCmdOptionList options;
+		CCmdOptionList options(program_info);
 		options.push_back(make_opt( in_filename, "in-file", 'i',
 					    "input image(s) to be segmenetd", "input", true));
 		options.push_back(make_opt( cls_filename, "cls-file", 'c',
 					    "output class probability images", "output", true));
 		options.push_back(make_opt( out_filename, "b0-file", 'o',
-					    "image corrected for intensity non-uniformity", NULL ));
+					    "image corrected for intensity non-uniformity", NULL, false ));
 		options.push_back(make_opt( noOfClasses, "no-of-classes", 'n',
 					    "number of classes", "classes", false));
 		options.push_back(make_opt( residuum, "residuum", 'r',
