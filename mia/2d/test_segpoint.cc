@@ -72,9 +72,12 @@ SegPointSplineTransformFixture::SegPointSplineTransformFixture()
 	const double sy = 4.0 / (size.y * size.y); 
 	const double sx = 4.0 / (size.x * size.x); 
 
-	for (size_t y = 0; y < size.y; ++y) {
+	// currently this works only for splines of degree 3 (and manyby 2) 
+	const int shift = 1; 
+
+	for (int y = -shift; y < int(size.y) + shift; ++y) {
 		const double hy = sy * y * (double(y) -  size.y); 
-		for (size_t x = 0; x < size.x; ++x, ic += 2) {
+		for (int x = -shift; x < int(size.x) +  shift; ++x, ic += 2) {
 			const double hx = sx * x * ( double(x) - size.x); 
 			ic[0] = hx;
 			ic[1] = hy; 
