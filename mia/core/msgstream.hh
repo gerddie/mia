@@ -32,6 +32,7 @@
 #define CVERB_HH 1
 
 //#pragma interface
+#include <vector>
 #include <cassert>
 #include <ostream>
 #include <mia/core/defines.hh>
@@ -263,6 +264,15 @@ inline vstream& cvmsg()
 }
 
 #define cverb ::mia::vstream::instance()
+
+template <typename T> 
+vstream& operator << (vstream& os, const std::vector<T>& v) {
+	os << "["; 
+	for (auto i =v.begin(); i != v.end(); ++i) 
+		os << *i << ", "; 
+	os << "]"; 
+	return os; 
+}
 
 NS_MIA_END
 

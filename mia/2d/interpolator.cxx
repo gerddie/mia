@@ -437,6 +437,7 @@ typename T2DConvoluteInterpolator<T>::TCoeff2D::value_type T2DConvoluteInterpola
 			const typename  TCoeff2D::value_type *p = &_M_coeff(0, _M_y_index[y]);
 			for (size_t x = 0; x < _M_kernel->size(); ++x) {
 				rx += _M_x_weight[x] * p[_M_x_index[x]];
+				cvdebug() << _M_x_weight[x] << "*" << p[_M_x_index[x]] << "\n"; 
 			}
 			result += _M_y_weight[y] * rx; 
 		}
@@ -455,6 +456,7 @@ T  T2DConvoluteInterpolator<T>::operator () (const C2DFVector& x) const
 	(*_M_kernel)(x.x, _M_x_weight, _M_x_index);
 	(*_M_kernel)(x.y, _M_y_weight, _M_y_index);
 
+	
 	mirror_boundary_conditions(_M_x_index, _M_coeff.get_size().x, _M_size2.x);
 	mirror_boundary_conditions(_M_y_index, _M_coeff.get_size().y, _M_size2.y);
 	

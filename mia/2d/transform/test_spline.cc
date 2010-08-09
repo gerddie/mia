@@ -220,8 +220,8 @@ BOOST_FIXTURE_TEST_CASE( test_splinestransform_prefix_iterator, TransformSplineF
 
 	for (size_t y = 0; y < range.y; ++y)
 		for (size_t x = 0; x < range.x; ++x, ++i) {
-			BOOST_CHECK_CLOSE(1.0 + x - fx(x,y), 1.0 + (*i).x, 0.1);
-			BOOST_CHECK_CLOSE(1.0 + y - fy(x,y), 1.0 + (*i).y, 0.1);
+			BOOST_CHECK_CLOSE(1.0 + x - fx(x,y), 1.0 + (*i).x, 0.2);
+			BOOST_CHECK_CLOSE(1.0 + y - fy(x,y), 1.0 + (*i).y, 0.2);
 		}
 }
 
@@ -232,8 +232,8 @@ BOOST_FIXTURE_TEST_CASE( test_splinestransform_postfix_iterator, TransformSpline
 		for (size_t x = 0; x < range.x; ++x) {
 			C2DFVector test = *i++;
 			cvdebug() << "splinestransform_postfix_iterator" << test << "\n"; 
-			BOOST_CHECK_CLOSE(1.0 + x - fx(x,y), 1.0 + test.x, 0.1);
-			BOOST_CHECK_CLOSE(1.0 + y - fy(x,y), 1.0 + test.y, 0.1);
+			BOOST_CHECK_CLOSE(1.0 + x - fx(x,y), 1.0 + test.x, 0.2);
+			BOOST_CHECK_CLOSE(1.0 + y - fy(x,y), 1.0 + test.y, 0.2);
 		}
 }
 
@@ -472,8 +472,8 @@ BOOST_AUTO_TEST_CASE( test_spline_c_rate_create )
 	C2DSplineTransformation  stransf(size, ipf, c_rate);
 
 	C2DBounds gridsize = stransf.get_coeff_size();
-	BOOST_CHECK_EQUAL(gridsize.x, 12);
-	BOOST_CHECK_EQUAL(gridsize.y, 14);
+	BOOST_CHECK_EQUAL(gridsize.x, 10);
+	BOOST_CHECK_EQUAL(gridsize.y, 12);
 
 	C2DSplineTransformation::const_iterator i = stransf.begin();
 	for(size_t y = 0; y < size.y; ++y)

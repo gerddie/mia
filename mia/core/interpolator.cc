@@ -34,6 +34,8 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/simpson.hh>
 
+#define USE_FASTFLOOR
+
 NS_MIA_BEGIN
 using namespace std;
 
@@ -76,6 +78,8 @@ void CBSplineKernel::operator () (double x, std::vector<double>& weight, std::ve
 	get_weights(x - ix, weight);
 }
 
+
+#ifdef USE_FASTFLOOR
 // code taken from http://www.stereopsis.com/FPU.html
 // Michael Herf
 const double _double2fixmagic = 68719476736.0*1.5;     //2^36 * 1.5,  (52-_shiftamt=36) uses limited precisicion to floor
@@ -101,7 +105,9 @@ inline int fastfloor(double val)
 	v.dval = val + _double2fixmagic;
 	return v.ival[iman_] >> _shiftamt; 
 }
-
+#else
+#define fastfloor floor
+#endif
 
 int CBSplineKernel::get_indices(double x, std::vector<int>& index) const
 {

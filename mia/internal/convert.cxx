@@ -98,7 +98,7 @@ typename TConvert<Image>::result_type TConvert<Image>::convert(const Data<S>& sr
 {
 	TRACE("TConvert::convert"); 
 
-	long double a, mx, my; 
+	long double a = 1.0, mx, my; 
 	Data<T> *result = new Data<T>(src.get_size(), src.get_attribute_list()); 
 
 	
