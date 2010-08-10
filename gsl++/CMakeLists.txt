@@ -20,11 +20,13 @@
 #
 
 SET(GSLPP_SOURCE 
+  matrix.cc
   multimin.cc
   vector.cc
   )
 
 SET(GSLPP_HEADERS 
+  matrix.hh
   multimin.hh
   vector.hh
   vector_template.hh
