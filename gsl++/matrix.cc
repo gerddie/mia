@@ -20,7 +20,7 @@
  *
  */
 
-
+#include <cassert>
 #include <gsl++/matrix.hh>
 
 namespace gsl {
@@ -33,11 +33,45 @@ Matrix::Matrix(size_t rows, size_t columns, bool clean):
 		gsl_matrix_alloc(rows, columns); 
 }
 
+Matrix::Matrix(const Matrix& other)
+{
+	_M_matrix = gsl_matrix_alloc(other.rows(), other.cols()); 
+	gsl_matrix_memcpy (_M_matrix, other._M_matrix); 
+}
+
+Matrix& Matrix::operator =(const Matrix& other)
+{
+	if (this == &other) 
+		return *this; 
+	
+	if (rows() == other.rows() && cols() == other.cols()) {
+		gsl_matrix_memcpy (_M_matrix, other._M_matrix);
+		return *this; 
+	}
+	gsl_matrix *help = gsl_matrix_alloc(other.rows(), other.cols()); 
+	gsl_matrix_memcpy (help, other._M_matrix); 
+	gsl_matrix_free(_M_matrix);
+	_M_matrix = help; 
+	return *this; 
+}
+
 Matrix::~Matrix()
 {
 	gsl_matrix_free(_M_matrix);
 }
-	
+
+size_t Matrix::rows()const
+{
+	assert(_M_matrix); 
+	return _M_matrix->size1; 
+}
+
+size_t Matrix::cols()const
+{
+	assert(_M_matrix); 
+	return _M_matrix->size2; 
+}
+
 
 void Matrix::set(size_t i, size_t j, double x)
 {

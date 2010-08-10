@@ -20,35 +20,37 @@
  *
  */
 
-#ifndef GSLPP_MATRIX_HH
-#define GSLPP_MATRIX_HH
-
-
-#include <gsl/gsl_matrix.h>
-namespace gsl {
-
-class Matrix {
-public: 
-	Matrix(size_t rows, size_t columns, bool clean); 
-	Matrix(const Matrix& other); 
-	Matrix& operator =(const Matrix& other); 
-
-	~Matrix(); 
-
-	size_t rows()const; 
-	size_t cols()const; 
-	
-	
-	void set(size_t i, size_t j, double x); 
-	double operator ()(size_t i, size_t j) const; 
-
-	operator gsl_matrix *(); 
-	operator const gsl_matrix *() const; 
-
-private: 
-	gsl_matrix *_M_matrix; 
-}; 
-
-} // end namespace 
-
+#ifndef BOOST_TEST_DYN_LINK
+#define BOOST_TEST_DYN_LINK
 #endif
+
+#define BOOST_TEST_MAIN
+#define BOOST_TEST_ALTERNATIVE_INIT_API
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+#include <gsl++/matrix.hh>
+
+using namespace gsl; 
+using namespace ::boost;
+using namespace ::boost::unit_test;
+
+
+
+BOOST_AUTO_TEST_CASE( test_matrix_alloc_and_free ) 
+{
+	Matrix m(2,3, true); 
+	BOOST_CHECK_EQUAL(m.rows(), 2); 
+	BOOST_CHECK_EQUAL(m.cols(), 3); 
+
+	for(size_t i = 0; i < 2;++i) 
+		for(size_t j = 0; j < 2;++j) 
+			BOOST_CHECK_EQUAL(m(i,j), 0.0); 
+
+	m.set(1,2, 1.0); 
+	BOOST_CHECK_EQUAL(m(1,2), 1.0); 
+	
+	Matrix k(m); 
+	BOOST_CHECK_EQUAL(k.rows(), 2); 
+	BOOST_CHECK_EQUAL(k.cols(), 3); 
+	BOOST_CHECK_EQUAL(k(1,2), 1.0); 
+}
