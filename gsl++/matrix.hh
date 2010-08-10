@@ -29,6 +29,7 @@ namespace gsl {
 
 class Matrix {
 public: 
+	Matrix(); 
 	Matrix(size_t rows, size_t columns, bool clean); 
 	Matrix(const Matrix& other); 
 	Matrix& operator =(const Matrix& other); 

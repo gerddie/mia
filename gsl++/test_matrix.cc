@@ -53,4 +53,11 @@ BOOST_AUTO_TEST_CASE( test_matrix_alloc_and_free )
 	BOOST_CHECK_EQUAL(k.rows(), 2); 
 	BOOST_CHECK_EQUAL(k.cols(), 3); 
 	BOOST_CHECK_EQUAL(k(1,2), 1.0); 
+
+	k.set(0,2, 2.0); 
+	BOOST_CHECK_EQUAL(k(0,2), 2.0); 
+
+	m = k; 
+	BOOST_CHECK_EQUAL(k(0,2), 2.0); 
+
 }

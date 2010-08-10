@@ -40,16 +40,17 @@ SET(MIACORE_SRC_BASE
   problem.cc
   probmap.cc
   regmodel.cc
-  scale1d.cc
-  shape.cc 
-  testplugin.cc 
-  typedescr.cc
   revision.cc 
+  scale1d.cc
+  scaler1d.cc
+  shape.cc 
   slopestatistics.cc
   slopeclassifier.cc
-  sqmin.cc
   spacial_kernel.cc 
+  sqmin.cc
   streamredir.cc
+  testplugin.cc 
+  typedescr.cc
   utils.cc 
   watch.cc 
   )
@@ -97,6 +98,7 @@ SET(MIACORE_HEADER_BASE
   property_flags.hh
   product_base.hh
   regmodel.hh
+  scaler1d.hh
   shape.hh shape.cxx
   slopestatistics.hh
   slopeclassifier.hh
@@ -249,6 +251,7 @@ NEW_TEST(simpson miacore)
 NEW_TEST(property_flags  miacore)
 NEW_TEST(flagstring  miacore)
 NEW_TEST(meanvar  miacore)
+NEW_TEST(scaler1d miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)

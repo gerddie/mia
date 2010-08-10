@@ -148,6 +148,7 @@ public:
 	typedef typename gsl_vector_dispatch<T>::const_reference const_reference; 
 	typedef typename gsl_vector_dispatch<T>::vector_pointer_type vector_pointer_type; 
 	
+	TVector();
 	TVector(size_type n, bool clear=true);
 	TVector(vector_type *holder); 
 	TVector(const vector_type *holder); 

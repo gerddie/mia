@@ -24,6 +24,13 @@
 #include <vector>
 
 namespace gsl {
+template <typename T> 
+TVector<T>::TVector():
+	data(NULL), 
+	cdata(NULL), 
+	owner(false)
+{
+}
 
 template <typename T> 
 TVector<T>::TVector(size_type n, bool clear):
