@@ -335,19 +335,21 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 	TRACE_FUNCTION;
 	// downscale the field
 	assert(params.size() == _M_coefficients.size() * 2);
-	
-	P1DInterpolatorFactory ipf(create_1dinterpolation_factory(ip_bspline4));
-	C1DScalar scaler(ipf);
 
+	C1DScalarFixed scaler_y(*ipf->get_kernel(), 
+				gradient.get_size().y, _M_coefficients.get_size().y);
+	C1DScalarFixed scaler_x(*ipf->get_kernel(), 
+				gradient.get_size().x, _M_coefficients.get_size().x);
+	
 	C2DFVectorfield tmp(C2DBounds(gradient.get_size().x, _M_coefficients.get_size().y));
 
-	vector<C2DFVector> in_buffer;
 	vector<C2DFVector> out_buffer(_M_coefficients.get_size().y - _M_enlarge);
 	vector<C2DFVector> out_buffer2(_M_coefficients.get_size().y);
 
-	// run y direction downscale and guess a continuing gradient 
 	for (size_t i = 0; i < gradient.get_size().x; ++i) {
 		gradient.get_data_line_y(i, in_buffer);
+
+		
 		scaler(in_buffer, out_buffer);
 		copy(out_buffer.begin(), out_buffer.end(), out_buffer2.begin() + _M_shift); 
 

@@ -56,7 +56,9 @@ C1DScalarFixed::C1DScalarFixed(const CBSplineKernel& kernel, size_t in_size, siz
 	_M_out_size(out_size), 
 	_M_support(kernel.size()), 
 	_M_poles(kernel.get_poles()),
-	_M_strategy(scs_unknown)
+	_M_strategy(scs_unknown), 
+	_M_input_buffer(in_size), 
+	_M_output_buffer(out_size)
 {
 	assert(in_size); 
 	assert(out_size); 
@@ -129,6 +131,47 @@ void C1DScalarFixed::operator () (const gsl::DoubleVector& input, gsl::DoubleVec
 	default: 
 		assert(0 && "Programming error: unknown scaling strategy"); 
 	};
+}
+
+gsl::DoubleVector::iterator C1DScalarFixed::input_begin()
+{
+	return _M_input_buffer.begin(); 
+}
+
+gsl::DoubleVector::iterator C1DScalarFixed::input_end() 
+{
+	return _M_input_buffer.end(); 
+}
+
+gsl::DoubleVector::iterator C1DScalarFixed::output_begin()
+{
+	return _M_output_buffer.begin(); 
+}
+
+gsl::DoubleVector::iterator C1DScalarFixed::output_end() 
+{
+	return _M_output_buffer.end();
+}
+
+
+
+void C1DScalarFixed::run()
+{
+	switch (_M_strategy) {
+	case scs_fill_output: fill(output_begin(), output_end(), _M_input_buffer[0]); 
+		break; 
+	case scs_upscale: upscale(_M_input_buffer, _M_output_buffer); 
+		break; 
+	case scs_copy: copy(_M_input_buffer.begin(), _M_input_buffer.end(), 
+			    _M_output_buffer.begin()); 
+		break; 
+	case scs_downscale: 
+		downscale(_M_input_buffer, _M_output_buffer);
+		break; 
+	default: 
+		assert(0 && "Programming error: unknown scaling strategy"); 
+	};
+	
 }
 
 

@@ -361,7 +361,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_update, TransformSplineFixture )
 
 	stransf.update(2.0, update);
 	stransf.reinit();
-
+x
 	C2DFVector testx(33.4, 82.4);
 	C2DFVector result = stransf.apply(testx);
 

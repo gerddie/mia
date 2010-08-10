@@ -53,7 +53,6 @@ public:
 
 	C1DScalarFixed(const CBSplineKernel& kernel, size_t in_size, size_t out_size);
 
-
 	/**
 	   Scaling operator.
 	   \param input input data
@@ -61,6 +60,14 @@ public:
 	   size. The path for down or upscaling is automatically selected.
 	 */
 	void operator () (const gsl::DoubleVector& input, gsl::DoubleVector& output) const;
+	void run();
+
+	gsl::DoubleVector::iterator input_begin();  
+	gsl::DoubleVector::iterator input_end();  
+
+	gsl::DoubleVector::iterator output_begin();  
+	gsl::DoubleVector::iterator output_end();  
+
 private:
 
 	void upscale(const gsl::DoubleVector& input, gsl::DoubleVector& output) const; 
@@ -85,6 +92,8 @@ private:
 	std::vector<double> _M_poles; 
 	EStrategy _M_strategy; 
 
+	gsl::DoubleVector _M_input_buffer; 
+	gsl::DoubleVector _M_output_buffer; 
 	std::vector<std::vector<double> > _M_weights; 
 	std::vector<std::vector<int> > _M_indices; 
 	gsl::Matrix _M_A; 	

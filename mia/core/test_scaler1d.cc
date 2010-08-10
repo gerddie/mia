@@ -122,8 +122,11 @@ void Scaler1DFixture::test_size(EInterpolation type, size_t target_size, double 
 	
 	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(type));	
 	C1DScalarFixed scaler(*ipf->get_kernel(), data.size(), target_size); 
+	copy(data.begin(), data.end(), scaler.input_begin()); 
 	
-	scaler(data, result); 
+	scaler.run(); 
+	
+	copy(scaler.output_begin(), scaler.output_end(), result.begin()); 
 
 	for(size_t i = 0; i < target_size; ++i) {
 		double x = (2 * M_PI * i) / (target_size - 1); 
