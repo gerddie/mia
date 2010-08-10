@@ -24,7 +24,7 @@
 #include <cassert>
 #include <limits>
 #include <iomanip>
-#include <mia/core/scale1d.hh>
+#include <mia/core/scaler1d.hh>
 #include <mia/2d/transform/spline.hh>
 #include <mia/2d/transformfactory.hh>
 
@@ -330,59 +330,24 @@ C2DTransformation::const_iterator C2DSplineTransformation::end() const
 	return C2DTransformation::const_iterator(new iterator_impl(get_size(), get_size(), *this));
 }
 
+struct FCopyX {
+	double operator() (const C2DFVector& x) const {
+		return x.x; 
+	}
+}; 
+
+struct FCopyY {
+	double operator() (const C2DFVector& x) const {
+		return x.y; 
+	}
+}; 
+
 void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
 	TRACE_FUNCTION;
-	// downscale the field
 	assert(params.size() == _M_coefficients.size() * 2);
-
-	C1DScalarFixed scaler_y(*ipf->get_kernel(), 
-				gradient.get_size().y, _M_coefficients.get_size().y);
-	C1DScalarFixed scaler_x(*ipf->get_kernel(), 
-				gradient.get_size().x, _M_coefficients.get_size().x);
 	
-	C2DFVectorfield tmp(C2DBounds(gradient.get_size().x, _M_coefficients.get_size().y));
-
-	vector<C2DFVector> out_buffer(_M_coefficients.get_size().y - _M_enlarge);
-	vector<C2DFVector> out_buffer2(_M_coefficients.get_size().y);
-
-	for (size_t i = 0; i < gradient.get_size().x; ++i) {
-		gradient.get_data_line_y(i, in_buffer);
-
-		
-		scaler(in_buffer, out_buffer);
-		copy(out_buffer.begin(), out_buffer.end(), out_buffer2.begin() + _M_shift); 
-
-		for (int j = 0; j < _M_shift; ++j) {
-			out_buffer2[_M_shift - j - 1] = out_buffer2[_M_shift - j] 
-				- (out_buffer[j + 1] - out_buffer[j]); 
-			out_buffer2[_M_shift + out_buffer.size() + j] = 
-				out_buffer2[_M_shift + out_buffer.size() + j - 1] 
-				- (out_buffer[out_buffer.size() - j - 1] - out_buffer[out_buffer.size() - j - 2]); 
-		}
-		tmp.put_data_line_y(i, out_buffer2); 
-
-	}
-	out_buffer.resize(_M_coefficients.get_size().x - _M_enlarge);
-	out_buffer2.resize(_M_coefficients.get_size().x); 
-	auto r = params.begin();
-
-	for (size_t i = 0; i < tmp.get_size().y; ++i) {
-		tmp.get_data_line_x(i, in_buffer);
-		scaler(in_buffer, out_buffer);
-		copy(out_buffer.begin(), out_buffer.end(), out_buffer2.begin() + _M_shift); 
-		for (int j = 0; j < _M_shift; ++j) {
-			out_buffer2[_M_shift - j - 1] = out_buffer2[_M_shift - j] 
-				- (out_buffer[j + 1] - out_buffer[j]); 
-			out_buffer2[_M_shift + out_buffer.size() + j] = 
-				out_buffer2[_M_shift + out_buffer.size() + j - 1] 
-				- (out_buffer[out_buffer.size() - j - 1] - out_buffer[out_buffer.size() - j - 2]); 
-		}
-		for(auto x = out_buffer2.begin(); x != out_buffer2.end(); ++x) {
-			*r++ = x->x;
-			*r++ = x->y;
-		}
-	}
+	// install new 
 }
 
 float  C2DSplineTransformation::pertuberate(C2DFVectorfield& v) const
