@@ -24,7 +24,6 @@
 #include <cassert>
 #include <limits>
 #include <iomanip>
-#include <mia/core/scaler1d.hh>
 #include <mia/2d/transform/spline.hh>
 #include <mia/2d/transformfactory.hh>
 
@@ -119,7 +118,6 @@ C2DFVector C2DSplineTransformation::apply(const C2DFVector& x) const
 	assert(_M_interpolator_valid && _M_interpolator);
 	const C2DFVector s = scale(x); 
 	const C2DFVector result = (*_M_interpolator)(scale(x));
-	cvdebug() << "C2DSplineTransformation::apply(" << x << "->" << s << ")=" << result<<"\n"; 
 	return result; 
 }
 
@@ -342,12 +340,91 @@ struct FCopyY {
 	}
 }; 
 
+// quatratic extrapolation 
+static double extrapolate(double x, double ym, double y0, double yp) 
+{
+	const double c = y0; 
+	const double b = 0.5 * (yp - ym); 
+	const double a = ym + b - c; 
+	return a * x * x + b * x + c; 
+}
+
+void C2DSplineTransformation::run_downscaler(C1DScalarFixed& scaler, vector<double>& out_buffer) const 
+{
+	const int size = out_buffer.size() - _M_shift; 
+	scaler.run(); 
+	copy(scaler.output_begin(), scaler.output_end(), out_buffer.begin() + _M_shift); 
+	
+	// continue the gradient a both sides with quatratic extrapolation 
+	for(int j = 0; j < _M_shift; ++j) {
+		out_buffer[_M_shift - j - 1] = extrapolate(-2, out_buffer[_M_shift - j], 
+							   out_buffer[_M_shift - j + 1], 
+							   out_buffer[_M_shift - j + 2]); 
+		out_buffer[size + j] = extrapolate(2, out_buffer[size + j - 3], 
+						   out_buffer[size + j - 2], out_buffer[size + j - 1]); 
+	}
+}
+
 void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
 	TRACE_FUNCTION;
 	assert(params.size() == _M_coefficients.size() * 2);
 	
-	// install new 
+	C2DDDatafield tmp_x(C2DBounds(gradient.get_size().x, _M_coefficients.get_size().y)); 
+	C2DDDatafield tmp_y(C2DBounds(gradient.get_size().x, _M_coefficients.get_size().y)); 
+
+	{
+		C1DScalarFixed scaler_y(*_M_ipf->get_kernel(), gradient.get_size().y, 
+					_M_coefficients.get_size().y - _M_enlarge);
+		
+		vector<C2DFVector> in_buffer(gradient.get_size().y); 
+		vector<double> out_buffer(_M_coefficients.get_size().y); 
+		
+		// run y-scaling 
+		FCopyX copy_x; 
+		FCopyY copy_y; 
+		for (size_t ix = 0; ix < gradient.get_size().x; ++ix) {
+			gradient.get_data_line_y(ix, in_buffer);
+#ifndef AM_I_STUPID // valgrind complains using the transform code ?!
+			for (auto iv = in_buffer.begin(), is = scaler_y.input_begin(); 
+			     iv != in_buffer.end(); ++iv, ++is) 
+				*is = iv->y; 
+#else
+			transform(in_buffer.begin(), in_buffer.end(), scaler_y.input_begin(), copy_y); 
+#endif
+			run_downscaler(scaler_y, out_buffer); 
+			tmp_y.put_data_line_y(ix, out_buffer);
+
+			transform(in_buffer.begin(), in_buffer.end(), scaler_y.input_begin(), copy_x); 
+			run_downscaler(scaler_y, out_buffer); 
+			tmp_x.put_data_line_y(ix, out_buffer);
+			
+		}
+	}
+	cvinfo() << "x done\n"; 
+	{
+		C1DScalarFixed scaler_x(*_M_ipf->get_kernel(), gradient.get_size().x, 
+					_M_coefficients.get_size().x - _M_enlarge);
+		
+		vector<double> out_buffer_x(_M_coefficients.get_size().x); 
+		vector<double> out_buffer_y(_M_coefficients.get_size().x); 
+		
+		auto r = params.begin(); 
+		// run x-scaling 
+		for (size_t iy = 0; iy < tmp_x.get_size().y; ++iy) {
+			copy(tmp_x.begin_at(0, iy), tmp_x.begin_at(0, iy) + tmp_x.get_size().x, 
+			     scaler_x.input_begin()); 
+			run_downscaler(scaler_x, out_buffer_x);
+			copy(tmp_y.begin_at(0, iy), tmp_y.begin_at(0, iy) + tmp_y.get_size().x, 
+			     scaler_x.input_begin()); 
+			run_downscaler(scaler_x, out_buffer_y);
+			for(auto vx = out_buffer_x.begin(), vy = out_buffer_y.begin(); 
+			    vx != out_buffer_x.end(); ++vx, ++vy, r+=2) {
+				r[0] = *vx; 
+				r[1] = *vy; 
+			}
+		}
+	}
 }
 
 float  C2DSplineTransformation::pertuberate(C2DFVectorfield& v) const

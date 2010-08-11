@@ -26,6 +26,7 @@
 #include <mia/2d/interpolator.hh>
 #include <mia/2d/transform.hh>
 #include <mia/2d/ppmatrix.hh>
+#include <mia/core/scaler1d.hh>
 
 NS_MIA_BEGIN
 
@@ -89,6 +90,7 @@ public:
 	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
 	virtual double get_divcurl_cost(double wd, double wr) const; 
 private:
+	void run_downscaler(C1DScalarFixed& scaler, vector<double>& out_buffer)const; 
 	virtual C2DTransformation *do_clone() const;
 	C2DBounds _M_range;
 	C2DFVector _M_target_c_rate;
