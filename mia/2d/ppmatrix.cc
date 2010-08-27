@@ -22,6 +22,11 @@
 #include <cmath>
 #include <mia/2d/ppmatrix.hh>
 
+#if defined(__SSE2__)
+#include <emmintrin.h>
+#endif
+
+
 NS_MIA_BEGIN
 
 class C2DPPDivcurlMatrixImpl {
@@ -43,9 +48,8 @@ private:
 	size_t _M_nodes; 
 	
 	struct SMatrixCell {
-		double v11; 
+		C2DDVector v; 
 		double v12; 
-		double v22; 
 		size_t i; 
 		size_t j; 
 	}; 
@@ -207,7 +211,7 @@ void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& rang
 					double r11y = h.y * rc11.get(  l, n, 1, 1, size.y); 
 					
 					SMatrixCell cell; 
-					cell.v11 = 
+					cell.v.x = 
 						wd * (r22x * r00y + r11x * r11y) + 
 						wr * (r11x * r11y + r00x * r22y); 
 					
@@ -215,12 +219,12 @@ void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& rang
 						wd * ( r21x * r01y + r01x * r21y) -
 						wr * ( r01x * r21y + r21x * r01y )); 
 					
-					cell.v22 = 
+					cell.v.y = 
 						wd * (r00x * r22y + r11x * r11y) + 
 						wr * (r22x * r00y + r11x * r11y);
 					cell.i = i; 
 					cell.j = m + n * nx;  
-					if (cell.v11 != 0.0 || cell.v12 != 0.0 ||cell.v22 != 0.0) 
+					if (cell.v.x != 0.0 || cell.v12 != 0.0 ||cell.v.y != 0.0) 
 						_M_P.push_back(cell); 
 				}
 			}
@@ -240,9 +244,9 @@ double C2DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 		auto ci = coefficients[p->i]; 
 		auto cj = coefficients[p->j]; 
 		
-		result_1 += ci.x * cj.x * p->v11; 
+		result_1 += ci.x * cj.x * p->v.x; 
 		result_2 += ci.x * cj.y * p->v12; 
-		result_3 += ci.y * cj.y * p->v22; 
+		result_3 += ci.y * cj.y * p->v.y; 
 	}
 	return result_1 + result_2 + result_3; 
 }
@@ -252,23 +256,63 @@ double C2DPPDivcurlMatrixImpl::evaluate(const T2DDatafield<C2DDVector>& coeffici
 {
 	assert(coefficients.size() == _M_nodes); 
 	assert(gradient.size() == coefficients.size() * 2); 
+#if defined(__SSE2__)
+	register __m128d result_a = {0.0, 0.0}; 
+	register __m128d result_b = result_a; 
+	
+	auto p = _M_P.begin(); 
+	auto pe = _M_P.end(); 
 
-	double result_1 = 0.0; 
-	double result_2 = 0.0; 
-	double result_3 = 0.0; 
+	
+	while (p != pe) {
+		const __m128d ci = _mm_loadu_pd(&coefficients[p->i].x); 
+		const __m128d cj = _mm_loadu_pd(&coefficients[p->j].x); 
+		const __m128d pv = _mm_loadu_pd(&p->v.x);
+		__m128d g = _mm_loadu_pd(&gradient[2*p->i]); 
+		const __m128d pv12 = _mm_set1_pd(p->v12); 
+		
+		__m128d cjpv = cj * pv; 
+		__m128d cjpv12 = cj * pv12; 
+		cjpv12 = _mm_shuffle_pd(cjpv12, cjpv12, 0x1); 
+		
+		result_a = result_a + ci * cjpv; 
+		cjpv = cjpv + cjpv; 
+		g = g + cjpv12; 
+		result_b = _mm_add_sd(result_b, _mm_mul_sd(ci, cjpv12)); 
+		g = g + cjpv; 
+		
+		_mm_storeu_pd(&gradient[2*p->i], g); 
+		++p; 
+	}
+	double result_12[2]; 
+	result_a = _mm_add_sd(result_a, result_b); 
+	_mm_storeu_pd(result_12, result_a); 
+	return result_12[0] + result_12[1]; 
+#else
+	register double result_1 = 0.0; 
+	register double result_2 = 0.0; 
+	register double result_3 = 0.0; 
 	for (auto p = _M_P.begin(); p != _M_P.end();++p) {
 		auto ci = coefficients[p->i]; 
 		auto cj = coefficients[p->j]; 
+		
+		const double cjxpv11 = cj.x * p->v.x; 
+		const double cjypv22 = cj.y * p->v.y; 
 
-		gradient[2*p->i    ] +=                 2 * cj.x * p->v11 + cj.y * p->v12; 
-		gradient[2*p->i + 1] += cj.x * p->v12 + 2 * cj.y * p->v22; 
+		const double cjxpv12 = cj.x * p->v12; 
+		const double cjypv12 = cj.y * p->v12; 
 
-		result_1 += ci.x * cj.x * p->v11; 
-		result_2 += ci.x * cj.y * p->v12; 
-		result_3 += ci.y * cj.y * p->v22; 
+
+		gradient[2*p->i    ] += cjxpv11 + cjxpv11 + cjypv12; 
+		gradient[2*p->i + 1] += cjypv22 + cjypv22 + cjxpv12; 
+
+		result_1 += ci.x * cjxpv11; 
+		result_2 += ci.x * cjypv12; 
+		result_3 += ci.y * cjypv22; 
 	}
 
 	return result_1 + result_2 + result_3; 
+#endif
 }
 
 const C2DBounds& C2DPPDivcurlMatrix::get_size() const

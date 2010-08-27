@@ -25,6 +25,7 @@
 #define GSL_VECTOR_TEMPLATE
 
 #include <gsl/gsl_vector.h>
+#include <cassert>
 
 namespace gsl {
 
@@ -167,7 +168,11 @@ public:
 	size_type size() const; 
 
 	const value_type operator[](size_t i)const; 
-	reference operator[](size_t i);
+
+	reference operator[](size_t i){
+		assert(data); 
+		return data->data[i]; 
+	}
 
 	operator const vector_type *() const; 
 	operator vector_pointer_type (); 

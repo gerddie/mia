@@ -136,13 +136,6 @@ const typename TVector<T>::value_type TVector<T>::operator[](size_t i)const
 }
 
 template <typename T> 
-typename TVector<T>::reference TVector<T>::operator[](size_t i)
-{
-	assert(data); 
-	return data->data[i]; 
-}
-
-template <typename T> 
 typename TVector<T>::size_type TVector<T>::size() const
 {
 	return this->cdata->size; 
