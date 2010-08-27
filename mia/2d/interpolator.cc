@@ -35,7 +35,6 @@
 #include <mia/core/interpolator1d.cxx>
 #include <mia/2d/interpolator.cxx>
 
-
 NS_MIA_BEGIN
 
 using namespace boost;

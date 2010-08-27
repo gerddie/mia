@@ -120,6 +120,7 @@ protected:
 
 	double mult_int_from_table(int s1, int s2, int range, EIntegralType type) const; 
 private:
+	void fill_index(int i, std::vector<int>& index) const; 
 	virtual double read_table(int skip, int delta, bool swapped, EIntegralType type) const; 
 	size_t _M_half_degree;
 	double _M_shift;

@@ -34,6 +34,10 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/simpson.hh>
 
+#if defined(__SSE2__)
+#include <emmintrin.h>
+#endif
+
 #define USE_FASTFLOOR
 
 NS_MIA_BEGIN
@@ -109,12 +113,21 @@ inline int fastfloor(double val)
 #define fastfloor floor
 #endif
 
+void CBSplineKernel::fill_index(int i, std::vector<int>& index) const 
+{
+	auto ib = index.begin(); 
+	const auto ie = index.end(); 
+	while (ib != ie) {
+		*ib = i; 
+		++ib; 
+		++i; 
+	}
+}
+
 int CBSplineKernel::get_indices(double x, std::vector<int>& index) const
 {
-	int ix = fastfloor(x + _M_shift);
-	int i = ix - _M_half_degree;
-	for (size_t k = 0; k < index.size(); ++k)
-		index[k] = i++;
+	const int ix = fastfloor(x + _M_shift);
+	fill_index(ix - (int)_M_half_degree, index); 
 	return ix;
 }
 
@@ -344,14 +357,42 @@ double CBSplineKernel3::get_mult_int(int s1, int s2, int range, EIntegralType ty
 	return mult_int_from_table(s1, s2, range, type); 
 }
 
+#ifdef __SSE2__
+typedef double v2df __attribute__ ((vector_size (16)));
+// getthis stupid compiler to allocate the memory and set the values 
+// once and for all. 
+const double oneby6[2] __attribute__((aligned(16))) = { 1.0/6.0,  1.0/6.0 };
+#endif
+
 void CBSplineKernel3::get_weights(double x, std::vector<double>&  weight)const
 {
-	const double onebysix = 1.0 / 6.0;
+	const double xm1 = 1 - x; 
+#ifdef __SSE2__
+	v2df X; 
+	X=_mm_loadl_pd(X, &xm1); 
+	X=_mm_loadh_pd(X, &x); 
+//	const double xc[2] __attribute__((aligned(16))) = { xm1, x };
+	//const v2df X =  __builtin_ia32_loadapd(xc); 
+	const v2df OB6 =  __builtin_ia32_loadupd(oneby6);
+	const v2df X2  = X * X; 
+	const v2df XB6 = X * OB6; 
+	const v2df W03 = X2 * XB6; 
+	v2df W30 = W03; 
+	W30 = __builtin_ia32_shufpd(W30, W30, 0x1); 
 
+	const v2df W12 = X - W03 - W03 + W30; 
+	
+	_mm_storel_pd(&weight[0], W03); 
+	_mm_storeh_pd(&weight[3], W03); 
+	_mm_storeu_pd(&weight[1], W12); 
+#else
+
+	const double onebysix = 1.0/6.0; 
 	weight[3] = onebysix * x * x * x;
-	weight[0] = onebysix + 0.5 * x * (x - 1.0) - weight[3];
-	weight[2] = x + weight[0] - 2.0 * weight[3];
-	weight[1] = 1.0 - weight[0] - weight[2] - weight[3];
+	weight[0] = onebysix  * xm1 * xm1 * xm1;
+	weight[2] = x - 2.0 * weight[3]  + weight[0] ;
+	weight[1] = xm1 - 2 * weight[0]  + weight[3];
+#endif
 }
 
 void CBSplineKernel3::get_derivative_weights(double x, std::vector<double>& weight) const

@@ -320,7 +320,7 @@ struct add_2d {
 	}
 };
 
-#if 0 //ned(__SSE2__) 
+#if 0 // defined(__SSE2__) 
 
 #ifdef __GNUC__
 #define _mm_loadu_pd    __builtin_ia32_loadupd
@@ -341,7 +341,7 @@ struct add_2d<T2DDatafield<double>,4> {
 			    const std::vector<int>& yindex) 
 	{
 		typedef double v2df __attribute__ ((vector_size (16)));
-		
+
 		double wx[4] __attribute__((aligned(16))); 
 		double wy[4] __attribute__((aligned(16))); 
 		copy(xweight.begin(), xweight.end(), wx); 
@@ -353,7 +353,7 @@ struct add_2d<T2DDatafield<double>,4> {
 		const double *pp3 = &coeff(0, yindex[3]);
 		
 		const double p0[4] __attribute__((aligned(16)))
-			=  {pp0[xindex[0]], pp0[xindex[1]], pp0[xindex[2]], pp0[xindex[3]]}; 
+			= { pp0[xindex[0]], pp0[xindex[1]], pp0[xindex[2]], pp0[xindex[3]]}; 
 		const double p1[4] __attribute__((aligned(16)))
 			=  {pp1[xindex[0]], pp1[xindex[1]], pp1[xindex[2]], pp1[xindex[3]]}; 
 		const double p2[4] __attribute__((aligned(16))) 
@@ -368,14 +368,14 @@ struct add_2d<T2DDatafield<double>,4> {
 		const register v2df rwy01 = _mm_loadu_pd(&wy[0]); 
 		const register v2df rwy23 = _mm_loadu_pd(&wy[2]); 
 		
-		register v2df rp001 =_mm_mul_pd(rwx01, &p0[0]); 
-		register v2df rp023 =_mm_mul_pd(rwx23, &p0[2]); 
-		register v2df rp101 =_mm_mul_pd(rwx01, &p1[0]); 
-		register v2df rp123 =_mm_mul_pd(rwx23, &p1[2]); 
-		register v2df rp201 =_mm_mul_pd(rwx01, &p2[0]); 
-		register v2df rp223 =_mm_mul_pd(rwx23, &p2[2]); 
-		register v2df rp301 =_mm_mul_pd(rwx01, &p3[0]); 
-		register v2df rp323 =_mm_mul_pd(rwx23, &p3[2]); 
+		register v2df rp001 =_mm_mul_pd(rwx01, _mm_loadu_pd(&p0[0])); 
+		register v2df rp023 =_mm_mul_pd(rwx23, _mm_loadu_pd(&p0[2])); 
+		register v2df rp101 =_mm_mul_pd(rwx01, _mm_loadu_pd(&p1[0])); 
+		register v2df rp123 =_mm_mul_pd(rwx23, _mm_loadu_pd(&p1[2])); 
+		register v2df rp201 =_mm_mul_pd(rwx01, _mm_loadu_pd(&p2[0])); 
+		register v2df rp223 =_mm_mul_pd(rwx23, _mm_loadu_pd(&p2[2])); 
+		register v2df rp301 =_mm_mul_pd(rwx01, _mm_loadu_pd(&p3[0])); 
+		register v2df rp323 =_mm_mul_pd(rwx23, _mm_loadu_pd(&p3[2])); 
 		
 		register v2df rs01_0 = _mm_unpacklo_pd(rp001, rp101); 
 		register v2df rs23_0 = _mm_unpacklo_pd(rp201, rp301); 
@@ -405,6 +405,43 @@ struct add_2d<T2DDatafield<double>,4> {
 		double s[2] __attribute__((aligned(16))); 
 		_mm_storeu_pd(s, sum2); 
 		return s[0] + s[1]; 
+	}
+};
+
+#else 
+
+// manually unroll for case 4 
+template <class C>
+struct add_2d<C,4> {
+	typedef typename C::value_type U; 
+	
+	static typename C::value_type apply(const C&  coeff, const std::vector<double>& xweight, 
+					    const std::vector<double>& yweight,
+					    const std::vector<int>& xindex, 
+					    const std::vector<int>& yindex) 
+	{
+		U result = U();
+		
+		U rx0 = U();
+		U rx1 = U();
+		U rx2 = U();
+		U rx3 = U();
+		const U *p0 = &coeff(0, yindex[0]);
+		const U *p1 = &coeff(0, yindex[1]);
+		const U *p2 = &coeff(0, yindex[2]);
+		const U *p3 = &coeff(0, yindex[3]);
+		for (size_t x = 0; x < 4; ++x) {
+			rx0 += xweight[x] * p0[xindex[x]];
+			rx1 += xweight[x] * p1[xindex[x]];
+			rx2 += xweight[x] * p2[xindex[x]];
+			rx3 += xweight[x] * p3[xindex[x]];
+		}
+		
+		result = yweight[0] * rx0 
+			+ yweight[1] * rx1 
+			+ yweight[2] * rx2 
+			+ yweight[3] * rx3; 
+		return result; 
 	}
 };
 
