@@ -33,6 +33,14 @@
 
 NS_MIA_BEGIN
 
+/**
+   Function to convert a streamable type from a string to a value
+   \tparam T some type that supports the >> stream operator 
+   \param s the c-string holding the value 
+   \returns value of T corresponding to s
+   \todo some error checking should be included
+ */
+
 template <typename T> 
 T from_string(const char *s) 
 {
@@ -42,6 +50,14 @@ T from_string(const char *s)
 	return result; 
 }
 
+/**
+   Function to convert a streamable type from a string to a value
+   \tparam T some type that supports the >> stream operator 
+   \param s the c++string holding the value 
+   \returns value of T corresponding to s
+   \todo some error checking should be included
+ */
+
 template <typename T> 
 const T from_string(const std::string& s) 
 {
@@ -50,6 +66,14 @@ const T from_string(const std::string& s)
 	sx >> result; 
 	return result; 
 }
+
+
+/**
+   Function to convert a streamable type from to a string 
+   \tparam T some type that supports the << stream operator 
+   \param v the value to be converted 
+   \returns string that corresponds to v 
+ */
 
 template <typename T> 
 const std::string  to_string(typename boost::call_traits<T>::param_type v)

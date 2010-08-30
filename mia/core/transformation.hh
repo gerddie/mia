@@ -31,16 +31,29 @@
 NS_MIA_BEGIN
 
 
+/**
+   Template of a generic tranformation function 
+   \tparam D data type of the object to be transformed 
+   \tparam I interpolator factory to create resampler for type D 
+ */
+
 template <typename D, typename I>
 class Transformation :public CIOData {
 public: 
 
+	/// interface type for plugin implementation and search 
 	static const char *value; 
+	
         virtual ~Transformation(); 
 
 	typedef D Data; 
 	typedef I Interpolator; 
 	
+	/** Apply the transformation to the input data 
+	    \param input 
+	    \param ipf interpolator factory 
+	    \returns a shared pointer to the transformed input data
+	*/
 	std::shared_ptr<D > operator () (const D& input, const I& ipf) const; 
 private: 
         virtual std::shared_ptr<D > apply(const D& input, const I& ipf) const = 0;

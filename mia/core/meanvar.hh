@@ -28,6 +28,15 @@
 
 NS_MIA_BEGIN
 
+/**
+   Evaluate the mean and the variance of a series of scalars 
+   \tparam ForwardIterator 
+   \param begin 
+   \param end 
+   \returns mean as .first and variance as .second of the std::pair. 
+   \todo could be extended to vector types 
+ */
+
 template <typename ForwardIterator>
 std::pair<double, double> mean_var(ForwardIterator begin, ForwardIterator end) 
 {

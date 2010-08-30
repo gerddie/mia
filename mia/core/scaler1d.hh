@@ -37,9 +37,12 @@
 NS_MIA_BEGIN
 
 /**
-   Class for scaling of one-dimensional arrays. kernels are the separable B-spline 
-   functions 
-   for upscaling, an interpolator is created by using the provided interpolator factory.
+   Class for general scaling of one-dimensional arrays. kernels are the separable B-spline 
+   functions.  For upscaling, an interpolator is created by using the provided interpolator factory.
+   Downscaling is done solving an overdetermined linear system of equations Ax = y. At construction 
+   time the matrix A is QR decomposed, and later the downscaling is done by applying solving 
+   the QRx=y
+   \todo see if scaling can be expressed by a filter 
 */
 
 class EXPORT_CORE C1DScalarFixed {
@@ -60,12 +63,23 @@ public:
 	   size. The path for down or upscaling is automatically selected.
 	 */
 	void operator () (const gsl::DoubleVector& input, gsl::DoubleVector& output) const;
+
+	/**
+	   Alternate interface for scaling. Here the input data has to be copied into 
+	   the pre-acclocated memory by using the \a input_begin() and \a input_end() iterators, 
+	   and the result can be read using the \a output_begin(), \a output_end() iterators. 
+	 */
 	void run();
 
+	/// \returns begin iterator of the input buffer 
 	gsl::DoubleVector::iterator input_begin();  
+	/// \returns end iterator of the input buffer 
 	gsl::DoubleVector::iterator input_end();  
 
+	/// \returns begin iterator of the output buffer 
 	gsl::DoubleVector::iterator output_begin();  
+	
+	/// \returns end iterator of the output buffer 
 	gsl::DoubleVector::iterator output_end();  
 
 private:

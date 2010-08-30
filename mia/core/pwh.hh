@@ -57,7 +57,8 @@ public:
 	/// \returns the probability of intensity x 
 	double operator [] (double x) const; 
 
-	double derivative (double i) const; 
+	/// \returns the derivative of probability of intensity x 
+	double derivative (double x) const; 
 private: 
 	struct CParzenWindowHistogramImpl *impl; 
 }; 

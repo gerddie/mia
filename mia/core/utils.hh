@@ -44,8 +44,8 @@
 NS_MIA_BEGIN
 
 /**
-   a helper class that stores the current working directory on construction
-   and goes back to the it when it is destroyed
+   A helper class that stores the current working directory on construction
+   and goes back to the it when the class intance is destroyed. 
 */
 class EXPORT_CORE CCWDSaver {
 	char *cwd;
@@ -55,6 +55,8 @@ public:
 };
 
 #ifndef WIN32
+
+
 /*! a functor to search  for files */
 class  FSearchFiles  {
 	std::list<std::string>& result;

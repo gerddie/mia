@@ -39,6 +39,7 @@ NS_MIA_BEGIN
 /**
    Class for scaling of one-dimensional arrays. For downscaling always a gaussian smoothing is used.
    for upscaling, an interpolator is created by using the provided interpolator factory.
+   \remark obsolete use C1DScalerFixed instead 
 */
 
 class EXPORT_CORE C1DScalar {

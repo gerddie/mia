@@ -30,11 +30,19 @@ NS_MIA_BEGIN
 
 extern EXPORT_CORE const char *property_gradient;
 
+
+/**
+   Class that holds properties.  
+ */
 class  EXPORT_CORE CPropertyFlagHolder {
 public:
 	bool has(const char *property) const;
 	void add(const char *property);
 
+	/**
+	   Tests if all properties in the testset are available in this instance 
+	   \param testset
+	 */
 	bool has_all_in(const CPropertyFlagHolder& testset)const;
 private:
 	virtual bool do_has(const char *property) const;

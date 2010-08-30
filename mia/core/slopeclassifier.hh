@@ -31,7 +31,7 @@ NS_MIA_BEGIN
 
 /**
    Classify a set of curves. This class is mostly usefull for the analysis
-   of series of perfusion images that are aquired usingfree breathing.
+   of series of perfusion images that are aquired using free breathing.
 */
 
 class  EXPORT_CORE  CSlopeClassifier {

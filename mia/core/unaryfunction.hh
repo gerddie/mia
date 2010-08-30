@@ -28,6 +28,11 @@
 
 NS_MIA_BEGIN
 
+
+/**
+   Abstract base class for an Unary function. 
+   \remark is this actually used? 
+*/
 class FUnary {
 public: 
 	virtual double operator () (double x) const = 0; 

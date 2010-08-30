@@ -30,12 +30,12 @@
 #include <mia/core/dictmap.hh>
 
 NS_MIA_BEGIN
-/**
-   The kernel of spline based interpolations - base type
- */
 
 extern EXPORT_CORE TDictMap<EInterpolation> GInterpolatorTable;
 
+/**
+   The kernel of spline based interpolations - base type
+ */
 class EXPORT_CORE CBSplineKernel {
 public:
 	enum EIntegralType { integral_11, 

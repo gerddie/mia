@@ -23,6 +23,15 @@
 
 NS_MIA_BEGIN
 
+/**
+   Simpson integration of a 1D-function 
+   \tparam F a functor that defines the double operator ()(double x). 
+   \param from begin of integration interval 
+   \param to end of integration interval 
+   \param intervals number of intervals to use for integration 
+   \param function funtion to integrate 
+   \returns value of integral 
+ */
 template <class F>
 double simpson(double from, double to, size_t intervals, const F& function)
 {

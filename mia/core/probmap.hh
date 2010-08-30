@@ -36,6 +36,9 @@ NS_MIA_BEGIN
 
 typedef std::vector<double> CDoubleVector;
 
+/**
+   A vector of probablility values. 
+ */
 class EXPORT_CORE CProbabilityVector: public std::vector<CDoubleVector> {
 public:
 
@@ -72,7 +75,15 @@ private:
 	void do_load(std::istream& is);
 };
 
+
+/// Compare two probability vectors 
 EXPORT_CORE bool operator == (const CProbabilityVector& a, const CProbabilityVector& b);
+
+
+/**
+   A map to change labels. 
+*/
+
 
 class EXPORT_CORE CLabelMap: public std::map<size_t, size_t> {
 public:

@@ -29,12 +29,18 @@
 
 NS_MIA_BEGIN
 
+/**
+   A template to get an generic dimension vector 
+   \tparam T must be a template that defines a type \a dimsize_type
+ */
 template <template <typename> class T>
 struct dim_traits {
 	typedef typename T::dimsize_type dimsize_type; 
 };
 
-
+/**
+   Structure to enable the use of the dim_traits class for std::vector 
+ */
 struct vector_dimsize {
 	
 	vector_dimsize(size_t n):_M_n(n) {

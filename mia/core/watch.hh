@@ -28,7 +28,7 @@
 #include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
-/** \file watch.hh
+/** 
     A milli-second watch to measure running times.
 */
 

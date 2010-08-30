@@ -39,8 +39,7 @@ NS_MIA_BEGIN
    to e.g. a text window or a console.
    The specialization must implement the do_put_buffer method, which writes out
    the characters from \a begin to \a end using a function of the output device.
- */
-
+*/
 class EXPORT_CORE streamredir: public std::streambuf   {
 public:
 	streamredir();

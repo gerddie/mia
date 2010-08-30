@@ -53,14 +53,20 @@
 
 NS_MIA_BEGIN
 
+/**
+   Basic Interpolator type for 1D Data.
+ */
+
 class EXPORT_CORE C1DInterpolator {
 public:
 	/** a virtual destructor is neccessary for some of the interpolators */
 	virtual  ~C1DInterpolator();
 };
 
+
 /**
    Basic Interpolator type for 1D Data.
+   \tparam T data type to be interpolated over 
  */
 
 template <typename T>
@@ -124,6 +130,8 @@ private:
 	double _M_sizeb;
 };
 
+/** Base type for interpolators that work with some kind of convolution  */
+
 template <class T>
 class EXPORT_CORE T1DConvoluteInterpolator: public T1DInterpolator<T> {
 public:
@@ -154,6 +162,8 @@ private:
 	mutable std::vector<double> _M_y_weight;
 };
 
+
+/** Factory to create 1D interpolators of a give type using the given input data */
 class EXPORT_CORE C1DInterpolatorFactory {
 public:
 	enum EType {ipt_nn, ipt_linear, ipt_spline, ipt_unknown};
@@ -177,6 +187,7 @@ private:
 	PSplineKernel _M_kernel;
 };
 typedef std::shared_ptr<const C1DInterpolatorFactory > P1DInterpolatorFactory;
+
 
 
 C1DInterpolatorFactory EXPORT_CORE  *create_1dinterpolation_factory(EInterpolation type);
