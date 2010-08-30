@@ -138,7 +138,7 @@ public:
 	   \param data
 	   \param kernel
 	 */
-	T3DConvoluteInterpolator(const T3DDatafield<T>& data, SHARED_PTR(CBSplineKernel) kernel);
+	T3DConvoluteInterpolator(const T3DDatafield<T>& data, std::shared_ptr<CBSplineKernel > kernel);
 
 	/// Standart constructor for factory prototyping
 	~T3DConvoluteInterpolator();
@@ -162,7 +162,7 @@ private:
 
 	TCoeff3D _M_coeff;
 	C3DBounds _M_size2;
-	SHARED_PTR(CBSplineKernel) _M_kernel;
+	std::shared_ptr<CBSplineKernel > _M_kernel;
 	T _M_min;
 	T _M_max;
 
@@ -191,7 +191,7 @@ public:
 	   \param type interpolator type id
 	   \param kernel spline kernel
 	*/
-	C3DInterpolatorFactory(EType type, SHARED_PTR(CBSplineKernel) kernel);
+	C3DInterpolatorFactory(EType type, std::shared_ptr<CBSplineKernel > kernel);
 
 	/// Copy constructor
 	C3DInterpolatorFactory(const C3DInterpolatorFactory& o);
@@ -211,7 +211,7 @@ public:
 
 private:
 	EType _M_type;
-	SHARED_PTR(CBSplineKernel) _M_kernel;
+	std::shared_ptr<CBSplineKernel > _M_kernel;
 };
 
 
@@ -231,7 +231,7 @@ T3DInterpolator<T> *C3DInterpolatorFactory::create(const T3DDatafield<T>& src) c
 	return NULL;
 }
 
-typedef SHARED_PTR(C3DInterpolatorFactory) P3DInterpolatorFactory;
+typedef std::shared_ptr<C3DInterpolatorFactory > P3DInterpolatorFactory;
 
 NS_MIA_END
 

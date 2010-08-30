@@ -40,7 +40,7 @@ struct FieldSplineFixture {
 		size(30, 32),
 		field(size),
 		ipf(C2DInterpolatorFactory::ip_spline,
-		    SHARED_PTR(CBSplineKernel) (new CBSplineKernel4()))
+		    std::shared_ptr<CBSplineKernel > (new CBSplineKernel4()))
 	{
 		C2DFVectorfield::iterator i = field.begin();
 		for (size_t y = 0; y < size.y; ++y)
@@ -48,7 +48,7 @@ struct FieldSplineFixture {
 				*i = C2DFVector( fx(x, y), fy(x, y));
 			}
 
-		SHARED_PTR(T2DInterpolator<C2DFVector> ) source(ipf.create(field));
+		std::shared_ptr<T2DInterpolator<C2DFVector>  > source(ipf.create(field));
 
 		list< bfs::path> kernelsearchpath;
 		kernelsearchpath.push_back(bfs::path("../core/spacialkernel"));
@@ -80,7 +80,7 @@ float FieldSplineFixture::fy(float x, float y)
 
 BOOST_FIXTURE_TEST_CASE( test_vector_field2d_splines, FieldSplineFixture )
 {
-	SHARED_PTR(T2DInterpolator<C2DFVector> ) source(ipf.create(field));
+	std::shared_ptr<T2DInterpolator<C2DFVector>  > source(ipf.create(field));
 
 	C2DFVector result = (*source)(C2DFVector(5.4, 23.5));
 

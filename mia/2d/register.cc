@@ -197,7 +197,7 @@ P2DFVectorfield C2DImageRegister::operator () (const C2DImage& source, const C2D
 		C2DBounds block_size(1 << x_shift, 1 << y_shift); 
 		stringstream downscalerstr; 
 		downscalerstr << "downscale:bx=" << (1 << x_shift) << ",by=" << (1 << y_shift); 
-		SHARED_PTR(C2DFilter> downscaler )= fph.produce(downscalerstr.str().c_str()); 
+		std::shared_ptr<C2DFilter> downscaler  >= fph.produce(downscalerstr.str().c_str()); 
 		
 		P2DImage src_scaled = downscaler->filter(source); 
 		P2DImage ref_scaled = downscaler->filter(reference);

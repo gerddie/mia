@@ -55,7 +55,7 @@ public:
 	std::vector<C2DFVector> _M_points;
 };
 
-typedef SHARED_PTR(C2DPolygon) P2DPolygon;
+typedef std::shared_ptr<C2DPolygon > P2DPolygon;
 
 NS_MIA_END
 

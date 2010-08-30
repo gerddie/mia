@@ -112,8 +112,8 @@ private:
 
 };
 
-typedef SHARED_PTR(CMessenger) PMessenger;
-typedef SHARED_PTR(boost::barrier) PBarrier;
+typedef std::shared_ptr<CMessenger > PMessenger;
+typedef std::shared_ptr<boost::barrier > PBarrier;
 
 
 /**

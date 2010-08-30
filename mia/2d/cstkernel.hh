@@ -78,8 +78,8 @@ private:
 typedef TCST2DKernel<C2DFVectorfield> CCST2DVectorKernel;
 typedef TCST2DKernel<C2DFImage>       CCST2DImageKernel;
 
-typedef  SHARED_PTR(CCST2DImageKernel) PCST2DImageKernel;
-typedef  SHARED_PTR(CCST2DVectorKernel) PCST2DVectorKernel;
+typedef  std::shared_ptr<CCST2DImageKernel > PCST2DImageKernel;
+typedef  std::shared_ptr<CCST2DVectorKernel > PCST2DVectorKernel;
 
 typedef TFactory<CCST2DVectorKernel, cst2d_vector_kernel, kernel_plugin_type> CCST2DVectorKernelPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> > CCST2DVectorKernelPluginHandler;

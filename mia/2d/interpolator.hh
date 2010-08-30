@@ -139,7 +139,7 @@ struct coeff_map<T2DVector<U> > {
 template <class T>
 class EXPORT_2D T2DConvoluteInterpolator: public T2DInterpolator<T> {
 public:
-	T2DConvoluteInterpolator(const T2DDatafield<T>& image, SHARED_PTR(CBSplineKernel) kernel);
+	T2DConvoluteInterpolator(const T2DDatafield<T>& image, std::shared_ptr<CBSplineKernel > kernel);
 	~T2DConvoluteInterpolator();
 	T  operator () (const C2DFVector& x) const;
 	T2DVector<T> derivative_at(const C2DFVector& x) const;
@@ -160,7 +160,7 @@ private:
 
 	TCoeff2D _M_coeff;
 	C2DBounds _M_size2;
-	SHARED_PTR(CBSplineKernel) _M_kernel;
+	std::shared_ptr<CBSplineKernel > _M_kernel;
 	T _M_min;
 	T _M_max;
 
@@ -174,7 +174,7 @@ class EXPORT_2D C2DInterpolatorFactory {
 public:
 	enum EType {ip_nn, ip_tri, ip_spline, ip_unknown};
 
-	C2DInterpolatorFactory(EType type, SHARED_PTR(CBSplineKernel) kernel);
+	C2DInterpolatorFactory(EType type, std::shared_ptr<CBSplineKernel > kernel);
 
 	C2DInterpolatorFactory(const C2DInterpolatorFactory& o);
 
@@ -189,9 +189,9 @@ public:
 
 private:
 	EType _M_type;
-	SHARED_PTR(CBSplineKernel) _M_kernel;
+	std::shared_ptr<CBSplineKernel > _M_kernel;
 };
-typedef SHARED_PTR(C2DInterpolatorFactory) P2DInterpolatorFactory;
+typedef std::shared_ptr<C2DInterpolatorFactory > P2DInterpolatorFactory;
 
 
 C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(int type);

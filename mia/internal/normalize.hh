@@ -110,10 +110,10 @@ struct FNormalizer: public TFilter<Image *>
 }; 
 
 template <class Image>
-SHARED_PTR(Image) normalize(const Image& image)
+std::shared_ptr<Image > normalize(const Image& image)
 {
 	FNormalizer<Image> n; 
-	return SHARED_PTR(Image)(mia::filter(n, image)); 
+	return std::shared_ptr<Image >(mia::filter(n, image)); 
 }
 
 NS_MIA_END

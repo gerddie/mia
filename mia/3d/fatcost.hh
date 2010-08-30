@@ -29,7 +29,7 @@
 NS_MIA_BEGIN
 
 class C3DImageFatCost;
-typedef SHARED_PTR(C3DImageFatCost) P3DImageFatCost;
+typedef std::shared_ptr<C3DImageFatCost > P3DImageFatCost;
 
 class EXPORT_3D C3DImageFatCost: public TFatCost<C3DTransformation, C3DFVectorfield> {
 public:

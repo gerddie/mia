@@ -49,7 +49,7 @@ template <typename T>
 class EXPORT_HANDLER TImageCreator:public CProductBase {
 public:
 	virtual ~TImageCreator(){}
-	virtual SHARED_PTR(T) operator () (const typename T::dimsize_type& size, EPixelType type) const = 0;
+	virtual std::shared_ptr<T > operator () (const typename T::dimsize_type& size, EPixelType type) const = 0;
 };
 
 

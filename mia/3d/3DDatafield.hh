@@ -53,7 +53,7 @@ NS_MIA_BEGIN
 template <class T>
 class  EXPORT_3D T3DDatafield {
 
-        typedef SHARED_PTR(std::vector<T> )  ref_data_type;
+        typedef std::shared_ptr<std::vector<T>  >  ref_data_type;
 
         /** Size of the field */
         C3DBounds  _M_size;

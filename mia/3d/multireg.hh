@@ -30,7 +30,7 @@
 
 NS_MIA_BEGIN
 
-typedef SHARED_PTR(C3DFVectorfield) P3DFVectorfield;
+typedef std::shared_ptr<C3DFVectorfield > P3DFVectorfield;
 /**
    The 3D non-rigid image registration class. Its usage is very simple:
    Initialise it with the desired parameters and call it with the

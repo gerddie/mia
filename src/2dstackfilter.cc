@@ -172,7 +172,7 @@ int main(int argc, const char *args[])
 			throw invalid_argument(string("no files match pattern ") + src_basename);
 
 
-		SHARED_PTR(C2DStackSaver)
+		std::shared_ptr<C2DStackSaver >
 			  endchain(new C2DStackSaver(out_filename, start_filenum, end_filenum, format_width,
 						     out_type, imageio, time(NULL)));
 

@@ -80,7 +80,7 @@ public:
 	}
 };
 
-typedef SHARED_PTR(FEvaluator) PEvaluator; 
+typedef std::shared_ptr<FEvaluator > PEvaluator; 
 
 class CFatGF2DImageCost : public C2DImageFatCost {
 public: 

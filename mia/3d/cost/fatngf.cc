@@ -104,7 +104,7 @@ private:
 	}
 };
 
-typedef SHARED_PTR(FEvaluator) PEvaluator;
+typedef std::shared_ptr<FEvaluator > PEvaluator;
 
 class CFatNFG3DImageCost : public C3DImageFatCost {
 public:

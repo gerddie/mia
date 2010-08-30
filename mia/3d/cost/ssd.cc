@@ -56,8 +56,8 @@ bool C3DSSDCostPlugin::do_test() const
 
 	C3DFImage *fsrc = new C3DFImage(C3DBounds(3,3,3), src_data );
 	C3DFImage *fref = new C3DFImage(C3DBounds(3,3,3), ref_data );
-	SHARED_PTR(C3DImage) src(fsrc);
-	SHARED_PTR(C3DImage) ref(fref);
+	std::shared_ptr<C3DImage > src(fsrc);
+	std::shared_ptr<C3DImage > ref(fref);
 
 	C3DSSDCost cost;
 	bool success = fabs(cost.value(*src, *ref) - 367.0 / 27.0)  < 0.001;

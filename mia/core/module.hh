@@ -66,7 +66,7 @@ private:
 	std::string m_name;
 };
 
-typedef SHARED_PTR(CPluginModule) PPluginModule;
+typedef std::shared_ptr<CPluginModule > PPluginModule;
 
 NS_MIA_END
 

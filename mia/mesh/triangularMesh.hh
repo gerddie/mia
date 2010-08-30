@@ -87,11 +87,11 @@ public:
 	typedef std::vector<C3DFVector>  CColorfield;
 	typedef std::vector<float>       CScalefield;
 
-	typedef SHARED_PTR(CTrianglefield) PTrianglefield;
-	typedef SHARED_PTR(CVertexfield) PVertexfield;
-	typedef SHARED_PTR(CNormalfield) PNormalfield;
-	typedef SHARED_PTR(CColorfield)  PColorfield;
-	typedef SHARED_PTR(CScalefield)  PScalefield;
+	typedef std::shared_ptr<CTrianglefield > PTrianglefield;
+	typedef std::shared_ptr<CVertexfield > PVertexfield;
+	typedef std::shared_ptr<CNormalfield > PNormalfield;
+	typedef std::shared_ptr<CColorfield >  PColorfield;
+	typedef std::shared_ptr<CScalefield >  PScalefield;
 
 	typedef CTrianglefield::value_type   triangle_type;
 	typedef CVertexfield::value_type     vertex_type;
@@ -267,7 +267,7 @@ private:
 	struct CTriangleMeshData * data;
 };
 
-typedef SHARED_PTR(CTriangleMesh) PTriangleMesh;
+typedef std::shared_ptr<CTriangleMesh > PTriangleMesh;
 
 /** This function is used to generate  the deformation scale of a mesh as the
     scalar product of the surface normal and a deformation field.

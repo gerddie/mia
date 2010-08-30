@@ -34,7 +34,7 @@ typedef TCost<C2DImage, C2DFVectorfield> C2DImageCost;
 typedef TFactory<C2DImageCost, C2DImage, cost_type> C2DImageCostPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C2DImageCostPlugin> > C2DImageCostPluginHandler;
 
-typedef SHARED_PTR(C2DImageCost) P2DImageCost;
+typedef std::shared_ptr<C2DImageCost > P2DImageCost;
 
 NS_MIA_END
 

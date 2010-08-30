@@ -55,7 +55,7 @@ struct C3DImageCollector : public TFilter<bool> {
 	bool operator ()(const T2DImage<T>& image) {
 
 		if (_M_image == 0)
-			_M_image = SHARED_PTR(C3DImage) (new T3DImage<T>(C3DBounds(image.get_size().x,
+			_M_image = std::shared_ptr<C3DImage > (new T3DImage<T>(C3DBounds(image.get_size().x,
 										  image.get_size().y,
 										  _M_slices)));
 
@@ -76,7 +76,7 @@ struct C3DImageCollector : public TFilter<bool> {
 		return true;
 	}
 
-	SHARED_PTR(C3DImage) result() const {
+	std::shared_ptr<C3DImage > result() const {
 		return _M_image;
 	}
 
@@ -84,7 +84,7 @@ private:
 	size_t _M_slices;
 	size_t _M_cur_slice;
 
-	SHARED_PTR(C3DImage) _M_image;
+	std::shared_ptr<C3DImage > _M_image;
 };
 
 /* Revision string */

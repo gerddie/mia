@@ -46,7 +46,7 @@ class EXPORT_CORE CParamList {
 public:
 
 	/// a shared pointer to a parameter to make handling easier
-	typedef SHARED_PTR(CParameter) PParameter;
+	typedef std::shared_ptr<CParameter > PParameter;
 
 	/**
 	   \param key

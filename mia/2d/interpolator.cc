@@ -44,7 +44,7 @@ C2DInterpolator::~C2DInterpolator()
 }
 
 
-C2DInterpolatorFactory::C2DInterpolatorFactory(EType type, SHARED_PTR(CBSplineKernel) kernel):
+C2DInterpolatorFactory::C2DInterpolatorFactory(EType type, std::shared_ptr<CBSplineKernel > kernel):
 	_M_type(type),
 	_M_kernel(kernel)
 {
@@ -75,7 +75,7 @@ const CBSplineKernel* C2DInterpolatorFactory::get_kernel() const
 
 C2DInterpolatorFactory *create_2dinterpolation_factory(int type)
 {
-	SHARED_PTR(CBSplineKernel) kernel;
+	std::shared_ptr<CBSplineKernel > kernel;
 	C2DInterpolatorFactory::EType iptype = C2DInterpolatorFactory::ip_spline;
 
 	switch (type) {

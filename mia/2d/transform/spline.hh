@@ -101,8 +101,8 @@ private:
 	mutable C2DFVector _M_scale;
 	mutable C2DFVector _M_inv_scale;
 	mutable bool _M_interpolator_valid;
-	mutable SHARED_PTR(T2DInterpolator<C2DFVector>)  _M_interpolator;
-	mutable SHARED_PTR(C2DPPDivcurlMatrix) _M_divcurl_matrix; 
+	mutable std::shared_ptr<T2DInterpolator<C2DFVector> >  _M_interpolator;
+	mutable std::shared_ptr<C2DPPDivcurlMatrix > _M_divcurl_matrix; 
 
 };
 

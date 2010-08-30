@@ -51,7 +51,7 @@ template <typename P, typename D, typename T>
 class EXPORT_HANDLER TFactory: public TPlugin<D,T> {
 public: 
 	typedef P Product; 
-	typedef SHARED_PTR(P) ProductPtr; 
+	typedef std::shared_ptr<P > ProductPtr; 
 	
 	/** initialise the plugin by the names 
 	    \remark what are these names and types good for?

@@ -42,7 +42,7 @@ class EXPORT_HANDLER TIOPluginHandler: public TPluginHandler<I> {
 public:
 
 	typedef typename I::Data Data; 
-	typedef typename SHARED_PTR(Data) PData; 
+	typedef typename std::shared_ptr<Data > PData; 
 	typedef typename TPluginHandler<I>::Interface Interface; 
 	typedef typename TPluginHandler<I>::const_iterator const_iterator; 
 	typedef std::multimap<std::string, std::string> CSuffixmap; 

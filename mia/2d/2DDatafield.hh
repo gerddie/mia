@@ -56,7 +56,7 @@ class EXPORT_2DDATAFIELD T2DDatafield  {
 
 public:
 	typedef  ::std::vector<T> data_array;
-	typedef  SHARED_PTR(data_array) data_pointer;
+	typedef  std::shared_ptr<data_array > data_pointer;
 
 	/// a shortcut data type
 	typedef typename data_array::iterator iterator;

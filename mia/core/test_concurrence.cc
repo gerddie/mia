@@ -81,13 +81,13 @@ BOOST_AUTO_TEST_CASE(  test_concurence )
 	PBarrier bar(new barrier(max_slaves));
 	PMessenger msg(new CMessenger(max_slaves));
 
-	std::vector< SHARED_PTR(CTestSlave) > slaves(max_slaves);
+	std::vector< std::shared_ptr<CTestSlave > > slaves(max_slaves);
 
 	thread_group threads;
 
 	for (size_t i = 0; i < max_slaves; ++i) {
 		cvdebug() << "Create slave " << i << "\n";
-		slaves[i] = SHARED_PTR(CTestSlave)(new CTestSlave(msg, bar,value, value_mutex,i));
+		slaves[i] = std::shared_ptr<CTestSlave >(new CTestSlave(msg, bar,value, value_mutex,i));
 		threads.create_thread(reference_wrapper<CTestSlave>(*slaves[i]));
 	}
 

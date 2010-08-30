@@ -170,7 +170,7 @@ private:
 	vector<CBuffer> m_field;
 	size_t m_n;
 	bool m_initialized;
-	SHARED_PTR(C1DFilterKernel) gauss;
+	std::shared_ptr<C1DFilterKernel > gauss;
 };
 
 

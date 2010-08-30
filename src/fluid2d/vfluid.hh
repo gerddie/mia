@@ -55,7 +55,7 @@ class TFluidReg {
 	C2DFImage Ref;
 	C2DFImage Model;
 	C2DFImage Template;
-	SHARED_PTR(T2DInterpolator<float>)  target_interp;
+	std::shared_ptr<T2DInterpolator<float> >  target_interp;
 
 
 	float min_stepsize;

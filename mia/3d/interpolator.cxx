@@ -184,7 +184,7 @@ struct min_max<T3DVector<T> > {
 
 
 template <typename T>
-T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& image, SHARED_PTR(CBSplineKernel)  kernel):
+T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& image, std::shared_ptr<CBSplineKernel >  kernel):
 	_M_coeff(image.get_size()), 
 	_M_size2(image.get_size() + image.get_size() - C3DBounds(2,2,2)),
 	_M_kernel(kernel),

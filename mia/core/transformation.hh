@@ -41,9 +41,9 @@ public:
 	typedef D Data; 
 	typedef I Interpolator; 
 	
-	SHARED_PTR(D) operator () (const D& input, const I& ipf) const; 
+	std::shared_ptr<D > operator () (const D& input, const I& ipf) const; 
 private: 
-        virtual SHARED_PTR(D) apply(const D& input, const I& ipf) const = 0;
+        virtual std::shared_ptr<D > apply(const D& input, const I& ipf) const = 0;
 
 }; 
 
@@ -55,7 +55,7 @@ Transformation<D, I>::~Transformation()
 }
 
 template <typename D, typename I>
-SHARED_PTR(D) Transformation<D,I>::operator() (const D& input, const I& ipf) const
+std::shared_ptr<D > Transformation<D,I>::operator() (const D& input, const I& ipf) const
 {
 	return apply(input, ipf); 
 }

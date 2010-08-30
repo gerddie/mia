@@ -26,7 +26,7 @@
 NS_MIA_BEGIN
 
 typedef TCost<C3DImage, C3DFVectorfield> C3DImageCost;
-typedef SHARED_PTR(C3DImageCost) P3DImageCost;
+typedef std::shared_ptr<C3DImageCost > P3DImageCost;
 typedef TFactory<C3DImageCost, C3DImage, cost_type> C3DImageCostPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin> > C3DImageCostPluginHandler;
 

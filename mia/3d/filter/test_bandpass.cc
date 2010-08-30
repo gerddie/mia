@@ -53,11 +53,11 @@ BOOST_AUTO_TEST_CASE( test_bandpass )
 	for (size_t i = 0; i < 24; ++i, ++f)
 		*f = src_data[i];
 
-	SHARED_PTR(C3DImage) srcw(src);
+	std::shared_ptr<C3DImage > srcw(src);
 
 	C3DImageBandPass filter(min, max);
 
-	SHARED_PTR(C3DImage) res = filter.filter(*srcw);
+	std::shared_ptr<C3DImage > res = filter.filter(*srcw);
 
 	BOOST_CHECK_EQUAL(res->get_pixel_type(), it_float);
 

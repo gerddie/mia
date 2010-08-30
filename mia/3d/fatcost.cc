@@ -47,7 +47,7 @@ P3DImageFatCost C3DImageFatCost::get_downscaled(const C3DBounds& scale) const
 {
 	stringstream downscalerstr;
 	downscalerstr << "downscale:bx=" << scale.x << ",by=" << scale.y << ",bz=" << scale.z;
-	SHARED_PTR(C3DFilter) downscaler = C3DFilterPluginHandler::instance().produce(downscalerstr.str().c_str());
+	std::shared_ptr<C3DFilter > downscaler = C3DFilterPluginHandler::instance().produce(downscalerstr.str().c_str());
 
 	P3DImage src_scaled = downscaler->filter(get_src());
 	P3DImage ref_scaled = downscaler->filter(get_ref());

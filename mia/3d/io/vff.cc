@@ -348,13 +348,13 @@ CVFF3DImageIO::PData CVFF3DImageIO::do_load(string const&  filename)const
 	switch (header.m_pixel_type) {
 	case it_ubyte:{
 		C3DUBImage *image = new C3DUBImage(header.m_size);
-		SHARED_PTR(C3DImage) pimage(image);
+		std::shared_ptr<C3DImage > pimage(image);
 		if (load_image(*image, header.m_spacing, f))
 			result->push_back(pimage);
 	}break;
 	case it_sshort:{
 		C3DSSImage *image = new C3DSSImage(header.m_size);
-		SHARED_PTR(C3DImage) pimage(image);
+		std::shared_ptr<C3DImage > pimage(image);
 		if (load_image(*image, header.m_spacing, f)) {
 			if (low_endian())
 				handle_endian(image->begin(), image->end());

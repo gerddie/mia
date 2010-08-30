@@ -54,7 +54,7 @@ class EXPORT_HANDLER TFifoFilter  {
 public: 
 	
 	/// smart pointer representing this class 
-	typedef SHARED_PTR(TFifoFilter) Pointer; 
+	typedef std::shared_ptr<TFifoFilter > Pointer; 
 	
 	/**
 	  Constructor 
@@ -156,7 +156,7 @@ public:
 	typedef std::vector<T>               result_type; 
 
 	/// smart pointer representing this class 
-	typedef SHARED_PTR( TFifoFilterSink<T> )  Pointer;
+	typedef std::shared_ptr< TFifoFilterSink<T>  >  Pointer;
 
 	/**
 	 contructor, its implementation is required because  TFifoFilter doesn't 
@@ -176,8 +176,8 @@ private:
 
 template <typename T> 
 struct __copy_create_ptr {
-	static SHARED_PTR(T) apply (typename ::boost::call_traits<T>::param_type x){
-		return SHARED_PTR(T)(new T(x)); 
+	static std::shared_ptr<T > apply (typename ::boost::call_traits<T>::param_type x){
+		return std::shared_ptr<T >(new T(x)); 
 	}
 }; 
 

@@ -35,7 +35,7 @@ CInterpolator::~CInterpolator()
 {
 }
 
-C3DInterpolatorFactory::C3DInterpolatorFactory(EType type, SHARED_PTR(CBSplineKernel) kernel):
+C3DInterpolatorFactory::C3DInterpolatorFactory(EType type, std::shared_ptr<CBSplineKernel > kernel):
 	_M_type(type),
 	_M_kernel(kernel)
 {
@@ -62,7 +62,7 @@ C3DInterpolatorFactory::~C3DInterpolatorFactory()
 
 EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(int type)
 {
-	SHARED_PTR(CBSplineKernel) kernel;
+	std::shared_ptr<CBSplineKernel > kernel;
 	C3DInterpolatorFactory::EType iptype = C3DInterpolatorFactory::ip_spline;
 
 	switch (type) {

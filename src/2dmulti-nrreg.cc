@@ -79,7 +79,7 @@ int do_main(int argc, const char **args)
 		return EXIT_FAILURE;
 
 	
-	SHARED_PTR(C2DInterpolatorFactory) ipf(create_2dinterpolation_factory(interpolator)); 
+	std::shared_ptr<C2DInterpolatorFactory > ipf(create_2dinterpolation_factory(interpolator)); 
 	if (!ipf)
 		throw invalid_argument("unknown interpolator requested"); 
 

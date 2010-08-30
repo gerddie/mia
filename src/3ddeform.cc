@@ -36,7 +36,7 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
-typedef SHARED_PTR(C3DFVectorfield) P3DFVectorfield;
+typedef std::shared_ptr<C3DFVectorfield > P3DFVectorfield;
 
 
 int do_main(int argc, const char **args)
@@ -75,7 +75,7 @@ int do_main(int argc, const char **args)
 		return EXIT_FAILURE;
 	}
 
-	SHARED_PTR(C3DInterpolatorFactory) ipf(create_3dinterpolation_factory(interpolator));
+	std::shared_ptr<C3DInterpolatorFactory > ipf(create_3dinterpolation_factory(interpolator));
 
 	FDeformer3D deformer(*transformation,*ipf);
 

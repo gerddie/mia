@@ -30,7 +30,7 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
-typedef SHARED_PTR(C2DFVectorfield) P2DFVectorfield;
+typedef std::shared_ptr<C2DFVectorfield > P2DFVectorfield;
 
 
 int do_main(int argc, const char **args)
@@ -67,7 +67,7 @@ int do_main(int argc, const char **args)
 		return EXIT_FAILURE;
 	}
 
-	SHARED_PTR(C2DInterpolatorFactory) ipf(create_2dinterpolation_factory(interpolator));
+	std::shared_ptr<C2DInterpolatorFactory > ipf(create_2dinterpolation_factory(interpolator));
 
 	FDeformer2D deformer(*transformation,*ipf);
 

@@ -31,7 +31,7 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
-class CCopyFilter: public TFilter<SHARED_PTR(C3DImage> ) {
+class CCopyFilter: public TFilter<std::shared_ptr<C3DImage>  > {
 public:
 
 	template <typename T>
@@ -47,11 +47,11 @@ static void creat_and_check(EPixelType type)
 	const T init_data[8] = {0,  1,  0,  1, 0,  1,  0,  1 };
 
 	T3DImage<T> *timg = new T3DImage<T>(C3DBounds(2,2, 2), init_data);
-	SHARED_PTR(C3DImage) image(timg);
+	std::shared_ptr<C3DImage > image(timg);
 	BOOST_CHECK(image->get_pixel_type() == type);
 
 	CCopyFilter copy_filter;
-	SHARED_PTR(C3DImage) result = filter(copy_filter, *image);
+	std::shared_ptr<C3DImage > result = filter(copy_filter, *image);
 
 	BOOST_CHECK(result->get_pixel_type() == type);
 
@@ -114,7 +114,7 @@ static void check_gradient()
 
 	C3DBounds size(4,4,4);
 	C3DFImage *image = new C3DFImage(size, init_data);
-	SHARED_PTR(C3DImage) pimage(image);
+	std::shared_ptr<C3DImage > pimage(image);
 
 	C3DFVectorfield gradient = get_gradient(*pimage);
 

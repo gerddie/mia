@@ -53,7 +53,7 @@ class EXPORT_HANDLER TIOPlugin: public TPlugin<D, io_plugin_type> {
 
 public:
 	typedef  typename D::type Data;
-	typedef  typename SHARED_PTR(Data) PData;
+	typedef  typename std::shared_ptr<Data > PData;
 	typedef  std::set<EPixelType> PixelTypeSet;
 
 	/**

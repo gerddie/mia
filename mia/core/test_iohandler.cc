@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(  test_datapool_io )
 
 	BOOST_CHECK(handler.save("datapool", "testdummy.datapool", data));
 	try {
-		SHARED_PTR(CDummyType) value = handler.load("testdummy.datapool");
+		std::shared_ptr<CDummyType > value = handler.load("testdummy.datapool");
 	}
 	catch (std::exception& x) {
 		BOOST_FAIL(x.what());

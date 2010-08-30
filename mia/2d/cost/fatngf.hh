@@ -67,7 +67,7 @@ private:
 };
 
 
-typedef SHARED_PTR(CCostEvaluator) PEvaluator;
+typedef std::shared_ptr<CCostEvaluator > PEvaluator;
 
 class CFatNFG2DImageCost : public mia::C2DImageFatCost {
 public:

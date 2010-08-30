@@ -62,7 +62,7 @@ private:
 };
 
 
-typedef SHARED_PTR(C2DRegTimeStep) P2DRegTimeStep;
+typedef std::shared_ptr<C2DRegTimeStep > P2DRegTimeStep;
 
 class EXPORT_2D C2DRegTimeStepPlugin : public TFactory<C2DRegTimeStep, C2DImage, timestep_type>
 {

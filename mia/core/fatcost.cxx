@@ -25,8 +25,8 @@
 
 NS_MIA_BEGIN
 template <typename T, typename F>
-TFatCost<T,F>::TFatCost(SHARED_PTR(Data) src, SHARED_PTR(Data) ref, 
-			SHARED_PTR(Interpolator)  ipf, float weight):
+TFatCost<T,F>::TFatCost(std::shared_ptr<Data > src, std::shared_ptr<Data > ref, 
+			std::shared_ptr<Interpolator >  ipf, float weight):
 	_M_src(src), 
 	_M_ref(ref), 
 	_M_ipf(ipf), 

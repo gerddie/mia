@@ -118,7 +118,7 @@ const std::string CTriangleMesh::get_type_description()
 
 
 template <typename T>
-void ensure_single_refered(SHARED_PTR(T)& data)
+void ensure_single_refered(std::shared_ptr<T >& data)
 {
 	if (!data.unique())
 		data.reset(new T(*data));

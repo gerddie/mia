@@ -81,7 +81,7 @@ CEXR2DVFIOPlugin::PData  CEXR2DVFIOPlugin::do_load(const string& filename) const
 		const ChannelList& channels = file.header().channels();
 		FrameBuffer frameBuffer;
 
-		SHARED_PTR(C2DIOVectorfield) vf(new C2DIOVectorfield(size));
+		std::shared_ptr<C2DIOVectorfield > vf(new C2DIOVectorfield(size));
 
 		for (ChannelList::ConstIterator i = channels.begin(); i != channels.end(); ++i) {
 

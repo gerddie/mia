@@ -46,7 +46,7 @@ using namespace mia;
 
 
 typedef TFifoFilter<char> CCharFifoFilter;
-typedef SHARED_PTR(TFifoFilter<char>)  PCharFifoFilter;
+typedef std::shared_ptr<TFifoFilter<char> >  PCharFifoFilter;
 
 class CCharFifoFilterSink : public CCharFifoFilter {
 public:
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE( test_sink_mechanics )
 }
 
 typedef TFifoFilter<int> CIntFifoFilter;
-typedef SHARED_PTR(TFifoFilter<int>)  PIntFifoFilter;
+typedef std::shared_ptr<TFifoFilter<int> >  PIntFifoFilter;
 typedef TFifoFilterSink<int> CIntFifoFilterSink;
 
 class CAddSomeFifoFilter : public CIntFifoFilter {

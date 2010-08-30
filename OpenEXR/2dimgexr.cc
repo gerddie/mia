@@ -80,7 +80,7 @@ CEXR2DImageIOPlugin::PData  CEXR2DImageIOPlugin::do_load(const string& filename)
 		const ChannelList& channels = file.header().channels();
 		FrameBuffer frameBuffer;
 
-		SHARED_PTR(C2DImageVector) result(new C2DImageVector);
+		std::shared_ptr<C2DImageVector > result(new C2DImageVector);
 
 		for (ChannelList::ConstIterator i = channels.begin(); i != channels.end(); ++i) {
 
@@ -89,13 +89,13 @@ CEXR2DImageIOPlugin::PData  CEXR2DImageIOPlugin::do_load(const string& filename)
 			cvdebug() << "channel '"<< i.name() <<"' of type " << channel.type << "\n";
 			switch (channel.type) {
 			case UINT: {
-				SHARED_PTR(C2DUIImage) img(new C2DUIImage(size));
+				std::shared_ptr<C2DUIImage > img(new C2DUIImage(size));
 				frameBuffer.insert ("Y", Slice(UINT, (char*)(&(*img)(0,0) - (dx + size.x * dy)),
 							       4, 4 * size.x, 1, 1, 0.0));
 				result->push_back(img);
 			}break;
 			case FLOAT: {
-				SHARED_PTR(C2DFImage) img(new C2DFImage(size));
+				std::shared_ptr<C2DFImage > img(new C2DFImage(size));
 				frameBuffer.insert ("Y", Slice(FLOAT, (char*)(&(*img)(0,0) - (dx + size.x * dy)),
 							       4, 4 * size.x, 1, 1, 0.0));
 				result->push_back(img);

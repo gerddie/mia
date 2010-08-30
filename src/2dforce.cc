@@ -33,7 +33,7 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
-typedef SHARED_PTR(C2DFVectorfield) P2DFVectorfield;
+typedef std::shared_ptr<C2DFVectorfield > P2DFVectorfield;
 
 struct FVectorNorm {
 

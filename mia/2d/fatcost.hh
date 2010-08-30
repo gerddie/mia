@@ -34,7 +34,7 @@
 NS_MIA_BEGIN
 
 class C2DImageFatCost;
-typedef SHARED_PTR(C2DImageFatCost) P2DImageFatCost;
+typedef std::shared_ptr<C2DImageFatCost > P2DImageFatCost;
 
 class EXPORT_2D C2DImageFatCost: public TFatCost<C2DTransformation, C2DFVectorfield> {
 public:

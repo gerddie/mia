@@ -55,7 +55,7 @@ struct TransformSplineFixtureFieldBase {
 	P2DInterpolatorFactory ipf;
 	C2DBounds field_range;
 	double h;
-	SHARED_PTR(T2DInterpolator<C2DFVector> ) source; 
+	std::shared_ptr<T2DInterpolator<C2DFVector>  > source; 
 protected:
 	virtual float fx(float x, float y) = 0;
 	virtual float fy(float x, float y) = 0;

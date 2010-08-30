@@ -69,7 +69,7 @@ protected:
 	float _M_max;
 };
 
-typedef SHARED_PTR(C3DRegTimeStep) P3DRegTimeStep;
+typedef std::shared_ptr<C3DRegTimeStep > P3DRegTimeStep;
 typedef THandlerSingleton<TFactoryPluginHandler<C3DRegTimeStepPlugin> > C3DRegTimeStepPluginHandler;
 
 NS_MIA_END

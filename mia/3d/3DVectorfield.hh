@@ -45,7 +45,7 @@ public:
 
 typedef T3DVectorfield<C3DFVector>  C3DFVectorfield;
 typedef T3DVectorfield<C3DDVector>  C3DDVectorfield;
-typedef SHARED_PTR(C3DFVectorfield) P3DFVectorfield;
+typedef std::shared_ptr<C3DFVectorfield > P3DFVectorfield;
 
 EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& a, const C3DFVectorfield& b);
 

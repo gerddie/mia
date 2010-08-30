@@ -96,7 +96,7 @@ CDownscale::result_type CDownscale::operator () (const T3DImage<T>& src) const
 
 CDownscale::result_type CDownscale::do_filter(const C3DImage& image) const
 {
-	SHARED_PTR(C3DImage) smooth_image = _M_smoothing->filter(image);
+	std::shared_ptr<C3DImage > smooth_image = _M_smoothing->filter(image);
 	return mia::filter(*this, *smooth_image);
 }
 

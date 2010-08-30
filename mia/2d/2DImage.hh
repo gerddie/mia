@@ -52,7 +52,7 @@ public:
 
         /// a definition of the image dimension type for
 	typedef C2DBounds dimsize_type;
-	typedef SHARED_PTR(C2DImage) Pointer;
+	typedef std::shared_ptr<C2DImage > Pointer;
 
         virtual  ~C2DImage();
 

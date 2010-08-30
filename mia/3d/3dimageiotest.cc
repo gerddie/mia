@@ -82,7 +82,7 @@ static bool is_equal(const C3DImage& a, const C3DImage& b)
 
 
 template <typename T>
-static SHARED_PTR(C3DImage) create_image()
+static std::shared_ptr<C3DImage > create_image()
 {
 	const T med = numeric_limits<T>::max() / 2;
 
@@ -93,11 +93,11 @@ static SHARED_PTR(C3DImage) create_image()
 	r->set_voxel_size(C3DFVector(2.0,1.0,0.5));
 	r->set_attribute("some", PAttribute(new TAttribute<string>("some text")));
 
-	return  SHARED_PTR(C3DImage) (r);
+	return  std::shared_ptr<C3DImage > (r);
 }
 
 template <>
-SHARED_PTR(C3DImage) create_image<bool>()
+std::shared_ptr<C3DImage > create_image<bool>()
 {
 	C3DBitImage *r = new C3DBitImage(C3DBounds(3,5,8));
 	for(C3DBitImage::iterator i = r->begin(); i != r->end(); ++i)
@@ -110,10 +110,10 @@ SHARED_PTR(C3DImage) create_image<bool>()
 	r->set_voxel_size(C3DFVector(2.0,1.0,0.5));
 	r->set_attribute("some", PAttribute(new TAttribute<string>("some other text")));
 
-	return  SHARED_PTR(C3DImage) (r);
+	return  std::shared_ptr<C3DImage > (r);
 }
 
-static SHARED_PTR(C3DImage) create_image_of_type(EPixelType type)
+static std::shared_ptr<C3DImage > create_image_of_type(EPixelType type)
 {
 	switch (type) {
 	case it_bit:    return create_image<bool>();
@@ -131,7 +131,7 @@ static SHARED_PTR(C3DImage) create_image_of_type(EPixelType type)
 	case it_double: return create_image<double>();
 	default:
 		cvfail() << "IO plugin supports more types then we know of\n";
-		return SHARED_PTR(C3DImage) ();
+		return std::shared_ptr<C3DImage > ();
 	}
 }
 
@@ -186,7 +186,7 @@ static void check_save_load(const C3DImageVector& images, const C3DImageIOPlugin
 	// clear the history
 	CHistory::instance().clear();
 
-	SHARED_PTR(C3DImageVector) reread(imgio.load(tmp_name.c_str()));
+	std::shared_ptr<C3DImageVector > reread(imgio.load(tmp_name.c_str()));
 
 	BOOST_REQUIRE(reread.get());
 

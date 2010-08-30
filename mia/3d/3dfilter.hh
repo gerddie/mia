@@ -53,7 +53,7 @@ private:
 };
 
 typedef TFactory<C3DImageCombiner, C3DImage, combiner_type> C3DImageCombinerPlugin;
-typedef SHARED_PTR(C3DImageCombiner) P3DImageCombiner;
+typedef std::shared_ptr<C3DImageCombiner > P3DImageCombiner;
 typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCombinerPlugin> > C3DImageCombinerPluginHandler;
 
 

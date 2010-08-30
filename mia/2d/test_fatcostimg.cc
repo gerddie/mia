@@ -59,7 +59,7 @@ private:
 	virtual P2DImageFatCost cloned(P2DImage src, P2DImage ref, float weight)const; 
 }; 
 
-typedef SHARED_PTR(CTest2DFatCost) PTest2DFatCost; 
+typedef std::shared_ptr<CTest2DFatCost > PTest2DFatCost; 
 
 
 CTest2DFatCost::CTest2DFatCost(const P2DImage& src, const P2DImage& ref, float w):

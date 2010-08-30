@@ -47,7 +47,7 @@ protected:
 public:
 	static const char *type_descr;
 	typedef C3DBounds dimsize_type;
-	typedef SHARED_PTR(C3DImage) Pointer;
+	typedef std::shared_ptr<C3DImage > Pointer;
 
 	virtual  ~C3DImage();
 

@@ -66,7 +66,7 @@ void CPNG2DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
 }
 
 template <typename T>
-SHARED_PTR(T2DImage<T> ) read_image(int width, int height, const png_bytep *data, size_t row_length, const CAttributedData& attributes)
+std::shared_ptr<T2DImage<T>  > read_image(int width, int height, const png_bytep *data, size_t row_length, const CAttributedData& attributes)
 {
 	cvdebug() << "copy loaded data\n";
 	T2DImage<T> *result = new T2DImage<T>(C2DBounds(width, height), attributes);
@@ -79,11 +79,11 @@ SHARED_PTR(T2DImage<T> ) read_image(int width, int height, const png_bytep *data
 	for (int i = 0; i < height; ++i) {
 		memcpy(&*result->begin_at(0,i), data[i], row_length);
 	}
-	return SHARED_PTR(T2DImage<T> ) (result);
+	return std::shared_ptr<T2DImage<T>  > (result);
 }
 
 template <>
-SHARED_PTR(T2DImage<bool> ) read_image(int width, int height, const png_bytep *data, size_t row_length, const CAttributedData& attributes)
+std::shared_ptr<T2DImage<bool>  > read_image(int width, int height, const png_bytep *data, size_t row_length, const CAttributedData& attributes)
 {
 	cvdebug() << "copy loaded data\n";
 	T2DImage<bool> *result = new T2DImage<bool>(C2DBounds(width, height), attributes);
@@ -96,7 +96,7 @@ SHARED_PTR(T2DImage<bool> ) read_image(int width, int height, const png_bytep *d
 	for (int i = 0; i < height; ++i) {
 		copy(data[i], data[i] + row_length, result->begin_at(0,i));
 	}
-	return SHARED_PTR(T2DImage<bool> ) (result);
+	return std::shared_ptr<T2DImage<bool>  > (result);
 }
 
 CPNG2DImageIOPlugin::PData  CPNG2DImageIOPlugin::do_load(const string& fname) const
@@ -209,7 +209,7 @@ CPNG2DImageIOPlugin::PData  CPNG2DImageIOPlugin::do_load(const string& fname) co
 	png_read_end(png_ptr, info_ptr);
 	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 
-	SHARED_PTR(C2DImageVector) result(new C2DImageVector);
+	std::shared_ptr<C2DImageVector > result(new C2DImageVector);
 
 	switch (bit_depth) {
 	case 1:  result->push_back(read_image<bool>(width, height, row_pointers.get(), row_length, attributes));

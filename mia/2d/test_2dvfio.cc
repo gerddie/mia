@@ -53,7 +53,7 @@ static void check_save_load(const C2DIOVectorfield& vf, const C2DVFIOPluginHandl
 	
 	cvdebug() << format << "saved" << std::endl;
 	
-	SHARED_PTR(C2DIOVectorfield) reread(vfio.load(tmp_name.c_str()));
+	std::shared_ptr<C2DIOVectorfield > reread(vfio.load(tmp_name.c_str()));
 	
 	BOOST_REQUIRE(reread.get()); 
         cvdebug() << vf.size() << " vs. " << reread->size() << "\n"; 

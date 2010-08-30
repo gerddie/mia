@@ -67,7 +67,7 @@ private:
 	std::set<std::string> _M_properties;
 };
 
-typedef SHARED_PTR(C2DTransformCreator) P2DTransformationFactory;
+typedef std::shared_ptr<C2DTransformCreator > P2DTransformationFactory;
 typedef TFactory<C2DTransformCreator, C2DImage, C2DTransformation> C2DTransformCreatorPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin> > C2DTransformCreatorHandler;
 FACTORY_TRAIT(C2DTransformCreatorHandler); 

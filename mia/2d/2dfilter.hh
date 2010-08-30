@@ -34,10 +34,10 @@ NS_MIA_BEGIN
 typedef TImageFilter<C2DImage> C2DFilter;
 typedef TImageFilterPlugin<C2DImage> C2DFilterPlugin;
 
-typedef SHARED_PTR(C2DFilter) P2DFilter;
+typedef std::shared_ptr<C2DFilter > P2DFilter;
 
 
-class EXPORT_2D C2DImageCombiner : public TFilter< SHARED_PTR( ::boost::any ) > ,
+class EXPORT_2D C2DImageCombiner : public TFilter< std::shared_ptr< ::boost::any  > > ,
 				   public CProductBase {
  public:
 	virtual ~C2DImageCombiner();

@@ -64,8 +64,8 @@ public:
 
 	 */
 
-	TFatCost(SHARED_PTR(Data) src, SHARED_PTR(Data) ref,
-		 SHARED_PTR(Interpolator) ipf, float weight = 1.0);
+	TFatCost(std::shared_ptr<Data > src, std::shared_ptr<Data > ref,
+		 std::shared_ptr<Interpolator > ipf, float weight = 1.0);
 
 	/// ensure virtual destruction, since we have virtual functions
 	virtual ~TFatCost();
@@ -99,7 +99,7 @@ public:
 		return *_M_floating;
 	}
 
-	SHARED_PTR(Interpolator) get_ipf() const {
+	std::shared_ptr<Interpolator > get_ipf() const {
 		return _M_ipf;
 	}
 	float get_weight() const {
@@ -109,10 +109,10 @@ private:
 	virtual double do_value() const = 0;
 	virtual double do_evaluate_force(Force& force) const = 0;
 
-	const SHARED_PTR(Data)  _M_src;
-	const SHARED_PTR(Data)  _M_ref;
-	SHARED_PTR(Interpolator) _M_ipf;
-	SHARED_PTR(Data) _M_floating;
+	const std::shared_ptr<Data >  _M_src;
+	const std::shared_ptr<Data >  _M_ref;
+	std::shared_ptr<Interpolator > _M_ipf;
+	std::shared_ptr<Data > _M_floating;
 	float _M_weight;
 	mutable double _M_cost;
 	mutable bool _M_cost_valid;

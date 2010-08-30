@@ -30,7 +30,7 @@ NS_MIA_BEGIN
 
 
 class C3DTransformation;
-typedef SHARED_PTR(C3DTransformation) P3DTransformation;
+typedef std::shared_ptr<C3DTransformation > P3DTransformation;
 
 /**
    Base class for 3D transformation

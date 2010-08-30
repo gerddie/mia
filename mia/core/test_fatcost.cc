@@ -62,7 +62,7 @@ float operator * (float f, const TestInt& ti)
 	return f * ti.value;
 }
 
-typedef SHARED_PTR(TestInt) PTestInt;
+typedef std::shared_ptr<TestInt > PTestInt;
 
 class TestTransformation: public Transformation<TestInt, TestInt> {
         virtual PTestInt apply(const TestInt& input, const TestInt& /*dummy*/) const {

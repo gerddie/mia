@@ -29,7 +29,7 @@
 
 NS_MIA_BEGIN
 
-typedef SHARED_PTR( C3DFVectorfield) P3DFVectorfield;
+typedef std::shared_ptr< C3DFVectorfield > P3DFVectorfield;
 
 /**
    The 3D non-rigid image registration class. Its usage is very simple:
@@ -38,7 +38,7 @@ typedef SHARED_PTR( C3DFVectorfield) P3DFVectorfield;
    describing the registration.
 */
 
-typedef SHARED_PTR(C3DImageCost) P3DImageCost;
+typedef std::shared_ptr<C3DImageCost > P3DImageCost;
 
 class EXPORT_3D C3DImageRegister {
 public:
@@ -82,7 +82,7 @@ private:
 	size_t _M_mnum;
 };
 
-typedef SHARED_PTR(C3DRegModel) P3DRegModel;
+typedef std::shared_ptr<C3DRegModel > P3DRegModel;
 
 NS_MIA_END
 

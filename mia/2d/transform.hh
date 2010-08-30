@@ -39,7 +39,7 @@ NS_MIA_BEGIN
 
 
 class C2DTransformation;
-typedef SHARED_PTR(C2DTransformation) P2DTransformation;
+typedef std::shared_ptr<C2DTransformation > P2DTransformation;
 
 /**
    This is the generic base class for 2D transformations.

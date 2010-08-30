@@ -187,7 +187,7 @@ P3DFVectorfield C3DImageRegister::operator () (const C3DImage& source, const C3D
 		C3DBounds block_size(1 << x_shift, 1 << y_shift, 1 << z_shift);
 		stringstream downscalerstr;
 		downscalerstr << "downscale:bx=" << (1 << x_shift) << ",by=" << (1 << x_shift) << ",bz=" << (1 << z_shift);
-		SHARED_PTR(C3DFilter) downscaler = fph.produce(downscalerstr.str().c_str());
+		std::shared_ptr<C3DFilter > downscaler = fph.produce(downscalerstr.str().c_str());
 
 		P3DImage src_scaled = downscaler->filter(source);
 		P3DImage ref_scaled = downscaler->filter(reference);

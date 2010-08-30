@@ -135,7 +135,7 @@ private:
 };
 
 /// a shared pointer definition of the Option
-typedef SHARED_PTR(CCmdOption) PCmdOption;
+typedef std::shared_ptr<CCmdOption > PCmdOption;
 
 
 /**

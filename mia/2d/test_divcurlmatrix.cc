@@ -47,7 +47,7 @@ struct TransformSplineFixtureFieldBase {
 				*i = C2DFVector( fx(sx, sy), fy(sx, sy));
 			}
 
-		SHARED_PTR(T2DInterpolator<C2DFVector> ) source(ipf->create(field));
+		std::shared_ptr<T2DInterpolator<C2DFVector>  > source(ipf->create(field));
 	}
 	C2DBounds size;
 	C2DFVectorfield field;

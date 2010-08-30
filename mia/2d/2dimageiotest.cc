@@ -77,7 +77,7 @@ static void check_save_load(const C2DImageVector& images, const Interface& imgio
 
 	cvdebug() << format << "saved" << std::endl;
 
-	SHARED_PTR(C2DImageVector) reread(imgio.load(tmp_name.c_str()));
+	std::shared_ptr<C2DImageVector > reread(imgio.load(tmp_name.c_str()));
 
 	BOOST_REQUIRE(reread.get());
 	cvdebug() << images.size() << " vs. " << reread->size() << "\n";

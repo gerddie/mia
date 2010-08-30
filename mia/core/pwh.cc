@@ -54,7 +54,7 @@ struct CParzenWindowHistogramImpl {
 	double derivative(double x) const; 
 
 	C1DSpacialKernelPlugin::ProductPtr kernel; 
-	SHARED_PTR(T1DConvoluteInterpolator<double>) interp; 
+	std::shared_ptr<T1DConvoluteInterpolator<double> > interp; 
 	double  range_low; 
 	double  range_high;  
 	double target_shift; 

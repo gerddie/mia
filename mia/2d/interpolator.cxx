@@ -170,7 +170,7 @@ struct __dispatch_copy<C2DFVectorfield, C2DDVectorfield > {
 
 
 template <typename T>
-T2DConvoluteInterpolator<T>::T2DConvoluteInterpolator(const T2DDatafield<T>& image, SHARED_PTR(CBSplineKernel)  kernel):
+T2DConvoluteInterpolator<T>::T2DConvoluteInterpolator(const T2DDatafield<T>& image, std::shared_ptr<CBSplineKernel >  kernel):
 	_M_coeff(image.get_size()), 
 	_M_size2(image.get_size() + image.get_size() - C2DBounds(2,2)),
 	_M_kernel(kernel),

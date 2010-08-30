@@ -384,14 +384,14 @@ CInria3DImageIOPlugin::PData CInria3DImageIOPlugin::do_load(const string&  filen
 		case  8: {
 			cvdebug() << " 8 bit \n";
 			C3DSBImage *image = new C3DSBImage(image_info.size);
-			SHARED_PTR(C3DImage) pimage(image);
+			std::shared_ptr<C3DImage > pimage(image);
 			if (load_image(*image, image_info.voxel, f))
 				result->push_back(pimage);
 		}break;
 		case 16:{
 			cvdebug() << " 16 bit \n";
 			C3DSSImage *image = new C3DSSImage(image_info.size);
-			SHARED_PTR(C3DImage) pimage(image);
+			std::shared_ptr<C3DImage > pimage(image);
 			if (load_image(*image, image_info.voxel, f)) {
 				handle_endian(*image, image_info.lowendian);
 				result->push_back(pimage);
@@ -400,7 +400,7 @@ CInria3DImageIOPlugin::PData CInria3DImageIOPlugin::do_load(const string&  filen
 		case 32: {
 			cvdebug() << " 32 bit \n";
 			C3DSIImage *image = new C3DSIImage(image_info.size);
-			SHARED_PTR(C3DImage) pimage(image);
+			std::shared_ptr<C3DImage > pimage(image);
 			if (load_image(*image, image_info.voxel, f)) {
 				handle_endian(*image, image_info.lowendian);
 				result->push_back(pimage);
@@ -415,14 +415,14 @@ CInria3DImageIOPlugin::PData CInria3DImageIOPlugin::do_load(const string&  filen
 		case  8: {
 			cvdebug() << " 8 bit \n";
 			C3DUBImage *image = new C3DUBImage(image_info.size);
-			SHARED_PTR(C3DImage) pimage(image);
+			std::shared_ptr<C3DImage > pimage(image);
 			if (load_image(*image, image_info.voxel, f))
 				result->push_back(pimage);
 		}break;
 		case 16:{
 			cvdebug() << " 16 bit \n";
 			C3DUSImage *image = new C3DUSImage(image_info.size);
-			SHARED_PTR(C3DImage) pimage(image);
+			std::shared_ptr<C3DImage > pimage(image);
 			if (load_image(*image, image_info.voxel, f)) {
 				handle_endian(*image, image_info.lowendian);
 				result->push_back(pimage);
@@ -431,7 +431,7 @@ CInria3DImageIOPlugin::PData CInria3DImageIOPlugin::do_load(const string&  filen
 		case 32: {
 			cvdebug() << " 32 bit \n";
 			C3DUIImage *image = new C3DUIImage(image_info.size);
-			SHARED_PTR(C3DImage) pimage(image);
+			std::shared_ptr<C3DImage > pimage(image);
 			if (load_image(*image, image_info.voxel, f)) {
 				handle_endian(*image, image_info.lowendian);
 				result->push_back(pimage);
@@ -445,7 +445,7 @@ CInria3DImageIOPlugin::PData CInria3DImageIOPlugin::do_load(const string&  filen
 		case 32: {
 			cvdebug() << "INRIA: load float \n";
 			C3DFImage *image = new C3DFImage(image_info.size);
-			SHARED_PTR(C3DImage) pimage(image);
+			std::shared_ptr<C3DImage > pimage(image);
 			if (load_image(*image, image_info.voxel, f)) {
 				handle_endian(*image, image_info.lowendian);
 				result->push_back(pimage);
@@ -455,7 +455,7 @@ CInria3DImageIOPlugin::PData CInria3DImageIOPlugin::do_load(const string&  filen
 		case 64:{
 			cvdebug() << "INRIA: load double \n";
 			C3DDImage *image = new C3DDImage(image_info.size);
-			SHARED_PTR(C3DImage) pimage(image);
+			std::shared_ptr<C3DImage > pimage(image);
 			if (load_image(*image, image_info.voxel, f)) {
 				handle_endian(*image, image_info.lowendian);
 				result->push_back(pimage);

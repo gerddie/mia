@@ -78,7 +78,7 @@ C1DInterpolatorFactory::~C1DInterpolatorFactory()
 
 C1DInterpolatorFactory *create_1dinterpolation_factory(EInterpolation type)
 {
-	SHARED_PTR(CBSplineKernel) kernel;
+	std::shared_ptr<CBSplineKernel > kernel;
 	C1DInterpolatorFactory::EType iptype = C1DInterpolatorFactory::ipt_spline;
 
 	switch (type) {

@@ -60,7 +60,7 @@ private:
 	struct CSlopeStatisticsImpl *impl;
 };
 
-typedef SHARED_PTR(CSlopeStatistics) PSlopeStatistics;
+typedef std::shared_ptr<CSlopeStatistics > PSlopeStatistics;
 NS_MIA_END
 
 #endif // mia_core_slopestatistics_hh

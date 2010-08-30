@@ -159,7 +159,7 @@ public:
 	enum EType {ipt_nn, ipt_linear, ipt_spline, ipt_unknown};
 
 	C1DInterpolatorFactory(EType type);
-	C1DInterpolatorFactory(EType type, SHARED_PTR(CBSplineKernel) kernel);
+	C1DInterpolatorFactory(EType type, std::shared_ptr<CBSplineKernel > kernel);
 
 	C1DInterpolatorFactory(const C1DInterpolatorFactory& o);
 
@@ -176,7 +176,7 @@ private:
 	EType _M_type;
 	PSplineKernel _M_kernel;
 };
-typedef SHARED_PTR(const C1DInterpolatorFactory) P1DInterpolatorFactory;
+typedef std::shared_ptr<const C1DInterpolatorFactory > P1DInterpolatorFactory;
 
 
 C1DInterpolatorFactory EXPORT_CORE  *create_1dinterpolation_factory(EInterpolation type);

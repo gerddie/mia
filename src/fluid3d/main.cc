@@ -246,9 +246,9 @@ int main(int argc, const char *argv[])
 		default:cverr() << "Unknown solver specified"<< endl; return -1;
 		}
 
-		SHARED_PTR(C3DInterpolatorFactory) ipf(create_3dinterpolation_factory(params.interp_type));
+		std::shared_ptr<C3DInterpolatorFactory > ipf(create_3dinterpolation_factory(params.interp_type));
 
-		SHARED_PTR(TLinEqnSolver) ensure_solver_delete(solver);
+		std::shared_ptr<TLinEqnSolver > ensure_solver_delete(solver);
 
 		g_start = Clock.get_seconds();
 

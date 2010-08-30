@@ -49,7 +49,7 @@ struct TransformSplineFixture {
 	TransformSplineFixture():
 		size(33,65),
 		ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
-					       SHARED_PTR(CBSplineKernel) (new CBSplineKernel3()))),
+					       std::shared_ptr<CBSplineKernel > (new CBSplineKernel3()))),
 		range(65, 129),
 		r(range.x - 1, range.y - 1),
 		stransf(range, ipf),
@@ -70,7 +70,7 @@ struct TransformSplineFixture {
 				*i = C2DFVector( fx(sx, sy), fy(sx, sy));
 			}
 
-		SHARED_PTR(T2DInterpolator<C2DFVector> ) source(ipf->create(field));
+		std::shared_ptr<T2DInterpolator<C2DFVector>  > source(ipf->create(field));
 
 		stransf.set_coefficients(field);
 		stransf.reinit();
@@ -463,7 +463,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_get_jacobian, TransformSplineFixture )
 BOOST_AUTO_TEST_CASE( test_spline_c_rate_create )
 {
 	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
-							      SHARED_PTR(CBSplineKernel) (new CBSplineKernel3())));
+							      std::shared_ptr<CBSplineKernel > (new CBSplineKernel3())));
 
 	C2DBounds size(20, 32);
 	C2DFVector c_rate(2.5, 3.2);
@@ -544,7 +544,7 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 	const C2DBounds size(10,9);
 	
 	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
-							      SHARED_PTR(CBSplineKernel) (new CBSplineKernel3())));
+							      std::shared_ptr<CBSplineKernel > (new CBSplineKernel3())));
 
 	C2DSplineTransformation trans(size, ipf);
 
@@ -634,7 +634,7 @@ struct TransformSplineFixtureFieldBase {
 		size(16,16),
 		field(size),
 		ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
-					       SHARED_PTR(CBSplineKernel) (new CBSplineKernel3()))),
+					       std::shared_ptr<CBSplineKernel > (new CBSplineKernel3()))),
 		range(16, 16),
 		stransf(range, ipf),
 		scale(1.0 / range.x, 1.0 / range.y)
@@ -652,7 +652,7 @@ struct TransformSplineFixtureFieldBase {
 					  << "]:(" << sx << "," << sy << ")=" << *i << "\n"; ;
 			}
 
-		SHARED_PTR(T2DInterpolator<C2DFVector> ) source(ipf->create(field));
+		std::shared_ptr<T2DInterpolator<C2DFVector>  > source(ipf->create(field));
 
 		stransf.set_coefficients(field);
 		stransf.reinit();

@@ -43,7 +43,7 @@ C2DImageCombiner::result_type C2DImageCombiner::combine( const C2DImage& a, cons
 
 double  EXPORT_2D distance(const C2DImage& a, const C2DImage& b,  const C2DImageCombiner& measure)
 {
-	SHARED_PTR(any) result = measure.combine(a,b);
+	std::shared_ptr<any > result = measure.combine(a,b);
 	return any_cast<double>(*result);
 }
 

@@ -40,7 +40,7 @@ struct FDeformer2D: public TFilter<P2DImage> {
 	P2DImage operator () (const T2DImage<T>& image) const {
 		T2DImage<T> *timage = new T2DImage<T>(image.get_size()); 
 
-		SHARED_PTR(T2DInterpolator<T>)  interp(_M_ipfac.create(image.data())); 
+		std::shared_ptr<T2DInterpolator<T> >  interp(_M_ipfac.create(image.data())); 
 
 		typename T2DImage<T>::iterator r = timage->begin(); 
 		C2DFVectorfield::const_iterator v = _M_vf.begin(); 
@@ -56,7 +56,7 @@ struct FDeformer2D: public TFilter<P2DImage> {
 	void operator () (const T2DImage<T>& image, T2DImage<T>& result) const {
 		assert(image.get_size() == result.get_size()); 
 
-		SHARED_PTR(T2DInterpolator<T>)  interp(_M_ipfac.create(image.data())); 
+		std::shared_ptr<T2DInterpolator<T> >  interp(_M_ipfac.create(image.data())); 
 
 		typename T2DImage<T>::iterator r = result.begin(); 
 		C2DFVectorfield::const_iterator v = _M_vf.begin(); 

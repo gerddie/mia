@@ -155,8 +155,8 @@ bool C2DSSDCostPlugin::do_test() const
 
 	C2DFImage *fsrc = new C2DFImage(C2DBounds(4,4), src_data ); 
 	C2DFImage *fref = new C2DFImage(C2DBounds(4,4), ref_data ); 
-	SHARED_PTR(C2DImage) src(fsrc); 
-	SHARED_PTR(C2DImage) ref(fref); 
+	std::shared_ptr<C2DImage > src(fsrc); 
+	std::shared_ptr<C2DImage > ref(fref); 
 
 	CSSDCost cost; 
 

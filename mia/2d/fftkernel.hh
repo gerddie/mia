@@ -69,7 +69,7 @@ private:
 	size_t _M_realsize_x;
 };
 
-typedef  SHARED_PTR(CFFT2DKernel) PFFT2DKernel;
+typedef  std::shared_ptr<CFFT2DKernel > PFFT2DKernel;
 
 
 typedef TFactory<CFFT2DKernel, fft2d_kernel_data, kernel_plugin_type> CFFT2DKernelPlugin;

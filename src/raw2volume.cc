@@ -98,11 +98,11 @@ void handle_endian(I b, I e)
 
 
 template <typename Image>
-SHARED_PTR(C3DImage) read_image_type(CInputFile& in_file, const C3DBounds& size, const C3DFVector& scale, bool big_endian)
+std::shared_ptr<C3DImage > read_image_type(CInputFile& in_file, const C3DBounds& size, const C3DFVector& scale, bool big_endian)
 {
 	typedef typename Image::value_type T;
 	Image *image = new Image(size);
-	SHARED_PTR(C3DImage) result(image);
+	std::shared_ptr<C3DImage > result(image);
 	if (!image) {
 		stringstream errmsg;
 		errmsg << "Unable to allocate image of size " << size;
@@ -121,7 +121,7 @@ SHARED_PTR(C3DImage) read_image_type(CInputFile& in_file, const C3DBounds& size,
 	return result;
 }
 
-SHARED_PTR(C3DImage) read_image(CInputFile& in_file, int pixel_type, const C3DBounds& size, const C3DFVector& scale, bool high_endian)
+std::shared_ptr<C3DImage > read_image(CInputFile& in_file, int pixel_type, const C3DBounds& size, const C3DFVector& scale, bool high_endian)
 {
 	switch (pixel_type) {
 	case it_ubyte: return read_image_type<C3DUBImage>(in_file, size, scale, high_endian);

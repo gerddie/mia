@@ -118,7 +118,7 @@ void CICAAnalysis::run_auto(int nica, int min_ica, float corr_thresh)
 	TRACE_FUNCTION;
 	assert(impl);
 
-	SHARED_PTR(itpp::Fast_ICA) fastICA( new itpp::Fast_ICA(impl->m_Signal));
+	std::shared_ptr<itpp::Fast_ICA > fastICA( new itpp::Fast_ICA(impl->m_Signal));
 
 	float corr = 1.0;
 	do {

@@ -32,7 +32,7 @@
 NS_MIA_BEGIN
 
 typedef TRegModel<C2DFVectorfield, C2DFVectorfield> C2DRegModel;
-typedef SHARED_PTR(C2DRegModel) P2DRegModel;
+typedef std::shared_ptr<C2DRegModel > P2DRegModel;
 typedef TFactory<C2DRegModel, C2DImage, regmodel_type>  C2DRegModelPlugin;
 typedef THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin> > C2DRegModelPluginHandler;
 

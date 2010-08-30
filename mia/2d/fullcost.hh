@@ -80,7 +80,7 @@ private:
 	C2DBounds _M_current_size; 
 
 }; 
-typedef SHARED_PTR(C2DFullCost) P2DFullCost;
+typedef std::shared_ptr<C2DFullCost > P2DFullCost;
 
 
 class C2DFullCostPlugin: public TFactory<C2DFullCost, C2DFullCost, C2DFullCost> {

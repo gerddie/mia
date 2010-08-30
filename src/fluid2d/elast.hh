@@ -50,7 +50,7 @@ class TElastReg {
 	const C2DFImage& Model;
 	C2DFImage Template;
 	C2DFImage Target;
-	SHARED_PTR(T2DInterpolator<float>)  target_interp;
+	std::shared_ptr<T2DInterpolator<float> >  target_interp;
 	float min_stepsize;
 	C2DBounds Start,End;
 

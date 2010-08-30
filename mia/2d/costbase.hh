@@ -54,6 +54,6 @@ private:
 
 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DCostBasePlugin> > C2DCostBasePluginHandler;
-typedef SHARED_PTR(C2DCostBase) P2DCostBase;
+typedef std::shared_ptr<C2DCostBase > P2DCostBase;
 
 NS_MIA_END

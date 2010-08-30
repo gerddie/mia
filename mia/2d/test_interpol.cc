@@ -65,7 +65,7 @@ void test_direct_interpolator(const T2DDatafield<T>& data)
 
 
 template <class T>
-void test_conv_interpolator(const T2DDatafield<T>& data, SHARED_PTR(CBSplineKernel) kernel)
+void test_conv_interpolator(const T2DDatafield<T>& data, std::shared_ptr<CBSplineKernel > kernel)
 {
 	T2DConvoluteInterpolator<T>  src(data, kernel);
 	test_interpolator(data, src);
@@ -138,7 +138,7 @@ void test_deformadd()
 	C2DUSImage *fimage = new C2DUSImage(size);
 	P2DImage image(fimage);
 
-	SHARED_PTR(C2DInterpolatorFactory) ipf(create_2dinterpolation_factory(ip_linear));
+	std::shared_ptr<C2DInterpolatorFactory > ipf(create_2dinterpolation_factory(ip_linear));
 
 	C2DFVectorfield A(size);
 	C2DFVectorfield B(size);
@@ -220,37 +220,37 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateBiLin_type, T, test_types )
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateBSpline2_type, T, test_types )
 {
 	T2DDatafield<T> data = create_data<T>();
-	test_conv_interpolator<T>(data, SHARED_PTR(CBSplineKernel) (new CBSplineKernel2()));
+	test_conv_interpolator<T>(data, std::shared_ptr<CBSplineKernel > (new CBSplineKernel2()));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateBSpline3_type, T, test_types )
 {
 	T2DDatafield<T> data = create_data<T>();
-	test_conv_interpolator<T>(data, SHARED_PTR(CBSplineKernel) (new CBSplineKernel3()));
+	test_conv_interpolator<T>(data, std::shared_ptr<CBSplineKernel > (new CBSplineKernel3()));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateBSpline4_type, T, test_types )
 {
 	T2DDatafield<T> data = create_data<T>();
-	test_conv_interpolator<T>(data, SHARED_PTR(CBSplineKernel) (new CBSplineKernel4()));
+	test_conv_interpolator<T>(data, std::shared_ptr<CBSplineKernel > (new CBSplineKernel4()));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateBSpline5_type, T, test_types )
 {
 	T2DDatafield<T> data = create_data<T>();
-	test_conv_interpolator<T>(data, SHARED_PTR(CBSplineKernel) (new CBSplineKernel5()));
+	test_conv_interpolator<T>(data, std::shared_ptr<CBSplineKernel > (new CBSplineKernel5()));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateOMoms3_type, T, test_types )
 {
 	T2DDatafield<T> data = create_data<T>();
-	test_conv_interpolator<T>(data, SHARED_PTR(CBSplineKernel) (new CBSplineKernelOMoms3()));
+	test_conv_interpolator<T>(data, std::shared_ptr<CBSplineKernel > (new CBSplineKernelOMoms3()));
 }
 
 struct CheckIPFKernelFixture {
 	template <class Kernel>
 	void check(EInterpolation type, bool has_kernel)  {
-		SHARED_PTR(C2DInterpolatorFactory) ipf(create_2dinterpolation_factory(type));
+		std::shared_ptr<C2DInterpolatorFactory > ipf(create_2dinterpolation_factory(type));
 		if (has_kernel)
 			BOOST_CHECK(dynamic_cast<const Kernel*>(ipf->get_kernel()));
 		else

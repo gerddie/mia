@@ -65,9 +65,9 @@ struct TFilter {
 
 
 template <class D>
-class EXPORT_HANDLER TImageFilter: public TFilter< SHARED_PTR(D) >, public CProductBase {
+class EXPORT_HANDLER TImageFilter: public TFilter< std::shared_ptr<D > >, public CProductBase {
 public:
-	typedef typename TFilter< SHARED_PTR(D) >::result_type result_type;
+	typedef typename TFilter< std::shared_ptr<D > >::result_type result_type;
 	virtual ~TImageFilter();
 	result_type filter(const D& image) const;
 private:
