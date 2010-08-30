@@ -36,13 +36,43 @@ namespace xmlpp {
 
 NS_MIA_BEGIN
 
+/**
+   Point of a segmentation shape. In addition to be a 2D point it can be 
+   read from and written to a XML tree and supports its own tranformation. 
+*/
+
 class  EXPORT_2D CSegPoint2D: public C2DFVector {
 public:
 	CSegPoint2D();
+
+	/**
+	   Construct the point with the given coordinates
+	   \param x
+	   \param y
+	 */
 	CSegPoint2D(float x, float y);
+
+	/**
+	   Construct the point from a XML node
+	   \param node
+	 */
 	CSegPoint2D(const xmlpp::Node& node);
+
+	/** Write the point as child-node to a given XML tree
+	    \param node 
+	*/
 	void write(xmlpp::Node& node) const;
+
+	/**
+	   Tranform the point according to the given tranformation 
+	   \param t 
+	 */
 	void transform(const C2DTransformation& t); 
+	/**
+	   Approximate the inverse transform of the point by using the given transformation 
+	   \param t 
+	   \param t 
+	 */
 	void inv_transform(const C2DTransformation& t); 
 };
 

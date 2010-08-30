@@ -34,26 +34,77 @@ namespace xmlpp {
 
 NS_MIA_BEGIN
 
+/**
+   A set of slices containing segmentation information
+   
+ */
 class EXPORT_2D CSegSet {
 public:
 	typedef std::vector<CSegFrame> Frames;
 
+	/// Standard constructor 
 	CSegSet();
-
+	/**
+	   Construct the segmentation set by reading from a file 
+	   \param src_filename file name to read set from 
+	 */
 	CSegSet(const std::string& src_filename);
+
+	/**
+	   Construct a segmentation set by reading from a XML document
+	   \param node the root node of the XML document 
+	 */
 	CSegSet(const xmlpp::Document& node);
 
+	/**
+	   Append a segmentation frame 
+	   \param frame 
+	 */
 	void add_frame(const CSegFrame& frame);
+
+	/**
+	   Write the segmentation information to an XML tree 
+	   \returns root node of xml tree. 
+	 */
 	xmlpp::Document *write() const;
 
+
+	/// \returns read-only vector of the segmentation frames 
 	const Frames& get_frames()const;
+
+	/** 
+	    \returns a reference to the read-write vector of the segmentation frames 
+	    Changing this vector changes the segmentation set 
+	*/ 
 	Frames& get_frames();
+
+	/**
+	   \returns the box of minimal size that includes the segmentation 
+	 */
 	const C2DBoundingBox get_boundingbox() const;
 
+	/**
+	   Rename the base of the image file names for all frames on a frame by frame basis. 
+	   \param new_base new base name 
+	*/
 	void rename_base(const std::string& new_base); 
 
+
+	/**
+	   This function renames the images files, shifts the origin of the segmentation and 
+	   removes frames from the beginning of the set 
+	   \param skip number of frames to skipü at the beginning 
+	   \param shift new origin of segmentation 
+	   \param  new_filename_base new file name base
+	   \rename This function does too many things at once. 
+	 */
 	CSegSet  shift_and_rename(size_t skip, const C2DFVector&  shift, const std::string& new_filename_base)const;
 
+	/**
+	   Transform the segmentations slice wise by using the given transformation 
+	   Wroks in-place. 
+	   \param t tranformation 
+	 */
 	void transform(const C2DTransformation& t);
 private:
 	void read(const xmlpp::Document& node);

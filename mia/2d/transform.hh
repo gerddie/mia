@@ -42,7 +42,8 @@ class C2DTransformation;
 typedef SHARED_PTR(C2DTransformation) P2DTransformation;
 
 /**
-   generic base class for 2D transformations.
+   This is the generic base class for 2D transformations.
+   Most methods are pure abstract and need to be implemented by a "real" transformation. 
 */
 
 class EXPORT_2D C2DTransformation: public Transformation<C2DImage, C2DInterpolatorFactory> {
@@ -123,7 +124,17 @@ public:
 	virtual C2DTransformation *invert() const = 0;
 
 
+	/**
+	   \returns the start iterator of the transformation that iterates over the grid 
+	   of the area the ransformation is defined on 
+	 */
 	virtual const_iterator begin() const = 0; 
+
+	/**
+	   \returns the end iterator of the transformation that iterates over the grid 
+	   of the area the ransformation is defined on 
+	 */
+	
 	virtual const_iterator end() const = 0; 
 
 	/**
@@ -265,6 +276,13 @@ private:
 
 };
 
+/**
+   Compare two transformation iterators
+   \param a
+   \param b
+   \returns \a true if iterators are not equal, \a false otherwise 
+   
+*/
 EXPORT_2D bool operator != (const C2DTransformation::const_iterator& a, 
 			    const C2DTransformation::const_iterator& b); 
 

@@ -29,16 +29,37 @@
 
 NS_MIA_BEGIN
 
-
+/**
+   This class is the base class for a Creater of transformations according to a 
+   given model. 
+   Derived from this class are all the plug-ins that may create transformations 
+   of different types. 
+ */
 class  EXPORT_2D C2DTransformCreator: public CProductBase {
 public:
+	/** Standard constructor 
+	    \remark it is empty, so why it is defined? 
+	 */
 	C2DTransformCreator();
 
+	/**
+	   Creates a transformation according to the given model and defined 
+	   on a grid [(0,0), size}
+	 */
 
 	P2DTransformation create(const C2DBounds& size) const;
-
+	
+	/**
+	   This function checks for a given property of the transformation creator. 
+	   \param property 
+	   \returns \a true if property is supported
+	 */
 	bool has_property(const char *property) const;
 protected:
+	/**
+	   Add a property 
+	   \param property 
+	 */
 	void add_property(const char *property);
 private:
 	virtual P2DTransformation do_create(const C2DBounds& size) const = 0;
@@ -47,7 +68,6 @@ private:
 };
 
 typedef SHARED_PTR(C2DTransformCreator) P2DTransformationFactory;
-
 typedef TFactory<C2DTransformCreator, C2DImage, C2DTransformation> C2DTransformCreatorPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin> > C2DTransformCreatorHandler;
 FACTORY_TRAIT(C2DTransformCreatorHandler); 

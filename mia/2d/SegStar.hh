@@ -30,6 +30,12 @@
 
 NS_MIA_BEGIN
 
+/**
+   This class implements the segmentation helper that defines the
+   center of a circle, six rays and the circle. 
+   It is used to help the (manual) segmenetation of the left heart myocardium. 
+ */
+
 class  EXPORT_2D CSegStar {
 public:
 	CSegStar();

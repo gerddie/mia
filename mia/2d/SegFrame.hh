@@ -31,22 +31,51 @@
 
 NS_MIA_BEGIN
 
+/**
+   Ths class implements the frame of a myocardial segmentation consisting of 
+   six sections CSegsection, the segmentation helper CSegStar, and the name of the 
+   corresponding image file.  
+*/
 class  EXPORT_2D CSegFrame {
 public:
 	typedef std::vector<CSegSection> Sections;
 
+
+	
 	CSegFrame();
 
+	/**
+	   Construct the segmentation frame from 
+	   \param image image file name 
+	   \param star CSegStar 
+	   \param sections the segmentation sections 
+	 */
 	CSegFrame(const std::string& image, const CSegStar& star, const Sections& sections);
 
+	/**
+	   Construct the segmentation frame from a XML root node
+	   \param node
+	 */
 	CSegFrame(const xmlpp::Node& node);
 
+	/// \returns the file name of the corresponding image 
 	const std::string& get_imagename() const;
+
+	/** set the file name of the corresponding image 
+	    \param name 
+	 */
 	void set_imagename(const std::string& name);
+
+	/** rename the file name base of the image according to 
+	    sed -e "s/.*[^0-9]\([0-9]*\..*\)/$new_base\1/"
+	    \param new_base
+	 */
 	void rename_base(const std::string& new_base); 
 
+	/// \returns a read-only reference to the segmentation sections 
 	const Sections& get_sections() const;
 
+	
 	const CSegStar& get_star() const;
 
 	const C2DBoundingBox get_boundingbox() const;
