@@ -31,8 +31,8 @@ template class EXPORT_HANDLER TCost<C3DImage, C3DFVectorfield>;
 template class EXPORT_HANDLER TPlugin<C3DImage, cost_type>;
 template class EXPORT_HANDLER TFactory<C3DImageCost, C3DImage, cost_type>;
 template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin> >;
-template class EXPORT_HANDLER TFactoryPluginHandler<C3DImageCostPlugin>;
-template class EXPORT_HANDLER TPluginHandler<C3DImageCostPlugin>;
+template class TFactoryPluginHandler<C3DImageCostPlugin>;
+template class TPluginHandler<C3DImageCostPlugin>;
 
 
 NS_MIA_END

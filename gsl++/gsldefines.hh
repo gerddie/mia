@@ -20,38 +20,15 @@
  *
  */
 
-#ifndef GSLPP_MATRIX_HH
-#define GSLPP_MATRIX_HH
+#ifndef mia_gsldefines_hh
+#define mia_gsldefines_hh
+#include <config.h>
 
+#ifdef miagsl_EXPORTS
+#define EXPORT_GSL DO_EXPORT
+#else
+#define EXPORT_GSL DO_IMPORT
+#endif
 
-#include <gsl/gsl_matrix.h>
-#include <gsl++/gsldefines.hh>
-
-namespace gsl {
-
-class EXPORT_GSL Matrix {
-public: 
-	Matrix(); 
-	Matrix(size_t rows, size_t columns, bool clean); 
-	Matrix(const Matrix& other); 
-	Matrix& operator =(const Matrix& other); 
-
-	~Matrix(); 
-
-	size_t rows()const; 
-	size_t cols()const; 
-	
-	
-	void set(size_t i, size_t j, double x); 
-	double operator ()(size_t i, size_t j) const; 
-
-	operator gsl_matrix *(); 
-	operator const gsl_matrix *() const; 
-
-private: 
-	gsl_matrix *_M_matrix; 
-}; 
-
-} // end namespace 
 
 #endif

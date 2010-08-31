@@ -86,8 +86,8 @@ C2DFullCostPlugin::ProductPtr C2DFullCostPlugin::do_create() const
 }
 
 
-template class EXPORT_HANDLER TPlugin<C2DFullCost, C2DFullCost>;
-template class EXPORT_HANDLER TFactory<C2DFullCost, C2DFullCost, C2DFullCost>;
+template class TPlugin<C2DFullCost, C2DFullCost>;
+template class TFactory<C2DFullCost, C2DFullCost, C2DFullCost>;
 template class EXPORT_HANDLER TFactoryPluginHandler<C2DFullCostPlugin>;
 template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C2DFullCostPlugin> >;
 template class TPluginHandler<C2DFullCostPlugin>;

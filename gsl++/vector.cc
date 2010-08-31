@@ -22,20 +22,21 @@
 
 #include <gsl++/vector.hh>
 #include <gsl++/vector_template.cxx>
+#include <gsl++/gsldefines.hh>
 
 namespace gsl {
 
-	template class TVector<double>; 
-	template class TVector<float>; 
+	template class EXPORT_GSL TVector<double>; 
+	template class EXPORT_GSL TVector<float>; 
 	
-	template class TVector<long>; 
-	template class TVector<int>; 
-	template class TVector<short>; 
-	template class TVector<char>; 
+	template class EXPORT_GSL TVector<long>; 
+	template class EXPORT_GSL TVector<int>; 
+	template class EXPORT_GSL TVector<short>; 
+	template class EXPORT_GSL TVector<char>; 
 	
-	template class TVector<ulong>; 
-	template class TVector<uint>; 
-	template class TVector<ushort>; 
-	template class TVector<uchar>; 
+	template class EXPORT_GSL TVector<ulong>; 
+	template class EXPORT_GSL TVector<uint>; 
+	template class EXPORT_GSL TVector<ushort>; 
+	template class EXPORT_GSL TVector<uchar>; 
 
 }

@@ -347,7 +347,7 @@ double CBSplineKernel::mult_int_from_table(int s1, int s2, int range, EIntegralT
 	return read_table(skip, delta, swapped, type); 
 }
 
-double CBSplineKernel::read_table(int skip, int delta, bool swapped, EIntegralType type) const
+double CBSplineKernel::read_table(int , int , bool , EIntegralType ) const
 {
 	assert(0 && "read_table needs to be implemented together with get_mult_int"); 
 }
@@ -378,7 +378,7 @@ void CBSplineKernel3::get_weights(double x, std::vector<double>&  weight)const
 	const v2df XB6 = X * OB6; 
 	const v2df W03 = X2 * XB6; 
 	v2df W30 = W03; 
-	W30 = __builtin_ia32_shufpd(W30, W30, 0x1); 
+	W30 = _mm_shuffle_pd(W30, W30, 0x1); 
 
 	const v2df W12 = X - W03 - W03 + W30; 
 	
@@ -1005,14 +1005,14 @@ void CBSplineKernel5::get_derivative_weights(double x, std::vector<double>& weig
 
 		const double h2 = 2.0 * x - 1.0;
 		const double w2 = x * x - x;
-		const double h2w2 = 2 * h2 * w2;
-		const double h2h22 = 2 * h2 * h2;
+		//const double h2w2 = 2 * h2 * w2;
+		//const double h2h22 = 2 * h2 * h2;
 		const double t = 12 * h2;
 
 		weight[0] = h2 / 2.0  - weight[5];
 
 		const double t0 = h2 / 2.0;
-		const double xm = x - 0.5;
+		//const double xm = x - 0.5;
 		const double t1 = -( 10 * w2 -1) / 2.0;
 
 		weight[2] = t0 + t1;

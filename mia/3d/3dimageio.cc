@@ -37,11 +37,11 @@ C3DImageVector *C3DImageVector::clone() const
 }
 
 
-template class EXPORT_3D TIOPlugin<io_3dimage_type>;
-template class EXPORT_3D THandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> >;
-template class EXPORT_3D TIOHandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> >;
-template class EXPORT_3D TIOPluginHandler<C3DImageIOPlugin>;
-template class EXPORT_3D TPluginHandler<C3DImageIOPlugin>;
+template class TIOPlugin<io_3dimage_type>;
+template class THandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> >;
+template class TIOHandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> >;
+template class TIOPluginHandler<C3DImageIOPlugin>;
+template class TPluginHandler<C3DImageIOPlugin>;
 
 P3DImageVector EXPORT_3D create_image3d_vector(P3DImage image)
 {

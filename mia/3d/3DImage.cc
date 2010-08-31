@@ -343,7 +343,7 @@ void C3DValueAttributeTranslator<T>::register_for(const std::string& key)
 	me.do_register(key);
 }
 
-template class  EXPORT_3D C3DValueAttribute<float>;
+template class C3DValueAttribute<float>;
 template class  EXPORT_3D C3DValueAttributeTranslator<float>;
 template class  EXPORT_3D C3DValueAttribute<int>;
 template class  EXPORT_3D C3DValueAttributeTranslator<int>;

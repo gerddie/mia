@@ -67,18 +67,18 @@ P2DImage  EXPORT_2D run_filter(const C2DImage& image, const char *filter)
 	return f->filter(image);
 }
 
-template class EXPORT_HANDLER TImageFilter<C2DImage>;
-template class EXPORT_HANDLER TImageFilterPlugin<C2DImage>;
+template class TImageFilter<C2DImage>;
+template class TImageFilterPlugin<C2DImage>;
 
-template class EXPORT_HANDLER TPlugin<C2DImage, filter_type>;
-template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> >;
-template class EXPORT_HANDLER TFactoryPluginHandler<C2DFilterPlugin>;
-template class EXPORT_HANDLER TPluginHandler<C2DFilterPlugin>;
+template class TPlugin<C2DImage, filter_type>;
+template class THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> >;
+template class TFactoryPluginHandler<C2DFilterPlugin>;
+template class TPluginHandler<C2DFilterPlugin>;
 
-template class EXPORT_HANDLER TPlugin<C2DImage, combiner_type>;
-template class EXPORT_HANDLER TFactory<C2DImageCombiner, C2DImage, combiner_type>;
-template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C2DImageCombinerPlugin> >;
-template class EXPORT_HANDLER TFactoryPluginHandler<C2DImageCombinerPlugin>;
-template class EXPORT_HANDLER TPluginHandler<C2DImageCombinerPlugin>;
+template class TPlugin<C2DImage, combiner_type>;
+template class TFactory<C2DImageCombiner, C2DImage, combiner_type>;
+template class THandlerSingleton<TFactoryPluginHandler<C2DImageCombinerPlugin> >;
+template class TFactoryPluginHandler<C2DImageCombinerPlugin>;
+template class TPluginHandler<C2DImageCombinerPlugin>;
 
 NS_MIA_END

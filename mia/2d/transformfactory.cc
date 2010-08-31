@@ -49,10 +49,10 @@ void C2DTransformCreator::add_property(const char *property)
 	_M_properties.insert(property);
 }
 
-template class EXPORT_HANDLER TPlugin<C2DImage, C2DTransformation>;
-template class EXPORT_HANDLER TFactory<C2DTransformCreator, C2DImage, C2DTransformation>;
-template class EXPORT_HANDLER TPluginHandler<C2DTransformCreatorPlugin>;
-template class EXPORT_HANDLER TFactoryPluginHandler<C2DTransformCreatorPlugin>;
-template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin> >;
+template class TPlugin<C2DImage, C2DTransformation>;
+template class TFactory<C2DTransformCreator, C2DImage, C2DTransformation>;
+template class TPluginHandler<C2DTransformCreatorPlugin>;
+template class TFactoryPluginHandler<C2DTransformCreatorPlugin>;
+template class THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin> >;
 
 NS_MIA_END

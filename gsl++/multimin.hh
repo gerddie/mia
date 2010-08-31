@@ -26,9 +26,10 @@
 #include <memory>
 #include <gsl++/vector.hh>
 #include <gsl/gsl_multimin.h>
+#include <gsl++/gsldefines.hh>
 
 namespace gsl {
-class CFDFMinimizer {
+class EXPORT_GSL  CFDFMinimizer {
 public: 
 	class Problem {
 	public:
@@ -64,7 +65,7 @@ private:
 
 
 
-class CFMinimizer {
+class EXPORT_GSL CFMinimizer {
 public: 
 	class Problem {
 	public:

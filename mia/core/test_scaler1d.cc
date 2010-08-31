@@ -46,7 +46,7 @@ struct Scaler1DFixture  {
 	Scaler1DFixture(); 
 
 	double f(double x) const;
-	void test_size(EInterpolation type, size_t target_size, double tolerance = 1);
+	void test_size(EInterpolation type, size_t target_size);
 	gsl::DoubleVector data; 
 };
 
@@ -116,7 +116,7 @@ Scaler1DFixture::Scaler1DFixture():
 		data[x] = f(2 * M_PI * x / 255.0);
 }
 
-void Scaler1DFixture::test_size(EInterpolation type, size_t target_size, double tolerance)
+void Scaler1DFixture::test_size(EInterpolation type, size_t target_size)
 {
 	gsl::DoubleVector result(target_size); 
 	

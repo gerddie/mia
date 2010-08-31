@@ -120,11 +120,11 @@ size_t C1DFoldingKernel::do_size()const
 }
 
 
-template class EXPORT_HANDLER TPlugin<spacial_kernel_data, kernel_plugin_type>;
-template class EXPORT_HANDLER TFactory<C1DFoldingKernel, spacial_kernel_data, kernel_plugin_type>;
-template class EXPORT_HANDLER TPluginHandler<C1DSpacialKernelPlugin>;
-template class EXPORT_HANDLER TFactoryPluginHandler<C1DSpacialKernelPlugin>;
-template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C1DSpacialKernelPlugin> >;
+template class TPlugin<spacial_kernel_data, kernel_plugin_type>;
+template class TFactory<C1DFoldingKernel, spacial_kernel_data, kernel_plugin_type>;
+template class TPluginHandler<C1DSpacialKernelPlugin>;
+template class TFactoryPluginHandler<C1DSpacialKernelPlugin>;
+template class THandlerSingleton<TFactoryPluginHandler<C1DSpacialKernelPlugin> >;
 
 
 

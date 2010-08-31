@@ -36,7 +36,7 @@ template class EXPORT_HANDLER TPlugin<C2DImage, cost_type>;
 template class EXPORT_HANDLER TFactory<C2DImageCost, C2DImage, cost_type>;
 template class EXPORT_HANDLER TFactoryPluginHandler<C2DImageCostPlugin>;
 template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C2DImageCostPlugin> >;
-template class EXPORT_HANDLER TPluginHandler<C2DImageCostPlugin>;
+template class TPluginHandler<C2DImageCostPlugin>;
 
 NS_MIA_END
 

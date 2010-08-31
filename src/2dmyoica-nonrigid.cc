@@ -43,8 +43,14 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const char *g_general_help = 
-	"This program runs the non-rigid registration of an perfusion image series"
-	"The cost model is always ssd + divcurl\n"
+	"This program runs the non-rigid registration of an perfusion image series.\n"
+	"In each pass, first an ICA analysis is run to estimate and eliminate \n" 
+	"the periodic movement and create reference images with intensities similar\n"
+	"to the corresponding original image. Then non-rigid registration is run \n"
+	"using the an \"ssd + divcurl\" cost model. The B-spline c-rate and the \n"
+	"divcurl cost weight are changed in each pass according to given parameters.\n"
+	"In the first pass a bounding box around the LV myocardium may be extracted\n" 
+	"to speed up computation\n\n"
 	"Basic usage: \n"
 	" mia-2dnonrigidreg [options] "; 
 
@@ -156,10 +162,10 @@ int do_main( int argc, const char *argv[] )
 
 	// registration parameters
 	EMinimizers minimizer = min_gd;
-	double c_rate = 20; 
-	double c_rate_divider = 20; 
-	double divcurlweight = 10.0; 
-	double divcurlweight_divider = 10.0; 
+	double c_rate = 32; 
+	double c_rate_divider = 4; 
+	double divcurlweight = 20.0; 
+	double divcurlweight_divider = 4.0; 
 
 
 	EInterpolation interpolator = ip_bspline3;
@@ -186,7 +192,8 @@ int do_main( int argc, const char *argv[] )
 				    "registered", false)); 
 	
 	options.push_back(make_opt( cropped_filename, "save-cropped", 0, "save cropped set to this file", NULL)); 
-	options.push_back(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images", NULL)); 
+	options.push_back(make_opt( save_crop_feature, "save-feature", 0, 
+				    "save segmentation feature images and initial ICA mixing matrix", NULL)); 
 
 	
 	options.set_group("\nRegistration"); 
@@ -196,7 +203,7 @@ int do_main( int argc, const char *argv[] )
 				    "start coefficinet rate in spines, gets divided by --c-rate-divider with every pass", 
 				    "c-rate", false));
 	options.push_back(make_opt( c_rate_divider, "c-rate-divider", 0, 
-				    "cofficient rate divider for ceah pass", 
+				    "cofficient rate divider for each pass", 
 				    "c-rate", false));
 	options.push_back(make_opt( divcurlweight, "start-divcurl", 'd',
 				    "start divcurl weight, gets divided by --divcurl-divider with every pass", 
@@ -217,7 +224,7 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( box_scale, "segscale", 's', 
 				    "segment and scale the crop box around the LV (0=no segmentation)", "segscale"));
 	options.push_back(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
-				    "as they are of other modalities", "skip")); 
+				    "e.g. because as they are of other modalities", "skip")); 
 	options.push_back(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA", 
 				    "ica-iter", false)); 
 

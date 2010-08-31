@@ -48,7 +48,7 @@ bool CPropertyFlagHolder::has_all_in(const CPropertyFlagHolder& testset) const
 	return true;
 }
 
-bool CPropertyFlagHolder::do_has(const char *property) const
+bool CPropertyFlagHolder::do_has(const char */* property*/) const
 {
 	// placeholder, derived classes may run some additional tests
 	return false; 

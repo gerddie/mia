@@ -43,11 +43,11 @@ C2DImageIOPPH::C2DImageIOPPH(const std::list< ::boost::filesystem::path>& search
 	C2DFVectorTranslator::register_for("pixel");
 }
 
-template class EXPORT_HANDLER TIOPlugin<io_2dimage_type>;
-template class EXPORT_HANDLER THandlerSingleton<C2DImageIOPPH>;
-template class EXPORT_HANDLER TIOHandlerSingleton<C2DImageIOPPH>;
-template class EXPORT_HANDLER TIOPluginHandler<C2DImageIOPlugin>;
-template class EXPORT_HANDLER TPluginHandler<C2DImageIOPlugin>;
+template class TIOPlugin<io_2dimage_type>;
+template class THandlerSingleton<C2DImageIOPPH>;
+template class TIOHandlerSingleton<C2DImageIOPPH>;
+template class TIOPluginHandler<C2DImageIOPlugin>;
+template class TPluginHandler<C2DImageIOPlugin>;
 
 
 P2DImageVector EXPORT_2D create_image2d_vector(P2DImage image)

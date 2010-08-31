@@ -47,7 +47,6 @@ int do_main( int argc, const char *argv[] )
 	string in_image2;
 	string out_filename;
 	string combiner_descr;
-	bool help_plugins = false;
 
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 	typedef C3DImageIOPluginHandler::Instance::PData PImageVector;
