@@ -132,11 +132,9 @@ protected:
 	}; 
 
 	/**
-	   This is the actual wrapper class around the GSL vector type. It provides 
+	   This is a wrapper class around the GSL vector type. It provides 
 	   a compatibility layer to make it possible to use STL algorithms and constructs.
 	*/
-
-
 template <typename T> 
 class TVector : public gsl_vector_dispatch<T> {
 public: 
@@ -149,12 +147,42 @@ public:
 	typedef typename gsl_vector_dispatch<T>::const_reference const_reference; 
 	typedef typename gsl_vector_dispatch<T>::vector_pointer_type vector_pointer_type; 
 	
+	/**
+	   Construct an empty vector without allocating the GSL data structures
+	 */
 	TVector();
-	TVector(size_type n, bool clear=true);
+
+	/**
+	   Construct a vector of given size
+	   \param size 
+	   \param clear if set to \a true set all values to zero at allocation 
+	 */
+	TVector(size_type size, bool clear=true);
+
+	/**
+	   Wrap a pre-constructed GSL vector. The passed GSL-vector will not be destroyed 
+	   when the destructor is called. 
+	   The values of the GSL vector can be changed 
+	   \param holder the already allocated GSL vector 
+	   
+	*/
 	TVector(vector_type *holder); 
+	/**
+	   Wrap a pre-constructed GSL vector. The passed GSL-vector will not be destroyed 
+	   when the destructor is called. 
+	   The values of the GSL vector can \a not be changed 
+	   \param holder the already allocated GSL vector 
+	*/
 	TVector(const vector_type *holder); 
+
+	/**
+	   Copy constructor, does a deep copy of the internal data structures. 
+	 */
 	TVector(const TVector<T>& other); 
 
+	/**
+	   Copy operator, does a deep copy of the internal data structures. 
+	 */
 	TVector<T>& operator = (const TVector<T>& other); 
 
 	~TVector(); 
@@ -174,10 +202,11 @@ public:
 		return data->data[i]; 
 	}
 
+	/// read only vector pointer type operator to enable transparent calls to the GSL APL
 	operator const vector_type *() const; 
-	operator vector_pointer_type (); 
-
 	
+	/// vector pointer type operator  to enable transparent calls to the GSL APL
+	operator vector_pointer_type (); 
 private: 
 	vector_type *data; 
 	const vector_type *cdata; 

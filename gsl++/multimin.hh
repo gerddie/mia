@@ -29,14 +29,42 @@
 #include <gsl++/gsldefines.hh>
 
 namespace gsl {
+
+/**
+   This class wraps the gradient based optimizers of the GSL 
+ */
 class EXPORT_GSL  CFDFMinimizer {
 public: 
+	/**
+	   This is the base class for all optimization problems that provide 
+	   gradient information for optimization. 
+	 */
 	class Problem {
 	public:
-		Problem(size_t n); 
+		/**
+		   Initialize the optimization problem with the given number of parameters
+		 */
+		Problem(size_t n_params); 
 
+		/**
+		   Callback to evaluate the value of the optimization criterion 
+		   To derive a CFDFMinimizer::Problem, the do_f methods has to be implemented accordingly. 
+		   \remark actually this function should be private and only visible CFDFMinimizer
+		 */
 		static double f(const gsl_vector * x, void * params); 
+		
+		/**
+		   Callback to evaluate the gradient of the optimization criterion 
+		   To derive a CFDFMinimizer::Problem, the do_df methods has to be implemented accordingly. 
+		   \remark actually this function should be private and only visible CFDFMinimizer
+		 */
 		static void df(const gsl_vector * x, void * params, gsl_vector * g); 
+
+		/**
+		   Callback to evaluate the gradient and the value of the optimization criterion 
+		   To derive a CFDFMinimizer::Problem, the do_fdf methods has to be implemented accordingly. 
+		   \remark actually this function should be private and only visible to CFDFMinimizer
+		 */
 		static void fdf(const gsl_vector * x, void * params, double * f, gsl_vector * g); 
 
 		operator gsl_multimin_function_fdf*(); 
@@ -50,26 +78,61 @@ public:
 	}; 
 	typedef std::shared_ptr<Problem> PProblem; 
 
+	/**
+	   Construtor of the optimizer. 
+	   \param p problem to be optimized 
+	   \ot optimizer type used 
+	 */
 	CFDFMinimizer(PProblem p, const gsl_multimin_fdfminimizer_type *ot); 
+	
+	
 	~CFDFMinimizer(); 
 
+	/**
+	   Set the gradient tolerance stopping criterion. (See GSL documentation.) 
+	 */
 	void set_g_tol(double tol); 
+
+	/**
+	   Set the epsilon stopping criterion. (See GSL documentation.) 
+	 */
 	void set_stop_eps(double tol); 
 	
+	/**
+	   Run the optimization 
+	   \retval x at entry contains the start point of the optimization at exit the optimized value 
+	   \returns returns a status whether the optimization succeeded or why it stopped 
+	 */
 	int run(DoubleVector& x); 
-	
 	
 private: 
 	struct CFDFMinimizerImpl *impl; 
 }; 
 
 
-
+/**
+   This class wraps the gradient free optimizers of the GSL 
+ */
 class EXPORT_GSL CFMinimizer {
 public: 
+	/**
+	   This is the base class for all optimization problems that don't provide 
+	   gradient information for optimization. 
+	 */
+	
 	class Problem {
 	public:
-		Problem(size_t n); 
+		/**
+		   Initialize the optimization problem with the given number of parameters
+		 */
+		Problem(size_t n_params); 
+		
+		/**
+		   Callback to evaluate the value of the optimization criterion 
+		   To derive a CFMinimizer::Problem, the do_f methods has to be implemented accordingly. 
+		   \remark actually this function should be private and only visible CFMinimizer
+		 */
+
 		static double f(const gsl_vector * x, void * params); 
 
 		operator gsl_multimin_function*(); 
@@ -81,9 +144,20 @@ public:
 	}; 
 	typedef std::shared_ptr<Problem> PProblem; 
 
+	/**
+	   Construtor of the optimizer. 
+	   \param p problem to be optimized 
+	   \ot optimizer type used 
+	 */
 	CFMinimizer(PProblem p, const gsl_multimin_fminimizer_type *ot); 
+	
 	~CFMinimizer(); 
 	
+	/**
+	   Run the optimization 
+	   \retval x at entry contains the start point of the optimization at exit the optimized value 
+	   \returns returns a status whether the optimization succeeded or why it stopped 
+	 */
 	int run(DoubleVector& x); 
 private: 
 	struct CFMinimizerImpl *impl; 

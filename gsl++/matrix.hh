@@ -29,11 +29,33 @@
 
 namespace gsl {
 
+
+
+/**
+   This is a wrapper class around the GSL matrix type. It provides 
+   a compatibility to avoid handling de-alloction manually.
+*/
 class EXPORT_GSL Matrix {
 public: 
 	Matrix(); 
+
+	/**
+	   Create a matrix of size rows \times columns, 
+	   \param rows
+	   \param columns 
+	   \param clean allocate zeroing out all elements 
+	 */
 	Matrix(size_t rows, size_t columns, bool clean); 
+
+	/**
+	   Copy constructor that executes a deep copy 
+	 */
 	Matrix(const Matrix& other); 
+
+
+	/**
+	   Copy operator that executes a deep copy 
+	 */
 	Matrix& operator =(const Matrix& other); 
 
 	~Matrix(); 
@@ -41,10 +63,9 @@ public:
 	size_t rows()const; 
 	size_t cols()const; 
 	
-	
 	void set(size_t i, size_t j, double x); 
 	double operator ()(size_t i, size_t j) const; 
-
+	
 	operator gsl_matrix *(); 
 	operator const gsl_matrix *() const; 
 
