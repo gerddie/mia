@@ -36,7 +36,7 @@
 #  define EXPORT_HANDLER __declspec(dllexport)
 #else
 #  ifdef __GNUC__
-#    define EXPORT_HANDLER __attribute((visibility("default")))
+#    define EXPORT_HANDLER __attribute__((visibility("default")))
 #  else
 #    define EXPORT_HANDLER
 #  endif

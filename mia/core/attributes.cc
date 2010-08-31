@@ -217,15 +217,15 @@ bool operator == (const CAttributeMap& am, const CAttributeMap& bm)
 	return true;
 }
 
-bool operator == (const CAttributedData& a, const CAttributedData& b)
+bool EXPORT_CORE operator == (const CAttributedData& a, const CAttributedData& b)
 {
 	return  *a._M_attr == *b._M_attr;
 }
 
 template <>
-void add_attribute(CAttributeMap& attributes, const std::string& name, const char * value)
+void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& name, const char * value)
 {
-	cvdebug() << "add attribute " << name << " of type 'const char*' and value '" << value << "'\n";
+	cvdebug() << "add attribute (instance) " << name << " of type 'const char*' and value '" << value << "'\n";
 	attributes[name] = PAttribute(new TAttribute<string>(value));
 }
 

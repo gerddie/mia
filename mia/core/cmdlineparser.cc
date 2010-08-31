@@ -714,7 +714,7 @@ size_t CCmdFlagOption::do_get_needed_args() const
 	return 1;
 }
 
-PCmdOption make_opt(int& value, const CFlagString& map, const char *long_opt, char short_opt,
+PCmdOption EXPORT_CORE make_opt(int& value, const CFlagString& map, const char *long_opt, char short_opt,
 		    const char *long_help, const char *short_help, bool required)
 {
 	return PCmdOption(new CCmdFlagOption(value, map, short_opt, long_opt,
@@ -722,7 +722,7 @@ PCmdOption make_opt(int& value, const CFlagString& map, const char *long_opt, ch
 }
 
 
-PCmdOption make_help_opt(const char *long_opt, char short_opt, const char *long_help, 
+PCmdOption EXPORT_CORE make_help_opt(const char *long_opt, char short_opt, const char *long_help, 
 			 CHelpOption::Callback *cb)
 {
 	return PCmdOption(new CHelpOption(cb, short_opt, long_opt, long_help));

@@ -322,24 +322,45 @@ void check_add_and_read(CAttributeMap& map, const char *name, T value)
 template <>
 void check_add_and_read(CAttributeMap& map, const char *name, const char *value)
 {
-	typedef const TAttribute<string> * PAttr;
+	typedef const TAttribute<string>& PAttr;
 	add_attribute(map, name, value);
 
-	PAttr attr = dynamic_cast<PAttr>(map[name].get());
-	BOOST_REQUIRE(attr);
-	string test_value = *attr;
+	cvdebug() << typeid(PAttr).name() << " vs " << typeid(*map[name].get()).name() << "\n"; 
+	PAttr attr = dynamic_cast<PAttr>(*map[name].get());
+	string test_value = attr;
 	BOOST_CHECK_EQUAL(string(value), test_value);
+}
+
+BOOST_AUTO_TEST_CASE( test_add_attribute_int )
+{
+	CAttributeMap map;
+	check_add_and_read(map, "int", 10);
+}
+
+BOOST_AUTO_TEST_CASE( test_add_attribute_short )
+{
+	CAttributeMap map;
+	check_add_and_read(map, "short", (short)20);
+}
+BOOST_AUTO_TEST_CASE( test_add_attribute_cstring )
+{
+	CAttributeMap map;
+	check_add_and_read(map, "char*", "char*_value");
+}
+BOOST_AUTO_TEST_CASE( test_add_attribute_string )
+{
+	CAttributeMap map;
+	check_add_and_read(map, "string", string("string_value"));
+}
+BOOST_AUTO_TEST_CASE( test_add_attribute_float )
+{
+	CAttributeMap map;
+	check_add_and_read(map, "float", 1.0f);
 }
 
 BOOST_AUTO_TEST_CASE( test_add_attribute )
 {
 	CAttributeMap map;
-
-	check_add_and_read(map, "int", 10);
-	check_add_and_read(map, "short", (short)20);
-	check_add_and_read(map, "char*", "char*_value");
-	check_add_and_read(map, "string", string("string_value"));
-	check_add_and_read(map, "float", 1.0f);
 	check_add_and_read(map, "double", 1.0);
 
 }

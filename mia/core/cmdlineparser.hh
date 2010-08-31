@@ -403,7 +403,7 @@ PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>&
                                 const char *short_help, bool required = false);
 
 
-PCmdOption make_help_opt(const char *long_opt, char short_opt, const char *long_help, 
+PCmdOption EXPORT_CORE make_help_opt(const char *long_opt, char short_opt, const char *long_help, 
 			 CHelpOption::Callback* cb); 
 
 

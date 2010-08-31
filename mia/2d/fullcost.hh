@@ -83,7 +83,7 @@ private:
 typedef std::shared_ptr<C2DFullCost > P2DFullCost;
 
 
-class C2DFullCostPlugin: public TFactory<C2DFullCost, C2DFullCost, C2DFullCost> {
+class EXPORT_2D C2DFullCostPlugin: public TFactory<C2DFullCost, C2DFullCost, C2DFullCost> {
 public:
 	C2DFullCostPlugin(const char *name);
 private:

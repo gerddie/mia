@@ -24,6 +24,8 @@
 #ifndef mia_core_defines_hh
 #define mia_core_defines_hh
 
+#include <config.h>
+
 #define NS_MIA_BEGIN namespace mia {
 #define NS_MIA_END }
 #define NS_MIA_USE using namespace mia; 
@@ -51,6 +53,13 @@ NS_END
 #define __attribute__(x) 
 #endif
 
+#ifdef miacore_EXPORTS
+#define EXPORT_CORE DO_EXPORT
+#else
+#define EXPORT_CORE DO_IMPORT
+#endif
+
+#define EXPORT DO_EXPORT
 
 #ifdef WIN32 
 #ifdef _DEBUG
@@ -59,36 +68,17 @@ NS_END
 #include <crtdbg.h>
 #endif
 
-#define EXPORT __declspec(dllexport) 
-
-#ifdef miacore_EXPORTS
-#define EXPORT_CORE __declspec(dllexport) 
-#else
-#define EXPORT_CORE __declspec(dllimport) 
-#endif
 
 #ifdef _MSC_VER
-x1
 #pragma warning(disable: 4251) // class needs to have dll interface to be used ...
 #pragma warning(disable: 4231) // nonstandard extension used "extern" before explicit template instanciation
 #pragma warning(disable: 4275) // non-dll class used as base 
 #pragma warning(disable: 4244) // warning about int->float conversion 
 #pragma warning(disable: 4305) // truncation from double to float 
 #pragma warning(disable: 4800) // performance warning about forcing value to true or false
-
 #define G_MODULE_SUFFIX "dll"
 #endif
-
 #else
-
-#  ifdef __GNUC__
-#    define EXPORT_CORE __attribute__((visibility("default")))
-#    define EXPORT __attribute__((visibility("default")))
-#  else
-#    define EXPORT_CORE
-#    define EXPORT __attribute__((visibility("default")))
-#  endif
-
 #define G_MODULE_SUFFIX "so"
 
 #endif

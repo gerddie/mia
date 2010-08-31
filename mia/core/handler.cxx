@@ -156,8 +156,11 @@ void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
 			cverr() << "Module '" << (*i)->get_name() << "' doesn't provide an interface\n"; 
 
 		while (pp) {
+			cvdebug() << "Got type '" << typeid(*pp).name() 
+				  << "', expect '"<< typeid(Interface).name() << "'\n"; 
 			Interface *p = dynamic_cast<Interface*>(pp); 
 			CPluginBase *pold = pp; 
+
 			pp = pp->next_interface(); 
 			
 			if (p) {

@@ -25,7 +25,7 @@
 NS_MIA_USE
 using namespace std;
 
-class CDummy1 :public CTestPlugin {
+class EXPORT CDummy1 :public CTestPlugin {
 public:
 	CDummy1();
 private:

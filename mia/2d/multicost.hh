@@ -29,7 +29,7 @@ NS_MIA_BEGIN
 /**
    A accumulation of cost functions that are weigted against each other 
  */
-class C2DFullCostList : public C2DFullCost {
+class EXPORT_2D C2DFullCostList : public C2DFullCost {
 public: 
 	C2DFullCostList(); 
 	

@@ -36,7 +36,7 @@ NS_MIA_BEGIN
 
 
 
-class C2DPPDivcurlMatrix {
+class EXPORT_2D C2DPPDivcurlMatrix {
 public: 
 	/**
 	   Construct the matrix according to the given coefficient field size, the used B-Spline kernel

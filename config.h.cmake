@@ -4,7 +4,7 @@
 #define VENDOR  "@VENDOR@"
 #define MIA_SOURCE_ROOT "@SOURCE_ROOT@"
 
-#if defined(MSVC)
+#if defined(_MSC_VER)
 #  define DO_EXPORT __declspec(dllexport) 
 #  define DO_IMPORT __declspec(dllimport) 
 #elif  defined(__GNUC__)
