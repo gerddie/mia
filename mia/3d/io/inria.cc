@@ -23,8 +23,7 @@
 
 /*! \brief plugin function to handle INRIA- format IO
 
-\file inria_3dimage_io.cc
-\author Gert Wollny <wollny@cbs.mpg.de>
+\author Gert Wollny <gw.fossdev@gmail.com>
 
 */
 

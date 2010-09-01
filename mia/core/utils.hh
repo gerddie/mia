@@ -25,8 +25,7 @@
 
 /*! \brief Some easy cache, string, and file manipulation tools
 
-\file miaUtils.hh
-\author G. Wollny, wollny@cbs.mpg.de, 2004
+\author Gert Wollny <gw.fossdev@gmail.com>, 2004-2010
 \author M. Tittgemeyer, tittge@cbs.mpg.de, 2004
 
 */

@@ -24,8 +24,8 @@
 
 /*! \brief plugin function to handle ply mesh- format IO
 
-\file off_mesh_io.cc
-\author Gert Wollny <wollny at cbs mpg de>
+
+\author Gert Wollny <gw.fossdev@gmail.com>
 
 */
 

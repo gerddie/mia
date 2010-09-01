@@ -39,13 +39,13 @@ struct EXPORT_CORE io_plugin_type {
 };
 
 /**
-   \class TIOPlugin template class
    The basis of all io plug-ins. The type \a D must provied a typedef \a type the referes to the
    data type to be handled and it must provied a string \a value that describes the type of
    the io data and also corresponds to the last part of the directory name, where the plug-in
    will be located after installation of the package.
    The type D must be derived from \a CIOData, to supply functions to store and acquire the
    file format used to load the data.
+   \tparam D the data type for witch the IO is implemented
 */
 
 template <typename D>

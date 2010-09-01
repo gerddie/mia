@@ -30,8 +30,7 @@ and if the filename has the suffix "*.bz2" the in/output is piped through bzip2,
 providing transparent compression of the data.
 
 
-\file miaFileIO.hh
-\author Gert Wollny <wollny@cbs.mpg.de>
+\author Gert Wollny <gw.fossdev@gmail.com>
 
 */
 

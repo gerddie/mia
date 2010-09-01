@@ -23,15 +23,6 @@
 
 // $Id: filter2dstack.hh,v 1.21 2006-09-18 21:40:12 gerddie Exp $
 
-/*! \brief basic type of a plugin handler
-
-A basis for filter plugins
-
-\file filter_plugin.hh
-\author Gert Wollny <wollny at cbs.mpg.de>
-
-*/
-
 #ifndef __mia_2dfifofilterstack_hh
 #define __mia_2dfifofilterstack_hh
 

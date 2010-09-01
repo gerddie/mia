@@ -25,7 +25,6 @@
 
 /*! \brief A verbose output stream
 
-\file miaIOStream.hh
 */
 
 #ifndef CVERB_HH

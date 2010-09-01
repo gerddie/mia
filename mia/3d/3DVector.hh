@@ -197,6 +197,13 @@ public:
 	}
 };
 
+/**
+   Cross product of two 3D vectors 
+   \param a
+   \param b
+   \returns cross product a x b 
+ */
+
 template <typename T>
 T3DVector<T> cross(const T3DVector<T>& a, const T3DVector<T>& b) 
 {
@@ -214,7 +221,7 @@ template <class T> double fabs(const T3DVector<T>& t)
 	return t.norm();
 }
 
-
+/// \returns the dot product of input vectors a and b
 template <class T> double dot(const T3DVector<T>& a, const T3DVector<T>& b)
 {
 	return a.x * b.x + a. y * b.y + a.z * b.z;

@@ -22,8 +22,7 @@
 
 A generic SSD implementation for plugins
 
-\file ssh.hh
-\author Gert Wollny <wollny at eva.mpg.de>
+\author Gert Wollny <gw.fossdev@gmail.com>
 
 */
 

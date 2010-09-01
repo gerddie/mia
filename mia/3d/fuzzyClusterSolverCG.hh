@@ -26,10 +26,9 @@
 
 	This contains basic solver functions based on CG schemes
 
-\file solverCG.hh
-
 \author Stefan Burckhardt and Carsten Wolters, wolters@mis.mpg.de, 2004
 \remark adapted for libmona by Heike Jaenicke and Marc Tittgemeyer, tittge@cbs.mpg.de, 2004
+\remark adapted for mia2 by Gert Wollny, gw.fossdev@gmail.com 2010 
 */
 
 

@@ -25,7 +25,6 @@
 
 /*! \brief A verbose output stream
 
-\file miaIOStream.cc
 */
 
 #include <iostream>
@@ -48,7 +47,7 @@ const TDictMap<vstream::Level>::Table verbose_dict[] = {
 	{NULL, vstream::ml_undefined},
 };
 
-EXPORT_CORE const TDictMap<vstream::Level> g_verbose_dict(verbose_dict);
+const TDictMap<vstream::Level> g_verbose_dict(verbose_dict);
 
 vstream::vstream(std::ostream& output, Level l):
 	_M_output(&output),

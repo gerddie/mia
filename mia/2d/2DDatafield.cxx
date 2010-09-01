@@ -102,7 +102,7 @@ typename T2DDatafield<T>::size_type T2DDatafield<T>::size()const
 }
 
 template <class T> 
-T T2DDatafield<T>::get_interpol_val_at(const T2DVector<float>& p) const
+T T2DDatafield<T>::get_interpol_val_at(const C2DFVector& p) const
 {
 	size_t  x = (size_t )p.x;
 	size_t  y = (size_t )p.y;

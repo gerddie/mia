@@ -51,9 +51,9 @@ EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& a, const C3DFVectorfiel
 template class EXPORT_3D T2DDatafield<C3DFVector>;
 template class EXPORT_3D T2DDatafield<C3DDVector>;
 
-template class EXPORT_3D T3DDatafield<C3DFVector>;
+template class T3DDatafield<C3DFVector>;
 template class EXPORT_3D T3DDatafield<C3DDVector>;
-template class EXPORT_3D T3DVectorfield<C3DFVector>;
+template class T3DVectorfield<C3DFVector>;
 template class EXPORT_3D T3DVectorfield<C3DDVector>;
 
 

@@ -101,7 +101,7 @@ public:
 		      std::vector<Complex>::const_iterator in_end,
 		      std::vector<Real>::iterator out_begin) const;
 
-	/// \returnd the size of the forward transform result (i.e. \f$\frac{n}{2} + 1\f$) complex numbers.
+	/// \returns the size of the forward transform result (i.e. \f$\frac{n}{2} + 1\f$) complex numbers.
 	size_t out_size() const;
 
  private:

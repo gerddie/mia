@@ -25,7 +25,6 @@
 
 /*! \brief Some easy cache, string, and file manipulation tools
 
-\file miaUtils.hh
 
 */
 

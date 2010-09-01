@@ -28,8 +28,7 @@
 A simple wrapper for the stdio FILE type that handles opening and closing
 and takes care, whether \a stdin sould be used for reading
 
-\file miaFileIO.cc
-\author Gert Wollny <wollny@cbs.mpg.de>
+\author Gert Wollny <gw.fossdev@gmail.com>
 
 */
 

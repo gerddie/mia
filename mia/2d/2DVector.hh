@@ -180,7 +180,13 @@ public:
 };
 
 
-
+/**
+   operator to write a 2D vector to a stream 
+   \tparam type of the vector values 
+   \param os output stream 
+   \param a vector 
+   \returns reference to stream to allow chaining of the operator 
+ */
 template <typename T>
 std::ostream& operator << (std::ostream& os, const T2DVector<T>& a)
 {
@@ -188,6 +194,13 @@ std::ostream& operator << (std::ostream& os, const T2DVector<T>& a)
 	return os; 
 }
 
+/**
+   operator to read a 2D vector from a stream 
+   \tparam type of the vector values 
+   \param is input stream 
+   \param a vector 
+   \returns reference to stream to allow chaining of the operator 
+ */
 template <typename T>
 std::istream& operator >> (std::istream& is, T2DVector<T>& a)
 {
@@ -195,6 +208,13 @@ std::istream& operator >> (std::istream& is, T2DVector<T>& a)
 	return is; 
 }
 
+/**
+   Add operator for two 2D vectors that hold the same data type 
+   \tparam type of the vector values 
+   \param a 
+   \param b
+   \returns a+b
+ */
 template <typename  T>
 T2DVector<T> operator +(const T2DVector<T>& a, const T2DVector<T>& b)
 {
@@ -203,6 +223,13 @@ T2DVector<T> operator +(const T2DVector<T>& a, const T2DVector<T>& b)
 	return r; 
 }
 
+/**
+   Element wise multiplication  operator for two 2D vectors that hold the same data type 
+   \tparam type of the vector values 
+   \param a 
+   \param b
+   \returns <a.x*b.x, a.y*b.y>
+ */
 template <typename  T>
 T2DVector<T> operator *(const T2DVector<T>& a, const T2DVector<T>& b)
 {
@@ -211,6 +238,14 @@ T2DVector<T> operator *(const T2DVector<T>& a, const T2DVector<T>& b)
 	return r; 
 }
 
+/**
+   Element wise division  operator for two 2D vectors that hold the same data type. 
+   Throws a std::invalid_argument exception if b.x=== or b.y==0. 
+   \tparam type of the vector values 
+   \param a 
+   \param b
+   \returns <a.x/b.x, a.y/b.y>
+ */
 template <typename  T>
 T2DVector<T> operator /(const T2DVector<T>& a, const T2DVector<T>& b)
 {
@@ -219,6 +254,13 @@ T2DVector<T> operator /(const T2DVector<T>& a, const T2DVector<T>& b)
 	return r; 
 }
 
+/**
+   Element wise subtraction operator for two 2D vectors that hold the same data type. 
+   \tparam type of the vector values 
+   \param a 
+   \param b
+   \returns a-b
+ */
 
 template <typename  T>
 T2DVector<T> operator -(const T2DVector<T>& a, const T2DVector<T>& b)
@@ -228,11 +270,28 @@ T2DVector<T> operator -(const T2DVector<T>& a, const T2DVector<T>& b)
 	return r; 
 }
 
+/**
+   dot product for two 2D vectors that hold the same data type. 
+   \tparam type of the vector values 
+   \param a 
+   \param b
+   \returns a.x*b.x + a.y*b.y 
+*/
+
 template <typename  T>
 T dot(const T2DVector<T>& a, const T2DVector<T>& b)
 {
 	return b.x * a.x + b.y * a.y; 
 }
+
+/**
+   Division of a vector by a scalar. 
+   Throws a std::invalid_argument exception if f==0. 
+   \tparam type of the vector values 
+   \param a 
+   \param f
+   \returns <a.x/f, b.y/f>
+*/
 
 template <typename  T>
 T2DVector<T> operator / (const T2DVector<T>& a, T f)
@@ -242,6 +301,13 @@ T2DVector<T> operator / (const T2DVector<T>& a, T f)
 	return r; 
 }
 
+/**
+   Multiplication of a vector with a scalar. 
+   \tparam type of the vector values 
+   \param a  vector 
+   \param f scalar 
+   \returns <a.x*f, b.y*f>
+*/
 template <typename  T>
 T2DVector<T> operator * (const T2DVector<T>& a, double f)
 {
@@ -250,12 +316,26 @@ T2DVector<T> operator * (const T2DVector<T>& a, double f)
 	return r; 
 }
 
+/**
+   Multiplication of a scalar with a vector. 
+   \tparam type of the vector values 
+   \param f scalar 
+   \param a vector 
+   \returns <a.x*f, b.y*f>
+*/
 template <typename  T>
 T2DVector<T> operator * (double f, const T2DVector<T>& a)
 {
 	return a * f; 
 }
 
+/**
+   Comparison of a vector. Not the this less operator does not define 
+   an order, since it is possible that a =/= b and !a<b && !b<a. 
+   \param a 
+   \param b 
+   \returns true if both elements in a are less the the corresponding elements in b. 
+ */
 template <typename T, typename S>
 bool operator < (const T2DVector<T>& a, const T2DVector<S>& b) 
 {
@@ -270,13 +350,19 @@ struct cross_product {
 	}; 
 }; 
 
+/**
+   Cross product of two 2D vectors. Technically it's the 3D cross product with 
+   the z-elements set to zero and ignoring all zero elements of the output vector 
+   \param a
+   \param b 
+   \returns 2D cross product 
+   \todo Check why does it use indirection to the apply-function? 
+ */
 template <typename  T>
 T cross(const T2DVector<T>& a, const T2DVector<T>& b)
 {
 	return cross_product<T, T2DVector>::apply(a,b); 
 }
-
-
 
 /// float valued 2D vector
 typedef T2DVector<float>    C2DFVector;
@@ -290,6 +376,11 @@ typedef T2DVector<unsigned int>   C2DBounds;
 
 NS_MIA_END
 
+/*
+  These template specializations are needed when using the T2DVector template 
+  in a boost lambda expression that uses ::boost::lambda::_1 
+  \todo add more operations 
+ */
 namespace boost { 
 	namespace lambda {
 		

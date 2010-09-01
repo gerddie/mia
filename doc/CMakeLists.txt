@@ -10,7 +10,9 @@ IF (DOXYGEN_FOUND)
    ADD_DEPENDENCIES(doc LibraryDoc)
    ADD_DEPENDENCIES(LibraryDoc miacore mia2d mia3d)
 
-
+   IF(DOXYGEN_DOT_FOUND)
+     SET(HAVE_DOT YES)
+   ENDIF(DOXYGEN_DOT_FOUND)
    CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/reference.dox.cmake 
                     ${CMAKE_CURRENT_BINARY_DIR}/reference.dox)
 

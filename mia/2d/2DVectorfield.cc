@@ -57,10 +57,10 @@ EXPORT_2D C2DFVectorfield& operator += (C2DFVectorfield& a, const C2DFVectorfiel
 
 
 
-template class EXPORT_2DDATAFIELD T2DDatafield<C2DFVector>;
+template class T2DDatafield<C2DFVector>;
 template class EXPORT_2DDATAFIELD T2DDatafield<C2DDVector>;
 
-template class EXPORT_2DDATAFIELD T2DVectorfield<C2DFVector>;
+template class T2DVectorfield<C2DFVector>;
 template class EXPORT_2DDATAFIELD T2DVectorfield<C2DDVector>;
 
 

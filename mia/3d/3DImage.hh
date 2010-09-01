@@ -82,9 +82,11 @@ private:
 	EPixelType _M_pixel_type;
 };
 
+/// define a shortcut to the 3D image shared pointer. 
 typedef C3DImage::Pointer P3DImage;
+
 /**
-   Typed 3D image
+   This template defines a 3D image holding a certain type \a T as pixel type. 
 */
 template <typename T>
 class EXPORT_3D T3DImage : public C3DImage {
@@ -262,6 +264,13 @@ public:
 private:
 	T3DDatafield<T> _M_image;
 };
+
+/**
+   Stand alone function to evaluate the gradient of an image using finite differences. 
+   The gradient at the boundaries is set to zero. 
+   \param image 
+   \returns a 3D vector field holding the gradient of the input image
+ */
 
 EXPORT_3D C3DFVectorfield get_gradient(const C3DImage& image);
 

@@ -156,34 +156,39 @@ private:
 	const static T Zero;
 };
 
+/// 2D scalar field that holds double values 
 typedef T2DDatafield<double> C2DDDatafield;
-/// float instanziation of a 2D data field
+
+/// 2D scalar field that holds float values 
 typedef T2DDatafield<float>  C2DFDatafield;
 
-/// unsigned long instanziation of a 2D data field
+/// 2D scalar field that holds unsigned int values 
 typedef T2DDatafield<unsigned int> C2DUIDatafield;
 
-/// long  instanziation of a 2D data field
+/// 2D scalar field that holds signed int values 
 typedef T2DDatafield<signed int>  C2DSIDatafield;
 
 #ifdef HAVE_INT64
-/// unsigned long instanziation of a 2D data field
+/// 
 typedef T2DDatafield<mia_uint64> C2DULDatafield;
 
 /// long  instanziation of a 2D data field
 typedef T2DDatafield<mia_int64>  C2DSLDatafield;
 #endif
 
+/// 2D scalar field that holds unsigned short values 
 typedef T2DDatafield<unsigned short> C2DUSDatafield;
 
-/// long  instanziation of a 2D data field
+/// 2D scalar field that holds signed short values 
 typedef T2DDatafield<signed short>  C2DSSDatafield;
 
+/// 2D scalar field that holds unsigned char (=byte) values 
 typedef T2DDatafield<unsigned char> C2DUBDatafield;
 
-/// long  instanziation of a 2D data field
+/// 2D scalar field that holds signed char values 
 typedef T2DDatafield<signed char>  C2DSBDatafield;
 
+/// 2D scalar field that holds bool values
 typedef T2DDatafield<bool>  C2DBitDatafield;
 
 NS_MIA_END

@@ -19,13 +19,6 @@
 
 // $Id: tiff_2dimage_io.cc,v 1.14 2006-06-13 10:20:54 wollny Exp $
 
-/*! \brief plugin function to handle vista- format IO
-
-\file inria_3dimage_io.cc
-\author Gert Wollny <wollny@cbs.mpg.de>
-
-*/
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif

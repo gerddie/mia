@@ -55,10 +55,9 @@
 \todo
 	Program cannot cope with negative pixel values
 
-\file segment3d.cc
-
 \remark The programm was origionall written by D.L. Pham and J.L.Prince, Pat. Rec. Let., 20:57-68,1999.
 \remark The CG optimization was included by Stefan Burckhardt und Carsten Walters
+\remark Adapted to mia2 by Gert Wollny gw.fossdev@gmail.com, 2009
 
 \author Heike J"anicke and M. Tittgemeyer (tittge@cbs.mpg.de), 2004
 */

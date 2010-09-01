@@ -17,15 +17,6 @@
  *
  */
 
-/*! \brief basic type of a plugin handler
-
-A generic SSD implementation for plugins
-
-\file ssh.hh
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
-
 #include <mia/core/creator.hh>
 #include <mia/3d/3DImage.hh>
 

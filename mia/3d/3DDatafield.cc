@@ -93,7 +93,7 @@ template class  EXPORT_3D T3DDatafield<short>;
 template class  EXPORT_3D T3DDatafield<unsigned short>;
 template class  EXPORT_3D T3DDatafield<unsigned char >;
 template class  EXPORT_3D T3DDatafield<signed char >;
-template class  EXPORT_3D T3DDatafield<bool>;
+template class  T3DDatafield<bool>;
 
 
 
