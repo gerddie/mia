@@ -20,20 +20,8 @@
  *
  */
 
-/*! \brief median 2D image filter using a squared support region 
-
-A median filter 
-
-\file median_2dimage_filter.cc
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
-
 #include <limits>
-
 #include <mia/2d/2dfilter.hh>
-
-
 
 namespace midpoint_2dimage_filter {
 NS_MIA_USE;

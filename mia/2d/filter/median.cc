@@ -18,15 +18,6 @@
  *
  */
 
-/*! \brief median 2D image filter using a squared support region
-
-A median filter
-
-\file median_2dimage_filter.cc
-\author Gert Wollny <gert.wollny at acm.org>
-
-*/
-
 #include <limits>
 
 #include <mia/core/filter.hh>

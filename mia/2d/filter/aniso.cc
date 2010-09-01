@@ -23,7 +23,6 @@
  */
 
 #include <limits>
-
 #include <algorithm>
 #include <cmath>
 #include <boost/algorithm/minmax_element.hpp>

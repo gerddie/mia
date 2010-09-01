@@ -18,17 +18,7 @@
  *
  */
 
-/*! \brief median 2D image filter using a squared support region
-
-A median filter
-
-\file kmeans_2dimage_filter.cc
-\author Gert Wollny <gw.fossdev @ gmail.com>
-
-*/
-
 #include <limits>
-
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/kmeans.hh>

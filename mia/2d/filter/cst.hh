@@ -17,17 +17,7 @@
  *
  */
 
-/*! \brief Filter for filtering in the dual space of the DCT
-
-A filter that converts using the discrete cosine transform DCT applies a kernel and then
-applies the inverse DCT
-
-\author Gert Wollny <gw.fossdev at gmail.com>
-
-*/
-
 #include <limits>
-
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/2dfilter.hh>

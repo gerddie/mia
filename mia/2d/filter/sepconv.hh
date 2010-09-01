@@ -18,14 +18,6 @@
  *
  */
 
-/*! \brief basic type of a plugin handler
-
-A bandpass filter
-
-\file bandpass_2dimage_filter.cc
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/spacial_kernel.hh>

@@ -18,19 +18,9 @@
  *
  */
 
-/*! \brief median least variance filter for 3D
-
-A mean least variance filter
-
-\file mlv.cc
-
-*/
-
-
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/3d/filter/mlv.hh>
-
 #include <limits>
 
 NS_BEGIN(mlv_3dimage_filter)

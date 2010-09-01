@@ -22,11 +22,6 @@
  *
  */
 
-/*
-  A image scaling filter
-  \author Gert Wollny <gert at die.upm.es>
-*/
-
 #include <limits>
 #include <sstream>
 #include <mia/core/msgstream.hh>

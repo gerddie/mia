@@ -20,15 +20,6 @@
  *
  */
 
-/*! \brief basic type of a plugin handler 
-
-Anisotropic diffussion employing fixed point arithmetic 
-
-\file gauss_image3d_filter.hh
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
-
 #include <algorithm>
 #include <functional>
 #include <cmath>

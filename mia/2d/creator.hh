@@ -22,20 +22,10 @@
  *
  */
 
-/*! \brief basic type of a plugin handler
-
-A generic SSD implementation for plugins
-
-\file ssh.hh
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
-
 #include <mia/core/creator.hh>
 #include <mia/2d/2DImage.hh>
 
 NS_MIA_BEGIN
-
 
 DEFINE_Image_Creator(C2DImage)
 

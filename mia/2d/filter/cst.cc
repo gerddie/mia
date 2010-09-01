@@ -17,12 +17,7 @@
  *
  */
 
-/*!
-\author Gert Wollny <gert.wollny at acm.org>
-*/
-
 #include <limits>
-
 #include <mia/core/msgstream.hh>
 #include <mia/2d/filter/cst.hh>
 

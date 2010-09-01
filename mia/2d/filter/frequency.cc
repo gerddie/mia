@@ -20,24 +20,10 @@
  *
  */
 
-
-
-/*! \brief fft 2D image filter 
-
-A median filter 
-
-\file median_2dimage_filter.cc
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
-
 #include <functional>
 #include <stdexcept>
-
 #include <boost/type_traits.hpp>
-
 #include <mia/2d/2dfilter.hh>
-
 #include <libmona/fftkernel.hh>
 
 // to avoid the indention

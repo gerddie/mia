@@ -20,16 +20,6 @@
  *
  */
 
-
-/*! \brief fft 2D image filter 
-
-A median filter 
-
-\file median_2dimage_filter.cc
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
-
 #include <cmath>
 #include <functional>
 #include <stdexcept>

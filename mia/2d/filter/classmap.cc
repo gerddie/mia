@@ -20,23 +20,12 @@
  *
  */
 
-/*! \brief basic type of a plugin handler 
-
-A 2D class mapping filter plugin 
-
-\file gauss_image3d_filter.hh
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
 #include <stdexcept>
-
 #include <boost/type_traits.hpp>
-
 #include <mia/2d/2dfilter.hh>
 #include <libmona/filter.hh>
 

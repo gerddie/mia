@@ -18,15 +18,6 @@
  *
  */
 
-/*! \brief basic type of a plugin handler
-
-A bandpass filter
-
-\file bandpass_3dimage_filter.cc
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
-
 #include <limits>
 #include <sstream>
 #include <mia/2d/2dfilter.hh>

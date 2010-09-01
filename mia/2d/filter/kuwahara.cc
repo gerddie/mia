@@ -20,16 +20,7 @@
  *
  */
 
-/*! \brief basic type of a plugin handler 
-
-A bandpass filter 
-
-\file bandpass_2dimage_filter.cc
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
 #include <limits>
-
 #include <mia/2d/2dfilter.hh>
 #include <libmona/filter2dimage.hh>
 

@@ -18,12 +18,6 @@
  *
  */
 
-/*!
-A 3D conected component labeling filter
-\file label.cc
-
-*/
-
 #include <stdexcept>
 #include <queue>
 #include <limits>

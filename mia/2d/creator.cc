@@ -22,13 +22,6 @@
  *
  */
 
-/*! \brief basic type of a plugin handler
-
-\file ssh.hh
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
-
 #include <mia/core/export_handler.hh>
 
 #include <mia/2d/creator.hh>

@@ -22,15 +22,6 @@
  *
  */
 
-/*! \brief basic type of a plugin handler
-
-2D Image cropping
-
-\file crop_2dimage_filter.hh
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
-
 #include <stdexcept>
 #include <mia/2d/filter/crop.hh>
 

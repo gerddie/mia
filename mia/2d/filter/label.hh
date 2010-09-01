@@ -18,12 +18,6 @@
  *
  */
 
-/*!
-A 2D conected component labeling filter
-\file label.cc
-
-*/
-
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/shape.hh>
 

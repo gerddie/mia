@@ -21,14 +21,6 @@
  *
  */
 
-/*! \brief basic type of a plugin handler
-
-A 3D weighted median filter plugin
-
-\file gauss_image3d_filter.hh
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
 #include <limits>
 #include <stdexcept>
 #include <mia/core/noisegen.hh>

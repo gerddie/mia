@@ -22,7 +22,7 @@
  *
  */
 
-/**
+/*
    This implementation of an adaptive median filter works like follows:
    - filter width is w=2*n+1
    - start with n=1

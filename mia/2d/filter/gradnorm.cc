@@ -19,16 +19,6 @@
  *
  */
 
-/*! \brief basic type of a plugin handler
-
-A image to gradient norm filter
-
-\file gradnorm.cc
-\author Gert Wollny <wollny at acm.org>
-
-*/
-
-
 #include <limits>
 #include <algorithm>
 #include <mia/core/filter.hh>

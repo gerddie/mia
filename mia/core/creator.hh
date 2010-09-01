@@ -21,15 +21,6 @@
  *
  */
 
-/*! \brief basic type of a plugin handler
-
-A generic SSD implementation for plugins
-
-\file ssh.hh
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
-
 #ifndef mia_core_creator_hh
 #define mia_core_creator_hh
 
@@ -45,11 +36,22 @@ struct EXPORT_CORE creator_type {
 	static const char *value;
 };
 
+/**
+   This template defines a generic base class for a creator of images containing some shapes. 
+   \tparam Image type to create 
+ */
 template <typename T>
 class EXPORT_HANDLER TImageCreator:public CProductBase {
 public:
 	virtual ~TImageCreator(){}
-	virtual std::shared_ptr<T > operator () (const typename T::dimsize_type& size, EPixelType type) const = 0;
+
+	/**
+	   Creator function, need to be overloaded  
+	   \param size output image size 
+	   \param type pixel type 
+	   \returns the created Image 
+	 */
+	virtual std::shared_ptr<T> operator () (const typename T::dimsize_type& size, EPixelType type) const = 0;
 };
 
 

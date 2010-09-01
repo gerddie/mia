@@ -18,14 +18,6 @@
  *
  */
 
-/*! \brief basic type of a plugin handler
-
-A bandpass filter
-
-\file bandpass_2dimage_filter.cc
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
 #include <mia/core/shared_ptr.hh>
 #include <mia/internal/autotest.hh>
 #include <mia/2d/filter/sepconv.hh>

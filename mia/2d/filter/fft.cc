@@ -21,14 +21,6 @@
  *
  */
 
-/*! \brief fft filter, required the definition of a kernel
-
-
-\file fft.cc
-\author Gert Wollny <gert.wollny at die.upm.es>
-
-*/
-
 #include <limits>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/filter/fft.hh>
