@@ -23,8 +23,10 @@
 #ifndef mia_2d_similarity_profile_hh
 #define mia_2d_similarity_profile_hh
 
+#include <mia/core/fft1d_r2c.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/fullcost.hh>
+
 
 NS_MIA_BEGIN
 /**
@@ -45,9 +47,6 @@ public:
 	 */
 	C2DSimilarityProfile(P2DFullCost cost, const C2DImageSeries& images, 
 		     size_t skip, size_t reference); 
-
-
-	~C2DSimilarityProfile(); 
 	
 	/// \returns the peak frequency coefficent and its index
 	float get_peak_frequency() const;
@@ -55,7 +54,11 @@ public:
 	/// returns a periodic subset including teh first and last image of the series
 	std::vector<size_t> get_periodic_subset() const; 
 private: 
-	struct C2DSimilarityProfileImpl *impl; 
+	size_t m_skip; 
+	size_t m_reference; 
+	mutable float m_peak_freq;
+	mutable bool m_peak_freq_valid; 
+	vector<CFFT1D_R2C::Real> m_cost_values; 
 }; 
 
 NS_MIA_END

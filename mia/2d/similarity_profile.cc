@@ -22,7 +22,6 @@
 
 #include <cassert>
 #include <stdexcept>
-#include <mia/core/fft1d_r2c.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/similarity_profile.hh>
 
@@ -30,25 +29,9 @@ NS_MIA_BEGIN
 
 using namespace std; 
 
-struct C2DSimilarityProfileImpl {
-public: 
-	C2DSimilarityProfileImpl(P2DFullCost cost, const C2DImageSeries& images, 
-				 size_t skip, size_t reference); 
-
-	float get_peak_frequency() const;
-	vector<size_t> get_periodic_subset() const; 
-
-private: 
-	size_t m_skip; 
-	size_t m_reference; 
-	mutable float m_peak_freq;
-	mutable bool m_peak_freq_valid; 
-	vector<CFFT1D_R2C::Real> m_cost_values; 
-}; 
-
-C2DSimilarityProfileImpl::C2DSimilarityProfileImpl(P2DFullCost cost, 
-						   const C2DImageSeries& images, 
-						   size_t _skip, size_t _reference):
+C2DSimilarityProfile::C2DSimilarityProfile(P2DFullCost cost, 
+					   const C2DImageSeries& images, 
+					   size_t _skip, size_t _reference):
 	m_skip(_skip),
 	m_reference(_reference),
 	m_peak_freq(-1),
@@ -73,7 +56,7 @@ C2DSimilarityProfileImpl::C2DSimilarityProfileImpl(P2DFullCost cost,
 }
 
 
-float C2DSimilarityProfileImpl::get_peak_frequency() const
+float C2DSimilarityProfile::get_peak_frequency() const
 {
 	if (!m_peak_freq_valid) {
 		CFFT1D_R2C fft(m_cost_values.size());
@@ -89,7 +72,7 @@ float C2DSimilarityProfileImpl::get_peak_frequency() const
 	return m_peak_freq;
 }
 
-vector<size_t> C2DSimilarityProfileImpl::get_periodic_subset() const
+vector<size_t> C2DSimilarityProfile::get_periodic_subset() const
 {
 	vector<size_t> result; 
 	
@@ -125,30 +108,4 @@ vector<size_t> C2DSimilarityProfileImpl::get_periodic_subset() const
 	return result; 
 }
 	
-
-C2DSimilarityProfile::C2DSimilarityProfile(P2DFullCost cost, 
-					   const C2DImageSeries& images, 
-					   size_t skip, size_t reference):
-	impl(new C2DSimilarityProfileImpl(cost, images, skip, reference)) 
-{
-}
-
-C2DSimilarityProfile::~C2DSimilarityProfile()
-{
-	delete impl; 
-}
-
-
-float C2DSimilarityProfile::get_peak_frequency() const
-{
-	assert(impl); 
-	return impl->get_peak_frequency(); 
-}
-
-vector<size_t> C2DSimilarityProfile::get_periodic_subset() const
-{
-	assert(impl); 
-	return impl->get_periodic_subset(); 
-}
-
 NS_MIA_END
