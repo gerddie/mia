@@ -252,6 +252,7 @@ NEW_TEST(property_flags  miacore)
 NEW_TEST(flagstring  miacore)
 NEW_TEST(meanvar  miacore)
 NEW_TEST(scaler1d miacore)
+NEW_TEST(statistics miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)
