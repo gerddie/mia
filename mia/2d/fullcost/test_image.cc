@@ -61,6 +61,7 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost,  ImagefullcostFixture )
 	BOOST_REQUIRE(save_image2d("ref.@", ref)); 
 
 	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
+	cost.reinit(); 
 	cost.set_size(size);
 	C2DTransformMock t(size); 
 	
@@ -104,6 +105,7 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_no_translate,  ImagefullcostFixture 
 	BOOST_REQUIRE(save_image2d("ref.@", ref)); 
 
 	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
+	cost.reinit(); 
 	cost.set_size(size);
 	double value = cost.cost_value();
 
@@ -137,7 +139,9 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 	BOOST_REQUIRE(save_image2d("ref.@", ref)); 
 
 	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
+	cost.reinit(); 
 	cost.set_size(size);
+	
 	C2DTransformMock t(size); 
 	
 	gsl::DoubleVector gradient(t.degrees_of_freedom()); 

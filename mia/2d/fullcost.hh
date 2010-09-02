@@ -67,7 +67,10 @@ public:
 	 */
 	double cost_value() const;
 
-		
+	/**
+	   Re-initialalize the cost function
+	*/
+	void reinit();
 	
 	/**
 	   Set the size of the cost function 
@@ -81,6 +84,7 @@ private:
 	virtual double do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const = 0;
 	virtual double do_value(const C2DTransformation& t) const = 0;
 	virtual double do_value() const = 0;
+	virtual void do_reinit();
 	
 	virtual void do_set_size() = 0; 
 	

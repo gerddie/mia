@@ -48,6 +48,7 @@ private:
 	double do_value(const C2DTransformation& t) const; 
 
 	double do_value() const; 
+	void do_reinit(); 
 
 	C2DImageDataKey _M_src_key;
 	C2DImageDataKey _M_ref_key;

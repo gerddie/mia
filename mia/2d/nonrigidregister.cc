@@ -197,6 +197,7 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 
 		save_image2d("src.@", src_scaled);
 		save_image2d("ref.@", ref_scaled);
+		_M_costs.reinit(); 
 		_M_costs.set_size(src_scaled->get_size()); 
 		
 		apply(*transform, gradminimizers[_M_minimizer].fdfmin);

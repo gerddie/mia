@@ -28,6 +28,7 @@ SET(MIA2D_SRC_BASE
   polygon.cc
   ppmatrix.cc
   rigidregister.cc
+  similarity_profile.cc
   shape.cc
   timestep.cc
   transform.cc
@@ -108,6 +109,7 @@ SET(MIA2D_HEADERS_BASE
   ppmatrix.hh
   rigidregister.hh
   shape.hh
+  similarity_profile.hh
   timestep.hh
   transform.hh
   transformmock.hh
@@ -197,6 +199,7 @@ TEST_2DMIA(ppmatrix)
 TEST_2DMIA(rigidregister)
 TEST_2DMIA(transformfactory)
 TEST_2DMIA(vectorfield_interpolator)
+TEST_2DMIA(similarity_profile)
 
 IF(ITPP_FOUND)
   TEST_2DMIA(ica)

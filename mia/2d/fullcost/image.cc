@@ -102,11 +102,9 @@ double C2DImageFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVect
 
 void C2DImageFullCost::do_set_size()
 {
-	_M_src = get_from_pool(_M_src_key); 
-	_M_ref = get_from_pool(_M_ref_key); 
-	
-	if (_M_src->get_size() != _M_ref->get_size()) 
-		throw runtime_error("C2DImageFullCost only works with images of equal size"); 
+	TRACE_FUNCTION; 
+	assert(_M_src); 
+	assert(_M_ref); 
 
 	if (_M_src->get_size() != get_current_size()) {
 		stringstream filter_descr; 
@@ -119,6 +117,16 @@ void C2DImageFullCost::do_set_size()
 		_M_ref = scaler->filter(*_M_ref); 
 	}
 	_M_cost_kernel->prepare_reference(*_M_ref); 
+}
+
+void C2DImageFullCost::do_reinit()
+{
+	TRACE_FUNCTION; 
+	_M_src = get_from_pool(_M_src_key);
+	_M_ref = get_from_pool(_M_ref_key);
+	if (_M_src->get_size() != _M_ref->get_size()) 
+		throw runtime_error("C2DImageFullCost only works with images of equal size"); 
+
 }
 
 P2DImage C2DImageFullCost::get_from_pool(const C2DImageDataKey& key)

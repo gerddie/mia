@@ -69,6 +69,16 @@ const C2DBounds& C2DFullCost::get_current_size() const
 	return _M_current_size; 
 }
 
+void C2DFullCost::reinit()
+{
+	do_reinit(); 
+}
+
+void C2DFullCost::do_reinit()
+{
+	
+}
+
 void C2DFullCost::set_size(const C2DBounds& size)
 {
 	if (_M_current_size != size) {
