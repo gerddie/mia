@@ -72,3 +72,13 @@ BOOST_AUTO_TEST_CASE( test_curl_cost )
 	BOOST_CHECK_EQUAL(gradient[0], 0.0); 
 	BOOST_CHECK_EQUAL(gradient[1], 4.0); 
 }
+
+BOOST_AUTO_TEST_CASE( test_curl_cost_notrans ) 
+{
+	C2DDivCurlFullCost  div(0.0, 4.0, 2.0); 
+
+	C2DBounds size(1,2); 
+	div.set_size(size); 
+
+	BOOST_CHECK_EQUAL(div.cost_value(), 0.0); 
+}

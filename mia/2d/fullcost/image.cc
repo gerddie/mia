@@ -60,6 +60,17 @@ double C2DImageFullCost::do_value(const C2DTransformation& t) const
 	return result; 
 }
 
+double C2DImageFullCost::do_value() const
+{
+	TRACE_FUNCTION; 
+	assert(_M_src); 
+	assert(_M_ref); 
+	const double result = _M_cost_kernel->value(*_M_src, *_M_ref); 
+	cvdebug() << "C2DImageFullCost::value = " << result << "\n"; 
+	return result; 
+}
+
+
 double C2DImageFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const
 {
 	TRACE_FUNCTION; 

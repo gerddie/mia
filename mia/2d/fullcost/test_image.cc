@@ -31,16 +31,13 @@
 NS_MIA_USE
 namespace bfs=::boost::filesystem;
 
-BOOST_AUTO_TEST_CASE( test_imagefullcost ) 
+struct ImagefullcostFixture {
+	ImagefullcostFixture(); 
+	
+}; 
+
+BOOST_FIXTURE_TEST_CASE( test_imagefullcost,  ImagefullcostFixture ) 
 {
-	list< bfs::path> cost_plugpath;
-	cost_plugpath.push_back(bfs::path("../cost"));
-	C2DImageCostPluginHandler::set_search_path(cost_plugpath);
-
-	list< bfs::path> filter_plugpath;
-	filter_plugpath.push_back(bfs::path("../filter"));
-	C2DFilterPluginHandler::set_search_path(filter_plugpath);
-
 
 	// create two images 
 	const float src_data[16] = {
@@ -81,11 +78,42 @@ BOOST_AUTO_TEST_CASE( test_imagefullcost )
 	
 }
 
-BOOST_AUTO_TEST_CASE( test_imagefullcost_2 ) 
+BOOST_FIXTURE_TEST_CASE( test_imagefullcost_no_translate,  ImagefullcostFixture ) 
 {
-	list< bfs::path> plugpath;
-	plugpath.push_back(bfs::path("../cost"));
-	C2DImageCostPluginHandler::set_search_path(plugpath);
+
+
+	// create two images 
+	const float src_data[16] = {
+		0, 0, 0, 0,
+		0, 3, 1, 0,
+		0, 6, 7, 0,
+		0, 0, 0, 0
+	};
+	const float ref_data[16] = {
+		0, 0, 0, 0,
+		0, 2, 3, 0,
+		0, 1, 2, 0,
+		0, 0, 0, 0
+	};
+	C2DBounds size(4,4); 
+
+	P2DImage src(new C2DFImage(size, src_data ));
+	P2DImage ref(new C2DFImage(size, ref_data ));
+	
+	BOOST_REQUIRE(save_image2d("src.@", src)); 
+	BOOST_REQUIRE(save_image2d("ref.@", ref)); 
+
+	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
+	cost.set_size(size);
+	double value = cost.cost_value();
+
+	BOOST_CHECK_CLOSE(value, 55.0 / 16.0, 0.1);
+
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
+{
 
 	// create two images 
 	const unsigned char src_data[16] = {
@@ -124,4 +152,19 @@ BOOST_AUTO_TEST_CASE( test_imagefullcost_2 )
 	BOOST_CHECK_CLOSE(gradient[10], 255 * 255 * 0.5f, 0.1);
 	BOOST_CHECK_CLOSE(gradient[11], 255 * 255 * 0.5f, 0.1);
 	
+}
+
+ImagefullcostFixture::ImagefullcostFixture()
+{
+	list< bfs::path> cost_plugpath;
+	cost_plugpath.push_back(bfs::path("../cost"));
+	C2DImageCostPluginHandler::set_search_path(cost_plugpath);
+
+	list< bfs::path> filter_plugpath;
+	filter_plugpath.push_back(bfs::path("../filter"));
+	C2DFilterPluginHandler::set_search_path(filter_plugpath);
+
+	list< bfs::path> io_plugpath;
+	io_plugpath.push_back(bfs::path("../io"));
+	C2DImageIOPluginHandler::set_search_path(io_plugpath);
 }

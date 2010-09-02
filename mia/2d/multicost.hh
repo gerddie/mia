@@ -39,6 +39,7 @@ private:
 
 	virtual double do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const;
 	double do_value(const C2DTransformation& t) const; 
+	double do_value() const; 
 	virtual void do_set_size(); 
 	
 	std::vector<P2DFullCost> _M_costs; 

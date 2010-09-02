@@ -49,6 +49,11 @@ double C2DDivCurlFullCost::do_value(const C2DTransformation& t) const
 	return result; 
 }
 
+double C2DDivCurlFullCost::do_value() const
+{
+	return 0.0; 
+}
+
 void C2DDivCurlFullCost::do_set_size()
 {
 	_M_size_scale = 1.0 / (get_current_size().x * get_current_size().y); 

@@ -40,6 +40,7 @@ public:
 private:
 	double do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const;
 	double do_value(const C2DTransformation& t) const;
+	double do_value() const; 
 	void do_set_size(); 
 	double _M_cost; 
 	double _M_gx; 
@@ -68,6 +69,12 @@ double C2DFullCostMock::do_value(const C2DTransformation& t) const
 {
 	return _M_cost; 
 }
+
+double C2DFullCostMock::do_value() const
+{
+	return _M_cost; 
+}
+
 
 void C2DFullCostMock::do_set_size()
 {

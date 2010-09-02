@@ -47,6 +47,8 @@ private:
 	bool do_has(const char *property) const; 
 	double do_value(const C2DTransformation& t) const; 
 
+	double do_value() const; 
+
 	C2DImageDataKey _M_src_key;
 	C2DImageDataKey _M_ref_key;
 	

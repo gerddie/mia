@@ -79,6 +79,14 @@ double C2DFullCostList::do_value(const C2DTransformation& t) const
 	return result; 
 }
 
+double C2DFullCostList::do_value() const
+{
+	double  result = 0; 
+	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i) {
+		result += (*i)->cost_value(); 
+	}
+	return result; 
+}
 
 void C2DFullCostList::do_set_size(){
 	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i) 

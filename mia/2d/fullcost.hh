@@ -61,6 +61,12 @@ public:
 	 */
 	double cost_value(const C2DTransformation& t) const;
 
+	/**
+	   Evaluate the weighted cost value without transforming the image 
+	   \returns weighted cost value 
+	 */
+	double cost_value() const;
+
 		
 	
 	/**
@@ -74,6 +80,8 @@ protected:
 private:
 	virtual double do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const = 0;
 	virtual double do_value(const C2DTransformation& t) const = 0;
+	virtual double do_value() const = 0;
+	
 	virtual void do_set_size() = 0; 
 	
 	double _M_weight;
