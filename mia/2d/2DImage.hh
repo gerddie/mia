@@ -29,7 +29,7 @@
 #include <mia/core/pixeltype.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-
+#include <mia/core/type_traits.hh>
 #include <mia/2d/2DVectorfield.hh>
 
 NS_MIA_BEGIN
@@ -96,6 +96,7 @@ public:
 /// Shared pointer representation of the 2D Image
 typedef C2DImage::Pointer P2DImage;
 typedef std::vector<P2DImage> C2DImageSeries;
+
 
 /**
 \brief This is the template version of a 2D image.

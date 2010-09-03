@@ -51,6 +51,9 @@ struct EXPORT_2D fft2d_kernel_data {
 
 class EXPORT_2D CFFT2DKernel :public CProductBase {
 public:
+	typedef fft2d_kernel_data plugin_data; 
+	typedef kernel_plugin_type plugin_type; 
+		
 	CFFT2DKernel();
 	virtual ~CFFT2DKernel();
 	void apply() const;
@@ -72,7 +75,7 @@ private:
 typedef  std::shared_ptr<CFFT2DKernel > PFFT2DKernel;
 
 
-typedef TFactory<CFFT2DKernel, fft2d_kernel_data, kernel_plugin_type> CFFT2DKernelPlugin;
+typedef TFactory<CFFT2DKernel> CFFT2DKernelPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<CFFT2DKernelPlugin> > CFFT2DKernelPluginHandler;
 
 NS_MIA_END

@@ -57,6 +57,9 @@ struct EXPORT_2D cst2d_image_kernel {
 template <typename T>
 class EXPORT_2D TCST2DKernel :public CProductBase {
 public:
+	typedef cst2d_vector_kernel plugin_data; 
+	typedef kernel_plugin_type plugin_type; 
+
 	typedef TCSTPlan<T> CPlan;
 	TCST2DKernel(fftwf_r2r_kind forward);
 	virtual ~TCST2DKernel();
@@ -81,10 +84,10 @@ typedef TCST2DKernel<C2DFImage>       CCST2DImageKernel;
 typedef  std::shared_ptr<CCST2DImageKernel > PCST2DImageKernel;
 typedef  std::shared_ptr<CCST2DVectorKernel > PCST2DVectorKernel;
 
-typedef TFactory<CCST2DVectorKernel, cst2d_vector_kernel, kernel_plugin_type> CCST2DVectorKernelPlugin;
+typedef TFactory<CCST2DVectorKernel> CCST2DVectorKernelPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> > CCST2DVectorKernelPluginHandler;
 
-typedef TFactory<CCST2DImageKernel, cst2d_image_kernel, kernel_plugin_type> CCST2DImgKernelPlugin;
+typedef TFactory<CCST2DImageKernel> CCST2DImgKernelPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<CCST2DImgKernelPlugin> > CCST2DImgKernelPluginHandler;
 
 

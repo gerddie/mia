@@ -52,6 +52,9 @@ struct __copy_create_ptr<C2DImage> {
 
 class EXPORT_3D C2DImageFifoFilter: public TFifoFilter<P2DImage>, public CProductBase  {
 public:
+	typedef image2d_stack plugin_data; 
+	typedef filter_type plugin_type; 
+
 	C2DImageFifoFilter(size_t filter_width, size_t min_fill, size_t read_start);
 protected:
 	C3DImage *create_buffer(const C2DBounds& slice_sice, size_t depth, EPixelType type);
@@ -69,7 +72,7 @@ protected:
 };
 
 class EXPORT_3D C2DFifoFilterPlugin:
-	public TFactory<C2DImageFifoFilter, image2d_stack, filter_type> {
+	public TFactory<C2DImageFifoFilter> {
 protected:
 	C2DFifoFilterPlugin(char const * const  name);
 	typedef std::vector<P2DImage> CImageStack;

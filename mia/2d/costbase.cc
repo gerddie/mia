@@ -56,7 +56,7 @@ double C2DCostBase::evaluate(const C2DTransformation& t, C2DFVectorfield& force)
 }
 
 C2DCostBasePlugin::C2DCostBasePlugin(const char *const name):
-	TFactory<C2DCostBase, cost_data2d_type, cost_type>(name),
+	TFactory<C2DCostBase>(name),
 	_M_weight(1.0f)
 {
 	add_parameter("weight", new CFloatParameter(_M_weight, 0.0,
@@ -72,7 +72,7 @@ float C2DCostBasePlugin::get_weight() const
 const char *cost_data2d_type::type_descr = "2d";
 
 template class TPlugin<cost_data2d_type, cost_type>;
-template class TFactory<C2DCostBase, cost_data2d_type, cost_type>;
+template class TFactory<C2DCostBase>;
 template class TPluginHandler<C2DCostBasePlugin>;
 template class EXPORT_HANDLER TFactoryPluginHandler<C2DCostBasePlugin>;
 template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C2DCostBasePlugin> >;

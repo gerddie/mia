@@ -63,7 +63,7 @@ double CNoiseGenerator::ranf() const
 }
 
 template class TPlugin<grayscale_noise_data, generator_type>;
-template class TFactory<CNoiseGenerator, grayscale_noise_data, generator_type>;
+template class TFactory<CNoiseGenerator>;
 template class TPluginHandler<CNoiseGeneratorPlugin>;
 template class TFactoryPluginHandler<CNoiseGeneratorPlugin>;
 template class THandlerSingleton<TFactoryPluginHandler<CNoiseGeneratorPlugin> >;

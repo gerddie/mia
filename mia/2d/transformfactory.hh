@@ -37,6 +37,9 @@ NS_MIA_BEGIN
  */
 class  EXPORT_2D C2DTransformCreator: public CProductBase {
 public:
+	typedef C2DImage plugin_data; 
+	typedef C2DTransformation plugin_type; 
+
 	/** Standard constructor 
 	    \remark it is empty, so why it is defined? 
 	 */
@@ -68,7 +71,7 @@ private:
 };
 
 typedef std::shared_ptr<C2DTransformCreator > P2DTransformationFactory;
-typedef TFactory<C2DTransformCreator, C2DImage, C2DTransformation> C2DTransformCreatorPlugin;
+typedef TFactory<C2DTransformCreator> C2DTransformCreatorPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin> > C2DTransformCreatorHandler;
 FACTORY_TRAIT(C2DTransformCreatorHandler); 
 

@@ -56,6 +56,9 @@ public:
 	typedef T Data;
 	typedef V Force;
 
+	typedef T plugin_data; 
+	typedef cost_type plugin_type; 
+
 	/// ensure virtual destruction, since we have virtual functions
 	virtual ~TCost();
 

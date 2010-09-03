@@ -26,9 +26,9 @@
 
 NS_MIA_BEGIN
 
-template class TRegModel<C3DFVectorfield, C3DFVectorfield>;
+template class TRegModel<C3DImage,C3DFVectorfield, C3DFVectorfield>;
 template class TPlugin<C3DImage, regmodel_type>;
-template class TFactory<C3DRegModel, C3DImage, regmodel_type>;
+template class TFactory<C3DRegModel>;
 template class THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin> >;
 template class TFactoryPluginHandler<C3DRegModelPlugin>;
 template class TPluginHandler<C3DRegModelPlugin>;

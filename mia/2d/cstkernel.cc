@@ -83,13 +83,13 @@ template class TCST2DKernel<C2DFVectorfield>;
 template class TCST2DKernel<C2DFImage>;
 
 template class TPlugin<cst2d_vector_kernel, kernel_plugin_type>;
-template class TFactory<CCST2DVectorKernel, cst2d_vector_kernel, kernel_plugin_type> ;
+template class TFactory<CCST2DVectorKernel> ;
 template class TPluginHandler<CCST2DVectorKernelPlugin>;
 template class TFactoryPluginHandler<CCST2DVectorKernelPlugin>;
 template class THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> > ;
 
 template class TPlugin<cst2d_image_kernel, kernel_plugin_type>;
-template class TFactory<CCST2DImageKernel, cst2d_image_kernel, kernel_plugin_type> ;
+template class TFactory<CCST2DImageKernel> ;
 template class TPluginHandler<CCST2DImgKernelPlugin>;
 template class TFactoryPluginHandler<CCST2DImgKernelPlugin>;
 template class THandlerSingleton<TFactoryPluginHandler<CCST2DImgKernelPlugin> > ;

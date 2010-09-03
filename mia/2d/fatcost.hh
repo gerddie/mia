@@ -47,7 +47,7 @@ private:
 	virtual P2DImageFatCost cloned(P2DImage src, P2DImage ref) const = 0;
 };
 
-class EXPORT_2D C2DFatImageCostPlugin: public TFactory<C2DImageFatCost, C2DImage, fatcost_type> {
+class EXPORT_2D C2DFatImageCostPlugin: public TFactory<C2DImageFatCost> {
 public:
 	C2DFatImageCostPlugin(const char *name);
 	P2DImageFatCost create_directly( P2DImage src, P2DImage ref,

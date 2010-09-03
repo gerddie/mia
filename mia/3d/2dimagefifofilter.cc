@@ -71,7 +71,7 @@ typedef TFifoFilterSink<P2DImage> C2DImageFifoFilterSink;
 template class TFifoFilterSink<P2DImage>;
 
 C2DFifoFilterPlugin::C2DFifoFilterPlugin(char const * const  name):
-	TFactory<C2DImageFifoFilter, image2d_stack, filter_type>(name)
+	TFactory<C2DImageFifoFilter>(name)
 {
 }
 
@@ -123,8 +123,8 @@ bool C2DFifoFilterPlugin::call_test(const CImageStack& in_data, const CImageStac
 
 template class TPlugin<image2d_stack, filter_type>;
 template class TFifoFilter<P2DImage>;
-template class TFactory<C2DImageFifoFilter, image2d_stack, filter_type>;
-template class TFactoryPluginHandler<TFactory<C2DImageFifoFilter, image2d_stack, filter_type> >;
+template class TFactory<C2DImageFifoFilter>;
+template class TFactoryPluginHandler<TFactory<C2DImageFifoFilter> >;
 //template class TPluginHandler<TFactory<C2DImageFifoFilter, image2d_stack, filter_type> >;
 template class TPluginHandler<C2DFifoFilterPlugin>;
 template class THandlerSingleton<TFactoryPluginHandler<C2DFifoFilterPlugin> >;

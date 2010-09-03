@@ -64,7 +64,7 @@ C2DBounds C2DImageFatCost::get_size() const
 }
 
 C2DFatImageCostPlugin::C2DFatImageCostPlugin(const char *name):
-	TFactory<C2DImageFatCost, C2DImage, fatcost_type>(name),
+	TFactory<C2DImageFatCost>(name),
 	_M_interpolator(ip_bspline3),
 	_M_weight(1.0f)
 
@@ -180,7 +180,7 @@ P2DImageFatCost C2DFatImageCostPluginHandlerImpl::create_directly(const std::str
 template class TFatCost<C2DTransformation, C2DFVectorfield>;
 
 template class TPlugin<C2DImage, fatcost_type>;
-template class TFactory<C2DImageFatCost, C2DImage, fatcost_type>;
+template class TFactory<C2DImageFatCost>;
 
 template class TPluginHandler<C2DFatImageCostPlugin>;
 template class TFactoryPluginHandler<C2DFatImageCostPlugin>;

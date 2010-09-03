@@ -34,6 +34,9 @@ NS_MIA_BEGIN
 
 class EXPORT_2D C2DRegTimeStep : public CProductBase {
 public:
+	typedef C2DImage plugin_data; 
+	typedef timestep_type plugin_type; 
+
 	C2DRegTimeStep(float min, float max);
 
 
@@ -64,7 +67,7 @@ private:
 
 typedef std::shared_ptr<C2DRegTimeStep > P2DRegTimeStep;
 
-class EXPORT_2D C2DRegTimeStepPlugin : public TFactory<C2DRegTimeStep, C2DImage, timestep_type>
+class EXPORT_2D C2DRegTimeStepPlugin : public TFactory<C2DRegTimeStep>
 {
 public:
 	C2DRegTimeStepPlugin(const char *name);

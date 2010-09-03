@@ -65,7 +65,7 @@ struct less_then<T2DVector<int> > {
 };
 
 template class TPlugin<C2DImage, shape_type>;
-template class TFactory<C2DShape, C2DImage, shape_type>;
+template class TFactory<C2DShape>;
 template class THandlerSingleton<TFactoryPluginHandler<C2DShapePlugin> >;
 template class TFactoryPluginHandler<C2DShapePlugin>;
 template class TPluginHandler<C2DShapePlugin>;

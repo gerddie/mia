@@ -108,7 +108,7 @@ float *CFFT2DKernel::prepare(const C2DBounds& size)
 }
 
 template class TPlugin<fft2d_kernel_data, kernel_plugin_type>;
-template class TFactory<CFFT2DKernel, fft2d_kernel_data, kernel_plugin_type>;
+template class TFactory<CFFT2DKernel>;
 template class TPluginHandler<CFFT2DKernelPlugin>;
 template class TFactoryPluginHandler<CFFT2DKernelPlugin>;
 template class THandlerSingleton<TFactoryPluginHandler<CFFT2DKernelPlugin> >;

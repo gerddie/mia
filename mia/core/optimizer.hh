@@ -43,7 +43,8 @@ struct EXPORT_CORE algorithm_type {
 
 class EXPORT_CORE COptimizer : public CProductBase {
 public:
-
+	typedef COptimizer plugin_data; 
+	typedef algorithm_type plugin_type; 
 	static const char *type_descr;
 
 	enum EOptimizerResults { or_failed=0,
@@ -67,7 +68,7 @@ private:
 	virtual const char *do_get_name() const = 0;
 };
 
-typedef TFactory<COptimizer, COptimizer, algorithm_type> COptimizerPlugin;
+typedef TFactory<COptimizer> COptimizerPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<COptimizerPlugin> > COptimizerPluginPluginHandler;
 
 

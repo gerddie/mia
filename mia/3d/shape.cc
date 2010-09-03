@@ -67,7 +67,7 @@ struct less_then<T3DVector<int> > {
 };
 
 template class TPlugin<C3DImage, shape_type>;
-template class TFactory<C3DShape, C3DImage, shape_type>;
+template class TFactory<C3DShape>;
 template class THandlerSingleton<TFactoryPluginHandler<C3DShapePlugin> >;
 template class TFactoryPluginHandler<C3DShapePlugin>;
 template class TPluginHandler<C3DShapePlugin>;

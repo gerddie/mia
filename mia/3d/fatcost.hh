@@ -33,6 +33,9 @@ typedef std::shared_ptr<C3DImageFatCost > P3DImageFatCost;
 
 class EXPORT_3D C3DImageFatCost: public TFatCost<C3DTransformation, C3DFVectorfield> {
 public:
+	typedef  C3DImage plugin_data; 
+	typedef  fatcost_type plugin_type; 
+
 	C3DImageFatCost(P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight);
 
 	P3DImageFatCost get_downscaled(const C3DBounds& scale) const;
@@ -42,7 +45,7 @@ private:
 	virtual P3DImageFatCost cloned(P3DImage src, P3DImage ref) const = 0;
 };
 
-class EXPORT_3D C3DFatImageCostPlugin: public TFactory<C3DImageFatCost, C3DImage, fatcost_type> {
+class EXPORT_3D C3DFatImageCostPlugin: public TFactory<C3DImageFatCost> {
 public:
 	C3DFatImageCostPlugin(const char *name);
 	P3DImageFatCost create_directly( P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight);

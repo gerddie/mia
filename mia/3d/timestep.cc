@@ -89,7 +89,7 @@ float C3DRegTimeStep::get_delta(float maxshift) const
 }
 
 C3DRegTimeStepPlugin::C3DRegTimeStepPlugin(const char *name):
-	TFactory<C3DRegTimeStep, C3DImage, timestep_type>(name),
+	TFactory<C3DRegTimeStep>(name),
 	_M_min(0.1),
 	_M_max(2.0)
 {
@@ -111,7 +111,7 @@ float C3DRegTimeStepPlugin::get_max_timestep() const
 }
 
 template class TPlugin<C3DImage, timestep_type>;
-template class TFactory<C3DRegTimeStep, C3DImage, timestep_type>;
+template class TFactory<C3DRegTimeStep>;
 template class THandlerSingleton<TFactoryPluginHandler<C3DRegTimeStepPlugin> >;
 template class TFactoryPluginHandler<C3DRegTimeStepPlugin>;
 template class TPluginHandler<C3DRegTimeStepPlugin>;

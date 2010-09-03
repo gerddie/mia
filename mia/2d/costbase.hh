@@ -35,6 +35,10 @@ struct EXPORT_2D cost_data2d_type {
 
 class EXPORT_2D C2DCostBase : public CProductBase {
 public:
+	typedef cost_data2d_type plugin_data; 
+	typedef cost_type plugin_type; 
+
+	
 	C2DCostBase(float weight);
 
 	double evaluate(const C2DTransformation& t, C2DFVectorfield& force) const;
@@ -43,7 +47,7 @@ private:
 	float _M_weight;
 };
 
-class EXPORT_CORE C2DCostBasePlugin: public TFactory<C2DCostBase, cost_data2d_type, cost_type> {
+class EXPORT_CORE C2DCostBasePlugin: public TFactory<C2DCostBase> {
 public:
 	C2DCostBasePlugin(const char *const name);
 protected:

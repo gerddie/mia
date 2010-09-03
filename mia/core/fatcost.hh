@@ -60,6 +60,11 @@ public:
 	typedef F Force;
 	typedef typename T::Data Data;
 	typedef typename T::Interpolator Interpolator;
+	
+	typedef typename T::Data plugin_data;
+	typedef fatcost_type plugin_type;
+
+
 	/**
 
 	 */

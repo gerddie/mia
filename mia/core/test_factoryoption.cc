@@ -35,6 +35,9 @@ NS_MIA_BEGIN
 
 class CProductMock : public CProductBase {
 public:
+	typedef CProductMock plugin_type; 
+	typedef CProductMock plugin_data; 
+
 	static const char *value; 
 	static const char *type_descr; 
 	CProductMock(const char *s):_M_value(s){
@@ -46,9 +49,9 @@ private:
 const char *CProductMock::value ="mock";  
 const char *CProductMock::type_descr ="product";  
 
-class CFactoryMock: public TFactory<CProductMock,CProductMock,CProductMock >  {
+class CFactoryMock: public TFactory<CProductMock>  {
 public: 
-	CFactoryMock():TFactory<CProductMock,CProductMock,CProductMock >("lala"){}
+	CFactoryMock():TFactory<CProductMock>("lala"){}
 		
 	typedef shared_ptr<CProductMock> ProductPtr; 
 	

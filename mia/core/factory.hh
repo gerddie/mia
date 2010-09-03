@@ -48,8 +48,9 @@ NS_MIA_BEGIN
 
 
 /** this is the class to load a certain plugin */
-template <typename P, typename D, typename T>
-class EXPORT_HANDLER TFactory: public TPlugin<D,T> {
+template <typename P>
+class EXPORT_HANDLER TFactory: 
+	public TPlugin<typename P::plugin_data, typename P::plugin_type> {
 public: 
 	typedef P Product; 
 	typedef std::shared_ptr<P > ProductPtr; 
@@ -97,7 +98,6 @@ public:
 }; 
 
 
-
 template <class T> 
 class FactoryTrait {
 	typedef typename T::must_create_trait_using_FACTORY_TRAIT type; 
@@ -118,14 +118,14 @@ public:
 
 
 
-template <typename P, typename D, typename T>
-TFactory<P,D,T>::TFactory(char const * const  name):
-	TPlugin<D,T>(name)
+template <typename P>
+TFactory<P>::TFactory(char const * const  name):
+	TPlugin<typename P::plugin_data, typename P::plugin_type>(name)
 {
 }
 
-template <typename P, typename D, typename T>
-typename TFactory<P,D,T>::ProductPtr TFactory<P,D,T>::create(const CParsedOptions& options, char const *params)
+template <typename P>
+typename TFactory<P>::ProductPtr TFactory<P>::create(const CParsedOptions& options, char const *params)
 {
 	this->set_parameters(options);
 	this->check_parameters();
@@ -172,8 +172,8 @@ typename P::ProductPtr TFactoryPluginHandler<P>::produce(char const *params)cons
 		return ProductPtr(); 
 }
 
-template <typename P, typename D, typename T>
-bool TFactory<P,D,T>::do_test() const
+template <typename P>
+bool TFactory<P>::do_test() const
 {
 	cvfail() << "do_test() is obsolete\n"; 
 	return false; 

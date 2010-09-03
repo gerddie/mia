@@ -39,12 +39,15 @@ NS_MIA_BEGIN
  */
 
 typedef TImageFilter<C3DImage> C3DFilter;
-typedef TFactory<C3DFilter, C3DImage, filter_type> C3DFilterPlugin;
+typedef TFactory<C3DFilter> C3DFilterPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C3DFilterPlugin> > C3DFilterPluginHandler;
 
 
 class EXPORT_3D C3DImageCombiner : public TFilter< PCombinerResult >, public CProductBase {
 public:
+	typedef C3DImage plugin_data; 
+	typedef combiner_type plugin_type; 
+	
 	virtual ~C3DImageCombiner();
 
 	result_type combine( const C3DImage& a, const C3DImage& b) const;
@@ -52,7 +55,7 @@ private:
 	virtual result_type do_combine( const C3DImage& a, const C3DImage& b) const = 0;
 };
 
-typedef TFactory<C3DImageCombiner, C3DImage, combiner_type> C3DImageCombinerPlugin;
+typedef TFactory<C3DImageCombiner> C3DImageCombinerPlugin;
 typedef std::shared_ptr<C3DImageCombiner > P3DImageCombiner;
 typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCombinerPlugin> > C3DImageCombinerPluginHandler;
 

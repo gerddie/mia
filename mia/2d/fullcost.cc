@@ -88,7 +88,7 @@ void C2DFullCost::set_size(const C2DBounds& size)
 }
 
 C2DFullCostPlugin::C2DFullCostPlugin(const char *name):
-	TFactory<C2DFullCost, C2DFullCost, C2DFullCost>(name), 
+	TFactory<C2DFullCost>(name), 
 	_M_weight(1.0)
 {
 	add_parameter("weight", new CFloatParameter(_M_weight, 1e-10f, 1e+10f,
@@ -102,7 +102,7 @@ C2DFullCostPlugin::ProductPtr C2DFullCostPlugin::do_create() const
 
 
 template class TPlugin<C2DFullCost, C2DFullCost>;
-template class TFactory<C2DFullCost, C2DFullCost, C2DFullCost>;
+template class TFactory<C2DFullCost>;
 template class EXPORT_HANDLER TFactoryPluginHandler<C2DFullCostPlugin>;
 template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C2DFullCostPlugin> >;
 template class TPluginHandler<C2DFullCostPlugin>;

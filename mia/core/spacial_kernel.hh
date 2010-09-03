@@ -50,8 +50,7 @@ struct EXPORT_CORE kernel_plugin_type {
 
 class EXPORT_CORE C1DFilterKernel : public CProductBase {
 protected:
-
-
+	
 	/** constructs the kernel
 	    \param fsize width parameter of the kernel
 	*/
@@ -59,6 +58,8 @@ protected:
 
 	virtual ~C1DFilterKernel();
 public:
+	typedef spacial_kernel_data plugin_data; 
+	typedef kernel_plugin_type  plugin_type; 
 
 	/// returns the filter width definition parameter
 	int get_fsize() const;
@@ -135,7 +136,7 @@ private:
 
 };
 
-typedef TFactory<C1DFoldingKernel, spacial_kernel_data, kernel_plugin_type> C1DSpacialKernelPlugin;
+typedef TFactory<C1DFoldingKernel> C1DSpacialKernelPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C1DSpacialKernelPlugin> > C1DSpacialKernelPluginHandler;
 
 FACTORY_TRAIT(C1DSpacialKernelPluginHandler); 

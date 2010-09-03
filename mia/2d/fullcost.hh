@@ -35,6 +35,9 @@ NS_MIA_BEGIN
 
 class EXPORT_2D C2DFullCost : public CProductBase {
 public: 
+	typedef C2DFullCost plugin_data; 
+	typedef C2DFullCost plugin_type;
+
 	static const char *type_descr;
 	static const char *value;
 	
@@ -95,7 +98,7 @@ private:
 typedef std::shared_ptr<C2DFullCost > P2DFullCost;
 
 
-class EXPORT_2D C2DFullCostPlugin: public TFactory<C2DFullCost, C2DFullCost, C2DFullCost> {
+class EXPORT_2D C2DFullCostPlugin: public TFactory<C2DFullCost> {
 public:
 	C2DFullCostPlugin(const char *name);
 private:

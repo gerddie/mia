@@ -67,6 +67,9 @@ struct TFilter {
 template <class D>
 class EXPORT_HANDLER TImageFilter: public TFilter< std::shared_ptr<D > >, public CProductBase {
 public:
+	typedef D plugin_data; 
+	typedef filter_type plugin_type; 
+	
 	typedef typename TFilter< std::shared_ptr<D > >::result_type result_type;
 	virtual ~TImageFilter();
 	result_type filter(const D& image) const;
@@ -75,10 +78,10 @@ private:
 };
 
 template <class Image>
-class EXPORT_HANDLER TImageFilterPlugin: public TFactory<TImageFilter<Image>, Image, filter_type> {
+class EXPORT_HANDLER TImageFilterPlugin: public TFactory<TImageFilter<Image> > {
 public:
 	TImageFilterPlugin(char const * const  name):
-		TFactory<TImageFilter<Image>, Image, filter_type>(name)
+		TFactory<TImageFilter<Image> >(name)
 	{}
 private:
 	virtual bool do_test() const {

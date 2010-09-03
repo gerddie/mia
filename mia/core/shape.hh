@@ -28,6 +28,7 @@
 #include <set>
 
 #include <mia/core/product_base.hh>
+#include <mia/core/type_traits.hh>
 
 #ifndef EXPORT_SHAPE
 #  ifdef WIN32
@@ -64,6 +65,10 @@ struct less_then {
 template <template <typename> class T, typename M>
 class EXPORT_SHAPE TShape :public CProductBase {
 public:
+	typedef shape_type plugin_type; 
+	
+	typedef typename M::Super plugin_data; 
+	
 	typedef std::set< T<int>, less_then<T<int> > > Flat;
 	typedef T<int> value_type;
 	typedef typename Flat::const_iterator const_iterator;

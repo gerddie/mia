@@ -50,7 +50,7 @@ void C2DTransformCreator::add_property(const char *property)
 }
 
 template class TPlugin<C2DImage, C2DTransformation>;
-template class TFactory<C2DTransformCreator, C2DImage, C2DTransformation>;
+template class TFactory<C2DTransformCreator>;
 template class TPluginHandler<C2DTransformCreatorPlugin>;
 template class TFactoryPluginHandler<C2DTransformCreatorPlugin>;
 template class THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin> >;

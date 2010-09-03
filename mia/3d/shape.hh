@@ -33,7 +33,7 @@ NS_MIA_BEGIN
 typedef TShape<T3DVector, C3DBitImage> C3DShape;
 typedef std::shared_ptr<C3DShape > P3DShape;
 
-typedef TFactory<C3DShape, C3DImage, shape_type> C3DShapePlugin;
+typedef TFactory<C3DShape> C3DShapePlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C3DShapePlugin> > C3DShapePluginHandler;
 
 NS_MIA_END

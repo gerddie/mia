@@ -28,6 +28,9 @@ NS_MIA_BEGIN
 
 class EXPORT_3D C3DRegTimeStep :public CProductBase {
 public:
+	typedef C3DImage plugin_data; 
+	typedef timestep_type plugin_type; 
+
 	C3DRegTimeStep(float min, float max);
 
 	virtual ~C3DRegTimeStep();
@@ -58,7 +61,7 @@ private:
 	float _M_step;
 };
 
-class EXPORT_3D C3DRegTimeStepPlugin : public TFactory<C3DRegTimeStep, C3DImage, timestep_type>
+class EXPORT_3D C3DRegTimeStepPlugin : public TFactory<C3DRegTimeStep>
 {
 public:
 	C3DRegTimeStepPlugin(const char *name);

@@ -43,6 +43,9 @@ struct EXPORT_CORE creator_type {
 template <typename T>
 class EXPORT_HANDLER TImageCreator:public CProductBase {
 public:
+	typedef T plugin_data; 
+	typedef creator_type plugin_type; 
+	
 	virtual ~TImageCreator(){}
 
 	/**
@@ -57,7 +60,7 @@ public:
 
 #define DEFINE_Image_Creator(TYPE) \
 	typedef TImageCreator<TYPE> TYPE##Creator; \
-	typedef TFactory<TImageCreator<TYPE>, TYPE, creator_type> TYPE##CreatorPlugin; \
+	typedef TFactory<TImageCreator<TYPE> > TYPE##CreatorPlugin; \
 	typedef THandlerSingleton<TFactoryPluginHandler<TYPE##CreatorPlugin> > TYPE##CreatorPluginHandler;\
 	FACTORY_TRAIT(THandlerSingleton<TFactoryPluginHandler<TYPE##CreatorPlugin> >); 
 
@@ -65,7 +68,7 @@ public:
 #define INSTANCIATE_Image_Creator(TYPE) \
 	template class  TImageCreator<TYPE>;\
 	template class  TPlugin<TYPE, creator_type>;			\
-	template class  TFactory<TImageCreator<TYPE>, TYPE, creator_type>; \
+	template class  TFactory<TImageCreator<TYPE> >;			\
 	template class  TPluginHandler<TYPE##CreatorPlugin>;	\
         template class  TFactoryPluginHandler<TYPE##CreatorPlugin>;	\
 	template class  THandlerSingleton<TFactoryPluginHandler<TYPE##CreatorPlugin> >; 

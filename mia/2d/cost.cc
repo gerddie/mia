@@ -33,7 +33,7 @@ NS_MIA_BEGIN
 
 template class EXPORT_HANDLER TCost<C2DImage, C2DFVectorfield>;
 template class EXPORT_HANDLER TPlugin<C2DImage, cost_type>;
-template class EXPORT_HANDLER TFactory<C2DImageCost, C2DImage, cost_type>;
+template class EXPORT_HANDLER TFactory<C2DImageCost>;
 template class EXPORT_HANDLER TFactoryPluginHandler<C2DImageCostPlugin>;
 template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C2DImageCostPlugin> >;
 template class TPluginHandler<C2DImageCostPlugin>;

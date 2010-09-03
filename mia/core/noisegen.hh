@@ -47,6 +47,9 @@ struct EXPORT_CORE generator_type {
 
 class EXPORT_CORE  CNoiseGenerator : public CProductBase {
 public:
+	typedef grayscale_noise_data plugin_data; 
+	typedef generator_type plugin_type; 
+	
 	CNoiseGenerator(unsigned int seed);
 	virtual ~CNoiseGenerator();
 	double operator ()()const;
@@ -57,7 +60,7 @@ private:
 
 };
 
-typedef TFactory<CNoiseGenerator, grayscale_noise_data, generator_type> CNoiseGeneratorPlugin;
+typedef TFactory<CNoiseGenerator> CNoiseGeneratorPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<CNoiseGeneratorPlugin> > CNoiseGeneratorPluginHandler;
 FACTORY_TRAIT(CNoiseGeneratorPluginHandler); 
 

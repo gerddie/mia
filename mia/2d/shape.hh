@@ -34,7 +34,7 @@ NS_MIA_BEGIN
 typedef TShape<T2DVector, C2DBitImage> C2DShape;
 typedef std::shared_ptr<C2DShape > P2DShape;
 
-typedef TFactory<C2DShape, C2DImage, shape_type> C2DShapePlugin;
+typedef TFactory<C2DShape> C2DShapePlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C2DShapePlugin> > C2DShapePluginHandler;
 
 NS_MIA_END

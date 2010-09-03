@@ -39,7 +39,9 @@ typedef std::shared_ptr<C2DFilter > P2DFilter;
 
 class EXPORT_2D C2DImageCombiner : public TFilter< std::shared_ptr< ::boost::any  > > ,
 				   public CProductBase {
- public:
+public:
+	typedef C2DImage plugin_data; 
+	typedef combiner_type plugin_type; 
 	virtual ~C2DImageCombiner();
 
 	result_type combine( const C2DImage& a, const C2DImage& b) const;
@@ -57,7 +59,7 @@ double EXPORT_2D distance(const C2DImage& image1, const C2DImage& image2,  const
 typedef THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> > C2DFilterPluginHandler;
 
 
-typedef TFactory<C2DImageCombiner, C2DImage, combiner_type> C2DImageCombinerPlugin;
+typedef TFactory<C2DImageCombiner> C2DImageCombinerPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C2DImageCombinerPlugin> > C2DImageCombinerPluginHandler;
 
 NS_MIA_END

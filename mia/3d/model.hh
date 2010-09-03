@@ -27,9 +27,9 @@
 
 NS_MIA_BEGIN
 
-typedef TRegModel<C3DFVectorfield, C3DFVectorfield> C3DRegModel;
+typedef TRegModel<C3DImage, C3DFVectorfield, C3DFVectorfield> C3DRegModel;
 typedef std::shared_ptr<C3DRegModel > P3DRegModel;
-typedef TFactory<C3DRegModel, C3DImage, regmodel_type>  C3DRegModelPlugin;
+typedef TFactory<C3DRegModel>  C3DRegModelPlugin;
 typedef THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin> > C3DRegModelPluginHandler;
 
 NS_MIA_END

@@ -36,9 +36,11 @@ struct EXPORT_CORE regmodel_type {
    Base class template for image registration models.
  */
 
-template <typename Force, typename Transformation>
+template <typename Data, typename Force, typename Transformation>
 class TRegModel :public CProductBase {
 public:
+	typedef regmodel_type plugin_type; 
+	typedef Data plugin_data; 
 	TRegModel();
 	virtual ~TRegModel();
 	void solve (const Force& b, Transformation& x) const;
@@ -52,30 +54,30 @@ private:
 // implementation part of the registration model
 //
 
-template <typename F, typename T>
-TRegModel<F,T>::TRegModel()
+template <typename D, typename F, typename T>
+TRegModel<D,F,T>::TRegModel()
 {
 }
 
-template <typename F, typename T>
-TRegModel<F,T>::~TRegModel()
+template <typename D, typename F, typename T>
+TRegModel<D,F,T>::~TRegModel()
 {
 }
 
-template <typename F, typename T>
-void TRegModel<F,T>::solve (const F& b, T& x) const
+template <typename D, typename F, typename T>
+void TRegModel<D,F,T>::solve (const F& b, T& x) const
 {
 	do_solve(b,x);
 }
 
-template <typename F, typename T>
-float TRegModel<F,T>::get_force_scale() const
+template <typename D, typename F, typename T>
+float TRegModel<D,F,T>::get_force_scale() const
 {
 	return do_get_force_scale();
 }
 
-template <typename F, typename T>
-float  TRegModel<F,T>::do_get_force_scale() const
+template <typename D, typename F, typename T>
+float  TRegModel<D,F,T>::do_get_force_scale() const
 {
 	return 1.0f;
 }

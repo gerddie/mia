@@ -60,7 +60,7 @@ C3DBounds C3DImageFatCost::get_size() const
 }
 
 C3DFatImageCostPlugin::C3DFatImageCostPlugin(const char *name):
-	TFactory<C3DImageFatCost, C3DImage, fatcost_type>(name),
+	TFactory<C3DImageFatCost>(name),
 	_M_weight(1.0f),
 	_M_interpolator(ip_bspline3)
 {
@@ -171,8 +171,7 @@ P3DImageFatCost C3DFatImageCostPluginHandlerImpl::create_directly(const std::str
 template class TFatCost<C3DTransformation, C3DFVectorfield>;
 
 template class TPlugin<C3DImage, fatcost_type>;
-template class TFactory<C3DImageFatCost, C3DImage, fatcost_type>;
-
+template class TFactory<C3DImageFatCost>;
 template class TPluginHandler<C3DFatImageCostPlugin>;
 template class TFactoryPluginHandler<C3DFatImageCostPlugin>;
 template class THandlerSingleton<C3DFatImageCostPluginHandlerImpl>;
