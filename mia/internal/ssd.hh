@@ -49,7 +49,7 @@ public:
 	CSSDCost(); 
 private: 
 	virtual double do_value(const Data& a, const Data& b) const; 
-	virtual void do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const; 
+	virtual double do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const; 
 };
 
 
@@ -95,22 +95,25 @@ double CSSDCost<TCost>::do_value(const Data& a, const Data& b) const
 */
 
 template <typename Force>
-struct FEvalForce: public mia::TFilter<int> {
+struct FEvalForce: public mia::TFilter<float> {
 	FEvalForce(Force& force, float scale):
 		_M_force(force), 
 		_M_scale(scale)
 		{
 		}
 	template <typename T, typename R> 
-	int operator ()( const T& a, const R& b) const {
+	float operator ()( const T& a, const R& b) const {
 		Force gradient = get_gradient(a); 
+		float cost = 0.0; 
 		typename T::const_iterator ai = a.begin();
 		typename R::const_iterator bi = b.begin();
 		
 		for (size_t i = 0; i < a.size(); ++i, ++ai, ++bi) {
-			_M_force[i] += gradient[i] * ((float(*ai) - float(*bi)) * _M_scale);
+			float delta = float(*ai) - float(*bi); 
+			_M_force[i] += gradient[i] * delta * _M_scale;
+			cost += delta * delta; 
 		}
-		return 0; 
+		return 0.5 * cost; 
 	}
 private: 
 	mutable Force& _M_force; 
@@ -122,12 +125,12 @@ private:
    This is the force evaluation routine of the cost function   
 */
 template <typename TCost> 
-void CSSDCost<TCost>::do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const
+double CSSDCost<TCost>::do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const
 {
 	assert(a.get_size() == b.get_size()); 
 	assert(a.get_size() == force.get_size()); 
 	FEvalForce<Force> ef(force, scale); 
-	filter(ef, a, b); 
+	return filter(ef, a, b); 
 }
 
 

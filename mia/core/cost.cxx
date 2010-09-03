@@ -38,9 +38,9 @@ double TCost<T,V>::value(const T& a, const T& b) const
 }
 
 template <typename T, typename V>
-void TCost<T,V>::evaluate_force(const T& a, const T& b, float scale, V& force) const
+double TCost<T,V>::evaluate_force(const T& a, const T& b, float scale, V& force) const
 {
-	do_evaluate_force(a, b, scale, force); 
+	return do_evaluate_force(a, b, scale, force); 
 }
 
 template <typename T, typename V>

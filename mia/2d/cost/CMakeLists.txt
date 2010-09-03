@@ -1,5 +1,5 @@
 
-SET(costplugins2dNew ssd)
+SET(costplugins2dNew ssd ngf)
 PLUGINGROUP_WITH_TEST_AND_PREFIX(2d-cost "${costplugins2dNew}" 
   "${MIA2DLIBS}" "${PLUGIN_INSTALL_PATH}/cost/2dimage"
   )

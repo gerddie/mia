@@ -9,7 +9,7 @@
 #  define DO_IMPORT __declspec(dllimport) 
 #elif  defined(__GNUC__)
 #  define DO_EXPORT __attribute__((visibility("default")))
-#  define DO_IMPORT	
+#  define DO_IMPORT __attribute__((visibility("default")))	
 #else
 #  define DO_EXPORT
 #  define DO_IMPORT

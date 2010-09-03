@@ -72,12 +72,12 @@ public:
 	    \param scale a force scaling parameter
 	    \retval force The external force of \a a with respect to \a b that lead to cost minimisation
 	 */
-	void evaluate_force(const T& a, const T& b, float scale, V& force) const;
+	double evaluate_force(const T& a, const T& b, float scale, V& force) const;
 
 	virtual void prepare_reference(const T& ref); 
 private:
 	virtual double do_value(const T& a, const T& b) const = 0;
-	virtual void do_evaluate_force(const T& a, const T& b, float scale, V& force) const = 0;
+	virtual double do_evaluate_force(const T& a, const T& b, float scale, V& force) const = 0;
 };
 
 
