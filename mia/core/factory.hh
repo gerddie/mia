@@ -46,13 +46,13 @@
 
 NS_MIA_BEGIN
 
+
 /** this is the class to load a certain plugin */
 template <typename P, typename D, typename T>
 class EXPORT_HANDLER TFactory: public TPlugin<D,T> {
 public: 
 	typedef P Product; 
 	typedef std::shared_ptr<P > ProductPtr; 
-	
 	/** initialise the plugin by the names 
 	    \remark what are these names and types good for?
 	*/
@@ -70,26 +70,9 @@ private:
 };
 
 
-template <class T> 
-class FactoryTrait {
-	typedef typename T::must_create_trait_using_FACTORY_TRAIT type; 
-}; 
-
-template <class T> 
-class FactoryTrait<std::shared_ptr<T> >  {
-public: 
-	typedef typename FactoryTrait<T>::type type; 
-}; 
-
-#define FACTORY_TRAIT(F)			\
-	template <>				\
-	class FactoryTrait< F::Instance::ProductPtr::element_type >  {	\
-	public:					\
-	typedef F type;		\
-	}; 
-
-
-
+/**
+   Base class for all plugin handlers that are derived from TFactory
+ */
 template <typename  P>
 class EXPORT_HANDLER TFactoryPluginHandler: public  TPluginHandler< P > {
 protected: 
@@ -112,6 +95,27 @@ public:
 
 	
 }; 
+
+
+
+template <class T> 
+class FactoryTrait {
+	typedef typename T::must_create_trait_using_FACTORY_TRAIT type; 
+}; 
+
+template <class T> 
+class FactoryTrait<std::shared_ptr<T> >  {
+public: 
+	typedef typename FactoryTrait<T>::type type; 
+}; 
+
+#define FACTORY_TRAIT(F)			\
+	template <>				\
+	class FactoryTrait< F::Instance::ProductPtr::element_type >  {	\
+	public:					\
+	typedef F type;		\
+	}; 
+
 
 
 template <typename P, typename D, typename T>

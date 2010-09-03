@@ -105,6 +105,7 @@ private:
 }; 
 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DFullCostPlugin> > C2DFullCostPluginHandler;
+FACTORY_TRAIT(C2DFullCostPluginHandler); 
 
 NS_MIA_END
 
