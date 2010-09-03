@@ -88,9 +88,9 @@ protected:
         //@}
 public: 	
 	typedef typename P::ProductPtr ProductPtr; 
-	typename P::ProductPtr produce(const char *plugindescr) const;
+	ProductPtr produce(const char *plugindescr) const;
 
-	typename P::ProductPtr produce(const std::string& params)const {
+	ProductPtr produce(const std::string& params)const {
 		return produce(params.c_str()); 
 	}
 
@@ -145,7 +145,8 @@ TFactoryPluginHandler<P>::TFactoryPluginHandler(const std::list<boost::filesyste
 
 	
 template <typename  P>
-typename P::ProductPtr TFactoryPluginHandler<P>::produce(char const *params)const
+typename TFactoryPluginHandler<P>::ProductPtr 
+TFactoryPluginHandler<P>::produce(char const *params)const
 {
 	assert(params); 
 	CComplexOptionParser param_list(params);
@@ -178,6 +179,25 @@ bool TFactory<P>::do_test() const
 	cvfail() << "do_test() is obsolete\n"; 
 	return false; 
 }
+
+#define EXPLICIT_INSTANCE_PLUGIN(T) \
+	template class TPlugin<T::plugin_data, T::plugin_type>; \
+	template class TFactory<T>;					
+
+#define EXPLICIT_INSTANCE_PLUGIN_HANDLER(P) \
+	template class TPluginHandler<P>;			\
+	template class TFactoryPluginHandler<P>;		\
+	template class THandlerSingleton<TFactoryPluginHandler<P> >;
+
+
+#define EXPLICIT_INSTANCE_HANDLER(T) \
+	template class TPlugin<T::plugin_data, T::plugin_type>; \
+	template class TFactory<T>;					\
+	template class TPluginHandler<TFactory<T> >;			\
+	template class TFactoryPluginHandler<TFactory<T> >;		\
+	template class THandlerSingleton<TFactoryPluginHandler<TFactory<T> > >;
+
+
 
 NS_MIA_END
 #endif

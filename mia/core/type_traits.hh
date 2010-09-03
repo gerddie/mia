@@ -31,6 +31,8 @@
 #ifndef mia_core_typetraits_hh
 #define mia_core_typetraits_hh
 
+#include <mia/core/defines.hh>
+
 #ifndef __GXX_EXPERIMENTAL_CXX0X__
 #include <boost/type_traits.hpp>
 #define IS_FLOAT(T) ::boost::is_floating_point<T>::value 
@@ -38,5 +40,14 @@
 #include <type_traits>
 #define IS_FLOAT(T) ::std::is_floating_point<T>::value 
 #endif
+
+NS_MIA_BEGIN
+
+template <typename T> 
+struct plugin_data_type {
+	typedef T type; 
+}; 
+
+NS_MIA_END
 
 #endif

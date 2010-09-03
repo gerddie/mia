@@ -54,8 +54,8 @@ EXPORT_2D C2DFVectorfield& operator += (C2DFVectorfield& a, const C2DFVectorfiel
 	}
 	return a;
 }
-
-
+template <typename T>
+const char *T2DVectorfield<T>::type_descr = "2dvf"; 
 
 template class T2DDatafield<C2DFVector>;
 template class EXPORT_2DDATAFIELD T2DDatafield<C2DDVector>;

@@ -190,6 +190,11 @@ public:
 	T2DDatafield<T> _M_image;
 };
 
+template <typename T> 
+struct plugin_data_type<T2DImage<T> > {
+	typedef C2DImage type; 
+}; 
+
 
 class CImageComparePrinter: public TFilter<int> {
 public:

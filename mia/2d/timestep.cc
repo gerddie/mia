@@ -103,10 +103,6 @@ float C2DRegTimeStepPlugin::get_max_timestep() const
 }
 
 
-template class TPlugin<C2DImage,timestep_type>;
-template class TFactory<C2DRegTimeStep>;
-template class TFactoryPluginHandler<C2DRegTimeStepPlugin>;
-template class TPluginHandler<C2DRegTimeStepPlugin>;
-template class THandlerSingleton<TFactoryPluginHandler<C2DRegTimeStepPlugin> >;
+EXPLICIT_INSTANCE_HANDLER(C2DRegTimeStep); 
 
 NS_MIA_END

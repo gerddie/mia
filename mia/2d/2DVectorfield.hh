@@ -32,6 +32,8 @@ NS_MIA_BEGIN
 template <typename T>
 class EXPORT_2D T2DVectorfield: public T2DDatafield<T>, public CAttributedData {
 public:
+	static const char *type_descr;
+
 	T2DVectorfield(){};
 	T2DVectorfield(const C2DBounds& size):
 		T2DDatafield<T>(size) {};

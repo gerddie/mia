@@ -24,8 +24,8 @@
 #include <mia/core/export_handler.hh>
 #include <mia/2d/fullcost.hh>
 
-#include <mia/core/handler.cxx>
 #include <mia/core/plugin_base.cxx>
+#include <mia/core/handler.cxx>
 
 NS_MIA_BEGIN
 using boost::lambda::_1; 
@@ -100,11 +100,7 @@ C2DFullCostPlugin::ProductPtr C2DFullCostPlugin::do_create() const
 	return do_create(_M_weight); 
 }
 
-
-template class TPlugin<C2DFullCost, C2DFullCost>;
-template class TFactory<C2DFullCost>;
-template class EXPORT_HANDLER TFactoryPluginHandler<C2DFullCostPlugin>;
-template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C2DFullCostPlugin> >;
-template class TPluginHandler<C2DFullCostPlugin>;
+EXPLICIT_INSTANCE_PLUGIN(C2DFullCost);
+EXPLICIT_INSTANCE_PLUGIN_HANDLER(C2DFullCostPlugin); 
 
 NS_MIA_END

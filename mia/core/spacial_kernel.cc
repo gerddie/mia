@@ -119,13 +119,7 @@ size_t C1DFoldingKernel::do_size()const
 	return m_mask.size();
 }
 
-
-template class TPlugin<spacial_kernel_data, kernel_plugin_type>;
-template class TFactory<C1DFoldingKernel>;
-template class TPluginHandler<C1DSpacialKernelPlugin>;
-template class TFactoryPluginHandler<C1DSpacialKernelPlugin>;
-template class THandlerSingleton<TFactoryPluginHandler<C1DSpacialKernelPlugin> >;
-
+EXPLICIT_INSTANCE_HANDLER(C1DFoldingKernel); 
 
 
 NS_MIA_END

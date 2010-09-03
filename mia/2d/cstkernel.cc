@@ -32,8 +32,7 @@ NS_MIA_BEGIN
 typedef TCST2DKernel<C2DFVectorfield> CCST2DVectorKernel;
 typedef TCST2DKernel<C2DFImage>       CCST2DImageKernel;
 
-const char* cst2d_vector_kernel::type_descr = "cst2dvectorkernel";
-const char* cst2d_image_kernel::type_descr = "cst2dimagekernel";
+const char* cst2d_kernel::value = "cst2d-kernel";
 
 template <typename T>
 TCST2DKernel<T>::TCST2DKernel(fftwf_r2r_kind forward):_M_forward(forward)
@@ -82,16 +81,7 @@ void TCST2DKernel<T>::prepare(const C2DBounds& s)
 template class TCST2DKernel<C2DFVectorfield>;
 template class TCST2DKernel<C2DFImage>;
 
-template class TPlugin<cst2d_vector_kernel, kernel_plugin_type>;
-template class TFactory<CCST2DVectorKernel> ;
-template class TPluginHandler<CCST2DVectorKernelPlugin>;
-template class TFactoryPluginHandler<CCST2DVectorKernelPlugin>;
-template class THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> > ;
-
-template class TPlugin<cst2d_image_kernel, kernel_plugin_type>;
-template class TFactory<CCST2DImageKernel> ;
-template class TPluginHandler<CCST2DImgKernelPlugin>;
-template class TFactoryPluginHandler<CCST2DImgKernelPlugin>;
-template class THandlerSingleton<TFactoryPluginHandler<CCST2DImgKernelPlugin> > ;
+EXPLICIT_INSTANCE_HANDLER(CCST2DVectorKernel);
+EXPLICIT_INSTANCE_HANDLER(CCST2DImageKernel);
 
 NS_MIA_END

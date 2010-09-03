@@ -62,12 +62,6 @@ double CNoiseGenerator::ranf() const
 	return x / RAND_MAX;
 }
 
-template class TPlugin<grayscale_noise_data, generator_type>;
-template class TFactory<CNoiseGenerator>;
-template class TPluginHandler<CNoiseGeneratorPlugin>;
-template class TFactoryPluginHandler<CNoiseGeneratorPlugin>;
-template class THandlerSingleton<TFactoryPluginHandler<CNoiseGeneratorPlugin> >;
-
-
+EXPLICIT_INSTANCE_HANDLER(CNoiseGenerator); 
 
 NS_MIA_END

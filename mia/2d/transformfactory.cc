@@ -49,10 +49,6 @@ void C2DTransformCreator::add_property(const char *property)
 	_M_properties.insert(property);
 }
 
-template class TPlugin<C2DImage, C2DTransformation>;
-template class TFactory<C2DTransformCreator>;
-template class TPluginHandler<C2DTransformCreatorPlugin>;
-template class TFactoryPluginHandler<C2DTransformCreatorPlugin>;
-template class THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin> >;
+EXPLICIT_INSTANCE_HANDLER(C2DTransformCreator); 
 
 NS_MIA_END

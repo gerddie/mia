@@ -75,10 +75,6 @@ template class THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> >;
 template class TFactoryPluginHandler<C2DFilterPlugin>;
 template class TPluginHandler<C2DFilterPlugin>;
 
-template class TPlugin<C2DImage, combiner_type>;
-template class TFactory<C2DImageCombiner>;
-template class THandlerSingleton<TFactoryPluginHandler<C2DImageCombinerPlugin> >;
-template class TFactoryPluginHandler<C2DImageCombinerPlugin>;
-template class TPluginHandler<C2DImageCombinerPlugin>;
+EXPLICIT_INSTANCE_HANDLER(C2DImageCombiner);
 
 NS_MIA_END

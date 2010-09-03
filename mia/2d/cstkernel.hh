@@ -46,19 +46,15 @@ A basis for fft filter plugins
 
 NS_MIA_BEGIN
 
-struct EXPORT_2D cst2d_vector_kernel {
-	static const char *type_descr;
-};
-
-struct EXPORT_2D cst2d_image_kernel {
-	static const char *type_descr;
+struct EXPORT_2D cst2d_kernel {
+	static const char *value;
 };
 
 template <typename T>
 class EXPORT_2D TCST2DKernel :public CProductBase {
 public:
-	typedef cst2d_vector_kernel plugin_data; 
-	typedef kernel_plugin_type plugin_type; 
+	typedef typename plugin_data_type<T>::type plugin_data; 
+	typedef cst2d_kernel plugin_type; 
 
 	typedef TCSTPlan<T> CPlan;
 	TCST2DKernel(fftwf_r2r_kind forward);
