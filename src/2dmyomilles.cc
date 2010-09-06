@@ -185,8 +185,8 @@ int do_main( int argc, const char *argv[] )
 		auto tr_creator = C2DTransformCreatorHandler::instance().produce("translate");
 		P2DTransformation shift = tr_creator->create(C2DBounds(1,1)); 
 		auto p = shift->get_parameters(); 
-		p[0] = -(float)crop_start.x; 
-		p[1] = -(float)crop_start.y; 
+		p[0] = (float)crop_start.x; 
+		p[1] = (float)crop_start.y; 
 		shift->set_parameters(p); 
 		
 		input_set.transform(*shift);
