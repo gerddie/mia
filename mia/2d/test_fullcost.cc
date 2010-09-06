@@ -42,6 +42,7 @@ private:
 	double do_value(const C2DTransformation& t) const;
 	double do_value() const; 
 	void do_set_size(); 
+	void do_reinit(); 
 	double _M_cost; 
 	double _M_gx; 
 	double _M_gy; 
@@ -74,7 +75,9 @@ double C2DFullCostMock::do_value() const
 {
 	return _M_cost; 
 }
-
+void C2DFullCostMock::do_reinit()
+{
+}
 
 void C2DFullCostMock::do_set_size()
 {

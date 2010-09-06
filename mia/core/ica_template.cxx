@@ -188,5 +188,10 @@ void TDataSeriesICA<Data>::set_max_iterations(int n)
 	m_analysis.set_max_iterations(n); 
 }
 
+template <class Data> 
+void TDataSeriesICA<Data>::set_approach(int approach)
+{
+	m_analysis.set_approach(approach); 
+}
 
 NS_MIA_END

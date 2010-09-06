@@ -30,7 +30,7 @@
 
 NS_MIA_BEGIN
 
-class EXPORT_2D C2DImageFullCost : public C2DFullCost {
+class EXPORT C2DImageFullCost : public C2DFullCost {
 public: 
 	C2DImageFullCost(const std::string& src, 
 			 const std::string& ref, 

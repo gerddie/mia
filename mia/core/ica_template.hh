@@ -146,6 +146,12 @@ public:
 	   \param n 
 	 */
 	void set_max_iterations(int n); 
+
+	/**
+	   Set the ICA approach to either FICA_APPROACH_DEFL(default) or FICA_APPROACH_SYMM. 
+	   \param approach
+	 */
+	void set_approach(int approach); 
 	
 
 	~TDataSeriesICA();

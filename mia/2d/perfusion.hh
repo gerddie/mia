@@ -93,6 +93,8 @@ public:
 	std::vector<C2DFImage> get_references() const; 
 
 
+	void set_approach(size_t approach); 
+
 	static TDictMap<EBoxSegmentation> segmethod_dict; 
 private: 
 	struct C2DPerfusionAnalysisImpl *impl; 

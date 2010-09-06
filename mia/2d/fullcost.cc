@@ -74,17 +74,16 @@ void C2DFullCost::reinit()
 	do_reinit(); 
 }
 
-void C2DFullCost::do_reinit()
-{
-	
-}
-
 void C2DFullCost::set_size(const C2DBounds& size)
 {
 	if (_M_current_size != size) {
 		_M_current_size = size; 
 		do_set_size(); 
 	}
+}
+
+void C2DFullCost::do_reinit()
+{
 }
 
 C2DFullCostPlugin::C2DFullCostPlugin(const char *name):

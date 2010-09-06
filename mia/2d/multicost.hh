@@ -41,7 +41,7 @@ private:
 	double do_value(const C2DTransformation& t) const; 
 	double do_value() const; 
 	virtual void do_set_size(); 
-	
+	virtual void do_reinit(); 
 	std::vector<P2DFullCost> _M_costs; 
 }; 
 

@@ -67,6 +67,7 @@ struct C2DPerfusionAnalysisImpl {
 	C2DBounds _M_image_size; 
 	CSlopeClassifier _M_cls; 
 	size_t _M_length; 
+	int _M_ica_approach; 
 };
 
 
@@ -92,6 +93,13 @@ void C2DPerfusionAnalysis::set_max_ica_iterations(size_t maxiter)
 	assert(impl); 
 	impl->_M_max_iterations = maxiter; 
 }
+
+void C2DPerfusionAnalysis::set_approach(size_t approach)
+{
+	assert(impl); 
+	impl->_M_ica_approach = approach; 
+}
+
 
 C2DFilterPlugin::ProductPtr C2DPerfusionAnalysis::get_crop_filter(float scale, C2DBounds& crop_start,
 								  EBoxSegmentation approach, 
@@ -122,7 +130,8 @@ C2DPerfusionAnalysisImpl::C2DPerfusionAnalysisImpl(size_t components,
 	_M_normalize(normalize), 
 	_M_meanstrip(meanstrip),
 	_M_max_iterations(0),
-	_M_length(0)
+	_M_length(0), 
+	_M_ica_approach(FICA_APPROACH_DEFL)
 {
 }
 
@@ -210,6 +219,7 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 	unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(series, false));
 	if (_M_components > 0) {
 		ica->set_max_iterations(_M_max_iterations);
+		ica->set_approach(_M_ica_approach); 
 		if (!ica->run(_M_components, _M_meanstrip, _M_normalize))
 			return false; 
 		_M_cls = CSlopeClassifier(ica->get_mixing_curves(), _M_meanstrip);
@@ -218,6 +228,7 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 		float min_cor = 0.0;
 		for (int i = 5; i > 3; --i) {
 			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
+			ica->set_approach(_M_ica_approach); 
 			l_ica->set_max_iterations(_M_max_iterations);
 			if (!l_ica->run(i, _M_meanstrip, _M_normalize)) {
 				cvwarn() << "run_ica: " << i << " components didn't return a result\n"; 

@@ -29,7 +29,7 @@
 
 NS_MIA_BEGIN
 
-class EXPORT_2D C2DDivCurlFullCost : public C2DFullCost {
+class EXPORT C2DDivCurlFullCost : public C2DFullCost {
 public: 
 	C2DDivCurlFullCost(double weight_div, double weight_curl, double weight); 
 private: 
@@ -37,7 +37,6 @@ private:
 	double do_value(const C2DTransformation& t) const;
 	double do_value() const;
 	void do_set_size(); 
-
 	double _M_weight_div; 
 	double _M_weight_curl; 
 	double _M_size_scale; 

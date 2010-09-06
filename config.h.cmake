@@ -1,3 +1,6 @@
+#ifndef mia_config_h
+#define mia_config_h
+
 #define PACKAGE_NAME "@PACKAGE_NAME@"
 #define PACKAGE_VERSION "@PACKAGE_VERSION@"
 #define PACKAGE "@MIA_NAME@"
@@ -15,3 +18,4 @@
 #  define DO_IMPORT
 #endif
 
+#endif

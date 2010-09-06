@@ -55,6 +55,7 @@ struct CICAAnalysisImpl {
 	size_t m_rows;
 
 	int m_max_iterations;
+	int m_approach; 
 };
 
 
@@ -85,6 +86,11 @@ void CICAAnalysis::set_row(int row, const itppvector&  buffer, double mean)
 	cvdebug() << "add row " << row << ", mean=" << mean << "\n";
 }
 
+void CICAAnalysis::set_approach(int approach)
+{
+	impl->m_approach = approach;
+}
+
 bool CICAAnalysis::run(size_t nica)
 {
 	TRACE_FUNCTION;
@@ -95,7 +101,7 @@ bool CICAAnalysis::run(size_t nica)
 
 	fastICA.set_nrof_independent_components(nica);
 	fastICA.set_non_linearity(  FICA_NONLIN_TANH  );
-	fastICA.set_approach( FICA_APPROACH_DEFL );
+	fastICA.set_approach( impl->m_approach );
 	if (impl->m_max_iterations > 0)
 		fastICA.set_max_num_iterations(impl->m_max_iterations);
 
@@ -384,7 +390,8 @@ CICAAnalysisImpl::CICAAnalysisImpl(const itpp::mat& ic, const itpp::mat& mix, co
 	m_ncomponents(mix.cols()),
 	m_nlength(ic.cols()),
 	m_rows(mix.rows()),
-	m_max_iterations(0)
+	m_max_iterations(0), 
+	m_approach(FICA_APPROACH_DEFL)
 {
 }
 

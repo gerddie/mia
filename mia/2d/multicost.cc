@@ -88,9 +88,16 @@ double C2DFullCostList::do_value() const
 	return result; 
 }
 
-void C2DFullCostList::do_set_size(){
+void C2DFullCostList::do_set_size()
+{
 	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i) 
 		(*i)->set_size(get_current_size()); 
+}
+
+void C2DFullCostList::do_reinit()
+{
+	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i) 
+		(*i)->reinit(); 
 }
 
 NS_MIA_END
