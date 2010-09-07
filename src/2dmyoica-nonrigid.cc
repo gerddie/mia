@@ -301,6 +301,9 @@ int do_main( int argc, const char *argv[] )
 		transform(input_set.get_images().begin() + skip_images, 
 			  input_set.get_images().end(), series.begin(), Convert2Float()); 
 
+		if (!ica2.run(series))
+			ica2.set_approach(FICA_APPROACH_SYMM); 
+
 		if (ica2.run(series) ) {
 			divcurlweight /= divcurlweight_divider; 
 			if (c_rate > 1) 

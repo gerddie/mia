@@ -25,6 +25,7 @@
 #define mia_core_defines_hh
 
 #include <config.h>
+#include <gsl++/gsldefines.hh>
 
 #define NS_MIA_BEGIN namespace mia {
 #define NS_MIA_END }

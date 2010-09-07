@@ -24,6 +24,17 @@
 #define mia_gsldefines_hh
 #include <config.h>
 
+#if defined(_MSC_VER)
+#  define DO_EXPORT __declspec(dllexport) 
+#  define DO_IMPORT __declspec(dllimport) 
+#elif  defined(__GNUC__)
+#  define DO_EXPORT __attribute__((visibility("default")))
+#  define DO_IMPORT __attribute__((visibility("default")))	
+#else
+#  define DO_EXPORT
+#  define DO_IMPORT
+#endif
+
 #ifdef miagsl_EXPORTS
 #define EXPORT_GSL DO_EXPORT
 #else

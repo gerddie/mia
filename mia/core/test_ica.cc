@@ -309,6 +309,36 @@ BOOST_AUTO_TEST_CASE( test_ica_with_some_mean_unknown )
 	}
 }
 
+BOOST_AUTO_TEST_CASE( test_ica_with_some_mean_unknown_SYMM )
+{
+	const int rows = 5;
+	const int elms = 10;
+	double data_rows[rows][elms] = {
+		{ 1.1, -0.9,  -1.9,  -0.9,  2.1, -1.9,  6.1, -2.9, -0.9, 1.1 },
+		{ 2.3, -1.7,  -2.7,  -2.7,  6.3, -3.7,  6.3, -2.7, -0.7, 2.3 },
+		{ 2, -4,  -5,  -6,  9, -7,  5, -4, -2, 2 },
+		{ 6, -2,  -5,  -13,  6, -4,  6, -3, -11, 14 },
+		{ 1, -9,  -10,  -5,  -2, -6,  2, -7, -5, 1 }
+	};
+
+	CICAAnalysis ica(rows, elms);
+	ica.set_approach(FICA_APPROACH_SYMM); 
+
+	for (int i = 0; i < rows; ++i)
+		ica.set_row(i, data_rows[i], data_rows[i] + elms);
+
+
+	ica.run(4);
+
+	for (int i = 0; i < rows; ++i) {
+		vector<float> mixed = ica.get_mix(i);
+		for (int k = 0; k < elms; ++k) {
+			BOOST_CHECK_CLOSE(mixed[k], data_rows[i][k], 0.001);
+		}
+
+	}
+}
+
 
 
 BOOST_AUTO_TEST_CASE( test_ica_with_some_mean_unknown_normalized_mix )

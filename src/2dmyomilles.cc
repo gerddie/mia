@@ -27,6 +27,7 @@
 #include <fstream>
 #include <libxml++/libxml++.h>
 #include <boost/filesystem.hpp>
+#include <itpp/signal/fastica.h>
 
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
@@ -229,6 +230,8 @@ int do_main( int argc, const char *argv[] )
 	
 		transform(input_images.begin() + skip_images, 
 			  input_images.end(), series.begin(), Convert2Float()); 
+		if (!ica2.run(series))
+			ica2.set_approach(FICA_APPROACH_SYMM); 
 		if (ica2.run(series) ) {
 			references_float = ica2.get_references(); 
 			transform(references_float.begin(), references_float.end(), 
