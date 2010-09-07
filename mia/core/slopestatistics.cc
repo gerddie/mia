@@ -72,7 +72,6 @@ private:
 CSlopeStatistics::CSlopeStatistics(const std::vector<float>& series):
 	impl(new CSlopeStatisticsImpl(series))
 {
-
 }
 
 CSlopeStatistics::~CSlopeStatistics()

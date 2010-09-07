@@ -377,7 +377,8 @@ CICAAnalysisImpl::CICAAnalysisImpl(size_t rows, size_t length):
 	m_ncomponents(0),
 	m_nlength(0),
 	m_rows(0),
-	m_max_iterations(0)
+	m_max_iterations(0), 
+	m_approach(FICA_APPROACH_DEFL)
 {
 	cvdebug() << "Analyis of signal with " << rows << " data rows of " << length << " entries\n";
 }
