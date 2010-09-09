@@ -246,9 +246,9 @@ void C2DMyocardPeriodicRegistration::run(C2DImageSeries& images)
 C2DMyocardPeriodicRegistration::RegistrationParams::RegistrationParams():
 	minimizer(min_gd), 
 	divcurlweight(5),
-	pass1_cost(C2DFullCostPluginHandler::instance().produce("ngf:kernel=sd")), 
-	pass2_cost(C2DFullCostPluginHandler::instance().produce("ssd")), 
-	series_select_cost(C2DFullCostPluginHandler::instance().produce("ngf:kernel=dot")),
+	pass1_cost(C2DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=ds]")), 
+	pass2_cost(C2DFullCostPluginHandler::instance().produce("image:cost=ssd")), 
+	series_select_cost(C2DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=dot]")),
 	transform_creator(C2DTransformCreatorHandler::instance().produce("spline")),
 	mg_levels(3),
 	skip(2)
@@ -265,13 +265,13 @@ int do_main( int argc, const char *argv[] )
 	// this parameter is currently not exported - reading the image data is 
 	// therefore done from the path given in the segmentation set 
 	bool override_src_imagepath = true;
-	EInterpolation interpolator; 
+	EInterpolation interpolator = ip_bspline3;
 
-	C2DMyocardPeriodicRegistration::RegistrationParams params; 
+	C2DMyocardPeriodicRegistration::RegistrationParams params;
 
 	CCmdOptionList options(g_general_help);
 	
-	options.set_group("\nFile-IO"); 
+	options.set_group("\nFile-IO");
 	options.push_back(make_opt( in_filename, "in-file", 'i', "input perfusion data set", "input", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o', "output perfusion data set", "output", true));
 	options.push_back(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels", 

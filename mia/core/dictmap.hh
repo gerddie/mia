@@ -34,6 +34,7 @@
 
 
 #include <mia/core/defines.hh>
+#include <mia/core/errormacro.hh>
 
 NS_MIA_BEGIN
 
@@ -136,7 +137,7 @@ const char *TDictMap<T>::get_name(T value) const
 	
 	if (i == _M_back_table.end()) {
 		if (!_M_last_is_default || (_M_default != value)) 
-			throw std::invalid_argument("TDictMap<T>::get_name: unknown, value provided"); 
+			THROW(std::invalid_argument, "TDictMap<T>::get_name: unknown value"<< value << " provided"); 
 		else
 			return "(default)"; 
 	}
