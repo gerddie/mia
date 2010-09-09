@@ -400,6 +400,7 @@ void CCmdOptionListData::write(size_t tab1, size_t width, const string& s) const
 			newline = true; 
 		}else {
 			clog << *is; 
+			++pos; 
 		}
 		++is; 
 	}
@@ -451,6 +452,8 @@ void CCmdOptionListData::print_help() const
 	auto t  = opt_table.begin();
 	for (auto i = help_table.begin(); i != help_table.end(); ++i, ++t) {
 		clog << setw(opt_size) << *t << " ";
+		if (t->length() > opt_size) 
+			clog << "\n " << setw(opt_size) << " "; 
 		write(opt_size+1, max_width, *i); 
 	}
 	

@@ -106,7 +106,7 @@ void TCmdFactoryOption<F>::do_write_value(std::ostream& os) const
 template <typename F>
 void TCmdFactoryOption<F>::do_get_long_help_really(std::ostream& os) const
 {
-	os << " set option to 'help' for more information."; 
+	os << ", set option to 'help' for more information."; 
 }
 
 template <typename F>
