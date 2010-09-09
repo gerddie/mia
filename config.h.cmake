@@ -1,8 +1,19 @@
 #ifndef mia_config_h
 #define mia_config_h
 
+#ifdef PACKAGE_NAME
+#undef PACKAGE_NAME
+#endif
 #define PACKAGE_NAME "@PACKAGE_NAME@"
+
+#ifdef PACKAGE_VERSION
+#undef PACKAGE_VERSION
+#endif
 #define PACKAGE_VERSION "@PACKAGE_VERSION@"
+
+#ifdef PACKAGE
+#undef PACKAGE
+#endif
 #define PACKAGE "@MIA_NAME@"
 #define VENDOR  "@VENDOR@"
 #define MIA_SOURCE_ROOT "@SOURCE_ROOT@"
