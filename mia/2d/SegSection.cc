@@ -143,5 +143,39 @@ float CSegSection::get_hausdorff_distance(const CSegSection& other) const
 	return p1.get_hausdorff_distance(p2);
 }
 
+void CSegSection::draw(C2DUBImage& mask, unsigned char color)
+{
+	//  adapted from public-domain code by Darel Rex Finley, 2007
+	
+	for (size_t y=0; y < mask.get_size().y; y++) {
+		vector<int> nodeX; 
+		int j=m_points.size()-1;
+		for (size_t i=0; i<m_points.size(); i++) {
+			if ((m_points[i].y <= y && m_points[j].y > y) || 
+			    (m_points[j].y <= y && m_points[i].y > y) ) {
+				nodeX.push_back( (int) (m_points[i].x + 
+						       ( y - m_points[i].y)/(m_points[j].y-m_points[i].y)
+							*(m_points[j].x - m_points[i].x)) + 0.5); 
+			}
+			j=i; 
+		}
+		
+		sort(nodeX.begin(), nodeX.end()); 
+		
+		//  Fill the pixels between node pairs.
+		for (size_t i=0; i<nodeX.size(); i+=2) {
+			if   (nodeX[i  ]>=(int)mask.get_size().x) 
+				break;
+			if   (nodeX[i+1]> 0 ) {
+				if (nodeX[i  ] < 0 ) 
+					nodeX[i  ]=0;
+				if (nodeX[i+1] > (int)mask.get_size().x) 
+					nodeX[i+1]=mask.get_size().x;
+				for (int j=nodeX[i]; j<nodeX[i+1]; j++) 
+					mask(j,y) = color;
+			}
+		}
+	}
+}
 
 NS_MIA_END

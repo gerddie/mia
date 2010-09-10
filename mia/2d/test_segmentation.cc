@@ -24,6 +24,7 @@
 
 #include <mia/internal/autotest.hh>
 
+#include <numeric>
 #include <mia/core/shared_ptr.hh>
 
 #include <mia/2d/SegSetWithImages.hh>
@@ -480,6 +481,43 @@ BOOST_AUTO_TEST_CASE( test_segset_set_images )
 
 }
 
+extern const char *sestsection_for_draw; 
+
+BOOST_FIXTURE_TEST_CASE(test_segsection_draw, SectionTestRead)
+{
+	init(sestsection_for_draw);
+	C2DUBImage test_image(C2DBounds(10,10)); 
+
+	// sanity test, is the area correct? 
+	section.draw(test_image, 1); 
+	BOOST_CHECK_EQUAL(accumulate(test_image.begin(),test_image.end(),0.0),31);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_segsection_draw2, SectionTestRead)
+{
+	const char *sestsection_for_draw2 = 
+		"<?xml version=\"1.0\"?>\n<test><section color=\"white\">"
+		"<point y=\"2\" x=\"1\"/>"
+		"<point y=\"4\" x=\"1\"/>"
+		"<point y=\"4\" x=\"3\"/>"
+		"<point y=\"2\" x=\"3\"/>"
+		"</section></test>\n";
+
+
+	init(sestsection_for_draw2);
+	C2DUBImage test_image(C2DBounds(6,7)); 
+
+	// sanity test, is the area correct? 
+	section.draw(test_image, 2); 
+	BOOST_CHECK_EQUAL(accumulate(test_image.begin(),test_image.end(),0.0),8);
+
+	for(size_t y = 0; y < 7; ++y)
+		for(size_t x = 0; x < 6; ++x)
+			BOOST_CHECK_EQUAL(test_image(x,y),( (x>=1 && x<3 && y >= 2 && y < 4) ? 2 : 0)); 
+
+}
+
+
 /*
 input_set.save_images(); 
 */
@@ -566,6 +604,17 @@ void SectionTestRead::check(const float *x_data, const float *y_data) const
 }
 
 
+
+const char *sestsection_for_draw = "<?xml version=\"1.0\"?>\n<test><section color=\"white\">"
+	"<point y=\"4\" x=\"1\"/>"
+	"<point y=\"8\" x=\"1\"/>"
+	"<point y=\"8\" x=\"7\"/>"
+	"<point y=\"1\" x=\"7\"/>"
+	"<point y=\"1\" x=\"4\"/>"
+	"<point y=\"6\" x=\"4\"/>"
+	"<point y=\"6\" x=\"3\"/>"
+	"<point y=\"4\" x=\"3\"/>"
+	"</section></test>\n";
 
 const char *teststar_init  =
 	"<?xml version=\"1.0\"?>\n<test>"
