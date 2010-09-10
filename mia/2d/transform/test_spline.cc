@@ -518,7 +518,8 @@ BOOST_FIXTURE_TEST_CASE( test_splines_refine, TransformSplineFixture )
 
 BOOST_AUTO_TEST_CASE( test_splines_transform )
 {
-	float src_image_init[10 * 9] = {
+	float src_image_init[10 * 10] = {
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0,10,30,30, 0, 0, 0,
@@ -530,7 +531,8 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	};
 
-	float ref_image_init[10 * 9] = {
+	float ref_image_init[10 * 10] = {
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -541,7 +543,7 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	};
-	const C2DBounds size(10,9);
+	const C2DBounds size(10,10);
 	
 	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
 							      std::shared_ptr<CBSplineKernel > (new CBSplineKernel3())));
@@ -563,12 +565,11 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 	float *itest = ref_image_init; 
 	auto ir = r.begin(); 
 	for (size_t y = 0; y < size.y; ++y)
-		for (size_t x = 0; x < size.x; ++x, ++ir, ++itest)
+		for (size_t x = 0; x < size.x; ++x, ++ir, ++itest) {
 			cvinfo() << x << "," << y << ", " << *ir << " ?= " <<*itest << "\n"; 
 			if (*itest > 0.001 || *ir > 0.001) 
 				BOOST_CHECK_EQUAL(*ir, *itest); 
-	
-
+		}
 }
 
 
