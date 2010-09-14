@@ -3,6 +3,8 @@
 #include <string>
 #include <mia/2d/SegFrame.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/errormacro.hh>
+#include <mia/2d/2dimageio.hh>
 
 #include <libxml++/libxml++.h>
 #include <boost/filesystem.hpp> 
@@ -175,6 +177,64 @@ C2DUBImage CSegFrame::get_section_masks(const C2DBounds& size) const
 	     i != m_sections.end(); ++i, ++idx)
 		i->draw(result, idx); 
 	return result; 
+}
+
+struct EvalMaskStat: public TFilter<CSegFrame::SectionsStats> {
+
+	EvalMaskStat(const C2DUBImage& mask):
+		m_mask(mask) {
+		max_idx = *max_element(mask.begin(), mask.end());
+	}; 
+	
+	template <typename T> 
+	CSegFrame::SectionsStats operator ()(const T2DImage<T>& image) const {
+		CSegFrame::SectionsStats result(max_idx); 
+		vector<size_t> size(max_idx, 0); 
+		for(auto m=m_mask.begin(), i = image.begin(); m != m_mask.end(); ++i, ++m) {
+			const double v = *i;
+			if (*m) {
+				result[*m-1].first  += v; 
+				result[*m-1].second += v * v; 
+				++size[*m-1]; 
+			}
+		}
+		for (auto i = result.begin(), n=size.begin(); i != result.end(); ++i, ++n) {
+			if (*n) 
+				i->first /= *n; 
+			if (*n > 1) 
+				i->second = sqrt( (i->second - i->first * i->first * *n)/ (*n - 1)); 
+		}
+		return result; 
+	}
+private: 
+	const C2DUBImage& m_mask; 
+	unsigned char max_idx; 
+}; 
+
+CSegFrame::SectionsStats CSegFrame::get_stats(const C2DUBImage& mask) const
+{
+	if (!m_image) {
+		m_image = load_image2d(m_filename); 
+		if (!m_image) 
+			THROW(runtime_error, "unable to find image file '" << m_filename << "'");
+	}
+	if (mask.get_size() != m_image->get_size()) 
+		THROW(invalid_argument, "Mask image and data image are of different size");
+
+	return ::mia::filter(EvalMaskStat(mask), *m_image);  
+
+
+}
+
+CSegFrame::SectionsStats CSegFrame::get_stats() const
+{
+	if (!m_image) {
+		m_image = load_image2d(m_filename); 
+		if (!m_image) 
+			THROW(runtime_error, "unable to find image file '" << m_filename << "'");
+	}
+	C2DUBImage mask = get_section_masks(m_image->get_size()); 
+	return get_stats(mask); 
 }
 
 NS_MIA_END

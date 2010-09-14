@@ -28,6 +28,7 @@
 #include <vector>
 #include <mia/2d/SegStar.hh>
 #include <mia/2d/SegSection.hh>
+#include <mia/2d/2DImage.hh>
 
 NS_MIA_BEGIN
 
@@ -39,8 +40,8 @@ NS_MIA_BEGIN
 class  EXPORT_2D CSegFrame {
 public:
 	typedef std::vector<CSegSection> Sections;
-
-
+	typedef std::pair<float, float> Statistics; 
+	typedef std::vector<Statistics> SectionsStats; 
 	
 	CSegFrame();
 
@@ -91,11 +92,15 @@ public:
 
 	C2DUBImage get_section_masks(const C2DBounds& size) const; 
 
+	SectionsStats get_stats(const C2DUBImage& mask) const; 
+	SectionsStats get_stats() const; 
+
 private:
 	bool m_has_star;
 	CSegStar m_star;
 	Sections m_sections;
 	std::string m_filename;
+	mutable P2DImage m_image; 
 };
 
 NS_MIA_END
