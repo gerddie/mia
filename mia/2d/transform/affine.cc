@@ -286,7 +286,7 @@ void C2DAffineTransformation::add(const C2DTransformation& other)
 
 C2DFVector C2DAffineTransformation::operator () (const C2DFVector& x) const
 {
-	return x - apply(x); 
+	return apply(x); 
 }
 
 float C2DAffineTransformation::get_jacobian(const C2DFVectorfield& /*v*/, float /*delta*/) const

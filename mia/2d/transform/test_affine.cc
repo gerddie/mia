@@ -85,26 +85,26 @@ BOOST_AUTO_TEST_CASE(test_affine2d)
 
 	C2DFVector x0(1.0f, 2.0f);
 
-	C2DFVector y0 = t1.apply(x0);
+	C2DFVector y0 = t1(x0);
 	BOOST_CHECK_EQUAL(y0, x0);
 
 	t1.scale(std::log(2.0), std::log(3.0));
 
-	C2DFVector y1 = t1.apply(x0);
+	C2DFVector y1 = t1(x0);
 	BOOST_CHECK_EQUAL(y1, C2DFVector(2.0f, 6.0f));
 
 	t1.translate(1.0f, 2.0f);
-	BOOST_CHECK_EQUAL(t1.apply(x0), C2DFVector(3.0f, 8.0f));
+	BOOST_CHECK_EQUAL(t1(x0), C2DFVector(3.0f, 8.0f));
 
 
 	t1.rotate(M_PI / 2.0);
-	C2DFVector yr1 = t1.apply(x0);
+	C2DFVector yr1 = t1(x0);
 	BOOST_CHECK_CLOSE(yr1.x ,-8.0, 0.1f);
 	BOOST_CHECK_CLOSE(yr1.y , 3.0, 0.1f);
 
 	C2DAffineTransformation t2(C2DBounds(10,20));
 	t2.rotate(M_PI / 2.0);
-	C2DFVector yr = t2.apply(x0);
+	C2DFVector yr = t2(x0);
 	BOOST_CHECK_CLOSE(yr.x ,  -2.0f, 0.1f);
 	BOOST_CHECK_CLOSE(yr.y ,   1.0f, 0.1f);
 
@@ -148,7 +148,7 @@ struct RotateTransFixture {
 BOOST_FIXTURE_TEST_CASE(basics_RotateTransFixture, RotateTransFixture)
 {
 	C2DFVector x(33, 40);
-	C2DFVector r  = rtrans.apply(x);
+	C2DFVector r  = rtrans(x);
 
 	BOOST_CHECK_CLOSE(r.x, (rot_cos * x.x - rot_sin* x.y), 0.1);
 	BOOST_CHECK_CLOSE(r.y, (rot_cos * x.x + rot_sin* x.y), 0.1);
@@ -157,7 +157,7 @@ BOOST_FIXTURE_TEST_CASE(basics_RotateTransFixture, RotateTransFixture)
 BOOST_FIXTURE_TEST_CASE(max_RotateTransFixture, RotateTransFixture)
 {
 	C2DFVector x(60, 80);
-	BOOST_CHECK_CLOSE(rtrans.get_max_transform(), (x - rtrans.apply(x)).norm(), 0.1);
+	BOOST_CHECK_CLOSE(rtrans.get_max_transform(), (x - rtrans(x)).norm(), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(set_identity_RotateTransFixture, RotateTransFixture)
@@ -251,13 +251,13 @@ BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, AffineGrad2ParamFixtureAff
 
 BOOST_FIXTURE_TEST_CASE (test_add, AffineGrad2ParamFixtureAffine)
 {
-	C2DFVector test = trans.apply(C2DFVector(2,1));
+	C2DFVector test = trans(C2DFVector(2,1));
 	cvinfo() << test << "\n";
-	test = trans.apply(test);
+	test = trans(test);
 	cvinfo() << test << "\n";
 	trans.add(trans);
 
-	C2DFVector probe = trans.apply(C2DFVector(2,1));
+	C2DFVector probe = trans(C2DFVector(2,1));
 
 	cvinfo() << probe << "\n";
 	BOOST_CHECK_CLOSE(probe.x, test.x, 0.1);
@@ -319,5 +319,39 @@ BOOST_AUTO_TEST_CASE (test_invers)
 	BOOST_CHECK_CLOSE(params[3],  1.0, 0.1); 
 	BOOST_CHECK_CLOSE(params[4], -1.0, 0.1); 
 	BOOST_CHECK_CLOSE(params[5],  1.0, 0.1); 
+	
+}
+
+BOOST_AUTO_TEST_CASE (test_invers2)
+{
+	C2DBounds size(10,20); 
+	C2DAffineTransformation trans(size); 
+
+	auto params = trans.get_parameters(); 
+//	BOOST_REQUIRE(params.size()== 6); 
+
+	params[0] = 1.0; 
+	params[1] = 2.0; 
+	params[2] = 3.0; 
+
+	params[3] = 3.0; 
+	params[4] = 2.0; 
+	params[5] = 2.0; 
+	
+	trans.set_parameters(params); 
+	
+	unique_ptr<C2DTransformation> inverse( trans.invert()); 
+	BOOST_CHECK_EQUAL(inverse->get_size(), size);
+
+	params = inverse->get_parameters(); 
+	BOOST_REQUIRE(params.size()== 6); 
+
+	BOOST_CHECK_CLOSE(params[0], -0.5, 0.1); 
+	BOOST_CHECK_CLOSE(params[1],  0.5, 0.1); 
+	BOOST_CHECK_CLOSE(params[2],  0.5, 0.1); 
+	
+	BOOST_CHECK_CLOSE(params[3],  0.75, 0.1); 
+	BOOST_CHECK_CLOSE(params[4], -0.25, 0.1); 
+	BOOST_CHECK_CLOSE(params[5], -1.75, 0.1); 
 	
 }
