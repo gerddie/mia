@@ -269,7 +269,7 @@ void C2DRigidTransformation::add(const C2DTransformation& other)
 
 C2DFVector C2DRigidTransformation::operator () (const C2DFVector& x) const
 {
-	return x - apply(x); 
+	return apply(x); 
 }
 
 float C2DRigidTransformation::get_jacobian(const C2DFVectorfield& /*v*/, float /*delta*/) const

@@ -48,7 +48,7 @@ BOOST_FIXTURE_TEST_CASE(basics_TranslateTransFixture, TranslateTransFixture)
 {
 	C2DFVector x(-2, -4);
 	BOOST_CHECK_EQUAL(rtrans.degrees_of_freedom(), 3);
-	BOOST_CHECK_EQUAL(C2DFVector(-1.0, -2.0),  rtrans.apply(x));
+	BOOST_CHECK_EQUAL(C2DFVector(-1.0, -2.0),  rtrans(x));
 }
 
 BOOST_FIXTURE_TEST_CASE(max_TranslateTransFixture, TranslateTransFixture)
@@ -86,20 +86,20 @@ BOOST_AUTO_TEST_CASE(test_rigid2d)
 
 	C2DFVector x0(1.0f, 2.0f);
 
-	C2DFVector y0 = t1.apply(x0);
+	C2DFVector y0 = t1(x0);
 	BOOST_CHECK_EQUAL(y0, x0);
 
 	t1.translate(1.0f, 2.0f);
-	BOOST_CHECK_EQUAL(t1.apply(x0), C2DFVector(2.0f, 4.0f));
+	BOOST_CHECK_EQUAL(t1(x0), C2DFVector(2.0f, 4.0f));
 
 	t1.rotate(M_PI / 2.0);
-	C2DFVector yr1 = t1.apply(x0);
+	C2DFVector yr1 = t1(x0);
 	BOOST_CHECK_CLOSE(yr1.x ,-4.0, 0.1f);
 	BOOST_CHECK_CLOSE(yr1.y , 2.0, 0.1f);
 
 	C2DRigidTransformation t2(C2DBounds(10,20));
 	t2.rotate(M_PI / 2.0);
-	C2DFVector yr = t2.apply(x0);
+	C2DFVector yr = t2(x0);
 	BOOST_CHECK_CLOSE(yr.x ,  -2.0f, 0.1f);
 	BOOST_CHECK_CLOSE(yr.y ,   1.0f, 0.1f);
 }
@@ -141,7 +141,7 @@ struct RotateTransFixture {
 BOOST_FIXTURE_TEST_CASE(basics_RotateTransFixture, RotateTransFixture)
 {
 	C2DFVector x(33, 40);
-	C2DFVector r  = rtrans.apply(x);
+	C2DFVector r  = rtrans(x);
 
 	BOOST_CHECK_CLOSE(r.x, (rot_cos * x.x - rot_sin* x.y), 0.1);
 	BOOST_CHECK_CLOSE(r.y, (rot_cos * x.x + rot_sin* x.y), 0.1);
@@ -150,7 +150,7 @@ BOOST_FIXTURE_TEST_CASE(basics_RotateTransFixture, RotateTransFixture)
 BOOST_FIXTURE_TEST_CASE(max_RotateTransFixture, RotateTransFixture)
 {
 	C2DFVector x(60, 80);
-	BOOST_CHECK_CLOSE(rtrans.get_max_transform(), (x - rtrans.apply(x)).norm(), 0.1);
+	BOOST_CHECK_CLOSE(rtrans.get_max_transform(), (x - rtrans(x)).norm(), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(set_identity_RotateTransFixture, RotateTransFixture)
