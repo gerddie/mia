@@ -143,7 +143,7 @@ float CSegSection::get_hausdorff_distance(const CSegSection& other) const
 	return p1.get_hausdorff_distance(p2);
 }
 
-void CSegSection::draw(C2DUBImage& mask, unsigned char color)
+void CSegSection::draw(C2DUBImage& mask, unsigned char color)const
 {
 	//  adapted from public-domain code by Darel Rex Finley, 2007
 	

@@ -52,7 +52,7 @@ public:
 	void append_to(C2DPolygon& polygon)const;
 	void transform(const C2DTransformation& t); 
 	void inv_transform(const C2DTransformation& t); 
-	void draw(C2DUBImage& mask, unsigned char color); 
+	void draw(C2DUBImage& mask, unsigned char color)const; 
 private:
 	std::string m_id;
 	Points m_points;

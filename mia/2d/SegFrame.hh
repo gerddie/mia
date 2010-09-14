@@ -89,6 +89,8 @@ public:
 
 	float get_hausdorff_distance(const CSegFrame& other) const;
 
+	C2DUBImage get_section_masks(const C2DBounds& size) const; 
+
 private:
 	bool m_has_star;
 	CSegStar m_star;

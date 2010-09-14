@@ -517,6 +517,48 @@ BOOST_FIXTURE_TEST_CASE(test_segsection_draw2, SectionTestRead)
 
 }
 
+BOOST_FIXTURE_TEST_CASE(test_frame_get_mask, FrameTestRead)
+{
+	const char *sestsection_for_draw2 = 
+		"<?xml version=\"1.0\"?>\n<test>"
+		"<frame image=\"framename\">"
+                "<section color=\"white\">"
+		"<point y=\"2\" x=\"1\"/>"
+		"<point y=\"4\" x=\"1\"/>"
+		"<point y=\"4\" x=\"3\"/>"
+		"<point y=\"2\" x=\"3\"/>"
+		"</section>"
+                "<section color=\"blue\">"
+		"<point y=\"0\" x=\"2\"/>"
+		"<point y=\"2\" x=\"2\"/>"
+		"<point y=\"2\" x=\"3\"/>"
+		"<point y=\"3\" x=\"3\"/>"
+		"<point y=\"3\" x=\"4\"/>"
+		"<point y=\"0\" x=\"4\"/>"
+		"</section>"
+		"</frame></test>\n";
+
+	init(sestsection_for_draw2);
+	
+	C2DBounds size(6,7); 
+
+	unsigned char test_data[6 * 7] =  {
+		0, 0, 2, 2, 0, 0, 
+		0, 0, 2, 2, 0, 0, 
+		0, 1, 1, 2, 0, 0, 
+		0, 1, 1, 0, 0, 0, 
+		0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0
+	}; 
+
+	C2DUBImage section_mask = frame.get_section_masks(size); 
+	for (auto i = section_mask.begin(), t = test_data; i != section_mask.end(); ++i, ++t) 
+		BOOST_CHECK_EQUAL(*i, *t); 
+
+}
+
+
 
 /*
 input_set.save_images(); 

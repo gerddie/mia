@@ -167,4 +167,14 @@ float CSegFrame::get_hausdorff_distance(const CSegFrame& other) const
 }
 
 
+C2DUBImage CSegFrame::get_section_masks(const C2DBounds& size) const 
+{
+	C2DUBImage result(size); 
+	unsigned char idx = 1; 
+	for (auto i = m_sections.begin(); 
+	     i != m_sections.end(); ++i, ++idx)
+		i->draw(result, idx); 
+	return result; 
+}
+
 NS_MIA_END
