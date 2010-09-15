@@ -249,10 +249,10 @@ void C2DAffineTransformation::set_identity()
 float C2DAffineTransformation::get_max_transform() const
 {
 	// check the corners
-	float m =      (C2DFVector(get_size()) -  apply(C2DFVector(get_size()))).norm2();
-	float test0Y = (C2DFVector(0, get_size().y) - apply(C2DFVector(0, get_size().y))).norm2();
-	float testX0 = (C2DFVector(get_size().x, 0) - apply(C2DFVector(get_size().x, 0))).norm2();
-	float test00 = apply(C2DFVector(0, 0)).norm2();
+	float m =      (apply(C2DFVector(get_size())) - C2DFVector(get_size())).norm2();
+	float test0Y = (apply(C2DFVector(0, get_size().y)) - C2DFVector(0, get_size().y)).norm2();
+	float testX0 = (apply(C2DFVector(get_size().x, 0)) - C2DFVector(get_size().x, 0)).norm2();
+	float test00 = (apply(C2DFVector(0, 0)) - C2DFVector(0, 0)).norm2();
 
 	if (m < test0Y)
 		m = test0Y;
@@ -322,9 +322,9 @@ C2DAffineTransformation::iterator_impl::iterator_impl(const C2DBounds& pos, cons
 						      const C2DAffineTransformation& trans):
 	C2DTransformation::iterator_impl(pos, size),
 	_M_trans(trans), 
-	_M_value(trans.transform(C2DFVector(pos)))
+	_M_value(trans.apply(C2DFVector(pos)))
 {
-	_M_dx = _M_trans.transform(C2DFVector(pos.x + 1.0, pos.y)) - _M_value;
+	_M_dx = _M_trans.apply(C2DFVector(pos.x + 1.0, pos.y)) - _M_value;
 }
 
 C2DTransformation::iterator_impl * C2DAffineTransformation::iterator_impl::clone() const
@@ -344,8 +344,8 @@ void C2DAffineTransformation::iterator_impl::do_x_increment()
 
 void C2DAffineTransformation::iterator_impl::do_y_increment()
 {
-	_M_value = _M_trans.transform(C2DFVector(get_pos())); 
-	_M_dx = _M_trans.transform(C2DFVector(get_pos().x + 1.0, get_pos().y)) - _M_value;
+	_M_value = _M_trans.apply(C2DFVector(get_pos())); 
+	_M_dx = _M_trans.apply(C2DFVector(get_pos().x + 1.0, get_pos().y)) - _M_value;
 }
 
 

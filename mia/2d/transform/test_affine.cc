@@ -45,9 +45,9 @@ struct TranslateTransFixture {
 
 BOOST_FIXTURE_TEST_CASE(basics_TranslateTransFixture, TranslateTransFixture)
 {
-	C2DFVector x(-2, -4);
+	C2DFVector x(2, 4);
 	BOOST_CHECK_EQUAL(rtrans.degrees_of_freedom(), 6);
-	BOOST_CHECK_EQUAL(C2DFVector(-1.0, -2.0),  rtrans.apply(x));
+	BOOST_CHECK_EQUAL(C2DFVector(3.0, 6.0),  rtrans(x));
 }
 
 BOOST_FIXTURE_TEST_CASE(max_TranslateTransFixture, TranslateTransFixture)
@@ -245,9 +245,6 @@ BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, AffineGrad2ParamFixtureAff
 	BOOST_CHECK_CLOSE(params[4], -0.25, 0.1);
 	BOOST_CHECK_CLOSE(params[5], -0.5, 0.1);
 }
-
-
-
 
 BOOST_FIXTURE_TEST_CASE (test_add, AffineGrad2ParamFixtureAffine)
 {

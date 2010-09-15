@@ -215,7 +215,7 @@ int CFMinimizerImpl::run(DoubleVector& x)
 		if (status) 
 			break; 
 		const double size = gsl_multimin_fminimizer_size (m_s);
-		status = gsl_multimin_test_size (size, 1e-2);
+		status = gsl_multimin_test_size (size, 1e-3);
 
 	} while (status == GSL_CONTINUE && iter < 100); 
 	
@@ -225,4 +225,4 @@ int CFMinimizerImpl::run(DoubleVector& x)
 	return status; 
 }
 
-}
+} // end namespace gsl 

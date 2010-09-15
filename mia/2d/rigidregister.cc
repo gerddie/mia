@@ -27,6 +27,7 @@
 #include <mia/2d/rigidregister.hh>
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/transformfactory.hh>
+#include <mia/core/filter.hh>
 #include <gsl++/multimin.hh>
 
 
@@ -64,10 +65,10 @@ public:
 	C2DRegGradientProblem(const C2DImage& model, const C2DImage& reference, C2DTransformation& transf,
 			 const C2DImageCost& _M_cost, const C2DInterpolatorFactory& _M_ipf);
 private:
-	double  do_f(const DoubleVector& x);
 	void    do_df(const DoubleVector& x, DoubleVector&  g);
 	double  do_fdf(const DoubleVector& x, DoubleVector&  g);
-
+protected: 
+	double  do_f(const DoubleVector& x);
 	P2DImage apply(const DoubleVector& x);
 	const C2DImage& _M_model;
 	const C2DImage& _M_reference;
@@ -76,6 +77,17 @@ private:
 	const C2DInterpolatorFactory& _M_ipf;
 };
 typedef shared_ptr<C2DRegGradientProblem> P2DGradientProblem;
+
+
+class C2DRegFakeGradientProblem: public C2DRegGradientProblem {
+public:
+	C2DRegFakeGradientProblem(const C2DImage& model, const C2DImage& reference, C2DTransformation& transf,
+			 const C2DImageCost& _M_cost, const C2DInterpolatorFactory& _M_ipf);
+private:
+	void    do_df(const DoubleVector& x, DoubleVector&  g);
+	double  do_fdf(const DoubleVector& x, DoubleVector&  g);
+
+};
 
 class C2DRegProblem: public gsl::CFMinimizer::Problem {
 public:
@@ -146,9 +158,13 @@ UMinimzer minimizers[min_undefined] = {
 void C2DRigidRegisterImpl::apply(const C2DImage& model, const C2DImage& reference, C2DTransformation& transf,
 				 const gsl_multimin_fdfminimizer_type *optimizer)const
 {
-	if (!_M_cost->has(property_gradient))
-		throw invalid_argument("requested optimizer needs gradient, but cost functions doesn't prvide one");
-	P2DGradientProblem gp(new C2DRegGradientProblem(model, reference, transf, *_M_cost, _M_ipf));
+#if 0 
+	P2DGradientProblem gp(_M_cost->has(property_gradient) ? 
+			      new C2DRegGradientProblem(model, reference, transf, *_M_cost, _M_ipf):
+			      new C2DRegFakeGradientProblem(model, reference, transf, *_M_cost, _M_ipf));
+#else
+	P2DGradientProblem gp(new C2DRegFakeGradientProblem(model, reference, transf, *_M_cost, _M_ipf));
+#endif
 	CFDFMinimizer minimizer(gp, optimizer );
 
 	auto x = transf.get_parameters();
@@ -240,6 +256,11 @@ C2DRegGradientProblem::C2DRegGradientProblem(const C2DImage& model, const C2DIma
 
 P2DImage C2DRegGradientProblem::apply(const DoubleVector& x)
 {
+	cvmsg() << "\nParams:";
+	for (auto i = x.begin(); i != x.end(); ++i) 
+		cverb << *i << " "; 
+	cverb << "\n"; 
+
 	_M_transf.set_parameters(x);
 	return _M_transf(_M_model, _M_ipf);
 }
@@ -270,6 +291,34 @@ double  C2DRegGradientProblem::do_fdf(const DoubleVector& x, DoubleVector&  g)
 	return _M_cost.value(*temp, _M_reference);
 }
 
+C2DRegFakeGradientProblem::C2DRegFakeGradientProblem(const C2DImage& model, const C2DImage& reference, 
+						     C2DTransformation& transf, const C2DImageCost& _M_cost, 
+						     const C2DInterpolatorFactory& _M_ipf):
+	C2DRegGradientProblem(model, reference, transf,  _M_cost,  _M_ipf)
+{
+}
+
+void    C2DRegFakeGradientProblem::do_df(const DoubleVector& x, DoubleVector&  g)
+{
+	DoubleVector x_tmp(x.size()); 
+	copy(x.begin(), x.end(), x_tmp.begin()); 
+	for (size_t i = 0; i < g.size(); ++i) {
+		x_tmp[i] += 0.01; 
+		double cost_p = do_f(x_tmp); 
+		x_tmp[i] -= 0.02; 
+		double cost_m = do_f(x_tmp); 
+		x_tmp[i] += 0.01;
+		g[i] = (cost_p - cost_m) * 50.0; 
+		cvinfo() << "g[" << i << "] = " << g[i] << "\n"; 
+	}
+}
+
+double  C2DRegFakeGradientProblem::do_fdf(const DoubleVector& x, DoubleVector&  g)
+{
+	double cost_value = do_f(x); 
+	do_df(x,g); 
+	return cost_value; 
+}
 
 C2DRegProblem::C2DRegProblem(const C2DImage& model, const C2DImage& reference, C2DTransformation& transf,
 	    const C2DImageCost& cost, const C2DInterpolatorFactory& ipf):
@@ -280,16 +329,20 @@ C2DRegProblem::C2DRegProblem(const C2DImage& model, const C2DImage& reference, C
 	_M_cost(cost),
 	_M_ipf(ipf)
 {
-
 }
-
 
 double  C2DRegProblem::do_f(const DoubleVector& x)
 {
+	cvmsg() << "\nParams:";
+	for (auto i = x.begin(); i != x.end(); ++i) 
+		cverb << *i << " "; 
+	cverb << "\n"; 
+
 	_M_transf.set_parameters(x);
 	P2DImage test =  _M_transf(_M_model, _M_ipf);
+
 	const double value = _M_cost.value(*test, _M_reference);
-	cvmsg() << "\rCost = " << value;
+	cvmsg() << "Cost = " << value << "\n";
 	return value;
 }
 
