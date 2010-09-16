@@ -91,7 +91,6 @@ C1DScalarFixed::C1DScalarFixed(const CBSplineKernel& kernel, size_t in_size, siz
 
 		_M_A = gsl::Matrix(in_size, out_size,  true);
 		_M_tau = gsl::DoubleVector(out_size); 
-		_M_residual = gsl::DoubleVector(in_size); 
 		for (size_t k = 0; k < out_size; ++k) {
 			double x = 0; 
 			for (size_t j = 0; j < in_size; ++j, x+=dx) {
@@ -259,8 +258,8 @@ void C1DScalarFixed::upscale(const gsl::DoubleVector& input, gsl::DoubleVector& 
 void C1DScalarFixed::downscale(const gsl::DoubleVector& input, gsl::DoubleVector& output) const
 {
 	gsl::DoubleVector coefs(output.size()); 
-	
-	gsl_linalg_QR_lssolve (_M_A, _M_tau, input, coefs, _M_residual); 
+	gsl::DoubleVector residual(input.size()); 
+	gsl_linalg_QR_lssolve (_M_A, _M_tau, input, coefs, residual); 
 	
 	for (size_t i = 0; i < output.size(); ++i) {
 		const vector<double>& weight = _M_weights[i]; 

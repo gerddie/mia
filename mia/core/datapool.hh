@@ -29,7 +29,7 @@
 #include <boost/any.hpp>
 
 #include <mia/core/defines.hh>
-
+#include <boost/thread/mutex.hpp>
 
 NS_MIA_BEGIN
 
@@ -85,7 +85,6 @@ public:
 	bool has_unused_data() const;
 private:
 
-
 	CDatapool();
 	CDatapool(const CDatapool& other);
 	typedef std::map<std::string, boost::any> Anymap;
@@ -94,6 +93,7 @@ private:
 	Anymap _M_map;
 	typedef std::map<std::string,bool> Usagemap;
 	mutable Usagemap _M_usage;
+	mutable boost::mutex _M_mutex; 
 };
 
 NS_MIA_END

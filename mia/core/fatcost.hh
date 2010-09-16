@@ -119,6 +119,7 @@ private:
 	std::shared_ptr<Interpolator > _M_ipf;
 	std::shared_ptr<Data > _M_floating;
 	float _M_weight;
+	
 	mutable double _M_cost;
 	mutable bool _M_cost_valid;
 

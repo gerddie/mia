@@ -156,10 +156,9 @@ private:
 	T _M_min;
 	T _M_max;
 
+	// not thread save!!!
 	mutable std::vector<int> _M_x_index;
-	mutable std::vector<int> _M_y_index;
 	mutable std::vector<double> _M_x_weight;
-	mutable std::vector<double> _M_y_weight;
 };
 
 

@@ -112,8 +112,6 @@ private:
 	std::vector<std::vector<int> > _M_indices; 
 	gsl::Matrix _M_A; 	
 	gsl::DoubleVector _M_tau; 
-	mutable gsl::DoubleVector _M_residual; 
-
 };
 
 

@@ -26,7 +26,7 @@
 #include <mia/core/fft1d_r2c.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/fullcost.hh>
-
+#include <boost/thread/mutex.hpp>
 
 NS_MIA_BEGIN
 /**
@@ -58,6 +58,7 @@ private:
 	size_t m_reference; 
 	mutable float m_peak_freq;
 	mutable bool m_peak_freq_valid; 
+	mutable boost::mutex _M_peak_freq_mutex;
 	vector<CFFT1D_R2C::Real> m_cost_values; 
 }; 
 

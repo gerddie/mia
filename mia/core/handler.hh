@@ -33,6 +33,7 @@
 #include <mia/core/shared_ptr.hh>
 #include <boost/filesystem/path.hpp>
 #include <boost/utility.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include <mia/core/defines.hh>
 #include <mia/core/module.hh>
@@ -147,6 +148,7 @@ public:
 private: 
 	static std::list<boost::filesystem::path> _M_searchpath; 
 	static bool _M_is_created; 
+	static boost::mutex _M_creation_mutex; 
 }; 
 
 

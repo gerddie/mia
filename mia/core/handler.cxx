@@ -39,6 +39,7 @@
 #include <mia/core/plugin_base.hh>
 #include <mia/core/msgstream.hh>
 
+
 #include <config.h>
 
 
@@ -291,6 +292,7 @@ THandlerSingleton<T>::THandlerSingleton():
 template <typename T> 
 const T& THandlerSingleton<T>::instance()
 {
+	boost::mutex::scoped_lock lock(_M_creation_mutex); 
 	TRACE_FUNCTION; 
 	static THandlerSingleton me; 
 	return me; 
@@ -299,6 +301,7 @@ const T& THandlerSingleton<T>::instance()
 template <typename T>
 void THandlerSingleton<T>::set_search_path(const std::list<boost::filesystem::path>& searchpath)
 {
+	boost::mutex::scoped_lock lock(_M_creation_mutex); 
 	typedef typename  T::Interface IF; 
 	TRACE("THandlerSingleton<T>::set_search_path"); 
 	cvdebug() << "Set path: "  << TPlugin<typename IF::PlugData,typename IF::PlugType>::search_path() << '\n'; 
@@ -323,6 +326,9 @@ template <typename T>
 std::list<boost::filesystem::path> THandlerSingleton<T>::_M_searchpath;
 template <typename T>
  bool THandlerSingleton<T>::_M_is_created = false; 
+
+template <typename T>
+boost::mutex THandlerSingleton<T>::_M_creation_mutex; 
 
 
 NS_MIA_END
