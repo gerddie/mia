@@ -122,8 +122,11 @@ int do_main( int argc, const char *argv[] )
 	C2DPerfusionAnalysis ica(components, !no_normalize, !no_meanstrip); 
 	if (max_ica_iterations) 
 		ica.set_max_ica_iterations(max_ica_iterations); 
-	if (!ica.run(series)) 
-		throw runtime_error("ICA analysis didn't result in usable components"); 
+
+	if (!ica.run(series)) {
+		ica.set_approach(FICA_APPROACH_SYMM); 
+		ica.run(series); // SYMM always returns some result - it might just not converge 
+	}
 	vector<C2DFImage> references_float = ica.get_references(); 
 	
 	C2DImageSeries references(references_float.size() + skip_images); 
