@@ -181,6 +181,7 @@ void C2DMyocardPeriodicRegistration::run_initial_pass(C2DImageSeries& images, co
 	for (auto i = subset.begin(); i != subset.end(); ++i) {
 		if (m_ref == *i) 
 			continue; 
+		cvmsg() << "Register " << i - subset.begin() << " to " << m_ref << "\n"; 
 		P2DImage src = images[*i]; 
 		P2DTransformation transform = nr.run(src, ref);
 		images[*i] = (*transform)(*images[*i], *m_params.interpolator);
@@ -287,6 +288,10 @@ int do_main( int argc, const char *argv[] )
 				    "image interpolator", NULL));
 	options.push_back(make_opt( params.mg_levels, "mg-levels", 'l', "multi-resolution levels", 
 				    "mg-levels", false));
+
+	options.push_back(make_opt( params.divcurlweight, "divcurl", 'd', 
+				    "divcurl regularization weight", "divcurl", false));
+
 	options.push_back(make_opt( params.transform_creator, "transForm", 'f', 
 				    "transformation type", "transform", false));
 

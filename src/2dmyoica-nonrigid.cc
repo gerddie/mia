@@ -304,20 +304,16 @@ int do_main( int argc, const char *argv[] )
 		if (!ica2.run(series))
 			ica2.set_approach(FICA_APPROACH_SYMM); 
 
-		if (ica2.run(series) ) {
-			divcurlweight /= divcurlweight_divider; 
-			if (c_rate > 1) 
-				c_rate /= c_rate_divider; 
-			references_float = ica2.get_references(); 
-			transform(references_float.begin(), references_float.end(), 
-				  references.begin(), C2DFImage2PImage()); 
-			run_registration_pass(input_set, references,  skip_images,  minimizer, 
-					      *ipfactory, mg_levels, c_rate, divcurlweight); 
-		} else {
-			cvmsg() << "Stopping registration in pass " << current_pass 
-				<< " because ICA didn't return useful results\n"; 
-			break; 
-		}
+		ica2.run(series); 
+		divcurlweight /= divcurlweight_divider; 
+		if (c_rate > 1) 
+			c_rate /= c_rate_divider; 
+		references_float = ica2.get_references(); 
+		transform(references_float.begin(), references_float.end(), 
+			  references.begin(), C2DFImage2PImage()); 
+		run_registration_pass(input_set, references,  skip_images,  minimizer, 
+				      *ipfactory, mg_levels, c_rate, divcurlweight); 
+		
 		do_continue =  (!pass || current_pass < pass) && ica2.has_periodic(); 
 	}
 
