@@ -32,11 +32,26 @@ extern EXPORT_CORE const char *property_gradient;
 
 
 /**
-   Class that holds properties.  
- */
+   This class holds a set of properties. 
+   \remark These properties are stored as plain text 
+   strings, but in the end only the pointer is compared. 
+*/
 class  EXPORT_CORE CPropertyFlagHolder {
 public:
+
+	/**
+	   Ensure evirtual destructor 
+	 */
+	virtual ~CPropertyFlagHolder(); 
+	/** check if a certain property is available 
+	    \param property
+	    \returns true if the property is available
+	*/
 	bool has(const char *property) const;
+
+	/** add  a certain property
+	    \param property proprety to add 
+	*/
 	void add(const char *property);
 
 	/**
@@ -48,7 +63,6 @@ private:
 	virtual bool do_has(const char *property) const;
 	std::set<const char *> _M_properties;
 };
-
 
 NS_MIA_END
 #endif

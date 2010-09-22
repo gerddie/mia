@@ -25,10 +25,6 @@
 
 NS_MIA_BEGIN
 
-CProductBase::~CProductBase()
-{
-}
-
 void CProductBase::set_module(PPluginModule module)
 {
 	_M_module = module;

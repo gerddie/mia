@@ -31,7 +31,15 @@
 
 NS_MIA_BEGIN
 
-typedef TRegModel<C2DImage, C2DFVectorfield, C2DFVectorfield> C2DRegModel;
+template <> 
+struct RegistrationTraits<2> {
+	typedef C2DImage Data;
+	typedef C2DFVectorfield Force; 
+	typedef C2DFVectorfield Transformation; 
+}; 
+
+
+typedef TRegModel<2> C2DRegModel;
 typedef std::shared_ptr<C2DRegModel > P2DRegModel;
 typedef TFactory<C2DRegModel>  C2DRegModelPlugin;
 typedef THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin> > C2DRegModelPluginHandler;

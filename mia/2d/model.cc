@@ -30,7 +30,7 @@
 
 NS_MIA_BEGIN
 
-template class TRegModel<C2DImage,C2DFVectorfield, C2DFVectorfield>;
+template class TRegModel<2>;
 template class TPlugin<C2DImage, regmodel_type>;
 template class TFactory<C2DRegModel>;
 template class THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin> >;

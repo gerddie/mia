@@ -44,8 +44,13 @@ NS_MIA_BEGIN
 #endif
 
 /**
-   A class to output messages during run-time, supporting various levels of
-   verbosity.
+   This class impelemtns a std::ostream like class to output messages during run-time, 
+   supporting various levels of verbosity. The class is implemened as a singleton.
+   On initialization it is set to use std::cerr as output stream, but this can be replaced 
+   by any type implementing the std::ostream interface. 
+   \remark The levels \a debug and \a trace are not compiled in, if -DNDEBUG is set - i.e. 
+   the corresponding output operators are replaced by dummy functions that should be 
+   optimized away. 
 */
 class EXPORT_CORE vstream {
 public:
@@ -81,22 +86,22 @@ public:
 	*/
 	std::ostream&  set_stream(std::ostream& os);
 
-	/** general output routine; output is only given, if the data verbosity level is
-	    set higher or equal to the stream verbosity level.
-	    \param text the text to be written to the stream
-	    \returns a reference to this object
-	*/
-
 	void flush();
 
 	/** \param l verbosity level
 	    \returns true if cverb will show the given verbosity level
 	*/
 	bool shows(Level l)const;
-
+	
+	/// \returns true if the output level is equal or below "debug" 
 	bool show_debug() const;
 
 
+	/** general output routine; output is only given, if the data verbosity level is
+	    set higher or equal to the stream verbosity level.
+	    \param text the text to be written to the stream
+	    \returns a reference to this object
+	*/
 	template <class T>
 	vstream& operator << (const T& text) {
 		if (_M_message_level >= _M_output_level)
@@ -115,8 +120,16 @@ public:
 	*/
 	vstream& operator << (Level l);
 
+
+	/**
+	   Set the output target with which the stream should be initialized 
+	   if std::cerr is not to be used. 
+	 */
 	static void set_output_target(std::ostream* os);
 
+	/**
+	   Transparent conversion operator to an std::ostream. 
+	 */
 	operator std::ostream& () {
 		return *_M_output;
 	}
@@ -264,6 +277,9 @@ inline vstream& cvmsg()
 
 #define cverb ::mia::vstream::instance()
 
+/**
+   Impelment the direct streaming of std::vectors. 
+*/
 template <typename T> 
 vstream& operator << (vstream& os, const std::vector<T>& v) {
 	os << "["; 

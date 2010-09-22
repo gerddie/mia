@@ -44,11 +44,13 @@ struct EXPORT_CORE cost_type {
 
 
 /**
-   The basic cost function type interface. Template parameter T describes the input data class, e.g. T3DImage, parameter
+   The basic cost function type interface. Template parameter T describes the input data class, e.g. 
+   T3DImage, parameter
    V is for the force field description.
-   The class defines an abstract interface and the functions \a do_value and \a do_evaluate_force have to be implemented by
+   The class defines an abstract interface and the functions \a do_value and \a do_evaluate_force 
+   have to be implemented by
    derived functions.
- */
+*/
 
 template <typename T, typename V>
 class TCost : public CProductBase{
