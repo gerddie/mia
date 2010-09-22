@@ -32,7 +32,7 @@ NS_MIA_BEGIN
 class EXPORT_2D C2DFullCostList : public C2DFullCost {
 public: 
 	C2DFullCostList(); 
-	
+
 	void push(P2DFullCost cost); 
 private: 
 	bool do_has(const char *property) const;
