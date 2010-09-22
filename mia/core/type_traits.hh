@@ -33,12 +33,14 @@
 
 #include <mia/core/defines.hh>
 
+#if 0
 #ifndef __GXX_EXPERIMENTAL_CXX0X__
 #include <boost/type_traits.hpp>
 #define IS_FLOAT(T) ::boost::is_floating_point<T>::value 
 #else 
 #include <type_traits>
 #define IS_FLOAT(T) ::std::is_floating_point<T>::value 
+#endif
 #endif
 
 NS_MIA_BEGIN

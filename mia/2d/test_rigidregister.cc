@@ -96,8 +96,10 @@ void RigidRegisterFixture::run(C2DTransformation& t, EMinimizers minimizer, doub
 	BOOST_CHECK_EQUAL(params.size(), orig_params.size());
 
 	for (size_t i = 0; i < params.size(); ++i) 
-		BOOST_CHECK_CLOSE(params[i], orig_params[i], accuracy);
-	
+		if (fabs(orig_params[i]) > 0.1) 
+			BOOST_CHECK_CLOSE(params[i], orig_params[i], accuracy);
+		else
+			BOOST_CHECK_CLOSE(1.0 + params[i], 1.0 + orig_params[i], accuracy);
 }
 
 RigidRegisterFixture::RigidRegisterFixture():

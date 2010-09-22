@@ -28,11 +28,9 @@
 #include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
-/** 
-    A milli-second watch to measure running times.
-*/
-
-/** A class to count time */
+/** A class to measure time with  milisecond accuracy 
+    \remark On WIN32 this class is currently a fake that always returns 0.0; 
+ */
 class EXPORT_CORE CWatch {
 	static int overlaps;
 public:
@@ -42,7 +40,7 @@ public:
 	CWatch();
 
 	/// \returns  get the current time value
-	double get_seconds();
+	double get_seconds() const;
 private:
 	static void overlap_handler(int p_sig);
 };
