@@ -418,10 +418,13 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 			copy(tmp_y.begin_at(0, iy), tmp_y.begin_at(0, iy) + tmp_y.get_size().x, 
 			     scaler_x.input_begin()); 
 			run_downscaler(scaler_x, out_buffer_y);
+			// translate the gradient also needs a sign correction, because 
+			// the actual transformation is I-s(x) 
+			// somehow a scaling may still be missing 
 			for(auto vx = out_buffer_x.begin(), vy = out_buffer_y.begin(); 
 			    vx != out_buffer_x.end(); ++vx, ++vy, r+=2) {
-				r[0] = *vx; 
-				r[1] = *vy; 
+				r[0] = -*vx; 
+				r[1] = -*vy; 
 			}
 		}
 	}

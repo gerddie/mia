@@ -257,9 +257,11 @@ void C2DGridTransformation::translate(const C2DFVectorfield& gradient, gsl::Doub
 {
 	assert(2 * params.size() != gradient.size());
 
+	// translating the gradient also means multiplication with -1 
+	// because the transformation is I-u(x)
 	for(auto f = gradient.begin(), r = params.begin(); f != gradient.end(); ++f, r+=2) {
-		r[0] = f->x;
-		r[1] = f->y;
+		r[0] = -f->x;
+		r[1] = -f->y;
 	}
 }
 

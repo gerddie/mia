@@ -89,6 +89,7 @@ double C2DImageFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVect
 	}
 	
 	C2DFVectorfield force(get_current_size()); 
+
  	_M_cost_kernel->evaluate_force(*temp, *_M_ref, 1.0, force); 
 
 	t.translate(force, gradient); 

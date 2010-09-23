@@ -286,8 +286,8 @@ BOOST_FIXTURE_TEST_CASE( test_splines_translate, TransformSplineFixture )
 
 	auto  i = force.begin();
 	while ( i != force.end() ) {
-		BOOST_CHECK_CLOSE(*i++, 1.0f, 0.1);
-		BOOST_CHECK_CLOSE(*i++, 2.0f, 0.1);
+		BOOST_CHECK_CLOSE(*i++, -1.0f, 0.1);
+		BOOST_CHECK_CLOSE(*i++, -2.0f, 0.1);
 	}
 }
 
@@ -316,13 +316,13 @@ BOOST_FIXTURE_TEST_CASE( test_splines_translate_2, TransformSplineFixture )
 		for (size_t x = 0; x < range.x; ++x, ++is,++ig) {
 			cvdebug() << "translate_test " << setw(3) << x << "," << setw(3)<< y  << *is << *ig << "\n"; 
 			if (abs(ig->x) > 0.1) 
-				BOOST_CHECK_CLOSE(x - is->x, ig->x, 1); 
+				BOOST_CHECK_CLOSE(x - is->x, -ig->x, 1); 
 			else 
-				BOOST_CHECK_CLOSE(1.0 + x - is->x, 1.0 + ig->x, 1); 
+				BOOST_CHECK_CLOSE(1.0 + x - is->x, 1.0 - ig->x, 1.1); 
 			if (abs(ig->y) > 0.1) 
-				BOOST_CHECK_CLOSE(y -is->y,  ig->y, 1); 
+				BOOST_CHECK_CLOSE(y -is->y,  -ig->y, 1); 
 			else 
-				BOOST_CHECK_CLOSE(1.0 + y - is->y, 1.0 + ig->y, 1); 
+				BOOST_CHECK_CLOSE(1.0 + y - is->y, 1.0 - ig->y, 1.1); 
 		}
 }
 

@@ -75,11 +75,11 @@ BOOST_FIXTURE_TEST_CASE( test_SSD2D_simple, C2DSSDFixture )
 
 	P2DInterpolatorFactory ipf(create_2dinterpolation_factory(ip_bspline3));
 	CFatSSD2DImageCost cost(P2DImage(psrc), P2DImage(pref), ipf, 2.0);
-	BOOST_CHECK_CLOSE(cost.value(), 2.0, 0.1);
+	BOOST_CHECK_CLOSE(cost.value(), 1.0, 0.1);
 
 	C2DFVectorfield force(size);
 	double c = cost.evaluate_force(force);
-	BOOST_CHECK_CLOSE(c, 2.0, 0.1);
+	BOOST_CHECK_CLOSE(c, 1.0, 0.1);
 
 	const C2DFVector zero(0,0);
 
