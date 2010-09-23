@@ -105,18 +105,18 @@ BOOST_FIXTURE_TEST_CASE( test_SSD2D, NSSD2DFixture )
 
 	P2DInterpolatorFactory ipf(create_2dinterpolation_factory(ip_bspline3));
 	CFatNSSD2DImageCost cost(P2DImage(psrc), P2DImage(pref), ipf, 2.0);
-	BOOST_CHECK_CLOSE(cost.value(), 1.00797741, 0.1);
+	BOOST_CHECK_CLOSE(cost.value(), 9 * 1.00797741, 0.1);
 
 	C2DFVectorfield force(size);
 	double c = cost.evaluate_force(force);
-	BOOST_CHECK_CLOSE(c, 1.00797741, 0.1);
+	BOOST_CHECK_CLOSE(c,  9.0 * 1.00797741, 0.1);
 
 	const C2DFVector zero(0,0);
 
 	C2DFVectorfield::const_iterator i = force.begin();
 	C2DFVector rforce = force(1,1);
 
-	BOOST_CHECK_CLOSE(rforce.x , 2.0f * -0.57735f / 9.0, 0.1);
-	BOOST_CHECK_CLOSE(rforce.y , 2.0f *  0.57735f / 9.0, 0.1);
+	BOOST_CHECK_CLOSE(rforce.x , 2.0f * -0.57735f, 0.1);
+	BOOST_CHECK_CLOSE(rforce.y , 2.0f *  0.57735f, 0.1);
 
 }

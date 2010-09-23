@@ -220,7 +220,8 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 	if (_M_components > 0) {
 		ica->set_max_iterations(_M_max_iterations);
 		ica->set_approach(_M_ica_approach); 
-		if (!ica->run(_M_components, _M_meanstrip, _M_normalize))
+		if (!ica->run(_M_components, _M_meanstrip, _M_normalize) && 
+		    (_M_ica_approach == FICA_APPROACH_DEFL))
 			return false; 
 		_M_cls = CSlopeClassifier(ica->get_mixing_curves(), _M_meanstrip);
 	} else {
@@ -230,7 +231,7 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
 			ica->set_approach(_M_ica_approach); 
 			l_ica->set_max_iterations(_M_max_iterations);
-			if (!l_ica->run(i, _M_meanstrip, _M_normalize)) {
+			if (!l_ica->run(i, _M_meanstrip, _M_normalize) && (_M_ica_approach == FICA_APPROACH_DEFL)) {
 				cvwarn() << "run_ica: " << i << " components didn't return a result\n"; 
 				continue; 
 			}

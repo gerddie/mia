@@ -257,8 +257,7 @@ int do_main( int argc, const char *argv[] )
 		ica.set_max_ica_iterations(max_ica_iterations); 
 	if (!ica.run(series)) {
 		ica.set_approach(FICA_APPROACH_SYMM); 
-		if (!ica.run(series))
-			throw runtime_error("ICA analysis didn't result in usable components"); 
+		ica.run(series);
 	}
 	vector<C2DFImage> references_float = ica.get_references(); 
 	
@@ -311,9 +310,10 @@ int do_main( int argc, const char *argv[] )
 		references_float = ica2.get_references(); 
 		transform(references_float.begin(), references_float.end(), 
 			  references.begin(), C2DFImage2PImage()); 
+#if 0
 		run_registration_pass(input_set, references,  skip_images,  minimizer, 
 				      *ipfactory, mg_levels, c_rate, divcurlweight); 
-		
+#endif 		
 		do_continue =  (!pass || current_pass < pass) && ica2.has_periodic(); 
 	}
 
