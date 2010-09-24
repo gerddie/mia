@@ -143,6 +143,12 @@ void CSegFrame::transform(const C2DTransformation& t)
 		i->transform(t); 
 }
 
+void CSegFrame::set_image(P2DImage image)
+{
+	m_image = image; 
+}
+
+
 void CSegFrame::inv_transform(const C2DTransformation& t)
 {
 	if (m_has_star) 

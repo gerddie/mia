@@ -37,6 +37,7 @@ DEFCHKEXE(2dlerp mia2d )
 DEFCHKEXE(2dsegshift mia2d )
 DEFEXE(2dsegshiftperslice mia2d )
 DEFEXE(2dmyomilles mia2d )
+DEFEXE(2dsegseriesstats mia2d )
 
 
 DEFCHKEXE(3dlerp mia3d )

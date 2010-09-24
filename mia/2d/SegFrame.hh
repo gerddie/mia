@@ -76,6 +76,8 @@ public:
 	/// \returns a read-only reference to the segmentation sections 
 	const Sections& get_sections() const;
 
+	void set_image(P2DImage image); 
+
 	
 	const CSegStar& get_star() const;
 
