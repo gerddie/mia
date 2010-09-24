@@ -400,6 +400,9 @@ BOOST_FIXTURE_TEST_CASE( test_segset_read, SegSetReadFixture )
 	const CSegSet::Frames& frames = segset.get_frames();
 	BOOST_CHECK_EQUAL(frames.size(), 2);
 
+	BOOST_CHECK_EQUAL(segset.get_LV_peak(), 1);
+	BOOST_CHECK_EQUAL(segset.get_RV_peak(), 0);
+
 	BOOST_CHECK_EQUAL(frames[0].get_imagename(), "image.png");
 	BOOST_CHECK_EQUAL(frames[1].get_imagename(), "image2.png");
 
@@ -691,13 +694,7 @@ BOOST_FIXTURE_TEST_CASE( test_segset_shift_and_rename, SegSetReadFixture )
 		for ( string::const_iterator x = xmldoc.begin(), t = testdoc.begin();
 		      x != xmldoc.end() && t != testdoc.end(); ++x, ++t ) {
 			if (*x != *t) {
-				cvfail() << "diff follows";
-				string::const_iterator xh = x;
-				string::const_iterator th = t;
-				for ( size_t i = 0; i < 3 && xh != xmldoc.begin(); ++i, --xh, --th);
-				for ( size_t i = 0; i < 7 && xh != xmldoc.begin() && th != testdoc.end();
-				      ++xh, ++th)
-					cvfail() << "'" << *xh << "' vs '"<< *th << "'" << endl;
+				cvfail() << "'" << *x << "' vs '"<< *t << "'" << endl;
 			}
 		}
 	}
@@ -853,6 +850,7 @@ const char *testframe_init2 = "<?xml version=\"1.0\"?>\n<test>"
 
 
 const char *testset_init = "<?xml version=\"1.0\"?>\n<workset>"
+	"<description><RVpeak value=\"0\"/><LVpeak value=\"1\"/></description>"
 	"<frame image=\"image.png\">"
 	"<star y=\"118\" x=\"109\" r=\"21\">"
 	"<point y=\"20\" x=\"10\"/>"
@@ -890,6 +888,7 @@ const char *testset_init = "<?xml version=\"1.0\"?>\n<workset>"
 	"</workset>\n";
 
 const char *testset_init2 = "<?xml version=\"1.0\"?>\n<workset>"
+	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/></description>"
 	"<frame image=\"image.png\">"
 	"<star y=\"118\" x=\"109\" r=\"21\">"
 	"<point y=\"20\" x=\"10\"/>"
@@ -907,6 +906,7 @@ const char *testset_init2 = "<?xml version=\"1.0\"?>\n<workset>"
 	"</workset>\n";
 
 const char *testset_init3 = "<?xml version=\"1.0\"?>\n<workset>"
+	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/></description>"
 	" <frame image=\"image.png\">"
 	"  <star y=\"118\" x=\"109\" r=\"21\">"
 	"   <point y=\"20\" x=\"10\"/>"
@@ -925,6 +925,10 @@ const char *testset_init3 = "<?xml version=\"1.0\"?>\n<workset>"
 
 const char *testset_bboxtest =
 "<?xml version=\"1.0\"?>\n<workset>"
+  "<description>"
+	"<RVpeak value=\"-1\"/>"
+	"<LVpeak value=\"-1\"/>"
+  "</description>"
   "<frame image=\"data0000.png\">"
       "<star y=\"118\" x=\"109\" r=\"21\">"
 	"<point y=\"20\" x=\"10\"/>"
@@ -959,6 +963,7 @@ const char *testset_bboxtest =
 
 const char *testset_shift_and_rename =
 "<?xml version=\"1.0\"?>\n<workset>"
+	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/></description>"
   "<frame image=\"moved0000.png\">"
       "<star y=\"128\" x=\"112\" r=\"21\">"
         "<point y=\"20\" x=\"10\"/>"

@@ -106,9 +106,18 @@ public:
 	   \param t tranformation 
 	 */
 	void transform(const C2DTransformation& t);
+
+	void set_RV_peak(int peak); 
+	int get_RV_peak() const; 
+
+	void set_LV_peak(int peak); 
+	int get_LV_peak() const; 
+
 private:
 	void read(const xmlpp::Document& node);
 	Frames m_frames;
+	int m_RV_peak; 
+	int m_LV_peak; 
 };
 
 

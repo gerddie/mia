@@ -22,10 +22,12 @@
  *
  */
 
+#include <libxml++/libxml++.h>
 #include <mia/2d/SegSet.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/filetools.hh>
-#include <libxml++/libxml++.h>
+#include <mia/core/tools.hh>
+
 
 
 NS_MIA_BEGIN
@@ -33,11 +35,15 @@ using namespace std;
 using namespace xmlpp;
 
 
-CSegSet::CSegSet()
+CSegSet::CSegSet():
+	m_RV_peak(-1),
+	m_LV_peak(-1)
 {
 }
 
-CSegSet::CSegSet(const std::string& src_filename)
+CSegSet::CSegSet(const std::string& src_filename):
+	m_RV_peak(-1),
+	m_LV_peak(-1)
 {
 	DomParser parser;
 	parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
@@ -50,7 +56,9 @@ CSegSet::CSegSet(const std::string& src_filename)
 
 }
 
-CSegSet::CSegSet(const xmlpp::Document& doc)
+CSegSet::CSegSet(const xmlpp::Document& doc):
+	m_RV_peak(-1),
+	m_LV_peak(-1)
 {
 	TRACE("CSegSet::CSegSet");
 	read(doc);
@@ -92,9 +100,16 @@ xmlpp::Document *CSegSet::write() const
 	xmlpp::Document *doc = new xmlpp::Document;
 	xmlpp::Element* nodeRoot = doc->create_root_node("workset");
 
+	Element* description = nodeRoot->add_child("description"); 
+	Element* RVPeak = description->add_child("RVpeak"); 
+	RVPeak->set_attribute("value", to_string<int>(m_RV_peak));
+	Element* LVPeak = description->add_child("LVpeak"); 
+	LVPeak->set_attribute("value", to_string<int>(m_LV_peak));
+
 	for(Frames::const_iterator i = m_frames.begin(); i != m_frames.end(); ++i) {
 		i->write(*nodeRoot);
 	}
+
 	return doc;
 }
 
@@ -106,13 +121,33 @@ void CSegSet::read(const xmlpp::Document& node)
 				       root->get_name());
 	}
 
-	xmlpp::Node::NodeList frames = root->get_children("frame");
-	xmlpp::Node::NodeList::const_iterator i = frames.begin();
-	xmlpp::Node::NodeList::const_iterator e = frames.end();
+	auto frames = root->get_children("frame");
+	auto i = frames.begin();
+	auto e = frames.end();
 
 	while (i != e) {
 		m_frames.push_back(CSegFrame(**i));
 		++i;
+	}
+
+	auto descr = root->get_children("description");
+	if (!descr.empty()) 
+		descr = (*descr.begin())->get_children();
+	for(auto i = descr.begin(); i != descr.end(); ++i) {
+		const Element& elm = dynamic_cast<const Element&>(**i); 
+		if (elm.get_name() == "RVpeak") {
+			const Attribute *attr = elm.get_attribute("value"); 
+			if (!attr)
+				cvwarn() << "CSegFrame: LVpeak without attribute"; 
+			m_RV_peak = from_string<int>(attr->get_value());
+		} else if (elm.get_name() == "LVpeak") {
+			const Attribute *attr = elm.get_attribute("value"); 
+			if (!attr)
+				cvwarn() << "CSegFrame: LVpeak without attribute"; 
+			m_LV_peak = from_string<int>(attr->get_value());
+		} else {
+			cvwarn() << "Ignoring unknown element '" << elm.get_name() << "'\n"; 
+		}
 	}
 }
 
@@ -143,6 +178,27 @@ void CSegSet::transform(const C2DTransformation& t)
 {
 	for (auto i = get_frames().begin(); i != get_frames().end(); ++i) 
 		i->transform(t); 
+}
+
+void CSegSet::set_RV_peak(int peak)
+{
+	m_RV_peak = peak; 
+}
+
+int CSegSet::get_RV_peak() const
+{
+	return m_RV_peak; 
+}
+
+
+void CSegSet::set_LV_peak(int peak)
+{
+	m_LV_peak = peak; 
+}
+
+int CSegSet::get_LV_peak() const
+{
+	return m_LV_peak; 
 }
 
 NS_MIA_END
