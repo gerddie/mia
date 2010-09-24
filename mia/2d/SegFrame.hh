@@ -91,6 +91,7 @@ public:
 	float get_hausdorff_distance(const CSegFrame& other) const;
 
 	C2DUBImage get_section_masks(const C2DBounds& size) const; 
+	C2DUBImage get_section_masks() const; 
 
 	SectionsStats get_stats(const C2DUBImage& mask) const; 
 	SectionsStats get_stats() const; 

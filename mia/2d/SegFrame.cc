@@ -179,6 +179,17 @@ C2DUBImage CSegFrame::get_section_masks(const C2DBounds& size) const
 	return result; 
 }
 
+
+C2DUBImage CSegFrame::get_section_masks() const
+{
+	if (!m_image) {
+		m_image = load_image2d(m_filename); 
+		if (!m_image) 
+			THROW(runtime_error, "unable to find image file '" << m_filename << "'");
+	}
+	return get_section_masks(m_image->get_size()); 
+}
+
 struct EvalMaskStat: public TFilter<CSegFrame::SectionsStats> {
 
 	EvalMaskStat(const C2DUBImage& mask):
