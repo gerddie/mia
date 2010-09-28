@@ -340,7 +340,7 @@ struct FCopyY {
 	}
 }; 
 
-// quatratic extrapolation 
+// quadratic extrapolation 
 static double extrapolate(double x, double ym, double y0, double yp) 
 {
 	const double c = y0; 
@@ -542,7 +542,7 @@ double C2DSplineTransformation::get_divcurl_cost(double wd, double wr, gsl::Doub
 		_M_divcurl_matrix->reset(_M_coefficients.get_size(), _M_range, 
 					 *_M_ipf->get_kernel(), wd, wr); 
 	
-	// this will throw ifthe interpolator is not of the right type
+	// this will throw if the interpolator is not of the right type
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
 		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*_M_interpolator); 
 	

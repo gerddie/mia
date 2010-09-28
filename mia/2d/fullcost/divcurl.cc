@@ -21,9 +21,12 @@
  */
 
 #include <limits>
+#include <algorithm>
+#include <boost/lambda/lambda.hpp>
 #include <mia/2d/fullcost/divcurl.hh>
 NS_MIA_BEGIN
 using namespace std; 
+using boost::lambda::_1; 
 
 C2DDivCurlFullCost::C2DDivCurlFullCost(double weight_div, double weight_curl, double weight):
 	C2DFullCost(weight), 
@@ -38,14 +41,15 @@ double C2DDivCurlFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVe
 {
 	assert(t.get_size() == get_current_size()); 
 	double result = t.get_divcurl_cost(_M_size_scale * _M_weight_div, _M_size_scale *_M_weight_curl, gradient); 
-	cvinfo() << "DivCurl=" << result << "\n"; 
+	cvdebug() << "C2DDivCurlFullCost::value = " << result << "\n"; 
+	transform(gradient.begin(), gradient.end(), gradient.begin(), -1.0 * _1); 
 	return result; 
 }
 
 double C2DDivCurlFullCost::do_value(const C2DTransformation& t) const
 {
 	double result = t.get_divcurl_cost(_M_size_scale * _M_weight_div, _M_size_scale * _M_weight_curl); 
-	cvdebug() << "C2DImageFullCost::value = " << result << "\n"; 
+	cvdebug() << "C2DDivCurlFullCost::value = " << result << "\n"; 
 	return result; 
 }
 
