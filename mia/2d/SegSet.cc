@@ -134,19 +134,21 @@ void CSegSet::read(const xmlpp::Document& node)
 	if (!descr.empty()) 
 		descr = (*descr.begin())->get_children();
 	for(auto i = descr.begin(); i != descr.end(); ++i) {
-		const Element& elm = dynamic_cast<const Element&>(**i); 
-		if (elm.get_name() == "RVpeak") {
+		cvdebug() << "description element '" << (*i)->get_name() << "'\n"; 
+		if ((*i)->get_name() == "RVpeak") {
+			const Element& elm = dynamic_cast<const Element&>(**i); 
 			const Attribute *attr = elm.get_attribute("value"); 
 			if (!attr)
 				cvwarn() << "CSegFrame: LVpeak without attribute"; 
 			m_RV_peak = from_string<int>(attr->get_value());
-		} else if (elm.get_name() == "LVpeak") {
+		} else if ((*i)->get_name() == "LVpeak") {
+			const Element& elm = dynamic_cast<const Element&>(**i); 
 			const Attribute *attr = elm.get_attribute("value"); 
 			if (!attr)
 				cvwarn() << "CSegFrame: LVpeak without attribute"; 
 			m_LV_peak = from_string<int>(attr->get_value());
 		} else {
-			cvwarn() << "Ignoring unknown element '" << elm.get_name() << "'\n"; 
+			cvinfo() << "Ignoring unknown element '" << (*i)->get_name() << "'\n"; 
 		}
 	}
 }
