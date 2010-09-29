@@ -35,9 +35,10 @@ namespace xmlpp {
 NS_MIA_BEGIN
 
 /**
-   A set of slices containing segmentation information
-   
- */
+   A set of slices containing segmentation information specifically designed for 
+   myocardial perfusion image series. 
+   \todo should probably go into a seperate library 
+*/
 class EXPORT_2D CSegSet {
 public:
 	typedef std::vector<CSegFrame> Frames;
@@ -107,12 +108,28 @@ public:
 	 */
 	void transform(const C2DTransformation& t);
 
+
+	/**
+	   Set the frame number of the RV peak enhancement
+	   \param peak 
+	*/
 	void set_RV_peak(int peak); 
+	
+	/**
+	   \\returns the frame number of the RV peak enhancement (-1 if not set)
+	*/
 	int get_RV_peak() const; 
 
+	/**
+	   Set the frame number of the LV peak enhancement
+	   \param peak 
+	*/
 	void set_LV_peak(int peak); 
-	int get_LV_peak() const; 
 
+	/**
+	   \\returns the frame number of the LV peak enhancement (-1 if not set)
+	*/
+	int get_LV_peak() const; 
 private:
 	void read(const xmlpp::Document& node);
 	Frames m_frames;

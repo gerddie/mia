@@ -86,7 +86,7 @@ C2DFullCostList create_costs(double divcurlweight)
 	stringstream divcurl_descr;  
 	divcurl_descr << "divcurl:weight=" << divcurlweight; 
 	result.push(C2DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
-	result.push(C2DFullCostPluginHandler::instance().produce("image:weight=256.0")); 
+	result.push(C2DFullCostPluginHandler::instance().produce("image:weight=1.0")); 
 	return result; 
 }
 
