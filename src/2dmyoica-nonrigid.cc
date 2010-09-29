@@ -258,7 +258,7 @@ int do_main( int argc, const char *argv[] )
 	if (!ica.run(series)) {
 		ica.set_approach(FICA_APPROACH_SYMM); 
 		if (!ica.run(series))
-			throw runtime_error("ICA analysis didn't result in usable components"); 
+			cvwarn() << "ICA not converged, but the SYMM approach has given something to work with ...");
 	}
 	vector<C2DFImage> references_float = ica.get_references(); 
 	
