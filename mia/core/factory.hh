@@ -47,7 +47,9 @@
 NS_MIA_BEGIN
 
 
-/** this is the class to load a certain plugin */
+/** This template is the model for all factory plugins, i.e. plugins that create certain objects.
+   \tparam P the object type created by the factory.
+*/
 template <typename P>
 class EXPORT_HANDLER TFactory: 
 	public TPlugin<typename P::plugin_data, typename P::plugin_type> {
@@ -97,7 +99,11 @@ public:
 	
 }; 
 
-
+/**
+   Type trait that enables the use of the factory creation in commen line parsing. 
+   This trait needs to be specialized for all factories that are to be used 
+   utilizing the TCmdFactoryOption interface. 
+ */
 template <class T> 
 class FactoryTrait {
 	typedef typename T::must_create_trait_using_FACTORY_TRAIT type; 
@@ -117,6 +123,10 @@ public:
 	}; 
 
 
+
+/*
+  Implementation of the factory
+*/
 
 template <typename P>
 TFactory<P>::TFactory(char const * const  name):

@@ -145,7 +145,7 @@ void C2DNonrigidRegisterImpl::apply(C2DTransformation& transf, const gsl_multimi
 	CFDFMinimizer minimizer(gp, optimizer );
 
 	auto x = transf.get_parameters();
-	cvmsg() << "Start Registration of " << x.size() <<  " parameters\n"; 
+	cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
 	minimizer.run(x);
 	transf.set_parameters(x);
 	cvmsg() << "\n"; 
@@ -233,7 +233,7 @@ double  C2DNonrigRegGradientProblem::do_f(const DoubleVector& x)
 	_M_func_evals++; 
 	_M_transf.set_parameters(x);
 	double result = _M_costs.cost_value(_M_transf);
-	cvinfo() << "Cost[fg="<<_M_grad_evals << ",fe="<<_M_func_evals<<"]=" << setw(20) << setprecision(15) << result << "\r"; 
+	cvmsg() << "Cost[fg="<<_M_grad_evals << ",fe="<<_M_func_evals<<"]=" << setw(20) << setprecision(15) << result << "\r"; 
 	return result; 
 }
 
@@ -249,8 +249,8 @@ double  C2DNonrigRegGradientProblem::do_fdf(const DoubleVector& x, DoubleVector&
 	_M_transf.set_parameters(x);
 	fill(g.begin(), g.end(), 0.0); 
 	double result = _M_costs.evaluate(_M_transf, g);
-	transform(g.begin(), g.end(), g.begin(), _1 * -1); 
-	cvinfo() << "Cost[fg="<<_M_grad_evals << ",fe="<<_M_func_evals<<"]=" << setw(20) << setprecision(15) << result << "\r"; 
+	//transform(g.begin(), g.end(), g.begin(), _1 * -1); 
+	cvmsg() << "Cost[fg="<<_M_grad_evals << ",fe="<<_M_func_evals<<"]=" << setw(20) << setprecision(15) << result << "\r"; 
 	return result; 
 }
 

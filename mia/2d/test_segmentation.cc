@@ -400,6 +400,9 @@ BOOST_FIXTURE_TEST_CASE( test_segset_read, SegSetReadFixture )
 	const CSegSet::Frames& frames = segset.get_frames();
 	BOOST_CHECK_EQUAL(frames.size(), 2);
 
+	BOOST_CHECK_EQUAL(segset.get_LV_peak(), 1);
+	BOOST_CHECK_EQUAL(segset.get_RV_peak(), 0);
+
 	BOOST_CHECK_EQUAL(frames[0].get_imagename(), "image.png");
 	BOOST_CHECK_EQUAL(frames[1].get_imagename(), "image2.png");
 
@@ -559,6 +562,48 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_mask, FrameTestRead)
 
 }
 
+BOOST_FIXTURE_TEST_CASE(test_frame_get_mask_size, FrameTestRead)
+{
+	const char *sestsection_for_draw2 = 
+		"<?xml version=\"1.0\"?>\n<test>"
+		"<frame image=\"name.@\">"
+                "<section color=\"white\">"
+		"<point y=\"2\" x=\"1\"/>"
+		"<point y=\"4\" x=\"1\"/>"
+		"<point y=\"4\" x=\"3\"/>"
+		"<point y=\"2\" x=\"3\"/>"
+		"</section>"
+                "<section color=\"blue\">"
+		"<point y=\"0\" x=\"2\"/>"
+		"<point y=\"2\" x=\"2\"/>"
+		"<point y=\"2\" x=\"3\"/>"
+		"<point y=\"3\" x=\"3\"/>"
+		"<point y=\"3\" x=\"4\"/>"
+		"<point y=\"0\" x=\"4\"/>"
+		"</section>"
+		"</frame></test>\n";
+
+	init(sestsection_for_draw2);
+	
+	C2DBounds size(6,7); 
+
+	float test_img[6 * 7] =  {
+		0, 0, 2, 3, 0, 0, 
+		0, 0, 4, 5, 0, 0, 
+		0, 1, 2, 6, 0, 0, 
+		0, 2, 1, 0, 0, 0, 
+		0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0
+	}; 
+
+	C2DFImage *pimg = new C2DFImage(size, test_img); 
+	P2DImage img(pimg); 
+	save_image2d("name.@", img);
+	
+	C2DUBImage section_mask = frame.get_section_masks(); 
+	BOOST_CHECK_EQUAL(section_mask.get_size(),size); 
+}; 
 
 BOOST_FIXTURE_TEST_CASE(test_frame_get_stats, FrameTestRead)
 {
@@ -649,13 +694,7 @@ BOOST_FIXTURE_TEST_CASE( test_segset_shift_and_rename, SegSetReadFixture )
 		for ( string::const_iterator x = xmldoc.begin(), t = testdoc.begin();
 		      x != xmldoc.end() && t != testdoc.end(); ++x, ++t ) {
 			if (*x != *t) {
-				cvfail() << "diff follows";
-				string::const_iterator xh = x;
-				string::const_iterator th = t;
-				for ( size_t i = 0; i < 3 && xh != xmldoc.begin(); ++i, --xh, --th);
-				for ( size_t i = 0; i < 7 && xh != xmldoc.begin() && th != testdoc.end();
-				      ++xh, ++th)
-					cvfail() << "'" << *xh << "' vs '"<< *th << "'" << endl;
+				cvfail() << "'" << *x << "' vs '"<< *t << "'" << endl;
 			}
 		}
 	}
@@ -811,6 +850,7 @@ const char *testframe_init2 = "<?xml version=\"1.0\"?>\n<test>"
 
 
 const char *testset_init = "<?xml version=\"1.0\"?>\n<workset>"
+	"<description><RVpeak value=\"0\"/><LVpeak value=\"1\"/></description>"
 	"<frame image=\"image.png\">"
 	"<star y=\"118\" x=\"109\" r=\"21\">"
 	"<point y=\"20\" x=\"10\"/>"
@@ -848,6 +888,7 @@ const char *testset_init = "<?xml version=\"1.0\"?>\n<workset>"
 	"</workset>\n";
 
 const char *testset_init2 = "<?xml version=\"1.0\"?>\n<workset>"
+	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/></description>"
 	"<frame image=\"image.png\">"
 	"<star y=\"118\" x=\"109\" r=\"21\">"
 	"<point y=\"20\" x=\"10\"/>"
@@ -865,6 +906,7 @@ const char *testset_init2 = "<?xml version=\"1.0\"?>\n<workset>"
 	"</workset>\n";
 
 const char *testset_init3 = "<?xml version=\"1.0\"?>\n<workset>"
+	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/></description>"
 	" <frame image=\"image.png\">"
 	"  <star y=\"118\" x=\"109\" r=\"21\">"
 	"   <point y=\"20\" x=\"10\"/>"
@@ -883,6 +925,10 @@ const char *testset_init3 = "<?xml version=\"1.0\"?>\n<workset>"
 
 const char *testset_bboxtest =
 "<?xml version=\"1.0\"?>\n<workset>"
+  "<description>"
+	"<RVpeak value=\"-1\"/>"
+	"<LVpeak value=\"-1\"/>"
+  "</description>"
   "<frame image=\"data0000.png\">"
       "<star y=\"118\" x=\"109\" r=\"21\">"
 	"<point y=\"20\" x=\"10\"/>"
@@ -917,6 +963,7 @@ const char *testset_bboxtest =
 
 const char *testset_shift_and_rename =
 "<?xml version=\"1.0\"?>\n<workset>"
+	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/></description>"
   "<frame image=\"moved0000.png\">"
       "<star y=\"128\" x=\"112\" r=\"21\">"
         "<point y=\"20\" x=\"10\"/>"

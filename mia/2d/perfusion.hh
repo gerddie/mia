@@ -92,7 +92,11 @@ public:
 	*/
 	std::vector<C2DFImage> get_references() const; 
 
-
+	/**
+	   Set the ICA seperation approach
+	   \param approach FICA_APPROACH_SYMM or FICA_APPROACH_DEFL
+	   \todo the parameter should be an enum
+	 */
 	void set_approach(size_t approach); 
 
 	static TDictMap<EBoxSegmentation> segmethod_dict; 

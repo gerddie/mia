@@ -40,6 +40,8 @@ public:
 
 	static const char *type_descr;
 	static const char *value;
+
+	typedef std::shared_ptr<C2DFullCost > Pointer; 
 	
 	/**
 	   Initialize the cost function with a weight 
@@ -94,7 +96,7 @@ private:
 	C2DBounds _M_current_size; 
 
 }; 
-typedef std::shared_ptr<C2DFullCost > P2DFullCost;
+typedef C2DFullCost::Pointer P2DFullCost;
 
 
 class EXPORT_2D C2DFullCostPlugin: public TFactory<C2DFullCost> {

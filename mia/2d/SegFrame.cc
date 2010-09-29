@@ -143,6 +143,12 @@ void CSegFrame::transform(const C2DTransformation& t)
 		i->transform(t); 
 }
 
+void CSegFrame::set_image(P2DImage image)
+{
+	m_image = image; 
+}
+
+
 void CSegFrame::inv_transform(const C2DTransformation& t)
 {
 	if (m_has_star) 
@@ -177,6 +183,17 @@ C2DUBImage CSegFrame::get_section_masks(const C2DBounds& size) const
 	     i != m_sections.end(); ++i, ++idx)
 		i->draw(result, idx); 
 	return result; 
+}
+
+
+C2DUBImage CSegFrame::get_section_masks() const
+{
+	if (!m_image) {
+		m_image = load_image2d(m_filename); 
+		if (!m_image) 
+			THROW(runtime_error, "unable to find image file '" << m_filename << "'");
+	}
+	return get_section_masks(m_image->get_size()); 
 }
 
 struct EvalMaskStat: public TFilter<CSegFrame::SectionsStats> {

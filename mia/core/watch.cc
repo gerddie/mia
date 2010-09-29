@@ -59,7 +59,7 @@ CWatch::CWatch()
 	}
 }
 
-double CWatch::get_seconds()
+double CWatch::get_seconds() const
 {
 	itimerval value;
 
@@ -84,7 +84,7 @@ CWatch::CWatch()
 {
 	cvwarn() << "CWatch::CWatch: fake implementation on WIN32\n";
 }
-double CWatch::get_seconds()
+double CWatch::get_seconds() const
 {
 	return 0.0;
 }

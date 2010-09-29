@@ -83,8 +83,11 @@ using namespace std;
 #define MU	  1	// Lame elasticity constants
 #define LAMBDA	  1	//
 
-enum TMethod { meth_sor,meth_cg,meth_filter,meth_sorex
-	       ,meth_sorap
+enum TMethod { meth_sor,
+	       meth_cg,
+	       meth_filter,
+	       meth_sorex,
+	       meth_sorap
 };
 
 

@@ -55,6 +55,29 @@ C2DSimilarityProfile::C2DSimilarityProfile(P2DFullCost cost,
 	}
 }
 
+C2DSimilarityProfile::C2DSimilarityProfile(const C2DSimilarityProfile& other):
+	m_skip(other.m_skip),
+	m_reference(other.m_reference), 
+	m_cost_values(other.m_cost_values)
+{
+	boost::mutex::scoped_lock lock(other._M_peak_freq_mutex);
+	m_peak_freq = other.m_peak_freq;
+	m_peak_freq_valid = other.m_peak_freq_valid; 
+}
+
+C2DSimilarityProfile& C2DSimilarityProfile::operator = (const C2DSimilarityProfile& other)
+{
+	if (this != &other) {
+		m_skip = other.m_skip; 
+		m_reference = other.m_reference; 
+		m_cost_values = other.m_cost_values; 
+		
+		boost::mutex::scoped_lock lock(other._M_peak_freq_mutex);
+		m_peak_freq = other.m_peak_freq;
+		m_peak_freq_valid = other.m_peak_freq_valid; 
+	}
+	return *this; 
+}
 
 float C2DSimilarityProfile::get_peak_frequency() const
 {

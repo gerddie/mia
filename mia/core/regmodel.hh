@@ -32,13 +32,29 @@ struct EXPORT_CORE regmodel_type {
 	static const char *value;
 };
 
+template <int Dim> 
+struct RegistrationTraits {
+	typedef void need_to_declare_RegistrationTraits_for_DIM; 
+	typedef need_to_declare_RegistrationTraits_for_DIM Data;
+	typedef need_to_declare_RegistrationTraits_for_DIM Force; 
+	typedef need_to_declare_RegistrationTraits_for_DIM Transformation; 
+}; 
+
 /**
    Base class template for image registration models.
+   The template parameters are type 
+   \tparam Dim dimension of registration model 
  */
 
-template <typename Data, typename Force, typename Transformation>
+
+
+template <int Dim>
 class TRegModel :public CProductBase {
 public:
+	typedef typename RegistrationTraits<Dim>::Data Data; 
+	typedef typename RegistrationTraits<Dim>::Force Force; 
+	typedef typename RegistrationTraits<Dim>::Transformation Transformation; 
+
 	typedef regmodel_type plugin_type; 
 	typedef Data plugin_data; 
 	TRegModel();
@@ -54,30 +70,30 @@ private:
 // implementation part of the registration model
 //
 
-template <typename D, typename F, typename T>
-TRegModel<D,F,T>::TRegModel()
+template <int Dim>
+TRegModel<Dim>::TRegModel()
 {
 }
 
-template <typename D, typename F, typename T>
-TRegModel<D,F,T>::~TRegModel()
+template <int Dim>
+TRegModel<Dim>::~TRegModel()
 {
 }
 
-template <typename D, typename F, typename T>
-void TRegModel<D,F,T>::solve (const F& b, T& x) const
+template <int Dim>
+void TRegModel<Dim>::solve (const Force& b, Transformation& x) const
 {
 	do_solve(b,x);
 }
 
-template <typename D, typename F, typename T>
-float TRegModel<D,F,T>::get_force_scale() const
+template <int Dim>
+float TRegModel<Dim>::get_force_scale() const
 {
 	return do_get_force_scale();
 }
 
-template <typename D, typename F, typename T>
-float  TRegModel<D,F,T>::do_get_force_scale() const
+template <int Dim>
+float  TRegModel<Dim>::do_get_force_scale() const
 {
 	return 1.0f;
 }

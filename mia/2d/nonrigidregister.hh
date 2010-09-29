@@ -42,8 +42,12 @@ enum EMinimizers {
 };
 
 /**
-   Class for registration without regularization - i.e. should only be used
-   for affine, rigid and translation only registrations
+   Class for non-rigid registration. 
+   The registration approach of this class lies in the optimization of a weighted sum of cost functions. 
+   These cost functions may include image based cost functions, penalty functions on the transformation, 
+   and others. The registration makes use of a multi-resolution scheme and support various transformation 
+   models.  All cost functions implement the C2DFullCost interface.  
+   Currently supported minimizers are those available in the GNU scientific library.
 */
 
 class EXPORT_2D C2DNonrigidRegister {
@@ -58,9 +62,9 @@ public:
 	 */
 
 	C2DNonrigidRegister(C2DFullCostList& costs, EMinimizers minimizer,
-			 P2DTransformationFactory transform_creation,
-			 const C2DInterpolatorFactory& ipf,  size_t mg_levels);
-
+			    P2DTransformationFactory transform_creation,
+			    const C2DInterpolatorFactory& ipf,  size_t mg_levels);
+	
 	
 	~C2DNonrigidRegister();
 

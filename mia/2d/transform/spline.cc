@@ -340,7 +340,7 @@ struct FCopyY {
 	}
 }; 
 
-// quatratic extrapolation 
+// quadratic extrapolation 
 static double extrapolate(double x, double ym, double y0, double yp) 
 {
 	const double c = y0; 
@@ -418,10 +418,13 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 			copy(tmp_y.begin_at(0, iy), tmp_y.begin_at(0, iy) + tmp_y.get_size().x, 
 			     scaler_x.input_begin()); 
 			run_downscaler(scaler_x, out_buffer_y);
+			// translate the gradient also needs a sign correction, because 
+			// the actual transformation is I-s(x) 
+			// somehow a scaling may still be missing 
 			for(auto vx = out_buffer_x.begin(), vy = out_buffer_y.begin(); 
 			    vx != out_buffer_x.end(); ++vx, ++vy, r+=2) {
-				r[0] = *vx; 
-				r[1] = *vy; 
+				r[0] = -*vx; 
+				r[1] = -*vy; 
 			}
 		}
 	}
@@ -539,7 +542,7 @@ double C2DSplineTransformation::get_divcurl_cost(double wd, double wr, gsl::Doub
 		_M_divcurl_matrix->reset(_M_coefficients.get_size(), _M_range, 
 					 *_M_ipf->get_kernel(), wd, wr); 
 	
-	// this will throw ifthe interpolator is not of the right type
+	// this will throw if the interpolator is not of the right type
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
 		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*_M_interpolator); 
 	

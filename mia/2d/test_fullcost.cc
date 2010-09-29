@@ -26,7 +26,9 @@
 #include <mia/2d/multicost.hh>
 #include <mia/2d/cost.hh>
 #include <mia/2d/fullcost.hh>
+#include <mia/2d/transformfactory.hh>
 #include <mia/2d/transformmock.hh>
+#include <mia/2d/2dimageio.hh>
 
 #include <mia/internal/autotest.hh>
 
@@ -155,8 +157,212 @@ BOOST_AUTO_TEST_CASE( test_multicost_property )
 	BOOST_CHECK(costs.has(test_prop)); 
 }
 
+class PrepareFullcostTests {
+public: 
+	static const PrepareFullcostTests& instance(); 
+	
+	const C2DFullCostPluginHandler::Instance& fullcost_handler()const; 
+	const C2DTransformCreatorHandler::Instance& transform_handler()const; 
+private:
+	PrepareFullcostTests(); 
+}; 
+
 
 BOOST_AUTO_TEST_CASE( test_load_plugins ) 
+{	
+	const C2DFullCostPluginHandler::Instance& handler = PrepareFullcostTests::instance().fullcost_handler(); 
+	BOOST_CHECK_EQUAL(handler.size(), 2); 
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "divcurl image ");
+}
+
+#if 0 
+BOOST_AUTO_TEST_CASE ( test_ssd_cost_spline_rate_3 ) 
+{
+	auto cost_ssd = PrepareFullcostTests::instance().fullcost_handler().produce("image:cost=ssd"); 
+	auto transform_factory = PrepareFullcostTests::instance().transform_handler().produce("spline:rate=3"); 
+
+	C2DBounds size(16,16); 
+	const float src_init[ 16 * 16] = {
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0,10,10,10,10,10,10,20,20,20,20,20,10,10, 0, 
+		0,10,20,20,20,10,10,10,10,10,20,10,10,10, 0, 
+		0,10,10,20,30,30,30,30,30,30,30,30,20,10, 0, 
+		0, 0,20,20,20,20,20,20,20,20,20,20,20,10, 0, 
+		0,10,10,10,10,10,10,20,20,20,20,20,10,10, 0, 
+		0,10,20,20,20,10,10,10,10,10,20,10,10,10, 0, 
+		0,10,10,20,30,30,30,30,30,30,30,30,20,10, 0, 
+		0, 0,20,20,20,20,20,20,20,20,20,20,20,10, 0, 
+		0,10,10,10,10,10,10,20,20,20,20,20,10,10, 0, 
+		0,10,20,20,20,10,10,10,10,10,20,10,10,10, 0, 
+		0,10,10,20,30,30,30,30,30,30,30,30,20,10, 0, 
+		0, 0,20,20,20,20,20,20,20,20,20,20,20,10, 0, 
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+		
+	}; 
+
+	const float ref_init[ 16 * 16] = {
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0,10,10,10,10,10,10,20,20,20,20,20,10,10, 0, 
+		0,10,30,30,40,20,20,30,30,40,40,20,30,10, 0, 
+		0,10,20,10,20,20,20,30,40,50,40,40,30,10, 0, 
+		0, 0,20,20,20,20,20,20,20,20,20,20,20,10, 0, 
+		0,10,10,10,10,10,10,20,20,20,20,20,10,10, 0, 
+		0,10,20,20,20,10,10,10,10,10,20,10,10,10, 0, 
+		0,10,30,30,20,20,32,20,30,40,50,30,20,10, 0, 
+		0, 0,30,30,30,30,30,30,20,20,50,20,20,10, 0, 
+		0,10,30.10,30,30,30,30,30,20,20,20,10,10, 0, 
+		0,10,30,10,30,30,40,43,20,20,30,30,10,10, 0, 
+		0,10,10,20,30,30,20,20,20,20,20,30,20,10, 0, 
+		0, 0,20,20,20,30,30,20,20,20,20,20,20,10, 0, 
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+		
+	}; 
+
+	P2DImage src(new C2DFImage(size, src_init)); 
+	save_image2d("src.@", src); 
+
+	P2DImage ref(new C2DFImage(size, ref_init)); 
+	save_image2d("ref.@", ref); 
+
+	cost_ssd->reinit(); 
+	cost_ssd->set_size(size); 
+	
+	P2DTransformation t = transform_factory->create(size); 
+
+	auto params = t->get_parameters(); 
+	gsl::DoubleVector gradient(params.size());  
+
+	double cost = cost_ssd->evaluate(*t, gradient);
+//	BOOST_CHECK_CLOSE(cost, 55*55 / 1024.0, 0.1); 
+	
+	for (size_t i = 0; i < params.size(); ++i) {
+		params[i] -= 0.0001; 
+		t->set_parameters(params); 
+		double costm = cost_ssd->cost_value(*t);
+		params[i] += 0.0002; 
+		t->set_parameters(params); 
+		double costp = cost_ssd->cost_value(*t);
+		params[i] -= 0.0001;
+		double cgrad = (costp - costm) / 0.0002; 
+
+		cvinfo()  << gradient[i] << " vs " << cgrad << " " 
+			  << gradient[i]/ cgrad<< "\n"; 
+
+		if (fabs(cgrad) > 0.001) 
+			BOOST_CHECK_CLOSE(gradient[i], cgrad, 0.1); 
+		else 
+			BOOST_CHECK_CLOSE(1.0 + gradient[i], 1.0, 0.1); 
+	}
+
+}
+
+
+BOOST_AUTO_TEST_CASE ( test_ssd_cost_vf ) 
+{
+	auto cost_ssd = PrepareFullcostTests::instance().fullcost_handler().produce("image:cost=ssd"); 
+	auto transform_factory = PrepareFullcostTests::instance().transform_handler().produce("vf"); 
+
+	C2DBounds size(16,16); 
+	const float src_init[ 16 * 16] = {
+		0,10,20,30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0,20,30,40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0,30,40,50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0,40,50,60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0,50,60,70, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0,60,70,80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0,70,80,90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0,80,90,00, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0,70,80,90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0,60,70,80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0,50,60,70, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0,40,50,60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0,30,40,50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0,20,30,40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0,10,20,30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0, 0,10,20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		
+	}; 
+
+	const float ref_init[ 16 * 16] = {
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0,10,10,10,10,10,10,20,20,20,20,20,10,10, 0, 
+		0,10,30,30,40,20,20,30,30,40,40,20,30,10, 0, 
+		0,10,20,10,20,20,20,30,40,50,40,40,30,10, 0, 
+		0, 0,20,20,20,20,20,20,20,20,20,20,20,10, 0, 
+		0,10,10,10,10,10,10,20,20,20,20,20,10,10, 0, 
+		0,10,20,20,20,10,10,10,10,10,20,10,10,10, 0, 
+		0,10,30,30,20,20,32,20,30,40,50,30,20,10, 0, 
+		0, 0,30,30,30,30,30,30,20,20,50,20,20,10, 0, 
+		0,10,30.10,30,30,30,30,30,20,20,20,10,10, 0, 
+		0,10,30,10,30,30,40,43,20,20,30,30,10,10, 0, 
+		0,10,10,20,30,30,20,20,20,20,20,30,20,10, 0, 
+		0, 0,20,20,20,30,30,20,20,20,20,20,20,10, 0, 
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+		
+	}; 
+
+	P2DImage src(new C2DFImage(size, src_init)); 
+	save_image2d("src.@", src); 
+
+	P2DImage ref(new C2DFImage(size, ref_init)); 
+	save_image2d("ref.@", ref); 
+
+	cost_ssd->reinit(); 
+	cost_ssd->set_size(size); 
+	
+	P2DTransformation t = transform_factory->create(size); 
+
+	auto params = t->get_parameters(); 
+	gsl::DoubleVector gradient(params.size());  
+
+	double cost = cost_ssd->evaluate(*t, gradient);
+//	BOOST_CHECK_CLOSE(cost, 55*55 / 1024.0, 0.1); 
+	
+	for (size_t i = 0; i < params.size(); ++i) {
+		params[i] -= 0.0001; 
+		t->set_parameters(params); 
+		double costm = cost_ssd->cost_value(*t);
+		params[i] += 0.0002; 
+		t->set_parameters(params); 
+		double costp = cost_ssd->cost_value(*t);
+		params[i] -= 0.0001;
+		double cgrad = (costp - costm) / 0.0002; 
+
+		cvinfo()  << gradient[i] << " vs " << cgrad << " " 
+			  << gradient[i]/ cgrad<< "\n"; 
+
+		if (fabs(cgrad) > 0.01) 
+			BOOST_CHECK_CLOSE(gradient[i], cgrad, 0.1); 
+		else 
+			BOOST_CHECK_CLOSE(1.0 + gradient[i], 1.0, 0.1); 
+	}
+
+}
+#endif
+
+const PrepareFullcostTests& PrepareFullcostTests::instance()
+{
+	const static PrepareFullcostTests  me; 
+	return me; 
+}
+
+const C2DFullCostPluginHandler::Instance& PrepareFullcostTests::fullcost_handler() const
+{
+	return C2DFullCostPluginHandler::instance(); 
+}
+
+const C2DTransformCreatorHandler::Instance& PrepareFullcostTests::transform_handler()const
+{
+	return C2DTransformCreatorHandler::instance(); 
+}
+
+PrepareFullcostTests::PrepareFullcostTests()
 {
 	list< bfs::path> cost_kernel_plugpath;
 	cost_kernel_plugpath.push_back(bfs::path("cost"));
@@ -165,10 +371,10 @@ BOOST_AUTO_TEST_CASE( test_load_plugins )
 	list< bfs::path> cost_plugpath;
 	cost_plugpath.push_back(bfs::path("fullcost"));
 	C2DFullCostPluginHandler::set_search_path(cost_plugpath);
-	
-	const C2DFullCostPluginHandler::Instance& handler = C2DFullCostPluginHandler::instance(); 
-	BOOST_CHECK_EQUAL(handler.size(), 2); 
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "divcurl image ");
+
+	list< bfs::path> transform_searchpath;
+	transform_searchpath.push_back(bfs::path("transform"));
+	C2DTransformCreatorHandler::set_search_path(transform_searchpath);
+
 }
-	
 

@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE( test_SSD_2D )
 	C2DSSDCost cost;
 
 	double cost_value = cost.value(*src, *ref);
-	BOOST_CHECK_CLOSE(cost_value, 55.0 / 16.0, 0.1);
+	BOOST_CHECK_CLOSE(cost_value, 0.5 * 55.0, 0.1);
 
 	C2DFVectorfield force(C2DBounds(4,4));
 

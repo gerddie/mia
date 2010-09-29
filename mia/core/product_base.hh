@@ -37,12 +37,25 @@ NS_MIA_BEGIN
 
 class EXPORT_CORE CProductBase: public CPropertyFlagHolder {
 public:
-	~CProductBase();
-	
+	/**
+	   Set the string used to create this object using its factory. 
+	   \param init init string 
+	 */
 	void set_init_string(const char *init); 
-	
+
+	/**
+	   \returns the init string used to create this instance 
+	 */
 	const char *get_init_string() const; 
 	
+	/**
+	   Set the plugin module which holds the code for this object 
+	   \param module
+	   \remark In a perfect world, the module could be unloaded after 
+	   all instances of the class using its code are destroyed. 
+	   Unfortunately, the destructor still required the code after 
+	   dereferencing the module. 
+	*/
 	void set_module(PPluginModule module);
 private:
 	PPluginModule _M_module;

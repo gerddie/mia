@@ -44,7 +44,7 @@ BOOST_FIXTURE_TEST_CASE (test_C2DSimilarityProfile_skip2_ref10, SimityProfileFix
 	
 	C2DSimilarityProfile sp(cost, series, 2, 10); 
 	
-	BOOST_CHECK_CLOSE(sp.get_peak_frequency(), 200.0560, 0.1);
+	BOOST_CHECK_CLOSE(sp.get_peak_frequency(), 100.0280, 0.1);
 	
 }
 

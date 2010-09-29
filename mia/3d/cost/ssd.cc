@@ -60,14 +60,14 @@ bool C3DSSDCostPlugin::do_test() const
 	std::shared_ptr<C3DImage > ref(fref);
 
 	C3DSSDCost cost;
-	bool success = fabs(cost.value(*src, *ref) - 367.0 / 27.0)  < 0.001;
+	bool success = fabs(cost.value(*src, *ref) - 0.5 * 367.0)  < 0.001;
 
 	C3DFVectorfield force(C3DBounds(3,3,3));
 
 	cost.evaluate_force(*src, *ref, 0.5, force);
 
 	cvdebug() << force(1,1,1) << " vs. " << C3DFVector(-6, -2, -4) << "\n";
-	success &= (force(1,1,1) == C3DFVector(-6, -2, -4));
+	success &= (force(1,1,1) == C3DFVector(-6, -2, -4) );
 	return success;
  }
 

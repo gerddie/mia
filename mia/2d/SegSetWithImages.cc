@@ -63,7 +63,9 @@ CSegSetWithImages::CSegSetWithImages(const string& filename, bool ignore_path):
 			input_image = (src_path / bfs::path(iimage) ).directory_string();
 			iframe->set_imagename(iimage);
 		}
-		_M_images.push_back(load_image2d(input_image));
+		P2DImage image = load_image2d(input_image); 
+		_M_images.push_back(image);
+		iframe->set_image(image); 
 		++iframe;
 	}
 }

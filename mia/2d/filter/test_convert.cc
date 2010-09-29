@@ -27,6 +27,8 @@
 #include <mia/core/type_traits.hh>
 #include <mia/2d/filter/convert.hh>
 
+#include <type_traits>
+
 #include <boost/mpl/vector.hpp>
 #include <boost/test/test_case_template.hpp>
 #include <boost/mpl/insert_range.hpp>
@@ -84,10 +86,10 @@ struct __dispatch_get_range<T, false> {
 template <typename T, typename S>
 struct test_data<T, S, pc_range> {
 	static pair<S, S> get_source() {
-		return __dispatch_get_range<S, IS_FLOAT(S) >::apply();
+		return __dispatch_get_range<S, std::is_floating_point<S>::value>::apply();
 	}
 	static pair<T, T> get_target() {
-		return __dispatch_get_range<T, IS_FLOAT(T) >::apply();
+		return __dispatch_get_range<T, std::is_floating_point<T>::value>::apply();
 	}
 };
 
@@ -154,7 +156,7 @@ struct test_data<T, S, pc_copy> {
 		return get_minmax<S>::apply();
 	}
 	static pair<T, T> get_target() {
-		return __dispatch_target_copy<T, S, IS_FLOAT(T)>::apply();
+		return __dispatch_target_copy<T, S, std::is_floating_point<T>::value >::apply();
 	}
 };
 

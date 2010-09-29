@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004 - 2010
  *
@@ -80,13 +80,16 @@ private:
 	FConvert2DImage2float _M_converter; 
 }; 
 
-C2DFullCostList create_costs(double divcurlweight)
+C2DFullCostList create_costs(double divcurlweight, double imageweight)
 {
 	C2DFullCostList result; 
 	stringstream divcurl_descr;  
 	divcurl_descr << "divcurl:weight=" << divcurlweight; 
 	result.push(C2DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
-	result.push(C2DFullCostPluginHandler::instance().produce("image:weight=256.0")); 
+
+	stringstream image_descr; 
+	image_descr << "image:weight=" << imageweight; 
+	result.push(C2DFullCostPluginHandler::instance().produce(image_descr.str())); 
 	return result; 
 }
 
@@ -128,11 +131,11 @@ void segment_and_crop_input(CSegSetWithImages&  input_set, const C2DPerfusionAna
 void run_registration_pass(CSegSetWithImages&  input_set, const C2DImageSeries& references, 
 			   int skip_images, EMinimizers minimizer, 
 			   C2DInterpolatorFactory& ipfactory, size_t mg_levels, 
-			   double c_rate, double divcurlweight) 
+			   double c_rate, double divcurlweight, double imageweight) 
 {
 	CSegSetWithImages::Frames& frames = input_set.get_frames();
 	C2DImageSeries input_images = input_set.get_images(); 
-	auto costs  = create_costs(divcurlweight); 
+	auto costs  = create_costs(divcurlweight, imageweight); 
 	auto transform_creator = create_transform_creator(c_rate); 
 	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, ipfactory, mg_levels);
 
@@ -167,7 +170,7 @@ int do_main( int argc, const char *argv[] )
 	double c_rate_divider = 4; 
 	double divcurlweight = 20.0; 
 	double divcurlweight_divider = 4.0; 
-
+	double imageweight = 1.0; 
 
 	EInterpolation interpolator = ip_bspline3;
 	size_t mg_levels = 3; 
@@ -212,6 +215,8 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( divcurlweight_divider, "divcurl-divider", 0,
 				    "divcurl weight scaling with each new pass", 
 				    "divcurl", false)); 
+	options.push_back(make_opt( imageweight, "imageweight", 'w', 
+				    "image cost weight", "imageweight", false)); 
 	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
 	options.push_back(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels", "mg-levels", false));
@@ -258,7 +263,7 @@ int do_main( int argc, const char *argv[] )
 	if (!ica.run(series)) {
 		ica.set_approach(FICA_APPROACH_SYMM); 
 		if (!ica.run(series))
-			cvwarn() << "ICA not converged, but the SYMM approach has given something to work with ...");
+			cvwarn() << "ICA not converged, but the SYMM approach has given something to work with ...\n";
 	}
 	vector<C2DFImage> references_float = ica.get_references(); 
 	
@@ -292,7 +297,7 @@ int do_main( int argc, const char *argv[] )
 		++current_pass; 
 		cvmsg() << "Registration pass " << current_pass << "\n"; 
 		run_registration_pass(input_set, references,  skip_images,  minimizer, 
-				      *ipfactory, mg_levels, c_rate, divcurlweight); 
+				      *ipfactory, mg_levels, c_rate, divcurlweight, imageweight); 
 		
 		C2DPerfusionAnalysis ica2(components, !no_normalize, !no_meanstrip); 
 		if (max_ica_iterations) 
@@ -304,20 +309,13 @@ int do_main( int argc, const char *argv[] )
 		if (!ica2.run(series))
 			ica2.set_approach(FICA_APPROACH_SYMM); 
 
-		if (ica2.run(series) ) {
-			divcurlweight /= divcurlweight_divider; 
-			if (c_rate > 1) 
-				c_rate /= c_rate_divider; 
-			references_float = ica2.get_references(); 
-			transform(references_float.begin(), references_float.end(), 
-				  references.begin(), C2DFImage2PImage()); 
-			run_registration_pass(input_set, references,  skip_images,  minimizer, 
-					      *ipfactory, mg_levels, c_rate, divcurlweight); 
-		} else {
-			cvmsg() << "Stopping registration in pass " << current_pass 
-				<< " because ICA didn't return useful results\n"; 
-			break; 
-		}
+		ica2.run(series); 
+		divcurlweight /= divcurlweight_divider; 
+		if (c_rate > 1) 
+			c_rate /= c_rate_divider; 
+		references_float = ica2.get_references(); 
+		transform(references_float.begin(), references_float.end(), 
+			  references.begin(), C2DFImage2PImage()); 
 		do_continue =  (!pass || current_pass < pass) && ica2.has_periodic(); 
 	}
 

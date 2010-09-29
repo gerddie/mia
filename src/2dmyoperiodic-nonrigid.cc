@@ -149,19 +149,15 @@ vector<size_t> C2DMyocardPeriodicRegistration::get_prealigned_subset(const C2DIm
 	
 	C2DSimilarityProfile best_series(m_params.series_select_cost, images, m_params.skip, ref); 
 	
-	float peak_freq = best_series.get_peak_frequency(); 
-	vector<size_t> series = best_series.get_periodic_subset();
-
 	// the skip values should be parameters 
 	for (size_t i = m_params.skip + 21; i < images.size()-2; ++i) {
 		C2DSimilarityProfile sp(m_params.series_select_cost, images,  m_params.skip, i); 
-		if (sp.get_peak_frequency() > peak_freq) {
+		if (sp.get_peak_frequency() > best_series.get_peak_frequency()) {
 			m_ref = i; 
-			peak_freq = sp.get_peak_frequency(); 
-			series = sp.get_periodic_subset(); 
+			best_series = sp; 
 		}
 	}
-	return series; 
+	return best_series.get_periodic_subset(); 
 }
 
 
@@ -185,6 +181,7 @@ void C2DMyocardPeriodicRegistration::run_initial_pass(C2DImageSeries& images, co
 	for (auto i = subset.begin(); i != subset.end(); ++i) {
 		if (m_ref == *i) 
 			continue; 
+		cvmsg() << "Register " << i - subset.begin() << " to " << m_ref << "\n"; 
 		P2DImage src = images[*i]; 
 		P2DTransformation transform = nr.run(src, ref);
 		images[*i] = (*transform)(*images[*i], *m_params.interpolator);
@@ -276,41 +273,42 @@ int do_main( int argc, const char *argv[] )
 	CCmdOptionList options(g_general_help);
 	
 	options.set_group("\nFile-IO");
-	options.push_back(make_opt( in_filename, "in-file", 'i', "input perfusion data set", "input", true));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output perfusion data set", "output", true));
-	options.push_back(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels", 
-				    "registered", false)); 
-	
+	options.push_back(make_opt( in_filename, "in-file", 'i', "input perfusion data set", 
+				    "input", true));
+	options.push_back(make_opt( out_filename, "out-file", 'o', "output perfusion data set", 
+				    "output", true));
+	options.push_back(make_opt( registered_filebase, "registered", 'r', 
+				    "file name base for registered fiels", "registered", false)); 
 	
 	options.set_group("\nRegistration"); 
 	options.push_back(make_opt( params.minimizer, TDictMap<EMinimizers>(g_minimizer_table),
-				    "optimizer", 'O', "Optimizer used for minimization", "optimizer", false));
+				    "optimizer", 'O', "Optimizer used for minimization", 
+				    "optimizer", false));
 	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
-	options.push_back(make_opt( params.mg_levels, "mg-levels", 'l', "multi-resolution levels", "mg-levels", false));
+	options.push_back(make_opt( params.mg_levels, "mg-levels", 'l', "multi-resolution levels", 
+				    "mg-levels", false));
+
+	options.push_back(make_opt( params.divcurlweight, "divcurl", 'd', 
+				    "divcurl regularization weight", "divcurl", false));
+
 	options.push_back(make_opt( params.transform_creator, "transForm", 'f', 
 				    "transformation type", "transform", false));
 
 	options.push_back(make_opt(params.pass1_cost, "cost-subset", '1', 
-				   "Cost function for registration during the subset registration", "cost-subset", 
-				   false)); 
+				   "Cost function for registration during the subset registration", 
+				   "cost-subset", false)); 
 
 	options.push_back(make_opt(params.pass2_cost, "cost-final", '2', 
-				   "Cost function for registration during the final registration", "cost-final", 
-				   false)); 
+				   "Cost function for registration during the final registration", 
+				   "cost-final", false)); 
 	options.push_back(make_opt(params.series_select_cost, "cost-series", 'S',
-				   "Const function to use for the analysis of the series", "cost-series",
-				   false)); 
+				   "Const function to use for the analysis of the series", 
+				   "cost-series", false)); 
 
 	
 
 	options.parse(argc, argv, false);
-	
-
-
-	// this cost will always be used 
-
-
 	params.interpolator.reset(create_2dinterpolation_factory(interpolator));
 
 	// load input data set
@@ -332,12 +330,8 @@ int do_main( int argc, const char *argv[] )
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-
-
 int main( int argc, const char *argv[] )
 {
-
-
 	try {
 		return do_main(argc, argv);
 	}
