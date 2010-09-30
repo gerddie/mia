@@ -57,7 +57,9 @@ CSegSet load_segmentation(const string& s)
 	return CSegSet(*parser.get_document());
 }
 
-
+const char *g_description = 
+	"This program is used to evaluate the Hausdorff distance between each frame "
+	"of a perfusion time series and a reference frame.";
 
 int do_main(int argc, const char *args[])
 {

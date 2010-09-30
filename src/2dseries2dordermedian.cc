@@ -177,6 +177,12 @@ private:
 /* Revision string */
 const char revision[] = "not specified";
 
+const char *g_descriptions = 
+	"This program evaluates the pixel-wise median of the absolute gauss filtered " 
+	"2nd order derivative of a series of images. In addition, it can be used to "
+	"output the time-intensity curve of a given pixel."
+	;
+
 int main( int argc, const char *argv[] )
 {
 
@@ -193,11 +199,7 @@ int main( int argc, const char *argv[] )
 
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 
-
-
-
-
-	CCmdOptionList options;
+	CCmdOptionList options(g_descriptions);
 	options.push_back(make_opt( in_filename, "in-file", 'i', "input segmentation set", "input", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o', "output file name", "output", true));
 	options.push_back(make_opt( skip, "skip", 'p', "Skip files at the beginning", "skip", false));

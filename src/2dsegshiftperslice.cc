@@ -20,9 +20,6 @@
  *
  */
 
-// TODO: segment set loading should use the relative path to the segment.set if there is
-//       no absolute path in the file
-
 #include <iterator>
 #include <algorithm>
 #include <iostream>
@@ -68,6 +65,11 @@ static string get_number(const string& fname)
 	return result;
 }
 
+const char *g_description = 
+	"This program is used to shift the 2d segmentation of a segmentation set individually "
+	"on a per slice base." 
+	;
+
 int do_main(int argc, const char *args[])
 {
 	string src_filename;
@@ -76,13 +78,13 @@ int do_main(int argc, const char *args[])
 
 	string shift_value_filebase("shift");
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", "input", true));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "input segmentation set", "out", true));
+	options.push_back(make_opt( out_filename, "out-file", 'o', "output segmentation set", "out", true));
 	options.push_back(make_opt( shift_filename, "image-file", 'g', "output image filename base", "image", false));
 
-	options.push_back(make_opt(shift_value_filebase, "shift", 'S', "shift of segmentation - base name ",
-				   "shift", true));
+	options.push_back(make_opt( shift_value_filebase, "shift", 'S', "shift of segmentation - base name ",
+				    "shift", true));
 
 
 	options.parse(argc, args);
@@ -114,8 +116,6 @@ int main(int argc, const char *args[] )
 {
 	try {
 		return do_main(argc, args);
-
-
 	}
 	catch (const runtime_error &e){
 		cerr << args[0] << " runtime: " << e.what() << endl;

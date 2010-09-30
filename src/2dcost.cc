@@ -31,11 +31,14 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
+const char *g_description = 
+	"This program is used to evaluate the cost between two images by using a given cost function.";  
+
 // set op the command line parameters and run the registration
 int do_main(int argc, const char **args)
 {
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 
 	options.parse(argc, args);
 

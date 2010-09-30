@@ -48,6 +48,11 @@ public:
 	}
 };
 
+const char *g_description = 
+	"This progranm is used to evaluate some statistics of an image. " 
+	"Output is Mean, Variation, Median, Min and Max of the intensity values."
+	; 
+
 int main( int argc, const char *argv[] )
 {
 
@@ -55,8 +60,8 @@ int main( int argc, const char *argv[] )
 	try {
 
 
-		CCmdOptionList options;
-		options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", "input", true));
+		CCmdOptionList options(g_description);
+		options.push_back(make_opt( in_filename, "in-file", 'i', "input image", "input", true));
 
 		options.parse(argc, argv);
 

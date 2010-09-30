@@ -39,22 +39,20 @@
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dfilter.hh>
 
-
-
-
-
 using namespace std;
 using namespace mia;
 using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
+const char *g_description = 
+	"Get the per-slice Hausdorff distance of a a segmentation with respectto a given reference frame."; 
 
 int do_main(int argc, const char *args[])
 {
 	string src_filename;
 	size_t reference = 0;
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", "input", true));
 	options.push_back(make_opt( reference, "ref-frame", 'r', "reference frame", "ref", true));
 	options.parse(argc, args);

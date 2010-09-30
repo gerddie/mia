@@ -1,4 +1,3 @@
-
 /* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2010
@@ -62,7 +61,10 @@ private:
 	bfs::path _M_image_outpath;
 };
 
-
+const char *g_description = 
+	"This program is used to crop the images of a segmented image series to contain "
+	"the segmentation over the full image series. An boundary enlargement factor can be given."
+	;
 
 int do_main(int argc, const char *args[])
 {
@@ -73,7 +75,7 @@ int do_main(int argc, const char *args[])
 
 	float  enlarge_boundary = 5;
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", "input", true));
 	options.push_back(make_opt( override_src_imagepath, "override-imagepath", 'p',
 				    "overide image path given in the segmentation set", "override", false));

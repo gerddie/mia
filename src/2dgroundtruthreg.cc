@@ -39,6 +39,11 @@
 using namespace std;
 using namespace mia;
 
+const char *g_description = 
+	"This program is used to evaluate an estimate of Ground Thruth for motion compensation "
+	"of series of myocardial perfusion images as decribed in Chao Li and Ying Sun, "
+	"'Nonrigid Registration of Myocardial Perfusion MRI Using Pseudo Ground Truth' , In Proc. "
+	" Medical Image Computing and Computer-Assisted Intervention – MICCAI 2009, 165-172, 2009 "; 
 
 int do_main( int argc, const char *argv[] )
 {
@@ -51,7 +56,7 @@ int do_main( int argc, const char *argv[] )
 	double rho_thresh = 0.5;
 
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	options.push_back(make_opt( src_name, "in-base", 'i', "input file name base", "input", false));
 	options.push_back(make_opt( out_name, "out-base", 'o', "output file name base", "output", false));
 	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',

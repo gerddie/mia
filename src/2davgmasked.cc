@@ -36,6 +36,11 @@ NS_MIA_USE
 using namespace std;
 using namespace boost;
 
+const char *g_description = 
+	"This program is used to evaluate the average intensity and its variation of a series "
+	"of images in a given masked region."
+	; 
+
 struct C2DStat : public TFilter<bool> {
 
 	typedef pair<size_t, double> TCollector;
@@ -94,9 +99,10 @@ int main( int argc, const char *argv[] )
 
 	const C2DImageIOPluginHandler::Instance& image2dio = C2DImageIOPluginHandler::instance();
 
-	CCmdOptionList options;
-	options.push_back(make_opt( in_filename, "in-files", 'i', "input image(s)", "in-files"));
-	options.push_back(make_opt( mask_filename, "mask-file", 'm', "mask image, must be of type byte", "mask-file"));
+	CCmdOptionList options(g_description);
+	options.push_back(make_opt( in_filename, "in-files", 'i', "input image(s)", "in-files", true));
+	options.push_back(make_opt( mask_filename, "mask-file", 'm', "mask image, must be of type byte", 
+				    "mask-file", true));
 
 	try {
 
@@ -104,12 +110,6 @@ int main( int argc, const char *argv[] )
 
 		if (!options.get_remaining().empty())
 			throw runtime_error("unknown option given ...");
-
-		if ( in_filename.empty() )
-			throw runtime_error("'--in-files' ('i') option required");
-
-		if ( mask_filename.empty() )
-			throw runtime_error("'--mask-file' ('m') option required");
 
 
 		CHistory::instance().append(argv[0], revision, options);
@@ -135,7 +135,8 @@ int main( int argc, const char *argv[] )
 		for (size_t i = start_filenum; i < end_filenum; ++i) {
 
 			string src_name = create_filename(src_basename.c_str(), i);
-			cvmsg() << new_line << "Read: " << i <<" out of "<< "[" << start_filenum<< "," << end_filenum << "] = " << src_name ;
+			cvmsg() << new_line << "Read: " << i <<" out of "<< "[" 
+				<< start_filenum<< "," << end_filenum << "] = " << src_name ;
 			C2DImageIOPluginHandler::Instance::PData  in_image_list = image2dio.load(src_name);
 
 			if (in_image_list.get() && in_image_list->size()) {

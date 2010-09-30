@@ -21,16 +21,6 @@
  *
  */
 
-/*
-  This program implements 2D gray scale image registration.
-  Depending on the available plug-ins it can accomodate various models and cost-functions.
-  So far input images can be given as PNG, TIF, BMP and OpenEXR (depending on the installed plug-ins)
-  The input images must be of the same dimensions and gray scale (whatever bit-depth).
-  The vector field will be saved as a EXR image with two frames of float values, one for the X
-  and one for the Y values of the vectors.
-  Other vector field output plug-ins might be supported depending on the installed plug-ins.
-*/
-
 #include <climits>
 #include <boost/test/unit_test_suite.hpp>
 #include <boost/test/unit_test.hpp>
@@ -46,27 +36,31 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
+const char *g_description = 
+	"This program is used to evaluate an image that is the linear combination of "
+	"two gray scale images"; 
+
+
 struct FAddWeighted: public TFilter<P2DImage> {
 	FAddWeighted(float w):
 		_M_w(w)
-	{
-	}
-
+		{
+		}
+	
 	template <typename T, typename S>
-	P2DImage operator() (const T2DImage<T>& a, const T2DImage<S>& b) const
-	{
+	P2DImage operator() (const T2DImage<T>& a, const T2DImage<S>& b) const	{
 		if (a.get_size() != b.get_size()) {
 			throw invalid_argument("input images cann not be combined because they differ in size");
 		}
 		T2DImage<T> *result = new T2DImage<T>(a.get_size());
 		typename T2DImage<T>::iterator r = result->begin();
 		typename T2DImage<T>::iterator e = result->end();
-
+		
 		typename T2DImage<T>::const_iterator ia = a.begin();
 		typename T2DImage<S>::const_iterator ib = b.begin();
-
+			
 		float w2 = 1.0 - _M_w;
-
+		
 		while ( r != e ) {
 			*r = (T)(w2 * *ia + _M_w * (float)*ib);
 			cvdebug() << w2 << " * " <<*ia << " + " << _M_w <<" * " <<  (float)*ib  << "->" << *r << "\n";
@@ -74,10 +68,10 @@ struct FAddWeighted: public TFilter<P2DImage> {
 			++ia;
 			++ib;
 		}
-
+			
 		return P2DImage(result);
 	}
-
+	
 private:
 	float _M_w;
 };
@@ -85,27 +79,27 @@ private:
 static void run_self_test()
 {
 	const C2DBounds size(1,2);
-
+	
 	C2DFImage *A = new C2DFImage(size);
 	C2DUBImage *B = new C2DUBImage(size);
-
+	
 	P2DImage pA(A);
 	P2DImage pB(B);
-
+	
 	(*A)(0,0) = 1.0; (*A)(0,1) = 2.0;
 	(*B)(0,0) = 3.0; (*B)(0,1) = 4.0;
-
+	
 	FAddWeighted aw(0.25);
-
+	
 	P2DImage R = mia::filter(aw, *pA, *pB);
-
-
+	
+	
 	const C2DFImage* result = dynamic_cast<const C2DFImage*>(R.get());
 	BOOST_REQUIRE(result);
-
+	
 	BOOST_CHECK_CLOSE( (*result)(0,0), 1.5f, 0.1f);
 	BOOST_CHECK_CLOSE( (*result)(0,1), 2.5f, 0.1f);
-
+	
 }
 
 static bool init_unit_test_suite( )
@@ -118,9 +112,9 @@ template <typename F>
 struct FFilter {
 	FFilter(const F& f):
 		_M_f(f)
-	{
-	}
-
+		{
+		}
+	
 	P2DImage operator () (const P2DImage& a, const P2DImage& b) const {
 		return ::mia::filter(_M_f, *a, *b);
 	}
@@ -128,11 +122,10 @@ private:
 	const F& _M_f;
 };
 
-// set op the command line parameters and run the registration
 int do_main(int argc, char **args)
 {
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	string src1_filename;
 	string src2_filename;
 	string out_filename;

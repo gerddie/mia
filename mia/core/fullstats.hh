@@ -31,6 +31,10 @@
 
 NS_MIA_BEGIN
 
+/**
+   This class is used to evaluate the statistics of a series of input data. 
+ */ 
+
 class  EXPORT_CORE CFullStats {
 public:
 	template <typename InputIterator>

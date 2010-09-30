@@ -44,7 +44,11 @@ const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
 	{NULL, min_undefined}
 };
 
-
+const char *g_description = 
+	"This program implements the registration of two gray scale 2D images. "
+	"The transformation is not penalized, therefore, one should only use translation, rigid, or affine "
+	"transformations as target and run mia-2dnonrigidreg of nonrigid registration is to be achieved." 
+	; 
 
 int do_main( int argc, const char *argv[] )
 {
@@ -58,7 +62,7 @@ int do_main( int argc, const char *argv[] )
 
 	size_t mg_levels = 3;
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	options.push_back(make_opt( src_filename, "in", 'i', "test image", "input", true));
 	options.push_back(make_opt( ref_filename, "ref", 'r', "reference image", "input", true));
 	options.push_back(make_opt( out_filename, "out", 'o', "registered output image", "output", true));

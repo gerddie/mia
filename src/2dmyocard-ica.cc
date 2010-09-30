@@ -355,7 +355,7 @@ int do_main( int argc, const char *argv[] )
 	int max_iterations = 0;
 
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
-	CCmdOptionList options;
+	CCmdOptionList options("Obsolete version of mia-2dmyocard-icaseries."); 
 	options.push_back(make_opt( src_name, "in-base", 'i', "input file name base", "input", false));
 	options.push_back(make_opt( coefs_name, "coefs", 0, "output mixing coefficients to this file", "coefs", false));
 	options.push_back(make_opt( out_name, "out-base", 'o', "output file name base", "output", false));

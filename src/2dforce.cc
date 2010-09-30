@@ -33,6 +33,11 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
+
+const char *g_description = 
+	"This program is used to evaluate a registration force norm image between two images."
+	;
+
 typedef std::shared_ptr<C2DFVectorfield > P2DFVectorfield;
 
 struct FVectorNorm {
@@ -55,7 +60,7 @@ private:
 
 int do_main(int argc, const char **args)
 {
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	string src_filename;
 	string out_filename;
 	string ref_filename;

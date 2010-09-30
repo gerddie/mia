@@ -89,6 +89,12 @@ struct FImageAvg : public TFilter<bool> {
 	}
 };
 
+const char *g_description = 
+	"This program is used to evaluate the temporal intensity correlation of neighboring pixels "
+	"in a series of images."
+	; 
+
+
 int do_main( int argc, const char *argv[] )
 {
 	string src_name("data0000.exr");
@@ -101,7 +107,7 @@ int do_main( int argc, const char *argv[] )
 
 
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	options.push_back(make_opt( src_name, "in-base", 'i', "input file name base", "input", false));
 	options.push_back(make_opt( out_hor_name, "horizontal", 'z', "horiZontal correlation output file name",
 				    "horizontal", false));

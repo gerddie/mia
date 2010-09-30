@@ -47,11 +47,17 @@ struct FGetNorm  {
 	}
 };
 
+const char *g_description = 
+	"This program implements 2D image cost force evaluation. "
+	"The input images must be of the same dimensions and gray scale (whatever bit-depth). " 
+	; 
+
+
 // set op the command line parameters and run the registration
 int do_main(int argc, const char **args)
 {
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	string out_filename;
 
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();

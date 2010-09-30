@@ -67,6 +67,15 @@ private:
 	FConvert2DImage2float _M_converter; 
 }; 
 
+
+const char *g_description = 
+	"This program is use dto run a modified version of the ICA based rigid registration approach "
+	"described in Milles et al. 'Fully Automated Motion Correction in First-Pass Myocardial Perfusion "
+	"MR Image Sequences', Trans. Med. Imaging., 27(11), 1611-1621, 2008. Changes include the extraction " 
+	"of the quasi-periodic movement in free breathingly acquired data sets and the option to run "
+	"affine registration instead of the optimization of translations only." 
+	;
+
 int do_main( int argc, const char *argv[] )
 {
 	// IO parameters 
@@ -81,14 +90,14 @@ int do_main( int argc, const char *argv[] )
 	// this parameter is currently not exported - reading the image data is 
 	// therefore done from the path given in the segmentation set 
 	bool override_src_imagepath = true;
-
+	
 	// registration parameters
 	string cost_function("ssd"); 
 	EMinimizers minimizer = min_nmsimplex;
 	string transform_type("translate");
 	EInterpolation interpolator = ip_bspline3;
 	size_t mg_levels = 3; 
-
+	
 	// ICA parameters 
 	size_t components = 0;
 	bool no_normalize = false; 
@@ -97,11 +106,11 @@ int do_main( int argc, const char *argv[] )
 	size_t skip_images = 0; 
 	size_t max_ica_iterations = 400; 
 	C2DPerfusionAnalysis::EBoxSegmentation segmethod=C2DPerfusionAnalysis::bs_features; 
-
+	
 	size_t current_pass = 0; 
 	size_t pass = 2; 
-
-	CCmdOptionList options;
+	
+	CCmdOptionList options(g_description);
 	options.push_back(make_opt( in_filename, "in-file", 'i', "input perfusion data set", "input", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o', "output perfusion data set", "output", true));
 	options.push_back(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels", 
@@ -143,10 +152,8 @@ int do_main( int argc, const char *argv[] )
 	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(interpolator));
 	C2DRigidRegister rigid_register(C2DImageCostPluginHandler::instance().produce("ssd"), 
 					minimizer, transform_type, *ipfactory); 
-					
-					
-	cvwarn() << "save_crop_feature:" << save_crop_feature << "\n"; 
 	
+	cvwarn() << "save_crop_feature:" << save_crop_feature << "\n"; 
 	
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
@@ -157,13 +164,19 @@ int do_main( int argc, const char *argv[] )
 	transform(input_images.begin() + skip_images, input_images.end(), 
 		  series.begin(), Convert2Float()); 
 	
-
+	
 	// run ICA
 	C2DPerfusionAnalysis ica(components, !no_normalize, !no_meanstrip); 
 	if (max_ica_iterations) 
 		ica.set_max_ica_iterations(max_ica_iterations); 
 	if (!ica.run(series)) 
-		throw runtime_error("ICA analysis didn't result in usable components"); 
+		ica.set_approach(FICA_APPROACH_SYMM); 
+	if (!ica.run(series) )
+		cvwarn() << "ICA analysis didn't converge, results might by bougus";
+	
+	input_set.set_RV_peak(ica.get_RV_peak_idx()); 
+	input_set.set_LV_peak(ica.get_LV_peak_idx()); 
+
 	vector<C2DFImage> references_float = ica.get_references(); 
 	
 	C2DImageSeries references(references_float.size()); 

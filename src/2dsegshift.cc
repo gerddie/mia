@@ -1,4 +1,3 @@
-
 /* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2010
@@ -57,7 +56,10 @@ CSegSet load_segmentation(const string& s)
 	return CSegSet(*parser.get_document());
 }
 
-
+const char *g_description = 
+	"This program is used to remove images from the beginning of a segmentation set and at the "
+	"same time move the segmentation by a given offset." 
+	;
 
 int do_main(int argc, const char *args[])
 {
@@ -68,7 +70,7 @@ int do_main(int argc, const char *args[])
 
 	C2DFVector shift;
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", "input", true));
 	options.push_back(make_opt( out_filename, "out-file", 'o', "input segmentation set", "out", true));
 	options.push_back(make_opt( shift_filename, "image-file", 'g', "output image filename base", "image", false));

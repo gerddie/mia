@@ -84,6 +84,9 @@ private:
 };
 
 
+const char *g_description = 
+	"This program evaluates the intensity variation of a set of image sgiven on the command line"; 
+
 
 int main( int argc, const char *argv[] )
 {
@@ -96,7 +99,7 @@ int main( int argc, const char *argv[] )
 		const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 
 
-		CCmdOptionList options;
+		CCmdOptionList options(g_description);
 		options.push_back(make_opt( out_filename, "out-file", 'o', "output image ", "output", true));
 		options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',"output file type" , "filetype"));
 

@@ -62,6 +62,12 @@ private:
 }; 
 
 
+const char *g_description = 
+	"This program is used to run an ICA analysis on a perfusion series of heart images. "
+	"As a result of the analysis, a set of syntetic reference images can be created, "
+	"that have movement removed and that are cropped to contain only the LV myocardium." 
+	;
+
 int do_main( int argc, const char *argv[] )
 {
 	// IO parameters 
@@ -85,7 +91,7 @@ int do_main( int argc, const char *argv[] )
 	size_t max_ica_iterations = 400; 
 	C2DPerfusionAnalysis::EBoxSegmentation segmethod=C2DPerfusionAnalysis::bs_features; 
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	options.push_back(make_opt( in_filename, "in-file", 'i', "input perfusion data set", "input", true));
 	options.push_back(make_opt( reference_filename, "references", 'r', "file name base for refernces files", 
 				    "references", false)); 

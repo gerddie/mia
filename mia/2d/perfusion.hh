@@ -99,6 +99,16 @@ public:
 	 */
 	void set_approach(size_t approach); 
 
+	/**
+	   \returns the RV peak enhancement index of -1 if ir could not be identified
+	 */
+	int get_RV_peak_idx() const; 
+	
+	/**
+	   \returns the LV peak enhancement index of -1 if ir could not be identified
+	*/
+	int get_LV_peak_idx() const; 
+
 	static TDictMap<EBoxSegmentation> segmethod_dict; 
 private: 
 	struct C2DPerfusionAnalysisImpl *impl; 

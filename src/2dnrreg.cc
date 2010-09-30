@@ -41,11 +41,19 @@ NS_MIA_USE
 using namespace boost; 
 using namespace std; 
 
+const *g_description = 
+	"This program is used to run a model based non-rigid registration of two 2D images. "
+	"Optimization is done using a time marching algorithm."
+	"Remark: The implementation currently only supports a per pixel transformation and "
+	"it is not well tested."; 
+
+
+
 // set op the command line parameters and run the registration 
 int do_main(int argc, const char **args)
 {
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	string src_filename; 
 	string out_filename; 
 	string def_filename; 

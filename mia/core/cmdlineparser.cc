@@ -155,10 +155,14 @@ const char *CCmdOptionValue::get_short_help() const
 	return _M_impl->_M_short_help;
 }
 
-void CCmdOptionValue::do_print_short_help(std::ostream& /*os*/) const
+void CCmdOptionValue::do_print_short_help(std::ostream&   os  ) const
 {
-	if ( get_short_option() && get_short_help() )
-		clog << '-' << get_short_option() << " " << get_short_help() << " ";
+	if ( get_short_option() ) {
+		os << '-' << get_short_option(); 
+		if (  get_short_help() )
+			os << " " << get_short_help();
+		os  << " ";
+	}
 }
 
 void CCmdOptionValue::do_get_long_help(std::ostream& os) const
@@ -327,8 +331,8 @@ CCmdOptionListData::CCmdOptionListData(const string& general_help):
 	set_current_group(g_help_optiongroup);
 	add(make_opt(verbose, g_verbose_dict, "verbose",  'V',"verbosity of output", "verbose"));
 	add(make_opt(copyright,  "copyright", 0,"print copyright information", NULL));
-	add(make_opt(help,  "help", 'h',"print this help", "help"));
-	add(make_opt(usage,  "usage", '?',"print a short help", "usage"));
+	add(make_opt(help,  "help", 'h',"print this help", NULL));
+	add(make_opt(usage,  "usage", '?',"print a short help", NULL));
 	set_current_group("");
 
 }
@@ -420,6 +424,7 @@ void CCmdOptionListData::print_help() const
 	vector<string> help_table;
 	
 	write(0, max_width, _M_general_help); 
+	write(0, max_width, "\nThe program supports the following command line options:"); 
 
 	size_t opt_size = 0;
 	clog << setiosflags(ios_base::left);
@@ -487,7 +492,7 @@ CCmdOptionList::CCmdOptionList(const string& general_help):
 }
 
 CCmdOptionList::CCmdOptionList():
-	_M_impl(new CCmdOptionListData("This MIA toolchain program supports the following options:"))
+	_M_impl(new CCmdOptionListData("This is a MIA toolchain program."))
 {
 }
 

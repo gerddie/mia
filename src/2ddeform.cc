@@ -32,10 +32,15 @@ using namespace std;
 
 typedef std::shared_ptr<C2DFVectorfield > P2DFVectorfield;
 
-
+const char *g_description = 
+	"This program is used to deeform a 2D image usinga deformation vector field. "
+	"Input image and deformation field must be of the same size. The transformation "
+	"formula is 'x -> x - v(x)'" 
+; 
+       
 int do_main(int argc, const char **args)
 {
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	string src_filename;
 	string out_filename;
 	string vf_filename;

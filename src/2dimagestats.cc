@@ -35,6 +35,13 @@
 NS_MIA_USE;
 using namespace std;
 
+const char *g_description = 
+	"This progranm is used to evaluate some statistics of a series of images. " 
+	"Output is Mean, Variation, Median, and Median Average Distance of the intensity values."
+	; 
+	
+	
+
 class CHistAccumulator : public TFilter<bool> {
 public:
 	CHistAccumulator(float min, float max, size_t bins, float thresh):
@@ -73,6 +80,8 @@ private:
 	float _M_thresh;
 };
 
+
+
 int main( int argc, const char *argv[] )
 {
 
@@ -84,7 +93,7 @@ int main( int argc, const char *argv[] )
 		const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 
 
-		CCmdOptionList options;
+		CCmdOptionList options(g_description);
 		options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", "input", true));
 		options.push_back(make_opt( thresh, "thresh", 't', "intensity thresh to ignore", "thresh", false));
 		options.push_back(make_opt( high_thresh, "high-thresh", 'g', "upper histogram percentage to ignore", "high-thresh", false));
