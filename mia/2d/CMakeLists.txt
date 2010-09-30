@@ -16,15 +16,12 @@ SET(MIA2D_SRC_BASE
   interpolator.cc 
   fatcost.cc
   fullcost.cc
-  ground_truth_evaluator.cc
-  groundtruthproblem.cc
   filterchain.cc
   model.cc
   modelsolverreg.cc
   multicost.cc
   nfg.cc
   nonrigidregister.cc 
-  perfusion.cc
   polygon.cc
   ppmatrix.cc
   rigidregister.cc
@@ -70,7 +67,7 @@ IF(ITPP_FOUND)
     )
 ENDIF(ITPP_FOUND)
 
-SET(MIA2D_SRC ${MIA2D_SRC_BASE} ${MIA2D_FFTW_CODE} ${SEG_SRC} ${ITPP_SRC})
+SET(MIA2D_SRC ${MIA2D_SRC_BASE} ${MIA2D_FFTW_CODE} ${ITPP_SRC})
 
 SET(MIA2D_HEADERS_BASE
   2DDatafield.hh 2DDatafield.cxx
@@ -121,18 +118,10 @@ SET(MIA2D_HEADERS_BASE
 SET(MIA2D_HEADERS ${MIA2D_HEADERS_BASE} ${SEG_HEADER} ${ITPP_HEADER})
 
 #
-# Libs that we need 
-#
-SET(LIBS miacore)
-
-#
 # the main 2D library
 # 
 ADD_LIBRARY(mia2d SHARED ${MIA2D_SRC})
-TARGET_LINK_LIBRARIES(mia2d ${LIBS})
-IF(XMLPP_FOUND)
-  TARGET_LINK_LIBRARIES(mia2d ${XMLPP_LIBRARIES})
-ENDIF(XMLPP_FOUND)
+TARGET_LINK_LIBRARIES(mia2d miacore)
 
 #
 # What we need to link from here on 
@@ -152,7 +141,7 @@ ADD_LIBRARY(mia2dtest SHARED
   transformmock.cc
   )
 
-TARGET_LINK_LIBRARIES(mia2dtest ${MIA2DLIBS} ${BOOST_UNITTEST})
+TARGET_LINK_LIBRARIES(mia2dtest mia2d ${BOOST_UNITTEST})
 SET_TARGET_PROPERTIES(mia2dtest PROPERTIES COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
 
 SET_TARGET_PROPERTIES(mia2d mia2dtest PROPERTIES 
@@ -163,52 +152,43 @@ IF(APPLE)
    SET_TARGET_PROPERTIES(mia2dtest PROPERTIES LINK_FLAGS "-single_module -Wl,-flat_namespace -Wl,-undefined -Wl,suppress")
 ENDIF(APPLE)
 
-MACRO(TEST_2DMIA file)
+MACRO(TEST_2DMIA file libs)
   ADD_EXECUTABLE(test-2d-${file} test_${file}.cc)
-  TARGET_LINK_LIBRARIES(test-2d-${file} mia2dtest ${BOOST_UNITTEST})
+  TARGET_LINK_LIBRARIES(test-2d-${file} ${libs} ${BOOST_UNITTEST} )
   ADD_TEST(2d-${file} test-2d-${file})
 ENDMACRO(TEST_2DMIA file)
 
-TEST_2DMIA(2ddatafield)
-TEST_2DMIA(2dimage)
-TEST_2DMIA(2dparam)
-TEST_2DMIA(2dvector)
+TEST_2DMIA(2ddatafield mia2dtest)
+TEST_2DMIA(2dimage mia2dtest)
+TEST_2DMIA(2dparam mia2dtest)
+TEST_2DMIA(2dvector mia2dtest)
 
-TEST_2DMIA(boundingbox)
+TEST_2DMIA(boundingbox mia2dtest)
 
-TEST_2DMIA(correlation_weight)
-TEST_2DMIA(costbase)
-TEST_2DMIA(distances)
+TEST_2DMIA(costbase mia2dtest)
+TEST_2DMIA(distances mia2dtest)
 
-TEST_2DMIA(fullcost)
-TEST_2DMIA(groundtruthproblem)
-TEST_2DMIA(imagecostbase)
-TEST_2DMIA(interpol)
-TEST_2DMIA(segpoint)
+TEST_2DMIA(fullcost mia2dtest)
+TEST_2DMIA(imagecostbase mia2dtest)
+TEST_2DMIA(interpol mia2dtest)
 
+TEST_2DMIA(matrix mia2dtest)
+TEST_2DMIA(modelsolverreg mia2dtest)
+TEST_2DMIA(nfg mia2dtest)
+TEST_2DMIA(nonrigidregister mia2dtest)
 
-TEST_2DMIA(matrix)
-TEST_2DMIA(modelsolverreg)
-TEST_2DMIA(nfg)
-TEST_2DMIA(nonrigidregister)
+TEST_2DMIA(oldnewintegrate mia2dtest)
 
-TEST_2DMIA(oldnewintegrate)
-TEST_2DMIA(perfusion)
-TEST_2DMIA(polygon)
-TEST_2DMIA(ppmatrix)
-TEST_2DMIA(rigidregister)
-TEST_2DMIA(transformfactory)
-TEST_2DMIA(vectorfield_interpolator)
-TEST_2DMIA(similarity_profile)
+TEST_2DMIA(polygon mia2dtest)
+TEST_2DMIA(ppmatrix mia2dtest)
+TEST_2DMIA(rigidregister mia2dtest)
+TEST_2DMIA(transformfactory mia2dtest)
+TEST_2DMIA(vectorfield_interpolator mia2dtest)
+TEST_2DMIA(similarity_profile mia2dtest)
 
 IF(ITPP_FOUND)
-  TEST_2DMIA(ica)
+  TEST_2DMIA(ica mia2dtest)
 ENDIF(ITPP_FOUND)
-
-
-IF(XMLPP_FOUND)
-  TEST_2DMIA(segmentation)
-ENDIF(XMLPP_FOUND)
 
 IF(CMAKE_BUILD_TYPE)
   SET(CONFIG ${CMAKE_BUILD_TYPE})
@@ -223,6 +203,44 @@ INSTALL_WITH_EXPORT(mia2d)
 INSTALL_WITH_EXPORT(mia2dtest)
 
 INSTALL(FILES ${MIA2D_HEADERS} DESTINATION ${INCLUDE_INSTALL_PATH}/mia/2d)
+
+
+
+SET(MIA2D_MYOCARDPERF_SRC 
+  ${SEG_SRC}
+  ground_truth_evaluator.cc
+  groundtruthproblem.cc
+  perfusion.cc
+)  
+
+SET(MIA2D_MYOCARDPERF_HEADER 
+  ${SEG_HEADER}
+  ground_truth_evaluator.hh
+  groundtruthproblem.hh
+  perfusion.hh
+)  
+
+ADD_LIBRARY(mia2dmyocardperf SHARED ${MIA2D_MYOCARDPERF_SRC})
+TARGET_LINK_LIBRARIES(mia2dmyocardperf mia2d)
+SET_TARGET_PROPERTIES(mia2dmyocardperf PROPERTIES VERSION ${LIBRARY_VERSION_INFO}
+)
+
+IF(XMLPP_FOUND)
+  TARGET_LINK_LIBRARIES(mia2dmyocardperf ${XMLPP_LIBRARIES})
+ENDIF(XMLPP_FOUND)
+
+INSTALL_WITH_EXPORT(mia2dmyocardperf)
+INSTALL(FILES ${MIA2D_MYOCARDPERF_HEADER} DESTINATION ${INCLUDE_INSTALL_PATH}/mia/2d)
+
+
+TEST_2DMIA(groundtruthproblem mia2dmyocardperf)
+TEST_2DMIA(perfusion mia2dmyocardperf)
+TEST_2DMIA(correlation_weight mia2dmyocardperf)
+
+IF(XMLPP_FOUND)
+  TEST_2DMIA(segmentation mia2dmyocardperf)
+  TEST_2DMIA(segpoint mia2dmyocardperf)
+ENDIF(XMLPP_FOUND)
 
 #
 # The plugin directories 
