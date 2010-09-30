@@ -1,6 +1,6 @@
 /*
 ** Copyright Madrid (c) 2010 BIT ETSIT UPM
-**                    Gert Wollny <gw.fossdev @ gmail.com>
+**    Gert Wollny <gw.fossdev @ gmail.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ struct C2DGroundTruthEvaluatorImpl {
 private:
 	double m_alpha;
 	double m_beta;
-	double m_rho;
+	CCorrelationEvaluator m_ce;
 };
 
 C2DGroundTruthEvaluator::C2DGroundTruthEvaluator(double alpha, double beta, double rho):
@@ -56,7 +56,7 @@ void C2DGroundTruthEvaluator::operator () (const std::vector<P2DImage>& original
 C2DGroundTruthEvaluatorImpl::C2DGroundTruthEvaluatorImpl(double alpha, double beta, double rho):
 	m_alpha(alpha),
 	m_beta(beta),
-	m_rho(rho)
+	m_ce(rho)
 
 {
 }
@@ -77,21 +77,22 @@ private:
 
 
 void C2DGroundTruthEvaluatorImpl::run(const std::vector<P2DImage>& originals,
-						       std::vector<P2DImage>& estimate) const
+				      std::vector<P2DImage>& estimate) const
 {
-	CCorrelationEvaluator ce(m_rho);
-	auto correlation = ce(originals);
+	auto correlation = m_ce(originals);
 
 	size_t slice_size = originals[0]->get_size().x * originals[0]->get_size().y;
-
 	size_t n = originals.size() * slice_size;
 
+	// copy original data into vector for optimization
 	gsl::DoubleVector input(n, false);
-
 	DataCopy dc(input, slice_size);
 	for (auto io = originals.begin(); io != originals.end(); ++io)
 		::mia::accumulate(dc, **io);
 
+	// if an initial estimate is give, then copy it to the 
+	// optimization output vector 
+	// otherwise copy input to estimate 
 	gsl::DoubleVector output(n,false);
 	if (estimate.size() == originals.size()) {
 		DataCopy dc(output, slice_size);
@@ -102,11 +103,11 @@ void C2DGroundTruthEvaluatorImpl::run(const std::vector<P2DImage>& originals,
 		estimate.resize(originals.size());
 	}
 
-
-
+	// run optimization of ground truth
 	gsl::CFDFMinimizer::PProblem gtp(new GroundTruthProblem(m_alpha, m_beta, originals[0]->get_size(),
-					    originals.size(), input, correlation));
+								originals.size(), input, correlation));
 
+	// remark, maybe one should test other optimizers 
 	gsl::CFDFMinimizer minimizer(gtp,  gsl_multimin_fdfminimizer_vector_bfgs2);
 
 	int min_status = minimizer.run(output);
@@ -117,7 +118,6 @@ void C2DGroundTruthEvaluatorImpl::run(const std::vector<P2DImage>& originals,
 
 	// copy back the result
 	auto igt = output.begin();
-
 	for(size_t i = 0; i < originals.size(); ++i) {
 		C2DFImage *image = new C2DFImage(originals[0]->get_size());
 		copy(igt, igt + slice_size, image->begin());

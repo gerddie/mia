@@ -94,7 +94,7 @@ int do_main( int argc, const char *argv[] )
 	}
 
 	if (series.size() < 5) 
-		THROW(runtime_error, "no input images found.");
+		THROW(runtime_error, "not enough input images found.");
 
 	C2DGroundTruthEvaluator gte(alpha, beta, rho_thresh);
 	vector<P2DImage> pgt;
