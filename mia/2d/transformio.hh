@@ -24,25 +24,16 @@
 #ifndef mia_2d_transformio_hh
 #define mia_2d_transformio_hh
 
-#include <mia/core/ioplugin.hh>
 #include <mia/core/iohandler.hh>
-#include <mia/core/iodata.hh>
+#include <mia/core/ioplugin.hh>
 #include <mia/2d/transform.hh>
 
 NS_MIA_BEGIN
-
-//static const char *type_descr;
-
-class EXPORT_2D io_2dtransform_type {
-public:
-	typedef  C2DTransformation type;
-	static const char *type_descr;
-};
-
-typedef TIOPlugin<io_2dtransform_type> C2DTransformIOPlugin;
-typedef THandlerSingleton<TIOPluginHandler<C2DTransformIOPlugin> > C2DTransformIOPluginHandler;
-
-
+typedef TIOPlugin<C2DTransformation> C2DTransformationIO; 
+typedef TIOHandlerSingleton< TIOPluginHandler<C2DTransformationIO> > C2DTransformationIOPluginHandler;
+typedef C2DTransformationIOPluginHandler::Instance::DataKey C2DTransformationDataKey;
 NS_MIA_END
+
+
 
 #endif

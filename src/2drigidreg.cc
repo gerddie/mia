@@ -117,6 +117,5 @@ int main( int argc, const char *argv[] )
 	catch (...){
 		cerr << argv[0] << " unknown exception" << endl;
 	}
-
 	return EXIT_FAILURE;
 }

@@ -175,4 +175,6 @@ bool C2DTransformation::refine()
 	return false; 
 }
 
+const char *C2DTransformation::type_descr = "2dtransform";
+
 NS_MIA_END

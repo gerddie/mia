@@ -178,7 +178,7 @@ ENDMACRO(GET_BOOST_LINKERFLAG)
 # Handle BOOST
 #
 #find essecial packages
-SET(BOOST_COMPONENTS   filesystem  regex  thread  unit_test_framework)
+SET(BOOST_COMPONENTS   filesystem  regex  thread  unit_test_framework serialization)
 IF (WIN32)
   SET(BOOST_COMPONENTS  ${BOOST_COMPONENTS} date_time system)
 ENDIF(WIN32)

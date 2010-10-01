@@ -56,6 +56,7 @@ public:
 	typedef  typename std::shared_ptr<Data > PData;
 	typedef  std::set<EPixelType> PixelTypeSet;
 
+
 	/**
 	   Constructor of the Plugin
 	   \param name the name of the plug-in, should correnspond to the file type

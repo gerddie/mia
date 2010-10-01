@@ -20,21 +20,21 @@
  *
  */
 
+#include <mia/core/export_handler.hh>
+
+#include <mia/core/errormacro.hh>
 #include <mia/2d/transformio.hh>
 #include <mia/core/ioplugin.cxx>
 #include <mia/core/iohandler.cxx>
 
+NS_MIA_BEGIN
 
-NS_MIA_BEGIN;
-
-const char *io_2dtransform_type::type_descr = "transformio";
-
-
-template class EXPORT_HANDLER TIOPlugin<io_2dtransform_type>;
-template class EXPORT_HANDLER THandlerSingleton<TIOPluginHandler<C2DTransformIOPlugin> >;
-template class TIOPluginHandler<C2DTransformIOPlugin>;
-template class TPluginHandler<C2DTransformIOPlugin>;
-
+template class TIOPlugin<C2DTransformation>;
+template class THandlerSingleton<TIOPluginHandler<C2DTransformationIO> >;
+template class TIOHandlerSingleton<TIOPluginHandler<C2DTransformationIO> >;
+template class TIOPluginHandler<C2DTransformationIO>;
+template class TPluginHandler<C2DTransformationIO>;
 
 NS_MIA_END
+
 

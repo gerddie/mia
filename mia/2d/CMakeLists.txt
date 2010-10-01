@@ -257,3 +257,5 @@ ADD_SUBDIRECTORY(model     )
 ADD_SUBDIRECTORY(shapes    )
 ADD_SUBDIRECTORY(timestep  )
 ADD_SUBDIRECTORY(transform )
+ADD_SUBDIRECTORY(transio )
+

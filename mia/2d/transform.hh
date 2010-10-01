@@ -33,8 +33,6 @@
 #include <mia/2d/2DImage.hh>
 #include <mia/2d/interpolator.hh>
 
-
-
 NS_MIA_BEGIN
 
 
@@ -50,7 +48,8 @@ class EXPORT_2D C2DTransformation: public Transformation<C2DImage, C2DInterpolat
 public:
 	typedef C2DImage Data;
 	typedef C2DInterpolatorFactory Interpolator;
-	
+	typedef C2DTransformation type; 
+	static const char *type_descr;
 protected: 
 	class iterator_impl  {
 	public: 
@@ -271,10 +270,13 @@ public:
 	virtual bool refine(); 
 
 private: 
+
+
 	std::string _M_creator_string;  
 	virtual C2DTransformation *do_clone() const = 0;
 
 };
+
 
 /**
    Compare two transformation iterators
