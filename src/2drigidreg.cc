@@ -28,6 +28,7 @@
 #include <mia/2d.hh>
 #include <mia/2d/rigidregister.hh>
 #include <gsl++/multimin.hh>
+#include <mia/core/factorycmdlineoption.hh>
 
 NS_MIA_USE;
 using namespace std;
@@ -57,7 +58,7 @@ int do_main( int argc, const char *argv[] )
 	string ref_filename;
 	string out_filename;
 	string trans_filename;
-	string transform_type("translate");
+	auto transform_creator = C2DTransformCreatorHandler::instance().produce("spline"); 
 	EMinimizers minimizer = min_nmsimplex;
 
 	size_t mg_levels = 3;
@@ -71,7 +72,7 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( mg_levels, "levels", 'l', "multigrid levels", "levels", false));
 	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
 				    "optimizer", 'O', "Optimizer used for minimization", "optimizer", false));
-	options.push_back(make_opt( transform_type, "transForm", 'f', "transformation typo", "transform", false));
+	options.push_back(make_opt( transform_creator, "transForm", 'f', "transformation type", "transform", false));
 
 	options.parse(argc, argv);
 
@@ -86,9 +87,9 @@ int do_main( int argc, const char *argv[] )
 	auto cost = C2DImageCostPluginHandler::instance().produce(cost_function);
 	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3));
 
-	C2DRigidRegister rr(cost, minimizer,  transform_type, *ipfactory);
+	C2DRigidRegister rr(cost, minimizer,  transform_creator, *ipfactory, mg_levels);
 
-	P2DTransformation transform = rr.run(Model, Reference, mg_levels);
+	P2DTransformation transform = rr.run(Model, Reference);
 	P2DImage result = (*transform)(*Model, *ipfactory);
 
 	if (!trans_filename.empty()) {

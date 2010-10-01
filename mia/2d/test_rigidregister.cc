@@ -68,8 +68,9 @@ void RigidRegisterFixture::run(C2DTransformation& t, EMinimizers minimizer, doub
 {
 	P2DImageCost cost = C2DImageCostPluginHandler::instance().produce("ssd");
 	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3));
+	auto tr_creator = C2DTransformCreatorHandler::instance().produce(t.get_creator_string());
 
-	C2DRigidRegister rr(cost, minimizer, t.get_creator_string(), *ipfactory);
+	C2DRigidRegister rr(cost, minimizer, tr_creator, *ipfactory, 1);
 
 
 	float src_image_init[10 * 10] = {
@@ -89,7 +90,7 @@ void RigidRegisterFixture::run(C2DTransformation& t, EMinimizers minimizer, doub
 	P2DImage src(new C2DFImage(size, src_image_init));
 	P2DImage ref = t(*src, *ipfactory);
 
-	P2DTransformation transform = rr.run(src, ref, 1);
+	P2DTransformation transform = rr.run(src, ref);
 	auto params = transform->get_parameters();
 	auto orig_params = t.get_parameters();
 

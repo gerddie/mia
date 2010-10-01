@@ -36,6 +36,7 @@
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/transformfactory.hh>
+#include <mia/core/factorycmdlineoption.hh>
 
 using namespace std;
 using namespace mia;
@@ -94,7 +95,7 @@ int do_main( int argc, const char *argv[] )
 	// registration parameters
 	string cost_function("ssd"); 
 	EMinimizers minimizer = min_nmsimplex;
-	string transform_type("translate");
+	auto transform_creator = C2DTransformCreatorHandler::instance().produce("spline"); 
 	EInterpolation interpolator = ip_bspline3;
 	size_t mg_levels = 3; 
 	
@@ -122,7 +123,7 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( cost_function, "cost", 'c', "registration criterion", "cost", false)); 
 	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
 				    "optimizer", 'O', "Optimizer used for minimization", "optimizer", false));
-	options.push_back(make_opt( transform_type, "transform", 'f', "transformation typo", "transform", false));
+	options.push_back(make_opt( transform_creator, "transForm", 'f', "transformation type", "transform", false));
 	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
 	options.push_back(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels", "mg-levels", false));
@@ -151,7 +152,7 @@ int do_main( int argc, const char *argv[] )
 	
 	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(interpolator));
 	C2DRigidRegister rigid_register(C2DImageCostPluginHandler::instance().produce("ssd"), 
-					minimizer, transform_type, *ipfactory); 
+					minimizer, transform_creator, *ipfactory, mg_levels); 
 	
 	cvwarn() << "save_crop_feature:" << save_crop_feature << "\n"; 
 	
@@ -227,8 +228,7 @@ int do_main( int argc, const char *argv[] )
 
 	for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
 		cvmsg() << "Register 1st pass, frame " << i << "\n"; 
-		P2DTransformation transform = rigid_register.run(input_images[i + skip_images] , 
-							     references[i], mg_levels);
+		P2DTransformation transform = rigid_register.run(input_images[i + skip_images], references[i]);
 		input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], *ipfactory);
 		P2DTransformation inverse(transform->invert()); 
 		frames[i + skip_images].transform(*inverse);
@@ -253,7 +253,7 @@ int do_main( int argc, const char *argv[] )
 			for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
 				cvmsg() << "Register " << current_pass + 1 <<  " pass, frame " << i << "\n"; 
 				P2DTransformation transform = rigid_register.run(input_images[i + skip_images] , 
-										 references[i], mg_levels); 
+										 references[i]); 
 				input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], *ipfactory);
 				P2DTransformation inverse(transform->invert()); 
 				frames[i + skip_images].transform(*inverse);

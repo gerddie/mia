@@ -30,8 +30,6 @@
 #include <mia/core/filter.hh>
 #include <gsl++/multimin.hh>
 
-
-
 NS_MIA_BEGIN
 
 using namespace gsl;
@@ -40,10 +38,10 @@ using namespace std;
 struct C2DRigidRegisterImpl {
 
 	C2DRigidRegisterImpl(P2DImageCost cost, EMinimizers minimizer,
-			     const string& transform_type,
-			     const C2DInterpolatorFactory& ipf);
+			     P2DTransformationFactory transform_creator,
+			     const C2DInterpolatorFactory& ipf,  size_t mg_levels);
 
-	P2DTransformation run(P2DImage src, P2DImage ref,  size_t mg_levels) const;
+	P2DTransformation run(P2DImage src, P2DImage ref) const;
 private:
 
 	void apply(const C2DImage& model, const C2DImage& reference, C2DTransformation& transf,
@@ -57,7 +55,8 @@ private:
 	P2DImageCost _M_cost;
 	EMinimizers _M_minimizer;
 	C2DInterpolatorFactory _M_ipf;
-	string _M_transform_type;
+	P2DTransformationFactory _M_transform_creator; 
+	size_t _M_mg_levels; 
 };
 
 class C2DRegGradientProblem: public gsl::CFDFMinimizer::Problem {
@@ -105,9 +104,9 @@ typedef shared_ptr<C2DRegProblem> P2DRegProblem;
 
 
 C2DRigidRegister::C2DRigidRegister(P2DImageCost cost, EMinimizers minimizer,
-				   const string& transform_type,
-				   const C2DInterpolatorFactory& ipf):
-	impl(new C2DRigidRegisterImpl( cost, minimizer, transform_type, ipf))
+				   P2DTransformationFactory transform_creator,
+				   const C2DInterpolatorFactory& ipf, size_t mg_levels):
+	impl(new C2DRigidRegisterImpl( cost, minimizer, transform_creator, ipf, mg_levels))
 {
 }
 
@@ -117,17 +116,20 @@ C2DRigidRegister::~C2DRigidRegister()
 	delete impl;
 }
 
-P2DTransformation C2DRigidRegister::run(P2DImage src, P2DImage ref,  size_t mg_levels) const
+P2DTransformation C2DRigidRegister::run(P2DImage src, P2DImage ref) const
 {
-	return impl->run(src, ref, mg_levels);
+	return impl->run(src, ref);
 }
 
 C2DRigidRegisterImpl::C2DRigidRegisterImpl(P2DImageCost cost, EMinimizers minimizer,
-					   const string& transform_type, const C2DInterpolatorFactory& ipf):
+					   P2DTransformationFactory transform_creator,
+					   const C2DInterpolatorFactory& ipf,  
+					   size_t mg_levels):
 	_M_cost(cost),
 	_M_minimizer(minimizer),
 	_M_ipf(ipf),
-	_M_transform_type(transform_type)
+	_M_transform_creator(transform_creator), 
+	_M_mg_levels(mg_levels)
 {
 }
 
@@ -187,20 +189,18 @@ void C2DRigidRegisterImpl::apply(const C2DImage& model, const C2DImage& referenc
 
 
 
-P2DTransformation C2DRigidRegisterImpl::run(P2DImage src, P2DImage ref,  size_t mg_levels) const
+P2DTransformation C2DRigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 {
 	assert(src);
 	assert(ref);
 	assert(src->get_size() == ref->get_size());
 
-	auto tr_creator = C2DTransformCreatorHandler::instance().produce(_M_transform_type);
-
 	P2DTransformation transform;
 
 	C2DBounds global_size = src->get_size();
 
-	int x_shift = mg_levels + 1;
-	int y_shift = mg_levels + 1;
+	int x_shift = _M_mg_levels + 1;
+	int y_shift = _M_mg_levels + 1;
 
 	while (x_shift && y_shift) {
 		if (x_shift)
@@ -223,7 +223,7 @@ P2DTransformation C2DRigidRegisterImpl::run(P2DImage src, P2DImage ref,  size_t 
 		if (transform)
 			transform = transform->upscale(src_scaled->get_size());
 		else
-			transform = tr_creator->create(src_scaled->get_size());
+			transform = _M_transform_creator->create(src_scaled->get_size());
 
 		cvmsg() << "register at " << src_scaled->get_size() << "\n";
 
@@ -345,7 +345,5 @@ double  C2DRegProblem::do_f(const DoubleVector& x)
 	cvmsg() << "Cost = " << value << "\n";
 	return value;
 }
-
-
 
 NS_MIA_END

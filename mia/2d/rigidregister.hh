@@ -29,6 +29,7 @@
 
 #include <mia/2d/cost.hh>
 #include <mia/2d/transform.hh>
+#include <mia/2d/transformfactory.hh>
 
 NS_MIA_BEGIN
 
@@ -58,8 +59,8 @@ public:
 	 */
 
 	C2DRigidRegister(P2DImageCost cost, EMinimizers minimizer,
-			 const string& transform_type,
-			 const C2DInterpolatorFactory& ipf);
+			 P2DTransformationFactory transform_creator,
+			 const C2DInterpolatorFactory& ipf,  size_t mg_levels);
 
 	
 	~C2DRigidRegister();
@@ -72,7 +73,7 @@ public:
 	   \returns the transformation registering src to ref that minimizes the constructor given 
 	   cost function 
 	 */
-	P2DTransformation  run(P2DImage src, P2DImage ref,  size_t mg_levels) const;
+	P2DTransformation  run(P2DImage src, P2DImage ref) const;
 
 private:
 	struct C2DRigidRegisterImpl *impl;
