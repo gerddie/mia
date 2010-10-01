@@ -144,6 +144,9 @@ void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
 		catch (invalid_argument& ex) {
 			cverr() << ex.what() << "\n"; 
 		}
+		catch (std::exception& ex) {
+			cverr() << ex.what() << "\n"; 
+		}
 		catch (...) {
 			cverr() << "Loading module " << i->directory_string() << "failed for unknown reasons\n"; 
 		}

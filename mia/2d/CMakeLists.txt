@@ -185,6 +185,7 @@ TEST_2DMIA(rigidregister mia2dtest)
 TEST_2DMIA(transformfactory mia2dtest)
 TEST_2DMIA(vectorfield_interpolator mia2dtest)
 TEST_2DMIA(similarity_profile mia2dtest)
+TEST_2DMIA(transio mia2d)
 
 IF(ITPP_FOUND)
   TEST_2DMIA(ica mia2dtest)

@@ -85,7 +85,7 @@ public:
 	   \param data data to be stored.
 	   \returns true if the saving was succesfull, false otherwise
 	*/
-	bool save(const std::string& fname, const typename D::type& data) const;
+	bool save(const std::string& fname, const Data& data) const;
 
 	/// \returns a set of thepixel types, supported by this IO plug-in
 	const PixelTypeSet& supported_pixel_types() const;

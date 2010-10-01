@@ -4,8 +4,8 @@ SET(io2dtransform_serialized
   xml
 )
 
-
-SET(SERLIBS mia2d ${Boost_SERIALIZATION})
+SET(SERLIBS mia2d ${Boost_SERIALIZATION_LIBRARY})
+MESSAGE(STATUS ${SERLIBS})
 
 PLUGIN_GROUP_PRE(
   "2d" 

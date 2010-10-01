@@ -54,7 +54,7 @@ typename TIOPlugin<D>::PData TIOPlugin<D>::load(const std::string& fname) const
 }
 
 template <typename D> 
-bool TIOPlugin<D>::save(const std::string& fname, const typename D::type& data) const
+bool TIOPlugin<D>::save(const std::string& fname, const Data& data) const
 {
 	return do_save(fname, data);
 }
