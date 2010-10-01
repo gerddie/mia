@@ -30,6 +30,8 @@
 #include <mia/2d/2dimageiotest.hh>
 
 #include <mia/2d/2dvfio.hh>
+#include <mia/2d/transformio.hh>
+#include <mia/2d/transformfactory.hh>
 
 
 #include <mia/3d/3dimageio.hh>
@@ -158,6 +160,13 @@ static void handler_setup()
 
 	C2DVFIOPluginHandler::set_search_path(searchpath);
 	C3DVFIOPluginHandler::set_search_path(searchpath);
+
+	C2DTransformationIOPluginHandler::set_search_path(searchpath);
+
+	std::list< bfs::path> tc_searchpath; 
+	searchpath.push_back(bfs::path("../mia/2d/transform"));
+
+	C2DTransformCreatorHandler::set_search_path(tc_searchpath);
 }
 
 
@@ -193,6 +202,58 @@ static void test_2dvf_plugin_handler()
 	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "datapool vista ");
 }
 
+
+static void test_2dtransform_plugin_handler()
+{
+	const C2DTransformationIOPluginHandler::Instance& handler = C2DTransformationIOPluginHandler::instance();
+	BOOST_CHECK_EQUAL(handler.size(), 2);
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "datapool vista ");
+}
+
+static void test_2dtransform_io()
+{
+	C2DBounds size( 20, 20); 
+	
+	const char *transforms[] = {
+		"translate",
+		"affine", 
+		"rigid", 
+		"spline:rate=3", 
+		"spline:rate=6", 
+		"vf"
+	}; 
+	const size_t n_transforms = sizeof(transforms)/sizeof(char*); 
+
+
+	for (size_t t = 0; t < n_transforms; ++t) {
+		auto tc = C2DTransformCreatorHandler::instance().produce(transforms[t]); 
+		auto tr = tc->create(size); 
+		auto params = tr->get_parameters(); 
+		for (size_t k = 0; k < params.size(); ++k) 
+			params[k] = k + 1; 
+		tr->set_parameters(params);
+		
+		stringstream fname; 
+		fname << transforms[t] << "." << "v2dt"; 
+		cvdebug() << "store to '" << fname << "'\n"; 
+		BOOST_CHECK(C2DTransformationIOPluginHandler::instance().save("", fname.str(), *tr)); 
+		
+		auto t_loaded = C2DTransformationIOPluginHandler::instance().load(fname.str()); 
+		BOOST_CHECK(t_loaded); 
+		BOOST_CHECK_EQUAL(t_loaded->get_size(), size); 
+		BOOST_CHECK_EQUAL(t_loaded->get_creator_string(), transforms[t]);
+		
+		auto lparams = t_loaded->get_parameters();
+		BOOST_CHECK_EQUAL(lparams.size(), params.size()); 
+		for (size_t k = 0; k < lparams.size(); ++k) 
+			BOOST_CHECK_EQUAL(lparams[k], k + 1); 
+		unlink( fname.str().c_str()); 
+		
+	}
+
+}
+
+
 bool init_unit_test_suite( )
 {
 
@@ -209,6 +270,10 @@ bool init_unit_test_suite( )
 
 	suite->add( BOOST_TEST_CASE( &test_3dvf_plugin_handler ));
 	suite->add( BOOST_TEST_CASE( &test_2dvf_plugin_handler ));
+
+	suite->add( BOOST_TEST_CASE( &test_2dtransform_plugin_handler ));
+	suite->add( BOOST_TEST_CASE( &test_2dtransform_io ));
+
 	add_2dvfio_tests( suite );
 
 	return true;
@@ -217,6 +282,6 @@ bool init_unit_test_suite( )
 int BOOST_TEST_CALL_DECL
 main( int argc, char* argv[] )
 {
-	CCmdOptionList().parse(argc, argv);
+	CCmdOptionList("Test vista plugins").parse(argc, argv);
 	return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );
 }
