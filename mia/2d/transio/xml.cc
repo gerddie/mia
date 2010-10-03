@@ -37,9 +37,9 @@ NS_MIA_BEGIN
 
 namespace bs=boost::serialization; 
 
-class C2DBBSTransformationIO: public C2DTransformationIO {
+class C2DXMLTransformationIO: public C2DTransformationIO {
 public: 	
-	C2DBBSTransformationIO(); 
+	C2DXMLTransformationIO(); 
 private: 
 	virtual void do_add_suffixes(std::multimap<std::string, std::string>& map) const;
 	virtual PData do_load(const std::string& fname) const;
@@ -48,17 +48,17 @@ private:
 }; 
 
 
-C2DBBSTransformationIO::C2DBBSTransformationIO():
+C2DXMLTransformationIO::C2DXMLTransformationIO():
 	C2DTransformationIO("xml")
 {
 }
 
-void C2DBBSTransformationIO::do_add_suffixes(std::multimap<std::string, std::string>& map) const
+void C2DXMLTransformationIO::do_add_suffixes(std::multimap<std::string, std::string>& map) const
 {
 	map.insert(pair<string,string>(".x2dt", get_name()));
 }
 
-P2DTransformation C2DBBSTransformationIO::do_load(const std::string& fname) const
+P2DTransformation C2DXMLTransformationIO::do_load(const std::string& fname) const
 {
 	std::ifstream ifs(fname);
         boost::archive::xml_iarchive ia(ifs);
@@ -70,7 +70,7 @@ P2DTransformation C2DBBSTransformationIO::do_load(const std::string& fname) cons
 	return result; 
 }
 
-bool C2DBBSTransformationIO::do_save(const std::string& fname, const C2DTransformation& data) const
+bool C2DXMLTransformationIO::do_save(const std::string& fname, const C2DTransformation& data) const
 {
 	ofstream ofs(fname);
 
@@ -81,14 +81,14 @@ bool C2DBBSTransformationIO::do_save(const std::string& fname, const C2DTransfor
 	return ofs.good();
 }
 
-const string C2DBBSTransformationIO::do_get_descr() const
+const string C2DXMLTransformationIO::do_get_descr() const
 {
 	return "XML serialized IO of 2D transformations"; 
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-		return new C2DBBSTransformationIO;
+		return new C2DXMLTransformationIO;
 }
 
 NS_MIA_END

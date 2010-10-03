@@ -72,6 +72,7 @@ BOOST_AUTO_TEST_CASE(test_transform_io)
 		for (size_t i = 0; i < n_io; ++i) {
 			stringstream fname; 
 			fname << transforms[t] << "." << io[i]; 
+			cvdebug() << "Test:'" << fname.str() << "'\n"; 
 			BOOST_CHECK(prep.transformio_handler().save("", fname.str(), *tr)); 
 			
 			auto t_loaded = prep.transformio_handler().load(fname.str()); 

@@ -256,8 +256,8 @@ typename TPluginHandler<I>::Interface *TPluginHandler<I>::plugin(const char *plu
 	typename map<string, Interface*>::const_iterator p = _M_plugins.find(plugin); 
 	if (p == _M_plugins.end()) {
 		stringstream msg; 
-		msg << "Plugin '" << plugin << "' in of '" 
-		    <<  I::PlugData::type_descr << "/" <<  I::PlugType::value << "' not found"; 
+		msg << "Plugin '" << plugin << "' not found in '" 
+		    << I::PlugType::value << "/" <<  I::PlugData::type_descr << "'"; 
 		throw invalid_argument(msg.str()); 
 	}
 	return p->second; 
