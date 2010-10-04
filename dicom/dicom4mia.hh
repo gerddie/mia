@@ -33,24 +33,14 @@
 
 NS_MIA_BEGIN
 
-extern EXPORT_DICOM const char * IDAcquisitionDate;
-extern EXPORT_DICOM  const char * IDAcquisitionNumber;
-extern EXPORT_DICOM  const char * IDImageType;
-extern EXPORT_DICOM  const char * IDInstanceNumber;
 extern EXPORT_DICOM const char * IDMediaStorageSOPClassUID;
-extern EXPORT_DICOM const char * IDModality;
-extern EXPORT_DICOM const char * IDPatientOrientation;
-extern EXPORT_DICOM const char * IDPatientPosition;
 extern EXPORT_DICOM const char * IDStudyDescription;
-extern EXPORT_DICOM const char * IDSamplesPerPixel;
 extern EXPORT_DICOM const char * IDSeriesDescription;
-extern EXPORT_DICOM const char * IDSeriesNumber;
-extern EXPORT_DICOM const char * IDSliceLocation;
-extern EXPORT_DICOM const char * IDStudyID;
+extern EXPORT_DICOM const char * IDSamplesPerPixel;
+extern EXPORT_DICOM const char * IDSamplesPerPixel;
 extern EXPORT_DICOM const char * IDTestValue;
 extern EXPORT_DICOM const char * IDSOPClassUID;
-extern EXPORT_DICOM const char * IDSmallestImagePixelValue;
-extern EXPORT_DICOM const char * IDLargestImagePixelValue;
+
 
 class EXPORT_DICOM CDicomReader {
 public:

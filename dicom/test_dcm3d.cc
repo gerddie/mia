@@ -19,8 +19,10 @@
  */
 
 #include <mia/internal/autotest.hh>
+#include <mia/2d/2dimageio.hh>
 #include <dicom/dcm3d.hh>
 #include <dicom/dicom4mia.hh>
+
 
 using namespace std;
 NS_MIA_USE;

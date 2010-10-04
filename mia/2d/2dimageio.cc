@@ -80,4 +80,17 @@ bool  EXPORT_2D save_image2d(const std::string& filename, P2DImage image)
 	return C2DImageIOPluginHandler::instance().save("", filename, out_image_list);
 }
 
+EXPORT_2D const char * IDAcquisitionDate =   "AcquisitionDate";
+EXPORT_2D const char * IDImageType =         "ImageType";
+EXPORT_2D const char * IDAcquisitionNumber = "AcquisitionNumber";
+EXPORT_2D const char * IDInstanceNumber =    "InstanceNumber";
+EXPORT_2D const char * IDSliceLocation = "SliceLocation";
+EXPORT_2D const char * IDSeriesNumber = "SeriesNumber";
+EXPORT_2D const char * IDModality =          "Modality";
+EXPORT_2D const char * IDPatientOrientation ="PatientOrientation";
+EXPORT_2D const char * IDPatientPosition = "PatientPosition";
+EXPORT_2D const char * IDSmallestImagePixelValue = "SmallestImagePixelValue";
+EXPORT_2D const char * IDLargestImagePixelValue = "LargestImagePixelValue";
+EXPORT_2D const char * IDStudyID = "StudyID";
+
 NS_MIA_END

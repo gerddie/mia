@@ -22,6 +22,7 @@
 
 #include <climits>
 #include <mia/internal/autotest.hh>
+#include <mia/2d/2dimageio.hh>
 #include <stdexcept>
 
 #define ENABLE_TEST_HACKS

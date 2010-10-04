@@ -65,6 +65,22 @@ P2DImageVector EXPORT_2D create_image2d_vector(P2DImage image);
 P2DImage EXPORT_2D  load_image2d(const std::string& filename);
 bool  EXPORT_2D save_image2d(const std::string& filename, P2DImage image);
 
+
+extern EXPORT_2D const char * IDModality;
+extern EXPORT_2D const char * IDPatientOrientation;
+extern EXPORT_2D const char * IDPatientPosition;
+extern EXPORT_2D const char * IDAcquisitionDate;
+extern EXPORT_2D const char * IDAcquisitionNumber;
+extern EXPORT_2D const char * IDImageType;
+extern EXPORT_2D const char * IDInstanceNumber;
+
+extern EXPORT_2D const char * IDSeriesNumber;
+extern EXPORT_2D const char * IDSliceLocation;
+extern EXPORT_2D const char * IDStudyID;
+extern EXPORT_2D const char * IDSmallestImagePixelValue;
+extern EXPORT_2D const char * IDLargestImagePixelValue;
+
+
 NS_MIA_END
 
 #endif

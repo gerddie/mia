@@ -37,6 +37,8 @@
 #include <dcmtk/dcmnet/diutil.h>
 #include <dcmtk/dcmjpeg/djdecode.h>
 
+#include <mia/2d/2dimageio.hh>
+
 NS_MIA_BEGIN
 
 using namespace std;
@@ -511,26 +513,14 @@ CDicomReader EXPORT_DICOM ugly_trick_writer_dcm_to_reader_dcm(CDicomWriter& writ
 	return CDicomReader(yeah);
 }
 
-
-EXPORT_DICOM const char * IDAcquisitionDate =   "AcquisitionDate";
-EXPORT_DICOM const char * IDAcquisitionNumber = "AcquisitionNumber";
-EXPORT_DICOM const char * IDImageType =         "ImageType";
-EXPORT_DICOM const char * IDInstanceNumber =    "InstanceNumber";
 EXPORT_DICOM const char * IDMediaStorageSOPClassUID= "MediaStorageSOPClassUID";
-EXPORT_DICOM const char * IDModality =          "Modality";
-EXPORT_DICOM const char * IDPatientOrientation ="PatientOrientation";
-EXPORT_DICOM const char * IDPatientPosition = "PatientPosition";
 EXPORT_DICOM const char * IDStudyDescription = "StudyDescription";
 EXPORT_DICOM const char * IDSamplesPerPixel = "IDSamplesPerPixel";
 EXPORT_DICOM const char * IDSeriesDescription = "SeriesDescription";
-EXPORT_DICOM const char * IDSeriesNumber = "SeriesNumber";
-EXPORT_DICOM const char * IDSliceLocation = "SliceLocation";
-EXPORT_DICOM const char * IDStudyID = "StudyID";
+
 EXPORT_DICOM const char * IDTestValue = "TestValue";
 EXPORT_DICOM const char * IDTransferSyntaxUID = "TransferSyntaxUID";
 EXPORT_DICOM const char * IDSOPClassUID = "SOPClassUID";
-EXPORT_DICOM const char * IDSmallestImagePixelValue = "SmallestImagePixelValue";
-EXPORT_DICOM const char * IDLargestImagePixelValue = "LargestImagePixelValue";
 
 
 NS_MIA_END

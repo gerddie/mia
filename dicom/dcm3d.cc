@@ -32,6 +32,7 @@
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/2d/2dimageio.hh>
 
 NS_BEGIN(IMAGEIO_3D_DICOM)
 
