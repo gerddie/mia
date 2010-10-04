@@ -205,7 +205,7 @@ C2DUBImage CSegFrame::get_section_masks(size_t n_sections) const
 	if (!m_image) 		
 		load_image(); 
 	C2DUBImage result = get_section_masks(m_image->get_size()); 
-	if (n_sections != m_sections.size()) {
+	if (n_sections != 0 && n_sections != m_sections.size()) {
 		const C2DFVector ray_a = m_star.m_directions[0]; 
 		
 		const double scale = n_sections / (2 * M_PI); 

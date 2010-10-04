@@ -93,6 +93,7 @@ int do_main( int argc, const char *argv[] )
 	string curves_filename("curves.txt"); 
 	string varcurves_filename("varcurves.txt"); 
 	
+	size_t n_sections = 0; 
 	size_t skip = 2; 
 	size_t reference = 20; 
 
@@ -103,7 +104,9 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( reference, "reference", 'r', "reference image", "refernce", false)); 
 	options.push_back(make_opt( curves_filename, "curves", 'c', "region average value curves", "curves", false));
 	options.push_back(make_opt( varcurves_filename, "varcurves", 'v', "region variation values", "varcurves", false));
-
+	options.push_back(make_opt( n_sections, "nsections", 'n', 
+				    "number of sections to use, 0=use as segmented", "nsections", false)); 
+	
 	options.parse(argc, argv);
 
 	CSegSetWithImages original(org_filename, true); 
@@ -122,8 +125,8 @@ int do_main( int argc, const char *argv[] )
 	vector<vector<SResult> > curves; 
 	vector<vector<SResult> > varcurves; 
 	
-	C2DUBImage org_mask = original_frames[reference].get_section_masks(); 
-	C2DUBImage reg_mask = registered_frames[reference].get_section_masks(); 
+	C2DUBImage org_mask = original_frames[reference].get_section_masks(n_sections); 
+	C2DUBImage reg_mask = registered_frames[reference].get_section_masks(n_sections); 
 	for (size_t i = skip; i < original_frames.size(); ++i)  {
 		auto stats_unregistered  = original_frames[i].get_stats(org_mask);
 		auto stats_registered    = registered_frames[i].get_stats(reg_mask);

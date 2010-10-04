@@ -176,7 +176,6 @@ BOOST_FIXTURE_TEST_CASE(segframe_transform, FrameTestRead)
 	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
 	BOOST_CHECK_EQUAL(xmldoc, testdoc);
 
-
 }
 
 
@@ -300,6 +299,15 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_mask_different, FrameTestRead)
 			BOOST_CHECK_EQUAL(section_mask(x,y), *t); 
 		}
 	
+	C2DUBImage section_mask2 = frame.get_section_masks(0); 
+	t = test_data; 
+	for (size_t y = 0; y < size.y; ++y) 
+		for (size_t x = 0; x < size.x; ++x, ++t) {
+			if (*t) 
+				BOOST_CHECK_EQUAL(section_mask2(x,y),1);
+			else 
+				BOOST_CHECK_EQUAL(section_mask2(x,y),0);
+		}
 	
 }
 
