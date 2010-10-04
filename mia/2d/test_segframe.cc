@@ -125,6 +125,8 @@ BOOST_FIXTURE_TEST_CASE(segframe_read2, FrameTestRead)
 }
 
 extern const char *testframe_shifted;
+#if 0 // shift should not be used 
+
 BOOST_FIXTURE_TEST_CASE(segframe_shift, FrameTestRead)
 {
 	init(testframe_init);
@@ -143,7 +145,7 @@ BOOST_FIXTURE_TEST_CASE(segframe_shift, FrameTestRead)
 
 
 }
-
+#endif
 
 BOOST_FIXTURE_TEST_CASE(segframe_transform, FrameTestRead)
 {
@@ -218,6 +220,89 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_mask, FrameTestRead)
 		BOOST_CHECK_EQUAL(*i, *t); 
 
 }
+
+
+BOOST_FIXTURE_TEST_CASE(test_frame_get_mask_different, FrameTestRead)
+{
+
+	CSegPoint2D center(7.5,7.5); 
+	float r = 4; 
+	CSegPoint2D d1(1.0,0); 
+	CSegPoint2D d2(0.0,-1.0); 
+	CSegPoint2D d3(-1.0,0.0); 
+	CSegStar star(center, r, d1, d2, d3); 
+	CSegSection::Points points; 
+	
+	for(size_t k = 0; k < 21; ++k) {
+		CSegPoint2D p(center.x + (r+2.0) * cos(k / 20.0 * 2 * M_PI), 
+			      center.y + (r+2.0) * sin(k / 20.0 * 2 * M_PI)); 
+		points.push_back(p); 
+	}
+	for(int k = 21;  k >= 0; --k) {
+		CSegPoint2D p(center.x + (r-2.0) * cos(k / 20.0 * 2 * M_PI), 
+			      center.y + (r-2.0) * sin(k / 20.0 * 2 * M_PI));
+		points.push_back(p); 
+	}
+
+	CSegFrame::Sections sections; 
+	sections.push_back(CSegSection("test", points));
+	
+	CSegFrame frame("testimage.@", star, sections);
+
+	C2DBounds size(16,16); 
+	P2DImage image(new C2DFImage(size)); 
+	save_image2d("testimage.@", image); 
+
+
+	C2DUBImage section_mask = frame.get_section_masks(8); 
+	
+
+	const unsigned char test_data[] = {
+		/*      0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 */
+		/*0*/	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		
+		/*1*/   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		
+		/*2*/   0, 0, 0, 0, 0, 6, 6, 6, 7, 0, 0, 0, 0, 0, 0, 0,
+		
+		/*3*/   0, 0, 0, 5, 6, 6, 6, 6, 7, 7, 7, 0, 0, 0, 0, 0,
+		
+		/*4*/   0, 0, 5, 5, 5, 6, 6, 6, 7, 7, 7, 7, 0, 0, 0, 0,
+
+		/*5*/   0, 0, 5, 5, 5, 5, 6, 6, 7, 7, 7, 8, 0, 0, 0, 0,
+
+		/*6*/   0, 5, 5, 5, 5, 5, 0, 0, 7, 7, 8, 8, 8, 0, 0, 0,
+		
+		/*7*/   0, 5, 5, 5, 5, 0, 0, 0, 0, 8, 8, 8, 8, 0, 0, 0,
+                /*                            x                      */   
+		/*8*/   0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0,
+		
+		/*9*/   0, 4, 4, 4, 4, 4, 0, 0, 2, 1, 1, 1, 1, 0, 0, 0,
+		
+		/*10*/  0, 0, 4, 4, 4, 4, 3, 3, 2, 2, 2, 1, 0, 0, 0, 0,
+		
+		/*11*/  0, 0, 4, 4, 4, 3, 3, 3, 2, 2, 2, 2, 0, 0, 0, 0,
+		
+		/*12*/  0, 0, 0, 4, 3, 3, 3, 3, 2, 2, 2, 0, 0, 0, 0, 0,
+		
+		/*13*/  0, 0, 0, 0, 0, 3, 3, 3, 2, 0, 0, 0, 0, 0, 0, 0,
+		
+		/*14*/  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		
+		/*15*/  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+	}; 
+	const unsigned char *t = test_data; 
+	for (size_t y = 0; y < size.y; ++y) 
+		for (size_t x = 0; x < size.x; ++x, ++t) {
+			cvdebug() << y<< ", " << x << ":" 
+				  << (int)section_mask(x,y) << ", " << (int)*t << "\n"; 
+			BOOST_CHECK_EQUAL(section_mask(x,y), *t); 
+		}
+	
+	
+}
+
 
 BOOST_FIXTURE_TEST_CASE(test_frame_get_mask_size, FrameTestRead)
 {
@@ -373,9 +458,7 @@ const char *testframe_init = "<?xml version=\"1.0\"?>\n<test>"
 const char *testframe_shifted = "<?xml version=\"1.0\"?>\n<test>"
 	"<frame image=\"newname\">"
 	"<star y=\"116\" x=\"108\" r=\"21\">"
-	"<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"0\"/>"
+	"<point y=\"0.894427\" x=\"0.447214\"/><point y=\"0.447214\" x=\"0.894427\"/><point y=\"1\" x=\"0\"/>"
 	"</star>"
 	"<section color=\"white\">"
 	"<point y=\"18\" x=\"9\"/>"

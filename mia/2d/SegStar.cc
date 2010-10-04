@@ -40,7 +40,8 @@ CSegStar::CSegStar()
 {
 }
 
-CSegStar::CSegStar(const CSegPoint2D& center, float r, const CSegPoint2D& d1, const CSegPoint2D& d2, const CSegPoint2D& d3):
+CSegStar::CSegStar(const CSegPoint2D& center, float r, const CSegPoint2D& d1, 
+		   const CSegPoint2D& d2, const CSegPoint2D& d3):
 	m_center(center),
 	m_radius(r)
 {
@@ -87,12 +88,34 @@ void CSegStar::shift(const C2DFVector& delta)
 
 void CSegStar::transform(const C2DTransformation& t)
 {
+	// in theory one should evaluate the center as mean of the 
+	// ray points (at least for non-rigid transformations)
+
+	C2DFVector old_center = m_center; 
 	m_center.transform(t); 
+	// transform the rays 
+	for (size_t i = 0; i < 3; ++i) {
+		C2DFVector help = t(old_center + m_radius * m_directions[i]) - m_center;
+		float n =  help.norm(); 
+		m_directions[i].x = help.x / n; 
+		m_directions[i].y = help.y / n; 
+	}
 }
 
 void CSegStar::inv_transform(const C2DTransformation& t)
 {
+	C2DFVector old_center = m_center; 
 	m_center.inv_transform(t); 
+	// transform the rays 
+	for (size_t i = 0; i < 3; ++i) {
+		C2DFVector help = old_center + m_radius * m_directions[i]; 
+		CSegPoint2D h(help.x, help.y); 
+		h.inv_transform(t); 
+		help = h - m_center; 
+		float n =  help.norm(); 
+		m_directions[i].x = help.x / n; 
+		m_directions[i].y = help.y / n; 
+	}
 }
 
 void CSegStar::write(xmlpp::Node& node) const

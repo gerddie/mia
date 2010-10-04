@@ -32,7 +32,7 @@ float EXPORT_2D angle(const C2DFVector& ray_a, const C2DFVector& ray_b)
 		return 0.0; 
 	
 	const double ddot = dot(ray_a, ray_b); 
-	return (cross(ray_a, ray_b) > 0.0 ) ? acos(ddot / norm): - acos(ddot / norm);
+	return (cross(ray_a, ray_b) >= 0.0 ) ? acos(ddot / norm): 2*M_PI - acos(ddot / norm);
 }
 
 float EXPORT_2D angle(const C2DFVector& a, const C2DFVector& b, const C2DFVector& s)

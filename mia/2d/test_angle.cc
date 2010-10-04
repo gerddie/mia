@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE( test_some_angles )
 	C2DFVector a(1.0, 0.0); 
 	
 	for (size_t i= 0; i < 20; ++i) {
-		const double ang = i * 2 * M_PI / 360.0; 
+		const double ang = i * 2 * M_PI / 180.0; 
 		C2DFVector b(cos(ang), sin(ang)); 
 		BOOST_CHECK_CLOSE(angle(a, b, s), ang, 0.1); 
 	}
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE( test_some_other_angles )
 	C2DFVector a(2.0, 1.0); 
 	
 	for (size_t i= 0; i < 20; ++i) {
-		const double ang = i * 2 * M_PI / 360.0; 
+		const double ang = i * 2 * M_PI / 180.0; 
 		C2DFVector b(cos(ang) + s.x, sin(ang) + s.y) ; 
 		BOOST_CHECK_CLOSE(angle(a, b, s), ang, 0.1); 
 	}
