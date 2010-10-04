@@ -1,0 +1,64 @@
+/* -*- mona-c++  -*-
+ *
+ * Copyright (c) Madrid 2010
+ * BIT, ETSI Telecomunicacion, UPM
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+
+#include <mia/internal/autotest.hh>
+#include <cmath>
+
+#include <mia/2d/angle.hh>
+
+
+BOOST_AUTO_TEST_CASE( test_some_angles )
+{
+	C2DFVector s(0.0, 0.0); 
+	C2DFVector a(1.0, 0.0); 
+	
+	for (size_t i= 0; i < 20; ++i) {
+		const double ang = i * 2 * M_PI / 360.0; 
+		C2DFVector b(cos(ang), sin(ang)); 
+		BOOST_CHECK_CLOSE(angle(a, b, s), ang, 0.1); 
+	}
+}
+
+BOOST_AUTO_TEST_CASE( test_some_other_angles )
+{
+	C2DFVector s(1.0, 1.0); 
+	C2DFVector a(2.0, 1.0); 
+	
+	for (size_t i= 0; i < 20; ++i) {
+		const double ang = i * 2 * M_PI / 360.0; 
+		C2DFVector b(cos(ang) + s.x, sin(ang) + s.y) ; 
+		BOOST_CHECK_CLOSE(angle(a, b, s), ang, 0.1); 
+	}
+}
+
+BOOST_AUTO_TEST_CASE( test_sero_length )
+{
+	C2DFVector s(1.0, 1.0); 
+	C2DFVector a(2.0, 1.0); 
+	C2DFVector b(2.0, 2.0); 
+	
+	BOOST_CHECK_EQUAL(angle(a, b, a), 0.0); 
+	BOOST_CHECK_EQUAL(angle(a, b, b), 0.0); 
+}
+
+
+

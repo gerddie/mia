@@ -1,4 +1,5 @@
 SET(MIA2D_SRC_BASE
+  angle.cc
   2DDatafield.cc
   2DVectorfield.cc
   2dfilter.cc
@@ -70,6 +71,7 @@ ENDIF(ITPP_FOUND)
 SET(MIA2D_SRC ${MIA2D_SRC_BASE} ${MIA2D_FFTW_CODE} ${ITPP_SRC})
 
 SET(MIA2D_HEADERS_BASE
+  angle.hh
   2DDatafield.hh 2DDatafield.cxx
   2dfilter.hh
   2DImage.hh
@@ -158,6 +160,7 @@ MACRO(TEST_2DMIA file libs)
   ADD_TEST(2d-${file} test-2d-${file})
 ENDMACRO(TEST_2DMIA file)
 
+TEST_2DMIA(angle mia2d)
 TEST_2DMIA(2ddatafield mia2dtest)
 TEST_2DMIA(2dimage mia2dtest)
 TEST_2DMIA(2dparam mia2dtest)
