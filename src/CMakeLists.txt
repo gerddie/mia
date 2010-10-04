@@ -45,6 +45,7 @@ DEFEXE(2dsegmentcropbox       mia2dmyocardperf )
 DEFEXE(2dseghausdorff         mia2dmyocardperf )
 DEFEXE(2dsegcompare           mia2dmyocardperf )
 DEFEXE(2dgroundtruthreg       mia2dmyocardperf )
+DEFEXE(2dseries2sets          mia2dmyocardperf )
 
 DEFCHKEXE(3dlerp mia3d )
 
