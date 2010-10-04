@@ -94,11 +94,14 @@ public:
 
 	C2DUBImage get_section_masks(const C2DBounds& size) const; 
 	C2DUBImage get_section_masks() const; 
+	C2DUBImage get_section_masks(size_t n_sections) const; 
 
 	SectionsStats get_stats(const C2DUBImage& mask) const; 
 	SectionsStats get_stats() const; 
 
 private:
+	void load_image() const; 
+
 	bool m_has_star;
 	CSegStar m_star;
 	Sections m_sections;

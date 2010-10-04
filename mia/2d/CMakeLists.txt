@@ -243,6 +243,7 @@ TEST_2DMIA(correlation_weight mia2dmyocardperf)
 
 IF(XMLPP_FOUND)
   TEST_2DMIA(segmentation mia2dmyocardperf)
+  TEST_2DMIA(segframe mia2dmyocardperf)
   TEST_2DMIA(segpoint mia2dmyocardperf)
 ENDIF(XMLPP_FOUND)
 

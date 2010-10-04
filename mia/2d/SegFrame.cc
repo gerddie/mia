@@ -5,6 +5,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/2d/2dimageio.hh>
+#include <mia/2d/angle.hh>
 
 #include <libxml++/libxml++.h>
 #include <boost/filesystem.hpp> 
@@ -185,15 +186,43 @@ C2DUBImage CSegFrame::get_section_masks(const C2DBounds& size) const
 	return result; 
 }
 
+void CSegFrame::load_image() const
+{
+	m_image = load_image2d(m_filename); 
+	if (!m_image) 
+		THROW(runtime_error, "unable to find image file '" << m_filename << "'");
+}
 
 C2DUBImage CSegFrame::get_section_masks() const
 {
-	if (!m_image) {
-		m_image = load_image2d(m_filename); 
-		if (!m_image) 
-			THROW(runtime_error, "unable to find image file '" << m_filename << "'");
-	}
+	if (!m_image)
+		load_image(); 
 	return get_section_masks(m_image->get_size()); 
+}
+
+C2DUBImage CSegFrame::get_section_masks(size_t n_sections) const
+{
+	if (!m_image) 		
+		load_image(); 
+	C2DUBImage result = get_section_masks(m_image->get_size()); 
+	if (n_sections != m_sections.size()) {
+		const C2DFVector ray_a = m_star.m_directions[0]; 
+		
+		const double scale = n_sections / (2 * M_PI); 
+		
+		// make a mask and re-run 
+		auto i = result.begin(); 
+		for (size_t y = 0; y < result.get_size().y; ++y)  {
+			for (size_t x = 0; x < result.get_size().x; ++x, ++i)  {
+				if (*i) {
+					const C2DFVector ray_b(x - m_star.m_center.x, y - m_star.m_center.y); 
+					const double a = angle(ray_a, ray_b);
+					*i = (unsigned char) (a * scale + 1.0); 
+				}
+			}
+		}
+	}
+	return result; 
 }
 
 struct EvalMaskStat: public TFilter<CSegFrame::SectionsStats> {
@@ -230,14 +259,11 @@ private:
 
 CSegFrame::SectionsStats CSegFrame::get_stats(const C2DUBImage& mask) const
 {
-	if (!m_image) {
-		m_image = load_image2d(m_filename); 
-		if (!m_image) 
-			THROW(runtime_error, "unable to find image file '" << m_filename << "'");
-	}
+	if (!m_image)
+		load_image(); 
 	if (mask.get_size() != m_image->get_size()) 
 		THROW(invalid_argument, "Mask image and data image are of different size");
-
+	
 	return ::mia::filter(EvalMaskStat(mask), *m_image);  
 
 
