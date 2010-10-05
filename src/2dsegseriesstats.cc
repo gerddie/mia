@@ -154,7 +154,7 @@ int do_main( int argc, const char *argv[] )
 			v_row[k].hand = stats_handsegmented[k].second; 
 		}
 		curves.push_back(c_row); 
-		varcurves.push_back(c_row);
+		varcurves.push_back(v_row);
 	}
 
 	
