@@ -130,11 +130,15 @@ int do_main( int argc, const char *argv[] )
 	for (size_t i = skip; i < original_frames.size(); ++i)  {
 		auto stats_unregistered  = original_frames[i].get_stats(org_mask);
 		auto stats_registered    = registered_frames[i].get_stats(reg_mask);
-		auto stats_handsegmented = original_frames[i].get_stats();
+		auto stats_handsegmented = original_frames[i].get_stats(n_sections); 
 
 		if (stats_unregistered.size() != stats_registered.size() ||
 		    stats_registered.size() != stats_handsegmented.size()) {
-			THROW(runtime_error, "Frame " << i << " is not properly segmented");  
+			THROW(runtime_error, "Frame " << i << " is not properly segmented,"
+			      << " got org:" << stats_unregistered.size() 
+			      << " reg:" << stats_registered.size() 
+			      << " hand:" << stats_handsegmented.size()
+			      );  
 		}
 			
 		vector<SResult> c_row(stats_unregistered.size()); 

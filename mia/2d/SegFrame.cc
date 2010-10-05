@@ -216,8 +216,10 @@ C2DUBImage CSegFrame::get_section_masks(size_t n_sections) const
 			for (size_t x = 0; x < result.get_size().x; ++x, ++i)  {
 				if (*i) {
 					const C2DFVector ray_b(x - m_star.m_center.x, y - m_star.m_center.y); 
-					const double a = angle(ray_a, ray_b);
-					*i = (unsigned char) (a * scale + 1.0); 
+					double a = scale * angle(ray_a, ray_b);
+					if (a >= n_sections) 
+						a -= n_sections; 
+					*i = (unsigned char) (a + 1.0); 
 				}
 			}
 		}
@@ -269,14 +271,14 @@ CSegFrame::SectionsStats CSegFrame::get_stats(const C2DUBImage& mask) const
 
 }
 
-CSegFrame::SectionsStats CSegFrame::get_stats() const
+CSegFrame::SectionsStats CSegFrame::get_stats(size_t n_sections) const
 {
 	if (!m_image) {
 		m_image = load_image2d(m_filename); 
 		if (!m_image) 
 			THROW(runtime_error, "unable to find image file '" << m_filename << "'");
 	}
-	C2DUBImage mask = get_section_masks(m_image->get_size()); 
+	C2DUBImage mask = get_section_masks(n_sections); 
 	return get_stats(mask); 
 }
 
