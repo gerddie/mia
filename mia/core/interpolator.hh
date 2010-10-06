@@ -206,6 +206,23 @@ public:
 
 double  EXPORT_CORE integrate2(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2, double n, double x0, double L);
 
+inline void mirror_boundary_conditions(std::vector<int>& index, int width, 
+				       int width2)
+{
+	// skip the cases where nothing happens
+	if (index[0] >= 0 && index[index.size()-1] < width)
+		return; 
+	for (size_t k = 0; k < index.size(); k++) {
+		int idx = (index[k] < 0) ? -index[k] : index[k]; 
+		
+		idx = (width == 1) ? (0) : ((idx < width2) ? idx : idx % width2);
+		if (width <= idx) {
+			idx = width2 - idx;
+		}
+		index[k] = idx; 
+	}
+}
+
 
 NS_MIA_END
 

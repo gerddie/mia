@@ -267,23 +267,6 @@ T1DConvoluteInterpolator<T>::initial_coeff(const coeff_vector& coeff,
 	return(sum / (1.0 - zn * zn));
 }
 
-inline void mirror_boundary_conditions(std::vector<int>& index, int width, 
-				       int width2)
-{
-	// skip the cases where nothing happens
-	if (index[0] >= 0 && index[index.size()-1] < width)
-		return; 
-	for (size_t k = 0; k < index.size(); k++) {
-		int idx = (index[k] < 0) ? -index[k] : index[k]; 
-		
-		idx = (width == 1) ? (0) : ((idx < width2) ? idx : idx % width2);
-		if (width <= idx) {
-			idx = width2 - idx;
-		}
-		index[k] = idx; 
-	}
-}
-
 template <typename T>
 typename T1DConvoluteInterpolator<T>::TCoeff1D::value_type 
 T1DConvoluteInterpolator<T>::initial_anti_coeff(const coeff_vector& coeff, 

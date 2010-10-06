@@ -485,6 +485,49 @@ typename T2DConvoluteInterpolator<T>::TCoeff2D::value_type T2DConvoluteInterpola
 }
 
 template <typename T>
+T T2DConvoluteInterpolator<T>::evaluate(const std::vector<double>& xweight,
+					const std::vector<double>& yweight,
+					const std::vector<int>&    xindex, 
+					const std::vector<int>&    yindex
+					) const
+{
+	typedef typename TCoeff2D::value_type U; 
+
+	U result = U();
+	
+	// give the compiler some chance to optimize and unroll the 
+	// interpolation loop by creating some fixed size calls  
+	switch (_M_kernel->size()) {
+	case 2: result = add_2d<TCoeff2D,2>::apply(_M_coeff, xweight, yweight, 
+					    xindex, yindex); break; 
+	case 3: result = add_2d<TCoeff2D,3>::apply(_M_coeff, xweight, yweight, 
+					    xindex, yindex); break; 
+	case 4: result = add_2d<TCoeff2D,4>::apply(_M_coeff, xweight, yweight, 
+					    xindex, yindex); break; 
+	case 5: result = add_2d<TCoeff2D,5>::apply(_M_coeff, xweight, yweight, 
+					    xindex, yindex); break; 
+	case 6: result = add_2d<TCoeff2D,6>::apply(_M_coeff, xweight, yweight, 
+					    xindex, yindex); break; 
+	default: {
+		/* perform interpolation */
+		for (size_t y = 0; y < _M_kernel->size(); ++y) {
+			U rx = U();
+			const typename  TCoeff2D::value_type *p = &_M_coeff(0, yindex[y]);
+			for (size_t x = 0; x < _M_kernel->size(); ++x) {
+				rx += xweight[x] * p[xindex[x]];
+			}
+			result += yweight[y] * rx; 
+		}
+	}
+	} // end switch 
+	
+	bounded<U, T>::apply(result, _M_min, _M_max);
+	return round_to<U, T>::value(result); 
+}
+
+
+
+template <typename T>
 T  T2DConvoluteInterpolator<T>::operator () (const C2DFVector& x) const
 {
 	typedef typename TCoeff2D::value_type U; 

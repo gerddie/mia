@@ -142,6 +142,10 @@ public:
 	T2DConvoluteInterpolator(const T2DDatafield<T>& image, std::shared_ptr<CBSplineKernel > kernel);
 	~T2DConvoluteInterpolator();
 	T  operator () (const C2DFVector& x) const;
+
+	T evaluate(const std::vector<double>& xweight, const std::vector<double>& yweight,
+		   const std::vector<int>&    xindex,  const std::vector<int>&    yindex) const; 
+
 	T2DVector<T> derivative_at(const C2DFVector& x) const;
 
 	typedef T2DDatafield< typename coeff_map< T >::coeff_type > TCoeff2D;

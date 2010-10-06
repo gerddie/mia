@@ -31,24 +31,6 @@
 
 NS_MIA_BEGIN
 
-inline void mirror_boundary_conditions(std::vector<int>& index, int width, 
-				       int width2)
-{
-	// skip the cases where nothing happens
-	if (index[0] >= 0 && index[index.size()-1] < width)
-		return; 
-	for (size_t k = 0; k < index.size(); k++) {
-		int idx = (index[k] < 0) ? -index[k] : index[k]; 
-		
-		idx = (width == 1) ? (0) : ((idx < width2) ? idx : idx % width2);
-		if (width <= idx) {
-			idx = width2 - idx;
-		}
-		index[k] = idx; 
-	}
-}
-
-
 using boost::lambda::_1; 
 using namespace std; 
 C1DScalarFixed::C1DScalarFixed(const CBSplineKernel& kernel, size_t in_size, size_t out_size):

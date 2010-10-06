@@ -89,6 +89,8 @@ public:
 
 	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
 	virtual double get_divcurl_cost(double wd, double wr) const; 
+
+	C2DFVector on_grid(const mia::C2DBounds& x) const; 
 private:
 	void run_downscaler(C1DScalarFixed& scaler, vector<double>& out_buffer)const; 
 	virtual C2DTransformation *do_clone() const;
@@ -101,8 +103,13 @@ private:
 	mutable C2DFVector _M_scale;
 	mutable C2DFVector _M_inv_scale;
 	mutable bool _M_interpolator_valid;
-	mutable std::shared_ptr<T2DInterpolator<C2DFVector> >  _M_interpolator;
+	mutable std::shared_ptr<T2DConvoluteInterpolator<C2DFVector> >  _M_interpolator;
 	mutable std::shared_ptr<C2DPPDivcurlMatrix > _M_divcurl_matrix; 
+	mutable std::vector<std::vector<double> > _M_x_weights; 
+	mutable std::vector<std::vector<int> > _M_x_indices; 
+	mutable std::vector<std::vector<double> > _M_y_weights; 
+	mutable std::vector<std::vector<int> > _M_y_indices; 
+
 
 };
 
