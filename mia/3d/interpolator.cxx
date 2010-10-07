@@ -320,6 +320,7 @@ T3DConvoluteInterpolator<T>::initial_coeff(const coeff_vector& coeff,
 	return(sum / (1.0 - zn * zn));
 }
 
+#if 0
 inline void mirror_boundary_conditions(std::vector<int>& index, size_t width, size_t width2)
 {
 	for (size_t k = 0; k < index.size(); k++) {
@@ -331,6 +332,7 @@ inline void mirror_boundary_conditions(std::vector<int>& index, size_t width, si
 		}
 	}
 }
+#endif
 
 template <typename T>
 typename T3DConvoluteInterpolator<T>::TCoeff3D::value_type 
