@@ -47,7 +47,8 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range,
 	_M_x_weights(_M_range.x), 
 	_M_x_indices(_M_range.x), 
 	_M_y_weights(_M_range.y),
-	_M_y_indices(_M_range.y)
+	_M_y_indices(_M_range.y), 
+	_M_grid_valid(false)
 
 {
 	if (_M_ipf->get_kernel())
@@ -70,7 +71,8 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DSplineTransformation& 
 	_M_x_weights(_M_range.x), 
 	_M_x_indices(_M_range.x), 
 	_M_y_weights(_M_range.y),
-	_M_y_indices(_M_range.y)
+	_M_y_indices(_M_range.y),
+	_M_grid_valid(false)
 {
 }
 
@@ -83,7 +85,8 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, P2DInte
 	_M_x_weights(_M_range.x), 
 	_M_x_indices(_M_range.x), 
 	_M_y_weights(_M_range.y),
-	_M_y_indices(_M_range.y)
+	_M_y_indices(_M_range.y),
+	_M_grid_valid(false)
 {
 	TRACE_FUNCTION;
 	assert(_M_range.x > 0);
@@ -125,26 +128,7 @@ void C2DSplineTransformation::reinit() const
 		assert(pinterpolator); 
 		_M_interpolator.reset(pinterpolator);
 		_M_interpolator_valid = true;
-		cvdebug() << "shift=" << _M_shift<< ", Scale: "<< _M_scale << "InvScale = " << _M_inv_scale << "\n";
-		
-		// pre-evaluateof fixed-grid coefficients
-		auto kernel = _M_ipf->get_kernel(); 
-		assert(kernel); 
-		size_t n_elms = kernel->size(); 
-		std::vector<int> indices(n_elms); 
-		std::vector<double> weights(n_elms); 
-		for (size_t i = 0; i < _M_range.x; ++i) {
-			(*kernel)(i * _M_scale.x + _M_shift, weights, indices); 
-			_M_x_weights[i] = weights; 
-			mirror_boundary_conditions(indices, _M_range.x, 2 * _M_range.x - 2);
-			_M_x_indices[i] = indices; 
-		}
-		for (size_t i = 0; i < _M_range.y; ++i) {
-			(*kernel)(i * _M_scale.y +  _M_shift, weights, indices); 
-			_M_y_weights[i] = weights; 
-			mirror_boundary_conditions(indices, _M_range.y, 2 * _M_range.y - 2);
-			_M_y_indices[i] = indices; 
-		}
+
 	}
 }
 
@@ -243,6 +227,7 @@ bool C2DSplineTransformation::refine()
 
 	set_coefficients(coeffs);
 	reinit();
+	_M_grid_valid = false; 
 	return true; 
 }
 
@@ -352,9 +337,36 @@ float C2DSplineTransformation::get_max_transform() const
 
 }
 
+void C2DSplineTransformation::init_grid()const
+{
+	if (!_M_grid_valid) {
+		// pre-evaluateof fixed-grid coefficients
+		auto kernel = _M_ipf->get_kernel(); 
+		assert(kernel); 
+		size_t n_elms = kernel->size(); 
+		std::vector<int> indices(n_elms); 
+		std::vector<double> weights(n_elms); 
+		for (size_t i = 0; i < _M_range.x; ++i) {
+			(*kernel)(i * _M_scale.x + _M_shift, weights, indices); 
+			_M_x_weights[i] = weights; 
+			mirror_boundary_conditions(indices, _M_range.x, 2 * _M_range.x - 2);
+			_M_x_indices[i] = indices; 
+		}
+		for (size_t i = 0; i < _M_range.y; ++i) {
+			(*kernel)(i * _M_scale.y +  _M_shift, weights, indices); 
+			_M_y_weights[i] = weights; 
+			mirror_boundary_conditions(indices, _M_range.y, 2 * _M_range.y - 2);
+			_M_y_indices[i] = indices; 
+		}
+
+		_M_grid_valid = true; 
+	}
+}
+
 C2DTransformation::const_iterator C2DSplineTransformation::begin() const
 {
 	reinit();
+	init_grid(); 
 	return C2DTransformation::const_iterator(new iterator_impl(C2DBounds(0,0), get_size(), *this));
 }
 
@@ -417,7 +429,7 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 		
 		// run y-scaling 
 		FCopyX copy_x; 
-		FCopyY copy_y; 
+//		FCopyY copy_y; 
 		for (size_t ix = 0; ix < gradient.get_size().x; ++ix) {
 			gradient.get_data_line_y(ix, in_buffer);
 #ifndef AM_I_STUPID // valgrind complains using the transform code ?!
@@ -530,6 +542,7 @@ C2DFVector C2DSplineTransformation::on_grid(const C2DBounds& x) const
 {
 	assert(x.x < _M_range.x); 
 	assert(x.y < _M_range.y); 
+	assert(_M_grid_valid); 
 	return _M_interpolator->evaluate(_M_x_weights[x.x], _M_y_weights[x.y],
 					 _M_x_indices[x.x], _M_y_indices[x.y]);
 }

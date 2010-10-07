@@ -92,6 +92,7 @@ public:
 
 	C2DFVector on_grid(const mia::C2DBounds& x) const; 
 private:
+	void init_grid()const; 
 	void run_downscaler(C1DScalarFixed& scaler, vector<double>& out_buffer)const; 
 	virtual C2DTransformation *do_clone() const;
 	C2DBounds _M_range;
@@ -109,7 +110,7 @@ private:
 	mutable std::vector<std::vector<int> > _M_x_indices; 
 	mutable std::vector<std::vector<double> > _M_y_weights; 
 	mutable std::vector<std::vector<int> > _M_y_indices; 
-
+	mutable bool _M_grid_valid; 
 
 };
 
