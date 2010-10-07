@@ -521,12 +521,12 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_fea
 
 int C2DPerfusionAnalysis::get_RV_peak_idx() const
 {
-	return impl->_M_cls.get_RV_idx();
+	return impl->_M_cls.get_RV_peak();
 }
 
 int C2DPerfusionAnalysis::get_LV_peak_idx() const
 {
-	return impl->_M_cls.get_LV_idx();
+	return impl->_M_cls.get_LV_peak();
 }
 
 
