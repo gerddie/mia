@@ -244,7 +244,7 @@ BOOST_AUTO_TEST_CASE( test_ica_with_zero_mean )
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
 
 
-	ica.run(3);
+	ica.run(3, vector<vector<float> >());
 
 	for (int i = 0; i < rows; ++i) {
 		vector<float> mixed = ica.get_mix(i);
@@ -271,7 +271,7 @@ BOOST_AUTO_TEST_CASE( test_ica_with_some_mean )
 	CICAAnalysis ica(rows, elms);
 	for (int i = 0; i < rows; ++i)
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
-	ica.run(3);
+	ica.run(3, vector<vector<float> >());
 	for (int i = 0; i < rows; ++i) {
 		vector<float> mixed = ica.get_mix(i);
 		for (int k = 0; k < elms; ++k) {
@@ -298,7 +298,7 @@ BOOST_AUTO_TEST_CASE( test_ica_with_some_mean_unknown )
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
 
 
-	ica.run(4);
+	ica.run(4, vector<vector<float> >());
 
 	for (int i = 0; i < rows; ++i) {
 		vector<float> mixed = ica.get_mix(i);
@@ -328,7 +328,7 @@ BOOST_AUTO_TEST_CASE( test_ica_with_some_mean_unknown_SYMM )
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
 
 
-	ica.run(4);
+	ica.run(4, vector<vector<float> >());
 
 	for (int i = 0; i < rows; ++i) {
 		vector<float> mixed = ica.get_mix(i);
@@ -359,7 +359,7 @@ BOOST_AUTO_TEST_CASE( test_ica_with_some_mean_unknown_normalized_mix )
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
 
 
-	ica.run(4);
+	ica.run(4, vector<vector<float> >());
 	vector<float>  mean = ica.normalize_Mix();
 
 
@@ -389,7 +389,7 @@ BOOST_AUTO_TEST_CASE( test_ica_with_some_mean_unknown_normalized )
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
 
 
-	ica.run(4);
+	ica.run(4, vector<vector<float> >());
 	ica.normalize_ICs();
 
 	for (int i = 0; i < rows; ++i) {
@@ -441,7 +441,7 @@ BOOST_AUTO_TEST_CASE( test_ica_access_failtures )
 
 	for (int i = 0; i < rows; ++i)
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
-	ica.run(4);
+	ica.run(4, vector<vector<float> >());
 
 	BOOST_CHECK_THROW(ica.get_feature_row(ncomponents), invalid_argument);
 	BOOST_CHECK_THROW(ica.get_mix_series(ncomponents), invalid_argument);

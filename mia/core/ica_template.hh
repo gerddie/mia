@@ -79,7 +79,8 @@ public:
 	  Runs the ICA 
 	  \param ncomponents retained components 
 	*/
-	bool run(size_t ncomponents, bool strip_mean, bool ica_normalize);
+	bool run(size_t ncomponents, bool strip_mean, bool ica_normalize, 
+		 std::vector<std::vector<float> >  guess = std::vector<std::vector<float> >());
 
 
 	size_t run_auto(int nica, int min_ica, float corr_thresh); 

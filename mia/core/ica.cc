@@ -91,19 +91,30 @@ void CICAAnalysis::set_approach(int approach)
 	impl->m_approach = approach;
 }
 
-bool CICAAnalysis::run(size_t nica)
+bool CICAAnalysis::run(size_t nica, vector<vector<float> > guess)
 {
 	TRACE_FUNCTION;
 	assert(impl);
-
+	
 
 	itpp::Fast_ICA fastICA(impl->m_Signal);
+	
+	
+	
 
 	fastICA.set_nrof_independent_components(nica);
 	fastICA.set_non_linearity(  FICA_NONLIN_TANH  );
 	fastICA.set_approach( impl->m_approach );
 	if (impl->m_max_iterations > 0)
 		fastICA.set_max_num_iterations(impl->m_max_iterations);
+
+	if (!guess.empty()) {
+		itpp::mat mguess(impl->m_Signal.rows(), guess.size()); 
+		for (size_t c = 0; c < guess.size(); ++c) 
+			for (size_t r = 0; r < guess.size(); ++r) 
+				mguess(r,c) = guess[c][r]; 
+		fastICA.set_init_guess(mguess); 
+	}
 
 	bool result = fastICA.separate();
 
@@ -116,15 +127,12 @@ bool CICAAnalysis::run(size_t nica)
 	return result; 
 }
 
-
-
-
 void CICAAnalysis::run_auto(int nica, int min_ica, float corr_thresh)
 {
 	TRACE_FUNCTION;
 	assert(impl);
 
-	std::shared_ptr<itpp::Fast_ICA > fastICA( new itpp::Fast_ICA(impl->m_Signal));
+	std::unique_ptr<itpp::Fast_ICA > fastICA( new itpp::Fast_ICA(impl->m_Signal));
 
 	float corr = 1.0;
 	do {

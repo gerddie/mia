@@ -234,7 +234,7 @@ P2DTransformation C2DRigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 			apply(*src_scaled, *ref_scaled, *transform, minimizers[_M_minimizer].fmin);
 
 		auto params = transform->get_parameters(); 
-		cvmsg() << "\nParams:";
+		cvinfo() << "\nParams:";
 		for (auto i = params.begin(); i != params.end(); ++i) 
 			cverb << *i << " "; 
 		cverb << "\n"; 
@@ -256,7 +256,7 @@ C2DRegGradientProblem::C2DRegGradientProblem(const C2DImage& model, const C2DIma
 
 P2DImage C2DRegGradientProblem::apply(const DoubleVector& x)
 {
-	cvmsg() << "\nParams:";
+	cvinfo() << "\nParams:";
 	for (auto i = x.begin(); i != x.end(); ++i) 
 		cverb << *i << " "; 
 	cverb << "\n"; 
@@ -333,7 +333,7 @@ C2DRegProblem::C2DRegProblem(const C2DImage& model, const C2DImage& reference, C
 
 double  C2DRegProblem::do_f(const DoubleVector& x)
 {
-	cvmsg() << "\nParams:";
+	cvinfo() << "\nParams:";
 	for (auto i = x.begin(); i != x.end(); ++i) 
 		cverb << *i << " "; 
 	cverb << "\n"; 

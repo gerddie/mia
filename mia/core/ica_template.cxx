@@ -72,10 +72,11 @@ TDataSeriesICA<Data>::~TDataSeriesICA()
 }
 
 template <class Data> 
-bool TDataSeriesICA<Data>::run(size_t ncomponents, bool strip_mean, bool ica_normalize)
+bool TDataSeriesICA<Data>::run(size_t ncomponents, bool strip_mean, bool ica_normalize, 
+			       std::vector<std::vector<float> >  guess )
 {
 	TRACE_FUNCTION; 
-	bool result = m_analysis.run(ncomponents);
+	bool result = m_analysis.run(ncomponents, guess);
 	if (result) {
 		if (strip_mean)
 			this->normalize_Mix();

@@ -57,6 +57,7 @@ struct C2DPerfusionAnalysisImpl {
 	void save_feature(const string& base, const string& feature, const C2DImage& image)const; 
 	P2DImage get_rvlv_delta_from_feature(const string& save_features)const; 
 	P2DImage get_rvlv_delta_from_peaks(const string& save_features)const; 
+	vector<vector<float> > create_guess(size_t rows); 
 
 	size_t _M_components;
 	bool _M_normalize;  
@@ -68,6 +69,7 @@ struct C2DPerfusionAnalysisImpl {
 	CSlopeClassifier _M_cls; 
 	size_t _M_length; 
 	int _M_ica_approach; 
+	bool _M_use_guess_model; 
 };
 
 
@@ -81,6 +83,11 @@ C2DPerfusionAnalysis::C2DPerfusionAnalysis(size_t components, bool normalize,
 C2DPerfusionAnalysis::~C2DPerfusionAnalysis()
 {
 	delete impl; 
+}
+
+void C2DPerfusionAnalysis::set_use_guess_model()
+{
+	impl->_M_use_guess_model = true; 
 }
 
 bool C2DPerfusionAnalysis::has_periodic() const
@@ -131,7 +138,8 @@ C2DPerfusionAnalysisImpl::C2DPerfusionAnalysisImpl(size_t components,
 	_M_meanstrip(meanstrip),
 	_M_max_iterations(0),
 	_M_length(0), 
-	_M_ica_approach(FICA_APPROACH_DEFL)
+	_M_ica_approach(FICA_APPROACH_DEFL), 
+	_M_use_guess_model(false)
 {
 }
 
@@ -206,6 +214,29 @@ vector<C2DFImage> C2DPerfusionAnalysisImpl::get_references() const
 	return result; 
 }
 
+vector<vector<float> > C2DPerfusionAnalysisImpl::create_guess(size_t rows)
+{
+	vector<vector<float> > result(3); 
+	
+	float rv_shift = 0.25 * rows;
+	float lv_shift = 0.4 * rows;
+
+	vector<float> lv_slope(rows); 
+	vector<float> rv_slope(rows); 
+	vector<float> perf_slope(rows); 
+	for (size_t x = 0; x < rows; ++x) {
+		rv_slope[x] = (tanh(12 * x /rows - 0.05 * rows) +   
+			       4.0 * exp(-(x-rv_shift) * (x-rv_shift) / rows) - 1)/5.0;
+		lv_slope[x] = (tanh(12 * x /rows - 0.05 * rows) +   
+			       4.0 * exp(-(x-lv_shift) * (x-lv_shift) / rows) - 1)/5.0;
+		perf_slope[x] = tanh(6 * x /rows - 0.05 * rows) / 5.0; 
+	}
+	result[0] = rv_slope; 
+	result[1] = lv_slope; 
+	result[2] = perf_slope; 
+	return result; 
+}
+
 bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series) 
 {
 	_M_series = series; 
@@ -217,10 +248,15 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 	_M_image_size = series[0].get_size(); 
 	bool has_one = false; 
 	unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(series, false));
+
+	vector<vector<float> > guess; 
+	if (_M_use_guess_model) 
+		guess = create_guess(series.size()); 
 	if (_M_components > 0) {
 		ica->set_max_iterations(_M_max_iterations);
 		ica->set_approach(_M_ica_approach); 
-		if (!ica->run(_M_components, _M_meanstrip, _M_normalize) && 
+			
+		if (!ica->run(_M_components, _M_meanstrip, _M_normalize, guess) && 
 		    (_M_ica_approach == FICA_APPROACH_DEFL))
 			return false; 
 		_M_cls = CSlopeClassifier(ica->get_mixing_curves(), _M_meanstrip);
@@ -231,7 +267,8 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
 			ica->set_approach(_M_ica_approach); 
 			l_ica->set_max_iterations(_M_max_iterations);
-			if (!l_ica->run(i, _M_meanstrip, _M_normalize) && (_M_ica_approach == FICA_APPROACH_DEFL)) {
+
+			if (!l_ica->run(i, _M_meanstrip, _M_normalize, guess) && (_M_ica_approach == FICA_APPROACH_DEFL)) {
 				cvwarn() << "run_ica: " << i << " components didn't return a result\n"; 
 				continue; 
 			}

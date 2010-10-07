@@ -103,6 +103,7 @@ int do_main( int argc, const char *argv[] )
 	size_t components = 0;
 	bool no_normalize = false; 
 	bool no_meanstrip = false; 
+	bool use_guess_model = false; 
 	float box_scale = 1.4;
 	size_t skip_images = 0; 
 	size_t max_ica_iterations = 400; 
@@ -135,6 +136,8 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
 	options.push_back(make_opt( no_meanstrip, "no-meanstrip", 0, 
 				    "don't strip the mean from the mixing curves", NULL));
+	options.push_back(make_opt( use_guess_model, "guess", 'g', "use initial guess for myocardial perfusion", 
+				    NULL)); 
 	options.push_back(make_opt( box_scale, "segscale", 's', 
 				    "segment and scale the crop box around the LV (0=no segmentation)", "segscale"));
 	options.push_back(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
@@ -170,6 +173,8 @@ int do_main( int argc, const char *argv[] )
 	C2DPerfusionAnalysis ica(components, !no_normalize, !no_meanstrip); 
 	if (max_ica_iterations) 
 		ica.set_max_ica_iterations(max_ica_iterations); 
+	if (use_guess_model) 
+		ica.set_use_guess_model(); 
 	if (!ica.run(series)) 
 		ica.set_approach(FICA_APPROACH_SYMM); 
 	if (!ica.run(series) )

@@ -110,6 +110,8 @@ public:
 	int get_LV_peak_idx() const; 
 
 	static TDictMap<EBoxSegmentation> segmethod_dict; 
+
+	void set_use_guess_model(); 
 private: 
 	struct C2DPerfusionAnalysisImpl *impl; 
 

@@ -19,6 +19,7 @@
 #include <boost/lambda/lambda.hpp>
 
 #include <mia/2d/correlation_weight.hh>
+#include <mia/core/errormacro.hh>
 
 NS_MIA_BEGIN
 using namespace std;
@@ -30,7 +31,7 @@ using boost::lambda::_2;
 struct CCorrelationEvaluatorImpl {
 	CCorrelationEvaluatorImpl(double thresh);
 
-	CCorrelationEvaluator::result_type run(const vector<P2DImage>& images) const;
+	CCorrelationEvaluator::result_type run(const vector<P2DImage>& images, size_t skip) const;
 private:
 
 	double m_thresh;
@@ -72,9 +73,9 @@ CCorrelationEvaluator::~CCorrelationEvaluator()
 }
 
 
-CCorrelationEvaluator::result_type CCorrelationEvaluator::operator() (const vector<P2DImage>& images) const
+CCorrelationEvaluator::result_type CCorrelationEvaluator::operator() (const vector<P2DImage>& images, size_t skip) const
 {
-	return impl->run(images);
+	return impl->run(images, skip);
 }
 
 
@@ -83,11 +84,14 @@ CCorrelationEvaluatorImpl::CCorrelationEvaluatorImpl(double thresh):
 {
 }
 
-CCorrelationEvaluator::result_type CCorrelationEvaluatorImpl::run(const vector<P2DImage>& images) const
+CCorrelationEvaluator::result_type CCorrelationEvaluatorImpl::run(const vector<P2DImage>& images, size_t skip) const
 {
 	// accumulate sums
+	if (skip >= images.size())
+		THROW(invalid_argument, "Want to skip " << skip 
+		      << "images, but series has only " << images.size() << " images"); 
 	FCorrelationAccumulator acc(images[0]->get_size(), m_thresh);
-	for (auto i = images.begin(); i != images.end(); ++i)
+	for (auto i = images.begin() + skip; i != images.end(); ++i)
 		mia::accumulate(acc,**i);
 
 	CCorrelationEvaluator::result_type result;
