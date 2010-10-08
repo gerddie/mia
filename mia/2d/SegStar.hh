@@ -52,6 +52,8 @@ public:
 	CSegPoint2D m_center;
 	float m_radius;
 	CSegPoint2D m_directions[3];
+private: 
+	void recenter_rays(); 
 };
 
 NS_MIA_END

@@ -45,6 +45,9 @@ class  EXPORT_2D CSegPoint2D: public C2DFVector {
 public:
 	CSegPoint2D();
 
+	CSegPoint2D(const C2DFVector& org);
+	CSegPoint2D& operator = (const C2DFVector& org);
+
 	/**
 	   Construct the point with the given coordinates
 	   \param x

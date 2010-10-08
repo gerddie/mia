@@ -94,28 +94,42 @@ void CSegStar::transform(const C2DTransformation& t)
 	C2DFVector old_center = m_center; 
 	m_center.transform(t); 
 	// transform the rays 
-	for (size_t i = 0; i < 3; ++i) {
-		C2DFVector help = t(old_center + m_radius * m_directions[i]) - m_center;
-		float n =  help.norm(); 
-		m_directions[i].x = help.x / n; 
-		m_directions[i].y = help.y / n; 
+	for (size_t i = 0; i < 3; ++i)
+		m_directions[i] = t(old_center + m_radius * m_directions[i]);
+	recenter_rays(); 
+}
+
+void CSegStar::recenter_rays()
+{
+	C2DFVector sum(0,0); 
+	for (size_t i = 0; i < 3; ++i)
+		sum += m_directions[i]; 
+
+	m_center = sum / 3.0f; 
+	
+	double radius = 0.0; 
+	for (size_t i = 0; i < 3; ++i){
+		radius += (m_directions[i]  - m_center).norm();
+		m_directions[i] -= m_center; 
+		double n = m_directions[i].norm(); 
+		if (n > 0.0) 
+			m_directions[i] /= n; 
 	}
+	m_radius /= 3.0; 
 }
 
 void CSegStar::inv_transform(const C2DTransformation& t)
 {
 	C2DFVector old_center = m_center; 
 	m_center.inv_transform(t); 
+
+	C2DFVector center_sum(0,0); 
 	// transform the rays 
 	for (size_t i = 0; i < 3; ++i) {
-		C2DFVector help = old_center + m_radius * m_directions[i]; 
-		CSegPoint2D h(help.x, help.y); 
-		h.inv_transform(t); 
-		help = h - m_center; 
-		float n =  help.norm(); 
-		m_directions[i].x = help.x / n; 
-		m_directions[i].y = help.y / n; 
+		m_directions[i] = old_center + m_radius * m_directions[i]; 
+		m_directions[i].inv_transform(t); 
 	}
+	recenter_rays(); 
 }
 
 void CSegStar::write(xmlpp::Node& node) const
