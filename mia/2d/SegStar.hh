@@ -54,6 +54,7 @@ public:
 	CSegPoint2D m_directions[3];
 private: 
 	void recenter_rays(); 
+	void reeval_center(); 
 };
 
 NS_MIA_END

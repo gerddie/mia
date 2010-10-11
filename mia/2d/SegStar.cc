@@ -97,34 +97,68 @@ void CSegStar::transform(const C2DTransformation& t)
 	recenter_rays(); 
 }
 
+inline double  __calc_bc(double a, double b, double c)
+{
+	return a * a *( b * b + c * c - a *a ); 
+}
+		
+
+// re-evaluate the center after a transformation has been applied 
+// since the transformation may be non-rigid, base this evaluation on the 
+// points located at the circumfence 
+void CSegStar::reeval_center() 
+{
+	double a = (m_directions[1] - m_directions[2]).norm(); 
+	double b = (m_directions[2] - m_directions[0]).norm(); 
+	double c = (m_directions[0] - m_directions[1]).norm(); 
+	
+	vector<double> x(3); 
+	x[0] = __calc_bc(a, b, c); 
+	x[1] = __calc_bc(b, c, a); 
+	x[2] = __calc_bc(c, a, b); 
+	
+        double sum = x[0] + x[1] + x[2]; 
+        for (size_t i = 0; i < 3; ++i) {
+		x[i] /= sum; 
+	}
+	C2DFVector result(0,0); 
+	
+	for (size_t i = 0; i < 3; ++i) 
+		result += x[i] * m_directions[i]; 
+        m_center = result; 
+}
+
+
+
 void CSegStar::recenter_rays()
 {
-	C2DFVector sum(0,0); 
-	for (size_t i = 0; i < 3; ++i)
-		sum += m_directions[i]; 
+	reeval_center(); 
+	m_directions[0] -= m_center; 
+	float n = m_directions[0].norm(); 
+	m_radius = n; 
+	m_directions[0] /= n; 
 
-	m_center = sum / 3.0f; 
+        float c = -0.5; 
+        float s = sqrt(0.75); 
+
+	m_directions[1] = C2DFVector(  c * m_directions[0].x +  s * m_directions[0].y,  
+				       c * m_directions[0].y -  s * m_directions[0].x); 
+	if (m_directions[1].x < 0) 
+		m_directions[1] *= -1; 
 	
-	double radius = 0.0; 
-	for (size_t i = 0; i < 3; ++i){
-		m_directions[i] -= m_center; 
-		double n = m_directions[i].norm(); 
-		if (n > 0.0) 
-			m_directions[i] /= n; 
-		radius += n; 
-	}
-//	m_radius = 3.0; 
+	m_directions[2] = C2DFVector(  c * m_directions[0].x -  s * m_directions[0].y,  
+				       c * m_directions[0].y +  s * m_directions[0].x); 
+	
+	if (m_directions[2].x > 0) 
+		m_directions[2] *= -1; 
+	
+
 }
 
 void CSegStar::inv_transform(const C2DTransformation& t)
 {
-	C2DFVector old_center = m_center;
-	m_center.inv_transform(t);
-
-	C2DFVector center_sum(0,0);
-	// transform the rays
 	for (size_t i = 0; i < 3; ++i) {
-		m_directions[i] = old_center + m_radius * m_directions[i];
+		m_directions[i] = m_center + m_radius * m_directions[i];
 		m_directions[i].inv_transform(t);
 	}
 	recenter_rays();
