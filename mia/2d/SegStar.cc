@@ -88,14 +88,12 @@ void CSegStar::shift(const C2DFVector& delta)
 
 void CSegStar::transform(const C2DTransformation& t)
 {
-	// in theory one should evaluate the center as mean of the 
-	// ray points (at least for non-rigid transformations)
-
-	C2DFVector old_center = m_center; 
-	m_center.transform(t); 
-	// transform the rays 
-	for (size_t i = 0; i < 3; ++i)
-		m_directions[i] = t(old_center + m_radius * m_directions[i]);
+	cvdebug() << "CSegStar::transform: " << m_center << "@" << m_radius << "\n"; 
+	for (size_t i = 0; i < 3; ++i) {
+		cvdebug() << "CSegStar::transform:" << i << ":" << m_center + m_radius * m_directions[i] << "\n"; 
+		m_directions[i] = t(m_center + m_radius * m_directions[i]);
+		cvdebug() << "CSegStar::transform:" << i << ":" << m_directions[i] << "\n"; 
+	}
 	recenter_rays(); 
 }
 
@@ -109,27 +107,27 @@ void CSegStar::recenter_rays()
 	
 	double radius = 0.0; 
 	for (size_t i = 0; i < 3; ++i){
-		radius += (m_directions[i]  - m_center).norm();
 		m_directions[i] -= m_center; 
 		double n = m_directions[i].norm(); 
 		if (n > 0.0) 
 			m_directions[i] /= n; 
+		radius += n; 
 	}
-	m_radius /= 3.0; 
+//	m_radius = 3.0; 
 }
 
 void CSegStar::inv_transform(const C2DTransformation& t)
 {
-	C2DFVector old_center = m_center; 
-	m_center.inv_transform(t); 
+	C2DFVector old_center = m_center;
+	m_center.inv_transform(t);
 
-	C2DFVector center_sum(0,0); 
-	// transform the rays 
+	C2DFVector center_sum(0,0);
+	// transform the rays
 	for (size_t i = 0; i < 3; ++i) {
-		m_directions[i] = old_center + m_radius * m_directions[i]; 
-		m_directions[i].inv_transform(t); 
+		m_directions[i] = old_center + m_radius * m_directions[i];
+		m_directions[i].inv_transform(t);
 	}
-	recenter_rays(); 
+	recenter_rays();
 }
 
 void CSegStar::write(xmlpp::Node& node) const

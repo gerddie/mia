@@ -46,7 +46,7 @@ CSegPoint2D::CSegPoint2D(const C2DFVector& org): C2DFVector(org)
 	
 CSegPoint2D& CSegPoint2D::operator = (const C2DFVector& org)
 {
-	CSegPoint2D::operator =(org); 
+	C2DFVector::operator =(org); 
 	return *this; 
 }
 

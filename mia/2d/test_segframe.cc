@@ -147,6 +147,49 @@ BOOST_FIXTURE_TEST_CASE(segframe_shift, FrameTestRead)
 }
 #endif
 
+
+const char *testframe_init = "<?xml version=\"1.0\"?>\n<test>"
+	"<frame image=\"image.png\">"
+	"<star y=\"118\" x=\"109\" r=\"21\">"
+	"<point y=\"1\" x=\"0\"/>"
+	"<point y=\"-0.5\" x=\"0.866025\"/>"
+	"<point y=\"-0.5\" x=\"-0.866025\"/>"
+	"</star>"
+	"<section color=\"white\">"
+	"<point y=\"20\" x=\"10\"/>"
+	"<point y=\"10\" x=\"20\"/>"
+	"<point y=\"4\" x=\"0\"/>"
+	"</section>"
+	"<section color=\"red\">"
+	"<point y=\"21\" x=\"11\"/>"
+	"<point y=\"11\" x=\"21\"/>"
+	"<point y=\"5\" x=\"1\"/>"
+	"</section>"
+	"</frame>"
+	"</test>\n";
+
+
+const char *testframe_shifted = "<?xml version=\"1.0\"?>\n<test>"
+	"<frame image=\"newname\">"
+	"<star y=\"116\" x=\"108\" r=\"21\">"
+	"<point y=\"1\" x=\"0\"/>"
+	"<point y=\"-0.5\" x=\"0.866025\"/>"
+	"<point y=\"-0.5\" x=\"-0.866025\"/>"
+	"</star>"
+	"<section color=\"white\">"
+	"<point y=\"18\" x=\"9\"/>"
+	"<point y=\"8\" x=\"19\"/>"
+	"<point y=\"2\" x=\"-1\"/>"
+	"</section>"
+	"<section color=\"red\">"
+	"<point y=\"19\" x=\"10\"/>"
+	"<point y=\"9\" x=\"20\"/>"
+	"<point y=\"3\" x=\"0\"/>"
+	"</section>"
+	"</frame>"
+	"</test>\n";
+
+
 BOOST_FIXTURE_TEST_CASE(segframe_transform, FrameTestRead)
 {
 	list< bfs::path> kernelsearchpath;
@@ -162,7 +205,6 @@ BOOST_FIXTURE_TEST_CASE(segframe_transform, FrameTestRead)
 	
 	init(testframe_init);
 	
-
 	frame.transform(*transform);
 	frame.set_imagename("newname"); 
 
@@ -410,7 +452,7 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_stats, FrameTestRead)
 BOOST_AUTO_TEST_CASE(segframe_write)
 {
 	CSegStar star(CSegPoint2D(109, 118), 21,
-		      CSegPoint2D(10, 20), CSegPoint2D(20, 10), CSegPoint2D(0, 4));
+		      CSegPoint2D(0, 1), CSegPoint2D(0.866025,-0.5), CSegPoint2D(-0.866025,-0.5));
 
 	CSegFrame::Sections sections;
 
@@ -440,46 +482,6 @@ BOOST_AUTO_TEST_CASE(segframe_write)
 	BOOST_CHECK_EQUAL(xmldoc, testdoc);
 
 }
-
-
-const char *testframe_init = "<?xml version=\"1.0\"?>\n<test>"
-	"<frame image=\"image.png\">"
-	"<star y=\"118\" x=\"109\" r=\"21\">"
-	"<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"0\"/>"
-	"</star>"
-	"<section color=\"white\">"
-	"<point y=\"20\" x=\"10\"/>"
-	"<point y=\"10\" x=\"20\"/>"
-	"<point y=\"4\" x=\"0\"/>"
-	"</section>"
-	"<section color=\"red\">"
-	"<point y=\"21\" x=\"11\"/>"
-	"<point y=\"11\" x=\"21\"/>"
-	"<point y=\"5\" x=\"1\"/>"
-	"</section>"
-	"</frame>"
-	"</test>\n";
-
-
-const char *testframe_shifted = "<?xml version=\"1.0\"?>\n<test>"
-	"<frame image=\"newname\">"
-	"<star y=\"116\" x=\"108\" r=\"21\">"
-	"<point y=\"0.894427\" x=\"0.447214\"/><point y=\"0.447214\" x=\"0.894427\"/><point y=\"1\" x=\"0\"/>"
-	"</star>"
-	"<section color=\"white\">"
-	"<point y=\"18\" x=\"9\"/>"
-	"<point y=\"8\" x=\"19\"/>"
-	"<point y=\"2\" x=\"-1\"/>"
-	"</section>"
-	"<section color=\"red\">"
-	"<point y=\"19\" x=\"10\"/>"
-	"<point y=\"9\" x=\"20\"/>"
-	"<point y=\"3\" x=\"0\"/>"
-	"</section>"
-	"</frame>"
-	"</test>\n";
 
 const char *testframe_init2 = "<?xml version=\"1.0\"?>\n<test>"
 	"<frame image=\"image.png\">"
