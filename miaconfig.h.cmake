@@ -12,3 +12,5 @@
 typedef signed @INT64@ mia_int64;
 typedef unsigned @INT64@ mia_uint64;
 #endif
+
+#cmakedefine ICA_ALWAYS_USE_SYMM 0

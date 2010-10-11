@@ -24,6 +24,7 @@
 #include <vector>
 #include <cassert>
 #include <stdexcept>
+#include <miaconfig.h>
 #include <mia/core/ica.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/msgstream.hh>
@@ -104,7 +105,14 @@ bool CICAAnalysis::run(size_t nica, vector<vector<float> > guess)
 
 	fastICA.set_nrof_independent_components(nica);
 	fastICA.set_non_linearity(  FICA_NONLIN_TANH  );
+	
+#if ICA_ALWAYS_USE_SYMM
+	// approach APPROACH_DEFL may not return in the unpached itpp 
+	// therefore, always use APPROACH_SYMM 
+	fastICA.set_approach( APPROACH_SYMM );
+#else
 	fastICA.set_approach( impl->m_approach );
+#endif
 	if (impl->m_max_iterations > 0)
 		fastICA.set_max_num_iterations(impl->m_max_iterations);
 
@@ -115,8 +123,14 @@ bool CICAAnalysis::run(size_t nica, vector<vector<float> > guess)
 				mguess(r,c) = guess[c][r]; 
 		fastICA.set_init_guess(mguess); 
 	}
-
+#if ICA_ALWAYS_USE_SYMM
+	// in the unpatched itpp separate doesn't return a value
+	// therefore, we always assume true
+	bool result = true; 
+	fastICA.separate();
+#else
 	bool result = fastICA.separate();
+#endif
 
 	impl->m_ICs = fastICA.get_independent_components();
 	impl->m_Mix = fastICA.get_mixing_matrix();

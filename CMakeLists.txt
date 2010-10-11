@@ -329,6 +329,20 @@ IF(WITH_ITPP)
     INCLUDE_DIRECTORIES(${ITPP_INCLUDE_DIRS})
     LINK_DIRECTORIES(${ITPP_LIBRARY_DIRS})
     SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} itpp")
+    SET(CMAKE_REQUIRED_LIBRARIES ${ITPP_LIBRARIES})
+    #if ITPP was found check if it supports the return value in separate 
+    INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkITPPBoolseparate.cmake)
+    IF(NOT ITPP_FASTICA_SEPARATE_HAS_RETURNVALUE) 
+      MESSAGE(WARNING "You are using  an unpatched version of IT++"
+	"In this version using APPROACH_DEFL may run forever, and FastICA::separate " 
+	"doesn't return a value indicating success, "
+	"therefore, APPROACH_DEFL will not be used. See also: "
+	"https://sourceforge.net/tracker/?func=detail&aid=3028968&group_id=37044&atid=418758")
+      SET(ICA_ALWAYS_USE_SYMM 1)
+    ELSE(NOT ITPP_FASTICA_SEPARATE_HAS_RETURNVALUE) 
+      SET(ICA_ALWAYS_USE_SYMM 0)
+    ENDIF(NOT ITPP_FASTICA_SEPARATE_HAS_RETURNVALUE) 
+    
   ENDIF(ITPP_FOUND)
 ENDIF(WITH_ITPP)
 
