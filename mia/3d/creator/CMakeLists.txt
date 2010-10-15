@@ -1,5 +1,6 @@
 SET(creator3d
 	    sphere
+	    lattic
 )
 
 PLUGIN_GROUP_PRE(

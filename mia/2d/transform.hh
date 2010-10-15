@@ -76,6 +76,12 @@ protected:
 public: 
 	class const_iterator : public std::forward_iterator_tag {
 	public: 
+
+		typedef std::forward_iterator_tag iterator_category; 
+		typedef C2DFVector value_type; 
+		typedef size_t difference_type; 
+		typedef C2DFVector *pointer; 
+		typedef C2DFVector& reference; 
 		const_iterator(); 
 		const_iterator(iterator_impl * holder); 
 

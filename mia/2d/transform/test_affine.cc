@@ -246,6 +246,26 @@ BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, AffineGrad2ParamFixtureAff
 	BOOST_CHECK_CLOSE(params[5], -0.5, 0.1);
 }
 
+BOOST_FIXTURE_TEST_CASE (test_grad2param_translation2, AffineGrad2ParamFixtureAffine)
+{
+	C2DFVectorfield gradient(size);
+
+	copy(trans.begin(), trans.end(), gradient.begin()); 
+
+	gsl::DoubleVector params = trans.get_parameters();
+
+	trans.translate(gradient, params);
+
+	gsl::DoubleVector org_params = trans.get_parameters();
+	BOOST_CHECK_CLOSE(params[0], org_params[0], 0.1);
+	BOOST_CHECK_CLOSE(params[1], org_params[1], 0.1);
+	BOOST_CHECK_CLOSE(params[2], org_params[2], 0.1);
+
+	BOOST_CHECK_CLOSE(params[3], org_params[3], 0.1);
+	BOOST_CHECK_CLOSE(params[4], org_params[4], 0.1);
+	BOOST_CHECK_CLOSE(params[5], org_params[5], 0.1);
+}
+
 BOOST_FIXTURE_TEST_CASE (test_add, AffineGrad2ParamFixtureAffine)
 {
 	C2DFVector test = trans(C2DFVector(2,1));
@@ -280,8 +300,8 @@ AffineGrad2ParamFixtureAffine::AffineGrad2ParamFixtureAffine():
 	trans(size)
 {
 	trans.translate(-1, -3);
-//	trans.rotate(0.0);
-//	trans.scale(0.69314718, -0.69314718);
+	trans.rotate(0.0);
+	trans.scale(0.69314718, -0.69314718);
 }
 
 
