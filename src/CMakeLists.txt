@@ -47,6 +47,7 @@ DEFEXE(2dsegcompare           mia2dmyocardperf )
 DEFEXE(2dgroundtruthreg       mia2dmyocardperf )
 DEFEXE(2dseries2sets          mia2dmyocardperf )
 DEFEXE(2dseries-mincorr       mia2dmyocardperf )
+DEFEXE(2dmyopgt-nonrigid      mia2dmyocardperf )
 
 DEFCHKEXE(3dlerp mia3d )
 
