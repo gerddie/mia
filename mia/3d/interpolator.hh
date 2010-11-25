@@ -207,7 +207,8 @@ public:
 	   \returns an interpolator with the given input data and the predefined interpolation type
 	 */
 	template <class T>
-	T3DInterpolator<T> *create(const T3DDatafield<T>& src) const;
+	T3DInterpolator<T> *create(const T3DDatafield<T>& src) const
+		__attribute__ ((warn_unused_result));
 
 private:
 	EType _M_type;
@@ -215,7 +216,8 @@ private:
 };
 
 
-EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(int type);
+EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(int type)
+	__attribute__ ((warn_unused_result));
 
 // implementation
 

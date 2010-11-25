@@ -339,23 +339,26 @@ float C2DSplineTransformation::get_max_transform() const
 
 void C2DSplineTransformation::init_grid()const
 {
+	TRACE_FUNCTION; 
 	if (!_M_grid_valid) {
+		cvdebug() << "really run C2DSplineTransformation::init_grid\n"; 
 		// pre-evaluateof fixed-grid coefficients
 		auto kernel = _M_ipf->get_kernel(); 
 		assert(kernel); 
 		size_t n_elms = kernel->size(); 
 		std::vector<int> indices(n_elms); 
 		std::vector<double> weights(n_elms); 
+		const C2DBounds& csize = _M_coefficients.get_size(); 
 		for (size_t i = 0; i < _M_range.x; ++i) {
 			(*kernel)(i * _M_scale.x + _M_shift, weights, indices); 
 			_M_x_weights[i] = weights; 
-			mirror_boundary_conditions(indices, _M_range.x, 2 * _M_range.x - 2);
+			mirror_boundary_conditions(indices, csize.x, 2 * csize.x - 2);
 			_M_x_indices[i] = indices; 
 		}
 		for (size_t i = 0; i < _M_range.y; ++i) {
 			(*kernel)(i * _M_scale.y +  _M_shift, weights, indices); 
 			_M_y_weights[i] = weights; 
-			mirror_boundary_conditions(indices, _M_range.y, 2 * _M_range.y - 2);
+			mirror_boundary_conditions(indices, csize.y, 2 * csize.y - 2);
 			_M_y_indices[i] = indices; 
 		}
 
@@ -543,6 +546,7 @@ C2DFVector C2DSplineTransformation::on_grid(const C2DBounds& x) const
 	assert(x.x < _M_range.x); 
 	assert(x.y < _M_range.y); 
 	assert(_M_grid_valid); 
+	cvdebug() << _M_x_indices[x.x] << _M_y_indices[x.y] << _M_coefficients.get_size() <<"\n"; 
 	return _M_interpolator->evaluate(_M_x_weights[x.x], _M_y_weights[x.y],
 					 _M_x_indices[x.x], _M_y_indices[x.y]);
 }

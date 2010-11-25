@@ -113,7 +113,7 @@ void CFDFMinimizer::set_stop_eps(double tol)
 int CFDFMinimizerImpl::run(DoubleVector& x)
 {
 	int iter = 0; 
-	int status; 
+	int status = GSL_CONTINUE; 
 	gsl_multimin_fdfminimizer_set (m_s, *m_problem, x, 0.01, m_gorth_tolerance);
 	do {
 		++iter; 

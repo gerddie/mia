@@ -17,7 +17,7 @@
  *
  */
 
-#define VSTREAM_DOMAIN "SHAPE SPHERE"
+#define VSTREAM_DOMAIN "CREATOR LATTIC"
 #ifdef _MSC_VER
 #define _USE_MATH_DEFINES
 #endif
@@ -27,7 +27,7 @@
 #include <mia/3d/creator.hh>
 #include <mia/3d/3dfilter.hh>
 
-NS_BEGIN(creator_sphere_3d);
+NS_BEGIN(creator_lattic_3d);
 using namespace mia;
 using namespace std;
 using namespace boost;

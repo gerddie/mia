@@ -162,9 +162,9 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( max_pass, "passes", 'P', "registration passes", "passes")); 
 
 	options.set_group("\nPseudo Ground Thruth estimation"); 
-	options.push_back(make_opt( alpha, "alpha", 'a', "spacial neighborhood penalty weight", "alpha", false));
-	options.push_back(make_opt( beta, "beta", 'b', "temporal second derivative penalty weight", "beta", false));
-	options.push_back(make_opt( rho_thresh, "rho_thresh", 'r', 
+	options.push_back(make_opt( alpha, "alpha", 'A', "spacial neighborhood penalty weight", "alpha", false));
+	options.push_back(make_opt( beta, "beta", 'B', "temporal second derivative penalty weight", "beta", false));
+	options.push_back(make_opt( rho_thresh, "rho_thresh", 'R', 
 				    "crorrelation threshhold for neighborhood analysis", "rho", false));
 
 	

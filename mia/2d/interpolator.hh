@@ -188,7 +188,8 @@ public:
 	virtual ~C2DInterpolatorFactory();
 
 	template <class T>
-	T2DInterpolator<T> *create(const T2DDatafield<T>& src) const;
+	T2DInterpolator<T> *create(const T2DDatafield<T>& src) const
+		__attribute__ ((warn_unused_result));
 
 	const CBSplineKernel* get_kernel() const;
 
@@ -199,7 +200,8 @@ private:
 typedef std::shared_ptr<C2DInterpolatorFactory > P2DInterpolatorFactory;
 
 
-C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(int type);
+C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(int type)
+	__attribute__ ((warn_unused_result));
 
 // implementation
 

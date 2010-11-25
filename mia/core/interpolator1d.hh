@@ -177,7 +177,8 @@ public:
 	virtual ~C1DInterpolatorFactory();
 
 	template <class T>
-	T1DInterpolator<T> *create(const std::vector<T>& src) const;
+	T1DInterpolator<T> *create(const std::vector<T>& src) const
+		__attribute__ ((warn_unused_result));
 
 	PSplineKernel get_kernel() const;
 
@@ -189,7 +190,8 @@ typedef std::shared_ptr<const C1DInterpolatorFactory > P1DInterpolatorFactory;
 
 
 
-C1DInterpolatorFactory EXPORT_CORE  *create_1dinterpolation_factory(EInterpolation type);
+C1DInterpolatorFactory EXPORT_CORE  *create_1dinterpolation_factory(EInterpolation type) 
+	__attribute__ ((warn_unused_result));
 
 // implementation
 

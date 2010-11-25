@@ -263,6 +263,8 @@ int do_main( int argc, const char *argv[] )
 	string out_filename;
 	string registered_filebase("reg");
 
+	size_t skip = 0; 
+	
 	// this parameter is currently not exported - reading the image data is 
 	// therefore done from the path given in the segmentation set 
 	bool override_src_imagepath = true;
@@ -279,8 +281,15 @@ int do_main( int argc, const char *argv[] )
 				    "output", true));
 	options.push_back(make_opt( registered_filebase, "registered", 'r', 
 				    "file name base for registered fiels", "registered", false)); 
+
+
+	options.push_back(make_opt(skip, "skip", 'k', 
+				   "Skip images at the begin of the series", 
+				   "skip", false)); 
 	
 	options.set_group("\nRegistration"); 
+
+
 	options.push_back(make_opt( params.minimizer, TDictMap<EMinimizers>(g_minimizer_table),
 				    "optimizer", 'O', "Optimizer used for minimization", 
 				    "optimizer", false));
@@ -313,12 +322,19 @@ int do_main( int argc, const char *argv[] )
 
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
-	C2DImageSeries images = input_set.get_images(); 
-	
+	C2DImageSeries in_images = input_set.get_images(); 
+	if (skip >= in_images.size()) {
+		THROW(invalid_argument, "Try to skip " << skip 
+		      << " images, but input set has only " << in_images.size() << " images.");  
+	}
+
+	C2DImageSeries series(in_images.begin() + skip, in_images.end()); 
+
 	C2DMyocardPeriodicRegistration mpr(params); 
-	mpr.run(images);
+	mpr.run(series);
 	
-	input_set.set_images(images); 
+	copy(series.begin(), series.end(), in_images.begin() + skip); 
+	input_set.set_images(in_images); 
 	input_set.rename_base(registered_filebase); 
 	input_set.save_images(out_filename); 
 	
