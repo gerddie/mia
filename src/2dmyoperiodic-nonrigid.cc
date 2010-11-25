@@ -32,6 +32,7 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/factorycmdlineoption.hh>
 #include <mia/core/errormacro.hh>
+#include <mia/2d/2dimageio.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/transformfactory.hh>
@@ -147,7 +148,7 @@ vector<size_t> C2DMyocardPeriodicRegistration::get_prealigned_subset(const C2DIm
 	cvmsg() << "estimate prealigned subset ...\n"; 
 	size_t ref = m_params.skip + 20; 
 	
-	C2DSimilarityProfile best_series(m_params.series_select_cost, images, m_params.skip, ref); 
+	C2DSimilarityProfile best_series(m_params.series_select_cost, images, 0, ref); 
 	
 	// the skip values should be parameters 
 	for (size_t i = m_params.skip + 21; i < images.size()-2; ++i) {
@@ -163,7 +164,7 @@ vector<size_t> C2DMyocardPeriodicRegistration::get_prealigned_subset(const C2DIm
 
 void C2DMyocardPeriodicRegistration::run_initial_pass(C2DImageSeries& images, const vector<size_t>& subset) 
 {
-	cvmsg() << "run initial registration pass ...\n"; 
+	cvmsg() << "run initial registration pass on "<< subset << "\n"; 
 	C2DFullCostList costs; 
 	// create costs
 	costs.push(m_params.pass1_cost); 
@@ -181,7 +182,7 @@ void C2DMyocardPeriodicRegistration::run_initial_pass(C2DImageSeries& images, co
 	for (auto i = subset.begin(); i != subset.end(); ++i) {
 		if (m_ref == *i) 
 			continue; 
-		cvmsg() << "Register " << i - subset.begin() << " to " << m_ref << "\n"; 
+		cvmsg() << "Register " << *i << " to " << m_ref << "\n"; 
 		P2DImage src = images[*i]; 
 		P2DTransformation transform = nr.run(src, ref);
 		images[*i] = (*transform)(*images[*i], *m_params.interpolator);
@@ -198,7 +199,6 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images, cons
 	divcurl_descr << "divcurl:weight=" << m_params.divcurlweight; 
 	costs.push(C2DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
 
-
 	C2DNonrigidRegister nr(costs, 
 			       m_params.minimizer, 
 			       m_params.transform_creator, 
@@ -211,6 +211,7 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images, cons
 	assert(delta > 0.0); 
 	
 	for (size_t i = m_params.skip; i < images.size(); ++i) {
+
 		if (i == *low_index)
 			continue; 
 		
@@ -221,10 +222,14 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images, cons
 			continue;
 		}
 
+		cvmsg() << "Register image " << i << "\n"; 
 		float w = *high_index - i;  
 		FAddWeighted lerp(w);
 		
 		P2DImage ref = mia::filter(lerp, *images[*low_index], *images[*high_index]); 
+		stringstream refname; 
+		refname << "ref" << setw(4) << setfill('0') << ".exr"; 
+		save_image2d(refname.str(), ref); 
 		P2DImage src = images[i]; 
 		P2DTransformation transform = nr.run(src, ref);
 		images[i] = (*transform)(*images[i], *m_params.interpolator);

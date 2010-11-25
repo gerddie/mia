@@ -233,7 +233,9 @@ double  C2DNonrigRegGradientProblem::do_f(const DoubleVector& x)
 	_M_func_evals++; 
 	_M_transf.set_parameters(x);
 	double result = _M_costs.cost_value(_M_transf);
-	cvmsg() << "Cost[fg="<<_M_grad_evals << ",fe="<<_M_func_evals<<"]=" << setw(20) << setprecision(15) << result << "\r"; 
+	cvmsg() << "Cost[fg="<<setw(4)<<_M_grad_evals << ",fe="<<setw(4)<<_M_func_evals<<"]=" 
+		<< setw(20) << setprecision(12) << result << "\r"; 
+	cvinfo() << "\n"; 
 	return result; 
 }
 
@@ -250,7 +252,9 @@ double  C2DNonrigRegGradientProblem::do_fdf(const DoubleVector& x, DoubleVector&
 	fill(g.begin(), g.end(), 0.0); 
 	double result = _M_costs.evaluate(_M_transf, g);
 	//transform(g.begin(), g.end(), g.begin(), _1 * -1); 
-	cvmsg() << "Cost[fg="<<_M_grad_evals << ",fe="<<_M_func_evals<<"]=" << setw(20) << setprecision(15) << result << "\r"; 
+	cvmsg() << "Cost[fg="<<setw(4)<<_M_grad_evals << ",fe="<<setw(4)<<_M_func_evals<<"]=" 
+		<< setw(20) << setprecision(12) << result << "\r"; 
+	cvinfo() << "\n"; 
 	return result; 
 }
 

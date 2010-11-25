@@ -133,7 +133,7 @@ float CCostEvaluatorDeltaScalar::get_cost_grad(size_t x,param_pass& p, mia::C2DF
 	const float helper0 = ref_norm2 - dot_rs * cxy;
 
 	// this 0.5 comes in because beloe in the gradient evaluation we don't do it
-	const float helper = - 0.5 * helper0 * cxy;
+	const float helper = 0.5 * helper0 * cxy;
 
 	const C2DFVector dsdx = p.src[x+1] - p.src[x-1];
 	const C2DFVector dsdy = p.srcp[x] - p.srcm[x];
@@ -209,8 +209,6 @@ double C2DNFGImageCost::do_evaluate_force(const mia::C2DImage& a, const mia::C2D
 	     ++y, pp.src += nx, pp.srcm += nx, pp.srcp += nx,
 		     iforce += nx, pp.ref += nx) {
 		for (size_t x = 1; x < nx - 1; ++x) {
-			cvdebug() << "x=" << x << "("<< nx << "), y="
-				  << y <<"("<<ny << ")\n"; 
 			sum +=  _M_evaluator->get_cost_grad(x, pp, iforce);
 		}
 	}
