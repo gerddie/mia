@@ -193,6 +193,8 @@ double C2DNFGImageCost::do_evaluate_force(const mia::C2DImage& a, const mia::C2D
 	const size_t nx = _M_ng_ref.get_size().x;
 	const size_t ny = _M_ng_ref.get_size().y;
 
+	assert(_M_ng_ref.get_size() == ng_a.get_size()); 
+	assert(_M_ng_ref.get_size() == a.get_size()); 
 
 	CCostEvaluator::param_pass pp;
 
@@ -204,9 +206,11 @@ double C2DNFGImageCost::do_evaluate_force(const mia::C2DImage& a, const mia::C2D
 	C2DFVectorfield::iterator iforce = force.begin() + nx;
 
 	for (size_t y = 1; y < ny - 1;
-	     ++y, pp.src += nx, pp.srcm += nx, pp.srcm += nx,
+	     ++y, pp.src += nx, pp.srcm += nx, pp.srcp += nx,
 		     iforce += nx, pp.ref += nx) {
 		for (size_t x = 1; x < nx - 1; ++x) {
+			cvdebug() << "x=" << x << "("<< nx << "), y="
+				  << y <<"("<<ny << ")\n"; 
 			sum +=  _M_evaluator->get_cost_grad(x, pp, iforce);
 		}
 	}

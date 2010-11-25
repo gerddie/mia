@@ -546,7 +546,6 @@ C2DFVector C2DSplineTransformation::on_grid(const C2DBounds& x) const
 	assert(x.x < _M_range.x); 
 	assert(x.y < _M_range.y); 
 	assert(_M_grid_valid); 
-	cvdebug() << _M_x_indices[x.x] << _M_y_indices[x.y] << _M_coefficients.get_size() <<"\n"; 
 	return _M_interpolator->evaluate(_M_x_weights[x.x], _M_y_weights[x.y],
 					 _M_x_indices[x.x], _M_y_indices[x.y]);
 }
