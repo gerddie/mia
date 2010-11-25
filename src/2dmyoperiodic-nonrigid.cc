@@ -94,6 +94,7 @@ struct FAddWeighted: public TFilter<P2DImage> {
 
 		float w2 = 1.0 - _M_w;
 
+		// this should be properly clamped
 		while ( r != e ) {
 			*r = (T)(w2 * *ia + _M_w * (float)*ib);
 			++r;
@@ -218,7 +219,8 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images, cons
 		if (i == *high_index) {
 			++low_index; 
 			++high_index; 
-			assert(high_index != subset.end());
+			if (high_index == subset.end())
+				return;  
 			continue;
 		}
 
@@ -227,9 +229,6 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images, cons
 		FAddWeighted lerp(w);
 		
 		P2DImage ref = mia::filter(lerp, *images[*low_index], *images[*high_index]); 
-		stringstream refname; 
-		refname << "ref" << setw(4) << setfill('0') << ".exr"; 
-		save_image2d(refname.str(), ref); 
 		P2DImage src = images[i]; 
 		P2DTransformation transform = nr.run(src, ref);
 		images[i] = (*transform)(*images[i], *m_params.interpolator);
