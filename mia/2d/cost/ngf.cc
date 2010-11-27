@@ -64,7 +64,7 @@ float CCostEvaluatorScalar::get_cost(size_t x,param_pass& p) const {
 
 float CCostEvaluatorScalar::get_cost_grad(size_t x,param_pass& p, C2DFVectorfield::iterator g) const
 {
-	float  help = dot(p.ref[x], p.src[x]);
+	float  help = -dot(p.ref[x], p.src[x]);
 	g[x].x = help * dot( p.ref[x], (p.src[x+1] - p.src[x-1]));
 	g[x].y = help * dot( p.ref[x], (p.srcp[x]  - p.srcm[x]));
 	return - help * help;

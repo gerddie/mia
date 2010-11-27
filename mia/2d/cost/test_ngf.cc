@@ -125,7 +125,7 @@ BOOST_FIXTURE_TEST_CASE( test_CostEvaluatorsCross, TestEvaluators  )
 BOOST_FIXTURE_TEST_CASE( test_CostEvaluatorsScalar, TestEvaluators  )
 {
         CCostEvaluatorScalar scalar;
-        run(scalar, - 64,  C2DFVector( 8 * 2, -  8 * 7));
+        run(scalar, - 64,  C2DFVector( -8 * 2, 8 * 7));
 }
 
 BOOST_FIXTURE_TEST_CASE( test_CostEvaluatorsSQDelta, TestEvaluators )
@@ -137,7 +137,7 @@ BOOST_FIXTURE_TEST_CASE( test_CostEvaluatorsSQDelta, TestEvaluators )
 BOOST_FIXTURE_TEST_CASE( test_CCostEvaluatorDeltaScalar, TestEvaluators )
 {
         CCostEvaluatorDeltaScalar ds;
-        run(ds, 4.0458, C2DFVector(-5.0885, 10.177));
+        run(ds, 4.0458, C2DFVector(5.0885, -10.177));
 }
 
 
