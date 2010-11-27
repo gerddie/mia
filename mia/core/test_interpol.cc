@@ -160,6 +160,10 @@ BOOST_AUTO_TEST_CASE( test_types )
 
 }
 
+// these tests need a review
+#define TEST_HIGHORDER_DRIVATIVES 1
+#ifdef TEST_HIGHORDER_DRIVATIVES
+
 typedef bmpl::vector<CBSplineKernel2,
 		     CBSplineKernel3,
 		     CBSplineKernelOMoms3,
@@ -216,14 +220,6 @@ typedef bmpl::vector<CBSplineKernel3,
 		     CBSplineKernel5
 		     > test_kernels3;
 
-BOOST_AUTO_TEST_CASE(test_half_size)
-{
-	BOOST_CHECK_EQUAL(CBSplineKernel2().get_active_halfrange(), 2); 
-	BOOST_CHECK_EQUAL(CBSplineKernel3().get_active_halfrange(), 2); 
-	BOOST_CHECK_EQUAL(CBSplineKernel4().get_active_halfrange(), 3); 
-	BOOST_CHECK_EQUAL(CBSplineKernel5().get_active_halfrange(), 3); 
-}
-
 BOOST_AUTO_TEST_CASE_TEMPLATE(test_derivatives3, T, test_kernels3)
 {
 	const double x = 0.2;
@@ -244,6 +240,15 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_derivatives3, T, test_kernels3)
 
 }
 
+#endif
+
+BOOST_AUTO_TEST_CASE(test_half_size)
+{
+	BOOST_CHECK_EQUAL(CBSplineKernel2().get_active_halfrange(), 2); 
+	BOOST_CHECK_EQUAL(CBSplineKernel3().get_active_halfrange(), 2); 
+	BOOST_CHECK_EQUAL(CBSplineKernel4().get_active_halfrange(), 3); 
+	BOOST_CHECK_EQUAL(CBSplineKernel5().get_active_halfrange(), 3); 
+}
 
 
 BOOST_AUTO_TEST_CASE(  test_spline2_weight_at )

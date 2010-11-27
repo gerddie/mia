@@ -158,7 +158,7 @@ void CBSplineKernel::derivative(double x, std::vector<double>& weight, std::vect
 {
 	assert(index.size() == _M_support_size);
 	int ix = get_indices(x, index);
-	get_derivative_weights(x - ix, weight);
+	get_derivative_weights(x - ix, weight, degree);
 }
 
 double CBSplineKernel::get_nonzero_radius() const
