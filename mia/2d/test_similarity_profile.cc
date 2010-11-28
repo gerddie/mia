@@ -39,7 +39,7 @@ struct SimityProfileFixture {
 }; 
 
 
-BOOST_FIXTURE_TEST_CASE (test_C2DSimilarityProfile_skip2_ref10, SimityProfileFixture) 
+BOOST_FIXTURE_TEST_CASE (test_C2DSimilarityProfile_ref10, SimityProfileFixture) 
 {
 	
 	C2DSimilarityProfile sp(cost, series, 10); 
