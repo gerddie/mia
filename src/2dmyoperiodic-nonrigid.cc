@@ -149,11 +149,11 @@ vector<size_t> C2DMyocardPeriodicRegistration::get_prealigned_subset(const C2DIm
 	cvmsg() << "estimate prealigned subset ...\n"; 
 	size_t ref = m_params.skip + 20; 
 	
-	C2DSimilarityProfile best_series(m_params.series_select_cost, images, 0, ref); 
+	C2DSimilarityProfile best_series(m_params.series_select_cost, images, ref); 
 	
 	// the skip values should be parameters 
 	for (size_t i = m_params.skip + 21; i < images.size()-2; ++i) {
-		C2DSimilarityProfile sp(m_params.series_select_cost, images,  m_params.skip, i); 
+		C2DSimilarityProfile sp(m_params.series_select_cost, images, i); 
 		if (sp.get_peak_frequency() > best_series.get_peak_frequency()) {
 			m_ref = i; 
 			best_series = sp; 

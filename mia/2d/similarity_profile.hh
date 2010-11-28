@@ -46,7 +46,7 @@ public:
 	   \param reference
 	 */
 	C2DSimilarityProfile(P2DFullCost cost, const C2DImageSeries& images, 
-		     size_t skip, size_t reference); 
+		      size_t reference); 
 
 	C2DSimilarityProfile(const C2DSimilarityProfile& org); 
 	C2DSimilarityProfile& operator = (const C2DSimilarityProfile& org); 

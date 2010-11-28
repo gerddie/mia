@@ -31,8 +31,7 @@ using namespace std;
 
 C2DSimilarityProfile::C2DSimilarityProfile(P2DFullCost cost, 
 					   const C2DImageSeries& images, 
-					   size_t _skip, size_t _reference):
-	m_skip(_skip),
+					   size_t _reference):
 	m_reference(_reference),
 	m_peak_freq(-1),
 	m_peak_freq_valid(false)
@@ -52,7 +51,6 @@ C2DSimilarityProfile::C2DSimilarityProfile(P2DFullCost cost,
 }
 
 C2DSimilarityProfile::C2DSimilarityProfile(const C2DSimilarityProfile& other):
-	m_skip(other.m_skip),
 	m_reference(other.m_reference), 
 	m_cost_values(other.m_cost_values)
 {
@@ -64,7 +62,6 @@ C2DSimilarityProfile::C2DSimilarityProfile(const C2DSimilarityProfile& other):
 C2DSimilarityProfile& C2DSimilarityProfile::operator = (const C2DSimilarityProfile& other)
 {
 	if (this != &other) {
-		m_skip = other.m_skip; 
 		m_reference = other.m_reference; 
 		m_cost_values = other.m_cost_values; 
 		
@@ -81,6 +78,7 @@ float C2DSimilarityProfile::get_peak_frequency() const
 		boost::mutex::scoped_lock lock(_M_peak_freq_mutex);
 		if (!m_peak_freq_valid) {
 			CFFT1D_R2C fft(m_cost_values.size());
+			cvdebug() << "costs:" << m_cost_values << "\n"; 
 			vector<CFFT1D_R2C::Complex> freq = fft.forward(m_cost_values);
 			for (auto i = freq.begin() + 1; i != freq.end(); ++i) {
 				const float n = norm<float>(*i);
