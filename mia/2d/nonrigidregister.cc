@@ -81,7 +81,7 @@ private:
 	const C2DInterpolatorFactory& _M_ipf;
 	size_t _M_func_evals; 
 	size_t _M_grad_evals; 
-
+	double _M_start_cost; 
 };
 typedef shared_ptr<C2DNonrigRegGradientProblem> P2DGradientNonrigregProblem;
 
@@ -145,7 +145,7 @@ void C2DNonrigidRegisterImpl::apply(C2DTransformation& transf, const gsl_multimi
 	CFDFMinimizer minimizer(gp, optimizer );
 
 	auto x = transf.get_parameters();
-	cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
+	cvmsg() << "Start Registration of " << x.size() <<  " parameters\n"; 
 	minimizer.run(x);
 	transf.set_parameters(x);
 	cvmsg() << "\n"; 
@@ -193,7 +193,7 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 		else
 			transform = _M_transform_creator->create(src_scaled->get_size());
 
-		cvinfo() << "register at " << src_scaled->get_size() << "\n";
+		cvmsg() << "register at " << src_scaled->get_size() << "\n";
 
 		save_image2d("src.@", src_scaled);
 		save_image2d("ref.@", ref_scaled);
@@ -218,7 +218,8 @@ C2DNonrigRegGradientProblem::C2DNonrigRegGradientProblem(const C2DFullCostList& 
 	_M_transf(transf),
 	_M_ipf(ipf), 
 	_M_func_evals(0),
-	_M_grad_evals(0)
+	_M_grad_evals(0), 
+	_M_start_cost(0.0)
 {
 
 }
@@ -230,12 +231,18 @@ void C2DNonrigRegGradientProblem::reset_counters()
 
 double  C2DNonrigRegGradientProblem::do_f(const DoubleVector& x)
 {
-	_M_func_evals++; 
+       
+
 	_M_transf.set_parameters(x);
 	double result = _M_costs.cost_value(_M_transf);
+	if (!_M_func_evals && !_M_grad_evals) 
+		_M_start_cost = result; 
+	
+	_M_func_evals++; 
 	cvmsg() << "Cost[fg="<<setw(4)<<_M_grad_evals << ",fe="<<setw(4)<<_M_func_evals<<"]=" 
-		<< setw(20) << setprecision(12) << result << "\r"; 
-	cvinfo() << "\n"; 
+		<< setw(20) << setprecision(12) << result 
+		<< "ratio:" << setw(20) << setprecision(12) << result / _M_start_cost <<   "\r"; 
+	cvinfo() << "\n";
 	return result; 
 }
 
@@ -246,14 +253,19 @@ void    C2DNonrigRegGradientProblem::do_df(const DoubleVector& x, DoubleVector& 
 
 double  C2DNonrigRegGradientProblem::do_fdf(const DoubleVector& x, DoubleVector&  g)
 {
-	_M_grad_evals++; 
-	
+
 	_M_transf.set_parameters(x);
 	fill(g.begin(), g.end(), 0.0); 
 	double result = _M_costs.evaluate(_M_transf, g);
+
+	if (!_M_func_evals && !_M_grad_evals) 
+		_M_start_cost = result; 
+
+	_M_grad_evals++; 
 	//transform(g.begin(), g.end(), g.begin(), _1 * -1); 
 	cvmsg() << "Cost[fg="<<setw(4)<<_M_grad_evals << ",fe="<<setw(4)<<_M_func_evals<<"]=" 
-		<< setw(20) << setprecision(12) << result << "\r"; 
+		<< setw(20) << setprecision(12) << result 
+		<< "ratio:" << setw(20) << setprecision(12) << result / _M_start_cost <<  "\r"; 
 	cvinfo() << "\n"; 
 	return result; 
 }

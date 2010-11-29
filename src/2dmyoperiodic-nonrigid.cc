@@ -22,7 +22,7 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmilles"
+#define VSTREAM_DOMAIN "2dmyoperiodic"
 
 #include <fstream>
 #include <sstream>
@@ -228,7 +228,7 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images, cons
 		}
 
 		cvmsg() << "Register image " << i << "\n"; 
-		float w = float(*high_index - i)/float(*high_index - *low_index);  
+		float w = float(*high_index - i)/delta;  
 		FAddWeighted lerp(w);
 		
 		P2DImage ref = mia::filter(lerp, *images[*low_index], *images[*high_index]); 
