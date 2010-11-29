@@ -138,8 +138,8 @@ float CCostEvaluatorDeltaScalar::get_cost_grad(size_t x,param_pass& p, mia::C2DF
 	const C2DFVector dsdx = p.src[x+1] - p.src[x-1];
 	const C2DFVector dsdy = p.srcp[x] - p.srcm[x];
 
-	g[x].x = scale * helper * ( 2 * dot(ref, dsdx ) - dotrsbyrr * dot(src, dsdx));
-	g[x].y = scale * helper * ( 2 * dot(ref, dsdy ) - dotrsbyrr * dot(src, dsdy));
+	g[x].x = -scale * helper * ( 2 * dot(ref, dsdx ) - dotrsbyrr * dot(src, dsdx));
+	g[x].y = -scale * helper * ( 2 * dot(ref, dsdy ) - dotrsbyrr * dot(src, dsdy));
 
 	return 0.5 * scale * helper0 * helper0;
 }
