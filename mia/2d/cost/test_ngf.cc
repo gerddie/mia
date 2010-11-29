@@ -137,7 +137,7 @@ BOOST_FIXTURE_TEST_CASE( test_CostEvaluatorsSQDelta, TestEvaluators )
 BOOST_FIXTURE_TEST_CASE( test_CCostEvaluatorDeltaScalar, TestEvaluators )
 {
         CCostEvaluatorDeltaScalar ds;
-        run(ds, 4.0458, C2DFVector(5.0885, -10.177));
+        run(ds, 4.0458, C2DFVector(-5.0885, 10.177));
 }
 
 
