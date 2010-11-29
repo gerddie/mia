@@ -25,6 +25,8 @@
 #define VSTREAM_DOMAIN "2dmilles"
 
 #include <fstream>
+#include <sstream>
+#include <iomanip>
 #include <libxml++/libxml++.h>
 #include <boost/filesystem.hpp>
 
@@ -96,7 +98,7 @@ struct FAddWeighted: public TFilter<P2DImage> {
 
 		// this should be properly clamped
 		while ( r != e ) {
-			*r = (T)(w2 * *ia + _M_w * (float)*ib);
+			*r = (T)(w2 * (float)*ia + _M_w * (float)*ib);
 			++r;
 			++ia;
 			++ib;
@@ -131,6 +133,7 @@ public:
 		shared_ptr<C2DInterpolatorFactory> interpolator; 
 		size_t mg_levels; 
 		size_t skip; 
+		bool save_ref; 
 	};
 
 	C2DMyocardPeriodicRegistration(const RegistrationParams& params); 
@@ -225,11 +228,17 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images, cons
 		}
 
 		cvmsg() << "Register image " << i << "\n"; 
-		float w = *high_index - i;  
+		float w = float(*high_index - i)/float(*high_index - *low_index);  
 		FAddWeighted lerp(w);
 		
 		P2DImage ref = mia::filter(lerp, *images[*low_index], *images[*high_index]); 
 		P2DImage src = images[i]; 
+		if (m_params.save_ref) {
+			stringstream refname; 
+			refname << "ref" << setw(4) << setfill('0') << i << ".v"; 
+			save_image2d(refname.str(), ref); 
+			cvmsg() << "Save reference to " << refname.str() << "\n"; 
+		}
 		P2DTransformation transform = nr.run(src, ref);
 		images[i] = (*transform)(*images[i], *m_params.interpolator);
 	}
@@ -256,7 +265,8 @@ C2DMyocardPeriodicRegistration::RegistrationParams::RegistrationParams():
 	series_select_cost(C2DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=dot]")),
 	transform_creator(C2DTransformCreatorHandler::instance().produce("spline")),
 	mg_levels(3),
-	skip(2)
+	skip(2), 
+	save_ref(false)
 {
 }
 
@@ -319,6 +329,8 @@ int do_main( int argc, const char *argv[] )
 				   "Const function to use for the analysis of the series", 
 				   "cost-series", false)); 
 
+	options.push_back(make_opt(params.save_ref,"save-references", 0, 
+				   "Save synthetic references to files refXXXX.v", "save-references", false)); 
 	
 
 	options.parse(argc, argv, false);
