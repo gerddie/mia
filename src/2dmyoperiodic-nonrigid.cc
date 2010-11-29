@@ -211,8 +211,6 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images, cons
 
 	auto low_index = subset.begin(); 
 	auto high_index = low_index + 1; 
-	float delta = *high_index - *low_index; 
-	assert(delta > 0.0); 
 	
 	for (size_t i = m_params.skip; i < images.size(); ++i) {
 
@@ -229,8 +227,7 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images, cons
 		// the last images may be registered using SSD without interpolating references 
 		P2DImage ref; 
 		if (high_index != subset.end()) {
-			cvmsg() << "Register image " << i << "\n"; 
-			float w = float(*high_index - i)/delta;  
+			float w = float(*high_index - i)/(*high_index - *low_index);  
 			FAddWeighted lerp(w);
 			
 			ref = mia::filter(lerp, *images[*low_index], *images[*high_index]); 
@@ -242,7 +239,8 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images, cons
 			}
 		}else
 			ref = images[*low_index]; 
-		
+
+		cvmsg() << "Register image " << i << "\n"; 		
 		P2DTransformation transform = nr.run(images[i], ref);
 		images[i] = (*transform)(*images[i], *m_params.interpolator);
 	}
