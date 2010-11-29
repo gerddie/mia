@@ -222,24 +222,28 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images, cons
 		if (i == *high_index) {
 			++low_index; 
 			++high_index; 
-			if (high_index == subset.end())
-				return;  
-			continue;
+			if (high_index != subset.end())
+				continue;
 		}
 
-		cvmsg() << "Register image " << i << "\n"; 
-		float w = float(*high_index - i)/delta;  
-		FAddWeighted lerp(w);
+		// the last images may be registered using SSD without interpolating references 
+		P2DImage ref; 
+		if (high_index != subset.end()) {
+			cvmsg() << "Register image " << i << "\n"; 
+			float w = float(*high_index - i)/delta;  
+			FAddWeighted lerp(w);
+			
+			ref = mia::filter(lerp, *images[*low_index], *images[*high_index]); 
+			if (m_params.save_ref) {
+				stringstream refname; 
+				refname << "ref" << setw(4) << setfill('0') << i << ".v"; 
+				save_image2d(refname.str(), ref); 
+				cvmsg() << "Save reference to " << refname.str() << "\n"; 
+			}
+		}else
+			ref = images[*low_index]; 
 		
-		P2DImage ref = mia::filter(lerp, *images[*low_index], *images[*high_index]); 
-		P2DImage src = images[i]; 
-		if (m_params.save_ref) {
-			stringstream refname; 
-			refname << "ref" << setw(4) << setfill('0') << i << ".v"; 
-			save_image2d(refname.str(), ref); 
-			cvmsg() << "Save reference to " << refname.str() << "\n"; 
-		}
-		P2DTransformation transform = nr.run(src, ref);
+		P2DTransformation transform = nr.run(images[i], ref);
 		images[i] = (*transform)(*images[i], *m_params.interpolator);
 	}
 }
