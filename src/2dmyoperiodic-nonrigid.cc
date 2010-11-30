@@ -309,7 +309,7 @@ C2DMyocardPeriodicRegistration::RegistrationParams::RegistrationParams():
 	divcurlweight(5),
 	pass1_cost(C2DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=ds]")), 
 	pass2_cost(C2DFullCostPluginHandler::instance().produce("image:cost=ssd")), 
-	series_select_cost(C2DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=dot]")),
+	series_select_cost(C2DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=ds]")),
 	transform_creator(C2DTransformCreatorHandler::instance().produce("spline")),
 	mg_levels(3),
 	skip(2), 
