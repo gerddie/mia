@@ -136,6 +136,17 @@ vector<size_t> C2DSimilarityProfile::get_periodic_subset() const
 		else
 			++i; 
 	}
+	// not yet past the end, therefore, we may want t o add the last image
+	while (i < m_cost_values.size()) {
+		if (m_cost_values[i] < m_cost_values[i - 1]
+		    && m_cost_values[i] < m_cost_values[i - 2]) {
+			result.push_back(i); 
+			i += 3; 
+		}
+		else
+			++i; 
+	}
+	
 	sort(result.begin(), result.end()); 
 	return result; 
 }

@@ -145,7 +145,7 @@ void C2DNonrigidRegisterImpl::apply(C2DTransformation& transf, const gsl_multimi
 	CFDFMinimizer minimizer(gp, optimizer );
 
 	auto x = transf.get_parameters();
-	cvmsg() << "Start Registration of " << x.size() <<  " parameters\n"; 
+	cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
 	minimizer.run(x);
 	transf.set_parameters(x);
 	cvmsg() << "\n"; 
@@ -193,7 +193,7 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 		else
 			transform = _M_transform_creator->create(src_scaled->get_size());
 
-		cvmsg() << "register at " << src_scaled->get_size() << "\n";
+		cvinfo() << "register at " << src_scaled->get_size() << "\n";
 
 		save_image2d("src.@", src_scaled);
 		save_image2d("ref.@", ref_scaled);

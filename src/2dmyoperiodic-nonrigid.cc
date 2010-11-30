@@ -134,12 +134,14 @@ public:
 		P2DTransformationFactory transform_creator; 
 		shared_ptr<C2DInterpolatorFactory> interpolator; 
 		size_t mg_levels; 
-		size_t skip; 
+		//		size_t skip; 
 		bool save_ref; 
 	};
 
 	C2DMyocardPeriodicRegistration(const RegistrationParams& params); 
 	void run(C2DImageSeries& images); 
+	size_t get_ref_idx()const; 
+
 private: 
 	vector<size_t>  get_high_contrast_candidates(const C2DImageSeries& images, 
 						     size_t startidx, size_t endidx); 
@@ -194,7 +196,7 @@ vector<size_t>  C2DMyocardPeriodicRegistration::get_high_contrast_candidates(con
 vector<size_t> C2DMyocardPeriodicRegistration::get_prealigned_subset(const C2DImageSeries& images) 
 {
 	cvmsg() << "estimate prealigned subset ...\n"; 
-	vector<size_t> candidates = get_high_contrast_candidates(images, m_params.skip + 20, images.size()-2); 
+	vector<size_t> candidates = get_high_contrast_candidates(images, 20, images.size()-2); 
 	assert(!candidates.empty()); 
 
 	C2DSimilarityProfile best_series(m_params.series_select_cost, images, candidates[0]); 
@@ -257,7 +259,7 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images, cons
 	auto low_index = subset.begin(); 
 	auto high_index = low_index + 1; 
 	
-	for (size_t i = m_params.skip; i < images.size(); ++i) {
+	for (size_t i = 0; i < images.size(); ++i) {
 
 		if (i == *low_index)
 			continue; 
@@ -303,6 +305,11 @@ void C2DMyocardPeriodicRegistration::run(C2DImageSeries& images)
 	run_final_pass(images, subset); 
 }
 
+size_t C2DMyocardPeriodicRegistration::get_ref_idx()const 
+{
+	return m_ref; 
+}
+
 
 C2DMyocardPeriodicRegistration::RegistrationParams::RegistrationParams():
 	minimizer(min_gd), 
@@ -312,7 +319,6 @@ C2DMyocardPeriodicRegistration::RegistrationParams::RegistrationParams():
 	series_select_cost(C2DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=ds]")),
 	transform_creator(C2DTransformCreatorHandler::instance().produce("spline")),
 	mg_levels(3),
-	skip(2), 
 	save_ref(false)
 {
 }
@@ -323,6 +329,7 @@ int do_main( int argc, const char *argv[] )
 	string in_filename;
 	string out_filename;
 	string registered_filebase("reg");
+	string reference_index_file; 
 
 	size_t skip = 0; 
 	
@@ -344,10 +351,15 @@ int do_main( int argc, const char *argv[] )
 				    "file name base for registered fiels", "registered", false)); 
 
 
+	options.push_back(make_opt(reference_index_file, "ref-idx", 0, 
+				   "save reference index number to this file", "ref-idx", false));  
+
 	options.push_back(make_opt(skip, "skip", 'k', 
 				   "Skip images at the begin of the series", 
 				   "skip", false)); 
 	
+	
+
 	options.set_group("\nRegistration"); 
 
 
@@ -395,6 +407,12 @@ int do_main( int argc, const char *argv[] )
 
 	C2DMyocardPeriodicRegistration mpr(params); 
 	mpr.run(series);
+
+	if (!reference_index_file.empty()) {
+		ofstream refidxfile(reference_index_file.c_str(), ios_base::out );
+		refidxfile << mpr.get_ref_idx(); 
+	}
+			
 	
 	copy(series.begin(), series.end(), in_images.begin() + skip); 
 	input_set.set_images(in_images); 
