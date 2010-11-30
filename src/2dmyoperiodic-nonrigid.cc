@@ -27,10 +27,12 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <queue>
 #include <libxml++/libxml++.h>
 #include <boost/filesystem.hpp>
 
 #include <mia/core/msgstream.hh>
+#include <mia/core/fullstats.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/factorycmdlineoption.hh>
 #include <mia/core/errormacro.hh>
@@ -139,6 +141,8 @@ public:
 	C2DMyocardPeriodicRegistration(const RegistrationParams& params); 
 	void run(C2DImageSeries& images); 
 private: 
+	vector<size_t>  get_high_contrast_candidates(const C2DImageSeries& images, 
+						     size_t startidx, size_t endidx); 
 	vector<size_t> get_prealigned_subset(const C2DImageSeries& images);  
 	void run_initial_pass(C2DImageSeries& images, const vector<size_t>& subset); 
 	void run_final_pass(C2DImageSeries& images, const vector<size_t>& subset); 
@@ -147,18 +151,59 @@ private:
 	size_t m_ref; 
 }; 
 
+struct IdxVariation {
+	size_t index; 
+	double variation; 
+}; 
+
+bool operator < (const IdxVariation& a, const IdxVariation& b) 
+{
+	return a.variation < b.variation; 
+}
+
+class CStatsEvaluator : public TFilter<CFullStats> {
+public:
+	template <typename T>
+	CFullStats operator () (const T2DImage<T>& image) const {
+		return CFullStats(image.begin(), image.end());
+	}
+};
+
+vector<size_t>  C2DMyocardPeriodicRegistration::get_high_contrast_candidates(const C2DImageSeries& images, 
+									     size_t startidx, size_t endidx)
+{
+	CStatsEvaluator sev; 
+	priority_queue<IdxVariation> q; 
+	while (startidx < endidx)  {
+		IdxVariation v; 
+		v.index = startidx; 
+		v.variation = mia::filter(sev, *images[startidx]).sigma();  
+		q.push(v); 
+		++startidx; 
+	}
+	vector<size_t> result; 
+	
+	while (result.size() < 20 && !q.empty()) {
+		IdxVariation v = q.top(); 
+		result.push_back(v.index); 
+		q.pop(); 
+	}
+	return result; 
+}
+
 vector<size_t> C2DMyocardPeriodicRegistration::get_prealigned_subset(const C2DImageSeries& images) 
 {
 	cvmsg() << "estimate prealigned subset ...\n"; 
-	size_t ref = m_params.skip + 20; 
-	
-	C2DSimilarityProfile best_series(m_params.series_select_cost, images, ref); 
+	vector<size_t> candidates = get_high_contrast_candidates(images, m_params.skip + 20, images.size()-2); 
+	assert(!candidates.empty()); 
+
+	C2DSimilarityProfile best_series(m_params.series_select_cost, images, candidates[0]); 
 	
 	// the skip values should be parameters 
-	for (size_t i = m_params.skip + 21; i < images.size()-2; ++i) {
-		C2DSimilarityProfile sp(m_params.series_select_cost, images, i); 
+	for (size_t i = 1; i < candidates.size(); ++i) {
+		C2DSimilarityProfile sp(m_params.series_select_cost, images, candidates[i]); 
 		if (sp.get_peak_frequency() > best_series.get_peak_frequency()) {
-			m_ref = i; 
+			m_ref = candidates[i]; 
 			best_series = sp; 
 		}
 	}
