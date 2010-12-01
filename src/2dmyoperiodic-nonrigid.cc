@@ -134,7 +134,7 @@ public:
 		P2DTransformationFactory transform_creator; 
 		shared_ptr<C2DInterpolatorFactory> interpolator; 
 		size_t mg_levels; 
-		//		size_t skip; 
+		size_t max_candidates; 
 		bool save_ref; 
 	};
 
@@ -185,7 +185,7 @@ vector<size_t>  C2DMyocardPeriodicRegistration::get_high_contrast_candidates(con
 	}
 	vector<size_t> result; 
 	
-	while (result.size() < 20 && !q.empty()) {
+	while (result.size() < m_params.max_candidates && !q.empty()) {
 		IdxVariation v = q.top(); 
 		result.push_back(v.index); 
 		q.pop(); 
@@ -319,6 +319,7 @@ C2DMyocardPeriodicRegistration::RegistrationParams::RegistrationParams():
 	series_select_cost(C2DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=ds]")),
 	transform_creator(C2DTransformCreatorHandler::instance().produce("spline")),
 	mg_levels(3),
+	max_candidates(20), 
 	save_ref(false)
 {
 }
@@ -349,16 +350,23 @@ int do_main( int argc, const char *argv[] )
 				    "output", true));
 	options.push_back(make_opt( registered_filebase, "registered", 'r', 
 				    "file name base for registered fiels", "registered", false)); 
+	options.push_back(make_opt(params.save_ref,"save-references", 0, 
+				   "Save synthetic references to files refXXXX.v", "save-references", false)); 
 
 
-	options.push_back(make_opt(reference_index_file, "ref-idx", 0, 
-				   "save reference index number to this file", "ref-idx", false));  
-
+	options.set_group("\nPreconditions"); 
 	options.push_back(make_opt(skip, "skip", 'k', 
 				   "Skip images at the begin of the series", 
 				   "skip", false)); 
-	
-	
+	options.push_back(make_opt(params.max_candidates, "max-candidates", 0, 
+				   "maximum number of candidates for global reference image", 
+				   "max-candidates", false)); 
+	options.push_back(make_opt(params.series_select_cost, "cost-series", 'S',
+				   "Const function to use for the analysis of the series", 
+				   "cost-series", false)); 
+	options.push_back(make_opt(reference_index_file, "ref-idx", 0, 
+				   "save reference index number to this file", "ref-idx", false));  
+
 
 	options.set_group("\nRegistration"); 
 
@@ -368,7 +376,7 @@ int do_main( int argc, const char *argv[] )
 				    "optimizer", false));
 	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
-	options.push_back(make_opt( params.mg_levels, "mg-levels", 'l', "multi-resolution levels", 
+	options.push_back(make_opt( params.mg_levels, "mr-levels", 'l', "multi-resolution levels", 
 				    "mg-levels", false));
 
 	options.push_back(make_opt( params.divcurlweight, "divcurl", 'd', 
@@ -384,12 +392,8 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt(params.pass2_cost, "cost-final", '2', 
 				   "Cost function for registration during the final registration", 
 				   "cost-final", false)); 
-	options.push_back(make_opt(params.series_select_cost, "cost-series", 'S',
-				   "Const function to use for the analysis of the series", 
-				   "cost-series", false)); 
+	
 
-	options.push_back(make_opt(params.save_ref,"save-references", 0, 
-				   "Save synthetic references to files refXXXX.v", "save-references", false)); 
 	
 
 	options.parse(argc, argv, false);
@@ -410,7 +414,7 @@ int do_main( int argc, const char *argv[] )
 
 	if (!reference_index_file.empty()) {
 		ofstream refidxfile(reference_index_file.c_str(), ios_base::out );
-		refidxfile << mpr.get_ref_idx(); 
+		refidxfile << mpr.get_ref_idx() + skip; 
 	}
 			
 	
