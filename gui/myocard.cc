@@ -167,7 +167,7 @@ CMyoMainframe::CMyoMainframe(const wxString& title):
 
 int main(int argc, char **argv)
 {
-	CCmdOptionList options;
+	CCmdOptionList options("This program does nothing.");
 
 	options.parse(argc, argv);
 

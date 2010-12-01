@@ -59,10 +59,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_vector_zero_init, T ,test_types )
 {									
 	T gsl_vector(5,true);
 
-	BOOST_REQUIRE(gsl_vector.size() == 5); 
+	BOOST_REQUIRE(gsl_vector.size() == 5u); 
 
 	for(size_t i = 0; i < 5; ++i) {
-		BOOST_CHECK_EQUAL(gsl_vector[i], 0);
+		BOOST_CHECK_EQUAL(gsl_vector[i], 0.0);
 	}
 
 	
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_vector_copy_to, T ,test_types )
 	copy(a.begin(), a.end(), gsl_vector.begin()); 
 	
 	for(size_t i = 0; i < 5; ++i) {
-		BOOST_CHECK_EQUAL(gsl_vector[i], i+1);
+		BOOST_CHECK_EQUAL(gsl_vector[i], static_cast<typename T::value_type>(i + 1));
 	}
 
 	
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_vector_copy_from, T ,test_types )
 	copy(gsl_vector.begin(), gsl_vector.end(), a.begin()); 
 	
 	for(size_t i = 0; i < 5; ++i)
-		BOOST_CHECK_EQUAL(a[i], i +1); 
+		BOOST_CHECK_EQUAL(a[i], static_cast<typename T::value_type>(i + 1)); 
 
 	
 }
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( test_vector_inplace_add, T ,test_types )
 	copy(gsl_vector.begin(), gsl_vector.end(), a.begin()); 
 	
 	for(size_t i = 0; i < 5; ++i)
-		BOOST_CHECK_EQUAL(a[i], i +1); 
+		BOOST_CHECK_EQUAL(a[i], static_cast<typename T::value_type>(i + 1)); 
 
 	
 }
@@ -148,9 +148,9 @@ BOOST_AUTO_TEST_CASE( test_vector_copy )
 	wy[2] = 2.0; 
 	BOOST_CHECK_EQUAL(wy[2], 2.0); 
 	
-	BOOST_CHECK_EQUAL(wx.size(), 10); 
+	BOOST_CHECK_EQUAL(wx.size(), 10u); 
 	wx = wy; 
-	BOOST_CHECK_EQUAL(wx.size(), 5); 
+	BOOST_CHECK_EQUAL(wx.size(), 5u); 
 	BOOST_CHECK_EQUAL(wx[2], 2.0); 
 
 }

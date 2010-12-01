@@ -62,6 +62,6 @@ bool init_unit_test_suite( )
 int BOOST_TEST_CALL_DECL
 main( int argc, char* argv[] )
 {
-	CCmdOptionList().parse(argc, argv);
+	CCmdOptionList(" Sysopsis: run tests").parse(argc, argv);
 	return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );
 }
