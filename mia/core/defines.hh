@@ -41,6 +41,7 @@ NS_BEGIN(mia)
 enum EInterpolation {
 	ip_nn,       /**< nearest neighbor interpolation */
 	ip_linear,   /**< linear interpolation */
+	ip_bspline0, /**< bsplines of degree 0 (effectively nearest neighbor interpolation) */ 
 	ip_bspline2, /**< bsplines of degree 2 */ 
 	ip_bspline3, /**< bsplines of degree 3 */  
 	ip_bspline4, /**< bsplines of degree 4 */ 

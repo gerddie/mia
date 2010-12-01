@@ -93,6 +93,10 @@ public:
 	///\returns the number of the neighboring grind points used on one side of the center 
 	int get_active_halfrange()const; 
 
+
+	int get_start_idx_and_value_weights(double x, std::vector<double>& weights) const; 
+	int get_start_idx_and_derivative_weights(double x, std::vector<double>& weights) const; 
+
 protected:
 
 	/** add a pole to the list of poles
@@ -111,6 +115,7 @@ private:
 };
 
 typedef std::shared_ptr<CBSplineKernel> PSplineKernel;
+typedef std::shared_ptr<CBSplineKernel> PBSplineKernel;
 
 enum ci_type {ci_bspline, ci_omoms};
 
@@ -129,6 +134,17 @@ inline size_t CBSplineKernel::size()const
 {
 	return _M_support_size;
 }
+
+/** implements a B-Spline kernel of degree 2 */
+class EXPORT_CORE CBSplineKernel0: public  CBSplineKernel{
+ public:
+	CBSplineKernel0();
+	virtual void get_weights(double x, std::vector<double>& weight)const;
+	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
+	virtual double get_weight_at(double x, int degree) const;
+	virtual void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
+};
+
 
 /** implements a B-Spline kernel of degree 2 */
 class EXPORT_CORE CBSplineKernel2: public  CBSplineKernel{

@@ -25,6 +25,7 @@ SET(MIACORE_SRC_BASE
   interpolator1d.cc
   iodata.cc
   ioplugin.cc
+  mitestimages.cc
   module.cc
   msgstream.cc 
   noisegen.cc 
@@ -47,6 +48,7 @@ SET(MIACORE_SRC_BASE
   slopestatistics.cc
   slopeclassifier.cc
   spacial_kernel.cc 
+  splineparzenmi.cc
   sqmin.cc
   streamredir.cc
   testplugin.cc 
@@ -83,6 +85,7 @@ SET(MIACORE_HEADER_BASE
   iodata.hh
   iohandler.cxx iohandler.hh
   ioplugin.cxx ioplugin.hh
+  mitestimages.hh
   module.hh
   msgstream.hh
   noisegen.hh
@@ -102,6 +105,7 @@ SET(MIACORE_HEADER_BASE
   shape.hh shape.cxx
   slopestatistics.hh
   slopeclassifier.hh
+  splineparzenmi.hh
   spacial_kernel.hh
   sqmin.hh
   streamredir.hh
@@ -253,6 +257,7 @@ NEW_TEST(flagstring  miacore)
 NEW_TEST(meanvar  miacore)
 NEW_TEST(scaler1d miacore)
 NEW_TEST(statistics miacore)
+NEW_TEST(splineparzenmi miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)

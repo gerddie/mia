@@ -171,6 +171,55 @@ int CBSplineKernel::get_active_halfrange() const
 	return (_M_support_size  + 1) / 2;
 }
 
+int CBSplineKernel::get_start_idx_and_value_weights(double x, std::vector<double>& weights) const
+{
+	const int result = fastfloor(x + _M_shift);
+	get_weights(x - result, weights); 
+	return result - (int)_M_half_degree; 
+}
+
+int CBSplineKernel::get_start_idx_and_derivative_weights(double x, std::vector<double>& weights) const
+{
+	const int result = fastfloor(x + _M_shift);
+	get_derivative_weights(x - result, weights); 
+	return result - (int)_M_half_degree; 
+}
+
+CBSplineKernel0::CBSplineKernel0():
+	CBSplineKernel(0, 0.5, ip_bspline0)
+{
+}
+	
+void CBSplineKernel0::get_weights(double /*x*/, std::vector<double>& weight)const
+{
+	assert(weight.size() > 0); 
+	weight[0] = 1; 
+}
+
+void CBSplineKernel0::get_derivative_weights(double /*x*/, std::vector<double>& /*weight*/) const
+{
+	assert(false && "get_derivative_weights is not defined for the Haar spline"); 
+	throw runtime_error("CBSplineKernel0::get_derivative_weights: not supported for Haar spline"); 
+}
+
+double CBSplineKernel0::get_weight_at(double x, int degree) const
+{
+	if (degree != 0) {
+		THROW(invalid_argument, "CBSplineKernel0::get_weight_at: degree " <<  degree << 
+		      "not supported for Haar spline"); 
+	}
+	return abs(x) < 0.5 ? 1.0 : 0.0; 
+}
+void CBSplineKernel0::get_derivative_weights(double /*x*/, std::vector<double>& weight, int degree) const
+{
+	if (degree == 0)
+		weight[0] = 1.0; 
+	else {
+		THROW(invalid_argument, "CBSplineKernel0::get_derivative_weights: degree " <<  degree << 
+		      "not supported for Haar spline"); 
+	}
+}
+
 CBSplineKernel2::CBSplineKernel2():
 	CBSplineKernel(2, 0.5, ip_bspline2)
 {
