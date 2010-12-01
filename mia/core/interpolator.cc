@@ -171,26 +171,6 @@ int CBSplineKernel::get_active_halfrange() const
 	return (_M_support_size  + 1) / 2;
 }
 
-double CBSplineKernel::get_mult_int(int s1, int s2, int range, EIntegralType type) const
-{
-	int deg1 = 0; 
-	int deg2 = 0; 
-	switch (type) {
-	case integral_11:
-		deg1 = deg2 = 1; 
-		break;
-	case integral_20:
-		deg1 = 2; 
-		break; 
-	case integral_02:
-		deg2 = 2; 
-		break; 
-	default:
-		assert(0 && "unknown integral type specified"); 
-	}
-	return integrate2(*this, s1, s2, deg1, deg2, 1, 0, range); 
-}
-
 CBSplineKernel2::CBSplineKernel2():
 	CBSplineKernel(2, 0.5, ip_bspline2)
 {
@@ -268,93 +248,6 @@ CBSplineKernel3::CBSplineKernel3():
 	CBSplineKernel(3, 0.0, ip_bspline3)
 {
 	add_pole(sqrt(3.0) - 2.0);
-}
-
-
-double CBSplineKernel3::read_table(int skip, int delta, bool swapped, EIntegralType type) const
-{
-	// for simplicity this table is redundant 
-	// columns refere to the absolute difference |s1-s2|
-	// rows correspond to the skip at boundaries 
-	// row 3 is no skip 
-	const double integral_11[7][4] = {
-		{  1.0/20.0,        0.0,       0.0,       0.0 },
-		{  1.0/ 3.0,  7.0/120.0,       0.0,       0.0 },
-		{ 37.0/60.0,-11.0/ 60.0, -1.0/10.0,       0.0 },
-		{  2.0/ 3.0, -1.0/  8.0, -1.0/ 5.0, -1.0/120.0}, 
-		{ 37.0/60.0,-11.0/ 60.0, -1.0/10.0,       0.0 },
-		{  1.0/ 3.0,  7.0/120.0,       0.0,       0.0 },
-		{  1.0/20.0,        0.0,       0.0,       0.0 }
-	}; 
-
-	const double integral_20[7][4] = {
-		{  1.0/30.0,        0.0,       0.0,       0.0 },
-		{ -1.0/ 3.0, 11.0/ 40.0,       0.0,       0.0 },
-		{ -7.0/10.0, 11.0/ 60.0, 11.0/60.0,       0.0 },
-		{ -2.0/ 3.0,  1.0/  8.0,  1.0/ 5.0, 1.0/120.0 }, 
-		{ -7.0/10.0, -3.0/ 20.0,  1.0/60.0,       0.0 },
-		{ -1.0/ 3.0, -7.0/120.0,       0.0,       0.0 },
-		{  1.0/30.0,        0.0,       0.0,       0.0 }
-	}; 
-
-	switch (type) {
-	case CBSplineKernel::integral_11:
-		return integral_11[3+skip][delta]; 
-	case CBSplineKernel::integral_02:
-		swapped = !swapped; 
-	case CBSplineKernel::integral_20:
-		if (swapped) 
-			return integral_20[3-skip][delta]; 
-		else
-			return integral_20[3+skip][delta]; 
-	default:
-		assert(0 && "unknown integral type specified"); 
-	}
-}
-
-double CBSplineKernel::mult_int_from_table(int s1, int s2, int range, EIntegralType type) const
-{
-	const int hr = get_active_halfrange(); 
-	const int max_skip = (size() + 1) & ~1; 
-	bool swapped = false; 
-	if (s2 < s1) {
-		swapped = true; 
-		swap(s1, s2); 
-	}
-	
-	const size_t delta = s2 - s1; 
-	if ( delta >= size() ) 
-		return 0.0;
-	
-	int skip = 0; 
-	const int dlow = hr - s1; 
-	if (dlow > 0) {
-		skip = s2 - hr;
-		if (skip > 0) 
-			skip = 0; 
-	} else {
-		const int dhigh = hr + s2 - range; 
-		if (dhigh > 0) 
-			skip = hr + s1 - range; 
-		if (skip < 0) 
-			skip = 0; 
-	}
-	if (abs(skip) >= max_skip) {
-		cvdebug()<< "skip because abs(skip = " << skip << ")>=" << size() << " delta="<< delta<<"\n";  
-		return 0.0; 
-	}
-	
-	return read_table(skip, delta, swapped, type); 
-}
-
-double CBSplineKernel::read_table(int , int , bool , EIntegralType ) const
-{
-	assert(0 && "read_table needs to be implemented together with get_mult_int"); 
-}
-
-double CBSplineKernel3::get_mult_int(int s1, int s2, int range, EIntegralType type) const
-{
-	return mult_int_from_table(s1, s2, range, type); 
 }
 
 #ifdef __SSE2__
@@ -721,56 +614,6 @@ void CBSplineKernel4::get_derivative_weights(double x, std::vector<double>& weig
 	}
 }
 
-double CBSplineKernel4::read_table(int skip, int delta, bool swapped, EIntegralType type) const
-{
-	const double integral_11[11][5] = {
-		/*-5*/{ 1.0/32265.0,          0,              0.0,                 0.0, 0.0 },
-		/*-4*/{ 19.0/336.0,       169.0/161280.0,              0.0,                 0.0, 0.0 },
-		/*-3*/{ 35.0/144.0,       4771.0/80640.0,  17.0/53760.0,                0.0, 0.0 },
-		/*-2*/{ 433.0/1008.0,     -1447.0/16128.0, -17.0/180.0,  -209.0/161280.0, 0.0 },
-		/*-1*/{ 15678.0/32256.0, -1699.0/53760.0, -6103.0/32256.0, -1189.0/53760.0,  -1.0/10080 },
-		/* 0*/{ 35.0/72.0,        -11.0/360.0, -17.0/90.0, -59.0/2520.0, -1.0/5040}, 
-		/* 1*/{ 15678.0/32256.0, -1699.0/53760.0, -6103.0/32256.0, -1189.0/53760.0,  -1.0/10080 },
-		/* 2*/{ 433.0/1008.0,     -1447.0/16128.0, -17.0/180.0,  -209.0/161280.0, 0.0 },
-		/* 3*/{ 35.0/144.0,       4771.0/80640.0,  17.0/53760.0,                0.0, 0.0 },
-		/* 4*/{ 19.0/336.0,       169.0/161280.0,              0.0,                 0.0, 0.0 },
-		/* 5*/{ 1.0/32265.0,          0,              0.0,                 0.0, 0.0 }
-	}; 
-
-
-	const double integral_20[11][5] = {
-		{       1.0/43008.0,             0.0,            0.0,            0.0,            0.0 },
-		{     551.0/16128.0,   31.0/ 10080.0,            0.0,            0.0,            0.0 },
-		{    -35.0/   144.0, 3284.0/ 15249.0,  588.0/48347.0,            0.0,            0.0 },
-		{  -2797.0/  5376.0, 1447.0/ 16128.0,  237.0/ 1280.0, 437.0/ 80640.0,            0.0 },
-		{  -6679.0/ 13739.0,  509.0/ 16738.0, 6103.0/32256.0, 884.0/ 37923.0,  61.0/397503.0 },
-		{    -35.0/    72.0,   11.0/   360.0,   17.0/   90.0,  59.0/  2520.0, 129.0/650165.0 }, 
-		{  -6679.0/ 13739.0,  277.0/ 10080.0,11117.0/62905.0,1345.0/ 74749.0,  20.0/444907.0 },
-		{  -2797.0/  5376.0,-1987.0/ 10752.0,   43.0/11520.0,  11.0/107520.0,            0.0 },
-		{    -35.0/   144.0,-4771.0/ 80640.0,  -17.0/53760.0,            0.0,            0.0 },
-		{     551.0/16128.0,   47.0/322560.0,            0.0,            0.0,            0.0 },
-		{      1.0/ 43008.0,             0.0,            0.0,             0.0,           0.0 }
-	}; 
-
-	switch (type) {
-	case CBSplineKernel::integral_11:
-		return integral_11[5 + skip][delta]; 
-	case CBSplineKernel::integral_02:
-		swapped = !swapped; 
-	case CBSplineKernel::integral_20:
-		if (swapped) 
-			return integral_20[5 - skip][delta]; 
-		else 
-			return integral_20[5 + skip][delta]; 
-	default:
-		assert(0 && "unknown integral type specified"); 
-	}
-}
-
-double CBSplineKernel4::get_mult_int(int s1, int s2, int range, EIntegralType type) const
-{
-	return mult_int_from_table(s1, s2, range, type); 
-}
 
 
 CBSplineKernel5::CBSplineKernel5():

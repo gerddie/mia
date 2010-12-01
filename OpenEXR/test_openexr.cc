@@ -33,7 +33,11 @@ using namespace boost;
 using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem;
 
-static void handler_setup()
+struct PathInitFixture {
+	PathInitFixture(); 
+}; 
+
+PathInitFixture::PathInitFixture()
 {
 	std::list< bfs::path> searchpath;
 	searchpath.push_back(bfs::path("."));
@@ -42,34 +46,21 @@ static void handler_setup()
 	C2DVFIOPluginHandler::set_search_path(searchpath);
 }
 
-static void test_2dimage_plugin_handler()
+BOOST_FIXTURE_TEST_CASE(test_2dimage_plugin_handler, PathInitFixture)
 {
 	const C2DImageIOPluginHandler::Instance& handler = C2DImageIOPluginHandler::instance();
 	BOOST_REQUIRE(handler.size() == 2u);
 	BOOST_REQUIRE(handler.get_plugin_names() == "datapool exr ");
 }
 
-static void test_2dvf_plugin_handler()
+BOOST_FIXTURE_TEST_CASE(test_2dvf_plugin_handler, PathInitFixture)
 {
 	const C2DVFIOPluginHandler::Instance& handler = C2DVFIOPluginHandler::instance();
 	BOOST_REQUIRE(handler.size() == 2u);
 	BOOST_REQUIRE(handler.get_plugin_names() == "datapool exr ");
 }
 
-extern void add_2dvfio_tests(test_suite* suite);
-
-bool init_unit_test_suite( )
+BOOST_FIXTURE_TEST_CASE(test_2dimage_plugin, PathInitFixture)
 {
-
-
-	handler_setup();
-
-	test_suite *suite = &framework::master_test_suite();
-
-	suite->add( BOOST_TEST_CASE( &test_2dimage_plugin_handler));
-	suite->add( BOOST_TEST_CASE( &test_2dimageio_plugins));
-
-	suite->add( BOOST_TEST_CASE( &test_2dvf_plugin_handler ));
-	//add_2dvfio_tests(test);
-	return true;
+	test_2dimageio_plugins(); 
 }

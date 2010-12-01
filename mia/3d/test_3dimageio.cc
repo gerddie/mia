@@ -22,15 +22,28 @@
 
 
 #define BOOST_TEST_MODULE 3DIMAGEIO
-#include <mia/internal/autotest.hh>
+
+
+
+#ifndef BOOST_TEST_DYN_LINK
+#define BOOST_TEST_DYN_LINK
+#endif
+#define BOOST_TEST_ALTERNATIVE_INIT_API
+#define BOOST_TEST_MAIN
+#define BOOST_TEST_NO_MAIN
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <algorithm>
+
+#include <mia/core/msgstream.hh>
+#include <mia/core/cmdlineparser.hh>
 
 #include <boost/filesystem/convenience.hpp>
 #include <boost/filesystem/path.hpp>
 
 #include <mia/3d/3dimageio.hh>
 #include <mia/3d/3dimageiotest.hh>
-#include <mia/core/cmdlineparser.hh>
 
 NS_MIA_USE
 using namespace boost;
@@ -50,7 +63,28 @@ BOOST_AUTO_TEST_CASE(test_3dimageio_plugin_avail)
 bool init_unit_test_suite( )
 {
 	cvdebug() << "init\n";
+	std::list< bfs::path> searchpath;
+	searchpath.push_back(bfs::path("io"));
+	C3DImageIOPluginHandler::set_search_path(searchpath);
+
 	init_unit_test();
 	add_3dimageio_plugin_tests( &framework::master_test_suite());
 	return true;
 }
+
+
+
+NS_MIA_USE; 
+int BOOST_TEST_CALL_DECL
+main( int argc, char* argv[] )
+{
+
+#ifdef WIN32
+	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
+#endif
+	CCmdOptionList(" Sysopsis: run tests").parse(argc, argv);
+	cvdebug() << "Initialize test ...\n"; 
+	return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );
+}
+

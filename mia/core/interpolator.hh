@@ -78,24 +78,6 @@ public:
 
 	EInterpolation get_type() const; 
 
-
-	/**
-	   evaluate the integral 
-	   /f[
-	   * \int_0^\text{range}
-	   \frac{\partial^{p}}{\partial x}\beta(x-s_1) \frac{\partial^{q}}{\partial x}\beta(x-s_2) dx
-	   * /f]
-	   with q1 and q2 defined by \a type 
-	   \param s1
-	   \param s2
-	   \param range 
-	   \param type 
-	   \returns value of integral 
-	   \remark a simpson based integration is implemented for all spline classes, but normally, a 
-            spline class could provide precalculated values
-	 */
-	virtual double get_mult_int(int s1, int s2, int range, EIntegralType type) const __attribute__((deprecated));  
-
 	/**
 	   \returns the poles of the spline
 	 */
@@ -118,10 +100,9 @@ protected:
 	*/
 	void add_pole(double x);
 
-	double mult_int_from_table(int s1, int s2, int range, EIntegralType type) const __attribute__((deprecated)); 
 private:
 	void fill_index(int i, std::vector<int>& index) const; 
-	virtual double read_table(int skip, int delta, bool swapped, EIntegralType type) const __attribute__((deprecated)); 
+
 	size_t _M_half_degree;
 	double _M_shift;
 	std::vector<double> _M_poles;
@@ -169,7 +150,6 @@ class EXPORT_CORE CBSplineKernel3: public  CBSplineKernel{
 	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
 	double get_mult_int(int s1, int s2, int range, EIntegralType type) const;  
 private: 
-	virtual double read_table(int skip, int delta, bool swapped, EIntegralType type) const; 
 };
 
 /** implements a B-Spline kernel of degree 4 */
@@ -182,7 +162,6 @@ public:
 	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
 	double get_mult_int(int s1, int s2, int range, EIntegralType type) const;  
 private: 
-	virtual double read_table(int skip, int delta, bool swapped, EIntegralType type) const; 
 };
 
 /** implements a B-Spline kernel of degree 5 */
