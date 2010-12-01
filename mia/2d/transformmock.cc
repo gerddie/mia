@@ -107,7 +107,7 @@ gsl::DoubleVector  C2DTransformMock::get_parameters() const
 	return result;
 }
 
-void C2DTransformMock::set_parameters(const gsl::DoubleVector& params)
+void C2DTransformMock::set_parameters(const gsl::DoubleVector& /*params*/)
 {
 
 }

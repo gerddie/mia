@@ -22,16 +22,12 @@
  */
 
 #define BOOST_TEST_MODULE VECTOR2DPARAM_TEST
-#define BOOST_TEST_NO_MAIN
-#define BOOST_TEST_DYN_LINK
 #include <cassert>
 #include <iostream>
 #include <cmath>
 #include <climits>
 
-#include <boost/test/unit_test_suite.hpp>
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <mia/internal/autotest.hh>
 
 #include <mia/2d/2DVector.hh>
 #include <mia/core.hh>
@@ -53,11 +49,4 @@ BOOST_AUTO_TEST_CASE( test_2dvector_parameter )
 
 
 	BOOST_CHECK_THROW(param.set("<3,12.2"), std::invalid_argument);
-}
-
-int BOOST_TEST_CALL_DECL
-main( int argc, char* argv[] )
-{
-	mia::CCmdOptionList().parse(argc, argv);
-	return ::boost::unit_test::unit_test_main( &init_unit_test, argc, argv );
 }

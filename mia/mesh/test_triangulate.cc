@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(  test_trianguale )
 		cvdebug() << triangles[i] << std::endl;
 	}
 
-	BOOST_CHECK_EQUAL(triangles.size(), 10);
+	BOOST_CHECK_EQUAL(triangles.size(), 10u);
 
 }
 

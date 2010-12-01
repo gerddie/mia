@@ -51,7 +51,7 @@ BOOST_FIXTURE_TEST_CASE(test_handler, HandlerTestFixture)
 {
 	const C2DTransformCreatorHandler::Instance& handler =
 		C2DTransformCreatorHandler::instance();
-	BOOST_CHECK_EQUAL(handler.size(), 5);
+	BOOST_CHECK_EQUAL(handler.size(), 5u);
 	BOOST_CHECK_EQUAL(handler.get_plugin_names(),
 			  "affine rigid spline translate vf ");
 }
@@ -76,7 +76,7 @@ BOOST_FIXTURE_TEST_CASE(test_spline_creator, HandlerTestFixture)
 	BOOST_CHECK_EQUAL(transform->get_size(), C2DBounds(16,32));
 
 	// +4 because we add a boundary of 2 rows/columns for a spline of degree 4
-	BOOST_CHECK_EQUAL(transform->degrees_of_freedom(), (4+4) * (8+4) * 2);
+	BOOST_CHECK_EQUAL(transform->degrees_of_freedom(), static_cast<size_t>((4+4) * (8+4) * 2));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_vf_creator, HandlerTestFixture)

@@ -174,7 +174,7 @@ static void handler_setup()
 static void test_3dimage_plugin_handler()
 {
 	const C3DImageIOPluginHandler::Instance& handler = C3DImageIOPluginHandler::instance();
-	BOOST_CHECK_EQUAL(handler.size(), 2);
+	BOOST_CHECK_EQUAL(handler.size(), 2u);
 	BOOST_CHECK_EQUAL(handler.get_plugin_names(),  "datapool vista ");
 }
 
@@ -183,14 +183,14 @@ static void test_3dimage_plugin_handler()
 static void test_2dimage_plugin_handler()
 {
 	const C2DImageIOPluginHandler::Instance& handler = C2DImageIOPluginHandler::instance();
-	BOOST_CHECK_EQUAL(handler.size(), 2);
+	BOOST_CHECK_EQUAL(handler.size(), 2u);
 	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "datapool vista ");
 }
 
 static void test_3dvf_plugin_handler()
 {
 	const C3DVFIOPluginHandler::Instance& handler = C3DVFIOPluginHandler::instance();
-	BOOST_CHECK_EQUAL(handler.size(), 2);
+	BOOST_CHECK_EQUAL(handler.size(), 2u);
 	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "datapool vista ");
 }
 
@@ -198,7 +198,7 @@ static void test_3dvf_plugin_handler()
 static void test_2dvf_plugin_handler()
 {
 	const C2DVFIOPluginHandler::Instance& handler = C2DVFIOPluginHandler::instance();
-	BOOST_CHECK_EQUAL(handler.size(), 2);
+	BOOST_CHECK_EQUAL(handler.size(), 2u);
 	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "datapool vista ");
 }
 
@@ -206,7 +206,7 @@ static void test_2dvf_plugin_handler()
 static void test_2dtransform_plugin_handler()
 {
 	const C2DTransformationIOPluginHandler::Instance& handler = C2DTransformationIOPluginHandler::instance();
-	BOOST_CHECK_EQUAL(handler.size(), 2);
+	BOOST_CHECK_EQUAL(handler.size(), 2u);
 	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "datapool vista ");
 }
 

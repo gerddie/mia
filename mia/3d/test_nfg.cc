@@ -18,15 +18,9 @@
  */
 
 
-#define BOOST_TEST_MODULE NFG_TEST
-#define BOOST_TEST_NO_MAIN
-#define BOOST_TEST_DYN_LINK
-
+#include <mia/internal/autotest.hh>
 #include <climits>
 #include <mia/core/shared_ptr.hh>
-#include <boost/test/unit_test_suite.hpp>
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
 
 #include <mia/core/cmdlineparser.hh>
 #include <mia/3d/nfg.hh>
@@ -139,13 +133,5 @@ BOOST_AUTO_TEST_CASE(  test_get_jump_level2 )
 {
 	P3DImage image = create_test_image();
 	BOOST_CHECK_CLOSE(get_jump_level(*image), check_noise_level * sqrt(9.25f) / 27.0f , 0.1);
-}
-
-
-int BOOST_TEST_CALL_DECL
-main( int argc, char* argv[] )
-{
-	mia::CCmdOptionList().parse(argc, argv);
-	return ::boost::unit_test::unit_test_main( &init_unit_test, argc, argv );
 }
 

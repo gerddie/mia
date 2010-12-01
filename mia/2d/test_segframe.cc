@@ -77,7 +77,7 @@ void FrameTestRead::init(const char *init_str)
 	const xmlpp::Document *document = parser.get_document();
 	const xmlpp::Element *root = document->get_root_node ();
 	const xmlpp::Node::NodeList nodes = root->get_children();
-	BOOST_CHECK_EQUAL(nodes.size(),1);
+	BOOST_CHECK_EQUAL(nodes.size(),1u);
 
 	frame = CSegFrame (**nodes.begin());
 }
@@ -91,8 +91,8 @@ BOOST_FIXTURE_TEST_CASE(segframe_read, FrameTestRead)
 
 	CSegFrame::Sections sections = frame.get_sections();
 
-	BOOST_CHECK_EQUAL(sections.size(), 2);
-	BOOST_REQUIRE(sections.size() == 2);
+	BOOST_CHECK_EQUAL(sections.size(), 2u);
+	BOOST_REQUIRE(sections.size() == 2u);
 
 	BOOST_CHECK_EQUAL(sections[0].get_id(), "white");
 	BOOST_CHECK_EQUAL(sections[1].get_id(), "red");
@@ -110,7 +110,7 @@ BOOST_FIXTURE_TEST_CASE(segframe_read2, FrameTestRead)
 
 	CSegFrame::Sections sections = frame.get_sections();
 
-	BOOST_CHECK_EQUAL(sections.size(), 3);
+	BOOST_CHECK_EQUAL(sections.size(), 3u);
 	BOOST_REQUIRE(sections.size() == 3);
 
 	BOOST_CHECK_EQUAL(sections[0].get_id(), "white");
@@ -439,7 +439,7 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_stats, FrameTestRead)
 	C2DUBImage section_mask = frame.get_section_masks(size); 
 	CSegFrame::SectionsStats stats1 =frame.get_stats(section_mask); 
 	
-	BOOST_CHECK_EQUAL(stats1.size(), 2); 
+	BOOST_CHECK_EQUAL(stats1.size(), 2u); 
 	BOOST_CHECK_CLOSE(stats1[0].first, 1.5, 0.1); 
 	BOOST_CHECK_CLOSE(stats1[0].second, sqrt(1.0/3.0), 0.1); 
 

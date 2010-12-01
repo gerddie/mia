@@ -60,7 +60,7 @@ BOOST_FIXTURE_TEST_CASE(test_upscale, TranslateTransformFixture)
 	BOOST_CHECK_EQUAL(a.get_size(), new_size);
 
 	auto params = a.get_parameters();
-	BOOST_CHECK_EQUAL(params.size(), 2);
+	BOOST_CHECK_EQUAL(params.size(), 2u);
 	params[0] = -4;
 	params[1] =  6;
 }
@@ -87,7 +87,7 @@ BOOST_FIXTURE_TEST_CASE(test_gradtranslate, TranslateTransformFixture)
 BOOST_FIXTURE_TEST_CASE(test_get_params, TranslateTransformFixture)
 {
 	auto a = transf.get_parameters();
-	BOOST_CHECK_EQUAL(a.size(), 2);
+	BOOST_CHECK_EQUAL(a.size(), 2u);
 	BOOST_CHECK_EQUAL(a[0], -2);
 	BOOST_CHECK_EQUAL(a[1],  3);
 }
@@ -99,7 +99,7 @@ BOOST_FIXTURE_TEST_CASE(test_set_params, TranslateTransformFixture)
 	a[1] = -1;
 	transf.set_parameters(a);
 	auto b = transf.get_parameters();
-	BOOST_CHECK_EQUAL(b.size(), 2);
+	BOOST_CHECK_EQUAL(b.size(), 2u);
 	BOOST_CHECK_EQUAL(b[0],a[0]);
 	BOOST_CHECK_EQUAL(b[1],a[1]);
 }
@@ -115,7 +115,7 @@ BOOST_FIXTURE_TEST_CASE(test_invert_params, TranslateTransformFixture)
 	BOOST_CHECK_EQUAL(inverse->get_size(), size);
 	
 	auto b = inverse->get_parameters();
-	BOOST_CHECK_EQUAL(b.size(), 2);
+	BOOST_CHECK_EQUAL(b.size(), 2u);
 	BOOST_CHECK_EQUAL(b[0],-a[0]);
 	BOOST_CHECK_EQUAL(b[1],-a[1]);
 }

@@ -20,16 +20,10 @@
  *
  */
 
+
 #define BOOST_TEST_MODULE 3DIMAGEIO
-#define BOOST_TEST_NO_MAIN
-#define BOOST_TEST_DYN_LINK
-
-#include <climits>
+#include <mia/internal/autotest.hh>
 #include <algorithm>
-
-
-#include <boost/test/unit_test_suite.hpp>
-#include <boost/test/unit_test.hpp>
 
 #include <boost/filesystem/convenience.hpp>
 #include <boost/filesystem/path.hpp>
@@ -43,17 +37,6 @@ using namespace boost;
 using namespace std;
 using namespace boost::unit_test;
 namespace bfs=::boost::filesystem;
-
-static void prepare_handler()
-{
-	std::list< ::boost::filesystem::path> searchpath;
-	searchpath.push_back(bfs::path("3d") /bfs::path("io"));
-	searchpath.push_back(bfs::path("io"));
-
-	C3DImageIOPluginHandler::set_search_path(searchpath);
-}
-
-
 
 BOOST_AUTO_TEST_CASE(test_3dimageio_plugin_avail)
 {
@@ -70,13 +53,4 @@ bool init_unit_test_suite( )
 	init_unit_test();
 	add_3dimageio_plugin_tests( &framework::master_test_suite());
 	return true;
-}
-
-int BOOST_TEST_CALL_DECL
-main( int argc, char* argv[] )
-{
-	mia::CCmdOptionList().parse(argc, argv);
-	prepare_handler();
-
-	return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );
 }

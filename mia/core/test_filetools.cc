@@ -36,10 +36,10 @@ using namespace boost;
 
 BOOST_AUTO_TEST_CASE( test_get_filename_number_pattern_width )
 {
-	BOOST_CHECK_EQUAL(get_filename_number_pattern_width("bla/bulb0000.png"), 4);
-	BOOST_CHECK_EQUAL(get_filename_number_pattern_width("bla/bulb000.png"), 3);
-	BOOST_CHECK_EQUAL(get_filename_number_pattern_width("bla/bulb0000.v.gz"), 0);
-	BOOST_CHECK_EQUAL(get_filename_number_pattern_width("bla/bulb0000s.gz"), 0);
+	BOOST_CHECK_EQUAL(get_filename_number_pattern_width("bla/bulb0000.png"), 4u);
+	BOOST_CHECK_EQUAL(get_filename_number_pattern_width("bla/bulb000.png"), 3u);
+	BOOST_CHECK_EQUAL(get_filename_number_pattern_width("bla/bulb0000.v.gz"), 0u);
+	BOOST_CHECK_EQUAL(get_filename_number_pattern_width("bla/bulb0000s.gz"), 0u);
 }
 
 struct Fixture_filename_number_pattern {

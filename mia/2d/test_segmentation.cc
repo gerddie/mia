@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(segpoint_read)
 	const Document *document = parser.get_document();
 	const Element *root = document->get_root_node ();
 	const Node::NodeList nodes = root->get_children("point");
-	BOOST_CHECK_EQUAL(nodes.size(),1);
+	BOOST_CHECK_EQUAL(nodes.size(),1u);
 
 	for (Node::NodeList::const_iterator i = nodes.begin();
 	     i != nodes.end(); ++i) {
@@ -116,7 +116,7 @@ void SegStarFixture::init(const char *init_str)
 	const Document *document = parser.get_document();
 	const Element *root = document->get_root_node ();
 	const Node::NodeList nodes = root->get_children("star");
-	BOOST_CHECK_EQUAL(nodes.size(),1);
+	BOOST_CHECK_EQUAL(nodes.size(),1u);
 
 	star = CSegStar(**nodes.begin());
 }
@@ -249,7 +249,7 @@ BOOST_FIXTURE_TEST_CASE( test_segset_read, SegSetReadFixture )
 	init(testset_init);
 
 	const CSegSet::Frames& frames = segset.get_frames();
-	BOOST_CHECK_EQUAL(frames.size(), 2);
+	BOOST_CHECK_EQUAL(frames.size(), 2u);
 
 	BOOST_CHECK_EQUAL(segset.get_LV_peak(), 1);
 	BOOST_CHECK_EQUAL(segset.get_RV_peak(), 0);
@@ -267,7 +267,7 @@ BOOST_FIXTURE_TEST_CASE( test_segset_read2, SegSetReadFixture )
 	init(testset_init2);
 
 	const CSegSet::Frames& frames = segset.get_frames();
-	BOOST_CHECK_EQUAL(frames.size(), 2);
+	BOOST_CHECK_EQUAL(frames.size(), 2u);
 
 	BOOST_CHECK_EQUAL(frames[0].get_imagename(), "image.png");
 	BOOST_CHECK_EQUAL(frames[1].get_imagename(), "image2.png");
@@ -421,7 +421,7 @@ void SectionTestRead::init(const char *init_str)
 	const xmlpp::Document *document = parser.get_document();
 	const xmlpp::Element *root = document->get_root_node ();
 	const xmlpp::Node::NodeList nodes = root->get_children();
-	BOOST_CHECK_EQUAL(nodes.size(),1);
+	BOOST_CHECK_EQUAL(nodes.size(),1u);
 	section = CSegSection(**nodes.begin());
 
 }

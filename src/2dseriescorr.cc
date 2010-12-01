@@ -71,7 +71,7 @@ struct __dipatch_sum {
 
 template <>
 struct __dipatch_sum<bool> {
-	static void apply (const T2DImage<bool>& a, T2DImage<bool>& b) {
+	static void apply (const T2DImage<bool>& /*a*/, T2DImage<bool>& /*b*/) {
 		throw invalid_argument("Can't sum images of pixel type 'bool'");
 	}
 };

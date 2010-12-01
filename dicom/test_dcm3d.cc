@@ -76,7 +76,7 @@ BOOST_FIXTURE_TEST_CASE( test_dicom_load, DicomLoaderFixture )
 	CDicom3DImageIOPlugin::PData pimages = plugin.load(MIA_SOURCE_ROOT"/testdata/IM-0001-0001.dcm");
 	BOOST_REQUIRE(pimages);
 
-	BOOST_CHECK_EQUAL(pimages->size(),2);
+	BOOST_CHECK_EQUAL(pimages->size(),2u);
 
 	P3DImage i1 = (*pimages)[0];
 	BOOST_CHECK_EQUAL(i1->get_size(), C3DBounds(256,256,8));

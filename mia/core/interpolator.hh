@@ -94,7 +94,7 @@ public:
 	   \remark a simpson based integration is implemented for all spline classes, but normally, a 
             spline class could provide precalculated values
 	 */
-	virtual double get_mult_int(int s1, int s2, int range, EIntegralType type) const;  
+	virtual double get_mult_int(int s1, int s2, int range, EIntegralType type) const __attribute__((deprecated));  
 
 	/**
 	   \returns the poles of the spline
@@ -118,10 +118,10 @@ protected:
 	*/
 	void add_pole(double x);
 
-	double mult_int_from_table(int s1, int s2, int range, EIntegralType type) const; 
+	double mult_int_from_table(int s1, int s2, int range, EIntegralType type) const __attribute__((deprecated)); 
 private:
 	void fill_index(int i, std::vector<int>& index) const; 
-	virtual double read_table(int skip, int delta, bool swapped, EIntegralType type) const; 
+	virtual double read_table(int skip, int delta, bool swapped, EIntegralType type) const __attribute__((deprecated)); 
 	size_t _M_half_degree;
 	double _M_shift;
 	std::vector<double> _M_poles;

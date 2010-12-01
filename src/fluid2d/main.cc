@@ -40,6 +40,9 @@
 
 NS_MIA_USE;
 
+const char *g_description = "This code implements non-rigid image registration "
+	"by implementing a fluid-dynamic transformation model."; 
+
 inline void register_level(const C2DImage& ModelScale, const C2DImage& RefScale, C2DFVectorfield& Shift,
 			   float regrid_thresh,float epsilon, int level, bool elast, float lambda, float mu,
 			   C2DInterpolatorFactory& ipfactory)
@@ -95,7 +98,7 @@ int main(int argc, const char *args[])
 
         try {
 
-		CCmdOptionList options;
+		CCmdOptionList options(g_description);
 		options.push_back(make_opt( src_filename, "in-image", 'i', "input (moedl) image to be registered", "input", true));
 		options.push_back(make_opt( ref_filename, "ref-image", 'r', "reference image", "reference", true));
 		options.push_back(make_opt( out_filename, "out", 'o', "output vector field", "output", false));

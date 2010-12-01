@@ -20,15 +20,8 @@
  */
 
 #define BOOST_TEST_MODULE 2DIMAGEFIFOFILTER_TEST
-#define BOOST_TEST_NO_MAIN
-#define BOOST_TEST_DYN_LINK
 #include <sstream>
-#include <climits>
-
-#include <boost/test/unit_test_suite.hpp>
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
-
+#include <mia/internal/autotest.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/3d/orientation.hh>
 
@@ -71,9 +64,3 @@ BOOST_AUTO_TEST_CASE( test_orientation_attribute )
 	BOOST_CHECK_EQUAL(orient, ior_axial);
 }
 
-int BOOST_TEST_CALL_DECL
-main( int argc, char* argv[] )
-{
-	mia::CCmdOptionList().parse(argc, argv);
-	return ::boost::unit_test::unit_test_main( &init_unit_test, argc, argv );
-}

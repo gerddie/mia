@@ -34,7 +34,7 @@ using namespace fft_2dimage_filter;
 
 class CFFT2DDummyKernel: public CFFT2DKernel {
 private:
-	void do_apply(const C2DBounds& _M_size, size_t _M_realsize_x, fftwf_complex *_M_cbuffer) const {};
+	void do_apply(const C2DBounds& /*size*/, size_t /*realsize_x*/, fftwf_complex */*cbuffer*/) const {};
 };
 
 BOOST_AUTO_TEST_CASE( test_fft )

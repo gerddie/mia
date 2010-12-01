@@ -369,10 +369,12 @@ void CBSplineKernel3::get_weights(double x, std::vector<double>&  weight)const
 	const double xm1 = 1 - x; 
 #ifdef __SSE2__
 	v2df X; 
+	
+	// this line warns about the use of un-initialized values
+	// but initializing the value would counter the idea of this optimization 
 	X=_mm_loadl_pd(X, &xm1); 
 	X=_mm_loadh_pd(X, &x); 
-//	const double xc[2] __attribute__((aligned(16))) = { xm1, x };
-	//const v2df X =  __builtin_ia32_loadapd(xc); 
+
 	const v2df OB6 =  __builtin_ia32_loadupd(oneby6);
 	const v2df X2  = X * X; 
 	const v2df XB6 = X * OB6; 

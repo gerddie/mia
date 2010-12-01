@@ -51,7 +51,7 @@ private:
 	virtual CCST2DImageKernel::CPlan *do_prepare(fftwf_r2r_kind fw_kind, const std::vector<int>& size);
 };
 
-void CCST2DDummyKernel::PrivatePlan::do_execute(float *buffer) const
+void CCST2DDummyKernel::PrivatePlan::do_execute(float */*buffer*/) const
 {
 }
 

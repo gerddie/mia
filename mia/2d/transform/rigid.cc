@@ -189,12 +189,12 @@ float C2DRigidTransformation::curl() const
 	return _M_rotation;
 }
 
-double C2DRigidTransformation::get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const
+double C2DRigidTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/, gsl::DoubleVector& /*gradient*/) const
 {
 	return 0.0; 
 }
 
-double C2DRigidTransformation::get_divcurl_cost(double wd, double wr) const
+double C2DRigidTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/) const
 {
 	return 0.0; 
 }
@@ -261,7 +261,7 @@ float C2DRigidTransformation::get_max_transform() const
 	return sqrt(m);
 }
 
-void C2DRigidTransformation::add(const C2DTransformation& other)
+void C2DRigidTransformation::add(const C2DTransformation& /*other*/)
 {
 	// *this  = other * *this
 	assert(0 && "not implemented");

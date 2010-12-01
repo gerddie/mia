@@ -47,7 +47,7 @@ struct TranslateTransFixture {
 BOOST_FIXTURE_TEST_CASE(basics_TranslateTransFixture, TranslateTransFixture)
 {
 	C2DFVector x(-2, -4);
-	BOOST_CHECK_EQUAL(rtrans.degrees_of_freedom(), 3);
+	BOOST_CHECK_EQUAL(rtrans.degrees_of_freedom(), 3u);
 	BOOST_CHECK_EQUAL(C2DFVector(-1.0, -2.0),  rtrans(x));
 }
 
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(test_rigid2d)
 {
 	C2DRigidTransformation t1(C2DBounds(10,20));
 
-	BOOST_CHECK_EQUAL(t1.degrees_of_freedom(), 3);
+	BOOST_CHECK_EQUAL(t1.degrees_of_freedom(), 3u);
 
 	C2DFVector x0(1.0f, 2.0f);
 
@@ -277,7 +277,7 @@ BOOST_AUTO_TEST_CASE (test_inverse_rigid)
 	
 	BOOST_CHECK_EQUAL(inverse->get_size(), size);
 
-	BOOST_CHECK_EQUAL(b.size(), 3);
+	BOOST_CHECK_EQUAL(b.size(), 3u);
 	BOOST_CHECK_CLOSE(b[0], ca * 1 + sa * 3, 0.1);
 	BOOST_CHECK_CLOSE(b[1],-sa * 1 + ca * 3, 0.1);
 	BOOST_CHECK_EQUAL(b[2],-1.0);

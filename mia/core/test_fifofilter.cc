@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE( test_mean )
 	filter.finalize();
 
 	const vector<int>& result = sink->result();
-	BOOST_CHECK_EQUAL(result.size(), 10);
+	BOOST_CHECK_EQUAL(result.size(), 10u);
 	if (!equal(result.begin(), result.end(), test_result)) {
 		BOOST_MESSAGE("int_ptr_equal() failed");
 		for (size_t i = 0; i < 10; ++i)
@@ -370,7 +370,7 @@ BOOST_AUTO_TEST_CASE( test_mean_add )
 	filter.finalize();
 
 	const vector< int >& result = sink->result();
-	BOOST_CHECK_EQUAL(result.size(), 10);
+	BOOST_CHECK_EQUAL(result.size(), 10u);
 	BOOST_CHECK(equal(result.begin(), result.end(), test_result));
 
 	if (!equal(result.begin(), result.end(), test_result)) {

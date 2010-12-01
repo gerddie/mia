@@ -62,14 +62,14 @@ static void creat_and_check(EPixelType type)
 
 	T2DImage<T> *img = dynamic_cast<T2DImage<T> *>(image.get());
 	BOOST_CHECK(img);
-	BOOST_CHECK_EQUAL(img->size(), 4);
+	BOOST_CHECK_EQUAL(img->size(), 4u);
 
 	P2DImage cloned(image->clone());
 	BOOST_CHECK_EQUAL(cloned->get_pixel_type(), type);
 
 	img = dynamic_cast< T2DImage<T> * >(cloned.get());
 	BOOST_REQUIRE(img);
-	BOOST_CHECK_EQUAL(img->size(),4);
+	BOOST_CHECK_EQUAL(img->size(),4u);
 
 	C2DFVector pixel_size(2.3f, 7.8f);
         img->set_pixel_size(pixel_size);

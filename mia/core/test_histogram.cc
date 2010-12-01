@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE( test_histogram)
 	BOOST_CHECK_EQUAL(h.median(), 4);
 
 	h.push(6, 2);
-	BOOST_CHECK_EQUAL(h[6], 2);
+	BOOST_CHECK_EQUAL(h[6], 2u);
 
 
 	BOOST_CHECK_EQUAL(h.median(), 4);
@@ -83,11 +83,11 @@ BOOST_AUTO_TEST_CASE( test_float_histogram)
 	CHistogram<CHistogramFeeder<float> >::value_type value = h.at(0);
 
 	BOOST_CHECK_EQUAL(value.first, 1);
-	BOOST_CHECK_EQUAL(value.second, 1);
+	BOOST_CHECK_EQUAL(value.second, 1u);
 
 	value = h.at(4);
 	BOOST_CHECK_EQUAL(value.first, 5);
-	BOOST_CHECK_EQUAL(value.second, 4);
+	BOOST_CHECK_EQUAL(value.second, 4u);
 
 	BOOST_CHECK_CLOSE(h.average(), 3.7, 0.1);
 	BOOST_CHECK_CLOSE(h.deviation(), sqrt((155.0 - 37.0 * 3.7) / 9.0), 0.1);

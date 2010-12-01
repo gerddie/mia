@@ -427,8 +427,8 @@ BOOST_AUTO_TEST_CASE( test_ica_saftey_against_stupid )
 BOOST_AUTO_TEST_CASE( test_ica_access_failtures )
 {
 	const int ncomponents = 4;
-	const int rows = 5;
-	const int elms = 10;
+	const size_t rows = 5;
+	const size_t elms = 10;
 	double data_rows[rows][elms] = {
 		{ 1.1, -0.9,  -1.9,  -0.9,  2.1, -1.9,  6.1, -2.9, -0.9, 1.1 },
 		{ 2.3, -1.7,  -2.7,  -2.7,  6.3, -3.7,  6.3, -2.7, -0.7, 2.3 },
@@ -439,7 +439,7 @@ BOOST_AUTO_TEST_CASE( test_ica_access_failtures )
 
 	CICAAnalysis ica(rows, elms);
 
-	for (int i = 0; i < rows; ++i)
+	for (size_t i = 0; i < rows; ++i)
 		ica.set_row(i, data_rows[i], data_rows[i] + elms);
 	ica.run(4, vector<vector<float> >());
 

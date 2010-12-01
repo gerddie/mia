@@ -39,8 +39,8 @@ using namespace ::boost::unit_test;
 BOOST_AUTO_TEST_CASE( test_matrix_alloc_and_free ) 
 {
 	Matrix m(2,3, true); 
-	BOOST_CHECK_EQUAL(m.rows(), 2); 
-	BOOST_CHECK_EQUAL(m.cols(), 3); 
+	BOOST_CHECK_EQUAL(m.rows(), 2u); 
+	BOOST_CHECK_EQUAL(m.cols(), 3u); 
 
 	for(size_t i = 0; i < 2;++i) 
 		for(size_t j = 0; j < 2;++j) 
@@ -50,8 +50,8 @@ BOOST_AUTO_TEST_CASE( test_matrix_alloc_and_free )
 	BOOST_CHECK_EQUAL(m(1,2), 1.0); 
 	
 	Matrix k(m); 
-	BOOST_CHECK_EQUAL(k.rows(), 2); 
-	BOOST_CHECK_EQUAL(k.cols(), 3); 
+	BOOST_CHECK_EQUAL(k.rows(), 2u); 
+	BOOST_CHECK_EQUAL(k.cols(), 3u); 
 	BOOST_CHECK_EQUAL(k(1,2), 1.0); 
 
 	k.set(0,2, 2.0); 

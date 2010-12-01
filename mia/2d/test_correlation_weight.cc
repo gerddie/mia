@@ -41,10 +41,10 @@ BOOST_FIXTURE_TEST_CASE( test_correlation, PseudoGroundTruthFixture )
 	CCorrelationEvaluator ce(0.3);
 	auto result = ce(input_series);
 
-	BOOST_CHECK_EQUAL(result.horizontal.get_size().x, 2);
-	BOOST_CHECK_EQUAL(result.horizontal.get_size().y, 3);
-	BOOST_CHECK_EQUAL(result.vertical.get_size().x, 3);
-	BOOST_CHECK_EQUAL(result.vertical.get_size().y, 2);
+	BOOST_CHECK_EQUAL(result.horizontal.get_size().x, 2u);
+	BOOST_CHECK_EQUAL(result.horizontal.get_size().y, 3u);
+	BOOST_CHECK_EQUAL(result.vertical.get_size().x, 3u);
+	BOOST_CHECK_EQUAL(result.vertical.get_size().y, 2u);
 
 
 	BOOST_CHECK_CLOSE(result.horizontal(0,1), 1.0, 0.1);

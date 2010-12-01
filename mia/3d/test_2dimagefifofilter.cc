@@ -22,19 +22,14 @@
  */
 
 #define BOOST_TEST_MODULE 2DIMAGEFIFOFILTER_TEST
-#define BOOST_TEST_NO_MAIN
-#define BOOST_TEST_DYN_LINK
+
 #include <cassert>
 #include <iostream>
 #include <cmath>
 #include <numeric>
 #include <climits>
 
-#include <boost/test/unit_test_suite.hpp>
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
-
-
+#include <mia/internal/autotest.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/3d/2dimagefifofilter.hh>
 
@@ -47,16 +42,9 @@ BOOST_AUTO_TEST_CASE( test_found_filters )
 	list< bfs::path> searchpath;
 	searchpath.push_back( bfs::path("fifof"));
 	C2DFifoFilterPluginHandler::set_search_path(searchpath);
-	BOOST_CHECK_EQUAL(C2DFifoFilterPluginHandler::instance().size(), 8);
+	BOOST_CHECK_EQUAL(C2DFifoFilterPluginHandler::instance().size(), 8u);
 
 	BOOST_CHECK_EQUAL(C2DFifoFilterPluginHandler::instance().get_plugin_names(),
 			  "close dilate erode gauss median mlv open regiongrow ");
 
-}
-
-int BOOST_TEST_CALL_DECL
-main( int argc, char* argv[] )
-{
-	mia::CCmdOptionList().parse(argc, argv);
-	return ::boost::unit_test::unit_test_main( &init_unit_test, argc, argv );
 }

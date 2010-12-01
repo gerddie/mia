@@ -119,7 +119,7 @@ P2DImage C2DTranslateTransformation::apply(const C2DImage& image, const C2DInter
 	return transform2d(image, ipf, *this);
 }
 
-bool C2DTranslateTransformation::save(const std::string& filename, const std::string& type) const
+bool C2DTranslateTransformation::save(const std::string& /*filename*/, const std::string& /*type*/) const
 {
 	assert(0 && "not implemented");
 
@@ -134,7 +134,7 @@ P2DTransformation C2DTranslateTransformation::upscale(const C2DBounds& size) con
 }
 
 
-void C2DTranslateTransformation::add(const C2DTransformation& a)
+void C2DTranslateTransformation::add(const C2DTransformation& /*a*/)
 {
 	assert(0 && "not implemented");
 }
@@ -154,12 +154,12 @@ size_t C2DTranslateTransformation::degrees_of_freedom() const
 	return 2;
 }
 
-void C2DTranslateTransformation::update(float step, const C2DFVectorfield& a)
+void C2DTranslateTransformation::update(float /*step*/, const C2DFVectorfield& /*a*/)
 {
 	assert(0 && "not implemented");
 }
 
-C2DFMatrix C2DTranslateTransformation::derivative_at(int x, int y) const
+C2DFMatrix C2DTranslateTransformation::derivative_at(int /*x*/, int /*y*/) const
 {
 	return C2DFMatrix();
 }
@@ -189,7 +189,7 @@ float C2DTranslateTransformation::get_max_transform() const
 	return _M_transform.norm();
 }
 
-float C2DTranslateTransformation::pertuberate(C2DFVectorfield& v) const
+float C2DTranslateTransformation::pertuberate(C2DFVectorfield& /*v*/) const
 {
 	return 0.0;
 }
@@ -199,7 +199,7 @@ C2DFVector C2DTranslateTransformation::operator () (const C2DFVector& x) const
 	return x - _M_transform;
 }
 
-float C2DTranslateTransformation::get_jacobian(const C2DFVectorfield& v, float delta) const
+float C2DTranslateTransformation::get_jacobian(const C2DFVectorfield& /*v*/, float /*delta*/) const
 {
 	return 0.0;
 }
@@ -229,12 +229,13 @@ float C2DTranslateTransformation::grad_curl() const
 	return 0.0;
 }
 
-double C2DTranslateTransformation::get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const
+double C2DTranslateTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/, 
+						    gsl::DoubleVector& /*gradient*/) const
 {
 	return 0.0;
 }
 
-double C2DTranslateTransformation::get_divcurl_cost(double wd, double wr) const
+double C2DTranslateTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/) const
 {
 	return 0.0;
 }

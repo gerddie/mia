@@ -68,7 +68,7 @@ double C2DFullCostMock::do_evaluate(const C2DTransformation&, gsl::DoubleVector&
 	return _M_cost; 
 }
 
-double C2DFullCostMock::do_value(const C2DTransformation& t) const
+double C2DFullCostMock::do_value(const C2DTransformation& /*t*/) const
 {
 	return _M_cost; 
 }
@@ -171,7 +171,7 @@ private:
 BOOST_AUTO_TEST_CASE( test_load_plugins ) 
 {	
 	const C2DFullCostPluginHandler::Instance& handler = PrepareFullcostTests::instance().fullcost_handler(); 
-	BOOST_CHECK_EQUAL(handler.size(), 2); 
+	BOOST_CHECK_EQUAL(handler.size(), 2u); 
 	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "divcurl image ");
 }
 

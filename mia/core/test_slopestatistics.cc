@@ -48,8 +48,8 @@ BOOST_AUTO_TEST_CASE( test_check_simple_series )
 
 	BOOST_CHECK_CLOSE(stats.get_range(), 5.0f, 0.1);
 
-	BOOST_CHECK_EQUAL(stats.get_first_peak().first, 2);
-	BOOST_CHECK_EQUAL(stats.get_second_peak().first, 8);
+	BOOST_CHECK_EQUAL(stats.get_first_peak().first, 2u);
+	BOOST_CHECK_EQUAL(stats.get_second_peak().first, 8u);
 
 	BOOST_CHECK_EQUAL(stats.get_first_peak().second, 6);
 	BOOST_CHECK_EQUAL(stats.get_second_peak().second, 1);
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE( test_perfusion_series )
 
 	BOOST_CHECK_CLOSE(stats.get_range(), 27.0f, 0.1);
 
-	BOOST_CHECK_EQUAL(stats.get_perfusion_high_peak().first, 6);
+	BOOST_CHECK_EQUAL(stats.get_perfusion_high_peak().first, 6u);
 	BOOST_CHECK_EQUAL(stats.get_perfusion_high_peak().second, -12);
 }
 

@@ -32,11 +32,11 @@ BOOST_AUTO_TEST_CASE( test_polygon )
 {
 	C2DPolygon poly;
 
-	BOOST_CHECK_EQUAL(poly.size(), 0);
+	BOOST_CHECK_EQUAL(poly.size(), 0u);
 	poly.append(C2DFVector(0.0, 0.0));
-	BOOST_CHECK_EQUAL(poly.size(), 1);
+	BOOST_CHECK_EQUAL(poly.size(), 1u);
 	poly.append(C2DFVector(0.0, 1.0));
-	BOOST_CHECK_EQUAL(poly.size(), 2);
+	BOOST_CHECK_EQUAL(poly.size(), 2u);
 }
 
 BOOST_AUTO_TEST_CASE( test_polygon_inside_closed_set )

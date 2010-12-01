@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE( test_dictmap )
 	BOOST_CHECK_EQUAL(map.get_value("c"), te_c);
 
 	set<string> name_set = map.get_name_set();
-	BOOST_CHECK_EQUAL(name_set.size(), 3);
+	BOOST_CHECK_EQUAL(name_set.size(), 3u);
 
 	BOOST_CHECK_EQUAL(string(map.get_name(te_a)), string("a"));
 	BOOST_CHECK_EQUAL(string("b"), string(map.get_name(te_b)));

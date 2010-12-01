@@ -17,17 +17,10 @@
  *
  */
 
-#include <climits>
-
-#define BOOST_TEST_DYN_LINK
+#include <mia/internal/autotest.hh>
 
 #include <boost/filesystem/convenience.hpp>
 #include <boost/filesystem/path.hpp>
-
-#include <boost/test/unit_test_suite.hpp>
-#include <boost/test/unit_test.hpp>
-
-#include <mia/core/cmdlineparser.hh>
 
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dimageiotest.hh>
@@ -52,14 +45,14 @@ static void handler_setup()
 static void test_2dimage_plugin_handler()
 {
 	const C2DImageIOPluginHandler::Instance& handler = C2DImageIOPluginHandler::instance();
-	BOOST_REQUIRE(handler.size() == 2);
+	BOOST_REQUIRE(handler.size() == 2u);
 	BOOST_REQUIRE(handler.get_plugin_names() == "datapool exr ");
 }
 
 static void test_2dvf_plugin_handler()
 {
 	const C2DVFIOPluginHandler::Instance& handler = C2DVFIOPluginHandler::instance();
-	BOOST_REQUIRE(handler.size() == 2);
+	BOOST_REQUIRE(handler.size() == 2u);
 	BOOST_REQUIRE(handler.get_plugin_names() == "datapool exr ");
 }
 
@@ -79,11 +72,4 @@ bool init_unit_test_suite( )
 	suite->add( BOOST_TEST_CASE( &test_2dvf_plugin_handler ));
 	//add_2dvfio_tests(test);
 	return true;
-}
-
-int BOOST_TEST_CALL_DECL
-main( int argc, char* argv[] )
-{
-	CCmdOptionList().parse(argc, argv);
-	return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );
 }

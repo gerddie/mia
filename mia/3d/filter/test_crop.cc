@@ -62,7 +62,8 @@ void CropFixture::check_result(C3DCrop& f, const C3DBounds& start, C3DBounds rsi
 	for (size_t z = 0; z < rsize.z; ++z)
 		for (size_t y = 0; y < rsize.y; ++y)
 			for (size_t x = 0; x < rsize.x; ++x, ++i) {
-				BOOST_CHECK_EQUAL(*i, (x+1+start.x ) * (y +1+start.y) * (z+1+start.z));
+				BOOST_CHECK_EQUAL(static_cast<size_t>(*i), 
+						  (x+1+start.x ) * (y +1+start.y) * (z+1+start.z));
 			}
 }
 

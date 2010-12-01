@@ -59,7 +59,7 @@ BOOST_FIXTURE_TEST_CASE(  test_dummy_io, DummyPluginFixture )
 
 	const CTestIOPluginHandler::Instance&  handler = CTestIOPluginHandler::instance();
 
-	BOOST_CHECK_EQUAL(handler.size(), 3);
+	BOOST_CHECK_EQUAL(handler.size(), 3u);
 
 	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "datapool la lo ");
 

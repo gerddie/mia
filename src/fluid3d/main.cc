@@ -177,6 +177,9 @@ void WriteStats(FILE *f,double wholetime,const TFluidRegParams& params,int metho
 
 #endif
 
+const char *g_description = "This code implements non-rigid image registration "
+	"by implementing a fluid-dynamic transformation model."; 
+
 int main(int argc, const char *argv[])
 {
 	//	FILE *srcf,*reff,*outf;
@@ -213,7 +216,7 @@ int main(int argc, const char *argv[])
 
 	cverb.set_verbosity( vstream::ml_message );
 
-	CCmdOptionList options;
+	CCmdOptionList options(g_description);
 	options.push_back(make_opt( in_filename, "in-image", 'i', "input image", "src", true ));
 	options.push_back(make_opt( ref_filename, "ref-image", 'r', "reference image ", "ref", true ));
 	options.push_back(make_opt( out_filename, "out-deformation", 'o', "output vector field", "result", true ));
@@ -288,68 +291,3 @@ int main(int argc, const char *argv[])
 
 }
 
-/* Changes to this file
-
-  $Log$
-  Revision 1.7  2005/06/29 13:43:35  wollny
-  cg removed and libmona-0.7
-
-  Revision 1.1.1.1  2005/06/17 10:31:09  gerddie
-  initial import at sourceforge
-
-  Revision 1.6  2005/06/17 10:23:45  wollny
-  move to libmona-0.7
-
-  Revision 1.5  2005/02/22 10:43:06  wollny
-  add history and use cvxxx
-
-  Revision 1.4  2005/02/22 10:06:25  wollny
-  enable parallel processing
-
-  Revision 1.3  2005/02/22 09:49:16  wollny
-  removed vistaio dependecy
-
-  Revision 1.1.1.1  2005/02/21 15:00:37  wollny
-  initial import
-
-  Revision 1.37  2004/04/30 14:25:26  gerddie
-  adapt to new vistaio
-
-  Revision 1.36  2004/04/30 13:43:10  gerddie
-  comment cleanup
-
-  Revision 1.35  2004/04/08 12:01:13  gerddie
-  stupid swap error in vfluid, and miatps nor uses nearest neighbor interpolation
-
-  Revision 1.34  2004/04/07 15:40:13  gerddie
-  ensure positive pixel values and other
-
-  Revision 1.33  2004/04/06 15:17:24  gerddie
-  remove a bug in vfluid and scale intensities
-
-  Revision 1.32  2004/04/05 15:24:33  gerddie
-  change filter allocation
-
-  Revision 1.31  2004/03/18 23:27:08  gerddie
-  Errors in thin plate spline part
-
-  Revision 1.30  2004/03/18 17:03:45  gerddie
-  Landmark handling implemented,  not yet tested
-
-  Revision 1.29  2004/03/18 14:28:44  gerddie
-  Inserted hooks for landmark support
-
-  Revision 1.28  2004/02/12 09:49:57  gerddie
-  move to vistaio for file loading
-
-  Revision 1.27  2003/08/27 10:14:35  gerddie
-  adapt to new debian install location and libtool versioning
-
-  Revision 1.26  2003/08/26 09:51:02  gerddie
-  update on plugin handling
-
-  Revision 1.25  2002/06/20 09:59:49  gerddie
-  added cvs-log entry
-
-
-*/
