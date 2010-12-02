@@ -233,6 +233,10 @@ int do_main( int argc, const char *argv[] )
 		gte(series, pgt);
 
 		// run registration pass 
+		// actually is a bit dumb to pass the full set, 
+		// but we must pass the segmentation
+		// information since it is also transformed after registration 
+		// and this needs to honor the skip too 
 		run_registration_pass(input_set, pgt, skip, reg_params); 
 		
 		// prepare next pass 
