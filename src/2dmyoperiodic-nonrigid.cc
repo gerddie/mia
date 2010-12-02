@@ -277,7 +277,7 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images, cons
 			float w = float(*high_index - i)/(*high_index - *low_index);  
 			FAddWeighted lerp(w);
 			
-			ref = mia::filter(lerp, *images[*low_index], *images[*high_index]); 
+			ref = mia::filter(lerp, *images[*high_index], *images[*low_index]); 
 			if (m_params.save_ref) {
 				stringstream refname; 
 				refname << "ref" << setw(4) << setfill('0') << i << ".v"; 
