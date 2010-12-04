@@ -117,10 +117,12 @@ P2DTransformationFactory create_transform_creator(size_t c_rate)
 }
 
 
-void run_registration_pass(CSegSetWithImages&  input_set, const C2DImageSeries& references, 
-			   int skip_images, const SRegistrationParams& params) 
+vector<P2DTransformation>
+run_registration_pass(const CSegSetWithImages&  input_set, C2DImageSeries& series, 
+				     const C2DImageSeries& references, 
+				     int skip_images, const SRegistrationParams& params) 
 {
-	CSegSetWithImages::Frames& frames = input_set.get_frames();
+	vector<P2DTransformation> result; 
 	C2DImageSeries input_images = input_set.get_images(); 
 	auto costs  = create_costs(params.divcurlweight, params.imageweight); 
 	auto transform_creator = create_transform_creator(params.c_rate); 
@@ -131,10 +133,10 @@ void run_registration_pass(CSegSetWithImages&  input_set, const C2DImageSeries& 
 	for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
 		cvmsg() << "Register frame " << i << "\n"; 
 		P2DTransformation transform = nrr.run(input_images[i + skip_images], references[i]);
-		input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], *params.ipfactory);
-		frames[i + skip_images].inv_transform(*transform);
+		series[i] = (*transform)(*input_images[i + skip_images], *params.ipfactory);
+		result.push_back(transform); 
 	}
-	input_set.set_images(input_images); 
+	return result; 
 }
 
 
@@ -172,11 +174,11 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( passes, "passes", 'P', "number of registration passes", "passes", false));
 
 	options.set_group("\nPseudo-Ground-Thruth"); 
-	options.push_back(make_opt( pgt_params.alpha, "alpha", 'a', "spacial neighborhood penalty weight", 
+	options.push_back(make_opt( pgt_params.alpha, "alpha", 'A', "spacial neighborhood penalty weight", 
 				    "alpha", false));
-	options.push_back(make_opt( pgt_params.beta, "beta", 'b', "temporal second derivative penalty weight", 
+	options.push_back(make_opt( pgt_params.beta, "beta", 'B', "temporal second derivative penalty weight", 
 				    "beta", false));
-	options.push_back(make_opt( pgt_params.rho_thresh, "rho_thresh", 'r', 
+	options.push_back(make_opt( pgt_params.rho_thresh, "rho_thresh", 'R', 
 				    "crorrelation threshhold for neighborhood analysis", "rho", false));
 
 
@@ -220,30 +222,35 @@ int do_main( int argc, const char *argv[] )
 	// create ground thruth evaluator 
 	C2DGroundTruthEvaluator gte(pgt_params.alpha, pgt_params.beta, pgt_params.rho_thresh);
 	vector<P2DImage> pgt;
-	
+
+	vector<P2DTransformation> transforms; 
+	C2DImageSeries images = input_set.get_images(); 
+	C2DImageSeries series(images.begin() + skip, images.end()); 
+
 	// main registration loop 
 	size_t pass = 0; 
 	while (pass < passes) {
 		cvmsg() << "Registration pass " << pass << "\n"; 
 		// skip images at start 
-		C2DImageSeries images = input_set.get_images(); 
-		C2DImageSeries series(images.begin() + skip, images.end()); 
 
 		// create pseudeo ground thruth 
 		gte(series, pgt);
 
 		// run registration pass 
-		// actually is a bit dumb to pass the full set, 
-		// but we must pass the segmentation
-		// information since it is also transformed after registration 
-		// and this needs to honor the skip too 
-		run_registration_pass(input_set, pgt, skip, reg_params); 
+		// we always register from the original image to not make it too smooth 
+		// due to interpolation 
+		transforms = run_registration_pass(input_set, series, pgt, skip, reg_params); 
 		
 		// prepare next pass 
 		reg_params.c_rate /= c_rate_divider; 
 		reg_params.divcurlweight /= divcurlweight_divider; 
 		++pass; 
 	}
+
+	copy(series.begin(), series.end(), images.begin() + skip); 
+	CSegSet::Frames& frames = input_set.get_frames(); 
+	for (auto f = frames.begin() +skip, t = transforms.begin(); f != frames.end(); ++t, ++f)
+		f->inv_transform(**t); 
 
 	// copy back registered images
 	input_set.rename_base(registered_filebase); 

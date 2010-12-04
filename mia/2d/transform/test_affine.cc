@@ -257,13 +257,13 @@ BOOST_FIXTURE_TEST_CASE (test_grad2param_translation2, AffineGrad2ParamFixtureAf
 	trans.translate(gradient, params);
 
 	gsl::DoubleVector org_params = trans.get_parameters();
-	BOOST_CHECK_CLOSE(params[0], org_params[0], 0.1);
-	BOOST_CHECK_CLOSE(params[1], org_params[1], 0.1);
-	BOOST_CHECK_CLOSE(params[2], org_params[2], 0.1);
+	BOOST_CHECK_CLOSE(params[0], -org_params[0], 0.1);
+	BOOST_CHECK_CLOSE(params[1], -org_params[1], 0.1);
+	BOOST_CHECK_CLOSE(params[2], -org_params[2], 0.1);
 
-	BOOST_CHECK_CLOSE(params[3], org_params[3], 0.1);
-	BOOST_CHECK_CLOSE(params[4], org_params[4], 0.1);
-	BOOST_CHECK_CLOSE(params[5], org_params[5], 0.1);
+	BOOST_CHECK_CLOSE(params[3], -org_params[3], 0.1);
+	BOOST_CHECK_CLOSE(params[4], -org_params[4], 0.1);
+	BOOST_CHECK_CLOSE(params[5], -org_params[5], 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE (test_add, AffineGrad2ParamFixtureAffine)
