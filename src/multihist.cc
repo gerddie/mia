@@ -91,10 +91,10 @@ int main( int argc, const char *argv[] )
 		string out_filename;
 
 		CCmdOptionList options(g_description);
-		options.push_back(make_opt( out_filename, "out", 'o', "output file name", "out", true));
-		options.push_back(make_opt( hmin, "min", 0, "minimum of histogram range", "min", false));
-		options.push_back(make_opt( hmax, "max", 0, "maximum of histogram range", "max", false));
-		options.push_back(make_opt( bins, "bins", 0, "number of histogram bins", "bins", false));
+		options.push_back(make_opt( out_filename, "out", 'o', "output file name", CCmdOption::required));
+		options.push_back(make_opt( hmin, "min", 0, "minimum of histogram range"));
+		options.push_back(make_opt( hmax, "max", 0, "maximum of histogram range"));
+		options.push_back(make_opt( bins, "bins", 0, "number of histogram bins"));
 		options.parse(argc, argv);
 
 

@@ -136,7 +136,8 @@ UMinimzer gradminimizers[min_undefined] = {
 };
 
 
-void C2DNonrigidRegisterImpl::apply(C2DTransformation& transf, const gsl_multimin_fdfminimizer_type *optimizer)const
+void C2DNonrigidRegisterImpl::apply(C2DTransformation& transf, 
+				    const gsl_multimin_fdfminimizer_type *optimizer)const
 {
 	if (!_M_costs.has(property_gradient))
 		throw invalid_argument("requested optimizer needs gradient, but cost functions doesn't prvide one");
@@ -176,7 +177,6 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 		if (shift)
 			shift--;
 
-
 		C2DBounds BlockSize(1 << shift, 1 << shift);
 		cvinfo() << "Blocksize = " << BlockSize.x << "x"<< BlockSize.y << "\n";
 
@@ -211,8 +211,9 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 	return transform;
 }
 
-C2DNonrigRegGradientProblem::C2DNonrigRegGradientProblem(const C2DFullCostList& costs, C2DTransformation& transf, 
-					     const C2DInterpolatorFactory& ipf):
+C2DNonrigRegGradientProblem::C2DNonrigRegGradientProblem(const C2DFullCostList& costs, 
+							 C2DTransformation& transf, 
+							 const C2DInterpolatorFactory& ipf):
 	gsl::CFDFMinimizer::Problem(transf.degrees_of_freedom()),
 	_M_costs(costs),
 	_M_transf(transf),
@@ -239,9 +240,11 @@ double  C2DNonrigRegGradientProblem::do_f(const DoubleVector& x)
 		_M_start_cost = result; 
 	
 	_M_func_evals++; 
-	cvmsg() << "Cost[fg="<<setw(4)<<_M_grad_evals << ",fe="<<setw(4)<<_M_func_evals<<"]=" 
+	cvmsg() << "Cost[fg="<<setw(4)<<_M_grad_evals 
+		<< ",fe="<<setw(4)<<_M_func_evals<<"]=" 
 		<< setw(20) << setprecision(12) << result 
-		<< "ratio:" << setw(20) << setprecision(12) << result / _M_start_cost <<   "\r"; 
+		<< "ratio:" << setw(20) << setprecision(12) 
+		<< result / _M_start_cost <<   "\r"; 
 	cvinfo() << "\n";
 	return result; 
 }
@@ -263,7 +266,8 @@ double  C2DNonrigRegGradientProblem::do_fdf(const DoubleVector& x, DoubleVector&
 
 	_M_grad_evals++; 
 	//transform(g.begin(), g.end(), g.begin(), _1 * -1); 
-	cvmsg() << "Cost[fg="<<setw(4)<<_M_grad_evals << ",fe="<<setw(4)<<_M_func_evals<<"]=" 
+	cvmsg() << "Cost[fg="<<setw(4)<<_M_grad_evals 
+		<< ",fe="<<setw(4)<<_M_func_evals<<"]=" 
 		<< setw(20) << setprecision(12) << result 
 		<< "ratio:" << setw(20) << setprecision(12) << result / _M_start_cost <<  "\r"; 
 	cvinfo() << "\n"; 

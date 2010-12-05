@@ -200,15 +200,14 @@ int main( int argc, const char *argv[] )
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_descriptions);
-	options.push_back(make_opt( in_filename, "in-file", 'i', "input segmentation set", "input", true));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output file name", "output", true));
-	options.push_back(make_opt( skip, "skip", 'p', "Skip files at the beginning", "skip", false));
-	options.push_back(make_opt( enlarge_boundary,  "enlarge-boundary", 'e', "Enlarge cropbox by number of pixels",
-				    "enlarge", false));
-	options.push_back(make_opt( crop, "crop", 'c', "crop image before running statistics", "crop", false));
-	options.push_back(make_opt( gauss_width, "gauss", 'g', "gauss filter width for moothing the gradient", "gauss", false));
-	options.push_back(make_opt( itc_file, "itc-file", 0, "intensity time curve output file", "itc-file", false));
-	options.push_back(make_opt( itc_location, "itc-loc", 0, "intensity time curve output pixel coordinates", false));
+	options.push_back(make_opt( in_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
+	options.push_back(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
+	options.push_back(make_opt( skip, "skip", 'p', "Skip files at the beginning"));
+	options.push_back(make_opt( enlarge_boundary,  "enlarge-boundary", 'e', "Enlarge cropbox by number of pixels"));
+	options.push_back(make_opt( crop, "crop", 'c', "crop image before running statistics"));
+	options.push_back(make_opt( gauss_width, "gauss", 'g', "gauss filter width for moothing the gradient"));
+	options.push_back(make_opt( itc_file, "itc-file", 0, "intensity time curve output file"));
+	options.push_back(make_opt( itc_location, "itc-loc", 0, "intensity time curve output pixel coordinates"));
 
 
 	try {

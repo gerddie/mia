@@ -98,14 +98,14 @@ int do_main( int argc, const char *argv[] )
 	size_t reference = 20; 
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( org_filename, "original", 'o', "original segmentation set", "original", true));
-	options.push_back(make_opt( reg_filename, "registered", 'g', "registered segmentation set", "registered", true));
-	options.push_back(make_opt( skip, "skip", 'k', "images to skip atthe bgin of the series", "skip", false)); 
-	options.push_back(make_opt( reference, "reference", 'r', "reference image", "refernce", false)); 
-	options.push_back(make_opt( curves_filename, "curves", 'c', "region average value curves", "curves", false));
-	options.push_back(make_opt( varcurves_filename, "varcurves", 'v', "region variation values", "varcurves", false));
+	options.push_back(make_opt( org_filename, "original", 'o', "original segmentation set", CCmdOption::required));
+	options.push_back(make_opt( reg_filename, "registered", 'g', "registered segmentation set", CCmdOption::required));
+	options.push_back(make_opt( skip, "skip", 'k', "images to skip atthe bgin of the series")); 
+	options.push_back(make_opt( reference, "reference", 'r', "reference image")); 
+	options.push_back(make_opt( curves_filename, "curves", 'c', "region average value curves"));
+	options.push_back(make_opt( varcurves_filename, "varcurves", 'v', "region variation values"));
 	options.push_back(make_opt( n_sections, "nsections", 'n', 
-				    "number of sections to use, 0=use as segmented", "nsections", false)); 
+				    "number of sections to use, 0=use as segmented")); 
 	
 	options.parse(argc, argv);
 

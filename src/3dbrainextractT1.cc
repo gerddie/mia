@@ -68,18 +68,14 @@ int main( int argc, const char *argv[] )
 
 		CCmdOptionList options(program_info);
 		options.push_back(make_opt( in_filename, "in-file", 'i',
-					    "input image(s) to be segmenetd", "input", true));
-		options.push_back(make_opt( out_filename, "out-file", 'o',
-					    "brain mask", NULL, true ));
-		options.push_back(make_opt( noOfClasses, "no-of-classes", 'n', "number of classes", "classes", false));
-		options.push_back(make_opt( wmclass,     "wm-class",      'w', "index of white matter", "wm", false));
+					    "input image(s) to be segmented", CCmdOption::required));
+		options.push_back(make_opt( out_filename, "out-file", 'o', "brain mask", CCmdOption::required ));
+		options.push_back(make_opt( noOfClasses, "no-of-classes", 'n', "number of classes"));
+		options.push_back(make_opt( wmclass,     "wm-class",      'w', "index of white matter"));
 		options.push_back(make_opt( wmclassprob, "wm-prob", 'p',
-					    "white matter class probability for initial mask creation",
-					    "wmclassprob", false));
-		options.push_back(make_opt( growthresh, "grow-threshold", 't', "intensity threshold for region growing",
-					    "growthresh", false));
-		options.push_back(make_opt( growshape, "grow-shape", 0, "neighbourhood mask region growing",
-					    "growshape", false));
+					    "white matter class probability for initial mask creation"));
+		options.push_back(make_opt( growthresh, "grow-threshold", 't', "intensity threshold for region growing"));
+		options.push_back(make_opt( growshape, "grow-shape", 0, "neighbourhood mask region growing"));
 
 
 		options.parse(argc, argv);

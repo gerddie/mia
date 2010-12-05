@@ -138,9 +138,8 @@ int do_main( int argc, const char *argv[] )
 	
 	CCmdOptionList options(g_description);
 	options.push_back(make_opt( out_directory, "out", 'o', "output directory (needs to exist and be writable)", 
-				    "output", true));
-	options.push_back(make_opt( no_copy_images, "no-copy", 0, "don't copy image files to output directory", 
-				    NULL, false));
+				    CCmdOption::required));
+	options.push_back(make_opt( no_copy_images, "no-copy", 0, "don't copy image files to output directory"));
 
 	options.parse(argc, argv, true);
 

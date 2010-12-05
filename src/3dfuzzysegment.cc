@@ -102,15 +102,15 @@ int main( int argc, const char *argv[] )
 
 		CCmdOptionList options(program_info);
 		options.push_back(make_opt( in_filename, "in-file", 'i',
-					    "input image(s) to be segmenetd", "input", true));
+					    "input image(s) to be segmenetd", CCmdOption::required));
 		options.push_back(make_opt( cls_filename, "cls-file", 'c',
-					    "output class probability images", "output", true));
+					    "output class probability images", CCmdOption::required));
 		options.push_back(make_opt( out_filename, "b0-file", 'o',
-					    "image corrected for intensity non-uniformity", NULL, false ));
+					    "image corrected for intensity non-uniformity" ));
 		options.push_back(make_opt( noOfClasses, "no-of-classes", 'n',
-					    "number of classes", "classes", false));
+					    "number of classes"));
 		options.push_back(make_opt( residuum, "residuum", 'r',
-					    "relative residuum", "residuum", false));
+					    "relative residuum"));
 
 		options.parse(argc, argv);
 

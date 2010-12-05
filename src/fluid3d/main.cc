@@ -217,26 +217,26 @@ int main(int argc, const char *argv[])
 	cverb.set_verbosity( vstream::ml_message );
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( in_filename, "in-image", 'i', "input image", "src", true ));
-	options.push_back(make_opt( ref_filename, "ref-image", 'r', "reference image ", "ref", true ));
-	options.push_back(make_opt( out_filename, "out-deformation", 'o', "output vector field", "result", true ));
-	options.push_back(make_opt( disable_multigrid, "disable-multigrid", 0, "disable multi-grid processing",
-				    "no-mg", false ));
+	options.push_back(make_opt( in_filename, "in-image", 'i', "input image", CCmdOption::required ));
+	options.push_back(make_opt( ref_filename, "ref-image", 'r', "reference image ", CCmdOption::required ));
+	options.push_back(make_opt( out_filename, "out-deformation", 'o', "output vector field", CCmdOption::required ));
+	options.push_back(make_opt( disable_multigrid, "disable-multigrid", 0, "disable multi-grid processing"));
 	options.push_back(make_opt( disable_fullres, "disable-fullres", 0,
-				    "disable processing on the full resolution image", "no-fulres", false ));
-	options.push_back(make_opt( params.Lambda,"lambda", 0, "elasticy constant", "lambda", false));
-	options.push_back(make_opt( params.My,"mu", 0, "elasticy constant", "mu", false));
-	options.push_back(make_opt( STARTSIZE, "start-size", 's', "initial multigrided size", "start", false ));
-	options.push_back(make_opt( method, g_method_dict, "method", 'm',  "method for solving PDE", "solver", false));
-	options.push_back(make_opt( params.InitialStepsize, "step", 0, "Initial stepsize", "", false));
-	options.push_back(make_opt( params.interp_type, GInterpolatorTable, "interpolator", 'p', "image transformation interpolator",
-				    "interp", false));
-	options.push_back(make_opt( params.Overrelaxation, "relax", 0, "overrelaxation factor vor method sor", "", false));
-	options.push_back(make_opt( params.maxiter, "maxiter", 0, "maxium iterations in sor and cg", "30", false));
-	options.push_back(make_opt( params.factor, "epsilon", 0, "truncation condition in sor and cg", "0.001", false));
-	options.push_back(make_opt( statlog_filename, "statlog", 0,"statistics logfilename", "stat", false));
-	options.push_back(make_opt( params.matter_threshold, "matter", 0, "intensity above which real matter is assumed (experimental)", "0", false));
-	options.push_back(make_opt( max_threads, "max-threads", 't', "maximal number of threads for sorap", "2", false));
+				    "disable processing on the full resolution image"));
+	options.push_back(make_opt( params.Lambda,"lambda", 0, "elasticy constant"));
+	options.push_back(make_opt( params.My,"mu", 0, "elasticy constant"));
+	options.push_back(make_opt( STARTSIZE, "start-size", 's', "initial multigrided size" ));
+	options.push_back(make_opt( method, g_method_dict, "method", 'm',  "method for solving PDE"));
+	options.push_back(make_opt( params.InitialStepsize, "step", 0, "Initial stepsize"));
+	options.push_back(make_opt( params.interp_type, GInterpolatorTable, "interpolator", 'p', 
+				    "image transformation interpolator"));
+	options.push_back(make_opt( params.Overrelaxation, "relax", 0, "overrelaxation factor vor method sor"));
+	options.push_back(make_opt( params.maxiter, "maxiter", 0, "maxium iterations in sor and cg"));
+	options.push_back(make_opt( params.factor, "epsilon", 0, "truncation condition in sor and cg"));
+	options.push_back(make_opt( statlog_filename, "statlog", 0,"statistics logfilename"));
+	options.push_back(make_opt( params.matter_threshold, "matter", 0, "intensity above which real "
+				    "matter is assumed (experimental)"));
+	options.push_back(make_opt( max_threads, "max-threads", 't', "maximal number of threads for sorap"));
 
 	try {
 		options.parse(argc, argv);

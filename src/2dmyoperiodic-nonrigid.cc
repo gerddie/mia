@@ -344,54 +344,45 @@ int do_main( int argc, const char *argv[] )
 	CCmdOptionList options(g_general_help);
 	
 	options.set_group("\nFile-IO");
-	options.push_back(make_opt( in_filename, "in-file", 'i', "input perfusion data set", 
-				    "input", true));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output perfusion data set", 
-				    "output", true));
+	options.push_back(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
+	options.push_back(make_opt( out_filename, "out-file", 'o', "output perfusion data set", CCmdOption::required));
 	options.push_back(make_opt( registered_filebase, "registered", 'r', 
-				    "file name base for registered fiels", "registered", false)); 
+				    "file name base for registered fiels")); 
 	options.push_back(make_opt(params.save_ref,"save-references", 0, 
-				   "Save synthetic references to files refXXXX.v", "save-references", false)); 
+				   "Save synthetic references to files refXXXX.v")); 
 
 
 	options.set_group("\nPreconditions"); 
 	options.push_back(make_opt(skip, "skip", 'k', 
-				   "Skip images at the begin of the series", 
-				   "skip", false)); 
+				   "Skip images at the begin of the series")); 
 	options.push_back(make_opt(params.max_candidates, "max-candidates", 0, 
-				   "maximum number of candidates for global reference image", 
-				   "max-candidates", false)); 
+				   "maximum number of candidates for global reference image")); 
 	options.push_back(make_opt(params.series_select_cost, "cost-series", 'S',
-				   "Const function to use for the analysis of the series", 
-				   "cost-series", false)); 
+				   "Const function to use for the analysis of the series")); 
 	options.push_back(make_opt(reference_index_file, "ref-idx", 0, 
-				   "save reference index number to this file", "ref-idx", false));  
+				   "save reference index number to this file"));  
 
 
 	options.set_group("\nRegistration"); 
 
 
 	options.push_back(make_opt( params.minimizer, TDictMap<EMinimizers>(g_minimizer_table),
-				    "optimizer", 'O', "Optimizer used for minimization", 
-				    "optimizer", false));
+				    "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
-	options.push_back(make_opt( params.mg_levels, "mr-levels", 'l', "multi-resolution levels", 
-				    "mg-levels", false));
+	options.push_back(make_opt( params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));
 
 	options.push_back(make_opt( params.divcurlweight, "divcurl", 'd', 
-				    "divcurl regularization weight", "divcurl", false));
+				    "divcurl regularization weight"));
 
 	options.push_back(make_opt( params.transform_creator, "transForm", 'f', 
-				    "transformation type", "transform", false));
+				    "transformation type"));
 
 	options.push_back(make_opt(params.pass1_cost, "cost-subset", '1', 
-				   "Cost function for registration during the subset registration", 
-				   "cost-subset", false)); 
+				   "Cost function for registration during the subset registration")); 
 
 	options.push_back(make_opt(params.pass2_cost, "cost-final", '2', 
-				   "Cost function for registration during the final registration", 
-				   "cost-final", false)); 
+				   "Cost function for registration during the final registration")); 
 	
 
 	

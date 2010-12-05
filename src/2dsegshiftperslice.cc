@@ -79,12 +79,12 @@ int do_main(int argc, const char *args[])
 	string shift_value_filebase("shift");
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", "input", true));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output segmentation set", "out", true));
-	options.push_back(make_opt( shift_filename, "image-file", 'g', "output image filename base", "image", false));
+	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
+	options.push_back(make_opt( out_filename, "out-file", 'o', "output segmentation set", CCmdOption::required));
+	options.push_back(make_opt( shift_filename, "image-file", 'g', "output image filename base"));
 
-	options.push_back(make_opt( shift_value_filebase, "shift", 'S', "shift of segmentation - base name ",
-				    "shift", true));
+	options.push_back(make_opt( shift_value_filebase, "shift", 'S', "shift of segmentation - base name ", 
+				    CCmdOption::required));
 
 
 	options.parse(argc, args);

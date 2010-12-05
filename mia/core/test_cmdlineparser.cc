@@ -21,7 +21,15 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#ifndef BOOST_TEST_DYN_LINK
+#define BOOST_TEST_DYN_LINK
+#endif
+//#define BOOST_TEST_ALTERNATIVE_INIT_API
+#define BOOST_TEST_MAIN
+#define BOOST_TEST_NO_MAIN
+#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
 #include <stdexcept>
 #include <climits>
 
@@ -51,7 +59,7 @@ BOOST_FIXTURE_TEST_CASE( test_set_option, CmdlineParserFixture )
 	possible_values.insert("dos");
 	possible_values.insert("tres");
 
-	PCmdOption popt(make_opt(value, possible_values, "string", 's', "a string option", "string"));
+	PCmdOption popt(make_opt(value, possible_values, "string", 's', "a string option"));
 
 	try {
 		popt->set_value("uno");
@@ -318,5 +326,16 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors2, CmdlineParserFixture )
 	olist.push_back(make_opt(bool_value, "bool", 'H', "a bool option", "bool"));
 
 	BOOST_CHECK_THROW(olist.parse(options.size(), &options[0], false), invalid_argument); 
+}
+
+NS_MIA_USE; 
+int BOOST_TEST_CALL_DECL
+main( int argc, char* argv[] )
+{
+#ifdef WIN32
+	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
+#endif
+	return ::boost::unit_test::unit_test_main( &init_unit_test, argc, argv );
 }
 

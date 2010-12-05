@@ -103,7 +103,7 @@ BOOST_FIXTURE_TEST_CASE(test_transform_creator_option, HandlerTestFixture)
 	auto product = C2DTransformCreatorHandler::instance().produce("spline"); 
 	BOOST_CHECK_EQUAL(product->get_init_string(), "spline"); 
 	
-	PCmdOption option = make_opt(product, "spline", 's',"Some help", "help", false); 
+	PCmdOption option = make_opt(product, "spline", 's',"Some help", "help"); 
 	
 	stringstream test; 
 	option->write_value(test); 
@@ -115,7 +115,7 @@ BOOST_FIXTURE_TEST_CASE(test_transform_creator_option2, HandlerTestFixture)
 {
 	C2DTransformCreatorHandler::ProductPtr product; 
 	
-	PCmdOption option = make_opt(product, "transform", 't',"Some help", "help", false); 
+	PCmdOption option = make_opt(product, "transform", 't',"Some help", "help"); 
 	
 	option->set_value("vf"); 
 	

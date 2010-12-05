@@ -66,11 +66,10 @@ int main( int argc, const char *argv[] )
 
 	CCmdOptionList options(program_info);
 	options.push_back(make_opt( in_filename, "in-file", 'i',
-				    "input image(s) to be filtered", "input", true));
+				    "input image(s) to be filtered", CCmdOption::required));
 	options.push_back(make_opt( out_filename, "out-file", 'o',
-				    "output image(s) that have been filtered", "output", true));
-	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
-				    "output file type" , "type", false));
+				    "output image(s) that have been filtered", CCmdOption::required));
+	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',  "output file type"));
 	options.push_back(make_help_opt( "help-plugins", 0,
 					 "give some help about the filter plugins", 
 					 new TPluginHandlerHelpCallback<C3DFilterPluginHandler>)); 

@@ -49,12 +49,14 @@ int do_main(int argc, const char *args[])
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 	CCmdOptionList options(program_info);
 
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output file for create object", "output", true));
+	options.push_back(make_opt( out_filename, "out-file", 'o', "output file for create object", 
+				    CCmdOption::required));
 	options.push_back(make_opt( type, imageio.get_set(), "type", 't', 
-				    "Output file type (normally deducted from output file name)", "filetype", false));
-	options.push_back(make_opt( size, "size", 's', "size of the object", "size", false));
-	options.push_back(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type ", "ubyte", false));
-	options.push_back(make_opt( creator,  "object", 'j', "object to be created", "object", true));
+				    "Output file type (normally deducted from output file name)", 
+				    CCmdOption::required));
+	options.push_back(make_opt( size, "size", 's', "size of the object", CCmdOption::required));
+	options.push_back(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type ", CCmdOption::required));
+	options.push_back(make_opt( creator,  "object", 'j', "object to be created", CCmdOption::required));
 
 	options.parse(argc, args, false);
 

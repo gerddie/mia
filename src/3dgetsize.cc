@@ -49,7 +49,8 @@ int main( int argc, const char *argv[] )
 		const C3DImageIOPluginHandler::Instance& imageio3d = C3DImageIOPluginHandler::instance();
 
 		CCmdOptionList options(program_info);
-		options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", "input", true));
+		options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
+					    CCmdOption::required));
 
 		options.parse(argc, argv);
 

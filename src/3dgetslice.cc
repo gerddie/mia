@@ -149,16 +149,16 @@ int main( int argc, const char *argv[] )
 
 		CCmdOptionList options(program_info);
 		options.push_back(make_opt( in_filename, "in-file", 'i', 
-					    "input image(s) to be filtered", "input", true));
+					    "input image(s) to be filtered", CCmdOption::required));
 		options.push_back(make_opt( out_filename, "out-file", 'o', 
-					    "output image(s) that have been filtered", "output", true));
+					    "output image(s) that have been filtered", CCmdOption::required));
 		options.push_back(make_opt( out_type, imageio2d.get_set(), "type", 't',
-					    "output file type" , "type", false));
-		options.push_back(make_opt( start_slice, "start", 's',"start slice number" , "start", false));
+					    "output file type"));
+		options.push_back(make_opt( start_slice, "start", 's',"start slice number"));
 		options.push_back(make_opt( slice_number, "number", 'n',
-					    "number of slices (all=0)" , "number", false));
+					    "number of slices (all=0)"));
 		options.push_back(make_opt( direction, GDirectionmap, "dir", 'd', 
-					    "slice direction (xy=axial, xz=coronal, yz=saggital)", "dir", false));
+					    "slice direction (xy=axial, xz=coronal, yz=saggital)"));
 
 		options.parse(argc, argv, false);
 

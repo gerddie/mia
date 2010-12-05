@@ -46,7 +46,7 @@ int main( int argc, const char *argv[] )
 {
 	string in_filename;
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( in_filename, "in-file", 'i', "input image example name", "input", true));
+	options.push_back(make_opt( in_filename, "in-file", 'i', "input image example name", CCmdOption::required));
 
 	options.parse(argc, argv);
 	size_t format_width = get_filename_number_pattern_width(in_filename);

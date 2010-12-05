@@ -70,19 +70,20 @@ int do_main(int argc, const char **args)
 
 	const C3DImageCostPluginHandler::Instance&  icph = C3DImageCostPluginHandler::instance();
 
-	options.push_back(make_opt( src_filename, "in-file", 'i', "input image (floating image)", "templ", true));
-	options.push_back(make_opt( ref_filename, "ref-file", 'r', "reference image", "reference", true));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output vector field", "outfield", true));
-	options.push_back(make_opt( def_filename, "def-file", 'd', "deformed inpout image", NULL, false));
-	options.push_back(make_opt( regmodel, "regmodel", 'm', "registration model", "model", true));
-	options.push_back(make_opt( timestep, "timestep", 't', "time setp", "timestep", true));
-	options.push_back(make_opt( start_size, "mgsize", 's', "multigrid start size", NULL, true));
-	options.push_back(make_opt( max_iter, "max-iter", 'n', ",maximum number of iterations", NULL, true));
-	options.push_back(make_opt( cost_function, "cost", 'c', "cost function", "ssd", true));
+	options.push_back(make_opt( src_filename, "in-file", 'i', "input image (floating image)", CCmdOption::required));
+	options.push_back(make_opt( ref_filename, "ref-file", 'r', "reference image", CCmdOption::required));
+	options.push_back(make_opt( out_filename, "out-file", 'o', "output vector field", CCmdOption::required));
+	options.push_back(make_opt( def_filename, "def-file", 'd', "deformed inpout image"));
+	options.push_back(make_opt( regmodel, "regmodel", 'm', "registration model", CCmdOption::required));
+	options.push_back(make_opt( timestep, "timestep", 't', "time setp", CCmdOption::required));
+	options.push_back(make_opt( start_size, "mgsize", 's', "multigrid start size"));
+	options.push_back(make_opt( max_iter, "max-iter", 'n', ",maximum number of iterations"));
+	options.push_back(make_opt( cost_function, "cost", 'c', "cost function", CCmdOption::required));
 	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
-					"image interpolator", "bspline3", true));
-	options.push_back(make_opt( epsilon, "epsilon", 'e', "relative accuracy to stop registration at a multi-grid level", "0.01", true));
-	options.push_back(make_opt( save_steps, "save-steps", 0, "save the steps of the registration in images", false));
+					"image interpolator", CCmdOption::required));
+	options.push_back(make_opt( epsilon, "epsilon", 'e', "relative accuracy to stop registration"
+				    " at a multi-grid level", CCmdOption::required));
+	options.push_back(make_opt( save_steps, "save-steps", 0, "save the steps of the registration in images"));
 
 	options.parse(argc, args);
 

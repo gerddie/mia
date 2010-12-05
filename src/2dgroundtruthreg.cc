@@ -164,47 +164,43 @@ int do_main( int argc, const char *argv[] )
 
 	CCmdOptionList options(g_description);
 	options.set_group("\nFile-IO"); 
-	options.push_back(make_opt( in_filename, "in-file", 'i', "input perfusion data set", "input", true));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output perfusion data set", "output", true));
-	options.push_back(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels", 
-				    "registered", false)); 
+	options.push_back(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
+	options.push_back(make_opt( out_filename, "out-file", 'o', "output perfusion data set", CCmdOption::required));
+	options.push_back(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels")); 
 
 	options.set_group("\nPreconditions"); 
-	options.push_back(make_opt( skip, "skip", 's', "skip images at beginning of series", "skip", false));
-	options.push_back(make_opt( passes, "passes", 'P', "number of registration passes", "passes", false));
+	options.push_back(make_opt( skip, "skip", 's', "skip images at beginning of series"));
+	options.push_back(make_opt( passes, "passes", 'P', "number of registration passes"));
 
 	options.set_group("\nPseudo-Ground-Thruth"); 
 	options.push_back(make_opt( pgt_params.alpha, "alpha", 'A', "spacial neighborhood penalty weight", 
-				    "alpha", false));
+				    CCmdOption::required));
 	options.push_back(make_opt( pgt_params.beta, "beta", 'B', "temporal second derivative penalty weight", 
-				    "beta", false));
+				    CCmdOption::required));
 	options.push_back(make_opt( pgt_params.rho_thresh, "rho_thresh", 'R', 
-				    "crorrelation threshhold for neighborhood analysis", "rho", false));
+				    "crorrelation threshhold for neighborhood analysis", CCmdOption::required));
 
 
 	
 	options.set_group("\nRegistration"); 
 	
 	options.push_back(make_opt( reg_params.minimizer, TDictMap<EMinimizers>(g_minimizer_table),
-				    "optimizer", 'O', "Optimizer used for minimization", 
-				    "optimizer", false));
+				    "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
-	options.push_back(make_opt( reg_params.mg_levels, "mr-levels", 'l', "multi-resolution levels", 
-				    "mg-levels", false));
+	options.push_back(make_opt( reg_params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));
 	
 	options.push_back(make_opt( reg_params.divcurlweight, "divcurl", 'd', 
-				    "divcurl regularization weight", "divcurl", false));
+				    "divcurl regularization weight"));
 	options.push_back(make_opt( divcurlweight_divider, "divcurl-divider", 0,
-				    "divcurl weight scaling with each new pass", 
-				    "divcurl", false)); 
+				    "divcurl weight scaling with each new pass")); 
 	options.push_back(make_opt( reg_params.c_rate, "start-c-rate", 'a', 
-				    "start coefficinet rate in spines, gets divided by --c-rate-divider with every pass", 				    "c-rate", false));
+				    "start coefficinet rate in spines, gets divided "
+				    "by --c-rate-divider with every pass"));
 	options.push_back(make_opt( c_rate_divider, "c-rate-divider", 0, 
-				    "cofficient rate divider for each pass", 
-				    "c-rate", false));
+				    "cofficient rate divider for each pass"));
 	options.push_back(make_opt( reg_params.imageweight, "imageweight", 'w', 
-				    "image cost weight", "imageweight", false)); 
+				    "image cost weight")); 
 
 	options.parse(argc, argv, false);
 

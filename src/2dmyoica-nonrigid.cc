@@ -101,13 +101,16 @@ P2DTransformationFactory create_transform_creator(size_t c_rate)
 }
 	
 
-void segment_and_crop_input(CSegSetWithImages&  input_set, const C2DPerfusionAnalysis& ica, 
-			    float box_scale, C2DPerfusionAnalysis::EBoxSegmentation segmethod, 
+void segment_and_crop_input(CSegSetWithImages&  input_set, 
+			    const C2DPerfusionAnalysis& ica, 
+			    float box_scale, 
+			    C2DPerfusionAnalysis::EBoxSegmentation segmethod, 
 			    C2DImageSeries& references, 
 			    const string& save_crop_feature)
 {
 	C2DBounds crop_start; 
-	auto cropper = ica.get_crop_filter(box_scale, crop_start, segmethod, save_crop_feature); 
+	auto cropper = ica.get_crop_filter(box_scale, crop_start, 
+					   segmethod, save_crop_feature); 
 	if (!cropper)
 		THROW(runtime_error, "Cropping was requested, but segmentation failed"); 
 	C2DImageSeries input_images = input_set.get_images(); 
@@ -128,7 +131,8 @@ void segment_and_crop_input(CSegSetWithImages&  input_set, const C2DPerfusionAna
 	input_set.set_images(input_images);  
 }
 
-void run_registration_pass(CSegSetWithImages&  input_set, const C2DImageSeries& references, 
+void run_registration_pass(CSegSetWithImages&  input_set, 
+			   const C2DImageSeries& references, 
 			   int skip_images, EMinimizers minimizer, 
 			   C2DInterpolatorFactory& ipfactory, size_t mg_levels, 
 			   double c_rate, double divcurlweight, double imageweight) 
@@ -137,13 +141,16 @@ void run_registration_pass(CSegSetWithImages&  input_set, const C2DImageSeries& 
 	C2DImageSeries input_images = input_set.get_images(); 
 	auto costs  = create_costs(divcurlweight, imageweight); 
 	auto transform_creator = create_transform_creator(c_rate); 
-	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, ipfactory, mg_levels);
+	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, 
+				ipfactory, mg_levels);
 
 	// this loop could be parallized 
 	for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
 		cvmsg() << "Register frame " << i << "\n"; 
-		P2DTransformation transform = nrr.run(input_images[i + skip_images], references[i]);
-		input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], ipfactory);
+		P2DTransformation transform = nrr.run(input_images[i + skip_images], 
+						      references[i]);
+		input_images[i + skip_images] = 
+			(*transform)(*input_images[i + skip_images], ipfactory);
 		frames[i + skip_images].inv_transform(*transform);
 	}
 	input_set.set_images(input_images); 
@@ -182,7 +189,8 @@ int do_main( int argc, const char *argv[] )
 	float box_scale = 0.0;
 	size_t skip_images = 0; 
 	size_t max_ica_iterations = 400; 
-	C2DPerfusionAnalysis::EBoxSegmentation segmethod=C2DPerfusionAnalysis::bs_features; 
+	C2DPerfusionAnalysis::EBoxSegmentation 
+		segmethod=C2DPerfusionAnalysis::bs_features; 
 
 	size_t current_pass = 0; 
 	size_t pass = 3; 
@@ -190,37 +198,39 @@ int do_main( int argc, const char *argv[] )
 	CCmdOptionList options(g_general_help);
 	
 	options.set_group("\nFile-IO"); 
-	options.push_back(make_opt( in_filename, "in-file", 'i', "input perfusion data set", "input", true));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output perfusion data set", "output", true));
-	options.push_back(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels", 
-				    "registered", false)); 
+	options.push_back(make_opt( in_filename, "in-file", 'i', 
+				    "input perfusion data set", CCmdOption::required));
+	options.push_back(make_opt( out_filename, "out-file", 'o', 
+				    "output perfusion data set", CCmdOption::required));
+	options.push_back(make_opt( registered_filebase, "registered", 'r', 
+				    "file name base for registered fiels")); 
 	
-	options.push_back(make_opt( cropped_filename, "save-cropped", 0, "save cropped set to this file", NULL)); 
+	options.push_back(make_opt( cropped_filename, "save-cropped", 0, 
+				    "save cropped set to this file", NULL)); 
 	options.push_back(make_opt( save_crop_feature, "save-feature", 0, 
-				    "save segmentation feature images and initial ICA mixing matrix", NULL)); 
+				    "save segmentation feature images"
+				    " and initial ICA mixing matrix", NULL)); 
 
 	
 	options.set_group("\nRegistration"); 
 	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
-				    "optimizer", 'O', "Optimizer used for minimization", "optimizer", false));
+				    "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( c_rate, "start-c-rate", 'a', 
-				    "start coefficinet rate in spines, gets divided by --c-rate-divider with every pass", 
-				    "c-rate", false));
+				    "start coefficinet rate in spines,"
+				    " gets divided by --c-rate-divider with every pass"));
 	options.push_back(make_opt( c_rate_divider, "c-rate-divider", 0, 
-				    "cofficient rate divider for each pass", 
-				    "c-rate", false));
+				    "cofficient rate divider for each pass"));
 	options.push_back(make_opt( divcurlweight, "start-divcurl", 'd',
-				    "start divcurl weight, gets divided by --divcurl-divider with every pass", 
-				    "divcurl", false)); 
+				    "start divcurl weight, gets divided by"
+				    " --divcurl-divider with every pass")); 
 	options.push_back(make_opt( divcurlweight_divider, "divcurl-divider", 0,
-				    "divcurl weight scaling with each new pass", 
-				    "divcurl", false)); 
+				    "divcurl weight scaling with each new pass")); 
 	options.push_back(make_opt( imageweight, "imageweight", 'w', 
-				    "image cost weight", "imageweight", false)); 
+				    "image cost weight")); 
 	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
-	options.push_back(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels", "mg-levels", false));
-	options.push_back(make_opt( pass, "passes", 'P', "registration passes", "passes")); 
+	options.push_back(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
+	options.push_back(make_opt( pass, "passes", 'P', "registration passes")); 
 
 	options.set_group("\nICA"); 
 	options.push_back(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
@@ -230,12 +240,11 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( box_scale, "segscale", 's', 
 				    "segment and scale the crop box around the LV (0=no segmentation)", "segscale"));
 	options.push_back(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
-				    "e.g. because as they are of other modalities", "skip")); 
-	options.push_back(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA", 
-				    "ica-iter", false)); 
+				    "e.g. because as they are of other modalities")); 
+	options.push_back(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 
 
 	options.push_back(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
-				   "Segmentation method", "segmethod")); 
+				   "Segmentation method")); 
 				    
 
 	options.parse(argc, argv, false);

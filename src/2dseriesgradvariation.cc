@@ -146,12 +146,11 @@ int main( int argc, const char *argv[] )
 
 
 	CCmdOptionList options(program_info);
-	options.push_back(make_opt( in_filename, "in-file", 'i', "input segmentation set", "input", true));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output file name", "output", true));
-	options.push_back(make_opt( skip, "skip", 'p', "Skip files at the beginning", "skip", false));
-	options.push_back(make_opt( enlarge_boundary,  "enlarge-boundary", 'e', "Enlarge cropbox by number of pixels",
-				    "enlarge", false));
-	options.push_back(make_opt( crop, "crop", 'c', "crop image before running statistics", "crop", false));
+	options.push_back(make_opt( in_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
+	options.push_back(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
+	options.push_back(make_opt( skip, "skip", 'p', "Skip files at the beginning"));
+	options.push_back(make_opt( enlarge_boundary,  "enlarge-boundary", 'e', "Enlarge cropbox by number of pixels"));
+	options.push_back(make_opt( crop, "crop", 'c', "crop image before running statistics"));
 
 	try {
 

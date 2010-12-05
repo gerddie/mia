@@ -53,8 +53,8 @@ int do_main(int argc, const char *args[])
 	size_t reference = 0;
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", "input", true));
-	options.push_back(make_opt( reference, "ref-frame", 'r', "reference frame", "ref", true));
+	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
+	options.push_back(make_opt( reference, "ref-frame", 'r', "reference frame", CCmdOption::required));
 	options.parse(argc, args);
 
 	DomParser parser;

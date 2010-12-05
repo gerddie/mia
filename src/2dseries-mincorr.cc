@@ -110,10 +110,9 @@ int do_main( int argc, const char *argv[] )
 
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( src_name, "in", 'i', "input segmentation set", "input", false));
-	options.push_back(make_opt( out_name, "out", 'o', "output image of minimal correlation",
-				    "output", false));
-	options.push_back(make_opt( skip, "skip", 's', "skip images at beginning of series", "skip", false));
+	options.push_back(make_opt( src_name, "in", 'i', "input segmentation set"));
+	options.push_back(make_opt( out_name, "out", 'o', "output image of minimal correlation"));
+	options.push_back(make_opt( skip, "skip", 's', "skip images at beginning of series"));
 
 	options.parse(argc, argv);
 

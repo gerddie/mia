@@ -64,15 +64,15 @@ int do_main( int argc, const char *argv[] )
 	size_t mg_levels = 3;
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( src_filename, "in", 'i', "test image", "input", true));
-	options.push_back(make_opt( ref_filename, "ref", 'r', "reference image", "input", true));
-	options.push_back(make_opt( out_filename, "out", 'o', "registered output image", "output", true));
-	options.push_back(make_opt( trans_filename, "trans", 't', "transformation", "transformation", false));
-	options.push_back(make_opt( cost_function, "cost", 'c', "cost function", "cost", false)); 
-	options.push_back(make_opt( mg_levels, "levels", 'l', "multigrid levels", "levels", false));
+	options.push_back(make_opt( src_filename, "in", 'i', "test image", CCmdOption::required));
+	options.push_back(make_opt( ref_filename, "ref", 'r', "reference image", CCmdOption::required));
+	options.push_back(make_opt( out_filename, "out", 'o', "registered output image", CCmdOption::required));
+	options.push_back(make_opt( trans_filename, "trans", 't', "transformation"));
+	options.push_back(make_opt( cost_function, "cost", 'c', "cost function")); 
+	options.push_back(make_opt( mg_levels, "levels", 'l', "multigrid levels"));
 	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
-				    "optimizer", 'O', "Optimizer used for minimization", "optimizer", false));
-	options.push_back(make_opt( transform_creator, "transForm", 'f', "transformation type", "transform", false));
+				    "optimizer", 'O', "Optimizer used for minimization"));
+	options.push_back(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 
 	options.parse(argc, argv);
 

@@ -163,16 +163,13 @@ int do_main(int argc, const char *argv[] )
 
 	CCmdOptionList options(g_description);
 	options.push_back(make_opt( in_filename, "in-file", 'i',
-				    "input image(s) to be filtered", "input", true));
+				    "input image(s) to be filtered", CCmdOption::required));
 	options.push_back(make_opt( out_filename, "out-file", 'o',
-				    "output image(s) that have been filtered", "output", true));
-	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
-				    "output file type" , "type", false));
-	options.push_back(make_opt( seed_point, "seed", 's',
-				    "seed point", "seed",  false));
+				    "output image(s) that have been filtered", CCmdOption::required));
+	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't', "output file type"));
+	options.push_back(make_opt( seed_point, "seed", 's', "seed point"));
 
-	options.push_back(make_opt( shape_descr, "neighborhood", 'n',
-				    "neighborhood shape", "neighborhood",  false));
+	options.push_back(make_opt( shape_descr, "neighborhood", 'n', "neighborhood shape"));
 
 	options.parse(argc, argv);
 

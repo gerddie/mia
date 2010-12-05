@@ -46,11 +46,11 @@ int do_main(int argc, const char **args)
 	string vf_filename;
 	EInterpolation interpolator = ip_bspline3;
 
-	options.push_back(make_opt( src_filename, "in-file", 'i', "input image", "input", true));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "reference image", "output", true));
-	options.push_back(make_opt( vf_filename, "transformation", 't', "transformation vector field", "transform", true));
-	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
-					"image interpolator", NULL));
+	options.push_back(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required));
+	options.push_back(make_opt( out_filename, "out-file", 'o', "reference image", CCmdOption::required));
+	options.push_back(make_opt( vf_filename, "transformation", 't', "transformation vector field", 
+				    CCmdOption::required));
+	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p', "image interpolator"));
 
 
 	options.parse(argc, args);

@@ -356,40 +356,32 @@ int do_main( int argc, const char *argv[] )
 
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 	CCmdOptionList options("Obsolete version of mia-2dmyocard-icaseries."); 
-	options.push_back(make_opt( src_name, "in-base", 'i', "input file name base", "input", false));
-	options.push_back(make_opt( coefs_name, "coefs", 0, "output mixing coefficients to this file", "coefs", false));
-	options.push_back(make_opt( out_name, "out-base", 'o', "output file name base", "output", false));
+	options.push_back(make_opt( src_name, "in-base", 'i', "input file name base"));
+	options.push_back(make_opt( coefs_name, "coefs", 0, "output mixing coefficients to this file"));
+	options.push_back(make_opt( out_name, "out-base", 'o', "output file name base"));
 
 	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
-				    "output file type" , "image-type"));
+				    "output file type"));
 
-	options.push_back(make_opt( first, "skip", 's', "skip images at beginning of series", "skip", false));
-	options.push_back(make_opt( last, "end", 'e', "last image in series", "end", false));
-	options.push_back(make_opt( components, "components", 'c', "nr. of components, 0=estimate automatically",
-				    "components", false));
-	options.push_back(make_opt( strip_mean, "strip-mean", 'm', "strip mean image from series", "strip-mean", false));
-	options.push_back(make_opt( feature_image_base, "save-features", 'f', "save feature image",
-				    "save feature", false));
+	options.push_back(make_opt( first, "skip", 's', "skip images at beginning of series"));
+	options.push_back(make_opt( last, "end", 'e', "last image in series"));
+	options.push_back(make_opt( components, "components", 'c', "nr. of components, 0=estimate automatically"));
+	options.push_back(make_opt( strip_mean, "strip-mean", 'm', "strip mean image from series"));
+	options.push_back(make_opt( feature_image_base, "save-features", 'f', "save feature image"));
 
-	options.push_back(make_opt(skip_only_periodic,"strip_periodic",'p', "strip only periodic component", "periodic",
-				   false));
+	options.push_back(make_opt(skip_only_periodic,"strip_periodic",'p', "strip only periodic component"));
 
-	options.push_back(make_opt(max_iterations,"max-ica-iterations",'x', "max ICA solver iterations", "iaxiter",
-				   false));
+	options.push_back(make_opt(max_iterations,"max-ica-iterations",'x', "max ICA solver iterations"));
 
-	options.push_back(make_opt( ica_normalize, "ica_normalize", 'n', "ica_normalize feature images",
-				    "ica_normalize", false));
-	options.push_back(make_opt( numbered_feature_image, "all-features", 0, "save all feature images to",
-				    "all", false));
+	options.push_back(make_opt( ica_normalize, "ica_normalize", 'n', "ica_normalize feature images"));
+	options.push_back(make_opt( numbered_feature_image, "all-features", 0, "save all feature images to"));
 
-	options.push_back(make_opt( LV_mask, "LV-crop-amp", 'L', "LV crop mask amplification, 0.0 = don't crop",
-				    "LV-crop", false));
-
+	options.push_back(make_opt( LV_mask, "LV-crop-amp", 'L', "LV crop mask amplification, 0.0 = don't crop"));
 
 
 	options.push_back(make_opt( auto_comp, "auto-components", 'a',
 				    "automatic esitmation of number of components based on correlation."
-				    " Implies -m and -n (Experimental)", false));
+				    " Implies -m and -n (Experimental)"));
 	options.parse(argc, argv);
 
 	size_t start_filenum = 0;

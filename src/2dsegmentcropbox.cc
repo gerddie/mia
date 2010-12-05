@@ -76,12 +76,12 @@ int do_main(int argc, const char *args[])
 	float  enlarge_boundary = 5;
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", "input", true));
+	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
 	options.push_back(make_opt( override_src_imagepath, "override-imagepath", 'p',
-				    "overide image path given in the segmentation set", "override", false));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output segmentation set", "output", true));
+				    "overide image path given in the segmentation set"));
+	options.push_back(make_opt( out_filename, "out-file", 'o', "output segmentation set", CCmdOption::required));
 	options.push_back(make_opt( enlarge_boundary, "enlarge", 'e',
-				    "enlarge boundary by number of pixels", "enlarge"));
+				    "enlarge boundary by number of pixels"));
 	options.parse(argc, args);
 
 	CSegSetWithImages  segset(src_filename, override_src_imagepath);

@@ -130,17 +130,24 @@ int main(int argc, const char *argv[])
 {
 
 	CCmdOptionList options("Test History funcionallity");
-	options.push_back(make_opt( options::some_single_string, "string", 's', "some string option", "oldstring",true ));
-	options.push_back(make_opt( options::some_float, "float", 'f', "some float option", "-1.0",true ));
-	options.push_back(make_opt( options::some_int, "int", 'i', "some int option", "-1",true));
+	options.push_back(make_opt( options::some_single_string, "string", 's', 
+				    "some string option", "oldstring", CCmdOption::required ));
+	options.push_back(make_opt( options::some_float, "float", 'f', "some float option", "-1.0", 
+				    CCmdOption::required ));
+	options.push_back(make_opt( options::some_int, "int", 'i', "some int option", "-1", CCmdOption::required));
 	options.push_back(make_opt( options::true_bool, "tbool", 't', "true_bool",NULL));
 	options.push_back(make_opt( options::internal, "internal", 'l', "internal test option", NULL ));
-	options.push_back(make_opt( options::dict_val, the_dict, "dict", 'd', "other vector of strings", "testa",true));
+	options.push_back(make_opt( options::dict_val, the_dict, "dict", 'd', "other vector of strings", "testa",
+				    CCmdOption::required));
 #ifdef OPT_CAN_VECTOR
-	options.push_back(make_opt( options::series_of_strings, "vstring", 'v', "a vector of strings", "",true));
-	options.push_back(make_opt( options::other_series_of_strings, "ovstring", 'o', "other vector of strings", "",true));
-	options.push_back(make_opt( options::series_of_int, "vint", 'u', "a vector of int", "",true));
-	options.push_back(make_opt( options::series_of_float, "vfloat", 'a', "a vector of float", "",true));
+	options.push_back(make_opt( options::series_of_strings, "vstring", 'v', "a vector of strings", "", 
+				    CCmdOption::required));
+	options.push_back(make_opt( options::other_series_of_strings, "ovstring", 'o', "other vector of strings", "",
+				    CCmdOption::required));
+	options.push_back(make_opt( options::series_of_int, "vint", 'u', "a vector of int", "",
+				    CCmdOption::required));
+	options.push_back(make_opt( options::series_of_float, "vfloat", 'a', "a vector of float", "",
+				    CCmdOption::required));
 #endif
 
 	vector<string> non_options;

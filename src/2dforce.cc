@@ -66,10 +66,10 @@ int do_main(int argc, const char **args)
 	string ref_filename;
 	string cost_descr("ssd");
 
-	options.push_back(make_opt( src_filename, "src-file", 'i', "input image", "template", true));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output force norm image","transform" , true));
-	options.push_back(make_opt( ref_filename, "ref-file", 'r', "reference image", "reference", true));
-	options.push_back(make_opt( cost_descr, "cost", 'c', "cost function to use", "cost", true));
+	options.push_back(make_opt( src_filename, "src-file", 'i', "input image", CCmdOption::required));
+	options.push_back(make_opt( out_filename, "out-file", 'o', "output force norm image", CCmdOption::required));
+	options.push_back(make_opt( ref_filename, "ref-file", 'r', "reference image", CCmdOption::required));
+	options.push_back(make_opt( cost_descr, "cost", 'c', "cost function to use", CCmdOption::required));
 
 
 	options.parse(argc, args);

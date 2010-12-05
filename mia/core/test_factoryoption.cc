@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE( test_a_factory_option )
 {
 
 	CFactoryHandlerMock::ProductPtr product; 
-	PCmdOption option = make_opt(product, "lala", 'l',"Some help", "help", false); 
+	PCmdOption option = make_opt(product, "lala", 'l',"Some help", "help"); 
 	
 	option->set_value("lala"); 
 	
@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE( test_another_factory_option )
 		CFactoryHandlerMock::instance().produce("lala"); 
 	BOOST_CHECK_EQUAL(product->get_init_string(), "lala"); 
 	
-	PCmdOption option = make_opt(product, "lala", 'l',"Some help", "help", false); 
+	PCmdOption option = make_opt(product, "lala", 'l',"Some help", "help"); 
 	
 	stringstream test; 
 	option->write_value(test); 

@@ -100,8 +100,8 @@ int main( int argc, const char *argv[] )
 
 
 		CCmdOptionList options(g_description);
-		options.push_back(make_opt( out_filename, "out-file", 'o', "output image ", "output", true));
-		options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',"output file type" , "filetype"));
+		options.push_back(make_opt( out_filename, "out-file", 'o', "output image ", CCmdOption::required));
+		options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',"output file type"));
 
 		options.parse(argc, argv);
 

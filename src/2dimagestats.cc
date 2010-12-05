@@ -94,9 +94,10 @@ int main( int argc, const char *argv[] )
 
 
 		CCmdOptionList options(g_description);
-		options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", "input", true));
-		options.push_back(make_opt( thresh, "thresh", 't', "intensity thresh to ignore", "thresh", false));
-		options.push_back(make_opt( high_thresh, "high-thresh", 'g', "upper histogram percentage to ignore", "high-thresh", false));
+		options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
+					    CCmdOption::required));
+		options.push_back(make_opt( thresh, "thresh", 't', "intensity thresh to ignore"));
+		options.push_back(make_opt( high_thresh, "high-thresh", 'g', "upper histogram percentage to ignore"));
 
 		options.parse(argc, argv);
 

@@ -136,16 +136,15 @@ int do_main(int argc, char **args)
 
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 
-	options.push_back(make_opt( src1_filename, "first", '1', "first input image ", "first", true));
-	options.push_back(make_opt( src2_filename, "second", '2', "second input image ", "second", true));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output vector field", "output", true));
-	options.push_back(make_opt( positions, "positions", 'p', "image series positions (first, target, second)", "pos", true));
-	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',"output file type (if not given deduct from output file name)",
-				    "image-type"));
-
-	options.push_back(make_opt( self_test, "self-test", 0, "run a self test of the tool", "selftest", false));
-
-
+	options.push_back(make_opt( src1_filename, "first", '1', "first input image ", CCmdOption::required));
+	options.push_back(make_opt( src2_filename, "second", '2', "second input image ", CCmdOption::required));
+	options.push_back(make_opt( out_filename, "out-file", 'o', "output vector field", CCmdOption::required));
+	options.push_back(make_opt( positions, "positions", 'p', 
+				    "image series positions (first, target, second)", CCmdOption::required));
+	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',"output file type "
+				    "(if not given deduct from output file name)"));
+	options.push_back(make_opt( self_test, "self-test", 0, "run a self test of the tool"));
+	
 	options.parse(argc, args);
 
 	if (!options.get_remaining().empty()) {

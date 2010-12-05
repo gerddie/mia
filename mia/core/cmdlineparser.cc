@@ -36,10 +36,10 @@ extern void print_full_copyright(const char *name);
 NS_MIA_BEGIN
 using namespace std;
 
-CCmdOption::CCmdOption(const char *long_opt, const char *long_help, bool required):
+CCmdOption::CCmdOption(const char *long_opt, const char *long_help, Flags flags):
 	_M_long_opt(long_opt),
 	_M_long_help(long_help), 
-	_M_required(required)
+	_M_flags(flags)
 {
         assert(long_opt);
         assert(long_help);
@@ -82,12 +82,12 @@ const char *CCmdOption::get_long_option() const
 
 void CCmdOption::clear_required()
 {
-	_M_required = false; 
+	_M_flags = static_cast<CCmdOption::Flags>(_M_flags & (~required)); 
 }
 
-bool CCmdOption::required() const
+bool CCmdOption::is_required() const
 {
-	return _M_required; 
+	return (_M_flags & required ) == required; 
 }
 
 void CCmdOption::do_get_long_help(std::ostream& /* os */) const
@@ -137,9 +137,10 @@ CCmdOptionData::CCmdOptionData(char short_opt, const char *short_help):
 {
 }
 
-CCmdOptionValue::CCmdOptionValue(char short_opt, const char *long_opt, const char *long_help, 
-				 const char *short_help, bool required):
-	CCmdOption(long_opt, long_help, required),
+CCmdOptionValue::CCmdOptionValue(char short_opt, const char *long_opt, 
+				 const char *long_help, 
+				 const char *short_help, Flags flags):
+	CCmdOption(long_opt, long_help, flags),
 	_M_impl(new CCmdOptionData(short_opt,  short_help))
 {
 }
@@ -266,9 +267,10 @@ struct CCmdOptionListData {
 };
 
 
-CCmdSetOption::CCmdSetOption(std::string& val, const std::set<std::string>& set, char short_opt, const char *long_opt, const char *long_help,
-			     const char *short_help, bool required):
-	CCmdOptionValue(short_opt, long_opt, long_help, short_help,  required),
+CCmdSetOption::CCmdSetOption(std::string& val, const std::set<std::string>& set, 
+			     char short_opt, const char *long_opt, const char *long_help,
+			     const char *short_help, Flags flags):
+	CCmdOptionValue(short_opt, long_opt, long_help, short_help,  flags),
 	_M_value(val),
 	_M_set(set)
 {
@@ -329,12 +331,15 @@ CCmdOptionListData::CCmdOptionListData(const string& general_help):
 	options[""] = vector<PCmdOption>();
 
 	set_current_group(g_help_optiongroup);
-	add(make_opt(verbose, g_verbose_dict, "verbose",  'V',"verbosity of output", "verbose"));
-	add(make_opt(copyright,  "copyright", 0,"print copyright information", NULL));
-	add(make_opt(help,  "help", 'h',"print this help", NULL));
-	add(make_opt(usage,  "usage", '?',"print a short help", NULL));
+	add(make_opt(verbose, g_verbose_dict, "verbose",  'V', "verbosity of output", 
+		     CCmdOption::not_required));
+	add(make_opt(copyright,  "copyright", 0, "print copyright information", 
+		     CCmdOption::not_required));
+	add(make_opt(help,  "help", 'h', "print this help", 
+		     CCmdOption::not_required));
+	add(make_opt(usage,  "usage", '?', "print a short help", 
+		     CCmdOption::not_required));
 	set_current_group("");
-
 }
 
 void CCmdOptionListData::add(PCmdOption opt)
@@ -379,7 +384,7 @@ vector<const char *> CCmdOptionListData::has_unset_required_options() const
 	vector<const char *> result; 
 	for(auto o_i = options.begin(); o_i != options.end(); ++o_i)
 		for(auto g_i = o_i->second.begin(); g_i != o_i->second.end(); ++g_i)
-			if ((*g_i)->required())
+			if ((*g_i)->is_required())
 				result.push_back((*g_i)->get_long_option()); 
 	return result; 
 }
@@ -518,7 +523,8 @@ int CCmdOptionList::handle_shortargs(const char *arg, size_t /*argc*/, const cha
 		CCmdOption *opt = _M_impl->find_option(*arg);
 		if (!opt ) {
 			if ( bool_options_only ) {
-				throw invalid_argument(string("bad flag combination:'-") + string(arg) + string("'"));
+				throw invalid_argument(string("bad flag combination:'-") + 
+						       string(arg) + string("'"));
 			}
 			return -1;
 		}
@@ -536,7 +542,8 @@ int CCmdOptionList::handle_shortargs(const char *arg, size_t /*argc*/, const cha
 				bool_options_only = false;
 				break;
 			default:
-				throw invalid_argument("need a space between option and parameter for multiple parameters");
+				throw invalid_argument("need a space between option and "
+						       "parameter for multiple parameters");
 			}
 		}else {
 			opt->set_value(args[0]);
@@ -583,8 +590,10 @@ void CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
 				// currently onyl one argument value is supported
 				assert(nargs <= 1); 
 				if (remaining_args < nargs ) {
-					THROW(invalid_argument, opt->get_long_option() << ": requires " 
-					      << nargs << " arguments, but only " << nargs << " remaining.");
+					THROW(invalid_argument, opt->get_long_option() 
+					      << ": requires " 
+					      << nargs << " arguments, but only " << nargs 
+					      << " remaining.");
 				}
 				
 				opt->set_value(args[idx]);
@@ -652,18 +661,30 @@ CCmdOptionList::~CCmdOptionList()
 
 PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>& set,
 				const char *long_opt, char short_opt,
-				const char *long_help, const char *short_help, bool required)
+				const char *long_help, const char *short_help, 
+				CCmdOption::Flags flags)
 {
-	return PCmdOption(new CCmdSetOption(value, set, short_opt, long_opt, long_help, short_help, required ));
+	return PCmdOption(new CCmdSetOption(value, set, short_opt, long_opt, 
+					    long_help, short_help, flags ));
 }
+
+PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>& set,
+                                const char *long_opt, char short_opt, 
+				const char *long_help, 
+				CCmdOption::Flags flags)
+{
+	return PCmdOption(new CCmdSetOption(value, set, short_opt, long_opt, 
+					    long_help, long_opt, flags ));
+}
+
 
 CHistoryRecord CCmdOptionList::get_values() const
 {
 	return _M_impl->get_values();
 }
 
-CHelpOption::CHelpOption(Callback *cb, char short_opt, const char*long_opt, const char *long_help):
-	CCmdOptionValue(short_opt, long_opt, long_help, NULL, false), 
+CHelpOption::CHelpOption(Callback *cb, char short_opt, const char *long_opt, const char *long_help):
+	CCmdOptionValue(short_opt, long_opt, long_help, NULL, not_required), 
 	_M_callback(cb)
 {
 }
@@ -687,9 +708,11 @@ void CHelpOption::do_write_value(std::ostream& /*os*/) const
 {
 }
 
-CCmdFlagOption::CCmdFlagOption(int& val, const CFlagString& map, char short_opt, const char *long_opt,
-			       const char *long_help, const char *short_help, bool required):
-	CCmdOptionValue(short_opt, long_opt, long_help,short_help, required),
+CCmdFlagOption::CCmdFlagOption(int& val, const CFlagString& map, char short_opt, 
+			       const char *long_opt, const char *long_help, 
+			       const char *short_help, 
+			       CCmdOption::Flags flags):
+	CCmdOptionValue(short_opt, long_opt, long_help,short_help, flags),
 	_M_value(val),
 	_M_map(map)
 {
@@ -722,20 +745,19 @@ size_t CCmdFlagOption::do_get_needed_args() const
 	return 1;
 }
 
-PCmdOption EXPORT_CORE make_opt(int& value, const CFlagString& map, const char *long_opt, char short_opt,
-		    const char *long_help, const char *short_help, bool required)
+PCmdOption EXPORT_CORE make_opt(int& value, const CFlagString& map, const char *long_opt, 
+				char short_opt,const char *long_help, 
+				const char *short_help, CCmdOption::Flags flags)
 {
 	return PCmdOption(new CCmdFlagOption(value, map, short_opt, long_opt,
-                          long_help, short_help, required ));
+                          long_help, short_help, flags ));
 }
 
 
-PCmdOption EXPORT_CORE make_help_opt(const char *long_opt, char short_opt, const char *long_help, 
-			 CHelpOption::Callback *cb)
+PCmdOption EXPORT_CORE make_help_opt(const char *long_opt, char short_opt, 
+				     const char *long_help, CHelpOption::Callback *cb)
 {
 	return PCmdOption(new CHelpOption(cb, short_opt, long_opt, long_help));
 }
-
-
 
 NS_MIA_END

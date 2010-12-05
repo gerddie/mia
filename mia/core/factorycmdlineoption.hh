@@ -56,7 +56,7 @@ public:
 	    the option is really set
 	*/
 	TCmdFactoryOption(typename F::ProductPtr& val, char short_opt, const char *long_opt,
-			   const char *long_help, const char *short_help, bool required);
+			   const char *long_help, const char *short_help, CCmdOption::Flags flags);
 private:
 	virtual bool do_set_value_really(const char *str_value);
 	virtual size_t do_get_needed_args() const;
@@ -68,12 +68,14 @@ private:
 };
 
 
-//implementation details 
+// implementation details 
 
 template <typename F>
-TCmdFactoryOption<F>::TCmdFactoryOption(typename F::ProductPtr& val, char short_opt, const char *long_opt,
-				  const char *long_help, const char *short_help, bool required):
-	CCmdOptionValue( short_opt, long_opt, long_help, short_help, required ),
+TCmdFactoryOption<F>::TCmdFactoryOption(typename F::ProductPtr& val, char short_opt, 
+					const char *long_opt,
+					const char *long_help, const char *short_help, 
+					CCmdOption::Flags flags):
+	CCmdOptionValue( short_opt, long_opt, long_help, short_help, flags ),
 	_M_value( val )
 {
 }
@@ -97,7 +99,7 @@ void TCmdFactoryOption<F>::do_write_value(std::ostream& os) const
 	if (_M_value) 
 		os << "=" << _M_value->get_init_string(); 
 	else 
-		if (required())
+		if (is_required())
 			os << "[required]"; 
 		else
 			os << "NULL"; 
@@ -123,12 +125,23 @@ const std::string TCmdFactoryOption<F>::do_get_value_as_string() const
 
 template <typename T>
 PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *long_opt, char short_opt,
-		    const char *long_help, const char *short_help, bool required= false)
+		    const char *long_help, const char *short_help, 
+		    CCmdOption::Flags flags= CCmdOption::not_required)
 {
 	typedef typename FactoryTrait<T>::type F;  
 	return PCmdOption(new TCmdFactoryOption<F>(value, short_opt, long_opt,
-						   long_help, short_help, required ));
+						   long_help, short_help, flags ));
 }
+
+template <typename T>
+PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *long_opt, char short_opt,
+		    const char *long_help, CCmdOption::Flags flags= CCmdOption::not_required)
+{
+	typedef typename FactoryTrait<T>::type F;  
+	return PCmdOption(new TCmdFactoryOption<F>(value, short_opt, long_opt,
+						   long_help, long_opt, flags ));
+}
+
 
 NS_MIA_END
 

@@ -108,18 +108,12 @@ int do_main( int argc, const char *argv[] )
 
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( src_name, "in-base", 'i', "input file name base", "input", false));
-	options.push_back(make_opt( out_hor_name, "horizontal", 'z', "horiZontal correlation output file name",
-				    "horizontal", false));
-
-	options.push_back(make_opt( out_ver_name, "vertical", 't', "verTical  correlation output file name",
-				    "vertical", false));
-
-	options.push_back(make_opt( out_sum_name, "average", 'a', "Average  correlation output file name",
-				    "average", false));
-
-	options.push_back(make_opt( first, "skip", 's', "skip images at beginning of series", "skip", false));
-	options.push_back(make_opt( last, "end", 'e', "last image in series", "end", false));
+	options.push_back(make_opt( src_name, "in-base", 'i', "input file name base"));
+	options.push_back(make_opt( out_hor_name, "horizontal", 'z', "horiZontal correlation output file name"));
+	options.push_back(make_opt( out_ver_name, "vertical", 't', "verTical  correlation output file name"));
+	options.push_back(make_opt( out_sum_name, "average", 'a', "Average  correlation output file name"));
+	options.push_back(make_opt( first, "skip", 's', "skip images at beginning of series"));
+	options.push_back(make_opt( last, "end", 'e', "last image in series"));
 
 	options.parse(argc, argv);
 

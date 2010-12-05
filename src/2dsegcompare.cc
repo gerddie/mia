@@ -67,8 +67,8 @@ int do_main(int argc, const char *args[])
 	string ref_filename;
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", "input", true));
-	options.push_back(make_opt( ref_filename, "ref-file", 'r', "reference frame", "ref", true));
+	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
+	options.push_back(make_opt( ref_filename, "ref-file", 'r', "reference frame", CCmdOption::required));
 	options.parse(argc, args);
 
 	CSegSet src_segset = load_segmentation(src_filename);

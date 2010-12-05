@@ -61,7 +61,7 @@ int main( int argc, const char *argv[] )
 
 
 		CCmdOptionList options(g_description);
-		options.push_back(make_opt( in_filename, "in-file", 'i', "input image", "input", true));
+		options.push_back(make_opt( in_filename, "in-file", 'i', "input image", CCmdOption::required));
 
 		options.parse(argc, argv);
 

@@ -62,7 +62,7 @@ int do_main(int argc, const char **args)
 
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output norm image", "output", true));
+	options.push_back(make_opt( out_filename, "out-file", 'o', "output norm image", CCmdOption::required));
 
 	options.parse(argc, args);
 
