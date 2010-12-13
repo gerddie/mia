@@ -120,7 +120,7 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( cropped_filename, "save-cropped", 0, "save cropped set to this file", NULL)); 
 	options.push_back(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images", NULL)); 
 
-	options.push_back(make_opt( cost_function, "cost", 'c', "registration criterion", CCmdOption::required)); 
+	options.push_back(make_opt( cost_function, "cost", 'c', "registration criterion")); 
 	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
 				    "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( transform_creator, "transForm", 'f', "transformation type"));

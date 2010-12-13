@@ -112,6 +112,8 @@ public:
 	static TDictMap<EBoxSegmentation> segmethod_dict; 
 
 	void set_use_guess_model(); 
+
+	void save_coefs(const string&  coefs_name)const; 
 private: 
 	struct C2DPerfusionAnalysisImpl *impl; 
 

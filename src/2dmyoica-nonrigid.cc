@@ -283,6 +283,10 @@ int do_main( int argc, const char *argv[] )
 	if (box_scale) {
 		segment_and_crop_input(input_set, ica, box_scale, segmethod, references, save_crop_feature); 
 		input_images = input_set.get_images(); 
+	}else if (!save_crop_feature.empty()) {
+		stringstream cfile; 
+		cfile << save_crop_feature << ".txt"; 
+		ica.save_coefs(cfile.str()); 
 	}
 
 	// save cropped images if requested

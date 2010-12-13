@@ -58,6 +58,7 @@ struct C2DPerfusionAnalysisImpl {
 	P2DImage get_rvlv_delta_from_feature(const string& save_features)const; 
 	P2DImage get_rvlv_delta_from_peaks(const string& save_features)const; 
 	vector<vector<float> > create_guess(size_t rows); 
+	void save_coefs(const string&  coefs_name)const; 
 
 	size_t _M_components;
 	bool _M_normalize;  
@@ -107,6 +108,12 @@ void C2DPerfusionAnalysis::set_approach(size_t approach)
 	impl->_M_ica_approach = approach; 
 }
 
+
+void C2DPerfusionAnalysis::save_coefs(const string&  coefs_name)const
+{
+	assert(impl); 
+	impl->save_coefs(coefs_name); 
+}
 
 C2DFilterPlugin::ProductPtr C2DPerfusionAnalysis::get_crop_filter(float scale, C2DBounds& crop_start,
 								  EBoxSegmentation approach, 
@@ -365,9 +372,10 @@ private:
 
 typedef pair<float, size_t> element;
 
-static void save_coefs(const string&  coefs_name, const C2DImageSeriesICA& ica)
+void C2DPerfusionAnalysisImpl::save_coefs(const string&  coefs_name) const 
 {
-	CSlopeClassifier::Columns mix = ica.get_mixing_curves();
+	assert(_M_ica); 
+	CSlopeClassifier::Columns mix = _M_ica->get_mixing_curves();
 	ofstream coef_file(coefs_name.c_str());
 
 	for (size_t r = 0; r < mix[0].size(); ++r) {
@@ -424,7 +432,7 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_del
 
 	if (!save_features.empty()) {
 		save_feature(save_features, "kmeans", *kmeans); 
-		save_coefs(save_features + ".txt", *_M_ica); 
+		save_coefs(save_features + ".txt"); 
 	}
 	if (nc == 5) {
 		cvmsg() << "RV classification failed\n"; 
@@ -513,7 +521,7 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_fea
 	if (!save_features.empty()) {
 		save_feature(save_features, "RVic", *_M_ica->get_feature_image(_M_cls.get_RV_idx())); 
 		save_feature(save_features, "LVic", *_M_ica->get_feature_image(_M_cls.get_LV_idx())); 
-		save_coefs(save_features + ".txt", *_M_ica); 
+		save_coefs(save_features + ".txt"); 
 	}
 
 	if (10 * lv_pixels > RV->get_size().x * RV->get_size().y) {
