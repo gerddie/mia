@@ -72,6 +72,7 @@ DEFEXE(3dmaskseeded       mia3d )
 DEFEXE(3dimageselect      mia3d )
 DEFEXE(3dbrainextractT1   mia3d )
 DEFEXE(3dimageaddattributes  mia3d )
+DEFEXE(3dvectorfieldcreate  mia3d )
 
 
 ADD_SUBDIRECTORY(fluid2d  )
