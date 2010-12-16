@@ -53,7 +53,7 @@ const char *g_general_help =
 	"In the first pass a bounding box around the LV myocardium may be extracted\n" 
 	"to speed up computation\n\n"
 	"Basic usage: \n"
-	" mia-2dnonrigidreg [options] "; 
+	" mia-2dmyoica-nonrigid [options] "; 
 
 
 const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
