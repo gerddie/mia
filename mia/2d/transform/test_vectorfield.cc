@@ -293,7 +293,7 @@ BOOST_FIXTURE_TEST_CASE( test_grid_div_value, DivGradFixture )
 
 	gsl::DoubleVector gradient(field.degrees_of_freedom(), true); 
 	double divcurlcost =  field.get_divcurl_cost(1.0, 0.0, gradient); 
-	BOOST_CHECK_CLOSE(divcurlcost, 6 * M_PI, 0.2); 
+	BOOST_CHECK_CLOSE(corr*corr*divcurlcost, 6 * M_PI, 0.2); 
 
 	double curlcost =  field.get_divcurl_cost(0.0, 1.0, gradient); 
 	BOOST_CHECK_CLOSE(1.0 + curlcost, 1.0, 1); 
@@ -301,7 +301,7 @@ BOOST_FIXTURE_TEST_CASE( test_grid_div_value, DivGradFixture )
 
 	// strange that it would multiply by the range ... 
 	double divcost =  field.get_divcurl_cost(1.0, 1.0, gradient); 
-	BOOST_CHECK_CLOSE(divcost, 6 * M_PI, 0.2); 
+	BOOST_CHECK_CLOSE(corr*corr*divcost, 6 * M_PI, 0.2); 
 
 }
 
@@ -313,8 +313,7 @@ BOOST_FIXTURE_TEST_CASE( test_grid_div_gradient_at, DivGradFixture )
 	float x2y2 = fx * fx + fy * fy; 
 	float e2x2y2 = exp(-2 * x2y2);
 	
-	float help = -32 * s2 * s2 * scale * ( x2y2 - 2) * 
-		(2* x2y2 * x2y2  - 7 * x2y2 + 2) * e2x2y2; 
+	float help = -32 * s2 * s2 * scale * ( x2y2 - 2) * ( 2 * x2y2 * x2y2  - 7 * x2y2 + 2) * e2x2y2;
 	float dx = fx * help; 
 	float dy = fy * help; 
 	C2DFVector g = field.get_graddiv_at(140, 132); 
