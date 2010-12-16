@@ -96,6 +96,8 @@ public:
 	C2DFVector operator ()(const  C2DFVector& x) const;
 	double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
 	double get_divcurl_cost(double wd, double wr) const; 
+
+	C2DFVector get_graddiv_at(int x, int y) const; 
 private:
 	virtual C2DTransformation *do_clone() const;
 	float grad_divergence(double weight, gsl::DoubleVector& gradient) const; 

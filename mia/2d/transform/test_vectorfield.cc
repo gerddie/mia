@@ -243,61 +243,105 @@ BOOST_FIXTURE_TEST_CASE( test_grid_clone, GridTransformFixture )
 	}
 }
 
-///\todo gradient of grid-divcurl needs testing too
-BOOST_AUTO_TEST_CASE( test_grid_div )
-{
-	const int dsize = 128; 
-	const float  range = 4.0; 
-	C2DBounds size(2*dsize + 1, 2*dsize + 1); 
-	float scale = range / dsize; 
-	float corr = dsize /range; 
-
-	cvinfo() << size << "\n"; 
-
-	C2DGridTransformation field(size); 
+struct DivGradFixture {
 	
+	DivGradFixture(); 
+	const int dsize; 
+	const float  range; 
+	C2DBounds size; 
+	float scale; 
+	float corr; 
+	C2DGridTransformation field; 
+	double gx(double x, double y) const; 
+	double gy(double x, double y) const; 
+}; 
+
+DivGradFixture::DivGradFixture():
+	dsize(128), 
+	range(4.0), 
+	size(2*dsize + 1, 2*dsize + 1), 
+	scale(range / dsize), 
+	corr(dsize /range), 
+	field(size)
+{
 	auto i = field.field_begin(); 
 	for (int y = 0; y < (int)size.y; ++y) 
 		for (int x = 0; x < (int)size.x; ++x, ++i) {
-			float fx = scale * (x-dsize); 
-			float fy = scale * (y-dsize); 
-			float help = exp(-fx * fx - fy * fy); 
-			i->x = fx * help; 
-			i->y = fy * help; 
+			i->x = gx(x,y); 
+			i->y = gy(x,y); 
 		}
-	
+}
+
+double DivGradFixture::gx(double x, double y) const
+{
+	const float fx = scale * (x-dsize); 
+	const float fy = scale * (y-dsize); 
+	return fx * exp(-fx * fx - fy * fy); 
+}
+double DivGradFixture::gy(double x, double y) const
+{
+	const float fx = scale * (x-dsize); 
+	const float fy = scale * (y-dsize); 
+	return fy * exp(-fx * fx - fy * fy); 
+}
+
+
+
+///\todo gradient of grid-divcurl needs testing too
+BOOST_FIXTURE_TEST_CASE( test_grid_div_value, DivGradFixture )
+{
 
 	gsl::DoubleVector gradient(field.degrees_of_freedom(), true); 
 	double divcurlcost =  field.get_divcurl_cost(1.0, 0.0, gradient); 
-	BOOST_CHECK_CLOSE(corr * corr * divcurlcost, 6 * M_PI, 0.2); 
+	BOOST_CHECK_CLOSE(divcurlcost, 6 * M_PI, 0.2); 
+
+	double curlcost =  field.get_divcurl_cost(0.0, 1.0, gradient); 
+	BOOST_CHECK_CLOSE(1.0 + curlcost, 1.0, 1); 
+
+
+	// strange that it would multiply by the range ... 
+	double divcost =  field.get_divcurl_cost(1.0, 1.0, gradient); 
+	BOOST_CHECK_CLOSE(divcost, 6 * M_PI, 0.2); 
+
+}
+
+BOOST_FIXTURE_TEST_CASE( test_grid_div_gradient_at, DivGradFixture )
+{
+	float s2 = scale * scale; 
+	float fx = scale * (140-dsize); 
+	float fy = scale * (132-dsize); 
+	float x2y2 = fx * fx + fy * fy; 
+	float e2x2y2 = exp(-2 * x2y2);
 	
-	#if 1
-	BOOST_FAIL("gradient implementation needs testing"); 
-	#else
-	auto ig = gradient.begin() + size.x + 1; 
+	float help = -32 * s2 * s2 * scale * ( x2y2 - 2) * 
+		(2* x2y2 * x2y2  - 7 * x2y2 + 2) * e2x2y2; 
+	float dx = fx * help; 
+	float dy = fy * help; 
+	C2DFVector g = field.get_graddiv_at(140, 132); 
+	BOOST_CHECK_CLOSE(g.x, dx, 0.2); 
+	BOOST_CHECK_CLOSE(g.y, dy, 0.2); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_grid_div_gradient_full, DivGradFixture )
+{
+	gsl::DoubleVector gradient(field.degrees_of_freedom(), true); 
+	field.get_divcurl_cost(1.0, 0.0, gradient); 
+	
+	auto ig = gradient.begin() + 2*(size.x + 1); 
 	for (int y = 1; y < (int)size.y-1; ++y, ig += 4) 
 		for (int x = 1; x < (int)size.x-1; ++x, ig+=2) {
 			float fx = scale * (x-dsize); 
 			float fy = scale * (y-dsize); 
 			float x2y2 = fx * fx + fy * fy; 
-			float help = -scale * 32 * (x2y2-2) * exp(-x2y2) * (2 * x2y2 * x2y2 - 7 * x2y2 + 2); 
+			float help = - scale * scale* scale * 16.0 * (x2y2 - 2) * (x2y2 - 1) * exp(-2 * x2y2); 
 			float dx = fx * help; 
 			float dy = fy * help; 
-			cvdebug() << fx << " " << fy << ":" << help << "\n"; 
-			if (abs(dx) > 0.01 || abs(ig[0]) > 0.01) 
-				BOOST_CHECK_CLOSE(ig[0], dx, 0.1); 
-			if (abs(dy) > 0.01 || abs(ig[1]) > 0.01) 
-				BOOST_CHECK_CLOSE(ig[1], dy, 0.1); 
+			cvdebug() << x << ", " << y << ":" << ig[0] << ", " << ig[1] << "\n"; 
+			if (abs(dx) > 1e-5 || abs(ig[0]) > 1e-5)
+				BOOST_CHECK_CLOSE(ig[0], dx, 0.3); 
+			if (abs(dy) > 1e-5 || abs(ig[1]) > 1e-5) 
+				BOOST_CHECK_CLOSE(ig[1], dy, 0.3); 
 		}
-
-	#endif
-	double curlcost =  field.get_divcurl_cost(0.0, 1.0, gradient); 
-	BOOST_CHECK_CLOSE(1.0 + corr * corr * curlcost, 1.0, 1); 
-
-
-	double divcost =  field.get_divcurl_cost(1.0, 1.0, gradient); 
-	BOOST_CHECK_CLOSE(corr * corr * divcost, 6 * M_PI, 0.2); 
-
 	
 }
 

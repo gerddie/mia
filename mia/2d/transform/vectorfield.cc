@@ -281,28 +281,67 @@ float C2DGridTransformation::pertuberate(C2DFVectorfield& v) const
 	return sqrt(max_gamma);
 }
 
+C2DFVector C2DGridTransformation::get_graddiv_at(int x, int y) const
+{
+
+	const double dfx_xx =  (_M_field(x+1,y).x + _M_field(x-1,y).x - 2 * _M_field(x,y).x);
+	const double dfy_yy =  (_M_field(x,y+1).y + _M_field(x,y-1).y - 2 * _M_field(x,y).y);
+	
+	const C2DFVector df_xxy =  (_M_field(x+1,y+1) + _M_field(x-1,y+1) - 2 * _M_field(x,y+1))
+		- (_M_field(x+1,y-1) + _M_field(x-1,y-1) - 2 * _M_field(x,y-1)); 
+
+	const C2DFVector df_yyx =  (_M_field(x+1,y+1) + _M_field(x+1,y-1) - 2 * _M_field(x+1,y))
+		- (_M_field(x-1,y+1) + _M_field(x-1,y-1) - 2 * _M_field(x-1,y));
+
+	const double dfx_xxx =  _M_field(x-1,y).x + _M_field(x+2,y).x - 
+		3 * (_M_field(x,y).x + _M_field(x+1,y).x); 
+
+	const double dfy_yyy =  _M_field(x,y-1).y + _M_field(x,y+2).y - 
+		3 * (_M_field(x,y).y + _M_field(x,y+1).y); 
+	
+	const C2DFVector df_xy = 0.25 * ((_M_field(x+1,y+1) + _M_field(x-1,y-1)) - 
+					 (_M_field(x+1,y-1) + _M_field(x-1,y+1))); 
+
+
+	const double dhx = (df_yyx.y + df_xxy.x) * (dfy_yy + df_xy.x) + 
+		(df_xy.y + dfx_xx) * (df_xxy.y + dfx_xxx ); 
+	
+	const double dhy = (dfy_yyy + df_yyx.x) * (dfy_yy + df_xy.x) + 
+		(df_xy.y + dfx_xx) * (df_yyx.y + df_xxy.x); 
+	
+	C2DFVector vv(2*dhx, 2*dhy); 
+	cvdebug() << x << ", " << y <<  vv << "\n"; 
+	return vv; 
+}
+
+
 float C2DGridTransformation::grad_divergence(double weight, gsl::DoubleVector& gradient) const
 {
 	const int dx =  _M_field.get_size().x;
 	auto iv = _M_field.begin() + dx + 1; 
 	
 	double result = 0.0;
-	auto ig = gradient.begin() + dx + 1; 
+	auto ig = gradient.begin() + 2*(dx + 1); 
 	for(size_t y = 1; y < _M_field.get_size().y - 1; ++y, iv += 2, ig += 4 )
-		for(size_t x = 1; x < _M_field.get_size().x - 1; ++x, ++iv, ++ig) {
-			const double dfx_xx = iv[ 1].x + iv[- 1].x - 2 * iv[0].x;
-			const double dfy_yy = iv[dx].y + iv[-dx].y - 2 * iv[0].y;
-			const double dfy_xy = iv[dx].y + iv[-1].y -  iv[0].y - iv[dx-1].y;
-			const double dfx_xy = iv[1].x - iv[0].x - iv[1-dx].x + iv[-dx].x; 
+		for(size_t x = 1; x < _M_field.get_size().x - 1; ++x, ++iv, ig += 2){
+			const double dfx_x = 0.5 * (iv[ 1].x - iv[- 1].x);
+			const double dfy_y = 0.5 * (iv[ dx].y - iv[-dx].y);
 
-			const double dhx = dfx_xx + dfy_xy;
-			const double dhy = dfy_yy + dfx_xy;
-			
+			const double dfx_xx =  (iv[ 1].x + iv[- 1].x - 2 * iv[0].x);
+			const double dfy_yy =  (iv[dx].y + iv[-dx].y - 2 * iv[0].y);
+			const double dfy_xy = 0.25 * (iv[dx + 1].y + iv[-dx-1].y - iv[1-dx].y - iv[dx-1].y);
+			const double dfx_xy = 0.25 * (iv[dx + 1].x + iv[-dx-1].x - iv[1-dx].x - iv[dx-1].x); 
+
+			const double dh1 = (dfx_x  + dfy_y);
+			const double dhx = (dfx_xx + dfy_xy) * dh1; 
+			const double dhy = (dfy_yy + dfx_xy) * dh1;
+
 			// this needs to be tested 
 			ig[0] +=  2 * weight * dhx; 
 			ig[1] +=  2 * weight * dhy; 
 
-			result += (dhx * dhx + dhy * dhy); 
+			const double v = dfx_x + dfy_y; 
+			result += v * v; 
 		}
 	return weight * result;
 }
