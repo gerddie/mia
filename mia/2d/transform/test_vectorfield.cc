@@ -508,14 +508,18 @@ BOOST_FIXTURE_TEST_CASE( test_grid_div_gradient_full, DivGradFixture )
 {
 	gsl::DoubleVector gradient(field.degrees_of_freedom(), true); 
 	field.get_divcurl_cost(1.0, 0.0, gradient); 
-	
-	auto ig = gradient.begin() + 2*(size.x + 1); 
-	for (int y = 1; y < (int)size.y-1; ++y, ig += 4) 
-		for (int x = 1; x < (int)size.x-1; ++x, ig+=2) {
+
+
+	auto ig = gradient.begin() + 4*(size.x + 1); 
+	for (int y = 2; y < (int)size.y-2; ++y, ig += 8) 
+		for (int x = 2; x < (int)size.x-2; ++x, ig+=2) {
 			float fx = scale * (x-dsize); 
 			float fy = scale * (y-dsize); 
 			float x2y2 = fx * fx + fy * fy; 
-			float help = - scale * scale* scale * 16.0 * (x2y2 - 2) * (x2y2 - 1) * exp(-2 * x2y2); 
+			float e2x2y2 = exp(-2 * x2y2);
+
+			float help = -32 * scale2 * scale2 * scale * ( x2y2 - 2) * 
+				( 2 * x2y2 * x2y2  - 7 * x2y2 + 2) * e2x2y2;
 			float dx = fx * help; 
 			float dy = fy * help; 
 			cvdebug() << x << ", " << y << ":" << ig[0] << ", " << ig[1] << "\n"; 

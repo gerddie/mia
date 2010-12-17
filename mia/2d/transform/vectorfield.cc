@@ -353,9 +353,9 @@ float C2DGridTransformation::grad_divergence(double weight, gsl::DoubleVector& g
 	auto iv = _M_field.begin() + dx + 1; 
 	
 	double result = 0.0;
-	auto ig = gradient.begin() + 2*(dx + 1); 
-	for(size_t y = 1; y < _M_field.get_size().y - 1; ++y, iv += 2, ig += 4 )
-		for(size_t x = 1; x < _M_field.get_size().x - 1; ++x, ++iv, ig += 2){
+	auto ig = gradient.begin() + 2*(2*dx + 2); 
+	for(size_t y = 2; y < _M_field.get_size().y - 2; ++y, iv += 4, ig += 8 )
+		for(size_t x = 2; x < _M_field.get_size().x - 2; ++x, ++iv, ig += 2){
 
 			const double dfx_xx =  (iv[ 1].x + iv[- 1].x - 2 * iv[0].x);
 			const double dfy_yy =  (iv[dx].y + iv[-dx].y - 2 * iv[0].y);
@@ -365,9 +365,10 @@ float C2DGridTransformation::grad_divergence(double weight, gsl::DoubleVector& g
 			const double p1 = dfy_yy + dfx_xy; 
 			const double p2 = dfx_xx + dfy_xy; 
 
+			C2DFVector grd = get_graddiv_at(x, y); 
 			// this needs to be tested 
-			ig[0] +=  2 * weight * 0.0; 
-			ig[1] +=  2 * weight * 0.0; 
+			ig[0] +=  weight * grd.x; 
+			ig[1] +=  weight * grd.y; 
 
 
 			const double v = p1 * p1 + p2 * p2; 
