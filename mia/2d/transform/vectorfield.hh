@@ -97,6 +97,20 @@ public:
 	double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
 	double get_divcurl_cost(double wd, double wr) const; 
 
+	// these functions are here for testing 
+
+
+	double dddgx_xxx(int x, int y) const; 
+	double dddgy_yyy(int x, int y) const; 
+
+	C2DFVector ddg_xx(int x, int y) const; 
+	C2DFVector dddg_xxy(int x, int y) const; 
+
+	C2DFVector ddg_yy(int x, int y) const; 
+	C2DFVector dddg_yyx(int x, int y) const; 
+
+	C2DFVector ddg_xy(int x, int y) const; 
+
 	C2DFVector get_graddiv_at(int x, int y) const; 
 private:
 	virtual C2DTransformation *do_clone() const;

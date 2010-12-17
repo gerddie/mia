@@ -250,10 +250,29 @@ struct DivGradFixture {
 	const float  range; 
 	C2DBounds size; 
 	float scale; 
+	float scale2; 
 	float corr; 
 	C2DGridTransformation field; 
 	double gx(double x, double y) const; 
 	double gy(double x, double y) const; 
+
+	double ddgx_xx(double x, double y) const; 
+	double ddgx_yy(double x, double y) const; 
+	double ddgy_xx(double x, double y) const; 
+	double ddgy_yy(double x, double y) const; 
+
+	double ddgx_xy(double x, double y) const; 
+	double ddgy_xy(double x, double y) const; 
+
+	double dddgx_xxx(double x, double y) const; 
+	double dddgy_yyy(double x, double y) const; 
+
+	double dddgx_xxy(double x, double y) const; 
+	double dddgy_xxy(double x, double y) const; 
+	double dddgx_yyx(double x, double y) const; 
+	double dddgy_yyx(double x, double y) const; 
+
+
 }; 
 
 DivGradFixture::DivGradFixture():
@@ -261,6 +280,7 @@ DivGradFixture::DivGradFixture():
 	range(4.0), 
 	size(2*dsize + 1, 2*dsize + 1), 
 	scale(range / dsize), 
+	scale2(scale*scale),
 	corr(dsize /range), 
 	field(size)
 {
@@ -274,18 +294,181 @@ DivGradFixture::DivGradFixture():
 
 double DivGradFixture::gx(double x, double y) const
 {
-	const float fx = scale * (x-dsize); 
-	const float fy = scale * (y-dsize); 
+	const double fx = scale * (x-dsize); 
+	const double fy = scale * (y-dsize); 
 	return fx * exp(-fx * fx - fy * fy); 
 }
 double DivGradFixture::gy(double x, double y) const
 {
-	const float fx = scale * (x-dsize); 
-	const float fy = scale * (y-dsize); 
+	const double fx = scale * (x-dsize); 
+	const double fy = scale * (y-dsize); 
 	return fy * exp(-fx * fx - fy * fy); 
 }
 
+double DivGradFixture::ddgx_xx(double x, double y) const
+{
+	const double fx = scale * (x-dsize); 
+	const double fy = scale * (y-dsize); 
+	return 2 * scale2 * fx * (2 * fx * fx -3 ) * exp(-fx * fx - fy * fy); 
+}
 
+double DivGradFixture::ddgx_yy(double x, double y) const
+{
+	const double fx = scale * (x-dsize); 
+	const double fy = scale * (y-dsize); 
+	return 2 * scale2 * fx * (2 * fy * fy -1 ) * exp(-fx * fx - fy * fy); 
+}
+
+double DivGradFixture::ddgy_xx(double x, double y) const
+{
+	const double fx = scale * (x-dsize); 
+	const double fy = scale * (y-dsize); 
+	return 2 * scale2 * fy * (2 * fx * fx -1 ) * exp(-fx * fx - fy * fy); 
+}
+
+double DivGradFixture::ddgy_yy(double x, double y) const
+{
+	const double fx = scale * (x-dsize); 
+	const double fy = scale * (y-dsize); 
+	return 2 * scale2 * fy * (2 * fy * fy -3 ) * exp(-fx * fx - fy * fy); 
+}
+
+double DivGradFixture::ddgx_xy(double x, double y) const
+{
+	const double fx = scale * (x-dsize); 
+	const double fy = scale * (y-dsize); 
+	return 2 * scale2 * fy * (2 * fx * fx - 1) * exp(-fx * fx - fy * fy); 
+}
+
+double DivGradFixture::ddgy_xy(double x, double y) const
+{
+	const double fx = scale * (x-dsize); 
+	const double fy = scale * (y-dsize); 
+	return 2 * scale2 * fx * (2 * fy * fy - 1) * exp(-fx * fx - fy * fy); 
+}
+
+double DivGradFixture::dddgx_xxx(double x, double y) const
+{
+	const double fx = scale * (x-dsize); 
+	const double fy = scale * (y-dsize); 
+	return - 2 * scale2 * scale * (4 * fx * fx * fx * fx - 
+				       12 * fx * fx + 3) 
+		* exp(-fx * fx - fy * fy); 
+}
+
+double DivGradFixture::dddgy_yyy(double x, double y) const
+{
+	const double fx = scale * (x-dsize); 
+	const double fy = scale * (y-dsize); 
+	return - 2 * scale2 * scale * (4 * fy * fy * fy * fy - 
+				       12 * fy * fy + 3) 
+		* exp(-fx * fx - fy * fy); 
+}
+
+double DivGradFixture::dddgx_xxy(double x, double y) const
+{
+	const double fx = scale * (x-dsize); 
+	const double fy = scale * (y-dsize); 
+	return -4 * scale * scale2 * fx * fy * (2 * fx * fx -3)
+		* exp(-fx * fx - fy * fy); 
+}
+
+double DivGradFixture::dddgy_xxy(double x, double y) const
+{
+	const double fx = scale * (x-dsize); 
+	const double fy = scale * (y-dsize); 
+
+	return - 2 * scale * scale2 * (2* fx*fx - 1) * (2* fy*fy - 1) * 
+		exp(-fx * fx - fy * fy); 
+
+}
+
+double DivGradFixture::dddgx_yyx(double x, double y) const
+{
+	const double fx = scale * (x-dsize); 
+	const double fy = scale * (y-dsize); 
+
+	return - 2 * scale * scale2 * (2* fx*fx - 1) * (2* fy*fy - 1) * 
+		exp(-fx * fx - fy * fy); 
+
+}
+
+double DivGradFixture::dddgy_yyx(double x, double y) const
+{
+	const double fx = scale * (x-dsize); 
+	const double fy = scale * (y-dsize); 
+	return -4 * scale * scale2 * fx * fy * (2 * fy * fy -3)
+		* exp(-fx * fx - fy * fy); 
+}
+
+
+BOOST_FIXTURE_TEST_CASE( DivGradFixture_selftest, DivGradFixture ) 
+{
+	const double x = 120.0; 
+	const double y = 131.0; 
+	
+	BOOST_CHECK_CLOSE(dddgx_xxx(x,y),
+			  (ddgx_xx(x + 0.001, y) -  ddgx_xx(x - 0.001, y))/0.002, 
+			  0.1); 
+	
+	BOOST_CHECK_CLOSE(dddgx_xxy(x,y), 
+			  (ddgx_xx(x, y + 0.001) -  ddgx_xx(x, y - 0.001))/0.002, 
+			  0.1); 
+
+	BOOST_CHECK_CLOSE(dddgx_yyx(x,y), 
+			  (ddgx_xy(x, y + 0.001) -  ddgx_xy(x, y - 0.001))/0.002, 
+			  0.1); 
+
+
+	BOOST_CHECK_CLOSE(dddgy_yyy(x,y),
+			  (ddgy_yy(x, y + 0.001) -  ddgy_yy(x, y - 0.001))/0.002, 
+			  0.1); 
+	
+	BOOST_CHECK_CLOSE(dddgy_yyx(x,y), 
+			  (ddgy_yy(x + 0.001, y) -  ddgy_yy(x - 0.001, y))/0.002, 
+			  0.1); 
+	
+	BOOST_CHECK_CLOSE(dddgy_xxy(x,y), 
+			  (ddgy_xy(x + 0.001, y) -  ddgy_xy(x - 0.001, y))/0.002, 
+			  0.1); 
+
+
+	
+	
+}
+
+BOOST_FIXTURE_TEST_CASE( test_grid_derivatives, DivGradFixture ) 
+{
+	const int x = 120; 
+	const int y = 131; 
+	
+	BOOST_CHECK_CLOSE(field.dddgx_xxx(x,y), dddgx_xxx(x,y), 0.5); 
+	BOOST_CHECK_CLOSE(field.dddgy_yyy(x,y), dddgy_yyy(x,y), 0.5); 
+	
+	C2DFVector ddd_xx = field.ddg_xx(x, y); 
+	BOOST_CHECK_CLOSE(ddd_xx.x, ddgx_xx(x,y), 0.5); 
+	BOOST_CHECK_CLOSE(ddd_xx.y, ddgy_xx(x,y), 0.5); 
+
+	C2DFVector ddd_xxy = field.dddg_xxy(x, y); 
+	
+	BOOST_CHECK_CLOSE(ddd_xxy.x, dddgx_xxy(x,y), 0.5); 
+	BOOST_CHECK_CLOSE(ddd_xxy.y, dddgy_xxy(x,y), 0.5); 
+
+	C2DFVector ddd_yy = field.ddg_yy(x, y); 
+	BOOST_CHECK_CLOSE(ddd_yy.x, ddgx_yy(x,y), 0.5); 
+	BOOST_CHECK_CLOSE(ddd_yy.y, ddgy_yy(x,y), 0.5); 
+
+	C2DFVector ddd_yyx = field.dddg_yyx(x, y); 
+	
+	BOOST_CHECK_CLOSE(ddd_yyx.x, dddgx_yyx(x,y), 0.5); 
+	BOOST_CHECK_CLOSE(ddd_yyx.y, dddgy_yyx(x,y), 0.5); 
+
+	C2DFVector dd_xy = field.ddg_xy(x, y); 
+	BOOST_CHECK_CLOSE(dd_xy.x, ddgx_xy(x,y), 0.5); 
+	BOOST_CHECK_CLOSE(dd_xy.y, ddgy_xy(x,y), 0.5); 
+	
+
+}
 
 ///\todo gradient of grid-divcurl needs testing too
 BOOST_FIXTURE_TEST_CASE( test_grid_div_value, DivGradFixture )
@@ -317,8 +500,8 @@ BOOST_FIXTURE_TEST_CASE( test_grid_div_gradient_at, DivGradFixture )
 	float dx = fx * help; 
 	float dy = fy * help; 
 	C2DFVector g = field.get_graddiv_at(140, 132); 
-	BOOST_CHECK_CLOSE(g.x, dx, 0.2); 
-	BOOST_CHECK_CLOSE(g.y, dy, 0.2); 
+	BOOST_CHECK_CLOSE(g.x, dx, 0.4); 
+	BOOST_CHECK_CLOSE(g.y, dy, 0.4); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_grid_div_gradient_full, DivGradFixture )
