@@ -293,6 +293,19 @@ double C2DGridTransformation::dddgy_yyy(int x, int y) const
 		      ( _M_field(x,y-2).y - 2 * _M_field(x,y-1).y)); 
 }
 
+double C2DGridTransformation::dddgy_xxx(int x, int y) const 
+{
+	return 0.5 * ((_M_field(x+2,y).y - 2 * _M_field(x+1,y).y) - 
+		      ( _M_field(x-2,y).y - 2 * _M_field(x-1,y).y)); 
+}
+
+double C2DGridTransformation::dddgx_yyy(int x, int y) const 
+{
+	return 0.5 * ((_M_field(x,y+2).x - 2 * _M_field(x,y+1).x) - 
+		      ( _M_field(x,y-2).x - 2 * _M_field(x,y-1).x)); 
+}
+
+
 C2DFVector C2DGridTransformation::ddg_xx(int x, int y) const
 {
 	return _M_field(x+1,y) + _M_field(x-1,y) - 2 * _M_field(x,y); 
@@ -346,6 +359,30 @@ C2DFVector C2DGridTransformation::get_graddiv_at(int x, int y) const
 	return vv; 
 }
 
+C2DFVector C2DGridTransformation::get_gradcurl_at(int x, int y) const
+{
+	const double dfy_xx =  (_M_field(x+1,y).y + _M_field(x-1,y).y - 2 * _M_field(x,y).y);
+	const double dfx_yy =  (_M_field(x,y+1).x + _M_field(x,y-1).x - 2 * _M_field(x,y).x);
+	const double dfy_xxx =  dddgy_xxx(x, y); 
+	const double dfx_yyy =  dddgx_yyy(x, y); 
+	
+	const C2DFVector df_xy = ddg_xy(x,y); 
+	const C2DFVector df_xxy = dddg_xxy(x, y); 	
+	const C2DFVector df_yyx = dddg_yyx(x,y); 
+
+
+	const double p1 = dfy_xx - df_xy.x; 
+	const double p2 = df_xy.y - dfx_yy;
+
+	const double dhx = p1 * (dfy_xxx - df_xxy.x) + p2 * (df_xxy.y - df_yyx.x);
+	
+	const double dhy = p1 * (df_xxy.y - df_yyx.x) + p2 * (df_yyx.y - dfx_yyy);
+
+	C2DFVector vv(2*dhx, 2*dhy); 
+	cvdebug() << x << ", " << y <<  vv << "\n"; 
+	return vv; 
+
+}
 
 float C2DGridTransformation::grad_divergence(double weight, gsl::DoubleVector& gradient) const
 {

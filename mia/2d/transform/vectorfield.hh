@@ -102,6 +102,10 @@ public:
 
 	double dddgx_xxx(int x, int y) const; 
 	double dddgy_yyy(int x, int y) const; 
+	
+	double dddgy_xxx(int x, int y) const; 
+	double dddgx_yyy(int x, int y) const; 
+
 
 	C2DFVector ddg_xx(int x, int y) const; 
 	C2DFVector dddg_xxy(int x, int y) const; 
@@ -112,6 +116,7 @@ public:
 	C2DFVector ddg_xy(int x, int y) const; 
 
 	C2DFVector get_graddiv_at(int x, int y) const; 
+	C2DFVector get_gradcurl_at(int x, int y) const; 
 private:
 	virtual C2DTransformation *do_clone() const;
 	float grad_divergence(double weight, gsl::DoubleVector& gradient) const; 
