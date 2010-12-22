@@ -431,9 +431,10 @@ double C2DGridTransformation::grad_curl(double weight, gsl::DoubleVector& gradie
 			const double dhx = dfy_xx - dfx_xy;
 			const double dhy = dfx_yy - dfy_xy;
 			
-			// this needs to be tested 
-			ig[0] +=  2 * weight *dhx; 
-			ig[1] +=  2 * weight *dhy; 
+
+			C2DFVector grd = get_gradcurl_at(x, y); 
+			ig[0] +=  weight * grd.x; 
+			ig[1] +=  weight * grd.y; 
 
 			result += (dhx * dhx + dhy * dhy); 
 		}

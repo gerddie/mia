@@ -780,6 +780,36 @@ BOOST_FIXTURE_TEST_CASE( test_grid_curl_derivative_at, CurlGradFixture )
 	
 }
 
+BOOST_FIXTURE_TEST_CASE( test_grid_curl_gradient_full, CurlGradFixture )
+{
+	gsl::DoubleVector gradient(field.degrees_of_freedom(), true); 
+	field.get_divcurl_cost(1.0, 0.0, gradient); 
+
+	
+
+	auto ig = gradient.begin() + 4*(size.x + 1); 
+	for (int y = 2; y < (int)size.y-2; ++y, ig += 8) 
+		for (int x = 2; x < (int)size.x-2; ++x, ig+=2) {
+			float fx = scale * (x-dsize); 
+			float fy = scale * (y-dsize); 
+			float x2y2 = fx * fx + fy * fy; 
+			float e2x2y2 = exp(-2 * x2y2);
+
+
+			float help = -32 * scale2 * scale2 * scale * 
+				( x2y2 - 2) * ( x2y2 * (2 * x2y2  - 7 ) + 2) * e2x2y2;
+			float dx = fx * help; 
+			float dy = fy * help; 
+			cvdebug() << x << ", " << y << ":" << ig[0] << ", " << ig[1] << "\n"; 
+			if (abs(dx) > 1e-5 || abs(ig[0]) > 1e-5)
+				BOOST_CHECK_CLOSE(ig[0], dx, 0.3); 
+			if (abs(dy) > 1e-5 || abs(ig[1]) > 1e-5) 
+				BOOST_CHECK_CLOSE(ig[1], dy, 0.3); 
+		}
+	
+}
+
+
 
 float GridTransformFixture::fx(float x, float y)
 {
