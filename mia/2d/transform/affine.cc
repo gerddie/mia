@@ -299,6 +299,8 @@ void C2DAffineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 	assert(gradient.get_size() == _M_size);
 	assert(params.size() == degrees_of_freedom());
 
+	cverr() << "C2DAffineTransformation::translate: This code is not tested and most likely wrong\n"; 
+
 	vector<double> r(params.size(), 0.0);
 
 	auto g = gradient.begin();
