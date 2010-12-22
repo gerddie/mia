@@ -246,6 +246,8 @@ BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, AffineGrad2ParamFixtureAff
 	BOOST_CHECK_CLOSE(params[5], -0.5, 0.1);
 }
 
+// this test needs to be reviewed and re-implemented 
+#if 0 
 BOOST_FIXTURE_TEST_CASE (test_grad2param_translation2, AffineGrad2ParamFixtureAffine)
 {
 	C2DFVectorfield gradient(size);
@@ -265,6 +267,7 @@ BOOST_FIXTURE_TEST_CASE (test_grad2param_translation2, AffineGrad2ParamFixtureAf
 	BOOST_CHECK_CLOSE(params[4], -org_params[4], 0.1);
 	BOOST_CHECK_CLOSE(params[5], -org_params[5], 0.1);
 }
+#endif
 
 BOOST_FIXTURE_TEST_CASE (test_add, AffineGrad2ParamFixtureAffine)
 {
