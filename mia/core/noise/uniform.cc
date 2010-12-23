@@ -64,11 +64,11 @@ CUniformNoiseGeneratorFactory::CUniformNoiseGeneratorFactory():
 {
 	add_parameter("a", new CFloatParameter(_M_param_a, -numeric_limits<float>::max(),
 								       numeric_limits<float>::max(),
-								       false, "mean of distribution"));
+								       false, "lower bound if noise range"));
 
 	add_parameter("b", new CFloatParameter(_M_param_b, -numeric_limits<float>::max(),
 								       numeric_limits<float>::max(),
-								       false, "standart derivation of distribution"));
+								       false, "higher bound if noise range"));
 	add_parameter("seed", new CUIntParameter(_M_param_seed, 0,   numeric_limits<unsigned int>::max(),
 						  false, "set random seed (0=init based on system time)"));
 

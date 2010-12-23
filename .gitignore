@@ -1,7 +1,6 @@
 test-*
 *.so
 *.so.*
-mia-*
 CMakeFiles
 Makefile
 cmake_install.cmake

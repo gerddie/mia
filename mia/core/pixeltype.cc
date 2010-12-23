@@ -48,6 +48,7 @@ const TDictMap<EPixelConversion>::Table ConversionTypeTable[] = {
 	{"linear", pc_linear},
 	{"range", pc_range},
 	{"opt", pc_opt},
+	{"optstat", pc_opt_stat},
 	{NULL, pc_unknown}
 };
 const TDictMap<EPixelConversion> CPixelConversionDict(ConversionTypeTable);

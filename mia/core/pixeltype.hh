@@ -48,7 +48,17 @@ enum EPixelType {it_bit,  /**< bit/bool pixels */
 		 it_unknown /**< unexpected type */
 };
 
-enum EPixelConversion {pc_copy, pc_linear, pc_range, pc_opt, pc_opt_stat, pc_unknown};
+enum EPixelConversion {pc_copy, /**< copy pixel values, ranges and values are truncated at conversion */
+		       pc_linear, /**< apply the linear function ax+b to the voxel values, then convert the values */
+		       pc_range, /**< apply a linear mapping the maps the complete input range of the input type to the 
+				    complete output range of the output type, output to float and double 
+				    is mapped to [-1,1] */
+		       pc_opt, /**< apply a linear mapping the maps the actual input value range to the 
+				    complete output value range, output to float and double is mapped to [-1,1] */
+		       pc_opt_stat, /**< apply a linear mapping the maps the mean of the the actual input values 
+				       to the mean of the output range and lets the output variation be 0.25 of 
+				       the output range */
+		       pc_unknown};
 
 EXPORT_CORE extern const TDictMap<EPixelType>::Table PixelTypeTable[];
 EXPORT_CORE extern const TDictMap<EPixelType> CPixelTypeDict;

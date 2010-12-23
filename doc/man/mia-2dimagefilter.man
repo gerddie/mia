@@ -1,0 +1,363 @@
+.TH mia\-2dimagefilter 1 "December 22, 2010" "version 2.0.3" "USER COMMANDS"
+.SH NAME
+mia\-2dimagefilter \- Run filters on a single gray scale image.
+mia\-2dimagefilterstack \- Run filters on a series of gray scale image.
+.SH SYNOPSIS
+.B mia\-2dimagefilter \-i <input image> \-o <output image> [<plugin>] ...
+.B mia\-2dimagefilterstack \-i <input image pattern> \-o <output base> \-t <type> [<plugin>] ...
+
+
+.SH DESCRIPTION
+.B mia\-2dimagefilter
+is used to apply a series of filters to a single imput image. 
+That are given as trailing parameters at the command line.
+
+.B mia\-2dimagefilterstack
+is used to apply a series of filters  independently to a series of consecutively numbered 
+input images. As above, the filters are given as trailing parameters at the command line.
+The numbering scheme of the output images is deducted from the numbetring scheme of the 
+input images. 
+ 
+
+.SH OPTIONS
+.TP
+\-i \-\-in\-file[required]  
+Input image to be filtered
+.TP
+\-o \-\-out\-file[required]   
+For 
+.B mia\-2dimagefilter 
+this is the output image file name and its suffix is normally used to deduct 
+the output image type. If, however, a type is given then it takes precedence 
+over the deducted type name. 
+For 
+.B mia\-2dimagefilterstack 
+this is the base of the output image file name and  the \-\-type parameters 
+provides the as suffix. Before the dot the number is added with as many 
+digest as provided by the input file name. 
+
+.TP
+\-t \-\-type
+Output file type. If given, this parameter takes precedence over the 
+type that may be deducted from output file name. 
+.br
+(bmp|datapool|dicom|exr|png|raw|tif|vista)
+The output type 
+.B datapool
+is a special type that provieds the means to store data temporarly and later retrive it,
+for instance, a filter may create a secondary output that is put into storage, and later retrived 
+by another filter that comes later in the chain. 
+
+.SH HELP AND INFO OPTIONS 
+.TP
+\-\-help\-plugins         
+give some help about the filter plugins
+.TP                  
+  \-V \-\-verbose=fail         
+verbosity of output
+.br
+(debug|error|fail|fatal|info|message|trace|warning)
+.TP
+\-\-copyright            
+print copyright information
+.TP
+  \-h \-\-help                 
+print help
+.TP
+  \-? \-\-usage
+print a short help
+
+
+.SH PLUGINS
+
+.I NOTE:
+To get a list of the installed plug\-ins and their options you can call 
+thie program with the \-\-help\-plugins options. If a plugin itself 
+makes use of other plug-ins in its creation, one may set the parameter to 
+.b help
+to obtain a list of these plugins. Deeper levels of plug-in nesting are currently not supported. 
+Below the plugins are listed that are included in the original distribution of the MIA library.
+
+.TP
+.B adaptmed
+adaptive median filter
+.RS
+.IP w:int	
+half filter width (default=0), actual spacial filter width is 2w+1 
+.RE
+
+.TP
+.B admean
+adaptive mean filter
+.RS
+.IP w:int	
+half filter width (default=1), actual spacial filter width is 2w+1 
+.RE
+
+.TP
+.B aniso
+anisotropic smoothing filter
+.RS
+.IP epsilon:float	
+iteration change threshold  (default=1)
+.IP iter:int	
+number of iterations  (default=100)
+.IP k:float
+the noise threshold (a value less or equal zero results in adaptive estimation)
+.IP n:set	
+neighbourhood (4 or 8)
+.IP psi:string
+edge stopping function (guess|pm1|pm2|tuckey)
+.RE
+
+.TP
+.B bandpass
+intensity bandpass filter
+.RS
+.IP max:float
+maximum of the band 
+.IP min:float
+minimum of the band
+.RE
+
+.TP
+.B binarize
+image binarize filter
+.RS
+.IP max:float	
+maximum accepted value
+.IP min:float	
+minimum accepted value
+.RE
+
+.TP
+.B  dilate erode open close 
+Morphological filters. These filters work on binary and gray scale images likewise. 
+.RS
+.IP hint:string	(black|white)
+a hint whether the main image content is black or white to optimize the way 
+the filter is run   (default=black) 
+For gray scale images this hint is ignored. 
+.IP shape:string 
+structuring element  (default=[sphere:r=2]) 
+.RE
+
+.TP
+.B  convert
+Image pixel format conversion filter. If conversion to a bit-valued image is requested
+the binarize filter must be used. 
+.RS
+.IP a:float	
+linear conversion parameter a  (default=1)
+.IP b:float	
+linear conversion parameter b  (default=0)
+.IP map:string	(copy|linear|opt|optstat|range)
+conversion mapping  (default=opt) 
+.IP repn:string	
+output pixel type (ubyte|sbyte|ushort|sshort|uint| sint|ulong|slong|float|double)
+.RE
+
+.TP
+.B  crop
+Image cropping filter. The region to be preserved is given. If a dimension 
+of the requested region is larger then the corresponding region of the 
+input image, then the extra output is filled with zeros. 
+.RS
+.IP start:2D\-Vector
+start of crop region (default=<0,0>) 
+.IP end:2D\-Vector
+end of crop region (default=<-1,-1>) 
+.RE
+
+
+.TP
+.B  cst
+Filter an image in the cosinus/sinus transformed domain. (Currently no filters are implemented). 
+.RS
+.IP k:string	
+filter kernel  (default=) (required)
+.RE
+
+
+.TP
+.B  downscale
+Downscaler filter, Other then the scale filter this filter uses a block size to evaluate 
+the output image size, i.e. each block of bx times by is reduced to one pixel 
+.RS
+.IP bx:int	
+blocksize in x direction 
+.IP by:int
+blocksize in y direction
+.IP kernel:string 
+Filter kernel to be used for downscaling. 
+.RE
+
+
+.TP
+.B  fft
+Filters and image in the frequency domain. 
+.RS
+.IP k:string	
+filter kernel (currently none implemented
+.RE 
+
+.TP
+.B  gauss
+isotropic gauss filter
+.RS
+.IP w:int	
+filter width parameter (default=1), the actual filter uses a width of 2w+1.
+.RE
+
+
+.TP
+.B  gradnorm
+Evaluate the norm of the image gardient from an image.
+
+
+.TP
+.B  invert
+Invert the intensity of an image. 
+
+
+.TP
+.B  kmeans
+kmeans filter
+.RS
+.IP c:int
+number of classes  (default=0)  in [0,255] 
+.RE
+
+.TP
+.B  label
+A 2D connected component labeler. The imput image must be bit-valued. 
+.RS
+.IP n:string 
+neighborhood mask  (default=4n, values=(4n|8n))
+.RE
+
+
+.TP
+.B  mask
+mask filter
+.RS
+.IP img:string	
+mask image (must be in bit representation). The parameter must be given by the user  
+.IP inv:bool (0|1)
+Indicate whether the mask should be inverted. 
+.RE
+
+
+.TP
+.B  median
+Median filter. 
+.RS
+.IP w:int
+Half filter width, the actual filter width is 2w+1. 
+.RE
+
+
+.TP
+.B  mlv
+Mean least variance filter. 
+.RS
+.IP w:int
+Half filter width parameter, the actual filter width is 2w+1.
+.RE 
+
+.TP
+.B  ngfnorm
+image to normalized-gradiend-field-norm filter
+
+
+.TP
+.B  noise
+noise filter
+.RS
+.IP mod:bool
+Use additive (0) or modulated (1) noise (default 0=additive)
+.IP g:string	
+noise generators  (default=[gauss:mu=0,sigma=10]), see below 
+.TP 
+.B gauss
+Gaussian noise generator using the Box\-Muller algorithm. 
+.RS 2
+.IP mu:float 
+mean of the noise to be generated
+.IP sigma:float 
+standart derivation of the noise distribution
+.IP seed:uint 
+set random seed (0: use time(NULL) ) 
+.RE
+.TP 
+.B uniform
+Unifom noise generator
+.RS 2
+.IP a:float 
+lower bound of noise range 
+.IP b:float 
+upper bound of noise range 
+.IP seed:uint
+set random seed (0: use time(NULL) ) 
+.RE
+.RE
+
+.TP
+.B  sandp
+salt and pepper filter
+.RS
+.IP thresh:float	
+threshold value below which no value is changed
+.ip w:int
+Half filter width parameter, the actual filter width is 2w+1.
+.RE
+
+
+.TP
+.B  scale
+Image scale filter. This filter scales to image using a certain interpolation kernel. 
+(Note: currently downscaling is always done with the gaussian kernel).
+.RS
+.IP interp:string 
+interpolation method to be used   (default=bspline3) 
+.IP sx:int 
+target image size in x direction, must be given
+.IP sy:int 
+target image size in y direction, must be given
+.RE
+
+.TP
+.B  selectbig
+Select the biggest component in a labeled image. 
+
+
+.TP
+.B  sepconv
+Apply a separaple convolution filter. 
+.RS
+.IP kx:string	
+filter kernel in x\-direction  (default=gauss:w=1) 
+.IP ky:string	
+filter kernel in y\-direction  (default=gauss:w=1)
+.RE 
+
+.SH EXAMPLES 
+
+
+binarize a gray scale image
+.br
+.B mia\-2dimagefilter \-i in.png \-o out.png binarize:min=2,max=200
+
+downscale ain image using a block size of 4x3
+.br
+.B mia\-2dimagefilter \-i in.png \-o out.png downscale:bx=4,by=3
+
+binarize an image, label it and select the largest connected component
+.br
+.B mia\-2dimagefilter \-i in.png \-o out.png binarize:min=200 label selectbig
+
+.SH COPYRIGHT 
+This software is copyright (c) Gert Wollny et al.
+It comes with  ABSOLUTELY NO WARRANTY and you may redistribute it
+under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later).
+

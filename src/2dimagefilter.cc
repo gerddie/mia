@@ -83,8 +83,6 @@ int do_main( int argc, const char *argv[] )
 
 	//CHistory::instance().append(argv[0], "unknown", options);
 
-	C2DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(in_filename);
-
 	std::list<C2DFilterPlugin::ProductPtr> filters;
 
 	for (std::vector<const char *>::const_iterator i = filter_chain.begin();
@@ -99,6 +97,7 @@ int do_main( int argc, const char *argv[] )
 		filters.push_back(filter);
 	}
 
+	C2DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(in_filename);
 	if (in_image_list.get() && in_image_list->size()) {
 		std::vector<const char *>::const_iterator filter_name = filter_chain.begin();
 		for (std::list<C2DFilterPlugin::ProductPtr>::const_iterator f = filters.begin();

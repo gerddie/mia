@@ -62,13 +62,15 @@ ENDIF(XMLPP_FOUND)
 IF(ITPP_FOUND)
   SET(ITPP_SRC 
     ica.cc 
+    perfusion.cc
     )
   SET(ITPP_HEADER 
     ica.hh
+    perfusion.hh
     )
 ENDIF(ITPP_FOUND)
 
-SET(MIA2D_SRC ${MIA2D_SRC_BASE} ${MIA2D_FFTW_CODE} ${ITPP_SRC})
+SET(MIA2D_SRC ${MIA2D_SRC_BASE} ${MIA2D_FFTW_CODE})
 
 SET(MIA2D_HEADERS_BASE
   angle.hh
@@ -190,10 +192,6 @@ TEST_2DMIA(vectorfield_interpolator mia2dtest)
 TEST_2DMIA(similarity_profile mia2dtest)
 TEST_2DMIA(transio mia2d)
 
-IF(ITPP_FOUND)
-  TEST_2DMIA(ica mia2dtest)
-ENDIF(ITPP_FOUND)
-
 IF(CMAKE_BUILD_TYPE)
   SET(CONFIG ${CMAKE_BUILD_TYPE})
 ELSE(CMAKE_BUILD_TYPE)
@@ -212,22 +210,24 @@ INSTALL(FILES ${MIA2D_HEADERS} DESTINATION ${INCLUDE_INSTALL_PATH}/mia/2d)
 
 SET(MIA2D_MYOCARDPERF_SRC 
   ${SEG_SRC}
+  ${ITPP_SRC}
   ground_truth_evaluator.cc
   groundtruthproblem.cc
-  perfusion.cc
+
 )  
 
 SET(MIA2D_MYOCARDPERF_HEADER 
   ${SEG_HEADER}
+  ${ITPP_HEADER}
   ground_truth_evaluator.hh
   groundtruthproblem.hh
-  perfusion.hh
 )  
 
 ADD_LIBRARY(mia2dmyocardperf SHARED ${MIA2D_MYOCARDPERF_SRC})
 TARGET_LINK_LIBRARIES(mia2dmyocardperf mia2d)
 SET_TARGET_PROPERTIES(mia2dmyocardperf PROPERTIES VERSION ${LIBRARY_VERSION_INFO}
 )
+
 
 IF(XMLPP_FOUND)
   TARGET_LINK_LIBRARIES(mia2dmyocardperf ${XMLPP_LIBRARIES})
@@ -237,8 +237,14 @@ INSTALL_WITH_EXPORT(mia2dmyocardperf)
 INSTALL(FILES ${MIA2D_MYOCARDPERF_HEADER} DESTINATION ${INCLUDE_INSTALL_PATH}/mia/2d)
 
 
+IF(ITPP_FOUND)
+  TEST_2DMIA(ica mia2dmyocardperf)
+  TEST_2DMIA(perfusion mia2dmyocardperf)
+ENDIF(ITPP_FOUND)
+
+
 TEST_2DMIA(groundtruthproblem mia2dmyocardperf)
-TEST_2DMIA(perfusion mia2dmyocardperf)
+
 TEST_2DMIA(correlation_weight mia2dmyocardperf)
 
 IF(XMLPP_FOUND)

@@ -1,5 +1,6 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ *
+ * Copyright (c) Madrid 2010
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,13 +28,32 @@
 
 NS_MIA_BEGIN
 
+/*
+  This class implements the image pixel type conversion. 
+  Various mappings are supported and defined as  EPixelConversion. 
+  \tparam Image the image type that must provide STL-like iterators. 
+ */
 template <class Image>	
 class TConvert: public TImageFilter<Image> {
 public: 	
 	typedef typename TImageFilter<Image>::result_type result_type; 
 	
+	/**
+	   Create the conversion filter with the parameters
+	   @param pt output pixel type
+	   @param ct conversion mapping to be applied 
+	   @param a scale factor for linear mapping 
+	   @param b shift factor for linear mapping 
+	 */
 	TConvert(mia::EPixelType pt, EPixelConversion ct, float a, float b); 
 
+	/**
+	   \tparam container type must support STL like forward iterator
+	   \tparam pixel type, must be a scalar data type 
+	   \param data the data to be converted 
+	   \returns the container with the converted data 
+	   \remark review the template parameters, there seem to be more then necessary  
+	 */
 	template <template  <typename> class Data, typename T>
 	typename TConvert<Image>::result_type operator () (const Data<T>& data) const; 
 	

@@ -74,16 +74,20 @@ INCLUDE (CheckTypeSize)
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
 
 #make sure we get the c++0x standard 
+#remark: I think this doesn't work, because to know the compiler, the test has already run 
+#and the flags are already in the cache. 
 IF(CMAKE_COMPILER_IS_GNUCXX)
   ADD_DEFINITIONS(-std=c++0x)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+
 
 
 IF(NOT "${CXX_HAS_CXX_0X_AUTO}")
   MESSAGE(FATAL_ERROR "This source code requires the c++0x auto type feature. "
     "If your compiler is supposed to support this feature, "
     "please enable the appropriate flags.\n"
-    "for g++ >= 4.4 this is '-std=c++0x'" )
+    "for g++ >= 4.4 this is '-std=c++0x' and delete the CMakeCache.txt file before"
+    "re-running cmake")
 ENDIF(NOT "${CXX_HAS_CXX_0X_AUTO}")
 
 ASSERT_SIZE(char 1)
@@ -226,7 +230,9 @@ ENDIF(UNIX)
 #
 
 #
-# Handle the GNU Scientific Library 
+# Handle the GNU Scientific Library, this might be a showstopper 
+# on MS windows when using Visual C++ 
+# it should be possible to make this dependency non-obligatory 
 #
 PKG_CHECK_MODULES(GSL REQUIRED gsl)
 INCLUDE_DIRECTORIES(${GSL_INCLUDE_DIRS})
@@ -235,7 +241,6 @@ LINK_DIRECTORIES(${GSL_LIBRARY_DIRS})
 #
 # take care of modules loading infrastructure
 #
-
 IF(NOT WIN32)
   FIND_LIBRARY(DL dl
     PATH
@@ -244,9 +249,9 @@ IF(NOT WIN32)
     /opt/local/lib
     /sw/lib
   )
-  IF(DL_NOTDOUND)
+  IF(DL_NOTFOUND)
     MESSAGE(FATAL_ERROR "non-windows systems without libdl.so are not yet supported")
-  ENDIF(DL_NOTDOUND)
+  ENDIF(DL_NOTFOUND)
   SET(BASELIBS  ${BOOST_DEPS} ${DL})
 ENDIF(NOT WIN32)
 
@@ -254,7 +259,6 @@ ENDIF(NOT WIN32)
 #
 # maybe one should replace this with mia
 #
-
 IF (WIN32 AND NOT UNIX)
   SET(PLUGSUFFIX ".dll")
 ELSE (WIN32 AND NOT UNIX)
@@ -321,7 +325,6 @@ ENDIF(WITH_XMLPP)
 #
 # at itpp for ICA
 #
-
 OPTION(WITH_ITPP "Use IT++ for some additional features" ${SEARCH_LIBS_DEFAULT})
 IF(WITH_ITPP)
   pkg_check_modules(ITPP itpp)
@@ -342,7 +345,6 @@ IF(WITH_ITPP)
     ELSE(NOT ITPP_FASTICA_SEPARATE_HAS_RETURNVALUE) 
       SET(ICA_ALWAYS_USE_SYMM 0)
     ENDIF(NOT ITPP_FASTICA_SEPARATE_HAS_RETURNVALUE) 
-    
   ENDIF(ITPP_FOUND)
 ENDIF(WITH_ITPP)
 
