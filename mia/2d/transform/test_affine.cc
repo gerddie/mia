@@ -247,7 +247,7 @@ BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, AffineGrad2ParamFixtureAff
 }
 
 // this test needs to be reviewed and re-implemented 
-#if 0 
+#if 0
 BOOST_FIXTURE_TEST_CASE (test_grad2param_translation2, AffineGrad2ParamFixtureAffine)
 {
 	C2DFVectorfield gradient(size);
@@ -303,7 +303,7 @@ AffineGrad2ParamFixtureAffine::AffineGrad2ParamFixtureAffine():
 	trans(size)
 {
 	trans.translate(-1, -3);
-	trans.rotate(0.0);
+	trans.rotate(1.0);
 	trans.scale(0.69314718, -0.69314718);
 }
 

@@ -415,67 +415,73 @@ void C2DSplineTransformation::run_downscaler(C1DScalarFixed& scaler, vector<doub
 	}
 }
 
+static void convolute(vector<C2DFVector>& output, 
+		      const vector<C2DFVector>& input,  const vector<double>& kernel)
+{
+	const int khsize = kernel.size() / 2; 
+	for(size_t o = 0; o < output.size(); ++o) {
+		int i = (o * (input.size()-1) / (output.size() - 1)); 
+		int istart = i - khsize; 
+		int iend = istart + kernel.size();
+		auto k = kernel.begin(); 
+		if (istart < 0) {
+			k += - istart;
+			istart = 0; 
+		}
+		if (iend > (int)input.size())
+			iend = input.size(); 
+		
+		output[o] = C2DFVector(); 
+		for(; istart < iend; ++istart, ++k) {
+			output[o] += *k * input[istart]; 
+		}
+		cvdebug() << o << " = " << output[o] << "\n"; 
+	}
+}
+
+
 void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
 	TRACE_FUNCTION;
 	assert(params.size() == _M_coefficients.size() * 2);
+	assert(gradient.get_size() == _M_range); 
+	// replace this code by a filter 
 	
-	C2DDDatafield tmp_x(C2DBounds(gradient.get_size().x, _M_coefficients.get_size().y)); 
-	C2DDDatafield tmp_y(C2DBounds(gradient.get_size().x, _M_coefficients.get_size().y)); 
+	vector<double> x_kernel_values; 
+	for(double i = - _M_ipf->get_kernel()->get_nonzero_radius() + _M_scale.x; 
+	    i < _M_ipf->get_kernel()->get_nonzero_radius(); i += _M_scale.x)
+		x_kernel_values.push_back(_M_ipf->get_kernel()->get_weight_at(i, 0));
+	cvdebug() << "x_kernel_values=" << x_kernel_values << "\n"; 
 
-	{
-		C1DScalarFixed scaler_y(*_M_ipf->get_kernel(), gradient.get_size().y, 
-					_M_coefficients.get_size().y - _M_enlarge);
-		
-		vector<C2DFVector> in_buffer(gradient.get_size().y); 
-		vector<double> out_buffer(_M_coefficients.get_size().y); 
-		
-		// run y-scaling 
-		FCopyX copy_x; 
-//		FCopyY copy_y; 
-		for (size_t ix = 0; ix < gradient.get_size().x; ++ix) {
-			gradient.get_data_line_y(ix, in_buffer);
-#ifndef AM_I_STUPID // valgrind complains using the transform code ?!
-			for (auto iv = in_buffer.begin(), is = scaler_y.input_begin(); 
-			     iv != in_buffer.end(); ++iv, ++is) 
-				*is = iv->y; 
-#else
-			transform(in_buffer.begin(), in_buffer.end(), scaler_y.input_begin(), copy_y); 
-#endif
-			run_downscaler(scaler_y, out_buffer); 
-			tmp_y.put_data_line_y(ix, out_buffer);
-
-			transform(in_buffer.begin(), in_buffer.end(), scaler_y.input_begin(), copy_x); 
-			run_downscaler(scaler_y, out_buffer); 
-			tmp_x.put_data_line_y(ix, out_buffer);
-			
-		}
+	vector<double> y_kernel_values; 
+	for(double i = - _M_ipf->get_kernel()->get_nonzero_radius() + _M_scale.y; 
+	    i < _M_ipf->get_kernel()->get_nonzero_radius(); i += _M_scale.y)
+		y_kernel_values.push_back(_M_ipf->get_kernel()->get_weight_at(i, 0));
+	
+	// y-convolution 
+	C2DFVectorfield tmp(C2DBounds(gradient.get_size().x, _M_coefficients.get_size().y));
+	vector<C2DFVector> in_buffer(gradient.get_size().y); 
+	vector<C2DFVector> out_buffer(_M_coefficients.get_size().y); 
+	
+	for (size_t ix = 0; ix < gradient.get_size().x; ++ix) {
+		gradient.get_data_line_y(ix, in_buffer);
+		convolute(out_buffer, in_buffer, y_kernel_values); 
+		tmp.put_data_line_y(ix, out_buffer);
 	}
-	cvinfo() << "x done\n"; 
-	{
-		C1DScalarFixed scaler_x(*_M_ipf->get_kernel(), gradient.get_size().x, 
-					_M_coefficients.get_size().x - _M_enlarge);
+	
+	in_buffer.resize(gradient.get_size().x); 
+	out_buffer.resize(_M_coefficients.get_size().x); 
+
+	// x convolution and copy to output
+	auto r = params.begin(); 
+	for (size_t iy = 0; iy < _M_coefficients.get_size().y; ++iy) {
+		tmp.get_data_line_x(iy, in_buffer);
+		convolute(out_buffer, in_buffer, x_kernel_values); 
 		
-		vector<double> out_buffer_x(_M_coefficients.get_size().x); 
-		vector<double> out_buffer_y(_M_coefficients.get_size().x); 
-		
-		auto r = params.begin(); 
-		// run x-scaling 
-		for (size_t iy = 0; iy < tmp_x.get_size().y; ++iy) {
-			copy(tmp_x.begin_at(0, iy), tmp_x.begin_at(0, iy) + tmp_x.get_size().x, 
-			     scaler_x.input_begin()); 
-			run_downscaler(scaler_x, out_buffer_x);
-			copy(tmp_y.begin_at(0, iy), tmp_y.begin_at(0, iy) + tmp_y.get_size().x, 
-			     scaler_x.input_begin()); 
-			run_downscaler(scaler_x, out_buffer_y);
-			// translate the gradient also needs a sign correction, because 
-			// the actual transformation is I-s(x) 
-			// somehow a scaling may still be missing 
-			for(auto vx = out_buffer_x.begin(), vy = out_buffer_y.begin(); 
-			    vx != out_buffer_x.end(); ++vx, ++vy, r+=2) {
-				r[0] = -*vx; 
-				r[1] = -*vy; 
-			}
+		for(auto v = out_buffer.begin();  v != out_buffer.end(); ++v, r+=2) {
+			cvdebug() << *v << "\n"; 
+			r[0] = -v->x; 
+			r[1] = -v->y; 
 		}
 	}
 }

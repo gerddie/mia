@@ -307,9 +307,9 @@ void C2DAffineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 	for (size_t y = 0; y < _M_size.y; ++y) {
 		for (size_t x = 0; x < _M_size.x; ++x, ++g) {
 			r[0] += x * g->x;
-			r[1] += x * g->y;
+			r[1] += y * g->x;
 			r[2] += g->x;
-			r[3] += y * g->x;
+			r[3] += x * g->y;
 			r[4] += y * g->y;
 			r[5] += g->y;
 		}

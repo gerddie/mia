@@ -279,22 +279,36 @@ BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 
 BOOST_FIXTURE_TEST_CASE( test_splines_translate, TransformSplineFixture )
 {
-	C2DFVectorfield gradient(C2DBounds(128,128));
+	C2DFVectorfield gradient(range); 
+	double scale_x = double(range.x - 1) / (size.x - 1 - 2*coeff_shift); 
+	double scale_y = double(range.y - 1) / (size.y - 1 - 2*coeff_shift); 
+	double scale = scale_x * scale_y; 
+	
+	cvdebug() << range << size << ", scale=" << scale << "\n"; 
+
 	fill(gradient.begin(), gradient.end(), C2DFVector(1.0, 2.0));
 
-	gsl::DoubleVector force(2 * stransf.get_coeff_size().x * stransf.get_coeff_size().y);
+	gsl::DoubleVector force(stransf.degrees_of_freedom());
 	stransf.translate(gradient, force);
 
 	auto  i = force.begin();
-	while ( i != force.end() ) {
-		BOOST_CHECK_CLOSE(*i++, -1.0f, 0.1);
-		BOOST_CHECK_CLOSE(*i++, -2.0f, 0.1);
-	}
+	for (size_t y = 0; y < stransf.get_coeff_size().y; ++y)
+		for (size_t x = 0; x < stransf.get_coeff_size().x; ++x, i+=2) {
+			if (y > 2 && y < stransf.get_coeff_size().y - 2 && 
+			    x > 2 && x < stransf.get_coeff_size().x - 2) {
+				BOOST_CHECK_CLOSE( i[0], -1.0f * scale, 0.1);
+				BOOST_CHECK_CLOSE( i[1], -2.0f * scale, 0.1);
+
+			}
+			
+			
+		}
 }
 
 BOOST_FIXTURE_TEST_CASE( test_splines_translate_2, TransformSplineFixture )
 {
 	C2DFVectorfield gradient(range);
+
 	auto ig = gradient.begin(); 
 	for (size_t y = 0; y < range.y; ++y) 
 		for (size_t x = 0; x < range.x; ++x, ++ig) {
@@ -306,24 +320,22 @@ BOOST_FIXTURE_TEST_CASE( test_splines_translate_2, TransformSplineFixture )
 	stransf.translate(gradient, force);
 	stransf.set_parameters(force); 
 	
-	// now the spline should be more or less the same 
-	// as the original function 
-
 	auto is = stransf.begin(); 
 	ig = gradient.begin(); 
-	// 3% error is rather big and the error pattern still suggests a 
-	// systematic error ...
 	for (size_t y = 0; y < range.y; ++y)
 		for (size_t x = 0; x < range.x; ++x, ++is,++ig) {
-			cvdebug() << "translate_test " << setw(3) << x << "," << setw(3)<< y  << *is << *ig << "\n"; 
-			if (abs(ig->x) > 0.1) 
-				BOOST_CHECK_CLOSE(x - is->x, -ig->x, 1); 
-			else 
-				BOOST_CHECK_CLOSE(1.0 + x - is->x, 1.0 - ig->x, 1.1); 
-			if (abs(ig->y) > 0.1) 
-				BOOST_CHECK_CLOSE(y -is->y,  -ig->y, 1); 
-			else 
-				BOOST_CHECK_CLOSE(1.0 + y - is->y, 1.0 - ig->y, 1.1); 
+			if (y > 2 && y < stransf.get_coeff_size().y - 2 && 
+			    x > 2 && x < stransf.get_coeff_size().x - 2) {
+
+				if (abs(ig->x) > 0.1) 
+					BOOST_CHECK_CLOSE(x - is->x, -ig->x, 1); 
+				else 
+					BOOST_CHECK_CLOSE(1.0 + x - is->x, 1.0 - ig->x, 1.1); 
+				if (abs(ig->y) > 0.1) 
+					BOOST_CHECK_CLOSE(y -is->y,  -ig->y, 1); 
+				else 
+					BOOST_CHECK_CLOSE(1.0 + y - is->y, 1.0 - ig->y, 1.1); 
+			}
 		}
 }
 

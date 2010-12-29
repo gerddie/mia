@@ -87,7 +87,7 @@ int do_main( int argc, const char *argv[] )
 				    "input perfusion data set", CCmdOption::required));
 	options.push_back(make_opt( out_filename, "out-file", 'o', 
 				    "output perfusion data set", CCmdOption::required));
-	options.push_back(make_opt( registered_filebase, "registered", 'r', 
+	options.push_back(make_opt( registered_filebase, "registered", 'R', 
 				    "file name base for registered fiels")); 
 	
 	
