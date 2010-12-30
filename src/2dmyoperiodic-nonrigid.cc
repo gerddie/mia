@@ -139,15 +139,19 @@ public:
 	};
 
 	C2DMyocardPeriodicRegistration(const RegistrationParams& params); 
-	void run(C2DImageSeries& images); 
+	vector<P2DTransformation> run(C2DImageSeries& images); 
 	size_t get_ref_idx()const; 
 
 private: 
 	vector<size_t>  get_high_contrast_candidates(const C2DImageSeries& images, 
 						     size_t startidx, size_t endidx); 
 	vector<size_t> get_prealigned_subset(const C2DImageSeries& images);  
-	void run_initial_pass(C2DImageSeries& images, const vector<size_t>& subset); 
-	void run_final_pass(C2DImageSeries& images, const vector<size_t>& subset); 
+	void run_initial_pass(C2DImageSeries& images, 
+			      vector<P2DTransformation>& transforms, 
+			      const vector<size_t>& subset); 
+	void run_final_pass(C2DImageSeries& images, 
+			    vector<P2DTransformation>& transforms, 
+			    const vector<size_t>& subset); 
 	
 	RegistrationParams m_params; 
 	size_t m_ref; 
@@ -213,7 +217,9 @@ vector<size_t> C2DMyocardPeriodicRegistration::get_prealigned_subset(const C2DIm
 }
 
 
-void C2DMyocardPeriodicRegistration::run_initial_pass(C2DImageSeries& images, const vector<size_t>& subset) 
+void C2DMyocardPeriodicRegistration::run_initial_pass(C2DImageSeries& images, 
+						      vector<P2DTransformation>& transforms, 
+						      const vector<size_t>& subset) 
 {
 	cvmsg() << "run initial registration pass on "<< subset << "\n"; 
 	C2DFullCostList costs; 
@@ -237,10 +243,13 @@ void C2DMyocardPeriodicRegistration::run_initial_pass(C2DImageSeries& images, co
 		P2DImage src = images[*i]; 
 		P2DTransformation transform = nr.run(src, ref);
 		images[*i] = (*transform)(*images[*i], *m_params.interpolator);
+		transforms[*i] = transform; 
 	}
 }
 
-void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images, const vector<size_t>& subset)
+void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images, 
+						    vector<P2DTransformation>& transforms, 
+						    const vector<size_t>& subset)
 {
 	cvmsg() << "run final registration pass ...\n"; 
 	C2DFullCostList costs; 
@@ -290,6 +299,7 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images, cons
 		cvmsg() << "Register image " << i << "\n"; 		
 		P2DTransformation transform = nr.run(images[i], ref);
 		images[i] = (*transform)(*images[i], *m_params.interpolator);
+		transforms[i] = transform; 
 	}
 }
 
@@ -298,11 +308,13 @@ C2DMyocardPeriodicRegistration::C2DMyocardPeriodicRegistration(const Registratio
 {
 }
 
-void C2DMyocardPeriodicRegistration::run(C2DImageSeries& images)
+vector<P2DTransformation> C2DMyocardPeriodicRegistration::run(C2DImageSeries& images)
 {
+	vector<P2DTransformation> transforms(images.size()); 
 	vector<size_t> subset = get_prealigned_subset(images); 
-	run_initial_pass(images, subset); 
-	run_final_pass(images, subset); 
+	run_initial_pass(images, transforms, subset); 
+	run_final_pass(images, transforms, subset); 
+	return transforms; 
 }
 
 size_t C2DMyocardPeriodicRegistration::get_ref_idx()const 
@@ -401,7 +413,7 @@ int do_main( int argc, const char *argv[] )
 	C2DImageSeries series(in_images.begin() + skip, in_images.end()); 
 
 	C2DMyocardPeriodicRegistration mpr(params); 
-	mpr.run(series);
+	vector<P2DTransformation> transforms = mpr.run(series);
 
 	if (!reference_index_file.empty()) {
 		ofstream refidxfile(reference_index_file.c_str(), ios_base::out );
@@ -413,6 +425,13 @@ int do_main( int argc, const char *argv[] )
 	input_set.set_images(in_images); 
 	input_set.rename_base(registered_filebase); 
 	input_set.save_images(out_filename); 
+
+	// transform the segmentations
+	CSegSet::Frames& frames = input_set.get_frames();
+	for (size_t i = 0; i <  transforms.size(); ++i) {
+		if (i != mpr.get_ref_idx()) 
+			frames[i + skip].inv_transform(*transforms[i]);
+	}
 	
 	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );
