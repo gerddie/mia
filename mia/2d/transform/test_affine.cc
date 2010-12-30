@@ -314,7 +314,7 @@ BOOST_AUTO_TEST_CASE (test_invers)
 	C2DAffineTransformation trans(size); 
 
 	auto params = trans.get_parameters(); 
-//	BOOST_REQUIRE(params.size()== 6); 
+	BOOST_REQUIRE(params.size()== 6); 
 
 	params[0] = 1.0; 
 	params[1] = 2.0; 
