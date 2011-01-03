@@ -90,6 +90,18 @@ BOOST_FIXTURE_TEST_CASE (test_translate_Gradient, TransformGradientFixture)
 
 }
 
+BOOST_FIXTURE_TEST_CASE (test_rigid_Gradient, TransformGradientFixture) 
+{
+	const C2DTransformCreatorHandler::Instance& handler =
+		C2DTransformCreatorHandler::instance();
+	P2DTransformationFactory creater = handler.produce("rigid");
+	P2DTransformation transform = creater->create(size);
+
+	run_test(*transform); 
+	
+
+}
+
 BOOST_FIXTURE_TEST_CASE (test_affine_Gradient, TransformGradientFixture) 
 {
 	const C2DTransformCreatorHandler::Instance& handler =
