@@ -48,7 +48,7 @@ class TransformGradientFixture {
 public: 
 	TransformGradientFixture(); 
 
-	void run_test(C2DTransformation& t)const; 
+	void run_test(C2DTransformation& t, double tol=0.1)const; 
 
 	C2DBounds size; 
 	Cost2DMock cost; 
@@ -98,9 +98,52 @@ BOOST_FIXTURE_TEST_CASE (test_affine_Gradient, TransformGradientFixture)
 	P2DTransformation transform = creater->create(size);
 
 	run_test(*transform); 
+}
+
+BOOST_FIXTURE_TEST_CASE (test_vf_Gradient, TransformGradientFixture) 
+{
+	const C2DTransformCreatorHandler::Instance& handler =
+		C2DTransformCreatorHandler::instance();
+	P2DTransformationFactory creater = handler.produce("vf");
+	P2DTransformation transform = creater->create(size);
+
+	run_test(*transform, 2.0); 
+}
+
+
+#if 0
+BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture) 
+{
+	const C2DTransformCreatorHandler::Instance& handler =
+		C2DTransformCreatorHandler::instance();
+	P2DTransformationFactory creater = handler.produce("spline:rate=2");
+	P2DTransformation t = creater->create(size);
+
+	auto params = t->get_parameters();
+	gsl::DoubleVector trgrad(params.size()); 
+	
+	t->translate(gradient,  trgrad); 
+	double delta = 0.01; 
+
+	for(auto itrg =  trgrad.begin(), 
+		    iparam = params.begin(); itrg != trgrad.end(); ++itrg, ++iparam) {
+		*iparam += delta; 
+		t->set_parameters(params);
+		double cost_plus = cost.value(*t);
+		*iparam -= 2*delta; 
+		t->set_parameters(params);
+		double cost_minus = cost.value(*t);
+		*iparam += delta; 
+		cvdebug() << cost_plus << ", " << cost_minus << "\n"; 
+		double test_val = (cost_plus - cost_minus)/ (2*delta); 
+		if (fabs(*itrg) > 1e-11 || fabs(test_val) > 1e-11) 
+			BOOST_CHECK_CLOSE(*itrg, test_val, 0.1); 
+	}
+
 	
 
 }
+#endif
 
 
 TransformGradientFixture::TransformGradientFixture():
@@ -118,7 +161,7 @@ TransformGradientFixture::TransformGradientFixture():
 	
 }
 
-void TransformGradientFixture::run_test(C2DTransformation& t)const
+void TransformGradientFixture::run_test(C2DTransformation& t, double tol)const
 {
 	auto params = t.get_parameters();
 	gsl::DoubleVector trgrad(params.size()); 
@@ -126,6 +169,8 @@ void TransformGradientFixture::run_test(C2DTransformation& t)const
 	t.translate(gradient,  trgrad); 
 	double delta = 0.001; 
 
+	int n_close_zero = 0; 
+	int n_zero = 0; 
 	for(auto itrg =  trgrad.begin(), 
 		    iparam = params.begin(); itrg != trgrad.end(); ++itrg, ++iparam) {
 		*iparam += delta; 
@@ -136,8 +181,20 @@ void TransformGradientFixture::run_test(C2DTransformation& t)const
 		double cost_minus = cost.value(t);
 		*iparam += delta; 
 		cvdebug() << cost_plus << ", " << cost_minus << "\n"; 
-		BOOST_CHECK_CLOSE(*itrg, (cost_plus - cost_minus)/ (2*delta), 0.1); 
+		double test_val = (cost_plus - cost_minus)/ (2*delta); 
+		if (fabs(*itrg) < 1e-8 && fabs(test_val) < 1e-8) {
+			n_close_zero++; 
+			continue; 
+		}
+		if (*itrg == 0.0 && fabs(test_val) < 1e-7) {
+			n_zero++; 
+			continue; 
+		}
+
+		BOOST_CHECK_CLOSE(*itrg, test_val, tol); 
 	}
+	cvmsg() << "value pairs < 1e-8 = " << n_close_zero << "\n"; 
+	cvmsg() << "grad value zero, but finite difference below 1e-7 = " << n_zero << "\n"; 
 }
 
 Cost2DMock::Cost2DMock(const C2DBounds& size):

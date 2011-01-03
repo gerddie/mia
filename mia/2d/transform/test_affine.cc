@@ -237,37 +237,14 @@ BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, AffineGrad2ParamFixtureAff
 
 	trans.translate(gradient, params);
 
-	BOOST_CHECK_CLOSE(params[0], 0.5, 0.1);
-	BOOST_CHECK_CLOSE(params[1], 1.0, 0.1);
-	BOOST_CHECK_CLOSE(params[2], 2.0, 0.1);
+	BOOST_CHECK_CLOSE(params[0], 2.0, 0.1);
+	BOOST_CHECK_CLOSE(params[1], 4.0, 0.1);
+	BOOST_CHECK_CLOSE(params[2], 8.0, 0.1);
 
-	BOOST_CHECK_CLOSE(params[3], 1.0, 0.1);
-	BOOST_CHECK_CLOSE(params[4], -0.25, 0.1);
-	BOOST_CHECK_CLOSE(params[5], -0.5, 0.1);
+	BOOST_CHECK_CLOSE(params[3], 4.0, 0.1);
+	BOOST_CHECK_CLOSE(params[4], -1.0, 0.1);
+	BOOST_CHECK_CLOSE(params[5], -2.0, 0.1);
 }
-
-// this test needs to be reviewed and re-implemented 
-#if 0
-BOOST_FIXTURE_TEST_CASE (test_grad2param_translation2, AffineGrad2ParamFixtureAffine)
-{
-	C2DFVectorfield gradient(size);
-
-	copy(trans.begin(), trans.end(), gradient.begin()); 
-
-	gsl::DoubleVector params = trans.get_parameters();
-
-	trans.translate(gradient, params);
-
-	gsl::DoubleVector org_params = trans.get_parameters();
-	BOOST_CHECK_CLOSE(params[0], -org_params[0], 0.1);
-	BOOST_CHECK_CLOSE(params[1], -org_params[1], 0.1);
-	BOOST_CHECK_CLOSE(params[2], -org_params[2], 0.1);
-
-	BOOST_CHECK_CLOSE(params[3], -org_params[3], 0.1);
-	BOOST_CHECK_CLOSE(params[4], -org_params[4], 0.1);
-	BOOST_CHECK_CLOSE(params[5], -org_params[5], 0.1);
-}
-#endif
 
 BOOST_FIXTURE_TEST_CASE (test_add, AffineGrad2ParamFixtureAffine)
 {
