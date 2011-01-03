@@ -123,7 +123,7 @@ BOOST_FIXTURE_TEST_CASE (test_vf_Gradient, TransformGradientFixture)
 }
 
 
-#if 0
+
 BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture) 
 {
 	const C2DTransformCreatorHandler::Instance& handler =
@@ -155,7 +155,7 @@ BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture)
 	
 
 }
-#endif
+
 
 
 TransformGradientFixture::TransformGradientFixture():
@@ -193,7 +193,9 @@ void TransformGradientFixture::run_test(C2DTransformation& t, double tol)const
 		double cost_minus = cost.value(t);
 		*iparam += delta; 
 		cvdebug() << cost_plus << ", " << cost_minus << "\n"; 
+
 		double test_val = (cost_plus - cost_minus)/ (2*delta); 
+		cvdebug() << *itrg << " vs " << test_val << "\n"; 
 		if (fabs(*itrg) < 1e-8 && fabs(test_val) < 1e-8) {
 			n_close_zero++; 
 			continue; 
