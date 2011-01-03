@@ -191,6 +191,7 @@ TEST_2DMIA(transformfactory mia2dtest)
 TEST_2DMIA(vectorfield_interpolator mia2dtest)
 TEST_2DMIA(similarity_profile mia2dtest)
 TEST_2DMIA(transio mia2d)
+TEST_2DMIA(transform mia2dtest)
 
 IF(CMAKE_BUILD_TYPE)
   SET(CONFIG ${CMAKE_BUILD_TYPE})
