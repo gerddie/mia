@@ -25,14 +25,16 @@
 
 #include <mia/2d/transform.hh>
 #include <mia/internal/autotest.hh>
+#include <mia/2d/transformfactory.hh>
 
 NS_MIA_USE; 
+namespace bfs=boost::filesystem;
 
 class Cost2DMock {
 public: 
 	Cost2DMock(const C2DBounds& size); 
 	double value(const C2DTransformation& t) const;  
-	double value_and_gradient(const C2DTransformation& t, C2DFVectorfield& gradient) const;
+	double value_and_gradient(C2DFVectorfield& gradient) const;
 	
 	double src_value(const C2DFVector& x)const; 
 	double ref_value(const C2DFVector& x)const; 
@@ -42,14 +44,27 @@ public:
 	float _M_r; 
 }; 
 
+class TransformGradientFixture {
+public: 
+	TransformGradientFixture(); 
+
+	void run_test(C2DTransformation& t)const; 
+
+	C2DBounds size; 
+	Cost2DMock cost; 
+
+	C2DFVector x; 
+	C2DFVectorfield gradient; 
+}; 
+
 
 
 BOOST_AUTO_TEST_CASE (selftest_Cost2DMock) 
 {
-	C2DBounds size(20,20); 
+	C2DBounds size(20,30); 
 	Cost2DMock cm(size); 
 	
-	C2DFVector x(11.0,11.0); 
+	C2DFVector x(11.0,16.0); 
 	C2DFVector dx(.001,0.0); 
 	C2DFVector dy(.0,0.001); 
 	
@@ -63,8 +78,67 @@ BOOST_AUTO_TEST_CASE (selftest_Cost2DMock)
 	
 }
 
+BOOST_FIXTURE_TEST_CASE (test_translate_Gradient, TransformGradientFixture) 
+{
+	const C2DTransformCreatorHandler::Instance& handler =
+		C2DTransformCreatorHandler::instance();
+	P2DTransformationFactory creater = handler.produce("translate");
+	P2DTransformation transform = creater->create(size);
+
+	run_test(*transform); 
+	
+
+}
+
+BOOST_FIXTURE_TEST_CASE (test_affine_Gradient, TransformGradientFixture) 
+{
+	const C2DTransformCreatorHandler::Instance& handler =
+		C2DTransformCreatorHandler::instance();
+	P2DTransformationFactory creater = handler.produce("affine");
+	P2DTransformation transform = creater->create(size);
+
+	run_test(*transform); 
+	
+
+}
 
 
+TransformGradientFixture::TransformGradientFixture():
+	size(20,30), 
+	cost(size),
+	x(11,16), 
+	gradient(size)
+
+{
+	list< bfs::path> kernelsearchpath;
+	kernelsearchpath.push_back(bfs::path("transform"));
+	C2DTransformCreatorHandler::set_search_path(kernelsearchpath);
+
+	cost.value_and_gradient(gradient);
+	
+}
+
+void TransformGradientFixture::run_test(C2DTransformation& t)const
+{
+	auto params = t.get_parameters();
+	gsl::DoubleVector trgrad(params.size()); 
+	
+	t.translate(gradient,  trgrad); 
+	double delta = 0.001; 
+
+	for(auto itrg =  trgrad.begin(), 
+		    iparam = params.begin(); itrg != trgrad.end(); ++itrg, ++iparam) {
+		*iparam += delta; 
+		t.set_parameters(params);
+		double cost_plus = cost.value(t);
+		*iparam -= 2*delta; 
+		t.set_parameters(params);
+		double cost_minus = cost.value(t);
+		*iparam += delta; 
+		cvdebug() << cost_plus << ", " << cost_minus << "\n"; 
+		BOOST_CHECK_CLOSE(*itrg, (cost_plus - cost_minus)/ (2*delta), 0.1); 
+	}
+}
 
 Cost2DMock::Cost2DMock(const C2DBounds& size):
 	_M_size(size), 
@@ -87,19 +161,19 @@ double Cost2DMock::value(const C2DTransformation& t) const
 		
 }
 
-double Cost2DMock::value_and_gradient(const C2DTransformation& t, C2DFVectorfield& gradient) const
+double Cost2DMock::value_and_gradient(C2DFVectorfield& gradient) const
 {
-	assert(_M_size == t.get_size()); 
 	assert(gradient.get_size() == _M_size); 
 	
 	double result = 0.0; 
-	auto it = t.begin(); 
+
 	auto ig = gradient.begin(); 
 	for (size_t y = 0; y < _M_size.y; ++y) 
-		for (size_t x = 0; x < _M_size.x; ++x, ++it, ++ig) {
-			double v = src_value(*it) - ref_value(C2DFVector(x,y)); 
+		for (size_t x = 0; x < _M_size.x; ++x, ++ig) {
+			C2DFVector pos(x,y);
+			double v = src_value(pos) - ref_value(pos); 
 			result += v * v; 
-			*ig = 2.0 * v * src_grad(*it);  
+			*ig = 2.0 * v * src_grad(pos);  
 		}
 	return result; 
 }

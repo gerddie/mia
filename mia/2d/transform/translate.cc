@@ -144,8 +144,8 @@ void C2DTranslateTransformation::translate(const C2DFVectorfield& gradient, gsl:
 	assert(gradient.get_size() == _M_size);
 	assert(params.size() == 2);
 	C2DFVector r = accumulate(gradient.begin(), gradient.end(), C2DFVector(0,0));
-	params[0] = r.x / gradient.size();
-	params[1] = r.y / gradient.size();
+	params[0] = -r.x;
+	params[1] = -r.y;
 }
 
 

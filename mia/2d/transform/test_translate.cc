@@ -73,15 +73,15 @@ BOOST_FIXTURE_TEST_CASE(test_gradtranslate, TranslateTransformFixture)
 	for(size_t y = 0; y < size.y;++y)
 		for(size_t x = 0; x < size.x;++x) {
 			field(x,y) = C2DFVector(x, y);
-			f.x += x;
-			f.y += y;
+			f.x -= x;
+			f.y -= y;
 		}
 
 	gsl::DoubleVector a(2);
 	transf.translate(field, a);
 
-	BOOST_CHECK_CLOSE(a[0], f.x / (size.x * size.y), 0.1);
-	BOOST_CHECK_CLOSE(a[1], f.y / (size.x * size.y), 0.1);
+	BOOST_CHECK_CLOSE(a[0], f.x, 0.1);
+	BOOST_CHECK_CLOSE(a[1], f.y, 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(test_get_params, TranslateTransformFixture)
