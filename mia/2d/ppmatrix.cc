@@ -36,6 +36,7 @@ public:
 
 	template <typename Field>
 	double multiply(const Field& coefficients) const; 
+	double evaluate(const C2DFVectorfield& coefficients, gsl::DoubleVector& gradient) const; 
 	double evaluate(const T2DDatafield<C2DDVector>& coefficients, gsl::DoubleVector& gradient) const; 
 	void reset(const C2DBounds& size, const C2DFVector& range, const CBSplineKernel& kernel, 
 		   double wd, double wr); 
@@ -82,6 +83,12 @@ double C2DPPDivcurlMatrix::operator * (const T2DDatafield<C2DDVector>& coefficie
 	return impl->multiply(coefficients); 
 }
 double C2DPPDivcurlMatrix::evaluate(const T2DDatafield<C2DDVector>& coefficients, gsl::DoubleVector& gradient) const
+{
+	TRACE_FUNCTION; 
+	return impl->evaluate(coefficients, gradient); 
+}
+
+double C2DPPDivcurlMatrix::evaluate(const C2DFVectorfield& coefficients, gsl::DoubleVector& gradient) const
 {
 	TRACE_FUNCTION; 
 	return impl->evaluate(coefficients, gradient); 
@@ -251,6 +258,7 @@ double C2DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 	return result_1 + result_2 + result_3; 
 }
 
+
 double C2DPPDivcurlMatrixImpl::evaluate(const T2DDatafield<C2DDVector>& coefficients, 
 					gsl::DoubleVector& gradient) const
 {
@@ -313,6 +321,36 @@ double C2DPPDivcurlMatrixImpl::evaluate(const T2DDatafield<C2DDVector>& coeffici
 
 	return result_1 + result_2 + result_3; 
 #endif
+}
+
+double C2DPPDivcurlMatrixImpl::evaluate(const C2DFVectorfield& coefficients, 
+					gsl::DoubleVector& gradient) const
+{
+	assert(coefficients.size() == _M_nodes); 
+	assert(gradient.size() == coefficients.size() * 2); 
+	register double result_1 = 0.0; 
+	register double result_2 = 0.0; 
+	register double result_3 = 0.0; 
+	for (auto p = _M_P.begin(); p != _M_P.end();++p) {
+		auto ci = coefficients[p->i]; 
+		auto cj = coefficients[p->j]; 
+		
+		const double cjxpv11 = cj.x * p->v.x; 
+		const double cjypv22 = cj.y * p->v.y; 
+
+		const double cjxpv12 = cj.x * p->v12; 
+		const double cjypv12 = cj.y * p->v12; 
+
+
+		gradient[2*p->i    ] += cjxpv11 + cjxpv11 + cjypv12; 
+		gradient[2*p->i + 1] += cjypv22 + cjypv22 + cjxpv12; 
+
+		result_1 += ci.x * cjxpv11; 
+		result_2 += ci.x * cjypv12; 
+		result_3 += ci.y * cjypv22; 
+	}
+
+	return result_1 + result_2 + result_3; 
 }
 
 const C2DBounds& C2DPPDivcurlMatrix::get_size() const

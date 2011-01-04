@@ -75,6 +75,7 @@ public:
 	   \returns <c^T, P, c>
 	 */
 	
+	double evaluate(const C2DFVectorfield& coefficients, gsl::DoubleVector& gradient) const; 
 	double evaluate(const T2DDatafield<C2DDVector>& coefficients, gsl::DoubleVector& gradient) const; 
 
 	/**

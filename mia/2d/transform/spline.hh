@@ -36,8 +36,8 @@ public:
 	using C2DTransformation::operator ();
 
 	C2DSplineTransformation(const C2DSplineTransformation& org);
-	C2DSplineTransformation(const C2DBounds& range, P2DInterpolatorFactory ipf);
-	C2DSplineTransformation(const C2DBounds& range, P2DInterpolatorFactory ipf, const C2DFVector& c_rate);
+	C2DSplineTransformation(const C2DBounds& range, PBSplineKernel kernel);
+	C2DSplineTransformation(const C2DBounds& range, PBSplineKernel kernel, const C2DFVector& c_rate);
 
 	void set_coefficients(const C2DFVectorfield& field);
 	void reinit()const;
@@ -100,18 +100,20 @@ private:
 	C2DSplineTransformation& operator = (const C2DSplineTransformation& org); 
 
 	void init_grid()const; 
+	C2DFVector interpolate(const C2DFVector& x) const; 
+	C2DFMatrix derivative_at(const C2DFVector& x) const; 
 	void run_downscaler(C1DScalarFixed& scaler, vector<double>& out_buffer)const; 
 	virtual C2DTransformation *do_clone() const;
 	C2DBounds _M_range;
 	C2DFVector _M_target_c_rate;
 	C2DFVectorfield _M_coefficients;
-	P2DInterpolatorFactory _M_ipf;
+	PBSplineKernel _M_kernel; 
 	int _M_shift; 
 	int _M_enlarge; 
 	mutable C2DFVector _M_scale;
 	mutable C2DFVector _M_inv_scale;
 	mutable bool _M_interpolator_valid;
-	mutable std::shared_ptr<T2DConvoluteInterpolator<C2DFVector> >  _M_interpolator;
+	//mutable std::shared_ptr<T2DConvoluteInterpolator<C2DFVector> >  _M_interpolator;
 	mutable std::shared_ptr<C2DPPDivcurlMatrix > _M_divcurl_matrix; 
 	mutable std::vector<std::vector<double> > _M_x_weights; 
 	mutable std::vector<std::vector<int> > _M_x_indices; 
