@@ -92,10 +92,10 @@ public:
 
 	C2DFVector on_grid(const mia::C2DBounds& x) const; 
 
-	void convolute(vector<C2DFVector>& output, 
-		       const vector<C2DFVector>& input,  const vector<double>& kernel) const; 
-
 private:
+
+	typedef std::vector<std::pair<int, std::vector<float> > > CSplineDerivativeRow; 
+	CSplineDerivativeRow get_derivative_row(size_t nin, size_t nout, double scale) const; 
 
 	C2DSplineTransformation& operator = (const C2DSplineTransformation& org); 
 
@@ -119,6 +119,8 @@ private:
 	mutable std::vector<std::vector<int> > _M_x_indices; 
 	mutable std::vector<std::vector<double> > _M_y_weights; 
 	mutable std::vector<std::vector<int> > _M_y_indices; 
+	mutable CSplineDerivativeRow  _M_mx; 
+	mutable CSplineDerivativeRow  _M_my; 
 	mutable bool _M_grid_valid; 
 
 };

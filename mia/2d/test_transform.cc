@@ -126,6 +126,20 @@ BOOST_FIXTURE_TEST_CASE (test_vf_Gradient, TransformGradientFixture)
 }
 
 
+BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture) 
+{
+	const C2DTransformCreatorHandler::Instance& handler =
+		C2DTransformCreatorHandler::instance();
+	P2DTransformationFactory creater = handler.produce("spline:rate=2");
+	P2DTransformation transform = creater->create(size);
+
+	// this is a quite high tolerance, but with all the interpolation going 
+	// on the evaluation is quite sensible to small changes and finite 
+	// differences are not very accurate 
+	run_test(*transform, 16.0); 
+}
+
+
 
 
 TransformGradientFixture::TransformGradientFixture():

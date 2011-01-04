@@ -124,6 +124,9 @@ void C2DSplineTransformation::reinit() const
 		_M_scale.y = float(_M_coefficients.get_size().y - 1 - _M_enlarge) / (_M_range.y - 1);
 		_M_inv_scale.x = float(_M_range.x - 1) / (_M_coefficients.get_size().x - 1 - _M_enlarge);
 		_M_inv_scale.y = float(_M_range.y - 1) / (_M_coefficients.get_size().y - 1 - _M_enlarge);
+
+		_M_mx = get_derivative_row(_M_range.x, _M_coefficients.get_size().x, _M_scale.x); 
+		_M_my = get_derivative_row(_M_range.y, _M_coefficients.get_size().y, _M_scale.y); 
 		_M_interpolator_valid = true;
 	}
 }
@@ -264,6 +267,7 @@ P2DTransformation C2DSplineTransformation::upscale(const C2DBounds& size) const
 
 void C2DSplineTransformation::add(const C2DTransformation& a)
 {
+	cverr() << "C2DSplineTransformation::add not properly tested\n"; 
 	TRACE_FUNCTION;
 	assert(a.get_size() == get_size());
 
@@ -461,52 +465,38 @@ void C2DSplineTransformation::run_downscaler(C1DScalarFixed& scaler, vector<doub
 	}
 }
 
-void C2DSplineTransformation::convolute(vector<C2DFVector>& output, 
-		      const vector<C2DFVector>& input,  const vector<double>& kernel) const 
+C2DSplineTransformation::CSplineDerivativeRow 
+C2DSplineTransformation::get_derivative_row(size_t nin, size_t nout, double scale) const 
 {
-	const int khsize = kernel.size() / 2; 
-	for(size_t o = 0; o < output.size(); ++o) {
-		int istart = (o * (input.size() - 1)) /(output.size() - _M_enlarge- 1)  - khsize; 
-		auto kb = kernel.begin(); 
-		auto ke = kernel.end(); 
-		if (istart < 0) {
-			ke += istart;
-			istart = 0; 
+	CSplineDerivativeRow result; 
+	for(size_t o = 0; o < nout; ++o) {
+		CSplineDerivativeRow::value_type v; 
+		v.first = -1; 
+		for(size_t i = 0; i < nin; ++i) {
+			double x = i * scale + _M_shift - o; 
+			if (fabs(x) <  _M_kernel->get_nonzero_radius()) {
+				if (v.first < 0)
+					v.first = i; 
+				double y = _M_kernel->get_weight_at(x, 0); 
+				if (y > 0) 
+					v.second.push_back(y); 
+				else 
+					break; 
+			}
 		}
-		int iend = (int)input.size() - istart - kernel.size(); 
-		if (iend < 0)
-			kb -= iend; 
-
-		cvdebug() <<"[" << istart << "," << iend << "] "; 
-		output[o] = C2DFVector(); 
-		for(; kb != ke; ++istart, ++kb) {
-			output[o] += *kb * input[istart]; 
-		}
-		cverb << o << " = " << output[o] << "\n"; 
+		cvdebug() << o << ":" << v.first << ":" << v.second << "\n"; 
+		result.push_back(v); 
 	}
+	return result; 
 }
-
 
 void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
 	TRACE_FUNCTION;
 	assert(params.size() == _M_coefficients.size() * 2);
 	assert(gradient.get_size() == _M_range); 
-
-	// y_matrix todo: pre-calculate 
-	vector<vector<float> > my(_M_coefficients.get_size().y, vector<float>(gradient.get_size().y)); 
-	for(size_t i = 0; i < gradient.get_size().y; ++i) {
-		double x = i * _M_scale.y + _M_shift; 
-		for(size_t o = 0; o < _M_coefficients.get_size().y; ++o) {
-			my[o][i] = _M_kernel->get_weight_at(x - o, 0); 
-		}
-	}
-
-	for(size_t o = 0; o < _M_coefficients.get_size().y; ++o) {
-		cvdebug() << o << ":" << my[o] << "\n"; 
-	}
-
-
+	reinit(); 
+	
 	C2DFVectorfield tmp(C2DBounds(gradient.get_size().x, _M_coefficients.get_size().y));
 	vector<C2DFVector> in_buffer(gradient.get_size().y); 
 	vector<C2DFVector> out_buffer(_M_coefficients.get_size().y); 
@@ -514,46 +504,28 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 	for (size_t ix = 0; ix < gradient.get_size().x; ++ix) {
 		gradient.get_data_line_y(ix, in_buffer);
 		for(size_t i = 0; i < _M_coefficients.get_size().y; ++i) {
-			out_buffer[i] = inner_product(in_buffer.begin(), in_buffer.end(), 
-						      my[i].begin(), C2DFVector());
+			const CSplineDerivativeRow::value_type& myrow = _M_my[i]; 
+			out_buffer[i] = inner_product(myrow.second.begin(), myrow.second.end(), 
+						      in_buffer.begin() + myrow.first, C2DFVector());
 						   
 		}
 		tmp.put_data_line_y(ix, out_buffer);
 	}
 
 
-	// x_matrix  todo: pre-calculate 
-	vector<vector<float> > mx(_M_coefficients.get_size().x, vector<float>(gradient.get_size().x)); 
-	for(size_t i = 0; i < gradient.get_size().x; ++i) {
-		double x = i * _M_scale.x + _M_shift; 
-		for(size_t o = 0; o < _M_coefficients.get_size().x; ++o) {
-			mx[o][i] = _M_kernel->get_weight_at(x - o, 0); 
-		}
-	}
-	for(size_t o = 0; o < _M_coefficients.get_size().x; ++o) {
-		cvdebug() << o << ":" << mx[o] << "\n"; 
-	}
-
-
 	in_buffer.resize(gradient.get_size().x); 
-	out_buffer.resize(_M_coefficients.get_size().x); 
-
 
 	// x convolution and copy to output
 	auto r = params.begin(); 
 	for (size_t iy = 0; iy < _M_coefficients.get_size().y; ++iy) {
 		tmp.get_data_line_x(iy, in_buffer);
 		
-		for(size_t i = 0; i < _M_coefficients.get_size().x; ++i) {
-			out_buffer[i] = inner_product(in_buffer.begin(), in_buffer.end(), 
-						      mx[i].begin(), C2DFVector());
-						   
-		}
-		cvdebug() << "Y:" << iy << ":" << out_buffer << "\n"; 
-		for(auto v = out_buffer.begin();  v != out_buffer.end(); ++v, r+=2) {
-			cvdebug() << *v << "\n"; 
-			r[0] = -v->x; 
-			r[1] = -v->y; 
+		for(size_t x = 0; x < _M_coefficients.get_size().x; ++x, r+=2) {
+			const CSplineDerivativeRow::value_type& mxrow = _M_mx[x]; 
+			const C2DFVector v = inner_product(mxrow.second.begin(), mxrow.second.end(), 
+						      in_buffer.begin() + mxrow.first, C2DFVector());
+			r[0] = -v.x; 
+			r[1] = -v.y; 
 		}
 	}
 }
@@ -627,13 +599,18 @@ C2DFVector C2DSplineTransformation::on_grid(const C2DBounds& x) const
 	assert(_M_interpolator_valid);
 
 	C2DFVector result; 
-	for(size_t y = 0; y < _M_y_weights[x.y].size(); ++y) {
+	auto & yweights =  _M_y_weights[x.y]; 
+	auto & yindices =  _M_y_indices[x.y]; 
+	auto & xweights =  _M_x_weights[x.x]; 
+	auto & xindices =  _M_x_indices[x.x]; 
+		
+	for(size_t y = 0; y < yweights.size(); ++y) {
 		C2DFVector hr; 
-		auto ic = _M_coefficients.begin_at(0, _M_y_indices[x.y][y]); 
-		for(size_t ix = 0; ix < _M_x_weights[x.x].size(); ++ix) {
-			hr += _M_x_weights[x.x][ix] * ic[_M_x_indices[x.x][ix]]; 
+		auto ic = _M_coefficients.begin_at(0, yindices[y]); 
+		for(size_t ix = 0; ix < xweights.size(); ++ix) {
+			hr += xweights[ix] * ic[xindices[ix]]; 
 		}
-		result += _M_y_weights[x.y][y] * hr; 
+		result += yweights[y] * hr; 
 	}
 	return result; 
 }
@@ -727,6 +704,7 @@ C2DSplineTransformCreator::C2DSplineTransformCreator(EInterpolation ip, const C2
 		_M_kernel.reset(new CBSplineKernel2());
 		break;
 	case ip_bspline3:
+		_M_kernel.reset(new CBSplineKernel3());
 		break;
 	case ip_bspline4:
 		_M_kernel.reset(new CBSplineKernel4());
@@ -744,6 +722,7 @@ C2DSplineTransformCreator::C2DSplineTransformCreator(EInterpolation ip, const C2
 
 P2DTransformation C2DSplineTransformCreator::do_create(const C2DBounds& size) const
 {
+	assert(_M_kernel); 
 	return P2DTransformation(new C2DSplineTransformation(size, _M_kernel, _M_rates));
 }
 
