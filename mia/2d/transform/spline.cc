@@ -24,6 +24,7 @@
 #include <cassert>
 #include <limits>
 #include <iomanip>
+#include <numeric>
 #include <mia/2d/transform/spline.hh>
 #include <mia/2d/transformfactory.hh>
 
@@ -415,27 +416,28 @@ void C2DSplineTransformation::run_downscaler(C1DScalarFixed& scaler, vector<doub
 	}
 }
 
-static void convolute(vector<C2DFVector>& output, 
-		      const vector<C2DFVector>& input,  const vector<double>& kernel)
+void C2DSplineTransformation::convolute(vector<C2DFVector>& output, 
+		      const vector<C2DFVector>& input,  const vector<double>& kernel) const 
 {
 	const int khsize = kernel.size() / 2; 
 	for(size_t o = 0; o < output.size(); ++o) {
-		int i = (o * (input.size()-1) / (output.size() - 1)); 
-		int istart = i - khsize; 
-		int iend = istart + kernel.size();
-		auto k = kernel.begin(); 
+		int istart = (o * (input.size() - 1)) /(output.size() - _M_enlarge- 1)  - khsize; 
+		auto kb = kernel.begin(); 
+		auto ke = kernel.end(); 
 		if (istart < 0) {
-			k += - istart;
+			ke += istart;
 			istart = 0; 
 		}
-		if (iend > (int)input.size())
-			iend = input.size(); 
-		
+		int iend = (int)input.size() - istart - kernel.size(); 
+		if (iend < 0)
+			kb -= iend; 
+
+		cvdebug() <<"[" << istart << "," << iend << "] "; 
 		output[o] = C2DFVector(); 
-		for(; istart < iend; ++istart, ++k) {
-			output[o] += *k * input[istart]; 
+		for(; kb != ke; ++istart, ++kb) {
+			output[o] += *kb * input[istart]; 
 		}
-		cvdebug() << o << " = " << output[o] << "\n"; 
+		cverb << o << " = " << output[o] << "\n"; 
 	}
 }
 
@@ -445,45 +447,89 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 	TRACE_FUNCTION;
 	assert(params.size() == _M_coefficients.size() * 2);
 	assert(gradient.get_size() == _M_range); 
-	// replace this code by a filter 
-	
-	vector<double> x_kernel_values; 
-	for(double i = - _M_ipf->get_kernel()->get_nonzero_radius() + _M_scale.x; 
-	    i < _M_ipf->get_kernel()->get_nonzero_radius(); i += _M_scale.x)
-		x_kernel_values.push_back(_M_ipf->get_kernel()->get_weight_at(i, 0));
-	cvdebug() << "x_kernel_values=" << x_kernel_values << "\n"; 
 
-	vector<double> y_kernel_values; 
-	for(double i = - _M_ipf->get_kernel()->get_nonzero_radius() + _M_scale.y; 
-	    i < _M_ipf->get_kernel()->get_nonzero_radius(); i += _M_scale.y)
-		y_kernel_values.push_back(_M_ipf->get_kernel()->get_weight_at(i, 0));
-	
-	// y-convolution 
+#if 1
+	// y_matrix todo: pre-calculate 
+	vector<vector<float> > my(_M_coefficients.get_size().y, vector<float>(gradient.get_size().y)); 
+	for(size_t i = 0; i < gradient.get_size().y; ++i) {
+		double x = i * _M_scale.y + _M_shift; 
+		for(size_t o = 0; o < _M_coefficients.get_size().y; ++o) {
+			my[o][i] = _M_ipf->get_kernel()->get_weight_at(x - o, 0); 
+		}
+	}
+
+	for(size_t o = 0; o < _M_coefficients.get_size().y; ++o) {
+		cvdebug() << o << ":" << my[o] << "\n"; 
+	}
+
+
 	C2DFVectorfield tmp(C2DBounds(gradient.get_size().x, _M_coefficients.get_size().y));
 	vector<C2DFVector> in_buffer(gradient.get_size().y); 
 	vector<C2DFVector> out_buffer(_M_coefficients.get_size().y); 
 	
 	for (size_t ix = 0; ix < gradient.get_size().x; ++ix) {
 		gradient.get_data_line_y(ix, in_buffer);
-		convolute(out_buffer, in_buffer, y_kernel_values); 
+		for(size_t i = 0; i < _M_coefficients.get_size().y; ++i) {
+			out_buffer[i] = inner_product(in_buffer.begin(), in_buffer.end(), 
+						      my[i].begin(), C2DFVector());
+						   
+		}
 		tmp.put_data_line_y(ix, out_buffer);
 	}
-	
+
+
+	// x_matrix  todo: pre-calculate 
+	vector<vector<float> > mx(_M_coefficients.get_size().x, vector<float>(gradient.get_size().x)); 
+	for(size_t i = 0; i < gradient.get_size().x; ++i) {
+		double x = i * _M_scale.x + _M_shift; 
+		for(size_t o = 0; o < _M_coefficients.get_size().x; ++o) {
+			mx[o][i] = _M_ipf->get_kernel()->get_weight_at(x - o, 0); 
+		}
+	}
+	for(size_t o = 0; o < _M_coefficients.get_size().x; ++o) {
+		cvdebug() << o << ":" << mx[o] << "\n"; 
+	}
+
+
 	in_buffer.resize(gradient.get_size().x); 
 	out_buffer.resize(_M_coefficients.get_size().x); 
+
 
 	// x convolution and copy to output
 	auto r = params.begin(); 
 	for (size_t iy = 0; iy < _M_coefficients.get_size().y; ++iy) {
 		tmp.get_data_line_x(iy, in_buffer);
-		convolute(out_buffer, in_buffer, x_kernel_values); 
 		
+		for(size_t i = 0; i < _M_coefficients.get_size().x; ++i) {
+			out_buffer[i] = inner_product(in_buffer.begin(), in_buffer.end(), 
+						      mx[i].begin(), C2DFVector());
+						   
+		}
+		cvdebug() << "Y:" << iy << ":" << out_buffer << "\n"; 
 		for(auto v = out_buffer.begin();  v != out_buffer.end(); ++v, r+=2) {
 			cvdebug() << *v << "\n"; 
 			r[0] = -v->x; 
 			r[1] = -v->y; 
 		}
 	}
+#else // this is the slow road 
+	auto r = params.begin(); 
+	for (size_t yo = 0; yo < _M_coefficients.get_size().y; ++yo)
+		for (size_t xo = 0; xo < _M_coefficients.get_size().x; ++xo, r+=2) {
+			auto ig = gradient.begin(); 
+			for (size_t yi = 0; yi < gradient.get_size().y; ++yi) 
+				for (size_t xi = 0; xi < gradient.get_size().x; ++xi, ++ig) {
+					C2DFVector x = scale(C2DFVector(xi,yi)); 
+					double v = _M_ipf->get_kernel()->get_weight_at(x.x - xo, 0) * 
+						_M_ipf->get_kernel()->get_weight_at(x.y - yo, 0); 
+					r[0] -= v * ig->x; 
+					r[1] -= v * ig->y; 
+				}
+		}
+	
+			
+
+#endif
 }
 
 float  C2DSplineTransformation::pertuberate(C2DFVectorfield& v) const
@@ -552,8 +598,18 @@ C2DFVector C2DSplineTransformation::on_grid(const C2DBounds& x) const
 	assert(x.x < _M_range.x); 
 	assert(x.y < _M_range.y); 
 	assert(_M_grid_valid); 
-	return _M_interpolator->evaluate(_M_x_weights[x.x], _M_y_weights[x.y],
-					 _M_x_indices[x.x], _M_y_indices[x.y]);
+	assert(_M_interpolator_valid);
+
+	C2DFVector result; 
+	for(size_t y = 0; y < _M_y_weights[x.y].size(); ++y) {
+		C2DFVector hr; 
+		auto ic = _M_coefficients.begin_at(0, _M_y_indices[x.y][y]); 
+		for(size_t ix = 0; ix < _M_x_weights[x.x].size(); ++ix) {
+			hr += _M_x_weights[x.x][ix] * ic[_M_x_indices[x.x][ix]]; 
+		}
+		result += _M_y_weights[x.y][y] * hr; 
+	}
+	return result; 
 }
 
 const C2DBounds& C2DSplineTransformation::get_coeff_size() const

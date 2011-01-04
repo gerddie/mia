@@ -23,9 +23,12 @@
 
 #define VSTREAM_DOMAIN "TRANSFORMS"
 
+#include <ostream>
+#include <fstream>
 #include <mia/2d/transform.hh>
 #include <mia/internal/autotest.hh>
 #include <mia/2d/transformfactory.hh>
+#include <mia/2d/transform/spline.hh>
 
 NS_MIA_USE; 
 namespace bfs=boost::filesystem;
@@ -122,39 +125,6 @@ BOOST_FIXTURE_TEST_CASE (test_vf_Gradient, TransformGradientFixture)
 	run_test(*transform, 2.0); 
 }
 
-
-
-BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture) 
-{
-	const C2DTransformCreatorHandler::Instance& handler =
-		C2DTransformCreatorHandler::instance();
-	P2DTransformationFactory creater = handler.produce("spline:rate=2");
-	P2DTransformation t = creater->create(size);
-
-	auto params = t->get_parameters();
-	gsl::DoubleVector trgrad(params.size()); 
-	
-	t->translate(gradient,  trgrad); 
-	double delta = 0.01; 
-
-	for(auto itrg =  trgrad.begin(), 
-		    iparam = params.begin(); itrg != trgrad.end(); ++itrg, ++iparam) {
-		*iparam += delta; 
-		t->set_parameters(params);
-		double cost_plus = cost.value(*t);
-		*iparam -= 2*delta; 
-		t->set_parameters(params);
-		double cost_minus = cost.value(*t);
-		*iparam += delta; 
-		cvdebug() << cost_plus << ", " << cost_minus << "\n"; 
-		double test_val = (cost_plus - cost_minus)/ (2*delta); 
-		if (fabs(*itrg) > 1e-11 || fabs(test_val) > 1e-11) 
-			BOOST_CHECK_CLOSE(*itrg, test_val, 0.1); 
-	}
-
-	
-
-}
 
 
 

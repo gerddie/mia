@@ -91,7 +91,12 @@ public:
 	virtual double get_divcurl_cost(double wd, double wr) const; 
 
 	C2DFVector on_grid(const mia::C2DBounds& x) const; 
+
+	void convolute(vector<C2DFVector>& output, 
+		       const vector<C2DFVector>& input,  const vector<double>& kernel) const; 
+
 private:
+
 	C2DSplineTransformation& operator = (const C2DSplineTransformation& org); 
 
 	void init_grid()const; 
