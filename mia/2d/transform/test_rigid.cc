@@ -212,29 +212,6 @@ struct RigidGrad2ParamFixtureRigid {
 	C2DRigidTransformation trans;
 };
 
-BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, RigidGrad2ParamFixtureRigid)
-{
-	C2DFVectorfield gradient(size);
-	const double alpha = 0.1;
-	const double ca = cos(alpha);
-	const double sa = sin(alpha);
-
-	for (size_t y = 0; y < size.y; ++y)
-		for (size_t x = 0; x < size.x; ++x)
-			gradient(x,y) = C2DFVector(x * ca - y * sa, x * sa + y * ca);
-
-
-	gsl::DoubleVector params = trans.get_parameters();
-
-	C2DFVector t = accumulate(gradient.begin(), gradient.end(), C2DFVector(0,0)) / (float)gradient.size();
-
-	trans.translate(gradient, params);
-
-	BOOST_CHECK_CLOSE(params[0], t.x, 0.1);
-	BOOST_CHECK_CLOSE(params[1], t.y, 0.1);
-	BOOST_CHECK_CLOSE(params[2], alpha, 3);
-}
-
 BOOST_FIXTURE_TEST_CASE (test_upscale, RigidGrad2ParamFixtureRigid)
 {
 	C2DBounds x(4,4);

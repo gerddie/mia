@@ -204,14 +204,12 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 	int cachYSize = image.get_size().y;
 	int cachZSize = image.get_size().z;
 	
-	const std::vector<double>& poles = _M_kernel->get_poles();
-
 	{
 		coeff_vector buffer(cachXSize);
 		for (int z = 0; z < cachZSize; z++){
 			for (int y = 0; y < cachYSize; y++) {
 				_M_coeff.get_data_line_x(y,z,buffer);
-				filter_line(buffer, poles);
+				_M_kernel->filter_line(buffer);
 				_M_coeff.put_data_line_x(y,z,buffer);
 			}
 		}
@@ -222,7 +220,7 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 		for (int z = 0; z < cachZSize; z++){
 			for (int x = 0; x < cachXSize; x++) {
 				_M_coeff.get_data_line_y(x,z,buffer);
-				filter_line(buffer, poles);
+				_M_kernel->filter_line(buffer);
 				_M_coeff.put_data_line_y(x,z,buffer);
 			}
 		}
@@ -233,7 +231,7 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 		for (int y = 0; y < cachYSize; y++){
 			for (int x = 0; x < cachXSize; x++) {
 				_M_coeff.get_data_line_z(x,y,buffer);
-				filter_line(buffer, poles);
+				_M_kernel->filter_line(buffer);
 				_M_coeff.put_data_line_z(x,y,buffer);
 			}
 		}
@@ -246,102 +244,6 @@ T3DConvoluteInterpolator<T>::~T3DConvoluteInterpolator()
 {
 }
 	
-template <typename A>
-struct FMultBy {
-	FMultBy(double f):
-		_M_f(f)
-	{
-	}
-	void operator()(A& value)
-	{
-		value *= _M_f; 
-	}
-private: 
-	double _M_f; 
-};
-
-
-template <typename T>
-void T3DConvoluteInterpolator<T>::filter_line(coeff_vector& coeff, 
-					 const std::vector<double>& poles)
-{
-	/* special case required by mirror boundaries */
-	if (coeff.size() < 2) {
-		return;
-	}
-	/* compute the overall gain */
-	double	lambda = 1.0;
-	for (size_t k = 0; k < poles.size() ; ++k) {
-		lambda  *=  2 - poles[k] - 1.0 / poles[k];
-	}
-	
-	/* apply the gain */
-	for_each(coeff.begin(), coeff.end(), 
-		 FMultBy<typename coeff_vector::value_type>(lambda));
-	
-	/* loop over all poles */
-	for (size_t k = 0; k < poles.size(); ++k) {
-		/* causal initialization */
-		coeff[0] = initial_coeff(coeff, poles[k]);
-		
-		/* causal recursion */
-		for (size_t n = 1; n < coeff.size(); ++n) {
-			coeff[n] += poles[k] * coeff[n - 1];
-		}
-		
-		/* anticausal initialization */
-		coeff[coeff.size() - 1] = initial_anti_coeff(coeff, poles[k]);
-		/* anticausal recursion */
-		for (int n = coeff.size() - 2; 0 <= n; n--) {
-			coeff[n] = poles[k] * (coeff[n + 1] - coeff[n]);
-		}
-	}
-}
-
-template <typename T>
-typename T3DConvoluteInterpolator<T>::TCoeff3D::value_type  
-T3DConvoluteInterpolator<T>::initial_coeff(const coeff_vector& coeff, 
-					   double pole)
-{
-	/* full loop */
-	double zn = pole;
-	double iz = 1.0 / pole;
-	double z2n = pow(pole, (double)(coeff.size() - 1));
-	typename T3DConvoluteInterpolator<T>::TCoeff3D::value_type  
-		sum = coeff[0] + z2n * coeff[coeff.size() - 1];
-	
-	z2n *= z2n * iz;
-	
-	for (size_t n = 1; n <= coeff.size()  - 2L; n++) {
-		sum += (zn + z2n) * coeff[n];
-		zn *= pole;
-		z2n *= iz;
-	}
-	return(sum / (1.0 - zn * zn));
-}
-
-#if 0
-inline void mirror_boundary_conditions(std::vector<int>& index, size_t width, size_t width2)
-{
-	for (size_t k = 0; k < index.size(); k++) {
-		index[k] = (width == 1) ? (0) : ((index[k] < 0) ?
-			(-index[k] - width2 * ((-index[k]) / width2))
-			: (index[k] - width2 * (index[k] / width2)));
-		if (width <= (size_t)index[k]) {
-			index[k] = width2 - index[k];
-		}
-	}
-}
-#endif
-
-template <typename T>
-typename T3DConvoluteInterpolator<T>::TCoeff3D::value_type 
-T3DConvoluteInterpolator<T>::initial_anti_coeff(const coeff_vector& coeff, 
-						double pole)
-{
-	return((pole / (pole * pole - 1.0)) * (pole * coeff[coeff.size() - 2] + coeff[coeff.size() - 1]));
-}
-
 template <class In, class Out>
 struct round_to {
 	

@@ -39,8 +39,8 @@ BOOST_FIXTURE_TEST_CASE ( test_transform, SegPointSplineTransformFixture )
 	CSegPoint2D p(3,4); 
 	p.transform(*t); 
 	
-	BOOST_CHECK_CLOSE(p.x, 3 + 4.0 * 3 * 7 / 100.0, 0.1 ); 
-	BOOST_CHECK_CLOSE(p.y, 4 + 4.0 * 4 * 6 / 100.0, 0.1 ); 
+	BOOST_CHECK_CLOSE(p.x, 3 + 4.0 * 3 * 7 / 100.0, 0.5 ); 
+	BOOST_CHECK_CLOSE(p.y, 4 + 4.0 * 4 * 6 / 100.0, 0.5 ); 
 	
 }
 
@@ -50,8 +50,8 @@ BOOST_FIXTURE_TEST_CASE ( test_inv_transform, SegPointSplineTransformFixture )
 	CSegPoint2D p(3,4); 
 	p.inv_transform(*t); 
 	
-	BOOST_CHECK_CLOSE(p.x, -(5.0*sqrt(37.0)-35.0)/2.0, 0.2  ); 
-	BOOST_CHECK_CLOSE(p.y, -(5.0*sqrt(33.0)-35.0)/2.0, 0.2  ); 
+	BOOST_CHECK_CLOSE(p.x, -(5.0*sqrt(37.0)-35.0)/2.0, 0.5  ); 
+	BOOST_CHECK_CLOSE(p.y, -(5.0*sqrt(33.0)-35.0)/2.0, 0.5  ); 
 	
 
 }

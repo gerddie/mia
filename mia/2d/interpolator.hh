@@ -158,10 +158,6 @@ private:
 
 	typename TCoeff2D::value_type evaluate() const;
 
-	void filter_line(coeff_vector& coeff, const std::vector<double>& poles);
-	typename TCoeff2D::value_type initial_coeff(const coeff_vector& coeff, double pole);
-	typename TCoeff2D::value_type initial_anti_coeff(const coeff_vector& coeff, double pole);
-
 	TCoeff2D _M_coeff;
 	C2DBounds _M_size2;
 	std::shared_ptr<CBSplineKernel > _M_kernel;

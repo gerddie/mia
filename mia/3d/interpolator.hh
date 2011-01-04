@@ -156,10 +156,6 @@ protected:
 	typedef std::vector< typename TCoeff3D::value_type > coeff_vector;
 private:
 
-	void filter_line(coeff_vector& coeff, const std::vector<double>& poles);
-	typename TCoeff3D::value_type initial_coeff(const coeff_vector& coeff, double pole);
-	typename TCoeff3D::value_type initial_anti_coeff(const coeff_vector& coeff, double pole);
-
 	TCoeff3D _M_coeff;
 	C3DBounds _M_size2;
 	std::shared_ptr<CBSplineKernel > _M_kernel;

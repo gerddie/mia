@@ -336,42 +336,6 @@ BOOST_FIXTURE_TEST_CASE( test_splines_translate, TransformSplineFixture )
 		}
 }
 
-#if 0 
-BOOST_FIXTURE_TEST_CASE( test_splines_translate_2, TransformSplineFixture )
-{
-	C2DFVectorfield gradient(range);
-
-	auto ig = gradient.begin(); 
-	for (size_t y = 0; y < range.y; ++y) 
-		for (size_t x = 0; x < range.x; ++x, ++ig) {
-			ig->x = fx(x,y); 
-			ig->y = fy(x,y); 
-		}
-
-	gsl::DoubleVector force = stransf.get_parameters(); 
-	stransf.translate(gradient, force);
-	stransf.set_parameters(force); 
-	
-	auto is = stransf.begin(); 
-	ig = gradient.begin(); 
-	for (size_t y = 0; y < range.y; ++y)
-		for (size_t x = 0; x < range.x; ++x, ++is,++ig) {
-			if (y > 2 && y < stransf.get_coeff_size().y - 2 && 
-			    x > 2 && x < stransf.get_coeff_size().x - 2) {
-
-				if (abs(ig->x) > 0.1) 
-					BOOST_CHECK_CLOSE(x - is->x, -ig->x, 1); 
-				else 
-					BOOST_CHECK_CLOSE(1.0 + x - is->x, 1.0 - ig->x, 1.1); 
-				if (abs(ig->y) > 0.1) 
-					BOOST_CHECK_CLOSE(y -is->y,  -ig->y, 1); 
-				else 
-					BOOST_CHECK_CLOSE(1.0 + y - is->y, 1.0 - ig->y, 1.1); 
-			}
-		}
-}
-#endif
-
 BOOST_FIXTURE_TEST_CASE( test_splines_clone, TransformSplineFixture )
 {
 	P2DTransformation clone(stransf.clone());
@@ -423,19 +387,6 @@ BOOST_FIXTURE_TEST_CASE( test_splines_gridpoint_derivative, TransformSplineFixtu
 	BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(x.x, x.y), 0.2);
 }
 
-#if 0 
-BOOST_FIXTURE_TEST_CASE(test_splines_gridpoint_derivative_new, TransformSplineFixture)
-{
-	for (size_t y = 0; y < range.y; ++y)
-		for (size_t x = 0; x < range.x; ++x) {
-			C2DFMatrix dv =  stransf.derivative_at(x, y);
-			BOOST_CHECK_CLOSE( 1.0 - dfx_x(x, y), dv.x.x, 0.5);
-			BOOST_CHECK_CLOSE(     - dfy_x(x, y), dv.x.y, 0.5);
-			BOOST_CHECK_CLOSE(     - dfx_y(x, y), dv.y.x, 0.5);
-			BOOST_CHECK_CLOSE( 1.0 - dfy_y(x, y), dv.y.y, 0.5);
-		}
-}
-#endif
 
 BOOST_FIXTURE_TEST_CASE( test_splines_set_identity, TransformSplineFixture )
 {
@@ -453,7 +404,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_get_max_transform, TransformSplineFixture 
 	float fx0 = fx(48,64);
 	float fy0 = fy(48,64);
 
-	BOOST_CHECK_CLOSE(sqrt(fx0*fx0 + fy0*fy0), stransf.get_max_transform(), 1);
+	BOOST_CHECK_CLOSE(sqrt(fx0*fx0 + fy0*fy0), stransf.get_max_transform(), 2.0);
 }
 
 #if 0 
@@ -779,15 +730,6 @@ BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture)
 	t.translate(gradient,  trgrad); 
 	double delta = 0.1; 
 
-	ofstream tgradx("testgradx.txt"); 
-	ofstream tgrady("testgrady.txt"); 
-	ofstream egradx("evalgradx.txt"); 
-	ofstream egrady("evalgrady.txt"); 
-	ofstream qgradx("quotientgradx.txt"); 
-	ofstream qgrady("quotientgrady.txt"); 
-	ofstream igradx("iquotientgradx.txt"); 
-	ofstream igrady("iquotientgrady.txt"); 
-
 	auto itrg =  trgrad.begin(); 
 	auto iparam = params.begin(); 
 	for(size_t y = 0; y < t.get_coeff_size().y; ++y) {
@@ -800,34 +742,12 @@ BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture)
 				t.set_parameters(params);
 				double cost_minus = cost.value(t);
 				*iparam += delta; 
-				cvdebug() << cost_plus << ", " << cost_minus << "\n"; 
 				double test_val = (cost_plus - cost_minus)/ (2*delta); 
-				if (fabs(*itrg) > 1e-11 || fabs(test_val) > 1e-11) 
+				if (fabs(*itrg) > 1e-09 || fabs(test_val) > 1e-09) 
 					BOOST_CHECK_CLOSE(*itrg, test_val, 5); 
 				
-				if (i) {
-					tgrady<< test_val <<" "; 
-					egrady<< *itrg <<" "; 
-					qgrady<< test_val/ *itrg << " "; 
-					igrady<<  *itrg / test_val << " "; 
-				}else {
-					tgradx<< test_val <<" "; 
-					egradx<< *itrg <<" "; 
-					qgradx<< test_val/ *itrg << " "; 
-					igradx<<  *itrg / test_val << " "; 
-				}
-					
 			}
 		}
-		tgradx << "\n"; 
-		egradx << "\n"; 
-		qgradx << "\n"; 
-		igradx << "\n"; 
-		tgrady << "\n"; 
-		egrady << "\n"; 
-		qgrady << "\n"; 
-		igrady << "\n"; 
-
 	}
 	
 }
