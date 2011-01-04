@@ -317,26 +317,26 @@ C2DFMatrix C2DSplineTransformation::derivative_at(const C2DFVector& x) const
 	size_t y = _M_kernel->get_start_idx_and_derivative_weights(x.y, yweights); 
 	
 	C2DFMatrix result; 
-	for(auto wy = yweights.begin(); y < _M_coefficients.get_size().y; ++y, ++wy)  {
+	for(auto wy = yweights.begin(); y < _M_coefficients.get_size().y && wy != yweights.end(); ++y, ++wy)  {
 		C2DFVector h; 
 		size_t x = startx; 
 		for(auto wx = xweights.begin(), cx = _M_coefficients.begin_at(startx,y); 
-		    x < _M_coefficients.get_size().x; ++x, ++wx)  {
+		    x < _M_coefficients.get_size().x && wx != xweights.end(); ++x, ++wx, ++cx)  {
 			h += *wx * *cx; 
 		}
-		result.x += h * *wy; 
+		result.y += h * *wy; 
 	}
 	startx = _M_kernel->get_start_idx_and_derivative_weights(x.x, xweights); 
 	y = _M_kernel->get_start_idx_and_value_weights(x.y, yweights); 
 
-	for(auto wy = yweights.begin(); y < _M_coefficients.get_size().y; ++y, ++wy)  {
+	for(auto wy = yweights.begin(); y < _M_coefficients.get_size().y && wy != yweights.end(); ++y, ++wy)  {
 		C2DFVector h; 
 		size_t x = startx; 
 		for(auto wx = xweights.begin(), cx = _M_coefficients.begin_at(startx,y); 
-		    x < _M_coefficients.get_size().x; ++x, ++wx)  {
+		    x < _M_coefficients.get_size().x && wx != xweights.end(); ++x, ++wx, ++cx)  {
 			h += *wx * *cx; 
 		}
-		result.y += h * *wy; 
+		result.x += h * *wy; 
 	}
 	return result; 
 	
