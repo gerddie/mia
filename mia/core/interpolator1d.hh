@@ -146,10 +146,6 @@ protected:
 	typedef std::vector< typename TCoeff1D::value_type > coeff_vector;
 private:
 
-	void filter_line(coeff_vector& coeff, const std::vector<double>& poles);
-	typename TCoeff1D::value_type initial_coeff(const coeff_vector& coeff, double pole);
-	typename TCoeff1D::value_type initial_anti_coeff(const coeff_vector& coeff, double pole);
-
 	TCoeff1D _M_coeff;
 	size_t _M_size2;
 	PSplineKernel _M_kernel;

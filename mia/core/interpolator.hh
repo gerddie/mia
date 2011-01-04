@@ -25,9 +25,12 @@
 #define mia_core_interpolator_hh
 
 #include <vector>
+#include <cmath>
 #include <mia/core/shared_ptr.hh>
 #include <mia/core/defines.hh>
 #include <mia/core/dictmap.hh>
+
+#include <boost/lambda/lambda.hpp>
 
 NS_MIA_BEGIN
 
@@ -97,7 +100,14 @@ public:
 	int get_start_idx_and_value_weights(double x, std::vector<double>& weights) const; 
 	int get_start_idx_and_derivative_weights(double x, std::vector<double>& weights) const; 
 
+	template <typename C>
+	void filter_line(std::vector<C>& coeff);
+
 protected:
+	template <typename C>
+	C initial_coeff(const std::vector<C>& coeff, double pole);
+	template <typename C>
+	C initial_anti_coeff(const std::vector<C>& coeff, double pole);
 
 	/** add a pole to the list of poles
 	    \param x
@@ -217,6 +227,85 @@ inline void mirror_boundary_conditions(std::vector<int>& index, int width,
 		index[k] = idx; 
 	}
 }
+
+template <typename A>
+struct FMultBy {
+	FMultBy(double f):
+		_M_f(f)
+	{
+	}
+	void operator()(A& value)
+	{
+		value *= _M_f; 
+	}
+private: 
+	double _M_f; 
+};
+
+
+template <typename C>
+void CBSplineKernel::filter_line(std::vector<C>& coeff)
+{
+	/* special case required by mirror boundaries */
+	if (coeff.size() < 2) {
+		return;
+	}
+	/* compute the overall gain */
+	double	lambda = 1.0;
+	for (size_t k = 0; k < _M_poles.size() ; ++k) {
+		lambda  *=  2 - _M_poles[k] - 1.0 / _M_poles[k];
+	}
+	
+	/* apply the gain */
+	for_each(coeff.begin(), coeff.end(), FMultBy<C>(lambda));
+	
+	/* loop over all poles */
+	for (size_t k = 0; k < _M_poles.size(); ++k) {
+		/* causal initialization */
+		coeff[0] = initial_coeff(coeff, _M_poles[k]);
+		
+		/* causal recursion */
+		for (size_t n = 1; n < coeff.size(); ++n) {
+			coeff[n] += _M_poles[k] * coeff[n - 1];
+		}
+		
+		/* anticausal initialization */
+		coeff[coeff.size() - 1] = initial_anti_coeff(coeff, _M_poles[k]);
+		/* anticausal recursion */
+		for (int n = coeff.size() - 2; 0 <= n; n--) {
+			coeff[n] = _M_poles[k] * (coeff[n + 1] - coeff[n]);
+		}
+	}
+}
+
+template <typename C>
+C CBSplineKernel::initial_coeff(const std::vector<C>& coeff, double pole)
+{
+	
+	/* full loop */
+	double zn = pole;
+	double iz = 1.0 / pole;
+	double z2n = pow(pole, (double)(coeff.size() - 1));
+	C sum = coeff[0] + z2n * coeff[coeff.size() - 1];
+	
+	z2n *= z2n * iz;
+	
+	for (size_t n = 1; n <= coeff.size()  - 2L; n++) {
+		sum += (zn + z2n) * coeff[n];
+		zn *= pole;
+		z2n *= iz;
+	}
+	
+	return(sum / (1.0 - zn * zn));
+}
+
+template <typename C>
+C CBSplineKernel::initial_anti_coeff(const std::vector<C>& coeff, double pole)
+{
+	return ((pole / (pole * pole - 1.0)) * 
+		(pole * coeff[coeff.size() - 2] + coeff[coeff.size() - 1]));
+}
+
 
 
 NS_MIA_END

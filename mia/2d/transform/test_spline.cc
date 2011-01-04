@@ -70,7 +70,23 @@ struct TransformSplineFixture {
 				*i = C2DFVector( fx(sx, sy), fy(sx, sy));
 			}
 
-		stransf.set_coefficients(field);
+		// now filter 
+		vector<C2DFVector> buffer(size.y); 
+		C2DFVectorfield help1(size);
+		for(size_t x = 0; x < size.x; ++x) {
+			field.get_data_line_y(x, buffer); 
+			kernel->filter_line(buffer); 
+			help1.put_data_line_y(x, buffer); 
+		}
+		C2DFVectorfield help2(size);
+		buffer.resize(size.x); 
+		for(size_t y = 0; y < size.y; ++y) {
+			help1.get_data_line_x(y, buffer); 
+			kernel->filter_line(buffer); 
+			help2.put_data_line_x(y, buffer); 
+		}
+
+		stransf.set_coefficients(help2); 
 		stransf.reinit();
 	}
 	C2DBounds size;
@@ -214,6 +230,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_add, TransformSplineFixture )
 
 BOOST_FIXTURE_TEST_CASE( test_splinestransform_prefix_iterator, TransformSplineFixture )
 {
+	
 	auto i = stransf.begin();
 
 	for (size_t y = 0; y < range.y; ++y)
@@ -223,6 +240,20 @@ BOOST_FIXTURE_TEST_CASE( test_splinestransform_prefix_iterator, TransformSplineF
 			BOOST_CHECK_CLOSE(1.0 + y - fy(x,y), 1.0 + (*i).y, 0.2);
 		}
 }
+
+BOOST_FIXTURE_TEST_CASE( test_splinestransform_prefix_iterator2, TransformSplineFixture )
+{
+	
+	auto i = stransf.begin();
+
+	for (size_t y = 0; y < range.y; ++y)
+		for (size_t x = 0; x < range.x; ++x, ++i) {
+			C2DFVector help = stransf(C2DFVector(x,y));
+			BOOST_CHECK_CLOSE(help.x, i->x, 0.1);
+			BOOST_CHECK_CLOSE(help.y, i->y, 0.1);
+		}
+}
+
 
 BOOST_FIXTURE_TEST_CASE( test_splinestransform_postfix_iterator, TransformSplineFixture )
 {

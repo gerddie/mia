@@ -185,7 +185,7 @@ T1DConvoluteInterpolator<T>::T1DConvoluteInterpolator(const std::vector<T>& data
 	// copy the data
 	__dispatch_copy<std::vector<T>, TCoeff1D >::apply(data, _M_coeff); 
 	
-	filter_line(_M_coeff, _M_kernel->get_poles());
+	_M_kernel->filter_line(_M_coeff);
 }
 
 template <typename T>
@@ -193,90 +193,6 @@ T1DConvoluteInterpolator<T>::~T1DConvoluteInterpolator()
 {
 }
 	
-template <typename A>
-struct FMultBy {
-	FMultBy(double f):
-		_M_f(f)
-	{
-	}
-	void operator()(A& value)
-	{
-		value *= _M_f; 
-	}
-private: 
-	double _M_f; 
-};
-
-template <typename T>
-void T1DConvoluteInterpolator<T>::filter_line(coeff_vector& coeff, 
-					 const std::vector<double>& poles)
-{
-	/* special case required by mirror boundaries */
-	if (coeff.size() < 2) {
-		return;
-	}
-	/* compute the overall gain */
-	double	lambda = 1.0;
-	for (size_t k = 0; k < poles.size() ; ++k) {
-		lambda  *=  2 - poles[k] - 1.0 / poles[k];
-	}
-	
-	/* apply the gain */
-	for_each(coeff.begin(), coeff.end(), 
-		 FMultBy<typename coeff_vector::value_type>(lambda));
-	
-	/* loop over all poles */
-	for (size_t k = 0; k < poles.size(); ++k) {
-		/* causal initialization */
-		coeff[0] = initial_coeff(coeff, poles[k]);
-		
-		/* causal recursion */
-		for (size_t n = 1; n < coeff.size(); ++n) {
-			coeff[n] += poles[k] * coeff[n - 1];
-		}
-		
-		/* anticausal initialization */
-		coeff[coeff.size() - 1] = initial_anti_coeff(coeff, poles[k]);
-		/* anticausal recursion */
-		for (int n = coeff.size() - 2; 0 <= n; n--) {
-			coeff[n] = poles[k] * (coeff[n + 1] - coeff[n]);
-		}
-	}
-}
-
-template <typename T>
-typename T1DConvoluteInterpolator<T>::TCoeff1D::value_type  
-T1DConvoluteInterpolator<T>::initial_coeff(const coeff_vector& coeff, 
-					   double pole)
-{
-	/* full loop */
-	double zn = pole;
-	double iz = 1.0 / pole;
-	double z2n = pow(pole, (double)(coeff.size() - 1));
-	typename T1DConvoluteInterpolator<T>::TCoeff1D::value_type  
-		sum = coeff[0] + z2n * coeff[coeff.size() - 1];
-	
-	z2n *= z2n * iz;
-	
-	for (size_t n = 1; n <= coeff.size()  - 2L; n++) {
-		sum += (zn + z2n) * coeff[n];
-		zn *= pole;
-		z2n *= iz;
-	}
-	
-	return(sum / (1.0 - zn * zn));
-}
-
-template <typename T>
-typename T1DConvoluteInterpolator<T>::TCoeff1D::value_type 
-T1DConvoluteInterpolator<T>::initial_anti_coeff(const coeff_vector& coeff, 
-						double pole)
-{
-	return((pole / (pole * pole - 1.0)) * 
-	       (pole * coeff[coeff.size() - 2] + coeff[coeff.size() - 1]));
-}
-
-
 template <class In, class Out>
 struct round_to {
 	

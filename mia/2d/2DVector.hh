@@ -294,7 +294,7 @@ T dot(const T2DVector<T>& a, const T2DVector<T>& b)
 */
 
 template <typename  T>
-T2DVector<T> operator / (const T2DVector<T>& a, T f)
+T2DVector<T> operator / (const T2DVector<T>& a, double f)
 {
 	T2DVector<T> r(a); 
 	r /= f; 

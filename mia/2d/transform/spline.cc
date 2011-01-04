@@ -125,7 +125,6 @@ void C2DSplineTransformation::reinit() const
 		_M_inv_scale.x = float(_M_range.x - 1) / (_M_coefficients.get_size().x - 1 - _M_enlarge);
 		_M_inv_scale.y = float(_M_range.y - 1) / (_M_coefficients.get_size().y - 1 - _M_enlarge);
 		_M_interpolator_valid = true;
-
 	}
 }
 
@@ -135,13 +134,14 @@ C2DFVector C2DSplineTransformation::interpolate(const C2DFVector& x) const
 	std::vector<double> yweights(_M_kernel->size()); 
 	size_t startx = _M_kernel->get_start_idx_and_value_weights(x.x, xweights); 
 	size_t y = _M_kernel->get_start_idx_and_value_weights(x.y, yweights); 
-	
+
 	C2DFVector result; 
-	for(auto wy = yweights.begin(); y < _M_coefficients.get_size().y; ++y, ++wy)  {
+	for(auto wy = yweights.begin(); y < _M_coefficients.get_size().y && wy != yweights.end()
+		    ; ++y, ++wy)  {
 		C2DFVector h; 
 		size_t x = startx; 
 		for(auto wx = xweights.begin(), cx = _M_coefficients.begin_at(startx,y); 
-		    x < _M_coefficients.get_size().x; ++x, ++wx)  {
+		    x < _M_coefficients.get_size().x && wx != xweights.end(); ++x, ++wx, ++cx)  {
 			h += *wx * *cx; 
 		}
 		result += h * *wy; 
@@ -152,9 +152,7 @@ C2DFVector C2DSplineTransformation::interpolate(const C2DFVector& x) const
 C2DFVector C2DSplineTransformation::apply(const C2DFVector& x) const
 {
 	assert(_M_interpolator_valid);
-	const C2DFVector s = scale(x); 
-	const C2DFVector result = interpolate(scale(x));
-	return result; 
+	return interpolate(scale(x));
 }
 
 C2DTransformation *C2DSplineTransformation::do_clone()const
@@ -495,7 +493,6 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 	assert(params.size() == _M_coefficients.size() * 2);
 	assert(gradient.get_size() == _M_range); 
 
-#if 1
 	// y_matrix todo: pre-calculate 
 	vector<vector<float> > my(_M_coefficients.get_size().y, vector<float>(gradient.get_size().y)); 
 	for(size_t i = 0; i < gradient.get_size().y; ++i) {
@@ -559,24 +556,6 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 			r[1] = -v->y; 
 		}
 	}
-#else // this is the slow road 
-	auto r = params.begin(); 
-	for (size_t yo = 0; yo < _M_coefficients.get_size().y; ++yo)
-		for (size_t xo = 0; xo < _M_coefficients.get_size().x; ++xo, r+=2) {
-			auto ig = gradient.begin(); 
-			for (size_t yi = 0; yi < gradient.get_size().y; ++yi) 
-				for (size_t xi = 0; xi < gradient.get_size().x; ++xi, ++ig) {
-					C2DFVector x = scale(C2DFVector(xi,yi)); 
-					double v = _M_ipf->get_kernel()->get_weight_at(x.x - xo, 0) * 
-						_M_ipf->get_kernel()->get_weight_at(x.y - yo, 0); 
-					r[0] -= v * ig->x; 
-					r[1] -= v * ig->y; 
-				}
-		}
-	
-			
-
-#endif
 }
 
 float  C2DSplineTransformation::pertuberate(C2DFVectorfield& v) const
