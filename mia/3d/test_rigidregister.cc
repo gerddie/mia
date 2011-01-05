@@ -75,13 +75,16 @@ void RigidRegisterFixture::run(C3DTransformation& t, EMinimizers minimizer, doub
 
 	C3DFImage *psrc = new C3DFImage(size); 
 	auto is = psrc->begin(); 
+	const float hx = size.x/2.0;  
+	const float hy = size.y/2.0;  
+	const float hz = size.z/2.0;  
 	for(size_t z = 0; z < size.z; ++z) {
-		double fz = z - size.z/2.0; 
+		double fz = z - hz; 
 		for(size_t y = 0; y < size.y; ++y) {
-			double fy = y - size.y/2.0; 
+			double fy = 1.3 * y - size.y/2.0; 
 			for(size_t x = 0; x < size.x; ++x,++is) {
-				double fx = x - size.x/2.0; 
-				*is = 100.0 * exp(-(fx*fx + fy*fy + fz * fz)/10.0); 
+				double fx = 1.5 * x - size.x/2.0; 
+				*is = exp(-(fx*fx/hx + fy*fy/hy + fz*fz/hz)); 
 			}
 		}
 	}
@@ -94,7 +97,7 @@ void RigidRegisterFixture::run(C3DTransformation& t, EMinimizers minimizer, doub
 	auto iss = rsrc.begin(); 
 	auto irs = rref.begin(); 
 	
-	for(size_t z = 0; z < size.z; ++z)
+	for(size_t z = 0; z < size.z; ++z) {
 		for(size_t y = 0; y < size.y; ++y) {
 			cvdebug() << "src:"; 
 			for(size_t x = 0; x < size.x; ++x,++iss)
@@ -105,6 +108,8 @@ void RigidRegisterFixture::run(C3DTransformation& t, EMinimizers minimizer, doub
 				cverb << setw(9) << *irs << " "; 
 			cverb << "\n"; 
 		}
+		cverb << "\n"; 
+	}
 	
 			
 
@@ -115,14 +120,14 @@ void RigidRegisterFixture::run(C3DTransformation& t, EMinimizers minimizer, doub
 	BOOST_CHECK_EQUAL(params.size(), orig_params.size());
 
 	for (size_t i = 0; i < params.size(); ++i) 
-		if (fabs(orig_params[i]) > 0.1) 
+		if (fabs(orig_params[i]) > 0.01) 
 			BOOST_CHECK_CLOSE(params[i], orig_params[i], accuracy);
 		else
 			BOOST_CHECK_CLOSE(1.0 + params[i], 1.0 + orig_params[i], accuracy);
 }
 
 RigidRegisterFixture::RigidRegisterFixture():
-	size(10,10,10)
+	size(20,30,40)
 {
 	
 }
@@ -193,13 +198,13 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_simplex, RigidRegisterFixture )
 	params[2] =  0.0;
 	params[3] =  0.0;
 	params[4] =  0.1;
-	params[5] =  1.0;
-	params[6] =  0.2;
-	params[7] =  0.1;
-	params[8] =  1.1;
-	params[9] =   0.2;
-	params[10] =  1.0;
-	params[11] =  2.0;
+	params[5] =  0.0;
+	params[6] =  0.0;
+	params[7] =  0.0;
+	params[8] =  1.0;
+	params[9] =  0.2;
+	params[10] = 0.1;
+	params[11] = 0.3;
 
 	transformation->set_parameters(params); 
 
@@ -215,11 +220,11 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_gd, RigidRegisterFixture )
 	params[1] =  0.0;
 	params[2] =  0.0;
 	params[3] =  0.0;
-	params[4] =  0.1;
-	params[5] =  1.0;
-	params[6] =  0.2;
-	params[7] =  0.1;
-	params[8] =  1.1;
+	params[4] =  1.1;
+	params[5] =  0.0;
+	params[6] =  0.0;
+	params[7] =  0.0;
+	params[8] =  1.0;
 	params[9] =   0.2;
 	params[10] =  1.0;
 	params[11] =  2.0;
@@ -235,14 +240,14 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_bfgs, RigidRegisterFixture )
 	auto transformation = tr_creator->create(size); 
 	auto params = transformation->get_parameters(); 
 	params[0] =  1.0;
-	params[1] =  1.0;
-	params[2] =  1.0;
+	params[1] =  0.0;
+	params[2] =  0.0;
 	params[3] =  0.0;
 	params[4] =  0.1;
-	params[5] =  1.0;
-	params[6] =  0.2;
-	params[7] =  0.1;
-	params[8] =  1.1;
+	params[5] =  0.0;
+	params[6] =  0.0;
+	params[7] =  0.0;
+	params[8] =  1.0;
 	params[9] =   0.2;
 	params[10] =  1.0;
 	params[11] =  2.0;
@@ -262,10 +267,10 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_cg_fr, RigidRegisterFixture )
 	params[2] =  0.0;
 	params[3] =  0.0;
 	params[4] =  0.1;
-	params[5] =  1.0;
-	params[6] =  0.2;
-	params[7] =  0.1;
-	params[8] =  1.1;
+	params[5] =  0.0;
+	params[6] =  0.0;
+	params[7] =  0.0;
+	params[8] =  1.0;
 	params[9] =   0.2;
 	params[10] =  1.0;
 	params[11] =  2.0;
@@ -285,10 +290,10 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_cg_pr, RigidRegisterFixture )
 	params[2] =  0.0;
 	params[3] =  0.0;
 	params[4] =  0.1;
-	params[5] =  1.0;
-	params[6] =  0.2;
-	params[7] =  0.1;
-	params[8] =  1.1;
+	params[5] =  0.0;
+	params[6] =  0.0;
+	params[7] =  0.0;
+	params[8] =  1.0;
 	params[9] =   0.2;
 	params[10] =  1.0;
 	params[11] =  2.0;
