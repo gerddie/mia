@@ -51,9 +51,9 @@ BOOST_FIXTURE_TEST_CASE(test_handler, HandlerTestFixture)
 {
 	const C3DTransformCreatorHandler::Instance& handler =
 		C3DTransformCreatorHandler::instance();
-	BOOST_CHECK_EQUAL(handler.size(), 1u);
+	BOOST_CHECK_EQUAL(handler.size(), 2u);
 	BOOST_CHECK_EQUAL(handler.get_plugin_names(),
-			  "translate ");
+			  "affine translate ");
 }
 
 BOOST_FIXTURE_TEST_CASE(test_translate_creator, HandlerTestFixture)
@@ -65,16 +65,17 @@ BOOST_FIXTURE_TEST_CASE(test_translate_creator, HandlerTestFixture)
 	BOOST_CHECK_EQUAL(transform->get_size(), C3DBounds(10,20,15));
 }
 
-#if 0
 
 BOOST_FIXTURE_TEST_CASE(test_affine_creator, HandlerTestFixture)
 {
 	const C3DTransformCreatorHandler::Instance& handler =
 		C3DTransformCreatorHandler::instance();
 	P3DTransformationFactory affine_creater = handler.produce("affine");
-	P3DTransformation transform = affine_creater->create(C3DBounds(10,20));
-	BOOST_CHECK_EQUAL(transform->get_size(), C3DBounds(10,20));
+	P3DTransformation transform = affine_creater->create(C3DBounds(10,20,30));
+	BOOST_CHECK_EQUAL(transform->get_size(), C3DBounds(10,20,30));
 }
+
+#if 0
 
 BOOST_FIXTURE_TEST_CASE(test_spline_creator, HandlerTestFixture)
 {
