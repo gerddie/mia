@@ -343,6 +343,7 @@ float C3DAffineTransformation::get_jacobian(const C3DFVectorfield& /*v*/, float 
 
 void C3DAffineTransformation::translate(const C3DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
+	cverr() << "C3DAffineTransformation::translate:Not yet tested\n"; 
 	assert(gradient.get_size() == _M_size);
 	assert(params.size() == degrees_of_freedom());
 
