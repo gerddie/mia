@@ -94,6 +94,7 @@ void C3DTransformation::iterator_impl::increment()
 	++_M_pos.z; 
 	if (_M_pos.z < _M_size.z) {
 		_M_pos.y = 0;
+		_M_pos.x = 0;
 		do_z_increment();
 		return; 
 	}
