@@ -21,6 +21,7 @@ SET(MIA3D_SRC
   register.cc
   timestep.cc
   transform.cc
+  transformfactory.cc
   shape.cc
   )
 
@@ -49,6 +50,8 @@ SET(MIA3D_HEADERS
 	register.hh
 	timestep.hh
 	transform.hh
+	transformfactory.hh
+	transformmock.hh
 	shape.hh 
 )
 
@@ -94,7 +97,12 @@ SET(MIA3DLIBS mia3d  ${LIBS})
 # io test library 
 #
 
-ADD_LIBRARY(mia3dtest SHARED 3dimageiotest.cc 3dvfiotest.cc fifotestfixture.cc)
+ADD_LIBRARY(mia3dtest SHARED 
+  3dimageiotest.cc 
+  3dvfiotest.cc 
+  fifotestfixture.cc
+  transformmock.cc
+  )
 TARGET_LINK_LIBRARIES(mia3dtest ${MIA3DLIBS} mia2dtest ${BOOST_UNITTEST})
 SET_TARGET_PROPERTIES(mia3dtest PROPERTIES COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
 
