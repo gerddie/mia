@@ -20,8 +20,8 @@
  *
  */
 
-#include <mia/2d/transform.hh>
-#include <mia/2d/deformer.hh>
+#include <mia/3d/transform.hh>
+#include <mia/3d/deformer.hh>
 
 
 #include <boost/lambda/lambda.hpp>
@@ -29,48 +29,48 @@
 NS_MIA_BEGIN
 using namespace boost::lambda;
 
-C2DTransformation::C2DTransformation()
+C3DTransformation::C3DTransformation()
 {
 
 }
 
-void C2DTransformation::reinit() const
+void C3DTransformation::reinit() const
 {
 }
 
-void C2DTransformation::set_creator_string(const std::string& s)
+void C3DTransformation::set_creator_string(const std::string& s)
 {
 	_M_creator_string = s; 
 }
 
 
-const std::string& C2DTransformation::get_creator_string()const
+const std::string& C3DTransformation::get_creator_string()const
 {
 	return _M_creator_string; 
 }
 
-C2DTransformation *C2DTransformation::clone() const
+C3DTransformation *C3DTransformation::clone() const
 {
-	C2DTransformation *result = do_clone(); 
+	C3DTransformation *result = do_clone(); 
 	if (result) 
 		result->set_creator_string(get_creator_string()); 
 	return result; 
 }
 
 
-C2DTransformation::iterator_impl::iterator_impl():
-	_M_pos(0,0), 
-	_M_size(0,0)
+C3DTransformation::iterator_impl::iterator_impl():
+	_M_pos(0,0,0), 
+	_M_size(0,0,0)
 {
 }
 
-C2DTransformation::iterator_impl::iterator_impl(const C2DBounds& pos, const C2DBounds& size):
+C3DTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& size):
 	_M_pos(pos), 
 	_M_size(size)
 {
 }
 
-void C2DTransformation::iterator_impl::increment()
+void C3DTransformation::iterator_impl::increment()
 {
 
 	if (_M_pos.x < _M_size.x) {
@@ -81,7 +81,7 @@ void C2DTransformation::iterator_impl::increment()
 		}
 	} else {
 		// if x is at the end, then everything is at the end
-		cvwarn() << "C2DTransformation::iterator_impl::increment() past end\n"; 
+		cvwarn() << "C3DTransformation::iterator_impl::increment() past end\n"; 
 	}
 	
 	++_M_pos.y;
@@ -97,97 +97,97 @@ void C2DTransformation::iterator_impl::increment()
 		do_z_increment();
 		return; 
 	}
-	cvdebug() << "C2DTransformation::iterator_impl::increment() at end\n"; 
+	cvdebug() << "C3DTransformation::iterator_impl::increment() at end\n"; 
 }
 
-const C2DBounds& C2DTransformation::iterator_impl::get_pos()const
+const C3DBounds& C3DTransformation::iterator_impl::get_pos()const
 {
 	return _M_pos; 
 }
 
-const C2DBounds& C2DTransformation::iterator_impl::get_size()const
+const C3DBounds& C3DTransformation::iterator_impl::get_size()const
 {
 	return _M_size; 
 }
 
 
-const C2DFVector&  C2DTransformation::iterator_impl::get_value() const
+const C3DFVector&  C3DTransformation::iterator_impl::get_value() const
 {
 	return do_get_value(); 
 }
 
-bool C2DTransformation::iterator_impl::operator == (const C2DTransformation::iterator_impl& b) const
+bool C3DTransformation::iterator_impl::operator == (const C3DTransformation::iterator_impl& b) const
 {
 	assert(_M_size == b._M_size); 
 	return _M_pos == b._M_pos; 
 }
 
-EXPORT_2D bool operator == (const C2DTransformation::const_iterator& a, 
-			    const C2DTransformation::const_iterator& b)
+EXPORT_3D bool operator == (const C3DTransformation::const_iterator& a, 
+			    const C3DTransformation::const_iterator& b)
 {
 	return *a._M_holder == *b._M_holder; 
 }
 
 
-EXPORT_2D bool operator != (const C2DTransformation::const_iterator& a, 
-			    const C2DTransformation::const_iterator& b)
+EXPORT_3D bool operator != (const C3DTransformation::const_iterator& a, 
+			    const C3DTransformation::const_iterator& b)
 {
 	return !(a == b); 
 }
 
 
-C2DTransformation::const_iterator::const_iterator():
+C3DTransformation::const_iterator::const_iterator():
 	_M_holder(NULL)
 {
 }
 
-C2DTransformation::const_iterator::const_iterator(iterator_impl * holder):
+C3DTransformation::const_iterator::const_iterator(iterator_impl * holder):
 	_M_holder(holder)
 {
 }
 
-C2DTransformation::const_iterator::const_iterator(const const_iterator& other):
+C3DTransformation::const_iterator::const_iterator(const const_iterator& other):
 	_M_holder(other._M_holder->clone())
 {
 }
 
-C2DTransformation::const_iterator& 
-C2DTransformation::const_iterator::operator = (const const_iterator& other)
+C3DTransformation::const_iterator& 
+C3DTransformation::const_iterator::operator = (const const_iterator& other)
 {
 	_M_holder.reset(other._M_holder->clone()); 
 	return *this; 
 }
 
-C2DTransformation::const_iterator& C2DTransformation::const_iterator::operator ++()
+C3DTransformation::const_iterator& C3DTransformation::const_iterator::operator ++()
 {
 	_M_holder->increment(); 
 	return *this; 
 }
 
-C2DTransformation::const_iterator C2DTransformation::const_iterator::operator ++(int)
+C3DTransformation::const_iterator C3DTransformation::const_iterator::operator ++(int)
 {
 	auto old = _M_holder->clone(); 
 	++(*this); 
-	return C2DTransformation::const_iterator(old); 
+	return C3DTransformation::const_iterator(old); 
 }
 
-const C2DFVector&  C2DTransformation::const_iterator::operator *() const
+const C3DFVector&  C3DTransformation::const_iterator::operator *() const
 {
 	assert(_M_holder); 
 	return _M_holder->get_value(); 
 }
 
-const C2DFVector  *C2DTransformation::const_iterator::operator ->() const
+const C3DFVector  *C3DTransformation::const_iterator::operator ->() const
 {
 	assert(_M_holder); 
 	return &_M_holder->get_value(); 
 }
 
-bool C2DTransformation::refine()
+bool C3DTransformation::refine()
 {
 	return false; 
 }
 
-const char *C2DTransformation::type_descr = "2dtransform";
+const char *C3DTransformation::type_descr = "3dtransform";
 
 NS_MIA_END

@@ -20,11 +20,11 @@
  *
  */
 
-#ifndef mia_2d_transformfactory_hh
-#define mia_2d_transformfactory_hh
+#ifndef mia_3d_transformfactory_hh
+#define mia_3d_transformfactory_hh
 
 #include <set>
-#include <mia/2d/transform.hh>
+#include <mia/3d/transform.hh>
 #include <mia/core/factory.hh>
 
 NS_MIA_BEGIN
@@ -35,22 +35,22 @@ NS_MIA_BEGIN
    Derived from this class are all the plug-ins that may create transformations 
    of different types. 
  */
-class  EXPORT_2D C2DTransformCreator: public CProductBase {
+class  EXPORT_3D C3DTransformCreator: public CProductBase {
 public:
-	typedef C2DImage plugin_data; 
-	typedef C2DTransformation plugin_type; 
+	typedef C3DImage plugin_data; 
+	typedef C3DTransformation plugin_type; 
 
 	/** Standard constructor 
 	    \remark it is empty, so why it is defined? 
 	 */
-	C2DTransformCreator();
+	C3DTransformCreator();
 
 	/**
 	   Creates a transformation according to the given model and defined 
 	   on a grid [(0,0), size}
 	 */
 
-	P2DTransformation create(const C2DBounds& size) const;
+	P3DTransformation create(const C3DBounds& size) const;
 	
 	/**
 	   This function checks for a given property of the transformation creator. 
@@ -65,15 +65,15 @@ protected:
 	 */
 	void add_property(const char *property);
 private:
-	virtual P2DTransformation do_create(const C2DBounds& size) const = 0;
+	virtual P3DTransformation do_create(const C3DBounds& size) const = 0;
 
 	std::set<std::string> _M_properties;
 };
 
-typedef std::shared_ptr<C2DTransformCreator > P2DTransformationFactory;
-typedef TFactory<C2DTransformCreator> C2DTransformCreatorPlugin;
-typedef THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin> > C2DTransformCreatorHandler;
-FACTORY_TRAIT(C2DTransformCreatorHandler); 
+typedef std::shared_ptr<C3DTransformCreator > P3DTransformationFactory;
+typedef TFactory<C3DTransformCreator> C3DTransformCreatorPlugin;
+typedef THandlerSingleton<TFactoryPluginHandler<C3DTransformCreatorPlugin> > C3DTransformCreatorHandler;
+FACTORY_TRAIT(C3DTransformCreatorHandler); 
 
 NS_MIA_END
 

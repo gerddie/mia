@@ -11,17 +11,16 @@ SET(MIA3D_SRC
   fatcost.cc
   fuzzyseg.cc
   fuzzyClusterSolverCG.cc
-  gridtransformation.cc
   ica.cc
   interpolator.cc
   model.cc
-  multireg.cc
   nfg.cc 
   orientation.cc
   register.cc
   timestep.cc
   transform.cc
   transformfactory.cc
+  transformio.cc
   shape.cc
   )
 
@@ -41,16 +40,15 @@ SET(MIA3D_HEADERS
 	fatcost.hh
 	fuzzyseg.hh
 	fuzzyClusterSolverCG.hh
-	gridtransformation.hh
 	interpolator.hh interpolator.cxx
 	ica.hh
 	model.hh
-	multireg.hh
 	nfg.hh
 	register.hh
 	timestep.hh
 	transform.hh
 	transformfactory.hh
+	transformio.hh
 	transformmock.hh
 	shape.hh 
 )
@@ -138,6 +136,7 @@ TEST_3D(nfg nfg)
 TEST_3D(orientation orientation)
 TEST_3D(deform deform)
 TEST_3D(ica ica)
+TEST_3D(transformfactory transformfactory)
 
 #
 # installation 
@@ -157,3 +156,4 @@ ADD_SUBDIRECTORY(fifof    )
 ADD_SUBDIRECTORY(io       )
 ADD_SUBDIRECTORY(shapes   )
 ADD_SUBDIRECTORY(reg3d    )
+ADD_SUBDIRECTORY(transform)

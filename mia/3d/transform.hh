@@ -20,7 +20,7 @@
  *
  */
 
-#ifndef mia_2d_transform_hh
+#ifndef mia_3d_transform_hh
 #define mia_3d_transform_hh
 
 #include <iterator>
@@ -193,7 +193,7 @@ public:
 	   \param y
 	   \returns 2x2 matrix of the derivative
 	 */
-	virtual C3DFMatrix derivative_at(int x, int y) const = 0;
+	virtual C3DFMatrix derivative_at(int x, int y, int z) const = 0;
 
 	/**
 	   Translate the input gradient to a vector field in the space of the transformation field

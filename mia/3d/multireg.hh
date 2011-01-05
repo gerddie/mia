@@ -26,7 +26,6 @@
 #include <mia/3d/deformer.hh>
 #include <mia/3d/fatcost.hh>
 #include <mia/3d/transform.hh>
-#include <mia/3d/gridtransformation.hh>
 
 NS_MIA_BEGIN
 

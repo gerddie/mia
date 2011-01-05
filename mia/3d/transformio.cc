@@ -23,17 +23,17 @@
 #include <mia/core/export_handler.hh>
 
 #include <mia/core/errormacro.hh>
-#include <mia/2d/transformio.hh>
+#include <mia/3d/transformio.hh>
 #include <mia/core/ioplugin.cxx>
 #include <mia/core/iohandler.cxx>
 
 NS_MIA_BEGIN
 
-template class TIOPlugin<C2DTransformation>;
-template class THandlerSingleton<TIOPluginHandler<C2DTransformationIO> >;
-template class TIOHandlerSingleton<TIOPluginHandler<C2DTransformationIO> >;
-template class TIOPluginHandler<C2DTransformationIO>;
-template class TPluginHandler<C2DTransformationIO>;
+template class TIOPlugin<C3DTransformation>;
+template class THandlerSingleton<TIOPluginHandler<C3DTransformationIO> >;
+template class TIOHandlerSingleton<TIOPluginHandler<C3DTransformationIO> >;
+template class TIOPluginHandler<C3DTransformationIO>;
+template class TPluginHandler<C3DTransformationIO>;
 
 NS_MIA_END
 

@@ -21,17 +21,17 @@
  *
  */
 
-#ifndef mia_2d_transformio_hh
-#define mia_2d_transformio_hh
+#ifndef mia_3d_transformio_hh
+#define mia_3d_transformio_hh
 
 #include <mia/core/iohandler.hh>
 #include <mia/core/ioplugin.hh>
-#include <mia/2d/transform.hh>
+#include <mia/3d/transform.hh>
 
 NS_MIA_BEGIN
-typedef TIOPlugin<C2DTransformation> C2DTransformationIO; 
-typedef TIOHandlerSingleton< TIOPluginHandler<C2DTransformationIO> > C2DTransformationIOPluginHandler;
-typedef C2DTransformationIOPluginHandler::Instance::DataKey C2DTransformationDataKey;
+typedef TIOPlugin<C3DTransformation> C3DTransformationIO; 
+typedef TIOHandlerSingleton< TIOPluginHandler<C3DTransformationIO> > C3DTransformationIOPluginHandler;
+typedef C3DTransformationIOPluginHandler::Instance::DataKey C3DTransformationDataKey;
 NS_MIA_END
 
 

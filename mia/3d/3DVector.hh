@@ -50,12 +50,7 @@ NS_MIA_BEGIN
 
 template < class T > class T3DVector {
 public:
-	union {
-		struct {
-			T x,y,z;
-		}; 
-		T v[3]; 
-	}; 
+	T x,y,z;
 	
 	typedef T value_type; 
 
@@ -75,18 +70,6 @@ public:
 	/// type casting copy constructor
 	template <class in> explicit T3DVector(const T3DVector<in>& org):
 		x(T(org.x)),y(T(org.y)),z(T(org.z)){
-	}
-	
-	/// index access to elemets read only
-	const T& operator[](int i) const  {
-		// Cruel hack, i have to think of something better
-		return v[i];
-	}
-	
-	/// index access to elemets read/write
-	T& operator[] (int i)  {
-		// dito
-		return v[i];
 	}
 	
 	/// assignment from different vector type
