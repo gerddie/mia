@@ -235,8 +235,8 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_bfgs, RigidRegisterFixture )
 	auto transformation = tr_creator->create(size); 
 	auto params = transformation->get_parameters(); 
 	params[0] =  1.0;
-	params[1] =  0.0;
-	params[2] =  0.0;
+	params[1] =  1.0;
+	params[2] =  1.0;
 	params[3] =  0.0;
 	params[4] =  0.1;
 	params[5] =  1.0;
@@ -273,6 +273,29 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_cg_fr, RigidRegisterFixture )
 	transformation->set_parameters(params); 
 
 	run(*transformation, min_cg_fr, 1.0); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_cg_pr, RigidRegisterFixture )
+{
+	auto tr_creator = C3DTransformCreatorHandler::instance().produce("affine");
+	auto transformation = tr_creator->create(size); 
+	auto params = transformation->get_parameters(); 
+	params[0] =  1.0;
+	params[1] =  0.0;
+	params[2] =  0.0;
+	params[3] =  0.0;
+	params[4] =  0.1;
+	params[5] =  1.0;
+	params[6] =  0.2;
+	params[7] =  0.1;
+	params[8] =  1.1;
+	params[9] =   0.2;
+	params[10] =  1.0;
+	params[11] =  2.0;
+
+	transformation->set_parameters(params); 
+
+	run(*transformation, min_cg_pr, 1.0); 
 }
 
 
