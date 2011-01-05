@@ -108,8 +108,10 @@ static void check_gradient()
 	};
 
 	const C3DFVector vf[8] = {
-		C3DFVector(-1.0f, 2.5f,-1.5f), C3DFVector(-0.5f, 2.0f, 0.0f), C3DFVector(2.5f, 0.0f, 0.5f), C3DFVector(-1.5f, 0.5f, 2.0f),
-		C3DFVector( 2.5f, 0.5f,-1.0f), C3DFVector( 0.5f, 2.0f, 0.5f), C3DFVector(1.5f, 0.5f,-2.0f), C3DFVector( 2.0f,-1.0f,-1.0f)
+		C3DFVector(-1.0f, 2.5f,-1.5f), C3DFVector(-0.5f, 2.0f, 0.0f), 
+		C3DFVector(2.5f, 0.0f, 0.5f),  C3DFVector(-1.5f, 0.5f, 2.0f),
+		C3DFVector( 2.5f, 0.5f,-1.0f), C3DFVector( 0.5f, 2.0f, 0.5f), 
+		C3DFVector(1.5f, 0.5f,-2.0f), C3DFVector( 2.0f,-1.0f,-1.0f)
 	};
 
 	C3DBounds size(4,4,4);
@@ -118,14 +120,14 @@ static void check_gradient()
 
 	C3DFVectorfield gradient = get_gradient(*pimage);
 
-	BOOST_CHECK(gradient(1,1,1) == vf[0]);
-	BOOST_CHECK(gradient(2,1,1) == vf[1]);
-	BOOST_CHECK(gradient(1,2,1) == vf[2]);
-	BOOST_CHECK(gradient(2,2,1) == vf[3]);
-	BOOST_CHECK(gradient(1,1,2) == vf[4]);
-	BOOST_CHECK(gradient(2,1,2) == vf[5]);
-	BOOST_CHECK(gradient(1,2,2) == vf[6]);
-	BOOST_CHECK(gradient(2,2,2) == vf[7]);
+	BOOST_CHECK_EQUAL(gradient(1,1,1), vf[0]);
+	BOOST_CHECK_EQUAL(gradient(2,1,1), vf[1]);
+	BOOST_CHECK_EQUAL(gradient(1,2,1), vf[2]);
+	BOOST_CHECK_EQUAL(gradient(2,2,1), vf[3]);
+	BOOST_CHECK_EQUAL(gradient(1,1,2), vf[4]);
+	BOOST_CHECK_EQUAL(gradient(2,1,2), vf[5]);
+	BOOST_CHECK_EQUAL(gradient(1,2,2), vf[6]);
+	BOOST_CHECK_EQUAL(gradient(2,2,2), vf[7]);
 
 	C3DFVector g1= image->data().get_gradient<float>(C3DFVector(1.5, 1.5, 1.5));
 	float gx1 =
