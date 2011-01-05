@@ -17,6 +17,7 @@ SET(MIA3D_SRC
   nfg.cc 
   orientation.cc
   register.cc
+  rigidregister.cc
   timestep.cc
   transform.cc
   transformfactory.cc
@@ -45,6 +46,7 @@ SET(MIA3D_HEADERS
 	model.hh
 	nfg.hh
 	register.hh
+	rigidregister.hh
 	timestep.hh
 	transform.hh
 	transformfactory.hh
@@ -137,6 +139,8 @@ TEST_3D(orientation orientation)
 TEST_3D(deform deform)
 TEST_3D(ica ica)
 TEST_3D(transformfactory transformfactory)
+TEST_3D(rigidregister rigidregister)
+TEST_3D(transform transform)
 
 #
 # installation 

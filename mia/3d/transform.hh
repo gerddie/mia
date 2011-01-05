@@ -316,11 +316,12 @@ struct C3DTransform : public TFilter<P3DImage> {
 		typename T3DImage<T>::iterator r = timage->begin();
 		typename Transform::const_iterator v = _M_trans.begin();
 
-		for (size_t y = 0; y < image.get_size().y; ++y)
-			for (size_t x = 0; x < image.get_size().x; ++x, ++r, ++v) {
-				*r = (*interp)(*v);
-			}
-
+		for (size_t z = 0; z < image.get_size().z; ++z)
+			for (size_t y = 0; y < image.get_size().y; ++y)
+				for (size_t x = 0; x < image.get_size().x; ++x, ++r, ++v) {
+					*r = (*interp)(*v);
+				}
+		
 		return P3DImage(timage);
 	}
 private:

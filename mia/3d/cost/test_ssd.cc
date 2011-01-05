@@ -18,28 +18,17 @@
  */
 
 
-#include <mia/3d/cost.hh>
-
-#define NS ssd_3dimage_cost
+#include <mia/internal/autotest.hh>
 #include <mia/3d/cost/ssd.hh>
 
-NS_BEGIN(NS)
 
-
-NS_MIA_USE;
 using namespace std;
 using namespace boost;
+namespace bfs=::boost::filesystem;
+using namespace mia;
+using namespace NS;
 
-
-template class CSSDCost<C3DImageCost>;
-
-
-const string C3DSSDCostPlugin::do_get_descr()const
-{
-	return "3D imaga cost: sum of squared differences";
-}
-
-bool C3DSSDCostPlugin::do_test() const
+BOOST_AUTO_TEST_CASE( test_SSD_3D )
 {
 	float src_data[27] = { 1, 2, 3,  2, 3, 4,  1, 4, 2,
 			       3, 4, 6,  7, 8, 4,  2, 3, 1,
@@ -55,23 +44,13 @@ bool C3DSSDCostPlugin::do_test() const
 	std::shared_ptr<C3DImage > ref(fref);
 
 	C3DSSDCost cost;
-	bool success = fabs(cost.value(*src, *ref) - 0.5 * 367.0)  < 0.001;
+	BOOST_CHECK_CLOSE(cost.value(*src, *ref),  0.5 * 367.0, 0.1);
 
 	C3DFVectorfield force(C3DBounds(3,3,3));
 
 	cost.evaluate_force(*src, *ref, 0.5, force);
 
-	cvdebug() << force(1,1,1) << " vs. " << C3DFVector(-6, -2, -4) << "\n";
-	success &= (force(1,1,1) == C3DFVector(-6, -2, -4) );
-	return success;
- }
-
-extern "C" EXPORT CPluginBase *get_plugin_interface()
-{
-	return new C3DSSDCostPlugin();
+	BOOST_CHECK_EQUAL(force(1,1,1), C3DFVector(-6, -2, -4) );
 }
-
-
-NS_END
 
 

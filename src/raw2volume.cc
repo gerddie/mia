@@ -176,8 +176,8 @@ int run(int argc, const char *args[])
 	if (scale.size() != 3)
 		throw invalid_argument("scale takes exactly 3 parameters");
 
-	C3DBounds bsize(size[0], size[1],size[2]);
-	C3DFVector fscale(scale[0], scale[1], scale[2]);
+	C3DBounds bsize(size);
+	C3DFVector fscale(scale);
 
 	C3DImageVector out_images;
 	fseek(in_file, skip, SEEK_SET);

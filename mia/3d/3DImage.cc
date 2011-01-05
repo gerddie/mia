@@ -232,33 +232,23 @@ struct FGetGradient3D: public TFilter< C3DFVectorfield> {
 	template <typename T>
 	C3DFVectorfield operator () ( const T3DImage<T>& image) const {
 
-		const C3DFVector zero(0.0, 0.0, 0.0);
 		C3DFVectorfield result(image.get_size());
-
-		size_t i = image.get_size().x * image.get_size().y;
-		fill (result.begin(), result.begin() + i, zero);
-
-		C3DFVectorfield::iterator v = result.begin() + i;
-
-		for (size_t z = 1; z < image.get_size().z - 1; ++z) {
-
-			fill (v, v + image.get_size().x, zero);
-			v += image.get_size().x;
-			i += image.get_size().x;
-
-			for (size_t y = 1; y < image.get_size().y - 1; ++y) {
-				*v++ = zero;
-				++i;
-				for (size_t x = 1; x < image.get_size().x - 1; ++x, ++v, ++i)
-					*v = image.get_gradient(i);
-				*v++ = zero;
-				++i;
+		size_t slice_size = image.get_size().x * image.get_size().y; 
+		size_t row_size = image.get_size().x; 
+		
+		auto v = result.begin() + slice_size + row_size + 1; 
+		auto i = image.begin() + slice_size + row_size + 1; 
+		
+		for (size_t z = 1; z < image.get_size().z - 1; ++z, i+= row_size, v+=row_size) {
+			for (size_t y = 1; y < image.get_size().y - 1; ++y, i += 2, v += 2 ) {
+				for (size_t x = 1; x < image.get_size().x - 1; ++x, ++v, ++i) {
+					*v = C3DFVector( 0.5 * (i[1] - i[-1]), 
+							0.5 * (i[row_size] - i[-row_size]), 
+							0.5 * (i[slice_size] - i[-slice_size])); 
+					cvdebug()<< x << ", " << y << ", " << z << ":" <<*i << " " << *v << "\n"; 
+				}
 			}
-			fill (v, v + image.get_size().x, zero);
-			v += image.get_size().x;
-			i += image.get_size().x;
 		}
-		fill (v, result.end(), zero);
 		return result;
 	}
 };
