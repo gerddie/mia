@@ -258,6 +258,7 @@ NEW_TEST(meanvar  miacore)
 NEW_TEST(scaler1d miacore)
 NEW_TEST(statistics miacore)
 NEW_TEST(splineparzenmi miacore)
+NEW_TEST(utils miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)
