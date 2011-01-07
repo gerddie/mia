@@ -166,7 +166,7 @@ inline bool vstream::shows(Level l)const
 #ifdef NDEBUG
 #define TRACE(DOMAIN)
 #define TRACE_FUNCTION
-
+#define FUNCTION_NOT_TESTED
 class CDebugSink {
 public:
 	template <class T>
@@ -216,6 +216,9 @@ private:
 /// a macro to trace scopes in a debug built
 #define TRACE(DOMAIN) ::mia::CTrace _xxx_trace(DOMAIN)
 #define TRACE_FUNCTION ::mia::CTrace _xxx_trace(__PRETTY_FUNCTION__)
+
+/// a macro to indicate that there are no tests for a function 
+#define FUNCTION_NOT_TESTED ::mia::cvwarn() << __PRETTY_FUNCTION__ << ":not tested\n"
 
 #endif
 

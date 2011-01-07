@@ -1,8 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
- * Max-Planck-Institute for Human Cognitive and Brain Science	
- * Max-Planck-Institute for Evolutionary Anthropology 
+ * Copyright (c) Leipzig, Madrid 2011
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,29 +19,40 @@
  *
  */
 
-#ifndef mia_core_errormacro_hh
-#define mia_core_errormacro_hh
-
-
-#include <sstream>
-#include <cassert>
 #include <stdexcept>
+#include <climits>
 
-/// helper macro to create exceptions using stream output for its message 
-#define THROW(EXCEPTION, MESSAGE)		\
-	do {					\
-		std::stringstream msg;		\
-		msg << MESSAGE;			\
-		throw EXCEPTION(msg.str());	\
-	} while (0)
+#include <mia/internal/autotest.hh>
 
-#ifdef NDEBUG
-#define DEBUG_ASSERT_RELEASE_THROW(cond, msg) \
-	if (!cond)		   \
-		throw std::invalid_argument(msg);
-#else
-#define DEBUG_ASSERT_RELEASE_THROW(cond, msg) \
-	assert(cond && msg); 
-#endif 
+#include <cmath>
 
-#endif
+NS_MIA_USE
+
+
+
+BOOST_AUTO_TEST_CASE(test_sincos) 
+{
+#ifndef _GNU_SOURCE
+	double x = M_PI/3.0; 
+	double s; 
+	double c; 
+
+	sincos(x, &s, &c); 
+	
+	BOOST_CHECK_CLOSE(c, 0.5, 0.01); 
+	BOOST_CHECK_CLOSE(c, sqrt(3.0)/2.0, 0.01); 
+
+
+	double fx = M_PI/3.0; 
+	double fs; 
+	double fc; 
+
+	sincos(fx, &fs, &fc); 
+	
+	BOOST_CHECK_CLOSE(fc, 0.5f, 0.01f); 
+	BOOST_CHECK_CLOSE(fc, sqrtf(3.0f)/2.0f, 0.01f); 
+
+#endif	
+}
+
+

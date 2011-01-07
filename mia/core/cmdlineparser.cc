@@ -325,7 +325,7 @@ CCmdOptionListData::CCmdOptionListData(const string& general_help):
 	help(false),
 	usage(false),
 	copyright(false),
-	verbose(vstream::ml_fail), 
+	verbose(vstream::ml_warning), 
 	_M_general_help(general_help)
 {
 	options[""] = vector<PCmdOption>();

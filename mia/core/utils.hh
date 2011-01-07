@@ -72,6 +72,13 @@ public:
 };
 #endif
 
+
+#ifndef _GNU_SOURCE
+void sincosf(float x, float *sin, float *cos); 
+void sincos(double x, double *sin, double *cos); 
+#endif
+
+
 NS_MIA_END
 
 #endif
