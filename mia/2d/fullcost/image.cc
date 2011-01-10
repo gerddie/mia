@@ -173,6 +173,10 @@ C2DImageFullCostPlugin::C2DImageFullCostPlugin():
 
 C2DFullCostPlugin::ProductPtr C2DImageFullCostPlugin::do_create(float weight) const
 {
+	cvdebug() << "create C2DImageFullCostPlugin with weight= " << weight 
+		  << " src=" << _M_src_name << " ref=" << _M_ref_name 
+		  << " cost=" << _M_cost_kernel << "\n";
+
 	return C2DFullCostPlugin::ProductPtr(
 		new C2DImageFullCost(_M_src_name, _M_ref_name, 
 				     _M_cost_kernel, _M_interpolator, weight, _M_debug)); 

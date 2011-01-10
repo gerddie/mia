@@ -129,6 +129,35 @@ BOOST_AUTO_TEST_CASE( test_multicost )
 	BOOST_CHECK_EQUAL(gradient[1], 0.5 * mgy1 + 0.2 * mgy2);
 }
 
+BOOST_AUTO_TEST_CASE( test_multicost2 ) 
+{
+	const double mcost1 = 10.0; 
+	const double mgx1   = 2.0; 
+	const double mgy1   = 3.0; 
+
+	const double mcost2 = 2.0; 
+	const double mgx2   = 4.0; 
+	const double mgy2   = 9.0; 
+
+	P2DFullCost c1(new C2DFullCostMock(0.5, mcost1, mgx1, mgy1)); 
+	P2DFullCost c2(new C2DFullCostMock(0.2, mcost2, mgx2, mgy2)); 
+	
+	C2DFullCostList costs; 
+	costs.push(c2); 
+	costs.push(c1); 
+
+	
+	C2DTransformMock t(C2DBounds(2,1)); 
+	gsl::DoubleVector gradient(t.degrees_of_freedom()); 
+	costs.set_size(t.get_size()); 
+	
+	BOOST_CHECK_EQUAL(costs.evaluate(t,gradient), 0.5 * mcost1 + 0.2 * mcost2);
+
+	BOOST_CHECK_EQUAL(gradient[0], 0.5 * mgx1 + 0.2 * mgx2);
+	BOOST_CHECK_EQUAL(gradient[1], 0.5 * mgy1 + 0.2 * mgy2);
+}
+
+
 BOOST_AUTO_TEST_CASE( test_multicost_property ) 
 {
 	const double mcost1 = 10.0; 
