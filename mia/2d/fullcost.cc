@@ -90,7 +90,7 @@ C2DFullCostPlugin::C2DFullCostPlugin(const char *name):
 	TFactory<C2DFullCost>(name), 
 	_M_weight(1.0)
 {
-	add_parameter("weight", new CFloatParameter(_M_weight, 1e-10f, 1e+10f,
+	add_parameter("weight", new CFloatParameter(_M_weight, -1e+10f, 1e+10f,
 						    false, "weight of cost function"));
 }
 	

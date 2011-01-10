@@ -35,6 +35,7 @@
 #include <mia/core/errormacro.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/perfusion.hh>
+#include <mia/2d/2dimageio.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/transformfactory.hh>
 
@@ -156,6 +157,16 @@ void run_registration_pass(CSegSetWithImages&  input_set,
 	input_set.set_images(input_images); 
 }
 
+void save_references(const string& save_ref, int current_pass, int skip_images, const C2DImageSeries& references)
+{
+	for(size_t i = 0 ; i < references.size(); ++i) {
+		stringstream filename; 
+		filename << save_ref << current_pass << "-" 
+			 << setw(4) << setfill('0') << skip_images + i << ".v"; 
+		save_image2d(filename.str(), references[i]);
+	}
+}
+
 int do_main( int argc, const char *argv[] )
 {
 	// IO parameters 
@@ -166,6 +177,8 @@ int do_main( int argc, const char *argv[] )
 	// debug options: save some intermediate steps 
 	string cropped_filename;
 	string save_crop_feature; 
+	string save_ref_filename;
+	string save_reg_filename;
 
 	// this parameter is currently not exported - reading the image data is 
 	// therefore done from the path given in the segmentation set 
@@ -210,6 +223,12 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( save_crop_feature, "save-feature", 0, 
 				    "save segmentation feature images"
 				    " and initial ICA mixing matrix", NULL)); 
+
+	options.push_back(make_opt( save_ref_filename, "save-refs", 0, 
+				    "save reference images", NULL)); 
+	options.push_back(make_opt( save_reg_filename, "save-regs", 0, 
+				    "save intermediate registered images", NULL)); 
+
 
 	
 	options.set_group("\nRegistration"); 
@@ -309,9 +328,16 @@ int do_main( int argc, const char *argv[] )
 	while (do_continue){
 		++current_pass; 
 		cvmsg() << "Registration pass " << current_pass << "\n"; 
+
+		if (!save_ref_filename.empty())
+			save_references(save_ref_filename, current_pass, skip_images, references); 
+
 		run_registration_pass(input_set, references,  skip_images,  minimizer, 
 				      *ipfactory, mg_levels, c_rate, divcurlweight, imageweight); 
 		
+		if (!save_reg_filename.empty()) 
+			save_references(save_reg_filename, current_pass, 0, input_set.get_images()); 
+
 		C2DPerfusionAnalysis ica2(components, !no_normalize, !no_meanstrip); 
 		if (max_ica_iterations) 
 			ica2.set_max_ica_iterations(max_ica_iterations); 

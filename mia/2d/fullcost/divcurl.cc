@@ -55,6 +55,7 @@ double C2DDivCurlFullCost::do_value(const C2DTransformation& t) const
 
 double C2DDivCurlFullCost::do_value() const
 {
+	cvwarn() << "Requesting DivCurl cost without a transformation doesn't make sense\n"; 
 	return 0.0; 
 }
 
@@ -87,6 +88,9 @@ C2DDivcurlFullCostPlugin::C2DDivcurlFullCostPlugin():
 
 C2DFullCostPlugin::ProductPtr C2DDivcurlFullCostPlugin::do_create(float weight) const
 {
+	cvdebug() << "create C2DDivCurlFullCost with weight= " << weight 
+		  << " div=" << _M_div << " curl=" << _M_curl << "\n"; 
+		
 	return C2DFullCostPlugin::ProductPtr(new C2DDivCurlFullCost(_M_div,  _M_curl, weight)); 
 }
 

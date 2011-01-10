@@ -152,6 +152,41 @@ void C2DNonrigidRegisterImpl::apply(C2DTransformation& transf,
 	cvmsg() << "\n"; 
 }
 
+/*
+  This filter could be replaced by a histogram equalizing filter 
+*/
+
+class FScaleFilterCreator: public TFilter<C2DFilterPluginHandler::ProductPtr> {
+public: 
+	template <typename T, typename S>
+	result_type operator ()(const T2DImage<T>& a, const T2DImage<S>& b) const {
+		double sum = 0.0; 
+		double sum2 = 0.0; 
+		int n = 2 * a.size(); 
+
+		for(auto ia = a.begin(), ib = b.begin(); ia != a.end(); ++ia, ++ib) {
+			sum += *ia + *ib; 
+			sum2 += *ia * *ia + *ib * *ib;
+		}
+		
+		double mean = sum / n; 
+		double sigma = sqrt((sum2 - sum * sum / n) / (n - 1));
+
+		// both images are of the same single color 
+		if (sigma == 0.0) 
+			return result_type(); 
+
+		// I want a conversion filter, that makes the images together zero mean 
+		// and diversion 1
+		stringstream filter_descr; 
+		filter_descr << "convert:repn=float,map=linear,b=" << -mean << ",a=" << 1.0/sigma; 
+			
+		return C2DFilterPluginHandler::instance().produce(filter_descr.str()); 
+		
+	}; 
+	
+}; 
+
 
 P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 {
@@ -165,7 +200,9 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 	P2DTransformation transform;
 
 	// convert the images to float ans scale to range [-1,1]
-	auto tofloat_converter = C2DFilterPluginHandler::instance().produce("convert:repn=float"); 
+	FScaleFilterCreator fc; 
+	auto tofloat_converter = ::mia::filter(fc, *src, *ref); 
+
 	src = tofloat_converter->filter(*src); 
 	ref = tofloat_converter->filter(*ref); 
 
@@ -265,7 +302,7 @@ double  C2DNonrigRegGradientProblem::do_fdf(const DoubleVector& x, DoubleVector&
 		_M_start_cost = result; 
 
 	_M_grad_evals++; 
-	//transform(g.begin(), g.end(), g.begin(), _1 * -1); 
+
 	cvmsg() << "Cost[fg="<<setw(4)<<_M_grad_evals 
 		<< ",fe="<<setw(4)<<_M_func_evals<<"]=" 
 		<< setw(20) << setprecision(12) << result 
