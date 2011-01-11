@@ -23,6 +23,11 @@
 
 NS_MIA_BEGIN
 
+CProblem::CProblem(size_t n_params):
+	m_nparams(n_params)
+{
+}
+
 void CProblem::setup()
 {
 	do_setup();
@@ -43,14 +48,10 @@ const char *CProblem::get_name() const
 	return do_get_name();
 }
 
-double CProblem::get_criterion(std::vector<float>& gradient) const
+double CProblem::get_criterion(const std::vector<double>& x, 
+			       std::vector<double>& gradient) const
 {
-	return do_get_criterion(gradient);
-}
-
-void CProblem::update_params(const std::vector<float>& delta)
-{
-	do_update_params(delta);
+	return do_get_criterion(x, gradient);
 }
 
 NS_MIA_END

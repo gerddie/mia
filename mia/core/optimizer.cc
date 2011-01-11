@@ -72,5 +72,4 @@ template class EXPORT_HANDLER TFactoryPluginHandler<COptimizerPlugin>;
 template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<COptimizerPlugin> >;
 
 
-
 NS_MIA_END
