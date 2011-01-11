@@ -74,6 +74,7 @@ public:
 	/// set the voxel size on world units
 	virtual void set_voxel_size(const C3DFVector& voxel) = 0;
 
+	
 	E3DImageOrientation get_orientation() const;
 
 	void set_orientation(E3DImageOrientation orient);

@@ -51,6 +51,10 @@ public:
 	typedef C3DTransformation type; 
 	static const char *type_descr;
 protected: 
+	/**
+	   This is the abstract base class of th actual implementation of the transformation iterator.  
+	*/
+
 	class iterator_impl  {
 	public: 
 		iterator_impl(); 
@@ -75,6 +79,12 @@ protected:
 
 	}; 
 public: 
+	/**
+	   This is an iterator that iterates over the grid of the 
+	   domain where the transformation is defined. 
+	   It implements the forward_iterator model. 
+	 */
+	
 	class const_iterator : public std::forward_iterator_tag {
 	public: 
 
