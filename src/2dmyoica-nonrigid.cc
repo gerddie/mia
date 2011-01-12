@@ -324,8 +324,8 @@ int do_main( int argc, const char *argv[] )
 
 	}
 
-	bool do_continue = ica.has_periodic(); 
-	while (do_continue){
+	bool do_continue=true; 
+	do {
 		++current_pass; 
 		cvmsg() << "Registration pass " << current_pass << "\n"; 
 
@@ -356,7 +356,7 @@ int do_main( int argc, const char *argv[] )
 		transform(references_float.begin(), references_float.end(), 
 			  references.begin(), C2DFImage2PImage()); 
 		do_continue =  (!pass || current_pass < pass) && ica2.has_periodic(); 
-	}
+	} while (do_continue); 
 
 	input_set.rename_base(registered_filebase); 
 	input_set.save_images(out_filename); 
