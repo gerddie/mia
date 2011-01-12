@@ -28,7 +28,19 @@
 #include <mia/3d/transformfactory.hh>
 #include <mia/core/spacial_kernel.hh>
 #include <mia/3d/3dfilter.hh>
+#include <mia/3d/3dimageio.hh>
 
+const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
+	{"simplex", min_nmsimplex},
+	{"cg-fr", min_cg_fr},
+	{"cg-pr", min_cg_pr},
+	{"bfgs", min_bfgs},
+	{"bfgs2", min_bfgs2},
+	{"gd", min_gd},
+	{NULL, min_undefined}
+};
+
+const TDictMap<EMinimizers> minimizers(g_minimizer_table); 
 
 NS_MIA_USE
 namespace bfs=boost::filesystem;
@@ -84,7 +96,7 @@ void RigidRegisterFixture::run(C3DTransformation& t, EMinimizers minimizer, doub
 			double fy = 1.3 * y - size.y/2.0; 
 			for(size_t x = 0; x < size.x; ++x,++is) {
 				double fx = 1.5 * x - size.x/2.0; 
-				*is = exp(-(fx*fx/hx + fy*fy/hy + fz*fz/hz)); 
+				*is = exp(-(fx*fx/(hx*hx) + fy*fy/(hy*hy) + fz*fz/(hz*hz))); 
 			}
 		}
 	}
@@ -124,10 +136,20 @@ void RigidRegisterFixture::run(C3DTransformation& t, EMinimizers minimizer, doub
 			BOOST_CHECK_CLOSE(params[i], orig_params[i], accuracy);
 		else
 			BOOST_CHECK_CLOSE(1.0 + params[i], 1.0 + orig_params[i], accuracy);
+
+	if ( cverb.get_level() <= vstream::ml_info ) {
+		save_image3d("src.hdr", src);
+		save_image3d("ref.hdr", ref);
+		P3DImage reg = (*transform)(*src, *ipfactory); 
+		stringstream out_name; 
+		out_name << "reg-" << t.get_creator_string()
+			 << "-" << minimizers.get_name(minimizer) << ".hdr"; 
+		save_image3d(out_name.str(), ref);
+	}
 }
 
 RigidRegisterFixture::RigidRegisterFixture():
-	size(20,30,40)
+	size(50,30,40)
 {
 	
 }
@@ -170,7 +192,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_bfgs, RigidRegisterFixture )
 	params[2] = 2.0;
 	transformation->set_parameters(params); 
 
-	run(*transformation, min_bfgs, 0.1); 
+	run(*transformation, min_bfgs, 1.0); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_cg_fr, RigidRegisterFixture )
@@ -183,156 +205,191 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_cg_fr, RigidRegisterFixture )
 	params[2] = 2.0;
 	transformation->set_parameters(params); 
 
-	run(*transformation, min_cg_fr, 0.1); 
+	run(*transformation, min_cg_fr, 2.0); 
 }
 
 
+BOOST_FIXTURE_TEST_CASE( test_rigid_simplex, RigidRegisterFixture )
+{
+	auto tr_creator = C3DTransformCreatorHandler::instance().produce("rigid");
+	auto transformation = tr_creator->create(size); 
+	auto params = transformation->get_parameters(); 
+	params[0] =  1.0;
+	params[1] =  3.0;
+	params[2] =  1.0;
+	params[3] =  0.3;
+	params[4] =  0.3;
+	params[5] = -0.2;
+	
+	transformation->set_parameters(params); 
 
-BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_simplex, RigidRegisterFixture )
+	run(*transformation, min_nmsimplex, 16.0); 
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_rigid_gd, RigidRegisterFixture )
+{
+	auto tr_creator = C3DTransformCreatorHandler::instance().produce("rigid");
+	auto transformation = tr_creator->create(size); 
+	auto params = transformation->get_parameters(); 
+	params[0] =  0.0;
+	params[1] =  0.0;
+	params[2] =  0.0;
+	params[3] = -0.3;
+	params[4] =  0.3;
+	params[5] =  0.2;
+	
+	transformation->set_parameters(params); 
+
+	run(*transformation, min_gd, 5.0); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_rigid_bfgs, RigidRegisterFixture )
+{
+	auto tr_creator = C3DTransformCreatorHandler::instance().produce("rigid");
+	auto transformation = tr_creator->create(size); 
+	auto params = transformation->get_parameters(); 
+	params[0] =  0.0;
+	params[1] =  0.0;
+	params[2] =  0.0;
+	params[3] =  0.5;
+	params[4] =  0.0;
+	params[5] =  0.0;
+	
+	transformation->set_parameters(params); 
+
+	run(*transformation, min_bfgs, 5.0); 
+}
+
+#if 0 
+// the problem with tese tests is, that the images to be registered are 
+// too ambigious, so that more then just one affine transformation 
+// can result in a good registration - which means the parameters 
+// will not be recovered. 
+BOOST_FIXTURE_TEST_CASE( test_affine_simplex, RigidRegisterFixture )
 {
 	auto tr_creator = C3DTransformCreatorHandler::instance().produce("affine");
 	auto transformation = tr_creator->create(size); 
 	auto params = transformation->get_parameters(); 
 	params[0] =  1.0;
-	params[1] =  0.0;
-	params[2] =  0.0;
-	params[3] =  0.0;
-	params[4] =  0.1;
-	params[5] =  0.0;
-	params[6] =  0.0;
-	params[7] =  0.0;
-	params[8] =  1.0;
-	params[9] =  0.2;
-	params[10] = 0.1;
-	params[11] = 0.3;
+	params[1] =  0.4;
+	params[2] =  0.7;
+	params[3] = -13.0;
+
+	params[4] = -0.1;
+	params[5] =  1.02;
+	params[6] =  0.4;
+	params[7] = -9.1;
+
+	params[8] =  0.9;
+	params[9] = -0.4;
+	params[10] = 0.9;
+	params[11] = -10.3;
 
 	transformation->set_parameters(params); 
 
 	run(*transformation, min_nmsimplex, 1.0); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_gd, RigidRegisterFixture )
+BOOST_FIXTURE_TEST_CASE( test_affine_gd, RigidRegisterFixture )
 {
 	auto tr_creator = C3DTransformCreatorHandler::instance().produce("affine");
 	auto transformation = tr_creator->create(size); 
 	auto params = transformation->get_parameters(); 
 	params[0] =  1.0;
-	params[1] =  0.0;
-	params[2] =  0.0;
-	params[3] =  0.0;
-	params[4] =  1.1;
-	params[5] =  0.0;
-	params[6] =  0.0;
-	params[7] =  0.0;
-	params[8] =  1.0;
-	params[9] =   0.2;
-	params[10] =  1.0;
-	params[11] =  2.0;
+	params[1] =  0.4;
+	params[2] =  0.7;
+	params[3] = -13.0;
+
+	params[4] = -0.1;
+	params[5] =  1.02;
+	params[6] =  0.4;
+	params[7] = -9.1;
+
+	params[8] =  0.9;
+	params[9] = -0.4;
+	params[10] = 0.9;
+	params[11] = -10.3;
 
 	transformation->set_parameters(params); 
 
 	run(*transformation, min_gd, 1.0); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_bfgs, RigidRegisterFixture )
+BOOST_FIXTURE_TEST_CASE( test_affine_bfgs, RigidRegisterFixture )
 {
 	auto tr_creator = C3DTransformCreatorHandler::instance().produce("affine");
 	auto transformation = tr_creator->create(size); 
 	auto params = transformation->get_parameters(); 
+
 	params[0] =  1.0;
-	params[1] =  0.0;
-	params[2] =  0.0;
-	params[3] =  0.0;
-	params[4] =  0.1;
-	params[5] =  0.0;
-	params[6] =  0.0;
-	params[7] =  0.0;
-	params[8] =  1.0;
-	params[9] =   0.2;
-	params[10] =  1.0;
-	params[11] =  2.0;
+	params[1] =  0.4;
+	params[2] =  0.7;
+	params[3] = -13.0;
+
+	params[4] = -0.1;
+	params[5] =  1.02;
+	params[6] =  0.4;
+	params[7] = -9.1;
+
+	params[8] =  0.9;
+	params[9] = -0.4;
+	params[10] = 0.9;
+	params[11] = -10.3;
 
 	transformation->set_parameters(params); 
 
 	run(*transformation, min_bfgs, 1.0); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_cg_fr, RigidRegisterFixture )
+BOOST_FIXTURE_TEST_CASE( test_affine_cg_fr, RigidRegisterFixture )
 {
 	auto tr_creator = C3DTransformCreatorHandler::instance().produce("affine");
 	auto transformation = tr_creator->create(size); 
 	auto params = transformation->get_parameters(); 
 	params[0] =  1.0;
-	params[1] =  0.0;
-	params[2] =  0.0;
-	params[3] =  0.0;
-	params[4] =  0.1;
-	params[5] =  0.0;
-	params[6] =  0.0;
-	params[7] =  0.0;
-	params[8] =  1.0;
-	params[9] =   0.2;
-	params[10] =  1.0;
-	params[11] =  2.0;
+	params[1] =  0.4;
+	params[2] =  0.7;
+	params[3] = -13.0;
+
+	params[4] = -0.1;
+	params[5] =  1.02;
+	params[6] =  0.4;
+	params[7] = -9.1;
+
+	params[8] =  0.9;
+	params[9] = -0.4;
+	params[10] = 0.9;
+	params[11] = -10.3;
 
 	transformation->set_parameters(params); 
 
 	run(*transformation, min_cg_fr, 1.0); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_cg_pr, RigidRegisterFixture )
+BOOST_FIXTURE_TEST_CASE( test_affine_cg_pr, RigidRegisterFixture )
 {
 	auto tr_creator = C3DTransformCreatorHandler::instance().produce("affine");
 	auto transformation = tr_creator->create(size); 
 	auto params = transformation->get_parameters(); 
 	params[0] =  1.0;
-	params[1] =  0.0;
-	params[2] =  0.0;
-	params[3] =  0.0;
-	params[4] =  0.1;
-	params[5] =  0.0;
-	params[6] =  0.0;
-	params[7] =  0.0;
-	params[8] =  1.0;
-	params[9] =   0.2;
-	params[10] =  1.0;
-	params[11] =  2.0;
+	params[1] =  0.4;
+	params[2] =  0.7;
+	params[3] = -13.0;
+
+	params[4] = -0.1;
+	params[5] =  1.02;
+	params[6] =  0.4;
+	params[7] = -9.1;
+
+	params[8] =  0.9;
+	params[9] = -0.4;
+	params[10] = 0.9;
+	params[11] = -10.3;
 
 	transformation->set_parameters(params); 
 
 	run(*transformation, min_cg_pr, 1.0); 
-}
-
-
-
-#if 0
-BOOST_FIXTURE_TEST_CASE( test_rigidreg_rigid_simplex, RigidRegisterFixture )
-{
-	auto tr_creator = C3DTransformCreatorHandler::instance().produce("rigid");
-	auto transformation = tr_creator->create(size); 
-	auto params = transformation->get_parameters(); 
-	params[0] = 1.0;
-	params[1] = 1.0;
-	params[2] = 0.5;
-	transformation->set_parameters(params); 
-
-	run(*transformation, min_nmsimplex, 1.0); 
-}
-
-BOOST_FIXTURE_TEST_CASE( test_rigidreg_rigid_gd, RigidRegisterFixture )
-{
-	auto tr_creator = C3DTransformCreatorHandler::instance().produce("rigid");
-	auto transformation = tr_creator->create(size); 
-	auto params = transformation->get_parameters(); 
-	params[0] = 1.0;
-	params[1] = 1.0;
-	params[2] = 0.5;
-	transformation->set_parameters(params); 
-
-	// this is a rather high tolerance, especially in light that the 
-	// nm_simplex algorithm passes with a 0.1% tolerance 
-	
-	run(*transformation, min_cg_pr, 5); 
 }
 
 #endif
