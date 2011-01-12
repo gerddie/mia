@@ -51,9 +51,9 @@ BOOST_FIXTURE_TEST_CASE(test_handler, HandlerTestFixture)
 {
 	const C3DTransformCreatorHandler::Instance& handler =
 		C3DTransformCreatorHandler::instance();
-	BOOST_CHECK_EQUAL(handler.size(), 2u);
+	BOOST_CHECK_EQUAL(handler.size(), 3u);
 	BOOST_CHECK_EQUAL(handler.get_plugin_names(),
-			  "affine translate ");
+			  "affine rigid translate ");
 }
 
 BOOST_FIXTURE_TEST_CASE(test_translate_creator, HandlerTestFixture)
@@ -74,6 +74,16 @@ BOOST_FIXTURE_TEST_CASE(test_affine_creator, HandlerTestFixture)
 	P3DTransformation transform = affine_creater->create(C3DBounds(10,20,30));
 	BOOST_CHECK_EQUAL(transform->get_size(), C3DBounds(10,20,30));
 }
+
+BOOST_FIXTURE_TEST_CASE(test_rigid_creator, HandlerTestFixture)
+{
+	const C3DTransformCreatorHandler::Instance& handler =
+		C3DTransformCreatorHandler::instance();
+	P3DTransformationFactory transform_creater = handler.produce("rigid");
+	P3DTransformation transform = transform_creater->create(C3DBounds(10,20,10));
+	BOOST_CHECK_EQUAL(transform->get_size(), C3DBounds(10,20,10));
+}
+
 
 #if 0
 
@@ -100,14 +110,6 @@ BOOST_FIXTURE_TEST_CASE(test_vf_creator, HandlerTestFixture)
 }
 
 
-BOOST_FIXTURE_TEST_CASE(test_transform_creator, HandlerTestFixture)
-{
-	const C3DTransformCreatorHandler::Instance& handler =
-		C3DTransformCreatorHandler::instance();
-	P3DTransformationFactory transform_creater = handler.produce("translate");
-	P3DTransformation transform = transform_creater->create(C3DBounds(10,20));
-	BOOST_CHECK_EQUAL(transform->get_size(), C3DBounds(10,20));
-}
 
 BOOST_FIXTURE_TEST_CASE(test_transform_creator_option, HandlerTestFixture)
 {
