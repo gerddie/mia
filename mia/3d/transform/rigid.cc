@@ -230,8 +230,13 @@ P3DTransformation C3DRigidTransformation::upscale(const C3DBounds& size) const
 
 C3DFMatrix C3DRigidTransformation::derivative_at(int /*x*/, int /*y*/, int /* y */) const
 {
-	assert(!"not implemented");
-	return C3DFMatrix();
+	if (!_M_matrix_valid)
+		evaluate_matrix();
+
+	return C3DFMatrix(
+		C3DFVector(_M_t[0], _M_t[4], _M_t[8]), 
+		C3DFVector(_M_t[1], _M_t[5], _M_t[9]), 
+		C3DFVector(_M_t[2], _M_t[6], _M_t[10]));
 }
 
 void C3DRigidTransformation::set_identity()
