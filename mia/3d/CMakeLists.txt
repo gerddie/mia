@@ -144,6 +144,7 @@ TEST_3D(ica ica)
 TEST_3D(transformfactory transformfactory)
 TEST_3D(rigidregister rigidregister)
 TEST_3D(transform transform)
+TEST_3D(transio transio)
 TEST_3D(quaternion quaternion)
 
 #
@@ -165,3 +166,4 @@ ADD_SUBDIRECTORY(io       )
 ADD_SUBDIRECTORY(shapes   )
 ADD_SUBDIRECTORY(reg3d    )
 ADD_SUBDIRECTORY(transform)
+ADD_SUBDIRECTORY(transio)
