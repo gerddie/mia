@@ -95,7 +95,7 @@ int do_main( int argc, const char *argv[] )
 	// registration parameters
 	string cost_function("ssd"); 
 	EMinimizers minimizer = min_nmsimplex;
-	auto transform_creator = C2DTransformCreatorHandler::instance().produce("spline"); 
+	auto transform_creator = C2DTransformCreatorHandler::instance().produce("rigid"); 
 	EInterpolation interpolator = ip_bspline3;
 	size_t mg_levels = 3; 
 	
@@ -179,9 +179,9 @@ int do_main( int argc, const char *argv[] )
 		cvwarn() << "ICA analysis didn't converge, results might by bougus";
 	
 	input_set.set_RV_peak(ica.get_RV_peak_idx()); 
-	input_set.set_LV_peak(ica.get_LV_peak_idx()); 
+	input_set.set_LV_peak(ica.get_LV_peak_idx());
 
-	vector<C2DFImage> references_float = ica.get_references(); 
+	vector<C2DFImage> references_float = ica.get_references();
 	
 	C2DImageSeries references(references_float.size()); 
 	transform(references_float.begin(), references_float.end(), references.begin(), C2DFImage2PImage()); 

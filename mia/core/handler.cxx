@@ -311,7 +311,7 @@ void THandlerSingleton<T>::set_search_path(const std::list<boost::filesystem::pa
 
 	if (_M_is_created) {
 		bfs::path type_path = TPlugin<typename IF::PlugData,typename IF::PlugType>::search_path();
-		cvwarn() << "THandlerSingleton<" << 
+		cvinfo() << "THandlerSingleton<" << 
 			type_path.file_string() <<
 			">::set_search_path: handler was already created\n"; 
 			

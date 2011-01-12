@@ -214,13 +214,13 @@ C3DFVector T3DImage<T>::get_voxel_size() const
 {
 	const PAttribute attr = get_attribute("voxel");
 	if (!attr) {
-		cvwarn() << "T3DDatafield<T>::get_voxel_size(): voxel size not defined\n";
+		cvinfo() << "T3DImage<T>::get_voxel_size(): voxel size not defined, default to <1,1,1>\n";
 		return C3DFVector(1,1,1);
 	}
 
 	const CVoxelAttribute * vs = dynamic_cast<const CVoxelAttribute *>(attr.get());
 	if (!vs){
-		cvwarn() << "T3DDatafield<T>::get_voxel_size(): voxel size wrong type\n";
+		cvinfo() << "T3DImage<T>::get_voxel_size(): voxel size wrong type, default to <1,1,1>\n";
 		return C3DFVector(1,1,1);
 	}
 
@@ -253,6 +253,12 @@ struct FGetGradient3D: public TFilter< C3DFVectorfield> {
 		return result;
 	}
 };
+
+/**
+   Evaluate the gradient of an image by using symmetric finite differences. 
+   @param image input image to calculate the gradient from 
+   @returns the 3D vector field representing the gradient, boundaries are set to zero. 
+*/
 
 C3DFVectorfield get_gradient(const C3DImage& image)
 {

@@ -106,7 +106,6 @@ BOOST_FIXTURE_TEST_CASE (test_affine_Gradient, TransformGradientFixture)
 	run_test(*transform); 
 }
 
-#if 0 
 BOOST_FIXTURE_TEST_CASE (test_rigid_Gradient, TransformGradientFixture) 
 {
 	const C3DTransformCreatorHandler::Instance& handler =
@@ -116,11 +115,10 @@ BOOST_FIXTURE_TEST_CASE (test_rigid_Gradient, TransformGradientFixture)
 
 	run_test(*transform); 
 	
-
 }
 
 
-
+#if 0 
 BOOST_FIXTURE_TEST_CASE (test_vf_Gradient, TransformGradientFixture) 
 {
 	const C3DTransformCreatorHandler::Instance& handler =

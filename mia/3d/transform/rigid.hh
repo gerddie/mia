@@ -48,7 +48,10 @@ public:
 
 	C3DRigidTransformation(const C3DBounds& size);
 	C3DRigidTransformation(const C3DBounds& size,const C3DFVector& translation,
-					       float rotation);
+			       const C3DFVector&  rotation);
+
+	C3DRigidTransformation(const C3DRigidTransformation& other);
+	C3DRigidTransformation& operator =(const C3DRigidTransformation& other);
 
 	void translate(float x, float y, float z);
 	void rotate(float xy, float xz, float yz);
@@ -104,12 +107,12 @@ public:
 private:
 	virtual C3DTransformation *do_clone() const;
 	void evaluate_matrix() const;
-	C3DRigidTransformation(const C3DRigidTransformation& other);
-	C3DRigidTransformation& operator =(const C3DRigidTransformation& other);
+
+
 	mutable std::vector<double> _M_t;
 	C3DBounds _M_size;
 	C3DFVector _M_translation;
-	float _M_rotation;
+	C3DFVector _M_rotation;
 	mutable bool _M_matrix_valid;
 };
 
