@@ -33,6 +33,9 @@
 #include <mia/2d/transformio.hh>
 #include <mia/2d/transformfactory.hh>
 
+#include <mia/3d/transformio.hh>
+#include <mia/3d/transformfactory.hh>
+
 
 #include <mia/3d/3dimageio.hh>
 #include <mia/3d/3dimageiotest.hh>
@@ -162,11 +165,16 @@ static void handler_setup()
 	C3DVFIOPluginHandler::set_search_path(searchpath);
 
 	C2DTransformationIOPluginHandler::set_search_path(searchpath);
+	C3DTransformationIOPluginHandler::set_search_path(searchpath);
 
-	std::list< bfs::path> tc_searchpath; 
-	searchpath.push_back(bfs::path("../mia/2d/transform"));
+	std::list< bfs::path> tc2_searchpath; 
+	tc2_searchpath.push_back(bfs::path("../mia/2d/transform"));
 
-	C2DTransformCreatorHandler::set_search_path(tc_searchpath);
+	std::list< bfs::path> tc3_searchpath; 
+	tc3_searchpath.push_back(bfs::path("../mia/3d/transform"));
+
+	C2DTransformCreatorHandler::set_search_path(tc2_searchpath);
+	C3DTransformCreatorHandler::set_search_path(tc3_searchpath);
 }
 
 
@@ -254,6 +262,51 @@ static void test_2dtransform_io()
 }
 
 
+static void test_3dtransform_io()
+{
+	C3DBounds size( 20, 20, 10); 
+	
+	const char *transforms[] = {
+		"translate",
+		"rigid",
+		"affine" 
+#if 0  
+		"spline:rate=3", 
+		"spline:rate=6", 
+		"vf"
+#endif 
+	}; 
+	const size_t n_transforms = sizeof(transforms)/sizeof(char*); 
+
+
+	for (size_t t = 0; t < n_transforms; ++t) {
+		cvdebug() << "Try to create " << transforms[t] << "\n"; 
+		auto tc = C3DTransformCreatorHandler::instance().produce(transforms[t]); 
+		auto tr = tc->create(size); 
+		auto params = tr->get_parameters(); 
+		for (size_t k = 0; k < params.size(); ++k) 
+			params[k] = k + 1; 
+		tr->set_parameters(params);
+		
+		stringstream fname; 
+		fname << transforms[t] << "." << "v3dt"; 
+		cvdebug() << "store to '" << fname << "'\n"; 
+		BOOST_CHECK(C3DTransformationIOPluginHandler::instance().save("", fname.str(), *tr)); 
+		
+		auto t_loaded = C3DTransformationIOPluginHandler::instance().load(fname.str()); 
+		BOOST_CHECK(t_loaded); 
+		BOOST_CHECK_EQUAL(t_loaded->get_size(), size); 
+		BOOST_CHECK_EQUAL(t_loaded->get_creator_string(), transforms[t]);
+		
+		auto lparams = t_loaded->get_parameters();
+		BOOST_CHECK_EQUAL(lparams.size(), params.size()); 
+		for (size_t k = 0; k < lparams.size(); ++k) 
+			BOOST_CHECK_EQUAL(lparams[k], k + 1); 
+		unlink( fname.str().c_str()); 
+	}
+}
+
+
 bool init_unit_test_suite( )
 {
 
@@ -273,6 +326,7 @@ bool init_unit_test_suite( )
 
 	suite->add( BOOST_TEST_CASE( &test_2dtransform_plugin_handler ));
 	suite->add( BOOST_TEST_CASE( &test_2dtransform_io ));
+	suite->add( BOOST_TEST_CASE( &test_3dtransform_io ));
 
 	add_2dvfio_tests( suite );
 

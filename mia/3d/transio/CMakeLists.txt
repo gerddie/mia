@@ -5,7 +5,6 @@ SET(io3dtransform_serialized
 )
 
 SET(SERLIBS mia3d ${Boost_SERIALIZATION_LIBRARY})
-MESSAGE(STATUS ${SERLIBS})
 
 PLUGIN_GROUP_PRE(
   "3d" 
