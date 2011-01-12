@@ -149,7 +149,7 @@ void RigidRegisterFixture::run(C3DTransformation& t, EMinimizers minimizer, doub
 }
 
 RigidRegisterFixture::RigidRegisterFixture():
-	size(50,30,40)
+	size(20,30,30)
 {
 	
 }
@@ -179,35 +179,8 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_gd, RigidRegisterFixture )
 	params[2] = 2.0;
 	transformation->set_parameters(params); 
 
-	run(*transformation, min_gd, 0.1); 
+	run(*transformation, min_gd, 0.4); 
 }
-
-BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_bfgs, RigidRegisterFixture )
-{
-	auto tr_creator = C3DTransformCreatorHandler::instance().produce("translate");
-	auto transformation = tr_creator->create(size); 
-	auto params = transformation->get_parameters(); 
-	params[0] = 1.0;
-	params[1] = 1.0;
-	params[2] = 2.0;
-	transformation->set_parameters(params); 
-
-	run(*transformation, min_bfgs, 1.0); 
-}
-
-BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_cg_fr, RigidRegisterFixture )
-{
-	auto tr_creator = C3DTransformCreatorHandler::instance().produce("translate");
-	auto transformation = tr_creator->create(size); 
-	auto params = transformation->get_parameters(); 
-	params[0] = 1.0;
-	params[1] = 1.0;
-	params[2] = 2.0;
-	transformation->set_parameters(params); 
-
-	run(*transformation, min_cg_fr, 2.0); 
-}
-
 
 BOOST_FIXTURE_TEST_CASE( test_rigid_simplex, RigidRegisterFixture )
 {
@@ -241,24 +214,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigid_gd, RigidRegisterFixture )
 	
 	transformation->set_parameters(params); 
 
-	run(*transformation, min_gd, 5.0); 
-}
-
-BOOST_FIXTURE_TEST_CASE( test_rigid_bfgs, RigidRegisterFixture )
-{
-	auto tr_creator = C3DTransformCreatorHandler::instance().produce("rigid");
-	auto transformation = tr_creator->create(size); 
-	auto params = transformation->get_parameters(); 
-	params[0] =  0.0;
-	params[1] =  0.0;
-	params[2] =  0.0;
-	params[3] =  0.5;
-	params[4] =  0.0;
-	params[5] =  0.0;
-	
-	transformation->set_parameters(params); 
-
-	run(*transformation, min_bfgs, 5.0); 
+	run(*transformation, min_gd, 7.0); 
 }
 
 #if 0 
