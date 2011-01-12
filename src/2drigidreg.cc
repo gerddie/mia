@@ -28,6 +28,7 @@
 #include <mia/2d.hh>
 #include <mia/2d/rigidregister.hh>
 #include <gsl++/multimin.hh>
+#include <mia/2d/transformio.hh>
 #include <mia/core/factorycmdlineoption.hh>
 
 NS_MIA_USE;
@@ -58,7 +59,7 @@ int do_main( int argc, const char *argv[] )
 	string ref_filename;
 	string out_filename;
 	string trans_filename;
-	auto transform_creator = C2DTransformCreatorHandler::instance().produce("spline"); 
+	auto transform_creator = C2DTransformCreatorHandler::instance().produce("rigid"); 
 	EMinimizers minimizer = min_nmsimplex;
 
 	size_t mg_levels = 3;
@@ -93,7 +94,8 @@ int do_main( int argc, const char *argv[] )
 	P2DImage result = (*transform)(*Model, *ipfactory);
 
 	if (!trans_filename.empty()) {
-		cvwarn() << "saving the transformation is not yet implemented";
+		if (!C2DTransformationIOPluginHandler::instance().save("", trans_filename, *transform)) 
+			cverr() << "Saving the transformation to '" << trans_filename << "' failed."; 
 	}
 
 	return save_image2d(out_filename, result);
