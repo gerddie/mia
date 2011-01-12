@@ -65,7 +65,7 @@ BOOST_FIXTURE_TEST_CASE(set_identity_TranslateTransFixture, TranslateTransFixtur
 	for (size_t z = 0; z < size.z; ++z)
 		for (size_t y = 0; y < size.y; ++y)
 			for (size_t x = 0; x < size.x; ++x, ++ti) {
-				BOOST_CHECK_EQUAL(*ti, C3DFVector(x, y, z);
+				BOOST_CHECK_EQUAL(*ti, C3DFVector(x, y, z));
 			}
 }
 
@@ -101,29 +101,29 @@ BOOST_AUTO_TEST_CASE(test_rigid3d)
 	const float pi_half = M_PI / 2.0; 
 
 	{
-		C3DRigidTransformation t_rot_x(t1); 
-		t_rot_x.rotate(pi_half, 0.0, 0.0);
-		C3DFVector yr1 = t_rot_x(x0);
-		BOOST_CHECK_CLOSE(yr1.x ,-4.0, 0.1f);
-		BOOST_CHECK_CLOSE(yr1.y , 2.0, 0.1f);
-		BOOST_CHECK_CLOSE(yr1.z , 1.0, 0.1f);
+		C3DRigidTransformation t_rot_xy(t1); 
+		t_rot_xy.rotate(pi_half, 0.0, 0.0);
+		C3DFVector yrx = t_rot_xy(x0);
+		BOOST_CHECK_CLOSE(yrx.x ,-4.0, 0.1f);
+		BOOST_CHECK_CLOSE(yrx.y , 2.0, 0.1f);
+		BOOST_CHECK_CLOSE(yrx.z , 1.0, 0.1f);
 	}
 
 	{
-		C3DRigidTransformation t_rot_y(t1); 
-		t_rot_y.rotate(0.0, pi_half,  0.0);
-		C3DFVector yr1 = t_rot_y(x0);
-		BOOST_CHECK_CLOSE(yr2.x ,-1.0, 0.1f);
-		BOOST_CHECK_CLOSE(yr2.y , 4.0, 0.1f);
-		BOOST_CHECK_CLOSE(yr2.z , 2.0, 0.1f);
+		C3DRigidTransformation t_rot_xz(t1); 
+		t_rot_xz.rotate(0.0, pi_half,  0.0);
+		C3DFVector yry = t_rot_xz(x0);
+		BOOST_CHECK_CLOSE(yry.x ,-1.0, 0.1f);
+		BOOST_CHECK_CLOSE(yry.y , 4.0, 0.1f);
+		BOOST_CHECK_CLOSE(yry.z , 2.0, 0.1f);
 	}
 	{
-		C3DRigidTransformation t_rot_z(t1); 
-		t_rot_z.rotate(0.0, pi_half,  0.0);
-		C3DFVector yr1 = t_rot_z(x0);
-		BOOST_CHECK_CLOSE(yr2.x ,-4.0, 0.1f);
-		BOOST_CHECK_CLOSE(yr2.y , 2.0, 0.1f);
-		BOOST_CHECK_CLOSE(yr2.z , 1.0, 0.1f);
+		C3DRigidTransformation t_rot_yz(t1); 
+		t_rot_yz.rotate(0.0,  0.0, pi_half);
+		C3DFVector yrz = t_rot_yz(x0);
+		BOOST_CHECK_CLOSE(yrz.x , 2.0, 0.1f);
+		BOOST_CHECK_CLOSE(yrz.y ,-1.0, 0.1f);
+		BOOST_CHECK_CLOSE(yrz.z , 4.0, 0.1f);
 	}
 
 
@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE(test_rigid3d)
 	C3DFVector yr = t2(x0);
 	BOOST_CHECK_CLOSE(yr.x ,  -2.0f, 0.1f);
 	BOOST_CHECK_CLOSE(yr.y ,   1.0f, 0.1f);
-	BOOST_CHECK_CLOSE(yr.z ,   1.0f, 0.1f);
+	BOOST_CHECK_CLOSE(yr.z ,  -1.0f, 0.1f);
 }
 
 BOOST_AUTO_TEST_CASE( test_rigid3d_iterator )
@@ -292,6 +292,6 @@ BOOST_AUTO_TEST_CASE (test_inverse_rigid)
 	BOOST_CHECK_CLOSE(b[0], ca * 1 + sa * 3, 0.1);
 	BOOST_CHECK_CLOSE(b[1],-sa * 1 + ca * 3, 0.1);
 	BOOST_CHECK_EQUAL(b[2],-1.0);
-
+	
 }
 #endif
