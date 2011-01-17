@@ -81,7 +81,8 @@ C2DFMatrix C2DTransformMock::derivative_at(int, int) const
 
 void C2DTransformMock::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
-	for(auto f = gradient.begin(), r = params.begin(); f != gradient.end(); ++f) {
+        auto r = params.begin();
+	for(auto f = gradient.begin(); f != gradient.end(); ++f) {
 		*r++ = f->x;
 		*r++ = f->y;
 	}

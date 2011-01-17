@@ -106,7 +106,4 @@ BOOST_AUTO_TEST_CASE( test_another_factory_option )
 	BOOST_CHECK_EQUAL(test.str(), "=lala"); 
 }
 
-
-
-
 NS_MIA_END

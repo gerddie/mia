@@ -245,7 +245,8 @@ int do_main( int argc, const char *argv[] )
 
 	copy(series.begin(), series.end(), images.begin() + skip); 
 	CSegSet::Frames& frames = input_set.get_frames(); 
-	for (auto f = frames.begin() +skip, t = transforms.begin(); f != frames.end(); ++t, ++f)
+	auto t = transforms.begin();
+	for (auto f = frames.begin() +skip; f != frames.end(); ++t, ++f)
 		f->inv_transform(**t); 
 
 	// copy back registered images

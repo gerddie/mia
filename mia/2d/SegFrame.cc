@@ -238,15 +238,17 @@ struct EvalMaskStat: public TFilter<CSegFrame::SectionsStats> {
 	CSegFrame::SectionsStats operator ()(const T2DImage<T>& image) const {
 		CSegFrame::SectionsStats result(max_idx); 
 		vector<size_t> size(max_idx, 0); 
-		for(auto m=m_mask.begin(), i = image.begin(); m != m_mask.end(); ++i, ++m) {
-			const double v = *i;
+		auto k = image.begin();
+		for(auto m=m_mask.begin(); m != m_mask.end(); ++k, ++m) {
+			const double v = *k;
 			if (*m) {
 				result[*m-1].first  += v; 
 				result[*m-1].second += v * v; 
 				++size[*m-1]; 
 			}
 		}
-		for (auto i = result.begin(), n=size.begin(); i != result.end(); ++i, ++n) {
+		auto n=size.begin();
+		for (auto i = result.begin(); i != result.end(); ++i, ++n) {
 			if (*n) 
 				i->first /= *n; 
 			if (*n > 1) 

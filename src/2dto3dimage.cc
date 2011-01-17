@@ -54,7 +54,7 @@ struct C3DImageCollector : public TFilter<bool> {
 	template <typename T>
 	bool operator ()(const T2DImage<T>& image) {
 
-		if (_M_image == 0)
+	        if (!_M_image)
 			_M_image = std::shared_ptr<C3DImage > (new T3DImage<T>(C3DBounds(image.get_size().x,
 										  image.get_size().y,
 										  _M_slices)));

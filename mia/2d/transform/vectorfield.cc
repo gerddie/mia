@@ -161,7 +161,8 @@ float C2DGridTransformation::get_max_transform() const
 gsl::DoubleVector C2DGridTransformation::get_parameters() const
 {
 	gsl::DoubleVector result(_M_field.size() * 2);
-	for(auto f = _M_field.begin(), r = result.begin(); f != _M_field.end(); ++f) {
+	auto r = result.begin();
+	for(auto f = _M_field.begin(); f != _M_field.end(); ++f) {
 		*r++ = f->x;
 		*r++ = f->y;
 	}
@@ -171,7 +172,8 @@ gsl::DoubleVector C2DGridTransformation::get_parameters() const
 void C2DGridTransformation::set_parameters(const gsl::DoubleVector& params)
 {
 	assert(2 * _M_field.size() == params.size());
-	for(auto f = _M_field.begin(), r = params.begin(); f != _M_field.end(); ++f) {
+	auto r = params.begin();
+	for(auto f = _M_field.begin(); f != _M_field.end(); ++f) {
 		f->x = *r++;
 		f->y = *r++;
 	}
@@ -259,7 +261,8 @@ void C2DGridTransformation::translate(const C2DFVectorfield& gradient, gsl::Doub
 
 	// translating the gradient also means multiplication with -1 
 	// because the transformation is I-u(x)
-	for(auto f = gradient.begin(), r = params.begin(); f != gradient.end(); ++f, r+=2) {
+	auto r = params.begin();
+	for(auto f = gradient.begin(); f != gradient.end(); ++f, r+=2) {
 		r[0] = -f->x;
 		r[1] = -f->y;
 	}

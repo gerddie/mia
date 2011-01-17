@@ -84,7 +84,7 @@ template <typename F>
 bool TCmdFactoryOption<F>::do_set_value_really(const char *str_value)
 {
 	_M_value = F::instance().produce(str_value); 
-	return _M_value; 
+	return !(!_M_value); 
 }
 
 template <typename F>

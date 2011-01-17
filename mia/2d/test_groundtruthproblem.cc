@@ -248,7 +248,8 @@ void GroundTruthAccess::check_vector_equal(const vector<double>& result, const d
 {
 	BOOST_REQUIRE(psize == result.size());
 	size_t i = 0;
-	for(auto sg = result.begin(), t = test; sg !=result.end(); ++t, ++sg, ++i) {
+	auto t = test;
+	for(auto sg = result.begin(); sg !=result.end(); ++t, ++sg, ++i) {
 		if (*sg != *t)
 			cvfail() << i << "\n";
 		BOOST_CHECK_CLOSE(*sg, *t, 0.1);

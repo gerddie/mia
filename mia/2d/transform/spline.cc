@@ -143,7 +143,8 @@ C2DFVector C2DSplineTransformation::interpolate(const C2DFVector& x) const
 		    ; ++y, ++wy)  {
 		C2DFVector h; 
 		size_t x = startx; 
-		for(auto wx = xweights.begin(), cx = _M_coefficients.begin_at(startx,y); 
+		auto wx = xweights.begin();
+		for(auto cx = _M_coefficients.begin_at(startx,y); 
 		    x < _M_coefficients.get_size().x && wx != xweights.end(); ++x, ++wx, ++cx)  {
 			h += *wx * *cx; 
 		}
@@ -190,7 +191,8 @@ gsl::DoubleVector C2DSplineTransformation::get_parameters() const
 {
 	TRACE_FUNCTION;
 	gsl::DoubleVector result(_M_coefficients.size() * 2);
-	for(auto f = _M_coefficients.begin(), r = result.begin(); f != _M_coefficients.end(); ++f) {
+	auto r = result.begin();
+	for(auto f = _M_coefficients.begin(); f != _M_coefficients.end(); ++f) {
 		*r++ = f->x;
 		*r++ = f->y;
 	}
@@ -201,7 +203,8 @@ void C2DSplineTransformation::set_parameters(const gsl::DoubleVector& params)
 {
 	TRACE_FUNCTION;
 	assert(2 * _M_coefficients.size() == params.size());
-	for(auto f = _M_coefficients.begin(), r = params.begin(); f != _M_coefficients.end(); ++f) {
+	auto r = params.begin();
+	for(auto f = _M_coefficients.begin(); f != _M_coefficients.end(); ++f) {
 		f->x = *r++;
 		f->y = *r++;
 	}
@@ -326,7 +329,8 @@ C2DFMatrix C2DSplineTransformation::derivative_at(const C2DFVector& x) const
 	for(auto wy = yweights.begin(); y < _M_coefficients.get_size().y && wy != yweights.end(); ++y, ++wy)  {
 		C2DFVector h; 
 		size_t x = startx; 
-		for(auto wx = xweights.begin(), cx = _M_coefficients.begin_at(startx,y); 
+		auto wx = xweights.begin();
+		for(auto cx = _M_coefficients.begin_at(startx,y); 
 		    x < _M_coefficients.get_size().x && wx != xweights.end(); ++x, ++wx, ++cx)  {
 			h += *wx * *cx; 
 		}
@@ -338,7 +342,8 @@ C2DFMatrix C2DSplineTransformation::derivative_at(const C2DFVector& x) const
 	for(auto wy = yweights.begin(); y < _M_coefficients.get_size().y && wy != yweights.end(); ++y, ++wy)  {
 		C2DFVector h; 
 		size_t x = startx; 
-		for(auto wx = xweights.begin(), cx = _M_coefficients.begin_at(startx,y); 
+		auto wx = xweights.begin();
+		for(auto cx = _M_coefficients.begin_at(startx,y); 
 		    x < _M_coefficients.get_size().x && wx != xweights.end(); ++x, ++wx, ++cx)  {
 			h += *wx * *cx; 
 		}

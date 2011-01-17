@@ -83,7 +83,8 @@ C3DFMatrix C3DTransformMock::derivative_at(int, int) const
 
 void C3DTransformMock::translate(const C3DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
-	for(auto f = gradient.begin(), r = params.begin(); f != gradient.end(); ++f) {
+        auto r = params.begin();
+	for(auto f = gradient.begin(); f != gradient.end(); ++f) {
 		*r++ = f->x;
 		*r++ = f->y;
 	}

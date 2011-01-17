@@ -257,7 +257,8 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_mask, FrameTestRead)
 	}; 
 
 	C2DUBImage section_mask = frame.get_section_masks(size); 
-	for (auto i = section_mask.begin(), t = test_data; i != section_mask.end(); ++i, ++t) 
+	auto t = test_data;
+	for (auto i = section_mask.begin(); i != section_mask.end(); ++i, ++t) 
 		BOOST_CHECK_EQUAL(*i, *t); 
 
 }
