@@ -23,8 +23,13 @@
 
 #include <cassert>
 
+
+#include <mia/core/interpolator1d.hh>
 #include <mia/3d/interpolator.hh>
+
+#include <mia/core/interpolator1d.cxx>
 #include <mia/3d/interpolator.cxx>
+
 
 
 NS_MIA_BEGIN
@@ -59,6 +64,10 @@ C3DInterpolatorFactory::~C3DInterpolatorFactory()
 {
 }
 
+PBSplineKernel C3DInterpolatorFactory::get_kernel() const
+{
+	return _M_kernel; 
+}
 
 EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(int type)
 {
@@ -117,5 +126,13 @@ INSTANCIATE_INTERPOLATORS(double);
 INSTANCIATE_INTERPOLATORS(mia_int64);
 INSTANCIATE_INTERPOLATORS(mia_uint64);
 #endif
+
+INSTANCIATE_INTERPOLATORS(C3DFVector);
+
+template class T1DInterpolator<C3DFVector>;
+template class T1DLinearInterpolator<C3DFVector>;
+template class T1DNNInterpolator<C3DFVector>;
+template class T1DConvoluteInterpolator<C3DFVector>;
+
 
 NS_MIA_END

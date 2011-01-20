@@ -103,8 +103,8 @@ struct trinlin_dispatch {
 			const T  a3 = T(dx * data(ux  , uy+1, uz  ) + fx * data(ux+1, uy+1, uz  ));
 			const T  a5 = T(dx * data(ux  , uy  , uz+1) + fx * data(ux+1, uy  , uz+1));
 			const T  a7 = T(dx * data(ux  , uy+1, uz+1) + fx * data(ux+1, uy+1, uz+1));
-			register T b1 = T(dy * a1 + fy * a3);
-			register T b2 = T(dy * a5 + fy * a7);
+			T b1 = T(dy * a1 + fy * a3);
+			T b2 = T(dy * a5 + fy * a7);
 			return  T(dz * b1 + fz * b2);
 		}
 		
@@ -147,7 +147,7 @@ T  T3DTrilinearInterpolator<T>::operator () (const C3DFVector& p)const
 
 
 template <class T>
-struct min_max {
+struct min_max_3d {
 	static void get( const T3DDatafield<T>& data, T* min, T*max)
 	{
 		typename T3DDatafield<T>::const_iterator i = data.begin(); 
@@ -163,7 +163,7 @@ struct min_max {
 };
 
 template <class  T>
-struct min_max<T3DVector<T> > {
+struct min_max_3d<T3DVector<T> > {
 	static void get( const T3DDatafield<T3DVector<T> >& data, T3DVector<T>* min, T3DVector<T>*max)
 	{
 		typename T3DDatafield<T3DVector<T> >::const_iterator i = data.begin(); 
@@ -195,7 +195,7 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 	_M_y_weight(kernel->size()),
 	_M_z_weight(kernel->size())
 {
-	min_max<T>::get(image, &_M_min, &_M_max);
+	min_max_3d<T>::get(image, &_M_min, &_M_max);
 	
 	// copy the data
 	std::copy(image.begin(), image.end(), _M_coeff.begin());
@@ -244,64 +244,6 @@ T3DConvoluteInterpolator<T>::~T3DConvoluteInterpolator()
 {
 }
 	
-template <class In, class Out>
-struct round_to {
-	
-	static Out value(In x) {
-		return (Out)x;
-	}
-};
-
-template <class In>
-struct round_to<In, unsigned char> {	
-	static unsigned char value(In x) {
-		return (unsigned char)floor(x + 0.5);
-	}
-};
-
-template <class In>
-struct round_to<In, signed char> {	
-	static signed char value(In x) {
-		return (signed char)floor(x + 0.5);
-	}
-};
-
-template <class In>
-struct round_to<In, unsigned short> {	
-	static unsigned short value(In x) {
-		return (unsigned short)floor(x + 0.5);
-	}
-};
-
-template <class In>
-struct round_to<In, signed short> {	
-	static signed short value(In x) {
-		return (signed short)floor(x + 0.5);
-	}
-};
-
-template <class In>
-struct round_to<In, unsigned long> {	
-	static unsigned long value(In x) {
-		return (unsigned long)floor(x + 0.5);
-	}
-};
-
-template <class In>
-struct round_to<In, signed long> {	
-	static signed long value(In x) {
-		return (signed long)floor(x + 0.5);
-	}
-};
-
-template <class T, class U>
-struct bounded {
-	static void apply(T& r, const U& min, const U& max)
-	{
-		r = (r >= min) ? ( (r <= max) ? r : max) : min;
-	}
-};
-
 template <class T, class U>
 struct bounded<T3DVector<T>, T3DVector<U> > {
 	static void apply(T3DVector<T>& r, const T3DVector<U>& min, const T3DVector<U>& max)

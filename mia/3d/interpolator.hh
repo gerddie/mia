@@ -133,6 +133,7 @@ struct coeff_map<T3DVector<U> > {
 template <class T>
 class EXPORT_3D T3DConvoluteInterpolator: public T3DInterpolator<T> {
 public:
+	typedef T3DDatafield< typename coeff_map< T >::coeff_type > TCoeff3D;
 	/**
 	   Create the interpolator from the input data and a given kernel
 	   \param data
@@ -150,8 +151,12 @@ public:
 	 */
 	T  operator () (const C3DFVector& x) const;
 
+	/// \returns the coefficients 
+	const TCoeff3D& get_coefficients() const {
+		return _M_coeff; 
+	}
+
 protected:
-	typedef T3DDatafield< typename coeff_map< T >::coeff_type > TCoeff3D;
 
 	typedef std::vector< typename TCoeff3D::value_type > coeff_vector;
 private:
@@ -187,7 +192,7 @@ public:
 	   \param type interpolator type id
 	   \param kernel spline kernel
 	*/
-	C3DInterpolatorFactory(EType type, std::shared_ptr<CBSplineKernel > kernel);
+	C3DInterpolatorFactory(EType type, PBSplineKernel kernel);
 
 	/// Copy constructor
 	C3DInterpolatorFactory(const C3DInterpolatorFactory& o);
@@ -206,9 +211,11 @@ public:
 	T3DInterpolator<T> *create(const T3DDatafield<T>& src) const
 		__attribute__ ((warn_unused_result));
 
+	/// @returns the B-spline kernel used for interpolator creation 
+	PBSplineKernel get_kernel() const; 
 private:
 	EType _M_type;
-	std::shared_ptr<CBSplineKernel > _M_kernel;
+	PBSplineKernel _M_kernel;
 };
 
 

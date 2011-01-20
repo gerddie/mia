@@ -97,8 +97,9 @@ struct lin_dispatch {
 	apply_derivative(const std::vector<T>& data, const double& p, const double& /*sizeb*/) {
 		const size_t ux = floor(p); 
 		if (ux < data.size() - 1)
-			return data[ux+1] - data[ux]; 
-		else return T(); 
+			return typename coeff_map<T>::coeff_type(data[ux+1] - data[ux]); 
+		else 
+			return typename coeff_map<T>::coeff_type(); 
 	}
 };
 
@@ -327,7 +328,7 @@ T1DConvoluteInterpolator<T>::derivative_at (const double& x) const
 	
 	// cut at boundary
 	if (x < 0.0 || x >= _M_coeff.size())
-		return T();
+		return typename coeff_map<T>::coeff_type();
 	
 	_M_kernel->derivative(x, _M_x_weight, _M_x_index);
 	mirror_boundary_conditions(_M_x_index, _M_coeff.size(), _M_size2);

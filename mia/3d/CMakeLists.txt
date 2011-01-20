@@ -17,6 +17,7 @@ SET(MIA3D_SRC
   nfg.cc 
   orientation.cc
   quaternion.cc
+  ppmatrix.cc 
   register.cc
   rigidregister.cc
   timestep.cc
@@ -47,6 +48,7 @@ SET(MIA3D_HEADERS
 	model.hh
 	nfg.hh
 	orientation.hh
+	ppmatrix.hh
 	quaternion.hh
 	register.hh
 	rigidregister.hh
@@ -146,6 +148,7 @@ TEST_3D(rigidregister rigidregister)
 TEST_3D(transform transform)
 TEST_3D(transio transio)
 TEST_3D(quaternion quaternion)
+TEST_3D(ppmatrix ppmatrix)
 
 #
 # installation 
