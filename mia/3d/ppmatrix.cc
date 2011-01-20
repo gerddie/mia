@@ -49,12 +49,12 @@ private:
 	size_t _M_nodes; 
 	
 	struct SMatrixCell {
-		double v11; 
-		double v12; 
-		double v13; 
-		double v22; 
-		double v23; 
-		double v33; 
+		double vxx; 
+		double vxy; 
+		double vxz; 
+		double vyy; 
+		double vyz; 
+		double vzz; 
 		size_t i; 
 		size_t j;
 	}; 
@@ -175,8 +175,10 @@ C3DPPDivcurlMatrixImpl::C3DPPDivcurlMatrixImpl(const C3DBounds& size, const C3DF
 void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& range, const CBSplineKernel& kernel, 
 				   double wdiv, double wrot)
 {
-	if (  _M_size == size && wdiv == _M_wdiv && wrot == _M_wrot && _M_range == range && kernel.get_type()  == _M_type)
+	if (  _M_size == size && wdiv == _M_wdiv && wrot == _M_wrot &&
+	      _M_range == range && kernel.get_type()  == _M_type)
 		return; 
+	
 	_M_size = size;
 	_M_wdiv = wdiv; 
 	_M_wrot = wrot; 
@@ -185,53 +187,56 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 	_M_nodes = size.x*size.y*size.z; 
 	_M_P.clear(); 
 
-	C3DFVector h((size.x-1)/range.x,(size.y-1)/range.y, (size.z-1)/range.z);
-	int nz = _M_size.z; 
-	int ny = _M_size.y; 
-	int nx = _M_size.x; 
+	C3DFVector h((size.x-1)/range.x,
+		     (size.y-1)/range.y, 
+		     (size.z-1)/range.z);
+	
+	const int nx = _M_size.x; 
+	const int ny = _M_size.y; 
+	const int nz = _M_size.z; 
+
+
 	int kernel_range = kernel.size()+1; 
 
+	CIntegralCache rc00(kernel); 
+	CIntegralCache rc11(kernel); 
 	CIntegralCache rc22(kernel); 
 	CIntegralCache rc21(kernel); 
 	CIntegralCache rc01(kernel); 
 	CIntegralCache rc10(kernel); 
 
-	CIntegralCache rc00(kernel); 
-	CIntegralCache rc11(kernel); 
 
 	const double wsum = wdiv + wrot; 
 	const double wdelta = 2.0 * (wdiv - wrot); 
 	
 	for (int a = 0, i=0; a < nz; ++a) {
+		cvdebug() << "block " << a << "\n"; 
 		for (int l = 0; l < ny; ++l) {
 			for (int k = 0; k < nx; ++k, ++i) {
+				size_t nk = 0; 
 				for (int b = max(0,a - kernel_range); b < min(a + kernel_range, nz); ++b) {
 					for (int n = max(0,l - kernel_range); n < min(l + kernel_range, ny); ++n) {
 						for (int m = max(0,k - kernel_range); m < min(k + kernel_range,nx); ++m) {
-							double r01x = h.x *  rc01.get( k, m, 0, 1,size.x); 
-							double r01y = h.y *  rc01.get( l, n, 0, 1,size.y); 
-							double r01z = h.z *  rc01.get( a, b, 0, 1,size.z); 
 
-							// i think this was symmetric ...
-							double r10x = h.x *  rc10.get( k, m, 0, 1,size.x); 
-							double r10y = h.y *  rc10.get( l, n, 0, 1,size.y); 
+							const double r01x = h.x * rc01.get( k, m, 0, 1,size.x); 
+							const double r01y = h.y * rc01.get( l, n, 0, 1,size.y); 
+							const double r01z = h.z * rc01.get( a, b, 0, 1,size.z); 
 
-							double r22x = h.x * rc22.get(k, m, 2, 2, size.x); 
-							double r22y = h.y * rc22.get(l, n, 2, 2, size.y); 
-							double r22z = h.z * rc22.get(a, b, 2, 2, size.z); 
+							const double r22x = h.x * rc22.get( k, m, 2, 2, size.x); 
+							const double r22y = h.y * rc22.get( l, n, 2, 2, size.y); 
+							const double r22z = h.z * rc22.get( a, b, 2, 2, size.z); 
 							
-							double r21x = h.x * rc21.get( k, m, 2, 1, size.x); 
-							double r21y = h.y * rc21.get( l, n, 2, 1, size.y); 
-							double r21z = h.z * rc21.get( a, b, 2, 1, size.z); 
+							const double r21x = h.x * rc21.get( k, m, 2, 1, size.x); 
+							const double r21y = h.y * rc21.get( l, n, 2, 1, size.y); 
+							const double r21z = h.z * rc21.get( a, b, 2, 1, size.z); 
 							
+							const double r00x = h.x * rc00.get( k, m, 0, 0, size.x); 
+							const double r00y = h.y * rc00.get( l, n, 0, 0, size.y); 
+							const double r00z = h.z * rc00.get( a, b, 0, 0, size.z); 
 							
-							double r00x = h.x * rc00.get( k, m, 0, 0, size.x); 
-							double r00y = h.y * rc00.get( l, n, 0, 0, size.y); 
-							double r00z = h.z * rc00.get( a, b, 0, 0, size.z); 
-							
-							double r11x = h.x * rc11.get(  k, m, 1, 1, size.x); 
-							double r11y = h.y * rc11.get(  l, n, 1, 1, size.y); 
-							double r11z = h.z * rc11.get(  a, b, 1, 1, size.z); 
+							const double r11x = h.x * rc11.get( k, m, 1, 1, size.x); 
+							const double r11y = h.y * rc11.get( l, n, 1, 1, size.y); 
+							const double r11z = h.z * rc11.get( a, b, 1, 1, size.z); 
 							
 							SMatrixCell cell; 
 							
@@ -243,61 +248,67 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 							const double r001111 = r00x * r11y * r11z; 
 
 							bool zero = true; 
-							cell.v11 = 
+							cell.vxx = 
 								r220000 * wdiv +
 								r111100 * wsum + 
 								r110011 * wsum + 
 								r002200 * wrot + 
 								r000022 * wrot + 
 								r001111 * 2.0 * wrot; 
-							zero &= cell.v11 == 0.0; 
+							zero &= cell.vxx == 0.0; 
 
-							cell.v22 = 
+							cell.vyy = 
 								r220000 * wrot +
 								r111100 * wsum + 
 								r110011 * 2* wrot + 
 								r002200 * wdiv + 
 								r000022 * wrot + 
 								r001111 * wsum; 
-							zero &= cell.v22 == 0.0; 
+							zero &= cell.vyy == 0.0; 
 							
-							cell.v33 = 
+							cell.vzz = 
 								r220000 * wrot +
-								r111100 * 2* wrot + 
+								r111100 * wrot * 2 + 
 								r110011 * wsum + 
 								r002200 * wrot + 
 								r000022 * wdiv + 
 								r001111 * wsum; 
-							zero &= cell.v33 == 0.0; 
+							zero &= cell.vzz == 0.0; 
 							
 							if (wdelta != 0.0) {
-								cell.v12 = wdelta * 
+								cell.vxy = wdelta * 
 									(r21x * r01y * r00z + 
 									 r01x * r21y * r00z + 
-									 r10x * r01y * r11z); 
-								zero &= cell.v12 == 0.0; 
+									 r01x * r01y * r11z); 
+								zero &= cell.vxy == 0.0; 
 
-								cell.v13 = wdelta * 
+								cell.vxz = wdelta * 
 									(r21x * r00y * r01z + 
-									 r10x * r11y * r01z + 
+									 r01x * r11y * r01z + 
 									 r01x * r00y * r21z); 
-								zero &= cell.v13 == 0.0; 
+								zero &= cell.vxz == 0.0; 
 
-								cell.v23 = wdelta * ( 
-									r11x * r10y * r01z + 
+								cell.vyz = wdelta * ( 
+									r11x * r01y * r01z + 
 									r00x * r21y * r01z + 
 									r00x * r01y * r21z); 
-								zero &= cell.v23 == 0.0; 
+								zero &= cell.vyz == 0.0; 
 							}
 								
-							if (!zero) 
+							if (!zero) {
+								cell.i = i; 
+								cell.j = m + nx * (n + ny * b); 
 								_M_P.push_back(cell); 
+								++nk; 
+							}
 						}
 					}
 				}
+				cvdebug() << "added " << nk << " cells for block " << i << "\n"; 
 			}
 		}
 	}
+	cvmsg() << "P-matrix has " << _M_P.size() << " entries\n"; 
 }
 
 template <typename Field>
@@ -313,17 +324,27 @@ double C3DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 	double result_6 = 0.0; 
 
 	for (auto p = _M_P.begin(); p != _M_P.end();++p) {
+		assert(p->i < coefficients.size()); 
+		assert(p->j < coefficients.size()); 
 		auto ci = coefficients[p->i]; 
 		auto cj = coefficients[p->j]; 
 		
-		result_1 += ci.x * cj.x * p->v11; 
-		result_2 += ci.x * cj.y * p->v12; 
-		result_3 += ci.y * cj.y * p->v22; 
-		result_4 += ci.x * cj.z * p->v13; 
-		result_5 += ci.y * cj.z * p->v23; 
-		result_6 += ci.z * cj.z * p->v33; 
+		result_1 += ci.x * cj.x * p->vxx; 
+		result_2 += ci.y * cj.y * p->vyy; 
+		result_3 += ci.z * cj.z * p->vzz; 
+		result_4 += ci.x * cj.y * p->vxy; 
+		result_5 += ci.x * cj.z * p->vxz; 
+		result_6 += ci.y * cj.z * p->vyz; 
+
 
 	}
+	cvinfo() << "result_1= " << result_1 << "\n"; 
+	cvinfo() << "result_2= " << result_2 << "\n"; 
+	cvinfo() << "result_3= " << result_3 << "\n"; 
+	cvinfo() << "result_4= " << result_4 << "\n"; 
+	cvinfo() << "result_5= " << result_5 << "\n"; 
+	cvinfo() << "result_6= " << result_6 << "\n"; 
+
 	return result_1 + result_2 + result_3 + 
 		result_4 + result_5 + result_6; 
 }
@@ -345,24 +366,24 @@ double C3DPPDivcurlMatrixImpl::evaluate(const T3DDatafield<C3DDVector>& coeffici
 		auto ci = coefficients[p->i]; 
 		auto cj = coefficients[p->j]; 
 		
-		const double cjxpv11 = cj.x * p->v11; 
-		const double cjypv22 = cj.y * p->v22; 
-		const double cjzpv33 = cj.z * p->v33; 
+		const double cjxpvxx = cj.x * p->vxx; 
+		const double cjypvyy = cj.y * p->vyy; 
+		const double cjzpvzz = cj.z * p->vzz; 
 
-		const double cjypv12 = cj.y * p->v12; 
-		const double cjxpv13 = cj.x * p->v13; 
-		const double cjzpv23 = cj.z * p->v23; 
+		const double cjypvxy = cj.y * p->vxy; 
+		const double cjxpvxz = cj.x * p->vxz; 
+		const double cjzpvyz = cj.z * p->vyz; 
 
-		result_1 += ci.x * cjxpv11; 
-		result_2 += ci.x * cjypv12; 
-		result_3 += ci.y * cjypv22; 
-		result_4 += ci.z * cjxpv13; 
-		result_5 += ci.y * cjzpv23; 
-		result_6 += ci.z * cjzpv33; 
+		result_1 += ci.x * cjxpvxx; 
+		result_2 += ci.x * cjypvxy; 
+		result_3 += ci.y * cjypvyy; 
+		result_4 += ci.z * cjxpvxz; 
+		result_5 += ci.y * cjzpvyz; 
+		result_6 += ci.z * cjzpvzz; 
 
-		gradient[3*p->i    ] += 2 * cjxpv11 + cjypv12 + cj.z * p->v13; 
-		gradient[3*p->i + 1] += 2 * cjypv22 + cjzpv23 + cj.x * p->v12; 
-		gradient[3*p->i + 2] += 2 * cjzpv33 + cjxpv13 + cj.y * p->v23; 
+		gradient[3*p->i    ] += 2 * cjxpvxx + cjypvxy + cj.z * p->vxz; 
+		gradient[3*p->i + 1] += 2 * cjypvyy + cjzpvyz + cj.x * p->vxy; 
+		gradient[3*p->i + 2] += 2 * cjzpvzz + cjxpvxz + cj.y * p->vyz; 
 
 	}
 
@@ -386,24 +407,24 @@ double C3DPPDivcurlMatrixImpl::evaluate(const C3DFVectorfield& coefficients,
 		auto ci = coefficients[p->i]; 
 		auto cj = coefficients[p->j]; 
 		
-		const double cjxpv11 = cj.x * p->v11; 
-		const double cjypv22 = cj.y * p->v22; 
-		const double cjzpv33 = cj.z * p->v33; 
+		const double cjxpvxx = cj.x * p->vxx; 
+		const double cjypvyy = cj.y * p->vyy; 
+		const double cjzpvzz = cj.z * p->vzz; 
 
-		const double cjypv12 = cj.y * p->v12; 
-		const double cjxpv13 = cj.x * p->v13; 
-		const double cjzpv23 = cj.z * p->v23; 
+		const double cjypvxy = cj.y * p->vxy; 
+		const double cjxpvxz = cj.x * p->vxz; 
+		const double cjzpvyz = cj.z * p->vyz; 
 
-		result_1 += ci.x * cjxpv11; 
-		result_2 += ci.x * cjypv12; 
-		result_3 += ci.y * cjypv22; 
-		result_4 += ci.z * cjxpv13; 
-		result_5 += ci.y * cjzpv23; 
-		result_6 += ci.z * cjzpv33; 
+		result_1 += ci.x * cjxpvxx; 
+		result_2 += ci.x * cjypvxy; 
+		result_3 += ci.y * cjypvyy; 
+		result_4 += ci.z * cjxpvxz; 
+		result_5 += ci.y * cjzpvyz; 
+		result_6 += ci.z * cjzpvzz; 
 
-		gradient[3*p->i    ] += 2 * cjxpv11 + cjypv12 + cj.z * p->v13; 
-		gradient[3*p->i + 1] += 2 * cjypv22 + cjzpv23 + cj.x * p->v12; 
-		gradient[3*p->i + 2] += 2 * cjzpv33 + cjxpv13 + cj.y * p->v23; 
+		gradient[3*p->i    ] += 2 * cjxpvxx + cjypvxy + cj.z * p->vxz; 
+		gradient[3*p->i + 1] += 2 * cjypvyy + cjzpvyz + cj.x * p->vxy; 
+		gradient[3*p->i + 2] += 2 * cjzpvzz + cjxpvxz + cj.y * p->vyz; 
 
 	}
 

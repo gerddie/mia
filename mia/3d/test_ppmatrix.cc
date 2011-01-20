@@ -30,11 +30,12 @@ struct TransformSplineFixtureFieldBase {
 	{
 
 	}
-	void init(int dsize, double range, EInterpolation type) {
+	void init(int dsize, double r, EInterpolation type) {
 		ipf.reset(create_3dinterpolation_factory(type));
 		size = C3DBounds(2 * dsize + 1,2 * dsize + 1,2 * dsize + 1);
 		field = C3DFVectorfield(size);
-		scale.x = scale.y = range / dsize;
+		range = r; 
+		scale.x = scale.y = scale.z = range / dsize;
 		h = dsize / range;
 
 		field_range.x = 2 * range; 
@@ -50,7 +51,7 @@ struct TransformSplineFixtureFieldBase {
 					double sz = z * scale.z;
 					*i = C3DFVector( fx(sx, sy, sz), fy(sx, sy, sz), fz(sx, sy, sz));
 				}
-		
+		assert(i == field.end()); 
 		source.reset(ipf->create(field));
 	}
 	C3DBounds size;
@@ -58,34 +59,37 @@ struct TransformSplineFixtureFieldBase {
 	P3DInterpolatorFactory ipf;
 	C3DFVector field_range;
 	double h;
+	double range; 
 	std::shared_ptr<T3DInterpolator<C3DFVector>  > source; 
 protected:
-	virtual double fx(double x, double y, double z) = 0;
-	virtual double fy(double x, double y, double z) = 0;
-	virtual double fz(double x, double y, double z) = 0;
+	virtual double fx(double x, double y, double z)const  = 0;
+	virtual double fy(double x, double y, double z)const  = 0;
+	virtual double fz(double x, double y, double z)const  = 0;
 	C3DFVector scale;
 private:
 
 };
 
 struct TransformSplineFixtureDivOnly: public TransformSplineFixtureFieldBase {
-	double fx(double x, double y, double z);
-	double fy(double x, double y, double z);
-	double fz(double x, double y, double z);
+	double fx(double x, double y, double z)const ;
+	double fy(double x, double y, double z)const ;
+	double fz(double x, double y, double z)const ;
+	double graddiv2(double x, double y, double z)const ;
+	double integrate() const ; 
 };
 
 struct TransformSplineFixtureCurlOnly: public TransformSplineFixtureFieldBase {
-	double fx(double x, double y, double z);
-	double fy(double x, double y, double z);
-	double fz(double x, double y, double z);
+	double fx(double x, double y, double z)const ;
+	double fy(double x, double y, double z)const ;
+	double fz(double x, double y, double z)const ;
 };
 
 
 struct TransformSplineFixtureexpm2Field: public TransformSplineFixtureFieldBase {
 	TransformSplineFixtureexpm2Field(){}
-	virtual double fx(double x, double y, double z);
-	virtual double fy(double x, double y, double z);
-	virtual double fz(double x, double y, double z);
+	virtual double fx(double x, double y, double z)const ;
+	virtual double fy(double x, double y, double z)const ;
+	virtual double fz(double x, double y, double z)const ;
 
 	double integrate_div(double x1, double x2, double y1, double y2, int xinterv, int yinterv);
 	double div_value_at(double x, double y, double z);
@@ -101,15 +105,18 @@ struct TransformSplineFixtureexpm2testInterp : public TransformSplineFixtureexpm
 }; 
 
 
-BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline4, TransformSplineFixtureDivOnly )
+BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3, TransformSplineFixtureDivOnly )
 {
-	init(16, 4, ip_bspline4);
+	init(8, 8, ip_bspline3);
 
 	const T3DConvoluteInterpolator<C3DFVector>& interp = 
 		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
-	const double testvalue = 105.0 * pow(M_PI, 1.5) / (sqrt(2.0) * 8); 
+	const double testvalue = 105.0 * pow(M_PI, 1.5) / (sqrt(2.0) * 8.0); 
+
+	// sanity check 
+	BOOST_CHECK_CLOSE(integrate(), testvalue, 0.1); 
 
 	C3DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
 	BOOST_CHECK_CLOSE( div  * coeffs, testvalue, 0.1); 	
@@ -120,6 +127,8 @@ BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline4, TransformSplineFixtureDivOnly )
 	C3DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
 	BOOST_CHECK_CLOSE( 1.0 + rot * coeffs, 1.0, 0.1); 	
 }
+
+#if 0 
 
 BOOST_FIXTURE_TEST_CASE( test_nodiv_bspline4, TransformSplineFixtureCurlOnly )
 {
@@ -135,13 +144,13 @@ BOOST_FIXTURE_TEST_CASE( test_nodiv_bspline4, TransformSplineFixtureCurlOnly )
 	BOOST_CHECK_CLOSE( curl  * coeffs, testvalue, 0.1); 	
 
 	C3DPPDivcurlMatrix divcurl(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 1.0);
-	BOOST_CHECK_CLOSE( divcurl  * coeffs, testvalue, 0.1); 	
+	BOOST_CHECK_CLOSE( divcurl * coeffs, testvalue, 0.1); 	
 	
 	C3DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
 	BOOST_CHECK_CLOSE( 1.0 + div * coeffs, 1.0, 0.1); 	
 }
 
-#if 0 
+
 
 // test whether the interpolation is "good enough" 
 BOOST_FIXTURE_TEST_CASE( test_interpolation_16_2_bspline3, TransformSplineFixtureexpm2testInterp ) 
@@ -278,135 +287,75 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_zero_x, TransformSplineFixtureConst )
 
 #endif
 
-double TransformSplineFixtureDivOnly::fx(double x, double y, double z)
+double TransformSplineFixtureDivOnly::fx(double x, double y, double z)const 
 {
 	return x * exp(-x*x-y*y-z*z);
 }
 
-double TransformSplineFixtureDivOnly::fy(double x, double y, double z)
+double TransformSplineFixtureDivOnly::fy(double x, double y, double z)const 
 {
 	return y * exp(-x*x-y*y-z*z);
 }
 
-double TransformSplineFixtureDivOnly::fz(double x, double y, double z)
+double TransformSplineFixtureDivOnly::fz(double x, double y, double z)const 
 {
 	return z * exp(-x*x-y*y-z*z);
 }
 
 
-double TransformSplineFixtureCurlOnly::fx(double x, double y, double z)
+double TransformSplineFixtureCurlOnly::fx(double x, double y, double z)const 
 {
 	return y * exp(-x*x-y*y-z*z);
 }
 
-double TransformSplineFixtureCurlOnly::fy(double x, double y, double z)
+double TransformSplineFixtureDivOnly::graddiv2(double x, double y, double z) const 
+{
+	double h1 = x*x+y*y+z*z; 
+	double h2 = 2.0 * h1; 
+	double h3 = h2 - 5.0; 
+	
+	return 4 * h1 * h3 * h3 * exp(-h2); 
+}
+
+double TransformSplineFixtureDivOnly::integrate() const
+{
+	const double step = range/100.0; 
+	
+	double sum = 0.0; 
+	for(double z = -range; z < range; z += step) 
+		for(double y = -range; y < range; y += step) 
+			for(double x = -range; x < range; x += step) {
+				sum += graddiv2(x, y, z); 
+			}
+	return sum * step * step * step; 
+}
+
+double TransformSplineFixtureCurlOnly::fy(double x, double y, double z)const 
 {
 	return -x * exp(-x*x-y*y-z*z);
 }
 
-double TransformSplineFixtureCurlOnly::fz(double x, double y, double z)
+double TransformSplineFixtureCurlOnly::fz(double x, double y, double z)const 
 {
 	return 0.0;
 }
 
-double TransformSplineFixtureexpm2Field::fx(double x, double y, double z)
+double TransformSplineFixtureexpm2Field::fx(double x, double y, double z)const 
 {
 	return exp(-x*x-y*y-z*z);
 }
 
-double TransformSplineFixtureexpm2Field::fy(double x, double y, double z)
+double TransformSplineFixtureexpm2Field::fy(double x, double y, double z)const 
 {
 	return exp(-x*x-y*y-z*z);
 }
 
-double TransformSplineFixtureexpm2Field::fz(double x, double y, double z)
+double TransformSplineFixtureexpm2Field::fz(double x, double y, double z)const 
 {
 	return exp(-x*x-y*y-z*z);
 }
 
 #if 0 
-double TransformSplineFixtureexpm2Field::dfx_xx(double x, double y, double z)
-{
-	return (4 * x * x  - 2) * fx(x,y,z);
-}
-
-double TransformSplineFixtureexpm2Field::dfx_yy(double x, double y, double z)
-{
-	return dfx_xx(y,x,z);
-}
-
-double TransformSplineFixtureexpm2Field::dfx_yy(double x, double y, double z)
-{
-	return dfx_xx(z,y,x);
-}
-
-double TransformSplineFixtureexpm2Field::dfx_xy(double x, double y, double z)
-{
-	return 4 * x * y * fx(x,y,z);
-}
-
-
-
-double TransformSplineFixtureexpm2Field::dfx_xxx(double x, double y, double z)
-{
-	return -4 * x * (2 * x * x  - 3) * fx(x,y,z);
-}
-
-
-double TransformSplineFixtureexpm2Field::dfx_xxy(double x, double y, double z)
-{
-	return - 4 * y * ( 2 * x * x  - 1)  * fx(x,y,z);
-}
-
-double TransformSplineFixtureexpm2Field::dfx_xyy(double x, double y, double z)
-{
-	return - 4 * x * (2 * y * y  - 1) * fx(x,y,z);
-}
-
-
-double TransformSplineFixtureexpm2Field::dfx_yyy(double x, double y, double z)
-{
-	return -4 * y * (2 * y * y  - 3) * fx(x,y,z);
-}
-
-
-double TransformSplineFixtureexpm2Field::dfy_xxx(double x, double y, double z)
-{
-	return -4 * x * (2 * x * x  - 3) * fy(x,y,z);
-}
-
-
-double TransformSplineFixtureexpm2Field::dfy_xxy(double x, double y, double z)
-{
-	return - 4 * y * ( 2 * x * x  - 1)  * fy(x,y,z);
-}
-
-double TransformSplineFixtureexpm2Field::dfy_xyy(double x, double y, double z)
-{
-	return - 4 * x * (2 * y * y  - 1) * fy(x,y,z);
-}
-
-
-double TransformSplineFixtureexpm2Field::dfy_yyy(double x, double y, double z)
-{
-	return -4 * y * (2 * y * y  - 3) * fy(x,y,z);
-}
-
-double TransformSplineFixtureexpm2Field::dfy_xx(double x, double y, double z)
-{
-	return (4 * x * x  - 2) * fy(x,y,z);
-}
-
-double TransformSplineFixtureexpm2Field::dfy_xy(double x, double y, double z)
-{
-	return 4 * x * y * fy(x,y,z);
-}
-
-double TransformSplineFixtureexpm2Field::dfy_yy(double x, double y, double z)
-{
-	return (4 * y * y  - 2) * fy(x,y,z);
-}
-
 
 
 double TransformSplineFixtureexpm2Field::div_value_at(double x, double y, double z)
