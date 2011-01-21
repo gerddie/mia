@@ -184,7 +184,7 @@ void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& rang
 	C2DFVector h((size.x-1)/range.x,(size.y-1)/range.y);
 	int ny = _M_size.y; 
 	int nx = _M_size.x; 
-	int kernel_range = kernel.size()+1; 
+	int kernel_range = kernel.size(); 
 	
 	CIntegralCache rc22(kernel); 
 	CIntegralCache rc21(kernel); 
