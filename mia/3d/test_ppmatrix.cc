@@ -41,7 +41,8 @@ struct TransformSplineFixtureFieldBase {
 		field_range.x = 2 * range; 
 		field_range.y = 2 * range; 
 		field_range.z = 2 * range; 
-
+		
+		graddiv2sum = 0.0; 
 		C3DFVectorfield::iterator i = field.begin();
 		for (int z = -dsize; z <= dsize; ++z)
 			for (int y = -dsize; y <= dsize; ++y)
@@ -50,9 +51,14 @@ struct TransformSplineFixtureFieldBase {
 					double sy = y * scale.y;
 					double sz = z * scale.z;
 					*i = C3DFVector( fx(sx, sy, sz), fy(sx, sy, sz), fz(sx, sy, sz));
+					cvdebug() << "(" << sx << ", " << sy << ", " << sz << *i << "\n"; 
+
+					graddiv2sum += graddiv2(sx, sy, sz); 
 				}
 		assert(i == field.end()); 
 		source.reset(ipf->create(field));
+
+		cvinfo() << "scale = " << scale << "\n"; 		graddiv2sum *= scale.x * scale.y*scale.z; 
 	}
 	C3DBounds size;
 	C3DFVectorfield field;
@@ -65,7 +71,9 @@ protected:
 	virtual double fx(double x, double y, double z)const  = 0;
 	virtual double fy(double x, double y, double z)const  = 0;
 	virtual double fz(double x, double y, double z)const  = 0;
+	virtual double graddiv2(double x, double y, double z)const = 0;
 	C3DFVector scale;
+	double graddiv2sum; 
 private:
 
 };
@@ -74,7 +82,7 @@ struct TransformSplineFixtureDivOnly: public TransformSplineFixtureFieldBase {
 	double fx(double x, double y, double z)const ;
 	double fy(double x, double y, double z)const ;
 	double fz(double x, double y, double z)const ;
-	double graddiv2(double x, double y, double z)const ;
+	double graddiv2(double x, double y, double z)const;
 	double integrate() const ; 
 };
 
@@ -107,7 +115,7 @@ struct TransformSplineFixtureexpm2testInterp : public TransformSplineFixtureexpm
 
 BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3, TransformSplineFixtureDivOnly )
 {
-	init(8, 8, ip_bspline3);
+	init(8, 4, ip_bspline3);
 
 	const T3DConvoluteInterpolator<C3DFVector>& interp = 
 		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
@@ -117,6 +125,7 @@ BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3, TransformSplineFixtureDivOnly )
 
 	// sanity check 
 	BOOST_CHECK_CLOSE(integrate(), testvalue, 0.1); 
+	BOOST_CHECK_CLOSE(graddiv2sum, testvalue, 0.1); 
 
 	C3DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
 	BOOST_CHECK_CLOSE( div  * coeffs, testvalue, 0.1); 	
@@ -127,6 +136,45 @@ BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3, TransformSplineFixtureDivOnly )
 	C3DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
 	BOOST_CHECK_CLOSE( 1.0 + rot * coeffs, 1.0, 0.1); 	
 }
+
+
+double TransformSplineFixtureDivOnly::fx(double x, double y, double z)const 
+{
+	return x * exp(-x*x-y*y-z*z);
+}
+
+double TransformSplineFixtureDivOnly::fy(double x, double y, double z)const 
+{
+	return y * exp(-x*x-y*y-z*z);
+}
+
+double TransformSplineFixtureDivOnly::fz(double x, double y, double z)const 
+{
+	return z * exp(-x*x-y*y-z*z);
+}
+
+double TransformSplineFixtureDivOnly::graddiv2(double x, double y, double z) const 
+{
+	double h1 = x*x+y*y+z*z; 
+	double h2 = 2.0 * h1; 
+	double h3 = h2 - 5.0; 
+	
+	return 4 * h1 * h3 * h3 * exp(-h2); 
+}
+
+double TransformSplineFixtureDivOnly::integrate() const
+{
+	const double step = range/100.0; 
+	
+	double sum = 0.0; 
+	for(double z = -range; z < range; z += step) 
+		for(double y = -range; y < range; y += step) 
+			for(double x = -range; x < range; x += step) {
+				sum += graddiv2(x, y, z); 
+			}
+	return sum * step * step * step; 
+}
+
 
 #if 0 
 
@@ -287,55 +335,19 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_zero_x, TransformSplineFixtureConst )
 
 #endif
 
-double TransformSplineFixtureDivOnly::fx(double x, double y, double z)const 
-{
-	return x * exp(-x*x-y*y-z*z);
-}
-
-double TransformSplineFixtureDivOnly::fy(double x, double y, double z)const 
-{
-	return y * exp(-x*x-y*y-z*z);
-}
-
-double TransformSplineFixtureDivOnly::fz(double x, double y, double z)const 
-{
-	return z * exp(-x*x-y*y-z*z);
-}
-
 
 double TransformSplineFixtureCurlOnly::fx(double x, double y, double z)const 
 {
 	return y * exp(-x*x-y*y-z*z);
 }
 
-double TransformSplineFixtureDivOnly::graddiv2(double x, double y, double z) const 
-{
-	double h1 = x*x+y*y+z*z; 
-	double h2 = 2.0 * h1; 
-	double h3 = h2 - 5.0; 
-	
-	return 4 * h1 * h3 * h3 * exp(-h2); 
-}
-
-double TransformSplineFixtureDivOnly::integrate() const
-{
-	const double step = range/100.0; 
-	
-	double sum = 0.0; 
-	for(double z = -range; z < range; z += step) 
-		for(double y = -range; y < range; y += step) 
-			for(double x = -range; x < range; x += step) {
-				sum += graddiv2(x, y, z); 
-			}
-	return sum * step * step * step; 
-}
 
 double TransformSplineFixtureCurlOnly::fy(double x, double y, double z)const 
 {
 	return -x * exp(-x*x-y*y-z*z);
 }
 
-double TransformSplineFixtureCurlOnly::fz(double x, double y, double z)const 
+double TransformSplineFixtureCurlOnly::fz(double /*x*/, double /*y*/, double /*z*/)const 
 {
 	return 0.0;
 }
