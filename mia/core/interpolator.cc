@@ -992,7 +992,6 @@ double  EXPORT_CORE integrate2(const CBSplineKernel& spline, double s1, double s
 	const size_t intervals = size_t(8 * (end_int - start_int));
 
 	sum = simpson( start_int, end_int, intervals, F2DKernelIntegrator(spline, s1, s2, deg1, deg2));
-	cvdebug() << "integrate(" << start_int << ", " << end_int << ")[" << intervals <<"]="<< sum << "*" << n <<"\n"; 
 	return sum * n;
 }
 
