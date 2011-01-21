@@ -222,9 +222,7 @@ void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& rang
 						wd * (r22x * r00y + r11x * r11y) + 
 						wr * (r11x * r11y + r00x * r22y); 
 					
-					cell.v12 = 2 *  (
-						wd * ( r21x * r01y + r01x * r21y) -
-						wr * ( r01x * r21y + r21x * r01y )); 
+					cell.v12 = 2 * ( wd - wr ) * ( r21x * r01y + r01x * r21y) ; 
 					
 					cell.v.y = 
 						wd * (r00x * r22y + r11x * r11y) + 
