@@ -239,10 +239,8 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 		for (int zj = max(0,zi - ksize); zj < min(zi + ksize, nz); ++zj) {
 			const double r00z = rc00.get( zi, zj, 0, 0, size.z); 
 			const double r01z = rc01.get( zi, zj, 0, 1, size.z); 
-			const double r10z = rc10.get( zi, zj, 1, 0, size.z); 
 			const double r11z = rc11.get( zi, zj, 1, 1, size.z); 
 			const double r12z = rc12.get( zi, zj, 1, 2, size.z); 
-			const double r21z = rc21.get( zi, zj, 2, 1, size.z); 
 			const double r22z = rc22.get( zi, zj, 2, 2, size.z); 
 
 
@@ -263,7 +261,6 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 							const double r01x = rc01.get( xi, xj, 0, 1, size.x); 
 							const double r10x = rc10.get( xi, xj, 1, 0, size.x); 
 							const double r11x = rc11.get( xi, xj, 1, 1, size.x); 
-							const double r12x = rc12.get( xi, xj, 1, 2, size.x); 
 							const double r21x = rc21.get( xi, xj, 2, 1, size.x); 
 							const double r22x = rc22.get( xi, xj, 2, 2, size.x); 
 
@@ -369,39 +366,40 @@ double C3DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 {
 	assert(coefficients.size() == _M_nodes); 
 
-	double result_1 = 0.0; 
-	double result_2 = 0.0; 
-	double result_3 = 0.0; 
-	double result_4 = 0.0; 
-	double result_5 = 0.0; 
-	double result_6 = 0.0; 
+	register double result_1 = 0.0; 
+	register double result_2 = 0.0; 
+	register double result_3 = 0.0; 
+	register double result_4 = 0.0; 
+	register double result_5 = 0.0; 
+	register double result_6 = 0.0; 
 
-	for (auto p = _M_P.begin(); p != _M_P.end();++p) {
-		auto ci = coefficients[p->i]; 
-		auto cj = coefficients[p->j]; 
-		
-		result_1 += ci.x * cj.x * p->vxx; 
-		result_2 += ci.y * cj.y * p->vyy; 
-		result_3 += ci.z * cj.z * p->vzz; 
-		if (_M_wdiv != _M_wrot) {
+	if (_M_wdiv == _M_wrot) {
+		for (auto p = _M_P.begin(); p != _M_P.end();++p) {
+			auto ci = coefficients[p->i]; 
+			auto cj = coefficients[p->j]; 
+			result_1 += ci.x * cj.x * p->vxx; 
+			result_2 += ci.y * cj.y * p->vyy; 
+			result_3 += ci.z * cj.z * p->vzz; 
+		}
+		return result_1 + result_2 + result_3; 
+	}else{
+		for (auto p = _M_P.begin(); p != _M_P.end();++p) {
+			auto ci = coefficients[p->i]; 
+			auto cj = coefficients[p->j]; 
+			
+			result_1 += ci.x * cj.x * p->vxx; 
+			result_2 += ci.y * cj.y * p->vyy; 
+			result_3 += ci.z * cj.z * p->vzz; 
+			
 			result_4 += ci.x * cj.y * p->vxy; 
 			result_5 += ci.x * cj.z * p->vxz; 
 			result_6 += ci.y * cj.z * p->vyz; 
+			
 		}
-
+		return result_1 + result_2 + result_3 + 
+			result_4 + result_5 + result_6; 
 	}
-	cvinfo() << "final\n"; 
-	cvinfo() << "result_1= " << result_1 << "\n"; 
-	cvinfo() << "result_2= " << result_2 << "\n"; 
-	cvinfo() << "result_3= " << result_3 << "\n"; 
-	cvinfo() << "result_4= " << result_4 << "\n"; 
-	cvinfo() << "result_5= " << result_5 << "\n"; 
-	cvinfo() << "result_6= " << result_6 << "\n"; 
-
-	return result_1 + result_2 + result_3 + 
-		result_4 + result_5 + result_6; 
 }
-
 
 double C3DPPDivcurlMatrixImpl::evaluate(const T3DDatafield<C3DDVector>& coefficients, 
 					gsl::DoubleVector& gradient) const
