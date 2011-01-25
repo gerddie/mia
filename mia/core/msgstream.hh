@@ -34,6 +34,7 @@
 #include <vector>
 #include <cassert>
 #include <ostream>
+#include <boost/call_traits.hpp>
 #include <mia/core/defines.hh>
 #include <mia/core/dictmap.hh>
 
@@ -55,7 +56,7 @@ NS_MIA_BEGIN
 class EXPORT_CORE vstream {
 public:
 	enum Level {
-		ml_trace = 0,
+		ml_trace,
 		ml_debug,
 		ml_info,
 		ml_message,
@@ -97,13 +98,18 @@ public:
 	bool show_debug() const;
 
 
+	/** a special handling to set the output level "inline"
+	    \param l the level of the following messages
+	*/
+	vstream& operator << (Level const l);
+
 	/** general output routine; output is only given, if the data verbosity level is
 	    set higher or equal to the stream verbosity level.
 	    \param text the text to be written to the stream
 	    \returns a reference to this object
 	*/
 	template <class T>
-	vstream& operator << (const T& text) {
+	vstream& operator << (const T&  text) {
 		if (_M_message_level >= _M_output_level)
 			*_M_output << text;
 		return *this;
@@ -115,10 +121,6 @@ public:
 	*/
 	vstream & operator<<(std::ostream& (*f)(std::ostream&));
 
-	/** a special handling to set the output level "inline"
-	    \param l the level of the following messages
-	*/
-	vstream& operator << (Level l);
 
 
 	/**
