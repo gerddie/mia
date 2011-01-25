@@ -112,26 +112,30 @@ class CIntegralCache {
 public: 
 	CIntegralCache(const CBSplineKernel& kernel); 
 	double get(int s1, int s2, int deg1, int deg2, int range) const; 
+	void print_index_range()const;
 private: 
 	const CBSplineKernel& _M_kernel; 
 	int _M_max_skip; 
 	int _M_row_length; 
 	int _M_hr; 
-	mutable map<int,double> _M_values; 
+	int _M_shift; 
+	mutable vector<int> _M_index_map; 
+	mutable vector<double> _M_values; 
 }; 
 
 CIntegralCache::CIntegralCache(const CBSplineKernel& kernel):
 	_M_kernel(kernel), 
 	_M_max_skip((kernel.size() + 1) & ~1), 
 	_M_row_length(kernel.size()), 
-	_M_hr(kernel.get_active_halfrange())
-	
+	_M_hr(kernel.get_active_halfrange()), 
+	_M_shift(kernel.size() * kernel.size()), 
+	_M_index_map(2*_M_shift, -1)
+
 {
 }
 
 double CIntegralCache::get(int s1, int s2, int deg1, int deg2, int range) const
 {
-	double result = 0.0; 
 	bool swapped = false; 
 	if (s2 < s1) {
 		swapped = true; 
@@ -140,7 +144,7 @@ double CIntegralCache::get(int s1, int s2, int deg1, int deg2, int range) const
 	
 	int delta = s2 - s1; 
 	if ( delta >= _M_row_length ) {
-		return result;
+		return 0.0;
 	}
 	
 	int skip = 0; 
@@ -158,7 +162,7 @@ double CIntegralCache::get(int s1, int s2, int deg1, int deg2, int range) const
 	}
 	if (abs(skip) >= _M_max_skip) {
 		cvdebug()<< "skip because abs(skip = " << skip << ")>=" << _M_row_length << " delta="<< delta<<"\n";  
-		return result; 
+		return 0.0; 
 	}
 	
 	if (swapped) {
@@ -166,19 +170,23 @@ double CIntegralCache::get(int s1, int s2, int deg1, int deg2, int range) const
 		swap(s1, s2); 
 	}
 	
-	int index = skip * 2*_M_row_length + delta + _M_row_length;
-	auto pv = _M_values.find(index);
-	
-	if (pv != _M_values.end()) 
-		result = pv->second; 
+	int index = skip * 2*_M_row_length + delta + _M_row_length + _M_shift;
+	int ref = _M_index_map[index]; 
+	if (ref >= 0) 
+		return _M_values[ref]; 
 	else {
-		result = _M_values[index] = integrate2(_M_kernel, s1, s2, deg1, deg2, 1, 0,  range); 
+		double result = integrate2(_M_kernel, s1, s2, deg1, deg2, 1, 0,  range); 
+		_M_index_map[index] = _M_values.size(); 
+		_M_values.push_back(result); 
+		return result; 
 	}
 	
-	
-	return result; 
 }
 
+void CIntegralCache::print_index_range()const
+{
+	//cvmsg() << "CIntegralCache index range: [" << min_index << ", " << max_index << "\n"; 
+}
 
 C3DPPDivcurlMatrixImpl::C3DPPDivcurlMatrixImpl(const C3DBounds& size, const C3DFVector& range, 
 					       const CBSplineKernel& kernel,
@@ -346,6 +354,14 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 		}
 	}
 	cvmsg() << "P-matrix has " << _M_P.size() << " entries\n"; 
+	cvmsg() << "size:" << _M_size << ", ksize=" << ksize << "\n"; 
+	rc00.print_index_range(); 
+	rc11.print_index_range(); 
+	rc22.print_index_range(); 
+	rc21.print_index_range();  
+	rc12.print_index_range(); 
+	rc01.print_index_range(); 
+	rc10.print_index_range(); 
 }
 
 template <typename Field>
