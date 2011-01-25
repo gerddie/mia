@@ -298,3 +298,132 @@ BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4_grad, TransformSplineFixtureMixe
 
 
 
+
+struct TransformSplineFixtureFieldNonuniform {
+	TransformSplineFixtureFieldNonuniform()
+	{
+
+	}
+	void init(const C3DBounds& dsize, double r, EInterpolation type) {
+		ipf.reset(create_3dinterpolation_factory(type));
+		size = C3DBounds(2*dsize.x + 1, 2*dsize.y + 1, 2*dsize.z + 1); 
+		field = C3DFVectorfield(size);
+		range = r; 
+		scale.x = range / size.x; 
+		scale.y = range / size.y; 
+		scale.z = range / size.z;
+
+		field_range.x = 2 * range; 
+		field_range.y = 2 * range; 
+		field_range.z = 2 * range; 
+		
+		C3DFVectorfield::iterator i = field.begin();
+		for (int z = -(int)dsize.z; z <= (int)dsize.z; ++z)
+			for (int y = -(int)dsize.y; y <= (int)dsize.y; ++y)
+				for (int x = -(int)dsize.x; x <= (int)dsize.x; ++x, ++i) {
+					double sx = x * scale.x;
+					double sy = y * scale.y;
+					double sz = z * scale.z;
+					*i = C3DFVector( fx(sx, sy, sz), fy(sx, sy, sz), fz(sx, sy, sz));
+					cvdebug() << "(" << sx << ", " << sy << ", " << sz << *i << "\n"; 
+				}
+		assert(i == field.end()); 
+		source.reset(ipf->create(field));
+
+		cvinfo() << "scale = " << scale << "\n"; 		
+	}
+	C3DBounds size;
+	C3DFVectorfield field;
+	P3DInterpolatorFactory ipf;
+	C3DFVector field_range;
+	double range; 
+	std::shared_ptr<T3DInterpolator<C3DFVector>  > source; 
+protected:
+	virtual double fx(double x, double y, double z)const  = 0;
+	virtual double fy(double x, double y, double z)const  = 0;
+	virtual double fz(double x, double y, double z)const  = 0;
+	C3DFVector scale;
+private:
+
+};
+
+struct TransformSplineFixtureMixedNonuniform: public TransformSplineFixtureFieldNonuniform {
+	double fx(double x, double y, double z)const ;
+	double fy(double x, double y, double z)const ;
+	double fz(double x, double y, double z)const ;
+};
+
+
+double TransformSplineFixtureMixedNonuniform::fx(double x, double y, double z)const 
+{
+	return x * exp(-x*x-y*y-z*z);
+}
+
+double TransformSplineFixtureMixedNonuniform::fy(double x, double y, double z)const 
+{
+	return -z * exp(-x*x-y*y-z*z);
+}
+
+double TransformSplineFixtureMixedNonuniform::fz(double x, double y, double z)const
+{
+	return y * exp(-x*x-y*y-z*z);
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_bspline3_nonuniform, TransformSplineFixtureMixedNonuniform )
+{
+	C3DBounds size(8,9,7); 
+	init(size, 4, ip_bspline4);
+
+	const T3DConvoluteInterpolator<C3DFVector>& interp = 
+		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
+	
+	auto coeffs = interp.get_coefficients(); 
+	const double testdiv = 21.0 * pow(M_PI, 1.5) / (sqrt(2.0) * 8.0); 
+	const double testcurl = 21.0 * pow(M_PI, 1.5) / (sqrt(2.0) * 2.0); 
+
+	C3DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
+	double realdiv = div  * coeffs; 
+	BOOST_CHECK_CLOSE( realdiv, testdiv, 0.5); 	
+
+	C3DPPDivcurlMatrix divcurl(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 1.0);
+	double realsum = divcurl  * coeffs; 
+	BOOST_CHECK_CLOSE( realsum, testdiv + testcurl, 0.5); 	
+	
+	C3DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
+	double realrot = rot * coeffs; 
+	BOOST_CHECK_CLOSE( realrot, testcurl, 0.1); 	
+
+	cvinfo() << "realdiv/ testdiv" << realdiv / testdiv << "\n"; 
+	cvinfo() << "realsum/ sum" << realsum / (testdiv + testcurl) << "\n"; 
+	cvinfo() << "realrot/ testcurl" << realrot/ testcurl << "\n"; 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_bspline3_uniform, TransformSplineFixtureMixedNonuniform )
+{
+	C3DBounds size(8,8,8); 
+	init(size, 4, ip_bspline4);
+
+	const T3DConvoluteInterpolator<C3DFVector>& interp = 
+		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
+	
+	auto coeffs = interp.get_coefficients(); 
+	const double testdiv = 21.0 * pow(M_PI, 1.5) / (sqrt(2.0) * 8.0); 
+	const double testcurl = 21.0 * pow(M_PI, 1.5) / (sqrt(2.0) * 2.0); 
+
+	C3DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
+	double realdiv = div  * coeffs; 
+	BOOST_CHECK_CLOSE( realdiv, testdiv, 0.5); 	
+
+	C3DPPDivcurlMatrix divcurl(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 1.0);
+	double realsum = divcurl  * coeffs; 
+	BOOST_CHECK_CLOSE( realsum, testdiv + testcurl, 0.5); 	
+	
+	C3DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
+	double realrot = rot * coeffs; 
+	BOOST_CHECK_CLOSE( realrot, testcurl, 0.1); 	
+
+	cvinfo() << "realdiv/ testdiv" << realdiv / testdiv << "\n"; 
+	cvinfo() << "realsum/ sum" << realsum / (testdiv + testcurl) << "\n"; 
+	cvinfo() << "realrot/ testcurl" << realrot/ testcurl << "\n"; 
+}

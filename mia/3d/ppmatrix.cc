@@ -129,7 +129,7 @@ CIntegralCache::CIntegralCache(const CBSplineKernel& kernel):
 	_M_row_length(kernel.size()), 
 	_M_hr(kernel.get_active_halfrange()), 
 	_M_shift(kernel.size() * kernel.size()), 
-	_M_index_map(2*_M_shift, -1)
+	_M_index_map(2*_M_shift + 1, -1)
 
 {
 }
@@ -171,6 +171,12 @@ double CIntegralCache::get(int s1, int s2, int deg1, int deg2, int range) const
 	}
 	
 	int index = skip * 2*_M_row_length + delta + _M_row_length + _M_shift;
+	assert(index >= 0); 
+	if (index >= (int)_M_index_map.size()) {
+		cverr() << "failed: " << index << " < " << _M_index_map.size() << "\n"; 
+		assert(index < (int)_M_index_map.size()); 		
+	}
+
 	int ref = _M_index_map[index]; 
 	if (ref >= 0) 
 		return _M_values[ref]; 
@@ -213,7 +219,7 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 	C3DFVector h((size.x-1)/range.x,
 		     (size.y-1)/range.y, 
 		     (size.z-1)/range.z);
-	const double scale = pow(h.x * h.y * h.z, 1.0/3.0); 
+	const double scale = h.x * h.y * h.z; 
 
 	cvinfo() << "scale = " << scale << "\n"; 
 	const int nx = _M_size.x;
@@ -381,6 +387,9 @@ double C3DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 			result_2 += ci.y * cj.y * p->vyy; 
 			result_3 += ci.z * cj.z * p->vzz; 
 		}
+		cvinfo() << "result_1 = " << result_1 << "\n"; 
+		cvinfo() << "result_2 = " << result_2 << "\n"; 
+		cvinfo() << "result_3 = " << result_3 << "\n"; 
 		return result_1 + result_2 + result_3; 
 	}else{
 		for (auto p = _M_P.begin(); p != _M_P.end();++p) {
@@ -395,7 +404,15 @@ double C3DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 			result_5 += ci.x * cj.z * p->vxz; 
 			result_6 += ci.y * cj.z * p->vyz; 
 			
-		}
+		}	
+		cvinfo() << "result_1 = " << result_1 << "\n"; 
+		cvinfo() << "result_2 = " << result_2 << "\n"; 
+		cvinfo() << "result_3 = " << result_3 << "\n"; 
+		cvinfo() << "result_4 = " << result_4 << "\n"; 
+		cvinfo() << "result_5 = " << result_5 << "\n"; 
+		cvinfo() << "result_6 = " << result_6 << "\n"; 
+
+
 		return result_1 + result_2 + result_3 + 
 			result_4 + result_5 + result_6; 
 	}
