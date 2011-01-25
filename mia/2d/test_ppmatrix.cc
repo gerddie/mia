@@ -31,18 +31,24 @@ struct TransformSplineFixtureFieldBase {
 
 	}
 	void init(int dsize, float range, EInterpolation type) {
+		init2d(T2DVector<int>(dsize,dsize), range, type); 
+	}
+	void init2d(const T2DVector<int>& dsize, float range, EInterpolation type) {
 		ipf.reset(create_2dinterpolation_factory(type));
-		size = C2DBounds(2 * dsize + 1,2 * dsize + 1);
+		size = C2DBounds(2 * dsize.x + 1,2 * dsize.y + 1);
 		field = C2DFVectorfield(size);
-		scale.x = scale.y = range / dsize;
-		h = dsize / range;
+		scale.x = range / dsize.x;
+		scale.y = range / dsize.y;
 
+		h.x = dsize.x / range; 
+		h.y = dsize.y / range; 
+			
 		field_range.x = 2 * range; 
 		field_range.y = 2 * range; 
 
 		C2DFVectorfield::iterator i = field.begin();
-		for (int y = -dsize; y <= dsize; ++y)
-			for (int x = -dsize; x <= dsize; ++x, ++i) {
+		for (int y = -dsize.y; y <= dsize.y; ++y)
+			for (int x = -dsize.x; x <= dsize.x; ++x, ++i) {
 				float sx = x * scale.x;
 				float sy = y * scale.y;
 				*i = C2DFVector( fx(sx, sy), fy(sx, sy));
@@ -52,9 +58,9 @@ struct TransformSplineFixtureFieldBase {
 	}
 	C2DBounds size;
 	C2DFVectorfield field;
+	C2DFVector h; 
 	P2DInterpolatorFactory ipf;
 	C2DBounds field_range;
-	double h;
 	std::shared_ptr<T2DInterpolator<C2DFVector>  > source; 
 protected:
 	virtual float fx(float x, float y) = 0;
@@ -161,6 +167,27 @@ BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3, TransformSplineFixtureDivOnly )
 	C2DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
 	BOOST_CHECK_CLOSE( 1.0 + rot * coeffs, 1.0, 0.1); 	
 }
+
+BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3_noniso, TransformSplineFixtureDivOnly )
+{
+	init2d(T2DVector<int>(16, 14), 4, ip_bspline4);
+
+	const T2DConvoluteInterpolator<C2DFVector>& interp = 
+		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+	
+	auto coeffs = interp.get_coefficients(); 
+	const double testvalue = 6.0 * M_PI;
+
+	C2DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
+	BOOST_CHECK_CLOSE( div  * coeffs, testvalue, 0.1); 	
+
+	C2DPPDivcurlMatrix divcurl(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 1.0);
+	BOOST_CHECK_CLOSE( divcurl  * coeffs, testvalue, 0.1); 	
+	
+	C2DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
+	BOOST_CHECK_CLOSE( 1.0 + rot * coeffs, 1.0, 0.1); 	
+}
+
 
 BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3_8_4, TransformSplineFixtureDivOnly )
 {
@@ -500,7 +527,7 @@ void TransformSplineFixtureexpm2testInterp::run(int size, float range, EInterpol
 	
 	for (float y = -range; y < range; y += range/5.0)
 		for (float x = -range; x < range; x += range/5.0) {
-			C2DFVector hx(x * h + size, y * h + size); 
+			C2DFVector hx(x * h.x + size, y * h.y + size); 
 			C2DFVector hy = (*source)(hx); 
 			BOOST_CHECK_CLOSE(1.0 + hy.x, 1.0 + fx(x , y ), 0.3); 
 			BOOST_CHECK_CLOSE(1.0 + hy.y, 1.0 + fy(x , y ), 0.3); 

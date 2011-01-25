@@ -181,7 +181,14 @@ void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& rang
 	_M_nodes = size.x*size.y; 
 	_M_P.clear(); 
 
-	C2DFVector h((size.x-1)/range.x,(size.y-1)/range.y);
+	C2DFVector h1((size.x-1)/range.x,(size.y-1)/range.y);
+	double global_scale = 1.0 / (h1.x * h1.y); 
+
+	C2DFVector h2(h1.x*h1.x, h1.y*h1.y);
+	C2DFVector h3(h1.x*h2.x, h1.y*h2.y);
+	C2DFVector h4(h1.x*h3.x, h1.y*h3.y);
+	
+
 	int ny = _M_size.y; 
 	int nx = _M_size.x; 
 	int kernel_range = kernel.size(); 
@@ -197,37 +204,34 @@ void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& rang
 
 	
 	for (int l = 0, i=0; l < ny; ++l) {
-		for (int k = 0; k < nx; ++k, ++i) {
-			for (int n = max(0,l - kernel_range); n < min(l + kernel_range, ny); ++n) {
+		for (int n = max(0,l - kernel_range); n < min(l + kernel_range, ny); ++n) {
+			double r00y =        rc00.get( l, n, 0, 0, size.y); 
+			double r01y = h1.y * rc01.get( l, n, 0, 1,size.y); 
+			double r11y = h2.y * rc11.get( l, n, 1, 1, size.y); 
+			double r21y = h3.y * rc21.get( l, n, 2, 1, size.y); 
+			double r22y = h4.y * rc22.get( l, n, 2, 2, size.y); 
+
+			for (int k = 0; k < nx; ++k) {
 				for (int m = max(0,k - kernel_range); m < min(k + kernel_range,nx); ++m) {
 					
-					double r01x = h.x *  rc01.get( k, m, 0, 1,size.x); 
-					double r01y = h.y *  rc01.get( l, n, 0, 1,size.y); 
-					
-					double r22x = h.x * rc22.get(k, m, 2, 2, size.x); 
-					double r22y = h.y * rc22.get(l, n, 2, 2, size.y); 
-					
-					double r21x = h.x * rc21.get( k, m, 2, 1, size.x); 
-					double r21y = h.y * rc21.get( l, n, 2, 1, size.y); 
-					
-					
-					double r00x = h.x * rc00.get( k, m, 0, 0, size.x); 
-					double r00y = h.y * rc00.get( l, n, 0, 0, size.y); 
-					
-					double r11x = h.x * rc11.get(  k, m, 1, 1, size.x); 
-					double r11y = h.y * rc11.get(  l, n, 1, 1, size.y); 
+					double r00x =        rc00.get( k, m, 0, 0, size.x); 
+					double r01x = h1.x * rc01.get( k, m, 0, 1,size.x); 
+					double r11x = h2.x * rc11.get( k, m, 1, 1, size.x); 
+					double r21x = h3.x * rc21.get( k, m, 2, 1, size.x); 
+					double r22x = h4.x * rc22.get( k, m, 2, 2, size.x); 
+
 					
 					SMatrixCell cell; 
-					cell.v.x = 
+					cell.v.x = global_scale * (
 						wd * (r22x * r00y + r11x * r11y) + 
-						wr * (r11x * r11y + r00x * r22y); 
+						wr * (r11x * r11y + r00x * r22y)); 
 					
-					cell.v12 = 2 * ( wd - wr ) * ( r21x * r01y + r01x * r21y) ; 
+					cell.v12 = 2 * global_scale * ( wd - wr ) * ( r21x * r01y + r01x * r21y) ; 
 					
-					cell.v.y = 
+					cell.v.y = global_scale * (
 						wd * (r00x * r22y + r11x * r11y) + 
-						wr * (r22x * r00y + r11x * r11y);
-					cell.i = i; 
+						wr * (r22x * r00y + r11x * r11y));
+					cell.i = k + l * nx; 
 					cell.j = m + n * nx;  
 					if (cell.v.x != 0.0 || cell.v12 != 0.0 ||cell.v.y != 0.0) 
 						_M_P.push_back(cell); 
