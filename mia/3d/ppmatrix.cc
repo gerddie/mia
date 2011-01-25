@@ -205,7 +205,7 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 	C3DFVector h((size.x-1)/range.x,
 		     (size.y-1)/range.y, 
 		     (size.z-1)/range.z);
-	const double scale = h.x * h.y * h.z; 
+	const double scale = pow(h.x * h.y * h.z, 1.0/3.0); 
 
 	cvinfo() << "scale = " << scale << "\n"; 
 	const int nx = _M_size.x;
