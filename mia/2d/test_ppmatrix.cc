@@ -162,6 +162,26 @@ BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3, TransformSplineFixtureDivOnly )
 	BOOST_CHECK_CLOSE( 1.0 + rot * coeffs, 1.0, 0.1); 	
 }
 
+BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3_8_4, TransformSplineFixtureDivOnly )
+{
+	init(8, 4, ip_bspline4);
+
+	const T2DConvoluteInterpolator<C2DFVector>& interp = 
+		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+	
+	auto coeffs = interp.get_coefficients(); 
+	const double testvalue = 6.0 * M_PI;
+
+	C2DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
+	BOOST_CHECK_CLOSE( div  * coeffs, testvalue, 0.1); 	
+
+	C2DPPDivcurlMatrix divcurl(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 1.0);
+	BOOST_CHECK_CLOSE( divcurl  * coeffs, testvalue, 0.1); 	
+	
+	C2DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
+	BOOST_CHECK_CLOSE( 1.0 + rot * coeffs, 1.0, 0.1); 	
+}
+
 BOOST_FIXTURE_TEST_CASE( test_nodiv_bspline3, TransformSplineFixtureCurlOnly )
 {
 	init(16, 4, ip_bspline4);

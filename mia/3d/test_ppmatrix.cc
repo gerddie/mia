@@ -58,7 +58,8 @@ struct TransformSplineFixtureFieldBase {
 		assert(i == field.end()); 
 		source.reset(ipf->create(field));
 
-		cvinfo() << "scale = " << scale << "\n"; 		graddiv2sum *= scale.x * scale.y*scale.z; 
+		cvinfo() << "scale = " << scale << "\n"; 		
+		graddiv2sum *= scale.x * scale.y*scale.z; 
 	}
 	C3DBounds size;
 	C3DFVectorfield field;
@@ -84,6 +85,13 @@ struct TransformSplineFixtureDivOnly: public TransformSplineFixtureFieldBase {
 	double fz(double x, double y, double z)const ;
 	double graddiv2(double x, double y, double z)const;
 	double integrate() const ; 
+};
+
+struct TransformSplineFixtureMixed: public TransformSplineFixtureFieldBase {
+	double fx(double x, double y, double z)const ;
+	double fy(double x, double y, double z)const ;
+	double fz(double x, double y, double z)const ;
+	double graddiv2(double x, double y, double z)const;
 };
 
 struct TransformSplineFixtureCurlOnly: public TransformSplineFixtureFieldBase {
@@ -113,9 +121,9 @@ struct TransformSplineFixtureexpm2testInterp : public TransformSplineFixtureexpm
 }; 
 
 
-BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3, TransformSplineFixtureDivOnly )
+BOOST_FIXTURE_TEST_CASE( test_bspline3_8_4, TransformSplineFixtureDivOnly )
 {
-	init(8, 4, ip_bspline3);
+	init(8, 4, ip_bspline4);
 
 	const T3DConvoluteInterpolator<C3DFVector>& interp = 
 		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
@@ -136,6 +144,31 @@ BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3, TransformSplineFixtureDivOnly )
 	C3DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
 	BOOST_CHECK_CLOSE( 1.0 + rot * coeffs, 1.0, 0.1); 	
 }
+
+BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3_7_4, TransformSplineFixtureDivOnly )
+{
+	init(7, 4, ip_bspline3);
+
+	const T3DConvoluteInterpolator<C3DFVector>& interp = 
+		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
+	
+	auto coeffs = interp.get_coefficients(); 
+	const double testvalue = 105.0 * pow(M_PI, 1.5) / (sqrt(2.0) * 8.0); 
+
+	// sanity check 
+	BOOST_CHECK_CLOSE(integrate(), testvalue, 0.1); 
+	BOOST_CHECK_CLOSE(graddiv2sum, testvalue, 0.1); 
+
+	C3DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
+	BOOST_CHECK_CLOSE( div  * coeffs, testvalue, 0.1); 	
+
+	C3DPPDivcurlMatrix divcurl(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 1.0);
+	BOOST_CHECK_CLOSE( divcurl  * coeffs, testvalue, 0.1); 	
+	
+	C3DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
+	BOOST_CHECK_CLOSE( 1.0 + rot * coeffs, 1.0, 0.1); 	
+}
+
 
 
 double TransformSplineFixtureDivOnly::fx(double x, double y, double z)const 
@@ -173,6 +206,57 @@ double TransformSplineFixtureDivOnly::integrate() const
 				sum += graddiv2(x, y, z); 
 			}
 	return sum * step * step * step; 
+}
+
+
+double TransformSplineFixtureMixed::fx(double x, double y, double z)const 
+{
+	return x * exp(-x*x-y*y-z*z);
+}
+
+double TransformSplineFixtureMixed::fy(double x, double y, double z)const 
+{
+	return y * exp(-x*x-y*y-z*z);
+}
+
+double TransformSplineFixtureMixed::fz(double x, double y, double z)const
+{
+	return 0.0;
+}
+
+double TransformSplineFixtureMixed::graddiv2(double x, double y, double z)const
+{
+	return 0.0; 
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4, TransformSplineFixtureMixed )
+{
+	init(10, 4, ip_bspline4);
+
+	const T3DConvoluteInterpolator<C3DFVector>& interp = 
+		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
+	
+	auto coeffs = interp.get_coefficients(); 
+	const double testdiv = 7.0 * pow(M_PI, 1.5) / sqrt(2.0); 
+	const double testcurl = testdiv / 4.0; 
+
+	C3DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
+	double graddiv = div  * coeffs; 
+	BOOST_CHECK_CLOSE( graddiv, testdiv, 0.1); 	
+
+
+	C3DPPDivcurlMatrix divcurl(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 1.0);
+	double graddivcurl = divcurl  * coeffs; 
+	BOOST_CHECK_CLOSE( graddivcurl, testdiv + testcurl, 0.1); 	
+	
+
+	C3DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
+	double gradcurl = rot  * coeffs; 
+	BOOST_CHECK_CLOSE( gradcurl, testcurl, 0.1); 	
+
+	cvinfo() << "graddiv  / testdiv= " << graddiv  / testdiv << "\n"; 
+	cvinfo() << "gradcurl / testcurl = " << gradcurl / testcurl << "\n"; 
 }
 
 

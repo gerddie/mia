@@ -57,10 +57,12 @@ private:
 		double vzz; 
 		size_t i; 
 		size_t j;
+		double sort_help; 
 		SMatrixCell(); 
 	}; 
 	vector<SMatrixCell> _M_P; 
 }; 
+
 
 C3DPPDivcurlMatrixImpl::SMatrixCell::SMatrixCell()
 {
@@ -169,11 +171,12 @@ double CIntegralCache::get(int s1, int s2, int deg1, int deg2, int range) const
 	
 	if (pv != _M_values.end()) 
 		result = pv->second; 
-	else 
+	else {
 		result = _M_values[index] = integrate2(_M_kernel, s1, s2, deg1, deg2, 1, 0,  range); 
+	}
 	
 	
-return result; 
+	return result; 
 }
 
 
@@ -202,112 +205,139 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 	C3DFVector h((size.x-1)/range.x,
 		     (size.y-1)/range.y, 
 		     (size.z-1)/range.z);
-	
+	const double scale = h.x * h.y * h.z; 
+
+	cvinfo() << "scale = " << scale << "\n"; 
 	const int nx = _M_size.x;
 	const int ny = _M_size.y;
 	const int nz = _M_size.z;
+	const size_t nxy = _M_size.x *_M_size.y; 
 
-	int kernel_range = kernel.size(); 
-	cvinfo() << "kernel_range = " <<kernel_range  << "\n"; 
+	int ksize = kernel.size(); 
+	cvinfo() << "ksize = " <<ksize  << "\n"; 
 
 	CIntegralCache rc00(kernel); 
 	CIntegralCache rc11(kernel); 
 	CIntegralCache rc22(kernel); 
 	CIntegralCache rc21(kernel); 
+	CIntegralCache rc12(kernel); 
 	CIntegralCache rc01(kernel); 
 	CIntegralCache rc10(kernel); 
 
 	const double wsum = wdiv + wrot; 
-	const double wdelta = 2.0 * (wdiv - wrot); 
+	const double wdelta = 2*(wdiv - wrot); 
 	
-	for (int a = 0; a < nz; ++a) {
-		for (int b = max(0,a - kernel_range); b < min(a + kernel_range, nz); ++b) {
-			const double r01z = h.z * rc01.get( a, b, 0, 1, size.z); 
-			const double r22z = h.z * rc22.get( a, b, 2, 2, size.z); 
-			const double r21z = h.z * rc21.get( a, b, 2, 1, size.z); 
-			const double r00z = h.z * rc00.get( a, b, 0, 0, size.z); 
-			const double r11z = h.z * rc11.get( a, b, 1, 1, size.z); 
-			
-			cvdebug() << "block " << a << "\n"; 
-			for (int l = 0; l < ny; ++l) {
-				for (int n = max(0,l - kernel_range); n < min(l + kernel_range, ny); ++n) {
-					const double r01y = h.y * rc01.get( l, n, 0, 1, size.y); 
-					const double r22y = h.y * rc22.get( l, n, 2, 2, size.y); 
-					const double r21y = h.y * rc21.get( l, n, 2, 1, size.y); 
-					const double r00y = h.y * rc00.get( l, n, 0, 0, size.y); 
-					const double r11y = h.y * rc11.get( l, n, 1, 1, size.y); 
+	for (int zi = 0; zi < nz; ++zi) {
+		for (int zj = max(0,zi - ksize); zj < min(zi + ksize, nz); ++zj) {
+			const double r00z = rc00.get( zi, zj, 0, 0, size.z); 
+			const double r01z = rc01.get( zi, zj, 0, 1, size.z); 
+			const double r10z = rc10.get( zi, zj, 1, 0, size.z); 
+			const double r11z = rc11.get( zi, zj, 1, 1, size.z); 
+			const double r12z = rc12.get( zi, zj, 1, 2, size.z); 
+			const double r21z = rc21.get( zi, zj, 2, 1, size.z); 
+			const double r22z = rc22.get( zi, zj, 2, 2, size.z); 
+
+
+			for (int yi = 0; yi < ny; ++yi) {
+				for (int yj = max(0,yi - ksize); yj < min(yi + ksize, ny); ++yj) {
+					const double r00y = rc00.get( yi, yj, 0, 0, size.y); 
+					const double r01y = rc01.get( yi, yj, 0, 1, size.y); 
+					const double r10y = rc10.get( yi, yj, 1, 0, size.y); 
+					const double r11y = rc11.get( yi, yj, 1, 1, size.y); 
+					const double r12y = rc12.get( yi, yj, 1, 2, size.y); 
+					const double r21y = rc21.get( yi, yj, 2, 1, size.y); 
+					const double r22y = rc22.get( yi, yj, 2, 2, size.y); 
+
 					
-					for (int k = 0; k < nx; ++k) {
-						for (int m = max(0,k - kernel_range); m < min(k + kernel_range,nx); ++m) {
-							const double r01x = h.x * rc01.get( k, m, 0, 1, size.x); 
-							const double r22x = h.x * rc22.get( k, m, 2, 2, size.x); 
-							const double r21x = h.x * rc21.get( k, m, 2, 1, size.x); 
-							const double r00x = h.x * rc00.get( k, m, 0, 0, size.x); 
-							const double r11x = h.x * rc11.get( k, m, 1, 1, size.x); 
+					for (int xi = 0; xi < nx; ++xi) {
+						for (int xj = max(0,xi - ksize); xj < min(xi + ksize,nx); ++xj) {
+							const double r00x = rc00.get( xi, xj, 0, 0, size.x); 
+							const double r01x = rc01.get( xi, xj, 0, 1, size.x); 
+							const double r10x = rc10.get( xi, xj, 1, 0, size.x); 
+							const double r11x = rc11.get( xi, xj, 1, 1, size.x); 
+							const double r12x = rc12.get( xi, xj, 1, 2, size.x); 
+							const double r21x = rc21.get( xi, xj, 2, 1, size.x); 
+							const double r22x = rc22.get( xi, xj, 2, 2, size.x); 
+
+
+
 
 							SMatrixCell cell; 
 							
-							const double r220000 = r22x * r00y * r00z; 
-							const double r002200 = r00x * r22y * r00z; 
-							const double r000022 = r00x * r00y * r22z; 
-							const double r111100 = r11x * r11y * r00z; 
-							const double r110011 = r11x * r00y * r11z; 
-							const double r001111 = r00x * r11y * r11z; 
+							const double r200200 = r22x * r00y * r00z; 
+							const double r020020 = r00x * r22y * r00z; 
+							const double r002002 = r00x * r00y * r22z; 
+							const double r110110 = r11x * r11y * r00z; 
+							const double r101101 = r11x * r00y * r11z; 
+							const double r011011 = r00x * r11y * r11z; 
 
 							bool zero = true; 
-							cell.vxx = 
-								r000022 * wrot + 
-								r001111 * 2.0 * wrot + 
-								r002200 * wrot + 
-								r110011 * wsum + 
-								r111100 * wsum + 
-								r220000 * wdiv; 
+							cell.vxx = scale * (
+								r002002 * wrot + 
+								r011011 * 2.0 * wrot + 
+								r020020 * wrot + 
+								r101101 * wsum + 
+								r110110 * wsum + 
+								r200200 * wdiv); 
 
 							zero &= cell.vxx == 0.0; 
 
-							cell.vyy = 
-								r000022 * wrot + 
-								r001111 * wsum + 
-								r002200 * wdiv + 
-								r110011 * 2* wrot + 
-								r111100 * wsum + 
-								r220000 * wrot; 
+							cell.vyy = scale * (
+								r002002 * wrot + 
+								r011011 * wsum + 
+								r020020 * wdiv + 
+								r101101 * 2* wrot + 
+								r110110 * wsum + 
+								r200200 * wrot); 
 							zero &= cell.vyy == 0.0; 
 							
-							cell.vzz = 
-								r000022 * wdiv + 
-								r001111 * wsum + 
-								r002200 * wrot +
-								r110011 * wsum +  
-								r111100 * wrot * 2 + 
-								r220000 * wrot; 
+							cell.vzz = scale * (
+								r002002 * wdiv + 
+								r011011 * wsum + 
+								r020020 * wrot +
+								r101101 * wsum +  
+								r110110 * wrot * 2 + 
+								r200200 * wrot); 
 
 							zero &= cell.vzz == 0.0; 
 							
 							if (wdelta != 0.0) {
-								cell.vxy = wdelta * 
+								cell.vxy = scale * wdelta * 
 									(r21x * r01y * r00z + 
-									 r01x * r21y * r00z + 
-									 r01x * r01y * r11z); 
+									 r10x * r12y * r00z + 
+									 r01x * r10y * r11z); 
 								zero &= cell.vxy == 0.0; 
 
-								cell.vxz = wdelta * 
+								cell.vxz = scale * wdelta * 
 									(r21x * r00y * r01z + 
-									 r01x * r11y * r01z + 
-									 r01x * r00y * r21z); 
+									 r10x * r11y * r01z + 
+									 r10x * r00y * r12z); 
 								zero &= cell.vxz == 0.0;
 
-								cell.vyz = wdelta * (
-									r11x * r01y * r01z + 
+								cell.vyz = scale * wdelta * (
+									r11x * r10y * r01z + 
 									r00x * r21y * r01z + 
-									r00x * r01y * r21z);
+									r00x * r10y * r12z);
 								zero &= cell.vyz == 0.0;
+
 							}
+							
 								
 							if (!zero) {
-								cell.i = k + nx * (l + ny * a);;
-								cell.j = m + nx * (n + ny * b);
+								
+								cell.i = xi + nx * yi + nxy * zi;
+								cell.j = xj + nx * yj + nxy * zj;
 								_M_P.push_back(cell);
+								cvdebug() <<"cell = [" 
+									  << cell.i << "x" << cell.j 
+									  << "] (" << cell.vxx
+									  << ", " << cell.vyy
+									  << ", " << cell.vzz
+									  << ", " << cell.vxy
+									  << ", " << cell.vxz
+									  << ", " << cell.vyz
+									  << "\n"; 
+
 							}
 						}
 					}
@@ -331,20 +361,20 @@ double C3DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 	double result_6 = 0.0; 
 
 	for (auto p = _M_P.begin(); p != _M_P.end();++p) {
-		assert(p->i < coefficients.size());
-		assert(p->j < coefficients.size());
-		auto ci = coefficients[p->i];
-		auto cj = coefficients[p->j];
+		auto ci = coefficients[p->i]; 
+		auto cj = coefficients[p->j]; 
 		
 		result_1 += ci.x * cj.x * p->vxx; 
 		result_2 += ci.y * cj.y * p->vyy; 
 		result_3 += ci.z * cj.z * p->vzz; 
-		result_4 += ci.x * cj.y * p->vxy; 
-		result_5 += ci.x * cj.z * p->vxz; 
-		result_6 += ci.y * cj.z * p->vyz; 
-
+		if (_M_wdiv != _M_wrot) {
+			result_4 += ci.x * cj.y * p->vxy; 
+			result_5 += ci.x * cj.z * p->vxz; 
+			result_6 += ci.y * cj.z * p->vyz; 
+		}
 
 	}
+	cvinfo() << "final\n"; 
 	cvinfo() << "result_1= " << result_1 << "\n"; 
 	cvinfo() << "result_2= " << result_2 << "\n"; 
 	cvinfo() << "result_3= " << result_3 << "\n"; 
