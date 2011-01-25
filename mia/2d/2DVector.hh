@@ -62,7 +62,7 @@ public:
 
 	T2DVector():x(T()),y(T()){}
 
-	T2DVector(int dim):x(T()),y(T()){
+	explicit T2DVector(int dim):x(T()),y(T()){
 		assert(dim ==2);
 	}
 
