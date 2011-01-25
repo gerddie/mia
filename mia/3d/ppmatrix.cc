@@ -216,12 +216,23 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 	_M_nodes = size.x*size.y*size.z;
 	_M_P.clear();
 
-	C3DFVector h((size.x-1)/range.x,
-		     (size.y-1)/range.y, 
-		     (size.z-1)/range.z);
-	const double scale = h.x * h.y * h.z; 
+	C3DFVector h1((size.x-1)/range.x,
+		      (size.y-1)/range.y, 
+		      (size.z-1)/range.z);
+	
+	C3DFVector h2(h1.x * h1.x, h1.y * h1.y, h1.z * h1.z); 
+	C3DFVector h3(h1.x * h2.x, h1.y * h2.y, h1.z * h2.z); 
+	C3DFVector h4(h1.x * h3.x, h1.y * h3.y, h1.z * h3.z); 
 
-	cvinfo() << "scale = " << scale << "\n"; 
+	const double global_scale = 1.0 / (h1.x * h1.y * h1.z); 
+
+	cvinfo() << "scale = " << global_scale << "\n"; 
+	cvinfo() << "h1 = " << h1 << "\n"; 
+	cvinfo() << "h2 = " << h2 << "\n"; 
+	cvinfo() << "h3 = " << h3 << "\n"; 
+	cvinfo() << "h4 = " << h4 << "\n"; 
+
+	
 	const int nx = _M_size.x;
 	const int ny = _M_size.y;
 	const int nz = _M_size.z;
@@ -243,35 +254,32 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 	
 	for (int zi = 0; zi < nz; ++zi) {
 		for (int zj = max(0,zi - ksize); zj < min(zi + ksize, nz); ++zj) {
-			const double r00z = rc00.get( zi, zj, 0, 0, size.z); 
-			const double r01z = rc01.get( zi, zj, 0, 1, size.z); 
-			const double r11z = rc11.get( zi, zj, 1, 1, size.z); 
-			const double r12z = rc12.get( zi, zj, 1, 2, size.z); 
-			const double r22z = rc22.get( zi, zj, 2, 2, size.z); 
+			const double r00z =        rc00.get( zi, zj, 0, 0, size.z); 
+			const double r01z = h1.z * rc01.get( zi, zj, 0, 1, size.z); 
+			const double r11z = h2.z * rc11.get( zi, zj, 1, 1, size.z); 
+			const double r12z = h3.z * rc12.get( zi, zj, 1, 2, size.z); 
+			const double r22z = h4.z * rc22.get( zi, zj, 2, 2, size.z); 
 
 
 			for (int yi = 0; yi < ny; ++yi) {
 				for (int yj = max(0,yi - ksize); yj < min(yi + ksize, ny); ++yj) {
-					const double r00y = rc00.get( yi, yj, 0, 0, size.y); 
-					const double r01y = rc01.get( yi, yj, 0, 1, size.y); 
-					const double r10y = rc10.get( yi, yj, 1, 0, size.y); 
-					const double r11y = rc11.get( yi, yj, 1, 1, size.y); 
-					const double r12y = rc12.get( yi, yj, 1, 2, size.y); 
-					const double r21y = rc21.get( yi, yj, 2, 1, size.y); 
-					const double r22y = rc22.get( yi, yj, 2, 2, size.y); 
+					const double r00y =        rc00.get( yi, yj, 0, 0, size.y); 
+					const double r01y = h1.y * rc01.get( yi, yj, 0, 1, size.y); 
+					const double r10y = h1.y * rc10.get( yi, yj, 1, 0, size.y); 
+					const double r11y = h2.y * rc11.get( yi, yj, 1, 1, size.y); 
+					const double r12y = h3.y * rc12.get( yi, yj, 1, 2, size.y); 
+					const double r21y = h3.y * rc21.get( yi, yj, 2, 1, size.y); 
+					const double r22y = h4.y * rc22.get( yi, yj, 2, 2, size.y); 
 
 					
 					for (int xi = 0; xi < nx; ++xi) {
 						for (int xj = max(0,xi - ksize); xj < min(xi + ksize,nx); ++xj) {
-							const double r00x = rc00.get( xi, xj, 0, 0, size.x); 
-							const double r01x = rc01.get( xi, xj, 0, 1, size.x); 
-							const double r10x = rc10.get( xi, xj, 1, 0, size.x); 
-							const double r11x = rc11.get( xi, xj, 1, 1, size.x); 
-							const double r21x = rc21.get( xi, xj, 2, 1, size.x); 
-							const double r22x = rc22.get( xi, xj, 2, 2, size.x); 
-
-
-
+							const double r00x =        rc00.get( xi, xj, 0, 0, size.x); 
+							const double r01x = h1.x * rc01.get( xi, xj, 0, 1, size.x); 
+							const double r10x = h1.x * rc10.get( xi, xj, 1, 0, size.x); 
+							const double r11x = h2.x * rc11.get( xi, xj, 1, 1, size.x); 
+							const double r21x = h3.x * rc21.get( xi, xj, 2, 1, size.x); 
+							const double r22x = h4.x * rc22.get( xi, xj, 2, 2, size.x); 
 
 							SMatrixCell cell; 
 							
@@ -283,7 +291,7 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 							const double r011011 = r00x * r11y * r11z; 
 
 							bool zero = true; 
-							cell.vxx = scale * (
+							cell.vxx = global_scale * (
 								r002002 * wrot + 
 								r011011 * 2.0 * wrot + 
 								r020020 * wrot + 
@@ -293,7 +301,7 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 
 							zero &= cell.vxx == 0.0; 
 
-							cell.vyy = scale * (
+							cell.vyy = global_scale * (
 								r002002 * wrot + 
 								r011011 * wsum + 
 								r020020 * wdiv + 
@@ -302,7 +310,7 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 								r200200 * wrot); 
 							zero &= cell.vyy == 0.0; 
 							
-							cell.vzz = scale * (
+							cell.vzz = global_scale * (
 								r002002 * wdiv + 
 								r011011 * wsum + 
 								r020020 * wrot +
@@ -313,19 +321,19 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 							zero &= cell.vzz == 0.0; 
 							
 							if (wdelta != 0.0) {
-								cell.vxy = scale * wdelta * 
+								cell.vxy = global_scale * wdelta * 
 									(r21x * r01y * r00z + 
 									 r10x * r12y * r00z + 
 									 r01x * r10y * r11z); 
 								zero &= cell.vxy == 0.0; 
 
-								cell.vxz = scale * wdelta * 
+								cell.vxz = global_scale * wdelta * 
 									(r21x * r00y * r01z + 
 									 r10x * r11y * r01z + 
 									 r10x * r00y * r12z); 
 								zero &= cell.vxz == 0.0;
 
-								cell.vyz = scale * wdelta * (
+								cell.vyz = global_scale * wdelta * (
 									r11x * r10y * r01z + 
 									r00x * r21y * r01z + 
 									r00x * r10y * r12z);

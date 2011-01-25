@@ -66,12 +66,13 @@ public:
 				((::boost::ForwardIterator<RefIterator>)),
 				(void)
 				)
-		fill(MovIterator mov_begin, MovIterator mov_end, RefIterator ref_begin, RefIterator ref_end); 
+		fill(MovIterator mov_begin, MovIterator mov_end, 
+		     RefIterator ref_begin, RefIterator ref_end); 
 
 
 	/**
-	   @returns the value of the mutual information that is maximized if the given input images 
-	            are equal. 
+	   @returns the value of the mutual information that is maximized if the 
+	   given input images are equal. 
 	 */
 	double value() const; 
 
