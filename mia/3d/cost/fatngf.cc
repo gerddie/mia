@@ -70,16 +70,16 @@ class FCross: public FEvaluator {
 public:
 	virtual double cost (const C3DFVector& src, const C3DFVector& ref) const{
 		C3DFVector d = cross(src, ref);
-		return d * d;
+		return d.norm2(); 
 	}
 	virtual C3DFVector  grad (int nx, int nxy, C3DFVectorfield::const_iterator isrc,
 			     const C3DFVector& ref, double& cost) const {
 		C3DFVector d = cross(*isrc, ref);
-		cost += d * d;
+		cost += d.norm2();
 
-		return C3DFVector  ( d * cross(isrc[1] - isrc[-1], ref),
-				     d * cross(isrc[nx] - isrc[-nx], ref),
-				     d * cross(isrc[nxy] - isrc[-nxy], ref));
+		return C3DFVector  ( dot(d, cross(isrc[1] - isrc[-1], ref)),
+				     dot(d, cross(isrc[nx] - isrc[-nx], ref)),
+				     dot(d, cross(isrc[nxy] - isrc[-nxy], ref)));
 	}
 };
 
