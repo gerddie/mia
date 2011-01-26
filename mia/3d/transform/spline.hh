@@ -39,7 +39,7 @@ public:
 	C3DSplineTransformation(const C3DBounds& range, PBSplineKernel kernel);
 	C3DSplineTransformation(const C3DBounds& range, PBSplineKernel kernel, const C3DFVector& c_rate);
 
-	void set_coefficients(const C3DFVectorfield& field);
+	void set_coefficients(const C3DDVectorfield& field);
 	void reinit()const;
 	C3DFVector apply( const C3DFVector& x) const;
 	C3DFVector scale( const C3DFVector& x) const;
@@ -112,7 +112,7 @@ private:
 	virtual C3DTransformation *do_clone() const;
 	C3DBounds _M_range;
 	C3DFVector _M_target_c_rate;
-	C3DFVectorfield _M_coefficients;
+	C3DDVectorfield _M_coefficients;
 	PBSplineKernel _M_kernel; 
 	int _M_shift; 
 	int _M_enlarge; 

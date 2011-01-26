@@ -50,7 +50,7 @@ struct TransformSplineFixture {
 	TransformSplineFixture():
 		size(33,65,20),
 		kernel(new CBSplineKernel3()),
-		range(55, 120, 45),
+		range(50, 70, 25),
 		r(range.x - 1, range.y - 1, range.z - 1),
 		stransf(range, kernel),
 		scale(2 * M_PI / r.x, 2 * M_PI / r.y, 2 * M_PI / r.z )
@@ -63,9 +63,9 @@ struct TransformSplineFixture {
 		size.x += 2*coeff_shift; 
 		size.y += 2*coeff_shift; 
 		size.z += 2*coeff_shift; 
-		C3DFVectorfield field(size); 
+		C3DDVectorfield field(size); 
 
-		C3DFVectorfield::iterator i = field.begin();
+		C3DDVectorfield::iterator i = field.begin();
 		for (size_t z = 0; z < size.z; ++z)
 			for (size_t y = 0; y < size.y; ++y)
 				for (size_t x = 0; x < size.x; ++x, ++i) {
@@ -78,8 +78,8 @@ struct TransformSplineFixture {
 				}
 		
 		// now filter 
-		C3DFVectorfield help1(size);
-		vector<C3DFVector> buffer(size.x); 
+		C3DDVectorfield help1(size);
+		vector<C3DDVector> buffer(size.x); 
 		for(size_t z = 0; z < size.z; ++z)
 			for(size_t y = 0; y < size.y; ++y) {
 				field.get_data_line_x(y, z, buffer); 
@@ -158,21 +158,21 @@ float TransformSplineFixture::fz(const C3DFVector& v)const
 float TransformSplineFixture::fx(float x, float y, float z)const
 {
 
-	return 	(1.0 - cosf(    scale.x * x)) * 
+	return 	20 * (1.0 - cosf(    scale.x * x)) * 
 		(1.0 - cosf(2 * scale.y * y)) * 
 		(1.0 - cosf(3 * scale.z * z)); 
 }
 
 float TransformSplineFixture::fy(float x, float y, float z)const
 {
-	return 	(1.0 - cosf(2 * scale.x * x)) * 
+	return 	10 * (1.0 - cosf(2 * scale.x * x)) * 
 		(1.0 - cosf(    scale.y * y)) * 
 		(1.0 - cosf(    scale.z * z)); 
 }
 
 float TransformSplineFixture::fz(float x, float y, float z)const
 {
-	return 	(1.0 - cosf(2 * scale.x * x)) * 
+	return 	30 * (1.0 - cosf(2 * scale.x * x)) * 
 		(1.0 - cosf(3 * scale.y * y)) * 
 		(1.0 - cosf(    scale.z * z)); 
 }
@@ -180,13 +180,13 @@ float TransformSplineFixture::fz(float x, float y, float z)const
 float TransformSplineFixture::dfx_x(float x, float y, float z)
 {
 	x *= scale.x;
-	return scale.x * sinf(x) * ( 1.0 - cosf(2 * scale.y * y))  * (1.0 - cosf(3 * scale.z * z)); 
+	return 20 * scale.x * sinf(x) * ( 1.0 - cosf(2 * scale.y * y))  * (1.0 - cosf(3 * scale.z * z)); 
 }
 
 float TransformSplineFixture::dfx_y(float x, float y, float z)
 {
 
-	return 	(1.0 - cosf(scale.x * x)) * 
+	return 	20 * (1.0 - cosf(scale.x * x)) * 
 		sinf(2 * scale.y * y) * 2* scale.y *  
 		(1.0 - cosf(3 * scale.z * z)); 
 }
@@ -194,49 +194,49 @@ float TransformSplineFixture::dfx_y(float x, float y, float z)
 float TransformSplineFixture::dfx_z(float x, float y, float z)
 {
 
-	return 	(1.0 - cosf(scale.x * x)) * 
+	return 	20 * (1.0 - cosf(scale.x * x)) * 
 		(1.0 - cosf(2 * scale.y * y)) * 
 		sinf(3 * scale.z * z) *3 * scale.z; 
 }
 
 float TransformSplineFixture::dfy_x(float x, float y, float z)
 {
-	return 	2* scale.x * sinf(2 * scale.x * x) * 
+	return 	20 * 2* scale.x * sinf(2 * scale.x * x) * 
 		(1.0 - cosf(    scale.y * y)) * 
 		(1.0 - cosf(    scale.z * z)); 
 }
 
 float TransformSplineFixture::dfy_y(float x, float y, float z)
 {
-	return 	scale.y * (1.0 - cosf(2 * scale.x * x)) 
+	return 	20 * scale.y * (1.0 - cosf(2 * scale.x * x)) 
 		* sinf( scale.y * y) 
 		* (1.0 - cosf( scale.z * z)); 
 }
 
 float TransformSplineFixture::dfy_z(float x, float y, float z)
 {
-	return 	(1.0 - cosf(2 * scale.x * x)) * 
+	return 	20 * (1.0 - cosf(2 * scale.x * x)) * 
 		(1.0 - cosf(    scale.y * y)) * 
 		scale.z * sinf( scale.z * z) ; 
 }
 
 float TransformSplineFixture::dfz_x(float x, float y, float z)
 {
-	return 	sinf(2 * scale.x * x) * 2 * scale.x * 
+	return 	20 * sinf(2 * scale.x * x) * 2 * scale.x * 
 		(1.0 - cosf(3 * scale.y * y)) * 
 		(1.0 - cosf(    scale.z * z)); 
 }
 
 float TransformSplineFixture::dfz_y(float x, float y, float z)
 {
-	return 	(1.0 - cosf(2 * scale.x * x)) * 
+	return 	20 * (1.0 - cosf(2 * scale.x * x)) * 
 		 3 * scale.y * sinf(3 * scale.y * y) * 
 		(1.0 - cosf(    scale.z * z)); 
 }
 
 float TransformSplineFixture::dfz_z(float x, float y, float z)
 {
-	return 	(1.0 - cosf(2 * scale.x * x)) * 
+	return 	20 * (1.0 - cosf(2 * scale.x * x)) * 
 		(1.0 - cosf(3 * scale.y * y)) * 
 		sinf( scale.z * z) * scale.z; 
 }
@@ -246,7 +246,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 {
 	BOOST_CHECK_EQUAL(stransf.degrees_of_freedom(), size.x*size.y*size.z * 3);
 
-	C3DFVector testx(34.4, 74.8, 49.6); 
+	C3DFVector testx(34.4, 74.8, 21.6); 
 
 	BOOST_CHECK_EQUAL(stransf.get_size(), range);
 
@@ -297,7 +297,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation_upscale, TransformSplineFix
 BOOST_FIXTURE_TEST_CASE( test_splines_add, TransformSplineFixture )
 {
 	stransf.reinit();
-	C3DFVector testx(40.4, 62.8, 70.3); 
+	C3DFVector testx(30.4, 42.8, 12.3); 
 
 	C3DFVector r1( testx.x - fx(testx), 
 		       testx.y - fy(testx), 
@@ -461,7 +461,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_update, TransformSplineFixture )
 	stransf.update(2.0, update);
 	stransf.reinit();
 
-	C3DFVector testx(33.4, 82.4, 72.9);
+	C3DFVector testx(33.4, 82.4, 21.9);
 	C3DFVector result = stransf.apply(testx);
 
 	BOOST_CHECK_CLOSE(result.x, fx(testx) + 2.0f, 0.1);
@@ -672,7 +672,7 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 	copy(src_image_init, src_image_init + 100, psrc->begin_at(0,0,4)); 
 	
 
-	C3DFVectorfield field(C3DBounds(5,4,4)); 
+	C3DDVectorfield field(C3DBounds(5,4,4)); 
 
 	C3DFVector shift(1,2,1); 
 	fill(field.begin(), field.end(), shift); 
@@ -708,7 +708,7 @@ struct TransformSplineFixtureFieldBase {
 
 	}
 	void init() {
-		C3DFVectorfield::iterator i = field.begin();
+		auto i = field.begin();
 		for (int z = 0; z < (int)size.z; ++z)
 			for (int y = 0; y < (int)size.y; ++y)
 				for (int x = 0; x < (int)size.x; ++x, ++i) {
@@ -726,7 +726,7 @@ struct TransformSplineFixtureFieldBase {
 		stransf.reinit();
 	}
 	C3DBounds size;
-	C3DFVectorfield field;
+	C3DDVectorfield field;
 	PBSplineKernel kernel; 
 	P3DInterpolatorFactory ipf;
 
