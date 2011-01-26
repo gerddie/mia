@@ -50,7 +50,7 @@ struct TransformSplineFixture {
 	TransformSplineFixture():
 		size(33,65,20),
 		kernel(new CBSplineKernel3()),
-		range(50, 70, 25),
+		range(50, 80, 30),
 		r(range.x - 1, range.y - 1, range.z - 1),
 		stransf(range, kernel),
 		scale(2 * M_PI / r.x, 2 * M_PI / r.y, 2 * M_PI / r.z )
@@ -402,9 +402,9 @@ BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 BOOST_FIXTURE_TEST_CASE( test_splines_translate, TransformSplineFixture )
 {
 	C3DFVectorfield gradient(range); 
-	double scale_x = double(range.x - 1) / (size.x - 1 - 2*coeff_shift); 
-	double scale_y = double(range.y - 1) / (size.y - 1 - 2*coeff_shift); 
-	double scale_z = double(range.z - 1) / (size.z - 1 - 2*coeff_shift); 
+	double scale_x = double(range.x) / (size.x); 
+	double scale_y = double(range.y) / (size.y); 
+	double scale_z = double(range.z) / (size.z); 
 	double scale = scale_x * scale_y * scale_z; 
 	
 	cvdebug() << range << size << ", scale=" << scale << "\n"; 
@@ -414,6 +414,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_translate, TransformSplineFixture )
 	gsl::DoubleVector force(stransf.degrees_of_freedom());
 	stransf.translate(gradient, force);
 
+	// the real test uses finite differences and is implemented elsewhere
 	auto  i = force.begin();
 	for (size_t z = 0; z < stransf.get_coeff_size().z; ++z)
 		for (size_t y = 0; y < stransf.get_coeff_size().y; ++y)
@@ -421,9 +422,9 @@ BOOST_FIXTURE_TEST_CASE( test_splines_translate, TransformSplineFixture )
 				if (y > 3 && y < stransf.get_coeff_size().y - 3 && 
 				    x > 3 && x < stransf.get_coeff_size().x - 3 && 
 				    z > 3 && z < stransf.get_coeff_size().z - 3) {
-					BOOST_CHECK_CLOSE( i[0], -1.0f * scale, 0.1);
-					BOOST_CHECK_CLOSE( i[1], -2.0f * scale, 0.1);
-					BOOST_CHECK_CLOSE( i[2], -3.0f * scale, 0.1);
+					BOOST_CHECK_CLOSE( i[0], -1.0f * scale, 1.5);
+					BOOST_CHECK_CLOSE( i[1], -2.0f * scale, 1.5);
+					BOOST_CHECK_CLOSE( i[2], -3.0f * scale, 1.5);
 				}
 			}
 }
