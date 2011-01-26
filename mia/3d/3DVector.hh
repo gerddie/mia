@@ -361,6 +361,19 @@ namespace boost {
 			typedef mia::C3DFVector type;
 		};
 
+		template<class Act> 
+		struct plain_return_type_2<arithmetic_action<Act>, mia::C3DDVector, mia::C3DDVector > {
+			typedef mia::C3DDVector type;
+		};
+		template<> 
+		struct plain_return_type_2<arithmetic_action<multiply_action>, mia::C3DDVector, float> {
+			typedef mia::C3DDVector type;
+		};
+		template<> 
+		struct plain_return_type_2<arithmetic_action<multiply_action>, float, mia::C3DDVector> {
+			typedef mia::C3DDVector type;
+		};
+
 	}
 }
 
