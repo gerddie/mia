@@ -171,7 +171,7 @@ bool TPolyTriangulator<VertexVector,Polygon>::is_convex(const typename CPoly::co
 	
 	typename VertexVector::value_type cross = ab ^ cb;
 
-	const bool result = cross * _M_orientation > 0; 
+	const bool result = dot(cross, _M_orientation) > 0; 
 	
 	return result; 
 

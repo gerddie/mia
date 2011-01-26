@@ -163,8 +163,8 @@ void CTriangleMeshData::evaluate_normals()
 			++errors;
 			continue;
 		}
-		float weight1 = acos((e1 * e2) / (e1.norm() * e2.norm()));
-		float weight2 = acos((e3 * e2) / (e3.norm() * e2.norm()));
+		float weight1 = acos((dot(e1,e2)) / (e1.norm() * e2.norm()));
+		float weight2 = acos((dot(e3,e2)) / (e3.norm() * e2.norm()));
 		(*_M_normals)[t->y] += weight1 * help_normal;
 		(*_M_normals)[t->z] += weight2 * help_normal;
 
