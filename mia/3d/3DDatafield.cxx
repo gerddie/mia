@@ -401,7 +401,7 @@ template <class T>
 typename T3DDatafield<T>::value_type
 T3DDatafield<T>::get_block_avrg(const C3DBounds& Start, const C3DBounds& BlockSize) const
 {
-        T Result = 0; // Not the best approach
+        T Result = T(); // Not the best approach
         size_t  S = BlockSize.x * BlockSize.y * BlockSize.z;
         C3DBounds End = Start+BlockSize;
         for (size_t  z = Start.z; z < End.z; z++) {

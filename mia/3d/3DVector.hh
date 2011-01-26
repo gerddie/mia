@@ -40,6 +40,7 @@ A fully templated class for all types of 3D vectors
 #include <complex>
 #include <iostream>
 
+#include <boost/lambda/lambda.hpp>
 #include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
@@ -58,7 +59,7 @@ public:
 	T3DVector():x(0),y(0),z(0){};
 	
 	/// create a zero-vector, \a dim must be 3
-	T3DVector(int dim):x(0),y(0),z(0){
+	explicit T3DVector(int dim):x(0),y(0),z(0){
 		assert(dim == 3);
 	}
 	
@@ -257,9 +258,9 @@ inline const T3DVector<T> operator -(const T3DVector<T>& a,const T3DVector<T>& b
 
 /// vector scalar product
 template <class T> 
-inline const T operator *(const T3DVector<T>& a,const T3DVector<T>& b)
+inline const T3DVector<T> operator *(const T3DVector<T>& a,const T3DVector<T>& b)
 {
-	return b.x * a.x + b.y * a.y + b.z * a.z;
+	return T3DVector<T>(b.x * a.x, b.y * a.y, b.z * a.z);
 }
 
 /// vector division by scalar
@@ -337,7 +338,33 @@ template <class T>
 bool operator >= (const T3DVector<T>& b, const T3DVector<T>& a){
 	return (b.x >= a.x && b.y >= a.y && b.z >= a.z);
 }
-
 NS_MIA_END
+
+/*
+  These template specializations are needed when using the T2DVector template 
+  in a boost lambda expression that uses ::boost::lambda::_1 
+  \todo add more operations 
+ */
+namespace boost { 
+	namespace lambda {
+		
+		template<class Act> 
+		struct plain_return_type_2<arithmetic_action<Act>, mia::C3DFVector, mia::C3DFVector > {
+			typedef mia::C3DFVector type;
+		};
+		template<> 
+		struct plain_return_type_2<arithmetic_action<multiply_action>, mia::C3DFVector, float> {
+			typedef mia::C3DFVector type;
+		};
+		template<> 
+		struct plain_return_type_2<arithmetic_action<multiply_action>, float, mia::C3DFVector> {
+			typedef mia::C3DFVector type;
+		};
+
+	}
+}
+
+
+
 
 #endif
