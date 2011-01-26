@@ -517,8 +517,7 @@ C3DSplineTransformation::get_derivative_row(size_t nin, size_t nout, double scal
 void C3DSplineTransformation::translate(const C3DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
 	TRACE_FUNCTION;
-	FUNCTION_NOT_TESTED;
-	assert(params.size() == _M_coefficients.size() * 2);
+	assert(params.size() == _M_coefficients.size() * 3);
 	assert(gradient.get_size() == _M_range); 
 	reinit(); 
 	
@@ -549,7 +548,7 @@ void C3DSplineTransformation::translate(const C3DFVectorfield& gradient, gsl::Do
 	in_buffer.resize(gradient.get_size().y); 
 	out_buffer.resize(_M_coefficients.get_size().y);
 
-	for (size_t iz = 0; iz < gradient.get_size().z; ++iz) {
+	for (size_t iz = 0; iz < _M_coefficients.get_size().z; ++iz) {
 		for (size_t ix = 0; ix < gradient.get_size().x; ++ix) {
 			tmp.get_data_line_y(ix, iz, in_buffer);
 			for(size_t i = 0; i < _M_coefficients.get_size().y; ++i) {

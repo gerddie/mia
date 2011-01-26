@@ -50,7 +50,7 @@ struct TransformSplineFixture {
 	TransformSplineFixture():
 		size(33,65,20),
 		kernel(new CBSplineKernel3()),
-		range(65, 129, 100),
+		range(55, 120, 45),
 		r(range.x - 1, range.y - 1, range.z - 1),
 		stransf(range, kernel),
 		scale(2 * M_PI / r.x, 2 * M_PI / r.y, 2 * M_PI / r.z )
