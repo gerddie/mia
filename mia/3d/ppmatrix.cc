@@ -395,9 +395,6 @@ double C3DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 			result_2 += ci.y * cj.y * p->vyy; 
 			result_3 += ci.z * cj.z * p->vzz; 
 		}
-		cvinfo() << "result_1 = " << result_1 << "\n"; 
-		cvinfo() << "result_2 = " << result_2 << "\n"; 
-		cvinfo() << "result_3 = " << result_3 << "\n"; 
 		return result_1 + result_2 + result_3; 
 	}else{
 		for (auto p = _M_P.begin(); p != _M_P.end();++p) {
@@ -413,14 +410,6 @@ double C3DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 			result_6 += ci.y * cj.z * p->vyz; 
 			
 		}	
-		cvinfo() << "result_1 = " << result_1 << "\n"; 
-		cvinfo() << "result_2 = " << result_2 << "\n"; 
-		cvinfo() << "result_3 = " << result_3 << "\n"; 
-		cvinfo() << "result_4 = " << result_4 << "\n"; 
-		cvinfo() << "result_5 = " << result_5 << "\n"; 
-		cvinfo() << "result_6 = " << result_6 << "\n"; 
-
-
 		return result_1 + result_2 + result_3 + 
 			result_4 + result_5 + result_6; 
 	}
