@@ -114,8 +114,8 @@ private:
 	C3DFVector _M_target_c_rate;
 	C3DDVectorfield _M_coefficients;
 	PBSplineKernel _M_kernel; 
-	int _M_shift; 
-	int _M_enlarge; 
+	C3DBounds _M_shift; 
+	C3DBounds _M_enlarge; 
 	mutable C3DFVector _M_scale;
 	mutable C3DFVector _M_inv_scale;
 	mutable bool _M_interpolator_valid;

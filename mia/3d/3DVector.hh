@@ -179,6 +179,7 @@ public:
 	const T3DVector<T> zxy()const {
 		return T3DVector<T>(z,x,y); 
 	}
+	static T3DVector<T> _1; 
 };
 
 /**
@@ -273,6 +274,17 @@ inline const T3DVector<T> operator /(const T3DVector<T>& a,double f)
 	return tmp;
 }
 
+/**
+   component wise division of two vectors 
+ */
+
+template <class T>
+inline const T3DVector<T> operator / (const T3DVector<T>& a, const T3DVector<T>& b)
+{
+	assert(b.x != 0.0 && b.x != 0.0 && b.x != 0.0);
+	return T3DVector<T>(a.x/b.x,a.y/b.y,a.z/b.z); 
+}
+
 
 /// vector multiplication with scalar
 template <class T> 
@@ -338,6 +350,9 @@ template <class T>
 bool operator >= (const T3DVector<T>& b, const T3DVector<T>& a){
 	return (b.x >= a.x && b.y >= a.y && b.z >= a.z);
 }
+template <typename T >
+T3DVector<T> T3DVector<T>::_1 = T3DVector<T>(1,1,1);
+
 NS_MIA_END
 
 /*

@@ -40,8 +40,6 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplin
 	_M_range(range),
 	_M_target_c_rate(1,1,1),
 	_M_kernel(kernel),
-	_M_shift(0), 
-	_M_enlarge(0), 
 	_M_scale(1.0, 1.0, 1.0),
 	_M_interpolator_valid(false),
 	_M_x_weights(_M_range.x), 
@@ -53,9 +51,14 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplin
 	_M_grid_valid(false)
 
 {
-	
-	_M_shift = _M_kernel->get_active_halfrange() - 1; 
-	_M_enlarge = 2*_M_shift; 
+	unsigned int s = _M_kernel->get_active_halfrange() - 1; 
+	_M_shift = C3DBounds(s,s,s); 
+	// add one for convenience: on the right side a zero padding is needed to 
+	// avoid memory access failures, because interpolatimng at the right boundary 
+	// us isually done with a zero weight on the last component, but the 
+	// code doesn't check if we want to access this 
+	// Quation is, what is more expensive 
+	_M_enlarge = 2 * _M_shift + C3DBounds::_1;
 	
 	TRACE_FUNCTION;
 	assert(_M_range.x > 0);
@@ -106,12 +109,11 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplin
 	assert(kernel); 
 
 	
-	_M_shift = _M_kernel->get_active_halfrange() - 1; 
-	_M_enlarge = 2*_M_shift; 
+	unsigned int s = _M_kernel->get_active_halfrange() - 1; 
+	_M_shift = C3DBounds(s,s,s); 
+	_M_enlarge = 2 * _M_shift + C3DBounds::_1;
 
-	C3DBounds csize(size_t((range.x + c_rate.x - 1) / c_rate.x) + _M_enlarge,
-			size_t((range.y + c_rate.y - 1) / c_rate.y) + _M_enlarge,
-			size_t((range.z + c_rate.z - 1) / c_rate.z) + _M_enlarge);
+	C3DBounds csize(C3DFVector(range - C3DBounds::_1 ) / c_rate  + C3DFVector(_M_enlarge));
 	_M_coefficients = C3DDVectorfield(csize);
 	reinit();
 }
@@ -121,10 +123,7 @@ void C3DSplineTransformation::set_coefficients(const C3DDVectorfield& field)
 	TRACE_FUNCTION;
 	_M_coefficients = field;
 	_M_interpolator_valid = false;
-
-	_M_target_c_rate.x = float(_M_range.x) / (field.get_size().x - _M_enlarge);
-	_M_target_c_rate.y = float(_M_range.y) / (field.get_size().y - _M_enlarge);
-	_M_target_c_rate.z = float(_M_range.z) / (field.get_size().z - _M_enlarge);
+	_M_target_c_rate =  C3DFVector(_M_range) / C3DFVector(field.get_size() - _M_enlarge);
 }
 
 void C3DSplineTransformation::reinit() const
@@ -132,12 +131,10 @@ void C3DSplineTransformation::reinit() const
 	TRACE_FUNCTION;
 	if (!_M_interpolator_valid) {
 		TRACE("C3DSplineTransformation::reinit applies");
-		_M_scale.x = float(_M_coefficients.get_size().x - 1 - _M_enlarge) / (_M_range.x - 1);
-		_M_scale.y = float(_M_coefficients.get_size().y - 1 - _M_enlarge) / (_M_range.y - 1);
-		_M_scale.z = float(_M_coefficients.get_size().z - 1 - _M_enlarge) / (_M_range.z - 1);
-		_M_inv_scale.x = float(_M_range.x - 1) / (_M_coefficients.get_size().x - 1 - _M_enlarge);
-		_M_inv_scale.y = float(_M_range.y - 1) / (_M_coefficients.get_size().y - 1 - _M_enlarge);
-		_M_inv_scale.z = float(_M_range.z - 1) / (_M_coefficients.get_size().z - 1 - _M_enlarge);
+		_M_scale = C3DFVector(_M_coefficients.get_size() - C3DBounds::_1 - _M_enlarge) / 
+			C3DFVector(_M_range - C3DBounds::_1);
+		
+		_M_inv_scale = C3DFVector::_1 / _M_scale; 
 
 		_M_mx = get_derivative_row(_M_range.x, _M_coefficients.get_size().x, _M_scale.x); 
 		_M_my = get_derivative_row(_M_range.y, _M_coefficients.get_size().y, _M_scale.y); 
@@ -156,7 +153,7 @@ C3DFVector C3DSplineTransformation::interpolate(const C3DFVector& x) const
 			_M_kernel->get_start_idx_and_value_weights(x.y, yweights), 
 			_M_kernel->get_start_idx_and_value_weights(x.z, zweights)); 
 	
-	return sum(start, xweights, yweights, zweights); 
+	return sum(start, xweights, yweights, zweights);
 }
 
 C3DFVector C3DSplineTransformation::apply(const C3DFVector& x) const
@@ -186,7 +183,7 @@ C3DFVector C3DSplineTransformation::operator () (const C3DFVector& x) const
 C3DFVector C3DSplineTransformation::scale( const C3DFVector& x) const
 {
 	assert(_M_interpolator_valid);
-	return x * _M_scale + C3DFVector(_M_shift,_M_shift,_M_shift);
+	return x * _M_scale + C3DFVector(_M_shift);
 }
 
 const C3DBounds& C3DSplineTransformation::get_size() const
@@ -236,9 +233,8 @@ bool C3DSplineTransformation::refine()
 {
 	TRACE_FUNCTION;
 	FUNCTION_NOT_TESTED;
-	C3DBounds csize(size_t((_M_range.x + _M_target_c_rate.x - 1) / _M_target_c_rate.x) + _M_enlarge,
-			size_t((_M_range.y + _M_target_c_rate.y - 1) / _M_target_c_rate.y) + _M_enlarge,
-			size_t((_M_range.z + _M_target_c_rate.z - 1) / _M_target_c_rate.z) + _M_enlarge);
+	C3DBounds csize((C3DFVector(_M_range - C3DBounds::_1) + _M_target_c_rate) / 
+			(_M_target_c_rate + C3DFVector(_M_enlarge))); 
 	
 	// no refinement necessary? 
 	if (csize.x <= _M_coefficients.get_size().x || 
@@ -250,20 +246,18 @@ bool C3DSplineTransformation::refine()
 	// \todo this should be done faster by a filter 
 	reinit();
 	C3DDVectorfield coeffs(csize);
-	C3DFVector dx((float)(_M_coefficients.get_size().x - 1 - _M_enlarge) / (float)(csize.x - 1 - _M_enlarge),
-		      (float)(_M_coefficients.get_size().y - 1 - _M_enlarge) / (float)(csize.y - 1 - _M_enlarge), 
-		      (float)(_M_coefficients.get_size().z - 1 - _M_enlarge) / (float)(csize.z - 1 - _M_enlarge));
+	C3DFVector dx(C3DFVector(_M_coefficients.get_size() - C3DBounds::_1 - _M_enlarge)/ 
+		      C3DFVector(csize - C3DBounds::_1 - _M_enlarge)); 
 
 	auto ic = coeffs.begin();
 
 	for (size_t z = 0; z < csize.z; ++z)
 		for (size_t y = 0; y < csize.y; ++y)
 			for (size_t x = 0; x < csize.x; ++x, ++ic) {
-			*ic = interpolate(C3DFVector(dx.x * (float(x) - _M_shift)+ _M_shift, 
-						     dx.y * (float(y) - _M_shift)+ _M_shift, 
-						     dx.z * (float(z) - _M_shift)+ _M_shift));
-		}
-
+				C3DFVector X(x,y,z); 
+				*ic = interpolate(C3DFVector(dx * X - C3DFVector(_M_shift))+ C3DFVector(_M_shift)); 
+			}
+	
 	set_coefficients(coeffs);
 	reinit();
 	_M_grid_valid = false; 
@@ -275,9 +269,7 @@ P3DTransformation C3DSplineTransformation::upscale(const C3DBounds& size) const
 {
 	TRACE_FUNCTION;
 	FUNCTION_NOT_TESTED;
-	C3DDVector mx(((float)size.x - 1.0)/ ((float)_M_range.x - 1.0),
-		      ((float)size.y - 1.0)/ ((float)_M_range.y - 1.0), 
-		      ((float)size.z - 1.0)/ ((float)_M_range.z - 1.0));
+	C3DDVector mx((C3DFVector(size) - C3DFVector::_1) / (C3DFVector(_M_range) - C3DFVector::_1)); 
 
 	C3DSplineTransformation *help = new C3DSplineTransformation(size, _M_kernel);
 	C3DDVectorfield new_coefs(_M_coefficients.get_size()); 
@@ -303,7 +295,7 @@ void C3DSplineTransformation::add(const C3DTransformation& a)
 	for (size_t z = 0; z < _M_coefficients.get_size().z; ++z)  {
 		for (size_t y = 0; y < _M_coefficients.get_size().y; ++y)  {
 			for (size_t x = 0; x < _M_coefficients.get_size().x; ++x, ++i)  {
-				C3DFVector v = C3DFVector(x - _M_shift, y - _M_shift, z-_M_shift) * _M_inv_scale;
+				C3DFVector v = (C3DFVector(x, y, z) - C3DFVector(_M_shift)) * _M_inv_scale;
 				C3DFVector u = a(v);
 				*i = v + apply(u) - u;
 			}
@@ -388,9 +380,9 @@ C3DFMatrix C3DSplineTransformation::derivative_at(const C3DFVector& v) const
 	_M_kernel->get_start_idx_and_derivative_weights(x.y, ydweights); 
 	_M_kernel->get_start_idx_and_derivative_weights(x.z, zdweights); 
 
-	C3DFMatrix result(sum(start, xdweights,  yweights,  zweights) * (-_M_scale.x), 
-			  sum(start,  xweights, ydweights,  zweights) * (-_M_scale.y), 
-			  sum(start,  xweights,  yweights, zdweights) * (-_M_scale.z)); 
+	C3DFMatrix result(sum(start, xdweights, yweights,  zweights) * (-_M_scale.x), 
+			  sum(start, xweights,  ydweights, zweights) * (-_M_scale.y), 
+			  sum(start, xweights,  yweights, zdweights) * (-_M_scale.z)); 
 	result.x.x += 1.0; 
 	result.y.y += 1.0; 
 	result.z.z += 1.0; 
@@ -441,26 +433,25 @@ void C3DSplineTransformation::init_grid()const
 		size_t n_elms = _M_kernel->size(); 
 		std::vector<int> indices(n_elms); 
 		std::vector<double> weights(n_elms); 
-		const C3DBounds& csize = _M_coefficients.get_size(); 
+		
 		for (size_t i = 0; i < _M_range.x; ++i) {
-			(*_M_kernel)(i * _M_scale.x + _M_shift, weights, indices); 
-			_M_x_weights[i] = weights; 
-			mirror_boundary_conditions(indices, csize.x, 2 * csize.x - 2);
-			_M_x_indices[i] = indices; 
+			_M_x_weights[i].resize(_M_kernel->size()); 
+			_M_x_indices[i].resize(_M_kernel->size());
+			(*_M_kernel)(i * _M_scale.x + _M_shift.x, _M_x_weights[i], _M_x_indices[i]); 
 		}
-		for (size_t i = 0; i < _M_range.y; ++i) {
-			(*_M_kernel)(i * _M_scale.y +  _M_shift, weights, indices); 
-			_M_y_weights[i] = weights; 
-			mirror_boundary_conditions(indices, csize.y, 2 * csize.y - 2);
-			_M_y_indices[i] = indices; 
+		
+		for (size_t i = 0; i < _M_range.y; ++i){
+			_M_y_weights[i].resize(_M_kernel->size()); 
+			_M_y_indices[i].resize(_M_kernel->size());
+			(*_M_kernel)(i * _M_scale.y + _M_shift.y, _M_y_weights[i], _M_y_indices[i]); 
 		}
 
-		for (size_t i = 0; i < _M_range.z; ++i) {
-			(*_M_kernel)(i * _M_scale.z +  _M_shift, weights, indices); 
-			_M_z_weights[i] = weights; 
-			mirror_boundary_conditions(indices, csize.z, 2 * csize.z - 2);
-			_M_z_indices[i] = indices; 
+		for (size_t i = 0; i < _M_range.z; ++i){
+			_M_z_weights[i].resize(_M_kernel->size()); 
+			_M_z_indices[i].resize(_M_kernel->size());
+			(*_M_kernel)(i * _M_scale.z + _M_shift.z, _M_z_weights[i], _M_z_indices[i]); 
 		}
+		
 		_M_grid_valid = true; 
 	}
 }
@@ -477,38 +468,45 @@ C3DTransformation::const_iterator C3DSplineTransformation::end() const
 	return C3DTransformation::const_iterator(new iterator_impl(get_size(), get_size(), *this));
 }
 
-struct FCopyX {
-	double operator() (const C3DFVector& x) const {
-		return x.x; 
-	}
-}; 
-
-struct FCopyY {
-	double operator() (const C3DFVector& x) const {
-		return x.y; 
-	}
-}; 
-
 C3DSplineTransformation::CSplineDerivativeRow 
 C3DSplineTransformation::get_derivative_row(size_t nin, size_t nout, double scale) const 
 {
+
+
 	CSplineDerivativeRow result; 
 	for(size_t o = 0; o < nout; ++o) {
+		double sum_y = 0.0; 
 		CSplineDerivativeRow::value_type v; 
+#if 0 
 		v.first = -1; 
 		for(size_t i = 0; i < nin; ++i) {
-			double x = i * scale + _M_shift - o; 
+			// in this code we assume that the shift is equal for all directions! 
+			const double x = i * scale + _M_shift.x - o; 
 			if (std::fabs(x) <  _M_kernel->get_nonzero_radius()) {
 				if (v.first < 0)
 					v.first = i; 
 				double y = _M_kernel->get_weight_at(x, 0); 
+				sum_y += y; 
 				if (y > 0) 
 					v.second.push_back(y); 
 				else 
 					break; 
 			}
 		}
-		cvdebug() << o << ":" << v.first << ":" << v.second << "\n"; 
+#else
+		const int r = _M_kernel->get_nonzero_radius(); 
+		v.first = static_cast<size_t>(max(0.0, floor((o - r - _M_shift.x) / scale))); 
+		size_t last = static_cast<size_t>(min(double(nin), 1+ceil((o + r - _M_shift.x) / scale))); 
+		for(size_t i = v.first; i < last; ++i) {
+			const double x = i * scale + _M_shift.x - o; 
+			double y = _M_kernel->get_weight_at(x, 0); 
+			sum_y += y; 
+			if (y > 0) 
+				v.second.push_back(y); 
+		}
+#endif
+
+		cvdebug() << o << ":" << v.first << ":" << v.second << ", sum= "<<sum_y << "\n"; 
 		result.push_back(v); 
 	}
 	return result; 
@@ -648,6 +646,9 @@ float C3DSplineTransformation::get_jacobian(const C3DFVectorfield& v, float delt
 
 C3DFVector C3DSplineTransformation::on_grid(const C3DBounds& x) const
 {
+	// this is a bit expensive, but uses less memory 
+	// one could evaluate the whole grid using convolution 
+	// but this would require more memory
 	assert(x.x < _M_range.x); 
 	assert(x.y < _M_range.y); 
 	assert(x.z < _M_range.z); 

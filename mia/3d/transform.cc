@@ -82,6 +82,7 @@ void C3DTransformation::iterator_impl::increment()
 	} else {
 		// if x is at the end, then everything is at the end
 		cvwarn() << "C3DTransformation::iterator_impl::increment() past end\n"; 
+		return; 
 	}
 	
 	++_M_pos.y;
