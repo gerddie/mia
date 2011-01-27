@@ -126,6 +126,11 @@ void C3DSplineTransformation::set_coefficients(const C3DDVectorfield& field)
 	_M_target_c_rate =  C3DFVector(_M_range) / C3DFVector(field.get_size() - _M_enlarge);
 }
 
+C3DBounds C3DSplineTransformation::get_enlarge() const
+{
+	return _M_enlarge; 
+}
+
 void C3DSplineTransformation::reinit() const
 {
 	TRACE_FUNCTION;
@@ -135,6 +140,7 @@ void C3DSplineTransformation::reinit() const
 			C3DFVector(_M_range - C3DBounds::_1);
 		
 		_M_inv_scale = C3DFVector::_1 / _M_scale; 
+		cvdebug() << "_M_inv_scale = " << _M_inv_scale << "\n"; 
 
 		_M_mx = get_derivative_row(_M_range.x, _M_coefficients.get_size().x, _M_scale.x); 
 		_M_my = get_derivative_row(_M_range.y, _M_coefficients.get_size().y, _M_scale.y); 
@@ -233,29 +239,27 @@ bool C3DSplineTransformation::refine()
 {
 	TRACE_FUNCTION;
 	FUNCTION_NOT_TESTED;
-	C3DBounds csize((C3DFVector(_M_range - C3DBounds::_1) + _M_target_c_rate) / 
-			(_M_target_c_rate + C3DFVector(_M_enlarge))); 
+	C3DBounds csize(C3DFVector(_M_range - C3DBounds::_1) / _M_target_c_rate + C3DFVector(_M_enlarge)); 
 	
-	// no refinement necessary? 
+        // no refinement necessary? 
 	if (csize.x <= _M_coefficients.get_size().x || 
 	    csize.y <= _M_coefficients.get_size().y ||
 	    csize.z <= _M_coefficients.get_size().z) 
 		return false; 
-
+	
 	// now interpolate the new coefficients 
 	// \todo this should be done faster by a filter 
 	reinit();
 	C3DDVectorfield coeffs(csize);
-	C3DFVector dx(C3DFVector(_M_coefficients.get_size() - C3DBounds::_1 - _M_enlarge)/ 
+	C3DFVector sx(C3DFVector(_M_coefficients.get_size() - C3DBounds::_1 - _M_enlarge)/ 
 		      C3DFVector(csize - C3DBounds::_1 - _M_enlarge)); 
-
+	
 	auto ic = coeffs.begin();
-
 	for (size_t z = 0; z < csize.z; ++z)
 		for (size_t y = 0; y < csize.y; ++y)
 			for (size_t x = 0; x < csize.x; ++x, ++ic) {
 				C3DFVector X(x,y,z); 
-				*ic = interpolate(C3DFVector(dx * X - C3DFVector(_M_shift))+ C3DFVector(_M_shift)); 
+				*ic = interpolate(sx * X - C3DFVector(_M_shift)+ C3DFVector(_M_shift)); 
 			}
 	
 	set_coefficients(coeffs);
@@ -268,8 +272,7 @@ bool C3DSplineTransformation::refine()
 P3DTransformation C3DSplineTransformation::upscale(const C3DBounds& size) const
 {
 	TRACE_FUNCTION;
-	FUNCTION_NOT_TESTED;
-	C3DDVector mx((C3DFVector(size) - C3DFVector::_1) / (C3DFVector(_M_range) - C3DFVector::_1)); 
+	C3DDVector mx(C3DFVector(size - C3DBounds::_1) / C3DFVector(_M_range - C3DBounds::_1));
 
 	C3DSplineTransformation *help = new C3DSplineTransformation(size, _M_kernel);
 	C3DDVectorfield new_coefs(_M_coefficients.get_size()); 
@@ -427,6 +430,7 @@ float C3DSplineTransformation::get_max_transform() const
 void C3DSplineTransformation::init_grid()const
 {
 	TRACE_FUNCTION; 
+	reinit();
 	if (!_M_grid_valid) {
 		cvdebug() << "really run C3DSplineTransformation::init_grid\n"; 
 		// pre-evaluateof fixed-grid coefficients
@@ -458,7 +462,6 @@ void C3DSplineTransformation::init_grid()const
 
 C3DTransformation::const_iterator C3DSplineTransformation::begin() const
 {
-	reinit();
 	init_grid(); 
 	return C3DTransformation::const_iterator(new iterator_impl(C3DBounds(0,0,0), get_size(), *this));
 }

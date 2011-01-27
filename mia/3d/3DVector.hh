@@ -282,7 +282,7 @@ template <class T>
 inline const T3DVector<T> operator / (const T3DVector<T>& a, const T3DVector<T>& b)
 {
 	assert(b.x != 0.0 && b.x != 0.0 && b.x != 0.0);
-	return T3DVector<T>(a.x/b.x,a.y/b.y,a.z/b.z); 
+	return T3DVector<T>(a.x/b.x, a.y/b.y, a.z/b.z); 
 }
 
 

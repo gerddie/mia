@@ -94,6 +94,8 @@ public:
 
 	C3DFVector on_grid(const mia::C3DBounds& x) const; 
 
+	C3DBounds get_enlarge() const; 
+
 private:
 	
 	C3DFVector sum(const C3DBounds& start, 

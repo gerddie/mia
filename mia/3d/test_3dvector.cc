@@ -35,16 +35,30 @@ static void test_3dvectors()
 
 	C3DFVector a(1.0f, 2.0f, 3.0f);
 	C3DFVector b(1.4f, 2.3f, 4.0f);
+	
+	C3DFVector cprod(1.4f, 4.6f, 12.0f); 
+	BOOST_CHECK_EQUAL(a*b, cprod); 
+	
+	C3DFVector c(2.0f, 3.0f, 4.0f);
+	C3DFVector d(4.4f, 9.0f,20.0f);
+	C3DFVector d_by_c(2.2f, 3.0f, 5.0f); 
+
+	BOOST_CHECK_EQUAL(d/c, d_by_c); 
+
+	
+	
+
+	
 
 	ostringstream so;
 	so << a;
 	cvdebug() << so.str() << "\n";
 	BOOST_CHECK(so.str() == string("<1,2,3>"));
 
-	C3DFVector c(3.0f, 4.0f, 1.0f);
+	C3DFVector sc(3.0f, 4.0f, 1.0f);
 	istringstream si("<1.0,2.0,3.0>");
-	si >> c;
-	BOOST_CHECK (c == a);
+	si >> sc;
+	BOOST_CHECK (sc == a);
 
 	BOOST_CHECK(a.size() == 3);
 	BOOST_CHECK(a.norm2() == 14.0f);
@@ -80,6 +94,8 @@ static void test_3dvectors()
 	BOOST_CHECK(a != b);
 	c = b;
 	BOOST_CHECK(c == b);
+
+	
 
 }
 
