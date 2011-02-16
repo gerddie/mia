@@ -259,7 +259,7 @@ bool C3DSplineTransformation::refine()
 		for (size_t y = 0; y < csize.y; ++y)
 			for (size_t x = 0; x < csize.x; ++x, ++ic) {
 				C3DFVector X(x,y,z); 
-				*ic = interpolate(sx * X - C3DFVector(_M_shift)+ C3DFVector(_M_shift)); 
+				*ic = interpolate(sx * (X - C3DFVector(_M_shift)) + C3DFVector(_M_shift)); 
 			}
 	
 	set_coefficients(coeffs);

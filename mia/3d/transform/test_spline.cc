@@ -670,9 +670,9 @@ BOOST_FIXTURE_TEST_CASE( test_splines_refine, TransformSplineFixture )
 						      z - fz(X) * rs.z); 
 				
 				if (fabs(test_value.x) < 0.0001) 
-					BOOST_CHECK_CLOSE(1.0 + i->x, 1.0 + test_value.x, 2);
+					BOOST_CHECK_CLOSE(1.0 + i->x, 1.0 + test_value.x, 5);
 				else 
-					BOOST_CHECK_CLOSE(i->x, test_value.x, 2);
+					BOOST_CHECK_CLOSE(i->x, test_value.x, 5);
 
 				if (fabs(test_value.y) < 0.0001) 
 					BOOST_CHECK_CLOSE(1.0 + i->y, 1.0 + test_value.y, 1.1);
@@ -680,9 +680,9 @@ BOOST_FIXTURE_TEST_CASE( test_splines_refine, TransformSplineFixture )
 					BOOST_CHECK_CLOSE(i->y, test_value.y, 1.5);
 
 				if (fabs(test_value.z) < 0.0001) 
-					BOOST_CHECK_CLOSE(1.0 + i->z, 1.0 + test_value.z, 3);
+					BOOST_CHECK_CLOSE(1.0 + i->z, 1.0 + test_value.z, 6);
 				else 
-					BOOST_CHECK_CLOSE(i->z, test_value.z, 3);
+					BOOST_CHECK_CLOSE(i->z, test_value.z, 6);
 			}
 }
 
