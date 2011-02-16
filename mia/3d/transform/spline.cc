@@ -99,7 +99,7 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplin
 	_M_grid_valid(false)
 {
 	TRACE_FUNCTION;
-	FUNCTION_NOT_TESTED;
+
 	assert(_M_range.x > 0);
 	assert(_M_range.y > 0);
 	assert(_M_range.z > 0);
@@ -140,7 +140,6 @@ void C3DSplineTransformation::reinit() const
 			C3DFVector(_M_range - C3DBounds::_1);
 		
 		_M_inv_scale = C3DFVector::_1 / _M_scale; 
-		cvdebug() << "_M_inv_scale = " << _M_inv_scale << "\n"; 
 
 		_M_mx = get_derivative_row(_M_range.x, _M_coefficients.get_size().x, _M_scale.x); 
 		_M_my = get_derivative_row(_M_range.y, _M_coefficients.get_size().y, _M_scale.y); 
@@ -170,7 +169,6 @@ C3DFVector C3DSplineTransformation::apply(const C3DFVector& x) const
 
 C3DTransformation *C3DSplineTransformation::do_clone()const
 {
-	FUNCTION_NOT_TESTED;
 	return new C3DSplineTransformation(*this);
 }
 
@@ -200,7 +198,6 @@ const C3DBounds& C3DSplineTransformation::get_size() const
 gsl::DoubleVector C3DSplineTransformation::get_parameters() const
 {
 	TRACE_FUNCTION;
-	FUNCTION_NOT_TESTED;
 	gsl::DoubleVector result(_M_coefficients.size() * 3);
 	auto r = result.begin();
 	for(auto f = _M_coefficients.begin(); f != _M_coefficients.end(); ++f) {
@@ -214,7 +211,7 @@ gsl::DoubleVector C3DSplineTransformation::get_parameters() const
 void C3DSplineTransformation::set_parameters(const gsl::DoubleVector& params)
 {
 	TRACE_FUNCTION;
-	FUNCTION_NOT_TESTED;
+
 	assert(3 * _M_coefficients.size() == params.size());
 	auto r = params.begin();
 	for(auto f = _M_coefficients.begin(); f != _M_coefficients.end(); ++f) {
@@ -238,7 +235,7 @@ bool C3DSplineTransformation::save(const std::string& /*filename*/,
 bool C3DSplineTransformation::refine()
 {
 	TRACE_FUNCTION;
-	FUNCTION_NOT_TESTED;
+
 	C3DBounds csize(C3DFVector(_M_range - C3DBounds::_1) / _M_target_c_rate + C3DFVector(_M_enlarge)); 
 	
         // no refinement necessary? 
@@ -471,45 +468,26 @@ C3DTransformation::const_iterator C3DSplineTransformation::end() const
 	return C3DTransformation::const_iterator(new iterator_impl(get_size(), get_size(), *this));
 }
 
+/*
+   This function evaluates the weights of the derivative  of the spline transformation 
+   w.r.t. the coefficients. 
+*/
+
 C3DSplineTransformation::CSplineDerivativeRow 
 C3DSplineTransformation::get_derivative_row(size_t nin, size_t nout, double scale) const 
 {
-
-
 	CSplineDerivativeRow result; 
 	for(size_t o = 0; o < nout; ++o) {
-		double sum_y = 0.0; 
 		CSplineDerivativeRow::value_type v; 
-#if 0 
-		v.first = -1; 
-		for(size_t i = 0; i < nin; ++i) {
-			// in this code we assume that the shift is equal for all directions! 
-			const double x = i * scale + _M_shift.x - o; 
-			if (std::fabs(x) <  _M_kernel->get_nonzero_radius()) {
-				if (v.first < 0)
-					v.first = i; 
-				double y = _M_kernel->get_weight_at(x, 0); 
-				sum_y += y; 
-				if (y > 0) 
-					v.second.push_back(y); 
-				else 
-					break; 
-			}
-		}
-#else
 		const int r = _M_kernel->get_nonzero_radius(); 
 		v.first = static_cast<size_t>(max(0.0, floor((o - r - _M_shift.x) / scale))); 
 		size_t last = static_cast<size_t>(min(double(nin), 1+ceil((o + r - _M_shift.x) / scale))); 
 		for(size_t i = v.first; i < last; ++i) {
 			const double x = i * scale + _M_shift.x - o; 
 			double y = _M_kernel->get_weight_at(x, 0); 
-			sum_y += y; 
 			if (y > 0) 
 				v.second.push_back(y); 
 		}
-#endif
-
-		cvdebug() << o << ":" << v.first << ":" << v.second << ", sum= "<<sum_y << "\n"; 
 		result.push_back(v); 
 	}
 	return result; 
@@ -527,7 +505,7 @@ void C3DSplineTransformation::translate(const C3DFVectorfield& gradient, gsl::Do
 				      _M_coefficients.get_size().z));
 	
 	vector<C3DFVector> in_buffer(gradient.get_size().z); 
-	vector<C3DFVector> out_buffer(_M_coefficients.get_size().z); 
+	vector<C3DFVector> out_buffer(_M_coefficients.get_size().z);
 	
 	for (size_t iy = 0; iy < gradient.get_size().y; ++iy) {
 		for (size_t ix = 0; ix < gradient.get_size().x; ++ix) {
@@ -572,9 +550,9 @@ void C3DSplineTransformation::translate(const C3DFVectorfield& gradient, gsl::Do
 				const CSplineDerivativeRow::value_type& mxrow = _M_mx[x]; 
 				const C3DFVector v = inner_product(mxrow.second.begin(), mxrow.second.end(), 
 								   in_buffer.begin() + mxrow.first, C3DFVector());
-				r[0] = -v.x; 
-				r[1] = -v.y; 
-				r[2] = -v.z; 
+				r[0] = -v.x;
+				r[1] = -v.y;
+				r[2] = -v.z;
 			}
 		}
 	}

@@ -847,10 +847,39 @@ BOOST_AUTO_TEST_CASE (test_spline_set_parameter)
 }
 
 
+BOOST_AUTO_TEST_CASE (test_3d_cost_mock ) 
+{
+	C3DBounds size(2,3,4);
+	Cost3DMock cost(size); 
+	
+	C3DFVector x(1.5,2.3,3.7); 
+
+	C3DFVector test_grad = cost.src_grad(x); 
+	
+	C3DFVector fd_grad; 
+	const float delta = 0.001; 
+
+	fd_grad.x = (cost.src_value(x + C3DFVector(delta, 0, 0)) - 
+		     cost.src_value(x - C3DFVector(delta, 0, 0))) / (2 * delta); 
+
+	fd_grad.y = (cost.src_value(x + C3DFVector(0.0, delta, 0.0)) - 
+		     cost.src_value(x - C3DFVector(0.0, delta, 0.0))) / (2 * delta); 
+	
+	fd_grad.z = (cost.src_value(x + C3DFVector(0.0, 0.0, delta)) - 
+		     cost.src_value(x - C3DFVector(0.0, 0.0, delta))) / (2 * delta); 
+
+	
+	BOOST_CHECK_CLOSE(test_grad.x, fd_grad.x, 0.1); 
+	BOOST_CHECK_CLOSE(test_grad.y, fd_grad.y, 0.1); 
+	BOOST_CHECK_CLOSE(test_grad.z, fd_grad.z, 0.1); 
+	
+
+}
+
 BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture) 
 {
 	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3)); 
-	C3DSplineTransformation t(size, kernel, C3DFVector(5.0, 5.0, 5.0));
+	C3DSplineTransformation t(size, kernel, C3DFVector(3.0, 3.0, 3.0));
 	
 
 	auto params = t.get_parameters();
@@ -860,26 +889,34 @@ BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture)
 	double delta = 0.1; 
 
 	auto itrg =  trgrad.begin(); 
-	
-	for ( auto iparam = params.begin(); iparam != params.end(); ++itrg, ++iparam) {
-		*iparam += delta; 
-		t.set_parameters(params);
-		double cost_plus = cost.value(t);
-		*iparam -= 2*delta; 
-		t.set_parameters(params);
-		double cost_minus = cost.value(t);
-		*iparam += delta; 
-		double test_val = (cost_plus - cost_minus)/ (2*delta); 
-		if (fabs(*itrg) > 1e-09 || fabs(test_val) > 1e-09) 
-			BOOST_CHECK_CLOSE(*itrg, test_val, 5); 
-		
-	}
+	auto iparam = params.begin();
+	for (size_t z = 0; z < t.get_coeff_size().z; ++z)
+		for(size_t y = 0; y < t.get_coeff_size().y; ++y)
+			for(size_t x = 0; x < t.get_coeff_size().x; ++x)
+				for (size_t i = 0; i < 3; ++i, ++itrg, ++iparam) {
+					*iparam += delta; 
+					t.set_parameters(params);
+					double cost_plus = cost.value(t);
+					*iparam -= 2*delta; 
+					t.set_parameters(params);
+					double cost_minus = cost.value(t);
+					*iparam += delta; 
+					double test_val = (cost_plus - cost_minus)/ (2*delta); 
+					if (fabs(*itrg) > 1e-07 || fabs(test_val) > 1e-07) 
+						BOOST_CHECK_CLOSE(*itrg, test_val, 5); 
+
+					cvdebug() << z << ", " << y << ", " << x << ", " << i <<": got " 
+						  << *itrg << " expect " << test_val << " Q: " 
+						  << *itrg / test_val 
+						  << "\n"; 
+						
+				}
 }
 
 
 
 TransformGradientFixture::TransformGradientFixture():
-	size(60,80,70), 
+	size(30,30,30), 
 	cost(size),
 	kernel(new CBSplineKernel3()), 
 	x(11,16,22), 
@@ -887,7 +924,6 @@ TransformGradientFixture::TransformGradientFixture():
 
 {
 	cost.value_and_gradient(gradient);
-	
 }
 
 void TransformGradientFixture::run_test(C3DTransformation& t, double tol)const
@@ -896,7 +932,7 @@ void TransformGradientFixture::run_test(C3DTransformation& t, double tol)const
 	gsl::DoubleVector trgrad(params.size()); 
 	
 	t.translate(gradient,  trgrad); 
-	double delta = 0.0001; 
+	double delta = 0.01; 
 
 	int n_close_zero = 0; 
 	int n_zero = 0; 
@@ -935,6 +971,7 @@ Cost3DMock::Cost3DMock(const C3DBounds& size):
 		  _M_center.y * _M_center.y + 
 		  _M_center.z * _M_center.z))
 {
+	_M_r *= _M_r * _M_r; 
 }
 	
 double Cost3DMock::value(const C3DTransformation& t) const
@@ -982,7 +1019,7 @@ C3DFVector Cost3DMock::src_grad(const C3DFVector& x)const
 	return - 2.0f / _M_r * (x-_M_center) * src_value(x); 
 }
 
-double Cost3DMock::ref_value(const C3DFVector& x)const 
+double Cost3DMock::ref_value(const C3DFVector& x) const 
 {
 	const C3DFVector p = x - _M_center - C3DFVector(2.0,2.0, 2.0); 
 	return exp( - (p.x * p.x + p.y * p.y  + p.z * p.z) / _M_r); 

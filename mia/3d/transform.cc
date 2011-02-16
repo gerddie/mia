@@ -99,7 +99,6 @@ void C3DTransformation::iterator_impl::increment()
 		do_z_increment();
 		return; 
 	}
-	cvdebug() << "C3DTransformation::iterator_impl::increment() at end\n"; 
 }
 
 const C3DBounds& C3DTransformation::iterator_impl::get_pos()const
