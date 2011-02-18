@@ -200,12 +200,17 @@ P2DTransformation C2DNonrigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 	P2DTransformation transform;
 
 	// convert the images to float ans scale to range [-1,1]
+	// this should be replaced by some kind of general pre-filter plug-in 
 	FScaleFilterCreator fc; 
 	auto tofloat_converter = ::mia::filter(fc, *src, *ref); 
-
-	src = tofloat_converter->filter(*src); 
-	ref = tofloat_converter->filter(*ref); 
-
+	
+	if (tofloat_converter) {
+		src = tofloat_converter->filter(*src); 
+		ref = tofloat_converter->filter(*ref); 
+	}
+	else // both images have only one value, and are, therefore, already registered
+		return _M_transform_creator->create(src->get_size());
+	
 	C2DBounds global_size = src->get_size();
 
 	int shift = _M_mg_levels;
