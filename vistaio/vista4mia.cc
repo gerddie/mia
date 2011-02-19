@@ -114,4 +114,28 @@ VISTA4MIA_EXPORT void copy_attr_list(VAttrList target, const CAttributeMap& attr
 }
 
 
+CVAttrList::CVAttrList(VAttrList list):m_list(list)
+{
+}
+
+CVAttrList::~CVAttrList()
+{
+	VDestroyAttrList(m_list);
+}
+
+CVAttrList::operator VAttrList()
+{
+	return m_list; 
+}
+
+VAttrList CVAttrList::operator ->()
+{
+	return m_list; 
+}
+
+bool CVAttrList::operator !() const
+{
+	return m_list == NULL; 
+}
+
 NS_MIA_END
