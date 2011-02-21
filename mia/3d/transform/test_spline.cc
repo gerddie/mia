@@ -52,9 +52,9 @@ struct TransformSplineFixture {
 				      float(range.z - 1) / (size.z - 1));
 		cvdebug() << "ivscale= " << ivscale << "\n"; 
 		
-		size.x += 2*coeff_shift + 1; 
-		size.y += 2*coeff_shift + 1; 
-		size.z += 2*coeff_shift + 1; 
+		size.x += 2*coeff_shift;
+		size.y += 2*coeff_shift;
+		size.z += 2*coeff_shift;
 		
 
 		cs = C3DFVector(coeff_shift, coeff_shift, coeff_shift); 
@@ -151,8 +151,6 @@ float TransformSplineFixture::fz(const C3DFVector& v)const
 	return fz(v.x, v.y, v.z); 
 }
 
-
-
 float TransformSplineFixture::fx(float x, float y, float z)const
 {
 
@@ -248,7 +246,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 
 	BOOST_CHECK_EQUAL(stransf.get_size(), range);
 
-	BOOST_CHECK_EQUAL(C3DFVector(stransf.get_enlarge()), 2*cs + C3DFVector::_1); 
+	BOOST_CHECK_EQUAL(C3DFVector(stransf.get_enlarge()), 2 * cs); 
 
 	C3DFVector scaled = stransf.scale(testx); 
 	C3DFVector testscale = testx / ivscale  + cs; 
@@ -424,10 +422,10 @@ BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 BOOST_FIXTURE_TEST_CASE( test_splines_translate, TransformSplineFixture )
 {
 	C3DFVectorfield gradient(range); 
-	double scale_x = double(range.x-1) / (size.x-1); 
-	double scale_y = double(range.y-1) / (size.y-1); 
-	double scale_z = double(range.z-1) / (size.z-1); 
-	double scale = scale_x * scale_y * scale_z; 
+	double scale_x = (size.x - 1 - 2*coeff_shift) / double(range.x-1);
+	double scale_y = (size.y - 1 - 2*coeff_shift) / double(range.y-1);
+	double scale_z = (size.z - 1 - 2*coeff_shift) / double(range.z-1);
+	double scale = (scale_x * scale_y * scale_z);
 	
 	cvdebug() << range << size << ", scale=" << scale << "\n"; 
 
@@ -438,18 +436,20 @@ BOOST_FIXTURE_TEST_CASE( test_splines_translate, TransformSplineFixture )
 
 	// the real test uses finite differences and is implemented elsewhere
 	// the tolerance here is way to high ... 
-	auto  i = force.begin();
-	for (size_t z = 0; z < stransf.get_coeff_size().z; ++z)
-		for (size_t y = 0; y < stransf.get_coeff_size().y; ++y)
-			for (size_t x = 0; x < stransf.get_coeff_size().x; ++x, i+=3) {
-				if (y > 3 && y < stransf.get_coeff_size().y - 3 && 
-				    x > 3 && x < stransf.get_coeff_size().x - 3 && 
-				    z > 3 && z < stransf.get_coeff_size().z - 3) {
-					BOOST_CHECK_CLOSE( i[0], -1.0f * scale, 3.3);
-					BOOST_CHECK_CLOSE( i[1], -2.0f * scale, 3.3);
-					BOOST_CHECK_CLOSE( i[2], -3.0f * scale, 3.3);
+	auto i = force.begin(); 
+	for (size_t z = 0; z < stransf.get_coeff_size().z; ++z) {
+		for (size_t y = 0; y < stransf.get_coeff_size().y; ++y) {
+			for (size_t x = 0; x < stransf.get_coeff_size().x ; ++x, i+=3) {
+				if (y > 2 && y < stransf.get_coeff_size().y - 2 && 
+				    x > 2 && x < stransf.get_coeff_size().x - 2 && 
+				    z > 2 && z < stransf.get_coeff_size().z - 2) {
+					BOOST_CHECK_CLOSE( i[0] * scale, -1.0f, 1.0);
+					BOOST_CHECK_CLOSE( i[1] * scale, -2.0f, 1.0);
+					BOOST_CHECK_CLOSE( i[2] * scale, -3.0f, 1.0);
 				}
 			}
+		}
+	}
 }
 
 BOOST_FIXTURE_TEST_CASE( test_splines_clone, TransformSplineFixture )
@@ -879,14 +879,16 @@ BOOST_AUTO_TEST_CASE (test_3d_cost_mock )
 BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture) 
 {
 	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3)); 
-	C3DSplineTransformation t(size, kernel, C3DFVector(3.0, 3.0, 3.0));
-	
+	C3DSplineTransformation t(size, kernel);
+	C3DDVectorfield coefs(C3DBounds(12,12,12)); 
+	t.set_coefficients(coefs); 
+	t.reinit(); 
 
 	auto params = t.get_parameters();
 	gsl::DoubleVector trgrad(params.size()); 
 	
 	t.translate(gradient,  trgrad); 
-	double delta = 0.1; 
+	double delta = 0.01; 
 
 	auto itrg =  trgrad.begin(); 
 	auto iparam = params.begin();
@@ -916,7 +918,7 @@ BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture)
 
 
 TransformGradientFixture::TransformGradientFixture():
-	size(30,30,30), 
+	size(10,10,10), 
 	cost(size),
 	kernel(new CBSplineKernel3()), 
 	x(11,16,22), 

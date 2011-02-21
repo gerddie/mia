@@ -120,8 +120,8 @@ private:
 	C3DBounds _M_enlarge; 
 	mutable C3DFVector _M_scale;
 	mutable C3DFVector _M_inv_scale;
-	mutable bool _M_interpolator_valid;
-	//mutable std::shared_ptr<T3DConvoluteInterpolator<C3DFVector> >  _M_interpolator;
+	mutable bool _M_scales_valid;
+
 	mutable std::shared_ptr<C3DPPDivcurlMatrix > _M_divcurl_matrix; 
 	mutable std::vector<std::vector<double> > _M_x_weights; 
 	mutable std::vector<std::vector<int> > _M_x_indices; 
