@@ -40,6 +40,7 @@ public:
 	C3DSplineTransformation(const C3DBounds& range, PBSplineKernel kernel, const C3DFVector& c_rate);
 
 	void set_coefficients(const C3DDVectorfield& field);
+	void set_coefficients_and_prefilter(const C3DDVectorfield& field);
 	void reinit()const;
 	C3DFVector apply( const C3DFVector& x) const;
 	C3DFVector scale( const C3DFVector& x) const;

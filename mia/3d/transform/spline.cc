@@ -127,6 +127,38 @@ void C3DSplineTransformation::set_coefficients(const C3DDVectorfield& field)
 	_M_target_c_rate =  C3DFVector(_M_range) / C3DFVector(field.get_size() - _M_enlarge);
 }
 
+void C3DSplineTransformation::set_coefficients_and_prefilter(const C3DDVectorfield& field)
+{
+	C3DDVectorfield help1(field.get_size());
+	C3DDVectorfield help2(field.get_size());
+	vector<C3DDVector> buffer(field.get_size().x); 
+	for(size_t z = 0; z < field.get_size().z; ++z)
+		for(size_t y = 0; y < field.get_size().y; ++y) {
+			field.get_data_line_x(y, z, buffer); 
+			_M_kernel->filter_line(buffer); 
+			help1.put_data_line_x(y, z, buffer); 
+		}
+	
+	buffer.resize(field.get_size().y); 
+	for(size_t z = 0; z < field.get_size().z; ++z)
+		for(size_t x = 0; x < field.get_size().x; ++x) {
+			help1.get_data_line_y(x, z, buffer); 
+			_M_kernel->filter_line(buffer); 
+			help2.put_data_line_y(x, z, buffer); 
+		}
+	
+	buffer.resize(field.get_size().z); 
+	for(size_t y = 0; y < field.get_size().y; ++y)
+		for(size_t x = 0; x < field.get_size().x; ++x) {
+			help2.get_data_line_z(x, y, buffer); 
+			_M_kernel->filter_line(buffer); 
+			help1.put_data_line_z(x, y, buffer); 
+		}
+	
+	set_coefficients(help1); 
+}
+
+
 C3DBounds C3DSplineTransformation::get_enlarge() const
 {
 	return _M_enlarge; 
@@ -243,6 +275,7 @@ bool C3DSplineTransformation::refine()
 
 	C3DBounds csize(C3DFVector(_M_range - C3DBounds::_1) / _M_target_c_rate + C3DFVector(_M_enlarge)); 
 	
+	
         // no refinement necessary? 
 	if (csize.x <= _M_coefficients.get_size().x || 
 	    csize.y <= _M_coefficients.get_size().y ||
@@ -252,21 +285,33 @@ bool C3DSplineTransformation::refine()
 	// now interpolate the new coefficients 
 	// \todo this should be done faster by a filter 
 	reinit();
+
 	C3DDVectorfield coeffs(csize);
-	C3DFVector sx(C3DFVector(_M_coefficients.get_size() - C3DBounds::_1 - _M_enlarge)/ 
-		      C3DFVector(csize - C3DBounds::_1 - _M_enlarge)); 
 	
-	auto ic = coeffs.begin();
-	for (size_t z = 0; z < csize.z; ++z)
-		for (size_t y = 0; y < csize.y; ++y)
-			for (size_t x = 0; x < csize.x; ++x, ++ic) {
-				C3DFVector X(x,y,z); 
-				*ic = interpolate(sx * (X - C3DFVector(_M_shift)) + C3DFVector(_M_shift));
+	C3DFVector scale = C3DFVector(_M_coefficients.get_size() - C3DBounds::_1 - _M_enlarge) / 
+		C3DFVector(csize - C3DBounds::_1 - _M_enlarge); 
+
+	vector<double> xweights(_M_kernel->size()); 
+	vector<double> yweights(_M_kernel->size()); 
+	vector<double> zweights(_M_kernel->size()); 
+	
+	C3DBounds start; 	
+	auto out = coeffs.begin(); 
+	for (size_t z = 0; z < coeffs.get_size().z; ++z) {
+		start.z = _M_kernel->get_start_idx_and_value_weights((z - _M_shift.z)* scale.z + _M_shift.z, zweights); 
+		for (size_t y = 0; y < coeffs.get_size().y; ++y) {
+			start.y = _M_kernel->get_start_idx_and_value_weights((y - _M_shift.y) * scale.y  + _M_shift.y, yweights); 
+			for (size_t x = 0; x < coeffs.get_size().x; ++x, ++out) {
+				start.x = _M_kernel->get_start_idx_and_value_weights((x - _M_shift.x) * scale.x + _M_shift.x, xweights); 
+				*out = sum(start, xweights, yweights, zweights);
 			}
-	
-	set_coefficients(coeffs);
-	reinit();
+		}
+	}
+
+	set_coefficients_and_prefilter(coeffs);
 	_M_grid_valid = false; 
+	reinit();
+
 	return true; 
 }
 
