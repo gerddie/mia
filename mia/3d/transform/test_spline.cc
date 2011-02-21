@@ -904,8 +904,11 @@ BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture)
 					double cost_minus = cost.value(t);
 					*iparam += delta; 
 					double test_val = (cost_plus - cost_minus)/ (2*delta); 
-					if (fabs(*itrg) > 1e-07 || fabs(test_val) > 1e-07) 
-						BOOST_CHECK_CLOSE(*itrg, test_val, 5); 
+					if (fabs(*itrg) > 1e-04 || fabs(test_val) > 1e-04) 
+						BOOST_CHECK_CLOSE(*itrg, test_val, 1); 
+					else if (fabs(*itrg) > 1e-05 || fabs(test_val) > 1e-05) 
+						BOOST_CHECK_CLOSE(*itrg, test_val, 7); 
+					// else both close to zero, ignore 
 
 					cvdebug() << z << ", " << y << ", " << x << ", " << i <<": got " 
 						  << *itrg << " expect " << test_val << " Q: " 
