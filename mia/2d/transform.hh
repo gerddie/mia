@@ -25,6 +25,7 @@
 
 #include <iterator>
 #include <memory>
+#include <ostream>
 
 #include <gsl++/vector.hh>
 #include <mia/core/transformation.hh>
@@ -56,7 +57,9 @@ protected:
 		iterator_impl(); 
 		iterator_impl(const C2DBounds& pos, const C2DBounds& size); 
 
-		void increment(); 
+		void increment();
+		void advance(unsigned int delta); 
+
 		const C2DFVector&  get_value() const;
 		virtual iterator_impl * clone() const = 0; 
 		
@@ -64,6 +67,8 @@ protected:
 		
 		const C2DBounds& get_pos()const; 
 		const C2DBounds& get_size()const; 
+		void print(std::ostream& os) const; 
+
 	private:
 		virtual const C2DFVector& do_get_value()const = 0; 
 		virtual void do_y_increment() = 0; 
@@ -91,9 +96,12 @@ public:
 		const_iterator& operator ++(); 
 		const_iterator operator ++(int); 
 
+		const_iterator& operator += (unsigned int delta); 
+
 		const C2DFVector& operator *() const;
 		const C2DFVector  *operator ->() const;
 
+		void print(std::ostream& os) const; 
 	private: 
 		std::unique_ptr<iterator_impl> _M_holder;
 
@@ -283,6 +291,19 @@ private:
 
 };
 
+// don't use a reference to the iterator, because we use the created copy as result 
+inline C2DTransformation::const_iterator operator + (C2DTransformation::const_iterator i, size_t delta) 
+{
+	i += delta; 
+	return i; 
+}
+
+inline std::ostream& operator << (std::ostream& os, 
+				  const C2DTransformation::const_iterator& i) 
+{
+	i.print(os); 
+	return os; 
+}
 
 /**
    Compare two transformation iterators

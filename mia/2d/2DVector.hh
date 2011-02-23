@@ -57,6 +57,8 @@ public:
 
 	typedef T value_type; 
 	T x,y;
+
+	static const T2DVector<T> _1; 
 		
 	// Contructors
 
@@ -179,6 +181,9 @@ public:
 
 };
 
+
+template <typename T> 
+const T2DVector<T> T2DVector<T>::_1 = T2DVector<T>(1,1); 
 
 /**
    operator to write a 2D vector to a stream 
