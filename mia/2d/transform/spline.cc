@@ -49,7 +49,6 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PBSplin
 	_M_y_weights(_M_range.y),
 	_M_y_indices(_M_range.y), 
 	_M_grid_valid(false)
-
 {
 	
 	_M_shift = _M_kernel->get_active_halfrange() - 1; 
@@ -105,21 +104,41 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PBSplin
 	reinit();
 }
 
+void C2DSplineTransformation::set_coefficients_and_prefilter(const C2DFVectorfield& field)
+{
+	vector<C2DFVector> buffer(field.get_size().y); 
+	C2DFVectorfield help1(field.get_size());
+	for(size_t x = 0; x < field.get_size().x; ++x) {
+		field.get_data_line_y(x, buffer); 
+		_M_kernel->filter_line(buffer); 
+		help1.put_data_line_y(x, buffer); 
+	}
+	C2DFVectorfield help2(field.get_size());
+	buffer.resize(field.get_size().x); 
+	for(size_t y = 0; y < field.get_size().y; ++y) {
+		help1.get_data_line_x(y, buffer); 
+		_M_kernel->filter_line(buffer); 
+		help2.put_data_line_x(y, buffer); 
+	}
+	set_coefficients(help2); 
+}
+
 void C2DSplineTransformation::set_coefficients(const C2DFVectorfield& field)
 {
 	TRACE_FUNCTION;
+	_M_interpolator_valid &= (_M_coefficients.get_size() != field.get_size());
 	_M_coefficients = field;
-	_M_interpolator_valid = false;
-
+/*
 	_M_target_c_rate.x = float(_M_range.x) / (field.get_size().x - _M_enlarge);
 	_M_target_c_rate.y = float(_M_range.y) / (field.get_size().y - _M_enlarge);
+*/
 }
 
 void C2DSplineTransformation::reinit() const
 {
 	TRACE_FUNCTION;
 	if (!_M_interpolator_valid) {
-		TRACE("C2DSplineTransformation::reinit applies");
+		cvdebug() << "C2DSplineTransformation::reinit applies\n";
 		_M_scale.x = float(_M_coefficients.get_size().x - 1 - _M_enlarge) / (_M_range.x - 1);
 		_M_scale.y = float(_M_coefficients.get_size().y - 1 - _M_enlarge) / (_M_range.y - 1);
 		_M_inv_scale.x = float(_M_range.x - 1) / (_M_coefficients.get_size().x - 1 - _M_enlarge);
@@ -227,23 +246,32 @@ bool C2DSplineTransformation::refine()
 			size_t((_M_range.y + _M_target_c_rate.y - 1) / _M_target_c_rate.y) + _M_enlarge);
 	
 	// no refinement necessary? 
-	if (csize.x <= _M_coefficients.get_size().x || 
+	if (csize.x <= _M_coefficients.get_size().x && 
 	    csize.y <= _M_coefficients.get_size().y) 
 		return false; 
 
 	// now interpolate the new coefficients 
 	// \todo this should be done faster by a filter 
 	reinit();
+	T2DConvoluteInterpolator<C2DFVector> interp(_M_coefficients, _M_kernel);
+
 	C2DFVectorfield coeffs(csize);
 	C2DFVector dx((float)(_M_coefficients.get_size().x - 1 - _M_enlarge) / (float)(csize.x - 1 - _M_enlarge),
 		      (float)(_M_coefficients.get_size().y - 1 - _M_enlarge) / (float)(csize.y - 1 - _M_enlarge));
 
 	C2DFVectorfield::iterator ic = coeffs.begin();
 
+	cvdebug() << "Refine from " << _M_coefficients.get_size() << " to " << csize << "\n"; 
+
 	for (size_t y = 0; y < csize.y; ++y)
 		for (size_t x = 0; x < csize.x; ++x, ++ic) {
-			*ic = interpolate(C2DFVector(dx.x * (float(x) - _M_shift)+ _M_shift, 
-						     dx.y * (float(y) - _M_shift)+ _M_shift));
+			C2DFVector X(dx.x * (float(x) - _M_shift) + _M_shift, 
+				     dx.y * (float(y) - _M_shift) + _M_shift); 
+			
+			if (y == x) {
+				cvdebug() << "<x,y> " << x << ", " << y << " to " << X << "\n"; 
+			}
+			*ic = interp(X);
 		}
 
 	set_coefficients(coeffs);
@@ -256,14 +284,14 @@ bool C2DSplineTransformation::refine()
 P2DTransformation C2DSplineTransformation::upscale(const C2DBounds& size) const
 {
 	TRACE_FUNCTION;
-	C2DFVector mx(((float)size.x - 1.0)/ ((float)_M_range.x - 1.0),
-		      ((float)size.y - 1.0)/ ((float)_M_range.y - 1.0));
+	C2DFVector mx(((float)size.x)/ ((float)_M_range.x),
+		      ((float)size.y)/ ((float)_M_range.y));
 
 	C2DSplineTransformation *help = new C2DSplineTransformation(size, _M_kernel);
 	C2DFVectorfield new_coefs(_M_coefficients.get_size()); 
 	
 	transform(_M_coefficients.begin(), _M_coefficients.end(), new_coefs.begin(), mx * _1 );
-	help->set_coefficients(new_coefs); 
+	help->set_coefficients(new_coefs);
 	help->_M_target_c_rate = _M_target_c_rate; 
 	return P2DTransformation(help);
 }
@@ -277,11 +305,11 @@ void C2DSplineTransformation::add(const C2DTransformation& a)
 	a.reinit();
 	
 	C2DFVectorfield new_coef(_M_coefficients.get_size()); 
-	C2DFVectorfield::iterator i = new_coef.begin();
+	auto i = new_coef.begin();
 
 	for (size_t y = 0; y < _M_coefficients.get_size().y; ++y)  {
 		for (size_t x = 0; x < _M_coefficients.get_size().x; ++x, ++i)  {
-			C2DFVector v = C2DFVector(x - _M_shift, y - _M_shift) * _M_inv_scale;
+			C2DFVector v = C2DFVector(x, y) * _M_inv_scale;
 			C2DFVector u = a(v);
 			*i = v + apply(u) - u;
 		}
@@ -401,24 +429,23 @@ void C2DSplineTransformation::init_grid()const
 	TRACE_FUNCTION; 
 	if (!_M_grid_valid) {
 		cvdebug() << "really run C2DSplineTransformation::init_grid\n"; 
+		cvdebug() << "Range = " << _M_range << "\n"; 
+		cvdebug() << "Coefs = " << _M_coefficients.get_size() << "\n"; 			
+		cvdebug() << "scale = " << _M_scale << "\n"; 			
 		// pre-evaluateof fixed-grid coefficients
+		// note: here, boundary conditions are of no consequence 
 		size_t n_elms = _M_kernel->size(); 
-		std::vector<int> indices(n_elms); 
 		std::vector<double> weights(n_elms); 
-		const C2DBounds& csize = _M_coefficients.get_size(); 
 		for (size_t i = 0; i < _M_range.x; ++i) {
-			(*_M_kernel)(i * _M_scale.x + _M_shift, weights, indices); 
-			_M_x_weights[i] = weights; 
-			mirror_boundary_conditions(indices, csize.x, 2 * csize.x - 2);
-			_M_x_indices[i] = indices; 
+			_M_x_indices[i] = _M_kernel->get_start_idx_and_value_weights(i * _M_scale.x + _M_shift, weights);
+			_M_x_weights[i] = weights;
+			cvdebug() << "xrow("<< i << ") start=" << _M_x_indices[i] << ", weights=" << weights<< "\n"; 
+
 		}
 		for (size_t i = 0; i < _M_range.y; ++i) {
-			(*_M_kernel)(i * _M_scale.y +  _M_shift, weights, indices); 
+			_M_y_indices[i] = _M_kernel->get_start_idx_and_value_weights(i * _M_scale.y + _M_shift, weights);
 			_M_y_weights[i] = weights; 
-			mirror_boundary_conditions(indices, csize.y, 2 * csize.y - 2);
-			_M_y_indices[i] = indices; 
 		}
-
 		_M_grid_valid = true; 
 	}
 }
@@ -491,7 +518,6 @@ C2DSplineTransformation::get_derivative_row(size_t nin, size_t nout, double scal
 					break; 
 			}
 		}
-		cvdebug() << o << ":" << v.first << ":" << v.second << "\n"; 
 		result.push_back(v); 
 	}
 	return result; 
@@ -502,6 +528,7 @@ void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::Do
 	TRACE_FUNCTION;
 	assert(params.size() == _M_coefficients.size() * 2);
 	assert(gradient.get_size() == _M_range); 
+
 	reinit(); 
 	
 	C2DFVectorfield tmp(C2DBounds(gradient.get_size().x, _M_coefficients.get_size().y));
@@ -611,11 +638,14 @@ C2DFVector C2DSplineTransformation::on_grid(const C2DBounds& x) const
 	auto & xweights =  _M_x_weights[x.x]; 
 	auto & xindices =  _M_x_indices[x.x]; 
 		
-	for(size_t y = 0; y < yweights.size(); ++y) {
+	// on the right boundary the last weight is zero, and access to the coefficient 
+	// field would be out of range to multiply with this zero, therefore, we stop 
+	// accumulating the values at the right boundary 
+	for(size_t y = 0; y < yweights.size() && yindices + y  < _M_coefficients.get_size().y; ++y) {
 		C2DFVector hr; 
-		auto ic = _M_coefficients.begin_at(0, yindices[y]); 
-		for(size_t ix = 0; ix < xweights.size(); ++ix) {
-			hr += xweights[ix] * ic[xindices[ix]]; 
+		auto ic = _M_coefficients.begin_at(xindices, yindices + y); 
+		for(size_t ix = 0; ix < xweights.size() && xindices + ix < _M_coefficients.get_size().x; ++ix) {
+			hr += xweights[ix] * ic[ix]; 
 		}
 		result += yweights[y] * hr; 
 	}
