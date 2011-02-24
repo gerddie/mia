@@ -9,11 +9,13 @@ SET(MIA3D_SRC
   3dimageio.cc
   3dvfio.cc
   fatcost.cc
+  fullcost.cc
   fuzzyseg.cc
   fuzzyClusterSolverCG.cc
   ica.cc
   interpolator.cc
   model.cc
+  multicost.cc
   nfg.cc 
   orientation.cc
   quaternion.cc
@@ -41,11 +43,13 @@ SET(MIA3D_HEADERS
 	3dvfio.hh
 	3dvfiotest.hh
 	fatcost.hh
+	fullcost.hh
 	fuzzyseg.hh
 	fuzzyClusterSolverCG.hh
 	interpolator.hh interpolator.cxx
 	ica.hh
 	model.hh
+	multicost.hh
 	nfg.hh
 	orientation.hh
 	ppmatrix.hh
@@ -89,7 +93,7 @@ TARGET_LINK_LIBRARIES(mia3d mia2d ${LIBS})
 
 MACRO(TEST_3D name)
   ADD_EXECUTABLE(test-3d-${name} test_${name}.cc)  
-  TARGET_LINK_LIBRARIES(test-3d-${name} ${MIA3DLIBS} ${BOOST_UNITTEST})
+  TARGET_LINK_LIBRARIES(test-3d-${name} mia3dtest ${BOOST_UNITTEST})
   ADD_TEST(3d-${name} test-3d-${name})
   IF(WIN32)
     SET_TARGET_PROPERTIES(test-3d-${name} PROPERTIES LINKER_FLAGS "/NODEFAULTLIB:MSVCRT")
@@ -149,6 +153,7 @@ TEST_3D(transform transform)
 TEST_3D(transio transio)
 TEST_3D(quaternion quaternion)
 TEST_3D(ppmatrix ppmatrix)
+TEST_3D(fullcost fullcost)
 
 #
 # installation 

@@ -190,5 +190,6 @@ bool C3DTransformation::refine()
 }
 
 const char *C3DTransformation::type_descr = "3dtransform";
+const char *C3DTransformation::dim_descr = "3d";
 
 NS_MIA_END

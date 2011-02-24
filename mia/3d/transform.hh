@@ -46,10 +46,12 @@ typedef std::shared_ptr<C3DTransformation > P3DTransformation;
 
 class EXPORT_3D C3DTransformation: public Transformation<C3DImage, C3DInterpolatorFactory> {
 public:
+	typedef C3DBounds Size; 
 	typedef C3DImage Data;
 	typedef C3DInterpolatorFactory Interpolator;
 	typedef C3DTransformation type; 
 	static const char *type_descr;
+	static const char *dim_descr;
 protected: 
 	/**
 	   This is the abstract base class of th actual implementation of the transformation iterator.  
