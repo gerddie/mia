@@ -48,9 +48,11 @@ typedef std::shared_ptr<C2DTransformation > P2DTransformation;
 class EXPORT_2D C2DTransformation: public Transformation<C2DImage, C2DInterpolatorFactory> {
 public:
 	typedef C2DImage Data;
+	typedef C2DBounds Size; 
 	typedef C2DInterpolatorFactory Interpolator;
 	typedef C2DTransformation type; 
 	static const char *type_descr;
+	static const char *dim_descr; 
 protected: 
 	class iterator_impl  {
 	public: 
