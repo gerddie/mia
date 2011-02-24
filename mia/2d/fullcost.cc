@@ -30,17 +30,6 @@
 
 NS_MIA_BEGIN
 
-C2DFullCost::C2DFullCost(double weight):
-	TFullCost<C2DTransformation>(weight)
-{
-}
-
-
-C2DFullCostPlugin::C2DFullCostPlugin(const char *name):
-	TFullCostPlugin<C2DTransformation>(name)
-{
-}
-	
 EXPLICIT_INSTANCE_PLUGIN(C2DFullCost);
 EXPLICIT_INSTANCE_PLUGIN_HANDLER(C2DFullCostPlugin); 
 

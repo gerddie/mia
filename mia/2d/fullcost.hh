@@ -28,26 +28,10 @@
 
 NS_MIA_BEGIN
 
-/**
-   Base class for a general cost function. 
- */
+typedef TFullCost<C2DTransformation> C2DFullCost; 
+typedef C2DFullCost::Pointer P2DFullCost; 
 
-
-
-class EXPORT_2D C2DFullCost : public TFullCost<C2DTransformation> {
-public: 
-	
-	C2DFullCost(double weight);
-}; 
-
-typedef C2DFullCost::Pointer P2DFullCost;
-
-
-class EXPORT_2D C2DFullCostPlugin: public TFullCostPlugin<C2DTransformation> {
-public:
-	C2DFullCostPlugin(const char *name);
-}; 
-
+typedef TFullCostPlugin<C2DTransformation> C2DFullCostPlugin; 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DFullCostPlugin> > C2DFullCostPluginHandler;
 FACTORY_TRAIT(C2DFullCostPluginHandler); 
 

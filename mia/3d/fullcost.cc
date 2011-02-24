@@ -30,17 +30,6 @@
 
 NS_MIA_BEGIN
 
-C3DFullCost::C3DFullCost(double weight):
-	TFullCost<C3DTransformation>(weight)
-{
-}
-
-
-C3DFullCostPlugin::C3DFullCostPlugin(const char *name):
-	TFullCostPlugin<C3DTransformation>(name)
-{
-}
-	
 EXPLICIT_INSTANCE_PLUGIN(C3DFullCost);
 EXPLICIT_INSTANCE_PLUGIN_HANDLER(C3DFullCostPlugin); 
 

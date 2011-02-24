@@ -28,26 +28,9 @@
 
 NS_MIA_BEGIN
 
-/**
-   Base class for a general cost function. 
- */
-
-
-
-class EXPORT_3D C3DFullCost : public TFullCost<C3DTransformation> {
-public: 
-	
-	C3DFullCost(double weight);
-}; 
-
-typedef C3DFullCost::Pointer P3DFullCost;
-
-
-class EXPORT_3D C3DFullCostPlugin: public TFullCostPlugin<C3DTransformation> {
-public:
-	C3DFullCostPlugin(const char *name);
-}; 
-
+typedef TFullCost<C3DTransformation> C3DFullCost; 
+typedef C3DFullCost::Pointer P3DFullCost; 
+typedef TFullCostPlugin<C3DTransformation> C3DFullCostPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C3DFullCostPlugin> > C3DFullCostPluginHandler;
 FACTORY_TRAIT(C3DFullCostPluginHandler); 
 
