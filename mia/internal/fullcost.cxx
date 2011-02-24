@@ -31,8 +31,7 @@ const char *TFullCost<T>::value = "fullcost";
 
 template <typename T> 
 TFullCost<T>::TFullCost(double weight):
-	_M_weight(weight), 
-	_M_current_size(0,0)
+	_M_weight(weight)
 {
 }
 

@@ -20,6 +20,9 @@
  *
  */
 
+#ifndef mia_internal_fullcost_hh
+#define mia_internal_fullcost_hh
+
 #include <mia/core/product_base.hh>
 #include <gsl++/vector.hh>
 
@@ -107,3 +110,5 @@ private:
 
 
 NS_MIA_END
+
+#endif
