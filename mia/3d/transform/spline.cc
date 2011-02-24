@@ -364,7 +364,6 @@ P3DImage C3DSplineTransformation::apply(const C3DImage& image,
 void C3DSplineTransformation::update(float step, const C3DFVectorfield& a)
 {
 	TRACE_FUNCTION;
-	FUNCTION_NOT_TESTED;
 	assert(a.get_size() == _M_coefficients.get_size());
 	auto ci = _M_coefficients.begin();
 	auto ce = _M_coefficients.end();

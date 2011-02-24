@@ -423,7 +423,6 @@ BOOST_FIXTURE_TEST_CASE( test_splines_clone, TransformSplineFixture )
 	}
 }
 
-#if 0
 BOOST_FIXTURE_TEST_CASE( test_splines_update, TransformSplineFixture )
 {
 	C3DFVectorfield update(stransf.get_coeff_size());
@@ -436,14 +435,13 @@ BOOST_FIXTURE_TEST_CASE( test_splines_update, TransformSplineFixture )
 	stransf.update(2.0, update);
 	stransf.reinit();
 
-	C3DFVector testx(33.4, 82.4, 21.9);
+	C3DFVector testx(33.4, 20.4, 21.9);
 	C3DFVector result = stransf.apply(testx);
 
 	BOOST_CHECK_CLOSE(result.x, fx(testx) + 2.0f, 0.1);
 	BOOST_CHECK_CLOSE(result.y, fy(testx) + 4.0f, 0.1);
 	BOOST_CHECK_CLOSE(result.z, fz(testx) + 6.0f, 0.1);
 }
-#endif
 
 BOOST_FIXTURE_TEST_CASE( test_splines_gridpoint_derivative, TransformSplineFixture )
 {
