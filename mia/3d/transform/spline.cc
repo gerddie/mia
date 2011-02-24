@@ -52,6 +52,7 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplin
 	_M_grid_valid(false)
 
 {
+	TRACE_FUNCTION;
 	unsigned int s = _M_kernel->get_active_halfrange() - 1; 
 	_M_shift = C3DBounds(s,s,s); 
 	// add one for convenience: on the right side a zero padding is needed to 
@@ -61,7 +62,6 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplin
 	// Quation is, what is more expensive 
 	_M_enlarge = 2 * _M_shift;
 	
-	TRACE_FUNCTION;
 	assert(_M_range.x > 0);
 	assert(_M_range.y > 0);
 	assert(_M_range.z > 0);
@@ -83,6 +83,7 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DSplineTransformation& 
 	_M_z_indices(_M_range.z),
 	_M_grid_valid(false)
 {
+	TRACE_FUNCTION;
 }
 
 C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplineKernel kernel, 
@@ -129,6 +130,7 @@ void C3DSplineTransformation::set_coefficients(const C3DDVectorfield& field)
 
 void C3DSplineTransformation::set_coefficients_and_prefilter(const C3DDVectorfield& field)
 {
+	TRACE_FUNCTION;
 	C3DDVectorfield help1(field.get_size());
 	C3DDVectorfield help2(field.get_size());
 	vector<C3DDVector> buffer(field.get_size().x); 
@@ -161,6 +163,7 @@ void C3DSplineTransformation::set_coefficients_and_prefilter(const C3DDVectorfie
 
 C3DBounds C3DSplineTransformation::get_enlarge() const
 {
+	TRACE_FUNCTION;
 	return _M_enlarge; 
 }
 
@@ -188,6 +191,7 @@ void C3DSplineTransformation::reinit() const
 
 C3DFVector C3DSplineTransformation::interpolate(const C3DFVector& x) const 
 {
+	TRACE_FUNCTION;
 	vector<double> xweights(_M_kernel->size()); 
 	vector<double> yweights(_M_kernel->size()); 
 	vector<double> zweights(_M_kernel->size()); 
@@ -201,17 +205,20 @@ C3DFVector C3DSplineTransformation::interpolate(const C3DFVector& x) const
 
 C3DFVector C3DSplineTransformation::apply(const C3DFVector& x) const
 {
+	TRACE_FUNCTION;
 	assert(_M_scales_valid);
 	return interpolate(scale(x));
 }
 
 C3DTransformation *C3DSplineTransformation::do_clone()const
 {
+	TRACE_FUNCTION;
 	return new C3DSplineTransformation(*this);
 }
 
 C3DTransformation *C3DSplineTransformation::invert() const
 {
+	TRACE_FUNCTION;
 	assert(0 && "not implemented"); 
 	return new C3DSplineTransformation(*this);
 }
@@ -219,17 +226,20 @@ C3DTransformation *C3DSplineTransformation::invert() const
 
 C3DFVector C3DSplineTransformation::operator () (const C3DFVector& x) const
 {
+	TRACE_FUNCTION;
 	return x - apply(x);
 }
 
 C3DFVector C3DSplineTransformation::scale( const C3DFVector& x) const
 {
+	TRACE_FUNCTION;
 	assert(_M_scales_valid);
 	return x * _M_scale + C3DFVector(_M_shift);
 }
 
 const C3DBounds& C3DSplineTransformation::get_size() const
 {
+	TRACE_FUNCTION;
 	return _M_range;
 }
 
@@ -327,7 +337,6 @@ P3DTransformation C3DSplineTransformation::upscale(const C3DBounds& size) const
 void C3DSplineTransformation::add(const C3DTransformation& a)
 {
 	TRACE_FUNCTION;
-	FUNCTION_NOT_TESTED;
 	assert(a.get_size() == get_size());
 
 	reinit();
@@ -350,7 +359,7 @@ void C3DSplineTransformation::add(const C3DTransformation& a)
 
 size_t C3DSplineTransformation::degrees_of_freedom() const
 {
-	FUNCTION_NOT_TESTED;
+	TRACE_FUNCTION;
 	return _M_coefficients.size() * 3;
 }
 
@@ -504,12 +513,14 @@ void C3DSplineTransformation::init_grid()const
 
 C3DTransformation::const_iterator C3DSplineTransformation::begin() const
 {
+	TRACE_FUNCTION;
 	init_grid(); 
 	return C3DTransformation::const_iterator(new iterator_impl(C3DBounds(0,0,0), get_size(), *this));
 }
 
 C3DTransformation::const_iterator C3DSplineTransformation::end() const
 {
+	TRACE_FUNCTION;
 	return C3DTransformation::const_iterator(new iterator_impl(get_size(), get_size(), *this));
 }
 
@@ -521,6 +532,7 @@ C3DTransformation::const_iterator C3DSplineTransformation::end() const
 C3DSplineTransformation::CSplineDerivativeRow 
 C3DSplineTransformation::get_derivative_row(size_t nin, size_t nout, double scale) const 
 {
+	TRACE_FUNCTION;
 	CSplineDerivativeRow result; 
 	for(size_t o = 0; o < nout; ++o) {
 		CSplineDerivativeRow::value_type v; 
@@ -677,6 +689,7 @@ float C3DSplineTransformation::get_jacobian(const C3DFVectorfield& v, float delt
 
 C3DFVector C3DSplineTransformation::on_grid(const C3DBounds& x) const
 {
+	TRACE_FUNCTION;
 	// this is a bit expensive, but uses less memory 
 	// one could evaluate the whole grid using convolution 
 	// but this would require more memory
@@ -691,6 +704,7 @@ C3DFVector C3DSplineTransformation::on_grid(const C3DBounds& x) const
 
 const C3DBounds& C3DSplineTransformation::get_coeff_size() const
 {
+	TRACE_FUNCTION;
 	return _M_coefficients.get_size();
 }
 
@@ -701,15 +715,18 @@ C3DSplineTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, cons
 	_M_trans(trans), 
 	_M_value_valid(false)
 {
+	TRACE_FUNCTION;
 }
  
 C3DTransformation::iterator_impl * C3DSplineTransformation::iterator_impl::clone() const
 {
+	TRACE_FUNCTION;
 	return new C3DSplineTransformation::iterator_impl(get_pos(), get_size(), _M_trans); 
 }
 
 const C3DFVector&  C3DSplineTransformation::iterator_impl::do_get_value()const
 {
+	TRACE_FUNCTION;
 	if (!_M_value_valid) {
 		_M_value = C3DFVector(get_pos()) - _M_trans.on_grid(get_pos());
 		_M_value_valid = true; 
@@ -719,22 +736,27 @@ const C3DFVector&  C3DSplineTransformation::iterator_impl::do_get_value()const
 
 void C3DSplineTransformation::iterator_impl::do_x_increment()
 {
+	TRACE_FUNCTION;
 	_M_value_valid = false; 
 }
 void C3DSplineTransformation::iterator_impl::do_y_increment()
 {
+	TRACE_FUNCTION;
 	_M_value_valid = false; 
 }
 void C3DSplineTransformation::iterator_impl::do_z_increment()
 {
+	TRACE_FUNCTION;
 	_M_value_valid = false; 
 }
 
 
 double C3DSplineTransformation::get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const
 {
+	TRACE_FUNCTION;
+	FUNCTION_NOT_TESTED;
 	reinit(); 
-	FUNCTION_NOT_TESTED; 	
+
 	// create PP matrices or adapt size 
 	if (!_M_divcurl_matrix) 
 		_M_divcurl_matrix.reset(new C3DPPDivcurlMatrix(_M_coefficients.get_size(), 
@@ -750,8 +772,10 @@ double C3DSplineTransformation::get_divcurl_cost(double wd, double wr, gsl::Doub
 
 double C3DSplineTransformation::get_divcurl_cost(double wd, double wr) const
 {
+	TRACE_FUNCTION;
+	FUNCTION_NOT_TESTED;
+
 	reinit(); 
-	
 	// create PP matrices or adapt size 
 	if (!_M_divcurl_matrix) 
 		_M_divcurl_matrix.reset(new C3DPPDivcurlMatrix(_M_coefficients.get_size(), C3DFVector(_M_range), 
@@ -777,7 +801,8 @@ private:
 C3DSplineTransformCreator::C3DSplineTransformCreator(EInterpolation ip, const C3DFVector& rates):
 	_M_rates(rates)
 {
-
+	TRACE_FUNCTION;
+	FUNCTION_NOT_TESTED;
 	switch (ip){
 	case ip_bspline2:
 		_M_kernel.reset(new CBSplineKernel2());
@@ -801,6 +826,9 @@ C3DSplineTransformCreator::C3DSplineTransformCreator(EInterpolation ip, const C3
 
 P3DTransformation C3DSplineTransformCreator::do_create(const C3DBounds& size) const
 {
+	TRACE_FUNCTION;
+	FUNCTION_NOT_TESTED;
+
 	assert(_M_kernel); 
 	return P3DTransformation(new C3DSplineTransformation(size, _M_kernel, _M_rates));
 }
@@ -834,11 +862,17 @@ C3DSplineTransformCreatorPlugin::C3DSplineTransformCreatorPlugin():
 C3DSplineTransformCreatorPlugin::ProductPtr
 C3DSplineTransformCreatorPlugin::do_create() const
 {
+	TRACE_FUNCTION;
+	FUNCTION_NOT_TESTED;
+
 	return ProductPtr(new C3DSplineTransformCreator(_M_ip, C3DFVector(_M_rate, _M_rate, _M_rate)));
 }
 
 bool C3DSplineTransformCreatorPlugin::do_test() const
 {
+	TRACE_FUNCTION;
+	FUNCTION_NOT_TESTED;
+
 	return true;
 }
 

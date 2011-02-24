@@ -255,9 +255,9 @@ BOOST_FIXTURE_TEST_CASE( test_splines_add, TransformSplineFixture )
 	C3DFVector result = stransf(testx);
 	// don't like the hight tolerance 
 	// should be checked again 
-	BOOST_CHECK_CLOSE(result.x, r2.x, 0.5);
-	BOOST_CHECK_CLOSE(result.y, r2.y, 1.2);
-	BOOST_CHECK_CLOSE(result.z, r2.z, 0.8);
+	BOOST_CHECK_CLOSE(result.x, r2.x, 0.1);
+	BOOST_CHECK_CLOSE(result.y, r2.y, 0.1);
+	BOOST_CHECK_CLOSE(result.z, r2.z, 0.1);
 
 }
 
