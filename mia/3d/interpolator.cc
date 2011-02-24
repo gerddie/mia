@@ -128,11 +128,17 @@ INSTANCIATE_INTERPOLATORS(mia_uint64);
 #endif
 
 INSTANCIATE_INTERPOLATORS(C3DFVector);
+INSTANCIATE_INTERPOLATORS(C3DDVector);
 
 template class T1DInterpolator<C3DFVector>;
 template class T1DLinearInterpolator<C3DFVector>;
 template class T1DNNInterpolator<C3DFVector>;
 template class T1DConvoluteInterpolator<C3DFVector>;
+
+template class T1DInterpolator<C3DDVector>;
+template class T1DLinearInterpolator<C3DDVector>;
+template class T1DNNInterpolator<C3DDVector>;
+template class T1DConvoluteInterpolator<C3DDVector>;
 
 
 NS_MIA_END
