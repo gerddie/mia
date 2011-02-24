@@ -249,7 +249,6 @@ gsl::DoubleVector C3DSplineTransformation::get_parameters() const
 void C3DSplineTransformation::set_parameters(const gsl::DoubleVector& params)
 {
 	TRACE_FUNCTION;
-
 	assert(3 * _M_coefficients.size() == params.size());
 	auto r = params.begin();
 	for(auto f = _M_coefficients.begin(); f != _M_coefficients.end(); ++f) {
@@ -351,6 +350,7 @@ void C3DSplineTransformation::add(const C3DTransformation& a)
 
 size_t C3DSplineTransformation::degrees_of_freedom() const
 {
+	FUNCTION_NOT_TESTED;
 	return _M_coefficients.size() * 3;
 }
 
@@ -408,7 +408,13 @@ C3DFVector C3DSplineTransformation::sum(const C3DBounds& start,
 C3DFMatrix C3DSplineTransformation::derivative_at(const C3DFVector& v) const
 {
 	TRACE_FUNCTION;
-	FUNCTION_NOT_TESTED;
+	
+	if (v.x < 0 || v.y < 0 || v.z < 0 ||
+	    v.x > _M_range.x - 1 ||  v.y > _M_range.y - 1  || v.z > _M_range.z -1) {
+		cvdebug() << "C3DSplineTransformation::derivative_at: input outside range\n"; 
+		return C3DFMatrix::_1; 
+	}
+
 	vector<double> xweights(_M_kernel->size()); 
 	vector<double> yweights(_M_kernel->size()); 
 	vector<double> zweights(_M_kernel->size()); 
@@ -417,10 +423,12 @@ C3DFMatrix C3DSplineTransformation::derivative_at(const C3DFVector& v) const
 	vector<double> zdweights(_M_kernel->size()); 
 
 	const C3DFVector x = scale(v);
-	C3DBounds start(_M_kernel->get_start_idx_and_value_weights(x.x, xweights), 
-			_M_kernel->get_start_idx_and_value_weights(x.y, xweights), 
-			_M_kernel->get_start_idx_and_value_weights(x.z, xweights)); 
 
+	C3DBounds start(_M_kernel->get_start_idx_and_value_weights(x.x, xweights), 
+			_M_kernel->get_start_idx_and_value_weights(x.y, yweights), 
+			_M_kernel->get_start_idx_and_value_weights(x.z, zweights)); 
+
+	cvdebug() << v << x << start << "\n"; 
 	_M_kernel->get_start_idx_and_derivative_weights(x.x, xdweights); 
 	_M_kernel->get_start_idx_and_derivative_weights(x.y, ydweights); 
 	_M_kernel->get_start_idx_and_derivative_weights(x.z, zdweights); 

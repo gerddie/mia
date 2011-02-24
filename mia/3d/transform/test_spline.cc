@@ -240,32 +240,6 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 	BOOST_CHECK_CLOSE(result_operator.z, testx.z - fz(testx), 0.1);
 }
 
-
-#ifdef REVIEW_THIS_TEST
-BOOST_FIXTURE_TEST_CASE( test_splines_transformation_upscale, TransformSplineFixture )
-{
-	const C3DBounds scale(2.0, 3.0);
-	C3DBounds new_range = scale * range;
-
-	const C3DFVector fscale(float(new_range.x - 1.0) / (range.x - 1.0),
-				float(new_range.y - 1.0) / (range.y - 1.0));
-
-	cvdebug() << fscale << "\n";
-	P3DTransformation  stransf_upscaled = stransf.upscale(new_range);
-
-	stransf_upscaled->reinit();
-
-	C3DFVector test2(34.4, 90.3);
-
-	C3DFVector result2 = stransf_upscaled->apply(fscale * test2);
-
-	BOOST_CHECK_CLOSE(result2.x, scale.x * fx(test2), 0.1);
-	BOOST_CHECK_CLOSE(result2.y, scale.y * fy(test2), 0.1);
-
-}
-#endif
-
-
 BOOST_FIXTURE_TEST_CASE( test_splines_add, TransformSplineFixture )
 {
 	stransf.reinit();
@@ -471,24 +445,37 @@ BOOST_FIXTURE_TEST_CASE( test_splines_update, TransformSplineFixture )
 }
 #endif
 
-#if 0 
 BOOST_FIXTURE_TEST_CASE( test_splines_gridpoint_derivative, TransformSplineFixture )
 {
-	C3DFVector x(33,80,60);
-	C3DFMatrix dv =  stransf.derivative_at(33,80,60);
 
-	BOOST_CHECK_CLOSE(dv.x.x, 1.0f - dfx_x(x.x, x.y, x.z), 0.2);
-	BOOST_CHECK_CLOSE(dv.y.x,      - dfx_y(x.x, x.y, x.z), 0.2);
-	BOOST_CHECK_CLOSE(dv.z.x,      - dfx_z(x.x, x.y, x.z), 0.2);
-	BOOST_CHECK_CLOSE(dv.x.y,      - dfy_x(x.x, x.y, x.z), 0.2);
-	BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(x.x, x.y, x.z), 0.2);
-	BOOST_CHECK_CLOSE(dv.z.y,      - dfy_z(x.x, x.y, x.z), 0.2);
-	BOOST_CHECK_CLOSE(dv.x.z,      - dfz_x(x.x, x.y, x.z), 0.2);
-	BOOST_CHECK_CLOSE(dv.y.z,      - dfz_y(x.x, x.y, x.z), 0.2);
-	BOOST_CHECK_CLOSE(dv.z.z, 1.0f - dfz_z(x.x, x.y, x.z), 0.2);
+//		range(50, 80, 30),
+	C3DFVector x(33,29,10);
+	C3DFMatrix dv =  stransf.derivative_at(x);
+	
+
+	BOOST_CHECK_CLOSE(dv.x.x, 1.0f - dfx_x(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.y.x,      - dfx_y(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.z.x,      - dfx_z(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.x.y,      - dfy_x(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.z.y,      - dfy_z(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.x.z,      - dfz_x(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.y.z,      - dfz_y(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.z.z, 1.0f - dfz_z(x), 0.2);
 
 }
-#endif
+
+BOOST_FIXTURE_TEST_CASE( test_splines_gridpoint_derivative_out_of_range, TransformSplineFixture )
+{
+	BOOST_CHECK_EQUAL(stransf.derivative_at(C3DFVector(-0.1, 1, 1)), C3DFMatrix::_1);
+	BOOST_CHECK_EQUAL(stransf.derivative_at(C3DFVector(1, -0.1, 1)), C3DFMatrix::_1);
+	BOOST_CHECK_EQUAL(stransf.derivative_at(C3DFVector(1, 1, -0.1)), C3DFMatrix::_1);
+
+	BOOST_CHECK_EQUAL(stransf.derivative_at(C3DFVector(range.x, 1, 1)), C3DFMatrix::_1);
+	BOOST_CHECK_EQUAL(stransf.derivative_at(C3DFVector(1, range.y, 1)), C3DFMatrix::_1);
+	BOOST_CHECK_EQUAL(stransf.derivative_at(C3DFVector(1, 1, range.z)), C3DFMatrix::_1);
+
+}
 
 
 BOOST_FIXTURE_TEST_CASE( test_splines_set_identity, TransformSplineFixture )
