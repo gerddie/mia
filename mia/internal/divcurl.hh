@@ -20,17 +20,40 @@
  *
  */
 
-#ifndef mia_2d_divcurl_hh
-#define mia_2d_divcurl_hh
+#ifndef mia_internal_divcurl_hh
+#define mia_internal_divcurl_hh
 
 
-#include <mia/2d/fullcost.hh>
-#include <mia/internal/divcurl.hh>
+#include <mia/internal/fullcost.hh>
 
 
 NS_MIA_BEGIN
-typedef TDivcurlFullCostPlugin<C2DTransformation> C2DDivCurlFullCostPlugin; 
-typedef TDivCurlFullCost<C2DTransformation> C2DDivCurlFullCost; 
+
+template <typename Transform> 
+class EXPORT TDivCurlFullCost : public TFullCost<Transform> {
+public: 
+	TDivCurlFullCost(double weight_div, double weight_curl, double weight); 
+private: 
+	double do_evaluate(const Transform& t, gsl::DoubleVector& gradient) const;
+	double do_value(const Transform& t) const;
+	double do_value() const;
+	void do_set_size(); 
+	double _M_weight_div; 
+	double _M_weight_curl; 
+	double _M_size_scale; 
+}; 
+
+template <typename T> 
+class TDivcurlFullCostPlugin: public TFullCostPlugin<T> {
+public: 
+	TDivcurlFullCostPlugin(); 
+private:
+	typename TFullCostPlugin<T>::ProductPtr do_create(float weight) const;
+	const std::string do_get_descr() const;
+	float _M_div;
+	float _M_curl;
+}; 
+
 NS_MIA_END
 
 #endif
