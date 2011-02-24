@@ -159,6 +159,7 @@ double C3DTransformMock::get_divcurl_cost(double wd, double wr, gsl::DoubleVecto
 {
 	gradient[0] = wd; 
 	gradient[1] = wr; 
+	gradient[2] = wr - wd; 
 	return wd + wr; 
 }
 

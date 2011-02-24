@@ -84,7 +84,7 @@ typename TFullCostPlugin<T>::ProductPtr TDivcurlFullCostPlugin<T>::do_create(flo
 	cvdebug() << "create C2DDivCurlFullCost with weight= " << weight 
 		  << " div=" << _M_div << " curl=" << _M_curl << "\n"; 
 		
-	return typename TFullCostPlugin<T>::ProductPtr(new C2DDivCurlFullCost(this->_M_div, this->_M_curl, weight)); 
+	return typename TFullCostPlugin<T>::ProductPtr(new TDivCurlFullCost<T>(this->_M_div, this->_M_curl, weight)); 
 }
 
 template <typename T> 
