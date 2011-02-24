@@ -32,7 +32,7 @@ namespace bfs=::boost::filesystem;
 
 BOOST_AUTO_TEST_CASE( test_divcurl_cost ) 
 {
-	C3DDivCurlFullCost  div(4.0, 6.0, 0.5); 
+	C3DDivCurlFullCost  div(4.0, 6.0, 1.0); 
 
 	C3DBounds size(1, 2, 1); 
 	C3DTransformMock t(size); 
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE( test_divcurl_cost )
 	BOOST_CHECK_EQUAL(div.evaluate(t, gradient), 5.0); 
 	BOOST_CHECK_EQUAL(gradient[0], -2.0); 
 	BOOST_CHECK_EQUAL(gradient[1], -3.0); 
-	BOOST_CHECK_EQUAL(gradient[2],  1.0);
+	BOOST_CHECK_EQUAL(gradient[2], -1.0);
 }
 
 BOOST_AUTO_TEST_CASE( test_div_cost ) 
@@ -57,22 +57,22 @@ BOOST_AUTO_TEST_CASE( test_div_cost )
 	BOOST_CHECK_EQUAL(div.evaluate(t, gradient), 1.0); 
 	BOOST_CHECK_EQUAL(gradient[0], -1.0); 
 	BOOST_CHECK_EQUAL(gradient[1],  0.0); 
-	BOOST_CHECK_EQUAL(gradient[2], -2.0);
+	BOOST_CHECK_EQUAL(gradient[2],  1.0);
 }
 
 BOOST_AUTO_TEST_CASE( test_curl_cost ) 
 {
-	C3DDivCurlFullCost  div(0.0, 4.0, 2.0); 
+	C3DDivCurlFullCost  div(0.0, 3.0, 2.0); 
 
 	C3DBounds size(1,2,1); 
 	C3DTransformMock t(size); 
 	div.set_size(size); 
 
 	gsl::DoubleVector gradient(t.degrees_of_freedom()); 
-	BOOST_CHECK_EQUAL(div.evaluate(t, gradient), 4.0); 
-	BOOST_CHECK_EQUAL(gradient[0], 0.0); 
-	BOOST_CHECK_EQUAL(gradient[1], -4.0); 
-	BOOST_CHECK_EQUAL(gradient[1], -8.0); 
+	BOOST_CHECK_EQUAL(div.evaluate(t, gradient), 3.0);
+	BOOST_CHECK_EQUAL(gradient[0], 0.0);
+	BOOST_CHECK_EQUAL(gradient[1], -3.0);
+	BOOST_CHECK_EQUAL(gradient[2], -3.0);
 }
 
 BOOST_AUTO_TEST_CASE( test_curl_cost_notrans ) 
