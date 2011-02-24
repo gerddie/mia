@@ -125,11 +125,11 @@ private:
 
 	mutable std::shared_ptr<C3DPPDivcurlMatrix > _M_divcurl_matrix; 
 	mutable std::vector<std::vector<double> > _M_x_weights; 
-	mutable std::vector<std::vector<int> > _M_x_indices; 
+	mutable std::vector<int> _M_x_indices; 
 	mutable std::vector<std::vector<double> > _M_y_weights; 
-	mutable std::vector<std::vector<int> > _M_y_indices; 
+	mutable std::vector<int> _M_y_indices; 
 	mutable std::vector<std::vector<double> > _M_z_weights; 
-	mutable std::vector<std::vector<int> > _M_z_indices; 
+	mutable std::vector<int> _M_z_indices; 
 	mutable CSplineDerivativeRow  _M_mx; 
 	mutable CSplineDerivativeRow  _M_my; 
 	mutable CSplineDerivativeRow  _M_mz; 
