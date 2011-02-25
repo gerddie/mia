@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -37,12 +37,10 @@
  	"B-Spline Signal Processing: Part II--Efficient Design and Applications,"
  	IEEE Transactions on Signal Processing, vol. 41, no. 2, pp. 834-848,
  	February 1993.
-
 */
 
 #ifndef mia_2d_interpolator_hh
 #define mia_2d_interpolator_hh
-
 
 #include <vector>
 #include <mia/core/shared_ptr.hh>
@@ -59,7 +57,6 @@ struct max_hold_type<T2DVector<T> > {
 	typedef T2DVector<double> type;
 };
 
-
 class EXPORT_2D C2DInterpolator {
 public:
 	/** a virtual destructor is neccessary for some of the interpolators */
@@ -68,7 +65,7 @@ public:
 
 /**
    Basic Interpolator type for 2D Data.
- */
+*/
 
 template <typename T>
 class  EXPORT_2D T2DInterpolator : public  C2DInterpolator {

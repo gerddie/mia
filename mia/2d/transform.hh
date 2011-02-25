@@ -38,7 +38,7 @@ NS_MIA_BEGIN
 
 
 class C2DTransformation;
-typedef std::shared_ptr<C2DTransformation > P2DTransformation;
+
 
 /**
    This is the generic base class for 2D transformations.
@@ -51,6 +51,8 @@ public:
 	typedef C2DBounds Size; 
 	typedef C2DInterpolatorFactory Interpolator;
 	typedef C2DTransformation type; 
+	typedef std::shared_ptr<C2DTransformation > Pointer; 
+
 	static const char *type_descr;
 	static const char *dim_descr; 
 protected: 
@@ -171,7 +173,7 @@ public:
 	   \param size new size of the transformation
 	   \returns shared pointer to upscaled transformation
 	 */
-	virtual P2DTransformation upscale(const C2DBounds& size) const = 0;
+	virtual Pointer upscale(const C2DBounds& size) const = 0;
 
 	/**
 	   concat a transformation,
@@ -292,6 +294,8 @@ private:
 	virtual C2DTransformation *do_clone() const = 0;
 
 };
+
+typedef C2DTransformation::Pointer P2DTransformation;
 
 // don't use a reference to the iterator, because we use the created copy as result 
 inline C2DTransformation::const_iterator operator + (C2DTransformation::const_iterator i, size_t delta) 

@@ -20,14 +20,34 @@
  *
  */
 
-#include <mia/core/export_handler.hh>
-
-#include <mia/2d/transformfactory.hh>
-#include <mia/internal/transformfactory.cxx>
+#include <mia/core/plugin_base.cxx>
+#include <mia/core/handler.cxx>
 
 NS_MIA_BEGIN
 
-template class TTransformCreator<C2DTransformation>; 
-EXPLICIT_INSTANCE_HANDLER(C2DTransformCreator); 
+template <typename T> 
+TTransformCreator<T>::TTransformCreator()
+{
+}
+
+template <typename T> 
+typename T::Pointer TTransformCreator<T>::create(const typename T::Size& size) const
+{
+	P2DTransformation result = do_create(size);
+	result->set_creator_string(get_init_string()); 
+	return result; 
+}
+
+template <typename T> 
+bool TTransformCreator<T>::has_property(const char *property) const
+{
+	return _M_properties.find(property) != _M_properties.end();
+}
+
+template <typename T> 
+void TTransformCreator<T>::add_property(const char *property)
+{
+	_M_properties.insert(property);
+}
 
 NS_MIA_END
