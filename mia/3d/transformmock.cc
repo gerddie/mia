@@ -74,7 +74,7 @@ void C3DTransformMock::set_identity()
 {
 }
 
-C3DFMatrix C3DTransformMock::derivative_at(int, int) const
+C3DFMatrix C3DTransformMock::derivative_at(int, int, int) const
 {
 	return C3DFMatrix(C3DFVector(1.0, 2.0, 3.0), 
 			  C3DFVector(4.0, 5.0, 6.0), 
@@ -159,6 +159,7 @@ double C3DTransformMock::get_divcurl_cost(double wd, double wr, gsl::DoubleVecto
 {
 	gradient[0] = wd; 
 	gradient[1] = wr; 
+	gradient[2] = wr - wd; 
 	return wd + wr; 
 }
 

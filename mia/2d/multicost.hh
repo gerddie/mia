@@ -23,26 +23,14 @@
  */
 
 #include <mia/2d/fullcost.hh>
+#include <mia/internal/multicost.hh>
 
 NS_MIA_BEGIN
 
 /**
    A accumulation of cost functions that are weigted against each other 
  */
-class EXPORT_2D C2DFullCostList : public C2DFullCost {
-public: 
-	C2DFullCostList(); 
+typedef TFullCostList<C2DTransformation> C2DFullCostList; 
 
-	void push(P2DFullCost cost); 
-private: 
-	bool do_has(const char *property) const;
-
-	virtual double do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const;
-	double do_value(const C2DTransformation& t) const; 
-	double do_value() const; 
-	virtual void do_set_size(); 
-	virtual void do_reinit(); 
-	std::vector<P2DFullCost> _M_costs; 
-}; 
 
 NS_MIA_END

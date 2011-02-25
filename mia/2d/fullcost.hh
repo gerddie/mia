@@ -24,90 +24,14 @@
 #define mia_2d_fullcost_hh
 
 #include <mia/2d/transform.hh>
-#include <gsl++/vector.hh>
+#include <mia/internal/fullcost.hh>
 
 NS_MIA_BEGIN
 
+typedef TFullCost<C2DTransformation> C2DFullCost; 
+typedef C2DFullCost::Pointer P2DFullCost; 
 
-/**
-   Base class for a general cost function. 
- */
-
-class EXPORT_2D C2DFullCost : public CProductBase {
-public: 
-	typedef C2DFullCost plugin_data; 
-	typedef C2DFullCost plugin_type;
-
-	static const char *type_descr;
-	static const char *value;
-
-	typedef std::shared_ptr<C2DFullCost > Pointer; 
-	
-	/**
-	   Initialize the cost function with a weight 
-	   \param weight 
-	 */
-	C2DFullCost(double weight);
-
-
-	/**
-	   Evaluate the weighted cost value and the weighted gradient in optimizer space 
-	   given a current  transformation. 
-	   \param t tranformation to be applied 
-	   \retval gradient gradient in optimizer space 
-	   \returns weighted cost value 
-	 */
-	double evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const;
-
-	/**
-	   Evaluate the weighted cost value 
-	   \param t tranformation to be applied 
-	   \returns weighted cost value 
-	 */
-	double cost_value(const C2DTransformation& t) const;
-
-	/**
-	   Evaluate the weighted cost value without transforming the image 
-	   \returns weighted cost value 
-	 */
-	double cost_value() const;
-
-	/**
-	   Re-initialalize the cost function
-	*/
-	void reinit();
-	
-	/**
-	   Set the size of the cost function 
-	 */
-	void set_size(const C2DBounds& size); 
-protected: 
-	/** \returns cost function weight  */
-	double get_weight() const; 
-	const C2DBounds& get_current_size() const; 
-private:
-	virtual double do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const = 0;
-	virtual double do_value(const C2DTransformation& t) const = 0;
-	virtual double do_value() const = 0;
-	virtual void do_reinit();
-	virtual void do_set_size() = 0; 
-	
-	double _M_weight;
-	C2DBounds _M_current_size; 
-
-}; 
-typedef C2DFullCost::Pointer P2DFullCost;
-
-
-class EXPORT_2D C2DFullCostPlugin: public TFactory<C2DFullCost> {
-public:
-	C2DFullCostPlugin(const char *name);
-private:
-	virtual C2DFullCostPlugin::ProductPtr do_create() const;
-	virtual C2DFullCostPlugin::ProductPtr do_create(float weight) const = 0;
-	float _M_weight;
-}; 
-
+typedef TFullCostPlugin<C2DTransformation> C2DFullCostPlugin; 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DFullCostPlugin> > C2DFullCostPluginHandler;
 FACTORY_TRAIT(C2DFullCostPluginHandler); 
 

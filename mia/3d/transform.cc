@@ -82,6 +82,7 @@ void C3DTransformation::iterator_impl::increment()
 	} else {
 		// if x is at the end, then everything is at the end
 		cvwarn() << "C3DTransformation::iterator_impl::increment() past end\n"; 
+		return; 
 	}
 	
 	++_M_pos.y;
@@ -98,7 +99,6 @@ void C3DTransformation::iterator_impl::increment()
 		do_z_increment();
 		return; 
 	}
-	cvdebug() << "C3DTransformation::iterator_impl::increment() at end\n"; 
 }
 
 const C3DBounds& C3DTransformation::iterator_impl::get_pos()const
@@ -190,5 +190,6 @@ bool C3DTransformation::refine()
 }
 
 const char *C3DTransformation::type_descr = "3dtransform";
+const char *C3DTransformation::dim_descr = "3d";
 
 NS_MIA_END

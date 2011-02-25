@@ -22,83 +22,8 @@
 
 #include <boost/lambda/lambda.hpp>
 #include <mia/2d/multicost.hh>
+#include <mia/internal/multicost.cxx>
 
 NS_MIA_BEGIN
-using boost::lambda::_1; 
-using boost::lambda::_2; 
-
-
-C2DFullCostList::C2DFullCostList():
-	C2DFullCost(1.0)
-{
-}
-
-void C2DFullCostList::push(P2DFullCost cost)
-{
-	_M_costs.push_back(cost); 
-}
-
-bool C2DFullCostList::do_has(const char *property) const
-{
-	bool result = !_M_costs.empty(); 
-	auto ic = _M_costs.begin(); 
-	while (result && ic != _M_costs.end()) {
-		result &= (*ic)->has(property); 
-		++ic; 
-	}
-	return result; 
-}
-
-double C2DFullCostList::do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const
-{
-	double  result = 0; 
-	gsl::DoubleVector tmp(gradient.size()); 
-	stringstream msg; 
-	msg << "Cost: "; 
-	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i) {
-		fill(tmp.begin(), tmp.end(), 0.0); 
-		double h = (*i)->evaluate(t, tmp); 
-		msg << h << "("<< (*i)->get_init_string() << ") "; 
-		result += h; 
-		transform(gradient.begin(), gradient.end(), tmp.begin(), gradient.begin(), _1 + _2); 
-	}
-	cvinfo() << msg.str() << " = " << result << "\n"; 
-	return result; 
-}
-
-double C2DFullCostList::do_value(const C2DTransformation& t) const
-{
-	double  result = 0; 
-	stringstream msg; 
-	msg << "Cost: "; 
-	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i) {
-		double h = (*i)->cost_value(t); 
-		msg << h << "("<< (*i)->get_init_string() << ") "; 
-		result += h; 
-	}
-	cvinfo() << msg.str() << " = " << result << "\n"; 
-	return result; 
-}
-
-double C2DFullCostList::do_value() const
-{
-	double  result = 0; 
-	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i) {
-		result += (*i)->cost_value(); 
-	}
-	return result; 
-}
-
-void C2DFullCostList::do_set_size()
-{
-	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i) 
-		(*i)->set_size(get_current_size()); 
-}
-
-void C2DFullCostList::do_reinit()
-{
-	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i) 
-		(*i)->reinit(); 
-}
-
+template class TFullCostList<C2DTransformation>; 
 NS_MIA_END

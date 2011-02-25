@@ -24,84 +24,16 @@
 #include <algorithm>
 #include <boost/lambda/lambda.hpp>
 #include <mia/2d/fullcost/divcurl.hh>
+
+#include <mia/internal/divcurl.cxx>
 NS_MIA_BEGIN
-using namespace std; 
-using boost::lambda::_1; 
 
-C2DDivCurlFullCost::C2DDivCurlFullCost(double weight_div, double weight_curl, double weight):
-	C2DFullCost(weight), 
-	_M_weight_div(weight_div), 
-	_M_weight_curl(weight_curl), 
-	_M_size_scale(1.0)
-{
-	this->add(::mia::property_gradient); 
-}
-
-double C2DDivCurlFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const
-{
-	assert(t.get_size() == get_current_size()); 
-	double result = t.get_divcurl_cost(_M_size_scale * _M_weight_div, _M_size_scale *_M_weight_curl, gradient); 
-	cvdebug() << "C2DDivCurlFullCost::value = " << result << "\n"; 
-	transform(gradient.begin(), gradient.end(), gradient.begin(), -1.0 * _1); 
-	return result; 
-}
-
-double C2DDivCurlFullCost::do_value(const C2DTransformation& t) const
-{
-	double result = t.get_divcurl_cost(_M_size_scale * _M_weight_div, _M_size_scale * _M_weight_curl); 
-	cvdebug() << "C2DDivCurlFullCost::value = " << result << "\n"; 
-	return result; 
-}
-
-double C2DDivCurlFullCost::do_value() const
-{
-	cvwarn() << "Requesting DivCurl cost without a transformation doesn't make sense\n"; 
-	return 0.0; 
-}
-
-void C2DDivCurlFullCost::do_set_size()
-{
-	_M_size_scale = 1.0 / (get_current_size().x * get_current_size().y); 
-}
-
-
-class C2DDivcurlFullCostPlugin: public C2DFullCostPlugin {
-public: 
-	C2DDivcurlFullCostPlugin(); 
-private: 
-	C2DFullCostPlugin::ProductPtr do_create(float weight) const;
-	const std::string do_get_descr() const;
-	float _M_div;
-	float _M_curl;
-}; 
-
-C2DDivcurlFullCostPlugin::C2DDivcurlFullCostPlugin():
-	C2DFullCostPlugin("divcurl"), 
-	_M_div(1.0), 
-	_M_curl(1.0)
-{
-	add_parameter("div", new CFloatParameter(_M_div, 0.0f, numeric_limits<float>::max(), 
-						 false, "penalty weight on divergence"));
-	add_parameter("curl", new CFloatParameter(_M_curl, 0.0f, numeric_limits<float>::max(), 
-						  false, "penalty weight on curl"));
-}
-
-C2DFullCostPlugin::ProductPtr C2DDivcurlFullCostPlugin::do_create(float weight) const
-{
-	cvdebug() << "create C2DDivCurlFullCost with weight= " << weight 
-		  << " div=" << _M_div << " curl=" << _M_curl << "\n"; 
-		
-	return C2DFullCostPlugin::ProductPtr(new C2DDivCurlFullCost(_M_div,  _M_curl, weight)); 
-}
-
-const std::string C2DDivcurlFullCostPlugin::do_get_descr() const
-{
-	return "divcurl penalty cost function"; 
-}
+template class TDivcurlFullCostPlugin<C2DTransformation>; 
+template class  TDivCurlFullCost<C2DTransformation>; 
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DDivcurlFullCostPlugin();
+	return new C2DDivCurlFullCostPlugin();
 }
 
 NS_MIA_END

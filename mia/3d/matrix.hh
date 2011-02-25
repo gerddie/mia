@@ -39,8 +39,17 @@ struct T3DMatrix: public T3DVector< T3DVector<T> > {
 	T3DMatrix& operator = (const T3DMatrix<T>& o);
 	
 	T3DMatrix& operator -= (const T3DMatrix<T>& o);
+	
+	void print( std::ostream& os) const; 
+
+	static const T3DMatrix _1; 
 
 }; 
+
+template <typename T> 
+const T3DMatrix<T> T3DMatrix<T>::_1(T3DVector< T >(1,0,0), 
+				 T3DVector< T >(0,1,0),
+				 T3DVector< T >(0,0,1));
 
 template <typename T> 
 T3DMatrix<T>::T3DMatrix():
@@ -65,7 +74,18 @@ T3DMatrix<T>::T3DMatrix(const T3DVector< T >& x, const T3DVector< T >& y, const 
 	T3DVector<T3DVector<T> >(x, y, z)
 {
 }
+template <typename T> 
+void T3DMatrix<T>::print( std::ostream& os) const
+{
+	os << "<" << this->x << ", " << this->y << ", " << this->z << " >"; 
+}
 
+template <typename T> 
+std::ostream& operator << (std::ostream& os, const T3DMatrix<T>& m) 
+{
+	m.print(os); 
+	return os; 
+}
 
 template <typename T> 
 T3DMatrix<T>& T3DMatrix<T>::operator = (const T3DMatrix<T>& o)

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2010
+ * Copyright (c) Madrid 2010-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -24,82 +24,17 @@
 #include <mia/core/export_handler.hh>
 #include <mia/2d/fullcost.hh>
 
+#include <mia/internal/fullcost.cxx>
 #include <mia/core/plugin_base.cxx>
 #include <mia/core/handler.cxx>
 
 NS_MIA_BEGIN
-using boost::lambda::_1; 
-
-const char *C2DFullCost::type_descr = "2d";
-const char *C2DFullCost::value = "fullcost";
-
-C2DFullCost::C2DFullCost(double weight):
-	_M_weight(weight), 
-	_M_current_size(0,0)
-{
-}
-
-double C2DFullCost::evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const
-{
-	assert(_M_current_size == t.get_size()); 
-	
-	double result = _M_weight * do_evaluate(t, gradient); 
-	transform(gradient.begin(), gradient.end(), gradient.begin(), _M_weight * _1); 
-	return result; 
-}
-
-double C2DFullCost::cost_value(const C2DTransformation& t) const 
-{
-	return _M_weight * do_value(t); 
-}
-
-double C2DFullCost::cost_value() const 
-{
-	return _M_weight * do_value(); 
-}
-	
-
-double C2DFullCost::get_weight() const
-{
-	return _M_weight; 
-}
-
-const C2DBounds& C2DFullCost::get_current_size() const
-{
-	return _M_current_size; 
-}
-
-void C2DFullCost::reinit()
-{
-	do_reinit(); 
-}
-
-void C2DFullCost::set_size(const C2DBounds& size)
-{
-	if (_M_current_size != size) {
-		_M_current_size = size; 
-		do_set_size(); 
-	}
-}
-
-void C2DFullCost::do_reinit()
-{
-}
-
-C2DFullCostPlugin::C2DFullCostPlugin(const char *name):
-	TFactory<C2DFullCost>(name), 
-	_M_weight(1.0)
-{
-	add_parameter("weight", new CFloatParameter(_M_weight, -1e+10f, 1e+10f,
-						    false, "weight of cost function"));
-}
-	
-C2DFullCostPlugin::ProductPtr C2DFullCostPlugin::do_create() const
-{
-	return do_create(_M_weight); 
-}
 
 EXPLICIT_INSTANCE_PLUGIN(C2DFullCost);
 EXPLICIT_INSTANCE_PLUGIN_HANDLER(C2DFullCostPlugin); 
+
+template class TFullCostPlugin<C2DTransformation>; 
+template class TFullCost<C2DTransformation>; 
+
 
 NS_MIA_END

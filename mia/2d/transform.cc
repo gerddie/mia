@@ -87,9 +87,52 @@ void C2DTransformation::iterator_impl::increment()
 	}
 }
 
+void C2DTransformation::iterator_impl::advance(unsigned int delta)
+{
+	unsigned int delta_x_max = _M_size.x - _M_pos.x; 
+	if (delta < delta_x_max) {
+		_M_pos.x += delta; 
+		do_x_increment();
+		return; 
+	}
+	++_M_pos.y; 
+	delta -= delta_x_max; 
+	_M_pos.x = 0; 
+	
+	if (delta) {
+		_M_pos.x += delta % _M_size.x; 
+		_M_pos.y += delta / _M_size.x;
+	}
+	if (_M_pos.y < _M_size.y) 
+		do_y_increment();
+#ifndef NDEBUG
+	else if (_M_pos.y == _M_size.y) 
+		cvdebug() << "C2DTransformation::iterator_impl::advance: iterator at end\n"; 
+	else 
+		cvwarn() << "C2DTransformation::iterator_impl::advance: iterator past end\n"; 
+#endif	
+}
+
+
+C2DTransformation::const_iterator& C2DTransformation::const_iterator::operator += (unsigned int delta)
+{
+	_M_holder->advance(delta); 
+	return *this; 
+}
+
+void C2DTransformation::const_iterator::print(ostream& os) const 
+{
+	_M_holder->print(os); 
+}
+
 const C2DBounds& C2DTransformation::iterator_impl::get_pos()const
 {
 	return _M_pos; 
+}
+
+void C2DTransformation::iterator_impl::print(ostream& os) const 
+{
+	os << "Iterator[pos=" << _M_pos << " of " << _M_size <<"]"; 
 }
 
 const C2DBounds& C2DTransformation::iterator_impl::get_size()const
@@ -106,7 +149,7 @@ const C2DFVector&  C2DTransformation::iterator_impl::get_value() const
 bool C2DTransformation::iterator_impl::operator == (const C2DTransformation::iterator_impl& b) const
 {
 	assert(_M_size == b._M_size); 
-	return _M_pos == b._M_pos; 
+	return _M_pos == b._M_pos || (_M_pos.y == _M_size.y && b._M_pos.y == b._M_size.y); 
 }
 
 EXPORT_2D bool operator == (const C2DTransformation::const_iterator& a, 
@@ -176,5 +219,6 @@ bool C2DTransformation::refine()
 }
 
 const char *C2DTransformation::type_descr = "2dtransform";
+const char *C2DTransformation::dim_descr = "2d"; 
 
 NS_MIA_END

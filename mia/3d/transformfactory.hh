@@ -25,51 +25,11 @@
 
 #include <set>
 #include <mia/3d/transform.hh>
-#include <mia/core/factory.hh>
+#include <mia/internal/transformfactory.hh>
 
 NS_MIA_BEGIN
 
-/**
-   This class is the base class for a Creater of transformations according to a 
-   given model. 
-   Derived from this class are all the plug-ins that may create transformations 
-   of different types. 
- */
-class  EXPORT_3D C3DTransformCreator: public CProductBase {
-public:
-	typedef C3DImage plugin_data; 
-	typedef C3DTransformation plugin_type; 
-
-	/** Standard constructor 
-	    \remark it is empty, so why it is defined? 
-	 */
-	C3DTransformCreator();
-
-	/**
-	   Creates a transformation according to the given model and defined 
-	   on a grid [(0,0), size}
-	 */
-
-	P3DTransformation create(const C3DBounds& size) const;
-	
-	/**
-	   This function checks for a given property of the transformation creator. 
-	   \param property 
-	   \returns \a true if property is supported
-	 */
-	bool has_property(const char *property) const;
-protected:
-	/**
-	   Add a property 
-	   \param property 
-	 */
-	void add_property(const char *property);
-private:
-	virtual P3DTransformation do_create(const C3DBounds& size) const = 0;
-
-	std::set<std::string> _M_properties;
-};
-
+typedef TTransformCreator<C3DTransformation>  C3DTransformCreator; 
 typedef std::shared_ptr<C3DTransformCreator > P3DTransformationFactory;
 typedef TFactory<C3DTransformCreator> C3DTransformCreatorPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C3DTransformCreatorPlugin> > C3DTransformCreatorHandler;

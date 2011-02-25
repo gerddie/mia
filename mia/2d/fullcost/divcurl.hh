@@ -25,23 +25,12 @@
 
 
 #include <mia/2d/fullcost.hh>
+#include <mia/internal/divcurl.hh>
 
 
 NS_MIA_BEGIN
-
-class EXPORT C2DDivCurlFullCost : public C2DFullCost {
-public: 
-	C2DDivCurlFullCost(double weight_div, double weight_curl, double weight); 
-private: 
-	double do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const;
-	double do_value(const C2DTransformation& t) const;
-	double do_value() const;
-	void do_set_size(); 
-	double _M_weight_div; 
-	double _M_weight_curl; 
-	double _M_size_scale; 
-}; 
-
+typedef TDivcurlFullCostPlugin<C2DTransformation> C2DDivCurlFullCostPlugin; 
+typedef TDivCurlFullCost<C2DTransformation> C2DDivCurlFullCost; 
 NS_MIA_END
 
 #endif

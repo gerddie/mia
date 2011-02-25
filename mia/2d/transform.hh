@@ -25,6 +25,7 @@
 
 #include <iterator>
 #include <memory>
+#include <ostream>
 
 #include <gsl++/vector.hh>
 #include <mia/core/transformation.hh>
@@ -36,27 +37,29 @@
 NS_MIA_BEGIN
 
 
-class C2DTransformation;
-typedef std::shared_ptr<C2DTransformation > P2DTransformation;
-
 /**
    This is the generic base class for 2D transformations.
    Most methods are pure abstract and need to be implemented by a "real" transformation. 
 */
-
 class EXPORT_2D C2DTransformation: public Transformation<C2DImage, C2DInterpolatorFactory> {
 public:
 	typedef C2DImage Data;
-	typedef C2DInterpolatorFactory Interpolator;
+	typedef C2DBounds Size; 
+	typedef C2DInterpolatorFactory InterpolatorFactory;
 	typedef C2DTransformation type; 
+	typedef std::shared_ptr<C2DTransformation > Pointer; 
+
 	static const char *type_descr;
+	static const char *dim_descr; 
 protected: 
 	class iterator_impl  {
 	public: 
 		iterator_impl(); 
 		iterator_impl(const C2DBounds& pos, const C2DBounds& size); 
 
-		void increment(); 
+		void increment();
+		void advance(unsigned int delta); 
+
 		const C2DFVector&  get_value() const;
 		virtual iterator_impl * clone() const = 0; 
 		
@@ -64,6 +67,8 @@ protected:
 		
 		const C2DBounds& get_pos()const; 
 		const C2DBounds& get_size()const; 
+		void print(std::ostream& os) const; 
+
 	private:
 		virtual const C2DFVector& do_get_value()const = 0; 
 		virtual void do_y_increment() = 0; 
@@ -91,9 +96,12 @@ public:
 		const_iterator& operator ++(); 
 		const_iterator operator ++(int); 
 
+		const_iterator& operator += (unsigned int delta); 
+
 		const C2DFVector& operator *() const;
 		const C2DFVector  *operator ->() const;
 
+		void print(std::ostream& os) const; 
 	private: 
 		std::unique_ptr<iterator_impl> _M_holder;
 
@@ -128,7 +136,6 @@ public:
 	 */
 	virtual C2DTransformation *invert() const = 0;
 
-
 	/**
 	   \returns the start iterator of the transformation that iterates over the grid 
 	   of the area the ransformation is defined on 
@@ -161,7 +168,7 @@ public:
 	   \param size new size of the transformation
 	   \returns shared pointer to upscaled transformation
 	 */
-	virtual P2DTransformation upscale(const C2DBounds& size) const = 0;
+	virtual Pointer upscale(const C2DBounds& size) const = 0;
 
 	/**
 	   concat a transformation,
@@ -283,6 +290,21 @@ private:
 
 };
 
+typedef C2DTransformation::Pointer P2DTransformation;
+
+// don't use a reference to the iterator, because we use the created copy as result 
+inline C2DTransformation::const_iterator operator + (C2DTransformation::const_iterator i, size_t delta) 
+{
+	i += delta; 
+	return i; 
+}
+
+inline std::ostream& operator << (std::ostream& os, 
+				  const C2DTransformation::const_iterator& i) 
+{
+	i.print(os); 
+	return os; 
+}
 
 /**
    Compare two transformation iterators

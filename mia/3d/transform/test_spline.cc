@@ -36,85 +36,61 @@ using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
-struct PathInitializer {
-	PathInitializer() {
-		list< bfs::path> kernelsearchpath;
-		kernelsearchpath.push_back(bfs::path("../../core/spacialkernel"));
-		C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
-	}
-};
-
-PathInitializer lala;
-
 struct TransformSplineFixture {
 	TransformSplineFixture():
-		size(33,65,20),
+		size(40,65,25),
 		kernel(new CBSplineKernel3()),
 		range(50, 80, 30),
 		r(range.x - 1, range.y - 1, range.z - 1),
-		stransf(range, kernel),
-		scale(2 * M_PI / r.x, 2 * M_PI / r.y, 2 * M_PI / r.z )
+		stransf(range, kernel), 
+		center(range.x/2.0, range.y/2.0, range.z/2.0), 
+		fscale(range.x * range.y * range.z)
+
 	{
 		coeff_shift = kernel->get_active_halfrange() - 1; 
-		C3DFVector ivscale(float(range.x - 1) / (size.x - 1),
-				   float(range.y - 1) / (size.y - 1),
-				   float(range.z - 1) / (size.z - 1));
 		
-		size.x += 2*coeff_shift; 
-		size.y += 2*coeff_shift; 
-		size.z += 2*coeff_shift; 
+		ivscale = C3DFVector (float(range.x - 1) / (size.x - 1),
+				      float(range.y - 1) / (size.y - 1),
+				      float(range.z - 1) / (size.z - 1));
+		cvdebug() << "ivscale= " << ivscale << "\n"; 
+		
+		size.x += 2*coeff_shift;
+		size.y += 2*coeff_shift;
+		size.z += 2*coeff_shift;
+		
+
+		cs = C3DFVector(coeff_shift, coeff_shift, coeff_shift); 
+
 		C3DDVectorfield field(size); 
 
 		C3DDVectorfield::iterator i = field.begin();
 		for (size_t z = 0; z < size.z; ++z)
 			for (size_t y = 0; y < size.y; ++y)
 				for (size_t x = 0; x < size.x; ++x, ++i) {
-					float sx = ivscale.x * (float(x) - coeff_shift);
-					float sy = ivscale.y * (float(y) - coeff_shift);
-					float sz = ivscale.z * (float(z) - coeff_shift);
-					*i = C3DFVector( fx(sx, sy, sz), 
-							 fy(sx, sy, sz), 
-							 fz(sx, sy, sz));
+					C3DFVector X(x,y,z); 
+					C3DFVector s(ivscale * (X - cs)); 
+					*i = C3DFVector( fx(s), fy(s), fz(s));
 				}
-		
-		// now filter 
-		C3DDVectorfield help1(size);
-		vector<C3DDVector> buffer(size.x); 
-		for(size_t z = 0; z < size.z; ++z)
-			for(size_t y = 0; y < size.y; ++y) {
-				field.get_data_line_x(y, z, buffer); 
-				kernel->filter_line(buffer); 
-				help1.put_data_line_x(y, z, buffer); 
-			}
 
-		buffer.resize(size.y); 
-		for(size_t z = 0; z < size.z; ++z)
-			for(size_t x = 0; x < size.x; ++x) {
-				help1.get_data_line_y(x, z, buffer); 
-				kernel->filter_line(buffer); 
-				field.put_data_line_y(x, z, buffer); 
-			}
-		buffer.resize(size.z); 
-		for(size_t y = 0; y < size.y; ++y)
-			for(size_t x = 0; x < size.x; ++x) {
-				field.get_data_line_z(x, y, buffer); 
-				kernel->filter_line(buffer); 
-				help1.put_data_line_z(x, y, buffer); 
-			}
-		
-		
-		stransf.set_coefficients(help1); 
+
+		stransf.set_coefficients_and_prefilter(field); 
 		stransf.reinit();
 	}
 	C3DBounds size;
-
+	C3DFVector ivscale; 
+	C3DFVector cs; 
 	PBSplineKernel kernel;
 
 	C3DBounds range;
 	C3DBounds r;
 	C3DSplineTransformation  stransf;
 	int coeff_shift; 
+	C3DFVector center; 
+	float fscale; 
 protected:
+
+	C3DFVector f(const C3DFVector& x)const;
+
 	float fx(float x, float y, float z)const ;
 	float fy(float x, float y, float z)const ;
 	float fz(float x, float y, float z)const ;
@@ -124,121 +100,115 @@ protected:
 	float fz(const C3DFVector& x)const;
 
 
-	float dfx_x(float x, float y, float z);
-	float dfy_x(float x, float y, float z);
-	float dfz_x(float x, float y, float z);
-	float dfx_y(float x, float y, float z);
-	float dfy_y(float x, float y, float z);
-	float dfz_y(float x, float y, float z);
-	float dfx_z(float x, float y, float z);
-	float dfy_z(float x, float y, float z);
-	float dfz_z(float x, float y, float z);
+	float dfx_x(const C3DFVector& x);
+	float dfy_x(const C3DFVector& x);
+	float dfz_x(const C3DFVector& x);
+	float dfx_y(const C3DFVector& x);
+	float dfy_y(const C3DFVector& x);
+	float dfz_y(const C3DFVector& x);
+	float dfx_z(const C3DFVector& x);
+	float dfy_z(const C3DFVector& x);
+	float dfz_z(const C3DFVector& x);
 private:
 	C3DFVector scale;
 };
 
+C3DFVector TransformSplineFixture::f(const C3DFVector& x)const
+{
+	return C3DFVector(fx(x), fy(x), fz(x)); 
+}
 
 float TransformSplineFixture::fx(const C3DFVector& v)const
 {
-	return fx(v.x, v.y, v.z); 
+	C3DFVector X = v - center; 
+	return 	exp ( - (6 * X.x * X.x + 5 * X.y * X.y + 4 * X.z*X.z) / fscale ) ;
 }
 
 float TransformSplineFixture::fy(const C3DFVector& v)const
 {
-	return fy(v.x, v.y, v.z); 
+	C3DFVector X = v - center; 
+	return 	exp ( - (3 * X.x * X.x + 7 * X.y * X.y + 2 * X.z*X.z) / fscale ) ;
+
 }
 
 float TransformSplineFixture::fz(const C3DFVector& v)const
 {
-	return fy(v.x, v.y, v.z); 
+	C3DFVector X = v - center; 
+	return 	exp ( - (2 * X.x * X.x + 4 * X.y * X.y + 5 * X.z*X.z) / fscale ) ;
+
 }
-
-
 
 float TransformSplineFixture::fx(float x, float y, float z)const
 {
-
-	return 	20 * (1.0 - cosf(    scale.x * x)) * 
-		(1.0 - cosf(2 * scale.y * y)) * 
-		(1.0 - cosf(3 * scale.z * z)); 
+	return fx(C3DFVector(x,y,z)); 
 }
 
 float TransformSplineFixture::fy(float x, float y, float z)const
 {
-	return 	10 * (1.0 - cosf(2 * scale.x * x)) * 
-		(1.0 - cosf(    scale.y * y)) * 
-		(1.0 - cosf(    scale.z * z)); 
+	return fy(C3DFVector(x,y,z)); 
 }
 
 float TransformSplineFixture::fz(float x, float y, float z)const
 {
-	return 	30 * (1.0 - cosf(2 * scale.x * x)) * 
-		(1.0 - cosf(3 * scale.y * y)) * 
-		(1.0 - cosf(    scale.z * z)); 
+	return fz(C3DFVector(x,y,z)); 
 }
 
-float TransformSplineFixture::dfx_x(float x, float y, float z)
+
+float TransformSplineFixture::dfx_x(const C3DFVector& v)
 {
-	x *= scale.x;
-	return 20 * scale.x * sinf(x) * ( 1.0 - cosf(2 * scale.y * y))  * (1.0 - cosf(3 * scale.z * z)); 
+	C3DFVector X = v - center; 
+	return - (12 * X.x ) / fscale  * fx(v);
 }
 
-float TransformSplineFixture::dfx_y(float x, float y, float z)
+float TransformSplineFixture::dfx_y(const C3DFVector& v)
 {
+	C3DFVector X = v - center; 
+	return - (10 * X.y ) / fscale  * fx(v);
 
-	return 	20 * (1.0 - cosf(scale.x * x)) * 
-		sinf(2 * scale.y * y) * 2* scale.y *  
-		(1.0 - cosf(3 * scale.z * z)); 
 }
 
-float TransformSplineFixture::dfx_z(float x, float y, float z)
+float TransformSplineFixture::dfx_z(const C3DFVector& v)
 {
-
-	return 	20 * (1.0 - cosf(scale.x * x)) * 
-		(1.0 - cosf(2 * scale.y * y)) * 
-		sinf(3 * scale.z * z) *3 * scale.z; 
+ 	C3DFVector X = v - center; 
+	return - ( 8 * X.z ) / fscale  * fx(v);
 }
 
-float TransformSplineFixture::dfy_x(float x, float y, float z)
+float TransformSplineFixture::dfy_x(const C3DFVector& v)
 {
-	return 	20 * 2* scale.x * sinf(2 * scale.x * x) * 
-		(1.0 - cosf(    scale.y * y)) * 
-		(1.0 - cosf(    scale.z * z)); 
+	C3DFVector X = v - center; 
+	return - ( 6 * X.x ) / fscale  * fy(v);
 }
 
-float TransformSplineFixture::dfy_y(float x, float y, float z)
+float TransformSplineFixture::dfy_y(const C3DFVector& v)
 {
-	return 	20 * scale.y * (1.0 - cosf(2 * scale.x * x)) 
-		* sinf( scale.y * y) 
-		* (1.0 - cosf( scale.z * z)); 
+	C3DFVector X = v - center; 
+	return - (14 * X.y ) / fscale  * fy(v);
+
 }
 
-float TransformSplineFixture::dfy_z(float x, float y, float z)
+float TransformSplineFixture::dfy_z(const C3DFVector& v)
 {
-	return 	20 * (1.0 - cosf(2 * scale.x * x)) * 
-		(1.0 - cosf(    scale.y * y)) * 
-		scale.z * sinf( scale.z * z) ; 
+	C3DFVector X = v - center; 
+	return - ( 4 * X.z ) / fscale  * fy(v);
+
 }
 
-float TransformSplineFixture::dfz_x(float x, float y, float z)
+float TransformSplineFixture::dfz_x(const C3DFVector& v)
 {
-	return 	20 * sinf(2 * scale.x * x) * 2 * scale.x * 
-		(1.0 - cosf(3 * scale.y * y)) * 
-		(1.0 - cosf(    scale.z * z)); 
+	C3DFVector X = v - center; 
+	return - ( 4 * X.x ) / fscale  * fz(v);
 }
 
-float TransformSplineFixture::dfz_y(float x, float y, float z)
+float TransformSplineFixture::dfz_y(const C3DFVector& v)
 {
-	return 	20 * (1.0 - cosf(2 * scale.x * x)) * 
-		 3 * scale.y * sinf(3 * scale.y * y) * 
-		(1.0 - cosf(    scale.z * z)); 
+	C3DFVector X = v - center; 
+	return - ( 8 * X.y ) / fscale  * fz(v);
 }
 
-float TransformSplineFixture::dfz_z(float x, float y, float z)
+float TransformSplineFixture::dfz_z(const C3DFVector& v)
 {
-	return 	20 * (1.0 - cosf(2 * scale.x * x)) * 
-		(1.0 - cosf(3 * scale.y * y)) * 
-		sinf( scale.z * z) * scale.z; 
+	C3DFVector X = v - center; 
+	return - (10 * X.z ) / fscale  * fz(v);
 }
 
 
@@ -246,16 +216,19 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 {
 	BOOST_CHECK_EQUAL(stransf.degrees_of_freedom(), size.x*size.y*size.z * 3);
 
-	C3DFVector testx(34.4, 74.8, 21.6); 
+	C3DFVector testx(34.4, 50.8, 21.6); 
 
 	BOOST_CHECK_EQUAL(stransf.get_size(), range);
 
-	C3DFVector scaledx = stransf.scale(testx);
-	BOOST_CHECK_CLOSE(scaledx.x, testx.x * (size.x-2*coeff_shift - 1) / (range.x-1)+coeff_shift, 0.1);
-	BOOST_CHECK_CLOSE(scaledx.y, testx.y * (size.y-2*coeff_shift - 1) / (range.y-1)+coeff_shift, 0.1);
-	BOOST_CHECK_CLOSE(scaledx.z, testx.z * (size.z-2*coeff_shift - 1) / (range.z-1)+coeff_shift, 0.1);
+	BOOST_CHECK_EQUAL(C3DFVector(stransf.get_enlarge()), 2 * cs); 
 
+	C3DFVector scaled = stransf.scale(testx); 
+	C3DFVector testscale = testx / ivscale  + cs; 
 
+	BOOST_CHECK_CLOSE(scaled.x, testscale.x, 0.1);
+	BOOST_CHECK_CLOSE(scaled.y, testscale.y, 0.1);
+	BOOST_CHECK_CLOSE(scaled.z, testscale.z, 0.1);
+	
 	C3DFVector result_apply = stransf.apply(testx);
 	BOOST_CHECK_CLOSE(result_apply.x, fx(testx), 0.1);
 	BOOST_CHECK_CLOSE(result_apply.y, fy(testx), 0.1);
@@ -265,34 +238,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 	BOOST_CHECK_CLOSE(result_operator.x, testx.x - fx(testx), 0.1);
 	BOOST_CHECK_CLOSE(result_operator.y, testx.y - fy(testx), 0.1);
 	BOOST_CHECK_CLOSE(result_operator.z, testx.z - fz(testx), 0.1);
-
 }
-
-
-#ifdef REVIEW_THIS_TEST
-BOOST_FIXTURE_TEST_CASE( test_splines_transformation_upscale, TransformSplineFixture )
-{
-	const C3DBounds scale(2.0, 3.0);
-	C3DBounds new_range = scale * range;
-
-	const C3DFVector fscale(float(new_range.x - 1.0) / (range.x - 1.0),
-				float(new_range.y - 1.0) / (range.y - 1.0));
-
-	cvdebug() << fscale << "\n";
-	P3DTransformation  stransf_upscaled = stransf.upscale(new_range);
-
-	stransf_upscaled->reinit();
-
-	C3DFVector test2(34.4, 90.3);
-
-	C3DFVector result2 = stransf_upscaled->apply(fscale * test2);
-
-	BOOST_CHECK_CLOSE(result2.x, scale.x * fx(test2), 0.1);
-	BOOST_CHECK_CLOSE(result2.y, scale.y * fy(test2), 0.1);
-
-}
-#endif
-
 
 BOOST_FIXTURE_TEST_CASE( test_splines_add, TransformSplineFixture )
 {
@@ -307,6 +253,8 @@ BOOST_FIXTURE_TEST_CASE( test_splines_add, TransformSplineFixture )
 	stransf.add(stransf);
 	stransf.reinit();
 	C3DFVector result = stransf(testx);
+	// don't like the hight tolerance 
+	// should be checked again 
 	BOOST_CHECK_CLOSE(result.x, r2.x, 0.1);
 	BOOST_CHECK_CLOSE(result.y, r2.y, 0.1);
 	BOOST_CHECK_CLOSE(result.z, r2.z, 0.1);
@@ -321,10 +269,22 @@ BOOST_FIXTURE_TEST_CASE( test_splinestransform_prefix_iterator, TransformSplineF
 	for (size_t z = 0; z < range.z; ++z)
 		for (size_t y = 0; y < range.y; ++y)
 			for (size_t x = 0; x < range.x; ++x, ++i) {
-				cvdebug() << "x=" << x << " y=" << y << ", " << range << "\n"; 
-				BOOST_CHECK_CLOSE(1.0 + x - fx(x,y,z), 1.0 + (*i).x, 0.8);
-				BOOST_CHECK_CLOSE(1.0 + y - fy(x,y,z), 1.0 + (*i).y, 0.8);
-				BOOST_CHECK_CLOSE(1.0 + z - fz(x,y,z), 1.0 + (*i).z, 0.8);
+				C3DBounds X(x,y,z); 
+				cvdebug() << X  << *i << "\n"; 
+				if (fabs(x - fx(x,y,z)) < 1e-8) 
+					BOOST_CHECK_CLOSE(1.0 + x - fx(x,y,z), 1.0 + i->x, .41);
+				else
+					BOOST_CHECK_CLOSE(x - fx(x,y,z), i->x, .41);
+
+				if (fabs(y - fy(x,y,z)) < 1e-8) 
+					BOOST_CHECK_CLOSE(1.0 + y - fy(x,y,z), 1.0 + i->y, 0.21);
+				else 
+					BOOST_CHECK_CLOSE(y - fy(x,y,z), i->y, 0.21);
+				
+				if (fabs(z - fz(x,y,z)) < 1e-8) 
+					BOOST_CHECK_CLOSE(1.0 + z - fz(x,y,z), 1.0 + i->z, 0.3);
+				else 
+					BOOST_CHECK_CLOSE(z - fz(x,y,z), i->z, .8);
 			}
 }
 
@@ -349,12 +309,22 @@ BOOST_FIXTURE_TEST_CASE( test_splinestransform_postfix_iterator, TransformSpline
 	auto i = stransf.begin();
 	for (size_t z = 0; z < range.z; ++z)
 		for (size_t y = 0; y < range.y; ++y)
-			for (size_t x = 0; x < range.x; ++x) {
-				C3DFVector test = *i++;
-				cvdebug() << "splinestransform_postfix_iterator" << test << "\n"; 
-				BOOST_CHECK_CLOSE(1.0 + x - fx(x,y,z), 1.0 + test.x, 0.8);
-				BOOST_CHECK_CLOSE(1.0 + y - fy(x,y,z), 1.0 + test.y, 0.8);
-				BOOST_CHECK_CLOSE(1.0 + z - fz(x,y,z), 1.0 + test.z, 0.8);
+			for (size_t x = 0; x < range.x; ++x, i++) {
+				cvdebug() << "splinestransform_postfix_iterator" << *i << "\n"; 
+				if (fabs(x - fx(x,y,z)) < 1e-8) 
+					BOOST_CHECK_CLOSE(1.0 + x - fx(x,y,z), 1.0 + i->x, 1.0);
+				else
+					BOOST_CHECK_CLOSE(x - fx(x,y,z), i->x, 1.0);
+
+				if (fabs(y - fy(x,y,z)) < 1e-8) 
+					BOOST_CHECK_CLOSE(1.0 + y - fy(x,y,z), 1.0 + i->y, 0.3);
+				else 
+					BOOST_CHECK_CLOSE(y - fy(x,y,z), i->y, 0.3);
+				
+				if (fabs(z - fz(x,y,z)) < 1e-8) 
+					BOOST_CHECK_CLOSE(1.0 + z - fz(x,y,z), 1.0 + i->z, 0.4);
+				else 
+					BOOST_CHECK_CLOSE(z - fz(x,y,z), i->z, 1.0);
 			}
 }
 
@@ -402,10 +372,10 @@ BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 BOOST_FIXTURE_TEST_CASE( test_splines_translate, TransformSplineFixture )
 {
 	C3DFVectorfield gradient(range); 
-	double scale_x = double(range.x) / (size.x); 
-	double scale_y = double(range.y) / (size.y); 
-	double scale_z = double(range.z) / (size.z); 
-	double scale = scale_x * scale_y * scale_z; 
+	double scale_x = (size.x - 1 - 2*coeff_shift) / double(range.x-1);
+	double scale_y = (size.y - 1 - 2*coeff_shift) / double(range.y-1);
+	double scale_z = (size.z - 1 - 2*coeff_shift) / double(range.z-1);
+	double scale = (scale_x * scale_y * scale_z);
 	
 	cvdebug() << range << size << ", scale=" << scale << "\n"; 
 
@@ -415,18 +385,21 @@ BOOST_FIXTURE_TEST_CASE( test_splines_translate, TransformSplineFixture )
 	stransf.translate(gradient, force);
 
 	// the real test uses finite differences and is implemented elsewhere
-	auto  i = force.begin();
-	for (size_t z = 0; z < stransf.get_coeff_size().z; ++z)
-		for (size_t y = 0; y < stransf.get_coeff_size().y; ++y)
-			for (size_t x = 0; x < stransf.get_coeff_size().x; ++x, i+=3) {
-				if (y > 3 && y < stransf.get_coeff_size().y - 3 && 
-				    x > 3 && x < stransf.get_coeff_size().x - 3 && 
-				    z > 3 && z < stransf.get_coeff_size().z - 3) {
-					BOOST_CHECK_CLOSE( i[0], -1.0f * scale, 1.5);
-					BOOST_CHECK_CLOSE( i[1], -2.0f * scale, 1.5);
-					BOOST_CHECK_CLOSE( i[2], -3.0f * scale, 1.5);
+	// the tolerance here is way to high ... 
+	auto i = force.begin(); 
+	for (size_t z = 0; z < stransf.get_coeff_size().z; ++z) {
+		for (size_t y = 0; y < stransf.get_coeff_size().y; ++y) {
+			for (size_t x = 0; x < stransf.get_coeff_size().x ; ++x, i+=3) {
+				if (y > 2 && y < stransf.get_coeff_size().y - 2 && 
+				    x > 2 && x < stransf.get_coeff_size().x - 2 && 
+				    z > 2 && z < stransf.get_coeff_size().z - 2) {
+					BOOST_CHECK_CLOSE( i[0] * scale, -1.0f, 1.0);
+					BOOST_CHECK_CLOSE( i[1] * scale, -2.0f, 1.0);
+					BOOST_CHECK_CLOSE( i[2] * scale, -3.0f, 1.0);
 				}
 			}
+		}
+	}
 }
 
 BOOST_FIXTURE_TEST_CASE( test_splines_clone, TransformSplineFixture )
@@ -462,7 +435,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_update, TransformSplineFixture )
 	stransf.update(2.0, update);
 	stransf.reinit();
 
-	C3DFVector testx(33.4, 82.4, 21.9);
+	C3DFVector testx(33.4, 20.4, 21.9);
 	C3DFVector result = stransf.apply(testx);
 
 	BOOST_CHECK_CLOSE(result.x, fx(testx) + 2.0f, 0.1);
@@ -470,21 +443,35 @@ BOOST_FIXTURE_TEST_CASE( test_splines_update, TransformSplineFixture )
 	BOOST_CHECK_CLOSE(result.z, fz(testx) + 6.0f, 0.1);
 }
 
-
 BOOST_FIXTURE_TEST_CASE( test_splines_gridpoint_derivative, TransformSplineFixture )
 {
-	C3DFVector x(33,80,60);
-	C3DFMatrix dv =  stransf.derivative_at(33,80,60);
 
-	BOOST_CHECK_CLOSE(dv.x.x, 1.0f - dfx_x(x.x, x.y, x.z), 0.2);
-	BOOST_CHECK_CLOSE(dv.y.x,      - dfx_y(x.x, x.y, x.z), 0.2);
-	BOOST_CHECK_CLOSE(dv.z.x,      - dfx_z(x.x, x.y, x.z), 0.2);
-	BOOST_CHECK_CLOSE(dv.x.y,      - dfy_x(x.x, x.y, x.z), 0.2);
-	BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(x.x, x.y, x.z), 0.2);
-	BOOST_CHECK_CLOSE(dv.z.y,      - dfy_z(x.x, x.y, x.z), 0.2);
-	BOOST_CHECK_CLOSE(dv.x.z,      - dfz_x(x.x, x.y, x.z), 0.2);
-	BOOST_CHECK_CLOSE(dv.y.z,      - dfz_y(x.x, x.y, x.z), 0.2);
-	BOOST_CHECK_CLOSE(dv.z.z, 1.0f - dfz_z(x.x, x.y, x.z), 0.2);
+//		range(50, 80, 30),
+	C3DFVector x(33,29,10);
+	C3DFMatrix dv =  stransf.derivative_at(x);
+	
+
+	BOOST_CHECK_CLOSE(dv.x.x, 1.0f - dfx_x(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.y.x,      - dfx_y(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.z.x,      - dfx_z(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.x.y,      - dfy_x(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.z.y,      - dfy_z(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.x.z,      - dfz_x(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.y.z,      - dfz_y(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.z.z, 1.0f - dfz_z(x), 0.2);
+
+}
+
+BOOST_FIXTURE_TEST_CASE( test_splines_gridpoint_derivative_out_of_range, TransformSplineFixture )
+{
+	BOOST_CHECK_EQUAL(stransf.derivative_at(C3DFVector(-0.1, 1, 1)), C3DFMatrix::_1);
+	BOOST_CHECK_EQUAL(stransf.derivative_at(C3DFVector(1, -0.1, 1)), C3DFMatrix::_1);
+	BOOST_CHECK_EQUAL(stransf.derivative_at(C3DFVector(1, 1, -0.1)), C3DFMatrix::_1);
+
+	BOOST_CHECK_EQUAL(stransf.derivative_at(C3DFVector(range.x, 1, 1)), C3DFMatrix::_1);
+	BOOST_CHECK_EQUAL(stransf.derivative_at(C3DFVector(1, range.y, 1)), C3DFMatrix::_1);
+	BOOST_CHECK_EQUAL(stransf.derivative_at(C3DFVector(1, 1, range.z)), C3DFMatrix::_1);
 
 }
 
@@ -568,9 +555,9 @@ BOOST_AUTO_TEST_CASE( test_spline_c_rate_create )
 	C3DSplineTransformation  stransf(size, kernel, c_rate);
 
 	C3DBounds gridsize = stransf.get_coeff_size();
-	BOOST_CHECK_EQUAL(gridsize.x, 10u);
-	BOOST_CHECK_EQUAL(gridsize.y, 12u);
-	BOOST_CHECK_EQUAL(gridsize.z,  7u);
+	BOOST_CHECK_EQUAL(gridsize.x, 9u);
+	BOOST_CHECK_EQUAL(gridsize.y, 11u);
+	BOOST_CHECK_EQUAL(gridsize.z,  6u);
 
 	C3DSplineTransformation::const_iterator i = stransf.begin();
 	for(size_t z = 0; z < size.z; ++z)
@@ -584,52 +571,77 @@ BOOST_AUTO_TEST_CASE( test_spline_c_rate_create )
 
 BOOST_FIXTURE_TEST_CASE( test_splines_upscale, TransformSplineFixture )
 {
-	C3DFVector upscale(2, 3, 4);
-	C3DBounds new_range(range.x * upscale.x, 
-			    range.y * upscale.y, 
-			    range.z * upscale.z); 
+	C3DBounds new_range(2 * range - C3DBounds::_1);
 
-	P3DTransformation upscaled(stransf.upscale(new_range)); 
-	auto i = upscaled->begin();
-	for (size_t z = 0; z < new_range.z; ++z)
-		for (size_t y = 0; y < new_range.y; ++y)
-			for (size_t x = 0; x < new_range.x; ++x, ++i) {
-				BOOST_CHECK_CLOSE(1.0 + x - fx(x/upscale.x,y/upscale.y, z/upscale.z)*upscale.x, 
-						  1.0 + i->x, 0.5);
-				BOOST_CHECK_CLOSE(1.0 + y - fy(x/upscale.x,y/upscale.y, z/upscale.z)*upscale.y, 
-						  1.0 + i->y, 0.5);
-				BOOST_CHECK_CLOSE(1.0 + z - fz(x/upscale.x,y/upscale.y, z/upscale.z)*upscale.z, 
-						  1.0 + i->z, 0.5);
+	auto upscaled = stransf.upscale(new_range); 
+	BOOST_REQUIRE(upscaled); 
+
+	C3DFVector rs(C3DFVector(new_range - C3DBounds::_1)/C3DFVector(range - C3DBounds::_1));
+
+	auto i = upscaled->begin(); 
+	for (size_t z = 0; z < new_range.z; ++z) {
+		for (size_t y = 0; y < new_range.y; ++y) {
+			for (size_t x = 0; x < new_range.x ; ++x, ++i) {
+				cvdebug() << x << ", " << y << "\n"; 
+				C3DFVector X(x,y,z); 
+				C3DFVector ff = f(X/rs) * rs; 
+				C3DFVector res = X - *i; 
+				
+				if (std::fabs(ff.x > 1e-8) || std::fabs(res.x) > 1e-8) 
+					BOOST_CHECK_CLOSE(res.x, ff.x, 2);
+				
+				if (std::fabs(ff.y > 1e-8)|| std::fabs(res.y) > 1e-8) 
+					BOOST_CHECK_CLOSE(res.y, ff.y, 2);
+				
+				if (std::fabs(ff.z > 1e-8)|| std::fabs(res.z) > 1e-8) 
+					BOOST_CHECK_CLOSE(res.z, ff.z, 2);
+
 			}
+		}
+	}
+
 }
 
 BOOST_FIXTURE_TEST_CASE( test_splines_refine, TransformSplineFixture )
 {
-	BOOST_CHECK(!stransf.refine()); 
-
-	C3DFVector upscale(2, 3, 2);
-	C3DBounds new_range(range.x * upscale.x, 
-			    range.y * upscale.y,
-			    range.z * upscale.z);
+	size = C3DBounds(17, 33, 23); 
 	
+	C3DFVector ivscale = (C3DFVector(range) - C3DFVector::_1) / 
+		(C3DFVector(size) - C3DFVector::_1); 
 
-	P3DTransformation upscaled(stransf.upscale(new_range)); 
-
-	BOOST_CHECK(upscaled->refine()); 
-	C3DSplineTransformation::const_iterator i = upscaled->begin();
 	
-	for (size_t z = 0; z < new_range.z; ++z)
-		for (size_t y = 0; y < new_range.y; ++y)
-			for (size_t x = 0; x < new_range.x; ++x, ++i) {
-				BOOST_CHECK_CLOSE(1.0 + x - fx(x/upscale.x,y/upscale.y,z/upscale.z)*upscale.x, 
-						  1.0 + i->x, 0.5);
-				BOOST_CHECK_CLOSE(1.0 + y - fy(x/upscale.x,y/upscale.y,z/upscale.z)*upscale.y, 
-						  1.0 + i->y, 0.5);
-				BOOST_CHECK_CLOSE(1.0 + y - fy(x/upscale.x,y/upscale.y,z/upscale.z)*upscale.z, 
-						  1.0 + i->z, 0.5);
+	size.x += 2*coeff_shift; 
+	size.y += 2*coeff_shift; 
+	size.z += 2*coeff_shift; 
+
+	C3DDVectorfield coefs(size); 
+	
+	auto i = coefs.begin();
+	C3DFVector cshift(coeff_shift, coeff_shift, coeff_shift); 
+	for (size_t z = 0; z < size.z; ++z)
+		for (size_t y = 0; y < size.y; ++y)
+			for (size_t x = 0; x < size.x; ++x, ++i)
+				*i = f(ivscale * (C3DFVector(x,y,z) - cshift));
+	
+	stransf.set_coefficients(coefs);
+
+	BOOST_CHECK(stransf.refine());
+	auto k = stransf.begin(); 
+	for (size_t z = 0; z < range.z; ++z) {
+		for (size_t y = 0; y < range.y; ++y) {
+			for (size_t x = 0; x < range.x; ++x, ++k) {
+				
+				C3DFVector X(x,y,z); 
+				C3DFVector ff(f(X));
+				cvdebug() << X  << " have " << (X - *k) << " exp " << ff <<"\n"; 
+				
+				BOOST_CHECK_CLOSE(ff.x, x -  k->x, 0.2);
+				BOOST_CHECK_CLOSE(ff.y, y -  k->y, 0.2);
+				BOOST_CHECK_CLOSE(ff.z, z -  k->z, 0.2);
 			}
+		}
+	}
 }
-
 
 BOOST_AUTO_TEST_CASE( test_splines_transform )
 {
@@ -791,39 +803,81 @@ BOOST_AUTO_TEST_CASE (test_spline_set_parameter)
 }
 
 
+BOOST_AUTO_TEST_CASE (test_3d_cost_mock ) 
+{
+	C3DBounds size(2,3,4);
+	Cost3DMock cost(size); 
+	
+	C3DFVector x(1.5,2.3,3.7); 
+
+	C3DFVector test_grad = cost.src_grad(x); 
+	
+	C3DFVector fd_grad; 
+	const float delta = 0.001; 
+
+	fd_grad.x = (cost.src_value(x + C3DFVector(delta, 0, 0)) - 
+		     cost.src_value(x - C3DFVector(delta, 0, 0))) / (2 * delta); 
+
+	fd_grad.y = (cost.src_value(x + C3DFVector(0.0, delta, 0.0)) - 
+		     cost.src_value(x - C3DFVector(0.0, delta, 0.0))) / (2 * delta); 
+	
+	fd_grad.z = (cost.src_value(x + C3DFVector(0.0, 0.0, delta)) - 
+		     cost.src_value(x - C3DFVector(0.0, 0.0, delta))) / (2 * delta); 
+
+	
+	BOOST_CHECK_CLOSE(test_grad.x, fd_grad.x, 0.1); 
+	BOOST_CHECK_CLOSE(test_grad.y, fd_grad.y, 0.1); 
+	BOOST_CHECK_CLOSE(test_grad.z, fd_grad.z, 0.1); 
+	
+
+}
+
 BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture) 
 {
 	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3)); 
-	C3DSplineTransformation t(size, kernel, C3DFVector(5.0, 5.0, 5.0));
-	
+	C3DSplineTransformation t(size, kernel);
+	C3DDVectorfield coefs(C3DBounds(12,12,12)); 
+	t.set_coefficients(coefs); 
+	t.reinit(); 
 
 	auto params = t.get_parameters();
 	gsl::DoubleVector trgrad(params.size()); 
 	
 	t.translate(gradient,  trgrad); 
-	double delta = 0.1; 
+	double delta = 0.01; 
 
 	auto itrg =  trgrad.begin(); 
-	
-	for ( auto iparam = params.begin(); iparam != params.end(); ++itrg, ++iparam) {
-		*iparam += delta; 
-		t.set_parameters(params);
-		double cost_plus = cost.value(t);
-		*iparam -= 2*delta; 
-		t.set_parameters(params);
-		double cost_minus = cost.value(t);
-		*iparam += delta; 
-		double test_val = (cost_plus - cost_minus)/ (2*delta); 
-		if (fabs(*itrg) > 1e-09 || fabs(test_val) > 1e-09) 
-			BOOST_CHECK_CLOSE(*itrg, test_val, 5); 
-		
-	}
+	auto iparam = params.begin();
+	for (size_t z = 0; z < t.get_coeff_size().z; ++z)
+		for(size_t y = 0; y < t.get_coeff_size().y; ++y)
+			for(size_t x = 0; x < t.get_coeff_size().x; ++x)
+				for (size_t i = 0; i < 3; ++i, ++itrg, ++iparam) {
+					*iparam += delta; 
+					t.set_parameters(params);
+					double cost_plus = cost.value(t);
+					*iparam -= 2*delta; 
+					t.set_parameters(params);
+					double cost_minus = cost.value(t);
+					*iparam += delta; 
+					double test_val = (cost_plus - cost_minus)/ (2*delta); 
+					if (fabs(*itrg) > 1e-04 || fabs(test_val) > 1e-04) 
+						BOOST_CHECK_CLOSE(*itrg, test_val, 1); 
+					else if (fabs(*itrg) > 1e-05 || fabs(test_val) > 1e-05) 
+						BOOST_CHECK_CLOSE(*itrg, test_val, 7); 
+					// else both close to zero, ignore 
+
+					cvdebug() << z << ", " << y << ", " << x << ", " << i <<": got " 
+						  << *itrg << " expect " << test_val << " Q: " 
+						  << *itrg / test_val 
+						  << "\n"; 
+						
+				}
 }
 
 
 
 TransformGradientFixture::TransformGradientFixture():
-	size(60,80,70), 
+	size(10,10,10), 
 	cost(size),
 	kernel(new CBSplineKernel3()), 
 	x(11,16,22), 
@@ -831,7 +885,6 @@ TransformGradientFixture::TransformGradientFixture():
 
 {
 	cost.value_and_gradient(gradient);
-	
 }
 
 void TransformGradientFixture::run_test(C3DTransformation& t, double tol)const
@@ -840,7 +893,7 @@ void TransformGradientFixture::run_test(C3DTransformation& t, double tol)const
 	gsl::DoubleVector trgrad(params.size()); 
 	
 	t.translate(gradient,  trgrad); 
-	double delta = 0.0001; 
+	double delta = 0.01; 
 
 	int n_close_zero = 0; 
 	int n_zero = 0; 
@@ -879,6 +932,7 @@ Cost3DMock::Cost3DMock(const C3DBounds& size):
 		  _M_center.y * _M_center.y + 
 		  _M_center.z * _M_center.z))
 {
+	_M_r *= _M_r * _M_r; 
 }
 	
 double Cost3DMock::value(const C3DTransformation& t) const
@@ -926,7 +980,7 @@ C3DFVector Cost3DMock::src_grad(const C3DFVector& x)const
 	return - 2.0f / _M_r * (x-_M_center) * src_value(x); 
 }
 
-double Cost3DMock::ref_value(const C3DFVector& x)const 
+double Cost3DMock::ref_value(const C3DFVector& x) const 
 {
 	const C3DFVector p = x - _M_center - C3DFVector(2.0,2.0, 2.0); 
 	return exp( - (p.x * p.x + p.y * p.y  + p.z * p.z) / _M_r); 

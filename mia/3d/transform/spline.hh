@@ -40,6 +40,7 @@ public:
 	C3DSplineTransformation(const C3DBounds& range, PBSplineKernel kernel, const C3DFVector& c_rate);
 
 	void set_coefficients(const C3DDVectorfield& field);
+	void set_coefficients_and_prefilter(const C3DDVectorfield& field);
 	void reinit()const;
 	C3DFVector apply( const C3DFVector& x) const;
 	C3DFVector scale( const C3DFVector& x) const;
@@ -94,6 +95,8 @@ public:
 
 	C3DFVector on_grid(const mia::C3DBounds& x) const; 
 
+	C3DBounds get_enlarge() const; 
+
 private:
 	
 	C3DFVector sum(const C3DBounds& start, 
@@ -114,19 +117,19 @@ private:
 	C3DFVector _M_target_c_rate;
 	C3DDVectorfield _M_coefficients;
 	PBSplineKernel _M_kernel; 
-	int _M_shift; 
-	int _M_enlarge; 
+	C3DBounds _M_shift; 
+	C3DBounds _M_enlarge; 
 	mutable C3DFVector _M_scale;
 	mutable C3DFVector _M_inv_scale;
-	mutable bool _M_interpolator_valid;
-	//mutable std::shared_ptr<T3DConvoluteInterpolator<C3DFVector> >  _M_interpolator;
+	mutable bool _M_scales_valid;
+
 	mutable std::shared_ptr<C3DPPDivcurlMatrix > _M_divcurl_matrix; 
 	mutable std::vector<std::vector<double> > _M_x_weights; 
-	mutable std::vector<std::vector<int> > _M_x_indices; 
+	mutable std::vector<int> _M_x_indices; 
 	mutable std::vector<std::vector<double> > _M_y_weights; 
-	mutable std::vector<std::vector<int> > _M_y_indices; 
+	mutable std::vector<int> _M_y_indices; 
 	mutable std::vector<std::vector<double> > _M_z_weights; 
-	mutable std::vector<std::vector<int> > _M_z_indices; 
+	mutable std::vector<int> _M_z_indices; 
 	mutable CSplineDerivativeRow  _M_mx; 
 	mutable CSplineDerivativeRow  _M_my; 
 	mutable CSplineDerivativeRow  _M_mz; 

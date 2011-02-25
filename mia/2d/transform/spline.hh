@@ -40,6 +40,7 @@ public:
 	C2DSplineTransformation(const C2DBounds& range, PBSplineKernel kernel, const C2DFVector& c_rate);
 
 	void set_coefficients(const C2DFVectorfield& field);
+	void set_coefficients_and_prefilter(const C2DFVectorfield& field);
 	void reinit()const;
 	C2DFVector apply( const C2DFVector& x) const;
 	C2DFVector scale( const C2DFVector& x) const;
@@ -93,7 +94,7 @@ public:
 	C2DFVector on_grid(const mia::C2DBounds& x) const; 
 
 private:
-
+	C2DFMatrix derivative_at(const C2DFVector& x) const; 
 	typedef std::vector<std::pair<int, std::vector<float> > > CSplineDerivativeRow; 
 	CSplineDerivativeRow get_derivative_row(size_t nin, size_t nout, double scale) const; 
 
@@ -101,7 +102,7 @@ private:
 
 	void init_grid()const; 
 	C2DFVector interpolate(const C2DFVector& x) const; 
-	C2DFMatrix derivative_at(const C2DFVector& x) const; 
+
 	void run_downscaler(C1DScalarFixed& scaler, vector<double>& out_buffer)const; 
 	virtual C2DTransformation *do_clone() const;
 	C2DBounds _M_range;
@@ -116,9 +117,9 @@ private:
 	//mutable std::shared_ptr<T2DConvoluteInterpolator<C2DFVector> >  _M_interpolator;
 	mutable std::shared_ptr<C2DPPDivcurlMatrix > _M_divcurl_matrix; 
 	mutable std::vector<std::vector<double> > _M_x_weights; 
-	mutable std::vector<std::vector<int> > _M_x_indices; 
+	mutable std::vector<int> _M_x_indices; 
 	mutable std::vector<std::vector<double> > _M_y_weights; 
-	mutable std::vector<std::vector<int> > _M_y_indices; 
+	mutable std::vector<int> _M_y_indices; 
 	mutable CSplineDerivativeRow  _M_mx; 
 	mutable CSplineDerivativeRow  _M_my; 
 	mutable bool _M_grid_valid; 

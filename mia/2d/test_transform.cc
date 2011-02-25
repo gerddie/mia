@@ -28,6 +28,7 @@
 #include <mia/2d/transform.hh>
 #include <mia/internal/autotest.hh>
 #include <mia/2d/transformfactory.hh>
+#include <mia/2d/transformmock.hh>
 #include <mia/2d/transform/spline.hh>
 
 NS_MIA_USE; 
@@ -139,6 +140,32 @@ BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture)
 	run_test(*transform, 16.0); 
 }
 
+BOOST_FIXTURE_TEST_CASE (test_transform_iterator, TransformGradientFixture) 
+{
+	C2DBounds size(3,5); 
+	C2DTransformMock t(size);
+
+	auto it = t.begin(); 
+	for(size_t i = 0; i < size.x * size.y; ++i, ++it);
+	BOOST_CHECK_EQUAL(it, t.end()); 
+
+	auto it2 = t.begin();
+	
+	++it2; 
+	it2 += 5; 
+	
+	auto itt = t.begin(); 
+	for(int i = 0; i < 6; ++i, ++itt); 
+	
+	BOOST_CHECK_EQUAL(it2, itt); 
+
+	BOOST_CHECK_EQUAL(t.begin() + 6, itt); 
+
+	auto it3 = t.begin(); 
+	it3 += size.x * size.y; 
+	
+	BOOST_CHECK_EQUAL(it3, t.end()); 
+}
 
 
 
@@ -166,6 +193,7 @@ void TransformGradientFixture::run_test(C2DTransformation& t, double tol)const
 	double delta = 0.001; 
 
 	int n_close_zero = 0; 
+
 	int n_zero = 0; 
 	for(auto itrg =  trgrad.begin(), 
 		    iparam = params.begin(); itrg != trgrad.end(); ++itrg, ++iparam) {
