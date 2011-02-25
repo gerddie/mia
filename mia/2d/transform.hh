@@ -49,7 +49,7 @@ class EXPORT_2D C2DTransformation: public Transformation<C2DImage, C2DInterpolat
 public:
 	typedef C2DImage Data;
 	typedef C2DBounds Size; 
-	typedef C2DInterpolatorFactory Interpolator;
+	typedef C2DInterpolatorFactory InterpolatorFactory;
 	typedef C2DTransformation type; 
 	typedef std::shared_ptr<C2DTransformation > Pointer; 
 
