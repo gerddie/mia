@@ -28,8 +28,9 @@
 NS_MIA_BEGIN
 
 
-template <int Transformation> {
+template <int Transformation> dim_traits{
 	typedef Transformation::Data Image; 
+	typedef Image::Pointer PImage; 
 	typedef typename TTransformCreator<C2DTransformation>::Pointer PTransformationFactory; 
 	typedef TFullCostList<Transformation> FullCostList; 
 	typedef TImageFilter<Image> Filter; 
