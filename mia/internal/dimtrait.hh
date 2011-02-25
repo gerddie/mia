@@ -1,6 +1,6 @@
-/* -*- mia-c++  -*-
+/* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -20,22 +20,22 @@
  *
  */
 
-#ifndef mia_3d_transformfactory_hh
-#define mia_3d_transformfactory_hh
+#ifndef mia_internal_dimtrait_hh
+#define mia_internal_dimtrait_hh
 
-#include <set>
-#include <mia/3d/transform.hh>
-#include <mia/internal/transformfactory.hh>
+#include <mia/core/iohandler.hh>
 
 NS_MIA_BEGIN
 
-typedef TTransformCreator<C3DTransformation>  C3DTransformCreator; 
-typedef std::shared_ptr<C3DTransformCreator > P3DTransformationFactory;
-typedef TFactory<C3DTransformCreator> C3DTransformCreatorPlugin;
-typedef THandlerSingleton<TFactoryPluginHandler<C3DTransformCreatorPlugin> > C3DTransformCreatorHandler;
-FACTORY_TRAIT(C3DTransformCreatorHandler); 
 
+template <int Transformation> {
+	typedef Transformation::Data Image; 
+	typedef typename TTransformCreator<C2DTransformation>::Pointer PTransformationFactory; 
+	typedef TFullCostList<Transformation> FullCostList; 
+	typedef TImageFilter<Image> Filter; 
+	typedef THandlerSingleton<TFactoryPluginHandler<TImageFilterPlugin<Image> > > FilterPluginHandler;
+	typedef typename Transformation::InterpolatorFactory InterpolatorFactory; 
+}; 
 NS_MIA_END
-
 
 #endif

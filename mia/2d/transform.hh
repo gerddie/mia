@@ -37,14 +37,10 @@
 NS_MIA_BEGIN
 
 
-class C2DTransformation;
-
-
 /**
    This is the generic base class for 2D transformations.
    Most methods are pure abstract and need to be implemented by a "real" transformation. 
 */
-
 class EXPORT_2D C2DTransformation: public Transformation<C2DImage, C2DInterpolatorFactory> {
 public:
 	typedef C2DImage Data;
@@ -139,7 +135,6 @@ public:
 	   \returns a the inverse transform 
 	 */
 	virtual C2DTransformation *invert() const = 0;
-
 
 	/**
 	   \returns the start iterator of the transformation that iterates over the grid 

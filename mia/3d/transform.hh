@@ -48,8 +48,9 @@ class EXPORT_3D C3DTransformation: public Transformation<C3DImage, C3DInterpolat
 public:
 	typedef C3DBounds Size; 
 	typedef C3DImage Data;
-	typedef C3DInterpolatorFactory Interpolator;
+	typedef C3DInterpolatorFactory InterpolatorFactory;
 	typedef C3DTransformation type; 
+	typedef std::shared_ptr<C3DTransformation> Pointer; 
 	static const char *type_descr;
 	static const char *dim_descr;
 protected: 

@@ -33,7 +33,7 @@ TTransformCreator<T>::TTransformCreator()
 template <typename T> 
 typename T::Pointer TTransformCreator<T>::create(const typename T::Size& size) const
 {
-	P2DTransformation result = do_create(size);
+	typename T::Pointer result = do_create(size);
 	result->set_creator_string(get_init_string()); 
 	return result; 
 }
