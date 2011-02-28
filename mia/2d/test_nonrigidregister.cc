@@ -123,13 +123,13 @@ double C2DFullCostMock::do_evaluate(const C2DTransformation& t, gsl::DoubleVecto
 	return result; 
 }
 
+
 double C2DFullCostMock::do_value(const C2DTransformation& t) const
 {
 	double result = 0.0; 
 	auto it = t.begin(); 
 
 	C2DFVector v;
-	double scalex = 
 	for (size_t y = 0; y < size.y; ++y) 
 		for (size_t x = 0; x < size.x; ++x, ++it) {
 
@@ -156,7 +156,7 @@ double C2DFullCostMock::fx(double x, double y)
 
 double C2DFullCostMock::fy(double x, double y)
 {
-	return sin(2 * M_PI * _M_scale.x * x / _real_size.x); 
+	return sin(2 * M_PI * _M_scale.y * y / _real_size.y); 
 }
 
 
