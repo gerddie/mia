@@ -17,6 +17,7 @@ SET(MIA3D_SRC
   model.cc
   multicost.cc
   nfg.cc 
+  nonrigidregister.cc
   orientation.cc
   quaternion.cc
   ppmatrix.cc 
@@ -51,6 +52,7 @@ SET(MIA3D_HEADERS
 	model.hh
 	multicost.hh
 	nfg.hh
+	nonrigidregister.hh
 	orientation.hh
 	ppmatrix.hh
 	quaternion.hh

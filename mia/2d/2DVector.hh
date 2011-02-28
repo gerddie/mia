@@ -142,6 +142,9 @@ public:
 		}
 	}
 
+	void fill(T v) {
+		x = y = v; 
+	}
 	
 	// Comparsion
 	bool operator == (const T2DVector& a)const{

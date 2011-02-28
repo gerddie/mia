@@ -258,7 +258,7 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 			shift--;
 
 		Size BlockSize(1 << shift, 1 << shift);
-		cvinfo() << "Blocksize = " << BlockSize.x << "x"<< BlockSize.y << "\n";
+		cvinfo() << "Blocksize = " << BlockSize  << "\n";
 
 		stringstream downscale_descr;
 		downscale_descr << "downscale:bx=" << BlockSize.x << ",by=" << BlockSize.y;
