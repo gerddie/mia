@@ -44,7 +44,9 @@ using namespace std;
 
 template <typename T> 
 struct TNonrigidRegisterImpl {
-	typedef dim_traits<Transform> this_dim_traits;
+	typedef dim_traits<T> this_dim_traits;
+	typedef typename T::Pointer PTransformation; 
+	typedef typename this_dim_traits::Size Size; 
 	typedef typename this_dim_traits::Image Image; 
 	typedef typename this_dim_traits::PImage PImage; 
 	typedef typename this_dim_traits::PTransformationFactory PTransformationFactory; 
@@ -76,7 +78,8 @@ private:
 template <typename T> 
 class TNonrigRegGradientProblem: public gsl::CFDFMinimizer::Problem {
 public:
-	typedef dim_traits<Transform> this_dim_traits;
+	typedef dim_traits<T> this_dim_traits;
+	typedef typename this_dim_traits::Size Size; 
 	typedef typename this_dim_traits::Image Image; 
 	typedef typename this_dim_traits::PImage PImage; 
 	typedef typename this_dim_traits::PTransformationFactory PTransformationFactory; 
@@ -91,7 +94,7 @@ public:
 
 	void reset_counters(); 
 	
-	typedef shared_ptr<NonrigRegGradientProblem<T> > PNonrigRegGradientProblem; 
+	typedef shared_ptr<TNonrigRegGradientProblem<T> > PNonrigRegGradientProblem; 
 private:
 	double  do_f(const DoubleVector& x);
 	void    do_df(const DoubleVector& x, DoubleVector&  g);
@@ -106,27 +109,32 @@ private:
 	double _M_start_cost; 
 };
 
-TNonrigidRegister<T>::TNonrigidRegister(C2DFullCostList& costs, EMinimizers minimizer,
-					 P2DTransformationFactory transform_creation,
-					 const C2DInterpolatorFactory& ipf, size_t mg_levels):
-	impl(new TNonrigidRegisterImpl( costs, minimizer, transform_creation, ipf, mg_levels))
+template <typename T> 
+TNonrigidRegister<T>::TNonrigidRegister(FullCostList& costs, EMinimizers minimizer,
+					 PTransformationFactory transform_creation,
+					 const InterpolatorFactory& ipf, size_t mg_levels):
+	impl(new TNonrigidRegisterImpl<T>( costs, minimizer, transform_creation, ipf, mg_levels))
 {
 }
 
-
+template <typename T> 
 TNonrigidRegister<T>::~TNonrigidRegister()
 {
 	delete impl;
 }
 
-P2DTransformation TNonrigidRegister<T>::run(P2DImage src, P2DImage ref) const
+template <typename T> 
+typename TNonrigidRegister<T>::PTransformation 
+TNonrigidRegister<T>::run(PImage src, PImage ref) const
 {
 	return impl->run(src, ref);
 }
 
-TNonrigidRegisterImpl<T>::TNonrigidRegisterImpl(C2DFullCostList& costs, EMinimizers minimizer,
-						 P2DTransformationFactory transform_creation, 
-						 const C2DInterpolatorFactory& ipf,size_t mg_levels):
+
+template <typename T> 
+TNonrigidRegisterImpl<T>::TNonrigidRegisterImpl(FullCostList& costs, EMinimizers minimizer,
+						 PTransformationFactory transform_creation, 
+						 const InterpolatorFactory& ipf,size_t mg_levels):
 	_M_costs(costs),
 	_M_minimizer(minimizer),
 	_M_ipf(ipf),
@@ -134,6 +142,7 @@ TNonrigidRegisterImpl<T>::TNonrigidRegisterImpl(C2DFullCostList& costs, EMinimiz
 	_M_mg_levels(mg_levels)
 {
 }
+
 
 static bool minimizer_need_gradient(EMinimizers m)
 {
@@ -157,13 +166,15 @@ UMinimzer gradminimizers[min_undefined] = {
 };
 
 
-void TNonrigidRegisterImpl<T>::apply(C2DTransformation& transf, 
+template <typename T> 
+void TNonrigidRegisterImpl<T>::apply(T& transf, 
 				    const gsl_multimin_fdfminimizer_type *optimizer)const
 {
 	if (!_M_costs.has(property_gradient))
 		throw invalid_argument("requested optimizer needs gradient, but cost functions doesn't prvide one");
 
-	P2DGradientNonrigregProblem gp(new C2DNonrigRegGradientProblem( _M_costs, transf, _M_ipf));
+	std::shared_ptr<TNonrigRegGradientProblem<T> > 
+		gp(new TNonrigRegGradientProblem<T>( _M_costs, transf, _M_ipf));
 	CFDFMinimizer minimizer(gp, optimizer );
 
 	auto x = transf.get_parameters();
@@ -177,15 +188,20 @@ void TNonrigidRegisterImpl<T>::apply(C2DTransformation& transf,
   This filter could be replaced by a histogram equalizing filter 
 */
 
-class FScaleFilterCreator: public TFilter<C2DFilterPluginHandler::ProductPtr> {
+template <typename T> 
+class FScaleFilterCreator: public TFilter<typename TNonrigidRegisterImpl<T>::FilterPluginHandler::ProductPtr> {
+	typedef typename TNonrigidRegisterImpl<T>::FilterPluginHandler FilterPluginHandler;
 public: 
-	template <typename T, typename S>
-	result_type operator ()(const Image& a, const T2DImage<S>& b) const {
+	typedef typename TFilter<typename TNonrigidRegisterImpl<T>::FilterPluginHandler::ProductPtr>::result_type result_type; 
+	template <typename V, typename S>
+	result_type operator ()(const V& a, const S& b) const {
 		double sum = 0.0; 
 		double sum2 = 0.0; 
 		int n = 2 * a.size(); 
 
-		for(auto ia = a.begin(), ib = b.begin(); ia != a.end(); ++ia, ++ib) {
+		auto ia = a.begin(); 
+		
+		for(auto ib = b.begin(); ia != a.end(); ++ia, ++ib) {
 			sum += *ia + *ib; 
 			sum2 += *ia * *ia + *ib * *ib;
 		}
@@ -202,14 +218,15 @@ public:
 		stringstream filter_descr; 
 		filter_descr << "convert:repn=float,map=linear,b=" << -mean << ",a=" << 1.0/sigma; 
 			
-		return C2DFilterPluginHandler::instance().produce(filter_descr.str()); 
+		return FilterPluginHandler::instance().produce(filter_descr.str()); 
 		
 	}; 
 	
 }; 
 
-
-PTransformation TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
+template <typename T> 
+typename TNonrigidRegisterImpl<T>::PTransformation 
+TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 {
 	assert(src);
 	assert(ref);
@@ -222,7 +239,7 @@ PTransformation TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 
 	// convert the images to float ans scale to range [-1,1]
 	// this should be replaced by some kind of general pre-filter plug-in 
-	FScaleFilterCreator fc; 
+	FScaleFilterCreator<T> fc; 
 	auto tofloat_converter = ::mia::filter(fc, *src, *ref); 
 	
 	if (tofloat_converter) {
@@ -245,8 +262,7 @@ PTransformation TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 
 		stringstream downscale_descr;
 		downscale_descr << "downscale:bx=" << BlockSize.x << ",by=" << BlockSize.y;
-		C2DFilterPlugin::ProductPtr downscaler =
-			FilterPluginHandler::instance().produce(downscale_descr.str().c_str());
+		auto downscaler = FilterPluginHandler::instance().produce(downscale_descr.str().c_str());
 
 		PImage src_scaled = shift ? downscaler->filter(*src) : src;
 		PImage ref_scaled = shift ? downscaler->filter(*ref) : ref;
@@ -274,9 +290,9 @@ PTransformation TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 	return transform;
 }
 
-C2DNonrigRegGradientProblem::C2DNonrigRegGradientProblem(const C2DFullCostList& costs, 
-							 C2DTransformation& transf, 
-							 const C2DInterpolatorFactory& ipf):
+template <typename T> 
+TNonrigRegGradientProblem<T>::TNonrigRegGradientProblem(const FullCostList& costs, 
+						       T& transf, const InterpolatorFactory& ipf):
 	gsl::CFDFMinimizer::Problem(transf.degrees_of_freedom()),
 	_M_costs(costs),
 	_M_transf(transf),
@@ -288,12 +304,14 @@ C2DNonrigRegGradientProblem::C2DNonrigRegGradientProblem(const C2DFullCostList& 
 
 }
 
-void C2DNonrigRegGradientProblem::reset_counters()
+template <typename T> 
+void TNonrigRegGradientProblem<T>::reset_counters()
 {
 	_M_func_evals = _M_grad_evals = 0; 
 }
 
-double  C2DNonrigRegGradientProblem::do_f(const DoubleVector& x)
+template <typename T> 
+double  TNonrigRegGradientProblem<T>::do_f(const DoubleVector& x)
 {
        
 
@@ -312,12 +330,14 @@ double  C2DNonrigRegGradientProblem::do_f(const DoubleVector& x)
 	return result; 
 }
 
-void    C2DNonrigRegGradientProblem::do_df(const DoubleVector& x, DoubleVector&  g)
+template <typename T> 
+void    TNonrigRegGradientProblem<T>::do_df(const DoubleVector& x, DoubleVector&  g)
 {
 	do_fdf(x,g); 
 }
 
-double  C2DNonrigRegGradientProblem::do_fdf(const DoubleVector& x, DoubleVector&  g)
+template <typename T> 
+double  TNonrigRegGradientProblem<T>::do_fdf(const DoubleVector& x, DoubleVector&  g)
 {
 
 	_M_transf.set_parameters(x);

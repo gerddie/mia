@@ -29,58 +29,11 @@
 
 #include <mia/2d/multicost.hh>
 #include <mia/2d/transformfactory.hh>
+#include <mia/internal/nonrigidregister.hh>
+
 
 NS_MIA_BEGIN
-
-enum EMinimizers {
-	min_cg_fr,
-	min_cg_pr,
-	min_bfgs,
-	min_bfgs2,
-	min_gd,
-	min_undefined
-};
-
-/**
-   Class for non-rigid registration. 
-   The registration approach of this class lies in the optimization of a weighted sum of cost functions. 
-   These cost functions may include image based cost functions, penalty functions on the transformation, 
-   and others. The registration makes use of a multi-resolution scheme and support various transformation 
-   models.  All cost functions implement the C2DFullCost interface.  
-   Currently supported minimizers are those available in the GNU scientific library.
-*/
-
-class EXPORT_2D C2DNonrigidRegister {
-public:
-	/**
-	   Constructor for the registration tool
-	   \param cost cost function model
-	   \param minimizer GSL provided minimizer
-	   \param transform_type string describing which transformation is supported
-	   \param ipf interpolator
-	   \param mg_levels multigrisd levels to be used 
-	 */
-
-	C2DNonrigidRegister(C2DFullCostList& costs, EMinimizers minimizer,
-			    P2DTransformationFactory transform_creation,
-			    const C2DInterpolatorFactory& ipf,  size_t mg_levels);
-	
-	
-	~C2DNonrigidRegister();
-
-	/**
-	   Run the registration of an image pair. 
-	   \param src source (moving) image 
-	   \param ref reference (fixed) image 
-	   \returns the transformation registering src to ref that minimizes the constructor given 
-	   cost function 
-	 */
-	P2DTransformation  run(P2DImage src, P2DImage ref) const;
-
-private:
-	struct C2DNonrigidRegisterImpl *impl;
-};
-
+typedef TNonrigidRegister<C2DTransformation> C2DNonrigidRegiste; 
 NS_MIA_END
 
 #endif

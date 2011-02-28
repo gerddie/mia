@@ -40,6 +40,7 @@ class  TTransformCreator: public CProductBase {
 public:
 	typedef typename Transform::Data plugin_data; 
 	typedef Transform plugin_type; 
+	typedef std::shared_ptr<TTransformCreator<Transform> > Pointer; 
 
 	/** Standard constructor 
 	    \remark it is empty, so why it is defined? 
