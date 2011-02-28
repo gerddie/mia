@@ -212,8 +212,9 @@ public:
 		// I want a conversion filter, that makes the images together zero mean 
 		// and diversion 1
 		stringstream filter_descr; 
-		filter_descr << "convert:repn=float,map=linear,b=" << -mean << ",a=" << 1.0/sigma; 
-			
+		filter_descr << "convert:repn=float,map=linear,b=" << -mean/sigma << ",a=" << 1.0/sigma; 
+		cvinfo() << "Will convert using the filter:" << filter_descr.str() << "\n"; 
+		
 		return FilterPluginHandler::instance().produce(filter_descr.str()); 
 		
 	}; 
@@ -244,7 +245,8 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 	}
 	else // both images have only one value, and are, therefore, already registered
 		return _M_transform_creator->create(src->get_size());
-	
+
+
 	Size global_size = src->get_size();
 
 	int shift = _M_mg_levels;

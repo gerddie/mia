@@ -84,8 +84,8 @@ double C3DImageFullCost::do_evaluate(const C3DTransformation& t, gsl::DoubleVect
 
 	if (_M_debug) {
 		stringstream fname; 
-		fname << "test" << setw(5) << setfill('0') << idx << ".@"; 
-		save_image(fname.str(), toubyte_converter->filter(*temp)); 
+		fname << "test" << setw(5) << setfill('0') << idx << ".v"; 
+		save_image(fname.str(), temp); 
 	}
 	
 	C3DFVectorfield force(get_current_size()); 

@@ -244,9 +244,8 @@ struct FGetGradient3D: public TFilter< C3DFVectorfield> {
 			for (size_t y = 1; y < image.get_size().y - 1; ++y, i += 2, v += 2 ) {
 				for (size_t x = 1; x < image.get_size().x - 1; ++x, ++v, ++i) {
 					*v = C3DFVector( 0.5 * (i[1] - i[-1]), 
-							0.5 * (i[row_size] - i[-row_size]), 
-							0.5 * (i[slice_size] - i[-slice_size])); 
-					cvdebug()<< x << ", " << y << ", " << z << ":" <<*i << " " << *v << "\n"; 
+							 0.5 * (i[row_size] - i[-row_size]), 
+							 0.5 * (i[slice_size] - i[-slice_size])); 
 				}
 			}
 		}

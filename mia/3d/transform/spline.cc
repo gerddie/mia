@@ -419,7 +419,6 @@ C3DFMatrix C3DSplineTransformation::derivative_at(const C3DFVector& v) const
 	
 	if (v.x < 0 || v.y < 0 || v.z < 0 ||
 	    v.x > _M_range.x - 1 ||  v.y > _M_range.y - 1  || v.z > _M_range.z -1) {
-		cvdebug() << "C3DSplineTransformation::derivative_at: input outside range\n"; 
 		return C3DFMatrix::_1; 
 	}
 
@@ -436,7 +435,6 @@ C3DFMatrix C3DSplineTransformation::derivative_at(const C3DFVector& v) const
 			_M_kernel->get_start_idx_and_value_weights(x.y, yweights), 
 			_M_kernel->get_start_idx_and_value_weights(x.z, zweights)); 
 
-	cvdebug() << v << x << start << "\n"; 
 	_M_kernel->get_start_idx_and_derivative_weights(x.x, xdweights); 
 	_M_kernel->get_start_idx_and_derivative_weights(x.y, ydweights); 
 	_M_kernel->get_start_idx_and_derivative_weights(x.z, zdweights); 
@@ -551,7 +549,6 @@ C3DSplineTransformation::get_derivative_row(size_t nin, size_t nout, double scal
 					break; 
 			}
 		}
-		cvdebug() << o << ":" << v.first << ":" << sum_y << v.second << "\n"; 
 		result.push_back(v); 
 	}
 	return result; 
@@ -647,7 +644,6 @@ float  C3DSplineTransformation::pertuberate(C3DFVectorfield& v) const
 					max_gamma = gamma;
 				}
 			}
-	cvdebug() << lx_max << "\n";
 	return sqrt(max_gamma);
 }
 
@@ -683,7 +679,6 @@ float C3DSplineTransformation::get_jacobian(const C3DFVectorfield& v, float delt
 			
 		}
 	}
-	cvdebug() << lx_min << "\n";
 	return j_min * _M_scale.y * _M_scale.x;
 }
 
