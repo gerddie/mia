@@ -81,7 +81,7 @@ public:
 	virtual C3DTransformation *invert() const;
 	virtual P3DImage apply(const C3DImage& image, const C3DInterpolatorFactory& ipf) const;
 	virtual bool save(const std::string& filename, const std::string& type) const;
-	virtual P3DTransformation upscale(const C3DBounds& size) const;
+	virtual P3DTransformation do_upscale(const C3DBounds& size) const;
 	virtual void add(const C3DTransformation& a);
 	virtual void translate(const C3DFVectorfield& gradient, gsl::DoubleVector& params) const;
 	virtual size_t degrees_of_freedom() const;

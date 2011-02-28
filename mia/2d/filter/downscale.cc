@@ -97,17 +97,18 @@ CDownscale::result_type CDownscale::do_filter(const C2DImage& image) const
 
 C2DDownscaleFilterPlugin::C2DDownscaleFilterPlugin():
 	C2DFilterPlugin("downscale"),
-	_M_bsx(1),
-	_M_bsy(1),
+	_M_b(1,1),
 	_M_filter("gauss")
 {
-	add_parameter("bx", new CIntParameter(_M_bsx, 1,
+	add_parameter("bx", new CUIntParameter(_M_b.x, 1,
 					      numeric_limits<int>::max(), false,
 					      "blocksize in x direction"));
 
-	add_parameter("by", new CIntParameter(_M_bsy, 1,
+	add_parameter("by", new CUIntParameter(_M_b.y, 1,
 					      numeric_limits<int>::max(), false,
 					      "blocksize in y direction"));
+
+	add_parameter("b", new C2DBoundsParameter(_M_b, false, "blocksize"));
 
 	add_parameter("kernel", new CStringParameter(_M_filter, false,
 						     "smoothing filter kernel to be applied"));
@@ -115,7 +116,7 @@ C2DDownscaleFilterPlugin::C2DDownscaleFilterPlugin():
 
 C2DDownscaleFilterPlugin::ProductPtr C2DDownscaleFilterPlugin::do_create()const
 {
-	return C2DDownscaleFilterPlugin::ProductPtr(new CDownscale(C2DBounds(_M_bsx, _M_bsy), _M_filter));
+	return C2DDownscaleFilterPlugin::ProductPtr(new CDownscale(_M_b, _M_filter));
 }
 
 const string C2DDownscaleFilterPlugin::do_get_descr()const

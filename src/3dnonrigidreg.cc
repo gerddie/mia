@@ -25,10 +25,11 @@
 
 #include <sstream>
 #include <mia/core.hh>
-#include <mia/2d.hh>
-#include <mia/2d/rigidregister.hh>
+#include <mia/3d.hh>
+#include <mia/3d/nonrigidregister.hh>
 #include <gsl++/multimin.hh>
-#include <mia/2d/transformio.hh>
+#include <mia/3d/transformfactory.hh>
+#include <mia/3d/transformio.hh>
 #include <mia/core/factorycmdlineoption.hh>
 
 NS_MIA_USE;
@@ -37,7 +38,6 @@ using namespace gsl;
 
 
 const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
-	{"simplex", min_nmsimplex},
 	{"cg-fr", min_cg_fr},
 	{"cg-pr", min_cg_pr},
 	{"bfgs", min_bfgs},
@@ -46,11 +46,12 @@ const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
 	{NULL, min_undefined}
 };
 
-const char *g_description = 
-	"This program implements the registration of two gray scale 2D images. "
-	"The transformation is not penalized, therefore, one should only use translation, rigid, or affine "
-	"transformations as target and run mia-2dnonrigidreg of nonrigid registration is to be achieved." 
-	; 
+
+const char *g_general_help = 
+	"This program runs the non-rigid registration of two images using certain"
+	"cost measures and a given transformation model.\n"
+	"Basic usage: \n"
+	" mia-3dnonrigidreg [options] cost1 cost2 "; 
 
 int do_main( int argc, const char *argv[] )
 {
@@ -59,42 +60,47 @@ int do_main( int argc, const char *argv[] )
 	string ref_filename;
 	string out_filename;
 	string trans_filename;
-	auto transform_creator = C2DTransformCreatorHandler::instance().produce("rigid"); 
-	EMinimizers minimizer = min_nmsimplex;
+	string transform_type("spline");
+	EMinimizers minimizer = min_bfgs2;
+
+	cvdebug() << "auto transform_creator\n"; 
+	auto transform_creator = C3DTransformCreatorHandler::instance().produce("spline:rate=10"); 
+	if (!transform_creator && transform_creator->get_init_string() != string("spline:rate=10"))
+		cverr() << "something's wrong\n"; 
 
 	size_t mg_levels = 3;
 
-	CCmdOptionList options(g_description);
+	CCmdOptionList options(g_general_help);
 	options.push_back(make_opt( src_filename, "in", 'i', "test image", CCmdOption::required));
 	options.push_back(make_opt( ref_filename, "ref", 'r', "reference image", CCmdOption::required));
 	options.push_back(make_opt( out_filename, "out", 'o', "registered output image", CCmdOption::required));
-	options.push_back(make_opt( trans_filename, "trans", 't', "transformation"));
-	options.push_back(make_opt( cost_function, "cost", 'c', "cost function")); 
-	options.push_back(make_opt( mg_levels, "levels", 'l', "multigrid levels"));
+	options.push_back(make_opt( trans_filename, "trans", 't', "output transformation"));
+	options.push_back(make_opt( mg_levels, "levels", 'l', "multigrid levels", CCmdOption::required));
 	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
 				    "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 
 	options.parse(argc, argv);
+	
+	auto cost_descrs = options.get_remaining(); 
 
-	P2DImage Model = load_image<P2DImage>(src_filename);
-	P2DImage Reference = load_image<P2DImage>(ref_filename);
+	C3DFullCostList costs; 
+	for (auto i = cost_descrs.begin(); i != cost_descrs.end(); ++i)
+		costs.push(C3DFullCostPluginHandler::instance().produce(*i)); 
 
-	C2DBounds GlobalSize = Model->get_size();
-	if (GlobalSize != Reference->get_size()){
+	P3DImage Model = load_image<P3DImage>(src_filename);
+	P3DImage Reference = load_image<P3DImage>(ref_filename);
+	C3DBounds GlobalSize = Model->get_size();
+	if (GlobalSize != Reference->get_size())
 		throw std::invalid_argument("Images have different size");
-	}
 
-	auto cost = C2DImageCostPluginHandler::instance().produce(cost_function);
-	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3));
-
-	C2DRigidRegister rr(cost, minimizer,  transform_creator, *ipfactory, mg_levels);
-
-	P2DTransformation transform = rr.run(Model, Reference);
-	P2DImage result = (*transform)(*Model, *ipfactory);
+	unique_ptr<C3DInterpolatorFactory>   ipfactory(create_3dinterpolation_factory(ip_bspline3));
+	C3DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory, mg_levels);
+	P3DTransformation transform = nrr.run(Model, Reference);
+	P3DImage result = (*transform)(*Model, *ipfactory);
 
 	if (!trans_filename.empty()) {
-		if (!C2DTransformationIOPluginHandler::instance().save("", trans_filename, *transform)) 
+		if (!C3DTransformationIOPluginHandler::instance().save("", trans_filename, *transform)) 
 			cverr() << "Saving the transformation to '" << trans_filename << "' failed."; 
 	}
 
@@ -119,5 +125,6 @@ int main( int argc, const char *argv[] )
 	catch (...){
 		cerr << argv[0] << " unknown exception" << endl;
 	}
+
 	return EXIT_FAILURE;
 }

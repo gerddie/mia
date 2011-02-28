@@ -138,13 +138,16 @@ void RigidRegisterFixture::run(C3DTransformation& t, EMinimizers minimizer, doub
 			BOOST_CHECK_CLOSE(1.0 + params[i], 1.0 + orig_params[i], accuracy);
 
 	if ( cverb.get_level() <= vstream::ml_info ) {
-		save_image3d("src.hdr", src);
-		save_image3d("ref.hdr", ref);
+		save_image
+("src.hdr", src);
+		save_image
+("ref.hdr", ref);
 		P3DImage reg = (*transform)(*src, *ipfactory); 
 		stringstream out_name; 
 		out_name << "reg-" << t.get_creator_string()
 			 << "-" << minimizers.get_name(minimizer) << ".hdr"; 
-		save_image3d(out_name.str(), ref);
+		save_image
+(out_name.str(), ref);
 	}
 }
 

@@ -73,7 +73,7 @@ P2DImage  EXPORT_2D load_image2d(const std::string& filename)
 	return *in_image_list->begin();
 }
 
-bool  EXPORT_2D save_image2d(const std::string& filename, P2DImage image)
+bool  EXPORT_2D save_image(const std::string& filename, P2DImage image)
 {
 	C2DImageIOPluginHandler::Instance::Data out_image_list;
 	out_image_list.push_back(image);

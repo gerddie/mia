@@ -28,15 +28,18 @@
 NS_MIA_BEGIN
 
 
-template <int Transformation> dim_traits{
-	typedef Transformation::Data Image; 
-	typedef Image::Pointer PImage; 
-	typedef typename TTransformCreator<C2DTransformation>::Pointer PTransformationFactory; 
+template <typename Transformation> 
+struct dim_traits{
+	typedef typename Transformation::Size Size; 
+	typedef typename Transformation::Data Image; 
+	typedef typename Image::Pointer PImage; 
+	typedef typename TTransformCreator<Transformation>::Pointer PTransformationFactory; 
 	typedef TFullCostList<Transformation> FullCostList; 
 	typedef TImageFilter<Image> Filter; 
 	typedef THandlerSingleton<TFactoryPluginHandler<TImageFilterPlugin<Image> > > FilterPluginHandler;
 	typedef typename Transformation::InterpolatorFactory InterpolatorFactory; 
 }; 
+
 NS_MIA_END
 
 #endif

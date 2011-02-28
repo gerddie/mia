@@ -114,8 +114,8 @@ int main(int argc, const char *args[])
 		options.parse(argc, args);
 
 
-		P2DImage Model = load_image2d(src_filename);
-		P2DImage Reference = load_image2d(ref_filename);
+		P2DImage Model = load_image<P2DImage>(src_filename);
+		P2DImage Reference = load_image<P2DImage>(ref_filename);
 
 		C2DBounds GlobalSize = Model->get_size();
 		if (GlobalSize != Reference->get_size()){
@@ -191,7 +191,7 @@ int main(int argc, const char *args[])
 		if (!def_filename.empty()) {
 			FDeformer2D deformer(transform, *ipfactory);
 			P2DImage result = ::mia::filter(deformer, *Model);
-			if (!save_image2d(def_filename, result))
+			if (!save_image(def_filename, result))
 				THROW(runtime_error, "Unable to save result to '" << def_filename << "'");
 		}
 

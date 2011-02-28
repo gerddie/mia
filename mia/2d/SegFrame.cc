@@ -196,7 +196,7 @@ void CSegFrame::load_image() const
 C2DUBImage CSegFrame::get_section_masks() const
 {
 	if (!m_image)
-		load_image(); 
+                load_image(); 
 	return get_section_masks(m_image->get_size()); 
 }
 

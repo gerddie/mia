@@ -29,7 +29,7 @@
 
 #include <mia/internal/multicost.hh>
 #include <mia/internal/transformfactory.hh>
-#include <mia/internal/dimtraits.hh>
+#include <mia/internal/dimtrait.hh>
 
 NS_MIA_BEGIN
 
@@ -41,6 +41,9 @@ enum EMinimizers {
 	min_gd,
 	min_undefined
 };
+
+template <typename Transform> 
+struct TNonrigidRegisterImpl; 
 
 /**
    Class for non-rigid registration. 
@@ -55,6 +58,7 @@ template <typename Transform>
 class TNonrigidRegister {
 public:
 	typedef dim_traits<Transform> this_dim_traits;
+	typedef typename Transform::Pointer PTransformation; 
 	typedef typename this_dim_traits::Image Image; 
 	typedef typename this_dim_traits::PImage PImage; 
 	typedef typename this_dim_traits::PTransformationFactory PTransformationFactory; 
@@ -89,7 +93,7 @@ public:
 	PTransformation  run(PImage src, PImage ref) const;
 
 private:
-	struct TNonrigidRegisterImpl<T> *impl;
+	struct TNonrigidRegisterImpl<Transform> *impl;
 };
 
 NS_MIA_END

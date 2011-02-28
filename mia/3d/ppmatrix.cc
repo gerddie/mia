@@ -18,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#define VSTREAM_DOMAIN "ppmatrix-3d" 
 
 #include <cmath>
 #include <mia/3d/ppmatrix.hh>
@@ -161,7 +162,6 @@ double CIntegralCache::get(int s1, int s2, int deg1, int deg2, int range) const
 			skip = 0; 
 	}
 	if (abs(skip) >= _M_max_skip) {
-		cvdebug()<< "skip because abs(skip = " << skip << ")>=" << _M_row_length << " delta="<< delta<<"\n";  
 		return 0.0; 
 	}
 	
@@ -347,16 +347,6 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 								cell.i = xi + nx * yi + nxy * zi;
 								cell.j = xj + nx * yj + nxy * zj;
 								_M_P.push_back(cell);
-								cvdebug() <<"cell = [" 
-									  << cell.i << "x" << cell.j 
-									  << "] (" << cell.vxx
-									  << ", " << cell.vyy
-									  << ", " << cell.vzz
-									  << ", " << cell.vxy
-									  << ", " << cell.vxz
-									  << ", " << cell.vyz
-									  << "\n"; 
-
 							}
 						}
 					}

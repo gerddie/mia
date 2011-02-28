@@ -220,7 +220,7 @@ const C3DBounds& C3DRigidTransformation::get_size() const
 	return _M_size;
 }
 
-P3DTransformation C3DRigidTransformation::upscale(const C3DBounds& size) const
+P3DTransformation C3DRigidTransformation::do_upscale(const C3DBounds& size) const
 {
 	C3DFVector new_trans(float(size.x) / (float)get_size().x * _M_translation.x,
 			     float(size.y) / (float)get_size().y * _M_translation.y,

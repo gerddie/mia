@@ -259,9 +259,6 @@ T2DDatafield<T>& T2DDatafield<T>::operator = (const T2DDatafield<T>& org)
 template <class T> 
 const T T2DDatafield<T>::Zero = T();
 
-
-
-
 NS_MIA_END
 
 #endif

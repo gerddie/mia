@@ -100,9 +100,6 @@ bool CICAAnalysis::run(size_t nica, vector<vector<float> > guess)
 
 	itpp::Fast_ICA fastICA(impl->m_Signal);
 	
-	
-	
-
 	fastICA.set_nrof_independent_components(nica);
 	fastICA.set_non_linearity(  FICA_NONLIN_TANH  );
 	

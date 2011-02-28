@@ -21,57 +21,57 @@
  */
 
 #include <boost/lambda/lambda.hpp>
-#include <mia/2d/fullcost/image.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/3d/fullcost/image.hh>
+#include <mia/3d/3dfilter.hh>
 
 NS_MIA_BEGIN
 
 using boost::lambda::_1; 
 
-C2DImageFullCost::C2DImageFullCost(const std::string& src, 
+C3DImageFullCost::C3DImageFullCost(const std::string& src, 
 				   const std::string& ref, 
 				   const std::string& cost, 
 				   EInterpolation ip_type, 
 				   double weight, 
 				   bool debug):
-	C2DFullCost(weight), 
-	_M_src_key(C2DImageIOPluginHandler::instance().load_to_pool(src)), 
-	_M_ref_key(C2DImageIOPluginHandler::instance().load_to_pool(ref)), 
-	_M_cost_kernel(C2DImageCostPluginHandler::instance().produce(cost)), 
-	_M_ipf(create_2dinterpolation_factory(ip_type)), 
+	C3DFullCost(weight), 
+	_M_src_key(C3DImageIOPluginHandler::instance().load_to_pool(src)), 
+	_M_ref_key(C3DImageIOPluginHandler::instance().load_to_pool(ref)), 
+	_M_cost_kernel(C3DImageCostPluginHandler::instance().produce(cost)), 
+	_M_ipf(create_3dinterpolation_factory(ip_type)), 
 	_M_debug(debug)
 {
 	assert(_M_cost_kernel); 
 }
 
-bool C2DImageFullCost::do_has(const char *property) const
+bool C3DImageFullCost::do_has(const char *property) const
 {
 	return _M_cost_kernel->has(property); 
 }
 
-double C2DImageFullCost::do_value(const C2DTransformation& t) const
+double C3DImageFullCost::do_value(const C3DTransformation& t) const
 {
 	TRACE_FUNCTION; 
 	assert(_M_src); 
 	assert(_M_ref); 
-	P2DImage temp  = t(*_M_src, *_M_ipf);
+	P3DImage temp  = t(*_M_src, *_M_ipf);
 	const double result = _M_cost_kernel->value(*temp, *_M_ref); 
-	cvdebug() << "C2DImageFullCost::value = " << result << "\n"; 
+	cvdebug() << "C3DImageFullCost::value = " << result << "\n"; 
 	return result; 
 }
 
-double C2DImageFullCost::do_value() const
+double C3DImageFullCost::do_value() const
 {
 	TRACE_FUNCTION; 
 	assert(_M_src); 
 	assert(_M_ref); 
 	const double result = _M_cost_kernel->value(*_M_src, *_M_ref); 
-	cvdebug() << "C2DImageFullCost::value = " << result << "\n"; 
+	cvdebug() << "C3DImageFullCost::value = " << result << "\n"; 
 	return result; 
 }
 
 
-double C2DImageFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const
+double C3DImageFullCost::do_evaluate(const C3DTransformation& t, gsl::DoubleVector& gradient) const
 {
 	TRACE_FUNCTION; 
 	assert(_M_src); 
@@ -79,16 +79,16 @@ double C2DImageFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVect
 	
 	static int idx = 0; 
 	static auto  toubyte_converter = 
-		C2DFilterPluginHandler::instance().produce("convert:repn=ubyte"); 
-	P2DImage temp  = t(*_M_src, *_M_ipf);
+		C3DFilterPluginHandler::instance().produce("convert:repn=ubyte"); 
+	P3DImage temp  = t(*_M_src, *_M_ipf);
 
 	if (_M_debug) {
 		stringstream fname; 
-		fname << "test" << setw(5) << setfill('0') << idx << ".@"; 
-		save_image(fname.str(), toubyte_converter->filter(*temp)); 
+		fname << "test" << setw(5) << setfill('0') << idx << ".v"; 
+		save_image(fname.str(), temp); 
 	}
 	
-	C2DFVectorfield force(get_current_size()); 
+	C3DFVectorfield force(get_current_size()); 
 
  	_M_cost_kernel->evaluate_force(*temp, *_M_ref, 1.0, force); 
 
@@ -101,7 +101,7 @@ double C2DImageFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVect
 	
 }
 
-void C2DImageFullCost::do_set_size()
+void C3DImageFullCost::do_set_size()
 {
 	TRACE_FUNCTION; 
 	assert(_M_src); 
@@ -110,9 +110,9 @@ void C2DImageFullCost::do_set_size()
 	if (_M_src->get_size() != get_current_size()) {
 		stringstream filter_descr; 
 		filter_descr << "scale:sx=" << get_current_size().x << ",sy=" << get_current_size().y; 
-		auto scaler = C2DFilterPluginHandler::instance().produce(filter_descr.str()); 
+		auto scaler = C3DFilterPluginHandler::instance().produce(filter_descr.str()); 
 		assert(scaler); 
-		cvdebug() << "C2DImageFullCost:scale images to " << get_current_size() << 
+		cvdebug() << "C3DImageFullCost:scale images to " << get_current_size() << 
 			" using '" << filter_descr.str() << "'\n"; 
 		_M_src = scaler->filter(*_M_src); 
 		_M_ref = scaler->filter(*_M_ref); 
@@ -120,33 +120,33 @@ void C2DImageFullCost::do_set_size()
 	}
 }
 
-void C2DImageFullCost::do_reinit()
+void C3DImageFullCost::do_reinit()
 {
 	TRACE_FUNCTION; 
 	_M_src = get_from_pool(_M_src_key);
 	_M_ref = get_from_pool(_M_ref_key);
 	if (_M_src->get_size() != _M_ref->get_size()) 
-		throw runtime_error("C2DImageFullCost only works with images of equal size"); 
+		throw runtime_error("C3DImageFullCost only works with images of equal size"); 
 	_M_cost_kernel->prepare_reference(*_M_ref); 
 }
 
-P2DImage C2DImageFullCost::get_from_pool(const C2DImageDataKey& key)
+P3DImage C3DImageFullCost::get_from_pool(const C3DImageDataKey& key)
 {
-	C2DImageIOPlugin::PData in_image_list = key.get();
+	C3DImageIOPlugin::PData in_image_list = key.get();
 		
 	if (!in_image_list || in_image_list->empty())
-		throw invalid_argument("C2DImageFullCost: no image available in data pool");
+		throw invalid_argument("C3DImageFullCost: no image available in data pool");
 
 	return (*in_image_list)[0];
 }
 
 
 // plugin implementation 
-class C2DImageFullCostPlugin: public C2DFullCostPlugin {
+class C3DImageFullCostPlugin: public C3DFullCostPlugin {
 public: 
-	C2DImageFullCostPlugin(); 
+	C3DImageFullCostPlugin(); 
 private: 
-	C2DFullCostPlugin::ProductPtr do_create(float weight) const;
+	C3DFullCostPlugin::ProductPtr do_create(float weight) const;
 	const std::string do_get_descr() const;
 	std::string _M_src_name;
 	std::string _M_ref_name;
@@ -155,8 +155,8 @@ private:
 	bool _M_debug; 
 }; 
 
-C2DImageFullCostPlugin::C2DImageFullCostPlugin():
-	C2DFullCostPlugin("image"), 
+C3DImageFullCostPlugin::C3DImageFullCostPlugin():
+	C3DFullCostPlugin("image"), 
 	_M_src_name("src.@"), 
 	_M_ref_name("ref.@"), 
 	_M_cost_kernel("ssd"), 
@@ -171,25 +171,25 @@ C2DImageFullCostPlugin::C2DImageFullCostPlugin():
 	add_parameter("debug", new CBoolParameter(_M_debug, false, "Save intermediate resuts for debugging")); 
 }
 
-C2DFullCostPlugin::ProductPtr C2DImageFullCostPlugin::do_create(float weight) const
+C3DFullCostPlugin::ProductPtr C3DImageFullCostPlugin::do_create(float weight) const
 {
-	cvdebug() << "create C2DImageFullCostPlugin with weight= " << weight 
+	cvdebug() << "create C3DImageFullCostPlugin with weight= " << weight 
 		  << " src=" << _M_src_name << " ref=" << _M_ref_name 
 		  << " cost=" << _M_cost_kernel << "\n";
 
-	return C2DFullCostPlugin::ProductPtr(
-		new C2DImageFullCost(_M_src_name, _M_ref_name, 
+	return C3DFullCostPlugin::ProductPtr(
+		new C3DImageFullCost(_M_src_name, _M_ref_name, 
 				     _M_cost_kernel, _M_interpolator, weight, _M_debug)); 
 }
 
-const std::string C2DImageFullCostPlugin::do_get_descr() const
+const std::string C3DImageFullCostPlugin::do_get_descr() const
 {
 	return "image similarity cost function"; 
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DImageFullCostPlugin();
+	return new C3DImageFullCostPlugin();
 }
 
 NS_MIA_END

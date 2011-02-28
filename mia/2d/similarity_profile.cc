@@ -41,10 +41,10 @@ C2DSimilarityProfile::C2DSimilarityProfile(P2DFullCost cost,
 	
 
 	P2DImage ref = images[m_reference]; 
-	save_image2d("ref.@", ref); 
+	save_image("ref.@", ref); 
 	
 	for(auto i = images.begin(); i != images.end(); ++i) {
-		save_image2d("src.@", *i);
+		save_image("src.@", *i);
 		cost->reinit(); 
 		m_cost_values.push_back( cost->cost_value()); 
 	}

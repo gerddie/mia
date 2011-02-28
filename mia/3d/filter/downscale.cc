@@ -103,22 +103,22 @@ CDownscale::result_type CDownscale::do_filter(const C3DImage& image) const
 
 C3DDownscaleFilterPlugin::C3DDownscaleFilterPlugin():
 	C3DFilterPlugin("downscale"),
-	_M_bsx(1),
-	_M_bsy(1),
-	_M_bsz(1),
+	_M_b(1,1,1),
 	_M_filter("gauss")
 {
-	add_parameter("bx", new CIntParameter(_M_bsx, 1,
+	add_parameter("bx", new CUIntParameter(_M_b.x, 1,
                                 numeric_limits<int>::max(), false,
                                 "blocksize in x direction"));
 
-	add_parameter("by", new CIntParameter(_M_bsy, 1,
+	add_parameter("by", new CUIntParameter(_M_b.y, 1,
                                         numeric_limits<int>::max(), false,
                                         "blocksize in y direction"));
 
-	add_parameter("bz", new CIntParameter(_M_bsz, 1,
+	add_parameter("bz", new CUIntParameter(_M_b.z, 1,
                                                 numeric_limits<int>::max(), false,
                                                 "blocksize in z direction"));
+
+	add_parameter("b", new C3DBoundsParameter(_M_b, false, "blocksize"));
 
 	add_parameter("kernel", new CStringParameter(_M_filter, false,
                                                 "smoothing filter kernel to be applied"));
@@ -126,7 +126,7 @@ C3DDownscaleFilterPlugin::C3DDownscaleFilterPlugin():
 
 C3DDownscaleFilterPlugin::ProductPtr C3DDownscaleFilterPlugin::do_create()const
 {
-	return C3DDownscaleFilterPlugin::ProductPtr(new CDownscale(C3DBounds(_M_bsx, _M_bsy, _M_bsz), _M_filter));
+	return C3DDownscaleFilterPlugin::ProductPtr(new CDownscale(_M_b, _M_filter));
 }
 
 void C3DDownscaleFilterPlugin::prepare_path() const

@@ -162,6 +162,23 @@ static void test_swizzle()
 
 }
 
+static void test_fill()
+{
+	T3DVector<int> test;
+
+	BOOST_CHECK_EQUAL(test.x, 0);
+	BOOST_CHECK_EQUAL(test.y, 0);
+	BOOST_CHECK_EQUAL(test.z, 0);
+
+	test.fill(2); 
+	BOOST_CHECK_EQUAL(test.z, 2);
+	BOOST_CHECK_EQUAL(test.y, 2);
+	BOOST_CHECK_EQUAL(test.x, 2);
+
+
+}
+
+
 void add_3dvector_tests(boost::unit_test::test_suite* suite)
 {
 	suite->add( BOOST_TEST_CASE( &test_3dvectors));

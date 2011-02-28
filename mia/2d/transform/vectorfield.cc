@@ -34,7 +34,7 @@ C2DGridTransformation::C2DGridTransformation(const C2DBounds& size):
 {
 }
 
-P2DTransformation C2DGridTransformation::upscale(const C2DBounds& size) const
+P2DTransformation C2DGridTransformation::do_upscale(const C2DBounds& size) const
 {
 	TRACE("C2DGridTransformation::upscale");
 	C2DGridTransformation *result = new C2DGridTransformation(size);

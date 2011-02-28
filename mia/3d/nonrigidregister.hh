@@ -22,17 +22,18 @@
  *
  */
 
-#define VSTREAM_DOMAIN "NR-REG"
 
-#include <mia/2d/nonrigidregister.hh>
-#include <mia/2d/2dfilter.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/transformfactory.hh>
-#include <mia/internal/nonrigidregister.cxx>
+#ifndef mia_3d_nonrigidregister_hh
+#define mia_3d_nonrigidregister_hh
+
+
+#include <mia/3d/multicost.hh>
+#include <mia/3d/transformfactory.hh>
+#include <mia/internal/nonrigidregister.hh>
+
 
 NS_MIA_BEGIN
-
-
-template class TNonrigidRegister<C2DTransformation>; 
-
+typedef TNonrigidRegister<C3DTransformation> C3DNonrigidRegister; 
 NS_MIA_END
+
+#endif

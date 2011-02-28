@@ -254,7 +254,7 @@ const C3DBounds& C3DAffineTransformation::get_size() const
 	return _M_size;
 }
 
-P3DTransformation C3DAffineTransformation::upscale(const C3DBounds& size) const
+P3DTransformation C3DAffineTransformation::do_upscale(const C3DBounds& size) const
 {
 	float x_mult = float(size.x) / (float)get_size().x;
 	float y_mult = float(size.y) / (float)get_size().y;

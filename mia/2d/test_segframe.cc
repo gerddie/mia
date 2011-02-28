@@ -293,7 +293,7 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_mask_different, FrameTestRead)
 
 	C2DBounds size(16,16); 
 	P2DImage image(new C2DFImage(size)); 
-	save_image2d("testimage.@", image); 
+	save_image("testimage.@", image); 
 
 
 	C2DUBImage section_mask = frame.get_section_masks(8); 
@@ -392,7 +392,7 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_mask_size, FrameTestRead)
 
 	C2DFImage *pimg = new C2DFImage(size, test_img); 
 	P2DImage img(pimg); 
-	save_image2d("name.@", img);
+	save_image("name.@", img);
 	
 	C2DUBImage section_mask = frame.get_section_masks(); 
 	BOOST_CHECK_EQUAL(section_mask.get_size(),size); 
@@ -435,7 +435,7 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_stats, FrameTestRead)
 
 	C2DFImage *pimg = new C2DFImage(size, test_img); 
 	P2DImage img(pimg); 
-	save_image2d("name.@", img);
+	save_image("name.@", img);
 	
 	C2DUBImage section_mask = frame.get_section_masks(size); 
 	CSegFrame::SectionsStats stats1 =frame.get_stats(section_mask); 

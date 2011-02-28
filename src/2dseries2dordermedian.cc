@@ -276,7 +276,7 @@ int main( int argc, const char *argv[] )
 			}
 		}
 
-		if (save_image2d(out_filename, result))
+		if (save_image(out_filename, result))
 		    return  EXIT_SUCCESS;
 
 	}

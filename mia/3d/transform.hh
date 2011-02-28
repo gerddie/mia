@@ -175,7 +175,7 @@ public:
 	   \param size new size of the transformation
 	   \returns shared pointer to upscaled transformation
 	 */
-	virtual P3DTransformation upscale(const C3DBounds& size) const = 0;
+	P3DTransformation upscale(const C3DBounds& size) const;
 
 	/**
 	   concat a transformation,
@@ -291,6 +291,7 @@ public:
 
 private: 
 
+	virtual P3DTransformation do_upscale(const C3DBounds& size) const = 0;
 
 	std::string _M_creator_string;  
 	virtual C3DTransformation *do_clone() const = 0;
@@ -322,7 +323,7 @@ struct C3DTransform : public TFilter<P3DImage> {
 	}
 	template <typename T>
 	P3DImage operator ()(const T3DImage<T>& image) const {
-		T3DImage<T> *timage = new T3DImage<T>(image.get_size());
+		T3DImage<T> *timage = new T3DImage<T>(image.get_size(), image);
 
 		std::auto_ptr<T3DInterpolator<T> > interp(_M_ipf.create(image.data()));
 
@@ -334,7 +335,6 @@ struct C3DTransform : public TFilter<P3DImage> {
 				for (size_t x = 0; x < image.get_size().x; ++x, ++r, ++v) {
 					*r = (*interp)(*v);
 				}
-		
 		return P3DImage(timage);
 	}
 private:

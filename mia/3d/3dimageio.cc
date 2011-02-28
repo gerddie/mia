@@ -59,11 +59,11 @@ P3DImage  EXPORT_3D load_image3d(const std::string& filename)
 		THROW(runtime_error, "unable to load 3D image from '" << filename << "'");
 }
 
-bool EXPORT_3D  save_image3d(const std::string& filename, P3DImage image)
+bool EXPORT_3D  save_image(const std::string& filename, P3DImage image)
 {
 	C3DImageVector out_images;
 	out_images.push_back(image);
-	return !C3DImageIOPluginHandler::instance().save("", filename, out_images);
+	return C3DImageIOPluginHandler::instance().save("", filename, out_images);
 }
 
 

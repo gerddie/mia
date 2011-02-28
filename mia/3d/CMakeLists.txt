@@ -17,6 +17,7 @@ SET(MIA3D_SRC
   model.cc
   multicost.cc
   nfg.cc 
+  nonrigidregister.cc
   orientation.cc
   quaternion.cc
   ppmatrix.cc 
@@ -51,6 +52,7 @@ SET(MIA3D_HEADERS
 	model.hh
 	multicost.hh
 	nfg.hh
+	nonrigidregister.hh
 	orientation.hh
 	ppmatrix.hh
 	quaternion.hh
@@ -149,6 +151,7 @@ TEST_3D(deform deform)
 TEST_3D(ica ica)
 TEST_3D(transformfactory transformfactory)
 TEST_3D(rigidregister rigidregister)
+TEST_3D(nonrigidregister nonrigidregister)
 TEST_3D(transform transform)
 TEST_3D(transio transio)
 TEST_3D(quaternion quaternion)

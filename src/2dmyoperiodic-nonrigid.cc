@@ -290,7 +290,7 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images,
 			if (m_params.save_ref) {
 				stringstream refname; 
 				refname << "ref" << setw(4) << setfill('0') << i << ".v"; 
-				save_image2d(refname.str(), ref); 
+				save_image(refname.str(), ref); 
 				cvmsg() << "Save reference to " << refname.str() << "\n"; 
 			}
 		}else

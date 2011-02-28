@@ -79,7 +79,7 @@ public:
 	virtual C2DTransformation *invert() const;
 	virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
 	virtual bool save(const std::string& filename, const std::string& type) const;
-	virtual P2DTransformation upscale(const C2DBounds& size) const;
+	virtual P2DTransformation do_upscale(const C2DBounds& size) const;
 	virtual void add(const C2DTransformation& a);
 	virtual void translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const;
 	virtual size_t degrees_of_freedom() const;

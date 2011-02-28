@@ -615,7 +615,7 @@ int GetClosestRegionLabel::operator() (const T2DImage<T>& image) const
 
 void C2DPerfusionAnalysisImpl::save_feature(const string& base, const string& feature, const C2DImage& image)const
 {
-	save_image2d(base + feature + ".png", run_filter(image, "convert")); 
+	save_image(base + feature + ".png", run_filter(image, "convert")); 
 }
 
 TDictMap<C2DPerfusionAnalysis::EBoxSegmentation>::Table segmethod_table[] ={

@@ -220,7 +220,7 @@ const C2DBounds& C2DAffineTransformation::get_size() const
 	return _M_size;
 }
 
-P2DTransformation C2DAffineTransformation::upscale(const C2DBounds& size) const
+P2DTransformation C2DAffineTransformation::do_upscale(const C2DBounds& size) const
 {
 	float x_mult = float(size.x) / (float)get_size().x;
 	float y_mult = float(size.y) / (float)get_size().y;

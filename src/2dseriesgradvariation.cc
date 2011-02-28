@@ -198,7 +198,7 @@ int main( int argc, const char *argv[] )
 			mia::accumulate(acc, *in_image);
 		}
 
-		if (save_image2d(out_filename, acc.result()))
+		if (save_image(out_filename, acc.result()))
 		    return  EXIT_SUCCESS;
 
 	}

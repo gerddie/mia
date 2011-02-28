@@ -123,7 +123,7 @@ int do_main( int argc, const char *argv[] )
 	
 	P2DImage result = get_minimal_correlation(horver); 
 	
-	return save_image2d(out_name, result)? EXIT_SUCCESS : EXIT_FAILURE;
+	return save_image(out_name, result)? EXIT_SUCCESS : EXIT_FAILURE;
 
 };
 

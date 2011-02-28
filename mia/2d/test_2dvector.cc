@@ -113,4 +113,15 @@ BOOST_AUTO_TEST_CASE(test_size_vector_option)
 	BOOST_CHECK_THROW( popt->set_value(str_value_err), std::invalid_argument);
 }
 
+BOOST_AUTO_TEST_CASE(test_vector_fill)
+{
+	C2DBounds v; 
+	BOOST_CHECK_EQUAL(v.x, 0u); 
+	BOOST_CHECK_EQUAL(v.y, 0u); 
+
+	v.fill(2); 
+	BOOST_CHECK_EQUAL(v.x, 2u); 
+	BOOST_CHECK_EQUAL(v.y, 2u); 
+
+}
 

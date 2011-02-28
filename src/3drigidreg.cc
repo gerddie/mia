@@ -77,8 +77,8 @@ int do_main( int argc, const char *argv[] )
 
 	options.parse(argc, argv);
 
-	P3DImage Model = load_image3d(src_filename);
-	P3DImage Reference = load_image3d(ref_filename);
+	P3DImage Model = load_image<P3DImage>(src_filename);
+	P3DImage Reference = load_image<P3DImage>(ref_filename);
 
 	C3DBounds GlobalSize = Model->get_size();
 	if (GlobalSize != Reference->get_size()){
@@ -98,7 +98,8 @@ int do_main( int argc, const char *argv[] )
 			cverr() << "Saving the transformation to '" << trans_filename << "' failed."; 
 	}
 
-	return save_image3d(out_filename, result);
+	return save_image
+(out_filename, result);
 }
 
 

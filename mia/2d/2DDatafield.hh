@@ -42,6 +42,7 @@ The class holds all types of data stored in two dimensional fields.
 // MIA specific
 #include <mia/2d/defines2d.hh>
 #include <mia/2d/2DVector.hh>
+#include <mia/core/parameter.hh>
 
 #ifndef EXPORT_2DDATAFIELD
 #  define EXPORT_2DDATAFIELD EXPORT_2D
@@ -190,6 +191,10 @@ typedef T2DDatafield<signed char>  C2DSBDatafield;
 
 /// 2D scalar field that holds bool values
 typedef T2DDatafield<bool>  C2DBitDatafield;
+
+
+extern const char type_str_2dbounds[]; 
+typedef  CTParameter<C2DBounds, type_str_2dbounds> C2DBoundsParameter;
 
 NS_MIA_END
 
