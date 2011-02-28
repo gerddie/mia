@@ -38,6 +38,7 @@
 
 #include <mia/3d/3DDatafield.hh>
 #include <mia/3d/3DDatafield.cxx>
+#include <mia/core/parameter.cxx>
 
 NS_MIA_BEGIN
 
@@ -95,7 +96,8 @@ template class  EXPORT_3D T3DDatafield<unsigned char >;
 template class  EXPORT_3D T3DDatafield<signed char >;
 template class  T3DDatafield<bool>;
 
-
+extern const char type_str_3dbounds[] = "3DBounds";
+template class EXPORT_3D  CTParameter<C3DBounds, type_str_3dbounds>;
 
 NS_MIA_END
 

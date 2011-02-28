@@ -41,6 +41,7 @@ The class holds all types of data stored in two dimensional fields.
 #endif
 
 #include <mia/2d/2DDatafield.cxx>
+#include <mia/core/parameter.cxx>
 
 NS_MIA_BEGIN
 
@@ -57,6 +58,9 @@ template class EXPORT_2DDATAFIELD T2DDatafield<signed short>;
 template class EXPORT_2DDATAFIELD T2DDatafield<bool>;
 template class EXPORT_2DDATAFIELD T2DDatafield<unsigned char>;
 template class EXPORT_2DDATAFIELD T2DDatafield<signed char>;
+
+extern const char type_str_2dbounds[] = "2DBounds";
+template class EXPORT_2DDATAFIELD  CTParameter<C2DBounds, type_str_2dbounds>;
 
 NS_MIA_END
 

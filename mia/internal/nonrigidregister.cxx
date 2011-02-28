@@ -260,7 +260,7 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 		cvinfo() << "Blocksize = " << BlockSize  << "\n";
 
 		stringstream downscale_descr;
-		downscale_descr << "downscale:bx=" << BlockSize.x << ",by=" << BlockSize.y;
+		downscale_descr << "downscale:b=[" << BlockSize<<"]";
 		auto downscaler = FilterPluginHandler::instance().produce(downscale_descr.str().c_str());
 
 		PImage src_scaled = shift ? downscaler->filter(*src) : src;

@@ -48,8 +48,7 @@ public:
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-	int _M_bsx;
-	int _M_bsy;
+	mia::C2DBounds _M_b;
 	std::string _M_filter;
 };
 

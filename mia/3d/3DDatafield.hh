@@ -44,6 +44,7 @@ The class holds all types of data stored in three dimensional fields.
 #include <mia/3d/defines3d.hh>
 #include <mia/2d/2DDatafield.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/parameter.hh>
 
 NS_MIA_BEGIN
 
@@ -326,6 +327,9 @@ typedef T3DDatafield<unsigned char>  C3DUBDatafield;
 
 	/// a data field of float values
 typedef T3DDatafield<bool>  C3DBitDatafield;
+
+extern const char type_str_3dbounds[]; 
+typedef  CTParameter<C3DBounds, type_str_3dbounds> C3DBoundsParameter;
 
 
 // some implementations

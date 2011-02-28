@@ -55,9 +55,7 @@ private:
 
 	virtual bool  do_test() const;
 	void prepare_path() const;
-	int _M_bsx;
-	int _M_bsy;
-	int _M_bsz;
+	mia::C3DBounds _M_b;
 	std::string _M_filter;
 };
 
