@@ -86,7 +86,7 @@ void save_feature_image_unnamed(const string& base, int id, size_t max_comp,
 {
 	stringstream fname;
 	fname << base << "-" << "-" << max_comp <<  id << ".exr";
-	if (!save_image2d(fname.str(), ica.get_feature_image(id)))
+	if (!save_image(fname.str(), ica.get_feature_image(id)))
 		THROW(runtime_error, "unable to save " << fname.str() << "\n");
 
 }
@@ -99,12 +99,12 @@ void save_feature_image(const string& base, const string& descr, int id, size_t 
 	if (id >= 0) {
 		fname << base << "-" << descr << "-" << max_comp << ".exr";
 		cvinfo() << "save id=" << id << " as feature '" << descr << "'\n";
-		if (!save_image2d(fname.str(), ica.get_feature_image(id)))
+		if (!save_image(fname.str(), ica.get_feature_image(id)))
 			THROW(runtime_error, "unable to save " << fname.str() << "\n");
 	}else{
 		fname << base << "-" << descr << "-" << max_comp << ".exr";
 		P2DImage image(ica.get_mean_image().clone());
-		if (!save_image2d(fname.str(), image))
+		if (!save_image(fname.str(), image))
 			THROW(runtime_error, "unable to save " << fname.str() << "\n");
 	}
 }
@@ -113,7 +113,7 @@ void save_feature_image(const string& base, const string& descr, size_t max_comp
 {
 	stringstream fname;
 	fname << base << "-" << descr << "-" << max_comp << ".exr";
-	if (!save_image2d(fname.str(), image))
+	if (!save_image(fname.str(), image))
 		THROW(runtime_error, "unable to save " << fname.str() << "\n");
 }
 
@@ -121,7 +121,7 @@ void save_feature_image_png(const string& base, const string& descr, P2DImage im
 {
 	stringstream fname;
 	fname << base << "-" << descr << ".png";
-	if (!save_image2d(fname.str(), image))
+	if (!save_image(fname.str(), image))
 		THROW(runtime_error, "unable to save " << fname.str() << "\n");
 }
 
@@ -404,7 +404,7 @@ int do_main( int argc, const char *argv[] )
 	FConvert2DImage2float converter;
 	for (size_t i = start_filenum; i < end_filenum; ++i) {
 		string src_name = create_filename(src_basename.c_str(), i);
-		P2DImage image = load_image2d(src_name);
+		P2DImage image = load_image<P2DImage>(src_name);
 		if (!image)
 			THROW(runtime_error, "image " << src_name << " not found");
 
@@ -490,17 +490,17 @@ int do_main( int argc, const char *argv[] )
 			if (cropper) {
 				reference = cropper->filter(*reference);
 				P2DImage crop_source = cropper->filter(*load_image2d(src_name));
-				if (!save_image2d(scrop_name.str(), crop_source))
+				if (!save_image(scrop_name.str(), crop_source))
 					THROW(runtime_error, "unable to save " << scrop_name.str() << "\n");
 			}else  {
-				if (!save_image2d(scrop_name.str(), load_image2d(src_name)))
+				if (!save_image(scrop_name.str(), load_image2d(src_name)))
 					THROW(runtime_error, "unable to save " << scrop_name.str() << "\n");
 			}
 		}
 		stringstream fname;
 		fname << out_name << setw(format_width) << setfill('0') << i << "." << out_type;
 
-		if (!save_image2d(fname.str(), reference))
+		if (!save_image(fname.str(), reference))
 			THROW(runtime_error, "unable to save " << fname.str() << "\n");
 		cvdebug() << "wrote '" << fname.str() << "\n";
 	}

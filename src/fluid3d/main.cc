@@ -71,8 +71,8 @@ using namespace std;
    \param -max-threads maximum number of threads in parallized run (default = 2)
    \param -halffilterdim half size if the filter when using \a conv (default = 3)
    \param -statlog a file to write out some statistics
-   \param -mu Lamé parameter - modulus of volume expansion (default = 1.0)
-   \param -lambda Lamé parameter  - modulus of elasticy in shear (default = 1.0)
+   \param -mu Lamï¿½ parameter - modulus of volume expansion (default = 1.0)
+   \param -lambda Lamï¿½ parameter  - modulus of elasticy in shear (default = 1.0)
 
  * \author Gert Wollny <wollny@cns.mpg.de>
 */
@@ -241,8 +241,8 @@ int main(int argc, const char *argv[])
 	try {
 		options.parse(argc, argv);
 
-		params.source = load_image3d(in_filename);
-		params.reference = load_image3d(ref_filename);
+		params.source = load_image<P3DImage>(in_filename);
+		params.reference = load_image<P3DImage>(ref_filename);
 
 		switch (method) {
 		case meth_sor:solver = new TSORSolver(params.maxiter,params.factor,params.factor,params.My,params.Lambda);break;

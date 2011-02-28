@@ -27,10 +27,6 @@
 #include <boost/lambda/lambda.hpp>
 
 
-#include <mia/2d/nonrigidregister.hh>
-#include <mia/2d/2dfilter.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/transformfactory.hh>
 #include <gsl++/multimin.hh>
 #include <iomanip>
 
@@ -257,7 +253,8 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 		if (shift)
 			shift--;
 
-		Size BlockSize(1 << shift, 1 << shift);
+		Size BlockSize; 
+                BlockSize.fill(1 << shift);
 		cvinfo() << "Blocksize = " << BlockSize  << "\n";
 
 		stringstream downscale_descr;
@@ -274,8 +271,8 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 
 		cvinfo() << "register at " << src_scaled->get_size() << "\n";
 
-		save_image2d("src.@", src_scaled);
-		save_image2d("ref.@", ref_scaled);
+		save_image("src.@", src_scaled);
+		save_image("ref.@", ref_scaled);
 		_M_costs.reinit(); 
 		_M_costs.set_size(src_scaled->get_size()); 
 		

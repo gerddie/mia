@@ -77,8 +77,8 @@ int do_main( int argc, const char *argv[] )
 
 	options.parse(argc, argv);
 
-	P2DImage Model = load_image2d(src_filename);
-	P2DImage Reference = load_image2d(ref_filename);
+	P2DImage Model = load_image<P2DImage>(src_filename);
+	P2DImage Reference = load_image<P2DImage>(ref_filename);
 
 	C2DBounds GlobalSize = Model->get_size();
 	if (GlobalSize != Reference->get_size()){
@@ -98,7 +98,7 @@ int do_main( int argc, const char *argv[] )
 			cverr() << "Saving the transformation to '" << trans_filename << "' failed."; 
 	}
 
-	return save_image2d(out_filename, result);
+	return save_image(out_filename, result);
 }
 
 

@@ -39,7 +39,7 @@ NS_MIA_BEGIN
  */
 
 typedef TImageFilter<C3DImage> C3DFilter;
-typedef TFactory<C3DFilter> C3DFilterPlugin;
+typedef TImageFilterPlugin<C3DImage> C3DFilterPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C3DFilterPlugin> > C3DFilterPluginHandler;
 
 

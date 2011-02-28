@@ -28,6 +28,8 @@
 #include <vector>
 #include <mia/core/ioplugin.hh>
 #include <mia/core/iohandler.hh>
+#include <mia/core/iohandler.hh>
+
 #include <mia/2d/2DImage.hh>
 
 NS_MIA_BEGIN
@@ -63,7 +65,14 @@ typedef C2DImageIOPluginHandler::Instance::PData P2DImageVector;
 P2DImageVector EXPORT_2D create_image2d_vector(P2DImage image);
 
 P2DImage EXPORT_2D  load_image2d(const std::string& filename);
-bool  EXPORT_2D save_image2d(const std::string& filename, P2DImage image);
+
+template <>
+inline P2DImage load_image<P2DImage>(const std::string& filename)
+{
+	return load_image2d(filename);
+}
+
+bool  EXPORT_2D save_image(const std::string& filename, P2DImage image);
 
 
 extern EXPORT_2D const char * IDModality;

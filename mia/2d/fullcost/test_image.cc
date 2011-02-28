@@ -57,8 +57,8 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost,  ImagefullcostFixture )
 	P2DImage src(new C2DFImage(size, src_data ));
 	P2DImage ref(new C2DFImage(size, ref_data ));
 	
-	BOOST_REQUIRE(save_image2d("src.@", src)); 
-	BOOST_REQUIRE(save_image2d("ref.@", ref)); 
+	BOOST_REQUIRE(save_image("src.@", src)); 
+	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
 	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
 	cost.reinit(); 
@@ -101,8 +101,8 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_no_translate,  ImagefullcostFixture 
 	P2DImage src(new C2DFImage(size, src_data ));
 	P2DImage ref(new C2DFImage(size, ref_data ));
 	
-	BOOST_REQUIRE(save_image2d("src.@", src)); 
-	BOOST_REQUIRE(save_image2d("ref.@", ref)); 
+	BOOST_REQUIRE(save_image("src.@", src)); 
+	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
 	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
 	cost.reinit(); 
@@ -135,8 +135,8 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 	P2DImage src(new C2DUBImage(size, src_data ));
 	P2DImage ref(new C2DUBImage(size, ref_data ));
 	
-	BOOST_REQUIRE(save_image2d("src.@", src)); 
-	BOOST_REQUIRE(save_image2d("ref.@", ref)); 
+	BOOST_REQUIRE(save_image("src.@", src)); 
+	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
 	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
 	cost.reinit(); 

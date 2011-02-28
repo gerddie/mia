@@ -26,6 +26,7 @@
 #include <mia/core/handler.cxx>
 
 NS_MIA_BEGIN
+
 using namespace boost;
 
 
@@ -40,13 +41,11 @@ C3DImageCombiner::result_type C3DImageCombiner::combine( const C3DImage& a,
 }
 
 template class TImageFilter<C3DImage>;
-
+template class TImageFilterPlugin<C3DImage>;
 template class TPlugin<C3DImage, filter_type>;
-template class TFactory<C3DFilter>;
 template class THandlerSingleton<TFactoryPluginHandler<C3DFilterPlugin> >;
 template class TFactoryPluginHandler<C3DFilterPlugin>;
 template class TPluginHandler<C3DFilterPlugin>;
-
 
 template class EXPORT_HANDLER TPlugin<C3DImage, combiner_type>;
 template class EXPORT_HANDLER TFactory<C3DImageCombiner>;

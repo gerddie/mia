@@ -94,6 +94,11 @@ public:
 	int size() const {
 		return 3;
 	}
+
+	void fill(T v) {
+		x = y = z = v;
+	}
+
 	
 	///add vector \a a	
 	T3DVector<T>& operator +=(const T3DVector<T>& a){

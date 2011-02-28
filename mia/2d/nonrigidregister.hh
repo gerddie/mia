@@ -33,7 +33,7 @@
 
 
 NS_MIA_BEGIN
-typedef TNonrigidRegister<C2DTransformation> C2DNonrigidRegiste; 
+typedef TNonrigidRegister<C2DTransformation> C2DNonrigidRegister; 
 NS_MIA_END
 
 #endif

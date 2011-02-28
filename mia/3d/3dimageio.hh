@@ -52,8 +52,16 @@ typedef C3DImageIOPluginHandler::Instance::PData P3DImageVector;
 
 P3DImageVector EXPORT_3D create_image3d_vector(P3DImage image);
 
-P3DImage  EXPORT_3D load_image3d(const std::string& filename);
-bool  EXPORT_3D save_image3d(const std::string& filename, P3DImage image);
+P3DImage  EXPORT_3D load_image3d(const std::string& filename); 
+
+template <> 
+inline P3DImage  EXPORT_3D load_image<P3DImage>(const std::string& filename)
+{
+	return load_image3d(filename); 
+}
+
+
+bool  EXPORT_3D save_image(const std::string& filename, P3DImage image);
 
 
 NS_MIA_END

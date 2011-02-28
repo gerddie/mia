@@ -39,6 +39,7 @@ struct dim_traits{
 	typedef THandlerSingleton<TFactoryPluginHandler<TImageFilterPlugin<Image> > > FilterPluginHandler;
 	typedef typename Transformation::InterpolatorFactory InterpolatorFactory; 
 }; 
+
 NS_MIA_END
 
 #endif

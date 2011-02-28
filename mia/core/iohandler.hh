@@ -137,5 +137,11 @@ public:
 
 }; 
 
+template <typename T>
+T load_image(const std::string& filename)
+{
+	return T(); 
+}
+
 NS_MIA_END
 #endif

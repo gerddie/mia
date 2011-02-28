@@ -132,7 +132,7 @@ int do_main( int argc, const char *argv[] )
 	vector<P2DImage> series;
 	for (size_t i = start_filenum; i < end_filenum; ++i) {
 		string src_name = create_filename(src_basename.c_str(), i);
-		P2DImage image = load_image2d(src_name);
+		P2DImage image = load_image<P2DImage>(src_name);
 		series.push_back(image );
 	}
 
@@ -145,16 +145,16 @@ int do_main( int argc, const char *argv[] )
 	P2DImage hor = acc.get_horizontal_corr();
 	P2DImage ver = acc.get_vertical_corr();
 
-	if (!save_image2d(out_hor_name, hor))
+	if (!save_image(out_hor_name, hor))
 		THROW(runtime_error, "unable to save horizontal correlation to '"<<out_hor_name<<"'");
 
-	if (!save_image2d(out_ver_name, ver))
+	if (!save_image(out_ver_name, ver))
 		THROW(runtime_error, "unable to save vertical correlation to '"<<out_ver_name<<"'");
 
 
 	FImageAvg avg;
 	filter_equal_inplace(avg, *hor, *ver);
-	if (!save_image2d(out_sum_name, ver))
+	if (!save_image(out_sum_name, ver))
 		THROW(runtime_error, "unable to save summed correlation to '"<<out_ver_name<<"'");
 
 	return EXIT_SUCCESS;

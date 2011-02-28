@@ -85,7 +85,7 @@ double C2DImageFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVect
 	if (_M_debug) {
 		stringstream fname; 
 		fname << "test" << setw(5) << setfill('0') << idx << ".@"; 
-		save_image2d(fname.str(), toubyte_converter->filter(*temp)); 
+		save_image(fname.str(), toubyte_converter->filter(*temp)); 
 	}
 	
 	C2DFVectorfield force(get_current_size()); 

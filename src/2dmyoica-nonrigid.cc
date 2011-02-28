@@ -163,7 +163,7 @@ void save_references(const string& save_ref, int current_pass, int skip_images, 
 		stringstream filename; 
 		filename << save_ref << current_pass << "-" 
 			 << setw(4) << setfill('0') << skip_images + i << ".v"; 
-		save_image2d(filename.str(), references[i]);
+		save_image(filename.str(), references[i]);
 	}
 }
 
