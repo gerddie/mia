@@ -64,8 +64,8 @@ int do_main( int argc, const char *argv[] )
 	EMinimizers minimizer = min_bfgs2;
 
 	cvdebug() << "auto transform_creator\n"; 
-	auto transform_creator = C3DTransformCreatorHandler::instance().produce("spline"); 
-	if (!transform_creator && transform_creator->get_init_string() != string("spline"))
+	auto transform_creator = C3DTransformCreatorHandler::instance().produce("spline:rate=10"); 
+	if (!transform_creator && transform_creator->get_init_string() != string("spline:rate=10"))
 		cverr() << "something's wrong\n"; 
 
 	size_t mg_levels = 3;

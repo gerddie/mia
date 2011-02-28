@@ -38,7 +38,6 @@ struct  EXPORT_2D C2DTransformMock: public C2DTransformation {
 	C2DTransformMock(const C2DBounds& size);
 	virtual C2DTransformation *invert() const;
 	virtual bool save(const std::string& filename, const std::string& type) const;
-	virtual P2DTransformation upscale(const C2DBounds& size) const;
 	virtual void add(const C2DTransformation& a);
 	virtual void update(float step, const C2DFVectorfield& a);
 	virtual size_t degrees_of_freedom() const;
@@ -74,6 +73,7 @@ protected:
 	}; 
 
 private:
+	virtual P2DTransformation do_upscale(const C2DBounds& size) const;
 	virtual C2DTransformation *do_clone() const;
         virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
 	C2DBounds m_size;

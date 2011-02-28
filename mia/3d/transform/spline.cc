@@ -319,7 +319,7 @@ bool C3DSplineTransformation::refine()
 }
 
 
-P3DTransformation C3DSplineTransformation::upscale(const C3DBounds& size) const
+P3DTransformation C3DSplineTransformation::do_upscale(const C3DBounds& size) const
 {
 	TRACE_FUNCTION;
 

@@ -168,7 +168,7 @@ public:
 	   \param size new size of the transformation
 	   \returns shared pointer to upscaled transformation
 	 */
-	virtual Pointer upscale(const C2DBounds& size) const = 0;
+	Pointer upscale(const C2DBounds& size) const;
 
 	/**
 	   concat a transformation,
@@ -284,6 +284,7 @@ public:
 
 private: 
 
+	virtual Pointer do_upscale(const C2DBounds& size) const = 0;
 
 	std::string _M_creator_string;  
 	virtual C2DTransformation *do_clone() const = 0;

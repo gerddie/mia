@@ -125,7 +125,7 @@ bool C2DTranslateTransformation::save(const std::string& /*filename*/, const std
 
 }
 
-P2DTransformation C2DTranslateTransformation::upscale(const C2DBounds& size) const
+P2DTransformation C2DTranslateTransformation::do_upscale(const C2DBounds& size) const
 {
 
 	return P2DTransformation(new C2DTranslateTransformation(size,

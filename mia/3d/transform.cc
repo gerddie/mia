@@ -57,6 +57,15 @@ C3DTransformation *C3DTransformation::clone() const
 	return result; 
 }
 
+P3DTransformation C3DTransformation::upscale(const C3DBounds& size) const
+{
+	P3DTransformation result = do_upscale(size); 
+	if (result) 
+		result->set_creator_string(get_creator_string()); 
+	return result; 
+}
+
+
 
 C3DTransformation::iterator_impl::iterator_impl():
 	_M_pos(0,0,0), 

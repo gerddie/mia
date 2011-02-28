@@ -57,6 +57,14 @@ C2DTransformation *C2DTransformation::clone() const
 	return result; 
 }
 
+C2DTransformation::Pointer C2DTransformation::upscale(const C2DBounds& size) const
+{
+	Pointer result = do_upscale(size); 
+	if (result) 
+		result->set_creator_string(get_creator_string()); 
+	return result;	
+}
+
 
 C2DTransformation::iterator_impl::iterator_impl():
 	_M_pos(0,0), 

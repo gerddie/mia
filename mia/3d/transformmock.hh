@@ -38,7 +38,6 @@ struct  EXPORT_3D C3DTransformMock: public C3DTransformation {
 	C3DTransformMock(const C3DBounds& size);
 	virtual C3DTransformation *invert() const;
 	virtual bool save(const std::string& filename, const std::string& type) const;
-	virtual P3DTransformation upscale(const C3DBounds& size) const;
 	virtual void add(const C3DTransformation& a);
 	virtual void update(float step, const C3DFVectorfield& a);
 	virtual size_t degrees_of_freedom() const;
@@ -75,6 +74,7 @@ protected:
 	}; 
 
 private:
+	virtual P3DTransformation do_upscale(const C3DBounds& size) const;
 	virtual C3DTransformation *do_clone() const;
         virtual P3DImage apply(const C3DImage& image, const C3DInterpolatorFactory& ipf) const;
 	C3DBounds m_size;

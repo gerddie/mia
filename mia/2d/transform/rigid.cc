@@ -205,7 +205,7 @@ const C2DBounds& C2DRigidTransformation::get_size() const
 	return _M_size;
 }
 
-P2DTransformation C2DRigidTransformation::upscale(const C2DBounds& size) const
+P2DTransformation C2DRigidTransformation::do_upscale(const C2DBounds& size) const
 {
 	C2DFVector new_trans(float(size.x) / (float)get_size().x * _M_translation.x,
 			     float(size.y) / (float)get_size().y * _M_translation.y);

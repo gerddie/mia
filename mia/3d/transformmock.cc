@@ -52,7 +52,7 @@ bool C3DTransformMock::save(const std::string& , const std::string& ) const
 	return false;
 }
 
-P3DTransformation C3DTransformMock::upscale(const C3DBounds&) const
+P3DTransformation C3DTransformMock::do_upscale(const C3DBounds&) const
 {
 	return P3DTransformation();
 }

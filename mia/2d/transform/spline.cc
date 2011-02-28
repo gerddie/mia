@@ -281,7 +281,7 @@ bool C2DSplineTransformation::refine()
 }
 
 
-P2DTransformation C2DSplineTransformation::upscale(const C2DBounds& size) const
+P2DTransformation C2DSplineTransformation::do_upscale(const C2DBounds& size) const
 {
 	TRACE_FUNCTION;
 	C2DFVector mx(((float)size.x)/ ((float)_M_range.x),

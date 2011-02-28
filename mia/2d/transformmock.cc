@@ -52,7 +52,7 @@ bool C2DTransformMock::save(const std::string& , const std::string& ) const
 	return false;
 }
 
-P2DTransformation C2DTransformMock::upscale(const C2DBounds&) const
+P2DTransformation C2DTransformMock::do_upscale(const C2DBounds&) const
 {
 	return P2DTransformation();
 }

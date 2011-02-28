@@ -132,7 +132,7 @@ bool C3DTranslateTransformation::save(const std::string& /*filename*/, const std
 
 }
 
-P3DTransformation C3DTranslateTransformation::upscale(const C3DBounds& size) const
+P3DTransformation C3DTranslateTransformation::do_upscale(const C3DBounds& size) const
 {
 
 	return P3DTransformation(new C3DTranslateTransformation(size,
