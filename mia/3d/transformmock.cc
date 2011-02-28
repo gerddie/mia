@@ -87,6 +87,7 @@ void C3DTransformMock::translate(const C3DFVectorfield& gradient, gsl::DoubleVec
 	for(auto f = gradient.begin(); f != gradient.end(); ++f) {
 		*r++ = f->x;
 		*r++ = f->y;
+		*r++ = f->z;
 	}
 }
 
@@ -197,14 +198,17 @@ const C3DFVector& C3DTransformMock::iterator_impl::do_get_value()const
 
 void C3DTransformMock::iterator_impl::do_x_increment()
 {
+	_M_value = C3DFVector(get_pos()); 
 }
 
 void C3DTransformMock::iterator_impl::do_y_increment()
 {
+	_M_value = C3DFVector(get_pos()); 
 }
 
 void C3DTransformMock::iterator_impl::do_z_increment()
 {
+	_M_value = C3DFVector(get_pos()); 
 }
 
 
