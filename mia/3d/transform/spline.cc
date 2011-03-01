@@ -397,7 +397,7 @@ C3DFVector C3DSplineTransformation::sum(const C3DBounds& start,
 					const vector<double>& yweights, 
 					const vector<double>& zweights) const 
 {
-	TRACE_FUNCTION;
+//	TRACE_FUNCTION;
 	C3DDVector result; 
 	size_t z = start.z; 
 	for(auto wz = zweights.begin(); z < _M_coefficients.get_size().z && 
@@ -424,7 +424,7 @@ C3DFVector C3DSplineTransformation::sum(const C3DBounds& start,
 
 C3DFMatrix C3DSplineTransformation::derivative_at(const C3DFVector& v) const
 {
-	TRACE_FUNCTION;
+//	TRACE_FUNCTION;
 	
 	if (v.x < 0 || v.y < 0 || v.z < 0 ||
 	    v.x > _M_range.x - 1 ||  v.y > _M_range.y - 1  || v.z > _M_range.z -1) {
@@ -751,7 +751,7 @@ float C3DSplineTransformation::get_jacobian(const C3DFVectorfield& v, float delt
 
 C3DFVector C3DSplineTransformation::on_grid(const C3DBounds& x) const
 {
-	TRACE_FUNCTION;
+//	TRACE_FUNCTION;
 	// this is a bit expensive, but uses less memory 
 	// one could evaluate the whole grid using convolution 
 	// but this would require more memory
@@ -788,7 +788,7 @@ C3DTransformation::iterator_impl * C3DSplineTransformation::iterator_impl::clone
 
 const C3DFVector&  C3DSplineTransformation::iterator_impl::do_get_value()const
 {
-	TRACE_FUNCTION;
+//	TRACE_FUNCTION;
 	if (!_M_value_valid) {
 		_M_value = C3DFVector(get_pos()) - _M_trans.on_grid(get_pos());
 		_M_value_valid = true; 
@@ -798,17 +798,17 @@ const C3DFVector&  C3DSplineTransformation::iterator_impl::do_get_value()const
 
 void C3DSplineTransformation::iterator_impl::do_x_increment()
 {
-	TRACE_FUNCTION;
+//	TRACE_FUNCTION;
 	_M_value_valid = false; 
 }
 void C3DSplineTransformation::iterator_impl::do_y_increment()
 {
-	TRACE_FUNCTION;
+//	TRACE_FUNCTION;
 	_M_value_valid = false; 
 }
 void C3DSplineTransformation::iterator_impl::do_z_increment()
 {
-	TRACE_FUNCTION;
+//	TRACE_FUNCTION;
 	_M_value_valid = false; 
 }
 
