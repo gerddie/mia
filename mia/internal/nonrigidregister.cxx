@@ -349,9 +349,10 @@ double  TNonrigRegGradientProblem<T>::do_fdf(const DoubleVector& x, DoubleVector
 	_M_grad_evals++; 
 
 	cvmsg() << "Cost[fg="<<setw(4)<<_M_grad_evals 
-		<< ",fe="<<setw(4)<<_M_func_evals<<"]=" 
+		<< ",fe="<<setw(4)<<_M_func_evals<<"]= with " 
+		<< x.size() << " parameters= " 
 		<< setw(20) << setprecision(12) << result 
-		<< "ratio:" << setw(20) << setprecision(12) << result / _M_start_cost <<  "\r"; 
+		<< " ratio:" << setw(20) << setprecision(12) << result / _M_start_cost <<  "\r"; 
 	cvinfo() << "\n"; 
 	return result; 
 }
