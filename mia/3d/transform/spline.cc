@@ -125,11 +125,11 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplin
 	if (csize.z < 2)
 		csize.z = 2; 
 	csize += _M_enlarge;
-	_M_coefficients = C3DDVectorfield(csize);
+	_M_coefficients = C3DFVectorfield(csize);
 	reinit();
 }
 
-void C3DSplineTransformation::set_coefficients(const C3DDVectorfield& field)
+void C3DSplineTransformation::set_coefficients(const C3DFVectorfield& field)
 {
 	TRACE_FUNCTION;
 	_M_scales_valid = (_M_coefficients.get_size() == field.get_size());
@@ -137,12 +137,12 @@ void C3DSplineTransformation::set_coefficients(const C3DDVectorfield& field)
 //	_M_target_c_rate =  C3DFVector(_M_range) / C3DFVector(field.get_size() - _M_enlarge);
 }
 
-void C3DSplineTransformation::set_coefficients_and_prefilter(const C3DDVectorfield& field)
+void C3DSplineTransformation::set_coefficients_and_prefilter(const C3DFVectorfield& field)
 {
 	TRACE_FUNCTION;
-	C3DDVectorfield help1(field.get_size());
-	C3DDVectorfield help2(field.get_size());
-	vector<C3DDVector> buffer(field.get_size().x); 
+	C3DFVectorfield help1(field.get_size());
+	C3DFVectorfield help2(field.get_size());
+	vector<C3DFVector> buffer(field.get_size().x); 
 	for(size_t z = 0; z < field.get_size().z; ++z)
 		for(size_t y = 0; y < field.get_size().y; ++y) {
 			field.get_data_line_x(y, z, buffer); 
@@ -303,9 +303,9 @@ bool C3DSplineTransformation::refine()
 	// now interpolate the new coefficients 
 	// \todo this should be done faster by a filter 
 	reinit();
-	T3DConvoluteInterpolator<C3DDVector> interp(_M_coefficients, _M_kernel);
+	T3DConvoluteInterpolator<C3DFVector> interp(_M_coefficients, _M_kernel);
 
-	C3DDVectorfield coeffs(csize);
+	C3DFVectorfield coeffs(csize);
 	C3DFVector dx(C3DFVector(_M_coefficients.get_size() - C3DBounds::_1 - _M_enlarge) / 
 		      C3DFVector(csize -  C3DBounds::_1 - _M_enlarge)); 
 
@@ -332,10 +332,10 @@ P3DTransformation C3DSplineTransformation::do_upscale(const C3DBounds& size) con
 {
 	TRACE_FUNCTION;
 
-	C3DDVector mx(C3DFVector(size) / C3DFVector(_M_range));
+	C3DFVector mx(C3DFVector(size) / C3DFVector(_M_range));
 
 	C3DSplineTransformation *help = new C3DSplineTransformation(size, _M_kernel);
-	C3DDVectorfield new_coefs(_M_coefficients.get_size()); 
+	C3DFVectorfield new_coefs(_M_coefficients.get_size()); 
 	
 	transform(_M_coefficients.begin(), _M_coefficients.end(), new_coefs.begin(), mx * _1 );
 	help->set_coefficients(new_coefs); 
@@ -351,7 +351,7 @@ void C3DSplineTransformation::add(const C3DTransformation& a)
 	reinit();
 	a.reinit();
 	
-	C3DDVectorfield new_coef(_M_coefficients.get_size()); 
+	C3DFVectorfield new_coef(_M_coefficients.get_size()); 
 	auto i = new_coef.begin();
 
 	for (size_t z = 0; z < _M_coefficients.get_size().z; ++z)  {
@@ -388,7 +388,7 @@ void C3DSplineTransformation::update(float step, const C3DFVectorfield& a)
 	auto ai = a.begin();
 
 	while( ci != ce ) {
-		*ci++ += C3DDVector(step * *ai++);
+		*ci++ += C3DFVector(step * *ai++);
 	}
 }
 
@@ -398,15 +398,15 @@ C3DFVector C3DSplineTransformation::sum(const C3DBounds& start,
 					const vector<double>& zweights) const 
 {
 //	TRACE_FUNCTION;
-	C3DDVector result; 
+	C3DFVector result; 
 	size_t z = start.z; 
 	for(auto wz = zweights.begin(); z < _M_coefficients.get_size().z && 
 		    wz != zweights.end(); ++z, ++wz)  {
-		C3DDVector hy; 
+		C3DFVector hy; 
 		size_t y = start.y; 
 		for(auto wy = yweights.begin(); y < _M_coefficients.get_size().y && 
 			    wy != yweights.end(); ++y, ++wy)  {
-			C3DDVector hx; 
+			C3DFVector hx; 
 			size_t x = start.x; 
 			auto wx = xweights.begin();
 			for(auto cx = _M_coefficients.begin_at(start.x,y,z); 

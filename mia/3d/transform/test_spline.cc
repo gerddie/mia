@@ -61,9 +61,9 @@ struct TransformSplineFixture {
 
 		cs = C3DFVector(coeff_shift, coeff_shift, coeff_shift); 
 
-		C3DDVectorfield field(size); 
+		C3DFVectorfield field(size); 
 
-		C3DDVectorfield::iterator i = field.begin();
+		C3DFVectorfield::iterator i = field.begin();
 		for (size_t z = 0; z < size.z; ++z)
 			for (size_t y = 0; y < size.y; ++y)
 				for (size_t x = 0; x < size.x; ++x, ++i) {
@@ -629,7 +629,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_refine, TransformSplineFixture )
 	size.y += 2*coeff_shift; 
 	size.z += 2*coeff_shift; 
 
-	C3DDVectorfield coefs(size); 
+	C3DFVectorfield coefs(size); 
 	
 	auto i = coefs.begin();
 	C3DFVector cshift(coeff_shift, coeff_shift, coeff_shift); 
@@ -700,7 +700,7 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 	copy(src_image_init, src_image_init + 100, psrc->begin_at(0,0,4)); 
 	
 
-	C3DDVectorfield field(C3DBounds(5,4,4)); 
+	C3DFVectorfield field(C3DBounds(5,4,4)); 
 
 	C3DFVector shift(1,2,1); 
 	fill(field.begin(), field.end(), shift); 
@@ -754,7 +754,7 @@ struct TransformSplineFixtureFieldBase {
 		stransf.reinit();
 	}
 	C3DBounds size;
-	C3DDVectorfield field;
+	C3DFVectorfield field;
 	PBSplineKernel kernel; 
 	P3DInterpolatorFactory ipf;
 
@@ -851,7 +851,7 @@ BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture)
 {
 	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3)); 
 	C3DSplineTransformation t(size, kernel);
-	C3DDVectorfield coefs(C3DBounds(12,12,12)); 
+	C3DFVectorfield coefs(C3DBounds(12,12,12)); 
 	t.set_coefficients(coefs); 
 	t.reinit(); 
 
@@ -1015,7 +1015,7 @@ struct TransformSplineFixtureFieldBase2 {
 	}
 	void init(int dsize, int r) {
 		size = C3DBounds(2 * dsize + 1,2 * dsize + 1,2 * dsize + 1);
-		C3DDVectorfield field(size);
+		C3DFVectorfield field(size);
 		range = r; 
 		scale.x = scale.y = scale.z = range / dsize;
 
