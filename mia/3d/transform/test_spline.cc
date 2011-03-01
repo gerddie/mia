@@ -1004,3 +1004,113 @@ double Cost3DMock::ref_value(const C3DFVector& x) const
 
 
 
+
+
+/////////////////////////////////////
+struct TransformSplineFixtureFieldBase2 {
+	TransformSplineFixtureFieldBase2()
+	{
+
+	}
+	void init(int dsize, double r, EInterpolation type) {
+		ipf.reset(create_3dinterpolation_factory(type));
+		size = C3DBounds(2 * dsize + 1,2 * dsize + 1,2 * dsize + 1);
+		field = C3DFVectorfield(size);
+		range = r; 
+		scale.x = scale.y = scale.z = range / dsize;
+
+		field_range.x = 2 * range; 
+		field_range.y = 2 * range; 
+		field_range.z = 2 * range; 
+		
+		graddiv2sum = 0.0; 
+		C3DFVectorfield::iterator i = field.begin();
+		for (int z = -dsize; z <= dsize; ++z)
+			for (int y = -dsize; y <= dsize; ++y)
+				for (int x = -dsize; x <= dsize; ++x, ++i) {
+					double sx = x * scale.x;
+					double sy = y * scale.y;
+					double sz = z * scale.z;
+					*i = C3DFVector( fx(sx, sy, sz), fy(sx, sy, sz), fz(sx, sy, sz));
+					cvdebug() << "(" << sx << ", " << sy << ", " << sz << *i << "\n"; 
+
+					graddiv2sum += graddiv2(sx, sy, sz); 
+				}
+		assert(i == field.end()); 
+		source.reset(ipf->create(field));
+
+		cvinfo() << "scale = " << scale << "\n"; 		
+		graddiv2sum *= scale.x * scale.y*scale.z; 
+	}
+	C3DBounds size;
+	C3DFVectorfield field;
+	P3DInterpolatorFactory ipf;
+	C3DFVector field_range;
+	double range; 
+	std::shared_ptr<T3DInterpolator<C3DFVector>  > source; 
+protected:
+	virtual double fx(double x, double y, double z)const  = 0;
+	virtual double fy(double x, double y, double z)const  = 0;
+	virtual double fz(double x, double y, double z)const  = 0;
+	virtual double graddiv2(double x, double y, double z)const = 0;
+	C3DFVector scale;
+	double graddiv2sum; 
+private:
+
+};
+
+struct TransformSplineFixtureMixed: public TransformSplineFixtureFieldBase2 {
+	double fx(double x, double y, double z)const ;
+	double fy(double x, double y, double z)const ;
+	double fz(double x, double y, double z)const ;
+	double graddiv2(double x, double y, double z)const;
+};
+
+BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4, TransformSplineFixtureMixed )
+{
+	init(10, 4, ip_bspline4);
+
+	const T3DConvoluteInterpolator<C3DFVector>& interp = 
+		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
+	
+	auto coeffs = interp.get_coefficients(); 
+	const double testdiv = 7.0 * pow(M_PI, 1.5) / sqrt(2.0); 
+	const double testcurl = testdiv / 4.0; 
+
+	C3DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
+	double graddiv = div  * coeffs; 
+	BOOST_CHECK_CLOSE( graddiv, testdiv, 0.1); 	
+
+
+	C3DPPDivcurlMatrix divcurl(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 1.0);
+	double graddivcurl = divcurl  * coeffs; 
+	BOOST_CHECK_CLOSE( graddivcurl, testdiv + testcurl, 0.1); 	
+	
+
+	C3DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
+	double gradcurl = rot  * coeffs; 
+	BOOST_CHECK_CLOSE( gradcurl, testcurl, 0.1); 	
+
+	cvinfo() << "graddiv  / testdiv= " << graddiv  / testdiv << "\n"; 
+	cvinfo() << "gradcurl / testcurl = " << gradcurl / testcurl << "\n"; 
+}
+
+double TransformSplineFixtureMixed::fx(double x, double y, double z)const 
+{
+	return x * exp(-x*x-y*y-z*z);
+}
+
+double TransformSplineFixtureMixed::fy(double x, double y, double z)const 
+{
+	return y * exp(-x*x-y*y-z*z);
+}
+
+double TransformSplineFixtureMixed::fz(double , double , double )const
+{
+	return 0.0;
+}
+
+double TransformSplineFixtureMixed::graddiv2(double , double , double )const
+{
+	return 0.0; 
+}
