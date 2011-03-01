@@ -110,6 +110,16 @@ void C3DTransformation::iterator_impl::increment()
 	}
 }
 
+void C3DTransformation::set_debug()
+{
+	_M_debug = true; 
+}
+bool C3DTransformation::get_debug()const
+{
+	return _M_debug; 
+}
+
+
 const C3DBounds& C3DTransformation::iterator_impl::get_pos()const
 {
 	return _M_pos; 

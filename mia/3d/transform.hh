@@ -289,13 +289,18 @@ public:
 	 */
 	virtual bool refine(); 
 
+	void set_debug(); 
+protected: 
+	
+	bool get_debug()const; 
+
 private: 
 
 	virtual P3DTransformation do_upscale(const C3DBounds& size) const = 0;
 
 	std::string _M_creator_string;  
 	virtual C3DTransformation *do_clone() const = 0;
-
+	bool _M_debug; 
 };
 
 
