@@ -116,6 +116,22 @@ NS_MIA_BEGIN
 VISTA4MIA_EXPORT void copy_attr_list(VAttrList target, const mia::CAttributeMap& attributes);
 VISTA4MIA_EXPORT void copy_attr_list(mia::CAttributeMap& attributes, const VAttrList target);
 
+/**
+   Helper class to indice atomatic destruction of vista attribute lists. 
+ */
+class CVAttrList {
+public: 
+	CVAttrList(VAttrList list); 
+	~CVAttrList(); 
+	operator VAttrList(); 
+	bool operator !() const; 
+	
+	VAttrList operator ->(); 
+private: 
+	VAttrList m_list; 
+		
+}; 
+
 NS_MIA_END
 
 

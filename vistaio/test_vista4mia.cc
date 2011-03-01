@@ -198,8 +198,8 @@ static void test_2dimage_plugin_handler()
 static void test_3dvf_plugin_handler()
 {
 	const C3DVFIOPluginHandler::Instance& handler = C3DVFIOPluginHandler::instance();
-	BOOST_CHECK_EQUAL(handler.size(), 2u);
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "datapool vista ");
+	BOOST_CHECK_EQUAL(handler.size(), 3u);
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "cvista datapool vista ");
 }
 
 
