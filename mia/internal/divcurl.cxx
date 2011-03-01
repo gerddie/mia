@@ -63,7 +63,7 @@ double TDivCurlFullCost<T>::do_value() const
 template <typename T> 
 void TDivCurlFullCost<T>::do_set_size()
 {
-	_M_size_scale = 1.0 / (this->get_current_size().x * this->get_current_size().y); 
+	_M_size_scale = 1.0 / (this->get_current_size().product()); 
 }
 
 template <typename T> 

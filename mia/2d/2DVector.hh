@@ -86,6 +86,10 @@ public:
 		return T(sqrt(norm2()));
 	}
 	
+	double product() const {
+		return x * y; 
+	}
+
 	// Operators
 	T2DVector& operator += (const T2DVector& a){
 		x += a.x; y += a.y;

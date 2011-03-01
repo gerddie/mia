@@ -21,7 +21,7 @@
  *
  */
 
-
+#define VSTREAM_DOMAIN "test-transio"
 #include <mia/internal/autotest.hh>
 #include <mia/3d/transformio.hh>
 #include <mia/3d/transformfactory.hh>

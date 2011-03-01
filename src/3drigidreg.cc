@@ -98,8 +98,7 @@ int do_main( int argc, const char *argv[] )
 			cverr() << "Saving the transformation to '" << trans_filename << "' failed."; 
 	}
 
-	return save_image
-(out_filename, result);
+	return save_image(out_filename, result);
 }
 
 

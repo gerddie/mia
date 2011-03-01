@@ -20,6 +20,7 @@
  *
  */
 
+#define VSTREAM_DOMAIN "3dtransform"
 #include <mia/3d/transform.hh>
 #include <mia/3d/deformer.hh>
 

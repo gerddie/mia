@@ -85,6 +85,9 @@ public:
 		return x * x + y * y + z * z;
 	}
 	
+	double product() const {
+		return x * y * z; 
+	}
 	//! Euclidian norm of the vector
 	double norm()const{
 		return sqrt(norm2());

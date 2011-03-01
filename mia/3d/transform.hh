@@ -328,18 +328,19 @@ struct C3DTransform : public TFilter<P3DImage> {
 	}
 	template <typename T>
 	P3DImage operator ()(const T3DImage<T>& image) const {
+		assert(image.get_size() == _M_trans.get_size()); 
 		T3DImage<T> *timage = new T3DImage<T>(image.get_size(), image);
 
 		std::auto_ptr<T3DInterpolator<T> > interp(_M_ipf.create(image.data()));
 
-		typename T3DImage<T>::iterator r = timage->begin();
-		typename Transform::const_iterator v = _M_trans.begin();
-
-		for (size_t z = 0; z < image.get_size().z; ++z)
-			for (size_t y = 0; y < image.get_size().y; ++y)
-				for (size_t x = 0; x < image.get_size().x; ++x, ++r, ++v) {
-					*r = (*interp)(*v);
-				}
+		auto r = timage->begin();
+		auto v = _M_trans.begin();
+		
+		while (r != timage->end()) {
+			cvdebug() << *v << "\n"; 
+			*r = (*interp)(*v);
+			++r; ++v; 
+		}
 		return P3DImage(timage);
 	}
 private:

@@ -233,6 +233,7 @@ struct FGetGradient3D: public TFilter< C3DFVectorfield> {
 	C3DFVectorfield operator () ( const T3DImage<T>& image) const {
 
 		C3DFVectorfield result(image.get_size());
+		fill(result.begin(), result.end(), C3DFVector()); 
 		size_t slice_size = image.get_size().x * image.get_size().y; 
 		size_t row_size = image.get_size().x; 
 		

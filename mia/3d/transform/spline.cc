@@ -26,6 +26,7 @@
 #include <iomanip>
 #include <numeric>
 #include <cmath>
+#include <sstream>
 #include <mia/3d/transform/spline.hh>
 #include <mia/3d/transformfactory.hh>
 #include <mia/3d/3dimageio.hh>
@@ -116,7 +117,14 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplin
 	_M_shift = C3DBounds(s,s,s); 
 	_M_enlarge = 2 * _M_shift;
 
-	C3DBounds csize(C3DFVector(range - C3DBounds::_1 ) / c_rate  + C3DFVector(_M_enlarge));
+	C3DBounds csize(C3DFVector(range - C3DBounds::_1 ) / c_rate); 
+	if (csize.x < 2)
+		csize.x = 2; 
+	if (csize.y < 2)
+		csize.y = 2; 
+	if (csize.z < 2)
+		csize.z = 2; 
+	csize += _M_enlarge;
 	_M_coefficients = C3DDVectorfield(csize);
 	reinit();
 }
@@ -558,6 +566,8 @@ C3DSplineTransformation::get_derivative_row(size_t nin, size_t nout, double scal
 void C3DSplineTransformation::translate(const C3DFVectorfield& gradient, gsl::DoubleVector& params) const
 {
 	TRACE_FUNCTION;
+	static int pass = 0; 
+
 	assert(params.size() == _M_coefficients.size() * 3);
 	assert(gradient.get_size() == _M_range); 
 	reinit(); 
@@ -640,8 +650,11 @@ void C3DSplineTransformation::translate(const C3DFVectorfield& gradient, gsl::Do
 		coefs.push_back(P3DImage(cx)); 
 		coefs.push_back(P3DImage(cy)); 
 		coefs.push_back(P3DImage(cz)); 
+
+		stringstream coef_filename; 
+		coef_filename << "coefs" << setw(5) << setfill('0') << pass << ".v"; 
 		
-		C3DImageIOPluginHandler::instance().save("", "coefs.v", coefs); 
+		C3DImageIOPluginHandler::instance().save("", coef_filename.str(), coefs); 
 		
 		C3DFImage *gx = new C3DFImage(gradient.get_size()); 
 		C3DFImage *gy = new C3DFImage(gradient.get_size()); 
@@ -661,9 +674,12 @@ void C3DSplineTransformation::translate(const C3DFVectorfield& gradient, gsl::Do
 		grad.push_back(P3DImage(gy)); 
 		grad.push_back(P3DImage(gz)); 
 		
-		C3DImageIOPluginHandler::instance().save("", "grad.v", grad); 
-		
+		stringstream grad_filename; 
+		grad_filename << "grad" << setw(5) << setfill('0') << pass << ".v"; 
 
+		C3DImageIOPluginHandler::instance().save("", grad_filename.str(), grad); 
+		
+		++pass; 
 	}
 
 }
@@ -836,7 +852,7 @@ double C3DSplineTransformation::get_divcurl_cost(double wd, double wr) const
 
 class C3DSplineTransformCreator: public C3DTransformCreator {
 public:
-	C3DSplineTransformCreator(EInterpolation ip, const C3DFVector& rates);
+	C3DSplineTransformCreator(EInterpolation ip, const C3DFVector& rates, bool debug);
 	virtual P3DTransformation do_create(const C3DBounds& size) const;
 private:
 	PBSplineKernel _M_kernel;
@@ -844,8 +860,9 @@ private:
 	bool _M_debug; 
 };
 
-C3DSplineTransformCreator::C3DSplineTransformCreator(EInterpolation ip, const C3DFVector& rates):
-	_M_rates(rates)
+C3DSplineTransformCreator::C3DSplineTransformCreator(EInterpolation ip, const C3DFVector& rates, bool debug):
+	_M_rates(rates), 
+	_M_debug(debug)
 {
 	TRACE_FUNCTION;
 	FUNCTION_NOT_TESTED;
@@ -893,25 +910,30 @@ public:
 private:
 	EInterpolation _M_ip;
 	float _M_rate;
+	bool _M_debug; 
 };
 
 C3DSplineTransformCreatorPlugin::C3DSplineTransformCreatorPlugin():
 	C3DTransformCreatorPlugin("spline"),
 	_M_ip(ip_bspline3),
-	_M_rate(10)
+	_M_rate(10), 
+	_M_debug(false)
 {
 	add_parameter("interp",
             new CDictParameter<EInterpolation>(_M_ip, GInterpolatorTable, "image interpolator"));
 	add_parameter("rate",
 		      new CFloatParameter(_M_rate, 1, numeric_limits<float>::max(), false,
 					  "isotropic coefficient rate in pixels"));
+	add_parameter("debug",
+		      new CBoolParameter(_M_debug, false, "enable additional debuging output"));
+
 }
 
 C3DSplineTransformCreatorPlugin::ProductPtr
 C3DSplineTransformCreatorPlugin::do_create() const
 {
 	TRACE_FUNCTION;
-	return ProductPtr(new C3DSplineTransformCreator(_M_ip, C3DFVector(_M_rate, _M_rate, _M_rate)));
+	return ProductPtr(new C3DSplineTransformCreator(_M_ip, C3DFVector(_M_rate, _M_rate, _M_rate), _M_debug));
 }
 
 bool C3DSplineTransformCreatorPlugin::do_test() const
