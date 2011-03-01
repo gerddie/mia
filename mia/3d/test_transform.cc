@@ -103,7 +103,7 @@ BOOST_FIXTURE_TEST_CASE (test_affine_Gradient, TransformGradientFixture)
 	P3DTransformationFactory creater = handler.produce("affine");
 	P3DTransformation transform = creater->create(size);
 
-	run_test(*transform); 
+	run_test(*transform, 0.2); 
 }
 
 BOOST_FIXTURE_TEST_CASE (test_rigid_Gradient, TransformGradientFixture) 
@@ -130,6 +130,9 @@ BOOST_FIXTURE_TEST_CASE (test_vf_Gradient, TransformGradientFixture)
 }
 
 #endif
+
+#if 0
+// this is actually tested in the spline.cc
 BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture) 
 {
 	const C3DTransformCreatorHandler::Instance& handler =
@@ -140,12 +143,12 @@ BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture)
 
 	run_test(*transform, 10.0); 
 }
-
+#endif
 
 
 
 TransformGradientFixture::TransformGradientFixture():
-	size(20, 30, 15), 
+	size(20, 28, 16), 
 	cost(size),
 	m_x(11,16, 7), 
 	gradient(size)
@@ -171,10 +174,10 @@ void TransformGradientFixture::run_test(C3DTransformation& t, double tol)const
 	int n_zero = 0; 
 	for(auto itrg =  trgrad.begin(), 
 		    iparam = params.begin(); itrg != trgrad.end(); ++itrg, ++iparam) {
-		*iparam += delta; 
+		*iparam += delta;
 		t.set_parameters(params);
 		double cost_plus = cost.value(t);
-		*iparam -= 2*delta; 
+		*iparam -= 2*delta;
 		t.set_parameters(params);
 		double cost_minus = cost.value(t);
 		*iparam += delta; 
@@ -182,11 +185,11 @@ void TransformGradientFixture::run_test(C3DTransformation& t, double tol)const
 
 		double test_val = (cost_plus - cost_minus)/ (2*delta); 
 		cvdebug() << *itrg << " vs " << test_val << "\n"; 
-		if (fabs(*itrg) < 1e-8 && fabs(test_val) < 1e-8) {
+		if (fabs(*itrg) < 1e-6 && fabs(test_val) < 1e-6) {
 			n_close_zero++; 
 			continue; 
 		}
-		if (*itrg == 0.0 && fabs(test_val) < 1e-7) {
+		if (*itrg == 0.0 && fabs(test_val) < 1e-5) {
 			n_zero++; 
 			continue; 
 		}
@@ -194,8 +197,8 @@ void TransformGradientFixture::run_test(C3DTransformation& t, double tol)const
 		BOOST_CHECK_CLOSE(*itrg, test_val, tol); 
 	}
 	cvmsg() << "N=" << trgrad.size() << "\n"; 
-	cvmsg() << "value pairs < 1e-8 = " << n_close_zero << "\n"; 
-	cvmsg() << "grad value zero, but finite difference below 1e-7 = " << n_zero << "\n"; 
+	cvmsg() << "value pairs < 1e-6 = " << n_close_zero << "\n"; 
+	cvmsg() << "grad value zero, but finite difference below 1e-5 = " << n_zero << "\n"; 
 }
 
 Cost3DMock::Cost3DMock(const C3DBounds& size):
@@ -252,7 +255,7 @@ C3DFVector Cost3DMock::src_grad(const C3DFVector& x)const
 
 double Cost3DMock::ref_value(const C3DFVector& x)const 
 {
-	const C3DFVector p = x - _M_center - C3DFVector(1.4,1.3,1.2); 
+	const C3DFVector p = x - _M_center - C3DFVector(1.1,1.2,1.1); 
 	return exp( - p.norm2() / _M_r ); 
 }
 

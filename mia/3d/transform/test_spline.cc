@@ -1004,3 +1004,111 @@ double Cost3DMock::ref_value(const C3DFVector& x) const
 
 
 
+
+
+/////////////////////////////////////
+struct TransformSplineFixtureFieldBase2 {
+	TransformSplineFixtureFieldBase2():
+		kernel(new CBSplineKernel4())
+	{
+
+	}
+	void init(int dsize, int r) {
+		size = C3DBounds(2 * dsize + 1,2 * dsize + 1,2 * dsize + 1);
+		C3DDVectorfield field(size);
+		range = r; 
+		scale.x = scale.y = scale.z = range / dsize;
+
+
+		field_range.x = 2 * range; 
+		field_range.y = 2 * range; 
+		field_range.z = 2 * range; 
+
+		auto t = new C3DSplineTransformation(C3DBounds(field_range), kernel); 
+		transform.reset(t);
+		
+		graddiv2sum = 0.0; 
+		auto i = field.begin();
+		for (int z = -dsize; z <= dsize; ++z)
+			for (int y = -dsize; y <= dsize; ++y)
+				for (int x = -dsize; x <= dsize; ++x, ++i) {
+					double sx = x * scale.x;
+					double sy = y * scale.y;
+					double sz = z * scale.z;
+					*i = C3DFVector( fx(sx, sy, sz), fy(sx, sy, sz), fz(sx, sy, sz));
+					cvdebug() << "(" << sx << ", " << sy << ", " << sz << *i << "\n"; 
+
+					graddiv2sum += graddiv2(sx, sy, sz); 
+				}
+
+		
+		cvinfo() << "scale = " << scale << "\n"; 		
+		graddiv2sum *= scale.x * scale.y * scale.z; 
+		t->set_coefficients_and_prefilter(field); 
+	}
+	C3DBounds size;
+
+	PBSplineKernel kernel;
+	C3DFVector field_range;
+	double range; 
+	P3DTransformation transform; 
+protected:
+	virtual double fx(double x, double y, double z)const  = 0;
+	virtual double fy(double x, double y, double z)const  = 0;
+	virtual double fz(double x, double y, double z)const  = 0;
+	virtual double graddiv2(double x, double y, double z)const = 0;
+	C3DFVector scale;
+	double graddiv2sum; 
+private:
+
+};
+
+struct TransformSplineFixtureMixed: public TransformSplineFixtureFieldBase2 {
+	double fx(double x, double y, double z)const ;
+	double fy(double x, double y, double z)const ;
+	double fz(double x, double y, double z)const ;
+	double graddiv2(double x, double y, double z)const;
+};
+
+BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4, TransformSplineFixtureMixed )
+{
+	init(10, 4);
+
+
+	const double testdiv = 7.0 * pow(M_PI, 1.5) / sqrt(2.0); 
+	const double testcurl = testdiv / 4.0; 
+
+	double divval = transform->get_divcurl_cost(1.0, 0.0);
+	BOOST_CHECK_CLOSE( divval, testdiv, 0.1); 	
+
+	
+	double graddivcurl = transform->get_divcurl_cost(1.0, 1.0);
+	BOOST_CHECK_CLOSE( graddivcurl, testdiv + testcurl, 0.1); 	
+	
+
+	double gradcurl = transform->get_divcurl_cost(0.0, 1.0);
+	BOOST_CHECK_CLOSE( gradcurl, testcurl, 0.1); 	
+
+	cvinfo() << "divval  / testdiv= " << divval  / testdiv << "\n"; 
+	cvinfo() << "gradcurl / testcurl = " << gradcurl / testcurl << "\n"; 
+}
+
+double TransformSplineFixtureMixed::fx(double x, double y, double z)const 
+{
+	return x * exp(-x*x-y*y-z*z);
+}
+
+double TransformSplineFixtureMixed::fy(double x, double y, double z)const 
+{
+	return y * exp(-x*x-y*y-z*z);
+}
+
+double TransformSplineFixtureMixed::fz(double , double , double )const
+{
+	return 0.0;
+}
+
+double TransformSplineFixtureMixed::graddiv2(double , double , double )const
+{
+	return 0.0; 
+}
