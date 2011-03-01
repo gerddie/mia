@@ -815,7 +815,7 @@ void C3DSplineTransformation::iterator_impl::do_z_increment()
 double C3DSplineTransformation::get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const
 {
 	TRACE_FUNCTION;
-	FUNCTION_NOT_TESTED;
+//	FUNCTION_NOT_TESTED;
 	reinit(); 
 
 	// create PP matrices or adapt size 
@@ -834,7 +834,6 @@ double C3DSplineTransformation::get_divcurl_cost(double wd, double wr, gsl::Doub
 double C3DSplineTransformation::get_divcurl_cost(double wd, double wr) const
 {
 	TRACE_FUNCTION;
-	FUNCTION_NOT_TESTED;
 
 	reinit(); 
 	// create PP matrices or adapt size 
@@ -865,7 +864,6 @@ C3DSplineTransformCreator::C3DSplineTransformCreator(EInterpolation ip, const C3
 	_M_debug(debug)
 {
 	TRACE_FUNCTION;
-	FUNCTION_NOT_TESTED;
 	switch (ip){
 	case ip_bspline2:
 		_M_kernel.reset(new CBSplineKernel2());

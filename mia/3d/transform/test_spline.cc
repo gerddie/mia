@@ -1008,23 +1008,27 @@ double Cost3DMock::ref_value(const C3DFVector& x) const
 
 /////////////////////////////////////
 struct TransformSplineFixtureFieldBase2 {
-	TransformSplineFixtureFieldBase2()
+	TransformSplineFixtureFieldBase2():
+		kernel(new CBSplineKernel4())
 	{
 
 	}
-	void init(int dsize, double r, EInterpolation type) {
-		ipf.reset(create_3dinterpolation_factory(type));
+	void init(int dsize, int r) {
 		size = C3DBounds(2 * dsize + 1,2 * dsize + 1,2 * dsize + 1);
-		field = C3DFVectorfield(size);
+		C3DDVectorfield field(size);
 		range = r; 
 		scale.x = scale.y = scale.z = range / dsize;
+
 
 		field_range.x = 2 * range; 
 		field_range.y = 2 * range; 
 		field_range.z = 2 * range; 
+
+		auto t = new C3DSplineTransformation(C3DBounds(field_range), kernel); 
+		transform.reset(t);
 		
 		graddiv2sum = 0.0; 
-		C3DFVectorfield::iterator i = field.begin();
+		auto i = field.begin();
 		for (int z = -dsize; z <= dsize; ++z)
 			for (int y = -dsize; y <= dsize; ++y)
 				for (int x = -dsize; x <= dsize; ++x, ++i) {
@@ -1036,18 +1040,18 @@ struct TransformSplineFixtureFieldBase2 {
 
 					graddiv2sum += graddiv2(sx, sy, sz); 
 				}
-		assert(i == field.end()); 
-		source.reset(ipf->create(field));
 
+		
 		cvinfo() << "scale = " << scale << "\n"; 		
-		graddiv2sum *= scale.x * scale.y*scale.z; 
+		graddiv2sum *= scale.x * scale.y * scale.z; 
+		t->set_coefficients_and_prefilter(field); 
 	}
 	C3DBounds size;
-	C3DFVectorfield field;
-	P3DInterpolatorFactory ipf;
+
+	PBSplineKernel kernel;
 	C3DFVector field_range;
 	double range; 
-	std::shared_ptr<T3DInterpolator<C3DFVector>  > source; 
+	P3DTransformation transform; 
 protected:
 	virtual double fx(double x, double y, double z)const  = 0;
 	virtual double fy(double x, double y, double z)const  = 0;
@@ -1068,30 +1072,24 @@ struct TransformSplineFixtureMixed: public TransformSplineFixtureFieldBase2 {
 
 BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4, TransformSplineFixtureMixed )
 {
-	init(10, 4, ip_bspline4);
+	init(10, 4);
 
-	const T3DConvoluteInterpolator<C3DFVector>& interp = 
-		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
-	
-	auto coeffs = interp.get_coefficients(); 
+
 	const double testdiv = 7.0 * pow(M_PI, 1.5) / sqrt(2.0); 
 	const double testcurl = testdiv / 4.0; 
 
-	C3DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
-	double graddiv = div  * coeffs; 
-	BOOST_CHECK_CLOSE( graddiv, testdiv, 0.1); 	
+	double divval = transform->get_divcurl_cost(1.0, 0.0);
+	BOOST_CHECK_CLOSE( divval, testdiv, 0.1); 	
 
-
-	C3DPPDivcurlMatrix divcurl(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 1.0);
-	double graddivcurl = divcurl  * coeffs; 
+	
+	double graddivcurl = transform->get_divcurl_cost(1.0, 1.0);
 	BOOST_CHECK_CLOSE( graddivcurl, testdiv + testcurl, 0.1); 	
 	
 
-	C3DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
-	double gradcurl = rot  * coeffs; 
+	double gradcurl = transform->get_divcurl_cost(0.0, 1.0);
 	BOOST_CHECK_CLOSE( gradcurl, testcurl, 0.1); 	
 
-	cvinfo() << "graddiv  / testdiv= " << graddiv  / testdiv << "\n"; 
+	cvinfo() << "divval  / testdiv= " << divval  / testdiv << "\n"; 
 	cvinfo() << "gradcurl / testcurl = " << gradcurl / testcurl << "\n"; 
 }
 

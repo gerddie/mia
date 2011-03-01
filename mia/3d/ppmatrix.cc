@@ -226,11 +226,11 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 
 	const double global_scale = 1.0 / (h1.x * h1.y * h1.z); 
 
-	cvinfo() << "scale = " << global_scale << "\n"; 
-	cvinfo() << "h1 = " << h1 << "\n"; 
-	cvinfo() << "h2 = " << h2 << "\n"; 
-	cvinfo() << "h3 = " << h3 << "\n"; 
-	cvinfo() << "h4 = " << h4 << "\n"; 
+	cvdebug() << "scale = " << global_scale << "\n"; 
+	cvdebug() << "h1 = " << h1 << "\n"; 
+	cvdebug() << "h2 = " << h2 << "\n"; 
+	cvdebug() << "h3 = " << h3 << "\n"; 
+	cvdebug() << "h4 = " << h4 << "\n"; 
 
 	
 	const int nx = _M_size.x;
@@ -354,8 +354,8 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 			}
 		}
 	}
-	cvmsg() << "P-matrix has " << _M_P.size() << " entries\n"; 
-	cvmsg() << "size:" << _M_size << ", ksize=" << ksize << "\n"; 
+	cvdebug() << "P-matrix has " << _M_P.size() << " entries\n"; 
+	cvdebug() << "size:" << _M_size << ", ksize=" << ksize << "\n"; 
 	rc00.print_index_range(); 
 	rc11.print_index_range(); 
 	rc22.print_index_range(); 
