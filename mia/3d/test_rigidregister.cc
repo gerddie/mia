@@ -135,7 +135,7 @@ void RigidRegisterFixture::run(C3DTransformation& t, EMinimizers minimizer, doub
 		if (fabs(orig_params[i]) > 0.01) 
 			BOOST_CHECK_CLOSE(params[i], orig_params[i], accuracy);
 		else
-			BOOST_CHECK_CLOSE(1.0 + params[i], 1.0 + orig_params[i], accuracy);
+			BOOST_CHECK_CLOSE(1.0 + params[i], 1.0 + orig_params[i], 2*accuracy);
 
 	if ( cverb.get_level() <= vstream::ml_info ) {
 		save_image
@@ -217,7 +217,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigid_gd, RigidRegisterFixture )
 	
 	transformation->set_parameters(params); 
 
-	run(*transformation, min_gd, 7.0); 
+	run(*transformation, min_gd, 8.0); 
 }
 
 #if 0 
