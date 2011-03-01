@@ -96,7 +96,6 @@ public:
 	C3DFVector on_grid(const mia::C3DBounds& x) const; 
 
 	C3DBounds get_enlarge() const; 
-
 private:
 	
 	C3DFVector sum(const C3DBounds& start, 
@@ -134,7 +133,6 @@ private:
 	mutable CSplineDerivativeRow  _M_my; 
 	mutable CSplineDerivativeRow  _M_mz; 
 	mutable bool _M_grid_valid; 
-
 };
 
 NS_MIA_END

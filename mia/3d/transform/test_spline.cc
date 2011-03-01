@@ -402,6 +402,21 @@ BOOST_FIXTURE_TEST_CASE( test_splines_translate, TransformSplineFixture )
 	}
 }
 
+BOOST_FIXTURE_TEST_CASE( test_splines_get_set_parameters, TransformSplineFixture )
+{
+	auto params = stransf.get_parameters(); 
+	float k = 0.1; 
+	for (auto i = params.begin(); i != params.end(); ++i, k += 0.1) 
+		*i = k; 
+	
+	stransf.set_parameters(params); 
+	
+	auto params2 = stransf.get_parameters(); 
+	for (auto i = params.begin(), j = params2.begin(); i != params.end(); ++i, ++j) 
+		BOOST_CHECK_EQUAL(*i, *j); 
+	
+}
+
 BOOST_FIXTURE_TEST_CASE( test_splines_clone, TransformSplineFixture )
 {
 	P3DTransformation clone(stransf.clone());
