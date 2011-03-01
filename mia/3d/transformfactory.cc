@@ -20,6 +20,7 @@
  *
  */
 
+#define VSTREAM_DOMAIN "3dtransformcreator"
 #include <mia/core/export_handler.hh>
 
 #include <mia/3d/transformfactory.hh>

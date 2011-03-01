@@ -20,6 +20,7 @@
  *
  */
 
+#define VSTREAM_DOMAIN "3dtransform"
 #include <mia/3d/transform.hh>
 #include <mia/3d/deformer.hh>
 
@@ -109,6 +110,16 @@ void C3DTransformation::iterator_impl::increment()
 		return; 
 	}
 }
+
+void C3DTransformation::set_debug()
+{
+	_M_debug = true; 
+}
+bool C3DTransformation::get_debug()const
+{
+	return _M_debug; 
+}
+
 
 const C3DBounds& C3DTransformation::iterator_impl::get_pos()const
 {

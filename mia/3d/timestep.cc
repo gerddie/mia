@@ -18,6 +18,7 @@
  *
  */
 
+#define VSTREAM_DOMAIN "3dtimestep"
 #include <mia/core/export_handler.hh>
 #include <mia/3d/timestep.hh>
 

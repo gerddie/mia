@@ -21,6 +21,7 @@
  *
  */
 
+#define VSTREAM_DOMAIN "test-transfactory"
 #include <cmath>
 #include <mia/internal/autotest.hh>
 #include <mia/3d/transformfactory.hh>

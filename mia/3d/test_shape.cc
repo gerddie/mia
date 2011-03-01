@@ -19,7 +19,7 @@
 
 
 
-
+#define VSTREAM_DOMAIN "test-shape"
 #include <boost/test/parameterized_test.hpp>
 #include <boost/test/unit_test.hpp>
 

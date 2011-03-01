@@ -288,6 +288,7 @@ struct FGradientEvaluator: public TFilter<C2DFVectorfield> {
 				else
 					*r = zero;
 			}
+		fill(r, r + image.get_size().x, zero);
 		return result;
 	}
 };

@@ -290,11 +290,6 @@ T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x) const
 {
 	typedef typename TCoeff3D::value_type U; 
 	
-	// cut at boundary
-	if (x.x < 0.0 || x.y < 0.0 || x.z < 0.0 ||
-	    x.x >= _M_coeff.get_size().x || x.y >= _M_coeff.get_size().y || x.z >= _M_coeff.get_size().z)
-		return T();
-	
 	(*_M_kernel)(x.x, _M_x_weight, _M_x_index);
 	(*_M_kernel)(x.y, _M_y_weight, _M_y_index);
 	(*_M_kernel)(x.z, _M_z_weight, _M_z_index);	

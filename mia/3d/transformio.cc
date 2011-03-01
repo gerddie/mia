@@ -20,6 +20,7 @@
  *
  */
 
+#define VSTREAM_DOMAIN "3dtransformio"
 #include <mia/core/export_handler.hh>
 
 #include <mia/core/errormacro.hh>

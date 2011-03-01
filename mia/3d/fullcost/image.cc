@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2010
+ * Copyright (c) Madrid 2010-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -25,8 +25,6 @@
 #include <mia/3d/3dfilter.hh>
 
 NS_MIA_BEGIN
-
-using boost::lambda::_1; 
 
 C3DImageFullCost::C3DImageFullCost(const std::string& src, 
 				   const std::string& ref, 
@@ -109,7 +107,9 @@ void C3DImageFullCost::do_set_size()
 
 	if (_M_src->get_size() != get_current_size()) {
 		stringstream filter_descr; 
-		filter_descr << "scale:sx=" << get_current_size().x << ",sy=" << get_current_size().y; 
+		filter_descr << "scale:sx=" << get_current_size().x 
+			     << ",sy=" << get_current_size().y
+			     << ",sz=" << get_current_size().z; 
 		auto scaler = C3DFilterPluginHandler::instance().produce(filter_descr.str()); 
 		assert(scaler); 
 		cvdebug() << "C3DImageFullCost:scale images to " << get_current_size() << 

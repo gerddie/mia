@@ -54,7 +54,7 @@ template <typename T>
 double TFullCostList<T>::do_evaluate(const T& t, gsl::DoubleVector& gradient) const
 {
 	double  result = 0; 
-	gsl::DoubleVector tmp(gradient.size()); 
+	gsl::DoubleVector tmp(gradient.size(), false); 
 	std::stringstream msg; 
 	msg << "Cost: "; 
 	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i) {

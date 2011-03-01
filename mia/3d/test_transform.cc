@@ -55,7 +55,7 @@ public:
 	C3DBounds size; 
 	Cost3DMock cost; 
 
-	C3DFVector x; 
+	C3DFVector m_x; 
 	C3DFVectorfield gradient; 
 }; 
 
@@ -129,27 +129,25 @@ BOOST_FIXTURE_TEST_CASE (test_vf_Gradient, TransformGradientFixture)
 	run_test(*transform, 2.0); 
 }
 
-
+#endif
 BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture) 
 {
 	const C3DTransformCreatorHandler::Instance& handler =
 		C3DTransformCreatorHandler::instance();
 	P3DTransformationFactory creater = handler.produce("spline:rate=2");
 	P3DTransformation transform = creater->create(size);
+	transform->set_debug(); 
 
-	// this is a quite high tolerance, but with all the interpolation going 
-	// on the evaluation is quite sensible to small changes and finite 
-	// differences are not very accurate 
-	run_test(*transform, 16.0); 
+	run_test(*transform, 10.0); 
 }
-#endif
+
 
 
 
 TransformGradientFixture::TransformGradientFixture():
-	size(20,30, 15), 
+	size(20, 30, 15), 
 	cost(size),
-	x(11,16, 7), 
+	m_x(11,16, 7), 
 	gradient(size)
 
 {
@@ -167,7 +165,7 @@ void TransformGradientFixture::run_test(C3DTransformation& t, double tol)const
 	gsl::DoubleVector trgrad(params.size()); 
 	
 	t.translate(gradient,  trgrad); 
-	double delta = 0.001; 
+	double delta = 0.01; 
 
 	int n_close_zero = 0; 
 	int n_zero = 0; 
@@ -195,6 +193,7 @@ void TransformGradientFixture::run_test(C3DTransformation& t, double tol)const
 
 		BOOST_CHECK_CLOSE(*itrg, test_val, tol); 
 	}
+	cvmsg() << "N=" << trgrad.size() << "\n"; 
 	cvmsg() << "value pairs < 1e-8 = " << n_close_zero << "\n"; 
 	cvmsg() << "grad value zero, but finite difference below 1e-7 = " << n_zero << "\n"; 
 }
@@ -242,19 +241,19 @@ double Cost3DMock::value_and_gradient(C3DFVectorfield& gradient) const
 double Cost3DMock::src_value(const C3DFVector& x)const
 {
 	const C3DFVector p = x - _M_center; 
-	return exp( - p.norm2() / _M_r); 
+	return exp( - p.norm2() / _M_r  ); 
 }
 
 C3DFVector Cost3DMock::src_grad(const C3DFVector& x)const
 {
 	
-	return - 2.0f / _M_r * (x-_M_center) * src_value(x); 
+	return - 2.0f  * (x-_M_center) / _M_r  * src_value(x); 
 }
 
 double Cost3DMock::ref_value(const C3DFVector& x)const 
 {
-	const C3DFVector p = x - _M_center - C3DFVector(1.0,1.0,1.0); 
-	return exp( - p.norm2() / _M_r); 
+	const C3DFVector p = x - _M_center - C3DFVector(1.4,1.3,1.2); 
+	return exp( - p.norm2() / _M_r ); 
 }
 
 
