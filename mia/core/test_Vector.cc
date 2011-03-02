@@ -1,6 +1,6 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -27,11 +27,24 @@
 
 NS_MIA_USE; 
 
+typedef Vector<double> DoubleVector; 
+
 BOOST_AUTO_TEST_CASE (test_init)
 {
 	double input[6] = {1,2,3,4,5,6}; 
 
 	DoubleVector v(6, input); 
+	
+	for(int i = 0; i < 6; ++i) 
+		BOOST_CHECK_EQUAL(v[i], input[i]); 
+	
+}
+
+BOOST_AUTO_TEST_CASE (test_const_init)
+{
+	const double input[6] = {1,2,3,4,5,6}; 
+
+	ConstVector<double> v(6, input); 
 	
 	for(int i = 0; i < 6; ++i) 
 		BOOST_CHECK_EQUAL(v[i], input[i]); 

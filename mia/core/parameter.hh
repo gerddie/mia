@@ -222,6 +222,7 @@ private:
 extern const char  type_str_uint[5];
 extern const char  type_str_int[4];
 extern const char  type_str_float[6];
+extern const char  type_str_double[7];
 extern const char  type_str_string[7];
 extern const char  type_str_bool[5];
 
@@ -231,6 +232,7 @@ typedef TRangeParameter<int, type_str_int> CIntParameter;
 typedef TRangeParameter<unsigned int, type_str_uint> CUIntParameter;
 /// a float parameter (with range)
 typedef TRangeParameter<float, type_str_float> CFloatParameter;
+typedef TRangeParameter<double, type_str_double> CDoubleParameter;
 /// an string parameter
 typedef CTParameter<std::string,type_str_string> CStringParameter;
 /// boolean parameter

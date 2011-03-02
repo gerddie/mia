@@ -235,6 +235,7 @@ DEFEXE(plugin_test miacore)
 ADD_SUBDIRECTORY(testplug      )
 ADD_SUBDIRECTORY(spacialkernel )
 ADD_SUBDIRECTORY(noise         ) 
+ADD_SUBDIRECTORY(minimizer     ) 
 
 NEW_TEST(attributes miacore)
 NEW_TEST(cmdlineparser miacore)

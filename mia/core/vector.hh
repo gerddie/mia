@@ -39,10 +39,18 @@ struct array_destructor {
 }; 
 
 template <typename T> 
-struct array_void_destructor : public array_destructor<T> {
+struct array_void_destructor {
 	virtual void operator () (T *) {
 	}
 }; 
+
+/**
+   c-array envelope that supports some facilities of STL like vectors and that 
+   allows holding pre-allocated data. 
+   Handling of the optinal deleting of the array is done by a destructor template
+   passed to the shared_ptr constructor 
+   \tparam the data type of the C-array 
+*/
 
 
 template <typename T> 
@@ -54,31 +62,44 @@ public:
 	typedef T *const_iterator;  
 	typedef size_t size_type; 
 
+	/**
+	   Create a vector, the data is won by this vector and will be 
+	   deleted if the reference count reaches zero 
+	   \param n 
+	 */
 	Vector(size_t n):
 		m_size(n),
 		m_data(new T[n], array_destructor<T>())
 	{
 	}
 
-	Vector(const Vector& other):
+	/// copy constructor 
+	Vector(const Vector<T>& other):
 		m_size(other.m_size),
 		m_data(other.m_data)
 	{
 	}
 
-	Vector<T>& operator = (const Vector& other)
+	/// assignment operator 
+	Vector<T>& operator = (const Vector<T>& other)
 	{
 		m_size = other.m_size; 
 		m_data = other.m_data; 
 		return *this; 
 	}
 
+	/**
+	   Consrurtor that creates the STL-like vector as an envelop around a 
+	   C-array. The data will not be freed at destruction time. 
+	   \param n size of input array
+	   \param init allocated input data
+	 */
 	Vector(size_t n, T *init):
 		m_size(n),
 		m_data(init, array_void_destructor<T>())
 	{
 	}
-		
+	
 	reference operator[] (size_t i) {
 		assert(i < m_size); 
 		return m_data.get()[i]; 
@@ -105,12 +126,66 @@ public:
 		return m_data.get() + m_size; 
 	}
 	
+	size_type size() const 
+	{
+		return m_size; 
+	}
+	
 private: 
 	size_t m_size; 
 	std::shared_ptr<T> m_data; 
 }; 
 
-typedef Vector<double> DoubleVector; 
+
+template <typename T> 
+class ConstVector {
+public: 
+	typedef const T& const_reference;  
+	typedef T *const_iterator;  
+	typedef size_t size_type; 
+
+	/// copy constructor 
+	ConstVector(const ConstVector<T>& other):
+		m_size(other.m_size),
+		m_data(other.m_data)
+	{
+	}
+
+	/**
+	   Consrurtor that creates the STL-like vector as an envelop around a 
+	   C-array. The data will not be freed at destruction time. 
+	   \param n size of input array
+	   \param init allocated input data
+	 */
+	ConstVector(size_t n, const T *init):
+		m_size(n),
+		m_data(init)
+	{
+	}
+	
+	const_reference operator[] (size_t i) const {
+		assert(i < m_size); 
+		return m_data[i]; 
+	}
+	
+	const_iterator begin() const{
+		return m_data; 
+	}
+
+	const_iterator end() const{
+		return m_data + m_size; 
+	}
+
+	size_type size() const 
+	{
+		return m_size; 
+	}
+	
+private: 
+	size_t m_size; 
+	const T *m_data; 
+}; 
+
 
 NS_MIA_END
 

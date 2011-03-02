@@ -33,7 +33,7 @@
 
 NS_MIA_BEGIN
 
-const char *const CMinimizer::value = "vector"; 
+const char *const CMinimizer::value = "singlecost"; 
 const char *const CMinimizer::type_descr = "minimizer"; 
 
 CMinimizer::Problem::Problem(size_t n_params):
@@ -53,19 +53,51 @@ CMinimizer::CMinimizer()
 void CMinimizer::set_problem(PProblem p)
 {
 	m_problem = p; 
+	do_set_problem(); 
 }
-	
+
+size_t CMinimizer::size() const
+{
+	return m_problem ? m_problem->size() : 0; 
+}
+
+void CMinimizer::do_set_problem()
+{
+}
+
+double  CMinimizer::Problem::f(size_t n, const double *x)
+{
+	assert(n == size()); 
+	ConstParameters params(n, x); 
+	return do_f(params); 	
+}
+
+void    CMinimizer::Problem::df(size_t n, const double *x, double *g)
+{
+	assert(n == size()); 
+	ConstParameters params_x(n, x); 
+	Parameters params_g(n, g); 
+	do_df(params_x, params_g); 
+}
+
+double  CMinimizer::Problem::fdf(size_t n, const double *x, double *g)
+{
+	assert(n == size()); 
+	ConstParameters params_x(n, x); 
+	Parameters params_g(n, g); 
+	return do_fdf(params_x, params_g); 
+}
 
 CMinimizer::~CMinimizer()
 {
 }
 
-CMinimizer::Problem& CMinimizer::get_problem()
+CMinimizer::Problem *CMinimizer::get_problem_pointer()
 {
-	return *m_problem; 
+	return m_problem.get(); 
 }
 	
-int CMinimizer::run(DoubleVector& x)
+int CMinimizer::run(Parameters& x)
 {
 	DEBUG_ASSERT_RELEASE_THROW(m_problem, "CMinimizer::run: no minimization problem given");
 	if (!m_problem->has_all_in(*this)) {
