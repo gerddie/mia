@@ -61,3 +61,27 @@ BOOST_AUTO_TEST_CASE( test_has_all_flag )
 	BOOST_CHECK(holder1.has_all_in(holder2));
 	BOOST_CHECK(!holder2.has_all_in(holder1));
 }
+
+
+BOOST_AUTO_TEST_CASE( test_get_missing_flags )
+{
+	const char *flag1 = "flag1";
+	const char *flag2 = "flag2";
+	const char *flag3 = "flag3";
+	
+	CPropertyFlagHolder holder1;
+	holder1.add(flag1);
+	CPropertyFlagHolder holder2;
+	holder2.add(flag1);
+
+	BOOST_CHECK(holder2.get_missing_properties(holder1).empty()); 
+	holder1.add(flag2);
+	holder1.add(flag3);
+	
+	auto result = holder2.get_missing_properties(holder1); 
+	BOOST_CHECK_EQUAL(result.size(), 2u); 
+
+	BOOST_CHECK(result.find(flag2) != result.end()); 
+	BOOST_CHECK(result.find(flag3) != result.end()); 
+	
+}

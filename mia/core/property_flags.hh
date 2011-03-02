@@ -38,6 +38,7 @@ extern EXPORT_CORE const char *property_gradient;
 */
 class  EXPORT_CORE CPropertyFlagHolder {
 public:
+	typedef std::set<const char *> Set;
 
 	/**
 	   Ensure evirtual destructor 
@@ -59,9 +60,11 @@ public:
 	   \param testset
 	 */
 	bool has_all_in(const CPropertyFlagHolder& testset)const;
+
+	Set get_missing_properties(const CPropertyFlagHolder& testset)const; 
 private:
 	virtual bool do_has(const char *property) const;
-	std::set<const char *> _M_properties;
+	Set _M_properties;
 };
 
 NS_MIA_END

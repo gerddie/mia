@@ -44,12 +44,23 @@ void CPropertyFlagHolder::add(const char *property)
 
 bool CPropertyFlagHolder::has_all_in(const CPropertyFlagHolder& testset) const
 {
-	for(std::set<const char *>::const_iterator ti = testset._M_properties.begin();
+	for(auto ti = testset._M_properties.begin();
 	    ti != testset._M_properties.end(); ++ti) {
 		if (!has(*ti))
 			return false;
 	}
 	return true;
+}
+
+CPropertyFlagHolder::Set
+CPropertyFlagHolder::get_missing_properties(const CPropertyFlagHolder& testset)const
+{
+	Set  result; 
+	for(auto ti = testset._M_properties.begin(); ti != testset._M_properties.end(); ++ti) {
+		if (!has(*ti))
+			result.insert(*ti); 
+	}
+	return result;
 }
 
 bool CPropertyFlagHolder::do_has(const char */* property*/) const
