@@ -44,7 +44,6 @@ private:
 	virtual double do_get_criterion(const std::vector<double>& x, 
 					std::vector<double>& gradient) const = 0;
 	size_t m_nparams; 
-
 };
 
 NS_MIA_END
