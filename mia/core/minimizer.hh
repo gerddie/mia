@@ -105,6 +105,8 @@ private:
 	PProblem m_problem;
 }; 
 
+typedef std::shared_ptr<CMinimizer> PMinimizer; 
+
 typedef TFactory<CMinimizer> CMinimizerPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<CMinimizerPlugin> > CMinimizerPluginPluginHandler;
 FACTORY_TRAIT(CMinimizerPluginPluginHandler); 

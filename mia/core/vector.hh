@@ -59,7 +59,7 @@ public:
 	typedef T& reference;  
 	typedef const T& const_reference;  
 	typedef T *iterator;  
-	typedef T *const_iterator;  
+	typedef const T *const_iterator;  
 	typedef size_t size_type; 
 
 	/**
@@ -130,7 +130,10 @@ public:
 	{
 		return m_size; 
 	}
-	
+
+	const T * get_pointer() const{
+		return m_data.get(); 
+	}
 private: 
 	size_t m_size; 
 	std::shared_ptr<T> m_data; 
@@ -141,13 +144,20 @@ template <typename T>
 class ConstVector {
 public: 
 	typedef const T& const_reference;  
-	typedef T *const_iterator;  
+	typedef const T *const_iterator;  
 	typedef size_t size_type; 
 
 	/// copy constructor 
 	ConstVector(const ConstVector<T>& other):
 		m_size(other.m_size),
 		m_data(other.m_data)
+	{
+	}
+
+	// this is dangerous ... 
+	ConstVector(const Vector<T>& other):
+		m_size(other.size()),
+		m_data(other.get_pointer())
 	{
 	}
 
