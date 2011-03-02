@@ -626,62 +626,6 @@ void C3DSplineTransformation::translate(const C3DFVectorfield& gradient, gsl::Do
 			}
 		}
 	}
-
-	if (get_debug()) {
-		
-		C3DFImage *cx = new C3DFImage(_M_coefficients.get_size()); 
-		C3DFImage *cy = new C3DFImage(_M_coefficients.get_size()); 
-		C3DFImage *cz = new C3DFImage(_M_coefficients.get_size()); 
-
-		auto icx = cx->begin(); 
-		auto icy = cy->begin(); 
-		auto icz = cz->begin(); 
-		auto r = params.begin(); 
-		for (size_t iz = 0; iz < _M_coefficients.get_size().z; ++iz) {
-			for (size_t iy = 0; iy < _M_coefficients.get_size().y; ++iy) {
-				for (size_t ix = 0; ix < _M_coefficients.get_size().x; ++ix, ++icx, ++icy, ++icz) {
-					*icx = *r++; 
-					*icy = *r++; 
-					*icz = *r++; 
-				}
-			}
-		}
-		C3DImageVector coefs; 
-		coefs.push_back(P3DImage(cx)); 
-		coefs.push_back(P3DImage(cy)); 
-		coefs.push_back(P3DImage(cz)); 
-
-		stringstream coef_filename; 
-		coef_filename << "coefs" << setw(5) << setfill('0') << pass << ".v"; 
-		
-		C3DImageIOPluginHandler::instance().save("", coef_filename.str(), coefs); 
-		
-		C3DFImage *gx = new C3DFImage(gradient.get_size()); 
-		C3DFImage *gy = new C3DFImage(gradient.get_size()); 
-		C3DFImage *gz = new C3DFImage(gradient.get_size()); 
-		
-		auto igx = gx->begin(); 
-		auto igy = gy->begin(); 
-		auto igz = gz->begin(); 
-		for(auto ig = gradient.begin(); ig != gradient.end(); ++ig, ++igx, ++igy, ++igz) {
-			*igx = ig->x; 
-			*igy = ig->y; 
-			*igz = ig->z; 
-		}
-			
-		C3DImageVector grad; 
-		grad.push_back(P3DImage(gx)); 
-		grad.push_back(P3DImage(gy)); 
-		grad.push_back(P3DImage(gz)); 
-		
-		stringstream grad_filename; 
-		grad_filename << "grad" << setw(5) << setfill('0') << pass << ".v"; 
-
-		C3DImageIOPluginHandler::instance().save("", grad_filename.str(), grad); 
-		
-		++pass; 
-	}
-
 }
 
 float  C3DSplineTransformation::pertuberate(C3DFVectorfield& v) const
