@@ -28,6 +28,7 @@ SET(MIACORE_SRC_BASE
   mitestimages.cc
   module.cc
   msgstream.cc 
+  minimizer.cc
   noisegen.cc 
   optimizer.cc 
   optionparser.cc 
@@ -88,6 +89,7 @@ SET(MIACORE_HEADER_BASE
   mitestimages.hh
   module.hh
   msgstream.hh
+  minimizer.hh
   noisegen.hh
   optimizer.hh
   optionparser.hh
