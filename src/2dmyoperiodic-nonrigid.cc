@@ -59,16 +59,6 @@ const char *g_general_help =
 	" mia-2dmyoperiodix-nonrigid [options] "; 
 
 
-const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
-	{"cg-fr", min_cg_fr},
-	{"cg-pr", min_cg_pr},
-	{"bfgs", min_bfgs},
-	{"bfgs2", min_bfgs2},
-	{"gd", min_gd},
-	{NULL, min_undefined}
-};
-
-
 class C2DFImage2PImage {
 public: 
 	P2DImage operator () (const C2DFImage& image) const {
@@ -126,7 +116,7 @@ public:
 	class RegistrationParams {
 	public: 
 		RegistrationParams(); 
-		EMinimizers minimizer;
+		PMinimizer minimizer;
 		double divcurlweight; 
 		P2DFullCost pass1_cost;  
 		P2DFullCost pass2_cost;
@@ -324,7 +314,7 @@ size_t C2DMyocardPeriodicRegistration::get_ref_idx()const
 
 
 C2DMyocardPeriodicRegistration::RegistrationParams::RegistrationParams():
-	minimizer(min_gd), 
+	minimizer(CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1")), 
 	divcurlweight(5),
 	pass1_cost(C2DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=ds]")), 
 	pass2_cost(C2DFullCostPluginHandler::instance().produce("image:cost=ssd")), 
@@ -378,8 +368,7 @@ int do_main( int argc, const char *argv[] )
 	options.set_group("\nRegistration"); 
 
 
-	options.push_back(make_opt( params.minimizer, TDictMap<EMinimizers>(g_minimizer_table),
-				    "optimizer", 'O', "Optimizer used for minimization"));
+	options.push_back(make_opt( params.minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
 	options.push_back(make_opt( params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));

@@ -31,17 +31,10 @@
 #include <mia/2d/transform.hh>
 #include <mia/2d/transformfactory.hh>
 
-NS_MIA_BEGIN
+#include <mia/internal/rigidregister.hh>
 
-enum EMinimizers {
-	min_nmsimplex,
-	min_cg_fr,
-	min_cg_pr,
-	min_bfgs,
-	min_bfgs2,
-	min_gd,
-	min_undefined
-};
+
+NS_MIA_BEGIN
 
 /**
    Class for registration without regularization - i.e. should only be used

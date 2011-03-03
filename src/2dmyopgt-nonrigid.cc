@@ -50,15 +50,6 @@ const char *g_description =
 	"'Nonrigid Registration of Myocardial Perfusion MRI Using Pseudo Ground Truth' , In Proc. "
 	"Medical Image Computing and Computer-Assisted Intervention – MICCAI 2009, 165-172, 2009 "; 
 
-const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
-	{"cg-fr", min_cg_fr},
-	{"cg-pr", min_cg_pr},
-	{"bfgs", min_bfgs},
-	{"bfgs2", min_bfgs2},
-	{"gd", min_gd},
-	{NULL, min_undefined}
-};
-
 
 C2DFullCostList create_costs(double divcurlweight, double imageweight)
 {
@@ -81,7 +72,7 @@ P2DTransformationFactory create_transform_creator(size_t c_rate)
 }
 
 void run_registration_pass(CSegSetWithImages&  input_set, const C2DImageSeries& references, 
-			   int skip_images, EMinimizers minimizer, 
+			   int skip_images, PMinimizer minimizer, 
 			   C2DInterpolatorFactory& ipfactory, size_t mg_levels, 
 			   double c_rate, double divcurlweight, double imageweight) 
 {
@@ -115,7 +106,7 @@ int do_main( int argc, const char *argv[] )
 	size_t skip_images = 0; 
 
 	// registration parameters
-	EMinimizers minimizer = min_gd;
+	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1");
 	double c_rate = 32; 
 	double c_rate_divider = 4; 
 	double divcurlweight = 20.0; 
@@ -139,8 +130,7 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels")); 
 
 	options.set_group("\nRegistration"); 
-	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
-				    "optimizer", 'O', "Optimizer used for minimization"));
+	options.push_back(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( c_rate, "start-c-rate", 'a', 
 				    "start coefficinet rate in spines, gets divided by --c-rate-divider with every pass"));
 	options.push_back(make_opt( c_rate_divider, "c-rate-divider", 0, 

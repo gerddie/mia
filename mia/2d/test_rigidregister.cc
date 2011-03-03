@@ -56,7 +56,7 @@ protected:
 
 		list< bfs::path> minimizerpath;
 		minimizerpath.push_back(bfs::path("../core/minimizer"));
-		CMinimizerPluginPluginHandler::set_search_path(minimizerpath); 
+		CMinimizerPluginHandler::set_search_path(minimizerpath); 
 
 	}
 };
@@ -71,7 +71,7 @@ protected:
 void RigidRegisterFixture::run(C2DTransformation& t, const string& minimizer_descr, double accuracy)
 {
 
-	auto minimizer = CMinimizerPluginPluginHandler::instance().produce(minimizer_descr); 
+	auto minimizer = CMinimizerPluginHandler::instance().produce(minimizer_descr); 
 	P2DImageCost cost = C2DImageCostPluginHandler::instance().produce("ssd");
 	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3));
 	auto tr_creator = C2DTransformCreatorHandler::instance().produce(t.get_creator_string());

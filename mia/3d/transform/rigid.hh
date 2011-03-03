@@ -86,12 +86,12 @@ public:
 	virtual bool save(const std::string& filename, const std::string& type) const;
 	virtual P3DTransformation do_upscale(const C3DBounds& size) const;
 	virtual void add(const C3DTransformation& a);
-	virtual void translate(const C3DFVectorfield& gradient, gsl::DoubleVector& params) const;
+	virtual void translate(const C3DFVectorfield& gradient, CDoubleVector& params) const;
 	virtual size_t degrees_of_freedom() const;
 	virtual void update(float step, const C3DFVectorfield& a);
 	virtual C3DFMatrix derivative_at(int x, int y, int z) const;
-	virtual gsl::DoubleVector get_parameters() const;
-	virtual void set_parameters(const gsl::DoubleVector& params);
+	virtual CDoubleVector get_parameters() const;
+	virtual void set_parameters(const CDoubleVector& params);
 	virtual void set_identity();
 	virtual float get_max_transform() const;
 	virtual float pertuberate(C3DFVectorfield& v) const;
@@ -102,7 +102,7 @@ public:
 	virtual float curl() const;
 	float grad_divergence() const;
 	float grad_curl() const;
-	double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
+	double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const; 
 	double get_divcurl_cost(double wd, double wr) const; 
 private:
 	virtual C3DTransformation *do_clone() const;

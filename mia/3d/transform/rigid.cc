@@ -153,9 +153,9 @@ void C3DRigidTransformation::rotate(float xy, float xz, float yz)
 	_M_translation = t;
 }
 
-gsl::DoubleVector C3DRigidTransformation::get_parameters() const
+CDoubleVector C3DRigidTransformation::get_parameters() const
 {
-	gsl::DoubleVector result(degrees_of_freedom());
+	CDoubleVector result(degrees_of_freedom());
 	result[0] = _M_translation.x;
 	result[1] = _M_translation.y;
 	result[2] = _M_translation.z;
@@ -166,7 +166,7 @@ gsl::DoubleVector C3DRigidTransformation::get_parameters() const
 	return result;
 }
 
-void C3DRigidTransformation::set_parameters(const gsl::DoubleVector& params)
+void C3DRigidTransformation::set_parameters(const CDoubleVector& params)
 {
 	assert(degrees_of_freedom() == params.size());
 
@@ -204,7 +204,7 @@ float C3DRigidTransformation::curl() const
 	return 0.0;
 }
 
-double C3DRigidTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/, gsl::DoubleVector& /*gradient*/) const
+double C3DRigidTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/, CDoubleVector& /*gradient*/) const
 {
 	return 0.0; 
 }
@@ -312,7 +312,7 @@ float C3DRigidTransformation::get_jacobian(const C3DFVectorfield& /*v*/, float /
 	assert(!"not implemented");
 }
 
-void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, gsl::DoubleVector& params) const
+void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleVector& params) const
 {
 	//
 

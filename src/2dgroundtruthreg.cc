@@ -60,18 +60,8 @@ struct SPGTParams {
 	SPGTParams(); 
 }; 
 
-const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
-	{"cg-fr", min_cg_fr},
-	{"cg-pr", min_cg_pr},
-	{"bfgs", min_bfgs},
-	{"bfgs2", min_bfgs2},
-	{"gd", min_gd},
-	{NULL, min_undefined}
-};
-
-
 struct SRegistrationParams { 
-	EMinimizers minimizer;
+	PMinimizer minimizer;
 	size_t c_rate; 
 	double divcurlweight; 
 	double imageweight; 
@@ -88,7 +78,7 @@ SPGTParams::SPGTParams():
 }
 	
 SRegistrationParams::SRegistrationParams():
-	minimizer(min_gd), 
+	minimizer(CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1")), 
 	c_rate(32), 
 	divcurlweight(20.0), 
 	imageweight(1.0), 
@@ -184,8 +174,7 @@ int do_main( int argc, const char *argv[] )
 	
 	options.set_group("\nRegistration"); 
 	
-	options.push_back(make_opt( reg_params.minimizer, TDictMap<EMinimizers>(g_minimizer_table),
-				    "optimizer", 'O', "Optimizer used for minimization"));
+	options.push_back(make_opt( reg_params.minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
 	options.push_back(make_opt( reg_params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));

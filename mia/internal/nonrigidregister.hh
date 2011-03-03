@@ -33,15 +33,6 @@
 
 NS_MIA_BEGIN
 
-enum EMinimizers {
-	min_cg_fr,
-	min_cg_pr,
-	min_bfgs,
-	min_bfgs2,
-	min_gd,
-	min_undefined
-};
-
 template <typename Transform> 
 struct TNonrigidRegisterImpl; 
 

@@ -37,8 +37,8 @@ public:
 
 	template <typename Field>
 	double multiply(const Field& coefficients) const; 
-	double evaluate(const C3DFVectorfield& coefficients, gsl::DoubleVector& gradient) const; 
-	double evaluate(const T3DDatafield<C3DDVector>& coefficients, gsl::DoubleVector& gradient) const; 
+	double evaluate(const C3DFVectorfield& coefficients, CDoubleVector& gradient) const; 
+	double evaluate(const T3DDatafield<C3DDVector>& coefficients, CDoubleVector& gradient) const; 
 	void reset(const C3DBounds& size, const C3DFVector& range, const CBSplineKernel& kernel, 
 		   double wdiv, double wrot); 
 	C3DBounds _M_size; 
@@ -95,13 +95,13 @@ double C3DPPDivcurlMatrix::operator * (const T3DDatafield<C3DDVector>& coefficie
 	TRACE_FUNCTION; 
 	return impl->multiply(coefficients); 
 }
-double C3DPPDivcurlMatrix::evaluate(const T3DDatafield<C3DDVector>& coefficients, gsl::DoubleVector& gradient) const
+double C3DPPDivcurlMatrix::evaluate(const T3DDatafield<C3DDVector>& coefficients, CDoubleVector& gradient) const
 {
 	TRACE_FUNCTION; 
 	return impl->evaluate(coefficients, gradient); 
 }
 
-double C3DPPDivcurlMatrix::evaluate(const C3DFVectorfield& coefficients, gsl::DoubleVector& gradient) const
+double C3DPPDivcurlMatrix::evaluate(const C3DFVectorfield& coefficients, CDoubleVector& gradient) const
 {
 	TRACE_FUNCTION; 
 	return impl->evaluate(coefficients, gradient); 
@@ -406,7 +406,7 @@ double C3DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 }
 
 double C3DPPDivcurlMatrixImpl::evaluate(const T3DDatafield<C3DDVector>& coefficients, 
-					gsl::DoubleVector& gradient) const
+					CDoubleVector& gradient) const
 {
 	assert(coefficients.size() == _M_nodes); 
 	assert(gradient.size() == coefficients.size() * 3); 
@@ -447,7 +447,7 @@ double C3DPPDivcurlMatrixImpl::evaluate(const T3DDatafield<C3DDVector>& coeffici
 }
 
 double C3DPPDivcurlMatrixImpl::evaluate(const C3DFVectorfield& coefficients, 
-					gsl::DoubleVector& gradient) const
+					CDoubleVector& gradient) const
 {
 	assert(coefficients.size() == _M_nodes); 
 	assert(gradient.size() == coefficients.size() * 3); 

@@ -37,16 +37,6 @@ using namespace std;
 using namespace gsl;
 
 
-const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
-	{"cg-fr", min_cg_fr},
-	{"cg-pr", min_cg_pr},
-	{"bfgs", min_bfgs},
-	{"bfgs2", min_bfgs2},
-	{"gd", min_gd},
-	{NULL, min_undefined}
-};
-
-
 const char *g_general_help = 
 	"This program runs the non-rigid registration of two images using certain"
 	"cost measures and a given transformation model.\n"
@@ -61,7 +51,7 @@ int do_main( int argc, const char *argv[] )
 	string out_filename;
 	string trans_filename;
 	string transform_type("spline");
-	EMinimizers minimizer = min_bfgs2;
+	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1");
 
 	cvdebug() << "auto transform_creator\n"; 
 	auto transform_creator = C2DTransformCreatorHandler::instance().produce("spline"); 
@@ -76,8 +66,7 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( out_filename, "out", 'o', "registered output image", CCmdOption::required));
 	options.push_back(make_opt( trans_filename, "trans", 't', "output transformation"));
 	options.push_back(make_opt( mg_levels, "levels", 'l', "multigrid levels", CCmdOption::required));
-	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
-				    "optimizer", 'O', "Optimizer used for minimization"));
+	options.push_back(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 
 	options.parse(argc, argv);

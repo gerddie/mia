@@ -43,10 +43,10 @@ struct  EXPORT_3D C3DTransformMock: public C3DTransformation {
 	virtual size_t degrees_of_freedom() const;
 	virtual void set_identity();
 	virtual C3DFMatrix derivative_at(int x, int y, int z) const;
-	virtual void translate(const C3DFVectorfield& gradient, gsl::DoubleVector& params) const;
+	virtual void translate(const C3DFVectorfield& gradient, CDoubleVector& params) const;
 	virtual float get_max_transform() const;
-	virtual gsl::DoubleVector  get_parameters() const;
-	virtual void set_parameters(const gsl::DoubleVector& params);
+	virtual CDoubleVector  get_parameters() const;
+	virtual void set_parameters(const CDoubleVector& params);
 	virtual const C3DBounds& get_size() const;
 	virtual float pertuberate(C3DFVectorfield& v) const;
 	virtual C3DFVector apply(const C3DFVector& x) const;
@@ -54,7 +54,7 @@ struct  EXPORT_3D C3DTransformMock: public C3DTransformation {
 	virtual float get_jacobian(const C3DFVectorfield& v, float delta) const;
 	virtual float divergence() const;
 	virtual float curl() const;
-	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
+	virtual double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const; 
 	double get_divcurl_cost(double wd, double wr) const; 
 
 	virtual C3DTransformation::const_iterator begin() const; 

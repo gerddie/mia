@@ -69,7 +69,7 @@ double C3DImageFullCost::do_value() const
 }
 
 
-double C3DImageFullCost::do_evaluate(const C3DTransformation& t, gsl::DoubleVector& gradient) const
+double C3DImageFullCost::do_evaluate(const C3DTransformation& t, CDoubleVector& gradient) const
 {
 	TRACE_FUNCTION; 
 	assert(_M_src); 

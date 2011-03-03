@@ -21,8 +21,6 @@
  */
 #define VSTREAM_DOMAIN "transformmock"
 
-#include <gsl++/vector.hh>
-
 #include <mia/3d/transformmock.hh>
 
 NS_MIA_BEGIN
@@ -82,7 +80,7 @@ C3DFMatrix C3DTransformMock::derivative_at(int, int, int) const
 			  C3DFVector(7.0, 8.0, 9.0));
 }
 
-void C3DTransformMock::translate(const C3DFVectorfield& gradient, gsl::DoubleVector& params) const
+void C3DTransformMock::translate(const C3DFVectorfield& gradient, CDoubleVector& params) const
 {
         auto r = params.begin();
 	for(auto f = gradient.begin(); f != gradient.end(); ++f) {
@@ -102,9 +100,9 @@ const C3DBounds& C3DTransformMock::get_size() const
 	return m_size;
 }
 
-gsl::DoubleVector  C3DTransformMock::get_parameters() const
+CDoubleVector  C3DTransformMock::get_parameters() const
 {
-	gsl::DoubleVector result(degrees_of_freedom());
+	CDoubleVector result(degrees_of_freedom());
 	if (degrees_of_freedom() >= 3) {
 		result[2] = -4.1;
 		result[1] = -2.3;
@@ -113,7 +111,7 @@ gsl::DoubleVector  C3DTransformMock::get_parameters() const
 	return result;
 }
 
-void C3DTransformMock::set_parameters(const gsl::DoubleVector& /*params*/)
+void C3DTransformMock::set_parameters(const CDoubleVector& /*params*/)
 {
 
 }
@@ -157,7 +155,7 @@ float C3DTransformMock::curl() const
 	return 2.0f;
 }
 
-double C3DTransformMock::get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const
+double C3DTransformMock::get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const
 {
 	gradient[0] = wd; 
 	gradient[1] = wr; 

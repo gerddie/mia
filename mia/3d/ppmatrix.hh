@@ -24,7 +24,7 @@
 
 #include <mia/3d/interpolator.hh>
 #include <mia/3d/3DDatafield.hh>
-#include <gsl++/vector.hh>
+#include <mia/core/vector.hh>
 
 NS_MIA_BEGIN
 
@@ -75,8 +75,8 @@ public:
 	   \returns <c^T, P, c>
 	 */
 	
-	double evaluate(const C3DFVectorfield& coefficients, gsl::DoubleVector& gradient) const; 
-	double evaluate(const T3DDatafield<C3DDVector>& coefficients, gsl::DoubleVector& gradient) const; 
+	double evaluate(const C3DFVectorfield& coefficients, CDoubleVector& gradient) const; 
+	double evaluate(const T3DDatafield<C3DDVector>& coefficients, CDoubleVector& gradient) const; 
 
 	/**
 	   \returns fild size this matrix was created for 

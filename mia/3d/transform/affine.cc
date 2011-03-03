@@ -200,21 +200,21 @@ void C3DAffineTransformation::shear(float /*v*/)
 	assert(0 && "not implemented");
 }
 
-gsl::DoubleVector C3DAffineTransformation::get_parameters() const
+CDoubleVector C3DAffineTransformation::get_parameters() const
 {
-	gsl::DoubleVector result(degrees_of_freedom());
+	CDoubleVector result(degrees_of_freedom());
 	copy(_M_t.begin(), _M_t.end(), result.begin());
 	return result;
 }
 
-void C3DAffineTransformation::set_parameters(const gsl::DoubleVector& params)
+void C3DAffineTransformation::set_parameters(const CDoubleVector& params)
 {
 	assert(degrees_of_freedom() == params.size());
 	copy(params.begin(), params.end(), _M_t.begin());
 
 }
 
-double C3DAffineTransformation::get_divcurl_cost(double, double, gsl::DoubleVector&) const
+double C3DAffineTransformation::get_divcurl_cost(double, double, CDoubleVector&) const
 {
 	return 0.0; 
 }
@@ -341,7 +341,7 @@ float C3DAffineTransformation::get_jacobian(const C3DFVectorfield& /*v*/, float 
 	assert(!"not implemented");
 }
 
-void C3DAffineTransformation::translate(const C3DFVectorfield& gradient, gsl::DoubleVector& params) const
+void C3DAffineTransformation::translate(const C3DFVectorfield& gradient, CDoubleVector& params) const
 {
 	assert(gradient.get_size() == _M_size);
 	assert(params.size() == degrees_of_freedom());

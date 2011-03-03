@@ -381,7 +381,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_translate, TransformSplineFixture )
 
 	fill(gradient.begin(), gradient.end(), C3DFVector(1.0, 2.0, 3.0));
 
-	gsl::DoubleVector force(stransf.degrees_of_freedom());
+	CDoubleVector force(stransf.degrees_of_freedom());
 	stransf.translate(gradient, force);
 
 	// the real test uses finite differences and is implemented elsewhere
@@ -856,7 +856,7 @@ BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture)
 	t.reinit(); 
 
 	auto params = t.get_parameters();
-	gsl::DoubleVector trgrad(params.size()); 
+	CDoubleVector trgrad(params.size()); 
 	
 	t.translate(gradient,  trgrad); 
 	double delta = 0.01; 
@@ -905,7 +905,7 @@ TransformGradientFixture::TransformGradientFixture():
 void TransformGradientFixture::run_test(C3DTransformation& t, double tol)const
 {
 	auto params = t.get_parameters();
-	gsl::DoubleVector trgrad(params.size()); 
+	CDoubleVector trgrad(params.size()); 
 	
 	t.translate(gradient,  trgrad); 
 	double delta = 0.01; 

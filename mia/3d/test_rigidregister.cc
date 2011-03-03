@@ -27,20 +27,9 @@
 #include <mia/3d/rigidregister.hh>
 #include <mia/3d/transformfactory.hh>
 #include <mia/core/spacial_kernel.hh>
+#include <mia/core/minimizer.hh>
 #include <mia/3d/3dfilter.hh>
 #include <mia/3d/3dimageio.hh>
-
-const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
-	{"simplex", min_nmsimplex},
-	{"cg-fr", min_cg_fr},
-	{"cg-pr", min_cg_pr},
-	{"bfgs", min_bfgs},
-	{"bfgs2", min_bfgs2},
-	{"gd", min_gd},
-	{NULL, min_undefined}
-};
-
-const TDictMap<EMinimizers> minimizers(g_minimizer_table); 
 
 NS_MIA_USE
 namespace bfs=boost::filesystem;
@@ -64,6 +53,10 @@ protected:
 		list< bfs::path> filterpath;
 		filterpath.push_back(bfs::path("filter"));
 		C3DFilterPluginHandler::set_search_path(filterpath);
+		
+		list< bfs::path> minimizerpath;
+		minimizerpath.push_back(bfs::path("../core/minimizer"));
+		CMinimizerPluginHandler::set_search_path(minimizerpath); 
 
 
 	}
@@ -72,12 +65,13 @@ protected:
 class RigidRegisterFixture : public PluginPathInitFixture {
 protected: 
 	RigidRegisterFixture(); 
-	void run(C3DTransformation& t, EMinimizers minimizer, double accuracy); 
+	void run(C3DTransformation& t, const std::string& minimizer_descr,  double accuracy); 
 	const C3DBounds size;
 }; 
 
-void RigidRegisterFixture::run(C3DTransformation& t, EMinimizers minimizer, double accuracy)
+void RigidRegisterFixture::run(C3DTransformation& t, const std::string& minimizer_descr, double accuracy)
 {
+	auto minimizer = CMinimizerPluginHandler::instance().produce(minimizer_descr); 
 	P3DImageCost cost = C3DImageCostPluginHandler::instance().produce("ssd");
 	unique_ptr<C3DInterpolatorFactory>   ipfactory(create_3dinterpolation_factory(ip_bspline3));
 	auto tr_creator = C3DTransformCreatorHandler::instance().produce(t.get_creator_string());
@@ -138,14 +132,12 @@ void RigidRegisterFixture::run(C3DTransformation& t, EMinimizers minimizer, doub
 			BOOST_CHECK_CLOSE(1.0 + params[i], 1.0 + orig_params[i], 2*accuracy);
 
 	if ( cverb.get_level() <= vstream::ml_info ) {
-		save_image
-("src.hdr", src);
-		save_image
-("ref.hdr", ref);
+		save_image("src.hdr", src);
+		save_image("ref.hdr", ref);
 		P3DImage reg = (*transform)(*src, *ipfactory); 
 		stringstream out_name; 
 		out_name << "reg-" << t.get_creator_string()
-			 << "-" << minimizers.get_name(minimizer) << ".hdr"; 
+			 << "-" << minimizer->get_init_string() << ".hdr"; 
 		save_image
 (out_name.str(), ref);
 	}
@@ -168,7 +160,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_nmsimplex, RigidRegisterFixture
 	params[2] = 2.0;
 	transformation->set_parameters(params); 
 
-	run(*transformation, min_nmsimplex, 1.0); 
+	run(*transformation, "gsl:opt=simplex,step=1.0", 1.0); 
 }
 
 
@@ -182,7 +174,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_gd, RigidRegisterFixture )
 	params[2] = 2.0;
 	transformation->set_parameters(params); 
 
-	run(*transformation, min_gd, 0.4); 
+	run(*transformation, "gsl:opt=gd,step=0.1", 0.4); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_rigid_simplex, RigidRegisterFixture )
@@ -199,7 +191,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigid_simplex, RigidRegisterFixture )
 	
 	transformation->set_parameters(params); 
 
-	run(*transformation, min_nmsimplex, 16.0); 
+	run(*transformation, "gsl:opt=simplex,step=1.0", 16.0); 
 }
 
 
@@ -217,7 +209,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigid_gd, RigidRegisterFixture )
 	
 	transformation->set_parameters(params); 
 
-	run(*transformation, min_gd, 8.0); 
+	run(*transformation, "gsl:opt=gd,step=0.1", 8.0); 
 }
 
 #if 0 
@@ -247,7 +239,7 @@ BOOST_FIXTURE_TEST_CASE( test_affine_simplex, RigidRegisterFixture )
 
 	transformation->set_parameters(params); 
 
-	run(*transformation, min_nmsimplex, 1.0); 
+	run(*transformation, "gsl:opt=simplex,step=1.0", 1.0); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_affine_gd, RigidRegisterFixture )

@@ -33,11 +33,13 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/factorycmdlineoption.hh>
 #include <mia/core/errormacro.hh>
+#include <mia/core/minimizer.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/transformfactory.hh>
+
 
 using namespace std;
 using namespace mia;
@@ -55,16 +57,6 @@ const char *g_general_help =
 	"to speed up computation\n\n"
 	"Basic usage: \n"
 	" mia-2dmyoica-nonrigid [options] "; 
-
-
-const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
-	{"cg-fr", min_cg_fr},
-	{"cg-pr", min_cg_pr},
-	{"bfgs", min_bfgs},
-	{"bfgs2", min_bfgs2},
-	{"gd", min_gd},
-	{NULL, min_undefined}
-};
 
 
 class C2DFImage2PImage {
@@ -134,7 +126,7 @@ void segment_and_crop_input(CSegSetWithImages&  input_set,
 
 void run_registration_pass(CSegSetWithImages&  input_set, 
 			   const C2DImageSeries& references, 
-			   int skip_images, EMinimizers minimizer, 
+			   int skip_images, PMinimizer minimizer, 
 			   C2DInterpolatorFactory& ipfactory, size_t mg_levels, 
 			   double c_rate, double divcurlweight, double imageweight) 
 {
@@ -185,7 +177,7 @@ int do_main( int argc, const char *argv[] )
 	bool override_src_imagepath = true;
 
 	// registration parameters
-	EMinimizers minimizer = min_gd;
+	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1");
 	double c_rate = 32; 
 	double c_rate_divider = 4; 
 	double divcurlweight = 20.0; 
@@ -232,8 +224,7 @@ int do_main( int argc, const char *argv[] )
 
 	
 	options.set_group("\nRegistration"); 
-	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
-				    "optimizer", 'O', "Optimizer used for minimization"));
+	options.push_back(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( c_rate, "start-c-rate", 'a', 
 				    "start coefficinet rate in spines,"
 				    " gets divided by --c-rate-divider with every pass"));
@@ -264,11 +255,8 @@ int do_main( int argc, const char *argv[] )
 
 	options.push_back(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
 				   "Segmentation method")); 
-				    
 
 	options.parse(argc, argv, false);
-
-
 
 	// this cost will always be used 
 

@@ -42,9 +42,9 @@ BOOST_AUTO_TEST_CASE( test_load_minimizer_plugins )
 
 	searchpath.push_back( bfs::path("minimizer"));
 	
-	CMinimizerPluginPluginHandler::set_search_path(searchpath); 
+	CMinimizerPluginHandler::set_search_path(searchpath); 
 
-	const CMinimizerPluginPluginHandler::Instance& handler = CMinimizerPluginPluginHandler::instance();
+	const CMinimizerPluginHandler::Instance& handler = CMinimizerPluginHandler::instance();
 
 	BOOST_CHECK_EQUAL(handler.size(), 1u); 
 	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "gsl "); 

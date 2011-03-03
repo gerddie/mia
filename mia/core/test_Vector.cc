@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE (test_new2)
 	for(int i = 0; i < 6; ++i) 
 		BOOST_CHECK_EQUAL(v[i], input[i]); 
 
-	CDoubleVector v2(v); 
+	const CDoubleVector v2(v); 
 	for(int i = 0; i < 6; ++i) 
 		BOOST_CHECK_EQUAL(v2[i], input[i]); 
 	

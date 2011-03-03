@@ -79,18 +79,18 @@ public:
 	virtual size_t degrees_of_freedom() const;
         virtual P3DImage apply(const C3DImage& image, const C3DInterpolatorFactory& ipf) const;
 	virtual void update(float step, const C3DFVectorfield& a);
-	virtual void translate(const C3DFVectorfield& gradient, gsl::DoubleVector& params) const;
+	virtual void translate(const C3DFVectorfield& gradient, CDoubleVector& params) const;
 	virtual C3DFMatrix derivative_at(int x, int y, int z) const;
 	C3DFMatrix derivative_at(const C3DFVector& x) const; 
 	virtual float get_max_transform() const;
-	virtual gsl::DoubleVector get_parameters() const;
-	virtual void set_parameters(const gsl::DoubleVector& params);
+	virtual CDoubleVector get_parameters() const;
+	virtual void set_parameters(const CDoubleVector& params);
 	virtual void set_identity();
 	virtual float pertuberate(C3DFVectorfield& v) const;
 	virtual float get_jacobian(const C3DFVectorfield& v, float delta) const;
 	virtual C3DFVector operator () (const C3DFVector& x) const;
 
-	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
+	virtual double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const; 
 	virtual double get_divcurl_cost(double wd, double wr) const; 
 
 	C3DFVector on_grid(const mia::C3DBounds& x) const; 

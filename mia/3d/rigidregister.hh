@@ -26,7 +26,7 @@
 #ifndef mia_3d_rigidregister_hh
 #define mia_3d_rigidregister_hh
 
-
+#include <mia/core/minimizer.hh>
 #include <mia/3d/cost.hh>
 #include <mia/3d/transform.hh>
 #include <mia/3d/transformfactory.hh>
@@ -58,7 +58,7 @@ public:
 	   \param ipf interpolator
 	 */
 
-	C3DRigidRegister(P3DImageCost cost, EMinimizers minimizer,
+	C3DRigidRegister(P3DImageCost cost, PMinimizer minimizer,
 			 P3DTransformationFactory transform_creator,
 			 const C3DInterpolatorFactory& ipf,  size_t mg_levels);
 

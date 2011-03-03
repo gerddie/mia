@@ -26,7 +26,7 @@
 #include <iterator>
 #include <memory>
 
-#include <gsl++/vector.hh>
+#include <mia/core/vector.hh>
 #include <mia/core/transformation.hh>
 #include <mia/core/filter.hh>
 #include <mia/3d/matrix.hh>
@@ -212,17 +212,17 @@ public:
 	   Translate the input gradient to a vector field in the space of the transformation field
 	   \remark this is too specialized and needs to be replaced by something
 	 */
-	virtual void translate(const C3DFVectorfield& gradient, gsl::DoubleVector& params) const = 0;
+	virtual void translate(const C3DFVectorfield& gradient, CDoubleVector& params) const = 0;
 
 	/**
 	   \returns the transformation parameters as a flat value array
 	 */
-	virtual gsl::DoubleVector get_parameters() const = 0;
+	virtual CDoubleVector get_parameters() const = 0;
 
 	/**
 	   sets the transformation parameters from a flat value array
 	 */
-	virtual void set_parameters(const gsl::DoubleVector& params) = 0;
+	virtual void set_parameters(const CDoubleVector& params) = 0;
 
 	/**
 	   \returns the (approximate) maximum absolute translation of the transformation over the whole domain
@@ -271,7 +271,7 @@ public:
 	   \retval gradient vector to hold the resulting gradient 
 	   \returns cost function value 
 	 */
-	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const = 0; 
+	virtual double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const = 0; 
 
 	/**
 	   Evaluate the grad div ^2 + grad rot ^2 value for the transformtion 

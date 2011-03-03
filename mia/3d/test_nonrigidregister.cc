@@ -53,7 +53,7 @@ public:
 	double fz(double x, double y, double z); 
 
 private:
-	double do_evaluate(const C3DTransformation& t, gsl::DoubleVector& gradient) const;
+	double do_evaluate(const C3DTransformation& t, CDoubleVector& gradient) const;
 	double do_value(const C3DTransformation& t) const;
 	void do_set_size(); 
 
@@ -100,7 +100,7 @@ C3DFullCostMock::C3DFullCostMock(double weight, const C3DBounds& size):
 {
 }
 
-double C3DFullCostMock::do_evaluate(const C3DTransformation& t, gsl::DoubleVector& gradient) const
+double C3DFullCostMock::do_evaluate(const C3DTransformation& t, CDoubleVector& gradient) const
 {
 	const C3DBounds& size = get_current_size(); 
 	BOOST_REQUIRE(size == t.get_size());

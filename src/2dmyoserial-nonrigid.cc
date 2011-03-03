@@ -50,16 +50,6 @@ const char *g_general_help =
 	" mia-2dmyoserial-nonrigid [options] <cost1> <cost2> ..."; 
 
 
-const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
-	{"cg-fr", min_cg_fr},
-	{"cg-pr", min_cg_pr},
-	{"bfgs", min_bfgs},
-	{"bfgs2", min_bfgs2},
-	{"gd", min_gd},
-	{NULL, min_undefined}
-};
-
-
 
 int do_main( int argc, const char *argv[] )
 {
@@ -75,7 +65,7 @@ int do_main( int argc, const char *argv[] )
 	bool override_src_imagepath = true;
 
 	// registration parameters
-	EMinimizers minimizer = min_gd;
+	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1");
 	EInterpolation interpolator = ip_bspline3;
 	size_t mg_levels = 3; 
 	int reference_param = -1; 
@@ -92,8 +82,7 @@ int do_main( int argc, const char *argv[] )
 	
 	
 	options.set_group("\nRegistration"); 
-	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
-				    "optimizer", 'O', "Optimizer used for minimization"));
+	options.push_back(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
 	options.push_back(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));

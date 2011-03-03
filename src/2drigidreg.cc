@@ -27,24 +27,12 @@
 #include <mia/core.hh>
 #include <mia/2d.hh>
 #include <mia/2d/rigidregister.hh>
-#include <gsl++/multimin.hh>
+#include <mia/core/minimizer.hh>
 #include <mia/2d/transformio.hh>
 #include <mia/core/factorycmdlineoption.hh>
 
 NS_MIA_USE;
 using namespace std;
-using namespace gsl;
-
-
-const TDictMap<EMinimizers>::Table g_minimizer_table[] = {
-	{"simplex", min_nmsimplex},
-	{"cg-fr", min_cg_fr},
-	{"cg-pr", min_cg_pr},
-	{"bfgs", min_bfgs},
-	{"bfgs2", min_bfgs2},
-	{"gd", min_gd},
-	{NULL, min_undefined}
-};
 
 const char *g_description = 
 	"This program implements the registration of two gray scale 2D images. "
@@ -60,7 +48,7 @@ int do_main( int argc, const char *argv[] )
 	string out_filename;
 	string trans_filename;
 	auto transform_creator = C2DTransformCreatorHandler::instance().produce("rigid"); 
-	EMinimizers minimizer = min_nmsimplex;
+	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=simplex,step=1.0"); 
 
 	size_t mg_levels = 3;
 
@@ -71,8 +59,7 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( trans_filename, "trans", 't', "transformation"));
 	options.push_back(make_opt( cost_function, "cost", 'c', "cost function")); 
 	options.push_back(make_opt( mg_levels, "levels", 'l', "multigrid levels"));
-	options.push_back(make_opt( minimizer, TDictMap<EMinimizers>(g_minimizer_table),
-				    "optimizer", 'O', "Optimizer used for minimization"));
+	options.push_back(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 
 	options.parse(argc, argv);

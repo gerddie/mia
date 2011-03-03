@@ -252,10 +252,10 @@ const C3DBounds& C3DSplineTransformation::get_size() const
 	return _M_range;
 }
 
-gsl::DoubleVector C3DSplineTransformation::get_parameters() const
+CDoubleVector C3DSplineTransformation::get_parameters() const
 {
 	TRACE_FUNCTION;
-	gsl::DoubleVector result(_M_coefficients.size() * 3);
+	CDoubleVector result(_M_coefficients.size() * 3);
 	auto r = result.begin();
 	for(auto f = _M_coefficients.begin(); f != _M_coefficients.end(); ++f) {
 		*r++ = f->x;
@@ -265,7 +265,7 @@ gsl::DoubleVector C3DSplineTransformation::get_parameters() const
 	return result;
 }
 
-void C3DSplineTransformation::set_parameters(const gsl::DoubleVector& params)
+void C3DSplineTransformation::set_parameters(const CDoubleVector& params)
 {
 	TRACE_FUNCTION;
 	assert(3 * _M_coefficients.size() == params.size());
@@ -563,10 +563,9 @@ C3DSplineTransformation::get_derivative_row(size_t nin, size_t nout, double scal
 	return result; 
 }
 
-void C3DSplineTransformation::translate(const C3DFVectorfield& gradient, gsl::DoubleVector& params) const
+void C3DSplineTransformation::translate(const C3DFVectorfield& gradient, CDoubleVector& params) const
 {
 	TRACE_FUNCTION;
-	static int pass = 0; 
 
 	assert(params.size() == _M_coefficients.size() * 3);
 	assert(gradient.get_size() == _M_range); 
@@ -756,7 +755,7 @@ void C3DSplineTransformation::iterator_impl::do_z_increment()
 	_M_value_valid = false; 
 }
 
-double C3DSplineTransformation::get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const
+double C3DSplineTransformation::get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const
 {
 	TRACE_FUNCTION;
 //	FUNCTION_NOT_TESTED;

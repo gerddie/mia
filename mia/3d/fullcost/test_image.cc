@@ -161,7 +161,7 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 	
 	C3DTransformMock t(size); 
 	
-	gsl::DoubleVector gradient(t.degrees_of_freedom()); 
+	CDoubleVector gradient(t.degrees_of_freedom()); 
 	double cost_value = cost.evaluate(t, gradient);
 	BOOST_CHECK_EQUAL(gradient.size(), 3u * 64u); 
 

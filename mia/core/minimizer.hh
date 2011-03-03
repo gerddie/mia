@@ -107,8 +107,8 @@ private:
 typedef CMinimizer::Pointer PMinimizer; 
 
 typedef TFactory<CMinimizer> CMinimizerPlugin;
-typedef THandlerSingleton<TFactoryPluginHandler<CMinimizerPlugin> > CMinimizerPluginPluginHandler;
-FACTORY_TRAIT(CMinimizerPluginPluginHandler); 
+typedef THandlerSingleton<TFactoryPluginHandler<CMinimizerPlugin> > CMinimizerPluginHandler;
+FACTORY_TRAIT(CMinimizerPluginHandler); 
 
 
 	

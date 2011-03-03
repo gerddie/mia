@@ -70,7 +70,7 @@ public:
 	   \param n 
 	   \param clean initialize vector to 0
 	 */
-	Vector(size_t n, bool clean = 0):
+	Vector(size_t n, bool clean = true):
 		m_size(n),
 		m_data(new T[n], array_destructor<T>()),
 		m_cdata(m_data.get())
@@ -124,6 +124,7 @@ public:
 	reference operator[] (size_t i) {
 		assert(i < m_size); 
 		assert(m_data); 
+		assert(m_data.unique()); 
 		return m_data.get()[i]; 
 	}
 
@@ -134,6 +135,7 @@ public:
 	
 	iterator begin() {
 		assert(m_data); 
+		assert(m_data.unique()); 
 		return m_data.get(); 
 	}
 

@@ -147,7 +147,7 @@ void C3DTranslateTransformation::add(const C3DTransformation& /*a*/)
 	assert(0 && "not implemented");
 }
 
-void C3DTranslateTransformation::translate(const C3DFVectorfield& gradient, gsl::DoubleVector& params) const
+void C3DTranslateTransformation::translate(const C3DFVectorfield& gradient, CDoubleVector& params) const
 {
 	assert(gradient.get_size() == _M_size);
 	assert(params.size() == 3);
@@ -173,16 +173,16 @@ C3DFMatrix C3DTranslateTransformation::derivative_at(int /*x*/, int /*y*/, int /
 	return C3DFMatrix();
 }
 
-gsl::DoubleVector C3DTranslateTransformation::get_parameters() const
+CDoubleVector C3DTranslateTransformation::get_parameters() const
 {
-	gsl::DoubleVector result(3);
+	CDoubleVector result(3);
 	result[0] = _M_transform.x;
 	result[1] = _M_transform.y;
 	result[2] = _M_transform.z;
 	return result;
 }
 
-void C3DTranslateTransformation::set_parameters(const gsl::DoubleVector& params)
+void C3DTranslateTransformation::set_parameters(const CDoubleVector& params)
 {
 	assert(params.size() == 3);
 	_M_transform.x = params[0];
@@ -241,7 +241,7 @@ float C3DTranslateTransformation::grad_curl() const
 }
 
 double C3DTranslateTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/, 
-						    gsl::DoubleVector& /*gradient*/) const
+						    CDoubleVector& /*gradient*/) const
 {
 	return 0.0;
 }
