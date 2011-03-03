@@ -20,8 +20,6 @@
  *
  */
 
-#include <gsl++/vector.hh>
-
 #include <mia/2d/transformmock.hh>
 
 NS_MIA_BEGIN

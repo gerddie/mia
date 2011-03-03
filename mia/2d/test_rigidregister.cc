@@ -209,7 +209,7 @@ BOOST_AUTO_TEST_CASE( test_rigidreg_affine_cost_gradient ) //, RigidRegisterFixt
 	P2DImage ref(new C2DFImage(size, ref_image_init));
 	P2DImage src(new C2DFImage(size, src_image_init));
 
-	gsl::DoubleVector gradient(transformation->degrees_of_freedom());
+	CDoubleVector gradient(transformation->degrees_of_freedom());
 	
 	cost->prepare_reference(*ref); 
 	
