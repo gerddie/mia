@@ -51,9 +51,7 @@ C3DSplineTransformationBig::C3DSplineTransformationBig(const C3DBounds& range, P
 	_M_y_indices(_M_range.y), 
 	_M_z_weights(_M_range.z),
 	_M_z_indices(_M_range.z), 
-	_M_grid_valid(false), 
-	_M_current_grid(new C3DFVectorfield(C3DBounds(0,0,0)))
-
+	_M_grid_valid(false)
 {
 	TRACE_FUNCTION;
 	unsigned int s = _M_kernel->get_active_halfrange() - 1; 
@@ -84,8 +82,7 @@ C3DSplineTransformationBig::C3DSplineTransformationBig(const C3DSplineTransforma
 	_M_y_indices(_M_range.y),
 	_M_z_weights(_M_range.z),
 	_M_z_indices(_M_range.z),
-	_M_grid_valid(false), 
-	_M_current_grid(new C3DFVectorfield(C3DBounds(0,0,0)))
+	_M_grid_valid(false)
 {
 	TRACE_FUNCTION;
 }
@@ -102,8 +99,7 @@ C3DSplineTransformationBig::C3DSplineTransformationBig(const C3DBounds& range, P
 	_M_y_indices(_M_range.y),
 	_M_z_weights(_M_range.z),
 	_M_z_indices(_M_range.z),
-	_M_grid_valid(false), 
-	_M_current_grid(new C3DFVectorfield(C3DBounds(0,0,0)))
+	_M_grid_valid(false)
 {
 	TRACE_FUNCTION;
 
@@ -130,6 +126,10 @@ C3DSplineTransformationBig::C3DSplineTransformationBig(const C3DBounds& range, P
 	csize += _M_enlarge;
 	_M_coefficients = C3DFVectorfield(csize);
 	reinit();
+}
+
+C3DSplineTransformationBig::~C3DSplineTransformationBig()
+{
 }
 
 void C3DSplineTransformationBig::set_coefficients(const C3DFVectorfield& field)
@@ -524,7 +524,7 @@ void C3DSplineTransformationBig::init_grid()const
 	reinit();
 	if (!_M_grid_valid) {
 		cvdebug() << "initialize grid\n"; 
-		if (!_M_current_grid.get() || (_M_current_grid->get_size() != _M_range)) {
+		if (!_M_current_grid || (_M_current_grid->get_size() != _M_range)) {
 			cvdebug() << "initialize grid field\n"; 
 			_M_current_grid.reset(new C3DFVectorfield(_M_range)); 
 		}
@@ -598,7 +598,8 @@ C3DTransformation::const_iterator C3DSplineTransformationBig::begin() const
 	TRACE_FUNCTION;
 	init_grid(); 
 	assert(_M_current_grid); 
-	return C3DTransformation::const_iterator(new iterator_impl(C3DBounds(0,0,0), get_size(), _M_current_grid));
+	return C3DTransformation::const_iterator(new iterator_impl(C3DBounds(0,0,0), get_size(), 
+								   _M_current_grid->begin()));
 }
 
 C3DTransformation::const_iterator C3DSplineTransformationBig::end() const
@@ -606,7 +607,8 @@ C3DTransformation::const_iterator C3DSplineTransformationBig::end() const
 	TRACE_FUNCTION;
 	init_grid(); 
 	assert(_M_current_grid); 
-	return C3DTransformation::const_iterator(new iterator_impl(get_size(), get_size(), _M_current_grid));
+	return C3DTransformation::const_iterator(new iterator_impl(get_size(), get_size(), 
+								   _M_current_grid->end()));
 }
 
 /*
@@ -793,17 +795,16 @@ const C3DBounds& C3DSplineTransformationBig::get_coeff_size() const
 
 
 C3DSplineTransformationBig::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& size, 
-						      P3DFVectorfield trans):
+							 C3DFVectorfield::const_iterator value_it):
 	C3DTransformation::iterator_impl(pos,size), 
-	_M_trans(trans),
-	_M_value_it( pos != size? trans->begin_at(pos.x, pos.y, pos.z): trans->end())
+	_M_value_it(value_it)
 {
 }
  
 C3DTransformation::iterator_impl * C3DSplineTransformationBig::iterator_impl::clone() const
 {
 	TRACE_FUNCTION;
-	return new C3DSplineTransformationBig::iterator_impl(get_pos(), get_size(), _M_trans); 
+	return new C3DSplineTransformationBig::iterator_impl(get_pos(), get_size(), _M_value_it); 
 }
 
 const C3DFVector&  C3DSplineTransformationBig::iterator_impl::do_get_value()const

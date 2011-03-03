@@ -38,6 +38,7 @@ public:
 	C3DSplineTransformationBig(const C3DSplineTransformationBig& org);
 	C3DSplineTransformationBig(const C3DBounds& range, PBSplineKernel kernel);
 	C3DSplineTransformationBig(const C3DBounds& range, PBSplineKernel kernel, const C3DFVector& c_rate);
+	~C3DSplineTransformationBig(); 
 
 	void set_coefficients(const C3DFVectorfield& field);
 	void set_coefficients_and_prefilter(const C3DFVectorfield& field);
@@ -52,7 +53,7 @@ public:
 	class EXPORT_3D iterator_impl: public C3DTransformation::iterator_impl  {
 	public:
 		iterator_impl(const C3DBounds& pos, const C3DBounds& size, 
-			      P3DFVectorfield trans); 
+			      C3DFVectorfield::const_iterator value_it); 
 	private: 
 		virtual C3DTransformation::iterator_impl * clone() const; 
 		virtual const C3DFVector&  do_get_value()const; 
@@ -60,8 +61,7 @@ public:
 		virtual void do_y_increment(); 
 		virtual void do_z_increment(); 
 
-		P3DFVectorfield _M_trans;
-		mutable C3DFVectorfield::const_iterator _M_value_it; 
+		C3DFVectorfield::const_iterator _M_value_it; 
 		
 
 	};
