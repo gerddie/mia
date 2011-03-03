@@ -1,0 +1,75 @@
+/* -*- mia-c++  -*-
+ *
+ * Copyright (c) Madrid 2010-2011
+ *
+ * BIT, ETSI Telecomunicacion, UPM
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+
+#define BOOST_TEST_MODULE CIRCLEINDEX
+
+#include <mia/internal/autotest.hh>
+#include <mia/core/index.hh>
+
+NS_MIA_USE
+
+BOOST_AUTO_TEST_CASE ( test_index_basics ) 
+{
+	CCircularIndex idx(4, 0); 
+
+	BOOST_CHECK_EQUAL(idx.next(), 0u); 
+	
+	BOOST_CHECK_EQUAL(idx.value(0), 0u); 
+	BOOST_CHECK_EQUAL(idx.value(1), 1u); 
+	BOOST_CHECK_EQUAL(idx.value(2), 2u); 
+	BOOST_CHECK_EQUAL(idx.value(3), 3u); 
+
+	idx.insert_one(); 
+	BOOST_CHECK_EQUAL(idx.next(), 1u);
+	
+	idx.insert_one(); 
+	BOOST_CHECK_EQUAL(idx.next(), 2u);
+
+	idx.insert_one(); 
+	BOOST_CHECK_EQUAL(idx.next(), 3u);
+
+	idx.insert_one(); 
+	BOOST_CHECK_EQUAL(idx.next(), 0u);
+	
+	idx.new_start(0); 
+	BOOST_CHECK_EQUAL(idx.value(0), 0u); 
+	BOOST_CHECK_EQUAL(idx.value(1), 1u); 
+	BOOST_CHECK_EQUAL(idx.value(2), 2u); 
+	BOOST_CHECK_EQUAL(idx.value(3), 3u); 
+
+	idx.new_start(1); 
+	BOOST_CHECK_EQUAL(idx.value(0), 1u); 
+	BOOST_CHECK_EQUAL(idx.value(1), 2u); 
+	BOOST_CHECK_EQUAL(idx.value(2), 3u); 
+	BOOST_CHECK_EQUAL(idx.value(3), 0u); 
+	
+	idx.insert_one(); 
+	BOOST_CHECK_EQUAL(idx.next(), 1u);
+
+	idx.new_start(2);
+	BOOST_CHECK_EQUAL(idx.value(0), 2u); 
+	BOOST_CHECK_EQUAL(idx.value(1), 3u); 
+	BOOST_CHECK_EQUAL(idx.value(2), 0u); 
+	BOOST_CHECK_EQUAL(idx.value(3), 1u); 
+
+}
