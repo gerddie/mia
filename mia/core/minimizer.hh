@@ -41,6 +41,7 @@ class EXPORT_CORE  CMinimizer : public CProductBase {
 public: 
 	typedef CMinimizer plugin_data; 
 	typedef CMinimizer plugin_type; 
+	typedef std::shared_ptr<CMinimizer> Pointer; 
 	
 	enum EMinimizerResult {failture, success}; 
 
@@ -103,7 +104,7 @@ private:
 	PProblem m_problem;
 }; 
 
-typedef std::shared_ptr<CMinimizer> PMinimizer; 
+typedef CMinimizer::Pointer PMinimizer; 
 
 typedef TFactory<CMinimizer> CMinimizerPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<CMinimizerPlugin> > CMinimizerPluginPluginHandler;

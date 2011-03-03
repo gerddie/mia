@@ -28,6 +28,8 @@
 
 #include <mia/core/defines.hh>
 #include <memory>
+#include <cstring>
+#include <cassert>
 
 NS_MIA_BEGIN
 
@@ -72,6 +74,15 @@ public:
 		m_data(new T[n], array_destructor<T>()),
 		m_cdata(m_data.get())
 	{
+	}
+
+	Vector(size_t n, bool clean):
+		m_size(n),
+		m_data(new T[n], array_destructor<T>()),
+		m_cdata(m_data.get())
+	{
+		if (clean) 
+			memset(m_data.get(), 0, m_size*sizeof(T)); 
 	}
 
 	/// copy constructor 
@@ -138,11 +149,11 @@ public:
 	}
 	
 	const_iterator begin() const{
-		return m_cdata.get(); 
+		return m_cdata; 
 	}
 
 	const_iterator end() const{
-		return m_cdata.get() + m_size; 
+		return m_cdata + m_size; 
 	}
 	
 	size_type size() const 

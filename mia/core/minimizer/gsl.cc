@@ -266,4 +266,10 @@ CGSLMinimizerPlugin::ProductPtr CGSLMinimizerPlugin::do_create() const
 					       m_start_step));
 }
 
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new CGSLMinimizerPlugin();
+}
+
+
 NS_END

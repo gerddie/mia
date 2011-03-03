@@ -21,40 +21,33 @@
  *
  */
 
-#include <cassert>
-#include <iostream>
-#include <cmath>
+#define BOOST_TEST_MODULE MINIMIZER_TEST
 
 #include <mia/internal/autotest.hh>
 
+#include <mia/core/minimizer.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/core/noisegen.hh>
+
 
 using namespace std; 
 using namespace mia; 
 using namespace boost;
 namespace bfs=::boost::filesystem; 
 
-BOOST_AUTO_TEST_CASE( test_plugins )	
+
+BOOST_AUTO_TEST_CASE( test_load_minimizer_plugins )	
 {
 	list< bfs::path> searchpath; 
 
-	searchpath.push_back( bfs::path("core") / bfs::path("noise"));
-	searchpath.push_back( bfs::path("noise"));
+	searchpath.push_back( bfs::path("minimizer"));
 	
-	CNoiseGeneratorPluginHandler::set_search_path(searchpath); 
+	CMinimizerPluginPluginHandler::set_search_path(searchpath); 
 
-	const CNoiseGeneratorPluginHandler::Instance& fh = CNoiseGeneratorPluginHandler::instance();
+	const CMinimizerPluginPluginHandler::Instance& handler = CMinimizerPluginPluginHandler::instance();
 
-	for (CNoiseGeneratorPluginHandler::Instance::const_iterator i = fh.begin(); 
-	     i != fh.end(); ++i)
-		BOOST_CHECK(i->second->test(true)); 
+	BOOST_CHECK_EQUAL(handler.size(), 1u); 
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "gsl "); 
+
 }
 
-BOOST_AUTO_TEST_CASE( test_factory_trait ) 
-{
-	FactoryTrait<CNoiseGeneratorPluginHandler::ProductPtr>::type::Instance help = 
-		CNoiseGeneratorPluginHandler::instance();
-	BOOST_CHECK(!help.empty()); 
-}

@@ -263,6 +263,7 @@ NEW_TEST(statistics miacore)
 NEW_TEST(splineparzenmi miacore)
 NEW_TEST(utils miacore)
 NEW_TEST(Vector miacore)
+NEW_TEST(minimizer miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)

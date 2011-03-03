@@ -42,8 +42,7 @@ BOOST_AUTO_TEST_CASE (test_init)
 BOOST_AUTO_TEST_CASE (test_const_init)
 {
 	const double input[6] = {1,2,3,4,5,6}; 
-
-	CDoubleVector v(6, input); 
+	const CDoubleVector v(6, input); 
 	
 	for(int i = 0; i < 6; ++i) 
 		BOOST_CHECK_EQUAL(v[i], input[i]); 
