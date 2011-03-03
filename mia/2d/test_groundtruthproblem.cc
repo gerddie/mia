@@ -26,7 +26,6 @@
 #include <mia/2d/groundtruthproblem.hh>
 
 using namespace mia;
-using gsl::DoubleVector;
 
 const size_t N = 5;
 const C2DBounds slice_size(3,3);
@@ -34,7 +33,7 @@ const size_t psize = 5 * 9;
 
 
 struct GroundTruthAccess: public GroundTruthProblem {
-	GroundTruthAccess(const DoubleVector& left_side,
+	GroundTruthAccess(const CDoubleVector& left_side,
 			   const  CCorrelationEvaluator::result_type& corr);
 	void check_spacial_gradient(const double *result);
 	void check_time_derivative(const double *result);
@@ -46,23 +45,23 @@ private:
 struct GroundTruthFixture {
 	GroundTruthFixture();
 
-	DoubleVector left_side;
-	DoubleVector x;
+	CDoubleVector left_side;
+	std::vector<double> x;
 	CCorrelationEvaluator::result_type corr;
 	unique_ptr<GroundTruthAccess> pgta;
 };
 
 BOOST_FIXTURE_TEST_CASE( test_value, GroundTruthFixture )
 {
-	BOOST_CHECK_CLOSE(pgta->f(x, pgta.get()), 598, 0.01);
+	BOOST_CHECK_CLOSE(pgta->f(x), 598, 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE( test_value_diff, GroundTruthFixture )
 {
 	x[4] += 0.1;
-	BOOST_CHECK_CLOSE(pgta->f(x, pgta.get()), 597.056, 0.01);
+	BOOST_CHECK_CLOSE(pgta->f(x), 597.056, 0.01);
 	x[4] -= 0.1;
-	BOOST_CHECK_CLOSE(pgta->f(x, pgta.get()), 598, 0.01);
+	BOOST_CHECK_CLOSE(pgta->f(x), 598, 0.01);
 }
 
 
@@ -70,13 +69,13 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_value, GroundTruthFixture )
 {
 	pgta->set_alpha_beta(0.0,0.0);
 
-	DoubleVector g(psize);
-	pgta->df(x, pgta.get(), g);
+	vector<double> g(psize);
+	pgta->df(x, g);
 	const double h = 0.0001;
 
 	for(size_t i = 0; i < psize; ++i) {
-		DoubleVector xp(x);
-		DoubleVector xm(x);
+		vector<double> xp(x);
+		vector<double> xm(x);
 
 		xp[i] += h;
 		xm[i] -= h;
@@ -87,8 +86,8 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_value, GroundTruthFixture )
 
 		cvdebug() << x[i] << " xm = " << xm[i] << " xp= " << xp[i] << "\n";
 
-		double fp = pgta->f(xp, pgta.get());
-		double fm = pgta->f(xm, pgta.get());
+		double fp = pgta->f(xp);
+		double fm = pgta->f(xm);
 
 		cvdebug() << "fp= "<< fp << ", fm=" << fm << ", h=" << h << "\n";
 		double df = (fp - fm) / (2 * h);
@@ -103,8 +102,8 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_spacial_direct, GroundTruthFixture )
 	pgta->set_alpha_beta(1.0,0.0);
 
 	copy(x.begin(), x.end(), left_side.begin());
-	DoubleVector g(psize);
-	pgta->df(x, pgta.get(), g);
+	vector<double> g(psize);
+	pgta->df(x, g);
 
 	float grad[psize] = {
 		-8, 22, -12, -2, -7,  7,  4, -2,  -2,
@@ -158,15 +157,15 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_spacial_finite_diff, GroundTruthFixt
 	pgta->set_alpha_beta(1.0,0.0);
 
 	copy(x.begin(), x.end(), left_side.begin());
-	DoubleVector g(psize);
-	pgta->df(x, pgta.get(), g);
+	vector<double> g(psize);
+	pgta->df(x, g);
 
 	const double h = 0.0001;
 
 	// only test inside
 	for(size_t i = 0; i < psize; ++i) {
-		DoubleVector xp(x);
-		DoubleVector xm(x);
+		vector<double> xp(x);
+		vector<double> xm(x);
 
 		xp[i] += h;
 		xm[i] -= h;
@@ -177,8 +176,8 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_spacial_finite_diff, GroundTruthFixt
 
 		cvdebug() << x[i] << " xm = " << xm[i] << " xp= " << xp[i] << "\n";
 
-		double fp = pgta->f(xp, pgta.get());
-		double fm = pgta->f(xm, pgta.get());
+		double fp = pgta->f(xp);
+		double fm = pgta->f(xm);
 		double df = (fp - fm) / (2 * h);
 
 		BOOST_CHECK_CLOSE(g[i], df, 0.1);
@@ -191,8 +190,8 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_temporal_direct, GroundTruthFixture 
 	pgta->set_alpha_beta(0.0,1.0);
 
 	copy(x.begin(), x.end(), left_side.begin());
-	DoubleVector g(psize);
-	pgta->df(x, pgta.get(), g);
+	vector<double> g(psize);
+	pgta->df(x, g);
 
 	float grad[psize] = {
 		0,  4, 0,  -4, -4,  -4,  1,  1,   0,
@@ -212,16 +211,16 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_temporal_finite_diff, GroundTruthFix
 	pgta->set_alpha_beta(0.0,1.0);
 
 	copy(x.begin(), x.end(), left_side.begin());
-	DoubleVector g(psize);
+	vector<double> g(psize);
 
-	pgta->df(x, pgta.get(), g);
+	pgta->df(x, g);
 
 	const double h = 0.0001;
 
 	// only test inside
 	for(size_t i = 0; i < psize; ++i) {
-		DoubleVector xp(x);
-		DoubleVector xm(x);
+		vector<double> xp(x);
+		vector<double> xm(x);
 
 		xp[i] += h;
 		xm[i] -= h;
@@ -232,8 +231,8 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_temporal_finite_diff, GroundTruthFix
 
 		cvdebug() << x[i] << " xm = " << xm[i] << " xp= " << xp[i] << "\n";
 
-		double fp = pgta->f(xp, pgta.get());
-		double fm = pgta->f(xm, pgta.get());
+		double fp = pgta->f(xp);
+		double fm = pgta->f(xm);
 		double df = (fp - fm) / (2 * h);
 
 		cvmsg() << "fp["<<i<<"]= "<< fp << ", fm=" << fm << ", h=" << h
@@ -256,7 +255,7 @@ void GroundTruthAccess::check_vector_equal(const vector<double>& result, const d
 	}
 }
 
-GroundTruthAccess::GroundTruthAccess(const DoubleVector& left_side,
+GroundTruthAccess::GroundTruthAccess(const CDoubleVector& left_side,
 		   const  CCorrelationEvaluator::result_type& corr):
 	GroundTruthProblem(1.0, 1.0, slice_size, N, left_side, corr)
 {

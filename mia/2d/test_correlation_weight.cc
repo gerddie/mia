@@ -23,14 +23,20 @@
 
 #include <mia/internal/autotest.hh>
 
-
+#include <mia/core/minimizer.hh>
 #include <mia/2d/correlation_weight.hh>
 #include <mia/2d/ground_truth_evaluator.hh>
+
+struct FixPluginpath {
+	FixPluginpath(); 
+};
 
 
 struct PseudoGroundTruthFixture {
 	PseudoGroundTruthFixture();
 
+	static FixPluginpath fix; 
+	
 	C2DBounds size;
 	size_t N;
 	vector<P2DImage> input_series;
@@ -133,6 +139,8 @@ PseudoGroundTruthFixture::PseudoGroundTruthFixture():
 	size(3,3),
 	N(4)
 {
+
+
 	const float init[4][3*3] = {
 		{ 0, 4, 0,  1, 1, 2,  3, 1, 1.1},
 		{ 0, 3, 0,  2, 2, 3,  3, 1, 1.2},
@@ -143,3 +151,13 @@ PseudoGroundTruthFixture::PseudoGroundTruthFixture():
 		input_series.push_back(P2DImage(new C2DFImage(size, init[i])));
 
 }
+namespace bfs=boost::filesystem; 
+
+FixPluginpath::FixPluginpath()
+{
+	list< bfs::path> minimizerpath;
+	minimizerpath.push_back(bfs::path("../core/minimizer"));
+	CMinimizerPluginHandler::set_search_path(minimizerpath); 
+}
+
+FixPluginpath PseudoGroundTruthFixture::fix; 

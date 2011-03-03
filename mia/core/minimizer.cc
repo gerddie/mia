@@ -65,6 +65,30 @@ void CMinimizer::do_set_problem()
 {
 }
 
+double  CMinimizer::Problem::f(const std::vector<double>& x)
+{
+	assert(x.size() == size()); 
+	const CDoubleVector params(x.size(), &x[0]); 
+	return do_f(params); 	
+}
+void    CMinimizer::Problem::df(const std::vector<double>& x, std::vector<double>& g)
+{
+	assert(x.size() == size()); 
+	assert(g.size() == size()); 
+	const CDoubleVector params_x(x.size(), &x[0]); 
+	CDoubleVector params_g(g.size(), &g[0]); 
+	do_df(params_x, params_g); 	
+}
+
+double  CMinimizer::Problem::fdf(const std::vector<double>& x, std::vector<double>& g)
+{
+	assert(x.size() == size()); 
+	assert(g.size() == size()); 
+	const CDoubleVector params_x(x.size(), &x[0]); 
+	CDoubleVector params_g(g.size(), &g[0]); 
+	return do_fdf(params_x, params_g); 	
+}
+
 double  CMinimizer::Problem::f(size_t n, const double *x)
 {
 	assert(n == size()); 

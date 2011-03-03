@@ -20,12 +20,10 @@
 #include <numeric>
 #include <mia/2d/ground_truth_evaluator.hh>
 #include <mia/2d/correlation_weight.hh>
-#include <gsl++/multimin.hh>
 #include <mia/2d/groundtruthproblem.hh>
 
 NS_MIA_BEGIN
 
-using gsl::DoubleVector;
 using namespace std;
 
 struct C2DGroundTruthEvaluatorImpl {
@@ -62,14 +60,14 @@ C2DGroundTruthEvaluatorImpl::C2DGroundTruthEvaluatorImpl(double alpha, double be
 }
 
 struct DataCopy : public TFilter<void> {
-	DataCopy(gsl::DoubleVector& target, size_t ss);
+	DataCopy(CDoubleVector& target, size_t ss);
 
 	template <typename T>
 	void operator() (const T2DImage<T>& image);
 
 private:
-	DoubleVector& m_target;
-	DoubleVector::iterator i_target;
+	CDoubleVector& m_target;
+	CDoubleVector::iterator i_target;
 	size_t m_slice_size;
 };
 
@@ -85,7 +83,7 @@ void C2DGroundTruthEvaluatorImpl::run(const std::vector<P2DImage>& originals,
 	size_t n = originals.size() * slice_size;
 
 	// copy original data into vector for optimization
-	gsl::DoubleVector input(n, false);
+	CDoubleVector input(n, false);
 	DataCopy dc(input, slice_size);
 	for (auto io = originals.begin(); io != originals.end(); ++io)
 		::mia::accumulate(dc, **io);
@@ -93,7 +91,7 @@ void C2DGroundTruthEvaluatorImpl::run(const std::vector<P2DImage>& originals,
 	// if an initial estimate is give, then copy it to the 
 	// optimization output vector 
 	// otherwise copy input to estimate 
-	gsl::DoubleVector output(n,false);
+	CDoubleVector output(n,false);
 	if (estimate.size() == originals.size()) {
 		DataCopy dc(output, slice_size);
 		for (auto io = estimate.begin(); io != estimate.end(); ++io)
@@ -104,17 +102,16 @@ void C2DGroundTruthEvaluatorImpl::run(const std::vector<P2DImage>& originals,
 	}
 
 	// run optimization of ground truth
-	gsl::CFDFMinimizer::PProblem gtp(new GroundTruthProblem(m_alpha, m_beta, originals[0]->get_size(),
+	CMinimizer::PProblem gtp(new GroundTruthProblem(m_alpha, m_beta, originals[0]->get_size(),
 								originals.size(), input, correlation));
 
 	// remark, maybe one should test other optimizers 
-	gsl::CFDFMinimizer minimizer(gtp,  gsl_multimin_fdfminimizer_vector_bfgs2);
+	auto  minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=bfgs2,step=0.1"); 
+	minimizer->set_problem(gtp);
 
-	int min_status = minimizer.run(output);
-	if (min_status != GSL_SUCCESS) {
-		cvwarn() << "C2DGroundTruthEvaluator: evaluation stopped with reason '"
-			 << gsl_strerror (min_status) << "'\n";
-	}
+	auto min_status = minimizer->run(output);
+	if (min_status != CMinimizer::success) 
+		cvwarn() << "C2DGroundTruthEvaluator: optimization did not converge\n"; 
 
 	// copy back the result
 	auto igt = output.begin();
@@ -126,7 +123,7 @@ void C2DGroundTruthEvaluatorImpl::run(const std::vector<P2DImage>& originals,
 	}
 }
 
-DataCopy::DataCopy(DoubleVector& target, size_t slice_size):
+DataCopy::DataCopy(CDoubleVector& target, size_t slice_size):
 	m_target(target),
 	i_target(target.begin()),
 	m_slice_size(slice_size)

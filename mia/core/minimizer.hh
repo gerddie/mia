@@ -63,6 +63,11 @@ public:
 		void    df(size_t n, const double *x, double *g); 
 		double  fdf(size_t n, const double *x, double *g); 
 
+		double  f(const std::vector<double>& x); 
+		void    df(const std::vector<double>& x, std::vector<double>& g); 
+		double  fdf(const std::vector<double>& x, std::vector<double>& g); 
+
+
 		/// \returns number of parameters to optimize
 		size_t size() const; 
 	private: 

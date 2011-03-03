@@ -24,14 +24,13 @@
 NS_MIA_BEGIN
 
 using namespace std;
-using gsl::DoubleVector;
 
 GroundTruthProblem::GroundTruthProblem(double a, double b,
 				       const C2DBounds& slice_size,
 				       size_t nframes,
-				       const gsl::DoubleVector& left_side,
+				       const CDoubleVector& left_side,
 				       const  CCorrelationEvaluator::result_type& corr):
-	gsl::CFDFMinimizer::Problem(left_side.size()),
+	CMinimizer::Problem(left_side.size()),
 	m_a(a),
 	m_b(b),
 	m_slice_size(slice_size),
@@ -40,11 +39,12 @@ GroundTruthProblem::GroundTruthProblem(double a, double b,
 	m_left_side(left_side),
 	m_corr(corr)
 {
+	add(property_gradient); 
 }
 
 
 // this function can certainly be optimized
-double GroundTruthProblem::evaluate_slice_gradient(DoubleVector::const_iterator ii,
+double GroundTruthProblem::evaluate_slice_gradient(CDoubleVector::const_iterator ii,
 						   vector<double>::iterator iout)
 {
 	double value = 0.0;
@@ -135,7 +135,7 @@ double GroundTruthProblem::evaluate_slice_gradient(DoubleVector::const_iterator 
 	return value;
 }
 
-double GroundTruthProblem::evaluate_spacial_gradients(const DoubleVector& x)
+double GroundTruthProblem::evaluate_spacial_gradients(const CDoubleVector& x)
 {
 	double result = 0.0;
 	m_spacial_gradient.resize(x.size());
@@ -147,7 +147,7 @@ double GroundTruthProblem::evaluate_spacial_gradients(const DoubleVector& x)
 	return result;
 }
 
-double  GroundTruthProblem::evaluate_time_gradients(const DoubleVector& x)
+double  GroundTruthProblem::evaluate_time_gradients(const CDoubleVector& x)
 {
 	/*
 	  The finite difference test shows that in the first and in the last
@@ -205,7 +205,7 @@ double  GroundTruthProblem::evaluate_time_gradients(const DoubleVector& x)
 }
 
 
-double  GroundTruthProblem::do_f(const DoubleVector& x)
+double  GroundTruthProblem::do_f(const CDoubleVector& x)
 {
 	double spacial_cost = evaluate_spacial_gradients(x);
 	double temporal_cost = evaluate_time_gradients(x);
@@ -225,7 +225,7 @@ double  GroundTruthProblem::do_f(const DoubleVector& x)
 	return result;
 }
 
-void GroundTruthProblem::do_df(const DoubleVector&  x, DoubleVector&  g)
+void GroundTruthProblem::do_df(const CDoubleVector&  x, CDoubleVector&  g)
 {
 	evaluate_spacial_gradients(x);
 	evaluate_time_gradients(x);
@@ -241,7 +241,7 @@ void GroundTruthProblem::do_df(const DoubleVector&  x, DoubleVector&  g)
 
 }
 
-double  GroundTruthProblem::do_fdf(const DoubleVector&  x, DoubleVector&  g)
+double  GroundTruthProblem::do_fdf(const CDoubleVector&  x, CDoubleVector&  g)
 {
 	const double spacial_cost = evaluate_spacial_gradients(x);
 	const double temporal_cost = evaluate_time_gradients(x);

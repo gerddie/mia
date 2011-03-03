@@ -1,19 +1,19 @@
 #ifndef mia_2d_ground_truth_problem_hh
 #define mia_2d_ground_truth_problem_hh
 
-#include <gsl++/multimin.hh>
+#include <mia/core/minimizer.hh>
 #include <mia/2d/correlation_weight.hh>
 
 
 NS_MIA_BEGIN
 
 
-class  EXPORT_2D GroundTruthProblem : public gsl::CFDFMinimizer::Problem {
+class  EXPORT_2D GroundTruthProblem : public CMinimizer::Problem {
 public:
 	GroundTruthProblem(double a, double b, 
 			   const C2DBounds& slice_size, 
 			   size_t nframes, 
-			   const gsl::DoubleVector& left_side, 
+			   const CDoubleVector& left_side, 
 			   const  CCorrelationEvaluator::result_type& corr); 
 
 	void set_alpha_beta(double a, double b); 
@@ -22,13 +22,13 @@ protected:
 	const std::vector<double>& get_spacial_gradient() const; 
 	const std::vector<double>& get_time_derivative() const; 
 private: 
-	virtual double  do_f(const gsl::DoubleVector& x); 
-	virtual void    do_df(const gsl::DoubleVector&  x, gsl::DoubleVector&  g); 
-	virtual double  do_fdf(const gsl::DoubleVector&  x, gsl::DoubleVector&  g); 
+	virtual double  do_f(const CDoubleVector& x); 
+	virtual void    do_df(const CDoubleVector&  x, CDoubleVector&  g); 
+	virtual double  do_fdf(const CDoubleVector&  x, CDoubleVector&  g); 
 	
-	double evaluate_spacial_gradients(const gsl::DoubleVector& x); 
-	double  evaluate_time_gradients(const gsl::DoubleVector& x); 
-	double evaluate_slice_gradient(gsl::DoubleVector::const_iterator ii,  std::vector<double>::iterator iout); 
+	double evaluate_spacial_gradients(const CDoubleVector& x); 
+	double  evaluate_time_gradients(const CDoubleVector& x); 
+	double evaluate_slice_gradient(CDoubleVector::const_iterator ii,  std::vector<double>::iterator iout); 
 
 	std::vector<double> m_spacial_gradient; 
 	std::vector<double> m_time_derivative;
@@ -38,7 +38,7 @@ private:
 	const C2DBounds& m_slice_size; 
 	size_t m_nframes; 
 	size_t m_frame_size; 
-	const gsl::DoubleVector& m_left_side; 
+	const CDoubleVector& m_left_side; 
 	const  CCorrelationEvaluator::result_type& m_corr; 
 }; 
 
