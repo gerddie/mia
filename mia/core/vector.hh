@@ -69,14 +69,16 @@ public:
 	 */
 	Vector(size_t n):
 		m_size(n),
-		m_data(new T[n], array_destructor<T>())
+		m_data(new T[n], array_destructor<T>()),
+		m_cdata(m_data.get())
 	{
 	}
 
 	/// copy constructor 
 	Vector(const Vector<T>& other):
 		m_size(other.m_size),
-		m_data(other.m_data)
+		m_data(other.m_data),
+		m_cdata(other.m_cdata)
 	{
 	}
 
@@ -85,45 +87,62 @@ public:
 	{
 		m_size = other.m_size; 
 		m_data = other.m_data; 
+		m_cdata = other.m_cdata; 
 		return *this; 
 	}
 
 	/**
-	   Consrurtor that creates the STL-like vector as an envelop around a 
+	   Constructor that creates the STL-like vector as an envelop around a 
 	   C-array. The data will not be freed at destruction time. 
 	   \param n size of input array
 	   \param init allocated input data
 	 */
 	Vector(size_t n, T *init):
 		m_size(n),
-		m_data(init, array_void_destructor<T>())
+		m_data(init, array_void_destructor<T>()),
+		m_cdata(init)
+	{
+	}
+
+	/**
+	   Constructor that creates the STL-like vector as an envelop around a 
+	   C-array. The data will not be freed at destruction time. 
+	   \param n size of input array
+	   \param init allocated input data
+	 */
+	Vector(size_t n, const T *init):
+		m_size(n),
+		m_cdata(init)
 	{
 	}
 	
 	reference operator[] (size_t i) {
 		assert(i < m_size); 
+		assert(m_data); 
 		return m_data.get()[i]; 
 	}
 
 	const_reference operator[] (size_t i) const {
 		assert(i < m_size); 
-		return m_data.get()[i]; 
+		return m_cdata[i]; 
 	}
 	
 	iterator begin() {
+		assert(m_data); 
 		return m_data.get(); 
 	}
 
 	iterator end() {
+		assert(m_data); 
 		return m_data.get() + m_size; 
 	}
 	
 	const_iterator begin() const{
-		return m_data.get(); 
+		return m_cdata.get(); 
 	}
 
 	const_iterator end() const{
-		return m_data.get() + m_size; 
+		return m_cdata.get() + m_size; 
 	}
 	
 	size_type size() const 
@@ -131,71 +150,13 @@ public:
 		return m_size; 
 	}
 
-	const T * get_pointer() const{
-		return m_data.get(); 
-	}
 private: 
 	size_t m_size; 
 	std::shared_ptr<T> m_data; 
+	const T *m_cdata; 
 }; 
 
-
-template <typename T> 
-class ConstVector {
-public: 
-	typedef const T& const_reference;  
-	typedef const T *const_iterator;  
-	typedef size_t size_type; 
-
-	/// copy constructor 
-	ConstVector(const ConstVector<T>& other):
-		m_size(other.m_size),
-		m_data(other.m_data)
-	{
-	}
-
-	// this is dangerous ... 
-	ConstVector(const Vector<T>& other):
-		m_size(other.size()),
-		m_data(other.get_pointer())
-	{
-	}
-
-	/**
-	   Consrurtor that creates the STL-like vector as an envelop around a 
-	   C-array. The data will not be freed at destruction time. 
-	   \param n size of input array
-	   \param init allocated input data
-	 */
-	ConstVector(size_t n, const T *init):
-		m_size(n),
-		m_data(init)
-	{
-	}
-	
-	const_reference operator[] (size_t i) const {
-		assert(i < m_size); 
-		return m_data[i]; 
-	}
-	
-	const_iterator begin() const{
-		return m_data; 
-	}
-
-	const_iterator end() const{
-		return m_data + m_size; 
-	}
-
-	size_type size() const 
-	{
-		return m_size; 
-	}
-	
-private: 
-	size_t m_size; 
-	const T *m_data; 
-}; 
-
+typedef Vector<double> CDoubleVector; 
 
 NS_MIA_END
 

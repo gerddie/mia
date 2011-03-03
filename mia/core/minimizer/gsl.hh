@@ -46,7 +46,7 @@ public:
 	
 private: 
 	virtual void do_set_problem();
-	virtual int do_run(Parameters& x);
+	virtual int do_run(mia::CDoubleVector& x);
 	
 	const gsl_multimin_fdfminimizer_type *m_ot; 
 	gsl_multimin_fdfminimizer *m_s; 
@@ -73,7 +73,7 @@ public:
 	
 private: 
 	virtual void do_set_problem();
-	virtual int do_run(Parameters& x);
+	virtual int do_run(mia::CDoubleVector& x);
 	
 	const gsl_multimin_fminimizer_type *m_ot; 
 	gsl_multimin_fminimizer *m_s; 

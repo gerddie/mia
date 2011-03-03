@@ -68,23 +68,23 @@ void CMinimizer::do_set_problem()
 double  CMinimizer::Problem::f(size_t n, const double *x)
 {
 	assert(n == size()); 
-	ConstParameters params(n, x); 
+	const CDoubleVector params(n, x); 
 	return do_f(params); 	
 }
 
 void    CMinimizer::Problem::df(size_t n, const double *x, double *g)
 {
 	assert(n == size()); 
-	ConstParameters params_x(n, x); 
-	Parameters params_g(n, g); 
+	const CDoubleVector params_x(n, x); 
+	CDoubleVector params_g(n, g); 
 	do_df(params_x, params_g); 
 }
 
 double  CMinimizer::Problem::fdf(size_t n, const double *x, double *g)
 {
 	assert(n == size()); 
-	ConstParameters params_x(n, x); 
-	Parameters params_g(n, g); 
+	const CDoubleVector params_x(n, x); 
+	CDoubleVector params_g(n, g); 
 	return do_fdf(params_x, params_g); 
 }
 
@@ -97,7 +97,7 @@ CMinimizer::Problem *CMinimizer::get_problem_pointer()
 	return m_problem.get(); 
 }
 	
-int CMinimizer::run(Parameters& x)
+int CMinimizer::run(CDoubleVector& x)
 {
 	DEBUG_ASSERT_RELEASE_THROW(m_problem, "CMinimizer::run: no minimization problem given");
 	if (!m_problem->has_all_in(*this)) {

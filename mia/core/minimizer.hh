@@ -44,8 +44,6 @@ public:
 	
 	enum EMinimizerResult {failture, success}; 
 
-	typedef Vector<double> Parameters; 
-	typedef ConstVector<double> ConstParameters; 
 	static const char *const value; 
 	static const char *const type_descr; 
 	
@@ -67,9 +65,9 @@ public:
 		/// \returns number of parameters to optimize
 		size_t size() const; 
 	private: 
-		virtual double  do_f(ConstParameters& x) = 0; 
-		virtual void    do_df(ConstParameters& x, Parameters&  g) = 0; 
-		virtual double  do_fdf(ConstParameters& x, Parameters&  g) = 0; 
+		virtual double  do_f(const CDoubleVector& x) = 0; 
+		virtual void    do_df(const CDoubleVector& x, CDoubleVector&  g) = 0; 
+		virtual double  do_fdf(const CDoubleVector& x, CDoubleVector&  g) = 0; 
 		size_t m_size; 
 	}; 
 	typedef std::shared_ptr<Problem> PProblem; 
@@ -93,14 +91,14 @@ public:
 	   \retval x at entry contains the start point of the optimization at exit the optimized value 
 	   \returns returns a status whether the optimization succeeded or why it stopped 
 	 */
-	int run(Parameters& x); 
+	int run(CDoubleVector& x); 
 	
 protected: 
 	Problem *get_problem_pointer();  
 	size_t size() const; 
 private: 
 	virtual void do_set_problem();
-	virtual int do_run(Parameters& x) = 0;
+	virtual int do_run(CDoubleVector& x) = 0;
 
 	PProblem m_problem;
 }; 

@@ -27,13 +27,12 @@
 
 NS_MIA_USE; 
 
-typedef Vector<double> DoubleVector; 
 
 BOOST_AUTO_TEST_CASE (test_init)
 {
 	double input[6] = {1,2,3,4,5,6}; 
 
-	DoubleVector v(6, input); 
+	CDoubleVector v(6, input); 
 	
 	for(int i = 0; i < 6; ++i) 
 		BOOST_CHECK_EQUAL(v[i], input[i]); 
@@ -44,7 +43,7 @@ BOOST_AUTO_TEST_CASE (test_const_init)
 {
 	const double input[6] = {1,2,3,4,5,6}; 
 
-	ConstVector<double> v(6, input); 
+	CDoubleVector v(6, input); 
 	
 	for(int i = 0; i < 6; ++i) 
 		BOOST_CHECK_EQUAL(v[i], input[i]); 
@@ -55,14 +54,14 @@ BOOST_AUTO_TEST_CASE (test_new)
 {
 	double input[6] = {1,2,3,4,5,6}; 
 
-	DoubleVector v(6); 
+	CDoubleVector v(6); 
 	std::copy(input, input + 6, v.begin()); 
 	
 	for(int i = 0; i < 6; ++i) 
 		BOOST_CHECK_EQUAL(v[i], input[i]); 
 }
 
-void test_cost(const DoubleVector& v, const double *test_data) 
+void test_cost(const CDoubleVector& v, const double *test_data) 
 {
 	for(int i = 0; i < 6; ++i) 
 		BOOST_CHECK_EQUAL(v[i], test_data[i]); 
@@ -72,7 +71,7 @@ BOOST_AUTO_TEST_CASE (test_new2)
 {
 	double input[6] = {1,2,3,4,5,6}; 
 
-	DoubleVector v(6); 
+	CDoubleVector v(6); 
 	for(int i = 0; i < 6; ++i) {
 		v[i] = input[i]; 
 	}
@@ -80,7 +79,7 @@ BOOST_AUTO_TEST_CASE (test_new2)
 	for(int i = 0; i < 6; ++i) 
 		BOOST_CHECK_EQUAL(v[i], input[i]); 
 
-	DoubleVector v2(v); 
+	CDoubleVector v2(v); 
 	for(int i = 0; i < 6; ++i) 
 		BOOST_CHECK_EQUAL(v2[i], input[i]); 
 	

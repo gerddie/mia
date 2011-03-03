@@ -29,9 +29,9 @@ class TestCFDFProblem : public CMinimizer::Problem {
 public:
 	TestCFDFProblem(); 
 private: 
-	virtual double  do_f(CMinimizer::ConstParameters& x); 
-	virtual void    do_df(CMinimizer::ConstParameters&  x, CMinimizer::Parameters&  g); 
-	virtual double  do_fdf(CMinimizer::ConstParameters&  x, CMinimizer::Parameters&  g); 
+	virtual double  do_f(const CDoubleVector& x); 
+	virtual void    do_df(const CDoubleVector&  x, CDoubleVector&  g); 
+	virtual double  do_fdf(const CDoubleVector&  x, CDoubleVector&  g); 
 	std::vector<double> m_p; 
 }; 
 
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE( test_cfdf_multmin )
 	problem->add(property_gradient); 
 	minimizer.set_problem(problem); 
 	
-	CMinimizer::Parameters x(2); 
+	CDoubleVector x(2); 
 	x[0] = 5.0; 
 	x[1] = 7.0; 
 	
@@ -61,7 +61,7 @@ TestCFDFProblem::TestCFDFProblem():
 }
 	
 
-double  TestCFDFProblem::do_f(CMinimizer::ConstParameters&  v)
+double  TestCFDFProblem::do_f(const CDoubleVector&  v)
 {
 
 	const double x = v[0];
@@ -72,7 +72,7 @@ double  TestCFDFProblem::do_f(CMinimizer::ConstParameters&  v)
 	
 }
 
-void    TestCFDFProblem::do_df(CMinimizer::ConstParameters&  v, CMinimizer::Parameters&  g)
+void    TestCFDFProblem::do_df(const CDoubleVector&  v, CDoubleVector&  g)
 {
 	const double x = v[0];
 	const double y = v[1];
@@ -81,7 +81,7 @@ void    TestCFDFProblem::do_df(CMinimizer::ConstParameters&  v, CMinimizer::Para
 	g[1] = 2.0 * m_p[3] * (y - m_p[1]);
 }
 
-double  TestCFDFProblem::do_fdf(CMinimizer::ConstParameters&  x, CMinimizer::Parameters&  g)
+double  TestCFDFProblem::do_fdf(const CDoubleVector&  x, CDoubleVector&  g)
 {
 	do_df(x,g); 
 	return do_f(x); 
@@ -92,9 +92,9 @@ class TestCFProblem : public CMinimizer::Problem {
 public:
 	TestCFProblem(); 
 private: 
-	virtual double  do_f(CMinimizer::ConstParameters& x); 
-	virtual void    do_df(CMinimizer::ConstParameters& x, CMinimizer::Parameters&  g); 
-	virtual double  do_fdf(CMinimizer::ConstParameters& x, CMinimizer::Parameters&  g); 
+	virtual double  do_f(const CDoubleVector& x); 
+	virtual void    do_df(const CDoubleVector& x, CDoubleVector&  g); 
+	virtual double  do_fdf(const CDoubleVector& x, CDoubleVector&  g); 
 	
 	std::vector<double> m_p; 
 }; 
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(test_cf_multmin )
 	CMinimizer::PProblem problem(new TestCFProblem); 
 	minimizer.set_problem(problem); 
 
-	CMinimizer::Parameters x(2); 
+	CDoubleVector x(2); 
 	x[0] = 5.0; 
 	x[1] = 7.0; 
 	
@@ -126,7 +126,7 @@ TestCFProblem::TestCFProblem():
 	copy(p_init, p_init+5, m_p.begin()); 
 }
 
-double  TestCFProblem::do_f(CMinimizer::ConstParameters&  v)
+double  TestCFProblem::do_f(const CDoubleVector&  v)
 {
 
 	const double x = v[0];
@@ -137,12 +137,12 @@ double  TestCFProblem::do_f(CMinimizer::ConstParameters&  v)
 	
 }
 
-void  TestCFProblem::do_df(CMinimizer::ConstParameters&  x, CMinimizer::Parameters&  g)
+void  TestCFProblem::do_df(const CDoubleVector&  /*x*/, CDoubleVector&  /*g*/)
 {
 	BOOST_FAIL("Gradient free problem was called by gradient requiring optimizer"); 
 }
 
-double  TestCFProblem::do_fdf(CMinimizer::ConstParameters&  x, CMinimizer::Parameters&  g)
+double  TestCFProblem::do_fdf(const CDoubleVector&  /*x*/, CDoubleVector&  /*g*/)
 {
 	BOOST_FAIL("Gradient free problem was called by gradient requiring optimizer"); 
 	return 0.0; 

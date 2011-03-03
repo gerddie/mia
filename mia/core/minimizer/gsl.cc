@@ -114,7 +114,7 @@ struct DeallocGSLVector {
 }; 
 
 
-int CGSLFDFMinimizer::do_run(Parameters& x)
+int CGSLFDFMinimizer::do_run(CDoubleVector& x)
 {
 	int iter = 0; 
 	int status = GSL_CONTINUE; 
@@ -185,7 +185,7 @@ void CGSLFMinimizer::do_set_problem()
 	m_step_init= gsl_vector_alloc(size());
 }
 
-int CGSLFMinimizer::do_run(Parameters& x)
+int CGSLFMinimizer::do_run(CDoubleVector& x)
 {
 	int iter = 0; 
 	int status;  
