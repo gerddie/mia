@@ -39,7 +39,7 @@ public:
 			 double weight, 
 			 bool debug); 
 private: 
-	double do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const;
+	double do_evaluate(const C2DTransformation& t, CDoubleVector& gradient) const;
 	void do_set_size(); 
 
 	static P2DImage get_from_pool(const C2DImageDataKey& key); 

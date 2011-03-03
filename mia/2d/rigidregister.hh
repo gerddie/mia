@@ -26,7 +26,7 @@
 #ifndef mia_2d_rigidregister_hh
 #define mia_2d_rigidregister_hh
 
-
+#include <mia/core/minimizer.hh>
 #include <mia/2d/cost.hh>
 #include <mia/2d/transform.hh>
 #include <mia/2d/transformfactory.hh>
@@ -58,7 +58,7 @@ public:
 	   \param ipf interpolator
 	 */
 
-	C2DRigidRegister(P2DImageCost cost, EMinimizers minimizer,
+	C2DRigidRegister(P2DImageCost cost, PMinimizer minimizer,
 			 P2DTransformationFactory transform_creator,
 			 const C2DInterpolatorFactory& ipf,  size_t mg_levels);
 

@@ -36,8 +36,8 @@ public:
 
 	template <typename Field>
 	double multiply(const Field& coefficients) const; 
-	double evaluate(const C2DFVectorfield& coefficients, gsl::DoubleVector& gradient) const; 
-	double evaluate(const T2DDatafield<C2DDVector>& coefficients, gsl::DoubleVector& gradient) const; 
+	double evaluate(const C2DFVectorfield& coefficients, CDoubleVector& gradient) const; 
+	double evaluate(const T2DDatafield<C2DDVector>& coefficients, CDoubleVector& gradient) const; 
 	void reset(const C2DBounds& size, const C2DFVector& range, const CBSplineKernel& kernel, 
 		   double wd, double wr); 
 	C2DBounds _M_size; 
@@ -82,13 +82,13 @@ double C2DPPDivcurlMatrix::operator * (const T2DDatafield<C2DDVector>& coefficie
 	TRACE_FUNCTION; 
 	return impl->multiply(coefficients); 
 }
-double C2DPPDivcurlMatrix::evaluate(const T2DDatafield<C2DDVector>& coefficients, gsl::DoubleVector& gradient) const
+double C2DPPDivcurlMatrix::evaluate(const T2DDatafield<C2DDVector>& coefficients, CDoubleVector& gradient) const
 {
 	TRACE_FUNCTION; 
 	return impl->evaluate(coefficients, gradient); 
 }
 
-double C2DPPDivcurlMatrix::evaluate(const C2DFVectorfield& coefficients, gsl::DoubleVector& gradient) const
+double C2DPPDivcurlMatrix::evaluate(const C2DFVectorfield& coefficients, CDoubleVector& gradient) const
 {
 	TRACE_FUNCTION; 
 	return impl->evaluate(coefficients, gradient); 
@@ -203,7 +203,7 @@ void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& rang
 	CIntegralCache rc11(kernel); 
 
 	
-	for (int l = 0, i=0; l < ny; ++l) {
+	for (int l = 0; l < ny; ++l) {
 		for (int n = max(0,l - kernel_range); n < min(l + kernel_range, ny); ++n) {
 			double r00y =        rc00.get( l, n, 0, 0, size.y); 
 			double r01y = h1.y * rc01.get( l, n, 0, 1,size.y); 
@@ -262,7 +262,7 @@ double C2DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 
 
 double C2DPPDivcurlMatrixImpl::evaluate(const T2DDatafield<C2DDVector>& coefficients, 
-					gsl::DoubleVector& gradient) const
+					CDoubleVector& gradient) const
 {
 	assert(coefficients.size() == _M_nodes); 
 	assert(gradient.size() == coefficients.size() * 2); 
@@ -326,7 +326,7 @@ double C2DPPDivcurlMatrixImpl::evaluate(const T2DDatafield<C2DDVector>& coeffici
 }
 
 double C2DPPDivcurlMatrixImpl::evaluate(const C2DFVectorfield& coefficients, 
-					gsl::DoubleVector& gradient) const
+					CDoubleVector& gradient) const
 {
 	assert(coefficients.size() == _M_nodes); 
 	assert(gradient.size() == coefficients.size() * 2); 

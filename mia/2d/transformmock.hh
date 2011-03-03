@@ -43,10 +43,10 @@ struct  EXPORT_2D C2DTransformMock: public C2DTransformation {
 	virtual size_t degrees_of_freedom() const;
 	virtual void set_identity();
 	virtual C2DFMatrix derivative_at(int x, int y) const;
-	virtual void translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const;
+	virtual void translate(const C2DFVectorfield& gradient, CDoubleVector& params) const;
 	virtual float get_max_transform() const;
-	virtual gsl::DoubleVector  get_parameters() const;
-	virtual void set_parameters(const gsl::DoubleVector& params);
+	virtual CDoubleVector  get_parameters() const;
+	virtual void set_parameters(const CDoubleVector& params);
 	virtual const C2DBounds& get_size() const;
 	virtual float pertuberate(C2DFVectorfield& v) const;
 	virtual C2DFVector apply(const C2DFVector& x) const;
@@ -54,7 +54,7 @@ struct  EXPORT_2D C2DTransformMock: public C2DTransformation {
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
 	virtual float divergence() const;
 	virtual float curl() const;
-	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
+	virtual double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const; 
 	double get_divcurl_cost(double wd, double wr) const; 
 
 	virtual C2DTransformation::const_iterator begin() const; 

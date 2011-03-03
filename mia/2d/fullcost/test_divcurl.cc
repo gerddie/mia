@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE( test_divcurl_cost )
 	C2DTransformMock t(size); 
 	div.set_size(size); 
 
-	gsl::DoubleVector gradient(t.degrees_of_freedom()); 
+	CDoubleVector gradient(t.degrees_of_freedom(), true); 
 	BOOST_CHECK_EQUAL(div.evaluate(t, gradient), 5.0); 
 	BOOST_CHECK_EQUAL(gradient[0], -2.0); 
 	BOOST_CHECK_EQUAL(gradient[1], -3.0); 
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE( test_div_cost )
 	C2DTransformMock t(size); 
 	div.set_size(size); 
 
-	gsl::DoubleVector gradient(t.degrees_of_freedom()); 
+	CDoubleVector gradient(t.degrees_of_freedom()); 
 	BOOST_CHECK_EQUAL(div.evaluate(t, gradient), 1.0); 
 	BOOST_CHECK_EQUAL(gradient[0], -1.0); 
 	BOOST_CHECK_EQUAL(gradient[1], 0.0); 
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE( test_curl_cost )
 	C2DTransformMock t(size); 
 	div.set_size(size); 
 
-	gsl::DoubleVector gradient(t.degrees_of_freedom()); 
+	CDoubleVector gradient(t.degrees_of_freedom()); 
 	BOOST_CHECK_EQUAL(div.evaluate(t, gradient), 4.0); 
 	BOOST_CHECK_EQUAL(gradient[0], 0.0); 
 	BOOST_CHECK_EQUAL(gradient[1], -4.0); 

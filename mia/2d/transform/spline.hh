@@ -78,17 +78,17 @@ public:
 	virtual size_t degrees_of_freedom() const;
         virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
 	virtual void update(float step, const C2DFVectorfield& a);
-	virtual void translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const;
+	virtual void translate(const C2DFVectorfield& gradient, CDoubleVector& params) const;
 	virtual C2DFMatrix derivative_at(int x, int y) const;
 	virtual float get_max_transform() const;
-	virtual gsl::DoubleVector get_parameters() const;
-	virtual void set_parameters(const gsl::DoubleVector& params);
+	virtual CDoubleVector get_parameters() const;
+	virtual void set_parameters(const CDoubleVector& params);
 	virtual void set_identity();
 	virtual float pertuberate(C2DFVectorfield& v) const;
 	virtual float get_jacobian(const C2DFVectorfield& v, float delta) const;
 	virtual C2DFVector operator () (const C2DFVector& x) const;
 
-	virtual double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
+	virtual double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const; 
 	virtual double get_divcurl_cost(double wd, double wr) const; 
 
 	C2DFVector on_grid(const mia::C2DBounds& x) const; 

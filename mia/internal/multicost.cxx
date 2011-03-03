@@ -51,10 +51,10 @@ bool TFullCostList<T>::do_has(const char *property) const
 }
 
 template <typename T> 
-double TFullCostList<T>::do_evaluate(const T& t, gsl::DoubleVector& gradient) const
+double TFullCostList<T>::do_evaluate(const T& t, CDoubleVector& gradient) const
 {
 	double  result = 0; 
-	gsl::DoubleVector tmp(gradient.size(), false); 
+	CDoubleVector tmp(gradient.size()); 
 	std::stringstream msg; 
 	msg << "Cost: "; 
 	for (auto i = _M_costs.begin(); i != _M_costs.end(); ++i) {

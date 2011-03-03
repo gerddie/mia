@@ -232,7 +232,7 @@ BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, AffineGrad2ParamFixtureAff
 	gradient(0,1) = C2DFVector(3.0, -2.0);
 	gradient(1,1) = C2DFVector(1.0,  1.0);
 
-	gsl::DoubleVector params = trans.get_parameters();
+	auto params = trans.get_parameters();
 
 
 	trans.translate(gradient, params);

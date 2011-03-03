@@ -187,7 +187,7 @@ TransformGradientFixture::TransformGradientFixture():
 void TransformGradientFixture::run_test(C2DTransformation& t, double tol)const
 {
 	auto params = t.get_parameters();
-	gsl::DoubleVector trgrad(params.size()); 
+	CDoubleVector trgrad(params.size()); 
 	
 	t.translate(gradient,  trgrad); 
 	double delta = 0.001; 

@@ -71,7 +71,7 @@ double C2DImageFullCost::do_value() const
 }
 
 
-double C2DImageFullCost::do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const
+double C2DImageFullCost::do_evaluate(const C2DTransformation& t, CDoubleVector& gradient) const
 {
 	TRACE_FUNCTION; 
 	assert(_M_src); 

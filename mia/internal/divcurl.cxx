@@ -36,7 +36,7 @@ TDivCurlFullCost<T>::TDivCurlFullCost(double weight_div, double weight_curl, dou
 }
 
 template <typename T> 
-double TDivCurlFullCost<T>::do_evaluate(const T& t, gsl::DoubleVector& gradient) const
+double TDivCurlFullCost<T>::do_evaluate(const T& t, CDoubleVector& gradient) const
 {
 	assert(t.get_size() == this->get_current_size()); 
 	double result = t.get_divcurl_cost(_M_size_scale * _M_weight_div, _M_size_scale *_M_weight_curl, gradient); 

@@ -206,10 +206,10 @@ const C2DBounds& C2DSplineTransformation::get_size() const
 	return _M_range;
 }
 
-gsl::DoubleVector C2DSplineTransformation::get_parameters() const
+CDoubleVector C2DSplineTransformation::get_parameters() const
 {
 	TRACE_FUNCTION;
-	gsl::DoubleVector result(_M_coefficients.size() * 2);
+	CDoubleVector result(_M_coefficients.size() * 2);
 	auto r = result.begin();
 	for(auto f = _M_coefficients.begin(); f != _M_coefficients.end(); ++f) {
 		*r++ = f->x;
@@ -218,7 +218,7 @@ gsl::DoubleVector C2DSplineTransformation::get_parameters() const
 	return result;
 }
 
-void C2DSplineTransformation::set_parameters(const gsl::DoubleVector& params)
+void C2DSplineTransformation::set_parameters(const CDoubleVector& params)
 {
 	TRACE_FUNCTION;
 	assert(2 * _M_coefficients.size() == params.size());
@@ -523,7 +523,7 @@ C2DSplineTransformation::get_derivative_row(size_t nin, size_t nout, double scal
 	return result; 
 }
 
-void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
+void C2DSplineTransformation::translate(const C2DFVectorfield& gradient, CDoubleVector& params) const
 {
 	TRACE_FUNCTION;
 	assert(params.size() == _M_coefficients.size() * 2);
@@ -690,7 +690,7 @@ void C2DSplineTransformation::iterator_impl::do_y_increment()
 }
 
 
-double C2DSplineTransformation::get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const
+double C2DSplineTransformation::get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const
 {
 	reinit(); 
 	

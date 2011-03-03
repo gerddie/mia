@@ -27,6 +27,7 @@
 #include <mia/2d/rigidregister.hh>
 #include <mia/2d/transformfactory.hh>
 #include <mia/core/spacial_kernel.hh>
+#include <mia/core/minimizer.hh>
 #include <mia/2d/2dfilter.hh>
 
 
@@ -53,6 +54,9 @@ protected:
 		filterpath.push_back(bfs::path("filter"));
 		C2DFilterPluginHandler::set_search_path(filterpath);
 
+		list< bfs::path> minimizerpath;
+		minimizerpath.push_back(bfs::path("../core/minimizer"));
+		CMinimizerPluginPluginHandler::set_search_path(minimizerpath); 
 
 	}
 };
@@ -60,12 +64,14 @@ protected:
 class RigidRegisterFixture : public PluginPathInitFixture {
 protected: 
 	RigidRegisterFixture(); 
-	void run(C2DTransformation& t, EMinimizers minimizer, double accuracy); 
+	void run(C2DTransformation& t, const string& minimizer_descr,  double accuracy); 
 	const C2DBounds size;
 }; 
 
-void RigidRegisterFixture::run(C2DTransformation& t, EMinimizers minimizer, double accuracy)
+void RigidRegisterFixture::run(C2DTransformation& t, const string& minimizer_descr, double accuracy)
 {
+
+	auto minimizer = CMinimizerPluginPluginHandler::instance().produce(minimizer_descr); 
 	P2DImageCost cost = C2DImageCostPluginHandler::instance().produce("ssd");
 	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3));
 	auto tr_creator = C2DTransformCreatorHandler::instance().produce(t.get_creator_string());
@@ -119,7 +125,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_nmsimplex, RigidRegisterFixture
 	params[1] = 1.0;
 	transformation->set_parameters(params); 
 
-	run(*transformation, min_nmsimplex, 1.0); 
+	run(*transformation, "gsl:opt=simplex,step=1.0", 1.0); 
 }
 
 
@@ -132,7 +138,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_translate_gd, RigidRegisterFixture )
 	params[1] = 1.0;
 	transformation->set_parameters(params); 
 
-	run(*transformation, min_gd, 0.1); 
+	run(*transformation, "gsl:opt=gd", 0.1); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_rigidreg_rigid_simplex, RigidRegisterFixture )
@@ -145,7 +151,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_rigid_simplex, RigidRegisterFixture )
 	params[2] = 0.5;
 	transformation->set_parameters(params); 
 
-	run(*transformation, min_nmsimplex, 1.0); 
+	run(*transformation, "gsl:opt=simplex,step=1.0", 1.0); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_simplex, RigidRegisterFixture )
@@ -161,7 +167,7 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_affine_simplex, RigidRegisterFixture )
 	params[5] =  2.0;
 	transformation->set_parameters(params); 
 
-	run(*transformation, min_nmsimplex, 1.0); 
+	run(*transformation, "gsl:opt=simplex,step=1.0", 1.0); 
 }
 
 #ifdef THIS_TEST_USES_THE_TRANSLATE_CODE_THAT_IS_NOT_WORKING
@@ -245,6 +251,6 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_rigid_gd, RigidRegisterFixture )
 	// this is a rather high tolerance, especially in light that the 
 	// nm_simplex algorithm passes with a 0.1% tolerance 
 	
-	run(*transformation, min_cg_pr, 5); 
+	run(*transformation, "gsl:opt=cg-pr", 5); 
 }
 

@@ -34,7 +34,7 @@ class EXPORT TDivCurlFullCost : public TFullCost<Transform> {
 public: 
 	TDivCurlFullCost(double weight_div, double weight_curl, double weight); 
 private: 
-	double do_evaluate(const Transform& t, gsl::DoubleVector& gradient) const;
+	double do_evaluate(const Transform& t, CDoubleVector& gradient) const;
 	double do_value(const Transform& t) const;
 	double do_value() const;
 	void do_set_size(); 

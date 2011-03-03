@@ -65,7 +65,7 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost,  ImagefullcostFixture )
 	cost.set_size(size);
 	C2DTransformMock t(size); 
 	
-	gsl::DoubleVector gradient(t.degrees_of_freedom()); 
+	CDoubleVector gradient(t.degrees_of_freedom()); 
 	double cost_value = cost.evaluate(t, gradient);
 
 	BOOST_CHECK_CLOSE(cost_value, 0.5 * 55.0, 0.1);
@@ -144,7 +144,7 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 	
 	C2DTransformMock t(size); 
 	
-	gsl::DoubleVector gradient(t.degrees_of_freedom()); 
+	CDoubleVector gradient(t.degrees_of_freedom()); 
 	double cost_value = cost.evaluate(t, gradient);
 
 	BOOST_CHECK_CLOSE(cost_value, 0.5 * 255 * 255.0 * 4.0, 0.1);

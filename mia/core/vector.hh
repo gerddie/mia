@@ -68,15 +68,9 @@ public:
 	   Create a vector, the data is won by this vector and will be 
 	   deleted if the reference count reaches zero 
 	   \param n 
+	   \param clean initialize vector to 0
 	 */
-	Vector(size_t n):
-		m_size(n),
-		m_data(new T[n], array_destructor<T>()),
-		m_cdata(m_data.get())
-	{
-	}
-
-	Vector(size_t n, bool clean):
+	Vector(size_t n, bool clean = 0):
 		m_size(n),
 		m_data(new T[n], array_destructor<T>()),
 		m_cdata(m_data.get())

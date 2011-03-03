@@ -26,7 +26,7 @@
 #ifndef mia_internal_nonrigidregister_hh
 #define mia_internal_nonrigidregister_hh
 
-
+#include <mia/core/minimizer.hh>
 #include <mia/internal/multicost.hh>
 #include <mia/internal/transformfactory.hh>
 #include <mia/internal/dimtrait.hh>
@@ -76,7 +76,7 @@ public:
 	   \param mg_levels multigrisd levels to be used 
 	 */
 
-	TNonrigidRegister(FullCostList& costs, EMinimizers minimizer,
+	TNonrigidRegister(FullCostList& costs, PMinimizer minimizer,
 			    PTransformationFactory transform_creation,
 			    const InterpolatorFactory& ipf,  size_t mg_levels);
 	

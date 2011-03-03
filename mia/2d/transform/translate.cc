@@ -139,7 +139,7 @@ void C2DTranslateTransformation::add(const C2DTransformation& /*a*/)
 	assert(0 && "not implemented");
 }
 
-void C2DTranslateTransformation::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
+void C2DTranslateTransformation::translate(const C2DFVectorfield& gradient, CDoubleVector& params) const
 {
 	assert(gradient.get_size() == _M_size);
 	assert(params.size() == 2);
@@ -164,15 +164,15 @@ C2DFMatrix C2DTranslateTransformation::derivative_at(int /*x*/, int /*y*/) const
 	return C2DFMatrix();
 }
 
-gsl::DoubleVector C2DTranslateTransformation::get_parameters() const
+CDoubleVector C2DTranslateTransformation::get_parameters() const
 {
-	gsl::DoubleVector result(2);
+	CDoubleVector result(2);
 	result[0] = _M_transform.x;
 	result[1] = _M_transform.y;
 	return result;
 }
 
-void C2DTranslateTransformation::set_parameters(const gsl::DoubleVector& params)
+void C2DTranslateTransformation::set_parameters(const CDoubleVector& params)
 {
 	assert(params.size() == 2);
 	_M_transform.x = params[0];
@@ -230,7 +230,7 @@ float C2DTranslateTransformation::grad_curl() const
 }
 
 double C2DTranslateTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/, 
-						    gsl::DoubleVector& /*gradient*/) const
+						    CDoubleVector& /*gradient*/) const
 {
 	return 0.0;
 }

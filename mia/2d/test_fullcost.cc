@@ -40,7 +40,7 @@ class C2DFullCostMock: public C2DFullCost {
 public: 
 	C2DFullCostMock(double weight, double cost, double gx, double gy); 
 private:
-	double do_evaluate(const C2DTransformation& t, gsl::DoubleVector& gradient) const;
+	double do_evaluate(const C2DTransformation& t, CDoubleVector& gradient) const;
 	double do_value(const C2DTransformation& t) const;
 	double do_value() const; 
 	void do_set_size(); 
@@ -59,7 +59,7 @@ C2DFullCostMock::C2DFullCostMock(double weight, double cost, double gx, double g
 {
 }
 
-double C2DFullCostMock::do_evaluate(const C2DTransformation&, gsl::DoubleVector& gradient) const 
+double C2DFullCostMock::do_evaluate(const C2DTransformation&, CDoubleVector& gradient) const 
 {
 	for(auto g = gradient.begin(); g != gradient.end(); g += 2) {
 		g[0] = _M_gx; 
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE( test_fullcost )
 
 	C2DFullCostMock c(0.5, mcost, mgx, mgy); 
 	C2DTransformMock t(C2DBounds(2,1)); 
-	gsl::DoubleVector gradient(t.degrees_of_freedom()); 
+	CDoubleVector gradient(t.degrees_of_freedom()); 
 	c.set_size(t.get_size()); 
 	
 	BOOST_CHECK_EQUAL(c.evaluate(t,gradient), 0.5 * mcost);
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE( test_multicost )
 	costs.push(c2); 
 	
 	C2DTransformMock t(C2DBounds(2,1)); 
-	gsl::DoubleVector gradient(t.degrees_of_freedom()); 
+	CDoubleVector gradient(t.degrees_of_freedom(), true); 
 	costs.set_size(t.get_size()); 
 	
 	BOOST_CHECK_EQUAL(costs.evaluate(t,gradient), 0.5 * mcost1 + 0.2 * mcost2);
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE( test_multicost2 )
 
 	
 	C2DTransformMock t(C2DBounds(2,1)); 
-	gsl::DoubleVector gradient(t.degrees_of_freedom()); 
+	CDoubleVector gradient(t.degrees_of_freedom()); 
 	costs.set_size(t.get_size()); 
 	
 	BOOST_CHECK_EQUAL(costs.evaluate(t,gradient), 0.5 * mcost1 + 0.2 * mcost2);
@@ -263,7 +263,7 @@ BOOST_AUTO_TEST_CASE ( test_ssd_cost_spline_rate_3 )
 	P2DTransformation t = transform_factory->create(size); 
 
 	auto params = t->get_parameters(); 
-	gsl::DoubleVector gradient(params.size());  
+	CDoubleVector gradient(params.size());  
 
 	double cost = cost_ssd->evaluate(*t, gradient);
 //	BOOST_CHECK_CLOSE(cost, 55*55 / 1024.0, 0.1); 
@@ -348,7 +348,7 @@ BOOST_AUTO_TEST_CASE ( test_ssd_cost_vf )
 	P2DTransformation t = transform_factory->create(size); 
 
 	auto params = t->get_parameters(); 
-	gsl::DoubleVector gradient(params.size());  
+	CDoubleVector gradient(params.size());  
 
 	double cost = cost_ssd->evaluate(*t, gradient);
 //	BOOST_CHECK_CLOSE(cost, 55*55 / 1024.0, 0.1); 

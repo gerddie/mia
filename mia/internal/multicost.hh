@@ -40,7 +40,7 @@ public:
 private: 
 	bool do_has(const char *property) const;
 
-	virtual double do_evaluate(const Transform& t, gsl::DoubleVector& gradient) const;
+	virtual double do_evaluate(const Transform& t, CDoubleVector& gradient) const;
 	double do_value(const Transform& t) const; 
 	double do_value() const; 
 	virtual void do_set_size(); 

@@ -79,12 +79,12 @@ public:
 	virtual bool save(const std::string& filename, const std::string& type) const;
 	virtual P2DTransformation do_upscale(const C2DBounds& size) const;
 	virtual void add(const C2DTransformation& a);
-	virtual void translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const;
+	virtual void translate(const C2DFVectorfield& gradient, CDoubleVector& params) const;
 	virtual size_t degrees_of_freedom() const;
 	virtual void update(float step, const C2DFVectorfield& a);
 	virtual C2DFMatrix derivative_at(int x, int y) const;
-	virtual gsl::DoubleVector get_parameters() const;
-	virtual void set_parameters(const gsl::DoubleVector& params);
+	virtual CDoubleVector get_parameters() const;
+	virtual void set_parameters(const CDoubleVector& params);
 	virtual void set_identity();
 	virtual float get_max_transform() const;
 	virtual float pertuberate(C2DFVectorfield& v) const;
@@ -95,7 +95,7 @@ public:
 	virtual float curl() const;
 	float grad_divergence() const;
 	float grad_curl() const;
-	double get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const; 
+	double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const; 
 	double get_divcurl_cost(double wd, double wr) const; 
 private:
 	virtual C2DTransformation *do_clone() const;

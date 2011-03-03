@@ -24,7 +24,7 @@
 #define mia_internal_fullcost_hh
 
 #include <mia/core/product_base.hh>
-#include <gsl++/vector.hh>
+#include <mia/core/vector.hh>
 
 NS_MIA_BEGIN
 
@@ -58,7 +58,7 @@ public:
 	   \retval gradient gradient in optimizer space 
 	   \returns weighted cost value 
 	 */
-	double evaluate(const Transform& t, gsl::DoubleVector& gradient) const;
+	double evaluate(const Transform& t, CDoubleVector& gradient) const;
 
 	/**
 	   Evaluate the weighted cost value 
@@ -87,7 +87,7 @@ protected:
 	double get_weight() const; 
 	const Size& get_current_size() const; 
 private:
-	virtual double do_evaluate(const Transform& t, gsl::DoubleVector& gradient) const = 0;
+	virtual double do_evaluate(const Transform& t, CDoubleVector& gradient) const = 0;
 	virtual double do_value(const Transform& t) const = 0;
 	virtual double do_value() const = 0;
 	virtual void do_reinit();

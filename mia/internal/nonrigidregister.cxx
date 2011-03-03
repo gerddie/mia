@@ -25,18 +25,9 @@
 #define VSTREAM_DOMAIN "NR-REG"
 
 #include <boost/lambda/lambda.hpp>
-
-
-#include <gsl++/multimin.hh>
 #include <iomanip>
 
-using boost::lambda::_1; 
-
-
 NS_MIA_BEGIN
-
-using namespace gsl;
-using namespace std;
 
 template <typename T> 
 struct TNonrigidRegisterImpl {
@@ -51,28 +42,22 @@ struct TNonrigidRegisterImpl {
 	typedef typename this_dim_traits::FilterPluginHandler FilterPluginHandler;
 	typedef typename this_dim_traits::InterpolatorFactory InterpolatorFactory; 
 
-	TNonrigidRegisterImpl(FullCostList& costs, EMinimizers minimizer,
+	TNonrigidRegisterImpl(FullCostList& costs, PMinimizer minimizer,
 				PTransformationFactory transform_creator,
 				const InterpolatorFactory& ipf,  size_t mg_levels);
 
 	PTransformation run(PImage src, PImage ref) const;
 private:
 
-	void apply(T& transf, const gsl_multimin_fdfminimizer_type *optimizer)const ;
-
-
-	void apply(T& transf, const gsl_multimin_fminimizer_type *optimizer)const ;
-
-
 	FullCostList& _M_costs;
-	EMinimizers _M_minimizer;
+	PMinimizer _M_minimizer;
 	InterpolatorFactory _M_ipf;
 	PTransformationFactory _M_transform_creator;
 	size_t _M_mg_levels; 
 };
 
 template <typename T> 
-class TNonrigRegGradientProblem: public gsl::CFDFMinimizer::Problem {
+class TNonrigRegGradientProblem: public CMinimizer::Problem {
 public:
 	typedef dim_traits<T> this_dim_traits;
 	typedef typename this_dim_traits::Size Size; 
@@ -92,11 +77,10 @@ public:
 	
 	typedef shared_ptr<TNonrigRegGradientProblem<T> > PNonrigRegGradientProblem; 
 private:
-	double  do_f(const DoubleVector& x);
-	void    do_df(const DoubleVector& x, DoubleVector&  g);
-	double  do_fdf(const DoubleVector& x, DoubleVector&  g);
+	double  do_f(const CDoubleVector& x);
+	void    do_df(const CDoubleVector& x, CDoubleVector&  g);
+	double  do_fdf(const CDoubleVector& x, CDoubleVector&  g);
 
-	PImage apply(const DoubleVector& x);
 	const FullCostList& _M_costs; 
 	T& _M_transf;
 	const InterpolatorFactory& _M_ipf;
@@ -106,7 +90,7 @@ private:
 };
 
 template <typename T> 
-TNonrigidRegister<T>::TNonrigidRegister(FullCostList& costs, EMinimizers minimizer,
+TNonrigidRegister<T>::TNonrigidRegister(FullCostList& costs, PMinimizer minimizer,
 					 PTransformationFactory transform_creation,
 					 const InterpolatorFactory& ipf, size_t mg_levels):
 	impl(new TNonrigidRegisterImpl<T>( costs, minimizer, transform_creation, ipf, mg_levels))
@@ -128,7 +112,7 @@ TNonrigidRegister<T>::run(PImage src, PImage ref) const
 
 
 template <typename T> 
-TNonrigidRegisterImpl<T>::TNonrigidRegisterImpl(FullCostList& costs, EMinimizers minimizer,
+TNonrigidRegisterImpl<T>::TNonrigidRegisterImpl(FullCostList& costs, PMinimizer minimizer,
 						 PTransformationFactory transform_creation, 
 						 const InterpolatorFactory& ipf,size_t mg_levels):
 	_M_costs(costs),
@@ -139,46 +123,6 @@ TNonrigidRegisterImpl<T>::TNonrigidRegisterImpl(FullCostList& costs, EMinimizers
 {
 }
 
-
-static bool minimizer_need_gradient(EMinimizers m)
-{
-	switch (m) {
-	case min_undefined: throw invalid_argument("Try to use minimizer 'undefined'");
-	default: return true;
-	}
-}
-
-struct  UMinimzer{
-		const gsl_multimin_fminimizer_type *fmin;
-		const gsl_multimin_fdfminimizer_type *fdfmin;
-};
-
-UMinimzer gradminimizers[min_undefined] = {
-	{ NULL, gsl_multimin_fdfminimizer_conjugate_fr },
-	{ NULL, gsl_multimin_fdfminimizer_conjugate_pr },
-	{ NULL, gsl_multimin_fdfminimizer_vector_bfgs },
-	{ NULL, gsl_multimin_fdfminimizer_vector_bfgs2 },
-	{ NULL, gsl_multimin_fdfminimizer_steepest_descent }
-};
-
-
-template <typename T> 
-void TNonrigidRegisterImpl<T>::apply(T& transf, 
-				    const gsl_multimin_fdfminimizer_type *optimizer)const
-{
-	if (!_M_costs.has(property_gradient))
-		throw invalid_argument("requested optimizer needs gradient, but cost functions doesn't prvide one");
-
-	std::shared_ptr<TNonrigRegGradientProblem<T> > 
-		gp(new TNonrigRegGradientProblem<T>( _M_costs, transf, _M_ipf));
-	CFDFMinimizer minimizer(gp, optimizer );
-
-	auto x = transf.get_parameters();
-	cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
-	minimizer.run(x);
-	transf.set_parameters(x);
-	cvmsg() << "\n"; 
-}
 
 /*
   This filter could be replaced by a histogram equalizing filter 
@@ -229,9 +173,6 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 	assert(ref);
 	assert(src->get_size() == ref->get_size());
 
-	if (!minimizer_need_gradient(_M_minimizer))
-		throw invalid_argument("Non-gradient based optimization not supported\n"); 
-
 	PTransformation transform;
 
 	// convert the images to float ans scale to range [-1,1]
@@ -278,13 +219,24 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 		_M_costs.reinit(); 
 		_M_costs.set_size(src_scaled->get_size()); 
 		
-		apply(*transform, gradminimizers[_M_minimizer].fdfmin);
+		std::shared_ptr<TNonrigRegGradientProblem<T> > 
+			gp(new TNonrigRegGradientProblem<T>( _M_costs, *transform, _M_ipf));
+		
+		_M_minimizer->set_problem(gp);
 
+		auto x = transform->get_parameters();
+		cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
+		_M_minimizer->run(x);
+		transform->set_parameters(x);
+		
 		// run the registration at refined splines 
-		if (transform->refine())
-			apply(*transform, gradminimizers[_M_minimizer].fdfmin);
+		if (transform->refine()) {
+			x = transform->get_parameters();
+			cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
+			_M_minimizer->run(x);
+			transform->set_parameters(x);
+		}
 
-		//auto params = transform->get_parameters(); 
 	} while (shift); 
 	return transform;
 }
@@ -292,7 +244,7 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 template <typename T> 
 TNonrigRegGradientProblem<T>::TNonrigRegGradientProblem(const FullCostList& costs, 
 						       T& transf, const InterpolatorFactory& ipf):
-	gsl::CFDFMinimizer::Problem(transf.degrees_of_freedom()),
+	CMinimizer::Problem(transf.degrees_of_freedom()),
 	_M_costs(costs),
 	_M_transf(transf),
 	_M_ipf(ipf), 
@@ -310,7 +262,7 @@ void TNonrigRegGradientProblem<T>::reset_counters()
 }
 
 template <typename T> 
-double  TNonrigRegGradientProblem<T>::do_f(const DoubleVector& x)
+double  TNonrigRegGradientProblem<T>::do_f(const CDoubleVector& x)
 {
        
 
@@ -330,13 +282,13 @@ double  TNonrigRegGradientProblem<T>::do_f(const DoubleVector& x)
 }
 
 template <typename T> 
-void    TNonrigRegGradientProblem<T>::do_df(const DoubleVector& x, DoubleVector&  g)
+void    TNonrigRegGradientProblem<T>::do_df(const CDoubleVector& x, CDoubleVector&  g)
 {
 	do_fdf(x,g); 
 }
 
 template <typename T> 
-double  TNonrigRegGradientProblem<T>::do_fdf(const DoubleVector& x, DoubleVector&  g)
+double  TNonrigRegGradientProblem<T>::do_fdf(const CDoubleVector& x, CDoubleVector&  g)
 {
 
 	_M_transf.set_parameters(x);

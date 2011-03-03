@@ -36,7 +36,7 @@ TFullCost<T>::TFullCost(double weight):
 }
 
 template <typename T> 
-double TFullCost<T>::evaluate(const T& t, gsl::DoubleVector& gradient) const
+double TFullCost<T>::evaluate(const T& t, CDoubleVector& gradient) const
 {
 	assert(_M_current_size == t.get_size()); 
 	

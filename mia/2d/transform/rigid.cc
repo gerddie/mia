@@ -145,16 +145,16 @@ void C2DRigidTransformation::rotate(float angle)
 	_M_translation.x = tx;
 }
 
-gsl::DoubleVector C2DRigidTransformation::get_parameters() const
+CDoubleVector C2DRigidTransformation::get_parameters() const
 {
-	gsl::DoubleVector result(degrees_of_freedom());
+	CDoubleVector result(degrees_of_freedom());
 	result[0] = _M_translation.x;
 	result[1] = _M_translation.y;
 	result[2] = _M_rotation;
 	return result;
 }
 
-void C2DRigidTransformation::set_parameters(const gsl::DoubleVector& params)
+void C2DRigidTransformation::set_parameters(const CDoubleVector& params)
 {
 	assert(degrees_of_freedom() == params.size());
 
@@ -189,7 +189,7 @@ float C2DRigidTransformation::curl() const
 	return _M_rotation;
 }
 
-double C2DRigidTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/, gsl::DoubleVector& /*gradient*/) const
+double C2DRigidTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/, CDoubleVector& /*gradient*/) const
 {
 	return 0.0; 
 }
@@ -277,7 +277,7 @@ float C2DRigidTransformation::get_jacobian(const C2DFVectorfield& /*v*/, float /
 	assert(!"not implemented");
 }
 
-void C2DRigidTransformation::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
+void C2DRigidTransformation::translate(const C2DFVectorfield& gradient, CDoubleVector& params) const
 {
 	//
 

@@ -668,7 +668,7 @@ BOOST_FIXTURE_TEST_CASE( test_grid_derivatives, DivGradFixture )
 BOOST_FIXTURE_TEST_CASE( test_grid_div_value, DivGradFixture )
 {
 
-	gsl::DoubleVector gradient(field.degrees_of_freedom(), true); 
+	CDoubleVector gradient(field.degrees_of_freedom(), true); 
 	double divcurlcost =  field.get_divcurl_cost(1.0, 0.0, gradient); 
 	BOOST_CHECK_CLOSE(corr*corr*divcurlcost, 6 * M_PI, 0.2); 
 
@@ -700,7 +700,7 @@ BOOST_FIXTURE_TEST_CASE( test_grid_div_gradient_at, DivGradFixture )
 
 BOOST_FIXTURE_TEST_CASE( test_grid_div_gradient_full, DivGradFixture )
 {
-	gsl::DoubleVector gradient(field.degrees_of_freedom(), true); 
+	CDoubleVector gradient(field.degrees_of_freedom(), true); 
 	field.get_divcurl_cost(1.0, 0.0, gradient); 
 
 
@@ -749,7 +749,7 @@ BOOST_AUTO_TEST_CASE( test_grid_curl )
 
 		}
 	
-	gsl::DoubleVector gradient(field.degrees_of_freedom()); 
+	CDoubleVector gradient(field.degrees_of_freedom()); 
 	double curlcost =  field.get_divcurl_cost(0.0, 1.0, gradient); 
 	BOOST_CHECK_CLOSE(corr * corr * curlcost, 6 * M_PI, 0.2); 
 
@@ -782,7 +782,7 @@ BOOST_FIXTURE_TEST_CASE( test_grid_curl_derivative_at, CurlGradFixture )
 
 BOOST_FIXTURE_TEST_CASE( test_grid_curl_gradient_full, CurlGradFixture )
 {
-	gsl::DoubleVector gradient(field.degrees_of_freedom(), true); 
+	CDoubleVector gradient(field.degrees_of_freedom(), true); 
 	field.get_divcurl_cost(1.0, 0.0, gradient); 
 
 	

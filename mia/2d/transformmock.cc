@@ -79,7 +79,7 @@ C2DFMatrix C2DTransformMock::derivative_at(int, int) const
 	return C2DFMatrix(C2DFVector(1.0, 2.0), C2DFVector(3.0, 4.0));
 }
 
-void C2DTransformMock::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
+void C2DTransformMock::translate(const C2DFVectorfield& gradient, CDoubleVector& params) const
 {
         auto r = params.begin();
 	for(auto f = gradient.begin(); f != gradient.end(); ++f) {
@@ -98,9 +98,9 @@ const C2DBounds& C2DTransformMock::get_size() const
 	return m_size;
 }
 
-gsl::DoubleVector  C2DTransformMock::get_parameters() const
+CDoubleVector  C2DTransformMock::get_parameters() const
 {
-	gsl::DoubleVector result(degrees_of_freedom());
+	CDoubleVector result(degrees_of_freedom());
 	if (degrees_of_freedom() > 2) 
 		result[1] = -2.3;
 	if (degrees_of_freedom() > 1) 
@@ -108,7 +108,7 @@ gsl::DoubleVector  C2DTransformMock::get_parameters() const
 	return result;
 }
 
-void C2DTransformMock::set_parameters(const gsl::DoubleVector& /*params*/)
+void C2DTransformMock::set_parameters(const CDoubleVector& /*params*/)
 {
 
 }
@@ -152,7 +152,7 @@ float C2DTransformMock::curl() const
 	return 2.0f;
 }
 
-double C2DTransformMock::get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const
+double C2DTransformMock::get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const
 {
 	gradient[0] = wd; 
 	gradient[1] = wr; 

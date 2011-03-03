@@ -158,9 +158,9 @@ float C2DGridTransformation::get_max_transform() const
 }
 
 
-gsl::DoubleVector C2DGridTransformation::get_parameters() const
+CDoubleVector C2DGridTransformation::get_parameters() const
 {
-	gsl::DoubleVector result(_M_field.size() * 2);
+	CDoubleVector result(_M_field.size() * 2);
 	auto r = result.begin();
 	for(auto f = _M_field.begin(); f != _M_field.end(); ++f) {
 		*r++ = f->x;
@@ -169,7 +169,7 @@ gsl::DoubleVector C2DGridTransformation::get_parameters() const
 	return result;
 }
 
-void C2DGridTransformation::set_parameters(const gsl::DoubleVector& params)
+void C2DGridTransformation::set_parameters(const CDoubleVector& params)
 {
 	assert(2 * _M_field.size() == params.size());
 	auto r = params.begin();
@@ -255,7 +255,7 @@ C2DGridTransformation::const_field_iterator C2DGridTransformation::field_end()co
 	return _M_field.end();
 }
 
-void C2DGridTransformation::translate(const C2DFVectorfield& gradient, gsl::DoubleVector& params) const
+void C2DGridTransformation::translate(const C2DFVectorfield& gradient, CDoubleVector& params) const
 {
 	assert(2 * params.size() != gradient.size());
 
@@ -387,7 +387,7 @@ C2DFVector C2DGridTransformation::get_gradcurl_at(int x, int y) const
 
 }
 
-float C2DGridTransformation::grad_divergence(double weight, gsl::DoubleVector& gradient) const
+float C2DGridTransformation::grad_divergence(double weight, CDoubleVector& gradient) const
 {
 	const int dx =  _M_field.get_size().x;
 	auto iv = _M_field.begin() + dx + 1; 
@@ -417,7 +417,7 @@ float C2DGridTransformation::grad_divergence(double weight, gsl::DoubleVector& g
 	return weight * result;
 }
 
-double C2DGridTransformation::grad_curl(double weight, gsl::DoubleVector& gradient) const
+double C2DGridTransformation::grad_curl(double weight, CDoubleVector& gradient) const
 {
 	const int dx =  _M_field.get_size().x;
 	auto iv = _M_field.begin() + dx + 1; 
@@ -444,7 +444,7 @@ double C2DGridTransformation::grad_curl(double weight, gsl::DoubleVector& gradie
 	return weight * result;
 }
 
-double C2DGridTransformation::get_divcurl_cost(double wd, double wr, gsl::DoubleVector& gradient) const
+double C2DGridTransformation::get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const
 {
 	double result = 0.0; 
 	// todo: if wd == wr run special case 

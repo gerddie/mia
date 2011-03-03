@@ -77,7 +77,7 @@ BOOST_FIXTURE_TEST_CASE(test_gradtranslate, TranslateTransformFixture)
 			f.y -= y;
 		}
 
-	gsl::DoubleVector a(2);
+	CDoubleVector a(2);
 	transf.translate(field, a);
 
 	BOOST_CHECK_CLOSE(a[0], f.x, 0.1);

@@ -259,7 +259,7 @@ BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_grad, TransformSplineFix
 	C2DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
 
 
-	gsl::DoubleVector gradient(field.size() * 2, true); 
+	CDoubleVector gradient(field.size() * 2, true); 
 	div.evaluate(coeffs, gradient); 
 	
 
@@ -301,7 +301,7 @@ BOOST_FIXTURE_TEST_CASE( test_rotation_expm2_bspline3_grad, TransformSplineFixtu
 	C2DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
 
 
-	gsl::DoubleVector gradient(field.size() * 2, true); 
+	CDoubleVector gradient(field.size() * 2, true); 
 	rot.evaluate(coeffs, gradient); 
 	
 
