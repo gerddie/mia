@@ -60,6 +60,8 @@ private:
 protected: 
 	P2DImage apply(const CDoubleVector& x); 
 	double  do_f(const CDoubleVector& x);
+	size_t do_size() const; 
+
 	const C2DImage& _M_model;
 	const C2DImage& _M_reference;
 	C2DTransformation& _M_transf;
@@ -87,6 +89,7 @@ private:
 	double  do_f(const CDoubleVector& x);
 	void    do_df(const CDoubleVector& x, CDoubleVector&  g);
 	double  do_fdf(const CDoubleVector& x, CDoubleVector&  g);
+	size_t do_size() const; 
 
 	const C2DImage& _M_model;
 	const C2DImage& _M_reference;
@@ -189,7 +192,6 @@ P2DTransformation C2DRigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 
 C2DRegGradientProblem::C2DRegGradientProblem(const C2DImage& model, const C2DImage& reference, C2DTransformation& transf,
 				   const C2DImageCost& cost, const C2DInterpolatorFactory& ipf):
-	CMinimizer::Problem(transf.degrees_of_freedom()),
 	_M_model(model),
 	_M_reference(reference),
 	_M_transf(transf),
@@ -197,6 +199,11 @@ C2DRegGradientProblem::C2DRegGradientProblem(const C2DImage& model, const C2DIma
 	_M_ipf(ipf)
 {
 	add(property_gradient); 
+}
+
+size_t C2DRegGradientProblem::do_size() const
+{
+	return _M_transf.degrees_of_freedom(); 
 }
 
 P2DImage C2DRegGradientProblem::apply(const CDoubleVector& x)
@@ -268,7 +275,6 @@ double  C2DRegFakeGradientProblem::do_fdf(const CDoubleVector& x, CDoubleVector&
 
 C2DRegProblem::C2DRegProblem(const C2DImage& model, const C2DImage& reference, C2DTransformation& transf,
 	    const C2DImageCost& cost, const C2DInterpolatorFactory& ipf):
-	CMinimizer::Problem(transf.degrees_of_freedom()),
 	_M_model(model),
 	_M_reference(reference),
 	_M_transf(transf),
@@ -301,5 +307,11 @@ double  C2DRegProblem::do_fdf(const CDoubleVector& , CDoubleVector&  )
 {
 	assert(0 && "C2DRegProblem::do_fdf should not be called from a gradient free minimizer"); 
 }
+
+size_t C2DRegProblem::do_size() const
+{
+	return _M_transf.degrees_of_freedom(); 
+}
+
 
 NS_MIA_END

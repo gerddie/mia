@@ -33,17 +33,13 @@
 
 NS_MIA_BEGIN
 
-const char *const CMinimizer::value = "singlecost"; 
-const char *const CMinimizer::type_descr = "minimizer"; 
+const char *const CMinimizer::value = "minimizer"; 
+const char *const CMinimizer::type_descr = "singlecost"; 
 
-CMinimizer::Problem::Problem(size_t n_params):
-	m_size(n_params) 
-{
-}
-	
+
 size_t CMinimizer::Problem::size() const
 {
-	return m_size; 
+	return do_size(); 
 }
 
 CMinimizer::CMinimizer()
@@ -87,6 +83,10 @@ double  CMinimizer::Problem::fdf(const std::vector<double>& x, std::vector<doubl
 	const CDoubleVector params_x(x.size(), &x[0]); 
 	CDoubleVector params_g(g.size(), &g[0]); 
 	return do_fdf(params_x, params_g); 	
+}
+
+CMinimizer::Problem::~Problem()
+{
 }
 
 double  CMinimizer::Problem::f(size_t n, const double *x)

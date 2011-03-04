@@ -46,6 +46,7 @@ bool CPropertyFlagHolder::has_all_in(const CPropertyFlagHolder& testset) const
 {
 	for(auto ti = testset._M_properties.begin();
 	    ti != testset._M_properties.end(); ++ti) {
+		
 		if (!has(*ti))
 			return false;
 	}

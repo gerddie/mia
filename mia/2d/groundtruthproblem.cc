@@ -30,7 +30,6 @@ GroundTruthProblem::GroundTruthProblem(double a, double b,
 				       size_t nframes,
 				       const CDoubleVector& left_side,
 				       const  CCorrelationEvaluator::result_type& corr):
-	CMinimizer::Problem(left_side.size()),
 	m_a(a),
 	m_b(b),
 	m_slice_size(slice_size),
@@ -42,6 +41,10 @@ GroundTruthProblem::GroundTruthProblem(double a, double b,
 	add(property_gradient); 
 }
 
+size_t GroundTruthProblem::do_size() const
+{
+	return m_left_side.size(); 
+}
 
 // this function can certainly be optimized
 double GroundTruthProblem::evaluate_slice_gradient(CDoubleVector::const_iterator ii,

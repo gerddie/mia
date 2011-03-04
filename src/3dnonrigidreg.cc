@@ -63,7 +63,7 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( ref_filename, "ref", 'r', "reference image", CCmdOption::required));
 	options.push_back(make_opt( out_filename, "out", 'o', "registered output image", CCmdOption::required));
 	options.push_back(make_opt( trans_filename, "trans", 't', "output transformation"));
-	options.push_back(make_opt( mg_levels, "levels", 'l', "multigrid levels", CCmdOption::required));
+	options.push_back(make_opt( mg_levels, "levels", 'l', "multi-resolution levels"));
 	options.push_back(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 

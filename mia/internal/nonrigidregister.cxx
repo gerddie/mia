@@ -81,6 +81,10 @@ private:
 	void    do_df(const CDoubleVector& x, CDoubleVector&  g);
 	double  do_fdf(const CDoubleVector& x, CDoubleVector&  g);
 
+	bool do_has(const char *property) const; 
+
+	size_t do_size() const; 
+
 	const FullCostList& _M_costs; 
 	T& _M_transf;
 	const InterpolatorFactory& _M_ipf;
@@ -231,6 +235,7 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 		
 		// run the registration at refined splines 
 		if (transform->refine()) {
+			_M_minimizer->set_problem(gp);
 			x = transform->get_parameters();
 			cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
 			_M_minimizer->run(x);
@@ -244,7 +249,6 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 template <typename T> 
 TNonrigRegGradientProblem<T>::TNonrigRegGradientProblem(const FullCostList& costs, 
 						       T& transf, const InterpolatorFactory& ipf):
-	CMinimizer::Problem(transf.degrees_of_freedom()),
 	_M_costs(costs),
 	_M_transf(transf),
 	_M_ipf(ipf), 
@@ -307,6 +311,18 @@ double  TNonrigRegGradientProblem<T>::do_fdf(const CDoubleVector& x, CDoubleVect
 		<< " ratio:" << setw(20) << setprecision(12) << result / _M_start_cost <<  "\r"; 
 	cvinfo() << "\n"; 
 	return result; 
+}
+
+template <typename T> 
+bool TNonrigRegGradientProblem<T>::do_has(const char *property) const
+{
+	return _M_costs.has(property); 
+}
+
+template <typename T> 
+size_t TNonrigRegGradientProblem<T>::do_size() const
+{
+	return _M_transf.degrees_of_freedom(); 
 }
 
 NS_MIA_END

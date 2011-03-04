@@ -59,6 +59,7 @@ private:
 	double  do_fdf(const CDoubleVector& x, CDoubleVector&  g);
 protected: 
 	double  do_f(const CDoubleVector& x);
+	size_t do_size() const; 
 	P3DImage apply(const CDoubleVector& x);
 	const C3DImage& _M_model;
 	const C3DImage& _M_reference;
@@ -91,7 +92,7 @@ private:
 	double  do_f(const CDoubleVector& x);
 	void    do_df(const CDoubleVector& x, CDoubleVector&  g);
 	double  do_fdf(const CDoubleVector& x, CDoubleVector&  g);
-
+	size_t do_size() const; 
 	const C3DImage& _M_model;
 	const C3DImage& _M_reference;
 	C3DTransformation& _M_transf;
@@ -200,7 +201,6 @@ P3DTransformation C3DRigidRegisterImpl::run(P3DImage src, P3DImage ref) const
 C3DRegGradientProblem::C3DRegGradientProblem(const C3DImage& model, const C3DImage& reference, 
 					     C3DTransformation& transf,
 					     const C3DImageCost& cost, const C3DInterpolatorFactory& ipf):
-	CMinimizer::Problem(transf.degrees_of_freedom()),
 	_M_model(model),
 	_M_reference(reference),
 	_M_transf(transf),
@@ -211,6 +211,11 @@ C3DRegGradientProblem::C3DRegGradientProblem(const C3DImage& model, const C3DIma
 
 {
 	add(property_gradient); 
+}
+
+size_t C3DRegGradientProblem::do_size() const
+{
+	return _M_transf.degrees_of_freedom(); 
 }
 
 P3DImage C3DRegGradientProblem::apply(const CDoubleVector& x)
@@ -290,7 +295,6 @@ double  C3DRegFakeGradientProblem::do_fdf(const CDoubleVector& x, CDoubleVector&
 
 C3DRegProblem::C3DRegProblem(const C3DImage& model, const C3DImage& reference, C3DTransformation& transf,
 	    const C3DImageCost& cost, const C3DInterpolatorFactory& ipf):
-	CMinimizer::Problem(transf.degrees_of_freedom()),
 	_M_model(model),
 	_M_reference(reference),
 	_M_transf(transf),
@@ -323,5 +327,11 @@ double  C3DRegProblem::do_fdf(const CDoubleVector& , CDoubleVector&  )
 {
 	assert(0 && "C2DRegProblem::do_fdf should not be called from a gradient free minimizer"); 
 }
+
+size_t C3DRegProblem::do_size() const
+{
+	return _M_transf.degrees_of_freedom(); 
+}
+
 
 NS_MIA_END

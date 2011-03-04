@@ -41,10 +41,18 @@ void TFullCostList<T>::push(typename TFullCost<T>::Pointer cost)
 template <typename T> 
 bool TFullCostList<T>::do_has(const char *property) const
 {
+	TRACE_FUNCTION; 
 	bool result = !_M_costs.empty(); 
+	if (!result) 
+		cvwarn() << "No cost functions given\n"; 
 	auto ic = _M_costs.begin(); 
 	while (result && ic != _M_costs.end()) {
 		result &= (*ic)->has(property); 
+		if (!result) {
+			cvwarn() << "Cost '"<< (*ic)->get_init_string() 
+				 << "' doesn't provide property '" 
+				 << property << "'\n"; 
+		}
 		++ic; 
 	}
 	return result; 

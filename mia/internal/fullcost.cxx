@@ -33,6 +33,7 @@ template <typename T>
 TFullCost<T>::TFullCost(double weight):
 	_M_weight(weight)
 {
+	add(property_gradient); 
 }
 
 template <typename T> 

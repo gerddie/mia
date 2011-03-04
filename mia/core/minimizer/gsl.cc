@@ -99,7 +99,8 @@ void CGSLFDFMinimizer::do_set_problem()
 	m_func.df = CGSLFDFMinimizer::df; 
 	m_func.fdf = CGSLFDFMinimizer::fdf; 
 	m_func.params = (void *)get_problem_pointer();
-	
+
+	cvinfo() << "Set problem size to " << size() << " parameters\n"; 
 	if (m_s) 
 		gsl_multimin_fdfminimizer_free (m_s);
 	m_s = gsl_multimin_fdfminimizer_alloc (m_ot, size()); 	
@@ -120,7 +121,7 @@ int CGSLFDFMinimizer::do_run(CDoubleVector& x)
 	int status = GSL_CONTINUE; 
 	shared_ptr<gsl_vector> init_x(gsl_vector_alloc(x.size()),DeallocGSLVector()); 
 	copy(x.begin(), x.end(), init_x->data);  
-	
+	cvinfo() << "Start GSL optimizer with " << x.size() << " parameters\n"; 
 	gsl_multimin_fdfminimizer_set (m_s, &m_func, init_x.get(), m_start_step, m_gorth_tolerance);
 	do {
 		++iter; 

@@ -25,6 +25,7 @@ private:
 	virtual double  do_f(const CDoubleVector& x); 
 	virtual void    do_df(const CDoubleVector&  x, CDoubleVector&  g); 
 	virtual double  do_fdf(const CDoubleVector&  x, CDoubleVector&  g); 
+	size_t do_size() const; 
 	
 	double evaluate_spacial_gradients(const CDoubleVector& x); 
 	double  evaluate_time_gradients(const CDoubleVector& x); 

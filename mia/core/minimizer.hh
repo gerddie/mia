@@ -54,10 +54,7 @@ public:
 	 */
 	class Problem : public CPropertyFlagHolder{
 	public:
-		/**
-		   Initialize the optimization problem with the given number of parameters
-		 */
-		Problem(size_t n_params); 
+		virtual ~Problem(); 
 
 		double  f(size_t n, const double *x); 
 		void    df(size_t n, const double *x, double *g); 
@@ -74,7 +71,7 @@ public:
 		virtual double  do_f(const CDoubleVector& x) = 0; 
 		virtual void    do_df(const CDoubleVector& x, CDoubleVector&  g) = 0; 
 		virtual double  do_fdf(const CDoubleVector& x, CDoubleVector&  g) = 0; 
-		size_t m_size; 
+		virtual size_t do_size() const = 0; 
 	}; 
 	typedef std::shared_ptr<Problem> PProblem; 
 

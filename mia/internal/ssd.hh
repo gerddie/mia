@@ -80,7 +80,7 @@ struct FEvalSSD : public mia::TFilter<double> {
 template <typename TCost> 
 CSSDCost<TCost>::CSSDCost()
 {
-	this->add(::mia::property_gradient); 	
+	this->add(::mia::property_gradient);
 }
 
 template <typename TCost> 
