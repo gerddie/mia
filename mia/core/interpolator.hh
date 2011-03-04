@@ -34,6 +34,14 @@
 
 NS_MIA_BEGIN
 
+/**
+   \file interpolator.hh
+   \todo - create B-spline kernels of size 0 and 1
+   \todo - add a index/weight type that can reuse old indices, 
+           and maybe even the old weights 
+   \todo move kernels into plugins 
+ */
+
 extern EXPORT_CORE TDictMap<EInterpolation> GInterpolatorTable;
 
 /**
