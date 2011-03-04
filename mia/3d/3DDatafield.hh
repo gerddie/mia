@@ -60,14 +60,15 @@ class  EXPORT_3D T3DDatafield {
         C3DBounds  _M_size;
 
         /** helper: product of Size.x * Size.y */
-        long int  _M_xy;
+        size_t  _M_xy;
 
         /** Pointer to the Field of Data hold by this class */
         ref_data_type _M_data;
 
         /** helper: represents the zero-value */
-        const static T Zero;
-
+        static const T Zero;
+	
+	static const unsigned int _M_elements; 
 
 public:
 
@@ -85,6 +86,9 @@ public:
         typedef typename std::vector<T>::value_type value_type;
         typedef typename std::vector<T>::size_type size_type;
         typedef typename std::vector<T>::difference_type difference_type;
+	typedef typename atomic_data<T>::type atomic_type; 
+	
+
 	typedef C3DBounds dimsize_type;
 
 	T3DDatafield();
@@ -228,6 +232,18 @@ public:
         void mask(const TMask& m);
 
 	T2DDatafield<T> get_data_plane_xy(size_t  z)const;
+
+	void read_zslice_flat(size_t z, std::vector<atomic_type>& buffer) const;
+	
+	void write_zslice_flat(size_t z, const std::vector<atomic_type>& buffer); 
+
+	void read_yslice_flat(size_t y, std::vector<atomic_type>& buffer) const;
+
+	void write_yslice_flat(size_t y, const std::vector<atomic_type>& buffer); 
+
+	void read_xslice_flat(size_t x, std::vector<atomic_type>& buffer) const;
+
+	void write_xslice_flat(size_t x, const std::vector<atomic_type>& buffer); 
 
         T2DDatafield<T> get_data_plane_yz(size_t  x)const;
 

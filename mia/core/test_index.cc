@@ -33,6 +33,7 @@ BOOST_AUTO_TEST_CASE ( test_index_basics )
 	CCircularIndex idx(4, 0); 
 
 	BOOST_CHECK_EQUAL(idx.next(), 0u); 
+	BOOST_CHECK_EQUAL(idx.fill(),0u); 
 	
 	BOOST_CHECK_EQUAL(idx.value(0), 0u); 
 	BOOST_CHECK_EQUAL(idx.value(1), 1u); 
@@ -41,9 +42,11 @@ BOOST_AUTO_TEST_CASE ( test_index_basics )
 
 	idx.insert_one(); 
 	BOOST_CHECK_EQUAL(idx.next(), 1u);
+	BOOST_CHECK_EQUAL(idx.fill(), 1u); 
 	
 	idx.insert_one(); 
 	BOOST_CHECK_EQUAL(idx.next(), 2u);
+	BOOST_CHECK_EQUAL(idx.fill(), 2u); 
 
 	idx.insert_one(); 
 	BOOST_CHECK_EQUAL(idx.next(), 3u);
@@ -58,12 +61,14 @@ BOOST_AUTO_TEST_CASE ( test_index_basics )
 	BOOST_CHECK_EQUAL(idx.value(3), 3u); 
 
 	idx.new_start(1); 
+	BOOST_CHECK_EQUAL(idx.fill(), 3u); 
 	BOOST_CHECK_EQUAL(idx.value(0), 1u); 
 	BOOST_CHECK_EQUAL(idx.value(1), 2u); 
 	BOOST_CHECK_EQUAL(idx.value(2), 3u); 
 	BOOST_CHECK_EQUAL(idx.value(3), 0u); 
 	
 	idx.insert_one(); 
+	BOOST_CHECK_EQUAL(idx.fill(), 4u); 
 	BOOST_CHECK_EQUAL(idx.next(), 1u);
 
 	idx.new_start(2);

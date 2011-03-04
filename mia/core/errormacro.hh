@@ -40,7 +40,7 @@
 #ifdef NDEBUG
 #define DEBUG_ASSERT_RELEASE_THROW(cond, msg) \
 	if (!cond)		   \
-		throw std::invalid_argument(msg);
+		throw std::logic_error(msg);
 #else
 #define DEBUG_ASSERT_RELEASE_THROW(cond, msg) \
 	assert(cond && msg); 

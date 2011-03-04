@@ -146,6 +146,7 @@ ENDIF(WIN32)
 
 TEST_3D(2dimagefifofilter 2dimagefifofilter)
 TEST_3D(nfg nfg)
+TEST_3D(vectorfield vectorfield)
 TEST_3D(orientation orientation)
 TEST_3D(deform deform)
 TEST_3D(ica ica)

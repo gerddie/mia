@@ -32,6 +32,8 @@ The class holds all types of data stored in three dimensional fields.
 #ifndef __3ddatafield_cxx
 #define __3ddatafield_cxx
 
+
+#include <cstring>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/2DDatafield.hh>
 #include <mia/3d/3DDatafield.hh>
@@ -39,9 +41,9 @@ The class holds all types of data stored in three dimensional fields.
 
 NS_MIA_BEGIN
 
-
-
-
+template <class T>
+const unsigned int T3DDatafield<T>::_M_elements = 
+	sizeof(T) / sizeof(typename T3DDatafield<T>::atomic_type); 
 
 template <class T>
 T3DDatafield<T>::T3DDatafield():
@@ -271,6 +273,121 @@ T2DDatafield<T> T3DDatafield<T>::get_data_plane_xy(size_t  z)const
 	copy(begin_at(0,0,z), begin_at(0,0,z) + result.size(), result.begin()); 
 	return result; 
 }
+
+template <typename T>
+struct __copy_dispatch {
+	typedef typename atomic_data<T>::type atomic_type; 
+	typedef std::vector<atomic_type> atomic_type_vector;
+	typedef std::vector<T> type_vector;
+	
+	static void apply_write(type_vector& dest, size_t dest_start, 
+				const atomic_type_vector& src, 
+				size_t src_start, size_t nelm) {
+		static_assert(__has_trivial_copy(T), "this copy mechanism can only be used if T has "
+			      "a trivial assignment operator"); 
+		memcpy(&dest[dest_start], &src[src_start], nelm * sizeof(T));
+	}
+	static void apply_read(atomic_type_vector& dest, size_t dest_start, 
+			       const type_vector& src, size_t src_start, 
+			       size_t nelm) {
+		static_assert(__has_trivial_copy(T), "this copy mechanism can only be used if T has "
+			      "a trivial assignment operator"); 
+		memcpy(&dest[dest_start], &src[src_start], nelm * sizeof(T));
+	}
+};
+
+template <>
+struct __copy_dispatch<bool> {
+	static void apply_write(std::vector<bool>& dest, size_t dest_start, 
+				const std::vector<bool>& src, size_t src_start, size_t nelm) {
+		copy(src.begin() + src_start, src.begin() + src_start + nelm, dest.begin() + dest_start); 
+	}
+	static void apply_read(std::vector<bool>& dest, size_t dest_start, 
+			       const std::vector<bool>& src, size_t src_start, 
+			       size_t nelm) {
+		copy(src.begin() + src_start, src.begin() + src_start + nelm, 
+		     dest.begin() + dest_start); 
+	}
+
+};
+
+
+template <class T>
+void T3DDatafield<T>::read_zslice_flat(size_t z, std::vector<atomic_type>& buffer)const
+{
+	assert(z < get_size().z); 
+	assert(_M_xy * _M_elements <= buffer.size()); 
+	__copy_dispatch<T>::apply_read(buffer, 0, *_M_data, z * _M_xy, _M_xy); 
+}
+
+
+template <class T>
+void T3DDatafield<T>::write_zslice_flat(size_t z, const std::vector<atomic_type>& buffer)
+{
+	assert(z < get_size().z); 
+	assert(_M_xy * _M_elements <= buffer.size()); 
+	__copy_dispatch<T>::apply_write(*_M_data, z * _M_xy, buffer, 0, _M_xy); 
+}
+
+
+template <class T>
+void T3DDatafield<T>::read_yslice_flat(size_t y, std::vector<atomic_type>& buffer)const
+{
+	assert(y < get_size().y); 
+	assert(get_size().x * get_size().z * _M_elements <= buffer.size()); 
+	
+	const size_t offset = y * get_size().x; 
+	for (size_t z = 0; z < get_size().z; ++z) {
+		__copy_dispatch<T>::apply_read(buffer, z * get_size().x  * _M_elements, 
+					       *_M_data, offset + z * _M_xy, get_size().x); 
+	}
+}
+
+template <class T>
+void T3DDatafield<T>::write_yslice_flat(size_t y, const std::vector<atomic_type>& buffer )
+{
+	assert(y < get_size().y); 
+	assert(get_size().x * get_size().z * _M_elements <= buffer.size()); 
+	
+	const size_t offset = y * get_size().x; 
+	for (size_t z = 0; z < get_size().z; ++z) {
+		__copy_dispatch<T>::apply_write(*_M_data, offset + z * _M_xy,
+						buffer, z * get_size().x * _M_elements, 
+					        get_size().x); 
+	}
+}
+
+template <class T>
+void T3DDatafield<T>::read_xslice_flat(size_t x, std::vector<atomic_type>& buffer)const
+{
+	assert(x < get_size().x); 
+	const size_t slice_size = get_size().y * get_size().z; 
+	assert(slice_size * _M_elements <= buffer.size()); 
+	
+	size_t offset = x; 
+	size_t doffs =  get_size().x; 
+	for (size_t i = 0; i < slice_size; ++i, offset += doffs) {
+		__copy_dispatch<T>::apply_read(buffer, _M_elements * i, 
+					       *_M_data, offset, 1); 
+	}
+}
+
+template <class T>
+void T3DDatafield<T>::write_xslice_flat(size_t x, const std::vector<atomic_type>& buffer)
+{
+	assert(x < get_size().x); 
+	const size_t slice_size = get_size().y * get_size().z; 
+	assert(slice_size * _M_elements <= buffer.size()); 
+	
+	size_t offset = x; 
+	size_t doffs =  get_size().x; 
+	for (size_t i = 0; i < slice_size; ++i, offset += doffs) {
+		__copy_dispatch<T>::apply_write(*_M_data, offset, 
+						buffer, _M_elements * i, 1);
+	}
+}
+
+
 
 template <class T>
 void T3DDatafield<T>::put_data_plane_xy(size_t  z, const T2DDatafield<T>& p)

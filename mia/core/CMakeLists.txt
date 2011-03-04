@@ -20,6 +20,7 @@ SET(MIACORE_SRC_BASE
   flagstring.cc
   fullstats.cc
   history.cc
+  index.cc
   info.cc
   interpolator.cc
   interpolator1d.cc
@@ -82,6 +83,7 @@ SET(MIACORE_HEADER_BASE
   handler.cxx handler.hh
   history.hh
   histogram.hh
+  index.hh
   interpolator.hh
   iodata.hh
   iohandler.cxx iohandler.hh
@@ -246,6 +248,7 @@ NEW_TEST(fatcost  miacore)
 NEW_TEST(filetools miacore)
 NEW_TEST(fullstats miacore)
 NEW_TEST(histogram miacore)
+NEW_TEST(index miacore)
 NEW_TEST(iohandler miacore)
 NEW_TEST(interpolator1d miacore)
 NEW_TEST(scale1d miacore)

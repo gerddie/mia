@@ -30,6 +30,13 @@
 #include <mia/3d/transform/splinebig.hh>
 #include <mia/3d/transformfactory.hh>
 #include <mia/3d/3dimageio.hh>
+#include <mia/core/index.hh>
+
+#ifdef HAVE_BLAS
+extern "C" {
+#include <cblas.h>
+}
+#endif
 
 #include <boost/lambda/lambda.hpp>
 
@@ -518,6 +525,116 @@ float C3DSplineTransformationBig::get_max_transform() const
 
 }
 
+#ifdef HAVE_BLAS
+
+void C3DSplineTransformationBig::init_grid()const
+{
+	TRACE_FUNCTION; 
+	reinit();
+	if (!_M_grid_valid) {
+		cvdebug() << "initialize grid\n"; 
+		if (!_M_current_grid || (_M_current_grid->get_size() != _M_range)) {
+			cvdebug() << "initialize grid field\n"; 
+			_M_current_grid.reset(new C3DFVectorfield(_M_range)); 
+		}
+		const int size_s1 = _M_coefficients.get_size().x * _M_coefficients.get_size().y * 3; 
+		const int size_s2 = _M_coefficients.get_size().x * _M_range.z * 3; 
+		const int size_s3 = _M_range.z * _M_range.y * 3; 
+		
+		const int max_data_length = max( max(size_s1, size_s2), size_s3);
+
+		// create the buffers 
+		unsigned int nelm = _M_kernel->size(); 
+		vector< vector<float> > in_buffer; 
+		for (unsigned int i = 0; i < nelm; ++i) 
+			in_buffer.push_back(vector<float>(max_data_length));
+		vector<float> out_buffer(max_data_length);
+		
+		C3DFVectorfield tmp(C3DBounds(_M_coefficients.get_size().x, 
+					      _M_coefficients.get_size().y, 
+					      _M_range.z));
+
+		CCircularIndex idxz(nelm, _M_z_indices[0]); 
+		for(size_t z = 0; z < _M_range.z; ++z) {
+			auto w = _M_z_weights[z]; 
+			int start = _M_z_indices[z];
+			
+			idxz.new_start(start); 
+			
+			// fill with slices 
+			auto fill = idxz.fill(); 
+			while (fill < nelm) {
+				_M_coefficients.read_zslice_flat(start + fill, in_buffer[idxz.next()]);
+				fill = idxz.fill(); 
+			}
+			
+			memset(&out_buffer[0], 0, size_s1 * sizeof(float)); 
+			
+			for (unsigned int i = 0; i < nelm; ++i) {
+				cblas_saxpy(size_s1, w[i], &in_buffer[idxz.value(i)][0], 1, 
+					    &out_buffer[0], 1);
+			}
+			tmp.write_zslice_flat(z, out_buffer); 
+		}
+		
+
+		C3DFVectorfield tmp2(C3DBounds(_M_coefficients.get_size().x, 
+					       _M_range.y, 
+					       _M_range.z));
+		
+		CCircularIndex idxy(nelm, _M_y_indices[0]); 
+		for(size_t y = 0; y < _M_range.y; ++y) {
+			auto w = _M_y_weights[y]; 
+			int start = _M_y_indices[y];
+			
+			idxy.new_start(start); 
+			
+			// fill with slices 
+			auto fill = idxy.fill(); 
+			while (fill < nelm) {
+				_M_coefficients.read_yslice_flat(start + fill, in_buffer[idxy.next()]);
+				fill = idxy.fill(); 
+			}
+			
+			memset(&out_buffer[0], 0, size_s2 * sizeof(float)); 
+			
+			for (unsigned int i = 0; i < nelm; ++i) {
+				cblas_saxpy(size_s2, w[i], &in_buffer[idxy.value(i)][0], 1, 
+					    &out_buffer[0], 1);
+			}
+			tmp.write_yslice_flat(y, out_buffer); 
+		}
+
+
+		CCircularIndex idxx(nelm, _M_y_indices[0]); 
+		for(size_t x = 0; x < _M_range.x; ++x) {
+			auto w = _M_x_weights[x]; 
+			int start = _M_x_indices[x];
+			
+			idxx.new_start(start); 
+			
+			// fill with slices 
+			auto fill = idxx.fill(); 
+			while (fill < nelm) {
+				_M_coefficients.read_zslice_flat(start + fill, in_buffer[idxx.next()]);
+				fill = idxx.fill(); 
+			}
+			
+			memset(&out_buffer[0], 0, size_s2 * sizeof(float)); 
+			
+			for (unsigned int i = 0; i < nelm; ++i) {
+				cblas_saxpy(size_s3, w[i], &in_buffer[idxx.value(i)][0], 1, 
+					    &out_buffer[0], 1);
+			}
+			tmp.write_xslice_flat(x, out_buffer); 
+		}
+
+
+		_M_grid_valid = true; 
+	}
+}
+
+#else 
 void C3DSplineTransformationBig::init_grid()const
 {
 	TRACE_FUNCTION; 
@@ -592,6 +709,9 @@ void C3DSplineTransformationBig::init_grid()const
 		_M_grid_valid = true; 
 	}
 }
+#endif 
+
+
 
 C3DTransformation::const_iterator C3DSplineTransformationBig::begin() const
 {

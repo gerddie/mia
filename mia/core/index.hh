@@ -34,7 +34,7 @@ public:
 	void insert_one(); 
 	unsigned int next() const; 
 	void new_start(unsigned int start);
-	
+	unsigned int fill()const; 
 	unsigned int value(unsigned int i) const; 
 private: 
 	unsigned int m_size; 

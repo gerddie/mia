@@ -39,9 +39,11 @@ A fully templated class for all types of 3D vectors
 #include <math.h>
 #include <complex>
 #include <iostream>
+#include <type_traits>
 
 #include <boost/lambda/lambda.hpp>
 #include <mia/core/defines.hh>
+#include <mia/core/type_traits.hh>
 
 NS_MIA_BEGIN
 
@@ -49,7 +51,8 @@ NS_MIA_BEGIN
    A simple 3D vector type. 
 */
 
-template < class T > class T3DVector {
+template < class T > 
+class T3DVector {
 public:
 	T x,y,z;
 	
@@ -63,6 +66,10 @@ public:
 		assert(dim == 3);
 	}
 	
+        // we provide the default copy mechanisms 
+	T3DVector(const T3DVector<T>& other) = default; 
+	T3DVector<T>& operator = (const T3DVector<T>& other) = default; 
+
 	/// constructor to construct vector from values
 	T3DVector(const T& x_,const T& y_,const T& z_):
 		x(x_),y(y_),z(z_){
@@ -188,7 +195,14 @@ public:
 		return T3DVector<T>(z,x,y); 
 	}
 	static T3DVector<T> _1; 
+	static const unsigned int  elements; 
 };
+
+
+template <typename T> 
+struct atomic_data<T3DVector<T> > {
+	typedef T type; 
+}; 
 
 /**
    Cross product of two 3D vectors 

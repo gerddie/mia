@@ -62,6 +62,11 @@ void CCircularIndex::new_start(unsigned int start)
 	}
 }
 
+unsigned int CCircularIndex::fill()const
+{
+	return m_fill; 
+}
+
 unsigned int CCircularIndex::value(unsigned int i) const
 {
 	return (i + m_cur_start) % m_size; 

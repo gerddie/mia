@@ -137,6 +137,21 @@ static void test_3ddatafield_get_put_xy()
 	BOOST_CHECK(equal(plane_xy.begin(), plane_xy.end(), data.begin_at(0,0,1)));
 }
 
+static void test_3ddatafield_zslice_flat()
+{
+	C3DBounds size(2,3,4);
+	C3DFDatafield data = create_field(size);
+
+	vector<float> slice(6); 
+	
+	data.read_zslice_flat(1, slice); 
+	BOOST_CHECK(equal(slice.begin(), slice.end(), data.begin_at(0,0,1)));
+
+	data.write_zslice_flat(2, slice); 
+	BOOST_CHECK(equal(slice.begin(), slice.end(), data.begin_at(0,0,2)));
+}
+
+
 static void test_3ddatafield_get_put_xz()
 {
 	C3DBounds size(2,3,4);
@@ -158,6 +173,45 @@ static void test_3ddatafield_get_put_xz()
 
 }
 
+static void test_3ddatafield_yslice_flat()
+{
+	C3DBounds size(2,3,4);
+	C3DFDatafield data = create_field(size);
+
+	vector<float> slice(8); 
+	
+	data.read_yslice_flat(1, slice); 
+	auto i = slice.begin(); 
+	for (size_t z = 0; z < size.z; ++z)
+		for (size_t x = 0; x < size.x; ++x, ++i)
+			BOOST_CHECK_EQUAL(*i, data(x,1,z));
+
+	data.write_yslice_flat(2, slice); 
+	i = slice.begin(); 
+	for (size_t z = 0; z < size.z; ++z)
+		for (size_t x = 0; x < size.x; ++x, ++i)
+			BOOST_CHECK_EQUAL(*i, data(x,2,z));
+}
+
+static void test_3ddatafield_xslice_flat()
+{
+	C3DBounds size(2,3,4);
+	C3DFDatafield data = create_field(size);
+
+	vector<float> slice(12); 
+	
+	data.read_xslice_flat(1, slice); 
+	auto i = slice.begin(); 
+	for (size_t z = 0; z < size.z; ++z)
+		for (size_t y = 0; y < size.y; ++y, ++i)
+			BOOST_CHECK_EQUAL(*i, data(1,y,z));
+
+	data.write_xslice_flat(0, slice); 
+	i = slice.begin(); 
+	for (size_t z = 0; z < size.z; ++z)
+		for (size_t y = 0; y < size.y; ++y, ++i)
+			BOOST_CHECK_EQUAL(*i, data(0,y,z));
+}
 
 
 
@@ -187,4 +241,7 @@ void add_3ddatafield_tests( boost::unit_test::test_suite* suite)
 	suite->add( BOOST_TEST_CASE( &test_3ddatafield_get_put_xy));
 	suite->add( BOOST_TEST_CASE( &test_3ddatafield_get_put_xz));
 	suite->add( BOOST_TEST_CASE( &test_3ddatafield_get_put_yz));
+	suite->add( BOOST_TEST_CASE( &test_3ddatafield_zslice_flat)); 
+	suite->add( BOOST_TEST_CASE( &test_3ddatafield_yslice_flat)); 
+	suite->add( BOOST_TEST_CASE( &test_3ddatafield_xslice_flat)); 
 }

@@ -210,7 +210,7 @@ C2DMLV::result_type C2DMLV::operator () (const T2DImage<T>& data) const
 											 _M_sqbuf.begin());
 
 #ifdef HAVE_BLAS
-			copy(&data(0,y), &data(0,y) + data.get_size().x, _M_buf.begin());
+			copy(data.begin_at(0,y), data.begin_at(0,y) + data.get_size().x, _M_buf.begin());
 			for (size_t x = 0; x < _M_kh; ++x) {
 				cblas_saxpy(data.get_size().x, 1.0f, &_M_buf[0],  1, &_M_mu_l1[x], 1);
 				cblas_saxpy(data.get_size().x, 1.0f, &_M_sqbuf[0],  1, &_M_sigma_l1[x], 1);

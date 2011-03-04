@@ -238,6 +238,16 @@ PKG_CHECK_MODULES(GSL REQUIRED gsl)
 INCLUDE_DIRECTORIES(${GSL_INCLUDE_DIRS})
 LINK_DIRECTORIES(${GSL_LIBRARY_DIRS})
 
+SET(BLA_VENDOR "ALL")
+FIND_LIBRARY(CBLAS_LIBRARY NAMES "cblas" PATHS
+  /usr/lib
+  /usr/local/lib
+  )
+IF (CBLAS_LIBRARY) 
+  ADD_DEFINITIONS(-DHAVE_BLAS)
+ENDIF(CBLAS_LIBRARY)
+
+
 #
 # take care of modules loading infrastructure
 #
@@ -253,6 +263,7 @@ IF(NOT WIN32)
     MESSAGE(FATAL_ERROR "non-windows systems without libdl.so are not yet supported")
   ENDIF(DL_NOTFOUND)
   SET(BASELIBS  ${BOOST_DEPS} ${DL})
+
 ENDIF(NOT WIN32)
 
 

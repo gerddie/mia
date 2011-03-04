@@ -49,6 +49,7 @@
 
 // MIA specific
 #include <mia/core/defines.hh>
+#include <mia/core/type_traits.hh>
 
 NS_MIA_BEGIN
 
@@ -188,6 +189,10 @@ public:
 
 };
 
+template <typename T> 
+struct atomic_data<T2DVector<T> > {
+	typedef T type; 
+}; 
 
 template <typename T> 
 const T2DVector<T> T2DVector<T>::_1 = T2DVector<T>(1,1); 
