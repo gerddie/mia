@@ -68,7 +68,7 @@ struct FEvalSSD : public mia::TFilter<double> {
 	
 	template <typename  T, typename  R>
 	FEvalSSD::result_type operator () (const T& a, const R& b) const {
-		return 0.5 * inner_product(a.begin(), a.end(), b.begin(), 0.0,  ::std::plus<double>(), 
+		return (0.5 / a.size()) * inner_product(a.begin(), a.end(), b.begin(), 0.0,  ::std::plus<double>(), 
 					   SQD<typename T::value_type , typename R::value_type >()); 
 	}
 }; 
@@ -107,13 +107,14 @@ struct FEvalForce: public mia::TFilter<float> {
 		float cost = 0.0; 
 		typename T::const_iterator ai = a.begin();
 		typename R::const_iterator bi = b.begin();
+		float scale = _M_scale / a.size(); 
 		
 		for (size_t i = 0; i < a.size(); ++i, ++ai, ++bi) {
 			float delta = float(*ai) - float(*bi); 
-			_M_force[i] += gradient[i] * delta * _M_scale;
+			_M_force[i] += gradient[i] * delta * scale;
 			cost += delta * delta; 
 		}
-		return 0.5 * cost * _M_scale; 
+		return 0.5 * cost * scale / a.size(); 
 	}
 private: 
 	mutable Force& _M_force; 
