@@ -136,6 +136,16 @@ int CGSLFDFMinimizer::do_run(CDoubleVector& x)
 	gsl_vector * help = gsl_multimin_fdfminimizer_x (m_s); 
 	std::copy(help->data, help->data + size(), x.begin()); 
 	
+	cvmsg() << "\n"; 
+	if (status) {
+		if (iter == m_maxiter)  
+			cvmsg() << "Maximum number of iterations reached\n"; 
+		else 
+			cvwarn() << "Iteration stopped because '" << gsl_strerror(status) << "\n";
+	}else{
+		cvmsg() << "Convergence reached\n"; 
+	}
+
 	return status == GSL_SUCCESS ? CMinimizer::success : CMinimizer::failture;
 	
 }
@@ -163,7 +173,7 @@ double CGSLFMinimizer::f(const gsl_vector * x, void *obj)
 	assert(x); 
 	assert(obj); 
 	
-	CMinimizer::Problem *o = (Problem *)obj; 
+	CMinimizer::Problem *o = reinterpret_cast<Problem *>(obj); 
 	return o->f(x->size, x->data); 
 }
 
@@ -204,11 +214,20 @@ int CGSLFMinimizer::do_run(CDoubleVector& x)
 		const double size = gsl_multimin_fminimizer_size (m_s);
 		status = gsl_multimin_test_size (size, 1e-3);
 		
-	} while (status == GSL_CONTINUE && iter < 100); 
+	} while (status == GSL_CONTINUE && iter < m_maxiter); 
 	
 	// copy best solution 
 	gsl_vector * help = gsl_multimin_fminimizer_x (m_s); 
 	std::copy(help->data, help->data + size(), x.begin()); 
+	if (status) {
+		if (iter == m_maxiter) 
+			cvmsg() << "\nMaximum number of iterations reached\n"; 
+		else 
+			cvwarn() << "\nIteration stopped because '" << gsl_strerror(status) << "\n";
+	}else{
+		cvmsg() << "\nConvergence reached\n"; 
+	}
+	
 	return status == GSL_SUCCESS ? CMinimizer::success : CMinimizer::failture;
 }
 

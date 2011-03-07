@@ -46,8 +46,8 @@ BOOST_AUTO_TEST_CASE( test_load_minimizer_plugins )
 
 	const CMinimizerPluginHandler::Instance& handler = CMinimizerPluginHandler::instance();
 
-	BOOST_CHECK_EQUAL(handler.size(), 1u); 
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "gsl "); 
+	BOOST_CHECK_EQUAL(handler.size(), 2u); 
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "gsl nlopt "); 
 
 }
 

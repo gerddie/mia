@@ -223,6 +223,7 @@ int CNLOptFDFMinimizer::do_run(CDoubleVector& x)
 	double minf = 0.0; 
 	
 	auto retval = nlopt_optimize(m_opt, &x[0], &minf); 
+	cvmsg() << "\n"; 
 	if (retval < 0) {
 		switch (retval) {
 		case NLOPT_FAILURE: throw runtime_error("CNLOptFDFMinimizer optimization failed"); 
@@ -230,24 +231,24 @@ int CNLOptFDFMinimizer::do_run(CDoubleVector& x)
 		case NLOPT_OUT_OF_MEMORY: throw runtime_error("CNLOptFDFMinimizer: out of memory"); 
 		case NLOPT_FORCED_STOP: throw runtime_error("CNLOptFDFMinimizer: optimization was forced to stop"); 
 		case NLOPT_ROUNDOFF_LIMITED:  
-			cvwarn() << "CNLOptFDFMinimizer: optimization stopped due to roundoff errors"; 
+			cvwarn() << "optimization stopped due to roundoff errors"; 
 			return CMinimizer::success; 
 		default: 
 			throw runtime_error("CNLOptFDFMinimizer: optimization failed with unknown error code"); 
 		}
 	}else {
 		switch (retval) {
-		case NLOPT_SUCCESS: cvmsg() << "NLOpt SUCCESS\n"; 
+		case NLOPT_SUCCESS: cvmsg() << "SUCCESS\n"; 
 			break; 
-		case NLOPT_STOPVAL_REACHED: cvmsg() << "NLOpt SUCCESS: objective value below stopvalue.\n"; 
+		case NLOPT_STOPVAL_REACHED: cvmsg() << "SUCCESS: objective value below stopvalue.\n"; 
 			break; 
-		case NLOPT_FTOL_REACHED:cvmsg() << "NLOpt SUCCESS: objective value changes below given tolerance.\n"; 
+		case NLOPT_FTOL_REACHED:cvmsg() << "SUCCESS: objective value changes below given tolerance.\n"; 
 			break; 
-		case NLOPT_XTOL_REACHED:cvmsg() << "NLOpt SUCCESS: X changes below given tolerance.\n"; 
+		case NLOPT_XTOL_REACHED:cvmsg() << "SUCCESS: X changes below given tolerance.\n"; 
 			break; 
-		case NLOPT_MAXEVAL_REACHED: cvmsg() << "NLOpt: maximum number of iterations reached.\n"; 
+		case NLOPT_MAXEVAL_REACHED: cvmsg() << "\nmaximum number of iterations reached.\n"; 
 			break; 
-		case NLOPT_MAXTIME_REACHED: cvmsg() << "NLOpt: maximum time exeeded.\n"; 
+		case NLOPT_MAXTIME_REACHED: cvmsg() << "\nmaximum time exeeded.\n"; 
 			break; 
 		default: 
 			cvmsg() << "NLOpt SUCCESS: with unknown return value.\n"; 
