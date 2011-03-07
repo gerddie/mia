@@ -222,11 +222,14 @@ int CNLOptFDFMinimizer::do_run(CDoubleVector& x)
 {
 	double minf = 0.0; 
 	
+	cvmsg() << "Starting optimization with '" << nlopt_algorithm_name(m_options.algo) << "'\n"; 
 	auto retval = nlopt_optimize(m_opt, &x[0], &minf); 
 	cvmsg() << "\n"; 
 	if (retval < 0) {
 		switch (retval) {
-		case NLOPT_FAILURE: throw runtime_error("CNLOptFDFMinimizer optimization failed"); 
+		case NLOPT_FAILURE: cvwarn() << "CNLOptFDFMinimizer: optimization failed for ungiven reasons\n"; 
+			// okay, it's a lie
+			return CMinimizer::success; 
 		case NLOPT_INVALID_ARGS: throw invalid_argument("CNLOptFDFMinimizer: invalid arguments given");
 		case NLOPT_OUT_OF_MEMORY: throw runtime_error("CNLOptFDFMinimizer: out of memory"); 
 		case NLOPT_FORCED_STOP: throw runtime_error("CNLOptFDFMinimizer: optimization was forced to stop"); 
@@ -246,9 +249,9 @@ int CNLOptFDFMinimizer::do_run(CDoubleVector& x)
 			break; 
 		case NLOPT_XTOL_REACHED:cvmsg() << "SUCCESS: X changes below given tolerance.\n"; 
 			break; 
-		case NLOPT_MAXEVAL_REACHED: cvmsg() << "\nmaximum number of iterations reached.\n"; 
+		case NLOPT_MAXEVAL_REACHED: cvmsg() << "maximum number of iterations reached.\n"; 
 			break; 
-		case NLOPT_MAXTIME_REACHED: cvmsg() << "\nmaximum time exeeded.\n"; 
+		case NLOPT_MAXTIME_REACHED: cvmsg() << "maximum time exeeded.\n"; 
 			break; 
 		default: 
 			cvmsg() << "NLOpt SUCCESS: with unknown return value.\n"; 
