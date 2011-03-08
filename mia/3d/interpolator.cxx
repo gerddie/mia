@@ -23,10 +23,6 @@
 
 #include <cmath>
 
-extern "C" {
-#include <cblas.h>
-}
-
 NS_MIA_BEGIN
 
 #if 0
@@ -318,52 +314,16 @@ struct add_3d {
 	}
 };
 
+#ifdef __SSE2__
 template <>
 struct add_3d<T3DDatafield< double >, 4> {
-
-	
 	static double value(const T3DDatafield< double >&  coeff, 
 			    const CBSplineKernel::SCache& xc, 
 			    const CBSplineKernel::SCache& yc,
-			    const CBSplineKernel::SCache& zc) 
-	{
-		const int dx = coeff.get_size().x; 
-		const int dxy = coeff.get_size().x *coeff.get_size().y; 
-
-		double  __attribute__((aligned(16))) cache[64]; 
-		// cache data 
-		int idx = 0; 
-		for (size_t z = 0; z < 4; ++z) {
-			for (size_t y = 0; y < 4; ++y, idx+=4) {
-				const double *p = &coeff[yc.index[y] * dx + zc.index[z] * dxy];
-				cache[idx  ]=  p[xc.index[0]];
-				cache[idx+1]=  p[xc.index[1]];
-				cache[idx+2]=  p[xc.index[2]];
-				cache[idx+3]=  p[xc.index[3]];
-
-			}
-		}
-		double __attribute__((aligned(16))) target1[16]; 
-		memset(target1, 0, 16 * sizeof(double)); 
-		// apply splines 
-		cblas_daxpy(16, zc.weights[0], &cache[ 0], 1, target1, 1);
-		cblas_daxpy(16, zc.weights[1], &cache[16], 1, target1, 1);
-		cblas_daxpy(16, zc.weights[2], &cache[32], 1, target1, 1);
-		cblas_daxpy(16, zc.weights[3], &cache[48], 1, target1, 1);
-		
-		double __attribute__((aligned(16))) target2[4];
-		memset(target2, 0, 4 * sizeof(double)); 
-		cblas_daxpy(4, yc.weights[0], &target1[ 0], 1, target2, 1);
-		cblas_daxpy(4, yc.weights[1], &target1[ 4], 1, target2, 1);
-		cblas_daxpy(4, yc.weights[2], &target1[ 8], 1, target2, 1);
-		cblas_daxpy(4, yc.weights[3], &target1[12], 1, target2, 1);
-		
-		return target2[0] * xc.weights[0] + target2[1] * xc.weights[1] + 
-			target2[2] * xc.weights[2] + target2[3] * xc.weights[3]; 
-
-	}
+			    const CBSplineKernel::SCache& zc); 
+	
 };
-
+#endif
 
 template <typename T>
 T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x) const
