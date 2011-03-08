@@ -165,6 +165,8 @@ private:
 	mutable std::vector<int> _M_y_index; 
 	mutable std::vector<double> _M_x_weight; 
 	mutable std::vector<double> _M_y_weight; 
+	mutable CBSplineKernel::SCache _M_x_cache; 
+	mutable CBSplineKernel::SCache _M_y_cache; 
 
 };
 

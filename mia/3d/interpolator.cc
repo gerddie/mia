@@ -112,9 +112,30 @@ EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(int type)
 }
 
 #ifdef __SSE2__
+typedef double v2df __attribute__ ((vector_size (16)));
+inline void my_daxpy_16_zero(double weight, double *in, double *out)
+{
+	v2df w=_mm_set1_pd(weight); 
+	
+	for (int i = 0; i < 2; ++i, in += 8, out += 8) {
+		
+		v2df x1 = _mm_load_pd(&in[0]); 
+		v2df x2 = _mm_load_pd(&in[2]); 
+		v2df x3 = _mm_load_pd(&in[4]); 
+		v2df x4 = _mm_load_pd(&in[6]); 
+		x1 *= w; 
+		x2 *= w; 
+		x3 *= w; 
+		x4 *= w; 
+		_mm_store_pd(&out[0], x1); 
+		_mm_store_pd(&out[2], x2); 
+		_mm_store_pd(&out[4], x3); 
+		_mm_store_pd(&out[6], x4); 
+	}
+}
+
 inline void my_daxpy_16(double weight, double *in, double *out)
 {
-	typedef double v2df __attribute__ ((vector_size (16)));
 	v2df w=_mm_set1_pd(weight); 
 	
 	for (int i = 0; i < 2; ++i, in += 8, out += 8) {
@@ -142,9 +163,23 @@ inline void my_daxpy_16(double weight, double *in, double *out)
 	}
 }
 
+inline void my_daxpy_4_zero(double weight, double *in, double *out)
+{
+
+	v2df w=_mm_set1_pd(weight); 
+	
+	v2df x1 = _mm_load_pd(&in[0]); 
+	v2df x2 = _mm_load_pd(&in[2]); 
+	
+	x1 *= w; 
+	x2 *= w; 
+	_mm_store_pd(&out[0], x1); 
+	_mm_store_pd(&out[2], x2); 
+}
+
 inline void my_daxpy_4(double weight, double *in, double *out)
 {
-	typedef double v2df __attribute__ ((vector_size (16)));
+
 	v2df w=_mm_set1_pd(weight); 
 	
 	v2df x1 = _mm_load_pd(&in[0]); 
@@ -174,31 +209,31 @@ double add_3d<T3DDatafield< double >, 4>::value(const T3DDatafield< double >&  c
 	for (size_t z = 0; z < 4; ++z) {
 		for (size_t y = 0; y < 4; ++y, idx+=4) {
 			const double *p = &coeff[yc.index[y] * dx + zc.index[z] * dxy];
-			cache[idx  ]=  p[xc.index[0]];
-			cache[idx+1]=  p[xc.index[1]];
-			cache[idx+2]=  p[xc.index[2]];
-			cache[idx+3]=  p[xc.index[3]];
+
+			cache[idx  ] = p[xc.index[0]]; 
+			cache[idx+1] = p[xc.index[1]]; 
+			cache[idx+2] = p[xc.index[2]]; 
+			cache[idx+3] = p[xc.index[3]]; 
 			
 		}
 	}
 	double __attribute__((aligned(16))) target1[16]; 
 	memset(target1, 0, 16 * sizeof(double)); 
 	// apply splines 
-	my_daxpy_16(zc.weights[0], &cache[ 0], target1);
+	my_daxpy_16_zero(zc.weights[0], &cache[ 0], target1);
 	my_daxpy_16(zc.weights[1], &cache[16], target1);
 	my_daxpy_16(zc.weights[2], &cache[32], target1);
 	my_daxpy_16(zc.weights[3], &cache[48], target1);
-	
+
 	double __attribute__((aligned(16))) target2[4];
-	memset(target2, 0, 4 * sizeof(double)); 
-	my_daxpy_4(yc.weights[0], &target1[ 0], target2);
+
+	my_daxpy_4_zero(yc.weights[0], &target1[ 0], target2);
 	my_daxpy_4(yc.weights[1], &target1[ 4], target2);
 	my_daxpy_4(yc.weights[2], &target1[ 8], target2);
 	my_daxpy_4(yc.weights[3], &target1[12], target2);
 	
 	return target2[0] * xc.weights[0] + target2[1] * xc.weights[1] + 
 		target2[2] * xc.weights[2] + target2[3] * xc.weights[3]; 
-	
 }
 
 #endif

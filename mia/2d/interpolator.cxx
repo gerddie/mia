@@ -177,7 +177,9 @@ T2DConvoluteInterpolator<T>::T2DConvoluteInterpolator(const T2DDatafield<T>& ima
 	_M_x_index(kernel->size()),
 	_M_y_index(kernel->size()),
 	_M_x_weight(kernel->size()),
-	_M_y_weight(kernel->size())
+	_M_y_weight(kernel->size()), 
+	_M_x_cache(kernel->size(), image.get_size().x, _M_size2.x), 
+	_M_y_cache(kernel->size(), image.get_size().y, _M_size2.y)
 {
 	min_max<typename T2DDatafield<T>::const_iterator >::get(image.begin(), image.end(), _M_min, _M_max);
 	
@@ -252,132 +254,6 @@ struct add_2d {
 	}
 };
 
-#if 0 // defined(__SSE2__) 
-
-#ifdef __GNUC__
-#define _mm_loadu_pd    __builtin_ia32_loadupd
-#define _mm_storeu_pd   __builtin_ia32_storeupd
-#define _mm_add_pd      __builtin_ia32_addpd
-#define _mm_mul_pd      __builtin_ia32_mulpd
-#define _mm_unpacklo_pd __builtin_ia32_unpcklpd
-#define _mm_unpackhi_pd __builtin_ia32_unpckhpd
-
-#endif
-
-template <>
-struct add_2d<T2DDatafield<double>,4> {
-	static double apply(const T2DDatafield<double>&  coeff, 
-			    const std::vector<double>& xweight, 
-			    const std::vector<double>& yweight,
-			    const std::vector<int>& xindex, 
-			    const std::vector<int>& yindex) 
-	{
-		typedef double v2df __attribute__ ((vector_size (16)));
-
-		double wx[4] __attribute__((aligned(16))); 
-		double wy[4] __attribute__((aligned(16))); 
-		copy(xweight.begin(), xweight.end(), wx); 
-		copy(yweight.begin(), yweight.end(), wy); 
-		
-		const double *pp0 = &coeff(0, yindex[0]);
-		const double *pp1 = &coeff(0, yindex[1]);
-		const double *pp2 = &coeff(0, yindex[2]);
-		const double *pp3 = &coeff(0, yindex[3]);
-		
-		const double p0[4] __attribute__((aligned(16)))
-			= { pp0[xindex[0]], pp0[xindex[1]], pp0[xindex[2]], pp0[xindex[3]]}; 
-		const double p1[4] __attribute__((aligned(16)))
-			=  {pp1[xindex[0]], pp1[xindex[1]], pp1[xindex[2]], pp1[xindex[3]]}; 
-		const double p2[4] __attribute__((aligned(16))) 
-			=  {pp2[xindex[0]], pp2[xindex[1]], pp2[xindex[2]], pp2[xindex[3]]}; 
-		const double p3[4] __attribute__((aligned(16)))  
-			 = {pp3[xindex[0]], pp3[xindex[1]], pp3[xindex[2]], pp3[xindex[3]]}; 
-		
-
-		const register v2df rwx01 = _mm_loadu_pd(&wx[0]); 
-		const register v2df rwx23 = _mm_loadu_pd(&wx[2]); 
-		
-		const register v2df rwy01 = _mm_loadu_pd(&wy[0]); 
-		const register v2df rwy23 = _mm_loadu_pd(&wy[2]); 
-		
-		register v2df rp001 =_mm_mul_pd(rwx01, _mm_loadu_pd(&p0[0])); 
-		register v2df rp023 =_mm_mul_pd(rwx23, _mm_loadu_pd(&p0[2])); 
-		register v2df rp101 =_mm_mul_pd(rwx01, _mm_loadu_pd(&p1[0])); 
-		register v2df rp123 =_mm_mul_pd(rwx23, _mm_loadu_pd(&p1[2])); 
-		register v2df rp201 =_mm_mul_pd(rwx01, _mm_loadu_pd(&p2[0])); 
-		register v2df rp223 =_mm_mul_pd(rwx23, _mm_loadu_pd(&p2[2])); 
-		register v2df rp301 =_mm_mul_pd(rwx01, _mm_loadu_pd(&p3[0])); 
-		register v2df rp323 =_mm_mul_pd(rwx23, _mm_loadu_pd(&p3[2])); 
-		
-		register v2df rs01_0 = _mm_unpacklo_pd(rp001, rp101); 
-		register v2df rs23_0 = _mm_unpacklo_pd(rp201, rp301); 
-		register v2df rs01_1 = _mm_unpackhi_pd(rp001, rp101); 
-		register v2df rs23_1 = _mm_unpackhi_pd(rp201, rp301); 
-
-		register v2df rs01_2 = _mm_unpacklo_pd(rp023, rp123); 
-		register v2df rs23_2 = _mm_unpacklo_pd(rp223, rp323); 
-		register v2df rs01_3 = _mm_unpackhi_pd(rp023, rp123); 
-		register v2df rs23_3 = _mm_unpackhi_pd(rp223, rp323); 
-
-		
-		register v2df s01_01 = _mm_add_pd(rs01_0, rs01_1); 
-		register v2df s01_23 = _mm_add_pd(rs01_2, rs01_3); 
-
-		register v2df s23_01 = _mm_add_pd(rs23_0, rs23_1); 
-		register v2df s23_23 = _mm_add_pd(rs23_2, rs23_3); 
-
-		register v2df s01_0123 =  _mm_add_pd(s01_01, s01_23); 
-		register v2df s23_0123 =  _mm_add_pd(s23_01, s23_23); 
-		
-		s01_0123 = _mm_mul_pd(rwy01, s01_0123); 
-		s23_0123 = _mm_mul_pd(rwy23, s23_0123); 
-		
-		register v2df sum2 = _mm_add_pd(s01_0123, s23_0123); 
-		
-		double s[2] __attribute__((aligned(16))); 
-		_mm_storeu_pd(s, sum2); 
-		return s[0] + s[1]; 
-	}
-};
-
-#else 
-
-// manually unroll for case 4 
-template <class C>
-struct add_2d<C,4> {
-	typedef typename C::value_type U; 
-	
-	static typename C::value_type apply(const C&  coeff, const std::vector<double>& xweight, 
-					    const std::vector<double>& yweight,
-					    const std::vector<int>& xindex, 
-					    const std::vector<int>& yindex) 
-	{
-		U result = U();
-		
-		U rx0 = U();
-		U rx1 = U();
-		U rx2 = U();
-		U rx3 = U();
-		const U *p0 = &coeff(0, yindex[0]);
-		const U *p1 = &coeff(0, yindex[1]);
-		const U *p2 = &coeff(0, yindex[2]);
-		const U *p3 = &coeff(0, yindex[3]);
-		for (size_t x = 0; x < 4; ++x) {
-			rx0 += xweight[x] * p0[xindex[x]];
-			rx1 += xweight[x] * p1[xindex[x]];
-			rx2 += xweight[x] * p2[xindex[x]];
-			rx3 += xweight[x] * p3[xindex[x]];
-		}
-		
-		result = yweight[0] * rx0 
-			+ yweight[1] * rx1 
-			+ yweight[2] * rx2 
-			+ yweight[3] * rx3; 
-		return result; 
-	}
-};
-
-#endif // __SSE2__
 
 template <typename T>
 typename T2DConvoluteInterpolator<T>::TCoeff2D::value_type T2DConvoluteInterpolator<T>::evaluate() const
@@ -457,6 +333,38 @@ T T2DConvoluteInterpolator<T>::evaluate(const std::vector<double>& xweight,
 	return round_to<U, T>::value(result); 
 }
 
+template <class C, int size>
+struct add_2d_new {
+	typedef typename C::value_type U; 
+	
+	static typename C::value_type value(const C&  coeff, const CBSplineKernel::SCache& xc, 
+					    const CBSplineKernel::SCache& yc) 
+	{
+		U result = U();
+		for (size_t y = 0; y < size; ++y) {
+			U rx = U();
+			const U *p = &coeff(0, yc.index[y]);
+			
+			for (size_t x = 0; x < size; ++x) {
+				rx += xc.weights[x] * p[xc.index[x]];
+			}
+			result += yc.weights[y] * rx; 
+		}
+		return result; 
+	}
+};
+
+#ifdef __SSE2__
+
+template <>
+struct add_2d_new<T2DDatafield< double >, 4> {
+	
+
+	static double value(const T2DDatafield< double >&  coeff, 
+			    const CBSplineKernel::SCache& xc, 
+			    const CBSplineKernel::SCache& yc); 
+}; 
+#endif
 
 
 template <typename T>
@@ -464,16 +372,33 @@ T  T2DConvoluteInterpolator<T>::operator () (const C2DFVector& x) const
 {
 	typedef typename TCoeff2D::value_type U; 
 	
-
-	(*_M_kernel)(x.x, _M_x_weight, _M_x_index);
-	(*_M_kernel)(x.y, _M_y_weight, _M_y_index);
-
+	(*_M_kernel)(x.x, _M_x_cache);
+	(*_M_kernel)(x.y, _M_y_cache);
 	
-	mirror_boundary_conditions(_M_x_index, _M_coeff.get_size().x, _M_size2.x);
-	mirror_boundary_conditions(_M_y_index, _M_coeff.get_size().y, _M_size2.y);
+	U result = U();
 	
-	U result = evaluate();
+	switch (_M_kernel->size()) {
+	case 2: result = add_2d_new<TCoeff2D,2>::value(_M_coeff, _M_x_cache, _M_y_cache); break; 
+	case 3: result = add_2d_new<TCoeff2D,3>::value(_M_coeff, _M_x_cache, _M_y_cache); break; 
+	case 4: result = add_2d_new<TCoeff2D,4>::value(_M_coeff, _M_x_cache, _M_y_cache); break; 
+	case 5: result = add_2d_new<TCoeff2D,5>::value(_M_coeff, _M_x_cache, _M_y_cache); break; 
+	case 6: result = add_2d_new<TCoeff2D,6>::value(_M_coeff, _M_x_cache, _M_y_cache); break; 
+	default: {
+		/* perform interpolation */
+		for (size_t y = 0; y < _M_kernel->size(); ++y) {
+			U rx = U();
+			const typename  TCoeff2D::value_type *p = &_M_coeff(0, _M_y_cache.index[y]);
+			
+			for (size_t x = 0; x < _M_kernel->size(); ++x) {
+				rx += _M_x_cache.weights[x] * p[_M_x_cache.index[x]];
+			}
+			result += _M_y_cache.weights[y] * rx; 
+		}
+	}
+	} // end switch 
+	
 	bounded<U, T>::apply(result, _M_min, _M_max);
+	
 	return round_to<U, T>::value(result); 
 }
 

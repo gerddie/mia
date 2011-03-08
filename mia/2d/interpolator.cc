@@ -112,6 +112,61 @@ C2DInterpolatorFactory *create_2dinterpolation_factory(int type)
 }
 
 
+#ifdef __SSE2__
+double add_2d_new<T2DDatafield< double >, 4>::value(const T2DDatafield< double >&  coeff, 
+							   const CBSplineKernel::SCache& xc, 
+							   const CBSplineKernel::SCache& yc) 
+{
+	typedef double v2df __attribute__ ((vector_size (16)));
+	double __attribute__((aligned(16))) cache[16]; 
+	
+	const int dx = coeff.get_size().x; 
+	int idx = 0; 
+	for (size_t y = 0; y < 4; ++y, idx+=4) {
+		const double *p = &coeff[yc.index[y] * dx];
+		cache[idx  ] = p[xc.index[0]]; 
+		cache[idx+1] = p[xc.index[1]]; 
+		cache[idx+2] = p[xc.index[2]]; 
+		cache[idx+3] = p[xc.index[3]]; 
+	}
+	
+	v2df w0  = _mm_set1_pd(yc.weights[0]);
+	v2df w1  = _mm_set1_pd(yc.weights[1]);
+	
+	v2df x00 = _mm_load_pd(&cache[0]); 
+	v2df x01 = _mm_load_pd(&cache[2]);
+	v2df x10 = _mm_load_pd(&cache[4]); 
+	v2df x11 = _mm_load_pd(&cache[6]);
+	
+	v2df y1 = x00 * w0 + x10 * w1; 
+	v2df y2 = x01 * w0 + x11 * w1; 
+
+	v2df w2  = _mm_set1_pd(yc.weights[2]);
+	v2df w3  = _mm_set1_pd(yc.weights[3]);
+	v2df x20 = _mm_load_pd(&cache[8]); 
+	v2df x21 = _mm_load_pd(&cache[10]);
+	v2df x30 = _mm_load_pd(&cache[12]); 
+	v2df x31 = _mm_load_pd(&cache[14]);
+
+	y1 += x20 * w2 + x30 * w3; 
+	y2 += x21 * w2 + x31 * w3; 
+
+	
+	w0 = _mm_loadu_pd(&xc.weights[0]); 
+	w1 = _mm_loadu_pd(&xc.weights[2]); 
+	
+	y1 *= w0; 
+	y2 *= w1; 
+	
+	y1 += y2; 
+	
+	double __attribute__((aligned(16))) result[2]; 
+	_mm_storeu_pd(result, y1); 
+	
+	return result[0] + result[1]; 
+}
+#endif
+
 #define INSTANCIATE_INTERPOLATORS(TYPE)			\
 	template class T2DInterpolator<TYPE>;		\
 	template class T2DBilinearInterpolator<TYPE>;	\
