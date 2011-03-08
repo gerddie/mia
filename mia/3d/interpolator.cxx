@@ -193,7 +193,10 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 	_M_z_index(kernel->size()),
 	_M_x_weight(kernel->size()),
 	_M_y_weight(kernel->size()),
-	_M_z_weight(kernel->size())
+	_M_z_weight(kernel->size()), 
+	_M_x_cache(kernel->size(), _M_coeff.get_size().x, _M_size2.x), 
+	_M_y_cache(kernel->size(), _M_coeff.get_size().y, _M_size2.y), 
+	_M_z_cache(kernel->size(), _M_coeff.get_size().z, _M_size2.z)
 {
 	min_max_3d<T>::get(image, &_M_min, &_M_max);
 	
@@ -255,7 +258,7 @@ struct bounded<T3DVector<T>, T3DVector<U> > {
 };
 
 template <class C, int size>
-struct add_3d {
+struct add_3d_old {
 	typedef typename C::value_type U; 
 	
 	static typename C::value_type value(const C&  coeff, const std::vector<double>& xweight, 
@@ -284,48 +287,66 @@ struct add_3d {
 	}
 };
 
+template <class C, int size>
+struct add_3d {
+	typedef typename C::value_type U; 
+	
+	static typename C::value_type value(const C&  coeff, const CBSplineKernel::SCache& xc, 
+					    const CBSplineKernel::SCache& yc,
+					    const CBSplineKernel::SCache& zc) 
+	{
+		U result = U();
+		
+		for (size_t z = 0; z < size; ++z) {
+			U ry = U();
+			for (size_t y = 0; y < size; ++y) {
+				U rx = U();
+				const U *p = &coeff(0, yc.index[y], zc.index[z]);
+				
+				for (size_t x = 0; x < size; ++x) {
+					rx += xc.weights[x] * p[xc.index[x]];
+				}
+				ry += yc.weights[y] * rx; 
+			}
+			result += zc.weights[z] * ry; 
+		}
+		return result; 
+	}
+};
+
 
 template <typename T>
 T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x) const
 {
 	typedef typename TCoeff3D::value_type U; 
 	
-	(*_M_kernel)(x.x, _M_x_weight, _M_x_index);
-	(*_M_kernel)(x.y, _M_y_weight, _M_y_index);
-	(*_M_kernel)(x.z, _M_z_weight, _M_z_index);	
+	(*_M_kernel)(x.x, _M_x_cache);
+	(*_M_kernel)(x.y, _M_y_cache);
+	(*_M_kernel)(x.z, _M_z_cache);	
 	
-	mirror_boundary_conditions(_M_x_index, _M_coeff.get_size().x, _M_size2.x);
-	mirror_boundary_conditions(_M_y_index, _M_coeff.get_size().y, _M_size2.y);
-	mirror_boundary_conditions(_M_z_index, _M_coeff.get_size().z, _M_size2.z);
-
-
 	U result = U();
 	
 	switch (_M_kernel->size()) {
-	case 2: result = add_3d<TCoeff3D,2>::value(_M_coeff, _M_x_weight, _M_y_weight, _M_z_weight, 
-					    _M_x_index, _M_y_index, _M_z_index); break; 
-	case 3: result = add_3d<TCoeff3D,3>::value(_M_coeff, _M_x_weight, _M_y_weight, _M_z_weight, 
-					    _M_x_index, _M_y_index, _M_z_index); break; 
-	case 4: result = add_3d<TCoeff3D,4>::value(_M_coeff, _M_x_weight, _M_y_weight, _M_z_weight, 
-					    _M_x_index, _M_y_index, _M_z_index); break; 
-	case 5: result = add_3d<TCoeff3D,5>::value(_M_coeff, _M_x_weight, _M_y_weight, _M_z_weight, 
-					    _M_x_index, _M_y_index, _M_z_index); break; 
-	case 6: result = add_3d<TCoeff3D,6>::value(_M_coeff, _M_x_weight, _M_y_weight, _M_z_weight, 
-					    _M_x_index, _M_y_index, _M_z_index); break; 
+	case 2: result = add_3d<TCoeff3D,2>::value(_M_coeff, _M_x_cache, _M_y_cache, _M_z_cache); break; 
+	case 3: result = add_3d<TCoeff3D,3>::value(_M_coeff, _M_x_cache, _M_y_cache, _M_z_cache); break; 
+	case 4: result = add_3d<TCoeff3D,4>::value(_M_coeff, _M_x_cache, _M_y_cache, _M_z_cache); break; 
+	case 5: result = add_3d<TCoeff3D,5>::value(_M_coeff, _M_x_cache, _M_y_cache, _M_z_cache); break; 
+	case 6: result = add_3d<TCoeff3D,6>::value(_M_coeff, _M_x_cache, _M_y_cache, _M_z_cache); break; 
 	default: {
 		/* perform interpolation */
 		for (size_t z = 0; z < _M_kernel->size(); ++z) {
 			U ry = U();
 			for (size_t y = 0; y < _M_kernel->size(); ++y) {
 				U rx = U();
-				const typename  TCoeff3D::value_type *p = &_M_coeff(0, _M_y_index[y], _M_z_index[z]);
+				const typename  TCoeff3D::value_type *p = &_M_coeff(0, _M_y_cache.index[y], 
+										    _M_z_cache.index[z]);
 				
 				for (size_t x = 0; x < _M_kernel->size(); ++x) {
-					rx += _M_x_weight[x] * p[_M_x_index[x]];
+					rx += _M_x_cache.weights[x] * p[_M_x_cache.index[x]];
 				}
-				ry += _M_y_weight[y] * rx; 
+				ry += _M_y_cache.weights[y] * rx; 
 			}
-			result += _M_z_weight[z] * ry; 
+			result += _M_z_cache.weights[z] * ry; 
 		}
 	}
 	} // end switch 

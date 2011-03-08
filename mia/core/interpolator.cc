@@ -28,6 +28,7 @@
 #include <cmath>
 #include <cassert>
 #include <iomanip>
+#include <limits>
 #include <mia/core/unaryfunction.hh>
 #include <mia/core/interpolator.hh>
 #include <mia/core/errormacro.hh>
@@ -58,6 +59,16 @@ struct bspline<0,0> {
 	}
 };
 
+CBSplineKernel::SCache::SCache(size_t s, int cs1, int cs2):
+	x(numeric_limits<double>::quiet_NaN()), 
+	start_idx(-1000), 
+	weights(s), 
+	index(s), 
+	csize1(cs1), 
+	csize2(cs2)
+{
+}
+
 CBSplineKernel::CBSplineKernel(size_t degree, double shift, EInterpolation type):
 	_M_half_degree(degree >> 1),
 	_M_shift(shift),
@@ -80,6 +91,20 @@ void CBSplineKernel::operator () (double x, std::vector<double>& weight, std::ve
 	assert(index.size() == _M_support_size);
 	int ix = get_indices(x, index);
 	get_weights(x - ix, weight);
+}
+
+void CBSplineKernel::operator () (double x, SCache& cache) const
+{
+	if (x == cache.x)
+		return; 
+	int start_idx  = get_start_idx_and_value_weights(x, cache.weights); 
+	cache.x = x; 
+	if (start_idx == cache.start_idx) 
+		return; 
+	cache.start_idx = start_idx; 
+
+	fill_index(start_idx, cache.index); 
+	mirror_boundary_conditions(cache.index, cache.csize1, cache.csize2); 
 }
 
 

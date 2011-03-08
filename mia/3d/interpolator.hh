@@ -174,6 +174,10 @@ private:
 	mutable std::vector<double> _M_x_weight;
 	mutable std::vector<double> _M_y_weight;
 	mutable std::vector<double> _M_z_weight;
+
+	mutable CBSplineKernel::SCache _M_x_cache; 
+	mutable CBSplineKernel::SCache _M_y_cache; 
+	mutable CBSplineKernel::SCache _M_z_cache; 
 };
 
 

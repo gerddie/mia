@@ -55,6 +55,16 @@ public:
 			     integral_unknown }; 
 			     
 
+	struct SCache {
+		SCache(size_t s, int cs1, int cs2); 
+		double x; 
+		int start_idx; 
+		std::vector<double> weights; 
+		std::vector<int> index; 
+		int csize1;
+		int csize2;
+	}; 
+
 	/**
 	   \param degree of the spline
 	   \param shift location shift of the input coordinate to obtain the proper support
@@ -73,6 +83,7 @@ public:
 	    \retval index indices corresponding to the weights
 	 */
 	void operator () (double x, std::vector<double>& weight, std::vector<int>& index)const;
+	void operator () (double x, SCache& cache)const;
 	void derivative(double x, std::vector<double>& weight, std::vector<int>& index)const;
 	void derivative(double x, std::vector<double>& weight, std::vector<int>& index, int degree)const;
 	int get_indices(double x, std::vector<int>& index) const;

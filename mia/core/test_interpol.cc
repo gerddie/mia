@@ -667,3 +667,28 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_sum_integrate_11 )
 	BOOST_CHECK_CLOSE(1.0 + sum, 1.0, 0.1); 
 }
 
+BOOST_AUTO_TEST_CASE(  test_bspline4_equivalence )
+{
+	CBSplineKernel3 kernel;
+	
+	CBSplineKernel::SCache cache(kernel.size(), 10, 12); 
+	std::vector<double> weights(kernel.size()); 
+	std::vector<int> indices(kernel.size()); 
+
+	double x1 = 1.4; 
+	
+	kernel(x1, cache); 
+	kernel(x1, weights, indices); 
+
+	BOOST_CHECK_EQUAL(cache.weights[0], weights[0]); 
+	BOOST_CHECK_EQUAL(cache.weights[1], weights[1]); 
+	BOOST_CHECK_EQUAL(cache.weights[2], weights[2]); 
+	BOOST_CHECK_EQUAL(cache.weights[3], weights[3]); 
+
+	BOOST_CHECK_EQUAL(cache.index[0], indices[0]); 
+	BOOST_CHECK_EQUAL(cache.index[1], indices[1]); 
+	BOOST_CHECK_EQUAL(cache.index[2], indices[2]); 
+	BOOST_CHECK_EQUAL(cache.index[3], indices[3]); 
+
+	
+}
