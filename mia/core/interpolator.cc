@@ -65,7 +65,8 @@ CBSplineKernel::SCache::SCache(size_t s, int cs1, int cs2):
 	weights(s), 
 	index(s), 
 	csize1(cs1), 
-	csize2(cs2)
+	csize2(cs2), 
+	is_mirrored(true)
 {
 }
 
@@ -104,7 +105,7 @@ void CBSplineKernel::operator () (double x, SCache& cache) const
 	cache.start_idx = start_idx; 
 
 	fill_index(start_idx, cache.index); 
-	mirror_boundary_conditions(cache.index, cache.csize1, cache.csize2); 
+	cache.is_mirrored = mirror_boundary_conditions(cache.index, cache.csize1, cache.csize2); 
 }
 
 
@@ -335,12 +336,7 @@ void CBSplineKernel3::get_weights(double x, std::vector<double>&  weight)const
 {
 	const double xm1 = 1 - x; 
 #ifdef __SSE2__
-	v2df X; 
-	
-	// this line warns about the use of un-initialized values
-	// but initializing the value would counter the idea of this optimization 
-	X=_mm_loadl_pd(X, &xm1); 
-	X=_mm_loadh_pd(X, &x); 
+	v2df X =_mm_set_pd(x, xm1); 
 
 	const v2df OB6 =  __builtin_ia32_loadupd(oneby6);
 	const v2df X2  = X * X; 
