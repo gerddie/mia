@@ -43,3 +43,5 @@ libdoc
 bspline4.oct
 testbspline4.oct
 testoct.oct
+*.pyc
+
