@@ -68,14 +68,14 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost,  ImagefullcostFixture )
 	CDoubleVector gradient(t.degrees_of_freedom()); 
 	double cost_value = cost.evaluate(t, gradient);
 
-	BOOST_CHECK_CLOSE(cost_value, 0.5 * 55.0, 0.1);
+	BOOST_CHECK_CLOSE(cost_value, 0.5 * 55.0/16.0, 0.1);
 
 	double value = cost.cost_value(t);
 
-	BOOST_CHECK_CLOSE(value, 0.5 * 55.0, 0.1);
+	BOOST_CHECK_CLOSE(value, 0.5 * 55.0/16.0, 0.1);
 	
-	BOOST_CHECK_CLOSE(gradient[10], 0.5f, 0.1);
-	BOOST_CHECK_CLOSE(gradient[11], 3.0f, 0.1);
+	BOOST_CHECK_CLOSE(gradient[10], 0.5f/16.0, 0.1);
+	BOOST_CHECK_CLOSE(gradient[11], 3.0f/16.0, 0.1);
 	
 }
 
@@ -109,7 +109,7 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_no_translate,  ImagefullcostFixture 
 	cost.set_size(size);
 	double value = cost.cost_value();
 
-	BOOST_CHECK_CLOSE(value, 0.5 * 55.0, 0.1);
+	BOOST_CHECK_CLOSE(value, 0.5 * 55.0/16.0, 0.1);
 
 }
 
@@ -147,14 +147,14 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 	CDoubleVector gradient(t.degrees_of_freedom()); 
 	double cost_value = cost.evaluate(t, gradient);
 
-	BOOST_CHECK_CLOSE(cost_value, 0.5 * 255 * 255.0 * 4.0, 0.1);
+	BOOST_CHECK_CLOSE(cost_value, 0.5 * 255 * 255.0 * 4.0/16.0, 0.1);
 
 	double value = cost.cost_value(t);
 
-	BOOST_CHECK_CLOSE(value, 0.5 * 255 * 255.0 * 4.0, 0.1);
+	BOOST_CHECK_CLOSE(value, 0.5 * 255 * 255.0 * 4.0/16.0, 0.1);
 	
-	BOOST_CHECK_CLOSE(gradient[10], 255 * 255 * 0.5f, 0.1);
-	BOOST_CHECK_CLOSE(gradient[11], 255 * 255 * 0.5f, 0.1);
+	BOOST_CHECK_CLOSE(gradient[10], 255 * 255 * 0.5f/16.0, 0.1);
+	BOOST_CHECK_CLOSE(gradient[11], 255 * 255 * 0.5f/16.0, 0.1);
 	
 }
 

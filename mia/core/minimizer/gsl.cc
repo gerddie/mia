@@ -139,11 +139,11 @@ int CGSLFDFMinimizer::do_run(CDoubleVector& x)
 	cvmsg() << "\n"; 
 	if (status) {
 		if (iter == m_maxiter)  
-			cvmsg() << "Maximum number of iterations reached\n"; 
+			cvinfo() << "Maximum number of iterations reached\n"; 
 		else 
-			cvwarn() << "Iteration stopped because '" << gsl_strerror(status) << "\n";
+			cvmsg() << "Iteration stopped because '" << gsl_strerror(status) << "'\n";
 	}else{
-		cvmsg() << "Convergence reached\n"; 
+		cvinfo() << "Convergence reached\n"; 
 	}
 
 	return status == GSL_SUCCESS ? CMinimizer::success : CMinimizer::failture;

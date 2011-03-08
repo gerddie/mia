@@ -59,10 +59,10 @@ bool C3DSSDCostPlugin::do_test() const
 
 	C3DFVectorfield force(C3DBounds(3,3,3));
 
-	cost.evaluate_force(*src, *ref, 0.5, force);
+	cost.evaluate_force(*src, *ref, 0.5 / 27.0, force);
 
-	cvdebug() << force(1,1,1) << " vs. " << C3DFVector(-6, -2, -4) << "\n";
-	success &= (force(1,1,1) == C3DFVector(-6, -2, -4) );
+	cvdebug() << force(1,1,1) << " vs. " << C3DFVector(-6 / 27.0, -2 / 27.0, -4 / 27.0) << "\n";
+	success &= (force(1,1,1) == C3DFVector(-6 / 27.0, -2 / 27.0, -4 / 27.0) );
 	return success;
  }
 

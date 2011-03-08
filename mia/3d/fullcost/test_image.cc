@@ -165,15 +165,15 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 	double cost_value = cost.evaluate(t, gradient);
 	BOOST_CHECK_EQUAL(gradient.size(), 3u * 64u); 
 
-	BOOST_CHECK_CLOSE(cost_value, 0.5 * 255 * 255.0 * 5.0, 0.1);
+	BOOST_CHECK_CLOSE(cost_value, 0.5 * 255 * 255.0 * 5.0 / 64.0, 0.1);
 
 	double value = cost.cost_value(t);
 
-	BOOST_CHECK_CLOSE(value, 0.5 * 255 * 255.0 * 5.0, 0.1);
+	BOOST_CHECK_CLOSE(value, 0.5 * 255 * 255.0 * 5.0 / 64.0, 0.1);
 	
-	BOOST_CHECK_CLOSE(gradient[111], 255 * 255 * 0.5f, 0.1);
-	BOOST_CHECK_CLOSE(gradient[112], 255 * 255 * 0.5f, 0.1);
-	BOOST_CHECK_CLOSE(gradient[113], 255 * 255 * 0.5f, 0.1);
+	BOOST_CHECK_CLOSE(gradient[111], 255 * 255 * 0.5f / 64.0, 0.1);
+	BOOST_CHECK_CLOSE(gradient[112], 255 * 255 * 0.5f / 64.0, 0.1);
+	BOOST_CHECK_CLOSE(gradient[113], 255 * 255 * 0.5f / 64.0, 0.1);
 	
 }
 

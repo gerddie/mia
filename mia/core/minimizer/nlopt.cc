@@ -222,7 +222,7 @@ int CNLOptFDFMinimizer::do_run(CDoubleVector& x)
 {
 	double minf = 0.0; 
 	
-	cvmsg() << "Starting optimization with '" << nlopt_algorithm_name(m_options.algo) << "'\n"; 
+	cvinfo() << "Starting optimization with '" << nlopt_algorithm_name(m_options.algo) << "'\n"; 
 	auto retval = nlopt_optimize(m_opt, &x[0], &minf); 
 	cvmsg() << "\n"; 
 	if (retval < 0) {
@@ -241,17 +241,17 @@ int CNLOptFDFMinimizer::do_run(CDoubleVector& x)
 		}
 	}else {
 		switch (retval) {
-		case NLOPT_SUCCESS: cvmsg() << "SUCCESS\n"; 
+		case NLOPT_SUCCESS: cvinfo() << "SUCCESS\n"; 
 			break; 
-		case NLOPT_STOPVAL_REACHED: cvmsg() << "SUCCESS: objective value below stopvalue.\n"; 
+		case NLOPT_STOPVAL_REACHED: cvinfo() << "SUCCESS: objective value below stopvalue.\n"; 
 			break; 
-		case NLOPT_FTOL_REACHED:cvmsg() << "SUCCESS: objective value changes below given tolerance.\n"; 
+		case NLOPT_FTOL_REACHED:cvinfo() << "SUCCESS: objective value changes below given tolerance.\n"; 
 			break; 
-		case NLOPT_XTOL_REACHED:cvmsg() << "SUCCESS: X changes below given tolerance.\n"; 
+		case NLOPT_XTOL_REACHED:cvinfo() << "SUCCESS: X changes below given tolerance.\n"; 
 			break; 
-		case NLOPT_MAXEVAL_REACHED: cvmsg() << "maximum number of iterations reached.\n"; 
+		case NLOPT_MAXEVAL_REACHED: cvinfo() << "maximum number of iterations reached.\n"; 
 			break; 
-		case NLOPT_MAXTIME_REACHED: cvmsg() << "maximum time exeeded.\n"; 
+		case NLOPT_MAXTIME_REACHED: cvinfo() << "maximum time exeeded.\n"; 
 			break; 
 		default: 
 			cvmsg() << "NLOpt SUCCESS: with unknown return value.\n"; 

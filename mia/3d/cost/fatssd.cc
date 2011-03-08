@@ -100,8 +100,9 @@ bool  C3DSSDFatImageCostPlugin::do_test() const
 
 	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3));
 	CFatSSD3DImageCost cost(test_image, ref_image, ipf, 1.0);
+	double scale = size.x * size.y * size.z; 
 
-	if (cost.value() > 8 * 16 * 7 * 1.001 * 0.5 || cost.value() <  8 * 16 * 7 *0.999 * 0.5 ) {
+	if (scale * cost.value() > 8 * 16 * 7 * 1.001 * 0.5 || scale * cost.value() <  8 * 16 * 7 *0.999 * 0.5 ) {
 		cvfail() << "C3DSSDFatImageCostPlugin\n";
 		return false;
 	}
