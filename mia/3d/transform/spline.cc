@@ -52,7 +52,6 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplin
 	_M_z_weights(_M_range.z),
 	_M_z_indices(_M_range.z), 
 	_M_grid_valid(false)
-
 {
 	TRACE_FUNCTION;
 	unsigned int s = _M_kernel->get_active_halfrange() - 1; 
@@ -111,7 +110,6 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplin
 	assert(c_rate.y >= 1.0);
 	assert(c_rate.z >= 1.0);
 	assert(kernel); 
-
 	
 	unsigned int s = _M_kernel->get_active_halfrange() - 1; 
 	_M_shift = C3DBounds(s,s,s); 
