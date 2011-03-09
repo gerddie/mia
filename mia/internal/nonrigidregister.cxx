@@ -197,8 +197,7 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 	int shift = _M_mg_levels;
 
 	do {
-		if (shift)
-			shift--;
+		shift--;
 
 		Size BlockSize; 
                 BlockSize.fill(1 << shift);

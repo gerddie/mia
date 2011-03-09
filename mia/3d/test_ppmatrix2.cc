@@ -270,7 +270,10 @@ BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4_grad, TransformSplineFixture2Mix
 	C3DPPDivcurlMatrix2 divcurl(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 1.0);
 	CDoubleVector gradient(3 * coeffs.size()); 
 	
-	divcurl.evaluate(coeffs, gradient); 
+	const double testdiv = 7.0 * pow(M_PI, 1.5) / sqrt(2.0); 
+	const double testcurl = testdiv / 4.0; 
+
+	BOOST_CHECK_CLOSE(divcurl.evaluate(coeffs, gradient), testdiv + testcurl, 2.0); 
 
 
 	const float delta = 0.001; 

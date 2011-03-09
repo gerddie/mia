@@ -320,17 +320,14 @@ double C3DPPDivcurlMatrix2Impl::multiply(const Field& coefficients) const
 				for (int xi = 0; xi < nx; ++xi, ++ci) {
 					for (int zj = max(0,zi - _M_ksize); zj < min(zi + _M_ksize, nz); ++zj) {
 						int dz = zi - zj + _M_ksize; 
-						for (int yj = max(0,yi - _M_ksize); yj < min(yi + _M_ksize, ny); ++yj) {
-							int dy = yi - yj + _M_ksize;
+						for (int yj = max(0,yi - _M_ksize); yj < min(yi + _M_ksize, ny); ++yj) {							int dy = yi - yj + _M_ksize;
 							int xstart = max(0,xi - _M_ksize); 
 							auto cj = coefficients.begin_at(xstart, yj, zj); 
-							for (int xj = xstart; xj < min(xi + _M_ksize,nx); ++xj, ++cj) {
-								int dx = xi - xj + _M_ksize; 
-								auto p = _M_P(dx, dy, dz); 
-								
-								result_1 += ci->x * cj->x * p.vxx; 
-								result_2 += ci->y * cj->y * p.vyy; 
-								result_3 += ci->z * cj->z * p.vzz; 
+							auto p = _M_P.begin_at(xi - xstart + _M_ksize, dy, dz);
+							for (int xj = xstart; xj < min(xi + _M_ksize,nx); --p, ++xj, ++cj) {
+								result_1 += ci->x * cj->x * p->vxx; 
+								result_2 += ci->y * cj->y * p->vyy; 
+								result_3 += ci->z * cj->z * p->vzz; 
 							}
 						}
 					}
@@ -348,17 +345,19 @@ double C3DPPDivcurlMatrix2Impl::multiply(const Field& coefficients) const
 							const int xstart = max(0,xi - _M_ksize);
 							const int xend = min(xi + _M_ksize,nx); 
 							auto cj = coefficients.begin_at(xstart, yj, zj); 
-							for (int xj = xstart; xj < xend; ++xj, ++cj) {
-								int dx = xi - xj + _M_ksize; 
-								auto p = _M_P(dx, dy, dz);
+							
+							auto p = _M_P.begin_at(xi - xstart + _M_ksize, dy, dz);
+
+							for (int xj = xstart; xj < xend; ++xj, ++cj, --p) {
+
 								
-								result_1 += ci->x * cj->x * p.vxx; 
-								result_2 += ci->y * cj->y * p.vyy; 
-								result_3 += ci->z * cj->z * p.vzz; 
+								result_1 += ci->x * cj->x * p->vxx; 
+								result_2 += ci->y * cj->y * p->vyy; 
+								result_3 += ci->z * cj->z * p->vzz; 
 								
-								result_4 += ci->x * cj->y * p.vxy; 
-								result_5 += ci->x * cj->z * p.vxz; 
-								result_6 += ci->y * cj->z * p.vyz;
+								result_4 += ci->x * cj->y * p->vxy; 
+								result_5 += ci->x * cj->z * p->vxz; 
+								result_6 += ci->y * cj->z * p->vyz;
 							}
 						}
 					}
@@ -389,27 +388,28 @@ double C3DPPDivcurlMatrix2Impl::evaluate(const T3DDatafield<C3DDVector>& coeffic
 	double result_6 = 0.0; 
 
 	auto ci = coefficients.begin(); 	
+	auto gi = gradient.begin(); 
 	int i = 0; 
 	for (int zi = 0; zi < nz; ++zi) {
 		for (int yi = 0; yi < ny; ++yi) {
-			for (int xi = 0; xi < nx; ++xi, ++ci, ++i) {
+			for (int xi = 0; xi < nx; ++xi, ++ci, ++i, gi+=3) {
 				for (int zj = max(0,zi - _M_ksize); zj < min(zi + _M_ksize, nz); ++zj) {
 					const int dz = zi - zj + _M_ksize; 
 					for (int yj = max(0,yi - _M_ksize); yj < min(yi + _M_ksize, ny); ++yj) {
 						const int dy = yi - yj + _M_ksize;
 						const int xstart = max(0,xi - _M_ksize);
-						const int xend = min(xi + _M_ksize,nx); 
+						const int xend = min(xi + _M_ksize,nx);
+						auto p = _M_P.begin_at(xi - xstart + _M_ksize, dy, dz); 
 						auto cj = coefficients.begin_at(xstart, yj, zj); 
-						for (int xj = xstart; xj < xend; ++xj, ++cj) {
-							int dx = xi - xj + _M_ksize; 
-							auto p = _M_P(dx, dy, dz);		
-							const double cjxpvxx = cj->x * p.vxx; 
-							const double cjypvyy = cj->y * p.vyy; 
-							const double cjzpvzz = cj->z * p.vzz; 
+						for (int xj = xstart; xj < xend; ++xj, ++cj, --p) {
 							
-							const double cjypvxy = cj->y * p.vxy; 
-							const double cjxpvxz = cj->x * p.vxz; 
-							const double cjzpvyz = cj->z * p.vyz; 
+							const double cjxpvxx = cj->x * p->vxx; 
+							const double cjypvyy = cj->y * p->vyy; 
+							const double cjzpvzz = cj->z * p->vzz; 
+							
+							const double cjypvxy = cj->y * p->vxy; 
+							const double cjxpvxz = cj->x * p->vxz; 
+							const double cjzpvyz = cj->z * p->vyz; 
 							
 							result_1 += ci->x * cjxpvxx; 
 							result_2 += ci->x * cjypvxy; 
@@ -418,12 +418,9 @@ double C3DPPDivcurlMatrix2Impl::evaluate(const T3DDatafield<C3DDVector>& coeffic
 							result_5 += ci->y * cjzpvyz; 
 							result_6 += ci->z * cjzpvzz; 
 							
-							gradient[3*i    ] += 2 * cjxpvxx + cjypvxy 
-								+ cj->z * p.vxz; 
-							gradient[3*i + 1] += 2 * cjypvyy + cjzpvyz 
-								+ cj->x * p.vxy; 
-							gradient[3*i + 2] += 2 * cjzpvzz + cjxpvxz 
-								+ cj->y * p.vyz; 
+							gi[0] += 2 * cjxpvxx + cjypvxy + cj->z * p->vxz; 
+							gi[1] += 2 * cjypvyy + cjzpvyz + cj->x * p->vxy; 
+							gi[2] += 2 * cjzpvzz + cjxpvxz + cj->y * p->vyz; 
 						}
 					}
 				}
@@ -452,26 +449,29 @@ double C3DPPDivcurlMatrix2Impl::evaluate(const C3DFVectorfield& coefficients,
 	double result_6 = 0.0; 
 	int i = 0; 
 	auto ci = coefficients.begin(); 	
+	auto gi = gradient.begin(); 
 	for (int zi = 0; zi < nz; ++zi) {
 		for (int yi = 0; yi < ny; ++yi) {
-			for (int xi = 0; xi < nx; ++xi, ++ci) {
+			for (int xi = 0; xi < nx; ++xi, ++ci, ++i, gi+=3) {
 				for (int zj = max(0,zi - _M_ksize); zj < min(zi + _M_ksize, nz); ++zj) {
 					const int dz = zi - zj + _M_ksize; 
 					for (int yj = max(0,yi - _M_ksize); yj < min(yi + _M_ksize, ny); ++yj) {
 						const int dy = yi - yj + _M_ksize;
 						const int xstart = max(0,xi - _M_ksize);
-						const int xend = min(xi + _M_ksize,nx); 
+						const int xend = min(xi + _M_ksize,nx);
+
+						auto p = _M_P.begin_at(xi - xstart + _M_ksize, dy, dz);
 						auto cj = coefficients.begin_at(xstart, yj, zj); 
-						for (int xj = xstart; xj < xend; ++xj, ++cj) {
-							int dx = xi - xj + _M_ksize; 
-							auto p = _M_P(dx, dy, dz);		
-							const double cjxpvxx = cj->x * p.vxx; 
-							const double cjypvyy = cj->y * p.vyy; 
-							const double cjzpvzz = cj->z * p.vzz; 
+
+						for (int xj = xstart; xj < xend; ++xj, ++cj, --p) {
+						
+							const double cjxpvxx = cj->x * p->vxx; 
+							const double cjypvyy = cj->y * p->vyy; 
+							const double cjzpvzz = cj->z * p->vzz; 
 							
-							const double cjypvxy = cj->y * p.vxy; 
-							const double cjxpvxz = cj->x * p.vxz; 
-							const double cjzpvyz = cj->z * p.vyz; 
+							const double cjypvxy = cj->y * p->vxy; 
+							const double cjxpvxz = cj->x * p->vxz; 
+							const double cjzpvyz = cj->z * p->vyz; 
 							
 							result_1 += ci->x * cjxpvxx; 
 							result_2 += ci->x * cjypvxy; 
@@ -480,12 +480,9 @@ double C3DPPDivcurlMatrix2Impl::evaluate(const C3DFVectorfield& coefficients,
 							result_5 += ci->y * cjzpvyz; 
 							result_6 += ci->z * cjzpvzz; 
 							
-							gradient[3*i    ] += 2 * cjxpvxx + cjypvxy 
-								+ cj->z * p.vxz; 
-							gradient[3*i + 1] += 2 * cjypvyy + cjzpvyz 
-								+ cj->x * p.vxy; 
-							gradient[3*i + 2] += 2 * cjzpvzz + cjxpvxz 
-								+ cj->y * p.vyz; 
+							gi[0] += 2 * cjxpvxx + cjypvxy + cj->z * p->vxz; 
+							gi[1] += 2 * cjypvyy + cjzpvyz + cj->x * p->vxy; 
+							gi[2] += 2 * cjzpvzz + cjxpvxz + cj->y * p->vyz; 
 						}
 					}
 				}
