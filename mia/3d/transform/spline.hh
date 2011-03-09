@@ -25,7 +25,7 @@
 
 #include <mia/3d/interpolator.hh>
 #include <mia/3d/transform.hh>
-#include <mia/3d/ppmatrix.hh>
+#include <mia/3d/ppmatrix2.hh>
 #include <mia/core/scaler1d.hh>
 
 NS_MIA_BEGIN
@@ -122,7 +122,7 @@ private:
 	mutable C3DFVector _M_inv_scale;
 	mutable bool _M_scales_valid;
 
-	mutable std::shared_ptr<C3DPPDivcurlMatrix > _M_divcurl_matrix; 
+	mutable std::shared_ptr<C3DPPDivcurlMatrix2 > _M_divcurl_matrix; 
 	mutable std::vector<std::vector<double> > _M_x_weights; 
 	mutable std::vector<int> _M_x_indices; 
 	mutable std::vector<std::vector<double> > _M_y_weights; 

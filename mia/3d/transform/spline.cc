@@ -763,7 +763,7 @@ double C3DSplineTransformation::get_divcurl_cost(double wd, double wr, CDoubleVe
 
 	// create PP matrices or adapt size 
 	if (!_M_divcurl_matrix) 
-		_M_divcurl_matrix.reset(new C3DPPDivcurlMatrix(_M_coefficients.get_size(), 
+		_M_divcurl_matrix.reset(new C3DPPDivcurlMatrix2(_M_coefficients.get_size(), 
 							       C3DFVector(_M_range), 
 							       *_M_kernel, wd, wr)); 
 	else 
@@ -781,7 +781,7 @@ double C3DSplineTransformation::get_divcurl_cost(double wd, double wr) const
 	reinit(); 
 	// create PP matrices or adapt size 
 	if (!_M_divcurl_matrix) 
-		_M_divcurl_matrix.reset(new C3DPPDivcurlMatrix(_M_coefficients.get_size(), C3DFVector(_M_range), 
+		_M_divcurl_matrix.reset(new C3DPPDivcurlMatrix2(_M_coefficients.get_size(), C3DFVector(_M_range), 
 							       *_M_kernel, wd, wr)); 
 	else 
 		_M_divcurl_matrix->reset(_M_coefficients.get_size(), C3DFVector(_M_range), 
