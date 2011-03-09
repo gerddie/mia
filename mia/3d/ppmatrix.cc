@@ -463,18 +463,19 @@ double C3DPPDivcurlMatrixImpl::evaluate(const C3DFVectorfield& coefficients,
 		auto cj = coefficients[p->j]; 
 		
 		const double cjxpvxx = cj.x * p->vxx; 
-		const double cjypvyy = cj.y * p->vyy; 
-		const double cjzpvzz = cj.z * p->vzz; 
+		const double cjxpvxz = cj.x * p->vxz; 
 
 		const double cjypvxy = cj.y * p->vxy; 
-		const double cjxpvxz = cj.x * p->vxz; 
+		const double cjypvyy = cj.y * p->vyy; 
+
 		const double cjzpvyz = cj.z * p->vyz; 
+		const double cjzpvzz = cj.z * p->vzz; 
 
 		result_1 += ci.x * cjxpvxx; 
 		result_2 += ci.x * cjypvxy; 
 		result_3 += ci.y * cjypvyy; 
-		result_4 += ci.z * cjxpvxz; 
 		result_5 += ci.y * cjzpvyz; 
+		result_4 += ci.z * cjxpvxz; 
 		result_6 += ci.z * cjzpvzz; 
 
 		gradient[3*p->i    ] += 2 * cjxpvxx + cjypvxy + cj.z * p->vxz; 

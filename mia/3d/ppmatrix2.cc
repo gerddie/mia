@@ -24,9 +24,7 @@
 #include <mia/3d/ppmatrix2.hh>
 #include <mia/3d/3DDatafield.cxx>
 
-#if defined(__SSE2__)
 #include <emmintrin.h>
-#endif
 
 
 NS_MIA_BEGIN
@@ -53,9 +51,11 @@ private:
 	
 	struct SMatrixCell {
 		double vxx; 
-		double vxy; 
 		double vxz; 
+
+		double vxy; 
 		double vyy; 
+
 		double vyz; 
 		double vzz; 
 		SMatrixCell(); 
@@ -445,19 +445,17 @@ double C3DPPDivcurlMatrix2Impl::evaluate(const C3DFVectorfield& coefficients,
 	const int ny = _M_size.y;
 	const int nz = _M_size.z;
 
-	double result_1 = 0.0; 
-	double result_2 = 0.0; 
-	double result_3 = 0.0; 
-	double result_4 = 0.0; 
-	double result_5 = 0.0; 
-	double result_6 = 0.0; 
+	double __attribute__((aligned(16))) result[6]; 
+	fill(result, result + 6, 0.0);
 	int i = 0; 
 	auto ci = coefficients.begin(); 	
 	auto gi = gradient.begin(); 
 	for (int zi = 0; zi < nz; ++zi) {
 		for (int yi = 0; yi < ny; ++yi) {
 			for (int xi = 0; xi < nx; ++xi, ++ci, ++i, gi+=3) {
-				C3DDVector g(0,0,0); 
+				
+				double __attribute__((aligned(16))) g[4]; 
+				fill(g, g + 4, 0.0);
 				for (int zj = max(0,zi - _M_ksize); zj < min(zi + _M_ksize, nz); ++zj) {
 					const int dz = zi - zj + _M_ksize; 
 					for (int yj = max(0,yi - _M_ksize); yj < min(yi + _M_ksize, ny); ++yj) {
@@ -469,36 +467,93 @@ double C3DPPDivcurlMatrix2Impl::evaluate(const C3DFVectorfield& coefficients,
 						auto cj = coefficients.begin_at(xstart, yj, zj); 
 
 						for (int xj = xstart; xj < xend; ++xj, ++cj, --p) {
-						
-							const double cjxpvxx = cj->x * p->vxx; 
-							const double cjypvyy = cj->y * p->vyy; 
-							const double cjzpvzz = cj->z * p->vzz; 
+							const __m128d cj_x = _mm_set1_pd(cj->x); 
+							const __m128d cj_y = _mm_set1_pd(cj->y); 
+							const __m128d cj_z = _mm_set1_pd(cj->z); 
+							const __m128d cj_zx = _mm_shuffle_pd(cj_z, cj_x, 
+											     _MM_SHUFFLE2(0,0));
 							
-							const double cjypvxy = cj->y * p->vxy; 
-							const double cjxpvxz = cj->x * p->vxz; 
-							const double cjzpvyz = cj->z * p->vyz; 
+							const __m128d p_xx_xz = _mm_load_pd(&p->vxx); 
+							const __m128d p_xy_yy = _mm_load_pd(&p->vxy); 
+							const __m128d p_yz_zz = _mm_load_pd(&p->vyz); 
+							const __m128d p_xz_xy = _mm_shuffle_pd(p_xx_xz, p_xy_yy, 
+											   _MM_SHUFFLE2(0,1));
 							
-							result_1 += ci->x * cjxpvxx; 
-							result_2 += ci->x * cjypvxy; 
-							result_3 += ci->y * cjypvyy; 
-							result_4 += ci->z * cjxpvxz; 
-							result_5 += ci->y * cjzpvyz; 
-							result_6 += ci->z * cjzpvzz; 
+							__m128d gz01 = cj_zx * p_xz_xy;
+							__m128d gz2X = _mm_mul_sd(cj_y, p_yz_zz);
+							 
+							const __m128d cj_xp_xx_xz = p_xx_xz * cj_x; 
+							const __m128d cj_yp_xy_yy = p_xy_yy * cj_y; 
+							const __m128d cj_zp_yz_zz = p_yz_zz * cj_z; 
 							
-							g.x += 2 * cjxpvxx + cjypvxy + cj->z * p->vxz; 
-							g.y += 2 * cjypvyy + cjzpvyz + cj->x * p->vxy; 
-							g.z += 2 * cjzpvzz + cjxpvxz + cj->y * p->vyz; 
+							const __m128d cj_xyp_xx_xy = _mm_shuffle_pd(cj_xp_xx_xz, 
+											     cj_yp_xy_yy, 
+											     _MM_SHUFFLE2(0,0)); 
+							
+							const __m128d cj_yzp_yy_yz = _mm_shuffle_pd(cj_yp_xy_yy, 
+											     cj_zp_yz_zz, 
+											     _MM_SHUFFLE2(0,1)); 
+							
+							const __m128d cj_zxp_zz_xz = _mm_shuffle_pd(cj_zp_yz_zz, 
+											     cj_xp_xx_xz, 
+											     _MM_SHUFFLE2(1,1)); 
+
+							const __m128d cix = _mm_set1_pd(ci->x); 
+							const __m128d ciy = _mm_set1_pd(ci->y); 
+							const __m128d ciz = _mm_set1_pd(ci->z); 
+
+							__m128d r0 = _mm_load_pd(&result[0]);
+							__m128d r1 = _mm_load_pd(&result[2]);
+							__m128d r2 = _mm_load_pd(&result[4]);
+							
+							r0 += cix * cj_xyp_xx_xy; 
+							r1 += ciy * cj_yzp_yy_yz; 
+							r2 += ciz * cj_zxp_zz_xz; 
+							
+							_mm_store_pd(&result[0], r0); 
+							_mm_store_pd(&result[2], r1); 
+							_mm_store_pd(&result[4], r2); 
+
+							const __m128d cjxy_xx_yy = _mm_shuffle_pd(cj_xp_xx_xz, 
+												 cj_yp_xy_yy, 
+												 _MM_SHUFFLE2(1,0));
+							const __m128d cjyz_xy_yz = _mm_shuffle_pd(cj_yp_xy_yy, 
+												 cj_zp_yz_zz,
+												 _MM_SHUFFLE2(0,0));
+							const __m128d two = _mm_set1_pd(2.0); 
+							
+							gz01 += two * cjxy_xx_yy + cjyz_xy_yz; 
+							const __m128d cj_zp_zz = _mm_shuffle_pd(cj_zp_yz_zz, 
+												cj_zp_yz_zz, 
+												_MM_SHUFFLE2(1,1)); 
+							
+							const __m128d cj_xp_xz = _mm_shuffle_pd(cj_xp_xx_xz, 
+												cj_xp_xx_xz, 
+												_MM_SHUFFLE2(1,1)); 
+
+							gz2X += _mm_add_sd(_mm_mul_sd(two, cj_zp_zz), cj_xp_xz);
+							
+							__m128d g0 = _mm_load_pd(&g[0]);
+							__m128d g2 = _mm_load_pd(&g[2]);
+							
+							g0 += gz01; 
+							g2 += gz2X; 
+							
+							
+							 _mm_store_pd(&g[0], g0);
+							 _mm_store_pd(&g[2], g2);
+							
 						}
 					}
 				}
-				gi[0] = g.x; 
-				gi[1] = g.y; 
-				gi[2] = g.z; 
+				gi[0] = g[0]; 
+				gi[1] = g[1]; 
+				gi[2] = g[2];
 			}
 		}
 	}
-	return result_1 + result_2 + result_3 + 
-		result_4 + result_5 + result_6; 
+	return result[0] + result[1] + result[2] + 
+		result[3] + result[4] + result[5]; 
 
 }
 
