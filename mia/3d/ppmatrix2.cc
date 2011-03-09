@@ -393,6 +393,7 @@ double C3DPPDivcurlMatrix2Impl::evaluate(const T3DDatafield<C3DDVector>& coeffic
 	for (int zi = 0; zi < nz; ++zi) {
 		for (int yi = 0; yi < ny; ++yi) {
 			for (int xi = 0; xi < nx; ++xi, ++ci, ++i, gi+=3) {
+				C3DDVector g(0,0,0); 
 				for (int zj = max(0,zi - _M_ksize); zj < min(zi + _M_ksize, nz); ++zj) {
 					const int dz = zi - zj + _M_ksize; 
 					for (int yj = max(0,yi - _M_ksize); yj < min(yi + _M_ksize, ny); ++yj) {
@@ -418,12 +419,15 @@ double C3DPPDivcurlMatrix2Impl::evaluate(const T3DDatafield<C3DDVector>& coeffic
 							result_5 += ci->y * cjzpvyz; 
 							result_6 += ci->z * cjzpvzz; 
 							
-							gi[0] += 2 * cjxpvxx + cjypvxy + cj->z * p->vxz; 
-							gi[1] += 2 * cjypvyy + cjzpvyz + cj->x * p->vxy; 
-							gi[2] += 2 * cjzpvzz + cjxpvxz + cj->y * p->vyz; 
+							g.x += 2 * cjxpvxx + cjypvxy + cj->z * p->vxz; 
+							g.y += 2 * cjypvyy + cjzpvyz + cj->x * p->vxy; 
+							g.z += 2 * cjzpvzz + cjxpvxz + cj->y * p->vyz; 
 						}
 					}
 				}
+				gi[0] = g.x; 
+				gi[1] = g.y; 
+				gi[2] = g.z; 
 			}
 		}
 	}
@@ -453,6 +457,7 @@ double C3DPPDivcurlMatrix2Impl::evaluate(const C3DFVectorfield& coefficients,
 	for (int zi = 0; zi < nz; ++zi) {
 		for (int yi = 0; yi < ny; ++yi) {
 			for (int xi = 0; xi < nx; ++xi, ++ci, ++i, gi+=3) {
+				C3DDVector g(0,0,0); 
 				for (int zj = max(0,zi - _M_ksize); zj < min(zi + _M_ksize, nz); ++zj) {
 					const int dz = zi - zj + _M_ksize; 
 					for (int yj = max(0,yi - _M_ksize); yj < min(yi + _M_ksize, ny); ++yj) {
@@ -480,12 +485,15 @@ double C3DPPDivcurlMatrix2Impl::evaluate(const C3DFVectorfield& coefficients,
 							result_5 += ci->y * cjzpvyz; 
 							result_6 += ci->z * cjzpvzz; 
 							
-							gi[0] += 2 * cjxpvxx + cjypvxy + cj->z * p->vxz; 
-							gi[1] += 2 * cjypvyy + cjzpvyz + cj->x * p->vxy; 
-							gi[2] += 2 * cjzpvzz + cjxpvxz + cj->y * p->vyz; 
+							g.x += 2 * cjxpvxx + cjypvxy + cj->z * p->vxz; 
+							g.y += 2 * cjypvyy + cjzpvyz + cj->x * p->vxy; 
+							g.z += 2 * cjzpvzz + cjxpvxz + cj->y * p->vyz; 
 						}
 					}
 				}
+				gi[0] = g.x; 
+				gi[1] = g.y; 
+				gi[2] = g.z; 
 			}
 		}
 	}

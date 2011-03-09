@@ -267,13 +267,21 @@ BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4_grad, TransformSplineFixture2Mix
 		dynamic_cast<const T3DConvoluteInterpolator<C3DFVector>&>(*source); 
 	
 	auto coeffs = interp.get_coefficients(); 
+	C3DFVectorfield help(coeffs.get_size()); 
+	
+	auto ic = coeffs.begin(); 
+	for(auto ih = help.begin(); ih != help.end(); ++ic, ++ih) 
+		*ih = C3DFVector(*ic); 
+	
 	C3DPPDivcurlMatrix2 divcurl(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 1.0);
-	CDoubleVector gradient(3 * coeffs.size()); 
+	CDoubleVector gradientf(3 * coeffs.size()); 
+	CDoubleVector gradientd(3 * coeffs.size()); 
 	
 	const double testdiv = 7.0 * pow(M_PI, 1.5) / sqrt(2.0); 
 	const double testcurl = testdiv / 4.0; 
 
-	BOOST_CHECK_CLOSE(divcurl.evaluate(coeffs, gradient), testdiv + testcurl, 2.0); 
+	BOOST_CHECK_CLOSE(divcurl.evaluate(help, gradientf), testdiv + testcurl, 2.0); 
+	divcurl.evaluate(coeffs, gradientd); 
 
 
 	const float delta = 0.001; 
@@ -287,10 +295,13 @@ BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4_grad, TransformSplineFixture2Mix
 		c->x += delta; 
 
 		double test_x = (vpx - vmx) / (2.0 * delta); 
-		if (fabs(test_x) < 1e-9) 
-			BOOST_CHECK_CLOSE( gradient[i] + 1e-7, test_x + 1e-7, 5); 
-		else
-			BOOST_CHECK_CLOSE(gradient[i], test_x, 0.1); 
+		if (fabs(test_x) < 1e-9) {
+			BOOST_CHECK_CLOSE(gradientd[i] + 1e-7, test_x + 1e-7, 5); 
+			BOOST_CHECK_CLOSE(gradientf[i] + 1e-7, test_x + 1e-7, 5); 
+		} else {
+			BOOST_CHECK_CLOSE(gradientd[i], test_x, 0.1); 
+			BOOST_CHECK_CLOSE(gradientf[i], test_x, 0.1); 
+		}
 
 		c->y += delta; 
 		double vpy = divcurl  * coeffs;
@@ -299,10 +310,13 @@ BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4_grad, TransformSplineFixture2Mix
 		c->y += delta; 
 		
 		double test_y = (vpy - vmy) / (2.0 * delta); 
-		if (fabs(test_y) < 1e-9) 
-			BOOST_CHECK_CLOSE( gradient[i+1] + 1e-7, test_y + 1e-7, 5); 
-		else
-			BOOST_CHECK_CLOSE(gradient[i+1], test_y, 0.1); 
+		if (fabs(test_y) < 1e-9) {
+			BOOST_CHECK_CLOSE(gradientd[i+1] + 1e-7, test_y + 1e-7, 5); 
+			BOOST_CHECK_CLOSE(gradientf[i+1] + 1e-7, test_y + 1e-7, 5); 
+		} else {
+			BOOST_CHECK_CLOSE(gradientd[i+1], test_y, 0.1); 
+			BOOST_CHECK_CLOSE(gradientf[i+1], test_y, 0.1); 
+		}
 
 
 		c->z += delta; 
@@ -312,10 +326,13 @@ BOOST_FIXTURE_TEST_CASE( test_mix_bspline4_10_4_grad, TransformSplineFixture2Mix
 		c->z += delta; 
 		
 		double test_z = (vpz - vmz) / (2.0 * delta); 
-		if (fabs(test_z) < 1e-9  ) 
-			BOOST_CHECK_CLOSE( gradient[i+2] + 1e-7, test_z + 1e-7, 5); 
-		else
-			BOOST_CHECK_CLOSE(gradient[i+2], test_z, 0.1); 
+		if (fabs(test_z) < 1e-9  ) {
+			BOOST_CHECK_CLOSE( gradientd[i+2] + 1e-7, test_z + 1e-7, 5); 
+			BOOST_CHECK_CLOSE( gradientf[i+2] + 1e-7, test_z + 1e-7, 5); 
+		} else {
+			BOOST_CHECK_CLOSE(gradientd[i+2], test_z, 0.1); 
+			BOOST_CHECK_CLOSE(gradientf[i+2], test_z, 0.1); 
+		}
 
 
 	}
