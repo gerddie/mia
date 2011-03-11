@@ -118,14 +118,6 @@ C3DTransformation *C3DTranslateTransformation::invert() const
 	return result; 
 }
 
-P3DImage C3DTranslateTransformation::apply(const C3DImage& image, const C3DInterpolatorFactory& ipf) const
-{
-	if (image.get_size() != get_size()) {
-		cvwarn() << "C3DTranslateTransformation::apply: size of input differs from transformation target size\n";
-	}
-	return transform3d(image, ipf, *this);
-}
-
 bool C3DTranslateTransformation::save(const std::string& /*filename*/, const std::string& /*type*/) const
 {
 	assert(0 && "not implemented");

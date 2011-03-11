@@ -180,11 +180,11 @@ BOOST_AUTO_TEST_CASE(test_shift_image)
 	const C3DBounds size(10,9,2);
 	P3DImage src(new C3DFImage(size, src_image_init));
 	
-	C3DTranslateTransformation transform(size,  C3DFVector(1.0, 2.0, -1));
+	C3DTranslateTransformation trans(size,  C3DFVector(1.0, 2.0, -1));
 	
 	unique_ptr<C3DInterpolatorFactory> ipf(create_3dinterpolation_factory(ip_nn)); 
 
-	P3DImage result = transform.apply(*src, *ipf);
+	P3DImage result = trans(*src, *ipf);
 	
 	const C3DFImage& r = dynamic_cast<const C3DFImage&>(*result); 
 	

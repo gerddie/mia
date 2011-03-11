@@ -73,10 +73,8 @@ int do_main(int argc, const char **args)
 
 	std::shared_ptr<C3DInterpolatorFactory > ipf(create_3dinterpolation_factory(interpolator));
 
-	C3DTransform<C3DTransformation> transformer(*ipf, *transformation); 
-
 	for (auto i = source->begin(); i != source->end(); ++i)
-		*i = filter(transformer, **i);
+		*i = (*transformation)(**i, *ipf);
 
 	if ( !imageio.save("", out_filename, *source) ){
 		string not_save = ("unable to save result to ") + out_filename;

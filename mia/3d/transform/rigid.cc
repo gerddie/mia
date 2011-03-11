@@ -31,14 +31,6 @@ NS_MIA_BEGIN
 using namespace boost::lambda;
 using namespace std;
 
-P3DImage C3DRigidTransformation::apply(const C3DImage& image,
-				       const C3DInterpolatorFactory& ipf) const
-{
-	if (image.get_size() != get_size()) {
-		cvwarn() << "C3DRigidTransformation::apply: size of input differs from transformation target size\n";
-	}
-	return transform3d(image, ipf, *this);
-}
 
 C3DFVector C3DRigidTransformation::apply(const C3DFVector& x) const
 {

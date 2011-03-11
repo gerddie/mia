@@ -209,6 +209,42 @@ bool C3DTransformation::refine()
 	return false; 
 }
 
+struct F3DTransform : public TFilter<P3DImage> {
+	F3DTransform(const C3DInterpolatorFactory& ipf, const C3DTransformation& trans):
+		_M_ipf(ipf),
+		_M_trans(trans){
+	}
+	template <typename T>
+	P3DImage operator ()(const T3DImage<T>& image) const {
+		
+		auto *timage = new T3DImage<T>(_M_trans.get_size(), image);
+		P3DImage result(timage);
+
+		std::auto_ptr<T3DInterpolator<T> > interp(_M_ipf.create(image.data()));
+
+		auto r = timage->begin();
+		auto v = _M_trans.begin();
+		
+		while (r != timage->end()) {
+			cvdebug() << *v << "\n"; 
+			*r = (*interp)(*v);
+			++r; ++v; 
+		}
+		return result;
+	}
+private:
+	const C3DInterpolatorFactory& _M_ipf;
+	const C3DTransformation& _M_trans;
+};
+
+
+
+P3DImage C3DTransformation::apply(const C3DImage& input, const C3DInterpolatorFactory& ipf) const
+{
+	return mia::filter(F3DTransform(ipf, *this), input);
+
+}
+
 const char *C3DTransformation::type_descr = "3dtransform";
 const char *C3DTransformation::dim_descr = "3d";
 

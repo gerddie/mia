@@ -370,13 +370,6 @@ size_t C3DSplineTransformation::degrees_of_freedom() const
 	return _M_coefficients.size() * 3;
 }
 
-P3DImage C3DSplineTransformation::apply(const C3DImage& image,
-					const C3DInterpolatorFactory& ipf) const
-{
-	TRACE_FUNCTION;
-	return transform3d(image, ipf, *this);
-}
-
 void C3DSplineTransformation::update(float step, const C3DFVectorfield& a)
 {
 	TRACE_FUNCTION;

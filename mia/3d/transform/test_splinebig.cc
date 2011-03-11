@@ -706,7 +706,7 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 	fill(field.begin(), field.end(), shift); 
 	trans.set_coefficients(field);
 	
-	P3DImage result = trans.apply(*src, *ipf);
+	P3DImage result = trans(*src, *ipf);
 	
 	const C3DFImage& r = dynamic_cast<const C3DFImage&>(*result); 
 	

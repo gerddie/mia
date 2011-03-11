@@ -295,6 +295,7 @@ protected:
 	bool get_debug()const; 
 
 private: 
+        virtual P3DImage apply(const C3DImage& input, const C3DInterpolatorFactory& ipf) const;
 
 	virtual P3DTransformation do_upscale(const C3DBounds& size) const = 0;
 
@@ -314,55 +315,6 @@ private:
 EXPORT_3D bool operator != (const C3DTransformation::const_iterator& a, 
 			    const C3DTransformation::const_iterator& b); 
 
-
-/**
-   Helper Functor to evaluate a transformed image by applying a given 
-   transformation and using the provided interpolator type
-*/
-
-template <typename Transform>
-struct C3DTransform : public TFilter<P3DImage> {
-	C3DTransform(const C3DInterpolatorFactory& ipf, const Transform& trans):
-		_M_ipf(ipf),
-		_M_trans(trans){
-	}
-	template <typename T>
-	P3DImage operator ()(const T3DImage<T>& image) const {
-		
-		T3DImage<T> *timage = new T3DImage<T>(_M_trans.get_size(), image);
-		P3DImage result(timage);
-
-		std::auto_ptr<T3DInterpolator<T> > interp(_M_ipf.create(image.data()));
-
-		auto r = timage->begin();
-		auto v = _M_trans.begin();
-		
-		while (r != timage->end()) {
-			cvdebug() << *v << "\n"; 
-			*r = (*interp)(*v);
-			++r; ++v; 
-		}
-		return result;
-	}
-private:
-	const C3DInterpolatorFactory& _M_ipf;
-	const Transform& _M_trans;
-};
-
-
-/**
-   Transform an image by a given transform using the provided interpolation method.
-   \param image the image to be transformed
-   \param ipf interpolator factory holding the information which interpolation method will be used
-   \param trans transformation
-   \returns transformed image
- */
-
-template <typename Transform>
-P3DImage transform3d(const C3DImage& image, const C3DInterpolatorFactory& ipf, const Transform& trans)
-{
-	return mia::filter(C3DTransform<Transform>(ipf, trans), image);
-}
 
 NS_MIA_END
 
