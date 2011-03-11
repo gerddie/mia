@@ -52,9 +52,9 @@ BOOST_FIXTURE_TEST_CASE(test_handler, HandlerTestFixture)
 {
 	const C3DTransformCreatorHandler::Instance& handler =
 		C3DTransformCreatorHandler::instance();
-	BOOST_CHECK_EQUAL(handler.size(), 5u);
+	BOOST_CHECK_EQUAL(handler.size(), 4u);
 	BOOST_CHECK_EQUAL(handler.get_plugin_names(),
-			  "affine rigid spline splinebig translate ");
+			  "affine rigid spline translate ");
 }
 
 BOOST_FIXTURE_TEST_CASE(test_translate_creator, HandlerTestFixture)

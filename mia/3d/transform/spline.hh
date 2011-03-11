@@ -20,12 +20,12 @@
  *
  */
 
-#ifndef mia_3d_splinetransform_hh
-#define mia_3d_splinetransform_hh
+#ifndef mia_3d_transform_spline_hh
+#define mia_3d_transform_spline_hh
 
 #include <mia/3d/interpolator.hh>
 #include <mia/3d/transform.hh>
-#include <mia/3d/ppmatrix2.hh>
+#include <mia/3d/ppmatrix.hh>
 #include <mia/core/scaler1d.hh>
 
 NS_MIA_BEGIN
@@ -38,6 +38,7 @@ public:
 	C3DSplineTransformation(const C3DSplineTransformation& org);
 	C3DSplineTransformation(const C3DBounds& range, PBSplineKernel kernel);
 	C3DSplineTransformation(const C3DBounds& range, PBSplineKernel kernel, const C3DFVector& c_rate);
+	~C3DSplineTransformation(); 
 
 	void set_coefficients(const C3DFVectorfield& field);
 	void set_coefficients_and_prefilter(const C3DFVectorfield& field);
@@ -52,7 +53,7 @@ public:
 	class EXPORT_3D iterator_impl: public C3DTransformation::iterator_impl  {
 	public:
 		iterator_impl(const C3DBounds& pos, const C3DBounds& size, 
-			      const C3DSplineTransformation& trans); 
+			      C3DFVectorfield::const_iterator value_it); 
 	private: 
 		virtual C3DTransformation::iterator_impl * clone() const; 
 		virtual const C3DFVector&  do_get_value()const; 
@@ -60,9 +61,8 @@ public:
 		virtual void do_y_increment(); 
 		virtual void do_z_increment(); 
 
-		const C3DSplineTransformation& _M_trans;
-		mutable C3DFVector _M_value;
-		mutable bool _M_value_valid; 
+		C3DFVectorfield::const_iterator _M_value_it; 
+		
 
 	};
 
@@ -121,7 +121,7 @@ private:
 	mutable C3DFVector _M_inv_scale;
 	mutable bool _M_scales_valid;
 
-	mutable std::shared_ptr<C3DPPDivcurlMatrix2 > _M_divcurl_matrix; 
+	mutable std::shared_ptr<C3DPPDivcurlMatrix> _M_divcurl_matrix; 
 	mutable std::vector<std::vector<double> > _M_x_weights; 
 	mutable std::vector<int> _M_x_indices; 
 	mutable std::vector<std::vector<double> > _M_y_weights; 
@@ -132,6 +132,7 @@ private:
 	mutable CSplineDerivativeRow  _M_my; 
 	mutable CSplineDerivativeRow  _M_mz; 
 	mutable bool _M_grid_valid; 
+	mutable P3DFVectorfield _M_current_grid; 
 };
 
 NS_MIA_END

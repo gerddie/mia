@@ -30,6 +30,13 @@
 #include <mia/3d/transform/spline.hh>
 #include <mia/3d/transformfactory.hh>
 #include <mia/3d/3dimageio.hh>
+#include <mia/core/index.hh>
+
+#ifdef HAVE_BLAS
+extern "C" {
+#include <cblas.h>
+}
+#endif
 
 #include <boost/lambda/lambda.hpp>
 
@@ -110,6 +117,7 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplin
 	assert(c_rate.y >= 1.0);
 	assert(c_rate.z >= 1.0);
 	assert(kernel); 
+
 	
 	unsigned int s = _M_kernel->get_active_halfrange() - 1; 
 	_M_shift = C3DBounds(s,s,s); 
@@ -125,6 +133,10 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplin
 	csize += _M_enlarge;
 	_M_coefficients = C3DFVectorfield(csize);
 	reinit();
+}
+
+C3DSplineTransformation::~C3DSplineTransformation()
+{
 }
 
 void C3DSplineTransformation::set_coefficients(const C3DFVectorfield& field)
@@ -193,6 +205,29 @@ void C3DSplineTransformation::reinit() const
 			  << " _M_range= " << _M_range 
 			  << "  _M_scale = " << _M_scale << "\n"; 
 		_M_scales_valid = true;
+		
+		// pre-evaluateof fixed-grid coefficients
+		size_t n_elms = _M_kernel->size(); 
+		for (size_t i = 0; i < _M_range.x; ++i) {
+			_M_x_weights[i].resize(n_elms); 
+			_M_x_indices[i] = _M_kernel->get_start_idx_and_value_weights(i * _M_scale.x + _M_shift.x, 
+										     _M_x_weights[i]); 
+		}
+		_M_x_weights[_M_range.x-1].resize(n_elms - 1); 
+
+		for (size_t i = 0; i < _M_range.y; ++i){
+			_M_y_weights[i].resize(n_elms); 
+			_M_y_indices[i] = _M_kernel->get_start_idx_and_value_weights(i * _M_scale.y + _M_shift.y, 
+										     _M_y_weights[i]); 
+		}
+		_M_y_weights[_M_range.y-1].resize(n_elms - 1); 
+		
+		for (size_t i = 0; i < _M_range.z; ++i){
+			_M_z_weights[i].resize(n_elms); 
+			_M_z_indices[i] = _M_kernel->get_start_idx_and_value_weights(i * _M_scale.z + _M_shift.z, 
+										     _M_z_weights[i]); 
+		}
+		_M_z_weights[_M_range.z-1].resize(n_elms - 1); 
 	}
 }
 
@@ -266,6 +301,7 @@ CDoubleVector C3DSplineTransformation::get_parameters() const
 void C3DSplineTransformation::set_parameters(const CDoubleVector& params)
 {
 	TRACE_FUNCTION;
+	_M_grid_valid = false; 
 	assert(3 * _M_coefficients.size() == params.size());
 	auto r = params.begin();
 	for(auto f = _M_coefficients.begin(); f != _M_coefficients.end(); ++f) {
@@ -482,44 +518,221 @@ float C3DSplineTransformation::get_max_transform() const
 
 }
 
+#ifdef HAVE_BLAS
+
 void C3DSplineTransformation::init_grid()const
 {
 	TRACE_FUNCTION; 
 	reinit();
 	if (!_M_grid_valid) {
-		cvdebug() << "really run C3DSplineTransformation::init_grid\n"; 
-		// pre-evaluateof fixed-grid coefficients
-		size_t n_elms = _M_kernel->size(); 
-		for (size_t i = 0; i < _M_range.x; ++i) {
-			_M_x_weights[i].resize(n_elms); 
-			_M_x_indices[i] = _M_kernel->get_start_idx_and_value_weights(i * _M_scale.x + _M_shift.x, 
-										     _M_x_weights[i]); 
+		cvdebug() << "initialize grid\n"; 
+		if (!_M_current_grid || (_M_current_grid->get_size() != _M_range)) {
+			cvdebug() << "initialize grid field\n"; 
+			_M_current_grid.reset(new C3DFVectorfield(_M_range)); 
 		}
-		for (size_t i = 0; i < _M_range.y; ++i){
-			_M_y_weights[i].resize(n_elms); 
-			_M_y_indices[i] = _M_kernel->get_start_idx_and_value_weights(i * _M_scale.y + _M_shift.y, 
-										     _M_y_weights[i]); 
+		const int size_s1 = _M_coefficients.get_size().x * _M_coefficients.get_size().y * 3; 
+		const int size_s2 = _M_coefficients.get_size().x * _M_range.z * 3; 
+		const int size_s3 = _M_range.z * _M_range.y * 3; 
+		
+		const int max_data_length = max( max(size_s1, size_s2), size_s3);
+
+		// create the buffers 
+		unsigned int nelm = _M_kernel->size(); 
+		vector< vector<float> > in_buffer; 
+		for (unsigned int i = 0; i < nelm; ++i) 
+			in_buffer.push_back(vector<float>(max_data_length));
+		vector<float> out_buffer(max_data_length);
+		
+		C3DFVectorfield tmp(C3DBounds(_M_coefficients.get_size().x, 
+					      _M_coefficients.get_size().y, 
+					      _M_range.z));
+
+		CCircularIndex idxz(nelm, _M_z_indices[0]); 
+		for(size_t z = 0; z < _M_range.z; ++z) {
+			auto w = _M_z_weights[z]; 
+			int start = _M_z_indices[z];
+			
+			cvdebug() << "z = " << z << "\n"; 
+			idxz.new_start(start); 
+			
+			// fill with slices 
+			auto fill = idxz.fill(); 
+			while (fill < nelm && start + fill < _M_coefficients.get_size().z) {
+				_M_coefficients.read_zslice_flat(start + fill, in_buffer[idxz.next()]);
+				idxz.insert_one(); 
+				fill = idxz.fill(); 
+			}
+			
+			memset(&out_buffer[0], 0, size_s1 * sizeof(float)); 
+			
+			for (unsigned int i = 0; i < nelm; ++i) {
+				cblas_saxpy(size_s1, w[i], &in_buffer[idxz.value(i)][0], 1, 
+					    &out_buffer[0], 1);
+			}
+			tmp.write_zslice_flat(z, out_buffer); 
 		}
-		for (size_t i = 0; i < _M_range.z; ++i){
-			_M_z_weights[i].resize(n_elms); 
-			_M_z_indices[i] = _M_kernel->get_start_idx_and_value_weights(i * _M_scale.z + _M_shift.z, 
-										     _M_z_weights[i]); 
+		
+
+		C3DFVectorfield tmp2(C3DBounds(_M_coefficients.get_size().x, 
+					       _M_range.y, 
+					       _M_range.z));
+		
+		CCircularIndex idxy(nelm, _M_y_indices[0]); 
+		for(size_t y = 0; y < _M_range.y; ++y) {
+			auto w = _M_y_weights[y]; 
+			int start = _M_y_indices[y];
+			cvdebug() << "y = " << y << "\n"; 
+			
+			idxy.new_start(start); 
+			
+			// fill with slices 
+			auto fill = idxy.fill(); 
+			while (fill < nelm  && start + fill < _M_coefficients.get_size().y) {
+				tmp.read_yslice_flat(start + fill, in_buffer[idxy.next()]);
+				idxy.insert_one(); 
+				fill = idxy.fill(); 
+			}
+			
+			memset(&out_buffer[0], 0, size_s2 * sizeof(float)); 
+			
+			for (unsigned int i = 0; i < nelm; ++i) {
+				cblas_saxpy(size_s2, w[i], &in_buffer[idxy.value(i)][0], 1, 
+					    &out_buffer[0], 1);
+			}
+			tmp2.write_yslice_flat(y, out_buffer); 
+		}
+
+
+		CCircularIndex idxx(nelm, _M_y_indices[0]); 
+		for(size_t x = 0; x < _M_range.x; ++x) {
+			auto w = _M_x_weights[x]; 
+			int start = _M_x_indices[x];
+			
+			cvdebug() << "x = " << x << "\n"; 
+			idxx.new_start(start); 
+			
+			// fill with slices 
+			auto fill = idxx.fill(); 
+			while (fill < nelm && start + fill < _M_coefficients.get_size().x) {
+				tmp2.read_xslice_flat(start + fill, in_buffer[idxx.next()]);
+				idxx.insert_one(); 
+				fill = idxx.fill(); 
+			}
+			
+			memset(&out_buffer[0], 0, size_s3 * sizeof(float)); 
+			
+			for (unsigned int i = 0; i < nelm; ++i) {
+				cblas_saxpy(size_s3, w[i], &in_buffer[idxx.value(i)][0], 1, 
+					    &out_buffer[0], 1);
+			}
+			_M_current_grid->write_xslice_flat(x, out_buffer); 
+		}
+		
+		auto i = _M_current_grid->begin(); 
+		for (size_t z = 0; z < _M_range.z; ++z) 
+			for (size_t y = 0; y < _M_range.y; ++y) 
+				for (size_t x = 0; x < _M_range.x; ++x, ++i)
+					*i = C3DFVector(x,y,z) - *i; 
+
+		_M_grid_valid = true; 
+	}
+}
+
+#else 
+void C3DSplineTransformation::init_grid()const
+{
+	TRACE_FUNCTION; 
+	reinit();
+	if (!_M_grid_valid) {
+		cvdebug() << "initialize grid\n"; 
+		if (!_M_current_grid || (_M_current_grid->get_size() != _M_range)) {
+			cvdebug() << "initialize grid field\n"; 
+			_M_current_grid.reset(new C3DFVectorfield(_M_range)); 
+		}
+		cvdebug() << "Current gris has size " << _M_current_grid->get_size() << "\n"; 
+		// now filter 
+		C3DFVectorfield tmp(C3DBounds(_M_coefficients.get_size().x, 
+					      _M_coefficients.get_size().y, 
+					      _M_range.z));
+		
+		vector<C3DFVector> out_buffer(_M_range.z); 
+		vector<C3DFVector> in_buffer(_M_coefficients.get_size().z);
+		
+		for (size_t iy = 0; iy < _M_coefficients.get_size().y; ++iy) {
+			for (size_t ix = 0; ix < _M_coefficients.get_size().x; ++ix) {
+				_M_coefficients.get_data_line_z(ix, iy, in_buffer);
+				for(size_t z = 0; z < _M_range.z; ++z) {
+					int start_z = _M_z_indices[z];
+					auto w = _M_z_weights[z]; 
+					
+					out_buffer[z] = inner_product(w.begin(), w.end(), 
+								      in_buffer.begin() + start_z, C3DFVector());
+				}
+				tmp.put_data_line_z(ix, iy, out_buffer);
+			}
+		}
+		
+		C3DFVectorfield tmp2(C3DBounds(_M_coefficients.get_size().x, 
+					      _M_range.y, 
+					      _M_range.z));
+
+		out_buffer.resize(_M_range.y); 
+		in_buffer.resize(_M_coefficients.get_size().y);
+
+		for (size_t iz = 0; iz < tmp.get_size().z; ++iz) {
+			for (size_t ix = 0; ix < tmp.get_size().x; ++ix) {
+				tmp.get_data_line_y(ix, iz, in_buffer);
+				for(size_t y = 0; y < _M_range.y; ++y) {
+					int start = _M_y_indices[y];
+					auto w = _M_y_weights[y]; 
+					
+					out_buffer[y] = inner_product(w.begin(), w.end(), 
+								      in_buffer.begin() + start, C3DFVector());
+				}
+				tmp2.put_data_line_y(ix, iz, out_buffer);
+			}
+		}
+
+		in_buffer.resize(_M_coefficients.get_size().x);
+		out_buffer.resize(_M_range.x); 
+
+		for (size_t iz = 0; iz < tmp2.get_size().z; ++iz) {
+			for (size_t iy = 0; iy < tmp2.get_size().y; ++iy) {
+				tmp2.get_data_line_x(iy, iz, in_buffer);
+				for(size_t x = 0; x < _M_range.x; ++x) {
+					int start = _M_x_indices[x];
+					auto w = _M_x_weights[x]; 
+					
+					out_buffer[x] = C3DFVector(x,iy,iz) - 
+						inner_product(w.begin(), w.end(), 
+							      in_buffer.begin() + start, C3DFVector());
+				}
+				_M_current_grid->put_data_line_x(iy, iz, out_buffer);
+			}
 		}
 		_M_grid_valid = true; 
 	}
 }
+#endif 
+
+
 
 C3DTransformation::const_iterator C3DSplineTransformation::begin() const
 {
 	TRACE_FUNCTION;
 	init_grid(); 
-	return C3DTransformation::const_iterator(new iterator_impl(C3DBounds(0,0,0), get_size(), *this));
+	assert(_M_current_grid); 
+	return C3DTransformation::const_iterator(new iterator_impl(C3DBounds(0,0,0), get_size(), 
+								   _M_current_grid->begin()));
 }
 
 C3DTransformation::const_iterator C3DSplineTransformation::end() const
 {
 	TRACE_FUNCTION;
-	return C3DTransformation::const_iterator(new iterator_impl(get_size(), get_size(), *this));
+	init_grid(); 
+	assert(_M_current_grid); 
+	return C3DTransformation::const_iterator(new iterator_impl(get_size(), get_size(), 
+								   _M_current_grid->end()));
 }
 
 /*
@@ -706,44 +919,34 @@ const C3DBounds& C3DSplineTransformation::get_coeff_size() const
 
 
 C3DSplineTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& size, 
-						      const C3DSplineTransformation& trans):
+							 C3DFVectorfield::const_iterator value_it):
 	C3DTransformation::iterator_impl(pos,size), 
-	_M_trans(trans), 
-	_M_value_valid(false)
+	_M_value_it(value_it)
 {
-	TRACE_FUNCTION;
 }
  
 C3DTransformation::iterator_impl * C3DSplineTransformation::iterator_impl::clone() const
 {
 	TRACE_FUNCTION;
-	return new C3DSplineTransformation::iterator_impl(get_pos(), get_size(), _M_trans); 
+	return new C3DSplineTransformation::iterator_impl(get_pos(), get_size(), _M_value_it); 
 }
 
 const C3DFVector&  C3DSplineTransformation::iterator_impl::do_get_value()const
 {
-//	TRACE_FUNCTION;
-	if (!_M_value_valid) {
-		_M_value = C3DFVector(get_pos()) - _M_trans.on_grid(get_pos());
-		_M_value_valid = true; 
-	}
-	return _M_value; 
+	return *_M_value_it; 
 }
 
 void C3DSplineTransformation::iterator_impl::do_x_increment()
 {
-//	TRACE_FUNCTION;
-	_M_value_valid = false; 
+	++_M_value_it; 
 }
 void C3DSplineTransformation::iterator_impl::do_y_increment()
 {
-//	TRACE_FUNCTION;
-	_M_value_valid = false; 
+	++_M_value_it; 
 }
 void C3DSplineTransformation::iterator_impl::do_z_increment()
 {
-//	TRACE_FUNCTION;
-	_M_value_valid = false; 
+	++_M_value_it; 
 }
 
 double C3DSplineTransformation::get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const
@@ -754,7 +957,7 @@ double C3DSplineTransformation::get_divcurl_cost(double wd, double wr, CDoubleVe
 
 	// create PP matrices or adapt size 
 	if (!_M_divcurl_matrix) 
-		_M_divcurl_matrix.reset(new C3DPPDivcurlMatrix2(_M_coefficients.get_size(), 
+		_M_divcurl_matrix.reset(new C3DPPDivcurlMatrix(_M_coefficients.get_size(), 
 							       C3DFVector(_M_range), 
 							       *_M_kernel, wd, wr)); 
 	else 
@@ -772,7 +975,7 @@ double C3DSplineTransformation::get_divcurl_cost(double wd, double wr) const
 	reinit(); 
 	// create PP matrices or adapt size 
 	if (!_M_divcurl_matrix) 
-		_M_divcurl_matrix.reset(new C3DPPDivcurlMatrix2(_M_coefficients.get_size(), C3DFVector(_M_range), 
+		_M_divcurl_matrix.reset(new C3DPPDivcurlMatrix(_M_coefficients.get_size(), C3DFVector(_M_range), 
 							       *_M_kernel, wd, wr)); 
 	else 
 		_M_divcurl_matrix->reset(_M_coefficients.get_size(), C3DFVector(_M_range), 
@@ -783,9 +986,9 @@ double C3DSplineTransformation::get_divcurl_cost(double wd, double wr) const
 }
 
 
-class C3DSplineTransformCreator: public C3DTransformCreator {
+class C3DSplinebigTransformCreator: public C3DTransformCreator {
 public:
-	C3DSplineTransformCreator(EInterpolation ip, const C3DFVector& rates, bool debug);
+	C3DSplinebigTransformCreator(EInterpolation ip, const C3DFVector& rates, bool debug);
 	virtual P3DTransformation do_create(const C3DBounds& size) const;
 private:
 	PBSplineKernel _M_kernel;
@@ -793,7 +996,7 @@ private:
 	bool _M_debug; 
 };
 
-C3DSplineTransformCreator::C3DSplineTransformCreator(EInterpolation ip, const C3DFVector& rates, bool debug):
+C3DSplinebigTransformCreator::C3DSplinebigTransformCreator(EInterpolation ip, const C3DFVector& rates, bool debug):
 	_M_rates(rates), 
 	_M_debug(debug)
 {
@@ -819,7 +1022,7 @@ C3DSplineTransformCreator::C3DSplineTransformCreator(EInterpolation ip, const C3
 }
 
 
-P3DTransformation C3DSplineTransformCreator::do_create(const C3DBounds& size) const
+P3DTransformation C3DSplinebigTransformCreator::do_create(const C3DBounds& size) const
 {
 	TRACE_FUNCTION;
 
@@ -865,7 +1068,7 @@ C3DSplineTransformCreatorPlugin::ProductPtr
 C3DSplineTransformCreatorPlugin::do_create() const
 {
 	TRACE_FUNCTION;
-	return ProductPtr(new C3DSplineTransformCreator(_M_ip, C3DFVector(_M_rate, _M_rate, _M_rate), _M_debug));
+	return ProductPtr(new C3DSplinebigTransformCreator(_M_ip, C3DFVector(_M_rate, _M_rate, _M_rate), _M_debug));
 }
 
 bool C3DSplineTransformCreatorPlugin::do_test() const
@@ -878,7 +1081,8 @@ bool C3DSplineTransformCreatorPlugin::do_test() const
 
 const std::string C3DSplineTransformCreatorPlugin::do_get_descr() const
 {
-	return "plugin to create spline transformations";
+	return "plugin to create spline transformations, use more value pre-caching, and therefore, it needs more" 
+		" working memory then 'spline'.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
