@@ -171,10 +171,12 @@ P3DTransformation C3DRigidRegisterImpl::run(P3DImage src, P3DImage ref) const
 
 		if (transform)
 			transform = transform->upscale(src_scaled->get_size());
-		else
-			transform = _M_transform_creator->create(src_scaled->get_size());
+		else {
+			transform = _M_transform_creator->create(ref_scaled->get_size());
+			// set initial scale 
+		}
 
-		cvmsg() << "register at " << src_scaled->get_size() << "\n";
+		cvmsg() << "register at " << ref_scaled->get_size() << "\n";
 
 
 		CMinimizer::PProblem gp = _M_minimizer->has(property_gradient)? 

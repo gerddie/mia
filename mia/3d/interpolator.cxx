@@ -188,12 +188,6 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 	_M_coeff(image.get_size()), 
 	_M_size2(image.get_size() + image.get_size() - C3DBounds(2,2,2)),
 	_M_kernel(kernel),
-	_M_x_index(kernel->size()),
-	_M_y_index(kernel->size()),
-	_M_z_index(kernel->size()),
-	_M_x_weight(kernel->size()),
-	_M_y_weight(kernel->size()),
-	_M_z_weight(kernel->size()), 
 	_M_x_cache(kernel->size(), _M_coeff.get_size().x, _M_size2.x), 
 	_M_y_cache(kernel->size(), _M_coeff.get_size().y, _M_size2.y), 
 	_M_z_cache(kernel->size(), _M_coeff.get_size().z, _M_size2.z)

@@ -328,8 +328,9 @@ struct C3DTransform : public TFilter<P3DImage> {
 	}
 	template <typename T>
 	P3DImage operator ()(const T3DImage<T>& image) const {
-		assert(image.get_size() == _M_trans.get_size()); 
-		T3DImage<T> *timage = new T3DImage<T>(image.get_size(), image);
+		
+		T3DImage<T> *timage = new T3DImage<T>(_M_trans.get_size(), image);
+		P3DImage result(timage);
 
 		std::auto_ptr<T3DInterpolator<T> > interp(_M_ipf.create(image.data()));
 
@@ -341,7 +342,7 @@ struct C3DTransform : public TFilter<P3DImage> {
 			*r = (*interp)(*v);
 			++r; ++v; 
 		}
-		return P3DImage(timage);
+		return result;
 	}
 private:
 	const C3DInterpolatorFactory& _M_ipf;

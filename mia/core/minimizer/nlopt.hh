@@ -68,8 +68,6 @@ private:
 
 }; 
 
-
-
 class CNLOptMinimizerPlugin: public mia::CMinimizerPlugin {
 public: 
 	CNLOptMinimizerPlugin();

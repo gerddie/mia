@@ -274,7 +274,7 @@ CNLOptMinimizerPlugin::CNLOptMinimizerPlugin():
 	add_parameter("local-opt", new CNLOptMinimizerParam(m_options.local_opt, dict, 
 						  "local minimization algorithm that may be required for the"
 						  " main minimization algorithm. Currently, it uses the same"
-						  " stopping criteria like the main algorithm"));
+						  " stopping criteria as the main algorithm"));
 	
 	add_parameter("stop", new CDoubleParameter(m_options.stopval, -HUGE_VAL, HUGE_VAL, false, 
 				  "Stopping criterion: function value falls below this value")); 
