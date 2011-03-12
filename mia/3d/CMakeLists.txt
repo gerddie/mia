@@ -55,7 +55,6 @@ SET(MIA3D_HEADERS
 	nonrigidregister.hh
 	orientation.hh
 	ppmatrix.hh
-	ppmatrix2.hh
 	quaternion.hh
 	register.hh
 	rigidregister.hh
