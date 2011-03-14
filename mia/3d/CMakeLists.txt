@@ -48,6 +48,7 @@ SET(MIA3D_HEADERS
 	fuzzyseg.hh
 	fuzzyClusterSolverCG.hh
 	interpolator.hh interpolator.cxx
+	iterator.hh iterator.cxx
 	ica.hh
 	model.hh
 	multicost.hh
@@ -158,6 +159,7 @@ TEST_3D(transio transio)
 TEST_3D(quaternion quaternion)
 TEST_3D(ppmatrix ppmatrix)
 TEST_3D(fullcost fullcost)
+TEST_3D(iterator iterator)
 
 #
 # installation 

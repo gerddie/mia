@@ -36,18 +36,25 @@ public:
 	range3d_iterator(const C3DBounds& pos, const C3DBounds& size, 
 		       const C3DBounds& start, const C3DBounds& end, I iterator);
 
+	/**
+	   End iterator, can't be dereferenced  
+	 */
+	range3d_iterator(const C3DBounds& pos);
+
+
 	range3d_iterator<I>& operator = (const range3d_iterator<I>& other); 
 	range3d_iterator(const range3d_iterator<I>& other); 
 	
 	range3d_iterator<I>& operator ++(); 
 	range3d_iterator<I> operator ++(int); 
 	
-	const value_type&  operator *() const;
-	const value_type  *operator ->() const;
+	value_type&  operator *() const;
+	value_type  *operator ->() const;
 	
 	const C3DBounds& pos() const; 
 
-	bool operator == (const range3d_iterator<I>& other) const; 
+	template <typename T> friend
+	bool operator == (const range3d_iterator<T>& left, const range3d_iterator<T>& right); 
 
 private: 
 	void increment_y(); 
@@ -55,12 +62,30 @@ private:
 
 	C3DBounds m_pos; 
 	C3DBounds m_size; 
-	C3DBounds m_start; 
+	C3DBounds m_begin; 
 	C3DBounds m_end; 
 	int m_xstride; 
 	int m_ystride; 
 	I m_iterator; 
 }; 
+
+template <typename I> 
+bool operator == (const range3d_iterator<I>& left, const range3d_iterator<I>& right)
+{
+	// we really want these two to the same range 
+//	assert(left.m_size == right.m_size);
+//	assert(left.m_begin == right.m_begin);
+//	assert(left.m_end == right.m_end);
+
+	return left.m_pos == right.m_pos; 
+
+}
+
+template <typename I> 
+bool operator != (const range3d_iterator<I>& a, const range3d_iterator<I>& b)
+{
+	return !(a == b); 
+}
 
 NS_MIA_END
 

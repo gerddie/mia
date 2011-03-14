@@ -22,6 +22,7 @@
 
 #define VSTREAM_DOMAIN "ITERATOR"
 
+#include <mia/internal/autotest.hh>
 #include <mia/3d/iterator.hh>
 #include <mia/3d/iterator.cxx>
 
@@ -29,33 +30,50 @@
 
 NS_MIA_USE;
 
-typedef range3d_iterator<C3DFVectorfield> range3d_vfiterator; 
+typedef range3d_iterator<C3DFVectorfield::iterator> range3d_vfiterator; 
 
 
-BOOST_AUTO_TEST_CASE (test_lala) 
+struct VFIteratorFixture {
+	VFIteratorFixture(); 
+	
+	C3DBounds size; 
+	C3DFVectorfield field;
+}; 
+
+BOOST_FIXTURE_TEST_CASE (test_lala, VFIteratorFixture) 
 {
-	C3DBounds size(5,6,7); 
-	C3DFVectorfield field(size);
-	
-	auto i = field.begin(); 
-	for (size_z z = 0; z < size.z; ++z) 
-		for (size_z y = 0; y < size.y; ++y) 
-			for (size_z x = 0; x < size.x; ++x, ++i) 
-				*i = C3FVector(x,y,z); 
-
-	
 	range3d_vfiterator begin(C3DBounds(2,2,2), size, 
 				 C3DBounds(2,2,2), C3DBounds(4,5,6), 
 				 field.begin_at(2,2,2)); 
-
-	range3d_vfiterator end(C3DBounds(4,5,6), size, 
-			       C3DBounds(2,2,2), C3DBounds(4,5,6), 
-			       field.begin_at(4,5,6)); 
+	
+	range3d_vfiterator end(C3DBounds(4,5,6));
 
 	while (begin != end) {
-		BOOST_CHECK_EQUAL(*begin, begin->pos()); 
+		BOOST_CHECK_EQUAL(*begin, C3DFVector(begin.pos())); 
 		++begin; 
 	}
 
-		
+	range3d_vfiterator begin2(C3DBounds(0,0,0), size, 
+				  C3DBounds(0,0,0), size, 
+				  field.begin_at(0,0,0)); 
+	
+	range3d_vfiterator end2(size);
+	while (begin2 != end2) {
+		BOOST_CHECK_EQUAL(*begin2, C3DFVector(begin2.pos())); 
+		++begin2; 
+	}
+	
+}
+
+
+VFIteratorFixture::VFIteratorFixture():
+	size(5,6,7), 
+	field(size)
+{
+	auto i = field.begin(); 
+	for (size_t z = 0; z < size.z; ++z) 
+		for (size_t y = 0; y < size.y; ++y) 
+			for (size_t x = 0; x < size.x; ++x, ++i) 
+				*i = C3DFVector(x,y,z); 
+	
 }
