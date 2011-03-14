@@ -41,11 +41,11 @@ The class holds all types of data stored in three dimensional fields.
 
 NS_MIA_BEGIN
 
-template <class T>
+template <typename T>
 const unsigned int T3DDatafield<T>::_M_elements = 
 	sizeof(T) / sizeof(typename T3DDatafield<T>::atomic_type); 
 
-template <class T>
+template <typename T>
 T3DDatafield<T>::T3DDatafield():
 	_M_size(C3DBounds(0,0,0)), 
 	_M_xy(0), 
@@ -53,7 +53,7 @@ T3DDatafield<T>::T3DDatafield():
 {
 }
 
-template <class T>
+template <typename T>
 void T3DDatafield<T>::swap(T3DDatafield& other)
 {
 	::std::swap(_M_size, other._M_size); 
@@ -61,7 +61,7 @@ void T3DDatafield<T>::swap(T3DDatafield& other)
 	_M_data.swap(other._M_data); 
 }
 
-template <class T>
+template <typename T>
 T3DDatafield<T>::T3DDatafield(const C3DBounds& size ):
 	_M_size(size),
 	_M_xy(size.x * size.y), 
@@ -69,7 +69,7 @@ T3DDatafield<T>::T3DDatafield(const C3DBounds& size ):
 {
 }
 
-template <class T>
+template <typename T>
 T3DDatafield<T>::T3DDatafield(const C3DBounds& size, const T *data):
 	_M_size(size), 
 	_M_xy(size.x * size.y), 
@@ -78,33 +78,33 @@ T3DDatafield<T>::T3DDatafield(const C3DBounds& size, const T *data):
 	std::copy(data, data + size.x * size.y * size.z, _M_data->begin()); 
 }
 	
-template <class T>
+template <typename T>
 T3DDatafield<T>::~T3DDatafield()
 {
 }
 
-template <class T>
+template <typename T>
 void T3DDatafield<T>::make_single_ref()
 {
 	if (!_M_data.unique())
 		_M_data = ref_data_type( new std::vector<T>(*_M_data) );
 }
 
-template <class T>
+template <typename T>
 typename T3DDatafield<T>::value_type
 T3DDatafield<T>::get_interpol_val_at(const T3DVector<float >& p) const
 {
         return get_trilin_interpol_val_at(p);
 }
 
-template <class T>
+template <typename T>
 typename T3DDatafield<T>::value_type
 T3DDatafield<T>::operator()(const T3DVector<float >& pos)const
 {
         return get_trilin_interpol_val_at(pos);
 }
 
-template <class T>
+template <typename T>
 typename T3DDatafield<T>::value_type
 T3DDatafield<T>::get_trilin_interpol_val_at(const T3DVector<float >& p) const
 {
@@ -146,7 +146,7 @@ T3DDatafield<T>::get_trilin_interpol_val_at(const T3DVector<float >& p) const
 
 
 
-template <class T>
+template <typename T>
 void T3DDatafield<T>::get_data_line_x(int y, int z, std::vector<T>& result)const
 {
         result.resize(_M_size.x);
@@ -155,7 +155,7 @@ void T3DDatafield<T>::get_data_line_x(int y, int z, std::vector<T>& result)const
 	std::copy(_M_data->begin() + start, _M_data->begin() + start + _M_size.x, result.begin()); 
 }
 
-template <class T>
+template <typename T>
 void T3DDatafield<T>::get_data_line_y(int x, int z, std::vector<T>& result)const
 {
         result.resize(_M_size.y);
@@ -167,7 +167,7 @@ void T3DDatafield<T>::get_data_line_y(int x, int z, std::vector<T>& result)const
                 *k = *i;
 }
 
-template <class T>
+template <typename T>
 void T3DDatafield<T>::get_data_line_z(int x, int y, std::vector<T>& result)const
 {
         result.resize(_M_size.z);
@@ -200,7 +200,7 @@ void T3DDatafield<T>::get_data_line_z(int x, int y, std::vector<T>& result)const
 }
 
 
-template <class T>
+template <typename T>
 void T3DDatafield<T>::put_data_line_x(int y, int z, const std::vector<T>& input)
 {
         assert(input.size() == _M_size.x);
@@ -212,7 +212,7 @@ void T3DDatafield<T>::put_data_line_x(int y, int z, const std::vector<T>& input)
 	std::copy(input.begin(), input.end(), _M_data->begin() + start); 
 }
 
-template <class T>
+template <typename T>
 void T3DDatafield<T>::put_data_line_y(int x, int z, const std::vector<T>& input)
 {
         assert(input.size() == _M_size.y);
@@ -227,7 +227,7 @@ void T3DDatafield<T>::put_data_line_y(int x, int z, const std::vector<T>& input)
 		*k = *i; 
 }
 
-template <class T>
+template <typename T>
 void T3DDatafield<T>::put_data_line_z(int x, int y, const std::vector<T>& input)
 {
         assert(input.size() == _M_size.z);
@@ -243,7 +243,7 @@ void T3DDatafield<T>::put_data_line_z(int x, int y, const std::vector<T>& input)
 }
 
 
-template <class T>
+template <typename T>
 T3DDatafield<T>& T3DDatafield<T>::operator = (const T3DDatafield<T>& org)
 {
         if (&org == this) {
@@ -257,7 +257,7 @@ T3DDatafield<T>& T3DDatafield<T>::operator = (const T3DDatafield<T>& org)
         return *this;
 }
 
-template <class T>
+template <typename T>
 T3DDatafield<T>::T3DDatafield(const T3DDatafield<T>& org):
 	_M_size(org._M_size),
 	_M_xy(org._M_xy),
@@ -265,7 +265,7 @@ T3DDatafield<T>::T3DDatafield(const T3DDatafield<T>& org):
 {
 }
 
-template <class T>
+template <typename T>
 T2DDatafield<T> T3DDatafield<T>::get_data_plane_xy(size_t  z)const
 {
 	assert(z < get_size().z); 
@@ -312,7 +312,7 @@ struct __copy_dispatch<bool> {
 };
 
 
-template <class T>
+template <typename T>
 void T3DDatafield<T>::read_zslice_flat(size_t z, std::vector<atomic_type>& buffer)const
 {
 	assert(z < get_size().z); 
@@ -321,7 +321,7 @@ void T3DDatafield<T>::read_zslice_flat(size_t z, std::vector<atomic_type>& buffe
 }
 
 
-template <class T>
+template <typename T>
 void T3DDatafield<T>::write_zslice_flat(size_t z, const std::vector<atomic_type>& buffer)
 {
 	assert(z < get_size().z); 
@@ -330,7 +330,7 @@ void T3DDatafield<T>::write_zslice_flat(size_t z, const std::vector<atomic_type>
 }
 
 
-template <class T>
+template <typename T>
 void T3DDatafield<T>::read_yslice_flat(size_t y, std::vector<atomic_type>& buffer)const
 {
 	assert(y < get_size().y); 
@@ -343,7 +343,7 @@ void T3DDatafield<T>::read_yslice_flat(size_t y, std::vector<atomic_type>& buffe
 	}
 }
 
-template <class T>
+template <typename T>
 void T3DDatafield<T>::write_yslice_flat(size_t y, const std::vector<atomic_type>& buffer )
 {
 	assert(y < get_size().y); 
@@ -357,7 +357,7 @@ void T3DDatafield<T>::write_yslice_flat(size_t y, const std::vector<atomic_type>
 	}
 }
 
-template <class T>
+template <typename T>
 void T3DDatafield<T>::read_xslice_flat(size_t x, std::vector<atomic_type>& buffer)const
 {
 	assert(x < get_size().x); 
@@ -372,7 +372,7 @@ void T3DDatafield<T>::read_xslice_flat(size_t x, std::vector<atomic_type>& buffe
 	}
 }
 
-template <class T>
+template <typename T>
 void T3DDatafield<T>::write_xslice_flat(size_t x, const std::vector<atomic_type>& buffer)
 {
 	assert(x < get_size().x); 
@@ -389,7 +389,7 @@ void T3DDatafield<T>::write_xslice_flat(size_t x, const std::vector<atomic_type>
 
 
 
-template <class T>
+template <typename T>
 void T3DDatafield<T>::put_data_plane_xy(size_t  z, const T2DDatafield<T>& p)
 {
 	assert(z < get_size().z); 
@@ -397,7 +397,7 @@ void T3DDatafield<T>::put_data_plane_xy(size_t  z, const T2DDatafield<T>& p)
 	copy(p.begin(), p.end(), begin_at(0,0,z)); 
 }
 
-template <class T>
+template <typename T>
 T2DDatafield<T> T3DDatafield<T>::get_data_plane_yz(size_t  x)const
 {
 	assert(x < get_size().x); 
@@ -416,7 +416,7 @@ T2DDatafield<T> T3DDatafield<T>::get_data_plane_yz(size_t  x)const
 	return result; 
 }
 
-template <class T>
+template <typename T>
 void T3DDatafield<T>::put_data_plane_yz(size_t  x, const T2DDatafield<T>& p)
 {
 	assert(p.get_size().x == get_size().y && p.get_size().y == get_size().z); 
@@ -435,7 +435,7 @@ void T3DDatafield<T>::put_data_plane_yz(size_t  x, const T2DDatafield<T>& p)
 
 }
 
-template <class T>
+template <typename T>
 T2DDatafield<T> T3DDatafield<T>::get_data_plane_xz(size_t  y)const
 {
 	assert(y < get_size().y); 
@@ -453,7 +453,7 @@ T2DDatafield<T> T3DDatafield<T>::get_data_plane_xz(size_t  y)const
 	return result; 
 }
 
-template <class T>
+template <typename T>
 void  T3DDatafield<T>::put_data_plane_xz(size_t  y, const T2DDatafield<T>& p)
 {
 	assert(y < get_size().y); 
@@ -472,7 +472,7 @@ void  T3DDatafield<T>::put_data_plane_xz(size_t  y, const T2DDatafield<T>& p)
 	}
 }
 
-template <class T>
+template <typename T>
 typename T3DDatafield<T>::value_type
 T3DDatafield<T>::get_avg()
 {
@@ -488,7 +488,7 @@ T3DDatafield<T>::get_avg()
         return Avg;
 }
 
-template <class T>
+template <typename T>
 typename T3DDatafield<T>::value_type
 T3DDatafield<T>::strip_avg()
 {
@@ -504,17 +504,17 @@ T3DDatafield<T>::strip_avg()
         return Avg;
 }
 
-template <class T>
+template <typename T>
 void T3DDatafield<T>::clear()
 {
         make_single_ref();
 	std::fill(_M_data->begin(), _M_data->end(), T()); 
 }
 
-template <class T>
+template <typename T>
 const T T3DDatafield<T>::Zero = T();
 
-template <class T>
+template <typename T>
 typename T3DDatafield<T>::value_type
 T3DDatafield<T>::get_block_avrg(const C3DBounds& Start, const C3DBounds& BlockSize) const
 {
@@ -529,6 +529,22 @@ T3DDatafield<T>::get_block_avrg(const C3DBounds& Start, const C3DBounds& BlockSi
                 }
         }
         return Result / S;
+}
+
+template <typename T>
+typename T3DDatafield<T>::range_iterator 
+T3DDatafield<T>::begin_range(const C3DBounds& begin, const C3DBounds& end)
+{
+	return range_iterator(begin, get_size(), begin, end, 
+			      begin_at(end.x, end.y, end.z)); 
+}
+
+template <typename T>
+typename T3DDatafield<T>::range_iterator 
+T3DDatafield<T>::end_range(const C3DBounds& begin, const C3DBounds& end)
+{
+	return range_iterator(end, get_size(), begin, end, 
+			      begin_at(end.x, end.y, end.z)); 
 }
 
 NS_MIA_END

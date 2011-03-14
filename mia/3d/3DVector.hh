@@ -195,6 +195,7 @@ public:
 		return T3DVector<T>(z,x,y); 
 	}
 	static T3DVector<T> _1; 
+	static T3DVector<T> _0; 
 	static const unsigned int  elements; 
 };
 
@@ -374,6 +375,9 @@ bool operator >= (const T3DVector<T>& b, const T3DVector<T>& a){
 }
 template <typename T >
 T3DVector<T> T3DVector<T>::_1 = T3DVector<T>(1,1,1);
+
+template <typename T >
+T3DVector<T> T3DVector<T>::_0 = T3DVector<T>(0,0,0);
 
 NS_MIA_END
 

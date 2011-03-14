@@ -20,6 +20,7 @@
  *
  */
 
+#include <stdexcept>
 #include <mia/core/errormacro.hh>
 #include <mia/3d/iterator.hh>
 
@@ -47,10 +48,9 @@ range3d_iterator<I>::range3d_iterator(const C3DBounds& pos):
 {
 }
 
-
 template <typename I> 
 range3d_iterator<I>::range3d_iterator(const C3DBounds& pos, const C3DBounds& size, 
-			       const C3DBounds& begin, const C3DBounds& end, I iterator):
+				      const C3DBounds& begin, const C3DBounds& end, I iterator):
 	m_pos(pos), 
 	m_size(size), 
 	m_begin(begin), 
@@ -61,27 +61,29 @@ range3d_iterator<I>::range3d_iterator(const C3DBounds& pos, const C3DBounds& siz
 	m_ystride = (m_size.y - (m_end.y - m_begin.y))*m_size.x; 
 }
 
+
 template <typename I> 
 range3d_iterator<I>& range3d_iterator<I>::operator = (const range3d_iterator<I>& other)
 {
-	m_pos = other.pos; 
-	m_size = other.size;  
-	m_begin = other.begin; 
-	m_end = other.end; 
+	m_pos = other.m_pos; 
+	m_size = other.m_size;  
+	m_begin = other.m_begin; 
+	m_end = other.m_end; 
 	m_iterator = other.m_iterator; 
 	m_xstride = other.m_xstride; 
 	m_ystride = other.m_ystride; 
+	return *this; 
 }
 
 template <typename I> 
 range3d_iterator<I>::range3d_iterator(const range3d_iterator<I>& other):
-	m_pos(other.pos), 
-	m_size(other.size), 
-	m_begin(other.begin), 
-	m_end(other.end), 
-	m_iterator(other.m_iterator), 
+	m_pos(other.m_pos), 
+	m_size(other.m_size), 
+	m_begin(other.m_begin), 
+	m_end(other.m_end), 
 	m_xstride(other.m_xstride),
-	m_ystride(other.m_ystride)
+	m_ystride(other.m_ystride),
+	m_iterator(other.m_iterator)
 {
 }	
 
@@ -130,15 +132,38 @@ range3d_iterator<I> range3d_iterator<I>::operator ++(int)
 }
 
 template <typename I> 
-typename I::value_type& range3d_iterator<I>::operator *() const
+typename range3d_iterator<I>::reference range3d_iterator<I>::operator *() const
 {
 	return *m_iterator; 
 }
 
 template <typename I> 
-typename I::value_type  *range3d_iterator<I>::operator ->() const
+struct __iterator_dispatch_operator_for_bool {
+	static typename range3d_iterator<I>::pointer 
+	apply(const typename range3d_iterator<I>::internal_iterator& it) {
+		return it.operator->(); 
+	}
+}; 
+
+template <> 
+struct __iterator_dispatch_operator_for_bool<std::vector<bool>::iterator> {
+	static std::vector<bool>::iterator::pointer apply(const std::vector<bool>::iterator& ) {
+		throw std::logic_error("You can't use the '->' with a bool 3DDatafield range iterator"); 
+	}
+}; 
+
+template <> 
+struct __iterator_dispatch_operator_for_bool<std::vector<bool>::const_iterator> {
+	static std::vector<bool>::const_iterator::pointer apply(const std::vector<bool>::const_iterator& ) {
+		throw std::logic_error("You can't use the '->' with a bool 3DDatafield range iterator"); 
+	}
+}; 
+			
+
+template <typename I> 
+typename range3d_iterator<I>::pointer range3d_iterator<I>::operator ->() const
 {
-	return m_iterator; 
+	return __iterator_dispatch_operator_for_bool<internal_iterator>::apply(m_iterator);
 }
 
 template <typename I> 

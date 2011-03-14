@@ -42,6 +42,7 @@ The class holds all types of data stored in three dimensional fields.
 
 #include <mia/3d/3DVector.hh>
 #include <mia/3d/defines3d.hh>
+#include <mia/3d/iterator.hh>
 #include <mia/2d/2DDatafield.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/parameter.hh>
@@ -77,6 +78,8 @@ public:
         void make_single_ref();
 
 	/// a shortcut data type
+
+
         typedef typename std::vector<T>::iterator iterator;
         typedef typename std::vector<T>::const_iterator const_iterator;
         typedef typename std::vector<T>::const_reference const_reference;
@@ -87,7 +90,8 @@ public:
         typedef typename std::vector<T>::size_type size_type;
         typedef typename std::vector<T>::difference_type difference_type;
 	typedef typename atomic_data<T>::type atomic_type; 
-	
+	typedef range3d_iterator<iterator> range_iterator; 
+	typedef range3d_iterator<const_iterator> const_range_iterator; 
 
 	typedef C3DBounds dimsize_type;
 
@@ -280,6 +284,13 @@ public:
                 make_single_ref();
                 return _M_data->begin();
         }
+
+        /** \returns an read/write forward iterator over a subset of the data. 
+            The functions ensures, that the field uses a single referenced datafield */
+        range_iterator begin_range(const C3DBounds& begin, const C3DBounds& end); 
+
+        /** \returns the end of a read/write forward iterator over a subset of the data. */
+        range_iterator end_range(const C3DBounds& begin, const C3DBounds& end); 
 
 	iterator begin_at(size_t x, size_t y, size_t z)
         {

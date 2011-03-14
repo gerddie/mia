@@ -30,17 +30,29 @@ NS_MIA_BEGIN
 template <typename I> 
 class range3d_iterator: public std::forward_iterator_tag {
 public: 
-	typedef typename I::value_type value_type; 
+	typedef typename I::reference reference; 
+	typedef typename I::pointer pointer; 
+	typedef I internal_iterator; 
 	
 	range3d_iterator(); 
 	range3d_iterator(const C3DBounds& pos, const C3DBounds& size, 
-		       const C3DBounds& start, const C3DBounds& end, I iterator);
-
+			 const C3DBounds& start, const C3DBounds& end, I iterator);
+	
 	/**
 	   End iterator, can't be dereferenced  
 	 */
 	range3d_iterator(const C3DBounds& pos);
 
+
+	template <typename AI> 
+	friend class range3d_iterator; 
+	
+	template <typename AI>
+	range3d_iterator<I>& operator = (const range3d_iterator<AI>& other); 
+
+	
+	template <typename AI>
+	range3d_iterator(const range3d_iterator<AI>& other); 
 
 	range3d_iterator<I>& operator = (const range3d_iterator<I>& other); 
 	range3d_iterator(const range3d_iterator<I>& other); 
@@ -48,8 +60,8 @@ public:
 	range3d_iterator<I>& operator ++(); 
 	range3d_iterator<I> operator ++(int); 
 	
-	value_type&  operator *() const;
-	value_type  *operator ->() const;
+	reference  operator *() const;
+	pointer    operator ->() const;
 	
 	const C3DBounds& pos() const; 
 
@@ -57,6 +69,7 @@ public:
 	bool operator == (const range3d_iterator<T>& left, const range3d_iterator<T>& right); 
 
 private: 
+
 	void increment_y(); 
 	void increment_z(); 
 
@@ -68,6 +81,35 @@ private:
 	int m_ystride; 
 	I m_iterator; 
 }; 
+
+
+
+template <typename I> 
+template <typename AI>
+range3d_iterator<I>& range3d_iterator<I>::operator = (const range3d_iterator<AI>& other)
+{
+	m_pos = other.m_pos; 
+	m_size = other.m_size;  
+	m_begin = other.m_begin; 
+	m_end = other.m_end; 
+	m_iterator = other.m_iterator; 
+	m_xstride = other.m_xstride; 
+	m_ystride = other.m_ystride; 
+	return *this; 
+}
+
+template <typename I> 
+template <typename AI>
+range3d_iterator<I>::range3d_iterator(const range3d_iterator<AI>& other):
+	m_pos(other.m_pos), 
+	m_size(other.m_size), 
+	m_begin(other.m_begin), 
+	m_end(other.m_end), 
+	m_xstride(other.m_xstride),
+	m_ystride(other.m_ystride),
+	m_iterator(other.m_iterator)
+{
+}	
 
 template <typename I> 
 bool operator == (const range3d_iterator<I>& left, const range3d_iterator<I>& right)

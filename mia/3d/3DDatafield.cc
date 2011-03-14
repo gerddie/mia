@@ -38,6 +38,7 @@
 
 #include <mia/3d/3DDatafield.hh>
 #include <mia/3d/3DDatafield.cxx>
+#include <mia/3d/iterator.cxx>
 #include <mia/core/parameter.cxx>
 
 NS_MIA_BEGIN
@@ -79,22 +80,27 @@ T3DDatafield<bool>::get_trilin_interpol_val_at(const T3DVector<float >& p) const
 	return  (dz * b1 + fz * b2) > 0.5;
 }
 
+#define INSTANCIATE(TYPE) \
+	template class  EXPORT_3D T3DDatafield<TYPE>;			\
+	template class  EXPORT_3D range3d_iterator<T3DDatafield<TYPE>::iterator>; \
+	template class  EXPORT_3D range3d_iterator<T3DDatafield<TYPE>::const_iterator>;
 
 
-template class  EXPORT_3D T3DDatafield<double>;
-template class  EXPORT_3D T3DDatafield<float>;
-template class  EXPORT_3D T3DDatafield<unsigned int>;
-template class  EXPORT_3D T3DDatafield<int>;
+
+INSTANCIATE(double);
+INSTANCIATE(float);
+INSTANCIATE(unsigned int);
+INSTANCIATE(int);
 
 #ifdef HAVE_INT64
-template class  EXPORT_3D T3DDatafield<mia_int64>;
-template class  EXPORT_3D T3DDatafield<mia_uint64>;
+INSTANCIATE(mia_int64);
+INSTANCIATE(mia_uint64);
 #endif
-template class  EXPORT_3D T3DDatafield<short>;
-template class  EXPORT_3D T3DDatafield<unsigned short>;
-template class  EXPORT_3D T3DDatafield<unsigned char >;
-template class  EXPORT_3D T3DDatafield<signed char >;
-template class  T3DDatafield<bool>;
+INSTANCIATE(short);
+INSTANCIATE(unsigned short);
+INSTANCIATE(unsigned char );
+INSTANCIATE(signed char);
+INSTANCIATE(bool);
 
 extern const char type_str_3dbounds[] = "3DBounds";
 template class EXPORT_3D  CTParameter<C3DBounds, type_str_3dbounds>;
