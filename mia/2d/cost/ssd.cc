@@ -33,43 +33,11 @@ NS_MIA_USE;
 using namespace std;
 using namespace boost;
 
+template class TSSDCost<mia::C2DImageCost>;
+
 const string C2DSSDCostPlugin::do_get_descr()const
 {
 	return "2D imaga cost: sum of squared differences";
-}
-
-bool C2DSSDCostPlugin::do_test() const
-{
-	bool success = true;
-	const float src_data[16] = {
-		0, 0, 0, 0,
-		0, 3, 1, 0,
-		0, 6, 7, 0,
-		0, 0, 0, 0
-	};
-	const float ref_data[16] = {
-		0, 0, 0, 0,
-		0, 2, 3, 0,
-		0, 1, 2, 0,
-		0, 0, 0, 0
-	};
-
-	C2DFImage *fsrc = new C2DFImage(C2DBounds(4,4), src_data );
-	C2DFImage *fref = new C2DFImage(C2DBounds(4,4), ref_data );
-	P2DImage src(fsrc);
-	P2DImage ref(fref);
-
-	C2DSSDCost cost;
-
-	double cost_value = cost.value(*src, *ref);
-	success &= ( cost_value == 55.0 / 16.0);
-
-	C2DFVectorfield force(C2DBounds(4,4));
-
-	cost.evaluate_force(*src, *ref, 0.5, force);
-
-	success &= (force(1,1) == C2DFVector(0.25, 1.5));
-	return success;
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

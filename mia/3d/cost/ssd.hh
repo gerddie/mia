@@ -26,12 +26,11 @@
 NS_BEGIN(NS);
 
 
-typedef CSSDCost<mia::C3DImageCost> C3DSSDCost;
+typedef TSSDCost<mia::C3DImageCost> C3DSSDCost;
 
 class C3DSSDCostPlugin: public TSSDCostPlugin<mia::C3DImageCostPlugin, C3DSSDCost> {
 private:
 	virtual const std::string do_get_descr()const;
-	virtual bool do_test() const;
 };
 
 NS_END

@@ -52,14 +52,14 @@ BOOST_AUTO_TEST_CASE( test_SSD_2D )
 	P2DImage src(new C2DFImage(C2DBounds(4,4), src_data ));
 	P2DImage ref(new C2DFImage(C2DBounds(4,4), ref_data ));
 
-	C2DSSDCost cost;
+	C2DSSDCost cost(true);
 
 	double cost_value = cost.value(*src, *ref);
 	BOOST_CHECK_CLOSE(cost_value, 0.5 * 55.0 / 16.0, 0.1);
 
 	C2DFVectorfield force(C2DBounds(4,4));
 
-	cost.evaluate_force(*src, *ref, 0.5, force);
+	BOOST_CHECK_CLOSE(cost.evaluate_force(*src, *ref, 0.5, force), 0.25 * 55.0 / 16.0, 0.1);
 
 	BOOST_CHECK_CLOSE(force(1,1).x, 0.25f / 16.0f, 0.1);
 	BOOST_CHECK_CLOSE(force(1,1).y, 1.50f / 16.0f, 0.1);
