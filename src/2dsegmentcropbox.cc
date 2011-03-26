@@ -162,7 +162,7 @@ CSegFrameCropper::CSegFrameCropper(const C2DIVector& shift,
 CSegFrame CSegFrameCropper::operator()(const CSegFrame& frame, const C2DImage& image) const
 {
 	P2DImage cropped = _M_filter->filter(image);
-	const string out_filename = (_M_image_outpath.file_string() / bfs::path(frame.get_imagename())).file_string();
+	const string out_filename = (_M_image_outpath.string() / bfs::path(frame.get_imagename())).string();
 
 	if (!save_image(out_filename, cropped))
 		cvwarn() << "Could not write cropped file '" << out_filename << "'\n";

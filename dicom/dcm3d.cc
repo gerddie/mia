@@ -184,7 +184,7 @@ static void add_images(const string& fname, const string& study_id, vector<P2DIm
 {
 	TRACE_FUNCTION;
 	bfs::path dir(fname);
-	string ext = dir.extension();
+	string ext = dir.extension().string();
 	dir.remove_filename();
 
 	if (dir.filename().empty())
@@ -202,11 +202,11 @@ static void add_images(const string& fname, const string& study_id, vector<P2DIm
 	bfs::directory_iterator di(dir);
 	bfs::directory_iterator dend;
 	while (di != dend) {
-		if (boost::regex_match(di->path().filename(), pat_expr) &&
+		if (boost::regex_match(di->path().filename().string(), pat_expr) &&
 			di->path().filename() != fname) {
 			bfs::path f =  di->path();
 			cvdebug() << "read file '" << f << "'\n";
-			CDicomReader reader(f.directory_string().c_str());
+			CDicomReader reader(f.string().c_str());
 			if (reader.good() && reader.get_attribute(IDStudyID, true) == study_id)
 				candidates.push_back(reader.get_image());
 		}
@@ -258,8 +258,8 @@ CSliceSaver::CSliceSaver(const string& fname):
 {
 	// filename split the
 	bfs::path fullname(fname);
-	_M_extension = fullname.extension();
-	_M_fnamebase = fullname.stem();
+	_M_extension = fullname.extension().string();
+	_M_fnamebase = fullname.stem().string();
 }
 
 void CSliceSaver::set_instance(size_t series, size_t slice)

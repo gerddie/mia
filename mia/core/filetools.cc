@@ -251,9 +251,9 @@ EXPORT_CORE size_t get_filename_number_pattern_width(std::string const& in_filen
 EXPORT_CORE size_t get_filename_number_pattern(std::string const& in_filename, string& base, string& suffix)
 {
 	bfs::path p(in_filename);
-	suffix = p.extension();
+	suffix = p.extension().string();
 
-	string rest = p.stem();
+	string rest = p.stem().string();
 
 	size_t nwidth = 0;
 	string::const_reverse_iterator r = rest.rbegin();
@@ -270,7 +270,7 @@ EXPORT_CORE void split_filename_number_pattern(std::string const& in_filename, s
 {
 	bfs::path p(in_filename);
 	size_t nwidth = get_filename_number_pattern(in_filename, base, suffix);
-	number = p.stem().substr(p.stem().size() - nwidth);
+	number = p.stem().string().substr(p.stem().string().size() - nwidth);
 }
 
 NS_MIA_END

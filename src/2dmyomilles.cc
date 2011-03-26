@@ -204,7 +204,7 @@ int do_main( int argc, const char *argv[] )
 	if (!cropped_filename.empty()) {
 		bfs::path cf(cropped_filename);
 		cf.replace_extension(); 
-		input_set.rename_base(cf.filename()); 
+		input_set.rename_base(cf.filename().string()); 
 		input_set.save_images(cropped_filename);
 
 		unique_ptr<xmlpp::Document> test_cropset(input_set.write());

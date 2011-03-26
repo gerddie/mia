@@ -69,7 +69,7 @@ void TPluginHandler<I>::global_searchpath(list<bfs::path>& searchpath)
 	bfs::path type_path = TPlugin<typename I::PlugData,typename I::PlugType>::search_path();
 	
 	cvdebug() << "Add plugin searchpath\n"; 
-	cvdebug() << "   " << get_plugin_root() << "/" << type_path.directory_string() << "\n"; 
+	cvdebug() << "   " << get_plugin_root() << "/" << type_path.string() << "\n"; 
 
 	searchpath.push_back( bfs::path(get_plugin_root()) / type_path); 
 
@@ -88,7 +88,7 @@ void TPluginHandler<I>::global_searchpath(list<bfs::path>& searchpath)
 
 	char *c_user = getenv("MIA_PLUGIN_PATH");
 	if (c_user) {
-		cvdebug() << "   " << c_user << "/" << type_path.file_string() << "\n"; 
+		cvdebug() << "   " << c_user << "/" << type_path.string() << "\n"; 
 		bfs::path lala(c_user); 
 		bfs::path subdir = lala / type_path; 
 		
@@ -113,17 +113,17 @@ void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
 	// search through all the path to find the plugins
 	for (list<bfs::path>::const_iterator dir = searchpath.begin(); 
 	     dir != searchpath.end(); ++dir){
-		cvdebug() << "Looking for " << dir->file_string() << "\n"; 
+		cvdebug() << "Looking for " << dir->string() << "\n"; 
 		if (bfs::exists(*dir) && bfs::is_directory(*dir)) {
 			// if we cant save the old directory something is terribly wrong
 			bfs::directory_iterator di(*dir); 
 			bfs::directory_iterator dend;
 			
-			cvdebug() << "TPluginHandler<I>::initialise: scan '"<<dir->directory_string() <<"'\n"; 
+			cvdebug() << "TPluginHandler<I>::initialise: scan '"<<dir->string() <<"'\n"; 
 
 			while (di != dend) {
-				cvdebug() << "    candidate:'" << di->path().directory_string() << "'"; 
-				if (boost::regex_match(di->path().filename(), pat_expr)) {
+				cvdebug() << "    candidate:'" << di->path().string() << "'"; 
+				if (boost::regex_match(di->path().string(), pat_expr)) {
 					candidates.push_back(*di); 
 					cverb << " add\n";
 				}else
@@ -138,8 +138,8 @@ void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
 	for (vector<bfs::path>::const_iterator i = candidates.begin(); 
 	     i != candidates.end(); ++i) {
 		try {
-			cvdebug()<< " Load '" <<i->directory_string()<<"'\n"; 
-			_M_modules.push_back(PPluginModule(new CPluginModule(i->directory_string().c_str())));
+			cvdebug()<< " Load '" <<i->string()<<"'\n"; 
+			_M_modules.push_back(PPluginModule(new CPluginModule(i->string().c_str())));
 		}
 		catch (invalid_argument& ex) {
 			cverr() << ex.what() << "\n"; 
@@ -148,7 +148,7 @@ void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
 			cverr() << ex.what() << "\n"; 
 		}
 		catch (...) {
-			cverr() << "Loading module " << i->directory_string() << "failed for unknown reasons\n"; 
+			cverr() << "Loading module " << i->string() << "failed for unknown reasons\n"; 
 		}
 	}
 
@@ -312,7 +312,7 @@ void THandlerSingleton<T>::set_search_path(const std::list<boost::filesystem::pa
 	if (_M_is_created) {
 		bfs::path type_path = TPlugin<typename IF::PlugData,typename IF::PlugType>::search_path();
 		cvinfo() << "THandlerSingleton<" << 
-			type_path.file_string() <<
+			type_path.string() <<
 			">::set_search_path: handler was already created\n"; 
 			
 	}

@@ -76,8 +76,8 @@ void CSegFrame::set_imagename(const std::string& name)
 void CSegFrame::rename_base(const std::string& new_base)
 {
 	bfs::path filename(m_filename); 
-	string suffix = filename.extension(); 
-	string name = filename.stem(); 
+	string suffix = filename.extension().string(); 
+	string name = filename.stem().string(); 
 	auto i = name.rbegin();
 	int k = 0; 
 	while (i != name.rend() && isdigit(*i) ) {

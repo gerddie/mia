@@ -48,7 +48,7 @@ CSegSetWithImages::CSegSetWithImages(const string& filename, bool ignore_path):
 	if (ignore_path) {
 		bfs::path src_path_(filename);
 		src_path_.remove_filename();
-		src_path = src_path_.directory_string();
+		src_path = src_path_.string();
 		cvdebug() << "Segmentation path" << src_path << "\n";
 	}
 
@@ -58,9 +58,9 @@ CSegSetWithImages::CSegSetWithImages(const string& filename, bool ignore_path):
 
 	while (iframe != eframe) {
 		string input_image = iframe->get_imagename();
-		string iimage = bfs::path(input_image).filename();
+		string iimage = bfs::path(input_image).string();
 		if (ignore_path) {
-			input_image = (src_path / bfs::path(iimage) ).directory_string();
+			input_image = (src_path / bfs::path(iimage) ).string();
 			iframe->set_imagename(iimage);
 		}
 		P2DImage image = load_image2d(input_image); 
@@ -90,7 +90,7 @@ void CSegSetWithImages::save_images(const string& filename) const
 	while (iframe != eframe) {
 		string image_name = iframe->get_imagename();
 		string filename = (image_name[0] == '/') ? 
-			image_name : (src_path / bfs::path(image_name)).directory_string(); 
+			image_name : (src_path / bfs::path(image_name)).string(); 
                         
 		if (!save_image(filename, *iimage))
 			THROW(runtime_error, "unable to save image to " << image_name ); 
@@ -163,7 +163,7 @@ CSegFrameCropper::CSegFrameCropper(const C2DIVector& shift,
 CSegFrame CSegFrameCropper::operator()(const CSegFrame& frame, const C2DImage& image) const
 {
 	P2DImage cropped = _M_filter->filter(image);
-	const string out_filename = (_M_image_outpath.file_string() / bfs::path(frame.get_imagename())).file_string();
+	const string out_filename = (_M_image_outpath.string() / bfs::path(frame.get_imagename())).string();
 
 	if (!save_image(out_filename, cropped))
 		cvwarn() << "Could not write cropped file '" << out_filename << "'\n";
