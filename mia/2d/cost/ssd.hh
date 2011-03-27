@@ -37,13 +37,11 @@
 NS_BEGIN(mia_2dcost_ssd)
 
 
-typedef CSSDCost<mia::C2DImageCost> C2DSSDCost;
-template class CSSDCost<mia::C2DImageCost>;
+typedef TSSDCost<mia::C2DImageCost> C2DSSDCost;
 
 class C2DSSDCostPlugin: public TSSDCostPlugin<mia::C2DImageCostPlugin, C2DSSDCost> {
 private:
 	virtual const std::string do_get_descr()const;
-	virtual bool do_test() const;
 };
 
 NS_END

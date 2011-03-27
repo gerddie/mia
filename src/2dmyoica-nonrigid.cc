@@ -73,16 +73,14 @@ private:
 	FConvert2DImage2float _M_converter; 
 }; 
 
-C2DFullCostList create_costs(double divcurlweight, double imageweight)
+C2DFullCostList create_costs(double divcurlweight, P2DFullCost imagecost)
 {
 	C2DFullCostList result; 
-	stringstream divcurl_descr;  
+	result.push(imagecost); 
+
+	stringstream divcurl_descr; 
 	divcurl_descr << "divcurl:weight=" << divcurlweight; 
 	result.push(C2DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
-
-	stringstream image_descr; 
-	image_descr << "image:weight=" << imageweight; 
-	result.push(C2DFullCostPluginHandler::instance().produce(image_descr.str())); 
 	return result; 
 }
 
@@ -128,11 +126,11 @@ void run_registration_pass(CSegSetWithImages&  input_set,
 			   const C2DImageSeries& references, 
 			   int skip_images, PMinimizer minimizer, 
 			   C2DInterpolatorFactory& ipfactory, size_t mg_levels, 
-			   double c_rate, double divcurlweight, double imageweight) 
+			   double c_rate, double divcurlweight, P2DFullCost imagecost) 
 {
 	CSegSetWithImages::Frames& frames = input_set.get_frames();
 	C2DImageSeries input_images = input_set.get_images(); 
-	auto costs  = create_costs(divcurlweight, imageweight); 
+	auto costs  = create_costs(divcurlweight, imagecost); 
 	auto transform_creator = create_transform_creator(c_rate); 
 	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, 
 				ipfactory, mg_levels);
@@ -178,11 +176,11 @@ int do_main( int argc, const char *argv[] )
 
 	// registration parameters
 	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1");
+	auto imagecost = C2DFullCostPluginHandler::instance().produce("image:weight=1,cost=ssd");
 	double c_rate = 32; 
 	double c_rate_divider = 4; 
 	double divcurlweight = 20.0; 
 	double divcurlweight_divider = 4.0; 
-	double imageweight = 1.0; 
 
 	EInterpolation interpolator = ip_bspline3;
 	size_t mg_levels = 3; 
@@ -235,8 +233,7 @@ int do_main( int argc, const char *argv[] )
 				    " --divcurl-divider with every pass")); 
 	options.push_back(make_opt( divcurlweight_divider, "divcurl-divider", 0,
 				    "divcurl weight scaling with each new pass")); 
-	options.push_back(make_opt( imageweight, "imageweight", 'w', 
-				    "image cost weight")); 
+	options.push_back(make_opt( imagecost, "imagecost", 'w', "image cost")); 
 	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
 	options.push_back(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
@@ -321,7 +318,7 @@ int do_main( int argc, const char *argv[] )
 			save_references(save_ref_filename, current_pass, skip_images, references); 
 
 		run_registration_pass(input_set, references,  skip_images,  minimizer, 
-				      *ipfactory, mg_levels, c_rate, divcurlweight, imageweight); 
+				      *ipfactory, mg_levels, c_rate, divcurlweight, imagecost); 
 		
 		if (!save_reg_filename.empty()) 
 			save_references(save_reg_filename, current_pass, 0, input_set.get_images()); 

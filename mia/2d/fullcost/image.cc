@@ -90,12 +90,11 @@ double C2DImageFullCost::do_evaluate(const C2DTransformation& t, CDoubleVector& 
 	
 	C2DFVectorfield force(get_current_size()); 
 
- 	_M_cost_kernel->evaluate_force(*temp, *_M_ref, 1.0, force); 
+ 	double result = _M_cost_kernel->evaluate_force(*temp, *_M_ref, 1.0, force); 
 
 	t.translate(force, gradient); 
 	idx++;
 
-	double result = _M_cost_kernel->value(*temp, *_M_ref); 
 	cvdebug() << "Image cost =" << result << "\n"; 
 	return result; 
 	
