@@ -28,7 +28,7 @@
 #include <mia/2d/timestep.hh>
 #include <mia/2d/cost.hh>
 #include <mia/2d/fatcost.hh>
-#include <mia/2d/transform.hh>
+#include <mia/2d/transformfactory.hh>
 
 NS_MIA_BEGIN
 
@@ -61,7 +61,7 @@ public:
 	C2DMultiImageRegister(size_t start_size, size_t max_iter, 
 			      C2DRegModel& model, 
 			      C2DRegTimeStep& time_step, 
-			      C2DTransformationFactory& trans_factory, 
+			      C2DTransformCreator& trans_factory, 
 			      float outer_epsilon); 
 
 	/**

@@ -25,8 +25,13 @@
 #include <string>
 #include <sstream>
 
+#define __STDC_UTF_16__ 1
+
 #include "mex.h"
 
+namespace mia {
+	const std::string get_plugin_root(); 
+}
 
 #ifdef WIN32
 #include <windows.h>
@@ -100,7 +105,7 @@ static string get_plugin_root()
 #else
 const string get_plugin_root() 
 {
-	return string(PLUGIN_SEARCH_PATH);
+	return string(::mia::get_plugin_root());
 }
 #endif
 

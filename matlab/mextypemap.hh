@@ -22,6 +22,7 @@
 #ifndef mextypemap_hh
 #define mextypemap_hh
 
+#define __STDC_UTF_16__ 1 
 #include <mex.h>
 #include <mia/2d.hh>
 #include <mia/3d.hh>

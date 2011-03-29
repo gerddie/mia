@@ -44,7 +44,7 @@ It is dedicated how to use the tools provided by MIA and how to develop software
 
 \section*{License}
 
-Copyright (c) Leipzig, Madrid 2004-2010
+Copyright (c) Leipzig, Madrid 2004-2011
 Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.1
   or any later version published by the Free Software Foundation; with no Invariant Sections, 
   with no Front-Cover Texts and with no Back-Cover Texts. 
@@ -93,7 +93,7 @@ To do so, your software environment has to meet the following pre-requisites:
    C++0x standard - GNU g++ (>=4.4) (http://gcc.gnu.org) is known to work. 
 \item CMake (http://www.cmake.org) 
 \item The BOOST >= 1.40 (http://www.boost.org) library
-\item itpp (http://itpp.sourceforge.net) 
+\item gsl (http://) The GNU Scientific Library 
 \end{enumerate}
 
 Additionally, the following packages add to the functionallity of the software: 
@@ -102,9 +102,13 @@ Additionally, the following packages add to the functionallity of the software:
 \item [OpenEXR:] A HDR Image Library that supports 32 bit and floating point valued images (http://www.openexr.org)
 \item [TIFF:]    The Tagged Image File Format (http://www.remotesensing.org/libtiff/libtiff.html)
 \item [PNG:]     Portable Network Graphics (http://www.libpng.org)
+\item [DCMTK:]   DICOM image IO (partial support) 
+\item [nlopt:]   Nonlinear optimizers library 
+\item [xml++:]   Input/output of XML files, support for certain segmentation features
+\item [it++:]    Signal processing library (http://itpp.sourceforge.net) 
 \end{description}
 
-Interfaces to MatLab and IDL are only build, when the according software package is installed.  
+
 If all of the above pre-requisites are met, the installation of mia boils down to:
 
 \lstset{language=bash}
@@ -120,22 +124,13 @@ In order to test some of the components, you may run ``make test''.
 
 \subsection{MS Windows} 
 
-An installation package is provided based on the Nullsoft Scriptable Install System (NSIS). 
-One can just run it and install MIA to the desired location. 
-
-If you decide to compile MIA be yourself, it has so far only been tested by using Microsoft Visual Studio 2008 (Servicepack 1). 
-Unpack the source code, and run CMakeSetup on the root CMakeLists.txt. 
-Select ``NMake Makefiles'' as target and generate the build files. 
-Compiling is then done in a command shell by first initialising the Visual Studio build environment by runninng  the 
-  ``...VC\\bin\\vcvarsXX.bat and then typing ``nmake package''. 
-This will create an installation package that then can be installed like given above.
-Running the installation is a requirement, since some registration keys are generated. 
+Currently broken 
 
 \chapter{User Guide}
 
 \include{running}
-\include{idl}
-\include{matlab}
+%%\include{idl}
+%%\include{matlab}
 
 \chapter{Program and Plug-in Reference}
 \include{programs}
