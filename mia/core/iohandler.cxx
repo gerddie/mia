@@ -22,8 +22,9 @@
  */
 
 #include <stdexcept>
-#include <boost/filesystem/convenience.hpp>
+#include <mia/core/bfsv23dispatch.hh>
 #include <mia/core/handler.cxx>
+
 
 NS_MIA_BEGIN
 
@@ -49,12 +50,12 @@ TIOPluginHandler<I>::prefered_plugin_ptr(const std::string& fname) const
 {
 	// get the suffix - if there is a Z, gz, or bz2, include it in the suffix
 	bfs::path fpath(fname);
-	std::string fsuffix = fpath.extension().string(); 
+	std::string fsuffix = __bfs_get_extension(fpath); 
 	if (!fsuffix.empty()) {
 		if (_M_compress_sfx.find(fsuffix) != _M_compress_sfx.end()) {
 			// remove the last extension and get the one before
 			bfs::path help(fpath.stem()); 
-			fsuffix = help.extension().string();
+			fsuffix = __bfs_get_extension(fpath); 
 		}
 	}else 
 		fsuffix = fname; 
@@ -79,13 +80,13 @@ TIOPluginHandler<I>::prefered_plugin(const std::string& fname) const
 {
 	// get the suffix - if there is a Z, gz, or bz2, include it in the suffix
 	bfs::path fpath(fname);
-	std::string fsuffix = fpath.extension().string();
+	auto fsuffix = __bfs_get_extension(fpath); 
 	if (_M_compress_sfx.find(fsuffix) != _M_compress_sfx.end()) {
 		bfs::path  help(fpath.stem()); 
-		fsuffix = help.extension().string();
+		fsuffix = __bfs_get_extension(fpath); 
 	}
 	cvdebug() << "Got suffix '" << fsuffix << "'\n"; 
-	CSuffixmap::const_iterator p = _M_suffixmap.find(fsuffix);
+	auto p = _M_suffixmap.find(fsuffix);
 	if (p != _M_suffixmap.end())
 		return *this->plugin(p->second.c_str());
 	throw invalid_argument(string("no plugin corresponds to '") + fsuffix + "'"); 

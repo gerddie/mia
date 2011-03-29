@@ -32,6 +32,7 @@
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/2dimageio.hh>
 
 NS_BEGIN(IMAGEIO_3D_DICOM)
@@ -184,7 +185,7 @@ static void add_images(const string& fname, const string& study_id, vector<P2DIm
 {
 	TRACE_FUNCTION;
 	bfs::path dir(fname);
-	string ext = dir.extension().string();
+	string ext = __bfs_get_extension(dir);
 	dir.remove_filename();
 
 	if (dir.filename().empty())
@@ -202,8 +203,8 @@ static void add_images(const string& fname, const string& study_id, vector<P2DIm
 	bfs::directory_iterator di(dir);
 	bfs::directory_iterator dend;
 	while (di != dend) {
-		if (boost::regex_match(di->path().filename().string(), pat_expr) &&
-			di->path().filename() != fname) {
+		if (boost::regex_match(__bfs_get_filename(di->path()), pat_expr) &&
+		    __bfs_get_filename(di->path()) != fname) {
 			bfs::path f =  di->path();
 			cvdebug() << "read file '" << f << "'\n";
 			CDicomReader reader(f.string().c_str());
@@ -258,8 +259,8 @@ CSliceSaver::CSliceSaver(const string& fname):
 {
 	// filename split the
 	bfs::path fullname(fname);
-	_M_extension = fullname.extension().string();
-	_M_fnamebase = fullname.stem().string();
+	_M_extension = __bfs_get_extension(fullname);
+	_M_fnamebase = __bfs_get_stem(fullname);
 }
 
 void CSliceSaver::set_instance(size_t series, size_t slice)
