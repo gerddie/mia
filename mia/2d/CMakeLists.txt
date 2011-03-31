@@ -180,6 +180,7 @@ TEST_2DMIA(interpol mia2dtest)
 TEST_2DMIA(matrix mia2dtest)
 TEST_2DMIA(modelsolverreg mia2dtest)
 TEST_2DMIA(nfg mia2dtest)
+TEST_2DMIA(cost mia2dtest)
 TEST_2DMIA(nonrigidregister mia2dtest)
 
 TEST_2DMIA(oldnewintegrate mia2dtest)

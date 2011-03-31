@@ -1,8 +1,9 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2010
- * Max-Planck-Institute for Human Cognitive and Brain Science	
- * Max-Planck-Institute for Evolutionary Anthropology 
+ *
+ * Max-Planck-Institute for Human Cognitive and Brain Science
+ * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,51 +22,28 @@
  *
  */
 
-#include <boost/test/unit_test_suite.hpp>
-#include <boost/test/unit_test.hpp>
 
 #include <mia/2d/cost.hh>
-
+#include <mia/internal/autotest.hh>
 
 NS_MIA_USE
-using namespace std; 
-using namespace boost;
 namespace bfs=::boost::filesystem; 
 
 using namespace boost::unit_test;
 
-static void prepare_plugin_path()
+BOOST_AUTO_TEST_CASE( test_2dimage_cost_avail )
 {
 	list< bfs::path> searchpath; 
 	
-	searchpath.push_back(bfs::path("2d") / bfs::path("cost")); 
 	searchpath.push_back(bfs::path("cost")); 
 
 	C2DImageCostPluginHandler::set_search_path(searchpath); 
+	
+	const auto& handler = C2DImageCostPluginHandler::instance(); 
+
+	BOOST_CHECK_EQUAL(handler.size(), 3u); 
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "lsd ngf ssd "); 
 }
 
-static void test_2dimage_cost_avail() 
-{
-	const C2DImageCostPluginHandler::Instance& fh = C2DImageCostPluginHandler::instance();
-	BOOST_CHECK(fh.size() == 2); 
-	BOOST_CHECK(fh.get_plugin_names() == "ssd ssddf ");
-}
 
-static void test_2dimage_cost()
-{
-	const C2DImageCostPluginHandler::Instance& fh = C2DImageCostPluginHandler::instance();
 
-	for (C2DImageCostPluginHandler::Instance::const_iterator i = fh.begin(); 
-	     i != fh.end(); ++i) {
-		cvmsg() << "Testing: " << i->second->get_long_name() << "\n"; 
-		BOOST_CHECK_MESSAGE(i->second->test(true), i->second->get_long_name()); 
-	}
-}
-
-void add_2dimagecost_tests(test_suite* suite)
-{
-	prepare_plugin_path(); 
-
-	suite->add( BOOST_TEST_CASE( &test_2dimage_cost_avail)); 
-	suite->add( BOOST_TEST_CASE( &test_2dimage_cost));
-}

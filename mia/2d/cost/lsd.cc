@@ -85,8 +85,10 @@ void CRefPrepare::operator()(const T2DImage<T>& ref)
 	m_Q_mappping[x->pos] = idx; 
 
 	while ( x != buffer.end() )  {
-		if (x->val != oldv) 
+		if (x->val != oldv) {
+			oldv = x->val; 
 			++idx;
+		}
 		++m_QtQinv[idx];
 		m_Q_mappping[x->pos] = idx; 
 		++x; 
@@ -153,10 +155,14 @@ double  RunCost::operator()(const T2DImage<T>& a)const
 		value += *ia * *ia; 
 		sums[*idx] += *ia; 
 	}
+	cvdebug() << "a * a = " << value << "\n"; 
 	
-	for (auto q = m_QtQinv.begin(), s = sums.begin(); q != m_QtQinv.end(); ++q, ++s)
+	for (auto q = m_QtQinv.begin(), s = sums.begin(); q != m_QtQinv.end(); ++q, ++s) {
+		cvdebug() << "qqt = " << *q << " sum " << *s << "\n"; 
 		value -= *q * *s * *s; 
+	}
 	
+	cvdebug() << "2*value = " << value << "\n"; 
 	return 0.5 * value; 
 }
 
@@ -186,6 +192,28 @@ double  RunCost::operator()(const T2DImage<T>& a, C2DFVectorfield& force)const
 	
 	return 0.5 * value; 
 	
+}
+
+
+C2DLSDImageCostPlugin::C2DLSDImageCostPlugin():
+	C2DImageCostPlugin("lsd")
+{
+}
+
+C2DImageCostPlugin::ProductPtr	C2DLSDImageCostPlugin::do_create()const
+{
+	return C2DImageCostPlugin::ProductPtr(new C2DLSDImageCost()); 
+}
+
+const std::string C2DLSDImageCostPlugin::do_get_descr()const
+{
+	return "Least-Squares Distance measure"; 
+}
+
+
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new C2DLSDImageCostPlugin();
 }
 
 NS_END

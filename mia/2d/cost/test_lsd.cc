@@ -55,6 +55,23 @@ BOOST_FIXTURE_TEST_CASE( test_LSD_2D_self, LSDFixture )
 	
 }
 
+BOOST_FIXTURE_TEST_CASE( test_LSD_2D, LSDFixture )
+{
+	C2DLSDImageCost cost;
+	cost.set_reference(*ref);
+	
+	double cost_value = cost.value(*src);
+	BOOST_CHECK_CLOSE(cost_value, 1.0, 0.1);
+
+	C2DFVectorfield force(C2DBounds(8,8));
+
+	BOOST_CHECK_CLOSE(cost.evaluate_force(*src, 0.5, force), 0.0, 0.1);
+
+	BOOST_CHECK_EQUAL(force(1,1).x, 0.0f);
+	BOOST_CHECK_EQUAL(force(1,1).y, 0.0f);
+	
+}
+
 
 LSDFixture::LSDFixture():
 	size(8,8)
@@ -71,9 +88,9 @@ LSDFixture::LSDFixture():
 	};
 	const float ref_data[64] = {
 		8, 8, 9, 9, 9, 3, 4, 4, 
-		4, 4, 3, 3, 9, 9, 9, 8,
-		9, 9, 3, 4, 5, 6, 7, 3, 
-		1, 0, 9, 3, 3, 4, 9, 9,
+		4, 4, 6, 3, 9, 9, 9, 8,
+		9, 9, 3, 4, 5, 9, 6, 3, 
+		1, 0, 9, 3, 5, 4, 9, 9,
 		3, 8, 3, 4, 5, 6, 7, 3, 
 		3, 4, 4, 5, 6, 4, 9, 9,
 		0, 9, 3, 4, 5, 3, 8, 4, 
