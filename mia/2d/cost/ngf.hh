@@ -73,10 +73,12 @@ typedef std::shared_ptr<CCostEvaluator > PEvaluator;
 class C2DNFGImageCost : public mia::C2DImageCost {
 public:
 	C2DNFGImageCost(PEvaluator evaluator);
-	virtual void prepare_reference(const mia::C2DImage& ref); 
+	virtual void prepare_reference(const mia::C2DImage& ref)__attribute__((deprecated)); 
 private:
-	virtual double do_value(const mia::C2DImage& a, const mia::C2DImage& b) const;
+	virtual double do_value(const mia::C2DImage& a, const mia::C2DImage& b) const ;
 	virtual double do_evaluate_force(const mia::C2DImage& a, const mia::C2DImage& b, float scale, mia::C2DFVectorfield& force) const;
+
+	virtual void post_set_reference(const mia::C2DImage& ref); 
 
 	mia::C2DFVectorfield _M_ng_ref;
 	bool _M_jump_levels_valid;

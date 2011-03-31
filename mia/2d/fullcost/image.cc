@@ -52,10 +52,9 @@ bool C2DImageFullCost::do_has(const char *property) const
 double C2DImageFullCost::do_value(const C2DTransformation& t) const
 {
 	TRACE_FUNCTION; 
-	assert(_M_src); 
-	assert(_M_ref); 
-	P2DImage temp  = t(*_M_src, *_M_ipf);
-	const double result = _M_cost_kernel->value(*temp, *_M_ref); 
+	assert(_M_src_scaled); 
+	P2DImage temp  = t(*_M_src_scaled, *_M_ipf);
+	const double result = _M_cost_kernel->value(*temp); 
 	cvdebug() << "C2DImageFullCost::value = " << result << "\n"; 
 	return result; 
 }
@@ -63,9 +62,10 @@ double C2DImageFullCost::do_value(const C2DTransformation& t) const
 double C2DImageFullCost::do_value() const
 {
 	TRACE_FUNCTION; 
-	assert(_M_src); 
-	assert(_M_ref); 
-	const double result = _M_cost_kernel->value(*_M_src, *_M_ref); 
+	assert(_M_src_scaled); 
+	// one should apply an identity transform here, to ensure that the test image is 
+	// of the same size like the reference image
+	const double result = _M_cost_kernel->value(*_M_src_scaled); 
 	cvdebug() << "C2DImageFullCost::value = " << result << "\n"; 
 	return result; 
 }
@@ -74,23 +74,27 @@ double C2DImageFullCost::do_value() const
 double C2DImageFullCost::do_evaluate(const C2DTransformation& t, CDoubleVector& gradient) const
 {
 	TRACE_FUNCTION; 
-	assert(_M_src); 
-	assert(_M_ref); 
+	assert(_M_src_scaled); 
 	
 	static int idx = 0; 
 	static auto  toubyte_converter = 
 		C2DFilterPluginHandler::instance().produce("convert:repn=ubyte"); 
-	P2DImage temp  = t(*_M_src, *_M_ipf);
+	P2DImage temp  = t(*_M_src_scaled, *_M_ipf);
 
 	if (_M_debug) {
 		stringstream fname; 
-		fname << "test" << setw(5) << setfill('0') << idx << ".@"; 
+		fname << "test" << setw(5) << setfill('0') << idx << ".png"; 
 		save_image(fname.str(), toubyte_converter->filter(*temp)); 
+		
+		stringstream rname; 
+		rname << "ref" << setw(5) << setfill('0') << idx << ".png"; 
+		save_image(rname.str(), toubyte_converter->filter(*_M_ref_scaled)); 
+
 	}
 	
 	C2DFVectorfield force(get_current_size()); 
 
- 	double result = _M_cost_kernel->evaluate_force(*temp, *_M_ref, 1.0, force); 
+ 	double result = _M_cost_kernel->evaluate_force(*temp, 1.0, force); 
 
 	t.translate(force, gradient); 
 	idx++;
@@ -106,17 +110,24 @@ void C2DImageFullCost::do_set_size()
 	assert(_M_src); 
 	assert(_M_ref); 
 
-	if (_M_src->get_size() != get_current_size()) {
-		stringstream filter_descr; 
-		filter_descr << "scale:sx=" << get_current_size().x << ",sy=" << get_current_size().y; 
-		auto scaler = C2DFilterPluginHandler::instance().produce(filter_descr.str()); 
-		assert(scaler); 
-		cvdebug() << "C2DImageFullCost:scale images to " << get_current_size() << 
-			" using '" << filter_descr.str() << "'\n"; 
-		_M_src = scaler->filter(*_M_src); 
-		_M_ref = scaler->filter(*_M_ref); 
-		_M_cost_kernel->prepare_reference(*_M_ref); 
+	if (!_M_src_scaled || _M_src_scaled->get_size() != get_current_size() ||
+	    !_M_ref_scaled || _M_ref_scaled->get_size() != get_current_size() ) {
+		if (get_current_size() == _M_src->get_size()) {
+			_M_src_scaled = _M_src; 
+			_M_ref_scaled = _M_ref; 
+		}else{
+			stringstream filter_descr; 
+			filter_descr << "scale:sx=" << get_current_size().x << ",sy=" << get_current_size().y; 
+			auto scaler = C2DFilterPluginHandler::instance().produce(filter_descr.str()); 
+			assert(scaler); 
+			cvdebug() << "C2DImageFullCost:scale images to " << get_current_size() << 
+				" using '" << filter_descr.str() << "'\n"; 
+			_M_src_scaled = scaler->filter(*_M_src); 
+			_M_ref_scaled = scaler->filter(*_M_ref); 
+		}
+		_M_cost_kernel->set_reference(*_M_ref_scaled); 
 	}
+
 }
 
 void C2DImageFullCost::do_reinit()
@@ -124,9 +135,18 @@ void C2DImageFullCost::do_reinit()
 	TRACE_FUNCTION; 
 	_M_src = get_from_pool(_M_src_key);
 	_M_ref = get_from_pool(_M_ref_key);
+	_M_src_scaled.reset(); 
+	_M_ref_scaled.reset(); 
+
+	// is this true? Actually the deformed image is used and it is always interpolated on the full 
+	// space of the reference image 
 	if (_M_src->get_size() != _M_ref->get_size()) 
 		throw runtime_error("C2DImageFullCost only works with images of equal size"); 
-	_M_cost_kernel->prepare_reference(*_M_ref); 
+	
+	if (_M_src->get_pixel_size() != _M_ref->get_pixel_size()) {
+		cverr() << "C2DImageFullCost: src and reference image are of differnet pixel dimensions."
+			<< "This code doesn't honour this and linear registration should be applied first."; 
+	}
 }
 
 P2DImage C2DImageFullCost::get_from_pool(const C2DImageDataKey& key)

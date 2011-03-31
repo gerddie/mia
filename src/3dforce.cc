@@ -90,9 +90,8 @@ int do_main(int argc, const char **args)
 		throw invalid_argument(string("no image found in ") + ref_filename);
 
 	C3DFVectorfield forcefield((*source->begin())->get_size());
-	cvmsg() << "Cost = " << cost->value( **source->begin(), **ref->begin()) << "\n";
-
-	cost->evaluate_force(**source->begin(), **ref->begin(), 1.0, forcefield);
+	cost->set_reference(**ref->begin());  
+	cvmsg() << "Cost = " << cost->evaluate_force(**source->begin(),1.0, forcefield) << "\n"; 
 
 	C3DFImage *presult = new C3DFImage(forcefield.get_size());
 	P3DImage result(presult);

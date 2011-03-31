@@ -156,13 +156,13 @@ BOOST_AUTO_TEST_CASE( test_fatngf_2d )
 
 	C2DNFGImageCost cost(eval);
 	double test_cost = 0.5 * weight * 18 * 36 / 200.0;
-	cost.prepare_reference(*ref); 
+	cost.set_reference(*ref); 
 	
-	BOOST_CHECK_CLOSE(cost.value(*src, *ref), test_cost, 0.1);
+	BOOST_CHECK_CLOSE(cost.value(*src), test_cost, 0.1);
 
 	C2DFVectorfield force(size);
 
-	double c = cost.evaluate_force(*src, *ref, 1.0, force);
+	double c = cost.evaluate_force(*src, 1.0, force);
 	BOOST_CHECK_CLOSE(c, test_cost, 0.1);
 
 	const C2DFVector boundelm(0,0);

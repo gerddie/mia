@@ -56,7 +56,7 @@ public:
                   registration
 	   \param save_steps save the deformed source image for each registration step
 	 */
-	C3DImageRegister(size_t start_size, const C3DImageCost& cost, size_t max_iter,
+	C3DImageRegister(size_t start_size, C3DImageCost& cost, size_t max_iter,
 			 C3DRegModel& model, C3DRegTimeStep& time_step,
 			 const C3DInterpolatorFactory&  ipf, float outer_epsilon, bool save_steps);
 
@@ -72,7 +72,7 @@ private:
 	void reg_level_regrid(const C3DImage& source, const C3DImage& reference, C3DFVectorfield& result);
 	void reg_level_regrid_opt(const C3DImage& source, const C3DImage& reference, C3DFVectorfield& result);
 	size_t _M_start_size;
-	const C3DImageCost& _M_cost;
+	C3DImageCost& _M_cost;
 	size_t _M_max_iter;
 	C3DRegModel& _M_model;
 	C3DRegTimeStep& _M_time_step;

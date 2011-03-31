@@ -91,6 +91,7 @@ public:
 private:
 	virtual double do_value(const T& a, const T& b) const = 0;
 	virtual double do_evaluate_force(const T& a, const T& b, float scale, V& force) const = 0;
+	virtual void post_set_reference(const T& ref); 
 	PData m_reference; 
 };
 

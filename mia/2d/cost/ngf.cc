@@ -163,6 +163,11 @@ C2DNFGImageCost::C2DNFGImageCost(PEvaluator evaluator):
 
 void C2DNFGImageCost::prepare_reference(const C2DImage& ref)
 {
+	post_set_reference(ref); 
+}
+
+void C2DNFGImageCost::post_set_reference(const mia::C2DImage& ref)
+{
 	_M_ng_ref =  get_nfg(ref);
 }
 

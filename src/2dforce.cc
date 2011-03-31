@@ -90,9 +90,8 @@ int do_main(int argc, const char **args)
 		throw invalid_argument(string("no image found in ") + ref_filename);
 
 	C2DFVectorfield forcefield((*source->begin())->get_size());
-	cvmsg() << "Cost = " << cost->value( **source->begin(), **ref->begin()) << "\n";
-
-	cost->evaluate_force(**source->begin(), **ref->begin(), 1.0, forcefield);
+	cost->set_reference(**ref->begin()); 
+	cvmsg() << "Cost = " << cost->evaluate_force(**source->begin(), 1.0, forcefield) << "\n"; 
 
 	C2DFImage *presult = new C2DFImage(forcefield.get_size());
 	P2DImage result(presult);

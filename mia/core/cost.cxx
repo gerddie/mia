@@ -65,7 +65,12 @@ template <typename T, typename V>
 void TCost<T,V>::set_reference(const T& ref)
 {
 	m_reference.reset(new RData(ref));
+	post_set_reference(ref); 
 }
 
+template <typename T, typename V>
+void TCost<T,V>::post_set_reference(const T& /*ref*/)
+{
+}
 
 NS_MIA_END

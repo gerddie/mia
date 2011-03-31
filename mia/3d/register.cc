@@ -146,7 +146,7 @@ P3DFVectorfield upscale( const C3DFVectorfield& vf, C3DBounds size)
 }
 
 
-C3DImageRegister::C3DImageRegister(size_t start_size, const C3DImageCost& cost, size_t max_iter,
+C3DImageRegister::C3DImageRegister(size_t start_size, C3DImageCost& cost, size_t max_iter,
 				   C3DRegModel& model, C3DRegTimeStep& time_step,
 				   const C3DInterpolatorFactory&  ipf, float outer_epsilon, bool save_steps):
 	_M_start_size(start_size),
@@ -249,7 +249,8 @@ void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DIma
 	local_shift.clear();
 
 	P3DImage temp = filter(FDeformer3D(result, _M_ipf), source);
-	double new_cost_value = initial_cost = _M_cost.value(*temp, reference);
+	_M_cost.set_reference(reference); 
+	double new_cost_value = initial_cost = _M_cost.value(*temp);
 	double C0 = new_cost_value;
 
 	C3DFVectorfield v(source.get_size());
@@ -266,7 +267,7 @@ void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DIma
 		cost_value = new_cost_value;
 
 		force.clear();
-		_M_cost.evaluate_force(*temp, reference, _M_model.get_force_scale(), force);
+		_M_cost.evaluate_force(*temp, _M_model.get_force_scale(), force);
 		C3DBounds l(0,0,0);
 
 		// solve for the force to get a velocity or deformation field
@@ -310,7 +311,7 @@ void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DIma
 			_M_time_step.apply(v, local_shift_tmp, delta);
 			cat3(result, local_shift_tmp, force);
 			temp = filter(FDeformer3D(force, _M_ipf), source);
-			double C1 = _M_cost.value(*temp, reference);
+			double C1 = _M_cost.value(*temp);
 			double fdelta_c2 = (C1 < best_cost_value ? 2.0 : 0.5);
 
 			std::copy(local_shift.begin(), local_shift.end(), local_shift_tmp.begin());
@@ -318,7 +319,7 @@ void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DIma
 			_M_time_step.apply(v, local_shift_tmp, fdelta_c2 * delta);
 			cat3(result, local_shift_tmp, force);
 			temp = filter(FDeformer3D(force, _M_ipf), source);
-			double C2 = _M_cost.value(*temp, reference);
+			double C2 = _M_cost.value(*temp);
 
 			best_fdelta = min_ax2_bx_c(fdelta_c2, C0, C1, C2);
 
@@ -330,7 +331,7 @@ void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DIma
 
 		cat3(result, local_shift, force);
 		temp = filter(FDeformer3D(force, _M_ipf), source);
-		new_cost_value = C0 = _M_cost.value(*temp, reference);
+		new_cost_value = C0 = _M_cost.value(*temp);
 
 
 		// todo: add some logic to use the best step width as an estimate in the next step
@@ -418,7 +419,8 @@ void C3DImageRegister::reg_level_regrid(const C3DImage& source, const C3DImage& 
 	local_shift.clear();
 
 	P3DImage temp = filter(FDeformer3D(result, _M_ipf), source);
-	double new_cost_value = initial_cost = _M_cost.value(*temp, reference);
+	_M_cost.set_reference(reference); 
+	double new_cost_value = initial_cost = _M_cost.value(*temp);
 
 	C3DFVectorfield v(source.get_size());
 	C3DFVectorfield force(source.get_size());
@@ -434,7 +436,7 @@ void C3DImageRegister::reg_level_regrid(const C3DImage& source, const C3DImage& 
 		cost_value = new_cost_value;
 
 		force.clear();
-		_M_cost.evaluate_force(*temp, reference, _M_model.get_force_scale(), force);
+		_M_cost.evaluate_force(*temp,  _M_model.get_force_scale(), force);
 		C3DBounds l(0,0,0);
 
 #if 0
@@ -493,7 +495,7 @@ void C3DImageRegister::reg_level_regrid(const C3DImage& source, const C3DImage& 
 			imageio.save("vff", regmov.str(), vimg);
 		}
 
-		new_cost_value = _M_cost.value(*temp, reference);
+		new_cost_value = _M_cost.value(*temp);
 
 
 		// if the cost is reduced, we allow for some search steps
@@ -571,7 +573,8 @@ void C3DImageRegister::reg_level(const C3DImage& source, const C3DImage& referen
 	double initial_cost;
 
 	P3DImage temp = filter(FDeformer3D(result, _M_ipf), source);
-	double new_cost_value = initial_cost = _M_cost.value(*temp, reference);
+	_M_cost.set_reference(reference); 
+	double new_cost_value = initial_cost = _M_cost.value(*temp);
 
 	C3DFVectorfield force(source.get_size());
 	C3DFVectorfield u(source.get_size());
@@ -589,7 +592,7 @@ void C3DImageRegister::reg_level(const C3DImage& source, const C3DImage& referen
 		cost_value = new_cost_value;
 
 		force.clear();
-		_M_cost.evaluate_force(*temp, reference, delta * force_scale, force);
+		_M_cost.evaluate_force(*temp, delta * force_scale, force);
 
 		_M_model.solve(force, result);
 
@@ -614,7 +617,7 @@ void C3DImageRegister::reg_level(const C3DImage& source, const C3DImage& referen
 			imageio.save("vff", regmov.str(), vimg);
 		}
 
-		new_cost_value = _M_cost.value(*temp, reference);
+		new_cost_value = _M_cost.value(*temp);
 
 		if (new_cost_value < best_cost_value) {
 			best_cost_value = new_cost_value;

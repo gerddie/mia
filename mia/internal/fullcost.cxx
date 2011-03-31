@@ -80,10 +80,8 @@ void TFullCost<T>::reinit()
 template <typename T> 
 void TFullCost<T>::set_size(const Size& size)
 {
-	if (_M_current_size != size) {
-		_M_current_size = size; 
-		do_set_size(); 
-	}
+	_M_current_size = size; 
+	do_set_size(); 
 }
 
 template <typename T> 

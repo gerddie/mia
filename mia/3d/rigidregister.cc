@@ -52,7 +52,7 @@ private:
 
 class C3DRegGradientProblem: public CMinimizer::Problem {
 public:
-	C3DRegGradientProblem(const C3DImage& model, const C3DImage& reference, C3DTransformation& transf,
+	C3DRegGradientProblem(const C3DImage& model, C3DTransformation& transf,
 			      const C3DImageCost& _M_cost, const C3DInterpolatorFactory& _M_ipf);
 private:
 	void    do_df(const CDoubleVector& x, CDoubleVector&  g);
@@ -62,7 +62,6 @@ protected:
 	size_t do_size() const; 
 	P3DImage apply(const CDoubleVector& x);
 	const C3DImage& _M_model;
-	const C3DImage& _M_reference;
 	C3DTransformation& _M_transf;
 	const C3DImageCost& _M_cost;
 	const C3DInterpolatorFactory& _M_ipf;
@@ -76,7 +75,7 @@ typedef shared_ptr<C3DRegGradientProblem> P3DGradientProblem;
 
 class C3DRegFakeGradientProblem: public C3DRegGradientProblem {
 public:
-	C3DRegFakeGradientProblem(const C3DImage& model, const C3DImage& reference, C3DTransformation& transf,
+	C3DRegFakeGradientProblem(const C3DImage& model, C3DTransformation& transf,
 				  const C3DImageCost& _M_cost, const C3DInterpolatorFactory& _M_ipf);
 private:
 	void    do_df(const CDoubleVector& x, CDoubleVector&  g);
@@ -86,7 +85,7 @@ private:
 
 class C3DRegProblem: public CMinimizer::Problem {
 public:
-	C3DRegProblem(const C3DImage& model, const C3DImage& reference, C3DTransformation& transf,
+	C3DRegProblem(const C3DImage& model, C3DTransformation& transf,
 			 const C3DImageCost& _M_cost, const C3DInterpolatorFactory& _M_ipf);
 private:
 	double  do_f(const CDoubleVector& x);
@@ -94,7 +93,6 @@ private:
 	double  do_fdf(const CDoubleVector& x, CDoubleVector&  g);
 	size_t do_size() const; 
 	const C3DImage& _M_model;
-	const C3DImage& _M_reference;
 	C3DTransformation& _M_transf;
 	const C3DImageCost& _M_cost;
 	const C3DInterpolatorFactory& _M_ipf;
@@ -178,12 +176,12 @@ P3DTransformation C3DRigidRegisterImpl::run(P3DImage src, P3DImage ref) const
 
 		cvmsg() << "register at " << ref_scaled->get_size() << "\n";
 
+		_M_cost->set_reference(*ref_scaled); 
+		
 
 		CMinimizer::PProblem gp = _M_minimizer->has(property_gradient)? 
-			CMinimizer::PProblem(new C3DRegFakeGradientProblem(*src_scaled, *ref_scaled,
-									   *transform, *_M_cost, _M_ipf)):
-			CMinimizer::PProblem(new C3DRegProblem(*src_scaled, *ref_scaled, *transform, 
-							       *_M_cost, _M_ipf)); 
+			CMinimizer::PProblem(new C3DRegFakeGradientProblem(*src_scaled, *transform, *_M_cost, _M_ipf)):
+			CMinimizer::PProblem(new C3DRegProblem(*src_scaled, *transform, *_M_cost, _M_ipf)); 
 		
 		_M_minimizer->set_problem(gp); 
 
@@ -200,11 +198,9 @@ P3DTransformation C3DRigidRegisterImpl::run(P3DImage src, P3DImage ref) const
 	return transform;
 }
 
-C3DRegGradientProblem::C3DRegGradientProblem(const C3DImage& model, const C3DImage& reference, 
-					     C3DTransformation& transf,
+C3DRegGradientProblem::C3DRegGradientProblem(const C3DImage& model, C3DTransformation& transf,
 					     const C3DImageCost& cost, const C3DInterpolatorFactory& ipf):
 	_M_model(model),
-	_M_reference(reference),
 	_M_transf(transf),
 	_M_cost(cost),
 	_M_ipf(ipf),
@@ -235,7 +231,7 @@ double  C3DRegGradientProblem::do_f(const CDoubleVector& x)
 {
 	++_M_feval; 
 	P3DImage temp = apply(x);
-	const double value = _M_cost.value(*temp, _M_reference);
+	const double value = _M_cost.value(*temp);
 	cvmsg() << "Cost(f="<<_M_feval<<",g="<< _M_geval <<") = " << value << "\n";
 	return value;
 }
@@ -247,7 +243,7 @@ void    C3DRegGradientProblem::do_df(const CDoubleVector& x, CDoubleVector&  g)
 	P3DImage temp = apply(x);
 
 	C3DFVectorfield gradient(_M_model.get_size());
-	_M_cost.evaluate_force(*temp, _M_reference, 1.0, gradient);
+	_M_cost.evaluate_force(*temp, 1.0, gradient);
 	_M_transf.translate(gradient, g);
 }
 
@@ -257,19 +253,17 @@ double  C3DRegGradientProblem::do_fdf(const CDoubleVector& x, CDoubleVector&  g)
 	++_M_feval;
 	P3DImage temp = apply(x);
 	C3DFVectorfield gradient(_M_model.get_size());
-	_M_cost.evaluate_force(*temp, _M_reference, 1.0, gradient);
-	
+	const double value = _M_cost.evaluate_force(*temp, 1.0, gradient);
 	_M_transf.translate(gradient, g);
 
-	const double value = _M_cost.value(*temp, _M_reference);
 	cvmsg() << "Cost(f="<<_M_feval<<",g="<< _M_geval <<") = " << value << "\n";
 	return value;
 }
 
-C3DRegFakeGradientProblem::C3DRegFakeGradientProblem(const C3DImage& model, const C3DImage& reference, 
+C3DRegFakeGradientProblem::C3DRegFakeGradientProblem(const C3DImage& model, 
 						     C3DTransformation& transf, const C3DImageCost& _M_cost, 
 						     const C3DInterpolatorFactory& _M_ipf):
-	C3DRegGradientProblem(model, reference, transf,  _M_cost,  _M_ipf)
+	C3DRegGradientProblem(model, transf,  _M_cost,  _M_ipf)
 {
 }
 
@@ -295,10 +289,9 @@ double  C3DRegFakeGradientProblem::do_fdf(const CDoubleVector& x, CDoubleVector&
 	return cost_value; 
 }
 
-C3DRegProblem::C3DRegProblem(const C3DImage& model, const C3DImage& reference, C3DTransformation& transf,
+C3DRegProblem::C3DRegProblem(const C3DImage& model, C3DTransformation& transf,
 	    const C3DImageCost& cost, const C3DInterpolatorFactory& ipf):
 	_M_model(model),
-	_M_reference(reference),
 	_M_transf(transf),
 	_M_cost(cost),
 	_M_ipf(ipf)
@@ -315,7 +308,7 @@ double  C3DRegProblem::do_f(const CDoubleVector& x)
 	_M_transf.set_parameters(x);
 	P3DImage test =  _M_transf(_M_model, _M_ipf);
 
-	const double value = _M_cost.value(*test, _M_reference);
+	const double value = _M_cost.value(*test);
 	cvmsg() << "Cost = " << value << "\n";
 	return value;
 }

@@ -130,6 +130,8 @@ TNonrigidRegisterImpl<T>::TNonrigidRegisterImpl(FullCostList& costs, PMinimizer 
 
 /*
   This filter could be replaced by a histogram equalizing filter 
+  or it should be moved outside the registration function 
+  and considered what it is, a pre-processing step
 */
 
 template <typename T> 
@@ -216,10 +218,18 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 			transform = _M_transform_creator->create(src_scaled->get_size());
 
 		cvinfo() << "register at " << src_scaled->get_size() << "\n";
-
+		/**
+		   This code is somewhat ugly, it stored the images in the internal buffer 
+		   and then it forces the cost function to reload the images
+		   However, currently the downscaling does not support a specific target size
+		 */
 		save_image("src.@", src_scaled);
 		save_image("ref.@", ref_scaled);
 		_M_costs.reinit(); 
+		
+		// currently this call does nothing, however it should replace the three lines above 
+		// and the cost function should handle the image scaling 
+
 		_M_costs.set_size(src_scaled->get_size()); 
 		
 		std::shared_ptr<TNonrigRegGradientProblem<T> > 

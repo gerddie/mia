@@ -45,7 +45,8 @@ C2DSimilarityProfile::C2DSimilarityProfile(P2DFullCost cost,
 	
 	for(auto i = images.begin(); i != images.end(); ++i) {
 		save_image("src.@", *i);
-		cost->reinit(); 
+		cost->reinit();
+		cost->set_size((*i)->get_size()); 
 		m_cost_values.push_back( cost->cost_value()); 
 	}
 }

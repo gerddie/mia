@@ -56,6 +56,9 @@ private:
 	P2DImage _M_src; 
 	P2DImage _M_ref; 
 
+	P2DImage _M_src_scaled; 
+	P2DImage _M_ref_scaled; 
+
 	P2DImageCost _M_cost_kernel; 
 	P2DInterpolatorFactory _M_ipf; 
 	bool _M_debug;
