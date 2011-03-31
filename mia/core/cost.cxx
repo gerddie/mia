@@ -49,4 +49,23 @@ void TCost<T,V>::prepare_reference(const T& )
 	
 }
 
+template <typename T, typename V>
+double TCost<T,V>::value(const T& a) const
+{
+	return do_value(a, *m_reference); 
+}
+
+template <typename T, typename V>
+double TCost<T,V>::evaluate_force(const T& a, float scale, V& force) const
+{
+	return do_evaluate_force(a, *m_reference, scale, force); 
+}
+
+template <typename T, typename V>
+void TCost<T,V>::set_reference(const T& ref)
+{
+	m_reference.reset(new RData(ref));
+}
+
+
 NS_MIA_END

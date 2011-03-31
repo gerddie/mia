@@ -25,6 +25,7 @@
 #define mia_core_cost_hh
 
 #include <mia/core/factory.hh>
+#include <mia/core/refholder.hh>
 
 
 #ifndef EXPORT_HANDLER
@@ -57,6 +58,8 @@ class TCost : public CProductBase{
 public:
 	typedef T Data;
 	typedef V Force;
+	typedef TRefHolder<T> RData; 
+	typedef typename RData::Pointer PData;
 
 	typedef T plugin_data; 
 	typedef cost_type plugin_type; 
@@ -69,7 +72,7 @@ public:
 	    \param b
 	    \returns the cost value describing the distance between the entities \a a and \a b.
 	 */
-	double value(const T& a, const T& b) const;
+	double value(const T& a, const T& b) const __attribute__((deprecated));
 
 	/** The force evaluation function
 	    \param a input entity
@@ -77,12 +80,18 @@ public:
 	    \param scale a force scaling parameter
 	    \retval force The external force of \a a with respect to \a b that lead to cost minimisation
 	 */
-	double evaluate_force(const T& a, const T& b, float scale, V& force) const;
+	double evaluate_force(const T& a, const T& b, float scale, V& force) const  __attribute__((deprecated));
 
-	virtual void prepare_reference(const T& ref); 
+	virtual void prepare_reference(const T& ref)  __attribute__((deprecated)); 
+
+	double value(const T& a) const;
+	double evaluate_force(const T& a, float scale, V& force) const;
+	void set_reference(const T& ref);
+
 private:
 	virtual double do_value(const T& a, const T& b) const = 0;
 	virtual double do_evaluate_force(const T& a, const T& b, float scale, V& force) const = 0;
+	PData m_reference; 
 };
 
 
