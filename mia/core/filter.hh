@@ -284,6 +284,40 @@ static void filter_equal_inplace(const F& f, const B& a, B& b)
 }
 
 
+/**
+   A filter type that handles data containers of equal types.
+   The data container is provided by a pointer or reference to its type independedn base class.
+   Data type dependency is introduced by using a templated derivative.
+   Both input objects need to use the same data type
+   \param f a filter to be applied to the data.
+   \param a input data to be filtered
+   \param b output of filtered data
+*/
+template <typename F, typename B, typename O>
+static typename F::result_type filter_and_output(const F& f, const B& a, O& b)
+{
+	typedef typename Binder<B>::Derived D;
+	switch (a.get_pixel_type()) {
+	case it_bit:    return f(DC(typename D::Dbool, a), b);break;
+	case it_sbyte:  return f(DC(typename D::Dsc, a), b);break;
+	case it_ubyte:  return f(DC(typename D::Duc, a), b);break;
+	case it_sshort: return f(DC(typename D::Dss, a), b);break;
+	case it_ushort: return f(DC(typename D::Dus, a), b);break;
+	case it_sint:   return f(DC(typename D::Dsi, a), b);break;
+	case it_uint:	return f(DC(typename D::Dui, a), b);break;
+#ifdef HAVE_INT64
+	case it_slong:  return f(DC(typename D::Dsl, a), b);break;
+	case it_ulong:  return f(DC(typename D::Dul, a), b);break;
+#endif
+	case it_float:  return f(DC(typename D::Dfloat, a), b);break;
+	case it_double: return f(DC(typename D::Ddouble, a), b);break;
+	default:
+		assert(!"unsupported pixel type in image");
+		throw invalid_argument("mia::filter_and_output: unsupported pixel type in image");
+	}
+}
+
+
 template <typename F, typename A, typename B>
 static typename F::result_type _filter(const F& f, const A& a, const B& b)
 {
