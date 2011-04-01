@@ -61,6 +61,7 @@ typedef THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> > C2DFilterPlug
 
 typedef TFactory<C2DImageCombiner> C2DImageCombinerPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C2DImageCombinerPlugin> > C2DImageCombinerPluginHandler;
+FACTORY_TRAIT(C2DImageCombinerPluginHandler); 
 
 NS_MIA_END
 
