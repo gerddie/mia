@@ -95,7 +95,6 @@ void CRefPrepare::operator()(const T2DImage<T>& ref)
 	}
 	++idx; 
 	m_QtQinv.resize(idx);
-	// invert histogram
 	transform(m_QtQinv.begin(), m_QtQinv.end(), m_QtQinv.begin(), 1.0/ _1); 
 }
 	
@@ -147,23 +146,21 @@ RunCost::RunCost(float scale, const vector<double>& QtQinv, const vector<int>& Q
 template <typename T> 
 double  RunCost::operator()(const T2DImage<T>& a)const
 {
-	double value = 0.0; 
+	double val1 = 0.0; 
+	double val2 = 0.0; 
 	vector<double> sums(m_QtQinv.size(), 0.0); 
 
 	auto idx = m_Q_mappping.begin(); 
 	for (auto ia = a.begin(); ia != a.end(); ++ia, ++idx) {
-		value += *ia * *ia; 
+		val1 += *ia * *ia;  
 		sums[*idx] += *ia; 
 	}
-	cvdebug() << "a * a = " << value << "\n"; 
 	
-	for (auto q = m_QtQinv.begin(), s = sums.begin(); q != m_QtQinv.end(); ++q, ++s) {
-		cvdebug() << "qqt = " << *q << " sum " << *s << "\n"; 
-		value -= *q * *s * *s; 
-	}
 	
-	cvdebug() << "2*value = " << value << "\n"; 
-	return 0.5 * value; 
+	for(size_t i = 0; i < sums.size(); ++i)
+		val2 += sums[i] * sums[i] * m_QtQinv[i]; 
+	
+	return 0.5 * (val1 - val2); 
 }
 
 template <typename T> 
