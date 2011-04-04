@@ -73,11 +73,6 @@ int do_main( int argc, const char *argv[] )
 	auto image2 = load_image2d(in2_filename); 
 
 	auto output = combiner->combine(*image1, *image2); 
-	auto outimage = any_cast<P2DImage>(*output); 
-	if (!outimage) {
-		THROW(invalid_argument, "combiner '" << combiner->get_init_string() << "' did not return a 2D image"); 
-	}
-	
 	if (!save_image(out_filename, outimage)) 
 		THROW(runtime_error, "unable to save result in '" << out_filename << "'");
 	

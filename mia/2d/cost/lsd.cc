@@ -175,7 +175,8 @@ double  RunCost::operator()(const T2DImage<T>& a, C2DFVectorfield& force)const
 		sums[*idx] += *ia; 
 	}
 	
-	for (auto q = m_QtQinv.begin(), s = sums.begin(); q != m_QtQinv.end(); ++q, ++s) {
+	auto s = sums.begin(); 
+	for (auto q = m_QtQinv.begin(); q != m_QtQinv.end(); ++q, ++s) {
 		value -= *q * *s * *s; 
 		*s *= *q; 
 	}

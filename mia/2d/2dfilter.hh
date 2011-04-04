@@ -27,7 +27,6 @@
 #include <mia/2d/2DImage.hh>
 #include <mia/core/factory.hh>
 #include <mia/core/filter.hh>
-#include <boost/any.hpp>
 
 NS_MIA_BEGIN
 
@@ -36,19 +35,17 @@ typedef TImageFilterPlugin<C2DImage> C2DFilterPlugin;
 
 typedef std::shared_ptr<C2DFilter > P2DFilter;
 
-
-class EXPORT_2D C2DImageCombiner : public TFilter< std::shared_ptr< ::boost::any  > > ,
+class EXPORT_2D C2DImageCombiner : public TFilter< P2DImage > ,
 				   public CProductBase {
 public:
 	typedef C2DImage plugin_data; 
 	typedef combiner_type plugin_type; 
 	virtual ~C2DImageCombiner();
-
+	
 	result_type combine( const C2DImage& a, const C2DImage& b) const;
 private:
 	virtual result_type do_combine( const C2DImage& a, const C2DImage& b) const = 0;
 };
-
 
 P2DImage  EXPORT_2D run_filter_chain(P2DImage image, size_t nfilters, const char *filters[]);
 P2DImage  EXPORT_2D run_filter(const C2DImage& image, const char *filter);
@@ -60,7 +57,8 @@ typedef THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> > C2DFilterPlug
 
 
 typedef TFactory<C2DImageCombiner> C2DImageCombinerPlugin;
-typedef THandlerSingleton<TFactoryPluginHandler<C2DImageCombinerPlugin> > C2DImageCombinerPluginHandler;
+typedef THandlerSingleton<TFactoryPluginHandler<C2DImageCombinerPlugin> > 
+C2DImageCombinerPluginHandler;
 FACTORY_TRAIT(C2DImageCombinerPluginHandler); 
 
 NS_MIA_END

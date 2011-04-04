@@ -34,7 +34,6 @@
 
 NS_MIA_BEGIN
 
-
 #define ATTR_IMAGE_KMEANS_CLASSES "kmeans"
 
 /**
@@ -127,21 +126,29 @@ public:
 	T2DImage(const T2DDatafield<T>& orig);
 	T2DImage(const T2DDatafield<T>& orig, const CAttributedData& attr);
 	T2DImage();
-
+	
 	virtual C2DImage* clone() const;
-
+	
 	const_reference operator()(size_t  x, size_t  y) const {
 		return _M_image(x,y);
 	}
-
+	
 	reference operator()(size_t  x, size_t  y){
 		return _M_image(x,y);
 	}
-
+	
+	const_reference operator[](size_t  idx) const {
+		return _M_image[idx];
+	}
+	
+	reference operator[](size_t  idx){
+		return _M_image[idx];
+	}
+	
 	const_reference operator()(const C2DBounds& l) const{
 		return _M_image(l.x,l.y);
 	}
-
+	
 	reference operator()(const C2DBounds& l){
 		return _M_image(l.x,l.y);
 	}
@@ -178,22 +185,17 @@ public:
 	void get_data_line_x(size_t y, std::vector<T>& buffer) const;
 
 	void get_data_line_y(size_t x, std::vector<T>& buffer) const;
-
+	
 	void put_data_line_x(size_t y, const std::vector<T>& buffer);
 
 	void put_data_line_y(size_t x, const std::vector<T>& buffer);
-
+	
 	C2DFVector get_gradient(size_t idx) const;
-
+	
 	C2DFVector get_gradient(const C2DFVector& p) const;
- private:
+private:
 	T2DDatafield<T> _M_image;
 };
-
-template <typename T> 
-struct plugin_data_type<T2DImage<T> > {
-	typedef C2DImage type; 
-}; 
 
 
 class CImageComparePrinter: public TFilter<int> {
@@ -210,6 +212,11 @@ public:
 	}
 };
 
+
+template <typename S> 
+struct plugin_data_type<T2DImage<S> > {
+	typedef C2DImage type; 
+}; 
 
 EXPORT_2D bool operator == (const C2DImage& a, const C2DImage& b);
 

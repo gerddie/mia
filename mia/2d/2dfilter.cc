@@ -41,12 +41,6 @@ C2DImageCombiner::result_type C2DImageCombiner::combine( const C2DImage& a, cons
 	return do_combine(a,b);
 }
 
-double  EXPORT_2D distance(const C2DImage& a, const C2DImage& b,  const C2DImageCombiner& measure)
-{
-	std::shared_ptr<any > result = measure.combine(a,b);
-	return any_cast<double>(*result);
-}
-
 P2DImage  EXPORT_2D run_filter_chain(P2DImage image, size_t nfilters, const char *filters[])
 {
 	const C2DFilterPluginHandler::Instance& ff = C2DFilterPluginHandler::instance();

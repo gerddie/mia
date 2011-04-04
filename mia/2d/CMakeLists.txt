@@ -185,6 +185,7 @@ TEST_2DMIA(nonrigidregister mia2dtest)
 
 TEST_2DMIA(oldnewintegrate mia2dtest)
 
+TEST_2DMIA(combiner mia2dtest)
 TEST_2DMIA(polygon mia2dtest)
 TEST_2DMIA(ppmatrix mia2dtest)
 TEST_2DMIA(rigidregister mia2dtest)
@@ -259,6 +260,7 @@ ENDIF(XMLPP_FOUND)
 # The plugin directories 
 #
 ADD_SUBDIRECTORY(cost      )
+ADD_SUBDIRECTORY(combiner  )
 ADD_SUBDIRECTORY(creator   )
 ADD_SUBDIRECTORY(io        )
 ADD_SUBDIRECTORY(filter    )
