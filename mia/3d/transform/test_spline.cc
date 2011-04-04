@@ -861,11 +861,14 @@ BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture)
 	t.translate(gradient,  trgrad); 
 	double delta = 0.01; 
 
-	auto itrg =  trgrad.begin(); 
-	auto iparam = params.begin();
-	for (size_t z = 0; z < t.get_coeff_size().z; ++z)
-		for(size_t y = 0; y < t.get_coeff_size().y; ++y)
-			for(size_t x = 0; x < t.get_coeff_size().x; ++x)
+
+
+	for (size_t z = 0; z < t.get_coeff_size().z; z += 4)
+		for(size_t y = 0; y < t.get_coeff_size().y; y +=4)
+			for(size_t x = 0; x < t.get_coeff_size().x; x+=4) {
+				auto ofs = (z * t.get_coeff_size().y + y) * t.get_coeff_size().x + x; 
+				auto itrg =  trgrad.begin() + ofs; 
+				auto iparam = params.begin() + ofs;
 				for (size_t i = 0; i < 3; ++i, ++itrg, ++iparam) {
 					*iparam += delta; 
 					t.set_parameters(params);
@@ -887,6 +890,7 @@ BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture)
 						  << "\n"; 
 						
 				}
+			}
 }
 
 
@@ -986,7 +990,7 @@ double Cost3DMock::value_and_gradient(C3DFVectorfield& gradient) const
 double Cost3DMock::src_value(const C3DFVector& x)const
 {
 	const C3DFVector p = x - _M_center; 
-	return exp( - (p.x * p.x + p.y * p.y + p.z * p.z) / _M_r); 
+	return exp(- (p.x * p.x + p.y * p.y + p.z * p.z) / _M_r); 
 }
 
 C3DFVector Cost3DMock::src_grad(const C3DFVector& x)const
