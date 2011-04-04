@@ -44,6 +44,7 @@ CFatSSD3DImageCost::CFatSSD3DImageCost(P3DImage src, P3DImage ref, P3DInterpolat
 	C3DImageFatCost(src,  ref,  ipf, weight),
 	_M_evaluator(C3DImageCostPluginHandler::instance().produce("ssd"))
 {
+	_M_evaluator->set_reference(*ref); 
 }
 
 P3DImageFatCost CFatSSD3DImageCost::cloned(P3DImage src, P3DImage ref) const
@@ -54,13 +55,13 @@ P3DImageFatCost CFatSSD3DImageCost::cloned(P3DImage src, P3DImage ref) const
 double CFatSSD3DImageCost::do_value() const
 {
 	TRACE("CFatSSD3DImageCost::do_value");
-
-	return _M_evaluator->value(get_floating(),get_ref());
+	
+	return _M_evaluator->value(get_floating());
 }
 double CFatSSD3DImageCost::do_evaluate_force(C3DFVectorfield& force) const
 {
 	TRACE("CFatSSD3DImageCost::do_evaluate_force");
-	_M_evaluator->evaluate_force(get_floating(), get_ref(), get_weight(), force);
+	_M_evaluator->evaluate_force(get_floating(), get_weight(), force);
 	return value();
 }
 
@@ -100,7 +101,7 @@ bool  C3DSSDFatImageCostPlugin::do_test() const
 
 	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3));
 	CFatSSD3DImageCost cost(test_image, ref_image, ipf, 1.0);
-	double scale = size.x * size.y * size.z; 
+	double scale = 1.0; 
 
 	if (scale * cost.value() > 8 * 16 * 7 * 1.001 * 0.5 || scale * cost.value() <  8 * 16 * 7 *0.999 * 0.5 ) {
 		cvfail() << "C3DSSDFatImageCostPlugin\n";

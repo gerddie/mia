@@ -174,7 +174,7 @@ private:
 template <typename CP, typename C> 
 TSSDCostPlugin<CP,C>::TSSDCostPlugin():
 	CP("ssd"), 
-	_M_normalize(true)
+	_M_normalize(false)
 {
 	TRACE("TSSDCostPlugin<CP,C>::TSSDCostPlugin()"); 
 	this->add_property(::mia::property_gradient); 
