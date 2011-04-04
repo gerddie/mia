@@ -41,6 +41,6 @@ BOOST_AUTO_TEST_CASE( test_load_plugins )
 	C2DImageCombinerPluginHandler::set_search_path(plugpath);
 
 	const C2DImageCombinerPluginHandler::Instance& handler = C2DImageCombinerPluginHandler::instance(); 
-	BOOST_CHECK_EQUAL(handler.size(), 4u); 
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "add div mul sub ");
+	BOOST_CHECK_EQUAL(handler.size(), 5u); 
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "absdiff add div mul sub ");
 }

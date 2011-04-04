@@ -24,6 +24,8 @@
 #define mia_2d_combiner_ops_hh
 
 #include <mia/2d/2dfilter.hh>
+#include <mia/2d/combiner/plugin.hh>
+
 
 NS_BEGIN(Combiner2d)
 
@@ -64,17 +66,24 @@ BINARY_OP(Sub,   -)
 BINARY_OP(Times, *)
 BINARY_OP(Div,   /)
 
-template <typename Combiner, const char * const name> 
-class T2DImageCombinerPlugin: public mia::C2DImageCombinerPlugin {
-public:
-	T2DImageCombinerPlugin(); 
-private:
-	virtual mia::C2DImageCombinerPlugin::ProductPtr do_create()const;
-	virtual const std::string do_get_descr() const;
-}; 
 
+template <typename A, typename B>
+struct __BinaryAbsDiff {
+	typedef decltype(fabs(*(A*)0 - *(B*)0)) return_type;	
+		static return_type apply(A a, B b) {	       
+			return fabs(a - b);
+		}			
+	};						
+								
+class BinaryAbsDiff {							
+public:									
+	template <typename A, typename B>
+	typename __BinaryAbsDiff<A,B>::return_type operator ()(A a, B b)const {
+		return __BinaryAbsDiff<A,B>::apply(a,b);
+	}
+};									\
 
-
+typedef T2DImageCombiner<BinaryAbsDiff> C2DAbsDiffImageCombiner;
 
 NS_END
 

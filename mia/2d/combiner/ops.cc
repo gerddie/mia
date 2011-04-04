@@ -25,11 +25,6 @@
 
 NS_BEGIN(Combiner2d)
 
-using boost::lambda::_1; 
-using boost::lambda::_2; 
-
-
-
 using namespace mia; 
 
 template <typename BO>
@@ -57,41 +52,29 @@ P2DImage T2DImageCombiner<BO>::do_combine( const C2DImage& a, const C2DImage& b)
 	return mia::filter(*this, a, b); 
 }
 
+template class T2DImageCombiner<BinaryAdd>; 
+template class T2DImageCombiner<BinarySub>; 
+template class T2DImageCombiner<BinaryTimes>; 
+template class T2DImageCombiner<BinaryDiv>; 
+template class T2DImageCombiner<BinaryAbsDiff>; 
 
-template <typename Combiner, const char * const name> 
-T2DImageCombinerPlugin<Combiner, name>::T2DImageCombinerPlugin():
-	C2DImageCombinerPlugin(name) 
-{
-}
-	
-template <typename Combiner, const char * const name> 
-C2DImageCombinerPlugin::ProductPtr 
-T2DImageCombinerPlugin<Combiner, name>::do_create()const
-{
-	return C2DImageCombinerPlugin::ProductPtr (new Combiner); 
-}
+NS_END
 
-template <typename Combiner, const char name[]> 
-const std::string T2DImageCombinerPlugin<Combiner, name>::do_get_descr() const
-{
-	return string("Imgage combiner '") +  string(name) + string("'"); 
-}
+NS_MIA_BEGIN
+using namespace Combiner2d; 
 
-template class  T2DImageCombiner<BinaryAdd>; 
-template class  T2DImageCombiner<BinarySub>; 
-template class  T2DImageCombiner<BinaryTimes>; 
-template class  T2DImageCombiner<BinaryDiv>; 
-
-extern const char pl_add[4] = "add"; 
-extern const char pl_sub[4] = "sub"; 
-extern const char pl_mul[4] = "mul"; 
-extern const char pl_div[4] = "div"; 
+extern const char pl_add[] = "add"; 
+extern const char pl_sub[] = "sub"; 
+extern const char pl_mul[] = "mul"; 
+extern const char pl_div[] = "div"; 
+extern const char pl_absdiff[] = "absdiff"; 
 
 
 template class  T2DImageCombinerPlugin<T2DImageCombiner<BinaryAdd>, pl_add>; 
 template class  T2DImageCombinerPlugin<T2DImageCombiner<BinarySub>, pl_sub>; 
 template class  T2DImageCombinerPlugin<T2DImageCombiner<BinaryTimes>, pl_mul>;
 template class  T2DImageCombinerPlugin<T2DImageCombiner<BinaryDiv>, pl_div>; 
+template class  T2DImageCombinerPlugin<T2DImageCombiner<BinaryAbsDiff>, pl_absdiff>; 
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
@@ -99,7 +82,8 @@ extern "C" EXPORT CPluginBase *get_plugin_interface()
 	retval->append_interface(new T2DImageCombinerPlugin<T2DImageCombiner<BinarySub>, pl_sub>()); 
 	retval->append_interface(new T2DImageCombinerPlugin<T2DImageCombiner<BinaryTimes>, pl_mul>()); 
 	retval->append_interface(new T2DImageCombinerPlugin<T2DImageCombiner<BinaryDiv>, pl_div>()); 
+	retval->append_interface(new T2DImageCombinerPlugin<T2DImageCombiner<BinaryAbsDiff>, pl_absdiff>); 
 	return retval;  
 }
 
-NS_END
+NS_MIA_END

@@ -42,6 +42,8 @@ const float test_sub21[length]  = { 0,  2,  6, 12, 20, 30 };
 const float test_mult[length]   = { 1,  8, 27, 64,125,216 }; 
 const float test_div21[length]  = { 1,  2,  3,  4,  5,  6 }; 
 
+const float test_absdiff[length]  = { 0,  2,  6, 12, 20, 30 }; 
+
 
 class CombinerOpsFixture {
 protected: 
@@ -99,4 +101,12 @@ BOOST_FIXTURE_TEST_CASE( test_div_combiner, CombinerOpsFixture )
 {
 	test_result<float>(*C2DDivImageCombiner().combine(*src2, *src1), test_div21); 
 }
+
+BOOST_FIXTURE_TEST_CASE( test_absdiff_combiner, CombinerOpsFixture )
+{
+	test_result<float>(*C2DAbsDiffImageCombiner().combine(*src2, *src1), test_absdiff); 
+	test_result<float>(*C2DAbsDiffImageCombiner().combine(*src1, *src2), test_absdiff); 
+}
+
+
 	
