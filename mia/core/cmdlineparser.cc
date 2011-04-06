@@ -21,12 +21,19 @@
  *
  */
 
+#include <miaconfig.h>
 #include <cstdlib>
 #include <iostream>
 #include <iomanip>
 #include <map>
 #include <ctype.h>
 #include <stdexcept>
+
+#ifdef HAVE_LIBXMLPP
+#include <libxml++/libxml++.h>
+#endif
+
+#include <mia/core/tools.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
 
@@ -36,7 +43,8 @@ extern void print_full_copyright(const char *name);
 NS_MIA_BEGIN
 using namespace std;
 
-CCmdOption::CCmdOption(const char *long_opt, const char *long_help, Flags flags):
+CCmdOption::CCmdOption(char short_opt, const char *long_opt, const char *long_help, Flags flags):
+	_M_short_opt(short_opt), 
 	_M_long_opt(long_opt),
 	_M_long_help(long_help), 
 	_M_flags(flags)
@@ -73,6 +81,11 @@ void CCmdOption::get_long_help(std::ostream& os) const
 const char *CCmdOption::long_help() const
 {
 	return _M_long_help;
+}
+
+char CCmdOption::get_short_option() const
+{
+	return _M_short_opt; 
 }
 
 const char *CCmdOption::get_long_option() const
@@ -125,14 +138,11 @@ const std::string CCmdOption::do_get_value_as_string() const
 }
 
 struct CCmdOptionData {
-	CCmdOptionData(char short_opt, const char *short_help);
-	char _M_short_opt;
-	const char *_M_long_opt;
+	CCmdOptionData(const char *short_help);
 	const char *_M_short_help;
 };
 
-CCmdOptionData::CCmdOptionData(char short_opt, const char *short_help):
-	_M_short_opt(short_opt),
+CCmdOptionData::CCmdOptionData(const char *short_help):
 	_M_short_help(short_help)
 {
 }
@@ -140,15 +150,9 @@ CCmdOptionData::CCmdOptionData(char short_opt, const char *short_help):
 CCmdOptionValue::CCmdOptionValue(char short_opt, const char *long_opt, 
 				 const char *long_help, 
 				 const char *short_help, Flags flags):
-	CCmdOption(long_opt, long_help, flags),
-	_M_impl(new CCmdOptionData(short_opt,  short_help))
+	CCmdOption(short_opt, long_opt, long_help, flags),
+	_M_impl(new CCmdOptionData(short_help))
 {
-}
-
-
-char CCmdOptionValue::get_short_option() const
-{
-	return _M_impl->_M_short_opt;
 }
 
 const char *CCmdOptionValue::get_short_help() const
@@ -243,6 +247,7 @@ struct CCmdOptionListData {
 	vector<const char *> remaining;
 
 	bool help;
+	bool help_xml; 
 	bool usage;
 	bool copyright;
 	vstream::Level verbose;
@@ -257,6 +262,9 @@ struct CCmdOptionListData {
 	CCmdOption *find_option(const char *key) const;
 	CCmdOption *find_option(char key) const;
 
+#ifdef HAVE_LIBXMLPP
+	void print_help_xml() const; 
+#endif
 	void print_help() const;
 	void print_usage() const;
 
@@ -313,7 +321,7 @@ const std::string CCmdSetOption::do_get_value_as_string() const
 	return _M_value;
 }
 
-const char *g_help_optiongroup="\nHelp & Info"; 
+const char *g_help_optiongroup="Help & Info"; 
 const char *g_basic_copyright = 
         "\n"
 	" This software is copyright (c) Gert Wollny et al.\n"
@@ -323,6 +331,7 @@ const char *g_basic_copyright =
 
 CCmdOptionListData::CCmdOptionListData(const string& general_help):
 	help(false),
+	help_xml(false), 
 	usage(false),
 	copyright(false),
 	verbose(vstream::ml_warning), 
@@ -337,6 +346,10 @@ CCmdOptionListData::CCmdOptionListData(const string& general_help):
 		     CCmdOption::not_required));
 	add(make_opt(help,  "help", 'h', "print this help", 
 		     CCmdOption::not_required));
+#ifdef HAVE_LIBXMLPP
+	add(make_opt(help_xml,  "help-xml", 0, "print help formatted as XML", 
+		     CCmdOption::not_required));
+#endif
 	add(make_opt(usage,  "usage", '?', "print a short help", 
 		     CCmdOption::not_required));
 	set_current_group("");
@@ -416,6 +429,38 @@ void CCmdOptionListData::write(size_t tab1, size_t width, const string& s) const
 	clog << endl; 
 }
 
+#ifdef HAVE_LIBXMLPP
+using xmlpp::Element; 
+void CCmdOptionListData::print_help_xml() const
+{
+	unique_ptr<xmlpp::Document> doc(new xmlpp::Document);
+	
+	Element* nodeRoot = doc->create_root_node("program");
+	Element* description = nodeRoot->add_child("description"); 
+	description->set_child_text(_M_general_help); 
+
+	for (auto g = options.begin(); g != options.end(); ++g) {
+		Element* group = nodeRoot->add_child("group"); 
+		group->set_attribute("name", g->first); 
+		
+		for (auto iopt= g->second.begin(); iopt != g->second.end(); ++iopt) {
+			const CCmdOption& opt = **iopt; 
+			if (opt.get_long_option() == string("help-xml")) 
+				continue; 
+			
+			Element* option = group->add_child("option"); 
+			option->set_attribute("short", to_string<char>(opt.get_short_option()));
+			option->set_attribute("long", opt.get_long_option());
+			option->set_attribute("required", to_string<bool>(opt.is_required())); 
+			option->set_attribute("default", opt.get_value_as_string()); 
+			option->set_child_text(opt.long_help()); 
+		}
+	}
+	cout << doc->write_to_string_formatted();
+	cout << "\n"; 
+}
+#endif 
+
 /**
    This help printing is a mess ...
  */
@@ -436,7 +481,8 @@ void CCmdOptionListData::print_help() const
 	for (auto i = options.begin(); i != options.end(); ++i) {
 
 		stringstream group;
-		opt_table.push_back(i->first);
+		group << "\n"  << i->first; 
+		opt_table.push_back(group.str());
 		help_table.push_back("  ");
 		
 		for (auto g_i = i->second.begin(); g_i != i->second.end(); ++g_i) {
@@ -615,6 +661,11 @@ void CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
 	if (_M_impl->help) {
 		_M_impl->print_help();
 		exit(0);
+#ifdef HAVE_LIBXMLPP
+	}else if (_M_impl->help_xml) {
+		_M_impl->print_help_xml();
+		exit(0);
+#endif 
 	} else if (_M_impl->usage) {
 		_M_impl->print_usage();
 		exit(0);

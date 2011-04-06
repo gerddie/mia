@@ -1,5 +1,6 @@
 #cmakedefine HAVE_UNISTD_H 1
 #cmakedefine WORDS_BIGENDIAN 1
+#cmakedefine HAVE_LIBXMLPP 1
 
 #define SOURCE_ROOT "@SOURCE_ROOT@"
 #define PLUGIN_SEARCH_PATH  "@PLUGIN_SEARCH_PATH@"

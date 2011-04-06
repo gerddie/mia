@@ -39,6 +39,8 @@ NS_MIA_BEGIN
 
 
 
+extern const char *g_help_optiongroup; 
+
 /** holds the history info of a certain program call */
 typedef std::map<std::string, std::string> CHistoryRecord;
 
@@ -70,7 +72,7 @@ public:
 	    \param long_opt the long option name
 	    \param longh_help a long help string
         */
-	CCmdOption(const char *long_opt, const char *long_help, Flags flags);
+	CCmdOption(char short_opt, const char *long_opt, const char *long_help, Flags flags);
 
         /// ensure virtual destruction
 	virtual ~CCmdOption();
@@ -99,6 +101,9 @@ public:
         /// \returns the long name of the option
 	const char *get_long_option() const;
 
+        /// \returns the long name of the option
+	char get_short_option() const;
+
         /** Print the short help of the option to an output stream
 	    \param os the output stream
         */
@@ -118,9 +123,11 @@ public:
 	const std::string get_value_as_string() const;
 
 	bool is_required() const; 
-protected:
+
         /// \returns the long help string
 	const char *long_help() const;
+
+protected:
 
 	// clear the "required" flag 
 	void clear_required(); 
@@ -135,6 +142,7 @@ private:
 	virtual void do_get_opt_help(std::ostream& os) const;
 	virtual const std::string do_get_value_as_string() const;
 
+	char _M_short_opt; 
 	const char *_M_long_opt;
 	const char *_M_long_help;
 	Flags _M_flags;
@@ -164,7 +172,6 @@ public:
 	virtual ~CCmdOptionValue();
 private:
 
-	char get_short_option() const;
 	const char *get_short_help() const;
 
 	virtual void do_add_option(CShortoptionMap& sm, CLongoptionMap& lm);

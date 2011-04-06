@@ -201,7 +201,7 @@ int do_main( int argc, const char *argv[] )
 
 	CCmdOptionList options(g_general_help);
 	
-	options.set_group("\nFile-IO"); 
+	options.set_group("File-IO"); 
 	options.push_back(make_opt( in_filename, "in-file", 'i', 
 				    "input perfusion data set", CCmdOption::required));
 	options.push_back(make_opt( out_filename, "out-file", 'o', 
@@ -222,7 +222,7 @@ int do_main( int argc, const char *argv[] )
 
 
 	
-	options.set_group("\nRegistration"); 
+	options.set_group("Registration"); 
 	options.push_back(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( c_rate, "start-c-rate", 'a', 
 				    "start coefficinet rate in spines,"
@@ -240,7 +240,7 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.push_back(make_opt( pass, "passes", 'P', "registration passes")); 
 
-	options.set_group("\nICA"); 
+	options.set_group("ICA"); 
 	options.push_back(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
 	options.push_back(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
 	options.push_back(make_opt( no_meanstrip, "no-meanstrip", 0, 

@@ -216,7 +216,7 @@ BOOST_FIXTURE_TEST_CASE( test_flagstring_option, CmdlineParserFixture )
 		{'o', te_one},
 		{'t', te_two},
 		{'h', te_three},
-		{NULL, te_undefined}
+		{0, te_undefined}
 	};
 	CFlagString map(table);
 

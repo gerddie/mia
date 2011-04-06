@@ -66,6 +66,7 @@ int do_main( int argc, const char *argv[] )
 				    "output image(s) that have been filtered", CCmdOption::required));
 	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
 				    "output file type (if not given deduct from output file name)"));
+	options.set_group(g_help_optiongroup); 
 	options.push_back(make_help_opt( "help-plugins", 0,
 					 "give some help about the filter plugins", 
 					 new TPluginHandlerHelpCallback<C2DFilterPluginHandler>));
