@@ -218,7 +218,7 @@ CBSplineKernel0::CBSplineKernel0():
 	
 void CBSplineKernel0::get_weights(double /*x*/, std::vector<double>& weight)const
 {
-	assert(weight.size() > 0); 
+	assert(weight.size() == 1); 
 	weight[0] = 1; 
 }
 
@@ -245,6 +245,69 @@ void CBSplineKernel0::get_derivative_weights(double /*x*/, std::vector<double>& 
 		      "not supported for Haar spline"); 
 	}
 }
+
+
+CBSplineKernel1::CBSplineKernel1():
+	CBSplineKernel(1, 0.0, ip_bspline1)
+{
+}
+	
+void CBSplineKernel1::get_weights(double x, std::vector<double>& weight)const
+{
+	assert(weight.size() == 2); 
+	
+	weight[1] = x; 
+	weight[0] = 1.0 - x; 
+
+}
+
+void CBSplineKernel1::get_derivative_weights(double x, std::vector<double>& weight) const
+{
+	assert(weight.size() == 2); 
+	
+	weight[1] =  1.0;  
+	weight[0] = -1.0; 
+}
+
+double CBSplineKernel1::get_weight_at(double x, int degree) const
+{
+	switch (degree) {
+	case 0: {
+		if ( fabs(x) < 1) 
+			return -x;
+		else 
+			return 0.0; 
+	}
+	case 1: {
+		if ( fabs(x) < 1) 
+			return x > 0.0 ? -1 : 1; 
+		else
+			return 0.0; 
+	}
+	default:
+		THROW(invalid_argument, "CBSplineKernel1::get_weight_at: degree " <<  degree << 
+		      "not supported for linearly interpolating spline"); 
+	}
+}
+
+void CBSplineKernel1::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
+{
+	assert(weight.size() == 2); 
+	switch (degree) {
+	case 0: {
+		get_weights(x, weight); 
+		break; 
+	}
+	case 1: {
+		get_derivative_weights(x, weight); 
+		break; 
+	}
+	default:
+		THROW(invalid_argument, "CBSplineKernel1::get_weight_at: degree " <<  degree << 
+		      "not supported for linearly interpolating spline"); 
+	}
+}
+
 
 CBSplineKernel2::CBSplineKernel2():
 	CBSplineKernel(2, 0.5, ip_bspline2)

@@ -33,6 +33,11 @@
 
 NS_MIA_BEGIN
 
+
+/**
+   Helper structure used to initialize std::shared_ptr with the proper 
+   delete operator.  
+ */
 template <typename T> 
 struct array_destructor {
 	virtual void operator () (T *p) {
@@ -40,6 +45,10 @@ struct array_destructor {
 	}
 }; 
 
+/**
+   Helper structure used to initialize std::shared_ptr with an empty 
+   delete operator, i.e. to fake a shared pointer 
+ */
 template <typename T> 
 struct array_void_destructor {
 	virtual void operator () (T *) {
@@ -50,10 +59,9 @@ struct array_void_destructor {
    c-array envelope that supports some facilities of STL like vectors and that 
    allows holding pre-allocated data. 
    Handling of the optinal deleting of the array is done by a destructor template
-   passed to the shared_ptr constructor 
+   passed to the std::shared_ptr constructor 
    \tparam the data type of the C-array 
 */
-
 
 template <typename T> 
 class Vector {
@@ -65,7 +73,7 @@ public:
 	typedef size_t size_type; 
 
 	/**
-	   Create a vector, the data is won by this vector and will be 
+	   Create a vector, the data is owned by this vector and will be 
 	   deleted if the reference count reaches zero 
 	   \param n 
 	   \param clean initialize vector to 0
@@ -121,6 +129,10 @@ public:
 	{
 	}
 	
+
+	/**
+	   Standard array access operator, read-write version 
+	 */
 	reference operator[] (size_t i) {
 		assert(i < m_size); 
 		assert(m_data); 
@@ -128,30 +140,49 @@ public:
 		return m_data.get()[i]; 
 	}
 
+	/**
+	   Standard array access operator, read-only version 
+	 */
 	const_reference operator[] (size_t i) const {
 		assert(i < m_size); 
 		return m_cdata[i]; 
 	}
 	
+	/**
+	   STL compatible iterator, begin of range  
+	 */
 	iterator begin() {
 		assert(m_data); 
 		assert(m_data.unique()); 
 		return m_data.get(); 
 	}
 
+	/**
+	   STL compatible iterator, end of range  
+	 */
 	iterator end() {
 		assert(m_data); 
 		return m_data.get() + m_size; 
 	}
 	
+
+	/**
+	   STL compatible const_iterator, begin of range   
+	 */
 	const_iterator begin() const{
 		return m_cdata; 
 	}
 
+	/**
+	   STL compatible const_iterator, end of range   
+	 */
 	const_iterator end() const{
 		return m_cdata + m_size; 
 	}
 	
+	/**
+	   \returns number of elements in the array 
+	 */
 	size_type size() const 
 	{
 		return m_size; 
@@ -163,6 +194,8 @@ private:
 	const T *m_cdata; 
 }; 
 
+
+/// STL like c-array wrapper for double floating point
 typedef Vector<double> CDoubleVector; 
 
 NS_MIA_END

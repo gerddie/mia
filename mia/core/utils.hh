@@ -54,8 +54,6 @@ public:
 };
 
 #ifndef WIN32
-
-
 /*! a functor to search  for files */
 class  FSearchFiles  {
 	std::list<std::string>& result;
@@ -74,10 +72,12 @@ public:
 
 
 #ifndef _GNU_SOURCE
+/*
+   Provide some conveniance functions for sin and cos if the GNU GCC extension is not available. 
+ */
 void sincosf(float x, float *sin, float *cos); 
 void sincos(double x, double *sin, double *cos); 
 #endif
-
 
 NS_MIA_END
 

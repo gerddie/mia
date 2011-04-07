@@ -40,7 +40,7 @@ C1DInterpolator::~C1DInterpolator()
 }
 
 
-C1DInterpolatorFactory::C1DInterpolatorFactory(EType type, PSplineKernel kernel):
+C1DInterpolatorFactory::C1DInterpolatorFactory(EType type, PBSplineKernel kernel):
 	m_type(type),
 	m_kernel(kernel)
 {
@@ -67,7 +67,7 @@ C1DInterpolatorFactory& C1DInterpolatorFactory::operator = ( const C1DInterpolat
 	return *this;
 }
 
-PSplineKernel C1DInterpolatorFactory::get_kernel() const
+PBSplineKernel C1DInterpolatorFactory::get_kernel() const
 {
 	return m_kernel;
 }

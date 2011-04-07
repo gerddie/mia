@@ -37,8 +37,6 @@ NS_MIA_BEGIN
 /**
    \file interpolator.hh
    \todo - create B-spline kernels of size 0 and 1
-   \todo - add a index/weight type that can reuse old indices, 
-           and maybe even the old weights 
    \todo move kernels into plugins 
  */
 
@@ -84,20 +82,72 @@ public:
 	    \retval index indices corresponding to the weights
 	 */
 	void operator () (double x, std::vector<double>& weight, std::vector<int>& index)const;
+
+	/**
+	   This operator evaluates the weights and indices of the interpolation at a given position. 
+	   The result is stored in the return value cache and this cache is only updated if neccesary 
+	   \param x location for which to evaluate weights and indices 
+	   \retval cache storage for returned value
+	   
+	 */
 	void operator () (double x, SCache& cache)const;
+
+	/**
+	   Evaluate the first order derivative weights of the B-Spline at the given position
+	   @param x location where to evaluate the derivative 
+	   @retval weight the interpolation weights are stored here 
+	   @retval index the interpolation coefficient intices are stored here 
+	*/
+	
 	void derivative(double x, std::vector<double>& weight, std::vector<int>& index)const;
-	void derivative(double x, std::vector<double>& weight, std::vector<int>& index, int degree)const;
+	
+        /**
+	   Evaluate the derivative weights of the B-Spline at the given position
+	   @param x location where to evaluate the derivative 
+	   @retval weight the interpolation weights are stored here 
+	   @retval index the interpolation coefficient intices are stored here 
+	   @param order order of the derivative to be evaluated 
+	 */
+	
+	void derivative(double x, std::vector<double>& weight, std::vector<int>& index, int order)const;
+	
+        /**
+	   Evaluate the indices of the coefficients that would be used for interpolation 
+	   @param x location where to evaluate
+	   @retval index the interpolation coefficient indices are stored here 
+	 */
 	int get_indices(double x, std::vector<int>& index) const;
 
 	/** evaluate the weights, this needs to be implemented for a specific spline
 	    \param x coordinate
 	    \retval weight the weights
+	    \remark why is this not a private function? 
 	 */
 	virtual void get_weights(double x, std::vector<double>& weight) const = 0;
-	virtual void get_derivative_weights(double x, std::vector<double>& weight) const = 0;
-	virtual void get_derivative_weights(double x, std::vector<double>& weight, int degree) const = 0;
 
-	virtual double get_weight_at(double x, int degree) const;
+	/** evaluate the first order derivative weights, this needs to be implemented for a specific spline
+	    \param x coordinate
+	    \retval weight the weights
+	    \remark why is this not a private function? 
+	 */
+	virtual void get_derivative_weights(double x, std::vector<double>& weight) const = 0;
+
+	/** evaluate the first order derivative weights, this needs to be implemented for a specific spline
+	    \param x coordinate
+	    \retval weight the weights
+	    \param order derivative order 
+	    \remark why is this not a private function? 
+	 */
+	virtual void get_derivative_weights(double x, std::vector<double>& weight, int order) const = 0;
+
+
+	/**
+	   Evaluate the weight at a single position 
+	   \param x location to evaluate B-spline at 
+	   \param order order of derivative to be evaluated (0 = value) 
+	   \returns B-spline weight 
+	 */
+	virtual double get_weight_at(double x, int order) const;
 
 	EInterpolation get_type() const; 
 
@@ -111,21 +161,40 @@ public:
 	*/
 	size_t size() const;
 
+
+	/// \returns the radius around zero where the B-spline does not evaluate to zero 
 	double get_nonzero_radius() const;
 
-	///\returns the number of the neighboring grind points used on one side of the center 
+	///\returns the number of the neighboring grind points used on each side of the center 
 	int get_active_halfrange()const; 
 
-
+	/**
+	   Evaluate the first coefficient index and the weights vor B-spline interpolation
+	   \param x location to evaluate the spline at 
+	   \retval weights weights of the B-spline 
+	   \returns first index into the coefficient field to be used - note this may be a negiative value 
+	*/
 	int get_start_idx_and_value_weights(double x, std::vector<double>& weights) const; 
+
+	/**
+	   Evaluate the first coefficient index and the derivative weights vor B-spline interpolation
+	   \param x location to evaluate the spline at 
+	   \retval weights weights of the B-spline 
+	   \returns first index into the coefficient field to be used - note this may be a negiative value 
+	*/
 	int get_start_idx_and_derivative_weights(double x, std::vector<double>& weights) const; 
 
+	/**
+	   Pre-filter a 1D line of coefficients 
+	   \param coeff data to be filtered in-place 
+	 */
 	template <typename C>
 	void filter_line(std::vector<C>& coeff);
 
 protected:
 	template <typename C>
 	C initial_coeff(const std::vector<C>& coeff, double pole);
+	
 	template <typename C>
 	C initial_anti_coeff(const std::vector<C>& coeff, double pole);
 
@@ -135,16 +204,24 @@ protected:
 	void add_pole(double x);
 
 private:
+	/**
+	   Helper function to fill the array index with consecutive values starting with i 
+	 */
 	void fill_index(int i, std::vector<int>& index) const; 
 
+	
 	size_t m_half_degree;
+	
 	double m_shift;
+	
 	std::vector<double> m_poles;
+
 	size_t m_support_size;
+	
 	EInterpolation m_type; 
 };
 
-typedef std::shared_ptr<CBSplineKernel> PSplineKernel;
+//typedef std::shared_ptr<CBSplineKernel> PSplineKernel;
 typedef std::shared_ptr<CBSplineKernel> PBSplineKernel;
 
 enum ci_type {ci_bspline, ci_omoms};
@@ -165,25 +242,35 @@ inline size_t CBSplineKernel::size()const
 	return m_support_size;
 }
 
-/** implements a B-Spline kernel of degree 2 */
+/** implements a B-Spline kernel of degree 0 */
 class EXPORT_CORE CBSplineKernel0: public  CBSplineKernel{
- public:
+public:
 	CBSplineKernel0();
 	virtual void get_weights(double x, std::vector<double>& weight)const;
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	virtual double get_weight_at(double x, int degree) const;
-	virtual void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
+	virtual double get_weight_at(double x, int order) const;
+	virtual void get_derivative_weights(double x, std::vector<double>& weight, int order) const;
+};
+
+/** implements a B-Spline kernel of degree 0 */
+class EXPORT_CORE CBSplineKernel1: public  CBSplineKernel{
+public:
+	CBSplineKernel1();
+	virtual void get_weights(double x, std::vector<double>& weight)const;
+	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
+	virtual double get_weight_at(double x, int order) const;
+	virtual void get_derivative_weights(double x, std::vector<double>& weight, int order) const;
 };
 
 
 /** implements a B-Spline kernel of degree 2 */
 class EXPORT_CORE CBSplineKernel2: public  CBSplineKernel{
- public:
+public:
 	CBSplineKernel2();
 	virtual void get_weights(double x, std::vector<double>& weight)const;
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	virtual double get_weight_at(double x, int degree) const;
-	virtual void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
+	virtual double get_weight_at(double x, int order) const;
+	virtual void get_derivative_weights(double x, std::vector<double>& weight, int order) const;
 };
 
 /** implements a B-Spline kernel of degree 3 */
@@ -192,8 +279,8 @@ class EXPORT_CORE CBSplineKernel3: public  CBSplineKernel{
 	CBSplineKernel3();
 	virtual void get_weights(double x, std::vector<double>& weight)const;
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	virtual double get_weight_at(double x, int degree) const;
-	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
+	virtual double get_weight_at(double x, int order) const;
+	void get_derivative_weights(double x, std::vector<double>& weight, int order) const;
 	double get_mult_int(int s1, int s2, int range, EIntegralType type) const;  
 private: 
 };
@@ -204,8 +291,8 @@ public:
 	CBSplineKernel4();
 	virtual void get_weights(double x, std::vector<double>& weight)const;
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	virtual double get_weight_at(double x, int degree) const;
-	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
+	virtual double get_weight_at(double x, int order) const;
+	void get_derivative_weights(double x, std::vector<double>& weight, int order) const;
 	double get_mult_int(int s1, int s2, int range, EIntegralType type) const;  
 private: 
 };
@@ -216,8 +303,8 @@ public:
 	CBSplineKernel5();
 	virtual void get_weights(double x, std::vector<double>& weight)const;
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	virtual double get_weight_at(double x, int degree) const;
-	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
+	virtual double get_weight_at(double x, int order) const;
+	void get_derivative_weights(double x, std::vector<double>& weight, int order) const;
 };
 
 /** implements a o-Moms kernel of degree 3 */
@@ -226,7 +313,7 @@ public:
 	CBSplineKernelOMoms3();
 	virtual void get_weights(double x, std::vector<double>& weight)const;
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	void get_derivative_weights(double x, std::vector<double>& weight, int degree) const;
+	void get_derivative_weights(double x, std::vector<double>& weight, int order) const;
 };
 
 double  EXPORT_CORE integrate2(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2, double n, double x0, double L);

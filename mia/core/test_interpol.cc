@@ -78,8 +78,9 @@ void test_direct_interpolator(const vector<T>& data)
 
 
 template <class T>
-void test_conv_interpolator(const vector<T>& data, PSplineKernel kernel, EInterpolation type)
+void test_conv_interpolator(const vector<T>& data, PBSplineKernel kernel, EInterpolation type)
 {
+	cvdebug() << "test type " << type << "\n"; 
 	BOOST_CHECK_EQUAL(kernel->get_type(), type); 
 	T1DConvoluteInterpolator<T>  src(data, kernel);
 	test_interpolator(data, src);
@@ -99,11 +100,13 @@ void test_type()
 
 	test_direct_interpolator<T, T1DNNInterpolator>(data);
 	test_direct_interpolator<T, T1DLinearInterpolator>(data);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel3()), ip_bspline3);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel4()), ip_bspline4);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel5()), ip_bspline5);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernelOMoms3()), ip_omoms3);
+	test_conv_interpolator<T>(data, PBSplineKernel(new CBSplineKernel0()), ip_bspline0);
+	test_conv_interpolator<T>(data, PBSplineKernel(new CBSplineKernel1()), ip_bspline1);
+	test_conv_interpolator<T>(data, PBSplineKernel(new CBSplineKernel2()), ip_bspline2);
+	test_conv_interpolator<T>(data, PBSplineKernel(new CBSplineKernel3()), ip_bspline3);
+	test_conv_interpolator<T>(data, PBSplineKernel(new CBSplineKernel4()), ip_bspline4);
+	test_conv_interpolator<T>(data, PBSplineKernel(new CBSplineKernel5()), ip_bspline5);
+	test_conv_interpolator<T>(data, PBSplineKernel(new CBSplineKernelOMoms3()), ip_omoms3);
 }
 
 double omoms3(double x)

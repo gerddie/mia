@@ -103,6 +103,7 @@ private:
 
 /**
     Nearest Neighbor interpolation.
+    \todo replace by Convolution interpolator with CBSplineKernel0
  */
 
 template <class T>
@@ -115,7 +116,8 @@ public:
 };
 
 /**
-   Tri-linear interpolation
+   linear interpolation
+   \todo replace by Convolution interpolator with CBSplineKernel1
 */
 
 template <class T>
@@ -135,7 +137,7 @@ private:
 template <class T>
 class EXPORT_CORE T1DConvoluteInterpolator: public T1DInterpolator<T> {
 public:
-	T1DConvoluteInterpolator(const std::vector<T>& image, PSplineKernel kernel);
+	T1DConvoluteInterpolator(const std::vector<T>& image, PBSplineKernel kernel);
 	~T1DConvoluteInterpolator();
 	T  operator () (const double& x) const;
 	virtual typename coeff_map<T>::coeff_type derivative_at (const double& x) const;
@@ -148,7 +150,7 @@ private:
 
 	TCoeff1D m_coeff;
 	size_t m_size2;
-	PSplineKernel m_kernel;
+	PBSplineKernel m_kernel;
 	T m_min;
 	T m_max;
 
@@ -158,13 +160,16 @@ private:
 };
 
 
-/** Factory to create 1D interpolators of a give type using the given input data */
+/** Factory to create 1D interpolators of a give type using the given input data 
+    \remark After replacing the NN and Linear interpolators by using BSplineKernel(0|1) 
+    this class should be removed 
+*/
 class EXPORT_CORE C1DInterpolatorFactory {
 public:
 	enum EType {ipt_nn, ipt_linear, ipt_spline, ipt_unknown};
 
 	C1DInterpolatorFactory(EType type);
-	C1DInterpolatorFactory(EType type, std::shared_ptr<CBSplineKernel > kernel);
+	C1DInterpolatorFactory(EType type, PBSplineKernel kernel);
 
 	C1DInterpolatorFactory(const C1DInterpolatorFactory& o);
 
@@ -176,11 +181,11 @@ public:
 	T1DInterpolator<T> *create(const std::vector<T>& src) const
 		__attribute__ ((warn_unused_result));
 
-	PSplineKernel get_kernel() const;
+	PBSplineKernel get_kernel() const;
 
 private:
 	EType m_type;
-	PSplineKernel m_kernel;
+	PBSplineKernel m_kernel;
 };
 typedef std::shared_ptr<const C1DInterpolatorFactory > P1DInterpolatorFactory;
 

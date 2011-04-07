@@ -173,8 +173,7 @@ void __dispatch_copy<I,O>::apply(const I& input, O& output)
 }
  
 template <typename T>
-T1DConvoluteInterpolator<T>::T1DConvoluteInterpolator(const std::vector<T>& data, 
-						      std::shared_ptr<CBSplineKernel >  kernel):
+T1DConvoluteInterpolator<T>::T1DConvoluteInterpolator(const std::vector<T>& data, PBSplineKernel  kernel):
 	m_coeff(data.size()), 
 	m_size2(data.size() + data.size() - 2),
 	m_kernel(kernel),
@@ -298,6 +297,7 @@ T  T1DConvoluteInterpolator<T>::operator () (const double& x) const
 	U result = U();
 	
 	switch (m_kernel->size()) {
+	case 1: result = add_1d<TCoeff1D,1>::value(m_coeff, m_x_weight, m_x_index); break; 
 	case 2: result = add_1d<TCoeff1D,2>::value(m_coeff, m_x_weight, m_x_index); break; 
 	case 3: result = add_1d<TCoeff1D,3>::value(m_coeff, m_x_weight, m_x_index); break; 
 	case 4: result = add_1d<TCoeff1D,4>::value(m_coeff, m_x_weight, m_x_index); break; 

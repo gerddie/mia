@@ -34,7 +34,9 @@ NS_MIA_BEGIN
 /**
    Template of a generic tranformation function 
    \tparam D data type of the object to be transformed 
-   \tparam I interpolator factory to create resampler for type D 
+   \tparam I interpolator factory to create resampler for type D
+   \todo the interpolator factory resp. th einterpolator kernel 
+         should probably be part of the class 
  */
 
 template <typename D, typename I>
