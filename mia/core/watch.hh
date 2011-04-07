@@ -24,11 +24,10 @@
 #ifndef mia_core_watch_h
 #define mia_core_watch_h
 
-
 #include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
-/** A class to measure time with  milisecond accuracy 
+/** This is a  class to measure time with  milisecond accuracy.  
     \remark On WIN32 this class is currently a fake that always returns 0.0; 
  */
 class EXPORT_CORE CWatch {
@@ -48,6 +47,3 @@ private:
 NS_MIA_END
 
 #endif
-
-
-
