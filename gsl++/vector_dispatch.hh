@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2010 Gert Wollny 
+ * Copyright (c) Madrid 2010-2011 Gert Wollny 
  *
  * BIT, ETSI Telecomunicacion, UPM
  *

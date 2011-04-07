@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -25,7 +25,7 @@
 
 /*! \brief Some easy cache, string, and file manipulation tools
 
-\author Gert Wollny <gw.fossdev@gmail.com>, 2004-2010
+\author Gert Wollny <gw.fossdev@gmail.com>, 2004-2011
 \author M. Tittgemeyer, tittge@cbs.mpg.de, 2004
 
 */

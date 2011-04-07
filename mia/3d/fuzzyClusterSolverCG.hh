@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -28,7 +28,7 @@
 
 \author Stefan Burckhardt and Carsten Wolters, wolters@mis.mpg.de, 2004
 \remark adapted for libmona by Heike Jaenicke and Marc Tittgemeyer, tittge@cbs.mpg.de, 2004
-\remark adapted for mia2 by Gert Wollny, gw.fossdev@gmail.com 2010 
+\remark adapted for mia2 by Gert Wollny, gw.fossdev@gmail.com 2011 
 */
 
 
