@@ -35,11 +35,11 @@ static char const *plugin_name = "noise";
 template <typename T>
 struct 	FNoiseModulator {
 	FNoiseModulator(const CNoiseGenerator& ng):
-		_M_ng(ng) {
+		m_ng(ng) {
 	}
 
 	T operator ()(T x) const {
-		double y = x * this->_M_ng();
+		double y = x * this->m_ng();
 		if (y < numeric_limits<T>::min())
 			return numeric_limits<T>::min();
 		if (y > numeric_limits<T>::max())
@@ -47,17 +47,17 @@ struct 	FNoiseModulator {
 		return T(y);
 	}
 private:
-	const CNoiseGenerator& _M_ng;
+	const CNoiseGenerator& m_ng;
 };
 
 template <typename T>
 struct 	FNoiseAdder {
 	FNoiseAdder(const CNoiseGenerator& ng):
-		_M_ng(ng) {
+		m_ng(ng) {
 	}
 
 	T operator ()(T x) const {
-		double y = x + this->_M_ng();
+		double y = x + this->m_ng();
 		if (y < numeric_limits<T>::min())
 			return numeric_limits<T>::min();
 		if (y > numeric_limits<T>::max())
@@ -65,7 +65,7 @@ struct 	FNoiseAdder {
 		return T(y);
 	}
 private:
-	const CNoiseGenerator& _M_ng;
+	const CNoiseGenerator& m_ng;
 };
 
 template <class T>
@@ -73,10 +73,10 @@ typename C2DNoise::result_type C2DNoise::operator () (const T2DImage<T>& data) c
 {
 	T2DImage<T> *result = new T2DImage<T>(data.get_size());
 	cvdebug() << "C2DNoise\n";
-	if (_M_modulated)
-		transform(data.begin(), data.end(), result->begin(), FNoiseModulator<T>(*_M_generator));
+	if (m_modulated)
+		transform(data.begin(), data.end(), result->begin(), FNoiseModulator<T>(*m_generator));
 	else
-		transform(data.begin(), data.end(), result->begin(), FNoiseAdder<T>(*_M_generator));
+		transform(data.begin(), data.end(), result->begin(), FNoiseAdder<T>(*m_generator));
 
 
 
@@ -90,12 +90,12 @@ P2DImage C2DNoise::do_filter(const C2DImage& image) const
 
 C2DNoiseImageFilterFactory::C2DNoiseImageFilterFactory():
 	C2DFilterPlugin(plugin_name),
-	_M_noise_gen("gauss:mu=0,sigma=10"),
-	_M_modulate(false)
+	m_noise_gen("gauss:mu=0,sigma=10"),
+	m_modulate(false)
 
 {
-	add_parameter("g", new CStringParameter(_M_noise_gen, false, "noise generator"));
-	add_parameter("mod", new TParameter<bool>(_M_modulate,false, "additive or modulated noise"));
+	add_parameter("g", new CStringParameter(m_noise_gen, false, "noise generator"));
+	add_parameter("mod", new TParameter<bool>(m_modulate,false, "additive or modulated noise"));
 }
 
 C2DFilterPlugin::ProductPtr C2DNoiseImageFilterFactory::do_create()const
@@ -103,11 +103,11 @@ C2DFilterPlugin::ProductPtr C2DNoiseImageFilterFactory::do_create()const
 
 	const CNoiseGeneratorPluginHandler::Instance& ng = CNoiseGeneratorPluginHandler::instance();
 
-	CNoiseGeneratorPlugin::ProductPtr generator(ng.produce(_M_noise_gen.c_str()));
+	CNoiseGeneratorPlugin::ProductPtr generator(ng.produce(m_noise_gen.c_str()));
 	if (!generator)
-		throw invalid_argument(_M_noise_gen + " does not describe a noise generator");
+		throw invalid_argument(m_noise_gen + " does not describe a noise generator");
 
-	return C2DFilterPlugin::ProductPtr(new C2DNoise(generator, _M_modulate));
+	return C2DFilterPlugin::ProductPtr(new C2DNoise(generator, m_modulate));
 }
 
 const string C2DNoiseImageFilterFactory::do_get_descr()const

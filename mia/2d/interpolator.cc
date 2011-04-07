@@ -45,21 +45,21 @@ C2DInterpolator::~C2DInterpolator()
 
 
 C2DInterpolatorFactory::C2DInterpolatorFactory(EType type, std::shared_ptr<CBSplineKernel > kernel):
-	_M_type(type),
-	_M_kernel(kernel)
+	m_type(type),
+	m_kernel(kernel)
 {
 }
 
 C2DInterpolatorFactory::C2DInterpolatorFactory(const C2DInterpolatorFactory& o):
-	_M_type(o._M_type),
-	_M_kernel(o._M_kernel)
+	m_type(o.m_type),
+	m_kernel(o.m_kernel)
 {
 }
 
 C2DInterpolatorFactory& C2DInterpolatorFactory::operator = ( const C2DInterpolatorFactory& o)
 {
-	_M_type = o._M_type;
-	_M_kernel = o._M_kernel;
+	m_type = o.m_type;
+	m_kernel = o.m_kernel;
 
 	return *this;
 }
@@ -70,7 +70,7 @@ C2DInterpolatorFactory::~C2DInterpolatorFactory()
 
 const CBSplineKernel* C2DInterpolatorFactory::get_kernel() const
 {
-	return _M_kernel.get();
+	return m_kernel.get();
 }
 
 C2DInterpolatorFactory *create_2dinterpolation_factory(int type)

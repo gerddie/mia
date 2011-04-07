@@ -49,12 +49,12 @@ private:
 	virtual void do_solve(const mia::C2DFVectorfield& b, mia::C2DFVectorfield& v) const;
 	virtual float do_force_scale() const;
 
-	float _M_mu;
-	float _M_lambda;
-	float _M_a1,_M_a, _M_b, _M_c, _M_a_b, _M_b_4;
-	float _M_omega;
-	float _M_epsilon;
-	size_t _M_max_iter;
+	float m_mu;
+	float m_lambda;
+	float m_a1,m_a, m_b, m_c, m_a_b, m_b_4;
+	float m_omega;
+	float m_epsilon;
+	size_t m_max_iter;
 };
 
 NS_END

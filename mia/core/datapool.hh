@@ -90,10 +90,10 @@ private:
 	typedef std::map<std::string, boost::any> Anymap;
 	typedef Anymap::const_iterator const_iterator;
 	const_iterator get_iterator(const std::string& key) const;
-	Anymap _M_map;
+	Anymap m_map;
 	typedef std::map<std::string,bool> Usagemap;
-	mutable Usagemap _M_usage;
-	mutable boost::mutex _M_mutex; 
+	mutable Usagemap m_usage;
+	mutable boost::mutex m_mutex; 
 };
 
 NS_MIA_END

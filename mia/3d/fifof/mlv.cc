@@ -59,9 +59,9 @@ static void convert(InputIterator a, InputIterator e, OutputIterator o)
 
 C2DMLVnFifoFilter::C2DMLVnFifoFilter(size_t hwidth):
 	C2DImageFifoFilter(4 * hwidth + 1, 2 * hwidth + 1, 2 * hwidth),
-	_M_hw(hwidth),
-	_M_w(2 * hwidth + 1),
-	_M_read_start(2 * hwidth)
+	m_hw(hwidth),
+	m_w(2 * hwidth + 1),
+	m_read_start(2 * hwidth)
 {
 }
 
@@ -71,21 +71,21 @@ template <typename T>
 C2DImage *C2DMLVnFifoFilter::operator()(const T3DImage<T>& /*dummy*/) const
 {
 	TRACE("C2DMLVnFifoFilter::operator() (pull)");
-	C2DFImage mu_result(_M_slice_size);
-	C2DFImage sigma_buffer(_M_slice_size);
+	C2DFImage mu_result(m_slice_size);
+	C2DFImage sigma_buffer(m_slice_size);
 
 	fill(sigma_buffer.begin(), sigma_buffer.end(), numeric_limits<float>::max());
 
 	for (size_t z = get_start(); z < get_end(); ++z) {
-		for (size_t iy = 0; iy < _M_w; ++iy)
-			for (size_t ix = 0; ix <= _M_w; ++ix) {
-				for (size_t y = 0; y < _M_slice_size.y; ++y) {
-					C3DFImage::const_iterator mu_i = _M_mu_buffer[z].begin_at(ix, y + iy);
-					C3DFImage::const_iterator si_i = _M_sigma_buffer[z].begin_at(ix, y + iy);
+		for (size_t iy = 0; iy < m_w; ++iy)
+			for (size_t ix = 0; ix <= m_w; ++ix) {
+				for (size_t y = 0; y < m_slice_size.y; ++y) {
+					C3DFImage::const_iterator mu_i = m_mu_buffer[z].begin_at(ix, y + iy);
+					C3DFImage::const_iterator si_i = m_sigma_buffer[z].begin_at(ix, y + iy);
 					C2DFImage::iterator omu_i = mu_result.begin_at(0, y);
 					C2DFImage::iterator osi_i = sigma_buffer.begin_at(0, y);
 
-					for (size_t x = 0; x < _M_slice_size.x; ++x) {
+					for (size_t x = 0; x < m_slice_size.x; ++x) {
 						if (osi_i[x] > si_i[x]) {
 							osi_i[x] = si_i[x];
 							omu_i[x] = mu_i[x];
@@ -97,7 +97,7 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T3DImage<T>& /*dummy*/) const
 
 	}
 
-	T2DImage<T> *result = new T2DImage<T>(_M_slice_size);
+	T2DImage<T> *result = new T2DImage<T>(m_slice_size);
 	convert(mu_result.begin(), mu_result.end(), result->begin());
 
 #if 0
@@ -143,9 +143,9 @@ void C2DMLVnFifoFilter::shift_buffer()
 {
 	TRACE("C2DMLVnFifoFilter::shift_buffer()");
 
-	rotate(_M_mu_buffer.begin(), _M_mu_buffer.end());
-	rotate(_M_sigma_buffer.begin(),_M_sigma_buffer.end());
-	rotate(_M_n.begin(), _M_n.end());
+	rotate(m_mu_buffer.begin(), m_mu_buffer.end());
+	rotate(m_sigma_buffer.begin(),m_sigma_buffer.end());
+	rotate(m_n.begin(), m_n.end());
 
 
 }
@@ -155,25 +155,25 @@ void C2DMLVnFifoFilter::evaluate(size_t slice)
 	cvdebug() << "Evaluate slice " << slice << "\n";
 #if 0
 	cout << "mu:";
-	copy(_M_mu_buffer[slice].begin(),  _M_mu_buffer[slice].end(),
+	copy(m_mu_buffer[slice].begin(),  m_mu_buffer[slice].end(),
 	     ostream_iterator<float>(cout, " "));
 	cout << "\n";
 
 	cout << "sigma:";
-	copy(_M_sigma_buffer[slice].begin(),  _M_sigma_buffer[slice].end(),
+	copy(m_sigma_buffer[slice].begin(),  m_sigma_buffer[slice].end(),
 	     ostream_iterator<float>(cout, " "));
 	cout << "\n";
 	cout << "N:";
-	copy(_M_n[slice].begin(),  _M_n[slice].end(),
+	copy(m_n[slice].begin(),  m_n[slice].end(),
 	     ostream_iterator<float>(cout, " "));
 	cout << "\n";
 
 	cout << "\n";
 #endif
-	do_evaluate(_M_n[slice].begin(),
-		    _M_n[slice].end(),
-		    _M_mu_buffer[slice].begin(),
-		    _M_sigma_buffer[slice].begin());
+	do_evaluate(m_n[slice].begin(),
+		    m_n[slice].end(),
+		    m_mu_buffer[slice].begin(),
+		    m_sigma_buffer[slice].begin());
 
 }
 
@@ -184,49 +184,49 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T2DImage<T>& input)
 {
 	TRACE("C2DMLVnFifoFilter::operator()(const T2DImage<T>& input)(push)");
 
-	fill(_M_mu_buffer[0].begin(), _M_mu_buffer[0].end(), 0.0);
-	fill(_M_sigma_buffer[0].begin(), _M_sigma_buffer[0].end(), 0.0);
-	fill(_M_n[0].begin(), _M_n[0].end(), 0.0);
+	fill(m_mu_buffer[0].begin(), m_mu_buffer[0].end(), 0.0);
+	fill(m_sigma_buffer[0].begin(), m_sigma_buffer[0].end(), 0.0);
+	fill(m_n[0].begin(), m_n[0].end(), 0.0);
 
-	for (size_t y = 0; y < _M_slice_size.y; ++y) {
-		copy(input.begin_at(0,y), input.begin_at(0,y + 1), _M_buf1.begin());
-		transform(_M_buf1.begin(), _M_buf1.end(), _M_buf2.begin(), _1 * _1);
+	for (size_t y = 0; y < m_slice_size.y; ++y) {
+		copy(input.begin_at(0,y), input.begin_at(0,y + 1), m_buf1.begin());
+		transform(m_buf1.begin(), m_buf1.end(), m_buf2.begin(), _1 * _1);
 
 		typename T2DImage<T>::const_iterator is = input.begin_at(0,y);
 		typename T2DImage<T>::const_iterator ie = input.begin_at(0,y + 1);
 
-		for (size_t iz = 0; iz < _M_w; ++iz)
-			for (size_t iy = 0; iy < _M_w; ++iy)
-				for (size_t ix = 0; ix < _M_w; ++ix) {
-					transform(_M_buf1.begin(), _M_buf1.end(),
-						  _M_mu_buffer[iz].begin_at(ix, y + iy),
-						  _M_mu_buffer[iz].begin_at(ix, y + iy), _1 + _2);
-					transform(_M_buf2.begin(), _M_buf2.end(),
-						  _M_sigma_buffer[iz].begin_at(ix, y + iy),
-						  _M_sigma_buffer[iz].begin_at(ix, y + iy), _1 + _2);
+		for (size_t iz = 0; iz < m_w; ++iz)
+			for (size_t iy = 0; iy < m_w; ++iy)
+				for (size_t ix = 0; ix < m_w; ++ix) {
+					transform(m_buf1.begin(), m_buf1.end(),
+						  m_mu_buffer[iz].begin_at(ix, y + iy),
+						  m_mu_buffer[iz].begin_at(ix, y + iy), _1 + _2);
+					transform(m_buf2.begin(), m_buf2.end(),
+						  m_sigma_buffer[iz].begin_at(ix, y + iy),
+						  m_sigma_buffer[iz].begin_at(ix, y + iy), _1 + _2);
 				}
 	}
 
-	C2DFImage::const_iterator ntmpl_b = _M_n_template.begin();
-	C2DFImage::const_iterator ntmpl_e = _M_n_template.end();
+	C2DFImage::const_iterator ntmpl_b = m_n_template.begin();
+	C2DFImage::const_iterator ntmpl_e = m_n_template.end();
 
-	for (size_t iz = 0; iz < _M_w; ++iz) {
+	for (size_t iz = 0; iz < m_w; ++iz) {
 		transform(ntmpl_b, ntmpl_e,
-			  _M_n[iz].begin_at(0, 0),
-			  _M_n[iz].begin_at(0, 0), _1 + _2);
+			  m_n[iz].begin_at(0, 0),
+			  m_n[iz].begin_at(0, 0), _1 + _2);
 	}
 #if 0
 	cout << "sum:";
-	copy(_M_mu_buffer[0].begin(),  _M_mu_buffer[1].end(),
+	copy(m_mu_buffer[0].begin(),  m_mu_buffer[1].end(),
 	     ostream_iterator<float>(cout, " "));
 	cout << "\n";
 
 	cout << "sum2:";
-	copy(_M_sigma_buffer[0].begin(),  _M_sigma_buffer[0].end(),
+	copy(m_sigma_buffer[0].begin(),  m_sigma_buffer[0].end(),
 	     ostream_iterator<float>(cout, " "));
 	cout << "\n";
 	cout << "N:";
-	copy(_M_n[0].begin(),  _M_n[0].end(),
+	copy(m_n[0].begin(),  m_n[0].end(),
 	     ostream_iterator<float>(cout, " "));
 	cout << "\n";
 
@@ -239,9 +239,9 @@ void C2DMLVnFifoFilter::post_finalize()
 {
 	TRACE("C2DMLVnFifoFilter::post_finalize()");
 
-	_M_mu_buffer.resize(0);
-	_M_sigma_buffer.resize(0);
-	_M_n.resize(0);
+	m_mu_buffer.resize(0);
+	m_sigma_buffer.resize(0);
+	m_n.resize(0);
 }
 
 void C2DMLVnFifoFilter::do_initialize(::boost::call_traits<P2DImage>::param_type x)
@@ -249,37 +249,37 @@ void C2DMLVnFifoFilter::do_initialize(::boost::call_traits<P2DImage>::param_type
 	TRACE("C2DMLVnFifoFilter::do_initialize");
 
 
-	_M_slice_size = x->get_size();
-	C2DBounds size(_M_slice_size.x + 2 * _M_hw,
-		       _M_slice_size.y + 2 * _M_hw);
+	m_slice_size = x->get_size();
+	C2DBounds size(m_slice_size.x + 2 * m_hw,
+		       m_slice_size.y + 2 * m_hw);
 
 	size_t n_slices = get_buffer_size();
 
-	_M_mu_buffer = vector<C2DFImage>(n_slices);
-	_M_sigma_buffer = vector<C2DFImage>(n_slices);
-	_M_n = vector<C2DFImage>(n_slices);
+	m_mu_buffer = vector<C2DFImage>(n_slices);
+	m_sigma_buffer = vector<C2DFImage>(n_slices);
+	m_n = vector<C2DFImage>(n_slices);
 
 	for (size_t i = 0; i < n_slices; ++i) {
-		_M_mu_buffer[i] = C2DFImage(size);
-		_M_sigma_buffer[i] = C2DFImage(size);
-		_M_n[i] = C2DFImage(size);
+		m_mu_buffer[i] = C2DFImage(size);
+		m_sigma_buffer[i] = C2DFImage(size);
+		m_n[i] = C2DFImage(size);
 	}
 
-	_M_buf_slice_size = size.x * size.y;
+	m_buf_slice_size = size.x * size.y;
 
-	_M_buf1.resize(_M_slice_size.x);
-	_M_buf2.resize(_M_slice_size.x);
-	_M_prototype.reset(create_buffer(C2DBounds(1,1), 1, x->get_pixel_type()));
+	m_buf1.resize(m_slice_size.x);
+	m_buf2.resize(m_slice_size.x);
+	m_prototype.reset(create_buffer(C2DBounds(1,1), 1, x->get_pixel_type()));
 
 
-	_M_n_template = C2DFImage(C2DBounds(_M_slice_size.x + 2 * _M_hw, _M_slice_size.y + 2 * _M_hw));
+	m_n_template = C2DFImage(C2DBounds(m_slice_size.x + 2 * m_hw, m_slice_size.y + 2 * m_hw));
 	// create the pattern that is used to update the count
 	// this is the slow version, but we have to do it only once
-	for (size_t y = 0; y < _M_slice_size.y; ++y)
-		for (size_t x = 0; x < _M_slice_size.x; ++x)
-			for (size_t iy = 0; iy < 2 * _M_hw + 1; ++iy)
-				for (size_t ix = 0; ix < 2 * _M_hw + 1; ++ix)
-					_M_n_template(x + ix, y + iy) += 1.0;
+	for (size_t y = 0; y < m_slice_size.y; ++y)
+		for (size_t x = 0; x < m_slice_size.x; ++x)
+			for (size_t iy = 0; iy < 2 * m_hw + 1; ++iy)
+				for (size_t ix = 0; ix < 2 * m_hw + 1; ++ix)
+					m_n_template(x + ix, y + iy) += 1.0;
 }
 
 void C2DMLVnFifoFilter::do_push(::boost::call_traits<P2DImage>::param_type x)
@@ -291,7 +291,7 @@ void C2DMLVnFifoFilter::do_push(::boost::call_traits<P2DImage>::param_type x)
 P2DImage C2DMLVnFifoFilter::do_filter()
 {
 	TRACE("C2DMLVnFifoFilter::do_filter");
-	return P2DImage(mia::filter(*this, *_M_prototype));
+	return P2DImage(mia::filter(*this, *m_prototype));
 }
 
 
@@ -304,14 +304,14 @@ private:
 	virtual bool do_test() const;
 	virtual C2DFifoFilterPlugin::ProductPtr do_create()const;
 
-	mutable int _M_hw;
+	mutable int m_hw;
 };
 
 C2DMLVnFifoFilterPlugin::C2DMLVnFifoFilterPlugin():
 	C2DFifoFilterPlugin("mlv"),
-	_M_hw(1)
+	m_hw(1)
 {
-	add_parameter("w", new CIntParameter(_M_hw, 0, numeric_limits<int>::max(),
+	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(),
 					     false, "filter width parameter"));
 }
 
@@ -327,7 +327,7 @@ bool C2DMLVnFifoFilterPlugin::do_test() const
 
 C2DFifoFilterPlugin::ProductPtr C2DMLVnFifoFilterPlugin::do_create()const
 {
-	return ProductPtr(new C2DMLVnFifoFilter(_M_hw));
+	return ProductPtr(new C2DMLVnFifoFilter(m_hw));
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

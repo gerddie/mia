@@ -52,7 +52,7 @@ public:
 
 	bool is_on_line(const C2DFVector& p, const C2DFVector& a, const C2DFVector& b) const;
 
-	std::vector<C2DFVector> _M_points;
+	std::vector<C2DFVector> m_points;
 };
 
 typedef std::shared_ptr<C2DPolygon > P2DPolygon;

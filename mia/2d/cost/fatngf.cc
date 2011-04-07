@@ -158,31 +158,31 @@ struct FGetMinMax : public TFilter<float> {
 CFatNFG2DImageCost::CFatNFG2DImageCost(P2DImage src, P2DImage ref, P2DInterpolatorFactory ipf,
 				       float weight, PEvaluator evaluator):
 	C2DImageFatCost(src,  ref,  ipf, weight),
-	_M_jump_levels_valid(false),
-	_M_evaluator(evaluator),
-	_M_intensity_scale(1.0)
+	m_jump_levels_valid(false),
+	m_evaluator(evaluator),
+	m_intensity_scale(1.0)
 {
 	FGetMinMax fgmm;
-	_M_intensity_scale = mia::filter(fgmm, *src) * mia::filter(fgmm, *ref);
-	cvdebug() << "_M_intensity_scale = " << _M_intensity_scale << "\n";
+	m_intensity_scale = mia::filter(fgmm, *src) * mia::filter(fgmm, *ref);
+	cvdebug() << "m_intensity_scale = " << m_intensity_scale << "\n";
 	add(property_gradient);
 }
 
 P2DImageFatCost CFatNFG2DImageCost::cloned(P2DImage src, P2DImage ref) const
 {
-	return P2DImageFatCost(new CFatNFG2DImageCost(src, ref,  get_ipf(), get_weight(), _M_evaluator));
+	return P2DImageFatCost(new CFatNFG2DImageCost(src, ref,  get_ipf(), get_weight(), m_evaluator));
 }
 
 void CFatNFG2DImageCost::prepare() const
 {
-	_M_ng_ref =  get_nfg(get_ref());
-	_M_jump_levels_valid = true;
+	m_ng_ref =  get_nfg(get_ref());
+	m_jump_levels_valid = true;
 }
 
 double CFatNFG2DImageCost::do_value() const
 {
 	TRACE("CFatNFG2DImageCost::do_value");
-	if (!_M_jump_levels_valid) {
+	if (!m_jump_levels_valid) {
 		prepare();
 	}
 
@@ -191,10 +191,10 @@ double CFatNFG2DImageCost::do_value() const
 
 	C2DFVectorfield ng_a = get_nfg(get_floating());
 	for (size_t y = 1; y < ng_a.get_size().y - 1; ++y) {
-		pp.ref = _M_ng_ref.begin_at(0,y);
+		pp.ref = m_ng_ref.begin_at(0,y);
 		pp.src = ng_a.begin_at(0,y);
 		for (size_t x = 1; x < ng_a.get_size().x - 1; ++x) {
-			sum +=  _M_evaluator->get_cost(x, pp);
+			sum +=  m_evaluator->get_cost(x, pp);
 		}
 	}
 	return 0.5 * get_weight() * sum / ng_a.size();
@@ -203,14 +203,14 @@ double CFatNFG2DImageCost::do_value() const
 double CFatNFG2DImageCost::do_evaluate_force(C2DFVectorfield& force) const
 {
 	TRACE("CFatNFG2DImageCost::do_evaluate_force");
-	if (!_M_jump_levels_valid) {
+	if (!m_jump_levels_valid) {
 		prepare();
 	}
 	double sum = 0.0;
 	C2DFVectorfield ng_a = get_nfg(get_floating());
 
-	const size_t nx = _M_ng_ref.get_size().x;
-	const size_t ny = _M_ng_ref.get_size().y;
+	const size_t nx = m_ng_ref.get_size().x;
+	const size_t ny = m_ng_ref.get_size().y;
 
 
 	CCostEvaluator::param_pass pp;
@@ -218,7 +218,7 @@ double CFatNFG2DImageCost::do_evaluate_force(C2DFVectorfield& force) const
 	pp.src = ng_a.begin() + nx;
 	pp.srcp = ng_a.begin() + 2 * nx;
 	pp.srcm = ng_a.begin();
-	pp.ref = _M_ng_ref.begin() + nx;
+	pp.ref = m_ng_ref.begin() + nx;
 
 	C2DFVectorfield::iterator iforce = force.begin() + nx;
 
@@ -226,7 +226,7 @@ double CFatNFG2DImageCost::do_evaluate_force(C2DFVectorfield& force) const
 	     ++y, pp.src += nx, pp.srcm += nx, pp.srcm += nx,
 		     iforce += nx, pp.ref += nx) {
 		for (size_t x = 1; x < nx - 1; ++x) {
-			sum +=  _M_evaluator->get_cost_grad(x, pp, iforce);
+			sum +=  m_evaluator->get_cost_grad(x, pp, iforce);
 		}
 	}
 	return 0.5 * get_weight() * sum / ng_a.size();
@@ -234,11 +234,11 @@ double CFatNFG2DImageCost::do_evaluate_force(C2DFVectorfield& force) const
 
 C2DNFGFatImageCostPlugin::C2DNFGFatImageCostPlugin():
 	C2DFatImageCostPlugin("ngf"),
-	_M_type("nfg-d")
+	m_type("nfg-d")
 {
 	TRACE("C2DNFGFatImageCostPlugin::C2DNFGFatImageCostPlugin()");
 	add_parameter("eval",
-		      new CStringParameter(_M_type, true, "plugin subtype (delta, scalar,cross)"));
+		      new CStringParameter(m_type, true, "plugin subtype (delta, scalar,cross)"));
 
 }
 
@@ -259,14 +259,14 @@ C2DFatImageCostPlugin::ProductPtr C2DNFGFatImageCostPlugin::do_create(P2DImage s
 	const TDictMap<ESubTypes> subtypemap(lut);
 
 	PEvaluator eval;
-	switch (subtypemap.get_value(_M_type.c_str())) {
+	switch (subtypemap.get_value(m_type.c_str())) {
 	case st_delta: eval.reset(new CCostEvaluatorSQDelta()); break;
 	case st_delta_scalar: eval.reset(new CCostEvaluatorDeltaScalar()); break;
 	case st_scalar: eval.reset(new CCostEvaluatorScalar()); break;
 	case st_cross: eval.reset(new CCostEvaluatorCross()); break;
 	default:
 		throw invalid_argument(string("C2DNFGFatImageCostPlugin: unknown cost sub-type '")
-				       +_M_type+"'");
+				       +m_type+"'");
 	}
 	return C2DFatImageCostPlugin::ProductPtr(new CFatNFG2DImageCost(src, ref, ipf, weight, eval));
 }

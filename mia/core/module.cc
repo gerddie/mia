@@ -49,7 +49,7 @@
 NS_MIA_BEGIN
 
 CPluginModule::CPluginModule(const char *path):
-	_M_loader(path, DLL_FLAGS ),
+	m_loader(path, DLL_FLAGS ),
 	m_refs(0),
 
 	m_name(path)
@@ -73,9 +73,9 @@ const std::string& CPluginModule::get_name() const
 
 CPluginBase *CPluginModule::get_interface() const
 {
-	FPluginInterface f = reinterpret_cast<FPluginInterface>(_M_loader.get_function("get_plugin_interface"));
+	FPluginInterface f = reinterpret_cast<FPluginInterface>(m_loader.get_function("get_plugin_interface"));
 	if (!f) {
-		cvdebug() << "looking up symbol 'get_plugin_interface' in " << _M_loader.get_name() << " failed\n";
+		cvdebug() << "looking up symbol 'get_plugin_interface' in " << m_loader.get_name() << " failed\n";
 		return NULL;
 	}
 	return f();

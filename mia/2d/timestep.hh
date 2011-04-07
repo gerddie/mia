@@ -58,10 +58,10 @@ private:
 	virtual bool do_has_regrid () const = 0;
 
 
-	float _M_min;
-	float _M_max;
-	float _M_current;
-	float _M_step;
+	float m_min;
+	float m_max;
+	float m_current;
+	float m_step;
 };
 
 
@@ -74,8 +74,8 @@ public:
 protected:
 	float get_min_timestep() const;
 	float get_max_timestep() const;
-	float _M_min;
-	float _M_max;
+	float m_min;
+	float m_max;
 };
 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DRegTimeStepPlugin> > C2DRegTimeStepPluginHandler;

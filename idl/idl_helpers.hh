@@ -60,16 +60,16 @@ template <typename T>
 struct FIDLImageCopy: public mia::TFilter<void> {
 	
 	FIDLImageCopy(void *out_data): 
-		_M_out_data((T *)out_data)
+		m_out_data((T *)out_data)
 	{
 	}
 	template <typename Image> 
 	void operator () ( const Image& image) const {
-		__dispatch_copy<typename Image::value_type, T>::apply(image, _M_out_data); 
+		__dispatch_copy<typename Image::value_type, T>::apply(image, m_out_data); 
 	}
 	
 private: 
-	T *_M_out_data; 
+	T *m_out_data; 
 }; 
 
 template <typename I>

@@ -40,20 +40,20 @@ typename C2DCrop::result_type C2DCrop::operator () (const Data2D& data) const
 	TRACE("C2DCrop::operator ()");
 
 
-	C2DSize end = _M_size;
+	C2DSize end = m_size;
 	if (end.x == -1)
 		end.x = data.get_size().x;
 	if (end.y == -1)
 		end.y = data.get_size().y;
 
-	if (_M_start.x >= end.x || _M_start.y >= end.y) {
+	if (m_start.x >= end.x || m_start.y >= end.y) {
 		stringstream errmsg;
-		errmsg << "C2DCrop::operator (): start vs. end = (" << _M_start.x << ", " << _M_start.y << ") vs. ("
+		errmsg << "C2DCrop::operator (): start vs. end = (" << m_start.x << ", " << m_start.y << ") vs. ("
 		       <<  end.x << ", " << end.y << ")";
 		throw invalid_argument(errmsg.str());
 	}
 
-	C2DBounds s(end.x - _M_start.x, end.y - _M_start.y);
+	C2DBounds s(end.x - m_start.x, end.y - m_start.y);
 
 	cvdebug() << "new size = (" << s.x << ", " << s.y<< ")\n";
 
@@ -63,14 +63,14 @@ typename C2DCrop::result_type C2DCrop::operator () (const Data2D& data) const
 		throw runtime_error("crop2d: unable to allocate image");
 	}
 
-	size_t read_start_x = _M_start.x < 0 ? 0 : _M_start.x;
-	size_t write_start_x = _M_start.x < 0 ? - _M_start.x : 0;
+	size_t read_start_x = m_start.x < 0 ? 0 : m_start.x;
+	size_t write_start_x = m_start.x < 0 ? - m_start.x : 0;
 	size_t length_x = result->get_size().x - write_start_x;
 	if (data.get_size().x - read_start_x < length_x )
 		length_x = data.get_size().x - read_start_x;
 
-	for (size_t iy = _M_start.y < 0 ? 0 : _M_start.y,
-		     oy = _M_start.y < 0 ? -_M_start.y : 0;
+	for (size_t iy = m_start.y < 0 ? 0 : m_start.y,
+		     oy = m_start.y < 0 ? -m_start.y : 0;
 	     iy < data.get_size().y && oy < result->get_size().y; ++iy, ++oy) {
 
 		typename Data2D::const_iterator s = data.begin_at(read_start_x, iy);
@@ -86,16 +86,16 @@ P2DImage C2DCrop::do_filter(const C2DImage& image) const
 
 C2DCropImageFilterFactory::C2DCropImageFilterFactory():
 	C2DFilterPlugin(plugin_name),
-	_M_start(0,0),
-	_M_end(-1,-1)
+	m_start(0,0),
+	m_end(-1,-1)
 {
-	add_parameter("start", new TParameter<C2DCrop::C2DSize>(_M_start, false, "start of crop region"));
-	add_parameter("end",   new TParameter<C2DCrop::C2DSize>(_M_end, false, "end of crop region"));
+	add_parameter("start", new TParameter<C2DCrop::C2DSize>(m_start, false, "start of crop region"));
+	add_parameter("end",   new TParameter<C2DCrop::C2DSize>(m_end, false, "end of crop region"));
 }
 
 C2DFilterPlugin::ProductPtr C2DCropImageFilterFactory::do_create()const
 {
-	return C2DFilterPlugin::ProductPtr (new C2DCrop(_M_start, _M_end));
+	return C2DFilterPlugin::ProductPtr (new C2DCrop(m_start, m_end));
 }
 
 const string C2DCropImageFilterFactory::do_get_descr()const

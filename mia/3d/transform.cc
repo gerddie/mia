@@ -41,13 +41,13 @@ void C3DTransformation::reinit() const
 
 void C3DTransformation::set_creator_string(const std::string& s)
 {
-	_M_creator_string = s; 
+	m_creator_string = s; 
 }
 
 
 const std::string& C3DTransformation::get_creator_string()const
 {
-	return _M_creator_string; 
+	return m_creator_string; 
 }
 
 C3DTransformation *C3DTransformation::clone() const
@@ -69,23 +69,23 @@ P3DTransformation C3DTransformation::upscale(const C3DBounds& size) const
 
 
 C3DTransformation::iterator_impl::iterator_impl():
-	_M_pos(0,0,0), 
-	_M_size(0,0,0)
+	m_pos(0,0,0), 
+	m_size(0,0,0)
 {
 }
 
 C3DTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& size):
-	_M_pos(pos), 
-	_M_size(size)
+	m_pos(pos), 
+	m_size(size)
 {
 }
 
 void C3DTransformation::iterator_impl::increment()
 {
 
-	if (_M_pos.x < _M_size.x) {
-		++_M_pos.x;
-		if (_M_pos.x < _M_size.x) {
+	if (m_pos.x < m_size.x) {
+		++m_pos.x;
+		if (m_pos.x < m_size.x) {
 			do_x_increment();
 			return; 
 		}
@@ -95,17 +95,17 @@ void C3DTransformation::iterator_impl::increment()
 		return; 
 	}
 	
-	++_M_pos.y;
-	if (_M_pos.y < _M_size.y) {
-		_M_pos.x = 0;
+	++m_pos.y;
+	if (m_pos.y < m_size.y) {
+		m_pos.x = 0;
 		do_y_increment();
 		return; 
 	}
 	
-	++_M_pos.z; 
-	if (_M_pos.z < _M_size.z) {
-		_M_pos.y = 0;
-		_M_pos.x = 0;
+	++m_pos.z; 
+	if (m_pos.z < m_size.z) {
+		m_pos.y = 0;
+		m_pos.x = 0;
 		do_z_increment();
 		return; 
 	}
@@ -113,22 +113,22 @@ void C3DTransformation::iterator_impl::increment()
 
 void C3DTransformation::set_debug()
 {
-	_M_debug = true; 
+	m_debug = true; 
 }
 bool C3DTransformation::get_debug()const
 {
-	return _M_debug; 
+	return m_debug; 
 }
 
 
 const C3DBounds& C3DTransformation::iterator_impl::get_pos()const
 {
-	return _M_pos; 
+	return m_pos; 
 }
 
 const C3DBounds& C3DTransformation::iterator_impl::get_size()const
 {
-	return _M_size; 
+	return m_size; 
 }
 
 
@@ -139,14 +139,14 @@ const C3DFVector&  C3DTransformation::iterator_impl::get_value() const
 
 bool C3DTransformation::iterator_impl::operator == (const C3DTransformation::iterator_impl& b) const
 {
-	assert(_M_size == b._M_size); 
-	return _M_pos == b._M_pos; 
+	assert(m_size == b.m_size); 
+	return m_pos == b.m_pos; 
 }
 
 EXPORT_3D bool operator == (const C3DTransformation::const_iterator& a, 
 			    const C3DTransformation::const_iterator& b)
 {
-	return *a._M_holder == *b._M_holder; 
+	return *a.m_holder == *b.m_holder; 
 }
 
 
@@ -158,50 +158,50 @@ EXPORT_3D bool operator != (const C3DTransformation::const_iterator& a,
 
 
 C3DTransformation::const_iterator::const_iterator():
-	_M_holder(NULL)
+	m_holder(NULL)
 {
 }
 
 C3DTransformation::const_iterator::const_iterator(iterator_impl * holder):
-	_M_holder(holder)
+	m_holder(holder)
 {
 }
 
 C3DTransformation::const_iterator::const_iterator(const const_iterator& other):
-	_M_holder(other._M_holder->clone())
+	m_holder(other.m_holder->clone())
 {
 }
 
 C3DTransformation::const_iterator& 
 C3DTransformation::const_iterator::operator = (const const_iterator& other)
 {
-	_M_holder.reset(other._M_holder->clone()); 
+	m_holder.reset(other.m_holder->clone()); 
 	return *this; 
 }
 
 C3DTransformation::const_iterator& C3DTransformation::const_iterator::operator ++()
 {
-	_M_holder->increment(); 
+	m_holder->increment(); 
 	return *this; 
 }
 
 C3DTransformation::const_iterator C3DTransformation::const_iterator::operator ++(int)
 {
-	auto old = _M_holder->clone(); 
+	auto old = m_holder->clone(); 
 	++(*this); 
 	return C3DTransformation::const_iterator(old); 
 }
 
 const C3DFVector&  C3DTransformation::const_iterator::operator *() const
 {
-	assert(_M_holder); 
-	return _M_holder->get_value(); 
+	assert(m_holder); 
+	return m_holder->get_value(); 
 }
 
 const C3DFVector  *C3DTransformation::const_iterator::operator ->() const
 {
-	assert(_M_holder); 
-	return &_M_holder->get_value(); 
+	assert(m_holder); 
+	return &m_holder->get_value(); 
 }
 
 bool C3DTransformation::refine()
@@ -211,19 +211,19 @@ bool C3DTransformation::refine()
 
 struct F3DTransform : public TFilter<P3DImage> {
 	F3DTransform(const C3DInterpolatorFactory& ipf, const C3DTransformation& trans):
-		_M_ipf(ipf),
-		_M_trans(trans){
+		m_ipf(ipf),
+		m_trans(trans){
 	}
 	template <typename T>
 	P3DImage operator ()(const T3DImage<T>& image) const {
 		
-		auto *timage = new T3DImage<T>(_M_trans.get_size(), image);
+		auto *timage = new T3DImage<T>(m_trans.get_size(), image);
 		P3DImage result(timage);
 
-		std::auto_ptr<T3DInterpolator<T> > interp(_M_ipf.create(image.data()));
+		std::auto_ptr<T3DInterpolator<T> > interp(m_ipf.create(image.data()));
 
 		auto r = timage->begin();
-		auto v = _M_trans.begin();
+		auto v = m_trans.begin();
 		
 		while (r != timage->end()) {
 			cvdebug() << *v << "\n"; 
@@ -233,8 +233,8 @@ struct F3DTransform : public TFilter<P3DImage> {
 		return result;
 	}
 private:
-	const C3DInterpolatorFactory& _M_ipf;
-	const C3DTransformation& _M_trans;
+	const C3DInterpolatorFactory& m_ipf;
+	const C3DTransformation& m_trans;
 };
 
 

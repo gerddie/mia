@@ -69,7 +69,7 @@ public:
 	CSegSetWithImages crop(const C2DIVector&  start, const C2DIVector&  end,
 			       const std::string& crop_filename_base);
 private:
-	C2DImageSeries _M_images;
+	C2DImageSeries m_images;
 };
 
 NS_MIA_END

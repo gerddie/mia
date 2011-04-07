@@ -94,8 +94,8 @@ protected:
 	/// insert another pixel coordinate
 	void insert(const T<int>& p);
 private:
-	Flat _M_shape;
-	T<int> _M_size;
+	Flat m_shape;
+	T<int> m_size;
 };
 
 NS_MIA_END

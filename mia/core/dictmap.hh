@@ -82,50 +82,50 @@ private:
 	typedef std::map<std::string, T> TMap; 
 	typedef std::map<T, std::string> TBackMap; 
 
-	bool      _M_last_is_default; 
-	TMap      _M_table;
-        TBackMap  _M_back_table;
-	T         _M_default; 
+	bool      m_last_is_default; 
+	TMap      m_table;
+        TBackMap  m_back_table;
+	T         m_default; 
 
 	struct Insert {
-		Insert(	std::set<std::string>& result ):_M_result(result) {
+		Insert(	std::set<std::string>& result ):m_result(result) {
 		}
 		void operator() (const typename TMap::value_type& v) {
-			_M_result.insert(v.first); 
+			m_result.insert(v.first); 
 		}
 	private: 
-		std::set<std::string>& _M_result; 
+		std::set<std::string>& m_result; 
 	};
 }; 
 
 
 template <typename T>
 TDictMap<T>::TDictMap(const Table *table, bool last_is_default): 
-	_M_last_is_default(last_is_default)
+	m_last_is_default(last_is_default)
 {
 	assert(table); 
 	const Table *t = table; 
 	while (t->name){
-		if (!_M_table.insert(typename TMap::value_type(t->name, t->value)).second)
+		if (!m_table.insert(typename TMap::value_type(t->name, t->value)).second)
 			throw std::invalid_argument(std::string("TDictMap<T>::TDictMap:'") + 
 						    std::string(t->name) + 
 						    std::string("' already present")); 
-		_M_back_table.insert(typename TBackMap::value_type(t->value, t->name)); 
+		m_back_table.insert(typename TBackMap::value_type(t->value, t->name)); 
 		++t; 
 	}
-	_M_default = t->value; 
+	m_default = t->value; 
 }
 
 template <typename T>
 T TDictMap<T>::get_value(const char *name) const
 {
-	typename TMap::const_iterator i = _M_table.find(name); 
-	if (i == _M_table.end()) {
-		if (!_M_last_is_default) 
+	typename TMap::const_iterator i = m_table.find(name); 
+	if (i == m_table.end()) {
+		if (!m_last_is_default) 
 			throw std::invalid_argument(std::string("TDictMap<T>::get_value: unknown key '")+
 						    std::string(name) + std::string("' provided")); 
 		else 
-			return _M_default; 
+			return m_default; 
 	}
 	return i->second; 
 }
@@ -133,10 +133,10 @@ T TDictMap<T>::get_value(const char *name) const
 template <typename T>
 const char *TDictMap<T>::get_name(T value) const
 {
-	typename TBackMap::const_iterator i = _M_back_table.find(value); 
+	typename TBackMap::const_iterator i = m_back_table.find(value); 
 	
-	if (i == _M_back_table.end()) {
-		if (!_M_last_is_default || (_M_default != value)) 
+	if (i == m_back_table.end()) {
+		if (!m_last_is_default || (m_default != value)) 
 			THROW(std::invalid_argument, "TDictMap<T>::get_name: unknown value"<< value << " provided"); 
 		else
 			return "(default)"; 
@@ -148,7 +148,7 @@ template <typename T>
 const std::set<std::string> TDictMap<T>::get_name_set() const
 {
 	std::set<std::string> result; 
-	std::for_each(_M_table.begin(),_M_table.end(), Insert(result)); 
+	std::for_each(m_table.begin(),m_table.end(), Insert(result)); 
 	return result; 
 }
 

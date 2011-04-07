@@ -47,8 +47,8 @@ const char *program_info =
 class CHistAccumulator : public TFilter<bool> {
 public:
 	CHistAccumulator(float min, float max, size_t bins, float thresh):
-		_M_histo(CHistogramFeeder<float>(min, max, bins)),
-		_M_thresh(thresh)
+		m_histo(CHistogramFeeder<float>(min, max, bins)),
+		m_thresh(thresh)
 	{
 	}
 
@@ -56,24 +56,24 @@ public:
 	bool operator () (const T3DImage<T>& image) {
 		for (typename T3DImage<T>::const_iterator i = image.begin();
 		     i != image.end(); ++i)
-			if (*i > _M_thresh)
-				_M_histo.push(*i);
+			if (*i > m_thresh)
+				m_histo.push(*i);
 		return true;
 	}
 
 	void print_stats()const
 	{
-		cout   <<  _M_histo.average() << " " << _M_histo.deviation()  << '\n';
+		cout   <<  m_histo.average() << " " << m_histo.deviation()  << '\n';
 	}
 
 	void print_stats(double thresh_high)const
 	{
-		CHistogram<CHistogramFeeder<float > > tmp(_M_histo, thresh_high);
+		CHistogram<CHistogramFeeder<float > > tmp(m_histo, thresh_high);
 		cout   <<  tmp.average() << " " << tmp.deviation()  << '\n';
 	}
 private:
-	CHistogram<CHistogramFeeder<float > > _M_histo;
-	float _M_thresh;
+	CHistogram<CHistogramFeeder<float > > m_histo;
+	float m_thresh;
 };
 
 

@@ -61,27 +61,27 @@ using namespace std;
 
 bool C2DPolygon::is_inside_closed_set(const C2DFVector& point) const
 {
-	if (_M_points.empty())
+	if (m_points.empty())
 		return false;
 
-	const size_t nvert = _M_points.size();
+	const size_t nvert = m_points.size();
 
 	if (nvert == 1)
-		return point == _M_points[0];
+		return point == m_points[0];
 
 	if (nvert == 2)
-		return is_on_line(point, _M_points[0], _M_points[1]);
+		return is_on_line(point, m_points[0], m_points[1]);
 
 	// code
 
 	bool c = false;
 	for (size_t i = 0, j = nvert-1; i < nvert; j = i++) {
-		if (is_on_line(point, _M_points[i], _M_points[j]))
+		if (is_on_line(point, m_points[i], m_points[j]))
 		    return true;
 
-		if ( ((_M_points[i].y > point.y) != ( _M_points[j].y > point .y) ) &&
-		     (point.x < (_M_points[j].x - _M_points[i].x) *
-		      (point.y - _M_points[i].y) / (_M_points[j].y-_M_points[i].y) + _M_points[i].x) )
+		if ( ((m_points[i].y > point.y) != ( m_points[j].y > point .y) ) &&
+		     (point.x < (m_points[j].x - m_points[i].x) *
+		      (point.y - m_points[i].y) / (m_points[j].y-m_points[i].y) + m_points[i].x) )
 			c = !c;
 	}
 	return c;
@@ -89,19 +89,19 @@ bool C2DPolygon::is_inside_closed_set(const C2DFVector& point) const
 
 bool C2DPolygon::is_inside_open_set(const C2DFVector& point) const
 {
-	const size_t nvert = _M_points.size();
+	const size_t nvert = m_points.size();
 	if (nvert < 3)
 		return false;
 
 	bool c = false;
 	for (size_t i = 0, j = nvert-1; i < nvert; j = i++) {
 
-		if (is_on_line(point, _M_points[i], _M_points[j]))
+		if (is_on_line(point, m_points[i], m_points[j]))
 			return false;
 
-		if ( ((_M_points[i].y > point.y) != ( _M_points[j].y > point .y) ) &&
-		     (point.x < (_M_points[j].x - _M_points[i].x) *
-		      (point.y - _M_points[i].y) / (_M_points[j].y-_M_points[i].y) + _M_points[i].x) )
+		if ( ((m_points[i].y > point.y) != ( m_points[j].y > point .y) ) &&
+		     (point.x < (m_points[j].x - m_points[i].x) *
+		      (point.y - m_points[i].y) / (m_points[j].y-m_points[i].y) + m_points[i].x) )
 			c = !c;
 	}
 	return c;
@@ -120,27 +120,27 @@ bool C2DPolygon::is_on_line(const C2DFVector& p, const C2DFVector& a, const C2DF
 
 void C2DPolygon::append(const C2DFVector& point)
 {
-	_M_points.push_back(point);
+	m_points.push_back(point);
 }
 
 size_t C2DPolygon::size() const
 {
-	return _M_points.size();
+	return m_points.size();
 }
 
 float C2DPolygon::get_mimimum_distance(const C2DFVector& point)const
 {
-	assert(!_M_points.empty());
-	const size_t nvert = _M_points.size();
+	assert(!m_points.empty());
+	const size_t nvert = m_points.size();
 	if (nvert < 2)
-		return (point - _M_points[0]).norm();
+		return (point - m_points[0]).norm();
 
-	float min_distance = distance_point_line(point, _M_points[0], _M_points[nvert-1]);
+	float min_distance = distance_point_line(point, m_points[0], m_points[nvert-1]);
 
-	vector<C2DFVector>::const_iterator p1 = _M_points.begin();
-	vector<C2DFVector>::const_iterator p2 = _M_points.begin() + 1;
+	vector<C2DFVector>::const_iterator p1 = m_points.begin();
+	vector<C2DFVector>::const_iterator p2 = m_points.begin() + 1;
 
-	while (p2 != _M_points.end()) {
+	while (p2 != m_points.end()) {
 		float distance = distance_point_line(point, *p1++, *p2++);
 		if (min_distance > distance) {
 			min_distance = distance;
@@ -152,8 +152,8 @@ float C2DPolygon::get_mimimum_distance(const C2DFVector& point)const
 float C2DPolygon::get_hausdorff_distance(const C2DPolygon& other)const
 {
 	float max_distance = 0.0;
-	vector<C2DFVector>::const_iterator p1 = _M_points.begin();
-	vector<C2DFVector>::const_iterator pe = _M_points.end();
+	vector<C2DFVector>::const_iterator p1 = m_points.begin();
+	vector<C2DFVector>::const_iterator pe = m_points.end();
 
 	while (p1 != pe) {
 		float distance = other.get_mimimum_distance(*p1++);
@@ -162,8 +162,8 @@ float C2DPolygon::get_hausdorff_distance(const C2DPolygon& other)const
 	}
 
 
-	p1 = other._M_points.begin();
-	pe = other._M_points.end();
+	p1 = other.m_points.begin();
+	pe = other.m_points.end();
 
 	while (p1 != pe) {
 		float distance = get_mimimum_distance(*p1++);

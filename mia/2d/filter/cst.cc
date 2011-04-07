@@ -28,40 +28,40 @@ NS_MIA_USE;
 using namespace std;
 
 C2DCst::C2DCst(const PCST2DImageKernel&  kernel):
-	_M_kernel(kernel)
+	m_kernel(kernel)
 {
 }
 
 template <typename T, bool is_integral>
 struct FBackConvert {
 	FBackConvert(double scale):
-		_M_scale(scale)
+		m_scale(scale)
 		{
-			cvdebug() << "scale = " << _M_scale <<"\n";
+			cvdebug() << "scale = " << m_scale <<"\n";
 		}
 
 	T operator ()(double x) {
-		return T(x *_M_scale);
+		return T(x *m_scale);
 	}
 private:
-	double _M_scale;
+	double m_scale;
 };
 
 template <typename T>
 struct FBackConvert<T, true> {
 	FBackConvert(double scale):
-		_M_scale(scale)
+		m_scale(scale)
 		{
-			cvdebug() << "scale = " << _M_scale <<"\n";
+			cvdebug() << "scale = " << m_scale <<"\n";
 		}
 
 	T operator ()(double x) {
-		double xc = x *_M_scale;
+		double xc = x *m_scale;
 		return xc < numeric_limits<T>::min() ? numeric_limits<T>::min() :
 			( xc < numeric_limits<T>::max() ?  T(xc) : numeric_limits<T>::max());
 	}
 private:
-	double _M_scale;
+	double m_scale;
 };
 
 
@@ -90,10 +90,10 @@ typename C2DCst::result_type C2DCst::operator () (const T2DImage<T>& image) cons
 {
 	cvdebug() << "C2DCST::operator() begin\n";
 
-	_M_kernel->prepare(image.get_size());
+	m_kernel->prepare(image.get_size());
 	T2DImage<T> *result = new T2DImage<T>(image.get_size());
 
-	__dispatch_fftw<T>::apply(*_M_kernel, image, *result);
+	__dispatch_fftw<T>::apply(*m_kernel, image, *result);
 
 	return P2DImage(result);
 }
@@ -107,12 +107,12 @@ P2DImage C2DCst::do_filter(const C2DImage& image) const
 C2DFilterPluginFactory::C2DFilterPluginFactory():
 	C2DFilterPlugin("cst")
 {
-	add_parameter("k", new CStringParameter(_M_kernel, true, "filter kernel"));
+	add_parameter("k", new CStringParameter(m_kernel, true, "filter kernel"));
 }
 
 C2DFilterPluginFactory::ProductPtr C2DFilterPluginFactory::do_create()const
 {
-	PCST2DImageKernel k = CCST2DImgKernelPluginHandler::instance().produce(_M_kernel.c_str());
+	PCST2DImageKernel k = CCST2DImgKernelPluginHandler::instance().produce(m_kernel.c_str());
 	return C2DFilterPluginFactory::ProductPtr(new C2DCst(k));
 }
 

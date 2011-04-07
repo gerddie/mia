@@ -44,9 +44,9 @@ public:
 private:
 	mia::C3DFilter::result_type do_filter(const mia::C3DImage& image) const;
 
-	mia::C1DSpacialKernelPlugin::ProductPtr _M_kx;
-	mia::C1DSpacialKernelPlugin::ProductPtr _M_ky;
-	mia::C1DSpacialKernelPlugin::ProductPtr _M_kz;
+	mia::C1DSpacialKernelPlugin::ProductPtr m_kx;
+	mia::C1DSpacialKernelPlugin::ProductPtr m_ky;
+	mia::C1DSpacialKernelPlugin::ProductPtr m_kz;
 
 };
 
@@ -61,9 +61,9 @@ private:
 	virtual bool  do_test() const;
 	void prepare_path() const;
 
-	std::string _M_kx;
-	std::string _M_ky;
-	std::string _M_kz;
+	std::string m_kx;
+	std::string m_ky;
+	std::string m_kz;
 };
 
 
@@ -74,7 +74,7 @@ public:
 	virtual const std::string do_get_descr()const;
 private:
 	virtual bool do_test() const;
-	int _M_w;
+	int m_w;
 };
 
 NS_END

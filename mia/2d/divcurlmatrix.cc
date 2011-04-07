@@ -56,10 +56,10 @@ private:
 
 
 
-	int _M_nodes;
-	C2DDDatafield _M_p11;
-	C2DDDatafield _M_p12;
-	C2DDDatafield _M_p22;
+	int m_nodes;
+	C2DDDatafield m_p11;
+	C2DDDatafield m_p12;
+	C2DDDatafield m_p22;
 
 
 };
@@ -99,10 +99,10 @@ C2DFVector C2DDivCurlMatrix::derivative_at(const C2DFVectorfield& coefficients, 
 }
 
 C2DDivCurlMatrixImpl::C2DDivCurlMatrixImpl(const C2DBounds& size, const CBSplineKernel* kernel):
-	_M_nodes(size.x*size.y),
-	_M_p11(C2DBounds(_M_nodes, _M_nodes)),
-	_M_p12(C2DBounds(_M_nodes, _M_nodes)),
-	_M_p22(C2DBounds(_M_nodes, _M_nodes))
+	m_nodes(size.x*size.y),
+	m_p11(C2DBounds(m_nodes, m_nodes)),
+	m_p12(C2DBounds(m_nodes, m_nodes)),
+	m_p22(C2DBounds(m_nodes, m_nodes))
 {
 	assert(kernel);
 
@@ -154,9 +154,9 @@ C2DDivCurlMatrixImpl::C2DDivCurlMatrixImpl(const C2DBounds& size, const CBSpline
 
 	}
 
-	C2DDDatafield::iterator ip11 = _M_p11.begin();
-	C2DDDatafield::iterator ip12 = _M_p12.begin();
-	C2DDDatafield::iterator ip22 = _M_p22.begin();
+	C2DDDatafield::iterator ip11 = m_p11.begin();
+	C2DDDatafield::iterator ip12 = m_p12.begin();
+	C2DDDatafield::iterator ip22 = m_p22.begin();
 
 	for (int y1 = 0; y1 < (int)size.y; ++y1)
 		for (int x1 = 0; x1 < (int)size.x; ++x1)
@@ -242,9 +242,9 @@ double C2DDivCurlMatrixImpl::multiply(const C2DFVectorfield& coefficients) const
 	const C2DBounds size = coefficients.get_size();
 
 	C2DFVectorfield::const_iterator ca = coefficients.begin();
-	C2DDDatafield::const_iterator ip11 = _M_p11.begin();
-	C2DDDatafield::const_iterator ip12 = _M_p12.begin();
-	C2DDDatafield::const_iterator ip22 = _M_p22.begin();
+	C2DDDatafield::const_iterator ip11 = m_p11.begin();
+	C2DDDatafield::const_iterator ip12 = m_p12.begin();
+	C2DDDatafield::const_iterator ip22 = m_p22.begin();
 
 
 	for (int y1 = 0; y1 < (int)size.y; ++y1)

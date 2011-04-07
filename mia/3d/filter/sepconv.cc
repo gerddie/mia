@@ -38,9 +38,9 @@ namespace bfs=::boost::filesystem;
 CSeparableConvolute::CSeparableConvolute(C1DSpacialKernelPlugin::ProductPtr kx,
 					 C1DSpacialKernelPlugin::ProductPtr ky,
 					 C1DSpacialKernelPlugin::ProductPtr kz):
-	_M_kx(kx),
-	_M_ky(ky),
-	_M_kz(kz)
+	m_kx(kx),
+	m_ky(ky),
+	m_kz(kz)
 {
 }
 
@@ -74,34 +74,34 @@ CSeparableConvolute::result_type CSeparableConvolute::operator () (const T3DImag
 	int cachYSize = data->get_size().y;
 	int cachZSize = data->get_size().z;
 
-	if (_M_kx.get()) {
+	if (m_kx.get()) {
 		invec_t buffer(cachXSize);
 		for (int z = 0; z < cachZSize; z++){
 			for (int y = 0; y < cachYSize; y++) {
 				data->get_data_line_x(y,z,buffer);
-				fold(buffer, *_M_kx);
+				fold(buffer, *m_kx);
 				data->put_data_line_x(y,z,buffer);
 			}
 		}
 	}
 
-	if (_M_ky.get()) {
+	if (m_ky.get()) {
 		invec_t buffer(cachYSize);
 		for (int z = 0; z < cachZSize; z++){
 			for (int x = 0; x < cachXSize; x++) {
 				data->get_data_line_y(x,z,buffer);
-				fold(buffer, *_M_ky);
+				fold(buffer, *m_ky);
 				data->put_data_line_y(x,z,buffer);
 			}
 		}
 	}
 
-	if (_M_kz.get()) {
+	if (m_kz.get()) {
 		invec_t buffer(cachZSize);
 		for (int y = 0; y < cachYSize; y++){
 			for (int x = 0; x < cachXSize; x++) {
 				data->get_data_line_z(x,y,buffer);
-				fold(buffer, *_M_kz);
+				fold(buffer, *m_kz);
 				data->put_data_line_z(x,y,buffer);
 			}
 		}
@@ -117,22 +117,22 @@ CSeparableConvolute::result_type CSeparableConvolute::do_filter(const C3DImage& 
 
 C3DSeparableConvoluteFilterPlugin::C3DSeparableConvoluteFilterPlugin():
 	C3DFilterPlugin("sepconv"),
-	_M_kx("gauss:w=1"),
-	_M_ky("gauss:w=1"),
-	_M_kz("gauss:w=1")
+	m_kx("gauss:w=1"),
+	m_ky("gauss:w=1"),
+	m_kz("gauss:w=1")
 {
-	add_parameter("kx", new CStringParameter(_M_kx, false, "filter kernel in x-direction"));
-	add_parameter("ky", new CStringParameter(_M_ky, false, "filter kernel in y-direction"));
-	add_parameter("kz", new CStringParameter(_M_ky, false, "filter kernel in z-direction"));
+	add_parameter("kx", new CStringParameter(m_kx, false, "filter kernel in x-direction"));
+	add_parameter("ky", new CStringParameter(m_ky, false, "filter kernel in y-direction"));
+	add_parameter("kz", new CStringParameter(m_ky, false, "filter kernel in z-direction"));
 }
 
 C3DSeparableConvoluteFilterPlugin::ProductPtr C3DSeparableConvoluteFilterPlugin::do_create()const
 {
 	C1DSpacialKernelPlugin::ProductPtr kx, ky, kz;
 	const C1DSpacialKernelPluginHandler::Instance&  skp = C1DSpacialKernelPluginHandler::instance();
-	kx = skp.produce(_M_kx.c_str());
-	ky = skp.produce(_M_ky.c_str());
-	kz = skp.produce(_M_kz.c_str());
+	kx = skp.produce(m_kx.c_str());
+	ky = skp.produce(m_ky.c_str());
+	kz = skp.produce(m_kz.c_str());
 
 
 	return C3DSeparableConvoluteFilterPlugin::ProductPtr(new CSeparableConvolute(kx, ky, kz));
@@ -156,9 +156,9 @@ const string C3DSeparableConvoluteFilterPlugin::do_get_descr()const
 
 C3DGaussFilterPlugin::C3DGaussFilterPlugin():
 	C3DFilterPlugin("gauss"),
-	_M_w(1)
+	m_w(1)
 {
-	add_parameter("w", new CIntParameter(_M_w, 0,numeric_limits<int>::max(), false, "filter width parameter"));
+	add_parameter("w", new CIntParameter(m_w, 0,numeric_limits<int>::max(), false, "filter width parameter"));
 }
 
 C3DFilterPlugin::ProductPtr C3DGaussFilterPlugin::do_create()const
@@ -167,7 +167,7 @@ C3DFilterPlugin::ProductPtr C3DGaussFilterPlugin::do_create()const
 	const C1DSpacialKernelPluginHandler::Instance&  skp = C1DSpacialKernelPluginHandler::instance();
 
 	stringstream fdescr;
-	fdescr << "gauss:w=" << _M_w;
+	fdescr << "gauss:w=" << m_w;
 	k = skp.produce(fdescr.str().c_str());
 
 	return C3DSeparableConvoluteFilterPlugin::ProductPtr(new CSeparableConvolute(k, k, k));

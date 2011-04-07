@@ -39,7 +39,7 @@ using namespace morphological_fifof;
 template <template <typename, bool> class Compare>
 C2DMorphFifoFilter<Compare>::C2DMorphFifoFilter(P3DShape shape):
 	C2DImageFifoFilter(shape->get_size().z, shape->get_size().z / 2 + 1 ,0),
-	_M_shape(shape)
+	m_shape(shape)
 {
 	TRACE("C2DMorphFifoFilter<Compare>::C2DMorphFifoFilter(P3DShape shape)");
 }
@@ -50,7 +50,7 @@ C2DImage *C2DMorphFifoFilter<Compare>::operator()(const T2DImage<T>& input)
 {
 	TRACE("C2DMorphFifoFilter<Compare>::push internal");
 
-	T3DImage<T> *buf = dynamic_cast<T3DImage<T> *> (_M_buffer.get());
+	T3DImage<T> *buf = dynamic_cast<T3DImage<T> *> (m_buffer.get());
 	assert(buf);
 
 	copy(input.begin(), input.end(), buf->begin());
@@ -62,18 +62,18 @@ template <typename T>
 C2DImage *C2DMorphFifoFilter<Compare>::operator()(const T3DImage<T>& input) const
 {
 	TRACE("C2DMorphFifoFilter<Compare>::operator()(const T3DImage<T>& input) const");
-	T2DImage<T> *result = new T2DImage<T>(_M_slice_size);
-	size_t read_slice = _M_shape->get_size().z / 2;
+	T2DImage<T> *result = new T2DImage<T>(m_slice_size);
+	size_t read_slice = m_shape->get_size().z / 2;
 	const bool is_float = is_floating_point<T>::value;
 	typedef Compare<T, is_float> cmp;
 
 	typename T2DImage<T>::iterator i = result->begin();
 
-	C3DShape::const_iterator shape_end = _M_shape->end();
+	C3DShape::const_iterator shape_end = m_shape->end();
 
 	for (size_t y = 0; y < result->get_size().y; ++y)
 		for (size_t x = 0; x < result->get_size().x; ++x, ++i) {
-			C3DShape::const_iterator shape_i = _M_shape->begin();
+			C3DShape::const_iterator shape_i = m_shape->begin();
 			T value = cmp::start_value();
 
 			while (shape_i != shape_end) {
@@ -107,8 +107,8 @@ template <template <typename, bool> class Compare>
 void C2DMorphFifoFilter<Compare>::do_initialize(::boost::call_traits<P2DImage>::param_type x)
 {
 	TRACE("C2DMorphFifoFilter<Compare>::do_initialize");
-	_M_slice_size = x->get_size();
-	_M_buffer.reset(create_buffer(_M_slice_size, _M_shape->get_size().z, it_float));
+	m_slice_size = x->get_size();
+	m_buffer.reset(create_buffer(m_slice_size, m_shape->get_size().z, it_float));
 
 }
 
@@ -118,7 +118,7 @@ P2DImage C2DMorphFifoFilter<Compare>::do_filter()
 	TRACE("C2DMorphFifoFilter<Compare>::do_filter");
 
 
-	return P2DImage(mia::filter(*this, *_M_buffer));
+	return P2DImage(mia::filter(*this, *m_buffer));
 }
 
 template <template <typename, bool> class Compare>
@@ -126,15 +126,15 @@ void C2DMorphFifoFilter<Compare>::shift_buffer()
 {
 	TRACE("C2DMorphFifoFilter<Compare>::shift_buffer");
 
-	mia::filter_inplace(_M_shifter, *_M_buffer);
+	mia::filter_inplace(m_shifter, *m_buffer);
 }
 
 
 C2DMorphFifoFilterPluginBase::C2DMorphFifoFilterPluginBase(const char *name):
 	C2DFifoFilterPlugin(name),
-	_M_shape_descr("6n")
+	m_shape_descr("6n")
 {
-	add_parameter("shape", new CStringParameter(_M_shape_descr, false, "structuring element"));
+	add_parameter("shape", new CStringParameter(m_shape_descr, false, "structuring element"));
 }
 
 
@@ -147,7 +147,7 @@ const string C2DMorphFifoFilterPluginBase::do_get_descr() const
 
 const string& C2DMorphFifoFilterPluginBase::get_shape_descr() const
 {
-	return _M_shape_descr;
+	return m_shape_descr;
 }
 
 

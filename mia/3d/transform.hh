@@ -77,8 +77,8 @@ protected:
 		virtual void do_y_increment() = 0; 
 		virtual void do_x_increment() = 0; 
 		
-		C3DBounds _M_pos; 
-		C3DBounds _M_size; 
+		C3DBounds m_pos; 
+		C3DBounds m_size; 
 
 	}; 
 public: 
@@ -109,7 +109,7 @@ public:
 		const C3DFVector  *operator ->() const;
 
 	private: 
-		std::unique_ptr<iterator_impl> _M_holder;
+		std::unique_ptr<iterator_impl> m_holder;
 
 		friend EXPORT_3D bool operator == (const C3DTransformation::const_iterator& a, 
 						   const C3DTransformation::const_iterator& b); 
@@ -299,9 +299,9 @@ private:
 
 	virtual P3DTransformation do_upscale(const C3DBounds& size) const = 0;
 
-	std::string _M_creator_string;  
+	std::string m_creator_string;  
 	virtual C3DTransformation *do_clone() const = 0;
-	bool _M_debug; 
+	bool m_debug; 
 };
 
 

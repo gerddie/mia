@@ -38,8 +38,8 @@ private:
 
 	virtual mia::P3DImage do_filter(const mia::C3DImage& src) const;
 
-	mia::P3DShape _M_shape;
-	bool _M_more_dark;
+	mia::P3DShape m_shape;
+	bool m_more_dark;
 };
 
 
@@ -53,8 +53,8 @@ public:
 private:
 	virtual mia::P3DImage do_filter(const mia::C3DImage& src) const;
 
-	mia::P3DShape _M_shape;
-	bool _M_more_dark;
+	mia::P3DShape m_shape;
+	bool m_more_dark;
 };
 
 class C3DOpenClose: public mia::C3DFilter {
@@ -63,9 +63,9 @@ public:
 private:
 	virtual mia::P3DImage do_filter(const mia::C3DImage& src) const;
 
-	C3DErode _M_erode;
-	C3DDilate _M_dilate;
-	bool _M_open;
+	C3DErode m_erode;
+	C3DDilate m_dilate;
+	bool m_open;
 };
 
 class C3DMorphFilterFactory: public mia::C3DFilterPlugin {
@@ -78,8 +78,8 @@ private:
 	virtual void prepare_path() const;
 
 
-	std::string _M_shape_descr;
-	std::string _M_hint;
+	std::string m_shape_descr;
+	std::string m_hint;
 };
 
 class C3DDilateFilterFactory: public C3DMorphFilterFactory {

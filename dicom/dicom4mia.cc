@@ -83,7 +83,7 @@ public:
 
 private:
 	typedef map<string, Key > Map;
-	Map _M_keylookup;
+	Map m_keylookup;
 };
 
 
@@ -475,22 +475,22 @@ LookupMap::LookupMap()
 {
 	const SLookupInit *s = lookup_init;
 	while (s->skey) {
-		_M_keylookup[s->skey] = pair<DcmTagKey,bool>(s->key,s->ismetadata);
+		m_keylookup[s->skey] = pair<DcmTagKey,bool>(s->key,s->ismetadata);
 		++s;
 	}
 }
 
 LookupMap::Key LookupMap::find(const string& k) const
 {
-	Map::const_iterator i = _M_keylookup.find(k);
+	Map::const_iterator i = m_keylookup.find(k);
 	// keys _must_ be in thelist, otherwise we have a problem
-	assert(i != _M_keylookup.end());
+	assert(i != m_keylookup.end());
 	return i->second;
 }
 
 bool LookupMap::has_key(const string& k) const
 {
-	return _M_keylookup.find(k) != _M_keylookup.end();
+	return m_keylookup.find(k) != m_keylookup.end();
 }
 
 const LookupMap& LookupMap::instance()

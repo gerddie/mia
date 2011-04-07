@@ -50,19 +50,19 @@ private:
 	double do_value() const; 
 	void do_reinit(); 
 
-	C3DImageDataKey _M_src_key;
-	C3DImageDataKey _M_ref_key;
+	C3DImageDataKey m_src_key;
+	C3DImageDataKey m_ref_key;
 	
-	P3DImage _M_src; 
-	P3DImage _M_ref; 
+	P3DImage m_src; 
+	P3DImage m_ref; 
 	
-	P3DImage _M_src_scaled; 
-	P3DImage _M_ref_scaled;
+	P3DImage m_src_scaled; 
+	P3DImage m_ref_scaled;
 
 
-	P3DImageCost _M_cost_kernel; 
-	P3DInterpolatorFactory _M_ipf; 
-	bool _M_debug;
+	P3DImageCost m_cost_kernel; 
+	P3DInterpolatorFactory m_ipf; 
+	bool m_debug;
 }; 
 
 NS_MIA_END

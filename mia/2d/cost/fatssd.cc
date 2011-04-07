@@ -31,10 +31,10 @@ NS_BEGIN(ssd_2dimage_fatcost)
 
 CFatSSD2DImageCost::CFatSSD2DImageCost(P2DImage src, P2DImage ref, P2DInterpolatorFactory ipf, float weight):
 C2DImageFatCost(src,  ref,  ipf, weight),
-	_M_evaluator(C2DImageCostPluginHandler::instance().produce("ssd"))
+	m_evaluator(C2DImageCostPluginHandler::instance().produce("ssd"))
 {
 	add(property_gradient);
-	_M_evaluator->set_reference(*ref); 
+	m_evaluator->set_reference(*ref); 
 }
 
 P2DImageFatCost CFatSSD2DImageCost::cloned(P2DImage src, P2DImage ref) const
@@ -46,12 +46,12 @@ double CFatSSD2DImageCost::do_value() const
 {
 	TRACE("CFatSSD2DImageCost::do_value");
 
-	return _M_evaluator->value(get_floating());
+	return m_evaluator->value(get_floating());
 }
 double CFatSSD2DImageCost::do_evaluate_force(C2DFVectorfield& force) const
 {
 	TRACE("CFatSSD2DImageCost::do_evaluate_force");
-	_M_evaluator->evaluate_force(get_floating(), get_weight(), force);
+	m_evaluator->evaluate_force(get_floating(), get_weight(), force);
 	return value();
 }
 

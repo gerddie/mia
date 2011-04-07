@@ -54,13 +54,13 @@ public:
 	 */
 	const T get() const; 
 private:
-	std::string _M_key;
+	std::string m_key;
 }; 
 
 
 template <typename T>
 TDelayedParameter<T>::TDelayedParameter(const std::string& key):
-	_M_key(key)
+	m_key(key)
 {
 }
 	
@@ -68,11 +68,11 @@ TDelayedParameter<T>::TDelayedParameter(const std::string& key):
 template <typename T>
 const T TDelayedParameter<T>::get() const
 {
-	if (!(CDatapool::Instance().has_key(_M_key))) {
-		THROW(std::invalid_argument, "TDelayedParameter::get(): Key '" << _M_key 
+	if (!(CDatapool::Instance().has_key(m_key))) {
+		THROW(std::invalid_argument, "TDelayedParameter::get(): Key '" << m_key 
 		      << "' is not availabe in the data pool");  
 	}
-	return boost::any_cast<T>(CDatapool::Instance().get(_M_key)); 
+	return boost::any_cast<T>(CDatapool::Instance().get(m_key)); 
 }
 
 NS_MIA_END

@@ -74,8 +74,8 @@ protected:
 		virtual void do_y_increment() = 0; 
 		virtual void do_x_increment() = 0; 
 		
-		C2DBounds _M_pos; 
-		C2DBounds _M_size; 
+		C2DBounds m_pos; 
+		C2DBounds m_size; 
 
 	}; 
 public: 
@@ -103,7 +103,7 @@ public:
 
 		void print(std::ostream& os) const; 
 	private: 
-		std::unique_ptr<iterator_impl> _M_holder;
+		std::unique_ptr<iterator_impl> m_holder;
 
 		friend EXPORT_2D bool operator == (const C2DTransformation::const_iterator& a, 
 						   const C2DTransformation::const_iterator& b); 
@@ -286,7 +286,7 @@ private:
 
 	virtual Pointer do_upscale(const C2DBounds& size) const = 0;
 
-	std::string _M_creator_string;  
+	std::string m_creator_string;  
 	virtual C2DTransformation *do_clone() const = 0;
 
 };
@@ -326,17 +326,17 @@ EXPORT_2D bool operator != (const C2DTransformation::const_iterator& a,
 template <typename Transform>
 struct C2DTransform : public TFilter<P2DImage> {
 	C2DTransform(const C2DInterpolatorFactory& ipf, const Transform& trans):
-		_M_ipf(ipf),
-		_M_trans(trans){
+		m_ipf(ipf),
+		m_trans(trans){
 	}
 	template <typename T>
 	P2DImage operator ()(const T2DImage<T>& image) const {
 		T2DImage<T> *timage = new T2DImage<T>(image.get_size());
 
-		std::auto_ptr<T2DInterpolator<T> > interp(_M_ipf.create(image.data()));
+		std::auto_ptr<T2DInterpolator<T> > interp(m_ipf.create(image.data()));
 
 		typename T2DImage<T>::iterator r = timage->begin();
-		typename Transform::const_iterator v = _M_trans.begin();
+		typename Transform::const_iterator v = m_trans.begin();
 
 		for (size_t y = 0; y < image.get_size().y; ++y)
 			for (size_t x = 0; x < image.get_size().x; ++x, ++r, ++v) {
@@ -346,8 +346,8 @@ struct C2DTransform : public TFilter<P2DImage> {
 		return P2DImage(timage);
 	}
 private:
-	const C2DInterpolatorFactory& _M_ipf;
-	const Transform& _M_trans;
+	const C2DInterpolatorFactory& m_ipf;
+	const Transform& m_trans;
 };
 
 

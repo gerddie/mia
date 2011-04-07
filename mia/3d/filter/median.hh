@@ -27,7 +27,7 @@
 NS_BEGIN(median_3dimage_filter)
 
 class C3DMedianFilter: public mia::C3DFilter {
-	int _M_width;
+	int m_width;
 public:
 	C3DMedianFilter(int hwidth);
 
@@ -39,8 +39,8 @@ private:
 
 
 class C3DSaltAndPepperFilter: public mia::C3DFilter {
-	int _M_width;
-	float _M_thresh;
+	int m_width;
+	float m_thresh;
 public:
 	C3DSaltAndPepperFilter(int hwidth, float thresh);
 
@@ -59,7 +59,7 @@ private:
 	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string  do_get_descr() const;
 	virtual bool do_test() const;
-	int _M_hw;
+	int m_hw;
 };
 
 
@@ -71,8 +71,8 @@ private:
 	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string  do_get_descr() const;
 	virtual bool do_test() const;
-	int _M_hw;
-	float _M_thresh;
+	int m_hw;
+	float m_thresh;
 };
 
 

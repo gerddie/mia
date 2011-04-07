@@ -98,10 +98,10 @@ protected:
 private: 	
 	// a map of plugins 
 
-	CSuffixmap _M_suffixmap; 
+	CSuffixmap m_suffixmap; 
 
 	// list of supported compressd file suffixes
-	std::set<std::string> _M_compress_sfx; 
+	std::set<std::string> m_compress_sfx; 
 
 	/**
 	   Private plugin to handle the virtual data pool IO  
@@ -116,7 +116,7 @@ private:
 			     const typename Interface::Data& data) const; 
 		const std::string do_get_descr() const;
 	}; 
-	CDatapoolPlugin *_M_pool_plugin; 
+	CDatapoolPlugin *m_pool_plugin; 
 }; 
 
 template <typename T>

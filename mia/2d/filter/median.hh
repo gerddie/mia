@@ -35,7 +35,7 @@ public:
 private:
 	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 
-	int _M_hw;
+	int m_hw;
 };
 
 class C2DFilterPluginFactory: public mia::C2DFilterPlugin {
@@ -44,13 +44,13 @@ public:
 private:
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string do_get_descr()const;
-	int _M_hw;
+	int m_hw;
 };
 
 
 class C2DSaltAndPepperFilter: public mia::C2DFilter {
-	int _M_width;
-	float _M_thresh;
+	int m_width;
+	float m_thresh;
 public:
 	C2DSaltAndPepperFilter(int hwidth, float thresh);
 
@@ -68,8 +68,8 @@ public:
 private:
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string  do_get_descr() const;
-	int _M_hw;
-	float _M_thresh;
+	int m_hw;
+	float m_thresh;
 };
 
 NS_END

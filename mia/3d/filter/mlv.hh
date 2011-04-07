@@ -26,8 +26,8 @@
 NS_BEGIN(mlv_3dimage_filter)
 
 class C3DMLVImageFilter: public mia::C3DFilter {
-	int _M_l;
-	int _M_kh;
+	int m_l;
+	int m_kh;
 public:
 	C3DMLVImageFilter(int hw);
 
@@ -56,7 +56,7 @@ private:
 	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string do_get_descr() const;
 	virtual bool  do_test() const;
-	int _M_hw;
+	int m_hw;
 };
 
 

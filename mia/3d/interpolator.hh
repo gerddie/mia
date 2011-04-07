@@ -82,10 +82,10 @@ public:
 	T3DDirectInterpolator(const T3DDatafield<T>& data);
 protected:
 	const T3DDatafield<T>& data()const {
-		return _M_data;
+		return m_data;
 	}
 private:
-	const T3DDatafield<T>& _M_data;
+	const T3DDatafield<T>& m_data;
 };
 
 /**
@@ -110,9 +110,9 @@ public:
 	T3DTrilinearInterpolator(const T3DDatafield<T>& image);
 	T operator () (const C3DFVector& x) const;
 private:
-	size_t _M_xy;
-	C3DFVector _M_size;
-	C3DFVector _M_sizeb;
+	size_t m_xy;
+	C3DFVector m_size;
+	C3DFVector m_sizeb;
 };
 
 
@@ -153,7 +153,7 @@ public:
 
 	/// \returns the coefficients 
 	const TCoeff3D& get_coefficients() const {
-		return _M_coeff; 
+		return m_coeff; 
 	}
 
 protected:
@@ -161,15 +161,15 @@ protected:
 	typedef std::vector< typename TCoeff3D::value_type > coeff_vector;
 private:
 
-	TCoeff3D _M_coeff;
-	C3DBounds _M_size2;
-	std::shared_ptr<CBSplineKernel > _M_kernel;
-	T _M_min;
-	T _M_max;
+	TCoeff3D m_coeff;
+	C3DBounds m_size2;
+	std::shared_ptr<CBSplineKernel > m_kernel;
+	T m_min;
+	T m_max;
 
- 	mutable CBSplineKernel::SCache _M_x_cache; 
-	mutable CBSplineKernel::SCache _M_y_cache; 
-	mutable CBSplineKernel::SCache _M_z_cache; 
+ 	mutable CBSplineKernel::SCache m_x_cache; 
+	mutable CBSplineKernel::SCache m_y_cache; 
+	mutable CBSplineKernel::SCache m_z_cache; 
 };
 
 
@@ -210,8 +210,8 @@ public:
 	/// @returns the B-spline kernel used for interpolator creation 
 	PBSplineKernel get_kernel() const; 
 private:
-	EType _M_type;
-	PBSplineKernel _M_kernel;
+	EType m_type;
+	PBSplineKernel m_kernel;
 };
 
 
@@ -223,10 +223,10 @@ EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(int type)
 template <class T>
 T3DInterpolator<T> *C3DInterpolatorFactory::create(const T3DDatafield<T>& src) const
 {
-	switch (_M_type) {
+	switch (m_type) {
 	case ip_nn:  return new T3DNNInterpolator<T>(src);
 	case ip_tri: return new T3DTrilinearInterpolator<T>(src);
-	case ip_spline: return new T3DConvoluteInterpolator<T>(src, _M_kernel);
+	case ip_spline: return new T3DConvoluteInterpolator<T>(src, m_kernel);
 	default: throw "C3DInterpolatorFactory::create: Unknown interpolator requested";
 	}
 	return NULL;

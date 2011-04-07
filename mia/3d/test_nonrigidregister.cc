@@ -58,8 +58,8 @@ private:
 	void do_set_size(); 
 
 
-	C3DBounds _M_real_size; 
-	C3DFVector _M_scale; 
+	C3DBounds m_real_size; 
+	C3DFVector m_scale; 
 }; 
 
 
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE ( test_nonrigid )
 
 C3DFullCostMock::C3DFullCostMock(double weight, const C3DBounds& size):
 	C3DFullCost(weight), 
-	_M_real_size(size)
+	m_real_size(size)
 {
 }
 
@@ -149,24 +149,24 @@ double C3DFullCostMock::do_value(const C3DTransformation& t) const
 
 void C3DFullCostMock::do_set_size()
 {
-	_M_scale.x = float(_M_real_size.x) / get_current_size().x; 
-	_M_scale.y = float(_M_real_size.y) / get_current_size().y; 
-	_M_scale.z = float(_M_real_size.z) / get_current_size().z; 
+	m_scale.x = float(m_real_size.x) / get_current_size().x; 
+	m_scale.y = float(m_real_size.y) / get_current_size().y; 
+	m_scale.z = float(m_real_size.z) / get_current_size().z; 
 }
 
 double C3DFullCostMock::fx(double x, double y, double z)
 {
-	return 2 * sin(M_PI * _M_scale.x * x / _real_size.x); 
+	return 2 * sin(M_PI * m_scale.x * x / _real_size.x); 
 }
 
 double C3DFullCostMock::fy(double x, double y, double z)
 {
-	return sin(2 * M_PI * _M_scale.y * y / _real_size.y); 
+	return sin(2 * M_PI * m_scale.y * y / _real_size.y); 
 }
 
 double C3DFullCostMock::fz(double x, double y, double z)
 {
-	return 1.5 * sin(2 * M_PI * _M_scale.z * z / _real_size.z); 
+	return 1.5 * sin(2 * M_PI * m_scale.z * z / _real_size.z); 
 }
 
 

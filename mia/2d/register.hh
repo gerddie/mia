@@ -75,11 +75,11 @@ private:
 	void reg_level(C2DImageFatCostList& cost, C2DGridTransformation& result, const C2DInterpolatorFactory& ipf); 
 	void reg_level_regrid(C2DImageFatCostList& cost, C2DGridTransformation& result, const C2DInterpolatorFactory& ipf); 
 	
-	size_t _M_start_size;
-	size_t _M_max_iter; 
-	C2DRegModel& _M_model; 
-	C2DRegTimeStep& _M_time_step; 
-	float _M_outer_epsilon; 
+	size_t m_start_size;
+	size_t m_max_iter; 
+	C2DRegModel& m_model; 
+	C2DRegTimeStep& m_time_step; 
+	float m_outer_epsilon; 
 }; 
 
 

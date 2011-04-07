@@ -41,30 +41,30 @@ C3DFVector C3DRigidTransformation::apply(const C3DFVector& x) const
 
 C3DFVector C3DRigidTransformation::transform(const C3DFVector& x)const
 {
-	if (!_M_matrix_valid)
+	if (!m_matrix_valid)
 		evaluate_matrix();
 
 	return C3DFVector(
-		_M_t[0] * x.x + _M_t[1] * x.y + _M_t[2] * x.z + _M_t[3],
-		_M_t[4] * x.x + _M_t[5] * x.y + _M_t[6] * x.z + _M_t[7],
-		_M_t[8] * x.x + _M_t[9] * x.y + _M_t[10] * x.z + _M_t[11]);
+		m_t[0] * x.x + m_t[1] * x.y + m_t[2] * x.z + m_t[3],
+		m_t[4] * x.x + m_t[5] * x.y + m_t[6] * x.z + m_t[7],
+		m_t[8] * x.x + m_t[9] * x.y + m_t[10] * x.z + m_t[11]);
 }
 
 C3DRigidTransformation::C3DRigidTransformation(const C3DBounds& size):
-	_M_t(12),
-	_M_size(size),
-	_M_translation(0.0, 0.0, 0.0),
-	_M_rotation(0.0,0.0,0.0),
-	_M_matrix_valid(false)
+	m_t(12),
+	m_size(size),
+	m_translation(0.0, 0.0, 0.0),
+	m_rotation(0.0,0.0,0.0),
+	m_matrix_valid(false)
 {
 }
 
 C3DRigidTransformation::C3DRigidTransformation(const C3DRigidTransformation& other):
-	_M_t(other._M_t),
-	_M_size(other._M_size),
-	_M_translation(other._M_translation),
-	_M_rotation(other._M_rotation),
-	_M_matrix_valid(_M_matrix_valid)
+	m_t(other.m_t),
+	m_size(other.m_size),
+	m_translation(other.m_translation),
+	m_rotation(other.m_rotation),
+	m_matrix_valid(m_matrix_valid)
 {
 }
 
@@ -78,18 +78,18 @@ C3DTransformation *C3DRigidTransformation::invert()const
 	
 	C3DRigidTransformation *result = new C3DRigidTransformation(*this); 
 	cverr() << "to be implemented\n"; 
-	result->_M_matrix_valid = false; 
+	result->m_matrix_valid = false; 
 	return result;
 }
 
 
 C3DRigidTransformation::C3DRigidTransformation(const C3DBounds& size,const C3DFVector& translation,
 					       const C3DFVector& rotation):
-	_M_t(12),
-	_M_size(size),
-	_M_translation(translation),
-	_M_rotation(rotation),
-	_M_matrix_valid(false)
+	m_t(12),
+	m_size(size),
+	m_translation(translation),
+	m_rotation(rotation),
+	m_matrix_valid(false)
 {
 }
 
@@ -99,7 +99,7 @@ bool C3DRigidTransformation::save(const std::string& filename, const std::string
 	file << "Transformation: 3D\n"
 	     << "Matrix: ";
 	for (size_t i = 0; i < 12 ; ++i)
-		file << _M_t[i] << " ";
+		file << m_t[i] << " ";
 	file << "\n";
 	return file.good();
 }
@@ -116,44 +116,44 @@ void C3DRigidTransformation::update(float /*step*/, const C3DFVectorfield& /*a*/
 
 void C3DRigidTransformation::translate(float x, float y, float z)
 {
-	_M_matrix_valid = false;
-	_M_translation.x +=  x;
-	_M_translation.y +=  y;
-	_M_translation.z +=  z;
+	m_matrix_valid = false;
+	m_translation.x +=  x;
+	m_translation.y +=  y;
+	m_translation.z +=  z;
 }
 
 void C3DRigidTransformation::rotate(float xy, float xz, float yz)
 {
-	_M_matrix_valid = false;
-	_M_rotation.z += xy;
-	_M_rotation.y += xz;
-	_M_rotation.x += yz;
+	m_matrix_valid = false;
+	m_rotation.z += xy;
+	m_rotation.y += xz;
+	m_rotation.x += yz;
 	float sx,cx,sy,cy,sz,cz; 
-	sincosf(_M_rotation.z, &sz, &cz); 
-	sincosf(_M_rotation.y, &sy, &cy);
-	sincosf(_M_rotation.x, &sx, &cx);
+	sincosf(m_rotation.z, &sz, &cz); 
+	sincosf(m_rotation.y, &sy, &cy);
+	sincosf(m_rotation.x, &sx, &cx);
 
-	C3DFVector t(cy*cz * _M_translation.x 
-		     - (cx*sz-cz*sx*sy) * _M_translation.y 
-		     + (sx*sz-cx*cz*sy) * _M_translation.z, 
-		     cy*sz * _M_translation.x 
-		     + (cx*cz-sx*sy*sz) * _M_translation.y 
-		     - (cx*sy*sz+cz*sx) * _M_translation.z, 
-		     sy* _M_translation.x  
-		     + cy*sx  * _M_translation.y + cx*cy * _M_translation.z); 
+	C3DFVector t(cy*cz * m_translation.x 
+		     - (cx*sz-cz*sx*sy) * m_translation.y 
+		     + (sx*sz-cx*cz*sy) * m_translation.z, 
+		     cy*sz * m_translation.x 
+		     + (cx*cz-sx*sy*sz) * m_translation.y 
+		     - (cx*sy*sz+cz*sx) * m_translation.z, 
+		     sy* m_translation.x  
+		     + cy*sx  * m_translation.y + cx*cy * m_translation.z); 
 	
-	_M_translation = t;
+	m_translation = t;
 }
 
 CDoubleVector C3DRigidTransformation::get_parameters() const
 {
 	CDoubleVector result(degrees_of_freedom());
-	result[0] = _M_translation.x;
-	result[1] = _M_translation.y;
-	result[2] = _M_translation.z;
-	result[3] = _M_rotation.x;
-	result[4] = _M_rotation.y;
-	result[5] = _M_rotation.z;
+	result[0] = m_translation.x;
+	result[1] = m_translation.y;
+	result[2] = m_translation.z;
+	result[3] = m_rotation.x;
+	result[4] = m_rotation.y;
+	result[5] = m_rotation.z;
 
 	return result;
 }
@@ -162,15 +162,15 @@ void C3DRigidTransformation::set_parameters(const CDoubleVector& params)
 {
 	assert(degrees_of_freedom() == params.size());
 
-	_M_translation.x = params[0];
-	_M_translation.y = params[1];
-	_M_translation.z = params[2];
-	_M_rotation.x    = params[3];
-	_M_rotation.y    = params[4];
-	_M_rotation.z    = params[5];
-	cvdebug() << "Rigid transform = (" << _M_translation << ", " << _M_rotation << ")\n"; 
+	m_translation.x = params[0];
+	m_translation.y = params[1];
+	m_translation.z = params[2];
+	m_rotation.x    = params[3];
+	m_rotation.y    = params[4];
+	m_rotation.z    = params[5];
+	cvdebug() << "Rigid transform = (" << m_translation << ", " << m_rotation << ")\n"; 
 
-	_M_matrix_valid = false;
+	m_matrix_valid = false;
 }
 
 float C3DRigidTransformation::divergence() const
@@ -209,63 +209,63 @@ double C3DRigidTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/) co
 
 const C3DBounds& C3DRigidTransformation::get_size() const
 {
-	return _M_size;
+	return m_size;
 }
 
 P3DTransformation C3DRigidTransformation::do_upscale(const C3DBounds& size) const
 {
-	C3DFVector new_trans(float(size.x) / (float)get_size().x * _M_translation.x,
-			     float(size.y) / (float)get_size().y * _M_translation.y,
-			     float(size.z) / (float)get_size().z * _M_translation.z);
-	return P3DTransformation(new C3DRigidTransformation(size, new_trans, _M_rotation));
+	C3DFVector new_trans(float(size.x) / (float)get_size().x * m_translation.x,
+			     float(size.y) / (float)get_size().y * m_translation.y,
+			     float(size.z) / (float)get_size().z * m_translation.z);
+	return P3DTransformation(new C3DRigidTransformation(size, new_trans, m_rotation));
 }
 
 C3DFMatrix C3DRigidTransformation::derivative_at(int /*x*/, int /*y*/, int /* y */) const
 {
-	if (!_M_matrix_valid)
+	if (!m_matrix_valid)
 		evaluate_matrix();
 
 	return C3DFMatrix(
-		C3DFVector(_M_t[0], _M_t[4], _M_t[8]), 
-		C3DFVector(_M_t[1], _M_t[5], _M_t[9]), 
-		C3DFVector(_M_t[2], _M_t[6], _M_t[10]));
+		C3DFVector(m_t[0], m_t[4], m_t[8]), 
+		C3DFVector(m_t[1], m_t[5], m_t[9]), 
+		C3DFVector(m_t[2], m_t[6], m_t[10]));
 }
 
 void C3DRigidTransformation::set_identity()
 {
 	cvdebug() << "set identity\n";
-	_M_translation = C3DFVector(); 
-	_M_rotation    = C3DFVector(); 
+	m_translation = C3DFVector(); 
+	m_rotation    = C3DFVector(); 
 }
 
 void C3DRigidTransformation::evaluate_matrix() const
 {
 	float sx,cx,sy,cy,sz,cz; 
-	sincosf(_M_rotation.z, &sz, &cz); 
-	sincosf(_M_rotation.y, &sy, &cy);
-	sincosf(_M_rotation.x, &sx, &cx);
+	sincosf(m_rotation.z, &sz, &cz); 
+	sincosf(m_rotation.y, &sy, &cy);
+	sincosf(m_rotation.x, &sx, &cx);
 
-	_M_t[0] =    cy*cz;
-	_M_t[1] =  - cx*sz-cz*sx*sy; 
-	_M_t[2] =    sx*sz-cx*cz*sy;
-	_M_t[3] = _M_translation.x;
+	m_t[0] =    cy*cz;
+	m_t[1] =  - cx*sz-cz*sx*sy; 
+	m_t[2] =    sx*sz-cx*cz*sy;
+	m_t[3] = m_translation.x;
 	
-	_M_t[4] = cy*sz;
-	_M_t[5] = cx*cz-sx*sy*sz;
-	_M_t[6] = - cx*sy*sz-cz*sx;
-	_M_t[7] = _M_translation.y; 
+	m_t[4] = cy*sz;
+	m_t[5] = cx*cz-sx*sy*sz;
+	m_t[6] = - cx*sy*sz-cz*sx;
+	m_t[7] = m_translation.y; 
 
-	_M_t[8] = sy;
-	_M_t[9] = cy*sx;
-	_M_t[10]= cx*cy;
-	_M_t[11]= _M_translation.z; 
+	m_t[8] = sy;
+	m_t[9] = cy*sx;
+	m_t[10]= cx*cy;
+	m_t[11]= m_translation.z; 
 
-	_M_matrix_valid = true;
+	m_matrix_valid = true;
 }
 
 float C3DRigidTransformation::get_max_transform() const
 {
-	if (!_M_matrix_valid) 
+	if (!m_matrix_valid) 
 		evaluate_matrix(); 
 	C3DFVector corners[7] = {
 		C3DFVector(get_size().x, 0, 0), 
@@ -308,15 +308,15 @@ void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleV
 {
 	//
 
-	assert(gradient.get_size() == _M_size);
+	assert(gradient.get_size() == m_size);
 	assert(params.size() == degrees_of_freedom());
 
 	vector<double> r(params.size(), 0.0);
 
 	auto g = gradient.begin();
-	for (size_t z = 0; z < _M_size.z; ++z)
-		for (size_t y = 0; y < _M_size.y; ++y)
-			for (size_t x = 0; x < _M_size.x; ++x, ++g) {
+	for (size_t z = 0; z < m_size.z; ++z)
+		for (size_t y = 0; y < m_size.y; ++y)
+			for (size_t x = 0; x < m_size.x; ++x, ++g) {
 				r[0] += g->x;
 				r[1] += g->y;
 				r[2] += g->z;
@@ -332,43 +332,43 @@ void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleV
 C3DRigidTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& size, 
 						      const C3DRigidTransformation& trans):
 	C3DTransformation::iterator_impl(pos, size),
-	_M_trans(trans), 
-	_M_value(trans.transform(C3DFVector(pos)))
+	m_trans(trans), 
+	m_value(trans.transform(C3DFVector(pos)))
 {
-	_M_dx = _M_trans.transform(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - _M_value;
+	m_dx = m_trans.transform(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
 }
 
 C3DTransformation::iterator_impl * C3DRigidTransformation::iterator_impl::clone() const
 {
-	return new iterator_impl(get_pos(), get_size(), _M_trans); 
+	return new iterator_impl(get_pos(), get_size(), m_trans); 
 }
 
 const C3DFVector&  C3DRigidTransformation::iterator_impl::do_get_value()const
 {
-	return _M_value; 
+	return m_value; 
 }
 
 void C3DRigidTransformation::iterator_impl::do_x_increment()
 {
-	_M_value += _M_dx; 
+	m_value += m_dx; 
 }
 
 void C3DRigidTransformation::iterator_impl::do_y_increment()
 {
-	_M_value = _M_trans.transform(C3DFVector(get_pos())); 
-	_M_dx = _M_trans.transform(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - _M_value;
+	m_value = m_trans.transform(C3DFVector(get_pos())); 
+	m_dx = m_trans.transform(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
 }
 
 void C3DRigidTransformation::iterator_impl::do_z_increment()
 {
-	_M_value = _M_trans.transform(C3DFVector(get_pos())); 
-	_M_dx = _M_trans.transform(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - _M_value;
+	m_value = m_trans.transform(C3DFVector(get_pos())); 
+	m_dx = m_trans.transform(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
 }
 
 
 C3DTransformation::const_iterator C3DRigidTransformation::begin() const
 {
-	if (!_M_matrix_valid) 
+	if (!m_matrix_valid) 
 		evaluate_matrix(); 
 	return C3DTransformation::const_iterator(new iterator_impl(C3DBounds(0,0,0), get_size(), *this)); 
 }

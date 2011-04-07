@@ -40,13 +40,13 @@ public:
 	double evaluate(const T2DDatafield<C2DDVector>& coefficients, CDoubleVector& gradient) const; 
 	void reset(const C2DBounds& size, const C2DFVector& range, const CBSplineKernel& kernel, 
 		   double wd, double wr); 
-	C2DBounds _M_size; 
+	C2DBounds m_size; 
 private: 
-	double _M_wd; 
-	double _M_wr; 
-	EInterpolation _M_type; 
-	C2DFVector _M_range; 
-	size_t _M_nodes; 
+	double m_wd; 
+	double m_wr; 
+	EInterpolation m_type; 
+	C2DFVector m_range; 
+	size_t m_nodes; 
 	
 	struct SMatrixCell {
 		C2DDVector v; 
@@ -54,7 +54,7 @@ private:
 		size_t i; 
 		size_t j; 
 	}; 
-	vector<SMatrixCell> _M_P; 
+	vector<SMatrixCell> m_P; 
 }; 
 
 
@@ -101,18 +101,18 @@ public:
 	CIntegralCache(const CBSplineKernel& kernel); 
 	double get(int s1, int s2, int deg1, int deg2, int range) const; 
 private: 
-	const CBSplineKernel& _M_kernel; 
-	int _M_max_skip; 
-	int _M_row_length; 
-	int _M_hr; 
-	mutable map<int,double> _M_values; 
+	const CBSplineKernel& m_kernel; 
+	int m_max_skip; 
+	int m_row_length; 
+	int m_hr; 
+	mutable map<int,double> m_values; 
 }; 
 
 CIntegralCache::CIntegralCache(const CBSplineKernel& kernel):
-	_M_kernel(kernel), 
-	_M_max_skip((kernel.size() + 1) & ~1), 
-	_M_row_length(kernel.size()), 
-	_M_hr(kernel.get_active_halfrange())
+	m_kernel(kernel), 
+	m_max_skip((kernel.size() + 1) & ~1), 
+	m_row_length(kernel.size()), 
+	m_hr(kernel.get_active_halfrange())
 	
 {
 }
@@ -126,24 +126,24 @@ double CIntegralCache::get(int s1, int s2, int deg1, int deg2, int range) const
 	}
 	
 	int delta = s2 - s1; 
-	if ( delta >= _M_row_length ) 
+	if ( delta >= m_row_length ) 
 		return 0.0;
 	
 	int skip = 0; 
-	const int dlow = _M_hr - s1; 
+	const int dlow = m_hr - s1; 
 	if (dlow > 0) {
-		skip = s2 - _M_hr;
+		skip = s2 - m_hr;
 		if (skip > 0) 
 			skip = 0; 
 	} else {
-		const int dhigh = _M_hr + s2 - range; 
+		const int dhigh = m_hr + s2 - range; 
 		if (dhigh > 0) 
-			skip = _M_hr + s1 - range; 
+			skip = m_hr + s1 - range; 
 		if (skip < 0) 
 			skip = 0; 
 	}
-	if (abs(skip) >= _M_max_skip) {
-		cvdebug()<< "skip because abs(skip = " << skip << ")>=" << _M_row_length << " delta="<< delta<<"\n";  
+	if (abs(skip) >= m_max_skip) {
+		cvdebug()<< "skip because abs(skip = " << skip << ")>=" << m_row_length << " delta="<< delta<<"\n";  
 		return 0.0; 
 	}
 	
@@ -152,11 +152,11 @@ double CIntegralCache::get(int s1, int s2, int deg1, int deg2, int range) const
 		swap(s1, s2); 
 	}
 	
-	int index = skip * 2*_M_row_length + delta + _M_row_length;
-	auto pv = _M_values.find(index);
-	if (pv != _M_values.end())
+	int index = skip * 2*m_row_length + delta + m_row_length;
+	auto pv = m_values.find(index);
+	if (pv != m_values.end())
 		return pv->second; 
-	double result = _M_values[index] = integrate2(_M_kernel, s1, s2, deg1, deg2, 1, 0,  range); 
+	double result = m_values[index] = integrate2(m_kernel, s1, s2, deg1, deg2, 1, 0,  range); 
 	return result; 
 }
 
@@ -171,15 +171,15 @@ C2DPPDivcurlMatrixImpl::C2DPPDivcurlMatrixImpl(const C2DBounds& size, const C2DF
 void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& range, const CBSplineKernel& kernel, 
 				   double wd, double wr)
 {
-	if (  _M_size == size && wd == _M_wd && wr == _M_wr && _M_range == range && kernel.get_type()  == _M_type)
+	if (  m_size == size && wd == m_wd && wr == m_wr && m_range == range && kernel.get_type()  == m_type)
 		return; 
-	_M_size = size;
-	_M_wd = wd; 
-	_M_wr = wr; 
-	_M_range = range; 
-	_M_type = kernel.get_type(); 
-	_M_nodes = size.x*size.y; 
-	_M_P.clear(); 
+	m_size = size;
+	m_wd = wd; 
+	m_wr = wr; 
+	m_range = range; 
+	m_type = kernel.get_type(); 
+	m_nodes = size.x*size.y; 
+	m_P.clear(); 
 
 	C2DFVector h1((size.x-1)/range.x,(size.y-1)/range.y);
 	double global_scale = 1.0 / (h1.x * h1.y); 
@@ -189,8 +189,8 @@ void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& rang
 	C2DFVector h4(h1.x*h3.x, h1.y*h3.y);
 	
 
-	int ny = _M_size.y; 
-	int nx = _M_size.x; 
+	int ny = m_size.y; 
+	int nx = m_size.x; 
 	int kernel_range = kernel.size(); 
 	
 	CIntegralCache rc22(kernel); 
@@ -234,7 +234,7 @@ void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& rang
 					cell.i = k + l * nx; 
 					cell.j = m + n * nx;  
 					if (cell.v.x != 0.0 || cell.v12 != 0.0 ||cell.v.y != 0.0) 
-						_M_P.push_back(cell); 
+						m_P.push_back(cell); 
 				}
 			}
 		}
@@ -244,12 +244,12 @@ void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& rang
 template <typename Field>
 double C2DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 {
-	assert(coefficients.size() == _M_nodes); 
+	assert(coefficients.size() == m_nodes); 
 
 	double result_1 = 0.0; 
 	double result_2 = 0.0; 
 	double result_3 = 0.0; 
-	for (auto p = _M_P.begin(); p != _M_P.end();++p) {
+	for (auto p = m_P.begin(); p != m_P.end();++p) {
 		auto ci = coefficients[p->i]; 
 		auto cj = coefficients[p->j]; 
 		
@@ -264,14 +264,14 @@ double C2DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 double C2DPPDivcurlMatrixImpl::evaluate(const T2DDatafield<C2DDVector>& coefficients, 
 					CDoubleVector& gradient) const
 {
-	assert(coefficients.size() == _M_nodes); 
+	assert(coefficients.size() == m_nodes); 
 	assert(gradient.size() == coefficients.size() * 2); 
 #if defined(__SSE2__)
 	register __m128d result_a = {0.0, 0.0}; 
 	register __m128d result_b = result_a; 
 	
-	auto p = _M_P.begin(); 
-	auto pe = _M_P.end(); 
+	auto p = m_P.begin(); 
+	auto pe = m_P.end(); 
 
 	
 	while (p != pe) {
@@ -302,7 +302,7 @@ double C2DPPDivcurlMatrixImpl::evaluate(const T2DDatafield<C2DDVector>& coeffici
 	register double result_1 = 0.0; 
 	register double result_2 = 0.0; 
 	register double result_3 = 0.0; 
-	for (auto p = _M_P.begin(); p != _M_P.end();++p) {
+	for (auto p = m_P.begin(); p != m_P.end();++p) {
 		auto ci = coefficients[p->i]; 
 		auto cj = coefficients[p->j]; 
 		
@@ -328,12 +328,12 @@ double C2DPPDivcurlMatrixImpl::evaluate(const T2DDatafield<C2DDVector>& coeffici
 double C2DPPDivcurlMatrixImpl::evaluate(const C2DFVectorfield& coefficients, 
 					CDoubleVector& gradient) const
 {
-	assert(coefficients.size() == _M_nodes); 
+	assert(coefficients.size() == m_nodes); 
 	assert(gradient.size() == coefficients.size() * 2); 
 	register double result_1 = 0.0; 
 	register double result_2 = 0.0; 
 	register double result_3 = 0.0; 
-	for (auto p = _M_P.begin(); p != _M_P.end();++p) {
+	for (auto p = m_P.begin(); p != m_P.end();++p) {
 		auto ci = coefficients[p->i]; 
 		auto cj = coefficients[p->j]; 
 		
@@ -358,7 +358,7 @@ double C2DPPDivcurlMatrixImpl::evaluate(const C2DFVectorfield& coefficients,
 const C2DBounds& C2DPPDivcurlMatrix::get_size() const
 {
 	TRACE_FUNCTION; 
-	return impl->_M_size; 
+	return impl->m_size; 
 }
 
 void C2DPPDivcurlMatrix::reset(const C2DBounds& size, const C2DFVector& range, const CBSplineKernel& kernel, 

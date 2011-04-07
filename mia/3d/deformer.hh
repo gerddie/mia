@@ -31,22 +31,22 @@ NS_MIA_BEGIN
 
 struct FDeformer3D: public TFilter<P3DImage> {
 	FDeformer3D(const C3DFVectorfield& vf, const C3DInterpolatorFactory& ipfac): 
-		_M_vf(vf), 
-		_M_ipfac(ipfac)
+		m_vf(vf), 
+		m_ipfac(ipfac)
 		{
 		}
 	template <typename T> 
 	P3DImage operator () (const T3DImage<T>& image) const {
 		T3DImage<T> *timage = new T3DImage<T>(image.get_size(), image.get_attribute_list()); 
 		P3DImage result(timage); 
-		std::auto_ptr<T3DInterpolator<T> > interp(_M_ipfac.create(image.data())); 
+		std::auto_ptr<T3DInterpolator<T> > interp(m_ipfac.create(image.data())); 
 		
 #ifdef __OPENMP                
 #pragma omp parallel for
 #endif                
 		for (size_t z = 0; z < image.get_size().z; ++z) {
 			typename T3DImage<T>::iterator r = timage->begin_at(0,0,z); 
-			C3DFVectorfield::const_iterator v = _M_vf.begin_at(0,0,z); 
+			C3DFVectorfield::const_iterator v = m_vf.begin_at(0,0,z); 
 			for (size_t y = 0; y < image.get_size().y; ++y)
 				for (size_t x = 0; x < image.get_size().x; ++x, ++r, ++v)
 					*r = (*interp)(C3DFVector(x - v->x, y - v->y, z - v->z));
@@ -56,13 +56,13 @@ struct FDeformer3D: public TFilter<P3DImage> {
 
 	template <typename T> 
 	P3DImage operator () (const T3DImage<T>& image, T3DImage<T>& result) const {
-		std::auto_ptr<T3DInterpolator<T> > interp(_M_ipfac.create(image.data())); 
+		std::auto_ptr<T3DInterpolator<T> > interp(m_ipfac.create(image.data())); 
 #ifdef __OPENMP                
 #pragma omp parallel for
 #endif                
 		for (size_t z = 0; z < image.get_size().z; ++z) {
 			typename T3DImage<T>::iterator r = result.begin_at(0,0,z); 
-			C3DFVectorfield::const_iterator v = _M_vf.begin_at(0,0,z); 
+			C3DFVectorfield::const_iterator v = m_vf.begin_at(0,0,z); 
 			for (size_t y = 0; y < image.get_size().y; ++y)
 				for (size_t x = 0; x < image.get_size().x; ++x, ++r, ++v)
 					*r = (*interp)(C3DFVector(x - v->x, y - v->y, z - v->z));
@@ -71,8 +71,8 @@ struct FDeformer3D: public TFilter<P3DImage> {
 	}
 	
 private: 
-	C3DFVectorfield _M_vf; 
-	C3DInterpolatorFactory _M_ipfac; 
+	C3DFVectorfield m_vf; 
+	C3DInterpolatorFactory m_ipfac; 
 }; 
 
 

@@ -42,8 +42,8 @@ public:
 private:
 	CSeparableConvolute::result_type do_filter(const mia::C2DImage& image) const;
 
-	mia::C1DSpacialKernelPlugin::ProductPtr _M_kx;
-	mia::C1DSpacialKernelPlugin::ProductPtr _M_ky;
+	mia::C1DSpacialKernelPlugin::ProductPtr m_kx;
+	mia::C1DSpacialKernelPlugin::ProductPtr m_ky;
 };
 
 
@@ -56,8 +56,8 @@ private:
 
 	virtual void prepare_path() const;
 
-	std::string _M_kx;
-	std::string _M_ky;
+	std::string m_kx;
+	std::string m_ky;
 };
 
 class C2DGaussFilterPlugin: public mia::C2DFilterPlugin {
@@ -66,7 +66,7 @@ public:
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-	int _M_w;
+	int m_w;
 };
 
 NS_END

@@ -42,7 +42,7 @@ struct __adjust {
 
 template <template <typename> class  T, typename M>
 TShape<T,M>::TShape():
-	_M_shape(less_then<T<int> >())
+	m_shape(less_then<T<int> >())
 {
 	TRACE("TShape<T,M>::TShape()"); 
 }
@@ -50,26 +50,26 @@ TShape<T,M>::TShape():
 template <template <typename> class  T, typename M>
 typename TShape<T,M>::const_iterator TShape<T,M>::begin() const
 {
-	return _M_shape.begin(); 
+	return m_shape.begin(); 
 }
 
 template <template <typename> class  T, typename M>
 typename TShape<T,M>::const_iterator TShape<T,M>::end() const
 {
-	return _M_shape.end(); 
+	return m_shape.end(); 
 }
 
 template <template <typename> class  T, typename M>
 typename TShape<T,M>::Size TShape<T,M>::get_size() const
 {
-	return typename TShape<T,M>::Size(_M_size); 
+	return typename TShape<T,M>::Size(m_size); 
 }
 
 template <template <typename> class  T, typename M>
 void TShape<T,M>::insert(const T<int>& p)
 {
-	_M_shape.insert(p); 
-	__adjust<T<int> >::apply(_M_size,p);
+	m_shape.insert(p); 
+	__adjust<T<int> >::apply(m_size,p);
 }
 
 template <template <typename> class  T, typename M>
@@ -78,7 +78,7 @@ typename TShape<T,M>::Mask TShape<T,M>::get_mask()const
 	typename TShape<T,M>::Mask result(get_size());
 	fill(result.begin(), result.end(), 0);  
 	
-	T<int> half_size = _M_size / 2; 
+	T<int> half_size = m_size / 2; 
 		
 	for (const_iterator i = begin(), e = end(); i != e; ++i){
 		result(T<unsigned int>(*i + half_size)) = true;  

@@ -67,11 +67,11 @@ private:
 	void reg_level(C3DImageFatCostList& cost, C3DGridTransformation& result, const C3DInterpolatorFactory& ipf);
 	void reg_level_regrid(C3DImageFatCostList& cost, C3DGridTransformation& result, const C3DInterpolatorFactory& ipf);
 
-	size_t _M_start_size;
-	size_t _M_max_iter;
-	C3DRegModel& _M_model;
-	C3DRegTimeStep& _M_time_step;
-	float _M_outer_epsilon;
+	size_t m_start_size;
+	size_t m_max_iter;
+	C3DRegModel& m_model;
+	C3DRegTimeStep& m_time_step;
+	float m_outer_epsilon;
 };
 
 

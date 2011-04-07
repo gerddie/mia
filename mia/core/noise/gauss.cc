@@ -47,9 +47,9 @@ double CGaussNoiseGenerator::box_muller()const	/* normal random variate generato
 {
 	double x1, x2, w, y1;
 
-	if (_M_use_last)	{
-		y1 = _M_y2;
-		_M_use_last = false;
+	if (m_use_last)	{
+		y1 = m_y2;
+		m_use_last = false;
 	} else {
 		do {
 			x1 = 2.0 * ranf() - 1.0;
@@ -59,18 +59,18 @@ double CGaussNoiseGenerator::box_muller()const	/* normal random variate generato
 
 		w = sqrt( (-2.0 * log( w ) ) / w );
 		y1 = x1 * w;
-		_M_y2 = x2 * w;
-		_M_use_last = true;
+		m_y2 = x2 * w;
+		m_use_last = true;
 	}
 
-	return( _M_mu + y1 * _M_sigma );
+	return( m_mu + y1 * m_sigma );
 }
 
 CGaussNoiseGenerator::CGaussNoiseGenerator(unsigned int seed, double mu, double sigma):
 	CNoiseGenerator(seed),
-	_M_mu(mu),
-	_M_sigma( sigma ),
-	_M_use_last(false)
+	m_mu(mu),
+	m_sigma( sigma ),
+	m_use_last(false)
 {
 }
 
@@ -81,19 +81,19 @@ double CGaussNoiseGenerator::get() const
 
 CGaussNoiseGeneratorFactory::CGaussNoiseGeneratorFactory():
 	CNoiseGeneratorPlugin("gauss"),
-	_M_param_seed(0),
-	_M_param_mu(0.0f),
-	_M_param_sigma(1.0f)
+	m_param_seed(0),
+	m_param_mu(0.0f),
+	m_param_sigma(1.0f)
 {
-	add_parameter("mu", new CFloatParameter(_M_param_mu, -numeric_limits<float>::max(),
+	add_parameter("mu", new CFloatParameter(m_param_mu, -numeric_limits<float>::max(),
 								       numeric_limits<float>::max(),
 								       false, "mean of distribution"));
 
-	add_parameter("sigma", new CFloatParameter(_M_param_sigma, 0.0f,
+	add_parameter("sigma", new CFloatParameter(m_param_sigma, 0.0f,
 								       numeric_limits<float>::max(),
 								       false, "standart derivation of distribution"));
 
-	add_parameter("seed", new CUIntParameter(_M_param_seed, 0,   numeric_limits<unsigned int>::max(),
+	add_parameter("seed", new CUIntParameter(m_param_seed, 0,   numeric_limits<unsigned int>::max(),
 						  false, "set random seed (0=init based on system time)"));
 
 }
@@ -102,7 +102,7 @@ CNoiseGeneratorPlugin::ProductPtr
 CGaussNoiseGeneratorFactory::do_create() const
 {
 
-	return CNoiseGeneratorPlugin::ProductPtr(new CGaussNoiseGenerator(_M_param_seed, _M_param_mu, _M_param_sigma));
+	return CNoiseGeneratorPlugin::ProductPtr(new CGaussNoiseGenerator(m_param_seed, m_param_mu, m_param_sigma));
 }
 
 const string CGaussNoiseGeneratorFactory::do_get_descr()const

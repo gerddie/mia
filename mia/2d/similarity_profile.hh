@@ -62,7 +62,7 @@ private:
 	size_t m_reference; 
 	mutable float m_peak_freq;
 	mutable bool m_peak_freq_valid; 
-	mutable boost::mutex _M_peak_freq_mutex;
+	mutable boost::mutex m_peak_freq_mutex;
 	vector<CFFT1D_R2C::Real> m_cost_values; 
 }; 
 

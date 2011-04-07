@@ -75,8 +75,8 @@ class FMask : public TFilter <P3DImage> {
 public:
 
 	FMask(const C3DBounds& seed_point, P3DShape neigborhood):
-		_M_seed_point(seed_point),
-		_M_neigborhood(neigborhood)
+		m_seed_point(seed_point),
+		m_neigborhood(neigborhood)
 	{
 	}
 
@@ -92,8 +92,8 @@ private:
 		T value;
 	};
 
-	C3DBounds _M_seed_point;
-	P3DShape _M_neigborhood;
+	C3DBounds m_seed_point;
+	P3DShape m_neigborhood;
 };
 
 template <typename T>
@@ -101,12 +101,12 @@ P3DImage FMask::operator() (const T3DImage<T>& image) const
 {
 	queue <seed_t<T> > pool;
 
-	if ( _M_seed_point < image.get_size() )   {
+	if ( m_seed_point < image.get_size() )   {
 
 		// create mask by flood filling starting from the seed
-		T thresh = image(_M_seed_point);
+		T thresh = image(m_seed_point);
 		C3DBitImage mask(image.get_size());
-		pool.push(seed_t<T>(_M_seed_point, thresh));
+		pool.push(seed_t<T>(m_seed_point, thresh));
 
 		while (!pool.empty()) {
 
@@ -119,8 +119,8 @@ P3DImage FMask::operator() (const T3DImage<T>& image) const
 			mask(v.p) = true;
 
 			// add neighboring pixels that fullfill the requirements
-			for (C3DShape::const_iterator i = _M_neigborhood->begin();
-			     i != _M_neigborhood->end(); ++i) {
+			for (C3DShape::const_iterator i = m_neigborhood->begin();
+			     i != m_neigborhood->end(); ++i) {
 
 				C3DBounds x( v.p.x + i->x,v.p.y + i->y, v.p.z + i->z);
 

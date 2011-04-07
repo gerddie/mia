@@ -59,8 +59,8 @@ public:
 		virtual void do_x_increment(); 
 		virtual void do_y_increment(); 
 
-		C2DFVectorfield::const_iterator _M_current;
-		C2DFVector _M_value; 
+		C2DFVectorfield::const_iterator m_current;
+		C2DFVector m_value; 
 
 	};
 
@@ -122,12 +122,12 @@ private:
 	float grad_divergence(double weight, CDoubleVector& gradient) const; 
 	double grad_curl(double weight, CDoubleVector& gradient) const; 
 	virtual C2DFMatrix field_derivative_at(int x, int y) const;
-	C2DFVectorfield _M_field;
+	C2DFVectorfield m_field;
 };
 
 inline C2DFVector C2DGridTransformation::apply(const  C2DFVector& x) const
 {
-	return _M_field.get_interpol_val_at(x);
+	return m_field.get_interpol_val_at(x);
 }
 
 EXPORT_2D C2DGridTransformation operator + (const C2DGridTransformation& a, const C2DGridTransformation& b);

@@ -31,7 +31,7 @@ private:
 	virtual mia::P2DImageFatCost cloned(mia::P2DImage src, mia::P2DImage ref) const;
 	virtual double do_value() const;
 	virtual double do_evaluate_force(mia::C2DFVectorfield& force) const;
-	mia::C2DImageCostPlugin::ProductPtr _M_evaluator;
+	mia::C2DImageCostPlugin::ProductPtr m_evaluator;
 };
 
 class C2DNSSDFatImageCostPlugin: public mia::C2DFatImageCostPlugin {

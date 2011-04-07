@@ -64,7 +64,7 @@ private:
 	virtual void do_get_long_help_really(std::ostream& os) const;
 	virtual const std::string do_get_value_as_string() const;
 
-	typename F::ProductPtr& _M_value;
+	typename F::ProductPtr& m_value;
 };
 
 
@@ -76,15 +76,15 @@ TCmdFactoryOption<F>::TCmdFactoryOption(typename F::ProductPtr& val, char short_
 					const char *long_help, const char *short_help, 
 					CCmdOption::Flags flags):
 	CCmdOptionValue( short_opt, long_opt, long_help, short_help, flags ),
-	_M_value( val )
+	m_value( val )
 {
 }
 
 template <typename F>
 bool TCmdFactoryOption<F>::do_set_value_really(const char *str_value)
 {
-	_M_value = F::instance().produce(str_value); 
-	return !(!_M_value); 
+	m_value = F::instance().produce(str_value); 
+	return !(!m_value); 
 }
 
 template <typename F>
@@ -96,8 +96,8 @@ size_t TCmdFactoryOption<F>::do_get_needed_args() const
 template <typename F>
 void TCmdFactoryOption<F>::do_write_value(std::ostream& os) const
 {
-	if (_M_value) 
-		os << "=" << _M_value->get_init_string(); 
+	if (m_value) 
+		os << "=" << m_value->get_init_string(); 
 	else 
 		if (is_required())
 			os << "[required]"; 
@@ -114,9 +114,9 @@ void TCmdFactoryOption<F>::do_get_long_help_really(std::ostream& os) const
 template <typename F>
 const std::string TCmdFactoryOption<F>::do_get_value_as_string() const
 {
-	if (_M_value) {
+	if (m_value) {
 		stringstream msg; 
-		msg << "'" << _M_value->get_init_string() << "'"; 
+		msg << "'" << m_value->get_init_string() << "'"; 
 		return msg.str();
 	}
 	else 

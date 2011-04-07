@@ -180,13 +180,13 @@ C2DTransformation::iterator_impl *C2DTransformMock::iterator_impl::clone()const
 
 C2DTransformMock::iterator_impl::iterator_impl(const C2DBounds& pos, const C2DBounds& size):
 	C2DTransformation::iterator_impl(pos, size), 
-	_M_value(-1.2, -2.3)
+	m_value(-1.2, -2.3)
 {
 }
 
 const C2DFVector& C2DTransformMock::iterator_impl::do_get_value()const
 {
-	return _M_value; 
+	return m_value; 
 }
 
 void C2DTransformMock::iterator_impl::do_x_increment()

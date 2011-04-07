@@ -80,12 +80,12 @@ private:
 
 	virtual void post_set_reference(const mia::C2DImage& ref); 
 
-	mia::C2DFVectorfield _M_ng_ref;
-	bool _M_jump_levels_valid;
-	float _M_cost_baseline;
+	mia::C2DFVectorfield m_ng_ref;
+	bool m_jump_levels_valid;
+	float m_cost_baseline;
 
-	PEvaluator _M_evaluator;
-	float _M_intensity_scale;
+	PEvaluator m_evaluator;
+	float m_intensity_scale;
 };
 
 class C2DNFGImageCostPlugin: public mia::C2DImageCostPlugin {
@@ -96,7 +96,7 @@ private:
 
 	bool do_test() const;
 	const std::string do_get_descr()const;
-	std::string _M_kernel;
+	std::string m_kernel;
 };
 
 NS_END

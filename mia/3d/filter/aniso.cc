@@ -168,9 +168,9 @@ public:
 	
 	void self_test() const; 
 private: 
-	int   _M_maxiter; 
-	float _M_epsilon; 
-	float _M_edge_stop; 
+	int   m_maxiter; 
+	float m_epsilon; 
+	float m_edge_stop; 
 
 }; 
 
@@ -182,38 +182,38 @@ private:
 	virtual const string do_get_descr()const; 
 	virtual void do_test() const; 
 	
-	TDictMap<EEdgeStop> _M_edge_stop_idmap; 
+	TDictMap<EEdgeStop> m_edge_stop_idmap; 
 
-	int   _M_maxiter; 
-	float _M_epsilon; 
-	float _M_edge_stop; 
-	string _M_edge_stop_func; 
+	int   m_maxiter; 
+	float m_epsilon; 
+	float m_edge_stop; 
+	string m_edge_stop_func; 
 };
 
 C3DAnisoFilterFactory::C3DAnisoFilterFactory():
 	C3DFilterPlugin("anisodiff"),
-	_M_edge_stop_idmap(edge_stop_map), 
-	_M_maxiter(100), 
-	_M_epsilon(1.0), 
-	_M_edge_stop(5.0), 
-	_M_edge_stop_func("tuckey")
+	m_edge_stop_idmap(edge_stop_map), 
+	m_maxiter(100), 
+	m_epsilon(1.0), 
+	m_edge_stop(5.0), 
+	m_edge_stop_func("tuckey")
 {
-	add_parameter("iter", CParamList::PParameter(new CIntParameter(_M_maxiter, 1, numeric_limits<int>::max(), 
+	add_parameter("iter", CParamList::PParameter(new CIntParameter(m_maxiter, 1, numeric_limits<int>::max(), 
 								       false, "maximum number of iterations"))); 
-	add_parameter("e", CParamList::PParameter(new CFloatParameter(_M_epsilon, numeric_limits<float>::min(), numeric_limits<float>::max(), 
+	add_parameter("e", CParamList::PParameter(new CFloatParameter(m_epsilon, numeric_limits<float>::min(), numeric_limits<float>::max(), 
 								      false, "delta value to finish iteration"))); 
-	add_parameter("k", CParamList::PParameter(new CFloatParameter(_M_epsilon, -1, numeric_limits<float>::max(), 
+	add_parameter("k", CParamList::PParameter(new CFloatParameter(m_epsilon, -1, numeric_limits<float>::max(), 
 								      false, "edge stopping value (<=0.0 = adaptive) ")));
 	add_parameter("edgestop", 
-		      CParamList::PParameter(new CStringParameter(_M_edge_stop_func, false, "Edge stopping function (pm1|pm2|tuckey)")));
+		      CParamList::PParameter(new CStringParameter(m_edge_stop_func, false, "Edge stopping function (pm1|pm2|tuckey)")));
 
 }
 
 C3DFilterPlugin::ProductPtr C3DAnisoFilterFactory::do_create()const
 {
-	FEdgeStopping estop = _M_edge_stop_idmap.get_value(_M_edge_stop_func.c_str()); 
+	FEdgeStopping estop = m_edge_stop_idmap.get_value(m_edge_stop_func.c_str()); 
 
-	return C3DFilterPlugin::ProductPtr(new C3DAnisoDiffFilter(estop, _M_maxiter, _M_epsilon, _M_edge_stop)); 
+	return C3DFilterPlugin::ProductPtr(new C3DAnisoDiffFilter(estop, m_maxiter, m_epsilon, m_edge_stop)); 
 }
 
 const string C3DAnisoFilterFactory::do_get_descr()const

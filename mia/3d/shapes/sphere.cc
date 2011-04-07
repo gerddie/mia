@@ -58,14 +58,14 @@ CSphere3DShape::CSphere3DShape(float radius)
 
 CSphere3DShapeFactory::CSphere3DShapeFactory():
 	C3DShapePlugin("sphere"),
-	_M_r(2)
+	m_r(2)
 {
-	add_parameter("r", new CFloatParameter(_M_r, 0, numeric_limits<float>::max(), false, "sphere radius"));
+	add_parameter("r", new CFloatParameter(m_r, 0, numeric_limits<float>::max(), false, "sphere radius"));
 }
 
 C3DShapePlugin::ProductPtr CSphere3DShapeFactory::do_create()const
 {
-	return CSphere3DShapeFactory::ProductPtr(new CSphere3DShape(_M_r));
+	return CSphere3DShapeFactory::ProductPtr(new CSphere3DShape(m_r));
 }
 
 

@@ -56,16 +56,16 @@ C1DGaussFilterKernel::C1DGaussFilterKernel(int fsize):
 
 C1DSpacialGaussKernelPlugin::C1DSpacialGaussKernelPlugin():
 	C1DSpacialKernelPlugin("gauss"),
-	_M_w(1)
+	m_w(1)
 {
-	add_parameter("w", new CIntParameter(_M_w, 0, numeric_limits<int>::max(),
+	add_parameter("w", new CIntParameter(m_w, 0, numeric_limits<int>::max(),
 					     false, "half filter width"));
 }
 
 C1DSpacialGaussKernelPlugin::ProductPtr C1DSpacialGaussKernelPlugin::do_create() const
 {
-	if (_M_w > 0)
-		return C1DSpacialGaussKernelPlugin::ProductPtr(new C1DGaussFilterKernel(_M_w));
+	if (m_w > 0)
+		return C1DSpacialGaussKernelPlugin::ProductPtr(new C1DGaussFilterKernel(m_w));
 	else
 		return C1DSpacialGaussKernelPlugin::ProductPtr();
 }

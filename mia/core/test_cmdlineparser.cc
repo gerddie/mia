@@ -41,13 +41,13 @@ using namespace std;
 using namespace boost::unit_test;
 
 struct CmdlineParserFixture {
-	CmdlineParserFixture():_M_level(cverb.get_level()) {
+	CmdlineParserFixture():m_level(cverb.get_level()) {
 	}
 	~CmdlineParserFixture() {
-		cverb.set_verbosity(_M_level);
+		cverb.set_verbosity(m_level);
 	}
 private:
-	vstream::Level _M_level;
+	vstream::Level m_level;
 
 };
 

@@ -38,11 +38,11 @@ public:
 	virtual P3DImage operator () (const C3DBounds& size, EPixelType type) const;
 private:
  	C3DFImage do_create(const C3DBounds& size) const;
-	C3DFVector _M_freq; 
+	C3DFVector m_freq; 
 };
 
 C3DLatticCreator::C3DLatticCreator(const C3DFVector& freq):
-	_M_freq(2*M_PI/ freq.x,2*M_PI/ freq.y, 2*M_PI/ freq.z)
+	m_freq(2*M_PI/ freq.x,2*M_PI/ freq.y, 2*M_PI/ freq.z)
 {
 }
 
@@ -86,16 +86,16 @@ C3DFImage C3DLatticCreator::do_create(const C3DBounds& size) const
 		double dz = center.z - z;
 		dz  *= dz;
 		double ez = exp(-dz/rmax.z);
-		double vz = sin(_M_freq.z * z); 
+		double vz = sin(m_freq.z * z); 
 		for (size_t y = 0; y < size.y; ++y) {
 			double dy = center.y - y;
 			dy *= dy;
 			double ey = exp(-dy/rmax.y) * ez; 
-			double vy = sin(_M_freq.y * y) + vz; 
+			double vy = sin(m_freq.y * y) + vz; 
 			for (size_t x = 0; x < size.x; ++x, ++p) {
 				double dx = center.x - x;
 				dx *= dx;
-				*p = (sin(_M_freq.x * x) + vy) * exp(-dx/rmax.x) * ey; 
+				*p = (sin(m_freq.x * x) + vy) * exp(-dx/rmax.x) * ey; 
 			}
 		}
 	}
@@ -111,21 +111,21 @@ private:
 	virtual C3DImageCreatorPlugin::ProductPtr do_create()const;
 	virtual const string do_get_descr()const;
 	virtual bool do_test() const;
-	C3DFVector _M_freq;
+	C3DFVector m_freq;
 };
 
 C3DLatticCreatorPlugin::C3DLatticCreatorPlugin():
 	C3DImageCreatorPlugin("lattic"),
-	_M_freq(16.0, 16.0, 16.0)
+	m_freq(16.0, 16.0, 16.0)
 {
-	add_parameter("fx", new CFloatParameter(_M_freq.x, 1, 64, false, "frequency in x-dir"));
-	add_parameter("fy", new CFloatParameter(_M_freq.y, 1, 64, false, "frequency in y-dir"));
-	add_parameter("fz", new CFloatParameter(_M_freq.z, 1, 64, false, "frequency in z-dir"));
+	add_parameter("fx", new CFloatParameter(m_freq.x, 1, 64, false, "frequency in x-dir"));
+	add_parameter("fy", new CFloatParameter(m_freq.y, 1, 64, false, "frequency in y-dir"));
+	add_parameter("fz", new CFloatParameter(m_freq.z, 1, 64, false, "frequency in z-dir"));
 }
 
 C3DImageCreatorPlugin::ProductPtr C3DLatticCreatorPlugin::do_create()const
 {
-	return C3DImageCreatorPlugin::ProductPtr(new C3DLatticCreator(_M_freq));
+	return C3DImageCreatorPlugin::ProductPtr(new C3DLatticCreator(m_freq));
 }
 
 const string C3DLatticCreatorPlugin::do_get_descr()const

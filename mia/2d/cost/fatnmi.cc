@@ -35,7 +35,7 @@ private:
 	virtual P2DImageFatCost cloned(P2DImage src, P2DImage ref, float weight) const; 
 	virtual double do_value() const; 
 	virtual double do_evaluate_force(C2DFVectorfield& force) const;
-	C2DImageCostPlugin::ProductPtr _M_evaluator; 
+	C2DImageCostPlugin::ProductPtr m_evaluator; 
 }; 
 
 

@@ -43,17 +43,17 @@ struct C2DRigidRegisterImpl {
 	P2DTransformation run(P2DImage src, P2DImage ref) const;
 private:
 
-	P2DImageCost _M_cost;
-	PMinimizer _M_minimizer;
-	C2DInterpolatorFactory _M_ipf;
-	P2DTransformationFactory _M_transform_creator; 
-	size_t _M_mg_levels; 
+	P2DImageCost m_cost;
+	PMinimizer m_minimizer;
+	C2DInterpolatorFactory m_ipf;
+	P2DTransformationFactory m_transform_creator; 
+	size_t m_mg_levels; 
 };
 
 class C2DRegGradientProblem: public CMinimizer::Problem {
 public:
 	C2DRegGradientProblem(const C2DImage& model, C2DTransformation& transf,
-			 const C2DImageCost& _M_cost, const C2DInterpolatorFactory& _M_ipf);
+			 const C2DImageCost& m_cost, const C2DInterpolatorFactory& m_ipf);
 private:
 	void    do_df(const CDoubleVector& x, CDoubleVector&  g);
 	double  do_fdf(const CDoubleVector& x, CDoubleVector&  g);
@@ -62,10 +62,10 @@ protected:
 	double  do_f(const CDoubleVector& x);
 	size_t do_size() const; 
 
-	const C2DImage& _M_model;
-	C2DTransformation& _M_transf;
-	const C2DImageCost& _M_cost;
-	const C2DInterpolatorFactory& _M_ipf;
+	const C2DImage& m_model;
+	C2DTransformation& m_transf;
+	const C2DImageCost& m_cost;
+	const C2DInterpolatorFactory& m_ipf;
 };
 typedef shared_ptr<C2DRegGradientProblem> P2DGradientProblem;
 
@@ -73,7 +73,7 @@ typedef shared_ptr<C2DRegGradientProblem> P2DGradientProblem;
 class C2DRegFakeGradientProblem: public C2DRegGradientProblem {
 public:
 	C2DRegFakeGradientProblem(const C2DImage& model, C2DTransformation& transf,
-			 const C2DImageCost& _M_cost, const C2DInterpolatorFactory& _M_ipf);
+			 const C2DImageCost& m_cost, const C2DInterpolatorFactory& m_ipf);
 private:
 	void    do_df(const CDoubleVector& x, CDoubleVector&  g);
 	double  do_fdf(const CDoubleVector& x, CDoubleVector&  g);
@@ -83,17 +83,17 @@ private:
 class C2DRegProblem: public CMinimizer::Problem {
 public:
 	C2DRegProblem(const C2DImage& model, C2DTransformation& transf,
-			 const C2DImageCost& _M_cost, const C2DInterpolatorFactory& _M_ipf);
+			 const C2DImageCost& m_cost, const C2DInterpolatorFactory& m_ipf);
 private:
 	double  do_f(const CDoubleVector& x);
 	void    do_df(const CDoubleVector& x, CDoubleVector&  g);
 	double  do_fdf(const CDoubleVector& x, CDoubleVector&  g);
 	size_t do_size() const; 
 
-	const C2DImage& _M_model;
-	C2DTransformation& _M_transf;
-	const C2DImageCost& _M_cost;
-	const C2DInterpolatorFactory& _M_ipf;
+	const C2DImage& m_model;
+	C2DTransformation& m_transf;
+	const C2DImageCost& m_cost;
+	const C2DInterpolatorFactory& m_ipf;
 };
 typedef shared_ptr<C2DRegProblem> P2DRegProblem;
 
@@ -120,11 +120,11 @@ C2DRigidRegisterImpl::C2DRigidRegisterImpl(P2DImageCost cost, PMinimizer minimiz
 					   P2DTransformationFactory transform_creator,
 					   const C2DInterpolatorFactory& ipf,  
 					   size_t mg_levels):
-	_M_cost(cost),
-	_M_minimizer(minimizer),
-	_M_ipf(ipf),
-	_M_transform_creator(transform_creator), 
-	_M_mg_levels(mg_levels)
+	m_cost(cost),
+	m_minimizer(minimizer),
+	m_ipf(ipf),
+	m_transform_creator(transform_creator), 
+	m_mg_levels(mg_levels)
 {
 }
 
@@ -138,8 +138,8 @@ P2DTransformation C2DRigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 
 	C2DBounds global_size = src->get_size();
 
-	int x_shift = _M_mg_levels + 1;
-	int y_shift = _M_mg_levels + 1;
+	int x_shift = m_mg_levels + 1;
+	int y_shift = m_mg_levels + 1;
 
 	while (x_shift && y_shift) {
 		if (x_shift)
@@ -159,25 +159,25 @@ P2DTransformation C2DRigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 		P2DImage src_scaled = x_shift && y_shift ? downscaler->filter(*src) : src;
 		P2DImage ref_scaled = x_shift && y_shift ? downscaler->filter(*ref) : ref;
 
-		_M_cost->set_reference(*ref_scaled); 
+		m_cost->set_reference(*ref_scaled); 
 		if (transform)
 			transform = transform->upscale(src_scaled->get_size());
 		else
-			transform = _M_transform_creator->create(src_scaled->get_size());
+			transform = m_transform_creator->create(src_scaled->get_size());
 
 		cvmsg() << "register at " << src_scaled->get_size() << "\n";
 
 
-		CMinimizer::PProblem gp = _M_minimizer->has(property_gradient)? 
+		CMinimizer::PProblem gp = m_minimizer->has(property_gradient)? 
 			CMinimizer::PProblem(new C2DRegFakeGradientProblem(*src_scaled, 
-									   *transform, *_M_cost, _M_ipf)):
+									   *transform, *m_cost, m_ipf)):
 			CMinimizer::PProblem(new C2DRegProblem(*src_scaled, *transform, 
-							       *_M_cost, _M_ipf)); 
+							       *m_cost, m_ipf)); 
 
-		_M_minimizer->set_problem(gp); 
+		m_minimizer->set_problem(gp); 
 
 		auto x = transform->get_parameters();
-		_M_minimizer->run(x);
+		m_minimizer->run(x);
 		transform->set_parameters(x);
 
 		auto params = transform->get_parameters(); 
@@ -191,17 +191,17 @@ P2DTransformation C2DRigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 
 C2DRegGradientProblem::C2DRegGradientProblem(const C2DImage& model, C2DTransformation& transf,
 				   const C2DImageCost& cost, const C2DInterpolatorFactory& ipf):
-	_M_model(model),
-	_M_transf(transf),
-	_M_cost(cost),
-	_M_ipf(ipf)
+	m_model(model),
+	m_transf(transf),
+	m_cost(cost),
+	m_ipf(ipf)
 {
 	add(property_gradient); 
 }
 
 size_t C2DRegGradientProblem::do_size() const
 {
-	return _M_transf.degrees_of_freedom(); 
+	return m_transf.degrees_of_freedom(); 
 }
 
 P2DImage C2DRegGradientProblem::apply(const CDoubleVector& x)
@@ -211,14 +211,14 @@ P2DImage C2DRegGradientProblem::apply(const CDoubleVector& x)
 		cverb << *i << " "; 
 	cverb << "\n"; 
 
-	_M_transf.set_parameters(x);
-	return _M_transf(_M_model, _M_ipf);
+	m_transf.set_parameters(x);
+	return m_transf(m_model, m_ipf);
 }
 
 double  C2DRegGradientProblem::do_f(const CDoubleVector& x)
 {
 	P2DImage temp = apply(x);
-	const double value = _M_cost.value(*temp);
+	const double value = m_cost.value(*temp);
 	cvmsg() << "\rCost = " << value;
 	return value;
 }
@@ -227,24 +227,24 @@ void    C2DRegGradientProblem::do_df(const CDoubleVector& x, CDoubleVector&  g)
 {
 	P2DImage temp = apply(x);
 
-	C2DFVectorfield gradient(_M_model.get_size());
-	_M_cost.evaluate_force(*temp, -1.0, gradient);
-	_M_transf.translate(gradient, g);
+	C2DFVectorfield gradient(m_model.get_size());
+	m_cost.evaluate_force(*temp, -1.0, gradient);
+	m_transf.translate(gradient, g);
 }
 
 double  C2DRegGradientProblem::do_fdf(const CDoubleVector& x, CDoubleVector&  g)
 {
 	P2DImage temp = apply(x);
-	C2DFVectorfield gradient(_M_model.get_size());
-	double result = _M_cost.evaluate_force(*temp, -1.0, gradient);
-	_M_transf.translate(gradient, g);
+	C2DFVectorfield gradient(m_model.get_size());
+	double result = m_cost.evaluate_force(*temp, -1.0, gradient);
+	m_transf.translate(gradient, g);
 	return result;
 }
 
 C2DRegFakeGradientProblem::C2DRegFakeGradientProblem(const C2DImage& model,
-						     C2DTransformation& transf, const C2DImageCost& _M_cost, 
-						     const C2DInterpolatorFactory& _M_ipf):
-	C2DRegGradientProblem(model, transf,  _M_cost,  _M_ipf)
+						     C2DTransformation& transf, const C2DImageCost& m_cost, 
+						     const C2DInterpolatorFactory& m_ipf):
+	C2DRegGradientProblem(model, transf,  m_cost,  m_ipf)
 {
 	add(property_gradient); 
 }
@@ -273,10 +273,10 @@ double  C2DRegFakeGradientProblem::do_fdf(const CDoubleVector& x, CDoubleVector&
 
 C2DRegProblem::C2DRegProblem(const C2DImage& model, C2DTransformation& transf,
 	    const C2DImageCost& cost, const C2DInterpolatorFactory& ipf):
-	_M_model(model),
-	_M_transf(transf),
-	_M_cost(cost),
-	_M_ipf(ipf)
+	m_model(model),
+	m_transf(transf),
+	m_cost(cost),
+	m_ipf(ipf)
 {
 }
 
@@ -287,10 +287,10 @@ double  C2DRegProblem::do_f(const CDoubleVector& x)
 		cverb << *i << " "; 
 	cverb << "\n"; 
 
-	_M_transf.set_parameters(x);
-	P2DImage test =  _M_transf(_M_model, _M_ipf);
+	m_transf.set_parameters(x);
+	P2DImage test =  m_transf(m_model, m_ipf);
 
-	const double value = _M_cost.value(*test);
+	const double value = m_cost.value(*test);
 	cvmsg() << "Cost = " << value << "\n";
 	return value;
 }
@@ -307,7 +307,7 @@ double  C2DRegProblem::do_fdf(const CDoubleVector& , CDoubleVector&  )
 
 size_t C2DRegProblem::do_size() const
 {
-	return _M_transf.degrees_of_freedom(); 
+	return m_transf.degrees_of_freedom(); 
 }
 
 

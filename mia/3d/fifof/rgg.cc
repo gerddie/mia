@@ -69,23 +69,23 @@ struct C2DRGGStackFilterImpl {
 	int operator () ( const T2DImage<T>& x); 
 private: 
 	
-	float _M_seed; 
+	float m_seed; 
 	const CProbabilityVector pv; 
-	size_t _M_depth; 
-	float _M_gt; 
+	size_t m_depth; 
+	float m_gt; 
 	
-	vector<C3DUBImage>  _M_region_buffer;  
-	vector<P2DImage>    _M_image_buffer; 
+	vector<C3DUBImage>  m_region_buffer;  
+	vector<P2DImage>    m_image_buffer; 
 }; 
 
 void C2DRGGStackFilterImpl::shift_buffer()
 {
-	copy_backward(_M_region_buffer->begin(), 
-		      _M_region_buffer->end() - _M_region_buffer->get_size().x * _M_region_buffer->get_size().y , 
-		      _M_region_buffer->end());
-	copy_backward(_M_image_buffer->begin(), 
-		      _M_image_buffer->end() - _M_image_buffer->get_size().x * _M_image_buffer->get_size().y , 
-		      _M_image_buffer->end());
+	copy_backward(m_region_buffer->begin(), 
+		      m_region_buffer->end() - m_region_buffer->get_size().x * m_region_buffer->get_size().y , 
+		      m_region_buffer->end());
+	copy_backward(m_image_buffer->begin(), 
+		      m_image_buffer->end() - m_image_buffer->get_size().x * m_image_buffer->get_size().y , 
+		      m_image_buffer->end());
 }
 
 
@@ -103,15 +103,15 @@ template <typename T>
 int C2DRGGStackFilterImpl::operator () ( const T2DImage<T>& x)
 {
 	C2DUBImage mask(x.get_size(), x.get_attribute_list()); 
-	transform(x.begin(), x.end(), mask.begin(), _M_pvseed); 
+	transform(x.begin(), x.end(), mask.begin(), m_pvseed); 
 }
 
 
 void C2DRGGStackFilterImpl::do_push(::boost::call_traits<mia::P2DImage>::param_type x)
 {
-	_M_image_buffer.push_back(x); 
-	if (_M_image_buffer.size() > depth) 
-		_M_image_buffer.pop_font(); 
+	m_image_buffer.push_back(x); 
+	if (m_image_buffer.size() > depth) 
+		m_image_buffer.pop_font(); 
 	
 	// run the region growing 
 	mia::accumulate(*this, x); 
@@ -127,29 +127,29 @@ void C2DRGGStackFilterImpl::post_finalize()
 
 C2DRGGStackFilter::C2DRGGStackFilter(float seed, const CProbabilityVector& pv, 
 				     size_t depth, float gt):
-	_M_impl(new C2DRGGStackFilterImpl(seed, pv, depth, gt)
+	m_impl(new C2DRGGStackFilterImpl(seed, pv, depth, gt)
 {
 }
 
 
 void C2DRGGStackFilter::do_initialize(::boost::call_traits<mia::P2DImage>::param_type x)
 {
-	_M_impl->do_initialize(x); 
+	m_impl->do_initialize(x); 
 }
 
 void C2DRGGStackFilter::do_push(::boost::call_traits<mia::P2DImage>::param_type x)
 {
-	_M_impl->do_push(x);
+	m_impl->do_push(x);
 }
 
 P2DImage C2DRGGStackFilter::do_filter()
 {
-	return _M_impl->do_filter(); 
+	return m_impl->do_filter(); 
 }
 
 void C2DRGGStackFilter::post_finalize()
 {
-	_M_impl->post_finalize(); 
+	m_impl->post_finalize(); 
 }
 
 class C2DRGGStackFilterFactory : public C2DFifoFilterPlugin {
@@ -161,25 +161,25 @@ private:
 	virtual bool do_test() const; 
 	virtual C2DFifoFilterPlugin::ProductPtr do_create()const;
 
-	string _M_seed_map; 
-	float  _M_seed_thresh; 
-	int    _M_depth; 
-	float  _M_gradient_thresh; 
+	string m_seed_map; 
+	float  m_seed_thresh; 
+	int    m_depth; 
+	float  m_gradient_thresh; 
 }; 
 
 
 C2DRGGStackFilterFactory::C2DRGGStackFilterFactory():
 	C2DFifoFilterPlugin("regiongrow"), 
-	_M_seed_thresh(0.9), 
-	_M_depth(5), 
-	_M_gradient_thresh(4.0)
+	m_seed_thresh(0.9), 
+	m_depth(5), 
+	m_gradient_thresh(4.0)
 {
-	add_parameter("map", new CStringParameter(_M_seed_map, true, "class probability map"));
-	add_parameter("st", new CFloatParameter(_M_seed_thresh, 0.0, 1.0, 
+	add_parameter("map", new CStringParameter(m_seed_map, true, "class probability map"));
+	add_parameter("st", new CFloatParameter(m_seed_thresh, 0.0, 1.0, 
 					      false, "seed probability threshhold"));
-	add_parameter("depth", new CIntParameter(_M_depth, 1, 30, 
+	add_parameter("depth", new CIntParameter(m_depth, 1, 30, 
 					      false, "number of slices to keep during processing"));
-	add_parameter("gt", new CFloatParameter(_M_gradient_thresh, 4.0, 
+	add_parameter("gt", new CFloatParameter(m_gradient_thresh, 4.0, 
 						numeric_limits<float>::max(), 
 						false, "gradient threshhold"));
 }
@@ -196,10 +196,10 @@ bool C2DRGGStackFilterFactory::do_test() const
 
 C2DFifoFilterPlugin::ProductPtr C2DRGGStackFilterFactory::do_create()const
 {
-	CProbabilityVector pv(_M_seed_map);
+	CProbabilityVector pv(m_seed_map);
 	return C2DFifoFilterPlugin::ProductPtr(
-             new C2DRGGStackFilter(_M_seed_thresh, pv, 
-				   _M_depth, _M_gradient_thresh)); 
+             new C2DRGGStackFilter(m_seed_thresh, pv, 
+				   m_depth, m_gradient_thresh)); 
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

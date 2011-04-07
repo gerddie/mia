@@ -31,7 +31,7 @@ using namespace std;
 using namespace boost::lambda;
 
 C3DMask::C3DMask(const C3DImageDataKey& image_key):
-	_M_image_key(image_key)
+	m_image_key(image_key)
 {
 }
 
@@ -52,7 +52,7 @@ struct __dispatch_mask {
 class C3DMaskDispatch : public TFilter< P3DImage > {
 public:
 	C3DMaskDispatch(const C3DBitImage *mask):
-		_M_mask(mask)
+		m_mask(mask)
 		{
 		}
 
@@ -60,12 +60,12 @@ public:
 	C3DMaskDispatch::result_type operator () (const mia::T3DImage<T>& data) const 	{
 
 		T3DImage<T> * result = new T3DImage<T>(data.get_size(), data.get_attribute_list());
-		transform(_M_mask->begin(), _M_mask->end(), data.begin(),  result->begin(),
+		transform(m_mask->begin(), m_mask->end(), data.begin(),  result->begin(),
 			  __ifthenelse<T>());
 		return C3DMask::result_type(result);
 	}
 private:
-	const C3DBitImage *_M_mask;
+	const C3DBitImage *m_mask;
 };
 
 
@@ -84,7 +84,7 @@ struct __dispatch_mask<bool> {
 template <typename T>
 C3DMask::result_type C3DMask::operator () (const T3DImage<T>& data) const
 {
-	C3DImageIOPlugin::PData in_image_list = _M_image_key.get();
+	C3DImageIOPlugin::PData in_image_list = m_image_key.get();
 
 	if (!in_image_list || in_image_list->empty())
 		throw invalid_argument("C3DMaskImage: no image available in data pool");
@@ -108,12 +108,12 @@ mia::P3DImage C3DMask::do_filter(const mia::C3DImage& image) const
 C3DMaskImageFilterFactory::C3DMaskImageFilterFactory():
 	C3DFilterPlugin("mask")
 {
-	add_parameter("input", new CStringParameter(_M_mask_filename, true, "second input image file name"));
+	add_parameter("input", new CStringParameter(m_mask_filename, true, "second input image file name"));
 }
 
 mia::C3DFilterPlugin::ProductPtr C3DMaskImageFilterFactory::do_create()const
 {
-	C3DImageDataKey mask_data = C3DImageIOPluginHandler::instance().load_to_pool(_M_mask_filename);
+	C3DImageDataKey mask_data = C3DImageIOPluginHandler::instance().load_to_pool(m_mask_filename);
 	return C3DFilterPlugin::ProductPtr(new C3DMask(mask_data));
 }
 

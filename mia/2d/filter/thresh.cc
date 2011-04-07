@@ -50,14 +50,14 @@ private:
 	template <class Data2D>
 	void filter_8(Data2D& data)const; 
 
-	float _M_min; 
-	int _M_neighbourhood; 
+	float m_min; 
+	int m_neighbourhood; 
 };
 
 
 
 class C2DThreshNImageFilter: public C2DImageFilterBase {
-	CThreshN _M_filter; 
+	CThreshN m_filter; 
 public:
 	C2DThreshNImageFilter(float min, int neighbourhood);
 
@@ -74,8 +74,8 @@ private:
 };
 
 CThreshN::CThreshN(float min, int neighbourhood):
-	_M_min(min), 
-	_M_neighbourhood(neighbourhood)
+	m_min(min), 
+	m_neighbourhood(neighbourhood)
 {
 }
 
@@ -87,7 +87,7 @@ void CThreshN::filter_0(Data2D& data)const
 	typename Data2D::iterator ie = data.end(); 
 	
 	while (ib != ie) {
-		if (*ib < _M_min)
+		if (*ib < m_min)
 			*ib = 0; 
 		++ib; 
 	};
@@ -99,62 +99,62 @@ void CThreshN::filter_4(Data2D& data)const
 	typename Data2D::iterator i = data.begin(); 
 	
 	// upper left corner
-	if (*i < _M_min && i[1] < _M_min && i[data.get_size().x] < _M_min)
+	if (*i < m_min && i[1] < m_min && i[data.get_size().x] < m_min)
 		*i = 0; 
 	++i; 
 	// upper row
 	for (size_t x = 1; x < data.get_size().x - 1; ++x, ++i) {
-		if (*i < _M_min && i[1] < _M_min && i[data.get_size().x] < _M_min
-		    && i[-1] < _M_min)
+		if (*i < m_min && i[1] < m_min && i[data.get_size().x] < m_min
+		    && i[-1] < m_min)
 			*i = 0; 
 	}
 
 	// upper right corner  
-	if (*i < _M_min && i[-1] < _M_min && i[data.get_size().x] < _M_min)
+	if (*i < m_min && i[-1] < m_min && i[data.get_size().x] < m_min)
 		*i = 0; 
 	++i; 
 
 	// the main part 
 	for (size_t y = 1; y < data.get_size().y -1; ++y) {
 		// left column 
-		if (*i < _M_min && 
-		    i[1] < _M_min && 
-		    i[-data.get_size().x] < _M_min && 
-		    i[data.get_size().x] < _M_min)
+		if (*i < m_min && 
+		    i[1] < m_min && 
+		    i[-data.get_size().x] < m_min && 
+		    i[data.get_size().x] < m_min)
 			*i = 0; 
 		++i; 
 		
 		// inner image area
 		for (size_t x = 1; x < data.get_size().x - 1; ++x, ++i) {
-			if (*i < _M_min && 
-			    i[1] < _M_min && i[-1] < _M_min && 
-			    i[-data.get_size().x] < _M_min && i[data.get_size().x] < _M_min)
+			if (*i < m_min && 
+			    i[1] < m_min && i[-1] < m_min && 
+			    i[-data.get_size().x] < m_min && i[data.get_size().x] < m_min)
 				*i = 0; 
 		}
 		
 		// right column
-		if (*i < _M_min && 
-		    i[-1] < _M_min && 
-		    i[-data.get_size().x] < _M_min && 
-		    i[data.get_size().x] < _M_min)
+		if (*i < m_min && 
+		    i[-1] < m_min && 
+		    i[-data.get_size().x] < m_min && 
+		    i[data.get_size().x] < m_min)
 			*i = 0; 
 		++i; 
 	}
 
 
 	// lower left corner
-	if (*i < _M_min && i[1] < _M_min && i[-data.get_size().x] < _M_min)
+	if (*i < m_min && i[1] < m_min && i[-data.get_size().x] < m_min)
 		*i = 0; 
 	++i; 
 	// upper row
 	for (size_t x = 1; x < data.get_size().x - 1; ++x, ++i) {
-		if (*i < _M_min && i[1] < _M_min && i[-data.get_size().x] < _M_min
-		    && i[-1] < _M_min)
+		if (*i < m_min && i[1] < m_min && i[-data.get_size().x] < m_min
+		    && i[-1] < m_min)
 			*i = 0; 
 	}
 
 	// lower right corner  
-	if (*i < _M_min && i[-1] < _M_min && i[-data.get_size().x] < _M_min)
+	if (*i < m_min && i[-1] < m_min && i[-data.get_size().x] < m_min)
 		*i = 0; 
 	++i; 
 
@@ -166,30 +166,30 @@ void CThreshN::filter_8(Data2D& data)const
 	typename Data2D::iterator i = data.begin(); 
 	
 	// upper left corner
-	if (*i < _M_min && 
-	    i[1] < _M_min && 
-	    i[data.get_size().x] < _M_min &&
-	    i[data.get_size().x + 1] < _M_min)
+	if (*i < m_min && 
+	    i[1] < m_min && 
+	    i[data.get_size().x] < m_min &&
+	    i[data.get_size().x + 1] < m_min)
 		*i = 0; 
 	++i; 
 	
 	// upper row
 	for (size_t x = 1; x < data.get_size().x - 1; ++x, ++i) {
-		if (*i < _M_min && 
-		    i[1] < _M_min && 
-		    i[-1] < _M_min && 
-		    i[data.get_size().x - 1] < _M_min && 
-		    i[data.get_size().x] < _M_min && 
-		    i[data.get_size().x + 1] < _M_min 
+		if (*i < m_min && 
+		    i[1] < m_min && 
+		    i[-1] < m_min && 
+		    i[data.get_size().x - 1] < m_min && 
+		    i[data.get_size().x] < m_min && 
+		    i[data.get_size().x + 1] < m_min 
 		    )
 			*i = 0; 
 	}
 
 	// upper right corner  
-	if (*i < _M_min && 
-	    i[-1] < _M_min && 
-	    i[data.get_size().x] < _M_min &&
-	    i[data.get_size().x - 1] < _M_min)
+	if (*i < m_min && 
+	    i[-1] < m_min && 
+	    i[data.get_size().x] < m_min &&
+	    i[data.get_size().x - 1] < m_min)
 		*i = 0; 
 	++i; 
 
@@ -198,66 +198,66 @@ void CThreshN::filter_8(Data2D& data)const
 	for (size_t y = 1; y < data.get_size().y -1; ++y) {
 		
 		// left column
-		if (*i < _M_min && 
-		    i[1] < _M_min && 
-		    i[-data.get_size().x] < _M_min &&
-		    i[-data.get_size().x + 1] < _M_min &&
-		    i[data.get_size().x] < _M_min &&
-		    i[data.get_size().x + 1] < _M_min)
+		if (*i < m_min && 
+		    i[1] < m_min && 
+		    i[-data.get_size().x] < m_min &&
+		    i[-data.get_size().x + 1] < m_min &&
+		    i[data.get_size().x] < m_min &&
+		    i[data.get_size().x + 1] < m_min)
 			*i = 0; 
 		++i; 
 		
 		// upper row
 		for (size_t x = 1; x < data.get_size().x - 1; ++x, ++i) {
-			if (*i < _M_min && 
-			    i[1] < _M_min && 
-			    i[-1] < _M_min && 
-			    i[-data.get_size().x - 1] < _M_min && 
-			    i[-data.get_size().x] < _M_min && 
-			    i[-data.get_size().x + 1] < _M_min &&
-			    i[data.get_size().x - 1] < _M_min && 
-			    i[data.get_size().x] < _M_min && 
-			    i[data.get_size().x + 1] < _M_min 
+			if (*i < m_min && 
+			    i[1] < m_min && 
+			    i[-1] < m_min && 
+			    i[-data.get_size().x - 1] < m_min && 
+			    i[-data.get_size().x] < m_min && 
+			    i[-data.get_size().x + 1] < m_min &&
+			    i[data.get_size().x - 1] < m_min && 
+			    i[data.get_size().x] < m_min && 
+			    i[data.get_size().x + 1] < m_min 
 			    )
 				*i = 0; 
 		}
 
 		// upper right corner  
-		if (*i < _M_min && 
-		    i[-1] < _M_min && 
-		    i[-data.get_size().x -1] < _M_min &&
-		    i[-data.get_size().x] < _M_min &&
-		    i[data.get_size().x] < _M_min &&
-		    i[data.get_size().x - 1] < _M_min)
+		if (*i < m_min && 
+		    i[-1] < m_min && 
+		    i[-data.get_size().x -1] < m_min &&
+		    i[-data.get_size().x] < m_min &&
+		    i[data.get_size().x] < m_min &&
+		    i[data.get_size().x - 1] < m_min)
 			*i = 0; 
 		++i; 
 	}
 
 	// upper left corner
-	if (*i < _M_min && 
-	    i[1] < _M_min && 
-	    i[-data.get_size().x] < _M_min &&
-	    i[-data.get_size().x + 1] < _M_min)
+	if (*i < m_min && 
+	    i[1] < m_min && 
+	    i[-data.get_size().x] < m_min &&
+	    i[-data.get_size().x + 1] < m_min)
 		*i = 0; 
 	++i; 
 	
 	// upper row
 	for (size_t x = 1; x < data.get_size().x - 1; ++x, ++i) {
-		if (*i < _M_min && 
-		    i[1] < _M_min && 
-		    i[-1] < _M_min && 
-		    i[-data.get_size().x - 1] < _M_min && 
-		    i[-data.get_size().x] < _M_min && 
-		    i[-data.get_size().x + 1] < _M_min 
+		if (*i < m_min && 
+		    i[1] < m_min && 
+		    i[-1] < m_min && 
+		    i[-data.get_size().x - 1] < m_min && 
+		    i[-data.get_size().x] < m_min && 
+		    i[-data.get_size().x + 1] < m_min 
 		    )
 			*i = 0; 
 	}
 
 	// upper right corner  
-	if (*i < _M_min && 
-	    i[-1] < _M_min && 
-	    i[-data.get_size().x] < _M_min &&
-	    i[-data.get_size().x - 1] < _M_min)
+	if (*i < m_min && 
+	    i[-1] < m_min && 
+	    i[-data.get_size().x] < m_min &&
+	    i[-data.get_size().x - 1] < m_min)
 		*i = 0; 
 	++i; 
 
@@ -271,7 +271,7 @@ typename CThreshN::result_type CThreshN::operator () (const Data2D& data) const
 	result->make_single_ref(); 
 	
 	cvdebug() << "CThreshN::operator () begin\n";
-	switch (_M_neighbourhood) {
+	switch (m_neighbourhood) {
 	case 0:filter_0(*result); 
 		break;
 	case 4:filter_4(*result); 
@@ -281,7 +281,7 @@ typename CThreshN::result_type CThreshN::operator () (const Data2D& data) const
 		break;
 	default:
 		stringstream errmsg; 
-		errmsg << "undefined neighborhood " << _M_neighbourhood << " in CThreshN::operator()"; 
+		errmsg << "undefined neighborhood " << m_neighbourhood << " in CThreshN::operator()"; 
 		throw mona_fatal_error(errmsg.str()); 
 	}
 	cvdebug() << "CThreshN::operator () end\n";
@@ -289,13 +289,13 @@ typename CThreshN::result_type CThreshN::operator () (const Data2D& data) const
 }
 
 C2DThreshNImageFilter::C2DThreshNImageFilter(float min, int neighbourhood):
-		_M_filter(min,neighbourhood)
+		m_filter(min,neighbourhood)
 {
 }
 
 P2DImage C2DThreshNImageFilter::do_filter(const C2DImage& image) const
 {
-	return wrap_filter(_M_filter, image); 
+	return wrap_filter(m_filter, image); 
 	
 }
 

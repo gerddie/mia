@@ -429,15 +429,15 @@ TSORAParallelSolver::~TSORAParallelSolver()
 class TSORAParallelSolverCaller {
 public:
 	TSORAParallelSolverCaller(TSORAParallelSolver *solver):
-		_M_solver(solver)
+		m_solver(solver)
 	{
 	}
 	void operator () () {
-		(*_M_solver)();
+		(*m_solver)();
 	}
 
 private:
-	TSORAParallelSolver *_M_solver;
+	TSORAParallelSolver *m_solver;
 };
 
 int TSORAParallelSolver::solve(const C3DFVectorfield& b,C3DFVectorfield *x)

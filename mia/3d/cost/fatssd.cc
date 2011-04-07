@@ -36,15 +36,15 @@ private:
 	virtual P3DImageFatCost cloned(P3DImage src, P3DImage ref) const;
 	virtual double do_value() const;
 	virtual double do_evaluate_force(C3DFVectorfield& force) const;
-	C3DImageCostPlugin::ProductPtr _M_evaluator;
+	C3DImageCostPlugin::ProductPtr m_evaluator;
 };
 
 
 CFatSSD3DImageCost::CFatSSD3DImageCost(P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight):
 	C3DImageFatCost(src,  ref,  ipf, weight),
-	_M_evaluator(C3DImageCostPluginHandler::instance().produce("ssd"))
+	m_evaluator(C3DImageCostPluginHandler::instance().produce("ssd"))
 {
-	_M_evaluator->set_reference(*ref); 
+	m_evaluator->set_reference(*ref); 
 }
 
 P3DImageFatCost CFatSSD3DImageCost::cloned(P3DImage src, P3DImage ref) const
@@ -56,12 +56,12 @@ double CFatSSD3DImageCost::do_value() const
 {
 	TRACE("CFatSSD3DImageCost::do_value");
 	
-	return _M_evaluator->value(get_floating());
+	return m_evaluator->value(get_floating());
 }
 double CFatSSD3DImageCost::do_evaluate_force(C3DFVectorfield& force) const
 {
 	TRACE("CFatSSD3DImageCost::do_evaluate_force");
-	_M_evaluator->evaluate_force(get_floating(), get_weight(), force);
+	m_evaluator->evaluate_force(get_floating(), get_weight(), force);
 	return value();
 }
 

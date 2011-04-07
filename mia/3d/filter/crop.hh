@@ -31,8 +31,8 @@ public:
 	C3DCrop::result_type operator () (const mia::T3DImage<T>& data) const;
 private:
 	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
-	const mia::C3DBounds _M_begin;
-	const mia::C3DBounds _M_end;
+	const mia::C3DBounds m_begin;
+	const mia::C3DBounds m_end;
 };
 
 /* The factory class - this is what the application gets first. This factory class is used to
@@ -45,8 +45,8 @@ public:
 	virtual const std::string do_get_descr()const;
 	virtual bool do_test()const {return true;};
 private:
-	mia::C3DBounds _M_begin;
-	mia::C3DBounds _M_end;
+	mia::C3DBounds m_begin;
+	mia::C3DBounds m_end;
 };
 
 NS_END

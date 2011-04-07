@@ -54,8 +54,8 @@ private:
 	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
 	EOrientations get_strategy(mia::E3DImageOrientation old_orientation) const;
 	mia::E3DImageOrientation get_new_orientation(EOrientations strategy, mia::E3DImageOrientation old_orientation)const;
-	EOrientations _M_strategy;
-	mia::E3DImageOrientation _M_out_orientation;
+	EOrientations m_strategy;
+	mia::E3DImageOrientation m_out_orientation;
 };
 
 
@@ -72,7 +72,7 @@ public:
 private:
 	static const mia::TDictMap<C3DReorient::EOrientations>::Table table[];
 	static const mia::TDictMap<C3DReorient::EOrientations> map;
-	C3DReorient::EOrientations _M_orientation;
+	C3DReorient::EOrientations m_orientation;
 };
 
 NS_END

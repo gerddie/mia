@@ -52,7 +52,7 @@ public:
 private: 
 	virtual double do_value(const Data& a, const Data& b) const; 
 	virtual double do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const; 
-	bool _M_normalize; 
+	bool m_normalize; 
 };
 
 
@@ -60,7 +60,7 @@ private:
    this is a filter to measure the actual cost
 */
 struct FEvalSSD : public mia::TFilter<double> {
-	FEvalSSD(bool normalize):_M_normalize(normalize){}
+	FEvalSSD(bool normalize):m_normalize(normalize){}
 	
 	template <typename T, typename R>
 	struct SQD {
@@ -72,11 +72,11 @@ struct FEvalSSD : public mia::TFilter<double> {
 	
 	template <typename  T, typename  R>
 	FEvalSSD::result_type operator () (const T& a, const R& b) const {
-		double scale = _M_normalize ? 0.5 / a.size() : 0.5; 
+		double scale = m_normalize ? 0.5 / a.size() : 0.5; 
 		return scale * inner_product(a.begin(), a.end(), b.begin(), 0.0,  ::std::plus<double>(), 
 					     SQD<typename T::value_type , typename R::value_type >()); 
 	}
-	bool _M_normalize; 
+	bool m_normalize; 
 }; 
 
 
@@ -86,14 +86,14 @@ struct FEvalSSD : public mia::TFilter<double> {
 
 template <typename TCost> 
 TSSDCost<TCost>::TSSDCost():
-	_M_normalize(true)
+	m_normalize(true)
 {
 	this->add(::mia::property_gradient);
 }
 
 template <typename TCost> 
 TSSDCost<TCost>::TSSDCost(bool normalize):
-	_M_normalize(normalize)
+	m_normalize(normalize)
 {
 	this->add(::mia::property_gradient);
 }
@@ -101,7 +101,7 @@ TSSDCost<TCost>::TSSDCost(bool normalize):
 template <typename TCost> 
 double TSSDCost<TCost>::do_value(const Data& a, const Data& b) const
 {
-	FEvalSSD essd(_M_normalize); 
+	FEvalSSD essd(m_normalize); 
 	return filter(essd, a, b); 
 }
 
@@ -112,9 +112,9 @@ double TSSDCost<TCost>::do_value(const Data& a, const Data& b) const
 template <typename Force>
 struct FEvalForce: public mia::TFilter<float> {
 	FEvalForce(Force& force, float scale, bool normalize):
-		_M_force(force), 
-		_M_scale(scale),
-		_M_normalize(normalize)
+		m_force(force), 
+		m_scale(scale),
+		m_normalize(normalize)
 		{
 		}
 	template <typename T, typename R> 
@@ -123,19 +123,19 @@ struct FEvalForce: public mia::TFilter<float> {
 		float cost = 0.0; 
 		typename T::const_iterator ai = a.begin();
 		typename R::const_iterator bi = b.begin();
-		float scale = _M_normalize ? _M_scale / a.size() : _M_scale; 
+		float scale = m_normalize ? m_scale / a.size() : m_scale; 
 		
 		for (size_t i = 0; i < a.size(); ++i, ++ai, ++bi) {
 			float delta = float(*ai) - float(*bi); 
-			_M_force[i] += gradient[i] * delta * scale;
+			m_force[i] += gradient[i] * delta * scale;
 			cost += delta * delta; 
 		}
 		return 0.5 * cost * scale; 
 	}
 private: 
-	mutable Force& _M_force; 
-	float _M_scale; 
-	bool _M_normalize; 
+	mutable Force& m_force; 
+	float m_scale; 
+	bool m_normalize; 
 }; 
 		
 
@@ -147,7 +147,7 @@ double TSSDCost<TCost>::do_evaluate_force(const Data& a, const Data& b, float sc
 {
 	assert(a.get_size() == b.get_size()); 
 	assert(a.get_size() == force.get_size()); 
-	FEvalForce<Force> ef(force, scale, _M_normalize); 
+	FEvalForce<Force> ef(force, scale, m_normalize); 
 	return filter(ef, a, b); 
 }
 
@@ -164,7 +164,7 @@ public:
 	TSSDCostPlugin();
 	virtual typename TSSDCostPlugin<CP,C>::ProductPtr do_create()const;
 private:
-	bool _M_normalize; 
+	bool m_normalize; 
 };
 
 
@@ -174,11 +174,11 @@ private:
 template <typename CP, typename C> 
 TSSDCostPlugin<CP,C>::TSSDCostPlugin():
 	CP("ssd"), 
-	_M_normalize(false)
+	m_normalize(false)
 {
 	TRACE("TSSDCostPlugin<CP,C>::TSSDCostPlugin()"); 
 	this->add_property(::mia::property_gradient); 
-	this->add_parameter("norm", new mia::CBoolParameter(_M_normalize, false, 
+	this->add_parameter("norm", new mia::CBoolParameter(m_normalize, false, 
 			    "Set whether the metric should be normalized by the number of image pixels")); 
 
 }
@@ -189,7 +189,7 @@ TSSDCostPlugin<CP,C>::TSSDCostPlugin():
 template <typename CP, typename C> 
 typename TSSDCostPlugin<CP,C>::ProductPtr TSSDCostPlugin<CP,C>::do_create() const
 {
-	return typename TSSDCostPlugin<CP,C>::ProductPtr(new TSSDCost<C>(_M_normalize));
+	return typename TSSDCostPlugin<CP,C>::ProductPtr(new TSSDCost<C>(m_normalize));
 }
 
 NS_END

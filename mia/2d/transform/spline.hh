@@ -59,9 +59,9 @@ public:
 		virtual void do_x_increment(); 
 		virtual void do_y_increment(); 
 
-		const C2DSplineTransformation& _M_trans;
-		mutable C2DFVector _M_value;
-		mutable bool _M_value_valid; 
+		const C2DSplineTransformation& m_trans;
+		mutable C2DFVector m_value;
+		mutable bool m_value_valid; 
 
 	};
 
@@ -105,24 +105,24 @@ private:
 
 	void run_downscaler(C1DScalarFixed& scaler, vector<double>& out_buffer)const; 
 	virtual C2DTransformation *do_clone() const;
-	C2DBounds _M_range;
-	C2DFVector _M_target_c_rate;
-	C2DFVectorfield _M_coefficients;
-	PBSplineKernel _M_kernel; 
-	int _M_shift; 
-	int _M_enlarge; 
-	mutable C2DFVector _M_scale;
-	mutable C2DFVector _M_inv_scale;
-	mutable bool _M_interpolator_valid;
-	//mutable std::shared_ptr<T2DConvoluteInterpolator<C2DFVector> >  _M_interpolator;
-	mutable std::shared_ptr<C2DPPDivcurlMatrix > _M_divcurl_matrix; 
-	mutable std::vector<std::vector<double> > _M_x_weights; 
-	mutable std::vector<int> _M_x_indices; 
-	mutable std::vector<std::vector<double> > _M_y_weights; 
-	mutable std::vector<int> _M_y_indices; 
-	mutable CSplineDerivativeRow  _M_mx; 
-	mutable CSplineDerivativeRow  _M_my; 
-	mutable bool _M_grid_valid; 
+	C2DBounds m_range;
+	C2DFVector m_target_c_rate;
+	C2DFVectorfield m_coefficients;
+	PBSplineKernel m_kernel; 
+	int m_shift; 
+	int m_enlarge; 
+	mutable C2DFVector m_scale;
+	mutable C2DFVector m_inv_scale;
+	mutable bool m_interpolator_valid;
+	//mutable std::shared_ptr<T2DConvoluteInterpolator<C2DFVector> >  m_interpolator;
+	mutable std::shared_ptr<C2DPPDivcurlMatrix > m_divcurl_matrix; 
+	mutable std::vector<std::vector<double> > m_x_weights; 
+	mutable std::vector<int> m_x_indices; 
+	mutable std::vector<std::vector<double> > m_y_weights; 
+	mutable std::vector<int> m_y_indices; 
+	mutable CSplineDerivativeRow  m_mx; 
+	mutable CSplineDerivativeRow  m_my; 
+	mutable bool m_grid_valid; 
 
 };
 

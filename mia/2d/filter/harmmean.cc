@@ -30,10 +30,10 @@ static char const * plugin_name = "harmmean";
 static const CIntOption param_width("w", "half window width w, actual window will be (2*w+1)", 1, 1, 256);
 	
 class C2DHarmonicMean : public C2DFilter{
-	int _M_width; 
+	int m_width; 
 public:
 	C2DHarmonicMean(int hwidth):
-		_M_width(hwidth)
+		m_width(hwidth)
 	{
 	}
 	
@@ -48,7 +48,7 @@ private:
 
 
 class CHarmonicMean2DImageFilter: public C2DImageFilterBase {
-	C2DHarmonicMean _M_filter; 
+	C2DHarmonicMean m_filter; 
 public:
 	CHarmonicMean2DImageFilter(int hwidth);
 
@@ -71,11 +71,11 @@ T C2DHarmonicMean::eval(int x, int y, const T2DImage<T>& data)const
 	double sum = 0.0; 
 	int num = 0; 
 	
-	for (int iy = max(0, y - _M_width); 
-	     iy < min(y + _M_width + 1, (int)data.get_size().y);  ++iy)
+	for (int iy = max(0, y - m_width); 
+	     iy < min(y + m_width + 1, (int)data.get_size().y);  ++iy)
 		
-		for (int ix = max(0, x - _M_width); 
-		     ix < min(x + _M_width + 1, (int)data.get_size().x);  ++ix) {
+		for (int ix = max(0, x - m_width); 
+		     ix < min(x + m_width + 1, (int)data.get_size().x);  ++ix) {
 			double val = data(ix,iy); 
 			if (!val) 
 				return T(); 
@@ -94,7 +94,7 @@ typename C2DHarmonicMean::result_type C2DHarmonicMean::operator () (const T2DIma
 
 	typename T2DImage<T>::iterator i = result->begin(); 
 
-	cvdebug() << "filter with width = " << _M_width <<  endl; 
+	cvdebug() << "filter with width = " << m_width <<  endl; 
 
 	for (int y = 0; y < (int)data.get_size().y; ++y)
 		for (int x = 0; x < (int)data.get_size().x; ++x, ++i) {
@@ -107,13 +107,13 @@ typename C2DHarmonicMean::result_type C2DHarmonicMean::operator () (const T2DIma
 }
 
 CHarmonicMean2DImageFilter::CHarmonicMean2DImageFilter(int hwidth):
-	_M_filter(hwidth)
+	m_filter(hwidth)
 {
 }
 
 P2DImage CHarmonicMean2DImageFilter::do_filter(const C2DImage& image) const
 {
-	return wrap_filter(_M_filter,image); 
+	return wrap_filter(m_filter,image); 
 }
 
 CHarmonicMean2DImageFilterFactory::CHarmonicMean2DImageFilterFactory():

@@ -61,7 +61,7 @@ public:
 	const std::string& get_name() const; 
 
 private:
-	CDLLoader _M_loader;
+	CDLLoader m_loader;
 	size_t m_refs;
 	std::string m_name;
 };

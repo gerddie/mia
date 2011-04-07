@@ -80,7 +80,7 @@ public:
 	*/
 	void print_help(std::ostream& os)const;
 private:
-	std::map<std::string, PParameter> _M_params;
+	std::map<std::string, PParameter> m_params;
 };
 
 NS_MIA_END

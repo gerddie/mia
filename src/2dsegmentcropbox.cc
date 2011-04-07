@@ -56,9 +56,9 @@ struct 	CSegFrameCropper {
 	CSegFrame operator()(const CSegFrame& frame, const C2DImage& image) const;
 
 private:
-	C2DIVector _M_shift;
-	C2DFilterPlugin::ProductPtr _M_filter;
-	bfs::path _M_image_outpath;
+	C2DIVector m_shift;
+	C2DFilterPlugin::ProductPtr m_filter;
+	bfs::path m_image_outpath;
 };
 
 const char *g_description = 
@@ -150,25 +150,25 @@ int main(int argc, const char *args[] )
 CSegFrameCropper::CSegFrameCropper(const C2DIVector& shift,
 				   C2DFilterPlugin::ProductPtr filter,
 				   const string& image_name):
-	_M_shift(shift),
-	_M_filter(filter),
-	_M_image_outpath(image_name)
+	m_shift(shift),
+	m_filter(filter),
+	m_image_outpath(image_name)
 {
-	_M_image_outpath.remove_filename();
+	m_image_outpath.remove_filename();
 
 }
 
 
 CSegFrame CSegFrameCropper::operator()(const CSegFrame& frame, const C2DImage& image) const
 {
-	P2DImage cropped = _M_filter->filter(image);
-	const string out_filename = (_M_image_outpath.string() / bfs::path(frame.get_imagename())).string();
+	P2DImage cropped = m_filter->filter(image);
+	const string out_filename = (m_image_outpath.string() / bfs::path(frame.get_imagename())).string();
 
 	if (!save_image(out_filename, cropped))
 		cvwarn() << "Could not write cropped file '" << out_filename << "'\n";
 
 	CSegFrame result = frame;
-	result.shift(_M_shift, frame.get_imagename());
+	result.shift(m_shift, frame.get_imagename());
 	return result;
 
 }

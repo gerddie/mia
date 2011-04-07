@@ -46,7 +46,7 @@ private:
 
 	virtual bool do_test() const;
 
-	int _M_w;
+	int m_w;
 };
 
 struct equal_double {

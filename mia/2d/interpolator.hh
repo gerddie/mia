@@ -92,10 +92,10 @@ public:
 	T2DDirectInterpolator(const T2DDatafield<T>& data);
 protected:
 	const T2DDatafield<T>& data()const {
-		return _M_data;
+		return m_data;
 	}
 private:
-	const T2DDatafield<T>& _M_data;
+	const T2DDatafield<T>& m_data;
 };
 
 /**
@@ -122,9 +122,9 @@ public:
 	T operator () (const C2DFVector& x) const;
 	T2DVector<T> derivative_at(const C2DFVector& x) const;
 private:
-	size_t _M_xy;
-	C2DFVector _M_size;
-	C2DFVector _M_sizeb;
+	size_t m_xy;
+	C2DFVector m_size;
+	C2DFVector m_sizeb;
 };
 
 template <class U>
@@ -155,18 +155,18 @@ private:
 
 	typename TCoeff2D::value_type evaluate() const;
 
-	TCoeff2D _M_coeff;
-	C2DBounds _M_size2;
-	std::shared_ptr<CBSplineKernel > _M_kernel;
-	T _M_min;
-	T _M_max;
+	TCoeff2D m_coeff;
+	C2DBounds m_size2;
+	std::shared_ptr<CBSplineKernel > m_kernel;
+	T m_min;
+	T m_max;
 
-	mutable std::vector<int> _M_x_index; 
-	mutable std::vector<int> _M_y_index; 
-	mutable std::vector<double> _M_x_weight; 
-	mutable std::vector<double> _M_y_weight; 
-	mutable CBSplineKernel::SCache _M_x_cache; 
-	mutable CBSplineKernel::SCache _M_y_cache; 
+	mutable std::vector<int> m_x_index; 
+	mutable std::vector<int> m_y_index; 
+	mutable std::vector<double> m_x_weight; 
+	mutable std::vector<double> m_y_weight; 
+	mutable CBSplineKernel::SCache m_x_cache; 
+	mutable CBSplineKernel::SCache m_y_cache; 
 
 };
 
@@ -189,8 +189,8 @@ public:
 	const CBSplineKernel* get_kernel() const;
 
 private:
-	EType _M_type;
-	std::shared_ptr<CBSplineKernel > _M_kernel;
+	EType m_type;
+	std::shared_ptr<CBSplineKernel > m_kernel;
 };
 typedef std::shared_ptr<C2DInterpolatorFactory > P2DInterpolatorFactory;
 
@@ -203,10 +203,10 @@ C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(int type)
 template <class T>
 T2DInterpolator<T> *C2DInterpolatorFactory::create(const T2DDatafield<T>& src) const
 {
-	switch (_M_type) {
+	switch (m_type) {
 	case ip_nn:  return new T2DNNInterpolator<T>(src);
 	case ip_tri: return new T2DBilinearInterpolator<T>(src);
-	case ip_spline: return new T2DConvoluteInterpolator<T>(src, _M_kernel);
+	case ip_spline: return new T2DConvoluteInterpolator<T>(src, m_kernel);
 	default: throw "CInterpolatorFactory::create: Unknown interpolator requested";
 	}
 	return NULL;

@@ -38,8 +38,8 @@ void C2DMorphFilterFactory::prepare_path() const
 }
 
 C2DDilate::C2DDilate(P2DShape shape, bool hint):
-	_M_shape(shape),
-	_M_more_dark(hint)
+	m_shape(shape),
+	m_more_dark(hint)
 
 {
 }
@@ -132,7 +132,7 @@ template <typename T>
 typename C2DFilter::result_type C2DDilate::operator () (const T2DImage<T>& image)const
 {
 
-	return P2DImage(__dispatch_dilate<T>::apply(image, *_M_shape, _M_more_dark));
+	return P2DImage(__dispatch_dilate<T>::apply(image, *m_shape, m_more_dark));
 }
 
 C2DFilter::result_type C2DDilate::do_filter (const C2DImage& image)const
@@ -148,30 +148,30 @@ C2DDilateFilterFactory::C2DDilateFilterFactory():
 
 C2DMorphFilterFactory::C2DMorphFilterFactory(const char *name):
 	C2DFilterPlugin(name),
-	_M_shape_descr("sphere:r=2"),
-	_M_hint("black")
+	m_shape_descr("sphere:r=2"),
+	m_hint("black")
 {
-	add_parameter("shape", new CStringParameter(_M_shape_descr, false, "structuring element"));
-	add_parameter("hint", new CStringParameter(_M_hint, false, "a hint at the main image content (black|white)"));
+	add_parameter("shape", new CStringParameter(m_shape_descr, false, "structuring element"));
+	add_parameter("hint", new CStringParameter(m_hint, false, "a hint at the main image content (black|white)"));
 }
 
 
 C2DFilterPlugin::ProductPtr C2DMorphFilterFactory::do_create()const
 {
-	cvdebug() << "create shape from " << _M_shape_descr << '\n';
-	P2DShape shape(C2DShapePluginHandler::instance().produce(_M_shape_descr.c_str()));
+	cvdebug() << "create shape from " << m_shape_descr << '\n';
+	P2DShape shape(C2DShapePluginHandler::instance().produce(m_shape_descr.c_str()));
 
 	if (!shape)
-		throw runtime_error(string("unable to create a shape from '") + _M_shape_descr +string("'"));
+		throw runtime_error(string("unable to create a shape from '") + m_shape_descr +string("'"));
 
 	bool bhint = true;
 
-	if (_M_hint == string("black"))
+	if (m_hint == string("black"))
 		bhint = true;
-	else if (_M_hint == string("white"))
+	else if (m_hint == string("white"))
 		bhint = false;
 	else
-		throw invalid_argument(string("hint '") + _M_hint + string("' not supported"));
+		throw invalid_argument(string("hint '") + m_hint + string("' not supported"));
 	return dodo_create(shape, bhint);
 }
 
@@ -187,8 +187,8 @@ const string C2DDilateFilterFactory::do_get_descr()const
 }
 
 C2DErode::C2DErode(P2DShape shape, bool hint):
-	_M_shape(shape),
-	_M_more_dark(hint)
+	m_shape(shape),
+	m_more_dark(hint)
 
 {
 }
@@ -285,7 +285,7 @@ template <typename T>
 typename C2DFilter::result_type C2DErode::operator () (const T2DImage<T>& image)const
 {
 
-	return P2DImage(__dispatch_erode<T>::apply(image, *_M_shape, _M_more_dark));
+	return P2DImage(__dispatch_erode<T>::apply(image, *m_shape, m_more_dark));
 }
 
 C2DFilter::result_type C2DErode::do_filter (const C2DImage& image)const
@@ -309,20 +309,20 @@ const string C2DErodeFilterFactory::do_get_descr()const
 }
 
 C2DOpenClose::C2DOpenClose(P2DShape shape, bool hint, bool open):
-	_M_erode(shape, hint),
-	_M_dilate(shape, hint),
-	_M_open(open)
+	m_erode(shape, hint),
+	m_dilate(shape, hint),
+	m_open(open)
 {
 }
 
 P2DImage C2DOpenClose::do_filter(const C2DImage& src) const
 {
-	if (_M_open) {
-		P2DImage tmp = _M_erode.filter(src);
-		return _M_dilate.filter(*tmp);
+	if (m_open) {
+		P2DImage tmp = m_erode.filter(src);
+		return m_dilate.filter(*tmp);
 	}else{
-		P2DImage tmp = _M_dilate.filter(src);
-		return _M_erode.filter(*tmp);
+		P2DImage tmp = m_dilate.filter(src);
+		return m_erode.filter(*tmp);
 	}
 }
 

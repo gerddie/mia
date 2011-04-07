@@ -41,13 +41,13 @@ typename T::Pointer TTransformCreator<T>::create(const typename T::Size& size) c
 template <typename T> 
 bool TTransformCreator<T>::has_property(const char *property) const
 {
-	return _M_properties.find(property) != _M_properties.end();
+	return m_properties.find(property) != m_properties.end();
 }
 
 template <typename T> 
 void TTransformCreator<T>::add_property(const char *property)
 {
-	_M_properties.insert(property);
+	m_properties.insert(property);
 }
 
 NS_MIA_END

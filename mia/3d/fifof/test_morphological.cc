@@ -34,7 +34,7 @@ namespace bfs=boost::filesystem;
 struct MorpologicalFilter_Fixture: public fifof_Fixture  {
 
 	MorpologicalFilter_Fixture();
-	C3DShapePlugin::ProductPtr _M_shape;
+	C3DShapePlugin::ProductPtr m_shape;
 };
 
 MorpologicalFilter_Fixture::MorpologicalFilter_Fixture()
@@ -42,7 +42,7 @@ MorpologicalFilter_Fixture::MorpologicalFilter_Fixture()
 	list< bfs::path> searchpath;
 	searchpath.push_back(bfs::path("..")/bfs::path("shapes"));
 	C3DShapePluginHandler::set_search_path(searchpath);
-	_M_shape = C3DShapePluginHandler::instance().produce("6n");
+	m_shape = C3DShapePluginHandler::instance().produce("6n");
 }
 
 BOOST_FIXTURE_TEST_CASE ( morphological_dilate, MorpologicalFilter_Fixture )
@@ -68,7 +68,7 @@ BOOST_FIXTURE_TEST_CASE ( morphological_dilate, MorpologicalFilter_Fixture )
 	};
 
 	prepare(input_data, test_data, size, n_slices);
-	C2DMorphFifoFilter<DilateCompare> dilate(_M_shape);
+	C2DMorphFifoFilter<DilateCompare> dilate(m_shape);
 	call_test(dilate);
 }
 
@@ -95,7 +95,7 @@ BOOST_FIXTURE_TEST_CASE ( morphological_erode, MorpologicalFilter_Fixture )
 
 	prepare(input_data, test_data, size, n_slices);
 
-	C2DMorphFifoFilter<ErodeCompare> erode(_M_shape);
+	C2DMorphFifoFilter<ErodeCompare> erode(m_shape);
 	call_test(erode);
 }
 

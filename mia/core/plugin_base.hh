@@ -132,15 +132,15 @@ private:
 
 	virtual const std::string do_get_descr() const = 0;
 
-	const char *_M_name;
+	const char *m_name;
 
-	CPluginBase *_M_next_interface;
+	CPluginBase *m_next_interface;
 
-	CParamList  _M_parameters;
+	CParamList  m_parameters;
 
-	CPropertyFlagHolder _M_properties;
+	CPropertyFlagHolder m_properties;
 
-	PPluginModule  _M_module;
+	PPluginModule  m_module;
 };
 
 

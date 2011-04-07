@@ -70,7 +70,7 @@ protected:
 		virtual void do_x_increment(); 
 		virtual void do_y_increment(); 
 		virtual void do_z_increment(); 
-		C3DFVector _M_value; 
+		C3DFVector m_value; 
 	}; 
 
 private:

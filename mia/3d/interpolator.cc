@@ -45,21 +45,21 @@ CInterpolator::~CInterpolator()
 }
 
 C3DInterpolatorFactory::C3DInterpolatorFactory(EType type, std::shared_ptr<CBSplineKernel > kernel):
-	_M_type(type),
-	_M_kernel(kernel)
+	m_type(type),
+	m_kernel(kernel)
 {
 }
 
 C3DInterpolatorFactory::C3DInterpolatorFactory(const C3DInterpolatorFactory& o):
-	_M_type(o._M_type),
-	_M_kernel(o._M_kernel)
+	m_type(o.m_type),
+	m_kernel(o.m_kernel)
 {
 }
 
 C3DInterpolatorFactory& C3DInterpolatorFactory::operator = ( const C3DInterpolatorFactory& o)
 {
-	_M_type = o._M_type;
-	_M_kernel = o._M_kernel;
+	m_type = o.m_type;
+	m_kernel = o.m_kernel;
 
 	return *this;
 }
@@ -70,7 +70,7 @@ C3DInterpolatorFactory::~C3DInterpolatorFactory()
 
 PBSplineKernel C3DInterpolatorFactory::get_kernel() const
 {
-	return _M_kernel; 
+	return m_kernel; 
 }
 
 EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(int type)

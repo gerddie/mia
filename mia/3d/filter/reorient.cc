@@ -38,7 +38,7 @@ NS_BEGIN(reorient_3dimage_filter)
 NS_MIA_USE;
 using namespace std;
 
-C3DReorient::C3DReorient(EOrientations strategy):_M_strategy(strategy)
+C3DReorient::C3DReorient(EOrientations strategy):m_strategy(strategy)
 {
 }
 
@@ -49,13 +49,13 @@ C3DReorient::result_type C3DReorient::operator () (const mia::T3DImage<T>& data)
 	TRACE(__FUNCTION__);
 	T3DImage<T> *result = NULL;
 
-	EOrientations strategy = _M_strategy;
+	EOrientations strategy = m_strategy;
 
 	if (strategy == axial ||  strategy == coronal || strategy == saggital) {
 		strategy = get_strategy(data.get_orientation());
 	}
 
-	cvdebug() << "strategy = " << strategy << "(" << _M_strategy <<")\n";
+	cvdebug() << "strategy = " << strategy << "(" << m_strategy <<")\n";
 	switch (strategy) {
 	case xyz: {
 		result = new T3DImage<T>(data.get_size(), data.get_attribute_list());
@@ -190,7 +190,7 @@ C3DReorient::EOrientations C3DReorient::get_strategy(E3DImageOrientation old_ori
 	TRACE(__FUNCTION__);
 	switch (old_orientation)  {
 	case ior_axial:
-		switch (_M_strategy)  {
+		switch (m_strategy)  {
 		case axial:    return xyz;
 		case saggital: return zyx; //??
 		case coronal:  return xyz; //??
@@ -198,7 +198,7 @@ C3DReorient::EOrientations C3DReorient::get_strategy(E3DImageOrientation old_ori
 			return xyz;
 		};
 	case ior_saggital:
-		switch (_M_strategy)  {
+		switch (m_strategy)  {
 		case axial:    return zyx;
 		case saggital: return xyz; //??
 		case coronal:  return xyz; //??
@@ -206,7 +206,7 @@ C3DReorient::EOrientations C3DReorient::get_strategy(E3DImageOrientation old_ori
 			return xyz;
 		};
 	case ior_coronal:
-		switch (_M_strategy)  {
+		switch (m_strategy)  {
 		case axial:    return xyz;
 		case saggital: return zyx; //??
 		case coronal:  return xyz; //??
@@ -227,16 +227,16 @@ P3DImage C3DReorient::do_filter(const C3DImage& image) const
 /* The factory constructor initialises the plugin name, and takes care that the plugin help will show its parameters */
 C3DReorientImageFilterFactory::C3DReorientImageFilterFactory():
 	C3DFilterPlugin("reorient"),
-	_M_orientation(C3DReorient::xyz)
+	m_orientation(C3DReorient::xyz)
 {
     add_parameter("map", new
-        CDictParameter<C3DReorient::EOrientations>(_M_orientation, map, "oriantation mapping to be applied"));
+        CDictParameter<C3DReorient::EOrientations>(m_orientation, map, "oriantation mapping to be applied"));
 }
 
 /* The factory create function creates and returns the filter with the given options*/
 C3DFilterPlugin::ProductPtr C3DReorientImageFilterFactory::do_create()const
 {
-	return C3DFilterPlugin::ProductPtr(new C3DReorient(_M_orientation));
+	return C3DFilterPlugin::ProductPtr(new C3DReorient(m_orientation));
 }
 
 /* This function sreturns a short description of the filter */

@@ -32,7 +32,7 @@ using namespace boost;
 NS_BEGIN(label_3dimage_filter)
 
 CLabel::CLabel(P3DShape& mask):
-	_M_mask(mask)
+	m_mask(mask)
 {
 }
 
@@ -47,7 +47,7 @@ void CLabel::grow_region(const C3DBounds& loc, const C3DBitImage& input, C3DUSIm
 		C3DBounds  l = neighbors.front();
 
 		neighbors.pop();
-		for (C3DShape::const_iterator s = _M_mask->begin(); s != _M_mask->end(); ++s) {
+		for (C3DShape::const_iterator s = m_mask->begin(); s != m_mask->end(); ++s) {
 			C3DBounds  pos(l.x + s->x, l.y + s->y, l.z + s->z);
 			if (pos.x < size.x && pos.y < size.y && pos.z < size.z && input(pos) && result(pos) == 0) {
 				result(pos) = label;
@@ -98,14 +98,14 @@ CLabel::result_type CLabel::do_filter(const C3DImage& image) const
 
 C3DLabelFilterPlugin::C3DLabelFilterPlugin():
 	C3DFilterPlugin("label"),
-	_M_mask_descr("6n")
+	m_mask_descr("6n")
 {
-	add_parameter("n", new CStringParameter(_M_mask_descr, false, "neighborhood mask")) ;
+	add_parameter("n", new CStringParameter(m_mask_descr, false, "neighborhood mask")) ;
 }
 
 C3DFilterPlugin::ProductPtr C3DLabelFilterPlugin::do_create()const
 {
-	P3DShape mask = C3DShapePluginHandler::instance().produce(_M_mask_descr.c_str());
+	P3DShape mask = C3DShapePluginHandler::instance().produce(m_mask_descr.c_str());
 	if (!mask)
 		return C3DFilterPlugin::ProductPtr();
 	return C3DFilterPlugin::ProductPtr(new CLabel(mask));

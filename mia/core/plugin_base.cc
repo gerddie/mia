@@ -51,8 +51,8 @@ using namespace std;
 const std::string plugin_help("help");
 
 CPluginBase::CPluginBase(const char *name):
-	_M_name(name),
-	_M_next_interface(NULL)
+	m_name(name),
+	m_next_interface(NULL)
 {
 }
 
@@ -64,19 +64,19 @@ CPluginBase::~CPluginBase()
 void CPluginBase::add_parameter(const std::string& name, CParameter *param)
 {
 	CParamList::PParameter p(param);
-	if ( _M_parameters.has_key(name) ) {
+	if ( m_parameters.has_key(name) ) {
 		stringstream errmsg;
 		errmsg << get_name() << ": Parameter name '" << name << "' already in use'";
 		throw invalid_argument(errmsg.str());
 	}
-	_M_parameters[name] = p;
+	m_parameters[name] = p;
 }
 
 
 void CPluginBase::set_parameters(const CParsedOptions& options)
 {
 	try {
-		_M_parameters.set(options);
+		m_parameters.set(options);
 	}
 	catch (invalid_argument& x) {
 		stringstream errmsg;
@@ -88,7 +88,7 @@ void CPluginBase::set_parameters(const CParsedOptions& options)
 void CPluginBase::check_parameters()
 {
 	try {
-		_M_parameters.check_required();
+		m_parameters.check_required();
 	}
 	catch (invalid_argument& x) {
 		stringstream errmsg;
@@ -100,7 +100,7 @@ void CPluginBase::check_parameters()
 
 const char *CPluginBase::get_name() const
 {
-	return _M_name;
+	return m_name;
 }
 
 
@@ -112,16 +112,16 @@ const std::string CPluginBase::get_descr() const
 
 void CPluginBase::get_help(std::ostream& os) const
 {
-	_M_parameters.print_help(os);
+	m_parameters.print_help(os);
 }
 
 
 void CPluginBase::append_interface(CPluginBase *plugin)
 {
-	if (_M_next_interface)
-		_M_next_interface->append_interface(plugin);
+	if (m_next_interface)
+		m_next_interface->append_interface(plugin);
 	else
-		_M_next_interface = plugin;
+		m_next_interface = plugin;
 }
 
 bool CPluginBase::test(bool uninstalled) const
@@ -139,27 +139,27 @@ void CPluginBase::prepare_path() const
 
 CPluginBase *CPluginBase::next_interface()
 {
-	return _M_next_interface;
+	return m_next_interface;
 }
 
 bool CPluginBase::has_property(const char *property) const
 {
-	return _M_properties.has(property);
+	return m_properties.has(property);
 }
 
 void CPluginBase::add_property(const char *property)
 {
-	_M_properties.add(property);
+	m_properties.add(property);
 }
 
 void CPluginBase::set_module(const PPluginModule& module)
 {
-	_M_module = module;
+	m_module = module;
 }
 
 PPluginModule CPluginBase::get_module() const
 {
-	return _M_module;
+	return m_module;
 }
 
 #ifdef WIN32

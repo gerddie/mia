@@ -95,33 +95,33 @@ public:
 	void transform(const T& transform);
 
 	const Data& get_src() const {
-		return *_M_src;
+		return *m_src;
 	}
 	const Data& get_ref() const{
-		return *_M_ref;
+		return *m_ref;
 	}
 	const Data& get_floating() const {
-		return *_M_floating;
+		return *m_floating;
 	}
 
 	std::shared_ptr<Interpolator > get_ipf() const {
-		return _M_ipf;
+		return m_ipf;
 	}
 	float get_weight() const {
-		return _M_weight;
+		return m_weight;
 	}
 private:
 	virtual double do_value() const = 0;
 	virtual double do_evaluate_force(Force& force) const = 0;
 
-	const std::shared_ptr<Data >  _M_src;
-	const std::shared_ptr<Data >  _M_ref;
-	std::shared_ptr<Interpolator > _M_ipf;
-	std::shared_ptr<Data > _M_floating;
-	float _M_weight;
+	const std::shared_ptr<Data >  m_src;
+	const std::shared_ptr<Data >  m_ref;
+	std::shared_ptr<Interpolator > m_ipf;
+	std::shared_ptr<Data > m_floating;
+	float m_weight;
 	
-	mutable double _M_cost;
-	mutable bool _M_cost_valid;
+	mutable double m_cost;
+	mutable bool m_cost_valid;
 
 };
 

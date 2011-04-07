@@ -80,7 +80,7 @@ public:
 	void set_orientation(E3DImageOrientation orient);
 
 private:
-	EPixelType _M_pixel_type;
+	EPixelType m_pixel_type;
 };
 
 /// define a shortcut to the 3D image shared pointer. 
@@ -174,32 +174,32 @@ public:
 
 	/// element access operator - read only
 	const_reference operator()(size_t  x, size_t  y, size_t  z) const {
-		return _M_image(x,y,z);
+		return m_image(x,y,z);
 	}
 
 	/// element access operator - read/write
 	reference operator()(size_t  x, size_t  y, size_t  z){
-		return _M_image(x,y,z);
+		return m_image(x,y,z);
 	}
 
 	/// element access operator - read only
 	const_reference operator()(const C3DBounds& l) const{
-		return _M_image(l.x,l.y, l.z);
+		return m_image(l.x,l.y, l.z);
 	}
 
 	/// element access operator - read/write
 	reference operator()(const C3DBounds& l){
-		return _M_image(l.x,l.y, l.z);
+		return m_image(l.x,l.y, l.z);
 	}
 
 	/// constant iterator
 	const_iterator begin()const {
-		return _M_image.begin();
+		return m_image.begin();
 	}
 
 	/// constant iterator
 	const_iterator end()const {
-		return _M_image.end();
+		return m_image.end();
 	}
 
 	/// \returns the all over number of pixels/voxels
@@ -207,28 +207,28 @@ public:
 
 	/// read/write iterator, issues copy-on-write
 	iterator begin() {
-		return _M_image.begin();
+		return m_image.begin();
 	}
 
 	/// read/write iterator, issues copy-on-write
 	iterator end() {
-		return _M_image.end();
+		return m_image.end();
 	}
 
 	/// constant iterator starting at the given location
 	const_iterator begin_at(size_t x, size_t y, size_t z) const {
-		return _M_image.begin_at(x,  y, z);
+		return m_image.begin_at(x,  y, z);
 	}
 
 	/// read/write iterator starting at the given location
 	iterator begin_at(size_t x, size_t y, size_t z) {
-		return _M_image.begin_at(x,  y,  z);
+		return m_image.begin_at(x,  y,  z);
 	}
 
         /** a linear read only access operator */
         const_reference operator[](int i)const
         {
-		return _M_image[i];
+		return m_image[i];
         }
 
         /** A linear read/write access operator. The refcount of Data must be 1,
@@ -236,7 +236,7 @@ public:
         */
         reference operator[](int i)
         {
-		return _M_image[i];
+		return m_image[i];
         }
 
 	/// read only access to the underlying data
@@ -251,7 +251,7 @@ public:
 	 */
 	C3DFVector get_gradient(int index) const
 	{
-		return _M_image.template get_gradient<float>(index);
+		return m_image.template get_gradient<float>(index);
 	}
 
 	/// \returns the 3D size of the image
@@ -263,7 +263,7 @@ public:
 	virtual void set_voxel_size(const C3DFVector& voxel);
 
 private:
-	T3DDatafield<T> _M_image;
+	T3DDatafield<T> m_image;
 };
 
 /**
@@ -310,7 +310,7 @@ private:
 	std::string do_as_string() const;
 	bool do_is_equal(const CAttribute& other) const;
 	bool do_is_less(const CAttribute& other) const;
-	T3DVector<T> _M_value;
+	T3DVector<T> m_value;
 };
 
 template <typename T>

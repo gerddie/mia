@@ -64,7 +64,7 @@ public:
 	Set get_missing_properties(const CPropertyFlagHolder& testset)const; 
 private:
 	virtual bool do_has(const char *property) const;
-	Set _M_properties;
+	Set m_properties;
 };
 
 NS_MIA_END

@@ -48,7 +48,7 @@ using namespace std;
 class CHistAccumulator : public TFilter<bool> {
 public:
 	CHistAccumulator(float min, float max, size_t bins):
-		_M_histo(CHistogramFeeder<float>(min, max, bins))
+		m_histo(CHistogramFeeder<float>(min, max, bins))
 	{
 	}
 
@@ -56,26 +56,26 @@ public:
 	bool operator () (const T2DImage<T>& image) {
 		for( typename T2DImage<T>::const_iterator i = image.begin();
 		     i != image.end(); ++i)
-			_M_histo.push(*i);
+			m_histo.push(*i);
 		return true;
 	}
 	bool save(const string& fname)const
 	{
 		size_t last_k = 0;
-		for (size_t i = 0; i < 	_M_histo.size(); ++i) {
-			if (_M_histo[i] > 0 )
+		for (size_t i = 0; i < 	m_histo.size(); ++i) {
+			if (m_histo[i] > 0 )
 				last_k = i;
 		}
 
 		ofstream file(fname.c_str());
 		for (size_t i = 0; i < 	last_k; ++i) {
-			const CHistogram<CHistogramFeeder<float > >::value_type v = _M_histo.at(i);
+			const CHistogram<CHistogramFeeder<float > >::value_type v = m_histo.at(i);
 			file << v.first << " " << v.second << "\n";
 		}
 		return file.good();
 	}
 private:
-	CHistogram<CHistogramFeeder<float > > _M_histo;
+	CHistogram<CHistogramFeeder<float > > m_histo;
 };
 
 

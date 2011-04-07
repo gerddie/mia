@@ -25,22 +25,22 @@
 
 namespace gsl {
 
-Matrix::Matrix():_M_matrix(NULL)
+Matrix::Matrix():m_matrix(NULL)
 {
 }
 
 Matrix::Matrix(size_t rows, size_t columns, bool clean):
-	_M_matrix(NULL)
+	m_matrix(NULL)
 {
-	_M_matrix = clean ? 
+	m_matrix = clean ? 
 		gsl_matrix_calloc(rows, columns):
 		gsl_matrix_alloc(rows, columns); 
 }
 
 Matrix::Matrix(const Matrix& other)
 {
-	_M_matrix = gsl_matrix_alloc(other.rows(), other.cols()); 
-	gsl_matrix_memcpy (_M_matrix, other._M_matrix); 
+	m_matrix = gsl_matrix_alloc(other.rows(), other.cols()); 
+	gsl_matrix_memcpy (m_matrix, other.m_matrix); 
 }
 
 Matrix& Matrix::operator =(const Matrix& other)
@@ -48,55 +48,55 @@ Matrix& Matrix::operator =(const Matrix& other)
 	if (this == &other) 
 		return *this; 
 
-	if (_M_matrix && rows() == other.rows() && cols() == other.cols()) {
-		gsl_matrix_memcpy (_M_matrix, other._M_matrix);
+	if (m_matrix && rows() == other.rows() && cols() == other.cols()) {
+		gsl_matrix_memcpy (m_matrix, other.m_matrix);
 		return *this; 
 	}
 	gsl_matrix *help = gsl_matrix_alloc(other.rows(), other.cols()); 
-	gsl_matrix_memcpy (help, other._M_matrix); 
-	if (_M_matrix) 
-		gsl_matrix_free(_M_matrix);
-	_M_matrix = help; 
+	gsl_matrix_memcpy (help, other.m_matrix); 
+	if (m_matrix) 
+		gsl_matrix_free(m_matrix);
+	m_matrix = help; 
 	return *this; 
 }
 
 Matrix::~Matrix()
 {
-	if (_M_matrix) 
-		gsl_matrix_free(_M_matrix);
+	if (m_matrix) 
+		gsl_matrix_free(m_matrix);
 }
 
 size_t Matrix::rows()const
 {
-	assert(_M_matrix); 
-	return _M_matrix->size1; 
+	assert(m_matrix); 
+	return m_matrix->size1; 
 }
 
 size_t Matrix::cols()const
 {
-	assert(_M_matrix); 
-	return _M_matrix->size2; 
+	assert(m_matrix); 
+	return m_matrix->size2; 
 }
 
 
 void Matrix::set(size_t i, size_t j, double x)
 {
-	gsl_matrix_set(_M_matrix, i,j,x); 
+	gsl_matrix_set(m_matrix, i,j,x); 
 }
 
 double Matrix::operator ()(size_t i, size_t j) const
 {
-	return gsl_matrix_get(_M_matrix, i,j);
+	return gsl_matrix_get(m_matrix, i,j);
 }
 
 Matrix::operator gsl_matrix * ()
 {
-	return _M_matrix; 
+	return m_matrix; 
 }
 
 Matrix::operator const gsl_matrix *() const
 {
-	return _M_matrix; 
+	return m_matrix; 
 }
 
 }

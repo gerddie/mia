@@ -45,12 +45,12 @@ NS_MIA_BEGIN
 using namespace std;
 
 CFile::CFile(const string& filename, bool from_stdio, bool write):
-	_M_must_close(!from_stdio),
-	_M_is_pipe(false),
-	_M_file(0)
+	m_must_close(!from_stdio),
+	m_is_pipe(false),
+	m_file(0)
 {
 	if (from_stdio) {
-		_M_file = write ? stdout : stdin;
+		m_file = write ? stdout : stdin;
 		return;
 	}
 #ifndef WIN32
@@ -60,23 +60,23 @@ CFile::CFile(const string& filename, bool from_stdio, bool write):
 
 	string pipe;
 	if (suffix == string(".gz")) {
-		_M_is_pipe = true;
+		m_is_pipe = true;
 		pipe = (write ? string("gzip >") : string("cat ")) + filename.c_str() + string("| zcat ");
 	}else if (suffix == string(".bz2")) {
-		_M_is_pipe = true;
+		m_is_pipe = true;
 		pipe = (write ? string("bzip2 >") : string("bzcat ")) + filename.c_str();
 	}else if (suffix == string(".Z")) {
-		_M_is_pipe = true;
+		m_is_pipe = true;
 		pipe = (write ? string("compress >") : string("zcat ")) + filename.c_str();
 	}
 
-	if (_M_is_pipe)
-		_M_file = popen (pipe.c_str(), write ? "w": "r");
+	if (m_is_pipe)
+		m_file = popen (pipe.c_str(), write ? "w": "r");
 	else
 #endif
-		_M_file = fopen (filename.c_str(), write ? "wb": "rb");
+		m_file = fopen (filename.c_str(), write ? "wb": "rb");
 
-	if (!_M_file) {
+	if (!m_file) {
 		stringstream errmsg;
 		errmsg << filename <<":" << strerror(errno);
 		throw runtime_error(errmsg.str());
@@ -86,13 +86,13 @@ CFile::CFile(const string& filename, bool from_stdio, bool write):
 /** destructor, closes file if necessary */
 CFile::~CFile() throw()
 {
-	if (_M_must_close && _M_file) {
+	if (m_must_close && m_file) {
 #ifndef WIN32
-		if (_M_is_pipe)
-			pclose(_M_file);
+		if (m_is_pipe)
+			pclose(m_file);
 		else
 #endif
-			fclose(_M_file);
+			fclose(m_file);
 	}
 }
 
@@ -100,13 +100,13 @@ CFile::~CFile() throw()
 /** \returns the stdio FILE pointer */
 CFile::operator PFILE()
 {
-	return _M_file;
+	return m_file;
 }
 
 /** \returns true if the file is not open (i.e. the FILE pointer is NULL */
 bool CFile::operator ! ()const
 {
-	return _M_file == NULL;
+	return m_file == NULL;
 }
 
 CInputFile::CInputFile(const string& filename):

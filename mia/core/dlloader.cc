@@ -45,9 +45,9 @@ using namespace std;
 struct CDLLoaderData {
 
 	CDLLoaderData(const char *name, int flags):
-	        _M_module(dlopen(name, flags)),
-		_M_name(name) 	{
-		if (!_M_module) {
+	        m_module(dlopen(name, flags)),
+		m_name(name) 	{
+		if (!m_module) {
 			stringstream s;
 			s << name << ":'" << dlerror() << "'";
 			throw runtime_error(s.str());
@@ -63,17 +63,17 @@ struct CDLLoaderData {
 		// For now, the unloading is left to the final clean up when
 		// the program ends, this leaves some reachable memory blocks
 		//
-		// dlclose(_M_module);
+		// dlclose(m_module);
 	}
 	void *get_function(const char *name) {
-		return dlsym(_M_module, name);
+		return dlsym(m_module, name);
 	}
 	const string& get_name() const {
-		return _M_name;
+		return m_name;
 	}
 private:
-	ModuleHandle _M_module;
-	string _M_name;
+	ModuleHandle m_module;
+	string m_name;
 };
 
 CDLLoader::CDLLoader(const char *name, int flags):

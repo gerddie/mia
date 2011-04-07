@@ -43,7 +43,7 @@ struct dim_traits {
  */
 struct vector_dimsize {
 	
-	vector_dimsize(size_t n):_M_n(n) {
+	vector_dimsize(size_t n):m_n(n) {
 	}
 	
 	size_t size() {
@@ -51,13 +51,13 @@ struct vector_dimsize {
 	}
 	T& operator [] (int i)
 	{
-		return _M_n; 
+		return m_n; 
 	}
 	const T& operator [] (int i) const 
 	{
-		return _M_n; 
+		return m_n; 
 	}
-	size_t _M_n; 
+	size_t m_n; 
 }; 
 
 template <typename T>

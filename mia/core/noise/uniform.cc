@@ -45,31 +45,31 @@ static const size_t center = 1024;
 
 CUniformNoiseGenerator::CUniformNoiseGenerator(unsigned int seed, double a, double b):
 	CNoiseGenerator(seed),
-	_M_a(a),
-	_M_step(1.0 / (b-a))
+	m_a(a),
+	m_step(1.0 / (b-a))
 {
 }
 
 double CUniformNoiseGenerator::get() const
 {
-	return _M_step * ranf() + _M_a;
+	return m_step * ranf() + m_a;
 }
 
 
 CUniformNoiseGeneratorFactory::CUniformNoiseGeneratorFactory():
 	CNoiseGeneratorPlugin("uniform"),
-	_M_param_seed(0),
-	_M_param_a(0),
-	_M_param_b(1)
+	m_param_seed(0),
+	m_param_a(0),
+	m_param_b(1)
 {
-	add_parameter("a", new CFloatParameter(_M_param_a, -numeric_limits<float>::max(),
+	add_parameter("a", new CFloatParameter(m_param_a, -numeric_limits<float>::max(),
 								       numeric_limits<float>::max(),
 								       false, "lower bound if noise range"));
 
-	add_parameter("b", new CFloatParameter(_M_param_b, -numeric_limits<float>::max(),
+	add_parameter("b", new CFloatParameter(m_param_b, -numeric_limits<float>::max(),
 								       numeric_limits<float>::max(),
 								       false, "higher bound if noise range"));
-	add_parameter("seed", new CUIntParameter(_M_param_seed, 0,   numeric_limits<unsigned int>::max(),
+	add_parameter("seed", new CUIntParameter(m_param_seed, 0,   numeric_limits<unsigned int>::max(),
 						  false, "set random seed (0=init based on system time)"));
 
 }
@@ -77,7 +77,7 @@ CUniformNoiseGeneratorFactory::CUniformNoiseGeneratorFactory():
 CNoiseGeneratorPlugin::ProductPtr
 CUniformNoiseGeneratorFactory::do_create()const
 {
-	return CNoiseGeneratorPlugin::ProductPtr(new CUniformNoiseGenerator(_M_param_seed, _M_param_a, _M_param_b));
+	return CNoiseGeneratorPlugin::ProductPtr(new CUniformNoiseGenerator(m_param_seed, m_param_a, m_param_b));
 }
 
 const string CUniformNoiseGeneratorFactory::do_get_descr()const

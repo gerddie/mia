@@ -53,54 +53,54 @@ public:
 private:
 	virtual void do_push(::boost::call_traits<P2DImage>::param_type x);
 
-	string _M_fnamebase;
-	size_t _M_start_num;
-	size_t _M_nslices;
-	size_t _M_slice;
-	C2DImageIOPluginHandler::Instance const& _M_ifh;
-	string _M_filetype;
-	time_t _M_start_time;
+	string m_fnamebase;
+	size_t m_start_num;
+	size_t m_nslices;
+	size_t m_slice;
+	C2DImageIOPluginHandler::Instance const& m_ifh;
+	string m_filetype;
+	time_t m_start_time;
 };
 
 C2DStackSaver::C2DStackSaver(string const & fnamebase, size_t start_num, size_t end_num, size_t fwidth,
 			     string const& filetype, C2DImageIOPluginHandler::Instance const& ifh, time_t start_time):
 	TFifoFilter<P2DImage>(0,0,0),
-	_M_start_num(start_num),
-	_M_nslices(end_num - start_num),
-	_M_slice(start_num),
-	_M_ifh(ifh),
-	_M_filetype(filetype),
-	_M_start_time(start_time)
+	m_start_num(start_num),
+	m_nslices(end_num - start_num),
+	m_slice(start_num),
+	m_ifh(ifh),
+	m_filetype(filetype),
+	m_start_time(start_time)
 
 {
 	stringstream ss;
 	ss << fnamebase << "%0" << fwidth << "d." << filetype;
-	_M_fnamebase  = ss.str();
+	m_fnamebase  = ss.str();
 }
 
 void C2DStackSaver::do_push(::boost::call_traits<P2DImage>::param_type image)
 {
 	C2DImageVector img_list;
 	img_list.push_back(image);
-	string out_filename = create_filename(_M_fnamebase.c_str(), _M_slice++);
+	string out_filename = create_filename(m_fnamebase.c_str(), m_slice++);
 
-	cvdebug() << "C2DStackSaver: save image " << out_filename << " to type "<< _M_filetype << '\n';
+	cvdebug() << "C2DStackSaver: save image " << out_filename << " to type "<< m_filetype << '\n';
 #ifndef WIN32
 	if (cverb.get_level() == vstream::ml_message) {
 		char esttime[30];
 		time_t now = time(NULL);
-		time_t est_end = (_M_nslices * (now - _M_start_time)) / (_M_slice - _M_start_num) + _M_start_time;
+		time_t est_end = (m_nslices * (now - m_start_time)) / (m_slice - m_start_num) + m_start_time;
 		ctime_r(&est_end, esttime);
 		char *est = esttime;
 		while (*est != '\n' && *est != 0)
 			++est;
 		if (*est == '\n')
 			*est = ' ';
-		cvmsg() << "\rFiltered " << _M_slice << ", estimated finish at: " <<  esttime;
+		cvmsg() << "\rFiltered " << m_slice << ", estimated finish at: " <<  esttime;
 	}
 #endif
 
-	bool save_okay = _M_ifh.save(_M_filetype, out_filename, img_list );
+	bool save_okay = m_ifh.save(m_filetype, out_filename, img_list );
 	if (!save_okay)
 		cverr() << "saving file " << out_filename << "failed\n";
 

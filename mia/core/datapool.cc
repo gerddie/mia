@@ -35,29 +35,29 @@ CDatapool::CDatapool()
 
 boost::any CDatapool::get(const std::string& key) const
 {
-	boost::mutex::scoped_lock lock(_M_mutex);
+	boost::mutex::scoped_lock lock(m_mutex);
 	Anymap::const_iterator i = get_iterator(key);
-	_M_usage[key] = true;
+	m_usage[key] = true;
 	cverb << "success\n";
 	return i->second;
 }
 
 boost::any CDatapool::get_and_remove(const std::string& key)
 {
-	boost::mutex::scoped_lock lock(_M_mutex);
+	boost::mutex::scoped_lock lock(m_mutex);
 	Anymap::const_iterator i = get_iterator(key);
 	boost::any retval = i->second;
-	_M_map.erase(key);
-	_M_usage.erase(key);
+	m_map.erase(key);
+	m_usage.erase(key);
 	return retval;
 }
 
 void CDatapool::add(const std::string& key, boost::any value)
 {
-	boost::mutex::scoped_lock lock(_M_mutex);
+	boost::mutex::scoped_lock lock(m_mutex);
 	cvdebug() << "add '" << key << "'\n";
-	_M_usage[key] = false;
-	_M_map[key] = value;
+	m_usage[key] = false;
+	m_map[key] = value;
 }
 
 CDatapool& CDatapool::Instance()
@@ -68,16 +68,16 @@ CDatapool& CDatapool::Instance()
 
 bool CDatapool::has_key(const std::string& key) const
 {
-	boost::mutex::scoped_lock lock(_M_mutex);
-	return _M_map.find(key) != _M_map.end();
+	boost::mutex::scoped_lock lock(m_mutex);
+	return m_map.find(key) != m_map.end();
 }
 
 bool CDatapool::has_unused_data() const
 {
-	boost::mutex::scoped_lock lock(_M_mutex);
+	boost::mutex::scoped_lock lock(m_mutex);
 	bool result = false;
-	for (Usagemap::const_iterator u = _M_usage.begin();
-	     u != _M_usage.end(); ++u) {
+	for (Usagemap::const_iterator u = m_usage.begin();
+	     u != m_usage.end(); ++u) {
 		if (!u->second)  {
 			result = true;
 			cvwarn() << "Datapool has unused parameter '" << u->first << "\n";
@@ -89,8 +89,8 @@ bool CDatapool::has_unused_data() const
 CDatapool::const_iterator CDatapool::get_iterator(const std::string& key) const
 {
 	cvdebug() << "CDatapool::get: '" << key << "' ... ";
-	Anymap::const_iterator i = _M_map.find(key);
-	if (i == _M_map.end()) {
+	Anymap::const_iterator i = m_map.find(key);
+	if (i == m_map.end()) {
 		cverb << "fail\n";
 		stringstream msg;
 		msg << "CDatapool: key '" << key << "' not available";

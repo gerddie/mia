@@ -70,9 +70,9 @@ public:
 	bool operator ! ()const;
 
 private:
-	bool _M_must_close;
-	bool _M_is_pipe;
-	FILE *_M_file;
+	bool m_must_close;
+	bool m_is_pipe;
+	FILE *m_file;
 };
 
 

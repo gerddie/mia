@@ -29,7 +29,7 @@ NS_MIA_USE;
 using namespace std;
 
 C2DKMeans::C2DKMeans(size_t cls):
-	_M_classes(cls)
+	m_classes(cls)
 {
 }
 
@@ -42,7 +42,7 @@ typename C2DKMeans::result_type C2DKMeans::operator () (const T2DImage<T>& data)
 
 	C2DUBImage *tresult = new C2DUBImage(data.get_size(), data);
 	P2DImage result(tresult);
-	std::vector<double> classes(_M_classes);
+	std::vector<double> classes(m_classes);
 
 	kmeans(data.begin(), data.end(), tresult->begin(), classes);
 
@@ -62,13 +62,13 @@ P2DImage C2DKMeans::do_filter(const C2DImage& image) const
 C2DKMeansFilterPluginFactory::C2DKMeansFilterPluginFactory():
 	C2DFilterPlugin("kmeans")
 {
-	add_parameter("c", new CIntParameter(_M_classes, 0, numeric_limits<unsigned char>::max(),
+	add_parameter("c", new CIntParameter(m_classes, 0, numeric_limits<unsigned char>::max(),
 					     false, "number of classes"));
 }
 
 C2DKMeansFilterPluginFactory::ProductPtr C2DKMeansFilterPluginFactory::do_create()const
 {
-	return C2DKMeansFilterPluginFactory::ProductPtr(new C2DKMeans(_M_classes));
+	return C2DKMeansFilterPluginFactory::ProductPtr(new C2DKMeans(m_classes));
 }
 
 const string C2DKMeansFilterPluginFactory::do_get_descr()const

@@ -34,8 +34,8 @@ class C2DCrop: public mia::C2DFilter {
 public:
 	typedef mia::T2DVector<int> C2DSize;
 	C2DCrop(const C2DSize & start, const C2DSize& size):
-		_M_start(start),
-		_M_size(size)
+		m_start(start),
+		m_size(size)
 	{
 	}
 
@@ -44,8 +44,8 @@ public:
 
 private:
 	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
-	C2DSize _M_start;
-	C2DSize _M_size;
+	C2DSize m_start;
+	C2DSize m_size;
 
 };
 
@@ -55,8 +55,8 @@ public:
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-	C2DCrop::C2DSize _M_start;
-	C2DCrop::C2DSize _M_end;
+	C2DCrop::C2DSize m_start;
+	C2DCrop::C2DSize m_end;
 };
 
 NS_END

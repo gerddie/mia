@@ -53,9 +53,9 @@ private:
 	void put_char(int);
 
 	virtual void do_put_buffer(const char *begin, const char *end) = 0;
-	char *_M_begin;
-	char *_M_cur;
-	char *_M_end;
+	char *m_begin;
+	char *m_cur;
+	char *m_end;
 };
 
 NS_MIA_END

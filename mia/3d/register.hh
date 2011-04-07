@@ -71,15 +71,15 @@ private:
 	void reg_level(const C3DImage& source, const C3DImage& reference, C3DFVectorfield& result);
 	void reg_level_regrid(const C3DImage& source, const C3DImage& reference, C3DFVectorfield& result);
 	void reg_level_regrid_opt(const C3DImage& source, const C3DImage& reference, C3DFVectorfield& result);
-	size_t _M_start_size;
-	C3DImageCost& _M_cost;
-	size_t _M_max_iter;
-	C3DRegModel& _M_model;
-	C3DRegTimeStep& _M_time_step;
-	const C3DInterpolatorFactory& _M_ipf;
-	float _M_outer_epsilon;
-	bool _M_save_steps;
-	size_t _M_mnum;
+	size_t m_start_size;
+	C3DImageCost& m_cost;
+	size_t m_max_iter;
+	C3DRegModel& m_model;
+	C3DRegTimeStep& m_time_step;
+	const C3DInterpolatorFactory& m_ipf;
+	float m_outer_epsilon;
+	bool m_save_steps;
+	size_t m_mnum;
 };
 
 typedef std::shared_ptr<C3DRegModel > P3DRegModel;

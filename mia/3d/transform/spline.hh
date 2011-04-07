@@ -61,7 +61,7 @@ public:
 		virtual void do_y_increment(); 
 		virtual void do_z_increment(); 
 
-		C3DFVectorfield::const_iterator _M_value_it; 
+		C3DFVectorfield::const_iterator m_value_it; 
 		
 
 	};
@@ -111,28 +111,28 @@ private:
 	C3DFVector interpolate(const C3DFVector& x) const; 
 
 	virtual C3DTransformation *do_clone() const;
-	C3DBounds _M_range;
-	C3DFVector _M_target_c_rate;
-	C3DFVectorfield _M_coefficients;
-	PBSplineKernel _M_kernel; 
-	C3DBounds _M_shift; 
-	C3DBounds _M_enlarge; 
-	mutable C3DFVector _M_scale;
-	mutable C3DFVector _M_inv_scale;
-	mutable bool _M_scales_valid;
+	C3DBounds m_range;
+	C3DFVector m_target_c_rate;
+	C3DFVectorfield m_coefficients;
+	PBSplineKernel m_kernel; 
+	C3DBounds m_shift; 
+	C3DBounds m_enlarge; 
+	mutable C3DFVector m_scale;
+	mutable C3DFVector m_inv_scale;
+	mutable bool m_scales_valid;
 
-	mutable std::shared_ptr<C3DPPDivcurlMatrix> _M_divcurl_matrix; 
-	mutable std::vector<std::vector<double> > _M_x_weights; 
-	mutable std::vector<int> _M_x_indices; 
-	mutable std::vector<std::vector<double> > _M_y_weights; 
-	mutable std::vector<int> _M_y_indices; 
-	mutable std::vector<std::vector<double> > _M_z_weights; 
-	mutable std::vector<int> _M_z_indices; 
-	mutable CSplineDerivativeRow  _M_mx; 
-	mutable CSplineDerivativeRow  _M_my; 
-	mutable CSplineDerivativeRow  _M_mz; 
-	mutable bool _M_grid_valid; 
-	mutable P3DFVectorfield _M_current_grid; 
+	mutable std::shared_ptr<C3DPPDivcurlMatrix> m_divcurl_matrix; 
+	mutable std::vector<std::vector<double> > m_x_weights; 
+	mutable std::vector<int> m_x_indices; 
+	mutable std::vector<std::vector<double> > m_y_weights; 
+	mutable std::vector<int> m_y_indices; 
+	mutable std::vector<std::vector<double> > m_z_weights; 
+	mutable std::vector<int> m_z_indices; 
+	mutable CSplineDerivativeRow  m_mx; 
+	mutable CSplineDerivativeRow  m_my; 
+	mutable CSplineDerivativeRow  m_mz; 
+	mutable bool m_grid_valid; 
+	mutable P3DFVectorfield m_current_grid; 
 };
 
 NS_MIA_END

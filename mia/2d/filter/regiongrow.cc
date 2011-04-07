@@ -42,20 +42,20 @@ static const CIntOption   param_class("class", "class to be segmented", 2, 0, nu
 
 
 class C2DReagiongrow: public C2DFilter {
-	float _M_low; 
-	float _M_seed; 
-	CDoubleVector _M_pv;
-	vector<T2DVector<int> >  _M_env;
+	float m_low; 
+	float m_seed; 
+	CDoubleVector m_pv;
+	vector<T2DVector<int> >  m_env;
 public:
 	C2DReagiongrow(float low, float seed,const CDoubleVector& pv):
-		_M_low(low), 
-		_M_seed(seed), 
-		_M_pv(pv)
+		m_low(low), 
+		m_seed(seed), 
+		m_pv(pv)
 	{
-		_M_env.push_back(T2DVector<int>(-1,  0)); 
-		_M_env.push_back(T2DVector<int>( 1,  0)); 
-		_M_env.push_back(T2DVector<int>( 0, -1)); 
-		_M_env.push_back(T2DVector<int>( 0,  1)); 
+		m_env.push_back(T2DVector<int>(-1,  0)); 
+		m_env.push_back(T2DVector<int>( 1,  0)); 
+		m_env.push_back(T2DVector<int>( 0, -1)); 
+		m_env.push_back(T2DVector<int>( 0,  1)); 
 	}
 	
 	template <class Data2D>
@@ -65,7 +65,7 @@ public:
 
 
 class C2DReagiongrowImageFilter: public C2DImageFilterBase {
-	C2DReagiongrow _M_filter; 
+	C2DReagiongrow m_filter; 
 public:
 	C2DReagiongrowImageFilter(float low, float seed,const CDoubleVector& pv);
 
@@ -83,21 +83,21 @@ public:
 template <typename T, bool is_integral>
 struct FBinarizeRegionGrow {
 	FBinarizeRegionGrow(float thresh, const CDoubleVector& pv):
-		_M_thresh(thresh), 
-		_M_pv(pv)
+		m_thresh(thresh), 
+		m_pv(pv)
 	{
 	}
 	
 	bool operator() (T x) {
 		size_t xi = x; 
-		if (xi < _M_pv.size())
-			return _M_pv[xi] >= _M_thresh; 
+		if (xi < m_pv.size())
+			return m_pv[xi] >= m_thresh; 
 		else
 			return false; 
 	}
 private: 
-	float _M_thresh; 
-	const CDoubleVector& _M_pv; 
+	float m_thresh; 
+	const CDoubleVector& m_pv; 
 };
 
 template <typename T>
@@ -125,17 +125,17 @@ typename C2DReagiongrow::result_type C2DReagiongrow::operator () (const Data2D& 
 	
 	// find seed segmentation 
 	transform(data.begin(), data.end(), result->begin(), 
-		  FBinarizeRegionGrow<typename Data2D::value_type, is_integral>(_M_seed, _M_pv)); 
+		  FBinarizeRegionGrow<typename Data2D::value_type, is_integral>(m_seed, m_pv)); 
 	
 	// find maximum segmentation
 	transform(data.begin(), data.end(), low_thresh.begin(), 
-		  FBinarizeRegionGrow<typename Data2D::value_type, is_integral>(_M_low, _M_pv)); 
+		  FBinarizeRegionGrow<typename Data2D::value_type, is_integral>(m_low, m_pv)); 
 	
 	// grow the seed until it hits the low_thresh
 	
 	C2DBitImage::iterator r = result->begin(); 
 	
-	vector<T2DVector<int> >::const_iterator ke = _M_env.end(); 
+	vector<T2DVector<int> >::const_iterator ke = m_env.end(); 
 	
 	queue<C2DBounds> seed_points; 
 	
@@ -149,7 +149,7 @@ typename C2DReagiongrow::result_type C2DReagiongrow::operator () (const Data2D& 
 		C2DBounds p = seed_points.front(); 
 		seed_points.pop(); 
 		
-		vector<T2DVector<int> >::const_iterator kb = _M_env.begin(); 
+		vector<T2DVector<int> >::const_iterator kb = m_env.begin(); 
 		while (kb != ke) {
 			size_t ix = kb->x + p.x; 
 			if (ix < data.get_size().x) {
@@ -169,13 +169,13 @@ typename C2DReagiongrow::result_type C2DReagiongrow::operator () (const Data2D& 
 }
 
 C2DReagiongrowImageFilter::C2DReagiongrowImageFilter(float low, float seed,const CDoubleVector& pv):
-	_M_filter(low, seed, pv)
+	m_filter(low, seed, pv)
 {
 }
 
 P2DImage C2DReagiongrowImageFilter::do_filter(const C2DImage& image) const
 {
-	return wrap_filter(_M_filter,image); 
+	return wrap_filter(m_filter,image); 
 }
 
 C2DReagiongrowImageFilterFactory::C2DReagiongrowImageFilterFactory():

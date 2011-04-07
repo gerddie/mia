@@ -30,40 +30,40 @@ NS_MIA_USE;
 using namespace std;
 
 C2DFft::C2DFft(const PFFT2DKernel&  kernel):
-	_M_kernel(kernel)
+	m_kernel(kernel)
 {
 }
 
 template <typename T, bool is_integral>
 struct FBackConvert {
 	FBackConvert(float scale):
-		_M_scale(scale)
+		m_scale(scale)
 		{
-			cvdebug() << "scale = " << _M_scale <<"\n";
+			cvdebug() << "scale = " << m_scale <<"\n";
 		}
 
 	T operator ()(float x) {
-		return T(x *_M_scale);
+		return T(x *m_scale);
 	}
 private:
-	float _M_scale;
+	float m_scale;
 };
 
 template <typename T>
 struct FBackConvert<T, true> {
 	FBackConvert(float scale):
-		_M_scale(scale)
+		m_scale(scale)
 		{
-			cvdebug() << "scale = " << _M_scale <<"\n";
+			cvdebug() << "scale = " << m_scale <<"\n";
 		}
 
 	T operator ()(float x) {
-		float xc = x *_M_scale;
+		float xc = x *m_scale;
 		return xc < numeric_limits<T>::min() ? numeric_limits<T>::min() :
 			( xc < numeric_limits<T>::max() ?  T(xc) : numeric_limits<T>::max());
 	}
 private:
-	float _M_scale;
+	float m_scale;
 };
 
 
@@ -72,7 +72,7 @@ typename C2DFft::result_type C2DFft::operator () (const T2DImage<T>& image) cons
 {
 	cvdebug() << "C2DFFT::operator() begin\n";
 
-	float *buffer = _M_kernel->prepare(image.get_size());
+	float *buffer = m_kernel->prepare(image.get_size());
 	size_t realsize_x = image.get_size().x;
 
 	// fill buffer with image data
@@ -83,7 +83,7 @@ typename C2DFft::result_type C2DFft::operator () (const T2DImage<T>& image) cons
 		else
 			copy(image.begin_at(0,y), image.begin_at(0,y) + image.get_size().x, &buffer[y *  realsize_x]);
 
-	_M_kernel->apply();
+	m_kernel->apply();
 
 	T2DImage<T> *result = new T2DImage<T>(image.get_size());
 
@@ -112,12 +112,12 @@ P2DImage C2DFft::do_filter(const C2DImage& image) const
 C2DFilterPluginFactory::C2DFilterPluginFactory():
 	C2DFilterPlugin("fft")
 {
-	add_parameter("k", new CStringParameter(_M_kernel, true, "filter kernel"));
+	add_parameter("k", new CStringParameter(m_kernel, true, "filter kernel"));
 }
 
 C2DFilterPluginFactory::ProductPtr C2DFilterPluginFactory::do_create()const
 {
-	PFFT2DKernel k = CFFT2DKernelPluginHandler::instance().produce(_M_kernel.c_str());
+	PFFT2DKernel k = CFFT2DKernelPluginHandler::instance().produce(m_kernel.c_str());
 	return C2DFilterPluginFactory::ProductPtr(new C2DFft(k));
 }
 

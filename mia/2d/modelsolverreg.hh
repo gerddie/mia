@@ -46,7 +46,7 @@ class CModelSolverRegistration  {
 
  private:
 
-	auto_ptr<struct CModelSolverRegistrationImpl> _M_impl;
+	auto_ptr<struct CModelSolverRegistrationImpl> m_impl;
 };
 
 NS_MIA_END

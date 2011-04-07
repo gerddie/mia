@@ -85,12 +85,12 @@ private:
 	CParsedOptions::value_type split_pair_b(const std::string& s, char c)const;
 	CParsedOptions::value_type split_pair(const std::string& s, char c)const;
 
-	CParts _M_Parts;
+	CParts m_Parts;
 
-	static char _M_parts_seperator;
-	static char _M_part_options;
-	static char _M_option_seperator;
-	static char _M_assignment_seperator;
+	static char m_parts_seperator;
+	static char m_part_options;
+	static char m_option_seperator;
+	static char m_assignment_seperator;
 
 };
 

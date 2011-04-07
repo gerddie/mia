@@ -50,21 +50,21 @@ C2DFVector C2DAffineTransformation::apply(const C2DFVector& x) const
 C2DFVector C2DAffineTransformation::transform(const C2DFVector& x)const
 {
 	return C2DFVector(
-		_M_t[0] * x.x + _M_t[1] * x.y + _M_t[2],
-		_M_t[3] * x.x + _M_t[4] * x.y + _M_t[5]
+		m_t[0] * x.x + m_t[1] * x.y + m_t[2],
+		m_t[3] * x.x + m_t[4] * x.y + m_t[5]
 			  );
 }
 
 C2DAffineTransformation::C2DAffineTransformation(const C2DBounds& size):
-	_M_t(6,0.0f),
-	_M_size(size)
+	m_t(6,0.0f),
+	m_size(size)
 {
-	_M_t[0] = _M_t[4] = 1.0;
+	m_t[0] = m_t[4] = 1.0;
 }
 
 C2DAffineTransformation::C2DAffineTransformation(const C2DAffineTransformation& other):
-	_M_t(other._M_t),
-	_M_size(other._M_size)
+	m_t(other.m_t),
+	m_size(other.m_size)
 {
 }
 
@@ -75,7 +75,7 @@ C2DTransformation *C2DAffineTransformation::do_clone()const
 
 C2DTransformation *C2DAffineTransformation::invert()const
 {
-	const double det = _M_t[0] * _M_t[4] - _M_t[1] * _M_t[3]; 
+	const double det = m_t[0] * m_t[4] - m_t[1] * m_t[3]; 
 	if (fabs(det) < 1e-6) 
 		THROW(invalid_argument, "C2DAffineTransformation::invert(): Matrix is singular"); 
 	
@@ -83,13 +83,13 @@ C2DTransformation *C2DAffineTransformation::invert()const
 
 	C2DAffineTransformation *result = new C2DAffineTransformation(*this);
 	
-	result->_M_t[0] = _M_t[4] * inv_det; 
-	result->_M_t[1] = - _M_t[1] * inv_det; 
-	result->_M_t[2] = (_M_t[1] * _M_t[5] - _M_t[2] * _M_t[4])* inv_det; 
+	result->m_t[0] = m_t[4] * inv_det; 
+	result->m_t[1] = - m_t[1] * inv_det; 
+	result->m_t[2] = (m_t[1] * m_t[5] - m_t[2] * m_t[4])* inv_det; 
 
-	result->_M_t[3] = - _M_t[3] * inv_det; 
-	result->_M_t[4] = _M_t[0] * inv_det; 
-	result->_M_t[5] = (_M_t[2] * _M_t[3] - _M_t[0] * _M_t[5])* inv_det; 
+	result->m_t[3] = - m_t[3] * inv_det; 
+	result->m_t[4] = m_t[0] * inv_det; 
+	result->m_t[5] = (m_t[2] * m_t[3] - m_t[0] * m_t[5])* inv_det; 
 		
 	return result; 
 }
@@ -97,8 +97,8 @@ C2DTransformation *C2DAffineTransformation::invert()const
 
 C2DAffineTransformation::C2DAffineTransformation(const C2DBounds& size,
 						 std::vector<double> transform):
-	_M_t(transform),
-	_M_size(size)
+	m_t(transform),
+	m_size(size)
 {
 }
 
@@ -108,7 +108,7 @@ bool C2DAffineTransformation::save(const std::string& filename, const std::strin
 	file << "Transformation: 2D\n"
 	     << "Matrix: ";
 	for (size_t i = 0; i < 6 ; ++i)
-		file << _M_t[i] << " ";
+		file << m_t[i] << " ";
 	file << "\n";
 	return file.good();
 }
@@ -127,18 +127,18 @@ void C2DAffineTransformation::scale(float x, float y)
 {
 	const double expx = exp(x);
 	const double expy = exp(y);
-	_M_t[0] *= expx;
-	_M_t[1] *= expx;
-	_M_t[2] *= expx;
-	_M_t[3] *= expy;
-	_M_t[4] *= expy;
-	_M_t[5] *= expy;
+	m_t[0] *= expx;
+	m_t[1] *= expx;
+	m_t[2] *= expx;
+	m_t[3] *= expy;
+	m_t[4] *= expy;
+	m_t[5] *= expy;
 }
 
 void C2DAffineTransformation::translate(float x, float y)
 {
-	_M_t[2] +=  x;
-	_M_t[5] +=  y;
+	m_t[2] +=  x;
+	m_t[5] +=  y;
 }
 
 void C2DAffineTransformation::rotate(float angle)
@@ -146,19 +146,19 @@ void C2DAffineTransformation::rotate(float angle)
 	const double sina = sin(angle);
 	const double cosa = cos(angle);
 
-	const double tx      = cosa * _M_t[2] - sina * _M_t[5];
-	_M_t[5] = sina * _M_t[2] + cosa * _M_t[5];
-	_M_t[2] = tx;
+	const double tx      = cosa * m_t[2] - sina * m_t[5];
+	m_t[5] = sina * m_t[2] + cosa * m_t[5];
+	m_t[2] = tx;
 
-	const double a = _M_t[0] * cosa - sina * _M_t[3];
-	const double b = _M_t[1] * cosa - sina * _M_t[4];
-	const double c = _M_t[0] * sina + cosa * _M_t[3];
-	const double d = _M_t[1] * sina + cosa * _M_t[4];
+	const double a = m_t[0] * cosa - sina * m_t[3];
+	const double b = m_t[1] * cosa - sina * m_t[4];
+	const double c = m_t[0] * sina + cosa * m_t[3];
+	const double d = m_t[1] * sina + cosa * m_t[4];
 
-	_M_t[0] = a;
-	_M_t[1] = b;
-	_M_t[3] = c;
-	_M_t[4] = d;
+	m_t[0] = a;
+	m_t[1] = b;
+	m_t[3] = c;
+	m_t[4] = d;
 
 }
 
@@ -171,14 +171,14 @@ void C2DAffineTransformation::shear(float /*v*/)
 CDoubleVector C2DAffineTransformation::get_parameters() const
 {
 	CDoubleVector result(degrees_of_freedom());
-	copy(_M_t.begin(), _M_t.end(), result.begin());
+	copy(m_t.begin(), m_t.end(), result.begin());
 	return result;
 }
 
 void C2DAffineTransformation::set_parameters(const CDoubleVector& params)
 {
 	assert(degrees_of_freedom() == params.size());
-	copy(params.begin(), params.end(), _M_t.begin());
+	copy(params.begin(), params.end(), m_t.begin());
 
 }
 
@@ -195,7 +195,7 @@ double C2DAffineTransformation::get_divcurl_cost(double, double) const
 
 float C2DAffineTransformation::divergence() const
 {
-	return _M_t[0] + _M_t[1] + _M_t[3] + _M_t[4] - 2.0f;
+	return m_t[0] + m_t[1] + m_t[3] + m_t[4] - 2.0f;
 }
 
 float C2DAffineTransformation::grad_divergence() const
@@ -212,12 +212,12 @@ float C2DAffineTransformation::grad_curl() const
 
 float C2DAffineTransformation::curl() const
 {
-	return _M_t[1] + _M_t[4] - _M_t[0] - _M_t[3];
+	return m_t[1] + m_t[4] - m_t[0] - m_t[3];
 }
 
 const C2DBounds& C2DAffineTransformation::get_size() const
 {
-	return _M_size;
+	return m_size;
 }
 
 P2DTransformation C2DAffineTransformation::do_upscale(const C2DBounds& size) const
@@ -226,24 +226,24 @@ P2DTransformation C2DAffineTransformation::do_upscale(const C2DBounds& size) con
 	float y_mult = float(size.y) / (float)get_size().y;
 
 	C2DAffineTransformation *result = new C2DAffineTransformation(*this);
-	result->_M_size = size;
-	result->_M_t[3] *= x_mult;
-	result->_M_t[5] *= y_mult;
+	result->m_size = size;
+	result->m_t[3] *= x_mult;
+	result->m_t[5] *= y_mult;
 
 	return P2DTransformation(result);
 }
 
 C2DFMatrix C2DAffineTransformation::derivative_at(int /*x*/, int /*y*/) const
 {
-	return C2DFMatrix(C2DFVector(_M_t[0], _M_t[1]),
-			  C2DFVector(_M_t[3], _M_t[4]));
+	return C2DFMatrix(C2DFVector(m_t[0], m_t[1]),
+			  C2DFVector(m_t[3], m_t[4]));
 }
 
 void C2DAffineTransformation::set_identity()
 {
 	cvdebug() << "set identity\n";
-	fill(_M_t.begin(), _M_t.end(), 0.0);
-	_M_t[0] = _M_t[4] = 1.0;
+	fill(m_t.begin(), m_t.end(), 0.0);
+	m_t[0] = m_t[4] = 1.0;
 }
 
 float C2DAffineTransformation::get_max_transform() const
@@ -270,17 +270,17 @@ void C2DAffineTransformation::add(const C2DTransformation& other)
 	// *this  = other * *this
 	const C2DAffineTransformation& a = dynamic_cast<const C2DAffineTransformation&>(other);
 
-	vector<double> h(_M_t.size());
+	vector<double> h(m_t.size());
 
-	h[0] = a._M_t[0] * _M_t[0] + a._M_t[1] * _M_t[3];
-	h[1] = a._M_t[0] * _M_t[1] + a._M_t[1] * _M_t[4];
-	h[2] = a._M_t[0] * _M_t[2] + a._M_t[1] * _M_t[5] + a._M_t[2];
+	h[0] = a.m_t[0] * m_t[0] + a.m_t[1] * m_t[3];
+	h[1] = a.m_t[0] * m_t[1] + a.m_t[1] * m_t[4];
+	h[2] = a.m_t[0] * m_t[2] + a.m_t[1] * m_t[5] + a.m_t[2];
 
-	h[3] = a._M_t[3] * _M_t[0] + a._M_t[4] * _M_t[3];
-	h[4] = a._M_t[3] * _M_t[1] + a._M_t[4] * _M_t[4];
-	h[5] = a._M_t[3] * _M_t[2] + a._M_t[4] * _M_t[5] + a._M_t[5];
+	h[3] = a.m_t[3] * m_t[0] + a.m_t[4] * m_t[3];
+	h[4] = a.m_t[3] * m_t[1] + a.m_t[4] * m_t[4];
+	h[5] = a.m_t[3] * m_t[2] + a.m_t[4] * m_t[5] + a.m_t[5];
 
-	copy(h.begin(), h.end(), _M_t.begin());
+	copy(h.begin(), h.end(), m_t.begin());
 }
 
 
@@ -296,14 +296,14 @@ float C2DAffineTransformation::get_jacobian(const C2DFVectorfield& /*v*/, float 
 
 void C2DAffineTransformation::translate(const C2DFVectorfield& gradient, CDoubleVector& params) const
 {
-	assert(gradient.get_size() == _M_size);
+	assert(gradient.get_size() == m_size);
 	assert(params.size() == degrees_of_freedom());
 
 	vector<double> r(params.size(), 0.0);
 
 	auto g = gradient.begin();
-	for (size_t y = 0; y < _M_size.y; ++y) {
-		for (size_t x = 0; x < _M_size.x; ++x, ++g) {
+	for (size_t y = 0; y < m_size.y; ++y) {
+		for (size_t x = 0; x < m_size.x; ++x, ++g) {
 			r[0] += x * g->x;
 			r[1] += y * g->x;
 			r[2] += g->x;
@@ -320,31 +320,31 @@ void C2DAffineTransformation::translate(const C2DFVectorfield& gradient, CDouble
 C2DAffineTransformation::iterator_impl::iterator_impl(const C2DBounds& pos, const C2DBounds& size, 
 						      const C2DAffineTransformation& trans):
 	C2DTransformation::iterator_impl(pos, size),
-	_M_trans(trans), 
-	_M_value(trans.apply(C2DFVector(pos)))
+	m_trans(trans), 
+	m_value(trans.apply(C2DFVector(pos)))
 {
-	_M_dx = _M_trans.apply(C2DFVector(pos.x + 1.0, pos.y)) - _M_value;
+	m_dx = m_trans.apply(C2DFVector(pos.x + 1.0, pos.y)) - m_value;
 }
 
 C2DTransformation::iterator_impl * C2DAffineTransformation::iterator_impl::clone() const
 {
-	return new iterator_impl(get_pos(), get_size(), _M_trans); 
+	return new iterator_impl(get_pos(), get_size(), m_trans); 
 }
 
 const C2DFVector&  C2DAffineTransformation::iterator_impl::do_get_value()const
 {
-	return _M_value; 
+	return m_value; 
 }
 
 void C2DAffineTransformation::iterator_impl::do_x_increment()
 {
-	_M_value += _M_dx; 
+	m_value += m_dx; 
 }
 
 void C2DAffineTransformation::iterator_impl::do_y_increment()
 {
-	_M_value = _M_trans.apply(C2DFVector(get_pos())); 
-	_M_dx = _M_trans.apply(C2DFVector(get_pos().x + 1.0, get_pos().y)) - _M_value;
+	m_value = m_trans.apply(C2DFVector(get_pos())); 
+	m_dx = m_trans.apply(C2DFVector(get_pos().x + 1.0, get_pos().y)) - m_value;
 }
 
 

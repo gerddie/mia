@@ -39,7 +39,7 @@ namespace bfs=boost::filesystem;
 
 
 CLabel::CLabel(P2DShape& mask):
-	_M_mask(mask)
+	m_mask(mask)
 {
 }
 
@@ -54,7 +54,7 @@ void CLabel::grow_region(const C2DBounds& loc, const C2DBitImage& input, C2DUSIm
 		C2DBounds  l = neighbors.front();
 
 		neighbors.pop();
-		for (C2DShape::const_iterator s = _M_mask->begin(); s != _M_mask->end(); ++s) {
+		for (C2DShape::const_iterator s = m_mask->begin(); s != m_mask->end(); ++s) {
 			C2DBounds  pos(l.x + s->x, l.y + s->y);
 			if (pos.x < size.x && pos.y < size.y  && input(pos) && result(pos) == 0) {
 				result(pos) = label;
@@ -114,21 +114,21 @@ private:
 	virtual void prepare_path() const;
 
 
-	string _M_mask_descr;
+	string m_mask_descr;
 
 };
 
 
 C2DLabelFilterPlugin::C2DLabelFilterPlugin():
 	C2DFilterPlugin("label"),
-	_M_mask_descr("4n")
+	m_mask_descr("4n")
 {
-	add_parameter("n", new CStringParameter(_M_mask_descr, false, "neighborhood mask")) ;
+	add_parameter("n", new CStringParameter(m_mask_descr, false, "neighborhood mask")) ;
 }
 
 C2DFilterPlugin::ProductPtr C2DLabelFilterPlugin::do_create()const
 {
-	P2DShape mask = C2DShapePluginHandler::instance().produce(_M_mask_descr.c_str());
+	P2DShape mask = C2DShapePluginHandler::instance().produce(m_mask_descr.c_str());
 	if (!mask)
 		return C2DFilterPlugin::ProductPtr();
 	return C2DFilterPlugin::ProductPtr(new CLabel(mask));

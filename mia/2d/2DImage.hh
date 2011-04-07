@@ -88,8 +88,8 @@ public:
          C2DImage();
 
  private:
-	C2DBounds _M_size;
-	EPixelType _M_pixel_type;
+	C2DBounds m_size;
+	EPixelType m_pixel_type;
 };
 
 /// Shared pointer representation of the 2D Image
@@ -130,51 +130,51 @@ public:
 	virtual C2DImage* clone() const;
 	
 	const_reference operator()(size_t  x, size_t  y) const {
-		return _M_image(x,y);
+		return m_image(x,y);
 	}
 	
 	reference operator()(size_t  x, size_t  y){
-		return _M_image(x,y);
+		return m_image(x,y);
 	}
 	
 	const_reference operator[](size_t  idx) const {
-		return _M_image[idx];
+		return m_image[idx];
 	}
 	
 	reference operator[](size_t  idx){
-		return _M_image[idx];
+		return m_image[idx];
 	}
 	
 	const_reference operator()(const C2DBounds& l) const{
-		return _M_image(l.x,l.y);
+		return m_image(l.x,l.y);
 	}
 	
 	reference operator()(const C2DBounds& l){
-		return _M_image(l.x,l.y);
+		return m_image(l.x,l.y);
 	}
 
 	const_iterator begin()const {
-		return _M_image.begin();
+		return m_image.begin();
 	}
 
 	const_iterator end()const {
-		return _M_image.end();
+		return m_image.end();
 	}
 
 	iterator begin() {
-		return _M_image.begin();
+		return m_image.begin();
 	}
 
 	iterator end() {
-		return _M_image.end();
+		return m_image.end();
 	}
 
 	const_iterator begin_at(size_t x, size_t y)const {
-		return _M_image.begin_at(x,  y);
+		return m_image.begin_at(x,  y);
 	}
 
 	iterator begin_at(size_t x, size_t y) {
-		return _M_image.begin_at(x,  y);
+		return m_image.begin_at(x,  y);
 	}
 
 	size_t size() const;
@@ -194,7 +194,7 @@ public:
 	
 	C2DFVector get_gradient(const C2DFVector& p) const;
 private:
-	T2DDatafield<T> _M_image;
+	T2DDatafield<T> m_image;
 };
 
 

@@ -78,8 +78,8 @@ typedef map<PAttribute, CImageInstances, attr_less> CImageSeries;
 typedef map<PAttribute, CImageSeries, attr_less> CAquisitions;
 
 struct C3DImageCreator: public TFilter<bool> {
-	C3DImageCreator(size_t nz): _M_nz(nz),
-				    _M_delta_z(0.0) {
+	C3DImageCreator(size_t nz): m_nz(nz),
+				    m_delta_z(0.0) {
 	};
 
 	template <typename T>
@@ -87,52 +87,52 @@ struct C3DImageCreator: public TFilter<bool> {
 
 	P3DImage get_image() const;
 private:
-	P3DImage _M_result;
-	size_t _M_nz;
-	size_t _M_z;
-	float _M_slice_pos;
-	float _M_delta_z;
-	C2DBounds _M_size2d;
-	C2DFVector _M_pixel_size;
+	P3DImage m_result;
+	size_t m_nz;
+	size_t m_z;
+	float m_slice_pos;
+	float m_delta_z;
+	C2DBounds m_size2d;
+	C2DFVector m_pixel_size;
 };
 
 template <typename T>
 bool C3DImageCreator::operator() ( const T2DImage<T>& image)
 {
 	T3DImage<T> *target = NULL;
-	if (!_M_result) {
-		_M_size2d = image.get_size();
-		target = new T3DImage<T>(C3DBounds(_M_size2d.x, _M_size2d.y, _M_nz), image);
-		_M_result.reset(target);
-		_M_z = 0;
-		_M_pixel_size = image.get_pixel_size();
-		_M_slice_pos = image.get_attribute_as<float>(IDSliceLocation);
-		_M_result->delete_attribute("pixel");
+	if (!m_result) {
+		m_size2d = image.get_size();
+		target = new T3DImage<T>(C3DBounds(m_size2d.x, m_size2d.y, m_nz), image);
+		m_result.reset(target);
+		m_z = 0;
+		m_pixel_size = image.get_pixel_size();
+		m_slice_pos = image.get_attribute_as<float>(IDSliceLocation);
+		m_result->delete_attribute("pixel");
 	}else {
-		target = dynamic_cast<T3DImage<T> *>(_M_result.get());
+		target = dynamic_cast<T3DImage<T> *>(m_result.get());
 		if (!target) {
 			THROW(invalid_argument, "Series input images have different pixel type");
 		}
-		if (_M_size2d != image.get_size()) {
+		if (m_size2d != image.get_size()) {
 			THROW(invalid_argument, "Series input images have different slice size");
 		}
 		float new_slice_pos = image.get_attribute_as<float>(IDSliceLocation);
-		_M_delta_z = new_slice_pos - _M_slice_pos;
-		_M_slice_pos = new_slice_pos;
+		m_delta_z = new_slice_pos - m_slice_pos;
+		m_slice_pos = new_slice_pos;
 	}
-	assert(_M_z < _M_nz);
-	target->put_data_plane_xy(_M_z, image);
-	++_M_z;
+	assert(m_z < m_nz);
+	target->put_data_plane_xy(m_z, image);
+	++m_z;
 	return true;
 }
 
 P3DImage C3DImageCreator::get_image() const
 {
-	_M_result->set_voxel_size(C3DFVector(_M_pixel_size.x, _M_pixel_size.y, _M_delta_z));
-	_M_result->delete_attribute(IDSliceLocation);
-	_M_result->delete_attribute(IDInstanceNumber);
+	m_result->set_voxel_size(C3DFVector(m_pixel_size.x, m_pixel_size.y, m_delta_z));
+	m_result->delete_attribute(IDSliceLocation);
+	m_result->delete_attribute(IDInstanceNumber);
 
-	return _M_result;
+	return m_result;
 }
 
 static P3DImage get_3dimage(CImageInstances& slices)
@@ -247,49 +247,49 @@ struct CSliceSaver: public TFilter<bool>
 
 	void set_instance(size_t series, size_t slice);
 
-	string _M_fnamebase;
-	string _M_extension;
-	size_t _M_series;
-	size_t _M_slice;
-	mutable float _M_location;
+	string m_fnamebase;
+	string m_extension;
+	size_t m_series;
+	size_t m_slice;
+	mutable float m_location;
 };
 
 CSliceSaver::CSliceSaver(const string& fname):
-	_M_location(0)
+	m_location(0)
 {
 	// filename split the
 	bfs::path fullname(fname);
-	_M_extension = __bfs_get_extension(fullname);
-	_M_fnamebase = __bfs_get_stem(fullname);
+	m_extension = __bfs_get_extension(fullname);
+	m_fnamebase = __bfs_get_stem(fullname);
 }
 
 void CSliceSaver::set_instance(size_t series, size_t slice)
 {
-	_M_series = series;
-	_M_slice = slice;
+	m_series = series;
+	m_slice = slice;
 }
 
 template <typename T>
 bool CSliceSaver::operator () ( const T3DImage<T>& image) const
 {
-	assert(_M_slice < image.get_size().z);
+	assert(m_slice < image.get_size().z);
 	stringstream fname;
-	fname << _M_fnamebase << setw(4) << setfill('0') << _M_series + 1 << "_" <<
-		setw(4) << setfill('0') << _M_slice + 1 << _M_extension;
+	fname << m_fnamebase << setw(4) << setfill('0') << m_series + 1 << "_" <<
+		setw(4) << setfill('0') << m_slice + 1 << m_extension;
 
 	C3DFVector voxel = image.get_voxel_size();
 	C2DFVector pixel(voxel.x, voxel.y);
 
 
-	T2DImage<T> slice = image.get_data_plane_xy(_M_slice);
+	T2DImage<T> slice = image.get_data_plane_xy(m_slice);
 	slice.set_pixel_size(pixel);
 
-	slice.set_attribute(IDInstanceNumber, PAttribute(new CIntAttribute(_M_slice + 1)));
-	slice.set_attribute(IDSliceLocation,  PAttribute(new CFloatAttribute(_M_location)));
-	_M_location += voxel.z;
+	slice.set_attribute(IDInstanceNumber, PAttribute(new CIntAttribute(m_slice + 1)));
+	slice.set_attribute(IDSliceLocation,  PAttribute(new CFloatAttribute(m_location)));
+	m_location += voxel.z;
 
 	if (!slice.has_attribute(IDSeriesNumber))
-		slice.set_attribute(IDSeriesNumber, PAttribute(new CIntAttribute(_M_series + 1)));
+		slice.set_attribute(IDSeriesNumber, PAttribute(new CIntAttribute(m_series + 1)));
 
 	CDicomWriter weiter(slice);
 	return weiter.write(fname.str().c_str());

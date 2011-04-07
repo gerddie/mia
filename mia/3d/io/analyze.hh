@@ -49,8 +49,8 @@ private:
 	mia::C3DImage *read_image(const mia::C3DBounds& size, short datatype, mia::CInputFile& data_file)const;
 
 	bool save_data(const std::string& fname, const Data& data, analyze_image_dimension& dime) const;
-	const mia::TDictMap<mia::EPixelType> _M_type_table;
-	mutable bool _M_swap_endian;
+	const mia::TDictMap<mia::EPixelType> m_type_table;
+	mutable bool m_swap_endian;
 };
 
 NS_END

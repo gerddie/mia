@@ -110,8 +110,8 @@ public:
 	*/
 	template <class T>
 	vstream& operator << (const T&  text) {
-		if (_M_message_level >= _M_output_level)
-			*_M_output << text;
+		if (m_message_level >= m_output_level)
+			*m_output << text;
 		return *this;
 	}
 
@@ -133,16 +133,16 @@ public:
 	   Transparent conversion operator to an std::ostream. 
 	 */
 	operator std::ostream& () {
-		return *_M_output;
+		return *m_output;
 	}
 
 private:
 	vstream(std::ostream& output, Level l);
 
-	static std::ostream* _M_output_target;
-	std::ostream* _M_output;
-	Level _M_output_level;
-	Level _M_message_level;
+	static std::ostream* m_output_target;
+	std::ostream* m_output;
+	Level m_output_level;
+	Level m_message_level;
 
 };
 
@@ -161,7 +161,7 @@ void set_verbose(bool verbose);
 
 inline bool vstream::shows(Level l)const
 {
-	return l >= _M_output_level;
+	return l >= m_output_level;
 }
 
 
@@ -197,22 +197,22 @@ inline vstream& cvdebug()
 class EXPORT_CORE CTrace {
 public:
 	CTrace(const char *domain):
-		_M_domain(domain),
-		_M_fill(_M_depth, ' ')  {
+		m_domain(domain),
+		m_fill(m_depth, ' ')  {
 		vstream::instance() << vstream::ml_trace
-				    << _M_fill << "enter " << _M_domain  << "\n";
-		++_M_depth;
+				    << m_fill << "enter " << m_domain  << "\n";
+		++m_depth;
 	};
 	~CTrace() {
 		vstream::instance() << vstream::ml_trace
-				    << _M_fill << "leave " << _M_domain  << "\n";
-		--_M_depth;
+				    << m_fill << "leave " << m_domain  << "\n";
+		--m_depth;
 	}
 private:
-	const char *_M_domain;
-	std::string _M_fill;
+	const char *m_domain;
+	std::string m_fill;
 	// should be thread local, or at least protected by a mutex
-	static size_t _M_depth;
+	static size_t m_depth;
 };
 
 /// a macro to trace scopes in a debug built
@@ -239,12 +239,12 @@ inline bool vstream::show_debug() const
 /// \returns the curent verbosity level
 inline vstream::Level vstream::get_level() const
 {
-	return _M_output_level;
+	return m_output_level;
 }
 
 inline void vstream::flush()
 {
-	_M_output->flush();
+	m_output->flush();
 }
 
 // some inlines

@@ -37,13 +37,13 @@ public:
 private:
 	template <typename T>
  	P2DImage do_create(const C2DBounds& size) const;
-	float _M_f;
-	double _M_p;
+	float m_f;
+	double m_p;
 };
 
 C2DCircleCreator::C2DCircleCreator(float f, float p):
-	_M_f(f),
-	_M_p(p)
+	m_f(f),
+	m_p(p)
 {
 }
 
@@ -93,8 +93,8 @@ P2DImage C2DCircleCreator::do_create(const C2DBounds& size) const
 
 	T2DVector<double> center(size.x / 2.0, size.y / 2.0);
 	T2DVector<double> rmax = center / 2.0;
-	rmax.x = pow(rmax.x, _M_p);
-	rmax.y = pow(rmax.y, _M_p);
+	rmax.x = pow(rmax.x, m_p);
+	rmax.y = pow(rmax.y, m_p);
 
 	double l = rmax.x + rmax.y;
 
@@ -102,13 +102,13 @@ P2DImage C2DCircleCreator::do_create(const C2DBounds& size) const
 
 	for (size_t y = 0; y < size.y; ++y) {
 		double dy = center.y - y;
-		dy  = pow(dy, _M_p);
+		dy  = pow(dy, m_p);
 		for (size_t x = 0; x < size.x; ++x, ++p) {
 			double dx = center.x - x;
-			dx = pow(dx, _M_p);
+			dx = pow(dx, m_p);
 
 			dx += dy;
-			*p =  (dx > l) ? 0 : *p = move_range<T,is_float>::apply(cos( dx / l * _M_f * M_PI ));
+			*p =  (dx > l) ? 0 : *p = move_range<T,is_float>::apply(cos( dx / l * m_f * M_PI ));
 		}
 	}
 	return  P2DImage(result);
@@ -122,22 +122,22 @@ private:
 	virtual C2DImageCreatorPlugin::ProductPtr do_create()const;
 	virtual const string do_get_descr()const;
 	virtual bool do_test() const;
-	float _M_f;
-	float _M_p;
+	float m_f;
+	float m_p;
 };
 
 C2DCircleCreatorPlugin::C2DCircleCreatorPlugin():
 	C2DImageCreatorPlugin("circle"),
-	_M_f(2.0),
-	_M_p(2.0)
+	m_f(2.0),
+	m_p(2.0)
 {
-	add_parameter("f", new CFloatParameter(_M_f, 0, 10, false, "spherical change frequency"));
-	add_parameter("p", new CFloatParameter(_M_p, 0.1, 100, false, "spherical shape parameter (2.0 = circle)"));
+	add_parameter("f", new CFloatParameter(m_f, 0, 10, false, "spherical change frequency"));
+	add_parameter("p", new CFloatParameter(m_p, 0.1, 100, false, "spherical shape parameter (2.0 = circle)"));
 }
 
 C2DImageCreatorPlugin::ProductPtr C2DCircleCreatorPlugin::do_create()const
 {
-	return C2DImageCreatorPlugin::ProductPtr(new C2DCircleCreator(_M_f, _M_p));
+	return C2DImageCreatorPlugin::ProductPtr(new C2DCircleCreator(m_f, m_p));
 }
 
 const string C2DCircleCreatorPlugin::do_get_descr()const

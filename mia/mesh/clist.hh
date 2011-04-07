@@ -57,32 +57,32 @@ public:
 	typedef const node *const_iterator; 
 
 	
-	clist(): _M_head(NULL){
+	clist(): m_head(NULL){
 		
 	}
 	~clist() {
-		if (_M_head != NULL) {
-			node *head = _M_head;
+		if (m_head != NULL) {
+			node *head = m_head;
 			while (head != head->succ) 
 				remove(head->succ);
-			delete _M_head; 
+			delete m_head; 
 		}
 	}
 	
 	iterator begin() {
-		return _M_head; 
+		return m_head; 
 	}
 	
 	iterator end() {
-		return _M_head;
+		return m_head;
 	}
 
 	const_iterator begin() const {
-		return _M_head; 
+		return m_head; 
 	}
 	
 	const_iterator end() const  {
-		return _M_head;
+		return m_head;
 	}
 
 	
@@ -90,33 +90,33 @@ public:
 		if (n->prev != n) {
 			n->succ->prev = n->prev; 
 			n->prev->succ = n->succ; 
-			if (n == _M_head) {
-				_M_head = n->prev; 
+			if (n == m_head) {
+				m_head = n->prev; 
 			}
 			delete n;
 		}else { // only head left
-			assert(n == _M_head);
+			assert(n == m_head);
 			delete n; 
-			_M_head = NULL; 
+			m_head = NULL; 
 		}
 	}
 	void push_back(T val)
 	{
-		if (_M_head) {
-			node *nn = new node(val, _M_head, _M_head->succ);
+		if (m_head) {
+			node *nn = new node(val, m_head, m_head->succ);
 			nn->prev->succ = nn; 
 			nn->succ->prev = nn; 
 		}else {
-			assert (_M_head == NULL);
-			_M_head = new node(val,NULL,NULL);
-			_M_head->prev = _M_head->succ = _M_head;  
+			assert (m_head == NULL);
+			m_head = new node(val,NULL,NULL);
+			m_head->prev = m_head->succ = m_head;  
 		}
 	}
 	int size() {
 		int s = 0; 
-		if (_M_head) {
-			node *n = _M_head; 
-			while (n->succ != _M_head) {
+		if (m_head) {
+			node *n = m_head; 
+			while (n->succ != m_head) {
 				n = n->succ; 
 				++s; 
 			}
@@ -124,7 +124,7 @@ public:
 		return s; 
 	}
 private:
-	node *_M_head;
+	node *m_head;
 };
 
 NS_MIA_END

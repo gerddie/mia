@@ -48,11 +48,11 @@ public:
 	size_t index(T x) const; 
 	T value(size_t k) const; 
 private: 
-	T _M_min;  
-	T _M_max; 
-	size_t _M_bins; 
-	double _M_step; 
-	double _M_inv_step; 
+	T m_min;  
+	T m_max; 
+	size_t m_bins; 
+	double m_step; 
+	double m_inv_step; 
 };
 
 template <>
@@ -103,43 +103,43 @@ public:
 	double average(double cut_percentage) const; 
 
 private: 
-	Feeder _M_feeder; 
-	std::vector<size_t> _M_histogram; 
-	size_t _M_n; 
+	Feeder m_feeder; 
+	std::vector<size_t> m_histogram; 
+	size_t m_n; 
 }; 
 
 // inline inplementation 
 template <typename T> 
 CHistogramFeeder<T>::CHistogramFeeder(T min, T max, size_t bins):
-	_M_min(min), 
-	_M_max(max), 
-	_M_bins(bins), 
-	_M_step(( double(max) - double(min) ) / double(bins - 1)), 
-	_M_inv_step(double(bins - 1) / (double(max) - double(min)))
+	m_min(min), 
+	m_max(max), 
+	m_bins(bins), 
+	m_step(( double(max) - double(min) ) / double(bins - 1)), 
+	m_inv_step(double(bins - 1) / (double(max) - double(min)))
 {
 }
 
 template <typename T> 
 size_t CHistogramFeeder<T>::size() const
 {
-	return _M_bins; 
+	return m_bins; 
 }
 
 template <typename T> 
 inline size_t CHistogramFeeder<T>::index(T x) const
 {
-	double val = floor(_M_inv_step * (x - _M_min) + 0.5); 
+	double val = floor(m_inv_step * (x - m_min) + 0.5); 
 	if (val < 0) 
 		return 0; 
-	if (val < _M_bins) 
+	if (val < m_bins) 
 		return val; 
-	return _M_bins - 1; 
+	return m_bins - 1; 
 }
 
 template <typename T> 
 T CHistogramFeeder<T>::value(size_t k) const
 {
-	return k * _M_step + _M_min; 
+	return k * m_step + m_min; 
 }
 
 inline CHistogramFeeder<unsigned char>::CHistogramFeeder(unsigned char /*min*/, unsigned char /*max*/, size_t /*bins*/)
@@ -165,24 +165,24 @@ unsigned char CHistogramFeeder<unsigned char>::value(size_t k) const
 
 template <typename Feeder>
 CHistogram<Feeder>::CHistogram(Feeder f):
-	_M_feeder(f), 
-	_M_histogram(f.size()), 
-	_M_n(0)
+	m_feeder(f), 
+	m_histogram(f.size()), 
+	m_n(0)
 {
 }
 
 template <typename Feeder>
 CHistogram<Feeder>::CHistogram(const CHistogram<Feeder>& org, double perc):
-	_M_feeder(org._M_feeder), 
-	_M_histogram(_M_feeder.size()), 
-	_M_n(0)
+	m_feeder(org.m_feeder), 
+	m_histogram(m_feeder.size()), 
+	m_n(0)
 {
-	size_t n = (size_t)(org._M_n * (1.0 - perc)); 
+	size_t n = (size_t)(org.m_n * (1.0 - perc)); 
 		
 	size_t i = 0;
-	while (n > _M_n && i < _M_histogram.size()) {
-		_M_n += org._M_histogram[i]; 
-		_M_histogram[i] = org._M_histogram[i]; 
+	while (n > m_n && i < m_histogram.size()) {
+		m_n += org.m_histogram[i]; 
+		m_histogram[i] = org.m_histogram[i]; 
 		++i; 
 	}
 }
@@ -191,14 +191,14 @@ CHistogram<Feeder>::CHistogram(const CHistogram<Feeder>& org, double perc):
 template <typename Feeder> 
 size_t CHistogram<Feeder>::size() const 
 {
-	return _M_histogram.size(); 
+	return m_histogram.size(); 
 }
 
 template <typename Feeder> 
 void CHistogram<Feeder>::push(typename Feeder::value_type x)
 {
-	++_M_n; 
-	++_M_histogram[_M_feeder.index(x)];
+	++m_n; 
+	++m_histogram[m_feeder.index(x)];
 }
 
 template <typename Feeder> 
@@ -214,39 +214,39 @@ void CHistogram<Feeder>::push_range(Iterator begin, Iterator end)
 template <typename Feeder> 
 void CHistogram<Feeder>::push(typename Feeder::value_type x, size_t count)
 {
-	_M_n += count; 
-	_M_histogram[_M_feeder.index(x)] += count;
+	m_n += count; 
+	m_histogram[m_feeder.index(x)] += count;
 }
 
 template <typename Feeder> 
 typename CHistogram<Feeder>::const_iterator CHistogram<Feeder>::begin() const
 {
-	return _M_histogram.begin(); 
+	return m_histogram.begin(); 
 }
 	
 template <typename Feeder> 
 typename CHistogram<Feeder>::const_iterator CHistogram<Feeder>::end() const
 {
-	return _M_histogram.end(); 
+	return m_histogram.end(); 
 }
 
 template <typename Feeder> 
 size_t CHistogram<Feeder>::operator [] (size_t idx) const
 {
-	assert(idx < _M_histogram.size()); 
-	return _M_histogram[idx]; 
+	assert(idx < m_histogram.size()); 
+	return m_histogram[idx]; 
 }
 
 template <typename Feeder> 
 typename Feeder::value_type CHistogram<Feeder>::median() const
 {
-	float n_2 = _M_n / 2.0f;
+	float n_2 = m_n / 2.0f;
 	float sum = 0; 
 	size_t k = 0; 
 	while ( sum < n_2 ) 
-		sum +=  _M_histogram[k++]; 
+		sum +=  m_histogram[k++]; 
 
-	return _M_feeder.value(k-1); 
+	return m_feeder.value(k-1); 
 }
 
 template <typename Feeder> 
@@ -255,12 +255,12 @@ typename Feeder::value_type CHistogram<Feeder>::MAD() const
 	typedef typename Feeder::value_type T; 
 	T m = median(); 
 	
-	CHistogram<Feeder> help(_M_feeder); 
+	CHistogram<Feeder> help(m_feeder); 
 	
 	; 
 	for (size_t k = 0; k < size(); ++k) {
-		T v = _M_feeder.value(k); 
-		help.push(v > m ? v - m : m -v, _M_histogram[k]); 
+		T v = m_feeder.value(k); 
+		help.push(v > m ? v - m : m -v, m_histogram[k]); 
 	}
 	return help.median(); 
 }
@@ -269,29 +269,29 @@ typename Feeder::value_type CHistogram<Feeder>::MAD() const
 template <typename Feeder> 
 const typename CHistogram<Feeder>::value_type CHistogram<Feeder>::at(size_t idx) const
 {
-	if (idx < _M_histogram.size())
-		return value_type(_M_feeder.value(idx), _M_histogram[idx]); 
+	if (idx < m_histogram.size())
+		return value_type(m_feeder.value(idx), m_histogram[idx]); 
 	else 
-		return value_type(_M_feeder.value(idx), 0); 
+		return value_type(m_feeder.value(idx), 0); 
 }
 
 template <typename Feeder> 
 double CHistogram<Feeder>::average() const
 {
-	if (_M_n < 1) 
+	if (m_n < 1) 
 		return 0.0;
 	double sum = 0.0;
 	for (size_t i = 0; i < size(); ++i) {
 		const typename CHistogram<Feeder>::value_type value = at(i); 
 		sum += value.first * value.second;
 	}
-	return sum / _M_n; 
+	return sum / m_n; 
 }
 
 template <typename Feeder> 
 double CHistogram<Feeder>::deviation() const
 {
-	if (_M_n < 2) 
+	if (m_n < 2) 
 		return 0.0;
 	double sum  = 0.0;
 	double sum2 = 0.0;
@@ -300,7 +300,7 @@ double CHistogram<Feeder>::deviation() const
 		sum  += value.first * value.second;
 		sum2 += value.first * value.first * value.second;
 	}
-	return sqrt((sum2 - sum * sum / _M_n) / (_M_n - 1)); 
+	return sqrt((sum2 - sum * sum / m_n) / (m_n - 1)); 
 }
 
 

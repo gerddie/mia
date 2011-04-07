@@ -26,10 +26,10 @@ NS_MIA_BEGIN
 
 template <class Image>
 TConvert<Image>::TConvert(EPixelType pt, EPixelConversion ct, float a, float b):
-	_M_pt(pt), 
-	_M_ct(ct), 
-	_M_a(a), 
-	_M_b(b)
+	m_pt(pt), 
+	m_ct(ct), 
+	m_a(a), 
+	m_b(b)
 {
 }
 
@@ -74,13 +74,13 @@ struct __dispatch_min<T, true> {
 template <typename  T, typename  S>
 struct  FPixelConverter {
 
-	FPixelConverter(long double a, long double mx, long double my):_M_a(a), _M_mx(mx), _M_my(my)
+	FPixelConverter(long double a, long double mx, long double my):m_a(a), m_mx(mx), m_my(my)
 	{
 	}
 	
 	T operator() (const S x)
 	{
-		long double y = _M_a * (x - _M_mx) + _M_my; 
+		long double y = m_a * (x - m_mx) + m_my; 
 		y = __dispatch_min<T, boost::is_floating_point<T>::value>::apply(y); 
 		if (y > std::numeric_limits<T>::max())
 			return std::numeric_limits<T>::max(); 
@@ -88,7 +88,7 @@ struct  FPixelConverter {
 	}
 
 private:
-	long double _M_a, _M_mx, _M_my; 
+	long double m_a, m_mx, m_my; 
 }; 
 
 
@@ -103,7 +103,7 @@ typename TConvert<Image>::result_type TConvert<Image>::convert(const Data<S>& sr
 
 	
 	
-	switch (_M_ct) {
+	switch (m_ct) {
 	case pc_copy:
 		a = 1.0; 
 		mx = 0.0; 
@@ -153,9 +153,9 @@ typename TConvert<Image>::result_type TConvert<Image>::convert(const Data<S>& sr
 		break; 
 	}
 	default: 
-		a = _M_a; 
+		a = m_a; 
 		mx = 0.0f; 
-		my = _M_b; 
+		my = m_b; 
 	}
 	cvdebug() << "a=" << a << ", mx=" << mx << ", my= "<< my << '\n'; 
 	FPixelConverter<T,S> cv(a, mx, my);
@@ -171,7 +171,7 @@ typename TConvert<Image>::result_type TConvert<Image>::operator () (const Data<T
 {
 	TRACE("TConvert<Image>::operator ()"); 
 	
-	switch (_M_pt) {
+	switch (m_pt) {
 	case it_bit:   return convert<Data, T, bool>(data); 
 	case it_sbyte: return convert<Data, T, signed char>(data); 
 	case it_ubyte: return convert<Data, T, unsigned char>(data); 
@@ -202,32 +202,32 @@ typename TConvert<Image>::result_type TConvert<Image>::do_filter(const Image& im
 template <class Image>
 TConvertFilterPlugin<Image>::TConvertFilterPlugin():
 	TImageFilterPlugin<Image>("convert"), 
-	_M_pixeltype("ubyte"), 
-	_M_convert("opt"),  
-	_M_a(1.0), 
-	_M_b(0.0)
+	m_pixeltype("ubyte"), 
+	m_convert("opt"),  
+	m_a(1.0), 
+	m_b(0.0)
 {
-	this->add_parameter("a", new CFloatParameter(_M_a, -std::numeric_limits<float>::max(), 
+	this->add_parameter("a", new CFloatParameter(m_a, -std::numeric_limits<float>::max(), 
 					       std::numeric_limits<float>::max(), false, 
 					       "linear conversion parameter a")); 
-	this->add_parameter("b", new CFloatParameter(_M_b, -std::numeric_limits<float>::max(), 
+	this->add_parameter("b", new CFloatParameter(m_b, -std::numeric_limits<float>::max(), 
 					       std::numeric_limits<float>::max(), false, 
 					       "linear conversion parameter b")); 
-	this->add_parameter("repn",new CStringParameter(_M_pixeltype, false, "output pixel type")); 
-	this->add_parameter("map", new CStringParameter(_M_convert, false, "conversion mapping"));
+	this->add_parameter("repn",new CStringParameter(m_pixeltype, false, "output pixel type")); 
+	this->add_parameter("map", new CStringParameter(m_convert, false, "conversion mapping"));
 
 }
 
 template <class Image>
 typename TImageFilterPlugin<Image>::ProductPtr TConvertFilterPlugin<Image>::do_create()const
 {
-	EPixelType pt = CPixelTypeDict.get_value(_M_pixeltype.c_str());
-	EPixelConversion ct = CPixelConversionDict.get_value(_M_convert.c_str()); 
+	EPixelType pt = CPixelTypeDict.get_value(m_pixeltype.c_str());
+	EPixelConversion ct = CPixelConversionDict.get_value(m_convert.c_str()); 
 
 	if (pt == it_bit)
 		throw invalid_argument("TConvert: for conversion to bit images you better use the 'binarize' filter"); 
 
-	return typename TImageFilterPlugin<Image>::ProductPtr(new TConvert<Image>(pt,ct,_M_a,_M_b));
+	return typename TImageFilterPlugin<Image>::ProductPtr(new TConvert<Image>(pt,ct,m_a,m_b));
 }
 
 template <class Image>

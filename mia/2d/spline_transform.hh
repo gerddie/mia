@@ -57,7 +57,7 @@ private:
 
 	C2DFVectorfield do_translate(const C2DFVectorfield& gradient) const; 
 
-	Interpolator _M_interpolator; 
+	Interpolator m_interpolator; 
 	
 };
 

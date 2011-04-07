@@ -54,14 +54,14 @@ private:
 	void re_label(C2DBitImage& input);
 	void grow( int x, int y, C2DBitImage& input, unsigned short l); 
 
-	mia::P2DShape _M_neigbourhood; 
-	mutable int   _M_last_label;
-	std::set<T2DVector<unsigned short> > _M_joints; 
-	std::string   _M_map_file;
-	bool _M_first_pass; 
+	mia::P2DShape m_neigbourhood; 
+	mutable int   m_last_label;
+	std::set<T2DVector<unsigned short> > m_joints; 
+	std::string   m_map_file;
+	bool m_first_pass; 
 
-	mia::C2DBounds _M_slice_size; 
-	mia::C3DUSImage _M_out_buffer;
+	mia::C2DBounds m_slice_size; 
+	mia::C3DUSImage m_out_buffer;
 	
 	
 

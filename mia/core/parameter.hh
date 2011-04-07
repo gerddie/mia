@@ -89,9 +89,9 @@ private:
 	*/
 	virtual bool do_set(const std::string& str_value) = 0;
 
-	bool _M_required;
-	const char *_M_type;
-	const char *_M_descr;
+	bool m_required;
+	const char *m_type;
+	const char *m_descr;
 };
 
 
@@ -118,7 +118,7 @@ protected:
 private:
 	virtual bool do_set(const std::string& str_value);
 	virtual void adjust(T& value);
-	T& _M_value;
+	T& m_value;
 };
 
 /**
@@ -145,8 +145,8 @@ protected:
 	void do_descr(std::ostream& os) const;
 private:
 	virtual void adjust(T& value);
-	T _M_min;
-	T _M_max;
+	T m_min;
+	T m_max;
 
 };
 
@@ -168,8 +168,8 @@ protected:
 	virtual void do_descr(std::ostream& os) const;
 private:
 	virtual bool do_set(const std::string& str_value);
-	T& _M_value;
-	const TDictMap<T> _M_dict;
+	T& m_value;
+	const TDictMap<T> m_dict;
 
 };
 
@@ -191,8 +191,8 @@ protected:
 	virtual void do_descr(std::ostream& os) const;
 private:
 	virtual bool do_set(const std::string& str_value);
-	T& _M_value;
-	const std::set<T> _M_valid_set;
+	T& m_value;
+	const std::set<T> m_valid_set;
 
 };
 
@@ -215,7 +215,7 @@ protected:
 	virtual void do_descr(std::ostream& os) const;
 private:
 	virtual bool do_set(const std::string& str_value);
-	T& _M_value;
+	T& m_value;
 };
 
 
@@ -242,15 +242,15 @@ typedef CTParameter<bool, type_str_bool> CBoolParameter;
 template <typename T>
 CDictParameter<T>::CDictParameter(T& value, const TDictMap<T> dict, const char *descr):
 	CParameter("dict", false, descr),
-	_M_value(value),
-	_M_dict(dict)
+	m_value(value),
+	m_dict(dict)
 {
 }
 
 template <typename T>
 void CDictParameter<T>::do_descr(std::ostream& os) const
 {
-	const std::set<std::string> names = _M_dict.get_name_set();
+	const std::set<std::string> names = m_dict.get_name_set();
 	os << '(';
 
 	std::set<std::string>::const_iterator i = names.begin();
@@ -269,25 +269,25 @@ void CDictParameter<T>::do_descr(std::ostream& os) const
 template <typename T>
 bool CDictParameter<T>::do_set(const std::string& str_value)
 {
-	_M_value = _M_dict.get_value(str_value.c_str());
+	m_value = m_dict.get_value(str_value.c_str());
 	return true;
 }
 
 template <typename T>
 CSetParameter<T>::CSetParameter(T& value, const std::set<T>& valid_set, const char *descr):
 	CParameter("set", false, descr),
-	_M_value(value),
-	_M_valid_set(valid_set)
+	m_value(value),
+	m_valid_set(valid_set)
 {
-	if (_M_valid_set.empty())
+	if (m_valid_set.empty())
 		throw std::invalid_argument("CSetParameter initialized with empty set");
 }
 
 template <typename T>
 void CSetParameter<T>::do_descr(std::ostream& os) const
 {
-	typename std::set<T>::const_iterator i = _M_valid_set.begin();
-	typename std::set<T>::const_iterator e = _M_valid_set.end();
+	typename std::set<T>::const_iterator i = m_valid_set.begin();
+	typename std::set<T>::const_iterator e = m_valid_set.end();
 
 	assert ( i != e );
 
@@ -305,17 +305,17 @@ bool CSetParameter<T>::do_set(const std::string& str_value)
 	std::stringstream s(str_value);
 	T val;
 	s >> val;
-	if (s.fail() ||  _M_valid_set.find(val) == _M_valid_set.end()) {
+	if (s.fail() ||  m_valid_set.find(val) == m_valid_set.end()) {
 		throw std::invalid_argument(errmsg(str_value));
 	}
-	_M_value = val;
+	m_value = val;
 	return true;
 }
 
 template <typename T>
 TParameter<T>::TParameter(T& value, bool required, const char *descr):
 	CParameter("streamable",  required, descr),
-	_M_value(value)
+	m_value(value)
 {
 }
 
@@ -324,14 +324,14 @@ TParameter<T>::TParameter(T& value, bool required, const char *descr):
 template <typename T>
 void TParameter<T>::do_descr(std::ostream& os) const
 {
-	os << _M_value;
+	os << m_value;
 }
 
 template <typename T>
 bool TParameter<T>::do_set(const std::string& str_value)
 {
 	std::stringstream s(str_value);
-	s >> _M_value;
+	s >> m_value;
 	if (s.fail())
 		throw std::invalid_argument(errmsg(str_value));
 	return true;

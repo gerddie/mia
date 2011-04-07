@@ -90,18 +90,18 @@ P3DImage C3DMedianFilter::operator () (const T3DImage<T>& data) const
 
 	typename T3DImage<T>::iterator i = result->begin();
 
-	vector<T> target_vector((2 * _M_width + 1) * (2 * _M_width + 1) * (2 * _M_width + 1));
+	vector<T> target_vector((2 * m_width + 1) * (2 * m_width + 1) * (2 * m_width + 1));
 
 	for (size_t z = 0; z < data.get_size().z; ++z)
 		for (size_t y = 0; y < data.get_size().y; ++y)
 			for (size_t x = 0; x < data.get_size().x; ++x, ++i)
-				*i = __dispatch_median_3dfilter<T>::apply(data, x, y, z, _M_width, target_vector);
+				*i = __dispatch_median_3dfilter<T>::apply(data, x, y, z, m_width, target_vector);
 
 	return P3DImage(result);
 }
 
 C3DMedianFilter::C3DMedianFilter(int hwidth):
-	_M_width(hwidth)
+	m_width(hwidth)
 {
 }
 
@@ -117,9 +117,9 @@ bool  C3DMedianFilterFactory::do_test() const
 
 C3DMedianFilterFactory::C3DMedianFilterFactory():
 	C3DFilterPlugin("median"),
-	_M_hw(1)
+	m_hw(1)
 {
-	add_parameter("w", new CIntParameter(_M_hw, 0, numeric_limits<int>::max(), false, "filter width parameter"));
+	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(), false, "filter width parameter"));
 }
 
 const string  C3DMedianFilterFactory::do_get_descr() const
@@ -129,14 +129,14 @@ const string  C3DMedianFilterFactory::do_get_descr() const
 
 C3DFilterPlugin::ProductPtr C3DMedianFilterFactory::do_create() const
 {
-	return C3DFilterPlugin::ProductPtr(new C3DMedianFilter(_M_hw));
+	return C3DFilterPlugin::ProductPtr(new C3DMedianFilter(m_hw));
 }
 
 
 
 C3DSaltAndPepperFilter::C3DSaltAndPepperFilter(int hwidth, float thresh):
-	_M_width(hwidth),
-	_M_thresh(thresh)
+	m_width(hwidth),
+	m_thresh(thresh)
 {
 }
 
@@ -148,14 +148,14 @@ P3DImage C3DSaltAndPepperFilter::operator () (const T3DImage<T>& data) const
 
 	typename T3DImage<T>::iterator i = result->begin();
 
-	vector<T> target_vector((2 * _M_width + 1) * (2 * _M_width + 1) * (2 * _M_width + 1));
+	vector<T> target_vector((2 * m_width + 1) * (2 * m_width + 1) * (2 * m_width + 1));
 
 	for (size_t z = 0; z < data.get_size().z; ++z)
 		for (size_t y = 0; y < data.get_size().y; ++y)
 			for (size_t x = 0; x < data.get_size().x; ++x, ++i, ++inp) {
-				T res = __dispatch_median_3dfilter<T>::apply(data, x, y, z, _M_width, target_vector);
+				T res = __dispatch_median_3dfilter<T>::apply(data, x, y, z, m_width, target_vector);
 				float delta = ::fabs((double)(res - *inp));
-				if (delta > _M_thresh)
+				if (delta > m_thresh)
 					*i = res;
 			}
 	return P3DImage(result);
@@ -170,16 +170,16 @@ P3DImage C3DSaltAndPepperFilter::do_filter(const C3DImage& image) const
 
 C3DSaltAndPepperFilterFactory::C3DSaltAndPepperFilterFactory():
 	C3DFilterPlugin("sandp"),
-	_M_hw(1),
-	_M_thresh(100)
+	m_hw(1),
+	m_thresh(100)
 {
-	add_parameter("w", new CIntParameter(_M_hw, 0, numeric_limits<int>::max(), false, "filter width parameter"));
-	add_parameter("thresh", new CFloatParameter(_M_thresh, 0, numeric_limits<float>::max(), false, "thresh value"));
+	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(), false, "filter width parameter"));
+	add_parameter("thresh", new CFloatParameter(m_thresh, 0, numeric_limits<float>::max(), false, "thresh value"));
 }
 
 C3DFilterPlugin::ProductPtr C3DSaltAndPepperFilterFactory::do_create()const
 {
-	return C3DFilterPlugin::ProductPtr(new C3DSaltAndPepperFilter(_M_hw, _M_thresh));
+	return C3DFilterPlugin::ProductPtr(new C3DSaltAndPepperFilter(m_hw, m_thresh));
 }
 const string  C3DSaltAndPepperFilterFactory::do_get_descr() const
 {

@@ -52,18 +52,18 @@ static const CFloatOption param_steep("p", "decision parameter whether fuzzy seg
 static const C2DUBImage::value_type undefined = numeric_limits<C2DUBImage::value_type>::max(); 
 
 class C2DWatershedFilter: public C2DFilter {
-	int _M_width; 
-	float _M_thresh; 
-	float _M_tol; 
-	float _M_steep; 
-	CProbabilityVector _M_pv;
+	int m_width; 
+	float m_thresh; 
+	float m_tol; 
+	float m_steep; 
+	CProbabilityVector m_pv;
 public:
 	C2DWatershedFilter(int hwidth, float thresh, float steep, float tol, const CProbabilityVector& pv):
-		_M_width(hwidth), 
-		_M_thresh(thresh), 
-		_M_tol(tol), 
-		_M_steep(steep),
-		_M_pv(pv)
+		m_width(hwidth), 
+		m_thresh(thresh), 
+		m_tol(tol), 
+		m_steep(steep),
+		m_pv(pv)
 	{
 	}
 	
@@ -77,7 +77,7 @@ private:
 
 
 class C2DWatershedFilterImageFilter: public C2DImageFilterBase {
-	C2DWatershedFilter _M_filter; 
+	C2DWatershedFilter m_filter; 
 public:
 	C2DWatershedFilterImageFilter(int hwidth, float thresh, float steep, float tol, const CProbabilityVector& pv);
 
@@ -110,8 +110,8 @@ C2DFImage C2DWatershedFilter::get_var_image(const Data2D& data, float &max_val) 
 			float sum = 0.0f; 
 			float sum2 = 0.0f; 
 			
-			for (int iy = max(0, y - _M_width); iy < min (y + _M_width, (int)data.get_size().y); ++iy)
-				for (int ix = max(0, x - _M_width); ix < min (x + _M_width, (int)data.get_size().x); ++ix) {
+			for (int iy = max(0, y - m_width); iy < min (y + m_width, (int)data.get_size().y); ++iy)
+				for (int ix = max(0, x - m_width); ix < min (x + m_width, (int)data.get_size().x); ++ix) {
 					float val = data(ix,iy); 
 					++n; 
 					sum += val; 
@@ -299,17 +299,17 @@ typename C2DWatershedFilter::result_type C2DWatershedFilter::operator () (const 
 	float max_val = 0.0f; 
 	C2DFImage var_image = get_var_image(data, max_val); 
 	
-	return dispatch_filter<typename Data2D::value_type, is_integral>::apply(data, _M_pv, _M_steep, _M_thresh, _M_tol, var_image); 
+	return dispatch_filter<typename Data2D::value_type, is_integral>::apply(data, m_pv, m_steep, m_thresh, m_tol, var_image); 
 }
 
 C2DWatershedFilterImageFilter::C2DWatershedFilterImageFilter(int hwidth, float thresh, float steep, float tol, const CProbabilityVector& pv):
-	_M_filter(hwidth, thresh, steep, tol, pv)
+	m_filter(hwidth, thresh, steep, tol, pv)
 {
 }
 
 P2DImage C2DWatershedFilterImageFilter::do_filter(const C2DImage& image) const
 {
-	return wrap_filter(_M_filter,image); 
+	return wrap_filter(m_filter,image); 
 }
 
 C2DWatershedFilterImageFilterFactory::C2DWatershedFilterImageFilterFactory():

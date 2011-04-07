@@ -137,11 +137,11 @@ protected:
 private:
 	void fill_index(int i, std::vector<int>& index) const; 
 
-	size_t _M_half_degree;
-	double _M_shift;
-	std::vector<double> _M_poles;
-	size_t _M_support_size;
-	EInterpolation _M_type; 
+	size_t m_half_degree;
+	double m_shift;
+	std::vector<double> m_poles;
+	size_t m_support_size;
+	EInterpolation m_type; 
 };
 
 typedef std::shared_ptr<CBSplineKernel> PSplineKernel;
@@ -162,7 +162,7 @@ struct coeff_map {
 
 inline size_t CBSplineKernel::size()const
 {
-	return _M_support_size;
+	return m_support_size;
 }
 
 /** implements a B-Spline kernel of degree 2 */
@@ -252,15 +252,15 @@ inline bool mirror_boundary_conditions(std::vector<int>& index, int width,
 template <typename A>
 struct FMultBy {
 	FMultBy(double f):
-		_M_f(f)
+		m_f(f)
 	{
 	}
 	void operator()(A& value)
 	{
-		value *= _M_f; 
+		value *= m_f; 
 	}
 private: 
-	double _M_f; 
+	double m_f; 
 };
 
 
@@ -273,28 +273,28 @@ void CBSplineKernel::filter_line(std::vector<C>& coeff)
 	}
 	/* compute the overall gain */
 	double	lambda = 1.0;
-	for (size_t k = 0; k < _M_poles.size() ; ++k) {
-		lambda  *=  2 - _M_poles[k] - 1.0 / _M_poles[k];
+	for (size_t k = 0; k < m_poles.size() ; ++k) {
+		lambda  *=  2 - m_poles[k] - 1.0 / m_poles[k];
 	}
 	
 	/* apply the gain */
 	for_each(coeff.begin(), coeff.end(), FMultBy<C>(lambda));
 	
 	/* loop over all poles */
-	for (size_t k = 0; k < _M_poles.size(); ++k) {
+	for (size_t k = 0; k < m_poles.size(); ++k) {
 		/* causal initialization */
-		coeff[0] = initial_coeff(coeff, _M_poles[k]);
+		coeff[0] = initial_coeff(coeff, m_poles[k]);
 		
 		/* causal recursion */
 		for (size_t n = 1; n < coeff.size(); ++n) {
-			coeff[n] += _M_poles[k] * coeff[n - 1];
+			coeff[n] += m_poles[k] * coeff[n - 1];
 		}
 		
 		/* anticausal initialization */
-		coeff[coeff.size() - 1] = initial_anti_coeff(coeff, _M_poles[k]);
+		coeff[coeff.size() - 1] = initial_anti_coeff(coeff, m_poles[k]);
 		/* anticausal recursion */
 		for (int n = coeff.size() - 2; 0 <= n; n--) {
-			coeff[n] = _M_poles[k] * (coeff[n + 1] - coeff[n]);
+			coeff[n] = m_poles[k] * (coeff[n + 1] - coeff[n]);
 		}
 	}
 }

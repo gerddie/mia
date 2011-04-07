@@ -29,13 +29,13 @@ NS_BEGIN(label_3dimage_filter)
 
 class CLabel: public mia::C3DFilter {
 public:
-	CLabel(mia::P3DShape& _M_mask);
+	CLabel(mia::P3DShape& m_mask);
 
 private:
 	void grow_region(const mia::C3DBounds& loc, const mia::C3DBitImage& input,
 			 mia::C3DUSImage& result, unsigned short label)const;
 	CLabel::result_type do_filter(const mia::C3DImage& image) const;
-	mia::P3DShape _M_mask;
+	mia::P3DShape m_mask;
 };
 
 class C3DLabelFilterPlugin: public mia::C3DFilterPlugin {
@@ -46,7 +46,7 @@ private:
 	virtual const std::string do_get_descr()const;
 
 	virtual bool do_test() const;
-	std::string _M_mask_descr;
+	std::string m_mask_descr;
 };
 
 NS_END

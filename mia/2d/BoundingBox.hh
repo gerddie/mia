@@ -53,9 +53,9 @@ public:
 	bool empty() const;
 
 private:
-	bool _M_empty;
-	C2DFVector _M_begin;
-	C2DFVector _M_end;
+	bool m_empty;
+	C2DFVector m_begin;
+	C2DFVector m_end;
 };
 
 NS_MIA_END

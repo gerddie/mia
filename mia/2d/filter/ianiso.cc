@@ -66,13 +66,13 @@ private:
 	float diffuse(C2DSLImage& data, float sigma, float gamma, const vector<C2DSLImage>& buffer)const; 
 
 
-	int _M_maxiter; 
-	float _M_epsilon; 
+	int m_maxiter; 
+	float m_epsilon; 
 };
 
 
 class CAnisoDiff2DImageFilter: public C2DImageFilterBase {
-	C2DAnisoDiff _M_filter; 
+	C2DAnisoDiff m_filter; 
 public:
 	CAnisoDiff2DImageFilter(int maxiter, float epsilon);
 
@@ -80,8 +80,8 @@ public:
 };
 
 C2DAnisoDiff::C2DAnisoDiff(int maxiter, float epsilon):
-	_M_maxiter(maxiter),
-	_M_epsilon(epsilon)
+	m_maxiter(maxiter),
+	m_epsilon(epsilon)
 {
 }
 
@@ -257,7 +257,7 @@ void C2DAnisoDiff::work(C2DSLImage& work_copy)const
 		cvmsg() <<" delta " << delta << "       " << endline; 
 		
 		
-	} while (delta > _M_epsilon && iter < _M_maxiter); 
+	} while (delta > m_epsilon && iter < m_maxiter); 
 	cvmsg() << '\n'; 
 	
 }
@@ -297,13 +297,13 @@ typename C2DAnisoDiff::result_type C2DAnisoDiff::operator () (Data2D& image) con
 }
 
 CAnisoDiff2DImageFilter::CAnisoDiff2DImageFilter(int maxiter, float epsilon):
-	_M_filter(maxiter, epsilon)
+	m_filter(maxiter, epsilon)
 {
 }
 
 void CAnisoDiff2DImageFilter::do_filter(P2DImage& image) const
 {
-	wrap_filter(_M_filter, image); 
+	wrap_filter(m_filter, image); 
 }
 
 CAnisoDiff2DImageFilterFactory::CAnisoDiff2DImageFilterFactory():

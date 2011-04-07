@@ -45,8 +45,8 @@ const char *g_description =
 class CHistAccumulator : public TFilter<bool> {
 public:
 	CHistAccumulator(float min, float max, size_t bins, float thresh):
-		_M_histo(CHistogramFeeder<float>(min, max, bins)),
-		_M_thresh(thresh)
+		m_histo(CHistogramFeeder<float>(min, max, bins)),
+		m_thresh(thresh)
 	{
 	}
 
@@ -54,19 +54,19 @@ public:
 	bool operator () (const T2DImage<T>& image) {
 		for (typename T2DImage<T>::const_iterator i = image.begin();
 		     i != image.end(); ++i)
-			if (*i > _M_thresh)
-				_M_histo.push(*i);
+			if (*i > m_thresh)
+				m_histo.push(*i);
 		return true;
 	}
 
 	void print_stats()const
 	{
-		print_stats(_M_histo);
+		print_stats(m_histo);
 	}
 
 	void print_stats(double thresh_high)const
 	{
-		CHistogram<CHistogramFeeder<float > > tmp(_M_histo, thresh_high);
+		CHistogram<CHistogramFeeder<float > > tmp(m_histo, thresh_high);
 		print_stats(tmp);
 	}
 private:
@@ -76,8 +76,8 @@ private:
 		       << tmp.median() << " " << tmp.MAD() << '\n';
 	}
 
-	CHistogram<CHistogramFeeder<float > > _M_histo;
-	float _M_thresh;
+	CHistogram<CHistogramFeeder<float > > m_histo;
+	float m_thresh;
 };
 
 

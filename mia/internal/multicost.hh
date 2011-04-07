@@ -45,7 +45,7 @@ private:
 	double do_value() const; 
 	virtual void do_set_size(); 
 	virtual void do_reinit(); 
-	std::vector<typename TFullCost<Transform>::Pointer> _M_costs; 
+	std::vector<typename TFullCost<Transform>::Pointer> m_costs; 
 }; 
 
 NS_MIA_END

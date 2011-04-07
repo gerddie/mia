@@ -54,24 +54,24 @@ private:
 	void shift_buffer();
 	virtual void post_finalize();
 
-	mia::C2DBounds _M_slice_size;
+	mia::C2DBounds m_slice_size;
 
-	std::vector<mia::C2DFImage> _M_mu_buffer;
-	std::vector<mia::C2DFImage> _M_sigma_buffer;
-	std::vector<mia::C2DFImage> _M_n;
+	std::vector<mia::C2DFImage> m_mu_buffer;
+	std::vector<mia::C2DFImage> m_sigma_buffer;
+	std::vector<mia::C2DFImage> m_n;
 
-	std::vector<float> _M_buf1;
-	std::vector<float> _M_buf2;
-	std::auto_ptr<mia::C3DImage> _M_prototype;
+	std::vector<float> m_buf1;
+	std::vector<float> m_buf2;
+	std::auto_ptr<mia::C3DImage> m_prototype;
 
-	mia::C2DFImage _M_n_template;
+	mia::C2DFImage m_n_template;
 
-	size_t _M_hw;
-	size_t _M_w;
-	size_t _M_read_start;
-	size_t _M_start_slice;
-	size_t _M_end_slice;
-	size_t _M_buf_slice_size;
+	size_t m_hw;
+	size_t m_w;
+	size_t m_read_start;
+	size_t m_start_slice;
+	size_t m_end_slice;
+	size_t m_buf_slice_size;
 };
 
 NS_END

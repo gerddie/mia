@@ -42,8 +42,8 @@ public:
 private:
 	CScale::result_type do_filter(const mia::C2DImage& image) const;
 
-	const mia::C2DBounds _M_size;
-	std::auto_ptr<mia::C2DInterpolatorFactory> _M_ipf;
+	const mia::C2DBounds m_size;
+	std::auto_ptr<mia::C2DInterpolatorFactory> m_ipf;
 };
 
 
@@ -54,9 +54,9 @@ public:
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-	mutable int _M_sx;
-	mutable int _M_sy;
-	std::string _M_interp;
+	mutable int m_sx;
+	mutable int m_sy;
+	std::string m_interp;
 };
 
 NS_END

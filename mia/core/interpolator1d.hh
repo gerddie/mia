@@ -95,10 +95,10 @@ public:
 	T1DDirectInterpolator(const std::vector<T>& data);
 protected:
 	const std::vector<T>& data()const {
-		return _M_data;
+		return m_data;
 	}
 private:
-	const std::vector<T>& _M_data;
+	const std::vector<T>& m_data;
 };
 
 /**
@@ -125,9 +125,9 @@ public:
 	T operator () (const double& x) const;
 	virtual typename coeff_map<T>::coeff_type derivative_at (const double& x) const;
 private:
-	size_t _M_xy;
-	double _M_size;
-	double _M_sizeb;
+	size_t m_xy;
+	double m_size;
+	double m_sizeb;
 };
 
 /** Base type for interpolators that work with some kind of convolution  */
@@ -146,15 +146,15 @@ protected:
 	typedef std::vector< typename TCoeff1D::value_type > coeff_vector;
 private:
 
-	TCoeff1D _M_coeff;
-	size_t _M_size2;
-	PSplineKernel _M_kernel;
-	T _M_min;
-	T _M_max;
+	TCoeff1D m_coeff;
+	size_t m_size2;
+	PSplineKernel m_kernel;
+	T m_min;
+	T m_max;
 
 	// not thread save!!!
-	mutable std::vector<int> _M_x_index;
-	mutable std::vector<double> _M_x_weight;
+	mutable std::vector<int> m_x_index;
+	mutable std::vector<double> m_x_weight;
 };
 
 
@@ -179,8 +179,8 @@ public:
 	PSplineKernel get_kernel() const;
 
 private:
-	EType _M_type;
-	PSplineKernel _M_kernel;
+	EType m_type;
+	PSplineKernel m_kernel;
 };
 typedef std::shared_ptr<const C1DInterpolatorFactory > P1DInterpolatorFactory;
 
@@ -194,10 +194,10 @@ C1DInterpolatorFactory EXPORT_CORE  *create_1dinterpolation_factory(EInterpolati
 template <class T>
 T1DInterpolator<T> *C1DInterpolatorFactory::create(const std::vector<T>& src) const
 {
-	switch (_M_type) {
+	switch (m_type) {
 	case ipt_nn:  return new T1DNNInterpolator<T>(src);
 	case ipt_linear: return new T1DLinearInterpolator<T>(src);
-	case ipt_spline: return new T1DConvoluteInterpolator<T>(src, _M_kernel);
+	case ipt_spline: return new T1DConvoluteInterpolator<T>(src, m_kernel);
 	default: throw "CInterpolatorFactory::create: Unknown interpolator requested";
 	}
 	return NULL;

@@ -35,11 +35,11 @@ using namespace std;
 
 template <typename T> 
 TFifoFilter<T>::TFifoFilter(size_t filter_width, size_t min_fill, size_t read_start):
-	_M_buf_size(filter_width + read_start),
-	_M_min_fill(min_fill + read_start), 
-	_M_read_start(read_start), 
-	_M_fill(0), 
-	_M_initialized(false)
+	m_buf_size(filter_width + read_start),
+	m_min_fill(min_fill + read_start), 
+	m_read_start(read_start), 
+	m_fill(0), 
+	m_initialized(false)
 {
 }
 
@@ -48,50 +48,50 @@ void TFifoFilter<T>::push(typename ::boost::call_traits<T>::param_type x)
 {
 	TRACE("TFifoFilter<T>::push"); 
 
-	if (!_M_initialized) {
+	if (!m_initialized) {
 		do_initialize(x); 
-		_M_initialized = true; 
+		m_initialized = true; 
 	} else {
 		shift_buffer();
 	}
 		
 	do_push(x);
-	++_M_fill; 
+	++m_fill; 
 
-	if (_M_fill > _M_read_start)  
-		evaluate(_M_read_start); 
+	if (m_fill > m_read_start)  
+		evaluate(m_read_start); 
 
 
-	if (_M_fill >= _M_min_fill) {
-		_M_start_slice = _M_read_start; 
-		_M_end_slice = _M_fill; 
+	if (m_fill >= m_min_fill) {
+		m_start_slice = m_read_start; 
+		m_end_slice = m_fill; 
 
 		T help = do_filter(); 
-		if (_M_chain) 
-			_M_chain->push(help); 
+		if (m_chain) 
+			m_chain->push(help); 
 	}
 	
-	if (_M_fill < _M_buf_size) {
+	if (m_fill < m_buf_size) {
 		return; 
 	}
-	--_M_fill; 
+	--m_fill; 
 }
 template <typename T> 
 size_t TFifoFilter<T>::get_buffer_size() const
 {
-	return _M_buf_size; 
+	return m_buf_size; 
 }
 
 template <typename T> 
 size_t TFifoFilter<T>::get_start() const
 {
-	return _M_start_slice; 
+	return m_start_slice; 
 }
 
 template <typename T> 
 size_t TFifoFilter<T>::get_end() const
 {
-	return _M_end_slice; 
+	return m_end_slice; 
 }
 
 
@@ -109,48 +109,48 @@ T TFifoFilter<T>::do_filter()
 template <typename T> 
 size_t TFifoFilter<T>::get_pos() const
 {
-	return _M_fill; 
+	return m_fill; 
 }
 
 template <typename T> 
 void TFifoFilter<T>::finalize()
 {
 	TRACE("TFifoFilter<T>::finalize()"); 
-	size_t overfill = _M_read_start; 
+	size_t overfill = m_read_start; 
 
 	while (overfill-- > 0) {
 		shift_buffer(); 
-		evaluate(_M_read_start); 
-		_M_start_slice = _M_read_start; 
-		_M_end_slice = _M_buf_size; 
+		evaluate(m_read_start); 
+		m_start_slice = m_read_start; 
+		m_end_slice = m_buf_size; 
 		T help = do_filter(); 
 		
-		if (_M_chain) 
-			_M_chain->push(help); 
+		if (m_chain) 
+			m_chain->push(help); 
 	}
 
 	// it makes the test run through, but I'm not sure why 
-	size_t start = _M_read_start + 1; 
+	size_t start = m_read_start + 1; 
 	
-	while (_M_fill >= _M_min_fill) {
+	while (m_fill >= m_min_fill) {
 		shift_buffer(); 
 		
-		_M_start_slice = start; 
-		_M_end_slice = _M_buf_size; 
+		m_start_slice = start; 
+		m_end_slice = m_buf_size; 
 
 		T help = do_filter(); 
 
-		if (_M_chain) 
-			_M_chain->push(help); 
-		--_M_fill;
+		if (m_chain) 
+			m_chain->push(help); 
+		--m_fill;
 		++start; 
 	}
 
 	post_finalize(); 
-	_M_initialized = false; 
+	m_initialized = false; 
 
-	if (_M_chain)
-		_M_chain->finalize(); 
+	if (m_chain)
+		m_chain->finalize(); 
 
 }
 
@@ -175,20 +175,20 @@ void TFifoFilter<T>::append_filter(typename TFifoFilter<T>::Pointer last)
 {
 	TRACE("TFifoFilter<T>::append_filter"); 
 
-	if (!_M_chain) 
-		_M_chain = last; 
+	if (!m_chain) 
+		m_chain = last; 
 	else {
-		Pointer n = _M_chain; 
+		Pointer n = m_chain; 
 		while (n->next())
 			n = n->next(); 
-		_M_chain->append_filter(last);
+		m_chain->append_filter(last);
 	}
 }
 
 template <typename T> 
 typename TFifoFilter<T>::Pointer TFifoFilter<T>::next() const 
 {
-	return _M_chain; 
+	return m_chain; 
 }
 
 template <typename T> 
@@ -200,7 +200,7 @@ TFifoFilterSink<T>::TFifoFilterSink():
 template <typename T> 
 const typename TFifoFilterSink<T>::result_type& TFifoFilterSink<T>::result()
 {
-	return _M_result; 
+	return m_result; 
 }
 
 
@@ -208,7 +208,7 @@ template <typename T>
 void TFifoFilterSink<T>::do_push(typename ::boost::call_traits<T>::param_type x)
 {
 	TRACE("TFifoFilterSink<T>::do_push()"); 
-	_M_result.push_back(x); 
+	m_result.push_back(x); 
 }
 
 template <typename T> 

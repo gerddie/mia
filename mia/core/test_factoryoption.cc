@@ -40,10 +40,10 @@ public:
 
 	static const char *value; 
 	static const char *type_descr; 
-	CProductMock(const char *s):_M_value(s){
+	CProductMock(const char *s):m_value(s){
 	}; 
 private: 
-	string _M_value;
+	string m_value;
 }; 
 
 const char *CProductMock::value ="mock";  

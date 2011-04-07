@@ -39,7 +39,7 @@ typename C2DAdmean::result_type C2DAdmean::operator () ( const Data2D& data ) co
 	typename Data2D::iterator i = result->begin();
 	typename Data2D::const_iterator t = data.begin();
 
-	cvdebug() << "filter with width = " << _M_width << endl;
+	cvdebug() << "filter with width = " << m_width << endl;
 
 	double sum = 0.0;
 	double sum2 = 0.0;
@@ -69,11 +69,11 @@ typename C2DAdmean::result_type C2DAdmean::operator () ( const Data2D& data ) co
 			double lsum2 = 0.0;
 			int num = 0;
 
-			for ( int iy = max ( 0, y - _M_width );
-			        iy < min ( y + _M_width + 1, ( int ) data.get_size().y );  ++iy )
+			for ( int iy = max ( 0, y - m_width );
+			        iy < min ( y + m_width + 1, ( int ) data.get_size().y );  ++iy )
 
-				for ( int ix = max ( 0, x - _M_width );
-				        ix < min ( x + _M_width + 1, ( int ) data.get_size().x );  ++ix )
+				for ( int ix = max ( 0, x - m_width );
+				        ix < min ( x + m_width + 1, ( int ) data.get_size().x );  ++ix )
 				{
 					double v = data ( ix,iy );
 					lsum += v;
@@ -100,15 +100,15 @@ P2DImage C2DAdmean::do_filter ( const C2DImage& image ) const
 
 CAdmean2DImageFilterFactory::CAdmean2DImageFilterFactory() :
 		C2DFilterPlugin ( plugin_name ),
-		_M_hwidth ( 1 )
+		m_hwidth ( 1 )
 {
-	add_parameter("w", new CIntParameter(_M_hwidth, 0, numeric_limits<int>::max(),
+	add_parameter("w", new CIntParameter(m_hwidth, 0, numeric_limits<int>::max(),
 					     false, "half filter width"));
 }
 
 C2DFilterPlugin::ProductPtr CAdmean2DImageFilterFactory::do_create()const
 {
-	return C2DFilterPlugin::ProductPtr ( new C2DAdmean ( _M_hwidth ) );
+	return C2DFilterPlugin::ProductPtr ( new C2DAdmean ( m_hwidth ) );
 }
 
 const string CAdmean2DImageFilterFactory::do_get_descr() const

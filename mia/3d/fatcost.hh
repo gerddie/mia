@@ -54,10 +54,10 @@ private:
 	virtual C3DFatImageCostPlugin::ProductPtr do_create(P3DImage src, P3DImage ref,
 							    P3DInterpolatorFactory ipf, float weight) const = 0;
 
-	std::string _M_src_name;
-	std::string _M_ref_name;
-	float _M_weight;
-	EInterpolation _M_interpolator;
+	std::string m_src_name;
+	std::string m_ref_name;
+	float m_weight;
+	EInterpolation m_interpolator;
 };
 
 class EXPORT_3D C3DImageFatCostList : public std::vector<P3DImageFatCost> {

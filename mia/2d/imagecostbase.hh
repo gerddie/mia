@@ -42,12 +42,12 @@ private:
 	virtual double do_evaluate_with_images(const C2DImage& floating, const C2DImage& ref,
 					       C2DFVectorfield& force) const = 0;
 
-	const C2DImageDataKey _M_src_key;
-	const C2DImageDataKey _M_ref_key;
+	const C2DImageDataKey m_src_key;
+	const C2DImageDataKey m_ref_key;
 
-	mutable P2DImage _M_src;
-	mutable P2DImage _M_ref;
-	P2DInterpolatorFactory _M_ipf;
+	mutable P2DImage m_src;
+	mutable P2DImage m_ref;
+	P2DInterpolatorFactory m_ipf;
 };
 
 class EXPORT_2D  C2DImageCostBasePlugin: public C2DCostBasePlugin {
@@ -58,9 +58,9 @@ protected:
 	const C2DImageDataKey get_src_key() const;
 	const C2DImageDataKey get_ref_key() const;
 private:
-	std::string _M_src_name;
-	std::string _M_ref_name;
-	EInterpolation _M_interpolator;
+	std::string m_src_name;
+	std::string m_ref_name;
+	EInterpolation m_interpolator;
 };
 
 

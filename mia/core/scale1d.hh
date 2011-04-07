@@ -73,9 +73,9 @@ private:
 
 	const mia::C1DFoldingKernel& get_downscale_kernel(int fwidth) const;
 
-	P1DInterpolatorFactory _M_ipf;
-	mutable int _M_fwidth;
-	mutable C1DSpacialKernelPlugin::ProductPtr _M_kernel;
+	P1DInterpolatorFactory m_ipf;
+	mutable int m_fwidth;
+	mutable C1DSpacialKernelPlugin::ProductPtr m_kernel;
 };
 
 template <typename T>
@@ -125,7 +125,7 @@ void C1DScalar::upscale(const std::vector<T>& input, std::vector<T>& output) con
 	double step = double(input.size() - 1) / (outsize - 1);
 
 	double x = 0.0;
-	std::auto_ptr< T1DInterpolator<T> >  data( _M_ipf->create(input));
+	std::auto_ptr< T1DInterpolator<T> >  data( m_ipf->create(input));
 
         for (size_t i = 0; i < outsize; ++i, x += step) {
 		output[i] = (*data)(x);

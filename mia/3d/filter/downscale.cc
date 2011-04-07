@@ -36,7 +36,7 @@ using namespace boost;
 namespace bfs= ::boost::filesystem;
 
 CDownscale::CDownscale(const C3DBounds& block_size, const string& filter):
-	_M_block_size(block_size)
+	m_block_size(block_size)
 {
 	stringstream fcompose;
 
@@ -46,19 +46,19 @@ CDownscale::CDownscale(const C3DBounds& block_size, const string& filter):
 		 << "]";
 	cvdebug() << "CDownscale::CDownscale: smoothing kernel '" << fcompose.str() << "'\n";
 
-	_M_smoothing = C3DFilterPluginHandler::instance().produce(fcompose.str().c_str());
+	m_smoothing = C3DFilterPluginHandler::instance().produce(fcompose.str().c_str());
 
-	if (!_M_smoothing)
+	if (!m_smoothing)
 		throw invalid_argument(string("smoothing filter creation from '") +
 				       fcompose.str() + string("failed"));
 	else
-		cvdebug() << " Created filter with use count:" <<_M_smoothing.use_count() << "\n";
+		cvdebug() << " Created filter with use count:" <<m_smoothing.use_count() << "\n";
 
 }
 
 CDownscale::~CDownscale()
 {
-	cvdebug() << " Release filter with use count:" <<_M_smoothing.use_count() << "\n";
+	cvdebug() << " Release filter with use count:" <<m_smoothing.use_count() << "\n";
 }
 
 template <class T>
@@ -66,19 +66,19 @@ CDownscale::result_type CDownscale::operator () (const T3DImage<T>& src) const
 {
 	cvdebug() << "CDownscale::operator () begin\n";
 	T3DImage<T> *fresult = new T3DImage<T>(
-		       C3DBounds((src.get_size().x + _M_block_size.x - 1) / _M_block_size.x,
-				 (src.get_size().y + _M_block_size.y - 1) / _M_block_size.y,
-				 (src.get_size().z + _M_block_size.z - 1) / _M_block_size.z));
+		       C3DBounds((src.get_size().x + m_block_size.x - 1) / m_block_size.x,
+				 (src.get_size().y + m_block_size.y - 1) / m_block_size.y,
+				 (src.get_size().z + m_block_size.z - 1) / m_block_size.z));
 
 	CDownscale::result_type Result(fresult);
 
 	typename T3DImage<T>::iterator i = fresult->begin();
-	C3DBounds Start(_M_block_size.x/2,_M_block_size.y/2,_M_block_size.z/2);
+	C3DBounds Start(m_block_size.x/2,m_block_size.y/2,m_block_size.z/2);
 
 	// Put the Blockaverages into the target
-	for (; Start.z < src.get_size().z; Start.z += _M_block_size.z){
-		for (Start.y = 0; Start.y < src.get_size().y; Start.y += _M_block_size.y){
-			for (Start.x = 0; Start.x < src.get_size().x; Start.x += _M_block_size.x,++i){
+	for (; Start.z < src.get_size().z; Start.z += m_block_size.z){
+		for (Start.y = 0; Start.y < src.get_size().y; Start.y += m_block_size.y){
+			for (Start.x = 0; Start.x < src.get_size().x; Start.x += m_block_size.x,++i){
 				*i = src(Start);
 			}
 		}
@@ -86,9 +86,9 @@ CDownscale::result_type CDownscale::operator () (const T3DImage<T>& src) const
 
 
 	C3DFVector pixel_size = src.get_voxel_size();
-	pixel_size.x /= _M_block_size.x;
-	pixel_size.y /= _M_block_size.y;
-	pixel_size.z /= _M_block_size.z;
+	pixel_size.x /= m_block_size.x;
+	pixel_size.y /= m_block_size.y;
+	pixel_size.z /= m_block_size.z;
 	fresult->set_voxel_size(pixel_size);
 	cvdebug() << "CDownscale::operator () end\n";
 	return Result;
@@ -96,37 +96,37 @@ CDownscale::result_type CDownscale::operator () (const T3DImage<T>& src) const
 
 CDownscale::result_type CDownscale::do_filter(const C3DImage& image) const
 {
-	std::shared_ptr<C3DImage > smooth_image = _M_smoothing->filter(image);
+	std::shared_ptr<C3DImage > smooth_image = m_smoothing->filter(image);
 	return mia::filter(*this, *smooth_image);
 }
 
 
 C3DDownscaleFilterPlugin::C3DDownscaleFilterPlugin():
 	C3DFilterPlugin("downscale"),
-	_M_b(1,1,1),
-	_M_filter("gauss")
+	m_b(1,1,1),
+	m_filter("gauss")
 {
-	add_parameter("bx", new CUIntParameter(_M_b.x, 1,
+	add_parameter("bx", new CUIntParameter(m_b.x, 1,
                                 numeric_limits<int>::max(), false,
                                 "blocksize in x direction"));
 
-	add_parameter("by", new CUIntParameter(_M_b.y, 1,
+	add_parameter("by", new CUIntParameter(m_b.y, 1,
                                         numeric_limits<int>::max(), false,
                                         "blocksize in y direction"));
 
-	add_parameter("bz", new CUIntParameter(_M_b.z, 1,
+	add_parameter("bz", new CUIntParameter(m_b.z, 1,
                                                 numeric_limits<int>::max(), false,
                                                 "blocksize in z direction"));
 
-	add_parameter("b", new C3DBoundsParameter(_M_b, false, "blocksize"));
+	add_parameter("b", new C3DBoundsParameter(m_b, false, "blocksize"));
 
-	add_parameter("kernel", new CStringParameter(_M_filter, false,
+	add_parameter("kernel", new CStringParameter(m_filter, false,
                                                 "smoothing filter kernel to be applied"));
 }
 
 C3DDownscaleFilterPlugin::ProductPtr C3DDownscaleFilterPlugin::do_create()const
 {
-	return C3DDownscaleFilterPlugin::ProductPtr(new CDownscale(_M_b, _M_filter));
+	return C3DDownscaleFilterPlugin::ProductPtr(new CDownscale(m_b, m_filter));
 }
 
 void C3DDownscaleFilterPlugin::prepare_path() const

@@ -26,13 +26,13 @@ NS_MIA_BEGIN
 const char *C3DImage::type_descr = "3dimage";
 
 C3DImage::C3DImage(EPixelType pixel_type):
-	_M_pixel_type(pixel_type)
+	m_pixel_type(pixel_type)
 {
 }
 
 C3DImage::C3DImage(const CAttributedData& data, EPixelType type):
 	CAttributedData(data),
-	_M_pixel_type(type)
+	m_pixel_type(type)
 {
 }
 
@@ -43,7 +43,7 @@ C3DImage::~C3DImage()
 
 EPixelType C3DImage::get_pixel_type() const
 {
-	return _M_pixel_type;
+	return m_pixel_type;
 }
 
 E3DImageOrientation C3DImage::get_orientation() const
@@ -64,28 +64,28 @@ void C3DImage::set_orientation(E3DImageOrientation orient)
 template <typename T>
 T3DImage<T>::T3DImage(const C3DBounds& size, const T* init_data):
 	C3DImage((EPixelType)pixel_type<T>::value),
-	_M_image(size, init_data)
+	m_image(size, init_data)
 {
 }
 
 template <typename T>
 T3DImage<T>::T3DImage(const C3DBounds& size, const CAttributedData& attr):
 	C3DImage(attr, (EPixelType)pixel_type<T>::value),
-	_M_image(size)
+	m_image(size)
 {
 }
 
 template <typename T>
 T3DImage<T>::T3DImage(const C3DBounds& size):
 	C3DImage((EPixelType)pixel_type<T>::value),
-	_M_image(size)
+	m_image(size)
 {
 }
 
 template <typename T>
 T3DImage<T>::T3DImage(const T3DImage<T>& orig):
 	C3DImage(orig),
-	_M_image(orig._M_image)
+	m_image(orig.m_image)
 {
 }
 
@@ -98,109 +98,109 @@ C3DImage::Pointer T3DImage<T>::clone() const
 template <typename T>
 void T3DImage<T>::get_data_line_x(int y, int z, std::vector<T>& buffer)const
 {
-	_M_image.get_data_line_x(y, z, buffer);
+	m_image.get_data_line_x(y, z, buffer);
 }
 
 template <typename T>
 void T3DImage<T>::get_data_line_y(int x, int z, std::vector<T>& buffer)const
 {
-	_M_image.get_data_line_y(x, z, buffer);
+	m_image.get_data_line_y(x, z, buffer);
 }
 
 
 template <typename T>
 void T3DImage<T>::get_data_line_z(int x, int y, std::vector<T>& buffer)const
 {
-	_M_image.get_data_line_z(x, y, buffer);
+	m_image.get_data_line_z(x, y, buffer);
 }
 
 
 template <typename T>
 void T3DImage<T>::put_data_line_x(int y, int z, const std::vector<T> &buffer)
 {
-	_M_image.put_data_line_x(y, z, buffer);
+	m_image.put_data_line_x(y, z, buffer);
 }
 
 
 template <typename T>
 void T3DImage<T>::put_data_line_y(int x, int z, const std::vector<T> &buffer)
 {
-	_M_image.put_data_line_y(x, z, buffer);
+	m_image.put_data_line_y(x, z, buffer);
 }
 
 
 template <typename T>
 void T3DImage<T>::put_data_line_z(int x, int y, const std::vector<T> &buffer)
 {
-	_M_image.put_data_line_z(x, y, buffer);
+	m_image.put_data_line_z(x, y, buffer);
 }
 
 template <typename T>
 T2DImage<T> T3DImage<T>::get_data_plane_xy(size_t  z)const
 {
-	return  T2DImage<T>(_M_image.get_data_plane_xy(z), *this);
+	return  T2DImage<T>(m_image.get_data_plane_xy(z), *this);
 }
 
 template <typename T>
 T2DImage<T> T3DImage<T>::get_data_plane_yz(size_t  x)const
 {
-	return  T2DImage<T>(_M_image.get_data_plane_yz(x), *this);
+	return  T2DImage<T>(m_image.get_data_plane_yz(x), *this);
 }
 
 template <typename T>
 T2DImage<T> T3DImage<T>::get_data_plane_xz(size_t  y)const
 {
-	return  T2DImage<T>(_M_image.get_data_plane_xz(y), *this);
+	return  T2DImage<T>(m_image.get_data_plane_xz(y), *this);
 }
 
 template <typename T>
 void T3DImage<T>::put_data_plane_xy(size_t  z, const T2DImage<T>& p)
 {
-	_M_image.put_data_plane_xy(z, p.data());
+	m_image.put_data_plane_xy(z, p.data());
 }
 
 template <typename T>
 void T3DImage<T>::put_data_plane_yz(size_t  x, const T2DImage<T>& p)
 {
-	_M_image.put_data_plane_yz(x, p.data());
+	m_image.put_data_plane_yz(x, p.data());
 }
 
 template <typename T>
 void T3DImage<T>::put_data_plane_xz(size_t  y, const T2DImage<T>& p)
 {
-	_M_image.put_data_plane_xz(y, p.data());
+	m_image.put_data_plane_xz(y, p.data());
 }
 
 
 template <typename T>
 T3DImage<T>::T3DImage():
 	C3DImage((EPixelType)pixel_type<T>::value),
-	_M_image(C3DBounds(0,0,0))
+	m_image(C3DBounds(0,0,0))
 {
 }
 
 template <typename T>
 size_t T3DImage<T>::size() const
 {
-	return _M_image.size();
+	return m_image.size();
 }
 
 template <typename T>
 const T3DDatafield<T>& T3DImage<T>::data() const
 {
-	return _M_image;
+	return m_image;
 }
 
 //template <typename T>
 //T3DDatafield<T>& T3DImage<T>::data()
 //{
-//	return _M_image;
+//	return m_image;
 //}
 
 template <typename T>
 const C3DBounds& T3DImage<T>::get_size() const
 {
-	return _M_image.get_size();
+	return m_image.get_size();
 }
 
 template <class T>
@@ -284,21 +284,21 @@ template class T3DImage<double>;
 
 template <typename T>
 C3DValueAttribute<T>::C3DValueAttribute(const T3DVector<T>& value):
-	_M_value(value)
+	m_value(value)
 {
 }
 
 template <typename T>
 C3DValueAttribute<T>::operator T3DVector<T>()const
 {
-	return _M_value;
+	return m_value;
 }
 
 template <typename T>
 std::string C3DValueAttribute<T>::do_as_string() const
 {
 	std::stringstream s;
-	s << _M_value.x << " " << _M_value.y << " " << _M_value.z;
+	s << m_value.x << " " << m_value.y << " " << m_value.z;
 	return s.str();
 }
 
@@ -308,7 +308,7 @@ bool C3DValueAttribute<T>::do_is_equal(const CAttribute& other) const
 	const C3DValueAttribute *va = dynamic_cast<const C3DValueAttribute*>(&other);
 	if (!va)
 		return false;
-	return  _M_value == va->_M_value;
+	return  m_value == va->m_value;
 }
 
 template <typename T>
@@ -317,7 +317,7 @@ bool C3DValueAttribute<T>::do_is_less(const CAttribute& other) const
 	const C3DValueAttribute *va = dynamic_cast<const C3DValueAttribute*>(&other);
 	if (!va)
 		return strcmp(typedescr(), other.typedescr());
-	return  _M_value < va->_M_value;
+	return  m_value < va->m_value;
 }
 
 template <typename T>

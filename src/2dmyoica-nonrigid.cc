@@ -71,7 +71,7 @@ class Convert2Float {
 public: 
 	C2DFImage operator () (P2DImage image) const; 
 private: 
-	FConvert2DImage2float _M_converter; 
+	FConvert2DImage2float m_converter; 
 }; 
 
 C2DFullCostList create_costs(double divcurlweight, P2DFullCost imagecost)
@@ -383,5 +383,5 @@ int main( int argc, const char *argv[] )
 
 inline C2DFImage Convert2Float::operator () (P2DImage image) const
 {
-	return ::mia::filter(_M_converter, *image); 
+	return ::mia::filter(m_converter, *image); 
 }

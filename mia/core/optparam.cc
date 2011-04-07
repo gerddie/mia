@@ -34,12 +34,12 @@ using namespace std;
 
 bool CParamList::has_key(const std::string& key) const
 {
-	return _M_params.find(key) != _M_params.end();
+	return m_params.find(key) != m_params.end();
 }
 
 CParamList::PParameter& CParamList::operator [] (const std::string& key)
 {
-	return _M_params[key];
+	return m_params[key];
 }
 
 void CParamList::set(const CParsedOptions& options)
@@ -47,8 +47,8 @@ void CParamList::set(const CParsedOptions& options)
 
 	for (CParsedOptions::const_iterator i = options.begin();
 	     i != options.end(); ++i) {
-		map<string, PParameter>::iterator p = _M_params.find(i->first);
-		if (p == _M_params.end()) {
+		map<string, PParameter>::iterator p = m_params.find(i->first);
+		if (p == m_params.end()) {
 			stringstream msg;
 			msg << "unknown parameter '" << i->first << "'";
 			throw invalid_argument(msg.str());
@@ -65,7 +65,7 @@ void CParamList::set(const CParsedOptions& options)
 
 void CParamList::check_required() const
 {
-	for (map<string, PParameter>::const_iterator i = _M_params.begin(); i != _M_params.end(); ++i) {
+	for (map<string, PParameter>::const_iterator i = m_params.begin(); i != m_params.end(); ++i) {
 		if (i->second->required_set()) {
 			stringstream msg;
 			msg << "parameter '" << i->first << "' required ";
@@ -77,8 +77,8 @@ void CParamList::check_required() const
 void CParamList::print_help(std::ostream& os) const
 {
 	// this should be sorted somehow ...
-	std::map<std::string, PParameter>::const_iterator i = _M_params.begin();
-	while ( i != _M_params.end() ) {
+	std::map<std::string, PParameter>::const_iterator i = m_params.begin();
+	while ( i != m_params.end() ) {
 		os  << "\t" << i->first;
 		i->second->descr(os);
 		os << "\n";

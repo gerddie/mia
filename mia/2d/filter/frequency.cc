@@ -50,13 +50,13 @@ public:
 		
 	
 private: 
-	C2DBounds _M_size; 
-	fftw_complex *_M_cbuffer; 
-	fftw_plan _M_forward_plan; 
+	C2DBounds m_size; 
+	fftw_complex *m_cbuffer; 
+	fftw_plan m_forward_plan; 
 };
 
 class C2DImageFFTFilter: public C2DImageFilterBase {
-	mutable C2DFFT _M_filter; 
+	mutable C2DFFT m_filter; 
 public:
 	C2DImageFFTFilter();
 
@@ -74,48 +74,48 @@ private:
 
 
 C2DFFT::C2DFFT():
-	_M_size(0,0), 
-	_M_cbuffer(NULL)
+	m_size(0,0), 
+	m_cbuffer(NULL)
 {
 }
 
 C2DFFT::~C2DFFT()
 {
-	if (_M_cbuffer) {
-		fftw_free(_M_cbuffer); 
-		fftw_destroy_plan( _M_forward_plan); 
+	if (m_cbuffer) {
+		fftw_free(m_cbuffer); 
+		fftw_destroy_plan( m_forward_plan); 
 	}
 }
 
 void C2DFFT::init(const C2DBounds& size)
 {
-	if (_M_size == size)
+	if (m_size == size)
 		return; 
 	cvdebug() << "C2DFFT::init ...\n"; 
 	
-	_M_size = size; 
+	m_size = size; 
 
-	cvdebug() << "size = " << _M_size.x << ", " << _M_size.y << "\n"; 
-	if (_M_cbuffer) {
-		delete[] _M_cbuffer; 
-		fftw_destroy_plan( _M_forward_plan); 
+	cvdebug() << "size = " << m_size.x << ", " << m_size.y << "\n"; 
+	if (m_cbuffer) {
+		delete[] m_cbuffer; 
+		fftw_destroy_plan( m_forward_plan); 
 	}
 	
-	_M_cbuffer = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * _M_size.y * _M_size.x);
+	m_cbuffer = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * m_size.y * m_size.x);
 	// create the fftw plans
 	
-	cvdebug() << "buffer at " << _M_cbuffer << "\n"; 
+	cvdebug() << "buffer at " << m_cbuffer << "\n"; 
 	
-	if (!_M_cbuffer) {
+	if (!m_cbuffer) {
 		throw runtime_error("unable to allocate fftw buffers"); 
 	}
 	
-	 _M_forward_plan = fftw_plan_dft_2d(_M_size.y, _M_size.x,
-					    _M_cbuffer, _M_cbuffer, FFTW_FORWARD, FFTW_ESTIMATE);
+	 m_forward_plan = fftw_plan_dft_2d(m_size.y, m_size.x,
+					    m_cbuffer, m_cbuffer, FFTW_FORWARD, FFTW_ESTIMATE);
 
-	 cvdebug() << "forward plan at " <<  _M_forward_plan << "\n"; 
-	 if (!_M_forward_plan) {
-		 //fftw_free(_M_cbuffer); 
+	 cvdebug() << "forward plan at " <<  m_forward_plan << "\n"; 
+	 if (!m_forward_plan) {
+		 //fftw_free(m_cbuffer); 
 		 throw runtime_error("unable to create forward plans ..."); 
 	 }
 	 
@@ -125,33 +125,33 @@ void C2DFFT::init(const C2DBounds& size)
 template <typename T, bool is_integral>
 struct FBackConvert {
 	FBackConvert(double scale):
-		_M_scale(scale) 
+		m_scale(scale) 
 		{
-			cvdebug() << "scale = " << _M_scale <<"\n"; 
+			cvdebug() << "scale = " << m_scale <<"\n"; 
 		}
 	
 	T operator ()(double x) {
-		return T(x *_M_scale); 
+		return T(x *m_scale); 
 	}
 private: 
-	double _M_scale; 
+	double m_scale; 
 };
 
 template <typename T>
 struct FBackConvert<T, true> {
 	FBackConvert(double scale):
-		_M_scale(scale) 
+		m_scale(scale) 
 		{
-			cvdebug() << "scale = " << _M_scale <<"\n"; 
+			cvdebug() << "scale = " << m_scale <<"\n"; 
 		}
 	
 	T operator ()(double x) {
-		double xc = x *_M_scale; 
+		double xc = x *m_scale; 
 		return xc < numeric_limits<T>::min() ? numeric_limits<T>::min() : 
 			( xc < numeric_limits<T>::max() ?  T(xc) : numeric_limits<T>::max()); 
 	}
 private: 
-	double _M_scale; 
+	double m_scale; 
 };
 
 template <typename T>
@@ -159,7 +159,7 @@ C2DFFT::result_type C2DFFT::operator()(const T2DImage<T>& image)const
 {
 	cvdebug() << "C2DFFT::operator() begin\n";
 	typename T2DImage<T>::const_iterator i = image.begin(); 
-	fftw_complex *t = _M_cbuffer; 
+	fftw_complex *t = m_cbuffer; 
 	for (size_t y = 0; y < image.get_size().y; ++y) {
 		float sign = y & 1 ? -1 : 1; 
 		for (size_t x = 0; x < image.get_size().x; ++x, sign *=-1, ++i, ++t) {
@@ -169,9 +169,9 @@ C2DFFT::result_type C2DFFT::operator()(const T2DImage<T>& image)const
 	}
 	
 	cvdebug() << "C2DFFT::operator() forward transform\n";
-	fftw_execute( _M_forward_plan); 
+	fftw_execute( m_forward_plan); 
 	
-	fftw_complex *cbuffer = _M_cbuffer;
+	fftw_complex *cbuffer = m_cbuffer;
 	
 	for (size_t i = 0; i < image.size(); ++i, ++cbuffer) {
 		(*cbuffer)[0] = sqrt((*cbuffer)[0] * (*cbuffer)[0] + (*cbuffer)[1] * (*cbuffer)[1]); 
@@ -182,7 +182,7 @@ C2DFFT::result_type C2DFFT::operator()(const T2DImage<T>& image)const
 	
 	T2DImage<T> *result = new T2DImage<T>(image.get_size());
 	typename T2DImage<T>::iterator r = result->begin(); 
-	cbuffer = _M_cbuffer;
+	cbuffer = m_cbuffer;
 	
 	for (size_t y = 0; y < image.get_size().y; ++y)
 		for (size_t x = 0; x < image.get_size().x; ++x, ++cbuffer, ++r) {
@@ -201,8 +201,8 @@ C2DImageFFTFilter::C2DImageFFTFilter()
 
 P2DImage C2DImageFFTFilter::do_filter(const C2DImage& image) const
 {
-	_M_filter.init(image.get_size()); 
-	return wrap_filter(_M_filter, image); 
+	m_filter.init(image.get_size()); 
+	return wrap_filter(m_filter, image); 
 }
 
 

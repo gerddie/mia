@@ -44,7 +44,7 @@ public:
 	const std::string& get_source_format() const;
 
 private:
-	std::string _M_source_format;
+	std::string m_source_format;
 };
 
 NS_MIA_END

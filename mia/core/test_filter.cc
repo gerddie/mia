@@ -36,7 +36,7 @@ NS_MIA_BEGIN
 
 struct TestPixelTypeBase {
 	TestPixelTypeBase(EPixelType pixel_type):
-		_M_pixel_type(pixel_type)
+		m_pixel_type(pixel_type)
 	{
 	}
 	virtual ~TestPixelTypeBase()
@@ -45,10 +45,10 @@ struct TestPixelTypeBase {
 
 	EPixelType get_pixel_type() const
 	{
-		return _M_pixel_type;
+		return m_pixel_type;
 	}
 private:
-	EPixelType _M_pixel_type;
+	EPixelType m_pixel_type;
 };
 
 template <class T>

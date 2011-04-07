@@ -51,13 +51,13 @@ private:
 		bool debug = false ) const;
 
 	
-	const VertexVector& _M_vv;
-	mutable Vector _M_orientation;
+	const VertexVector& m_vv;
+	mutable Vector m_orientation;
 };
 
 template <class VertexVector, class Polygon>
 TPolyTriangulator<VertexVector,Polygon>::TPolyTriangulator(const VertexVector& vv):
-	_M_vv(vv)
+	m_vv(vv)
 {
 }
 
@@ -75,7 +75,7 @@ TPolyTriangulator<VertexVector,Polygon>::triangulate(TriangleList& output, const
 	
 	CPoly cpoly; 
 
-	_M_orientation = eval_orientation(poly);
+	m_orientation = eval_orientation(poly);
 
 	typename Polygon::const_iterator pi = poly.begin();
 	typename Polygon::const_iterator pe = poly.end();
@@ -150,10 +150,10 @@ TPolyTriangulator<VertexVector,Polygon>::eval_orientation(const Polygon& poly) c
 	typename Polygon::const_iterator c2 = c1; 
 	++c2; 
 	
-	typename VertexVector::value_type a = _M_vv[*pb];
+	typename VertexVector::value_type a = m_vv[*pb];
 	
 	while (c1 != be && c2 != be) {
-		result += (_M_vv[*c1++] - a) ^ (_M_vv[*c2++] - a);
+		result += (m_vv[*c1++] - a) ^ (m_vv[*c2++] - a);
 	}
 	return result;
 
@@ -162,16 +162,16 @@ TPolyTriangulator<VertexVector,Polygon>::eval_orientation(const Polygon& poly) c
 template <class VertexVector, class Polygon>
 bool TPolyTriangulator<VertexVector,Polygon>::is_convex(const typename CPoly::const_iterator& i, bool /*debug*/) const
 {
-	typename VertexVector::value_type a = _M_vv[**i->prev];
-	typename VertexVector::value_type b = _M_vv[**i];
-	typename VertexVector::value_type c = _M_vv[**i->succ];
+	typename VertexVector::value_type a = m_vv[**i->prev];
+	typename VertexVector::value_type b = m_vv[**i];
+	typename VertexVector::value_type c = m_vv[**i->succ];
 	
 	typename VertexVector::value_type ab = a - b;
 	typename VertexVector::value_type cb = c - b; 
 	
 	typename VertexVector::value_type cross = ab ^ cb;
 
-	const bool result = dot(cross, _M_orientation) > 0; 
+	const bool result = dot(cross, m_orientation) > 0; 
 	
 	return result; 
 
@@ -185,9 +185,9 @@ bool TPolyTriangulator<VertexVector,Polygon>::is_ear(const typename CPoly::const
 		return false; 
 	}
 	
-	typename VertexVector::value_type a = _M_vv[**p->prev];
-	typename VertexVector::value_type b = _M_vv[**p];
-	typename VertexVector::value_type c = _M_vv[**p->succ];
+	typename VertexVector::value_type a = m_vv[**p->prev];
+	typename VertexVector::value_type b = m_vv[**p];
+	typename VertexVector::value_type c = m_vv[**p->succ];
 	
 	cvdebug() << "check triangle" << a << b << c << " = (" << **p->prev << "," << **p << "," << **p->succ << "\n"; 
 	
@@ -196,8 +196,8 @@ bool TPolyTriangulator<VertexVector,Polygon>::is_ear(const typename CPoly::const
 	i = i->succ;
 	while (i != cpoly.end()) {
 		if (i != p && i != p->prev && i != p->succ)
-			if (!is_convex(i, debug) && is_inside(a,b,c,_M_vv[**i], debug)) {
-				cvdebug() << "point " << **i << ":" << _M_vv[**i] << " is concave and inside\n"; 
+			if (!is_convex(i, debug) && is_inside(a,b,c,m_vv[**i], debug)) {
+				cvdebug() << "point " << **i << ":" << m_vv[**i] << " is concave and inside\n"; 
 		
 				return false; 
 			}

@@ -28,12 +28,12 @@ NS_MIA_BEGIN
 
 void CIOData::set_source_format(const std::string& format)
 {
-	_M_source_format = format;
+	m_source_format = format;
 }
 
 const std::string& CIOData::get_source_format() const
 {
-	return _M_source_format;
+	return m_source_format;
 }
 
 NS_MIA_END

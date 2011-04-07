@@ -28,23 +28,23 @@
 NS_MIA_BEGIN
 using namespace std;
 C3DTranslateTransformation::C3DTranslateTransformation(const C3DBounds& size):
-	_M_transform(0,0,0),
-	_M_size(size)
+	m_transform(0,0,0),
+	m_size(size)
 {
 }
 
 C3DTranslateTransformation::C3DTranslateTransformation(const C3DBounds& size,const C3DFVector& transform):
-	_M_transform(transform),
-	_M_size(size)
+	m_transform(transform),
+	m_size(size)
 {
 }
 
 
 void C3DTranslateTransformation::translate(float x, float y, float z)
 {
-	_M_transform.x += x;
-	_M_transform.y += y;
-	_M_transform.z += z;
+	m_transform.x += x;
+	m_transform.y += y;
+	m_transform.z += z;
 }
 
 C3DFVector C3DTranslateTransformation::apply(const C3DFVector& x) const
@@ -57,51 +57,51 @@ C3DFVector C3DTranslateTransformation::apply(const C3DFVector& x) const
 C3DTranslateTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& size, 
 							 const C3DFVector& value):
 	C3DTransformation::iterator_impl(pos, size), 
-	_M_translate(value)
+	m_translate(value)
 {
-	_M_value = -1.0f * _M_translate; 
+	m_value = -1.0f * m_translate; 
 }
 
 C3DTransformation::iterator_impl * C3DTranslateTransformation::iterator_impl::clone() const 
 {
-	return new iterator_impl(get_pos(), get_size(), _M_value); 
+	return new iterator_impl(get_pos(), get_size(), m_value); 
 }
 
 const C3DFVector&  C3DTranslateTransformation::iterator_impl::do_get_value() const 
 {
-	return _M_value; 
+	return m_value; 
 }
 
 void C3DTranslateTransformation::iterator_impl::do_x_increment()
 {
-	_M_value = C3DFVector(get_pos()) - _M_translate; 
+	m_value = C3DFVector(get_pos()) - m_translate; 
 }
 
 void C3DTranslateTransformation::iterator_impl::do_y_increment()
 {
-	_M_value = C3DFVector(get_pos()) - _M_translate; 
+	m_value = C3DFVector(get_pos()) - m_translate; 
 }
 
 void C3DTranslateTransformation::iterator_impl::do_z_increment()
 {
-	_M_value = C3DFVector(get_pos()) - _M_translate; 
+	m_value = C3DFVector(get_pos()) - m_translate; 
 }
 
 C3DTransformation::const_iterator C3DTranslateTransformation::begin() const
 {
 	
-	return C3DTransformation::const_iterator(new iterator_impl(C3DBounds(0,0,0), _M_size, _M_transform));
+	return C3DTransformation::const_iterator(new iterator_impl(C3DBounds(0,0,0), m_size, m_transform));
 }
 
 C3DTransformation::const_iterator C3DTranslateTransformation::end() const
 {
-	return C3DTransformation::const_iterator(new iterator_impl(_M_size, _M_size, _M_transform));
+	return C3DTransformation::const_iterator(new iterator_impl(m_size, m_size, m_transform));
 }
 
 
 const C3DBounds& C3DTranslateTransformation::get_size() const
 {
-	return _M_size;
+	return m_size;
 }
 
 C3DTransformation *C3DTranslateTransformation::do_clone() const
@@ -112,9 +112,9 @@ C3DTransformation *C3DTranslateTransformation::do_clone() const
 C3DTransformation *C3DTranslateTransformation::invert() const
 {
 	C3DTranslateTransformation *result = new C3DTranslateTransformation(*this);
-	result->_M_transform.x = -_M_transform.x;
-	result->_M_transform.y = -_M_transform.y;
-	result->_M_transform.z = -_M_transform.z;
+	result->m_transform.x = -m_transform.x;
+	result->m_transform.y = -m_transform.y;
+	result->m_transform.z = -m_transform.z;
 	return result; 
 }
 
@@ -128,9 +128,9 @@ P3DTransformation C3DTranslateTransformation::do_upscale(const C3DBounds& size) 
 {
 
 	return P3DTransformation(new C3DTranslateTransformation(size,
-								C3DFVector((_M_transform.x * size.x) / _M_size.x,
-									   (_M_transform.y * size.y) / _M_size.y,
-									   (_M_transform.z * size.z) / _M_size.z)));
+								C3DFVector((m_transform.x * size.x) / m_size.x,
+									   (m_transform.y * size.y) / m_size.y,
+									   (m_transform.z * size.z) / m_size.z)));
 }
 
 
@@ -141,7 +141,7 @@ void C3DTranslateTransformation::add(const C3DTransformation& /*a*/)
 
 void C3DTranslateTransformation::translate(const C3DFVectorfield& gradient, CDoubleVector& params) const
 {
-	assert(gradient.get_size() == _M_size);
+	assert(gradient.get_size() == m_size);
 	assert(params.size() == 3);
 	C3DFVector r = accumulate(gradient.begin(), gradient.end(), C3DFVector(0,0,0)); 
 	params[0] = -r.x;
@@ -168,28 +168,28 @@ C3DFMatrix C3DTranslateTransformation::derivative_at(int /*x*/, int /*y*/, int /
 CDoubleVector C3DTranslateTransformation::get_parameters() const
 {
 	CDoubleVector result(3);
-	result[0] = _M_transform.x;
-	result[1] = _M_transform.y;
-	result[2] = _M_transform.z;
+	result[0] = m_transform.x;
+	result[1] = m_transform.y;
+	result[2] = m_transform.z;
 	return result;
 }
 
 void C3DTranslateTransformation::set_parameters(const CDoubleVector& params)
 {
 	assert(params.size() == 3);
-	_M_transform.x = params[0];
-	_M_transform.y = params[1];
-	_M_transform.z = params[2];
+	m_transform.x = params[0];
+	m_transform.y = params[1];
+	m_transform.z = params[2];
 }
 
 void C3DTranslateTransformation::set_identity()
 {
-	_M_transform.x = _M_transform.y = _M_transform.z = 0.0;
+	m_transform.x = m_transform.y = m_transform.z = 0.0;
 }
 
 float C3DTranslateTransformation::get_max_transform() const
 {
-	return _M_transform.norm();
+	return m_transform.norm();
 }
 
 float C3DTranslateTransformation::pertuberate(C3DFVectorfield& /*v*/) const
@@ -199,7 +199,7 @@ float C3DTranslateTransformation::pertuberate(C3DFVectorfield& /*v*/) const
 
 C3DFVector C3DTranslateTransformation::operator () (const C3DFVector& x) const
 {
-	return x - _M_transform;
+	return x - m_transform;
 }
 
 float C3DTranslateTransformation::get_jacobian(const C3DFVectorfield& /*v*/, float /*delta*/) const
@@ -209,7 +209,7 @@ float C3DTranslateTransformation::get_jacobian(const C3DFVectorfield& /*v*/, flo
 
 C3DFVector C3DTranslateTransformation::transform(const C3DFVector& x)const
 {
-	return x + _M_transform;
+	return x + m_transform;
 }
 
 float C3DTranslateTransformation::divergence() const

@@ -144,7 +144,7 @@ private:
 	virtual bool do_is_equal(const CAttribute& other) const;
 	virtual bool do_is_less(const CAttribute& other) const;
 
-	T _M_value;
+	T m_value;
 };
 
 /**
@@ -264,7 +264,7 @@ public:
 
 	friend EXPORT_CORE bool operator == (const CAttributedData& a, const CAttributedData& b);
 private:
-	PAttributeMap _M_attr;
+	PAttributeMap m_attr;
 };
 
 
@@ -329,7 +329,7 @@ private:
 	void add(const std::string& key, const CAttrTranslator *  const t);
 
 	typedef std::map<std::string, const CAttrTranslator *  const> CMap;
-	CMap _M_translators;
+	CMap m_translators;
 };
 
 
@@ -385,20 +385,20 @@ private:
 
 template <typename T>
 TAttribute<T>::TAttribute(typename ::boost::reference_wrapper<T>::type value):
-	_M_value(value)
+	m_value(value)
 {
 }
 
 template <typename T>
 TAttribute<T>::operator T() const
 {
-	return _M_value;
+	return m_value;
 }
 
 template <typename T>
 const T& TAttribute<T>::get_value() const
 {
-	return _M_value;
+	return m_value;
 }
 
 template <typename T>
@@ -534,7 +534,7 @@ struct dispatch_attr_string<CAttributeMap> {
 template <typename T>
 std::string TAttribute<T>::do_as_string() const
 {
-	return dispatch_attr_string<T>::val2string(_M_value);
+	return dispatch_attr_string<T>::val2string(m_value);
 }
 
 template <typename T>
@@ -547,7 +547,7 @@ bool TAttribute<T>::do_is_equal(const CAttribute& other) const
 			  << "failed\n";
 		return false;
 	}
-	return _M_value == o->_M_value;
+	return m_value == o->m_value;
 }
 
 template <typename T>
@@ -555,7 +555,7 @@ bool TAttribute<T>::do_is_less(const CAttribute& other) const
 {
 	const TAttribute<T>* o = dynamic_cast<const TAttribute<T> *>(&other);
 	if (o)
-		return _M_value < o->_M_value;
+		return m_value < o->m_value;
 
 	return strcmp(typedescr(), other.typedescr()) < 0;
 }

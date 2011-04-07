@@ -42,11 +42,11 @@ public:
 	void execute(const F&  op) const; 
 	
 private: 
-	mutable T *_M_in; 
-	mutable T *_M_out; 
+	mutable T *m_in; 
+	mutable T *m_out; 
 
-	fftwf_plan _M_forward_plan; 
-	fftwf_plan _M_backward_plan; 
+	fftwf_plan m_forward_plan; 
+	fftwf_plan m_backward_plan; 
 }; 
 
 
@@ -64,27 +64,27 @@ TFFTPlan<T>::TFFTPlan(fftwf_r2r_kind forward, fftwf_r2r_kind backward, size_t ra
 		n *= size[i]; 
 
 	;
-	if (NULL == (_M_in = (T *) fftwf_malloc(sizeof(T) * n))) {
+	if (NULL == (m_in = (T *) fftwf_malloc(sizeof(T) * n))) {
 		msg = "unable to allocate FFTW data"; 
 		goto in_fail; 
 	}
 
-	if ( NULL == (_M_out  = (T *) fftwf_malloc(sizeof(T) * n))) {
+	if ( NULL == (m_out  = (T *) fftwf_malloc(sizeof(T) * n))) {
 		msg = "unable to allocate FFTW data"; 
 		goto out_fail; 
 	}
 	
-	if (0 == (_M_forward_plan = fftwf_plan_many_r2r(rank, n, rank, 
-						       _M_in, NULL, rank, 1, 
-						       _M_out, NULL, rank, 1, 
+	if (0 == (m_forward_plan = fftwf_plan_many_r2r(rank, n, rank, 
+						       m_in, NULL, rank, 1, 
+						       m_out, NULL, rank, 1, 
 						       &fw_kind[0], FFTW_ESTIMATE))) {
 		msg = "unable to create FFTW forward plan"; 
 		goto plan_fw_fail; 
 	}
 
-	if (0 == (_M_backward_plan = fftwf_plan_many_r2r(rank, n, rank, 
-							_M_out, NULL, rank, 1, 
-							_M_in,  NULL, rank, 1, 
+	if (0 == (m_backward_plan = fftwf_plan_many_r2r(rank, n, rank, 
+							m_out, NULL, rank, 1, 
+							m_in,  NULL, rank, 1, 
 							&bw_kind[0], FFTW_ESTIMATE))) {
 		msg = "unable to create FFTW backward plan";
 		goto  plan_bw_fail; 
@@ -93,11 +93,11 @@ TFFTPlan<T>::TFFTPlan(fftwf_r2r_kind forward, fftwf_r2r_kind backward, size_t ra
 	return; 
 
  plan_bw_fail:		
-	fftwf_destroy_plan(_M_forward_plan); 
+	fftwf_destroy_plan(m_forward_plan); 
  plan_fw_fail:
-	fftwf_free(_M_out); 
+	fftwf_free(m_out); 
  out_fail:
-	fftwf_free(_M_in); 
+	fftwf_free(m_in); 
  in_fail: 
 	throw std::runtime_error(msg); 
 }
@@ -105,21 +105,21 @@ TFFTPlan<T>::TFFTPlan(fftwf_r2r_kind forward, fftwf_r2r_kind backward, size_t ra
 template <typename T> 
 TFFTPlan<T>::~TFFTPlan()
 {
-	fftwf_destroy_plan(_M_backward_plan); 
-	fftwf_destroy_plan(_M_forward_plan); 
-	fftwf_free(_M_out); 
-	fftwf_free(_M_in); 
+	fftwf_destroy_plan(m_backward_plan); 
+	fftwf_destroy_plan(m_forward_plan); 
+	fftwf_free(m_out); 
+	fftwf_free(m_in); 
 
 }
 
 template <typename F>
 void TFFTPlan<T>::execute(I cbegin, I cend, O cbegin, const F&  op) const
 {
-	op.prepare(_M_in);
-	fftwf_execute( _M_forward_plan); 
-	op.run(_M_out); 
-	fftwf_execute(_M_backward_plan);
-	op.get_result(_M_in); 
+	op.prepare(m_in);
+	fftwf_execute( m_forward_plan); 
+	op.run(m_out); 
+	fftwf_execute(m_backward_plan);
+	op.get_result(m_in); 
 }
 	
 NS_MIA_END

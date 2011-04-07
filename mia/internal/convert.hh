@@ -62,10 +62,10 @@ private:
 	typename TConvert<Image>::result_type convert(const Data<S>& src) const; 
 	typename TConvert::result_type do_filter(const Image& image) const;
 	
-	EPixelType _M_pt; 
-	EPixelConversion _M_ct; 
-	float _M_a; 
-	float _M_b; 
+	EPixelType m_pt; 
+	EPixelConversion m_ct; 
+	float m_a; 
+	float m_b; 
 };
 
 template <class Image>	
@@ -76,10 +76,10 @@ private:
 	virtual typename TImageFilterPlugin<Image>::ProductPtr do_create()const;
 	virtual const std::string do_get_descr()const; 
 	
-	std::string _M_pixeltype; 
-	std::string _M_convert; 
-	float _M_a; 
-	float _M_b; 
+	std::string m_pixeltype; 
+	std::string m_convert; 
+	float m_a; 
+	float m_b; 
 
 };
 

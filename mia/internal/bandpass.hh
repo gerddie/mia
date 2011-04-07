@@ -39,8 +39,8 @@ public:
 private: 
 	typename TBandPass::result_type do_filter(const Image& image) const;
 	
-	float _M_min; 
-	float _M_max; 
+	float m_min; 
+	float m_max; 
 };
 
 template <class Image> 
@@ -50,8 +50,8 @@ public:
 	virtual typename TImageFilterPlugin<Image>::ProductPtr do_create()const;
 	virtual const std::string do_get_descr()const; 
 private: 
-	float _M_min; 
-	float _M_max; 
+	float m_min; 
+	float m_max; 
 };
 
 NS_MIA_END

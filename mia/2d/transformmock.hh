@@ -69,7 +69,7 @@ protected:
 		virtual const C2DFVector& do_get_value()const; 
 		virtual void do_x_increment(); 
 		virtual void do_y_increment(); 
-		C2DFVector _M_value; 
+		C2DFVector m_value; 
 	}; 
 
 private:

@@ -59,10 +59,10 @@ private:
 							    P2DInterpolatorFactory ipf,
 							    float weight) const = 0;
 
-	std::string _M_src_name;
-	std::string _M_ref_name;
-	EInterpolation _M_interpolator;
-	float _M_weight;
+	std::string m_src_name;
+	std::string m_ref_name;
+	EInterpolation m_interpolator;
+	float m_weight;
 };
 
 class EXPORT_2D C2DImageFatCostList : public std::vector<P2DImageFatCost> {

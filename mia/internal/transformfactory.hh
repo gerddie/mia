@@ -68,7 +68,7 @@ protected:
 private:
 	virtual	typename Transform::Pointer do_create(const typename Transform::Size& size) const = 0;
 
-	std::set<std::string> _M_properties;
+	std::set<std::string> m_properties;
 };
 
 NS_MIA_END

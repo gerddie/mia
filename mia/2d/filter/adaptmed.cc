@@ -48,7 +48,7 @@ using namespace std;
 static char const * plugin_name = "adaptmed";
 
 C2DAdaptMedian::C2DAdaptMedian(int hw):
-	_M_hw(hw)
+	m_hw(hw)
 {
 }
 
@@ -129,14 +129,14 @@ typename C2DAdaptMedian::result_type C2DAdaptMedian::operator () (const Data2D& 
 
 	Data2D *result = new Data2D(data.get_size());
 
-	vector<typename Data2D::value_type> target_vector((2 * _M_hw + 1) *
-							       (2 * _M_hw + 1));
+	vector<typename Data2D::value_type> target_vector((2 * m_hw + 1) *
+							       (2 * m_hw + 1));
 
 	typename Data2D::iterator i = result->begin();
 
 	for (int y = 0; y < (int)data.get_size().y; ++y)
 		for (int x = 0; x < (int)data.get_size().x; ++x, ++i)
-			*i = __dispatch_filter<Data2D>::apply(data, x, y, _M_hw, target_vector);
+			*i = __dispatch_filter<Data2D>::apply(data, x, y, m_hw, target_vector);
 
 	cvdebug() << "C2DAdaptMedian::operator () end\n";
 	return P2DImage(result);
@@ -151,13 +151,13 @@ C2DAdaptMedian::result_type C2DAdaptMedian::do_filter(const C2DImage& image) con
 C2DAdaptMedianImageFilterFactory::C2DAdaptMedianImageFilterFactory():
 	C2DFilterPlugin(plugin_name)
 {
-	add_parameter("w", new CIntParameter(_M_hw, 0, numeric_limits<int>::max(),
+	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(),
 					     false, "half filter width"));
 }
 
 C2DFilterPlugin::ProductPtr C2DAdaptMedianImageFilterFactory::do_create()const
 {
-	return C2DFilterPlugin::ProductPtr(new C2DAdaptMedian(_M_hw));
+	return C2DFilterPlugin::ProductPtr(new C2DAdaptMedian(m_hw));
 }
 
 const string C2DAdaptMedianImageFilterFactory::do_get_descr()const

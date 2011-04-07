@@ -149,15 +149,15 @@ P3DFVectorfield upscale( const C3DFVectorfield& vf, C3DBounds size)
 C3DImageRegister::C3DImageRegister(size_t start_size, C3DImageCost& cost, size_t max_iter,
 				   C3DRegModel& model, C3DRegTimeStep& time_step,
 				   const C3DInterpolatorFactory&  ipf, float outer_epsilon, bool save_steps):
-	_M_start_size(start_size),
-	_M_cost(cost),
-	_M_max_iter(max_iter),
-	_M_model(model),
-	_M_time_step(time_step),
-	_M_ipf(ipf),
-	_M_outer_epsilon(outer_epsilon),
-	_M_save_steps(save_steps),
-	_M_mnum(0)
+	m_start_size(start_size),
+	m_cost(cost),
+	m_max_iter(max_iter),
+	m_model(model),
+	m_time_step(time_step),
+	m_ipf(ipf),
+	m_outer_epsilon(outer_epsilon),
+	m_save_steps(save_steps),
+	m_mnum(0)
 {
 }
 
@@ -177,9 +177,9 @@ P3DFVectorfield C3DImageRegister::operator () (const C3DImage& source, const C3D
 	if (source.get_size() != reference.get_size())
 		throw invalid_argument("only registration of images of the same size is allowed");
 
-	size_t x_shift = log2(source.get_size().x / _M_start_size);
-	size_t y_shift = log2(source.get_size().y / _M_start_size);
-	size_t z_shift = log2(source.get_size().z / _M_start_size);
+	size_t x_shift = log2(source.get_size().x / m_start_size);
+	size_t y_shift = log2(source.get_size().y / m_start_size);
+	size_t z_shift = log2(source.get_size().z / m_start_size);
 
 	P3DFVectorfield result;
 
@@ -197,7 +197,7 @@ P3DFVectorfield C3DImageRegister::operator () (const C3DImage& source, const C3D
 		else
 			result = upscale( *result, src_scaled->get_size() );
 
-		if (_M_time_step.has_regrid()) {
+		if (m_time_step.has_regrid()) {
 			reg_level_regrid_opt(*src_scaled, *ref_scaled, *result);
 		}else {
 			reg_level(*src_scaled, *ref_scaled, *result);
@@ -220,7 +220,7 @@ P3DFVectorfield C3DImageRegister::operator () (const C3DImage& source, const C3D
 	}else {
 		result = upscale( *result, source.get_size());
 	}
-	if (_M_time_step.has_regrid()) {
+	if (m_time_step.has_regrid()) {
 	reg_level_regrid_opt(source, reference, *result);
 	}else
 		reg_level(source, reference, *result);
@@ -248,9 +248,9 @@ void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DIma
 
 	local_shift.clear();
 
-	P3DImage temp = filter(FDeformer3D(result, _M_ipf), source);
-	_M_cost.set_reference(reference); 
-	double new_cost_value = initial_cost = _M_cost.value(*temp);
+	P3DImage temp = filter(FDeformer3D(result, m_ipf), source);
+	m_cost.set_reference(reference); 
+	double new_cost_value = initial_cost = m_cost.value(*temp);
 	double C0 = new_cost_value;
 
 	C3DFVectorfield v(source.get_size());
@@ -267,38 +267,38 @@ void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DIma
 		cost_value = new_cost_value;
 
 		force.clear();
-		_M_cost.evaluate_force(*temp, _M_model.get_force_scale(), force);
+		m_cost.evaluate_force(*temp, m_model.get_force_scale(), force);
 		C3DBounds l(0,0,0);
 
 		// solve for the force to get a velocity or deformation field
 
-		_M_model.solve(force, v);
+		m_model.solve(force, v);
 
 		// obtain the maximum shift. v might be updated according to the time step model
-		float maxshift = _M_time_step.calculate_pertuberation(v, local_shift);
+		float maxshift = m_time_step.calculate_pertuberation(v, local_shift);
 		if (maxshift <= 0) {
 			cvmsg() << "zero time step, perfect registration?\n";
 			break;
 		}
 
 		// get the time step based on the maximum shift
-		float delta = _M_time_step.get_delta(maxshift);
+		float delta = m_time_step.get_delta(maxshift);
 		cvdebug() << "Timestep = " << delta << "\n";
 
 		// now check, whether the new deformation would result in a
 		// non-topologic distortion of the image. if so, regrid
 		// some time step models might always return false
-		if (_M_time_step.regrid_requested(local_shift, v, delta)) {
+		if (m_time_step.regrid_requested(local_shift, v, delta)) {
 			cat (local_shift, result);
 			result = local_shift;
 			local_shift.clear();
 			better = false;
-			if (_M_save_steps) {
+			if (m_save_steps) {
 				stringstream regmov;
 				C3DImageVector vimg;
-				temp = filter(FDeformer3D(result, _M_ipf), source);
+				temp = filter(FDeformer3D(result, m_ipf), source);
 				vimg.push_back(temp);
-				regmov << "regmov" << setw(5) << setfill('0') << _M_mnum - 1 << "regrid.vff";
+				regmov << "regmov" << setw(5) << setfill('0') << m_mnum - 1 << "regrid.vff";
 				imageio.save("", regmov.str(), vimg);
 			}
 
@@ -308,41 +308,41 @@ void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DIma
 		{
 			C3DFVectorfield local_shift_tmp(local_shift);
 
-			_M_time_step.apply(v, local_shift_tmp, delta);
+			m_time_step.apply(v, local_shift_tmp, delta);
 			cat3(result, local_shift_tmp, force);
-			temp = filter(FDeformer3D(force, _M_ipf), source);
-			double C1 = _M_cost.value(*temp);
+			temp = filter(FDeformer3D(force, m_ipf), source);
+			double C1 = m_cost.value(*temp);
 			double fdelta_c2 = (C1 < best_cost_value ? 2.0 : 0.5);
 
 			std::copy(local_shift.begin(), local_shift.end(), local_shift_tmp.begin());
 
-			_M_time_step.apply(v, local_shift_tmp, fdelta_c2 * delta);
+			m_time_step.apply(v, local_shift_tmp, fdelta_c2 * delta);
 			cat3(result, local_shift_tmp, force);
-			temp = filter(FDeformer3D(force, _M_ipf), source);
-			double C2 = _M_cost.value(*temp);
+			temp = filter(FDeformer3D(force, m_ipf), source);
+			double C2 = m_cost.value(*temp);
 
 			best_fdelta = min_ax2_bx_c(fdelta_c2, C0, C1, C2);
 
 			// this is just hardcoded crap ...
 			if ( best_fdelta < 0.1)
 				best_fdelta = 0.1;
-			_M_time_step.apply(v, local_shift, best_fdelta * delta);
+			m_time_step.apply(v, local_shift, best_fdelta * delta);
 		}
 
 		cat3(result, local_shift, force);
-		temp = filter(FDeformer3D(force, _M_ipf), source);
-		new_cost_value = C0 = _M_cost.value(*temp);
+		temp = filter(FDeformer3D(force, m_ipf), source);
+		new_cost_value = C0 = m_cost.value(*temp);
 
 
 		// todo: add some logic to use the best step width as an estimate in the next step
 
 
 
-		if (_M_save_steps) {
+		if (m_save_steps) {
 			stringstream regmov;
 			C3DImageVector vimg;
 			vimg.push_back(temp);
-			regmov << "regmov" << setw(5) << setfill('0') << _M_mnum++ << ".vff";
+			regmov << "regmov" << setw(5) << setfill('0') << m_mnum++ << ".vff";
 			imageio.save("vff", regmov.str(), vimg);
 		}
 
@@ -361,13 +361,13 @@ void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DIma
 
 		// if the cost reduction was big, increase the possible time step
 		if (best_fdelta > 1.5) {
-			_M_time_step.increase();
+			m_time_step.increase();
 		}
 
 		// if the cost increased, reduce the time step if possible,
 		// or count down the allowed search in sub-optimal areas
 		if (new_cost_value > best_cost_value || best_fdelta < 0.5)
-			if (!_M_time_step.decrease())
+			if (!m_time_step.decrease())
 				--inertia;
 
 		cvmsg() << iter << "@" << reference.get_size()
@@ -377,7 +377,7 @@ void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DIma
 			<< lend;
 
 	} while ( ((inertia > 0) || (new_cost_value < best_cost_value)) &&
-		  new_cost_value / initial_cost > _M_outer_epsilon && iter < _M_max_iter);
+		  new_cost_value / initial_cost > m_outer_epsilon && iter < m_max_iter);
 
 	cvmsg() << '\n';
 
@@ -389,12 +389,12 @@ void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DIma
 		result = best_local_shift;
 	}
 
-	if (_M_save_steps) {
+	if (m_save_steps) {
 		stringstream regmov;
 		C3DImageVector vimg;
-		vimg.push_back(filter(FDeformer3D(best_local_shift, _M_ipf), source));
-		regmov << "regmov" << setw(5) << setfill('0') << --_M_mnum << "final.vff";
-		_M_mnum++;
+		vimg.push_back(filter(FDeformer3D(best_local_shift, m_ipf), source));
+		regmov << "regmov" << setw(5) << setfill('0') << --m_mnum << "final.vff";
+		m_mnum++;
 		imageio.save("vff", regmov.str(), vimg);
 	}
 }
@@ -418,9 +418,9 @@ void C3DImageRegister::reg_level_regrid(const C3DImage& source, const C3DImage& 
 
 	local_shift.clear();
 
-	P3DImage temp = filter(FDeformer3D(result, _M_ipf), source);
-	_M_cost.set_reference(reference); 
-	double new_cost_value = initial_cost = _M_cost.value(*temp);
+	P3DImage temp = filter(FDeformer3D(result, m_ipf), source);
+	m_cost.set_reference(reference); 
+	double new_cost_value = initial_cost = m_cost.value(*temp);
 
 	C3DFVectorfield v(source.get_size());
 	C3DFVectorfield force(source.get_size());
@@ -436,7 +436,7 @@ void C3DImageRegister::reg_level_regrid(const C3DImage& source, const C3DImage& 
 		cost_value = new_cost_value;
 
 		force.clear();
-		_M_cost.evaluate_force(*temp,  _M_model.get_force_scale(), force);
+		m_cost.evaluate_force(*temp,  m_model.get_force_scale(), force);
 		C3DBounds l(0,0,0);
 
 #if 0
@@ -450,52 +450,52 @@ void C3DImageRegister::reg_level_regrid(const C3DImage& source, const C3DImage& 
 #endif
 		// solve for the force to get a velocity or deformation field
 
-		_M_model.solve(force, v);
+		m_model.solve(force, v);
 
 		// obtain the maximum shift. v might be updated according to the time step model
-		float maxshift = _M_time_step.calculate_pertuberation(v, local_shift);
+		float maxshift = m_time_step.calculate_pertuberation(v, local_shift);
 		if (maxshift <= 0) {
 			cvmsg() << "zero time step, perfect registration?\n";
 			break;
 		}
 
 		// get the time step based on the maximum shift
-		float delta = _M_time_step.get_delta(maxshift);
+		float delta = m_time_step.get_delta(maxshift);
 		cvdebug() << "Timestep = " << delta << "\n";
 
 		// now check, whether the new deformation would result in a
 		// non-topologic distortion of the image. if so, regrid
 		// some time step models might always return false
-		if (_M_time_step.regrid_requested(local_shift, v, delta)) {
+		if (m_time_step.regrid_requested(local_shift, v, delta)) {
 			cat (local_shift, result);
 			result = local_shift;
 			local_shift.clear();
 			better = false;
-			if (_M_save_steps) {
+			if (m_save_steps) {
 				stringstream regmov;
 				C3DImageVector vimg;
-				temp = filter(FDeformer3D(result, _M_ipf), source);
+				temp = filter(FDeformer3D(result, m_ipf), source);
 				vimg.push_back(temp);
-				regmov << "regmov" << setw(5) << setfill('0') << _M_mnum - 1 << "regrid.vff";
+				regmov << "regmov" << setw(5) << setfill('0') << m_mnum - 1 << "regrid.vff";
 				imageio.save("", regmov.str(), vimg);
 			}
 
 		}
 
-		_M_time_step.apply(v, local_shift, delta);
+		m_time_step.apply(v, local_shift, delta);
 
 		cat3(result, local_shift, force);
-		temp = filter(FDeformer3D(force, _M_ipf), source);
+		temp = filter(FDeformer3D(force, m_ipf), source);
 
-		if (_M_save_steps) {
+		if (m_save_steps) {
 			stringstream regmov;
 			C3DImageVector vimg;
 			vimg.push_back(temp);
-			regmov << "regmov" << setw(5) << setfill('0') << _M_mnum++ << ".vff";
+			regmov << "regmov" << setw(5) << setfill('0') << m_mnum++ << ".vff";
 			imageio.save("vff", regmov.str(), vimg);
 		}
 
-		new_cost_value = _M_cost.value(*temp);
+		new_cost_value = m_cost.value(*temp);
 
 
 		// if the cost is reduced, we allow for some search steps
@@ -509,13 +509,13 @@ void C3DImageRegister::reg_level_regrid(const C3DImage& source, const C3DImage& 
 
 		// if the cost reduction was big, increase the possible time step
 		if (new_cost_value < cost_value * 0.9) {
-			_M_time_step.increase();
+			m_time_step.increase();
 		}
 
 		// if the cost increased, reduce the time step if possible,
 		// or count down the allowed search in sub-optimal areas
 		if (new_cost_value > best_cost_value)
-			if (!_M_time_step.decrease())
+			if (!m_time_step.decrease())
 				--inertia;
 
 		cvmsg() << iter << "@" << reference.get_size()
@@ -525,7 +525,7 @@ void C3DImageRegister::reg_level_regrid(const C3DImage& source, const C3DImage& 
 			<< lend;
 
 	} while ( ((inertia > 0) || (new_cost_value < best_cost_value)) &&
-		  new_cost_value / initial_cost > _M_outer_epsilon && iter < _M_max_iter);
+		  new_cost_value / initial_cost > m_outer_epsilon && iter < m_max_iter);
 
 	cvmsg() << '\n';
 
@@ -537,12 +537,12 @@ void C3DImageRegister::reg_level_regrid(const C3DImage& source, const C3DImage& 
 		result = best_local_shift;
 	}
 
-	if (_M_save_steps) {
+	if (m_save_steps) {
 		stringstream regmov;
 		C3DImageVector vimg;
-		vimg.push_back(filter(FDeformer3D(best_local_shift, _M_ipf), source));
-		regmov << "regmov" << setw(5) << setfill('0') << --_M_mnum << "final.vff";
-		_M_mnum++;
+		vimg.push_back(filter(FDeformer3D(best_local_shift, m_ipf), source));
+		regmov << "regmov" << setw(5) << setfill('0') << --m_mnum << "final.vff";
+		m_mnum++;
 		imageio.save("vff", regmov.str(), vimg);
 	}
 }
@@ -566,15 +566,15 @@ void C3DImageRegister::reg_level(const C3DImage& source, const C3DImage& referen
 	size_t inertia = 5;
 
 	pair<float, float> mm = filter( FMinMax(), source);
-	float force_scale =_M_model.get_force_scale() / ((mm.second - mm.first)* (mm.second - mm.first));
+	float force_scale =m_model.get_force_scale() / ((mm.second - mm.first)* (mm.second - mm.first));
 
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance() ;
 
 	double initial_cost;
 
-	P3DImage temp = filter(FDeformer3D(result, _M_ipf), source);
-	_M_cost.set_reference(reference); 
-	double new_cost_value = initial_cost = _M_cost.value(*temp);
+	P3DImage temp = filter(FDeformer3D(result, m_ipf), source);
+	m_cost.set_reference(reference); 
+	double new_cost_value = initial_cost = m_cost.value(*temp);
 
 	C3DFVectorfield force(source.get_size());
 	C3DFVectorfield u(source.get_size());
@@ -585,39 +585,39 @@ void C3DImageRegister::reg_level(const C3DImage& source, const C3DImage& referen
 
 	float best_cost_value = new_cost_value;
 
-	float maxshift = _M_time_step.calculate_pertuberation(result, result);
-	float delta = _M_time_step.get_delta(1.0 + maxshift);
+	float maxshift = m_time_step.calculate_pertuberation(result, result);
+	float delta = m_time_step.get_delta(1.0 + maxshift);
 	do {
 		++iter;
 		cost_value = new_cost_value;
 
 		force.clear();
-		_M_cost.evaluate_force(*temp, delta * force_scale, force);
+		m_cost.evaluate_force(*temp, delta * force_scale, force);
 
-		_M_model.solve(force, result);
+		m_model.solve(force, result);
 
-		maxshift = _M_time_step.calculate_pertuberation(result, result);
+		maxshift = m_time_step.calculate_pertuberation(result, result);
 		if (maxshift <= 0) {
 			cvmsg() << "zero time step, perfect registration?\n";
 			break;
 		}
 
 		// get the time step based on the maximum shift
-		delta = _M_time_step.get_delta(1.0/iter + maxshift);
+		delta = m_time_step.get_delta(1.0/iter + maxshift);
 		cvdebug() << "Timestep = " << delta << "\n";
 
 
-		temp = filter(FDeformer3D(result, _M_ipf), source);
+		temp = filter(FDeformer3D(result, m_ipf), source);
 
-		if (_M_save_steps) {
+		if (m_save_steps) {
 			stringstream regmov;
 			C3DImageVector vimg;
 			vimg.push_back(temp);
-			regmov << "regmov" << setw(5) << setfill('0') << _M_mnum++ << ".vff";
+			regmov << "regmov" << setw(5) << setfill('0') << m_mnum++ << ".vff";
 			imageio.save("vff", regmov.str(), vimg);
 		}
 
-		new_cost_value = _M_cost.value(*temp);
+		new_cost_value = m_cost.value(*temp);
 
 		if (new_cost_value < best_cost_value) {
 			best_cost_value = new_cost_value;
@@ -627,13 +627,13 @@ void C3DImageRegister::reg_level(const C3DImage& source, const C3DImage& referen
 
 		// if the cost reduction was big, increase the possible time step
 		if (new_cost_value < cost_value * 0.9) {
-			_M_time_step.increase();
+			m_time_step.increase();
 		}
 
 		// if the cost increased, reduce the time step if possible,
 		// or count down the allowed search in sub-optimal areas
 		if (new_cost_value >= cost_value)
-			if (!_M_time_step.decrease()) {
+			if (!m_time_step.decrease()) {
 				--inertia;
 			}
 
@@ -643,17 +643,17 @@ void C3DImageRegister::reg_level(const C3DImage& source, const C3DImage& referen
 			<< ", delta =" << delta << "                     "
 			<< lend;
 
-	} while ( inertia > 0 && new_cost_value / initial_cost > _M_outer_epsilon && iter < _M_max_iter);
+	} while ( inertia > 0 && new_cost_value / initial_cost > m_outer_epsilon && iter < m_max_iter);
 
 	cvmsg() << '\n';
 
 	result = best_result;
-	if (_M_save_steps) {
+	if (m_save_steps) {
 		stringstream regmov;
 		C3DImageVector vimg;
-		vimg.push_back(filter(FDeformer3D(result, _M_ipf), source));
-		regmov << "regmov" << setw(5) << setfill('0') << --_M_mnum << "final.vff";
-		_M_mnum++;
+		vimg.push_back(filter(FDeformer3D(result, m_ipf), source));
+		regmov << "regmov" << setw(5) << setfill('0') << --m_mnum << "final.vff";
+		m_mnum++;
 		imageio.save("vff", regmov.str(), vimg);
 	}
 }

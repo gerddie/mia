@@ -28,10 +28,10 @@ NS_MIA_BEGIN
 
 
 CMessenger::CMessenger(size_t nslaves):
-	_M_command(-1),
-	_M_param(NULL),
-	_M_precmd_barrier(nslaves),
-	_M_finished(true)
+	m_command(-1),
+	m_param(NULL),
+	m_precmd_barrier(nslaves),
+	m_finished(true)
 {
 
 }
@@ -40,17 +40,17 @@ void CMessenger::send_command_and_wait(int command, boost::any *param)
 {
 	{
 		cvdebug() << "MASTER: send command "<< command << "\n";
-		boost::mutex::scoped_lock lock(_M_send_mutex);
-		_M_finished = false;
-		_M_command = command;
-		_M_param = param;
-		_M_send_condition.notify_all();
+		boost::mutex::scoped_lock lock(m_send_mutex);
+		m_finished = false;
+		m_command = command;
+		m_param = param;
+		m_send_condition.notify_all();
 	}
 	cvdebug() << "MASTER: send command "<< command << " wait for finish\n";
 	{
-		boost::mutex::scoped_lock lock(_M_receive_mutex);
-		while (!_M_finished)
-			_M_receive_condition.wait(lock);
+		boost::mutex::scoped_lock lock(m_receive_mutex);
+		while (!m_finished)
+			m_receive_condition.wait(lock);
 	}
 	cvdebug() << "MASTER: send command "<< command << " done\n";
 }
@@ -58,10 +58,10 @@ void CMessenger::send_command_and_wait(int command, boost::any *param)
 void CMessenger::send_command_finished()
 {
 	cvdebug() << "SLAVE: send 'finished' \n";
-	boost::mutex::scoped_lock lock(_M_receive_mutex);
-	_M_finished = true;
-	_M_command = -1;
-	_M_receive_condition.notify_one();
+	boost::mutex::scoped_lock lock(m_receive_mutex);
+	m_finished = true;
+	m_command = -1;
+	m_receive_condition.notify_one();
 	cvdebug() <<  "SLAVE: send 'finished' done \n";
 }
 
@@ -69,19 +69,19 @@ int CMessenger::wait_for_command()
 {
 	cvdebug() << "SLAVE: wait for command \n";
 	// first gather all slaves
-	_M_precmd_barrier.wait();
-	boost::mutex::scoped_lock lock(_M_send_mutex);
-	while (_M_command < 0)
-		_M_send_condition.wait(lock);
-	cvdebug() << "SLAVE: got command " <<  _M_command << " \n";
-	int command = _M_command;
+	m_precmd_barrier.wait();
+	boost::mutex::scoped_lock lock(m_send_mutex);
+	while (m_command < 0)
+		m_send_condition.wait(lock);
+	cvdebug() << "SLAVE: got command " <<  m_command << " \n";
+	int command = m_command;
 	return command;
 }
 
 CSlave::CSlave(PMessenger messanger, PBarrier final_barrier, size_t nr):
-	_M_messanger(messanger),
-	_M_final_barrier(final_barrier),
-	_M_nr(nr)
+	m_messanger(messanger),
+	m_final_barrier(final_barrier),
+	m_nr(nr)
 
 {
 }
@@ -94,27 +94,27 @@ void CSlave::operator ()()
 {
 	bool run = true;
 
-	cvdebug() << "SLAVE:" << _M_nr << " started  \n";
+	cvdebug() << "SLAVE:" << m_nr << " started  \n";
 	while ( run ) {
 
-		int command = _M_messanger->wait_for_command();
+		int command = m_messanger->wait_for_command();
 
 		if (command != CMessenger::cmd_finish)
-			run_command(command, _M_messanger->get_param());
+			run_command(command, m_messanger->get_param());
 		else {
 			run = false;
-			cvdebug() << "SLAVE:" << _M_nr << " got terminate command; run = " << run << "\n";
+			cvdebug() << "SLAVE:" << m_nr << " got terminate command; run = " << run << "\n";
 		}
 
-		cvdebug() << "SLAVE:" << _M_nr << " wait at barrier  \n";
-		if (_M_final_barrier->wait()) {
-			cvdebug() << "SLAVE:" << _M_nr << " send finish  \n";
-			_M_messanger->send_command_finished();
-			cvdebug() << "SLAVE:" << _M_nr << " send finish  done \n";
+		cvdebug() << "SLAVE:" << m_nr << " wait at barrier  \n";
+		if (m_final_barrier->wait()) {
+			cvdebug() << "SLAVE:" << m_nr << " send finish  \n";
+			m_messanger->send_command_finished();
+			cvdebug() << "SLAVE:" << m_nr << " send finish  done \n";
 		}
-		cvdebug() << "SLAVE:" << _M_nr << " proceed after barrier with run = " << run <<'\n';
+		cvdebug() << "SLAVE:" << m_nr << " proceed after barrier with run = " << run <<'\n';
 	}
-	cvdebug() << "SLAVE:" << _M_nr << " terminated \n";
+	cvdebug() << "SLAVE:" << m_nr << " terminated \n";
 }
 
 NS_MIA_END

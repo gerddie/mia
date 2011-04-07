@@ -32,10 +32,10 @@
 NS_MIA_BEGIN
 
 C2DRegTimeStep::C2DRegTimeStep(float min, float max):
-	_M_min(min),
-	_M_max(max),
-	_M_current((max - min)/ 2.0 + min ),
-	_M_step((max-min) / 20)
+	m_min(min),
+	m_max(max),
+	m_current((max - min)/ 2.0 + min ),
+	m_step((max-min) / 20)
 {
 }
 
@@ -46,9 +46,9 @@ C2DRegTimeStep::~C2DRegTimeStep()
 
 bool C2DRegTimeStep::decrease()
 {
-	_M_current /= 2.0;
-	if (_M_current < _M_min) {
-		_M_current = _M_min;
+	m_current /= 2.0;
+	if (m_current < m_min) {
+		m_current = m_min;
 		return false;
 	}
 	return true;
@@ -56,9 +56,9 @@ bool C2DRegTimeStep::decrease()
 
 void C2DRegTimeStep::increase()
 {
-	_M_current *= 1.5;
-	if (_M_current > _M_max)
-		_M_current = _M_max;
+	m_current *= 1.5;
+	if (m_current > m_max)
+		m_current = m_max;
 }
 
 float C2DRegTimeStep::calculate_pertuberation(C2DFVectorfield& io, const C2DTransformation& shift) const
@@ -78,28 +78,28 @@ bool C2DRegTimeStep::has_regrid () const
 float C2DRegTimeStep::get_delta(float maxshift) const
 {
 	assert(maxshift > 0.0f);
-	return (_M_current / maxshift);
+	return (m_current / maxshift);
 }
 
 C2DRegTimeStepPlugin::C2DRegTimeStepPlugin(const char *name):
 	TFactory<C2DRegTimeStep>(name),
-	_M_min(0.1),
-	_M_max(2.0)
+	m_min(0.1),
+	m_max(2.0)
 {
-	add_parameter("min", new CFloatParameter(_M_min, 0.001, numeric_limits<float>::max(),
+	add_parameter("min", new CFloatParameter(m_min, 0.001, numeric_limits<float>::max(),
 							   false, "minimum time step allowed"));
-	add_parameter("max", new CFloatParameter(_M_max, 0.002, numeric_limits<float>::max(),
+	add_parameter("max", new CFloatParameter(m_max, 0.002, numeric_limits<float>::max(),
 							       false, "maximum time step allowed"));
 }
 
 float C2DRegTimeStepPlugin::get_min_timestep() const
 {
-	return _M_min;
+	return m_min;
 }
 
 float C2DRegTimeStepPlugin::get_max_timestep() const
 {
-	return _M_max;
+	return m_max;
 }
 
 

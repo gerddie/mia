@@ -58,18 +58,18 @@ class  EXPORT_3D T3DDatafield {
         typedef std::shared_ptr<std::vector<T>  >  ref_data_type;
 
         /** Size of the field */
-        C3DBounds  _M_size;
+        C3DBounds  m_size;
 
         /** helper: product of Size.x * Size.y */
-        size_t  _M_xy;
+        size_t  m_xy;
 
         /** Pointer to the Field of Data hold by this class */
-        ref_data_type _M_data;
+        ref_data_type m_data;
 
         /** helper: represents the zero-value */
         static const T Zero;
 	
-	static const unsigned int _M_elements; 
+	static const unsigned int m_elements; 
 
 public:
 
@@ -153,7 +153,7 @@ public:
         /** \returns the 3D-size of the data field */
         const C3DBounds&  get_size() const
         {
-                return _M_size;
+                return m_size;
         }
 
         /** Set alle elements of the field to T() == Zero*/
@@ -162,7 +162,7 @@ public:
         /** \returns the number of elements in the datafield */
         size_type size()const
         {
-                return _M_data->size();
+                return m_data->size();
         }
 
 	void swap(T3DDatafield& other);
@@ -182,9 +182,9 @@ public:
         const_reference operator()(size_t  x, size_t  y, size_t  z) const
 	{
         	// Look if we are inside, and give reference, else give the zero
-	        if (x < _M_size.x && y < _M_size.y && z < _M_size.z) {
-	                const std::vector<T>& data = *_M_data;
-	                return data[x+ _M_size.x * (y  + _M_size.y * z)];
+	        if (x < m_size.x && y < m_size.y && z < m_size.z) {
+	                const std::vector<T>& data = *m_data;
+	                return data[x+ m_size.x * (y  + m_size.y * z)];
 	        }
 		return Zero;
 	}
@@ -201,8 +201,8 @@ public:
 	{
         	// Look if we are inside, and give reference, else throw exception
 	        // since write access is wanted
-	        assert(x < _M_size.x && y < _M_size.y && z < _M_size.z);
-		return (*_M_data)[x + _M_size.x *(y + _M_size.y * z)];
+	        assert(x < m_size.x && y < m_size.y && z < m_size.z);
+		return (*m_data)[x + m_size.x *(y + m_size.y * z)];
 	}
 
 
@@ -262,18 +262,18 @@ public:
         /** \returns an read only forward iterator over the whole data field */
         const_iterator begin()const
         {
-                return _M_data->begin();
+                return m_data->begin();
         }
 
 	const_iterator begin_at(size_t x, size_t y, size_t z)const
         {
-                return _M_data->begin() + (z * _M_size.y + y) * _M_size.x + x;
+                return m_data->begin() + (z * m_size.y + y) * m_size.x + x;
         }
 
 
         const_iterator end()const
         {
-                return _M_data->end();
+                return m_data->end();
         }
 
         /** \returns an read/write random access iterator over the whole data
@@ -282,7 +282,7 @@ public:
         iterator begin()
         {
                 make_single_ref();
-                return _M_data->begin();
+                return m_data->begin();
         }
 
         /** \returns an read/write forward iterator over a subset of the data. 
@@ -295,7 +295,7 @@ public:
 	iterator begin_at(size_t x, size_t y, size_t z)
         {
 		make_single_ref();
-		return _M_data->begin() + (z * _M_size.y + y) * _M_size.x + x;
+		return m_data->begin() + (z * m_size.y + y) * m_size.x + x;
         }
 
 	/** \returns an read/write random access iterator over the whole data
@@ -304,13 +304,13 @@ public:
         iterator end()
         {
                 make_single_ref();
-                return _M_data->end();
+                return m_data->end();
         }
 
         /** a linear read only access operator */
         const_reference operator[](int i)const
         {
-                return (*_M_data)[i];
+                return (*m_data)[i];
         }
 
         /** A linear read/write access operator. The refcount of Data must be 1,
@@ -318,15 +318,15 @@ public:
         */
         reference operator[](int i)
         {
-		assert(_M_data.unique());
-                return (*_M_data)[i];
+		assert(m_data.unique());
+                return (*m_data)[i];
         }
 
 
         /** \returns the element count of one z slice */
         size_t  get_plane_size_xy()const
         {
-                return _M_xy;
+                return m_xy;
         };
 
 private:
@@ -365,17 +365,17 @@ template <class T>
 template <typename Out>
 T3DVector<Out> T3DDatafield<T>::get_gradient(size_t  x, size_t  y, size_t  z) const
 {
-	const std::vector<T>& data = *_M_data;
-	const int sizex = _M_size.x;
+	const std::vector<T>& data = *m_data;
+	const int sizex = m_size.x;
 	// Look if we are inside the used space
-	if (x - 1 < _M_size.x - 2 &&  y - 1 < _M_size.y - 2 &&  z - 1 < _M_size.z - 2) {
+	if (x - 1 < m_size.x - 2 &&  y - 1 < m_size.y - 2 &&  z - 1 < m_size.z - 2) {
 
                 // Lookup all neccessary Values
-		const T *H  = &data[x + _M_size.x * (y + _M_size.y * z)];
+		const T *H  = &data[x + m_size.x * (y + m_size.y * z)];
 
 		return T3DVector<Out> (Out((H[1] - H[-1]) * 0.5),
 				       Out((H[sizex] - H[-sizex]) * 0.5),
-				       Out((H[_M_xy] - H[-_M_xy]) * 0.5));
+				       Out((H[m_xy] - H[-m_xy]) * 0.5));
 	}
 
 	return T3DVector<Out>();
@@ -385,13 +385,13 @@ template <class T>
 template <typename Out>
 T3DVector<Out> T3DDatafield<T>::get_gradient(int hardcode) const
 {
-	const int sizex = _M_size.x;
+	const int sizex = m_size.x;
 	// Lookup all neccessary Values
-	const T *H  = &(*_M_data)[hardcode];
+	const T *H  = &(*m_data)[hardcode];
 
 	return T3DVector<Out> (Out((H[1] - H[-1]) * 0.5),
 			       Out((H[sizex] - H[-sizex]) * 0.5),
-			       Out((H[_M_xy] - H[-_M_xy]) * 0.5));
+			       Out((H[m_xy] - H[-m_xy]) * 0.5));
 }
 
 
@@ -401,9 +401,9 @@ T3DVector<Out> T3DDatafield<bool>::get_gradient(int hardcode) const
 {
 
 	// Lookup all neccessary Values
-	return T3DVector<Out> (Out(((*_M_data)[hardcode + 1] - (*_M_data)[hardcode -1]) * 0.5),
-			       Out(((*_M_data)[hardcode + _M_size.x] - (*_M_data)[hardcode -_M_size.x]) * 0.5),
-			       Out(((*_M_data)[hardcode + _M_xy] - (*_M_data)[hardcode -_M_xy]) * 0.5));
+	return T3DVector<Out> (Out(((*m_data)[hardcode + 1] - (*m_data)[hardcode -1]) * 0.5),
+			       Out(((*m_data)[hardcode + m_size.x] - (*m_data)[hardcode -m_size.x]) * 0.5),
+			       Out(((*m_data)[hardcode + m_xy] - (*m_data)[hardcode -m_xy]) * 0.5));
 }
 
 template <class T>
@@ -411,8 +411,8 @@ template <typename Out>
 T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
 {
         // This will become really funny
-	const int sizex = _M_size.x;
-        const std::vector<T>& data = *_M_data;
+	const int sizex = m_size.x;
+        const std::vector<T>& data = *m_data;
         // Calculate the int coordinates near the POI
         // and the distances
         size_t  x = size_t (p.x);
@@ -426,11 +426,11 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
         float  zm = 1 - dz;
 
 	// Look if we are inside the used space
-        if (x-1 < _M_size.x-3 &&  y -1 < _M_size.y-3 && z - 1 < _M_size.z-3 ) {
+        if (x-1 < m_size.x-3 &&  y -1 < m_size.y-3 && z - 1 < m_size.z-3 ) {
                 // Lookup all neccessary Values
-                const T *H000  = &data[x + sizex * y + _M_xy * z];
+                const T *H000  = &data[x + sizex * y + m_xy * z];
 
-                const T* H_100 = &H000[-_M_xy];
+                const T* H_100 = &H000[-m_xy];
                 const T* H_101 = &H_100[1];
                 const T* H_110 = &H_100[sizex];
                 const T* H_111 = &H_110[1];
@@ -451,7 +451,7 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
                 const T* H020 = &H010[sizex];
                 const T* H021 = &H020[ 1];
 
-                const T* H100 = &H000[_M_xy];
+                const T* H100 = &H000[m_xy];
 
                 const T* H1_10 = &H100[sizex];
                 const T* H1_11 = &H1_10[1];
@@ -468,7 +468,7 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
                 const T* H120 = &H110[sizex];
                 const T* H121 = &H120[ 1];
 
-                const T* H200 = &H100[_M_xy];
+                const T* H200 = &H100[m_xy];
                 const T* H201 = &H200[1];
                 const T* H210 = &H200[sizex];
                 const T* H211 = &H210[1];

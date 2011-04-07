@@ -44,14 +44,14 @@ public:
 
 private:
 	virtual void run_command(int command, any* param) ;
-	size_t& _M_value;
-	mutex& _M_value_mutex;
+	size_t& m_value;
+	mutex& m_value_mutex;
 };
 
 CTestSlave::CTestSlave(PMessenger msg, PBarrier final_barrier, size_t& value, mutex& value_mutex, size_t nr):
 	CSlave(msg, final_barrier, nr),
-	_M_value(value),
-	_M_value_mutex(value_mutex)
+	m_value(value),
+	m_value_mutex(value_mutex)
 
 {
 
@@ -62,9 +62,9 @@ void CTestSlave::run_command(int command, any* /*param*/)
 	cvdebug() << "SLAVE " << nr() << ": run command " << command << "\n";
 	if (command == 2) {
 
-		mutex::scoped_lock lock(_M_value_mutex);
-		++_M_value;
-		cvdebug() <<"SLAVE " << nr() << ": " <<  _M_value << "\n";
+		mutex::scoped_lock lock(m_value_mutex);
+		++m_value;
+		cvdebug() <<"SLAVE " << nr() << ": " <<  m_value << "\n";
 	}
 	cvdebug() << "SLAVE " << nr() << ": run command " << command << " done\n";
 }

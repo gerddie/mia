@@ -50,45 +50,45 @@ const TDictMap<vstream::Level>::Table verbose_dict[] = {
 const TDictMap<vstream::Level> g_verbose_dict(verbose_dict);
 
 vstream::vstream(std::ostream& output, Level l):
-	_M_output(&output),
-	_M_output_level(l),
-	_M_message_level(ml_fatal)
+	m_output(&output),
+	m_output_level(l),
+	m_message_level(ml_fatal)
 {
 }
 
 void vstream::set_verbosity(Level l)
 {
-	_M_output_level = l;
+	m_output_level = l;
 }
 
 vstream& vstream::instance()
 {
-	static vstream verb(_M_output_target ? *_M_output_target :
+	static vstream verb(m_output_target ? *m_output_target :
 			    std::cerr, vstream::ml_fail);
 	return verb;
 }
 
-std::ostream *vstream::_M_output_target = 0;
+std::ostream *vstream::m_output_target = 0;
 
 void vstream::set_output_target(std::ostream* os)
 {
-	_M_output_target = os;
+	m_output_target = os;
 }
 
 vstream& vstream::operator << (Level l)
 {
-	_M_message_level = l;
-	if (_M_message_level >= _M_output_level) {
+	m_message_level = l;
+	if (m_message_level >= m_output_level) {
 
-		switch (_M_message_level) {
-		case ml_debug:  *_M_output << "DEBUG:"; break;
-		case ml_info:  *_M_output << "INFO:"; break;
+		switch (m_message_level) {
+		case ml_debug:  *m_output << "DEBUG:"; break;
+		case ml_info:  *m_output << "INFO:"; break;
 		case ml_message:break;
-		case ml_warning:*_M_output << "WARNING:"; break;
-		case ml_fail:   *_M_output << "FAILED:"; break;
-		case ml_error:  *_M_output << "ERROR:"; break;
-		case ml_fatal:  *_M_output << "FATAL:"; break;
-		default:        *_M_output << "TRACE:";
+		case ml_warning:*m_output << "WARNING:"; break;
+		case ml_fail:   *m_output << "FAILED:"; break;
+		case ml_error:  *m_output << "ERROR:"; break;
+		case ml_fatal:  *m_output << "FATAL:"; break;
+		default:        *m_output << "TRACE:";
 		}
 	}
 
@@ -97,15 +97,15 @@ vstream& vstream::operator << (Level l)
 
 std::ostream&  vstream::set_stream(std::ostream& os)
 {
-	std::ostream& old_os = *_M_output;
-	_M_output = &os;
+	std::ostream& old_os = *m_output;
+	m_output = &os;
 	return old_os;
 }
 
 vstream & vstream::operator<<(std::ostream& (*f)(std::ostream&))
 {
-	if (_M_message_level >= _M_output_level) {
-		*_M_output << f;
+	if (m_message_level >= m_output_level) {
+		*m_output << f;
 	}
 	return *this;
 }
@@ -117,7 +117,7 @@ void set_verbose(bool verbose)
 }
 
 #ifndef NDEBUG
-size_t CTrace::_M_depth = 0;
+size_t CTrace::m_depth = 0;
 #endif
 
 NS_MIA_END

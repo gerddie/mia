@@ -69,7 +69,7 @@ public:
 
 struct FAddWeighted: public TFilter<P2DImage> {
 	FAddWeighted(float w):
-		_M_w(w)
+		m_w(w)
 	{
 	}
 
@@ -86,11 +86,11 @@ struct FAddWeighted: public TFilter<P2DImage> {
 		auto ia = a.begin();
 		auto ib = b.begin();
 
-		float w2 = 1.0 - _M_w;
+		float w2 = 1.0 - m_w;
 
 		// this should be properly clamped
 		while ( r != e ) {
-			*r = (T)(w2 * (float)*ia + _M_w * (float)*ib);
+			*r = (T)(w2 * (float)*ia + m_w * (float)*ib);
 			++r;
 			++ia;
 			++ib;
@@ -100,14 +100,14 @@ struct FAddWeighted: public TFilter<P2DImage> {
 	}
 
 private:
-	float _M_w;
+	float m_w;
 };
 
 class Convert2Float {
 public: 
 	C2DFImage operator () (P2DImage image) const; 
 private: 
-	FConvert2DImage2float _M_converter; 
+	FConvert2DImage2float m_converter; 
 }; 
 
 
@@ -453,5 +453,5 @@ int main( int argc, const char *argv[] )
 
 inline C2DFImage Convert2Float::operator () (P2DImage image) const
 {
-	return ::mia::filter(_M_converter, *image); 
+	return ::mia::filter(m_converter, *image); 
 }

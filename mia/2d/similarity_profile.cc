@@ -55,7 +55,7 @@ C2DSimilarityProfile::C2DSimilarityProfile(const C2DSimilarityProfile& other):
 	m_reference(other.m_reference), 
 	m_cost_values(other.m_cost_values)
 {
-	boost::mutex::scoped_lock lock(other._M_peak_freq_mutex);
+	boost::mutex::scoped_lock lock(other.m_peak_freq_mutex);
 	m_peak_freq = other.m_peak_freq;
 	m_peak_freq_valid = other.m_peak_freq_valid; 
 }
@@ -66,7 +66,7 @@ C2DSimilarityProfile& C2DSimilarityProfile::operator = (const C2DSimilarityProfi
 		m_reference = other.m_reference; 
 		m_cost_values = other.m_cost_values; 
 		
-		boost::mutex::scoped_lock lock(other._M_peak_freq_mutex);
+		boost::mutex::scoped_lock lock(other.m_peak_freq_mutex);
 		m_peak_freq = other.m_peak_freq;
 		m_peak_freq_valid = other.m_peak_freq_valid; 
 	}
@@ -76,7 +76,7 @@ C2DSimilarityProfile& C2DSimilarityProfile::operator = (const C2DSimilarityProfi
 float C2DSimilarityProfile::get_peak_frequency() const
 {
 	{
-		boost::mutex::scoped_lock lock(_M_peak_freq_mutex);
+		boost::mutex::scoped_lock lock(m_peak_freq_mutex);
 		if (!m_peak_freq_valid) {
 			CFFT1D_R2C fft(m_cost_values.size());
 			cvdebug() << "costs:" << m_cost_values << "\n"; 

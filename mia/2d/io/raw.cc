@@ -96,14 +96,14 @@ struct C2DRawImageSaver {
 	typedef bool result_type;
 
 	C2DRawImageSaver(CFile& f):
-		_M_f(f)
+		m_f(f)
 	{
 	}
 
 	template <typename T>
 	result_type operator()(const T2DImage<T>& image) const;
 private:
-	CFile& _M_f;
+	CFile& m_f;
 };
 
 
@@ -129,7 +129,7 @@ template <typename T>
 C2DRawImageSaver::result_type
 C2DRawImageSaver::operator()(const T2DImage<T>& image) const
 {
-	return T2DRawImageWriter<T>::apply(image, _M_f);
+	return T2DRawImageWriter<T>::apply(image, m_f);
 }
 
 ///

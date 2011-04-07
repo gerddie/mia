@@ -58,8 +58,8 @@ public:
 	*/
 	void set_module(PPluginModule module);
 private:
-	PPluginModule _M_module;
-	std::string _M_init_string; 
+	PPluginModule m_module;
+	std::string m_init_string; 
 };
 NS_MIA_END
 

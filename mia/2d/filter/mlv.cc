@@ -43,11 +43,11 @@ NS_MIA_USE;
 using namespace std;
 
 C2DMLV::C2DMLV(int hw):
-	_M_l(hw),
-	_M_kh(2 * hw +1),
-	_M_mu(C2DBounds(0,0)),
-	_M_sigma(C2DBounds(0,0)),
-	_M_n(C2DBounds(0,0))
+	m_l(hw),
+	m_kh(2 * hw +1),
+	m_mu(C2DBounds(0,0)),
+	m_sigma(C2DBounds(0,0)),
+	m_n(C2DBounds(0,0))
 {
 }
 
@@ -55,8 +55,8 @@ template <typename T>
 void C2DMLV::run_sub(const T2DImage<T>& image, int cx, int cy, float& mu, float& sigma, float &n)const
 {
 	n = 0.0;
-	const int ymax = min(cy +  _M_kh, image.get_size().y);
-	const int xmax = min(cx +  _M_kh, image.get_size().x);
+	const int ymax = min(cy +  m_kh, image.get_size().y);
+	const int xmax = min(cx +  m_kh, image.get_size().x);
 	mu = 0.0f;
 	sigma = 0.0f;
 
@@ -79,8 +79,8 @@ template <typename T>
 T C2DMLV::get(int x, int y, float ref)const
 {
 
-	const int ymax = y +  _M_kh;
-	const int xmax = x +  _M_kh;
+	const int ymax = y +  m_kh;
+	const int xmax = x +  m_kh;
 
 
 	float best_sigma = numeric_limits<float>::max();
@@ -90,12 +90,12 @@ T C2DMLV::get(int x, int y, float ref)const
 
 	for (int iy = y; iy < ymax; ++iy)
 		for (int ix = x; ix < xmax; ++ix, ++i) {
-			float const &s =  _M_sigma(ix,iy);
+			float const &s =  m_sigma(ix,iy);
 			if (best_sigma > s) {
 				best_sigma = s;
-				best_mu = _M_mu(ix,iy);
+				best_mu = m_mu(ix,iy);
 			}else if (best_sigma == s) {
-				const float mu = _M_mu(ix,iy);
+				const float mu = m_mu(ix,iy);
 				if (::fabs(mu - best_mu) < ::fabs(best_mu - ref)) {
 					best_mu = mu;
 				}
@@ -173,78 +173,78 @@ C2DMLV::result_type C2DMLV::operator () (const T2DImage<T>& data) const
 	cvdebug() << "C2DMLV::operator () begin\n";
 
 	T2DImage<T> *result = new T2DImage<T>(data.get_size());
-	C2DBounds border(2*_M_l, 2*_M_l);
+	C2DBounds border(2*m_l, 2*m_l);
 	C2DBounds extsize = data.get_size() + border;
 
-	if (_M_mu.get_size() != extsize) {
+	if (m_mu.get_size() != extsize) {
 		cvdebug() << "run initialise code\n";
 		// reinitialize
-		_M_mu = C2DFImage(extsize);
-		_M_sigma = C2DFImage(extsize);
-		_M_n = C2DFImage(extsize);
-		_M_sqbuf.resize(data.get_size().x);
-		_M_buf.resize(data.get_size().x);
-		_M_mu_l1.resize(extsize.x);
-		_M_sigma_l1.resize(extsize.x);
+		m_mu = C2DFImage(extsize);
+		m_sigma = C2DFImage(extsize);
+		m_n = C2DFImage(extsize);
+		m_sqbuf.resize(data.get_size().x);
+		m_buf.resize(data.get_size().x);
+		m_mu_l1.resize(extsize.x);
+		m_sigma_l1.resize(extsize.x);
 
-		C2DFImage::iterator i_mu = _M_mu.begin();
-		C2DFImage::iterator i_s = _M_sigma.begin();
-		C2DFImage::iterator i_n = _M_n.begin();
-		for (size_t y = 0; y < _M_n.get_size().y; ++y)
-			for (size_t x = 0; x < _M_n.get_size().x; ++x, ++i_mu, ++i_s, ++i_n)
+		C2DFImage::iterator i_mu = m_mu.begin();
+		C2DFImage::iterator i_s = m_sigma.begin();
+		C2DFImage::iterator i_n = m_n.begin();
+		for (size_t y = 0; y < m_n.get_size().y; ++y)
+			for (size_t x = 0; x < m_n.get_size().x; ++x, ++i_mu, ++i_s, ++i_n)
 				run_sub(data, int(x) - border.x, int(y) - border.y, *i_mu, *i_s, *i_n);
 	}else {
 		cvdebug() << "run size repeat code\n";
-		fill(_M_mu.begin(), _M_mu.end(), 0.0f);
-		fill(_M_sigma.begin(), _M_sigma.end(), 0.0f);
+		fill(m_mu.begin(), m_mu.end(), 0.0f);
+		fill(m_sigma.begin(), m_sigma.end(), 0.0f);
 
-		cvdebug() << "temporary image have size (" << _M_mu.get_size().x << ", " << _M_mu.get_size().y << ")\n";
+		cvdebug() << "temporary image have size (" << m_mu.get_size().x << ", " << m_mu.get_size().y << ")\n";
 
 		for (size_t y = 0; y < data.get_size().y; ++y) {
-			fill(_M_mu_l1.begin(), _M_mu_l1.end(), 0.0f);
-			fill(_M_sigma_l1.begin(), _M_sigma_l1.end(), 0.0f);
+			fill(m_mu_l1.begin(), m_mu_l1.end(), 0.0f);
+			fill(m_sigma_l1.begin(), m_sigma_l1.end(), 0.0f);
 
 
 			__dispatch_trasform<typename T2DImage<T>::const_iterator>::apply(data.begin() + data.get_size().x * y,
 											 data.begin() + data.get_size().x * (y + 1) ,
-											 _M_sqbuf.begin());
+											 m_sqbuf.begin());
 
 #ifdef HAVE_BLAS
-			copy(data.begin_at(0,y), data.begin_at(0,y) + data.get_size().x, _M_buf.begin());
-			for (size_t x = 0; x < _M_kh; ++x) {
-				cblas_saxpy(data.get_size().x, 1.0f, &_M_buf[0],  1, &_M_mu_l1[x], 1);
-				cblas_saxpy(data.get_size().x, 1.0f, &_M_sqbuf[0],  1, &_M_sigma_l1[x], 1);
+			copy(data.begin_at(0,y), data.begin_at(0,y) + data.get_size().x, m_buf.begin());
+			for (size_t x = 0; x < m_kh; ++x) {
+				cblas_saxpy(data.get_size().x, 1.0f, &m_buf[0],  1, &m_mu_l1[x], 1);
+				cblas_saxpy(data.get_size().x, 1.0f, &m_sqbuf[0],  1, &m_sigma_l1[x], 1);
 			}
 
-			for (size_t iy= 0; iy < _M_kh; ++iy) {
-				cblas_saxpy(_M_mu_l1.size(), 1.0f, &_M_mu_l1[0],  1, &_M_mu(0,y + iy), 1);
-				cblas_saxpy(_M_sigma_l1.size(), 1.0f, &_M_sigma_l1[0],  1, &_M_sigma(0,y + iy), 1);
+			for (size_t iy= 0; iy < m_kh; ++iy) {
+				cblas_saxpy(m_mu_l1.size(), 1.0f, &m_mu_l1[0],  1, &m_mu(0,y + iy), 1);
+				cblas_saxpy(m_sigma_l1.size(), 1.0f, &m_sigma_l1[0],  1, &m_sigma(0,y + iy), 1);
 			}
 #else
-			for (size_t x = 0; x < _M_kh; ++x) {
-				C2DFImage::iterator start = _M_mu_l1.begin() + x;
+			for (size_t x = 0; x < m_kh; ++x) {
+				C2DFImage::iterator start = m_mu_l1.begin() + x;
 
 				__dispatch_trasform<typename T2DImage<T>::const_iterator>::apply_add(start,
 												     start + data.get_size().x,
 												     data.begin() + data.get_size().x * y);
 
-				start = _M_sigma_l1.begin() + x;
-				transform(start, start + data.get_size().x, _M_sqbuf.begin(), start, _1 + _2);
+				start = m_sigma_l1.begin() + x;
+				transform(start, start + data.get_size().x, m_sqbuf.begin(), start, _1 + _2);
 			}
 
-			for (size_t iy= 0; iy < _M_kh; ++iy) {
-				transform(_M_mu_l1.begin(), _M_mu_l1.end(), _M_mu.begin_at(0,y + iy), _M_mu.begin_at(0,y + iy), _1 + _2);
-				transform(_M_sigma_l1.begin(), _M_sigma_l1.end(), _M_sigma.begin_at(0,y + iy), _M_sigma.begin_at(0,y + iy), _1 + _2);
+			for (size_t iy= 0; iy < m_kh; ++iy) {
+				transform(m_mu_l1.begin(), m_mu_l1.end(), m_mu.begin_at(0,y + iy), m_mu.begin_at(0,y + iy), _1 + _2);
+				transform(m_sigma_l1.begin(), m_sigma_l1.end(), m_sigma.begin_at(0,y + iy), m_sigma.begin_at(0,y + iy), _1 + _2);
 			}
 #endif
 
 		}
 
 
-		C2DFImage::const_iterator i_n = _M_n.begin();
-		C2DFImage::const_iterator e_n = _M_n.end();
-		C2DFImage::iterator i_mu = _M_mu.begin();
-		C2DFImage::iterator i_s = _M_sigma.begin();
+		C2DFImage::const_iterator i_n = m_n.begin();
+		C2DFImage::const_iterator e_n = m_n.end();
+		C2DFImage::iterator i_mu = m_mu.begin();
+		C2DFImage::iterator i_s = m_sigma.begin();
 
 		while ( i_n != e_n) {
 			if (*i_n > 1.0) {
@@ -276,14 +276,14 @@ P2DImage C2DMLV::do_filter(const C2DImage& image) const
 
 C2DExtKuwaImageFilterFactory::C2DExtKuwaImageFilterFactory():
 	C2DFilterPlugin("mlv"),
-	_M_hw(1)
+	m_hw(1)
 {
-	add_parameter("w", new CIntParameter(_M_hw, 0, numeric_limits<int>::max(), false, "filter width parameter"));
+	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(), false, "filter width parameter"));
 }
 
 C2DExtKuwaImageFilterFactory::ProductPtr C2DExtKuwaImageFilterFactory::do_create()const
 {
-	return C2DExtKuwaImageFilterFactory::ProductPtr(new C2DMLV(_M_hw));
+	return C2DExtKuwaImageFilterFactory::ProductPtr(new C2DMLV(m_hw));
 }
 
 const string C2DExtKuwaImageFilterFactory::do_get_descr()const

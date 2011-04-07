@@ -37,13 +37,13 @@ public:
 	template <class Data2D>
 	typename C2DMidpoint::result_type operator () (const Data2D& data) const ;
 private: 
-	int _M_hw; 
+	int m_hw; 
 };
 
 
 
 class C2DMidpointImageFilter: public C2DImageFilterBase {
-	C2DMidpoint _M_filter; 
+	C2DMidpoint m_filter; 
 public:
 	C2DMidpointImageFilter(int hw);
 
@@ -58,7 +58,7 @@ public:
 };
 
 C2DMidpoint::C2DMidpoint(int hw):
-	_M_hw(hw)
+	m_hw(hw)
 {
 }
 
@@ -110,27 +110,27 @@ typename C2DMidpoint::result_type C2DMidpoint::operator () (const Data2D& data) 
 
 	Data2D *result = new Data2D(data.get_size()); 
 
-	vector<typename Data2D::value_type> target_vector((2 * _M_hw + 1) * 
-							       (2 * _M_hw + 1));
+	vector<typename Data2D::value_type> target_vector((2 * m_hw + 1) * 
+							       (2 * m_hw + 1));
 
 	typename Data2D::iterator i = result->begin(); 
 	
 	for (int y = 0; y < (int)data.get_size().y; ++y) 
 		for (int x = 0; x < (int)data.get_size().x; ++x, ++i)
-			*i = __dispatch_filter<Data2D>::apply(data, x, y, _M_hw, target_vector);  
+			*i = __dispatch_filter<Data2D>::apply(data, x, y, m_hw, target_vector);  
 	
 	cvdebug() << "C2DMidpoint::operator () end\n";
 	return P2DImage(result); 
 }
 
 C2DMidpointImageFilter::C2DMidpointImageFilter(int hw):
-		_M_filter(hw)
+		m_filter(hw)
 {
 }
 
 P2DImage C2DMidpointImageFilter::do_filter(const C2DImage& image) const
 {
-	return wrap_filter(_M_filter, image); 
+	return wrap_filter(m_filter, image); 
 }
 
 

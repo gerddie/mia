@@ -142,10 +142,10 @@ private:
 	virtual void do_get_opt_help(std::ostream& os) const;
 	virtual const std::string do_get_value_as_string() const;
 
-	char _M_short_opt; 
-	const char *_M_long_opt;
-	const char *_M_long_help;
-	Flags _M_flags;
+	char m_short_opt; 
+	const char *m_long_opt;
+	const char *m_long_help;
+	Flags m_flags;
 };
 
 /// a shared pointer definition of the Option
@@ -182,7 +182,7 @@ private:
 	virtual void do_set_value(const char *str_value);
 	virtual bool do_set_value_really(const char *str_value) = 0;
 
-	struct CCmdOptionData *_M_impl;
+	struct CCmdOptionData *m_impl;
 };
 
 
@@ -222,7 +222,7 @@ private:
 	virtual void do_write_value(std::ostream& os) const;
 	virtual const std::string do_get_value_as_string() const;
 
-	T& _M_value;
+	T& m_value;
 };
 
 /** Command line option that translates a set of string values to corresponding 
@@ -254,8 +254,8 @@ private:
 	virtual void do_get_long_help_really(std::ostream& os) const;
 	virtual const std::string do_get_value_as_string() const;
 
-	T& _M_value;
-	const TDictMap<T> _M_map;
+	T& m_value;
+	const TDictMap<T> m_map;
 };
 
 
@@ -283,8 +283,8 @@ private:
 	virtual void do_write_value(std::ostream& os) const;
 	virtual void do_get_long_help_really(std::ostream& os) const;
 	virtual const std::string do_get_value_as_string() const;
-	int& _M_value;
-	const CFlagString _M_map;
+	int& m_value;
+	const CFlagString m_map;
 };
 
 /** Command line option that supports only a limited number of values 
@@ -315,8 +315,8 @@ private:
 	virtual void do_get_long_help_really(std::ostream& os) const;
 	virtual const std::string do_get_value_as_string() const;
 
-	std::string& _M_value;
-	const std::set<std::string> _M_set;
+	std::string& m_value;
+	const std::set<std::string> m_set;
 };
 
 /**
@@ -343,7 +343,7 @@ public:
 	void print(std::ostream& os) const;
 
 private:
-	std::unique_ptr<Callback> _M_callback;
+	std::unique_ptr<Callback> m_callback;
 	virtual bool do_set_value_really(const char *str_value);
 	virtual size_t do_get_needed_args() const;
 	virtual void do_write_value(std::ostream& os) const;
@@ -549,7 +549,7 @@ class EXPORT_CORE CCmdOptionList {
 	void set_group(const std::string& group); 
  private:
 	int handle_shortargs(const char *arg, size_t argc, const char *args[]);
-	struct CCmdOptionListData *_M_impl;
+	struct CCmdOptionListData *m_impl;
 };
 
 
@@ -694,34 +694,34 @@ TCmdOption<T>::TCmdOption(T& val, char short_opt, const char *long_opt, const ch
                         const char *short_help, 
 			  CCmdOption::Flags flags):
         CCmdOptionValue(short_opt, long_opt, long_help, short_help, flags),
-        _M_value(val)
+        m_value(val)
 {
-        __dispatch_opt<T>::init(_M_value);
+        __dispatch_opt<T>::init(m_value);
 }
 
 template <typename T>
 bool TCmdOption<T>::do_set_value_really(const char *svalue)
 {
-        return __dispatch_opt<T>::apply(svalue, _M_value);
+        return __dispatch_opt<T>::apply(svalue, m_value);
 }
 
 template <typename T>
         size_t TCmdOption<T>::do_get_needed_args() const
 {
-        return __dispatch_opt<T>::size(_M_value);
+        return __dispatch_opt<T>::size(m_value);
 }
 
 template <typename T>
 void TCmdOption<T>::do_write_value(std::ostream& os) const
 {
-        __dispatch_opt<T>::apply( os, _M_value, is_required());
+        __dispatch_opt<T>::apply( os, m_value, is_required());
 }
 
 
 template <typename T>
         const std::string TCmdOption<T>::do_get_value_as_string() const
 {
-        return __dispatch_opt<T>::get_as_string(_M_value);
+        return __dispatch_opt<T>::get_as_string(m_value);
 }
 
 
@@ -734,13 +734,13 @@ TCmdDictOption<T>::TCmdDictOption( T& val, const TDictMap<T>& map, char short_op
 				   const char *long_opt, const char *long_help,
                                    const char *short_help, Flags flags ) :
                 CCmdOptionValue( short_opt, long_opt, long_help, short_help, flags ),
-                _M_value( val ),
-_M_map( map ) {}
+                m_value( val ),
+m_map( map ) {}
 
 template <typename T>
 bool TCmdDictOption<T>::do_set_value_really( const char *svalue )
 {
-        _M_value = _M_map.get_value( svalue );
+        m_value = m_map.get_value( svalue );
         return true;
 }
 
@@ -753,19 +753,19 @@ size_t TCmdDictOption<T>::do_get_needed_args() const
 template <typename T>
 void TCmdDictOption<T>::do_write_value( std::ostream& os ) const
 {
-        os << "=" << _M_map.get_name( _M_value );
+        os << "=" << m_map.get_name( m_value );
 }
 
 template <typename T>
 const std::string TCmdDictOption<T>::do_get_value_as_string() const
 {
-        return _M_map.get_name( _M_value );
+        return m_map.get_name( m_value );
 }
 
 template <typename T>
 void TCmdDictOption<T>::do_get_long_help_really( std::ostream& os ) const
 {
-        const std::set<std::string> names = _M_map.get_name_set();
+        const std::set<std::string> names = m_map.get_name_set();
         if ( names.size() > 0 ) {
                 os << "\n(" ;
                 std::set<std::string>::const_iterator i = names.begin();

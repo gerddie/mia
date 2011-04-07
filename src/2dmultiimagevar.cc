@@ -48,39 +48,39 @@ using namespace boost::lambda;
 class CVarAccumulator : public TFilter<bool> {
 public:
 	CVarAccumulator():
-		_M_n(0)
+		m_n(0)
 	{
 	}
 
 	template <typename T>
 	bool operator () (const T2DImage<T>& image) {
-		if (!_M_n) {
-			_M_sum = C2DDImage(image.get_size(), image);
-			_M_sum2 = C2DDImage(image.get_size());
-		}else if (image.get_size() != _M_sum.get_size()) {
+		if (!m_n) {
+			m_sum = C2DDImage(image.get_size(), image);
+			m_sum2 = C2DDImage(image.get_size());
+		}else if (image.get_size() != m_sum.get_size()) {
 			THROW(invalid_argument, "input images differ in size");
 		}
 
-		transform(image.begin(), image.end(), _M_sum.begin(), _M_sum.begin(), _1 + _2);
-		transform(image.begin(), image.end(), _M_sum2.begin(), _M_sum2.begin(), _1  * _1 + _2);
-		++_M_n;
+		transform(image.begin(), image.end(), m_sum.begin(), m_sum.begin(), _1 + _2);
+		transform(image.begin(), image.end(), m_sum2.begin(), m_sum2.begin(), _1  * _1 + _2);
+		++m_n;
 		return true;
 	}
 
 	P2DImage result()const
 	{
-		C2DFImage *image = new C2DFImage( _M_sum.get_size());
+		C2DFImage *image = new C2DFImage( m_sum.get_size());
 		P2DImage result(image);
-		transform(_M_sum.begin(), _M_sum.end(), _M_sum2.begin(),
-			  image->begin(), (_2 - _1 * _1 / _M_n) / (_M_n - 1));
+		transform(m_sum.begin(), m_sum.end(), m_sum2.begin(),
+			  image->begin(), (_2 - _1 * _1 / m_n) / (m_n - 1));
 		transform(image->begin(), image->end(), image->begin(),  ptr_fun(::sqrt));
 		return result;
 
 	}
 private:
-	C2DDImage _M_sum;
-	C2DDImage _M_sum2;
-	size_t _M_n;
+	C2DDImage m_sum;
+	C2DDImage m_sum2;
+	size_t m_n;
 };
 
 

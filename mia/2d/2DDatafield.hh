@@ -74,11 +74,11 @@ public:
 
 	T2DDatafield();
 
-	T2DDatafield(const C2DBounds& __M_size);
+	T2DDatafield(const C2DBounds& _m_size);
 
-	T2DDatafield(const C2DBounds& __M_size, const T *_data);
+	T2DDatafield(const C2DBounds& _m_size, const T *_data);
 
-	T2DDatafield(const C2DBounds& __M_size, const data_array& data);
+	T2DDatafield(const C2DBounds& _m_size, const data_array& data);
 
 	T2DDatafield(const T2DDatafield<T>& org);
 
@@ -99,11 +99,11 @@ public:
 	reference operator()(size_t  x, size_t  y);
 
 	const_reference operator[](size_t  idx) const{
-			return (*_M_data)[idx];
+			return (*m_data)[idx];
 	}
 
 	reference operator[](size_t  idx){
-			return (*_M_data)[idx];
+			return (*m_data)[idx];
 	}
 
 	const_reference operator()(const C2DBounds& l) const;
@@ -121,39 +121,39 @@ public:
 	size_type size() const;
 
 	const_iterator begin()const {
-		const data_array& data = *_M_data;
+		const data_array& data = *m_data;
 		return data.begin();
 	}
 
 	const_iterator end()const {
-		const data_array& data = *_M_data;
+		const data_array& data = *m_data;
 		return data.end();
 	}
 
 	iterator begin() {
 		make_single_ref();
-		return _M_data->begin();
+		return m_data->begin();
 	}
 
 	iterator end() {
 		make_single_ref();
-		return _M_data->end();
+		return m_data->end();
 	}
 
 	const_iterator begin_at(size_t x, size_t y)const {
 		const_iterator b = begin();
-		advance(b, x + y * _M_size.x);
+		advance(b, x + y * m_size.x);
 		return b;
 	}
 
 	iterator begin_at(size_t x, size_t y) {
 		iterator b = begin();
-		advance(b, x + y * _M_size.x);
+		advance(b, x + y * m_size.x);
 		return b;
 	}
 private:
-	C2DBounds  _M_size;
-	data_pointer _M_data;
+	C2DBounds  m_size;
+	data_pointer m_data;
 	const static T Zero;
 };
 

@@ -70,7 +70,7 @@ public:
 	operator const gsl_matrix *() const; 
 
 private: 
-	gsl_matrix *_M_matrix; 
+	gsl_matrix *m_matrix; 
 }; 
 
 } // end namespace 

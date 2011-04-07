@@ -100,15 +100,15 @@ public:
 	 */
 	boost::any *get_param();
 private:
-	boost::condition _M_send_condition;
-	boost::mutex _M_send_mutex;
-	int _M_command;
-	boost::any *_M_param;
+	boost::condition m_send_condition;
+	boost::mutex m_send_mutex;
+	int m_command;
+	boost::any *m_param;
 
-	boost::condition _M_receive_condition;
-	boost::mutex _M_receive_mutex;
-	boost::barrier _M_precmd_barrier;
-	bool _M_finished;
+	boost::condition m_receive_condition;
+	boost::mutex m_receive_mutex;
+	boost::barrier m_precmd_barrier;
+	bool m_finished;
 
 };
 
@@ -142,9 +142,9 @@ protected:
 	size_t nr() const;
 private:
 	virtual void run_command(int command, boost::any *param) = 0;
-	PMessenger _M_messanger;
-	PBarrier _M_final_barrier;
-	size_t _M_nr;
+	PMessenger m_messanger;
+	PBarrier m_final_barrier;
+	size_t m_nr;
 };
 
 
@@ -166,67 +166,67 @@ public:
 
 	const TLockedValue<T>& operator += (T val);
 private:
-	T _M_val;
-	boost::mutex _M_mutex;
+	T m_val;
+	boost::mutex m_mutex;
 };
 
 
 inline size_t CSlave::nr() const
 {
-	return _M_nr;
+	return m_nr;
 }
 
 // implementation
 inline boost::any *CMessenger::get_param()
 {
-	return _M_param;
+	return m_param;
 }
 
 template <typename T>
 TLockedValue<T>::TLockedValue():
-	_M_val()
+	m_val()
 {
 }
 
 template <typename T>
 TLockedValue<T>::TLockedValue(T val):
-	_M_val(val)
+	m_val(val)
 {
 }
 
 template <typename T>
 const TLockedValue<T>& TLockedValue<T>::operator = (T val)
 {
-	boost::mutex::scoped_lock lock(_M_mutex);
-	_M_val = val;
+	boost::mutex::scoped_lock lock(m_mutex);
+	m_val = val;
 }
 
 template <typename T>
 TLockedValue<T>::operator T() const
 {
-	boost::mutex::scoped_lock lock(_M_mutex);
-	return _M_val;
+	boost::mutex::scoped_lock lock(m_mutex);
+	return m_val;
 }
 
 template <typename T>
 void TLockedValue<T>::set (T val)
 {
-	boost::mutex::scoped_lock lock(_M_mutex);
-	_M_val = val;
+	boost::mutex::scoped_lock lock(m_mutex);
+	m_val = val;
 }
 
 template <typename T>
 const T TLockedValue<T>::get() const
 {
-	boost::mutex::scoped_lock lock(_M_mutex);
-	return _M_val;
+	boost::mutex::scoped_lock lock(m_mutex);
+	return m_val;
 }
 
 template <typename T>
 const TLockedValue<T>& TLockedValue<T>::operator += (T val)
 {
-	boost::mutex::scoped_lock lock(_M_mutex);
-	_M_val += val;
+	boost::mutex::scoped_lock lock(m_mutex);
+	m_val += val;
 	return *this;
 }
 

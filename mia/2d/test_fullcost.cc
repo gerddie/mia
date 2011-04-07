@@ -45,16 +45,16 @@ private:
 	double do_value() const; 
 	void do_set_size(); 
 	void do_reinit(); 
-	double _M_cost; 
-	double _M_gx; 
-	double _M_gy; 
+	double m_cost; 
+	double m_gx; 
+	double m_gy; 
 }; 
 
 C2DFullCostMock::C2DFullCostMock(double weight, double cost, double gx, double gy):
 	C2DFullCost(weight),
-	_M_cost(cost), 
-	_M_gx(gx), 
-	_M_gy(gy)
+	m_cost(cost), 
+	m_gx(gx), 
+	m_gy(gy)
 
 {
 }
@@ -62,20 +62,20 @@ C2DFullCostMock::C2DFullCostMock(double weight, double cost, double gx, double g
 double C2DFullCostMock::do_evaluate(const C2DTransformation&, CDoubleVector& gradient) const 
 {
 	for(auto g = gradient.begin(); g != gradient.end(); g += 2) {
-		g[0] = _M_gx; 
-		g[1] = _M_gy; 
+		g[0] = m_gx; 
+		g[1] = m_gy; 
 	}
-	return _M_cost; 
+	return m_cost; 
 }
 
 double C2DFullCostMock::do_value(const C2DTransformation& /*t*/) const
 {
-	return _M_cost; 
+	return m_cost; 
 }
 
 double C2DFullCostMock::do_value() const
 {
-	return _M_cost; 
+	return m_cost; 
 }
 void C2DFullCostMock::do_reinit()
 {

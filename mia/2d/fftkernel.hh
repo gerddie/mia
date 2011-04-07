@@ -60,16 +60,16 @@ public:
 	float *prepare(const C2DBounds& size);
 private:
 	void tear_down();
-	virtual void do_apply(const C2DBounds& _M_size, size_t _M_realsize_x, fftwf_complex *_M_cbuffer) const = 0;
+	virtual void do_apply(const C2DBounds& m_size, size_t m_realsize_x, fftwf_complex *m_cbuffer) const = 0;
 
-	C2DBounds _M_size;
-	fftwf_complex *_M_cbuffer;
-	float   *_M_fbuffer;
-	float _M_scale;
-	fftwf_plan _M_forward_plan;
-	fftwf_plan _M_backward_plan;
+	C2DBounds m_size;
+	fftwf_complex *m_cbuffer;
+	float   *m_fbuffer;
+	float m_scale;
+	fftwf_plan m_forward_plan;
+	fftwf_plan m_backward_plan;
 
-	size_t _M_realsize_x;
+	size_t m_realsize_x;
 };
 
 typedef  std::shared_ptr<CFFT2DKernel > PFFT2DKernel;

@@ -41,35 +41,35 @@ C1DInterpolator::~C1DInterpolator()
 
 
 C1DInterpolatorFactory::C1DInterpolatorFactory(EType type, PSplineKernel kernel):
-	_M_type(type),
-	_M_kernel(kernel)
+	m_type(type),
+	m_kernel(kernel)
 {
-	assert(_M_type == ipt_spline && _M_kernel);
+	assert(m_type == ipt_spline && m_kernel);
 }
 
 C1DInterpolatorFactory::C1DInterpolatorFactory(EType type):
-	_M_type(type)
+	m_type(type)
 {
-	assert(_M_type == ipt_nn || _M_type == ipt_linear);
+	assert(m_type == ipt_nn || m_type == ipt_linear);
 }
 
 C1DInterpolatorFactory::C1DInterpolatorFactory(const C1DInterpolatorFactory& o):
-	_M_type(o._M_type),
-	_M_kernel(o._M_kernel)
+	m_type(o.m_type),
+	m_kernel(o.m_kernel)
 {
 }
 
 C1DInterpolatorFactory& C1DInterpolatorFactory::operator = ( const C1DInterpolatorFactory& o)
 {
-	_M_type = o._M_type;
-	_M_kernel = o._M_kernel;
+	m_type = o.m_type;
+	m_kernel = o.m_kernel;
 
 	return *this;
 }
 
 PSplineKernel C1DInterpolatorFactory::get_kernel() const
 {
-	return _M_kernel;
+	return m_kernel;
 }
 
 C1DInterpolatorFactory::~C1DInterpolatorFactory()

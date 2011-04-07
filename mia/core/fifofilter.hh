@@ -136,14 +136,14 @@ private:
 	virtual void evaluate(size_t slice); 
 
 
-	size_t _M_buf_size;
-	size_t _M_min_fill;
-	size_t _M_read_start; 
-	size_t _M_fill; 
-	size_t _M_start_slice; 
-	size_t _M_end_slice; 
-	Pointer _M_chain; 
-	bool _M_initialized; 
+	size_t m_buf_size;
+	size_t m_min_fill;
+	size_t m_read_start; 
+	size_t m_fill; 
+	size_t m_start_slice; 
+	size_t m_end_slice; 
+	Pointer m_chain; 
+	bool m_initialized; 
 }; 
 
 /**
@@ -170,7 +170,7 @@ public:
 private: 
 	virtual void do_push(typename ::boost::call_traits<T>::param_type x); 
 	void shift_buffer(); 
-	result_type _M_result; 
+	result_type m_result; 
 }; 
 
 

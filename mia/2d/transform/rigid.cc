@@ -49,31 +49,31 @@ C2DFVector C2DRigidTransformation::apply(const C2DFVector& x) const
 
 C2DFVector C2DRigidTransformation::transform(const C2DFVector& x)const
 {
-	if (!_M_matrix_valid)
+	if (!m_matrix_valid)
 		evaluate_matrix();
 
 	return C2DFVector(
-		_M_t[0] * x.x + _M_t[1] * x.y + _M_t[2],
-		_M_t[3] * x.x + _M_t[4] * x.y + _M_t[5]
+		m_t[0] * x.x + m_t[1] * x.y + m_t[2],
+		m_t[3] * x.x + m_t[4] * x.y + m_t[5]
 			  );
 }
 
 C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size):
-	_M_t(6),
-	_M_size(size),
-	_M_translation(0.0, 0.0),
-	_M_rotation(0.0),
-	_M_matrix_valid(false)
+	m_t(6),
+	m_size(size),
+	m_translation(0.0, 0.0),
+	m_rotation(0.0),
+	m_matrix_valid(false)
 {
 
 }
 
 C2DRigidTransformation::C2DRigidTransformation(const C2DRigidTransformation& other):
-	_M_t(other._M_t),
-	_M_size(other._M_size),
-	_M_translation(other._M_translation),
-	_M_rotation(other._M_rotation),
-	_M_matrix_valid(_M_matrix_valid)
+	m_t(other.m_t),
+	m_size(other.m_size),
+	m_translation(other.m_translation),
+	m_rotation(other.m_rotation),
+	m_matrix_valid(m_matrix_valid)
 {
 }
 
@@ -85,23 +85,23 @@ C2DTransformation *C2DRigidTransformation::do_clone()const
 C2DTransformation *C2DRigidTransformation::invert()const
 {
 	C2DRigidTransformation *result = new C2DRigidTransformation(*this); 
-	result->_M_rotation = -_M_rotation;  
-	const double sina = sin(_M_rotation); 
-	const double cosa = cos(_M_rotation); 
-	result->_M_translation.x = - cosa * _M_translation.x - sina * _M_translation.y; 
-	result->_M_translation.y =   sina * _M_translation.x - cosa * _M_translation.y; 
-	result->_M_matrix_valid = false; 
+	result->m_rotation = -m_rotation;  
+	const double sina = sin(m_rotation); 
+	const double cosa = cos(m_rotation); 
+	result->m_translation.x = - cosa * m_translation.x - sina * m_translation.y; 
+	result->m_translation.y =   sina * m_translation.x - cosa * m_translation.y; 
+	result->m_matrix_valid = false; 
 	return result;
 }
 
 
 C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size,const C2DFVector& translation,
 					       float rotation):
-	_M_t(6),
-	_M_size(size),
-	_M_translation(translation),
-	_M_rotation(rotation),
-	_M_matrix_valid(false)
+	m_t(6),
+	m_size(size),
+	m_translation(translation),
+	m_rotation(rotation),
+	m_matrix_valid(false)
 {
 }
 
@@ -111,7 +111,7 @@ bool C2DRigidTransformation::save(const std::string& filename, const std::string
 	file << "Transformation: 2D\n"
 	     << "Matrix: ";
 	for (size_t i = 0; i < 6 ; ++i)
-		file << _M_t[i] << " ";
+		file << m_t[i] << " ";
 	file << "\n";
 	return file.good();
 }
@@ -128,29 +128,29 @@ void C2DRigidTransformation::update(float /*step*/, const C2DFVectorfield& /*a*/
 
 void C2DRigidTransformation::translate(float x, float y)
 {
-	_M_matrix_valid = false;
-	_M_translation.x +=  x;
-	_M_translation.y +=  y;
+	m_matrix_valid = false;
+	m_translation.x +=  x;
+	m_translation.y +=  y;
 }
 
 void C2DRigidTransformation::rotate(float angle)
 {
-	_M_matrix_valid = false;
-	_M_rotation += angle;
+	m_matrix_valid = false;
+	m_rotation += angle;
 	const double sina = sin(angle);
 	const double cosa = cos(angle);
 
-	const double tx      = cosa * _M_translation.x - sina * _M_translation.y;
-	_M_translation.y = sina * _M_translation.x + cosa * _M_translation.y;
-	_M_translation.x = tx;
+	const double tx      = cosa * m_translation.x - sina * m_translation.y;
+	m_translation.y = sina * m_translation.x + cosa * m_translation.y;
+	m_translation.x = tx;
 }
 
 CDoubleVector C2DRigidTransformation::get_parameters() const
 {
 	CDoubleVector result(degrees_of_freedom());
-	result[0] = _M_translation.x;
-	result[1] = _M_translation.y;
-	result[2] = _M_rotation;
+	result[0] = m_translation.x;
+	result[1] = m_translation.y;
+	result[2] = m_rotation;
 	return result;
 }
 
@@ -158,12 +158,12 @@ void C2DRigidTransformation::set_parameters(const CDoubleVector& params)
 {
 	assert(degrees_of_freedom() == params.size());
 
-	_M_translation.x = params[0];
-	_M_translation.y = params[1];
-	_M_rotation = params[2];
-	cvdebug() << "Rigid transform = (" << _M_translation << ", " << _M_rotation << ")\n"; 
+	m_translation.x = params[0];
+	m_translation.y = params[1];
+	m_rotation = params[2];
+	cvdebug() << "Rigid transform = (" << m_translation << ", " << m_rotation << ")\n"; 
 
-	_M_matrix_valid = false;
+	m_matrix_valid = false;
 }
 
 float C2DRigidTransformation::divergence() const
@@ -186,7 +186,7 @@ float C2DRigidTransformation::grad_curl() const
 float C2DRigidTransformation::curl() const
 {
 	// this is not right
-	return _M_rotation;
+	return m_rotation;
 }
 
 double C2DRigidTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/, CDoubleVector& /*gradient*/) const
@@ -202,20 +202,20 @@ double C2DRigidTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/) co
 
 const C2DBounds& C2DRigidTransformation::get_size() const
 {
-	return _M_size;
+	return m_size;
 }
 
 P2DTransformation C2DRigidTransformation::do_upscale(const C2DBounds& size) const
 {
-	C2DFVector new_trans(float(size.x) / (float)get_size().x * _M_translation.x,
-			     float(size.y) / (float)get_size().y * _M_translation.y);
-	return P2DTransformation(new C2DRigidTransformation(size, new_trans, _M_rotation));
+	C2DFVector new_trans(float(size.x) / (float)get_size().x * m_translation.x,
+			     float(size.y) / (float)get_size().y * m_translation.y);
+	return P2DTransformation(new C2DRigidTransformation(size, new_trans, m_rotation));
 }
 
 C2DFMatrix C2DRigidTransformation::derivative_at(int /*x*/, int /*y*/) const
 {
-	const double cosa = cos(_M_rotation);
-	const double sina = sin(_M_rotation);
+	const double cosa = cos(m_rotation);
+	const double sina = sin(m_rotation);
 
 	return C2DFMatrix(C2DFVector(cosa, -sina),
 			  C2DFVector(sina,  cosa));
@@ -224,22 +224,22 @@ C2DFMatrix C2DRigidTransformation::derivative_at(int /*x*/, int /*y*/) const
 void C2DRigidTransformation::set_identity()
 {
 	cvdebug() << "set identity\n";
-	_M_translation.x = _M_translation.y = _M_rotation = 0.0;
+	m_translation.x = m_translation.y = m_rotation = 0.0;
 }
 
 void C2DRigidTransformation::evaluate_matrix() const
 {
-	const double cosa = cos(_M_rotation);
-	const double sina = sin(_M_rotation);
+	const double cosa = cos(m_rotation);
+	const double sina = sin(m_rotation);
 
-	_M_t[0] = cosa;
-	_M_t[1] = -sina;
-	_M_t[2] = _M_translation.x;
-	_M_t[3] = sina;
-	_M_t[4] = cosa;
-	_M_t[5] = _M_translation.y;
+	m_t[0] = cosa;
+	m_t[1] = -sina;
+	m_t[2] = m_translation.x;
+	m_t[3] = sina;
+	m_t[4] = cosa;
+	m_t[5] = m_translation.y;
 
-	_M_matrix_valid = true;
+	m_matrix_valid = true;
 }
 
 float C2DRigidTransformation::get_max_transform() const
@@ -281,14 +281,14 @@ void C2DRigidTransformation::translate(const C2DFVectorfield& gradient, CDoubleV
 {
 	//
 
-	assert(gradient.get_size() == _M_size);
+	assert(gradient.get_size() == m_size);
 	assert(params.size() == degrees_of_freedom());
 
 	vector<double> r(params.size(), 0.0);
 
 	auto g = gradient.begin();
-	for (size_t y = 0; y < _M_size.y; ++y) {
-		for (size_t x = 0; x < _M_size.x; ++x, ++g) {
+	for (size_t y = 0; y < m_size.y; ++y) {
+		for (size_t x = 0; x < m_size.x; ++x, ++g) {
 			r[0] += g->x;
 			r[1] += g->y;
 			r[2] += -y * g->x + x * g->y; 
@@ -304,31 +304,31 @@ void C2DRigidTransformation::translate(const C2DFVectorfield& gradient, CDoubleV
 C2DRigidTransformation::iterator_impl::iterator_impl(const C2DBounds& pos, const C2DBounds& size, 
 						      const C2DRigidTransformation& trans):
 	C2DTransformation::iterator_impl(pos, size),
-	_M_trans(trans), 
-	_M_value(trans.transform(C2DFVector(pos)))
+	m_trans(trans), 
+	m_value(trans.transform(C2DFVector(pos)))
 {
-	_M_dx = _M_trans.transform(C2DFVector(pos.x + 1.0, pos.y)) - _M_value;
+	m_dx = m_trans.transform(C2DFVector(pos.x + 1.0, pos.y)) - m_value;
 }
 
 C2DTransformation::iterator_impl * C2DRigidTransformation::iterator_impl::clone() const
 {
-	return new iterator_impl(get_pos(), get_size(), _M_trans); 
+	return new iterator_impl(get_pos(), get_size(), m_trans); 
 }
 
 const C2DFVector&  C2DRigidTransformation::iterator_impl::do_get_value()const
 {
-	return _M_value; 
+	return m_value; 
 }
 
 void C2DRigidTransformation::iterator_impl::do_x_increment()
 {
-	_M_value += _M_dx; 
+	m_value += m_dx; 
 }
 
 void C2DRigidTransformation::iterator_impl::do_y_increment()
 {
-	_M_value = _M_trans.transform(C2DFVector(get_pos())); 
-	_M_dx = _M_trans.transform(C2DFVector(get_pos().x + 1.0, get_pos().y)) - _M_value;
+	m_value = m_trans.transform(C2DFVector(get_pos())); 
+	m_dx = m_trans.transform(C2DFVector(get_pos().x + 1.0, get_pos().y)) - m_value;
 }
 
 

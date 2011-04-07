@@ -93,8 +93,8 @@ private:
 	virtual void do_reinit();
 	virtual void do_set_size() = 0; 
 	
-	double _M_weight;
-	Size _M_current_size; 
+	double m_weight;
+	Size m_current_size; 
 
 }; 
 
@@ -105,7 +105,7 @@ public:
 private:
 	virtual typename TFullCostPlugin<Transform>::ProductPtr do_create() const;
 	virtual typename TFullCostPlugin<Transform>::ProductPtr do_create(float weight) const = 0;
-	float _M_weight;
+	float m_weight;
 }; 
 
 

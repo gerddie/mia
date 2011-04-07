@@ -42,20 +42,20 @@ static const char *program_info =
 
 struct FVectorNorm {
 
-	FVectorNorm():_M_max_norm(0.0f) {
+	FVectorNorm():m_max_norm(0.0f) {
 	}
 
 	float operator ()(const C3DFVector& v) {
 		float n = v.norm();
-		if (_M_max_norm < n)
-			_M_max_norm = n;
+		if (m_max_norm < n)
+			m_max_norm = n;
 		return n;
 	}
 	float get_max()const {
-		return _M_max_norm;
+		return m_max_norm;
 	}
 private:
-	float _M_max_norm;
+	float m_max_norm;
 };
 
 int do_main(int argc, const char **args)

@@ -156,7 +156,7 @@ struct FGetMinMax : public TFilter<float> {
 
 
 C2DNFGImageCost::C2DNFGImageCost(PEvaluator evaluator):
-	_M_evaluator(evaluator)
+	m_evaluator(evaluator)
 {
 	add(property_gradient);
 }
@@ -168,7 +168,7 @@ void C2DNFGImageCost::prepare_reference(const C2DImage& ref)
 
 void C2DNFGImageCost::post_set_reference(const mia::C2DImage& ref)
 {
-	_M_ng_ref =  get_nfg(ref);
+	m_ng_ref =  get_nfg(ref);
 }
 
 double C2DNFGImageCost::do_value(const mia::C2DImage& a, const mia::C2DImage& /*b*/) const
@@ -180,10 +180,10 @@ double C2DNFGImageCost::do_value(const mia::C2DImage& a, const mia::C2DImage& /*
 
 	C2DFVectorfield ng_a = get_nfg(a);
 	for (size_t y = 1; y < ng_a.get_size().y - 1; ++y) {
-		pp.ref = _M_ng_ref.begin_at(0,y);
+		pp.ref = m_ng_ref.begin_at(0,y);
 		pp.src = ng_a.begin_at(0,y);
 		for (size_t x = 1; x < ng_a.get_size().x - 1; ++x) {
-			sum +=  _M_evaluator->get_cost(x, pp);
+			sum +=  m_evaluator->get_cost(x, pp);
 		}
 	}
 	return 0.5 * sum / ng_a.size();
@@ -198,18 +198,18 @@ double C2DNFGImageCost::do_evaluate_force(const mia::C2DImage& a,
 	double sum = 0.0;
 	C2DFVectorfield ng_a = get_nfg(a);
 
-	const size_t nx = _M_ng_ref.get_size().x;
-	const size_t ny = _M_ng_ref.get_size().y;
+	const size_t nx = m_ng_ref.get_size().x;
+	const size_t ny = m_ng_ref.get_size().y;
 
-	assert(_M_ng_ref.get_size() == ng_a.get_size()); 
-	assert(_M_ng_ref.get_size() == a.get_size()); 
+	assert(m_ng_ref.get_size() == ng_a.get_size()); 
+	assert(m_ng_ref.get_size() == a.get_size()); 
 
 	CCostEvaluator::param_pass pp;
 
 	pp.src = ng_a.begin() + nx;
 	pp.srcp = ng_a.begin() + 2 * nx;
 	pp.srcm = ng_a.begin();
-	pp.ref = _M_ng_ref.begin() + nx;
+	pp.ref = m_ng_ref.begin() + nx;
 
 	C2DFVectorfield::iterator iforce = force.begin() + nx;
 
@@ -217,7 +217,7 @@ double C2DNFGImageCost::do_evaluate_force(const mia::C2DImage& a,
 	     ++y, pp.src += nx, pp.srcm += nx, pp.srcp += nx,
 		     iforce += nx, pp.ref += nx) {
 		for (size_t x = 1; x < nx - 1; ++x) {
-			sum +=  _M_evaluator->get_cost_grad(x, pp, iforce);
+			sum +=  m_evaluator->get_cost_grad(x, pp, iforce);
 		}
 	}
 	return 0.5 * sum / ng_a.size();
@@ -225,11 +225,11 @@ double C2DNFGImageCost::do_evaluate_force(const mia::C2DImage& a,
 
 C2DNFGImageCostPlugin::C2DNFGImageCostPlugin():
 	C2DImageCostPlugin("ngf"),
-	_M_kernel("ds")
+	m_kernel("ds")
 {
 	TRACE("C2DNFGImageCostPlugin::C2DNFGImageCostPlugin()");
 	add_parameter("eval",
-		      new CStringParameter(_M_kernel, false, "plugin subtype (sq, ds,dot,cross)"));
+		      new CStringParameter(m_kernel, false, "plugin subtype (sq, ds,dot,cross)"));
 
 }
 
@@ -249,14 +249,14 @@ C2DImageCostPlugin::ProductPtr C2DNFGImageCostPlugin::do_create()const
 	const TDictMap<ESubTypes> subtypemap(lut);
 
 	PEvaluator eval;
-	switch (subtypemap.get_value(_M_kernel.c_str())) {
+	switch (subtypemap.get_value(m_kernel.c_str())) {
 	case st_delta: eval.reset(new CCostEvaluatorSQDelta()); break;
 	case st_delta_scalar: eval.reset(new CCostEvaluatorDeltaScalar()); break;
 	case st_scalar: eval.reset(new CCostEvaluatorScalar()); break;
 	case st_cross: eval.reset(new CCostEvaluatorCross()); break;
 	default:
 		throw invalid_argument(string("C2DNFGImageCostPlugin: unknown cost sub-type '")
-				       +_M_kernel+"'");
+				       +m_kernel+"'");
 	}
 	return C2DImageCostPlugin::ProductPtr(new C2DNFGImageCost(eval));
 }

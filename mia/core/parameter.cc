@@ -30,9 +30,9 @@ NS_MIA_BEGIN
 using namespace std;
 
 CParameter::CParameter(const char type[], bool required, const char *descr):
-    _M_required(required),
-    _M_type(type),
-    _M_descr(descr)
+    m_required(required),
+    m_type(type),
+    m_descr(descr)
 {
 }
 
@@ -42,20 +42,20 @@ CParameter::~CParameter()
 
 const char *CParameter::type() const
 {
-	return _M_type;
+	return m_type;
 }
 
 void CParameter::descr(ostream& os) const
 {
-	os << ":" << _M_type << "\t" << _M_descr << " ";
+	os << ":" << m_type << "\t" << m_descr << " ";
 	do_descr(os);
-	if (_M_required)
+	if (m_required)
 		os << "(required)";
 }
 
 const char *CParameter::get_descr() const
 {
-	return _M_descr;
+	return m_descr;
 }
 
 const std::string CParameter::errmsg(const std::string& err_value) const
@@ -68,12 +68,12 @@ const std::string CParameter::errmsg(const std::string& err_value) const
 
 bool CParameter::required_set() const
 {
-	return _M_required;
+	return m_required;
 }
 
 bool CParameter::set(const string& str_value)
 {
-	_M_required = false;
+	m_required = false;
 	return do_set(str_value);
 }
 

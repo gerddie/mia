@@ -46,15 +46,15 @@ public:
 
 	class EXPORT_3D iterator_impl: public C3DTransformation::iterator_impl  {
 	public:
-		iterator_impl(const C3DBounds& pos, const C3DBounds& size, const C3DFVector& _M_value); 
+		iterator_impl(const C3DBounds& pos, const C3DBounds& size, const C3DFVector& m_value); 
 	private: 
 		virtual C3DTransformation::iterator_impl * clone() const; 
 		virtual const C3DFVector&  do_get_value()const; 
 		virtual void do_x_increment(); 
 		virtual void do_y_increment(); 
 		virtual void do_z_increment(); 
-		C3DFVector _M_translate;
-		C3DFVector _M_value;
+		C3DFVector m_translate;
+		C3DFVector m_value;
 	};
 
 	C3DTransformation::const_iterator begin() const;
@@ -86,8 +86,8 @@ public:
 	using C3DTransformation::operator ();
 private:
 	virtual C3DTransformation *do_clone() const;
-	C3DFVector _M_transform;
-	C3DBounds _M_size;
+	C3DFVector m_transform;
+	C3DBounds m_size;
 };
 
 

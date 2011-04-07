@@ -55,7 +55,7 @@ public:
 private:
 	virtual void do_push(char c);
 
-	string _M_result;
+	string m_result;
 
 };
 
@@ -65,12 +65,12 @@ CCharFifoFilterSink::CCharFifoFilterSink():CCharFifoFilter(0, 1, 0)
 
 const string CCharFifoFilterSink::result()
 {
-	return _M_result;
+	return m_result;
 }
 
 void CCharFifoFilterSink::do_push(char c)
 {
-	_M_result.append(1, c);
+	m_result.append(1, c);
 }
 
 
@@ -101,31 +101,31 @@ private:
 	virtual void do_push(int c);
 	virtual void evaluate(size_t slice);
 
-	int _M_value;
-	int _M_buf;
+	int m_value;
+	int m_buf;
 };
 
 CAddSomeFifoFilter::CAddSomeFifoFilter(int value):
 	CIntFifoFilter(0,1,0),
-	_M_value(value)
+	m_value(value)
 {
 }
 
 int CAddSomeFifoFilter::do_filter()
 {
-	return _M_buf;
+	return m_buf;
 }
 
 
 void CAddSomeFifoFilter::do_push(int c)
 {
-	_M_buf = c;
+	m_buf = c;
 }
 
 
 void CAddSomeFifoFilter::evaluate(size_t /*slice*/)
 {
-	_M_buf += _M_value;
+	m_buf += m_value;
 }
 
 class CMeanIntFifoFilter : public CIntFifoFilter {
@@ -135,31 +135,31 @@ private:
 	virtual int do_filter();
 	virtual void shift_buffer();
 	virtual void do_push(int c);
-	vector<int> _M_buf;
+	vector<int> m_buf;
 };
 
 CMeanIntFifoFilter::CMeanIntFifoFilter(size_t hwidth):
 	CIntFifoFilter(2 * hwidth + 1, hwidth + 1, 0),
-	_M_buf(2 * hwidth + 1)
+	m_buf(2 * hwidth + 1)
 {
 }
 
 int CMeanIntFifoFilter::do_filter()
 {
 	int result;
-	result = accumulate(_M_buf.begin() + get_start(), _M_buf.begin() + get_end(), 0);
+	result = accumulate(m_buf.begin() + get_start(), m_buf.begin() + get_end(), 0);
 	result /= get_end() - get_start();
 	return result;
 }
 
 void CMeanIntFifoFilter::shift_buffer()
 {
-	copy_backward(_M_buf.begin(), _M_buf.end() - 1, _M_buf.end());
+	copy_backward(m_buf.begin(), m_buf.end() - 1, m_buf.end());
 }
 
 void CMeanIntFifoFilter::do_push(int c)
 {
-	_M_buf[0] = c;
+	m_buf[0] = c;
 }
 
 
@@ -200,14 +200,14 @@ private:
 	virtual void evaluate(size_t slice);
 	virtual void do_push(int c);
 
-	vector<int> _M_buf;
+	vector<int> m_buf;
 };
 
 CMeanAddIntFifoFilter::CMeanAddIntFifoFilter(size_t hwidth):
 	CIntFifoFilter(2 * hwidth + 1, hwidth + 1, hwidth),
-	_M_buf(3 * hwidth + 1)
+	m_buf(3 * hwidth + 1)
 {
-	fill(_M_buf.begin(), _M_buf.end(), 400);
+	fill(m_buf.begin(), m_buf.end(), 400);
 }
 
 int CMeanAddIntFifoFilter::do_filter()
@@ -215,24 +215,24 @@ int CMeanAddIntFifoFilter::do_filter()
 	cvdebug() << get_start() << ", " <<  get_end() << "\n";
 
 	int result;
-	result = accumulate(_M_buf.begin() + get_start(), _M_buf.begin() + get_end(), 0);
+	result = accumulate(m_buf.begin() + get_start(), m_buf.begin() + get_end(), 0);
 	result /= get_end() - get_start();
 	return result;
 }
 
 void CMeanAddIntFifoFilter::shift_buffer()
 {
-	copy_backward(_M_buf.begin(), _M_buf.end() - 1, _M_buf.end());
+	copy_backward(m_buf.begin(), m_buf.end() - 1, m_buf.end());
 }
 
 void CMeanAddIntFifoFilter::evaluate(size_t slice)
 {
-	_M_buf[slice] += 1;
+	m_buf[slice] += 1;
 }
 
 void CMeanAddIntFifoFilter::do_push(int c)
 {
-	_M_buf[0] = c;
+	m_buf[0] = c;
 }
 
 
@@ -250,9 +250,9 @@ private:
 	virtual void shift_buffer();
 	virtual void evaluate(size_t slice);
 	virtual void do_push(int c);
-	stringstream _M_starts;
-	stringstream _M_ends;
-	stringstream _M_callseries;
+	stringstream m_starts;
+	stringstream m_ends;
+	stringstream m_callseries;
 };
 
 
@@ -263,51 +263,51 @@ CTrackCallersFilter::CTrackCallersFilter():
 
 void CTrackCallersFilter::do_initialize(int /*x*/)
 {
-	_M_callseries << 'b';
+	m_callseries << 'b';
 }
 
 void CTrackCallersFilter::post_finalize()
 {
-	_M_callseries << 'x';
+	m_callseries << 'x';
 }
 
 const string CTrackCallersFilter::get_starts() const
 {
-	return _M_starts.str();
+	return m_starts.str();
 }
 
 const string CTrackCallersFilter::get_ends() const
 {
-	return _M_ends.str();
+	return m_ends.str();
 }
 
 const string CTrackCallersFilter::get_callseries() const
 {
-	return _M_callseries.str();
+	return m_callseries.str();
 }
 
 
 int CTrackCallersFilter::do_filter()
 {
-	_M_callseries << 'f';
-	_M_starts << get_start() << " ";
-	_M_ends   << get_end()   << " ";
+	m_callseries << 'f';
+	m_starts << get_start() << " ";
+	m_ends   << get_end()   << " ";
 	return 0;
 }
 
 void CTrackCallersFilter::shift_buffer()
 {
-	_M_callseries << 's';
+	m_callseries << 's';
 }
 
 void CTrackCallersFilter::evaluate(size_t /*slice*/)
 {
-	_M_callseries << 'e';
+	m_callseries << 'e';
 }
 
 void CTrackCallersFilter::do_push(int /*c*/)
 {
-	_M_callseries << 'p';
+	m_callseries << 'p';
 }
 
 

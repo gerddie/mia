@@ -91,28 +91,28 @@ private:
 	void evaluate_histograms(); 	
 	void evaluate_log_cache();  
         
-        size_t _M_ref_bins;
-	PBSplineKernel  _M_ref_kernel; 
-	size_t _M_ref_border; 
-	size_t _M_ref_real_bins; 
-        double _M_ref_max;
-	double _M_ref_min;
-        double _M_ref_scale; 
+        size_t m_ref_bins;
+	PBSplineKernel  m_ref_kernel; 
+	size_t m_ref_border; 
+	size_t m_ref_real_bins; 
+        double m_ref_max;
+	double m_ref_min;
+        double m_ref_scale; 
 
-	size_t _M_mov_bins;
+	size_t m_mov_bins;
 	
-	PBSplineKernel  _M_mov_kernel; 
-	size_t _M_mov_border; 
-	size_t _M_mov_real_bins; 
-        double _M_mov_max;
-	double _M_mov_min;
-        double _M_mov_scale; 
+	PBSplineKernel  m_mov_kernel; 
+	size_t m_mov_border; 
+	size_t m_mov_real_bins; 
+        double m_mov_max;
+	double m_mov_min;
+        double m_mov_scale; 
 	
-	std::vector<double> _M_joined_histogram; 
-	std::vector<double> _M_ref_histogram; 
-	std::vector<double> _M_mov_histogram; 
+	std::vector<double> m_joined_histogram; 
+	std::vector<double> m_ref_histogram; 
+	std::vector<double> m_mov_histogram; 
 
-	std::vector<std::vector<double> > _M_pdfLogCache; 
+	std::vector<std::vector<double> > m_pdfLogCache; 
 };   
 
 template <typename MovIterator, typename RefIterator>
@@ -123,30 +123,30 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
 	CSplineParzenMI::fill(MovIterator mov_begin, MovIterator mov_end, 
 				       RefIterator ref_begin, RefIterator ref_end)
 {
-	std::fill(_M_joined_histogram.begin(), _M_joined_histogram.end(), 0.0); 
+	std::fill(m_joined_histogram.begin(), m_joined_histogram.end(), 0.0); 
 
         auto mov_range = std::minmax_element(mov_begin, mov_end); 
         if (*mov_range.second  ==  *mov_range.first) 
                 throw std::invalid_argument("Moving image intensity range is zero"); 
         
-        _M_mov_min = *mov_range.first; 
-        _M_mov_max = *mov_range.second;
+        m_mov_min = *mov_range.first; 
+        m_mov_max = *mov_range.second;
         
         auto ref_range = std::minmax_element(ref_begin, ref_end); 
         if (*ref_range.second  ==  *ref_range.first) 
                 throw std::invalid_argument("Reference image intensity range is zero"); 
         
-        _M_ref_min = *ref_range.first; 
-        _M_ref_max = *ref_range.second; 
+        m_ref_min = *ref_range.first; 
+        m_ref_max = *ref_range.second; 
 
-	_M_ref_scale = (_M_ref_bins - 1) / (_M_ref_max - _M_ref_min); 
-	_M_mov_scale = (_M_mov_bins - 1) / (_M_mov_max - _M_mov_min); 
+	m_ref_scale = (m_ref_bins - 1) / (m_ref_max - m_ref_min); 
+	m_mov_scale = (m_mov_bins - 1) / (m_mov_max - m_mov_min); 
 
-        cvdebug() << "Mov Range = [" << _M_mov_min << ", " << _M_mov_max << "]\n"; 
-        cvdebug() << "Ref Range = [" << _M_ref_min << ", " << _M_ref_max << "]\n"; 
+        cvdebug() << "Mov Range = [" << m_mov_min << ", " << m_mov_max << "]\n"; 
+        cvdebug() << "Ref Range = [" << m_ref_min << ", " << m_ref_max << "]\n"; 
        
-	std::vector<double> mweights(_M_mov_kernel->size()); 
-        std::vector<double> rweights(_M_ref_kernel->size()); 
+	std::vector<double> mweights(m_mov_kernel->size()); 
+        std::vector<double> rweights(m_ref_kernel->size()); 
 	
 	size_t N = 0;         
 	while (ref_begin != ref_end && mov_begin != mov_end) {
@@ -154,12 +154,12 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
 		const double mov = scale_moving(*mov_begin); 
 		const double ref = scale_reference(*ref_begin); 
 		
-		const int mov_start = _M_mov_kernel->get_start_idx_and_value_weights(mov, mweights) + _M_mov_border; 
-                const int ref_start = _M_ref_kernel->get_start_idx_and_value_weights(ref, rweights) + _M_ref_border;  
+		const int mov_start = m_mov_kernel->get_start_idx_and_value_weights(mov, mweights) + m_mov_border; 
+                const int ref_start = m_ref_kernel->get_start_idx_and_value_weights(ref, rweights) + m_ref_border;  
 		
-                for (size_t r = 0; r < _M_ref_kernel->size(); ++r) {
-                        auto inbeg = _M_joined_histogram.begin() + 
-				_M_mov_real_bins * (ref_start + r) + mov_start; 
+                for (size_t r = 0; r < m_ref_kernel->size(); ++r) {
+                        auto inbeg = m_joined_histogram.begin() + 
+				m_mov_real_bins * (ref_start + r) + mov_start; 
                         std::transform(mweights.begin(), mweights.end(), inbeg, inbeg, 
 				       boost::lambda::_1 * rweights[r] + boost::lambda::_2); 
                 }
@@ -172,7 +172,7 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
 	cvdebug() << "CSplineParzenMI::fill: counted " << N << " pixels\n"; 
 	// normalize joined histogram 
 	const double scale = 1.0/N; 
-	transform(_M_joined_histogram.begin(), _M_joined_histogram.end(), _M_joined_histogram.begin(), 
+	transform(m_joined_histogram.begin(), m_joined_histogram.end(), m_joined_histogram.begin(), 
 		  boost::lambda::_1 * scale); 
 
 	evaluate_histograms();  

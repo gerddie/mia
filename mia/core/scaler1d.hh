@@ -100,18 +100,18 @@ private:
 		scs_unknown
 	}; 
 
-	size_t _M_in_size; 
-	size_t _M_out_size; 
-	size_t _M_support; 
-	std::vector<double> _M_poles; 
-	EStrategy _M_strategy; 
+	size_t m_in_size; 
+	size_t m_out_size; 
+	size_t m_support; 
+	std::vector<double> m_poles; 
+	EStrategy m_strategy; 
 
-	gsl::DoubleVector _M_input_buffer; 
-	gsl::DoubleVector _M_output_buffer; 
-	std::vector<std::vector<double> > _M_weights; 
-	std::vector<std::vector<int> > _M_indices; 
-	gsl::Matrix _M_A; 	
-	gsl::DoubleVector _M_tau; 
+	gsl::DoubleVector m_input_buffer; 
+	gsl::DoubleVector m_output_buffer; 
+	std::vector<std::vector<double> > m_weights; 
+	std::vector<std::vector<int> > m_indices; 
+	gsl::Matrix m_A; 	
+	gsl::DoubleVector m_tau; 
 };
 
 

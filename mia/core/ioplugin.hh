@@ -95,7 +95,7 @@ protected:
 	/// add pixel type t to the list of supported types
 	void add_supported_type(EPixelType t);
 private:
-	PixelTypeSet _M_typeset;
+	PixelTypeSet m_typeset;
 
 	/**
 	   Interface function that needs to be impemented ina a derived class:

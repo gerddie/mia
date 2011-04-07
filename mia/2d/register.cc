@@ -146,19 +146,19 @@ C2DImageRegister::C2DImageRegister(size_t start_size, const C2DImageCost& cost, 
 				   C2DRegModel& model, C2DRegTimeStep& time_step, 
 				   const C2DInterpolatorFactory&  ipf, float outer_epsilon, bool save_steps, P2DImage movie
 				):
-	_M_start_size(start_size), 
-	_M_cost(cost), 
-	_M_max_iter(max_iter), 
-	_M_model(model), 
-	_M_time_step(time_step), 
-	_M_ipf(ipf),
-	_M_outer_epsilon(outer_epsilon), 
-	_M_save_steps(save_steps), 
-	_M_mnum(0),
-	_M_movie(movie)
+	m_start_size(start_size), 
+	m_cost(cost), 
+	m_max_iter(max_iter), 
+	m_model(model), 
+	m_time_step(time_step), 
+	m_ipf(ipf),
+	m_outer_epsilon(outer_epsilon), 
+	m_save_steps(save_steps), 
+	m_mnum(0),
+	m_movie(movie)
 
 {
-	if ( _M_start_size <= 0 ) 
+	if ( m_start_size <= 0 ) 
 		throw invalid_argument("C2DImageRegister: start size must be greater than 0"); 
 		
 }
@@ -180,14 +180,14 @@ P2DFVectorfield C2DImageRegister::operator () (const C2DImage& source, const C2D
 		throw invalid_argument("only registration of images of the same size is allowed"); 
 
 
-	size_t x_shift = log2(source.get_size().x / _M_start_size); 
-	size_t y_shift = log2(source.get_size().y / _M_start_size);
+	size_t x_shift = log2(source.get_size().x / m_start_size); 
+	size_t y_shift = log2(source.get_size().y / m_start_size);
 
-	if (_M_movie.get()) {
+	if (m_movie.get()) {
 		stringstream regmov;
 		C2DImageVector vimg;
-		vimg.push_back(_M_movie); 
-		regmov << "regmov" << setw(5) << setfill('0') << _M_mnum++ << "."REGMOVE_IMGTYPE;  
+		vimg.push_back(m_movie); 
+		regmov << "regmov" << setw(5) << setfill('0') << m_mnum++ << "."REGMOVE_IMGTYPE;  
 		C2DImageIOPluginHandler::instance().save(REGMOVE_IMGTYPE, regmov.str(), vimg); 
 	}
 	
@@ -207,7 +207,7 @@ P2DFVectorfield C2DImageRegister::operator () (const C2DImage& source, const C2D
 		else 
 			result = upscale( *result, src_scaled->get_size() );
 
-		if (_M_time_step.has_regrid()) {		
+		if (m_time_step.has_regrid()) {		
 			reg_level_regrid(*src_scaled, *ref_scaled, *result);
 		}else {
 			reg_level(*src_scaled, *ref_scaled, *result);
@@ -226,7 +226,7 @@ P2DFVectorfield C2DImageRegister::operator () (const C2DImage& source, const C2D
 	}else {
 		result = upscale( *result, source.get_size());
 	}
-	if (_M_time_step.has_regrid()) {		
+	if (m_time_step.has_regrid()) {		
 		reg_level_regrid(source, reference, *result); 
 	}else
 		reg_level(source, reference, *result); 
@@ -252,8 +252,8 @@ void C2DImageRegister::reg_level_regrid(const C2DImage& source, const C2DImage& 
 
 	local_shift.set_identity(); 
 	
-	P2DImage temp = filter(FDeformer2D(result, _M_ipf), source);
-	double new_cost_value = initial_cost = _M_cost.value(*temp, reference); 
+	P2DImage temp = filter(FDeformer2D(result, m_ipf), source);
+	double new_cost_value = initial_cost = m_cost.value(*temp, reference); 
 	
 	C2DFVectorfield v(source.get_size()); 
 	C2DFVectorfield force(source.get_size());
@@ -269,47 +269,47 @@ void C2DImageRegister::reg_level_regrid(const C2DImage& source, const C2DImage& 
 		cost_value = new_cost_value; 
 
 		force.clear(); 
-		_M_cost.evaluate_force(*temp, reference, _M_model.get_force_scale(), force);
+		m_cost.evaluate_force(*temp, reference, m_model.get_force_scale(), force);
 				
 		// solve for the force to get a velocity or deformation field
 		v.clear(); 
-		_M_model.solve(force, v); 
+		m_model.solve(force, v); 
 
 		// obtain the maximum shift. v might be updated according to the time step model
-		float maxshift = _M_time_step.calculate_pertuberation(v, local_shift); 
+		float maxshift = m_time_step.calculate_pertuberation(v, local_shift); 
 		if (maxshift <= 0) {
 			cvmsg() << "zero time step, perfect registration?\n"; 
 			break; 
 		}
 
 		// get the time step based on the maximum shift
-		float delta = _M_time_step.get_delta(maxshift); 
+		float delta = m_time_step.get_delta(maxshift); 
 		cvdebug() << "maxshift = " << maxshift << " Timestep = " << delta << "\n"; 
 		
 		// now check, whether the new deformation would result in a 
 		// non-topologic distortion of the image. if so, regrid
 		// some time step models might always return false 
-		if (_M_time_step.regrid_requested(local_shift, v, delta)) {
+		if (m_time_step.regrid_requested(local_shift, v, delta)) {
 			result.add(local_shift); 
 			local_shift.set_identity();
 			better = false;
 		}
 
 		local_shift.update(delta, v); 
-		temp = filter(FDeformer2D(result + local_shift, _M_ipf), source);
+		temp = filter(FDeformer2D(result + local_shift, m_ipf), source);
 		
 		
-		if (_M_movie.get()) {
+		if (m_movie.get()) {
 			stringstream regmov; 
 			C2DImageVector vimg;
-			P2DFVectorfield scaled(upscale(force, _M_movie->get_size()));
-			vimg.push_back(filter(FDeformer2D(*scaled, _M_ipf), *_M_movie)); 
-			regmov << "regmov" << setw(5) << setfill('0') << _M_mnum++ << "."REGMOVE_IMGTYPE;  
+			P2DFVectorfield scaled(upscale(force, m_movie->get_size()));
+			vimg.push_back(filter(FDeformer2D(*scaled, m_ipf), *m_movie)); 
+			regmov << "regmov" << setw(5) << setfill('0') << m_mnum++ << "."REGMOVE_IMGTYPE;  
 			C2DImageIOPluginHandler::instance().save(REGMOVE_IMGTYPE, regmov.str(), vimg); 
 		}
 		
 
-		new_cost_value = _M_cost.value(*temp, reference); 
+		new_cost_value = m_cost.value(*temp, reference); 
 		
 		// if the cost is reduced, we allow for some search steps 
 		// with increasing cost again, and we save the current best deformation 
@@ -322,12 +322,12 @@ void C2DImageRegister::reg_level_regrid(const C2DImage& source, const C2DImage& 
 
 		// if the cost reduction was big, increase the possible time step 
 		if (new_cost_value < cost_value * 0.9)
-			_M_time_step.increase(); 
+			m_time_step.increase(); 
 		
 		// if the cost increased, reduce the time step if possible, 
 		// or count down the allowed search in sub-optimal areas
 		if (new_cost_value > best_cost_value)
-			if (!_M_time_step.decrease())
+			if (!m_time_step.decrease())
 				--inertia; 
 		
 		cvmsg() << iter << "@" << reference.get_size() 
@@ -336,7 +336,7 @@ void C2DImageRegister::reg_level_regrid(const C2DImage& source, const C2DImage& 
 			<< lend;
 		
 	} while ( ((inertia > 0) || (new_cost_value < best_cost_value)) && 
-		  new_cost_value / initial_cost > _M_outer_epsilon && iter < _M_max_iter);
+		  new_cost_value / initial_cost > m_outer_epsilon && iter < m_max_iter);
 
 	cvmsg() << '\n'; 
 	
@@ -368,12 +368,12 @@ void C2DImageRegister::reg_level(const C2DImage& source, const C2DImage& referen
 //	bool better = false; 
 
 	pair<float, float> mm = filter( FMinMax(), source); 
-	float force_scale =_M_model.get_force_scale() / ((mm.second - mm.first)* (mm.second - mm.first)); 
+	float force_scale =m_model.get_force_scale() / ((mm.second - mm.first)* (mm.second - mm.first)); 
 	
 	double initial_cost; 
 	
-	P2DImage temp = filter(FDeformer2D(result, _M_ipf), source);
-	double new_cost_value = initial_cost = _M_cost.value(*temp, reference); 
+	P2DImage temp = filter(FDeformer2D(result, m_ipf), source);
+	double new_cost_value = initial_cost = m_cost.value(*temp, reference); 
 	
 	C2DFVectorfield force(source.get_size());
 	C2DFVectorfield u(source.get_size()); 
@@ -384,41 +384,41 @@ void C2DImageRegister::reg_level(const C2DImage& source, const C2DImage& referen
 
 	float best_cost_value = new_cost_value; 
 
-	float maxshift = _M_time_step.calculate_pertuberation(result, result); 
-	float delta = _M_time_step.get_delta(1.0 + maxshift); 
+	float maxshift = m_time_step.calculate_pertuberation(result, result); 
+	float delta = m_time_step.get_delta(1.0 + maxshift); 
 	do {
 		++iter; 
 		cost_value = new_cost_value; 
 
 		force.clear(); 
-		_M_cost.evaluate_force(*temp, reference, delta * force_scale, force);
+		m_cost.evaluate_force(*temp, reference, delta * force_scale, force);
 				
-		_M_model.solve(force, u);
+		m_model.solve(force, u);
 		
-		maxshift = _M_time_step.calculate_pertuberation(u, u); 
+		maxshift = m_time_step.calculate_pertuberation(u, u); 
 		if (maxshift <= 0) {
 			cvmsg() << "zero time step, perfect registration?\n"; 
 			break; 
 		}
 
 		// get the time step based on the maximum shift
-		delta = _M_time_step.get_delta(1.0/iter + maxshift); 
+		delta = m_time_step.get_delta(1.0/iter + maxshift); 
 		cvdebug() << "Timestep = " << delta << "\n"; 
 		
-		_M_time_step.apply(u, result, delta);
+		m_time_step.apply(u, result, delta);
 				
 
-		temp = filter(FDeformer2D(result, _M_ipf), source);
+		temp = filter(FDeformer2D(result, m_ipf), source);
 				
-		if (_M_save_steps) {
+		if (m_save_steps) {
 			stringstream regmov; 
 			C2DImageVector vimg; 
 			vimg.push_back(temp); 
-			regmov << "regmov" << setw(5) << setfill('0') << _M_mnum++ << "."REGMOVE_IMGTYPE;  
+			regmov << "regmov" << setw(5) << setfill('0') << m_mnum++ << "."REGMOVE_IMGTYPE;  
 			C2DImageIOPluginHandler::instance().save(REGMOVE_IMGTYPE, regmov.str(), vimg); 
 		}
 
-		new_cost_value = _M_cost.value(*temp, reference); 
+		new_cost_value = m_cost.value(*temp, reference); 
 		
 		if (new_cost_value < best_cost_value) {
 			best_cost_value = new_cost_value; 
@@ -429,14 +429,14 @@ void C2DImageRegister::reg_level(const C2DImage& source, const C2DImage& referen
 
 		// if the cost reduction was big, increase the possible time step 
 		if (new_cost_value < cost_value * 0.9) {
-			_M_time_step.increase(); 
+			m_time_step.increase(); 
 			
 		}
 		
 		// if the cost increased, reduce the time step if possible, 
 		// or count down the allowed search in sub-optimal areas
 		if (new_cost_value >= cost_value)
-			if (!_M_time_step.decrease()) {
+			if (!m_time_step.decrease()) {
 				--inertia; 
 			}
 		
@@ -445,17 +445,17 @@ void C2DImageRegister::reg_level(const C2DImage& source, const C2DImage& referen
 			<< ", current =" << new_cost_value / cost_value << "                     "
 			<< lend;
 		
-	} while ( inertia > 0 && new_cost_value / initial_cost > _M_outer_epsilon && iter < _M_max_iter);
+	} while ( inertia > 0 && new_cost_value / initial_cost > m_outer_epsilon && iter < m_max_iter);
 
 	cvmsg() << '\n'; 
 	
 	result = best_result; 
-	if (_M_save_steps) {
+	if (m_save_steps) {
 		stringstream regmov; 
 		C2DImageVector vimg;
-		vimg.push_back(filter(FDeformer2D(result, _M_ipf), source)); 
-		regmov << "regmov" << setw(5) << setfill('0') << --_M_mnum << "final."REGMOVE_IMGTYPE;
-		_M_mnum++; 
+		vimg.push_back(filter(FDeformer2D(result, m_ipf), source)); 
+		regmov << "regmov" << setw(5) << setfill('0') << --m_mnum << "final."REGMOVE_IMGTYPE;
+		m_mnum++; 
 		C2DImageIOPluginHandler::instance().save(REGMOVE_IMGTYPE, regmov.str(), vimg); 
 	}
 }
@@ -463,11 +463,11 @@ void C2DImageRegister::reg_level(const C2DImage& source, const C2DImage& referen
 C2DMultiImageRegister::C2DMultiImageRegister(size_t start_size, size_t max_iter, 
 					     C2DRegModel& model, C2DRegTimeStep& time_step, 
 					     float outer_epsilon):
-	_M_start_size(start_size),
-	_M_max_iter(max_iter),  
-	_M_model(model), 
-	_M_time_step(time_step), 
-	_M_outer_epsilon(outer_epsilon)
+	m_start_size(start_size),
+	m_max_iter(max_iter),  
+	m_model(model), 
+	m_time_step(time_step), 
+	m_outer_epsilon(outer_epsilon)
 {
 }
 
@@ -476,8 +476,8 @@ P2DTransformation C2DMultiImageRegister::operator () (C2DImageFatCostList& cost,
 	TRACE("C2DMultiImageRegister::operator"); 
 
 
-	size_t x_shift = log2(cost.get_size().x / _M_start_size); 
-	size_t y_shift = log2(cost.get_size().y / _M_start_size);
+	size_t x_shift = log2(cost.get_size().x / m_start_size); 
+	size_t y_shift = log2(cost.get_size().y / m_start_size);
 
 
 	P2DTransformation result(new C2DGridTransformation(C2DBounds(0,0))); 
@@ -491,7 +491,7 @@ P2DTransformation C2DMultiImageRegister::operator () (C2DImageFatCostList& cost,
 		
 
 		C2DGridTransformation& current_result = dynamic_cast<C2DGridTransformation&>(*result); 
-		if (_M_time_step.has_regrid()) {		
+		if (m_time_step.has_regrid()) {		
 			reg_level_regrid(cost_scaled, current_result, *ipf);
 		}else {
 			reg_level(cost_scaled, current_result, *ipf);
@@ -509,7 +509,7 @@ P2DTransformation C2DMultiImageRegister::operator () (C2DImageFatCostList& cost,
 	{
 		C2DGridTransformation& current_result = dynamic_cast<C2DGridTransformation&>(*result); 
 		
-		if (_M_time_step.has_regrid()) {		
+		if (m_time_step.has_regrid()) {		
 			reg_level_regrid(cost, current_result, *ipf); 
 		}else
 			reg_level(cost, current_result, *ipf); 
@@ -547,7 +547,7 @@ void C2DMultiImageRegister::reg_level_regrid(C2DImageFatCostList& cost, C2DGridT
 
 	float best_cost_value = new_cost_value; 
 
-	float force_scale = _M_model.get_force_scale(); 
+	float force_scale = m_model.get_force_scale(); 
 	do {
 		++iter; 
 		cost_value = new_cost_value; 
@@ -560,23 +560,23 @@ void C2DMultiImageRegister::reg_level_regrid(C2DImageFatCostList& cost, C2DGridT
 
 		// solve for the force to get a velocity or deformation field
 		//v.clear(); 
-		_M_model.solve(force, v); 
+		m_model.solve(force, v); 
 
 		// obtain the maximum shift. v might be updated according to the time step model
-		float maxshift = _M_time_step.calculate_pertuberation(v, local_shift); 
+		float maxshift = m_time_step.calculate_pertuberation(v, local_shift); 
 		if (maxshift <= 0) {
 			cvmsg() << "zero time step, perfect registration?\n"; 
 			break; 
 		}
 
 		// get the time step based on the maximum shift
-		float delta = _M_time_step.get_delta(maxshift); 
+		float delta = m_time_step.get_delta(maxshift); 
 		cvdebug() << "maxshift = " << maxshift << " Timestep = " << delta << "\n"; 
 		
 		// now check, whether the new deformation would result in a 
 		// non-topologic distortion of the image. if so, regrid
 		// some time step models might always return false 
-		if (_M_time_step.regrid_requested(local_shift, v, delta)) {
+		if (m_time_step.regrid_requested(local_shift, v, delta)) {
 			result.add(local_shift); 
 			fill(local_shift.field_begin(), local_shift.field_end(), C2DFVector(0.0f, 0.0f)); 
 			better = false;
@@ -600,12 +600,12 @@ void C2DMultiImageRegister::reg_level_regrid(C2DImageFatCostList& cost, C2DGridT
 
 		// if the cost reduction was big, increase the possible time step 
 		if (new_cost_value < cost_value * 0.9)
-			_M_time_step.increase(); 
+			m_time_step.increase(); 
 		
 		// if the cost increased, reduce the time step if possible, 
 		// or count down the allowed search in sub-optimal areas
 		if (new_cost_value > best_cost_value)
-			if (!_M_time_step.decrease())
+			if (!m_time_step.decrease())
 				--inertia; 
 		
 		cvmsg() << iter << "@" << cost.get_size() 
@@ -614,7 +614,7 @@ void C2DMultiImageRegister::reg_level_regrid(C2DImageFatCostList& cost, C2DGridT
 			<< lend;
 		
 	} while ( ((inertia > 0) || (new_cost_value < best_cost_value)) && 
-		  new_cost_value / initial_cost > _M_outer_epsilon && iter < _M_max_iter);
+		  new_cost_value / initial_cost > m_outer_epsilon && iter < m_max_iter);
 
 	cvmsg() << '\n'; 
 	
@@ -655,7 +655,7 @@ void C2DMultiImageRegister::reg_level(C2DImageFatCostList& cost, C2DGridTransfor
 
 	float best_cost_value = new_cost_value; 
 
-	float force_scale = _M_model.get_force_scale(); 
+	float force_scale = m_model.get_force_scale(); 
 	cvmsg() << "Force scale = " << force_scale << "\n"; 
 
 	do {
@@ -669,17 +669,17 @@ void C2DMultiImageRegister::reg_level(C2DImageFatCostList& cost, C2DGridTransfor
 				
 		// solve for the force to get a velocity or deformation field
 		fill(v.begin(), v.end(), C2DFVector(0.0f, 0.0f)); 
-		_M_model.solve(force, v); 
+		m_model.solve(force, v); 
 
 		// obtain the maximum shift. v might be updated according to the time step model
-		float maxshift = _M_time_step.calculate_pertuberation(v, local_shift); 
+		float maxshift = m_time_step.calculate_pertuberation(v, local_shift); 
 		if (maxshift <= 0) {
 			cvmsg() << "zero time step, perfect registration?\n"; 
 			break; 
 		}
 
 		// get the time step based on the maximum shift
-		float delta = _M_time_step.get_delta(maxshift); 
+		float delta = m_time_step.get_delta(maxshift); 
 		cvdebug() << "maxshift = " << maxshift << " Timestep = " << delta << "\n"; 
 		
 		local_shift.update(delta, v); 
@@ -700,12 +700,12 @@ void C2DMultiImageRegister::reg_level(C2DImageFatCostList& cost, C2DGridTransfor
 
 		// if the cost reduction was big, increase the possible time step 
 		if (new_cost_value < cost_value * 0.9)
-			_M_time_step.increase(); 
+			m_time_step.increase(); 
 		
 		// if the cost increased, reduce the time step if possible, 
 		// or count down the allowed search in sub-optimal areas
 		if (new_cost_value > best_cost_value)
-			if (!_M_time_step.decrease())
+			if (!m_time_step.decrease())
 				--inertia; 
 		
 		cvmsg() << iter << "@" << cost.get_size() 
@@ -714,7 +714,7 @@ void C2DMultiImageRegister::reg_level(C2DImageFatCostList& cost, C2DGridTransfor
 			<< lend;
 		
 	} while ( ((inertia > 0) || (new_cost_value < best_cost_value)) && 
-		  new_cost_value / initial_cost > _M_outer_epsilon && iter < _M_max_iter);
+		  new_cost_value / initial_cost > m_outer_epsilon && iter < m_max_iter);
 
 	cvmsg() << '\n'; 
 	

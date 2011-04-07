@@ -39,7 +39,7 @@ using boost::lambda::_1;
 using boost::lambda::_2;
 
 C2DCostBase::C2DCostBase(float weight):
-	_M_weight(weight)
+	m_weight(weight)
 {
 
 }
@@ -49,24 +49,24 @@ double C2DCostBase::evaluate(const C2DTransformation& t, C2DFVectorfield& force)
 	assert(t.get_size() == force.get_size());
 	C2DFVectorfield f(force.get_size());
 
-	const double result = _M_weight * do_evaluate(t, f);
-	transform(f.begin(), f.end(), force.begin(), force.begin(),( _1 * _M_weight) + _2);
+	const double result = m_weight * do_evaluate(t, f);
+	transform(f.begin(), f.end(), force.begin(), force.begin(),( _1 * m_weight) + _2);
 
 	return result;
 }
 
 C2DCostBasePlugin::C2DCostBasePlugin(const char *const name):
 	TFactory<C2DCostBase>(name),
-	_M_weight(1.0f)
+	m_weight(1.0f)
 {
-	add_parameter("weight", new CFloatParameter(_M_weight, 0.0,
+	add_parameter("weight", new CFloatParameter(m_weight, 0.0,
 						    std::numeric_limits<float>::max(), false,
 						    "cost function weight"));
 }
 
 float C2DCostBasePlugin::get_weight() const
 {
-	return _M_weight;
+	return m_weight;
 }
 
 const char *cost_data2d_type::type_descr = "2d";

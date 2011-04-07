@@ -72,9 +72,9 @@ BOOST_FIXTURE_TEST_CASE(test_C2DAnisoDiffN4, C2DAnisoDiffN4Fixture)
 
 	update_gamma_sigma(src_image);
 
-	BOOST_CHECK_CLOSE(_M_sigma_e, 1.4826f, 0.1);
-	BOOST_CHECK_CLOSE(_M_sigma, float(1.4826*sqrt(5.0f)) , 0.1);
-	BOOST_CHECK_CLOSE(_M_gamma, 0.25f, 0.1);
+	BOOST_CHECK_CLOSE(m_sigma_e, 1.4826f, 0.1);
+	BOOST_CHECK_CLOSE(m_sigma, float(1.4826*sqrt(5.0f)) , 0.1);
+	BOOST_CHECK_CLOSE(m_gamma, 0.25f, 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(test_C2DAnisoDiffN4_oneStep, C2DAnisoDiffN4Fixture)

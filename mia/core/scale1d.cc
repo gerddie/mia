@@ -28,21 +28,21 @@
 NS_MIA_BEGIN
 
 C1DScalar::C1DScalar(P1DInterpolatorFactory ipf):
-	_M_ipf(ipf),
-	_M_fwidth(-1)
+	m_ipf(ipf),
+	m_fwidth(-1)
 {
 }
 
 const C1DFoldingKernel& C1DScalar::get_downscale_kernel(int fwidth) const
 {
-	if (fwidth != _M_fwidth) {
-		_M_fwidth = fwidth;
+	if (fwidth != m_fwidth) {
+		m_fwidth = fwidth;
 		stringstream gf_descr;
 		gf_descr << "gauss:w=" << fwidth;
-		_M_kernel = C1DSpacialKernelPluginHandler::instance().produce(gf_descr.str().c_str());
+		m_kernel = C1DSpacialKernelPluginHandler::instance().produce(gf_descr.str().c_str());
 	}
-	assert(_M_kernel);
-	return dynamic_cast<const C1DFoldingKernel&>(*_M_kernel);
+	assert(m_kernel);
+	return dynamic_cast<const C1DFoldingKernel&>(*m_kernel);
 }
 
 NS_MIA_END

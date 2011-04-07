@@ -44,7 +44,7 @@ public:
 	double evaluate(const C2DTransformation& t, C2DFVectorfield& force) const;
 private:
 	virtual double do_evaluate(const C2DTransformation& t, C2DFVectorfield& force) const = 0;
-	float _M_weight;
+	float m_weight;
 };
 
 class EXPORT_CORE C2DCostBasePlugin: public TFactory<C2DCostBase> {
@@ -53,7 +53,7 @@ public:
 protected:
 	float get_weight() const;
 private:
-	float _M_weight;
+	float m_weight;
 };
 
 

@@ -114,8 +114,8 @@ private:
 	void global_searchpath(list< ::boost::filesystem::path>& searchpath); 
 	void initialise(const std::list< ::boost::filesystem::path>& searchpath); 
 	
-	std::vector<PPluginModule> _M_modules;
-	CPluginMap _M_plugins; 
+	std::vector<PPluginModule> m_modules;
+	CPluginMap m_plugins; 
 	
 }; 
 
@@ -146,9 +146,9 @@ public:
 	THandlerSingleton(); 
 	
 private: 
-	static std::list<boost::filesystem::path> _M_searchpath; 
-	static bool _M_is_created; 
-	static boost::mutex _M_creation_mutex; 
+	static std::list<boost::filesystem::path> m_searchpath; 
+	static bool m_is_created; 
+	static boost::mutex m_creation_mutex; 
 }; 
 
 

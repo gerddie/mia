@@ -27,111 +27,111 @@
 NS_MIA_BEGIN
 
 C2DBoundingBox::C2DBoundingBox():
-	_M_empty(true)
+	m_empty(true)
 {
 }
 
 C2DBoundingBox::C2DBoundingBox(const C2DFVector& begin, const C2DFVector& end):
-	_M_empty(false),
-	_M_begin(begin),
-	_M_end(end)
+	m_empty(false),
+	m_begin(begin),
+	m_end(end)
 {
-	assert(_M_begin.x <= _M_end.x);
-	assert(_M_begin.y <= _M_end.y);
+	assert(m_begin.x <= m_end.x);
+	assert(m_begin.y <= m_end.y);
 }
 
 void C2DBoundingBox::unite(const C2DBoundingBox& other)
 {
-	if (_M_empty) {
-		if (other._M_empty)
+	if (m_empty) {
+		if (other.m_empty)
 			return;
 		*this = other;
 	}
-	if (other._M_begin.x < _M_begin.x)
-		_M_begin.x = other._M_begin.x;
+	if (other.m_begin.x < m_begin.x)
+		m_begin.x = other.m_begin.x;
 
-	if (other._M_begin.y < _M_begin.y)
-		_M_begin.y = other._M_begin.y;
+	if (other.m_begin.y < m_begin.y)
+		m_begin.y = other.m_begin.y;
 
-	if (other._M_end.x > _M_end.x)
-		_M_end.x = other._M_end.x;
+	if (other.m_end.x > m_end.x)
+		m_end.x = other.m_end.x;
 
-	if (other._M_end.y > _M_end.y)
-		_M_end.y = other._M_end.y;
+	if (other.m_end.y > m_end.y)
+		m_end.y = other.m_end.y;
 }
 
 C2DFVector C2DBoundingBox::get_begin() const
 {
-	assert(!_M_empty);
-	return _M_begin;
+	assert(!m_empty);
+	return m_begin;
 }
 
 C2DFVector C2DBoundingBox::get_end() const
 {
-	assert(!_M_empty);
-	return _M_end;
+	assert(!m_empty);
+	return m_end;
 }
 
 C2DFVector C2DBoundingBox::get_size() const
 {
-	assert(!_M_empty);
-	return _M_end - _M_begin;
+	assert(!m_empty);
+	return m_end - m_begin;
 }
 
 C2DIVector C2DBoundingBox::get_grid_begin() const
 {
-	assert(!_M_empty);
-	return C2DIVector((int)floor(_M_begin.x),
-			  (int)floor(_M_begin.y));
+	assert(!m_empty);
+	return C2DIVector((int)floor(m_begin.x),
+			  (int)floor(m_begin.y));
 }
 
 C2DIVector C2DBoundingBox::get_grid_end() const
 {
-	assert(!_M_empty);
- 	return C2DIVector((int)ceil(_M_end.x),
-			  (int)ceil(_M_end.y));
+	assert(!m_empty);
+ 	return C2DIVector((int)ceil(m_end.x),
+			  (int)ceil(m_end.y));
 
 }
 
 C2DBounds C2DBoundingBox::get_grid_size() const
 {
-	assert(!_M_empty);
+	assert(!m_empty);
 	return C2DBounds(get_grid_end() - get_grid_begin());
 }
 
 void C2DBoundingBox::add(const C2DFVector& point)
 {
-	if (_M_empty) {
-		_M_begin = _M_end = point;
-		_M_empty = false;
+	if (m_empty) {
+		m_begin = m_end = point;
+		m_empty = false;
 		return;
 	}
-	if (point.x < _M_begin.x)
-		_M_begin.x = point.x;
+	if (point.x < m_begin.x)
+		m_begin.x = point.x;
 
-	if (point.y < _M_begin.y)
-		_M_begin.y = point.y;
+	if (point.y < m_begin.y)
+		m_begin.y = point.y;
 
-	if (point.x > _M_end.x)
-		_M_end.x = point.x;
+	if (point.x > m_end.x)
+		m_end.x = point.x;
 
-	if (point.y > _M_end.y)
-		_M_end.y = point.y;
+	if (point.y > m_end.y)
+		m_end.y = point.y;
 
 }
 
 void C2DBoundingBox::enlarge(float boundary)
 {
-	_M_end.y += boundary;
-	_M_end.x += boundary;
-	_M_begin.y -= boundary;
-	_M_begin.x -= boundary;
+	m_end.y += boundary;
+	m_end.x += boundary;
+	m_begin.y -= boundary;
+	m_begin.x -= boundary;
 
 }
 
 bool C2DBoundingBox::empty() const
 {
-	return _M_empty;
+	return m_empty;
 }
 
 NS_MIA_END

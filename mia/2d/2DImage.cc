@@ -33,15 +33,15 @@ const char *C2DImage::type_descr = "2dimage";
 
 
 C2DImage::C2DImage(const C2DBounds& size, EPixelType pixel_type):
-	_M_size(size),
-	_M_pixel_type(pixel_type)
+	m_size(size),
+	m_pixel_type(pixel_type)
 {
 }
 
 C2DImage::C2DImage(const CAttributedData& attributes, const C2DBounds& size, EPixelType type):
 	CAttributedData(attributes),
-	_M_size(size),
-	_M_pixel_type(type)
+	m_size(size),
+	m_pixel_type(type)
 {
 }
 
@@ -51,12 +51,12 @@ C2DImage::~C2DImage()
 
 EPixelType C2DImage::get_pixel_type() const
 {
-	return _M_pixel_type;
+	return m_pixel_type;
 }
 
 const C2DBounds& C2DImage::get_size() const
 {
-	return _M_size;
+	return m_size;
 }
 
 C2DFVector C2DImage::get_pixel_size() const
@@ -91,28 +91,28 @@ C2DImage* T2DImage<T>::clone() const
 template <typename T>
 T2DImage<T>::T2DImage(const C2DBounds& size, const T* init_data):
 	C2DImage(size, (EPixelType)pixel_type<T>::value),
-	_M_image(size, init_data)
+	m_image(size, init_data)
 {
 }
 
 template <typename T>
 T2DImage<T>::T2DImage(const C2DBounds& size, const typename T2DDatafield<T>::data_array& init_data):
 	C2DImage(size, (EPixelType)pixel_type<T>::value),
-	_M_image(size, init_data)
+	m_image(size, init_data)
 {
 }
 
 template <typename T>
 T2DImage<T>::T2DImage(const C2DBounds& size):
 	C2DImage(size, (EPixelType)pixel_type<T>::value),
-	_M_image(size)
+	m_image(size)
 {
 }
 
 template <typename T>
 T2DImage<T>::T2DImage(const T2DDatafield<T>& orig):
 	C2DImage(orig.get_size(), (EPixelType)pixel_type<T>::value),
-	_M_image(orig)
+	m_image(orig)
 
 {
 }
@@ -120,7 +120,7 @@ T2DImage<T>::T2DImage(const T2DDatafield<T>& orig):
 template <typename T>
 T2DImage<T>::T2DImage(const T2DDatafield<T>& orig, const CAttributedData& attr):
 	C2DImage(attr, orig.get_size(), (EPixelType)pixel_type<T>::value),
-	_M_image(orig)
+	m_image(orig)
 {
 }
 
@@ -128,73 +128,73 @@ T2DImage<T>::T2DImage(const T2DDatafield<T>& orig, const CAttributedData& attr):
 template <typename T>
 T2DImage<T>::T2DImage(const C2DBounds& size, const CAttributedData& attr):
 	C2DImage(attr, size, (EPixelType)pixel_type<T>::value),
-	_M_image(size)
+	m_image(size)
 {
 }
 
 template <typename T>
 T2DImage<T>::T2DImage(const T2DImage<T>& orig):
 	C2DImage(orig),
-	_M_image(orig._M_image)
+	m_image(orig.m_image)
 {
 }
 
 template <typename T>
 T2DImage<T>::T2DImage():
 	C2DImage(C2DBounds(0,0), (EPixelType)pixel_type<T>::value),
-	_M_image(C2DBounds(0,0))
+	m_image(C2DBounds(0,0))
 {
 }
 
 template <typename T>
 size_t T2DImage<T>::size() const
 {
-	return _M_image.size();
+	return m_image.size();
 }
 
 template <typename T>
 const T2DDatafield<T>& T2DImage<T>::data() const
 {
-	return _M_image;
+	return m_image;
 }
 
 
 template <typename T>
 void T2DImage<T>::get_data_line_x(size_t y, std::vector<T>& buffer) const
 {
-	_M_image.get_data_line_x(y, buffer);
+	m_image.get_data_line_x(y, buffer);
 }
 
 template <typename T>
 void T2DImage<T>::get_data_line_y(size_t x, std::vector<T>& buffer) const
 {
-	_M_image.get_data_line_y(x, buffer);
+	m_image.get_data_line_y(x, buffer);
 }
 
 template <typename T>
 void T2DImage<T>::put_data_line_x(size_t y, const std::vector<T>& buffer)
 {
-	_M_image.put_data_line_x(y, buffer);
+	m_image.put_data_line_x(y, buffer);
 }
 
 template <typename T>
 void T2DImage<T>::put_data_line_y(size_t x, const std::vector<T>& buffer)
 {
-	_M_image.put_data_line_y(x, buffer);
+	m_image.put_data_line_y(x, buffer);
 }
 
 //template <typename T>
 //T2DDatafield<T>& T2DImage<T>::data()
 //{
-//	return _M_image;
+//	return m_image;
 //}
 
 template <class T>
 C2DFVector T2DImage<T>::get_gradient(size_t idx) const
 {
-	return C2DFVector(0.5f * ( _M_image[idx + 1] - _M_image[idx - 1]),
-			  0.5f * ( _M_image[idx + _M_image.get_size().x] -
-				   _M_image[(int)idx - (int)_M_image.get_size().x]));
+	return C2DFVector(0.5f * ( m_image[idx + 1] - m_image[idx - 1]),
+			  0.5f * ( m_image[idx + m_image.get_size().x] -
+				   m_image[(int)idx - (int)m_image.get_size().x]));
 }
 
 template <class T>
@@ -207,7 +207,7 @@ C2DFVector T2DImage<T>::get_gradient(const T2DVector<float>& p) const
 	float xm = p.x - x;  float xp = 1.0f - xm;
 	float ym = p.y - y;  float yp = 1.0f - ym;
 
-	const T *help = &_M_image[x + sizex * y];
+	const T *help = &m_image[x + sizex * y];
 
 	const T H00  = help[0];
 	const T H0_1 = help[ 0 - sizex];
@@ -247,20 +247,20 @@ C2DFVector T2DImage<bool>::get_gradient(const C2DFVector& p) const
 
 	int idx = x + get_size().x * y;
 
-	const float H00  = _M_image[idx];
-	const float H0_1 = _M_image[idx - sizex];
-	const float H01  = _M_image[idx + sizex];
-	const float H02  = _M_image[idx + 2*sizex];
+	const float H00  = m_image[idx];
+	const float H0_1 = m_image[idx - sizex];
+	const float H01  = m_image[idx + sizex];
+	const float H02  = m_image[idx + 2*sizex];
 
-	const float H10  = _M_image[idx + 1];
-	const float H1_1 = _M_image[idx + 1-sizex];
-	const float H11  = _M_image[idx + 1+sizex];
-	const float H12  = _M_image[idx + 1+2*sizex];
+	const float H10  = m_image[idx + 1];
+	const float H1_1 = m_image[idx + 1-sizex];
+	const float H11  = m_image[idx + 1+sizex];
+	const float H12  = m_image[idx + 1+2*sizex];
 
-	const float H_10 = _M_image[idx -1];
-	const float H_11 = _M_image[idx + sizex-1];
-	const float H21  = _M_image[idx + 2+sizex];
-	const float H20  = _M_image[idx + 2];
+	const float H_10 = m_image[idx -1];
+	const float H_11 = m_image[idx + sizex-1];
+	const float H21  = m_image[idx + 2+sizex];
+	const float H20  = m_image[idx + 2];
 
 	return
 		T2DVector<float>((( xp * ( H10 - H_10 ) + xm * ( H20 - H00 ) ) * yp +
