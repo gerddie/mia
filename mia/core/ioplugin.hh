@@ -39,7 +39,7 @@ struct EXPORT_CORE io_plugin_type {
 };
 
 /**
-   The basis of all io plug-ins. The type \a D must provied a typedef \a type the referes to the
+   The basis of all IO plug-ins. The type \a D must provied a typedef \a type the referes to the
    data type to be handled and it must provied a string \a value that describes the type of
    the io data and also corresponds to the last part of the directory name, where the plug-in
    will be located after installation of the package.

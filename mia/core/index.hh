@@ -27,14 +27,38 @@
 
 NS_MIA_BEGIN
 
+/**
+   This class provides the structure for the translation of a linear index to 
+   a circular buffer. 
+   An example for its use can be found in mia/3d/translate/spline.cc: on_grid (BLAS_VERSION)
+ */
+
 class CCircularIndex {
 public: 
+	/*
+	  Construct the buffer
+	  \param size size ofthe buffer 
+	  \param start start index
+	 */
 	CCircularIndex(unsigned int size, unsigned int start); 
 	
+	/* Insert one index */
 	void insert_one(); 
+
+	/* get the next index */
 	unsigned int next() const; 
+
+	/* reset the start index */ 
 	void new_start(unsigned int start);
+
+	/** \returns the number of occupied indices */
 	unsigned int fill()const; 
+
+	/** 
+	    Translate the linear index i to the index in the circular buffer 
+	    \param i 
+	    \returns circular index 
+	 */
 	unsigned int value(unsigned int i) const; 
 private: 
 	unsigned int m_size; 

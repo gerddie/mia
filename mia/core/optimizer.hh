@@ -31,16 +31,15 @@
 
 NS_MIA_BEGIN
 
-/**
-   Base class for all optimizers
-*/
 
 struct EXPORT_CORE algorithm_type {
 	static const char *value;
 };
 
-
-
+/**
+   Base class for all optimizers
+   \remark obsolete, use CMinimizer 
+*/
 class EXPORT_CORE COptimizer : public CProductBase {
 public:
 	typedef COptimizer plugin_data; 

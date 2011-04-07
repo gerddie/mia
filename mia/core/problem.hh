@@ -27,6 +27,9 @@
 
 NS_MIA_BEGIN
 
+/*
+  Obsolete, use CMinimizer::Problem 
+*/
 class EXPORT_CORE CProblem  {
 public:
 	CProblem(size_t n_params); 

@@ -30,7 +30,7 @@
 NS_MIA_BEGIN
 
 /**
-   Interface haleper class for all IO data classes - defines the get/set format
+   Interface halper class for all IO data classes - defines the get/set format
 */
 class EXPORT_CORE CIOData {
 public:

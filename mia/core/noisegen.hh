@@ -49,9 +49,17 @@ class EXPORT_CORE  CNoiseGenerator : public CProductBase {
 public:
 	typedef grayscale_noise_data plugin_data; 
 	typedef generator_type plugin_type; 
-	
+
+	/**
+	   Constructor to initialize the noise generator with the given seed 
+	   \param seed 
+	 */
 	CNoiseGenerator(unsigned int seed);
+
+	
 	virtual ~CNoiseGenerator();
+	
+	/// \returns the next random value comprising the noise 
 	double operator ()()const;
 protected:
 	double ranf() const;

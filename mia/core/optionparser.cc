@@ -53,7 +53,8 @@ CComplexOptionParser::CComplexOptionParser(const string& param)
 		pair<string, string>  part = split_pair(*i,m_part_options);
 		CParsedOptions options;
 
-		cvdebug() << "CComplexOptionParser: '" << part.first << "' : '" << part.second << "' len="<< part.second.size() << "\n";
+		cvdebug() << "CComplexOptionParser: '" << part.first << "' : '" << part.second 
+			  << "' len="<< part.second.size() << "\n";
 
 		string help = part.second;
 

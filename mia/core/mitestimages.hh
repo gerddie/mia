@@ -1,6 +1,10 @@
 #ifndef mi_test_images_h
 #define mi_test_images_h
 
+/**
+   Simple structure for test images 
+ */
+
 struct SImageSize {
 	int width; 
 	int height; 

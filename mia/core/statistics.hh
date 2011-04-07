@@ -30,7 +30,7 @@
 /**
    Functor to be called by mia::filter to evaluate mean and variance of 
    a series of data. 
-   
+
 */
 struct  FMeanVariance: public TFilter< pair<double, double> >  {
 

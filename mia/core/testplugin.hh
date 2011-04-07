@@ -34,6 +34,10 @@ struct test_plugin_data;
 
 EXPORT_CORE extern const char *const test_property;
 
+/**
+   Class to test plugin handling. 
+*/
+
 class EXPORT_CORE CTestPlugin: public TPlugin<test_plugin_data, test_plugin_type>  {
 public:
 	CTestPlugin(const char *name);

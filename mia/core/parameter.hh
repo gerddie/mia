@@ -36,7 +36,7 @@ NS_MIA_BEGIN
 
 /**
    The base class for parameters that might be set based on strings.
-   The main use-case is command line parameters for plug-ins.
+   The main use-case is to provide parameters to plug-ins.
 */
 
 class EXPORT_CORE CParameter {

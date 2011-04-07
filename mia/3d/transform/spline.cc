@@ -519,7 +519,12 @@ float C3DSplineTransformation::get_max_transform() const
 }
 
 #ifdef HAVE_BLAS
-
+/*
+  This versions of the INIT-GRID function evaluate a 3D vector field comprising the deformations 
+  at each grid point. Other then interpolating at each grid point on  request, this version 
+  implements a separable filtering of the slices using cblas for fast addition of large ranges.  
+  
+*/
 void C3DSplineTransformation::init_grid()const
 {
 	TRACE_FUNCTION; 
@@ -639,6 +644,12 @@ void C3DSplineTransformation::init_grid()const
 }
 
 #else 
+/*
+  This versions of the INIT-GRID function evaluate a 3D vector field comprising the deformations 
+  at each grid point. The filtering is done per row/column/pillar. The number of operations should 
+  be the same, but the BLAS version works the data in larger batches and should, therefore, take 
+  more advantage of caching effects. 
+*/
 void C3DSplineTransformation::init_grid()const
 {
 	TRACE_FUNCTION; 

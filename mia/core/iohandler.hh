@@ -34,7 +34,7 @@ NS_MIA_BEGIN
 /**
    Input/Output plugin handler base class, derived privately from the 
    standart plug-in handler to hide its interface.
-   Class \a I, the interface class needs to be derived from \a TIOPlugin.  
+   \tparam I the interface class that needs to be derived from \a TIOPlugin.  
 */
 
 template <class I> 
@@ -79,11 +79,19 @@ public:
 	 */
 	bool save(const std::string& type, const std::string& fname, const Data& data) const;
 
+	/** Tolerant search for the plug-in corresponding to the file name suffix
+	    \param fname a file name 
+	    \returns the plug-in that is preferred for the suffix of \a fname, or NULL 
+	    if none was found. 
+	*/
+	const Interface *prefered_plugin_ptr(const std::string& fname) const; 
+
 	/** 
+	    Search for the plug-in corresponding to the file name suffix, if the 
+	    search fails, an \a std::invalid_argument exception is thrown. 
 	    \param fname a file name 
 	    \returns the plug-in that is preferred for the suffix of \a fname 
 	*/
-	const Interface *prefered_plugin_ptr(const std::string& fname) const; 
 
 	const Interface& prefered_plugin(const std::string& fname) const; 
 
@@ -119,6 +127,13 @@ private:
 	CDatapoolPlugin *m_pool_plugin; 
 }; 
 
+/**
+   This makes a singleton from the IO plugin handler. This specification is needed 
+   to enable tests on plugin loading, where the search path has to be changed to 
+   the location of the uninstalled plug-ins. 
+   \tparam T must be some instanciation of TIOPluginHandler. 
+   \remark why is this not templated over the plugin interface I like above? 
+*/
 template <typename T>
 class EXPORT_HANDLER TIOHandlerSingleton : public THandlerSingleton<T> {
 public: 
@@ -137,6 +152,10 @@ public:
 
 }; 
 
+/**
+   This fakes some load image function 
+   \remark what is this for? 
+*/
 template <typename T>
 T load_image(const std::string& filename)
 {

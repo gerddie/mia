@@ -48,7 +48,7 @@ public:
 	   @param mkernel B-spline kernel for filling and evaluating moving intensities
 	*/
 	CSplineParzenMI(size_t rbins, PBSplineKernel rkernel,
-                                 size_t mbins, PBSplineKernel mkernel); 
+			size_t mbins, PBSplineKernel mkernel); 
 	
 
 	/**

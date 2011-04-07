@@ -114,10 +114,20 @@ public:
 	*/
 	bool has_property(const char *property) const;
 
+
+	/// \remark obsolete function 
 	bool test(bool uninstalled) const;
 
+	/* set the shared modules containing the code of this plugin 
+	   This enshures that the modules is not unloaded while the plug-in 
+	   still exists and needs to call its destructor whos code resides 
+	   in the module. 
+	 */
 	void set_module(const PPluginModule& module);
 
+	/*
+	  \returns the module 
+	 */
 	PPluginModule get_module() const;
 protected:
 	/**
@@ -127,19 +137,34 @@ protected:
 	void add_property(const char *property);
 
 private:
+	/// \remark obsolete test path, needs to be cleaned up 
 	virtual bool do_test() const = 0;
+	
 	virtual void prepare_path() const;
 
 	virtual const std::string do_get_descr() const = 0;
 
+	// plugin name 
 	const char *m_name;
 
+	/* pointer to the next interface in a plugin chain 
+	   NULL indicates end of chain
+	*/
 	CPluginBase *m_next_interface;
 
+	/*
+	  List of paramaters understudd by this plugin 
+	 */
 	CParamList  m_parameters;
 
+	/*
+	  Specific properties of this plug in 
+	 */
 	CPropertyFlagHolder m_properties;
 
+	/*
+	  The dynamically loadable module that holds the code of this plugin.  
+	 */
 	PPluginModule  m_module;
 };
 
