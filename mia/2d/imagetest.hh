@@ -30,6 +30,16 @@
 
 NS_MIA_BEGIN
 
+/**
+   Test if two images are ove equal size, equal pixel type and if their 
+   pixel values are equal if the pixel type is integral, or close 
+   if the pixel type is floating point. 
+   The backend uses the BOOST unit test library to report sucess or failture. 
+
+   @param A test image 
+   @param expect the expected image 
+   
+ */
 void EXPORT_2D test_image_equal(const C2DImage& A, const C2DImage& expect);
 
 NS_MIA_END

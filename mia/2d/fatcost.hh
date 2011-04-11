@@ -33,19 +33,47 @@
 
 NS_MIA_BEGIN
 
-class C2DImageFatCost;
-typedef std::shared_ptr<C2DImageFatCost > P2DImageFatCost;
+
+/**
+   Image cost function class that handles the multiresolution part on its own. 
+   \todo This class should probably removed and C2DFullcost be used. 
+ */
 
 class EXPORT_2D C2DImageFatCost: public TFatCost<C2DTransformation, C2DFVectorfield> {
 public:
+	/// Pointer type of this class 
+	typedef std::shared_ptr<C2DImageFatCost > Pointer;
+
+	/**
+	   Cunstructor to create the cost base 
+	   @param src floating image 
+	   @param ref reference image 
+	   @param ipf interpolation factory 
+	   @param weight of this cost function 
+	 */
 	C2DImageFatCost(P2DImage src, P2DImage ref, P2DInterpolatorFactory ipf, float weight);
 
-	P2DImageFatCost get_downscaled(const C2DBounds& scale) const;
+	/**
+	   return a copy of this cost function that holds downscaled versions of the images, 
+	   @param scale inverse scaling parameter
+	 */
+	Pointer get_downscaled(const C2DBounds& scale) const;
 
+
+	/**
+	   @returns image size of this cost function instance 
+	 */
 	C2DBounds get_size() const;
 private:
-	virtual P2DImageFatCost cloned(P2DImage src, P2DImage ref) const = 0;
+	virtual Pointer cloned(P2DImage src, P2DImage ref) const = 0;
 };
+
+/// Short for the C2DImageFatCost pointer type 
+typedef C2DImageFatCost::Pointer P2DImageFatCost; 
+
+/**
+   The base plugin interface for the creation of the C2DImageFatCost cost function 
+ */
 
 class EXPORT_2D C2DFatImageCostPlugin: public TFactory<C2DImageFatCost> {
 public:
@@ -65,16 +93,40 @@ private:
 	float m_weight;
 };
 
+
+/**
+   A list of cost functions of type C2DImageFatCost. 
+   This class is used to combine different image cost functions 
+ */
+
 class EXPORT_2D C2DImageFatCostList : public std::vector<P2DImageFatCost> {
 public:
-	double value() const;
 
+	/// @returns the weightes sum of the cost function values contained in the list 
+	double value() const;
+	
+        /**
+	   Evaluate the registration force resulting from the image gradient 
+	   @retval force 
+	   @returns the weightes sum of the cost function values contained in the list 
+	*/
 	double evaluate_force(C2DFVectorfield& force) const;
 
+	/**
+	   @param scale inverse scaling parameter
+	   @returns the doenscaled version of this cost function list 
+	 */
 	C2DImageFatCostList get_downscaled(const C2DBounds& scale) const;
 
+	/**
+	   @returns image size of this cost function instance 
+	 */
 	C2DBounds get_size() const;
 
+	/**
+	   Transform the floating image according to the given transformation 
+	   @param transform
+	 */
 	void transform(const C2DTransformation& transform);
 };
 

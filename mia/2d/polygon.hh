@@ -35,19 +35,54 @@
 
 NS_MIA_BEGIN
 
+/**
+   This class defines a polygon in 2D space and some functions on it. 
+   @remark Adding two polygons together is not done in a proper algebraic way.
+ */
 class EXPORT_2D C2DPolygon {
 public:
+
+	/**
+	   Evaluate if a given points is within the polygon if the 
+	   polygon is considered to be a closed set, i.e. contains its boundary. 
+	   @param point 
+	   @returns true if the poin is inside, false otherwiese  
+	 */
 	bool is_inside_closed_set(const C2DFVector& point) const;
+
+	/**
+	   Evaluate if a given points is within the polygon if the 
+	   polygon is considered to be an open set, i.e. doesn't contain its boundary. 
+	   @param point 
+	   @returns true if the poin is inside, false otherwiese  
+	 */
+
 	bool is_inside_open_set(const C2DFVector& point) const;
 
+
+	/**
+	   Append a point to the polyon 
+	 */
 	void append(const C2DFVector& point);
 
+	/**
+	   @returns the number of points within the polygon 
+	 */
 	size_t size() const;
 
+	/**
+	   Evaluate the minimum distance of a point to the polygon 
+	   @param point 
+	   @returns distance 
+	 */
 	float get_mimimum_distance(const C2DFVector& point)const ;
 
+	/**
+	   Evaluate the Hausdorff distance between this polygon and  another one 
+	   @param other 
+	   @returns Hausdorff distance 
+	 */
 	float get_hausdorff_distance(const C2DPolygon& other)const ;
-
  private:
 
 	bool is_on_line(const C2DFVector& p, const C2DFVector& a, const C2DFVector& b) const;

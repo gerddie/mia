@@ -76,29 +76,100 @@ public:
 	/// \returns a read-only reference to the segmentation sections 
 	const Sections& get_sections() const;
 
+	/**
+	   Set the image corresponding to the segmentation frame 
+	   @param image 
+	 */
 	void set_image(P2DImage image); 
 
-	
+	/**
+	   @returns the star of the LV contained in this frame 
+	 */
 	const CSegStar& get_star() const;
 
+	/// @returns the bounding box enclosing all segmentation sections belonging to thie frame 
 	const C2DBoundingBox get_boundingbox() const;
 
+
+	/**
+	   Append the segmentation frame to a XML node 
+	   @param node parent node to append the frame description to 
+	 */
 	void write(xmlpp::Node& node) const;
 
+	/**
+	   Shift the segmentation frame and change the file name to the new name 
+	   corresponding to the shifted image 
+	   @param delta translation 
+	   @param cropped_file new image file name 
+	*/
 	void shift(const C2DFVector& delta, const std::string& cropped_file);
 
+
+	/**
+	   transform the frame segmentation by a given transformation 
+	   @param t 
+	 */
 	void transform(const C2DTransformation& t);
+
+	/**
+	   transform the frame segmentation by the inverse of the given transformation 
+	   @param t 
+	 */
 	void inv_transform(const C2DTransformation& t);
 
+	/**
+	   Evaluate the Hausdorff distance of this segmentation frame to another 
+	   @param other 
+	   @returns Hausdorff distance
+	 */
 	float get_hausdorff_distance(const CSegFrame& other) const;
 
+
+	/**
+	   Evaluate a mask image based on the segmented sections
+	   @param size size of the output image 
+	   @returns an image containing the masks for each section  numbered in the storage 
+	   order of the sections
+	   @remark If overlap exists between the sections the masks with a higher index overwrite 
+	   the masks with a lower index. 
+	 */
 	C2DUBImage get_section_masks(const C2DBounds& size) const; 
+
+	/**
+	   Create the section masks by using the size of the image corresponding to the frame 
+	   @returns the mask image, for details see get_section_masks(const C2DBounds& size). 
+	 */
 	C2DUBImage get_section_masks() const; 
+
+	/**
+	   Create the section masks by using the size of the image corresponding to the frame. 
+	   If the number of requested sections is equal to the number of sections stored, this 
+	   call is equal to get_section_masks(), 
+           Otherwiese, instead of using the sections as defined, evaluate the union of all the sections 
+	   and then split this union evenly in \a n_sections starting by the first directional ray 
+	   and moving clockwiese with the star center as the angular point. 
+	   @param n_sections number of target sections 
+	   @returns the mask image, for details see get_section_masks(const C2DBounds& size). 
+	 */
 	C2DUBImage get_section_masks(size_t n_sections) const; 
 
-	SectionsStats get_stats(const C2DUBImage& mask) const; 
-	SectionsStats get_stats(size_t n_sections) const; 
 
+	/**
+	   Evaluate inetnsity mean and variation of the image data for the registions  
+	   defined by the given mask image. 
+	   @param mask 
+	   @returns the statustics 
+	 */
+	SectionsStats get_stats(const C2DUBImage& mask) const; 
+	
+	/**
+	   Evaluate inetnsity mean and variation of the image data for the registions  
+	   defined the get_section_masks(size_t n_sections) method. 
+	   @param n_sections 
+	   @returns the statustics 
+	 */
+	SectionsStats get_stats(size_t n_sections) const; 
 private:
 	void load_image() const; 
 

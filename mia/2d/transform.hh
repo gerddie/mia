@@ -79,6 +79,12 @@ protected:
 
 	}; 
 public: 
+	/**
+	   Iterator to iterator over the grid points of the supported range 
+	   \todo this iterator shouldn't be here, but should be a separate 
+	   class not bound to the 2D transformation 
+	 */
+
 	class const_iterator : public std::forward_iterator_tag {
 	public: 
 
@@ -87,20 +93,54 @@ public:
 		typedef size_t difference_type; 
 		typedef C2DFVector *pointer; 
 		typedef C2DFVector& reference; 
+
+		/**
+		   Standard constructor 
+		   \remark constructed like this the iterator is not usable. 
+		 */
 		const_iterator(); 
+
+		/**
+		   Constructor to be initialized with "a real implementation" 
+		   \param holder is the implementation that does all the real work 
+		   and depends on the transformation 
+		 */
 		const_iterator(iterator_impl * holder); 
 
+
+		/** Assignment operator implemnts the deep copy of the holder 
+		    The pointer to the holder is not shared but cloned.  
+		*/
 		const_iterator& operator = (const const_iterator& other); 
+
+		/** Copy Constructor impelemnts the deep copy of the holder 
+		    The pointer to the holder is not shared but cloned.  
+		 */
 		const_iterator(const const_iterator& other); 
 
+
+		/**
+		   Prefix increment 
+		 */
 		const_iterator& operator ++(); 
+
+		/**
+		   Postfix increment 
+		 */
 		const_iterator operator ++(int); 
 
+		/**
+		   Advance 
+		 */
 		const_iterator& operator += (unsigned int delta); 
 
 		const C2DFVector& operator *() const;
+		
 		const C2DFVector  *operator ->() const;
 
+		/** Print the current position and value to an output stream 
+		    \param os 
+		*/
 		void print(std::ostream& os) const; 
 	private: 
 		std::unique_ptr<iterator_impl> m_holder;

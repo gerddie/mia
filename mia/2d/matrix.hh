@@ -28,6 +28,10 @@
 
 NS_MIA_BEGIN
 
+/**
+   Simple implementation of a 2D Matrix to store 2nd order derivatives. 
+ */
+
 template <typename T> 
 struct T2DMatrix: public T2DVector< T2DVector<T> > {
 	

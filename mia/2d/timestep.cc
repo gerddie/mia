@@ -46,11 +46,12 @@ C2DRegTimeStep::~C2DRegTimeStep()
 
 bool C2DRegTimeStep::decrease()
 {
-	m_current /= 2.0;
-	if (m_current < m_min) {
-		m_current = m_min;
+	if (m_current <= m_min)
 		return false;
-	}
+	
+	m_current /= 2.0;
+	if (m_current <= m_min)
+		m_current = m_min;
 	return true;
 }
 

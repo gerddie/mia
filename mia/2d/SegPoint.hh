@@ -71,10 +71,11 @@ public:
 	   \param t 
 	 */
 	void transform(const C2DTransformation& t); 
+	
 	/**
-	   Approximate the inverse transform of the point by using the given transformation 
+	   Evaluate an approximation of the inverse of the given transform of the point
 	   \param t 
-	   \param t 
+
 	 */
 	void inv_transform(const C2DTransformation& t); 
 };

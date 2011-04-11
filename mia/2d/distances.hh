@@ -30,6 +30,14 @@
 
 NS_MIA_BEGIN
 
+/**
+   Evaluate the distance between a point and a löine segment 
+   @param point the point 
+   @param a start of line segment 
+   @param b end of line segment 
+   @returns distance 
+*/
+
 float EXPORT_2D distance_point_line(const C2DFVector& point,
 				    const C2DFVector& a,
 				    const C2DFVector& b);

@@ -29,7 +29,14 @@
 #include <mia/core/factory.hh>
 #include <mia/2d/2DImage.hh>
 
+/**
+   \file shape.hh
+   Specialize the shape templates for 2D shapes.  
+*/
+
 NS_MIA_BEGIN
+
+
 
 typedef TShape<T2DVector, C2DBitImage> C2DShape;
 typedef std::shared_ptr<C2DShape > P2DShape;

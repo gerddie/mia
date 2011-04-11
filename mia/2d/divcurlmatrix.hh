@@ -28,6 +28,10 @@
 
 NS_MIA_BEGIN
 
+/**
+   Obsolete version of the divcurl regularization related matrix 
+ */
+
 class  EXPORT_2D C2DDivCurlMatrix {
 public:
 	C2DDivCurlMatrix(const C2DBounds& size, const CBSplineKernel* kernel);

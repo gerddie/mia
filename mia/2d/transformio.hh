@@ -28,6 +28,10 @@
 #include <mia/core/ioplugin.hh>
 #include <mia/2d/transform.hh>
 
+/* Specializations of certain templates to create the necesities for the 
+   2D transformation IO */ 
+   
+
 NS_MIA_BEGIN
 typedef TIOPlugin<C2DTransformation> C2DTransformationIO; 
 typedef TIOHandlerSingleton< TIOPluginHandler<C2DTransformationIO> > C2DTransformationIOPluginHandler;

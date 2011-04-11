@@ -7,15 +7,37 @@
 
 NS_MIA_BEGIN
 
+/**
+   This class implements the optimization problem required for Ground Thruth Estimation 
+   as described in 
+     Chao Li and Ying Sun, Nonrigid Registration of Myocardial Perfusion MRI Using Pseudo Ground Truth,
+     In Proc. Medical Image Computing and Computer-Assisted Intervention – MICCAI 2009,
+     165-172, 2009
+   For its use see the class C2DGroundTruthEvaluator. 
+*/
 
 class  EXPORT_2D GroundTruthProblem : public CMinimizer::Problem {
 public:
+
+	/**
+	   Create the ground thruth estimator with the given parameters 
+	   (see the paper for details on a and b) 
+	   @param a parameter \alpha 
+	   @param b parameter \beta 
+	   @param slice_size 2D image size of the series images, 
+	   @param left_side 
+	   @param corr 
+	   
+	 */
 	GroundTruthProblem(double a, double b, 
 			   const C2DBounds& slice_size, 
 			   size_t nframes, 
 			   const CDoubleVector& left_side, 
 			   const  CCorrelationEvaluator::result_type& corr); 
 
+	/**
+	   Set the parametes a and b 
+	 */
 	void set_alpha_beta(double a, double b); 
 
 protected: 

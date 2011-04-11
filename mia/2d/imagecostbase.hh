@@ -27,6 +27,11 @@
 
 NS_MIA_BEGIN
 
+/**
+   Alternative implementation of cost function,
+   \remark not used?
+ */
+
 class EXPORT_2D C2DImageCostBase: public C2DCostBase {
 public:
 	C2DImageCostBase(const C2DImageDataKey& src_key, const C2DImageDataKey& ref_key,

@@ -30,6 +30,12 @@
 
 NS_MIA_BEGIN 
 
+
+/**
+   Deform an image by using a dense vector field as transformation. 
+   \remark obsolete-shouls be done by using C2DTransform 
+ */
+
 struct FDeformer2D: public TFilter<P2DImage> {
 	FDeformer2D(const C2DFVectorfield& vf, const C2DInterpolatorFactory& ipfac): 
 		m_vf(vf), 
