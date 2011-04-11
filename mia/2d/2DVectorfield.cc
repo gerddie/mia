@@ -36,6 +36,9 @@
 
 NS_MIA_BEGIN
 
+/**
+   
+ */
 EXPORT_2D C2DFVectorfield& operator += (C2DFVectorfield& a, const C2DFVectorfield& b)
 {
 	assert(a.get_size() == b.get_size());

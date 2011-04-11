@@ -54,6 +54,10 @@ public:
 			     bool meanstrip);
 
 
+	/**
+	   Set the number of ICA iterations 
+	   @param maxiter
+	 */
 	void set_max_ica_iterations(size_t maxiter); 
 	
 	~C2DPerfusionAnalysis();
@@ -109,10 +113,21 @@ public:
 	*/
 	int get_LV_peak_idx() const; 
 
+	/**
+	   Dictionary for segmentation method flags 
+	 */
 	static TDictMap<EBoxSegmentation> segmethod_dict; 
 
+	/**
+	   Use an experimental model to create a initial guess. 
+	 */
 	void set_use_guess_model(); 
 
+
+	/**
+	   Save the mixin matrix to a file. 
+	   @param coefs_name output file name 
+	 */
 	void save_coefs(const string&  coefs_name)const; 
 private: 
 	struct C2DPerfusionAnalysisImpl *impl; 

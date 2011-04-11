@@ -32,24 +32,60 @@ NS_MIA_BEGIN
 
 typedef T2DVector<int> C2DIVector;
 
+
+/**
+   2D axis orthothogonal bounding box. 
+ */
 class  EXPORT_2D C2DBoundingBox {
 public:
 	C2DBoundingBox();
+
+	/**
+	   Construct a new bounding box with 
+	   @param begin left lower corner 
+	   @param end right upper corner 
+	 */
 	C2DBoundingBox(const C2DFVector& begin, const C2DFVector& end);
 
+	/**
+	   Combine two bounding boxes 
+	   @param other box
+	 */
 	void unite(const C2DBoundingBox& other);
+
+	/**
+	   Change the box to include the given point 
+	   @param point 
+	 */
 	void add(const C2DFVector& point);
 
+
+	/// @returns left lower grid point 
 	C2DIVector get_grid_begin() const;
+	
+	/// @returns right upper grid point 
 	C2DIVector get_grid_end() const;
+
+	/// @returns size of bounding box in the grid  
 	C2DBounds get_grid_size() const;
 
+	/// @returns left lower bounding box point 
 	C2DFVector get_begin() const;
+	
+	/// @returns right upper  bounding box point 
 	C2DFVector get_end() const;
+
+	/// @returns size of bounding box 
 	C2DFVector get_size() const;
 
+
+	/** enlarge the bounding box by a given amount 
+	    @param boundary 
+	*/
 	void enlarge(float boundary);
 
+
+	/// @returns true if the box is not empty 
 	bool empty() const;
 
 private:

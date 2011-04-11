@@ -29,15 +29,27 @@
 
 NS_MIA_BEGIN
 
+/**
+   2D Vector field 
+ */
 template <typename T>
 class EXPORT_2D T2DVectorfield: public T2DDatafield<T>, public CAttributedData {
 public:
 	static const char *type_descr;
 
 	T2DVectorfield(){};
+
+	/**
+	   @param size of vector field 
+	 */
 	T2DVectorfield(const C2DBounds& size):
 		T2DDatafield<T>(size) {};
 
+
+	/**
+	   @param data meta data  
+	   @param size of vector field 
+	 */
 	T2DVectorfield(const CAttributedData& data, const C2DBounds& size):
 		T2DDatafield<T>(size),
 		CAttributedData(data)
@@ -48,6 +60,13 @@ public:
 typedef T2DVectorfield<C2DFVector>  C2DFVectorfield;
 typedef T2DVectorfield<C2DDVector>  C2DDVectorfield;
 
+/**
+   Concat two vector fields that descrive a transformation 
+   T_a = x - a(x) and T_b = x - b(x) 
+   @retval in a, out a( x - b(x) ) + b(x); 
+   @param b 
+   @returns a( x - b(x) ) + b(x); 
+*/
 EXPORT_2D C2DFVectorfield& operator += (C2DFVectorfield& a, const C2DFVectorfield& b);
 
 NS_MIA_END

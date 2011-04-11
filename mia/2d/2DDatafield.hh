@@ -50,7 +50,9 @@ The class holds all types of data stored in two dimensional fields.
 
 NS_MIA_BEGIN
 
-
+/**
+   2D data filed 
+*/
 
 template <class T>
 class EXPORT_2DDATAFIELD T2DDatafield  {

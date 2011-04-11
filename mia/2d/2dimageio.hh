@@ -34,9 +34,13 @@
 
 NS_MIA_BEGIN
 
+
+/**
+   Vector of 2D images to 
+ */
 class EXPORT_2D C2DImageVector: public C2DImageSeries,
-		      public CIOData {
- public:
+				public CIOData {
+public:
 	C2DImageVector *clone() const;
 };
 
@@ -62,7 +66,19 @@ typedef TIOHandlerSingleton< C2DImageIOPPH > C2DImageIOPluginHandler;
 typedef C2DImageIOPluginHandler::Instance::DataKey C2DImageDataKey;
 
 typedef C2DImageIOPluginHandler::Instance::PData P2DImageVector;
+
+
+/**
+   Convenience function to create a vector of images wrapping one image
+ */
 P2DImageVector EXPORT_2D create_image2d_vector(P2DImage image);
+
+
+/**
+   Convenience function to load one 2D image from a file 
+   @param filename 
+   @returns image 
+ */
 
 P2DImage EXPORT_2D  load_image2d(const std::string& filename);
 
@@ -72,9 +88,19 @@ inline P2DImage load_image<P2DImage>(const std::string& filename)
 	return load_image2d(filename);
 }
 
+/**
+   Convenience function to save one 2D image to a file 
+   @param filename 
+   @param image 
+   @returns true if saving was  successfull
+ */
+
 bool  EXPORT_2D save_image(const std::string& filename, P2DImage image);
 
 
+/**
+   some DICOM tags that may be used 
+ */
 extern EXPORT_2D const char * IDModality;
 extern EXPORT_2D const char * IDPatientOrientation;
 extern EXPORT_2D const char * IDPatientPosition;

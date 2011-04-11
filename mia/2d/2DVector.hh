@@ -53,6 +53,9 @@
 
 NS_MIA_BEGIN
 
+/**
+   2D Vector 
+ */
 template <class T > class T2DVector {
 public:	
 
@@ -79,19 +82,23 @@ public:
 		}
 	// Functions
 
+
+	///@returns square norm of the vector 
 	T norm2() const {
 		return T(x * x + y * y);
 	}
 
+	///@returns norm of the vector 
 	T norm() const {
 		return T(sqrt(norm2()));
 	}
 	
+	///@returns product of the elements of the vector  
 	double product() const {
 		return x * y; 
 	}
 
-	// Operators
+	// Operators 
 	T2DVector& operator += (const T2DVector& a){
 		x += a.x; y += a.y;
 		return *this;

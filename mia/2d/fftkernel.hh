@@ -49,18 +49,42 @@ struct EXPORT_2D fft2d_kernel_data {
 	static const char *type_descr;
 };
 
+/**
+   Base class for 2D FFT filters. Filter applications are applied like this: 
+   first a real-to-complex transformation is run, then run the filter on 
+   the half-complex transform and run the back-transform.  
+*/
 class EXPORT_2D CFFT2DKernel :public CProductBase {
 public:
 	typedef fft2d_kernel_data plugin_data; 
 	typedef kernel_plugin_type plugin_type; 
 		
 	CFFT2DKernel();
+
 	virtual ~CFFT2DKernel();
+
+	/**
+	   Run the FFT by first calling the forward plan, then 
+	   call do_apply() and then running the backward plan. 
+	   Normalization is left to the caller,  
+	 */
 	void apply() const;
+	
+
+	/**
+	   Prepare the FFT structures and return the buffer where the data needs to be 
+	   put when it should be processed. 
+	 */
 	float *prepare(const C2DBounds& size);
+	
 private:
+	/*
+	  free all the FFT structures 
+	 */
 	void tear_down();
-	virtual void do_apply(const C2DBounds& m_size, size_t m_realsize_x, fftwf_complex *m_cbuffer) const = 0;
+	
+	virtual void do_apply(const C2DBounds& m_size, size_t m_realsize_x, 
+			      fftwf_complex *m_cbuffer) const = 0;
 
 	C2DBounds m_size;
 	fftwf_complex *m_cbuffer;
@@ -73,8 +97,6 @@ private:
 };
 
 typedef  std::shared_ptr<CFFT2DKernel > PFFT2DKernel;
-
-
 typedef TFactory<CFFT2DKernel> CFFT2DKernelPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<CFFT2DKernelPlugin> > CFFT2DKernelPluginHandler;
 
