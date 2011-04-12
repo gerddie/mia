@@ -30,7 +30,6 @@
 #include <mia/core/pixeltype.hh>
 #include <mia/core/product_base.hh>
 #include <mia/core/factory.hh>
-
 #include <mia/core/import_handler.hh>
 
 NS_MIA_BEGIN

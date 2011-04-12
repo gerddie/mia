@@ -321,10 +321,10 @@ public:
 
 /**
    Approximate integration of a B-Spline kernel product 
-   /f[
+   \f[ 
    \int_{x_0}^L \frac{\partial^{d_1}}{\partial x^{d_1}} \beta(x - s_1)  
         \frac{\partial^{d_2}}{\partial x^{d_2}} \beta(x - s_2) dx
-   /f]
+   \f]
    using the Simpson integration.  
    @param spline kernel \f$\beta\f$  
    @param s1 

@@ -21,6 +21,12 @@
  *
  */
 
+
+/**
+   @file core/defines.hh 
+   This file provides some defines to make life easier 
+ */
+
 #ifndef mia_core_defines_hh
 #define mia_core_defines_hh
 
@@ -53,6 +59,7 @@ enum EInterpolation {
 NS_END
 
 #ifndef __GNUC__
+/// remove the __attribute__ syntax if the compiler is not GCC compatible 
 #define __attribute__(x) 
 #endif
 
