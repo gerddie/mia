@@ -40,6 +40,7 @@ NS_MIA_BEGIN
  */
 template <typename T> 
 struct array_destructor {
+	/// run delete on an array 
 	virtual void operator () (T *p) {
 		delete[] p; 
 	}
@@ -51,6 +52,7 @@ struct array_destructor {
  */
 template <typename T> 
 struct array_void_destructor {
+	/// skip deleting the pointer 
 	virtual void operator () (T *) {
 	}
 }; 

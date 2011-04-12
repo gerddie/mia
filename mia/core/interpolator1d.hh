@@ -166,7 +166,11 @@ private:
 */
 class EXPORT_CORE C1DInterpolatorFactory {
 public:
-	enum EType {ipt_nn, ipt_linear, ipt_spline, ipt_unknown};
+	/// Enum types for the different interpolation kernel types 
+	enum EType {ipt_nn,  /**< nearest neighbor interpolation */
+		    ipt_linear,   /**< linear interpolation */
+		    ipt_spline,   /**< spline based interpolation */
+		    ipt_unknown};  /**< stopper ID */
 
 	C1DInterpolatorFactory(EType type);
 	C1DInterpolatorFactory(EType type, PBSplineKernel kernel);

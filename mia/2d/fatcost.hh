@@ -65,7 +65,7 @@ public:
 	 */
 	C2DBounds get_size() const;
 private:
-	virtual Pointer cloned(P2DImage src, P2DImage ref) const = 0;
+	virtual Pointer cloned(P2DImage src, P2DImage ref) const __attribute__((warn_unused_result))  = 0;
 };
 
 /// Short for the C2DImageFatCost pointer type 

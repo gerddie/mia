@@ -48,7 +48,7 @@ public:
 	/** copy from normal vectorfield constructor */
 	C2DIOVectorfield(const C2DFVectorfield& org);
 
-	C2DIOVectorfield *clone() const;
+	C2DIOVectorfield *clone() const __attribute__((warn_unused_result));
 };
 
 struct io_2dvf_type {

@@ -41,7 +41,9 @@ NS_MIA_BEGIN
 class EXPORT_2D C2DImageVector: public C2DImageSeries,
 				public CIOData {
 public:
-	C2DImageVector *clone() const;
+
+	/// \returns a newly created copy of the image vector 
+	C2DImageVector *clone() const __attribute__((warn_unused_result));
 };
 
 

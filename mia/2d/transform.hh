@@ -61,7 +61,7 @@ protected:
 		void advance(unsigned int delta); 
 
 		const C2DFVector&  get_value() const;
-		virtual iterator_impl * clone() const = 0; 
+		virtual iterator_impl * clone() const __attribute__((warn_unused_result))  = 0; 
 		
 		bool operator == (const iterator_impl& other) const; 
 		
@@ -169,12 +169,12 @@ public:
 	/**
 	   \returns a newly allocated copy of the actual transformation
 	 */
-	virtual C2DTransformation *clone() const;
+	virtual C2DTransformation *clone() const __attribute__((warn_unused_result));
 
 	/**
 	   \returns a the inverse transform 
 	 */
-	virtual C2DTransformation *invert() const = 0;
+	virtual C2DTransformation *invert() const __attribute__((warn_unused_result))  = 0;
 
 	/**
 	   \returns the start iterator of the transformation that iterates over the grid 
@@ -327,7 +327,7 @@ private:
 	virtual Pointer do_upscale(const C2DBounds& size) const = 0;
 
 	std::string m_creator_string;  
-	virtual C2DTransformation *do_clone() const = 0;
+	virtual C2DTransformation *do_clone() const __attribute__((warn_unused_result)) = 0;
 
 };
 

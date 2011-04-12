@@ -112,7 +112,10 @@ private:
 
 };
 
+/// Pointer type of the CMessage class 
 typedef std::shared_ptr<CMessenger > PMessenger;
+
+/// Pointer type of the CBarrier class  
 typedef std::shared_ptr<boost::barrier > PBarrier;
 
 

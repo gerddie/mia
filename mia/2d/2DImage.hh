@@ -71,7 +71,7 @@ public:
         returns a copy of this image
         Abstract method
         */
-	virtual C2DImage* clone() const = 0;
+	virtual C2DImage* clone() const __attribute__((warn_unused_result))  = 0;
 
  protected:
          /** Constructor initializes the size and the pixel type
@@ -127,7 +127,7 @@ public:
 	T2DImage(const T2DDatafield<T>& orig, const CAttributedData& attr);
 	T2DImage();
 	
-	virtual C2DImage* clone() const;
+	virtual C2DImage* clone() const __attribute__((warn_unused_result));
 	
 	const_reference operator()(size_t  x, size_t  y) const {
 		return m_image(x,y);

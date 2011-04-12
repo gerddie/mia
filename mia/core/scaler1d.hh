@@ -48,7 +48,7 @@ class EXPORT_CORE C1DScalarFixed {
 public:
 	/**
 	    Create the scaler prividing the given interpolator factory.
-	    \param ipf
+	    \param kernel interpolation kernel 
 	    \param in_size
 	    \param out_size
 	 */

@@ -65,7 +65,7 @@ protected:
 		friend class C2DTransformMock; 
 		iterator_impl(const C2DBounds& pos, const C2DBounds& size);  
 
-		C2DTransformation::iterator_impl *clone()const; 
+		C2DTransformation::iterator_impl *clone()const __attribute__((warn_unused_result)); 
 		virtual const C2DFVector& do_get_value()const; 
 		virtual void do_x_increment(); 
 		virtual void do_y_increment(); 
@@ -74,7 +74,7 @@ protected:
 
 private:
 	virtual P2DTransformation do_upscale(const C2DBounds& size) const;
-	virtual C2DTransformation *do_clone() const;
+	virtual C2DTransformation *do_clone() const __attribute__((warn_unused_result));
         virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
 	C2DBounds m_size;
 

@@ -35,11 +35,12 @@
 NS_MIA_BEGIN
 
 /**
-   \file interpolator.hh
+   \file core/interpolator.hh
    \todo - create B-spline kernels of size 0 and 1
    \todo move kernels into plugins 
  */
 
+/// Table to define value-enum relations between interpolator types and strings 
 extern EXPORT_CORE TDictMap<EInterpolation> GInterpolatorTable;
 
 /**
@@ -221,10 +222,12 @@ private:
 	EInterpolation m_type; 
 };
 
-//typedef std::shared_ptr<CBSplineKernel> PSplineKernel;
+/// Pointer type for B-Spline kernels 
 typedef std::shared_ptr<CBSplineKernel> PBSplineKernel;
 
-enum ci_type {ci_bspline, ci_omoms};
+/// convolution kernel type enums 
+enum ci_type {ci_bspline, /**< B-Spline kernels */
+	      ci_omoms};  /**< O-Moms kernels  */
 
 template <typename T>
 struct max_hold_type {
@@ -316,7 +319,25 @@ public:
 	void get_derivative_weights(double x, std::vector<double>& weight, int order) const;
 };
 
-double  EXPORT_CORE integrate2(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2, double n, double x0, double L);
+/**
+   Approximate integration of a B-Spline kernel product 
+   /f[
+   \int_{x_0}^L \frac{\partial^{d_1}}{\partial x^{d_1}} \beta(x - s_1)  
+        \frac{\partial^{d_2}}{\partial x^{d_2}} \beta(x - s_2) dx
+   /f]
+   using the Simpson integration.  
+   @param spline kernel \f$\beta\f$  
+   @param s1 
+   @param s2
+   @param d1 
+   @param d2
+   @param n number of integration intervals 
+   @param x0 start of interval
+   @param L end of interval 
+   @returns value of integral 
+   
+*/
+double  EXPORT_CORE integrate2(const CBSplineKernel& spline, double s1, double s2, int d1, int d2, double n, double x0, double L);
 
 inline bool mirror_boundary_conditions(std::vector<int>& index, int width, 
 				       int width2)

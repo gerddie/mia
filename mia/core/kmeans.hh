@@ -110,9 +110,6 @@ bool kmeans_step(InputIterator ibegin, InputIterator iend, OutputIterator obegin
 
 
 /**
-   \fn template <typename InputIterator, typename OutputIterator> 
-                void kmeans(InputIterator ibegin, InputIterator iend, OutputIterator obegin, 
-	       std::vector<double>& classes)
    Run a kmeans clustering on some input data and store the class centers and the 
    class membership. 
    \tparam InputIterator readable forward iterator, 

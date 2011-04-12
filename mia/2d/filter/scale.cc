@@ -56,7 +56,7 @@ CScale::result_type CScale::operator () (const T2DImage<T>& src) const
 
 
 
-	auto_ptr<T2DInterpolator<T> > s(m_ipf->create(src.data()));
+	unique_ptr<T2DInterpolator<T> > s(m_ipf->create(src.data()));
 
 	T2DImage<T> *result = new T2DImage<T>(m_size);
 	typename T2DImage<T>::iterator i = result->begin();

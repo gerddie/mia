@@ -33,6 +33,7 @@ NS_MIA_BEGIN
 
 /**
    2D transformation based on a deformation vector for each grid point.
+   Implements the C2DTransformation interface 
  */
 
 class EXPORT_2D C2DGridTransformation : public C2DTransformation {

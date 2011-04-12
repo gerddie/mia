@@ -45,6 +45,7 @@ The class holds all types of data stored in two dimensional fields.
 #include <mia/core/parameter.hh>
 
 #ifndef EXPORT_2DDATAFIELD
+/// define used export 2D symbols 
 #  define EXPORT_2DDATAFIELD EXPORT_2D
 #endif
 
@@ -195,7 +196,10 @@ typedef T2DDatafield<signed char>  C2DSBDatafield;
 typedef T2DDatafield<bool>  C2DBitDatafield;
 
 
+/// template parameters string for C2DBoundsParameter
 extern const char type_str_2dbounds[]; 
+
+/// Parameter type for 2D size definitions 
 typedef  CTParameter<C2DBounds, type_str_2dbounds> C2DBoundsParameter;
 
 NS_MIA_END

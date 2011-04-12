@@ -267,6 +267,7 @@ private:
 	struct CTriangleMeshData * data;
 };
 
+/// Pointer type of the CTriangle mesh class
 typedef std::shared_ptr<CTriangleMesh > PTriangleMesh;
 
 /** This function is used to generate  the deformation scale of a mesh as the
@@ -327,7 +328,10 @@ struct io_mesh_type {
     static const char *type_descr;
 };
 
+/// IO plugin for triangular meshes
 typedef TIOPlugin<io_mesh_type> CMeshIOPlugin;
+
+/// Plug-in handler for triangulat mesh IO 
 typedef TIOHandlerSingleton<TIOPluginHandler<CMeshIOPlugin> > CMeshIOPluginHandler;
 
 

@@ -355,7 +355,10 @@ typedef T3DDatafield<unsigned char>  C3DUBDatafield;
 	/// a data field of float values
 typedef T3DDatafield<bool>  C3DBitDatafield;
 
+/// template parameter name for C3DBoundsParameter
 extern const char type_str_3dbounds[]; 
+
+/// 3D size parameter type 
 typedef  CTParameter<C3DBounds, type_str_3dbounds> C3DBoundsParameter;
 
 
@@ -495,6 +498,7 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
 
 #ifndef mia3d_EXPORTS
 
+/// 
 extern template class  EXPORT_3D T3DDatafield<double>;
 extern template class  EXPORT_3D T3DDatafield<float>;
 extern template class  EXPORT_3D T3DDatafield<unsigned int>;
