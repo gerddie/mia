@@ -8,12 +8,9 @@ SET(MIA2D_SRC_BASE
   2dvfio.cc
   BoundingBox.cc
   cost.cc
-#  costbase.cc
   correlation_weight.cc 
   creator.cc
   distances.cc
-#  divcurlmatrix.cc
-#  imagecostbase.cc
   interpolator.cc 
   fatcost.cc
   fullcost.cc
@@ -84,20 +81,17 @@ SET(MIA2D_HEADERS_BASE
   2dvfio.hh
   BoundingBox.hh
   cost.hh
-#  costbase.hh
   correlation_weight.hh 
   creator.hh
   defines2d.hh
   deformer.hh
   distances.hh
-#  divcurlmatrix.cc
   fatcost.hh
   fullcost.hh
   filterchain.hh
   fftkernel.hh
   ground_truth_evaluator.hh
   groundtruthproblem.hh
-#  imagecostbase.hh
   interpolator.hh
   matrix.hh
   model.hh
@@ -167,24 +161,16 @@ TEST_2DMIA(2ddatafield mia2dtest)
 TEST_2DMIA(2dimage mia2dtest)
 TEST_2DMIA(2dparam mia2dtest)
 TEST_2DMIA(2dvector mia2dtest)
-
 TEST_2DMIA(boundingbox mia2dtest)
-
-#TEST_2DMIA(costbase mia2dtest)
 TEST_2DMIA(distances mia2dtest)
-
 TEST_2DMIA(fullcost mia2dtest)
-#TEST_2DMIA(imagecostbase mia2dtest)
 TEST_2DMIA(interpol mia2dtest)
-
 TEST_2DMIA(matrix mia2dtest)
 TEST_2DMIA(modelsolverreg mia2dtest)
 TEST_2DMIA(nfg mia2dtest)
 TEST_2DMIA(cost mia2dtest)
 TEST_2DMIA(nonrigidregister mia2dtest)
-
 TEST_2DMIA(oldnewintegrate mia2dtest)
-
 TEST_2DMIA(combiner mia2dtest)
 TEST_2DMIA(polygon mia2dtest)
 TEST_2DMIA(ppmatrix mia2dtest)
@@ -263,7 +249,6 @@ ADD_SUBDIRECTORY(fft       )
 ADD_SUBDIRECTORY(fullcost  )
 ADD_SUBDIRECTORY(kernel    )
 ADD_SUBDIRECTORY(model     )
-#ADD_SUBDIRECTORY(reg2d     )
 ADD_SUBDIRECTORY(shapes    )
 ADD_SUBDIRECTORY(timestep  )
 ADD_SUBDIRECTORY(transform )

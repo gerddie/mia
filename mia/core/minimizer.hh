@@ -26,7 +26,6 @@
 #include <memory>
 #include <vector>
 
-#include <mia/core/problem.hh>
 #include <mia/core/factory.hh>
 #include <mia/core/handler.hh>
 #include <mia/core/vector.hh>

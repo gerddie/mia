@@ -31,7 +31,7 @@ SET(MIACORE_SRC_BASE
   msgstream.cc 
   minimizer.cc
   noisegen.cc 
-  optimizer.cc 
+#  optimizer.cc 
   optionparser.cc 
   optparam.cc 
   parallel.cc 
@@ -40,7 +40,7 @@ SET(MIACORE_SRC_BASE
   plugin_base.cc  
   product_base.cc
   property_flags.cc
-  problem.cc
+#  problem.cc
   probmap.cc
   regmodel.cc
   revision.cc 
@@ -93,14 +93,14 @@ SET(MIACORE_HEADER_BASE
   msgstream.hh
   minimizer.hh
   noisegen.hh
-  optimizer.hh
+#  optimizer.hh
   optionparser.hh
   optparam.hh
   parallel.hh
   parameter.cxx parameter.hh
   pixeltype.hh
   plugin_base.cxx plugin_base.hh
-  problem.hh
+#  problem.hh
   probmap.hh
   property_flags.hh
   product_base.hh
