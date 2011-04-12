@@ -38,6 +38,7 @@ NS_MIA_BEGIN
 
 /**
 \brief This is the base class for 2D images that can hold generic pixel data
+
 This class is the abstract base class for 2D images that can be passed around
 without the program knowing, what actual pixel type an image holds.
 It provides access to the image size and the pixel type, and it also
