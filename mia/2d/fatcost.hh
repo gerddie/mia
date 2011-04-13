@@ -73,11 +73,25 @@ typedef C2DImageFatCost::Pointer P2DImageFatCost;
 
 /**
    The base plugin interface for the creation of the C2DImageFatCost cost function 
+   @todo should be superseded by the CFullcostPlugin 
  */
-
 class EXPORT_2D C2DFatImageCostPlugin: public TFactory<C2DImageFatCost> {
 public:
+	/**
+	   Create the plug-in with a certain name 
+	   @param name 
+	 */
 	C2DFatImageCostPlugin(const char *name);
+
+	/**
+	   Create the cost function directly by giving the parameters that are normally part of the 
+	   command line 
+	   @param src src or floating image 
+	   @param ref reference image 
+	   @param ipf interpolation factory 
+	   @param weight of this cost function when combining with others 
+	   @returns the cost function 
+	 */
 	P2DImageFatCost create_directly( P2DImage src, P2DImage ref,
 					 P2DInterpolatorFactory ipf,
 					 float weight);

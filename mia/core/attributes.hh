@@ -222,6 +222,7 @@ public:
 
 	//@}
 
+	/// Assignemt operator 
 	CAttributedData& operator =(const CAttributedData& org);
 
 	/** \param key
@@ -239,15 +240,15 @@ public:
 	/**
 	   Sets the attribute \a name to value \a attr. If \a attr is \a NULL, then
 	   the attribute is removed from the list (or not added)
-	   \param name
+	   \param key
 	   \param attr
 	*/
 	void set_attribute(const std::string& key, PAttribute attr);
 
 	/**
 	   Set an attribute using one of the defined translators
-	   \param name
-	   \param attr
+	   \param key
+	   \param value
 	 */
 	void set_attribute(const std::string& key, const std::string& value);
 
@@ -255,11 +256,28 @@ public:
 	const std::string get_attribute_as_string(const std::string& key)const;
 
 
+	/**
+	   Look for a certain attribute and try to cast it to the output type. 
+	   If the attribute is not found, a std::invalid_argument exception is thrown. 
+	   If the cast fails then std::bad_cast exception will be thrown.
+	   @param key the key of the attribute to look up. 
+	   @returns the value of the attribute 
+	*/
 	template <typename T>
 	const T get_attribute_as(const std::string& key)const;
 
+	/**
+	   Delete the attribute with a given key from the list 
+	   @param key 
+	 */
+
 	void delete_attribute(const std::string& key);
 
+	/**
+	   See if a certain attribute exists 
+	   @param key
+	   @returns true if attribute exists, false otherwise
+	*/
 	bool has_attribute(const std::string& key)const;
 
 	friend EXPORT_CORE bool operator == (const CAttributedData& a, const CAttributedData& b);
@@ -277,7 +295,9 @@ EXPORT_CORE bool operator == (const CAttributeMap& am, const CAttributeMap& bm);
 
 
 /**
-   A class to translate an attribute from a string.
+   @brief A class to translate an attribute from a string.
+   
+   This class is the base class to translate attributes from their typed value to a string and back. 
 */
 
 class EXPORT_CORE CAttrTranslator {
@@ -295,11 +315,16 @@ private:
 protected:
 	CAttrTranslator();
 
+	/**
+	   Register this translator to handle attributes with the given key 
+	   @param key 
+	 */
 	void do_register(const std::string& key);
 };
 
 /**
    \brief A singelton class to translate strings to attributes based on keys.
+   
    This class provides a singleton to translate strings to attributes. For the translation to take
    place for each attribute key a CAttrTranslator needs to be registered first.
 */
@@ -361,6 +386,7 @@ void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& nam
 
 
 /** \brief Generic string vs. attribute translator singleton
+
     This class defines a generic translator between strings and a specific attribute type.
     All translaters are registered to a global map of type CStringAttrTranslatorMap
     that selects the conversion  based on a key. The global map is implemented as a singleton

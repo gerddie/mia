@@ -29,13 +29,14 @@
 NS_MIA_BEGIN
 
 /**
+   @brief Precomputed matrix for the DivCurl regularization. 
+
    Precomputed Matrix for the DivCurl regularization. 
    This class stores the precomputed matrix for the divcurl regislarization 
    of a spline based transformation. 
+   @todo Optimize like the 3D version that only stores the patch of required values instead 
+   of building the whole diagonals 
 */
-
-
-
 class EXPORT_2D C2DPPDivcurlMatrix {
 public: 
 	/**
@@ -71,11 +72,19 @@ public:
 	/**
 	   Given this matrix P and the coefficient field c evaluate the value for c^T P c 
 	   \param coefficients B-Spline coefficient field c 
-	   \retval gradinet gradient of the divcurl cost 
+	   \retval gradient gradient of the divcurl cost 
 	   \returns <c^T, P, c>
 	 */
 	
 	double evaluate(const C2DFVectorfield& coefficients, CDoubleVector& gradient) const; 
+
+	/**
+	   Given this matrix P and the coefficient field c evaluate the value for c^T P c 
+	   Specialization for double valued vectors 
+	   \param coefficients B-Spline coefficient field c 
+	   \retval gradient gradient of the divcurl cost 
+	   \returns <c^T, P, c>
+	*/
 	double evaluate(const T2DDatafield<C2DDVector>& coefficients, CDoubleVector& gradient) const; 
 
 	/**

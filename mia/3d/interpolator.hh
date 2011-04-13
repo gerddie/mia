@@ -174,12 +174,16 @@ private:
 
 
 /**
-   A factory to create interpolators of a given type by providing input data.
-
+   @brief A factory to create interpolators of a given type by providing input data.
+   
  */
 
 class EXPORT_3D C3DInterpolatorFactory {
 public:
+	/**
+	   types of supported interpolations 
+	   @remark there should be global flags
+	 */
 	enum EType {ip_nn, ip_tri, ip_spline, ip_unknown};
 
 

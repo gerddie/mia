@@ -172,34 +172,57 @@ public:
 		    ipt_spline,   /**< spline based interpolation */
 		    ipt_unknown};  /**< stopper ID */
 
+	/** Initialize the factory with a certain kernel type 
+	    @param type 
+	 */
 	C1DInterpolatorFactory(EType type);
+
+	/** Initialize the factory with a certain kernel type and the according B-Spline kernel 
+	    @param type 
+	    @param kernel 
+	 */
 	C1DInterpolatorFactory(EType type, PBSplineKernel kernel);
 
+	/// Copy constructor 
 	C1DInterpolatorFactory(const C1DInterpolatorFactory& o);
 
+	/// assignment operator 
 	C1DInterpolatorFactory& operator = ( const C1DInterpolatorFactory& o);
 
 	virtual ~C1DInterpolatorFactory();
 
+	/**
+	   Create a 1D interpolator from a set of sampes that 
+	   returns the same values as the original at grid points 
+	   @tparam data type to be interpolated 
+	   @param src input data 
+	   @returns the interpolator 
+	 */
 	template <class T>
 	T1DInterpolator<T> *create(const std::vector<T>& src) const
 		__attribute__ ((warn_unused_result));
 
+	/// @returns the B-spline kernel 
 	PBSplineKernel get_kernel() const;
 
 private:
 	EType m_type;
 	PBSplineKernel m_kernel;
 };
+
+/// Pointer type for C1DInterpolatorFactory. 
 typedef std::shared_ptr<const C1DInterpolatorFactory > P1DInterpolatorFactory;
 
-
+/**
+   Create an interpolation factory from a type by also allocating the B-spline kernel if 
+   neccessary. 
+   @todo this should become the work of a plug-in handler 
+ */
 
 C1DInterpolatorFactory EXPORT_CORE  *create_1dinterpolation_factory(EInterpolation type) 
 	__attribute__ ((warn_unused_result));
 
 // implementation
-
 template <class T>
 T1DInterpolator<T> *C1DInterpolatorFactory::create(const std::vector<T>& src) const
 {
@@ -211,6 +234,7 @@ T1DInterpolator<T> *C1DInterpolatorFactory::create(const std::vector<T>& src) co
 	}
 	return NULL;
 }
+
 
 
 template <typename T>

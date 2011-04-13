@@ -48,13 +48,26 @@ extern EXPORT_CORE TDictMap<EInterpolation> GInterpolatorTable;
  */
 class EXPORT_CORE CBSplineKernel {
 public:
+	/** @cond 
+	    this is obolete 
+	*/ 
 	enum EIntegralType { integral_11, 
 			     integral_20, 
 			     integral_02, 
 			     integral_unknown }; 
-			     
-
+	/// @endcond 
+	
+	/**
+	   A struture to cache B-spline weights and indices 
+	 */
 	struct SCache {
+		/**
+		   Initialize the case by setting the index and weight array size and 
+		   mirror boundary sizes 
+		   @param s support size of the kernel which equals the size of the index and weight arrays 
+		   @param cs1 size of the 1D coefficient array accessed when interpolating with this spline 
+		   @param cs2 2*cs1
+		 */
 		SCache(size_t s, int cs1, int cs2); 
 		double x; 
 		int start_idx; 
@@ -149,11 +162,12 @@ public:
 	   \returns B-spline weight 
 	 */
 	virtual double get_weight_at(double x, int order) const;
-
+	
+	/// @returns the type of this interpolator 
 	EInterpolation get_type() const; 
 
 	/**
-	   \returns the poles of the spline
+	   \returns the poles of the spline used for pre-filtering 
 	 */
 	const std::vector<double>& get_poles() const;
 
@@ -193,18 +207,18 @@ public:
 	void filter_line(std::vector<C>& coeff);
 
 protected:
-	template <typename C>
-	C initial_coeff(const std::vector<C>& coeff, double pole);
-	
-	template <typename C>
-	C initial_anti_coeff(const std::vector<C>& coeff, double pole);
-
 	/** add a pole to the list of poles
 	    \param x
 	*/
 	void add_pole(double x);
 
 private:
+	template <typename C>
+	C initial_coeff(const std::vector<C>& coeff, double pole);
+	
+	template <typename C>
+	C initial_anti_coeff(const std::vector<C>& coeff, double pole);
+
 	/**
 	   Helper function to fill the array index with consecutive values starting with i 
 	 */
@@ -339,6 +353,13 @@ public:
 */
 double  EXPORT_CORE integrate2(const CBSplineKernel& spline, double s1, double s2, int d1, int d2, double n, double x0, double L);
 
+/**
+   Function to apply mirrored boundary conditions so that the indices fit into [0,width)
+   @retval index index array to be adjusted
+   @param width width of the supported index range 
+   @param width2 2*width to allow repitition over the range
+   @returns true if mirroring was applied 
+*/
 inline bool mirror_boundary_conditions(std::vector<int>& index, int width, 
 				       int width2)
 {

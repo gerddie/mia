@@ -33,15 +33,25 @@
 #include <config.h>
 #include <gsl++/gsldefines.hh>
 
+/// conveniance define to start the mia namespace 
 #define NS_MIA_BEGIN namespace mia {
+
+/// conveniance define to end the mia namespace 
 #define NS_MIA_END }
+
+/// conveniance define to use the mia namespace 
 #define NS_MIA_USE using namespace mia; 
 
+/// conveniance define to start a namespace 
 #define NS_BEGIN(NS) namespace NS {
+
+/// conveniance define to end a namespace 
 #define NS_END }
+
+/// conveniance define to use s namespace 
 #define NS_USE(NS) using namespace NS
 
-NS_BEGIN(mia)
+NS_MIA_BEGIN
 
 /// some constants for interpoation types
 enum EInterpolation {
@@ -56,8 +66,9 @@ enum EInterpolation {
 	ip_omoms3,    /**< omoms splines of degree 3 */
 	ip_unknown
 };
-NS_END
+NS_MIA_END
 
+/// suffix for plug-ins 
 #define MIA_MODULE_SUFFIX "mia"
 
 #ifndef __GNUC__

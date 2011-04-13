@@ -55,8 +55,6 @@ public:
 	   \param trans_factory factory for creation of transformations
            \param outer_epsilon a relative cost function value per 
                 multi-grid level to stop registration
-	   \param save_steps save the deformed source image for each 
-                registration step
 	*/
 	C2DMultiImageRegister(size_t start_size, size_t max_iter, 
 			      C2DRegModel& model, 
@@ -66,8 +64,8 @@ public:
 
 	/**
 	   The registration operator that does the registration
-	   \param source the source or template image to be registered to the ...
-	   \param reference 
+	   \param cost cost function combination to be optimized 
+	   \param ipf interpolator to be used for image transformations 
 	   \returns a vector field describing the registration
 	 */
 	P2DTransformation operator () (C2DImageFatCostList& cost, P2DInterpolatorFactory  ipf);

@@ -71,11 +71,18 @@ public:
 	/**
 	   Given this matrix P and the coefficient field c evaluate the value for c^T P c 
 	   \param coefficients B-Spline coefficient field c 
-	   \retval gradinet gradient of the divcurl cost 
+	   \retval gradient gradient of the divcurl cost 
 	   \returns <c^T, P, c>
 	 */
 	
 	double evaluate(const C3DFVectorfield& coefficients, CDoubleVector& gradient) const; 
+	
+	/**
+	   Given this matrix P and the coefficient field c evaluate the value for c^T P c 
+	   \param coefficients B-Spline coefficient field c 
+	   \retval gradient gradient of the divcurl cost 
+	   \returns <c^T, P, c>
+	 */
 	double evaluate(const T3DDatafield<C3DDVector>& coefficients, CDoubleVector& gradient) const; 
 
 	/**

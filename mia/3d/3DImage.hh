@@ -33,24 +33,41 @@
 NS_MIA_BEGIN
 
 /**
+   @brief The generic base type of a 3D image 
+   
    The base type of a 3D image with is used to move around the images in the code.
    This type is not prepared to hold actual data. Instead the templated type T3DImage derived from this class
    is used to hold image data of a certain voxel type.
 */
 
 class EXPORT_3D C3DImage  :  public CAttributedData{
-
 protected:
+	/**
+	   Constructor to create the base sceleton of the image 
+	   @param data attributes (meta data) that belong to the image but is normally not required for 
+	   processing 
+	   @param type pixel type of this image  
+	 */
 	C3DImage(const CAttributedData& data, EPixelType type);
+	/**
+	   Constructor to create the base sceleton of the image 
+	   @param type pixel type of this image  
+	*/
 	C3DImage(EPixelType type);
+	
+	/// standard constructor 
 	C3DImage();
 public:
+	/// data type description for the plug-in path component 
 	static const char *type_descr;
+	
+	/// generic type for the dimension of the image 
 	typedef C3DBounds dimsize_type;
+
+	/// Pointer type of the image 
 	typedef std::shared_ptr<C3DImage > Pointer;
 
 	virtual  ~C3DImage();
-
 
 	/**
 	   \returns the type of the pixels(voxels) in the image
@@ -74,11 +91,14 @@ public:
 	/// set the voxel size on world units
 	virtual void set_voxel_size(const C3DFVector& voxel) = 0;
 
-	
+	///@returns the orientation of the image 
 	E3DImageOrientation get_orientation() const;
 
+	/** Set the orientation of the image 
+	    @param orient 
+	    @remark orientation is currently not really used
+	*/
 	void set_orientation(E3DImageOrientation orient);
-
 private:
 	EPixelType m_pixel_type;
 };
@@ -87,6 +107,8 @@ private:
 typedef C3DImage::Pointer P3DImage;
 
 /**
+   @brief Specific type of the 3D images that hold real pixel data 
+
    This template defines a 3D image holding a certain type \a T as pixel type. 
 */
 template <typename T>

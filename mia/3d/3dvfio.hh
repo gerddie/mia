@@ -46,17 +46,22 @@ public:
 	/** copy from normal vectorfield constructor */
 	C3DIOVectorfield(const C3DFVectorfield& org);
 
-	C3DIOVectorfield *clone() const;
+	/// @returns a dynamically allocated copy of the IO object 
+	C3DIOVectorfield *clone() const __attribute__((warn_unused_result));
 
 };
 
+///@cond 
 struct io_3dvf_type {
 	typedef  C3DIOVectorfield type;
 	static const char *type_descr;
 };
+///@endcond 
 
-
+/// Base class for vector field IO plug-ins 
 typedef TIOPlugin<io_3dvf_type> C3DVFIOPlugin;
+
+/// Plug-in handler for vector field IO 
 typedef THandlerSingleton<TIOPluginHandler<C3DVFIOPlugin> > C3DVFIOPluginHandler;
 
 NS_MIA_END

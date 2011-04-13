@@ -28,12 +28,12 @@
 NS_MIA_BEGIN
 
 /**
-   This class mocks a transformation by implementing all the pure virtual 
+   @brief This class mocks a transformation by implementing all the pure virtual 
    methods of the \a C2DTransformation interface. 
    It is used only for testing purpouses. 
  */
-
 struct  EXPORT_2D C2DTransformMock: public C2DTransformation {
+	/// @cond 
 	C2DTransformMock();
 	C2DTransformMock(const C2DBounds& size);
 	virtual C2DTransformation *invert() const;
@@ -77,7 +77,7 @@ private:
 	virtual C2DTransformation *do_clone() const __attribute__((warn_unused_result));
         virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
 	C2DBounds m_size;
-
+	/// @endcond 
 };
 
 NS_MIA_END

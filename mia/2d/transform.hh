@@ -43,32 +43,80 @@ NS_MIA_BEGIN
 */
 class EXPORT_2D C2DTransformation: public Transformation<C2DImage, C2DInterpolatorFactory> {
 public:
+	/// generic name for the data used by this transformation  
 	typedef C2DImage Data;
+	
+	/// generic name for the size type used by this transformation  
 	typedef C2DBounds Size; 
+
+	/// generic name for the interpolation factory used by this transformation  
 	typedef C2DInterpolatorFactory InterpolatorFactory;
+
+	/// generic name for this transformation type 
 	typedef C2DTransformation type; 
+
+	/// pointer type of this transformation 
 	typedef std::shared_ptr<C2DTransformation > Pointer; 
 
+	/// plug-in search path element "type" 
 	static const char *type_descr;
+	
+	/// plug-in search path element "data" 
 	static const char *dim_descr; 
 protected: 
+
+	/**
+	   @brief Base of the implementation of an iterator over the transformation domain 
+	   This iterator takes care of iterating over the transformation range. X is the fastest 
+	   changing index. 
+	   Some methods are abstract and must be defined in derived classes by using the 
+	   specific transformation model. 
+	*/
 	class iterator_impl  {
 	public: 
 		iterator_impl(); 
+
+		/**
+		   Constructor to initialize the iterator at a certain point 
+		   @param pos current position of the iterator 
+		   @param size defines the grid of the domain of the iterator as 
+		      \f$[0,size.x-1] \times  [0,size.y-1]\f$
+		   
+		 */
 		iterator_impl(const C2DBounds& pos, const C2DBounds& size); 
 
+		/// increment the position 
 		void increment();
+		
+		/// fast advance the position 
 		void advance(unsigned int delta); 
-
+		
+		/// @returns the current value of the transformation iterated over 
 		const C2DFVector&  get_value() const;
+
+		/// @returns a dynamically allocated copy of the iterator 
 		virtual iterator_impl * clone() const __attribute__((warn_unused_result))  = 0; 
 		
+		/**
+		   Compare the iterator to another one 
+		   @param other 
+		   @retval true if the positions are equal or both are at the end of the range 
+		   @remark no test is run whether both iterator belong to the same transformation 
+		 */
 		bool operator == (const iterator_impl& other) const; 
 		
+		/// @returns the cutrrent grid position of the iterator 
 		const C2DBounds& get_pos()const; 
-		const C2DBounds& get_size()const; 
-		void print(std::ostream& os) const; 
 
+		/// @returns the domain size of the underlying transformation 
+		const C2DBounds& get_size()const; 
+
+		/**
+		   Print some information about the iteratorto an output stream, 
+		   mostely used for debugging purpouses 
+		   @param os
+		 */
+		void print(std::ostream& os) const; 
 	private:
 		virtual const C2DFVector& do_get_value()const = 0; 
 		virtual void do_y_increment() = 0; 
@@ -88,10 +136,19 @@ public:
 	class const_iterator : public std::forward_iterator_tag {
 	public: 
 
+		/// provide the STL with some typedef fro traits 
 		typedef std::forward_iterator_tag iterator_category; 
+
+		/// generic name for the value type of this iterator 
 		typedef C2DFVector value_type; 
+		
+		/// generic name for the difference type of this iterator 
 		typedef size_t difference_type; 
+		
+		/// generic name for the pointer type of this iterator 
 		typedef C2DFVector *pointer; 
+
+		/// generic name for the reference type of this iterator 
 		typedef C2DFVector& reference; 
 
 		/**
@@ -130,12 +187,17 @@ public:
 		const_iterator operator ++(int); 
 
 		/**
-		   Advance 
-		 */
+		   Advance a certain amount of steps. This implementation 
+		   will ususlly be fatser than the generic std::advance function, since
+		   for forward_iterators std::advance calls "++" delta times 
+		   @param delta 
+		*/
 		const_iterator& operator += (unsigned int delta); 
 
+		/// @returns the current value of the transformation 
 		const C2DFVector& operator *() const;
 		
+		/// @returns the pointer version of the current value of the transformation 
 		const C2DFVector  *operator ->() const;
 
 		/** Print the current position and value to an output stream 
@@ -159,7 +221,7 @@ public:
 
 	/**
 	   Set the descrition string that was used to create this transformstion 
-	   \params s
+	   @param s
 	 */
 	void set_creator_string(const std::string& s); 
 
@@ -359,19 +421,34 @@ EXPORT_2D bool operator != (const C2DTransformation::const_iterator& a,
 
 
 /**
+   @brief Helper functor for 2D image transformations 
+   
    Helper Functor to evaluate a transformed image by applying a given 
    transformation and using the provided interpolator type
 */
 
 template <typename Transform>
 struct C2DTransform : public TFilter<P2DImage> {
+
+	/**
+	   Construtor 
+	   @param ipf interpolation factory to use 
+	   @param trans tranformation to be applied 
+	 */
 	C2DTransform(const C2DInterpolatorFactory& ipf, const Transform& trans):
 		m_ipf(ipf),
 		m_trans(trans){
 	}
+	
+	/**
+	   Operator to run the 2D transform. The output image size is defined by the 
+	   support of the transformation 
+	   @param image 
+	   @returns transformed image. 
+	 */
 	template <typename T>
 	P2DImage operator ()(const T2DImage<T>& image) const {
-		T2DImage<T> *timage = new T2DImage<T>(image.get_size());
+		T2DImage<T> *timage = new T2DImage<T>(m_trans.get_size(), image);
 
 		std::auto_ptr<T2DInterpolator<T> > interp(m_ipf.create(image.data()));
 
@@ -397,8 +474,7 @@ private:
    \param ipf interpolator factory holding the information which interpolation method will be used
    \param trans transformation
    \returns transformed image
- */
-
+*/
 template <typename Transform>
 P2DImage transform2d(const C2DImage& image, const C2DInterpolatorFactory& ipf, const Transform& trans)
 {

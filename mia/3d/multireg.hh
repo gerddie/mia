@@ -42,7 +42,6 @@ public:
 	   The constructor:
 	   \param start_size an approximate size for the lowest resolution in the
                    multi-resolution registration
-	   \param cost an image similarity measure with an according gradient function
 	   \param max_iter maximum number of times steps to be used at each multi-grid level
 	   \param model the registration model (e.g.- navier for linear elasticity operator)
 	   \param time_step the time step model (e.g. fluid to letthe model operator work on the
@@ -58,8 +57,8 @@ public:
 
 	/**
 	   The registration operator that does the registration
-	   \param source the source or template image to be registered to the ...
-	   \param reference
+	   \param cost the cost function to be minimized 
+	   \param ipf interpolation factory used for image transformations 
 	   \returns a vector field describing the registration
 	 */
 	P3DTransformation operator () (C3DImageFatCostList& cost, P3DInterpolatorFactory  ipf);

@@ -48,14 +48,17 @@ public:
 	C2DSimilarityProfile(P2DFullCost cost, const C2DImageSeries& images, 
 		      size_t reference); 
 
+	/// copy constructor 
 	C2DSimilarityProfile(const C2DSimilarityProfile& org); 
+	
+	/// assignment operator 
 	C2DSimilarityProfile& operator = (const C2DSimilarityProfile& org); 
 
 	
 	/// \returns the peak frequency coefficent and its index
 	float get_peak_frequency() const;
 
-	/// returns a periodic subset including teh first and last image of the series
+	/// @returns a periodic subset including the first and last image of the series
 	std::vector<size_t> get_periodic_subset() const; 
 private: 
 	size_t m_skip; 

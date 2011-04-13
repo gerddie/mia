@@ -8,7 +8,6 @@ IF (DOXYGEN_FOUND)
 
    ADD_CUSTOM_TARGET(LibraryDoc echo "creating user library documentation")
    ADD_DEPENDENCIES(doc LibraryDoc)
-   ADD_DEPENDENCIES(LibraryDoc miacore mia2d mia3d)
 
    IF(DOXYGEN_DOT_FOUND)
      SET(HAVE_DOT YES)

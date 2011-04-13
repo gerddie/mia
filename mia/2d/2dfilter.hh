@@ -66,10 +66,11 @@ P2DImage  EXPORT_2D run_filter(const C2DImage& image, const char *filter);
 class EXPORT_2D C2DImageCombiner : public TFilter< P2DImage > ,
 				   public CProductBase {
 public:
+	/// data type for plug-in serachpath component 
 	typedef C2DImage plugin_data; 
+	/// plug-in type for plug-in serachpath component 
 	typedef combiner_type plugin_type; 
-
-
+	
 	virtual ~C2DImageCombiner();
 	/**
 	   Combine two images by a given operator 
