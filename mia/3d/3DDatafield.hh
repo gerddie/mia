@@ -496,29 +496,6 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
 
 }
 
-#ifndef mia3d_EXPORTS
-
-/// 
-extern template class  EXPORT_3D T3DDatafield<double>;
-extern template class  EXPORT_3D T3DDatafield<float>;
-extern template class  EXPORT_3D T3DDatafield<unsigned int>;
-extern template class  EXPORT_3D T3DDatafield<int>;
-
-#ifdef HAVE_INT64
-extern template class  EXPORT_3D T3DDatafield<mia_uint64>;
-extern template class  EXPORT_3D T3DDatafield<mia_int64>;
-#endif
-extern template class  EXPORT_3D T3DDatafield<short>;
-extern template class  EXPORT_3D T3DDatafield<unsigned short>;
-extern template class  EXPORT_3D T3DDatafield<unsigned char >;
-extern template class  EXPORT_3D T3DDatafield<signed char >;
-extern template class  T3DDatafield<bool>;
-
-extern template class EXPORT_3D T2DDatafield<T3DVector<double> >;
-extern template class EXPORT_3D T2DDatafield<T3DVector<float> >;
-
-#endif
-
 NS_MIA_END
 
 #endif

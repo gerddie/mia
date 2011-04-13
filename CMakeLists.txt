@@ -272,16 +272,7 @@ IF(NOT WIN32)
   SET(BASELIBS  ${BOOST_DEPS} ${DL})
 
 ENDIF(NOT WIN32)
-
-
-#
-# maybe one should replace this with mia
-#
-IF (WIN32 AND NOT UNIX)
-  SET(PLUGSUFFIX ".dll")
-ELSE (WIN32 AND NOT UNIX)
-  SET(PLUGSUFFIX ".so")
-ENDIF (WIN32 AND NOT UNIX)
+SET(PLUGSUFFIX ".mia")
 
 
 OPTION(WARN_OLD_PLUGINSTYLE "Warn if plugins use old implementation style" OFF)

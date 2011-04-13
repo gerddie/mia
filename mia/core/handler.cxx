@@ -102,7 +102,7 @@ void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
 	// create the pattern match
 	stringstream pattern; 
 
-	pattern << ".*\\."<< G_MODULE_SUFFIX << "$"; 
+	pattern << ".*\\."<< MIA_MODULE_SUFFIX << "$"; 
 
 	cvdebug() << "TPluginHandler<I>::initialise: '"<<
 		TPlugin<typename I::PlugData,typename I::PlugType>::search_path() <<

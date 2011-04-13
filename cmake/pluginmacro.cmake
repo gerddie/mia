@@ -9,7 +9,7 @@ ENDMACRO(CREATE_PLUGIN_COMMON plugname libs)
 
 MACRO(CREATE_PLUGIN_MODULE plugname)
   add_library(${plugname} MODULE "${PROJECT_SOURCE_DIR}/mia/internal/dummy.cc")
-  set_target_properties(${plugname} PROPERTIES PREFIX "")
+  set_target_properties(${plugname} PROPERTIES PREFIX ""  SUFFIX ${PLUGSUFFIX})
   target_link_libraries(${plugname} ${plugname}-common)
 ENDMACRO(CREATE_PLUGIN_MODULE plugname)
 

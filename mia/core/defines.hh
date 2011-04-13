@@ -58,17 +58,22 @@ enum EInterpolation {
 };
 NS_END
 
+#define MIA_MODULE_SUFFIX "mia"
+
 #ifndef __GNUC__
 /// remove the __attribute__ syntax if the compiler is not GCC compatible 
-#define __attribute__(x) 
+#  define __attribute__(x) 
 #endif
 
 #ifdef miacore_EXPORTS
-#define EXPORT_CORE DO_EXPORT
+/// Macro to manage Visual C++ style dllimport/dllexport 
+#  define EXPORT_CORE DO_EXPORT
 #else
-#define EXPORT_CORE DO_IMPORT
+/// Macro to manage Visual C++ style dllimport/dllexport 
+#  define EXPORT_CORE DO_IMPORT
 #endif
 
+/// Macro to set visibility to default, resp. __declspec(dllexport) 
 #define EXPORT DO_EXPORT
 
 #ifdef WIN32 
@@ -78,7 +83,6 @@ NS_END
 #include <crtdbg.h>
 #endif
 
-
 #ifdef _MSC_VER
 #pragma warning(disable: 4251) // class needs to have dll interface to be used ...
 #pragma warning(disable: 4231) // nonstandard extension used "extern" before explicit template instanciation
@@ -86,11 +90,7 @@ NS_END
 #pragma warning(disable: 4244) // warning about int->float conversion 
 #pragma warning(disable: 4305) // truncation from double to float 
 #pragma warning(disable: 4800) // performance warning about forcing value to true or false
-#define G_MODULE_SUFFIX "dll"
 #endif
-#else
-#define G_MODULE_SUFFIX "so"
-
 #endif
 
 #ifdef miacore_EXPORTS
