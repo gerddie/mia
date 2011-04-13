@@ -30,6 +30,7 @@
 #include <mia/internal/multicost.hh>
 #include <mia/internal/transformfactory.hh>
 #include <mia/internal/dimtrait.hh>
+#include <mia/core/import_handler.hh>
 
 NS_MIA_BEGIN
 
@@ -46,7 +47,7 @@ struct TNonrigidRegisterImpl;
 */
 
 template <typename Transform> 
-class TNonrigidRegister {
+class EXPORT_HANDLER TNonrigidRegister {
 public:
 	typedef dim_traits<Transform> this_dim_traits;
 	typedef typename Transform::Pointer PTransformation; 

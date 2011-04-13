@@ -38,7 +38,7 @@ For details see
 
 */
 
-class CSplineParzenMI{
+class EXPORT_CORE CSplineParzenMI{
 public: 
 	/**
 	   Constructor of the mutual information class 

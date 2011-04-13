@@ -26,6 +26,7 @@
 #include <set>
 #include <mia/2d/transform.hh>
 #include <mia/core/factory.hh>
+#include <mia/core/import_handler.hh>
 
 NS_MIA_BEGIN
 
@@ -36,7 +37,7 @@ NS_MIA_BEGIN
    of different types. 
  */
 template <typename Transform> 
-class  TTransformCreator: public CProductBase {
+class EXPORT_HANDLER TTransformCreator: public CProductBase {
 public:
 	typedef typename Transform::Data plugin_data; 
 	typedef Transform plugin_type; 

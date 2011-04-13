@@ -39,7 +39,7 @@ NS_MIA_BEGIN
 
 
 
-extern const char *g_help_optiongroup; 
+extern EXPORT_CORE const char *g_help_optiongroup; 
 
 /** holds the history info of a certain program call */
 typedef std::map<std::string, std::string> CHistoryRecord;

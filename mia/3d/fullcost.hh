@@ -24,6 +24,7 @@
 #define mia_3d_fullcost_hh
 
 #include <mia/3d/transform.hh>
+#include <mia/core/export_handler.hh>
 #include <mia/internal/fullcost.hh>
 
 NS_MIA_BEGIN

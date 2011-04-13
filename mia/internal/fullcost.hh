@@ -25,6 +25,7 @@
 
 #include <mia/core/product_base.hh>
 #include <mia/core/vector.hh>
+#include <mia/core/import_handler.hh>
 
 NS_MIA_BEGIN
 
@@ -33,7 +34,7 @@ NS_MIA_BEGIN
  */
 
 template <typename Transform>
-class TFullCost : public CProductBase {
+class EXPORT_HANDLER TFullCost : public CProductBase {
 public: 
 	typedef typename Transform::Size Size; 
 	typedef TFullCost<Transform> plugin_data; 
@@ -99,7 +100,7 @@ private:
 }; 
 
 template <typename Transform>
-class TFullCostPlugin: public TFactory<TFullCost<Transform> > {
+class EXPORT_HANDLER TFullCostPlugin: public TFactory<TFullCost<Transform> > {
 public:
 	TFullCostPlugin(const char *name);
 private:

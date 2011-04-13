@@ -32,7 +32,7 @@ NS_MIA_BEGIN
    A accumulation of cost functions that are weigted against each other 
  */
 template <typename Transform>
-class TFullCostList : public TFullCost<Transform> {
+class EXPORT_HANDLER TFullCostList : public TFullCost<Transform> {
 public: 
 	TFullCostList(); 
 

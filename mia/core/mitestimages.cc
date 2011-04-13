@@ -1,6 +1,7 @@
 
 #include <mia/core/mitestimages.hh>
 
+NS_MIA_BEGIN
 
 const SImageSize mi_test_size = {256, 256}; 
 
@@ -8203,3 +8204,5 @@ const int reverence_init_data[] = {
 	188,187,194,201,208,214,222,215,208,201,194,187,180,174,167,160,
 	154,147,140,133,127,119,113,106,100,93,86,79,72,66,59,52
 	};
+
+NS_MIA_END

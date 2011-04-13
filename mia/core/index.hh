@@ -33,7 +33,7 @@ NS_MIA_BEGIN
    An example for its use can be found in mia/3d/translate/spline.cc: on_grid (BLAS_VERSION)
  */
 
-class CCircularIndex {
+class EXPORT_CORE CCircularIndex {
 public: 
 	/*
 	  Construct the buffer
