@@ -100,7 +100,7 @@ protected:
 		/**
 		   Compare the iterator to another one 
 		   @param other 
-		   @retval true if the positions are equal or both are at the end of the range 
+		   @returns true if the positions are equal or both are at the end of the range 
 		   @remark no test is run whether both iterator belong to the same transformation 
 		 */
 		bool operator == (const iterator_impl& other) const; 
@@ -332,7 +332,7 @@ public:
 
 	/**
 	   evaluate the pertuberation of a vectorfield combined with this transformation
-	   \retval v vectorfield to be pertuberated
+	   \param[in,out] v vectorfield to be pertuberated
 	   \returns maximum value of the pertuberation
 	   \remark this makes only sense for fluid dynamics registration and should be handled elsewhere
 	 */
@@ -363,7 +363,7 @@ public:
 	   transformtion 
 	   \param wd weight of the divergence
 	   \param wr weight of the rotation 
-	   \retval gradient vector to hold the resulting gradient 
+	   \param[out] gradient vector to hold the resulting gradient 
 	   \returns cost function value 
 	 */
 	virtual double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const = 0; 

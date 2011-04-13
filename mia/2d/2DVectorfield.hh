@@ -63,7 +63,7 @@ typedef T2DVectorfield<C2DDVector>  C2DDVectorfield;
 /**
    Concat two vector fields that descrive a transformation 
    T_a = x - a(x) and T_b = x - b(x) 
-   @retval in a, out a( x - b(x) ) + b(x); 
+   @param[in,out] in a, out a( x - b(x) ) + b(x); 
    @param b 
    @returns a( x - b(x) ) + b(x); 
 */

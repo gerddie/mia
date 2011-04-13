@@ -56,7 +56,9 @@ struct EXPORT_2D fft2d_kernel_data {
 */
 class EXPORT_2D CFFT2DKernel :public CProductBase {
 public:
+	/// plugin search path helper type 
 	typedef fft2d_kernel_data plugin_data; 
+	/// plugin search path helper type 
 	typedef kernel_plugin_type plugin_type; 
 		
 	CFFT2DKernel();

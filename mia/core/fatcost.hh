@@ -82,7 +82,7 @@ public:
 
 	/** The force evaluation function
 	    \param force the force field in which to accumulate the force
-	    \retval force added the weighted accumutaed force
+	    \param[out] force added the weighted accumutaed force
 	*/
 	double evaluate_force(Force& force) const;
 

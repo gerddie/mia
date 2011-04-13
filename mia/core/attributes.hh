@@ -280,7 +280,9 @@ public:
 	*/
 	bool has_attribute(const std::string& key)const;
 
+	/// @cond FRIENDSDOC
 	friend EXPORT_CORE bool operator == (const CAttributedData& a, const CAttributedData& b);
+	/// @endcond 
 private:
 	PAttributeMap m_attr;
 };

@@ -34,6 +34,7 @@ NS_MIA_BEGIN
  */
 
 struct  EXPORT_3D C3DTransformMock: public C3DTransformation {
+	/// @cond TESTINTERFACE 
 	C3DTransformMock();
 	C3DTransformMock(const C3DBounds& size);
 	virtual C3DTransformation *invert() const;
@@ -78,7 +79,7 @@ private:
 	virtual C3DTransformation *do_clone() const;
         virtual P3DImage apply(const C3DImage& image, const C3DInterpolatorFactory& ipf) const;
 	C3DBounds m_size;
-
+	///@endcond 
 };
 
 NS_MIA_END

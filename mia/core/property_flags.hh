@@ -38,6 +38,7 @@ extern EXPORT_CORE const char *property_gradient;
 */
 class  EXPORT_CORE CPropertyFlagHolder {
 public:
+	/// define the type of the set of flags 
 	typedef std::set<const char *> Set;
 
 	/**
@@ -61,6 +62,11 @@ public:
 	 */
 	bool has_all_in(const CPropertyFlagHolder& testset)const;
 
+	/**
+	   Evalaute the set of properties that is availabe in the testset but not in this one
+	   @param testset 
+	   @return set of missing flags 
+	 */
 	Set get_missing_properties(const CPropertyFlagHolder& testset)const; 
 private:
 	virtual bool do_has(const char *property) const;

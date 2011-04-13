@@ -59,6 +59,7 @@ template <class T>
 class EXPORT_2DDATAFIELD T2DDatafield  {
 
 public:
+
 	typedef  ::std::vector<T> data_array;
 	typedef  std::shared_ptr<data_array > data_pointer;
 
@@ -74,6 +75,7 @@ public:
 	typedef typename data_array::size_type size_type;
 	typedef C2DBounds dimsize_type;
 	typedef C2DFVector coord_type;
+
 
 	T2DDatafield();
 

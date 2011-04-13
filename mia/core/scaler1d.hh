@@ -58,7 +58,7 @@ public:
 	/**
 	   Scaling operator.
 	   \param input input data
-	   \retval output when calling the function, the size of this vector mist be set to the requested
+	   \param[out] output when calling the function, the size of this vector must be set to the requested
 	   size. The path for down or upscaling is automatically selected.
 	 */
 	void operator () (const gsl::DoubleVector& input, gsl::DoubleVector& output) const;

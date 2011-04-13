@@ -50,7 +50,7 @@ public:
 	/**
 	   Run the estimation algorithm.
 	   @param originals iriginal image series 
-	   @retval  estimate the estimated pseudo ground truth. 
+	   @param[in,out]  estimate the estimated pseudo ground truth. 
 	 */
 	void operator () (const std::vector<P2DImage>& originals,
 			  std::vector<P2DImage>& estimate) const;

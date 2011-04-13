@@ -100,7 +100,7 @@ public:
 	
 	/**
 	   Run the optimization 
-	   \retval x at entry contains the start point of the optimization at exit the optimized value 
+	   \param[in,out] x at entry contains the start point of the optimization at exit the optimized value 
 	   \returns returns a status whether the optimization succeeded or why it stopped 
 	 */
 	int run(DoubleVector& x); 
@@ -155,7 +155,7 @@ public:
 	
 	/**
 	   Run the optimization 
-	   \retval x at entry contains the start point of the optimization at exit the optimized value 
+	   \param[in,out] x at entry contains the start point of the optimization at exit the optimized value 
 	   \returns returns a status whether the optimization succeeded or why it stopped 
 	 */
 	int run(DoubleVector& x); 

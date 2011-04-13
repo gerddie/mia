@@ -35,20 +35,20 @@ NS_MIA_BEGIN
 
 class EXPORT_CORE CCircularIndex {
 public: 
-	/*
+	/**
 	  Construct the buffer
 	  \param size size ofthe buffer 
 	  \param start start index
-	 */
+	*/
 	CCircularIndex(unsigned int size, unsigned int start); 
 	
-	/* Insert one index */
+	/** Insert one index */
 	void insert_one(); 
 
-	/* get the next index */
+	/** get the next index */
 	unsigned int next() const; 
 
-	/* reset the start index */ 
+	/** reset the start index */ 
 	void new_start(unsigned int start);
 
 	/** \returns the number of occupied indices */

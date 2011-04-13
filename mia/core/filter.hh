@@ -50,11 +50,11 @@ struct EXPORT_CORE filter_type {
    filter functions
    \a filter and \a filter_equal
    Derived classes have to define an operator like
-   template <typename T>
-   TFilter<R>::result_type operator () (const T& data) const;
+   template &lt typename T &lt
+   TFilter &ltR&gt::result_type operator () (const T& data) const;
    or
-   template <typename T>
-   TFilter<R>::result_type operator () (const T& data);
+   template &lttypename T &gt 
+   TFilter &ltR&gt::result_type operator () (const T& data);
 */
 template <typename R>
 struct TFilter {

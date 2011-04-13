@@ -47,23 +47,37 @@
 NS_MIA_BEGIN
 
 
-/** This template is the model for all factory plugins, i.e. plugins that create certain objects.
+/** 
+    @brief This is tha base of all plugins that create "things", like filters, cost functions 
+    time step operatores and the like. 
+    
+    This template is the model for all factory plugins, i.e. plugins that create certain objects.
    \tparam P the object type created by the factory.
 */
 template <typename P>
 class EXPORT_HANDLER TFactory: 
 	public TPlugin<typename P::plugin_data, typename P::plugin_type> {
 public: 
+
+	/// typedef to give the output type a nice name 
 	typedef P Product; 
+	
+	/// typedef to give the output pointer type a nice name 
 	typedef std::shared_ptr<P > ProductPtr; 
+	
 	/** initialise the plugin by the names 
 	    \remark what are these names and types good for?
 	*/
 	TFactory(char const * const  name);
 	
-	/** the creation function 
-	    \params options the options to initialise the plugin 
-	    \returns an instance of the requested object
+	/** This function creates the object handled by this plugin 
+	    It uses options to set its parameters and, if successfull, 
+	    sets the init string of the object to params and 
+	    returns the newly created object as a shared pointer. 
+	    
+	    @param options the options to initialise the plugin 
+	    @param params original parameter string 
+	    @returns an instance of the requested object
 	*/
 	virtual ProductPtr create(const CParsedOptions& options, char const *params);
 	
@@ -74,7 +88,9 @@ private:
 
 
 /**
-   Base class for all plugin handlers that are derived from TFactory
+   @brief the Base class for all plugn handlers that deal with factory plugins.  
+   
+   Base class for all plugin handlers that are derived from TFactory. 
  */
 template <typename  P>
 class EXPORT_HANDLER TFactoryPluginHandler: public  TPluginHandler< P > {
@@ -88,15 +104,22 @@ protected:
 	
 	TFactoryPluginHandler(const std::list<boost::filesystem::path>& searchpath); 
         //@}
-public: 	
+public: 
+	/// The pointer type of the the object this plug in hander produces 
 	typedef typename P::ProductPtr ProductPtr; 
+
+	/**
+	   Create an object according to the given description. If creation fails, an empty 
+	   pointer is returned. if plugindescr is set to "help" then print out some help.  
+	   
+	 */
 	ProductPtr produce(const char *plugindescr) const;
 
+	/// \overload produce(const char *plugindescr)
 	ProductPtr produce(const std::string& params)const {
 		return produce(params.c_str()); 
 	}
 
-	
 }; 
 
 /**

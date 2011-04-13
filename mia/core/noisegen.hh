@@ -41,13 +41,17 @@ struct EXPORT_CORE generator_type {
 };
 
 /**
-   Base class for the noise generators.
- */
+   \brief Base class for the noise generators.
 
-
+   This class defines the interface for noise generators. Real implementations 
+   are provided as plug-ins. 
+*/
 class EXPORT_CORE  CNoiseGenerator : public CProductBase {
 public:
+	/// typedef helber for plugin search path 
 	typedef grayscale_noise_data plugin_data; 
+	
+	/// typedef helber for plugin search path 
 	typedef generator_type plugin_type; 
 
 	/**
@@ -62,6 +66,10 @@ public:
 	/// \returns the next random value comprising the noise 
 	double operator ()()const;
 protected:
+	/** @return a random value by using the system call to rand()  and 
+	    that is then used to create the noise as requested 
+	    
+	 */
 	double ranf() const;
 private:
 	virtual double get() const = 0;

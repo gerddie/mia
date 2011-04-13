@@ -33,7 +33,7 @@ NS_MIA_BEGIN
    It is used only for testing purpouses. 
  */
 struct  EXPORT_2D C2DTransformMock: public C2DTransformation {
-	/// @cond 
+	/// @cond TESTINTERFACE 
 	C2DTransformMock();
 	C2DTransformMock(const C2DBounds& size);
 	virtual C2DTransformation *invert() const;

@@ -121,7 +121,7 @@ public:
 	
         /**
 	   Evaluate the registration force resulting from the image gradient 
-	   @retval force 
+	   @param[out] force 
 	   @returns the weightes sum of the cost function values contained in the list 
 	*/
 	double evaluate_force(C2DFVectorfield& force) const;

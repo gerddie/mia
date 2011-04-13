@@ -44,6 +44,7 @@ NS_MIA_BEGIN
 
 class  EXPORT_2D CSegSection {
 public:
+	/// convenicence typedef for the points defining the section 
 	typedef std::vector<CSegPoint2D> Points;
 	
 	/// default constructor 

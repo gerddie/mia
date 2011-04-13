@@ -39,9 +39,17 @@ NS_MIA_BEGIN
 */
 class  EXPORT_2D CSegFrame {
 public:
+	/// convenience typedef for the sections 
 	typedef std::vector<CSegSection> Sections;
+	
+	/** convenience typedef for the statistics values  
+	    @remark maybe a type with more meaningful elements would be better 
+	 */ 
 	typedef std::pair<float, float> Statistics; 
+	
+	/// convenience typedef for the section statistics vector 
 	typedef std::vector<Statistics> SectionsStats; 
+	
 	
 	CSegFrame();
 

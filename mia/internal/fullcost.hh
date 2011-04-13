@@ -56,7 +56,7 @@ public:
 	   Evaluate the weighted cost value and the weighted gradient in optimizer space 
 	   given a current  transformation. 
 	   \param t tranformation to be applied 
-	   \retval gradient gradient in optimizer space 
+	   \param[out] gradient gradient in optimizer space 
 	   \returns weighted cost value 
 	 */
 	double evaluate(const Transform& t, CDoubleVector& gradient) const;

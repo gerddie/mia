@@ -45,13 +45,31 @@ public:
 	streamredir();
 	virtual ~streamredir();
 protected:
-	int overflow(int);
+	
+	/**
+	   implement the overflow function to force output of buffer 
+	   @param c next character to write 
+	   @returns 0 
+	 */
+	int overflow(int c);
+	/**
+	   Force writing of buffer. 
+	   @returns 0 
+	 */
 	int sync();
+
+	/**
+	   implement function to handle '\n' and '\r' properly 
+	   @param s string to write 
+	   @param n number of bytes in string 
+	   @return number of chars written 
+	*/
 	std::streamsize xsputn ( const char * s, std::streamsize n );
 private:
 	void put_buffer(void);
 	void put_char(int);
 
+	/// this function needs to be overwritten in order to write to a specific output 
 	virtual void do_put_buffer(const char *begin, const char *end) = 0;
 	char *m_begin;
 	char *m_cur;

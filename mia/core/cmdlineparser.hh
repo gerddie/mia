@@ -64,13 +64,18 @@ typedef std::map<std::string,  CCmdOption *> CLongoptionMap;
 class EXPORT_CORE CCmdOption  {
 public:
 
+	/**
+	   Option flags 
+	*/
 	enum Flags {
-		not_required = 0, 
-		required = 1
+		not_required = 0, /**< option not required */
+		required = 1      /**< option required     */
 	}; 
         /** The constructor
+	    \param short_opt the short option character 
 	    \param long_opt the long option name
-	    \param longh_help a long help string
+	    \param long_help a long help string
+	    @param flags option flags 
         */
 	CCmdOption(char short_opt, const char *long_opt, const char *long_help, Flags flags);
 
@@ -122,6 +127,7 @@ public:
         /// \returns the options value as string
 	const std::string get_value_as_string() const;
 
+	/// @returns true if the option is a required option and hasn't been set
 	bool is_required() const; 
 
         /// \returns the long help string
@@ -129,7 +135,7 @@ public:
 
 protected:
 
-	// clear the "required" flag 
+	/// clear the "required" flag 
 	void clear_required(); 
 private:
 	virtual void do_add_option(CShortoptionMap& sm, CLongoptionMap& lm)  = 0;
@@ -162,7 +168,7 @@ public:
 	    \param long_opt long option name (must not be NULL)
 	    \param long_help long help string (must not be NULL)
 	    \param short_help short help string
-	    \param required if this is set to true, extra checking will be done weather
+	    \param flags if this is set to true, extra checking will be done weather
 	    the option is really set on the command line
         */
 	CCmdOptionValue(char short_opt, const char *long_opt, const char *long_help,
@@ -203,7 +209,7 @@ class TCmdOption: public  CCmdOptionValue{
 
 public:
         /** Constructor of the command option
-	    \retval val variable to hold the parsed option value - pass in the default value -
+	    \param[in,out] val variable to hold the parsed option value - pass in the default value -
             exception: \a bool values always default to \a false
 	    \param short_opt short option name (or 0)
 	    \param long_opt long option name (must not be NULL)
@@ -236,7 +242,7 @@ class TCmdDictOption: public  CCmdOptionValue{
 
 public:
         /** Constructor of the command option
-	    \retval val variable to hold the parsed option value - pass in the default value -
+	    \param[in,out] val variable to hold the parsed option value - pass in the default value -
 	    \param map the lookup table for the option
 	    \param short_opt short option name (or 0)
 	    \param long_opt long option name (must not be NULL)
@@ -266,13 +272,13 @@ class CCmdFlagOption: public  CCmdOptionValue{
 
 public:
         /** Constructor of the command option
-	    \retval val variable to hold the parsed option value - pass in the default value -
+	    \param[in,out] val variable to hold the parsed option value - pass in the default value -
 	    \param map the lookup table for the option
 	    \param short_opt short option name (or 0)
 	    \param long_opt long option name (must not be NULL)
 	    \param long_help long help string (must not be NULL)
 	    \param short_help short help string
-	    \param required if this is set to true, extra checking will be done weather
+	    \param flags if this is set to true, extra checking will be done weather
 	    the option is really set
 	*/
 	CCmdFlagOption(int& val, const CFlagString& map, char short_opt, const char *long_opt,
@@ -295,13 +301,13 @@ private:
 class EXPORT_CORE CCmdSetOption: public CCmdOptionValue{
 public:
          /** Constructor of the command option
-	     \retval val variable to hold the parsed option value - pass in the default value -
+	     \param[in,out] val variable to hold the parsed option value - pass in the default value -
 	     \param set the set of allowed values for the option
 	     \param short_opt short option name (or 0)
 	     \param long_opt long option name (must not be NULL)
 	     \param long_help long help string (must not be NULL)
 	     \param short_help short help string
-	     \param required if this is set to true, extra checking will be done weather
+	     \param flags if this is set to true, extra checking will be done weather
 	     the option is really set
          */
 
@@ -334,12 +340,16 @@ public:
 	};
 
 	/** Constructor of the command option
-	     \param callback to call when help option is requested
+	     \param cb callback to call when help option is requested
 	     \param short_opt short option name (or 0)
 	     \param long_opt long option name (must not be NULL)
 	     \param long_help long help string (must not be NULL)
          */
 	CHelpOption(Callback *cb, char short_opt, const char*long_opt, const char *long_help);
+
+	/** Print the option to a stream 
+	    @param os 
+	*/
 	void print(std::ostream& os) const;
 
 private:
@@ -393,7 +403,7 @@ PCmdOption make_opt(T& value, const char *long_opt, char short_opt,
 
 /**
    Convinience function: Create a table lookup option
-   \retval val variable to hold the parsed and translated option value
+   \param[in,out] val variable to hold the parsed and translated option value
    \param map the lookup table for the option
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
@@ -415,7 +425,7 @@ PCmdOption make_opt(T& value, const TDictMap<T>& map, const char *long_opt, char
 
 /**
    Convinience function: Create a table lookup option
-   \retval val variable to hold the parsed and translated option value
+   \param[in,out] val variable to hold the parsed and translated option value
    \param map the lookup table for the option
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
@@ -436,7 +446,7 @@ PCmdOption make_opt(T& value, const TDictMap<T>& map, const char *long_opt, char
 
 /**
    Convinience function: Create a flag lookup option
-   \retval val variable to hold the parsed and translated option value
+   \param[in,out] val variable to hold the parsed and translated option value
    \param map the lookup table for the option flags
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
@@ -455,7 +465,7 @@ PCmdOption  EXPORT_CORE make_opt(int& value, const CFlagString& map, const char 
 
 /**
    Convinience function: Create a set restricted option
-   \retval val variable to hold the parsed and translated option value
+   \param[in,out] val variable to hold the parsed and translated option value
    \param set the set of allowed values
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
@@ -473,7 +483,7 @@ PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>&
 
 /**
    Convinience function: Create a set restricted option
-   \retval val variable to hold the parsed and translated option value
+   \param[in,out] val variable to hold the parsed and translated option value
    \param set the set of allowed values
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
@@ -529,13 +539,13 @@ class EXPORT_CORE CCmdOptionList {
         /** the work routine, can take the arguemnts straight from \a main
 	    \param argc number of arguments
 	    \param args array of arguments strings
+	    @param has_additional allow additional arguments, if true the unparsed arguments will 
+	    be accessable by the function get_remaining(), otherwiese the occurence of unknown arguments 
+	    will be reported as error. 
         */
 	void parse(size_t argc, const char *args[], bool has_additional = true);
-
-        /** the work routine, can take the arguemnts straight from \a main
-	    \param argc number of arguments
-	    \param args array of arguments strings
-        */
+	
+	/** \overload parse(size_t argc, const char *args[], bool has_additional) */
         void parse(size_t argc, char *args[], bool has_additional = true);
 
         /// \returns a vector of the remaining arguments
@@ -546,6 +556,10 @@ class EXPORT_CORE CCmdOptionList {
         */
 	CHistoryRecord get_values() const;
 
+	/**
+	   Set the option group to add subsequent options to 
+	   @param group 
+	 */
 	void set_group(const std::string& group); 
  private:
 	int handle_shortargs(const char *arg, size_t argc, const char *args[]);

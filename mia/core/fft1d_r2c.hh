@@ -51,6 +51,8 @@ public:
 		}
 #endif
 	};
+
+	/// A typedef that makes switching between single precicion and double precicion easier 
 	typedef float          Real;
 
 	/**
@@ -79,7 +81,7 @@ public:
 	   Execute forward transformation. distance(in_begin, in_end) must be equal to \a n as given at construction time
 	   \param in_begin
 	   \param in_end
-	   \retval out_begin output iterator pointing at the output range that must be at least
+	   \param out_begin output iterator pointing at the output range that must be at least
 	   of size \f$\frac{n}{2} + 1\f$ with n as given at construction time
 	   \sa out_size
 	 */
@@ -93,7 +95,7 @@ public:
 	   given at construction time
 	   \param in_begin
 	   \param in_end
-	   \retval out_begin output iterator pointing at the output range that must be at least
+	   \param out_begin output iterator pointing at the output range that must be at least
 	   of size \a n as given at construction time
 	   \sa out_size
 	 */

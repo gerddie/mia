@@ -118,14 +118,15 @@ public:
 	/// \remark obsolete function 
 	bool test(bool uninstalled) const;
 
-	/* set the shared modules containing the code of this plugin 
+	/** set the shared modules containing the code of this plugin 
 	   This enshures that the modules is not unloaded while the plug-in 
 	   still exists and needs to call its destructor whos code resides 
 	   in the module. 
+	   @param module 
 	 */
 	void set_module(const PPluginModule& module);
 
-	/*
+	/**
 	  \returns the module 
 	 */
 	PPluginModule get_module() const;
@@ -197,6 +198,7 @@ public:
 	/// \returns the plugin specific part of the plugin search path
 	static ::boost::filesystem::path search_path();
 
+	/// @returns the long name of the plug in consisting of its name, its type, and data descriptors 
 	const std::string get_long_name() const;
 
 };

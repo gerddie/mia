@@ -46,11 +46,9 @@ public:
 	   \param model the registration model (e.g.- navier for linear elasticity operator)
 	   \param time_step the time step model (e.g. fluid to letthe model operator work on the
                 velocity field instead of the deformation field)
-	   \param ipf an interpolator factory for image interpolation
-           \param outer_epsilon a relative cost function value per multi-grid level to stop
+	   \param outer_epsilon a relative cost function value per multi-grid level to stop
                   registration
-	   \param save_steps save the deformed source image for each registration step
-	 */
+	*/
 	C3DMultiImageRegister(size_t start_size, size_t max_iter,
 			      C3DRegModel& model, C3DRegTimeStep& time_step,
 			      float outer_epsilon);

@@ -40,6 +40,7 @@ NS_MIA_BEGIN
 
 /// plugin helper type
 struct EXPORT_CORE cost_type {
+	/// plugin path helper variable 
 	static const char *value;
 };
 
@@ -78,7 +79,7 @@ public:
 	    \param a input entity
 	    \param b input entity
 	    \param scale a force scaling parameter
-	    \retval force The external force of \a a with respect to \a b that lead to cost minimisation
+	    \param[out] force The external force of \a a with respect to \a b that lead to cost minimisation
 	 */
 	double evaluate_force(const T& a, const T& b, float scale, V& force) const  __attribute__((deprecated));
 

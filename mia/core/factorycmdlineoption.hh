@@ -47,7 +47,7 @@ class TCmdFactoryOption: public  CCmdOptionValue{
 
 public:
         /** Constructor of the command option
-	    \retval val variable to hold the parsed option value - pass in the default value -
+	    \param[in,out] val variable to hold the parsed option value - pass in the default value -
 	    \param short_opt short option name (or 0)
 	    \param long_opt long option name (must not be NULL)
 	    \param long_help long help string (must not be NULL)

@@ -54,12 +54,12 @@ public:
 	/// \returns a vector of the images 
 	const C2DImageSeries& get_images()const;
 
-	// sets the image series 
+	/// sets the image series @param series 
 	void set_images(const C2DImageSeries& series); 
 	
-	// save the images to their give file names 
+	/// save the images to their give file names with the given directory as root @param root 
 	void save_images(const string& root) const; 
-
+	
 	/** Run acropping on the inout images and correct the segmentation information accordingly 
 	    \param start upper left corner of the cropping reagion 
 	    \param end lower right corner  of the cropping reagion 

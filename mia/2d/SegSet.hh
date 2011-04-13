@@ -41,6 +41,7 @@ NS_MIA_BEGIN
 */
 class EXPORT_2D CSegSet {
 public:
+	/// convenience typedef for the frames comprising a segmentation set 
 	typedef std::vector<CSegFrame> Frames;
 
 	/// Standard constructor 
@@ -97,7 +98,7 @@ public:
 	   \param skip number of frames to skipü at the beginning 
 	   \param shift new origin of segmentation 
 	   \param  new_filename_base new file name base
-	   \rename This function does too many things at once. 
+	   \remark This function does too many things at once. 
 	 */
 	CSegSet  shift_and_rename(size_t skip, const C2DFVector&  shift, const std::string& new_filename_base)const;
 

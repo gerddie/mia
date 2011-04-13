@@ -70,7 +70,7 @@ public:
 
 	/**
 	   \param key
-	   \retuns \a true if key exists in pool and \a false if not
+	   \returns \a true if key exists in pool and \a false if not
 	*/
 	bool has_key(const std::string& key) const;
 	/**

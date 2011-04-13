@@ -21,10 +21,11 @@ public:
 
 	/**
 	   Create the ground thruth estimator with the given parameters 
-	   (see the paper for details on a and b) 
-	   @param a parameter \alpha 
-	   @param b parameter \beta 
+	   (see the paper for details on \f$\alpha\f$ and \f$\beta\f$) 
+	   @param a parameter \f$\alpha\f$ 
+	   @param b parameter \f$\beta\f$ 
 	   @param slice_size 2D image size of the series images, 
+	   @param nframe number of frames in the perfusion series 
 	   @param left_side 
 	   @param corr 
 	   
@@ -36,12 +37,16 @@ public:
 			   const  CCorrelationEvaluator::result_type& corr); 
 
 	/**
-	   Set the parametes a and b 
+	   Set the parametes \f$\alpha\f$ and \f$\beta\f$
 	 */
 	void set_alpha_beta(double a, double b); 
 
 protected: 
+	
+	///@returns a reference to the spacial gradient 
 	const std::vector<double>& get_spacial_gradient() const; 
+
+	///@returns a reference to the temporal gradient 
 	const std::vector<double>& get_time_derivative() const; 
 private: 
 	virtual double  do_f(const CDoubleVector& x); 

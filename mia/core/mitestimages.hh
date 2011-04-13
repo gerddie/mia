@@ -10,7 +10,9 @@ NS_MIA_BEGIN
  */
 
 struct SImageSize {
+	/// image width 
 	int width; 
+	/// image height 
 	int height; 
 }; 
 

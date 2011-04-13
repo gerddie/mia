@@ -48,9 +48,7 @@ extern EXPORT_CORE TDictMap<EInterpolation> GInterpolatorTable;
  */
 class EXPORT_CORE CBSplineKernel {
 public:
-	/** @cond 
-	    this is obolete 
-	*/ 
+	/// @cond OBSOLETE 
 	enum EIntegralType { integral_11, 
 			     integral_20, 
 			     integral_02, 
@@ -69,18 +67,36 @@ public:
 		   @param cs2 2*cs1
 		 */
 		SCache(size_t s, int cs1, int cs2); 
+
+		/** last location the B-spline was evaluated at. This  value is initialized to NaN
+		    to make sure we 
+		*/
 		double x; 
+		
+		/// last start index the B-spline was evaluated for 
 		int start_idx; 
+		
+		/// cached weights 
 		std::vector<double> weights; 
+		
+		/// cached indices 
 		std::vector<int> index; 
+
+		/// coefficient index range 
 		int csize1;
+		
+		/// double coefficient index range 
 		int csize2;
+
+		/// store whether indices were mirrored 
 		bool is_mirrored; 
 	}; 
 
 	/**
-	   \param degree of the spline
-	   \param shift location shift of the input coordinate to obtain the proper support
+	   @param degree of the spline
+	   @param shift location shift of the input coordinate to obtain the proper support
+	   @param type interpolation type 
+	   @remark why to I give the type, it should alwas be bspline
 	 */
 	CBSplineKernel(size_t degree, double shift, EInterpolation type);
 
@@ -92,8 +108,8 @@ public:
 	/**
 	    This operator evaluates the weights and indices of the interpolation
 	    \param x input coordinate
-	    \retval weight weights of the interpolation
-	    \retval index indices corresponding to the weights
+	    \param[out] weight weights of the interpolation
+	    \param[out] index indices corresponding to the weights
 	 */
 	void operator () (double x, std::vector<double>& weight, std::vector<int>& index)const;
 
@@ -101,7 +117,7 @@ public:
 	   This operator evaluates the weights and indices of the interpolation at a given position. 
 	   The result is stored in the return value cache and this cache is only updated if neccesary 
 	   \param x location for which to evaluate weights and indices 
-	   \retval cache storage for returned value
+	   \param[in,out] cache storage for returned value
 	   
 	 */
 	void operator () (double x, SCache& cache)const;
@@ -109,8 +125,8 @@ public:
 	/**
 	   Evaluate the first order derivative weights of the B-Spline at the given position
 	   @param x location where to evaluate the derivative 
-	   @retval weight the interpolation weights are stored here 
-	   @retval index the interpolation coefficient intices are stored here 
+	   @param[out] weight the interpolation weights are stored here 
+	   @param[out] index the interpolation coefficient intices are stored here 
 	*/
 	
 	void derivative(double x, std::vector<double>& weight, std::vector<int>& index)const;
@@ -118,8 +134,8 @@ public:
         /**
 	   Evaluate the derivative weights of the B-Spline at the given position
 	   @param x location where to evaluate the derivative 
-	   @retval weight the interpolation weights are stored here 
-	   @retval index the interpolation coefficient intices are stored here 
+	   @param[out] weight the interpolation weights are stored here 
+	   @param[out] index the interpolation coefficient intices are stored here 
 	   @param order order of the derivative to be evaluated 
 	 */
 	
@@ -128,27 +144,28 @@ public:
         /**
 	   Evaluate the indices of the coefficients that would be used for interpolation 
 	   @param x location where to evaluate
-	   @retval index the interpolation coefficient indices are stored here 
+	   @param[out] index the interpolation coefficient indices are stored here 
+	   @returns start index 
 	 */
 	int get_indices(double x, std::vector<int>& index) const;
 
 	/** evaluate the weights, this needs to be implemented for a specific spline
 	    \param x coordinate
-	    \retval weight the weights
+	    \param[out] weight the weights
 	    \remark why is this not a private function? 
 	 */
 	virtual void get_weights(double x, std::vector<double>& weight) const = 0;
 
 	/** evaluate the first order derivative weights, this needs to be implemented for a specific spline
 	    \param x coordinate
-	    \retval weight the weights
+	    \param[out] weight the weights
 	    \remark why is this not a private function? 
 	 */
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const = 0;
 
 	/** evaluate the first order derivative weights, this needs to be implemented for a specific spline
 	    \param x coordinate
-	    \retval weight the weights
+	    \param[out] weight the weights
 	    \param order derivative order 
 	    \remark why is this not a private function? 
 	 */
@@ -186,7 +203,7 @@ public:
 	/**
 	   Evaluate the first coefficient index and the weights vor B-spline interpolation
 	   \param x location to evaluate the spline at 
-	   \retval weights weights of the B-spline 
+	   \param[out] weights weights of the B-spline 
 	   \returns first index into the coefficient field to be used - note this may be a negiative value 
 	*/
 	int get_start_idx_and_value_weights(double x, std::vector<double>& weights) const; 
@@ -194,7 +211,7 @@ public:
 	/**
 	   Evaluate the first coefficient index and the derivative weights vor B-spline interpolation
 	   \param x location to evaluate the spline at 
-	   \retval weights weights of the B-spline 
+	   \param[out] weights weights of the B-spline 
 	   \returns first index into the coefficient field to be used - note this may be a negiative value 
 	*/
 	int get_start_idx_and_derivative_weights(double x, std::vector<double>& weights) const; 
@@ -292,7 +309,7 @@ public:
 
 /** implements a B-Spline kernel of degree 3 */
 class EXPORT_CORE CBSplineKernel3: public  CBSplineKernel{
- public:
+public:
 	CBSplineKernel3();
 	virtual void get_weights(double x, std::vector<double>& weight)const;
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
@@ -355,7 +372,7 @@ double  EXPORT_CORE integrate2(const CBSplineKernel& spline, double s1, double s
 
 /**
    Function to apply mirrored boundary conditions so that the indices fit into [0,width)
-   @retval index index array to be adjusted
+   @param[in,out] index index array to be adjusted
    @param width width of the supported index range 
    @param width2 2*width to allow repitition over the range
    @returns true if mirroring was applied 

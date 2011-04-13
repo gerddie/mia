@@ -38,7 +38,9 @@ public:
 	   helper structure to hold the correlation data 
 	 */
 	typedef struct {
+		/// data field to hold the correlation in horizontal direction 
 		C2DFImage horizontal;
+		/// data field to hold the correlation in vertical direction 
 		C2DFImage vertical;
 	} result_type;
 
@@ -58,7 +60,7 @@ public:
 	 */
 	result_type operator() (const std::vector<P2DImage>& images, size_t skip = 0) const;
 
-public:
+private:
 	struct CCorrelationEvaluatorImpl *impl;
 };
 

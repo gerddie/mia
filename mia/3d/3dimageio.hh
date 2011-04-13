@@ -36,7 +36,7 @@ NS_MIA_BEGIN
 class EXPORT_3D C3DImageVector: public std::vector< std::shared_ptr<C3DImage >> ,
 		      public CIOData {
 public:
-	/// 
+	/// returns a dynamically created copy of the image vector 
 	C3DImageVector *clone() const __attribute__((warn_unused_result));
 
 };

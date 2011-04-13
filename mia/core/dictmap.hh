@@ -48,7 +48,9 @@ public:
 	   The initialisation table. The last entry must have the name pointer pointing to 0. 
 	*/
 	typedef struct { 
+		/// parameter name 
 		const char *name; 
+		/// parameter value 
 		const T value; 
 	} Table; 
 	
@@ -69,7 +71,7 @@ public:
 	T get_value(const char *name) const; 
 	
 	/**
-	   \param name 
+	   \param value
 	   \returns corresponding flag 
 	   \remark throws std::invalid_argument if the value is unknown 
 	*/

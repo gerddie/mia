@@ -78,6 +78,12 @@ public:
 	   \returns interpolated value at location x
 	 */
 	virtual T operator () (const double& x) const = 0;
+
+	/**
+	   interface to evaluate the derivative of the spline defined function 
+	   @param x 
+	   @returns interpolated approximate derivative at x 
+	 */
 	virtual typename coeff_map<T>::coeff_type derivative_at (const double& x) const = 0;
 
 
@@ -94,6 +100,7 @@ public:
 	 */
 	T1DDirectInterpolator(const std::vector<T>& data);
 protected:
+	/// return a reference to the data coefficients used for interpolation 
 	const std::vector<T>& data()const {
 		return m_data;
 	}

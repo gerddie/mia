@@ -56,6 +56,8 @@ libpthreads during run-time.
 NS_MIA_BEGIN
 
 /**
+   @brief A message queue for thread syncronisation in a Master-Slave setting 
+
    This class implements a message queue that can be used for thread syncronisation and
    Master-Slave processing.
 
@@ -120,7 +122,7 @@ typedef std::shared_ptr<boost::barrier > PBarrier;
 
 
 /**
-   The base of all slave threads.
+   @brief The base of all slave threads.
 */
 class EXPORT_CORE CSlave: private boost::noncopyable {
 public:
@@ -152,21 +154,33 @@ private:
 
 
 /**
-   Generic class to provide syncronised access to a value
+   @brief Generic class to provide syncronised access to a value
+
+   This class holds a value of thegiven type and all access to it is scncronized.  
+   @remark some of these things could probably done with atomic operations 
 */
 template <typename T>
 class TLockedValue:private boost::noncopyable {
 public:
 
 	TLockedValue();
+	
+	/// constructor to set the value 
 	TLockedValue(T val);
 
+	/// assignment operator 
 	const TLockedValue& operator = (T val);
+
+	/// operator for transparent access to the value 
 	operator T() const;
 
+	/// Set the value @param val 
 	void set (T val);
+
+	/// @returns the value 
 	const T get() const;
 
+	/// operator of the value 
 	const TLockedValue<T>& operator += (T val);
 private:
 	T m_val;

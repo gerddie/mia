@@ -173,7 +173,11 @@ class solve_sCG {
 	 */
 	void add_to_solution(C3DFImage *e);
 
-	// function for parallel solver
+	/** function for parallel solver
+	    @param max_iteration
+	    @param normr
+	    @param firstnormr0
+	 */
 	void solvepar(long *max_iteration, double *normr, double *firstnormr0);
 
 };

@@ -59,6 +59,8 @@ public:
 	typedef Data plugin_data; 
 	TRegModel();
 	virtual ~TRegModel();
+
+	
 	void solve (const Force& b, Transformation& x) const;
 	float get_force_scale() const;
 private:

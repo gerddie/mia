@@ -61,7 +61,7 @@ public:
 	/**
 	   Evaluate the pertuberation of the vector field in combination with the next 
 	   transformation to be applied. What actually happens here depends on the time step model. 
-	   \retval io vector field resulting from the solution of the PDE, may be overwritted by 
+	   \param[in,out] io vector field resulting from the solution of the PDE, may be overwritted by 
 	   its pertuberated version 
 	   \param shift current transformation 
 	   \returns the norm of the maxium transformation over the transformation domain 

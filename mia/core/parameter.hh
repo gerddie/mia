@@ -73,6 +73,7 @@ public:
 	*/
 	bool set(const std::string& str_value);
 
+	/// @returns the help description of the parameter 
 	const char *get_descr() const;
 protected:
 
@@ -82,6 +83,7 @@ protected:
 	*/
 	virtual void do_descr(std::ostream& os) const = 0;
 
+	/// create an error message by using the given value that raises the error 
 	const std::string errmsg(const std::string& err_value) const;
 private:
 	/** the actual (abstract) function to set the parameter that needs to be overwritten

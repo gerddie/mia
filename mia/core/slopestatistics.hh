@@ -31,11 +31,18 @@ NS_MIA_BEGIN
 
 
 /**
+   @brief Runs some statistics over a one-dimensional curve 
+   
    Evaluates some statistics about a one-dimensional mapping [0, 1,..., N-1] -> R.
+   This is mostly used for perfusion analysis.  
  */
 
 class  EXPORT_CORE CSlopeStatistics {
 public:
+	/**
+	   Initialize the statistice with the data of a curve 
+	   @param series 
+	 */
 	CSlopeStatistics(const std::vector<float>& series);
 	~CSlopeStatistics();
 

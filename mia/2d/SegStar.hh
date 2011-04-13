@@ -67,7 +67,7 @@ public:
 
 	/**
 	   Shift the segmentation data 
-	   @param shift 
+	   @param delta
 	 */
 	void shift(const C2DFVector& delta);
 

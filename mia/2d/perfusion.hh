@@ -85,7 +85,7 @@ public:
 	   Some heuristics are used to check whether the segmentation makes sense
 	   
 	   @param scale enlargement scale of the bounding box to create the cropping region 
-	   @param retval crop_start returns the left upper corner of the cropping region that can be used  
+	   @param[out] crop_start returns the left upper corner of the cropping region that can be used  
 	   to adjust segmentations
 	   @param approach on what input data to base thesegmentation on 
 	   @param save_features if not empty store feature images in files with this prefix 

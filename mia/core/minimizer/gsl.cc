@@ -145,9 +145,8 @@ int CGSLFDFMinimizer::do_run(CDoubleVector& x)
 	}else{
 		cvinfo() << "Convergence reached\n"; 
 	}
-
-	return status == GSL_SUCCESS ? CMinimizer::success : CMinimizer::failture;
 	
+	return status == GSL_SUCCESS ? CMinimizer::success : CMinimizer::failure;
 }
 
 CGSLFMinimizer::CGSLFMinimizer(const gsl_multimin_fminimizer_type *ot,
@@ -228,7 +227,7 @@ int CGSLFMinimizer::do_run(CDoubleVector& x)
 		cvmsg() << "\nConvergence reached\n"; 
 	}
 	
-	return status == GSL_SUCCESS ? CMinimizer::success : CMinimizer::failture;
+	return status == GSL_SUCCESS ? CMinimizer::success : CMinimizer::failure;
 }
 
 

@@ -48,7 +48,7 @@ typedef std::shared_ptr<C3DTransformation > P3DTransformation;
 
 class EXPORT_3D C3DTransformation: public Transformation<C3DImage, C3DInterpolatorFactory> {
 public:
-	/// @cond 
+	/// @cond LAZY 
 	typedef C3DBounds Size; 
 	typedef C3DImage Data;
 	typedef C3DInterpolatorFactory InterpolatorFactory;
@@ -59,21 +59,38 @@ public:
 	/// @endcond 
 protected: 
 	/**
-	   This is the abstract base class of th actual implementation of the transformation iterator.  
+	   This is the abstract base class of the actual implementation of the transformation iterator.  
 	*/
-
 	class iterator_impl  {
 	public: 
 		iterator_impl(); 
+
+		/**
+		   Initialize the iterator with its current position and the size of the domain 
+		   the actual domain is: 
+		   \f$[0,size.x-1]\times [0,size.y-1]\times [0,size.z-1]\f$
+		 */
 		iterator_impl(const C3DBounds& pos, const C3DBounds& size); 
 
+		/// move to next position 
 		void increment(); 
+
+		/// @returns current value of the underlying transformation 
 		const C3DFVector&  get_value() const;
-		virtual iterator_impl * clone() const = 0; 
+
+		/// @returns a dynamic copy of the iterator 
+		virtual iterator_impl * clone() const  __attribute__((warn_unused_result)) = 0; 
 		
+		/**
+		   Compare this iterator to another one. Iterators are equal if they are at the same 
+		   position or at the end.
+		*/
 		bool operator == (const iterator_impl& other) const; 
 		
+		/// @returns the current position on the support domain grid 
 		const C3DBounds& get_pos()const; 
+
+		/// @returns the size of the supported domain 
 		const C3DBounds& get_size()const; 
 	private:
 		virtual const C3DFVector& do_get_value()const = 0; 
@@ -90,26 +107,42 @@ public:
 	   This is an iterator that iterates over the grid of the 
 	   domain where the transformation is defined. 
 	   It implements the forward_iterator model. 
+	   @todo make position readable from outside
+	   @todo add iteration over sub-domains  
 	 */
 	
 	class const_iterator : public std::forward_iterator_tag {
 	public: 
 
+		/// @cond some_STL_conform_typedefs
 		typedef std::forward_iterator_tag iterator_category; 
 		typedef C3DFVector value_type; 
 		typedef size_t difference_type; 
 		typedef C3DFVector *pointer; 
 		typedef C3DFVector& reference; 
+		/// @endcond 
+		
 		const_iterator(); 
+
+		/// Copy constructor 
+		const_iterator(const const_iterator& other); 		
+
+		/// initialize the iterator with the actual worker object 
 		const_iterator(iterator_impl * holder); 
 
+		/// assignment operator 
 		const_iterator& operator = (const const_iterator& other); 
-		const_iterator(const const_iterator& other); 
 
+		/// prefix increment 
 		const_iterator& operator ++(); 
+		
+		/// postfix increment 
 		const_iterator operator ++(int); 
 
+		/// return current value of the transformation 
 		const C3DFVector& operator *() const;
+
+		/// return pointer to current value of the transformation 
 		const C3DFVector  *operator ->() const;
 
 	private: 
@@ -242,7 +275,7 @@ public:
 
 	/**
 	   evaluate the pertuberation of a vectorfield combined with this transformation
-	   \retval v vectorfield to be pertuberated
+	   \param[in,out] v vectorfield to be pertuberated
 	   @returns maximum value of the pertuberation
 	   \remark this makes only sense for fluid dynamics registration and should be handled elsewhere
 	 */
@@ -273,7 +306,7 @@ public:
 	   transformtion 
 	   @param wd weight of the divergence
 	   @param wr weight of the rotation 
-	   \retval gradient vector to hold the resulting gradient 
+	   \param[out] gradient vector to hold the resulting gradient 
 	   @returns cost function value 
 	 */
 	virtual double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const = 0; 

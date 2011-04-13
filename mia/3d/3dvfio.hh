@@ -51,7 +51,7 @@ public:
 
 };
 
-///@cond 
+///@cond LAZY 
 struct io_3dvf_type {
 	typedef  C3DIOVectorfield type;
 	static const char *type_descr;

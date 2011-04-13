@@ -36,7 +36,7 @@
 NS_MIA_BEGIN
 
 /**
-   \Brief class for ICA analysis and use of such data.
+   \brief class for ICA analysis and use of such data.
 
    This class implements basic operations for of ICA. It makes use of the ITPP implementation of FastICA.
 
@@ -45,6 +45,7 @@ NS_MIA_BEGIN
 class  EXPORT_CORE CICAAnalysis {
 public:
 
+	/// The type of a vector as used by IT++
 	typedef itpp::Vec<itpp::mat::value_type> itppvector;
 	/**
 	   Initialize an ICA based of predefined data - this is unly used for test cases.
@@ -66,6 +67,7 @@ public:
 	typedef std::set<size_t> IndexSet;
 
 	/**
+	   \fn set_row
 	   Set on row of input data
 	   \tparam Iterator input data iterator, must follow the model of a forward iterator
 	   \param row index of the input slice
@@ -81,6 +83,7 @@ public:
 	/**
 	   Run the independed component analysis using the given numbers of components
 	   \param nica number of indentepended components
+	   \param guess initial guess for the ICA, pass an empty vector of you don't want to use this feature  
 	 */
 	bool run(size_t nica, std::vector<std::vector<float> > guess); 
 
@@ -129,7 +132,7 @@ public:
 	/**
 	   Replace a mixing signal curve
 	   \param index of the curve to be replaced
-	   \param new data for mixing curve
+	   \param series new data for mixing curve
 	 */
 	void set_mixing_series(size_t index, const std::vector<float>& series);
 

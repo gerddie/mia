@@ -54,8 +54,13 @@ class EXPORT_CORE CComplexOptionParser {
 
 public:
 
+	/** define thy type for a list of separators*/
 	typedef char SSeperators[];
+
+	/// Type for a map of parts of a complex option 
 	typedef std::multimap<std::string, CParsedOptions> CParts;
+
+	/// the iterator over the parts of a complex option 
 	typedef CParts::const_iterator const_iterator;
 
 	/**

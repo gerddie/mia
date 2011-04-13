@@ -44,6 +44,7 @@ public:
 	/** append a new history record
 	    \param program name of the calling program
 	    \param version version of the program run
+	    \param options the options used in this call 
 	*/
 	void append(const std::string& program, const std::string& version, const CCmdOptionList& options);
 

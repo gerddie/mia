@@ -76,10 +76,9 @@ public:
 	const std::set<std::string> get_set() const; 
 
 	/**
-	   returns the interface of a specific plug-in of the handeled type
-	   \param plugin name of the plugin to access
-	   \returns a pointer to the plug-in 
-	*/
+	   Print out the help to an output stream 
+	   @param os
+	 */
 	void print_help(std::ostream& os) const; 
 	
 	
@@ -107,6 +106,11 @@ protected:
 	*/
 	typename TPluginHandler<I>::Interface *plugin(const char *plugin) const;
 
+
+	/**
+	   Add a given plug-in to the handler 
+	   @param plugin 
+	 */
 	void add_plugin(Interface *plugin); 
 
 

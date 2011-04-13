@@ -95,6 +95,7 @@ public:
 
 	const Interface& prefered_plugin(const std::string& fname) const; 
 
+	/// @returns the a mapping of the supported file suffixes to their plugins 
 	const CSuffixmap& get_supported_filetype_map() const; 
 
 protected: 

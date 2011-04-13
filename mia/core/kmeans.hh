@@ -117,9 +117,9 @@ bool kmeans_step(InputIterator ibegin, InputIterator iend, OutputIterator obegin
    \param ibegin iterator indicating the start of the input data 
    \param iend iterator indicating the end of the input data, expect an STL-like handling, 
    i.e. iend points behind the last element to be accessed
-   \retval obegin begin of the output range where the class membership will be stored
+   \param obegin begin of the output range where the class membership will be stored
    it is up to the caller to ensure that this range is at least as large as the input range
-   \retval classes at input the size of the vector indicates the number of clusters to be used
+   \param[in,out] classes at input the size of the vector indicates the number of clusters to be used
    at output the vector elements contain the class centers in increasing order. 
 */
 
