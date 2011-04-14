@@ -201,8 +201,8 @@ private:
     f the string passed to the option for translation can not be translation to a 
     value of type T,
     the \a set_value method will throw a \a std::invalid_argument exception
-    If T is of type template <typename R> std::vector<R>,  the list of N values needs to be
-    given like value1,value2,...,valueN.
+    If T is of type template &lt; typename R &gt; std::vector &lt; R &gt;,  
+    the list of N values needs to be  given like value1,value2,...,valueN.
 */
 template <typename T>
 class TCmdOption: public  CCmdOptionValue{
@@ -215,8 +215,7 @@ public:
 	    \param long_opt long option name (must not be NULL)
 	    \param long_help long help string (must not be NULL)
 	    \param short_help short help string
-	    \param required if this is set to true, extra checking will be done weather
-	    the option is really set
+	    \param flags support options like required 
         */
 	TCmdOption(T& val, char short_opt, const char *long_opt, const char *long_help,
                    const char *short_help, CCmdOption::Flags flags = CCmdOption::not_required);
@@ -248,7 +247,7 @@ public:
 	    \param long_opt long option name (must not be NULL)
 	    \param long_help long help string (must not be NULL)
 	    \param short_help short help string
-	    \param required if this is set to true, extra checking will be done weather
+	    \param flags set whether the option is required or not 
 	    the option is really set
 	*/
 	TCmdDictOption(T& val, const TDictMap<T>& map, char short_opt, const char *long_opt,

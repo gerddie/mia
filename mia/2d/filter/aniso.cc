@@ -125,13 +125,13 @@ void C2DAnisoDiff::create_histogramfeeder(const C2DFImage& data) const
 	else
 		bins = (size_t)(dist+1);
 
-	m_histogramfeeder = CHistogramFeeder<float>(*range.first, *range.second, bins);
+	m_histogramfeeder = THistogramFeeder<float>(*range.first, *range.second, bins);
 }
 
 /* estimate the MAD */
 float C2DAnisoDiff::estimate_MAD(const C2DFImage& data)const
 {
-	CHistogram<CHistogramFeeder<float> >  gradient_histogram(m_histogramfeeder);
+	THistogram<THistogramFeeder<float> >  gradient_histogram(m_histogramfeeder);
 
 	C2DFImage::const_iterator id = data.begin();
 

@@ -138,6 +138,7 @@ public:
 	/// \returns typeid(T).name(), and is, therefore, dependend on the compiler
 	virtual const char *typedescr() const;
 protected:
+	/// @returns the value of the attribute 
 	const T& get_value() const;
 private:
 	virtual std::string do_as_string() const;

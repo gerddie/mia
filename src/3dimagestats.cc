@@ -47,7 +47,7 @@ const char *program_info =
 class CHistAccumulator : public TFilter<bool> {
 public:
 	CHistAccumulator(float min, float max, size_t bins, float thresh):
-		m_histo(CHistogramFeeder<float>(min, max, bins)),
+		m_histo(THistogramFeeder<float>(min, max, bins)),
 		m_thresh(thresh)
 	{
 	}
@@ -68,11 +68,11 @@ public:
 
 	void print_stats(double thresh_high)const
 	{
-		CHistogram<CHistogramFeeder<float > > tmp(m_histo, thresh_high);
+		THistogram<THistogramFeeder<float > > tmp(m_histo, thresh_high);
 		cout   <<  tmp.average() << " " << tmp.deviation()  << '\n';
 	}
 private:
-	CHistogram<CHistogramFeeder<float > > m_histo;
+	THistogram<THistogramFeeder<float > > m_histo;
 	float m_thresh;
 };
 

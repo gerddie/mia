@@ -185,4 +185,5 @@ void add_3dvector_tests(boost::unit_test::test_suite* suite)
 	suite->add( BOOST_TEST_CASE( &test_float_vector_option));
 	suite->add( BOOST_TEST_CASE( &test_size_vector_option));
 	suite->add( BOOST_TEST_CASE( &test_swizzle ));
+	suite->add( BOOST_TEST_CASE( &test_fill ));
 }

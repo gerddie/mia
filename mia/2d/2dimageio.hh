@@ -102,6 +102,7 @@ bool  EXPORT_2D save_image(const std::string& filename, P2DImage image);
 
 /**
    some DICOM tags that may be used 
+   \cond DICOM_TAGS 
  */
 extern EXPORT_2D const char * IDModality;
 extern EXPORT_2D const char * IDPatientOrientation;
@@ -116,7 +117,7 @@ extern EXPORT_2D const char * IDSliceLocation;
 extern EXPORT_2D const char * IDStudyID;
 extern EXPORT_2D const char * IDSmallestImagePixelValue;
 extern EXPORT_2D const char * IDLargestImagePixelValue;
-
+/// @endcond 
 
 NS_MIA_END
 

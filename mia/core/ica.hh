@@ -83,7 +83,8 @@ public:
 	/**
 	   Run the independed component analysis using the given numbers of components
 	   \param nica number of indentepended components
-	   \param guess initial guess for the ICA, pass an empty vector of you don't want to use this feature  
+	   \param guess initial guess for the ICA, pass an empty vector of you 
+	   don't want to use this feature  
 	 */
 	bool run(size_t nica, std::vector<std::vector<float> > guess); 
 

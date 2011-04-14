@@ -164,9 +164,9 @@ CScaled3DVFIOPlugin::PData CScaled3DVFIOPlugin::read_compressed(const T3DVector<
 	T *z = &VPixel( values.x, 0, 0, 0, T );
 
 	for (auto r = result->begin(); r != result->end(); ++r, ++y, ++y, ++z) {
-		r->x = *x; 
-		r->y = *y; 
-		r->z = *z; 
+		r->x = scale.x * *x; 
+		r->y = scale.y * *y; 
+		r->z = scale.z * *z; 
 	}
 	return result; 
 }
@@ -221,7 +221,7 @@ CScaled3DVFIOPlugin::PData CScaled3DVFIOPlugin::do_load(const string& fname) con
 	return result; 
 }
 
-bool CScaled3DVFIOPlugin::do_save(const string& fname, const Data& data) const
+bool CScaled3DVFIOPlugin::do_save(const string& /*fname*/, const Data& /*data*/) const
 {
 	throw invalid_argument("cviste: obsolete file format, saving nor supported"); 
 }

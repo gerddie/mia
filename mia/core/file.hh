@@ -45,12 +45,18 @@ providing transparent compression of the data.
 
 NS_MIA_BEGIN
 
+/// typedef of the cstdio file pointer to avoid the *
 typedef FILE * PFILE;
 
 /**
-   A wrapper for the \a cstdio file type.
-*/
+   \brief A wrapper for the \a cstdio file type that closes the file  automatically when 
+   the scope is left. 
 
+   This class implements a transparent wrapper around the C stdio FILE type to make it 
+   possible that the file is closed autmatically when the scope of the file variable is left. 
+   A variable of this type can be used with all the C-stdio functions that take a file 
+   pointer as argument.  
+*/
 class EXPORT_CORE CFile {
 public:
 	/** constructor

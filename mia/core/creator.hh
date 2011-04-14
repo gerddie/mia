@@ -37,13 +37,18 @@ struct EXPORT_CORE creator_type {
 };
 
 /**
+   \brief The base class for generic image creation 
+
    This template defines a generic base class for a creator of images containing some shapes. 
-   \tparam Image type to create 
+   \tparam T image type to create 
  */
 template <typename T>
 class EXPORT_HANDLER TImageCreator:public CProductBase {
 public:
+	/// plugin searchpath helper type, data part  
 	typedef T plugin_data; 
+	
+	/// plugin searchpath helper type, plugin type part  
 	typedef creator_type plugin_type; 
 	
 	virtual ~TImageCreator(){}

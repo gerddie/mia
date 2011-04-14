@@ -57,7 +57,7 @@ protected:
 	float m_k;
 	FEdgeStopping m_edge_stop;
 	int m_neighbourhood;
-	mutable mia::CHistogramFeeder<float> m_histogramfeeder;
+	mutable mia::THistogramFeeder<float> m_histogramfeeder;
 	mutable float m_sigma_e;
 	mutable float m_gamma;
 	mutable float m_sigma;

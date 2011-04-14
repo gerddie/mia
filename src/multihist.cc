@@ -48,7 +48,7 @@ using namespace std;
 class CHistAccumulator : public TFilter<bool> {
 public:
 	CHistAccumulator(float min, float max, size_t bins):
-		m_histo(CHistogramFeeder<float>(min, max, bins))
+		m_histo(THistogramFeeder<float>(min, max, bins))
 	{
 	}
 
@@ -69,13 +69,13 @@ public:
 
 		ofstream file(fname.c_str());
 		for (size_t i = 0; i < 	last_k; ++i) {
-			const CHistogram<CHistogramFeeder<float > >::value_type v = m_histo.at(i);
+			const THistogram<THistogramFeeder<float > >::value_type v = m_histo.at(i);
 			file << v.first << " " << v.second << "\n";
 		}
 		return file.good();
 	}
 private:
-	CHistogram<CHistogramFeeder<float > > m_histo;
+	THistogram<THistogramFeeder<float > > m_histo;
 };
 
 

@@ -46,53 +46,98 @@ struct EXPORT_CORE cost_type {
 
 
 /**
-   The basic cost function type interface. Template parameter T describes the input data class, e.g. 
-   T3DImage, parameter
-   V is for the force field description.
-   The class defines an abstract interface and the functions \a do_value and \a do_evaluate_force 
-   have to be implemented by
-   derived functions.
+   \brief The generic cost function interface. 
+
+   The class defines an abstract interface for a cost function between two entities of the same 
+   type. 
+   The pure virtual functions 
+    -double do_value(const T& a, const T& b) const, and 
+    -double do_evaluate_force(const T& a, const T& b, float scale, V& force) const
+    have to be implemented in the derived class to make it a real cost function. 
+    The virtual function 
+    - void post_set_reference(const T& ref)
+    may be overwritten in order to prepare the reference data for the implemented cost function.
+    \tparam T the data type of the objects that the cost evaluation is based on 
+    \tparam V the type of the gradient force field created by this cost function 
 */
 
 template <typename T, typename V>
 class TCost : public CProductBase{
 public:
+	/// typedef for generic programming: The data type used by the cost function 
 	typedef T Data;
+	
+	/// typedef for generic programming: The gradient forca type create by the cost function 
 	typedef V Force;
+
+	/// Const reference holder TRefHolder of the cost function data 
 	typedef TRefHolder<T> RData; 
+	
+	/// Pointer to const reference holder TRefHolder of the cost function data 
 	typedef typename RData::Pointer PData;
 
+	/// plugin searchpath helper type 
 	typedef T plugin_data; 
+	
+	/// plugin searchpath helper type 
 	typedef cost_type plugin_type; 
 
 	/// ensure virtual destruction, since we have virtual functions
 	virtual ~TCost();
 
-	/** The cost value evaluation function
-	    \param a
-	    \param b
+	/** \deprecared The cost value evaluation function, call TCost::value(const T& a) instead 
+	    after setting the reference image
+	    \param src
+	    \param ref
 	    \returns the cost value describing the distance between the entities \a a and \a b.
 	 */
-	double value(const T& a, const T& b) const __attribute__((deprecated));
+	double value(const T& src, const T& ref) const __attribute__((deprecated));
 
-	/** The force evaluation function
-	    \param a input entity
-	    \param b input entity
+	/** \deprecared The force evaluation function, 
+   	      TCost::use evaluate_force(const T& a, float scale, V& force) instead 
+	    \param src input entity
+	    \param ref input entity
 	    \param scale a force scaling parameter
 	    \param[out] force The external force of \a a with respect to \a b that lead to cost minimisation
 	 */
-	double evaluate_force(const T& a, const T& b, float scale, V& force) const  __attribute__((deprecated));
+	double evaluate_force(const T& src, const T&ref, float scale, V& force) const  __attribute__((deprecated));
 
+	/**
+	   \deprecared use TCost::set_reference instead 
+	   prepare the reference for this cost function 
+	   \param ref 
+	 */
 	virtual void prepare_reference(const T& ref)  __attribute__((deprecated)); 
 
-	double value(const T& a) const;
-	double evaluate_force(const T& a, float scale, V& force) const;
-	void set_reference(const T& ref);
+	/**
+	   Evaluate the value of the cost function petreen the given src image and 
+	   the reference that was set by calling set_reference(const T& ref). 
+	   \param src 
+	   \returns the cost function value 
+	 */
+	double value(const T& src) const;
 
+	/**
+	   Evaluate the value of the cost function and its gradient with respect 
+	   to the given src image and  the reference that was set by 
+           calling set_reference(const T& ref). 
+	   \param src 
+	   \param[out] force gradient force 
+	   \returns the cost function value 
+	 */
+	double evaluate_force(const T& a, float scale, V& force) const;
+	
+	/**
+	   Set the new reference of the cost function. The virtual private function  
+	   post_set_reference(const T& ref) is then called to run possible preparations 
+	   on the reference image. 
+	 */
+	void set_reference(const T& ref);
 private:
 	virtual double do_value(const T& a, const T& b) const = 0;
 	virtual double do_evaluate_force(const T& a, const T& b, float scale, V& force) const = 0;
 	virtual void post_set_reference(const T& ref); 
+	
 	PData m_reference; 
 };
 

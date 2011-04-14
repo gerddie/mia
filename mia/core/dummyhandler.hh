@@ -51,6 +51,7 @@ public:
 };
 
 
+/// Test IO plugin handler, don't use this in real code  
 typedef TIOHandlerSingleton<TIOPluginHandler<CTestIOPlugin> > CTestIOPluginHandler;
 
 

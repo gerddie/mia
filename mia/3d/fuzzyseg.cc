@@ -139,7 +139,7 @@ vector<double> Isodata3d (const Data3D& src_image, unsigned int nClasses, unsign
 		clCenter[i] = (i+1) *dCenters; //save clCenters
 
 	// first pass: build a histogram
-	CHistogram<CHistogramFeeder<int> > histo(CHistogramFeeder<int>(0, maxPixVal + 1, maxPixVal + 1));
+	THistogram<THistogramFeeder<int> > histo(THistogramFeeder<int>(0, maxPixVal + 1, maxPixVal + 1));
 	histo.push_range (src_image.begin(), src_image.end ());
 
 	// now find cluster centers
