@@ -67,12 +67,11 @@ public:
 	typedef std::set<size_t> IndexSet;
 
 	/**
-	   \fn set_row
 	   Set on row of input data
 	   \tparam Iterator input data iterator, must follow the model of a forward iterator
 	   \param row index of the input slice
 	   \param begin start iterator of input data
-	   \param end
+	   \param end end iterator of input data
 	 */
 	template <class Iterator>
 	BOOST_CONCEPT_REQUIRES(((::boost::ForwardIterator<Iterator>)),

@@ -360,14 +360,13 @@ private:
 
 /**
    Convinience function: Create a standard option
-   \param value val variable to hold the parsed option value - pass in the default value -
+   \param value value variable to hold the parsed option value - pass in the default value -
    exception: \a bool values always default to \a false
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
    \param long_help long help string (must not be NULL)
    \param short_help short help string
-   \param required if this is set to true, extra checking will be done weather
-   the option is really set
+   \param flags add flags like whether the optionis required to be set 
    \returns the option warped into a \a boost::shared_ptr
 */
 template <typename T>
@@ -382,13 +381,12 @@ PCmdOption make_opt(T& value, const char *long_opt, char short_opt,
 
 /**
    Convinience function: Create a standard option
-   \param value val variable to hold the parsed option value - pass in the default value -
+   \param value value variable to hold the parsed option value - pass in the default value -
    exception: \a bool values always defaults to \a false
    \param short_opt short option name (or 0)
    \param long_opt long option name (must not be NULL)
    \param help long help string (must not be NULL)
-   \param required if this is set to true, extra checking will be done weather
-   the option is really set
+   \param flags add flags like whether the optionis required to be set 
    \returns the option warped into a \a boost::shared_ptr
 */
 template <typename T>
@@ -401,14 +399,13 @@ PCmdOption make_opt(T& value, const char *long_opt, char short_opt,
 
 /**
    Convinience function: Create a table lookup option
-   \param[in,out] val variable to hold the parsed and translated option value
+   \param[in,out] value variable to hold the parsed and translated option value
    \param map the lookup table for the option
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
    \param long_help long help string (must not be NULL)
    \param short_help short help string
-   \param required if this is set to true, extra checking will be done weather
-   the option is really set
+   \param flags add flags like whether the optionis required to be set 
    \returns the option warped into a \a boost::shared_ptr
  */
 
@@ -423,13 +420,12 @@ PCmdOption make_opt(T& value, const TDictMap<T>& map, const char *long_opt, char
 
 /**
    Convinience function: Create a table lookup option
-   \param[in,out] val variable to hold the parsed and translated option value
+   \param[in,out] value variable to hold the parsed and translated option value
    \param map the lookup table for the option
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
    \param help help string (must not be NULL)
-   \param required if this is set to true, extra checking will be done weather
-   the option is really set
+   \param flags add flags like whether the optionis required to be set 
    \returns the option warped into a \a boost::shared_ptr
  */
 
@@ -444,14 +440,13 @@ PCmdOption make_opt(T& value, const TDictMap<T>& map, const char *long_opt, char
 
 /**
    Convinience function: Create a flag lookup option
-   \param[in,out] val variable to hold the parsed and translated option value
+   \param[in,out] value variable to hold the parsed and translated option value
    \param map the lookup table for the option flags
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
    \param long_help long help string (must not be NULL)
    \param short_help short help string
-   \param required if this is set to true, extra checking will be done weather
-   the option is really set
+   \param flags add flags like whether the optionis required to be set 
    \returns the option warped into a \a boost::shared_ptr
  */
 
@@ -463,14 +458,13 @@ PCmdOption  EXPORT_CORE make_opt(int& value, const CFlagString& map, const char 
 
 /**
    Convinience function: Create a set restricted option
-   \param[in,out] val variable to hold the parsed and translated option value
+   \param[in,out] value variable to hold the parsed and translated option value
    \param set the set of allowed values
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
    \param long_help long help string (must not be NULL)
    \param short_help short help string
-   \param required if this is set to true, extra checking will be done weather
-   the option is really set
+   \param flags add flags like whether the optionis required to be set 
    \returns the option warped into a \a boost::shared_ptr
  */
 PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>& set,
@@ -481,13 +475,12 @@ PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>&
 
 /**
    Convinience function: Create a set restricted option
-   \param[in,out] val variable to hold the parsed and translated option value
+   \param[in,out] value variable to hold the parsed and translated option value
    \param set the set of allowed values
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
    \param help long help string (must not be NULL)
-   \param required if this is set to true, extra checking will be done weather
-   the option is really set
+   \param flags add flags like whether the optionis required to be set 
    \returns the option warped into a \a boost::shared_ptr
  */
 PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>& set,

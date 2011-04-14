@@ -42,7 +42,9 @@
 
 NS_MIA_BEGIN
 
-EXPORT_CORE extern const char plugin_test_mode[];
+//EXPORT_CORE extern const char plugin_test_mode[];
+
+/// standard string to print out help in the factory plug-in handler 
 EXPORT_CORE extern const std::string plugin_help;
 
 /**
@@ -172,7 +174,7 @@ private:
 
 /**
    Templated plugin base class. The classes \a D and \a T must define a
-   static  const char *value.  the combination D::value/T::value
+   static  const char *value.  the combination D::value and T::value
    is will be part of the plugin search path.
 */
 template <typename D, typename T>

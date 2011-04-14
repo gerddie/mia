@@ -63,10 +63,17 @@ enum EPixelConversion {pc_copy, /**< copy pixel values, ranges and values are tr
 				       the output range */
 		       pc_unknown};
 
+
+/// dictionary table for the pixel types 
 EXPORT_CORE extern const TDictMap<EPixelType>::Table PixelTypeTable[];
+
+/// dictionary for the pixel types 
 EXPORT_CORE extern const TDictMap<EPixelType> CPixelTypeDict;
 
+/// dictionary table for the pixel conversion types 
 EXPORT_CORE extern const TDictMap<EPixelConversion>::Table ConversionTypeTable[];
+
+/// dictionary for the pixel conversion types 
 EXPORT_CORE extern const TDictMap<EPixelConversion> CPixelConversionDict;
 
 /**

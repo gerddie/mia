@@ -44,18 +44,22 @@
 NS_MIA_BEGIN
 
 
-/** \class TPluginHandler
-    \brief The basic %template of all plugin handlers
+/** \brief The basic %template of all plugin handlers
 
-    The TPluginHandler provides the base interface to all plug-in handlers. 
+    The template TPluginHandler provides the base interface to all plug-in handlers. 
     \tparam I the plugin interface derived from \sa CPluginBase.
 */
 
 template <class I> 
 class  EXPORT_HANDLER TPluginHandler: boost::noncopyable {
 public: 
+	/// typedef for the plug-in interface provided by the class 
 	typedef I Interface; 
+
+	/// a map containing the names and theavailabe plug-ins 
 	typedef std::map<std::string, Interface*> CPluginMap; 
+
+	/// the iterator to walk over the available plug-ins 
 	typedef typename CPluginMap::const_iterator const_iterator; 
 	
 
@@ -125,8 +129,9 @@ private:
 
 
 /**
-   Class to make a singleton out of a plugin handler by deriving from it.
+   \brief the singleton that a plug-in handler really is 
    
+   Class to make a singleton out of a plugin handler by deriving from it.
 */
 
 template <typename T>
@@ -139,13 +144,24 @@ public:
 	 */
 	static void set_search_path(const std::list<boost::filesystem::path>& searchpath);
 	
+	/// The instance of the plugin handler 
 	typedef T Instance;
+
+	/// iterator to iterator over the actual plug-ins 
 	typedef typename T::const_iterator const_iterator;
+
+	/// the name,plug-in pair \remark why do I need this 
 	typedef typename T::CPluginMap::value_type value_type;
 	
 	/// \returns a reference to the only instance of the plugin handler 
 	static const T& instance(); 
- protected:
+protected:
+	/** initialize the handler singleton with a specific plugin search path 
+	    (used for running tests) 
+	    \param searchpath
+	    \remark why not private?  
+	*/
+	
 	THandlerSingleton(const std::list<boost::filesystem::path>& searchpath); 
 	THandlerSingleton(); 
 	

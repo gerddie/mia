@@ -81,7 +81,7 @@ public:
 	/**
 	   Construtor of the optimizer. 
 	   \param p problem to be optimized 
-	   \ot optimizer type used 
+	   \param ot optimizer type used 
 	 */
 	CFDFMinimizer(PProblem p, const gsl_multimin_fdfminimizer_type *ot); 
 	
@@ -147,7 +147,7 @@ public:
 	/**
 	   Construtor of the optimizer. 
 	   \param p problem to be optimized 
-	   \ot optimizer type used 
+	   \param ot optimizer type used 
 	 */
 	CFMinimizer(PProblem p, const gsl_multimin_fminimizer_type *ot); 
 	

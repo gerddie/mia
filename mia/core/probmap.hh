@@ -107,6 +107,7 @@ private:
 	void do_load(std::istream& is);
 };
 
+/// element wise equal operator for a CLabelMap 
 EXPORT_CORE bool operator == (const CLabelMap& a, const CLabelMap& b);
 
 NS_MIA_END

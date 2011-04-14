@@ -29,10 +29,21 @@
 
 NS_MIA_BEGIN
 
+/** base class for the creators of 3D transformations 
+    \todo rename this to factory 
+ */
 typedef TTransformCreator<C3DTransformation>  C3DTransformCreator; 
+
+/// pointer type of the class for the creators of 3D transformations 
 typedef std::shared_ptr<C3DTransformCreator > P3DTransformationFactory;
+
+/// Base class for the transform creator plugins 
 typedef TFactory<C3DTransformCreator> C3DTransformCreatorPlugin;
+
+/// Transform creator plugin handler 
 typedef THandlerSingleton<TFactoryPluginHandler<C3DTransformCreatorPlugin> > C3DTransformCreatorHandler;
+
+/// trait to make the transform creator comman-line parseble
 FACTORY_TRAIT(C3DTransformCreatorHandler); 
 
 NS_MIA_END

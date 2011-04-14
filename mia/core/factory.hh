@@ -138,6 +138,7 @@ public:
  */
 template <class T> 
 class FactoryTrait {
+	/// the typetrait type if not defined properly 
 	typedef typename T::must_create_trait_using_FACTORY_TRAIT type; 
 }; 
 
@@ -150,6 +151,7 @@ class FactoryTrait {
 template <class T> 
 class FactoryTrait<std::shared_ptr<T> >  {
 public: 
+	/// the typetrait type 
 	typedef typename FactoryTrait<T>::type type; 
 }; 
 

@@ -28,7 +28,9 @@
 #include <boost/test/unit_test_suite.hpp>
 
 NS_MIA_BEGIN
+/// \cond INTERNAL_TEST
 void EXPORT_3DTEST add_3dimageio_plugin_tests( boost::unit_test::test_suite* suite);
+/// \endcond 
 NS_MIA_END
 
 #endif

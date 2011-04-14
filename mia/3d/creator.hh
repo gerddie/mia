@@ -22,6 +22,7 @@
 
 NS_MIA_BEGIN
 
+/// define all that is necessary for the 2D image creator plugin and its handling 
 DEFINE_Image_Creator(C3DImage);
 
 NS_MIA_END

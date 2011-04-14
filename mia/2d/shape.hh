@@ -29,13 +29,7 @@
 #include <mia/core/factory.hh>
 #include <mia/2d/2DImage.hh>
 
-/**
-   \file 2d/shape.hh
-   Specialize the shape templates for 2D shapes.  
-*/
-
 NS_MIA_BEGIN
-
 
 /// 2D shape class, see also TShape 
 typedef TShape<T2DVector, C2DBitImage> C2DShape;

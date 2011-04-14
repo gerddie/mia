@@ -31,8 +31,10 @@
 
 NS_MIA_BEGIN
 
+/// \cond INTERNAL_TEST
 void EXPORT_2DTEST imagefiltertest2d_prepare_plugin_path();
 void EXPORT_2DTEST add_2dfilter_plugin_test(boost::unit_test::test_suite* suite);
+/// \endcond
 
 NS_MIA_END
 

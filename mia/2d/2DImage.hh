@@ -296,6 +296,7 @@ typedef T2DImage<double> C2DDImage;
  */
 template <>
 struct Binder<C2DImage> {
+	/// trait to have a common name for all the derived classes
 	typedef __bind_all<T2DImage> Derived;
 };
 

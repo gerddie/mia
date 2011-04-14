@@ -29,10 +29,19 @@
 
 NS_MIA_BEGIN
 
+/// 3D version of the TFullCost
 typedef TFullCost<C3DTransformation> C3DFullCost; 
+
+/// pointer of the 3D version of the TFullCost
 typedef C3DFullCost::Pointer P3DFullCost; 
+
+/// plugin base class for C3DFullCost objects 
 typedef TFullCostPlugin<C3DTransformation> C3DFullCostPlugin;
+
+/// plugin handler for C3DFullCost object creation 
 typedef THandlerSingleton<TFactoryPluginHandler<C3DFullCostPlugin> > C3DFullCostPluginHandler;
+
+/// Trait to make C3DFullCost available for creation by command line parsing 
 FACTORY_TRAIT(C3DFullCostPluginHandler); 
 
 NS_MIA_END

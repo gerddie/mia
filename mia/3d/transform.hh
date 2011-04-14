@@ -37,6 +37,8 @@ NS_MIA_BEGIN
 
 
 class C3DTransformation;
+
+/// pointer type for a 3D transformation 
 typedef std::shared_ptr<C3DTransformation > P3DTransformation;
 
 /**

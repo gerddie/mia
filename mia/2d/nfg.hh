@@ -41,7 +41,7 @@ NS_MIA_BEGIN
 
 /**
    Evaluate an approximate of the noise level - specifically this 
-   uses the deviation \sigma of the intensities 
+   uses the deviation \f$\sigma\f$ of the intensities 
    @param image 
    @returns noise level 
  */

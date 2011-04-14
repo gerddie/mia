@@ -61,9 +61,9 @@ public:
 
 	/**
 	   Constructor for the registration tool
-	   \param cost cost function model
+	   \param costs cost function model
 	   \param minimizer GSL provided minimizer
-	   \param transform_type string describing which transformation is supported
+	   \param transform_creation string describing which transformation is supported
 	   \param ipf interpolator
 	   \param mg_levels multigrisd levels to be used 
 	 */

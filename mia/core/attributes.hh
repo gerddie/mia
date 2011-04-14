@@ -25,7 +25,6 @@
 #ifndef mia_core_attributes_hh
 #define mia_core_attributes_hh
 
-#include <mia/core/defines.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/shared_ptr.hh>
@@ -38,6 +37,7 @@
 #include <stdexcept>
 #include <boost/any.hpp>
 #include <boost/ref.hpp>
+#include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
 
@@ -290,7 +290,7 @@ private:
 };
 
 
-/** Compare two attribute data instances \a and \b
+/** Compare two attribute data instances \a a  and \a b
     \returns \a true, if \a a and \a b hold the same set of attributes with the same values,
              \a false otherwise
 */
@@ -386,7 +386,7 @@ void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& key
    \param value
  */
 template <>
-void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& name, const char * value);
+void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& key, const char * value);
 
 
 /** \brief Generic string vs. attribute translator singleton

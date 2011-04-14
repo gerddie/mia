@@ -52,7 +52,7 @@ public:
 	    \param long_opt long option name (must not be NULL)
 	    \param long_help long help string (must not be NULL)
 	    \param short_help short help string
-	    \param required if this is set to true, extra checking will be done weather
+	    \param flags some options flags, currently supported: required or not. 
 	    the option is really set
 	*/
 	TCmdFactoryOption(typename F::ProductPtr& val, char short_opt, const char *long_opt,

@@ -195,6 +195,7 @@ typedef TFactory<CMinimizer> CMinimizerPlugin;
 /// The minimizer plugin handler 
 typedef THandlerSingleton<TFactoryPluginHandler<CMinimizerPlugin> > CMinimizerPluginHandler;
 
+/// Trait to make the minimizer definition parsable on the command line  
 FACTORY_TRAIT(CMinimizerPluginHandler); 
 
 

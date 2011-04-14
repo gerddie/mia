@@ -46,7 +46,7 @@ public:
 	CSlopeStatistics(const std::vector<float>& series);
 	~CSlopeStatistics();
 
-	/// \returns the curve length evaluated discretly, i.e. taking the \Delta x = 1 into account
+	/// \returns the curve length evaluated discretly, i.e. taking the \f$\Delta\f$ x = 1 into account
 	float get_curve_length() const;
 
 	/// \returns the absolute range of the curve - i.e. max(series) - min(series)

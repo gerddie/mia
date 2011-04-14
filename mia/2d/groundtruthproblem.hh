@@ -25,7 +25,7 @@ public:
 	   @param a parameter \f$\alpha\f$ 
 	   @param b parameter \f$\beta\f$ 
 	   @param slice_size 2D image size of the series images, 
-	   @param nframe number of frames in the perfusion series 
+	   @param nframes number of frames in the perfusion series 
 	   @param left_side 
 	   @param corr 
 	   

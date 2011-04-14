@@ -72,7 +72,10 @@ protected:
 	float m_max;
 };
 
+/// Pointer type for time steps in 3D time-marching image registration \sa C3DRegTimeStep
 typedef std::shared_ptr<C3DRegTimeStep > P3DRegTimeStep;
+
+/// plugin handler for 3D time marching time step operator plug-ins 
 typedef THandlerSingleton<TFactoryPluginHandler<C3DRegTimeStepPlugin> > C3DRegTimeStepPluginHandler;
 
 NS_MIA_END

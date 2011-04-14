@@ -32,6 +32,7 @@ NS_MIA_BEGIN
 struct test_plugin_type;
 struct test_plugin_data;
 
+/// constant defining a test property 
 EXPORT_CORE extern const char *const test_property;
 
 /**

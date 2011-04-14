@@ -28,6 +28,7 @@
 
 NS_MIA_BEGIN
 
+/// constant defining the gradient property 
 extern EXPORT_CORE const char *property_gradient;
 
 

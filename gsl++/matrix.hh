@@ -40,7 +40,7 @@ public:
 	Matrix(); 
 
 	/**
-	   Create a matrix of size rows \times columns, 
+	   Create a matrix of size rows \f$\times\f$ columns, 
 	   \param rows
 	   \param columns 
 	   \param clean allocate zeroing out all elements 

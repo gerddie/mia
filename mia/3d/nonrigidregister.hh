@@ -33,6 +33,7 @@
 
 
 NS_MIA_BEGIN
+/// specialization of the 3D non-rigid registration 
 typedef TNonrigidRegister<C3DTransformation> C3DNonrigidRegister; 
 NS_MIA_END
 

@@ -236,6 +236,7 @@ T3DInterpolator<T> *C3DInterpolatorFactory::create(const T3DDatafield<T>& src) c
 	return NULL;
 }
 
+/// Pointer type of the 3D interpolation factory 
 typedef std::shared_ptr<C3DInterpolatorFactory > P3DInterpolatorFactory;
 
 NS_MIA_END

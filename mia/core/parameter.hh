@@ -164,7 +164,6 @@ public:
 	/** Constructor
 	   \param value reference to the parameter handled by this parameter object
 	   \param dict dictionary for parameter translation
-	   \param required set to \a true if the parameter has to be set by the user
 	   \param descr a description of the parameter
 	 */
 	CDictParameter(T& value, const TDictMap<T> dict, const char *descr);
@@ -186,8 +185,7 @@ class CSetParameter : public CParameter{
 public:
 	/** Constructor
 	   \param value reference to the parameter handled by this parameter object
-	   \param dict dictionary for parameter translation
-	   \param required set to \a true if the parameter has to be set by the user
+	   \param valid_set dictionary for parameter translation
 	   \param descr a description of the parameter
 	 */
 	CSetParameter(T& value, const std::set<T>& valid_set, const char *descr);
@@ -210,7 +208,6 @@ class TParameter : public CParameter{
 public:
 	/** Constructor
 	   \param value reference to the parameter handled by this parameter object
-	   \param dict dictionary for parameter translation
 	   \param required set to \a true if the parameter has to be set by the user
 	   \param descr a description of the parameter
 	 */
@@ -226,11 +223,22 @@ private:
 };
 
 
+/// template parameter string for unsigned int parameter type 
 extern const char  type_str_uint[5];
+
+/// template parameter string for int parameter type 
 extern const char  type_str_int[4];
+
+/// template parameter string for float parameter type 
 extern const char  type_str_float[6];
+
+/// template parameter string for double parameter type 
 extern const char  type_str_double[7];
+
+/// template parameter string for string parameter type 
 extern const char  type_str_string[7];
+
+/// template parameter string for boolean parameter type 
 extern const char  type_str_bool[5];
 
 /// an integer parameter (with range)

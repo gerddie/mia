@@ -59,7 +59,7 @@ protected:
 	int sync();
 
 	/**
-	   implement function to handle '\n' and '\r' properly 
+	   implement function to handle \a newline and \a return properly 
 	   @param s string to write 
 	   @param n number of bytes in string 
 	   @return number of chars written 

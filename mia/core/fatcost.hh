@@ -41,11 +41,13 @@ NS_MIA_BEGIN
 
 /// plugin helper type
 struct EXPORT_CORE fatcost_type {
+	/// actual value of the helper type
 	static const char *value;
 };
 
 
 /**
+   \deprecated move to TFullCost
    The basic cost function type interface of a "fat" cost that handles the data itself.
    Template parameter D describes the input data class, e.g. T3DImage, parameter
    T is for the Transformation and F for the force field.
@@ -89,8 +91,6 @@ public:
 	/**
 	   Transform the containing data
 	   \param transform the transfomation to be applied
-	   \param accumulate if true the deformation is applied accumulating on the old ones, if false,
-	   the transfromation is applied to the original study image
 	*/
 	void transform(const T& transform);
 

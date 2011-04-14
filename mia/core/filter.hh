@@ -117,10 +117,16 @@ struct Binder {
    The data container is provided by a pointer or reference to its type independedn base class.
    Data type dependency is introduced by using a templated derivative.
    The filter object is const.
+   \tparam a Filter that must provide a type result_type, and an operator 
+   template &lt; typename T &gt; 
+        F::result_type F::operator()(const D<T>& b) const; 
+	with D&lt;T&gt; being a derived class of B 
+   \tparam b the data to be processed in form of a reference to the base class of a class 
+             template D&lt;T&gt; 
    \param f a filter to be applied to the data.
-   \param data the input data to be filtered
-   \returns whathever the filter \a f defines as return type and provides as a
-   result of its operator ()
+   \param b the input data to be filtered
+   \returns whathever the filter \a F defines as return type and provides as a
+         result of its operator ()
 */
 template <typename F, typename B>
 static typename F::result_type filter(const F& f, const B& b)
@@ -147,12 +153,13 @@ static typename F::result_type filter(const F& f, const B& b)
 }
 
 /**
+   The in-place type of the function typename F::result_type filter(const F& f, const B& b). 
    A filter type that handles data containers of different types.
    The data container is provided by a pointer or reference to its type independedn base class.
    Data type dependency is introduced by using a templated derivative.
    The filter object is const.
    \param f a filter to be applied to the data.
-   \param data the input data to be filtered
+   \param b the input data to be filtered
    \returns whathever the filter \a f defines as return type and provides as a result of its operator ()
 */
 template <typename F, typename B>

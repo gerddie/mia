@@ -147,7 +147,7 @@ private:
 
 };
 
-
+/// Dictonary for the verbosity command line option 
 extern EXPORT_CORE const TDictMap<vstream::Level> g_verbose_dict;
 
 /**
@@ -257,14 +257,14 @@ inline void vstream::flush()
 
 // some inlines
 
-///  \direct output to this stream adapter to print out fatalities in the code 
+///  direct output to this stream adapter to print out fatalities in the code 
 inline vstream& cvfatal()
 {
 	vstream::instance() << vstream::ml_fatal << VSTREAM_DOMAIN << ":";
 	return vstream::instance();
 }
 
-///  \direct output to this stream adapter to print out failtures in tests beyond BOOST_FAIL
+///  direct output to this stream adapter to print out failtures in tests beyond BOOST_FAIL
 inline vstream& cvfail()
 {
 	vstream::instance() << vstream::ml_fail << VSTREAM_DOMAIN << ":";

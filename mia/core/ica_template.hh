@@ -64,20 +64,20 @@ public:
 	/** a (shared) pointer to itself */
 	typedef typename Data::Pointer PData; 
 
-	/** \addgroup Contructors */
-	/*\@{  
-	  \brief ICA initialization 
-	  The contructor for an ICA
-	  \param initializer data set containing all the time steps of input data 
-	  \param strip_mean strip the mean from the series before processing 
+	/**
+	   \brief ICA initialization 
+	   
+	   The contructor for an ICA
+	   \param initializer data set containing all the time steps of input data 
+	   \param strip_mean strip the mean from the series before processing 
 	 */
 	TDataSeriesICA(const std::vector<Data>& initializer, bool strip_mean);
-	/* \@}*/
-
-	/** \addgroup ICA application */
-	/*\@{  
-	  Runs the ICA 
-	  \param ncomponents retained components 
+	
+	/**  Runs the ICA 
+	     \param ncomponents retained components 
+	     \param strip_mean strip the mean from the input 
+	     \param ica_normalize normalize the ICA after processing 
+	     \param guess provide an initial guess (leave empty, if not wanted)  
 	*/
 	bool run(size_t ncomponents, bool strip_mean, bool ica_normalize, 
 		 std::vector<std::vector<float> >  guess = std::vector<std::vector<float> >());
@@ -92,13 +92,11 @@ public:
 	
 	/// Normalizes the Mixing Matrix columns to have zero mean. 
 	void normalize_Mix();
-	/* \@}*/
+	
 
-
-	/** \addgroup Getters */
-	/*\@{  
-	  \returns the mixed signal at index \a idx
-	 */
+	/** 
+	    \returns the mixed signal at index \a idx
+	*/
 	Data get_mix(size_t idx) const;
 
 	/// \returns the mean of the input data 
@@ -115,7 +113,7 @@ public:
 	/**
 	   Evaluate a partial mix of the ICs by using the given indes set 
 	   \param idx time indes 
-	   \param skip set of components to use when mixing
+	   \param comps set of components to use when mixing
 	   \returns the mixed data
 	 */
 	Data get_partial_mix(size_t idx, const IndexSet& comps) const;
@@ -128,10 +126,10 @@ public:
 
 	/**
 	   Evaluate a mix as sum and difference of ICs
-	   \param 
-	   \@}
+	   \param plus add these ICs 
+	   \param minus subtract these ICs 
+	   \returns the combined signal 
 	 */
-	
 	PData get_delta_feature(const IndexSet& plus, const IndexSet& minus)const; 
 	
 	/**
