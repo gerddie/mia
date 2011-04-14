@@ -61,7 +61,7 @@ public:
 	 */
 	CSlopeClassifier(const Columns& m, bool mean_stripped=false);
 
-	/*** copy constructor */
+	/** copy constructor */
 	CSlopeClassifier(const CSlopeClassifier& other);
 	
 	CSlopeClassifier(); 

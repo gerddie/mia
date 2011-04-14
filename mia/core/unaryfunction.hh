@@ -35,6 +35,7 @@ NS_MIA_BEGIN
 */
 class FUnary {
 public: 
+	/// this would be the operator 
 	virtual double operator () (double x) const = 0; 
 }; 
 

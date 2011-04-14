@@ -81,6 +81,7 @@ public:
 		    ed_color   = 4,
 		    ed_scale   = 8};
 
+	/// \cond SELFEXPLAINING 
 	typedef std::vector<T3DVector<unsigned int> >   CTrianglefield;
 	typedef std::vector<C3DFVector>  CVertexfield;
 	typedef std::vector<C3DFVector>  CNormalfield;
@@ -113,7 +114,7 @@ public:
 
 	typedef CColorfield::const_iterator const_color_iterator;
 	typedef CColorfield::iterator       color_iterator;
-
+	/// \endcond 
 
 	/// Standart constructor creates an empty mesh
 	CTriangleMesh();
@@ -144,10 +145,15 @@ public:
 		      PColorfield colors,
 		      PScalefield scales);
 
+	/** creates a new mesh from given input data
+	    \param triangles the triangle data (required)
+	    \param vertices the vertex data (required)
+	*/
 	CTriangleMesh(PTrianglefield triangles, PVertexfield vertices);
 
 
-	CTriangleMesh *clone() const;
+	/// \returns a copy of this mesh 
+	CTriangleMesh *clone() const __attribute__((warn_unused_result));
 
 	/** \returns a  mesh where the connectivity is copied, the vertices are allocated, but not set,
 	    and without normals and scale values */
@@ -218,8 +224,13 @@ public:
 	*/
 	const scale_type&       scale_at(unsigned int i)const;
 
+	/**
+	   \returns the color at the given index i 
+	   \param i 
+	 */
 	const color_type&       color_at(unsigned int i)const;
 
+	/// \cond SELFEXPLAINING 
 	const_triangle_iterator triangles_begin() const;
 	triangle_iterator       triangles_begin();
 	const_triangle_iterator triangles_end() const;
@@ -244,7 +255,8 @@ public:
 	const_color_iterator color_end()const;
 	color_iterator       color_begin();
 	color_iterator       color_end();
-
+	/// \endcond 
+	
 	/** \returns the format the mesh was given in the beginning */
 	const std::string& get_sourceformat()const {
 			return m_sourceformat;

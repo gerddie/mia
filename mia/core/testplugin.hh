@@ -41,7 +41,10 @@ EXPORT_CORE extern const char *const test_property;
 
 class EXPORT_CORE CTestPlugin: public TPlugin<test_plugin_data, test_plugin_type>  {
 public:
+	/// Construct the test plugin with the given name 
 	CTestPlugin(const char *name);
+
+	/// \returns the plugin search path for testing 
 	static ::boost::filesystem::path search_path();
 private:
 	virtual bool do_test() const = 0;

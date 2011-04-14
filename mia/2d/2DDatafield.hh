@@ -52,18 +52,23 @@ The class holds all types of data stored in two dimensional fields.
 NS_MIA_BEGIN
 
 /**
-   2D data filed 
+   \brief A class to hold data on a regular 2D grid 
+   
+   This class is the base for all kind of 2D data that is stored over a regular grid. 
+   \tparam T the data type of the values hold at the grid points.  
 */
-
 template <class T>
 class EXPORT_2DDATAFIELD T2DDatafield  {
 
 public:
 
+	/// type for the flat reprentation of the 2D data field 
 	typedef  ::std::vector<T> data_array;
+
+	/// pointer type 
 	typedef  std::shared_ptr<data_array > data_pointer;
 
-	/// a shortcut data type
+	/// \cond SELFEXPLAINING 
 	typedef typename data_array::iterator iterator;
 	typedef typename data_array::const_iterator const_iterator;
 	typedef typename data_array::const_reference const_reference;
@@ -75,10 +80,11 @@ public:
 	typedef typename data_array::size_type size_type;
 	typedef C2DBounds dimsize_type;
 	typedef C2DFVector coord_type;
-
+	/// \endcond 
 
 	T2DDatafield();
 
+	
 	T2DDatafield(const C2DBounds& _m_size);
 
 	T2DDatafield(const C2DBounds& _m_size, const T *_data);

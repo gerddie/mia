@@ -116,10 +116,25 @@ private:
 template <class T>
 class EXPORT_CORE T1DNNInterpolator: public T1DDirectInterpolator<T> {
 public:
-	T1DNNInterpolator(const std::vector<T>& image);
+	/**
+	   Create the interpolator by copying the coefficient data 
+	   \param data 
+	 */
+	T1DNNInterpolator(const std::vector<T>& data );
+
+	/**
+	   The actual interpolation operator 
+	   \param x location to interpolate at 
+	   \returns the interpolated value 
+	*/
 	T operator () (const double& x) const;
-	virtual  typename coeff_map<T>::coeff_type
-		derivative_at (const double& x) const;
+
+	/**
+	   The interpolation funtion for the first order derivative
+	   \param x location to interpolate at 
+	   \returns the interpolated derivative value 
+	*/
+	virtual  typename coeff_map<T>::coeff_type derivative_at (const double& x) const;
 };
 
 /**
@@ -130,8 +145,24 @@ public:
 template <class T>
 class EXPORT_CORE T1DLinearInterpolator: public T1DDirectInterpolator<T> {
 public:
-	T1DLinearInterpolator(const std::vector<T>& image);
+	/**
+	   create the interpolator by copying the coefficient data 
+	   \param data 
+	 */
+	T1DLinearInterpolator(const std::vector<T>& data);
+	
+	/**
+	   The actual interpolation operator 
+	   \param x location to interpolate at 
+	   \returns the interpolated value 
+	*/
 	T operator () (const double& x) const;
+	
+	/**
+	   The interpolation funtion for the first order derivative
+	   \param x location to interpolate at 
+	   \returns the interpolated derivative value 
+	*/
 	virtual typename coeff_map<T>::coeff_type derivative_at (const double& x) const;
 private:
 	size_t m_xy;
@@ -144,15 +175,36 @@ private:
 template <class T>
 class EXPORT_CORE T1DConvoluteInterpolator: public T1DInterpolator<T> {
 public:
-	T1DConvoluteInterpolator(const std::vector<T>& image, PBSplineKernel kernel);
+	/**
+	   Construtor to prefilter the input for proper interpolation 
+	   \param data the data used for interpolation 
+	   \param kernel the spline kernel used for interpolation 
+	 */
+	
+	T1DConvoluteInterpolator(const std::vector<T>& data, PBSplineKernel kernel);
+	
 	~T1DConvoluteInterpolator();
+	
+	/**
+	   The actual interpolation operator 
+	   \param x location to interpolate at 
+	   \returns the interpolated value 
+	 */
 	T  operator () (const double& x) const;
+
+	/**
+	   The interpolation funtion for the first order derivative
+	   \param x location to interpolate at 
+	   \returns the interpolated derivative value 
+	 */
 	virtual typename coeff_map<T>::coeff_type derivative_at (const double& x) const;
 
 protected:
+	/// Type of the coefficients after filtering 
 	typedef std::vector< typename coeff_map< T >::coeff_type > TCoeff1D;
 
-	typedef std::vector< typename TCoeff1D::value_type > coeff_vector;
+	/// vector to hold coefficients 
+	typedef TCoeff1D coeff_vector;
 private:
 
 	TCoeff1D m_coeff;

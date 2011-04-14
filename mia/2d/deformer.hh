@@ -33,15 +33,28 @@ NS_MIA_BEGIN
 
 /**
    Deform an image by using a dense vector field as transformation. 
-   \remark obsolete-shouls be done by using C2DTransform 
+   \remark obsolete-should be done by using C2DTransform 
  */
 
 struct FDeformer2D: public TFilter<P2DImage> {
+	
+	/**
+	   Construor taking the 
+	   \param vf vector field defining the transformation like T(x) := x - vf(x) 
+	   \param ipfac the interpolation factory used for image interpolation 
+	 */
 	FDeformer2D(const C2DFVectorfield& vf, const C2DInterpolatorFactory& ipfac): 
 		m_vf(vf), 
 		m_ipfac(ipfac)
 		{
 		}
+
+	/**
+	   Operator to run the transformation like a filter to be called by mia::filter 
+	   \tparam T pixel type if the input image 
+	   \param image the input image 
+	   \returns the transformed image 
+	 */
 	template <typename T> 
 	P2DImage operator () (const T2DImage<T>& image) const {
 		T2DImage<T> *timage = new T2DImage<T>(image.get_size()); 
@@ -58,6 +71,12 @@ struct FDeformer2D: public TFilter<P2DImage> {
 		return P2DImage(timage); 
 	}
 
+	/**
+	   Operator to transform the image and store the result in a pre-allocated 
+	   image 
+	   \param[in] image the input image 
+	   \param[out] result the output image 
+	*/
 	template <typename T> 
 	void operator () (const T2DImage<T>& image, T2DImage<T>& result) const {
 		assert(image.get_size() == result.get_size()); 

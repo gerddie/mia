@@ -315,7 +315,6 @@ public:
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
 	virtual double get_weight_at(double x, int order) const;
 	void get_derivative_weights(double x, std::vector<double>& weight, int order) const;
-	double get_mult_int(int s1, int s2, int range, EIntegralType type) const;  
 private: 
 };
 
@@ -327,7 +326,6 @@ public:
 	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
 	virtual double get_weight_at(double x, int order) const;
 	void get_derivative_weights(double x, std::vector<double>& weight, int order) const;
-	double get_mult_int(int s1, int s2, int range, EIntegralType type) const;  
 private: 
 };
 

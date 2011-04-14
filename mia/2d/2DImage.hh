@@ -305,11 +305,21 @@ struct Binder<C2DImage> {
  */
 template <>
 struct dispatch_attr_string<C2DFVector> {
+	/**
+	   Convert the vector to a string 
+	   \param value 
+	   \returns the values corresponding to the vector elements as separated by spaces 
+	 */
 	static std::string val2string(const C2DFVector& value) {
 		std::stringstream sval;
 		sval << value.x << " " << value.y;
 		return sval.str();
 	}
+	/**
+	   Convert a string to 2D vector 
+	   \param str a string of two values separated by a whitespace 
+	   \returns 2D vector with the elements set accordingly 
+	 */
 	static C2DFVector string2val(const std::string& str) {
 		std::istringstream sval(str);
 		C2DFVector value;

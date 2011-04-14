@@ -35,6 +35,7 @@ NS_MIA_BEGIN
  */
 template <template <typename> class T>
 struct dim_traits {
+	/// the trait 
 	typedef typename T::dimsize_type dimsize_type; 
 };
 
