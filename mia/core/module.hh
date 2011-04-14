@@ -35,12 +35,16 @@ using namespace std;
 /// definition of the Plugin interface loading function
 
 class CPluginBase;
+
+/// C function type that is provided by the plug-ins as entry point 
 typedef  CPluginBase* (*FPluginInterface)(void);
 
-/** \class CPluginModule
-    The plugin module loading class
- */
+/** 
+    \brief  The plugin module loading class. 
 
+    This class handles the loading of shared object modules and hides all the 
+    ugliness of platform dependency. 
+ */
 class EXPORT_CORE CPluginModule {
 public:
         /**
@@ -66,6 +70,7 @@ private:
 	std::string m_name;
 };
 
+/// Shared pointer type of the CPluginModule
 typedef std::shared_ptr<CPluginModule > PPluginModule;
 
 NS_MIA_END

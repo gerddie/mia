@@ -76,8 +76,13 @@ private:
 
 };
 
+/// Base class for al noise generator plugins 
 typedef TFactory<CNoiseGenerator> CNoiseGeneratorPlugin;
-typedef THandlerSingleton<TFactoryPluginHandler<CNoiseGeneratorPlugin> > CNoiseGeneratorPluginHandler;
+
+/// The noise generator plugin handler 
+typedef THandlerSingleton<TFactoryPluginHandler<CNoiseGeneratorPlugin> > 
+      CNoiseGeneratorPluginHandler;
+
 FACTORY_TRAIT(CNoiseGeneratorPluginHandler); 
 
 

@@ -186,10 +186,15 @@ private:
 	PProblem m_problem;
 }; 
 
+/// Pointer type for the CMinimizer class 
 typedef CMinimizer::Pointer PMinimizer; 
 
+/// Base class for the CMinimizer creator plugins 
 typedef TFactory<CMinimizer> CMinimizerPlugin;
+
+/// The minimizer plugin handler 
 typedef THandlerSingleton<TFactoryPluginHandler<CMinimizerPlugin> > CMinimizerPluginHandler;
+
 FACTORY_TRAIT(CMinimizerPluginHandler); 
 
 

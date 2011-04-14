@@ -97,11 +97,14 @@ public:
 
 /// Shared pointer representation of the 2D Image
 typedef C2DImage::Pointer P2DImage;
+
+/// helper type for image series 
 typedef std::vector<P2DImage> C2DImageSeries;
 
 
 /**
 \brief This is the template version of a 2D image.
+
 The purpouse of this class is to hold actual pixel data and provide access to it.
 */
 
@@ -237,27 +240,55 @@ EXPORT_2D C2DFVectorfield get_gradient(const C2DImage& image);
 
 
 
+/// 2D image with binary values 
 typedef T2DImage<bool> C2DBitImage;
+
+/// 2D image with signed 8 bit integer values 
 typedef T2DImage<signed char> C2DSBImage;
+
+/// 2D image with unsigned 8 bit integer values 
 typedef T2DImage<unsigned char> C2DUBImage;
+
+/// 2D image with signed 16 bit integer values 
 typedef T2DImage<signed short> C2DSSImage;
+
+/// 2D image with unsigned 16 bit integer values 
 typedef T2DImage<unsigned short> C2DUSImage;
+
+/// 2D image with signed 32 bit integer values 
 typedef T2DImage<signed int> C2DSIImage;
+
+/// 2D image with unsigned 32 bit integer values 
 typedef T2DImage<unsigned int> C2DUIImage;
+
 #ifdef HAVE_INT64
+/// 2D image with signed 64 bit integer values 
 typedef T2DImage<mia_int64> C2DSLImage;
+
+/// 2D image with unsigned 64 bit integer values 
 typedef T2DImage<mia_uint64> C2DULImage;
 #endif
+
+/// 2D image with single precsion floating point values 
 typedef T2DImage<float> C2DFImage;
+
+/// 2D image with double  precsion floating point values 
 typedef T2DImage<double> C2DDImage;
 
-
+/**
+   \brief Helper class for 2D filter application 
+   
+   This class specializes the __bind_all template for 2D images 
+   to enable the use of  mia::filter, mia::accumulate, and the likes.  
+ */
 template <>
 struct Binder<C2DImage> {
 	typedef __bind_all<T2DImage> Derived;
 };
 
-
+/**
+   Specialization of the attribute to string conversion for 2D Vectors. 
+ */
 template <>
 struct dispatch_attr_string<C2DFVector> {
 	static std::string val2string(const C2DFVector& value) {
@@ -273,9 +304,23 @@ struct dispatch_attr_string<C2DFVector> {
 	}
 };
 
-
+/**
+   \brief functor to convert an image with an abitrary pixel type to single floating point pixels 
+   
+   This functor provides the often used funcionality to convert a 2D image from 
+   any pixel representation to a single precision floating point representation.  
+   The data is just copied. 
+   For conversion with scaling and proepry clamping you should use the convert filter 
+   provided through C2DFilterPluginHandler. 
+   
+ */
 struct FConvert2DImage2float: public TFilter<C2DFImage> {
 
+	/**
+	   Operator to do the actual conversion. 
+	   \param image input image 
+	   \returns the image converted floating point pixel values 
+	 */
 	template <typename T>
 	C2DFImage operator () (const T2DImage<T> &image) const {
 		C2DFImage result(image.get_size());
@@ -284,6 +329,8 @@ struct FConvert2DImage2float: public TFilter<C2DFImage> {
 	}
 };
 
+
+/// typedef for the C2DFVector to std::string translator 
 typedef TTranslator<C2DFVector> C2DFVectorTranslator;
 
 

@@ -36,6 +36,7 @@ typedef TImageFilter<C2DImage> C2DFilter;
 /// 2D image filter plugin 
 typedef TImageFilterPlugin<C2DImage> C2DFilterPlugin;
 
+/// shared pointer type for the C2DFilter class 
 typedef std::shared_ptr<C2DFilter > P2DFilter;
 
 /// 2D filter plugin handler
@@ -89,9 +90,12 @@ double EXPORT_2D distance(const C2DImage& image1, const C2DImage& image2,
 			  const C2DImageCombiner& measure);
 
 
+/// Base class for image combiners 
 typedef TFactory<C2DImageCombiner> C2DImageCombinerPlugin;
+
+/// Plugin handler for image combiner plugins 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DImageCombinerPlugin> > 
-C2DImageCombinerPluginHandler;
+        C2DImageCombinerPluginHandler;
 FACTORY_TRAIT(C2DImageCombinerPluginHandler); 
 
 NS_MIA_END

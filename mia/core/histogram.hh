@@ -37,7 +37,7 @@
 #include <mia/core/msgstream.hh>
 #include <boost/type_traits.hpp>
 
-/** \file This file defined some classes to handle simple histograms */ 
+/** \file histogram.hh This file defined some classes to handle simple histograms */ 
 
 NS_MIA_BEGIN
 

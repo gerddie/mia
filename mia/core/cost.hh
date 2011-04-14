@@ -85,7 +85,7 @@ public:
 	/// ensure virtual destruction, since we have virtual functions
 	virtual ~TCost();
 
-	/** \deprecared The cost value evaluation function, call TCost::value(const T& a) instead 
+	/** \deprecated The cost value evaluation function, call TCost::value(const T& a) instead 
 	    after setting the reference image
 	    \param src
 	    \param ref
@@ -93,7 +93,7 @@ public:
 	 */
 	double value(const T& src, const T& ref) const __attribute__((deprecated));
 
-	/** \deprecared The force evaluation function, 
+	/** \deprecated The force evaluation function, 
    	      TCost::use evaluate_force(const T& a, float scale, V& force) instead 
 	    \param src input entity
 	    \param ref input entity
@@ -103,7 +103,7 @@ public:
 	double evaluate_force(const T& src, const T&ref, float scale, V& force) const  __attribute__((deprecated));
 
 	/**
-	   \deprecared use TCost::set_reference instead 
+	   \deprecated use TCost::set_reference instead 
 	   prepare the reference for this cost function 
 	   \param ref 
 	 */
@@ -122,10 +122,11 @@ public:
 	   to the given src image and  the reference that was set by 
            calling set_reference(const T& ref). 
 	   \param src 
+	   \param scale scaling of the force vectors 
 	   \param[out] force gradient force 
 	   \returns the cost function value 
 	 */
-	double evaluate_force(const T& a, float scale, V& force) const;
+	double evaluate_force(const T& src, float scale, V& force) const;
 	
 	/**
 	   Set the new reference of the cost function. The virtual private function  

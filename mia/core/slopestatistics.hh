@@ -67,6 +67,7 @@ private:
 	struct CSlopeStatisticsImpl *impl;
 };
 
+/// Pointer type for the CSlopeStatistics class 
 typedef std::shared_ptr<CSlopeStatistics > PSlopeStatistics;
 NS_MIA_END
 

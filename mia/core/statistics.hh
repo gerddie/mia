@@ -34,6 +34,10 @@
 */
 struct  FMeanVariance: public TFilter< pair<double, double> >  {
 
+	/** result type of this functor 
+	    - first = mean
+	    - second = variance 
+	*/
 	typedef TFilter< pair<double, double> >::result_type result_type; 
 	
 	/**
@@ -53,6 +57,10 @@ struct  FMeanVariance: public TFilter< pair<double, double> >  {
 */
 struct  FMedianMAD: public TFilter< pair<double, double> >  {
 
+	/** result type of this functor 
+	    - first = median 
+	    - second = MAD 
+	*/
 	typedef TFilter< pair<double, double> >::result_type result_type; 
 	
 	/**

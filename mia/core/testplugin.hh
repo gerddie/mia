@@ -55,6 +55,7 @@ public:
 };
 
 
+/// Test plugin handler only used internally for theting the plugin handler 
 typedef THandlerSingleton<CTestPluginHandlerImpl> CTestPluginHandler;
 NS_MIA_END
 

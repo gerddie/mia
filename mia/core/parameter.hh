@@ -35,10 +35,11 @@
 NS_MIA_BEGIN
 
 /**
+   \brief The base class for parameters used in complex options 
+
    The base class for parameters that might be set based on strings.
    The main use-case is to provide parameters to plug-ins.
 */
-
 class EXPORT_CORE CParameter {
 public:
 	/**
@@ -98,8 +99,10 @@ private:
 
 
 /**
+   \brief Generic type of a complex paramter 
+
    The (templated) typed parameter. There needs to be defined an
-   \a operator  << (istream& is, T& x) for the \a do_set method to work.
+   \a operator  &lt;&lt; (istream& is, T& x) for the \a do_set method to work.
 */
 
 template <typename T, const char * const type>
@@ -124,6 +127,8 @@ private:
 };
 
 /**
+   \brief Scalar parameter with an expected value range 
+
    A scalar parameter that supports a bracketing range. If the user tries to set the parameter
    to a value outside the range, the set method will throw an \a invalid_argument exception
 */
@@ -234,6 +239,7 @@ typedef TRangeParameter<int, type_str_int> CIntParameter;
 typedef TRangeParameter<unsigned int, type_str_uint> CUIntParameter;
 /// a float parameter (with range)
 typedef TRangeParameter<float, type_str_float> CFloatParameter;
+/// a double parameter (with range)
 typedef TRangeParameter<double, type_str_double> CDoubleParameter;
 /// an string parameter
 typedef CTParameter<std::string,type_str_string> CStringParameter;
