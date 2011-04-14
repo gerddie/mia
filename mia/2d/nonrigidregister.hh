@@ -34,6 +34,7 @@
 
 
 NS_MIA_BEGIN
+/// Specialization of TNonrigidRegister for 2D images 
 typedef TNonrigidRegister<C2DTransformation> C2DNonrigidRegister; 
 NS_MIA_END
 

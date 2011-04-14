@@ -27,6 +27,7 @@
    This file provides some defines to make life easier 
  */
 
+
 #ifndef mia_core_defines_hh
 #define mia_core_defines_hh
 
@@ -51,6 +52,15 @@
 /// conveniance define to use s namespace 
 #define NS_USE(NS) using namespace NS
 
+
+/**
+   \brief The main namespace of this library. 
+   
+   The mia namespace is the general namespace of this library.  
+   Currently, only plug-ins have additional namespace to avoid name clashes
+   between dynamically loaded modules that might have been developed outside 
+   this source package. 
+*/
 NS_MIA_BEGIN
 
 /// some constants for interpoation types

@@ -192,9 +192,14 @@ private:
 	EType m_type;
 	std::shared_ptr<CBSplineKernel > m_kernel;
 };
+
+/// Pointer type for the 2D interpolationfactory 
 typedef std::shared_ptr<C2DInterpolatorFactory > P2DInterpolatorFactory;
 
 
+/**
+   create a 2D interpolation factory of a certain interpolation type 
+*/
 C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(int type)
 	__attribute__ ((warn_unused_result));
 

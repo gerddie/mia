@@ -24,10 +24,6 @@
 #ifndef mia_core_histogram_hh
 #define mia_core_histogram_hh
 
-#ifndef VSTREAM_DOMAIN
-#define VSTREAM_DOMAIN "CORE-HISTOGRAM"
-#endif
-
 #include <mia/core/defines.hh>
 
 #include <cmath>

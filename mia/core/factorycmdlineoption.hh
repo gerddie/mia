@@ -39,7 +39,7 @@ NS_MIA_BEGIN
    ProductPtr must be a pointer like object that holds and instance of a type T of the 
    the created object.  Type T in turn must provide a method get_init_string() that returns 
    the string that was passed to the \a produce method in order to create this object. 
-   \todo use cocept checks to test these class requirements 
+   \todo use concept checks to test these class requirements 
 */
 
 template <typename F>
@@ -123,6 +123,20 @@ const std::string TCmdFactoryOption<F>::do_get_value_as_string() const
 		return "''"; 
 }
 
+/**
+   \deprecated use template 
+     make_opt(typename std::shared_ptr<T>& value, const char *long_opt, char short_opt,
+              const char *long_help, CCmdOption::Flags flags)
+   Create a command line option that uses a TFactoryPluginHandler to create 
+   the actual value. 
+   \param[in,out] value the ProductPtr of the factory 
+   \param long_opt long option name 
+   \param short_opt short option char, set to 0 of none give
+   \param long_help the help string for thie option 
+   \param short_help the help string for thie option 
+   \param flags set whether command line option must be set 
+*/
+
 template <typename T>
 PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *long_opt, char short_opt,
 		    const char *long_help, const char *short_help, 
@@ -133,6 +147,16 @@ PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *long_opt, ch
 						   long_help, short_help, flags ));
 }
 
+/**
+   Create a command line option that uses a TFactoryPluginHandler to create 
+   the actual value. 
+   \tparam T the non-pointer type of the value
+   \param[in,out] value the ProductPtr of the factory 
+   \param long_opt long option name 
+   \param short_opt short option char, set to 0 of none give
+   \param long_help the help string for thie option 
+   \param flags set whether command line option must be set 
+*/
 template <typename T>
 PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *long_opt, char short_opt,
 		    const char *long_help, CCmdOption::Flags flags= CCmdOption::not_required)

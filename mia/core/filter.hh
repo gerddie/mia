@@ -316,6 +316,7 @@ static typename F::result_type filter_and_output(const F& f, const B& a, O& b)
 	}
 }
 
+/// \cond INTERNAL 
 
 template <typename F, typename A, typename B>
 static typename F::result_type _filter(const F& f, const A& a, const B& b)
@@ -340,6 +341,8 @@ static typename F::result_type _filter(const F& f, const A& a, const B& b)
 		throw invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
+/// \endcond
+
 
 /**
    A filter type that handles data containers of different types.
@@ -376,7 +379,7 @@ static typename F::result_type filter(const F& f, const A& a, const B& b)
 }
 
 
-
+/// \cond INTERNAL 
 template <typename F, typename A, typename B>
 static typename F::result_type _accumulate(F& f, const A& a, const B& b)
 {
@@ -400,7 +403,7 @@ static typename F::result_type _accumulate(F& f, const A& a, const B& b)
 		throw invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
-
+/// \endcond
 
 /**
    A accumulatro type that handles data containers of different types.

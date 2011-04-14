@@ -24,8 +24,10 @@
 // $Id: factory.hh,v 1.4 2005/06/03 11:00:38 gerddie Exp $
 
 /** 
+    \file; core/factory.hh
     \author: Gert Wollny < wollny at cbs mpg de >
-    implements a plugin loading factory
+    Defines and implements tha infrastructor for factories and 
+    plugins that provide factories. 
 */
 
 #ifndef FACTORY_HH
@@ -123,21 +125,37 @@ public:
 }; 
 
 /**
+   \brief Type trait to enable the use of a factory product as command 
+      line option 
+
    Type trait that enables the use of the factory creation in commen line parsing. 
    This trait needs to be specialized for all factories that are to be used 
    utilizing the TCmdFactoryOption interface. 
+   \tparam T a class that can be created by a TFactory through the call to 
+    the method TFactoryPluginHandler::produce(const char *plugindescr) of the 
+    corresponding factory plugin handler. 
+    \sa TCmdFactoryOption
  */
 template <class T> 
 class FactoryTrait {
 	typedef typename T::must_create_trait_using_FACTORY_TRAIT type; 
 }; 
 
+/**
+   \brief Type trait to enable the use of a factory product as command 
+      line option 
+      
+   This trait specializes FactoryTrait for shared pointers.  
+ */
 template <class T> 
 class FactoryTrait<std::shared_ptr<T> >  {
 public: 
 	typedef typename FactoryTrait<T>::type type; 
 }; 
 
+/**
+   Specialize the FactoryTrait template for the given TFactoryPluginHandler 
+*/
 #define FACTORY_TRAIT(F)			\
 	template <>				\
 	class FactoryTrait< F::Instance::ProductPtr::element_type >  {	\
@@ -213,16 +231,19 @@ bool TFactory<P>::do_test() const
 	return false; 
 }
 
+/// Do some explicit instanciation for a plugin based on TFactory 
 #define EXPLICIT_INSTANCE_PLUGIN(T) \
 	template class TPlugin<T::plugin_data, T::plugin_type>; \
 	template class TFactory<T>;					
 
+/// Do some explicit instanciation for a plugin based on TFactoryPluginHandler
 #define EXPLICIT_INSTANCE_PLUGIN_HANDLER(P) \
 	template class TPluginHandler<P>;			\
 	template class TFactoryPluginHandler<P>;		\
 	template class THandlerSingleton<TFactoryPluginHandler<P> >;
 
-
+/** Do some explicit instanciation for the plugin classe and the handler of 
+    a plugin based on TFactoryPluginHandler */
 #define EXPLICIT_INSTANCE_HANDLER(T) \
 	template class TPlugin<T::plugin_data, T::plugin_type>; \
 	template class TFactory<T>;					\

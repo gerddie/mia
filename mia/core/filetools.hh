@@ -98,7 +98,23 @@ EXPORT_CORE std::string create_filename(const char *cformat, size_t num);
 
 EXPORT_CORE size_t get_filename_number_pattern_width(std::string const& in_filename);
 
+/**
+   Split the file name numbering pattern for names (e.g. "lala0000.bla") and get the number 
+     of digits 
+   \param in_filename the input file name 
+   \param[out} base the base of the filename (would be "lala") 
+   \param[out] suffix the file suffix (would be ".bla") 
+   \returns the number of digits (would be 4) 
+ */
 EXPORT_CORE size_t get_filename_number_pattern(std::string const& in_filename, std::string& base, std::string& suffix);
+
+/**
+   Split the file name numbering pattern for names (e.g. "lala00210.bla") 
+   \param in_filename the input file name 
+   \param[out} base the base of the filename (would be "lala") 
+   \param[out] suffix the file suffix (would be ".bla") 
+   \param[out] number the file suffix (would be "00210") 
+ */
 
 EXPORT_CORE void split_filename_number_pattern(std::string const& in_filename, std::string& base,
 					       std::string& suffix, std::string& number);

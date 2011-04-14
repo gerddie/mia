@@ -29,6 +29,7 @@
 
 NS_MIA_BEGIN
 
+/// Specialization of the ICA for 2D images 
 typedef TDataSeriesICA<C2DFImage>  C2DImageSeriesICA;
 
 NS_MIA_END

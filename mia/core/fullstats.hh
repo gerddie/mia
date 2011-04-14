@@ -100,6 +100,12 @@ CFullStats::CFullStats(InputIterator begin, InputIterator end):
 	evaluate(tmp);
 }
 
+/**
+   Operator to write the statistics to a stream 
+   \param os output stream 
+   \param stats the statistics to be written 
+   \returns the stream 
+*/
 std::ostream& operator << (std::ostream& os, const CFullStats& stats)
 {
 	stats.print(os);

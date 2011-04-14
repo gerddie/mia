@@ -25,6 +25,7 @@
 #ifndef mia_core_attributes_hh
 #define mia_core_attributes_hh
 
+#include <mia/core/defines.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/shared_ptr.hh>
@@ -41,12 +42,12 @@
 NS_MIA_BEGIN
 
 /**
-   \brief Base class of all attributes
+   \brief The class of all attributes of data that is considered to ve meta-data. 
+   
    CAttribute is the base class used for generric attributes of images and similar
-   entities. This class is abstract and most likely you want to use one of the provided specializations
-   of the class TAttribute or create your own specializations.
+   entities. This class is abstract and most likely you want to use one of the 
+   provided specializations of the class TAttribute or create your own specializations.
 */
-
 class EXPORT_CORE CAttribute {
 public:
 	/// virtual destructor since derived classes may define dynamic objetcs

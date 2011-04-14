@@ -23,21 +23,6 @@
 
 // $Id: parallel.hh 928 2006-06-27 10:37:53Z write1 $
 
-/*! \brief A barrier class for POSIX threads.
-
-This file implements a Barrier class similar to the barrier suggested in
-    \a Programming \a with \a POSIX \a Threads by \a David \a R. \a Butenhof
-    and some more files.
-
-
-\file parallel.hh
-
-\author Gert Wollny <wollny@cbs.mpg.de>
-
-\todo hide all parallelization issues in classes, and let it check availability of
-libpthreads during run-time.
-
-*/
 
 #ifndef mia_core_parallel_hh
 #define mia_core_parallel_hh

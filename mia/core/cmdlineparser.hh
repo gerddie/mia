@@ -30,15 +30,14 @@
 #include <iostream>
 #include <string>
 #include <iterator>
-#include <mia/core/shared_ptr.hh>
 #include <mia/core/defines.hh>
+#include <mia/core/shared_ptr.hh>
 #include <mia/core/dictmap.hh>
 #include <mia/core/flagstring.hh>
 
 NS_MIA_BEGIN
 
-
-
+/// the string defining the name of the help options 
 extern EXPORT_CORE const char *g_help_optiongroup; 
 
 /** holds the history info of a certain program call */

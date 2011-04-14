@@ -87,11 +87,25 @@ T2DMatrix<T>& T2DMatrix<T>::operator -= (const T2DMatrix<T>& o)
 	return *this; 
 }
 
+/**
+   Left hand side product of a matrix m and a vector x 
+   \param x
+   \param m
+   \returns x * m 
+ */
+
 template <typename T> 
 T2DVector<T> operator * (const T2DVector<T>& x, const T2DMatrix<T>& m)
 {
 	return T2DVector<T>(dot(m.x, x), dot(m.y, x)); 
 }
+
+/**
+   right hand side product of a matrix m and a vector x 
+   \param m
+   \param x
+   \returns m * x
+ */
 
 template <typename T> 
 T2DVector<T> operator * (const T2DMatrix<T>& m, const T2DVector<T>& x  )
@@ -100,7 +114,7 @@ T2DVector<T> operator * (const T2DMatrix<T>& m, const T2DVector<T>& x  )
 			    m.x.y * x.x + m.y.y * x.y);
 }
 
-
+/// a simple 2x2 matrix 
 typedef T2DMatrix<float> C2DFMatrix; 
 
 NS_MIA_END

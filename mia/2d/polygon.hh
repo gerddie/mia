@@ -90,6 +90,7 @@ public:
 	std::vector<C2DFVector> m_points;
 };
 
+/// Pointer type for 2D polygons 
 typedef std::shared_ptr<C2DPolygon > P2DPolygon;
 
 NS_MIA_END

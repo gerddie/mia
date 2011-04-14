@@ -35,6 +35,8 @@ NS_MIA_BEGIN
 
 
 /**
+   \brief Image cost function base that handles resizing and transformations of the images 
+   
    Image cost function class that handles the multiresolution part on its own. 
    \todo This class should probably removed and C2DFullcost be used. 
  */

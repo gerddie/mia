@@ -21,16 +21,6 @@
  *
  */
 
-// $Id: fftkernel.hh,v 1.1 2006-03-01 19:14:13 wollny Exp $
-
-/*! \brief basic type of a plugin handler
-
-A basis for fft filter plugins
-
-\author Gert Wollny <wollny at die.upm.es>
-
-*/
-
 #ifndef mia_2d_fftkernel_hh
 #define mia_2d_fftkernel_hh
 
@@ -50,7 +40,12 @@ struct EXPORT_2D fft2d_kernel_data {
 };
 
 /**
-   Base class for 2D FFT filters. Filter applications are applied like this: 
+   \cond NEEDS_REHAUL 
+   \brief Base class for 2D FFT filters. 
+
+   This class provides tha basic interface for filters that work within the 
+   frequency domain by means of a FFT.  
+   Filter applications are applied like this: 
    first a real-to-complex transformation is run, then run the filter on 
    the half-complex transform and run the back-transform.  
 */
@@ -101,6 +96,8 @@ private:
 typedef  std::shared_ptr<CFFT2DKernel > PFFT2DKernel;
 typedef TFactory<CFFT2DKernel> CFFT2DKernelPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<CFFT2DKernelPlugin> > CFFT2DKernelPluginHandler;
+
+/// \endcond 
 
 NS_MIA_END
 

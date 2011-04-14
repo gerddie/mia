@@ -21,16 +21,6 @@
  *
  */
 
-// $Id: fftkernel.hh,v 1.1 2006-03-01 19:14:13 wollny Exp $
-
-/*! \brief basic type of a plugin handler
-
-A basis for fft filter plugins
-
-\author Gert Wollny <wollny at die.upm.es>
-
-*/
-
 #ifndef mia_2d_fftkernel_hh
 #define mia_2d_fftkernel_hh
 
@@ -59,7 +49,8 @@ struct EXPORT_2D cst2d_kernel {
    the data into a dual space, runs some filter there and then transforms the data back. 
    This class may be used for gray scale image data and vector data. 
    
-   @tparam The catual data type to run the filter on 
+   @tparam The actual data type to run the filter on 
+   @remark why is this called a kernel? 
 */
 
 template <typename T>
@@ -102,8 +93,8 @@ private:
 	auto_ptr<CPlan> m_plan;
 };
 
-/*
-  image filter
+/**
+  \cond NEEDS_REHAUL 
 */
 
 typedef TCST2DKernel<C2DFVectorfield> CCST2DVectorKernel;
@@ -113,12 +104,12 @@ typedef  std::shared_ptr<CCST2DImageKernel > PCST2DImageKernel;
 typedef  std::shared_ptr<CCST2DVectorKernel > PCST2DVectorKernel;
 
 typedef TFactory<CCST2DVectorKernel> CCST2DVectorKernelPlugin;
-typedef THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> > CCST2DVectorKernelPluginHandler;
+typedef THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> > 
+CCST2DVectorKernelPluginHandler;
 
 typedef TFactory<CCST2DImageKernel> CCST2DImgKernelPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<CCST2DImgKernelPlugin> > CCST2DImgKernelPluginHandler;
-
-
+/// \endcond 
 
 NS_MIA_END
 

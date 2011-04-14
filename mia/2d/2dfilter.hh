@@ -86,9 +86,6 @@ private:
 };
 
 
-double EXPORT_2D distance(const C2DImage& image1, const C2DImage& image2,  
-			  const C2DImageCombiner& measure);
-
 
 /// Base class for image combiners 
 typedef TFactory<C2DImageCombiner> C2DImageCombinerPlugin;

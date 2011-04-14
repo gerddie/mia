@@ -224,8 +224,21 @@ struct plugin_data_type<T2DImage<S> > {
 	typedef C2DImage type; 
 }; 
 
+/**
+   Evaluate if two images are equal in size, pixel type and all its pixels. 
+   Meta data is not considered, nor is the pixel size 
+   \param a
+   \param b
+   \returns result of comparison 
+   \remark pixel size should probably also compared 
+   \remark who calls this function anyway? 
+ */
 EXPORT_2D bool operator == (const C2DImage& a, const C2DImage& b);
 
+/**
+   Evaluate if two images are not equal in size, pixel type or all its pixels. 
+   Meta data is not considered, nor is the pixel size. 
+*/
 inline bool operator != (const C2DImage& a, const C2DImage& b)
 {
 	return ! (a == b );

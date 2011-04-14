@@ -23,9 +23,6 @@
 
 // $Id: miaIOStream.hh 936 2006-07-10 13:32:49Z write1 $
 
-/*! \brief A verbose output stream
-
-*/
 
 #ifndef CVERB_HH
 #define CVERB_HH 1
@@ -45,11 +42,13 @@ NS_MIA_BEGIN
 #endif
 
 /**
+   \brief A output stream to enable certain levels of verbosity 
+
    This class impelemtns a std::ostream like class to output messages during run-time, 
    supporting various levels of verbosity. The class is implemened as a singleton.
    On initialization it is set to use std::cerr as output stream, but this can be replaced 
    by any type implementing the std::ostream interface. 
-   \remark The levels \a debug and \a trace are not compiled in, if -DNDEBUG is set - i.e. 
+   \remark if -DNDEBUG is set, the levels \a debug and \a trace are not compiled in - i.e. 
    the corresponding output operators are replaced by dummy functions that should be 
    optimized away. 
 */
@@ -70,8 +69,9 @@ public:
 	/** initialise a  stream that writes only messages above a certain
 	    verbosity level
 	*/
-
 	static vstream& instance();
+
+
 	/** set the verbosity output level
 	    \param l
 	*/
@@ -87,6 +87,7 @@ public:
 	*/
 	std::ostream&  set_stream(std::ostream& os);
 
+	/// write pending output 
 	void flush();
 
 	/** \param l verbosity level
@@ -188,6 +189,9 @@ inline CDebugSink& cvdebug()
 
 #else
 
+/** Short for debug output in non-debug build output send to this will 
+    be ignored. 
+*/
 inline vstream& cvdebug()
 {
 	vstream::instance() << vstream::ml_debug << VSTREAM_DOMAIN << ":";
@@ -224,6 +228,10 @@ private:
 
 #endif
 
+/**
+   Informal output that may be of interest to understand problems with a program
+   and are of higher priority then debugging output. 
+ */
 inline vstream& cvinfo()
 {
 	vstream::instance() << vstream::ml_info << VSTREAM_DOMAIN << ":";
@@ -249,37 +257,42 @@ inline void vstream::flush()
 
 // some inlines
 
+///  \direct output to this stream adapter to print out fatalities in the code 
 inline vstream& cvfatal()
 {
 	vstream::instance() << vstream::ml_fatal << VSTREAM_DOMAIN << ":";
 	return vstream::instance();
 }
 
+///  \direct output to this stream adapter to print out failtures in tests beyond BOOST_FAIL
 inline vstream& cvfail()
 {
 	vstream::instance() << vstream::ml_fail << VSTREAM_DOMAIN << ":";
 	return vstream::instance();
 }
 
-
+/// send errors to this stream adapter 
 inline vstream& cverr()
 {
 	vstream::instance() << vstream::ml_error << VSTREAM_DOMAIN << ":";
 	return vstream::instance();
 }
 
+/// send warnings to this stream adapter 
 inline vstream& cvwarn()
 {
 	vstream::instance() << vstream::ml_warning << VSTREAM_DOMAIN << ":";
 	return vstream::instance();
 }
 
+/// send messages to this stream adapter 
 inline vstream& cvmsg()
 {
 	vstream::instance() << vstream::ml_message << VSTREAM_DOMAIN << ":";
 	return vstream::instance();
 }
 
+/// define a shortcut to the raw output stream 
 #define cverb ::mia::vstream::instance()
 
 /**

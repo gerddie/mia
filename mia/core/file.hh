@@ -21,20 +21,6 @@
  *
  */
 
-/*! \brief Wrapper for the stdio FILE type
-
-A simple wrapper for the stdio FILE type that handles opening and closing
-and takes care, whether \a stdin should be used for reading.
-If the filename has the suffix ".gz"  the in/output is piped through gzip,
-and if the filename has the suffix "*.bz2" the in/output is piped through bzip2,
-providing transparent compression of the data.
-
-
-\author Gert Wollny <gw.fossdev@gmail.com>
-
-*/
-
-
 #ifndef mia_core_file_hh
 #define mia_core_file_hh
 
@@ -44,6 +30,7 @@ providing transparent compression of the data.
 #include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
+/// Main namespace of this library 
 
 /// typedef of the cstdio file pointer to avoid the *
 typedef FILE * PFILE;

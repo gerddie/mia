@@ -56,7 +56,10 @@ struct io_2dvf_type {
 	static const char *type_descr;
 };
 
+/// Base class for 2D vector field IO plugins 
 typedef TIOPlugin<io_2dvf_type> C2DVFIOPlugin;
+
+/// Handler for 2D vector field IO 
 typedef THandlerSingleton<TIOPluginHandler<C2DVFIOPlugin> > C2DVFIOPluginHandler;
 
 NS_MIA_END

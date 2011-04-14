@@ -33,16 +33,6 @@
 
 NS_MIA_BEGIN
 
-enum EMinimizers {
-	min_nmsimplex,
-	min_cg_fr,
-	min_cg_pr,
-	min_bfgs,
-	min_bfgs2,
-	min_gd,
-	min_undefined
-};
-
 /**
    Class for registration without regularization - i.e. should only be used
    for affine, rigid and translation only registrations

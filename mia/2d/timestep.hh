@@ -107,6 +107,7 @@ private:
 	float m_current;
 	float m_step;
 };
+/// pointer type for the 2D registration time step 
 typedef std::shared_ptr<C2DRegTimeStep > P2DRegTimeStep;
 
 /**

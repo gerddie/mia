@@ -48,6 +48,9 @@ enum EPixelType {it_bit,  /**< bit/bool pixels */
 		 it_unknown /**< unexpected type */
 };
 
+/**
+   types of pixel conversions 
+ */
 enum EPixelConversion {pc_copy, /**< copy pixel values, ranges and values are truncated at conversion */
 		       pc_linear, /**< apply the linear function ax+b to the voxel values, then convert the values */
 		       pc_range, /**< apply a linear mapping the maps the complete input range of the input type to the 

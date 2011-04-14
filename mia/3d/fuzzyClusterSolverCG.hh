@@ -20,17 +20,6 @@
  *
  */
 
-// $Id: fuzzyClusterSolverCG.hh 672 2005-06-29 13:32:02Z wollny $
-
-/*! \brief solverCG -- a class providing a CG solver
-
-	This contains basic solver functions based on CG schemes
-
-\author Stefan Burckhardt and Carsten Wolters, wolters@mis.mpg.de, 2004
-\remark adapted for libmona by Heike Jaenicke and Marc Tittgemeyer, tittge@cbs.mpg.de, 2004
-\remark adapted for mia2 by Gert Wollny, gw.fossdev@gmail.com 2011 
-*/
-
 
 #ifndef __SOLVERCG_HH
 #define __SOLVERCG_HH
@@ -62,7 +51,15 @@ using namespace std;
 */
 extern bool fborder (long index, long nx, long ny, long nz);
 
-/** A class to solve sCG */
+/*! \brief solve_sCG -- a class providing a CG solver
+
+	This contains basic solver functions based on CG schemes
+
+\author Stefan Burckhardt and Carsten Wolters, wolters@mis.mpg.de, 2004
+\remark adapted for libmona by Heike Jaenicke and Marc Tittgemeyer, tittge@cbs.mpg.de, 2004
+\remark adapted for mia2 by Gert Wollny, gw.fossdev@gmail.com 2011 
+*/
+
 
 class solve_sCG {
 

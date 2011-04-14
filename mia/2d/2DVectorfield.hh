@@ -57,7 +57,10 @@ public:
 	}
 };
 
+/// 2D vector field to store single precicion 2D vectors 
 typedef T2DVectorfield<C2DFVector>  C2DFVectorfield;
+
+/// 2D vector field to store double precicion 2D vectors 
 typedef T2DVectorfield<C2DDVector>  C2DDVectorfield;
 
 /**

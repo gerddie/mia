@@ -30,10 +30,16 @@
 
 NS_MIA_BEGIN
 
+/// the base class for simple 2D image cost functions 
 typedef TCost<C2DImage, C2DFVectorfield> C2DImageCost;
+
+/// the base class for simple 2D image cost functions plug ins 
 typedef TFactory<C2DImageCost> C2DImageCostPlugin;
+
+/// the 2D image cost function plugin handler 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DImageCostPlugin> > C2DImageCostPluginHandler;
 
+/// pointer type of simple 2D image cost functions 
 typedef std::shared_ptr<C2DImageCost > P2DImageCost;
 
 NS_MIA_END

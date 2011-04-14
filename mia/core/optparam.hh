@@ -37,6 +37,7 @@ NS_MIA_BEGIN
 
 /*! \class CParamList
     \brief A class to hold a list of named parameters.
+
     It takes care of setting the parameters based on its names,
     and can check whether required parameters are really set.
 */

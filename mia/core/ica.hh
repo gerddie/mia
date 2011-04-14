@@ -177,7 +177,7 @@ private:
 
 };
 
-
+/// \cond DOXYGEN_DOESNT_UNDERSTAND_BOOST_CONCEPT_REQUIRES
 template <class Iterator>
 BOOST_CONCEPT_REQUIRES(((::boost::ForwardIterator<Iterator>)),
 		       (void))
@@ -195,6 +195,7 @@ CICAAnalysis::set_row(size_t row, Iterator begin, Iterator end)
 		buffer[i] -= mean;
 	set_row(row, buffer, mean);
 }
+/// \endcond 
 
 NS_MIA_END
 

@@ -53,7 +53,7 @@ public:
 	static const char *type_descr;
 };
 
-
+/// Base type for 2D image IO plugins 
 typedef TIOPlugin<io_2dimage_type> C2DImageIOPlugin;
 
 class EXPORT_2D C2DImageIOPPH: public TIOPluginHandler<C2DImageIOPlugin> {
@@ -64,14 +64,29 @@ protected:
 	C2DImageIOPPH(const std::list< ::boost::filesystem::path>& searchpath);
 };
 
+/** The 2D image IO plugin handler that also provides the interface to 
+    load and store 2D images. 
+ */
 typedef TIOHandlerSingleton< C2DImageIOPPH > C2DImageIOPluginHandler;
+
+/** The type for virtual storage access for images 
+    \sa CDatapool
+ */
 typedef C2DImageIOPluginHandler::Instance::DataKey C2DImageDataKey;
 
+/** 
+    Data type of what is actually loaded by the image plugins handler 
+ */
 typedef C2DImageIOPluginHandler::Instance::PData P2DImageVector;
 
 
 /**
    Convenience function to create a vector of images wrapping one image
+   \param image 
+   \returns the vector containing the image 
+   \todo the interface that requires a vector to be passes may not be the best approach 
+   in ensures that we can also load all images from a multi-record image file type 
+   but other then that it is very inconvenient 
  */
 P2DImageVector EXPORT_2D create_image2d_vector(P2DImage image);
 
@@ -84,6 +99,11 @@ P2DImageVector EXPORT_2D create_image2d_vector(P2DImage image);
 
 P2DImage EXPORT_2D  load_image2d(const std::string& filename);
 
+/**
+   Convenience function to load one 2D image from a file 
+   @param filename 
+   @returns image 
+ */
 template <>
 inline P2DImage load_image<P2DImage>(const std::string& filename)
 {

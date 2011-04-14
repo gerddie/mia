@@ -30,11 +30,12 @@
 
 NS_MIA_BEGIN
 
+/// a 2D int vector 
 typedef T2DVector<int> C2DIVector;
 
 
 /**
-   2D axis orthothogonal bounding box. 
+   \brief 2D axis orthothogonal bounding box. 
  */
 class  EXPORT_2D C2DBoundingBox {
 public:
