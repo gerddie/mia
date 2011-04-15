@@ -68,15 +68,6 @@ void test_interpolator(const vector<T>& data, const Interpolator& src)
 	}
 }
 
-
-template <class T, template <class> class Interpolator>
-void test_direct_interpolator(const vector<T>& data)
-{
-	Interpolator<T> src(data);
-	test_interpolator(data, src);
-}
-
-
 template <class T>
 void test_conv_interpolator(const vector<T>& data, PBSplineKernel kernel, EInterpolation type)
 {
@@ -98,8 +89,6 @@ void test_type()
 	for (size_t x = 1; x < data.size() + 1; ++x, ++i)
 		*i = T(x);
 
-	test_direct_interpolator<T, T1DNNInterpolator>(data);
-	test_direct_interpolator<T, T1DLinearInterpolator>(data);
 	test_conv_interpolator<T>(data, PBSplineKernel(new CBSplineKernel0()), ip_bspline0);
 	test_conv_interpolator<T>(data, PBSplineKernel(new CBSplineKernel1()), ip_bspline1);
 	test_conv_interpolator<T>(data, PBSplineKernel(new CBSplineKernel2()), ip_bspline2);

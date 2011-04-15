@@ -125,9 +125,8 @@ private:
 
 class EXPORT_2D C2DInterpolatorFactory {
 public:
-	enum EType {ip_spline, ip_unknown};
 
-	C2DInterpolatorFactory(EType type, std::shared_ptr<CBSplineKernel > kernel);
+	C2DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel);
 
 	C2DInterpolatorFactory(const C2DInterpolatorFactory& o);
 
@@ -142,7 +141,7 @@ public:
 	const CBSplineKernel* get_kernel() const;
 
 private:
-	EType m_type;
+	EInterpolationFactory m_type;
 	std::shared_ptr<CBSplineKernel > m_kernel;
 };
 
@@ -153,7 +152,7 @@ typedef std::shared_ptr<C2DInterpolatorFactory > P2DInterpolatorFactory;
 /**
    create a 2D interpolation factory of a certain interpolation type 
 */
-C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(int type)
+C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(EInterpolation type)
 	__attribute__ ((warn_unused_result));
 
 // implementation
@@ -162,7 +161,7 @@ template <class T>
 T2DInterpolator<T> *C2DInterpolatorFactory::create(const T2DDatafield<T>& src) const
 {
 	switch (m_type) {
-	case ip_spline: return new T2DConvoluteInterpolator<T>(src, m_kernel);
+	case ipf_spline: return new T2DConvoluteInterpolator<T>(src, m_kernel);
 	default: throw "CInterpolatorFactory::create: Unknown interpolator requested";
 	}
 	return NULL;

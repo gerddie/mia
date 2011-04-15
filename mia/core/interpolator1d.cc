@@ -40,17 +40,11 @@ C1DInterpolator::~C1DInterpolator()
 }
 
 
-C1DInterpolatorFactory::C1DInterpolatorFactory(EType type, PBSplineKernel kernel):
+C1DInterpolatorFactory::C1DInterpolatorFactory(EInterpolationFactory  type, PBSplineKernel kernel):
 	m_type(type),
 	m_kernel(kernel)
 {
-	assert(m_type == ipt_spline && m_kernel);
-}
-
-C1DInterpolatorFactory::C1DInterpolatorFactory(EType type):
-	m_type(type)
-{
-	assert(m_type == ipt_nn || m_type == ipt_linear);
+	assert(m_kernel);
 }
 
 C1DInterpolatorFactory::C1DInterpolatorFactory(const C1DInterpolatorFactory& o):
@@ -78,42 +72,12 @@ C1DInterpolatorFactory::~C1DInterpolatorFactory()
 
 C1DInterpolatorFactory *create_1dinterpolation_factory(EInterpolation type)
 {
-	std::shared_ptr<CBSplineKernel > kernel;
-	C1DInterpolatorFactory::EType iptype = C1DInterpolatorFactory::ipt_spline;
-
-	switch (type) {
-	case ip_nn:
-		return new C1DInterpolatorFactory(C1DInterpolatorFactory::ipt_nn);
-		break;
-	case ip_linear:
-		return new C1DInterpolatorFactory(C1DInterpolatorFactory::ipt_linear);
-		break;
-	case ip_bspline2:
-		kernel.reset(new CBSplineKernel2());
-		break;
-	case ip_bspline3:
-		kernel.reset(new CBSplineKernel3());
-		break;
-	case ip_bspline4:
-		kernel.reset(new CBSplineKernel4());
-		break;
-	case ip_bspline5:
-		kernel.reset(new CBSplineKernel5());
-		break;
-	case ip_omoms3:
-		kernel.reset(new CBSplineKernelOMoms3());
-		break;
-	default:
-		throw std::invalid_argument("unknown interpolation method");
-	}
-	return new C1DInterpolatorFactory(iptype, kernel);
+	return create_interpolator_factory<C1DInterpolatorFactory>(type); 
 }
 
 
 #define INSTANCIATE_INTERPOLATORS(TYPE)			\
 	template class T1DInterpolator<TYPE>;		\
-	template class T1DLinearInterpolator<TYPE>;	\
-	template class T1DNNInterpolator<TYPE>;		\
 	template class T1DConvoluteInterpolator<TYPE>
 
 INSTANCIATE_INTERPOLATORS(bool);

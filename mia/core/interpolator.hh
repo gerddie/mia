@@ -472,6 +472,49 @@ C CBSplineKernel::initial_anti_coeff(const std::vector<C>& coeff, double pole)
 }
 
 
+template <typename InterpolatorFactory> 
+InterpolatorFactory *create_interpolator_factory(EInterpolation type) 
+{
+	std::shared_ptr<CBSplineKernel > kernel;
+	EInterpolationFactory iptype = ipf_unknown; 
+	switch (type) {
+	case ip_nn:
+	case ip_bspline0:
+		iptype = ipf_spline;
+		kernel.reset(new CBSplineKernel0());
+		break;
+	case ip_linear:
+	case ip_bspline1:
+		iptype = ipf_spline;
+		kernel.reset(new CBSplineKernel1());
+		break;
+	case ip_bspline2:
+		iptype = ipf_spline;
+		kernel.reset(new CBSplineKernel2());
+		break;
+	case ip_bspline3:
+		iptype = ipf_spline;
+		kernel.reset(new CBSplineKernel3());
+		break;
+	case ip_bspline4:
+		iptype = ipf_spline;
+		kernel.reset(new CBSplineKernel4());
+		break;
+	case ip_bspline5:
+		iptype = ipf_spline;
+		kernel.reset(new CBSplineKernel5());
+		break;
+	case ip_omoms3:
+		iptype = ipf_spline;
+		kernel.reset(new CBSplineKernelOMoms3());
+		break;
+	default:
+		throw std::invalid_argument("unknown interpolation method");
+	}
+	return new InterpolatorFactory(iptype, kernel); 
+
+}
+
 
 NS_MIA_END
 

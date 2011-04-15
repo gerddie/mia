@@ -89,87 +89,6 @@ public:
 
 };
 
-
-/** Base type for interpolators that work directly on the image data */
-template <typename T>
-class EXPORT_CORE T1DDirectInterpolator: public T1DInterpolator<T> {
-public:
-
-	/** Constructor
-	    \param data the source data
-	 */
-	T1DDirectInterpolator(const std::vector<T>& data);
-protected:
-	/// return a reference to the data coefficients used for interpolation 
-	const std::vector<T>& data()const {
-		return m_data;
-	}
-private:
-	const std::vector<T>& m_data;
-};
-
-/**
-    Nearest Neighbor interpolation.
-    \todo replace by Convolution interpolator with CBSplineKernel0
- */
-
-template <class T>
-class EXPORT_CORE T1DNNInterpolator: public T1DDirectInterpolator<T> {
-public:
-	/**
-	   Create the interpolator by copying the coefficient data 
-	   \param data 
-	 */
-	T1DNNInterpolator(const std::vector<T>& data );
-
-	/**
-	   The actual interpolation operator 
-	   \param x location to interpolate at 
-	   \returns the interpolated value 
-	*/
-	T operator () (const double& x) const;
-
-	/**
-	   The interpolation funtion for the first order derivative
-	   \param x location to interpolate at 
-	   \returns the interpolated derivative value 
-	*/
-	virtual  typename coeff_map<T>::coeff_type derivative_at (const double& x) const;
-};
-
-/**
-   linear interpolation
-   \todo replace by Convolution interpolator with CBSplineKernel1
-*/
-
-template <class T>
-class EXPORT_CORE T1DLinearInterpolator: public T1DDirectInterpolator<T> {
-public:
-	/**
-	   create the interpolator by copying the coefficient data 
-	   \param data 
-	 */
-	T1DLinearInterpolator(const std::vector<T>& data);
-	
-	/**
-	   The actual interpolation operator 
-	   \param x location to interpolate at 
-	   \returns the interpolated value 
-	*/
-	T operator () (const double& x) const;
-	
-	/**
-	   The interpolation funtion for the first order derivative
-	   \param x location to interpolate at 
-	   \returns the interpolated derivative value 
-	*/
-	virtual typename coeff_map<T>::coeff_type derivative_at (const double& x) const;
-private:
-	size_t m_xy;
-	double m_size;
-	double m_sizeb;
-};
-
 /** Base type for interpolators that work with some kind of convolution  */
 
 template <class T>
@@ -225,22 +144,12 @@ private:
 */
 class EXPORT_CORE C1DInterpolatorFactory {
 public:
-	/// Enum types for the different interpolation kernel types 
-	enum EType {ipt_nn,  /**< nearest neighbor interpolation */
-		    ipt_linear,   /**< linear interpolation */
-		    ipt_spline,   /**< spline based interpolation */
-		    ipt_unknown};  /**< stopper ID */
-
-	/** Initialize the factory with a certain kernel type 
-	    @param type 
-	 */
-	C1DInterpolatorFactory(EType type);
 
 	/** Initialize the factory with a certain kernel type and the according B-Spline kernel 
 	    @param type 
 	    @param kernel 
 	 */
-	C1DInterpolatorFactory(EType type, PBSplineKernel kernel);
+	C1DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel);
 
 	/// Copy constructor 
 	C1DInterpolatorFactory(const C1DInterpolatorFactory& o);
@@ -265,7 +174,7 @@ public:
 	PBSplineKernel get_kernel() const;
 
 private:
-	EType m_type;
+	EInterpolationFactory  m_type;
 	PBSplineKernel m_kernel;
 };
 
@@ -286,9 +195,7 @@ template <class T>
 T1DInterpolator<T> *C1DInterpolatorFactory::create(const std::vector<T>& src) const
 {
 	switch (m_type) {
-	case ipt_nn:  return new T1DNNInterpolator<T>(src);
-	case ipt_linear: return new T1DLinearInterpolator<T>(src);
-	case ipt_spline: return new T1DConvoluteInterpolator<T>(src, m_kernel);
+	case ipf_spline: return new T1DConvoluteInterpolator<T>(src, m_kernel);
 	default: throw "CInterpolatorFactory::create: Unknown interpolator requested";
 	}
 	return NULL;

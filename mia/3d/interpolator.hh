@@ -70,60 +70,11 @@ public:
 
 };
 
-
-/** Base type for interpolators that work directly on the image data */
-template <typename T>
-class EXPORT_3D T3DDirectInterpolator: public T3DInterpolator<T> {
-public:
-
-	/** Constructor
-	    \param data the source data
-	 */
-	T3DDirectInterpolator(const T3DDatafield<T>& data);
-protected:
-	const T3DDatafield<T>& data()const {
-		return m_data;
-	}
-private:
-	const T3DDatafield<T>& m_data;
-};
-
-/**
-    Nearest Neighbor interpolation.
- */
-
-template <class T>
-class EXPORT_3D T3DNNInterpolator: public T3DDirectInterpolator<T> {
-public:
-	T3DNNInterpolator(const T3DDatafield<T>& image);
-	T operator () (const C3DFVector& x) const;
-
-};
-
-/**
-   Tri-linear interpolation
-*/
-
-template <class T>
-class EXPORT_3D T3DTrilinearInterpolator: public T3DDirectInterpolator<T> {
-public:
-	T3DTrilinearInterpolator(const T3DDatafield<T>& image);
-	T operator () (const C3DFVector& x) const;
-private:
-	size_t m_xy;
-	C3DFVector m_size;
-	C3DFVector m_sizeb;
-};
-
-
 template <class U>
 struct coeff_map<T3DVector<U> > {
 	typedef T3DVector<U> value_type;
 	typedef C3DDVector   coeff_type;
 };
-
-
-
 
 
 /**
@@ -180,19 +131,13 @@ private:
 
 class EXPORT_3D C3DInterpolatorFactory {
 public:
-	/**
-	   types of supported interpolations 
-	   @remark there should be global flags
-	 */
-	enum EType {ip_nn, ip_tri, ip_spline, ip_unknown};
-
 
 	/**
 	   Initialise the factory by providing a interpolator type id and a kernel (if needed)
 	   \param type interpolator type id
 	   \param kernel spline kernel
 	*/
-	C3DInterpolatorFactory(EType type, PBSplineKernel kernel);
+	C3DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel);
 
 	/// Copy constructor
 	C3DInterpolatorFactory(const C3DInterpolatorFactory& o);
@@ -214,12 +159,12 @@ public:
 	/// @returns the B-spline kernel used for interpolator creation 
 	PBSplineKernel get_kernel() const; 
 private:
-	EType m_type;
+	EInterpolationFactory m_type;
 	PBSplineKernel m_kernel;
 };
 
 
-EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(int type)
+EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(EInterpolation type)
 	__attribute__ ((warn_unused_result));
 
 // implementation
@@ -228,16 +173,14 @@ template <class T>
 T3DInterpolator<T> *C3DInterpolatorFactory::create(const T3DDatafield<T>& src) const
 {
 	switch (m_type) {
-	case ip_nn:  return new T3DNNInterpolator<T>(src);
-	case ip_tri: return new T3DTrilinearInterpolator<T>(src);
-	case ip_spline: return new T3DConvoluteInterpolator<T>(src, m_kernel);
+	case ipf_spline: return new T3DConvoluteInterpolator<T>(src, m_kernel);
 	default: throw "C3DInterpolatorFactory::create: Unknown interpolator requested";
 	}
 	return NULL;
 }
 
 /// Pointer type of the 3D interpolation factory 
-typedef std::shared_ptr<C3DInterpolatorFactory > P3DInterpolatorFactory;
+typedef std::shared_ptr<C3DInterpolatorFactory> P3DInterpolatorFactory;
 
 NS_MIA_END
 

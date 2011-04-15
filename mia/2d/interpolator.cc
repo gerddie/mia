@@ -44,7 +44,7 @@ C2DInterpolator::~C2DInterpolator()
 }
 
 
-C2DInterpolatorFactory::C2DInterpolatorFactory(EType type, std::shared_ptr<CBSplineKernel > kernel):
+C2DInterpolatorFactory::C2DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel):
 	m_type(type),
 	m_kernel(kernel)
 {
@@ -73,46 +73,9 @@ const CBSplineKernel* C2DInterpolatorFactory::get_kernel() const
 	return m_kernel.get();
 }
 
-C2DInterpolatorFactory *create_2dinterpolation_factory(int type)
+C2DInterpolatorFactory *create_2dinterpolation_factory(EInterpolation type)
 {
-	std::shared_ptr<CBSplineKernel > kernel;
-	C2DInterpolatorFactory::EType iptype = C2DInterpolatorFactory::ip_spline;
-
-	switch (type) {
-	case ip_nn:
-	case ip_bspline0:
-		iptype = C2DInterpolatorFactory::ip_spline;
-		kernel.reset(new CBSplineKernel0());
-		break;
-	case ip_linear:
-	case ip_bspline1:
-		iptype = C2DInterpolatorFactory::ip_spline;
-		kernel.reset(new CBSplineKernel1());
-		break;
-	case ip_bspline2:
-		iptype = C2DInterpolatorFactory::ip_spline;
-		kernel.reset(new CBSplineKernel2());
-		break;
-	case ip_bspline3:
-		iptype = C2DInterpolatorFactory::ip_spline;
-		kernel.reset(new CBSplineKernel3());
-		break;
-	case ip_bspline4:
-		iptype = C2DInterpolatorFactory::ip_spline;
-		kernel.reset(new CBSplineKernel4());
-		break;
-	case ip_bspline5:
-		iptype = C2DInterpolatorFactory::ip_spline;
-		kernel.reset(new CBSplineKernel5());
-		break;
-	case ip_omoms3:
-		iptype = C2DInterpolatorFactory::ip_spline;
-		kernel.reset(new CBSplineKernelOMoms3());
-		break;
-	default:
-		throw std::invalid_argument("unknown interpolation method");
-	}
-	return new C2DInterpolatorFactory(iptype, kernel);
+	return create_interpolator_factory<C2DInterpolatorFactory>(type); 
 }
 
 

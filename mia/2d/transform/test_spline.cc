@@ -294,7 +294,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 
 	C2DFImage test_image(range);
 	
-	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
+	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(ipf_spline,
 							      std::shared_ptr<CBSplineKernel > (new CBSplineKernel3()))); 
 	auto_ptr<T2DInterpolator<float> > src(ipf->create(image.data()));
 
@@ -593,7 +593,7 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 	
 	PBSplineKernel kernel(new CBSplineKernel3()); 
 
-	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
+	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(ipf_spline,
 							      kernel));
 
 	C2DSplineTransformation trans(size, kernel);
@@ -683,7 +683,7 @@ struct TransformSplineFixtureFieldBase {
 		size(16,16),
 		field(size),
 		kernel(new CBSplineKernel3()), 
-		ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline, kernel)),
+		ipf(new C2DInterpolatorFactory(ipf_spline, kernel)),
 		range(16, 16),
 		stransf(range, kernel),
 		scale(1.0 / range.x, 1.0 / range.y)

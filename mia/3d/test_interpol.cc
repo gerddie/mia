@@ -60,7 +60,7 @@ static bool test_direct_interpolator(const T3DDatafield<T>& data)
 
 
 template <class T>
-static bool test_conv_interpolator(const T3DDatafield<T>& data, std::shared_ptr<CBSplineKernel > kernel)
+static bool test_conv_interpolator(const T3DDatafield<T>& data, PBSplineKernel kernel)
 {
 	T3DConvoluteInterpolator<T>  src(data, kernel);
 	bool result = test_interpolator(data, src);
@@ -79,25 +79,25 @@ static void test_type()
 				*i = z;
 
 
-	if (!test_direct_interpolator<T, T3DNNInterpolator>(data))
+	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel0())))
 		BOOST_FAIL(" NN Interpolator FAIL");
 
-	if (!test_direct_interpolator<T, T3DTrilinearInterpolator>(data))
+	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel1())))
 		BOOST_FAIL(" Tri Interpolator FAIL");
 
-	if (!test_conv_interpolator<T>(data, std::shared_ptr<CBSplineKernel > (new CBSplineKernel2())))
+	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel2())))
 		BOOST_FAIL(" BSpline 2 Interpolator FAIL");
 
-	if (!test_conv_interpolator<T>(data, std::shared_ptr<CBSplineKernel > (new CBSplineKernel3())))
+	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel3())))
 		BOOST_FAIL(" BSpline 3 Interpolator FAIL");
 
-	if (!test_conv_interpolator<T>(data, std::shared_ptr<CBSplineKernel > (new CBSplineKernel4())))
+	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel4())))
 		BOOST_FAIL(" BSpline 4 Interpolator FAIL");
 
-	if (!test_conv_interpolator<T>(data, std::shared_ptr<CBSplineKernel > (new CBSplineKernel5())))
+	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel5())))
 		BOOST_FAIL(" BSpline 5 Interpolator FAIL\n");
 
-	if (!test_conv_interpolator<T>(data, std::shared_ptr<CBSplineKernel > (new CBSplineKernelOMoms3())))
+	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernelOMoms3())))
 		BOOST_FAIL(" oMoms 3 Interpolator FAIL\n");
 }
 

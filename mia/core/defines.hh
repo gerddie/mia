@@ -73,9 +73,16 @@ enum EInterpolation {
 	ip_bspline3, /**< bsplines of degree 3 */  
 	ip_bspline4, /**< bsplines of degree 4 */ 
 	ip_bspline5, /**< bsplines of degree 5 */  
-	ip_omoms3,    /**< omoms splines of degree 3 */
-	ip_unknown
+	ip_omoms3,   /**< omoms splines of degree 3 */
+	ip_unknown   /**< unknown type */
 };
+
+/// Enumerate for the types of possible interpolator factories 
+enum EInterpolationFactory {
+	ipf_spline, /**< bspline based interpolation */ 
+	ipf_unknown /**< unkown type */ 
+};
+
 NS_MIA_END
 
 /// suffix for plug-ins 

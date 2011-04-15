@@ -341,7 +341,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 	
 	C3DFImage test_image(range);
 	
-	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(C3DInterpolatorFactory::ip_spline,
+	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(ipf_spline,
 							      std::shared_ptr<CBSplineKernel > (new CBSplineKernel3()))); 
 	auto_ptr<T3DInterpolator<float> > src(ipf->create(image.data()));
 
@@ -689,7 +689,7 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 	
 	PBSplineKernel kernel(new CBSplineKernel3()); 
 
-	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(C3DInterpolatorFactory::ip_spline,
+	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(ipf_spline,
 							      kernel));
 
 	C3DSplineTransformation trans(size, kernel);
@@ -728,7 +728,7 @@ struct TransformSplineFixtureFieldBase {
 		size(16,16,16),
 		field(size),
 		kernel(new CBSplineKernel3()), 
-		ipf(new C3DInterpolatorFactory(C3DInterpolatorFactory::ip_spline, kernel)),
+		ipf(new C3DInterpolatorFactory(ipf_spline, kernel)),
 		range(16, 16,16),
 		stransf(range, kernel),
 		scale(1.0 / range.x, 1.0 / range.y, 1.0 / range.z)

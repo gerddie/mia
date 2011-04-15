@@ -39,8 +39,8 @@ struct FieldSplineFixture {
 	FieldSplineFixture():
 		size(30, 32),
 		field(size),
-		ipf(C2DInterpolatorFactory::ip_spline,
-		    std::shared_ptr<CBSplineKernel > (new CBSplineKernel4()))
+		ipf(ipf_spline,
+		    std::shared_ptr<CBSplineKernel> (new CBSplineKernel4()))
 	{
 		C2DFVectorfield::iterator i = field.begin();
 		for (size_t y = 0; y < size.y; ++y)
