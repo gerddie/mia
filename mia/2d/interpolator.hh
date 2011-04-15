@@ -80,53 +80,6 @@ public:
 
 };
 
-
-/** Base type for interpolators that work directly on the image data */
-template <typename T>
-class EXPORT_2D T2DDirectInterpolator: public T2DInterpolator<T> {
-public:
-
-	/** Constructor
-	    \param data the source data
-	 */
-	T2DDirectInterpolator(const T2DDatafield<T>& data);
-protected:
-	const T2DDatafield<T>& data()const {
-		return m_data;
-	}
-private:
-	const T2DDatafield<T>& m_data;
-};
-
-/**
-    Nearest Neighbor interpolation.
- */
-
-template <class T>
-class EXPORT_2D T2DNNInterpolator: public T2DDirectInterpolator<T> {
-public:
-	T2DNNInterpolator(const T2DDatafield<T>& image);
-	T operator () (const C2DFVector& x) const;
-	T2DVector<T> derivative_at(const C2DFVector& x) const;
-
-};
-
-/**
-   Tri-linear interpolation
-*/
-
-template <class T>
-class EXPORT_2D T2DBilinearInterpolator: public T2DDirectInterpolator<T> {
-public:
-	T2DBilinearInterpolator(const T2DDatafield<T>& image);
-	T operator () (const C2DFVector& x) const;
-	T2DVector<T> derivative_at(const C2DFVector& x) const;
-private:
-	size_t m_xy;
-	C2DFVector m_size;
-	C2DFVector m_sizeb;
-};
-
 template <class U>
 struct coeff_map<T2DVector<U> > {
 	typedef T2DVector<U> value_type;
@@ -172,7 +125,7 @@ private:
 
 class EXPORT_2D C2DInterpolatorFactory {
 public:
-	enum EType {ip_nn, ip_tri, ip_spline, ip_unknown};
+	enum EType {ip_spline, ip_unknown};
 
 	C2DInterpolatorFactory(EType type, std::shared_ptr<CBSplineKernel > kernel);
 
@@ -209,8 +162,6 @@ template <class T>
 T2DInterpolator<T> *C2DInterpolatorFactory::create(const T2DDatafield<T>& src) const
 {
 	switch (m_type) {
-	case ip_nn:  return new T2DNNInterpolator<T>(src);
-	case ip_tri: return new T2DBilinearInterpolator<T>(src);
 	case ip_spline: return new T2DConvoluteInterpolator<T>(src, m_kernel);
 	default: throw "CInterpolatorFactory::create: Unknown interpolator requested";
 	}

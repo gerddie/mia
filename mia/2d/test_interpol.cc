@@ -208,13 +208,13 @@ T2DDatafield<T> create_data()
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateNN_type, T, test_types )
 {
 	T2DDatafield<T> data = create_data<T>();
-	test_direct_interpolator<T, T2DNNInterpolator>(data);
+	test_conv_interpolator<T>(data, std::shared_ptr<CBSplineKernel > (new CBSplineKernel0()));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateBiLin_type, T, test_types )
 {
 	T2DDatafield<T> data = create_data<T>();
-	test_direct_interpolator<T, T2DBilinearInterpolator>(data);
+	test_conv_interpolator<T>(data, std::shared_ptr<CBSplineKernel > (new CBSplineKernel1()));
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( test_interpolateBSpline2_type, T, test_types )
@@ -251,17 +251,20 @@ struct CheckIPFKernelFixture {
 	template <class Kernel>
 	void check(EInterpolation type, bool has_kernel)  {
 		std::shared_ptr<C2DInterpolatorFactory > ipf(create_2dinterpolation_factory(type));
-		if (has_kernel)
+		if (has_kernel) {
+			BOOST_CHECK(ipf->get_kernel());
 			BOOST_CHECK(dynamic_cast<const Kernel*>(ipf->get_kernel()));
-		else
+		} else
 			BOOST_CHECK(!ipf->get_kernel());
 	}
 };
 
 BOOST_FIXTURE_TEST_CASE(check_ipf_kernels_linear, CheckIPFKernelFixture)
 {
-	check<CBSplineKernel>(ip_nn, false);
-	check<CBSplineKernel>(ip_linear, false);
+	check<CBSplineKernel0>(ip_nn, true);
+	check<CBSplineKernel1>(ip_linear, true);
+	check<CBSplineKernel0>(ip_bspline0, true);
+	check<CBSplineKernel1>(ip_bspline1, true);
 	check<CBSplineKernel2>(ip_bspline2, true);
 	check<CBSplineKernel3>(ip_bspline3, true);
 	check<CBSplineKernel4>(ip_bspline4, true);

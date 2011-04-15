@@ -80,10 +80,14 @@ C2DInterpolatorFactory *create_2dinterpolation_factory(int type)
 
 	switch (type) {
 	case ip_nn:
-		iptype = C2DInterpolatorFactory::ip_nn;
+	case ip_bspline0:
+		iptype = C2DInterpolatorFactory::ip_spline;
+		kernel.reset(new CBSplineKernel0());
 		break;
 	case ip_linear:
-		iptype = C2DInterpolatorFactory::ip_tri;
+	case ip_bspline1:
+		iptype = C2DInterpolatorFactory::ip_spline;
+		kernel.reset(new CBSplineKernel1());
 		break;
 	case ip_bspline2:
 		iptype = C2DInterpolatorFactory::ip_spline;
@@ -169,8 +173,6 @@ double add_2d_new<T2DDatafield< double >, 4>::value(const T2DDatafield< double >
 
 #define INSTANCIATE_INTERPOLATORS(TYPE)			\
 	template class T2DInterpolator<TYPE>;		\
-	template class T2DBilinearInterpolator<TYPE>;	\
-	template class T2DNNInterpolator<TYPE>;		\
 	template class T2DConvoluteInterpolator<TYPE>
 
 INSTANCIATE_INTERPOLATORS(bool);
@@ -191,8 +193,6 @@ INSTANCIATE_INTERPOLATORS(mia_uint64);
 INSTANCIATE_INTERPOLATORS(C2DFVector);
 
 template class T1DInterpolator<C2DFVector>;
-template class T1DLinearInterpolator<C2DFVector>;
-template class T1DNNInterpolator<C2DFVector>;
 template class T1DConvoluteInterpolator<C2DFVector>;
 
 
