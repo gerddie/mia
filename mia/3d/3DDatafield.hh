@@ -79,7 +79,7 @@ public:
 
 	/// a shortcut data type
 
-
+	/// \cond SELFEXPLAINING 
         typedef typename std::vector<T>::iterator iterator;
         typedef typename std::vector<T>::const_iterator const_iterator;
         typedef typename std::vector<T>::const_reference const_reference;
@@ -92,8 +92,8 @@ public:
 	typedef typename atomic_data<T>::type atomic_type; 
 	typedef range3d_iterator<iterator> range_iterator; 
 	typedef range3d_iterator<const_iterator> const_range_iterator; 
-
 	typedef C3DBounds dimsize_type;
+	/// \endcond 
 
 	T3DDatafield();
 
@@ -165,6 +165,7 @@ public:
                 return m_data->size();
         }
 
+	/// swap the data ofthis 3DDatafield with another one 
 	void swap(T3DDatafield& other);
 
         /** \returns the average over the whole datafield*/
@@ -235,28 +236,108 @@ public:
         template <class TMask>
         void mask(const TMask& m);
 
-	T2DDatafield<T> get_data_plane_xy(size_t  z)const;
-
-	void read_zslice_flat(size_t z, std::vector<atomic_type>& buffer) const;
-	
-	void write_zslice_flat(size_t z, const std::vector<atomic_type>& buffer); 
-
-	void read_yslice_flat(size_t y, std::vector<atomic_type>& buffer) const;
-
-	void write_yslice_flat(size_t y, const std::vector<atomic_type>& buffer); 
-
+	/**
+	   Read the a x-slice of the data field into a flat buffer - i.e. the 
+           information about multi-dimensionality of the elements is lost. 
+	   For this to work, T has to be a POD-like data type, i.e., it has no 
+	   hidden elements like a virtual methods table, and, if T is a type 
+	   of more then one element, all these elements have to be of the same 
+	   type. Specifically, a specialization of the trait atomic_data for T 
+	   must exists. 
+	   \param x slice to be read 
+	   \param[out] buffer Buffer where the data will be written to. It must 
+	   large enough to hold size.y * size.z * number of elements 
+	   
+	*/
 	void read_xslice_flat(size_t x, std::vector<atomic_type>& buffer) const;
 
+	/**
+	   Read the a y-slice of the data field into a flat buffer - i.e. the 
+           information about multi-dimensionality of the elements is lost. 
+	   For this to work, T has to be a POD-like data type, i.e., it has no 
+	   hidden elements like a virtual methods table, and, if T is a type 
+	   of more then one element, all these elements have to be of the same 
+	   type. Specifically, a specialization of the trait atomic_data for T 
+	   must exists. 
+	   \param y slice to be read 
+	   \param[out] buffer Buffer where the data will be written to. It must 
+	   large enough to hold size.x * size.z * number of elements 
+	*/
+	void read_yslice_flat(size_t y, std::vector<atomic_type>& buffer) const;
+	
+	/**
+	   Read the a z-slice of the data field into a flat buffer - i.e. the 
+           information about multi-dimensionality of the elements is lost. 
+	   For this to work, T has to be a POD-like data type, i.e., it has no 
+	   hidden elements like a virtual methods table, and, if T is a type 
+	   of more then one element, all these elements have to be of the same 
+	   type. Specifically, a specialization of the trait atomic_data for T 
+	   must exists. 
+	   \param z slice to be read 
+	   \param[out] buffer Buffer where the data will be written to. It must 
+	   large enough to hold size.x * size.y * number of elements 
+	*/
+	void read_zslice_flat(size_t z, std::vector<atomic_type>& buffer) const;
+	
+	/**
+	   Write a z-slice from a flat buffer to the 3D data field. For details see 
+	   void read_zslice_flat(size_t z, std::vector<atomic_type>& buffer) const;
+	 */
+	void write_zslice_flat(size_t z, const std::vector<atomic_type>& buffer); 
+
+
+	/**
+	   Write a y-slice from a flat buffer to the 3D data field. For details see 
+	   void read_yslice_flat(size_t y, std::vector<atomic_type>& buffer) const;
+	 */
+	void write_yslice_flat(size_t y, const std::vector<atomic_type>& buffer); 
+
+	/**
+	   Write a x-slice from a flat buffer to the 3D data field. For details see 
+	   void read_yslice_flat(size_t x, std::vector<atomic_type>& buffer) const;
+	*/
 	void write_xslice_flat(size_t x, const std::vector<atomic_type>& buffer); 
 
-        T2DDatafield<T> get_data_plane_yz(size_t  x)const;
+	/**
+	   Read a z-plane from the 3D data set.
+	   \param z
+	   \returns the copied data in a 2D data field 
+	*/
+	T2DDatafield<T> get_data_plane_xy(size_t  z)const;
+	
+	/**
+	   Read a x-plane from the 3D data set.
+	   \param x
+	   \returns the copied data in a 2D data field 
+	*/
+	T2DDatafield<T> get_data_plane_yz(size_t  x)const;
 
-        T2DDatafield<T> get_data_plane_xz(size_t  y)const;
+	/**
+	   Read a y-plane from the 3D data set.
+	   \param y
+	   \returns the copied data in a 2D data field 
+	*/
+	T2DDatafield<T> get_data_plane_xz(size_t  y)const;
 
+	/**
+	   write a z-plane to the 3D data set.
+	   \param z
+	   \param p plane data, must be of dimensions (size.x, size.y)
+	*/
 	void put_data_plane_xy(size_t  z, const T2DDatafield<T>& p);
 
+	/**
+	   write a x-plane to the 3D data set.
+	   \param x
+	   \param p plane data, must be of dimensions (size.y, size.z)
+	*/
         void put_data_plane_yz(size_t  x, const T2DDatafield<T>& p);
 
+	/**
+	   write a y-plane to the 3D data set.
+	   \param y
+	   \param p plane data, must be of dimensions (size.x, size.z)
+	*/
         void put_data_plane_xz(size_t  y, const T2DDatafield<T>& p);
 
         /** \returns an read only forward iterator over the whole data field */
@@ -264,13 +345,19 @@ public:
         {
                 return m_data->begin();
         }
-
+	
+	/**
+	   \returns an read only forward iterator over data field starting at (x,y,z)
+	 */
 	const_iterator begin_at(size_t x, size_t y, size_t z)const
         {
                 return m_data->begin() + (z * m_size.y + y) * m_size.x + x;
         }
 
 
+	/**
+	   \returns the end iterator to the 3D data field 
+	 */
         const_iterator end()const
         {
                 return m_data->end();
@@ -292,6 +379,14 @@ public:
         /** \returns the end of a read/write forward iterator over a subset of the data. */
         range_iterator end_range(const C3DBounds& begin, const C3DBounds& end); 
 
+	/**
+	   Obtain an iterator at position (x,y,z)
+	   The functions ensures, that the field uses a single referenced datafield
+	   \param x
+	   \param y
+	   \param z
+	   \returns the iterator 
+	 */
 	iterator begin_at(size_t x, size_t y, size_t z)
         {
 		make_single_ref();
@@ -384,6 +479,7 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(size_t  x, size_t  y, size_t  z) co
 	return T3DVector<Out>();
 }
 
+
 template <class T>
 template <typename Out>
 T3DVector<Out> T3DDatafield<T>::get_gradient(int hardcode) const
@@ -398,6 +494,9 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(int hardcode) const
 }
 
 
+/**
+   Specialization to handle the wired std::vector<bool> implementation 
+ */
 template <>
 template <typename Out>
 T3DVector<Out> T3DDatafield<bool>::get_gradient(int hardcode) const

@@ -54,16 +54,21 @@ NS_MIA_BEGIN
 */
 class EXPORT_CORE vstream {
 public:
+	/**
+	   Output verbosity level threshhold, ml_trace is the lowest threshhold and 
+	   ml_fatal the highest. Output is written, when the output threshold is above or equal
+	   to the one set within the output stream. 
+	 */
 	enum Level {
-		ml_trace,
-		ml_debug,
-		ml_info,
-		ml_message,
-		ml_warning,
-		ml_fail,
-		ml_error,
-		ml_fatal,
-		ml_undefined
+		ml_trace,  /**< write trace of function calls and higher, disabled with -DNDEBUG */
+		ml_debug,  /**< write debugging information  and higher, disabled with -DNDEBUG */
+		ml_info,   /**< write additional info about the data processed  and higher */
+		ml_message,/**< write process status messages  and higher*/
+		ml_warning,/**< write warnings  and higher*/
+		ml_fail,   /**< write failture messages (for tests)  and higher */
+		ml_error,  /**< write non-fatal error messages  and higher */
+		ml_fatal,  /**< write only fatal error messages */
+		ml_undefined /**< stopper */
 	};
 
 	/** initialise a  stream that writes only messages above a certain

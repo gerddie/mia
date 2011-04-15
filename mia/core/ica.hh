@@ -89,7 +89,7 @@ public:
 
         /**
 	   Run the independed component analysis with an estimation of the optimal number
-	   of components.
+	   of components. (experimental) 
 	   \param max_ica maximum number of independend components
 	   \param min_ica minimum number of independend components
 	   \param corr_thresh minimum absolute correation of the mixing signals to joins two components

@@ -41,27 +41,46 @@ struct RegistrationTraits {
 }; 
 
 /**
-   Base class template for image registration models.
-   The template parameters are type 
+   \brief Base class for PDE model based registrations
+   
+   Base class template for PDE based image registration models.
+   The template parameters are 
    \tparam Dim dimension of registration model 
  */
-
-
-
 template <int Dim>
 class TRegModel :public CProductBase {
 public:
+	/// Imaga data type for the registration model 
 	typedef typename RegistrationTraits<Dim>::Data Data; 
+
+	/// gradient force data type for the registration model 
 	typedef typename RegistrationTraits<Dim>::Force Force; 
+
+	/// transformation type for the registrationmodel 
 	typedef typename RegistrationTraits<Dim>::Transformation Transformation; 
 
+	/// plug-in helper type for search path evaluation 
 	typedef regmodel_type plugin_type; 
+	
+	/// plug-in helper type for search path evaluation 
 	typedef Data plugin_data; 
+	
 	TRegModel();
 	virtual ~TRegModel();
 
-	
+	/**
+	   PDE solver for the registration model 
+	   \param[in] b force the gradient force of the cost function 
+	   \param[in,out] x estimated transformation direction that can be further optimized 
+	   by a line search 
+	   \remark the naming needs to be reviewed,  
+	 */
 	void solve (const Force& b, Transformation& x) const;
+
+	/**
+	   \returns the scaling applied to the gradient force 
+	   \remark why is this needed? 
+	 */
 	float get_force_scale() const;
 private:
 	virtual void do_solve(const Force& b, Transformation& x) const = 0;

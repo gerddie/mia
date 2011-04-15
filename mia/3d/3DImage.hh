@@ -114,8 +114,10 @@ typedef C3DImage::Pointer P3DImage;
 template <typename T>
 class EXPORT_3D T3DImage : public C3DImage {
 public:
+	/// define the super class of this class for generic processing 
 	typedef C3DImage Super;
 
+	/// \cond SELFEXPLAINING 
 	typedef typename T3DDatafield<T>::iterator iterator;
 	typedef typename T3DDatafield<T>::const_iterator const_iterator;
 	typedef typename T3DDatafield<T>::const_reference const_reference;
@@ -125,7 +127,8 @@ public:
 	typedef typename T3DDatafield<T>::value_type value_type;
 	typedef typename T3DDatafield<T>::difference_type difference_type;
 	typedef typename T3DDatafield<T>::size_type size_type;
-
+	/// \endcond
+	
 	/**
 	   Construct a new image of a given size and with the given input date.
 	   \param size
@@ -179,21 +182,25 @@ public:
         /** Put some Data along some line parallel to Z axis */
         void put_data_line_z(int x, int y, const std::vector<T> &buffer);
 
-
+	/// forwarding function to access the underlying T3DDatafield
 	T2DImage<T> get_data_plane_xy(size_t  z)const;
 
+	/// forwarding function to access the underlying T3DDatafield
         T2DImage<T> get_data_plane_yz(size_t  x)const;
 
+	/// forwarding function to access the underlying T3DDatafield
         T2DImage<T> get_data_plane_xz(size_t  y)const;
 
+	/// forwarding function to access the underlying T3DDatafield
 	void put_data_plane_xy(size_t  z, const T2DImage<T>& p);
 
+	/// forwarding function to access the underlying T3DDatafield
         void put_data_plane_yz(size_t  x, const T2DImage<T>& p);
 
+	/// forwarding function to access the underlying T3DDatafield
         void put_data_plane_xz(size_t  y, const T2DImage<T>& p);
 
-
-
+	
 	/// element access operator - read only
 	const_reference operator()(size_t  x, size_t  y, size_t  z) const {
 		return m_image(x,y,z);
@@ -279,6 +286,7 @@ public:
 	/// \returns the 3D size of the image
 	virtual const C3DBounds& get_size() const;
 
+	/// \returns the physical voxel size 
 	virtual C3DFVector get_voxel_size() const;
 
 	/// set the voxel size on world units

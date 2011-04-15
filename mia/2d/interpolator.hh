@@ -76,6 +76,11 @@ public:
 	   \returns interpolated value at location x
 	 */
 	virtual T operator () (const C2DFVector& x) const = 0;
+	
+	/**
+	   \param x location of data value to read
+	   \returns interpolated gradient at location x
+	*/
 	virtual T2DVector<T> derivative_at(const C2DFVector& x) const = 0;
 
 };

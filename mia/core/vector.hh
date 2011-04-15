@@ -58,6 +58,8 @@ struct array_void_destructor {
 }; 
 
 /**
+   \brief A wrapper around the c-array to provide an STL like interface for iterators 
+
    c-array envelope that supports some facilities of STL like vectors and that 
    allows holding pre-allocated data. 
    Handling of the optinal deleting of the array is done by a destructor template
@@ -68,11 +70,14 @@ struct array_void_destructor {
 template <typename T> 
 class Vector {
 public: 
+	
+	/// \cond STLCOMPAT 
 	typedef T& reference;  
 	typedef const T& const_reference;  
 	typedef T *iterator;  
 	typedef const T *const_iterator;  
 	typedef size_t size_type; 
+	/// \endcond 
 
 	/**
 	   Create a vector, the data is owned by this vector and will be 

@@ -32,8 +32,12 @@
 NS_MIA_BEGIN
 
 /**
+   \brief Template for all plug-in handlers that are responsible for data IO 
+   
    Input/Output plugin handler base class, derived privately from the 
    standart plug-in handler to hide its interface.
+   All IO plug-in handlers all proved a CDatapool as temporal storage to pass 
+   data around without disk-io.
    \tparam I the interface class that needs to be derived from \a TIOPlugin.  
 */
 
@@ -41,12 +45,22 @@ template <class I>
 class EXPORT_HANDLER TIOPluginHandler: public TPluginHandler<I> {
 public:
 
+	/// Data type handled by this plug-in 
 	typedef typename I::Data Data; 
+	
+        /// Shared pointer to the data hadnled by this plug-in 
 	typedef typename std::shared_ptr<Data > PData; 
+	
+	/// the IO interface provided by this handler 
 	typedef typename TPluginHandler<I>::Interface Interface; 
+	
+	/// an iterator over the availabe plug-ins 
 	typedef typename TPluginHandler<I>::const_iterator const_iterator; 
+
+	/// The map that maps file name suffixes to IO plug-ins 
 	typedef std::multimap<std::string, std::string> CSuffixmap; 
 	
+	/// The type of the key used for the CDatapool access 
 	typedef TDelayedParameter<PData> DataKey; 
 	
 	/**
@@ -138,7 +152,13 @@ private:
 template <typename T>
 class EXPORT_HANDLER TIOHandlerSingleton : public THandlerSingleton<T> {
 public: 
+	/// inherit the suffix map of the handler class 
 	typedef typename T::CSuffixmap CSuffixmap; 
+	
+	/**
+	   Constructor used to override the plugin search path for testing 
+	   \param searchpath 
+	 */
 	TIOHandlerSingleton(const std::list<boost::filesystem::path>& searchpath):
 		THandlerSingleton<T>(searchpath)
 		{

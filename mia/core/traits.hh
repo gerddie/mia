@@ -44,26 +44,32 @@ struct dim_traits {
  */
 struct vector_dimsize {
 	
+	/// contruct the dimsize object 
 	vector_dimsize(size_t n):m_n(n) {
 	}
 	
+	/// \return the dimension 1 as dimension of this vector 
 	size_t size() {
 		return 1; 
 	}
+
+	/// return a read-write reference to the first (and only)dimension
 	T& operator [] (int i)
 	{
 		return m_n; 
 	}
+
+	/// return a read-only  reference to the first (and only)dimension
 	const T& operator [] (int i) const 
 	{
 		return m_n; 
 	}
+private: 
 	size_t m_n; 
 }; 
 
 template <typename T>
 struct dim_traits<std::vector<T> > {
-		
 	typedef vector_dimsize dimsize_type; 
 }; 
 

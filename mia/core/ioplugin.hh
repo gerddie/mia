@@ -52,8 +52,13 @@ template <typename D>
 class EXPORT_HANDLER TIOPlugin: public TPlugin<D, io_plugin_type> {
 
 public:
+	/// type of the data handled by this plug-in  
 	typedef  typename D::type Data;
+	
+	/// shared pointer of the data handled by this plug-in  
 	typedef  typename std::shared_ptr<Data > PData;
+
+	/// the type for the supported pixel types of this IO handler 
 	typedef  std::set<EPixelType> PixelTypeSet;
 
 

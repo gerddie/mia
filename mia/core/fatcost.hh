@@ -58,6 +58,7 @@ struct EXPORT_CORE fatcost_type {
 template <typename T, typename F>
 class EXPORT_HANDLER TFatCost: public CProductBase {
 public:
+	/// \cond DEPRECATED 
 	typedef T Transform;
 	typedef F Force;
 	typedef typename T::Data Data;
@@ -123,6 +124,7 @@ private:
 	mutable double m_cost;
 	mutable bool m_cost_valid;
 
+	/// \endcond
 };
 
 NS_MIA_END

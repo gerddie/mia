@@ -83,7 +83,15 @@ public:
 		 std::vector<std::vector<float> >  guess = std::vector<std::vector<float> >());
 
 
-	size_t run_auto(int nica, int min_ica, float corr_thresh); 
+        /**
+	   Run the independed component analysis with an estimation of the optimal number
+	   of components based on mixing curve correlation (experimental) 
+	   \param max_ica maximum number of independend components
+	   \param min_ica minimum number of independend components
+	   \param corr_thresh minimum absolute correation of the mixing signals to joins two components
+	   \returns number of obtained independend components
+	*/
+	size_t run_auto(int max_ica, int min_ica, float corr_thresh); 
 	
 	/** Normalizes the ICs to the range of [-1,1] and correct the mixing matrix accordingly. 
 	    This operation does not change the output of a mix. 

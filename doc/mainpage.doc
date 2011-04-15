@@ -13,5 +13,9 @@
   at https://sourceforge.net/apps/mediawiki/mia/index.php?title=Mia_-_A_tool_chain_for_Medical_Image_Analysis
 
   \author Gert Wollny gw.fossdev@gmail.com 
+
+  If you use this software to prepare a scientific publication, please reference it as 
   
+  Gert Wollny et al., "MIA - A plugin-based Framework for Medical Image Processing", http://mia.sf.net 
+
 */

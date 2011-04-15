@@ -172,17 +172,24 @@ private:
 };
 
 
-/**
+/** 
+    \brief The generic base for all plug-ins 
+
    Templated plugin base class. The classes \a D and \a T must define a
-   static  const char *value.  the combination D::value and T::value
-   is will be part of the plugin search path.
+   static const char *type_descr and static const char *value respectively.  
+   The combination D::type_descr and T::value is will be part of the plugin search path.
+   \tparam D data type descriptior 
+   \tparam T plugin type descriptor 
+   
 */
 template <typename D, typename T>
 class EXPORT_HANDLER TPlugin: public  CPluginBase {
 public:
+	/// Typedef for the data type descriptor handled by this plug-in 
 	typedef D PlugData;
-	typedef T PlugType;
 
+	/// Typedef for the plugin type descriptor handled by this plug-in 
+	typedef T PlugType;
 
 	/**
 	   The constructor  initialises the plug-in with its name and sets

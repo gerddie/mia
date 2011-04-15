@@ -29,6 +29,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief A simple 2x2 matrix 
+   
    Simple implementation of a 2D Matrix to store 2nd order derivatives. 
  */
 
@@ -36,12 +38,23 @@ template <typename T>
 struct T2DMatrix: public T2DVector< T2DVector<T> > {
 	
 	T2DMatrix(); 
+
+	/// copy constructor 
 	T2DMatrix(const T2DMatrix<T>& o); 
+
+	/// construct the matrix from a 2D vector of 2D vectors 
 	T2DMatrix(const T2DVector< T2DVector<T> >& o); 
+	
+	/** construct  the matrix from two 2D vectors 
+	    \param x 1st row 
+	    \param y 2nd row 
+	*/
 	T2DMatrix(const T2DVector< T >& x, const T2DVector< T >& y ); 
 	
+	/// assignment operator 
 	T2DMatrix& operator = (const T2DMatrix<T>& o);
 	
+	/// element wise subtract operator 
 	T2DMatrix& operator -= (const T2DMatrix<T>& o);
 
 }; 

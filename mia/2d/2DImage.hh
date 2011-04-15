@@ -103,7 +103,7 @@ typedef std::vector<P2DImage> C2DImageSeries;
 
 
 /**
-\brief This is the template version of a 2D image.
+\brief This is the template version of a 2D image that is used for holding real data.
 
 The purpouse of this class is to hold actual pixel data and provide access to it.
 */
@@ -111,8 +111,10 @@ The purpouse of this class is to hold actual pixel data and provide access to it
 template <typename T>
 class EXPORT_2D T2DImage : public C2DImage {
 public:
+	/// define the super class of this class for generic processing 
 	typedef C2DImage Super;
 
+	/// \cond SELFEXPLAINING 
 	typedef typename T2DDatafield<T>::iterator iterator;
 	typedef typename T2DDatafield<T>::const_iterator const_iterator;
 	typedef typename T2DDatafield<T>::const_reference const_reference;
@@ -122,87 +124,153 @@ public:
 	typedef typename T2DDatafield<T>::value_type value_type;
 	typedef typename T2DDatafield<T>::difference_type difference_type;
 	typedef typename T2DDatafield<T>::size_type size_type;
+	/// \endcond
 
+	/**
+	   Create a 2D image with the given size and initialize it with the given data 
+	   \param size 
+	   \param init_data must at least be of size (size.x*size.y)
+	*/
 	T2DImage(const C2DBounds& size, const T* init_data);
+
+	/**
+	   Create a 2D image with the given size and initialize it with the given data 
+	   \param size 
+	   \param init_data must at least be of size (size.x*size.y)
+	*/
 	T2DImage(const C2DBounds& size, const typename T2DDatafield<T>::data_array& init_data);
+	/**
+	   Create a 2D image with thegiven size and attach the given meta-data list. 
+	   \param size image size 
+	   \param attr meta-data to be added 
+	 */
 	T2DImage(const C2DBounds& size, const CAttributedData& attr);
+
+	/**
+	   Create a 2D image with the given size and initialize it with the given data 
+	   \param size 
+	*/
 	T2DImage(const C2DBounds& size);
+
+	/**
+	   Copy constructor 
+	 */
 	T2DImage(const T2DImage& orig);
 
+	/**
+	   Constructor to create the image by using a 2D data field 
+	   \param orig the input data field 
+	*/
 	T2DImage(const T2DDatafield<T>& orig);
+
+	/**
+	   Constructor to create the image by using a 2D data field and a given meta data set. 
+	   \param orig the input data field 
+	   \param attr the meta data 
+	*/
 	T2DImage(const T2DDatafield<T>& orig, const CAttributedData& attr);
-	T2DImage();
 	
+	T2DImage();
+
+	/**
+	   \returns a dynamically created copy of the image
+	 */
 	virtual C2DImage* clone() const __attribute__((warn_unused_result));
 	
+	/// forwarding function to access the underlying T2DDatafield
 	const_reference operator()(size_t  x, size_t  y) const {
 		return m_image(x,y);
 	}
 	
+	/// forwarding function to access the underlying T2DDatafield
 	reference operator()(size_t  x, size_t  y){
 		return m_image(x,y);
 	}
 	
+	/// forwarding function to access the underlying T2DDatafield
 	const_reference operator[](size_t  idx) const {
 		return m_image[idx];
 	}
 	
+	/// forwarding function to access the underlying T2DDatafield
 	reference operator[](size_t  idx){
 		return m_image[idx];
 	}
 	
+	/// forwarding function to access the underlying T2DDatafield
 	const_reference operator()(const C2DBounds& l) const{
 		return m_image(l.x,l.y);
 	}
 	
+	/// forwarding function to access the underlying T2DDatafield
 	reference operator()(const C2DBounds& l){
 		return m_image(l.x,l.y);
 	}
 
+	/// forwarding function to access the underlying T2DDatafield
 	const_iterator begin()const {
 		return m_image.begin();
 	}
 
+	/// forwarding function to access the underlying T2DDatafield
 	const_iterator end()const {
 		return m_image.end();
 	}
 
+	/// forwarding function to access the underlying T2DDatafield
 	iterator begin() {
 		return m_image.begin();
 	}
 
+	/// forwarding function to access the underlying T2DDatafield
 	iterator end() {
 		return m_image.end();
 	}
 
+	/// forwarding function to access the underlying T2DDatafield
 	const_iterator begin_at(size_t x, size_t y)const {
 		return m_image.begin_at(x,  y);
 	}
 
+	/// forwarding function to access the underlying T2DDatafield
 	iterator begin_at(size_t x, size_t y) {
 		return m_image.begin_at(x,  y);
 	}
 
+	/// forwarding function to access the underlying T2DDatafield
 	size_t size() const;
 
-	const T2DDatafield<T>& data() const;
-	//T2DDatafield<T>& data();
+	/// get direct access to the data field 
+	const T2DDatafield<T>& data() const __attribute__((deprecated));
 
+	/// forwarding function to access the underlying T2DDatafield
 	void get_data_line_x(size_t y, std::vector<T>& buffer) const;
 
+	/// forwarding function to access the underlying T2DDatafield
 	void get_data_line_y(size_t x, std::vector<T>& buffer) const;
 	
+	/// forwarding function to access the underlying T2DDatafield
 	void put_data_line_x(size_t y, const std::vector<T>& buffer);
 
+	/// forwarding function to access the underlying T2DDatafield
 	void put_data_line_y(size_t x, const std::vector<T>& buffer);
 	
+	/** 
+	    evaluate the image gradient afthe given grid position by using centered finite differences 
+	    \param idx linear index into the image data 
+	    \returns the approximated gradient 
+	 */
 	C2DFVector get_gradient(size_t idx) const;
 	
+	/**
+	   Evaluate the gradient by using linerly interpolated finite differences 
+	   \param p continious coordinate into the image domain 
+	   \returns gradient at position p 
+	 */
 	C2DFVector get_gradient(const C2DFVector& p) const;
 private:
 	T2DDatafield<T> m_image;
 };
-
 
 class CImageComparePrinter: public TFilter<int> {
 public:

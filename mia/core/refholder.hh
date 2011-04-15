@@ -27,19 +27,25 @@
 NS_MIA_BEGIN
 
 /**
-   This is a little hepler class to make it possible to change a 
-   constant reference member variable after construction of a class. 
+   \brief A class to make a const reference not so const 
+   
+   This is a little hepler class to make it possible to change what 
+   a constant reference member variable points to after construction of a class.
    \tparam T the type a reference is used form 
  */
 
 template <typename T> 
 class TRefHolder {
 public: 
+	/// pointer type of this reference holder.  
 	typedef std::shared_ptr<TRefHolder<T> > Pointer; 
+	
+	/// the type of the actual reference this class holds
 	typedef const T& const_reference; 
 	
 	/**
 	   Constructor 
+	   \param r the const reference to be hold 
 	 */
 	TRefHolder(const_reference r):
 		m_r(r){}

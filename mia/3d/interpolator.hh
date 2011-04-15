@@ -84,7 +84,10 @@ struct coeff_map<T3DVector<U> > {
 template <class T>
 class EXPORT_3D T3DConvoluteInterpolator: public T3DInterpolator<T> {
 public:
+	/** type how the coefficients are stored  - this is done to use a higher accuracy 
+	    if the input data is not of double floating point precicion */ 
 	typedef T3DDatafield< typename coeff_map< T >::coeff_type > TCoeff3D;
+	
 	/**
 	   Create the interpolator from the input data and a given kernel
 	   \param data
@@ -108,13 +111,13 @@ public:
 	}
 
 protected:
-
+	/// helper class for filtering 
 	typedef std::vector< typename TCoeff3D::value_type > coeff_vector;
 private:
 
 	TCoeff3D m_coeff;
 	C3DBounds m_size2;
-	std::shared_ptr<CBSplineKernel > m_kernel;
+	PBSplineKernel m_kernel;
 	T m_min;
 	T m_max;
 

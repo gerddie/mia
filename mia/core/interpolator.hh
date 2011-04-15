@@ -36,7 +36,6 @@ NS_MIA_BEGIN
 
 /**
    \file core/interpolator.hh
-   \todo - create B-spline kernels of size 0 and 1
    \todo move kernels into plugins 
  */
 
@@ -471,9 +470,15 @@ C CBSplineKernel::initial_anti_coeff(const std::vector<C>& coeff, double pole)
 		(pole * coeff[coeff.size() - 2] + coeff[coeff.size() - 1]));
 }
 
+/**
+   Generic implementaation to create and interpolation factory 
+   \tparam InterpolatorFactory target factory 
+   \param type interpolation type to be used 
+   \returns the newly created interpolation factory  
+ */
 
 template <typename InterpolatorFactory> 
-InterpolatorFactory *create_interpolator_factory(EInterpolation type) 
+InterpolatorFactory *create_interpolator_factory(EInterpolation type) __attribute__((warn_unused_result))
 {
 	std::shared_ptr<CBSplineKernel > kernel;
 	EInterpolationFactory iptype = ipf_unknown; 

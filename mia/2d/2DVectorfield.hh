@@ -35,11 +35,13 @@ NS_MIA_BEGIN
 template <typename T>
 class EXPORT_2D T2DVectorfield: public T2DDatafield<T>, public CAttributedData {
 public:
+	/// plug.in related type description string 
 	static const char *type_descr;
 
 	T2DVectorfield(){};
 
 	/**
+	   Contruct a vector field of the given size 
 	   @param size of vector field 
 	 */
 	T2DVectorfield(const C2DBounds& size):

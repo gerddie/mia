@@ -140,7 +140,7 @@ T2DDatafield<T>::operator()(size_t  x, size_t  y)
 		return (*m_data)[x + m_size.x * y ];
 	}else{
 		//FORCECOREDUMP;
-		throw "operator(x,y,z):Index out of bounds";
+		throw std::invalid_argument("T2DDatafield<T>::operator(x,y,z):Index out of bounds");
 	}
 
 }

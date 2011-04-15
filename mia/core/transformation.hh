@@ -48,7 +48,10 @@ public:
 	
         virtual ~Transformation(); 
 
+	/// typedef for the data type to be transformed by this transformation 
 	typedef D Data; 
+
+	/// type of the interpolator used by this transformation 
 	typedef I Interpolator; 
 	
 	/** Apply the transformation to the input data 
@@ -56,9 +59,9 @@ public:
 	    \param ipf interpolator factory 
 	    \returns a shared pointer to the transformed input data
 	*/
-	std::shared_ptr<D > operator () (const D& input, const I& ipf) const; 
+	std::shared_ptr<D> operator () (const D& input, const I& ipf) const; 
 private: 
-        virtual std::shared_ptr<D > apply(const D& input, const I& ipf) const = 0;
+        virtual std::shared_ptr<D> apply(const D& input, const I& ipf) const = 0;
 
 }; 
 
