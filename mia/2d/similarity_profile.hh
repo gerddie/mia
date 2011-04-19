@@ -30,6 +30,8 @@
 
 NS_MIA_BEGIN
 /**
+   \brief A class to evaluate image similarity profiles of image series 
+
    This class evaluates the similarity profile of a series of images 
    with respect to a certain cost function and a given reference. 
    It can then be used to evaluate a periodic subset and the 

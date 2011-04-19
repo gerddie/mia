@@ -29,6 +29,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief a class to real-to-complex 1D FFTs 
+
    Class to run a 1D real-to-complex FFT and its inverse. This class makes use of fftw.
    The result of a  forward transform followed directly by a backward transform is the input
    scaled by the size of the input.

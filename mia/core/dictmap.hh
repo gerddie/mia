@@ -39,7 +39,9 @@
 NS_MIA_BEGIN
 
 /**
-   A mapper from emums to string values. - usefull for names flags 
+   \brief A mapper from emums to string values. - usefull for names flags 
+
+   \todo extend it to also contain help strings for each flag. 
 */
 template <typename T>
 class TDictMap {

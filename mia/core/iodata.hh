@@ -30,7 +30,9 @@
 NS_MIA_BEGIN
 
 /**
-   Interface halper class for all IO data classes - defines the get/set format
+   \brief helper class to derive from for data that can be loaded and stored to a disk. 
+
+   Interface halper class for all IO data classes - defines the get/set format functions.  
 */
 class EXPORT_CORE CIOData {
 public:

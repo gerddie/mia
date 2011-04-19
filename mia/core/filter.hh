@@ -45,7 +45,10 @@ struct EXPORT_CORE filter_type {
 #define DC(T, D) dynamic_cast<const T&>(D)
 #define DV(T, D) dynamic_cast<T&>(D)
 
+
 /**
+   \brief base class for all filer type functors. 
+
    Base class for all filters that can be used with the pixel type transparent
    filter functions
    \a filter and \a filter_equal
@@ -62,23 +65,49 @@ struct TFilter {
 	typedef R result_type;
 };
 
+/**
+   \brief Generic interface class to data filters. 
+
+   This class provides the basic interface to image filtering.  
+   \tparam D the data type to be filtered 
+*/
+
 
 template <class D>
 class EXPORT_HANDLER TImageFilter: public TFilter< std::shared_ptr<D > >, public CProductBase {
 public:
-	typedef D plugin_data; 
+
+	/// plugin handler helper type 
+	typedef D plugin_data;
+	/// plugin handler helper type 
 	typedef filter_type plugin_type; 
 	
+	/// result type of this filter 
 	typedef typename TFilter< std::shared_ptr<D > >::result_type result_type;
+	
 	virtual ~TImageFilter();
+
+	/* run the filter 
+	   \param image must be of a type that has Binder trait defined.  
+	 */ 
 	result_type filter(const D& image) const;
 private:
 	virtual result_type do_filter(const D& image) const = 0;
 };
 
+/**
+   \brief Generic image filter plugin base 
+
+   This class provides the generic base class for image filter 
+   plug-ins. 
+   \tparam Image the image type for which the filters are defined. 
+   
+ */
+
 template <class Image>
 class EXPORT_HANDLER TImageFilterPlugin: public TFactory<TImageFilter<Image> > {
 public:
+	/// Constructor that sets the plug-in name 
 	TImageFilterPlugin(char const * const  name):
 		TFactory<TImageFilter<Image> >(name)
 	{}
@@ -88,7 +117,6 @@ private:
 		return true;
 	};
 };
-
 
 template <template <class> class  D>
 struct __bind_all {
@@ -107,6 +135,16 @@ struct __bind_all {
 	typedef D<double> Ddouble;
 };
 
+
+/**
+   \brief a trait to define types for images of all pixel types that are derived 
+   from a common base class. 
+
+   The class needs to have a typedef 
+   - typedef __bind_all<sometype> Derived; 
+   See Binder<C2DImage> how to do this properly. 
+   \tparam B the base class from which the templated images are derived
+ */
 template <typename B>
 struct Binder {
 };

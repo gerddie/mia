@@ -33,7 +33,9 @@
 NS_MIA_BEGIN
 
 /**
-   Ths class implements the frame of a myocardial segmentation consisting of 
+   \brief A class to represent one segmented frame in a heart perfusion series 
+   
+   This class implements the frame of a myocardial segmentation consisting of 
    six sections CSegsection, the segmentation helper CSegStar, and the name of the 
    corresponding image file.  
 */

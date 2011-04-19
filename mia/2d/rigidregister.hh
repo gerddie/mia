@@ -40,7 +40,11 @@ NS_MIA_BEGIN
    @brief Linear Registration of 2D images.  
    
    Class for registration without regularization - i.e. should only be used
-   for affine, rigid and translation only registrations
+   for affine, rigid and translation only registrations. 
+   However, one might note that the generic implementation of the C2DTransformtion 
+   class makes is possible to use any kind of transformation that is provided by 
+   a transformation plug-in. 
+   This class allows that exactly one cost function is used. 
 */
 
 class EXPORT_2D C2DRigidRegister {

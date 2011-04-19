@@ -28,6 +28,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief A class to adress a circulat bufer of a fixed size. 
+
    This class provides the structure for the translation of a linear index to 
    a circular buffer. 
    An example for its use can be found in mia/3d/translate/spline.cc: on_grid (BLAS_VERSION)

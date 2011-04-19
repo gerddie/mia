@@ -35,6 +35,7 @@ NS_MIA_BEGIN
 
 
 /**
+   \cond INTERNAL
    Helper structure used to initialize std::shared_ptr with the proper 
    delete operator.  
  */
@@ -56,6 +57,7 @@ struct array_void_destructor {
 	virtual void operator () (T *) {
 	}
 }; 
+/// \endcond 
 
 /**
    \brief A wrapper around the c-array to provide an STL like interface for iterators 

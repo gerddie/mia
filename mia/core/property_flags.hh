@@ -33,7 +33,9 @@ extern EXPORT_CORE const char *property_gradient;
 
 
 /**
-   This class holds a set of properties. 
+   \brief This class holds a set of properties. 
+   
+   This class holds a set of properies that can be compared 
    \remark These properties are stored as plain text 
    strings, but in the end only the pointer is compared. 
 */

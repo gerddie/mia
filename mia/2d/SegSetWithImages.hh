@@ -35,6 +35,8 @@ namespace xmlpp {
 NS_MIA_BEGIN
 
 /**
+   \brief A set of images and its segmentations, related to heart perfusion analysis  
+   
    A set of slices containing segmentationinformation as well as the images. 
  */
 class EXPORT_2D CSegSetWithImages: public CSegSet {

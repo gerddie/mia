@@ -38,8 +38,11 @@ NS_MIA_BEGIN
 
 
 /**
-   This is the generic base class for 2D transformations.
-   Most methods are pure abstract and need to be implemented by a "real" transformation. 
+   \brief This is the generic base class for 2D transformations.
+
+   This class defines the generic interface for a 2D transformation. 
+   Most methods are pure abstract and need to be implemented by a "real" transformation.
+   Actual implementations are provided as plug-ins.
 */
 class EXPORT_2D C2DTransformation: public Transformation<C2DImage, C2DInterpolatorFactory> {
 public:

@@ -36,7 +36,7 @@ struct test_plugin_data;
 EXPORT_CORE extern const char *const test_property;
 
 /**
-   Class to test plugin handling. 
+   \brief Class to test plugin handling. 
 */
 
 class EXPORT_CORE CTestPlugin: public TPlugin<test_plugin_data, test_plugin_type>  {
@@ -51,6 +51,9 @@ private:
 };
 
 
+/**
+   \brief Class to test plugin handling. 
+*/
 class EXPORT_CORE CTestPluginHandlerImpl : public  TPluginHandler<CTestPlugin> {
 protected:
 	CTestPluginHandlerImpl(const std::list<boost::filesystem::path>& searchpath);

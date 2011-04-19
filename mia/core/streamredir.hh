@@ -35,6 +35,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief base class to redirect output streams
+
    This class implements the abstract base class for stream output redirection
    to e.g. a text window or a console.
    The specialization must implement the do_put_buffer method, which writes out

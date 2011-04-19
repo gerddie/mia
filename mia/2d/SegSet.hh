@@ -35,9 +35,10 @@ namespace xmlpp {
 NS_MIA_BEGIN
 
 /**
+   \brief A set of segmentation of a 2D series of perfusion images 
+   
    A set of slices containing segmentation information specifically designed for 
    myocardial perfusion image series. 
-   \todo should probably go into a seperate library 
 */
 class EXPORT_2D CSegSet {
 public:

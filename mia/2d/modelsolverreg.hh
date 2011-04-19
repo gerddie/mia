@@ -33,6 +33,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief A class for PDE based time-marching non-linear image registration 
+
    Worker class for a PDE model based non-linear registration. 
    It runs a multi-resolution registration and at each resolution level 
     a marchin time-step  appoach is used for registration. 

@@ -30,7 +30,9 @@
 NS_MIA_BEGIN
 
 /**
-   2D Vector field 
+   \brief 2D Vector field 
+   
+   This class provides an  interface to make the IO opf vector fields possible 
  */
 template <typename T>
 class EXPORT_2D T2DVectorfield: public T2DDatafield<T>, public CAttributedData {

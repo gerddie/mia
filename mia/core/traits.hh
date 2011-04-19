@@ -30,6 +30,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief A trait to obtaine information about of dimensions of a class 
+
    A template to get an generic dimension vector 
    \tparam T must be a template that defines a type \a dimsize_type
  */
@@ -40,7 +42,7 @@ struct dim_traits {
 };
 
 /**
-   Structure to enable the use of the dim_traits class for std::vector 
+   \brief Structure to enable the use of the dim_traits class for std::vector 
  */
 struct vector_dimsize {
 	

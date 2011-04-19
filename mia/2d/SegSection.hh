@@ -36,6 +36,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief Segmentation class to represent a section of the LV myocardium 
+
    Structure to save the segmentation of a section of the myocardium. 
    In theory this can be used for any king of segmentation that uses 
    a polynom to approximate a segmented 2D shape. 

@@ -31,6 +31,8 @@
 
 NS_MIA_BEGIN
 /**
+   \brief The time step class for time-marching registration algorithms
+
    Registration time step for  a time-marching registration algorithm like 
    those based on a variational model. 
    Generally the time marhcing model consists of two parts, a PDE describing 

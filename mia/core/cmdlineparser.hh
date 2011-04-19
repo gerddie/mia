@@ -54,7 +54,10 @@ typedef std::map<char,  CCmdOption *>        CShortoptionMap;
 /// Class to provide a maping from long option names to options
 typedef std::map<std::string,  CCmdOption *> CLongoptionMap;
 
-/** The base class of all possible command line options. It defines the interface
+/** 
+    \brief The base class for all command line options. 
+
+    The base class of all possible command line options. It defines the interface
     of the options as well as some basic functionality to create help strings
     \todo "Add a start or set group command"
     \todo "Add a parameter to the parse command that tells whether additional parameters 
@@ -158,7 +161,9 @@ typedef std::shared_ptr<CCmdOption > PCmdOption;
 
 
 /**
-    The base class to options that really hold values
+   \brief The base class for command line options that hold "normal" values.  
+
+   The base class to options that really hold values
 */
 class EXPORT_CORE CCmdOptionValue: public CCmdOption {
 public:
@@ -192,7 +197,11 @@ private:
 
 
 
-/** Templated implementation of a command line option to hold a value of type T.
+/** 
+    \brief Templated version based on CCmdOptionValue for values that can be converted to 
+    and from strings by stream operators 
+
+    Templated implementation of a command line option to hold a value of type T.
     \tparam T value parameter, the type T has to support the operators
     "std::ostream& operator << (std::ostream& os, T x)" and
     "std::istream& operator >> (std::istream& os, T x)"
@@ -229,7 +238,9 @@ private:
 	T& m_value;
 };
 
-/** Command line option that translates a set of string values to corresponding 
+/** \brief A command line option that uses a dictionary to map strings to values. 
+
+    Command line option that translates a set of string values to corresponding 
     values of type \a T given in a table \a TDictMap<T>. 
     If a string is passed to the option that is not defined in the table,
     it will throw a \a std::invalid_argument exception.
@@ -263,7 +274,8 @@ private:
 };
 
 
-/** Command line option that translates a string to a set of flags.
+/** 
+    \brief Command line option that translates a string to a set of flags.
 */
 
 class CCmdFlagOption: public  CCmdOptionValue{
@@ -291,7 +303,9 @@ private:
 	const CFlagString m_map;
 };
 
-/** Command line option that supports only a limited number of values 
+/** \brief A command line option that supports a limited set of values interpreted as strings. 
+    
+    Command line option that supports only a limited number of values 
     (given and interpreted as strings)
     If the string given to the option is not element of the set of allowed values, 
     the \a set_value method will throw a \a std::invalid_argument exception.
@@ -324,6 +338,9 @@ private:
 };
 
 /**
+   \brief A command line option that will appear in the help group 
+   and exits the program after printing the help. 
+
    Option that will appear in the help group and setting it will 
    always terminate the program after printing out the requested 
    help. 
@@ -502,7 +519,10 @@ class TPluginHandlerHelpCallback: public CHelpOption::Callback {
 
 
 /**
-   The class to hold the list of options
+   \brief The class to hold the list of options
+
+   This class holds all the user defined and default command line option, 
+   handles the parsing and the printing of help. 
 */
 class EXPORT_CORE CCmdOptionList {
  public:

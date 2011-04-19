@@ -36,7 +36,11 @@
 NS_MIA_BEGIN
 
 
-/** This class holds the complete history list of a data set */
+/** 
+    \brief This class holds the complete history list of a data set. 
+    
+    \todo Use it. 
+*/
 
 
 class EXPORT_CORE CHistory: public std::list<CHistoryEntry> {

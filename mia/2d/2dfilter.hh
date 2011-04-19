@@ -62,7 +62,9 @@ P2DImage  EXPORT_2D run_filter(const C2DImage& image, const char *filter);
 
 
 /**
-   2D Image combiner 
+   \brief 2D Image combiner 
+   
+   A class to provides the base for operations that combine two images to create a new image
  */
 class EXPORT_2D C2DImageCombiner : public TFilter< P2DImage > ,
 				   public CProductBase {

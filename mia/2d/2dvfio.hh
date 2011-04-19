@@ -33,6 +33,11 @@
 
 NS_MIA_BEGIN
 
+/**
+   \brief a class for the IO of 2D vector fields 
+
+   \remark this class is obsolete, new code should use the 2D transformation IO 
+ */
 
 
 class EXPORT_2D C2DIOVectorfield: public C2DFVectorfield, public CIOData {

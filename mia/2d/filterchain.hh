@@ -31,6 +31,8 @@ NS_MIA_BEGIN
 
 
 /**
+   \brief a convenience class to create a chain of 2D image filters 
+
    This class is used to construct a filter chain from a vector of 
    parameter strings. 
    

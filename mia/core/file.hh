@@ -69,7 +69,10 @@ private:
 };
 
 
-/** A simple wrapper for the stdio FILE type that handles opening and closing for
+/** 
+    \brief A stdio FILE for opening a file for reading. 
+    
+    A simple wrapper for the stdio FILE type that handles opening and closing for
     reading and takes care, whether \a stdin should be used */
 class EXPORT_CORE CInputFile: public CFile {
 public:
@@ -87,7 +90,10 @@ public:
 	CInputFile(const std::string& filename, bool from_stdin);
 };
 
-/** A simple wrapper for the stdio FILE type that handles opening and closing for
+/** 
+    \brief A stdio FILE for opening a file for writing. 
+    
+    A simple wrapper for the stdio FILE type that handles opening and closing for
     writing and takes care, whether \a stdout should be used */
 class EXPORT_CORE COutputFile: public CFile {
 public:
@@ -105,7 +111,11 @@ public:
 	COutputFile(const std::string& filename, bool from_stdin);
 };
 
-/** This class provides the base for showing sime kind of progress bar during some operation */
+/** 
+    \brief A callback interface to show progess. 
+    
+    This class provides the base for showing sime kind of progress bar during some operation 
+*/
 class EXPORT_CORE CProgressCallback {
 public:
 	virtual ~CProgressCallback();

@@ -29,6 +29,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief The base class for all plug-in created object. 
+   
    Base of all objects that are created from within plug-ins using a factory method. 
    It also holds the creator string for the instance of the created object.
    \remark The pointer to the modules should take care that the module is valid until the 

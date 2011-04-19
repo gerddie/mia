@@ -30,6 +30,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief A command line option class to use a TFactory to create the value from the parameter string. 
+
    Command line option that uses a factory singleton to create the target object from 
    the parsed command line parameter 
    \tparam F the factory type that must define a type F::ProductPtr, must provide a

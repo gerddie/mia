@@ -31,6 +31,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief Helper class for the segmentation of the left heart ventricle myocardium 
+
    This class implements the segmentation helper that defines the
    center of a circle, six rays and the circle. 
    It is used to help the (manual) segmentation of the left heart myocardium.

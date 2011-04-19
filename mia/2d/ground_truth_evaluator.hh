@@ -25,6 +25,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief Main class for peudo ground truth estimation for perfusion series 
+   
    This class implements the Ground Truth Estimation for perfusion series
    as given in
    Chao Li and Ying Sun, "Nonrigid Registration of Myocardial Perfusion

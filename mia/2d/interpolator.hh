@@ -64,9 +64,10 @@ public:
 };
 
 /**
+   \brief The base class for 2D interpolators 
+
    Basic Interpolator type for 2D Data.
 */
-
 template <typename T>
 class  EXPORT_2D T2DInterpolator : public  C2DInterpolator {
 public:
@@ -90,6 +91,13 @@ struct coeff_map<T2DVector<U> > {
 	typedef T2DVector<U> value_type;
 	typedef C2DDVector   coeff_type;
 };
+
+/**
+   \brief The base class for 2D interpolators that use some kind of spacial convolution 
+
+   This class provides the interface for 2D interpolation based on some kind of 
+   spacial convolution, like e.g. by using B-splines. 
+*/
 
 template <class T>
 class EXPORT_2D T2DConvoluteInterpolator: public T2DInterpolator<T> {
@@ -128,21 +136,45 @@ private:
 
 };
 
+/**
+   \brief The factory to create an interpolator from some input data 
+*/
+
 class EXPORT_2D C2DInterpolatorFactory {
 public:
 
+	/**
+	   Construct the factory by giving the interpolator type and the 
+	   kernel used for interpolation. 
+	   \param type 
+	   \param kernel
+	 */
 	C2DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel);
 
+	/// Copy constructor 
 	C2DInterpolatorFactory(const C2DInterpolatorFactory& o);
 
+	/// Assignment operator 
 	C2DInterpolatorFactory& operator = ( const C2DInterpolatorFactory& o);
 
 	virtual ~C2DInterpolatorFactory();
+
+	/**
+	   Interpolator creation function 
+	   \tparam pixel data type - can be anything that cann be added to itself and 
+	   multiplied by a double scalar. The class T must also define the coeff_map trait. 
+	   \param src input data to interpolate 
+	   \returns the requested interpolator
+	 */
 
 	template <class T>
 	T2DInterpolator<T> *create(const T2DDatafield<T>& src) const
 		__attribute__ ((warn_unused_result));
 
+
+	/**
+	   \returns raw pointer to the interpolation kernel. 
+	 */
 	const CBSplineKernel* get_kernel() const;
 
 private:

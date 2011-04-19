@@ -32,6 +32,7 @@ NS_MIA_BEGIN
 
 /**
    \brief This class implements a 1D histogram using Parzen Windows. 
+
    This class uses NFFT to implement the Parzen windows probability estimation. 
    Input samples are given once with a fixed operation range and the number 
    of output samples used to interpolate the histogram 

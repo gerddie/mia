@@ -39,7 +39,8 @@
 
 NS_MIA_BEGIN
 
-/**
+/** \brief A Scope based helper class to save and restore the current working directory 
+
    A helper class that stores the current working directory on construction
    and goes back to the it when the class intance is destroyed. 
 */

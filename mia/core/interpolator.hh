@@ -43,7 +43,11 @@ NS_MIA_BEGIN
 extern EXPORT_CORE TDictMap<EInterpolation> GInterpolatorTable;
 
 /**
-   The kernel of spline based interpolations - base type
+   \brief Base class for all spline based interpolation kernels.  
+
+   The kernel of spline based interpolations that provides the interface to 
+   evaluate weights and indices into the coefficient field. 
+   
  */
 class EXPORT_CORE CBSplineKernel {
 public:
@@ -478,7 +482,7 @@ C CBSplineKernel::initial_anti_coeff(const std::vector<C>& coeff, double pole)
  */
 
 template <typename InterpolatorFactory> 
-InterpolatorFactory *create_interpolator_factory(EInterpolation type) __attribute__((warn_unused_result))
+InterpolatorFactory *create_interpolator_factory(EInterpolation type) 
 {
 	std::shared_ptr<CBSplineKernel > kernel;
 	EInterpolationFactory iptype = ipf_unknown; 

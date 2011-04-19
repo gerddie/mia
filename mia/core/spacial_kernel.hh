@@ -43,6 +43,8 @@ struct EXPORT_CORE kernel_plugin_type {
 };
 
 /**
+   \brief base class for 1D filter kernels 
+
    prototype for a 1D spacial convolution kernel
    \todo put the convolution into this class, problem: it must work for all
          data types but should also be virtual
@@ -92,7 +94,7 @@ private:
 };
 
 /**
-   Base class for folding kernal types.
+   \brief Base class for folding kernal types.
  */
 
 class EXPORT_CORE C1DFoldingKernel : public C1DFilterKernel {

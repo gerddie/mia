@@ -30,7 +30,8 @@ NS_MIA_BEGIN
 /**
    @brief This class mocks a transformation by implementing all the pure virtual 
    methods of the \a C2DTransformation interface. 
-   It is used only for testing purpouses. 
+
+   This class is only used for testing purpouses. 
  */
 struct  EXPORT_2D C2DTransformMock: public C2DTransformation {
 	/// @cond TESTINTERFACE 

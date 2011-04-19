@@ -33,8 +33,14 @@
    
 
 NS_MIA_BEGIN
+
+/// The base class for 2D transformation IO plugins 
 typedef TIOPlugin<C2DTransformation> C2DTransformationIO; 
+
+/// The 2D transformationb plugin handler 
 typedef TIOHandlerSingleton< TIOPluginHandler<C2DTransformationIO> > C2DTransformationIOPluginHandler;
+
+/// The data key type for the CDatapool storage 
 typedef C2DTransformationIOPluginHandler::Instance::DataKey C2DTransformationDataKey;
 NS_MIA_END
 

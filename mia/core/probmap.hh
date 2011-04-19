@@ -37,7 +37,10 @@ NS_MIA_BEGIN
 typedef std::vector<double> CDoubleVector;
 
 /**
-   A vector of probablility values. 
+   \brief A vector of probablility values. 
+   
+   A vector of probablility values that supports loading and storing 
+   the data. 
  */
 class EXPORT_CORE CProbabilityVector: public std::vector<CDoubleVector> {
 public:

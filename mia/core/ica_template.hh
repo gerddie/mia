@@ -41,6 +41,7 @@ NS_MIA_BEGIN
 
 /**
    \brief Templated representation of a ICA series analyis 
+
    This class provides a generic implementation for the ICA analysis 
    of data series. 
    \tparam Data some kind of data set ofwhich series are analyzed 

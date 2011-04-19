@@ -42,14 +42,15 @@
 
 NS_MIA_BEGIN
 
-//EXPORT_CORE extern const char plugin_test_mode[];
 
 /// standard string to print out help in the factory plug-in handler 
 EXPORT_CORE extern const std::string plugin_help;
 
 /**
-   \class CPluginBase
-   The base for all plug-ins.
+   \brief The base class for all plug-ins.
+
+   The base class for all plug-ins. It supports handling parameters 
+   and a provides a help interface. 
 */
 
 class EXPORT_CORE CPluginBase {
@@ -175,11 +176,11 @@ private:
 /** 
     \brief The generic base for all plug-ins 
 
-   Templated plugin base class. The classes \a D and \a T must define a
-   static const char *type_descr and static const char *value respectively.  
-   The combination D::type_descr and T::value is will be part of the plugin search path.
-   \tparam D data type descriptior 
-   \tparam T plugin type descriptor 
+    Templated plugin base class. The classes \a D and \a T must define a
+    static const char *type_descr and static const char *value respectively.  
+    The combination D::type_descr and T::value is will be part of the plugin search path.
+    \tparam D data type descriptior 
+    \tparam T plugin type descriptor 
    
 */
 template <typename D, typename T>

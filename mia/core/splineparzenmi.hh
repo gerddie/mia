@@ -31,13 +31,17 @@
 NS_MIA_BEGIN
 
 /**
+   \brief Implementation of mutual information based on B-splines 
+
 This class implements a spline parzen windows based evaluation of the 
 mutual information between two images and its gradient w.r.t. to one image. 
 
 For details see 
+ 	P. Thévenaz, M. Unser, "Optimization of Mutual Information 
+	for Multiresolution Image Registration," IEEE Tran on Img Proc, 
+	vol. 9, no. 12, pp. 2083-2099, December 2000. 
 
 */
-
 class EXPORT_CORE CSplineParzenMI{
 public: 
 	/**

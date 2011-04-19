@@ -26,6 +26,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief evaluate the correlation between neighboring pixels in an image series  
+   
    Evaluate time-intensity correlations of neighboring pixels in a series of images. 
    This class is used to evaluate a pseude ground truth for motion compensation. 
    See C2DGroundTruthEvaluator for more information 

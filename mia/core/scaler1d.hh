@@ -37,11 +37,14 @@
 NS_MIA_BEGIN
 
 /**
+   \brief A class for general scaling of one-dimensional arrays. 
+
    Class for general scaling of one-dimensional arrays. kernels are the separable B-spline 
    functions.  For upscaling, an interpolator is created by using the provided interpolator factory.
    Downscaling is done solving an overdetermined linear system of equations Ax = y. At construction 
    time the matrix A is QR decomposed, and later the downscaling is done by solving QRx=y
    \todo see if scaling can be expressed by a filter 
+   \todo seems like downscaling isn't done properly 
 */
 
 class EXPORT_CORE C1DScalarFixed {

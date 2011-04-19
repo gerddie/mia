@@ -34,10 +34,11 @@ NS_MIA_BEGIN
 
 
 /**
-   The 2D non-rigid image registration class. Its usage is very simple: 
-   Initialise it with the desired parameters and call it with the 
-   source (template) and reference image to obtain a vector field 
-   describing the registration. 
+   \brief A 2D non-rigid registration class for time-marching PDE based registration  
+
+   The 2D non-rigid image registration class. This class allows the combination of 
+   various image cost functions, provides multi-level registration and the use 
+   of various PDE models (depending on the provided plug-ins.
 */
 class EXPORT_2D C2DMultiImageNonrigidRegister {
 public: 

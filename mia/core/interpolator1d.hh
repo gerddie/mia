@@ -54,8 +54,10 @@
 NS_MIA_BEGIN
 
 /**
-   Basic Interpolator type for 1D Data.
- */
+   \brief Basic Interpolator type for 1D Data.
+   
+   \remark Why do we need this? 
+*/
 
 class EXPORT_CORE C1DInterpolator {
 public:
@@ -65,6 +67,8 @@ public:
 
 
 /**
+   \brief Interpolator base class providing the full interface 
+   
    Basic Interpolator type for 1D Data.
    \tparam T data type to be interpolated over 
  */
@@ -89,8 +93,12 @@ public:
 
 };
 
-/** Base type for interpolators that work with some kind of convolution  */
-
+/** 
+    \brief Interpolator that uses some kind of spaciel kernel. 
+    
+    Base type for interpolators that work with some kind of convolution  
+    \remark currently all interpolators are like this ... 
+*/
 template <class T>
 class EXPORT_CORE T1DConvoluteInterpolator: public T1DInterpolator<T> {
 public:
@@ -138,9 +146,10 @@ private:
 };
 
 
-/** Factory to create 1D interpolators of a give type using the given input data 
-    \remark After replacing the NN and Linear interpolators by using BSplineKernel(0|1) 
-    this class should be removed 
+/** 
+    \brief Factory class for 1D interpolators 
+
+    Factory to create 1D interpolators of a give data type using the given input data.  
 */
 class EXPORT_CORE C1DInterpolatorFactory {
 public:

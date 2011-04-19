@@ -66,7 +66,7 @@ public:
 	typedef T value_type; 
 	
 	/// first element 
-	T x
+	T x;
 	
 	/// second element 
 	T y;

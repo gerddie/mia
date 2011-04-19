@@ -45,6 +45,8 @@ NS_MIA_BEGIN
 using namespace std; 
 
 /**
+   \brief Generic base class for out-of-core FIFO filters. 
+
   Base class for a First-in-first out filter that does not need 
   the whole data to be loaded. 	
 */
@@ -147,7 +149,9 @@ private:
 }; 
 
 /**
-  Generic data sink as end of the filter chain that is used for testing purpouses. 
+   \brief Helper class for testing FIFO filter chains. 
+
+   Generic data sink as end of the filter chain that is used for testing purpouses. 
 */
 template <typename T> 
 class EXPORT_HANDLER TFifoFilterSink : public TFifoFilter<T> {

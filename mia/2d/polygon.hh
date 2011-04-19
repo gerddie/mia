@@ -36,6 +36,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief A simple 2D polygon class.  
+
    This class defines a polygon in 2D space and some functions on it. 
    @remark Adding two polygons together is not done in a proper algebraic way.
  */
