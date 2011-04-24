@@ -27,6 +27,18 @@
 
 NS_MIA_BEGIN
 
+/**
+   \brief class to make a triangle mesh from a closed polygon
+
+   This class is used to convert a closed polygon into a mesh defined 
+   by triangles. 
+
+   \tparam VertexVector type of the vector that contains the vertices
+   \tparam Polygon The type of the Polygon   
+
+*/
+
+
 template <class VertexVector, class Polygon>
 class TPolyTriangulator {
 public:

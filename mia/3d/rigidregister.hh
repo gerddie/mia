@@ -34,6 +34,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief 3D linear registration class 
+   
    Class for registration without regularization - i.e. should only be used
    for affine, rigid and translation only registrations
 */

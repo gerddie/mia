@@ -28,6 +28,10 @@
 NS_MIA_BEGIN
 
 /**
+   \brief a 3D iterator that knows its position in the 3D grid ans supports iterating over 
+   sub-ranges 
+   
+
    Iterator to iterate over a sub-range of 3D data that is given on a grid. 
    Two iterators are considered to be equal, if their positions are equal.  
    \tparam the internal iterator that is used to iterate of the original 

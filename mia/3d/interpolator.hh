@@ -55,7 +55,7 @@ public:
 };
 
 /**
-   Basic Interpolator type for 3D Data.
+   \brief Basic Interpolator type for 3D Data.
  */
 
 template <typename T>
@@ -78,7 +78,7 @@ struct coeff_map<T3DVector<U> > {
 
 
 /**
-   Interpolator that is based on convolution,like b-splines an o-moms.
+   \brief Interpolator that is based on convolution,like b-splines an o-moms.
 */
 
 template <class T>

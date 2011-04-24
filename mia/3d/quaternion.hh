@@ -28,6 +28,10 @@
 
 NS_MIA_BEGIN 
 
+/**
+   \brief a class to implement a quaternion
+ */
+
 class EXPORT_3D Quaternion {
 
 public: 

@@ -28,6 +28,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief A test class to enable running code that needs a transformation 
+
    This class mocks a transformation by implementing all the pure virtual 
    methods of the \a C3DTransformation interface. 
    It is used only for testing purpouses. 

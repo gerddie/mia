@@ -67,7 +67,10 @@ class for triangular meshes and some basic algorithms
 
 NS_MIA_BEGIN
 
-/** This class defines the representation of a triangle-mesh.  */
+/** \brief A class to deine a triangle mesh with some attributes 
+    
+    This class defines the representation of a triangle-mesh.  
+*/
 
 class EXPORT_MESH CTriangleMesh: public CIOData {
 

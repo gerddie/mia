@@ -29,12 +29,11 @@
 NS_MIA_BEGIN
 
 /**
-   Precomputed Matrix for the DivCurl regularization. 
+   \brief Precomputed Matrix for the DivCurl regularization. 
+   
    This class stores the precomputed matrix for the divcurl regislarization 
    of a spline based transformation. 
 */
-
-
 
 class EXPORT_3D C3DPPDivcurlMatrix {
 public: 
