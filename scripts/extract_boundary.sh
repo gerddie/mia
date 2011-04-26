@@ -32,8 +32,8 @@ mkdir -p $TMPDIR
 mkdir -p $TMPDIR/a
 mkdir -p $TMPDIR/b
 
-mia-2dstackfilter -i $1 -o $TMPDIR/a/ -t png dilate:shape=n6 -V message
-mia-2dstackfilter -i $2 -o $TMPDIR/b/ -t png dilate:shape=n6 -V message
+mia-2dstackfilter -i $1 -o $TMPDIR/a/ -t png dilate:shape=6n -V message
+mia-2dstackfilter -i $2 -o $TMPDIR/b/ -t png dilate:shape=6n -V message
 
 pushd $TMPDIR/a
 files=`ls *` 
@@ -41,7 +41,7 @@ popd
 
 for f in $files; do 
     echo $f 
-    mia-2dbinarycombine -1 $TMPDIR/a/$f -2 $TMPDIR/b/$f -o $3 -p and 
+    mia-2dbinarycombine -1 $TMPDIR/a/$f -2 $TMPDIR/b/$f -o $3$f -p and 
 done 
 
 rm -fr $TMPDIR

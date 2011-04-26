@@ -108,7 +108,7 @@ void C2DMorphFifoFilter<Compare>::do_initialize(::boost::call_traits<P2DImage>::
 {
 	TRACE("C2DMorphFifoFilter<Compare>::do_initialize");
 	m_slice_size = x->get_size();
-	m_buffer.reset(create_buffer(m_slice_size, m_shape->get_size().z, it_float));
+	m_buffer.reset(create_buffer(m_slice_size, m_shape->get_size().z, x->get_pixel_type()));
 
 }
 

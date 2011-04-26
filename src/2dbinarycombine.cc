@@ -70,7 +70,7 @@ P2DImage binary_op(const C2DBitImage& a, const C2DBitImage& b, EBinops op)
 	case bin_or  : 	transform(a.begin(), a.end(), b.begin(), result->begin(), logical_or<bool>()); 
 		break; 
 	case bin_nor : 
-		transform(a.begin(), a.end(), b.begin(), result->begin(), not2(logical_and<bool>())); 
+		transform(a.begin(), a.end(), b.begin(), result->begin(), not2(logical_or<bool>())); 
 		break; 
 	case bin_and : 
 		transform(a.begin(), a.end(), b.begin(), result->begin(), logical_and<bool>()); 
