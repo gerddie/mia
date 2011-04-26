@@ -23,7 +23,7 @@
 # $2 output path
 
 median_width=3
-extkuwa_width=4
+mlv_width=4
 
 mkdir -p $2
 cd $2
@@ -40,5 +40,5 @@ fi
 if [ ! -e filtered.done ] ; then 
     mkdir -p filtered 
     echo stack-process
-    eva-2dstackfilter -i bg_thresh/bg${number_pattern}.png -o filtered/f median:w=$median_width extkuwa:w=$extkuwa_width -V message && touch filtered.done
+    eva-2dstackfilter -i bg_thresh/bg${number_pattern}.png -o filtered/f median:w=$median_width mlv:w=$mlv_width -V message && touch filtered.done
 fi
