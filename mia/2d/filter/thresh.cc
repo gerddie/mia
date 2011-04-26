@@ -71,7 +71,7 @@ P2DImage C2DThreshNImageFilter::do_filter(const C2DImage& src) const
 
 C2DThreshNImageFilterFactory::C2DThreshNImageFilterFactory():
 	C2DFilterPlugin("thresh"),
-	m_shape("n4"), 
+	m_shape("4n"), 
 	m_thresh(5.0)
 {
 	add_parameter("shape", new CStringParameter(m_shape, false, "neighborhood shape"));

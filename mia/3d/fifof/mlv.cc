@@ -141,35 +141,15 @@ void rotate(Iterator begin, Iterator end)
 
 void C2DMLVnFifoFilter::shift_buffer()
 {
-	TRACE("C2DMLVnFifoFilter::shift_buffer()");
-
+	TRACE_FUNCTION; 
 	rotate(m_mu_buffer.begin(), m_mu_buffer.end());
 	rotate(m_sigma_buffer.begin(),m_sigma_buffer.end());
 	rotate(m_n.begin(), m_n.end());
-
-
 }
 
 void C2DMLVnFifoFilter::evaluate(size_t slice)
 {
-	cvdebug() << "Evaluate slice " << slice << "\n";
-#if 0
-	cout << "mu:";
-	copy(m_mu_buffer[slice].begin(),  m_mu_buffer[slice].end(),
-	     ostream_iterator<float>(cout, " "));
-	cout << "\n";
-
-	cout << "sigma:";
-	copy(m_sigma_buffer[slice].begin(),  m_sigma_buffer[slice].end(),
-	     ostream_iterator<float>(cout, " "));
-	cout << "\n";
-	cout << "N:";
-	copy(m_n[slice].begin(),  m_n[slice].end(),
-	     ostream_iterator<float>(cout, " "));
-	cout << "\n";
-
-	cout << "\n";
-#endif
+	TRACE_FUNCTION; 
 	do_evaluate(m_n[slice].begin(),
 		    m_n[slice].end(),
 		    m_mu_buffer[slice].begin(),
@@ -215,30 +195,12 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T2DImage<T>& input)
 			  m_n[iz].begin_at(0, 0),
 			  m_n[iz].begin_at(0, 0), _1 + _2);
 	}
-#if 0
-	cout << "sum:";
-	copy(m_mu_buffer[0].begin(),  m_mu_buffer[1].end(),
-	     ostream_iterator<float>(cout, " "));
-	cout << "\n";
-
-	cout << "sum2:";
-	copy(m_sigma_buffer[0].begin(),  m_sigma_buffer[0].end(),
-	     ostream_iterator<float>(cout, " "));
-	cout << "\n";
-	cout << "N:";
-	copy(m_n[0].begin(),  m_n[0].end(),
-	     ostream_iterator<float>(cout, " "));
-	cout << "\n";
-
-	cout << "\n";
-#endif
 	return NULL;
 }
 
 void C2DMLVnFifoFilter::post_finalize()
 {
-	TRACE("C2DMLVnFifoFilter::post_finalize()");
-
+	TRACE_FUNCTION; 
 	m_mu_buffer.resize(0);
 	m_sigma_buffer.resize(0);
 	m_n.resize(0);

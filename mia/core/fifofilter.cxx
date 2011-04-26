@@ -46,7 +46,7 @@ TFifoFilter<T>::TFifoFilter(size_t filter_width, size_t min_fill, size_t read_st
 template <typename T> 
 void TFifoFilter<T>::push(typename ::boost::call_traits<T>::param_type x)
 {
-	TRACE("TFifoFilter<T>::push"); 
+	TRACE_FUNCTION; 
 
 	if (!m_initialized) {
 		do_initialize(x); 
@@ -115,7 +115,7 @@ size_t TFifoFilter<T>::get_pos() const
 template <typename T> 
 void TFifoFilter<T>::finalize()
 {
-	TRACE("TFifoFilter<T>::finalize()"); 
+	TRACE_FUNCTION; 
 	size_t overfill = m_read_start; 
 
 	while (overfill-- > 0) {
@@ -132,7 +132,8 @@ void TFifoFilter<T>::finalize()
 	// it makes the test run through, but I'm not sure why 
 	size_t start = m_read_start + 1; 
 	
-	while (m_fill >= m_min_fill) {
+	while (m_fill >= m_min_fill && m_fill) {
+		cvdebug() << "finalize: " << m_fill << "("<<m_min_fill <<")\n"; 
 		shift_buffer(); 
 		
 		m_start_slice = start; 
@@ -207,7 +208,6 @@ const typename TFifoFilterSink<T>::result_type& TFifoFilterSink<T>::result()
 template <typename T> 
 void TFifoFilterSink<T>::do_push(typename ::boost::call_traits<T>::param_type x)
 {
-	TRACE("TFifoFilterSink<T>::do_push()"); 
 	m_result.push_back(x); 
 }
 

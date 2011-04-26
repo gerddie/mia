@@ -394,7 +394,7 @@ CPngImageSaver::result_type CPngImageSaver::operator ()(const T2DImage<T>& image
 
 bool CPNG2DImageIOPlugin::do_save(const string& fname, const C2DImageVector& data) const
 {
-	cvdebug() << "CPNG2DImageIO::save begin\n";
+	TRACE_FUNCTION; 
 
 	COutputFile f(fname);
 	if (!f) {

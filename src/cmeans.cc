@@ -396,9 +396,9 @@ int main(int argc, const char *args[])
 		size_t sig_size_c = 0; 
 		size_t sig_size = 0; 
 		while (cin.good()) {
-			float val;
-			cin >> val; 
-			histo.push_back(val); 
+			float val, cnt;
+			cin >> val >> cnt; 
+			histo.push_back(cnt); 
 			++sig_size_c; 
 			if (val > 0)
 				sig_size = sig_size_c; 

@@ -162,7 +162,7 @@ P2DImage C2DRegiongrowFifoFilter::do_filter()
 	TRACE("C2DRegiongrowFifoFilter::do_filter");
 	cvdebug() << "Range: [" << get_start() << ", " << get_end() << "]\n";
 	grow();
-	C2DBitImage *result = new C2DBitImage(C2DBounds(3,3));
+	C2DBitImage *result = new C2DBitImage(m_slice_size);
 	copy(m_out_buffer.begin_at(0,0,get_start()),  m_out_buffer.begin_at(0,0, get_start() + 1), result->begin());
 	return P2DImage(result);
 }

@@ -21,6 +21,8 @@
  *
  */
 
+#define VSTREAM_DOMAIN "2dstackfilter" 
+
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -80,6 +82,7 @@ C2DStackSaver::C2DStackSaver(string const & fnamebase, size_t start_num, size_t 
 
 void C2DStackSaver::do_push(::boost::call_traits<P2DImage>::param_type image)
 {
+	TRACE_FUNCTION; 
 	C2DImageVector img_list;
 	img_list.push_back(image);
 	string out_filename = create_filename(m_fnamebase.c_str(), m_slice++);
@@ -96,7 +99,7 @@ void C2DStackSaver::do_push(::boost::call_traits<P2DImage>::param_type image)
 			++est;
 		if (*est == '\n')
 			*est = ' ';
-		cvmsg() << "\rFiltered " << m_slice << ", estimated finish at: " <<  esttime;
+		cvmsg() << "Filtered " << m_slice << ", estimated finish at: " <<  esttime << "\r";
 	}
 #endif
 
@@ -157,6 +160,7 @@ int main(int argc, const char *args[])
 				throw invalid_argument(error.str());
 			}
 			filter->append_filter(f);
+			++i; 
 		}
 
 		size_t start_filenum = 0;
@@ -167,6 +171,7 @@ int main(int argc, const char *args[])
 
 		string src_basename = get_filename_pattern_and_range(in_filename, start_filenum,
 								     end_filenum, format_width);
+	       
 		if (start_filenum >= end_filenum)
 			throw invalid_argument(string("no files match pattern ") + src_basename);
 
@@ -199,8 +204,10 @@ int main(int argc, const char *args[])
 
 		}
 
+		cvdebug() << "\nrun finalize\n";  
 		filter->finalize();
-
+		cvdebug() << "done";  
+		
 		cvmsg() << '\n';
 		return EXIT_SUCCESS;
 	}
