@@ -27,7 +27,7 @@ DEFEXE(2dnonrigidreg      mia2d )
 DEFEXE(2dmultiimagevar    mia2d )
 DEFEXE(2dmulti-force      mia2d )
 DEFEXE(2dimagefullstats   mia2d )
-DEFEXE(2dcombineandinvert mia2d )
+DEFEXE(2dbinarycombine    mia2d )
 DEFCHKEXE(2dlerp mia2d )
 
 

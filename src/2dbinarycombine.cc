@@ -45,17 +45,66 @@
 using namespace std;
 NS_MIA_USE
 
-P2DImage combine_and_invert(const C2DBitImage& a, const C2DBitImage& b)
+enum EBinops  {
+	bin_or, 
+	bin_nor, 
+	bin_and, 
+	bin_nand, 
+	bin_xor, 
+	bin_nxor, 
+	bin_unknown
+}; 
+
+struct logical_xor : public binary_function<bool,bool,bool> {
+	bool operator() (bool a, bool b) const {
+		return (a ^ b);
+	}
+};
+
+P2DImage binary_op(const C2DBitImage& a, const C2DBitImage& b, EBinops op)
 {
 	assert(a.get_size() == b.get_size()); 
 	C2DBitImage *result = new C2DBitImage(a.get_size()); 
 	
-	transform(a.begin(), a.end(), b.begin(), result->begin(), not2(logical_or<bool>())); 
+	switch (op) {
+	case bin_or  : 	transform(a.begin(), a.end(), b.begin(), result->begin(), logical_or<bool>()); 
+		break; 
+	case bin_nor : 
+		transform(a.begin(), a.end(), b.begin(), result->begin(), not2(logical_and<bool>())); 
+		break; 
+	case bin_and : 
+		transform(a.begin(), a.end(), b.begin(), result->begin(), logical_and<bool>()); 
+		break; 
+	case bin_nand:  
+		transform(a.begin(), a.end(), b.begin(), result->begin(), not2(logical_and<bool>())); 
+		break; 
+	case bin_xor : 
+		transform(a.begin(), a.end(), b.begin(), result->begin(), logical_xor());
+		break; 
+	case bin_nxor:  
+		transform(a.begin(), a.end(), b.begin(), result->begin(), not2(logical_xor())); 
+		break; 
+	default: 
+		throw invalid_argument("Unknown binary operation requested"); 
+	}
 	return P2DImage(result); 
 }
 
+
+const TDictMap<EBinops>::Table g_binops_table[] = {
+	{"or", bin_or}, 
+	{"nor", bin_nor}, 
+	{"and", bin_and}, 
+	{"nand", bin_nand}, 
+	{"xor", bin_xor}, 
+	{"nxor", bin_nxor}, 
+	{NULL,bin_unknown}, 
+}; 
+
+const TDictMap<EBinops> g_binops_dict(g_binops_table);
+
 /* Revision string */
-const char g_description[] = "This program is used to combine two binary images and invert the result";
+const char g_description[] = "This program is used to combine two binary images";
 
 int main( int argc, const char *argv[] )
 {
@@ -63,13 +112,16 @@ int main( int argc, const char *argv[] )
 	string filename1;
 	string filename2;
 	string out_filename;
+	EBinops op = bin_nor; 
 
 	CCmdOptionList options(g_description);
 	
 	options.push_back(make_opt( filename1, "file1", '1', 
 				    "input mask image 1", NULL, CCmdOption::required)); 
 	options.push_back(make_opt( filename2, "file2", '2', 
-					"input input mask image 2", NULL, CCmdOption::required)); 
+				    "input input mask image 2", NULL, CCmdOption::required)); 
+	options.push_back(make_opt(op, g_binops_dict, "operation", 'p', 
+				   "Operation to be applied")); 
 	options.push_back(make_opt( out_filename, "out-file", 'o', 
 					"output mask image", NULL, CCmdOption::required)); 
 
@@ -84,7 +136,7 @@ int main( int argc, const char *argv[] )
 		try {
 			const C2DBitImage& img1 = dynamic_cast<const C2DBitImage&>(*image1); 
 			const C2DBitImage& img2 = dynamic_cast<const C2DBitImage&>(*image2); 
-			P2DImage result = combine_and_invert(img1, img2); 
+			P2DImage result = binary_op(img1, img2, op); 
 			
 			if ( !save_image(out_filename, result) ){
 				THROW(runtime_error, "cannot save result to " << out_filename); 
