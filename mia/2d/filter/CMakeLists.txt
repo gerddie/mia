@@ -14,7 +14,7 @@ SET (NOTHING
   midpoint
   regiongrow
   rgg
-  thresh
+
   variation
   watershed
   wmean
@@ -43,6 +43,7 @@ SET(filters2dNew_base
   scale
   selectbig
   sepconv
+  thresh
 )
 
 SET(filters2dNew ${filters2dNew_base} ${filters2d_fftNew})

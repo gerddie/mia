@@ -1,4 +1,5 @@
 /* -*- mia-c++  -*-
+ *
  * Copyright (c) Leipzig, Madrid 2004-2010
  * ETSI Telecomunicacion, UPM
  *
@@ -17,7 +18,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
 
 #include <mia/core/shared_ptr.hh>
 #include <mia/internal/autotest.hh>
