@@ -18,6 +18,28 @@
  *
  */
 
+/* 
+   LatexBeginPlugin{2D image filters}
+   
+   \subsubsection*{Spacial separable convolution filter}
+   \label{filter2d:selectbig}
+   
+   \begin{description}
+   
+   \item [Plugin:] selectbig
+   \item [Description:] A 2D filter that creats a binary mask representing the intensity with the highest pixel count. 
+   The pixel value 0 will be ignored, and if two intensities have the same pixel count, then the result is undefined. 
+   \item [Input:] An image with integral intensity values, usually this will be the output of the 
+         label filter \ref{filter2d:label}. 
+   \item [Input:] An binary image with a mask that represents the pixels with the highest pixel count. 
+
+   This plug-in takes no parameters. 
+   
+   \end{description}
+
+   LatexEnd  
+ */
+
 
 #include <limits>
 #include <stdexcept>

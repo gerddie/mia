@@ -21,6 +21,32 @@
  *
  */
 
+/* 
+   LatexBeginPlugin{2D image filters}
+   
+   \subsubsection*{Run a filter in the frequency domain}
+   \label{filter2d:fft}
+   
+   \begin{description}
+   
+   \item [Plugin:] fft
+   \item [Description:] Run a filter in the frequency domain by applying a forward real2complex fft, 
+         running the filter, and applying the backward complex2real fft. 
+   \item [Input:] Abitrary gray scale or binary image 
+   \item [Output:] The filtered image of the same pixel type and dimension 
+   
+   \plugtabstart
+   k & string & filter kernel as provided by the 2D fft kernel plugin handler \ref{sec:fft2dkern} &   \\
+   \plugtabend
+   
+   \item [Remark:] Currently, no kernels are implemented. 
+   
+   \end{description}
+
+   LatexEnd  
+ */
+
+
 #include <limits>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/filter/fft.hh>

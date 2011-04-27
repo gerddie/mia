@@ -18,6 +18,37 @@
  *
  */
 
+
+/* 
+   LatexBeginPlugin{2D image filters}
+   
+   \subsubsection*{Downscale an image}
+   \label{filter2d:downscale}
+   
+   \begin{description}
+   
+   \item [Plugin:] downscale
+   \item [Description:] Downscale the input image by using a given block size to define the 
+            downscale factor. Prior to scaling the image is filtered by a smoothing filter to eliminate 
+	    high frequency data and avoid aliasing artifacts. 
+   \item [Input:] Abitrary gray scale or binary image 
+   \item [Output:] The downscaled image.  
+   
+   \plugtabstart
+   bx & int & downscale factor in x direction & 1  \\
+   by & int & downscale factor in y direction & 1  \\
+   b & string & Alternative to define the scaling factors as a 2D vector & <1,1>  \\
+   kernel & string & Base type of the smoothing kernel, the filter kernel width is estimated based 
+       on the downscale factors & gauss \\\hline 
+   \plugtabend
+   
+   \end{description}
+
+   LatexEnd  
+ */
+
+
+
 #include <limits>
 #include <sstream>
 

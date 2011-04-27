@@ -18,6 +18,30 @@
  *
  */
 
+/* LatexBeginPlugin{2D image filters}
+   
+   \subsubsection*{Label connected components}
+   \label{filter2d:label}
+   
+   \begin{description}
+   
+   \item [Plugin:] label
+   \item [Description:] Label connected components 
+   \item [Input:] Binary image 
+   \item [Output:] An image of type unsigned char or unsigned short, depending on the number of components found. 
+                  The first label is 1
+   
+   \plugtabstart
+   shape &  string & neighbourhood shape as provided by the shape plug-ins \ref{sec:2dshapes} & 4n  \\
+   \plugtabend
+   
+   \item [Remark:] A maximum of 65535 labels is supported. 
+
+   \end{description}
+
+   LatexEnd  
+ */
+
 #include <stdexcept>
 #include <queue>
 #include <limits>
@@ -25,6 +49,7 @@
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/filter/label.hh>
+
 
 
 
@@ -88,11 +113,13 @@ CLabel::result_type CLabel::do_filter(const C2DImage& image) const
 			if (*i && !*r) {
 				cvdebug() << "label:" << current_label << " seed at " << loc << "\n";
 				grow_region(loc, input, *result, current_label);
-				++current_label;
-
+				if (current_label < numeric_limits<unsigned short>::max())  
+					++current_label;
+				else 
+					throw invalid_argument("CLabel: too many connected regions found");
 			}
 		}
-
+	
 	cvmsg() << "\n";
 	if (current_label < 257) {
 		C2DUBImage *real_result = new C2DUBImage(image.get_size(), image);

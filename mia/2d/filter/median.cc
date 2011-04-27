@@ -18,6 +18,29 @@
  *
  */
 
+/* 
+   LatexBeginPlugin{2D image filters}
+   
+   \subsubsection*{Median filter}
+   \label{filter2d:median}
+   
+   \begin{description}
+   
+   \item [Plugin:] median
+   \item [Description:] Apply the median filter. 
+   \item [Input:] Abitrary gray scale or binary image 
+   \item [Output:] The filtered image of the same pixel type and dimension 
+   
+   \plugtabstart
+   w &  int & filter width parameter & 1  \\
+   \plugtabend
+   
+   \end{description}
+
+   LatexEnd  
+ */
+
+
 #include <limits>
 
 #include <mia/core/filter.hh>

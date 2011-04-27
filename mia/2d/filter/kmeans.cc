@@ -18,6 +18,28 @@
  *
  */
 
+
+/* LatexBeginPlugin{2D image filters}
+   
+   \subsubsection*{K-means classification}
+   \label{filter2d:kmeans}
+   
+   \begin{description}
+   
+   \item [Plugin:] kmeans
+   \item [Description:] Apply a k-means classification to the image 
+   \item [Input:] A gray scale image of abitrary pixel type. 
+   \item [Output:] The classification image, the class centers are saved as image attribute
+   
+   \plugtabstart
+   c &  int & The number of classes ($\le$ 255) & 5  \\
+   \plugtabend
+
+   \end{description}
+
+   LatexEnd  
+ */
+
 #include <limits>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
@@ -60,7 +82,8 @@ P2DImage C2DKMeans::do_filter(const C2DImage& image) const
 
 
 C2DKMeansFilterPluginFactory::C2DKMeansFilterPluginFactory():
-	C2DFilterPlugin("kmeans")
+	C2DFilterPlugin("kmeans"),
+	m_classes(3)
 {
 	add_parameter("c", new CIntParameter(m_classes, 0, numeric_limits<unsigned char>::max(),
 					     false, "number of classes"));

@@ -23,17 +23,43 @@
  */
 
 /*
-   This implementation of an adaptive median filter works like follows:
-   - filter width is w=2*n+1
-   - start with n=1
-     * if the resulting filtered value is equal to the min or max of the covered
-       area (max or min) then increase n and repeat filtering
-     * repeat above algorithm until n=n_max or resulting value is not equal to an
-       extreme value
-   - if the original intensity value of the image is equal to one of the extremes,
-     then keep the value, otherwise replace it by the filter result
-   for bit valued images this is just the normal median filter.
+  LatexBeginPlugin{2D image filters}
+
+  \subsubsection*{Adaptive median filter}
+  \label{filter2d:adaptmed}
+  
+  \begin{description}
+  
+  \item [Plugin:] adaptmed
+  \item [Description:] An adaptive median filter that works like follows: 
+
+  \begin{itemize}
+    \item filter width is w=2*n+1
+    \item start with n=1
+    \begin{itemize}
+      \item  if the resulting filtered value is equal to the min or max of the covered
+             area (max or min) then increase n and repeat filtering
+      \item  repeat above algorithm until n=n\_max or resulting value is not equal to an
+             extreme value
+    \end{itemize}     
+    \item if the original intensity value of the image is equal to one of the extremes,
+          then keep the value, otherwise replace it by the filter result
+  \end{itemize}
+
+  \item [Input:] Abitrary gray scale image 
+  \item [Output:] The filtered image of the same pixel type and dimension 
+  
+  \plugtabstart
+  w &  int & maximum filter width parameter & 2  \\
+  \plugtabend
+  
+  \item [Remark:] for bit valued images this is just the normal median filter applied with the maximum filter width.
+  
+  \end{description}
+
+  LatexEnd
 */
+
 
 #include <limits>
 #include <mia/2d/filter/adaptmed.hh>
@@ -149,7 +175,8 @@ C2DAdaptMedian::result_type C2DAdaptMedian::do_filter(const C2DImage& image) con
 
 
 C2DAdaptMedianImageFilterFactory::C2DAdaptMedianImageFilterFactory():
-	C2DFilterPlugin(plugin_name)
+	C2DFilterPlugin(plugin_name), 
+	m_hw(2)
 {
 	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(),
 					     false, "half filter width"));

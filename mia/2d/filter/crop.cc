@@ -22,6 +22,31 @@
  *
  */
 
+/* 
+   LatexBeginPlugin{2D image filters}
+   
+   \subsubsection*{Image cropping}
+   \label{filter2d:crop}
+   
+   \begin{description}
+   
+   \item [Plugin:] crop
+   \item [Description:] Crop a region of an image, the region is always clamped to the original image size. 
+   \item [Input:] Abitray grayscale image 
+   \item [Output:] A gray scale image that contains the cropped region. 
+   
+   \plugtabstart
+   start & 2D vector & upper left corner of the requested sub-region  & <0,0>  \\
+   end & 2D vector & lower right corner of the requested sub-region, a value of -1 refers the size of the 
+      original image in that dimension  & <-1,-1>  \					\
+   \plugtabend
+   
+   \end{description}
+
+   LatexEnd  
+ */
+
+
 #include <stdexcept>
 #include <mia/2d/filter/crop.hh>
 

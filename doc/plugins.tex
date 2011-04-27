@@ -24,99 +24,291 @@ In this section the following notation is used: $g$ indicates the source image,
 For an in-depth discussion of most of the filters presented here, see, e.g., \citet{gonzales02:dip}.
 
 
-\subsubsection*{Convesion of pixel types}
-\begin{description}
-\item [Plugin:]convert
-\item [Description:] Pixel conversion filter
-\item [Conversions:] Mapping methods 
-\begin{description}
-\item [copy:] pixel values are copied, values outside of the target range are clipped
-\item [linear:] pixel values are transformed according to $x \rightarrow a \times x + b$ , 
-                 values outside of the target range are clipped
-\item [opt:] The range of the input pixels \emph{found in the input image} 
-		is mapped to the range of the output type. 
-\item [range:] The range of the input pixel \emph{type} is mapped to the range of the output type. 
-\end{description}
-\item [Parameters:] a, b, map, repn
+  \subsubsection*{Adaptive median filter}
+  \label{filter2d:adaptmed}
+  
+  \begin{description}
+  
+  \item [Plugin:] adaptmed
+  \item [Description:] An adaptive median filter that works like follows: 
 
-\plugtabstart
-a&  float&  scaling for linear mapping & 1.0\\\hline
-b&  float&  shift of linear mapping    & 0.0\\\hline
-map& string & type of mapping (copy|linear|opt|range) & opt\\\hline
-repn & string & target pixel type ( sbyte | ubyte | sshort | ushort |
+  \begin{itemize}
+    \item filter width is w=2*n+1
+    \item start with n=1
+    \begin{itemize}
+      \item  if the resulting filtered value is equal to the min or max of the covered
+             area (max or min) then increase n and repeat filtering
+      \item  repeat above algorithm until n=n\_max or resulting value is not equal to an
+             extreme value
+    \end{itemize}     
+    \item if the original intensity value of the image is equal to one of the extremes,
+          then keep the value, otherwise replace it by the filter result
+  \end{itemize}
+
+  \item [Input:] Abitrary gray scale image 
+  \item [Output:] The filtered image of the same pixel type and dimension 
+  
+  \plugtabstart
+  w &  int & maximum filter width parameter & 2  \\
+  \plugtabend
+  
+  \item [Remark:] for bit valued images this is just the normal median filter applied with the maximum filter width.
+  
+  \end{description}
+
+
+  \subsubsection*{Adaptive median filter}
+  \label{filter2d:adaptmed}
+  
+  \begin{description}
+  
+  \item [Plugin:] admean
+  \item [Description:] An adaptive mean filter that works like a normal mean filter, if the intensity 
+        variation within the filter mask is lower then the intensity variation in the whole image, 
+	that the uses a special formula if the local variation is higher then the image intensity variation.
+  \item [Input:] Abitrary gray scale image 
+  \item [Output:] The filtered image of the same pixel type and dimension 
+  
+  \plugtabstart
+  w &  int & filter width parameter & 1  \\
+  \plugtabend
+  
+  \end{description}
+
+
+  \subsubsection*{Anisotropic filtering}
+  \label{filter2d:aniso}
+  
+  \begin{description}
+  
+  \item [Plugin:] aniso
+  \item [Description:] Run a anisotropic filter on the input image 
+  \item [Input:] Abitrary gray scale image 
+  \item [Output:] The filtered image of the same pixel type and dimension 
+  
+  \plugtabstart
+  iter & int & maximum number of iterations & 100 \\
+  epsilon & float & stop iteration if changes fall below this value & 1.0  \\
+  k & float & k the noise threshold ($\le 0$: adaptive) & -1 \\
+  psi & string & Edge stopping funtion (ps1|ps2|tuckey|guess) & - \\
+  n & int & neighbourhood shape (4|8) &  8 \\
+  \plugtabend
+  
+  \item [Remark:] For mor information see \cite{perona90:aniso}. 
+  
+  \end{description}
+
+   
+   \subsubsection*{Intensity based bandpass filter}
+   \begin{description}
+   \item [Plugin:]bandpass
+   \item [Description:]An intensity band pass filter - all pixels with intensities
+   outside the given range are set to zero, all other pixels remain the
+   same ($x:=x\in [min,max]\:?\: x\::\:0$
+   \item [Parameters:] min, max
+   
+   \plugtabstart
+   min&  float&  lower bound of the bandpass range &0\\\hline
+   max&  float&  upper bound of the bandpass range &3.40282e+38\\\hline
+   \end{tabular}
+   \end{description}
+   
+
+   \subsubsection*{Binarize Filter}
+   \begin{description}
+   \item [Plugin:]binarize
+   \item [Description:]An binarize filter - all pixels with intensities
+   outside the given range are set to zero, all other pixels are set to one
+   same ($x:=x\in [min,max]\:?\: x\::\:0$
+   \item [Parameters:] min, max
+   
+   \plugtabstart
+   min&  float&  lower bound of the intensity range &0\\\hline
+   max&  float&  upper bound of the intensity range &3.40282e+38\\\hline
+   \end{tabular}
+   \end{description}
+   
+   
+   \subsubsection*{Pixel value conversion}
+   \label{filter2d:convert}
+   
+   \begin{description}
+   \item [Plugin:]convert
+   \item [Description:] Pixel conversion filter
+   \item [Conversions:] Mapping methods 
+   \begin{description}
+   \item [copy:] pixel values are copied, values outside of the target range are clipped
+   \item [linear:] pixel values are transformed according to $x \rightarrow a \times x + b$ , 
+       values outside of the target range are clipped
+   \item [opt:] The range of the input pixels \emph{found in the input image} 
+       is mapped to the range of the output type. 
+   \item [range:] The range of the input pixel \emph{type} is mapped to the range of the output type. 
+   \end{description}
+   \item [Parameters:] a, b, map, repn
+   
+   \plugtabstart
+   a&  float&  scaling for linear mapping & 1.0\\\hline
+   b&  float&  shift of linear mapping    & 0.0\\\hline
+   map& string & type of mapping (copy|linear|opt|range) & opt\\\hline
+   repn & string & target pixel type ( sbyte | ubyte | sshort | ushort |
 				sint | uint | slong | ulong | float | double) & ubyte \\\hline
-\end{tabular}
-\end{description}
+   \plugtabend
+   
+   \end{description}
 
-\subsubsection*{Downscale Filter}
+   
+   \subsubsection*{Image cropping}
+   \label{filter2d:crop}
+   
+   \begin{description}
+   
+   \item [Plugin:] crop
+   \item [Description:] Crop a region of an image, the region is always clamped to the original image size. 
+   \item [Input:] Abitray grayscale image 
+   \item [Output:] A gray scale image that contains the cropped region. 
+   
+   \plugtabstart
+   start & 2D vector & upper left corner of the requested sub-region  & <0,0>  \\
+   end & 2D vector & lower right corner of the requested sub-region, a value of -1 refers the size of the 
+      original image in that dimension  & <-1,-1>  \\
+   \plugtabend
+   
+   \end{description}
 
-\begin{description}
-\item [Plugin:] downscale
-\item [Description:] An filter that uses a seperable kernel to filter a 2D image. 
-	For available kernels see Section \ref{sec:spacialkern}
-\item [Parameters:] bx, by, kernel
+   
+   \subsubsection*{Run a filter in the frequency domain}
+   \label{filter2d:cst}
+   
+   \begin{description}
+   
+   \item [Plugin:] cst
+   \item [Description:] Run a filter in the frequency domain by applying a cosinus or sinus transformation, 
+         running the filter, and applying the backward cosinus or sinus transformation. 
+   \item [Input:] Abitrary gray scale or binary image 
+   \item [Output:] The filtered image of the same pixel type and dimension 
+   
+   \plugtabstart
+   k & string & filter kernel as provided by the 2D cst kernel plugin handler \ref{sec:cst2dkern} &   \\
+   \plugtabend
+   
+   \item [Remark:] Currently, no kernels are implemented. 
+   
+   \end{description}
 
-\plugtabstart 
-bx & int &  blocksize in x direction  $\in [1,2147483647]$ & 1 \\\hline
-by & int &  blocksize in y direction  $\in [1,2147483647]$ & 1 \\\hline
-kernel & string &   smoothing filter kernel type to be applied  & gauss \\\hline
-\end{tabular}
-\end{description}
+   
+   \subsubsection*{Downscale an image}
+   \label{filter2d:downscale}
+   
+   \begin{description}
+   
+   \item [Plugin:] downscale
+   \item [Description:] Downscale the input image by using a given block size to define the 
+            downscale factor. Prior to scaling the image is filtered by a smoothing filter to eliminate 
+	    high frequency data and avoid aliasing artifacts. 
+   \item [Input:] Abitrary gray scale or binary image 
+   \item [Output:] The downscaled image.  
+   
+   \plugtabstart
+   bx & int & downscale factor in x direction & 1  \\
+   by & int & downscale factor in y direction & 1  \\
+   b & string & Alternative to define the scaling factors as a 2D vector & <1,1>  \\
+   kernel & string & Base type of the smoothing kernel, the filter kernel width is estimated based 
+       on the downscale factors & gauss \\
+   \plugtabend
+   
+   \end{description}
 
+   
+   \subsubsection*{Norm of a normalized gradient field of the image}
+   \label{filter2d:ngfnorm}
+   
+   \begin{description}
+   
+   \item [Plugin:] ngfnorm
+   \item [Description:] This filter evaluates the norm of a normalized gradient field of the input image
+   \item [Input:] An abitrary gray scale image. 
+   \item [Input:] The norm of the normalized gradient field of the input image as a single float valued 
+             image of the same dimension as th einput image. 
+   
+   \end{description}
+   This plugin doesn't take parameters. 
 
+   
+   \subsubsection*{An image scaling filter}
+   \label{filter2d:scale}
+   
+   \begin{description}
+   
+   \item [Plugin:] scale
+   \item [Description:] A 2D image filter to scale images. 
+   \item [Input:] An abitrary gray scale image. 
+   \item [Input:] The scaled image with the same pixel type.  
+   
+   \plugtabstart
+   sx & int & target width & 128 \\
+   sy & int & target height & 128 \\
+   interp & string & interpolation kernel descriptor & "bspline3" \\
+   \plugtabend
 
-\subsubsection*{Intensity based bandpass filter}
-\begin{description}
-\item [Plugin:]bandpass
-\item [Description:]An intensity band pass filter - all pixels with intensities
-outside the given range are set to zero, all other pixels remain the
-same ($x:=x\in [min,max]\:?\: x\::\:0$
-\item [Parameters:] min, max
+   \item [Remark:] Currently downscaling is not handled correctly. 
+   
+   \end{description}
 
-\plugtabstart
-min&  float&  lower bound of the bandpass range &0\\\hline
-max&  float&  upper bound of the bandpass range &3.40282e+38\\\hline
-\end{tabular}
-\end{description}
+   
+   \subsubsection*{Spacial separable convolution filter}
+   \label{filter2d:selectbig}
+   
+   \begin{description}
+   
+   \item [Plugin:] selectbig
+   \item [Description:] A 2D filter that creats a binary mask representing the intensity with the highest pixel count. 
+   The pixel value 0 will be ignored, and if two intensities have the same pixel count, then the result is undefined. 
+   \item [Input:] An image with integral intensity values, usually this will be the output of the 
+         label filter \ref{filter2d:label}. 
+   \item [Input:] An binary image with a mask that represents the pixels with the highest pixel count. 
 
-\subsubsection*{Mean Least Variance}
-\begin{description}
-\item [Plugin:]\emph{mlv}
-\item [Description:] an edge preserving and enhancing filter \cite{schulze94morphologybased}
-\item [Parameters:] w
+   This plug-in takes no parameters. 
+   
+   \end{description}
 
-\plugtabstart
-w & integer & filter width parameter &1\\\hline
-\end{tabular}
-\end{description}
+   
+   \subsubsection*{Spacial separable convolution filter}
+   \label{filter2d:sepconv}
+   
+   \begin{description}
+   
+   \item [Plugin:] sepconv
+   \item [Description:] A 2D image filter that runs separable ove each dimension 
+   \item [Input:] Abitrary gray scale image 
+   \item [Output:] Filtered gray scale image of the same pixel type and dimension
+   
+   \plugtabstart
+   kx &  string & Filter kernel in x-direction as available through the spacial kernel plug-ins \ref{sec:SpacialKernels}
+      & gauss:w=1    \\
+   ky &  string & Filter kernel in y-direction as available through the spacial kernel plug-ins \ref{sec:SpacialKernels}
+      & gauss:w=1    \\
+   \plugtabend
+   
+   \end{description}
 
+   
+   \subsubsection*{Threshhold filter with neighbourhood preservation}
+   \label{filter2d:thresh}
+   
+   \begin{description}
+   
+   \item [Plugin:] thresh
+   \item [Description:] set a pixel value to zero if all neighborhood values are below a given threshhold 
+   \item [Input:] Abitrary gray scale image 
+   \item [Output:] Filtered gray scale image of the same pixel type and dimension
 
-\subsubsection*{Median Filter}
-\begin{description}
-\item [Plugin:]\emph{median}
-\item [Description:] the median filter, brute force inpmementation 
-\item [Parameters:] w
+   \plugtabstart
+   shape &  string & neighbourhood shape as available through the shape plugins \ref{sec:2dshapes} & 4n \\
+   thresh&  float  & threshhold value & 5.0\\
+   \plugtabend
+   
+   \end{description}
 
-\plugtabstart
-w & integer & filter width parameter & 1\\
-\hline
-\end{tabular}
-\end{description}
-
-
-\subsubsection*{Seperable Convolution Filter}
-
-\begin{description}
-\item [Plugin:] sepconv
-\item [Description:] An filter that uses a seperable kernel to filter a 2D image. 
-	For available kernels see Section \ref{sec:spacialkern}
-\item [Parameters:] kx, ky
-
-\plugtabstart
-kx&  string &  filter kernel applied in the x-direction & gauss:w=1 \\\hline
-ky&  string &  filter kernel applied in the y-direction & gauss:w=1 \\\hline
-\end{tabular}
-\end{description}
 
 %
 %

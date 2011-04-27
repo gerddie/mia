@@ -22,6 +22,34 @@
  *
  */
 
+
+/* 
+   LatexBeginPlugin{2D image filters}
+   
+   \subsubsection*{An image scaling filter}
+   \label{filter2d:scale}
+   
+   \begin{description}
+   
+   \item [Plugin:] scale
+   \item [Description:] A 2D image filter to scale images. 
+   \item [Input:] An abitrary gray scale image. 
+   \item [Input:] The scaled image with the same pixel type.  
+   
+   \plugtabstart
+   sx & int & target width & 128 \\
+   sy & int & target height & 128 \\
+   interp & string & interpolation kernel descriptor & "bspline3" \\\hline 
+   \plugtabend
+
+   \item [Remark:] Currently downscaling is not handled correctly. 
+   
+   \end{description}
+
+   LatexEnd  
+ */
+
+
 #include <limits>
 #include <sstream>
 #include <mia/core/msgstream.hh>

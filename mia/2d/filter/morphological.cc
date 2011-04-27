@@ -18,10 +18,37 @@
 
 */
 
+/* 
+   LatexBeginPlugin{2D image filters}
+   
+   \subsubsection*{Morphological filters}
+   \label{filter2d:morph}
+   
+   \begin{description}
+   
+   \item [Plugin:] dilate, erode, close, open
+   \item [Description:] Apply the according morphological operation using a given structuring element 
+   \item [Input:] Abitrary gray scale or binary image 
+   \item [Output:] The filtered image of the same pixel type and dimension 
+   
+   \plugtabstart
+   shape &  string & definition of the structuring element as provided by the shape plugins \ref{sec:2dshapes} & 
+         sphere:r=2    \\
+   hint  &  string & A hint to speed up the processing of binary images (black|white), should indicate 
+         what kind of pixel is more presnt in the image  & black \\\hline 
+   \plugtabend
+   
+   \end{description}
+
+   LatexEnd  
+ */
+
 #include <iomanip>
 #include <limits>
 #include <mia/2d/shape.hh>
 #include <mia/2d/filter/morphological.hh>
+
+
 
 NS_BEGIN(morphological_2dimage_filter)
 

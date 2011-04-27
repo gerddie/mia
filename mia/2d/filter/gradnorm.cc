@@ -19,6 +19,27 @@
  *
  */
 
+/* 
+   LatexBeginPlugin{2D image filters}
+   
+   \subsubsection*{Norm of a gradient of the image}
+   \label{filter2d:gradnorm}
+   
+   \begin{description}
+   
+   \item [Plugin:] gradnorm
+   \item [Description:] This filter evaluates the norm of the gradient of the input image
+   \item [Input:] An abitrary gray scale image. 
+   \item [Input:] The norm of the gradient of the input image as a single float valued 
+             image normalized to the range [-1, 1]. 
+   
+   \end{description}
+   This plugin doesn't take parameters. 
+
+   LatexEnd  
+ */
+
+
 #include <limits>
 #include <algorithm>
 #include <mia/core/filter.hh>
