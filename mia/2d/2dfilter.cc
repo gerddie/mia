@@ -21,6 +21,20 @@
  *
  */
 
+/*
+  LatexBeginSection{2D image filters}
+  \label{sec:filter2d}
+  
+  2D image filters take a constant reference to a C2DImage as parameter and 
+  return the result in a shared_ptr P2DImage. 
+  After constructions, filters work like functions, i.e. the output image is only dependent 
+  on the input image and the construction parameters. 
+
+  LatexEnd
+*/
+
+
+
 #include <mia/core/export_handler.hh>
 
 #include <mia/2d/2dfilter.hh>
