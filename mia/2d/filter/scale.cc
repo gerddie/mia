@@ -26,7 +26,7 @@
 /* 
    LatexBeginPlugin{2D image filters}
    
-   \subsubsection*{An image scaling filter}
+   \subsection{An image scaling filter}
    \label{filter2d:scale}
    
    \begin{description}

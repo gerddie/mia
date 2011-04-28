@@ -25,7 +25,7 @@
   LatexBeginPlugin{2D neighborhood shapes}
 
 
-  \subsubsection*{Basic shapes}
+  \subsection{Basic shapes}
   \label{shapes2d:basic}
 
   \begin{description}

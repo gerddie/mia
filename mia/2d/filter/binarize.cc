@@ -25,7 +25,7 @@
 /* 
    LatexBeginPlugin{2D image filters}
 
-   \subsubsection*{Binarize Filter}
+   \subsection{Binarize Filter}
    \begin{description}
    \item [Plugin:]binarize
    \item [Description:]An binarize filter - all pixels with intensities

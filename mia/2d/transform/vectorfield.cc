@@ -23,7 +23,7 @@
 /* 
   LatexBeginSection{2D Transformations}
    
-   \subsubsection*{Dense vectorfield}
+   \subsection{Dense vectorfield}
    \label{transform2d:vf}
    
    \begin{description}

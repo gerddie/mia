@@ -23,7 +23,7 @@
 /* 
   LatexBeginSection{2D Transformations}
    
-   \subsubsection*{Translation}
+   \subsection{Translation}
    \label{transform2d:translate}
    
    \begin{description}

@@ -20,7 +20,7 @@
 /* 
    LatexBeginPlugin{Spacial filter kernels}
    
-   \subsubsection*{Gauss}
+   \subsection{Gauss}
    \label{skernel:gauss}
    
    \begin{description}

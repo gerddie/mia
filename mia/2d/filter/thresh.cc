@@ -25,7 +25,7 @@
 /* 
    LatexBeginPlugin{2D image filters}
    
-   \subsubsection*{Threshhold filter with neighbourhood preservation}
+   \subsection{Threshhold filter with neighbourhood preservation}
    \label{filter2d:thresh}
    
    \begin{description}

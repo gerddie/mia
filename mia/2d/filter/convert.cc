@@ -21,7 +21,7 @@
 /* 
    LatexBeginPlugin{2D image filters}
    
-   \subsubsection*{Pixel value conversion}
+   \subsection{Pixel value conversion}
    \label{filter2d:convert}
    
    \begin{description}

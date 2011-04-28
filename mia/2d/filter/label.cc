@@ -20,7 +20,7 @@
 
 /* LatexBeginPlugin{2D image filters}
    
-   \subsubsection*{Label connected components}
+   \subsection{Label connected components}
    \label{filter2d:label}
    
    \begin{description}

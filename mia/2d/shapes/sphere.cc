@@ -25,7 +25,7 @@
   LatexBeginPlugin{2D neighborhood shapes}
 
 
-  \subsubsection*{spherical shapes}
+  \subsection{spherical shapes}
   \label{shapes2d:sphere}
 
   \begin{description}

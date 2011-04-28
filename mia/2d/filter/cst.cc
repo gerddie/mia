@@ -21,7 +21,7 @@
 /* 
    LatexBeginPlugin{2D image filters}
    
-   \subsubsection*{Run a filter in the frequency domain}
+   \subsection{Run a filter in the frequency domain}
    \label{filter2d:cst}
    
    \begin{description}

@@ -24,7 +24,7 @@
 /* 
   LatexBeginSection{2D Transformations}
    
-   \subsubsection*{B-spline based transformation}
+   \subsection{B-spline based transformation}
    \label{transform2d:spline}
    
    \begin{description}

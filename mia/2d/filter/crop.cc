@@ -25,7 +25,7 @@
 /* 
    LatexBeginPlugin{2D image filters}
    
-   \subsubsection*{Image cropping}
+   \subsection{Image cropping}
    \label{filter2d:crop}
    
    \begin{description}

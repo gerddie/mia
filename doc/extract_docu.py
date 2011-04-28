@@ -85,10 +85,10 @@ for b in comment_blocks:
         sections[key].append_plugin(b)
 
 
-print "\\section{{Plug-ins}}"
-print "In this section the plug-ins are described that are provided by the library." 
-print "\\label{{ch:plugins}}"
+print "\\chapter{Plug-ins}"
+print "In this chapter the plug-ins are described that are provided by the library." 
+print "\\label{ch:plugins}"
 
 for s in sections.keys(): 
-    print "\\subsection{{{0}}}".format(s), 
+    print "\\section{{{0}}}".format(s), 
     sections[s].write()

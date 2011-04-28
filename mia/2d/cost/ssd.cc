@@ -26,7 +26,7 @@
 /* 
    LatexBeginPlugin{2D image similarity kernels}
    
-   \subsubsection*{Sum of Squared Differences}
+   \subsection{Sum of Squared Differences}
    \label{cost2d:ssd}
    
    \begin{description}
@@ -36,14 +36,8 @@
    \begin{equation}
       F_\text{SSD} (S,R) = \frac{1}{2} \int_{\Omega} \left( S(x) - R(x) \right)^2 \text{d}x 
    \end{equation}
-   and its gradient 
-   \begin{equation}
-      \frac{\partial}{\partial{x}} F_\text{SSD} (S,R) = \left( S(x) - R(x) \right) \\frac{\partial}{\partial{x}} S(x)
-   \end{equation}
-
    \item [Study:] An abitrary gray scale or binary images 
    \item [Reference:] An abitrary gray scale or binary images 
-   
    \end{description}
    
    This plug-in doesn't take additional parameters. 

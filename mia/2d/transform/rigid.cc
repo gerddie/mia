@@ -24,7 +24,7 @@
 /* 
   LatexBeginSection{2D Transformations}
    
-   \subsubsection*{Rigid}
+   \subsection{Rigid}
    \label{transform2d:rigid}
    
    \begin{description}

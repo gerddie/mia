@@ -21,7 +21,7 @@
 /* 
    LatexBeginPlugin{2D image filters}
    
-   \subsubsection*{Median filter}
+   \subsection{Median filter}
    \label{filter2d:median}
    
    \begin{description}

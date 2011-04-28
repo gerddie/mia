@@ -25,7 +25,7 @@
 /*
   LatexBeginPlugin{2D image filters}
 
-  \subsubsection*{Anisotropic filtering}
+  \subsection{Anisotropic filtering}
   \label{filter2d:aniso}
   
   \begin{description}

@@ -22,7 +22,7 @@
 /* 
    LatexBeginPlugin{2D image filters}
    
-   \subsubsection*{Spacial separable convolution filter}
+   \subsection{Spacial separable convolution filter}
    \label{filter2d:sepconv}
    
    \begin{description}

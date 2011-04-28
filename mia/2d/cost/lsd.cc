@@ -21,7 +21,7 @@
 /* 
    LatexBeginPlugin{2D image similarity kernels}
    
-   \subsubsection*{Least Squares Difference}
+   \subsection{Least Squares Difference}
    \label{cost2d:lsd}
    
    \begin{description}

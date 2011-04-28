@@ -24,7 +24,7 @@
 /* 
    LatexBeginPlugin{2D image combiner}
    
-   \subsubsection*{Arithmetic image combiners}
+   \subsection{Arithmetic image combiners}
    \label{combiner2d:aritmetic}
    
    \begin{description}

@@ -23,7 +23,7 @@
 /* 
   LatexBeginSection{2D Transformations}
    
-   \subsubsection*{Affine}
+   \subsection{Affine}
    \label{transform2d:affine}
    
    \begin{description}

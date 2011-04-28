@@ -20,7 +20,7 @@
 
 /* LatexBeginPlugin{2D image filters}
    
-   \subsubsection*{Intensity invert}
+   \subsection{Intensity invert}
    \label{filter2d:invert}
    
    \begin{description}

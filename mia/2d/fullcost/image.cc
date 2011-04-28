@@ -25,7 +25,7 @@
    LatexBeginPlugin{2D full cost functions}
 
       
-   \subsubsection*{Image cost function}
+   \subsection{Image cost function}
    \label{fullcost2d:image}
    
    \begin{description}

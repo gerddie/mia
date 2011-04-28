@@ -21,7 +21,7 @@
 /* 
    LatexBeginPlugin{2D image filters}
    
-   \subsubsection*{Morphological filters}
+   \subsection{Morphological filters}
    \label{filter2d:morph}
    
    \begin{description}

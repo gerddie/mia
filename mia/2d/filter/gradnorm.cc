@@ -22,7 +22,7 @@
 /* 
    LatexBeginPlugin{2D image filters}
    
-   \subsubsection*{Norm of a gradient of the image}
+   \subsection{Norm of a gradient of the image}
    \label{filter2d:gradnorm}
    
    \begin{description}

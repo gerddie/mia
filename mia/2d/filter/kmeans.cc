@@ -21,7 +21,7 @@
 
 /* LatexBeginPlugin{2D image filters}
    
-   \subsubsection*{K-means classification}
+   \subsection{K-means classification}
    \label{filter2d:kmeans}
    
    \begin{description}

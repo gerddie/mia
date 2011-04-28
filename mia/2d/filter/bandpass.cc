@@ -25,7 +25,7 @@
 /*
    LatexBeginPlugin{2D image filters}
    
-   \subsubsection*{Intensity based bandpass filter}
+   \subsection{Intensity based bandpass filter}
    \begin{description}
    \item [Plugin:]bandpass
    \item [Description:]An intensity band pass filter - all pixels with intensities
