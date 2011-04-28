@@ -20,6 +20,25 @@
  *
  */
 
+/* 
+  LatexBeginSection{2D Transformations}
+   
+   \subsubsection*{Translation}
+   \label{transform2d:translate}
+   
+   \begin{description}
+   
+   \item [Plugin:] translate
+   \item [Description:] Translation only.  
+   \item [Degrees of Freedom:] 2
+  
+   \end{description}
+   This plug-in doesn't take parameters 
+
+   LatexEnd  
+ */
+
+
 #include <numeric>
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/transform/translate.hh>

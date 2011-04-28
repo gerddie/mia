@@ -38,7 +38,7 @@
    \plugtabstart
    start & 2D vector & upper left corner of the requested sub-region  & <0,0>  \\
    end & 2D vector & lower right corner of the requested sub-region, a value of -1 refers the size of the 
-      original image in that dimension  & <-1,-1>  \					\
+      original image in that dimension  & <-1,-1>  \\
    \plugtabend
    
    \end{description}

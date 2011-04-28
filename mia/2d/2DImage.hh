@@ -241,7 +241,7 @@ public:
 	size_t size() const;
 
 	/// get direct access to the data field 
-	const T2DDatafield<T>& data() const __attribute__((deprecated));
+	const T2DDatafield<T>& data() const;
 
 	/// forwarding function to access the underlying T2DDatafield
 	void get_data_line_x(size_t y, std::vector<T>& buffer) const;

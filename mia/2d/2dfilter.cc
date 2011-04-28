@@ -26,9 +26,25 @@
   \label{sec:filter2d}
   
   2D image filters take a constant reference to a C2DImage as parameter and 
-  return the result in a shared_ptr P2DImage. 
+  return the result in a shared\_ptr P2DImage. 
   After constructions, filters work like functions, i.e. the output image is only dependent 
   on the input image and the construction parameters. 
+  
+  Filters are created by the C2DFilterPluginHandler singleton.
+
+  LatexEnd
+*/
+
+/*
+  LatexBeginSection{2D image combiner}
+  \label{sec:combiner2d}
+  
+  2D image combiners take two constant references to a C2DImage as parameter and 
+  return the result in a shared\_ptr P2DImage. 
+  After constructions, combinerss work like functions, i.e. the output image is only dependent 
+  on the input images and the construction parameters. 
+
+  Combiners are created by the C2DImageCombinerPluginHandler singleton. 
 
   LatexEnd
 */

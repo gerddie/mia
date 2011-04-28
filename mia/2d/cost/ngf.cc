@@ -22,6 +22,55 @@
 */
 
 
+/* 
+   LatexBeginPlugin{2D image similarity kernels}
+   
+   \subsubsection*{Normalized Gradient Fields}
+   \label{cost2d:ngf}
+   
+   \begin{description}
+   
+   \item [Plugin:] ngf
+   \item [Description:] This function evaluates the image similarity based on normalized gradient 
+                        fields. Given normalized gradient fields $\n_S$ of the study image and $\n_R$
+			of the reference image various evaluators are implemented: 
+   \begin{itemize}
+   \item cross Cross product based formulation: 
+     \begin{equation}
+       F_{\text{ngf}, \times}(\n_S, \n_R) := \frac{1}{2}\int_{\Omega} \left( \n_S(x) \times \n_R(x) \right)^2 \text{d}x
+     \end{equation}
+   \item dot Dot product based formulation: 
+     \begin{equation}
+        F_{\text{ngf}, \cdot}(\n_S, \n_R) := \frac{1}{2}\int_{\Omega} \left( \n_S(x) \cdot \n_R(x) \right)^2 \text{d}x
+      \end{equation}
+   \item sq 
+     \begin{equation}
+   	F_{\text{ngf}, \Delta^2} := \frac{1}{2}  \int_\Omega  
+	\left(<\n_R(x),\n_S(x)>^2   - \| \n_R(x)\|^2 \right)^2  \text{d}x,
+     \end{equation}
+   \item ds 
+     \begin{equation}
+   	F_{\text{ngf}, \cdot\Delta} := \frac{1}{2}  \int_\Omega  
+	\left( \| \n_R(x)\|^2 -
+        \frac{<\n_R(x),\n_S(x)>^2}{\|\n_R(x)\|\|\n_S(x)\|} \right)^2  \text{d}x,
+      \end{equation}
+   \end{itemize}
+
+   \item [Study:] An abitrary gray scale or binary images 
+   \item [Reference:] An abitrary gray scale or binary images 
+   
+   \end{description}
+   
+   \plugtabstart
+   eval &  strimng & Evaluator (cross|dot|ds|sq) & ds  \\
+   \plugtabend
+
+   For further information see \cite{haber05, wollny08a, wollny10b}. 
+
+   LatexEnd  
+ */
+
+
 #include <mia/2d/cost/ngf.hh>
 #include <mia/core/property_flags.hh>
 

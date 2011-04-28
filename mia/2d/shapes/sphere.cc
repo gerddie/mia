@@ -21,6 +21,26 @@
  *
  */
 
+/*
+  LatexBeginPlugin{2D neighborhood shapes}
+
+
+  \subsubsection*{spherical shapes}
+  \label{shapes2d:sphere}
+
+  \begin{description}
+   
+   \item [Plugin:] sphere 
+   \item [Description:] provide a 2D sphere like shape that includes its interior. 
+   
+   \end{description}
+   \plugtabstart
+   r &  float & radius of the sphere & 2 \\
+   \plugtabend
+   
+  LatexEnd
+*/
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif

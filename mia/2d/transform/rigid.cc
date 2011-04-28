@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2007-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -19,6 +19,26 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+
+/* 
+  LatexBeginSection{2D Transformations}
+   
+   \subsubsection*{Rigid}
+   \label{transform2d:rigid}
+   
+   \begin{description}
+   
+   \item [Plugin:] rigid
+   \item [Description:] Rigid transformations - i.r. rotations and translations are allowed. 
+   \item [Degrees of Freedom:] 3 
+  
+   \end{description}
+   This plug-in doesn't take parameters 
+
+   LatexEnd  
+ */
+
 
 #include <fstream>
 #include <mia/core/msgstream.hh>

@@ -20,6 +20,25 @@
  *
  */
 
+/* 
+  LatexBeginSection{2D Transformations}
+   
+   \subsubsection*{Dense vectorfield}
+   \label{transform2d:vf}
+   
+   \begin{description}
+   
+   \item [Plugin:] vf
+   \item [Description:] This plug-in implements a transformation that defines a translation for 
+                        each point of the grid defining the domain of the transformation. 
+   \item [Degrees of Freedom:] with the grid size $(n_x,n_y)$: $2* nx * ny$
+  
+   \end{description}
+   This plug-in doesn't  take parameters. 
+
+   LatexEnd  
+ */
+
 #include <limits>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/transform/vectorfield.hh>

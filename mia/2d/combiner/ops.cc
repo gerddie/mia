@@ -20,6 +20,30 @@
  *
  */
 
+
+/* 
+   LatexBeginPlugin{2D image combiner}
+   
+   \subsubsection*{Arithmetic image combiners}
+   \label{combiner2d:aritmetic}
+   
+   \begin{description}
+   
+   \item [Plugin:] add, sub, mul, div, absdiff
+   \item [Description:] combine the two images by applying the corresponding arithmetic operaton. 
+   The input images must be of the same size. 
+   \item [Input1:] Abitrary gray scale or binary image 
+   \item [Input2:] Abitrary gray scale or binary image 
+   \item [Output:] The combined image of the pixel type that is deducted from the 
+                   C++ return type for the corresponding operation between the input pixel types.
+   \item [Remark:] No special error handling is implemented for the division by zero.  
+   \end{description}
+   These plug-ins don't take additional parameters
+
+   LatexEnd  
+ */
+
+
 #include <boost/lambda/lambda.hpp>
 #include <mia/2d/combiner/ops.hh>
 
@@ -32,12 +56,13 @@ template <typename T, typename S>
 P2DImage T2DImageCombiner<BO>::operator () ( const T2DImage<T>& a, const T2DImage<S>& b) const
 {
 	// there's got to be a better way ...
-	typedef decltype(a[0] + b[0]) R; 
+	BO bo; 
+	typedef decltype(bo(a[0], b[0])) R; 
 			
 	auto  r = new T2DImage<R>(a.get_size()); 
 	
 	P2DImage result(r);
-	BO bo; 
+
 	transform(a.begin(), a.end(), b.begin(), r->begin(), bo); 
 	return result; 
 }

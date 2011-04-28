@@ -68,8 +68,6 @@ for f in sys.argv[1:]:
         exit(1)
     infile.close()
 
-print len(comment_blocks)
-
 sections = {}
 
 for b in comment_blocks: 
@@ -87,6 +85,10 @@ for b in comment_blocks:
         sections[key].append_plugin(b)
 
 
+print "\\section{{Plug-ins}}"
+print "In this section the plug-ins are described that are provided by the library." 
+print "\\label{{ch:plugins}}"
+
 for s in sections.keys(): 
-    print "\\section{{{0}}}".format(s), 
+    print "\\subsection{{{0}}}".format(s), 
     sections[s].write()

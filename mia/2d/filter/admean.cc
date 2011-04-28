@@ -26,7 +26,7 @@
   LatexBeginPlugin{2D image filters}
 
   \subsubsection*{Adaptive median filter}
-  \label{filter2d:adaptmed}
+  \label{filter2d:admean}
   
   \begin{description}
   
