@@ -17,22 +17,35 @@ import sys
 import re
 import string 
 
-class Section:
+class PluginSection:
    def __init__(self):
-       self.body = []
-       self.subsections = []
-
+      self.body = []
+      self.subsections = {}
+      self.unspecified = []
+      
    def append_to_body(self, text_block): 
-       self.body.extend(text_block[1:])
-
+      self.body.extend(text_block)
+      
    def append_plugin(self, text_block): 
-       self.subsections.extend(text_block[1:])
+      found = False
+      for l in text_block: 
+            e = re.search("[Plugin:] *([a-z1-9]*)", l)
+            if e:
+               self.subsections[e.group(1)] = text_block
+               found = True 
+               break
+      if not found:
+         self.unspecified.extend(text_block)
 
    def write(self): 
     for l in self.body:
         print l, 
-    for l in self.subsections:
-        print l, 
+    for k in self.subsections.keys:
+        for l in self.subsections[k]:
+           print l
+
+    for l in self.unspecified:
+       print l
     
        
 # this will be a list of lists containing all the documentation comment blocks
@@ -75,14 +88,14 @@ for b in comment_blocks:
    
     key = m.group(2)
     if not sections.has_key(key): 
-        sections[key] = Section()
+        sections[key] = PluginSection()
     
     
     if m.group(1) == "Section":
-        sections[key].append_to_body(b)
+        sections[key].append_to_body(b[1:])
         
     if m.group(1) == "Plugin":
-        sections[key].append_plugin(b)
+        sections[key].append_plugin(b[1:])
 
 
 print "\\chapter{Plug-ins}"

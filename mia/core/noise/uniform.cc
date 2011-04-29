@@ -19,16 +19,33 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
 
-
- Function  CGaussNoiseGenerator::box_muller implements the Polar form
- of the Box-Muller Transformation and is
-
- (c) Copyright 1994, Everett F. Carter Jr.
- Permission is granted by the author to use
- this software for any application provided this
- copyright notice is preserved.
-
 */
+
+
+/* 
+   LatexBeginPlugin{Noise Generators}
+   
+   \subsection{Uniform noise generator}
+   \label{noise:uniform}
+   
+   \begin{description}
+   
+   \item [Plugin:] uniform
+   \item [Description:] This noise generator creates (pseudo) random values that are uniformly distributed over 
+        a range [a,b]. 
+
+   \plugtabstart
+   a & float & Begin of noise value output range & 0 \\
+   b & float & End of noise value output range & 1 \\
+   seed & unsigned & Seed value for the initialization of the pseudo-number generator, 0 indicates to 
+   use the current system time value returned by the time(NULL) function. & 0 \\
+   \plugtabend
+      
+
+   \end{description 
+
+   LatexEnd 
+*/ 
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -113,7 +130,7 @@ bool CUniformNoiseGeneratorFactory::do_test()const
 	double sigma = sqrt((b-a) * (b-a) / 12.0);
 
 	if (fabs(mu - sum1) > 0.01 || fabs(sigma  - sum2) > 0.01) {
-		cvfail() << "avargaing at " << sum1 << " should be " << mu << " sigma " << sum2 << " should be " << sigma << "\n";
+		cvfail() << "averaging at " << sum1 << " should be " << mu << " sigma " << sum2 << " should be " << sigma << "\n";
 		return -1;
 	}
 

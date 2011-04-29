@@ -20,6 +20,18 @@
  *
  */
 
+/*
+  LatexBeginSection{Minimizers}
+  \label{sec:minimizers}
+  
+  These minimizers are used to optimize functions of the type $F:\Omega \rightarrow \R$. 
+  
+  Minimizers are created by the CMinimizerPluginHandler singleton.
+
+  LatexEnd
+*/
+
+
 #include <stdexcept>
 #include <sstream>
 #include <boost/lambda/lambda.hpp>

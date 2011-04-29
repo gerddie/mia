@@ -29,6 +29,31 @@
 
 */
 
+/* 
+   LatexBeginPlugin{Noise Generators}
+   
+   \subsection{Gaussian noise generator}
+   \label{noise:gauss}
+   
+   \begin{description}
+   
+   \item [Plugin:] gauss
+   \item [Description:] This noise generator creates random values that are distributed according to a 
+        Gaussien distribution by using the Box-Muller transformation. 
+
+   \plugtabstart
+   mu & float & mean of the Gaussian distribution & 0 \\
+   sigma & float & standart derivation of the Gaussian  distribution & 1 \\
+   seed & unsigned & Seed value for the initialization of the pseudo-number generator, 0 indicates to 
+   use the current system time value returned by the time(NULL) function. & 0 \\
+   \plugtabend
+
+   \end{description 
+
+   LatexEnd 
+*/ 
+
+
 #include <cmath>
 
 #include <limits>
