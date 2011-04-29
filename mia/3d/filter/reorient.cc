@@ -1,5 +1,6 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ *
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -20,13 +21,34 @@
  *
  */
 
+/* 
+   LatexBeginPlugin{3D image filters}
+   
+   \subsection{Reorient image}
+   \label{filter3d:reorient}
+   
+   \begin{description}
+   
+   \item [Plugin:] reorient
+   \item [Description:] Change the orientation of the 3D image 
+   \item [Input:] An abitary 3D image 
+   \item [Input:] The re-oriented 3D image 
+
+   \plugtabstart
+   \plugtabend
+   map & string & mapping to be applied & xyz \\
+   \end{description}
+
+   LatexEnd  
+ */
+
 
 #include <limits>
 #include <stdexcept>
 // boost type trains are needed to check whether we are dealing with an integer pixel valued image
 #include <boost/type_traits.hpp>
 
-// this is for the definition of the 2D image plugin base classes
+// this is for the definition of the 3D image plugin base classes
 #include <mia/3d/filter/reorient.hh>
 
 

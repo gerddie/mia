@@ -126,7 +126,7 @@ struct DilateTestFixture: SetPathFixture  {
 
 BOOST_FIXTURE_TEST_CASE( test_dilate, DilateTestFixture)
 {
-	cvdebug() << "C2DDilateStackFilterFactory::do_test() \n";
+	cvdebug() << "C3DDilateStackFilterFactory::do_test() \n";
 
 	CParsedOptions options;
 
@@ -242,7 +242,7 @@ struct ErodeTestFixture: SetPathFixture {
 
 BOOST_FIXTURE_TEST_CASE( test_erode, ErodeTestFixture)
 {
-	cvdebug() << "C2DErodeStackFilterFactory::do_test() \n";
+	cvdebug() << "C3DErodeStackFilterFactory::do_test() \n";
 
 	CParsedOptions options;
 

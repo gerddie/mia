@@ -21,7 +21,7 @@
 /* 
    LatexBeginPlugin{2D image filters}
    
-   \subsection{Spacial separable convolution filter}
+   \subsection{Select biggest component}
    \label{filter2d:selectbig}
    
    \begin{description}

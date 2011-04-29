@@ -18,6 +18,21 @@
  *
  */
 
+/*
+  LatexBeginSection{3D image filters}
+  \label{sec:filter3d}
+  
+  3D image filters take a constant reference to a C3DImage as parameter and 
+  return the result in a shared\_ptr P3DImage. 
+  After constructions, filters work like functions, i.e. the output image is only dependent 
+  on the input image and the construction parameters. 
+  
+  Filters are created by the C3DFilterPluginHandler singleton.
+
+  LatexEnd
+*/
+
+
 #include <mia/core/export_handler.hh>
 
 #include <mia/3d/3dfilter.hh>

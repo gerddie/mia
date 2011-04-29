@@ -1,5 +1,5 @@
 /*
-** Copyrigh (C) 2007 Gert Wollny <gert at die.upm.es>
+**  Copyright (c) 2007-2011
 **   E.S.T.I. Telecomunication, Universidad Politecnica, Madrid
 **
 ** This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,31 @@
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 */
+
+/* 
+   LatexBeginPlugin{3D image filters}
+   
+   \subsection{Morphological filters}
+   \label{filter3d:morph}
+   
+   \begin{description}
+   
+   \item [Plugin:] dilate, erode, close, open
+   \item [Description:] Apply the according morphological operation using a given structuring element 
+   \item [Input:] Abitrary gray scale or binary image 
+   \item [Output:] The filtered image of the same pixel type and dimension 
+   
+   \plugtabstart
+   shape &  string & definition of the structuring element as provided by the shape plugins \ref{sec:3dshapes} & 
+         sphere:r=2    \\
+   hint  &  string & A hint to speed up the processing of binary images (black|white), should indicate 
+         what kind of pixel is more presnt in the image  & black \\\hline 
+   \plugtabend
+   
+   \end{description}
+
+   LatexEnd  
+ */
 
 
 #include <iomanip>
@@ -186,7 +211,7 @@ C3DDilateFilterFactory::ProductPtr C3DDilateFilterFactory::dodo_create(P3DShape 
 
 const string C3DDilateFilterFactory::do_get_descr()const
 {
-	return "2d image stack dilate filter";
+	return "3d image stack dilate filter";
 }
 
 bool  C3DDilateFilterFactory::do_test() const
@@ -315,7 +340,7 @@ C3DErodeFilterFactory::ProductPtr C3DErodeFilterFactory::dodo_create(P3DShape sh
 
 const string C3DErodeFilterFactory::do_get_descr()const
 {
-	return "2d image stack erode filter";
+	return "3d image stack erode filter";
 }
 
 bool C3DErodeFilterFactory::do_test() const

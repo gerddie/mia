@@ -1,7 +1,7 @@
 /* -*- mona-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
- * 
  *
+ * Copyright (c) Leipzig, Madrid 2004-2011
+ * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -17,6 +17,34 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/*
+  LatexBeginPlugin{3D image filters}
+
+  \subsection{Anisotropic filtering}
+  \label{filter3d:aniso}
+  
+  \begin{description}
+  
+  \item [Plugin:] aniso
+  \item [Description:] Run a anisotropic filter on the input image 
+  \item [Input:] Abitrary gray scale image 
+  \item [Output:] The filtered image of the same pixel type and dimension 
+  
+  \plugtabstart
+  iter & int & maximum number of iterations & 100 \\
+  epsilon & float & stop iteration if changes fall below this value & 1.0  \\
+  k & float & k the noise threshold ($\le 0$: adaptive) & -1 \\
+  psi & string & Edge stopping funtion (ps1|ps2|tuckey|guess) & - \\
+  \plugtabend
+  
+  \item [Remark:] For mor information see \cite{perona90:aniso}. 
+  
+  \end{description}
+
+  LatexEnd
+*/
+
 
 #include <mia/core/msgstream.hh>
 #include <mia/core/disctmap.hh>

@@ -21,6 +21,27 @@
  *
  */
 
+/* 
+   LatexBeginPlugin{3D image filters}
+
+   \subsection{Binarize Filter}
+   \begin{description}
+   \item [Plugin:]binarize
+   \item [Description:]An binarize filter - all pixels with intensities
+   outside the given range are set to zero, all other pixels are set to one
+   same ($x:=x\in [min,max]\:?\: x\::\:0$
+   \item [Parameters:] min, max
+   
+   \plugtabstart
+   min&  float&  lower bound of the intensity range &0\\\hline
+   max&  float&  upper bound of the intensity range &3.40282e+38\\\hline
+   \end{tabular}
+   \end{description}
+   
+   LatexEnd  
+ */
+
+
 #include <mia/3d/filter/binarize.hh>
 #include <mia/internal/binarize.cxx>
 

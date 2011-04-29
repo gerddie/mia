@@ -21,6 +21,34 @@
  *
  */
 
+/* 
+   LatexBeginPlugin{3D image filters}
+   
+   \subsection{Spacial separable convolution filter}
+   \label{filter3d:sepconv}
+   
+   \begin{description}
+   
+   \item [Plugin:] sepconv
+   \item [Description:] A 3D image filter that runs separable ove each dimension 
+   \item [Input:] Abitrary gray scale image 
+   \item [Output:] Filtered gray scale image of the same pixel type and dimension
+   
+   \plugtabstart
+   kx &  string & Filter kernel in x-direction as available through the spacial kernel plug-ins \ref{sec:SpacialKernels}
+      & gauss:w=1    \\
+   ky &  string & Filter kernel in y-direction as available through the spacial kernel plug-ins \ref{sec:SpacialKernels}
+      & gauss:w=1    \\
+   kz &  string & Filter kernel in z-direction as available through the spacial kernel plug-ins \ref{sec:SpacialKernels}
+      & gauss:w=1    \\\hline 
+   \plugtabend
+   
+   \end{description}
+
+   LatexEnd  
+ */
+
+
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/3d/filter/sepconv.hh>
