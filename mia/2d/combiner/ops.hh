@@ -69,12 +69,12 @@ BINARY_OP(Div,   /)
 
 template <typename A, typename B>
 struct __BinaryAbsDiff {
-	typedef decltype(fabs(*(A*)0 - *(B*)0)) return_type;	
+	typedef decltype(*(A*)0 - *(B*)0) return_type; 
 		static return_type apply(A a, B b) {	       
-			return fabs(a - b);
-		}			
-	};						
-								
+			return static_cast<double>(a) > static_cast<double>(b) ? (a - b) : (b - a); 
+		}
+};						
+
 class BinaryAbsDiff {							
 public:									
 	template <typename A, typename B>

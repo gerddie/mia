@@ -19,14 +19,37 @@
  */
 
 /*
-  This plug-in implements the navier-stokes operator like registration model
-  that accounts for linear elastic and fluid dynamic registration.
-  Which model is used depends on the selected time step.
+  LatexBeginPlugin{2D model based registration}
 
-  To solve the PDE an adaptive SOR is implemented. Some fine tuninig of
-  the update algorithm might be apropriate.
-*/
+  \subsection{Navier-Stokes PDE, Gauss-Southwell version}
+  \label{model2d:naviera}
+  
+  \begin{description}
+   
+  \item [Plugin:] navier
+   \item [Description:] This plug-in provides a version of the Navier-Stockes based 
+   registration model that allow for linear-elastic or fluid dynamic registration models. 
+   \begin{equation}
+   \mu \nabla ^{2}\vu(\vx)+(\mu +\lambda )\nabla (\nabla \cdot \vu(\vx)) &= -[S(\vx)-R(\vx)]\left. \nabla S\right| _{\vx}\ \
+   \end{equation}
+   
+   The plug-in solves the underlying PDE by running a Gauss-Southwell relaxation. 
+   For a version that uses Succesive Overrelaxation use \emph{navier}
+   \ref{model2d:navier}.
 
+   \plugtabstart
+   mu & float & shear parameter $\mu$  & 1.0 \\
+   lambda & float & dilation parameter $\lambda$  & 1.0 \\
+   omega & float & relaxation parameter & 1.0 \\
+   epsilon & float & stopping parameter & 0.0001 \\
+   iter & int & maximum number of iterations & 100 \\
+   \plugtabend
+
+   \end{description}
+
+						
+  LatexEnd 
+*/ 
 #include <limits>
 #include <mia/2d/model/naviera.hh>
 

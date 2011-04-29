@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -21,6 +21,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/*
+  LatexBeginSection{2D image creators}
+  \label{sec:creator2d}
+  
+  These plug-ins create 2D imgages with predefined objects inside. 
+
+  LatexEnd
+
+*/
 
 #include <mia/core/export_handler.hh>
 

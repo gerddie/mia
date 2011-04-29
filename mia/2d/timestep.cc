@@ -21,6 +21,19 @@
  *
  */
 
+/*
+  LatexBeginSection{2D time steps for model based registration}
+  \label{sec:timestep2d}
+  
+  These plug-ins refer to non-linear registration approaches that use 
+  a PDE based model for the regularization of the transformation.
+  The plug-ins implement different time step models. 
+
+  LatexEnd
+
+*/
+
+
 #include <mia/core/export_handler.hh>
 
 #include <mia/core/factory.hh>

@@ -16,6 +16,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+/*
+  LatexBeginPlugin{2D image creators}
+
+  \subsection{Circle creator}
+  \label{creator2d:circle}
+   
+  \begin{description}
+   
+  \item [Plugin:] circle
+  \item [Description:] Creates an image with a filled shape. The filling pattern is 
+         given bythe parameters. 
+   
+   \plugtabstart
+   f & float & spherical change frequency & 1.0 \\
+   p & float spherical shape parameter (2.0 = circle)& 2.0 \\
+   \plugtabend
+   
+   \end{description}
+
+
+  LatexEnd
+*/
+
 #ifdef _MSC_VER
 #define _USE_MATH_DEFINES
 #endif
@@ -101,10 +124,10 @@ P2DImage C2DCircleCreator::do_create(const C2DBounds& size) const
 	const bool is_float = is_floating_point<T>::value;
 
 	for (size_t y = 0; y < size.y; ++y) {
-		double dy = center.y - y;
+		double dy = abs(center.y - y);
 		dy  = pow(dy, m_p);
 		for (size_t x = 0; x < size.x; ++x, ++p) {
-			double dx = center.x - x;
+			double dx = abs(center.x - x);
 			dx = pow(dx, m_p);
 
 			dx += dy;
@@ -128,7 +151,7 @@ private:
 
 C2DCircleCreatorPlugin::C2DCircleCreatorPlugin():
 	C2DImageCreatorPlugin("circle"),
-	m_f(2.0),
+	m_f(1.0),
 	m_p(2.0)
 {
 	add_parameter("f", new CFloatParameter(m_f, 0, 10, false, "spherical change frequency"));

@@ -21,6 +21,18 @@
  *
  */
 
+/*
+  LatexBeginSection{2D model based registration}
+  \label{sec:regmodel2d}
+  
+  These plug-ins refer to non-linear registration approaches that use 
+  a PDE based model for the regularization of the transformation. 
+
+  LatexEnd
+
+*/
+
+
 #include <mia/core/export_handler.hh>
 
 #include <mia/2d/model.hh>

@@ -25,9 +25,46 @@
 
 
 using namespace identity_regmodel;
+using namespace mia; 
 
 void C2DIdentityRegModel::do_solve(const mia::C2DFVectorfield& b, mia::C2DFVectorfield& v) const
 {
 	assert(b.get_size() == v.get_size());
 	copy(b.begin(), b.end(), v.begin());
+}
+
+class C2DIdentityRegModelPlugin: public C2DRegModelPlugin {
+public:
+	C2DIdentityRegModelPlugin();
+	C2DIdentityRegModelPlugin::ProductPtr do_create()const;
+
+private:
+	bool do_test() const;
+	const string do_get_descr()const;
+};
+
+C2DIdentityRegModelPlugin::C2DIdentityRegModelPlugin():
+	C2DRegModelPlugin("identity")
+{
+}
+
+C2DIdentityRegModelPlugin::ProductPtr C2DIdentityRegModelPlugin::do_create()const
+{
+	return C2DIdentityRegModelPlugin::ProductPtr(
+		new C2DIdentityRegModel());
+}
+
+bool C2DIdentityRegModelPlugin::do_test() const
+{
+	return true;
+}
+
+const string C2DIdentityRegModelPlugin::do_get_descr()const
+{
+	return "identity registration model - cust copies the input force field to the output";
+}
+
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new C2DIdentityRegModelPlugin();
 }

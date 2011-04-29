@@ -18,14 +18,22 @@
  *
  */
 
-
 /*
-  This plug-in implements the navier-stokes operator like registration model
-  that accounts for linear elastic and fluid dynamic registration.
-  Which model is used depends on the selected time step.
+  LatexBeginPlugin{2D model based registration}
 
-  To solve the PDE a full SOR is implemented.
-*/
+  \subsection{Identity}
+  \label{model2d:identity}
+  
+  \begin{description}
+   
+  \item [Plugin:] identity
+  \item [Description:] This plug-in provides an identity model that just copies the 
+  input field to the output. 
+  \end{description}
+  This plug-in doesn't take extra parameters. 
+  
+  LatexEnd 
+*/ 
 
 #include <limits>
 
