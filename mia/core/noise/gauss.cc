@@ -48,7 +48,7 @@
    use the current system time value returned by the time(NULL) function. & 0 \\
    \plugtabend
 
-   \end{description 
+   \end{description}
 
    LatexEnd 
 */ 

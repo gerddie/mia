@@ -32,11 +32,12 @@
    \item [Description:] This plugin provides minimizers that are implemented in the GNU Scientific Library
                         \cite{galassi09}
 			Currently, the following optimizers are supported: 
+			
 			\begin{tabular}{|c|l|c|}
 			\hline 
 			Name & Description & uses Gradient \\\hline 
 			simplex & The simplex algorithm \cite{nelder65}, currently the 
-			          stopping criterion is set to  $10^{-3}& no \\
+			          stopping criterion is set to  $10^{-3}$ & no \\
 			bfgs    &  Broyden-Fletcher-Goldfarb-Shanno (BFGS) algorithm & yes \\
 			bfgs2  &   Alternative Implementation of the BFGS algorithm & yes \\
 			cg-fr &  Fletcher-Reeves conjugate gradient algorithm & yes \\
@@ -44,12 +45,13 @@
 			gd & Gradient Descent & yes \\
 			\hline 
 			\end{tabular}
+
    \plugtabstart
    opt  & string & Optimization methos (see above) & gd \\
    tol  & double & Stopping criterion $\in[0.001,10]$;  actual meaning depends on the algorithm & 0.1 \\
-   eps  & gradient norm stopping criterion (stop when |g| < eps) $\in [10^{-10}, 10.0]$ & 0.01 \\
+   eps  & double & gradient norm stopping criterion (stop when |g| < eps) $\in [10^{-10}, 10.0]$ & 0.01 \\
    iter & int & maximum number of iterations & 100 \\
-   step & double & initial step size $\in [0, 10] & 0.001 \\
+   step & double & initial step size $\in [0, 10]$ & 0.001 \\
    \plugtabend
    
    \end{description}

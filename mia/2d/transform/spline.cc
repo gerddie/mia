@@ -22,7 +22,7 @@
 
 
 /* 
-  LatexBeginSection{2D Transformations}
+  LatexBeginPlugin{2D Transformations}
    
    \subsection{B-spline based transformation}
    \label{transform2d:spline}

@@ -21,9 +21,9 @@
  */
 
 /* 
-  LatexBeginSection{2D Transformations}
+  LatexBeginPlugin{2D Transformations}
    
-   \subsection{Dense vectorfield}
+   \subsection{Vectorfield}
    \label{transform2d:vf}
    
    \begin{description}

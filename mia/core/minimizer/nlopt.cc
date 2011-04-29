@@ -44,7 +44,7 @@
    local-opt & string & secondary minimization algorithm (some of the main algorithms need this, 
                        all parameters that are used for the main algorithm are currently also 
 		       used for the local one &  not given\\
-   stop & double & Stopping criterion: function value falls below this value & -HUGE_VAL \\
+   stop & double & Stopping criterion: function value falls below this value & -HUGE \\
    xtola & double & Stopping criterion: the absolute change of all x-values is below this value & 0.0 \\
    xtolr & double & Stopping criterion: the relative change of all x-values is below this value & 0.0 \\
    ftola & double & Stopping criterion: the relative change of the objective value is below  this value & 0.0 \\

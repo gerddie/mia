@@ -21,8 +21,8 @@
  */
 
 /* 
-  LatexBeginSection{2D Transformations}
-   
+  LatexBeginPlugin{2D Transformations}
+  
    \subsection{Affine}
    \label{transform2d:affine}
    

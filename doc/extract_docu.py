@@ -27,25 +27,23 @@ class PluginSection:
       self.body.extend(text_block)
       
    def append_plugin(self, text_block): 
-      found = False
       for l in text_block: 
-            e = re.search("[Plugin:] *([a-z1-9]*)", l)
-            if e:
-               self.subsections[e.group(1)] = text_block
-               found = True 
-               break
-      if not found:
-         self.unspecified.extend(text_block)
+         e = re.search("subsection\{(.*)\}", l)
+         if e:
+            self.subsections[e.group(1)] = text_block
+            return 
+      self.unspecified.extend(text_block)
 
    def write(self): 
-    for l in self.body:
-        print l, 
-    for k in self.subsections.keys:
-        for l in self.subsections[k]:
-           print l
+      for l in self.body:
+         print l, 
+      for k in sorted(self.subsections.keys()):
+         sys.stderr.write("  {}\n".format(k))
+         for l in self.subsections[k]:
+            print l,
 
-    for l in self.unspecified:
-       print l
+      for l in self.unspecified:
+         print l,
     
        
 # this will be a list of lists containing all the documentation comment blocks
@@ -84,7 +82,7 @@ for f in sys.argv[1:]:
 sections = {}
 
 for b in comment_blocks: 
-    m = re.search(" *LatexBegin([a-zA-Z]*)({.*})", b[0])
+    m = re.search(" *LatexBegin([a-zA-Z]*){(.*)}", b[0])
    
     key = m.group(2)
     if not sections.has_key(key): 
@@ -102,6 +100,7 @@ print "\\chapter{Plug-ins}"
 print "In this chapter the plug-ins are described that are provided by the library." 
 print "\\label{ch:plugins}"
 
-for s in sections.keys(): 
-    print "\\section{{{0}}}".format(s), 
-    sections[s].write()
+for s in sorted(sections.keys()): 
+   sys.stderr.write("{}\n".format(s))
+   print "\\section{{{0}}}".format(s), 
+   sections[s].write()

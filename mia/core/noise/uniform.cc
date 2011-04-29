@@ -42,7 +42,7 @@
    \plugtabend
       
 
-   \end{description 
+   \end{description}
 
    LatexEnd 
 */ 
