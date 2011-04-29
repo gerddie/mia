@@ -21,6 +21,16 @@
  *
  */
 
+/*
+   LatexBeginSection{2D FFT filter kernels}
+   \label {sec:fft2dkern}
+   
+   These are kernels for filters that work in the frequency domain on the 
+   Fourier transformed image. 
+
+   \LatexEnd
+*/
+
 #include <boost/lambda/lambda.hpp>
 
 #include <mia/2d/fftkernel.hh>

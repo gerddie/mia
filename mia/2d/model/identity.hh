@@ -18,23 +18,6 @@
  *
  */
 
-/*
-  LatexBeginPlugin{2D model based registration}
-
-  \subsection{Identity}
-  \label{model2d:identity}
-  
-  \begin{description}
-   
-  \item [Plugin:] identity
-  \item [Description:] This plug-in provides an identity model that just copies the 
-  input field to the output. 
-  \end{description}
-  This plug-in doesn't take extra parameters. 
-  
-  LatexEnd 
-*/ 
-
 #include <limits>
 
 #include <mia/2d/model.hh>

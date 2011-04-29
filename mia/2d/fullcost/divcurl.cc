@@ -33,8 +33,8 @@
    \item [Description:] Evaluate the DivCurl measure of a given transformation $T$. 
 
    \begin{equation}
-   F_{\text{divcurl}} := \int_{\Omega} w_{\text{div}}\left\| \div(T(\vx)) \right\|^2  + 
-                                       w_{\text{curl}}\left\| \curl(T(\vx)) \right\|^2 d\vx.
+   F_{\text{divcurl}} := \int_{\Omega} w_{\text{div}}\left\| \nabla \nabla  \cdot (T(\vx)) \right\|^2  + 
+                                       w_{\text{curl}}\left\| \nabla \curl(T(\vx)) \right\|^2 d\vx.
    \end{equation}
    
    \plugtabstart

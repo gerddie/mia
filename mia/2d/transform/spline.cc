@@ -38,7 +38,7 @@
    \end{description}
 
    \plugtabstart
-   interp & string & interpolating B-spline kernel (bsplineX, omoms3) with X the degree (2-5), bspline3 \\ 
+   interp & string & interpolating B-spline kernel (bsplineX, omoms3) with X the degree (2-5)& bspline3 \\ 
    rate   & float  & coefficient rate (currently the same in all dimenions & 10 \\
    \plugtabend
 

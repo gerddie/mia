@@ -33,7 +33,7 @@
    \item [Description:] This plug-in provides a version of the Navier-Stockes based 
    registration model that allow for linear-elastic or fluid dynamic registration models. 
    \begin{equation}
-   \mu \nabla ^{2}\vu(\vx)+(\mu +\lambda )\nabla (\nabla \cdot \vu(\vx)) &= -[S(\vx)-R(\vx)]\left. \nabla S\right| _{\vx}\ \
+   \mu \nabla ^{2}\vu(\vx)+(\mu +\lambda )\nabla (\nabla \cdot \vu(\vx)) = -[S(\vx)-R(\vx)]\left. \nabla S\right| _{\vx}\ \
    \end{equation}
    
    The plug-in solves the underlying PDE by running a full SOR algorithm. 
