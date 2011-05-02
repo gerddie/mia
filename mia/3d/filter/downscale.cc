@@ -137,15 +137,15 @@ C3DDownscaleFilterPlugin::C3DDownscaleFilterPlugin():
 	m_filter("gauss")
 {
 	add_parameter("bx", new CUIntParameter(m_b.x, 1,
-                                numeric_limits<int>::max(), false,
-                                "blocksize in x direction"));
-
+					       numeric_limits<int>::max(), false,
+					       "blocksize in x direction"));
+	
 	add_parameter("by", new CUIntParameter(m_b.y, 1,
-                                        numeric_limits<int>::max(), false,
-                                        "blocksize in y direction"));
-
+					       numeric_limits<int>::max(), false,
+					       "blocksize in y direction"));
+	
 	add_parameter("bz", new CUIntParameter(m_b.z, 1,
-                                                numeric_limits<int>::max(), false,
+					       numeric_limits<int>::max(), false,
                                                 "blocksize in z direction"));
 
 	add_parameter("b", new C3DBoundsParameter(m_b, false, "blocksize"));

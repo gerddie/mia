@@ -84,7 +84,8 @@ TRangeParameter<T,TS>::TRangeParameter(T& value, T min, T max, bool required, co
 	m_max(max)
 {
 	if (m_min > m_max) 
-		throw std::invalid_argument("TRangeParameter: min > max not allowed"); 
+		THROW(std::invalid_argument, "Parameter '"<<descr<<"' TRangeParameter<T,"<< TS << ">: min(" 
+		      << m_min <<") > max ("<< m_max << ")  not allowed"); 
 }
 
 template <typename T, const char * const TS> 

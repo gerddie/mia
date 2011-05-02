@@ -17,6 +17,28 @@
  *
  */
 
+/* 
+   LatexBeginPlugin{3D image similarity kernels}
+   
+   \subsection{Sum of Squared Differences}
+   \label{cost3d:ssd}
+   
+   \begin{description}
+   
+   \item [Plugin:] ssd
+   \item [Description:] Evaluates the Sum of Squared Differences similarity measure between two images:
+   \begin{equation}
+      F_\text{SSD} (S,R) = \frac{1}{2} \int_{\Omega} \left( S(x) - R(x) \right)^2 \text{d}x 
+   \end{equation}
+   \item [Study:] An abitrary gray scale or binary images 
+   \item [Reference:] An abitrary gray scale or binary images 
+   \end{description}
+   
+   This plug-in doesn't take additional parameters. 
+
+   LatexEnd  
+ */
+
 
 #include <mia/3d/cost.hh>
 
