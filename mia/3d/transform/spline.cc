@@ -20,6 +20,31 @@
  *
  */
 
+/* 
+  LatexBeginPlugin{3D Transformations}
+   
+   \subsection{B-spline based transformation}
+   \label{transform3d:spline}
+   
+   \begin{description}
+   
+   \item [Plugin:] spline
+   \item [Description:] This plug-in implements a free-form transfromation that can be described by 
+   a set of B-spline coefficients and an underlying B-spline kernel. 
+   \item [Degrees of Freedom:] depends on the coefficient rate and the size of the domain where the 
+      transformation is defined on 
+  
+   \end{description}
+
+   \plugtabstart
+   interp & string & interpolating B-spline kernel (bsplineX, omoms3) with X the degree (2-5)& bspline3 \\ 
+   rate   & float  & coefficient rate (currently the same in all dimenions & 10 \\
+   \plugtabend
+
+   LatexEnd  
+ */
+
+
 #include <cstdlib>
 #include <cassert>
 #include <limits>

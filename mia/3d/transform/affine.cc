@@ -20,6 +20,30 @@
  *
  */
 
+/* 
+  LatexBeginPlugin{3D Transformations}
+  
+   \subsection{Affine}
+   \label{transform3d:affine}
+   
+   \begin{description}
+   
+   \item [Plugin:] affine
+   \item [Description:] Affine-linear transformations - i.e. the transformation cann be described in terms of a 
+   multiplication by a $2\times2$ matrix $A$ and the addition of a translation vector $b$: 
+   \begin{equation}
+   x \rightarrow Ax + b
+   \end{equation}
+   
+   \item [Degrees of Freedom:] 12
+  
+   \end{description}
+   This plug-in doesn't take parameters 
+
+   LatexEnd  
+ */
+
+
 #include <fstream>
 #include <cmath>
 #include <mia/core/msgstream.hh>

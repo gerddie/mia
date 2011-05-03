@@ -35,8 +35,8 @@
    \item [Input:] The re-oriented 3D image 
 
    \plugtabstart
-   \plugtabend
    map & string & mapping to be applied & xyz \\
+   \plugtabend
    \end{description}
 
    LatexEnd  

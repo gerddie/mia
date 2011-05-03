@@ -20,6 +20,17 @@
  *
  */
 
+/*
+  LatexBeginSection{3D Transformations}
+  \label{sec:3dtransforms}
+  
+  3D transformations provide to means to transform images and point sets. They are mostly used 
+  in image registration. 
+  
+  LatexEnd
+*/
+
+
 #define VSTREAM_DOMAIN "3dtransform"
 #include <mia/3d/transform.hh>
 #include <mia/3d/deformer.hh>

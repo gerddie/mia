@@ -21,6 +21,27 @@
  *
  */
 
+/*
+  LatexBeginPlugin{3D neighborhood shapes}
+
+
+  \subsection{Spherical shape}
+  \label{shapes3d:sphere}
+
+  \begin{description}
+   
+   \item [Plugin:] sphere 
+   \item [Description:] provides a 3D filled sphere. 
+   
+   \end{description}
+   \plugtabstart
+   r &  float & radius of the sphere & 2 \\
+   \plugtabend
+   
+  LatexEnd
+*/
+
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif

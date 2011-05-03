@@ -20,7 +20,7 @@
 
 /*
   LatexBeginSection{3D image filters}
-  \label{sec:filter3d}
+  \label{sec:3dfilters}
   
   3D image filters take a constant reference to a C3DImage as parameter and 
   return the result in a shared\_ptr P3DImage. 

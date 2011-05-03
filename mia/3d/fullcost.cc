@@ -21,8 +21,8 @@
  */
 
 /*
-  LatexBeginSection{2D full cost functions}
-  \label{sec:2dfullcost}
+  LatexBeginSection{3D full cost functions}
+  \label{sec:3dfullcost}
   
   This class of cost functions evaluates the cost resulting from the 
   use of a certain transformation. This may include a penalty term that ensures 
