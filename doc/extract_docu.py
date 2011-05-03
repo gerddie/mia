@@ -16,6 +16,29 @@
 import sys
 import re
 import string 
+from fnmatch import fnmatch
+from os.path import walk
+
+
+
+class CPatternCollector:
+   def __init__(self, pattern):
+      self.pattern = pattern
+      self.files=[]
+
+      
+def collect_files(arg, dirname, names):
+    for f in names:
+        if fnmatch(f, arg.pattern):
+            arg.files.append(dirname + "/" + f)
+   
+
+
+def find_files(root, pattern): 
+   arg = CPatternCollector(pattern)
+   walk(root, collect_files, arg)
+   return arg.files 
+
 
 class PluginSection:
    def __init__(self):
@@ -34,23 +57,28 @@ class PluginSection:
             return 
       self.unspecified.extend(text_block)
 
-   def write(self): 
+   def write(self, output): 
       for l in self.body:
-         print l, 
+         output.write(l)
       for k in sorted(self.subsections.keys()):
          sys.stderr.write("  {}\n".format(k))
          for l in self.subsections[k]:
-            print l,
+            output.write(l)
 
       for l in self.unspecified:
-         print l,
+         output.write(l)
     
        
 # this will be a list of lists containing all the documentation comment blocks
 comment_blocks = []
 
+
+root= sys.argv[1]
+output_filename = sys.argv[2]
+files = find_files(root, "*.cc")
+
 # read all files and extract comment blocks 
-for f in sys.argv[1:]: 
+for f in files: 
     infile = open(f,"r")
     lines = infile.readlines()
 
@@ -95,12 +123,13 @@ for b in comment_blocks:
     if m.group(1) == "Plugin":
         sections[key].append_plugin(b[1:])
 
+output_file = open(output_filename,"w")
 
-print "\\chapter{Plug-ins}"
-print "In this chapter the plug-ins are described that are provided by the library." 
-print "\\label{ch:plugins}"
+output_file.write("\\chapter{Plug-ins}\n")
+output_file.write("In this chapter the plug-ins are described that are provided by the library.\n") 
+output_file.write("\\label{ch:plugins}")
 
 for s in sorted(sections.keys()): 
    sys.stderr.write("{}\n".format(s))
-   print "\\section{{{0}}}".format(s), 
-   sections[s].write()
+   output_file.write("\\section{{{0}}}".format(s)) 
+   sections[s].write(output_file)
