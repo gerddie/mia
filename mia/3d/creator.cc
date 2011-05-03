@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/*
+  LatexBeginSection{3D image creators}
+  \label{sec:creator3d}
+  
+  These plug-ins create 3D imgages with predefined objects inside. 
+
+  LatexEnd
+
+*/
+
 
 #include <mia/core/export_handler.hh>
 

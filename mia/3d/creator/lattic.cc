@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,30 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+
+/*
+  LatexBeginPlugin{3D image creators}
+
+  \subsection{Lattice Creator}
+  \label{creator3d:lattic}
+   
+  \begin{description}
+   
+  \item [Plugin:] lattic
+  \item [Description:] Creates an image with a lattic that has smooth boundaried 
+   
+   \plugtabstart
+   fx & float & lattic pattern frequency & 16.0 \\
+   fy & float & lattic pattern frequency & 16.0 \\
+   fz & float & lattic pattern frequency & 16.0 \\
+   \plugtabend
+   
+   \end{description}
+
+
+  LatexEnd
+*/
 
 #define VSTREAM_DOMAIN "CREATOR LATTIC"
 #ifdef _MSC_VER

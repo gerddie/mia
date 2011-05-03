@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -27,7 +27,7 @@
 
 static const char info[] =
 	"%s is Copyright\n"
-	"    (c) 2002-2010 Leipzig, Germany and Madrid, Spain \n"
+	"    (c) 2002-2011 Leipzig, Germany and Madrid, Spain \n"
         "         MPI for Human Cognitive and Brain Sciences \n"
 	"         MPI for Evolutionary Anthropology\n"
 	"         ETSI Telecomunicacion, UPM\n"

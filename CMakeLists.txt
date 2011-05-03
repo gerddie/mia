@@ -1,5 +1,5 @@
 #
-# Copyright (c) Leipzig, Madrid 2004-2010-2011-2011-2011-2011-2011-2011-2011-2011
+# Copyright (c) Leipzig, Madrid 2004-2010-2011-2011-2011-2011-2011-2011-2011-2011-2011-2011-2011-2011
 # BIT, ETSI Telecomunicacion, UPM
 #
 # This program is free software; you can redistribute it and/or modify

@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
    
    \plugtabstart
    f & float & spherical change frequency & 1.0 \\
-   p & float spherical shape parameter (2.0 = circle)& 2.0 \\
+   p & float & spherical shape parameter (2.0 = circle)& 2.0 \\
    \plugtabend
    
    \end{description}

@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,30 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/*
+  LatexBeginPlugin{3D image creators}
+
+  \subsection{Sphere Creator}
+  \label{creator3d:sphere}
+   
+  \begin{description}
+   
+  \item [Plugin:] sphere
+  \item [Description:] Creates an image with a filled distorted sphere-like shape. The shape and filling 
+       patternare given by the parameters. 
+   
+   \plugtabstart
+   f & float & spherical change frequency & 1.0 \\
+   p & float & spherical shape parameter (2.0 = circle)& 2.0 \\
+   \plugtabend
+   
+   \end{description}
+
+
+  LatexEnd
+*/
+
 
 #define VSTREAM_DOMAIN "SHAPE SPHERE"
 #ifdef _MSC_VER
@@ -103,15 +127,15 @@ P3DImage C3DSphereCreator::do_create(const C3DBounds& size) const
 	const bool is_float = is_floating_point<T>::value;
 
 	for (size_t z = 0; z < size.z; ++z) {
-		double dz = center.z - z;
+		double dz = abs(center.z - z);
 		dz  = pow(dz, m_p);
 		for (size_t y = 0; y < size.y; ++y) {
-			double dy = center.y - y;
+			double dy = abs(center.y - y);
 			dy  = pow(dy, m_p);
 
 			dy += dz;
 			for (size_t x = 0; x < size.x; ++x, ++p) {
-				double dx = center.x - x;
+				double dx = abs(center.x - x);
 				dx = pow(dx, m_p);
 
 				dx += dy;
