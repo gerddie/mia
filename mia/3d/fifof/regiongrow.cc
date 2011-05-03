@@ -21,11 +21,40 @@
  *
  */
 
-/*! \brief
+/* 
+   LatexBeginPlugin{2D image stack filters}
+   
+   \subsection{Probability based region growing}
+   \label{fifof:regiongrow}
+   
+   \begin{description}
+   
+   \item [Plugin:] regiongrow
+   \item [Description:] Run a region-growing filter on a stack of images that comprise 
+         a 3D image.  The region growing is based on class probabilities obtained from 
+	 a c-means classification of the pixel intensities. 
+	 Quasi-3D processing is achieved by holding a number of 3D slices in the working memory 
+	 to allow the region to grow "backwards" in the stack. 
+   \item [Input:] Gray scale images, all of the same size and pixel type  
+   \item [Output:] A binary mask representing the region 
+   
+   \plugtabstart
+   map & string & File name for the intensity--class probability map & -  \\
+   seed  & float & Seed threshold, pixels with a class probablility above or equal to this value 
+                    are used to seed the region growing & 0.98 \\
+   low & float & probability threshold for the acceptance of a probability, 
+                 during the region growing, pixels with a lower class probability are not 
+                 added to the region & 0.5 \\
+   depth & int & Number of slices to keep during processing. A smaller value 
+                 saves working memory but also reduces the possibility 
+                 for the region growing to grow backwards in the image stack & 5 \\
+   class & int & class to be segmented, must be lower then the number of classes in the probability map  & 2 \\
+   \plugtabend
+   
+   \end{description}
 
-A region growing filter for stacks of 2D images
-
-*/
+   LatexEnd  
+ */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

@@ -49,8 +49,7 @@ mia-2dimagefilter -i volume.v -o morphed.v open:shape=[sphere:r=3]
 \end{lstlisting}
 
 The available filters and structuring elements are described in chapter \ref{ch:plugins}. 
-Given the plug-in based architecture, more filters can easyly ba added.
-Datails are described in subsection  chapter \ref{ch:filterplugin} (FIXME:still empty).
+Given the plug-in based architecture, more filters can easyly be added (see programming guide).
 
 \subsection{Non-linear image registration and deformation}
 
@@ -69,9 +68,6 @@ In order to apply the deformation to an input image, using the omoms3 interpolat
 \begin{lstlisting}
 mia-3ddeform -i source.v -t field.v -o deformed.v -p omoms3
 \end{lstlisting}
-
-\noindent 
-More options to the image registration are described in Subsections \ref{sec:reg2d}, \ref{sec:reg3d}, and \ref{sec:nrreg}
 
 
 

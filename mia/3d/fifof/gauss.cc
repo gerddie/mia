@@ -21,13 +21,28 @@
  *
  */
 
-/*! \brief basic type of a plugin handler
+/* 
+   LatexBeginPlugin{2D image stack filters}
+   
+   \subsection{Gaussian smoothing}
+   \label{fifof:gauss}
+   
+   \begin{description}
+   
+   \item [Plugin:] gauss
+   \item [Description:] Runs an isotropic Gaussian smothing filter on the imput images. 
+   \item [Input:] Gray scale or binary images, all of the same size and pixel type  
+   \item [Output:] The filtered image(s) 
+   
+   \plugtabstart
+   w & int & filter width parameter, the actual filter captures a neighborhood of 
+                 $(2 * w + 1) \times (2 * w + 1) \times (2 * w + 1)$ voxels & 1 \\ 
+   \plugtabend
+   
+   \end{description}
 
-A gauss filter for stacks of 2D images
-
-\author Gert Wollny <gerddie at gmail.com>
-
-*/
+   LatexEnd  
+ */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

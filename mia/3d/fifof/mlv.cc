@@ -19,13 +19,31 @@
  *
  */
 
-/*! \brief basic type of a plugin handler
 
-A median filter for stacks of 2D images
+/* 
+   LatexBeginPlugin{2D image stack filters}
+   
+   \subsection{Mean least variance}
+   \label{fifof:mlv}
+   
+   \begin{description}
+   
+   \item [Plugin:] mlv 
+   \item [Description:] Runs a mean least variance filter on the imput images. 
+               The number of slices that are hold in the working memory is deducted from 
+	       the filter size.
+   \item [Input:] Gray scale or binary images, all of the same size and pixel type  
+   \item [Output:] The filtered image(s) 
+   
+   \plugtabstart
+   w & int & filter width parameter, the actual filter captures a neighborhood of 
+                 $(4 * w + 1) \times (4 * w + 1) \times (4 * w + 1)$ voxels & 1 \\ 
+   \plugtabend
+   
+   \end{description}
 
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
+   LatexEnd  
+ */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

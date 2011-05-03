@@ -27,6 +27,31 @@
 #include <map>
 #include <ctime>
 
+/* 
+   atexBeginPlugin{2D image stack filters}
+   
+   \subsection{Label}
+   \label{fifof:label}
+   
+   \begin{description}
+   
+   \item [Plugin:] label
+   \item [Description:] Labels connected components in a series of binary images. 
+      Since lables may join after preceeding label images are already saved and 
+      discarded from the pipeline stage, a map for labels that were joined is 
+      created. 
+   \item [Input:] Binary images, all of the same size
+   \item [Output:] The labeled image(s) 
+   
+   \plugtabstart
+   \plugtabend
+   shape & string & shape to define neighbourhood of voxels, only simple neighborhoods are supported & 6n \\ 
+   map & string & file name where the label join map will be saved &  - \ \
+   first & bool & Set true if this is the first labeling pass
+   \end{description}
+
+   atexEnd  
+ */
 
 NS_BEGIN(label_2dstack_filter)
 
@@ -131,7 +156,7 @@ void  C2DLabelStackFilter::re_label(C2DBitImage& input)
 	C3DUSImage::iterator use = m_out_buffer.end(); 
 	C2DBitImage::iterator ii = input.begin(); 
 
-	// maintain ols labeling for new slice, and clean the input at 
+	// maintain old labeling for new slice, and clean the input at 
 	// labeled positions
 	while (usi != use)  {
 		if (!*ii) 

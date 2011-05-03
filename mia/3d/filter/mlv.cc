@@ -32,9 +32,9 @@
    \item [Output:] The filtered image of the same pixel type and dimension 
    
    \plugtabstart
-   w &  int & filter width parameter & 1  \\
+   w & int & filter width parameter, the actual filter captures a neighborhood of 
+                 $(4 * w + 1) \times (4 * w + 1) \times (4 * w + 1)$ voxels & 1 \\ 
    \plugtabend
-   
    \end{description}
 
    LatexEnd  
