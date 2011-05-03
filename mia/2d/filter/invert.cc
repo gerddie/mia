@@ -27,7 +27,7 @@
    
    \item [Plugin:] invert
    \item [Description:] invert the image intensities. Inversion of an image $I$ is done by a linearly mapping using 
-     $\forall x in I: x \rightarrow (\max(I) - x + \min(I))$ 
+     $\forall x \in I: x \rightarrow (\max(I) - x + \min(I))$ 
    
    \item [Input:] A gray scale image of abitrary pixel type. 
    \item [Output:] The inverted image 
