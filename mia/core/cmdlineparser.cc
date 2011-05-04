@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
@@ -600,12 +600,14 @@ int CCmdOptionList::handle_shortargs(const char *arg, size_t /*argc*/, const cha
 	return 0;
 }
 
-void CCmdOptionList::parse(size_t argc, char *args[], bool has_additional)
+CCmdOptionList::EHelpRequested
+CCmdOptionList::parse(size_t argc, char *args[], bool has_additional)
 {
-	parse(argc, (const char **)args, has_additional);
+	return parse(argc, (const char **)args, has_additional);
 }
 
-void CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
+CCmdOptionList::EHelpRequested
+CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
 {
 
 	size_t idx = 1;
@@ -660,18 +662,18 @@ void CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
 
 	if (m_impl->help) {
 		m_impl->print_help();
-		exit(0);
+		return hr_help;
 #ifdef HAVE_LIBXMLPP
 	}else if (m_impl->help_xml) {
 		m_impl->print_help_xml();
-		exit(0);
+		return hr_help_xml;
 #endif 
 	} else if (m_impl->usage) {
 		m_impl->print_usage();
-		exit(0);
+		return hr_usage;
 	} else if (m_impl->copyright) {
 		::print_full_copyright(args[0]);
-		exit(0);
+		return hr_copyright;
 	}
 
 	cverb.set_verbosity(m_impl->verbose);
@@ -697,7 +699,7 @@ void CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
 		msg << g_basic_copyright; 
 		throw invalid_argument(msg.str());
 	}
-
+	return hr_no; 
 }
 
 const vector<const char *>& CCmdOptionList::get_remaining() const

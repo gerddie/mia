@@ -171,7 +171,9 @@ int do_main(int argc, const char *argv[] )
 
 	options.push_back(make_opt( shape_descr, "neighborhood", 'n', "neighborhood shape"));
 
-	options.parse(argc, argv);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 
 

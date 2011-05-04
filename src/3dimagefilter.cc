@@ -74,7 +74,9 @@ int main( int argc, const char *argv[] )
 					 "give some help about the filter plugins", 
 					 new TPluginHandlerHelpCallback<C3DFilterPluginHandler>)); 
 
-	options.parse(argc, argv);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	vector<const char *> filter_chain = options.get_remaining();
 

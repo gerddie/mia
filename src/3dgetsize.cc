@@ -52,7 +52,9 @@ int main( int argc, const char *argv[] )
 		options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
 					    CCmdOption::required));
 
-		options.parse(argc, argv);
+		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+			return EXIT_SUCCESS; 
+
 
 		if ( !options.get_remaining().empty())
 			throw invalid_argument("Unknown options given");

@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  *
@@ -382,7 +382,9 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( auto_comp, "auto-components", 'a',
 				    "automatic esitmation of number of components based on correlation."
 				    " Implies -m and -n (Experimental)"));
-	options.parse(argc, argv);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;

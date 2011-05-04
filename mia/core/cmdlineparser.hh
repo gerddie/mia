@@ -525,7 +525,15 @@ class TPluginHandlerHelpCallback: public CHelpOption::Callback {
    handles the parsing and the printing of help. 
 */
 class EXPORT_CORE CCmdOptionList {
- public:
+public:
+	enum EHelpRequested {
+		hr_no = 0,
+		hr_help,
+		hr_help_xml,
+		hr_usage, 
+		hr_copyright
+	};
+
         /**
 	   Constructor creates the options list and adds some defaut options like
 	   --help, --verbose, --copyright, and --usage
@@ -554,10 +562,10 @@ class EXPORT_CORE CCmdOptionList {
 	    be accessable by the function get_remaining(), otherwiese the occurence of unknown arguments 
 	    will be reported as error. 
         */
-	void parse(size_t argc, const char *args[], bool has_additional = true);
+	EHelpRequested parse(size_t argc, const char *args[], bool has_additional = true) __attribute__((warn_unused_result));
 	
 	/** \overload parse(size_t argc, const char *args[], bool has_additional) */
-        void parse(size_t argc, char *args[], bool has_additional = true);
+        EHelpRequested parse(size_t argc, char *args[], bool has_additional = true) __attribute__((warn_unused_result));
 
         /// \returns a vector of the remaining arguments
 	const std::vector<const char *>& get_remaining() const;

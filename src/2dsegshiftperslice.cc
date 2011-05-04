@@ -71,7 +71,7 @@ const char *g_description =
 	"on a per slice base." 
 	;
 
-int do_main(int argc, const char *args[])
+int do_main(int argc, const char *argv[])
 {
 	string src_filename;
 	string out_filename;
@@ -88,7 +88,9 @@ int do_main(int argc, const char *args[])
 				    CCmdOption::required));
 
 
-	options.parse(argc, args);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	CSegSet src_segset = load_segmentation(src_filename);
 	CSegSet::Frames& frames = src_segset.get_frames();
@@ -113,22 +115,22 @@ int do_main(int argc, const char *args[])
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-int main(int argc, const char *args[] )
+int main(int argc, const char *argv[] )
 {
 	try {
-		return do_main(argc, args);
+		return do_main(argc, argv);
 	}
 	catch (const runtime_error &e){
-		cerr << args[0] << " runtime: " << e.what() << endl;
+		cerr << argv[0] << " runtime: " << e.what() << endl;
 	}
 	catch (const invalid_argument &e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (const exception& e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (...){
-		cerr << args[0] << " unknown exception" << endl;
+		cerr << argv[0] << " unknown exception" << endl;
 	}
 	return EXIT_FAILURE;
 }

@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  *
@@ -115,7 +115,9 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( first, "skip", 's', "skip images at beginning of series"));
 	options.push_back(make_opt( last, "end", 'e', "last image in series"));
 
-	options.parse(argc, argv);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;

@@ -16,7 +16,7 @@ using namespace mia;
 using xmlpp::DomParser; 
 
 
-int do_main(int argc, const char *args[])
+int do_main(int argc, const char *argv[])
 {
 	string src_filename; 
 	int  enlarge_boundary = 5; 
@@ -26,7 +26,7 @@ int do_main(int argc, const char *args[])
 	options.push_back(make_opt( enlarge_boundary, "enlarge", 'e', "enlarge boundary by number of pixels", "enlarge"));
 
 	
-	options.parse(argc, args);
+	options.parse(argc, argv);
 		
 	DomParser parser;
 	parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
@@ -54,24 +54,24 @@ int do_main(int argc, const char *args[])
 	return EXIT_SUCCESS; 
 }
 
-int main(int argc, const char *args[] )
+int main(int argc, const char *argv[] )
 {
 	try {
-		return do_main(argc, args); 
+		return do_main(argc, argv); 
 		
 		
 	}
 	catch (const runtime_error &e){
-		cerr << args[0] << " runtime: " << e.what() << endl;
+		cerr << argv[0] << " runtime: " << e.what() << endl;
 	}
 	catch (const invalid_argument &e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (const exception& e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (...){
-		cerr << args[0] << " unknown exception" << endl;
+		cerr << argv[0] << " unknown exception" << endl;
 	}
 	return EXIT_FAILURE;
 }

@@ -93,7 +93,9 @@ int main( int argc, const char *argv[] )
 					    CCmdOption::required));
 		options.push_back(make_opt( thresh, "thresh", 't', "intensity thresh to ignore"));
 
-		options.parse(argc, argv);
+		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+			return EXIT_SUCCESS; 
+
 
 		//CHistory::instance().append(argv[0], "unknown", options);
 

@@ -169,7 +169,8 @@ int main(int argc, char **argv)
 {
 	CCmdOptionList options("This program does nothing.");
 
-	options.parse(argc, argv);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 
 	// normally the next call should use the remaining arguments
 	wxEntry(argc, argv);

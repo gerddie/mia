@@ -69,7 +69,9 @@ int do_main( int argc, const char *argv[])
 				    "output file type"));
 	options.push_back(make_opt( num, "number", 'n',  "image number to be selected"));
 
-	options.parse(argc, argv);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	// read image
 	C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(in_filename);

@@ -152,7 +152,8 @@ int do_main( int argc, const char *argv[] )
 				    "crorrelation threshhold for neighborhood analysis"));
 
 	
-	options.parse(argc, argv, false);
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 	
 	// this cost will always be used 
 	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(interpolator));

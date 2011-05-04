@@ -197,7 +197,9 @@ int main( int argc, const char *argv[] )
 
 	try {
 
-		options.parse(argc, argv);
+		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+			return EXIT_SUCCESS; 
+		
 		C2DFilterChain filter_chain(options.get_remaining());
 
 		cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";

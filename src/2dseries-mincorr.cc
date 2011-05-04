@@ -18,7 +18,7 @@
 */
 
 
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  *
@@ -114,7 +114,9 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( out_name, "out", 'o', "output image of minimal correlation"));
 	options.push_back(make_opt( skip, "skip", 's', "skip images at beginning of series"));
 
-	options.parse(argc, argv);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	CSegSetWithImages  input_set(src_name, true);
 	CCorrelationEvaluator ce(0.0);

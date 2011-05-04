@@ -88,7 +88,8 @@ BOOST_AUTO_TEST_CASE(  test_trianguale )
 int BOOST_TEST_CALL_DECL
 main( int argc, char* argv[] )
 {
-	mia::CCmdOptionList(" Sysopsis: run tests").parse(argc, argv);
+	if (mia::CCmdOptionList(" Sysopsis: run tests").parse(argc, argv) != CCmdOptionList::hr_no)
+		return 0; 
 	return ::boost::unit_test::unit_test_main( &init_unit_test, argc, argv );
 }
 

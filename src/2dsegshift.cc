@@ -61,7 +61,7 @@ const char *g_description =
 	"same time move the segmentation by a given offset." 
 	;
 
-int do_main(int argc, const char *args[])
+int do_main(int argc, const char *argv[])
 {
 	string src_filename;
 	string out_filename;
@@ -78,7 +78,9 @@ int do_main(int argc, const char *args[])
 	options.push_back(make_opt(shift, "shift", 'S', "shift of segmentation"));
 	options.push_back(make_opt(skip, "skip", 's', "skip frames at the begining"));
 
-	options.parse(argc, args);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	CSegSet src_segset = load_segmentation(src_filename);
 
@@ -94,24 +96,24 @@ int do_main(int argc, const char *args[])
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-int main(int argc, const char *args[] )
+int main(int argc, const char *argv[] )
 {
 	try {
-		return do_main(argc, args);
+		return do_main(argc, argv);
 
 
 	}
 	catch (const runtime_error &e){
-		cerr << args[0] << " runtime: " << e.what() << endl;
+		cerr << argv[0] << " runtime: " << e.what() << endl;
 	}
 	catch (const invalid_argument &e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (const exception& e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (...){
-		cerr << args[0] << " unknown exception" << endl;
+		cerr << argv[0] << " unknown exception" << endl;
 	}
 	return EXIT_FAILURE;
 }

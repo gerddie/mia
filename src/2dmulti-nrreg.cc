@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
@@ -52,7 +52,7 @@ const char *g_description =
 
 
 // set op the command line parameters and run the registration 
-int do_main(int argc, const char **args)
+int do_main(int argc, const char **argv)
 {
 
 	CCmdOptionList options(g_description);
@@ -73,7 +73,7 @@ int do_main(int argc, const char **args)
 					"image interpolator", "interpolator", false)); 
 	options.push_back(make_opt( epsilon, "epsilon", 'e', "relative accuracy to stop registration at a multi-grid level", NULL, false)); 
 
-	options.parse(argc, args);
+	options.parse(argc, argv);
 
 	vector<const char *> cost_chain = options.get_remaining(); 
 
@@ -115,10 +115,10 @@ int do_main(int argc, const char **args)
 }
 
 // for readablility the real main function encapsulates the do_main in a try-catch block
-int main(int argc, const char **args)
+int main(int argc, const char **argv)
 {
 	try {
-		return do_main(argc, args); 
+		return do_main(argc, argv); 
 	}
 	catch (invalid_argument& err) {
 		cerr << "invalid argument: " << err.what() << "\n"; 

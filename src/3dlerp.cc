@@ -134,7 +134,7 @@ private:
 };
 
 // set op the command line parameters and run the registration
-int do_main(int argc, char **args)
+int do_main(int argc, char **argv)
 {
 
 	CCmdOptionList options(g_description);
@@ -157,7 +157,9 @@ int do_main(int argc, char **args)
 				    "output file type (if not given deduct from output file name)"));
 	options.push_back(make_opt( self_test, "self-test", 0, "run a self test of the tool"));
 
-	options.parse(argc, args);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	if (!options.get_remaining().empty()) {
 		cerr << "Unknown options found\n";
@@ -165,7 +167,7 @@ int do_main(int argc, char **args)
 	}
 
 	if (self_test) {
-		return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, args );
+		return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );
 	}
 
 	if (positions.size() != 3) {
@@ -212,10 +214,10 @@ int do_main(int argc, char **args)
 }
 
 // for readablility the real main function encapsulates the do_main in a try-catch block
-int main(int argc, char **args)
+int main(int argc, char **argv)
 {
 	try {
-		return do_main(argc, args);
+		return do_main(argc, argv);
 	}
 	catch (invalid_argument& err) {
 		cerr << "invalid argument: " << err.what() << "\n";

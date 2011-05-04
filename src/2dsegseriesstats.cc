@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  *
@@ -107,7 +107,9 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( n_sections, "nsections", 'n', 
 				    "number of sections to use, 0=use as segmented")); 
 	
-	options.parse(argc, argv);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	CSegSetWithImages original(org_filename, true); 
 	CSegSetWithImages registered(reg_filename, true); 

@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  *
@@ -111,7 +111,9 @@ int do_main( int argc, const char *argv[] )
 
 	options.push_back(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
 				   "Segmentation method")); 
-	options.parse(argc, argv, false);
+	
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+		return EXIT_SUCCESS; 
 
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);

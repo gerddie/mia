@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  *
@@ -62,7 +62,9 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 
-	options.parse(argc, argv);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	P3DImage Model = load_image<P3DImage>(src_filename);
 	P3DImage Reference = load_image<P3DImage>(ref_filename);

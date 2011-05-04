@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  *
@@ -38,7 +38,7 @@ static const char *program_info =
 NS_MIA_USE
 using namespace std;
 
-int do_main(int argc, const char **args)
+int do_main(int argc, const char **argv)
 {
 	CCmdOptionList options(program_info);
 
@@ -54,7 +54,9 @@ int do_main(int argc, const char **args)
 	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p', "image interpolator"));
 
 
-	options.parse(argc, args);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 	auto transformation = C3DTransformationIOPluginHandler::instance().load(trans_filename);
@@ -84,10 +86,10 @@ int do_main(int argc, const char **args)
 }
 
 
-int main(int argc, const char **args)
+int main(int argc, const char **argv)
 {
 	try {
-		return do_main(argc, args);
+		return do_main(argc, argv);
 	}
 	catch (invalid_argument& err) {
 		cerr << "invalid argument: " << err.what() << "\n";

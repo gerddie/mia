@@ -117,7 +117,7 @@ void FillField2(C3DFVectorfield& Field,const C3DBounds& Size,float fun)
 
 const char program_info[] = "This is a program to create 3D vector fields."; 
 
-int do_main(int argc, const char *args[])
+int do_main(int argc, const char *argv[])
 {
 
 	C3DBounds Size(64,64,64);
@@ -136,7 +136,9 @@ int do_main(int argc, const char *args[])
 	options.push_back(make_opt( fieldtype, "ftype", 'y', "vector field type")); 
 	options.push_back(make_opt( funfactor, "fun", 'f', "just some parameter to vary the field ;-)")); 
 	
-	options.parse(argc, args, false);
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	C3DFVectorfield Field(Size);
 	switch (fieldtype){

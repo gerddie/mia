@@ -51,7 +51,7 @@ const char *g_description =
 
 
 // set op the command line parameters and run the registration
-int do_main(int argc, const char **args)
+int do_main(int argc, const char **argv)
 {
 	CCmdOptionList options(g_description);
 
@@ -85,7 +85,9 @@ int do_main(int argc, const char **args)
 				    " at a multi-grid level", CCmdOption::required));
 	options.push_back(make_opt( save_steps, "save-steps", 0, "save the steps of the registration in images"));
 
-	options.parse(argc, args);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	if (! options.get_remaining().empty()) {
 		cerr << "Unknown options found\n";
@@ -151,10 +153,10 @@ int do_main(int argc, const char **args)
 }
 
 // for readablility the real main function encapsulates the do_main in a try-catch block
-int main(int argc, const char **args)
+int main(int argc, const char **argv)
 {
 	try {
-		return do_main(argc, args);
+		return do_main(argc, argv);
 	}
 	catch (invalid_argument& err) {
 		cerr << "invalid argument: " << err.what() << "\n";

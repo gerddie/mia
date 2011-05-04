@@ -239,7 +239,9 @@ int main(int argc, const char *argv[])
 	options.push_back(make_opt( max_threads, "max-threads", 't', "maximal number of threads for sorap"));
 
 	try {
-		options.parse(argc, argv);
+		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+			return EXIT_SUCCESS; 
+
 
 		params.source = load_image<P3DImage>(in_filename);
 		params.reference = load_image<P3DImage>(ref_filename);

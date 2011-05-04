@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
@@ -26,7 +26,7 @@
 
 #include <boost/type_traits.hpp>
 #include <mia/2d/2dfilter.hh>
-#include <libmona/fftkernel.hh>
+#include <libmia/fftkernel.hh>
 
 // to avoid the indention
 #define NSBEGIN namespace lnfft_2dimage_filter {

@@ -127,8 +127,10 @@ int main( int argc, const char *argv[] )
 
 	try {
 
-		options.parse(argc, argv, false);
-		
+		if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+			return EXIT_SUCCESS; 
+
+	
 		// read images
 		P2DImage image1 = load_image2d(filename1); 
 		P2DImage image2 = load_image2d(filename2); 

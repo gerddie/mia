@@ -138,7 +138,7 @@ std::shared_ptr<C3DImage > read_image(CInputFile& in_file, int pixel_type, const
 	};
 }
 
-int run(int argc, const char *args[])
+int run(int argc, const char *argv[])
 {
 	EPixelType pixel_type = it_ubyte;
 	bool high_endian = false;
@@ -164,7 +164,10 @@ int run(int argc, const char *args[])
 	options.push_back(make_opt( skip, "skip", 'k', "skip number of bytes from beginning of file"));
 	options.push_back(make_opt( size, "size", 's', "size of input <NX,NY,NZ>", CCmdOption::required));
 	options.push_back(make_opt( type, imageio.get_set(), "type", 't', "Output file type"));
-	options.parse(argc, args, false);
+
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	CInputFile in_file(in_filename);
 	if ( !in_file )
@@ -187,22 +190,22 @@ int run(int argc, const char *args[])
 }
 
 
-int main(int argc, const char *args[])
+int main(int argc, const char *argv[])
 {
 	try {
-		return run(argc, args);
+		return run(argc, argv);
 	}
 	catch (const runtime_error &e){
-		cerr << args[0] << " runtime: " << e.what() << endl;
+		cerr << argv[0] << " runtime: " << e.what() << endl;
 	}
 	catch (const invalid_argument &e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (const std::exception& e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (...){
-		cerr << args[0] << " unknown exception" << endl;
+		cerr << argv[0] << " unknown exception" << endl;
 	}
 
 	return EXIT_FAILURE;

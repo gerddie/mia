@@ -612,37 +612,3 @@ void TSORAParallelSolver::operator () ()
 	solve_p(*pb,px);
 }
 
-
-
-/* Changes to this file
-
-  $Log$
-  Revision 1.5  2005/06/29 13:43:35  wollny
-  cg removed and libmona-0.7
-
-  Revision 1.1.1.1  2005/06/17 10:31:09  gerddie
-  initial import at sourceforge
-
-  Revision 1.4  2005/02/22 10:06:25  wollny
-  enable parallel processing
-
-  Revision 1.3  2005/02/22 09:49:16  wollny
-  removed vistaio dependecy
-
-  Revision 1.1.1.1  2005/02/21 15:00:37  wollny
-  initial import
-
-  Revision 1.17  2004/04/05 15:24:33  gerddie
-  change filter allocation
-
-  Revision 1.16  2003/08/27 10:14:35  gerddie
-  adapt to new debian install location and libtool versioning
-
-  Revision 1.15  2002/08/01 20:38:54  gerddie
-  added new mutex and condition type
-
-  Revision 1.14  2002/06/20 09:59:49  gerddie
-  added cvs-log entry
-
-
-*/

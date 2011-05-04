@@ -191,8 +191,9 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( reg_params.imageweight, "imageweight", 'w', 
 				    "image cost weight")); 
 
-	options.parse(argc, argv, false);
-
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+		return EXIT_SUCCESS; 
+	
 	
 	reg_params.ipfactory.reset(create_2dinterpolation_factory(interpolator));
 		

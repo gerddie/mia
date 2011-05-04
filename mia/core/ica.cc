@@ -120,7 +120,7 @@ bool CICAAnalysis::run(size_t nica, vector<vector<float> > guess)
 				mguess(r,c) = guess[c][r]; 
 		fastICA.set_init_guess(mguess); 
 	}
-#if ICA_ALWAYS_USE_SYMM
+#ifdef ICA_ALWAYS_USE_SYMM
 	// in the unpatched itpp separate doesn't return a value
 	// therefore, we always assume true
 	bool result = true; 

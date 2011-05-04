@@ -38,7 +38,7 @@ static const char *program_info =
 	"  mia-2dimagecreator <options>\n"; 
 
 
-int do_main(int argc, const char *args[])
+int do_main(int argc, const char *argv[])
 {
 	C2DImageCreatorPluginHandler::ProductPtr creator;
 	string out_filename;
@@ -57,7 +57,10 @@ int do_main(int argc, const char *args[])
 	options.push_back(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type "));
 	options.push_back(make_opt( creator,  "object", 'j', "object to be created", CCmdOption::required));
 
-	options.parse(argc, args, false);
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+		return EXIT_SUCCESS; 
+
+
 
 	P2DImage image = (*creator)(size, pixel_type);
 	if (!image) {

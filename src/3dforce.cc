@@ -58,7 +58,7 @@ private:
 	float m_max_norm;
 };
 
-int do_main(int argc, const char **args)
+int do_main(int argc, const char **argv)
 {
 	CCmdOptionList options(program_info);
 	string src_filename;
@@ -72,7 +72,8 @@ int do_main(int argc, const char **args)
 	options.push_back(make_opt( cost_descr, "cost", 'c', "cost function to use"));
 
 
-	options.parse(argc, args);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 
 
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
@@ -110,10 +111,10 @@ int do_main(int argc, const char **args)
 }
 
 
-int main(int argc, const char **args)
+int main(int argc, const char **argv)
 {
 	try {
-		return do_main(argc, args);
+		return do_main(argc, argv);
 	}
 	catch (invalid_argument& err) {
 		cerr << "invalid argument: " << err.what() << "\n";

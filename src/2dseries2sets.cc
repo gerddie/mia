@@ -138,7 +138,9 @@ int do_main( int argc, const char *argv[] )
 				    CCmdOption::required));
 	options.push_back(make_opt( no_copy_images, "no-copy", 0, "don't copy image files to output directory"));
 
-	options.parse(argc, argv, true);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	auto input_files =  options.get_remaining();
 	if (input_files.empty()) {

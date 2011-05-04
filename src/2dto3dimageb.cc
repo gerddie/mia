@@ -107,8 +107,9 @@ int main( int argc, const char *argv[] )
 
 	try {
 
-		options.parse(argc, argv);
-
+		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+			return EXIT_SUCCESS; 
+		
 		if (options.get_remaining().empty())
 			throw runtime_error("no slices given ...");
 

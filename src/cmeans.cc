@@ -356,7 +356,7 @@ void test(double k, bool auto_k)
 }
 
 
-int main(int argc, const char *args[])
+int main(int argc, const char *argv[])
 {
 	int nclasses; 
 	int max_iter; 
@@ -384,7 +384,9 @@ int main(int argc, const char *args[])
 	options.push_back(make_opt( out_filename, "out", 'o', "output file name to store probabilities")); 
 
 	try {
-		options.parse(argc, args, false);
+		if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
+			return EXIT_SUCCESS; 
+
 		
 		if (self_test) {
 			test(0.002, false); 
@@ -427,16 +429,16 @@ int main(int argc, const char *args[])
 	}
 	
 	catch (const runtime_error &e){
-		cerr << args[0] << " runtime: " << e.what() << endl;
+		cerr << argv[0] << " runtime: " << e.what() << endl;
 	}
 	catch (const invalid_argument &e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (const exception& e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (...){
-		cerr << args[0] << " unknown exception" << endl;
+		cerr << argv[0] << " unknown exception" << endl;
 	}
 	return EXIT_FAILURE;
 }

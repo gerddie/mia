@@ -254,7 +254,8 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
 				   "Segmentation method")); 
 
-	options.parse(argc, argv, false);
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+		return EXIT_SUCCESS; 
 
 	// this cost will always be used 
 

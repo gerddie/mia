@@ -23,7 +23,7 @@
 
 // $Id: segment3d.cc 938 2006-07-11 11:57:01Z write1 $
 
-/*! \brief mona-segment3d -- fuzzy clustering of 3D images
+/*! \brief mia-segment3d -- fuzzy clustering of 3D images
 
 \par Program description
 
@@ -31,7 +31,7 @@
 
 \par Usage
 
-	<code>mona-segment3d --usage</code> (or <code> mona-getmtr --help</code>)
+	<code>mia-segment3d --usage</code> (or <code> mia-getmtr --help</code>)
 
 	\param --in-file		image to be segmented
 	\param --b0-image		image corected for intensity non-uniformities
@@ -44,9 +44,9 @@
 
 	-# Perform a segmentation (WM, GM, CSF) of a 3D T1w VISTA image
 	\code
-		user> mona-segment3d -i image.v -o b0-image.v -c cls.v -r 0.2 -n 3
+		user> mia-segment3d -i image.v -o b0-image.v -c cls.v -r 0.2 -n 3
 	\endcode
-	Note, the image format can be anything covered by the io plugins included in \a libmona.
+	Note, the image format can be anything covered by the io plugins included in \a libmia.
 
 \par Known bugs
 
@@ -112,7 +112,9 @@ int main( int argc, const char *argv[] )
 		options.push_back(make_opt( residuum, "residuum", 'r',
 					    "relative residuum"));
 
-		options.parse(argc, argv);
+		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+			return EXIT_SUCCESS; 
+
 
 		vector<const char *> non_options = options.get_remaining();
 

@@ -47,7 +47,7 @@ namespace bfs=boost::filesystem;
 const char *g_description = 
 	"Get the per-slice Hausdorff distance of a a segmentation with respectto a given reference frame."; 
 
-int do_main(int argc, const char *args[])
+int do_main(int argc, const char *argv[])
 {
 	string src_filename;
 	size_t reference = 0;
@@ -55,7 +55,9 @@ int do_main(int argc, const char *args[])
 	CCmdOptionList options(g_description);
 	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
 	options.push_back(make_opt( reference, "ref-frame", 'r', "reference frame", CCmdOption::required));
-	options.parse(argc, args);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	DomParser parser;
 	parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
@@ -90,24 +92,24 @@ int do_main(int argc, const char *args[])
 
 }
 
-int main(int argc, const char *args[] )
+int main(int argc, const char *argv[] )
 {
 	try {
-		return do_main(argc, args);
+		return do_main(argc, argv);
 
 
 	}
 	catch (const runtime_error &e){
-		cerr << args[0] << " runtime: " << e.what() << endl;
+		cerr << argv[0] << " runtime: " << e.what() << endl;
 	}
 	catch (const invalid_argument &e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (const exception& e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (...){
-		cerr << args[0] << " unknown exception" << endl;
+		cerr << argv[0] << " unknown exception" << endl;
 	}
 	return EXIT_FAILURE;
 }

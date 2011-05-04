@@ -119,7 +119,10 @@ int main( int argc, const char *argv[] )
 		options.push_back(make_opt( hmin, "min", 0, "minimum of histogram range"));
 		options.push_back(make_opt( hmax, "max", 0, "maximum of histogram range"));
 		options.push_back(make_opt( bins, "bins", 0, "number of histogram bins"));
-		options.parse(argc, argv, false);
+		
+		if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
+			return EXIT_SUCCESS; 
+
 
 		const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 

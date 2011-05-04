@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  *
@@ -71,7 +71,9 @@ int do_main( int argc, const char *argv[] )
 					 "give some help about the filter plugins", 
 					 new TPluginHandlerHelpCallback<C2DFilterPluginHandler>));
 	
-	options.parse(argc, argv);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	vector<const char *> filter_chain = options.get_remaining();
 

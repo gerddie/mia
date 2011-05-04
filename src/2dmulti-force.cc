@@ -54,7 +54,7 @@ const char *g_description =
 
 
 // set op the command line parameters and run the registration
-int do_main(int argc, const char **args)
+int do_main(int argc, const char **argv)
 {
 
 	CCmdOptionList options(g_description);
@@ -64,7 +64,9 @@ int do_main(int argc, const char **args)
 
 	options.push_back(make_opt( out_filename, "out-file", 'o', "output norm image", CCmdOption::required));
 
-	options.parse(argc, args);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	vector<const char *> cost_chain = options.get_remaining();
 
@@ -115,10 +117,10 @@ int do_main(int argc, const char **args)
 }
 
 // for readablility the real main function encapsulates the do_main in a try-catch block
-int main(int argc, const char **args)
+int main(int argc, const char **argv)
 {
 	try {
-		return do_main(argc, args);
+		return do_main(argc, argv);
 	}
 	catch (invalid_argument& err) {
 		cerr << "invalid argument: " << err.what() << "\n";

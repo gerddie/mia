@@ -155,7 +155,9 @@ int main( int argc, const char *argv[] )
 	try {
 
 
-		options.parse(argc, argv);
+		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+			return EXIT_SUCCESS; 
+
 		cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
 
 		if ( in_filename.empty() )

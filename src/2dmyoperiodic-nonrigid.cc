@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  *
@@ -386,9 +386,9 @@ int do_main( int argc, const char *argv[] )
 				   "Cost function for registration during the final registration")); 
 	
 
-	
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+		return EXIT_SUCCESS; 
 
-	options.parse(argc, argv, false);
 	params.interpolator.reset(create_2dinterpolation_factory(interpolator));
 
 	// load input data set

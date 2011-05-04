@@ -109,7 +109,7 @@ void C2DStackSaver::do_push(::boost::call_traits<P2DImage>::param_type image)
 
 }
 
-int main(int argc, const char *args[])
+int main(int argc, const char *argv[])
 {
 	string in_filename;
 	string out_filename;
@@ -133,7 +133,9 @@ int main(int argc, const char *args[])
 					 new TPluginHandlerHelpCallback<C2DFifoFilterPluginHandler>)); 
 
 	try{
-		options.parse(argc, args, true);
+		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+			return EXIT_SUCCESS; 
+
 		vector<const char *> filter_chain = options.get_remaining();
 
 		if (help_plugins) {
@@ -212,16 +214,16 @@ int main(int argc, const char *args[])
 		return EXIT_SUCCESS;
 	}
 	catch (const runtime_error &e){
-		cerr << args[0] << " runtime: " << e.what() << endl;
+		cerr << argv[0] << " runtime: " << e.what() << endl;
 	}
 	catch (const invalid_argument &e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (const exception& e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (...){
-		cerr << args[0] << " unknown exception" << endl;
+		cerr << argv[0] << " unknown exception" << endl;
 	}
 
 	return EXIT_FAILURE;

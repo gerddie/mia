@@ -63,7 +63,9 @@ int main( int argc, const char *argv[] )
 		CCmdOptionList options(g_description);
 		options.push_back(make_opt( in_filename, "in-file", 'i', "input image", CCmdOption::required));
 
-		options.parse(argc, argv);
+		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+			return EXIT_SUCCESS; 
+
 
 
 		// read image

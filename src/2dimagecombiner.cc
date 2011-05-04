@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  *
@@ -65,7 +65,10 @@ int do_main( int argc, const char *argv[] )
 				    "output image(s) that have been filtered", CCmdOption::required));
 	options.push_back(make_opt( combiner, "operation", 'p', "operation to be applied"));
 	
-	options.parse(argc, argv, false);
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+		return EXIT_SUCCESS; 
+
+		
 
 	//CHistory::instance().append(argv[0], "unknown", options);
 

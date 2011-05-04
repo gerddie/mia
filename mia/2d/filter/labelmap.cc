@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
@@ -22,7 +22,7 @@
 
 #include <stdexcept>
 #include <mia/2d/2dfilter.hh>
-#include <libmona/probmapio.hh>
+#include <libmia/probmapio.hh>
 
 namespace labelmap_2dimage_filter {
 NS_MIA_USE;

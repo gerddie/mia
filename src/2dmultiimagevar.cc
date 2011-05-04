@@ -103,7 +103,9 @@ int main( int argc, const char *argv[] )
 		options.push_back(make_opt( out_filename, "out-file", 'o', "output image ", CCmdOption::required));
 		options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',"output file type"));
 
-		options.parse(argc, argv);
+		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+			return EXIT_SUCCESS; 
+
 
 		if (options.get_remaining().empty())
 			throw runtime_error("no input images given ...");

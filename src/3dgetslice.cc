@@ -160,7 +160,9 @@ int main( int argc, const char *argv[] )
 		options.push_back(make_opt( direction, GDirectionmap, "dir", 'd', 
 					    "slice direction (xy=axial, xz=coronal, yz=saggital)"));
 
-		options.parse(argc, argv, false);
+		if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
+			return EXIT_SUCCESS; 
+
 
 		// read image
 		C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio3d.load(in_filename);

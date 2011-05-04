@@ -153,7 +153,8 @@ int main(int argc, const char *argv[])
 	vector<string> non_options;
 
 	try {
-		options.parse(argc, argv);
+		if (options.parse(argc, argv)) 
+			return EXIT_SUCCESS; 
 	}
 	catch (invalid_argument& x) {
 		assert(!options::internal);

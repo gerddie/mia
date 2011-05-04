@@ -89,7 +89,9 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 	options.push_back(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
 
-	options.parse(argc, argv, true);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 	
         // create cost function chain
 	auto cost_functions = options.get_remaining(); 
