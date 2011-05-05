@@ -24,6 +24,8 @@
 
 */
 
+
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -43,38 +45,50 @@
 using namespace mia;
 using namespace std;
 
-/**
- * \page miafluid3d miafluid3d a program for non rigid registration
- *
- *
- * This program is used for non-rigid registration based on fluid dynamics.
- * It is called like this:
 
-     miafluid3d <options>
+/*
+  LatexBeginProgramDescription{3D image registration}
+  
+  \begin{description}
+  \item [Program:] \emph{mia-fluid3d}
+  \item [Description:] This program is used for non-rigid registration based on fluid dynamics.
+  It uses SSD as the sole registration criterion. For details please see \cite{wollny02comput}.
 
-   Where options include but are not limited to
+  The program is called like 
+  \lstset{language=bash}
+  \begin{lstlisting}
+mia-3dnrreg -i <input image> -r <reference image> -o <output image> [options]
+  \end{lstlisting}
+  
 
-   \param -in  The input image to be registered \a required
-   \param -ref The reference image to be registered to \a required
-   \param -out The output vector field describing the deformation in an reverse Eulerien reference frame \a required
+  \item [Options:] $\:$
 
-   \param -method Method for solving the underlying PDE including
-   \li \em sor - successive overrelaxation
-   \li \em sora - successive overrelaxation with adaptive update
-   \li \em soarp - successive overrelaxation with adaptive update, parallized
-   \li \em cg - conjugated gradients (needs lots of ram)
-   \li \em conv - convolution filters    (default = sor)
+  \tabstart
+  \optinfile
+  \optreffile
+  --out-file & -o & string & output file to store the registering transformation \\\hline 
+  --def-file & -d  & string & transformation output file \\\hline 
+  --epsilon &  & float & threshhold to stop the registration at a multi-grid level \\\hline
+  --interpolator & -p & string & image interpolator
+           (bspline2|bspline3|bspline4|bspline5|nn|omoms3|tri)  \\\hline 
+  --lambda & & float & elasticity constant \\\hline 
+  --maxiter &  & int & maxiumum number of iterations to solve the PDE  \\\hline
+  --max-threads & -t & int & number of threads to use \\\hline 
+  --method & -m & string & solver method to be used for the PDE \\\hline 
+  --mu & & float & elasticity constant \\\hline 
+  --relax &  & float & relaxation factor for PDE solver \\\hline
+  --start-size & -s & int & multiresolution start size \\\hline
+  --step & & float & initial step size \\\hline 
+  \tabend
 
-   \param -maxiter maximum number of iterations in solving the PDE (default = 20)
-   \param -epsilon relative error to stop iterations in solving the PDE (default = 0.01)
-   \param -startsize estimate for start size in multi-grid processing (default = 32)
-   \param -max-threads maximum number of threads in parallized run (default = 2)
-   \param -halffilterdim half size if the filter when using \a conv (default = 3)
-   \param -statlog a file to write out some statistics
-   \param -mu Lam� parameter - modulus of volume expansion (default = 1.0)
-   \param -lambda Lam� parameter  - modulus of elasticy in shear (default = 1.0)
-
- * \author Gert Wollny <wollny@cns.mpg.de>
+  \item [Example:]Register image test.v to image ref.v and write the deformation vector field regfield.v. 
+  Start registration at the smallest size above 16 pixel. 
+   \lstset{language=bash}
+  \begin{lstlisting}
+mia-fluid3d -i test.v -r ref.v -o regfield.v -s 16 
+  \end{lstlisting}
+  \end{description}
+  LatexEnd
 */
 
 
