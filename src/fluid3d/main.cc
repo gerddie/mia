@@ -51,6 +51,7 @@ using namespace std;
   
   \begin{description}
   \item [Program:] \emph{mia-fluid3d}
+  \hrule 
   \item [Description:] This program is used for non-rigid registration based on fluid dynamics.
   It uses SSD as the sole registration criterion. For details please see \cite{wollny02comput}.
 

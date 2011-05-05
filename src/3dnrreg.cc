@@ -26,6 +26,7 @@
   
   \begin{description}
   \item [Program:] \emph{mia-3dnrnreg}
+  \hrule 
   \item [Description:] This program implements the non-linear registration by using a PDE based 
   smoothess model of the transformation.
 

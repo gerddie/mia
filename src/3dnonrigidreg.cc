@@ -28,14 +28,14 @@
   
   \begin{description}
   \item [Program:] \emph{mia-3dnonrigidreg}
-  \item [Description:] This program implements the registration of two gray scale 3D images. 
-	The transformation is not penalized, therefore, one should only use translation, rigid, or affine 
-	transformations as target and run mia-3dnonrigidreg of nonrigid registration is to be achieved.
+  \hrule 
+  \item [Description:] This program implements the non-linear registration of two gray scale 3D images. 
 
   The program is called like 
   \lstset{language=bash}
   \begin{lstlisting}
-mia-3drigidreg -i <input image> -r <reference image> -o <output image> [options] <cost1> [<cost2>] ...
+mia-3drigidreg -i <input image> -r <reference image> -o <output image> \
+               [options] <cost1> [<cost2>] ...
   \end{lstlisting}
   
 

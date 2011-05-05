@@ -39,6 +39,7 @@
   
   \begin{description}
   \item [Program:] \emph{mia-2dstackfilter}
+  \hrule 
   \item [Description:] This program is used to filter and convert a series of 2D gray scale images in a 
   3D fashion by running filters as given on the command line. 
   For available filters see section \ref{sec:fifof}. 
@@ -46,7 +47,8 @@
   The program is called like 
   \lstset{language=bash}
   \begin{lstlisting}
-mia-2dstackfilter -i <input images> -o <output image basename> -t <output file type> [<filter>] ... 
+mia-2dstackfilter -i <input images> -o <output image basename> \
+                  -t <output file type> [<filter>] ... 
   \end{lstlisting}
   with the filters given as extra parameters as additional command line parameters. 
 

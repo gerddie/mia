@@ -22,13 +22,47 @@
  */
 
 /*
-  This program implements 2D gray scale image registration. 
-  Depending on the available plug-ins it can accomodate various models and cost-functions. 
-  So far input images can be given as PNG, TIF, BMP and OpenEXR (depending on the installed plug-ins)
-  The input images must be of the same dimensions and gray scale (whatever bit-depth). 
-  The vector field will be saved as a EXR image with two frames of float values, one for the X 
-  and one for the Y values of the vectors. 
-  Other vector field output plug-ins might be supported depending on the installed plug-ins. 
+  LatexBeginProgramDescription{2D image registration}
+  
+  \begin{description}
+  \item [Program:] \emph{mia-2dnrnreg}
+  \hrule 
+  \item [Description:] This program implements the non-linear registration by using a PDE based 
+  smoothess model of the transformation.
+
+  The program is called like 
+  \lstset{language=bash}
+  \begin{lstlisting}
+mia-2dnrreg -i <input image> -r <reference image> -o <output image> [options]
+  \end{lstlisting}
+  
+
+  \item [Options:] $\:$
+
+  \tabstart
+  \optinfile
+  \optreffile
+  \optoutfile
+  --cost  & -c & string & Cost function as given in section \ref{sec:cost2d}  \\\hline
+  --def-file & -d  & string & transformation output file \\\hline 
+  --epsilon & -e & float & threshhold to stop the registration at a multi-grid level \\\hline
+  --interpolator & -p & string & image interpolator
+           (bspline2|bspline3|bspline4|bspline5|nn|omoms3|tri)  \\\hline 
+  --maxiter & -n & int & maxiumum number of iterations to solve the PDE  \\\hline
+  --mgsize & -s & int & multiresolution start size \\\hline
+  --regmodel & -m & string & registration PDE model as given in section  \ref{sec:regmodel2d}  \\\hline
+  --timestep & -t  & string & transformation time step model as given in section  \ref{sec:timestep2d} \\\hline 
+  \tabend
+
+  \item [Example:]Register image test.v to image ref.v and write the registered image to reg.v. 
+  Start registration at the smallest size above 16 pixel and ssd as cost function. 
+   \lstset{language=bash}
+  \begin{lstlisting}
+mia-2dnrreg -i test.v -r ref.v -o reg.v -s 16 -c ssd 
+  \end{lstlisting}
+  \item [Remark:] The implementation is currently not well tested and might not do what you expect. 
+  \end{description}
+  LatexEnd
 */
 
 #include <mia/core.hh>

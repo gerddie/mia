@@ -36,6 +36,7 @@
   
   \begin{description}
   \item [Program:] \emph{mia-3dimagefilter}
+  \hrule 
   \item [Description:] This program is used to filter and convert 3D gray scale images by running 
   filters as given on the command line. For available filters see section \ref{sec:3dfilters}. 
 
