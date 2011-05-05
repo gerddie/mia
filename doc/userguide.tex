@@ -89,8 +89,8 @@ In order to use MIA, on these platforms the software is best installed from sour
 To do so, your software environment has to meet the following pre-requisites: 
 
 \begin{enumerate}
-\item You need a ANSI-compatible C++ compiler that supports {\bf auto} from the upcoming 
-   C++0x standard - GNU g++ (>=4.4) (http://gcc.gnu.org) is known to work. 
+\item You need a ANSI-compatible C++ compiler that supports some features of the new C++0x standard 
+   - GNU g++ (>=4.4) (http://gcc.gnu.org) is known to work. 
 \item CMake (http://www.cmake.org) 
 \item The BOOST >= 1.40 (http://www.boost.org) library
 \item gsl (http://) The GNU Scientific Library 
@@ -109,14 +109,14 @@ Additionally, the following packages add to the functionallity of the software:
 \end{description}
 
 
-If all of the above pre-requisites are met, the installation of mia boils down to:
+If all of the above pre-requisites are met, the installation of MIA boils down to:
 
 \lstset{language=bash}
 \begin{lstlisting}
-  tar -zxvf mia-2.0..tgz
+  tar -zxvf mia-2.0.X.tgz
   mkdir build-mia
   cd build-mia
-  cmake -DCMAKE_INSTALL_PREFIX=<path to install> ../mia-2.0.0
+  cmake -DCMAKE_INSTALL_PREFIX=<path to install> ../mia-2.0.X
   make
   make install
 \end{lstlisting}
@@ -124,7 +124,7 @@ In order to test some of the components, you may run ``make test''.
 
 \subsection{MS Windows} 
 
-Currently broken 
+Currently broken, may work with cygwin. 
 
 \chapter{User Guide}
 
@@ -190,9 +190,9 @@ Windows Bitmap & http://www.daubnet.com/formats/BMP.html & bmp \\\hline
 \centering{
 \begin{tabular}{|l|l|c|}
 \hline
-File type description & on the web & suffix \\\hline
+File type description & remark & suffix \\\hline
+Analyze & & hdr + img \\\hline 
 INRIA 3D File format &http://foveaproject.free.fr/softwareEng.html & inria  \\\hline
-%%Medical Imaging NetCDF & http://www.bic.mni.mcgill.ca/software/minc/ & mnc \\\hline
 Sun TAAC Image File Format & & vff \\\hline
 Vista File Format & http://www.cs.ubc.ca/nest/lci/vista/vista.html & v \\\hline
 \end{tabular}
