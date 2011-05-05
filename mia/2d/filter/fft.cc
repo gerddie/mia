@@ -22,7 +22,7 @@
  */
 
 /* 
-   LatexBeginPlugin{2D image filters}
+   LatexBeginPluginDescription{2D image filters}
    
    \subsection{Run a filter in the frequency domain}
    \label{filter2d:fft}

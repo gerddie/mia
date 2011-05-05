@@ -22,7 +22,7 @@
  */
 
 /*
-   LatexBeginSection{2D CST filter kernels}
+   LatexBeginPluginSection{2D CST filter kernels}
    \label {sec:cst2dkern}
    
    These are kernels for filters that work in the frequency domain on the 

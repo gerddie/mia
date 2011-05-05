@@ -39,8 +39,7 @@ def find_files(root, pattern):
    walk(root, collect_files, arg)
    return arg.files 
 
-
-class PluginSection:
+class DocuSection:
    def __init__(self):
       self.body = []
       self.subsections = {}
@@ -68,13 +67,34 @@ class PluginSection:
       for l in self.unspecified:
          output.write(l)
     
+
+class DocuCharpter: 
+   def __init__(self):
+      self.sections = {}
+      
+   def add(self, key1, key2, text_block):
+      if key1 == "Section":
+         if not self.sections.has_key(key2):
+            self.sections[key2] = DocuSection()
+         self.sections[key2].append_to_body(text_block)
+
+      if key1 == "Description":
+         self.sections[key2].append_plugin(text_block)
+           
+   def write(self, output): 
+      for s in sorted(self.sections.keys()): 
+         sys.stderr.write("{}\n".format(s))
+         output.write("\\section{{{0}}}".format(s)) 
+         self.sections[s].write(output)
+
        
 # this will be a list of lists containing all the documentation comment blocks
 comment_blocks = []
 
 
 root= sys.argv[1]
-output_filename = sys.argv[2]
+program_filename = sys.argv[2]
+plugin_filename = sys.argv[3]
 files = find_files(root, "*.cc")
 
 # read all files and extract comment blocks 
@@ -107,29 +127,26 @@ for f in files:
         exit(1)
     infile.close()
 
-sections = {}
+
+plugin_sections = DocuCharpter()
+program_sections = DocuCharpter()
 
 for b in comment_blocks: 
-    m = re.search(" *LatexBegin([a-zA-Z]*){(.*)}", b[0])
+    m = re.search(" *LatexBegin(P[a-z]*)([A-Z][a-z]*){(.*)}", b[0])
    
-    key = m.group(2)
-    if not sections.has_key(key): 
-        sections[key] = PluginSection()
-    
-    
-    if m.group(1) == "Section":
-        sections[key].append_to_body(b[1:])
-        
-    if m.group(1) == "Plugin":
-        sections[key].append_plugin(b[1:])
+    type_key = m.group(1)
+    if type_key == "Plugin":
+       plugin_sections.add(m.group(2), m.group(3), b[1:])
+    elif type_key == "Program":
+       program_sections.add(m.group(2), m.group(3), b[1:])
+       
 
-output_file = open(output_filename,"w")
 
-output_file.write("\\chapter{Plug-ins}\n")
-output_file.write("In this chapter the plug-ins are described that are provided by the library.\n") 
-output_file.write("\\label{ch:plugins}")
 
-for s in sorted(sections.keys()): 
-   sys.stderr.write("{}\n".format(s))
-   output_file.write("\\section{{{0}}}".format(s)) 
-   sections[s].write(output_file)
+program_file = open(program_filename,"w")
+program_sections.write(program_file)
+
+
+plugin_file = open(plugin_filename,"w")
+plugin_sections.write(plugin_file)
+

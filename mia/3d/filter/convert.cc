@@ -19,7 +19,7 @@
  */
 
 /* 
-   LatexBeginPlugin{3D image filters}
+   LatexBeginPluginDescription{3D image filters}
    
    \subsection{Pixel value conversion}
    \label{filter3d:convert}

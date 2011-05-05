@@ -21,7 +21,7 @@
  */
 
 /*
-  LatexBeginSection{Minimizers}
+  LatexBeginPluginSection{Minimizers}
   \label{sec:minimizers}
   
   These minimizers are used to optimize functions of the type $F:\Omega \rightarrow \R$. 

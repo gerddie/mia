@@ -30,7 +30,7 @@
 */
 
 /* 
-   LatexBeginPlugin{Noise Generators}
+   LatexBeginPluginDescription{Noise Generators}
    
    \subsection{Gaussian noise generator}
    \label{noise:gauss}

@@ -20,7 +20,7 @@
 
 
 /* 
-   LatexBeginPlugin{2D image filters}
+   LatexBeginPluginDescription{2D image filters}
    
    \subsection{Downscale filter}
    \label{filter2d:downscale}

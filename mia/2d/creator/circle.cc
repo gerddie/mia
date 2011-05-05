@@ -17,7 +17,7 @@
  *
  */
 /*
-  LatexBeginPlugin{2D image creators}
+  LatexBeginPluginDescription{2D image creators}
 
   \subsection{Circle creator}
   \label{creator2d:circle}

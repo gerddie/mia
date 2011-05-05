@@ -21,7 +21,7 @@
  */
 
 /* 
-  LatexBeginPlugin{3D Transformations}
+  LatexBeginPluginDescription{3D Transformations}
    
    \subsection{Rigid}
    \label{transform3d:rigid}

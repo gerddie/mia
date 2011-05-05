@@ -22,7 +22,7 @@
  */
 
 /*
-  LatexBeginSection{Noise Generators}
+  LatexBeginPluginSection{Noise Generators}
   \label{sec:noisegen}
   
   These plug-ins are used to create specific types of random data. 

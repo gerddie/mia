@@ -18,7 +18,7 @@
  *
  */
 
-/* LatexBeginPlugin{2D image filters}
+/* LatexBeginPluginDescription{2D image filters}
    
    \subsection{Intensity invert}
    \label{filter2d:invert}

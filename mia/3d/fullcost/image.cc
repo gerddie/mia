@@ -21,7 +21,7 @@
  */
 
 /* 
-   LatexBeginPlugin{3D full cost functions}
+   LatexBeginPluginDescription{3D full cost functions}
 
       
    \subsection{Image cost function}

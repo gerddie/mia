@@ -22,7 +22,7 @@
  */
 
 /*
-  LatexBeginPlugin{3D neighborhood shapes}
+  LatexBeginPluginDescription{3D neighborhood shapes}
 
   \subsection{Basic shapes}
   \label{shapes3d:basic}

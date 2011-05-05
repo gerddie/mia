@@ -21,7 +21,7 @@
  */
 
 /* 
-  LatexBeginPlugin{3D Transformations}
+  LatexBeginPluginDescription{3D Transformations}
    
    \subsection{B-spline based transformation}
    \label{transform3d:spline}

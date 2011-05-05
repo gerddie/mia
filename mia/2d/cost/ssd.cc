@@ -24,7 +24,7 @@
 */
 
 /* 
-   LatexBeginPlugin{2D image similarity kernels}
+   LatexBeginPluginDescription{2D image similarity kernels}
    
    \subsection{Sum of Squared Differences}
    \label{cost2d:ssd}

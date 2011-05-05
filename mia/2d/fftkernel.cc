@@ -22,7 +22,7 @@
  */
 
 /*
-   LatexBeginSection{2D FFT filter kernels}
+   LatexBeginPluginSection{2D FFT filter kernels}
    \label {sec:fft2dkern}
    
    These are kernels for filters that work in the frequency domain on the 

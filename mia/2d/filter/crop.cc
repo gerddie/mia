@@ -23,7 +23,7 @@
  */
 
 /* 
-   LatexBeginPlugin{2D image filters}
+   LatexBeginPluginDescription{2D image filters}
    
    \subsection{Image cropping}
    \label{filter2d:crop}

@@ -23,7 +23,7 @@
  */
 
 /*
-  LatexBeginSection{2D image similarity kernels}
+  LatexBeginPluginSection{2D image similarity kernels}
   \label{sec:cost2d}
   
   2D image similarity kernels evaluate the according similarity measure between 

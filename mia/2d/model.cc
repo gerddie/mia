@@ -22,7 +22,7 @@
  */
 
 /*
-  LatexBeginSection{2D model based registration}
+  LatexBeginPluginSection{2D model based registration}
   \label{sec:regmodel2d}
   
   These plug-ins refer to non-linear registration approaches that use 

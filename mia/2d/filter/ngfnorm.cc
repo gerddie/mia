@@ -33,7 +33,7 @@
 
 
 /* 
-   LatexBeginPlugin{2D image filters}
+   LatexBeginPluginDescription{2D image filters}
    
    \subsection{Norm of a normalized gradient field of the image}
    \label{filter2d:ngfnorm}

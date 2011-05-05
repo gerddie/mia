@@ -22,7 +22,7 @@
 
 
 /* 
-  LatexBeginPlugin{2D Transformations}
+  LatexBeginPluginDescription{2D Transformations}
    
    \subsection{Rigid}
    \label{transform2d:rigid}

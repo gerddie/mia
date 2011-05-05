@@ -23,7 +23,7 @@
  */
 
 /*
-  LatexBeginPlugin{2D image filters}
+  LatexBeginPluginDescription{2D image filters}
 
   \subsection{Anisotropic filtering}
   \label{filter2d:aniso}

@@ -22,7 +22,7 @@
  */
 
 /*
-  LatexBeginSection{2D image filters}
+  LatexBeginPluginSection{2D image filters}
   \label{sec:filter2d}
   
   2D image filters take a constant reference to a C2DImage as parameter and 
@@ -36,7 +36,7 @@
 */
 
 /*
-  LatexBeginSection{2D image combiner}
+  LatexBeginPluginSection{2D image combiner}
   \label{sec:combiner2d}
   
   2D image combiners take two constant references to a C2DImage as parameter and 

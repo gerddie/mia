@@ -19,7 +19,7 @@
  */
 
 /* 
-   LatexBeginPlugin{2D image filters}
+   LatexBeginPluginDescription{2D image filters}
    
    \subsection{Median filter}
    \label{filter2d:median}

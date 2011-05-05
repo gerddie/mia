@@ -23,7 +23,7 @@
  */
 
 /* 
-   LatexBeginPlugin{2D image filters}
+   LatexBeginPluginDescription{2D image filters}
    
    \subsection{Threshhold filter with neighbourhood preservation}
    \label{filter2d:thresh}

@@ -22,7 +22,7 @@
  */
 
 /*
-  LatexBeginPlugin{3D neighborhood shapes}
+  LatexBeginPluginDescription{3D neighborhood shapes}
 
 
   \subsection{Spherical shape}

@@ -18,7 +18,7 @@
  */
 
 /*
-  LatexBeginPlugin{3D image creators}
+  LatexBeginPluginDescription{3D image creators}
 
   \subsection{Sphere Creator}
   \label{creator3d:sphere}

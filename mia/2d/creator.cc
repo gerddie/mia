@@ -23,7 +23,7 @@
  */
 
 /*
-  LatexBeginSection{2D image creators}
+  LatexBeginPluginSection{2D image creators}
   \label{sec:creator2d}
   
   These plug-ins create 2D imgages with predefined objects inside. 

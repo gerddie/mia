@@ -22,7 +22,7 @@
 
 
 /* 
-   LatexBeginPlugin{2D image combiner}
+   LatexBeginPluginDescription{2D image combiner}
    
    \subsection{Arithmetic image combiners}
    \label{combiner2d:aritmetic}

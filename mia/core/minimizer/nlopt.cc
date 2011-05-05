@@ -22,7 +22,7 @@
 
 
 /* 
-   LatexBeginPlugin{Minimizers}
+   LatexBeginPluginDescription{Minimizers}
    
    \subsection{Minimizers provided by the NLOpt Library}
    \label{minimizer:nlopt}

@@ -22,7 +22,7 @@
  */
 
 /* 
-   LatexBeginPlugin{3D image filters}
+   LatexBeginPluginDescription{3D image filters}
    
    \subsection{Reorient image}
    \label{filter3d:reorient}

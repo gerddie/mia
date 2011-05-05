@@ -22,7 +22,7 @@
  */
 
 /*
-  LatexBeginSection{2D neighborhood shapes}
+  LatexBeginPluginSection{2D neighborhood shapes}
   \label{sec:2dshapes}
   
   These 2D shapes define neighbourhoods for a variety of image processing filters, 

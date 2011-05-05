@@ -23,7 +23,7 @@
  */
 
 /*
-  LatexBeginPlugin{2D image filters}
+  LatexBeginPluginDescription{2D image filters}
 
   \subsection{Adaptive mean filter}
   \label{filter2d:admean}

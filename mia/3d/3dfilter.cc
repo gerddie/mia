@@ -19,7 +19,7 @@
  */
 
 /*
-  LatexBeginSection{3D image filters}
+  LatexBeginPluginSection{3D image filters}
   \label{sec:3dfilters}
   
   3D image filters take a constant reference to a C3DImage as parameter and 

@@ -19,7 +19,7 @@
  */
 
 /*
-  LatexBeginSection{3D neighborhood shapes}
+  LatexBeginPluginSection{3D neighborhood shapes}
   \label{sec:3dshapes}
   
   These 3D shapes define neighbourhoods for a variety of image processing filters, 

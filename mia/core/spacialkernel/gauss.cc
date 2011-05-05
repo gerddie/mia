@@ -18,7 +18,7 @@
  */
 
 /* 
-   LatexBeginPlugin{Spacial filter kernels}
+   LatexBeginPluginDescription{Spacial filter kernels}
    
    \subsection{Gauss}
    \label{skernel:gauss}

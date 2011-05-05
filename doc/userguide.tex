@@ -128,7 +128,88 @@ Currently broken
 \chapter{User Guide}
 
 \include{running}
+
+\chapter{Programs}
+\label{ch:prog}
+
+
+This chapter lists all the software tools provided by mia2D. 
+The descriptions follow a designated pattern: 
+
+\begin{description}
+\item [Program:]\emph{the command line program name}
+\item [Description:]A description of the program
+\item [Options:] list of options
+
+\noindent 
+\tabstart
+long name & short name & value type & description of the parameter & default value\\
+\hline
+\tabend
+
+\item [Example:] Example how to run the program 
+
+\noindent 
+If no value type is given, then the option accepts no further parameter. 
+All programs support the following options: 
+
+\tabstart
+--help & -? & & Print out some help & \\\hline
+--usage & & & Print out a short help & \\\hline
+--version & -v & & Print out version information & \\\hline
+--copyright & & & Print out copyright information & \\\hline
+--verbose & -V & string & set the verbosity of the output out of \{ debug, message, warning, fail, error, fatal\} & error \\\hline
+\tabend
+\item [Remarks:] additional notes
+\end{description}
+
+
+The programs support a variety of 2D and 3D image and data file formats, see tables \ref{tab:2dformats} 
+and \ref{tab:3dformats}. 
+Support for some of these formats depend on external libraries and needs to be enabled at compile time.
+
+\begin{table}[h]
+\caption{\label{tab:2dformats}2D image formats}
+\centering{
+\begin{tabular}{|l|l|c|}
+\hline
+File type description & remark & suffix \\\hline
+DICOM & Only a supset of tags is supported & \\\hline 
+OpenEXR HDR image format & http://www.openexr.com/ & exr \\\hline
+Portable Network Graphics & http://www.libpng.org & png \\\hline
+Tagged Image File format & http://www.remotesensing.org/libtiff/libtiff.html & tif \\\hline
+Vista & & v \\\hline 
+Windows Bitmap & http://www.daubnet.com/formats/BMP.html & bmp \\\hline
+\end{tabular}
+}	
+\end{table}
+
+\begin{table}[h]
+\caption{\label{tab:3dformats}3D image formats}
+\centering{
+\begin{tabular}{|l|l|c|}
+\hline
+File type description & on the web & suffix \\\hline
+INRIA 3D File format &http://foveaproject.free.fr/softwareEng.html & inria  \\\hline
+%%Medical Imaging NetCDF & http://www.bic.mni.mcgill.ca/software/minc/ & mnc \\\hline
+Sun TAAC Image File Format & & vff \\\hline
+Vista File Format & http://www.cs.ubc.ca/nest/lci/vista/vista.html & v \\\hline
+\end{tabular}
+}
+\end{table}
+
+\noindent 
+In all cases only binary and gray scale data is supported.
+
 \include{programs}
+
+
+\chapter{Plug-ins}
+\label{ch:plugins}
+
+In this chapter the plug-ins are described that are provided by the library.
+
+
 \include{plugins}
 
 \bibliographystyle{plainnat}

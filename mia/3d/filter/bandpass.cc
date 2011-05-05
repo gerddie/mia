@@ -19,7 +19,7 @@
  */
 
 /*
-   LatexBeginPlugin{3D image filters}
+   LatexBeginPluginDescription{3D image filters}
    
    \subsection{Bandpass intensity filter}
    \begin{description}

@@ -19,7 +19,7 @@
  */
 
 /* 
-   LatexBeginPlugin{2D image filters}
+   LatexBeginPluginDescription{2D image filters}
    
    \subsection{Pixel value conversion}
    \label{filter2d:convert}

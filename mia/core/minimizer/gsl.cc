@@ -21,7 +21,7 @@
  */
 
 /* 
-   LatexBeginPlugin{Minimizers}
+   LatexBeginPluginDescription{Minimizers}
    
    \subsection{Minimizers provided by the GNU Scientific Library}
    \label{minimizer:gsl}

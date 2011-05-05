@@ -21,7 +21,7 @@
  */
 
 /* 
-  LatexBeginPlugin{3D Transformations}
+  LatexBeginPluginDescription{3D Transformations}
   
    \subsection{Affine}
    \label{transform3d:affine}

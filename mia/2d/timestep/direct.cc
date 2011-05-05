@@ -19,7 +19,7 @@
  */
 
 /*
-  LatexBeginPlugin{2D time steps for model based registration}
+  LatexBeginPluginDescription{2D time steps for model based registration}
 
   \subsection{Direct step}
   \label{timestep2d:direct}

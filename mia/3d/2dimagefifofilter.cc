@@ -22,7 +22,7 @@
  */
 
 /*
-  LatexBeginSection{2D image stack filters}
+  LatexBeginPluginSection{2D image stack filters}
   \label{sec:fifof}
   
   These filters work on a stack of 2D images in a 3D manner by interpreting the images of the stack 

@@ -19,7 +19,7 @@
  */
 
 /*
-  LatexBeginPlugin{2D model based registration}
+  LatexBeginPluginDescription{2D model based registration}
 
   \subsection{Navier-Stokes PDE, Gauss-Southwell version}
   \label{model2d:naviera}

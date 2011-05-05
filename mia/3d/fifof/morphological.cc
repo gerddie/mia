@@ -20,7 +20,7 @@
 
 
 /* 
-   LatexBeginPlugin{2D image stack filters}
+   LatexBeginPluginDescription{2D image stack filters}
    
    \subsection{Morphological filters}
    \label{fifof:morph}

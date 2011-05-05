@@ -48,11 +48,11 @@ IF (PDFLATEX_COMPILER)
    if (PYTHONINTERP_FOUND)
      ADD_CUSTOM_COMMAND(SOURCE COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/extract_docu.py 
 
-       ARGS  ${CMAKE_CURRENT_SOURCE_DIR}/../mia plugins.tex
+       ARGS  ${CMAKE_CURRENT_SOURCE_DIR}/.. programs.tex plugins.tex
        TARGET user_guide_plugins
-       OUTPUTS plugins.tex)
+       OUTPUTS programs.tex plugins.tex)
    else(PYTHONINTERP_FOUND)
-     ADD_CUSTOM_COMMAND(SOURCE COMMAND echo "Needs python to create documentation" >plugins.tex
+     ADD_CUSTOM_COMMAND(SOURCE COMMAND echo "Needs python to create documentation" | tee programs.tex >plugins.tex
        TARGET user_guide_plugins
        OUTPUTS plugins.tex)
    endif(PYTHONINTERP_FOUND)

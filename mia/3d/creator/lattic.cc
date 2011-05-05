@@ -19,7 +19,7 @@
 
 
 /*
-  LatexBeginPlugin{3D image creators}
+  LatexBeginPluginDescription{3D image creators}
 
   \subsection{Lattice Creator}
   \label{creator3d:lattic}

@@ -23,7 +23,7 @@
  */
 
 /* 
-   LatexBeginPlugin{2D image filters}
+   LatexBeginPluginDescription{2D image filters}
    
    \subsection{Mean Least Variance filter}
    \label{filter2d:mlv}

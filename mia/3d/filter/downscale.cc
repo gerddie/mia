@@ -22,7 +22,7 @@
  */
 
 /* 
-   LatexBeginPlugin{3D image filters}
+   LatexBeginPluginDescription{3D image filters}
    
    \subsection{Downscale filter}
    \label{filter3d:downscale}

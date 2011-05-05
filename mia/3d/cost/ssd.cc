@@ -18,7 +18,7 @@
  */
 
 /* 
-   LatexBeginPlugin{3D image similarity kernels}
+   LatexBeginPluginDescription{3D image similarity kernels}
    
    \subsection{Sum of Squared Differences}
    \label{cost3d:ssd}

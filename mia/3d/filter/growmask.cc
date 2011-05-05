@@ -19,7 +19,7 @@
  */
 
 /* 
-   LatexBeginPlugin{3D image filters}
+   LatexBeginPluginDescription{3D image filters}
    
    \subsection{Region growing based on an initial seed mask}
    \label{filter3d:growmask}

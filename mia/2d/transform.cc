@@ -21,7 +21,7 @@
  */
 
 /*
-  LatexBeginSection{2D Transformations}
+  LatexBeginPluginSection{2D Transformations}
   \label{sec:2dtransforms}
   
   2D transformations provide to means to transform images and point sets. They are mostly used 

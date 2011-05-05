@@ -21,7 +21,7 @@
  */
 
 /*
-  LatexBeginPlugin{2D model based registration}
+  LatexBeginPluginDescription{2D model based registration}
 
   \subsection{Identity}
   \label{model2d:identity}

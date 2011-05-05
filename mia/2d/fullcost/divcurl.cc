@@ -21,7 +21,7 @@
  */
 
 /* 
-   LatexBeginPlugin{2D full cost functions}
+   LatexBeginPluginDescription{2D full cost functions}
 
       
    \subsection{DivCurl smoothing measure}

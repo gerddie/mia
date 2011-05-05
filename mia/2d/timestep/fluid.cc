@@ -19,7 +19,7 @@
  */
 
 /*
-  LatexBeginPlugin{2D time steps for model based registration}
+  LatexBeginPluginDescription{2D time steps for model based registration}
 
   \subsection{Fluid step}
   \label{timestep2d:fluid}

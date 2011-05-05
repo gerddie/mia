@@ -28,7 +28,7 @@
 #include <ctime>
 
 /* 
-   atexBeginPlugin{2D image stack filters}
+   atexBeginPluginDescription{2D image stack filters}
    
    \subsection{Label}
    \label{fifof:label}

@@ -22,7 +22,7 @@
  */
 
 /* 
-   LatexBeginPlugin{2D image stack filters}
+   LatexBeginPluginDescription{2D image stack filters}
    
    \subsection{Gaussian smoothing}
    \label{fifof:gauss}

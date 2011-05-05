@@ -21,7 +21,7 @@
  */
 
 /*
-  LatexBeginSection{3D Transformations}
+  LatexBeginPluginSection{3D Transformations}
   \label{sec:3dtransforms}
   
   3D transformations provide to means to transform images and point sets. They are mostly used 

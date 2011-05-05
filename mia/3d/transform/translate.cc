@@ -21,7 +21,7 @@
  */
 
 /* 
-  LatexBeginPlugin{3D Transformations}
+  LatexBeginPluginDescription{3D Transformations}
    
    \subsection{Translation}
    \label{transform3d:translate}

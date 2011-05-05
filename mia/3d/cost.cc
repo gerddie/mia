@@ -18,7 +18,7 @@
  */
 
 /*
-  LatexBeginSection{3D image similarity kernels}
+  LatexBeginPluginSection{3D image similarity kernels}
   \label{sec:cost3d}
   
   3D image similarity kernels evaluate the according similarity measure between 

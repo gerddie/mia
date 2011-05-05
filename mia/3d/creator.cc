@@ -19,7 +19,7 @@
  */
 
 /*
-  LatexBeginSection{3D image creators}
+  LatexBeginPluginSection{3D image creators}
   \label{sec:creator3d}
   
   These plug-ins create 3D imgages with predefined objects inside. 

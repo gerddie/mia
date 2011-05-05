@@ -22,7 +22,7 @@
  */
 
 /*
-  LatexBeginSection{2D time steps for model based registration}
+  LatexBeginPluginSection{2D time steps for model based registration}
   \label{sec:timestep2d}
   
   These plug-ins refer to non-linear registration approaches that use 

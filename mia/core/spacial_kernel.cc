@@ -22,7 +22,7 @@
  */
 
 /*
-  LatexBeginSection{Spacial filter kernels}
+  LatexBeginPluginSection{Spacial filter kernels}
   \label{sec:SpacialKernels}
   
   These plug-ins provide kernels for 1D separable filtering. 

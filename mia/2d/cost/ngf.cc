@@ -23,7 +23,7 @@
 
 
 /* 
-   LatexBeginPlugin{2D image similarity kernels}
+   LatexBeginPluginDescription{2D image similarity kernels}
    
    \subsection{Normalized Gradient Fields}
    \label{cost2d:ngf}

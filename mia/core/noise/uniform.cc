@@ -23,7 +23,7 @@
 
 
 /* 
-   LatexBeginPlugin{Noise Generators}
+   LatexBeginPluginDescription{Noise Generators}
    
    \subsection{Uniform noise generator}
    \label{noise:uniform}

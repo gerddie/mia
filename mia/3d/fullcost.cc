@@ -21,7 +21,7 @@
  */
 
 /*
-  LatexBeginSection{3D full cost functions}
+  LatexBeginPluginSection{3D full cost functions}
   \label{sec:3dfullcost}
   
   This class of cost functions evaluates the cost resulting from the 
