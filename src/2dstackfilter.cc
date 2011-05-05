@@ -21,6 +21,56 @@
  *
  */
 
+
+/*
+  LatexBeginProgramSection{2D image stack processing}
+  \label{sec:2dstackprograms}
+  
+  These programs all take a series of consecutively numbered input files of the 
+  same dimensions and size and process it as if it would be a 3D image. 
+  For that reason only filters are supported that can process the the slices in one pass. 
+
+  LatexEnd
+*/
+
+/*
+  LatexBeginProgramDescription{2D image stack processing}
+  \label{sec:2dimagestackproc}  
+  
+  \begin{description}
+  \item [Program:] \emph{mia-2dstackfilter}
+  \item [Description:] This program is used to filter and convert a series of 2D gray scale images in a 
+  3D fashion by running filters as given on the command line. 
+  For available filters see section \ref{sec:fifof}. 
+
+  The program is called like 
+  \lstset{language=bash}
+  \begin{lstlisting}
+mia-2dstackfilter -i <input images> -o <output image basename> -t <output file type> [<filter>] ... 
+  \end{lstlisting}
+  with the filters given as extra parameters as additional command line parameters. 
+
+  \item [Options:] $\:$
+
+  \tabstart
+  \optinfile
+  \optoutfile
+  \opttypetwod
+  \opthelpplugin
+  \tabend
+
+  \item [Example:]Run a mean-least-varaiance filter on a series of images that follow the 
+  numbering pattern inputXXXX.exr and store the output in images filteredXXXX.exr 
+   \lstset{language=bash}
+  \begin{lstlisting}
+mia-2dstackfilter -i image0000.exr -o filtered -t exr mlv:w=2 
+  \end{lstlisting}
+  \end{description}
+  
+  LatexEnd
+*/
+
+
 #define VSTREAM_DOMAIN "2dstackfilter" 
 
 

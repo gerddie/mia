@@ -73,9 +73,10 @@ class DocuCharpter:
       self.sections = {}
       
    def add(self, key1, key2, text_block):
+      if not self.sections.has_key(key2):
+         self.sections[key2] = DocuSection()
+
       if key1 == "Section":
-         if not self.sections.has_key(key2):
-            self.sections[key2] = DocuSection()
          self.sections[key2].append_to_body(text_block)
 
       if key1 == "Description":
