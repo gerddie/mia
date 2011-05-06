@@ -1,7 +1,8 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2011
- * 
+ * Copyright (c) Leipzig, Madrid 2004-2011
+ * Max-Planck-Institute for Human Cognitive and Brain Science
+ * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,39 +21,31 @@
  *
  */
 
+#ifndef mia_2d_filter_fifiof_byslice_hh
+#define mia_2d_filter_fifiof_byslice_hh
 
-/*
-  \author Gert Wollny <gerddie at gmail.com>
-*/
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <memory>
+#include <mia/2d/2dfilter.hh>
+#include <mia/3d/2dimagefifofilter.hh>
+
+NS_BEGIN(byslice_2dstack_filter)
 
 
-#include <mia/internal/autotest.hh>
-#include <mia/3d/fifotestfixture.hh>
-#include <mia/3d/fifof/median.hh>
 
-NS_USE(median_2dstack_filter);
-NS_MIA_USE;
+class C2DBysliceFifoFilter : public mia::C2DImageFifoFilter {
+public:
+	C2DBysliceFifoFilter(std::string filter);
+private:
+	void do_push(::boost::call_traits<mia::P2DImage>::param_type x);
+	mia::P2DImage do_filter();
 
-BOOST_FIXTURE_TEST_CASE( test_fifof_median , fifof_Fixture )
-{
-	const size_t n_slices = 3;
-	const C2DBounds size(3,3);
+	mia::P2DImage m_last_image;
+	mia::C2DFilterPluginHandler::ProductPtr m_filter; 
+};
 
-	float input_data[n_slices * 9] = {
-		1, 2, 3, 4, 5, 6, 7, 8, 9,
-		11, 12, 13, 14, 15, 16, 17, 18, 19,
-		21, 22, 23, 24, 25, 26, 27, 28, 29
-	};
-
-	float test_data[n_slices * 9] = {
-		 8, 8.5, 9, 9.5,  10, 10.5, 11, 11.5, 12,
-		 13,  13.5, 14, 14.5, 15, 15.5, 16, 16.5, 17,
-		 18, 18.5, 19, 19.5, 20, 20.5, 21, 21.5, 22
-	};
-
-	prepare(input_data, test_data, size, n_slices);
-	C2DMedianFifoFilter f(1);
-
-	call_test(f);
-}
-
+NS_END
+#endif

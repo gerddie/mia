@@ -1,4 +1,5 @@
 SET(fifof2dNew
+  byslice
   gauss
   median
   mlv
