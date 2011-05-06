@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -35,12 +35,14 @@ const char *g_description =
 	"This program is used to evaluate the cost between two images by using a given cost function.";  
 
 // set op the command line parameters and run the registration
-int do_main(int argc, const char **args)
+int do_main(int argc, const char **argv)
 {
 
 	CCmdOptionList options(g_description);
 
-	options.parse(argc, args);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	vector<const char *> cost_chain = options.get_remaining();
 
@@ -66,10 +68,10 @@ int do_main(int argc, const char **args)
 }
 
 // for readablility the real main function encapsulates the do_main in a try-catch block
-int main(int argc, const char **args)
+int main(int argc, const char **argv)
 {
 	try {
-		return do_main(argc, args);
+		return do_main(argc, argv);
 	}
 	catch (invalid_argument& err) {
 		cerr << "invalid argument: " << err.what() << "\n";

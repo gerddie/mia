@@ -1,6 +1,6 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -37,7 +37,7 @@ public:
 private:
 	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 
-	mia::PFFT2DKernel  _M_kernel;
+	mia::PFFT2DKernel  m_kernel;
 };
 
 class C2DFilterPluginFactory: public mia::C2DFilterPlugin {
@@ -46,7 +46,7 @@ public:
 private:
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string do_get_descr()const;
-	std::string _M_kernel;
+	std::string m_kernel;
 };
 
 NS_END

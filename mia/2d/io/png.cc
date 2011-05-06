@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -238,7 +238,7 @@ CPNG2DImageIOPlugin::PData  CPNG2DImageIOPlugin::do_load(const string& fname) co
 
 struct CPngImageSaver: public TFilter<bool> {
 	CPngImageSaver(CFile& f):
-		_M_f(f)
+		m_f(f)
 	{
 	}
 
@@ -246,7 +246,7 @@ struct CPngImageSaver: public TFilter<bool> {
 	CPngImageSaver::result_type operator ()(const T2DImage<T>& image)const;
 private:
 
-	CFile& _M_f;
+	CFile& m_f;
 };
 
 template <typename T>
@@ -344,7 +344,7 @@ CPngImageSaver::result_type CPngImageSaver::operator ()(const T2DImage<T>& image
 		throw runtime_error("Error writing png file");
 	}
 
-	png_init_io(png_ptr, _M_f);
+	png_init_io(png_ptr, m_f);
 
 
 	png_set_IHDR(png_ptr, info_ptr, image.get_size().x, image.get_size().y,
@@ -394,7 +394,7 @@ CPngImageSaver::result_type CPngImageSaver::operator ()(const T2DImage<T>& image
 
 bool CPNG2DImageIOPlugin::do_save(const string& fname, const C2DImageVector& data) const
 {
-	cvdebug() << "CPNG2DImageIO::save begin\n";
+	TRACE_FUNCTION; 
 
 	COutputFile f(fname);
 	if (!f) {

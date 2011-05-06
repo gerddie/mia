@@ -1,5 +1,5 @@
 /* -*- mona-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ public:
 private:
 	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 
-	mia::PCST2DImageKernel _M_kernel;
+	mia::PCST2DImageKernel m_kernel;
 };
 
 class EXPORT_2D C2DFilterPluginFactory: public mia::C2DFilterPlugin {
@@ -43,7 +43,7 @@ public:
 private:
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string do_get_descr()const;
-	std::string _M_kernel;
+	std::string m_kernel;
 };
 
 NS_END // end namespace cst_2dimage_filter

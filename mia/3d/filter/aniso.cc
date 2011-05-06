@@ -1,7 +1,7 @@
-/* -*- mona-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
- * 
+/* -*- mia-c++  -*-
  *
+ * Copyright (c) Leipzig, Madrid 2004-2011
+ * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -17,6 +17,34 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/*
+  LatexBeginPluginDescription{3D image filters}
+
+  \subsection{Anisotropic filtering}
+  \label{filter3d:aniso}
+  
+  \begin{description}
+  
+  \item [Plugin:] aniso
+  \item [Description:] Run a anisotropic filter on the input image 
+  \item [Input:] Abitrary gray scale image 
+  \item [Output:] The filtered image of the same pixel type and dimension 
+  
+  \plugtabstart
+  iter & int & maximum number of iterations & 100 \\
+  epsilon & float & stop iteration if changes fall below this value & 1.0  \\
+  k & float & k the noise threshold ($\le 0$: adaptive) & -1 \\
+  psi & string & Edge stopping funtion (ps1|ps2|tuckey|guess) & - \\
+  \plugtabend
+  
+  \item [Remark:] For mor information see \cite{perona90:aniso}. 
+  
+  \end{description}
+
+  LatexEnd
+*/
+
 
 #include <mia/core/msgstream.hh>
 #include <mia/core/disctmap.hh>
@@ -168,9 +196,9 @@ public:
 	
 	void self_test() const; 
 private: 
-	int   _M_maxiter; 
-	float _M_epsilon; 
-	float _M_edge_stop; 
+	int   m_maxiter; 
+	float m_epsilon; 
+	float m_edge_stop; 
 
 }; 
 
@@ -182,38 +210,38 @@ private:
 	virtual const string do_get_descr()const; 
 	virtual void do_test() const; 
 	
-	TDictMap<EEdgeStop> _M_edge_stop_idmap; 
+	TDictMap<EEdgeStop> m_edge_stop_idmap; 
 
-	int   _M_maxiter; 
-	float _M_epsilon; 
-	float _M_edge_stop; 
-	string _M_edge_stop_func; 
+	int   m_maxiter; 
+	float m_epsilon; 
+	float m_edge_stop; 
+	string m_edge_stop_func; 
 };
 
 C3DAnisoFilterFactory::C3DAnisoFilterFactory():
 	C3DFilterPlugin("anisodiff"),
-	_M_edge_stop_idmap(edge_stop_map), 
-	_M_maxiter(100), 
-	_M_epsilon(1.0), 
-	_M_edge_stop(5.0), 
-	_M_edge_stop_func("tuckey")
+	m_edge_stop_idmap(edge_stop_map), 
+	m_maxiter(100), 
+	m_epsilon(1.0), 
+	m_edge_stop(5.0), 
+	m_edge_stop_func("tuckey")
 {
-	add_parameter("iter", CParamList::PParameter(new CIntParameter(_M_maxiter, 1, numeric_limits<int>::max(), 
+	add_parameter("iter", CParamList::PParameter(new CIntParameter(m_maxiter, 1, numeric_limits<int>::max(), 
 								       false, "maximum number of iterations"))); 
-	add_parameter("e", CParamList::PParameter(new CFloatParameter(_M_epsilon, numeric_limits<float>::min(), numeric_limits<float>::max(), 
+	add_parameter("e", CParamList::PParameter(new CFloatParameter(m_epsilon, numeric_limits<float>::min(), numeric_limits<float>::max(), 
 								      false, "delta value to finish iteration"))); 
-	add_parameter("k", CParamList::PParameter(new CFloatParameter(_M_epsilon, -1, numeric_limits<float>::max(), 
+	add_parameter("k", CParamList::PParameter(new CFloatParameter(m_epsilon, -1, numeric_limits<float>::max(), 
 								      false, "edge stopping value (<=0.0 = adaptive) ")));
 	add_parameter("edgestop", 
-		      CParamList::PParameter(new CStringParameter(_M_edge_stop_func, false, "Edge stopping function (pm1|pm2|tuckey)")));
+		      CParamList::PParameter(new CStringParameter(m_edge_stop_func, false, "Edge stopping function (pm1|pm2|tuckey)")));
 
 }
 
 C3DFilterPlugin::ProductPtr C3DAnisoFilterFactory::do_create()const
 {
-	FEdgeStopping estop = _M_edge_stop_idmap.get_value(_M_edge_stop_func.c_str()); 
+	FEdgeStopping estop = m_edge_stop_idmap.get_value(m_edge_stop_func.c_str()); 
 
-	return C3DFilterPlugin::ProductPtr(new C3DAnisoDiffFilter(estop, _M_maxiter, _M_epsilon, _M_edge_stop)); 
+	return C3DFilterPlugin::ProductPtr(new C3DAnisoDiffFilter(estop, m_maxiter, m_epsilon, m_edge_stop)); 
 }
 
 const string C3DAnisoFilterFactory::do_get_descr()const

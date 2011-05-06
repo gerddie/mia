@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Evolutionary Anthropoloy
  * BIT, ETSI Telecomunicacion, UPM
@@ -20,6 +20,26 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/*
+  LatexBeginPluginDescription{2D neighborhood shapes}
+
+
+  \subsection{Spherical shape}
+  \label{shapes2d:sphere}
+
+  \begin{description}
+   
+   \item [Plugin:] sphere 
+   \item [Description:] provide a 2D sphere like shape that includes its interior. 
+   
+   \end{description}
+   \plugtabstart
+   r &  float & radius of the sphere & 2 \\
+   \plugtabend
+   
+  LatexEnd
+*/
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -57,14 +77,14 @@ CSphere2DShape::CSphere2DShape(float radius)
 
 CSphere2DShapeFactory::CSphere2DShapeFactory():
 	C2DShapePlugin("sphere"),
-	_M_r(2)
+	m_r(2)
 {
-	add_parameter("r", new CFloatParameter(_M_r, 0, numeric_limits<float>::max(), false, "sphere radius"));
+	add_parameter("r", new CFloatParameter(m_r, 0, numeric_limits<float>::max(), false, "sphere radius"));
 }
 
 C2DShapePlugin::ProductPtr CSphere2DShapeFactory::do_create()const
 {
-	return CSphere2DShapeFactory::ProductPtr(new CSphere2DShape(_M_r));
+	return CSphere2DShapeFactory::ProductPtr(new CSphere2DShape(m_r));
 }
 
 

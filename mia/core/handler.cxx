@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -69,7 +69,7 @@ void TPluginHandler<I>::global_searchpath(list<bfs::path>& searchpath)
 	bfs::path type_path = TPlugin<typename I::PlugData,typename I::PlugType>::search_path();
 	
 	cvdebug() << "Add plugin searchpath\n"; 
-	cvdebug() << "   " << get_plugin_root() << "/" << type_path.directory_string() << "\n"; 
+	cvdebug() << "   " << get_plugin_root() << "/" << type_path.string() << "\n"; 
 
 	searchpath.push_back( bfs::path(get_plugin_root()) / type_path); 
 
@@ -88,7 +88,7 @@ void TPluginHandler<I>::global_searchpath(list<bfs::path>& searchpath)
 
 	char *c_user = getenv("MIA_PLUGIN_PATH");
 	if (c_user) {
-		cvdebug() << "   " << c_user << "/" << type_path.file_string() << "\n"; 
+		cvdebug() << "   " << c_user << "/" << type_path.string() << "\n"; 
 		bfs::path lala(c_user); 
 		bfs::path subdir = lala / type_path; 
 		
@@ -102,7 +102,7 @@ void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
 	// create the pattern match
 	stringstream pattern; 
 
-	pattern << ".*\\."<< G_MODULE_SUFFIX << "$"; 
+	pattern << ".*\\."<< MIA_MODULE_SUFFIX << "$"; 
 
 	cvdebug() << "TPluginHandler<I>::initialise: '"<<
 		TPlugin<typename I::PlugData,typename I::PlugType>::search_path() <<
@@ -113,17 +113,17 @@ void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
 	// search through all the path to find the plugins
 	for (list<bfs::path>::const_iterator dir = searchpath.begin(); 
 	     dir != searchpath.end(); ++dir){
-		cvdebug() << "Looking for " << dir->file_string() << "\n"; 
+		cvdebug() << "Looking for " << dir->string() << "\n"; 
 		if (bfs::exists(*dir) && bfs::is_directory(*dir)) {
 			// if we cant save the old directory something is terribly wrong
 			bfs::directory_iterator di(*dir); 
 			bfs::directory_iterator dend;
 			
-			cvdebug() << "TPluginHandler<I>::initialise: scan '"<<dir->directory_string() <<"'\n"; 
+			cvdebug() << "TPluginHandler<I>::initialise: scan '"<<dir->string() <<"'\n"; 
 
 			while (di != dend) {
-				cvdebug() << "    candidate:'" << di->path().directory_string() << "'"; 
-				if (boost::regex_match(di->path().filename(), pat_expr)) {
+				cvdebug() << "    candidate:'" << di->path().string() << "'"; 
+				if (boost::regex_match(di->path().string(), pat_expr)) {
 					candidates.push_back(*di); 
 					cverb << " add\n";
 				}else
@@ -138,8 +138,8 @@ void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
 	for (vector<bfs::path>::const_iterator i = candidates.begin(); 
 	     i != candidates.end(); ++i) {
 		try {
-			cvdebug()<< " Load '" <<i->directory_string()<<"'\n"; 
-			_M_modules.push_back(PPluginModule(new CPluginModule(i->directory_string().c_str())));
+			cvdebug()<< " Load '" <<i->string()<<"'\n"; 
+			m_modules.push_back(PPluginModule(new CPluginModule(i->string().c_str())));
 		}
 		catch (invalid_argument& ex) {
 			cverr() << ex.what() << "\n"; 
@@ -148,13 +148,13 @@ void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
 			cverr() << ex.what() << "\n"; 
 		}
 		catch (...) {
-			cverr() << "Loading module " << i->directory_string() << "failed for unknown reasons\n"; 
+			cverr() << "Loading module " << i->string() << "failed for unknown reasons\n"; 
 		}
 	}
 
 	// now try to load the interfaces and put them in the map
-	for (vector<PPluginModule>::const_iterator i = _M_modules.begin(); 
-	     i != _M_modules.end(); ++i) {
+	for (vector<PPluginModule>::const_iterator i = m_modules.begin(); 
+	     i != m_modules.end(); ++i) {
 		CPluginBase *pp = (*i)->get_interface();
 		if (!pp) 
 			cverr() << "Module '" << (*i)->get_name() << "' doesn't provide an interface\n"; 
@@ -169,7 +169,7 @@ void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
 			
 			if (p) {
 				cvdebug() << "add plugin '" << p->get_name() << "'\n"; 
-				if (_M_plugins.find(p->get_name()) ==  _M_plugins.end()) {
+				if (m_plugins.find(p->get_name()) ==  m_plugins.end()) {
 					p->set_module(*i);
 					add_plugin(p); 
 				} else {
@@ -189,19 +189,19 @@ void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
 template <typename I>
 void TPluginHandler<I>::add_plugin(Interface *p)
 {
-	_M_plugins[p->get_name()] = p;	
+	m_plugins[p->get_name()] = p;	
 }
 
 template <typename I>
 typename TPluginHandler<I>::const_iterator TPluginHandler<I>::begin() const
 {
-	return _M_plugins.begin(); 
+	return m_plugins.begin(); 
 }
 
 template <typename I>
 typename TPluginHandler<I>::const_iterator TPluginHandler<I>::end() const
 {
-	return _M_plugins.end(); 
+	return m_plugins.end(); 
 }
 
 /**
@@ -210,8 +210,8 @@ typename TPluginHandler<I>::const_iterator TPluginHandler<I>::end() const
 template <typename I>
 TPluginHandler<I>::~TPluginHandler()
 {
-	for (typename CPluginMap::iterator i = _M_plugins.begin(); 
-	     i != _M_plugins.end(); ++i) {
+	for (typename CPluginMap::iterator i = m_plugins.begin(); 
+	     i != m_plugins.end(); ++i) {
 		delete i->second; 
 	}
 }
@@ -220,7 +220,7 @@ TPluginHandler<I>::~TPluginHandler()
 template <typename I>
 size_t TPluginHandler<I>::size() const
 {
-	return _M_plugins.size(); 
+	return m_plugins.size(); 
 }
 
 template <typename I>
@@ -228,8 +228,8 @@ const string TPluginHandler<I>::get_plugin_names() const
 {
 	vector<string> names;  
 
-	for (typename map<string, Interface*>::const_iterator i = _M_plugins.begin(); 
-	     i != _M_plugins.end(); ++i)
+	for (typename map<string, Interface*>::const_iterator i = m_plugins.begin(); 
+	     i != m_plugins.end(); ++i)
 		names.push_back(i->first);
 
 	sort(names.begin(), names.end()); 
@@ -244,8 +244,8 @@ template <typename I>
 const std::set<std::string> TPluginHandler<I>::get_set() const
 {
 	std::set<std::string> r; 
-	for (typename map<string, Interface*>::const_iterator i = _M_plugins.begin(); 
-	     i != _M_plugins.end(); ++i)
+	for (typename map<string, Interface*>::const_iterator i = m_plugins.begin(); 
+	     i != m_plugins.end(); ++i)
 		r.insert(i->first);
 	return r; 
 }
@@ -253,8 +253,8 @@ const std::set<std::string> TPluginHandler<I>::get_set() const
 template <typename I>
 typename TPluginHandler<I>::Interface *TPluginHandler<I>::plugin(const char *plugin) const 
 {
-	typename map<string, Interface*>::const_iterator p = _M_plugins.find(plugin); 
-	if (p == _M_plugins.end()) {
+	typename map<string, Interface*>::const_iterator p = m_plugins.find(plugin); 
+	if (p == m_plugins.end()) {
 		stringstream msg; 
 		msg << "Plugin '" << plugin << "' not found in '" 
 		    << I::PlugType::value << "/" <<  I::PlugData::type_descr << "'"; 
@@ -278,24 +278,24 @@ THandlerSingleton<T>::THandlerSingleton(const std::list<boost::filesystem::path>
 	T(searchpath) 
 {
 	TRACE_FUNCTION; 
-	assert(!_M_is_created); 
-	_M_is_created = true; 
+	assert(!m_is_created); 
+	m_is_created = true; 
 }
 
 template <typename T> 
 THandlerSingleton<T>::THandlerSingleton():
-	T(_M_searchpath)
+	T(m_searchpath)
 {
 	TRACE_FUNCTION; 
-	assert(!_M_is_created); 
-	_M_is_created = true; 
+	assert(!m_is_created); 
+	m_is_created = true; 
 }
 
 	
 template <typename T> 
 const T& THandlerSingleton<T>::instance()
 {
-	boost::mutex::scoped_lock lock(_M_creation_mutex); 
+	boost::mutex::scoped_lock lock(m_creation_mutex); 
 	TRACE_FUNCTION; 
 	static THandlerSingleton me; 
 	return me; 
@@ -304,34 +304,34 @@ const T& THandlerSingleton<T>::instance()
 template <typename T>
 void THandlerSingleton<T>::set_search_path(const std::list<boost::filesystem::path>& searchpath)
 {
-	boost::mutex::scoped_lock lock(_M_creation_mutex); 
+	boost::mutex::scoped_lock lock(m_creation_mutex); 
 	typedef typename  T::Interface IF; 
 	TRACE("THandlerSingleton<T>::set_search_path"); 
 	cvdebug() << "Set path: "  << TPlugin<typename IF::PlugData,typename IF::PlugType>::search_path() << '\n'; 
 
-	if (_M_is_created) {
+	if (m_is_created) {
 		bfs::path type_path = TPlugin<typename IF::PlugData,typename IF::PlugType>::search_path();
 		cvinfo() << "THandlerSingleton<" << 
-			type_path.file_string() <<
+			type_path.string() <<
 			">::set_search_path: handler was already created\n"; 
 			
 	}
 #if 0 // work around the appearent icc bug, where the static member 
       //variable is not initialised
-	::new (&_M_searchpath) std::list<boost::filesystem::path>; 
+	::new (&m_searchpath) std::list<boost::filesystem::path>; 
 #endif
-	_M_searchpath = searchpath; 
+	m_searchpath = searchpath; 
 
 }
 
 
 template <typename T>
-std::list<boost::filesystem::path> THandlerSingleton<T>::_M_searchpath;
+std::list<boost::filesystem::path> THandlerSingleton<T>::m_searchpath;
 template <typename T>
- bool THandlerSingleton<T>::_M_is_created = false; 
+ bool THandlerSingleton<T>::m_is_created = false; 
 
 template <typename T>
-boost::mutex THandlerSingleton<T>::_M_creation_mutex; 
+boost::mutex THandlerSingleton<T>::m_creation_mutex; 
 
 
 NS_MIA_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -43,7 +43,8 @@ struct FCompare {
 BOOST_AUTO_TEST_CASE( test_mlv )
 {
 #ifndef WIN32
-	srand48(time(NULL));
+	// the test should always use the same random numbers 
+	srand48(0);
 #endif
 	for (int w = 1; w < 5; ++w) {
 		cvdebug() << "test filter of width " << w << "\n";

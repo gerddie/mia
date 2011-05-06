@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -33,39 +33,56 @@
 
 NS_MIA_BEGIN
 
+
+/**
+   \cond INTERNAL
+   Helper structure used to initialize std::shared_ptr with the proper 
+   delete operator.  
+ */
 template <typename T> 
 struct array_destructor {
+	/// run delete on an array 
 	virtual void operator () (T *p) {
 		delete[] p; 
 	}
 }; 
 
+/**
+   Helper structure used to initialize std::shared_ptr with an empty 
+   delete operator, i.e. to fake a shared pointer 
+ */
 template <typename T> 
 struct array_void_destructor {
+	/// skip deleting the pointer 
 	virtual void operator () (T *) {
 	}
 }; 
+/// \endcond 
 
 /**
+   \brief A wrapper around the c-array to provide an STL like interface for iterators 
+
    c-array envelope that supports some facilities of STL like vectors and that 
    allows holding pre-allocated data. 
    Handling of the optinal deleting of the array is done by a destructor template
-   passed to the shared_ptr constructor 
+   passed to the std::shared_ptr constructor 
    \tparam the data type of the C-array 
 */
-
 
 template <typename T> 
 class Vector {
 public: 
+	
+	/// \cond STLCOMPAT 
 	typedef T& reference;  
 	typedef const T& const_reference;  
 	typedef T *iterator;  
 	typedef const T *const_iterator;  
 	typedef size_t size_type; 
+	/// \endcond 
 
 	/**
-	   Create a vector, the data is won by this vector and will be 
+	   Create a vector, the data is owned by this vector and will be 
 	   deleted if the reference count reaches zero 
 	   \param n 
 	   \param clean initialize vector to 0
@@ -121,6 +138,10 @@ public:
 	{
 	}
 	
+
+	/**
+	   Standard array access operator, read-write version 
+	 */
 	reference operator[] (size_t i) {
 		assert(i < m_size); 
 		assert(m_data); 
@@ -128,30 +149,49 @@ public:
 		return m_data.get()[i]; 
 	}
 
+	/**
+	   Standard array access operator, read-only version 
+	 */
 	const_reference operator[] (size_t i) const {
 		assert(i < m_size); 
 		return m_cdata[i]; 
 	}
 	
+	/**
+	   STL compatible iterator, begin of range  
+	 */
 	iterator begin() {
 		assert(m_data); 
 		assert(m_data.unique()); 
 		return m_data.get(); 
 	}
 
+	/**
+	   STL compatible iterator, end of range  
+	 */
 	iterator end() {
 		assert(m_data); 
 		return m_data.get() + m_size; 
 	}
 	
+
+	/**
+	   STL compatible const_iterator, begin of range   
+	 */
 	const_iterator begin() const{
 		return m_cdata; 
 	}
 
+	/**
+	   STL compatible const_iterator, end of range   
+	 */
 	const_iterator end() const{
 		return m_cdata + m_size; 
 	}
 	
+	/**
+	   \returns number of elements in the array 
+	 */
 	size_type size() const 
 	{
 		return m_size; 
@@ -163,6 +203,8 @@ private:
 	const T *m_cdata; 
 }; 
 
+
+/// STL like c-array wrapper for double floating point
 typedef Vector<double> CDoubleVector; 
 
 NS_MIA_END

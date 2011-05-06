@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -22,14 +22,51 @@
  *
  */
 
-// $Id: 2dimagefilter.cc,v 1.12 2006-07-12 13:44:23 wollny Exp $
+/*
+  LatexBeginProgramSection{2D image processing}
+  \label{sec:2dprograms}
+  
+  These programs all take a single 2d image as input. 
 
-/*! \brief mia-2dimagefilter
+  LatexEnd
+*/
 
-\sa mia-2dimagefilter.cc
+/*
+  LatexBeginProgramDescription{2D image processing}
+  \label{sec:2dimageproc}  
+  
+  \begin{description}
+  \item [Program:] \emph{mia-2dimagefilter}
+  \hrule 
+  \item [Description:] This program is used to filter and convert 2D gray scale images by running 
+  filters as given on the command line. For available filters see section \ref{sec:filter2d}. 
 
-\file mask.cc
-\author G. Wollny, wollny eva.mpg.de, 2005
+  The program is called like 
+  \lstset{language=bash}
+  \begin{lstlisting}
+mia-2dimagefilter -i <input image> -o <output image> [<filter>] ... 
+  \end{lstlisting}
+  with the filters given as extra parameters as additional command line parameters. 
+
+  \item [Options:] $\:$
+
+  \tabstart
+  \optinfile
+  \optoutfile
+  \opthelpplugin
+  \tabend
+
+  \item [Example:]Run a mean-least-varaiance filter on input.exr, then run a 5-class k-means classification 
+           and binarize by selecting the 4th class.
+   \lstset{language=bash}
+  \begin{lstlisting}
+mia-2dimagefilter -i image.exr -o filtered.png mlv:w=2 \
+                                               kmeans:c=5 \
+		                               binarize:min=4,max=4 
+  \end{lstlisting}
+  \end{description}
+  
+  LatexEnd
 */
 
 #include <sstream>
@@ -66,11 +103,14 @@ int do_main( int argc, const char *argv[] )
 				    "output image(s) that have been filtered", CCmdOption::required));
 	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
 				    "output file type (if not given deduct from output file name)"));
+	options.set_group(g_help_optiongroup); 
 	options.push_back(make_help_opt( "help-plugins", 0,
 					 "give some help about the filter plugins", 
 					 new TPluginHandlerHelpCallback<C2DFilterPluginHandler>));
 	
-	options.parse(argc, argv);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	vector<const char *> filter_chain = options.get_remaining();
 

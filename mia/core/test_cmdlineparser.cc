@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -41,13 +41,13 @@ using namespace std;
 using namespace boost::unit_test;
 
 struct CmdlineParserFixture {
-	CmdlineParserFixture():_M_level(cverb.get_level()) {
+	CmdlineParserFixture():m_level(cverb.get_level()) {
 	}
 	~CmdlineParserFixture() {
-		cverb.set_verbosity(_M_level);
+		cverb.set_verbosity(m_level);
 	}
 private:
-	vstream::Level _M_level;
+	vstream::Level m_level;
 
 };
 
@@ -203,7 +203,7 @@ BOOST_FIXTURE_TEST_CASE( test_dict_option, CmdlineParserFixture )
 
 	options.push_back("self");
 	options.push_back("-dtwo");
-	olist.parse(options.size(), &options[0]);
+	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_no); 
 
 	BOOST_CHECK( olist.get_remaining().size() == 0);
 	BOOST_CHECK(value == te_two);
@@ -216,7 +216,7 @@ BOOST_FIXTURE_TEST_CASE( test_flagstring_option, CmdlineParserFixture )
 		{'o', te_one},
 		{'t', te_two},
 		{'h', te_three},
-		{NULL, te_undefined}
+		{0, te_undefined}
 	};
 	CFlagString map(table);
 
@@ -230,7 +230,7 @@ BOOST_FIXTURE_TEST_CASE( test_flagstring_option, CmdlineParserFixture )
 	options.push_back("self");
 	options.push_back("-f");
 	options.push_back("ot");
-	olist.parse(options.size(), &options[0]);
+	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_no); 
 
 	BOOST_CHECK( olist.get_remaining().size() == 0);
 	BOOST_CHECK(value == te_two || te_one);
@@ -281,7 +281,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser, CmdlineParserFixture )
 	olist.push_back(make_opt(usval,  "ushort", 'u', "a short int option", "ushort"));
 	olist.push_back(make_opt(vector_value,  "vector-string", 'S', "a vector of strings", "vstring"));
 
-	olist.parse(options.size(), &options[0]);
+	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]),  CCmdOptionList::hr_no);
 
 	for( vector<const char *>::const_iterator i = olist.get_remaining().begin(); i != olist.get_remaining().end(); ++i)
 		BOOST_MESSAGE(*i);
@@ -307,11 +307,12 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors1, CmdlineParserFixture )
 	options.push_back("self1");
 	options.push_back("-H2u16");
 	bool bool_value = false;
+	bool dummy; 
 
 	CCmdOptionList olist("Synopis:Tests command line options.");
 	olist.push_back(make_opt(bool_value, "bool", 'H', "a bool option", "bool"));
 
-	BOOST_CHECK_THROW(olist.parse(options.size(), &options[0]), invalid_argument); 
+	BOOST_CHECK_THROW(dummy = (olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no), invalid_argument); 
 }
 
 
@@ -321,11 +322,11 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors2, CmdlineParserFixture )
 	options.push_back("self1");
 	options.push_back("-H2u16");
 	bool bool_value = false;
-
+	bool dummy; 
 	CCmdOptionList olist("Synopis:Tests command line options.");
 	olist.push_back(make_opt(bool_value, "bool", 'H', "a bool option", "bool"));
 
-	BOOST_CHECK_THROW(olist.parse(options.size(), &options[0], false), invalid_argument); 
+	BOOST_CHECK_THROW(dummy = (olist.parse(options.size(), &options[0], false) == CCmdOptionList::hr_no), invalid_argument); 
 }
 
 NS_MIA_USE; 

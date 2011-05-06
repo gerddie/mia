@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -37,6 +37,8 @@ namespace xmlpp {
 NS_MIA_BEGIN
 
 /**
+   \brief a point in a 2D segmentation shape 
+
    Point of a segmentation shape. In addition to be a 2D point it can be 
    read from and written to a XML tree and supports its own tranformation. 
 */
@@ -45,7 +47,10 @@ class  EXPORT_2D CSegPoint2D: public C2DFVector {
 public:
 	CSegPoint2D();
 
+	/// copy constructor 
 	CSegPoint2D(const C2DFVector& org);
+
+	/// assignment operator 
 	CSegPoint2D& operator = (const C2DFVector& org);
 
 	/**
@@ -71,10 +76,11 @@ public:
 	   \param t 
 	 */
 	void transform(const C2DTransformation& t); 
+	
 	/**
-	   Approximate the inverse transform of the point by using the given transformation 
+	   Evaluate an approximation of the inverse of the given transform of the point
 	   \param t 
-	   \param t 
+
 	 */
 	void inv_transform(const C2DTransformation& t); 
 };

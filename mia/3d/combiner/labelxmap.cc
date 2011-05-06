@@ -1,5 +1,5 @@
 /*  -*- mia-c++ -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Gert Wollny <gert.wollny at web.de>
  *
@@ -57,12 +57,12 @@ public:
 private:
 	virtual void do_save(const std::string& fname) const;
 	typedef map<XLabel, size_t, LessXLabel> CLabelMap;
-	CLabelMap _M_map;
+	CLabelMap m_map;
 };
 
 bool operator == (const CXLabelResult& a, const CXLabelResult& b)
 {
-	return a._M_map == b._M_map;
+	return a.m_map == b.m_map;
 }
 
 
@@ -81,9 +81,9 @@ void CXLabelResult::add(size_t a , size_t b)
 {
 	if (a != 0 && b != 0) {
 		XLabel l(a,b);
-		CLabelMap::iterator i = _M_map.find(l);
-		if (i == _M_map.end())
-			_M_map[l] = 1;
+		CLabelMap::iterator i = m_map.find(l);
+		if (i == m_map.end())
+			m_map[l] = 1;
 		else
 			++i->second;
 	}
@@ -94,9 +94,9 @@ void CXLabelResult::do_save(const std::string& fname) const
 	ofstream f(fname.c_str(),ios_base::out);
 
 	f << "#labelxmap\n";
-	f << "size=" << _M_map.size() << '\n';
+	f << "size=" << m_map.size() << '\n';
 
-	for (CLabelMap::const_iterator i = _M_map.begin(); i != _M_map.end(); ++i)
+	for (CLabelMap::const_iterator i = m_map.begin(); i != m_map.end(); ++i)
 		f << i->first.first << " " <<  i->first.second <<  " " << i->second << '\n';
 
 

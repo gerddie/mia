@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -21,13 +21,9 @@
  *
  */
 
-// $Id: miaUtils.hh 887 2006-03-01 12:22:14Z write1 $
-
-/*! \brief Some easy cache, string, and file manipulation tools
-
-\author Gert Wollny <gw.fossdev@gmail.com>, 2004-2010
-\author M. Tittgemeyer, tittge@cbs.mpg.de, 2004
-
+/*! \file core/utils.hh Some easy cache, string, and file manipulation tools
+  \author Gert Wollny <gw.fossdev@gmail.com>, 2004-2011
+  \author M. Tittgemeyer, tittge@cbs.mpg.de, 2004
 */
 
 #ifndef __MIA_TOOLS_HH
@@ -38,11 +34,13 @@
 #include <sstream>
 #include <vector>
 #include <stdexcept>
-
 #include <mia/core/defines.hh>
+
+
 NS_MIA_BEGIN
 
-/**
+/** \brief A Scope based helper class to save and restore the current working directory 
+
    A helper class that stores the current working directory on construction
    and goes back to the it when the class intance is destroyed. 
 */
@@ -54,8 +52,6 @@ public:
 };
 
 #ifndef WIN32
-
-
 /*! a functor to search  for files */
 class  FSearchFiles  {
 	std::list<std::string>& result;
@@ -74,10 +70,16 @@ public:
 
 
 #ifndef _GNU_SOURCE
+/**
+   Provide sincosf conveniance functions for sin and cos if the GNU GCC extension is not available. 
+ */
 void sincosf(float x, float *sin, float *cos); 
+
+/**
+   Provide sincosf conveniance functions for sin and cos if the GNU GCC extension is not available. 
+ */
 void sincos(double x, double *sin, double *cos); 
 #endif
-
 
 NS_MIA_END
 

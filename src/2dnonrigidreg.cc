@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -21,6 +21,56 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/*
+  LatexBeginProgramDescription{2D image registration}
+  
+  \begin{description}
+  \item [Program:] \emph{mia-2dnonrigidreg}
+  \hrule 
+  \item [Description:] This program implements the non-linear registration of two gray scale 2D images. 
+
+  The program is called like 
+  \lstset{language=bash}
+  \begin{lstlisting}
+mia-2drigidreg -i <input image> -r <reference image> -o <output image> \
+               [options] <cost1> [<cost2>] ...
+  \end{lstlisting}
+  
+
+  \item [Options:] $\:$
+
+  \tabstart
+  \optinfile
+  \optreffile
+  \optoutfile
+  --levels & -l & int & multiresolution processing levels  \\\hline
+  --optimizer & -O & string & optimizer as given in section \ref{sec:minimizers}   \\\hline
+  --trans & -t & string & transformation output file \\\hline
+  --transForm & -f  & string & transformation type to achieve registration as given in section \ref{sec:2dtransforms} 
+              \\\hline
+  \tabend
+
+  The cost functions are given as extra parameters on the command line. 
+  These may include any combination of the cost functions given in section \ref{sec:2dfullcost}. 
+
+
+  \item [Example:]Register image test.v to image ref.v by using a spline transformation with a 
+  coefficient rate of 5  and write the registered image to reg.v. 
+  Use two multiresolution levels, ssd as image cost function and divcurl weighted by 10.0 
+   as transformation smoothness penalty. 
+   \lstset{language=bash}
+  \begin{lstlisting}
+mia-2dnonrigidreg -i test.v -r ref.v -o reg.v -l 2 \
+                  -f spline:rate=3  image:cost=ssd divcurl:weight=10
+  \end{lstlisting}
+ 
+  \item [Remark:] The implementation allows to use a linear transformation, like \emph{rigid} as target 
+    transformation supersetting mia-2drigidreg. 
+    Of course giving a transformation penalty wouldn't make sense in such cases.
+  \end{description}
+  LatexEnd
+*/
 
 
 #include <sstream>
@@ -69,7 +119,9 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 
-	options.parse(argc, argv);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 	
 	auto cost_descrs = options.get_remaining(); 
 

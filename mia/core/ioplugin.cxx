@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -63,7 +63,7 @@ bool TIOPlugin<D>::save(const std::string& fname, const Data& data) const
 template <typename D> 
 const typename TIOPlugin<D>::PixelTypeSet& TIOPlugin<D>::supported_pixel_types() const
 {
-	return _M_typeset; 
+	return m_typeset; 
 }
 
 
@@ -71,7 +71,7 @@ const typename TIOPlugin<D>::PixelTypeSet& TIOPlugin<D>::supported_pixel_types()
 template <typename D> 
 void TIOPlugin<D>::add_supported_type(EPixelType t)
 {
-	_M_typeset.insert(t); 
+	m_typeset.insert(t); 
 }
 
 // io plugins are not tested internally

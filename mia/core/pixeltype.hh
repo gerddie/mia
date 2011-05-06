@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -48,6 +48,9 @@ enum EPixelType {it_bit,  /**< bit/bool pixels */
 		 it_unknown /**< unexpected type */
 };
 
+/**
+   types of pixel conversions 
+ */
 enum EPixelConversion {pc_copy, /**< copy pixel values, ranges and values are truncated at conversion */
 		       pc_linear, /**< apply the linear function ax+b to the voxel values, then convert the values */
 		       pc_range, /**< apply a linear mapping the maps the complete input range of the input type to the 
@@ -60,10 +63,17 @@ enum EPixelConversion {pc_copy, /**< copy pixel values, ranges and values are tr
 				       the output range */
 		       pc_unknown};
 
+
+/// dictionary table for the pixel types 
 EXPORT_CORE extern const TDictMap<EPixelType>::Table PixelTypeTable[];
+
+/// dictionary for the pixel types 
 EXPORT_CORE extern const TDictMap<EPixelType> CPixelTypeDict;
 
+/// dictionary table for the pixel conversion types 
 EXPORT_CORE extern const TDictMap<EPixelConversion>::Table ConversionTypeTable[];
+
+/// dictionary for the pixel conversion types 
 EXPORT_CORE extern const TDictMap<EPixelConversion> CPixelConversionDict;
 
 /**

@@ -1,6 +1,6 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -30,6 +30,7 @@
 #include <mia/internal/multicost.hh>
 #include <mia/internal/transformfactory.hh>
 #include <mia/internal/dimtrait.hh>
+#include <mia/core/import_handler.hh>
 
 NS_MIA_BEGIN
 
@@ -46,7 +47,7 @@ struct TNonrigidRegisterImpl;
 */
 
 template <typename Transform> 
-class TNonrigidRegister {
+class EXPORT_HANDLER TNonrigidRegister {
 public:
 	typedef dim_traits<Transform> this_dim_traits;
 	typedef typename Transform::Pointer PTransformation; 
@@ -60,9 +61,9 @@ public:
 
 	/**
 	   Constructor for the registration tool
-	   \param cost cost function model
+	   \param costs cost function model
 	   \param minimizer GSL provided minimizer
-	   \param transform_type string describing which transformation is supported
+	   \param transform_creation string describing which transformation is supported
 	   \param ipf interpolator
 	   \param mg_levels multigrisd levels to be used 
 	 */

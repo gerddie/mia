@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -32,10 +32,10 @@
 NS_MIA_BEGIN
 using namespace std;
 
-char CComplexOptionParser::_M_parts_seperator      = '+';
-char CComplexOptionParser::_M_part_options         = ':';
-char CComplexOptionParser::_M_option_seperator     = ',';
-char CComplexOptionParser::_M_assignment_seperator = '=';
+char CComplexOptionParser::m_parts_seperator      = '+';
+char CComplexOptionParser::m_part_options         = ':';
+char CComplexOptionParser::m_option_seperator     = ',';
+char CComplexOptionParser::m_assignment_seperator = '=';
 
 
 CComplexOptionParser::CComplexOptionParser(const string& param)
@@ -43,28 +43,29 @@ CComplexOptionParser::CComplexOptionParser(const string& param)
 	cvdebug() << "CComplexOptionParser: constr '" << param << "'\n";
 	typedef list<string> string_list;
 	string_list parts;
-	if (split(param, _M_parts_seperator, parts)== 0)
+	if (split(param, m_parts_seperator, parts)== 0)
 		return;
 
 	string_list::const_iterator i = parts.begin();
 	string_list::const_iterator e = parts.end();
 
 	while (i != e) {
-		pair<string, string>  part = split_pair(*i,_M_part_options);
+		pair<string, string>  part = split_pair(*i,m_part_options);
 		CParsedOptions options;
 
-		cvdebug() << "CComplexOptionParser: '" << part.first << "' : '" << part.second << "' len="<< part.second.size() << "\n";
+		cvdebug() << "CComplexOptionParser: '" << part.first << "' : '" << part.second 
+			  << "' len="<< part.second.size() << "\n";
 
 		string help = part.second;
 
 		while (!help.empty()) {
 			cvdebug() << "split '"<< help << "'\n";
-			pair<string, string> next_option = split_pair(help, _M_assignment_seperator);
+			pair<string, string> next_option = split_pair(help, m_assignment_seperator);
 
 			if (next_option.second.empty()) {
 				help = next_option.second;
 			}else {
-				pair<string, string> tail = split_pair_b(next_option.second, _M_option_seperator);
+				pair<string, string> tail = split_pair_b(next_option.second, m_option_seperator);
 				next_option.second = tail.first;
 				help = tail.second;
 			}
@@ -72,17 +73,17 @@ CComplexOptionParser::CComplexOptionParser(const string& param)
 			options.insert(next_option);
 		}
 		cvdebug() << "CComplexOptionParser: add '" << part.first << "'\n";
-		_M_Parts.insert(CParts::value_type(part.first, options));
+		m_Parts.insert(CParts::value_type(part.first, options));
 
 		++i;
 	}
-	cvdebug() << "CComplexOptionParser: constr - got " << _M_Parts.size() << " option(s)\n";
+	cvdebug() << "CComplexOptionParser: constr - got " << m_Parts.size() << " option(s)\n";
 }
 
 CComplexOptionParser::const_iterator
 CComplexOptionParser::begin()const
 {
-	return _M_Parts.begin();
+	return m_Parts.begin();
 }
 
 
@@ -90,23 +91,23 @@ CComplexOptionParser::begin()const
 CComplexOptionParser::const_iterator
 CComplexOptionParser::end()const
 {
-	return _M_Parts.end();
+	return m_Parts.end();
 }
 
 
 CComplexOptionParser::CParts::size_type CComplexOptionParser::size() const
 {
-	return _M_Parts.size();
+	return m_Parts.size();
 }
 
 
 void CComplexOptionParser::set_seperators(SSeperators s)
 {
 	assert(strlen(s) >= 4);
-	_M_parts_seperator      = s[0];
-	_M_part_options         = s[1];
-	_M_option_seperator     = s[2];
-	_M_assignment_seperator = s[3];
+	m_parts_seperator      = s[0];
+	m_part_options         = s[1];
+	m_option_seperator     = s[2];
+	m_assignment_seperator = s[3];
 }
 
 int CComplexOptionParser::split(const string& s, char c, list<string>& result)const

@@ -1,6 +1,6 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -29,10 +29,12 @@
 
 #include <mia/2d/multicost.hh>
 #include <mia/2d/transformfactory.hh>
+#include <mia/core/export_handler.hh>
 #include <mia/internal/nonrigidregister.hh>
 
 
 NS_MIA_BEGIN
+/// Specialization of TNonrigidRegister for 2D images 
 typedef TNonrigidRegister<C2DTransformation> C2DNonrigidRegister; 
 NS_MIA_END
 

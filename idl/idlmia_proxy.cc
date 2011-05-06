@@ -1,5 +1,5 @@
 /* -*- mia-c++ -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ class idl_streamredir: public streamredir {
 void idl_streamredir::do_put_buffer(const char *begin, const char *end)
 {
 	string buffer(begin, end); 
-	IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_INFO, buffer.c_str());
+	IDL_Message(IDLm_NAMED_GENERIC, IDL_MSG_INFO, buffer.c_str());
 }
 
 class OutputRedirect : public ostream {
@@ -113,20 +113,20 @@ static IDL_VPTR catch_throw_wrapper(int argc, IDL_VPTR *argv, idl_function_ext f
 	catch (invalid_argument& x) {
 		stringstream err; 
 		err << "MIA - invalid argument:" << x.what(); 
-		IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_RET, err.str().c_str());
+		IDL_Message(IDLm_NAMED_GENERIC, IDL_MSG_RET, err.str().c_str());
 	}
 	catch (runtime_error& x) {
 		stringstream err; 
 		err << "MIA - runtime error:" << x.what(); 
-		IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_RET, err.str().c_str());
+		IDL_Message(IDLm_NAMED_GENERIC, IDL_MSG_RET, err.str().c_str());
 	}
 	catch (exception& x) {
 		stringstream err; 
 		err << "MIA - general exception:" << x.what(); 
-		IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_RET, err.str().c_str());
+		IDL_Message(IDLm_NAMED_GENERIC, IDL_MSG_RET, err.str().c_str());
 	}
 	catch (...) {
-		IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_RET, "unknown exception");
+		IDL_Message(IDLm_NAMED_GENERIC, IDL_MSG_RET, "unknown exception");
 
 	}
 	IDL_VPTR retval = (IDL_VPTR) IDL_MemAlloc(sizeof(IDL_VARIABLE), 0, 0); 
@@ -146,20 +146,20 @@ static void  proc_catch_throw_wrapper(int argc, IDL_VPTR *argv, idl_procedure_ex
 	catch (invalid_argument& x) {
 		stringstream err; 
 		err << "MIA - invalid argument:" << x.what(); 
-		IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_RET, err.str().c_str());
+		IDL_Message(IDLm_NAMED_GENERIC, IDL_MSG_RET, err.str().c_str());
 	}
 	catch (runtime_error& x) {
 		stringstream err; 
 		err << "MIA - runtime error:" << x.what(); 
-		IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_RET, err.str().c_str());
+		IDL_Message(IDLm_NAMED_GENERIC, IDL_MSG_RET, err.str().c_str());
 	}
 	catch (exception& x) {
 		stringstream err; 
 		err << "MIA - general exception:" << x.what(); 
-		IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_RET, err.str().c_str());
+		IDL_Message(IDLm_NAMED_GENERIC, IDL_MSG_RET, err.str().c_str());
 	}
 	catch (...) {
-		IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_RET, "unknown exception");
+		IDL_Message(IDLm_NAMED_GENERIC, IDL_MSG_RET, "unknown exception");
 
 	}
 }

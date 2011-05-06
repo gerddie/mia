@@ -1,6 +1,6 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -30,20 +30,39 @@
 
 NS_MIA_BEGIN 
 
+
+/**
+   Deform an image by using a dense vector field as transformation. 
+   \remark obsolete-should be done by using C2DTransform 
+ */
+
 struct FDeformer2D: public TFilter<P2DImage> {
+	
+	/**
+	   Construor taking the 
+	   \param vf vector field defining the transformation like T(x) := x - vf(x) 
+	   \param ipfac the interpolation factory used for image interpolation 
+	 */
 	FDeformer2D(const C2DFVectorfield& vf, const C2DInterpolatorFactory& ipfac): 
-		_M_vf(vf), 
-		_M_ipfac(ipfac)
+		m_vf(vf), 
+		m_ipfac(ipfac)
 		{
 		}
+
+	/**
+	   Operator to run the transformation like a filter to be called by mia::filter 
+	   \tparam T pixel type if the input image 
+	   \param image the input image 
+	   \returns the transformed image 
+	 */
 	template <typename T> 
 	P2DImage operator () (const T2DImage<T>& image) const {
 		T2DImage<T> *timage = new T2DImage<T>(image.get_size()); 
 
-		std::shared_ptr<T2DInterpolator<T> >  interp(_M_ipfac.create(image.data())); 
+		std::shared_ptr<T2DInterpolator<T> >  interp(m_ipfac.create(image.data())); 
 
 		typename T2DImage<T>::iterator r = timage->begin(); 
-		C2DFVectorfield::const_iterator v = _M_vf.begin(); 
+		C2DFVectorfield::const_iterator v = m_vf.begin(); 
 
 		for (size_t y = 0; y < image.get_size().y; ++y)
 			for (size_t x = 0; x < image.get_size().x; ++x, ++r, ++v) {
@@ -52,14 +71,20 @@ struct FDeformer2D: public TFilter<P2DImage> {
 		return P2DImage(timage); 
 	}
 
+	/**
+	   Operator to transform the image and store the result in a pre-allocated 
+	   image 
+	   \param[in] image the input image 
+	   \param[out] result the output image 
+	*/
 	template <typename T> 
 	void operator () (const T2DImage<T>& image, T2DImage<T>& result) const {
 		assert(image.get_size() == result.get_size()); 
 
-		std::shared_ptr<T2DInterpolator<T> >  interp(_M_ipfac.create(image.data())); 
+		std::shared_ptr<T2DInterpolator<T> >  interp(m_ipfac.create(image.data())); 
 
 		typename T2DImage<T>::iterator r = result.begin(); 
-		C2DFVectorfield::const_iterator v = _M_vf.begin(); 
+		C2DFVectorfield::const_iterator v = m_vf.begin(); 
 
 		for (size_t y = 0; y < image.get_size().y; ++y)
 			for (size_t x = 0; x < image.get_size().x; ++x, ++r, ++v) {
@@ -68,8 +93,8 @@ struct FDeformer2D: public TFilter<P2DImage> {
 	}
 
 private: 
-	C2DFVectorfield _M_vf; 
-	C2DInterpolatorFactory _M_ipfac; 
+	C2DFVectorfield m_vf; 
+	C2DInterpolatorFactory m_ipfac; 
 }; 
 
 NS_MIA_END

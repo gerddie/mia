@@ -7,9 +7,7 @@ REQUIREMENTS:
   ANSI C++ compiler that supports the auto keyword of the 
             upcoming standard C++0x 
 	GNU g++ >= 4.4 (tested) 
-        MS Visual C++ 2010 
-
-
+        MS Visual C++ 2010 (not tested) 
         
 SUPPORTED Platforms: 
 

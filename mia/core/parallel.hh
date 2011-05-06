@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -23,21 +23,6 @@
 
 // $Id: parallel.hh 928 2006-06-27 10:37:53Z write1 $
 
-/*! \brief A barrier class for POSIX threads.
-
-This file implements a Barrier class similar to the barrier suggested in
-    \a Programming \a with \a POSIX \a Threads by \a David \a R. \a Butenhof
-    and some more files.
-
-
-\file parallel.hh
-
-\author Gert Wollny <wollny@cbs.mpg.de>
-
-\todo hide all parallelization issues in classes, and let it check availability of
-libpthreads during run-time.
-
-*/
 
 #ifndef mia_core_parallel_hh
 #define mia_core_parallel_hh
@@ -56,6 +41,8 @@ libpthreads during run-time.
 NS_MIA_BEGIN
 
 /**
+   @brief A message queue for thread syncronisation in a Master-Slave setting 
+
    This class implements a message queue that can be used for thread syncronisation and
    Master-Slave processing.
 
@@ -100,24 +87,27 @@ public:
 	 */
 	boost::any *get_param();
 private:
-	boost::condition _M_send_condition;
-	boost::mutex _M_send_mutex;
-	int _M_command;
-	boost::any *_M_param;
+	boost::condition m_send_condition;
+	boost::mutex m_send_mutex;
+	int m_command;
+	boost::any *m_param;
 
-	boost::condition _M_receive_condition;
-	boost::mutex _M_receive_mutex;
-	boost::barrier _M_precmd_barrier;
-	bool _M_finished;
+	boost::condition m_receive_condition;
+	boost::mutex m_receive_mutex;
+	boost::barrier m_precmd_barrier;
+	bool m_finished;
 
 };
 
+/// Pointer type of the CMessage class 
 typedef std::shared_ptr<CMessenger > PMessenger;
+
+/// Pointer type of the CBarrier class  
 typedef std::shared_ptr<boost::barrier > PBarrier;
 
 
 /**
-   The base of all slave threads.
+   @brief The base of all slave threads.
 */
 class EXPORT_CORE CSlave: private boost::noncopyable {
 public:
@@ -142,91 +132,103 @@ protected:
 	size_t nr() const;
 private:
 	virtual void run_command(int command, boost::any *param) = 0;
-	PMessenger _M_messanger;
-	PBarrier _M_final_barrier;
-	size_t _M_nr;
+	PMessenger m_messanger;
+	PBarrier m_final_barrier;
+	size_t m_nr;
 };
 
 
 /**
-   Generic class to provide syncronised access to a value
+   @brief Generic class to provide syncronised access to a value
+
+   This class holds a value of thegiven type and all access to it is scncronized.  
+   @remark some of these things could probably done with atomic operations 
 */
 template <typename T>
 class TLockedValue:private boost::noncopyable {
 public:
 
 	TLockedValue();
+	
+	/// constructor to set the value 
 	TLockedValue(T val);
 
+	/// assignment operator 
 	const TLockedValue& operator = (T val);
+
+	/// operator for transparent access to the value 
 	operator T() const;
 
+	/// Set the value @param val 
 	void set (T val);
+
+	/// @returns the value 
 	const T get() const;
 
+	/// operator of the value 
 	const TLockedValue<T>& operator += (T val);
 private:
-	T _M_val;
-	boost::mutex _M_mutex;
+	T m_val;
+	boost::mutex m_mutex;
 };
 
 
 inline size_t CSlave::nr() const
 {
-	return _M_nr;
+	return m_nr;
 }
 
 // implementation
 inline boost::any *CMessenger::get_param()
 {
-	return _M_param;
+	return m_param;
 }
 
 template <typename T>
 TLockedValue<T>::TLockedValue():
-	_M_val()
+	m_val()
 {
 }
 
 template <typename T>
 TLockedValue<T>::TLockedValue(T val):
-	_M_val(val)
+	m_val(val)
 {
 }
 
 template <typename T>
 const TLockedValue<T>& TLockedValue<T>::operator = (T val)
 {
-	boost::mutex::scoped_lock lock(_M_mutex);
-	_M_val = val;
+	boost::mutex::scoped_lock lock(m_mutex);
+	m_val = val;
 }
 
 template <typename T>
 TLockedValue<T>::operator T() const
 {
-	boost::mutex::scoped_lock lock(_M_mutex);
-	return _M_val;
+	boost::mutex::scoped_lock lock(m_mutex);
+	return m_val;
 }
 
 template <typename T>
 void TLockedValue<T>::set (T val)
 {
-	boost::mutex::scoped_lock lock(_M_mutex);
-	_M_val = val;
+	boost::mutex::scoped_lock lock(m_mutex);
+	m_val = val;
 }
 
 template <typename T>
 const T TLockedValue<T>::get() const
 {
-	boost::mutex::scoped_lock lock(_M_mutex);
-	return _M_val;
+	boost::mutex::scoped_lock lock(m_mutex);
+	return m_val;
 }
 
 template <typename T>
 const TLockedValue<T>& TLockedValue<T>::operator += (T val)
 {
-	boost::mutex::scoped_lock lock(_M_mutex);
-	_M_val += val;
+	boost::mutex::scoped_lock lock(m_mutex);
+	m_val += val;
 	return *this;
 }
 

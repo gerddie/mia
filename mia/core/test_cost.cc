@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -67,10 +67,11 @@ BOOST_FIXTURE_TEST_CASE( test_cost_basic, TestCost )
 	double a = 2.0;
 	double b = 4.0;
 
-	BOOST_CHECK_CLOSE(value(a, b), 2.0, 0.1);
+	set_reference(b); 
+	BOOST_CHECK_CLOSE(value(a), 2.0, 0.1);
 
 	double force = 1.0;
-	BOOST_CHECK_CLOSE(evaluate_force(a, b, 3.0, force), 2.0, 0.1); 
+	BOOST_CHECK_CLOSE(evaluate_force(a, 3.0, force), 2.0, 0.1); 
 
 	BOOST_CHECK_CLOSE(force, -12.0, 0.1);
 }

@@ -1,6 +1,6 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -53,63 +53,99 @@
 
 NS_MIA_BEGIN
 
+/**
+   \brief a 2D vector 
+   
+   A 2D vector that provides the usual set of operations required to handle such objects. 
+   \tparam type of the elements 
+ */
 template <class T > class T2DVector {
 public:	
 
+	/// typedef for generic access to the element type 
 	typedef T value_type; 
-	T x,y;
-
+	
+	/// first element 
+	T x;
+	
+	/// second element 
+	T y;
+	
+	/// a static for the value <1,1>. 
 	static const T2DVector<T> _1; 
 		
-	// Contructors
-
 	T2DVector():x(T()),y(T()){}
 
+	/** this constructor is required for some generic code 
+	    It is explicit to avoid some problems with automatic assigment 
+	 */ 
 	explicit T2DVector(int dim):x(T()),y(T()){
 		assert(dim ==2);
 	}
 
+	/**
+	   Contruct the vector with the according elements 
+	   \param _x 
+	   \param _y 
+	 */
 	T2DVector(T _x, T _y):x(_x),y(_y){};
 
+	
+	/**
+	   Automatically convert a 2D vector from another element type 
+	 */
 	template <typename In>
 	T2DVector(const T2DVector<In>& in):
 		x(in.x), 
 		y(in.y)
 		{
 		}
+	
 	// Functions
 
+
+	///@returns square norm of the vector 
 	T norm2() const {
 		return T(x * x + y * y);
 	}
 
+	///@returns norm of the vector 
 	T norm() const {
 		return T(sqrt(norm2()));
 	}
 	
+	///@returns product of the elements of the vector  
 	double product() const {
 		return x * y; 
 	}
 
-	// Operators
+	// Operators 
+
+	/// in place addition 
 	T2DVector& operator += (const T2DVector& a){
 		x += a.x; y += a.y;
 		return *this;
 	}
+
+	/// in place subtraction 
 	T2DVector& operator -= (const T2DVector& a){
 		x -= a.x; y -= a.y;
 		return *this;
 	}
+
+	/// in place multiplication with a scalar 
 	T2DVector& operator *= (double a){
 		x *= a; y *= a;
 		return *this;
 	}
 
+	/// in place element wise multiplication of two 2D vectors 
 	T2DVector& operator *= (const T2DVector& a){
 		x *= a.x; y *= a.y;
 		return *this;
 	}
 
+	/// in place element wise division of two 2D vectors 
 	T2DVector& operator /= (const T2DVector& a){
 		if ( a.x == 0.0 || a.y == 0.0)
 			throw std::invalid_argument("T2DVector<T>::operator /=: division by zero not allowed"); 
@@ -117,16 +153,22 @@ public:
 		return *this;
 	}
 
+	/// in place division by a scalar  
 	T2DVector& operator /= (double a){
 		if ( a == 0.0 )
 			throw std::invalid_argument("T2DVector<T>::operator /=: division by zero not allowed"); 
 		x /= a; y /= a;
 		return *this;
 	}
+
+	/// returns the size of this vector, always 2
 	size_t size() const {
 		return 2;
 	}
 	
+	/** Array access operator for some generic code 
+	    One should have a look how expensive this function is 
+	 */ 
 	T& operator [](int i) {
 		switch (i) {
 		case 0:return x; 
@@ -137,6 +179,9 @@ public:
 		}
 	}
 	
+	/** Array access operator for some generic code 
+	    One should have a look how expensive this function is 
+	 */ 
 	const T& operator [](int i) const {
 		switch (i) {
 		case 0:return x; 
@@ -146,23 +191,28 @@ public:
 		}
 		}
 	}
-
+	
+	/// fill all the elements with the given value
 	void fill(T v) {
 		x = y = v; 
 	}
 	
-	// Comparsion
+	/// Equal operator 
 	bool operator == (const T2DVector& a)const{
 		return (x == a.x && y == a.y);
 	}
+	
+	/// not equal operator 
 	bool operator != (const T2DVector& a)const{
 		return (! (*this == a));
 	}
 
+	/// print the vector to a stream with special formatting 
 	void print(std::ostream& os) const {
 		os << "<"<< x << "," << y << ">"; 
 	}
 	
+	/// read the properly formatted 2D vector from a stream 
 	void read(std::istream& is) {
 		char c; 
 		

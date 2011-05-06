@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -31,15 +31,22 @@ NS_MIA_BEGIN
 
 
 /**
+   @brief Runs some statistics over a one-dimensional curve 
+   
    Evaluates some statistics about a one-dimensional mapping [0, 1,..., N-1] -> R.
+   This is mostly used for perfusion analysis.  
  */
 
 class  EXPORT_CORE CSlopeStatistics {
 public:
+	/**
+	   Initialize the statistice with the data of a curve 
+	   @param series 
+	 */
 	CSlopeStatistics(const std::vector<float>& series);
 	~CSlopeStatistics();
 
-	/// \returns the curve length evaluated discretly, i.e. taking the \Delta x = 1 into account
+	/// \returns the curve length evaluated discretly, i.e. taking the \f$\Delta\f$ x = 1 into account
 	float get_curve_length() const;
 
 	/// \returns the absolute range of the curve - i.e. max(series) - min(series)
@@ -60,6 +67,7 @@ private:
 	struct CSlopeStatisticsImpl *impl;
 };
 
+/// Pointer type for the CSlopeStatistics class 
 typedef std::shared_ptr<CSlopeStatistics > PSlopeStatistics;
 NS_MIA_END
 

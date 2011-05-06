@@ -1,5 +1,5 @@
-/* -*- mona-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+/* -*- mia-c++  -*-
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -40,12 +40,12 @@
 #include <gts.h>
 
 // MONA specific
-#include <libmona/plugin_handler.hh>
-#include <libmona/triangularMesh.hh>
-#include <libmona/monaFileIO.hh>
+#include <libmia/plugin_handler.hh>
+#include <libmia/triangularMesh.hh>
+#include <libmia/monaFileIO.hh>
 
 namespace gts_mesh_io {
-using namespace mona;
+using namespace mia;
 using namespace std; 
 
 static char const * format = "gts";

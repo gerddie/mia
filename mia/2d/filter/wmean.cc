@@ -1,5 +1,5 @@
-/* -*- mona-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+/* -*- mia-c++  -*-
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -31,12 +31,12 @@ static const CIntOption param_width("hw", "half window width w, actual window wi
 static const CFloatOption param_weight("weight", "weigt of the surrounding pixels", 0.7, 0.01, 2.0);
 
 class C2DWMean : public C2DFilter{
-	int _M_width; 
-	float _M_weight; 
+	int m_width; 
+	float m_weight; 
 public:
 	C2DWMean(int hwidth, float weight):
-		_M_width(hwidth), 
-		_M_weight(weight)
+		m_width(hwidth), 
+		m_weight(weight)
 	{
 	}
 	
@@ -47,7 +47,7 @@ public:
 
 
 class CWMean2DImageFilter: public C2DImageFilterBase {
-	C2DWMean _M_filter; 
+	C2DWMean m_filter; 
 public:
 	CWMean2DImageFilter(int hwidth, float weight);
 
@@ -73,7 +73,7 @@ typename C2DWMean::result_type C2DWMean::operator () (const Data2D& data) const
 	typename Data2D::iterator i = result->begin(); 
 	typename Data2D::const_iterator t = data.begin(); 
 
-	cvdebug() << "filter with width = " << _M_width << " and weight " << _M_weight << endl; 
+	cvdebug() << "filter with width = " << m_width << " and weight " << m_weight << endl; 
 
 	for (int y = 0; y < (int)data.get_size().y; ++y)
 		for (int x = 0; x < (int)data.get_size().x; ++x, ++i, ++t) {
@@ -82,28 +82,28 @@ typename C2DWMean::result_type C2DWMean::operator () (const Data2D& data) const
 			int num = -1; 
 			
 			
-			for (int iy = max(0, y - _M_width); 
-			     iy < min(y + _M_width + 1, (int)data.get_size().y);  ++iy)
+			for (int iy = max(0, y - m_width); 
+			     iy < min(y + m_width + 1, (int)data.get_size().y);  ++iy)
 				
-				for (int ix = max(0, x - _M_width); 
-				     ix < min(x + _M_width + 1, (int)data.get_size().x);  ++ix) {
+				for (int ix = max(0, x - m_width); 
+				     ix < min(x + m_width + 1, (int)data.get_size().x);  ++ix) {
 					
 					sum += data(ix,iy); 
 					++num; 
 				}
-			*i = (typename Data2D::value_type) ( (*t + (_M_weight / num) * (sum - *t)) / (1 + _M_weight));
+			*i = (typename Data2D::value_type) ( (*t + (m_weight / num) * (sum - *t)) / (1 + m_weight));
 		}
 	return P2DImage(result); 
 }
 
 CWMean2DImageFilter::CWMean2DImageFilter(int hwidth, float weight):
-	_M_filter(hwidth, weight)
+	m_filter(hwidth, weight)
 {
 }
 
 P2DImage CWMean2DImageFilter::do_filter(const C2DImage& image) const
 {
-	return wrap_filter(_M_filter,image); 
+	return wrap_filter(m_filter,image); 
 }
 
 CWMean2DImageFilterFactory::CWMean2DImageFilterFactory():

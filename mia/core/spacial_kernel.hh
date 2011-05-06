@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -43,6 +43,8 @@ struct EXPORT_CORE kernel_plugin_type {
 };
 
 /**
+   \brief base class for 1D filter kernels 
+
    prototype for a 1D spacial convolution kernel
    \todo put the convolution into this class, problem: it must work for all
          data types but should also be virtual
@@ -58,7 +60,9 @@ protected:
 
 	virtual ~C1DFilterKernel();
 public:
+	/// define the plugin search path, data part  
 	typedef spacial_kernel_data plugin_data; 
+	/// define the plugin search path, type part 
 	typedef kernel_plugin_type  plugin_type; 
 
 	/// returns the filter width definition parameter
@@ -67,8 +71,16 @@ public:
 	/// returns the width of the kernel
 	size_t size() const;
 
+	/** run the filter in-place 
+	    @param data 
+	 */
 	void apply_inplace(std::vector<double>& data) const;
 
+	/**
+	   run the filter out-of-place 
+	   @param data input data 
+	   @returns the filtered output 
+	 */
 	std::vector<double> apply(const std::vector<double>& data) const;
 
 private:
@@ -82,15 +94,23 @@ private:
 };
 
 /**
-   Base class for folding kernal types.
+   \brief Base class for folding kernal types.
  */
 
 class EXPORT_CORE C1DFoldingKernel : public C1DFilterKernel {
 public:
+
+	
+	/// Data type of the kernel coefficient vector 
 	typedef std::vector<double> vec_mask;
 
+	/// iterator over the kernel 
 	typedef vec_mask::const_iterator const_iterator;
 
+	/**
+	   Kernel constructor of the given size 
+	   @param fsize 
+	 */
 	C1DFoldingKernel(int fsize);
 
 
@@ -106,22 +126,26 @@ public:
 	/// returns a constant iterator at the end of the derivative of the filter kernel
 	const_iterator dend()const;
 
-
-
+	/// standard access operator, rw version 
 	double& operator[](int i) {
 		return m_mask[i];
 	}
+	
+	/// standard access operator, ro version 
 	double operator[](int i)const {
 		return m_mask[i];
 	}
 protected:
+	/// kernel iterator 
         typedef vec_mask::iterator iterator;
 
+	/// returns an iterator at the begin of the kernel
 	iterator begin();
 
-	/// returns an iterator at the end if the derivative of the  kernel
+	/// returns an iterator at the end of the kernel
 	iterator end();
 
+	/// returns an iterator at the begin if the derivative of the  kernel
 	iterator dbegin();
 
 	/// returns an iterator at the end if the derivative of the  kernel
@@ -136,7 +160,10 @@ private:
 
 };
 
+/// base class for filters kernels working in the spacial domain 
 typedef TFactory<C1DFoldingKernel> C1DSpacialKernelPlugin;
+
+/// plugin handler for spaciel filter kernels 
 typedef THandlerSingleton<TFactoryPluginHandler<C1DSpacialKernelPlugin> > C1DSpacialKernelPluginHandler;
 
 FACTORY_TRAIT(C1DSpacialKernelPluginHandler); 

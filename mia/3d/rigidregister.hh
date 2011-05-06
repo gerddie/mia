@@ -33,17 +33,9 @@
 
 NS_MIA_BEGIN
 
-enum EMinimizers {
-	min_nmsimplex,
-	min_cg_fr,
-	min_cg_pr,
-	min_bfgs,
-	min_bfgs2,
-	min_gd,
-	min_undefined
-};
-
 /**
+   \brief 3D linear registration class 
+   
    Class for registration without regularization - i.e. should only be used
    for affine, rigid and translation only registrations
 */
@@ -52,10 +44,11 @@ class EXPORT_3D C3DRigidRegister {
 public:
 	/**
 	   Constructor for the registration tool
-	   \param cost cost function model
-	   \param minimizer GSL provided minimizer
-	   \param transform_type string describing which transformation is supported
-	   \param ipf interpolator
+	   @param cost cost function model
+	   @param minimizer GSL provided minimizer
+	   @param transform_creator string describing which transformation is supported
+	   @param ipf interpolator
+	   @param mg_levels number of multi-resolution levels to be used 
 	 */
 
 	C3DRigidRegister(P3DImageCost cost, PMinimizer minimizer,
@@ -67,10 +60,9 @@ public:
 
 	/**
 	   Run the registration of an image pair. 
-	   \param src source (moving) image 
-	   \param ref reference (fixed) image 
-	   \param mg_levels multigrisd levels to be used 
-	   \returns the transformation registering src to ref that minimizes the constructor given 
+	   @param src source (moving) image 
+	   @param ref reference (fixed) image 
+	   @returns the transformation registering src to ref that minimizes the constructor given 
 	   cost function 
 	 */
 	P3DTransformation  run(P3DImage src, P3DImage ref) const;

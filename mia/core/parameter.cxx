@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -42,7 +42,7 @@ NS_MIA_BEGIN
 template <typename T, const char * const TS> 
 CTParameter<T, TS>::CTParameter(T& value,  bool required, const char *descr):
 	CParameter(TS, required, descr),
-	_M_value(value)
+	m_value(value)
 {
 	
 }
@@ -50,7 +50,7 @@ CTParameter<T, TS>::CTParameter(T& value,  bool required, const char *descr):
 template <typename T, const char * const TS> 
 void CTParameter<T, TS>::do_descr(std::ostream& os) const
 {
-	os << " (default=" <<  _M_value << ") ";
+	os << " (default=" <<  m_value << ") ";
 }
 
 
@@ -59,7 +59,7 @@ bool CTParameter<T, TS>::do_set(const std::string& str_value)
 {
 	char c; 
 	std::istringstream s(str_value); 
-	s >> _M_value; 
+	s >> m_value; 
 	if (s.fail()) 
 		throw std::invalid_argument(errmsg(str_value)); 
 	while (!s.eof() && s.peek() == ' ') 
@@ -67,7 +67,7 @@ bool CTParameter<T, TS>::do_set(const std::string& str_value)
 	if (!s.eof()) 
 		throw std::invalid_argument(errmsg(str_value)); 
 	
-	adjust(_M_value); 
+	adjust(m_value); 
 	return true; 
 }
 
@@ -80,25 +80,26 @@ void CTParameter<T,TS>::adjust(T& /*value*/)
 template <typename T, const char * const TS> 
 TRangeParameter<T,TS>::TRangeParameter(T& value, T min, T max, bool required, const char *descr):
 	CTParameter<T, TS>(value, required, descr),
-	_M_min(min), 
-	_M_max(max)
+	m_min(min), 
+	m_max(max)
 {
-	if (_M_min > _M_max) 
-		throw std::invalid_argument("TRangeParameter: min > max not allowed"); 
+	if (m_min > m_max) 
+		THROW(std::invalid_argument, "Parameter '"<<descr<<"' TRangeParameter<T,"<< TS << ">: min(" 
+		      << m_min <<") > max ("<< m_max << ")  not allowed"); 
 }
 
 template <typename T, const char * const TS> 
 void TRangeParameter<T,TS>::adjust(T& value)
 {
-	if (value < _M_min) {
-		cvwarn() << "TRangeParameter<T,TS>: adjust " << value <<" to lower bound " << _M_min << "\n"; 
-		value = _M_min; 
+	if (value < m_min) {
+		cvwarn() << "TRangeParameter<T,TS>: adjust " << value <<" to lower bound " << m_min << "\n"; 
+		value = m_min; 
 	}
 
 	
-	if (value > _M_max) {
-		cvwarn() << "TRangeParameter<T,TS>: adjust " << value <<" to upper bound " << _M_max << "\n"; 
-		value = _M_max; 
+	if (value > m_max) {
+		cvwarn() << "TRangeParameter<T,TS>: adjust " << value <<" to upper bound " << m_max << "\n"; 
+		value = m_max; 
 	}
 }
 
@@ -106,7 +107,7 @@ template <typename T, const char * const TS>
 void TRangeParameter<T,TS>::do_descr(std::ostream& os) const
 {
 	CTParameter<T, TS>::do_descr(os); 
-	os << " in [" << _M_min << "," << _M_max << "] ";
+	os << " in [" << m_min << "," << m_max << "] ";
 }
 
 NS_MIA_END

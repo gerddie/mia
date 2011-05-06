@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -100,9 +100,9 @@ public:
 	template <typename T>
 	CSegment3d::result_type operator () (const T3DImage<T>& data);
 private:
-	unsigned int _M_nClasses;
-	float 	     _M_res;
-	P3DImage     _M_out;
+	unsigned int m_nClasses;
+	float 	     m_res;
+	P3DImage     m_out;
 
 };
 
@@ -139,7 +139,7 @@ vector<double> Isodata3d (const Data3D& src_image, unsigned int nClasses, unsign
 		clCenter[i] = (i+1) *dCenters; //save clCenters
 
 	// first pass: build a histogram
-	CHistogram<CHistogramFeeder<int> > histo(CHistogramFeeder<int>(0, maxPixVal + 1, maxPixVal + 1));
+	THistogram<THistogramFeeder<int> > histo(THistogramFeeder<int>(0, maxPixVal + 1, maxPixVal + 1));
 	histo.push_range (src_image.begin(), src_image.end ());
 
 	// now find cluster centers
@@ -310,7 +310,7 @@ int estimateGain (C3DFImage& gain_image, const Data3D& src_image, vector<C3DFIma
 
 
 CSegment3d::CSegment3d(const unsigned int& nClasses, const float& res):
-	_M_nClasses(nClasses), _M_res(res)
+	m_nClasses(nClasses), m_res(res)
 {
 }
 
@@ -320,7 +320,7 @@ CSegment3d::~CSegment3d ()
 
 P3DImage CSegment3d::get_out_image () const
 {
-	return _M_out;
+	return m_out;
 }
 
 
@@ -339,7 +339,7 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 
 	// number of pixels in image
 	// TODO: was ist u ??
-	vector<double> u(_M_nClasses);
+	vector<double> u(m_nClasses);
 
 	// Field to store the border
 	vector<char> border(noOfPixels);
@@ -380,11 +380,11 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 	fill (gainBegin, gainEnd, 1.0);
 
 	// class probability image, compute initial class centers
-	vector<double> clCenter = Isodata3d (data, _M_nClasses, (unsigned int) iMax);
+	vector<double> clCenter = Isodata3d (data, m_nClasses, (unsigned int) iMax);
 
 	// some verbose output
 	cvmsg()  << "intl. class centers:" ;
-	for (unsigned int k = 0; k < _M_nClasses; k++)
+	for (unsigned int k = 0; k < m_nClasses; k++)
 		cverb << " [" << k << "] " << clCenter[k];
 	cverb << endl;
 
@@ -392,7 +392,7 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 	// create class membership volumes
 
 	C3DFImageVec cls_image;
-	for (size_t i = 0; i < _M_nClasses; ++i)  {
+	for (size_t i = 0; i < m_nClasses; ++i)  {
 		cls_image.push_back(new C3DFImage ( data.get_size(),
 						    data.get_attribute_list()));
 	}
@@ -402,8 +402,8 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 		// Algorithm step 2:
 		// estimate gain field
 
-		estimateGain (gain_image, data, cls_image, clCenter, _M_nClasses,
-			      &firstnormr0, _M_res, border);
+		estimateGain (gain_image, data, cls_image, clCenter, m_nClasses,
+			      &firstnormr0, m_res, border);
 		if (firstnormr0 < 1000)
 			firstnormr0 = 1.0;
 
@@ -423,13 +423,13 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 					sum = 0;
 					// get difference from gain-field
 					double gainVal = gain_image(x, y, z);
-					for (unsigned int k = 0; k < _M_nClasses; k++)  {
+					for (unsigned int k = 0; k < m_nClasses; k++)  {
 						dist = pixVal-gainVal*clCenter[k];
 						u[k] = dist? 1/(dist*dist): HUGE;
 						sum += u[k];
 					};
 
-					for (unsigned int k = 0; k < _M_nClasses; k++)  {
+					for (unsigned int k = 0; k < m_nClasses; k++)  {
 						double un = u[k]/sum;
 						double uk = (*cls_image[k])(x, y, z);
 						if (::fabs(un-uk) > dumax)
@@ -442,7 +442,7 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 
 		// Algorithm step 4:
 		// recompute class clCenters
-		for (unsigned int k = 0; k < _M_nClasses; k++) {
+		for (unsigned int k = 0; k < m_nClasses; k++) {
 			nom = 0;
 			den = 0;
 			typename T3DImage<T>::const_iterator sp = data.begin();
@@ -466,7 +466,7 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 		cvmsg() << "\r[" << t << "/4]" << flush;
 		cvmsg() << " class centers:";
 
-		for (unsigned int k = 0; k < _M_nClasses; k++)
+		for (unsigned int k = 0; k < m_nClasses; k++)
 			cverb << " [" << k << "] " << clCenter[k];
 		cverb << endl;
 		if (dumax < 0.01)
@@ -492,7 +492,7 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 
 	corrected_image->set_attribute("class_centers",
 				       PAttribute(new CVDoubleAttribute( clCenter)));
-	_M_out.reset(corrected_image);
+	m_out.reset(corrected_image);
 	for (size_t i = 0; i < cls_image.size(); ++i) {
 		cls_image[i]->set_attribute("class_number",
 					    PAttribute(new CIntAttribute( i )));

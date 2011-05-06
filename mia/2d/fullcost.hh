@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2010
+ * Copyright (c) Madrid 2010-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -24,6 +24,7 @@
 #define mia_2d_fullcost_hh
 
 #include <mia/2d/transform.hh>
+#include <mia/core/export_handler.hh>
 #include <mia/internal/fullcost.hh>
 
 NS_MIA_BEGIN

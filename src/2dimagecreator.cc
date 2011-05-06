@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -38,7 +38,7 @@ static const char *program_info =
 	"  mia-2dimagecreator <options>\n"; 
 
 
-int do_main(int argc, const char *args[])
+int do_main(int argc, const char *argv[])
 {
 	C2DImageCreatorPluginHandler::ProductPtr creator;
 	string out_filename;
@@ -52,13 +52,15 @@ int do_main(int argc, const char *args[])
 	options.push_back(make_opt( out_filename, "out-file", 'o', "output file for create object", 
 				    CCmdOption::required));
 	options.push_back(make_opt( type, imageio.get_set(), "type", 't', 
-				    "Output file type (normally deducted from output file name)", 
-				    CCmdOption::required));
-	options.push_back(make_opt( size, "size", 's', "size of the object", CCmdOption::required));
-	options.push_back(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type ", CCmdOption::required));
+				    "Output file type (normally deducted from output file name)"));
+	options.push_back(make_opt( size, "size", 's', "size of the object"));
+	options.push_back(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type "));
 	options.push_back(make_opt( creator,  "object", 'j', "object to be created", CCmdOption::required));
 
-	options.parse(argc, args, false);
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+		return EXIT_SUCCESS; 
+
+
 
 	P2DImage image = (*creator)(size, pixel_type);
 	if (!image) {

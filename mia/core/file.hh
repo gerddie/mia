@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -21,20 +21,6 @@
  *
  */
 
-/*! \brief Wrapper for the stdio FILE type
-
-A simple wrapper for the stdio FILE type that handles opening and closing
-and takes care, whether \a stdin should be used for reading.
-If the filename has the suffix ".gz"  the in/output is piped through gzip,
-and if the filename has the suffix "*.bz2" the in/output is piped through bzip2,
-providing transparent compression of the data.
-
-
-\author Gert Wollny <gw.fossdev@gmail.com>
-
-*/
-
-
 #ifndef mia_core_file_hh
 #define mia_core_file_hh
 
@@ -44,13 +30,20 @@ providing transparent compression of the data.
 #include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
+/// Main namespace of this library 
 
+/// typedef of the cstdio file pointer to avoid the *
 typedef FILE * PFILE;
 
 /**
-   A wrapper for the \a cstdio file type.
-*/
+   \brief A wrapper for the \a cstdio file type that closes the file  automatically when 
+   the scope is left. 
 
+   This class implements a transparent wrapper around the C stdio FILE type to make it 
+   possible that the file is closed autmatically when the scope of the file variable is left. 
+   A variable of this type can be used with all the C-stdio functions that take a file 
+   pointer as argument.  
+*/
 class EXPORT_CORE CFile {
 public:
 	/** constructor
@@ -70,13 +63,16 @@ public:
 	bool operator ! ()const;
 
 private:
-	bool _M_must_close;
-	bool _M_is_pipe;
-	FILE *_M_file;
+	bool m_must_close;
+	bool m_is_pipe;
+	FILE *m_file;
 };
 
 
-/** A simple wrapper for the stdio FILE type that handles opening and closing for
+/** 
+    \brief A stdio FILE for opening a file for reading. 
+    
+    A simple wrapper for the stdio FILE type that handles opening and closing for
     reading and takes care, whether \a stdin should be used */
 class EXPORT_CORE CInputFile: public CFile {
 public:
@@ -94,7 +90,10 @@ public:
 	CInputFile(const std::string& filename, bool from_stdin);
 };
 
-/** A simple wrapper for the stdio FILE type that handles opening and closing for
+/** 
+    \brief A stdio FILE for opening a file for writing. 
+    
+    A simple wrapper for the stdio FILE type that handles opening and closing for
     writing and takes care, whether \a stdout should be used */
 class EXPORT_CORE COutputFile: public CFile {
 public:
@@ -112,7 +111,11 @@ public:
 	COutputFile(const std::string& filename, bool from_stdin);
 };
 
-/** This class provides the base for showing sime kind of progress bar during some operation */
+/** 
+    \brief A callback interface to show progess. 
+    
+    This class provides the base for showing sime kind of progress bar during some operation 
+*/
 class EXPORT_CORE CProgressCallback {
 public:
 	virtual ~CProgressCallback();

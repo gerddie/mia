@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -124,10 +124,10 @@ BOOST_AUTO_TEST_CASE(test_shift_image)
 {
 	float src_image_init[10 * 9] = {
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 1, 2, 3, 0, 0, 0,
 		0, 0, 0, 0,10,30,30, 0, 0, 0,
 		0, 0, 0, 0,50,50,50, 0, 0, 0,
-		0, 0, 0, 0,50,50,50, 0, 0, 0,
+		0, 0, 0,20,50,50,50, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -135,13 +135,13 @@ BOOST_AUTO_TEST_CASE(test_shift_image)
 	};
 
 	float ref_image_init[10 * 9] = {
+		0, 0, 0, 0, 0,10,30,30, 0, 0,
+		0, 0, 0, 0, 0, 1, 2, 3, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 1, 2, 3, 0, 0,
 		0, 0, 0, 0, 0,10,30,30, 0, 0,
 		0, 0, 0, 0, 0,50,50,50, 0, 0,
-		0, 0, 0, 0, 0,50,50,50, 0, 0,
+		0, 0, 0, 0,20,50,50,50, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	};
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(test_shift_image)
 	
 	C2DTranslateTransformation transform(size,  C2DFVector(1.0, 2.0));
 	
-	unique_ptr<C2DInterpolatorFactory> ipf(create_2dinterpolation_factory(ip_nn)); 
+	unique_ptr<C2DInterpolatorFactory> ipf(create_2dinterpolation_factory(ip_bspline0)); 
 
 	P2DImage result = transform.apply(*src, *ipf);
 	

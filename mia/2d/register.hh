@@ -1,6 +1,6 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -28,16 +28,17 @@
 #include <mia/2d/timestep.hh>
 #include <mia/2d/cost.hh>
 #include <mia/2d/fatcost.hh>
-#include <mia/2d/transform.hh>
+#include <mia/2d/transformfactory.hh>
 
 NS_MIA_BEGIN
 
 
 /**
-   The 2D non-rigid image registration class. Its usage is very simple: 
-   Initialise it with the desired parameters and call it with the 
-   source (template) and reference image to obtain a vector field 
-   describing the registration. 
+   \brief A 2D non-rigid registration class for time-marching PDE based registration  
+
+   The 2D non-rigid image registration class. This class allows the combination of 
+   various image cost functions, provides multi-level registration and the use 
+   of various PDE models (depending on the provided plug-ins.
 */
 class EXPORT_2D C2DMultiImageNonrigidRegister {
 public: 
@@ -55,19 +56,17 @@ public:
 	   \param trans_factory factory for creation of transformations
            \param outer_epsilon a relative cost function value per 
                 multi-grid level to stop registration
-	   \param save_steps save the deformed source image for each 
-                registration step
 	*/
 	C2DMultiImageRegister(size_t start_size, size_t max_iter, 
 			      C2DRegModel& model, 
 			      C2DRegTimeStep& time_step, 
-			      C2DTransformationFactory& trans_factory, 
+			      C2DTransformCreator& trans_factory, 
 			      float outer_epsilon); 
 
 	/**
 	   The registration operator that does the registration
-	   \param source the source or template image to be registered to the ...
-	   \param reference 
+	   \param cost cost function combination to be optimized 
+	   \param ipf interpolator to be used for image transformations 
 	   \returns a vector field describing the registration
 	 */
 	P2DTransformation operator () (C2DImageFatCostList& cost, P2DInterpolatorFactory  ipf);
@@ -75,11 +74,11 @@ private:
 	void reg_level(C2DImageFatCostList& cost, C2DGridTransformation& result, const C2DInterpolatorFactory& ipf); 
 	void reg_level_regrid(C2DImageFatCostList& cost, C2DGridTransformation& result, const C2DInterpolatorFactory& ipf); 
 	
-	size_t _M_start_size;
-	size_t _M_max_iter; 
-	C2DRegModel& _M_model; 
-	C2DRegTimeStep& _M_time_step; 
-	float _M_outer_epsilon; 
+	size_t m_start_size;
+	size_t m_max_iter; 
+	C2DRegModel& m_model; 
+	C2DRegTimeStep& m_time_step; 
+	float m_outer_epsilon; 
 }; 
 
 

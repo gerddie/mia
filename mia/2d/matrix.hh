@@ -1,6 +1,6 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -28,16 +28,33 @@
 
 NS_MIA_BEGIN
 
+/**
+   \brief A simple 2x2 matrix 
+   
+   Simple implementation of a 2D Matrix to store 2nd order derivatives. 
+ */
+
 template <typename T> 
 struct T2DMatrix: public T2DVector< T2DVector<T> > {
 	
 	T2DMatrix(); 
+
+	/// copy constructor 
 	T2DMatrix(const T2DMatrix<T>& o); 
+
+	/// construct the matrix from a 2D vector of 2D vectors 
 	T2DMatrix(const T2DVector< T2DVector<T> >& o); 
+	
+	/** construct  the matrix from two 2D vectors 
+	    \param x 1st row 
+	    \param y 2nd row 
+	*/
 	T2DMatrix(const T2DVector< T >& x, const T2DVector< T >& y ); 
 	
+	/// assignment operator 
 	T2DMatrix& operator = (const T2DMatrix<T>& o);
 	
+	/// element wise subtract operator 
 	T2DMatrix& operator -= (const T2DMatrix<T>& o);
 
 }; 
@@ -83,11 +100,25 @@ T2DMatrix<T>& T2DMatrix<T>::operator -= (const T2DMatrix<T>& o)
 	return *this; 
 }
 
+/**
+   Left hand side product of a matrix m and a vector x 
+   \param x
+   \param m
+   \returns x * m 
+ */
+
 template <typename T> 
 T2DVector<T> operator * (const T2DVector<T>& x, const T2DMatrix<T>& m)
 {
 	return T2DVector<T>(dot(m.x, x), dot(m.y, x)); 
 }
+
+/**
+   right hand side product of a matrix m and a vector x 
+   \param m
+   \param x
+   \returns m * x
+ */
 
 template <typename T> 
 T2DVector<T> operator * (const T2DMatrix<T>& m, const T2DVector<T>& x  )
@@ -96,7 +127,7 @@ T2DVector<T> operator * (const T2DMatrix<T>& m, const T2DVector<T>& x  )
 			    m.x.y * x.x + m.y.y * x.y);
 }
 
-
+/// a simple 2x2 matrix 
 typedef T2DMatrix<float> C2DFMatrix; 
 
 NS_MIA_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -35,6 +35,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief base class to redirect output streams
+
    This class implements the abstract base class for stream output redirection
    to e.g. a text window or a console.
    The specialization must implement the do_put_buffer method, which writes out
@@ -45,17 +47,35 @@ public:
 	streamredir();
 	virtual ~streamredir();
 protected:
-	int overflow(int);
+	
+	/**
+	   implement the overflow function to force output of buffer 
+	   @param c next character to write 
+	   @returns 0 
+	 */
+	int overflow(int c);
+	/**
+	   Force writing of buffer. 
+	   @returns 0 
+	 */
 	int sync();
+
+	/**
+	   implement function to handle \a newline and \a return properly 
+	   @param s string to write 
+	   @param n number of bytes in string 
+	   @return number of chars written 
+	*/
 	std::streamsize xsputn ( const char * s, std::streamsize n );
 private:
 	void put_buffer(void);
 	void put_char(int);
 
+	/// this function needs to be overwritten in order to write to a specific output 
 	virtual void do_put_buffer(const char *begin, const char *end) = 0;
-	char *_M_begin;
-	char *_M_cur;
-	char *_M_end;
+	char *m_begin;
+	char *m_cur;
+	char *m_end;
 };
 
 NS_MIA_END

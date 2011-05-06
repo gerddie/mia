@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -36,7 +36,7 @@
 NS_MIA_BEGIN
 
 /**
-   \Brief class for ICA analysis and use of such data.
+   \brief class for ICA analysis and use of such data.
 
    This class implements basic operations for of ICA. It makes use of the ITPP implementation of FastICA.
 
@@ -45,6 +45,7 @@ NS_MIA_BEGIN
 class  EXPORT_CORE CICAAnalysis {
 public:
 
+	/// The type of a vector as used by IT++
 	typedef itpp::Vec<itpp::mat::value_type> itppvector;
 	/**
 	   Initialize an ICA based of predefined data - this is unly used for test cases.
@@ -70,7 +71,7 @@ public:
 	   \tparam Iterator input data iterator, must follow the model of a forward iterator
 	   \param row index of the input slice
 	   \param begin start iterator of input data
-	   \param end
+	   \param end end iterator of input data
 	 */
 	template <class Iterator>
 	BOOST_CONCEPT_REQUIRES(((::boost::ForwardIterator<Iterator>)),
@@ -81,12 +82,14 @@ public:
 	/**
 	   Run the independed component analysis using the given numbers of components
 	   \param nica number of indentepended components
+	   \param guess initial guess for the ICA, pass an empty vector of you 
+	   don't want to use this feature  
 	 */
 	bool run(size_t nica, std::vector<std::vector<float> > guess); 
 
         /**
 	   Run the independed component analysis with an estimation of the optimal number
-	   of components.
+	   of components. (experimental) 
 	   \param max_ica maximum number of independend components
 	   \param min_ica minimum number of independend components
 	   \param corr_thresh minimum absolute correation of the mixing signals to joins two components
@@ -129,7 +132,7 @@ public:
 	/**
 	   Replace a mixing signal curve
 	   \param index of the curve to be replaced
-	   \param new data for mixing curve
+	   \param series new data for mixing curve
 	 */
 	void set_mixing_series(size_t index, const std::vector<float>& series);
 
@@ -173,7 +176,7 @@ private:
 
 };
 
-
+/// \cond DOXYGEN_DOESNT_UNDERSTAND_BOOST_CONCEPT_REQUIRES
 template <class Iterator>
 BOOST_CONCEPT_REQUIRES(((::boost::ForwardIterator<Iterator>)),
 		       (void))
@@ -191,6 +194,7 @@ CICAAnalysis::set_row(size_t row, Iterator begin, Iterator end)
 		buffer[i] -= mean;
 	set_row(row, buffer, mean);
 }
+/// \endcond 
 
 NS_MIA_END
 

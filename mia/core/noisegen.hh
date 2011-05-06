@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -41,27 +41,48 @@ struct EXPORT_CORE generator_type {
 };
 
 /**
-   Base class for the noise generators.
- */
+   \brief Base class for the noise generators.
 
-
+   This class defines the interface for noise generators. Real implementations 
+   are provided as plug-ins. 
+*/
 class EXPORT_CORE  CNoiseGenerator : public CProductBase {
 public:
+	/// typedef helber for plugin search path 
 	typedef grayscale_noise_data plugin_data; 
-	typedef generator_type plugin_type; 
 	
+	/// typedef helber for plugin search path 
+	typedef generator_type plugin_type; 
+
+	/**
+	   Constructor to initialize the noise generator with the given seed 
+	   \param seed 
+	 */
 	CNoiseGenerator(unsigned int seed);
+
+	
 	virtual ~CNoiseGenerator();
+	
+	/// \returns the next random value comprising the noise 
 	double operator ()()const;
 protected:
+	/** @return a random value by using the system call to rand()  and 
+	    that is then used to create the noise as requested 
+	    
+	 */
 	double ranf() const;
 private:
 	virtual double get() const = 0;
 
 };
 
+/// Base class for al noise generator plugins 
 typedef TFactory<CNoiseGenerator> CNoiseGeneratorPlugin;
-typedef THandlerSingleton<TFactoryPluginHandler<CNoiseGeneratorPlugin> > CNoiseGeneratorPluginHandler;
+
+/// The noise generator plugin handler 
+typedef THandlerSingleton<TFactoryPluginHandler<CNoiseGeneratorPlugin> > 
+      CNoiseGeneratorPluginHandler;
+
 FACTORY_TRAIT(CNoiseGeneratorPluginHandler); 
 
 

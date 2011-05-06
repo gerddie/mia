@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -45,41 +45,41 @@ NS_MIA_BEGIN
 
 template <class T> 
 T2DDatafield<T>::T2DDatafield(const C2DBounds& _Size):
-	_M_size(_Size), 
-	_M_data(new data_array(_M_size.x * _M_size.y))
+	m_size(_Size), 
+	m_data(new data_array(m_size.x * m_size.y))
 {
 }
 
 template <class T> 
 T2DDatafield<T>::T2DDatafield():
-	_M_size(C2DBounds(0,0)), 
-	_M_data(new data_array(0))
+	m_size(C2DBounds(0,0)), 
+	m_data(new data_array(0))
 {
 }
 
 template <class T> 
 T2DDatafield<T>::T2DDatafield(const C2DBounds& size,const T *_data):
-	_M_size(size), 
-	_M_data(new data_array(_M_size.x * _M_size.y))
+	m_size(size), 
+	m_data(new data_array(m_size.x * m_size.y))
 {
 	if (_data)
-		::std::copy(_data, _data + _M_data->size(), _M_data->begin()); 
+		::std::copy(_data, _data + m_data->size(), m_data->begin()); 
 	else
-		::std::fill(_M_data->begin(), _M_data->end(), T()); 
+		::std::fill(m_data->begin(), m_data->end(), T()); 
 }
 
 template <class T> 
 T2DDatafield<T>::T2DDatafield(const C2DBounds& size, const data_array& data):
-	_M_size(size),
-	_M_data(new data_array(data))
+	m_size(size),
+	m_data(new data_array(data))
 {
-	assert(_M_data->size() == _M_size.x * _M_size.y); 
+	assert(m_data->size() == m_size.x * m_size.y); 
 }
 
 template <class T> 
 T2DDatafield<T>::T2DDatafield(const T2DDatafield<T>& org):
-	_M_size(org._M_size), 
-	_M_data(org._M_data)
+	m_size(org.m_size), 
+	m_data(org.m_data)
 {
 }
 
@@ -91,14 +91,14 @@ T2DDatafield<T>::~T2DDatafield()
 template <class T> 
 void T2DDatafield<T>::make_single_ref()
 {
-	if (!_M_data.unique())
-		_M_data = data_pointer(new data_array(*_M_data)); 
+	if (!m_data.unique())
+		m_data = data_pointer(new data_array(*m_data)); 
 }
 
 template <class T> 
 typename T2DDatafield<T>::size_type T2DDatafield<T>::size()const
 {
-	return _M_data->size(); 
+	return m_data->size(); 
 }
 
 template <class T> 
@@ -122,7 +122,7 @@ T T2DDatafield<T>::get_interpol_val_at(const C2DFVector& p) const
 template <class T> 
 const C2DBounds&  T2DDatafield<T>::get_size() const
 {
-	return _M_size;
+	return m_size;
 }
 
 template <class T> 
@@ -136,11 +136,11 @@ template <class T>
 typename T2DDatafield<T>::reference
 T2DDatafield<T>::operator()(size_t  x, size_t  y)
 {
-	if (x < _M_size.x && y < _M_size.y){	
-		return (*_M_data)[x + _M_size.x * y ];
+	if (x < m_size.x && y < m_size.y){	
+		return (*m_data)[x + m_size.x * y ];
 	}else{
 		//FORCECOREDUMP;
-		throw "operator(x,y,z):Index out of bounds";
+		throw std::invalid_argument("T2DDatafield<T>::operator(x,y,z):Index out of bounds");
 	}
 
 }
@@ -149,10 +149,10 @@ template <class T>
 typename T2DDatafield<T>::const_reference
 T2DDatafield<T>::operator()(size_t  x, size_t  y)const
 {
-	const data_array& cData = *_M_data; 
+	const data_array& cData = *m_data; 
 	
-	if ( x < _M_size.x && y < _M_size.y ){
-		return cData[ x + _M_size.x * y ];
+	if ( x < m_size.x && y < m_size.y ){
+		return cData[ x + m_size.x * y ];
 	}else{
 		return Zero;
 	}
@@ -161,10 +161,10 @@ template <class T>
 typename T2DDatafield<T>::const_reference
 T2DDatafield<T>::operator()(const C2DBounds& l)const
 {
-	const data_array& cData = *_M_data; 
+	const data_array& cData = *m_data; 
 	
-	if ( l.x < _M_size.x && l.y < _M_size.y ){
-		return cData[ l.x + _M_size.x * l.y ];
+	if ( l.x < m_size.x && l.y < m_size.y ){
+		return cData[ l.x + m_size.x * l.y ];
 	}else{
 		return Zero;
 	}
@@ -180,23 +180,23 @@ T2DDatafield<T>::operator()(const C2DBounds& l)
 template <class T> 
 void T2DDatafield<T>::get_data_line_x(size_t y, std::vector<T>& buffer)const
 {
-	assert(y < _M_size.y); 
-	buffer.resize(_M_size.x); 
+	assert(y < m_size.y); 
+	buffer.resize(m_size.x); 
 
-	const data_array& d = *_M_data; 
+	const data_array& d = *m_data; 
 	const_iterator b = d.begin(); 
-	advance(b, y * _M_size.x); 
+	advance(b, y * m_size.x); 
 
-	std::copy(b, b + _M_size.x, buffer.begin()); 
+	std::copy(b, b + m_size.x, buffer.begin()); 
 }
      
 template <class T> 
 void T2DDatafield<T>::get_data_line_y(size_t x, std::vector<T>& buffer)const
 {
-	assert(x < _M_size.x); 
-	buffer.resize(_M_size.y); 
+	assert(x < m_size.x); 
+	buffer.resize(m_size.y); 
 
-	const data_array& d = *_M_data; 
+	const data_array& d = *m_data; 
 	const_iterator src = d.begin(); 
 	advance(src,x);
 	typename std::vector<T>::iterator dest_i = buffer.begin(); 
@@ -205,7 +205,7 @@ void T2DDatafield<T>::get_data_line_y(size_t x, std::vector<T>& buffer)const
 	size_t idx = 0; 
 	while (dest_i != dest_e) {
 		*dest_i = src[idx];
-		idx += _M_size.x;
+		idx += m_size.x;
 		++dest_i;
 	}
 }
@@ -213,18 +213,18 @@ void T2DDatafield<T>::get_data_line_y(size_t x, std::vector<T>& buffer)const
 template <class T> 
 void T2DDatafield<T>::put_data_line_x(size_t y,  const std::vector<T>& buffer)
 {
-	assert(y < _M_size.y); 
-	assert(buffer.size() == _M_size.x); 
+	assert(y < m_size.y); 
+	assert(buffer.size() == m_size.x); 
 	make_single_ref();
 
-	std::copy(buffer.begin(), buffer.end(), _M_data->begin() + _M_size.x * y ); 
+	std::copy(buffer.begin(), buffer.end(), m_data->begin() + m_size.x * y ); 
 }
      
 template <class T> 
 void T2DDatafield<T>::put_data_line_y(size_t x, const std::vector<T>& buffer)
 {
-	assert(x < _M_size.x); 
-	assert(buffer.size() == _M_size.y); 
+	assert(x < m_size.x); 
+	assert(buffer.size() == m_size.y); 
 	
 	make_single_ref();
 	typename std::vector<T>::const_iterator src_i = buffer.begin();
@@ -236,7 +236,7 @@ void T2DDatafield<T>::put_data_line_y(size_t x, const std::vector<T>& buffer)
 	size_t idx = 0; 
 	while ( src_i != src_e ) {
 		dest[idx] = *src_i;
-		idx += _M_size.x; 
+		idx += m_size.x; 
 		++src_i;
 	}
 }
@@ -249,8 +249,8 @@ T2DDatafield<T>& T2DDatafield<T>::operator = (const T2DDatafield<T>& org)
 		return *this;
 	}
 	
-	_M_size = org._M_size;
-	_M_data = org._M_data;
+	m_size = org.m_size;
+	m_data = org.m_data;
 	return *this; 
 }
 

@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -27,12 +27,12 @@ NS_MIA_BEGIN
 template <typename T, typename F>
 TFatCost<T,F>::TFatCost(std::shared_ptr<Data > src, std::shared_ptr<Data > ref, 
 			std::shared_ptr<Interpolator >  ipf, float weight):
-	_M_src(src), 
-	_M_ref(ref), 
-	_M_ipf(ipf), 
-	_M_floating(src), 
-	_M_weight(weight),
-	_M_cost_valid(false)
+	m_src(src), 
+	m_ref(ref), 
+	m_ipf(ipf), 
+	m_floating(src), 
+	m_weight(weight),
+	m_cost_valid(false)
 {
 }
 
@@ -46,28 +46,28 @@ template <typename T, typename F>
 double TFatCost<T,F>::value() const 
 {
 	TRACE("TFatCost<T,F>::value"); 
-	if (!_M_cost_valid) {
-		_M_cost = do_value() * _M_weight; 
-		_M_cost_valid = true; 
+	if (!m_cost_valid) {
+		m_cost = do_value() * m_weight; 
+		m_cost_valid = true; 
 	}
-	return _M_cost; 
+	return m_cost; 
 }
 
 template <typename T, typename F>
 double TFatCost<T,F>::evaluate_force(F& force) const
 {
 	TRACE("TFatCost<T,F>::evaluate_force"); 
-	_M_cost = do_evaluate_force(force); 
-	_M_cost_valid = true; 
-	return _M_cost; 
+	m_cost = do_evaluate_force(force); 
+	m_cost_valid = true; 
+	return m_cost; 
 }
 
 template <typename T, typename F>		
 void TFatCost<T,F>::transform(const T& t)
 {
 	TRACE("TFatCost<T,F>::transform"); 
-	_M_cost_valid = false; 
-	_M_floating = t(*_M_src, *_M_ipf); 
+	m_cost_valid = false; 
+	m_floating = t(*m_src, *m_ipf); 
 }
 
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -41,11 +41,13 @@ NS_MIA_BEGIN
 
 /// plugin helper type
 struct EXPORT_CORE fatcost_type {
+	/// actual value of the helper type
 	static const char *value;
 };
 
 
 /**
+   \deprecated move to TFullCost
    The basic cost function type interface of a "fat" cost that handles the data itself.
    Template parameter D describes the input data class, e.g. T3DImage, parameter
    T is for the Transformation and F for the force field.
@@ -56,6 +58,7 @@ struct EXPORT_CORE fatcost_type {
 template <typename T, typename F>
 class EXPORT_HANDLER TFatCost: public CProductBase {
 public:
+	/// \cond DEPRECATED 
 	typedef T Transform;
 	typedef F Force;
 	typedef typename T::Data Data;
@@ -82,47 +85,46 @@ public:
 
 	/** The force evaluation function
 	    \param force the force field in which to accumulate the force
-	    \retval force added the weighted accumutaed force
+	    \param[out] force added the weighted accumutaed force
 	*/
 	double evaluate_force(Force& force) const;
 
 	/**
 	   Transform the containing data
 	   \param transform the transfomation to be applied
-	   \param accumulate if true the deformation is applied accumulating on the old ones, if false,
-	   the transfromation is applied to the original study image
 	*/
 	void transform(const T& transform);
 
 	const Data& get_src() const {
-		return *_M_src;
+		return *m_src;
 	}
 	const Data& get_ref() const{
-		return *_M_ref;
+		return *m_ref;
 	}
 	const Data& get_floating() const {
-		return *_M_floating;
+		return *m_floating;
 	}
 
 	std::shared_ptr<Interpolator > get_ipf() const {
-		return _M_ipf;
+		return m_ipf;
 	}
 	float get_weight() const {
-		return _M_weight;
+		return m_weight;
 	}
 private:
 	virtual double do_value() const = 0;
 	virtual double do_evaluate_force(Force& force) const = 0;
 
-	const std::shared_ptr<Data >  _M_src;
-	const std::shared_ptr<Data >  _M_ref;
-	std::shared_ptr<Interpolator > _M_ipf;
-	std::shared_ptr<Data > _M_floating;
-	float _M_weight;
+	const std::shared_ptr<Data >  m_src;
+	const std::shared_ptr<Data >  m_ref;
+	std::shared_ptr<Interpolator > m_ipf;
+	std::shared_ptr<Data > m_floating;
+	float m_weight;
 	
-	mutable double _M_cost;
-	mutable bool _M_cost_valid;
+	mutable double m_cost;
+	mutable bool m_cost_valid;
 
+	/// \endcond
 };
 
 NS_MIA_END

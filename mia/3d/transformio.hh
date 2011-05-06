@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -29,8 +29,14 @@
 #include <mia/3d/transform.hh>
 
 NS_MIA_BEGIN
+
+/// Base class for the generic IO of transformations 
 typedef TIOPlugin<C3DTransformation> C3DTransformationIO; 
+
+/// Plug-in handler for the transformation IO plug-ins 
 typedef TIOHandlerSingleton< TIOPluginHandler<C3DTransformationIO> > C3DTransformationIOPluginHandler;
+
+/// data key type for temporary storage of 3D transformations \sa CDatapool 
 typedef C3DTransformationIOPluginHandler::Instance::DataKey C3DTransformationDataKey;
 NS_MIA_END
 

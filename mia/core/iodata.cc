@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -28,12 +28,12 @@ NS_MIA_BEGIN
 
 void CIOData::set_source_format(const std::string& format)
 {
-	_M_source_format = format;
+	m_source_format = format;
 }
 
 const std::string& CIOData::get_source_format() const
 {
-	return _M_source_format;
+	return m_source_format;
 }
 
 NS_MIA_END

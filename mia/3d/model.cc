@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/*
+  LatexBeginPluginSection{3D model based registration}
+  \label{sec:regmodel3d}
+  
+  These plug-ins refer to non-linear registration approaches that use 
+  a PDE based model for the regularization of the transformation. 
+
+  LatexEnd
+
+*/
+
+
+
 #include <mia/core/export_handler.hh>
 
 #include <mia/3d/model.hh>

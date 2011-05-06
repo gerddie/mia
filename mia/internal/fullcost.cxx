@@ -31,7 +31,7 @@ const char *TFullCost<T>::value = "fullcost";
 
 template <typename T> 
 TFullCost<T>::TFullCost(double weight):
-	_M_weight(weight)
+	m_weight(weight)
 {
 	add(property_gradient); 
 }
@@ -39,36 +39,36 @@ TFullCost<T>::TFullCost(double weight):
 template <typename T> 
 double TFullCost<T>::evaluate(const T& t, CDoubleVector& gradient) const
 {
-	assert(_M_current_size == t.get_size()); 
+	assert(m_current_size == t.get_size()); 
 	
-	double result = _M_weight * do_evaluate(t, gradient); 
-	transform(gradient.begin(), gradient.end(), gradient.begin(), _M_weight * boost::lambda::_1); 
+	double result = m_weight * do_evaluate(t, gradient); 
+	transform(gradient.begin(), gradient.end(), gradient.begin(), m_weight * boost::lambda::_1); 
 	return result; 
 }
 
 template <typename T> 
 double TFullCost<T>::cost_value(const T& t) const 
 {
-	return _M_weight * do_value(t); 
+	return m_weight * do_value(t); 
 }
 
 template <typename T> 
 double TFullCost<T>::cost_value() const 
 {
-	return _M_weight * do_value(); 
+	return m_weight * do_value(); 
 }
 	
 
 template <typename T> 
 double TFullCost<T>::get_weight() const
 {
-	return _M_weight; 
+	return m_weight; 
 }
 
 template <typename T> 
 const typename TFullCost<T>::Size& TFullCost<T>::get_current_size() const
 {
-	return _M_current_size; 
+	return m_current_size; 
 }
 
 template <typename T> 
@@ -80,10 +80,8 @@ void TFullCost<T>::reinit()
 template <typename T> 
 void TFullCost<T>::set_size(const Size& size)
 {
-	if (_M_current_size != size) {
-		_M_current_size = size; 
-		do_set_size(); 
-	}
+	m_current_size = size; 
+	do_set_size(); 
 }
 
 template <typename T> 
@@ -94,16 +92,16 @@ void TFullCost<T>::do_reinit()
 template <typename T> 
 TFullCostPlugin<T>::TFullCostPlugin(const char *name):
 	TFactory<TFullCost<T> >(name), 
-	_M_weight(1.0)
+	m_weight(1.0)
 {
-	this->add_parameter("weight", new CFloatParameter(_M_weight, -1e+10f, 1e+10f,
+	this->add_parameter("weight", new CFloatParameter(m_weight, -1e+10f, 1e+10f,
 						    false, "weight of cost function"));
 }
 	
 template <typename T> 
 typename TFullCostPlugin<T>::ProductPtr TFullCostPlugin<T>::do_create() const
 {
-	return do_create(_M_weight); 
+	return do_create(m_weight); 
 }
 
 NS_MIA_END

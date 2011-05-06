@@ -55,7 +55,7 @@ public:
 };
 
 /**
-   Basic Interpolator type for 3D Data.
+   \brief Basic Interpolator type for 3D Data.
  */
 
 template <typename T>
@@ -70,52 +70,6 @@ public:
 
 };
 
-
-/** Base type for interpolators that work directly on the image data */
-template <typename T>
-class EXPORT_3D T3DDirectInterpolator: public T3DInterpolator<T> {
-public:
-
-	/** Constructor
-	    \param data the source data
-	 */
-	T3DDirectInterpolator(const T3DDatafield<T>& data);
-protected:
-	const T3DDatafield<T>& data()const {
-		return _M_data;
-	}
-private:
-	const T3DDatafield<T>& _M_data;
-};
-
-/**
-    Nearest Neighbor interpolation.
- */
-
-template <class T>
-class EXPORT_3D T3DNNInterpolator: public T3DDirectInterpolator<T> {
-public:
-	T3DNNInterpolator(const T3DDatafield<T>& image);
-	T operator () (const C3DFVector& x) const;
-
-};
-
-/**
-   Tri-linear interpolation
-*/
-
-template <class T>
-class EXPORT_3D T3DTrilinearInterpolator: public T3DDirectInterpolator<T> {
-public:
-	T3DTrilinearInterpolator(const T3DDatafield<T>& image);
-	T operator () (const C3DFVector& x) const;
-private:
-	size_t _M_xy;
-	C3DFVector _M_size;
-	C3DFVector _M_sizeb;
-};
-
-
 template <class U>
 struct coeff_map<T3DVector<U> > {
 	typedef T3DVector<U> value_type;
@@ -123,17 +77,17 @@ struct coeff_map<T3DVector<U> > {
 };
 
 
-
-
-
 /**
-   Interpolator that is based on convolution,like b-splines an o-moms.
+   \brief Interpolator that is based on convolution,like b-splines an o-moms.
 */
 
 template <class T>
 class EXPORT_3D T3DConvoluteInterpolator: public T3DInterpolator<T> {
 public:
+	/** type how the coefficients are stored  - this is done to use a higher accuracy 
+	    if the input data is not of double floating point precicion */ 
 	typedef T3DDatafield< typename coeff_map< T >::coeff_type > TCoeff3D;
+	
 	/**
 	   Create the interpolator from the input data and a given kernel
 	   \param data
@@ -153,42 +107,40 @@ public:
 
 	/// \returns the coefficients 
 	const TCoeff3D& get_coefficients() const {
-		return _M_coeff; 
+		return m_coeff; 
 	}
 
 protected:
-
+	/// helper class for filtering 
 	typedef std::vector< typename TCoeff3D::value_type > coeff_vector;
 private:
 
-	TCoeff3D _M_coeff;
-	C3DBounds _M_size2;
-	std::shared_ptr<CBSplineKernel > _M_kernel;
-	T _M_min;
-	T _M_max;
+	TCoeff3D m_coeff;
+	C3DBounds m_size2;
+	PBSplineKernel m_kernel;
+	T m_min;
+	T m_max;
 
- 	mutable CBSplineKernel::SCache _M_x_cache; 
-	mutable CBSplineKernel::SCache _M_y_cache; 
-	mutable CBSplineKernel::SCache _M_z_cache; 
+ 	mutable CBSplineKernel::SCache m_x_cache; 
+	mutable CBSplineKernel::SCache m_y_cache; 
+	mutable CBSplineKernel::SCache m_z_cache; 
 };
 
 
 /**
-   A factory to create interpolators of a given type by providing input data.
-
+   @brief A factory to create interpolators of a given type by providing input data.
+   
  */
 
 class EXPORT_3D C3DInterpolatorFactory {
 public:
-	enum EType {ip_nn, ip_tri, ip_spline, ip_unknown};
-
 
 	/**
 	   Initialise the factory by providing a interpolator type id and a kernel (if needed)
 	   \param type interpolator type id
 	   \param kernel spline kernel
 	*/
-	C3DInterpolatorFactory(EType type, PBSplineKernel kernel);
+	C3DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel);
 
 	/// Copy constructor
 	C3DInterpolatorFactory(const C3DInterpolatorFactory& o);
@@ -210,12 +162,12 @@ public:
 	/// @returns the B-spline kernel used for interpolator creation 
 	PBSplineKernel get_kernel() const; 
 private:
-	EType _M_type;
-	PBSplineKernel _M_kernel;
+	EInterpolationFactory m_type;
+	PBSplineKernel m_kernel;
 };
 
 
-EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(int type)
+EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(EInterpolation type)
 	__attribute__ ((warn_unused_result));
 
 // implementation
@@ -223,16 +175,15 @@ EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(int type)
 template <class T>
 T3DInterpolator<T> *C3DInterpolatorFactory::create(const T3DDatafield<T>& src) const
 {
-	switch (_M_type) {
-	case ip_nn:  return new T3DNNInterpolator<T>(src);
-	case ip_tri: return new T3DTrilinearInterpolator<T>(src);
-	case ip_spline: return new T3DConvoluteInterpolator<T>(src, _M_kernel);
+	switch (m_type) {
+	case ipf_spline: return new T3DConvoluteInterpolator<T>(src, m_kernel);
 	default: throw "C3DInterpolatorFactory::create: Unknown interpolator requested";
 	}
 	return NULL;
 }
 
-typedef std::shared_ptr<C3DInterpolatorFactory > P3DInterpolatorFactory;
+/// Pointer type of the 3D interpolation factory 
+typedef std::shared_ptr<C3DInterpolatorFactory> P3DInterpolatorFactory;
 
 NS_MIA_END
 

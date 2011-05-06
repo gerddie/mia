@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Evolutionary Anthropoloy
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/* LatexBeginPluginDescription{2D image filters}
+   
+   \subsection{Intensity invert}
+   \label{filter2d:invert}
+   
+   \begin{description}
+   
+   \item [Plugin:] invert
+   \item [Description:] invert the image intensities. Inversion of an image $I$ is done by a linearly mapping using 
+     $\forall x \in I: x \rightarrow (\max(I) - x + \min(I))$ 
+   
+   \item [Input:] A gray scale image of abitrary pixel type. 
+   \item [Output:] The inverted image 
+   
+   \end{description}
+   
+   This plug-in doesn't take parameters. 
+
+   LatexEnd  
+ */
+
+
 
 #include <limits>
 #include <mia/core/filter.hh>

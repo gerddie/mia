@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -21,6 +21,60 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+
+/*
+  LatexBeginProgramSection{2D image registration}
+  \label{sec:2dreg}
+  
+  These programs run provide types of 2D image registration. 
+
+  LatexEnd
+*/
+
+
+/*
+  LatexBeginProgramDescription{2D image registration}
+  
+  \begin{description}
+  \item [Program:] \emph{mia-2drigidreg}
+  \hrule 
+  \item [Description:] This program implements the registration of two gray scale 2D images. 
+	The transformation is not penalized, therefore, one should only use translation, rigid, or affine 
+	transformations as target and run mia-2dnonrigidreg of nonrigid registration is to be achieved.
+
+  The program is called like 
+  \lstset{language=bash}
+  \begin{lstlisting}
+mia-2drigidreg -i <input image> -r <reference image> -o <output image> [options]
+  \end{lstlisting}
+  
+
+  \item [Options:] $\:$
+
+  \tabstart
+  \optinfile
+  \optreffile
+  \optoutfile
+  --cost  & -c & string & Cost function as given in section \ref{sec:cost2d}  \\\hline
+  --levels & -l & int & multiresolution processing levels \\\hline
+  --optimizer & -O & string & optimizer as given in section \ref{sec:minimizers}  \\\hline
+  --trans & -t & string & transformation output file  \\\hline
+  --transForm & -f  & string & transformation type to achieve registration as given in section \ref{sec:2dtransforms} 
+     \\\hline
+  \tabend
+
+  \item [Example:]Register image test.v to image ref.v affine and write the registered image to reg.v. 
+  Use two multiresolution levels and ssd as cost function. 
+   \lstset{language=bash}
+  \begin{lstlisting}
+mia-2drigidreg -i test.v -r ref.v -o reg.v -l 2 -f affine -c ssd 
+  \end{lstlisting}
+  \item [Remark:] The implementation allows to use a non-linear transformation, like \emph{spline} as target 
+    transformation, but this is not advisable. 
+  \end{description}
+  LatexEnd
+*/
 
 
 #include <sstream>
@@ -62,7 +116,9 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 
-	options.parse(argc, argv);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	P2DImage Model = load_image<P2DImage>(src_filename);
 	P2DImage Reference = load_image<P2DImage>(ref_filename);

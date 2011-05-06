@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -52,6 +52,8 @@ struct less_then {
 
 
 /**
+   \brief a generic class for morphological shapes 
+   
    Pixel representation of shapes and masks around the origin.
    Type T is the coordinate class (e.g. T2DVector) and type M is the Mask image
    type, usually an binary image of the same dimensionallity as the coordinate
@@ -65,14 +67,27 @@ struct less_then {
 template <template <typename> class T, typename M>
 class EXPORT_SHAPE TShape :public CProductBase {
 public:
+	/// helper type for use of the class in TFactory 
 	typedef shape_type plugin_type; 
 	
+	/// Obtain the data type that is used for the mask image from the template parameters 
 	typedef typename M::Super plugin_data; 
 	
+	/** type to store the mask coordinates in a set to be able to easily iterate over it 
+	    and avoid duplicate entries 
+	*/ 
 	typedef std::set< T<int>, less_then<T<int> > > Flat;
+	
+	/// the actual value type of the mask coordinates 
 	typedef T<int> value_type;
+	
+	/// iterator over the mask coordinate set 
 	typedef typename Flat::const_iterator const_iterator;
+
+	/// the mask image type 
 	typedef M Mask;
+	
+	/// the size type for the mask image 
 	typedef T<unsigned int> Size;
 
 	/// standard constructor initialises the shape set
@@ -94,8 +109,8 @@ protected:
 	/// insert another pixel coordinate
 	void insert(const T<int>& p);
 private:
-	Flat _M_shape;
-	T<int> _M_size;
+	Flat m_shape;
+	T<int> m_size;
 };
 
 NS_MIA_END

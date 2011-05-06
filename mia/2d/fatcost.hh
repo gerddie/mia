@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -33,23 +33,67 @@
 
 NS_MIA_BEGIN
 
-class C2DImageFatCost;
-typedef std::shared_ptr<C2DImageFatCost > P2DImageFatCost;
+
+/**
+   \brief Image cost function base that handles resizing and transformations of the images 
+   
+   Image cost function class that handles the multiresolution part on its own. 
+   \todo This class should probably removed and C2DFullcost be used. 
+ */
 
 class EXPORT_2D C2DImageFatCost: public TFatCost<C2DTransformation, C2DFVectorfield> {
 public:
+	/// Pointer type of this class 
+	typedef std::shared_ptr<C2DImageFatCost > Pointer;
+
+	/**
+	   Cunstructor to create the cost base 
+	   @param src floating image 
+	   @param ref reference image 
+	   @param ipf interpolation factory 
+	   @param weight of this cost function 
+	 */
 	C2DImageFatCost(P2DImage src, P2DImage ref, P2DInterpolatorFactory ipf, float weight);
 
-	P2DImageFatCost get_downscaled(const C2DBounds& scale) const;
+	/**
+	   return a copy of this cost function that holds downscaled versions of the images, 
+	   @param scale inverse scaling parameter
+	 */
+	Pointer get_downscaled(const C2DBounds& scale) const;
 
+
+	/**
+	   @returns image size of this cost function instance 
+	 */
 	C2DBounds get_size() const;
 private:
-	virtual P2DImageFatCost cloned(P2DImage src, P2DImage ref) const = 0;
+	virtual Pointer cloned(P2DImage src, P2DImage ref) const __attribute__((warn_unused_result))  = 0;
 };
 
+/// Short for the C2DImageFatCost pointer type 
+typedef C2DImageFatCost::Pointer P2DImageFatCost; 
+
+/**
+   The base plugin interface for the creation of the C2DImageFatCost cost function 
+   @todo should be superseded by the CFullcostPlugin 
+ */
 class EXPORT_2D C2DFatImageCostPlugin: public TFactory<C2DImageFatCost> {
 public:
+	/**
+	   Create the plug-in with a certain name 
+	   @param name 
+	 */
 	C2DFatImageCostPlugin(const char *name);
+
+	/**
+	   Create the cost function directly by giving the parameters that are normally part of the 
+	   command line 
+	   @param src src or floating image 
+	   @param ref reference image 
+	   @param ipf interpolation factory 
+	   @param weight of this cost function when combining with others 
+	   @returns the cost function 
+	 */
 	P2DImageFatCost create_directly( P2DImage src, P2DImage ref,
 					 P2DInterpolatorFactory ipf,
 					 float weight);
@@ -59,22 +103,46 @@ private:
 							    P2DInterpolatorFactory ipf,
 							    float weight) const = 0;
 
-	std::string _M_src_name;
-	std::string _M_ref_name;
-	EInterpolation _M_interpolator;
-	float _M_weight;
+	std::string m_src_name;
+	std::string m_ref_name;
+	EInterpolation m_interpolator;
+	float m_weight;
 };
+
+
+/**
+   A list of cost functions of type C2DImageFatCost. 
+   This class is used to combine different image cost functions 
+ */
 
 class EXPORT_2D C2DImageFatCostList : public std::vector<P2DImageFatCost> {
 public:
-	double value() const;
 
+	/// @returns the weightes sum of the cost function values contained in the list 
+	double value() const;
+	
+        /**
+	   Evaluate the registration force resulting from the image gradient 
+	   @param[out] force 
+	   @returns the weightes sum of the cost function values contained in the list 
+	*/
 	double evaluate_force(C2DFVectorfield& force) const;
 
+	/**
+	   @param scale inverse scaling parameter
+	   @returns the doenscaled version of this cost function list 
+	 */
 	C2DImageFatCostList get_downscaled(const C2DBounds& scale) const;
 
+	/**
+	   @returns image size of this cost function instance 
+	 */
 	C2DBounds get_size() const;
 
+	/**
+	   Transform the floating image according to the given transformation 
+	   @param transform
+	 */
 	void transform(const C2DTransformation& transform);
 };
 

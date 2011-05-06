@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Evolutionary Anthropoloy
  * BIT, ETSI Telecomunicacion, UPM
@@ -35,7 +35,7 @@ private:
 	virtual const string do_get_descr() const;
 	virtual C3DShapePlugin::ProductPtr do_create()const;
 	virtual bool do_test() const;
-	float _M_r;
+	float m_r;
 };
 NS_MIA_END
 #endif

@@ -341,7 +341,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 	
 	C3DFImage test_image(range);
 	
-	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(C3DInterpolatorFactory::ip_spline,
+	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(ipf_spline,
 							      std::shared_ptr<CBSplineKernel > (new CBSplineKernel3()))); 
 	auto_ptr<T3DInterpolator<float> > src(ipf->create(image.data()));
 
@@ -689,7 +689,7 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 	
 	PBSplineKernel kernel(new CBSplineKernel3()); 
 
-	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(C3DInterpolatorFactory::ip_spline,
+	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(ipf_spline,
 							      kernel));
 
 	C3DSplineTransformation trans(size, kernel);
@@ -728,7 +728,7 @@ struct TransformSplineFixtureFieldBase {
 		size(16,16,16),
 		field(size),
 		kernel(new CBSplineKernel3()), 
-		ipf(new C3DInterpolatorFactory(C3DInterpolatorFactory::ip_spline, kernel)),
+		ipf(new C3DInterpolatorFactory(ipf_spline, kernel)),
 		range(16, 16,16),
 		stransf(range, kernel),
 		scale(1.0 / range.x, 1.0 / range.y, 1.0 / range.z)
@@ -780,9 +780,9 @@ public:
 	double src_value(const C3DFVector& x)const; 
 	double ref_value(const C3DFVector& x)const; 
 	C3DFVector src_grad(const C3DFVector& x)const; 
-	C3DBounds _M_size; 
-	C3DFVector _M_center; 
-	float _M_r; 
+	C3DBounds m_size; 
+	C3DFVector m_center; 
+	float m_r; 
 }; 
 
 class TransformGradientFixture {
@@ -861,11 +861,14 @@ BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture)
 	t.translate(gradient,  trgrad); 
 	double delta = 0.01; 
 
-	auto itrg =  trgrad.begin(); 
-	auto iparam = params.begin();
-	for (size_t z = 0; z < t.get_coeff_size().z; ++z)
-		for(size_t y = 0; y < t.get_coeff_size().y; ++y)
-			for(size_t x = 0; x < t.get_coeff_size().x; ++x)
+
+
+	for (size_t z = 0; z < t.get_coeff_size().z; z += 4)
+		for(size_t y = 0; y < t.get_coeff_size().y; y +=4)
+			for(size_t x = 0; x < t.get_coeff_size().x; x+=4) {
+				auto ofs = (z * t.get_coeff_size().y + y) * t.get_coeff_size().x + x; 
+				auto itrg =  trgrad.begin() + ofs; 
+				auto iparam = params.begin() + ofs;
 				for (size_t i = 0; i < 3; ++i, ++itrg, ++iparam) {
 					*iparam += delta; 
 					t.set_parameters(params);
@@ -887,6 +890,7 @@ BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture)
 						  << "\n"; 
 						
 				}
+			}
 }
 
 
@@ -941,23 +945,23 @@ void TransformGradientFixture::run_test(C3DTransformation& t, double tol)const
 }
 
 Cost3DMock::Cost3DMock(const C3DBounds& size):
-	_M_size(size), 
-	_M_center(0.5 * size.x, 0.5 * size.y, 0.5 * size.z),
-	_M_r(sqrt(_M_center.x * _M_center.x + 
-		  _M_center.y * _M_center.y + 
-		  _M_center.z * _M_center.z))
+	m_size(size), 
+	m_center(0.5 * size.x, 0.5 * size.y, 0.5 * size.z),
+	m_r(sqrt(m_center.x * m_center.x + 
+		  m_center.y * m_center.y + 
+		  m_center.z * m_center.z))
 {
-	_M_r *= _M_r * _M_r; 
+	m_r *= m_r * m_r; 
 }
 	
 double Cost3DMock::value(const C3DTransformation& t) const
 {
-	assert(_M_size == t.get_size()); 
+	assert(m_size == t.get_size()); 
 	double result = 0.0; 
 	auto it = t.begin(); 
-	for (size_t z = 0; z < _M_size.z; ++z) 
-		for (size_t y = 0; y < _M_size.y; ++y) 
-			for (size_t x = 0; x < _M_size.x; ++x, ++it) {
+	for (size_t z = 0; z < m_size.z; ++z) 
+		for (size_t y = 0; y < m_size.y; ++y) 
+			for (size_t x = 0; x < m_size.x; ++x, ++it) {
 				double v = src_value(*it) - ref_value(C3DFVector(x,y,z)); 
 				result += v * v; 
 			}
@@ -967,14 +971,14 @@ double Cost3DMock::value(const C3DTransformation& t) const
 
 double Cost3DMock::value_and_gradient(C3DFVectorfield& gradient) const
 {
-	assert(gradient.get_size() == _M_size); 
+	assert(gradient.get_size() == m_size); 
 	
 	double result = 0.0; 
 
 	auto ig = gradient.begin(); 
-	for (size_t z = 0; z < _M_size.z; ++z) 
-		for (size_t y = 0; y < _M_size.y; ++y) 
-			for (size_t x = 0; x < _M_size.x; ++x, ++ig) {
+	for (size_t z = 0; z < m_size.z; ++z) 
+		for (size_t y = 0; y < m_size.y; ++y) 
+			for (size_t x = 0; x < m_size.x; ++x, ++ig) {
 				C3DFVector pos(x,y,z);
 				double v = src_value(pos) - ref_value(pos); 
 				result += v * v; 
@@ -985,20 +989,20 @@ double Cost3DMock::value_and_gradient(C3DFVectorfield& gradient) const
 
 double Cost3DMock::src_value(const C3DFVector& x)const
 {
-	const C3DFVector p = x - _M_center; 
-	return exp( - (p.x * p.x + p.y * p.y + p.z * p.z) / _M_r); 
+	const C3DFVector p = x - m_center; 
+	return exp(- (p.x * p.x + p.y * p.y + p.z * p.z) / m_r); 
 }
 
 C3DFVector Cost3DMock::src_grad(const C3DFVector& x)const
 {
 	
-	return - 2.0f / _M_r * (x-_M_center) * src_value(x); 
+	return - 2.0f / m_r * (x-m_center) * src_value(x); 
 }
 
 double Cost3DMock::ref_value(const C3DFVector& x) const 
 {
-	const C3DFVector p = x - _M_center - C3DFVector(2.0,2.0, 2.0); 
-	return exp( - (p.x * p.x + p.y * p.y  + p.z * p.z) / _M_r); 
+	const C3DFVector p = x - m_center - C3DFVector(2.0,2.0, 2.0); 
+	return exp( - (p.x * p.x + p.y * p.y  + p.z * p.z) / m_r); 
 }
 
 

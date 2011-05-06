@@ -1,5 +1,5 @@
 /*  -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ private:
 
 	virtual bool do_test() const;
 
-	int _M_w;
+	int m_w;
 };
 
 struct equal_double {

@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -24,10 +24,6 @@
 #ifndef mia_core_histogram_hh
 #define mia_core_histogram_hh
 
-#ifndef VSTREAM_DOMAIN
-#define VSTREAM_DOMAIN "CORE-HISTOGRAM"
-#endif
-
 #include <mia/core/defines.hh>
 
 #include <cmath>
@@ -37,173 +33,280 @@
 #include <mia/core/msgstream.hh>
 #include <boost/type_traits.hpp>
 
+/** \file histogram.hh This file defined some classes to handle simple histograms */ 
+
 NS_MIA_BEGIN
 
+/**
+   \brief A class to normalize and quantizize input data to 
+   a given histogram range with its given number of bins. 
+
+   This class is used as a helpe class for simple histograms. 
+   The class is responsible for scaling and quantizising the input values to 
+   fit the histogram parameters. 
+   \tparam the input data type to be fed into the instogram 
+*/
 template <typename T>
-class CHistogramFeeder {
+class THistogramFeeder {
 public: 	
+	/// typedef for generic programming 
 	typedef T value_type; 
-	CHistogramFeeder(T min, T max, size_t bins); 
+
+	/**
+	   Initialize the histogram feeder for a histogram with values 
+	   in [min,max] with the given number of bins. 
+	   \param min 
+	   \param max
+	   \param bins 
+	 */
+	THistogramFeeder(T min, T max, size_t bins); 
+	
+	/// \returns the number of bins 
 	size_t size() const; 
+
+	/**
+	   Evaluate the target bin of an input value  
+	   \param x input value 
+	   \returns the target bin index 
+	   \remark the index is the nearest neighbor of the scaled input value 
+	 */
 	size_t index(T x) const; 
+
+	/**
+	   Evaluate the center value of a given bin in terms of the input data range 
+	   \param k bin index 
+	   \returns center value of bin 
+	 */
 	T value(size_t k) const; 
 private: 
-	T _M_min;  
-	T _M_max; 
-	size_t _M_bins; 
-	double _M_step; 
-	double _M_inv_step; 
+	T m_min;  
+	T m_max; 
+	size_t m_bins; 
+	double m_step; 
+	double m_inv_step; 
 };
 
+/**
+   \brief specialization of the THistogramFeeder for unsigned byte input data 
+
+   This specialization always uses the full range [0,256) of the input data 
+   and 256 bins. 
+   \remark is this really a good idea to specialize the histogram like this, 
+   because so it is not possible to use a different number of bins for unsigned byte 
+ */
 template <>
-class CHistogramFeeder<unsigned char> {
+class THistogramFeeder<unsigned char> {
 public: 	
+	/// typedef for generic programming 
 	typedef unsigned char value_type; 
-	CHistogramFeeder(unsigned char min, unsigned char max, size_t bins); 
+
+	/// Construct the feeder, the parameters are ignored 
+	THistogramFeeder(unsigned char min, unsigned char max, size_t bins); 
+
+	/// \returns 256 
 	size_t size() const; 
+	
+	/// \returns x
 	size_t index(unsigned char x) const; 
+
+	/// \returns k 
 	unsigned char value(size_t k) const; 
 };
 
+/// typedef for the unsigned byte histogram feeder specialization 
+typedef THistogramFeeder<unsigned char> CUBHistogramFeeder; 
 
-typedef CHistogramFeeder<unsigned char> CUBHistogramFeeder; 
+/**
+   \brief a simple histogram that uses an instance of THistogramFeeder 
+   as input converter
 
+   This class implements a simple histogram that uses the nearest neighbor 
+   approach implemeneted in THistogramFeeder to fill the histogram and provides 
+   some funcionallity to work with the histogram. 
+   \tparam the input feeder 
+ */
 template <typename Feeder>
-class CHistogram {
+class THistogram {
 public: 
+
+	/// STL iterator 
 	typedef std::vector<size_t>::const_iterator const_iterator; 
+	
+	/// A type for the value-index pair \todo change to meaningful name 
 	typedef std::pair<typename Feeder::value_type, size_t> value_type; 
 
-	CHistogram(Feeder f); 
+	/**
+	   Constructor to create the histogram with the given input feeder. 
+	 */
+	THistogram(Feeder f); 
 
-	CHistogram(const CHistogram<Feeder>& org, double perc); 
+	/**
+	   Constructor to create a histogram by copying another histogram and 
+	   cutting of part ot the upper tail. 
+	   
+	   \param org original histogram to copy from 
+	   \param perc percentage of the bins to cut off 
+	   \todo this should actually cut of a percentage of the data and not of the 
+	   bins 
+	 */
+	THistogram(const THistogram<Feeder>& org, double perc); 
 	
+	/**
+	   Add a value x to the histogram 
+	   \param x 
+	 */
 	void push(typename Feeder::value_type x);
-	
+
+	/**
+	   Add a value x to the histogram count times 
+	   \param x 
+	   \param count 
+	 */
 	void push(typename Feeder::value_type x, size_t count);
 
+	/**
+	   Add a range of data to the histogram 
+	   \tparam Iterator forward iterator 
+	   \param begin start of input range 
+	   \param end end of input range (STL convention) 
+	 */
 	template <typename Iterator>
 	void push_range(Iterator begin, Iterator end);
-	
+
+	/// \returns size of histogram 
 	size_t size() const; 
-	
+
+	/// \returns start of histogram 
 	const_iterator begin() const; 
 	
+	/// \returns end of histogram 
 	const_iterator end() const; 
 	
+	/// \returns value of histogram bin at idx 
 	size_t operator [] (size_t idx) const; 
 
+	/** Return the count and input range value corresponding to 
+	    the bin at idx 
+	    \param idx
+	    \returns <value,count> pair 
+	*/ 
 	const value_type at(size_t idx) const; 
 
+	
+	/// \returns median of the histogram 
 	typename Feeder::value_type median() const; 
+
+	/// \returns Median Average Distance  of the histogram 
 	typename Feeder::value_type MAD() const; 
+
+	/// \returns mean of the histogram 
 	double average() const; 
+	
+	/// \returns deviation of the histogram 
 	double deviation() const; 
 
-	double average(double cut_percentage) const; 
-
 private: 
-	Feeder _M_feeder; 
-	std::vector<size_t> _M_histogram; 
-	size_t _M_n; 
+	Feeder m_feeder; 
+	std::vector<size_t> m_histogram; 
+	size_t m_n; 
 }; 
 
 // inline inplementation 
 template <typename T> 
-CHistogramFeeder<T>::CHistogramFeeder(T min, T max, size_t bins):
-	_M_min(min), 
-	_M_max(max), 
-	_M_bins(bins), 
-	_M_step(( double(max) - double(min) ) / double(bins - 1)), 
-	_M_inv_step(double(bins - 1) / (double(max) - double(min)))
+THistogramFeeder<T>::THistogramFeeder(T min, T max, size_t bins):
+	m_min(min), 
+	m_max(max), 
+	m_bins(bins), 
+	m_step(( double(max) - double(min) ) / double(bins - 1)), 
+	m_inv_step(double(bins - 1) / (double(max) - double(min)))
 {
 }
 
 template <typename T> 
-size_t CHistogramFeeder<T>::size() const
+size_t THistogramFeeder<T>::size() const
 {
-	return _M_bins; 
+	return m_bins; 
 }
 
 template <typename T> 
-inline size_t CHistogramFeeder<T>::index(T x) const
+inline size_t THistogramFeeder<T>::index(T x) const
 {
-	double val = floor(_M_inv_step * (x - _M_min) + 0.5); 
+	double val = floor(m_inv_step * (x - m_min) + 0.5); 
 	if (val < 0) 
 		return 0; 
-	if (val < _M_bins) 
+	if (val < m_bins) 
 		return val; 
-	return _M_bins - 1; 
+	return m_bins - 1; 
 }
 
 template <typename T> 
-T CHistogramFeeder<T>::value(size_t k) const
+T THistogramFeeder<T>::value(size_t k) const
 {
-	return k * _M_step + _M_min; 
+	return k * m_step + m_min; 
 }
 
-inline CHistogramFeeder<unsigned char>::CHistogramFeeder(unsigned char /*min*/, unsigned char /*max*/, size_t /*bins*/)
+inline THistogramFeeder<unsigned char>::THistogramFeeder(unsigned char /*min*/, unsigned char /*max*/, size_t /*bins*/)
 {
 }
 
-inline size_t CHistogramFeeder<unsigned char>::size() const
+inline size_t THistogramFeeder<unsigned char>::size() const
 {
 	return 256; 
 }
 
 inline 
-size_t CHistogramFeeder<unsigned char>::index(unsigned char x) const
+size_t THistogramFeeder<unsigned char>::index(unsigned char x) const
 {
 	return x; 
 }
 
 inline 
-unsigned char CHistogramFeeder<unsigned char>::value(size_t k) const
+unsigned char THistogramFeeder<unsigned char>::value(size_t k) const
 {
 	return k; 
 }
 
 template <typename Feeder>
-CHistogram<Feeder>::CHistogram(Feeder f):
-	_M_feeder(f), 
-	_M_histogram(f.size()), 
-	_M_n(0)
+THistogram<Feeder>::THistogram(Feeder f):
+	m_feeder(f), 
+	m_histogram(f.size()), 
+	m_n(0)
 {
 }
 
 template <typename Feeder>
-CHistogram<Feeder>::CHistogram(const CHistogram<Feeder>& org, double perc):
-	_M_feeder(org._M_feeder), 
-	_M_histogram(_M_feeder.size()), 
-	_M_n(0)
+THistogram<Feeder>::THistogram(const THistogram<Feeder>& org, double perc):
+	m_feeder(org.m_feeder), 
+	m_histogram(m_feeder.size()), 
+	m_n(0)
 {
-	size_t n = (size_t)(org._M_n * (1.0 - perc)); 
+	size_t n = (size_t)(org.m_n * (1.0 - perc)); 
 		
 	size_t i = 0;
-	while (n > _M_n && i < _M_histogram.size()) {
-		_M_n += org._M_histogram[i]; 
-		_M_histogram[i] = org._M_histogram[i]; 
+	while (n > m_n && i < m_histogram.size()) {
+		m_n += org.m_histogram[i]; 
+		m_histogram[i] = org.m_histogram[i]; 
 		++i; 
 	}
 }
 
 
 template <typename Feeder> 
-size_t CHistogram<Feeder>::size() const 
+size_t THistogram<Feeder>::size() const 
 {
-	return _M_histogram.size(); 
+	return m_histogram.size(); 
 }
 
 template <typename Feeder> 
-void CHistogram<Feeder>::push(typename Feeder::value_type x)
+void THistogram<Feeder>::push(typename Feeder::value_type x)
 {
-	++_M_n; 
-	++_M_histogram[_M_feeder.index(x)];
+	++m_n; 
+	++m_histogram[m_feeder.index(x)];
 }
 
 template <typename Feeder> 
 template <typename Iterator>
-void CHistogram<Feeder>::push_range(Iterator begin, Iterator end)
+void THistogram<Feeder>::push_range(Iterator begin, Iterator end)
 {
 	while (begin != end) 
 		push(*begin++); 
@@ -212,95 +315,95 @@ void CHistogram<Feeder>::push_range(Iterator begin, Iterator end)
 
 
 template <typename Feeder> 
-void CHistogram<Feeder>::push(typename Feeder::value_type x, size_t count)
+void THistogram<Feeder>::push(typename Feeder::value_type x, size_t count)
 {
-	_M_n += count; 
-	_M_histogram[_M_feeder.index(x)] += count;
+	m_n += count; 
+	m_histogram[m_feeder.index(x)] += count;
 }
 
 template <typename Feeder> 
-typename CHistogram<Feeder>::const_iterator CHistogram<Feeder>::begin() const
+typename THistogram<Feeder>::const_iterator THistogram<Feeder>::begin() const
 {
-	return _M_histogram.begin(); 
+	return m_histogram.begin(); 
 }
 	
 template <typename Feeder> 
-typename CHistogram<Feeder>::const_iterator CHistogram<Feeder>::end() const
+typename THistogram<Feeder>::const_iterator THistogram<Feeder>::end() const
 {
-	return _M_histogram.end(); 
+	return m_histogram.end(); 
 }
 
 template <typename Feeder> 
-size_t CHistogram<Feeder>::operator [] (size_t idx) const
+size_t THistogram<Feeder>::operator [] (size_t idx) const
 {
-	assert(idx < _M_histogram.size()); 
-	return _M_histogram[idx]; 
+	assert(idx < m_histogram.size()); 
+	return m_histogram[idx]; 
 }
 
 template <typename Feeder> 
-typename Feeder::value_type CHistogram<Feeder>::median() const
+typename Feeder::value_type THistogram<Feeder>::median() const
 {
-	float n_2 = _M_n / 2.0f;
+	float n_2 = m_n / 2.0f;
 	float sum = 0; 
 	size_t k = 0; 
 	while ( sum < n_2 ) 
-		sum +=  _M_histogram[k++]; 
+		sum +=  m_histogram[k++]; 
 
-	return _M_feeder.value(k-1); 
+	return m_feeder.value(k-1); 
 }
 
 template <typename Feeder> 
-typename Feeder::value_type CHistogram<Feeder>::MAD() const
+typename Feeder::value_type THistogram<Feeder>::MAD() const
 {
 	typedef typename Feeder::value_type T; 
 	T m = median(); 
 	
-	CHistogram<Feeder> help(_M_feeder); 
+	THistogram<Feeder> help(m_feeder); 
 	
 	; 
 	for (size_t k = 0; k < size(); ++k) {
-		T v = _M_feeder.value(k); 
-		help.push(v > m ? v - m : m -v, _M_histogram[k]); 
+		T v = m_feeder.value(k); 
+		help.push(v > m ? v - m : m -v, m_histogram[k]); 
 	}
 	return help.median(); 
 }
 
 
 template <typename Feeder> 
-const typename CHistogram<Feeder>::value_type CHistogram<Feeder>::at(size_t idx) const
+const typename THistogram<Feeder>::value_type THistogram<Feeder>::at(size_t idx) const
 {
-	if (idx < _M_histogram.size())
-		return value_type(_M_feeder.value(idx), _M_histogram[idx]); 
+	if (idx < m_histogram.size())
+		return value_type(m_feeder.value(idx), m_histogram[idx]); 
 	else 
-		return value_type(_M_feeder.value(idx), 0); 
+		return value_type(m_feeder.value(idx), 0); 
 }
 
 template <typename Feeder> 
-double CHistogram<Feeder>::average() const
+double THistogram<Feeder>::average() const
 {
-	if (_M_n < 1) 
+	if (m_n < 1) 
 		return 0.0;
 	double sum = 0.0;
 	for (size_t i = 0; i < size(); ++i) {
-		const typename CHistogram<Feeder>::value_type value = at(i); 
+		const typename THistogram<Feeder>::value_type value = at(i); 
 		sum += value.first * value.second;
 	}
-	return sum / _M_n; 
+	return sum / m_n; 
 }
 
 template <typename Feeder> 
-double CHistogram<Feeder>::deviation() const
+double THistogram<Feeder>::deviation() const
 {
-	if (_M_n < 2) 
+	if (m_n < 2) 
 		return 0.0;
 	double sum  = 0.0;
 	double sum2 = 0.0;
 	for (size_t i = 0; i < size(); ++i) {
-		const typename CHistogram<Feeder>::value_type value = at(i); 
+		const typename THistogram<Feeder>::value_type value = at(i); 
 		sum  += value.first * value.second;
 		sum2 += value.first * value.first * value.second;
 	}
-	return sqrt((sum2 - sum * sum / _M_n) / (_M_n - 1)); 
+	return sqrt((sum2 - sum * sum / m_n) / (m_n - 1)); 
 }
 
 

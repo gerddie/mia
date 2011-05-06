@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -33,6 +33,11 @@
 
 NS_MIA_BEGIN
 
+/**
+   \brief a class for the IO of 2D vector fields 
+
+   \remark this class is obsolete, new code should use the 2D transformation IO 
+ */
 
 
 class EXPORT_2D C2DIOVectorfield: public C2DFVectorfield, public CIOData {
@@ -48,7 +53,7 @@ public:
 	/** copy from normal vectorfield constructor */
 	C2DIOVectorfield(const C2DFVectorfield& org);
 
-	C2DIOVectorfield *clone() const;
+	C2DIOVectorfield *clone() const __attribute__((warn_unused_result));
 };
 
 struct io_2dvf_type {
@@ -56,7 +61,10 @@ struct io_2dvf_type {
 	static const char *type_descr;
 };
 
+/// Base class for 2D vector field IO plugins 
 typedef TIOPlugin<io_2dvf_type> C2DVFIOPlugin;
+
+/// Handler for 2D vector field IO 
 typedef THandlerSingleton<TIOPluginHandler<C2DVFIOPlugin> > C2DVFIOPluginHandler;
 
 NS_MIA_END

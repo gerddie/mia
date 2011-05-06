@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -21,13 +21,28 @@
  *
  */
 
-/*! \brief basic type of a plugin handler
+/* 
+   LatexBeginPluginDescription{2D image stack filters}
+   
+   \subsection{Gaussian smoothing}
+   \label{fifof:gauss}
+   
+   \begin{description}
+   
+   \item [Plugin:] gauss
+   \item [Description:] Runs an isotropic Gaussian smothing filter on the imput images. 
+   \item [Input:] Gray scale or binary images, all of the same size and pixel type  
+   \item [Output:] The filtered image(s) 
+   
+   \plugtabstart
+   w & int & filter width parameter, the actual filter captures a neighborhood of 
+                 $(2 * w + 1) \times (2 * w + 1) \times (2 * w + 1)$ voxels & 1 \\ 
+   \plugtabend
+   
+   \end{description}
 
-A gauss filter for stacks of 2D images
-
-\author Gert Wollny <gerddie at gmail.com>
-
-*/
+   LatexEnd  
+ */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -74,24 +89,24 @@ private:
 	virtual bool do_test() const;
 	virtual C2DFifoFilterPlugin::ProductPtr do_create()const;
 
-	mutable int _M_hw;
+	mutable int m_hw;
 };
 
 
 C2DGaussFifoFilter::C2DGaussFifoFilter(size_t hw):
 	C2DImageFifoFilter(2*hw + 1, hw + 1, 0),
-	_M_hw(hw)
+	m_hw(hw)
 {
 	const C2DFilterPluginHandler::Instance& filter_plugins = C2DFilterPluginHandler::instance();
 	stringstream filter_descr;
 	filter_descr << "gauss:w=" << hw;
 
-	_M_gauss2d = filter_plugins.produce(filter_descr.str().c_str());
-	if (!_M_gauss2d) {
+	m_gauss2d = filter_plugins.produce(filter_descr.str().c_str());
+	if (!m_gauss2d) {
 		filter_descr << " is not a supported filter description";
 		throw runtime_error(filter_descr.str());
 	}
-	_M_1dfilter = C1DSpacialKernelPluginHandler::instance().produce(filter_descr.str().c_str());
+	m_1dfilter = C1DSpacialKernelPluginHandler::instance().produce(filter_descr.str().c_str());
 }
 
 template <typename T>
@@ -99,31 +114,31 @@ C2DImage *C2DGaussFifoFilter::operator()(const T3DImage<T>& /*buffer*/) const
 {
 	TRACE("C2DGaussFifoFilter::pull");
 
-	C2DFImage help(_M_slice_size);
+	C2DFImage help(m_slice_size);
 
-	if ((int)get_start() == 0 && get_end() == _M_1dfilter->size()) {
-		const float k = (*_M_1dfilter)[0];
-		transform(_M_buffer->begin(), _M_buffer->begin() + help.size(), help.begin(), _1 * k);
+	if ((int)get_start() == 0 && get_end() == m_1dfilter->size()) {
+		const float k = (*m_1dfilter)[0];
+		transform(m_buffer->begin(), m_buffer->begin() + help.size(), help.begin(), _1 * k);
 
 		for (size_t i =  1; i < get_end(); ++i) {
-			C2DFImage::iterator s_i = _M_buffer->begin_at(0,0,i);
-			const float k = (*_M_1dfilter)[i];
+			C2DFImage::iterator s_i = m_buffer->begin_at(0,0,i);
+			const float k = (*m_1dfilter)[i];
 			transform(help.begin(), help.end(), s_i, help.begin(), _1 + k * _2);
 		}
 	}else{
-		const float k = (*_M_1dfilter)[0];
-		transform(_M_buffer->begin_at(0,0,get_end() - 1),
-			  _M_buffer->begin_at(0,0,get_end()),
+		const float k = (*m_1dfilter)[0];
+		transform(m_buffer->begin_at(0,0,get_end() - 1),
+			  m_buffer->begin_at(0,0,get_end()),
 			  help.begin(), _1 * k);
 
 		for (size_t i =  1; i < get_end(); ++i) {
-			C2DFImage::iterator s_i = _M_buffer->begin_at(0,0, get_end() - 1 - i);
-			const float k = (*_M_1dfilter)[i];
+			C2DFImage::iterator s_i = m_buffer->begin_at(0,0, get_end() - 1 - i);
+			const float k = (*m_1dfilter)[i];
 			transform(help.begin(), help.end(), s_i, help.begin(), _1 + k * _2);
 		}
 
 	}
-	T2DImage<T> *retval = new T2DImage<T>(_M_slice_size);
+	T2DImage<T> *retval = new T2DImage<T>(m_slice_size);
 	convert(help.begin(), help.end(), retval->begin());
 	return retval;
 }
@@ -133,47 +148,47 @@ template <typename T>
 C2DImage *C2DGaussFifoFilter::operator()(const T2DImage<T>& input)
 {
 	TRACE("C2DGaussFifoFilter::push internal");
-	copy(input.begin(), input.end(), _M_buffer->begin());
+	copy(input.begin(), input.end(), m_buffer->begin());
 	return NULL;
 }
 
 void C2DGaussFifoFilter::shift_buffer()
 {
-	copy_backward(_M_buffer->begin(),
-		      _M_buffer->end() - _M_buffer->get_size().x * _M_buffer->get_size().y ,
-		      _M_buffer->end());
+	copy_backward(m_buffer->begin(),
+		      m_buffer->end() - m_buffer->get_size().x * m_buffer->get_size().y ,
+		      m_buffer->end());
 }
 
 void C2DGaussFifoFilter::do_initialize(::boost::call_traits<P2DImage>::param_type x)
 {
-	_M_slice_size = x->get_size();
-	_M_buffer.reset(new C3DFImage(C3DBounds(_M_slice_size.x, _M_slice_size.y, 2 * _M_hw + 1)));
-	_M_dummy.reset(create_buffer(C2DBounds(1,1), 1, x->get_pixel_type()));
+	m_slice_size = x->get_size();
+	m_buffer.reset(new C3DFImage(C3DBounds(m_slice_size.x, m_slice_size.y, 2 * m_hw + 1)));
+	m_dummy.reset(create_buffer(C2DBounds(1,1), 1, x->get_pixel_type()));
 }
 
 void C2DGaussFifoFilter::do_push(::boost::call_traits<P2DImage>::param_type x)
 {
-	P2DImage tmp = _M_gauss2d->filter(*x);
+	P2DImage tmp = m_gauss2d->filter(*x);
 	mia::accumulate(*this, *tmp);
 
 }
 
 P2DImage C2DGaussFifoFilter::do_filter()
 {
-	return 	P2DImage(mia::filter(*this, *_M_dummy));
+	return 	P2DImage(mia::filter(*this, *m_dummy));
 }
 
 void C2DGaussFifoFilter::post_finalize()
 {
-	_M_buffer.reset(NULL);
-	_M_dummy.reset(NULL);
+	m_buffer.reset(NULL);
+	m_dummy.reset(NULL);
 }
 
 C2DGaussStackFilterFactory::C2DGaussStackFilterFactory():
 	C2DFifoFilterPlugin("gauss"),
-	_M_hw(1)
+	m_hw(1)
 {
-	add_parameter("w", new CIntParameter(_M_hw, 0, numeric_limits<int>::max(),
+	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(),
 					     false, "filter width parameter (2*w+1)"));
 }
 
@@ -190,7 +205,7 @@ bool C2DGaussStackFilterFactory::do_test() const
 
 C2DFifoFilterPlugin::ProductPtr C2DGaussStackFilterFactory::do_create()const
 {
-	return ProductPtr(new C2DGaussFifoFilter(_M_hw));
+	return ProductPtr(new C2DGaussFifoFilter(m_hw));
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

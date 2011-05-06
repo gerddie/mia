@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2010
+ * Copyright (c) Madrid 2010-2011
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -77,26 +77,26 @@ struct TransformSplineFixtureConst: public TransformSplineFixtureFieldBase {
 	virtual float fx(float x, float y);
 	virtual float fy(float x, float y);
 private: 
-	float _M_fx; 
-	float _M_fy; 
+	float m_fx; 
+	float m_fy; 
 };
 
 void TransformSplineFixtureConst::prepare(int dsize, float range, EInterpolation type, float fx, float fy)
 {
-	_M_fx = fx; 
-	_M_fy = fy; 
+	m_fx = fx; 
+	m_fy = fy; 
 
 	init(dsize, range, type); 
 }
 
 float TransformSplineFixtureConst::fx(float , float )
 {
-	return _M_fx; 
+	return m_fx; 
 }
 
 float TransformSplineFixtureConst::fy(float , float )
 {
-	return _M_fy; 
+	return m_fy; 
 }
 
 

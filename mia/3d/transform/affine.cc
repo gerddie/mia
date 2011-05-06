@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -19,6 +19,30 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/* 
+  LatexBeginPluginDescription{3D Transformations}
+  
+   \subsection{Affine}
+   \label{transform3d:affine}
+   
+   \begin{description}
+   
+   \item [Plugin:] affine
+   \item [Description:] Affine-linear transformations - i.e. the transformation cann be described in terms of a 
+   multiplication by a $2\times2$ matrix $A$ and the addition of a translation vector $b$: 
+   \begin{equation}
+   x \rightarrow Ax + b
+   \end{equation}
+   
+   \item [Degrees of Freedom:] 12
+  
+   \end{description}
+   This plug-in doesn't take parameters 
+
+   LatexEnd  
+ */
+
 
 #include <fstream>
 #include <cmath>
@@ -42,21 +66,21 @@ C3DFVector C3DAffineTransformation::apply(const C3DFVector& x) const
 C3DFVector C3DAffineTransformation::transform(const C3DFVector& x)const
 {
 	return C3DFVector(
-		_M_t[0] * x.x + _M_t[1] * x.y + _M_t[2] * x.z + _M_t[3],
-		_M_t[4] * x.x + _M_t[5] * x.y + _M_t[6] * x.z + _M_t[7],
-		_M_t[8] * x.x + _M_t[9] * x.y + _M_t[10] * x.z + _M_t[11]);
+		m_t[0] * x.x + m_t[1] * x.y + m_t[2] * x.z + m_t[3],
+		m_t[4] * x.x + m_t[5] * x.y + m_t[6] * x.z + m_t[7],
+		m_t[8] * x.x + m_t[9] * x.y + m_t[10] * x.z + m_t[11]);
 }
 
 C3DAffineTransformation::C3DAffineTransformation(const C3DBounds& size):
-	_M_t(12,0.0f),
-	_M_size(size)
+	m_t(12,0.0f),
+	m_size(size)
 {
-	_M_t[0] = _M_t[5] = _M_t[10] =  1.0;
+	m_t[0] = m_t[5] = m_t[10] =  1.0;
 }
 
 C3DAffineTransformation::C3DAffineTransformation(const C3DAffineTransformation& other):
-	_M_t(other._M_t),
-	_M_size(other._M_size)
+	m_t(other.m_t),
+	m_size(other.m_size)
 {
 }
 
@@ -68,9 +92,9 @@ C3DTransformation *C3DAffineTransformation::do_clone()const
 C3DTransformation *C3DAffineTransformation::invert()const
 {
 	const double det = 
-		_M_t[10] * (_M_t[0] * _M_t[5] - _M_t[1] * _M_t[4]) + 
-		_M_t[ 9] * (_M_t[2] * _M_t[4] - _M_t[0] * _M_t[6]) + 
-		_M_t[ 8] * (_M_t[1] * _M_t[6] - _M_t[2] * _M_t[5]); 
+		m_t[10] * (m_t[0] * m_t[5] - m_t[1] * m_t[4]) + 
+		m_t[ 9] * (m_t[2] * m_t[4] - m_t[0] * m_t[6]) + 
+		m_t[ 8] * (m_t[1] * m_t[6] - m_t[2] * m_t[5]); 
 	
 	if (std::fabs(det) < 1e-8) 
 		THROW(invalid_argument, "C3DAffineTransformation::invert(): Matrix is singular"); 
@@ -79,29 +103,29 @@ C3DTransformation *C3DAffineTransformation::invert()const
 
 	C3DAffineTransformation *result = new C3DAffineTransformation(*this);
 
-	const double h1625 =  _M_t[1]  * _M_t[6] - _M_t[2] * _M_t[5]; 
-	const double h1735 =  _M_t[1]  * _M_t[7] - _M_t[3] * _M_t[5]; 
-	const double h2736 =  _M_t[2]  * _M_t[7] - _M_t[3] * _M_t[6]; 
+	const double h1625 =  m_t[1]  * m_t[6] - m_t[2] * m_t[5]; 
+	const double h1735 =  m_t[1]  * m_t[7] - m_t[3] * m_t[5]; 
+	const double h2736 =  m_t[2]  * m_t[7] - m_t[3] * m_t[6]; 
 	
-	const double h0624 =  _M_t[0]  * _M_t[6] - _M_t[2] * _M_t[4]; 
-	const double h3407 =  _M_t[3]  * _M_t[4] - _M_t[0] * _M_t[7];
-	const double h0514 =  _M_t[0]  * _M_t[5] - _M_t[1] * _M_t[4];
+	const double h0624 =  m_t[0]  * m_t[6] - m_t[2] * m_t[4]; 
+	const double h3407 =  m_t[3]  * m_t[4] - m_t[0] * m_t[7];
+	const double h0514 =  m_t[0]  * m_t[5] - m_t[1] * m_t[4];
 	
 	
-	result->_M_t[0] = ( _M_t[10] * _M_t[5] - _M_t[6] * _M_t[9])  * inv_det; 
-	result->_M_t[1] = - ( _M_t[10] * _M_t[1] - _M_t[2] * _M_t[9])  * inv_det; 
-	result->_M_t[2] = h1625  * inv_det; 
-	result->_M_t[3] = -(h1625 *_M_t[11] - h1735 *_M_t[10] + h2736 *_M_t[9])  * inv_det;
+	result->m_t[0] = ( m_t[10] * m_t[5] - m_t[6] * m_t[9])  * inv_det; 
+	result->m_t[1] = - ( m_t[10] * m_t[1] - m_t[2] * m_t[9])  * inv_det; 
+	result->m_t[2] = h1625  * inv_det; 
+	result->m_t[3] = -(h1625 *m_t[11] - h1735 *m_t[10] + h2736 *m_t[9])  * inv_det;
 
-	result->_M_t[4] = -( _M_t[10] * _M_t[4] - _M_t[6] * _M_t[8])  * inv_det; 
-	result->_M_t[5] = ( _M_t[10] * _M_t[0] - _M_t[2] * _M_t[8])  * inv_det; 
-	result->_M_t[6] = -h0624  * inv_det; 
-	result->_M_t[7] = (h0624*_M_t[11] + h3407 *_M_t[10] + h2736 *_M_t[8])  * inv_det;
+	result->m_t[4] = -( m_t[10] * m_t[4] - m_t[6] * m_t[8])  * inv_det; 
+	result->m_t[5] = ( m_t[10] * m_t[0] - m_t[2] * m_t[8])  * inv_det; 
+	result->m_t[6] = -h0624  * inv_det; 
+	result->m_t[7] = (h0624*m_t[11] + h3407 *m_t[10] + h2736 *m_t[8])  * inv_det;
 
-	result->_M_t[8]  = ( _M_t[4] * _M_t[9] - _M_t[5] * _M_t[8])  * inv_det; 
-	result->_M_t[9]  = -( _M_t[0] * _M_t[9] - _M_t[1] * _M_t[8])  * inv_det; 
-	result->_M_t[10] = h0514  * inv_det; 
-	result->_M_t[11] = -(h0514*_M_t[11] + h3407 *_M_t[9] + h1735 *_M_t[8])  * inv_det;
+	result->m_t[8]  = ( m_t[4] * m_t[9] - m_t[5] * m_t[8])  * inv_det; 
+	result->m_t[9]  = -( m_t[0] * m_t[9] - m_t[1] * m_t[8])  * inv_det; 
+	result->m_t[10] = h0514  * inv_det; 
+	result->m_t[11] = -(h0514*m_t[11] + h3407 *m_t[9] + h1735 *m_t[8])  * inv_det;
 
 	return result; 
 }
@@ -109,8 +133,8 @@ C3DTransformation *C3DAffineTransformation::invert()const
 
 C3DAffineTransformation::C3DAffineTransformation(const C3DBounds& size,
 						 std::vector<double> transform):
-	_M_t(transform),
-	_M_size(size)
+	m_t(transform),
+	m_size(size)
 {
 }
 
@@ -120,7 +144,7 @@ bool C3DAffineTransformation::save(const std::string& filename, const std::strin
 	file << "Transformation: 3D\n"
 	     << "Matrix: ";
 	for (size_t i = 0; i < 12 ; ++i)
-		file << _M_t[i] << " ";
+		file << m_t[i] << " ";
 	file << "\n";
 	return file.good();
 }
@@ -140,27 +164,27 @@ void C3DAffineTransformation::scale(float x, float y, float z)
 	const double expx = exp(x);
 	const double expy = exp(y);
 	const double expz = exp(z);
-	_M_t[0] *= expx;
-	_M_t[1] *= expx;
-	_M_t[2] *= expx;
-	_M_t[3] *= expx;
-	_M_t[4] *= expy;
-	_M_t[5] *= expy;
-	_M_t[6] *= expy;
-	_M_t[7] *= expy;
-	_M_t[8] *= expz;
-	_M_t[9] *= expz;
-	_M_t[10] *= expz;
-	_M_t[11] *= expz;
+	m_t[0] *= expx;
+	m_t[1] *= expx;
+	m_t[2] *= expx;
+	m_t[3] *= expx;
+	m_t[4] *= expy;
+	m_t[5] *= expy;
+	m_t[6] *= expy;
+	m_t[7] *= expy;
+	m_t[8] *= expz;
+	m_t[9] *= expz;
+	m_t[10] *= expz;
+	m_t[11] *= expz;
 
 
 }
 
 void C3DAffineTransformation::translate(float x, float y, float z)
 {
-	_M_t[ 3] +=  x;
-	_M_t[ 7] +=  y;
-	_M_t[11] +=  z;
+	m_t[ 3] +=  x;
+	m_t[ 7] +=  y;
+	m_t[11] +=  z;
 }
 
 void C3DAffineTransformation::rotate(float angle)
@@ -169,19 +193,19 @@ void C3DAffineTransformation::rotate(float angle)
 	const double sina = sin(angle);
 	const double cosa = cos(angle);
 
-	const double tx      = cosa * _M_t[2] - sina * _M_t[5];
-	_M_t[5] = sina * _M_t[2] + cosa * _M_t[5];
-	_M_t[2] = tx;
+	const double tx      = cosa * m_t[2] - sina * m_t[5];
+	m_t[5] = sina * m_t[2] + cosa * m_t[5];
+	m_t[2] = tx;
 
-	const double a = _M_t[0] * cosa - sina * _M_t[3];
-	const double b = _M_t[1] * cosa - sina * _M_t[4];
-	const double c = _M_t[0] * sina + cosa * _M_t[3];
-	const double d = _M_t[1] * sina + cosa * _M_t[4];
+	const double a = m_t[0] * cosa - sina * m_t[3];
+	const double b = m_t[1] * cosa - sina * m_t[4];
+	const double c = m_t[0] * sina + cosa * m_t[3];
+	const double d = m_t[1] * sina + cosa * m_t[4];
 
-	_M_t[0] = a;
-	_M_t[1] = b;
-	_M_t[3] = c;
-	_M_t[4] = d;
+	m_t[0] = a;
+	m_t[1] = b;
+	m_t[3] = c;
+	m_t[4] = d;
 
 }
 
@@ -194,14 +218,14 @@ void C3DAffineTransformation::shear(float /*v*/)
 CDoubleVector C3DAffineTransformation::get_parameters() const
 {
 	CDoubleVector result(degrees_of_freedom());
-	copy(_M_t.begin(), _M_t.end(), result.begin());
+	copy(m_t.begin(), m_t.end(), result.begin());
 	return result;
 }
 
 void C3DAffineTransformation::set_parameters(const CDoubleVector& params)
 {
 	assert(degrees_of_freedom() == params.size());
-	copy(params.begin(), params.end(), _M_t.begin());
+	copy(params.begin(), params.end(), m_t.begin());
 
 }
 
@@ -219,7 +243,7 @@ double C3DAffineTransformation::get_divcurl_cost(double, double) const
 float C3DAffineTransformation::divergence() const
 {
 	assert(0 && "not implemented");
-	return _M_t[0] + _M_t[1] + _M_t[3] + _M_t[4] - 2.0f;
+	return m_t[0] + m_t[1] + m_t[3] + m_t[4] - 2.0f;
 }
 
 float C3DAffineTransformation::grad_divergence() const
@@ -237,12 +261,12 @@ float C3DAffineTransformation::grad_curl() const
 float C3DAffineTransformation::curl() const
 {
 	assert(0 && "not implemented");
-	return _M_t[1] + _M_t[4] - _M_t[0] - _M_t[3];
+	return m_t[1] + m_t[4] - m_t[0] - m_t[3];
 }
 
 const C3DBounds& C3DAffineTransformation::get_size() const
 {
-	return _M_size;
+	return m_size;
 }
 
 P3DTransformation C3DAffineTransformation::do_upscale(const C3DBounds& size) const
@@ -252,26 +276,26 @@ P3DTransformation C3DAffineTransformation::do_upscale(const C3DBounds& size) con
 	float z_mult = float(size.z) / (float)get_size().z;
 
 	C3DAffineTransformation *result = new C3DAffineTransformation(*this);
-	result->_M_size   = size;
-	result->_M_t[3]  *= x_mult;
-	result->_M_t[7]  *= y_mult;
-	result->_M_t[11] *= z_mult;
+	result->m_size   = size;
+	result->m_t[3]  *= x_mult;
+	result->m_t[7]  *= y_mult;
+	result->m_t[11] *= z_mult;
 
 	return P3DTransformation(result);
 }
 
 C3DFMatrix C3DAffineTransformation::derivative_at(int /*x*/, int /*y*/, int /*z*/) const
 {
-	return C3DFMatrix(C3DFVector(_M_t[0], _M_t[1], _M_t[2]),
-			  C3DFVector(_M_t[4], _M_t[5], _M_t[6]),
-			  C3DFVector(_M_t[8], _M_t[9], _M_t[10]));
+	return C3DFMatrix(C3DFVector(m_t[0], m_t[1], m_t[2]),
+			  C3DFVector(m_t[4], m_t[5], m_t[6]),
+			  C3DFVector(m_t[8], m_t[9], m_t[10]));
 }
 
 void C3DAffineTransformation::set_identity()
 {
 	cvdebug() << "set identity\n";
-	fill(_M_t.begin(), _M_t.end(), 0.0);
-	_M_t[0] = _M_t[5] = _M_t[10] = 1.0;
+	fill(m_t.begin(), m_t.end(), 0.0);
+	m_t[0] = m_t[5] = m_t[10] = 1.0;
 }
 
 float C3DAffineTransformation::get_max_transform() const
@@ -301,24 +325,24 @@ void C3DAffineTransformation::add(const C3DTransformation& other)
 	// *this  = other * *this
 	const C3DAffineTransformation& a = dynamic_cast<const C3DAffineTransformation&>(other);
 
-	vector<double> h(_M_t.size());
+	vector<double> h(m_t.size());
 
-	h[0] = a._M_t[0] * _M_t[0] + a._M_t[1] * _M_t[4] + a._M_t[2] * _M_t[8];
-	h[1] = a._M_t[0] * _M_t[1] + a._M_t[1] * _M_t[5] + a._M_t[2] * _M_t[9];
-	h[2] = a._M_t[0] * _M_t[2] + a._M_t[1] * _M_t[6] + a._M_t[2] * _M_t[10];
-	h[3] = a._M_t[0] * _M_t[3] + a._M_t[1] * _M_t[7] + a._M_t[2] * _M_t[11] + a._M_t[3];
+	h[0] = a.m_t[0] * m_t[0] + a.m_t[1] * m_t[4] + a.m_t[2] * m_t[8];
+	h[1] = a.m_t[0] * m_t[1] + a.m_t[1] * m_t[5] + a.m_t[2] * m_t[9];
+	h[2] = a.m_t[0] * m_t[2] + a.m_t[1] * m_t[6] + a.m_t[2] * m_t[10];
+	h[3] = a.m_t[0] * m_t[3] + a.m_t[1] * m_t[7] + a.m_t[2] * m_t[11] + a.m_t[3];
 
-	h[4] = a._M_t[4] * _M_t[0] + a._M_t[5] * _M_t[4] + a._M_t[6] * _M_t[8];
-	h[5] = a._M_t[4] * _M_t[1] + a._M_t[5] * _M_t[5] + a._M_t[6] * _M_t[9];
-	h[6] = a._M_t[4] * _M_t[2] + a._M_t[5] * _M_t[6] + a._M_t[6] * _M_t[10];
-	h[7] = a._M_t[4] * _M_t[3] + a._M_t[5] * _M_t[7] + a._M_t[6] * _M_t[11] + a._M_t[7];
+	h[4] = a.m_t[4] * m_t[0] + a.m_t[5] * m_t[4] + a.m_t[6] * m_t[8];
+	h[5] = a.m_t[4] * m_t[1] + a.m_t[5] * m_t[5] + a.m_t[6] * m_t[9];
+	h[6] = a.m_t[4] * m_t[2] + a.m_t[5] * m_t[6] + a.m_t[6] * m_t[10];
+	h[7] = a.m_t[4] * m_t[3] + a.m_t[5] * m_t[7] + a.m_t[6] * m_t[11] + a.m_t[7];
 
-	h[8]  = a._M_t[8] * _M_t[0] + a._M_t[9] * _M_t[4] + a._M_t[10] * _M_t[8];
-	h[9]  = a._M_t[8] * _M_t[1] + a._M_t[9] * _M_t[5] + a._M_t[10] * _M_t[9];
-	h[10] = a._M_t[8] * _M_t[2] + a._M_t[9] * _M_t[6] + a._M_t[10] * _M_t[10];
-	h[11] = a._M_t[8] * _M_t[3] + a._M_t[9] * _M_t[7] + a._M_t[10] * _M_t[11] + a._M_t[11];
+	h[8]  = a.m_t[8] * m_t[0] + a.m_t[9] * m_t[4] + a.m_t[10] * m_t[8];
+	h[9]  = a.m_t[8] * m_t[1] + a.m_t[9] * m_t[5] + a.m_t[10] * m_t[9];
+	h[10] = a.m_t[8] * m_t[2] + a.m_t[9] * m_t[6] + a.m_t[10] * m_t[10];
+	h[11] = a.m_t[8] * m_t[3] + a.m_t[9] * m_t[7] + a.m_t[10] * m_t[11] + a.m_t[11];
 
-	copy(h.begin(), h.end(), _M_t.begin());
+	copy(h.begin(), h.end(), m_t.begin());
 }
 
 
@@ -334,15 +358,15 @@ float C3DAffineTransformation::get_jacobian(const C3DFVectorfield& /*v*/, float 
 
 void C3DAffineTransformation::translate(const C3DFVectorfield& gradient, CDoubleVector& params) const
 {
-	assert(gradient.get_size() == _M_size);
+	assert(gradient.get_size() == m_size);
 	assert(params.size() == degrees_of_freedom());
 
 	vector<double> r(params.size(), 0.0);
 
 	auto g = gradient.begin();
-	for (size_t z = 0; z < _M_size.z; ++z) {
-		for (size_t y = 0; y < _M_size.y; ++y) {
-			for (size_t x = 0; x < _M_size.x; ++x, ++g) {
+	for (size_t z = 0; z < m_size.z; ++z) {
+		for (size_t y = 0; y < m_size.y; ++y) {
+			for (size_t x = 0; x < m_size.x; ++x, ++g) {
 				r[0] += x * g->x;
 				r[1] += y * g->x;
 				r[2] += z * g->x;
@@ -369,37 +393,37 @@ void C3DAffineTransformation::translate(const C3DFVectorfield& gradient, CDouble
 C3DAffineTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& size, 
 						      const C3DAffineTransformation& trans):
 	C3DTransformation::iterator_impl(pos, size),
-	_M_trans(trans), 
-	_M_value(trans.apply(C3DFVector(pos)))
+	m_trans(trans), 
+	m_value(trans.apply(C3DFVector(pos)))
 {
-	_M_dx = _M_trans.apply(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - _M_value;
+	m_dx = m_trans.apply(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
 }
 
 C3DTransformation::iterator_impl * C3DAffineTransformation::iterator_impl::clone() const
 {
-	return new iterator_impl(get_pos(), get_size(), _M_trans); 
+	return new iterator_impl(get_pos(), get_size(), m_trans); 
 }
 
 const C3DFVector&  C3DAffineTransformation::iterator_impl::do_get_value()const
 {
-	return _M_value; 
+	return m_value; 
 }
 
 void C3DAffineTransformation::iterator_impl::do_x_increment()
 {
-	_M_value += _M_dx; 
+	m_value += m_dx; 
 }
 
 void C3DAffineTransformation::iterator_impl::do_y_increment()
 {
-	_M_value = _M_trans.apply(C3DFVector(get_pos())); 
-	_M_dx = _M_trans.apply(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - _M_value;
+	m_value = m_trans.apply(C3DFVector(get_pos())); 
+	m_dx = m_trans.apply(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
 }
 
 void C3DAffineTransformation::iterator_impl::do_z_increment()
 {
-	_M_value = _M_trans.apply(C3DFVector(get_pos())); 
-	_M_dx = _M_trans.apply(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - _M_value;
+	m_value = m_trans.apply(C3DFVector(get_pos())); 
+	m_dx = m_trans.apply(C3DFVector(get_pos().x + 1.0, get_pos().y, get_pos().z)) - m_value;
 }
 
 

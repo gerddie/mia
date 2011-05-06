@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -38,24 +38,30 @@ NS_MIA_BEGIN
 typedef std::map<std::string, std::string> CParsedOptions;
 
 
-/** \class CComplexOptionParser
+/** 
     \brief Parser for complex command line options
-        This is a little parser to parse more complex command line options.
-	The syntax of the command line is
-	"ssd:src=img1.v,ref=img2.v+lm:src=lm1.lmx,ref=lm2.lmx,f=[tsp:r=3]"
-	with one level of brackets allowed
-
-	Above options string will be split off like:
-	< ssd, { < src, img1.v  >, < ref, img2.v  > } >
-	<   lm, ( < src, lm1.lmx >, < ref, lm2.lmx >, < f, tsp:r=3 > } >
+    
+    This is a little parser to parse more complex command line options.
+    The syntax of the command line is
+    "ssd:src=img1.v,ref=img2.v+lm:src=lm1.lmx,ref=lm2.lmx,f=[tsp:r=3]"
+    with one level of brackets allowed
+    
+    Above options string will be split off like:
+    < ssd, { < src, img1.v  >, < ref, img2.v  > } >
+    <   lm, ( < src, lm1.lmx >, < ref, lm2.lmx >, < f, tsp:r=3 > } >
 */
 
 class EXPORT_CORE CComplexOptionParser {
 
 public:
 
+	/** define thy type for a list of separators*/
 	typedef char SSeperators[];
+
+	/// Type for a map of parts of a complex option 
 	typedef std::multimap<std::string, CParsedOptions> CParts;
+
+	/// the iterator over the parts of a complex option 
 	typedef CParts::const_iterator const_iterator;
 
 	/**
@@ -85,12 +91,12 @@ private:
 	CParsedOptions::value_type split_pair_b(const std::string& s, char c)const;
 	CParsedOptions::value_type split_pair(const std::string& s, char c)const;
 
-	CParts _M_Parts;
+	CParts m_Parts;
 
-	static char _M_parts_seperator;
-	static char _M_part_options;
-	static char _M_option_seperator;
-	static char _M_assignment_seperator;
+	static char m_parts_seperator;
+	static char m_part_options;
+	static char m_option_seperator;
+	static char m_assignment_seperator;
 
 };
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -63,9 +63,9 @@ public:
 		virtual void do_x_increment(); 
 		virtual void do_y_increment(); 
 
-		const C2DRigidTransformation& _M_trans;
-		C2DFVector _M_value;
-		C2DFVector _M_dx;
+		const C2DRigidTransformation& m_trans;
+		C2DFVector m_value;
+		C2DFVector m_dx;
 
 	};
 
@@ -102,11 +102,11 @@ private:
 	void evaluate_matrix() const;
 	C2DRigidTransformation(const C2DRigidTransformation& other);
 	C2DRigidTransformation& operator =(const C2DRigidTransformation& other);
-	mutable std::vector<double> _M_t;
-	C2DBounds _M_size;
-	C2DFVector _M_translation;
-	float _M_rotation;
-	mutable bool _M_matrix_valid;
+	mutable std::vector<double> m_t;
+	C2DBounds m_size;
+	C2DFVector m_translation;
+	float m_rotation;
+	mutable bool m_matrix_valid;
 };
 
 

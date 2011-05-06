@@ -1,5 +1,5 @@
 /* -*- mona-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -30,14 +30,14 @@ NS_MIA_BEGIN
 
 template <class Image>	
 class TBinarize: public TImageFilter<Image> {
-	float _M_min; 
-	float _M_max; 
+	float m_min; 
+	float m_max; 
 public:
 	typedef typename TImageFilter<Image>::result_type result_type; 
 	
 	TBinarize(float min, float max):
-		_M_min(min), 
-		_M_max(max)
+		m_min(min), 
+		m_max(max)
 	{
 	}
 	
@@ -55,8 +55,8 @@ public:
 	virtual typename TImageFilterPlugin<Image>::ProductPtr do_create()const;
 	virtual const std::string do_get_descr()const; 
 private: 
-	float _M_min; 
-	float _M_max; 
+	float m_min; 
+	float m_max; 
 
 };
 	

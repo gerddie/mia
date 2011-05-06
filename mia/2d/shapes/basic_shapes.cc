@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Evolutionary Anthropoloy
  * BIT, ETSI Telecomunicacion, UPM
@@ -20,6 +20,47 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/*
+  LatexBeginPluginDescription{2D neighborhood shapes}
+
+
+  \subsection{Basic shapes}
+  \label{shapes2d:basic}
+
+  \begin{description}
+   
+   \item [Plugin:] 4n, 8n 
+   \item [Description:] provide the simple neighbourhood shapes, 'o' indicates the center (that belongs to the shape) 
+       and 'x' the additional elements. 
+   \begin{itemize}
+   \item 4n 
+     \begin{tabular}{|c|c|c|}
+     \hline 
+     & x & \\
+     \hline 
+     x & o & x \\
+     \hline 
+     & x & \\
+     \hline 
+     \end{tabular}
+   \item 8n 
+     \begin{tabular}{|c|c|c|}
+     \hline 
+     x & x & x\\
+     \hline 
+     x & o & x \\
+     \hline 
+     x & x & x\\
+     \hline 
+     \end{tabular}
+   \end{itemize}
+   
+   \end{description}
+   These plug-ins don't take parameters. 
+   
+  LatexEnd
+*/
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

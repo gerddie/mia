@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -20,6 +20,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/*
+  LatexBeginPluginSection{2D neighborhood shapes}
+  \label{sec:2dshapes}
+  
+  These 2D shapes define neighbourhoods for a variety of image processing filters, 
+  like, e.g., morphological filters \ref{filter2d:morph} or neighborhood aware threshholding \ref{filter2d:thresh}. 
+  Shapes are always binary. 
+  
+  LatexEnd
+*/
+
+
 
 
 #include <mia/core/export_handler.hh>

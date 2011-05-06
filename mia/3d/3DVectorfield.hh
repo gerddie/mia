@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -47,7 +47,14 @@ typedef T3DVectorfield<C3DFVector>  C3DFVectorfield;
 typedef T3DVectorfield<C3DDVector>  C3DDVectorfield;
 typedef std::shared_ptr<C3DFVectorfield > P3DFVectorfield;
 
-EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& a, const C3DFVectorfield& b);
+/**
+   Concat two vector fields assuming these define transformations 
+   A(x) = x - a(x) and B(x) = x - b(x), hence c(x) = a(x-b(x)) + b(x) 
+   \param[in,out] lhs left input vector field and output 
+   \param[in] rhs right input vector field and output 
+   \returns lhs after processing 
+ */
+EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& lhs, const C3DFVectorfield& rhs);
 
 NS_MIA_END
 

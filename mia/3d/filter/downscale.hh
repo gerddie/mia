@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -40,8 +40,8 @@ public:
 private:
 	mia::C3DFilter::result_type do_filter(const mia::C3DImage& image) const;
 
-	mia::C3DFilterPlugin::ProductPtr _M_smoothing;
-	const mia::C3DBounds _M_block_size;
+	mia::C3DFilterPlugin::ProductPtr m_smoothing;
+	const mia::C3DBounds m_block_size;
 
 
 };
@@ -55,8 +55,8 @@ private:
 
 	virtual bool  do_test() const;
 	void prepare_path() const;
-	mia::C3DBounds _M_b;
-	std::string _M_filter;
+	mia::C3DBounds m_b;
+	std::string m_filter;
 };
 
 NS_END

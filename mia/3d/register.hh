@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,9 @@ NS_MIA_BEGIN
 typedef std::shared_ptr< C3DFVectorfield > P3DFVectorfield;
 
 /**
-   The 3D non-rigid image registration class. Its usage is very simple:
+   \brief A 3D non-rigid image registration class. 
+
+   A 3D non-rigid image registration class. 
    Initialise it with the desired parameters and call it with the
    source (template) and reference image to obtain a vector field
    describing the registration.
@@ -56,7 +58,7 @@ public:
                   registration
 	   \param save_steps save the deformed source image for each registration step
 	 */
-	C3DImageRegister(size_t start_size, const C3DImageCost& cost, size_t max_iter,
+	C3DImageRegister(size_t start_size, C3DImageCost& cost, size_t max_iter,
 			 C3DRegModel& model, C3DRegTimeStep& time_step,
 			 const C3DInterpolatorFactory&  ipf, float outer_epsilon, bool save_steps);
 
@@ -71,15 +73,15 @@ private:
 	void reg_level(const C3DImage& source, const C3DImage& reference, C3DFVectorfield& result);
 	void reg_level_regrid(const C3DImage& source, const C3DImage& reference, C3DFVectorfield& result);
 	void reg_level_regrid_opt(const C3DImage& source, const C3DImage& reference, C3DFVectorfield& result);
-	size_t _M_start_size;
-	const C3DImageCost& _M_cost;
-	size_t _M_max_iter;
-	C3DRegModel& _M_model;
-	C3DRegTimeStep& _M_time_step;
-	const C3DInterpolatorFactory& _M_ipf;
-	float _M_outer_epsilon;
-	bool _M_save_steps;
-	size_t _M_mnum;
+	size_t m_start_size;
+	C3DImageCost& m_cost;
+	size_t m_max_iter;
+	C3DRegModel& m_model;
+	C3DRegTimeStep& m_time_step;
+	const C3DInterpolatorFactory& m_ipf;
+	float m_outer_epsilon;
+	bool m_save_steps;
+	size_t m_mnum;
 };
 
 typedef std::shared_ptr<C3DRegModel > P3DRegModel;

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,29 @@
  *
  */
 
+/* 
+   LatexBeginPluginDescription{2D image filters}
+   
+   \subsection{Median filter}
+   \label{filter2d:median}
+   
+   \begin{description}
+   
+   \item [Plugin:] median
+   \item [Description:] Apply the median filter. 
+   \item [Input:] Abitrary gray scale or binary image 
+   \item [Output:] The filtered image of the same pixel type and dimension 
+   
+   \plugtabstart
+   w &  int & filter width parameter & 1  \\
+   \plugtabend
+   
+   \end{description}
+
+   LatexEnd  
+ */
+
+
 #include <limits>
 
 #include <mia/core/filter.hh>
@@ -29,7 +52,7 @@ NS_MIA_USE;
 using namespace std;
 
 C2DMedian::C2DMedian(int hw):
-	_M_hw(hw)
+	m_hw(hw)
 {
 }
 
@@ -83,13 +106,13 @@ typename C2DMedian::result_type C2DMedian::operator () (const T2DImage<T>& data)
 	T2DImage<T> *tresult = new T2DImage<T>(data.get_size());
 	P2DImage result(tresult);
 
-	vector<T> target_vector((2 * _M_hw + 1) * (2 * _M_hw + 1));
+	vector<T> target_vector((2 * m_hw + 1) * (2 * m_hw + 1));
 
 	typename T2DImage<T>::iterator i = tresult->begin();
 
 	for (int y = 0; y < (int)data.get_size().y; ++y)
 		for (int x = 0; x < (int)data.get_size().x; ++x, ++i)
-			*i = __dispatch_filter<T>::apply(data, x, y, _M_hw, target_vector);
+			*i = __dispatch_filter<T>::apply(data, x, y, m_hw, target_vector);
 
 	cvdebug() << "C2DMedian::operator () end\n";
 	return result;
@@ -104,12 +127,12 @@ P2DImage C2DMedian::do_filter(const C2DImage& image) const
 C2DFilterPluginFactory::C2DFilterPluginFactory():
 	C2DFilterPlugin("median")
 {
-	add_parameter("w", new CIntParameter(_M_hw, 0, numeric_limits<int>::max(), false, "half filter width"));
+	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(), false, "half filter width"));
 }
 
 C2DFilterPluginFactory::ProductPtr C2DFilterPluginFactory::do_create()const
 {
-	return C2DFilterPluginFactory::ProductPtr(new C2DMedian(_M_hw));
+	return C2DFilterPluginFactory::ProductPtr(new C2DMedian(m_hw));
 }
 
 const string C2DFilterPluginFactory::do_get_descr()const
@@ -120,8 +143,8 @@ const string C2DFilterPluginFactory::do_get_descr()const
 
 
 C2DSaltAndPepperFilter::C2DSaltAndPepperFilter(int hwidth, float thresh):
-	_M_width(hwidth),
-	_M_thresh(thresh)
+	m_width(hwidth),
+	m_thresh(thresh)
 {
 }
 
@@ -133,14 +156,14 @@ P2DImage C2DSaltAndPepperFilter::operator () (const T2DImage<T>& data) const
 
 	typename T2DImage<T>::iterator i = result->begin();
 
-	vector<T> target_vector((2 * _M_width + 1) * (2 * _M_width + 1));
+	vector<T> target_vector((2 * m_width + 1) * (2 * m_width + 1));
 
 
 	for (size_t y = 0; y < data.get_size().y; ++y)
 		for (size_t x = 0; x < data.get_size().x; ++x, ++i, ++inp) {
-			T res = __dispatch_filter<T>::apply(data, x, y, _M_width, target_vector);
+			T res = __dispatch_filter<T>::apply(data, x, y, m_width, target_vector);
 			float delta = ::fabs((double)(res - *inp));
-			if (delta > _M_thresh)
+			if (delta > m_thresh)
 				*i = res;
 		}
 	return P2DImage(result);
@@ -155,16 +178,16 @@ P2DImage C2DSaltAndPepperFilter::do_filter(const C2DImage& image) const
 
 C2DSaltAndPepperFilterFactory::C2DSaltAndPepperFilterFactory():
 	C2DFilterPlugin("sandp"),
-	_M_hw(1),
-	_M_thresh(100)
+	m_hw(1),
+	m_thresh(100)
 {
-	add_parameter("w", new CIntParameter(_M_hw, 0, numeric_limits<int>::max(), false, "filter width parameter"));
-	add_parameter("thresh", new CFloatParameter(_M_thresh, 0, numeric_limits<float>::max(), false, "thresh value"));
+	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(), false, "filter width parameter"));
+	add_parameter("thresh", new CFloatParameter(m_thresh, 0, numeric_limits<float>::max(), false, "thresh value"));
 }
 
 C2DFilterPlugin::ProductPtr C2DSaltAndPepperFilterFactory::do_create()const
 {
-	return C2DFilterPlugin::ProductPtr(new C2DSaltAndPepperFilter(_M_hw, _M_thresh));
+	return C2DFilterPlugin::ProductPtr(new C2DSaltAndPepperFilter(m_hw, m_thresh));
 }
 const string  C2DSaltAndPepperFilterFactory::do_get_descr() const
 {

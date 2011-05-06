@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2009-2010
+ * Copyright (c) Leipzig, Madrid 2009-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *

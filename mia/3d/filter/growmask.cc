@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,6 +18,32 @@
  *
  */
 
+/* 
+   LatexBeginPluginDescription{3D image filters}
+   
+   \subsection{Region growing based on an initial seed mask}
+   \label{filter3d:growmask}
+   
+   \begin{description}
+   
+   \item [Plugin:] growmask
+   \item [Description:] Use an input binary mask and a reference gray scale image to do region growing 
+                        by adding pixels as long as the have a lower intensity above a given threshold.  
+   \item [Input:] Binary seed mask image.
+   \item [Output:] Binary grown mask image. 
+   
+   \plugtabstart
+   ref & string & reference image for mask region growing, may come from the data pool and must be of the same size 
+	          like the seed mask image &  \\ 
+   shape & string & neighborhood mask as provided by the shape plugins \ref{sec:3dshapes} & 6n \\
+   min & float & lower threshold for mask growing & 1.0 \\
+   \plugtabend
+   
+   \end{description}
+
+   LatexEnd  
+ */
+
 
 #include <limits>
 #include <queue>
@@ -25,7 +51,7 @@
 // boost type trains are needed to check whether we are dealing with an integer pixel valued image
 #include <boost/type_traits.hpp>
 
-// this is for the definition of the 2D image plugin base classes
+// this is for the definition of the 3D image plugin base classes
 #include <mia/3d/filter/growmask.hh>
 #include <mia/3d/3dimageio.hh>
 
@@ -58,17 +84,17 @@ private:
 				    const C3DBitImage& mask,
 				    T value, queue <seed_t<T> >& pool)const ;
 	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
-	C3DBitImage _M_start_mask;
-	P3DShape _M_neigborhood;
-	float _M_min;
+	C3DBitImage m_start_mask;
+	P3DShape m_neigborhood;
+	float m_min;
 };
 
 
 
 C3DGrowmask::C3DGrowmask(const mia::C3DImageDataKey& reference, P3DShape neigborhood, float min):
-	_M_ref(reference),
-	_M_neigborhood(neigborhood),
-	_M_min(min)
+	m_ref(reference),
+	m_neigborhood(neigborhood),
+	m_min(min)
 {
 }
 
@@ -90,14 +116,14 @@ struct __dispatch_growmask<bool> {
 template <typename T>
 C3DGrowmask::result_type C3DGrowmask::operator () (const mia::T3DImage<T>& data) const
 {
-	C3DImageIOPlugin::PData in_image_list = _M_ref.get();
+	C3DImageIOPlugin::PData in_image_list = m_ref.get();
 
 	if (!in_image_list || in_image_list->empty())
 		throw invalid_argument("C3DGrowmask: no image available in data pool");
 
 	P3DImage image = (*in_image_list)[0];
 
-	return __dispatch_growmask<T>::apply(data, _M_neigborhood, _M_min, *image);
+	return __dispatch_growmask<T>::apply(data, m_neigborhood, m_min, *image);
 }
 
 
@@ -110,12 +136,12 @@ P3DImage C3DGrowmask::do_filter(const C3DImage& image) const
 /* The factory constructor initialises the plugin name, and takes care that the plugin help will show its parameters */
 C3DGrowmaskImageFilterFactory::C3DGrowmaskImageFilterFactory():
 	C3DFilterPlugin("growmask"),
-	_M_shape_descr("6n"),
-	_M_min(1.0)
+	m_shape_descr("6n"),
+	m_min(1.0)
 {
-	add_parameter("ref", new CStringParameter(_M_ref_filename, true, "reference image for mask region growing"));
-	add_parameter("shape", new CStringParameter(_M_shape_descr, true, "neighborhood mask"));
-	add_parameter("min", new CFloatParameter(_M_min, -numeric_limits<float>::max(),
+	add_parameter("ref", new CStringParameter(m_ref_filename, true, "reference image for mask region growing"));
+	add_parameter("shape", new CStringParameter(m_shape_descr, true, "neighborhood mask"));
+	add_parameter("min", new CFloatParameter(m_min, -numeric_limits<float>::max(),
 						 numeric_limits<float>::max(), false,
 						 "lower threshold for mask growing"));
 }
@@ -125,11 +151,11 @@ C3DFilterPlugin::ProductPtr C3DGrowmaskImageFilterFactory::do_create()const
 {
 	// create neigborhood shape
 
-	P3DShape shape(C3DShapePluginHandler::instance().produce(_M_shape_descr.c_str()));
+	P3DShape shape(C3DShapePluginHandler::instance().produce(m_shape_descr.c_str()));
 
 	// load reference image
-	C3DImageDataKey ref_data = C3DImageIOPluginHandler::instance().load_to_pool(_M_ref_filename);
-	return C3DFilterPlugin::ProductPtr(new C3DGrowmask(ref_data,shape, _M_min));
+	C3DImageDataKey ref_data = C3DImageIOPluginHandler::instance().load_to_pool(m_ref_filename);
+	return C3DFilterPlugin::ProductPtr(new C3DGrowmask(ref_data,shape, m_min));
 }
 
 /* This function sreturns a short description of the filter */
@@ -150,9 +176,9 @@ extern "C" EXPORT CPluginBase *get_plugin_interface()
 
 
 C3DDoGrowmask::C3DDoGrowmask(const C3DBitImage& start_mask, P3DShape neigborhood, float min):
-	_M_start_mask(start_mask),
-	_M_neigborhood(neigborhood),
-	_M_min(min)
+	m_start_mask(start_mask),
+	m_neigborhood(neigborhood),
+	m_min(min)
 {
 	assert(start_mask.get_pixel_type() == it_bit);
 }
@@ -162,8 +188,8 @@ void C3DDoGrowmask::add_neigborhood(const C3DBounds& pos, const T3DImage<T>& ima
 				    const C3DBitImage& mask,
 				    T value, queue <seed_t<T> >& pool) const
 {
-	for (C3DShape::const_iterator i = _M_neigborhood->begin();
-	     i != _M_neigborhood->end(); ++i) {
+	for (C3DShape::const_iterator i = m_neigborhood->begin();
+	     i != m_neigborhood->end(); ++i) {
 
 		C3DBounds x( pos.x + i->x,pos.y + i->y, pos.z + i->z);
 
@@ -171,7 +197,7 @@ void C3DDoGrowmask::add_neigborhood(const C3DBounds& pos, const T3DImage<T>& ima
 			continue;
 
 		T tv = image(x);
-		if ( ( tv <= value && tv >= _M_min) && !mask(x) )
+		if ( ( tv <= value && tv >= m_min) && !mask(x) )
 			pool.push(seed_t<T>(x, tv));
 	}
 }
@@ -182,9 +208,9 @@ C3DDoGrowmask::result_type C3DDoGrowmask::operator () (const T3DImage<T>& data) 
 {
 	queue <seed_t<T> > pool;
 
-	if (data.get_size() != _M_start_mask.get_size())
+	if (data.get_size() != m_start_mask.get_size())
 		throw invalid_argument("C3DGrowmask::filter: seed mask and reference must be ofthe same size");
-	C3DBitImage *r = new C3DBitImage(_M_start_mask);
+	C3DBitImage *r = new C3DBitImage(m_start_mask);
 	P3DImage result(r);
 
 	// first initialize the seed queue

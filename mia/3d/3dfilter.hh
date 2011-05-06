@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -61,6 +61,11 @@ typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCombinerPlugin> > C3DIma
 
 
 
+/**
+   Convenience function to create a filter chain from a series of filter descriptions 
+   \param chain the descriptions 
+   \returns the filter chain as a vector 
+ */
 
 template <typename S>
 std::vector<C3DFilterPlugin::ProductPtr> create_filter_chain(const std::vector<S>& chain)

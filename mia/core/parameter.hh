@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -35,10 +35,11 @@
 NS_MIA_BEGIN
 
 /**
-   The base class for parameters that might be set based on strings.
-   The main use-case is command line parameters for plug-ins.
-*/
+   \brief The base class for parameters used in complex options 
 
+   The base class for parameters that might be set based on strings.
+   The main use-case is to provide parameters to plug-ins.
+*/
 class EXPORT_CORE CParameter {
 public:
 	/**
@@ -73,6 +74,7 @@ public:
 	*/
 	bool set(const std::string& str_value);
 
+	/// @returns the help description of the parameter 
 	const char *get_descr() const;
 protected:
 
@@ -82,6 +84,7 @@ protected:
 	*/
 	virtual void do_descr(std::ostream& os) const = 0;
 
+	/// create an error message by using the given value that raises the error 
 	const std::string errmsg(const std::string& err_value) const;
 private:
 	/** the actual (abstract) function to set the parameter that needs to be overwritten
@@ -89,15 +92,17 @@ private:
 	*/
 	virtual bool do_set(const std::string& str_value) = 0;
 
-	bool _M_required;
-	const char *_M_type;
-	const char *_M_descr;
+	bool m_required;
+	const char *m_type;
+	const char *m_descr;
 };
 
 
 /**
+   \brief Generic type of a complex paramter 
+
    The (templated) typed parameter. There needs to be defined an
-   \a operator  << (istream& is, T& x) for the \a do_set method to work.
+   \a operator  &lt;&lt; (istream& is, T& x) for the \a do_set method to work.
 */
 
 template <typename T, const char * const type>
@@ -118,10 +123,12 @@ protected:
 private:
 	virtual bool do_set(const std::string& str_value);
 	virtual void adjust(T& value);
-	T& _M_value;
+	T& m_value;
 };
 
 /**
+   \brief Scalar parameter with an expected value range 
+
    A scalar parameter that supports a bracketing range. If the user tries to set the parameter
    to a value outside the range, the set method will throw an \a invalid_argument exception
 */
@@ -145,8 +152,8 @@ protected:
 	void do_descr(std::ostream& os) const;
 private:
 	virtual void adjust(T& value);
-	T _M_min;
-	T _M_max;
+	T m_min;
+	T m_max;
 
 };
 
@@ -157,7 +164,6 @@ public:
 	/** Constructor
 	   \param value reference to the parameter handled by this parameter object
 	   \param dict dictionary for parameter translation
-	   \param required set to \a true if the parameter has to be set by the user
 	   \param descr a description of the parameter
 	 */
 	CDictParameter(T& value, const TDictMap<T> dict, const char *descr);
@@ -168,8 +174,8 @@ protected:
 	virtual void do_descr(std::ostream& os) const;
 private:
 	virtual bool do_set(const std::string& str_value);
-	T& _M_value;
-	const TDictMap<T> _M_dict;
+	T& m_value;
+	const TDictMap<T> m_dict;
 
 };
 
@@ -179,8 +185,7 @@ class CSetParameter : public CParameter{
 public:
 	/** Constructor
 	   \param value reference to the parameter handled by this parameter object
-	   \param dict dictionary for parameter translation
-	   \param required set to \a true if the parameter has to be set by the user
+	   \param valid_set dictionary for parameter translation
 	   \param descr a description of the parameter
 	 */
 	CSetParameter(T& value, const std::set<T>& valid_set, const char *descr);
@@ -191,8 +196,8 @@ protected:
 	virtual void do_descr(std::ostream& os) const;
 private:
 	virtual bool do_set(const std::string& str_value);
-	T& _M_value;
-	const std::set<T> _M_valid_set;
+	T& m_value;
+	const std::set<T> m_valid_set;
 
 };
 
@@ -203,7 +208,6 @@ class TParameter : public CParameter{
 public:
 	/** Constructor
 	   \param value reference to the parameter handled by this parameter object
-	   \param dict dictionary for parameter translation
 	   \param required set to \a true if the parameter has to be set by the user
 	   \param descr a description of the parameter
 	 */
@@ -215,15 +219,26 @@ protected:
 	virtual void do_descr(std::ostream& os) const;
 private:
 	virtual bool do_set(const std::string& str_value);
-	T& _M_value;
+	T& m_value;
 };
 
 
+/// template parameter string for unsigned int parameter type 
 extern const char  type_str_uint[5];
+
+/// template parameter string for int parameter type 
 extern const char  type_str_int[4];
+
+/// template parameter string for float parameter type 
 extern const char  type_str_float[6];
+
+/// template parameter string for double parameter type 
 extern const char  type_str_double[7];
+
+/// template parameter string for string parameter type 
 extern const char  type_str_string[7];
+
+/// template parameter string for boolean parameter type 
 extern const char  type_str_bool[5];
 
 /// an integer parameter (with range)
@@ -232,6 +247,7 @@ typedef TRangeParameter<int, type_str_int> CIntParameter;
 typedef TRangeParameter<unsigned int, type_str_uint> CUIntParameter;
 /// a float parameter (with range)
 typedef TRangeParameter<float, type_str_float> CFloatParameter;
+/// a double parameter (with range)
 typedef TRangeParameter<double, type_str_double> CDoubleParameter;
 /// an string parameter
 typedef CTParameter<std::string,type_str_string> CStringParameter;
@@ -242,15 +258,15 @@ typedef CTParameter<bool, type_str_bool> CBoolParameter;
 template <typename T>
 CDictParameter<T>::CDictParameter(T& value, const TDictMap<T> dict, const char *descr):
 	CParameter("dict", false, descr),
-	_M_value(value),
-	_M_dict(dict)
+	m_value(value),
+	m_dict(dict)
 {
 }
 
 template <typename T>
 void CDictParameter<T>::do_descr(std::ostream& os) const
 {
-	const std::set<std::string> names = _M_dict.get_name_set();
+	const std::set<std::string> names = m_dict.get_name_set();
 	os << '(';
 
 	std::set<std::string>::const_iterator i = names.begin();
@@ -269,25 +285,25 @@ void CDictParameter<T>::do_descr(std::ostream& os) const
 template <typename T>
 bool CDictParameter<T>::do_set(const std::string& str_value)
 {
-	_M_value = _M_dict.get_value(str_value.c_str());
+	m_value = m_dict.get_value(str_value.c_str());
 	return true;
 }
 
 template <typename T>
 CSetParameter<T>::CSetParameter(T& value, const std::set<T>& valid_set, const char *descr):
 	CParameter("set", false, descr),
-	_M_value(value),
-	_M_valid_set(valid_set)
+	m_value(value),
+	m_valid_set(valid_set)
 {
-	if (_M_valid_set.empty())
+	if (m_valid_set.empty())
 		throw std::invalid_argument("CSetParameter initialized with empty set");
 }
 
 template <typename T>
 void CSetParameter<T>::do_descr(std::ostream& os) const
 {
-	typename std::set<T>::const_iterator i = _M_valid_set.begin();
-	typename std::set<T>::const_iterator e = _M_valid_set.end();
+	typename std::set<T>::const_iterator i = m_valid_set.begin();
+	typename std::set<T>::const_iterator e = m_valid_set.end();
 
 	assert ( i != e );
 
@@ -305,17 +321,17 @@ bool CSetParameter<T>::do_set(const std::string& str_value)
 	std::stringstream s(str_value);
 	T val;
 	s >> val;
-	if (s.fail() ||  _M_valid_set.find(val) == _M_valid_set.end()) {
+	if (s.fail() ||  m_valid_set.find(val) == m_valid_set.end()) {
 		throw std::invalid_argument(errmsg(str_value));
 	}
-	_M_value = val;
+	m_value = val;
 	return true;
 }
 
 template <typename T>
 TParameter<T>::TParameter(T& value, bool required, const char *descr):
 	CParameter("streamable",  required, descr),
-	_M_value(value)
+	m_value(value)
 {
 }
 
@@ -324,14 +340,14 @@ TParameter<T>::TParameter(T& value, bool required, const char *descr):
 template <typename T>
 void TParameter<T>::do_descr(std::ostream& os) const
 {
-	os << _M_value;
+	os << m_value;
 }
 
 template <typename T>
 bool TParameter<T>::do_set(const std::string& str_value)
 {
 	std::stringstream s(str_value);
-	s >> _M_value;
+	s >> m_value;
 	if (s.fail())
 		throw std::invalid_argument(errmsg(str_value));
 	return true;

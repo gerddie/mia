@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -28,9 +28,19 @@
 #include <mia/core/ioplugin.hh>
 #include <mia/2d/transform.hh>
 
+/* Specializations of certain templates to create the necesities for the 
+   2D transformation IO */ 
+   
+
 NS_MIA_BEGIN
+
+/// The base class for 2D transformation IO plugins 
 typedef TIOPlugin<C2DTransformation> C2DTransformationIO; 
+
+/// The 2D transformationb plugin handler 
 typedef TIOHandlerSingleton< TIOPluginHandler<C2DTransformationIO> > C2DTransformationIOPluginHandler;
+
+/// The data key type for the CDatapool storage 
 typedef C2DTransformationIOPluginHandler::Instance::DataKey C2DTransformationDataKey;
 NS_MIA_END
 

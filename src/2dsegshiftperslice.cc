@@ -1,7 +1,7 @@
 
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@
 #include <libxml++/libxml++.h>
 
 #include <mia/core.hh>
+#include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/SegSet.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dfilter.hh>
@@ -57,7 +58,7 @@ CSegSet load_segmentation(const string& s)
 static string get_number(const string& fname)
 {
 	bfs::path f(fname);
-	string the_stem = f.stem();
+	string the_stem = __bfs_get_stem(f);
 	auto rs = the_stem.rbegin();
 	string result;
 	while (rs != the_stem.rend() && isdigit(*rs))
@@ -70,7 +71,7 @@ const char *g_description =
 	"on a per slice base." 
 	;
 
-int do_main(int argc, const char *args[])
+int do_main(int argc, const char *argv[])
 {
 	string src_filename;
 	string out_filename;
@@ -87,7 +88,9 @@ int do_main(int argc, const char *args[])
 				    CCmdOption::required));
 
 
-	options.parse(argc, args);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	CSegSet src_segset = load_segmentation(src_filename);
 	CSegSet::Frames& frames = src_segset.get_frames();
@@ -112,22 +115,22 @@ int do_main(int argc, const char *args[])
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-int main(int argc, const char *args[] )
+int main(int argc, const char *argv[] )
 {
 	try {
-		return do_main(argc, args);
+		return do_main(argc, argv);
 	}
 	catch (const runtime_error &e){
-		cerr << args[0] << " runtime: " << e.what() << endl;
+		cerr << argv[0] << " runtime: " << e.what() << endl;
 	}
 	catch (const invalid_argument &e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (const exception& e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (...){
-		cerr << args[0] << " unknown exception" << endl;
+		cerr << argv[0] << " unknown exception" << endl;
 	}
 	return EXIT_FAILURE;
 }

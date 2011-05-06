@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
@@ -69,7 +69,7 @@ public:
 
 struct FAddWeighted: public TFilter<P2DImage> {
 	FAddWeighted(float w):
-		_M_w(w)
+		m_w(w)
 	{
 	}
 
@@ -86,11 +86,11 @@ struct FAddWeighted: public TFilter<P2DImage> {
 		auto ia = a.begin();
 		auto ib = b.begin();
 
-		float w2 = 1.0 - _M_w;
+		float w2 = 1.0 - m_w;
 
 		// this should be properly clamped
 		while ( r != e ) {
-			*r = (T)(w2 * (float)*ia + _M_w * (float)*ib);
+			*r = (T)(w2 * (float)*ia + m_w * (float)*ib);
 			++r;
 			++ia;
 			++ib;
@@ -100,14 +100,14 @@ struct FAddWeighted: public TFilter<P2DImage> {
 	}
 
 private:
-	float _M_w;
+	float m_w;
 };
 
 class Convert2Float {
 public: 
 	C2DFImage operator () (P2DImage image) const; 
 private: 
-	FConvert2DImage2float _M_converter; 
+	FConvert2DImage2float m_converter; 
 }; 
 
 
@@ -386,9 +386,9 @@ int do_main( int argc, const char *argv[] )
 				   "Cost function for registration during the final registration")); 
 	
 
-	
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+		return EXIT_SUCCESS; 
 
-	options.parse(argc, argv, false);
 	params.interpolator.reset(create_2dinterpolation_factory(interpolator));
 
 	// load input data set
@@ -453,5 +453,5 @@ int main( int argc, const char *argv[] )
 
 inline C2DFImage Convert2Float::operator () (P2DImage image) const
 {
-	return ::mia::filter(_M_converter, *image); 
+	return ::mia::filter(m_converter, *image); 
 }

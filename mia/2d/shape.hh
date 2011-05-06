@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -31,10 +31,16 @@
 
 NS_MIA_BEGIN
 
+/// 2D shape class, see also TShape 
 typedef TShape<T2DVector, C2DBitImage> C2DShape;
+
+/// Pointer type of the C2DShape 
 typedef std::shared_ptr<C2DShape > P2DShape;
 
+/// Base class for Shape generating plug-ins 
 typedef TFactory<C2DShape> C2DShapePlugin;
+
+/// Plug-in handler for the shape plug-ins 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DShapePlugin> > C2DShapePluginHandler;
 
 NS_MIA_END

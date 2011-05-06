@@ -1,5 +1,5 @@
 /*  -*- mia-c++ -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Gert Wollny <gert.wollny at web.de>
  *
@@ -428,18 +428,18 @@ struct save_dispatch<bool> {
 class CVFFSaver: public TFilter<bool> {
 public:
 	CVFFSaver(COutputFile& f):
-		_M_f(f)
+		m_f(f)
 	{
 	}
 
 	template <class T>
 	bool operator ()(const T3DImage<T>& image) const
 	{
-		return save_dispatch<T>::apply(image, _M_f);
+		return save_dispatch<T>::apply(image, m_f);
 	}
 
 private:
-	COutputFile& _M_f;
+	COutputFile& m_f;
 };
 
 bool CVFF3DImageIO::do_save(string const&  filename, const C3DImageVector& data)const

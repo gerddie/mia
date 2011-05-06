@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +23,8 @@ NS_MIA_BEGIN
 
 template <class Image> 
 TBandPass<Image>::TBandPass(float min, float max):
-	_M_min(min), 
-	_M_max(max)
+	m_min(min), 
+	m_max(max)
 {
 }
 
@@ -42,7 +42,7 @@ typename TBandPass<Image>::result_type TBandPass<Image>::operator () (const Data
 	fill(result->begin(), result->end(), 0); 
 	
 	while (ib != ie) {
-		if (! (*ib < _M_min) && ! (*ib > _M_max))
+		if (! (*ib < m_min) && ! (*ib > m_max))
 			*r = *ib; 
 		++r; 
 		++ib; 
@@ -61,17 +61,19 @@ typename TBandPass<Image>::result_type TBandPass<Image>::do_filter(const Image& 
 template <class Image> 
 TBandPassFilterPlugin<Image>::TBandPassFilterPlugin():
 	TImageFilterPlugin<Image>("bandpass"), 
-	_M_min(0), 
-	_M_max(numeric_limits<float>::max())
+	m_min(0), 
+	m_max(numeric_limits<float>::max())
 {
-	this->add_parameter("min", new CFloatParameter(_M_min, 0, numeric_limits<float>::max(), false, "minimum of the band")); 
-	this->add_parameter("max", new CFloatParameter(_M_max, 0, numeric_limits<float>::max(), false, "maximum of the band")); 
+	this->add_parameter("min", new CFloatParameter(m_min, -numeric_limits<float>::max(), 
+						       numeric_limits<float>::max(), false, "minimum of the band")); 
+	this->add_parameter("max", new CFloatParameter(m_max, -numeric_limits<float>::max(), 
+						       numeric_limits<float>::max(), false, "maximum of the band")); 
 }
 
 template <class Image> 
 typename TImageFilterPlugin<Image>::ProductPtr TBandPassFilterPlugin<Image>::do_create()const
 {
-	return typename TImageFilterPlugin<Image>::ProductPtr(new TBandPass<Image>(_M_min, _M_max)); 
+	return typename TImageFilterPlugin<Image>::ProductPtr(new TBandPass<Image>(m_min, m_max)); 
 }
 
 template <class Image> 

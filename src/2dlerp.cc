@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -43,7 +43,7 @@ const char *g_description =
 
 struct FAddWeighted: public TFilter<P2DImage> {
 	FAddWeighted(float w):
-		_M_w(w)
+		m_w(w)
 		{
 		}
 	
@@ -59,11 +59,11 @@ struct FAddWeighted: public TFilter<P2DImage> {
 		typename T2DImage<T>::const_iterator ia = a.begin();
 		typename T2DImage<S>::const_iterator ib = b.begin();
 			
-		float w2 = 1.0 - _M_w;
+		float w2 = 1.0 - m_w;
 		
 		while ( r != e ) {
-			*r = (T)(w2 * *ia + _M_w * (float)*ib);
-			cvdebug() << w2 << " * " <<*ia << " + " << _M_w <<" * " <<  (float)*ib  << "->" << *r << "\n";
+			*r = (T)(w2 * *ia + m_w * (float)*ib);
+			cvdebug() << w2 << " * " <<*ia << " + " << m_w <<" * " <<  (float)*ib  << "->" << *r << "\n";
 			++r;
 			++ia;
 			++ib;
@@ -73,7 +73,7 @@ struct FAddWeighted: public TFilter<P2DImage> {
 	}
 	
 private:
-	float _M_w;
+	float m_w;
 };
 
 static void run_self_test()
@@ -111,18 +111,18 @@ static bool init_unit_test_suite( )
 template <typename F>
 struct FFilter {
 	FFilter(const F& f):
-		_M_f(f)
+		m_f(f)
 		{
 		}
 	
 	P2DImage operator () (const P2DImage& a, const P2DImage& b) const {
-		return ::mia::filter(_M_f, *a, *b);
+		return ::mia::filter(m_f, *a, *b);
 	}
 private:
-	const F& _M_f;
+	const F& m_f;
 };
 
-int do_main(int argc, char **args)
+int do_main(int argc, char **argv)
 {
 
 	CCmdOptionList options(g_description);
@@ -145,7 +145,9 @@ int do_main(int argc, char **args)
 				    "(if not given deduct from output file name)"));
 	options.push_back(make_opt( self_test, "self-test", 0, "run a self test of the tool"));
 	
-	options.parse(argc, args);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	if (!options.get_remaining().empty()) {
 		cerr << "Unknown options found\n";
@@ -153,7 +155,7 @@ int do_main(int argc, char **args)
 	}
 
 	if (self_test) {
-		return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, args );
+		return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );
 	}
 
 	if (positions.size() != 3) {
@@ -200,10 +202,10 @@ int do_main(int argc, char **args)
 }
 
 // for readablility the real main function encapsulates the do_main in a try-catch block
-int main(int argc, char **args)
+int main(int argc, char **argv)
 {
 	try {
-		return do_main(argc, args);
+		return do_main(argc, argv);
 	}
 	catch (invalid_argument& err) {
 		cerr << "invalid argument: " << err.what() << "\n";

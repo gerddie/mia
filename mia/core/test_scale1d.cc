@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -63,7 +63,7 @@ BOOST_FIXTURE_TEST_CASE( test_upscale_NN, ScaleFixtureBase)
 
 	initialize( in_size, init_src, test_size, init_test);
 
-	C1DScalar scaler(P1DInterpolatorFactory(new C1DInterpolatorFactory(C1DInterpolatorFactory::ipt_nn)));
+	C1DScalar scaler(P1DInterpolatorFactory(create_1dinterpolation_factory(ip_bspline0)));
 	vector<float> result(test_size);
 	scaler(src, result);
 	check_result(result);
@@ -78,7 +78,7 @@ BOOST_FIXTURE_TEST_CASE( test_upscale_linear, ScaleFixtureBase)
 
 	initialize( in_size, init_src, test_size, init_test);
 
-	C1DScalar scaler(P1DInterpolatorFactory(new C1DInterpolatorFactory(C1DInterpolatorFactory::ipt_linear)));
+	C1DScalar scaler(P1DInterpolatorFactory(create_1dinterpolation_factory(ip_bspline1)));
 	vector<float> result(test_size);
 	scaler(src, result);
 	check_result(result);
@@ -93,7 +93,7 @@ BOOST_FIXTURE_TEST_CASE( test_downscale, ScaleFixtureBase)
 
 	initialize( src_size, init_src, test_size, init_test);
 
-	C1DScalar scaler(P1DInterpolatorFactory(new C1DInterpolatorFactory(C1DInterpolatorFactory::ipt_linear)));
+	C1DScalar scaler(P1DInterpolatorFactory(create_1dinterpolation_factory(ip_bspline1)));
 	vector<float> result(test_size);
 	scaler(src, result);
 	check_result(result);

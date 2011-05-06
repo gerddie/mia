@@ -1,5 +1,5 @@
-/* -*- mona-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+/* -*- mia-c++  -*-
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -22,7 +22,7 @@
 
 #include <limits>
 #include <mia/2d/2dfilter.hh>
-#include <libmona/filter2dimage.hh>
+#include <libmia/filter2dimage.hh>
 
 
 namespace kuwahara_2dimage_filter {
@@ -45,14 +45,14 @@ private:
 	template <class Data2D>
 	void run_sub(const Data2D& image, int cx, int cy, float& mu, float& sigma)const;
 	
-	int _M_l; 
-	int _M_kh; 
+	int m_l; 
+	int m_kh; 
 
 	
 };
 
 typedef C2DImageFilter<C2DKuwahara> C2DKuwaharaImageFilter;
-//template class mona::C2DImageFilter<C2DKuwahara>; 
+//template class mia::C2DImageFilter<C2DKuwahara>; 
 
 
 class C2DKuwaharaImageFilterFactory: public C2DFilterPlugin {
@@ -63,8 +63,8 @@ public:
 };
 
 C2DKuwahara::C2DKuwahara(const CParsedOptions& options):
-	_M_l(param_hw.get_value(options)),
-	_M_kh(2 * _M_l +1)
+	m_l(param_hw.get_value(options)),
+	m_kh(2 * m_l +1)
 {
 }
 
@@ -72,8 +72,8 @@ template <class Data2D>
 void C2DKuwahara::run_sub(const Data2D& image, int cx, int cy, float& mu, float& sigma)const
 {
 	int n = 0; 
-	const int ymax = min(cy +  _M_kh, (int)image.get_size().y); 
-	const int xmax = min(cx +  _M_kh, (int)image.get_size().x); 
+	const int ymax = min(cy +  m_kh, (int)image.get_size().y); 
+	const int xmax = min(cx +  m_kh, (int)image.get_size().x); 
 	mu = 0.0f; 
 	sigma = 0.0f; 
 	
@@ -97,11 +97,11 @@ typename Data2D::value_type C2DKuwahara::run(const Data2D& image, int x, int y)c
 	float mu[5]; 
 	float sigma[5]; 
 	
-	run_sub(image, x - _M_kh + 1, y - _M_kh + 1, mu[0], sigma[0]); 
-	run_sub(image, x - _M_kh + 1, y            , mu[1], sigma[1]); 
-	run_sub(image, x            , y - _M_kh + 1, mu[2], sigma[2]); 
+	run_sub(image, x - m_kh + 1, y - m_kh + 1, mu[0], sigma[0]); 
+	run_sub(image, x - m_kh + 1, y            , mu[1], sigma[1]); 
+	run_sub(image, x            , y - m_kh + 1, mu[2], sigma[2]); 
 	run_sub(image, x            , y            , mu[3], sigma[3]);
-	run_sub(image, x - _M_l     , y - _M_l     , mu[4], sigma[4]);
+	run_sub(image, x - m_l     , y - m_l     , mu[4], sigma[4]);
 	
 	int best = 0; 
 	

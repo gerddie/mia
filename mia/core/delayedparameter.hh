@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -37,6 +37,8 @@ NS_MIA_BEGIN
 
 
 /**
+   \brief A parameter proxy object with a key to identify it.  
+
    Class for a parameter that can be stored in the internal data pool. 
  */
 template <typename T>
@@ -54,13 +56,13 @@ public:
 	 */
 	const T get() const; 
 private:
-	std::string _M_key;
+	std::string m_key;
 }; 
 
 
 template <typename T>
 TDelayedParameter<T>::TDelayedParameter(const std::string& key):
-	_M_key(key)
+	m_key(key)
 {
 }
 	
@@ -68,11 +70,11 @@ TDelayedParameter<T>::TDelayedParameter(const std::string& key):
 template <typename T>
 const T TDelayedParameter<T>::get() const
 {
-	if (!(CDatapool::Instance().has_key(_M_key))) {
-		THROW(std::invalid_argument, "TDelayedParameter::get(): Key '" << _M_key 
+	if (!(CDatapool::Instance().has_key(m_key))) {
+		THROW(std::invalid_argument, "TDelayedParameter::get(): Key '" << m_key 
 		      << "' is not availabe in the data pool");  
 	}
-	return boost::any_cast<T>(CDatapool::Instance().get(_M_key)); 
+	return boost::any_cast<T>(CDatapool::Instance().get(m_key)); 
 }
 
 NS_MIA_END

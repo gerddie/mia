@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2010 Gert Wollny 
+ * Copyright (c) Madrid 2010-2011 Gert Wollny 
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -81,7 +81,7 @@ public:
 	/**
 	   Construtor of the optimizer. 
 	   \param p problem to be optimized 
-	   \ot optimizer type used 
+	   \param ot optimizer type used 
 	 */
 	CFDFMinimizer(PProblem p, const gsl_multimin_fdfminimizer_type *ot); 
 	
@@ -100,7 +100,7 @@ public:
 	
 	/**
 	   Run the optimization 
-	   \retval x at entry contains the start point of the optimization at exit the optimized value 
+	   \param[in,out] x at entry contains the start point of the optimization at exit the optimized value 
 	   \returns returns a status whether the optimization succeeded or why it stopped 
 	 */
 	int run(DoubleVector& x); 
@@ -147,7 +147,7 @@ public:
 	/**
 	   Construtor of the optimizer. 
 	   \param p problem to be optimized 
-	   \ot optimizer type used 
+	   \param ot optimizer type used 
 	 */
 	CFMinimizer(PProblem p, const gsl_multimin_fminimizer_type *ot); 
 	
@@ -155,7 +155,7 @@ public:
 	
 	/**
 	   Run the optimization 
-	   \retval x at entry contains the start point of the optimization at exit the optimized value 
+	   \param[in,out] x at entry contains the start point of the optimization at exit the optimized value 
 	   \returns returns a status whether the optimization succeeded or why it stopped 
 	 */
 	int run(DoubleVector& x); 

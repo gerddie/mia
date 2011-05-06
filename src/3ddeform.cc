@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -39,7 +39,7 @@ using namespace std;
 typedef std::shared_ptr<C3DFVectorfield > P3DFVectorfield;
 
 
-int do_main(int argc, const char **args)
+int do_main(int argc, const char **argv)
 {
 	CCmdOptionList options(program_info);
 
@@ -55,7 +55,9 @@ int do_main(int argc, const char **args)
 	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p', "image interpolator"));
 
 
-	options.parse(argc, args);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+	
 
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 	const C3DVFIOPluginHandler::Instance&  vfioh = C3DVFIOPluginHandler::instance();
@@ -92,10 +94,10 @@ int do_main(int argc, const char **args)
 }
 
 
-int main(int argc, const char **args)
+int main(int argc, const char **argv)
 {
 	try {
-		return do_main(argc, args);
+		return do_main(argc, argv);
 	}
 	catch (invalid_argument& err) {
 		cerr << "invalid argument: " << err.what() << "\n";

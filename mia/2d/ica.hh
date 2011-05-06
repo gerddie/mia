@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@
 
 NS_MIA_BEGIN
 
+/// Specialization of the ICA for 2D images 
 typedef TDataSeriesICA<C2DFImage>  C2DImageSeriesICA;
 
 NS_MIA_END

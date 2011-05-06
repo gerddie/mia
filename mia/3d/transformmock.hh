@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -28,12 +28,15 @@
 NS_MIA_BEGIN
 
 /**
+   \brief A test class to enable running code that needs a transformation 
+
    This class mocks a transformation by implementing all the pure virtual 
    methods of the \a C3DTransformation interface. 
    It is used only for testing purpouses. 
  */
 
 struct  EXPORT_3D C3DTransformMock: public C3DTransformation {
+	/// @cond TESTINTERFACE 
 	C3DTransformMock();
 	C3DTransformMock(const C3DBounds& size);
 	virtual C3DTransformation *invert() const;
@@ -70,7 +73,7 @@ protected:
 		virtual void do_x_increment(); 
 		virtual void do_y_increment(); 
 		virtual void do_z_increment(); 
-		C3DFVector _M_value; 
+		C3DFVector m_value; 
 	}; 
 
 private:
@@ -78,7 +81,7 @@ private:
 	virtual C3DTransformation *do_clone() const;
         virtual P3DImage apply(const C3DImage& image, const C3DInterpolatorFactory& ipf) const;
 	C3DBounds m_size;
-
+	///@endcond 
 };
 
 NS_MIA_END

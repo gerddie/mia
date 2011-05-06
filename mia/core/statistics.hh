@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2010
+ * Copyright (c) Madrid 2010-2011
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -28,12 +28,16 @@
 
 
 /**
-   Functor to be called by mia::filter to evaluate mean and variance of 
+   \brief Functor to be called by mia::filter to evaluate mean and variance of 
    a series of data. 
-   
+
 */
 struct  FMeanVariance: public TFilter< pair<double, double> >  {
 
+	/** result type of this functor 
+	    - first = mean
+	    - second = variance 
+	*/
 	typedef TFilter< pair<double, double> >::result_type result_type; 
 	
 	/**
@@ -48,11 +52,15 @@ struct  FMeanVariance: public TFilter< pair<double, double> >  {
 }; 
 
 /**
-   Functor to be called by mia::filter to evaluate median and median average distance (MAD) of 
+   \brief Functor to be called by mia::filter to evaluate median and median average distance (MAD) of 
    a series of data. 
 */
 struct  FMedianMAD: public TFilter< pair<double, double> >  {
 
+	/** result type of this functor 
+	    - first = median 
+	    - second = MAD 
+	*/
 	typedef TFilter< pair<double, double> >::result_type result_type; 
 	
 	/**

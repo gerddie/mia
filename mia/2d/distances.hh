@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -29,6 +29,14 @@
 #include <mia/2d/defines2d.hh>
 
 NS_MIA_BEGIN
+
+/**
+   Evaluate the distance between a point and a löine segment 
+   @param point the point 
+   @param a start of line segment 
+   @param b end of line segment 
+   @returns distance 
+*/
 
 float EXPORT_2D distance_point_line(const C2DFVector& point,
 				    const C2DFVector& a,

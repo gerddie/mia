@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -35,12 +35,16 @@ using namespace std;
 /// definition of the Plugin interface loading function
 
 class CPluginBase;
+
+/// C function type that is provided by the plug-ins as entry point 
 typedef  CPluginBase* (*FPluginInterface)(void);
 
-/** \class CPluginModule
-    The plugin module loading class
- */
+/** 
+    \brief  The plugin module loading class. 
 
+    This class handles the loading of shared object modules and hides all the 
+    ugliness of platform dependency. 
+ */
 class EXPORT_CORE CPluginModule {
 public:
         /**
@@ -61,11 +65,12 @@ public:
 	const std::string& get_name() const; 
 
 private:
-	CDLLoader _M_loader;
+	CDLLoader m_loader;
 	size_t m_refs;
 	std::string m_name;
 };
 
+/// Shared pointer type of the CPluginModule
 typedef std::shared_ptr<CPluginModule > PPluginModule;
 
 NS_MIA_END

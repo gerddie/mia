@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -22,6 +22,31 @@
  *
  */
 
+/*
+  LatexBeginPluginDescription{2D image filters}
+
+  \subsection{Adaptive mean filter}
+  \label{filter2d:admean}
+  
+  \begin{description}
+  
+  \item [Plugin:] admean
+  \item [Description:] An adaptive mean filter that works like a normal mean filter, if the intensity 
+        variation within the filter mask is lower then the intensity variation in the whole image, 
+	that the uses a special formula if the local variation is higher then the image intensity variation.
+  \item [Input:] Abitrary gray scale image 
+  \item [Output:] The filtered image of the same pixel type and dimension 
+  
+  \plugtabstart
+  w &  int & filter width parameter & 1  \\
+  \plugtabend
+  
+  \end{description}
+
+  LatexEnd
+*/
+
+
 #include <mia/2d/filter/admean.hh>
 
 NS_BEGIN ( admean_2dimage_filter )
@@ -33,27 +58,25 @@ static char const * plugin_name = "admean";
 template <class Data2D>
 typename C2DAdmean::result_type C2DAdmean::operator () ( const Data2D& data ) const
 {
+	typedef typename Data2D::value_type out_type; 
 	Data2D *result = new Data2D ( data.get_size() );
 
 
-	typename Data2D::iterator i = result->begin();
-	typename Data2D::const_iterator t = data.begin();
+	auto i = result->begin();
+	auto t = data.begin();
 
-	cvdebug() << "filter with width = " << _M_width << endl;
+	cvdebug() << "filter with width = " << m_width << endl;
 
 	double sum = 0.0;
 	double sum2 = 0.0;
 	double n = data.size();
 
-	if ( n == 1 )
-	{
+	if ( n == 1 ){
 		*i = *t;
 		return P2DImage ( result );
 	}
 
-	for ( typename Data2D::const_iterator i = data.begin();
-	        i != data.end(); ++i )
-	{
+	for ( auto i = data.begin(); i != data.end(); ++i ) {
 		sum += *i;
 		sum2 += *i * *i;
 	}
@@ -62,34 +85,30 @@ typename C2DAdmean::result_type C2DAdmean::operator () ( const Data2D& data ) co
 	double var2 = ( sum2 - mean * sum ) / ( n -1 );
 
 	for ( int y = 0; y < ( int ) data.get_size().y; ++y )
-		for ( int x = 0; x < ( int ) data.get_size().x; ++x, ++i, ++t )
-		{
-
+		for ( int x = 0; x < ( int ) data.get_size().x; ++x, ++i, ++t )	{
+			
 			double lsum = 0.0;
 			double lsum2 = 0.0;
 			int num = 0;
 
-			for ( int iy = max ( 0, y - _M_width );
-			        iy < min ( y + _M_width + 1, ( int ) data.get_size().y );  ++iy )
-
-				for ( int ix = max ( 0, x - _M_width );
-				        ix < min ( x + _M_width + 1, ( int ) data.get_size().x );  ++ix )
-				{
+			for ( int iy = max ( 0, y - m_width );
+			      iy < min ( y + m_width + 1, ( int ) data.get_size().y );  ++iy )
+				for ( int ix = max ( 0, x - m_width );
+				      ix < min ( x + m_width + 1, ( int ) data.get_size().x );  ++ix )	{
 					double v = data ( ix,iy );
 					lsum += v;
 					lsum2 += v*v;
 					++num;
 				}
-			if ( num > 1 )
-			{
+			if ( num > 1 )	{
 				float lmean = lsum/num;
 				float lvar2 = ( lsum2 - lsum * lmean ) / ( num - 1 );
-				*i = ( typename Data2D::value_type ) ( lvar2 > var2 ? ( *t -  var2 / lvar2 * ( *t - lmean ) ) : lmean );
+				*i = static_cast<out_type>( lvar2 > var2 ? 
+							    ( *t -  var2 / lvar2 * ( *t - lmean ) ) : lmean );
 			}
 			else
-				*i = ( typename Data2D::value_type ) ( lsum );
+				*i = static_cast<out_type>( lsum );
 		}
-
 	return P2DImage ( result );
 }
 
@@ -100,15 +119,15 @@ P2DImage C2DAdmean::do_filter ( const C2DImage& image ) const
 
 CAdmean2DImageFilterFactory::CAdmean2DImageFilterFactory() :
 		C2DFilterPlugin ( plugin_name ),
-		_M_hwidth ( 1 )
+		m_hwidth ( 1 )
 {
-	add_parameter("w", new CIntParameter(_M_hwidth, 0, numeric_limits<int>::max(),
+	add_parameter("w", new CIntParameter(m_hwidth, 0, numeric_limits<int>::max(),
 					     false, "half filter width"));
 }
 
 C2DFilterPlugin::ProductPtr CAdmean2DImageFilterFactory::do_create()const
 {
-	return C2DFilterPlugin::ProductPtr ( new C2DAdmean ( _M_hwidth ) );
+	return C2DFilterPlugin::ProductPtr ( new C2DAdmean ( m_hwidth ) );
 }
 
 const string CAdmean2DImageFilterFactory::do_get_descr() const

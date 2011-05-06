@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -103,11 +103,11 @@ class PRIVATE C2DMorphFifoFilter : public mia::C2DImageFifoFilter {
 	mia::P2DImage do_filter();
 	void shift_buffer();
 
-	mia::P3DShape _M_shape;
-	std::auto_ptr<mia::C3DImage> _M_buffer;
+	mia::P3DShape m_shape;
+	std::auto_ptr<mia::C3DImage> m_buffer;
 
-	mia::C2DBounds _M_slice_size;
-	CShiftSlices _M_shifter;
+	mia::C2DBounds m_slice_size;
+	CShiftSlices m_shifter;
 };
 
 class PRIVATE C2DMorphFifoFilterPluginBase : public mia::C2DFifoFilterPlugin {
@@ -116,7 +116,7 @@ class PRIVATE C2DMorphFifoFilterPluginBase : public mia::C2DFifoFilterPlugin {
 	virtual const std::string do_get_descr() const;
 	const std::string& get_shape_descr() const;
  private:
-	std::string _M_shape_descr;
+	std::string m_shape_descr;
 };
 
 template <template <typename, bool> class Compare>

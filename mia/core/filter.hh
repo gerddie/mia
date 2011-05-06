@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -30,7 +30,6 @@
 #include <mia/core/pixeltype.hh>
 #include <mia/core/product_base.hh>
 #include <mia/core/factory.hh>
-
 #include <mia/core/import_handler.hh>
 
 NS_MIA_BEGIN
@@ -46,16 +45,19 @@ struct EXPORT_CORE filter_type {
 #define DC(T, D) dynamic_cast<const T&>(D)
 #define DV(T, D) dynamic_cast<T&>(D)
 
+
 /**
+   \brief base class for all filer type functors. 
+
    Base class for all filters that can be used with the pixel type transparent
    filter functions
    \a filter and \a filter_equal
    Derived classes have to define an operator like
-   template <typename T>
-   TFilter<R>::result_type operator () (const T& data) const;
+   template &lt typename T &lt
+   TFilter &ltR&gt::result_type operator () (const T& data) const;
    or
-   template <typename T>
-   TFilter<R>::result_type operator () (const T& data);
+   template &lttypename T &gt 
+   TFilter &ltR&gt::result_type operator () (const T& data);
 */
 template <typename R>
 struct TFilter {
@@ -63,23 +65,49 @@ struct TFilter {
 	typedef R result_type;
 };
 
+/**
+   \brief Generic interface class to data filters. 
+
+   This class provides the basic interface to image filtering.  
+   \tparam D the data type to be filtered 
+*/
+
 
 template <class D>
 class EXPORT_HANDLER TImageFilter: public TFilter< std::shared_ptr<D > >, public CProductBase {
 public:
-	typedef D plugin_data; 
+
+	/// plugin handler helper type 
+	typedef D plugin_data;
+	/// plugin handler helper type 
 	typedef filter_type plugin_type; 
 	
+	/// result type of this filter 
 	typedef typename TFilter< std::shared_ptr<D > >::result_type result_type;
+	
 	virtual ~TImageFilter();
+
+	/* run the filter 
+	   \param image must be of a type that has Binder trait defined.  
+	 */ 
 	result_type filter(const D& image) const;
 private:
 	virtual result_type do_filter(const D& image) const = 0;
 };
 
+/**
+   \brief Generic image filter plugin base 
+
+   This class provides the generic base class for image filter 
+   plug-ins. 
+   \tparam Image the image type for which the filters are defined. 
+   
+ */
+
 template <class Image>
 class EXPORT_HANDLER TImageFilterPlugin: public TFactory<TImageFilter<Image> > {
 public:
+	/// Constructor that sets the plug-in name 
 	TImageFilterPlugin(char const * const  name):
 		TFactory<TImageFilter<Image> >(name)
 	{}
@@ -89,7 +117,6 @@ private:
 		return true;
 	};
 };
-
 
 template <template <class> class  D>
 struct __bind_all {
@@ -108,6 +135,16 @@ struct __bind_all {
 	typedef D<double> Ddouble;
 };
 
+
+/**
+   \brief a trait to define types for images of all pixel types that are derived 
+   from a common base class. 
+
+   The class needs to have a typedef 
+   - typedef __bind_all<sometype> Derived; 
+   See Binder<C2DImage> how to do this properly. 
+   \tparam B the base class from which the templated images are derived
+ */
 template <typename B>
 struct Binder {
 };
@@ -118,10 +155,16 @@ struct Binder {
    The data container is provided by a pointer or reference to its type independedn base class.
    Data type dependency is introduced by using a templated derivative.
    The filter object is const.
+   \tparam a Filter that must provide a type result_type, and an operator 
+   template &lt; typename T &gt; 
+        F::result_type F::operator()(const D<T>& b) const; 
+	with D&lt;T&gt; being a derived class of B 
+   \tparam b the data to be processed in form of a reference to the base class of a class 
+             template D&lt;T&gt; 
    \param f a filter to be applied to the data.
-   \param data the input data to be filtered
-   \returns whathever the filter \a f defines as return type and provides as a
-   result of its operator ()
+   \param b the input data to be filtered
+   \returns whathever the filter \a F defines as return type and provides as a
+         result of its operator ()
 */
 template <typename F, typename B>
 static typename F::result_type filter(const F& f, const B& b)
@@ -148,12 +191,13 @@ static typename F::result_type filter(const F& f, const B& b)
 }
 
 /**
+   The in-place type of the function typename F::result_type filter(const F& f, const B& b). 
    A filter type that handles data containers of different types.
    The data container is provided by a pointer or reference to its type independedn base class.
    Data type dependency is introduced by using a templated derivative.
    The filter object is const.
    \param f a filter to be applied to the data.
-   \param data the input data to be filtered
+   \param b the input data to be filtered
    \returns whathever the filter \a f defines as return type and provides as a result of its operator ()
 */
 template <typename F, typename B>
@@ -284,6 +328,41 @@ static void filter_equal_inplace(const F& f, const B& a, B& b)
 }
 
 
+/**
+   A filter type that handles data containers of equal types.
+   The data container is provided by a pointer or reference to its type independedn base class.
+   Data type dependency is introduced by using a templated derivative.
+   Both input objects need to use the same data type
+   \param f a filter to be applied to the data.
+   \param a input data to be filtered
+   \param b output of filtered data
+*/
+template <typename F, typename B, typename O>
+static typename F::result_type filter_and_output(const F& f, const B& a, O& b)
+{
+	typedef typename Binder<B>::Derived D;
+	switch (a.get_pixel_type()) {
+	case it_bit:    return f(DC(typename D::Dbool, a), b);break;
+	case it_sbyte:  return f(DC(typename D::Dsc, a), b);break;
+	case it_ubyte:  return f(DC(typename D::Duc, a), b);break;
+	case it_sshort: return f(DC(typename D::Dss, a), b);break;
+	case it_ushort: return f(DC(typename D::Dus, a), b);break;
+	case it_sint:   return f(DC(typename D::Dsi, a), b);break;
+	case it_uint:	return f(DC(typename D::Dui, a), b);break;
+#ifdef HAVE_INT64
+	case it_slong:  return f(DC(typename D::Dsl, a), b);break;
+	case it_ulong:  return f(DC(typename D::Dul, a), b);break;
+#endif
+	case it_float:  return f(DC(typename D::Dfloat, a), b);break;
+	case it_double: return f(DC(typename D::Ddouble, a), b);break;
+	default:
+		assert(!"unsupported pixel type in image");
+		throw invalid_argument("mia::filter_and_output: unsupported pixel type in image");
+	}
+}
+
+/// \cond INTERNAL 
+
 template <typename F, typename A, typename B>
 static typename F::result_type _filter(const F& f, const A& a, const B& b)
 {
@@ -307,6 +386,8 @@ static typename F::result_type _filter(const F& f, const A& a, const B& b)
 		throw invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
+/// \endcond
+
 
 /**
    A filter type that handles data containers of different types.
@@ -343,7 +424,7 @@ static typename F::result_type filter(const F& f, const A& a, const B& b)
 }
 
 
-
+/// \cond INTERNAL 
 template <typename F, typename A, typename B>
 static typename F::result_type _accumulate(F& f, const A& a, const B& b)
 {
@@ -367,7 +448,7 @@ static typename F::result_type _accumulate(F& f, const A& a, const B& b)
 		throw invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
-
+/// \endcond
 
 /**
    A accumulatro type that handles data containers of different types.

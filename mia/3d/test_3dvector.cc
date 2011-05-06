@@ -1,5 +1,5 @@
 /*  -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -185,4 +185,5 @@ void add_3dvector_tests(boost::unit_test::test_suite* suite)
 	suite->add( BOOST_TEST_CASE( &test_float_vector_option));
 	suite->add( BOOST_TEST_CASE( &test_size_vector_option));
 	suite->add( BOOST_TEST_CASE( &test_swizzle ));
+	suite->add( BOOST_TEST_CASE( &test_fill ));
 }

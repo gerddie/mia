@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -23,9 +23,6 @@
 
 // $Id: miaIOStream.hh 936 2006-07-10 13:32:49Z write1 $
 
-/*! \brief A verbose output stream
-
-*/
 
 #ifndef CVERB_HH
 #define CVERB_HH 1
@@ -45,33 +42,41 @@ NS_MIA_BEGIN
 #endif
 
 /**
+   \brief A output stream to enable certain levels of verbosity 
+
    This class impelemtns a std::ostream like class to output messages during run-time, 
    supporting various levels of verbosity. The class is implemened as a singleton.
    On initialization it is set to use std::cerr as output stream, but this can be replaced 
    by any type implementing the std::ostream interface. 
-   \remark The levels \a debug and \a trace are not compiled in, if -DNDEBUG is set - i.e. 
+   \remark if -DNDEBUG is set, the levels \a debug and \a trace are not compiled in - i.e. 
    the corresponding output operators are replaced by dummy functions that should be 
    optimized away. 
 */
 class EXPORT_CORE vstream {
 public:
+	/**
+	   Output verbosity level threshhold, ml_trace is the lowest threshhold and 
+	   ml_fatal the highest. Output is written, when the output threshold is above or equal
+	   to the one set within the output stream. 
+	 */
 	enum Level {
-		ml_trace,
-		ml_debug,
-		ml_info,
-		ml_message,
-		ml_warning,
-		ml_fail,
-		ml_error,
-		ml_fatal,
-		ml_undefined
+		ml_trace,  /**< write trace of function calls and higher, disabled with -DNDEBUG */
+		ml_debug,  /**< write debugging information  and higher, disabled with -DNDEBUG */
+		ml_info,   /**< write additional info about the data processed  and higher */
+		ml_message,/**< write process status messages  and higher*/
+		ml_warning,/**< write warnings  and higher*/
+		ml_fail,   /**< write failture messages (for tests)  and higher */
+		ml_error,  /**< write non-fatal error messages  and higher */
+		ml_fatal,  /**< write only fatal error messages */
+		ml_undefined /**< stopper */
 	};
 
 	/** initialise a  stream that writes only messages above a certain
 	    verbosity level
 	*/
-
 	static vstream& instance();
+
+
 	/** set the verbosity output level
 	    \param l
 	*/
@@ -87,6 +92,7 @@ public:
 	*/
 	std::ostream&  set_stream(std::ostream& os);
 
+	/// write pending output 
 	void flush();
 
 	/** \param l verbosity level
@@ -110,8 +116,8 @@ public:
 	*/
 	template <class T>
 	vstream& operator << (const T&  text) {
-		if (_M_message_level >= _M_output_level)
-			*_M_output << text;
+		if (m_message_level >= m_output_level)
+			*m_output << text;
 		return *this;
 	}
 
@@ -133,20 +139,20 @@ public:
 	   Transparent conversion operator to an std::ostream. 
 	 */
 	operator std::ostream& () {
-		return *_M_output;
+		return *m_output;
 	}
 
 private:
 	vstream(std::ostream& output, Level l);
 
-	static std::ostream* _M_output_target;
-	std::ostream* _M_output;
-	Level _M_output_level;
-	Level _M_message_level;
+	static std::ostream* m_output_target;
+	std::ostream* m_output;
+	Level m_output_level;
+	Level m_message_level;
 
 };
 
-
+/// Dictonary for the verbosity command line option 
 extern EXPORT_CORE const TDictMap<vstream::Level> g_verbose_dict;
 
 /**
@@ -161,7 +167,7 @@ void set_verbose(bool verbose);
 
 inline bool vstream::shows(Level l)const
 {
-	return l >= _M_output_level;
+	return l >= m_output_level;
 }
 
 
@@ -188,6 +194,9 @@ inline CDebugSink& cvdebug()
 
 #else
 
+/** Short for debug output in non-debug build output send to this will 
+    be ignored. 
+*/
 inline vstream& cvdebug()
 {
 	vstream::instance() << vstream::ml_debug << VSTREAM_DOMAIN << ":";
@@ -197,22 +206,22 @@ inline vstream& cvdebug()
 class EXPORT_CORE CTrace {
 public:
 	CTrace(const char *domain):
-		_M_domain(domain),
-		_M_fill(_M_depth, ' ')  {
+		m_domain(domain),
+		m_fill(m_depth, ' ')  {
 		vstream::instance() << vstream::ml_trace
-				    << _M_fill << "enter " << _M_domain  << "\n";
-		++_M_depth;
+				    << m_fill << "enter " << m_domain  << "\n";
+		++m_depth;
 	};
 	~CTrace() {
 		vstream::instance() << vstream::ml_trace
-				    << _M_fill << "leave " << _M_domain  << "\n";
-		--_M_depth;
+				    << m_fill << "leave " << m_domain  << "\n";
+		--m_depth;
 	}
 private:
-	const char *_M_domain;
-	std::string _M_fill;
+	const char *m_domain;
+	std::string m_fill;
 	// should be thread local, or at least protected by a mutex
-	static size_t _M_depth;
+	static size_t m_depth;
 };
 
 /// a macro to trace scopes in a debug built
@@ -224,6 +233,10 @@ private:
 
 #endif
 
+/**
+   Informal output that may be of interest to understand problems with a program
+   and are of higher priority then debugging output. 
+ */
 inline vstream& cvinfo()
 {
 	vstream::instance() << vstream::ml_info << VSTREAM_DOMAIN << ":";
@@ -239,47 +252,52 @@ inline bool vstream::show_debug() const
 /// \returns the curent verbosity level
 inline vstream::Level vstream::get_level() const
 {
-	return _M_output_level;
+	return m_output_level;
 }
 
 inline void vstream::flush()
 {
-	_M_output->flush();
+	m_output->flush();
 }
 
 // some inlines
 
+///  direct output to this stream adapter to print out fatalities in the code 
 inline vstream& cvfatal()
 {
 	vstream::instance() << vstream::ml_fatal << VSTREAM_DOMAIN << ":";
 	return vstream::instance();
 }
 
+///  direct output to this stream adapter to print out failtures in tests beyond BOOST_FAIL
 inline vstream& cvfail()
 {
 	vstream::instance() << vstream::ml_fail << VSTREAM_DOMAIN << ":";
 	return vstream::instance();
 }
 
-
+/// send errors to this stream adapter 
 inline vstream& cverr()
 {
 	vstream::instance() << vstream::ml_error << VSTREAM_DOMAIN << ":";
 	return vstream::instance();
 }
 
+/// send warnings to this stream adapter 
 inline vstream& cvwarn()
 {
 	vstream::instance() << vstream::ml_warning << VSTREAM_DOMAIN << ":";
 	return vstream::instance();
 }
 
+/// send messages to this stream adapter 
 inline vstream& cvmsg()
 {
 	vstream::instance() << vstream::ml_message << VSTREAM_DOMAIN << ":";
 	return vstream::instance();
 }
 
+/// define a shortcut to the raw output stream 
 #define cverb ::mia::vstream::instance()
 
 /**

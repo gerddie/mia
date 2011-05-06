@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -49,11 +49,11 @@ struct TNonrigidRegisterImpl {
 	PTransformation run(PImage src, PImage ref) const;
 private:
 
-	FullCostList& _M_costs;
-	PMinimizer _M_minimizer;
-	InterpolatorFactory _M_ipf;
-	PTransformationFactory _M_transform_creator;
-	size_t _M_mg_levels; 
+	FullCostList& m_costs;
+	PMinimizer m_minimizer;
+	InterpolatorFactory m_ipf;
+	PTransformationFactory m_transform_creator;
+	size_t m_mg_levels; 
 };
 
 template <typename T> 
@@ -71,7 +71,7 @@ public:
 
 
 	TNonrigRegGradientProblem(const FullCostList& costs, T& transf,
-			      const InterpolatorFactory& _M_ipf);
+			      const InterpolatorFactory& m_ipf);
 
 	void reset_counters(); 
 	
@@ -85,12 +85,12 @@ private:
 
 	size_t do_size() const; 
 
-	const FullCostList& _M_costs; 
-	T& _M_transf;
-	const InterpolatorFactory& _M_ipf;
-	size_t _M_func_evals; 
-	size_t _M_grad_evals; 
-	double _M_start_cost; 
+	const FullCostList& m_costs; 
+	T& m_transf;
+	const InterpolatorFactory& m_ipf;
+	size_t m_func_evals; 
+	size_t m_grad_evals; 
+	double m_start_cost; 
 };
 
 template <typename T> 
@@ -119,17 +119,19 @@ template <typename T>
 TNonrigidRegisterImpl<T>::TNonrigidRegisterImpl(FullCostList& costs, PMinimizer minimizer,
 						 PTransformationFactory transform_creation, 
 						 const InterpolatorFactory& ipf,size_t mg_levels):
-	_M_costs(costs),
-	_M_minimizer(minimizer),
-	_M_ipf(ipf),
-	_M_transform_creator(transform_creation), 
-	_M_mg_levels(mg_levels)
+	m_costs(costs),
+	m_minimizer(minimizer),
+	m_ipf(ipf),
+	m_transform_creator(transform_creation), 
+	m_mg_levels(mg_levels)
 {
 }
 
 
 /*
   This filter could be replaced by a histogram equalizing filter 
+  or it should be moved outside the registration function 
+  and considered what it is, a pre-processing step
 */
 
 template <typename T> 
@@ -189,12 +191,12 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 		ref = tofloat_converter->filter(*ref); 
 	}
 	else // both images have only one value, and are, therefore, already registered
-		return _M_transform_creator->create(src->get_size());
+		return m_transform_creator->create(src->get_size());
 
 
 	Size global_size = src->get_size();
 
-	int shift = _M_mg_levels;
+	int shift = m_mg_levels;
 
 	do {
 		shift--;
@@ -213,31 +215,39 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 		if (transform)
 			transform = transform->upscale(src_scaled->get_size());
 		else
-			transform = _M_transform_creator->create(src_scaled->get_size());
+			transform = m_transform_creator->create(src_scaled->get_size());
 
 		cvinfo() << "register at " << src_scaled->get_size() << "\n";
-
+		/**
+		   This code is somewhat ugly, it stored the images in the internal buffer 
+		   and then it forces the cost function to reload the images
+		   However, currently the downscaling does not support a specific target size
+		 */
 		save_image("src.@", src_scaled);
 		save_image("ref.@", ref_scaled);
-		_M_costs.reinit(); 
-		_M_costs.set_size(src_scaled->get_size()); 
+		m_costs.reinit(); 
+		
+		// currently this call does nothing, however it should replace the three lines above 
+		// and the cost function should handle the image scaling 
+
+		m_costs.set_size(src_scaled->get_size()); 
 		
 		std::shared_ptr<TNonrigRegGradientProblem<T> > 
-			gp(new TNonrigRegGradientProblem<T>( _M_costs, *transform, _M_ipf));
+			gp(new TNonrigRegGradientProblem<T>( m_costs, *transform, m_ipf));
 		
-		_M_minimizer->set_problem(gp);
+		m_minimizer->set_problem(gp);
 
 		auto x = transform->get_parameters();
 		cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
-		_M_minimizer->run(x);
+		m_minimizer->run(x);
 		transform->set_parameters(x);
 		
 		// run the registration at refined splines 
 		if (transform->refine()) {
-			_M_minimizer->set_problem(gp);
+			m_minimizer->set_problem(gp);
 			x = transform->get_parameters();
 			cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
-			_M_minimizer->run(x);
+			m_minimizer->run(x);
 			transform->set_parameters(x);
 		}
 
@@ -248,12 +258,12 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 template <typename T> 
 TNonrigRegGradientProblem<T>::TNonrigRegGradientProblem(const FullCostList& costs, 
 						       T& transf, const InterpolatorFactory& ipf):
-	_M_costs(costs),
-	_M_transf(transf),
-	_M_ipf(ipf), 
-	_M_func_evals(0),
-	_M_grad_evals(0), 
-	_M_start_cost(0.0)
+	m_costs(costs),
+	m_transf(transf),
+	m_ipf(ipf), 
+	m_func_evals(0),
+	m_grad_evals(0), 
+	m_start_cost(0.0)
 {
 
 }
@@ -261,7 +271,7 @@ TNonrigRegGradientProblem<T>::TNonrigRegGradientProblem(const FullCostList& cost
 template <typename T> 
 void TNonrigRegGradientProblem<T>::reset_counters()
 {
-	_M_func_evals = _M_grad_evals = 0; 
+	m_func_evals = m_grad_evals = 0; 
 }
 
 template <typename T> 
@@ -269,17 +279,17 @@ double  TNonrigRegGradientProblem<T>::do_f(const CDoubleVector& x)
 {
        
 
-	_M_transf.set_parameters(x);
-	double result = _M_costs.cost_value(_M_transf);
-	if (!_M_func_evals && !_M_grad_evals) 
-		_M_start_cost = result; 
+	m_transf.set_parameters(x);
+	double result = m_costs.cost_value(m_transf);
+	if (!m_func_evals && !m_grad_evals) 
+		m_start_cost = result; 
 	
-	_M_func_evals++; 
-	cvmsg() << "Cost[fg="<<setw(4)<<_M_grad_evals 
-		<< ",fe="<<setw(4)<<_M_func_evals<<"]=" 
+	m_func_evals++; 
+	cvmsg() << "Cost[fg="<<setw(4)<<m_grad_evals 
+		<< ",fe="<<setw(4)<<m_func_evals<<"]=" 
 		<< setw(20) << setprecision(12) << result 
 		<< "ratio:" << setw(20) << setprecision(12) 
-		<< result / _M_start_cost <<   "\r"; 
+		<< result / m_start_cost <<   "\r"; 
 	cvinfo() << "\n";
 	return result; 
 }
@@ -294,20 +304,20 @@ template <typename T>
 double  TNonrigRegGradientProblem<T>::do_fdf(const CDoubleVector& x, CDoubleVector&  g)
 {
 
-	_M_transf.set_parameters(x);
+	m_transf.set_parameters(x);
 	fill(g.begin(), g.end(), 0.0); 
-	double result = _M_costs.evaluate(_M_transf, g);
+	double result = m_costs.evaluate(m_transf, g);
 
-	if (!_M_func_evals && !_M_grad_evals) 
-		_M_start_cost = result; 
+	if (!m_func_evals && !m_grad_evals) 
+		m_start_cost = result; 
 
-	_M_grad_evals++; 
+	m_grad_evals++; 
 
-	cvmsg() << "Cost[fg="<<setw(4)<<_M_grad_evals 
-		<< ",fe="<<setw(4)<<_M_func_evals<<"]= with " 
+	cvmsg() << "Cost[fg="<<setw(4)<<m_grad_evals 
+		<< ",fe="<<setw(4)<<m_func_evals<<"]= with " 
 		<< x.size() << " parameters= " 
 		<< setw(20) << setprecision(12) << result 
-		<< " ratio:" << setw(20) << setprecision(12) << result / _M_start_cost <<  "\r"; 
+		<< " ratio:" << setw(20) << setprecision(12) << result / m_start_cost <<  "\r"; 
 	cvinfo() << "\n"; 
 	return result; 
 }
@@ -315,13 +325,13 @@ double  TNonrigRegGradientProblem<T>::do_fdf(const CDoubleVector& x, CDoubleVect
 template <typename T> 
 bool TNonrigRegGradientProblem<T>::do_has(const char *property) const
 {
-	return _M_costs.has(property); 
+	return m_costs.has(property); 
 }
 
 template <typename T> 
 size_t TNonrigRegGradientProblem<T>::do_size() const
 {
-	return _M_transf.degrees_of_freedom(); 
+	return m_transf.degrees_of_freedom(); 
 }
 
 NS_MIA_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -21,6 +21,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/*
+  LatexBeginPluginSection{2D image similarity kernels}
+  \label{sec:cost2d}
+  
+  2D image similarity kernels evaluate the according similarity measure between 
+  two images. These kernels may be used standalone, like e.g. in linear registration, 
+  or will be called from generalized image similarity cost plug-ins that also take 
+  care of transforming and scaling the images during the image registration process. 
+
+  In the following $\Omega$ is the image domain, and $S:\Omega\rightarrow \R$ stands  
+  for the study or floating image, and  $R:\Omega\rightarrow \R$ for the reference or fixed image. 
+
+  LatexEnd
+*/
+
 
 #include <mia/core/export_handler.hh>
 

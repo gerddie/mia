@@ -1,6 +1,6 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2009-2010
+ * Copyright (c) Leipzig, Madrid 2009-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -31,13 +31,15 @@
 NS_MIA_BEGIN
 
 /**
+   @brief A class to run an ICA on a heart perfusion series
+
    This class provides the tools for ICA based 2D perfusion image series. This class is specifically 
    designed for the analysis of free breathingly aquired myocardial perfusion images. 
-   
 */
 
 class  EXPORT_2D C2DPerfusionAnalysis  {
 public: 
+	/// Possible bases for LV-RV heart segmentation
 	enum EBoxSegmentation {
 		bs_delta_feature, /*!< Segmentation based on the difference of the LV and RV feature images */
 		bs_delta_peak,    /*!< Segmentation based on the difference of the LV and RV peak enhancenemt images */
@@ -54,6 +56,10 @@ public:
 			     bool meanstrip);
 
 
+	/**
+	   Set the number of ICA iterations 
+	   @param maxiter
+	 */
 	void set_max_ica_iterations(size_t maxiter); 
 	
 	~C2DPerfusionAnalysis();
@@ -77,10 +83,13 @@ public:
 	   The algorithm evaluates the centers of the LV and the RV and uses the distance 
 	   between both to estimata a bounding box. 
 	   Some heuristics are used to check whether the segmentation makes sense
-	   \param scale enlargement scale of the bounding box to create the cropping region 
-	   \retval crop_start returns the left upper corner of the cropping region that can be used  
+	   
+	   @param scale enlargement scale of the bounding box to create the cropping region 
+	   @param[out] crop_start returns the left upper corner of the cropping region that can be used  
 	   to adjust segmentations
-	   \returns the cropping filter or C2DFilterPlugin::ProductPtr() if the segmentation fails. 
+	   @param approach on what input data to base thesegmentation on 
+	   @param save_features if not empty store feature images in files with this prefix 
+	   @returns the cropping filter or C2DFilterPlugin::ProductPtr() if the segmentation fails. 
 	 */
 	C2DFilterPlugin::ProductPtr get_crop_filter(float scale, C2DBounds& crop_start,
 						    EBoxSegmentation approach, 
@@ -109,10 +118,21 @@ public:
 	*/
 	int get_LV_peak_idx() const; 
 
+	/**
+	   Dictionary for segmentation method flags 
+	 */
 	static TDictMap<EBoxSegmentation> segmethod_dict; 
 
+	/**
+	   Use an experimental model to create a initial guess. 
+	 */
 	void set_use_guess_model(); 
 
+
+	/**
+	   Save the mixin matrix to a file. 
+	   @param coefs_name output file name 
+	 */
 	void save_coefs(const string&  coefs_name)const; 
 private: 
 	struct C2DPerfusionAnalysisImpl *impl; 

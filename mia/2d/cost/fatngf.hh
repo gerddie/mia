@@ -78,12 +78,12 @@ private:
 	virtual double do_value() const;
 	virtual double do_evaluate_force(mia::C2DFVectorfield& force) const;
 	void prepare() const;
-	mutable mia::C2DFVectorfield _M_ng_ref;
-	mutable bool _M_jump_levels_valid;
-	mutable float _M_cost_baseline;
+	mutable mia::C2DFVectorfield m_ng_ref;
+	mutable bool m_jump_levels_valid;
+	mutable float m_cost_baseline;
 
-	PEvaluator _M_evaluator;
-	float _M_intensity_scale;
+	PEvaluator m_evaluator;
+	float m_intensity_scale;
 };
 
 class C2DNFGFatImageCostPlugin: public mia::C2DFatImageCostPlugin {
@@ -95,7 +95,7 @@ private:
 
 	bool do_test() const;
 	const std::string do_get_descr()const;
-	std::string _M_type;
+	std::string m_type;
 };
 
 NS_END

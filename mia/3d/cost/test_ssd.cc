@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,11 +44,12 @@ BOOST_AUTO_TEST_CASE( test_SSD_3D_norm )
 	std::shared_ptr<C3DImage > ref(fref);
 
 	C3DSSDCost cost(true);
-	BOOST_CHECK_CLOSE(cost.value(*src, *ref),  0.5 * 367.0 / 27.0, 0.1);
+	cost.set_reference(*ref); 
+	BOOST_CHECK_CLOSE(cost.value(*src),  0.5 * 367.0 / 27.0, 0.1);
 
 	C3DFVectorfield force(C3DBounds(3,3,3));
 
-	cost.evaluate_force(*src, *ref, 0.5, force);
+	cost.evaluate_force(*src, 0.5, force);
 
 	BOOST_CHECK_EQUAL(force(1,1,1), C3DFVector(-6/ 27.0, -2/ 27.0, -4/ 27.0) );
 }
@@ -69,11 +70,12 @@ BOOST_AUTO_TEST_CASE( test_SSD_3D )
 	std::shared_ptr<C3DImage > ref(fref);
 
 	C3DSSDCost cost(false);
-	BOOST_CHECK_CLOSE(cost.value(*src, *ref),  0.5 * 367.0, 0.1);
+	cost.set_reference(*ref); 
+	BOOST_CHECK_CLOSE(cost.value(*src),  0.5 * 367.0, 0.1);
 
 	C3DFVectorfield force(C3DBounds(3,3,3));
 
-	cost.evaluate_force(*src, *ref, 0.5, force);
+	cost.evaluate_force(*src, 0.5, force);
 
 	BOOST_CHECK_EQUAL(force(1,1,1), C3DFVector(-6, -2, -4) );
 }

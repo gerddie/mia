@@ -1,7 +1,7 @@
 
 
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,27 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/* 
+   LatexBeginPluginDescription{2D image filters}
+   
+   \subsection{Norm of a gradient of the image}
+   \label{filter2d:gradnorm}
+   
+   \begin{description}
+   
+   \item [Plugin:] gradnorm
+   \item [Description:] This filter evaluates the norm of the gradient of the input image
+   \item [Input:] An abitrary gray scale image. 
+   \item [Input:] The norm of the gradient of the input image as a single float valued 
+             image normalized to the range [-1, 1]. 
+   
+   \end{description}
+   This plugin doesn't take parameters. 
+
+   LatexEnd  
+ */
+
 
 #include <limits>
 #include <algorithm>

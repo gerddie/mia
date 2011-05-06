@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -21,6 +21,34 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/*
+  LatexBeginPluginDescription{2D image filters}
+
+  \subsection{Anisotropic filtering}
+  \label{filter2d:aniso}
+  
+  \begin{description}
+  
+  \item [Plugin:] aniso
+  \item [Description:] Run a anisotropic filter on the input image 
+  \item [Input:] Abitrary gray scale image 
+  \item [Output:] The filtered image of the same pixel type and dimension 
+  
+  \plugtabstart
+  iter & int & maximum number of iterations & 100 \\
+  epsilon & float & stop iteration if changes fall below this value & 1.0  \\
+  k & float & k the noise threshold ($\le 0$: adaptive) & -1 \\
+  psi & string & Edge stopping funtion (ps1|ps2|tuckey|guess) & - \\
+  n & int & neighbourhood shape (4|8) &  8 \\
+  \plugtabend
+  
+  \item [Remark:] For mor information see \cite{perona90:aniso}. 
+  
+  \end{description}
+
+  LatexEnd
+*/
 
 #include <limits>
 #include <algorithm>
@@ -84,16 +112,16 @@ static const TDictMap<C2DAnisoDiff::FEdgeStopping> edge_stop_dict(edge_stop_tabl
 
 
 C2DAnisoDiff::C2DAnisoDiff(int maxiter, float epsilon, float k, FEdgeStopping edge_stop, int neighbourhood):
-	_M_maxiter(maxiter),
-	_M_epsilon(epsilon),
-	_M_k(k),
-	_M_edge_stop(edge_stop),
-	_M_neighbourhood(neighbourhood),
-	_M_histogramfeeder(0,256,256)
+	m_maxiter(maxiter),
+	m_epsilon(epsilon),
+	m_k(k),
+	m_edge_stop(edge_stop),
+	m_neighbourhood(neighbourhood),
+	m_histogramfeeder(0,256,256)
 {
-	if (_M_neighbourhood != 4 && _M_neighbourhood != 8) {
+	if (m_neighbourhood != 4 && m_neighbourhood != 8) {
 		stringstream errmsg;
-		errmsg << "neighbourhood " << _M_neighbourhood << "not supported. Select 4 or 8";
+		errmsg << "neighbourhood " << m_neighbourhood << "not supported. Select 4 or 8";
 		throw invalid_argument(errmsg.str());
 	}
 }
@@ -125,13 +153,13 @@ void C2DAnisoDiff::create_histogramfeeder(const C2DFImage& data) const
 	else
 		bins = (size_t)(dist+1);
 
-	_M_histogramfeeder = CHistogramFeeder<float>(*range.first, *range.second, bins);
+	m_histogramfeeder = THistogramFeeder<float>(*range.first, *range.second, bins);
 }
 
 /* estimate the MAD */
 float C2DAnisoDiff::estimate_MAD(const C2DFImage& data)const
 {
-	CHistogram<CHistogramFeeder<float> >  gradient_histogram(_M_histogramfeeder);
+	THistogram<THistogramFeeder<float> >  gradient_histogram(m_histogramfeeder);
 
 	C2DFImage::const_iterator id = data.begin();
 
@@ -179,19 +207,19 @@ float C2DAnisoDiff::diffuse(C2DFImage& dest, const C2DFImage& src)const
 			float val  = 0.0;
 			float idd = *id;
 
-			if (_M_neighbourhood == 8) {
-				val += _M_edge_stop(cinv_sqrt2 * (id[-sxp1]  - idd), _M_sigma);
-				val += _M_edge_stop(cinv_sqrt2 * (id[-sxm1]  - idd), _M_sigma);
-				val += _M_edge_stop(cinv_sqrt2 * (id[ sxm1]  - idd), _M_sigma);
-				val += _M_edge_stop(cinv_sqrt2 * (id[ sxp1]  - idd), _M_sigma);
+			if (m_neighbourhood == 8) {
+				val += m_edge_stop(cinv_sqrt2 * (id[-sxp1]  - idd), m_sigma);
+				val += m_edge_stop(cinv_sqrt2 * (id[-sxm1]  - idd), m_sigma);
+				val += m_edge_stop(cinv_sqrt2 * (id[ sxm1]  - idd), m_sigma);
+				val += m_edge_stop(cinv_sqrt2 * (id[ sxp1]  - idd), m_sigma);
 			}
 
-			val += _M_edge_stop(id[-sx] - idd, _M_sigma);
-			val += _M_edge_stop(id[ -1] - idd, _M_sigma);
-			val += _M_edge_stop(id[ +1] - idd, _M_sigma);
-			val += _M_edge_stop(id[ sx] - idd, _M_sigma);
+			val += m_edge_stop(id[-sx] - idd, m_sigma);
+			val += m_edge_stop(id[ -1] - idd, m_sigma);
+			val += m_edge_stop(id[ +1] - idd, m_sigma);
+			val += m_edge_stop(id[ sx] - idd, m_sigma);
 
-			val *= _M_gamma;
+			val *= m_gamma;
 			sum += val * val;
 
 			*idest = idd + val;
@@ -206,21 +234,21 @@ float C2DAnisoDiff::diffuse(C2DFImage& dest, const C2DFImage& src)const
 
 void C2DAnisoDiff::update_gamma_sigma(const mia::C2DFImage& src)const
 {
-	if (_M_k <= 0) {
-		_M_sigma_e = zmn_weight *  estimate_MAD(src);
-		_M_sigma = sqrt(5.0f) *  _M_sigma_e;
+	if (m_k <= 0) {
+		m_sigma_e = zmn_weight *  estimate_MAD(src);
+		m_sigma = sqrt(5.0f) *  m_sigma_e;
 	}else{
-		_M_sigma_e = _M_k / sqrt(5.0f);
-		_M_sigma = _M_k;
+		m_sigma_e = m_k / sqrt(5.0f);
+		m_sigma = m_k;
 	}
-	_M_gamma = 1.0 / (_M_edge_stop(_M_sigma_e, _M_sigma) * _M_neighbourhood);
+	m_gamma = 1.0 / (m_edge_stop(m_sigma_e, m_sigma) * m_neighbourhood);
 
 }
 
 template <class T>
 typename C2DAnisoDiff::result_type C2DAnisoDiff::operator () (const T2DImage<T>& image) const
 {
-	cvdebug() << "begin C2DAnisoDiff::operator (), k=" << _M_k << "\n";
+	cvdebug() << "begin C2DAnisoDiff::operator (), k=" << m_k << "\n";
 
 	int iter = 0;
 
@@ -238,17 +266,17 @@ typename C2DAnisoDiff::result_type C2DAnisoDiff::operator () (const T2DImage<T>&
 
 		update_gamma_sigma(*src);
 
-		if (_M_sigma_e == 0.0)  // image contains only one colour
+		if (m_sigma_e == 0.0)  // image contains only one colour
 			break;
 
 		delta = diffuse(*dest, *src);
 
-		cvmsg() <<iter <<": " << " _M_sigma_e = " << _M_sigma_e <<" _M_gamma = "<<_M_gamma <<" ";
+		cvmsg() <<iter <<": " << " m_sigma_e = " << m_sigma_e <<" m_gamma = "<<m_gamma <<" ";
 		cvmsg() <<" delta " << delta << "       " << endline;
 
 		swap(src, dest);
 
-	} while (delta > _M_epsilon && iter < _M_maxiter);
+	} while (delta > m_epsilon && iter < m_maxiter);
 
 	cvmsg() << '\n';
 
@@ -278,36 +306,36 @@ P2DImage C2DAnisoDiff::do_filter(const C2DImage& image) const
 
 CAnisoDiff2DImageFilterFactory::CAnisoDiff2DImageFilterFactory():
 	C2DFilterPlugin(plugin_name),
-	_M_maxiter(100),
-	_M_epsilon(1.0),
-	_M_k ( -1.0),
-	_M_edge_stop(),
-	_M_neighbourhood(8)
+	m_maxiter(100),
+	m_epsilon(1.0),
+	m_k ( -1.0),
+	m_edge_stop(),
+	m_neighbourhood(8)
 {
 
 	TRACE("CAnisoDiff2DImageFilterFactory::CAnisoDiff2DImageFilterFactory()");
 	cvdebug() << "CAnisoDiff2DImageFilterFactory::CAnisoDiff2DImageFilterFactory()\n";
 
-	add_parameter("iter", new CIntParameter(_M_maxiter, 1, 10000, false,  "number of iterations"));
+	add_parameter("iter", new CIntParameter(m_maxiter, 1, 10000, false,  "number of iterations"));
 
-	add_parameter("epsilon", new CFloatParameter(_M_epsilon,
+	add_parameter("epsilon", new CFloatParameter(m_epsilon,
 						     0.001, 100, false,  "iteration change threshold"));
-	add_parameter("k", new CFloatParameter(_M_k, 0, 100, false,
+	add_parameter("k", new CFloatParameter(m_k, 0, 100, false,
 					       "k the noise threshold (<=0 -> adaptive)"));
 
-	add_parameter("psi", new CDictParameter<C2DAnisoDiff::FEdgeStopping>(_M_edge_stop, edge_stop_table,
+	add_parameter("psi", new CDictParameter<C2DAnisoDiff::FEdgeStopping>(m_edge_stop, edge_stop_table,
 							       "edge stopping function"));
 
 	set<int> nset;
 	nset.insert(4);
 	nset.insert(8);
 
-	add_parameter("n", new CSetParameter<int>(_M_neighbourhood, nset, "neighbourhood"));
+	add_parameter("n", new CSetParameter<int>(m_neighbourhood, nset, "neighbourhood"));
 }
 
 C2DFilterPlugin::ProductPtr CAnisoDiff2DImageFilterFactory::do_create() const
 {
-	return C2DFilterPlugin::ProductPtr(new C2DAnisoDiff(_M_maxiter, _M_epsilon, _M_k, _M_edge_stop, _M_neighbourhood));
+	return C2DFilterPlugin::ProductPtr(new C2DAnisoDiff(m_maxiter, m_epsilon, m_k, m_edge_stop, m_neighbourhood));
 }
 
 const string CAnisoDiff2DImageFilterFactory::do_get_descr()const

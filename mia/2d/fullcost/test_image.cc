@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2010
+ * Copyright (c) Madrid 2010-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -68,14 +68,14 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost,  ImagefullcostFixture )
 	CDoubleVector gradient(t.degrees_of_freedom()); 
 	double cost_value = cost.evaluate(t, gradient);
 
-	BOOST_CHECK_CLOSE(cost_value, 0.5 * 55.0/16.0, 0.1);
+	BOOST_CHECK_CLOSE(cost_value, 0.5 * 55.0, 0.1);
 
 	double value = cost.cost_value(t);
 
-	BOOST_CHECK_CLOSE(value, 0.5 * 55.0/16.0, 0.1);
+	BOOST_CHECK_CLOSE(value, 0.5 * 55.0, 0.1);
 	
-	BOOST_CHECK_CLOSE(gradient[10], 0.5f/16.0, 0.1);
-	BOOST_CHECK_CLOSE(gradient[11], 3.0f/16.0, 0.1);
+	BOOST_CHECK_CLOSE(gradient[10], 0.5f, 0.1);
+	BOOST_CHECK_CLOSE(gradient[11], 3.0f, 0.1);
 	
 }
 
@@ -109,7 +109,7 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_no_translate,  ImagefullcostFixture 
 	cost.set_size(size);
 	double value = cost.cost_value();
 
-	BOOST_CHECK_CLOSE(value, 0.5 * 55.0/16.0, 0.1);
+	BOOST_CHECK_CLOSE(value, 0.5 * 55.0, 0.1);
 
 }
 
@@ -147,16 +147,78 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 	CDoubleVector gradient(t.degrees_of_freedom()); 
 	double cost_value = cost.evaluate(t, gradient);
 
-	BOOST_CHECK_CLOSE(cost_value, 0.5 * 255 * 255.0 * 4.0/16.0, 0.1);
+	BOOST_CHECK_CLOSE(cost_value, 0.5 * 255 * 255.0 * 4.0, 0.1);
 
 	double value = cost.cost_value(t);
 
-	BOOST_CHECK_CLOSE(value, 0.5 * 255 * 255.0 * 4.0/16.0, 0.1);
+	BOOST_CHECK_CLOSE(value, 0.5 * 255 * 255.0 * 4.0, 0.1);
 	
-	BOOST_CHECK_CLOSE(gradient[10], 255 * 255 * 0.5f/16.0, 0.1);
-	BOOST_CHECK_CLOSE(gradient[11], 255 * 255 * 0.5f/16.0, 0.1);
+	BOOST_CHECK_CLOSE(gradient[10], 255 * 255 * 0.5f, 0.1);
+	BOOST_CHECK_CLOSE(gradient[11], 255 * 255 * 0.5f, 0.1);
 	
 }
+
+BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2_scaled,  ImagefullcostFixture)
+{
+
+	// create two images 
+	const unsigned char src_data[64] = {
+		0, 0,   0,   0,   0,   0, 0, 0,
+		0, 0,   0,   0,   0,   0, 0, 0,
+		0, 0, 255, 255, 255, 255, 0, 0,
+		0, 0, 255, 255, 255, 255, 0, 0,
+		0, 0, 255, 255, 255, 255, 0, 0,
+		0, 0, 255, 255, 255, 255, 0, 0,
+		0, 0,   0,   0,   0,   0, 0, 0,
+		0, 0,   0,   0,   0,   0, 0, 0
+	};
+	const unsigned char ref_data[64] = {
+		0, 0,   0,   0,   0,   0,   0, 0,
+		0, 0,   0,   0,   0,   0,   0, 0,
+		0, 0, 100, 100, 100, 100,   0, 0,
+		0, 0, 100, 100, 100, 100,   0, 0,
+		0, 0, 100, 100, 100, 100,   0, 0,
+		0, 0, 100, 100, 100, 100,   0, 0,
+		0, 0,   0,   0,   0,   0,   0, 0,
+		0, 0,   0,   0,   0,   0,   0, 0
+	};
+	C2DBounds size(8,8); 
+
+	P2DImage src(new C2DUBImage(size, src_data ));
+	P2DImage ref(new C2DUBImage(size, ref_data ));
+	
+	BOOST_REQUIRE(save_image("src.@", src)); 
+	BOOST_REQUIRE(save_image("ref.@", ref)); 
+
+	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
+	cost.reinit(); 
+	cost.set_size(size);
+	
+	C2DTransformMock t(size); 
+	
+	CDoubleVector gradient(t.degrees_of_freedom()); 
+	double cost_value = cost.evaluate(t, gradient);
+
+	BOOST_CHECK_CLOSE(cost_value, 0.5 * 155 * 155.0 * 16.0, 0.1);
+
+	double value = cost.cost_value(t);
+
+	BOOST_CHECK_CLOSE(value, 0.5 * 155 * 155.0 * 16.0, 0.1);
+	
+	C2DBounds rsize(4,4);
+	cost.set_size(rsize);
+	C2DTransformMock t2(rsize); 
+	CDoubleVector gradient2(t2.degrees_of_freedom()); 
+	double cost_value2 = cost.evaluate(t2, gradient2);
+	BOOST_CHECK_CLOSE(cost_value2, 0.5 * 155 * 155.0 * 4.0, 0.1);
+	BOOST_CHECK_CLOSE(cost.cost_value(t), 0.5 * 155 * 155.0 * 4.0, 0.1);
+
+	BOOST_CHECK_CLOSE(gradient2[10], 155 * 255 * 0.5f, 0.1);
+	BOOST_CHECK_CLOSE(gradient2[11], 155 * 255 * 0.5f, 0.1);
+
+
+}
+
 
 ImagefullcostFixture::ImagefullcostFixture()
 {

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -49,33 +49,33 @@ bool CAttribute::is_less(const CAttribute& other) const
 
 
 CAttributedData::CAttributedData():
-	_M_attr(new CAttributeMap())
+	m_attr(new CAttributeMap())
 {
 }
 
 CAttributedData::CAttributedData(PAttributeMap attr):
-	_M_attr(attr)
+	m_attr(attr)
 {
 }
 
 CAttributedData::CAttributedData(const CAttributedData& org):
-	_M_attr(org._M_attr)
+	m_attr(org.m_attr)
 {
 }
 
 CAttributedData& CAttributedData::operator =(const CAttributedData& org)
 {
 	if (this != &org)
-		_M_attr = org._M_attr;
+		m_attr = org.m_attr;
 	return *this;
 }
 
 
 const PAttribute CAttributedData::get_attribute(const std::string& name) const
 {
-	CAttributeMap::const_iterator i = _M_attr->find(name);
+	CAttributeMap::const_iterator i = m_attr->find(name);
 
-	if ( i != _M_attr->end() )
+	if ( i != m_attr->end() )
 	     return i->second;
 	return PAttribute();
 }
@@ -83,27 +83,27 @@ const PAttribute CAttributedData::get_attribute(const std::string& name) const
 
 PAttributeMap CAttributedData::get_attribute_list()
 {
-	if ( !_M_attr.unique() )
-		_M_attr = PAttributeMap(new CAttributeMap(*_M_attr));
-	return _M_attr;
+	if ( !m_attr.unique() )
+		m_attr = PAttributeMap(new CAttributeMap(*m_attr));
+	return m_attr;
 }
 
 const PAttributeMap CAttributedData::get_attribute_list() const
 {
-	return _M_attr;
+	return m_attr;
 }
 
 bool CAttributedData::has_attribute(const std::string& name)const
 {
-	CAttributeMap::const_iterator i = _M_attr->find(name);
-	return (i != _M_attr->end());
+	CAttributeMap::const_iterator i = m_attr->find(name);
+	return (i != m_attr->end());
 }
 
 void CAttributedData::set_attribute(const std::string& name, PAttribute attr)
 {
-	if ( !_M_attr.unique() )
-		_M_attr = PAttributeMap(new CAttributeMap(*_M_attr));
-	(*_M_attr)[name] = attr;
+	if ( !m_attr.unique() )
+		m_attr = PAttributeMap(new CAttributeMap(*m_attr));
+	(*m_attr)[name] = attr;
 }
 
 EXPORT_CORE std::ostream&  operator << (std::ostream& os, const CAttributeMap& data)
@@ -121,9 +121,9 @@ EXPORT_CORE std::ostream&  operator << (std::ostream& os, const CAttributeMap& d
 void CAttributedData::delete_attribute(const std::string& key)
 {
 
-	if ( !_M_attr.unique() )
-		_M_attr = PAttributeMap(new CAttributeMap(*_M_attr));
-	_M_attr->erase(key);
+	if ( !m_attr.unique() )
+		m_attr = PAttributeMap(new CAttributeMap(*m_attr));
+	m_attr->erase(key);
 }
 
 void CAttributedData::set_attribute(const std::string& name, const std::string& value)
@@ -138,8 +138,8 @@ void CAttributedData::set_attribute(const std::string& name, const std::string& 
 
 const string CAttributedData::get_attribute_as_string(const std::string& name)const
 {
-	CAttributeMap::const_iterator i = _M_attr->find(name);
-	if ( i != _M_attr->end() )
+	CAttributeMap::const_iterator i = m_attr->find(name);
+	if ( i != m_attr->end() )
 		return i->second->as_string();
 	else
 		return "";
@@ -152,21 +152,21 @@ CStringAttrTranslatorMap::CStringAttrTranslatorMap()
 
 void CStringAttrTranslatorMap::add(const string& key, const CAttrTranslator* const t)
 {
-	CMap::const_iterator k = _M_translators.find(key);
-	if ( k != _M_translators.end()) {
+	CMap::const_iterator k = m_translators.find(key);
+	if ( k != m_translators.end()) {
 		if ( typeid(*t) != typeid(*k->second))
 			throw invalid_argument(string("translator with key '") + key + ("' already defined otherwise"));
 		else
 			return;
 	}
 	cvdebug() << "add translator type '" << typeid(*t).name() << "' for '" << key << "'\n";
-	_M_translators.insert(pair<string, const CAttrTranslator* const>(key,t));
+	m_translators.insert(pair<string, const CAttrTranslator* const>(key,t));
 }
 
 PAttribute CStringAttrTranslatorMap::to_attr(const string& key, const string& value) const
 {
-	map<string, const CAttrTranslator * const>::const_iterator i = _M_translators.find(key);
-	if ( i != _M_translators.end())
+	map<string, const CAttrTranslator * const>::const_iterator i = m_translators.find(key);
+	if ( i != m_translators.end())
 		return i->second->from_string(value);
 	else
 		return PAttribute(new TAttribute<string>(value));
@@ -219,7 +219,7 @@ bool operator == (const CAttributeMap& am, const CAttributeMap& bm)
 
 bool EXPORT_CORE operator == (const CAttributedData& a, const CAttributedData& b)
 {
-	return  *a._M_attr == *b._M_attr;
+	return  *a.m_attr == *b.m_attr;
 }
 
 template <>

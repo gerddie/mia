@@ -1,6 +1,6 @@
 /*  -*- mia-c++ -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -404,7 +404,7 @@ struct C2DBMPImageSaver {
 	typedef bool result_type;
 
 	C2DBMPImageSaver(CFile& f):
-		_M_f(f)
+		m_f(f)
 	{
 	}
 
@@ -413,7 +413,7 @@ struct C2DBMPImageSaver {
 private:
 	bool write_header(int bpp, int compression, const C2DBounds& size)const;
 
-	CFile& _M_f;
+	CFile& m_f;
 };
 
 template <typename Image2D>
@@ -562,9 +562,9 @@ bool C2DBMPImageSaver::write_header(int bpp, int compression, const C2DBounds& s
 	endian_adapt_info_header(info_header);
 #endif
 
-	if (fwrite(&header, sizeof(CBMP2DImageIO::BMPHeader), 1, _M_f) != 1)
+	if (fwrite(&header, sizeof(CBMP2DImageIO::BMPHeader), 1, m_f) != 1)
 		return false;
-	if (fwrite(&info_header, sizeof(CBMP2DImageIO::BMPInfoHeader), 1, _M_f) != 1)
+	if (fwrite(&info_header, sizeof(CBMP2DImageIO::BMPInfoHeader), 1, m_f) != 1)
 		return false;
 
 	if (bpp <= 8) {
@@ -579,7 +579,7 @@ bool C2DBMPImageSaver::write_header(int bpp, int compression, const C2DBounds& s
 		for (size_t i = 0; i < ncolours; ++i, black+=step)
 			palette[i] = black;
 
-		if (fwrite(&palette[0], sizeof(int), ncolours , _M_f) != ncolours)
+		if (fwrite(&palette[0], sizeof(int), ncolours , m_f) != ncolours)
 			return false;
 	}
 
@@ -593,7 +593,7 @@ C2DBMPImageSaver::operator()(const Image2D& image) const
 	if (!write_header(TBMPIOPixelTrait<Image2D>::pixel_size, 0, image.get_size()))
 		return false;
 
-	return T2DBMPImageWriter<Image2D, TBMPIOPixelTrait<Image2D>::supported>::apply(image,_M_f);
+	return T2DBMPImageWriter<Image2D, TBMPIOPixelTrait<Image2D>::supported>::apply(image,m_f);
 }
 
 

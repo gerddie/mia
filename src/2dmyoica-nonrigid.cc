@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
@@ -34,6 +34,7 @@
 #include <mia/core/factorycmdlineoption.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
+#include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/2dimageio.hh>
@@ -70,7 +71,7 @@ class Convert2Float {
 public: 
 	C2DFImage operator () (P2DImage image) const; 
 private: 
-	FConvert2DImage2float _M_converter; 
+	FConvert2DImage2float m_converter; 
 }; 
 
 C2DFullCostList create_costs(double divcurlweight, P2DFullCost imagecost)
@@ -200,7 +201,7 @@ int do_main( int argc, const char *argv[] )
 
 	CCmdOptionList options(g_general_help);
 	
-	options.set_group("\nFile-IO"); 
+	options.set_group("File-IO"); 
 	options.push_back(make_opt( in_filename, "in-file", 'i', 
 				    "input perfusion data set", CCmdOption::required));
 	options.push_back(make_opt( out_filename, "out-file", 'o', 
@@ -221,7 +222,7 @@ int do_main( int argc, const char *argv[] )
 
 
 	
-	options.set_group("\nRegistration"); 
+	options.set_group("Registration"); 
 	options.push_back(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.push_back(make_opt( c_rate, "start-c-rate", 'a', 
 				    "start coefficinet rate in spines,"
@@ -239,7 +240,7 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.push_back(make_opt( pass, "passes", 'P', "registration passes")); 
 
-	options.set_group("\nICA"); 
+	options.set_group("ICA"); 
 	options.push_back(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
 	options.push_back(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
 	options.push_back(make_opt( no_meanstrip, "no-meanstrip", 0, 
@@ -253,7 +254,8 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
 				   "Segmentation method")); 
 
-	options.parse(argc, argv, false);
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+		return EXIT_SUCCESS; 
 
 	// this cost will always be used 
 
@@ -297,7 +299,7 @@ int do_main( int argc, const char *argv[] )
 	if (!cropped_filename.empty()) {
 		bfs::path cf(cropped_filename);
 		cf.replace_extension(); 
-		input_set.rename_base(cf.filename()); 
+		input_set.rename_base(__bfs_get_filename(cf)); 
 		input_set.save_images(cropped_filename);
 
 		unique_ptr<xmlpp::Document> test_cropset(input_set.write());
@@ -382,5 +384,5 @@ int main( int argc, const char *argv[] )
 
 inline C2DFImage Convert2Float::operator () (P2DImage image) const
 {
-	return ::mia::filter(_M_converter, *image); 
+	return ::mia::filter(m_converter, *image); 
 }

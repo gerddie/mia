@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -30,6 +30,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief A command line option class to use a TFactory to create the value from the parameter string. 
+
    Command line option that uses a factory singleton to create the target object from 
    the parsed command line parameter 
    \tparam F the factory type that must define a type F::ProductPtr, must provide a
@@ -39,7 +41,7 @@ NS_MIA_BEGIN
    ProductPtr must be a pointer like object that holds and instance of a type T of the 
    the created object.  Type T in turn must provide a method get_init_string() that returns 
    the string that was passed to the \a produce method in order to create this object. 
-   \todo use cocept checks to test these class requirements 
+   \todo use concept checks to test these class requirements 
 */
 
 template <typename F>
@@ -47,12 +49,12 @@ class TCmdFactoryOption: public  CCmdOptionValue{
 
 public:
         /** Constructor of the command option
-	    \retval val variable to hold the parsed option value - pass in the default value -
+	    \param[in,out] val variable to hold the parsed option value - pass in the default value -
 	    \param short_opt short option name (or 0)
 	    \param long_opt long option name (must not be NULL)
 	    \param long_help long help string (must not be NULL)
 	    \param short_help short help string
-	    \param required if this is set to true, extra checking will be done weather
+	    \param flags some options flags, currently supported: required or not. 
 	    the option is really set
 	*/
 	TCmdFactoryOption(typename F::ProductPtr& val, char short_opt, const char *long_opt,
@@ -64,7 +66,7 @@ private:
 	virtual void do_get_long_help_really(std::ostream& os) const;
 	virtual const std::string do_get_value_as_string() const;
 
-	typename F::ProductPtr& _M_value;
+	typename F::ProductPtr& m_value;
 };
 
 
@@ -76,15 +78,15 @@ TCmdFactoryOption<F>::TCmdFactoryOption(typename F::ProductPtr& val, char short_
 					const char *long_help, const char *short_help, 
 					CCmdOption::Flags flags):
 	CCmdOptionValue( short_opt, long_opt, long_help, short_help, flags ),
-	_M_value( val )
+	m_value( val )
 {
 }
 
 template <typename F>
 bool TCmdFactoryOption<F>::do_set_value_really(const char *str_value)
 {
-	_M_value = F::instance().produce(str_value); 
-	return !(!_M_value); 
+	m_value = F::instance().produce(str_value); 
+	return !(!m_value); 
 }
 
 template <typename F>
@@ -96,8 +98,8 @@ size_t TCmdFactoryOption<F>::do_get_needed_args() const
 template <typename F>
 void TCmdFactoryOption<F>::do_write_value(std::ostream& os) const
 {
-	if (_M_value) 
-		os << "=" << _M_value->get_init_string(); 
+	if (m_value) 
+		os << "=" << m_value->get_init_string(); 
 	else 
 		if (is_required())
 			os << "[required]"; 
@@ -114,14 +116,28 @@ void TCmdFactoryOption<F>::do_get_long_help_really(std::ostream& os) const
 template <typename F>
 const std::string TCmdFactoryOption<F>::do_get_value_as_string() const
 {
-	if (_M_value) {
+	if (m_value) {
 		stringstream msg; 
-		msg << "'" << _M_value->get_init_string() << "'"; 
+		msg << "'" << m_value->get_init_string() << "'"; 
 		return msg.str();
 	}
 	else 
 		return "''"; 
 }
+
+/**
+   \deprecated use template 
+     make_opt(typename std::shared_ptr<T>& value, const char *long_opt, char short_opt,
+              const char *long_help, CCmdOption::Flags flags)
+   Create a command line option that uses a TFactoryPluginHandler to create 
+   the actual value. 
+   \param[in,out] value the ProductPtr of the factory 
+   \param long_opt long option name 
+   \param short_opt short option char, set to 0 of none give
+   \param long_help the help string for thie option 
+   \param short_help the help string for thie option 
+   \param flags set whether command line option must be set 
+*/
 
 template <typename T>
 PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *long_opt, char short_opt,
@@ -133,6 +149,16 @@ PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *long_opt, ch
 						   long_help, short_help, flags ));
 }
 
+/**
+   Create a command line option that uses a TFactoryPluginHandler to create 
+   the actual value. 
+   \tparam T the non-pointer type of the value
+   \param[in,out] value the ProductPtr of the factory 
+   \param long_opt long option name 
+   \param short_opt short option char, set to 0 of none give
+   \param long_help the help string for thie option 
+   \param flags set whether command line option must be set 
+*/
 template <typename T>
 PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *long_opt, char short_opt,
 		    const char *long_help, CCmdOption::Flags flags= CCmdOption::not_required)

@@ -1,3 +1,4 @@
+
 \documentclass[english, 10pt, a4paper,headsepline,openany]{scrbook}
 \usepackage[T1]{fontenc}
 \usepackage[latin1]{inputenc}
@@ -11,6 +12,8 @@
 \usepackage{graphics}
 \usepackage{nonfloat}
 \usepackage{babel}
+\usepackage[colorlinks,linkcolor=blue]{hyperref}
+\usepackage{multirow}
 
 \include{version}
 \include{definitions}
@@ -25,11 +28,8 @@
 \begin{document}
 
 \vfill{}
-\title{MIA User and Programming Guide \\Software Version: \miaversion}
+\title{MIA User Guide \\Software Version: \miaversion}
 \vfill{}
-
-
-\date{01. October 2007}
 
 
 \author{Gert Wollny}
@@ -38,13 +38,13 @@
 
 \section*{Preface}
 
-This is the MIA User and Programming Guide. 
+This is the MIA User Guide. 
 It is dedicated how to use the tools provided by MIA and how to develop software based on the infrastructure provided by MIA.
 
 
 \section*{License}
 
-Copyright (c) Leipzig, Madrid 2004-2010
+Copyright (c) Leipzig, Madrid 2004-2011
 Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.1
   or any later version published by the Free Software Foundation; with no Invariant Sections, 
   with no Front-Cover Texts and with no Back-Cover Texts. 
@@ -55,9 +55,10 @@ A copy of the license is available at http://www.gnu.org/copyleft/fdl.html
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline 
-Date  & Description of changes\\
+Date  & Description\\
 \hline
 \hline 
+01/06/2011 & Second Public Release  \\
 01/10/2007 & First Public Release  \\
 01/03/2007 & Second Beta \\
 13/06/2007 & First Beta  \\
@@ -72,15 +73,14 @@ Date  & Description of changes\\
 
 \chapter{Introduction}
 
-This is the MIA Programming Guide. This document describes, how mia can be installed and used to 
-  write software. 
+This is the MIA User Guide. This document describes, how mia can be installed and used. 
 
-This document is maintained by Gert Wollny <gert.wollny@acm.org>. 
+This document is maintained by Gert Wollny <gw.fossdev@gmail.com>. 
 Additions, modifications or corrections may be mailed there for inclusion in the next release. 
 
 \section{Installation}
 
-MIA has been tested on GNU/Linux (x86,amd65) but should be installable on any Posix compatible platform. 
+MIA has been tested on GNU/Linux (x86,amd64) but should be installable on any Posix compatible platform. 
 
 
 \subsection{UNIX, Linux, Mac OS X} 
@@ -93,7 +93,7 @@ To do so, your software environment has to meet the following pre-requisites:
    C++0x standard - GNU g++ (>=4.4) (http://gcc.gnu.org) is known to work. 
 \item CMake (http://www.cmake.org) 
 \item The BOOST >= 1.40 (http://www.boost.org) library
-\item itpp (http://itpp.sourceforge.net) 
+\item gsl (http://) The GNU Scientific Library 
 \end{enumerate}
 
 Additionally, the following packages add to the functionallity of the software: 
@@ -102,14 +102,18 @@ Additionally, the following packages add to the functionallity of the software:
 \item [OpenEXR:] A HDR Image Library that supports 32 bit and floating point valued images (http://www.openexr.org)
 \item [TIFF:]    The Tagged Image File Format (http://www.remotesensing.org/libtiff/libtiff.html)
 \item [PNG:]     Portable Network Graphics (http://www.libpng.org)
+\item [DCMTK:]   DICOM image IO (partial support) 
+\item [nlopt:]   Nonlinear optimizers library 
+\item [xml++:]   Input/output of XML files, support for certain segmentation features
+\item [it++:]    Signal processing library (http://itpp.sourceforge.net) 
 \end{description}
 
-Interfaces to MatLab and IDL are only build, when the according software package is installed.  
+
 If all of the above pre-requisites are met, the installation of mia boils down to:
 
 \lstset{language=bash}
 \begin{lstlisting}
-  tar -zxvf mia-2.0.0.tgz
+  tar -zxvf mia-2.0..tgz
   mkdir build-mia
   cd build-mia
   cmake -DCMAKE_INSTALL_PREFIX=<path to install> ../mia-2.0.0
@@ -120,426 +124,94 @@ In order to test some of the components, you may run ``make test''.
 
 \subsection{MS Windows} 
 
-An installation package is provided based on the Nullsoft Scriptable Install System (NSIS). 
-One can just run it and install MIA to the desired location. 
-
-If you decide to compile MIA be yourself, it has so far only been tested by using Microsoft Visual Studio 2008 (Servicepack 1). 
-Unpack the source code, and run CMakeSetup on the root CMakeLists.txt. 
-Select ``NMake Makefiles'' as target and generate the build files. 
-Compiling is then done in a command shell by first initialising the Visual Studio build environment by runninng  the 
-  ``...VC\\bin\\vcvarsXX.bat and then typing ``nmake package''. 
-This will create an installation package that then can be installed like given above.
-Running the installation is a requirement, since some registration keys are generated. 
+Currently broken 
 
 \chapter{User Guide}
 
 \include{running}
-\include{idl}
-\include{matlab}
 
-\chapter{Program and Plug-in Reference}
-\include{programs}
-\include{plugins}
+\chapter{Programs}
+\label{ch:prog}
 
-\chapter{Programming Guide}
-\lstset{numbers=left, numberstyle=\small, numbersep=5pt}
 
-This part of the MIA guide decribes, how to use the interfaces provided to write your own softwrae, 
-  how to extend the the functionallity of MIA without touchting its core, and, finally, how to 
-  change MIA itself. 
-\begin{itemize}
-\item In chapter \ref{ch:simple} an example is provided, that describes how to scan the command line, load an image, 
-  run some given filters on it and store the image. 
-\item Chapter \ref{ch:images} focuses images on writing an image filter that can handle various different gray scale pixel formats.
-\item Chapter \ref{ch:io} decribes how to teach MIA to read and write additional image formats. 
-\item Chapter \ref{ch:filterplugin} will teach you, how to write an image filter plugin. 
-\item Chapter \ref{ch:addpluginstype} gives an insight how to create a new class of plug-ins.
-\end{itemize}
-
-\section{A simple program}
-\label{ch:simple}
-
-This chapter will teach you how to use the MIA-tools to scan command line parameters, read and store images, 
-  create filters opbejcts from plug-ins and apply filter chains to the images. 
-In summary, the program described here is the \texttt{mia-2dimagefilter} from \texttt{src/2dimagefilter.cc}. 
-
-For convenience the full source code is printed in the listning below, and we will go through it line by line. 
-\lstset{language=c++}
-\begin{lstlisting}
-#include <mia/core.hh>
-#include <mia/2d.hh>
-
-NS_MIA_USE; 
-using namespace std; 
-
-int main( int argc, const char *argv[] )
-{
-  string in_filename;
-  string out_filename;
-  string out_type; 
-  bool help_plugins = false; 
-
-  try 
-  {
-    const C2DFilterPluginHandler::Instance& filter_plugins = 
-      C2DFilterPluginHandler::instance();
-  
-    const C2DImageIOPluginHandler::Instance& imageio = 
-      C2DImageIOPluginHandler::instance();
-  
-    CCmdOptionList options;  
-    options.push_back(make_opt( in_filename, "in-file", 'i', 
-                      "input image(s) to be filtered", "input", true)); 
-    options.push_back(make_opt( out_filename, "out-file", 'o', 
-                      "output image(s) that have been filtered", "output", true)); 
-    options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
-                      "output file type (if not given deduct from output file name)" , 
-                      "image-type"));
-    options.push_back(make_opt( help_plugins, "help-plugins", 0, 
-                      "give some help about the filter plugins", NULL)); 
-
-    options.parse(argc, argv); 
-    vector<const char *> filter_chain = options.get_remaining(); 
-
-    list<C2DFilterPlugin::ProductPtr> filters;
-    for (vector<string>::const_iterator i = filter_chain.begin(); 
-         i != filter_chain.end(); ++i) {
-       C2DFilterPlugin::ProductPtr filter =  filter_plugins.produce(i->c_str()); 
-       if (!filter) {
-         stringstream error; 
-         error << "Filter " << *i << " not found"; 
-         throw invalid_argument(error.str());
-       }
-       filters.push_back(filter);
-    }
-
-    C2DImageIOPluginHandler::PData  in_image_list = imageio.load(in_filename);  
-    if (!in_image_list || in_image_list->empty())
-         throw invalid_argument(string("No images found in ")  + in_filename);
-
-    vector<string>::const_iterator filter_name = filter_chain.begin();
-    for (list<C2DFilterPlugin::ProductPtr>::const_iterator f = filters.begin(); 
-         f != filters.end(); ++f) {
-      for (C2DImageIOPluginHandler::Data::iterator   
-         i = in_image_list->begin(); i != in_image_list->end(); ++i)
-    
-           *i = (*f)->filter(**i);
-    }
-    if ( !imageio.save(out_type, out_filename, *in_image_list) )
-      throw runtime_error(string("unable to save result to ") + out_filename);
-    return EXIT_SUCCESS; 
-
-  } 
-  catch (const runtime_error &e){
-    cerr << argv[0] << " runtime: " << e.what() << endl;
-  }
-  catch (const invalid_argument &e){
-    cerr << argv[0] << " error: " << e.what() << endl;
-  }
-  catch (const exception& e){
-    cerr << argv[0] << " error: " << e.what() << endl;
-  }
-  catch (...){
-    cerr << argv[0] << " unknown exception" << endl;
-  }
-  return EXIT_FAILURE;
-}  
-\end{lstlisting}  
+This chapter lists all the software tools provided by mia2D. 
+The descriptions follow a designated pattern: 
 
 \begin{description}
-\item [1:] For option parsing include the core of the MIA library. 
-\item [2:] For 2D image handling pull in the apropriate declaration. 
-\item [4-5:] Using the MIA and STD namespace for short access. 
-\item [7:] Start the main function. 
-\item [9-12:] Declare some variables, that are needed for the command line parsing, namely the input and output file names, 
-    the output file format (if not given the file format is deducted from the output file name), and a flag 
-    see if the user requests some help on the supported filter plugins. 
-    The values given to these variables will be the default values for the options. 
-     As an exception, boolean values are always default to ``false''. 
-\item [14-15, 64-77:] The whole code is put into a try catch block, since error handling is done by exceptions. 
-\item [16-20:] Define some short cuts for the plugin handlers.
-\item [22-31:] Define the options for this program using the variables given above. 
-    Silently, in the background are some more options available, that deal with common tasks, such as printing out the general
-      help, printing out copyright information, and verbosity level of the output. 
-    See chapter \ref{ch:prog} for details. 
-\item [33-34:] Parse the command line. 
-     For this program, the remaining command line parameters describe the filters to be applied. 
-    A command line like 
-    \lstset{language=bash,numbers=none}
-    \begin{lstlisting}
-eva-2dimagefilter -i input.png -o output.png \
-    downscale:bx=2,by=2 bandpass:min=20,max=200
-    \end{lstlisting}
-      will be parsed like follows:
-      \begin{itemize}
-      \item  \texttt{in\_filename} = ``input.png''
-      \item  \texttt{out\_filename} = ``output.png''
-      \item  \texttt{filter\_chain} = (downscale:bx=2,by=2, bandpass:min=20,max=200)
-      \end{itemize}
+\item [Program:]\emph{the command line program name}
+\item [Description:]A description of the program
+\item [Options:] list of options
 
-\item [36-46:] Create the filter chain by using the filter descriptions from the command line. 
-       If the creation of one filter fails, an \texttt{invalid\_argument} exception is thrown, which will terminate the 
-       program with an error message. 
-\item [48-50:] Load the image(s) from the input file. 
-       If no input image is found, throw an \texttt{invalid\_argument} exception that will terminate the program with an error message. 
-\item [52-59:] Apply the filters to all input images replacing the input images. 
-       Since the images are all wrapped into shared pointers, no memory leaks will be introduced by this code. 
-\item [60-61:] Save the filtered image(s) in the output file. If not successfull throw an exception.
-\item [62:] Terminate the program with the return value indicating success.
-\item [64-77:] Catch all known and unknown exceptions and report.
-\item [78:] return signalling failure, because somewhere in the program a exception was thrown that could only be reported 
-    in the main function. 
+\noindent 
+\tabstart
+long name & short name & value type & description of the parameter \\
+\hline
+\tabend
+
+\item [Example:] Example how to run the program 
+
+\noindent 
+If no value type is given, then the option accepts no further parameter. 
+All programs support the following options: 
+
+\tabstart
+--help & -? & & Print out some help \\\hline
+--usage & & & Print out a short help \\\hline
+--version & -v & & Print out version information \\\hline
+--copyright & & & Print out copyright information \\\hline
+--verbose & -V & string & set the verbosity of the output out of \{ debug, message, warning, fail, error, fatal\} \\\hline
+\tabend
+\item [Remarks:] additional notes
 \end{description}
 
-\section{Images and Filtering}
 
-\label{ch:images}
+The programs support a variety of 2D and 3D image and data file formats, see tables \ref{tab:2dformats} 
+and \ref{tab:3dformats}. 
+Support for some of these formats depend on external libraries and needs to be enabled at compile time.
 
-In the following, the basic handling of images is described. 
-All the examples will use 2D images. 
-If not otherwise noted, 3D images are handled likewise. 
+\begin{table}[h]
+\caption{\label{tab:2dformats}2D image formats}
+\centering{
+\begin{tabular}{|l|l|c|}
+\hline
+File type description & remark & suffix \\\hline
+DICOM & Only a supset of tags is supported & \\\hline 
+OpenEXR HDR image format & http://www.openexr.com/ & exr \\\hline
+Portable Network Graphics & http://www.libpng.org & png \\\hline
+Tagged Image File format & http://www.remotesensing.org/libtiff/libtiff.html & tif \\\hline
+Vista & & v \\\hline 
+Windows Bitmap & http://www.daubnet.com/formats/BMP.html & bmp \\\hline
+\end{tabular}
+}	
+\end{table}
 
-\section{How to create and copy images of a certain image type}
-
-The images supported in MIA  may contain different pixel types, e.g. 1-bit, 8-bit, 16-bit, or even float valued ones. 
-MIA uses shared pointers to \texttt{C2DImage}, respectively,  to hold images. 
-However, in order to account for the pixel type, at creation time a derivative class of the used pixel type needs to be specified. 
-In order to create an 16-bit image with unsigned pixel values with a given \texttt{size}, use:
-
-\begin{lstlisting}
-P2DImage image = P2DImage(new C2DUSImage(size)); 
-\end{lstlisting}
- 
-In order to copy such an image, an image copy filter is provided, that can be invoked like follows: 
-
-\begin{lstlisting}
-P2DImage image_copy = filter<T2DImage>(FCopyImage(), image); 
-\end{lstlisting}
-\emph{Remark: a clone method might come in handy ...}
-
-More about these image filters is described in the next section: 
-
-\section{An Image Filter}
-\label{sec:filter}
-
-In order to access the image data, its type needs to be known. 
-Of course it is possible to use the \texttt{get\_type} method of the \texttt{C2DImage} class and use
-  a switch statement in order to cast to the appropriate derived class. 
-However, since this needs to be done very often, MIA provides various template functions to handle the most cases
-  of image access. 
-Namely, functions \texttt{mia::filter} are provided that take a filter functor as argument as well as one image or two images. 
-Examples of its usage follow: 
-Imagine, an image thresh-holding filter, that takes an image, and sets all pixels above or below given thresholds to zero, and 
-  all pixels within the range to one. 
-Such a filter would be defined like follows:     
-
-\lstset{language=c++,numbers=left}	
-\begin{lstlisting}
-#include <mona/core/filter.hh>
-
-struct FThreshold: public TFilter<P2DImage> {
-  FThreshold(double min, double max):
-    _M_min(min), 
-    _M_max(max)
-    {
-    }
-  typename <template T> 
-  FThreshold::result_type operator()(const T2DImage<T>& image)const {
-    typename T2DImage<T>::const_iterator ii = image.begin(); 
-    typename T2DImage<T>::const_iterator ei = image.end();
-    
-    C2DBitImage *r = new  C2DBitImage(image.get_size(), image.get_attribute_list()); 
-    P2DImage result(r); 
-    C2DBitImage::iterator ir = r->begin();
-    
-    while (ii != ei) {
-      *ir++ = (*ii >= _M_min && *ii < _M_max); 
-      ++ii; 
-    }
-    return result;     
-  }
-private: 
-  double _M_min; 
-  double _M_max; 
-); 
-\end{lstlisting}
-
-Here, \texttt{TFilter} is a template, that defines the type \texttt{return\_type} that is needed for the call to the actual filter function. 
-The constructor of the filter functor \texttt{FThreshold} initialises the filter with the given parameters. 
-A \texttt{do\_threshold} function that makes use of this filter operator would look like this:   
-  
-\begin{lstlisting}
-P2DImage do_threshold(double min, double max, const C2DImage& image)
-{  
-  return  mia::filter<T2DImage>(FThreshold(min,max), image);
-}   
-\end{lstlisting}
-
-The \texttt{filter<T2DImage>} function takes care of casting the input image depending on its pixel type, and then invokes 
-  the operator () of \texttt{FThreshold} and returns its result.
-  
-\section{Pixel Type Dependant Filtering}
-\label{sec:ptdf}
-
-Imaging the situation, when a filter type is only appropriate for certain pixel types, or should behave differently for different
-   pixel types. 
-Then using template specification comes to the rescue. 
-Imagine, for example, in the above example, using the thresh-holding filter on a bit-valued image doesn't make much sense. 
-Therefore, we would like to report an error, if the filter is invoked with an bit valued image. 
-This can be done  by additionally implementing a specialisation of the operator () of \texttt{FThreshold}: 
-\emph{I think another indirection is needed here ...}
-\begin{lstlisting}
-template <>
-FTreshold::result_type FTreshold::operator(const C2DBitImage& image)const 
-{
-  throw invalid_argument("FTreshold can not be used on bit-valued images"); 
+\begin{table}[h]
+\caption{\label{tab:3dformats}3D image formats}
+\centering{
+\begin{tabular}{|l|l|c|}
+\hline
+File type description & on the web & suffix \\\hline
+INRIA 3D File format &http://foveaproject.free.fr/softwareEng.html & inria  \\\hline
+%%Medical Imaging NetCDF & http://www.bic.mni.mcgill.ca/software/minc/ & mnc \\\hline
+Sun TAAC Image File Format & & vff \\\hline
+Vista File Format & http://www.cs.ubc.ca/nest/lci/vista/vista.html & v \\\hline
+\end{tabular}
 }
-\end{lstlisting}
- 
-The compiler will take care of the rest, and if the user provides a bit valued image the above exception will be raised. 
-
-
-\section{Extending MIA}
-\label{ch:io}
-
-\subsection{Adding a Plugin to store/load data in a new file format}
-\label{sec:newfilehandler}
-
-In the following, adding support fo a new 2D image file format is described. 
-The base class defining the interface for 2D Image IO is \texttt{C2DImageIOPlugin} and it is 
-  declared in the the header file \texttt{<mia/2d/2dimageio.hh>}. 
-In order to implement the new IO file format, four abstract virtual functions have to be implemented: 
-\begin{itemize}  
-\item {\tt do\_add\_suffixes}: Adds the standard suffixes for this file format to the plugin handlers suffic map. 
-\item {\tt do\_load}: Implements loading data from the file. 
-\item {\tt do\_save}: Implements storing data to the file. 
-\item {\tt do\_get\_descr}: Returns a string with a short description of the plugin.
-\end{itemize}  
-In addition, a constructor has to be defined, in order to name the format. 
-
-The following example code is taken from the Windows BMP iamge format IO plugin which resides in the MIA source tree in \texttt{mia/2d/io/bmp.cc}.
-First, the plugin class is declared as a specification of the general 2D plugin class: 
-
-\begin{lstlisting}{BMPIO}
-#include <mia/2d/2dimageio.hh>
-NS_BEGIN(BMPIO)
-NS_MIA_USE
-
-class CBMP2DImageIO: public C2DImageIOPlugin {
-public:
-  CBMP2DImageIO();
-private: 
-  void do_add_suffixes(multimap<string, string>& map) const;
-  PData do_load(const string& fname) const;
-  bool do_save(const string& fname, const Data& data) const;
-  const string do_get_descr() const; 
-};
-\end{lstlisting}
+\end{table}
 
 \noindent 
-The constructor of the plugin takes care of two things: initialise the plug-in with its apropriate name and set the supported pixel formats. 
+In all cases only binary and gray scale data is supported.
 
-\begin{lstlisting}{BMPIO}
-CBMP2DImageIO::CBMP2DImageIO():
-	C2DImageIOPlugin("bmp")
-{
-	add_supported_type(it_ushort);
-	add_supported_type(it_ubyte); 
-	add_supported_type(it_bit);
-}
-\end{lstlisting}
-
-\noindent 
-Since at construction time, nothing is known about the plugin handler, the setup of the suffix-fileformat map has to be done in an extra function: 
-\begin{lstlisting}{BMPIO}
-void CBMP2DImageIO::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".bmp", get_name())); 
-	map.insert(pair<string,string>(".BMP", get_name())); 
-}
-\end{lstlisting}
+\include{programs}
 
 
-\noindent 
-The next function just gives a plain text description of the plug-in, that might be used wehn printing out help. 
-\begin{lstlisting}{BMPIO}
-const string  CBMP2DImageIO::do_get_descr()const
-{
-	return string("BMP 2D-image input/output support");
-}
-\end{lstlisting}
+\chapter{Plug-ins}
+\label{ch:plugins}
 
-\noindent 
-Since some file types (like, e.g. TIFF) provide their own routines for opening the file, this filr oprn code needs to be added here.
-After creating the result image vector, format specific code follows to load the image data that is then returned. 
-\begin{lstlisting}{BMPIO}
-CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
-{
-  int read = 0; 
-  CInputFile f(filename);
-  if (!f)
-    return PData(); 
+In this chapter the plug-ins are described that are provided by the library.
 
-  PData result = PData(new C2DImageVector()); 
 
- 
-  // File format specific implementation follows
-  //  ...
-	
-  return result; 
-}
-\end{lstlisting}
-
-\noindent 
-In the save function, again the file needts to be opened/created for output, because this might by format specific. 
-Saving the image data requires a translation of the pixel type that is best provided by a filter function (see Section \ref{sec:filter}) here 
-  given by the CImageSaver class.
-\begin{lstlisting}{BMPIO}
-bool CBMP2DImageIO::do_save(string const& filename, const C2DImageVector& data) const
-{
-	cvdebug() << "CBMP2DImageIO::save begin\n"; 
-	
-	COutputFile f(filename);
-	if (!f) {
-		cverr() << "CBMP2DImageIO::save:unable to open output file:" << filename << "\n"; 
-		return false; 
-	}
-		
-	CImageSaver saver(f); 
-	
-	for (C2DImageVector::const_iterator iimg = data.begin(); iimg != data.end(); ++iimg)
-		filter(saver, **iimg); 
-	
-	cvdebug() << "CBMP2DImageIO::save end\n"; 
-	return true; 
-}
-\end{lstlisting}
-
-\noindent 
-Finally, the plugin interface function needs to be defined. 
-This functions needs to be declared \texttt{extern ``C''} to avoid the C++ name mangeling that is compiler dependend. 
-Depending on the target platform and compiler, some additional decoration might be necessary that is set elsewhere 
-  through the \texttt{EXPORT} define.
-\begin{lstlisting}{BMPIO}
-extern "C" EXPORT CPluginBase *get_plugin_interface()
-{
-		return new CBMP2DImageIO;
-}
-\end{lstlisting}
-
-\noindent 
-Above code skeleton provides the basis for all IO plugins. 
-For further reading, the source code in the respective ``io'' directories might hold forward. 
-
-\subsection{Writing an Image Filter Plugin}
-\label{ch:filterplugin}
-
-\subsection{Adding a new general plugin type}
-\label{ch:addpluginstype}
-
-\subsection{Adding new data types}
-\label{sec:adddatatypeio}
-
+\include{plugins}
 
 \bibliographystyle{plainnat}
 \cleardoublepage\addcontentsline{toc}{chapter}{\bibname}

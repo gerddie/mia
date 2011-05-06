@@ -6,6 +6,8 @@ LINK_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../mia/3d)
 
 #basic helpers 
 DEFEXE(filenumberpattern  miacore )
+DEFEXE(cmeans  miacore )
+
 
 #2D programs 
 DEFEXE(2dimagefilter      mia2d )
@@ -14,16 +16,18 @@ DEFEXE(multihist          mia2d )
 DEFEXE(2dimagestats       mia2d )
 DEFEXE(2dimagefilterstack mia2d )
 DEFEXE(2dimagecreator     mia2d )
+DEFEXE(2dimagecombiner    mia2d )
 DEFEXE(raw2image          mia2d )
 DEFEXE(2ddeform           mia2d )
+DEFEXE(2dtransform        mia2d )
 DEFEXE(2dforce            mia2d )
 DEFEXE(2davgmasked        mia2d )
 DEFEXE(2drigidreg         mia2d )
 DEFEXE(2dnonrigidreg      mia2d )
 DEFEXE(2dmultiimagevar    mia2d )
 DEFEXE(2dmulti-force      mia2d )
-DEFEXE(2dimagefullstats mia2d )
-
+DEFEXE(2dimagefullstats   mia2d )
+DEFEXE(2dbinarycombine    mia2d )
 DEFCHKEXE(2dlerp mia2d )
 
 

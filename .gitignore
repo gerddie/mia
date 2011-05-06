@@ -1,6 +1,7 @@
 test-*
 mia-*
 *.so
+*.mia
 *.so.*
 CMakeFiles
 Makefile

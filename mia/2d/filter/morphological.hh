@@ -37,8 +37,8 @@ private:
 
 	virtual mia::P2DImage do_filter(const mia::C2DImage& src) const;
 
-	mia::P2DShape _M_shape;
-	bool _M_more_dark;
+	mia::P2DShape m_shape;
+	bool m_more_dark;
 };
 
 
@@ -53,8 +53,8 @@ private:
 
 	virtual mia::P2DImage do_filter(const mia::C2DImage& src) const;
 
-	mia::P2DShape _M_shape;
-	bool _M_more_dark;
+	mia::P2DShape m_shape;
+	bool m_more_dark;
 };
 
 class C2DOpenClose: public mia::C2DFilter {
@@ -63,9 +63,9 @@ public:
 private:
 	virtual mia::P2DImage do_filter(const mia::C2DImage& src) const;
 
-	C2DErode _M_erode;
-	C2DDilate _M_dilate;
-	bool _M_open;
+	C2DErode m_erode;
+	C2DDilate m_dilate;
+	bool m_open;
 };
 
 class C2DMorphFilterFactory: public mia::C2DFilterPlugin {
@@ -78,8 +78,8 @@ private:
 
 	virtual void prepare_path() const;
 
-	std::string _M_shape_descr;
-	std::string _M_hint;
+	std::string m_shape_descr;
+	std::string m_hint;
 };
 
 class C2DDilateFilterFactory: public C2DMorphFilterFactory {

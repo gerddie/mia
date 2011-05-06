@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -21,6 +21,36 @@
  *
  */
 
+/*
+  LatexBeginPluginSection{2D image filters}
+  \label{sec:filter2d}
+  
+  2D image filters take a constant reference to a C2DImage as parameter and 
+  return the result in a shared\_ptr P2DImage. 
+  After constructions, filters work like functions, i.e. the output image is only dependent 
+  on the input image and the construction parameters. 
+  
+  Filters are created by the C2DFilterPluginHandler singleton.
+
+  LatexEnd
+*/
+
+/*
+  LatexBeginPluginSection{2D image combiner}
+  \label{sec:combiner2d}
+  
+  2D image combiners take two constant references to a C2DImage as parameter and 
+  return the result in a shared\_ptr P2DImage. 
+  After constructions, combinerss work like functions, i.e. the output image is only dependent 
+  on the input images and the construction parameters. 
+
+  Combiners are created by the C2DImageCombinerPluginHandler singleton. 
+
+  LatexEnd
+*/
+
+
+
 #include <mia/core/export_handler.hh>
 
 #include <mia/2d/2dfilter.hh>
@@ -39,12 +69,6 @@ C2DImageCombiner::~C2DImageCombiner()
 C2DImageCombiner::result_type C2DImageCombiner::combine( const C2DImage& a, const C2DImage& b) const
 {
 	return do_combine(a,b);
-}
-
-double  EXPORT_2D distance(const C2DImage& a, const C2DImage& b,  const C2DImageCombiner& measure)
-{
-	std::shared_ptr<any > result = measure.combine(a,b);
-	return any_cast<double>(*result);
 }
 
 P2DImage  EXPORT_2D run_filter_chain(P2DImage image, size_t nfilters, const char *filters[])

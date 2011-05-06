@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -26,6 +26,7 @@
 #include <set>
 #include <mia/2d/transform.hh>
 #include <mia/core/factory.hh>
+#include <mia/core/import_handler.hh>
 
 NS_MIA_BEGIN
 
@@ -36,7 +37,7 @@ NS_MIA_BEGIN
    of different types. 
  */
 template <typename Transform> 
-class  TTransformCreator: public CProductBase {
+class EXPORT_HANDLER TTransformCreator: public CProductBase {
 public:
 	typedef typename Transform::Data plugin_data; 
 	typedef Transform plugin_type; 
@@ -68,7 +69,7 @@ protected:
 private:
 	virtual	typename Transform::Pointer do_create(const typename Transform::Size& size) const = 0;
 
-	std::set<std::string> _M_properties;
+	std::set<std::string> m_properties;
 };
 
 NS_MIA_END

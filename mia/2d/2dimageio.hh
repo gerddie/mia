@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -34,10 +34,16 @@
 
 NS_MIA_BEGIN
 
+
+/**
+   Vector of 2D images to 
+ */
 class EXPORT_2D C2DImageVector: public C2DImageSeries,
-		      public CIOData {
- public:
-	C2DImageVector *clone() const;
+				public CIOData {
+public:
+
+	/// \returns a newly created copy of the image vector 
+	C2DImageVector *clone() const __attribute__((warn_unused_result));
 };
 
 
@@ -47,7 +53,7 @@ public:
 	static const char *type_descr;
 };
 
-
+/// Base type for 2D image IO plugins 
 typedef TIOPlugin<io_2dimage_type> C2DImageIOPlugin;
 
 class EXPORT_2D C2DImageIOPPH: public TIOPluginHandler<C2DImageIOPlugin> {
@@ -58,23 +64,66 @@ protected:
 	C2DImageIOPPH(const std::list< ::boost::filesystem::path>& searchpath);
 };
 
+/** The 2D image IO plugin handler that also provides the interface to 
+    load and store 2D images. 
+ */
 typedef TIOHandlerSingleton< C2DImageIOPPH > C2DImageIOPluginHandler;
+
+/** The type for virtual storage access for images 
+    \sa CDatapool
+ */
 typedef C2DImageIOPluginHandler::Instance::DataKey C2DImageDataKey;
 
+/** 
+    Data type of what is actually loaded by the image plugins handler 
+ */
 typedef C2DImageIOPluginHandler::Instance::PData P2DImageVector;
+
+
+/**
+   Convenience function to create a vector of images wrapping one image
+   \param image 
+   \returns the vector containing the image 
+   \todo the interface that requires a vector to be passes may not be the best approach 
+   in ensures that we can also load all images from a multi-record image file type 
+   but other then that it is very inconvenient 
+ */
 P2DImageVector EXPORT_2D create_image2d_vector(P2DImage image);
+
+
+/**
+   Convenience function to load one 2D image from a file 
+   @param filename 
+   @returns image 
+ */
 
 P2DImage EXPORT_2D  load_image2d(const std::string& filename);
 
+/**
+   Convenience function to load one 2D image from a file 
+   @param filename 
+   @returns image 
+ */
 template <>
 inline P2DImage load_image<P2DImage>(const std::string& filename)
 {
 	return load_image2d(filename);
 }
 
+/**
+   Convenience function to save one 2D image to a file 
+   @param filename 
+   @param image 
+   @returns true if saving was  successfull
+ */
+
 bool  EXPORT_2D save_image(const std::string& filename, P2DImage image);
 
 
+/**
+   some DICOM tags that may be used 
+   \cond DICOM_TAGS 
+ */
 extern EXPORT_2D const char * IDModality;
 extern EXPORT_2D const char * IDPatientOrientation;
 extern EXPORT_2D const char * IDPatientPosition;
@@ -88,7 +137,7 @@ extern EXPORT_2D const char * IDSliceLocation;
 extern EXPORT_2D const char * IDStudyID;
 extern EXPORT_2D const char * IDSmallestImagePixelValue;
 extern EXPORT_2D const char * IDLargestImagePixelValue;
-
+/// @endcond 
 
 NS_MIA_END
 

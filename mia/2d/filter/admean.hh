@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -31,10 +31,10 @@ NS_BEGIN ( admean_2dimage_filter )
 
 class C2DAdmean : public mia::C2DFilter
 {
-	int _M_width;
+	int m_width;
 public:
 	C2DAdmean ( int hwidth ) :
-		_M_width ( hwidth )
+		m_width ( hwidth )
 	{
 	}
 
@@ -52,7 +52,7 @@ public:
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string do_get_descr() const;
 private:
-	int _M_hwidth;
+	int m_hwidth;
 };
 
 NS_END

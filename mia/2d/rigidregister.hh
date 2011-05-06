@@ -1,6 +1,6 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -37,18 +37,25 @@
 NS_MIA_BEGIN
 
 /**
+   @brief Linear Registration of 2D images.  
+   
    Class for registration without regularization - i.e. should only be used
-   for affine, rigid and translation only registrations
+   for affine, rigid and translation only registrations. 
+   However, one might note that the generic implementation of the C2DTransformtion 
+   class makes is possible to use any kind of transformation that is provided by 
+   a transformation plug-in. 
+   This class allows that exactly one cost function is used. 
 */
 
 class EXPORT_2D C2DRigidRegister {
 public:
 	/**
 	   Constructor for the registration tool
-	   \param cost cost function model
-	   \param minimizer GSL provided minimizer
-	   \param transform_type string describing which transformation is supported
-	   \param ipf interpolator
+	   @param  cost cost function model
+	   @param  minimizer GSL provided minimizer
+	   @param  transform_creator object used to create the transformation type 
+	   @param  ipf interpolator
+	   @param mg_levels number of used multi-resolution levels 
 	 */
 
 	C2DRigidRegister(P2DImageCost cost, PMinimizer minimizer,
@@ -60,10 +67,9 @@ public:
 
 	/**
 	   Run the registration of an image pair. 
-	   \param src source (moving) image 
-	   \param ref reference (fixed) image 
-	   \param mg_levels multigrisd levels to be used 
-	   \returns the transformation registering src to ref that minimizes the constructor given 
+	   @param  src source (moving) image 
+	   @param  ref reference (fixed) image 
+	   @returns the transformation registering src to ref that minimizes the constructor given 
 	   cost function 
 	 */
 	P2DTransformation  run(P2DImage src, P2DImage ref) const;

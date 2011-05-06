@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2010
+ * Copyright (c) Madrid 2010-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -25,6 +25,7 @@
 #include <fstream>
 #include <libxml++/libxml++.h>
 #include <mia/core/cmdlineparser.hh>
+#include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <boost/filesystem.hpp>
@@ -45,8 +46,6 @@ const char *g_description =
 typedef pair<P2DImage, string> SImage; 
 typedef vector<SImage> C2DImageVectorWithName; 
 
-//  emacs indetaion with <> broken ...
-#define DynamicCast(T,D) dynamic_cast<T>(D)
 vector<C2DImageVectorWithName> separate_slices(const C2DImageVectorWithName &images)
 {
 	// collect series 
@@ -57,7 +56,7 @@ vector<C2DImageVectorWithName> separate_slices(const C2DImageVectorWithName &ima
 	for (auto i = images.begin(); i != images.end(); ++i) {
 		float slice_location = 0.0;
 		
-		auto pslice_location = DynamicCast(const CFloatAttribute *,i->first->get_attribute(IDSliceLocation).get());
+		auto pslice_location = dynamic_cast<const CFloatAttribute *>(i->first->get_attribute(IDSliceLocation).get());
 		if (pslice_location) {
 			// round the location ,because we want to compare it 
 			slice_location = floor(1000.0 * *pslice_location) / 1000.0; 
@@ -67,7 +66,7 @@ vector<C2DImageVectorWithName> separate_slices(const C2DImageVectorWithName &ima
 		
 		AquisitionSeries& aqs = series[slice_location]; 
 		
-		auto pAcquisitionNumber = DynamicCast(const CIntAttribute *,i->first->get_attribute(IDAcquisitionNumber).get());
+		auto pAcquisitionNumber = dynamic_cast<const CIntAttribute *>(i->first->get_attribute(IDAcquisitionNumber).get());
 		if (pAcquisitionNumber) {
 			aq_number = *pAcquisitionNumber; 
 		}else {
@@ -91,14 +90,12 @@ vector<C2DImageVectorWithName> separate_slices(const C2DImageVectorWithName &ima
 	return result; 
 }
 
-#if 0
-void copy_file(const bfs::path& infile, const bfs::path& outfile) 
+void mia_copy_file(const bfs::path& infile, const bfs::path& outfile) 
 {
-	ifstream ifs(infile.file_string().c_str(), ios::in  | ios::binary);
-	ofstream ofs(outfile.file_string().c_str(),ios::out | ios::binary);
+	ifstream ifs(infile.string().c_str(), ios::in  | ios::binary);
+	ofstream ofs(outfile.string().c_str(),ios::out | ios::binary);
 	ofs << ifs.rdbuf();
 }
-#endif 
 
 bool save_series(int index, const C2DImageVectorWithName& series, const string& out_directory, bool no_copy_files) 
 {
@@ -113,9 +110,9 @@ bool save_series(int index, const C2DImageVectorWithName& series, const string& 
 			frame.set_imagename(i->second);
 		else {
 			bfs::path infile(i->second); 
-			string filename = infile.filename();
+			string filename = __bfs_get_filename(infile);
 			frame.set_imagename(filename);
-			copy_file(infile, outpath / bfs::path(filename)); 
+			mia_copy_file(infile, outpath / bfs::path(filename)); 
 		}
 		set.add_frame(frame);
 	}
@@ -125,7 +122,7 @@ bool save_series(int index, const C2DImageVectorWithName& series, const string& 
 	bfs::path outfilename = bfs::path(out_directory) / bfs::path(fname.str()); 
 	
 	unique_ptr<xmlpp::Document> outset(set.write());
-	ofstream outfile(outfilename.file_string().c_str(), ios_base::out );
+	ofstream outfile(outfilename.string().c_str(), ios_base::out );
 	if (outfile.good())
 		outfile << outset->write_to_string_formatted();
 	return outfile.good();
@@ -141,7 +138,9 @@ int do_main( int argc, const char *argv[] )
 				    CCmdOption::required));
 	options.push_back(make_opt( no_copy_images, "no-copy", 0, "don't copy image files to output directory"));
 
-	options.parse(argc, argv, true);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	auto input_files =  options.get_remaining();
 	if (input_files.empty()) {

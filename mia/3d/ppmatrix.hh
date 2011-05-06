@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2010
+ * Copyright (c) Madrid 2010-2011
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,12 +29,11 @@
 NS_MIA_BEGIN
 
 /**
-   Precomputed Matrix for the DivCurl regularization. 
+   \brief Precomputed Matrix for the DivCurl regularization. 
+   
    This class stores the precomputed matrix for the divcurl regislarization 
    of a spline based transformation. 
 */
-
-
 
 class EXPORT_3D C3DPPDivcurlMatrix {
 public: 
@@ -71,11 +70,18 @@ public:
 	/**
 	   Given this matrix P and the coefficient field c evaluate the value for c^T P c 
 	   \param coefficients B-Spline coefficient field c 
-	   \retval gradinet gradient of the divcurl cost 
+	   \param[out] gradient gradient of the divcurl cost 
 	   \returns <c^T, P, c>
 	 */
 	
 	double evaluate(const C3DFVectorfield& coefficients, CDoubleVector& gradient) const; 
+	
+	/**
+	   Given this matrix P and the coefficient field c evaluate the value for c^T P c 
+	   \param coefficients B-Spline coefficient field c 
+	   \param[out] gradient gradient of the divcurl cost 
+	   \returns <c^T, P, c>
+	 */
 	double evaluate(const T3DDatafield<C3DDVector>& coefficients, CDoubleVector& gradient) const; 
 
 	/**

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -21,11 +21,40 @@
  *
  */
 
-/*! \brief
+/* 
+   LatexBeginPluginDescription{2D image stack filters}
+   
+   \subsection{Probability based region growing}
+   \label{fifof:regiongrow}
+   
+   \begin{description}
+   
+   \item [Plugin:] regiongrow
+   \item [Description:] Run a region-growing filter on a stack of images that comprise 
+         a 3D image.  The region growing is based on class probabilities obtained from 
+	 a c-means classification of the pixel intensities. 
+	 Quasi-3D processing is achieved by holding a number of 3D slices in the working memory 
+	 to allow the region to grow "backwards" in the stack. 
+   \item [Input:] Gray scale images, all of the same size and pixel type  
+   \item [Output:] A binary mask representing the region 
+   
+   \plugtabstart
+   map & string & File name for the intensity--class probability map & -  \\
+   seed  & float & Seed threshold, pixels with a class probablility above or equal to this value 
+                    are used to seed the region growing & 0.98 \\
+   low & float & probability threshold for the acceptance of a probability, 
+                 during the region growing, pixels with a lower class probability are not 
+                 added to the region & 0.5 \\
+   depth & int & Number of slices to keep during processing. A smaller value 
+                 saves working memory but also reduces the possibility 
+                 for the region growing to grow backwards in the image stack & 5 \\
+   class & int & class to be segmented, must be lower then the number of classes in the probability map  & 2 \\
+   \plugtabend
+   
+   \end{description}
 
-A region growing filter for stacks of 2D images
-
-*/
+   LatexEnd  
+ */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -46,33 +75,33 @@ static char const * plugin_name = "regiongrow";
 C2DRegiongrowFifoFilter::C2DRegiongrowFifoFilter(const CProbabilityVector probmap,
 			float low, float seed, int cls, int depth):
 	C2DImageFifoFilter(1, 1, depth),
-	_M_probmap(probmap),
-	_M_low(low),
-	_M_seed(seed),
-	_M_class(cls),
-	_M_depth(depth)
+	m_probmap(probmap),
+	m_low(low),
+	m_seed(seed),
+	m_class(cls),
+	m_depth(depth)
 {
-	_M_shape = C3DShapePluginHandler::instance().produce("6n");
+	m_shape = C3DShapePluginHandler::instance().produce("6n");
 }
 
 template <typename T, bool is_float>
 struct FTransform {
 	FTransform(CProbabilityVector::value_type map):
-		_M_map(map),
-		_M_maxidx(map.size()-1)
+		m_map(map),
+		m_maxidx(map.size()-1)
 	{
-		assert((size_t)_M_maxidx < map.size());
+		assert((size_t)m_maxidx < map.size());
 	}
 
 	double operator () (T x) const {
 		if (x <= 0)
-			return _M_map[0];
-		if (x <= _M_maxidx)
-			return _M_map[x];
-		return _M_map[_M_maxidx];
+			return m_map[0];
+		if (x <= m_maxidx)
+			return m_map[x];
+		return m_map[m_maxidx];
 	}
-	CProbabilityVector::value_type _M_map;
-	T _M_maxidx;
+	CProbabilityVector::value_type m_map;
+	T m_maxidx;
 };
 
 template <typename T>
@@ -92,12 +121,12 @@ template <typename T>
 int C2DRegiongrowFifoFilter::operator ()( const T2DImage<T>& image)
 {
 	const bool is_float = is_floating_point<T>::value;
-	transform(image.begin(), image.end(), _M_in_buffer.begin(),
-		  FTransform<T, is_float>(_M_probmap[_M_class]));
+	transform(image.begin(), image.end(), m_in_buffer.begin(),
+		  FTransform<T, is_float>(m_probmap[m_class]));
 
-	transform(_M_in_buffer.begin(), _M_in_buffer.begin() + image.size(),
-		  _M_out_buffer.begin(),
-		  _M_seed);
+	transform(m_in_buffer.begin(), m_in_buffer.begin() + image.size(),
+		  m_out_buffer.begin(),
+		  m_seed);
 	return 0;
 }
 
@@ -110,26 +139,26 @@ void C2DRegiongrowFifoFilter::do_push(::boost::call_traits<P2DImage>::param_type
 void C2DRegiongrowFifoFilter::do_initialize(::boost::call_traits<P2DImage>::param_type x)
 {
 	TRACE("C2DRegiongrowFifoFilter::do_initialize");
-	_M_slice_size = x->get_size();
-	_M_slice_emls = _M_slice_size.x * _M_slice_size.y;
-	C3DBounds buf_size(_M_slice_size.x, _M_slice_size.y, _M_depth + 1);
-	_M_in_buffer = C3DDImage(buf_size);
-	_M_out_buffer = C3DBitImage(buf_size);
+	m_slice_size = x->get_size();
+	m_slice_emls = m_slice_size.x * m_slice_size.y;
+	C3DBounds buf_size(m_slice_size.x, m_slice_size.y, m_depth + 1);
+	m_in_buffer = C3DDImage(buf_size);
+	m_out_buffer = C3DBitImage(buf_size);
 }
 
 void C2DRegiongrowFifoFilter::seed_env(const C3DBounds& center, queue<C3DBounds>& seeds) const
 {
-	C3DShape::const_iterator sb = _M_shape->begin();
-	C3DShape::const_iterator se = _M_shape->end();
+	C3DShape::const_iterator sb = m_shape->begin();
+	C3DShape::const_iterator se = m_shape->end();
 
 	while (sb != se) {
 		C3DBounds x(center.x + sb->x, center.y + sb->y, center.z + sb->z);
 		++sb;
 		if (x.z >= get_end())
 			continue;
-		if ( _M_slice_size.y <= x.y || _M_slice_size.x <= x.x)
+		if ( m_slice_size.y <= x.y || m_slice_size.x <= x.x)
 			continue;
-		if (!_M_out_buffer(x) && _M_in_buffer(x) >= _M_low)
+		if (!m_out_buffer(x) && m_in_buffer(x) >= m_low)
 			seeds.push(x);
 	}
 }
@@ -137,11 +166,11 @@ void C2DRegiongrowFifoFilter::seed_env(const C3DBounds& center, queue<C3DBounds>
 void  C2DRegiongrowFifoFilter::grow()
 {
 	queue<C3DBounds> seeds;
-	C3DBitImage::const_iterator i = _M_out_buffer.begin();
+	C3DBitImage::const_iterator i = m_out_buffer.begin();
 
 	for (size_t z = 0; z < get_end(); ++z)
-		for (size_t y = 0; y < _M_slice_size.y; ++y)
-			for (size_t x = 0; x < _M_slice_size.x; ++x, ++i) {
+		for (size_t y = 0; y < m_slice_size.y; ++y)
+			for (size_t x = 0; x < m_slice_size.x; ++x, ++i) {
 				if (*i)
 					seed_env(C3DBounds(x,y,z), seeds);
 			}
@@ -150,8 +179,8 @@ void  C2DRegiongrowFifoFilter::grow()
 		C3DBounds x = seeds.front();
 		cvdebug() << "add " << x << "\n";
 		seeds.pop();
-		if (!_M_out_buffer(x)) {
-			_M_out_buffer(x) = true;
+		if (!m_out_buffer(x)) {
+			m_out_buffer(x) = true;
 			seed_env(x, seeds);
 		}
 	}
@@ -162,16 +191,16 @@ P2DImage C2DRegiongrowFifoFilter::do_filter()
 	TRACE("C2DRegiongrowFifoFilter::do_filter");
 	cvdebug() << "Range: [" << get_start() << ", " << get_end() << "]\n";
 	grow();
-	C2DBitImage *result = new C2DBitImage(C2DBounds(3,3));
-	copy(_M_out_buffer.begin_at(0,0,get_start()),  _M_out_buffer.begin_at(0,0, get_start() + 1), result->begin());
+	C2DBitImage *result = new C2DBitImage(m_slice_size);
+	copy(m_out_buffer.begin_at(0,0,get_start()),  m_out_buffer.begin_at(0,0, get_start() + 1), result->begin());
 	return P2DImage(result);
 }
 
 void C2DRegiongrowFifoFilter::shift_buffer()
 {
 	TRACE("C2DRegiongrowFifoFilter::shift_buffer");
-	copy_backward(_M_in_buffer.begin(), _M_in_buffer.end() - _M_slice_emls, _M_in_buffer.end());
-	copy_backward(_M_out_buffer.begin(), _M_out_buffer.end() - _M_slice_emls, _M_out_buffer.end());
+	copy_backward(m_in_buffer.begin(), m_in_buffer.end() - m_slice_emls, m_in_buffer.end());
+	copy_backward(m_out_buffer.begin(), m_out_buffer.end() - m_slice_emls, m_out_buffer.end());
 }
 
 class C2DRegiongrowFifoFilterPlugin : public C2DFifoFilterPlugin {
@@ -182,30 +211,30 @@ private:
 	virtual bool do_test() const;
 	virtual C2DFifoFilterPlugin::ProductPtr do_create()const;
 
-	string _M_map;
-	float _M_low;
-	float _M_seed;
-	int _M_class;
-	int _M_depth;
+	string m_map;
+	float m_low;
+	float m_seed;
+	int m_class;
+	int m_depth;
 };
 
 
 C2DRegiongrowFifoFilterPlugin::C2DRegiongrowFifoFilterPlugin():
 	C2DFifoFilterPlugin(plugin_name),
-	_M_low(0.5f),
-	_M_seed(0.98),
-	_M_class(2),
-	_M_depth(10)
+	m_low(0.5f),
+	m_seed(0.98),
+	m_class(2),
+	m_depth(10)
 {
-	add_parameter("map", new CStringParameter(_M_map, true, "seed class map"));
-	add_parameter("low", new CFloatParameter(_M_low, .0f, 1.0f, false,
+	add_parameter("map", new CStringParameter(m_map, true, "seed class map"));
+	add_parameter("low", new CFloatParameter(m_low, .0f, 1.0f, false,
 						 "low threshold for acceptance probability"));
-	add_parameter("seed", new CFloatParameter(_M_seed, .0f, 1.0f, false,
+	add_parameter("seed", new CFloatParameter(m_seed, .0f, 1.0f, false,
 						 "threshold for seed probability"));
 
-	add_parameter("class", new CIntParameter(_M_class, 0, numeric_limits<int>::max(), false,
+	add_parameter("class", new CIntParameter(m_class, 0, numeric_limits<int>::max(), false,
 						 "class to be segmented"));
-	add_parameter("depth", new CIntParameter(_M_depth, 5, numeric_limits<int>::max(), false,
+	add_parameter("depth", new CIntParameter(m_depth, 5, numeric_limits<int>::max(), false,
 						 "number of slices to keep during processing"));
 }
 
@@ -224,8 +253,8 @@ bool C2DRegiongrowFifoFilterPlugin::do_test() const
 C2DFifoFilterPlugin::ProductPtr C2DRegiongrowFifoFilterPlugin::do_create()const
 {
 	return C2DFifoFilterPlugin::ProductPtr(
-		 new C2DRegiongrowFifoFilter(CProbabilityVector(_M_map),
-					     _M_low, _M_seed, _M_class, _M_depth));
+		 new C2DRegiongrowFifoFilter(CProbabilityVector(m_map),
+					     m_low, m_seed, m_class, m_depth));
 }
 
 

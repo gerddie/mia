@@ -1,5 +1,5 @@
-/* -*- mona-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+/* -*- mia-c++  -*-
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -22,7 +22,7 @@
 
 #include <stdexcept>
 #include <mia/2d/2dfilter.hh>
-#include <libmona/probmapio.hh>
+#include <libmia/probmapio.hh>
 
 namespace labelmap_2dimage_filter {
 NS_MIA_USE;
@@ -32,17 +32,17 @@ static char const *plugin_name = "labelmap";
 static const CStringOption param_map("map", "map file", NULL);
 
 class C2DLabelMap: public C2DFilter {
-	vector<size_t>  _M_map;
+	vector<size_t>  m_map;
 public:
 	C2DLabelMap(const CLabelMap& lmap):
-		_M_map(numeric_limits<unsigned short>::max())
+		m_map(numeric_limits<unsigned short>::max())
 	{
-		for (size_t i = 0; i < _M_map.size(); ++i)
-			_M_map[i] = i; 
+		for (size_t i = 0; i < m_map.size(); ++i)
+			m_map[i] = i; 
 		
 		for (CLabelMap::const_iterator i = lmap.begin(), e = lmap.end(); 
 		     i != e; ++i)
-			_M_map[i->first] = i->second; 
+			m_map[i->first] = i->second; 
 	}
 	
 	template <class Data2D>
@@ -52,7 +52,7 @@ public:
 
 
 class C2DLabelMapImageFilter: public C2DImageFilterBase {
-	C2DLabelMap _M_filter; 
+	C2DLabelMap m_filter; 
 public:
 	C2DLabelMapImageFilter(const CLabelMap& map);
 
@@ -77,15 +77,15 @@ struct dispatch_label_map {
 
 struct FRemap {
 	FRemap(const vector<size_t>& lmap):
-		_M_map(lmap)
+		m_map(lmap)
 	{
 	}
 	
 	unsigned short operator ()(unsigned short x) {
-		return _M_map[x]; 
+		return m_map[x]; 
 	}
 private: 
-	const vector<size_t>& _M_map; 
+	const vector<size_t>& m_map; 
 };
 
 template <> 
@@ -111,18 +111,18 @@ struct dispatch_label_map<C2DUBImage> {
 template <class Data2D>
 typename C2DLabelMap::result_type C2DLabelMap::operator () (const Data2D& data) const
 {
-	return dispatch_label_map<Data2D>::apply(data, _M_map); 
+	return dispatch_label_map<Data2D>::apply(data, m_map); 
 	
 }
 
 C2DLabelMapImageFilter::C2DLabelMapImageFilter(const CLabelMap& map):
-	_M_filter(map)
+	m_filter(map)
 {
 }
 
 P2DImage C2DLabelMapImageFilter::do_filter(const C2DImage& image) const
 {
-	return wrap_filter(_M_filter,image); 
+	return wrap_filter(m_filter,image); 
 }
 
 C2DLabelMapImageFilterFactory::C2DLabelMapImageFilterFactory():

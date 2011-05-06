@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -19,17 +19,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-// $Id: fuzzyClusterSolverCG.hh 672 2005-06-29 13:32:02Z wollny $
-
-/*! \brief solverCG -- a class providing a CG solver
-
-	This contains basic solver functions based on CG schemes
-
-\author Stefan Burckhardt and Carsten Wolters, wolters@mis.mpg.de, 2004
-\remark adapted for libmona by Heike Jaenicke and Marc Tittgemeyer, tittge@cbs.mpg.de, 2004
-\remark adapted for mia2 by Gert Wollny, gw.fossdev@gmail.com 2010 
-*/
 
 
 #ifndef __SOLVERCG_HH
@@ -62,7 +51,15 @@ using namespace std;
 */
 extern bool fborder (long index, long nx, long ny, long nz);
 
-/** A class to solve sCG */
+/*! \brief solve_sCG -- a class providing a CG solver
+
+	This contains basic solver functions based on CG schemes
+
+\author Stefan Burckhardt and Carsten Wolters, wolters@mis.mpg.de, 2004
+\remark adapted for libmona by Heike Jaenicke and Marc Tittgemeyer, tittge@cbs.mpg.de, 2004
+\remark adapted for mia2 by Gert Wollny, gw.fossdev@gmail.com 2011 
+*/
+
 
 class solve_sCG {
 
@@ -173,7 +170,11 @@ class solve_sCG {
 	 */
 	void add_to_solution(C3DFImage *e);
 
-	// function for parallel solver
+	/** function for parallel solver
+	    @param max_iteration
+	    @param normr
+	    @param firstnormr0
+	 */
 	void solvepar(long *max_iteration, double *normr, double *firstnormr0);
 
 };

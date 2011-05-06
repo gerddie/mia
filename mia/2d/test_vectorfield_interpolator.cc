@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -39,8 +39,8 @@ struct FieldSplineFixture {
 	FieldSplineFixture():
 		size(30, 32),
 		field(size),
-		ipf(C2DInterpolatorFactory::ip_spline,
-		    std::shared_ptr<CBSplineKernel > (new CBSplineKernel4()))
+		ipf(ipf_spline,
+		    std::shared_ptr<CBSplineKernel> (new CBSplineKernel4()))
 	{
 		C2DFVectorfield::iterator i = field.begin();
 		for (size_t y = 0; y < size.y; ++y)

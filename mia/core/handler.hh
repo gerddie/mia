@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -44,18 +44,22 @@
 NS_MIA_BEGIN
 
 
-/** \class TPluginHandler
-    \brief The basic %template of all plugin handlers
+/** \brief The basic %template of all plugin handlers
 
-    The TPluginHandler provides the base interface to all plug-in handlers. 
+    The template TPluginHandler provides the base interface to all plug-in handlers. 
     \tparam I the plugin interface derived from \sa CPluginBase.
 */
 
 template <class I> 
 class  EXPORT_HANDLER TPluginHandler: boost::noncopyable {
 public: 
+	/// typedef for the plug-in interface provided by the class 
 	typedef I Interface; 
+
+	/// a map containing the names and theavailabe plug-ins 
 	typedef std::map<std::string, Interface*> CPluginMap; 
+
+	/// the iterator to walk over the available plug-ins 
 	typedef typename CPluginMap::const_iterator const_iterator; 
 	
 
@@ -76,10 +80,9 @@ public:
 	const std::set<std::string> get_set() const; 
 
 	/**
-	   returns the interface of a specific plug-in of the handeled type
-	   \param plugin name of the plugin to access
-	   \returns a pointer to the plug-in 
-	*/
+	   Print out the help to an output stream 
+	   @param os
+	 */
 	void print_help(std::ostream& os) const; 
 	
 	
@@ -107,6 +110,11 @@ protected:
 	*/
 	typename TPluginHandler<I>::Interface *plugin(const char *plugin) const;
 
+
+	/**
+	   Add a given plug-in to the handler 
+	   @param plugin 
+	 */
 	void add_plugin(Interface *plugin); 
 
 
@@ -114,15 +122,16 @@ private:
 	void global_searchpath(list< ::boost::filesystem::path>& searchpath); 
 	void initialise(const std::list< ::boost::filesystem::path>& searchpath); 
 	
-	std::vector<PPluginModule> _M_modules;
-	CPluginMap _M_plugins; 
+	std::vector<PPluginModule> m_modules;
+	CPluginMap m_plugins; 
 	
 }; 
 
 
 /**
-   Class to make a singleton out of a plugin handler by deriving from it.
+   \brief the singleton that a plug-in handler really is 
    
+   Class to make a singleton out of a plugin handler by deriving from it.
 */
 
 template <typename T>
@@ -135,20 +144,31 @@ public:
 	 */
 	static void set_search_path(const std::list<boost::filesystem::path>& searchpath);
 	
+	/// The instance of the plugin handler 
 	typedef T Instance;
+
+	/// iterator to iterator over the actual plug-ins 
 	typedef typename T::const_iterator const_iterator;
+
+	/// the name,plug-in pair \remark why do I need this 
 	typedef typename T::CPluginMap::value_type value_type;
 	
 	/// \returns a reference to the only instance of the plugin handler 
 	static const T& instance(); 
- protected:
+protected:
+	/** initialize the handler singleton with a specific plugin search path 
+	    (used for running tests) 
+	    \param searchpath
+	    \remark why not private?  
+	*/
+	
 	THandlerSingleton(const std::list<boost::filesystem::path>& searchpath); 
 	THandlerSingleton(); 
 	
 private: 
-	static std::list<boost::filesystem::path> _M_searchpath; 
-	static bool _M_is_created; 
-	static boost::mutex _M_creation_mutex; 
+	static std::list<boost::filesystem::path> m_searchpath; 
+	static bool m_is_created; 
+	static boost::mutex m_creation_mutex; 
 }; 
 
 

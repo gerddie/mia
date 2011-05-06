@@ -25,6 +25,7 @@
 
 #include <mia/core/product_base.hh>
 #include <mia/core/vector.hh>
+#include <mia/core/import_handler.hh>
 
 NS_MIA_BEGIN
 
@@ -33,7 +34,7 @@ NS_MIA_BEGIN
  */
 
 template <typename Transform>
-class TFullCost : public CProductBase {
+class EXPORT_HANDLER TFullCost : public CProductBase {
 public: 
 	typedef typename Transform::Size Size; 
 	typedef TFullCost<Transform> plugin_data; 
@@ -55,7 +56,7 @@ public:
 	   Evaluate the weighted cost value and the weighted gradient in optimizer space 
 	   given a current  transformation. 
 	   \param t tranformation to be applied 
-	   \retval gradient gradient in optimizer space 
+	   \param[out] gradient gradient in optimizer space 
 	   \returns weighted cost value 
 	 */
 	double evaluate(const Transform& t, CDoubleVector& gradient) const;
@@ -93,19 +94,19 @@ private:
 	virtual void do_reinit();
 	virtual void do_set_size() = 0; 
 	
-	double _M_weight;
-	Size _M_current_size; 
+	double m_weight;
+	Size m_current_size; 
 
 }; 
 
 template <typename Transform>
-class TFullCostPlugin: public TFactory<TFullCost<Transform> > {
+class EXPORT_HANDLER TFullCostPlugin: public TFactory<TFullCost<Transform> > {
 public:
 	TFullCostPlugin(const char *name);
 private:
 	virtual typename TFullCostPlugin<Transform>::ProductPtr do_create() const;
 	virtual typename TFullCostPlugin<Transform>::ProductPtr do_create(float weight) const = 0;
-	float _M_weight;
+	float m_weight;
 }; 
 
 

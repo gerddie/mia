@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -21,49 +21,42 @@
  *
  */
 
+#ifndef mia_core_bfsv23dispatch_hh
+#define mia_core_bfsv23dispatch_hh
 
-#ifndef mia_2d_splinetransform_hh
-#define mia_2d_splinetransform_hh
+#include <boost/filesystem/path.hpp>
+#include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
 
+inline std::string __bfs_get_filename(const boost::filesystem::path& path) 
+{
+#if BOOST_FILESYSTEM_VERSION==3
+	return path.filename().string(); 
+#else 
+	return path.filename(); 
+#endif
+}
 
+inline std::string __bfs_get_extension(const boost::filesystem::path& path) 
+{
+#if BOOST_FILESYSTEM_VERSION==3
+	return path.extension().string(); 
+#else 
+	return path.extension(); 
+#endif
+}
 
-class C2DSplineTransformation: C2DTransformation {
-public: 
-
-	typedef T2DInterpolator<C2DFVector> Interpolator; 
-
-	C2DSplineTransformation();
-
-	bool save(const std::string& filename, const std::string& type) const; 
-
-	P2DTransformation upscale(const C2DBounds& size) const; 
-
-	void add(const C2DTransformation& a); 
-
-	size_t degrees_of_freedom() const; 
-
-	virtual const C2DBounds& get_size() const; 
-private: 
-	
-	virtual bool do_save(const std::string& filename, const std::string& type) const; 
-
-	virtual P2DTransformation do_upscale(const C2DBounds& size) const;
-
-	virtual void do_add(const C2DTransformation& a); 
-
-	virtual size_t do_degrees_of_freedom() const; 
-
-	C2DFVectorfield do_translate(const C2DFVectorfield& gradient) const; 
-
-	Interpolator _M_interpolator; 
-	
-};
-
+inline std::string __bfs_get_stem(const boost::filesystem::path& path) 
+{
+#if BOOST_FILESYSTEM_VERSION==3
+	return path.stem().string(); 
+#else 
+	return path.stem(); 
+#endif
+}
 
 
 NS_MIA_END
 
 #endif
-

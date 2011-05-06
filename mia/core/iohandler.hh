@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -32,21 +32,35 @@
 NS_MIA_BEGIN
 
 /**
+   \brief Template for all plug-in handlers that are responsible for data IO 
+   
    Input/Output plugin handler base class, derived privately from the 
    standart plug-in handler to hide its interface.
-   Class \a I, the interface class needs to be derived from \a TIOPlugin.  
+   All IO plug-in handlers all proved a CDatapool as temporal storage to pass 
+   data around without disk-io.
+   \tparam I the interface class that needs to be derived from \a TIOPlugin.  
 */
 
 template <class I> 
 class EXPORT_HANDLER TIOPluginHandler: public TPluginHandler<I> {
 public:
 
+	/// Data type handled by this plug-in 
 	typedef typename I::Data Data; 
+	
+        /// Shared pointer to the data hadnled by this plug-in 
 	typedef typename std::shared_ptr<Data > PData; 
+	
+	/// the IO interface provided by this handler 
 	typedef typename TPluginHandler<I>::Interface Interface; 
+	
+	/// an iterator over the availabe plug-ins 
 	typedef typename TPluginHandler<I>::const_iterator const_iterator; 
+
+	/// The map that maps file name suffixes to IO plug-ins 
 	typedef std::multimap<std::string, std::string> CSuffixmap; 
 	
+	/// The type of the key used for the CDatapool access 
 	typedef TDelayedParameter<PData> DataKey; 
 	
 	/**
@@ -79,14 +93,23 @@ public:
 	 */
 	bool save(const std::string& type, const std::string& fname, const Data& data) const;
 
-	/** 
+	/** Tolerant search for the plug-in corresponding to the file name suffix
 	    \param fname a file name 
-	    \returns the plug-in that is preferred for the suffix of \a fname 
+	    \returns the plug-in that is preferred for the suffix of \a fname, or NULL 
+	    if none was found. 
 	*/
 	const Interface *prefered_plugin_ptr(const std::string& fname) const; 
 
+	/** 
+	    Search for the plug-in corresponding to the file name suffix, if the 
+	    search fails, an \a std::invalid_argument exception is thrown. 
+	    \param fname a file name 
+	    \returns the plug-in that is preferred for the suffix of \a fname 
+	*/
+
 	const Interface& prefered_plugin(const std::string& fname) const; 
 
+	/// @returns the a mapping of the supported file suffixes to their plugins 
 	const CSuffixmap& get_supported_filetype_map() const; 
 
 protected: 
@@ -98,10 +121,10 @@ protected:
 private: 	
 	// a map of plugins 
 
-	CSuffixmap _M_suffixmap; 
+	CSuffixmap m_suffixmap; 
 
 	// list of supported compressd file suffixes
-	std::set<std::string> _M_compress_sfx; 
+	std::set<std::string> m_compress_sfx; 
 
 	/**
 	   Private plugin to handle the virtual data pool IO  
@@ -116,13 +139,26 @@ private:
 			     const typename Interface::Data& data) const; 
 		const std::string do_get_descr() const;
 	}; 
-	CDatapoolPlugin *_M_pool_plugin; 
+	CDatapoolPlugin *m_pool_plugin; 
 }; 
 
+/**
+   This makes a singleton from the IO plugin handler. This specification is needed 
+   to enable tests on plugin loading, where the search path has to be changed to 
+   the location of the uninstalled plug-ins. 
+   \tparam T must be some instanciation of TIOPluginHandler. 
+   \remark why is this not templated over the plugin interface I like above? 
+*/
 template <typename T>
 class EXPORT_HANDLER TIOHandlerSingleton : public THandlerSingleton<T> {
 public: 
+	/// inherit the suffix map of the handler class 
 	typedef typename T::CSuffixmap CSuffixmap; 
+	
+	/**
+	   Constructor used to override the plugin search path for testing 
+	   \param searchpath 
+	 */
 	TIOHandlerSingleton(const std::list<boost::filesystem::path>& searchpath):
 		THandlerSingleton<T>(searchpath)
 		{
@@ -137,6 +173,10 @@ public:
 
 }; 
 
+/**
+   This fakes some load image function 
+   \remark what is this for? 
+*/
 template <typename T>
 T load_image(const std::string& filename)
 {

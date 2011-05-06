@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2010
+ * Copyright (c) Madrid 2010-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -50,15 +50,18 @@ private:
 	double do_value() const; 
 	void do_reinit(); 
 
-	C2DImageDataKey _M_src_key;
-	C2DImageDataKey _M_ref_key;
+	C2DImageDataKey m_src_key;
+	C2DImageDataKey m_ref_key;
 	
-	P2DImage _M_src; 
-	P2DImage _M_ref; 
+	P2DImage m_src; 
+	P2DImage m_ref; 
 
-	P2DImageCost _M_cost_kernel; 
-	P2DInterpolatorFactory _M_ipf; 
-	bool _M_debug;
+	P2DImage m_src_scaled; 
+	P2DImage m_ref_scaled; 
+
+	P2DImageCost m_cost_kernel; 
+	P2DInterpolatorFactory m_ipf; 
+	bool m_debug;
 }; 
 
 NS_MIA_END

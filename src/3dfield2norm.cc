@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -48,7 +48,9 @@ int do_main(int argc, const char *argv[])
 	options.push_back(make_opt( src_filename, "in", 'i', "input vector field", CCmdOption::required));
 	options.push_back(make_opt( out_filename, "out", 'o', "output image", CCmdOption::required));
 
-	options.parse(argc, argv);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	auto vf = C3DVFIOPluginHandler::instance().load(src_filename);
 	

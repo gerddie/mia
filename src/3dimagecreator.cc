@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -37,7 +37,7 @@ static const char *g_description =
 	"Basic usage:\n"
 	"  mia-raw2image [options] \n";
 
-int do_main(int argc, const char *args[])
+int do_main(int argc, const char *argv[])
 {
 	string object("sphere");
 	string out_filename;
@@ -55,7 +55,9 @@ int do_main(int argc, const char *args[])
 	options.push_back(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type "));
 	options.push_back(make_opt( object,  "object", 'j', "object to be created"));
 
-	options.parse(argc, args, false);
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	C3DImageCreatorPlugin::ProductPtr creator = creator_ph.produce(object.c_str());
 	if (!creator) {

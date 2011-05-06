@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -49,16 +49,16 @@ private:
 
 	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 
-	int _M_l;
-	unsigned int _M_kh;
+	int m_l;
+	unsigned int m_kh;
 
-	mutable mia::C2DFImage _M_mu;
-	mutable mia::C2DFImage _M_sigma;
-	mutable mia::C2DFImage _M_n;
-	mutable std::vector<float> _M_sqbuf;
-	mutable std::vector<float> _M_buf;
-	mutable std::vector<float> _M_mu_l1;
-	mutable std::vector<float> _M_sigma_l1;
+	mutable mia::C2DFImage m_mu;
+	mutable mia::C2DFImage m_sigma;
+	mutable mia::C2DFImage m_n;
+	mutable std::vector<float> m_sqbuf;
+	mutable std::vector<float> m_buf;
+	mutable std::vector<float> m_mu_l1;
+	mutable std::vector<float> m_sigma_l1;
 };
 
 
@@ -68,7 +68,7 @@ public:
 private:
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string do_get_descr() const;
-	int _M_hw;
+	int m_hw;
 };
 
 NS_END

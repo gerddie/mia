@@ -1,5 +1,5 @@
-/* -*- mona-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+/* -*- mia-c++  -*-
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -27,10 +27,10 @@
 #include <stdexcept>
 #include <boost/type_traits.hpp>
 #include <mia/2d/2dfilter.hh>
-#include <libmona/filter.hh>
+#include <libmia/filter.hh>
 
 
-#include <libmona/probmapio.hh>
+#include <libmia/probmapio.hh>
 
 namespace classmap_2dimage_filter {
 NS_MIA_USE;
@@ -43,10 +43,10 @@ static const CStringOption param_map("map", "class probability map", "");
 static const CIntOption param_class("class", "class to be mapped", 2, 0, 254); 
 
 class C2DClassMapFilter: public C2DFilter {
-	CDoubleVector _M_pv; 
+	CDoubleVector m_pv; 
 	
 public: 
-	C2DClassMapFilter(const CDoubleVector& pv):_M_pv(pv)
+	C2DClassMapFilter(const CDoubleVector& pv):m_pv(pv)
 	{
 	}
 	
@@ -93,12 +93,12 @@ C2DClassMapFilter::result_type C2DClassMapFilter::operator()(const T2DImage<T>& 
 {
 	
 	const bool is_integral = ::boost::is_integral<T>::value; 
-	return dispatch_filter<T, is_integral>::apply(image, _M_pv);
+	return dispatch_filter<T, is_integral>::apply(image, m_pv);
 }
 
 
 class C2DClassMapFilterImageFilter: public C2DImageFilterBase {
-	C2DClassMapFilter _M_filter; 
+	C2DClassMapFilter m_filter; 
 public:
 	C2DClassMapFilterImageFilter(const CDoubleVector& pv);
 
@@ -117,13 +117,13 @@ private:
 
 
 C2DClassMapFilterImageFilter::C2DClassMapFilterImageFilter(const CDoubleVector& pv):
-	_M_filter(pv)
+	m_filter(pv)
 {
 }
 
 P2DImage C2DClassMapFilterImageFilter::do_filter(const C2DImage& image) const
 {
-	return wrap_filter(_M_filter, image); 
+	return wrap_filter(m_filter, image); 
 }
 
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -47,18 +47,18 @@ private:
 	void do_set_size(); 
 	void do_reinit(); 
 	C3DFMatrix derivative_at(int x, int y, int z) const;
-	double _M_cost; 
-	double _M_gx; 
-	double _M_gy; 
-	double _M_gz; 
+	double m_cost; 
+	double m_gx; 
+	double m_gy; 
+	double m_gz; 
 }; 
 
 C3DFullCostMock::C3DFullCostMock(double weight, double cost, double gx, double gy, double gz):
 	C3DFullCost(weight),
-	_M_cost(cost), 
-	_M_gx(gx), 
-	_M_gy(gy), 
-	_M_gz(gz)
+	m_cost(cost), 
+	m_gx(gx), 
+	m_gy(gy), 
+	m_gz(gz)
 
 {
 }
@@ -66,21 +66,21 @@ C3DFullCostMock::C3DFullCostMock(double weight, double cost, double gx, double g
 double C3DFullCostMock::do_evaluate(const C3DTransformation&, CDoubleVector& gradient) const 
 {
 	for(auto g = gradient.begin(); g != gradient.end(); g += 3){
-		g[0] = _M_gx; 
-		g[1] = _M_gy; 
-		g[2] = _M_gz; 
+		g[0] = m_gx; 
+		g[1] = m_gy; 
+		g[2] = m_gz; 
 	}
-	return _M_cost; 
+	return m_cost; 
 }
 
 double C3DFullCostMock::do_value(const C3DTransformation& /*t*/) const
 {
-	return _M_cost; 
+	return m_cost; 
 }
 
 double C3DFullCostMock::do_value() const
 {
-	return _M_cost; 
+	return m_cost; 
 }
 void C3DFullCostMock::do_reinit()
 {

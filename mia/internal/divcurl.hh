@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2010
+ * Copyright (c) Madrid 2010-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -38,9 +38,9 @@ private:
 	double do_value(const Transform& t) const;
 	double do_value() const;
 	void do_set_size(); 
-	double _M_weight_div; 
-	double _M_weight_curl; 
-	double _M_size_scale; 
+	double m_weight_div; 
+	double m_weight_curl; 
+	double m_size_scale; 
 }; 
 
 template <typename T> 
@@ -50,8 +50,8 @@ public:
 private:
 	typename TFullCostPlugin<T>::ProductPtr do_create(float weight) const;
 	const std::string do_get_descr() const;
-	float _M_div;
-	float _M_curl;
+	float m_div;
+	float m_curl;
 }; 
 
 NS_MIA_END

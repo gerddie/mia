@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -38,29 +38,29 @@ namespace bfs=::boost::filesystem;
 
 struct FNormalDistribution {
 	FNormalDistribution(float mean, float sigma) :
-		_M_mean(mean), 
-		_M_sigma(sigma), 
-		_M_w1(1.0 / (2.0 * _M_sigma * _M_sigma)), 
-		_M_w2(sqrt( _M_w1 / M_PI))
+		m_mean(mean), 
+		m_sigma(sigma), 
+		m_w1(1.0 / (2.0 * m_sigma * m_sigma)), 
+		m_w2(sqrt( m_w1 / M_PI))
 
 	{
 
 	}
 	
 	float operator()(float x) const {
-		const float h = x - _M_mean; 
-		return _M_w2 * exp( - _M_w1 * h * h); 
+		const float h = x - m_mean; 
+		return m_w2 * exp( - m_w1 * h * h); 
 	}
 
 	float dndx(float x) const {
-		const float h = x - _M_mean; 
-		return - 2.0 * _M_w2 * _M_w1 * h * exp( - _M_w1 * h * h); 
+		const float h = x - m_mean; 
+		return - 2.0 * m_w2 * m_w1 * h * exp( - m_w1 * h * h); 
 	}
 
-	float _M_mean; 
-	float _M_sigma; 
-	float _M_w1; 
-	float _M_w2; 
+	float m_mean; 
+	float m_sigma; 
+	float m_w1; 
+	float m_w2; 
 }; 
 
 BOOST_AUTO_TEST_CASE ( test_parzen_window_histogram ) 

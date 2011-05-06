@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Evolutionary Anthropoloy
  *
  * This program is free software; you can redistribute it and/or modify
@@ -65,8 +65,8 @@ double CSSDCost::do_value(const C2DImage& a, const C2DImage& b) const
 
 struct FEvalForce: public TFilter<int> {
 	FEvalForce(C2DFVectorfield& force, float scale):
-		_M_force(force),
-		_M_scale(scale)
+		m_force(force),
+		m_scale(scale)
 		{
 		}
 	template <typename T, typename R> 
@@ -79,17 +79,17 @@ struct FEvalForce: public TFilter<int> {
 		typename T2DImage<R>::const_iterator bi = b.begin(); 
 		C2DFImage::iterator hi = help.begin(); 
 		while (ai != ae) {
-			*hi = ((float)*ai - (float)*bi) * _M_scale; 
+			*hi = ((float)*ai - (float)*bi) * m_scale; 
 			++hi; ++ai; ++bi; 
 		}
 		
-		_M_force = get_gradient(help); 
+		m_force = get_gradient(help); 
 
 		return 0; 
 	}
 private: 
-	mutable C2DFVectorfield& _M_force; 
-	float _M_scale; 
+	mutable C2DFVectorfield& m_force; 
+	float m_scale; 
 
 }; 
 		
@@ -112,8 +112,8 @@ private:
 
 	virtual bool do_test() const; 
 
-	float _M_min; 
-	float _M_max; 
+	float m_min; 
+	float m_max; 
 };
 
 

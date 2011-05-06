@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -35,12 +35,14 @@ namespace xmlpp {
 NS_MIA_BEGIN
 
 /**
+   \brief A set of segmentation of a 2D series of perfusion images 
+   
    A set of slices containing segmentation information specifically designed for 
    myocardial perfusion image series. 
-   \todo should probably go into a seperate library 
 */
 class EXPORT_2D CSegSet {
 public:
+	/// convenience typedef for the frames comprising a segmentation set 
 	typedef std::vector<CSegFrame> Frames;
 
 	/// Standard constructor 
@@ -97,7 +99,7 @@ public:
 	   \param skip number of frames to skipü at the beginning 
 	   \param shift new origin of segmentation 
 	   \param  new_filename_base new file name base
-	   \rename This function does too many things at once. 
+	   \remark This function does too many things at once. 
 	 */
 	CSegSet  shift_and_rename(size_t skip, const C2DFVector&  shift, const std::string& new_filename_base)const;
 

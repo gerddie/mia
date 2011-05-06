@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Biomedical Image Technologies, Universidad Politecnica de Madrid
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/* 
+   LatexBeginPluginDescription{3D image filters}
+   
+   \subsection{Mean Least Variance filter}
+   \label{filter3d:mlv}
+   
+   \begin{description}
+   
+   \item [Plugin:] mlv
+   \item [Description:] Apply the mean least variance filter. 
+   \item [Input:] Abitrary gray scale or binary image 
+   \item [Output:] The filtered image of the same pixel type and dimension 
+   
+   \plugtabstart
+   w & int & filter width parameter, the actual filter captures a neighborhood of 
+                 $(4 * w + 1) \times (4 * w + 1) \times (4 * w + 1)$ voxels & 1 \\ 
+   \plugtabend
+   \end{description}
+
+   LatexEnd  
+ */
+
 
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
@@ -39,9 +62,9 @@ void C3DMLVImageFilter::run_sub(InputIterator begin, InputIterator end, int cy, 
 {
 	transform(begin, end, buffer.begin(), FSquare());
 
-	for (int z = 0; z < _M_kh; ++z)
-		for (int y = 0; y < _M_kh; ++y)
-			for (int x = 0; x < _M_kh; ++x) {
+	for (int z = 0; z < m_kh; ++z)
+		for (int y = 0; y < m_kh; ++y)
+			for (int x = 0; x < m_kh; ++x) {
 				transform(begin, end, mu.begin_at(x, cy + y, cz + z),
 					  mu.begin_at(x, cy + y, cz + z), plus<float>());
 
@@ -58,9 +81,9 @@ template <typename T>
 T C3DMLVImageFilter::get(const C3DFImage& mu, const C3DFImage& sigma, int x, int y, int z, T ref)const
 {
 
-	const int zmax = z +  _M_kh;
-	const int ymax = y +  _M_kh;
-	const int xmax = x +  _M_kh;
+	const int zmax = z +  m_kh;
+	const int ymax = y +  m_kh;
+	const int xmax = x +  m_kh;
 
 
 	float best_sigma = numeric_limits<float>::max();
@@ -91,7 +114,7 @@ typename C3DMLVImageFilter::result_type C3DMLVImageFilter::operator () (const T3
 {
 	cvdebug() << "C3DMLV::operator () begin\n";
 
-	C3DBounds border(2*_M_l, 2*_M_l, 2*_M_l);
+	C3DBounds border(2*m_l, 2*m_l, 2*m_l);
 	vector<float> buffer(data.get_size().x);
 	vector<float> eins(data.get_size().x);
 	fill(eins.begin(), eins.end(), 1.0f);
@@ -139,8 +162,8 @@ typename C3DMLVImageFilter::result_type C3DMLVImageFilter::operator () (const T3
 }
 
 C3DMLVImageFilter::C3DMLVImageFilter(int hw):
-	_M_l(hw),
-	_M_kh(2 * hw + 1)
+	m_l(hw),
+	m_kh(2 * hw + 1)
 {
 }
 
@@ -151,15 +174,15 @@ P3DImage C3DMLVImageFilter::do_filter(const C3DImage& image) const
 
 C3DMLVImageFilterFactory::C3DMLVImageFilterFactory():
 	C3DFilterPlugin("mlv"),
-	_M_hw(1)
+	m_hw(1)
 {
-	add_parameter("w", new CIntParameter(_M_hw, 0, numeric_limits<int>::max(), false, "filter width parameter"));
+	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(), false, "filter width parameter"));
 
 }
 
 C3DFilterPlugin::ProductPtr C3DMLVImageFilterFactory::do_create()const
 {
-	return C3DFilterPlugin::ProductPtr(new C3DMLVImageFilter(_M_hw));
+	return C3DFilterPlugin::ProductPtr(new C3DMLVImageFilter(m_hw));
 }
 
 const string C3DMLVImageFilterFactory::do_get_descr()const

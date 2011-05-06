@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -28,10 +28,10 @@
 NS_BEGIN(mask_2dimage_filter)
 
 class C2DMask : public mia::C2DFilter {
-	const mia::C2DBitImage _M_mask;
+	const mia::C2DBitImage m_mask;
 public:
 	C2DMask(const mia::C2DBitImage& mask):
-		_M_mask(mask)
+		m_mask(mask)
 	{
 	}
 
@@ -48,8 +48,8 @@ public:
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-	std::string _M_mask_name;
-	bool _M_invert;
+	std::string m_mask_name;
+	bool m_invert;
 };
 
 NS_END

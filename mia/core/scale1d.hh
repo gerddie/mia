@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -37,6 +37,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief Class for scaling of one-dimensional arrays. 
+   
    Class for scaling of one-dimensional arrays. For downscaling always a gaussian smoothing is used.
    for upscaling, an interpolator is created by using the provided interpolator factory.
    \remark obsolete use C1DScalerFixed instead 
@@ -55,7 +57,7 @@ public:
 	/**
 	   Scaling operator.
 	   \param input input data
-	   \retval output when calling the function, the size of this vector mist be set to the requested
+	   \param[out] output when calling the function, the size of this vector must be set to the requested
 	   size. The path for down or upscaling is automatically selected.
 	 */
 	template <typename T>
@@ -73,9 +75,9 @@ private:
 
 	const mia::C1DFoldingKernel& get_downscale_kernel(int fwidth) const;
 
-	P1DInterpolatorFactory _M_ipf;
-	mutable int _M_fwidth;
-	mutable C1DSpacialKernelPlugin::ProductPtr _M_kernel;
+	P1DInterpolatorFactory m_ipf;
+	mutable int m_fwidth;
+	mutable C1DSpacialKernelPlugin::ProductPtr m_kernel;
 };
 
 template <typename T>
@@ -125,7 +127,7 @@ void C1DScalar::upscale(const std::vector<T>& input, std::vector<T>& output) con
 	double step = double(input.size() - 1) / (outsize - 1);
 
 	double x = 0.0;
-	std::auto_ptr< T1DInterpolator<T> >  data( _M_ipf->create(input));
+	std::auto_ptr< T1DInterpolator<T> >  data( m_ipf->create(input));
 
         for (size_t i = 0; i < outsize; ++i, x += step) {
 		output[i] = (*data)(x);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -48,7 +48,9 @@ int main( int argc, const char *argv[] )
 	CCmdOptionList options(g_description);
 	options.push_back(make_opt( in_filename, "in-file", 'i', "input image example name", CCmdOption::required));
 
-	options.parse(argc, argv);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 	size_t format_width = get_filename_number_pattern_width(in_filename);
 	cout << setw(format_width) << setfill('0') << 0;
 	return 0;

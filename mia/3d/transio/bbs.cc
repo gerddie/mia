@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2010
+ * Copyright (c) Madrid 2010-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -22,8 +22,10 @@
 
 
 /*
-  This plug in implements a BOOST binary serialization object for 2D transformations. 
-  The output is non-portable (what ever that  exacly means)
+  This plug in implements a BOOST binary serialization object for 3D transformations. 
+  The output is non-portable which probably means that one should load and store 
+  the data always on the same operataing system with the same endianess and 
+  word size. 
 */
 
 #include <mia/3d/transformio.hh>

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -71,10 +71,10 @@ CBSplineKernel::SCache::SCache(size_t s, int cs1, int cs2):
 }
 
 CBSplineKernel::CBSplineKernel(size_t degree, double shift, EInterpolation type):
-	_M_half_degree(degree >> 1),
-	_M_shift(shift),
-	_M_support_size(degree + 1), 
-	_M_type(type)
+	m_half_degree(degree >> 1),
+	m_shift(shift),
+	m_support_size(degree + 1), 
+	m_type(type)
 {
 }
 
@@ -84,12 +84,12 @@ CBSplineKernel::~CBSplineKernel()
 
 EInterpolation CBSplineKernel::get_type() const
 {
-	return _M_type; 
+	return m_type; 
 }
 
 void CBSplineKernel::operator () (double x, std::vector<double>& weight, std::vector<int>& index)const
 {
-	assert(index.size() == _M_support_size);
+	assert(index.size() == m_support_size);
 	int ix = get_indices(x, index);
 	get_weights(x - ix, weight);
 }
@@ -152,8 +152,8 @@ void CBSplineKernel::fill_index(int i, std::vector<int>& index) const
 
 int CBSplineKernel::get_indices(double x, std::vector<int>& index) const
 {
-	const int ix = fastfloor(x + _M_shift);
-	fill_index(ix - (int)_M_half_degree, index); 
+	const int ix = fastfloor(x + m_shift);
+	fill_index(ix - (int)m_half_degree, index); 
 	return ix;
 }
 
@@ -165,50 +165,50 @@ double CBSplineKernel::get_weight_at(double /*x*/, int degree) const
 
 const std::vector<double>& CBSplineKernel::get_poles() const
 {
-	return _M_poles;
+	return m_poles;
 }
 
 void CBSplineKernel::add_pole(double x)
 {
-	_M_poles.push_back(x);
+	m_poles.push_back(x);
 }
 
 void CBSplineKernel::derivative(double x, std::vector<double>& weight, std::vector<int>& index)const
 {
-	assert(index.size() == _M_support_size);
+	assert(index.size() == m_support_size);
 	int ix = get_indices(x, index);
 	get_derivative_weights(x - ix, weight);
 }
 
 void CBSplineKernel::derivative(double x, std::vector<double>& weight, std::vector<int>& index, int degree)const
 {
-	assert(index.size() == _M_support_size);
+	assert(index.size() == m_support_size);
 	int ix = get_indices(x, index);
 	get_derivative_weights(x - ix, weight, degree);
 }
 
 double CBSplineKernel::get_nonzero_radius() const
 {
-	return _M_support_size / 2.0;
+	return m_support_size / 2.0;
 }
 
 int CBSplineKernel::get_active_halfrange() const   
 {
-	return (_M_support_size  + 1) / 2;
+	return (m_support_size  + 1) / 2;
 }
 
 int CBSplineKernel::get_start_idx_and_value_weights(double x, std::vector<double>& weights) const
 {
-	const int result = fastfloor(x + _M_shift);
+	const int result = fastfloor(x + m_shift);
 	get_weights(x - result, weights); 
-	return result - (int)_M_half_degree; 
+	return result - (int)m_half_degree; 
 }
 
 int CBSplineKernel::get_start_idx_and_derivative_weights(double x, std::vector<double>& weights) const
 {
-	const int result = fastfloor(x + _M_shift);
+	const int result = fastfloor(x + m_shift);
 	get_derivative_weights(x - result, weights); 
-	return result - (int)_M_half_degree; 
+	return result - (int)m_half_degree; 
 }
 
 CBSplineKernel0::CBSplineKernel0():
@@ -218,7 +218,7 @@ CBSplineKernel0::CBSplineKernel0():
 	
 void CBSplineKernel0::get_weights(double /*x*/, std::vector<double>& weight)const
 {
-	assert(weight.size() > 0); 
+	assert(weight.size() == 1); 
 	weight[0] = 1; 
 }
 
@@ -245,6 +245,69 @@ void CBSplineKernel0::get_derivative_weights(double /*x*/, std::vector<double>& 
 		      "not supported for Haar spline"); 
 	}
 }
+
+
+CBSplineKernel1::CBSplineKernel1():
+	CBSplineKernel(1, 0.0, ip_bspline1)
+{
+}
+	
+void CBSplineKernel1::get_weights(double x, std::vector<double>& weight)const
+{
+	assert(weight.size() == 2); 
+	
+	weight[1] = x; 
+	weight[0] = 1.0 - x; 
+
+}
+
+void CBSplineKernel1::get_derivative_weights(double x, std::vector<double>& weight) const
+{
+	assert(weight.size() == 2); 
+	
+	weight[1] =  1.0;  
+	weight[0] = -1.0; 
+}
+
+double CBSplineKernel1::get_weight_at(double x, int degree) const
+{
+	switch (degree) {
+	case 0: {
+		if ( fabs(x) < 1) 
+			return -x;
+		else 
+			return 0.0; 
+	}
+	case 1: {
+		if ( fabs(x) < 1) 
+			return x > 0.0 ? -1 : 1; 
+		else
+			return 0.0; 
+	}
+	default:
+		THROW(invalid_argument, "CBSplineKernel1::get_weight_at: degree " <<  degree << 
+		      "not supported for linearly interpolating spline"); 
+	}
+}
+
+void CBSplineKernel1::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
+{
+	assert(weight.size() == 2); 
+	switch (degree) {
+	case 0: {
+		get_weights(x, weight); 
+		break; 
+	}
+	case 1: {
+		get_derivative_weights(x, weight); 
+		break; 
+	}
+	default:
+		THROW(invalid_argument, "CBSplineKernel1::get_weight_at: degree " <<  degree << 
+		      "not supported for linearly interpolating spline"); 
+	}
+}
+
 
 CBSplineKernel2::CBSplineKernel2():
 	CBSplineKernel(2, 0.5, ip_bspline2)
@@ -976,16 +1039,16 @@ EXPORT_CORE TDictMap<EInterpolation> GInterpolatorTable(InterpolationOptions);
 
 struct F2DKernelIntegrator: public FUnary {
 	F2DKernelIntegrator(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2):
-		_M_spline(spline), _M_s1(s1), _M_s2(s2), _M_deg1(deg1), _M_deg2(deg2)
+		m_spline(spline), m_s1(s1), m_s2(s2), m_deg1(deg1), m_deg2(deg2)
 		{
 		}
 	virtual double operator() (double x) const {
-		return _M_spline.get_weight_at(x - _M_s1, _M_deg1) *
-			_M_spline.get_weight_at(x - _M_s2, _M_deg2);
+		return m_spline.get_weight_at(x - m_s1, m_deg1) *
+			m_spline.get_weight_at(x - m_s2, m_deg2);
 	}
 private:
-	const CBSplineKernel& _M_spline;
-	double _M_s1, _M_s2, _M_deg1, _M_deg2;
+	const CBSplineKernel& m_spline;
+	double m_s1, m_s2, m_deg1, m_deg2;
 };
 
 

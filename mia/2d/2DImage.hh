@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -34,11 +34,11 @@
 
 NS_MIA_BEGIN
 
-
 #define ATTR_IMAGE_KMEANS_CLASSES "kmeans"
 
 /**
 \brief This is the base class for 2D images that can hold generic pixel data
+
 This class is the abstract base class for 2D images that can be passed around
 without the program knowing, what actual pixel type an image holds.
 It provides access to the image size and the pixel type, and it also
@@ -52,6 +52,8 @@ public:
 
         /// a definition of the image dimension type for
 	typedef C2DBounds dimsize_type;
+
+	/// 2D Image pointer type 
 	typedef std::shared_ptr<C2DImage > Pointer;
 
         virtual  ~C2DImage();
@@ -72,7 +74,7 @@ public:
         returns a copy of this image
         Abstract method
         */
-	virtual C2DImage* clone() const = 0;
+	virtual C2DImage* clone() const __attribute__((warn_unused_result))  = 0;
 
  protected:
          /** Constructor initializes the size and the pixel type
@@ -89,25 +91,30 @@ public:
          C2DImage();
 
  private:
-	C2DBounds _M_size;
-	EPixelType _M_pixel_type;
+	C2DBounds m_size;
+	EPixelType m_pixel_type;
 };
 
 /// Shared pointer representation of the 2D Image
 typedef C2DImage::Pointer P2DImage;
+
+/// helper type for image series 
 typedef std::vector<P2DImage> C2DImageSeries;
 
 
 /**
-\brief This is the template version of a 2D image.
+\brief This is the template version of a 2D image that is used for holding real data.
+
 The purpouse of this class is to hold actual pixel data and provide access to it.
 */
 
 template <typename T>
 class EXPORT_2D T2DImage : public C2DImage {
 public:
+	/// define the super class of this class for generic processing 
 	typedef C2DImage Super;
 
+	/// \cond SELFEXPLAINING 
 	typedef typename T2DDatafield<T>::iterator iterator;
 	typedef typename T2DDatafield<T>::const_iterator const_iterator;
 	typedef typename T2DDatafield<T>::const_reference const_reference;
@@ -117,84 +124,153 @@ public:
 	typedef typename T2DDatafield<T>::value_type value_type;
 	typedef typename T2DDatafield<T>::difference_type difference_type;
 	typedef typename T2DDatafield<T>::size_type size_type;
+	/// \endcond
 
+	/**
+	   Create a 2D image with the given size and initialize it with the given data 
+	   \param size 
+	   \param init_data must at least be of size (size.x*size.y)
+	*/
 	T2DImage(const C2DBounds& size, const T* init_data);
+
+	/**
+	   Create a 2D image with the given size and initialize it with the given data 
+	   \param size 
+	   \param init_data must at least be of size (size.x*size.y)
+	*/
 	T2DImage(const C2DBounds& size, const typename T2DDatafield<T>::data_array& init_data);
+	/**
+	   Create a 2D image with thegiven size and attach the given meta-data list. 
+	   \param size image size 
+	   \param attr meta-data to be added 
+	 */
 	T2DImage(const C2DBounds& size, const CAttributedData& attr);
+
+	/**
+	   Create a 2D image with the given size and initialize it with the given data 
+	   \param size 
+	*/
 	T2DImage(const C2DBounds& size);
+
+	/**
+	   Copy constructor 
+	 */
 	T2DImage(const T2DImage& orig);
 
+	/**
+	   Constructor to create the image by using a 2D data field 
+	   \param orig the input data field 
+	*/
 	T2DImage(const T2DDatafield<T>& orig);
+
+	/**
+	   Constructor to create the image by using a 2D data field and a given meta data set. 
+	   \param orig the input data field 
+	   \param attr the meta data 
+	*/
 	T2DImage(const T2DDatafield<T>& orig, const CAttributedData& attr);
+	
 	T2DImage();
 
-	virtual C2DImage* clone() const;
-
+	/**
+	   \returns a dynamically created copy of the image
+	 */
+	virtual C2DImage* clone() const __attribute__((warn_unused_result));
+	
+	/// forwarding function to access the underlying T2DDatafield
 	const_reference operator()(size_t  x, size_t  y) const {
-		return _M_image(x,y);
+		return m_image(x,y);
 	}
-
+	
+	/// forwarding function to access the underlying T2DDatafield
 	reference operator()(size_t  x, size_t  y){
-		return _M_image(x,y);
+		return m_image(x,y);
 	}
-
+	
+	/// forwarding function to access the underlying T2DDatafield
+	const_reference operator[](size_t  idx) const {
+		return m_image[idx];
+	}
+	
+	/// forwarding function to access the underlying T2DDatafield
+	reference operator[](size_t  idx){
+		return m_image[idx];
+	}
+	
+	/// forwarding function to access the underlying T2DDatafield
 	const_reference operator()(const C2DBounds& l) const{
-		return _M_image(l.x,l.y);
+		return m_image(l.x,l.y);
 	}
-
+	
+	/// forwarding function to access the underlying T2DDatafield
 	reference operator()(const C2DBounds& l){
-		return _M_image(l.x,l.y);
+		return m_image(l.x,l.y);
 	}
 
+	/// forwarding function to access the underlying T2DDatafield
 	const_iterator begin()const {
-		return _M_image.begin();
+		return m_image.begin();
 	}
 
+	/// forwarding function to access the underlying T2DDatafield
 	const_iterator end()const {
-		return _M_image.end();
+		return m_image.end();
 	}
 
+	/// forwarding function to access the underlying T2DDatafield
 	iterator begin() {
-		return _M_image.begin();
+		return m_image.begin();
 	}
 
+	/// forwarding function to access the underlying T2DDatafield
 	iterator end() {
-		return _M_image.end();
+		return m_image.end();
 	}
 
+	/// forwarding function to access the underlying T2DDatafield
 	const_iterator begin_at(size_t x, size_t y)const {
-		return _M_image.begin_at(x,  y);
+		return m_image.begin_at(x,  y);
 	}
 
+	/// forwarding function to access the underlying T2DDatafield
 	iterator begin_at(size_t x, size_t y) {
-		return _M_image.begin_at(x,  y);
+		return m_image.begin_at(x,  y);
 	}
 
+	/// forwarding function to access the underlying T2DDatafield
 	size_t size() const;
 
+	/// get direct access to the data field 
 	const T2DDatafield<T>& data() const;
-	//T2DDatafield<T>& data();
 
+	/// forwarding function to access the underlying T2DDatafield
 	void get_data_line_x(size_t y, std::vector<T>& buffer) const;
 
+	/// forwarding function to access the underlying T2DDatafield
 	void get_data_line_y(size_t x, std::vector<T>& buffer) const;
-
+	
+	/// forwarding function to access the underlying T2DDatafield
 	void put_data_line_x(size_t y, const std::vector<T>& buffer);
 
+	/// forwarding function to access the underlying T2DDatafield
 	void put_data_line_y(size_t x, const std::vector<T>& buffer);
-
+	
+	/** 
+	    evaluate the image gradient afthe given grid position by using centered finite differences 
+	    \param idx linear index into the image data 
+	    \returns the approximated gradient 
+	 */
 	C2DFVector get_gradient(size_t idx) const;
-
+	
+	/**
+	   Evaluate the gradient by using linerly interpolated finite differences 
+	   \param p continious coordinate into the image domain 
+	   \returns gradient at position p 
+	 */
 	C2DFVector get_gradient(const C2DFVector& p) const;
- private:
-	T2DDatafield<T> _M_image;
+private:
+	T2DDatafield<T> m_image;
 };
-
-template <typename T> 
-struct plugin_data_type<T2DImage<T> > {
-	typedef C2DImage type; 
-}; 
-
 
 class CImageComparePrinter: public TFilter<int> {
 public:
@@ -211,8 +287,26 @@ public:
 };
 
 
+template <typename S> 
+struct plugin_data_type<T2DImage<S> > {
+	typedef C2DImage type; 
+}; 
+
+/**
+   Evaluate if two images are equal in size, pixel type and all its pixels. 
+   Meta data is not considered, nor is the pixel size 
+   \param a
+   \param b
+   \returns result of comparison 
+   \remark pixel size should probably also compared 
+   \remark who calls this function anyway? 
+ */
 EXPORT_2D bool operator == (const C2DImage& a, const C2DImage& b);
 
+/**
+   Evaluate if two images are not equal in size, pixel type or all its pixels. 
+   Meta data is not considered, nor is the pixel size. 
+*/
 inline bool operator != (const C2DImage& a, const C2DImage& b)
 {
 	return ! (a == b );
@@ -227,34 +321,73 @@ EXPORT_2D C2DFVectorfield get_gradient(const C2DImage& image);
 
 
 
+/// 2D image with binary values 
 typedef T2DImage<bool> C2DBitImage;
+
+/// 2D image with signed 8 bit integer values 
 typedef T2DImage<signed char> C2DSBImage;
+
+/// 2D image with unsigned 8 bit integer values 
 typedef T2DImage<unsigned char> C2DUBImage;
+
+/// 2D image with signed 16 bit integer values 
 typedef T2DImage<signed short> C2DSSImage;
+
+/// 2D image with unsigned 16 bit integer values 
 typedef T2DImage<unsigned short> C2DUSImage;
+
+/// 2D image with signed 32 bit integer values 
 typedef T2DImage<signed int> C2DSIImage;
+
+/// 2D image with unsigned 32 bit integer values 
 typedef T2DImage<unsigned int> C2DUIImage;
+
 #ifdef HAVE_INT64
+/// 2D image with signed 64 bit integer values 
 typedef T2DImage<mia_int64> C2DSLImage;
+
+/// 2D image with unsigned 64 bit integer values 
 typedef T2DImage<mia_uint64> C2DULImage;
 #endif
+
+/// 2D image with single precsion floating point values 
 typedef T2DImage<float> C2DFImage;
+
+/// 2D image with double  precsion floating point values 
 typedef T2DImage<double> C2DDImage;
 
-
+/**
+   \brief Helper class for 2D filter application 
+   
+   This class specializes the __bind_all template for 2D images 
+   to enable the use of  mia::filter, mia::accumulate, and the likes.  
+ */
 template <>
 struct Binder<C2DImage> {
+	/// trait to have a common name for all the derived classes
 	typedef __bind_all<T2DImage> Derived;
 };
 
-
+/**
+   Specialization of the attribute to string conversion for 2D Vectors. 
+ */
 template <>
 struct dispatch_attr_string<C2DFVector> {
+	/**
+	   Convert the vector to a string 
+	   \param value 
+	   \returns the values corresponding to the vector elements as separated by spaces 
+	 */
 	static std::string val2string(const C2DFVector& value) {
 		std::stringstream sval;
 		sval << value.x << " " << value.y;
 		return sval.str();
 	}
+	/**
+	   Convert a string to 2D vector 
+	   \param str a string of two values separated by a whitespace 
+	   \returns 2D vector with the elements set accordingly 
+	 */
 	static C2DFVector string2val(const std::string& str) {
 		std::istringstream sval(str);
 		C2DFVector value;
@@ -263,9 +396,23 @@ struct dispatch_attr_string<C2DFVector> {
 	}
 };
 
-
+/**
+   \brief functor to convert an image with an abitrary pixel type to single floating point pixels 
+   
+   This functor provides the often used funcionality to convert a 2D image from 
+   any pixel representation to a single precision floating point representation.  
+   The data is just copied. 
+   For conversion with scaling and proepry clamping you should use the convert filter 
+   provided through C2DFilterPluginHandler. 
+   
+ */
 struct FConvert2DImage2float: public TFilter<C2DFImage> {
 
+	/**
+	   Operator to do the actual conversion. 
+	   \param image input image 
+	   \returns the image converted floating point pixel values 
+	 */
 	template <typename T>
 	C2DFImage operator () (const T2DImage<T> &image) const {
 		C2DFImage result(image.get_size());
@@ -274,6 +421,8 @@ struct FConvert2DImage2float: public TFilter<C2DFImage> {
 	}
 };
 
+
+/// typedef for the C2DFVector to std::string translator 
 typedef TTranslator<C2DFVector> C2DFVectorTranslator;
 
 

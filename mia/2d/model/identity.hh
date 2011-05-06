@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,15 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-
-/*
-  This plug-in implements the navier-stokes operator like registration model
-  that accounts for linear elastic and fluid dynamic registration.
-  Which model is used depends on the selected time step.
-
-  To solve the PDE a full SOR is implemented.
-*/
 
 #include <limits>
 

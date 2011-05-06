@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -45,21 +45,31 @@ The class holds all types of data stored in two dimensional fields.
 #include <mia/core/parameter.hh>
 
 #ifndef EXPORT_2DDATAFIELD
+/// define used export 2D symbols 
 #  define EXPORT_2DDATAFIELD EXPORT_2D
 #endif
 
 NS_MIA_BEGIN
 
-
-
+/**
+   \brief A class to hold data on a regular 2D grid 
+   
+   This class is the base for all kind of 2D data that is stored over a regular grid. 
+   The data it hols is stored in a shared pointer. 
+   \tparam T the data type of the values hold at the grid points.  
+*/
 template <class T>
 class EXPORT_2DDATAFIELD T2DDatafield  {
 
 public:
+
+	/// type for the flat reprentation of the 2D data field 
 	typedef  ::std::vector<T> data_array;
+
+	/// pointer type 
 	typedef  std::shared_ptr<data_array > data_pointer;
 
-	/// a shortcut data type
+	/// \cond SELFEXPLAINING 
 	typedef typename data_array::iterator iterator;
 	typedef typename data_array::const_iterator const_iterator;
 	typedef typename data_array::const_reference const_reference;
@@ -71,89 +81,202 @@ public:
 	typedef typename data_array::size_type size_type;
 	typedef C2DBounds dimsize_type;
 	typedef C2DFVector coord_type;
+	/// \endcond 
 
 	T2DDatafield();
 
-	T2DDatafield(const C2DBounds& __M_size);
+	/**
+	   Create a 2D data field with the given size 
+	   \param size 
+	*/
+	T2DDatafield(const C2DBounds& size);
 
-	T2DDatafield(const C2DBounds& __M_size, const T *_data);
+	/**
+	   Create a 2D data field with the given size and initialize it with the given data 
+	   \param size 
+	   \param _data must at least be of size (size.x*size.y)
+	*/
+	T2DDatafield(const C2DBounds& size, const T *_data);
 
-	T2DDatafield(const C2DBounds& __M_size, const data_array& data);
+	/**
+	   Create a 2D data field with the given size and initialize it with the given data 
+	   \param size 
+	   \param data must at least be of size (size.x*size.y)
+	*/
+	T2DDatafield(const C2DBounds& size, const data_array& data);
 
+	/** copy constructor, it does a shallow copy of the original, i.e. 
+	    the data is not copied, only the shared pointer increases its reference count.
+	    If you want a truely unique copy, call make_single_ref() afterwards. 
+	 */ 
 	T2DDatafield(const T2DDatafield<T>& org);
 
+	/**
+	   Assignment operator, Just like the copy constructor this call does only increment 
+	   the reference count to the data. 
+	   If you want a truely unique copy, call make_single_ref() afterwards. 
+	*/
+	T2DDatafield& operator = (const T2DDatafield& org);
+	
 	virtual ~T2DDatafield();
 
-	T get_interpol_val_at(const C2DFVector& p) const;
+	
+	/// This function should really go away 
+	T get_interpol_val_at(const C2DFVector& p) const __attribute__((deprecated));
 
+	/**
+	   Since the data is internally stored by a shared pointer, this 
+	   function ensures that the data is not shared with any other object 
+	 */
 	void make_single_ref();
 
-	T2DDatafield& operator = (const T2DDatafield& org);
-
+	/// \returns the size of the data field 
 	const C2DBounds&  get_size() const;
 
+	/**
+	   This function first ensures that the copy of the data is unique by calling make_single_ref()
+	   and then sets the elements of data to T(). 
+	 */
 	void clear();
 
-	const_reference operator()(size_t  x, size_t  y) const;
+	/**
+	   returns a read-only reference to the data element at (x,y). 
+	   If the index is outside the image domain, the function returns the Zero element. 
+	   \param x
+	   \param y
+	   \returns the reference 
+	*/
+	const_reference operator()(size_t  x, size_t y) const;
 
+	/**
+	   returns a writable reference to the data element at (x,y). 
+	   If the index is outside the image domain, the function throws a 
+	   std::invalid_argument exception. 
+	*/
 	reference operator()(size_t  x, size_t  y);
 
+	/**
+	   Direct index into the underlying data array  - this access is usually faster then 
+	   calling operator()(size_t  x, size_t  y) and corresponds to 
+	   \f$idx= x + y * m_size.x\f$ but is doesn't test whether 
+	   the index is inside the image domain. 
+	   \param idx
+	   \returns read-only reference to the data	   
+	 */
 	const_reference operator[](size_t  idx) const{
-			return (*_M_data)[idx];
+			return (*m_data)[idx];
 	}
 
+	/**
+	   Direct index into the underlying data array  - this access is usually faster then 
+	   calling operator()(size_t  x, size_t  y) and corresponds to 
+	   \f$idx= x + y * m_size.x\f$ but is doesn't test whether 
+	   the index is inside the image domain. 
+	   \param idx
+	   \returns read-write reference to the data	   
+	 */
 	reference operator[](size_t  idx){
-			return (*_M_data)[idx];
+			return (*m_data)[idx];
 	}
 
+	/// \overload const_reference  operator()(size_t  x, size_t  y) const;
 	const_reference operator()(const C2DBounds& l) const;
 
+	/// \overload reference operator()(size_t  x, size_t  y);
 	reference operator()(const C2DBounds& l);
 
+
+	/**
+	   Read a data row from the data field to the provided buffer 
+	   \param[in]  y row to be copied from 
+	   \param[out] buffer to copy the data to. It will be resized to fit the data
+	 */
 	void get_data_line_x(size_t y, std::vector<T>& buffer) const;
 
+	/**
+	   Read a data column from the data field to the provided buffer 
+	   \param[in]  x column to be copied from 
+	   \param[out] buffer to copy the data to. It will be resized to fit the data
+	 */
 	void get_data_line_y(size_t x, std::vector<T>& buffer) const;
 
+	/**
+	   Write a data row to the data field. The function ensures that tha data is not shared 
+	   with some other object.  
+	   \param[in]  y row to be copied to 
+	   \param[in]  buffer data buffer, must be of the same size as the row size of the data field 
+	 */
 	void put_data_line_x(size_t y, const std::vector<T>& buffer);
 
+	/**
+	   Write a data column to the data field. The function ensures that tha data is not shared 
+	   with some other object.  
+	   \param[in]  x column to be copied to 
+	   \param[in]  buffer data buffer, must be of the same size as the column size of the data field 
+	 */
 	void put_data_line_y(size_t x, const std::vector<T>& buffer);
 
+	/// \returns the number of elements in the data field 
 	size_type size() const;
 
+	/// \returns a read-only iterator to the begin of the data field with x being the fastest changing index   
 	const_iterator begin()const {
-		const data_array& data = *_M_data;
+		const data_array& data = *m_data;
 		return data.begin();
 	}
-
+	
+	/// \returns a read-only iterator to the end of the data field with x being the fastest changing index   
 	const_iterator end()const {
-		const data_array& data = *_M_data;
+		const data_array& data = *m_data;
 		return data.end();
 	}
 
+	/** Get a read-write iterator to iterate over the whole field. 
+	    The functions ensures that the data will only be referenced by this object. 
+	    \returns a read-write iterator to the begin of the data field
+	 */
 	iterator begin() {
 		make_single_ref();
-		return _M_data->begin();
+		return m_data->begin();
 	}
+
+	/** Get a read-write iterator to iterate over the whole field. 
+	    The functions ensures that the data will only be referenced by this object. 
+	    \returns a read-write iterator to the end of the data field
+	 */
 
 	iterator end() {
 		make_single_ref();
-		return _M_data->end();
+		return m_data->end();
 	}
 
+	/** Get a read-write iterator to iterate over the field staring from the given position. 
+	    The functions ensures that the data will only be referenced by this object. 
+	    \param x
+	    \param y
+	    \returns a read-write iterator to the given position of the data field
+	 */
 	const_iterator begin_at(size_t x, size_t y)const {
+	    
+	    
 		const_iterator b = begin();
-		advance(b, x + y * _M_size.x);
+		advance(b, x + y * m_size.x);
 		return b;
 	}
 
+	/** Get a read-only iterator to iterate over the field staring from the given position. 
+	    \param x
+	    \param y
+	    \returns a read-write iterator to the given position of the data field
+	 */
 	iterator begin_at(size_t x, size_t y) {
 		iterator b = begin();
-		advance(b, x + y * _M_size.x);
+		advance(b, x + y * m_size.x);
 		return b;
 	}
 private:
-	C2DBounds  _M_size;
-	data_pointer _M_data;
+	C2DBounds  m_size;
+	data_pointer m_data;
 	const static T Zero;
 };
 
@@ -193,7 +316,10 @@ typedef T2DDatafield<signed char>  C2DSBDatafield;
 typedef T2DDatafield<bool>  C2DBitDatafield;
 
 
+/// template parameters string for C2DBoundsParameter
 extern const char type_str_2dbounds[]; 
+
+/// Parameter type for 2D size definitions 
 typedef  CTParameter<C2DBounds, type_str_2dbounds> C2DBoundsParameter;
 
 NS_MIA_END

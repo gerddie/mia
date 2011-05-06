@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -52,11 +52,11 @@ private:
 	mia::P2DImage do_filter();
 	void do_shift();
 	void shift_buffer();
-	mia::C2DBounds _M_slice_size;
-	std::auto_ptr<mia::C3DImage> _M_buffer;
-	size_t _M_hw;
+	mia::C2DBounds m_slice_size;
+	std::auto_ptr<mia::C3DImage> m_buffer;
+	size_t m_hw;
 
-	C2DImageFifoFilter::CShiftSlices _M_ss;
+	C2DImageFifoFilter::CShiftSlices m_ss;
 };
 
 NS_END

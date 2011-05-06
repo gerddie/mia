@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,12 +114,12 @@ private:
 	virtual double do_value() const;
 	virtual double do_evaluate_force(C3DFVectorfield& force) const;
 	void prepare() const;
-	mutable C3DFVectorfield _M_ng_ref;
-	mutable bool _M_jump_levels_valid;
-	mutable float _M_cost_baseline;
+	mutable C3DFVectorfield m_ng_ref;
+	mutable bool m_jump_levels_valid;
+	mutable float m_cost_baseline;
 
-	PEvaluator _M_evaluator;
-	float _M_intensity_scale;
+	PEvaluator m_evaluator;
+	float m_intensity_scale;
 };
 
 
@@ -135,57 +135,57 @@ struct FGetMinMax : public TFilter<float> {
 
 CFatNFG3DImageCost::CFatNFG3DImageCost(P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight, PEvaluator evaluator):
 	C3DImageFatCost(src,  ref,  ipf, weight),
-	_M_jump_levels_valid(false),
-	_M_evaluator(evaluator),
-	_M_intensity_scale(1.0)
+	m_jump_levels_valid(false),
+	m_evaluator(evaluator),
+	m_intensity_scale(1.0)
 {
 	FGetMinMax fgmm;
-	_M_intensity_scale = mia::filter(fgmm, *src) * mia::filter(fgmm, *ref);
-	cvdebug() << "_M_intensity_scale = " << _M_intensity_scale << "\n";
+	m_intensity_scale = mia::filter(fgmm, *src) * mia::filter(fgmm, *ref);
+	cvdebug() << "m_intensity_scale = " << m_intensity_scale << "\n";
 }
 
 P3DImageFatCost CFatNFG3DImageCost::cloned(P3DImage src, P3DImage ref) const
 {
-	return P3DImageFatCost(new CFatNFG3DImageCost(src, ref,  get_ipf(), get_weight(), _M_evaluator));
+	return P3DImageFatCost(new CFatNFG3DImageCost(src, ref,  get_ipf(), get_weight(), m_evaluator));
 }
 
 void CFatNFG3DImageCost::prepare() const
 {
 
-	_M_ng_ref =  get_nfg(get_ref());
-	_M_jump_levels_valid = true;
+	m_ng_ref =  get_nfg(get_ref());
+	m_jump_levels_valid = true;
 }
 
 double CFatNFG3DImageCost::do_value() const
 {
 	TRACE("CFatNFG3DImageCost::do_value");
-	if (!_M_jump_levels_valid) {
+	if (!m_jump_levels_valid) {
 		prepare();
 	}
 
 	C3DFVectorfield ng_a = get_nfg(get_floating());
 
 	double sum = 0.0;
-	for (C3DFVectorfield::const_iterator ia = ng_a.begin(), ib = _M_ng_ref.begin();
+	for (C3DFVectorfield::const_iterator ia = ng_a.begin(), ib = m_ng_ref.begin();
 	     ia != ng_a.end(); ++ia, ++ib) {
-		sum += _M_evaluator->cost(*ia, *ib);
+		sum += m_evaluator->cost(*ia, *ib);
 	}
-	return 0.5  * _M_intensity_scale * get_weight() * sum / ng_a.size();
+	return 0.5  * m_intensity_scale * get_weight() * sum / ng_a.size();
 }
 
 double CFatNFG3DImageCost::do_evaluate_force(C3DFVectorfield& force) const
 {
 	TRACE("CFatNFG3DImageCost::do_evaluate_force");
-	if (!_M_jump_levels_valid) {
+	if (!m_jump_levels_valid) {
 		prepare();
 	}
 
 	const C3DFVectorfield ng_src = get_nfg(get_floating());
-	const float weight =  _M_intensity_scale * get_weight();
+	const float weight =  m_intensity_scale * get_weight();
 
-	const size_t nx = _M_ng_ref.get_size().x;
-	const size_t ny = _M_ng_ref.get_size().y;
-	const size_t nz = _M_ng_ref.get_size().z;
+	const size_t nx = m_ng_ref.get_size().x;
+	const size_t ny = m_ng_ref.get_size().y;
+	const size_t nz = m_ng_ref.get_size().z;
 	const size_t nxy = nx * ny;
 
 
@@ -195,12 +195,12 @@ double CFatNFG3DImageCost::do_evaluate_force(C3DFVectorfield& force) const
 #endif
 	for (size_t z = 1; z < nz - 1; ++z) {
 		C3DFVectorfield::const_iterator isrc = ng_src.begin_at(1, 1, z);
-		C3DFVectorfield::const_iterator iref = _M_ng_ref.begin_at(1, 1, z);
+		C3DFVectorfield::const_iterator iref = m_ng_ref.begin_at(1, 1, z);
 		C3DFVectorfield::iterator iforce = force.begin_at(1, 1, z);
 		double lcost = 0.0;
 		for (size_t y = 1; y < ny - 1; ++y) {
 			for (size_t x = 1; x < nx - 1; ++x, ++iforce, ++isrc, ++iref) {
-				*iforce =  weight * 0.5 * _M_evaluator->grad(nx, nxy, isrc, *iref, lcost);
+				*iforce =  weight * 0.5 * m_evaluator->grad(nx, nxy, isrc, *iref, lcost);
 			}
 			iforce += 2;
 			isrc   += 2;
@@ -212,7 +212,7 @@ double CFatNFG3DImageCost::do_evaluate_force(C3DFVectorfield& force) const
 		cost += lcost;
 	}
 
-	return 0.5 * _M_intensity_scale * cost / ng_src.size();
+	return 0.5 * m_intensity_scale * cost / ng_src.size();
 }
 
 class C3DNFGFatImageCostPlugin: public C3DFatImageCostPlugin {
@@ -224,15 +224,15 @@ private:
 							    float weight)const;
 	bool do_test() const;
 	const string do_get_descr()const;
-	string _M_type;
+	string m_type;
 };
 
 C3DNFGFatImageCostPlugin::C3DNFGFatImageCostPlugin():
 	C3DFatImageCostPlugin("ngf"),
-	_M_type("delta")
+	m_type("delta")
 {
 	TRACE("C3DNFGFatImageCostPlugin::C3DNFGFatImageCostPlugin()");
-	add_parameter("eval", new CStringParameter(_M_type, true,
+	add_parameter("eval", new CStringParameter(m_type, true,
 						   "plugin subtype (delta, scalar,cross)"));
 
 }
@@ -254,12 +254,12 @@ C3DFatImageCostPlugin::ProductPtr C3DNFGFatImageCostPlugin::do_create(P3DImage s
 	const TDictMap<ESubTypes> subtypemap(lut);
 
 	PEvaluator eval;
-	switch (subtypemap.get_value(_M_type.c_str())) {
+	switch (subtypemap.get_value(m_type.c_str())) {
 	case st_delta: eval.reset(new FDeltaScalar()); break;
 	case st_scalar: eval.reset(new FScalar()); break;
 	case st_cross: eval.reset(new FCross()); break;
 	default:
-		throw invalid_argument(string("C3DNFGFatImageCostPlugin: unknown cost sub-type '")+_M_type+"'");
+		throw invalid_argument(string("C3DNFGFatImageCostPlugin: unknown cost sub-type '")+m_type+"'");
 	}
 	return C3DFatImageCostPlugin::ProductPtr(new CFatNFG3DImageCost(src, ref, ipf, weight, eval));
 }

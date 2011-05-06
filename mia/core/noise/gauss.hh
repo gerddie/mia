@@ -9,10 +9,10 @@ private:
 	virtual double get() const; 
 	double box_muller() const;
 	
-	double _M_mu; 		
-	double _M_sigma; 
-	mutable bool _M_use_last; 
-	mutable double _M_y2; 
+	double m_mu; 		
+	double m_sigma; 
+	mutable bool m_use_last; 
+	mutable double m_y2; 
 };
 
 
@@ -23,9 +23,9 @@ private:
 	mia::CNoiseGeneratorPlugin::ProductPtr do_create() const; 
 	virtual const std::string do_get_descr()const; 
 	bool do_test()const; 
-	unsigned int _M_param_seed; 
-	float _M_param_mu; 
-	float _M_param_sigma;
+	unsigned int m_param_seed; 
+	float m_param_mu; 
+	float m_param_sigma;
 
 }; 
 

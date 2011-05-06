@@ -1,7 +1,7 @@
 
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #ifndef mextypemap_hh
 #define mextypemap_hh
 
+#define __STDC_UTF_16__ 1 
 #include <mex.h>
 #include <mia/2d.hh>
 #include <mia/3d.hh>

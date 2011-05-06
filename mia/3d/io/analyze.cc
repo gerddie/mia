@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Biomedical Image Technologies, Universidad Politecnica de Madrid
  *
@@ -164,7 +164,7 @@ extern "C" EXPORT CPluginBase *get_plugin_interface()
 
 CAnalyze3DImageIOPlugin::CAnalyze3DImageIOPlugin():
 	C3DImageIOPlugin("analyze"),
-	_M_type_table(analyze_type_table)
+	m_type_table(analyze_type_table)
 {
 //	add_supported_type(it_bit);
 	add_supported_type(it_ubyte);
@@ -344,12 +344,12 @@ C3DImage *CAnalyze3DImageIOPlugin::read_image(const C3DBounds& size, short datat
 		cvwarn() << "Got an RGB indicator but I will ignore it\n";
 
 	switch (datatype & 0xFF) {
-//	case DT_BINARY       :return do_read_image<bool>::apply(size, data_file, _M_swap_endian);
-	case DT_UNSIGNED_CHAR:return do_read_image<unsigned char, flipped>::apply(size, data_file, _M_swap_endian);
-	case DT_SIGNED_SHORT :return do_read_image<signed short, flipped>::apply(size, data_file, _M_swap_endian);
-	case DT_SIGNED_INT   :return do_read_image<signed int, flipped>::apply(size, data_file, _M_swap_endian);
-	case DT_FLOAT        :return do_read_image<float, flipped>::apply(size, data_file, _M_swap_endian);
-	case DT_DOUBLE       :return do_read_image<double, flipped>::apply(size, data_file, _M_swap_endian);
+//	case DT_BINARY       :return do_read_image<bool>::apply(size, data_file, m_swap_endian);
+	case DT_UNSIGNED_CHAR:return do_read_image<unsigned char, flipped>::apply(size, data_file, m_swap_endian);
+	case DT_SIGNED_SHORT :return do_read_image<signed short, flipped>::apply(size, data_file, m_swap_endian);
+	case DT_SIGNED_INT   :return do_read_image<signed int, flipped>::apply(size, data_file, m_swap_endian);
+	case DT_FLOAT        :return do_read_image<float, flipped>::apply(size, data_file, m_swap_endian);
+	case DT_DOUBLE       :return do_read_image<double, flipped>::apply(size, data_file, m_swap_endian);
 	default:
 		stringstream msg;
 		msg << "Analyze: unsupported image type:" << datatype;
@@ -407,9 +407,9 @@ CAnalyze3DImageIOPlugin::PData CAnalyze3DImageIOPlugin::do_load(const string&  f
 
 	if (hdr.dime.dim[0] < 0 || hdr.dime.dim[0] > 15) {
 		swap_hdr(hdr);
-		_M_swap_endian = true;
+		m_swap_endian = true;
 	}else
-		_M_swap_endian = false;
+		m_swap_endian = false;
 
 	if (hdr.dime.dim[0] < 0 || hdr.dime.dim[0] > 15) {
 		cvdebug() << filename.c_str() << ":" << "not an analyze  header\n";
@@ -497,28 +497,28 @@ struct __do_fwrite<bool> {
 class CSavefilter: public TFilter<bool> {
 public:
 	CSavefilter(COutputFile& f, analyze_image_dimension& dime):
-		_M_f(f),
-		_M_dime(dime)
+		m_f(f),
+		m_dime(dime)
 		{
 		}
 
 	template <class T>
 	bool operator ()(const T3DImage<T>& image) const {
-		if (__do_fwrite<T>::apply(image, sizeof(T), image.size(), _M_f)!= image.size()) {
+		if (__do_fwrite<T>::apply(image, sizeof(T), image.size(), m_f)!= image.size()) {
 			throw runtime_error(string("Analyze: Error writing file") + strerror(errno));
 		}
 		pair<typename T3DImage<T>::const_iterator, typename T3DImage<T>::const_iterator>
 			image_minmax = ::boost::minmax_element(image.begin(), image.end());
-		if ( (int)*image_minmax.first < _M_dime.glmin)
-			_M_dime.glmin = (int) *image_minmax.first;
-		if ( (int)*image_minmax.second > _M_dime.glmax)
-			_M_dime.glmax = (int) *image_minmax.second;
+		if ( (int)*image_minmax.first < m_dime.glmin)
+			m_dime.glmin = (int) *image_minmax.first;
+		if ( (int)*image_minmax.second > m_dime.glmax)
+			m_dime.glmax = (int) *image_minmax.second;
 		return true;
 	}
 
 private:
-	COutputFile& _M_f;
-	analyze_image_dimension& _M_dime;
+	COutputFile& m_f;
+	analyze_image_dimension& m_dime;
 };
 
 

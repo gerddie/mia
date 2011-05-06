@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -21,16 +21,6 @@
  *
  */
 
-// $Id: fftkernel.hh,v 1.1 2006-03-01 19:14:13 wollny Exp $
-
-/*! \brief basic type of a plugin handler
-
-A basis for fft filter plugins
-
-\author Gert Wollny <wollny at die.upm.es>
-
-*/
-
 #ifndef mia_2d_fftkernel_hh
 #define mia_2d_fftkernel_hh
 
@@ -46,32 +36,65 @@ A basis for fft filter plugins
 
 NS_MIA_BEGIN
 
+/// plugin-helper structure 
 struct EXPORT_2D cst2d_kernel {
+	/// plugin path helper value 
 	static const char *value;
 };
+
+/**
+   @brief Base class for cos/sin transformation filters 
+
+   This class defines the interface for filter that uses cosinus and sinus transforms to move 
+   the data into a dual space, runs some filter there and then transforms the data back. 
+   This class may be used for gray scale image data and vector data. 
+   
+   @tparam The actual data type to run the filter on 
+   @remark why is this called a kernel? 
+*/
 
 template <typename T>
 class EXPORT_2D TCST2DKernel :public CProductBase {
 public:
+	/// some helper typedef for the plug-in handler 
 	typedef typename plugin_data_type<T>::type plugin_data; 
+
+	/// define the plugin-type helper to get the search path 
 	typedef cst2d_kernel plugin_type; 
 
+	/// define the type of the FFTW plan used 
 	typedef TCSTPlan<T> CPlan;
+	
+	/**
+	   Consruct the filter as either forward or backward 
+	   @remark why is this? 
+	 */
 	TCST2DKernel(fftwf_r2r_kind forward);
+	
 	virtual ~TCST2DKernel();
-	void apply(const T& in, T& out) const;
-	void prepare(const C2DBounds& size);
 
+	/**
+	   Apply the transform 
+	   @param[in] in 
+	   @param[out] out 
+	 */
+	void apply(const T& in, T& out) const;
+
+	/**
+	   Prepare the transform based on the size of the data field to be transformed 
+	   @param size 
+	 */
+	void prepare(const C2DBounds& size);
 
 private:
         virtual CPlan *do_prepare(fftwf_r2r_kind fw_kind, const std::vector<int>& size) = 0;
 
-	fftwf_r2r_kind _M_forward;
-	auto_ptr<CPlan> _M_plan;
+	fftwf_r2r_kind m_forward;
+	auto_ptr<CPlan> m_plan;
 };
 
-/*
-  image filter
+/**
+  \cond NEEDS_REHAUL 
 */
 
 typedef TCST2DKernel<C2DFVectorfield> CCST2DVectorKernel;
@@ -81,12 +104,12 @@ typedef  std::shared_ptr<CCST2DImageKernel > PCST2DImageKernel;
 typedef  std::shared_ptr<CCST2DVectorKernel > PCST2DVectorKernel;
 
 typedef TFactory<CCST2DVectorKernel> CCST2DVectorKernelPlugin;
-typedef THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> > CCST2DVectorKernelPluginHandler;
+typedef THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> > 
+CCST2DVectorKernelPluginHandler;
 
 typedef TFactory<CCST2DImageKernel> CCST2DImgKernelPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<CCST2DImgKernelPlugin> > CCST2DImgKernelPluginHandler;
-
-
+/// \endcond 
 
 NS_MIA_END
 

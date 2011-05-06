@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -42,11 +42,11 @@ public:
 	~Cstreamredir();
 private:
 	virtual void do_put_buffer(const char *begin, const char *end);
-	ostringstream& _M_output;
+	ostringstream& m_output;
 };
 
 Cstreamredir::Cstreamredir(ostringstream& output):
-	_M_output(output)
+	m_output(output)
 {
 }
 
@@ -58,7 +58,7 @@ Cstreamredir::~Cstreamredir()
 void Cstreamredir::do_put_buffer(const char *begin, const char *end)
 {
 	while (begin != end)
-		_M_output << *begin++;
+		m_output << *begin++;
 }
 
 BOOST_AUTO_TEST_CASE( test_streamredir )

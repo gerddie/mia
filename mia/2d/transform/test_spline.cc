@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -294,7 +294,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 
 	C2DFImage test_image(range);
 	
-	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
+	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(ipf_spline,
 							      std::shared_ptr<CBSplineKernel > (new CBSplineKernel3()))); 
 	auto_ptr<T2DInterpolator<float> > src(ipf->create(image.data()));
 
@@ -593,7 +593,7 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 	
 	PBSplineKernel kernel(new CBSplineKernel3()); 
 
-	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline,
+	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(ipf_spline,
 							      kernel));
 
 	C2DSplineTransformation trans(size, kernel);
@@ -683,7 +683,7 @@ struct TransformSplineFixtureFieldBase {
 		size(16,16),
 		field(size),
 		kernel(new CBSplineKernel3()), 
-		ipf(new C2DInterpolatorFactory(C2DInterpolatorFactory::ip_spline, kernel)),
+		ipf(new C2DInterpolatorFactory(ipf_spline, kernel)),
 		range(16, 16),
 		stransf(range, kernel),
 		scale(1.0 / range.x, 1.0 / range.y)
@@ -730,9 +730,9 @@ public:
 	double src_value(const C2DFVector& x)const; 
 	double ref_value(const C2DFVector& x)const; 
 	C2DFVector src_grad(const C2DFVector& x)const; 
-	C2DBounds _M_size; 
-	C2DFVector _M_center; 
-	float _M_r; 
+	C2DBounds m_size; 
+	C2DFVector m_center; 
+	float m_r; 
 }; 
 
 class TransformGradientFixture {
@@ -857,19 +857,19 @@ void TransformGradientFixture::run_test(C2DTransformation& t, double tol)const
 }
 
 Cost2DMock::Cost2DMock(const C2DBounds& size):
-	_M_size(size), 
-	_M_center(0.5 * size.x, 0.5 * size.y),
-	_M_r(sqrt(_M_center.x * _M_center.x + _M_center.y * _M_center.y))
+	m_size(size), 
+	m_center(0.5 * size.x, 0.5 * size.y),
+	m_r(sqrt(m_center.x * m_center.x + m_center.y * m_center.y))
 {
 }
 	
 double Cost2DMock::value(const C2DTransformation& t) const
 {
-	assert(_M_size == t.get_size()); 
+	assert(m_size == t.get_size()); 
 	double result = 0.0; 
 	auto it = t.begin(); 
-	for (size_t y = 0; y < _M_size.y; ++y) 
-		for (size_t x = 0; x < _M_size.x; ++x, ++it) {
+	for (size_t y = 0; y < m_size.y; ++y) 
+		for (size_t x = 0; x < m_size.x; ++x, ++it) {
 			double v = src_value(*it) - ref_value(C2DFVector(x,y)); 
 			result += v * v; 
 		}
@@ -879,13 +879,13 @@ double Cost2DMock::value(const C2DTransformation& t) const
 
 double Cost2DMock::value_and_gradient(C2DFVectorfield& gradient) const
 {
-	assert(gradient.get_size() == _M_size); 
+	assert(gradient.get_size() == m_size); 
 	
 	double result = 0.0; 
 
 	auto ig = gradient.begin(); 
-	for (size_t y = 0; y < _M_size.y; ++y) 
-		for (size_t x = 0; x < _M_size.x; ++x, ++ig) {
+	for (size_t y = 0; y < m_size.y; ++y) 
+		for (size_t x = 0; x < m_size.x; ++x, ++ig) {
 			C2DFVector pos(x,y);
 			double v = src_value(pos) - ref_value(pos); 
 			result += v * v; 
@@ -896,20 +896,20 @@ double Cost2DMock::value_and_gradient(C2DFVectorfield& gradient) const
 
 double Cost2DMock::src_value(const C2DFVector& x)const
 {
-	const C2DFVector p = x - _M_center; 
-	return exp( - (p.x * p.x + p.y * p.y) / _M_r); 
+	const C2DFVector p = x - m_center; 
+	return exp( - (p.x * p.x + p.y * p.y) / m_r); 
 }
 
 C2DFVector Cost2DMock::src_grad(const C2DFVector& x)const
 {
 	
-	return - 2.0f / _M_r * (x-_M_center) * src_value(x); 
+	return - 2.0f / m_r * (x-m_center) * src_value(x); 
 }
 
 double Cost2DMock::ref_value(const C2DFVector& x)const 
 {
-	const C2DFVector p = x - _M_center - C2DFVector(2.0,2.0); 
-	return exp( - (p.x * p.x + p.y * p.y) / _M_r); 
+	const C2DFVector p = x - m_center - C2DFVector(2.0,2.0); 
+	return exp( - (p.x * p.x + p.y * p.y) / m_r); 
 }
 
 

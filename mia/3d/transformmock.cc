@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -186,28 +186,28 @@ C3DTransformation::iterator_impl *C3DTransformMock::iterator_impl::clone()const
 
 C3DTransformMock::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& size):
 	C3DTransformation::iterator_impl(pos, size), 
-	_M_value(-1.2, -2.3,-4.3)
+	m_value(-1.2, -2.3,-4.3)
 {
 }
 
 const C3DFVector& C3DTransformMock::iterator_impl::do_get_value()const
 {
-	return _M_value; 
+	return m_value; 
 }
 
 void C3DTransformMock::iterator_impl::do_x_increment()
 {
-	_M_value = C3DFVector(get_pos()); 
+	m_value = C3DFVector(get_pos()); 
 }
 
 void C3DTransformMock::iterator_impl::do_y_increment()
 {
-	_M_value = C3DFVector(get_pos()); 
+	m_value = C3DFVector(get_pos()); 
 }
 
 void C3DTransformMock::iterator_impl::do_z_increment()
 {
-	_M_value = C3DFVector(get_pos()); 
+	m_value = C3DFVector(get_pos()); 
 }
 
 

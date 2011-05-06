@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -21,7 +21,24 @@
  *
  */
 
-// $Id: filter2dstack.hh,v 1.21 2006-09-18 21:40:12 gerddie Exp $
+/*
+  LatexBeginPluginSection{2D image stack filters}
+  \label{sec:fifof}
+  
+  These filters work on a stack of 2D images in a 3D manner by interpreting the images of the stack 
+   as slices of a 3D image.
+  For spacial filters with a fixed filter width that is small compared to the number of slices 
+  the filter is applied in a true 3D manner. 
+  Other filters, that would normaly require to work on the whole image domain at once, the 
+  image filter is only applied to a subset of the images at a time 
+  which results in a quasi-3D processing. 
+  Only filters are supported that can be run in a single pass. 
+  
+  Filters are created by the C2DFifoFilterPluginHandler singleton.
+
+  LatexEnd
+*/
+
 
 #include <mia/core/export_handler.hh>
 

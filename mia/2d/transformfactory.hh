@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -25,15 +25,27 @@
 
 #include <set>
 #include <mia/2d/transform.hh>
+#include <mia/core/export_handler.hh>
 #include <mia/internal/transformfactory.hh>
 #include <mia/core/factory.hh>
 
 NS_MIA_BEGIN
 
+/** The base class for 2D transformation creators 
+    \remark should the name be C2DTransformFactory? 
+*/ 
 typedef TTransformCreator<C2DTransformation>  C2DTransformCreator; 
+
+/// Pointer type to the transformation factory
 typedef std::shared_ptr<C2DTransformCreator > P2DTransformationFactory;
+
+/// this is the Factory class that is used to create the transformation creator 
 typedef TFactory<C2DTransformCreator> C2DTransformCreatorPlugin;
+
+/// The plugin handler to manage the transformation creators
 typedef THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin> > C2DTransformCreatorHandler;
+
+
 FACTORY_TRAIT(C2DTransformCreatorHandler); 
 
 NS_MIA_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -23,17 +23,43 @@
  */
 
 /*
-   This implementation of an adaptive median filter works like follows:
-   - filter width is w=2*n+1
-   - start with n=1
-     * if the resulting filtered value is equal to the min or max of the covered
-       area (max or min) then increase n and repeat filtering
-     * repeat above algorithm until n=n_max or resulting value is not equal to an
-       extreme value
-   - if the original intensity value of the image is equal to one of the extremes,
-     then keep the value, otherwise replace it by the filter result
-   for bit valued images this is just the normal median filter.
+  LatexBeginPluginDescription{2D image filters}
+
+  \subsection{Adaptive median filter}
+  \label{filter2d:adaptmed}
+  
+  \begin{description}
+  
+  \item [Plugin:] adaptmed
+  \item [Description:] An adaptive median filter that works like follows: 
+
+  \begin{itemize}
+    \item filter width is w=2*n+1
+    \item start with n=1
+    \begin{itemize}
+      \item  if the resulting filtered value is equal to the min or max of the covered
+             area (max or min) then increase n and repeat filtering
+      \item  repeat above algorithm until n=n\_max or resulting value is not equal to an
+             extreme value
+    \end{itemize}     
+    \item if the original intensity value of the image is equal to one of the extremes,
+          then keep the value, otherwise replace it by the filter result
+  \end{itemize}
+
+  \item [Input:] Abitrary gray scale image 
+  \item [Output:] The filtered image of the same pixel type and dimension 
+  
+  \plugtabstart
+  w &  int & maximum filter width parameter & 2  \\
+  \plugtabend
+  
+  \item [Remark:] for bit valued images this is just the normal median filter applied with the maximum filter width.
+  
+  \end{description}
+
+  LatexEnd
 */
+
 
 #include <limits>
 #include <mia/2d/filter/adaptmed.hh>
@@ -48,7 +74,7 @@ using namespace std;
 static char const * plugin_name = "adaptmed";
 
 C2DAdaptMedian::C2DAdaptMedian(int hw):
-	_M_hw(hw)
+	m_hw(hw)
 {
 }
 
@@ -129,14 +155,14 @@ typename C2DAdaptMedian::result_type C2DAdaptMedian::operator () (const Data2D& 
 
 	Data2D *result = new Data2D(data.get_size());
 
-	vector<typename Data2D::value_type> target_vector((2 * _M_hw + 1) *
-							       (2 * _M_hw + 1));
+	vector<typename Data2D::value_type> target_vector((2 * m_hw + 1) *
+							       (2 * m_hw + 1));
 
 	typename Data2D::iterator i = result->begin();
 
 	for (int y = 0; y < (int)data.get_size().y; ++y)
 		for (int x = 0; x < (int)data.get_size().x; ++x, ++i)
-			*i = __dispatch_filter<Data2D>::apply(data, x, y, _M_hw, target_vector);
+			*i = __dispatch_filter<Data2D>::apply(data, x, y, m_hw, target_vector);
 
 	cvdebug() << "C2DAdaptMedian::operator () end\n";
 	return P2DImage(result);
@@ -149,15 +175,16 @@ C2DAdaptMedian::result_type C2DAdaptMedian::do_filter(const C2DImage& image) con
 
 
 C2DAdaptMedianImageFilterFactory::C2DAdaptMedianImageFilterFactory():
-	C2DFilterPlugin(plugin_name)
+	C2DFilterPlugin(plugin_name), 
+	m_hw(2)
 {
-	add_parameter("w", new CIntParameter(_M_hw, 0, numeric_limits<int>::max(),
+	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(),
 					     false, "half filter width"));
 }
 
 C2DFilterPlugin::ProductPtr C2DAdaptMedianImageFilterFactory::do_create()const
 {
-	return C2DFilterPlugin::ProductPtr(new C2DAdaptMedian(_M_hw));
+	return C2DFilterPlugin::ProductPtr(new C2DAdaptMedian(m_hw));
 }
 
 const string C2DAdaptMedianImageFilterFactory::do_get_descr()const

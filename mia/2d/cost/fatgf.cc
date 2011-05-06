@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,10 +90,10 @@ private:
 	virtual double do_value() const; 
 	virtual double do_evaluate_force(C2DFVectorfield& force) const;
 	void prepare() const;  
-	mutable C2DFVectorfield _M_ng_ref; 
-	mutable bool _M_ref_prepared; 
-	PEvaluator _M_evaluator; 
-	float _M_intensity_scale; 
+	mutable C2DFVectorfield m_ng_ref; 
+	mutable bool m_ref_prepared; 
+	PEvaluator m_evaluator; 
+	float m_intensity_scale; 
 }; 
 
 
@@ -109,59 +109,59 @@ struct FGetMinMax : public TFilter<float> {
 
 CFatGF2DImageCost::CFatGF2DImageCost(P2DImage src, P2DImage ref, float weight, PEvaluator evaluator):
 	C2DImageFatCost(src,  ref,  weight), 
-	_M_ref_prepared(false), 
-	_M_evaluator(evaluator), 
-	_M_intensity_scale(1.0)
+	m_ref_prepared(false), 
+	m_evaluator(evaluator), 
+	m_intensity_scale(1.0)
 {
 	FGetMinMax fgmm;
-	_M_intensity_scale = mia::filter(fgmm, *src) * mia::filter(fgmm, *ref); 
-	cvdebug() << "_M_intensity_scale = " << _M_intensity_scale << "\n"; 
+	m_intensity_scale = mia::filter(fgmm, *src) * mia::filter(fgmm, *ref); 
+	cvdebug() << "m_intensity_scale = " << m_intensity_scale << "\n"; 
 }
 
 P2DImageFatCost CFatGF2DImageCost::cloned(P2DImage src, P2DImage ref, float weight) const
 {
-	return P2DImageFatCost(new CFatGF2DImageCost(src, ref,  weight, _M_evaluator)); 
+	return P2DImageFatCost(new CFatGF2DImageCost(src, ref,  weight, m_evaluator)); 
 }
 
 void CFatGF2DImageCost::prepare() const
 {
-	_M_ng_ref =  get_gradient(get_ref()); 
-	_M_ref_prepared = true; 
+	m_ng_ref =  get_gradient(get_ref()); 
+	m_ref_prepared = true; 
 }
 
 double CFatGF2DImageCost::do_value() const
 {
 	TRACE("CFatGF2DImageCost::do_value"); 
-	if (!_M_ref_prepared)
+	if (!m_ref_prepared)
 		prepare(); 
 
 	
 	C2DFVectorfield ng_a = get_gradient(get_floating()); 
 
 	double sum = 0.0; 
-	for (C2DFVectorfield::const_iterator ia = ng_a.begin(), ib = _M_ng_ref.begin(); 
+	for (C2DFVectorfield::const_iterator ia = ng_a.begin(), ib = m_ng_ref.begin(); 
 	     ia != ng_a.end(); ++ia, ++ib) {
-		double help = (*_M_evaluator)(*ia, *ib); 
+		double help = (*m_evaluator)(*ia, *ib); 
 		sum += help * help; 
 	}
-	return 0.5 * _M_evaluator->negate() * _M_intensity_scale * get_weight() * sum / ng_a.size(); 
+	return 0.5 * m_evaluator->negate() * m_intensity_scale * get_weight() * sum / ng_a.size(); 
 }
 
 double CFatGF2DImageCost::do_evaluate_force(C2DFVectorfield& force) const
 {
 	TRACE("CFatGF2DImageCost::do_evaluate_force"); 
-	if (!_M_ref_prepared) {
+	if (!m_ref_prepared) {
 		prepare(); 
 	}
 
 	C2DFVectorfield ng_src = get_gradient(get_floating()); 
-	float weight =  _M_intensity_scale * get_weight();
+	float weight =  m_intensity_scale * get_weight();
 
-	const size_t nx = _M_ng_ref.get_size().x;
-	const size_t ny = _M_ng_ref.get_size().y;
+	const size_t nx = m_ng_ref.get_size().x;
+	const size_t ny = m_ng_ref.get_size().y;
 	
 	C2DFVectorfield::const_iterator isrc = ng_src.begin() + nx; 
-	C2DFVectorfield::const_iterator iref = _M_ng_ref.begin() + nx; 
+	C2DFVectorfield::const_iterator iref = m_ng_ref.begin() + nx; 
 	C2DFVectorfield::iterator iforce = force.begin() + nx; 
 	
 	double cost = 0.0;
@@ -170,18 +170,18 @@ double CFatGF2DImageCost::do_evaluate_force(C2DFVectorfield& force) const
 		++isrc; 
 		++iref;
 		for (size_t x = 1; x < nx - 1; ++x, ++iforce, ++isrc, ++iref) {
-			double help =  (*_M_evaluator)(*isrc, *iref);
+			double help =  (*m_evaluator)(*isrc, *iref);
 			cost += help * help; 
 			
-			iforce->x += weight * 0.5 * help * _M_evaluator->grad(isrc[1] - isrc[-1], *iref); 
-			iforce->y += weight * 0.5 * help * _M_evaluator->grad(isrc[nx] - isrc[-nx], *iref); 
+			iforce->x += weight * 0.5 * help * m_evaluator->grad(isrc[1] - isrc[-1], *iref); 
+			iforce->y += weight * 0.5 * help * m_evaluator->grad(isrc[nx] - isrc[-nx], *iref); 
 		}
 		++iforce; 
 		++isrc;
 		++iref; 
 	}
 	
-	return 0.5 * _M_evaluator->negate() * _M_intensity_scale * cost / ng_src.size();
+	return 0.5 * m_evaluator->negate() * m_intensity_scale * cost / ng_src.size();
 }
 
 class C2DGFFatImageCostPlugin: public C2DFatImageCostPlugin {
@@ -192,15 +192,15 @@ private:
 							    P2DImage ref, float weight)const;
 	bool do_test() const; 
 	const string do_get_descr()const; 
-	string _M_type; 
+	string m_type; 
 }; 
 
 C2DGFFatImageCostPlugin::C2DGFFatImageCostPlugin():
 	C2DFatImageCostPlugin("gf"), 
-	_M_type("delta")
+	m_type("delta")
 {
 	TRACE("C2DGFFatImageCostPlugin::C2DGFFatImageCostPlugin()"); 
-	add_parameter("eval", new CStringParameter(_M_type, true, 
+	add_parameter("eval", new CStringParameter(m_type, true, 
 						   "plugin subtype (delta, scalar,cross)")); 
 		
 }
@@ -222,12 +222,12 @@ C2DFatImageCostPlugin::ProductPtr C2DGFFatImageCostPlugin::do_create(P2DImage sr
 	const TDictMap<ESubTypes> subtypemap(lut); 
 
 	PEvaluator eval; 
-	switch (subtypemap.get_value(_M_type.c_str())) {
+	switch (subtypemap.get_value(m_type.c_str())) {
 	case st_delta: eval.reset(new FDeltaScalar()); break; 
 	case st_scalar: eval.reset(new FScalar()); break; 
 	case st_cross: eval.reset(new FCross()); break; 
 	default: 
-		throw invalid_argument(string("C2DGFFatImageCostPlugin: unknown cost sub-type '")+_M_type+"'");
+		throw invalid_argument(string("C2DGFFatImageCostPlugin: unknown cost sub-type '")+m_type+"'");
 	}
 	return C2DFatImageCostPlugin::ProductPtr(new CFatGF2DImageCost(src, ref, weight, eval)); 
 }

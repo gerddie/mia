@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -56,9 +56,9 @@ struct 	CSegFrameCropper {
 	CSegFrame operator()(const CSegFrame& frame, const C2DImage& image) const;
 
 private:
-	C2DIVector _M_shift;
-	C2DFilterPlugin::ProductPtr _M_filter;
-	bfs::path _M_image_outpath;
+	C2DIVector m_shift;
+	C2DFilterPlugin::ProductPtr m_filter;
+	bfs::path m_image_outpath;
 };
 
 const char *g_description = 
@@ -66,7 +66,7 @@ const char *g_description =
 	"the segmentation over the full image series. An boundary enlargement factor can be given."
 	;
 
-int do_main(int argc, const char *args[])
+int do_main(int argc, const char *argv[])
 {
 	string src_filename;
 	string out_filename;
@@ -82,7 +82,9 @@ int do_main(int argc, const char *args[])
 	options.push_back(make_opt( out_filename, "out-file", 'o', "output segmentation set", CCmdOption::required));
 	options.push_back(make_opt( enlarge_boundary, "enlarge", 'e',
 				    "enlarge boundary by number of pixels"));
-	options.parse(argc, args);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	CSegSetWithImages  segset(src_filename, override_src_imagepath);
 	C2DBoundingBox box = segset.get_boundingbox();
@@ -125,22 +127,22 @@ int do_main(int argc, const char *args[])
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-int main(int argc, const char *args[] )
+int main(int argc, const char *argv[] )
 {
 	try {
-		return do_main(argc, args);
+		return do_main(argc, argv);
 	}
 	catch (const runtime_error &e){
-		cerr << args[0] << " runtime: " << e.what() << endl;
+		cerr << argv[0] << " runtime: " << e.what() << endl;
 	}
 	catch (const invalid_argument &e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (const exception& e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (...){
-		cerr << args[0] << " unknown exception" << endl;
+		cerr << argv[0] << " unknown exception" << endl;
 	}
 	return EXIT_FAILURE;
 }
@@ -150,25 +152,25 @@ int main(int argc, const char *args[] )
 CSegFrameCropper::CSegFrameCropper(const C2DIVector& shift,
 				   C2DFilterPlugin::ProductPtr filter,
 				   const string& image_name):
-	_M_shift(shift),
-	_M_filter(filter),
-	_M_image_outpath(image_name)
+	m_shift(shift),
+	m_filter(filter),
+	m_image_outpath(image_name)
 {
-	_M_image_outpath.remove_filename();
+	m_image_outpath.remove_filename();
 
 }
 
 
 CSegFrame CSegFrameCropper::operator()(const CSegFrame& frame, const C2DImage& image) const
 {
-	P2DImage cropped = _M_filter->filter(image);
-	const string out_filename = (_M_image_outpath.file_string() / bfs::path(frame.get_imagename())).file_string();
+	P2DImage cropped = m_filter->filter(image);
+	const string out_filename = (m_image_outpath.string() / bfs::path(frame.get_imagename())).string();
 
 	if (!save_image(out_filename, cropped))
 		cvwarn() << "Could not write cropped file '" << out_filename << "'\n";
 
 	CSegFrame result = frame;
-	result.shift(_M_shift, frame.get_imagename());
+	result.shift(m_shift, frame.get_imagename());
 	return result;
 
 }

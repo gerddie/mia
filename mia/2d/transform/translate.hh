@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -46,14 +46,14 @@ public:
 
 	class EXPORT_2D iterator_impl: public C2DTransformation::iterator_impl  {
 	public:
-		iterator_impl(const C2DBounds& pos, const C2DBounds& size, const C2DFVector& _M_value); 
+		iterator_impl(const C2DBounds& pos, const C2DBounds& size, const C2DFVector& m_value); 
 	private: 
 		virtual C2DTransformation::iterator_impl * clone() const; 
 		virtual const C2DFVector&  do_get_value()const; 
 		virtual void do_x_increment(); 
 		virtual void do_y_increment(); 
-		C2DFVector _M_translate;
-		C2DFVector _M_value;
+		C2DFVector m_translate;
+		C2DFVector m_value;
 	};
 
 	C2DTransformation::const_iterator begin() const;
@@ -85,8 +85,8 @@ public:
 	virtual double get_divcurl_cost(double wd, double wr) const; 
 private:
 	virtual C2DTransformation *do_clone() const;
-	C2DFVector _M_transform;
-	C2DBounds _M_size;
+	C2DFVector m_transform;
+	C2DBounds m_size;
 };
 
 

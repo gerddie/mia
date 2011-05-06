@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -20,6 +20,60 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+
+/*
+  LatexBeginProgramSection{2D image stack processing}
+  \label{sec:2dstackprograms}
+  
+  These programs all take a series of consecutively numbered input files of the 
+  same dimensions and size and process it as if it would be a 3D image. 
+  For that reason only filters are supported that can process the the slices in one pass. 
+
+  LatexEnd
+*/
+
+/*
+  LatexBeginProgramDescription{2D image stack processing}
+  \label{sec:2dimagestackproc}  
+  
+  \begin{description}
+  \item [Program:] \emph{mia-2dstackfilter}
+  \hrule 
+  \item [Description:] This program is used to filter and convert a series of 2D gray scale images in a 
+  3D fashion by running filters as given on the command line. 
+  For available filters see section \ref{sec:fifof}. 
+
+  The program is called like 
+  \lstset{language=bash}
+  \begin{lstlisting}
+mia-2dstackfilter -i <input images> -o <output image basename> \
+                  -t <output file type> [<filter>] ... 
+  \end{lstlisting}
+  with the filters given as extra parameters as additional command line parameters. 
+
+  \item [Options:] $\:$
+
+  \tabstart
+  \optinfile
+  \optoutfile
+  \opttypetwod
+  \opthelpplugin
+  \tabend
+
+  \item [Example:]Run a mean-least-varaiance filter on a series of images that follow the 
+  numbering pattern inputXXXX.exr and store the output in images filteredXXXX.exr 
+   \lstset{language=bash}
+  \begin{lstlisting}
+mia-2dstackfilter -i image0000.exr -o filtered -t exr mlv:w=2 
+  \end{lstlisting}
+  \end{description}
+  
+  LatexEnd
+*/
+
+
+#define VSTREAM_DOMAIN "2dstackfilter" 
 
 
 #ifdef HAVE_CONFIG_H
@@ -53,60 +107,61 @@ public:
 private:
 	virtual void do_push(::boost::call_traits<P2DImage>::param_type x);
 
-	string _M_fnamebase;
-	size_t _M_start_num;
-	size_t _M_nslices;
-	size_t _M_slice;
-	C2DImageIOPluginHandler::Instance const& _M_ifh;
-	string _M_filetype;
-	time_t _M_start_time;
+	string m_fnamebase;
+	size_t m_start_num;
+	size_t m_nslices;
+	size_t m_slice;
+	C2DImageIOPluginHandler::Instance const& m_ifh;
+	string m_filetype;
+	time_t m_start_time;
 };
 
 C2DStackSaver::C2DStackSaver(string const & fnamebase, size_t start_num, size_t end_num, size_t fwidth,
 			     string const& filetype, C2DImageIOPluginHandler::Instance const& ifh, time_t start_time):
 	TFifoFilter<P2DImage>(0,0,0),
-	_M_start_num(start_num),
-	_M_nslices(end_num - start_num),
-	_M_slice(start_num),
-	_M_ifh(ifh),
-	_M_filetype(filetype),
-	_M_start_time(start_time)
+	m_start_num(start_num),
+	m_nslices(end_num - start_num),
+	m_slice(start_num),
+	m_ifh(ifh),
+	m_filetype(filetype),
+	m_start_time(start_time)
 
 {
 	stringstream ss;
 	ss << fnamebase << "%0" << fwidth << "d." << filetype;
-	_M_fnamebase  = ss.str();
+	m_fnamebase  = ss.str();
 }
 
 void C2DStackSaver::do_push(::boost::call_traits<P2DImage>::param_type image)
 {
+	TRACE_FUNCTION; 
 	C2DImageVector img_list;
 	img_list.push_back(image);
-	string out_filename = create_filename(_M_fnamebase.c_str(), _M_slice++);
+	string out_filename = create_filename(m_fnamebase.c_str(), m_slice++);
 
-	cvdebug() << "C2DStackSaver: save image " << out_filename << " to type "<< _M_filetype << '\n';
+	cvdebug() << "C2DStackSaver: save image " << out_filename << " to type "<< m_filetype << '\n';
 #ifndef WIN32
 	if (cverb.get_level() == vstream::ml_message) {
 		char esttime[30];
 		time_t now = time(NULL);
-		time_t est_end = (_M_nslices * (now - _M_start_time)) / (_M_slice - _M_start_num) + _M_start_time;
+		time_t est_end = (m_nslices * (now - m_start_time)) / (m_slice - m_start_num) + m_start_time;
 		ctime_r(&est_end, esttime);
 		char *est = esttime;
 		while (*est != '\n' && *est != 0)
 			++est;
 		if (*est == '\n')
 			*est = ' ';
-		cvmsg() << "\rFiltered " << _M_slice << ", estimated finish at: " <<  esttime;
+		cvmsg() << "Filtered " << m_slice << ", estimated finish at: " <<  esttime << "\r";
 	}
 #endif
 
-	bool save_okay = _M_ifh.save(_M_filetype, out_filename, img_list );
+	bool save_okay = m_ifh.save(m_filetype, out_filename, img_list );
 	if (!save_okay)
 		cverr() << "saving file " << out_filename << "failed\n";
 
 }
 
-int main(int argc, const char *args[])
+int main(int argc, const char *argv[])
 {
 	string in_filename;
 	string out_filename;
@@ -130,7 +185,9 @@ int main(int argc, const char *args[])
 					 new TPluginHandlerHelpCallback<C2DFifoFilterPluginHandler>)); 
 
 	try{
-		options.parse(argc, args, true);
+		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+			return EXIT_SUCCESS; 
+
 		vector<const char *> filter_chain = options.get_remaining();
 
 		if (help_plugins) {
@@ -157,6 +214,7 @@ int main(int argc, const char *args[])
 				throw invalid_argument(error.str());
 			}
 			filter->append_filter(f);
+			++i; 
 		}
 
 		size_t start_filenum = 0;
@@ -167,6 +225,7 @@ int main(int argc, const char *args[])
 
 		string src_basename = get_filename_pattern_and_range(in_filename, start_filenum,
 								     end_filenum, format_width);
+	       
 		if (start_filenum >= end_filenum)
 			throw invalid_argument(string("no files match pattern ") + src_basename);
 
@@ -199,22 +258,24 @@ int main(int argc, const char *args[])
 
 		}
 
+		cvdebug() << "\nrun finalize\n";  
 		filter->finalize();
-
+		cvdebug() << "done";  
+		
 		cvmsg() << '\n';
 		return EXIT_SUCCESS;
 	}
 	catch (const runtime_error &e){
-		cerr << args[0] << " runtime: " << e.what() << endl;
+		cerr << argv[0] << " runtime: " << e.what() << endl;
 	}
 	catch (const invalid_argument &e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (const exception& e){
-		cerr << args[0] << " error: " << e.what() << endl;
+		cerr << argv[0] << " error: " << e.what() << endl;
 	}
 	catch (...){
-		cerr << args[0] << " unknown exception" << endl;
+		cerr << argv[0] << " unknown exception" << endl;
 	}
 
 	return EXIT_FAILURE;

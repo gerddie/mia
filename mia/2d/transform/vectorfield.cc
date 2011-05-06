@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -20,6 +20,25 @@
  *
  */
 
+/* 
+  LatexBeginPluginDescription{2D Transformations}
+   
+   \subsection{Vectorfield}
+   \label{transform2d:vf}
+   
+   \begin{description}
+   
+   \item [Plugin:] vf
+   \item [Description:] This plug-in implements a transformation that defines a translation for 
+                        each point of the grid defining the domain of the transformation. 
+   \item [Degrees of Freedom:] with the grid size $(n_x,n_y)$: $2* nx * ny$
+  
+   \end{description}
+   This plug-in doesn't  take parameters. 
+
+   LatexEnd  
+ */
+
 #include <limits>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/transform/vectorfield.hh>
@@ -30,7 +49,7 @@ NS_MIA_BEGIN
 using namespace std;
 
 C2DGridTransformation::C2DGridTransformation(const C2DBounds& size):
-	_M_field(size)
+	m_field(size)
 {
 }
 
@@ -40,19 +59,19 @@ P2DTransformation C2DGridTransformation::do_upscale(const C2DBounds& size) const
 	C2DGridTransformation *result = new C2DGridTransformation(size);
 
 	// initial upscale
-	if (_M_field.get_size().x != 0 && _M_field.get_size().y != 0) {
+	if (m_field.get_size().x != 0 && m_field.get_size().y != 0) {
 
-		float x_mult = float(size.x) / (float)_M_field.get_size().x;
-		float y_mult = float(size.y) / (float)_M_field.get_size().y;
+		float x_mult = float(size.x) / (float)m_field.get_size().x;
+		float y_mult = float(size.y) / (float)m_field.get_size().y;
 		float ix_mult = 1.0f / x_mult;
 		float iy_mult = 1.0f / y_mult;
 
-		C2DFVectorfield::iterator i = result->_M_field.begin();
+		C2DFVectorfield::iterator i = result->m_field.begin();
 
 		for (unsigned int y = 0; y < size.y; y++){
 			for (unsigned int x = 0; x < size.x; x++,++i){
 				C2DFVector help(ix_mult * x, iy_mult * y);
-				C2DFVector val = _M_field.get_interpol_val_at(help);
+				C2DFVector val = m_field.get_interpol_val_at(help);
 				*i = C2DFVector(val.x * x_mult,val.y * y_mult);
 			}
 		}
@@ -62,26 +81,26 @@ P2DTransformation C2DGridTransformation::do_upscale(const C2DBounds& size) const
 
 const C2DBounds& C2DGridTransformation::get_size() const
 {
-	return _M_field.get_size();
+	return m_field.get_size();
 }
 
 bool C2DGridTransformation::save(const std::string& filename, const std::string& type) const
 {
-	C2DIOVectorfield outfield(_M_field);
+	C2DIOVectorfield outfield(m_field);
 	return C2DVFIOPluginHandler::instance().save(type, filename, outfield);
 }
 
 void C2DGridTransformation::add(const C2DTransformation& a)
 {
 	const C2DGridTransformation& other = dynamic_cast<const C2DGridTransformation&>(a);
-	_M_field += other._M_field;
+	m_field += other.m_field;
 }
 
 void C2DGridTransformation::update(float step, const C2DFVectorfield& a)
 {
 	C2DFVectorfield::const_iterator inf = a.begin();
 	C2DFVectorfield::const_iterator enf = a.end();
-	C2DFVectorfield::iterator onf = _M_field.begin();
+	C2DFVectorfield::iterator onf = m_field.begin();
 
 	while (inf != enf)
 		*onf++ += step * *inf++;
@@ -102,7 +121,7 @@ C2DTransformation *C2DGridTransformation::invert() const
 
 size_t C2DGridTransformation::degrees_of_freedom() const
 {
-	return 2 * _M_field.size();
+	return 2 * m_field.size();
 }
 
 
@@ -117,12 +136,12 @@ C2DFMatrix C2DGridTransformation::field_derivative_at(int x, int y) const
 {
 	C2DFMatrix result;
 
-	const int sx = _M_field.get_size().x;
-	const int sy = _M_field.get_size().y;
+	const int sx = m_field.get_size().x;
+	const int sy = m_field.get_size().y;
 
 	if (y >= 0 && y < sy ) {
 		if (x >= 0 && x < sx ) {
-			C2DFVectorfield::const_pointer center = &_M_field[sx * y + x];
+			C2DFVectorfield::const_pointer center = &m_field[sx * y + x];
 			if (x > 0 && x < sx - 1) {
 				result.x = (center[ 1] - center[-1]) * 0.5f;
 			}
@@ -136,13 +155,13 @@ C2DFMatrix C2DGridTransformation::field_derivative_at(int x, int y) const
 
 void C2DGridTransformation::set_identity()
 {
-	fill(_M_field.begin(),_M_field.end(), C2DFVector(0,0));
+	fill(m_field.begin(),m_field.end(), C2DFVector(0,0));
 }
 
 float C2DGridTransformation::get_max_transform() const
 {
-	C2DFVectorfield::const_iterator i = _M_field.begin();
-	C2DFVectorfield::const_iterator e = _M_field.end();
+	C2DFVectorfield::const_iterator i = m_field.begin();
+	C2DFVectorfield::const_iterator e = m_field.end();
 
 	assert(i != e);
 	float value = i->norm2();
@@ -160,9 +179,9 @@ float C2DGridTransformation::get_max_transform() const
 
 CDoubleVector C2DGridTransformation::get_parameters() const
 {
-	CDoubleVector result(_M_field.size() * 2);
+	CDoubleVector result(m_field.size() * 2);
 	auto r = result.begin();
-	for(auto f = _M_field.begin(); f != _M_field.end(); ++f) {
+	for(auto f = m_field.begin(); f != m_field.end(); ++f) {
 		*r++ = f->x;
 		*r++ = f->y;
 	}
@@ -171,9 +190,9 @@ CDoubleVector C2DGridTransformation::get_parameters() const
 
 void C2DGridTransformation::set_parameters(const CDoubleVector& params)
 {
-	assert(2 * _M_field.size() == params.size());
+	assert(2 * m_field.size() == params.size());
 	auto r = params.begin();
-	for(auto f = _M_field.begin(); f != _M_field.end(); ++f) {
+	for(auto f = m_field.begin(); f != m_field.end(); ++f) {
 		f->x = *r++;
 		f->y = *r++;
 	}
@@ -183,37 +202,37 @@ void C2DGridTransformation::set_parameters(const CDoubleVector& params)
 C2DGridTransformation::iterator_impl::iterator_impl(const C2DBounds& pos, const C2DBounds& size, 
 						    C2DFVectorfield::const_iterator start):
 	C2DTransformation::iterator_impl(pos, size), 
-	_M_current(start)
+	m_current(start)
 {
-	_M_value = C2DFVector(get_pos()) - *_M_current; 
+	m_value = C2DFVector(get_pos()) - *m_current; 
 }
 
 C2DTransformation::iterator_impl * C2DGridTransformation::iterator_impl::clone() const
 {
-	return new C2DGridTransformation::iterator_impl(get_pos(), get_size(), _M_current); 
+	return new C2DGridTransformation::iterator_impl(get_pos(), get_size(), m_current); 
 }
 
 const C2DFVector&  C2DGridTransformation::iterator_impl::do_get_value()const
 {
-	return _M_value; 
+	return m_value; 
 }
 
 void C2DGridTransformation::iterator_impl::do_x_increment()
 {
-	++_M_current; 
-	_M_value = C2DFVector(get_pos()) - *_M_current; 
+	++m_current; 
+	m_value = C2DFVector(get_pos()) - *m_current; 
 }
 
 void C2DGridTransformation::iterator_impl::do_y_increment()
 {
-	++_M_current; 
-	_M_value = C2DFVector(get_pos()) - *_M_current; 
+	++m_current; 
+	m_value = C2DFVector(get_pos()) - *m_current; 
 }
 
 
 P2DImage C2DGridTransformation::apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const
 {
-	assert(image.get_size() == _M_field.get_size());
+	assert(image.get_size() == m_field.get_size());
 	return transform2d(image, ipf, *this);
 }
 
@@ -225,34 +244,34 @@ C2DFVector C2DGridTransformation::operator ()(const  C2DFVector& x) const
 C2DGridTransformation::const_iterator C2DGridTransformation::begin() const
 {
 	return const_iterator(new iterator_impl(C2DBounds(0,0), 
-						_M_field.get_size(), _M_field.begin()));
+						m_field.get_size(), m_field.begin()));
 }
 
 C2DGridTransformation::const_iterator C2DGridTransformation::end() const
 {
-	return const_iterator(new iterator_impl( _M_field.get_size(), _M_field.get_size(), 
-						 _M_field.end()));
+	return const_iterator(new iterator_impl( m_field.get_size(), m_field.get_size(), 
+						 m_field.end()));
 }
 
 
 C2DGridTransformation::field_iterator C2DGridTransformation::field_begin()
 {
-	return _M_field.begin();
+	return m_field.begin();
 }
 
 C2DGridTransformation::field_iterator C2DGridTransformation::field_end()
 {
-	return _M_field.end();
+	return m_field.end();
 }
 
 C2DGridTransformation::const_field_iterator C2DGridTransformation::field_begin() const
 {
-	return _M_field.begin();
+	return m_field.begin();
 }
 
 C2DGridTransformation::const_field_iterator C2DGridTransformation::field_end()const
 {
-	return _M_field.end();
+	return m_field.end();
 }
 
 void C2DGridTransformation::translate(const C2DFVectorfield& gradient, CDoubleVector& params) const
@@ -286,44 +305,44 @@ float C2DGridTransformation::pertuberate(C2DFVectorfield& v) const
 
 double C2DGridTransformation::dddgx_xxx(int x, int y) const 
 {
-	return 0.5 * ((_M_field(x+2,y).x - 2 * _M_field(x+1,y).x) - 
-		      ( _M_field(x-2,y).x - 2 * _M_field(x-1,y).x)); 
+	return 0.5 * ((m_field(x+2,y).x - 2 * m_field(x+1,y).x) - 
+		      ( m_field(x-2,y).x - 2 * m_field(x-1,y).x)); 
 }
 
 double C2DGridTransformation::dddgy_yyy(int x, int y) const 
 {
-	return 0.5 * ((_M_field(x,y+2).y - 2 * _M_field(x,y+1).y) - 
-		      ( _M_field(x,y-2).y - 2 * _M_field(x,y-1).y)); 
+	return 0.5 * ((m_field(x,y+2).y - 2 * m_field(x,y+1).y) - 
+		      ( m_field(x,y-2).y - 2 * m_field(x,y-1).y)); 
 }
 
 double C2DGridTransformation::dddgy_xxx(int x, int y) const 
 {
-	return 0.5 * ((_M_field(x+2,y).y - 2 * _M_field(x+1,y).y) - 
-		      ( _M_field(x-2,y).y - 2 * _M_field(x-1,y).y)); 
+	return 0.5 * ((m_field(x+2,y).y - 2 * m_field(x+1,y).y) - 
+		      ( m_field(x-2,y).y - 2 * m_field(x-1,y).y)); 
 }
 
 double C2DGridTransformation::dddgx_yyy(int x, int y) const 
 {
-	return 0.5 * ((_M_field(x,y+2).x - 2 * _M_field(x,y+1).x) - 
-		      ( _M_field(x,y-2).x - 2 * _M_field(x,y-1).x)); 
+	return 0.5 * ((m_field(x,y+2).x - 2 * m_field(x,y+1).x) - 
+		      ( m_field(x,y-2).x - 2 * m_field(x,y-1).x)); 
 }
 
 
 C2DFVector C2DGridTransformation::ddg_xx(int x, int y) const
 {
-	return _M_field(x+1,y) + _M_field(x-1,y) - 2 * _M_field(x,y); 
+	return m_field(x+1,y) + m_field(x-1,y) - 2 * m_field(x,y); 
 }
 
 C2DFVector C2DGridTransformation::ddg_xy(int x, int y) const
 {
-	return 0.25 * ((_M_field(x+1,y+1) + _M_field(x-1,y-1)) - 
-		       (_M_field(x+1,y-1) + _M_field(x-1,y+1))); 
+	return 0.25 * ((m_field(x+1,y+1) + m_field(x-1,y-1)) - 
+		       (m_field(x+1,y-1) + m_field(x-1,y+1))); 
 }
 
 
 C2DFVector C2DGridTransformation::ddg_yy(int x, int y) const
 {
-	return _M_field(x,y+1) + _M_field(x,y-1) - 2 * _M_field(x,y); 
+	return m_field(x,y+1) + m_field(x,y-1) - 2 * m_field(x,y); 
 }
 
 
@@ -341,8 +360,8 @@ C2DFVector C2DGridTransformation::dddg_yyx(int x, int y) const
 C2DFVector C2DGridTransformation::get_graddiv_at(int x, int y) const
 {
 
-	const double dfx_xx =  (_M_field(x+1,y).x + _M_field(x-1,y).x - 2 * _M_field(x,y).x);
-	const double dfy_yy =  (_M_field(x,y+1).y + _M_field(x,y-1).y - 2 * _M_field(x,y).y);
+	const double dfx_xx =  (m_field(x+1,y).x + m_field(x-1,y).x - 2 * m_field(x,y).x);
+	const double dfy_yy =  (m_field(x,y+1).y + m_field(x,y-1).y - 2 * m_field(x,y).y);
 	
 	const C2DFVector df_xxy = dddg_xxy(x, y); 
 	const C2DFVector df_yyx = dddg_yyx(x,y); 
@@ -364,8 +383,8 @@ C2DFVector C2DGridTransformation::get_graddiv_at(int x, int y) const
 
 C2DFVector C2DGridTransformation::get_gradcurl_at(int x, int y) const
 {
-	const double dfy_xx =  (_M_field(x+1,y).y + _M_field(x-1,y).y - 2 * _M_field(x,y).y);
-	const double dfx_yy =  (_M_field(x,y+1).x + _M_field(x,y-1).x - 2 * _M_field(x,y).x);
+	const double dfy_xx =  (m_field(x+1,y).y + m_field(x-1,y).y - 2 * m_field(x,y).y);
+	const double dfx_yy =  (m_field(x,y+1).x + m_field(x,y-1).x - 2 * m_field(x,y).x);
 	const double dfy_xxx =  dddgy_xxx(x, y); 
 	const double dfx_yyy =  dddgx_yyy(x, y); 
 	
@@ -389,13 +408,13 @@ C2DFVector C2DGridTransformation::get_gradcurl_at(int x, int y) const
 
 float C2DGridTransformation::grad_divergence(double weight, CDoubleVector& gradient) const
 {
-	const int dx =  _M_field.get_size().x;
-	auto iv = _M_field.begin() + dx + 1; 
+	const int dx =  m_field.get_size().x;
+	auto iv = m_field.begin() + dx + 1; 
 	
 	double result = 0.0;
 	auto ig = gradient.begin() + 2*(2*dx + 2); 
-	for(size_t y = 2; y < _M_field.get_size().y - 2; ++y, iv += 4, ig += 8 )
-		for(size_t x = 2; x < _M_field.get_size().x - 2; ++x, ++iv, ig += 2){
+	for(size_t y = 2; y < m_field.get_size().y - 2; ++y, iv += 4, ig += 8 )
+		for(size_t x = 2; x < m_field.get_size().x - 2; ++x, ++iv, ig += 2){
 
 			const double dfx_xx =  (iv[ 1].x + iv[- 1].x - 2 * iv[0].x);
 			const double dfy_yy =  (iv[dx].y + iv[-dx].y - 2 * iv[0].y);
@@ -419,13 +438,13 @@ float C2DGridTransformation::grad_divergence(double weight, CDoubleVector& gradi
 
 double C2DGridTransformation::grad_curl(double weight, CDoubleVector& gradient) const
 {
-	const int dx =  _M_field.get_size().x;
-	auto iv = _M_field.begin() + dx + 1; 
+	const int dx =  m_field.get_size().x;
+	auto iv = m_field.begin() + dx + 1; 
 	
 	double result = 0.0;
 	auto ig = gradient.begin() + dx + 1; 	
-	for(size_t y = 1; y < _M_field.get_size().y - 1; ++y, iv += 2, ig += 4 )
-		for(size_t x = 1; x < _M_field.get_size().x - 1; ++x, ++iv,  ig += 2) {
+	for(size_t y = 1; y < m_field.get_size().y - 1; ++y, iv += 2, ig += 4 )
+		for(size_t x = 1; x < m_field.get_size().x - 1; ++x, ++iv,  ig += 2) {
 			const double dfy_xx = iv[ 1].y + iv[- 1].y - 2 * iv[0].y;
 			const double dfx_yy = iv[dx].x + iv[-dx].x - 2 * iv[0].x;
 			const double dfy_xy = iv[dx].y + iv[-1].y -  iv[0].y - iv[dx-1].y;
@@ -461,11 +480,11 @@ double C2DGridTransformation::get_divcurl_cost(double wd, double wr) const
 {
 	double result = 0.0; 
 	// todo: if wd == wr run special case 
-	const int dx =  _M_field.get_size().x;
-	auto iv = _M_field.begin() + dx + 1; 
+	const int dx =  m_field.get_size().x;
+	auto iv = m_field.begin() + dx + 1; 
 	
-	for(size_t y = 1; y < _M_field.get_size().y - 1; ++y, iv += 2 )
-		for(size_t x = 1; x < _M_field.get_size().x - 1; ++x, ++iv) {
+	for(size_t y = 1; y < m_field.get_size().y - 1; ++y, iv += 2 )
+		for(size_t x = 1; x < m_field.get_size().x - 1; ++x, ++iv) {
 			const double dfx_xx = iv[ 1].x + iv[- 1].x - 2 * iv[0].x;
 			const double dfy_yy = iv[dx].y + iv[-dx].y - 2 * iv[0].y;
 			const double dfy_xy = iv[dx].y + iv[-1].y -  iv[0].y - iv[dx-1].y;
@@ -495,7 +514,7 @@ float C2DGridTransformation::get_jacobian(const C2DFVectorfield& v, float delta)
 	float j_min = numeric_limits<float>::max();
 
 	for(size_t y = 1; y < get_size().y - 1; ++y) {
-		C2DFVectorfield::const_iterator iu = _M_field.begin_at(1,y);
+		C2DFVectorfield::const_iterator iu = m_field.begin_at(1,y);
 		C2DFVectorfield::const_iterator iv = v.begin_at(1,y);
 		for(size_t x = 1; x < get_size().x - 1; ++x, ++iu, ++iv) {
 			C2DFVector jx((iu[1] - iu[-1]) + (delta * (iv[1] - iv[-1])));

@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  *
  * This program is free software; you can redistribute it and/or modify
@@ -42,40 +42,40 @@ The class holds all types of data stored in three dimensional fields.
 NS_MIA_BEGIN
 
 template <typename T>
-const unsigned int T3DDatafield<T>::_M_elements = 
+const unsigned int T3DDatafield<T>::m_elements = 
 	sizeof(T) / sizeof(typename T3DDatafield<T>::atomic_type); 
 
 template <typename T>
 T3DDatafield<T>::T3DDatafield():
-	_M_size(C3DBounds(0,0,0)), 
-	_M_xy(0), 
-	_M_data(new std::vector<T>(0))
+	m_size(C3DBounds(0,0,0)), 
+	m_xy(0), 
+	m_data(new std::vector<T>(0))
 {
 }
 
 template <typename T>
 void T3DDatafield<T>::swap(T3DDatafield& other)
 {
-	::std::swap(_M_size, other._M_size); 
-	::std::swap(_M_xy, other._M_xy); 
-	_M_data.swap(other._M_data); 
+	::std::swap(m_size, other.m_size); 
+	::std::swap(m_xy, other.m_xy); 
+	m_data.swap(other.m_data); 
 }
 
 template <typename T>
 T3DDatafield<T>::T3DDatafield(const C3DBounds& size ):
-	_M_size(size),
-	_M_xy(size.x * size.y), 
-	_M_data(new std::vector<T>(size.x * size.y * size.z))
+	m_size(size),
+	m_xy(size.x * size.y), 
+	m_data(new std::vector<T>(size.x * size.y * size.z))
 {
 }
 
 template <typename T>
 T3DDatafield<T>::T3DDatafield(const C3DBounds& size, const T *data):
-	_M_size(size), 
-	_M_xy(size.x * size.y), 
-	_M_data(new std::vector<T>(size.x * size.y * size.z))
+	m_size(size), 
+	m_xy(size.x * size.y), 
+	m_data(new std::vector<T>(size.x * size.y * size.z))
 {
-	std::copy(data, data + size.x * size.y * size.z, _M_data->begin()); 
+	std::copy(data, data + size.x * size.y * size.z, m_data->begin()); 
 }
 	
 template <typename T>
@@ -86,8 +86,8 @@ T3DDatafield<T>::~T3DDatafield()
 template <typename T>
 void T3DDatafield<T>::make_single_ref()
 {
-	if (!_M_data.unique())
-		_M_data = ref_data_type( new std::vector<T>(*_M_data) );
+	if (!m_data.unique())
+		m_data = ref_data_type( new std::vector<T>(*m_data) );
 }
 
 template <typename T>
@@ -120,12 +120,12 @@ T3DDatafield<T>::get_trilin_interpol_val_at(const T3DVector<float >& p) const
         float  dy = 1-fy;
         float  dz = 1-fz;
 
-        if ( x < _M_size.x-1 && y  < _M_size.y -1 && z < _M_size.z -1 ) {
+        if ( x < m_size.x-1 && y  < m_size.y -1 && z < m_size.z -1 ) {
 
-                const T *ptr = &(*this)[x + _M_size.x * (y +_M_size.y * z)];
-                const T *ptr_h = &ptr[_M_size.x];
-                const T *ptr2 = &ptr[_M_xy];
-                const T *ptr2_h = &ptr2[_M_size.x];
+                const T *ptr = &(*this)[x + m_size.x * (y +m_size.y * z)];
+                const T *ptr_h = &ptr[m_size.x];
+                const T *ptr2 = &ptr[m_xy];
+                const T *ptr2_h = &ptr2[m_size.x];
                 const T a1 = T(dx * ptr[0]    + fx * ptr[1]);
                 const T a3 = T(dx * ptr_h[0]  + fx * ptr_h[1]);
                 const T a5 = T(dx * ptr2[0]   + fx * ptr2[1]);
@@ -149,40 +149,40 @@ T3DDatafield<T>::get_trilin_interpol_val_at(const T3DVector<float >& p) const
 template <typename T>
 void T3DDatafield<T>::get_data_line_x(int y, int z, std::vector<T>& result)const
 {
-        result.resize(_M_size.x);
-	size_t start = _M_size.x * (y  + _M_size.y * z); 
+        result.resize(m_size.x);
+	size_t start = m_size.x * (y  + m_size.y * z); 
 	
-	std::copy(_M_data->begin() + start, _M_data->begin() + start + _M_size.x, result.begin()); 
+	std::copy(m_data->begin() + start, m_data->begin() + start + m_size.x, result.begin()); 
 }
 
 template <typename T>
 void T3DDatafield<T>::get_data_line_y(int x, int z, std::vector<T>& result)const
 {
-        result.resize(_M_size.y);
-	size_t start = x + _M_size.x * _M_size.y * z;
+        result.resize(m_size.y);
+	size_t start = x + m_size.x * m_size.y * z;
 
-	typename std::vector<T>::const_iterator i = _M_data->begin() + start; 
+	typename std::vector<T>::const_iterator i = m_data->begin() + start; 
 	
-	for (typename std::vector<T>::iterator k = result.begin(); k != result.end(); ++k, i += _M_size.x)
+	for (typename std::vector<T>::iterator k = result.begin(); k != result.end(); ++k, i += m_size.x)
                 *k = *i;
 }
 
 template <typename T>
 void T3DDatafield<T>::get_data_line_z(int x, int y, std::vector<T>& result)const
 {
-        result.resize(_M_size.z);
-	size_t start = x + _M_size.x * y;
+        result.resize(m_size.z);
+	size_t start = x + m_size.x * y;
 
 
-	typename std::vector<T>::const_iterator i = _M_data->begin() + start;
+	typename std::vector<T>::const_iterator i = m_data->begin() + start;
 	typename std::vector<T>::iterator k = result.begin(); 
 	
-	if (_M_size.z > 8) {
-		const size_t xy = _M_xy; 
-		const size_t xy2 = _M_xy << 1; 
-		const size_t xy3 = _M_xy + xy2; 
+	if (m_size.z > 8) {
+		const size_t xy = m_xy; 
+		const size_t xy2 = m_xy << 1; 
+		const size_t xy3 = m_xy + xy2; 
 		const size_t xy4 =  xy2 << 1; 
-		int  z = _M_size.z - 4; 
+		int  z = m_size.z - 4; 
 		while ( z > 0) {
 			k[0] = i[0];
 			k[1] = i[xy];
@@ -194,7 +194,7 @@ void T3DDatafield<T>::get_data_line_z(int x, int y, std::vector<T>& result)const
 		}
 	}
 		
-	for (; k != result.end(); ++k, i += _M_xy)
+	for (; k != result.end(); ++k, i += m_xy)
 		*k = *i;
 
 }
@@ -203,42 +203,42 @@ void T3DDatafield<T>::get_data_line_z(int x, int y, std::vector<T>& result)const
 template <typename T>
 void T3DDatafield<T>::put_data_line_x(int y, int z, const std::vector<T>& input)
 {
-        assert(input.size() == _M_size.x);
+        assert(input.size() == m_size.x);
 	
 	make_single_ref();
 		
-        size_t start = _M_size.x * (y  + _M_size.y * z);
+        size_t start = m_size.x * (y  + m_size.y * z);
 	
-	std::copy(input.begin(), input.end(), _M_data->begin() + start); 
+	std::copy(input.begin(), input.end(), m_data->begin() + start); 
 }
 
 template <typename T>
 void T3DDatafield<T>::put_data_line_y(int x, int z, const std::vector<T>& input)
 {
-        assert(input.size() == _M_size.y);
+        assert(input.size() == m_size.y);
 	
 	make_single_ref();
-	size_t start= x + _M_size.x * _M_size.y * z;
+	size_t start= x + m_size.x * m_size.y * z;
 	
-	typename std::vector<T>::iterator k = _M_data->begin() + start; 
+	typename std::vector<T>::iterator k = m_data->begin() + start; 
 
 	for (typename std::vector<T>::const_iterator i = input.begin(); 
-	     i != input.end(); ++i, k += _M_size.x)
+	     i != input.end(); ++i, k += m_size.x)
 		*k = *i; 
 }
 
 template <typename T>
 void T3DDatafield<T>::put_data_line_z(int x, int y, const std::vector<T>& input)
 {
-        assert(input.size() == _M_size.z);
+        assert(input.size() == m_size.z);
 
 	make_single_ref();
-	size_t start= x + _M_size.x * y;
+	size_t start= x + m_size.x * y;
 	
-	typename std::vector<T>::iterator k = _M_data->begin() + start; 
+	typename std::vector<T>::iterator k = m_data->begin() + start; 
 
 	for (typename std::vector<T>::const_iterator i = input.begin(); 
-	     i != input.end(); ++i, k += _M_xy)
+	     i != input.end(); ++i, k += m_xy)
 		 *k = *i; 
 }
 
@@ -250,18 +250,18 @@ T3DDatafield<T>& T3DDatafield<T>::operator = (const T3DDatafield<T>& org)
                 return *this;
         }
 	
-        _M_size = org._M_size;
-        _M_xy = org._M_xy;
-        _M_data = org._M_data;
+        m_size = org.m_size;
+        m_xy = org.m_xy;
+        m_data = org.m_data;
 
         return *this;
 }
 
 template <typename T>
 T3DDatafield<T>::T3DDatafield(const T3DDatafield<T>& org):
-	_M_size(org._M_size),
-	_M_xy(org._M_xy),
-	_M_data(org._M_data)
+	m_size(org.m_size),
+	m_xy(org.m_xy),
+	m_data(org.m_data)
 {
 }
 
@@ -316,8 +316,8 @@ template <typename T>
 void T3DDatafield<T>::read_zslice_flat(size_t z, std::vector<atomic_type>& buffer)const
 {
 	assert(z < get_size().z); 
-	assert(_M_xy * _M_elements <= buffer.size()); 
-	__copy_dispatch<T>::apply_read(buffer, 0, *_M_data, z * _M_xy, _M_xy); 
+	assert(m_xy * m_elements <= buffer.size()); 
+	__copy_dispatch<T>::apply_read(buffer, 0, *m_data, z * m_xy, m_xy); 
 }
 
 
@@ -325,8 +325,8 @@ template <typename T>
 void T3DDatafield<T>::write_zslice_flat(size_t z, const std::vector<atomic_type>& buffer)
 {
 	assert(z < get_size().z); 
-	assert(_M_xy * _M_elements <= buffer.size()); 
-	__copy_dispatch<T>::apply_write(*_M_data, z * _M_xy, buffer, 0, _M_xy); 
+	assert(m_xy * m_elements <= buffer.size()); 
+	__copy_dispatch<T>::apply_write(*m_data, z * m_xy, buffer, 0, m_xy); 
 }
 
 
@@ -334,12 +334,12 @@ template <typename T>
 void T3DDatafield<T>::read_yslice_flat(size_t y, std::vector<atomic_type>& buffer)const
 {
 	assert(y < get_size().y); 
-	assert(get_size().x * get_size().z * _M_elements <= buffer.size()); 
+	assert(get_size().x * get_size().z * m_elements <= buffer.size()); 
 	
 	const size_t offset = y * get_size().x; 
 	for (size_t z = 0; z < get_size().z; ++z) {
-		__copy_dispatch<T>::apply_read(buffer, z * get_size().x  * _M_elements, 
-					       *_M_data, offset + z * _M_xy, get_size().x); 
+		__copy_dispatch<T>::apply_read(buffer, z * get_size().x  * m_elements, 
+					       *m_data, offset + z * m_xy, get_size().x); 
 	}
 }
 
@@ -347,12 +347,12 @@ template <typename T>
 void T3DDatafield<T>::write_yslice_flat(size_t y, const std::vector<atomic_type>& buffer )
 {
 	assert(y < get_size().y); 
-	assert(get_size().x * get_size().z * _M_elements <= buffer.size()); 
+	assert(get_size().x * get_size().z * m_elements <= buffer.size()); 
 	
 	const size_t offset = y * get_size().x; 
 	for (size_t z = 0; z < get_size().z; ++z) {
-		__copy_dispatch<T>::apply_write(*_M_data, offset + z * _M_xy,
-						buffer, z * get_size().x * _M_elements, 
+		__copy_dispatch<T>::apply_write(*m_data, offset + z * m_xy,
+						buffer, z * get_size().x * m_elements, 
 					        get_size().x); 
 	}
 }
@@ -362,13 +362,13 @@ void T3DDatafield<T>::read_xslice_flat(size_t x, std::vector<atomic_type>& buffe
 {
 	assert(x < get_size().x); 
 	const size_t slice_size = get_size().y * get_size().z; 
-	assert(slice_size * _M_elements <= buffer.size()); 
+	assert(slice_size * m_elements <= buffer.size()); 
 	
 	size_t offset = x; 
 	size_t doffs =  get_size().x; 
 	for (size_t i = 0; i < slice_size; ++i, offset += doffs) {
-		__copy_dispatch<T>::apply_read(buffer, _M_elements * i, 
-					       *_M_data, offset, 1); 
+		__copy_dispatch<T>::apply_read(buffer, m_elements * i, 
+					       *m_data, offset, 1); 
 	}
 }
 
@@ -377,13 +377,13 @@ void T3DDatafield<T>::write_xslice_flat(size_t x, const std::vector<atomic_type>
 {
 	assert(x < get_size().x); 
 	const size_t slice_size = get_size().y * get_size().z; 
-	assert(slice_size * _M_elements <= buffer.size()); 
+	assert(slice_size * m_elements <= buffer.size()); 
 	
 	size_t offset = x; 
 	size_t doffs =  get_size().x; 
 	for (size_t i = 0; i < slice_size; ++i, offset += doffs) {
-		__copy_dispatch<T>::apply_write(*_M_data, offset, 
-						buffer, _M_elements * i, 1);
+		__copy_dispatch<T>::apply_write(*m_data, offset, 
+						buffer, m_elements * i, 1);
 	}
 }
 
@@ -483,7 +483,7 @@ T3DDatafield<T>::get_avg()
         while ( i != e ) {
                 Avg += *i++;
         }
-        Avg /= (_M_size.x * _M_size.y *_M_size.z);
+        Avg /= (m_size.x * m_size.y *m_size.z);
 
         return Avg;
 }
@@ -508,7 +508,7 @@ template <typename T>
 void T3DDatafield<T>::clear()
 {
         make_single_ref();
-	std::fill(_M_data->begin(), _M_data->end(), T()); 
+	std::fill(m_data->begin(), m_data->end(), T()); 
 }
 
 template <typename T>

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -28,14 +28,14 @@ NS_MIA_BEGIN
 using namespace std;
 
 streamredir::streamredir():
-	_M_begin(new char[2048])
+	m_begin(new char[2048])
 {
-	setp(_M_begin, _M_begin + 2048);
+	setp(m_begin, m_begin + 2048);
 }
 
 streamredir::~streamredir()
 {
-	delete[] _M_begin;
+	delete[] m_begin;
 }
 
 int streamredir::overflow(int c)

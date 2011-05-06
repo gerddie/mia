@@ -1,5 +1,5 @@
 /*
-** Copyright (c) Leipzig, Madrid 1999-2010
+** Copyright (c) Leipzig, Madrid 1999-2011
 **                    Gert Wollny <wollny@cns.mpg.de>
 **
 ** This program is free software; you can redistribute it and/or modify
@@ -80,7 +80,7 @@ C2DFVectorfield upscale( const C2DFVectorfield& vf, C2DBounds size)
 }
 
 
-int main(int argc, const char *args[])
+int main(int argc, const char *argv[])
 {
 	float regrid_thresh = 0.5;
 
@@ -111,7 +111,9 @@ int main(int argc, const char *args[])
 		options.push_back(make_opt( lambda, "lambda", 0, "elasticity parameter"));
 		options.push_back(make_opt( elastic, "elastic", 0, "use elastic registration"));
 
-		options.parse(argc, args);
+		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+			return EXIT_SUCCESS; 
+
 
 
 		P2DImage Model = load_image<P2DImage>(src_filename);
@@ -199,10 +201,10 @@ int main(int argc, const char *args[])
 
 	}
 	catch(std::invalid_argument& x) {
-		cverr()<< args[0] << ": invalid argument: "<< x.what() << "\n";
+		cverr()<< argv[0] << ": invalid argument: "<< x.what() << "\n";
 	}
 	catch(std::exception& x) {
-		cverr()<< args[0] << ": exception " << x.what() << "\n";
+		cverr()<< argv[0] << ": exception " << x.what() << "\n";
 	}
 	return EXIT_FAILURE;
 }

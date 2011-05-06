@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,28 @@
  *
  */
 
+
+/* LatexBeginPluginDescription{2D image filters}
+   
+   \subsection{K-means classification}
+   \label{filter2d:kmeans}
+   
+   \begin{description}
+   
+   \item [Plugin:] kmeans
+   \item [Description:] Apply a k-means classification to the image 
+   \item [Input:] A gray scale image of abitrary pixel type. 
+   \item [Output:] The classification image, the class centers are saved as image attribute
+   
+   \plugtabstart
+   c &  int & The number of classes ($\le$ 255) & 5  \\
+   \plugtabend
+
+   \end{description}
+
+   LatexEnd  
+ */
+
 #include <limits>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
@@ -29,7 +51,7 @@ NS_MIA_USE;
 using namespace std;
 
 C2DKMeans::C2DKMeans(size_t cls):
-	_M_classes(cls)
+	m_classes(cls)
 {
 }
 
@@ -42,7 +64,7 @@ typename C2DKMeans::result_type C2DKMeans::operator () (const T2DImage<T>& data)
 
 	C2DUBImage *tresult = new C2DUBImage(data.get_size(), data);
 	P2DImage result(tresult);
-	std::vector<double> classes(_M_classes);
+	std::vector<double> classes(m_classes);
 
 	kmeans(data.begin(), data.end(), tresult->begin(), classes);
 
@@ -60,15 +82,16 @@ P2DImage C2DKMeans::do_filter(const C2DImage& image) const
 
 
 C2DKMeansFilterPluginFactory::C2DKMeansFilterPluginFactory():
-	C2DFilterPlugin("kmeans")
+	C2DFilterPlugin("kmeans"),
+	m_classes(3)
 {
-	add_parameter("c", new CIntParameter(_M_classes, 0, numeric_limits<unsigned char>::max(),
+	add_parameter("c", new CIntParameter(m_classes, 0, numeric_limits<unsigned char>::max(),
 					     false, "number of classes"));
 }
 
 C2DKMeansFilterPluginFactory::ProductPtr C2DKMeansFilterPluginFactory::do_create()const
 {
-	return C2DKMeansFilterPluginFactory::ProductPtr(new C2DKMeans(_M_classes));
+	return C2DKMeansFilterPluginFactory::ProductPtr(new C2DKMeans(m_classes));
 }
 
 const string C2DKMeansFilterPluginFactory::do_get_descr()const

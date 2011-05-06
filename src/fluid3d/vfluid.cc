@@ -1,6 +1,7 @@
 /*
-** Copyright (c) Leipzig, Madrid 1999-2010
-**                    Gert Wollny <wollny@cns.mpg.de>
+** Copyright (c) Leipzig, Madrid 1999-2011
+**
+**     Gert Wollny <gw.fossdev@gmail.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -759,79 +760,4 @@ P3DFVectorfield fluid_transform(const TFluidRegParams& params,TLinEqnSolver *sol
 }
 
 #endif
-
-/* Changes to this file
-
-  $Log$
-  Revision 1.5  2005/06/29 13:43:35  wollny
-  cg removed and libmona-0.7
-
-  Revision 1.1.1.1  2005/06/17 10:31:09  gerddie
-  initial import at sourceforge
-
-  Revision 1.4  2005/02/22 10:43:06  wollny
-  add history and use cvxxx
-
-  Revision 1.3  2005/02/22 09:49:16  wollny
-  removed vistaio dependecy
-
-  Revision 1.1.1.1  2005/02/21 15:00:37  wollny
-  initial import
-
-  Revision 1.46  2004/10/28 16:50:00  gerddie
-  merging last changes
-
-  Revision 1.45  2004/06/13 20:29:31  gerddie
-  version update and no more backup best fit
-
-  Revision 1.44  2004/04/08 12:01:13  gerddie
-  stupid swap error in vfluid, and miatps nor uses nearest neighbor interpolation
-
-  Revision 1.43  2004/04/06 20:45:36  gerddie
-  resolve conflicts
-
-  Revision 1.42  2004/04/06 15:17:24  gerddie
-  remove a bug in vfluid and scale intensities
-
-  Revision 1.41  2004/04/05 15:24:33  gerddie
-  change filter allocation
-
-  Revision 1.40  2004/03/24 16:17:34  gerddie
-  landmarks seem to work now ...
-
-  Revision 1.39  2004/03/23 17:24:23  gerddie
-  landmark problem localized
-
-  Revision 1.38  2004/03/22 16:09:16  gerddie
-  no need for a temporary vector field
-
-  Revision 1.37  2004/03/21 20:45:17  gerddie
-  deep landmark usage
-
-  Revision 1.36  2004/03/19 15:48:02  gerddie
-  frelled up
-
-  Revision 1.35  2004/03/19 14:48:11  gerddie
-  not yet working
-
-  Revision 1.34  2004/03/18 23:27:08  gerddie
-  Errors in thin plate spline part
-
-  Revision 1.33  2004/03/18 14:28:44  gerddie
-  Inserted hooks for landmark support
-
-  Revision 1.32  2003/12/12 11:31:09  gerddie
-  cleanups
-
-  Revision 1.31  2003/01/20 14:57:28  gerddie
-  removed some compile bugs
-
-  Revision 1.30  2002/07/08 21:50:18  gerddie
-  mesh deform updated + better header dependencies
-
-  Revision 1.29  2002/06/20 09:59:49  gerddie
-  added cvs-log entry
-
-
-*/
 

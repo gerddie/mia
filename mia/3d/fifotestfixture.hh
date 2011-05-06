@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -36,8 +36,8 @@ struct EXPORT_3D fifof_Fixture  {
 	void prepare(const A *input_data, const B *test_data, const C2DBounds& size, size_t slices);
 	void call_test( C2DImageFifoFilter& filter)const ;
 
-	C2DImageStack _M_in_data;
-	C2DImageStack _M_test_data;
+	C2DImageStack m_in_data;
+	C2DImageStack m_test_data;
 };
 
 template <typename A, typename B>
@@ -45,8 +45,8 @@ void fifof_Fixture::prepare(const A *input_data, const B *test_data, const C2DBo
 {
 	size_t slice_size = size.x * size.y;
 	for (size_t i = 0; i < n_slices; ++i, input_data += slice_size, test_data += slice_size) {
-		_M_in_data.push_back(P2DImage(new T2DImage<A>(size, input_data)));
-		_M_test_data.push_back(P2DImage(new T2DImage<B>(size, test_data)));
+		m_in_data.push_back(P2DImage(new T2DImage<A>(size, input_data)));
+		m_test_data.push_back(P2DImage(new T2DImage<B>(size, test_data)));
 	}
 }
 

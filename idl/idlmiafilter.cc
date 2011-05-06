@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ class idl_streamredir: public streamredir {
 void idl_streamredir::do_put_buffer(const char *begin, const char *end)
 {
 	string buffer(begin, end); 
-	IDL_Message_call(IDL_M_NAMED_GENERIC, IDL_MSG_INFO, buffer.c_str());
+	IDL_Message_call(IDLm_NAMED_GENERIC, IDL_MSG_INFO, buffer.c_str());
 }
 
 class OutputRedirect : public ostream {
@@ -167,7 +167,7 @@ extern "C" int DYNAMIC_EXPORT mia2(int argc, void *argv [])
 	try {
 		OutputRedirect oredir; 
 		if (argc < 1) {
-			IDL_Message_call(IDL_M_NAMED_GENERIC, IDL_MSG_RET, "no function given");
+			IDL_Message_call(IDLm_NAMED_GENERIC, IDL_MSG_RET, "no function given");
 			return -2; 
 		}
 		
@@ -193,23 +193,23 @@ extern "C" int DYNAMIC_EXPORT mia2(int argc, void *argv [])
 	catch (invalid_argument& x) {
 		stringstream err; 
 		err << "MIA - invalid argument:" << x.what(); 
-		IDL_Message_call(IDL_M_NAMED_GENERIC, IDL_MSG_INFO, err.str().c_str());
+		IDL_Message_call(IDLm_NAMED_GENERIC, IDL_MSG_INFO, err.str().c_str());
 		return -1; 
 	}
 	catch (runtime_error& x) {
 		stringstream err; 
 		err << "MIA - runtime error:" << x.what(); 
-		IDL_Message_call(IDL_M_NAMED_GENERIC, IDL_MSG_INFO, err.str().c_str());
+		IDL_Message_call(IDLm_NAMED_GENERIC, IDL_MSG_INFO, err.str().c_str());
 		return -3; 
 	}
 	catch (exception& x) {
 		stringstream err; 
 		err << "MIA - general exception:" << x.what(); 
-		IDL_Message_call(IDL_M_NAMED_GENERIC, IDL_MSG_INFO, err.str().c_str());
+		IDL_Message_call(IDLm_NAMED_GENERIC, IDL_MSG_INFO, err.str().c_str());
 		return -4; 
 	}
 	catch (...) {
-		IDL_Message_call(IDL_M_NAMED_GENERIC, IDL_MSG_INFO, "unknown exception");
+		IDL_Message_call(IDLm_NAMED_GENERIC, IDL_MSG_INFO, "unknown exception");
 		return -5; 
 	}
 }

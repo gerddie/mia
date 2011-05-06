@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -29,7 +29,11 @@
 
 NS_MIA_BEGIN
 
+/**
+   Template type parameter for time-step plugins 
+ */
 struct EXPORT_CORE timestep_type {
+	/// value for plug-in search path component 
 	static const char *value;
 };
 

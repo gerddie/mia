@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Evolutionary Anthropoloy
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,6 +18,33 @@
  *
  */
 
+
+/* 
+   LatexBeginPluginDescription{2D image filters}
+   
+   \subsection{Spacial separable convolution filter}
+   \label{filter2d:sepconv}
+   
+   \begin{description}
+   
+   \item [Plugin:] sepconv
+   \item [Description:] A 2D image filter that runs separable ove each dimension 
+   \item [Input:] Abitrary gray scale image 
+   \item [Output:] Filtered gray scale image of the same pixel type and dimension
+   
+   \plugtabstart
+   kx &  string & Filter kernel in x-direction as available through the spacial kernel plug-ins \ref{sec:SpacialKernels}
+      & gauss:w=1    \\
+   ky &  string & Filter kernel in y-direction as available through the spacial kernel plug-ins \ref{sec:SpacialKernels}
+      & gauss:w=1    \\\hline 
+   \plugtabend
+   
+   \end{description}
+
+   LatexEnd  
+ */
+
+
 #include <mia/2d/filter/sepconv.hh>
 
 NS_BEGIN(SeparableConvolute_2dimage_filter)
@@ -29,8 +56,8 @@ namespace bfs=::boost::filesystem;
 
 CSeparableConvolute::CSeparableConvolute(C1DSpacialKernelPlugin::ProductPtr kx,
 					 C1DSpacialKernelPlugin::ProductPtr ky):
-	_M_kx(kx),
-	_M_ky(ky)
+	m_kx(kx),
+	m_ky(ky)
 {
 }
 
@@ -63,21 +90,21 @@ CSeparableConvolute::result_type CSeparableConvolute::operator () (const T2DImag
 	int cachXSize = data->get_size().x;
 	int cachYSize = data->get_size().y;
 
-	if (_M_kx.get()) {
+	if (m_kx.get()) {
 		invec_t buffer(cachXSize);
 		for (int y = 0; y < cachYSize; y++) {
 			data->get_data_line_x(y,buffer);
-			fold(buffer, *_M_kx);
+			fold(buffer, *m_kx);
 			data->put_data_line_x(y,buffer);
 		}
 
 	}
 
-	if (_M_ky.get()) {
+	if (m_ky.get()) {
 		invec_t buffer(cachYSize);
 		for (int x = 0; x < cachXSize; x++) {
 			data->get_data_line_y(x,buffer);
-			fold(buffer, *_M_ky);
+			fold(buffer, *m_ky);
 			data->put_data_line_y(x,buffer);
 		}
 	}
@@ -93,11 +120,11 @@ CSeparableConvolute::result_type CSeparableConvolute::do_filter(const C2DImage& 
 
 C2DSeparableConvoluteFilterPlugin::C2DSeparableConvoluteFilterPlugin():
 	C2DFilterPlugin("sepconv"),
-	_M_kx("gauss:w=1"),
-	_M_ky("gauss:w=1")
+	m_kx("gauss:w=1"),
+	m_ky("gauss:w=1")
 {
-	add_parameter("kx", new CStringParameter(_M_kx, false, "filter kernel in x-direction"));
-	add_parameter("ky", new CStringParameter(_M_ky, false, "filter kernel in y-direction"));
+	add_parameter("kx", new CStringParameter(m_kx, false, "filter kernel in x-direction"));
+	add_parameter("ky", new CStringParameter(m_ky, false, "filter kernel in y-direction"));
 }
 
 C2DSeparableConvoluteFilterPlugin::ProductPtr C2DSeparableConvoluteFilterPlugin::do_create()const
@@ -105,8 +132,8 @@ C2DSeparableConvoluteFilterPlugin::ProductPtr C2DSeparableConvoluteFilterPlugin:
 	C1DSpacialKernelPlugin::ProductPtr kx, ky, kz;
 	const C1DSpacialKernelPluginHandler::Instance& skp = C1DSpacialKernelPluginHandler::instance();
 
-	kx = skp.produce(_M_kx.c_str());
-	ky = skp.produce(_M_ky.c_str());
+	kx = skp.produce(m_kx.c_str());
+	ky = skp.produce(m_ky.c_str());
 
 	return C2DSeparableConvoluteFilterPlugin::ProductPtr(new CSeparableConvolute(kx, ky));
 }
@@ -125,9 +152,9 @@ void C2DSeparableConvoluteFilterPlugin::prepare_path() const
 
 C2DGaussFilterPlugin::C2DGaussFilterPlugin():
 	C2DFilterPlugin("gauss"),
-	_M_w(1)
+	m_w(1)
 {
-	add_parameter("w", new CIntParameter(_M_w, 0, numeric_limits<int>::max(),
+	add_parameter("w", new CIntParameter(m_w, 0, numeric_limits<int>::max(),
 					     false, "filter width parameter"));
 }
 
@@ -137,7 +164,7 @@ C2DFilterPlugin::ProductPtr C2DGaussFilterPlugin::do_create()const
 	const C1DSpacialKernelPluginHandler::Instance&  skp = C1DSpacialKernelPluginHandler::instance();
 
 	stringstream fdescr;
-	fdescr << "gauss:w=" << _M_w;
+	fdescr << "gauss:w=" << m_w;
 	k = skp.produce(fdescr.str().c_str());
 
 	return C2DSeparableConvoluteFilterPlugin::ProductPtr(new CSeparableConvolute(k, k));

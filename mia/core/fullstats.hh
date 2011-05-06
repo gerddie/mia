@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -32,22 +32,37 @@
 NS_MIA_BEGIN
 
 /**
-   This class is used to evaluate the statistics of a series of input data. 
+   \brief This class is used to evaluate the statistics of a series of input data. 
+   
+   This class is used to evaluate the mean, variation, median, minimum and the maximum 
+   of some input data. 
  */ 
 
 class  EXPORT_CORE CFullStats {
 public:
+
+	/**
+	   Evaluate the statictics of a range of input data. 
+	   \tparam a forward iterator, The value it hold must be convertable to double 
+	   \param begin 
+	   \param end 
+	 */
 	template <typename InputIterator>
 	CFullStats(InputIterator begin, InputIterator end);
 
+	/// Print the statistics to some output file 
 	void print(std::ostream& os) const;
 
+	/// @returns the mean of the values 
 	double mean()const;
+	/// @returns the variation \f$\sigma\f$ of the values 
 	double sigma()const;
+	/// @returns the median of the values 
 	double median()const;
+	/// @returns the minimum of the values 
 	double max()const;
+	/// @returns the maximum  of the values 
 	double min()const;
-
 
 private:
 	typedef std::vector<double> Vector;
@@ -85,6 +100,12 @@ CFullStats::CFullStats(InputIterator begin, InputIterator end):
 	evaluate(tmp);
 }
 
+/**
+   Operator to write the statistics to a stream 
+   \param os output stream 
+   \param stats the statistics to be written 
+   \returns the stream 
+*/
 std::ostream& operator << (std::ostream& os, const CFullStats& stats)
 {
 	stats.print(os);

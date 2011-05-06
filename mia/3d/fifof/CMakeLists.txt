@@ -7,7 +7,7 @@ SET(fifof2dNew
 )
 
 PLUGINGROUP_WITH_TEST_AND_PREFIX(2dfifo "${fifof2dNew}" 
-  "mia3dtest"   "${PLUGIN_INSTALL_PATH}/filter/3dstack"
+  "mia3dtest"   "${PLUGIN_INSTALL_PATH}/filter/2dstack"
   )
 
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -48,34 +48,56 @@ using namespace std;
 class CHistAccumulator : public TFilter<bool> {
 public:
 	CHistAccumulator(float min, float max, size_t bins):
-		_M_histo(CHistogramFeeder<float>(min, max, bins))
+		m_histo(THistogramFeeder<float>(min, max, bins)), 
+		m_last(0)
 	{
 	}
 
 	template <typename T>
 	bool operator () (const T2DImage<T>& image) {
-		for( typename T2DImage<T>::const_iterator i = image.begin();
-		     i != image.end(); ++i)
-			_M_histo.push(*i);
+		for(auto i = image.begin(); i != image.end(); ++i)
+			m_histo.push(*i);
 		return true;
 	}
+
+	void resize() {
+		for (size_t i = 0; i < 	m_histo.size(); ++i) {
+			if (m_histo[i] > 0 )
+				m_last = i;
+		}
+	}
+			
 	bool save(const string& fname)const
 	{
-		size_t last_k = 0;
-		for (size_t i = 0; i < 	_M_histo.size(); ++i) {
-			if (_M_histo[i] > 0 )
-				last_k = i;
-		}
-
 		ofstream file(fname.c_str());
-		for (size_t i = 0; i < 	last_k; ++i) {
-			const CHistogram<CHistogramFeeder<float > >::value_type v = _M_histo.at(i);
+		for (size_t i = 0; i < 	m_last; ++i) {
+			const THistogram<THistogramFeeder<float > >::value_type v = m_histo.at(i);
 			file << v.first << " " << v.second << "\n";
 		}
 		return file.good();
 	}
+
+	int propose_threshold()const {
+		int pos = m_last / 10; 
+		int max_pos = m_last / 6; 
+		double val = m_histo[pos];
+		
+		for (int i = pos; i > 10; --i)
+			if (m_histo[i] < val) {
+				pos = i; 
+				val = m_histo[i]; 
+			}
+		
+		for (int i = pos; i < max_pos; ++i)
+			if (m_histo[i] < val) {
+				pos = i; 
+				val = m_histo[i]; 
+			}
+		return pos; 
+	}
 private:
-	CHistogram<CHistogramFeeder<float > > _M_histo;
+	THistogram<THistogramFeeder<float > > m_histo;
+	size_t m_last; 
 };
 
 
@@ -89,36 +111,51 @@ int main( int argc, const char *argv[] )
 		size_t bins = 65536;
 
 		string out_filename;
-
+		string in_filename;
+		
 		CCmdOptionList options(g_description);
+		options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
 		options.push_back(make_opt( out_filename, "out", 'o', "output file name", CCmdOption::required));
 		options.push_back(make_opt( hmin, "min", 0, "minimum of histogram range"));
 		options.push_back(make_opt( hmax, "max", 0, "maximum of histogram range"));
 		options.push_back(make_opt( bins, "bins", 0, "number of histogram bins"));
-		options.parse(argc, argv);
+		
+		if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
+			return EXIT_SUCCESS; 
 
-
-		vector<const char *> fn = options.get_remaining();
-		if ( fn.empty() )
-			throw invalid_argument("no files given\n");
 
 		const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 
+		size_t start_filenum = 0;
+		size_t end_filenum  = 0;
+		size_t format_width = 0;
+
+		string src_basename = get_filename_pattern_and_range(in_filename, start_filenum, end_filenum, format_width);
+		
+		if (start_filenum >= end_filenum)
+			throw invalid_argument(string("no files match pattern ") + src_basename);
+
+
 		CHistAccumulator histo_accu(hmin, hmax, bins);
-		for (vector<const char *>::const_iterator i = fn.begin(); i != fn.end(); ++i) {
-			C2DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(*i);
-			cvmsg() << "Read:" << *i << "\r";
+		for (size_t i = start_filenum; i < end_filenum; ++i) {
+			string src_name = create_filename(src_basename.c_str(), i);
+			C2DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(src_name);
+			cvmsg() << "Read:" << src_name << "\r";
 			if (in_image_list.get() && in_image_list->size()) {
-				for (C2DImageIOPluginHandler::Instance::Data::iterator i = in_image_list->begin();
-				     i != in_image_list->end(); ++i)
-					accumulate(histo_accu, **i);
+				for (auto k = in_image_list->begin(); k != in_image_list->end(); ++k)
+					accumulate(histo_accu, **k);
 			}
 		}
 		cvmsg() << "\n";
-
+		
+		histo_accu.resize(); 
+		
 		if (!histo_accu.save(out_filename))
 			throw runtime_error(string("Error writing output file:") + out_filename);
+		
+		
 
+		cout << histo_accu.propose_threshold(); 
 		return EXIT_SUCCESS;
 
 	}

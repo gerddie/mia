@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2010
+ * Copyright (c) Madrid 2010-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -19,6 +19,38 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/* 
+   LatexBeginPluginDescription{2D full cost functions}
+
+      
+   \subsection{DivCurl smoothing measure}
+   \label{fullcost2d:divcurl}
+   
+   \begin{description}
+   
+   \item [Plugin:] divcurl
+   \item [Description:] Evaluate the DivCurl measure of a given transformation $T$. 
+
+   \begin{equation}
+   F_{\text{divcurl}} := \int_{\Omega} w_{\text{div}}\left\| \nabla \nabla  \cdot (T(\vx)) \right\|^2  + 
+                                       w_{\text{curl}}\left\| \nabla \curl(T(\vx)) \right\|^2 d\vx.
+   \end{equation}
+   
+   \plugtabstart
+   weight &  float & all-over weight of the cost function & 1.0  \\
+   div &  float & weight $w_{\text{div}}$ of the divergence part of the transformation & 1.0  \\
+   curl &  float & weight $w_{\text{curl}}$ of the rotation part of the transformation  & 1.0  \\
+   \plugtabend
+   
+   \item [Remark:] Using this cost function only makes sense for spline based transformations  
+             \ref{transform2d:spline} with spline degree 3 or higher, or densely defined 
+             transfromations \ref{transform2d:vf}
+   \end{description}
+
+   LatexEnd
+*/
+
 
 #include <limits>
 #include <algorithm>

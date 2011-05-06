@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -42,12 +42,15 @@
 
 NS_MIA_BEGIN
 
-EXPORT_CORE extern const char plugin_test_mode[];
+
+/// standard string to print out help in the factory plug-in handler 
 EXPORT_CORE extern const std::string plugin_help;
 
 /**
-   \class CPluginBase
-   The base for all plug-ins.
+   \brief The base class for all plug-ins.
+
+   The base class for all plug-ins. It supports handling parameters 
+   and a provides a help interface. 
 */
 
 class EXPORT_CORE CPluginBase {
@@ -114,10 +117,21 @@ public:
 	*/
 	bool has_property(const char *property) const;
 
+
+	/// \remark obsolete function 
 	bool test(bool uninstalled) const;
 
+	/** set the shared modules containing the code of this plugin 
+	   This enshures that the modules is not unloaded while the plug-in 
+	   still exists and needs to call its destructor whos code resides 
+	   in the module. 
+	   @param module 
+	 */
 	void set_module(const PPluginModule& module);
 
+	/**
+	  \returns the module 
+	 */
 	PPluginModule get_module() const;
 protected:
 	/**
@@ -127,34 +141,56 @@ protected:
 	void add_property(const char *property);
 
 private:
+	/// \remark obsolete test path, needs to be cleaned up 
 	virtual bool do_test() const = 0;
+	
 	virtual void prepare_path() const;
 
 	virtual const std::string do_get_descr() const = 0;
 
-	const char *_M_name;
+	// plugin name 
+	const char *m_name;
 
-	CPluginBase *_M_next_interface;
+	/* pointer to the next interface in a plugin chain 
+	   NULL indicates end of chain
+	*/
+	CPluginBase *m_next_interface;
 
-	CParamList  _M_parameters;
+	/*
+	  List of paramaters understudd by this plugin 
+	 */
+	CParamList  m_parameters;
 
-	CPropertyFlagHolder _M_properties;
+	/*
+	  Specific properties of this plug in 
+	 */
+	CPropertyFlagHolder m_properties;
 
-	PPluginModule  _M_module;
+	/*
+	  The dynamically loadable module that holds the code of this plugin.  
+	 */
+	PPluginModule  m_module;
 };
 
 
-/**
-   Templated plugin base class. The classes \a D and \a T must define a
-   static  const char *value.  the combination D::value/T::value
-   is will be part of the plugin search path.
+/** 
+    \brief The generic base for all plug-ins 
+
+    Templated plugin base class. The classes \a D and \a T must define a
+    static const char *type_descr and static const char *value respectively.  
+    The combination D::type_descr and T::value is will be part of the plugin search path.
+    \tparam D data type descriptior 
+    \tparam T plugin type descriptor 
+   
 */
 template <typename D, typename T>
 class EXPORT_HANDLER TPlugin: public  CPluginBase {
 public:
+	/// Typedef for the data type descriptor handled by this plug-in 
 	typedef D PlugData;
-	typedef T PlugType;
 
+	/// Typedef for the plugin type descriptor handled by this plug-in 
+	typedef T PlugType;
 
 	/**
 	   The constructor  initialises the plug-in with its name and sets
@@ -172,6 +208,7 @@ public:
 	/// \returns the plugin specific part of the plugin search path
 	static ::boost::filesystem::path search_path();
 
+	/// @returns the long name of the plug in consisting of its name, its type, and data descriptors 
 	const std::string get_long_name() const;
 
 };

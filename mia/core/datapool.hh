@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -35,6 +35,7 @@ NS_MIA_BEGIN
 
 /**
    \brief temporary data storage to avoid storing on disk
+
    This class implements a data storage pool as a singelton
    that can be used to store some
    data temporarly like it would be stored on disk.
@@ -70,7 +71,7 @@ public:
 
 	/**
 	   \param key
-	   \retuns \a true if key exists in pool and \a false if not
+	   \returns \a true if key exists in pool and \a false if not
 	*/
 	bool has_key(const std::string& key) const;
 	/**
@@ -90,10 +91,10 @@ private:
 	typedef std::map<std::string, boost::any> Anymap;
 	typedef Anymap::const_iterator const_iterator;
 	const_iterator get_iterator(const std::string& key) const;
-	Anymap _M_map;
+	Anymap m_map;
 	typedef std::map<std::string,bool> Usagemap;
-	mutable Usagemap _M_usage;
-	mutable boost::mutex _M_mutex; 
+	mutable Usagemap m_usage;
+	mutable boost::mutex m_mutex; 
 };
 
 NS_MIA_END

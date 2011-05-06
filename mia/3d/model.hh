@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,10 +34,16 @@ struct RegistrationTraits<3> {
 	typedef C3DFVectorfield Transformation; 
 }; 
 
-
+/// the 3D registration model base class 
 typedef TRegModel<3> C3DRegModel;
+
+/// the 3D registration model base class pointer 
 typedef std::shared_ptr<C3DRegModel > P3DRegModel;
+
+/// the 3D registration model plug-in base class 
 typedef TFactory<C3DRegModel>  C3DRegModelPlugin;
+
+/// the 3D registration model plug-in handler 
 typedef THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin> > C3DRegModelPluginHandler;
 
 NS_MIA_END

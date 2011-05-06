@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -27,7 +27,8 @@
 #include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
-/**  Portabe Dynamic Link Library Loader
+/**  \brief Portabe Dynamic Link Library Loader
+     
      This class provides a portable way to load dynamic link libraries
 */
 class EXPORT_CORE CDLLoader {

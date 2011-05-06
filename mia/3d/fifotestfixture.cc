@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -42,21 +42,21 @@ void fifof_Fixture::call_test(C2DImageFifoFilter& filter)const
 	C2DImageFifoFilterSink::Pointer sink(new C2DImageFifoFilterSink());
 	filter.append_filter(sink);
 
-	for (C2DImageStack::const_iterator i = _M_in_data.begin();
-	     i != _M_in_data.end(); ++i)
+	for (C2DImageStack::const_iterator i = m_in_data.begin();
+	     i != m_in_data.end(); ++i)
 		filter.push(*i);
 
 	filter.finalize();
 	C2DImageFifoFilterSink::result_type r = sink->result();
 
-	BOOST_CHECK_EQUAL(r.size(), _M_test_data.size());
-	BOOST_REQUIRE(r.size() == _M_test_data.size());
+	BOOST_CHECK_EQUAL(r.size(), m_test_data.size());
+	BOOST_REQUIRE(r.size() == m_test_data.size());
 
 	for (size_t i = 0; i < r.size(); ++i) {
-		BOOST_CHECK_EQUAL(r[i]->get_pixel_type(), _M_test_data[i]->get_pixel_type());
-		BOOST_CHECK_EQUAL(r[i]->get_size(), _M_test_data[i]->get_size());
+		BOOST_CHECK_EQUAL(r[i]->get_pixel_type(), m_test_data[i]->get_pixel_type());
+		BOOST_CHECK_EQUAL(r[i]->get_size(), m_test_data[i]->get_size());
 
-		test_image_equal(*r[i], *_M_test_data[i]);
+		test_image_equal(*r[i], *m_test_data[i]);
 	}
 }
 

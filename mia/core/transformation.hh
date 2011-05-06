@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -32,9 +32,13 @@ NS_MIA_BEGIN
 
 
 /**
+   \brief generic  base class for transformations 
+
    Template of a generic tranformation function 
    \tparam D data type of the object to be transformed 
-   \tparam I interpolator factory to create resampler for type D 
+   \tparam I interpolator factory to create resampler for type D
+   \todo the interpolator factory resp. the interpolator kernel 
+         should probably be part of the class 
  */
 
 template <typename D, typename I>
@@ -46,7 +50,10 @@ public:
 	
         virtual ~Transformation(); 
 
+	/// typedef for the data type to be transformed by this transformation 
 	typedef D Data; 
+
+	/// type of the interpolator used by this transformation 
 	typedef I Interpolator; 
 	
 	/** Apply the transformation to the input data 
@@ -54,9 +61,9 @@ public:
 	    \param ipf interpolator factory 
 	    \returns a shared pointer to the transformed input data
 	*/
-	std::shared_ptr<D > operator () (const D& input, const I& ipf) const; 
+	std::shared_ptr<D> operator () (const D& input, const I& ipf) const; 
 private: 
-        virtual std::shared_ptr<D > apply(const D& input, const I& ipf) const = 0;
+        virtual std::shared_ptr<D> apply(const D& input, const I& ipf) const = 0;
 
 }; 
 

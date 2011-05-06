@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -372,8 +372,8 @@ bool COffMeshIO::load_triangles(istream& inp, vector<CTriangleMesh::triangle_typ
 		if (!show_thresh) {
 			show_thresh = show_thresh_start;
 
-			if (_M_cb)
-				_M_cb->show_progress(nfaces_start - nfaces, nfaces_start);
+			if (m_cb)
+				m_cb->show_progress(nfaces_start - nfaces, nfaces_start);
 		}
 
 		skip_to_newline(inp);
@@ -398,25 +398,25 @@ private:
 
 	void evaluate();
 
-	map<int, map< int, int > > _M_count;
+	map<int, map< int, int > > m_count;
 
-	int _M_edges;
-	int _M_non_manifold;
+	int m_edges;
+	int m_non_manifold;
 };
 
 
 CTriangleChecker::CTriangleChecker():
-	_M_edges(0),
-	_M_non_manifold(0)
+	m_edges(0),
+	m_non_manifold(0)
 {
 
 }
 
 void CTriangleChecker::operator ()(const CTriangleMesh::triangle_type& tri)
 {
-	if (tri.x > tri.y) _M_count[tri.x][tri.y] += 1; else  _M_count[tri.y][tri.x] += 1;
-	if (tri.x > tri.z) _M_count[tri.x][tri.z] += 1; else  _M_count[tri.z][tri.x] += 1;
-	if (tri.z > tri.y) _M_count[tri.z][tri.y] += 1; else  _M_count[tri.y][tri.z] += 1;
+	if (tri.x > tri.y) m_count[tri.x][tri.y] += 1; else  m_count[tri.y][tri.x] += 1;
+	if (tri.x > tri.z) m_count[tri.x][tri.z] += 1; else  m_count[tri.z][tri.x] += 1;
+	if (tri.z > tri.y) m_count[tri.z][tri.y] += 1; else  m_count[tri.y][tri.z] += 1;
 }
 
 void CTriangleChecker::print()
@@ -424,27 +424,27 @@ void CTriangleChecker::print()
 	if (cverb.show_debug()) {
 		evaluate();
 		cvdebug() << "Mesh has \n";
-		cvdebug() << "  nonmanifold edges: " << _M_non_manifold << "\n";
-		cvdebug() << "           of edges: " << _M_edges << "\n";
+		cvdebug() << "  nonmanifold edges: " << m_non_manifold << "\n";
+		cvdebug() << "           of edges: " << m_edges << "\n";
 	}
 }
 
 void CTriangleChecker::evaluate()
 {
-	map< int, map< int, int > >::const_iterator io = _M_count.begin();
-	map< int, map< int, int > >::const_iterator eo = _M_count.end();
+	map< int, map< int, int > >::const_iterator io = m_count.begin();
+	map< int, map< int, int > >::const_iterator eo = m_count.end();
 
 	while (io != eo) {
 
-		_M_edges += io->second.size();
+		m_edges += io->second.size();
 		map< int, int >::const_iterator i1 = io->second.begin();
 		map< int, int >::const_iterator e1 = io->second.end();
 
 		while (i1 != e1) {
 			if (i1->second != 2) {
-				++_M_non_manifold;
+				++m_non_manifold;
 
-				if (_M_non_manifold < 10) {
+				if (m_non_manifold < 10) {
 					cvdebug() << io->first << ":"
 						  << i1->first << " "
 						  << i1->second << "\n";
@@ -727,7 +727,7 @@ bool COffMeshIO::do_save(ostream& os, const CTriangleMesh& data) const
 
 bool COffMeshIO::do_save(const CTriangleMesh& data, string const &  filename)const
 {
-	_M_cb = cb;
+	m_cb = cb;
 
 	if (filename == "-")
 		return do_save(cout, data);

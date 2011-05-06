@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -39,7 +39,7 @@ public:
 
 private:
 	C2DAdaptMedian::result_type do_filter(const mia::C2DImage& image) const;
-	int _M_hw;
+	int m_hw;
 };
 
 class C2DAdaptMedianImageFilterFactory: public mia::C2DFilterPlugin {
@@ -48,7 +48,7 @@ public:
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string do_get_descr() const;
 private:
-	int _M_hw;
+	int m_hw;
 };
 
 NS_END

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -40,10 +40,10 @@ public:
 
 	static const char *value; 
 	static const char *type_descr; 
-	CProductMock(const char *s):_M_value(s){
+	CProductMock(const char *s):m_value(s){
 	}; 
 private: 
-	string _M_value;
+	string m_value;
 }; 
 
 const char *CProductMock::value ="mock";  

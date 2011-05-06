@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -41,6 +41,7 @@ NS_MIA_BEGIN
 
 /**
    \brief Templated representation of a ICA series analyis 
+
    This class provides a generic implementation for the ICA analysis 
    of data series. 
    \tparam Data some kind of data set ofwhich series are analyzed 
@@ -64,26 +65,34 @@ public:
 	/** a (shared) pointer to itself */
 	typedef typename Data::Pointer PData; 
 
-	/** \addgroup Contructors */
-	/*\@{  
-	  \brief ICA initialization 
-	  The contructor for an ICA
-	  \param initializer data set containing all the time steps of input data 
-	  \param strip_mean strip the mean from the series before processing 
+	/**
+	   \brief ICA initialization 
+	   
+	   The contructor for an ICA
+	   \param initializer data set containing all the time steps of input data 
+	   \param strip_mean strip the mean from the series before processing 
 	 */
 	TDataSeriesICA(const std::vector<Data>& initializer, bool strip_mean);
-	/* \@}*/
-
-	/** \addgroup ICA application */
-	/*\@{  
-	  Runs the ICA 
-	  \param ncomponents retained components 
+	
+	/**  Runs the ICA 
+	     \param ncomponents retained components 
+	     \param strip_mean strip the mean from the input 
+	     \param ica_normalize normalize the ICA after processing 
+	     \param guess provide an initial guess (leave empty, if not wanted)  
 	*/
 	bool run(size_t ncomponents, bool strip_mean, bool ica_normalize, 
 		 std::vector<std::vector<float> >  guess = std::vector<std::vector<float> >());
 
 
-	size_t run_auto(int nica, int min_ica, float corr_thresh); 
+        /**
+	   Run the independed component analysis with an estimation of the optimal number
+	   of components based on mixing curve correlation (experimental) 
+	   \param max_ica maximum number of independend components
+	   \param min_ica minimum number of independend components
+	   \param corr_thresh minimum absolute correation of the mixing signals to joins two components
+	   \returns number of obtained independend components
+	*/
+	size_t run_auto(int max_ica, int min_ica, float corr_thresh); 
 	
 	/** Normalizes the ICs to the range of [-1,1] and correct the mixing matrix accordingly. 
 	    This operation does not change the output of a mix. 
@@ -92,13 +101,11 @@ public:
 	
 	/// Normalizes the Mixing Matrix columns to have zero mean. 
 	void normalize_Mix();
-	/* \@}*/
+	
 
-
-	/** \addgroup Getters */
-	/*\@{  
-	  \returns the mixed signal at index \a idx
-	 */
+	/** 
+	    \returns the mixed signal at index \a idx
+	*/
 	Data get_mix(size_t idx) const;
 
 	/// \returns the mean of the input data 
@@ -115,7 +122,7 @@ public:
 	/**
 	   Evaluate a partial mix of the ICs by using the given indes set 
 	   \param idx time indes 
-	   \param skip set of components to use when mixing
+	   \param comps set of components to use when mixing
 	   \returns the mixed data
 	 */
 	Data get_partial_mix(size_t idx, const IndexSet& comps) const;
@@ -128,10 +135,10 @@ public:
 
 	/**
 	   Evaluate a mix as sum and difference of ICs
-	   \param 
-	   \@}
+	   \param plus add these ICs 
+	   \param minus subtract these ICs 
+	   \returns the combined signal 
 	 */
-	
 	PData get_delta_feature(const IndexSet& plus, const IndexSet& minus)const; 
 	
 	/**

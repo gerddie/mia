@@ -1,5 +1,5 @@
-/* -*- mona-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+/* -*- mia-c++  -*-
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -21,7 +21,7 @@
  */
 
 #include <mia/2d/2dfilter.hh>
-#include <libmona/filter.hh>
+#include <libmia/filter.hh>
 
 namespace distance_2dimage_filter {
 NS_MIA_USE;
@@ -34,20 +34,20 @@ static const CFloatOption param_hw("scale", "scaling factor for fixed point stor
 	
 class C2DDistance: public C2DFilter {
 public:
-	C2DDistance(float scale):_M_scale(scale){}
+	C2DDistance(float scale):m_scale(scale){}
 	
 	template <class T>
 	typename C2DDistance::result_type operator () (const T2DImage<T>& data) const ;
 private: 
-	float _M_scale; 
+	float m_scale; 
 
 };
 
 
 class C2DDistanceImageFilter: public C2DImageFilterBase {
-	C2DDistance _M_filter; 
+	C2DDistance m_filter; 
 public:
-	C2DDistanceImageFilter(float scale):_M_filter(scale){}; 
+	C2DDistanceImageFilter(float scale):m_filter(scale){}; 
 	
 	virtual P2DImage do_filter(const C2DImage& image) const;
 };
@@ -79,12 +79,12 @@ typename C2DDistance::result_type C2DDistance::operator() (const T2DImage<T>& im
 				double dy2 = double(yr) - yi; 
 				dy2 *= dy2; 
 				for (int xr = 0; xr < (int)image.get_size().x; ++xr, ++r) {
-					double min_d = *r / _M_scale; 
+					double min_d = *r / m_scale; 
 					min_d *= min_d; 
 					double dx = double(xi) - xr; 
 					double d = dx * dx + dy2; 
 					if (min_d > d) {
-						d = _M_scale * sqrt(d) + 0.5; 
+						d = m_scale * sqrt(d) + 0.5; 
 						*r = d > numeric_limits<C2DUSImage::value_type>::max() ? 
 							numeric_limits<C2DUSImage::value_type>::max(): 
 							(unsigned short)d; 
@@ -98,7 +98,7 @@ typename C2DDistance::result_type C2DDistance::operator() (const T2DImage<T>& im
 	
 P2DImage C2DDistanceImageFilter::do_filter(const C2DImage& image) const
 {
-	return wrap_filter(_M_filter,image); 
+	return wrap_filter(m_filter,image); 
 }
 
 C2DDistanceImageFilterFactory::C2DDistanceImageFilterFactory():

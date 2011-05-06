@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -78,8 +78,8 @@ BOOST_FIXTURE_TEST_CASE( test_fifof_gauss , GaussFixture )
 
 
 	for (size_t i = 0; i < slices; ++i) {
-		_M_in_data.push_back(P2DImage(new C2DFImage(size, input_data[i])));
-		_M_test_data.push_back(P2DImage(new C2DFImage(size, test_data[i])));
+		m_in_data.push_back(P2DImage(new C2DFImage(size, input_data[i])));
+		m_test_data.push_back(P2DImage(new C2DFImage(size, test_data[i])));
 	}
 
 	call_test(f);

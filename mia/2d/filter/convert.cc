@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,40 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/* 
+   LatexBeginPluginDescription{2D image filters}
+   
+   \subsection{Pixel value conversion}
+   \label{filter2d:convert}
+   
+   \begin{description}
+   \item [Plugin:]convert
+   \item [Description:] Pixel conversion filter
+   \item [Conversions:] Mapping methods 
+   \begin{description}
+   \item [copy:] pixel values are copied, values outside of the target range are clipped
+   \item [linear:] pixel values are transformed according to $x \rightarrow a \times x + b$ , 
+       values outside of the target range are clipped
+   \item [opt:] The range of the input pixels \emph{found in the input image} 
+       is mapped to the range of the output type. 
+   \item [range:] The range of the input pixel \emph{type} is mapped to the range of the output type. 
+   \end{description}
+   \item [Parameters:] a, b, map, repn
+   
+   \plugtabstart
+   a&  float&  scaling for linear mapping & 1.0\\\hline
+   b&  float&  shift of linear mapping    & 0.0\\\hline
+   map& string & type of mapping (copy|linear|opt|range) & opt\\\hline
+   repn & string & target pixel type ( sbyte | ubyte | sshort | ushort |
+				sint | uint | slong | ulong | float | double) & ubyte \\\hline
+   \plugtabend
+   
+   \end{description}
+
+   LatexEnd  
+ */
+
 
 #include <mia/2d/filter/convert.hh>
 #include <mia/internal/convert.cxx>

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -34,13 +34,13 @@ NS_MIA_BEGIN
 using boost::lambda::_1; 
 using namespace std; 
 C1DScalarFixed::C1DScalarFixed(const CBSplineKernel& kernel, size_t in_size, size_t out_size):
-	_M_in_size(in_size), 
-	_M_out_size(out_size), 
-	_M_support(kernel.size()), 
-	_M_poles(kernel.get_poles()),
-	_M_strategy(scs_unknown), 
-	_M_input_buffer(in_size), 
-	_M_output_buffer(out_size)
+	m_in_size(in_size), 
+	m_out_size(out_size), 
+	m_support(kernel.size()), 
+	m_poles(kernel.get_poles()),
+	m_strategy(scs_unknown), 
+	m_input_buffer(in_size), 
+	m_output_buffer(out_size)
 {
 	assert(in_size); 
 	assert(out_size); 
@@ -48,58 +48,58 @@ C1DScalarFixed::C1DScalarFixed(const CBSplineKernel& kernel, size_t in_size, siz
 	if (in_size < out_size) {
 		// prepare for upscaling 
 		if (in_size == 1) {
-			_M_strategy = scs_fill_output; 
+			m_strategy = scs_fill_output; 
 		} else {
-			_M_strategy = scs_upscale; 
+			m_strategy = scs_upscale; 
 			const double dx = double(in_size - 1) / (out_size-1); 
 			double x = 0; 
 			for(size_t i = 0; i < out_size; ++i, x+= dx) {
-				std::vector<double> weight(_M_support); 
-				std::vector<int> index(_M_support); 
+				std::vector<double> weight(m_support); 
+				std::vector<int> index(m_support); 
 				kernel(x, weight, index); 
 				mirror_boundary_conditions(index, in_size, 2*in_size - 2); 
-				_M_weights.push_back(weight); 
-				_M_indices.push_back(index); 
+				m_weights.push_back(weight); 
+				m_indices.push_back(index); 
 			}
 		}
 	} else if (in_size == out_size){
-		_M_strategy = scs_copy; 
+		m_strategy = scs_copy; 
 	} else {
-		_M_strategy = scs_downscale; 
+		m_strategy = scs_downscale; 
 		// prepare for downscaling 
 		const double dx = double(out_size-1) / (in_size-1); 
-		std::vector<double> weight(_M_support); 
-		std::vector<int> index(_M_support); 
+		std::vector<double> weight(m_support); 
+		std::vector<int> index(m_support); 
 
-		_M_A = gsl::Matrix(in_size, out_size,  true);
-		_M_tau = gsl::DoubleVector(out_size); 
+		m_A = gsl::Matrix(in_size, out_size,  true);
+		m_tau = gsl::DoubleVector(out_size); 
 		for (size_t k = 0; k < out_size; ++k) {
 			double x = 0; 
 			for (size_t j = 0; j < in_size; ++j, x+=dx) {
 				kernel(x, weight, index);
 				mirror_boundary_conditions(index, out_size, 2*out_size - 2); 
-				for (size_t i = 0; i < _M_support; ++i) {
-					double v = _M_A(j, index[i]); 
-					_M_A.set(j, index[i], v + weight[i]);
+				for (size_t i = 0; i < m_support; ++i) {
+					double v = m_A(j, index[i]); 
+					m_A.set(j, index[i], v + weight[i]);
 				}
 			}
 		}
 		for(size_t i = 0; i < out_size; ++i) {
-			std::vector<double> weight(_M_support); 
-			std::vector<int> index(_M_support); 
+			std::vector<double> weight(m_support); 
+			std::vector<int> index(m_support); 
 			kernel(i, weight, index); 
 			mirror_boundary_conditions(index, out_size, 2*out_size - 2); 
-			_M_weights.push_back(weight); 
-			_M_indices.push_back(index); 
+			m_weights.push_back(weight); 
+			m_indices.push_back(index); 
 		}
 
-		gsl_linalg_QR_decomp(_M_A, _M_tau); 
+		gsl_linalg_QR_decomp(m_A, m_tau); 
 	}
 }
  
 void C1DScalarFixed::operator () (const gsl::DoubleVector& input, gsl::DoubleVector& output) const
 {
-	switch (_M_strategy) {
+	switch (m_strategy) {
 	case scs_fill_output: fill(output.begin(), output.end(), input[0]); 
 		break; 
 	case scs_upscale: upscale(input, output); 
@@ -116,38 +116,38 @@ void C1DScalarFixed::operator () (const gsl::DoubleVector& input, gsl::DoubleVec
 
 gsl::DoubleVector::iterator C1DScalarFixed::input_begin()
 {
-	return _M_input_buffer.begin(); 
+	return m_input_buffer.begin(); 
 }
 
 gsl::DoubleVector::iterator C1DScalarFixed::input_end() 
 {
-	return _M_input_buffer.end(); 
+	return m_input_buffer.end(); 
 }
 
 gsl::DoubleVector::iterator C1DScalarFixed::output_begin()
 {
-	return _M_output_buffer.begin(); 
+	return m_output_buffer.begin(); 
 }
 
 gsl::DoubleVector::iterator C1DScalarFixed::output_end() 
 {
-	return _M_output_buffer.end();
+	return m_output_buffer.end();
 }
 
 
 
 void C1DScalarFixed::run()
 {
-	switch (_M_strategy) {
-	case scs_fill_output: fill(output_begin(), output_end(), _M_input_buffer[0]); 
+	switch (m_strategy) {
+	case scs_fill_output: fill(output_begin(), output_end(), m_input_buffer[0]); 
 		break; 
-	case scs_upscale: upscale(_M_input_buffer, _M_output_buffer); 
+	case scs_upscale: upscale(m_input_buffer, m_output_buffer); 
 		break; 
-	case scs_copy: copy(_M_input_buffer.begin(), _M_input_buffer.end(), 
-			    _M_output_buffer.begin()); 
+	case scs_copy: copy(m_input_buffer.begin(), m_input_buffer.end(), 
+			    m_output_buffer.begin()); 
 		break; 
 	case scs_downscale: 
-		downscale(_M_input_buffer, _M_output_buffer);
+		downscale(m_input_buffer, m_output_buffer);
 		break; 
 	default: 
 		assert(0 && "Programming error: unknown scaling strategy"); 
@@ -166,28 +166,28 @@ gsl::DoubleVector C1DScalarFixed::filter_line(const gsl::DoubleVector& coeff)con
 	gsl::DoubleVector result(coeff.size()); 
 	/* compute the overall gain */
 	double	lambda = 1.0;
-	for (size_t k = 0; k < _M_poles.size() ; ++k) {
-		lambda  *=  2 - _M_poles[k] - 1.0 / _M_poles[k];
+	for (size_t k = 0; k < m_poles.size() ; ++k) {
+		lambda  *=  2 - m_poles[k] - 1.0 / m_poles[k];
 	}
 	
 	/* apply the gain */
 	transform(coeff.begin(), coeff.end(), result.begin(), _1 * lambda); 
 	
-	/* loop over all _M_poles */
-	for (size_t k = 0; k < _M_poles.size(); ++k) {
+	/* loop over all m_poles */
+	for (size_t k = 0; k < m_poles.size(); ++k) {
 		/* causal initialization */
-		result[0] = initial_coeff(result, _M_poles[k]);
+		result[0] = initial_coeff(result, m_poles[k]);
 		
 		/* causal recursion */
 		for (size_t n = 1; n < coeff.size(); ++n) {
-			result[n] += _M_poles[k] * result[n - 1];
+			result[n] += m_poles[k] * result[n - 1];
 		}
 		
 		/* anticausal initialization */
-		result[coeff.size() - 1] = initial_anti_coeff(result, _M_poles[k]);
+		result[coeff.size() - 1] = initial_anti_coeff(result, m_poles[k]);
 		/* anticausal recursion */
 		for (int n = result.size() - 2; 0 <= n; n--) {
-			result[n] = _M_poles[k] * (result[n + 1] - result[n]);
+			result[n] = m_poles[k] * (result[n + 1] - result[n]);
 		}
 	}
 	return result; 
@@ -228,10 +228,10 @@ void C1DScalarFixed::upscale(const gsl::DoubleVector& input, gsl::DoubleVector& 
 	gsl::DoubleVector coefs = filter_line(input); 
 
 	for (size_t i = 0; i < output.size(); ++i, ++io) {
-		const vector<double>& weight = _M_weights[i]; 
-		const vector<int>& index = _M_indices[i]; 
+		const vector<double>& weight = m_weights[i]; 
+		const vector<int>& index = m_indices[i]; 
 		double v = 0.0; 
-		for (size_t k = 0; k < _M_support; ++k)
+		for (size_t k = 0; k < m_support; ++k)
 			v += weight[k] * coefs[index[k]]; 
 		*io = v; 
 	}
@@ -241,13 +241,13 @@ void C1DScalarFixed::downscale(const gsl::DoubleVector& input, gsl::DoubleVector
 {
 	gsl::DoubleVector coefs(output.size()); 
 	gsl::DoubleVector residual(input.size()); 
-	gsl_linalg_QR_lssolve (_M_A, _M_tau, input, coefs, residual); 
+	gsl_linalg_QR_lssolve (m_A, m_tau, input, coefs, residual); 
 	
 	for (size_t i = 0; i < output.size(); ++i) {
-		const vector<double>& weight = _M_weights[i]; 
-		const vector<int>& index = _M_indices[i]; 
+		const vector<double>& weight = m_weights[i]; 
+		const vector<int>& index = m_indices[i]; 
 		double v = 0.0;
-		for (size_t k = 0; k < _M_support; ++k)
+		for (size_t k = 0; k < m_support; ++k)
 			v += weight[k] * coefs[index[k]]; 
 		output[i] = output.size()  * v; 
 	}

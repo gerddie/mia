@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -30,7 +30,9 @@
 NS_MIA_BEGIN
 
 /**
-   Interface haleper class for all IO data classes - defines the get/set format
+   \brief helper class to derive from for data that can be loaded and stored to a disk. 
+
+   Interface halper class for all IO data classes - defines the get/set format functions.  
 */
 class EXPORT_CORE CIOData {
 public:
@@ -44,7 +46,7 @@ public:
 	const std::string& get_source_format() const;
 
 private:
-	std::string _M_source_format;
+	std::string m_source_format;
 };
 
 NS_MIA_END

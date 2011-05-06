@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -39,7 +39,9 @@ struct EXPORT_CORE io_plugin_type {
 };
 
 /**
-   The basis of all io plug-ins. The type \a D must provied a typedef \a type the referes to the
+   \brief The templatex basis class of all IO plug-ins.
+
+   The basis of all IO plug-ins. The type \a D must provied a typedef \a type the referes to the
    data type to be handled and it must provied a string \a value that describes the type of
    the io data and also corresponds to the last part of the directory name, where the plug-in
    will be located after installation of the package.
@@ -52,8 +54,13 @@ template <typename D>
 class EXPORT_HANDLER TIOPlugin: public TPlugin<D, io_plugin_type> {
 
 public:
+	/// type of the data handled by this plug-in  
 	typedef  typename D::type Data;
+	
+	/// shared pointer of the data handled by this plug-in  
 	typedef  typename std::shared_ptr<Data > PData;
+
+	/// the type for the supported pixel types of this IO handler 
 	typedef  std::set<EPixelType> PixelTypeSet;
 
 
@@ -95,7 +102,7 @@ protected:
 	/// add pixel type t to the list of supported types
 	void add_supported_type(EPixelType t);
 private:
-	PixelTypeSet _M_typeset;
+	PixelTypeSet m_typeset;
 
 	/**
 	   Interface function that needs to be impemented ina a derived class:

@@ -1,6 +1,6 @@
 /*
-** Copyright (c) Leipzig, Madrid 1999-2010
-**               2010 ETSI Telecomunicacion, UP, Madrid
+** Copyright (c) Leipzig, Madrid 1999-2011
+**               2011 ETSI Telecomunicacion, UP, Madrid
 **
 **
 ** This program is free software; you can redistribute it and/or modify

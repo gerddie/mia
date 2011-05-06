@@ -1,0 +1,21 @@
+/** \mainpage MIA - plug-in based framework for gray-scale and medical image processing 
+ 
+  \section intro_sec Introduction
+  
+  The MIA provides a framwork for common tasks in gray scale images processing 
+  including image filtering and image registration for 2D and 3D images. 
+  This is the documentation of the public interface of the according libraries.
+
+  In addition to this library interface there exist a number of plug-ins and 
+  programs make use if the interface and can be run to execute certain 
+  image processing tasks.
+  For information about these programs and plug-ins please see the user guide 
+  at https://sourceforge.net/apps/mediawiki/mia/index.php?title=Mia_-_A_tool_chain_for_Medical_Image_Analysis
+
+  \author Gert Wollny gw.fossdev@gmail.com 
+
+  If you use this software to prepare a scientific publication, please reference it as 
+  
+  Gert Wollny et al., "MIA - A plugin-based Framework for Medical Image Processing", http://mia.sf.net 
+
+*/

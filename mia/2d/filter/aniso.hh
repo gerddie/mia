@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -52,15 +52,15 @@ protected:
 	void create_histogramfeeder(const mia::C2DFImage& data) const;
 	void update_gamma_sigma(const mia::C2DFImage& src)const;
 
-	int _M_maxiter;
-	float _M_epsilon;
-	float _M_k;
-	FEdgeStopping _M_edge_stop;
-	int _M_neighbourhood;
-	mutable mia::CHistogramFeeder<float> _M_histogramfeeder;
-	mutable float _M_sigma_e;
-	mutable float _M_gamma;
-	mutable float _M_sigma;
+	int m_maxiter;
+	float m_epsilon;
+	float m_k;
+	FEdgeStopping m_edge_stop;
+	int m_neighbourhood;
+	mutable mia::THistogramFeeder<float> m_histogramfeeder;
+	mutable float m_sigma_e;
+	mutable float m_gamma;
+	mutable float m_sigma;
 };
 
 class CAnisoDiff2DImageFilterFactory: public mia::C2DFilterPlugin {
@@ -69,11 +69,11 @@ public:
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-	int _M_maxiter;
-	float _M_epsilon;
-	float _M_k;
-	C2DAnisoDiff::FEdgeStopping _M_edge_stop;
-	int _M_neighbourhood;
+	int m_maxiter;
+	float m_epsilon;
+	float m_k;
+	C2DAnisoDiff::FEdgeStopping m_edge_stop;
+	int m_neighbourhood;
 };
 
 NS_END

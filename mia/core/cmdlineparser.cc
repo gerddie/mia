@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -21,12 +21,19 @@
  *
  */
 
+#include <miaconfig.h>
 #include <cstdlib>
 #include <iostream>
 #include <iomanip>
 #include <map>
 #include <ctype.h>
 #include <stdexcept>
+
+#ifdef HAVE_LIBXMLPP
+#include <libxml++/libxml++.h>
+#endif
+
+#include <mia/core/tools.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
 
@@ -36,10 +43,11 @@ extern void print_full_copyright(const char *name);
 NS_MIA_BEGIN
 using namespace std;
 
-CCmdOption::CCmdOption(const char *long_opt, const char *long_help, Flags flags):
-	_M_long_opt(long_opt),
-	_M_long_help(long_help), 
-	_M_flags(flags)
+CCmdOption::CCmdOption(char short_opt, const char *long_opt, const char *long_help, Flags flags):
+	m_short_opt(short_opt), 
+	m_long_opt(long_opt),
+	m_long_help(long_help), 
+	m_flags(flags)
 {
         assert(long_opt);
         assert(long_help);
@@ -72,22 +80,27 @@ void CCmdOption::get_long_help(std::ostream& os) const
 
 const char *CCmdOption::long_help() const
 {
-	return _M_long_help;
+	return m_long_help;
+}
+
+char CCmdOption::get_short_option() const
+{
+	return m_short_opt; 
 }
 
 const char *CCmdOption::get_long_option() const
 {
-	return _M_long_opt;
+	return m_long_opt;
 }
 
 void CCmdOption::clear_required()
 {
-	_M_flags = static_cast<CCmdOption::Flags>(_M_flags & (~required)); 
+	m_flags = static_cast<CCmdOption::Flags>(m_flags & (~required)); 
 }
 
 bool CCmdOption::is_required() const
 {
-	return (_M_flags & required ) == required; 
+	return (m_flags & required ) == required; 
 }
 
 void CCmdOption::do_get_long_help(std::ostream& /* os */) const
@@ -101,7 +114,7 @@ void CCmdOption::get_opt_help(std::ostream& os) const
 
 void CCmdOption::do_get_opt_help(std::ostream& os) const
 {
-	os << _M_long_help;
+	os << m_long_help;
 }
 
 void   CCmdOption::write_value(std::ostream& os) const
@@ -125,35 +138,26 @@ const std::string CCmdOption::do_get_value_as_string() const
 }
 
 struct CCmdOptionData {
-	CCmdOptionData(char short_opt, const char *short_help);
-	char _M_short_opt;
-	const char *_M_long_opt;
-	const char *_M_short_help;
+	CCmdOptionData(const char *short_help);
+	const char *m_short_help;
 };
 
-CCmdOptionData::CCmdOptionData(char short_opt, const char *short_help):
-	_M_short_opt(short_opt),
-	_M_short_help(short_help)
+CCmdOptionData::CCmdOptionData(const char *short_help):
+	m_short_help(short_help)
 {
 }
 
 CCmdOptionValue::CCmdOptionValue(char short_opt, const char *long_opt, 
 				 const char *long_help, 
 				 const char *short_help, Flags flags):
-	CCmdOption(long_opt, long_help, flags),
-	_M_impl(new CCmdOptionData(short_opt,  short_help))
+	CCmdOption(short_opt, long_opt, long_help, flags),
+	m_impl(new CCmdOptionData(short_help))
 {
-}
-
-
-char CCmdOptionValue::get_short_option() const
-{
-	return _M_impl->_M_short_opt;
 }
 
 const char *CCmdOptionValue::get_short_help() const
 {
-	return _M_impl->_M_short_help;
+	return m_impl->m_short_help;
 }
 
 void CCmdOptionValue::do_print_short_help(std::ostream&   os  ) const
@@ -230,7 +234,7 @@ void CCmdOptionValue::do_add_option(CShortoptionMap& sm, CLongoptionMap& lm)
 
 CCmdOptionValue::~CCmdOptionValue()
 {
-	delete _M_impl;
+	delete m_impl;
 }
 
 struct CCmdOptionListData {
@@ -243,6 +247,7 @@ struct CCmdOptionListData {
 	vector<const char *> remaining;
 
 	bool help;
+	bool help_xml; 
 	bool usage;
 	bool copyright;
 	vstream::Level verbose;
@@ -257,13 +262,16 @@ struct CCmdOptionListData {
 	CCmdOption *find_option(const char *key) const;
 	CCmdOption *find_option(char key) const;
 
+#ifdef HAVE_LIBXMLPP
+	void print_help_xml() const; 
+#endif
 	void print_help() const;
 	void print_usage() const;
 
 	vector<const char *> has_unset_required_options() const; 
 	void write(size_t tab1, size_t width, const string& s)const; 
 
-	string _M_general_help; 
+	string m_general_help; 
 };
 
 
@@ -271,17 +279,17 @@ CCmdSetOption::CCmdSetOption(std::string& val, const std::set<std::string>& set,
 			     char short_opt, const char *long_opt, const char *long_help,
 			     const char *short_help, Flags flags):
 	CCmdOptionValue(short_opt, long_opt, long_help, short_help,  flags),
-	_M_value(val),
-	_M_set(set)
+	m_value(val),
+	m_set(set)
 {
 }
 
 
 bool CCmdSetOption::do_set_value_really(const char *str_value)
 {
-	if (_M_set.find(str_value) == _M_set.end())
+	if (m_set.find(str_value) == m_set.end())
 		return false;
-	_M_value = str_value;
+	m_value = str_value;
 	return true;
 }
 
@@ -292,17 +300,17 @@ size_t CCmdSetOption::do_get_needed_args() const
 
 void CCmdSetOption::do_write_value(std::ostream& os) const
 {
-	os << "=" << _M_value;
+	os << "=" << m_value;
 }
 
 void CCmdSetOption::do_get_long_help_really(std::ostream& os) const
 {
-	if (_M_set.size() > 0) {
+	if (m_set.size() > 0) {
 		os << "\n(" ;
-		std::set<std::string>::const_iterator i = _M_set.begin();
+		std::set<std::string>::const_iterator i = m_set.begin();
 		os << *i;
 		++i;
-		while ( i != _M_set.end() )
+		while ( i != m_set.end() )
 			os << '|' << *i++;
 		os  << ")";
 	}
@@ -310,10 +318,10 @@ void CCmdSetOption::do_get_long_help_really(std::ostream& os) const
 
 const std::string CCmdSetOption::do_get_value_as_string() const
 {
-	return _M_value;
+	return m_value;
 }
 
-const char *g_help_optiongroup="\nHelp & Info"; 
+const char *g_help_optiongroup="Help & Info"; 
 const char *g_basic_copyright = 
         "\n"
 	" This software is copyright (c) Gert Wollny et al.\n"
@@ -323,10 +331,11 @@ const char *g_basic_copyright =
 
 CCmdOptionListData::CCmdOptionListData(const string& general_help):
 	help(false),
+	help_xml(false), 
 	usage(false),
 	copyright(false),
 	verbose(vstream::ml_warning), 
-	_M_general_help(general_help)
+	m_general_help(general_help)
 {
 	options[""] = vector<PCmdOption>();
 
@@ -337,6 +346,10 @@ CCmdOptionListData::CCmdOptionListData(const string& general_help):
 		     CCmdOption::not_required));
 	add(make_opt(help,  "help", 'h', "print this help", 
 		     CCmdOption::not_required));
+#ifdef HAVE_LIBXMLPP
+	add(make_opt(help_xml,  "help-xml", 0, "print help formatted as XML", 
+		     CCmdOption::not_required));
+#endif
 	add(make_opt(usage,  "usage", '?', "print a short help", 
 		     CCmdOption::not_required));
 	set_current_group("");
@@ -416,6 +429,38 @@ void CCmdOptionListData::write(size_t tab1, size_t width, const string& s) const
 	clog << endl; 
 }
 
+#ifdef HAVE_LIBXMLPP
+using xmlpp::Element; 
+void CCmdOptionListData::print_help_xml() const
+{
+	unique_ptr<xmlpp::Document> doc(new xmlpp::Document);
+	
+	Element* nodeRoot = doc->create_root_node("program");
+	Element* description = nodeRoot->add_child("description"); 
+	description->set_child_text(m_general_help); 
+
+	for (auto g = options.begin(); g != options.end(); ++g) {
+		Element* group = nodeRoot->add_child("group"); 
+		group->set_attribute("name", g->first); 
+		
+		for (auto iopt= g->second.begin(); iopt != g->second.end(); ++iopt) {
+			const CCmdOption& opt = **iopt; 
+			if (opt.get_long_option() == string("help-xml")) 
+				continue; 
+			
+			Element* option = group->add_child("option"); 
+			option->set_attribute("short", to_string<char>(opt.get_short_option()));
+			option->set_attribute("long", opt.get_long_option());
+			option->set_attribute("required", to_string<bool>(opt.is_required())); 
+			option->set_attribute("default", opt.get_value_as_string()); 
+			option->set_child_text(opt.long_help()); 
+		}
+	}
+	cout << doc->write_to_string_formatted();
+	cout << "\n"; 
+}
+#endif 
+
 /**
    This help printing is a mess ...
  */
@@ -428,7 +473,7 @@ void CCmdOptionListData::print_help() const
 	vector<string> opt_table;
 	vector<string> help_table;
 	
-	write(0, max_width, _M_general_help); 
+	write(0, max_width, m_general_help); 
 	write(0, max_width, "\nThe program supports the following command line options:"); 
 
 	size_t opt_size = 0;
@@ -436,7 +481,8 @@ void CCmdOptionListData::print_help() const
 	for (auto i = options.begin(); i != options.end(); ++i) {
 
 		stringstream group;
-		opt_table.push_back(i->first);
+		group << "\n"  << i->first; 
+		opt_table.push_back(group.str());
 		help_table.push_back("  ");
 		
 		for (auto g_i = i->second.begin(); g_i != i->second.end(); ++g_i) {
@@ -492,35 +538,35 @@ void CCmdOptionListData::print_usage() const
 }
 
 CCmdOptionList::CCmdOptionList(const string& general_help):
-	_M_impl(new CCmdOptionListData(general_help))
+	m_impl(new CCmdOptionListData(general_help))
 {
 }
 
 CCmdOptionList::CCmdOptionList():
-	_M_impl(new CCmdOptionListData("This is a MIA toolchain program."))
+	m_impl(new CCmdOptionListData("This is a MIA toolchain program."))
 {
 }
 
 void CCmdOptionList::push_back(PCmdOption opt)
 {
-	_M_impl->add(opt);
+	m_impl->add(opt);
 }
 
 void CCmdOptionList::add(const std::string& /*table*/, PCmdOption opt)
 {
-	_M_impl->add(opt);
+	m_impl->add(opt);
 }
 
 void CCmdOptionList::set_group(const std::string& group)
 {
-	_M_impl->set_current_group(group); 
+	m_impl->set_current_group(group); 
 }
 
 int CCmdOptionList::handle_shortargs(const char *arg, size_t /*argc*/, const char *args[])
 {
 	bool bool_options_only = false;
 	do {
-		CCmdOption *opt = _M_impl->find_option(*arg);
+		CCmdOption *opt = m_impl->find_option(*arg);
 		if (!opt ) {
 			if ( bool_options_only ) {
 				throw invalid_argument(string("bad flag combination:'-") + 
@@ -554,12 +600,14 @@ int CCmdOptionList::handle_shortargs(const char *arg, size_t /*argc*/, const cha
 	return 0;
 }
 
-void CCmdOptionList::parse(size_t argc, char *args[], bool has_additional)
+CCmdOptionList::EHelpRequested
+CCmdOptionList::parse(size_t argc, char *args[], bool has_additional)
 {
-	parse(argc, (const char **)args, has_additional);
+	return parse(argc, (const char **)args, has_additional);
 }
 
-void CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
+CCmdOptionList::EHelpRequested
+CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
 {
 
 	size_t idx = 1;
@@ -570,21 +618,21 @@ void CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
 
 		// if we don't scan an option, we deal with a left over argument
 		if (*ccarg != '-') {
-			_M_impl->remaining.push_back(cur_arg);
+			m_impl->remaining.push_back(cur_arg);
 			continue;
 		}
 
 		// we found a singular dash, this is also stored as a left over argument
 		++ccarg;
 		if (!*ccarg) {
-			_M_impl->remaining.push_back(cur_arg);
+			m_impl->remaining.push_back(cur_arg);
 			continue;
 		}
 
 		// now check if this is a long option 
 		if( *ccarg == '-') { 
 			++ccarg;
-			CCmdOption *opt = _M_impl->find_option(ccarg);
+			CCmdOption *opt = m_impl->find_option(ccarg);
 			if (opt) {
 				size_t nargs = opt->get_needed_args();
 				// currently onyl one argument value is supported
@@ -608,31 +656,36 @@ void CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
 			}
 		}
 		// current option was not found
-		_M_impl->remaining.push_back(cur_arg);
+		m_impl->remaining.push_back(cur_arg);
 
 	}
 
-	if (_M_impl->help) {
-		_M_impl->print_help();
-		exit(0);
-	} else if (_M_impl->usage) {
-		_M_impl->print_usage();
-		exit(0);
-	} else if (_M_impl->copyright) {
+	if (m_impl->help) {
+		m_impl->print_help();
+		return hr_help;
+#ifdef HAVE_LIBXMLPP
+	}else if (m_impl->help_xml) {
+		m_impl->print_help_xml();
+		return hr_help_xml;
+#endif 
+	} else if (m_impl->usage) {
+		m_impl->print_usage();
+		return hr_usage;
+	} else if (m_impl->copyright) {
 		::print_full_copyright(args[0]);
-		exit(0);
+		return hr_copyright;
 	}
 
-	cverb.set_verbosity(_M_impl->verbose);
-	if (!has_additional && !_M_impl->remaining.empty()) {
+	cverb.set_verbosity(m_impl->verbose);
+	if (!has_additional && !m_impl->remaining.empty()) {
 		stringstream msg; 
 		msg << "Unknown options given: "; 
-		for (auto i = _M_impl->remaining.begin(); _M_impl->remaining.end() != i; ++i)
+		for (auto i = m_impl->remaining.begin(); m_impl->remaining.end() != i; ++i)
 			msg << " '" << *i << "' "; 
 		throw invalid_argument(msg.str());
 	}
 	
-	auto unset_but_required = _M_impl->has_unset_required_options(); 
+	auto unset_but_required = m_impl->has_unset_required_options(); 
 	if (!unset_but_required.empty()) {
 		stringstream msg; 
 		if (unset_but_required.size() > 1) 
@@ -646,17 +699,17 @@ void CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
 		msg << g_basic_copyright; 
 		throw invalid_argument(msg.str());
 	}
-
+	return hr_no; 
 }
 
 const vector<const char *>& CCmdOptionList::get_remaining() const
 {
-	return _M_impl->remaining;
+	return m_impl->remaining;
 }
 
 CCmdOptionList::~CCmdOptionList()
 {
-	delete _M_impl;
+	delete m_impl;
 }
 
 PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>& set,
@@ -680,18 +733,18 @@ PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>&
 
 CHistoryRecord CCmdOptionList::get_values() const
 {
-	return _M_impl->get_values();
+	return m_impl->get_values();
 }
 
 CHelpOption::CHelpOption(Callback *cb, char short_opt, const char *long_opt, const char *long_help):
 	CCmdOptionValue(short_opt, long_opt, long_help, NULL, not_required), 
-	_M_callback(cb)
+	m_callback(cb)
 {
 }
 
 void CHelpOption::print(std::ostream& os) const
 {
-	_M_callback->print(os);
+	m_callback->print(os);
 }
 
 bool CHelpOption::do_set_value_really(const char */*str_value*/)
@@ -713,30 +766,30 @@ CCmdFlagOption::CCmdFlagOption(int& val, const CFlagString& map, char short_opt,
 			       const char *short_help, 
 			       CCmdOption::Flags flags):
 	CCmdOptionValue(short_opt, long_opt, long_help,short_help, flags),
-	_M_value(val),
-	_M_map(map)
+	m_value(val),
+	m_map(map)
 {
 }
 
 void CCmdFlagOption::do_write_value(std::ostream& os) const
 {
-	os << _M_map.get(_M_value);
+	os << m_map.get(m_value);
 }
 
 void CCmdFlagOption::do_get_long_help_really(std::ostream& os) const
 {
-	os << " supported flags:(" <<_M_map.get_flagnames() << os << ")";
+	os << " supported flags:(" <<m_map.get_flagnames() << os << ")";
 }
 
 const std::string CCmdFlagOption::do_get_value_as_string() const
 {
-	return _M_map.get(_M_value);
+	return m_map.get(m_value);
 }
 
 
 bool CCmdFlagOption::do_set_value_really(const char *str_value)
 {
-	_M_value = _M_map.get(str_value);
+	m_value = m_map.get(str_value);
 	return true;
 }
 

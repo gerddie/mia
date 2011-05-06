@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -70,9 +70,9 @@ public:
 		virtual void do_y_increment(); 
 		virtual void do_z_increment(); 
 
-		const C3DRigidTransformation& _M_trans;
-		C3DFVector _M_value;
-		C3DFVector _M_dx;
+		const C3DRigidTransformation& m_trans;
+		C3DFVector m_value;
+		C3DFVector m_dx;
 
 	};
 
@@ -108,11 +108,11 @@ private:
 	void evaluate_matrix() const;
 
 
-	mutable std::vector<double> _M_t;
-	C3DBounds _M_size;
-	C3DFVector _M_translation;
-	C3DFVector _M_rotation;
-	mutable bool _M_matrix_valid;
+	mutable std::vector<double> m_t;
+	C3DBounds m_size;
+	C3DFVector m_translation;
+	C3DFVector m_rotation;
+	mutable bool m_matrix_valid;
 };
 
 

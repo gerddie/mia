@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -34,14 +34,14 @@ static char const * plugin_name = "mask";
 template <class Data2D>
 typename C2DMask::result_type C2DMask::operator () (const Data2D& data) const
 {
-	if (data.get_size() != _M_mask.get_size())
+	if (data.get_size() != m_mask.get_size())
 		throw runtime_error("Input image and mask differ in size");
 
 	const typename Data2D::value_type zero = typename Data2D::value_type();
 
 	Data2D *result = new Data2D(data);
 
-	C2DBitImage::const_iterator im = _M_mask.begin();
+	C2DBitImage::const_iterator im = m_mask.begin();
 	typename Data2D::iterator id = result->begin();
 	typename Data2D::iterator ie = result->end();
 
@@ -63,21 +63,21 @@ P2DImage C2DMask::do_filter(const C2DImage& image) const
 
 C2DMaskImageFilterFactory::C2DMaskImageFilterFactory():
 	C2DFilterPlugin(plugin_name),
-	_M_invert(false)
+	m_invert(false)
 {
-	add_parameter("img", new CStringParameter(_M_mask_name, true,
+	add_parameter("img", new CStringParameter(m_mask_name, true,
 						  "mask image (must be in bit representation)"));
-	add_parameter("inv", new TParameter<bool>(_M_invert, false,
+	add_parameter("inv", new TParameter<bool>(m_invert, false,
 						  "whether the mask should be inverted"));
 }
 
 C2DFilterPlugin::ProductPtr C2DMaskImageFilterFactory::do_create()const
 {
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
-	C2DImageIOPluginHandler::Instance::PData inImage_list = imageio.load(_M_mask_name);
+	C2DImageIOPluginHandler::Instance::PData inImage_list = imageio.load(m_mask_name);
 
 	if (!inImage_list.get() || !inImage_list->size() ) {
-		string not_found = string("No image data found in ") + _M_mask_name;
+		string not_found = string("No image data found in ") + m_mask_name;
 		throw runtime_error(not_found);
 	}
 
@@ -89,7 +89,7 @@ C2DFilterPlugin::ProductPtr C2DMaskImageFilterFactory::do_create()const
 	C2DBitImage *image = dynamic_cast<C2DBitImage *>(mask->get());
 
 	assert(image);
-	if (_M_invert)
+	if (m_invert)
 		transform(image->begin(), image->end(), image->begin(), logical_not<bool>());
 
 	return C2DFilterPlugin::ProductPtr(new C2DMask(*image));

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,29 +63,29 @@ private:
 	C3DFVector get_p(const C3DFVector& b, const C3DFVectorfield::iterator& v) const;
 	C3DFVector get_q(const C3DFVectorfield::iterator& v)const;
 	PRIVATE float  solve_at(const C3DFVector& b, C3DFVectorfield::iterator& x)const;
-	float _M_mu;
-	float _M_lambda;
-	float _M_a1,_M_a, _M_b, _M_c, _M_a_b, _M_b_4;
-//	float _M_omega;
-	float _M_epsilon;
-	size_t _M_max_iter;
-	mutable int _M_dx;
-	mutable int _M_dxy;
+	float m_mu;
+	float m_lambda;
+	float m_a1,m_a, m_b, m_c, m_a_b, m_b_4;
+//	float m_omega;
+	float m_epsilon;
+	size_t m_max_iter;
+	mutable int m_dx;
+	mutable int m_dxy;
 
 };
 
 C3DNavierRegModel::C3DNavierRegModel(float mu, float lambda, size_t maxiter,  float epsilon):
-	_M_mu(mu),
-	_M_lambda(lambda),
-	_M_epsilon(epsilon),
-	_M_max_iter(maxiter)
+	m_mu(mu),
+	m_lambda(lambda),
+	m_epsilon(epsilon),
+	m_max_iter(maxiter)
 {
 	float a = mu;
 	float b = lambda + mu;
-	_M_c = 1 / (6*a+2*b);
-	_M_b_4 = 0.25 * b * _M_c;
-	_M_a_b = ( a + b ) * _M_c;
-	_M_a = a * _M_c;
+	m_c = 1 / (6*a+2*b);
+	m_b_4 = 0.25 * b * m_c;
+	m_a_b = ( a + b ) * m_c;
+	m_a = a * m_c;
 
 	cvdebug() << "initialise model with mu=" << mu << " lambda=" << lambda << "\n";
 }
@@ -93,17 +93,17 @@ C3DNavierRegModel::C3DNavierRegModel(float mu, float lambda, size_t maxiter,  fl
 
 float C3DNavierRegModel::do_force_scale() const
 {
-	cvdebug() << "Force scale = " <<_M_c << "\n";
-	return _M_c;
+	cvdebug() << "Force scale = " <<m_c << "\n";
+	return m_c;
 }
 
 inline PRIVATE  void C3DNavierRegModel::set_flags(C3DUBImage::iterator loc)const
 {
-	const register int dx = _M_dx;
-	const register int mdx = - _M_dx;
+	const register int dx = m_dx;
+	const register int mdx = - m_dx;
 
-	C3DUBImage::iterator lmz = loc - _M_dxy;
-	C3DUBImage::iterator lpz = loc + _M_dxy;
+	C3DUBImage::iterator lmz = loc - m_dxy;
+	C3DUBImage::iterator lpz = loc + m_dxy;
 	C3DUBImage::iterator lmy = loc - dx;
 	C3DUBImage::iterator lpy = loc + dx;
 
@@ -143,8 +143,8 @@ void C3DNavierRegModel::do_solve(const C3DFVectorfield& b, C3DFVectorfield& v) c
 	size_t i = 0;
 	assert(b.get_size() == v.get_size());
 
-	_M_dx = b.get_size().x;
-	_M_dxy = b.get_plane_size_xy();
+	m_dx = b.get_size().x;
+	m_dxy = b.get_plane_size_xy();
 
 	C3DFImage residua(b.get_size());
 	fill(residua.begin(), residua.end(), 0.0f);
@@ -165,7 +165,7 @@ void C3DNavierRegModel::do_solve(const C3DFVectorfield& b, C3DFVectorfield& v) c
 
 		for (size_t z = 1; z < b.get_size().z-1; z++) {
 
-			size_t step = _M_dx + _M_dxy * z;
+			size_t step = m_dx + m_dxy * z;
 
 			C3DFVectorfield::const_iterator ib = b.begin() + step;
 			C3DFVectorfield::iterator iv = v.begin() + step;
@@ -212,7 +212,7 @@ void C3DNavierRegModel::do_solve(const C3DFVectorfield& b, C3DFVectorfield& v) c
 		if (residuum < 1)
 			break;
 
-	} while (i < _M_max_iter && residuum / start_residuum > _M_epsilon);
+	} while (i < m_max_iter && residuum / start_residuum > m_epsilon);
 
 }
 
@@ -221,23 +221,23 @@ inline C3DFVector C3DNavierRegModel::get_p(const C3DFVector& b, const C3DFVector
 	const C3DFVector vm = v[-1];
 	const C3DFVector vp = v[1];
 
-	const C3DFVector vym = v[-_M_dx];
-	const C3DFVector vyp = v[ _M_dx];
-	const C3DFVector vzm = v[-_M_dxy];
-	const C3DFVector vzp = v[ _M_dxy];
+	const C3DFVector vym = v[-m_dx];
+	const C3DFVector vyp = v[ m_dx];
+	const C3DFVector vzm = v[-m_dxy];
+	const C3DFVector vzp = v[ m_dxy];
 
 
-	float rx = (vm.x + vp.x) * _M_a_b;
-	float ry = (vm.y + vp.y) * _M_a_b;
-	float rz = (vm.z + vp.z) * _M_a_b;
+	float rx = (vm.x + vp.x) * m_a_b;
+	float ry = (vm.y + vp.y) * m_a_b;
+	float rz = (vm.z + vp.z) * m_a_b;
 
 	rx += b.x;
 	ry += b.y;
 	rz += b.z;
 
-	float hx = (vym.x + vyp.x + vzp.x + vzm.x) * _M_a;
-	float hy = (vym.y + vyp.y + vzp.y + vzm.y) * _M_a;
-	float hz = (vym.z + vyp.z + vzp.z + vzm.z) * _M_a;
+	float hx = (vym.x + vyp.x + vzp.x + vzm.x) * m_a;
+	float hy = (vym.y + vyp.y + vzp.y + vzm.y) * m_a;
+	float hz = (vym.z + vyp.z + vzp.z + vzm.z) * m_a;
 
 	return  C3DFVector(rx + hx, ry + hy, rz + hz);
 }
@@ -245,28 +245,28 @@ inline C3DFVector C3DNavierRegModel::get_p(const C3DFVector& b, const C3DFVector
 inline C3DFVector C3DNavierRegModel::get_q(const C3DFVectorfield::iterator& v)const
 {
 
-	const C3DFVector& vmm0 = v[ -1 - _M_dx];
-	const C3DFVector& vpm0 = v[  1 - _M_dx];
-	const C3DFVector& vmp0 = v[ -1 + _M_dx];
-	const C3DFVector& vpp0 = v[  1 + _M_dx];
+	const C3DFVector& vmm0 = v[ -1 - m_dx];
+	const C3DFVector& vpm0 = v[  1 - m_dx];
+	const C3DFVector& vmp0 = v[ -1 + m_dx];
+	const C3DFVector& vpp0 = v[  1 + m_dx];
 
-	const  C3DFVectorfield::iterator vm = v - _M_dxy;
-	const  C3DFVectorfield::iterator vp = v + _M_dxy;
+	const  C3DFVectorfield::iterator vm = v - m_dxy;
+	const  C3DFVectorfield::iterator vp = v + m_dxy;
 
 	const C3DFVector& vm0m = vm[ -1];
 	const C3DFVector& vp0m = vm[  1];
 	const C3DFVector& vm0p = vp[ -1];
 	const C3DFVector& vp0p = vp[  1];
 
-	const C3DFVector& v0mm = vm[ -_M_dx];
-	const C3DFVector& v0pm = vm[  _M_dx];
-	const C3DFVector& v0mp = vp[ -_M_dx];
-	const C3DFVector& v0pp = vp[  _M_dx];
+	const C3DFVector& v0mm = vm[ -m_dx];
+	const C3DFVector& v0pm = vm[  m_dx];
+	const C3DFVector& v0mp = vp[ -m_dx];
+	const C3DFVector& v0pp = vp[  m_dx];
 
 
-	return C3DFVector( (vmm0.y + vpp0.y - vmp0.y - vpm0.y + vm0m.z + vp0p.z - vm0p.z - vp0m.z) * _M_b_4,
-			   (vmm0.x + vpp0.x - vmp0.x - vpm0.x + v0mm.z + v0pp.z - v0mp.z - v0pm.z) * _M_b_4,
-			   (vm0m.x + vp0p.x - vm0p.x - vp0m.x + v0mm.y + v0pp.y - v0mp.y - v0pm.y) * _M_b_4);
+	return C3DFVector( (vmm0.y + vpp0.y - vmp0.y - vpm0.y + vm0m.z + vp0p.z - vm0p.z - vp0m.z) * m_b_4,
+			   (vmm0.x + vpp0.x - vmp0.x - vpm0.x + v0mm.z + v0pp.z - v0mp.z - v0pm.z) * m_b_4,
+			   (vm0m.x + vp0p.x - vm0p.x - vp0m.x + v0mm.y + v0pp.y - v0mp.y - v0pm.y) * m_b_4);
 }
 
 inline float  C3DNavierRegModel::solve_at(const C3DFVector& b, C3DFVectorfield::iterator& v)const
@@ -274,11 +274,11 @@ inline float  C3DNavierRegModel::solve_at(const C3DFVector& b, C3DFVectorfield::
 	register C3DFVector& vv = *v;
 	const C3DFVector old_v = vv;
 
-	const  C3DFVectorfield::iterator vm = v - _M_dxy;
-	const  C3DFVectorfield::iterator vp = v + _M_dxy;
+	const  C3DFVectorfield::iterator vm = v - m_dxy;
+	const  C3DFVectorfield::iterator vp = v + m_dxy;
 
-	const register int dx = _M_dx;
-	const register int mx = - _M_dx;
+	const register int dx = m_dx;
+	const register int mx = - m_dx;
 
 	const C3DFVector& v0mm = vm[ mx];
 	const C3DFVector& vm0m = vm[ -1];
@@ -304,13 +304,13 @@ inline float  C3DNavierRegModel::solve_at(const C3DFVector& b, C3DFVectorfield::
 	const C3DFVector& v0pp = vp[  dx];
 	const C3DFVector& vp0p = vp[  1];
 
-	register float rx = (vm00.x + vp00.x) * _M_a_b + b.x;
+	register float rx = (vm00.x + vp00.x) * m_a_b + b.x;
 	register const float hx = vym.x + vyp.x + vzp.x + vzm.x;
 
-	register float ry = (vm00.y + vp00.y) * _M_a_b + b.y;
+	register float ry = (vm00.y + vp00.y) * m_a_b + b.y;
 	register const float hy = vym.y + vyp.y + vzp.y + vzm.y;
 
-	register float rz = (vm00.z + vp00.z) * _M_a_b + b.z;
+	register float rz = (vm00.z + vp00.z) * m_a_b + b.z;
 	register const float hz = vym.z + vyp.z + vzp.z + vzm.z;
 
 	{
@@ -342,13 +342,13 @@ inline float  C3DNavierRegModel::solve_at(const C3DFVector& b, C3DFVectorfield::
 		ay -= v0pm.z;
 		az -= v0pm.y;
 
-		rx += _M_b_4 * ax;
-		ry += _M_b_4 * ay;
-		rz += _M_b_4 * az;
+		rx += m_b_4 * ax;
+		ry += m_b_4 * ay;
+		rz += m_b_4 * az;
 
-		rx += hx * _M_a;
-		ry += hy * _M_a;
-		rz += hz * _M_a;
+		rx += hx * m_a;
+		ry += hy * m_a;
+		rz += hz * m_a;
 
 	}
 
@@ -368,7 +368,7 @@ inline float  C3DNavierRegModel::solve_at(const C3DFVector& b, C3DFVectorfield::
 
 	//C3DFVector q = get_q(v);
 
-	//const C3DFVector hmm((( p + q ) - *v) * _M_omega);
+	//const C3DFVector hmm((( p + q ) - *v) * m_omega);
 
 
 
@@ -392,8 +392,8 @@ bool  C3DNavierRegModel::test_kernel()
 
 	C3DBounds size(3,3,3);
 	size_t mid_index = 1 + size.x + size.x * size.y;
-	_M_dx = size.x;
-	_M_dxy = size.x * size.y;
+	m_dx = size.x;
+	m_dxy = size.x * size.y;
 
 	C3DFVectorfield v(size);
 
@@ -447,35 +447,35 @@ private:
 	bool  do_test() const;
 	const string do_get_descr()const;
 
-	float _M_mu;
-	float _M_lambda;
-	float _M_epsilon;
-	int _M_maxiter;
+	float m_mu;
+	float m_lambda;
+	float m_epsilon;
+	int m_maxiter;
 };
 
 C3DNavierRegModelPlugin::C3DNavierRegModelPlugin():
 	C3DRegModelPlugin("naviera"),
-	_M_mu(1.0),
-	_M_lambda(1.0),
-	_M_epsilon(0.0001),
-	_M_maxiter(40)
+	m_mu(1.0),
+	m_lambda(1.0),
+	m_epsilon(0.0001),
+	m_maxiter(40)
 {
 	typedef CParamList::PParameter PParameter;
-	add_parameter("mu", new CFloatParameter(_M_mu, 0.0, numeric_limits<float>::max(),
+	add_parameter("mu", new CFloatParameter(m_mu, 0.0, numeric_limits<float>::max(),
 							   false, "isotropic compliance"));
-	add_parameter("lambda", new CFloatParameter(_M_lambda, 0.0, numeric_limits<float>::max(),
+	add_parameter("lambda", new CFloatParameter(m_lambda, 0.0, numeric_limits<float>::max(),
 							       false, "isotropic compression"));
 
-	add_parameter("epsilon", new CFloatParameter(_M_epsilon, 0.000001, 0.1,
+	add_parameter("epsilon", new CFloatParameter(m_epsilon, 0.000001, 0.1,
 								false, "stopping parameter"));
-	add_parameter("iter", new CIntParameter(_M_maxiter, 10, 10000,
+	add_parameter("iter", new CIntParameter(m_maxiter, 10, 10000,
 							   false, "maximum number of iterations"));
 }
 
 C3DNavierRegModelPlugin::ProductPtr C3DNavierRegModelPlugin::do_create()const
 {
-	return C3DNavierRegModelPlugin::ProductPtr(new C3DNavierRegModel(_M_mu, _M_lambda,
-									 _M_maxiter, _M_epsilon));
+	return C3DNavierRegModelPlugin::ProductPtr(new C3DNavierRegModel(m_mu, m_lambda,
+									 m_maxiter, m_epsilon));
 }
 
 bool  C3DNavierRegModelPlugin::do_test() const

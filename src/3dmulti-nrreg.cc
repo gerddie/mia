@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -49,7 +49,7 @@ const char *g_description =
 	"  mia-3dmulti-nrreg [options] <cost functions>\n";
 
 // set op the command line parameters and run the registration
-int do_main(int argc, const char **args)
+int do_main(int argc, const char **argv)
 {
 
 	CCmdOptionList options(g_description);
@@ -71,7 +71,7 @@ int do_main(int argc, const char **args)
 	options.push_back(make_opt( epsilon, "epsilon", 'e', "relative accuracy to stop registration "
 				    "at a multi-grid level"));
 
-	options.parse(argc, args, true);
+	options.parse(argc, argv, true);
 
 	if (out_filename.empty()) {
 		cvfatal() << "No output filename given\n";
@@ -118,10 +118,10 @@ int do_main(int argc, const char **args)
 }
 
 // for readablility the real main function encapsulates the do_main in a try-catch block
-int main(int argc, const char **args)
+int main(int argc, const char **argv)
 {
 	try {
-		return do_main(argc, args);
+		return do_main(argc, argv);
 	}
 	catch (invalid_argument& err) {
 		cerr << "invalid argument: " << err.what() << "\n";

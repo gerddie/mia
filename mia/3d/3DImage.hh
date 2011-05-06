@@ -1,5 +1,5 @@
 /*  -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  *
  * This program is free software; you can redistribute it and/or modify
@@ -33,24 +33,41 @@
 NS_MIA_BEGIN
 
 /**
+   @brief The generic base type of a 3D image 
+   
    The base type of a 3D image with is used to move around the images in the code.
    This type is not prepared to hold actual data. Instead the templated type T3DImage derived from this class
    is used to hold image data of a certain voxel type.
 */
 
 class EXPORT_3D C3DImage  :  public CAttributedData{
-
 protected:
+	/**
+	   Constructor to create the base sceleton of the image 
+	   @param data attributes (meta data) that belong to the image but is normally not required for 
+	   processing 
+	   @param type pixel type of this image  
+	 */
 	C3DImage(const CAttributedData& data, EPixelType type);
+	/**
+	   Constructor to create the base sceleton of the image 
+	   @param type pixel type of this image  
+	*/
 	C3DImage(EPixelType type);
+	
+	/// standard constructor 
 	C3DImage();
 public:
+	/// data type description for the plug-in path component 
 	static const char *type_descr;
+	
+	/// generic type for the dimension of the image 
 	typedef C3DBounds dimsize_type;
+
+	/// Pointer type of the image 
 	typedef std::shared_ptr<C3DImage > Pointer;
 
 	virtual  ~C3DImage();
-
 
 	/**
 	   \returns the type of the pixels(voxels) in the image
@@ -74,26 +91,33 @@ public:
 	/// set the voxel size on world units
 	virtual void set_voxel_size(const C3DFVector& voxel) = 0;
 
-	
+	///@returns the orientation of the image 
 	E3DImageOrientation get_orientation() const;
 
+	/** Set the orientation of the image 
+	    @param orient 
+	    @remark orientation is currently not really used
+	*/
 	void set_orientation(E3DImageOrientation orient);
-
 private:
-	EPixelType _M_pixel_type;
+	EPixelType m_pixel_type;
 };
 
 /// define a shortcut to the 3D image shared pointer. 
 typedef C3DImage::Pointer P3DImage;
 
 /**
+   @brief Specific type of the 3D images that hold real pixel data 
+
    This template defines a 3D image holding a certain type \a T as pixel type. 
 */
 template <typename T>
 class EXPORT_3D T3DImage : public C3DImage {
 public:
+	/// define the super class of this class for generic processing 
 	typedef C3DImage Super;
 
+	/// \cond SELFEXPLAINING 
 	typedef typename T3DDatafield<T>::iterator iterator;
 	typedef typename T3DDatafield<T>::const_iterator const_iterator;
 	typedef typename T3DDatafield<T>::const_reference const_reference;
@@ -103,7 +127,8 @@ public:
 	typedef typename T3DDatafield<T>::value_type value_type;
 	typedef typename T3DDatafield<T>::difference_type difference_type;
 	typedef typename T3DDatafield<T>::size_type size_type;
-
+	/// \endcond
+	
 	/**
 	   Construct a new image of a given size and with the given input date.
 	   \param size
@@ -157,49 +182,53 @@ public:
         /** Put some Data along some line parallel to Z axis */
         void put_data_line_z(int x, int y, const std::vector<T> &buffer);
 
-
+	/// forwarding function to access the underlying T3DDatafield
 	T2DImage<T> get_data_plane_xy(size_t  z)const;
 
+	/// forwarding function to access the underlying T3DDatafield
         T2DImage<T> get_data_plane_yz(size_t  x)const;
 
+	/// forwarding function to access the underlying T3DDatafield
         T2DImage<T> get_data_plane_xz(size_t  y)const;
 
+	/// forwarding function to access the underlying T3DDatafield
 	void put_data_plane_xy(size_t  z, const T2DImage<T>& p);
 
+	/// forwarding function to access the underlying T3DDatafield
         void put_data_plane_yz(size_t  x, const T2DImage<T>& p);
 
+	/// forwarding function to access the underlying T3DDatafield
         void put_data_plane_xz(size_t  y, const T2DImage<T>& p);
 
-
-
+	
 	/// element access operator - read only
 	const_reference operator()(size_t  x, size_t  y, size_t  z) const {
-		return _M_image(x,y,z);
+		return m_image(x,y,z);
 	}
 
 	/// element access operator - read/write
 	reference operator()(size_t  x, size_t  y, size_t  z){
-		return _M_image(x,y,z);
+		return m_image(x,y,z);
 	}
 
 	/// element access operator - read only
 	const_reference operator()(const C3DBounds& l) const{
-		return _M_image(l.x,l.y, l.z);
+		return m_image(l.x,l.y, l.z);
 	}
 
 	/// element access operator - read/write
 	reference operator()(const C3DBounds& l){
-		return _M_image(l.x,l.y, l.z);
+		return m_image(l.x,l.y, l.z);
 	}
 
 	/// constant iterator
 	const_iterator begin()const {
-		return _M_image.begin();
+		return m_image.begin();
 	}
 
 	/// constant iterator
 	const_iterator end()const {
-		return _M_image.end();
+		return m_image.end();
 	}
 
 	/// \returns the all over number of pixels/voxels
@@ -207,28 +236,28 @@ public:
 
 	/// read/write iterator, issues copy-on-write
 	iterator begin() {
-		return _M_image.begin();
+		return m_image.begin();
 	}
 
 	/// read/write iterator, issues copy-on-write
 	iterator end() {
-		return _M_image.end();
+		return m_image.end();
 	}
 
 	/// constant iterator starting at the given location
 	const_iterator begin_at(size_t x, size_t y, size_t z) const {
-		return _M_image.begin_at(x,  y, z);
+		return m_image.begin_at(x,  y, z);
 	}
 
 	/// read/write iterator starting at the given location
 	iterator begin_at(size_t x, size_t y, size_t z) {
-		return _M_image.begin_at(x,  y,  z);
+		return m_image.begin_at(x,  y,  z);
 	}
 
         /** a linear read only access operator */
         const_reference operator[](int i)const
         {
-		return _M_image[i];
+		return m_image[i];
         }
 
         /** A linear read/write access operator. The refcount of Data must be 1,
@@ -236,7 +265,7 @@ public:
         */
         reference operator[](int i)
         {
-		return _M_image[i];
+		return m_image[i];
         }
 
 	/// read only access to the underlying data
@@ -251,19 +280,20 @@ public:
 	 */
 	C3DFVector get_gradient(int index) const
 	{
-		return _M_image.template get_gradient<float>(index);
+		return m_image.template get_gradient<float>(index);
 	}
 
 	/// \returns the 3D size of the image
 	virtual const C3DBounds& get_size() const;
 
+	/// \returns the physical voxel size 
 	virtual C3DFVector get_voxel_size() const;
 
 	/// set the voxel size on world units
 	virtual void set_voxel_size(const C3DFVector& voxel);
 
 private:
-	T3DDatafield<T> _M_image;
+	T3DDatafield<T> m_image;
 };
 
 /**
@@ -310,7 +340,7 @@ private:
 	std::string do_as_string() const;
 	bool do_is_equal(const CAttribute& other) const;
 	bool do_is_less(const CAttribute& other) const;
-	T3DVector<T> _M_value;
+	T3DVector<T> m_value;
 };
 
 template <typename T>

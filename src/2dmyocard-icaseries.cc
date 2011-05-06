@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -37,6 +37,7 @@
 
 
 #include <mia/core.hh>
+#include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/ica.hh>
@@ -58,7 +59,7 @@ class Convert2Float {
 public: 
 	C2DFImage operator () (P2DImage image) const; 
 private: 
-	FConvert2DImage2float _M_converter; 
+	FConvert2DImage2float m_converter; 
 }; 
 
 
@@ -110,7 +111,9 @@ int do_main( int argc, const char *argv[] )
 
 	options.push_back(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
 				   "Segmentation method")); 
-	options.parse(argc, argv, false);
+	
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+		return EXIT_SUCCESS; 
 
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
@@ -170,7 +173,7 @@ int do_main( int argc, const char *argv[] )
 	if (!cropped_filename.empty()) {
 		bfs::path cf(cropped_filename);
 		cf.replace_extension(); 
-		input_set.rename_base(cf.filename()); 
+		input_set.rename_base(cf.string()); 
 		input_set.save_images(cropped_filename);
 		
 		unique_ptr<xmlpp::Document> test_cropset(input_set.write());
@@ -186,7 +189,7 @@ int do_main( int argc, const char *argv[] )
 		bfs::path reff(reference_filename);
 		reff.replace_extension(); 
 		input_set.set_images(references);  
-		input_set.rename_base(reff.filename()); 
+		input_set.rename_base(__bfs_get_filename(reff)); 
 		input_set.save_images(reference_filename);
 		
 		
@@ -226,6 +229,6 @@ int main( int argc, const char *argv[] )
 
 inline C2DFImage Convert2Float::operator () (P2DImage image) const
 {
-	return ::mia::filter(_M_converter, *image); 
+	return ::mia::filter(m_converter, *image); 
 }
 

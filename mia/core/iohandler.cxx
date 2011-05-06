@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -22,8 +22,9 @@
  */
 
 #include <stdexcept>
-#include <boost/filesystem/convenience.hpp>
+#include <mia/core/bfsv23dispatch.hh>
 #include <mia/core/handler.cxx>
+
 
 NS_MIA_BEGIN
 
@@ -32,15 +33,15 @@ namespace bfs = ::boost::filesystem;
 template <class I> 
 TIOPluginHandler<I>::TIOPluginHandler(const std::list<bfs::path>& searchpath):
 	TPluginHandler<I>(searchpath), 
-	_M_pool_plugin(new CDatapoolPlugin())
+	m_pool_plugin(new CDatapoolPlugin())
 {
-	add_plugin(_M_pool_plugin); 
+	add_plugin(m_pool_plugin); 
 	for (const_iterator i = this->begin(); i != this->end(); ++i) 
-		i->second->add_suffixes(_M_suffixmap);
+		i->second->add_suffixes(m_suffixmap);
 
-	_M_compress_sfx.insert(".Z"); 
-	_M_compress_sfx.insert(".gz"); 
-	_M_compress_sfx.insert(".bz2"); 
+	m_compress_sfx.insert(".Z"); 
+	m_compress_sfx.insert(".gz"); 
+	m_compress_sfx.insert(".bz2"); 
 }
 
 template <class I> 
@@ -49,12 +50,12 @@ TIOPluginHandler<I>::prefered_plugin_ptr(const std::string& fname) const
 {
 	// get the suffix - if there is a Z, gz, or bz2, include it in the suffix
 	bfs::path fpath(fname);
-	std::string fsuffix = fpath.extension(); 
+	std::string fsuffix = __bfs_get_extension(fpath); 
 	if (!fsuffix.empty()) {
-		if (_M_compress_sfx.find(fsuffix) != _M_compress_sfx.end()) {
+		if (m_compress_sfx.find(fsuffix) != m_compress_sfx.end()) {
 			// remove the last extension and get the one before
 			bfs::path help(fpath.stem()); 
-			fsuffix = help.extension();
+			fsuffix = __bfs_get_extension(fpath); 
 		}
 	}else 
 		fsuffix = fname; 
@@ -65,10 +66,10 @@ TIOPluginHandler<I>::prefered_plugin_ptr(const std::string& fname) const
 	cvdebug() << "looking up plugin for '" << fsuffix << "'\n"; 
 
 	if (fsuffix == ".datapool") 
-		return _M_pool_plugin; 
+		return m_pool_plugin; 
 
-	CSuffixmap::const_iterator p = _M_suffixmap.find(fsuffix);
-	if (p != _M_suffixmap.end())
+	CSuffixmap::const_iterator p = m_suffixmap.find(fsuffix);
+	if (p != m_suffixmap.end())
 		return this->plugin(p->second.c_str());
 	return 0; 
 }
@@ -79,14 +80,14 @@ TIOPluginHandler<I>::prefered_plugin(const std::string& fname) const
 {
 	// get the suffix - if there is a Z, gz, or bz2, include it in the suffix
 	bfs::path fpath(fname);
-	std::string fsuffix = fpath.extension();
-	if (_M_compress_sfx.find(fsuffix) != _M_compress_sfx.end()) {
+	auto fsuffix = __bfs_get_extension(fpath); 
+	if (m_compress_sfx.find(fsuffix) != m_compress_sfx.end()) {
 		bfs::path  help(fpath.stem()); 
-		fsuffix = help.extension();
+		fsuffix = __bfs_get_extension(fpath); 
 	}
 	cvdebug() << "Got suffix '" << fsuffix << "'\n"; 
-	CSuffixmap::const_iterator p = _M_suffixmap.find(fsuffix);
-	if (p != _M_suffixmap.end())
+	auto p = m_suffixmap.find(fsuffix);
+	if (p != m_suffixmap.end())
 		return *this->plugin(p->second.c_str());
 	throw invalid_argument(string("no plugin corresponds to '") + fsuffix + "'"); 
 }
@@ -95,7 +96,7 @@ template <class I>
 const typename TIOPluginHandler<I>::CSuffixmap& 
 TIOPluginHandler<I>::get_supported_filetype_map() const
 {
-	return _M_suffixmap; 
+	return m_suffixmap; 
 }
 
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -26,6 +26,14 @@
 
 NS_MIA_BEGIN
 
+/**
+   This function runs a fuzzy c-means segmentation with B-field correction in the input data set. 
+   \param[in] src the input image 
+   \param[in] noOfClasses number of segmentation classes
+   \param[in] residuum limit for optimization 
+   \param[out] classes probability images after segmentation 
+   \returns the B-field corrected image 
+ */
 EXPORT_3D P3DImage fuzzy_segment_3d(const C3DImage& src, size_t noOfClasses, float residuum, C3DImageVector& classes);
 
 NS_MIA_END

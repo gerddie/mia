@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Evolutionary Anthropoloy
  *
  * This program is free software; you can redistribute it and/or modify
@@ -36,8 +36,8 @@ public:
 private:
 	CDownscale::result_type do_filter(const mia::C2DImage& image) const;
 
- 	mia::C2DFilterPlugin::ProductPtr _M_smoothing;
-	const mia::C2DBounds _M_block_size;
+ 	mia::C2DFilterPlugin::ProductPtr m_smoothing;
+	const mia::C2DBounds m_block_size;
 
 
 };
@@ -48,8 +48,8 @@ public:
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-	mia::C2DBounds _M_b;
-	std::string _M_filter;
+	mia::C2DBounds m_b;
+	std::string m_filter;
 };
 
 NS_END

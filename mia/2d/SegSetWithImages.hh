@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -35,6 +35,8 @@ namespace xmlpp {
 NS_MIA_BEGIN
 
 /**
+   \brief A set of images and its segmentations, related to heart perfusion analysis  
+   
    A set of slices containing segmentationinformation as well as the images. 
  */
 class EXPORT_2D CSegSetWithImages: public CSegSet {
@@ -54,12 +56,12 @@ public:
 	/// \returns a vector of the images 
 	const C2DImageSeries& get_images()const;
 
-	// sets the image series 
+	/// sets the image series @param series 
 	void set_images(const C2DImageSeries& series); 
 	
-	// save the images to their give file names 
+	/// save the images to their give file names with the given directory as root @param root 
 	void save_images(const string& root) const; 
-
+	
 	/** Run acropping on the inout images and correct the segmentation information accordingly 
 	    \param start upper left corner of the cropping reagion 
 	    \param end lower right corner  of the cropping reagion 
@@ -69,7 +71,7 @@ public:
 	CSegSetWithImages crop(const C2DIVector&  start, const C2DIVector&  end,
 			       const std::string& crop_filename_base);
 private:
-	C2DImageSeries _M_images;
+	C2DImageSeries m_images;
 };
 
 NS_MIA_END

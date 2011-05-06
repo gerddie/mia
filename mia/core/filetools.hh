@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -47,9 +47,9 @@ EXPORT_CORE std::vector<std::string> get_consecutive_numbered_files(std::string 
    are all numberd consecutive. Also obtain the begin and end numbers as well as the width of the
    number pattern
    \param in_filename a file name pattern, e.g. file0000.png
-   \retval min minimum file number
-   \retval max maximum file number
-   \retval format_width with of the numbering part (here 4)
+   \param[out] min minimum file number
+   \param[out] max maximum file number
+   \param[out] format_width with of the numbering part (here 4)
    \returns a vector of filenames that follow above pattern
 */
 EXPORT_CORE const std::string get_filename_pattern_and_range(std::string const& in_filename, size_t& min, size_t& max, size_t& format_width);
@@ -68,7 +68,7 @@ EXPORT_CORE std::vector<std::string> get_consecutive_numbered_files_from_pattern
 /**
    split a filename with a number part into a c-format string or a wildcard string
    \param fname input file name
-   \retval base the resulting format string
+   \param[out] base the resulting format string
    \param wildcard true to generate a wildcard string, false to generate a c-format string
    \returns the width of the numbering pattern
    example fname = file000.png -> wildcard ? file???.png : file%03d.png
@@ -98,7 +98,23 @@ EXPORT_CORE std::string create_filename(const char *cformat, size_t num);
 
 EXPORT_CORE size_t get_filename_number_pattern_width(std::string const& in_filename);
 
-EXPORT_CORE size_t get_filename_number_pattern(std::string const& in_filename, std::string& base, std::string& suffix);
+/**
+   Split the file name numbering pattern for names (e.g. "lala0000.bla") and get the number 
+     of digits 
+   \param infilename the input file name 
+   \param[out] base the base of the filename (would be "lala") 
+   \param[out] suffix the file suffix (would be ".bla") 
+   \returns the number of digits (would be 4) 
+ */
+EXPORT_CORE size_t get_filename_number_pattern(std::string const& infilename, std::string& base, std::string& suffix);
+
+/**
+   Split the file name numbering pattern for names (e.g. "lala00210.bla") 
+   \param in_filename the input file name 
+   \param[out] base the base of the filename (would be "lala") 
+   \param[out] suffix the file suffix (would be ".bla") 
+   \param[out] number the file suffix (would be "00210") 
+ */
 
 EXPORT_CORE void split_filename_number_pattern(std::string const& in_filename, std::string& base,
 					       std::string& suffix, std::string& number);

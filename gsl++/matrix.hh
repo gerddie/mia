@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2010 Gert Wollny 
+ * Copyright (c) Madrid 2010-2011 Gert Wollny 
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -40,7 +40,7 @@ public:
 	Matrix(); 
 
 	/**
-	   Create a matrix of size rows \times columns, 
+	   Create a matrix of size rows \f$\times\f$ columns, 
 	   \param rows
 	   \param columns 
 	   \param clean allocate zeroing out all elements 
@@ -70,7 +70,7 @@ public:
 	operator const gsl_matrix *() const; 
 
 private: 
-	gsl_matrix *_M_matrix; 
+	gsl_matrix *m_matrix; 
 }; 
 
 } // end namespace 

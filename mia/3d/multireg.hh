@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,8 @@ NS_MIA_BEGIN
 
 typedef std::shared_ptr<C3DFVectorfield > P3DFVectorfield;
 /**
-   The 3D non-rigid image registration class. Its usage is very simple:
+   \brief A 3D non-rigid image registration class. 
+   
    Initialise it with the desired parameters and call it with the
    source (template) and reference image to obtain a vector field
    describing the registration.
@@ -42,24 +43,21 @@ public:
 	   The constructor:
 	   \param start_size an approximate size for the lowest resolution in the
                    multi-resolution registration
-	   \param cost an image similarity measure with an according gradient function
 	   \param max_iter maximum number of times steps to be used at each multi-grid level
 	   \param model the registration model (e.g.- navier for linear elasticity operator)
 	   \param time_step the time step model (e.g. fluid to letthe model operator work on the
                 velocity field instead of the deformation field)
-	   \param ipf an interpolator factory for image interpolation
-           \param outer_epsilon a relative cost function value per multi-grid level to stop
+	   \param outer_epsilon a relative cost function value per multi-grid level to stop
                   registration
-	   \param save_steps save the deformed source image for each registration step
-	 */
+	*/
 	C3DMultiImageRegister(size_t start_size, size_t max_iter,
 			      C3DRegModel& model, C3DRegTimeStep& time_step,
 			      float outer_epsilon);
 
 	/**
 	   The registration operator that does the registration
-	   \param source the source or template image to be registered to the ...
-	   \param reference
+	   \param cost the cost function to be minimized 
+	   \param ipf interpolation factory used for image transformations 
 	   \returns a vector field describing the registration
 	 */
 	P3DTransformation operator () (C3DImageFatCostList& cost, P3DInterpolatorFactory  ipf);
@@ -67,11 +65,11 @@ private:
 	void reg_level(C3DImageFatCostList& cost, C3DGridTransformation& result, const C3DInterpolatorFactory& ipf);
 	void reg_level_regrid(C3DImageFatCostList& cost, C3DGridTransformation& result, const C3DInterpolatorFactory& ipf);
 
-	size_t _M_start_size;
-	size_t _M_max_iter;
-	C3DRegModel& _M_model;
-	C3DRegTimeStep& _M_time_step;
-	float _M_outer_epsilon;
+	size_t m_start_size;
+	size_t m_max_iter;
+	C3DRegModel& m_model;
+	C3DRegTimeStep& m_time_step;
+	float m_outer_epsilon;
 };
 
 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -42,23 +42,23 @@ static const char *program_info =
 
 struct FVectorNorm {
 
-	FVectorNorm():_M_max_norm(0.0f) {
+	FVectorNorm():m_max_norm(0.0f) {
 	}
 
 	float operator ()(const C3DFVector& v) {
 		float n = v.norm();
-		if (_M_max_norm < n)
-			_M_max_norm = n;
+		if (m_max_norm < n)
+			m_max_norm = n;
 		return n;
 	}
 	float get_max()const {
-		return _M_max_norm;
+		return m_max_norm;
 	}
 private:
-	float _M_max_norm;
+	float m_max_norm;
 };
 
-int do_main(int argc, const char **args)
+int do_main(int argc, const char **argv)
 {
 	CCmdOptionList options(program_info);
 	string src_filename;
@@ -72,7 +72,8 @@ int do_main(int argc, const char **args)
 	options.push_back(make_opt( cost_descr, "cost", 'c', "cost function to use"));
 
 
-	options.parse(argc, args);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 
 
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
@@ -90,9 +91,8 @@ int do_main(int argc, const char **args)
 		throw invalid_argument(string("no image found in ") + ref_filename);
 
 	C3DFVectorfield forcefield((*source->begin())->get_size());
-	cvmsg() << "Cost = " << cost->value( **source->begin(), **ref->begin()) << "\n";
-
-	cost->evaluate_force(**source->begin(), **ref->begin(), 1.0, forcefield);
+	cost->set_reference(**ref->begin());  
+	cvmsg() << "Cost = " << cost->evaluate_force(**source->begin(),1.0, forcefield) << "\n"; 
 
 	C3DFImage *presult = new C3DFImage(forcefield.get_size());
 	P3DImage result(presult);
@@ -111,10 +111,10 @@ int do_main(int argc, const char **args)
 }
 
 
-int main(int argc, const char **args)
+int main(int argc, const char **argv)
 {
 	try {
-		return do_main(argc, args);
+		return do_main(argc, argv);
 	}
 	catch (invalid_argument& err) {
 		cerr << "invalid argument: " << err.what() << "\n";

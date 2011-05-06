@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -37,16 +37,17 @@
 #include <stdexcept>
 #include <boost/any.hpp>
 #include <boost/ref.hpp>
+#include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
 
 /**
-   \brief Base class of all attributes
+   \brief The class of all attributes of data that is considered to ve meta-data. 
+   
    CAttribute is the base class used for generric attributes of images and similar
-   entities. This class is abstract and most likely you want to use one of the provided specializations
-   of the class TAttribute or create your own specializations.
+   entities. This class is abstract and most likely you want to use one of the 
+   provided specializations of the class TAttribute or create your own specializations.
 */
-
 class EXPORT_CORE CAttribute {
 public:
 	/// virtual destructor since derived classes may define dynamic objetcs
@@ -138,13 +139,14 @@ public:
 	/// \returns typeid(T).name(), and is, therefore, dependend on the compiler
 	virtual const char *typedescr() const;
 protected:
+	/// @returns the value of the attribute 
 	const T& get_value() const;
 private:
 	virtual std::string do_as_string() const;
 	virtual bool do_is_equal(const CAttribute& other) const;
 	virtual bool do_is_less(const CAttribute& other) const;
 
-	T _M_value;
+	T m_value;
 };
 
 /**
@@ -222,6 +224,7 @@ public:
 
 	//@}
 
+	/// Assignemt operator 
 	CAttributedData& operator =(const CAttributedData& org);
 
 	/** \param key
@@ -239,15 +242,15 @@ public:
 	/**
 	   Sets the attribute \a name to value \a attr. If \a attr is \a NULL, then
 	   the attribute is removed from the list (or not added)
-	   \param name
+	   \param key
 	   \param attr
 	*/
 	void set_attribute(const std::string& key, PAttribute attr);
 
 	/**
 	   Set an attribute using one of the defined translators
-	   \param name
-	   \param attr
+	   \param key
+	   \param value
 	 */
 	void set_attribute(const std::string& key, const std::string& value);
 
@@ -255,20 +258,39 @@ public:
 	const std::string get_attribute_as_string(const std::string& key)const;
 
 
+	/**
+	   Look for a certain attribute and try to cast it to the output type. 
+	   If the attribute is not found, a std::invalid_argument exception is thrown. 
+	   If the cast fails then std::bad_cast exception will be thrown.
+	   @param key the key of the attribute to look up. 
+	   @returns the value of the attribute 
+	*/
 	template <typename T>
 	const T get_attribute_as(const std::string& key)const;
 
+	/**
+	   Delete the attribute with a given key from the list 
+	   @param key 
+	 */
+
 	void delete_attribute(const std::string& key);
 
+	/**
+	   See if a certain attribute exists 
+	   @param key
+	   @returns true if attribute exists, false otherwise
+	*/
 	bool has_attribute(const std::string& key)const;
 
+	/// @cond FRIENDSDOC
 	friend EXPORT_CORE bool operator == (const CAttributedData& a, const CAttributedData& b);
+	/// @endcond 
 private:
-	PAttributeMap _M_attr;
+	PAttributeMap m_attr;
 };
 
 
-/** Compare two attribute data instances \a and \b
+/** Compare two attribute data instances \a a  and \a b
     \returns \a true, if \a a and \a b hold the same set of attributes with the same values,
              \a false otherwise
 */
@@ -277,7 +299,9 @@ EXPORT_CORE bool operator == (const CAttributeMap& am, const CAttributeMap& bm);
 
 
 /**
-   A class to translate an attribute from a string.
+   @brief A class to translate an attribute from a string.
+   
+   This class is the base class to translate attributes from their typed value to a string and back. 
 */
 
 class EXPORT_CORE CAttrTranslator {
@@ -295,11 +319,16 @@ private:
 protected:
 	CAttrTranslator();
 
+	/**
+	   Register this translator to handle attributes with the given key 
+	   @param key 
+	 */
 	void do_register(const std::string& key);
 };
 
 /**
    \brief A singelton class to translate strings to attributes based on keys.
+   
    This class provides a singleton to translate strings to attributes. For the translation to take
    place for each attribute key a CAttrTranslator needs to be registered first.
 */
@@ -329,7 +358,7 @@ private:
 	void add(const std::string& key, const CAttrTranslator *  const t);
 
 	typedef std::map<std::string, const CAttrTranslator *  const> CMap;
-	CMap _M_translators;
+	CMap m_translators;
 };
 
 
@@ -357,10 +386,11 @@ void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& key
    \param value
  */
 template <>
-void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& name, const char * value);
+void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& key, const char * value);
 
 
 /** \brief Generic string vs. attribute translator singleton
+
     This class defines a generic translator between strings and a specific attribute type.
     All translaters are registered to a global map of type CStringAttrTranslatorMap
     that selects the conversion  based on a key. The global map is implemented as a singleton
@@ -385,20 +415,20 @@ private:
 
 template <typename T>
 TAttribute<T>::TAttribute(typename ::boost::reference_wrapper<T>::type value):
-	_M_value(value)
+	m_value(value)
 {
 }
 
 template <typename T>
 TAttribute<T>::operator T() const
 {
-	return _M_value;
+	return m_value;
 }
 
 template <typename T>
 const T& TAttribute<T>::get_value() const
 {
-	return _M_value;
+	return m_value;
 }
 
 template <typename T>
@@ -534,7 +564,7 @@ struct dispatch_attr_string<CAttributeMap> {
 template <typename T>
 std::string TAttribute<T>::do_as_string() const
 {
-	return dispatch_attr_string<T>::val2string(_M_value);
+	return dispatch_attr_string<T>::val2string(m_value);
 }
 
 template <typename T>
@@ -547,7 +577,7 @@ bool TAttribute<T>::do_is_equal(const CAttribute& other) const
 			  << "failed\n";
 		return false;
 	}
-	return _M_value == o->_M_value;
+	return m_value == o->m_value;
 }
 
 template <typename T>
@@ -555,7 +585,7 @@ bool TAttribute<T>::do_is_less(const CAttribute& other) const
 {
 	const TAttribute<T>* o = dynamic_cast<const TAttribute<T> *>(&other);
 	if (o)
-		return _M_value < o->_M_value;
+		return m_value < o->m_value;
 
 	return strcmp(typedescr(), other.typedescr()) < 0;
 }

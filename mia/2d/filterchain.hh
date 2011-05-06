@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -29,15 +29,46 @@
 
 NS_MIA_BEGIN
 
+
+/**
+   \brief a convenience class to create a chain of 2D image filters 
+
+   This class is used to construct a filter chain from a vector of 
+   parameter strings. 
+   
+*/
+
 class EXPORT_2D C2DFilterChain {
 public:
 	C2DFilterChain();
-	C2DFilterChain(const vector<const char *>& descr);
 
+	/**
+	   Construct the filter chain by using a list of strings 
+	   that describe the filters to be chained up. 
+	   @param descr 
+	*/
+	C2DFilterChain(const vector<const char *>& descr);
+	
+	/**
+	   Adds a filter at the begin of the chain. 
+	   @param filter 
+	 */
 	void push_front(P2DFilter filter);
+
+	/**
+	   Adds a filter at the end of the chain. 
+	   @param filter 
+	 */
 	void push_back(P2DFilter filter);
 
+	/**
+	   run the filter chain on an image
+	   @param image input image 
+	   @returns filtered image 
+	 */
 	P2DImage filter(const C2DImage& image) const;
+
+	/// @returns true if the filter chain is empty, false otherwise 
 	bool empty() const;
 private:
 	std::list<P2DFilter> m_chain;

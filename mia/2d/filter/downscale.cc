@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Evolutionary Anthropoloy
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,6 +18,37 @@
  *
  */
 
+
+/* 
+   LatexBeginPluginDescription{2D image filters}
+   
+   \subsection{Downscale filter}
+   \label{filter2d:downscale}
+   
+   \begin{description}
+   
+   \item [Plugin:] downscale
+   \item [Description:] Downscale the input image by using a given block size to define the 
+            downscale factor. Prior to scaling the image is filtered by a smoothing filter to eliminate 
+	    high frequency data and avoid aliasing artifacts. 
+   \item [Input:] Abitrary gray scale or binary image 
+   \item [Output:] The downscaled image.  
+   
+   \plugtabstart
+   bx & int & downscale factor in x direction & 1  \\
+   by & int & downscale factor in y direction & 1  \\
+   b & string & Alternative to define the scaling factors as a 2D vector & <1,1>  \\
+   kernel & string & Base type of the smoothing kernel, the filter kernel width is estimated based 
+       on the downscale factors & gauss \\\hline 
+   \plugtabend
+   
+   \end{description}
+
+   LatexEnd  
+ */
+
+
+
 #include <limits>
 #include <sstream>
 
@@ -34,7 +65,7 @@ using namespace boost;
 namespace bfs= ::boost::filesystem;
 
 CDownscale::CDownscale(const C2DBounds& block_size, const string& filter):
-	_M_block_size(block_size)
+	m_block_size(block_size)
 {
 	stringstream fcompose;
 
@@ -44,19 +75,19 @@ CDownscale::CDownscale(const C2DBounds& block_size, const string& filter):
 	cvdebug() << "CDownscale::CDownscale: smoothing kernel '" << fcompose.str() << "'\n";
 
 
-	_M_smoothing = C2DFilterPluginHandler::instance().produce(fcompose.str().c_str());
+	m_smoothing = C2DFilterPluginHandler::instance().produce(fcompose.str().c_str());
 
-	if (!_M_smoothing)
+	if (!m_smoothing)
 		throw invalid_argument(string("smoothing filter creation from '") +
 				       fcompose.str() + string("failed"));
 	else
-		cvdebug() << " Created filter with use count:" <<_M_smoothing.use_count() << "\n";
+		cvdebug() << " Created filter with use count:" <<m_smoothing.use_count() << "\n";
 
 }
 
 CDownscale::~CDownscale()
 {
-	cvdebug() << " Release filter with use count:" <<_M_smoothing.use_count() << "\n";
+	cvdebug() << " Release filter with use count:" <<m_smoothing.use_count() << "\n";
 }
 
 template <class T>
@@ -64,24 +95,24 @@ CDownscale::result_type CDownscale::operator () (const T2DImage<T>& src) const
 {
 	cvdebug() << "CDownscale::operator () begin\n";
 	T2DImage<T> *fresult = new T2DImage<T>(
-		       C2DBounds((src.get_size().x + _M_block_size.x - 1) / _M_block_size.x,
-				 (src.get_size().y + _M_block_size.y - 1) / _M_block_size.y));
+		       C2DBounds((src.get_size().x + m_block_size.x - 1) / m_block_size.x,
+				 (src.get_size().y + m_block_size.y - 1) / m_block_size.y));
 
 	CDownscale::result_type Result(fresult);
 
 	typename T2DImage<T>::iterator i = fresult->begin();
-	C2DBounds Start(_M_block_size.x/2,_M_block_size.y/2);
+	C2DBounds Start(m_block_size.x/2,m_block_size.y/2);
 
 	// Put the Blockaverages into the target
-	for (Start.y = 0; Start.y < src.get_size().y; Start.y += _M_block_size.y){
-		for (Start.x = 0; Start.x < src.get_size().x; Start.x += _M_block_size.x,++i){
+	for (Start.y = 0; Start.y < src.get_size().y; Start.y += m_block_size.y){
+		for (Start.x = 0; Start.x < src.get_size().x; Start.x += m_block_size.x,++i){
 			*i = src(Start);
 		}
 	}
 
 	C2DFVector pixel_size = src.get_pixel_size();
-	pixel_size.x /= _M_block_size.x;
-	pixel_size.y /= _M_block_size.y;
+	pixel_size.x /= m_block_size.x;
+	pixel_size.y /= m_block_size.y;
 	fresult->set_pixel_size(pixel_size);
 
 	cvdebug() << "CDownscale::operator () end\n";
@@ -90,33 +121,33 @@ CDownscale::result_type CDownscale::operator () (const T2DImage<T>& src) const
 
 CDownscale::result_type CDownscale::do_filter(const C2DImage& image) const
 {
-	P2DImage smooth_image = _M_smoothing->filter(image);
+	P2DImage smooth_image = m_smoothing->filter(image);
 	return mia::filter(*this, *smooth_image);
 }
 
 
 C2DDownscaleFilterPlugin::C2DDownscaleFilterPlugin():
 	C2DFilterPlugin("downscale"),
-	_M_b(1,1),
-	_M_filter("gauss")
+	m_b(1,1),
+	m_filter("gauss")
 {
-	add_parameter("bx", new CUIntParameter(_M_b.x, 1,
+	add_parameter("bx", new CUIntParameter(m_b.x, 1,
 					      numeric_limits<int>::max(), false,
 					      "blocksize in x direction"));
 
-	add_parameter("by", new CUIntParameter(_M_b.y, 1,
+	add_parameter("by", new CUIntParameter(m_b.y, 1,
 					      numeric_limits<int>::max(), false,
 					      "blocksize in y direction"));
 
-	add_parameter("b", new C2DBoundsParameter(_M_b, false, "blocksize"));
+	add_parameter("b", new C2DBoundsParameter(m_b, false, "blocksize"));
 
-	add_parameter("kernel", new CStringParameter(_M_filter, false,
+	add_parameter("kernel", new CStringParameter(m_filter, false,
 						     "smoothing filter kernel to be applied"));
 }
 
 C2DDownscaleFilterPlugin::ProductPtr C2DDownscaleFilterPlugin::do_create()const
 {
-	return C2DDownscaleFilterPlugin::ProductPtr(new CDownscale(_M_b, _M_filter));
+	return C2DDownscaleFilterPlugin::ProductPtr(new CDownscale(m_b, m_filter));
 }
 
 const string C2DDownscaleFilterPlugin::do_get_descr()const

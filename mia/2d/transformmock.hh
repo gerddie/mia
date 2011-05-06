@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -28,12 +28,13 @@
 NS_MIA_BEGIN
 
 /**
-   This class mocks a transformation by implementing all the pure virtual 
+   @brief This class mocks a transformation by implementing all the pure virtual 
    methods of the \a C2DTransformation interface. 
-   It is used only for testing purpouses. 
- */
 
+   This class is only used for testing purpouses. 
+ */
 struct  EXPORT_2D C2DTransformMock: public C2DTransformation {
+	/// @cond TESTINTERFACE 
 	C2DTransformMock();
 	C2DTransformMock(const C2DBounds& size);
 	virtual C2DTransformation *invert() const;
@@ -65,19 +66,19 @@ protected:
 		friend class C2DTransformMock; 
 		iterator_impl(const C2DBounds& pos, const C2DBounds& size);  
 
-		C2DTransformation::iterator_impl *clone()const; 
+		C2DTransformation::iterator_impl *clone()const __attribute__((warn_unused_result)); 
 		virtual const C2DFVector& do_get_value()const; 
 		virtual void do_x_increment(); 
 		virtual void do_y_increment(); 
-		C2DFVector _M_value; 
+		C2DFVector m_value; 
 	}; 
 
 private:
 	virtual P2DTransformation do_upscale(const C2DBounds& size) const;
-	virtual C2DTransformation *do_clone() const;
+	virtual C2DTransformation *do_clone() const __attribute__((warn_unused_result));
         virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
 	C2DBounds m_size;
-
+	/// @endcond 
 };
 
 NS_MIA_END

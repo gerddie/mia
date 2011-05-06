@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE( test_histogram)
 	test_result[5] = 4;
 
 
-	CHistogram<CUBHistogramFeeder> h = CHistogram<CUBHistogramFeeder>(CUBHistogramFeeder(0,0,0));
+	THistogram<CUBHistogramFeeder> h = THistogram<CUBHistogramFeeder>(CUBHistogramFeeder(0,0,0));
 	BOOST_CHECK(h.size() == 256);
 
 	for (int i = 0; i < 10; ++i)
@@ -77,10 +77,10 @@ BOOST_AUTO_TEST_CASE( test_float_histogram)
 	float init_data[10] = { 1, 2, 3, 4, 5, 5, 5, 5, 4, 3 };
 
 
-	CHistogram<CHistogramFeeder<float> > h(CHistogramFeeder<float>(1,5,5));
+	THistogram<THistogramFeeder<float> > h(THistogramFeeder<float>(1,5,5));
 	h.push_range(init_data, init_data + 10);
 
-	CHistogram<CHistogramFeeder<float> >::value_type value = h.at(0);
+	THistogram<THistogramFeeder<float> >::value_type value = h.at(0);
 
 	BOOST_CHECK_EQUAL(value.first, 1);
 	BOOST_CHECK_EQUAL(value.second, 1u);
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE( test_float_histogram)
 	BOOST_CHECK_CLOSE(h.average(), 3.7, 0.1);
 	BOOST_CHECK_CLOSE(h.deviation(), sqrt((155.0 - 37.0 * 3.7) / 9.0), 0.1);
 
-	CHistogram<CHistogramFeeder<float> > h2(h,0.0);
+	THistogram<THistogramFeeder<float> > h2(h,0.0);
 	BOOST_CHECK_CLOSE(h2.average(), 3.7, 0.1);
 	BOOST_CHECK_CLOSE(h2.deviation(), sqrt((155.0 - 37.0 * 3.7) / 9.0), 0.1);
 
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE( test_histogram2)
 	test_result[7] = 3;
 
 
-	CHistogram<CHistogramFeeder<float> > h(CHistogramFeeder<float>(1,256,256));
+	THistogram<THistogramFeeder<float> > h(THistogramFeeder<float>(1,256,256));
 	BOOST_CHECK(h.size() == 256);
 
 	for (size_t i = 0; i < nsamples; ++i)
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE( test_histogram3)
 		2, 4, 1, 9, 2
 	};
 
-	CHistogram<CHistogramFeeder<double> > h(CHistogramFeeder<double>(1,9,4096));
+	THistogram<THistogramFeeder<double> > h(THistogramFeeder<double>(1,9,4096));
 	BOOST_CHECK(h.size() == 4096);
 
 	for (size_t i = 0; i < nsamples; ++i)
@@ -161,23 +161,23 @@ BOOST_AUTO_TEST_CASE( test_histogram3)
 
 struct FNormalDistribution {
 	FNormalDistribution(float mean, float sigma) :
-		_M_mean(mean),
-		_M_sigma(sigma),
-		_M_w1(1.0 / (2.0 * _M_sigma * _M_sigma)),
-		_M_w2(sqrt( _M_w1 / M_PI))
+		m_mean(mean),
+		m_sigma(sigma),
+		m_w1(1.0 / (2.0 * m_sigma * m_sigma)),
+		m_w2(sqrt( m_w1 / M_PI))
 
 	{
 
 	}
 
 	float operator()(float x) const {
-		const float h = x - _M_mean;
-		return _M_w2 * exp( - _M_w1 * h * h);
+		const float h = x - m_mean;
+		return m_w2 * exp( - m_w1 * h * h);
 	}
-	float _M_mean;
-	float _M_sigma;
-	float _M_w1;
-	float _M_w2;
+	float m_mean;
+	float m_sigma;
+	float m_w1;
+	float m_w2;
 };
 
 BOOST_AUTO_TEST_CASE ( test_histogram_gauss_noise )
@@ -197,8 +197,8 @@ BOOST_AUTO_TEST_CASE ( test_histogram_gauss_noise )
 
 	FNormalDistribution n1(127, 16);
 
-	typedef CHistogram<CHistogramFeeder<double> > CDoubleHistogram;
-	CDoubleHistogram histo(CHistogramFeeder<double>(0,256,64));
+	typedef THistogram<THistogramFeeder<double> > CDoubleHistogram;
+	CDoubleHistogram histo(THistogramFeeder<double>(0,256,64));
 
 	for (size_t k = 0; k < 1; ++k) {
 		const CNoiseGenerator& g = *ng[k];

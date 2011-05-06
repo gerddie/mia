@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ public:
 private:
 	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
 
-	mia::C3DImageDataKey _M_image_key;
+	mia::C3DImageDataKey m_image_key;
 };
 
 /* The factory class - this is what the application gets first. This factory class is used to
@@ -50,7 +50,7 @@ public:
 	virtual const std::string do_get_descr()const;
 	virtual bool do_test()const {return true;};
 private:
-	std::string _M_mask_filename;
+	std::string m_mask_filename;
 };
 
 NS_END

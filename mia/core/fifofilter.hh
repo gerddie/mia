@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -45,6 +45,8 @@ NS_MIA_BEGIN
 using namespace std; 
 
 /**
+   \brief Generic base class for out-of-core FIFO filters. 
+
   Base class for a First-in-first out filter that does not need 
   the whole data to be loaded. 	
 */
@@ -136,18 +138,20 @@ private:
 	virtual void evaluate(size_t slice); 
 
 
-	size_t _M_buf_size;
-	size_t _M_min_fill;
-	size_t _M_read_start; 
-	size_t _M_fill; 
-	size_t _M_start_slice; 
-	size_t _M_end_slice; 
-	Pointer _M_chain; 
-	bool _M_initialized; 
+	size_t m_buf_size;
+	size_t m_min_fill;
+	size_t m_read_start; 
+	size_t m_fill; 
+	size_t m_start_slice; 
+	size_t m_end_slice; 
+	Pointer m_chain; 
+	bool m_initialized; 
 }; 
 
 /**
-  Generic data sink as end of the filter chain that is used for testing purpouses. 
+   \brief Helper class for testing FIFO filter chains. 
+
+   Generic data sink as end of the filter chain that is used for testing purpouses. 
 */
 template <typename T> 
 class EXPORT_HANDLER TFifoFilterSink : public TFifoFilter<T> {
@@ -170,7 +174,7 @@ public:
 private: 
 	virtual void do_push(typename ::boost::call_traits<T>::param_type x); 
 	void shift_buffer(); 
-	result_type _M_result; 
+	result_type m_result; 
 }; 
 
 

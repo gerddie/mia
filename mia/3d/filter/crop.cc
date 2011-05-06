@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,6 +18,30 @@
  *
  */
 
+/* 
+   LatexBeginPluginDescription{3D image filters}
+   
+   \subsection{Image cropping}
+   \label{filter3d:crop}
+   
+   \begin{description}
+   
+   \item [Plugin:] crop
+   \item [Description:] Crop a region of an image, the region is always clamped to the original image size. 
+   \item [Input:] Abitray grayscale image 
+   \item [Output:] A gray scale image that contains the cropped region. 
+   
+   \plugtabstart
+   start & 3D vector & upper left corner of the requested sub-region  & <0,0,0>  \\
+   end & 3D vector & lower right corner of the requested sub-region, a value of -1 refers the size of the 
+      original image in that dimension  & <-1,-1, -1>  \\
+   \plugtabend
+   
+   \end{description}
+
+   LatexEnd  
+ */
+
 
 #include <mia/3d/filter/crop.hh>
 
@@ -27,14 +51,14 @@ NS_MIA_USE;
 using namespace std;
 
 C3DCrop::C3DCrop(const C3DBounds& begin, const C3DBounds& end):
-	_M_begin(begin), _M_end(end)
+	m_begin(begin), m_end(end)
 {
 }
 
 template <typename T>
 C3DCrop::result_type C3DCrop::operator () (const T3DImage<T>& data) const
 {
-	C3DBounds end(_M_end);
+	C3DBounds end(m_end);
 	if (end.x > data.get_size().x)
 		end.x = data.get_size().x;
 
@@ -44,7 +68,7 @@ C3DCrop::result_type C3DCrop::operator () (const T3DImage<T>& data) const
 	if (end.z > data.get_size().z)
 		end.z = data.get_size().z;
 
-	C3DBounds begin(_M_begin);
+	C3DBounds begin(m_begin);
 	if (begin.x >= data.get_size().x || begin.x >= end.x ||
 	    begin.y >= data.get_size().y || begin.y >= end.y ||
 	    begin.z >= data.get_size().z || begin.z >= end.z)
@@ -72,16 +96,16 @@ mia::P3DImage C3DCrop::do_filter(const mia::C3DImage& image) const
 
 C3DCropImageFilterFactory::C3DCropImageFilterFactory():
 	C3DFilterPlugin("crop"),
-	_M_begin(0,0,0),
-	_M_end(-1,-1,-1)
+	m_begin(0,0,0),
+	m_end(-1,-1,-1)
 {
-	add_parameter("begin", new TParameter<C3DBounds>(_M_begin, false, "begin of cropping range"));
-	add_parameter("end", new TParameter<C3DBounds>(_M_end, false, "end of cropping range, maximum = (-1,-1,-1)"));
+	add_parameter("begin", new TParameter<C3DBounds>(m_begin, false, "begin of cropping range"));
+	add_parameter("end", new TParameter<C3DBounds>(m_end, false, "end of cropping range, maximum = (-1,-1,-1)"));
 }
 
 C3DFilterPlugin::ProductPtr C3DCropImageFilterFactory::do_create()const
 {
-	return ProductPtr(new C3DCrop(_M_begin, _M_end));
+	return ProductPtr(new C3DCrop(m_begin, m_end));
 }
 const std::string C3DCropImageFilterFactory::do_get_descr()const
 {

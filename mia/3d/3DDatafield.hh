@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * Gert Wollny <gert.wollny at web.de>
@@ -58,18 +58,18 @@ class  EXPORT_3D T3DDatafield {
         typedef std::shared_ptr<std::vector<T>  >  ref_data_type;
 
         /** Size of the field */
-        C3DBounds  _M_size;
+        C3DBounds  m_size;
 
         /** helper: product of Size.x * Size.y */
-        size_t  _M_xy;
+        size_t  m_xy;
 
         /** Pointer to the Field of Data hold by this class */
-        ref_data_type _M_data;
+        ref_data_type m_data;
 
         /** helper: represents the zero-value */
         static const T Zero;
 	
-	static const unsigned int _M_elements; 
+	static const unsigned int m_elements; 
 
 public:
 
@@ -79,7 +79,7 @@ public:
 
 	/// a shortcut data type
 
-
+	/// \cond SELFEXPLAINING 
         typedef typename std::vector<T>::iterator iterator;
         typedef typename std::vector<T>::const_iterator const_iterator;
         typedef typename std::vector<T>::const_reference const_reference;
@@ -92,8 +92,8 @@ public:
 	typedef typename atomic_data<T>::type atomic_type; 
 	typedef range3d_iterator<iterator> range_iterator; 
 	typedef range3d_iterator<const_iterator> const_range_iterator; 
-
 	typedef C3DBounds dimsize_type;
+	/// \endcond 
 
 	T3DDatafield();
 
@@ -153,7 +153,7 @@ public:
         /** \returns the 3D-size of the data field */
         const C3DBounds&  get_size() const
         {
-                return _M_size;
+                return m_size;
         }
 
         /** Set alle elements of the field to T() == Zero*/
@@ -162,9 +162,10 @@ public:
         /** \returns the number of elements in the datafield */
         size_type size()const
         {
-                return _M_data->size();
+                return m_data->size();
         }
 
+	/// swap the data ofthis 3DDatafield with another one 
 	void swap(T3DDatafield& other);
 
         /** \returns the average over the whole datafield*/
@@ -182,9 +183,9 @@ public:
         const_reference operator()(size_t  x, size_t  y, size_t  z) const
 	{
         	// Look if we are inside, and give reference, else give the zero
-	        if (x < _M_size.x && y < _M_size.y && z < _M_size.z) {
-	                const std::vector<T>& data = *_M_data;
-	                return data[x+ _M_size.x * (y  + _M_size.y * z)];
+	        if (x < m_size.x && y < m_size.y && z < m_size.z) {
+	                const std::vector<T>& data = *m_data;
+	                return data[x+ m_size.x * (y  + m_size.y * z)];
 	        }
 		return Zero;
 	}
@@ -201,8 +202,8 @@ public:
 	{
         	// Look if we are inside, and give reference, else throw exception
 	        // since write access is wanted
-	        assert(x < _M_size.x && y < _M_size.y && z < _M_size.z);
-		return (*_M_data)[x + _M_size.x *(y + _M_size.y * z)];
+	        assert(x < m_size.x && y < m_size.y && z < m_size.z);
+		return (*m_data)[x + m_size.x *(y + m_size.y * z)];
 	}
 
 
@@ -235,45 +236,131 @@ public:
         template <class TMask>
         void mask(const TMask& m);
 
-	T2DDatafield<T> get_data_plane_xy(size_t  z)const;
-
-	void read_zslice_flat(size_t z, std::vector<atomic_type>& buffer) const;
-	
-	void write_zslice_flat(size_t z, const std::vector<atomic_type>& buffer); 
-
-	void read_yslice_flat(size_t y, std::vector<atomic_type>& buffer) const;
-
-	void write_yslice_flat(size_t y, const std::vector<atomic_type>& buffer); 
-
+	/**
+	   Read the a x-slice of the data field into a flat buffer - i.e. the 
+           information about multi-dimensionality of the elements is lost. 
+	   For this to work, T has to be a POD-like data type, i.e., it has no 
+	   hidden elements like a virtual methods table, and, if T is a type 
+	   of more then one element, all these elements have to be of the same 
+	   type. Specifically, a specialization of the trait atomic_data for T 
+	   must exists. 
+	   \param x slice to be read 
+	   \param[out] buffer Buffer where the data will be written to. It must 
+	   large enough to hold size.y * size.z * number of elements 
+	   
+	*/
 	void read_xslice_flat(size_t x, std::vector<atomic_type>& buffer) const;
 
+	/**
+	   Read the a y-slice of the data field into a flat buffer - i.e. the 
+           information about multi-dimensionality of the elements is lost. 
+	   For this to work, T has to be a POD-like data type, i.e., it has no 
+	   hidden elements like a virtual methods table, and, if T is a type 
+	   of more then one element, all these elements have to be of the same 
+	   type. Specifically, a specialization of the trait atomic_data for T 
+	   must exists. 
+	   \param y slice to be read 
+	   \param[out] buffer Buffer where the data will be written to. It must 
+	   large enough to hold size.x * size.z * number of elements 
+	*/
+	void read_yslice_flat(size_t y, std::vector<atomic_type>& buffer) const;
+	
+	/**
+	   Read the a z-slice of the data field into a flat buffer - i.e. the 
+           information about multi-dimensionality of the elements is lost. 
+	   For this to work, T has to be a POD-like data type, i.e., it has no 
+	   hidden elements like a virtual methods table, and, if T is a type 
+	   of more then one element, all these elements have to be of the same 
+	   type. Specifically, a specialization of the trait atomic_data for T 
+	   must exists. 
+	   \param z slice to be read 
+	   \param[out] buffer Buffer where the data will be written to. It must 
+	   large enough to hold size.x * size.y * number of elements 
+	*/
+	void read_zslice_flat(size_t z, std::vector<atomic_type>& buffer) const;
+	
+	/**
+	   Write a z-slice from a flat buffer to the 3D data field. For details see 
+	   void read_zslice_flat(size_t z, std::vector<atomic_type>& buffer) const;
+	 */
+	void write_zslice_flat(size_t z, const std::vector<atomic_type>& buffer); 
+
+
+	/**
+	   Write a y-slice from a flat buffer to the 3D data field. For details see 
+	   void read_yslice_flat(size_t y, std::vector<atomic_type>& buffer) const;
+	 */
+	void write_yslice_flat(size_t y, const std::vector<atomic_type>& buffer); 
+
+	/**
+	   Write a x-slice from a flat buffer to the 3D data field. For details see 
+	   void read_yslice_flat(size_t x, std::vector<atomic_type>& buffer) const;
+	*/
 	void write_xslice_flat(size_t x, const std::vector<atomic_type>& buffer); 
 
-        T2DDatafield<T> get_data_plane_yz(size_t  x)const;
+	/**
+	   Read a z-plane from the 3D data set.
+	   \param z
+	   \returns the copied data in a 2D data field 
+	*/
+	T2DDatafield<T> get_data_plane_xy(size_t  z)const;
+	
+	/**
+	   Read a x-plane from the 3D data set.
+	   \param x
+	   \returns the copied data in a 2D data field 
+	*/
+	T2DDatafield<T> get_data_plane_yz(size_t  x)const;
 
-        T2DDatafield<T> get_data_plane_xz(size_t  y)const;
+	/**
+	   Read a y-plane from the 3D data set.
+	   \param y
+	   \returns the copied data in a 2D data field 
+	*/
+	T2DDatafield<T> get_data_plane_xz(size_t  y)const;
 
+	/**
+	   write a z-plane to the 3D data set.
+	   \param z
+	   \param p plane data, must be of dimensions (size.x, size.y)
+	*/
 	void put_data_plane_xy(size_t  z, const T2DDatafield<T>& p);
 
+	/**
+	   write a x-plane to the 3D data set.
+	   \param x
+	   \param p plane data, must be of dimensions (size.y, size.z)
+	*/
         void put_data_plane_yz(size_t  x, const T2DDatafield<T>& p);
 
+	/**
+	   write a y-plane to the 3D data set.
+	   \param y
+	   \param p plane data, must be of dimensions (size.x, size.z)
+	*/
         void put_data_plane_xz(size_t  y, const T2DDatafield<T>& p);
 
         /** \returns an read only forward iterator over the whole data field */
         const_iterator begin()const
         {
-                return _M_data->begin();
+                return m_data->begin();
         }
-
+	
+	/**
+	   \returns an read only forward iterator over data field starting at (x,y,z)
+	 */
 	const_iterator begin_at(size_t x, size_t y, size_t z)const
         {
-                return _M_data->begin() + (z * _M_size.y + y) * _M_size.x + x;
+                return m_data->begin() + (z * m_size.y + y) * m_size.x + x;
         }
 
 
+	/**
+	   \returns the end iterator to the 3D data field 
+	 */
         const_iterator end()const
         {
-                return _M_data->end();
+                return m_data->end();
         }
 
         /** \returns an read/write random access iterator over the whole data
@@ -282,7 +369,7 @@ public:
         iterator begin()
         {
                 make_single_ref();
-                return _M_data->begin();
+                return m_data->begin();
         }
 
         /** \returns an read/write forward iterator over a subset of the data. 
@@ -292,10 +379,18 @@ public:
         /** \returns the end of a read/write forward iterator over a subset of the data. */
         range_iterator end_range(const C3DBounds& begin, const C3DBounds& end); 
 
+	/**
+	   Obtain an iterator at position (x,y,z)
+	   The functions ensures, that the field uses a single referenced datafield
+	   \param x
+	   \param y
+	   \param z
+	   \returns the iterator 
+	 */
 	iterator begin_at(size_t x, size_t y, size_t z)
         {
 		make_single_ref();
-		return _M_data->begin() + (z * _M_size.y + y) * _M_size.x + x;
+		return m_data->begin() + (z * m_size.y + y) * m_size.x + x;
         }
 
 	/** \returns an read/write random access iterator over the whole data
@@ -304,13 +399,13 @@ public:
         iterator end()
         {
                 make_single_ref();
-                return _M_data->end();
+                return m_data->end();
         }
 
         /** a linear read only access operator */
         const_reference operator[](int i)const
         {
-                return (*_M_data)[i];
+                return (*m_data)[i];
         }
 
         /** A linear read/write access operator. The refcount of Data must be 1,
@@ -318,15 +413,15 @@ public:
         */
         reference operator[](int i)
         {
-		assert(_M_data.unique());
-                return (*_M_data)[i];
+		assert(m_data.unique());
+                return (*m_data)[i];
         }
 
 
         /** \returns the element count of one z slice */
         size_t  get_plane_size_xy()const
         {
-                return _M_xy;
+                return m_xy;
         };
 
 private:
@@ -355,7 +450,10 @@ typedef T3DDatafield<unsigned char>  C3DUBDatafield;
 	/// a data field of float values
 typedef T3DDatafield<bool>  C3DBitDatafield;
 
+/// template parameter name for C3DBoundsParameter
 extern const char type_str_3dbounds[]; 
+
+/// 3D size parameter type 
 typedef  CTParameter<C3DBounds, type_str_3dbounds> C3DBoundsParameter;
 
 
@@ -365,45 +463,49 @@ template <class T>
 template <typename Out>
 T3DVector<Out> T3DDatafield<T>::get_gradient(size_t  x, size_t  y, size_t  z) const
 {
-	const std::vector<T>& data = *_M_data;
-	const int sizex = _M_size.x;
+	const std::vector<T>& data = *m_data;
+	const int sizex = m_size.x;
 	// Look if we are inside the used space
-	if (x - 1 < _M_size.x - 2 &&  y - 1 < _M_size.y - 2 &&  z - 1 < _M_size.z - 2) {
+	if (x - 1 < m_size.x - 2 &&  y - 1 < m_size.y - 2 &&  z - 1 < m_size.z - 2) {
 
                 // Lookup all neccessary Values
-		const T *H  = &data[x + _M_size.x * (y + _M_size.y * z)];
+		const T *H  = &data[x + m_size.x * (y + m_size.y * z)];
 
 		return T3DVector<Out> (Out((H[1] - H[-1]) * 0.5),
 				       Out((H[sizex] - H[-sizex]) * 0.5),
-				       Out((H[_M_xy] - H[-_M_xy]) * 0.5));
+				       Out((H[m_xy] - H[-m_xy]) * 0.5));
 	}
 
 	return T3DVector<Out>();
 }
 
+
 template <class T>
 template <typename Out>
 T3DVector<Out> T3DDatafield<T>::get_gradient(int hardcode) const
 {
-	const int sizex = _M_size.x;
+	const int sizex = m_size.x;
 	// Lookup all neccessary Values
-	const T *H  = &(*_M_data)[hardcode];
+	const T *H  = &(*m_data)[hardcode];
 
 	return T3DVector<Out> (Out((H[1] - H[-1]) * 0.5),
 			       Out((H[sizex] - H[-sizex]) * 0.5),
-			       Out((H[_M_xy] - H[-_M_xy]) * 0.5));
+			       Out((H[m_xy] - H[-m_xy]) * 0.5));
 }
 
 
+/**
+   Specialization to handle the wired std::vector<bool> implementation 
+ */
 template <>
 template <typename Out>
 T3DVector<Out> T3DDatafield<bool>::get_gradient(int hardcode) const
 {
 
 	// Lookup all neccessary Values
-	return T3DVector<Out> (Out(((*_M_data)[hardcode + 1] - (*_M_data)[hardcode -1]) * 0.5),
-			       Out(((*_M_data)[hardcode + _M_size.x] - (*_M_data)[hardcode -_M_size.x]) * 0.5),
-			       Out(((*_M_data)[hardcode + _M_xy] - (*_M_data)[hardcode -_M_xy]) * 0.5));
+	return T3DVector<Out> (Out(((*m_data)[hardcode + 1] - (*m_data)[hardcode -1]) * 0.5),
+			       Out(((*m_data)[hardcode + m_size.x] - (*m_data)[hardcode -m_size.x]) * 0.5),
+			       Out(((*m_data)[hardcode + m_xy] - (*m_data)[hardcode -m_xy]) * 0.5));
 }
 
 template <class T>
@@ -411,8 +513,8 @@ template <typename Out>
 T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
 {
         // This will become really funny
-	const int sizex = _M_size.x;
-        const std::vector<T>& data = *_M_data;
+	const int sizex = m_size.x;
+        const std::vector<T>& data = *m_data;
         // Calculate the int coordinates near the POI
         // and the distances
         size_t  x = size_t (p.x);
@@ -426,11 +528,11 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
         float  zm = 1 - dz;
 
 	// Look if we are inside the used space
-        if (x-1 < _M_size.x-3 &&  y -1 < _M_size.y-3 && z - 1 < _M_size.z-3 ) {
+        if (x-1 < m_size.x-3 &&  y -1 < m_size.y-3 && z - 1 < m_size.z-3 ) {
                 // Lookup all neccessary Values
-                const T *H000  = &data[x + sizex * y + _M_xy * z];
+                const T *H000  = &data[x + sizex * y + m_xy * z];
 
-                const T* H_100 = &H000[-_M_xy];
+                const T* H_100 = &H000[-m_xy];
                 const T* H_101 = &H_100[1];
                 const T* H_110 = &H_100[sizex];
                 const T* H_111 = &H_110[1];
@@ -451,7 +553,7 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
                 const T* H020 = &H010[sizex];
                 const T* H021 = &H020[ 1];
 
-                const T* H100 = &H000[_M_xy];
+                const T* H100 = &H000[m_xy];
 
                 const T* H1_10 = &H100[sizex];
                 const T* H1_11 = &H1_10[1];
@@ -468,7 +570,7 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
                 const T* H120 = &H110[sizex];
                 const T* H121 = &H120[ 1];
 
-                const T* H200 = &H100[_M_xy];
+                const T* H200 = &H100[m_xy];
                 const T* H201 = &H200[1];
                 const T* H210 = &H200[sizex];
                 const T* H211 = &H210[1];
@@ -492,28 +594,6 @@ T3DVector<Out> T3DDatafield<T>::get_gradient(const T3DVector<float >& p) const
         return T3DVector<Out>();
 
 }
-
-#ifndef mia3d_EXPORTS
-
-extern template class  EXPORT_3D T3DDatafield<double>;
-extern template class  EXPORT_3D T3DDatafield<float>;
-extern template class  EXPORT_3D T3DDatafield<unsigned int>;
-extern template class  EXPORT_3D T3DDatafield<int>;
-
-#ifdef HAVE_INT64
-extern template class  EXPORT_3D T3DDatafield<mia_uint64>;
-extern template class  EXPORT_3D T3DDatafield<mia_int64>;
-#endif
-extern template class  EXPORT_3D T3DDatafield<short>;
-extern template class  EXPORT_3D T3DDatafield<unsigned short>;
-extern template class  EXPORT_3D T3DDatafield<unsigned char >;
-extern template class  EXPORT_3D T3DDatafield<signed char >;
-extern template class  T3DDatafield<bool>;
-
-extern template class EXPORT_3D T2DDatafield<T3DVector<double> >;
-extern template class EXPORT_3D T2DDatafield<T3DVector<float> >;
-
-#endif
 
 NS_MIA_END
 

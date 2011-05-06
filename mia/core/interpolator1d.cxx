@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -28,122 +28,6 @@
 #include <cmath>
 
 NS_MIA_BEGIN
-
-#if 0
-template <typename T>
-T T1DInterpolator<T>::operator () (const double& x) const
-{
-	return T(); 
-}
-#endif
-
-template <typename T>
-T1DDirectInterpolator<T>::T1DDirectInterpolator(const std::vector<T>& data):
-       _M_data(data)
-{
-}
-
-template <typename T>
-T1DNNInterpolator<T>::T1DNNInterpolator(const std::vector<T>& image):
-	T1DDirectInterpolator<T>(image)
-{
-}
-
-template <typename T>
-T
-T1DNNInterpolator<T>::operator () (const double& x)const
-{
-	size_t ix( size_t(x + 0.5f));
-	if (ix < this->data().size())
-		return this->data()[ix];
-	else
-		return T();
-}
-
-template <typename T>
-typename coeff_map<T>::coeff_type
-T1DNNInterpolator<T>::derivative_at (const double& /*x*/) const
-{
-	throw std::invalid_argument("Nearest Neighbor interpolator doesn't support a derivative"); 
-}
-
-
-template <typename T>
-T1DLinearInterpolator<T>::T1DLinearInterpolator(const std::vector<T>& image):
-	T1DDirectInterpolator<T>(image), 
-	_M_size(image.size()),
-	_M_sizeb(image.size()-1)
-		
-{
-}
-
-template <typename T> 
-struct lin_dispatch {
-	static T apply(const std::vector<T>& data, const double& p, const double& sizeb) {
-	// Calculate the coordinates and the distances
-		const double x  = floor(p);
-		const double fx = p - x;
-		const double dx = 1.0f - fx;
-		size_t ux = x; 
-
-		if ( x < sizeb && 0.0 <= x )
-			return T ( (dx * data[ux] + fx * data[ux + 1]) );
-		else if (ux < data.size())
-			return data[ux]; 
-		else
-			return T(); 
-	}
-	static typename coeff_map<T>::coeff_type 
-	apply_derivative(const std::vector<T>& data, const double& p, const double& /*sizeb*/) {
-		const size_t ux = floor(p); 
-		if (ux < data.size() - 1)
-			return typename coeff_map<T>::coeff_type(data[ux+1] - data[ux]); 
-		else 
-			return typename coeff_map<T>::coeff_type(); 
-	}
-};
-
-template <> 
-struct lin_dispatch<bool> {
-	static bool apply(const std::vector<bool>& data, const double& p, const double& /*sizeb*/) {
-		const double x  = floor(p);
-		const double fx = p - x;
-		const double dx = 1.0f - fx;
-		
-		const size_t ux = (size_t)x;  
-		const double  a1 = dx * data[ux] + fx * data[ux+1];
-
-		return  a1 > 0.5;
-		
-	}
-	static coeff_map<bool>::coeff_type 
-	apply_derivative(const std::vector<bool>& data, const double& p, const double& /*sizeb*/) {
-		const size_t ux = floor(p); 
-		if (ux < data.size() - 1) {
-			if (data[ux]  ==  data[ux+1]) 
-				return 0.0; 
-			if (data[ux] && !data[ux+1]) 
-				return -1;
-			else 
-				return 1;
-		}
-		return 0.0; 
-	}
-};
-	
-template <typename T>
-T  T1DLinearInterpolator<T>::operator () (const double& p)const
-{
-	return lin_dispatch<T>::apply(this->data(), p, this->_M_sizeb); 
-}
-
-
-template <typename T>
-typename coeff_map<T>::coeff_type
-T1DLinearInterpolator<T>::derivative_at (const double& x) const
-{
-	return lin_dispatch<T>::apply_derivative(this->data(), x, this->_M_sizeb); 
-}
 
 template <typename T>
 void __dispatch_min_max<T>::apply(const T i, T& min, T &max) 
@@ -173,20 +57,19 @@ void __dispatch_copy<I,O>::apply(const I& input, O& output)
 }
  
 template <typename T>
-T1DConvoluteInterpolator<T>::T1DConvoluteInterpolator(const std::vector<T>& data, 
-						      std::shared_ptr<CBSplineKernel >  kernel):
-	_M_coeff(data.size()), 
-	_M_size2(data.size() + data.size() - 2),
-	_M_kernel(kernel),
-	_M_x_index(kernel->size()),
-	_M_x_weight(kernel->size())
+T1DConvoluteInterpolator<T>::T1DConvoluteInterpolator(const std::vector<T>& data, PBSplineKernel  kernel):
+	m_coeff(data.size()), 
+	m_size2(data.size() + data.size() - 2),
+	m_kernel(kernel),
+	m_x_index(kernel->size()),
+	m_x_weight(kernel->size())
 {
-	min_max<typename std::vector<T>::const_iterator>::get(data.begin(), data.end(), _M_min, _M_max);
+	min_max<typename std::vector<T>::const_iterator>::get(data.begin(), data.end(), m_min, m_max);
 	
 	// copy the data
-	__dispatch_copy<std::vector<T>, TCoeff1D >::apply(data, _M_coeff); 
+	__dispatch_copy<std::vector<T>, TCoeff1D >::apply(data, m_coeff); 
 	
-	_M_kernel->filter_line(_M_coeff);
+	m_kernel->filter_line(m_coeff);
 }
 
 template <typename T>
@@ -289,33 +172,34 @@ T  T1DConvoluteInterpolator<T>::operator () (const double& x) const
 	typedef typename TCoeff1D::value_type U; 
 	
 	// cut at boundary
-	if (x < 0.0 || x >= _M_coeff.size())
+	if (x < 0.0 || x >= m_coeff.size())
 		return T();
 	
-	(*_M_kernel)(x, _M_x_weight, _M_x_index);
-	mirror_boundary_conditions(_M_x_index, _M_coeff.size(), _M_size2);
+	(*m_kernel)(x, m_x_weight, m_x_index);
+	mirror_boundary_conditions(m_x_index, m_coeff.size(), m_size2);
 
 	U result = U();
 	
-	switch (_M_kernel->size()) {
-	case 2: result = add_1d<TCoeff1D,2>::value(_M_coeff, _M_x_weight, _M_x_index); break; 
-	case 3: result = add_1d<TCoeff1D,3>::value(_M_coeff, _M_x_weight, _M_x_index); break; 
-	case 4: result = add_1d<TCoeff1D,4>::value(_M_coeff, _M_x_weight, _M_x_index); break; 
-	case 5: result = add_1d<TCoeff1D,5>::value(_M_coeff, _M_x_weight, _M_x_index); break; 
-	case 6: result = add_1d<TCoeff1D,6>::value(_M_coeff, _M_x_weight, _M_x_index); break; 
+	switch (m_kernel->size()) {
+	case 1: result = add_1d<TCoeff1D,1>::value(m_coeff, m_x_weight, m_x_index); break; 
+	case 2: result = add_1d<TCoeff1D,2>::value(m_coeff, m_x_weight, m_x_index); break; 
+	case 3: result = add_1d<TCoeff1D,3>::value(m_coeff, m_x_weight, m_x_index); break; 
+	case 4: result = add_1d<TCoeff1D,4>::value(m_coeff, m_x_weight, m_x_index); break; 
+	case 5: result = add_1d<TCoeff1D,5>::value(m_coeff, m_x_weight, m_x_index); break; 
+	case 6: result = add_1d<TCoeff1D,6>::value(m_coeff, m_x_weight, m_x_index); break; 
 	default: {
 		/* perform interpolation */
 		
 		U result = U();
 		
-		for (size_t x = 0; x < _M_kernel->size(); ++x) {
-			result += _M_x_weight[x] * _M_coeff[_M_x_index[x]];
+		for (size_t x = 0; x < m_kernel->size(); ++x) {
+			result += m_x_weight[x] * m_coeff[m_x_index[x]];
 		}
 		
 	}
 	} // end switch 
 	
-	bounded<U, T>::apply(result, _M_min, _M_max);
+	bounded<U, T>::apply(result, m_min, m_max);
 	
 	return round_to<U, T>::value(result); 
 }
@@ -327,27 +211,27 @@ T1DConvoluteInterpolator<T>::derivative_at (const double& x) const
 	typedef typename TCoeff1D::value_type U; 
 	
 	// cut at boundary
-	if (x < 0.0 || x >= _M_coeff.size())
+	if (x < 0.0 || x >= m_coeff.size())
 		return typename coeff_map<T>::coeff_type();
 	
-	_M_kernel->derivative(x, _M_x_weight, _M_x_index);
-	mirror_boundary_conditions(_M_x_index, _M_coeff.size(), _M_size2);
+	m_kernel->derivative(x, m_x_weight, m_x_index);
+	mirror_boundary_conditions(m_x_index, m_coeff.size(), m_size2);
 
 	U result = U();
 	
-	switch (_M_kernel->size()) {
-	case 2: result = add_1d<TCoeff1D,2>::value(_M_coeff, _M_x_weight, _M_x_index); break; 
-	case 3: result = add_1d<TCoeff1D,3>::value(_M_coeff, _M_x_weight, _M_x_index); break; 
-	case 4: result = add_1d<TCoeff1D,4>::value(_M_coeff, _M_x_weight, _M_x_index); break; 
-	case 5: result = add_1d<TCoeff1D,5>::value(_M_coeff, _M_x_weight, _M_x_index); break; 
-	case 6: result = add_1d<TCoeff1D,6>::value(_M_coeff, _M_x_weight, _M_x_index); break; 
+	switch (m_kernel->size()) {
+	case 2: result = add_1d<TCoeff1D,2>::value(m_coeff, m_x_weight, m_x_index); break; 
+	case 3: result = add_1d<TCoeff1D,3>::value(m_coeff, m_x_weight, m_x_index); break; 
+	case 4: result = add_1d<TCoeff1D,4>::value(m_coeff, m_x_weight, m_x_index); break; 
+	case 5: result = add_1d<TCoeff1D,5>::value(m_coeff, m_x_weight, m_x_index); break; 
+	case 6: result = add_1d<TCoeff1D,6>::value(m_coeff, m_x_weight, m_x_index); break; 
 	default: {
 		/* perform interpolation */
 		
 		U result = U();
 		
-		for (size_t x = 0; x < _M_kernel->size(); ++x) {
-			result += _M_x_weight[x] * _M_coeff[_M_x_index[x]];
+		for (size_t x = 0; x < m_kernel->size(); ++x) {
+			result += m_x_weight[x] * m_coeff[m_x_index[x]];
 		}
 		
 	}

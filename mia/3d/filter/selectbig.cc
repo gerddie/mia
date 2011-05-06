@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -21,12 +21,35 @@
  */
 
 
+/* 
+   LatexBeginPluginDescription{3D image filters}
+   
+   \subsection{Select biggest component}
+   \label{filter3d:selectbig}
+   
+   \begin{description}
+   
+   \item [Plugin:] selectbig
+   \item [Description:] A 3D filter that creats a binary mask representing the intensity with the highest pixel count. 
+   The pixel value 0 will be ignored, and if two intensities have the same pixel count, then the result is undefined. 
+   \item [Input:] An image with integral intensity values, usually this will be the output of the 
+         label filter \ref{filter3d:label}. 
+   \item [Input:] An binary image with a mask that represents the pixels with the highest pixel count. 
+
+   This plug-in takes no parameters. 
+   
+   \end{description}
+
+   LatexEnd  
+ */
+
+
 #include <limits>
 #include <stdexcept>
 // boost type trains are needed to check whether we are dealing with an integer pixel valued image
 #include <boost/type_traits.hpp>
 
-// this is for the definition of the 2D image plugin base classes
+// this is for the definition of the 3D image plugin base classes
 #include <mia/3d/filter/selectbig.hh>
 
 

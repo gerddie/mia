@@ -31,7 +31,6 @@ SET(MIACORE_SRC_BASE
   msgstream.cc 
   minimizer.cc
   noisegen.cc 
-  optimizer.cc 
   optionparser.cc 
   optparam.cc 
   parallel.cc 
@@ -40,7 +39,6 @@ SET(MIACORE_SRC_BASE
   plugin_base.cc  
   product_base.cc
   property_flags.cc
-  problem.cc
   probmap.cc
   regmodel.cc
   revision.cc 
@@ -93,14 +91,12 @@ SET(MIACORE_HEADER_BASE
   msgstream.hh
   minimizer.hh
   noisegen.hh
-  optimizer.hh
   optionparser.hh
   optparam.hh
   parallel.hh
   parameter.cxx parameter.hh
   pixeltype.hh
   plugin_base.cxx plugin_base.hh
-  problem.hh
   probmap.hh
   property_flags.hh
   product_base.hh
@@ -197,6 +193,11 @@ SET(MIACORE_HEADER ${MIACORE_HEADER_BASE} ${ITPP_HEADER} ${FFTWF_HEADER} ${PWPDF
 ADD_LIBRARY(miacore SHARED ${MIACORE_SRC})
 ADD_DEPENDENCIES(miacore revision.hh)
 TARGET_LINK_LIBRARIES(miacore ${BASELIBS} miagsl)
+
+IF(XMLPP_FOUND)
+  TARGET_LINK_LIBRARIES(miacore ${XMLPP_LIBRARIES})
+ENDIF(XMLPP_FOUND)
+
 
 IF(FFTWF_FOUND AND WITH_FFTWF)
   TARGET_LINK_LIBRARIES(miacore ${FFTWF_LIB})

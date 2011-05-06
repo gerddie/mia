@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -20,6 +20,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/*
+  LatexBeginPluginSection{2D model based registration}
+  \label{sec:regmodel2d}
+  
+  These plug-ins refer to non-linear registration approaches that use 
+  a PDE based model for the regularization of the transformation. 
+
+  LatexEnd
+
+*/
+
 
 #include <mia/core/export_handler.hh>
 

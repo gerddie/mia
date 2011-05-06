@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,28 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/* 
+   LatexBeginPluginDescription{3D image similarity kernels}
+   
+   \subsection{Sum of Squared Differences}
+   \label{cost3d:ssd}
+   
+   \begin{description}
+   
+   \item [Plugin:] ssd
+   \item [Description:] Evaluates the Sum of Squared Differences similarity measure between two images:
+   \begin{equation}
+      F_\text{SSD} (S,R) = \frac{1}{2} \int_{\Omega} \left( S(x) - R(x) \right)^2 \text{d}x 
+   \end{equation}
+   \item [Study:] An abitrary gray scale or binary images 
+   \item [Reference:] An abitrary gray scale or binary images 
+   \end{description}
+   
+   This plug-in doesn't take additional parameters. 
+
+   LatexEnd  
  */
 
 

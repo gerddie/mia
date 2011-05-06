@@ -1,5 +1,5 @@
-/* -*- mona-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+/* -*- mia-c++  -*-
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -31,36 +31,36 @@ NS_MIA_BEGIN
 template <typename T, bool is_integral>
 struct FBinarize {
 	FBinarize(float fmin, float fmax): 
-		_M_min(numeric_limits<T>::min()), 
-		_M_max(numeric_limits<T>::max()){
-		if (fmin > _M_min)
-			_M_min = static_cast<T>(fmin < numeric_limits<T>::max() ? fmin : numeric_limits<T>::max()); 
+		m_min(numeric_limits<T>::min()), 
+		m_max(numeric_limits<T>::max()){
+		if (fmin > m_min)
+			m_min = static_cast<T>(fmin < numeric_limits<T>::max() ? fmin : numeric_limits<T>::max()); 
 		
-		if (fmax < _M_max)
-			_M_max = static_cast<T>(fmax > numeric_limits<T>::min() ? fmax : numeric_limits<T>::min()); 
+		if (fmax < m_max)
+			m_max = static_cast<T>(fmax > numeric_limits<T>::min() ? fmax : numeric_limits<T>::min()); 
 	}
 	
 	bool operator ()(T x)const {
-		return !(x > _M_max || x < _M_min);
+		return !(x > m_max || x < m_min);
 	}
 private: 
-	T _M_min; 
-	T _M_max; 
+	T m_min; 
+	T m_max; 
 }; 
 
 template <typename T>
 struct FBinarize<T, false> {
 	FBinarize(float fmin, float fmax): 
-		_M_min(fmin), 
-		_M_max(fmax){
+		m_min(fmin), 
+		m_max(fmax){
 	}
 	
 	bool operator ()(T x)const {
-		return !(x > _M_max || x < _M_min);  
+		return !(x > m_max || x < m_min);  
 	}
 private: 
-	T _M_min; 
-	T _M_max; 
+	T m_min; 
+	T m_max; 
 }; 
 
 template <class Image>
@@ -77,7 +77,7 @@ typename TBinarize<Image>::result_type TBinarize<Image>::operator () (const Data
 	}
 	
 	transform(data.begin(), data.end(), result->begin(), 
-		  FBinarize<T, is_integral>(_M_min, _M_max)); 
+		  FBinarize<T, is_integral>(m_min, m_max)); 
 	
 	return result_type(result); 
 }
@@ -94,12 +94,12 @@ typename TBinarize<Image>::result_type TBinarize<Image>::do_filter(const Image& 
 template <class Image>
 TBinarizeImageFilterFactory<Image>::TBinarizeImageFilterFactory():
 	TImageFilterPlugin<Image>("binarize"), 
-	_M_min(0), 
-	_M_max(std::numeric_limits<float>::max())
+	m_min(0), 
+	m_max(std::numeric_limits<float>::max())
 {
-	this->add_parameter("min", new CFloatParameter(_M_min, 0, numeric_limits<float>::max(), 
+	this->add_parameter("min", new CFloatParameter(m_min, 0, numeric_limits<float>::max(), 
 						 false, "minimum of the band")); 
-	this->add_parameter("max", new CFloatParameter(_M_max, 0, numeric_limits<float>::max(), 
+	this->add_parameter("max", new CFloatParameter(m_max, 0, numeric_limits<float>::max(), 
 						 false, "maximum of the band")); 
 
 }
@@ -107,7 +107,7 @@ TBinarizeImageFilterFactory<Image>::TBinarizeImageFilterFactory():
 template <class Image> 
 typename TImageFilterPlugin<Image>::ProductPtr TBinarizeImageFilterFactory<Image>::do_create()const
 {
-	return typename TImageFilterPlugin<Image>::ProductPtr(new TBinarize<Image>(_M_min, _M_max)); 
+	return typename TImageFilterPlugin<Image>::ProductPtr(new TBinarize<Image>(m_min, m_max)); 
 }
 
 template <class Image> 

@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,13 +19,28 @@
  *
  */
 
-/*! \brief basic type of a plugin handler
+/* 
+   LatexBeginPluginDescription{2D image stack filters}
+   
+   \subsection{Median}
+   \label{fifof:median}
+   
+   \begin{description}
+   
+   \item [Plugin:] median
+   \item [Description:] Runs a median filter on the imput images. 
+   \item [Input:] Gray scale or binary images, all of the same size and pixel type  
+   \item [Output:] The filtered image(s) 
+   
+   \plugtabstart
+   w & int & filter width parameter, the actual filter captures a neighborhood of 
+                 $(2 * w + 1) \times (2 * w + 1) \times (2 * w + 1)$ voxels & 1 \\ 
+   \plugtabend
+   
+   \end{description}
 
-A median filter for stacks of 2D images
-
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
+   LatexEnd  
+ */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -92,20 +107,20 @@ C2DImage *C2DMedianFifoFilter::operator()(const T3DImage<T>& buffer) const {
 
 	cvdebug() << "filter z range: " << get_start() << ":" << get_end() << "\n";
 
-	T2DImage<T> *retval = new T2DImage<T>(_M_slice_size);
+	T2DImage<T> *retval = new T2DImage<T>(m_slice_size);
 	// do the actual filtering
 
 
-	vector<T> target_vector((2 * _M_hw + 1) * (2 * _M_hw + 1) * (2 * _M_hw + 1));
+	vector<T> target_vector((2 * m_hw + 1) * (2 * m_hw + 1) * (2 * m_hw + 1));
 
 	typename T2DImage<T>::iterator i = retval->begin();
 
-	for (size_t y = 0; y < _M_slice_size.y; ++y)
-		for (size_t x = 0; x < _M_slice_size.x; ++x, ++i)
+	for (size_t y = 0; y < m_slice_size.y; ++y)
+		for (size_t x = 0; x < m_slice_size.x; ++x, ++i)
 			*i = __dispatch_median_3dfilter<T>::apply(buffer, x, y,
 								  get_start(),
 								  get_end(),
-								  _M_hw, target_vector);
+								  m_hw, target_vector);
 
 	return retval;
 }
@@ -115,7 +130,7 @@ C2DImage *C2DMedianFifoFilter::operator()(const T3DImage<T>& buffer) const {
 template <typename T>
 C2DImage *C2DMedianFifoFilter::operator()(const T2DImage<T>& input) {
 	TRACE("push internal");
-	T3DImage<T> *buf = dynamic_cast<T3DImage<T> *>(_M_buffer.get());
+	T3DImage<T> *buf = dynamic_cast<T3DImage<T> *>(m_buffer.get());
 	if (!buf) {
 		throw invalid_argument("C2DMedianFifoFilter: input images use different pixel types");
 	}
@@ -125,7 +140,7 @@ C2DImage *C2DMedianFifoFilter::operator()(const T2DImage<T>& input) {
 
 C2DMedianFifoFilter::C2DMedianFifoFilter(size_t hwidth):
 	C2DImageFifoFilter(2 * hwidth + 1, hwidth + 1, 0),
-	_M_hw(hwidth)
+	m_hw(hwidth)
 
 {
 }
@@ -133,8 +148,8 @@ C2DMedianFifoFilter::C2DMedianFifoFilter(size_t hwidth):
 void C2DMedianFifoFilter::do_initialize(::boost::call_traits<P2DImage>::param_type x)
 {
 	TRACE("C2DMedianFifoFilter::do_initialize");
-	_M_slice_size = x->get_size();
-	_M_buffer.reset(create_buffer(_M_slice_size, 2 * _M_hw + 1, x->get_pixel_type()));
+	m_slice_size = x->get_size();
+	m_buffer.reset(create_buffer(m_slice_size, 2 * m_hw + 1, x->get_pixel_type()));
 }
 
 void C2DMedianFifoFilter::do_push(::boost::call_traits<P2DImage>::param_type x)
@@ -145,14 +160,14 @@ void C2DMedianFifoFilter::do_push(::boost::call_traits<P2DImage>::param_type x)
 
 void C2DMedianFifoFilter::shift_buffer()
 {
-	mia::filter_inplace(_M_ss, *_M_buffer);
+	mia::filter_inplace(m_ss, *m_buffer);
 }
 
 P2DImage C2DMedianFifoFilter::do_filter()
 {
 	TRACE("C2DMedianFifoFilter::do_filter");
 
-	return P2DImage(mia::filter(*this, *_M_buffer));
+	return P2DImage(mia::filter(*this, *m_buffer));
 }
 
 
@@ -165,14 +180,14 @@ private:
 	virtual bool do_test() const;
 	virtual C2DFifoFilterPlugin::ProductPtr do_create()const;
 
-	int _M_hw;
+	int m_hw;
 };
 
 C2DMedianFifoFilterPlugin::C2DMedianFifoFilterPlugin():
 	C2DFifoFilterPlugin("median"),
-	_M_hw(1)
+	m_hw(1)
 {
-	add_parameter("w", new CIntParameter(_M_hw, 0, numeric_limits<int>::max(),
+	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(),
 					     false, "filter width parameter"));
 }
 
@@ -189,7 +204,7 @@ bool C2DMedianFifoFilterPlugin::do_test() const
 
 C2DFifoFilterPlugin::ProductPtr C2DMedianFifoFilterPlugin::do_create()const
 {
-	return ProductPtr(new C2DMedianFifoFilter(_M_hw));
+	return ProductPtr(new C2DMedianFifoFilter(m_hw));
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

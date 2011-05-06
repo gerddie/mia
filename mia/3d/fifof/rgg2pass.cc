@@ -1,5 +1,5 @@
-/* -*- mona-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+/* -*- mia-c++  -*-
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -33,10 +33,10 @@ A gradient based region growing filter seeded based on a fuzzy c-means classific
 
 #include <cassert>
 
-#include <libmona/defines.hh>
+#include <libmia/defines.hh>
 
-#include <libmona/filter2dstack.hh>
-#include <libmona/probmapio.hh>
+#include <libmia/filter2dstack.hh>
+#include <libmia/probmapio.hh>
 
 #include "rgg_tools.hh"
 

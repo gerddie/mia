@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -19,16 +19,33 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
 
-
- Function  CGaussNoiseGenerator::box_muller implements the Polar form
- of the Box-Muller Transformation and is
-
- (c) Copyright 1994, Everett F. Carter Jr.
- Permission is granted by the author to use
- this software for any application provided this
- copyright notice is preserved.
-
 */
+
+
+/* 
+   LatexBeginPluginDescription{Noise Generators}
+   
+   \subsection{Uniform noise generator}
+   \label{noise:uniform}
+   
+   \begin{description}
+   
+   \item [Plugin:] uniform
+   \item [Description:] This noise generator creates (pseudo) random values that are uniformly distributed over 
+        a range [a,b]. 
+
+   \plugtabstart
+   a & float & Begin of noise value output range & 0 \\
+   b & float & End of noise value output range & 1 \\
+   seed & unsigned & Seed value for the initialization of the pseudo-number generator, 0 indicates to 
+   use the current system time value returned by the time(NULL) function. & 0 \\
+   \plugtabend
+      
+
+   \end{description}
+
+   LatexEnd 
+*/ 
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -45,31 +62,31 @@ static const size_t center = 1024;
 
 CUniformNoiseGenerator::CUniformNoiseGenerator(unsigned int seed, double a, double b):
 	CNoiseGenerator(seed),
-	_M_a(a),
-	_M_step(1.0 / (b-a))
+	m_a(a),
+	m_step(1.0 / (b-a))
 {
 }
 
 double CUniformNoiseGenerator::get() const
 {
-	return _M_step * ranf() + _M_a;
+	return m_step * ranf() + m_a;
 }
 
 
 CUniformNoiseGeneratorFactory::CUniformNoiseGeneratorFactory():
 	CNoiseGeneratorPlugin("uniform"),
-	_M_param_seed(0),
-	_M_param_a(0),
-	_M_param_b(1)
+	m_param_seed(0),
+	m_param_a(0),
+	m_param_b(1)
 {
-	add_parameter("a", new CFloatParameter(_M_param_a, -numeric_limits<float>::max(),
+	add_parameter("a", new CFloatParameter(m_param_a, -numeric_limits<float>::max(),
 								       numeric_limits<float>::max(),
 								       false, "lower bound if noise range"));
 
-	add_parameter("b", new CFloatParameter(_M_param_b, -numeric_limits<float>::max(),
+	add_parameter("b", new CFloatParameter(m_param_b, -numeric_limits<float>::max(),
 								       numeric_limits<float>::max(),
 								       false, "higher bound if noise range"));
-	add_parameter("seed", new CUIntParameter(_M_param_seed, 0,   numeric_limits<unsigned int>::max(),
+	add_parameter("seed", new CUIntParameter(m_param_seed, 0,   numeric_limits<unsigned int>::max(),
 						  false, "set random seed (0=init based on system time)"));
 
 }
@@ -77,7 +94,7 @@ CUniformNoiseGeneratorFactory::CUniformNoiseGeneratorFactory():
 CNoiseGeneratorPlugin::ProductPtr
 CUniformNoiseGeneratorFactory::do_create()const
 {
-	return CNoiseGeneratorPlugin::ProductPtr(new CUniformNoiseGenerator(_M_param_seed, _M_param_a, _M_param_b));
+	return CNoiseGeneratorPlugin::ProductPtr(new CUniformNoiseGenerator(m_param_seed, m_param_a, m_param_b));
 }
 
 const string CUniformNoiseGeneratorFactory::do_get_descr()const
@@ -113,7 +130,7 @@ bool CUniformNoiseGeneratorFactory::do_test()const
 	double sigma = sqrt((b-a) * (b-a) / 12.0);
 
 	if (fabs(mu - sum1) > 0.01 || fabs(sigma  - sum2) > 0.01) {
-		cvfail() << "avargaing at " << sum1 << " should be " << mu << " sigma " << sum2 << " should be " << sigma << "\n";
+		cvfail() << "averaging at " << sum1 << " should be " << mu << " sigma " << sum2 << " should be " << sigma << "\n";
 		return -1;
 	}
 

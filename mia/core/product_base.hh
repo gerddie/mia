@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -29,6 +29,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief The base class for all plug-in created object. 
+   
    Base of all objects that are created from within plug-ins using a factory method. 
    It also holds the creator string for the instance of the created object.
    \remark The pointer to the modules should take care that the module is valid until the 
@@ -58,8 +60,8 @@ public:
 	*/
 	void set_module(PPluginModule module);
 private:
-	PPluginModule _M_module;
-	std::string _M_init_string; 
+	PPluginModule m_module;
+	std::string m_init_string; 
 };
 NS_MIA_END
 

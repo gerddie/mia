@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -27,40 +27,75 @@
 #include <mia/2d/2DImage.hh>
 #include <mia/core/factory.hh>
 #include <mia/core/filter.hh>
-#include <boost/any.hpp>
 
 NS_MIA_BEGIN
 
+/// 2D image filter 
 typedef TImageFilter<C2DImage> C2DFilter;
+
+/// 2D image filter plugin 
 typedef TImageFilterPlugin<C2DImage> C2DFilterPlugin;
 
+/// shared pointer type for the C2DFilter class 
 typedef std::shared_ptr<C2DFilter > P2DFilter;
 
+/// 2D filter plugin handler
+typedef THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> > C2DFilterPluginHandler;
 
-class EXPORT_2D C2DImageCombiner : public TFilter< std::shared_ptr< ::boost::any  > > ,
+
+/**
+   convenience function: run a filter chain on a image 
+   @param image input image 
+   @param nfilters number of filter definitions following 
+   @param filters array of strings defining the filter to be applied 
+   @returns the filtered image 
+*/
+P2DImage  EXPORT_2D run_filter_chain(P2DImage image, size_t nfilters, const char *filters[]);
+
+/**
+   convenience function: run a filter chain on a image 
+   @param image input image 
+   @param filter string defining the filter to be applied 
+   @returns the filtered image 
+*/
+P2DImage  EXPORT_2D run_filter(const C2DImage& image, const char *filter);
+
+
+/**
+   \brief 2D Image combiner 
+   
+   A class to provides the base for operations that combine two images to create a new image
+ */
+class EXPORT_2D C2DImageCombiner : public TFilter< P2DImage > ,
 				   public CProductBase {
 public:
+	/// data type for plug-in serachpath component 
 	typedef C2DImage plugin_data; 
+	/// plug-in type for plug-in serachpath component 
 	typedef combiner_type plugin_type; 
+	
 	virtual ~C2DImageCombiner();
-
+	/**
+	   Combine two images by a given operator 
+	   @param a 
+	   @param b 
+	   @returns combined image 
+	   
+	 */
 	result_type combine( const C2DImage& a, const C2DImage& b) const;
 private:
 	virtual result_type do_combine( const C2DImage& a, const C2DImage& b) const = 0;
 };
 
 
-P2DImage  EXPORT_2D run_filter_chain(P2DImage image, size_t nfilters, const char *filters[]);
-P2DImage  EXPORT_2D run_filter(const C2DImage& image, const char *filter);
 
-double EXPORT_2D distance(const C2DImage& image1, const C2DImage& image2,  const C2DImageCombiner& measure);
-
-//typedef TFactory<C2DFilter, C2DImage, filter_type> C2DFilterPlugin;
-typedef THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> > C2DFilterPluginHandler;
-
-
+/// Base class for image combiners 
 typedef TFactory<C2DImageCombiner> C2DImageCombinerPlugin;
-typedef THandlerSingleton<TFactoryPluginHandler<C2DImageCombinerPlugin> > C2DImageCombinerPluginHandler;
+
+/// Plugin handler for image combiner plugins 
+typedef THandlerSingleton<TFactoryPluginHandler<C2DImageCombinerPlugin> > 
+        C2DImageCombinerPluginHandler;
+FACTORY_TRAIT(C2DImageCombinerPluginHandler); 
 
 NS_MIA_END
 

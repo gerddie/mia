@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -30,39 +30,48 @@
 NS_MIA_BEGIN
 
 /**
+   \brief A trait to obtaine information about of dimensions of a class 
+
    A template to get an generic dimension vector 
    \tparam T must be a template that defines a type \a dimsize_type
  */
 template <template <typename> class T>
 struct dim_traits {
+	/// the trait 
 	typedef typename T::dimsize_type dimsize_type; 
 };
 
 /**
-   Structure to enable the use of the dim_traits class for std::vector 
+   \brief Structure to enable the use of the dim_traits class for std::vector 
  */
 struct vector_dimsize {
 	
-	vector_dimsize(size_t n):_M_n(n) {
+	/// contruct the dimsize object 
+	vector_dimsize(size_t n):m_n(n) {
 	}
 	
+	/// \return the dimension 1 as dimension of this vector 
 	size_t size() {
 		return 1; 
 	}
+
+	/// return a read-write reference to the first (and only)dimension
 	T& operator [] (int i)
 	{
-		return _M_n; 
+		return m_n; 
 	}
+
+	/// return a read-only  reference to the first (and only)dimension
 	const T& operator [] (int i) const 
 	{
-		return _M_n; 
+		return m_n; 
 	}
-	size_t _M_n; 
+private: 
+	size_t m_n; 
 }; 
 
 template <typename T>
 struct dim_traits<std::vector<T> > {
-		
 	typedef vector_dimsize dimsize_type; 
 }; 
 

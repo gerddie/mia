@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Madrid 2010
+ * Copyright (c) Madrid 2010-2011
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -40,14 +40,14 @@ public:
 	double evaluate(const T3DDatafield<C3DDVector>& coefficients, CDoubleVector& gradient) const; 
 	void reset(const C3DBounds& size, const C3DFVector& range, const CBSplineKernel& kernel, 
 		   double wdiv, double wrot); 
-	C3DBounds _M_size; 
+	C3DBounds m_size; 
 private: 
-	double _M_wdiv; 
-	double _M_wrot; 
-	EInterpolation _M_type; 
-	C3DFVector _M_range; 
-	size_t _M_nodes; 
-	int _M_ksize; 
+	double m_wdiv; 
+	double m_wrot; 
+	EInterpolation m_type; 
+	C3DFVector m_range; 
+	size_t m_nodes; 
+	int m_ksize; 
 	
 	struct SMatrixCell {
 		double vxx; 
@@ -60,7 +60,7 @@ private:
 		double vzz; 
 		SMatrixCell(); 
 	}; 
-	T3DDatafield<SMatrixCell> _M_P; 
+	T3DDatafield<SMatrixCell> m_P; 
 }; 
 
 
@@ -161,17 +161,17 @@ C3DPPDivcurlMatrixImpl::C3DPPDivcurlMatrixImpl(const C3DBounds& size, const C3DF
 void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& range, const CBSplineKernel& kernel, 
 				   double wdiv, double wrot)
 {
-	if (  _M_size == size && wdiv == _M_wdiv && wrot == _M_wrot &&
-	      _M_range == range && kernel.get_type()  == _M_type)
+	if (  m_size == size && wdiv == m_wdiv && wrot == m_wrot &&
+	      m_range == range && kernel.get_type()  == m_type)
 		return; 
 	
-	_M_size = size;
-	_M_wdiv = wdiv;
-	_M_wrot = wrot;
-	_M_range = range;
-	_M_type = kernel.get_type();
-	_M_nodes = size.x*size.y*size.z;
-	_M_P = T3DDatafield<SMatrixCell>(C3DBounds(2 * kernel.size()+1, 
+	m_size = size;
+	m_wdiv = wdiv;
+	m_wrot = wrot;
+	m_range = range;
+	m_type = kernel.get_type();
+	m_nodes = size.x*size.y*size.z;
+	m_P = T3DDatafield<SMatrixCell>(C3DBounds(2 * kernel.size()+1, 
 						   2 * kernel.size()+1, 
 						   2 * kernel.size()+1)); 
 
@@ -192,8 +192,8 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 	cvdebug() << "h4 = " << h4 << "\n"; 
 
 	
-	_M_ksize = kernel.size(); 
-	cvinfo() << "ksize = " <<_M_ksize  << "\n"; 
+	m_ksize = kernel.size(); 
+	cvinfo() << "ksize = " <<m_ksize  << "\n"; 
 
 	CIntegralCache2 rc00(kernel, 0, 0); 
 	CIntegralCache2 rc11(kernel, 1, 1); 
@@ -206,14 +206,14 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 	const double wsum = wdiv + wrot; 
 	const double wdelta = 2*(wdiv - wrot); 
 
-	auto p = _M_P.begin(); 
-	for (int z = -_M_ksize; z <= _M_ksize; ++z)  {
+	auto p = m_P.begin(); 
+	for (int z = -m_ksize; z <= m_ksize; ++z)  {
 		const double r00z =        rc00.get(z); 
 		const double r01z = h1.z * rc01.get(z); 
 		const double r11z = h2.z * rc11.get(z); 
 		const double r12z = h3.z * rc12.get(z); 
 		const double r22z = h4.z * rc22.get(z); 
-		for (int y = -_M_ksize; y <= _M_ksize; ++y)  {
+		for (int y = -m_ksize; y <= m_ksize; ++y)  {
 			const double r00y =        rc00.get(y); 
 			const double r01y = h1.y * rc01.get(y); 
 			const double r10y = h1.y * rc10.get(y); 
@@ -221,7 +221,7 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 			const double r12y = h3.y * rc12.get(y); 
 			const double r21y = h3.y * rc21.get(y); 
 			const double r22y = h4.y * rc22.get(y); 
-			for (int x = -_M_ksize; x <= _M_ksize; ++x, ++p) {
+			for (int x = -m_ksize; x <= m_ksize; ++x, ++p) {
 				const double r00x =        rc00.get(x); 
 				const double r01x = h1.x * rc01.get(x); 
 				const double r10x = h1.x * rc10.get(x); 
@@ -292,14 +292,14 @@ void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& rang
 			}
 		}
 	}
-	cvdebug() << "P-matrix has " << _M_P.size() << " entries\n"; 
-	cvdebug() << "size:" << _M_size << ", _M_ksize=" << _M_ksize << "\n"; 
+	cvdebug() << "P-matrix has " << m_P.size() << " entries\n"; 
+	cvdebug() << "size:" << m_size << ", m_ksize=" << m_ksize << "\n"; 
 }
 
 template <typename Field>
 double C3DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 {
-	assert(coefficients.size() == _M_nodes); 
+	assert(coefficients.size() == m_nodes); 
 
 	register double result_1 = 0.0; 
 	register double result_2 = 0.0; 
@@ -308,23 +308,23 @@ double C3DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 	register double result_5 = 0.0; 
 	register double result_6 = 0.0; 
 
-	const int nx = _M_size.x;
-	const int ny = _M_size.y;
-	const int nz = _M_size.z;
+	const int nx = m_size.x;
+	const int ny = m_size.y;
+	const int nz = m_size.z;
 
 	auto ci = coefficients.begin(); 
 
-	if (_M_wdiv == _M_wrot) {
+	if (m_wdiv == m_wrot) {
 		for (int zi = 0; zi < nz; ++zi) {
 			for (int yi = 0; yi < ny; ++yi) {
 				for (int xi = 0; xi < nx; ++xi, ++ci) {
-					for (int zj = max(0,zi - _M_ksize); zj < min(zi + _M_ksize, nz); ++zj) {
-						int dz = zi - zj + _M_ksize; 
-						for (int yj = max(0,yi - _M_ksize); yj < min(yi + _M_ksize, ny); ++yj) {							int dy = yi - yj + _M_ksize;
-							int xstart = max(0,xi - _M_ksize); 
+					for (int zj = max(0,zi - m_ksize); zj < min(zi + m_ksize, nz); ++zj) {
+						int dz = zi - zj + m_ksize; 
+						for (int yj = max(0,yi - m_ksize); yj < min(yi + m_ksize, ny); ++yj) {							int dy = yi - yj + m_ksize;
+							int xstart = max(0,xi - m_ksize); 
 							auto cj = coefficients.begin_at(xstart, yj, zj); 
-							auto p = _M_P.begin_at(xi - xstart + _M_ksize, dy, dz);
-							for (int xj = xstart; xj < min(xi + _M_ksize,nx); --p, ++xj, ++cj) {
+							auto p = m_P.begin_at(xi - xstart + m_ksize, dy, dz);
+							for (int xj = xstart; xj < min(xi + m_ksize,nx); --p, ++xj, ++cj) {
 								result_1 += ci->x * cj->x * p->vxx; 
 								result_2 += ci->y * cj->y * p->vyy; 
 								result_3 += ci->z * cj->z * p->vzz; 
@@ -338,15 +338,15 @@ double C3DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 		for (int zi = 0; zi < nz; ++zi) {
 			for (int yi = 0; yi < ny; ++yi) {
 				for (int xi = 0; xi < nx; ++xi, ++ci) {
-					for (int zj = max(0,zi - _M_ksize); zj < min(zi + _M_ksize, nz); ++zj) {
-						const int dz = zi - zj + _M_ksize; 
-						for (int yj = max(0,yi - _M_ksize); yj < min(yi + _M_ksize, ny); ++yj) {
-							const int dy = yi - yj + _M_ksize;
-							const int xstart = max(0,xi - _M_ksize);
-							const int xend = min(xi + _M_ksize,nx); 
+					for (int zj = max(0,zi - m_ksize); zj < min(zi + m_ksize, nz); ++zj) {
+						const int dz = zi - zj + m_ksize; 
+						for (int yj = max(0,yi - m_ksize); yj < min(yi + m_ksize, ny); ++yj) {
+							const int dy = yi - yj + m_ksize;
+							const int xstart = max(0,xi - m_ksize);
+							const int xend = min(xi + m_ksize,nx); 
 							auto cj = coefficients.begin_at(xstart, yj, zj); 
 							
-							auto p = _M_P.begin_at(xi - xstart + _M_ksize, dy, dz);
+							auto p = m_P.begin_at(xi - xstart + m_ksize, dy, dz);
 
 							for (int xj = xstart; xj < xend; ++xj, ++cj, --p) {
 
@@ -373,12 +373,12 @@ double C3DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 double C3DPPDivcurlMatrixImpl::evaluate(const T3DDatafield<C3DDVector>& coefficients, 
 					CDoubleVector& gradient) const
 {
-	assert(coefficients.size() == _M_nodes); 
+	assert(coefficients.size() == m_nodes); 
 	assert(gradient.size() == coefficients.size() * 3); 
 
-	const int nx = _M_size.x;
-	const int ny = _M_size.y;
-	const int nz = _M_size.z;
+	const int nx = m_size.x;
+	const int ny = m_size.y;
+	const int nz = m_size.z;
 
 	double result_1 = 0.0; 
 	double result_2 = 0.0; 
@@ -394,13 +394,13 @@ double C3DPPDivcurlMatrixImpl::evaluate(const T3DDatafield<C3DDVector>& coeffici
 		for (int yi = 0; yi < ny; ++yi) {
 			for (int xi = 0; xi < nx; ++xi, ++ci, ++i, gi+=3) {
 				C3DDVector g(0,0,0); 
-				for (int zj = max(0,zi - _M_ksize); zj < min(zi + _M_ksize, nz); ++zj) {
-					const int dz = zi - zj + _M_ksize; 
-					for (int yj = max(0,yi - _M_ksize); yj < min(yi + _M_ksize, ny); ++yj) {
-						const int dy = yi - yj + _M_ksize;
-						const int xstart = max(0,xi - _M_ksize);
-						const int xend = min(xi + _M_ksize,nx);
-						auto p = _M_P.begin_at(xi - xstart + _M_ksize, dy, dz); 
+				for (int zj = max(0,zi - m_ksize); zj < min(zi + m_ksize, nz); ++zj) {
+					const int dz = zi - zj + m_ksize; 
+					for (int yj = max(0,yi - m_ksize); yj < min(yi + m_ksize, ny); ++yj) {
+						const int dy = yi - yj + m_ksize;
+						const int xstart = max(0,xi - m_ksize);
+						const int xend = min(xi + m_ksize,nx);
+						auto p = m_P.begin_at(xi - xstart + m_ksize, dy, dz); 
 						auto cj = coefficients.begin_at(xstart, yj, zj); 
 						for (int xj = xstart; xj < xend; ++xj, ++cj, --p) {
 							
@@ -438,12 +438,12 @@ double C3DPPDivcurlMatrixImpl::evaluate(const T3DDatafield<C3DDVector>& coeffici
 double C3DPPDivcurlMatrixImpl::evaluate(const C3DFVectorfield& coefficients, 
 					CDoubleVector& gradient) const
 {
-	assert(coefficients.size() == _M_nodes); 
+	assert(coefficients.size() == m_nodes); 
 	assert(gradient.size() == coefficients.size() * 3); 
 
-	const int nx = _M_size.x;
-	const int ny = _M_size.y;
-	const int nz = _M_size.z;
+	const int nx = m_size.x;
+	const int ny = m_size.y;
+	const int nz = m_size.z;
 
 	double __attribute__((aligned(16))) result[6]; 
 	fill(result, result + 6, 0.0);
@@ -456,14 +456,14 @@ double C3DPPDivcurlMatrixImpl::evaluate(const C3DFVectorfield& coefficients,
 				
 				double __attribute__((aligned(16))) g[4]; 
 				fill(g, g + 4, 0.0);
-				for (int zj = max(0,zi - _M_ksize); zj < min(zi + _M_ksize, nz); ++zj) {
-					const int dz = zi - zj + _M_ksize; 
-					for (int yj = max(0,yi - _M_ksize); yj < min(yi + _M_ksize, ny); ++yj) {
-						const int dy = yi - yj + _M_ksize;
-						const int xstart = max(0,xi - _M_ksize);
-						const int xend = min(xi + _M_ksize,nx);
+				for (int zj = max(0,zi - m_ksize); zj < min(zi + m_ksize, nz); ++zj) {
+					const int dz = zi - zj + m_ksize; 
+					for (int yj = max(0,yi - m_ksize); yj < min(yi + m_ksize, ny); ++yj) {
+						const int dy = yi - yj + m_ksize;
+						const int xstart = max(0,xi - m_ksize);
+						const int xend = min(xi + m_ksize,nx);
 
-						auto p = _M_P.begin_at(xi - xstart + _M_ksize, dy, dz);
+						auto p = m_P.begin_at(xi - xstart + m_ksize, dy, dz);
 						auto cj = coefficients.begin_at(xstart, yj, zj); 
 
 						for (int xj = xstart; xj < xend; ++xj, ++cj, --p) {
@@ -560,7 +560,7 @@ double C3DPPDivcurlMatrixImpl::evaluate(const C3DFVectorfield& coefficients,
 const C3DBounds& C3DPPDivcurlMatrix::get_size() const
 {
 	TRACE_FUNCTION; 
-	return impl->_M_size; 
+	return impl->m_size; 
 }
 
 void C3DPPDivcurlMatrix::reset(const C3DBounds& size, const C3DFVector& range, const CBSplineKernel& kernel, 

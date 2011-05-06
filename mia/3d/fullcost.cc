@@ -20,6 +20,20 @@
  *
  */
 
+/*
+  LatexBeginPluginSection{3D full cost functions}
+  \label{sec:3dfullcost}
+  
+  This class of cost functions evaluates the cost resulting from the 
+  use of a certain transformation. This may include a penalty term that ensures 
+  the smoothness of a transformation or the evaluation of a similarity measure 
+  between a transformed study data set and a refernce data set. 
+  
+  These cost functions can be combined and weighted. 
+  
+  LatexEnd
+*/
+
 #include <boost/lambda/lambda.hpp>
 #include <mia/core/export_handler.hh>
 #include <mia/3d/fullcost.hh>

@@ -1,6 +1,6 @@
 /* -*- mona-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -119,7 +119,7 @@ T3DVector<T> operator * (const T3DMatrix<T>& m, const T3DVector<T>& x  )
 			    m.x.z * x.x + m.y.z * x.y + m.z.z * x.z);
 }
 
-
+/// a simple 3x3 matrix 
 typedef T3DMatrix<float> C3DFMatrix; 
 
 NS_MIA_END

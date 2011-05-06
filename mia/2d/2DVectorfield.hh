@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -29,15 +29,31 @@
 
 NS_MIA_BEGIN
 
+/**
+   \brief 2D Vector field 
+   
+   This class provides an  interface to make the IO opf vector fields possible 
+ */
 template <typename T>
 class EXPORT_2D T2DVectorfield: public T2DDatafield<T>, public CAttributedData {
 public:
+	/// plug.in related type description string 
 	static const char *type_descr;
 
 	T2DVectorfield(){};
+
+	/**
+	   Contruct a vector field of the given size 
+	   @param size of vector field 
+	 */
 	T2DVectorfield(const C2DBounds& size):
 		T2DDatafield<T>(size) {};
 
+
+	/**
+	   @param data meta data  
+	   @param size of vector field 
+	 */
 	T2DVectorfield(const CAttributedData& data, const C2DBounds& size):
 		T2DDatafield<T>(size),
 		CAttributedData(data)
@@ -45,9 +61,19 @@ public:
 	}
 };
 
+/// 2D vector field to store single precicion 2D vectors 
 typedef T2DVectorfield<C2DFVector>  C2DFVectorfield;
+
+/// 2D vector field to store double precicion 2D vectors 
 typedef T2DVectorfield<C2DDVector>  C2DDVectorfield;
 
+/**
+   Concat two vector fields that descrive a transformation 
+   T_a = x - a(x) and T_b = x - b(x) 
+   @param[in,out] a ; output=a( x - b(x) ) + b(x); 
+   @param b 
+   @returns a( x - b(x) ) + b(x); 
+*/
 EXPORT_2D C2DFVectorfield& operator += (C2DFVectorfield& a, const C2DFVectorfield& b);
 
 NS_MIA_END

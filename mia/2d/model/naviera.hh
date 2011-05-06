@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -46,12 +46,12 @@ public:
 private:
 	virtual void do_solve(const mia::C2DFVectorfield& b, mia::C2DFVectorfield& x) const;
 
-	float _M_mu;
-	float _M_lambda;
-	float _M_a1,_M_a, _M_b, _M_c, _M_a_b, _M_b_4;
-	float _M_omega;
-	float _M_epsilon;
-	size_t _M_max_iter;
+	float m_mu;
+	float m_lambda;
+	float m_a1,m_a, m_b, m_c, m_a_b, m_b_4;
+	float m_omega;
+	float m_epsilon;
+	size_t m_max_iter;
 };
 
 class C2DNavierRegModelPlugin: public mia::C2DRegModelPlugin {
@@ -63,11 +63,11 @@ private:
 	bool do_test() const;
 	const std::string do_get_descr()const;
 
-	float _M_mu;
-	float _M_lambda;
-	float _M_omega;
-	float _M_epsilon;
-	int _M_maxiter;
+	float m_mu;
+	float m_lambda;
+	float m_omega;
+	float m_epsilon;
+	int m_maxiter;
 };
 
 NS_END

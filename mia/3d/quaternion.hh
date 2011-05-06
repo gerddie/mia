@@ -22,12 +22,17 @@
 #define mia_3d_quaternion_hh
 
 #include <ostream>
+#include <mia/3d/defines3d.hh>
 #include <mia/3d/3DVector.hh>
 
 
 NS_MIA_BEGIN 
 
-class Quaternion {
+/**
+   \brief a class to implement a quaternion
+ */
+
+class EXPORT_3D Quaternion {
 
 public: 
 	Quaternion(); 
@@ -90,7 +95,8 @@ inline double Quaternion::z() const
 	return m_v.z; 
 }
 
-bool operator != (const Quaternion& a, const Quaternion& b); 
+bool EXPORT_3D operator == (const Quaternion& a, const Quaternion& b); 
+bool EXPORT_3D operator != (const Quaternion& a, const Quaternion& b); 
 
 inline std::ostream& operator << (std::ostream& os, const Quaternion& a) 
 {

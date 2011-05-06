@@ -1,5 +1,5 @@
-/* -*- mona-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+/* -*- mia-c++  -*-
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -25,9 +25,9 @@
 #include <boost/type_traits.hpp>
 
 #include <mia/2d/2dfilter.hh>
-#include <libmona/filter.hh>
+#include <libmia/filter.hh>
 
-#include <libmona/probmapio.hh>
+#include <libmia/probmapio.hh>
 #include "rgg_tools.hh"	
 
 namespace rgg_2dimage_filter {
@@ -43,18 +43,18 @@ static const CFloatOption param_seed("seed", "threshold for seed probability", 0
 
 	
 class C2DRGG: public C2DFilter {
-	float _M_seed; 
-	CProbabilityVector _M_pv;
-	vector<T2DVector<int> >  _M_env;
+	float m_seed; 
+	CProbabilityVector m_pv;
+	vector<T2DVector<int> >  m_env;
 public:
 	C2DRGG(float seed,const CProbabilityVector& pv):
-		_M_seed(seed), 
-		_M_pv(pv)
+		m_seed(seed), 
+		m_pv(pv)
 	{
-		_M_env.push_back(T2DVector<int>(-1,  0)); 
-		_M_env.push_back(T2DVector<int>( 1,  0)); 
-		_M_env.push_back(T2DVector<int>( 0, -1)); 
-		_M_env.push_back(T2DVector<int>( 0,  1)); 
+		m_env.push_back(T2DVector<int>(-1,  0)); 
+		m_env.push_back(T2DVector<int>( 1,  0)); 
+		m_env.push_back(T2DVector<int>( 0, -1)); 
+		m_env.push_back(T2DVector<int>( 0,  1)); 
 	}
 	
 	template <class T>
@@ -64,7 +64,7 @@ public:
 
 
 class C2DRGGImageFilter: public C2DImageFilterBase {
-	C2DRGG _M_filter; 
+	C2DRGG m_filter; 
 public:
 	C2DRGGImageFilter(float seed,const CProbabilityVector& pv); 
 
@@ -90,13 +90,13 @@ typename C2DRGG::result_type C2DRGG::operator () (const T2DImage<T>& data) const
 	C2DUBImage *result = new C2DUBImage(data.get_size()); 
 	
 	// find seed segmentation 
-	transform(data.begin(), data.end(), result->begin(), FMapClass(_M_seed, _M_pv)); 
+	transform(data.begin(), data.end(), result->begin(), FMapClass(m_seed, m_pv)); 
 	
 	// evaluate all boundary pixels and get gradient
 	
 	C2DUBImage::iterator r = result->begin(); 
 	
-	vector<T2DVector<int> >::const_iterator ke = _M_env.end(); 
+	vector<T2DVector<int> >::const_iterator ke = m_env.end(); 
 	
 	priority_queue<Contact<C2DBounds,T> > contacts; 
 	
@@ -105,7 +105,7 @@ typename C2DRGG::result_type C2DRGG::operator () (const T2DImage<T>& data) const
 	for (size_t y = 0; y < data.get_size().y; ++y)
 		for (size_t x = 0; x < data.get_size().x; ++x, ++r, ++di) {
 			if (*r != undefined) {
-				vector<T2DVector<int> >::const_iterator kb = _M_env.begin(); 
+				vector<T2DVector<int> >::const_iterator kb = m_env.begin(); 
 				while (kb != ke) {
 					size_t ix = kb->x + x; 
 					if (ix < data.get_size().x) {
@@ -138,7 +138,7 @@ typename C2DRGG::result_type C2DRGG::operator () (const T2DImage<T>& data) const
 		
 		r = c.cl;
 	
-		vector<T2DVector<int> >::const_iterator kb = _M_env.begin(); 
+		vector<T2DVector<int> >::const_iterator kb = m_env.begin(); 
 		while (kb != ke) {
 			size_t ix = kb->x + c.l.x; 
 			if (ix < data.get_size().x) {
@@ -161,13 +161,13 @@ typename C2DRGG::result_type C2DRGG::operator () (const T2DImage<T>& data) const
 }
 
 C2DRGGImageFilter::C2DRGGImageFilter(float seed,const CProbabilityVector& pv):
-	_M_filter( seed, pv)
+	m_filter( seed, pv)
 {
 }
 
 P2DImage C2DRGGImageFilter::do_filter(const C2DImage& image) const
 {
-	return wrap_filter(_M_filter,image); 
+	return wrap_filter(m_filter,image); 
 }
 
 C2DRGGImageFilterFactory::C2DRGGImageFilterFactory():

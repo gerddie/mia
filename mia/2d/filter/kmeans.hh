@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ public:
 private:
 	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 
-	size_t _M_classes;
+	size_t m_classes;
 };
 
 class C2DKMeansFilterPluginFactory: public mia::C2DFilterPlugin {
@@ -47,7 +47,7 @@ public:
 private:
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string do_get_descr()const;
-	int _M_classes;
+	int m_classes;
 };
 
 NS_END

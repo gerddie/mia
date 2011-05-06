@@ -1,5 +1,5 @@
 /*  -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,27 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/* 
+   LatexBeginPluginDescription{Spacial filter kernels}
+   
+   \subsection{Gauss}
+   \label{skernel:gauss}
+   
+   \begin{description}
+   
+   \item [Plugin:] gauss
+   \item [Description:] The spacial Gauss kernel 
+   
+   \plugtabstart
+   w &  int & half kernel with, the full kernel with is 2*w+1 & 1  \\
+   \plugtabend
+   
+   \end{description}
+
+   LatexEnd  
+ */
+
 
 #include <mia/core/spacialkernel/gauss.hh>
 
@@ -56,16 +77,16 @@ C1DGaussFilterKernel::C1DGaussFilterKernel(int fsize):
 
 C1DSpacialGaussKernelPlugin::C1DSpacialGaussKernelPlugin():
 	C1DSpacialKernelPlugin("gauss"),
-	_M_w(1)
+	m_w(1)
 {
-	add_parameter("w", new CIntParameter(_M_w, 0, numeric_limits<int>::max(),
+	add_parameter("w", new CIntParameter(m_w, 0, numeric_limits<int>::max(),
 					     false, "half filter width"));
 }
 
 C1DSpacialGaussKernelPlugin::ProductPtr C1DSpacialGaussKernelPlugin::do_create() const
 {
-	if (_M_w > 0)
-		return C1DSpacialGaussKernelPlugin::ProductPtr(new C1DGaussFilterKernel(_M_w));
+	if (m_w > 0)
+		return C1DSpacialGaussKernelPlugin::ProductPtr(new C1DGaussFilterKernel(m_w));
 	else
 		return C1DSpacialGaussKernelPlugin::ProductPtr();
 }

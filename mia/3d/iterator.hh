@@ -28,6 +28,10 @@
 NS_MIA_BEGIN
 
 /**
+   \brief a 3D iterator that knows its position in the 3D grid ans supports iterating over 
+   sub-ranges 
+   
+
    Iterator to iterate over a sub-range of 3D data that is given on a grid. 
    Two iterators are considered to be equal, if their positions are equal.  
    \tparam the internal iterator that is used to iterate of the original 
@@ -38,8 +42,11 @@ NS_MIA_BEGIN
 template <typename I> 
 class range3d_iterator: public std::forward_iterator_tag {
 public: 
+	/// data type reference 
 	typedef typename I::reference reference; 
+	/// data type pointer  
 	typedef typename I::pointer pointer; 
+	/// data type for the real iterator in the background 
 	typedef I internal_iterator; 
 	
 
@@ -64,7 +71,10 @@ public:
 	 */
 	range3d_iterator(const C3DBounds& pos);
 
+	/// assignment operator 
 	range3d_iterator<I>& operator = (const range3d_iterator<I>& other); 
+	
+	/// copy constructore 
 	range3d_iterator(const range3d_iterator<I>& other); 
 	
 
@@ -92,11 +102,15 @@ public:
 	range3d_iterator<I>& operator = (const range3d_iterator<AI>& other); 
 
 	
+	/// prefix increment 
 	range3d_iterator<I>& operator ++(); 
+	/// postfix increment 
 	range3d_iterator<I> operator ++(int); 
 	
-	
+	/// @returns current value the iterator points to 
 	reference  operator *() const;
+	
+	/// @returns pointer to the current value the iterator points to 
 	pointer    operator ->() const;
 
 	/** \returns the current position within the 3D grid with respect to the 
@@ -104,8 +118,10 @@ public:
 	 */
 	const C3DBounds& pos() const; 
 
+	/// @cond NOFRIENDDOC
 	template <typename T> friend
 	bool operator == (const range3d_iterator<T>& left, const range3d_iterator<T>& right); 
+	/// @endcond 
 
 private: 
 

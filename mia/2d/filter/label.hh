@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Biomedical Image Technologies, Universidad Politecnica de Madrid
  *
  * This program is free software; you can redistribute it and/or modify
@@ -28,13 +28,13 @@ NS_BEGIN(label_2dimage_filter)
 
 class CLabel: public mia::C2DFilter {
 public:
-	CLabel(mia::P2DShape& _M_mask);
+	CLabel(mia::P2DShape& m_mask);
 
 private:
 	void grow_region(const mia::C2DBounds& loc,
 			 const mia::C2DBitImage& input, mia::C2DUSImage& result, unsigned short label)const;
 	CLabel::result_type do_filter(const mia::C2DImage& image) const;
-	mia::P2DShape _M_mask;
+	mia::P2DShape m_mask;
 };
 
 NS_END

@@ -64,9 +64,10 @@ public:
 };
 
 /**
+   \brief The base class for 2D interpolators 
+
    Basic Interpolator type for 2D Data.
 */
-
 template <typename T>
 class  EXPORT_2D T2DInterpolator : public  C2DInterpolator {
 public:
@@ -76,55 +77,13 @@ public:
 	   \returns interpolated value at location x
 	 */
 	virtual T operator () (const C2DFVector& x) const = 0;
+	
+	/**
+	   \param x location of data value to read
+	   \returns interpolated gradient at location x
+	*/
 	virtual T2DVector<T> derivative_at(const C2DFVector& x) const = 0;
 
-};
-
-
-/** Base type for interpolators that work directly on the image data */
-template <typename T>
-class EXPORT_2D T2DDirectInterpolator: public T2DInterpolator<T> {
-public:
-
-	/** Constructor
-	    \param data the source data
-	 */
-	T2DDirectInterpolator(const T2DDatafield<T>& data);
-protected:
-	const T2DDatafield<T>& data()const {
-		return _M_data;
-	}
-private:
-	const T2DDatafield<T>& _M_data;
-};
-
-/**
-    Nearest Neighbor interpolation.
- */
-
-template <class T>
-class EXPORT_2D T2DNNInterpolator: public T2DDirectInterpolator<T> {
-public:
-	T2DNNInterpolator(const T2DDatafield<T>& image);
-	T operator () (const C2DFVector& x) const;
-	T2DVector<T> derivative_at(const C2DFVector& x) const;
-
-};
-
-/**
-   Tri-linear interpolation
-*/
-
-template <class T>
-class EXPORT_2D T2DBilinearInterpolator: public T2DDirectInterpolator<T> {
-public:
-	T2DBilinearInterpolator(const T2DDatafield<T>& image);
-	T operator () (const C2DFVector& x) const;
-	T2DVector<T> derivative_at(const C2DFVector& x) const;
-private:
-	size_t _M_xy;
-	C2DFVector _M_size;
-	C2DFVector _M_sizeb;
 };
 
 template <class U>
@@ -132,6 +91,13 @@ struct coeff_map<T2DVector<U> > {
 	typedef T2DVector<U> value_type;
 	typedef C2DDVector   coeff_type;
 };
+
+/**
+   \brief The base class for 2D interpolators that use some kind of spacial convolution 
+
+   This class provides the interface for 2D interpolation based on some kind of 
+   spacial convolution, like e.g. by using B-splines. 
+*/
 
 template <class T>
 class EXPORT_2D T2DConvoluteInterpolator: public T2DInterpolator<T> {
@@ -155,47 +121,75 @@ private:
 
 	typename TCoeff2D::value_type evaluate() const;
 
-	TCoeff2D _M_coeff;
-	C2DBounds _M_size2;
-	std::shared_ptr<CBSplineKernel > _M_kernel;
-	T _M_min;
-	T _M_max;
+	TCoeff2D m_coeff;
+	C2DBounds m_size2;
+	std::shared_ptr<CBSplineKernel > m_kernel;
+	T m_min;
+	T m_max;
 
-	mutable std::vector<int> _M_x_index; 
-	mutable std::vector<int> _M_y_index; 
-	mutable std::vector<double> _M_x_weight; 
-	mutable std::vector<double> _M_y_weight; 
-	mutable CBSplineKernel::SCache _M_x_cache; 
-	mutable CBSplineKernel::SCache _M_y_cache; 
+	mutable std::vector<int> m_x_index; 
+	mutable std::vector<int> m_y_index; 
+	mutable std::vector<double> m_x_weight; 
+	mutable std::vector<double> m_y_weight; 
+	mutable CBSplineKernel::SCache m_x_cache; 
+	mutable CBSplineKernel::SCache m_y_cache; 
 
 };
 
+/**
+   \brief The factory to create an interpolator from some input data 
+*/
+
 class EXPORT_2D C2DInterpolatorFactory {
 public:
-	enum EType {ip_nn, ip_tri, ip_spline, ip_unknown};
 
-	C2DInterpolatorFactory(EType type, std::shared_ptr<CBSplineKernel > kernel);
+	/**
+	   Construct the factory by giving the interpolator type and the 
+	   kernel used for interpolation. 
+	   \param type 
+	   \param kernel
+	 */
+	C2DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel);
 
+	/// Copy constructor 
 	C2DInterpolatorFactory(const C2DInterpolatorFactory& o);
 
+	/// Assignment operator 
 	C2DInterpolatorFactory& operator = ( const C2DInterpolatorFactory& o);
 
 	virtual ~C2DInterpolatorFactory();
+
+	/**
+	   Interpolator creation function 
+	   \tparam pixel data type - can be anything that cann be added to itself and 
+	   multiplied by a double scalar. The class T must also define the coeff_map trait. 
+	   \param src input data to interpolate 
+	   \returns the requested interpolator
+	 */
 
 	template <class T>
 	T2DInterpolator<T> *create(const T2DDatafield<T>& src) const
 		__attribute__ ((warn_unused_result));
 
+
+	/**
+	   \returns raw pointer to the interpolation kernel. 
+	 */
 	const CBSplineKernel* get_kernel() const;
 
 private:
-	EType _M_type;
-	std::shared_ptr<CBSplineKernel > _M_kernel;
+	EInterpolationFactory m_type;
+	std::shared_ptr<CBSplineKernel > m_kernel;
 };
+
+/// Pointer type for the 2D interpolationfactory 
 typedef std::shared_ptr<C2DInterpolatorFactory > P2DInterpolatorFactory;
 
 
-C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(int type)
+/**
+   create a 2D interpolation factory of a certain interpolation type 
+*/
+C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(EInterpolation type)
 	__attribute__ ((warn_unused_result));
 
 // implementation
@@ -203,10 +197,8 @@ C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(int type)
 template <class T>
 T2DInterpolator<T> *C2DInterpolatorFactory::create(const T2DDatafield<T>& src) const
 {
-	switch (_M_type) {
-	case ip_nn:  return new T2DNNInterpolator<T>(src);
-	case ip_tri: return new T2DBilinearInterpolator<T>(src);
-	case ip_spline: return new T2DConvoluteInterpolator<T>(src, _M_kernel);
+	switch (m_type) {
+	case ipf_spline: return new T2DConvoluteInterpolator<T>(src, m_kernel);
 	default: throw "CInterpolatorFactory::create: Unknown interpolator requested";
 	}
 	return NULL;

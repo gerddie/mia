@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -29,6 +29,8 @@
 NS_MIA_BEGIN
 
 /**
+   \brief a class to real-to-complex 1D FFTs 
+
    Class to run a 1D real-to-complex FFT and its inverse. This class makes use of fftw.
    The result of a  forward transform followed directly by a backward transform is the input
    scaled by the size of the input.
@@ -51,6 +53,8 @@ public:
 		}
 #endif
 	};
+
+	/// A typedef that makes switching between single precicion and double precicion easier 
 	typedef float          Real;
 
 	/**
@@ -79,7 +83,7 @@ public:
 	   Execute forward transformation. distance(in_begin, in_end) must be equal to \a n as given at construction time
 	   \param in_begin
 	   \param in_end
-	   \retval out_begin output iterator pointing at the output range that must be at least
+	   \param out_begin output iterator pointing at the output range that must be at least
 	   of size \f$\frac{n}{2} + 1\f$ with n as given at construction time
 	   \sa out_size
 	 */
@@ -93,7 +97,7 @@ public:
 	   given at construction time
 	   \param in_begin
 	   \param in_end
-	   \retval out_begin output iterator pointing at the output range that must be at least
+	   \param out_begin output iterator pointing at the output range that must be at least
 	   of size \a n as given at construction time
 	   \sa out_size
 	 */

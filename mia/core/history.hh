@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -36,7 +36,11 @@
 NS_MIA_BEGIN
 
 
-/** This class holds the complete history list of a data set */
+/** 
+    \brief This class holds the complete history list of a data set. 
+    
+    \todo Use it. 
+*/
 
 
 class EXPORT_CORE CHistory: public std::list<CHistoryEntry> {
@@ -44,6 +48,7 @@ public:
 	/** append a new history record
 	    \param program name of the calling program
 	    \param version version of the program run
+	    \param options the options used in this call 
 	*/
 	void append(const std::string& program, const std::string& version, const CCmdOptionList& options);
 

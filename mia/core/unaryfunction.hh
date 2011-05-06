@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -35,6 +35,7 @@ NS_MIA_BEGIN
 */
 class FUnary {
 public: 
+	/// this would be the operator 
 	virtual double operator () (double x) const = 0; 
 }; 
 

@@ -1,5 +1,5 @@
 /*  -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * 2007 Gert Wollny
  *
@@ -54,8 +54,14 @@ NS_MIA_BEGIN
 template < class T > 
 class T3DVector {
 public:
-	T x,y,z;
+	/// vector element
+	T x;
+	/// vector element
+	T y;
+	/// vector element
+	T z;
 	
+	/// typedef for generic programming 
 	typedef T value_type; 
 
 	/// standart constructor 
@@ -66,8 +72,10 @@ public:
 		assert(dim == 3);
 	}
 	
-        // we provide the default copy mechanisms 
+        /// we provide the default copy mechanisms 
 	T3DVector(const T3DVector<T>& other) = default; 
+	
+	/// we provide the default copy mechanisms 
 	T3DVector<T>& operator = (const T3DVector<T>& other) = default; 
 
 	/// constructor to construct vector from values
@@ -92,54 +100,57 @@ public:
 		return x * x + y * y + z * z;
 	}
 	
+	/// \returns the product of the vector components
 	double product() const {
 		return x * y * z; 
 	}
-	//! Euclidian norm of the vector
+	/// \returns the Euclidian norm of the vector
 	double norm()const{
 		return sqrt(norm2());
 	}
 	
-	//! dimension of vector (always 3)
+	/// \returns the dimension of vector (always 3)
 	int size() const {
 		return 3;
 	}
 
+	/// Fill the vector elements with value v 
 	void fill(T v) {
 		x = y = z = v;
 	}
 
 	
-	///add vector \a a	
+	/// inplace addition 
 	T3DVector<T>& operator +=(const T3DVector<T>& a){
 		x+=a.x; y+=a.y; z+=a.z;
 		return *this;
 	}
 	
-	///subtract vector \a a 
+	/// inplace subtraction
 	T3DVector<T>& operator -=(const T3DVector<T>& a){
 		x-=a.x; y-=a.y; z-=a.z;
 		return *this;
 	}
 	
-	///multiply the vector with \a a
+	/// inplace multiplication 
 	T3DVector<T>& operator *=(const double a){
 		x = T(x * a); y = T(y * a); z = T(z * a);
 		return *this;
 	}
 	
-	/// divide the vector by \a a
+	/// inplace divisison by a scalar 
 	T3DVector<T>& operator /=(const double a){
 		assert(a != 0.0);
 		x = T(x/ a); y =T (y / a); z = T(z / a);
 		return *this;
 	}
 
-	/// print out the vector to the stream \a *os
+	/// print out the formatted vector to the stream
 	void write(std::ostream& os)const {
 		os << "<" << x << "," << y << "," << z << ">"; 
 	}
 
+	/// read the vector from a formatted string 
 	void read(std::istream& is) {
 		char c; 
 		
@@ -171,31 +182,43 @@ public:
 			is.putback(c);
 	}
 
+	/// swizzle operator 
 	const T3DVector<T>&  xyz()const {
 		return *this; 
 	}
 	
+	/// swizzle operator 
 	const T3DVector<T> xzy()const {
 		return T3DVector<T>(x,z,y); 
 	}
 
+	/// swizzle operator 
 	const T3DVector<T> yxz()const {
 		return T3DVector<T>(y,x,z); 
 	}
 
+	/// swizzle operator 
 	const T3DVector<T> yzx()const {
 		return T3DVector<T>(y,z,x); 
 	}
 
+	/// swizzle operator 
 	const T3DVector<T> zyx()const {
 		return T3DVector<T>(z,y,x); 
 	}
-
+	
+	/// swizzle operator 
 	const T3DVector<T> zxy()const {
 		return T3DVector<T>(z,x,y); 
 	}
+	
+	/// declare the vector (1,1,1)
 	static T3DVector<T> _1; 
+
+	/// declare the vector (0,0,0)
 	static T3DVector<T> _0; 
+	
+	/// the number of elements this vector holds (=3)
 	static const unsigned int  elements; 
 };
 

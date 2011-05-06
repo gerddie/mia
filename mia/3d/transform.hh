@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -37,15 +37,20 @@ NS_MIA_BEGIN
 
 
 class C3DTransformation;
+
+/// pointer type for a 3D transformation 
 typedef std::shared_ptr<C3DTransformation > P3DTransformation;
 
 /**
-   This is the generic base class for 3D transformations.
-   Most methods are pure abstract and need to be implemented by a "real" transformation. 
+   @brief This is the generic base class for 3D transformations.
+
+   This class defines the interface for 3D transformations. Most methods are pure abstract 
+   and need to be implemented by a "real" transformation. 
 */
 
 class EXPORT_3D C3DTransformation: public Transformation<C3DImage, C3DInterpolatorFactory> {
 public:
+	/// @cond LAZY 
 	typedef C3DBounds Size; 
 	typedef C3DImage Data;
 	typedef C3DInterpolatorFactory InterpolatorFactory;
@@ -53,23 +58,41 @@ public:
 	typedef std::shared_ptr<C3DTransformation> Pointer; 
 	static const char *type_descr;
 	static const char *dim_descr;
+	/// @endcond 
 protected: 
 	/**
-	   This is the abstract base class of th actual implementation of the transformation iterator.  
+	   This is the abstract base class of the actual implementation of the transformation iterator.  
 	*/
-
 	class iterator_impl  {
 	public: 
 		iterator_impl(); 
+
+		/**
+		   Initialize the iterator with its current position and the size of the domain 
+		   the actual domain is: 
+		   \f$[0,size.x-1]\times [0,size.y-1]\times [0,size.z-1]\f$
+		 */
 		iterator_impl(const C3DBounds& pos, const C3DBounds& size); 
 
+		/// move to next position 
 		void increment(); 
+
+		/// @returns current value of the underlying transformation 
 		const C3DFVector&  get_value() const;
-		virtual iterator_impl * clone() const = 0; 
+
+		/// @returns a dynamic copy of the iterator 
+		virtual iterator_impl * clone() const  __attribute__((warn_unused_result)) = 0; 
 		
+		/**
+		   Compare this iterator to another one. Iterators are equal if they are at the same 
+		   position or at the end.
+		*/
 		bool operator == (const iterator_impl& other) const; 
 		
+		/// @returns the current position on the support domain grid 
 		const C3DBounds& get_pos()const; 
+
+		/// @returns the size of the supported domain 
 		const C3DBounds& get_size()const; 
 	private:
 		virtual const C3DFVector& do_get_value()const = 0; 
@@ -77,8 +100,8 @@ protected:
 		virtual void do_y_increment() = 0; 
 		virtual void do_x_increment() = 0; 
 		
-		C3DBounds _M_pos; 
-		C3DBounds _M_size; 
+		C3DBounds m_pos; 
+		C3DBounds m_size; 
 
 	}; 
 public: 
@@ -86,30 +109,46 @@ public:
 	   This is an iterator that iterates over the grid of the 
 	   domain where the transformation is defined. 
 	   It implements the forward_iterator model. 
+	   @todo make position readable from outside
+	   @todo add iteration over sub-domains  
 	 */
 	
 	class const_iterator : public std::forward_iterator_tag {
 	public: 
 
+		/// @cond some_STL_conform_typedefs
 		typedef std::forward_iterator_tag iterator_category; 
 		typedef C3DFVector value_type; 
 		typedef size_t difference_type; 
 		typedef C3DFVector *pointer; 
 		typedef C3DFVector& reference; 
+		/// @endcond 
+		
 		const_iterator(); 
+
+		/// Copy constructor 
+		const_iterator(const const_iterator& other); 		
+
+		/// initialize the iterator with the actual worker object 
 		const_iterator(iterator_impl * holder); 
 
+		/// assignment operator 
 		const_iterator& operator = (const const_iterator& other); 
-		const_iterator(const const_iterator& other); 
 
+		/// prefix increment 
 		const_iterator& operator ++(); 
+		
+		/// postfix increment 
 		const_iterator operator ++(int); 
 
+		/// return current value of the transformation 
 		const C3DFVector& operator *() const;
+
+		/// return pointer to current value of the transformation 
 		const C3DFVector  *operator ->() const;
 
 	private: 
-		std::unique_ptr<iterator_impl> _M_holder;
+		std::unique_ptr<iterator_impl> m_holder;
 
 		friend EXPORT_3D bool operator == (const C3DTransformation::const_iterator& a, 
 						   const C3DTransformation::const_iterator& b); 
@@ -125,32 +164,32 @@ public:
 
 	/**
 	   Set the descrition string that was used to create this transformstion 
-	   \params s
+	   @param s
 	 */
 	void set_creator_string(const std::string& s); 
 
-	/// \returns the description string used to create this transformations 
+	/// @returns the description string used to create this transformations 
 	const std::string& get_creator_string()const; 
 
 	/**
-	   \returns a newly allocated copy of the actual transformation
+	   @returns a newly allocated copy of the actual transformation
 	 */
 	virtual C3DTransformation *clone() const;
 
 	/**
-	   \returns a the inverse transform 
+	   @returns a the inverse transform 
 	 */
 	virtual C3DTransformation *invert() const = 0;
 
 
 	/**
-	   \returns the start iterator of the transformation that iterates over the grid 
+	   @returns the start iterator of the transformation that iterates over the grid 
 	   of the area the ransformation is defined on 
 	 */
 	virtual const_iterator begin() const = 0; 
 
 	/**
-	   \returns the end iterator of the transformation that iterates over the grid 
+	   @returns the end iterator of the transformation that iterates over the grid 
 	   of the area the ransformation is defined on 
 	 */
 	
@@ -164,22 +203,22 @@ public:
 
 	/**
 	   Save the transformation to some file
-	   \param filename name of the file to save to
-	   \param type file type description
-	   \returns \a true if saving was successfull and \a false if not
+	   @param filename name of the file to save to
+	   @param type file type description
+	   @returns \a true if saving was successfull and \a false if not
 	 */
 	virtual bool save(const std::string& filename, const std::string& type) const = 0;
 
 	/**
 	   Transforation upscaling to new image size
-	   \param size new size of the transformation
-	   \returns shared pointer to upscaled transformation
+	   @param size new size of the transformation
+	   @returns shared pointer to upscaled transformation
 	 */
 	P3DTransformation upscale(const C3DBounds& size) const;
 
 	/**
 	   concat a transformation,
-	   \param a the transformation to be added
+	   @param a the transformation to be added
 	 */
 	virtual void add(const C3DTransformation& a) = 0;
 
@@ -190,7 +229,7 @@ public:
 	virtual void update(float step, const C3DFVectorfield& a) = 0;
 
 	/**
-	   \returns the number of free parameters this transformation provides
+	   @returns the number of free parameters this transformation provides
 	 */
 	virtual size_t degrees_of_freedom() const = 0;
 
@@ -202,9 +241,10 @@ public:
 	/**
 	   evaluate the derivative (Jacobian matrix) of the transformation at the given
 	   grid coordinates
-	   \param x
-	   \param y
-	   \returns 2x2 matrix of the derivative
+	   @param x
+	   @param y
+	   @param z
+	   @returns 3x3 matrix of the derivative
 	 */
 	virtual C3DFMatrix derivative_at(int x, int y, int z) const = 0;
 
@@ -215,7 +255,7 @@ public:
 	virtual void translate(const C3DFVectorfield& gradient, CDoubleVector& params) const = 0;
 
 	/**
-	   \returns the transformation parameters as a flat value array
+	   @returns the transformation parameters as a flat value array
 	 */
 	virtual CDoubleVector get_parameters() const = 0;
 
@@ -225,39 +265,39 @@ public:
 	virtual void set_parameters(const CDoubleVector& params) = 0;
 
 	/**
-	   \returns the (approximate) maximum absolute translation of the transformation over the whole domain
+	   @returns the (approximate) maximum absolute translation of the transformation over the whole domain
 	 */
 	virtual float get_max_transform() const = 0;
 
 	/**
 	   A transformation is defined on [0,X-1]x[0.Y-1]. 
-	   \returns the upper boundaries (X,Y) of this range 
+	   @returns the upper boundaries (X,Y) of this range 
 	 */
 	virtual const C3DBounds& get_size() const = 0;
 
 	/**
 	   evaluate the pertuberation of a vectorfield combined with this transformation
-	   \retval v vectorfield to be pertuberated
-	   \returns maximum value of the pertuberation
+	   \param[in,out] v vectorfield to be pertuberated
+	   @returns maximum value of the pertuberation
 	   \remark this makes only sense for fluid dynamics registration and should be handled elsewhere
 	 */
 	virtual float pertuberate(C3DFVectorfield& v) const = 0;
 
 	/**
-	   \returns the displacement at coordinate x
+	   @returns the displacement at coordinate x
 	   \remark rename the function to something that explains better whats going on
 	 */
 	virtual C3DFVector apply(const C3DFVector& x) const = 0;
 
         /**
 	   apply the actual transformation to point x
-	   \returns transformed point
+	   @returns transformed point
 	 */
 	virtual C3DFVector operator () (const C3DFVector& x) const = 0;
 
 	/**
 	   Evaluate the Jacobian of the transformation when updated with vector field v by factor delta
-	   \returns Jacobian
+	   @returns Jacobian
 	   \remark this only is used for fluid dynamics registration and should probably be moved elsewhere
 	 */
 	virtual float get_jacobian(const C3DFVectorfield& v, float delta) const = 0;
@@ -266,18 +306,18 @@ public:
 	/**
 	   Evaluate the grad div ^2 + grad rot ^2 value and its gradient for the 
 	   transformtion 
-	   \param wd weight of the divergence
-	   \param wr weight of the rotation 
-	   \retval gradient vector to hold the resulting gradient 
-	   \returns cost function value 
+	   @param wd weight of the divergence
+	   @param wr weight of the rotation 
+	   \param[out] gradient vector to hold the resulting gradient 
+	   @returns cost function value 
 	 */
 	virtual double get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const = 0; 
 
 	/**
 	   Evaluate the grad div ^2 + grad rot ^2 value for the transformtion 
-	   \param wd weight of the divergence
-	   \param wr weight of the rotation 
-	   \returns cost function value 
+	   @param wd weight of the divergence
+	   @param wr weight of the rotation 
+	   @returns cost function value 
 	 */
 
 	virtual double get_divcurl_cost(double wd, double wr) const = 0; 
@@ -285,13 +325,16 @@ public:
 	/**
 	   If applicaple the transformation model is refined (e.g. splines 
 	   are converted to a denser coefficient distribution. 
-	   \returns \a true if refinement was applied, and \a false otherwise
+	   @returns \a true if refinement was applied, and \a false otherwise
 	 */
 	virtual bool refine(); 
 
+	/**
+	   Enable some additional debugging.  
+	 */
 	void set_debug(); 
 protected: 
-	
+	/// @returns information about the debug state 
 	bool get_debug()const; 
 
 private: 
@@ -299,17 +342,17 @@ private:
 
 	virtual P3DTransformation do_upscale(const C3DBounds& size) const = 0;
 
-	std::string _M_creator_string;  
+	std::string m_creator_string;  
 	virtual C3DTransformation *do_clone() const = 0;
-	bool _M_debug; 
+	bool m_debug; 
 };
 
 
 /**
    Compare two transformation iterators
-   \param a
-   \param b
-   \returns \a true if iterators are not equal, \a false otherwise 
+   @param a
+   @param b
+   @returns \a true if iterators are not equal, \a false otherwise 
    
 */
 EXPORT_3D bool operator != (const C3DTransformation::const_iterator& a, 

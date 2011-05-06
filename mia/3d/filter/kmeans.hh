@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,27 +18,39 @@
  *
  */
 
+#ifndef __mia_3d_filter_kmeans_hh
+#define __mia_3d_filter_kmeans_hh
 
-#ifndef mia_2d_cost_divcurl_hh
-#define mia_2d_cost_divcurl_hh
+#include <limits>
 
-#include <mia/2d/costbase.hh>
+#include <mia/core/filter.hh>
+#include <mia/core/msgstream.hh>
+#include <mia/3d/3dfilter.hh>
 
+NS_BEGIN( kmeans_3dimage_filter)
 
-NS_BEGIN(mia_2dcost_divcurl)
-
-
-struct C2DDivCurlCostImpl;
-
-class C2DDivCurlCost: public mia::C2DCostBase {
+class C3DKMeans : public mia::C3DFilter {
 public:
-	C2DDivCurlCost(float weight, float divergence, float curl);
-	~C2DDivCurlCost();
+	C3DKMeans(size_t classes);
+
+	template <class T>
+	typename C3DKMeans::result_type operator () (const mia::T3DImage<T>& data) const ;
 private:
-	virtual double do_evaluate(const mia::C2DTransformation& t, mia::C2DFVectorfield& force) const;
-	struct C2DDivCurlCostImpl *impl;
+	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
+
+	size_t m_classes;
+};
+
+class C3DKMeansFilterPluginFactory: public mia::C3DFilterPlugin {
+public:
+	C3DKMeansFilterPluginFactory();
+private:
+	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
+	virtual const std::string do_get_descr()const;
+	int m_classes;
 };
 
 NS_END
+
 
 #endif

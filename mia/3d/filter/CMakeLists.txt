@@ -6,6 +6,7 @@ SET(filters3dNew
   downscale 
   growmask
   invert
+  kmeans 
   label
   mask
   median 

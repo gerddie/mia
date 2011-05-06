@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -24,8 +24,10 @@
 // $Id: factory.hh,v 1.4 2005/06/03 11:00:38 gerddie Exp $
 
 /** 
+    \file; core/factory.hh
     \author: Gert Wollny < wollny at cbs mpg de >
-    implements a plugin loading factory
+    Defines and implements tha infrastructor for factories and 
+    plugins that provide factories. 
 */
 
 #ifndef FACTORY_HH
@@ -47,23 +49,37 @@
 NS_MIA_BEGIN
 
 
-/** This template is the model for all factory plugins, i.e. plugins that create certain objects.
+/** 
+    @brief This is tha base of all plugins that create "things", like filters, cost functions 
+    time step operatores and the like. 
+    
+    This template is the model for all factory plugins, i.e. plugins that create certain objects.
    \tparam P the object type created by the factory.
 */
 template <typename P>
 class EXPORT_HANDLER TFactory: 
 	public TPlugin<typename P::plugin_data, typename P::plugin_type> {
 public: 
+
+	/// typedef to give the output type a nice name 
 	typedef P Product; 
+	
+	/// typedef to give the output pointer type a nice name 
 	typedef std::shared_ptr<P > ProductPtr; 
+	
 	/** initialise the plugin by the names 
 	    \remark what are these names and types good for?
 	*/
 	TFactory(char const * const  name);
 	
-	/** the creation function 
-	    \params options the options to initialise the plugin 
-	    \returns an instance of the requested object
+	/** This function creates the object handled by this plugin 
+	    It uses options to set its parameters and, if successfull, 
+	    sets the init string of the object to params and 
+	    returns the newly created object as a shared pointer. 
+	    
+	    @param options the options to initialise the plugin 
+	    @param params original parameter string 
+	    @returns an instance of the requested object
 	*/
 	virtual ProductPtr create(const CParsedOptions& options, char const *params);
 	
@@ -74,7 +90,9 @@ private:
 
 
 /**
-   Base class for all plugin handlers that are derived from TFactory
+   @brief the Base class for all plugn handlers that deal with factory plugins.  
+   
+   Base class for all plugin handlers that are derived from TFactory. 
  */
 template <typename  P>
 class EXPORT_HANDLER TFactoryPluginHandler: public  TPluginHandler< P > {
@@ -88,33 +106,58 @@ protected:
 	
 	TFactoryPluginHandler(const std::list<boost::filesystem::path>& searchpath); 
         //@}
-public: 	
+public: 
+	/// The pointer type of the the object this plug in hander produces 
 	typedef typename P::ProductPtr ProductPtr; 
+
+	/**
+	   Create an object according to the given description. If creation fails, an empty 
+	   pointer is returned. if plugindescr is set to "help" then print out some help.  
+	   
+	 */
 	ProductPtr produce(const char *plugindescr) const;
 
+	/// \overload produce(const char *plugindescr)
 	ProductPtr produce(const std::string& params)const {
 		return produce(params.c_str()); 
 	}
 
-	
 }; 
 
 /**
+   \brief Type trait to enable the use of a factory product as command 
+      line option 
+
    Type trait that enables the use of the factory creation in commen line parsing. 
    This trait needs to be specialized for all factories that are to be used 
    utilizing the TCmdFactoryOption interface. 
+   \tparam T a class that can be created by a TFactory through the call to 
+    the method TFactoryPluginHandler::produce(const char *plugindescr) of the 
+    corresponding factory plugin handler. 
+    \sa TCmdFactoryOption
  */
 template <class T> 
 class FactoryTrait {
+	/// the typetrait type if not defined properly 
 	typedef typename T::must_create_trait_using_FACTORY_TRAIT type; 
 }; 
 
+/**
+   \brief Type trait to enable the use of a factory product as command 
+      line option 
+      
+   This trait specializes FactoryTrait for shared pointers.  
+ */
 template <class T> 
 class FactoryTrait<std::shared_ptr<T> >  {
 public: 
+	/// the typetrait type 
 	typedef typename FactoryTrait<T>::type type; 
 }; 
 
+/**
+   Specialize the FactoryTrait template for the given TFactoryPluginHandler 
+*/
 #define FACTORY_TRAIT(F)			\
 	template <>				\
 	class FactoryTrait< F::Instance::ProductPtr::element_type >  {	\
@@ -190,16 +233,19 @@ bool TFactory<P>::do_test() const
 	return false; 
 }
 
+/// Do some explicit instanciation for a plugin based on TFactory 
 #define EXPLICIT_INSTANCE_PLUGIN(T) \
 	template class TPlugin<T::plugin_data, T::plugin_type>; \
 	template class TFactory<T>;					
 
+/// Do some explicit instanciation for a plugin based on TFactoryPluginHandler
 #define EXPLICIT_INSTANCE_PLUGIN_HANDLER(P) \
 	template class TPluginHandler<P>;			\
 	template class TFactoryPluginHandler<P>;		\
 	template class THandlerSingleton<TFactoryPluginHandler<P> >;
 
-
+/** Do some explicit instanciation for the plugin classe and the handler of 
+    a plugin based on TFactoryPluginHandler */
 #define EXPLICIT_INSTANCE_HANDLER(T) \
 	template class TPlugin<T::plugin_data, T::plugin_type>; \
 	template class TFactory<T>;					\

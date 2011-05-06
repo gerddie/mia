@@ -1,5 +1,5 @@
-/* -*- mona-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+/* -*- mia-c++  -*-
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -26,7 +26,7 @@
 
 #include <boost/type_traits.hpp>
 #include <mia/2d/2dfilter.hh>
-#include <libmona/fftkernel.hh>
+#include <libmia/fftkernel.hh>
 
 // to avoid the indention
 #define NSBEGIN namespace lnfft_2dimage_filter {
@@ -54,19 +54,19 @@ public:
 		
 	
 private: 
-	C2DFFTKernelFactory::ProductPtr _M_kernel; 
-	C2DBounds _M_size; 
+	C2DFFTKernelFactory::ProductPtr m_kernel; 
+	C2DBounds m_size; 
 	union {
-		fftw_complex *_M_cbuffer; 
-		double   *_M_fbuffer; 
+		fftw_complex *m_cbuffer; 
+		double   *m_fbuffer; 
 	}; 
-	fftw_plan _M_forward_plan; 
-	fftw_plan _M_backward_plan; 
-	size_t _M_realsize_x; 
+	fftw_plan m_forward_plan; 
+	fftw_plan m_backward_plan; 
+	size_t m_realsize_x; 
 };
 
 class C2DImageLnFFTFilter: public C2DImageFilterBase {
-	mutable C2DLnFFT _M_filter; 
+	mutable C2DLnFFT m_filter; 
 public:
 	C2DImageLnFFTFilter(C2DFFTKernelFactory::ProductPtr kernel);
 
@@ -84,62 +84,62 @@ private:
 
 
 C2DLnFFT::C2DLnFFT(C2DFFTKernelFactory::ProductPtr kernel):
-	_M_kernel(kernel), 
-	_M_size(0,0), 
-	_M_cbuffer(NULL), 
-	_M_realsize_x(0)
+	m_kernel(kernel), 
+	m_size(0,0), 
+	m_cbuffer(NULL), 
+	m_realsize_x(0)
 {
 }
 
 C2DLnFFT::~C2DLnFFT()
 {
-	if (_M_cbuffer) {
-		fftw_free(_M_cbuffer); 
-		fftw_destroy_plan( _M_forward_plan); 
-		fftw_destroy_plan( _M_backward_plan); 		
+	if (m_cbuffer) {
+		fftw_free(m_cbuffer); 
+		fftw_destroy_plan( m_forward_plan); 
+		fftw_destroy_plan( m_backward_plan); 		
 	}
 }
 
 void C2DLnFFT::init(const C2DBounds& size)
 {
-	if (_M_size == size)
+	if (m_size == size)
 		return; 
 	cvdebug() << "C2DLnFFT::init ...\n"; 
 	
-	_M_size = size; 
-	_M_realsize_x = 2 * (_M_size.x /2 + 1); 
+	m_size = size; 
+	m_realsize_x = 2 * (m_size.x /2 + 1); 
 
-	cvdebug() << "size = " << _M_size.x << ", " << _M_size.y << "\n"; 
-	if (_M_cbuffer) {
-		delete[] _M_cbuffer; 
-		fftw_destroy_plan( _M_forward_plan); 
-		fftw_destroy_plan( _M_backward_plan); 		
+	cvdebug() << "size = " << m_size.x << ", " << m_size.y << "\n"; 
+	if (m_cbuffer) {
+		delete[] m_cbuffer; 
+		fftw_destroy_plan( m_forward_plan); 
+		fftw_destroy_plan( m_backward_plan); 		
 	}
 	
-	_M_cbuffer = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * _M_size.y * _M_realsize_x);
+	m_cbuffer = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * m_size.y * m_realsize_x);
 	// create the fftw plans
 	
-	cvdebug() << "buffer at " << _M_cbuffer << ":" << _M_fbuffer << "\n"; 
+	cvdebug() << "buffer at " << m_cbuffer << ":" << m_fbuffer << "\n"; 
 	
-	if (!_M_cbuffer) {
+	if (!m_cbuffer) {
 		throw runtime_error("unable to allocate fftw buffers"); 
 	}
 	
-	 _M_forward_plan = fftw_plan_dft_r2c_2d(_M_size.y, _M_size.x,
-						_M_fbuffer, _M_cbuffer, FFTW_ESTIMATE);
+	 m_forward_plan = fftw_plan_dft_r2c_2d(m_size.y, m_size.x,
+						m_fbuffer, m_cbuffer, FFTW_ESTIMATE);
 
-	 cvdebug() << "forward plan at " <<  _M_forward_plan << "\n"; 
-	 if (!_M_forward_plan) {
-		 //fftw_free(_M_cbuffer); 
+	 cvdebug() << "forward plan at " <<  m_forward_plan << "\n"; 
+	 if (!m_forward_plan) {
+		 //fftw_free(m_cbuffer); 
 		 throw runtime_error("unable to create forward plans ..."); 
 	 }
 	 
-	 _M_backward_plan = fftw_plan_dft_c2r_2d(_M_size.y, _M_size.x,
-						 _M_cbuffer, _M_fbuffer, FFTW_ESTIMATE);
+	 m_backward_plan = fftw_plan_dft_c2r_2d(m_size.y, m_size.x,
+						 m_cbuffer, m_fbuffer, FFTW_ESTIMATE);
 	 
-	 if (!_M_backward_plan) {
-		 //fftw_free(_M_cbuffer); 
-		 //fftw_destroy_plan( _M_forward_plan); 		 
+	 if (!m_backward_plan) {
+		 //fftw_free(m_cbuffer); 
+		 //fftw_destroy_plan( m_forward_plan); 		 
 		 throw runtime_error("unable to create backward plans ..."); 
 	 }
 	 
@@ -149,42 +149,42 @@ void C2DLnFFT::init(const C2DBounds& size)
 template <typename T, bool is_integral>
 struct FBackConvert {
 	FBackConvert(double scale):
-		_M_scale(scale) 
+		m_scale(scale) 
 		{
-			cvdebug() << "scale = " << _M_scale <<"\n"; 
+			cvdebug() << "scale = " << m_scale <<"\n"; 
 		}
 	
 	T operator ()(double x) {
-		return T(exp(x *_M_scale) - 1.0); 
+		return T(exp(x *m_scale) - 1.0); 
 	}
 private: 
-	double _M_scale; 
+	double m_scale; 
 };
 
 template <typename T>
 struct FBackConvert<T, true> {
 	FBackConvert(double scale):
-		_M_scale(scale) 
+		m_scale(scale) 
 		{
-			cvdebug() << "scale = " << _M_scale <<"\n"; 
+			cvdebug() << "scale = " << m_scale <<"\n"; 
 		}
 	
 	T operator ()(double x) {
-		double xc = exp(x *_M_scale) - 1.0; 
+		double xc = exp(x *m_scale) - 1.0; 
 		return xc < numeric_limits<T>::min() ? numeric_limits<T>::min() : 
 			( xc < numeric_limits<T>::max() ?  T(xc) : numeric_limits<T>::max()); 
 	}
 private: 
-	double _M_scale; 
+	double m_scale; 
 };
 
 struct ForwardLogify {
-	ForwardLogify(double f):_M_f(f){}
+	ForwardLogify(double f):m_f(f){}
 	double operator ()(double x) {
-		return _M_f * log(x + 1.0); 
+		return m_f * log(x + 1.0); 
 	}
 private: 
-	double _M_f; 
+	double m_f; 
 };
 
 template <typename T>
@@ -195,16 +195,16 @@ C2DLnFFT::result_type C2DLnFFT::operator()(const T2DImage<T>& image)const
 	
 	cvdebug() << "C2DLnFFT::operator() begin\n";
 	for (size_t y = 0; y < image.get_size().y; ++y) 
-		transform(&image(0,y), &image(0,y) + image.get_size().x, &_M_fbuffer[y * _M_realsize_x], y & 1 ? flm : flp); 
+		transform(&image(0,y), &image(0,y) + image.get_size().x, &m_fbuffer[y * m_realsize_x], y & 1 ? flm : flp); 
 		
 	cvdebug() << "C2DLnFFT::operator() forward transform\n";
-	fftw_execute( _M_forward_plan); 
+	fftw_execute( m_forward_plan); 
 
 	cvdebug() << "C2DLnFFT::operator() call kernel\n";
-	_M_kernel->apply(_M_size, _M_cbuffer); 
+	m_kernel->apply(m_size, m_cbuffer); 
 	
 	cvdebug() << "C2DLnFFT::operator() backward transform\n";
-	fftw_execute( _M_backward_plan); 
+	fftw_execute( m_backward_plan); 
 
 	cvdebug() << "C2DLnFFT::operator() back copy\n";
 	T2DImage<T> *result = new T2DImage<T>(image.get_size()); 
@@ -216,7 +216,7 @@ C2DLnFFT::result_type C2DLnFFT::operator()(const T2DImage<T>& image)const
 	FBackConvert<T, is_integral> convertm(-1.0/ image.size());
 	// copy back and scale filtered output
 	for (size_t y = 0; y < image.get_size().y; ++y)
-		transform(&_M_fbuffer[y * _M_realsize_x], &_M_fbuffer[y * _M_realsize_x + _M_size.x] , 
+		transform(&m_fbuffer[y * m_realsize_x], &m_fbuffer[y * m_realsize_x + m_size.x] , 
 			  &(*result)(0,y), (y & 1) ? convertm : convertp);
 	
 	cvdebug() << "C2DLnFFT::operator() end\n";
@@ -225,15 +225,15 @@ C2DLnFFT::result_type C2DLnFFT::operator()(const T2DImage<T>& image)const
 }
 
 C2DImageLnFFTFilter::C2DImageLnFFTFilter(C2DFFTKernelFactory::ProductPtr kernel):
-	_M_filter(kernel)
+	m_filter(kernel)
 {
 }
 	
 
 P2DImage C2DImageLnFFTFilter::do_filter(const C2DImage& image) const
 {
-	_M_filter.init(image.get_size()); 
-	return wrap_filter(_M_filter, image); 
+	m_filter.init(image.get_size()); 
+	return wrap_filter(m_filter, image); 
 }
 
 

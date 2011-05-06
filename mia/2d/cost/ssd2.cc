@@ -1,5 +1,5 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,8 +32,8 @@ using namespace std;
 template <class VF, template <typename> class Image >
 struct FForceAndValue: public TFilter<double> {
 	FForceAndValue(const VF& image_gradient, VF& force):
-		_M_image_gradient(image_gradient),
-		_M_force(force)
+		m_image_gradient(image_gradient),
+		m_force(force)
 	{
 	}
 
@@ -44,8 +44,8 @@ struct FForceAndValue: public TFilter<double> {
 
 		typename Image<T>::const_iterator isrc = src.begin();
 		typename Image<S>::const_iterator iref = ref.begin();
-		typename VF::const_iterator igrad = _M_image_gradient.begin();
-		typename VF::iterator iforce = _M_force.begin();
+		typename VF::const_iterator igrad = m_image_gradient.begin();
+		typename VF::iterator iforce = m_force.begin();
 
 		while (isrc != src.end()) {
 			const double delta = *isrc++ - *iref++;
@@ -57,8 +57,8 @@ struct FForceAndValue: public TFilter<double> {
 
 		return 0.5 * result / src.size();
 	}
-	const C2DFVectorfield& _M_image_gradient;
-	C2DFVectorfield& _M_force;
+	const C2DFVectorfield& m_image_gradient;
+	C2DFVectorfield& m_force;
 };
 
 

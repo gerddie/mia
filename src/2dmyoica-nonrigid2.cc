@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004 - 2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
@@ -34,6 +34,7 @@
 #include <mia/core/factorycmdlineoption.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
+#include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/SegSetWithImages.hh>
@@ -70,7 +71,7 @@ class Convert2Float {
 public: 
 	C2DFImage operator () (P2DImage image) const; 
 private: 
-	FConvert2DImage2float _M_converter; 
+	FConvert2DImage2float m_converter; 
 }; 
 
 C2DFullCostList create_costs(double divcurlweight, double imageweight)
@@ -241,7 +242,8 @@ int do_main( int argc, const char *argv[] )
 				   "Segmentation method")); 
 				    
 
-	options.parse(argc, argv, false);
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+		return EXIT_SUCCESS; 
 
 
 
@@ -283,7 +285,7 @@ int do_main( int argc, const char *argv[] )
 	if (!cropped_filename.empty()) {
 		bfs::path cf(cropped_filename);
 		cf.replace_extension(); 
-		input_set.rename_base(cf.filename()); 
+		input_set.rename_base(__bfs_get_filename(cf)); 
 		input_set.save_images(cropped_filename);
 
 		unique_ptr<xmlpp::Document> test_cropset(input_set.write());
@@ -372,5 +374,5 @@ int main( int argc, const char *argv[] )
 
 inline C2DFImage Convert2Float::operator () (P2DImage image) const
 {
-	return ::mia::filter(_M_converter, *image); 
+	return ::mia::filter(m_converter, *image); 
 }

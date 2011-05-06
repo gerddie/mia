@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -20,6 +20,27 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/*
+  LatexBeginPluginDescription{3D neighborhood shapes}
+
+
+  \subsection{Spherical shape}
+  \label{shapes3d:sphere}
+
+  \begin{description}
+   
+   \item [Plugin:] sphere 
+   \item [Description:] provides a 3D filled sphere. 
+   
+   \end{description}
+   \plugtabstart
+   r &  float & radius of the sphere & 2 \\
+   \plugtabend
+   
+  LatexEnd
+*/
+
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -58,14 +79,14 @@ CSphere3DShape::CSphere3DShape(float radius)
 
 CSphere3DShapeFactory::CSphere3DShapeFactory():
 	C3DShapePlugin("sphere"),
-	_M_r(2)
+	m_r(2)
 {
-	add_parameter("r", new CFloatParameter(_M_r, 0, numeric_limits<float>::max(), false, "sphere radius"));
+	add_parameter("r", new CFloatParameter(m_r, 0, numeric_limits<float>::max(), false, "sphere radius"));
 }
 
 C3DShapePlugin::ProductPtr CSphere3DShapeFactory::do_create()const
 {
-	return CSphere3DShapeFactory::ProductPtr(new CSphere3DShape(_M_r));
+	return CSphere3DShapeFactory::ProductPtr(new CSphere3DShape(m_r));
 }
 
 

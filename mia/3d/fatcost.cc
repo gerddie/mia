@@ -1,5 +1,5 @@
 /*  -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,14 +61,14 @@ C3DBounds C3DImageFatCost::get_size() const
 
 C3DFatImageCostPlugin::C3DFatImageCostPlugin(const char *name):
 	TFactory<C3DImageFatCost>(name),
-	_M_weight(1.0f),
-	_M_interpolator(ip_bspline3)
+	m_weight(1.0f),
+	m_interpolator(ip_bspline3)
 {
 	TRACE("C3DFatImageCostPlugin::C3DFatImageCostPlugin");
-	add_parameter("src", new CStringParameter(_M_src_name, true, "study image"));
-	add_parameter("ref", new CStringParameter(_M_ref_name, true, "reference image"));
-	add_parameter("interp", new CDictParameter<EInterpolation>(_M_interpolator, GInterpolatorTable, "image interpolator"));
-	add_parameter("weight", new CFloatParameter(_M_weight, 1e-10f, 1e+10f,
+	add_parameter("src", new CStringParameter(m_src_name, true, "study image"));
+	add_parameter("ref", new CStringParameter(m_ref_name, true, "reference image"));
+	add_parameter("interp", new CDictParameter<EInterpolation>(m_interpolator, GInterpolatorTable, "image interpolator"));
+	add_parameter("weight", new CFloatParameter(m_weight, 1e-10f, 1e+10f,
 						    false, "weight of cost function"));
 }
 
@@ -85,28 +85,28 @@ C3DFatImageCostPlugin::ProductPtr C3DFatImageCostPlugin::do_create()const
 	typedef C3DImageIOPluginHandler::Instance::PData PImageVector;
 
 
-        PImageVector reference = imageio.load(_M_ref_name);
+        PImageVector reference = imageio.load(m_ref_name);
         if (reference->empty()) {
                 stringstream msg;
-                msg << "Unable to load images form " << _M_ref_name;
+                msg << "Unable to load images form " << m_ref_name;
                 throw invalid_argument(msg.str());
         }
 
-        PImageVector source    = imageio.load(_M_src_name);
+        PImageVector source    = imageio.load(m_src_name);
         if (source->empty()) {
                 stringstream msg;
-                msg << "Unable to load images form " << _M_src_name;
+                msg << "Unable to load images form " << m_src_name;
                 throw invalid_argument(msg.str());
 	}
 
 	if (source->size() > 1)
-		cvwarn() << "'" << _M_src_name << "' contains more then one image, using only first\n";
+		cvwarn() << "'" << m_src_name << "' contains more then one image, using only first\n";
 
 	if (reference->size() > 1)
-		cvwarn() << "'" << _M_ref_name << "' contains more then one image, using only first\n";
+		cvwarn() << "'" << m_ref_name << "' contains more then one image, using only first\n";
 
-	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(_M_interpolator));
-	return do_create((*source)[0], (*reference)[0], ipf, _M_weight);
+	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(m_interpolator));
+	return do_create((*source)[0], (*reference)[0], ipf, m_weight);
 }
 
 double C3DImageFatCostList::value() const

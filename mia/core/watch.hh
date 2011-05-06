@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -24,11 +24,12 @@
 #ifndef mia_core_watch_h
 #define mia_core_watch_h
 
-
 #include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
-/** A class to measure time with  milisecond accuracy 
+/** \brief A class for measuring time. 
+    
+    This is a  class to measure time with  milisecond accuracy.  
     \remark On WIN32 this class is currently a fake that always returns 0.0; 
  */
 class EXPORT_CORE CWatch {
@@ -48,6 +49,3 @@ private:
 NS_MIA_END
 
 #endif
-
-
-

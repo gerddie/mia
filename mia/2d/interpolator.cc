@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -44,22 +44,22 @@ C2DInterpolator::~C2DInterpolator()
 }
 
 
-C2DInterpolatorFactory::C2DInterpolatorFactory(EType type, std::shared_ptr<CBSplineKernel > kernel):
-	_M_type(type),
-	_M_kernel(kernel)
+C2DInterpolatorFactory::C2DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel):
+	m_type(type),
+	m_kernel(kernel)
 {
 }
 
 C2DInterpolatorFactory::C2DInterpolatorFactory(const C2DInterpolatorFactory& o):
-	_M_type(o._M_type),
-	_M_kernel(o._M_kernel)
+	m_type(o.m_type),
+	m_kernel(o.m_kernel)
 {
 }
 
 C2DInterpolatorFactory& C2DInterpolatorFactory::operator = ( const C2DInterpolatorFactory& o)
 {
-	_M_type = o._M_type;
-	_M_kernel = o._M_kernel;
+	m_type = o.m_type;
+	m_kernel = o.m_kernel;
 
 	return *this;
 }
@@ -70,45 +70,12 @@ C2DInterpolatorFactory::~C2DInterpolatorFactory()
 
 const CBSplineKernel* C2DInterpolatorFactory::get_kernel() const
 {
-	return _M_kernel.get();
+	return m_kernel.get();
 }
 
-C2DInterpolatorFactory *create_2dinterpolation_factory(int type)
+C2DInterpolatorFactory *create_2dinterpolation_factory(EInterpolation type)
 {
-	std::shared_ptr<CBSplineKernel > kernel;
-	C2DInterpolatorFactory::EType iptype = C2DInterpolatorFactory::ip_spline;
-
-	switch (type) {
-	case ip_nn:
-		iptype = C2DInterpolatorFactory::ip_nn;
-		break;
-	case ip_linear:
-		iptype = C2DInterpolatorFactory::ip_tri;
-		break;
-	case ip_bspline2:
-		iptype = C2DInterpolatorFactory::ip_spline;
-		kernel.reset(new CBSplineKernel2());
-		break;
-	case ip_bspline3:
-		iptype = C2DInterpolatorFactory::ip_spline;
-		kernel.reset(new CBSplineKernel3());
-		break;
-	case ip_bspline4:
-		iptype = C2DInterpolatorFactory::ip_spline;
-		kernel.reset(new CBSplineKernel4());
-		break;
-	case ip_bspline5:
-		iptype = C2DInterpolatorFactory::ip_spline;
-		kernel.reset(new CBSplineKernel5());
-		break;
-	case ip_omoms3:
-		iptype = C2DInterpolatorFactory::ip_spline;
-		kernel.reset(new CBSplineKernelOMoms3());
-		break;
-	default:
-		throw std::invalid_argument("unknown interpolation method");
-	}
-	return new C2DInterpolatorFactory(iptype, kernel);
+	return create_interpolator_factory<C2DInterpolatorFactory>(type); 
 }
 
 
@@ -169,8 +136,6 @@ double add_2d_new<T2DDatafield< double >, 4>::value(const T2DDatafield< double >
 
 #define INSTANCIATE_INTERPOLATORS(TYPE)			\
 	template class T2DInterpolator<TYPE>;		\
-	template class T2DBilinearInterpolator<TYPE>;	\
-	template class T2DNNInterpolator<TYPE>;		\
 	template class T2DConvoluteInterpolator<TYPE>
 
 INSTANCIATE_INTERPOLATORS(bool);
@@ -191,8 +156,6 @@ INSTANCIATE_INTERPOLATORS(mia_uint64);
 INSTANCIATE_INTERPOLATORS(C2DFVector);
 
 template class T1DInterpolator<C2DFVector>;
-template class T1DLinearInterpolator<C2DFVector>;
-template class T1DNNInterpolator<C2DFVector>;
 template class T1DConvoluteInterpolator<C2DFVector>;
 
 

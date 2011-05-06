@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -20,6 +20,25 @@
  *
  */
 
+/* 
+  LatexBeginPluginDescription{2D Transformations}
+   
+   \subsection{Translation}
+   \label{transform2d:translate}
+   
+   \begin{description}
+   
+   \item [Plugin:] translate
+   \item [Description:] Translation only.  
+   \item [Degrees of Freedom:] 2
+  
+   \end{description}
+   This plug-in doesn't take parameters 
+
+   LatexEnd  
+ */
+
+
 #include <numeric>
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/transform/translate.hh>
@@ -28,22 +47,22 @@
 NS_MIA_BEGIN
 using namespace std;
 C2DTranslateTransformation::C2DTranslateTransformation(const C2DBounds& size):
-	_M_transform(0,0),
-	_M_size(size)
+	m_transform(0,0),
+	m_size(size)
 {
 }
 
 C2DTranslateTransformation::C2DTranslateTransformation(const C2DBounds& size,const C2DFVector& transform):
-	_M_transform(transform),
-	_M_size(size)
+	m_transform(transform),
+	m_size(size)
 {
 }
 
 
 void C2DTranslateTransformation::translate(float x, float y)
 {
-	_M_transform.x += x;
-	_M_transform.y += y;
+	m_transform.x += x;
+	m_transform.y += y;
 }
 
 C2DFVector C2DTranslateTransformation::apply(const C2DFVector& x) const
@@ -56,46 +75,46 @@ C2DFVector C2DTranslateTransformation::apply(const C2DFVector& x) const
 C2DTranslateTransformation::iterator_impl::iterator_impl(const C2DBounds& pos, const C2DBounds& size, 
 							 const C2DFVector& value):
 	C2DTransformation::iterator_impl(pos, size), 
-	_M_translate(value)
+	m_translate(value)
 {
-	_M_value = -1.0f * _M_translate; 
+	m_value = -1.0f * m_translate; 
 }
 
 C2DTransformation::iterator_impl * C2DTranslateTransformation::iterator_impl::clone() const 
 {
-	return new iterator_impl(get_pos(), get_size(), _M_value); 
+	return new iterator_impl(get_pos(), get_size(), m_value); 
 }
 
 const C2DFVector&  C2DTranslateTransformation::iterator_impl::do_get_value() const 
 {
-	return _M_value; 
+	return m_value; 
 }
 
 void C2DTranslateTransformation::iterator_impl::do_x_increment()
 {
-	_M_value = C2DFVector(get_pos()) - _M_translate; 
+	m_value = C2DFVector(get_pos()) - m_translate; 
 }
 
 void C2DTranslateTransformation::iterator_impl::do_y_increment()
 {
-	_M_value = C2DFVector(get_pos()) - _M_translate; 
+	m_value = C2DFVector(get_pos()) - m_translate; 
 }
 
 C2DTransformation::const_iterator C2DTranslateTransformation::begin() const
 {
 	
-	return C2DTransformation::const_iterator(new iterator_impl(C2DBounds(0,0), _M_size, _M_transform));
+	return C2DTransformation::const_iterator(new iterator_impl(C2DBounds(0,0), m_size, m_transform));
 }
 
 C2DTransformation::const_iterator C2DTranslateTransformation::end() const
 {
-	return C2DTransformation::const_iterator(new iterator_impl(_M_size, _M_size, _M_transform));
+	return C2DTransformation::const_iterator(new iterator_impl(m_size, m_size, m_transform));
 }
 
 
 const C2DBounds& C2DTranslateTransformation::get_size() const
 {
-	return _M_size;
+	return m_size;
 }
 
 C2DTransformation *C2DTranslateTransformation::do_clone() const
@@ -106,8 +125,8 @@ C2DTransformation *C2DTranslateTransformation::do_clone() const
 C2DTransformation *C2DTranslateTransformation::invert() const
 {
 	C2DTranslateTransformation *result = new C2DTranslateTransformation(*this);
-	result->_M_transform.x = -_M_transform.x;
-	result->_M_transform.y = -_M_transform.y;
+	result->m_transform.x = -m_transform.x;
+	result->m_transform.y = -m_transform.y;
 	return result; 
 }
 
@@ -129,8 +148,8 @@ P2DTransformation C2DTranslateTransformation::do_upscale(const C2DBounds& size) 
 {
 
 	return P2DTransformation(new C2DTranslateTransformation(size,
-								C2DFVector((_M_transform.x * size.x) / _M_size.x,
-									   (_M_transform.y * size.y) / _M_size.y)));
+								C2DFVector((m_transform.x * size.x) / m_size.x,
+									   (m_transform.y * size.y) / m_size.y)));
 }
 
 
@@ -141,7 +160,7 @@ void C2DTranslateTransformation::add(const C2DTransformation& /*a*/)
 
 void C2DTranslateTransformation::translate(const C2DFVectorfield& gradient, CDoubleVector& params) const
 {
-	assert(gradient.get_size() == _M_size);
+	assert(gradient.get_size() == m_size);
 	assert(params.size() == 2);
 	C2DFVector r = accumulate(gradient.begin(), gradient.end(), C2DFVector(0,0));
 	params[0] = -r.x;
@@ -167,26 +186,26 @@ C2DFMatrix C2DTranslateTransformation::derivative_at(int /*x*/, int /*y*/) const
 CDoubleVector C2DTranslateTransformation::get_parameters() const
 {
 	CDoubleVector result(2);
-	result[0] = _M_transform.x;
-	result[1] = _M_transform.y;
+	result[0] = m_transform.x;
+	result[1] = m_transform.y;
 	return result;
 }
 
 void C2DTranslateTransformation::set_parameters(const CDoubleVector& params)
 {
 	assert(params.size() == 2);
-	_M_transform.x = params[0];
-	_M_transform.y = params[1];
+	m_transform.x = params[0];
+	m_transform.y = params[1];
 }
 
 void C2DTranslateTransformation::set_identity()
 {
-	_M_transform.x = _M_transform.y = 0.0;
+	m_transform.x = m_transform.y = 0.0;
 }
 
 float C2DTranslateTransformation::get_max_transform() const
 {
-	return _M_transform.norm();
+	return m_transform.norm();
 }
 
 float C2DTranslateTransformation::pertuberate(C2DFVectorfield& /*v*/) const
@@ -196,7 +215,7 @@ float C2DTranslateTransformation::pertuberate(C2DFVectorfield& /*v*/) const
 
 C2DFVector C2DTranslateTransformation::operator () (const C2DFVector& x) const
 {
-	return x - _M_transform;
+	return x - m_transform;
 }
 
 float C2DTranslateTransformation::get_jacobian(const C2DFVectorfield& /*v*/, float /*delta*/) const
@@ -206,7 +225,7 @@ float C2DTranslateTransformation::get_jacobian(const C2DFVectorfield& /*v*/, flo
 
 C2DFVector C2DTranslateTransformation::transform(const C2DFVector& x)const
 {
-	return x + _M_transform;
+	return x + m_transform;
 }
 
 float C2DTranslateTransformation::divergence() const

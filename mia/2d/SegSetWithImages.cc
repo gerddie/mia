@@ -1,7 +1,7 @@
 
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -48,7 +48,7 @@ CSegSetWithImages::CSegSetWithImages(const string& filename, bool ignore_path):
 	if (ignore_path) {
 		bfs::path src_path_(filename);
 		src_path_.remove_filename();
-		src_path = src_path_.directory_string();
+		src_path = src_path_.string();
 		cvdebug() << "Segmentation path" << src_path << "\n";
 	}
 
@@ -58,13 +58,13 @@ CSegSetWithImages::CSegSetWithImages(const string& filename, bool ignore_path):
 
 	while (iframe != eframe) {
 		string input_image = iframe->get_imagename();
-		string iimage = bfs::path(input_image).filename();
+		string iimage = bfs::path(input_image).string();
 		if (ignore_path) {
-			input_image = (src_path / bfs::path(iimage) ).directory_string();
+			input_image = (src_path / bfs::path(iimage) ).string();
 			iframe->set_imagename(iimage);
 		}
 		P2DImage image = load_image2d(input_image); 
-		_M_images.push_back(image);
+		m_images.push_back(image);
 		iframe->set_image(image); 
 		++iframe;
 	}
@@ -75,7 +75,7 @@ void CSegSetWithImages::set_images(const C2DImageSeries& series)
 {
 	if (series.size() != get_frames().size()) 
 		THROW(invalid_argument, "image set and number of segmentation frames must have same number of images"); 
-	_M_images = series; 
+	m_images = series; 
 }
 
 void CSegSetWithImages::save_images(const string& filename) const
@@ -85,12 +85,12 @@ void CSegSetWithImages::save_images(const string& filename) const
 	
 	auto iframe = get_frames().begin();
 	auto eframe = get_frames().end();
-	auto iimage = _M_images.begin();
+	auto iimage = m_images.begin();
 
 	while (iframe != eframe) {
 		string image_name = iframe->get_imagename();
 		string filename = (image_name[0] == '/') ? 
-			image_name : (src_path / bfs::path(image_name)).directory_string(); 
+			image_name : (src_path / bfs::path(image_name)).string(); 
                         
 		if (!save_image(filename, *iimage))
 			THROW(runtime_error, "unable to save image to " << image_name ); 
@@ -101,7 +101,7 @@ void CSegSetWithImages::save_images(const string& filename) const
 
 const C2DImageSeries& CSegSetWithImages::get_images()const
 {
-	return _M_images;
+	return m_images;
 }
 
 struct 	CSegFrameCropper {
@@ -112,9 +112,9 @@ struct 	CSegFrameCropper {
 	CSegFrame operator()(const CSegFrame& frame, const C2DImage& image) const;
 
 private:
-	C2DIVector _M_shift;
-	C2DFilterPlugin::ProductPtr _M_filter;
-	bfs::path _M_image_outpath;
+	C2DIVector m_shift;
+	C2DFilterPlugin::ProductPtr m_filter;
+	bfs::path m_image_outpath;
 };
 
 
@@ -151,25 +151,25 @@ CSegSetWithImages CSegSetWithImages::crop(const C2DIVector&  start, const C2DIVe
 CSegFrameCropper::CSegFrameCropper(const C2DIVector& shift,
 				   C2DFilterPlugin::ProductPtr filter,
 				   const string& image_name):
-	_M_shift(shift),
-	_M_filter(filter),
-	_M_image_outpath(image_name)
+	m_shift(shift),
+	m_filter(filter),
+	m_image_outpath(image_name)
 {
-	_M_image_outpath.remove_filename();
+	m_image_outpath.remove_filename();
 
 }
 
 
 CSegFrame CSegFrameCropper::operator()(const CSegFrame& frame, const C2DImage& image) const
 {
-	P2DImage cropped = _M_filter->filter(image);
-	const string out_filename = (_M_image_outpath.file_string() / bfs::path(frame.get_imagename())).file_string();
+	P2DImage cropped = m_filter->filter(image);
+	const string out_filename = (m_image_outpath.string() / bfs::path(frame.get_imagename())).string();
 
 	if (!save_image(out_filename, cropped))
 		cvwarn() << "Could not write cropped file '" << out_filename << "'\n";
 
 	CSegFrame result = frame;
-	result.shift(_M_shift, frame.get_imagename());
+	result.shift(m_shift, frame.get_imagename());
 	return result;
 
 }

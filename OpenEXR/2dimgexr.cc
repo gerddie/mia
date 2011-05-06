@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,7 +121,7 @@ struct CImageSaver {
 	typedef bool result_type;
 
 	CImageSaver(const string& filename):
-		_M_fname(filename)
+		m_fname(filename)
 	{
 	}
 
@@ -130,7 +130,7 @@ struct CImageSaver {
 private:
 	bool write_header(int bpp, int compression, const C2DBounds& size);
 
-	string _M_fname;
+	string m_fname;
 };
 
 template <typename T>
@@ -203,7 +203,7 @@ template <typename T>
 CImageSaver::result_type
 CImageSaver::operator()(const T2DImage<T>& image) const
 {
-	return image_writer_exr<T, pixel_trait_exr<T>::supported>::apply(image,_M_fname);
+	return image_writer_exr<T, pixel_trait_exr<T>::supported>::apply(image,m_fname);
 }
 
 

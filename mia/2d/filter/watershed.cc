@@ -1,5 +1,5 @@
-/* -*- mona-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2010
+/* -*- mia-c++  -*-
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -32,9 +32,9 @@
 #include <boost/type_traits.hpp>
 
 #include <mia/2d/2dfilter.hh>
-#include <libmona/filter.hh>
+#include <libmia/filter.hh>
 
-#include <libmona/probmapio.hh>
+#include <libmia/probmapio.hh>
 
 namespace watershed_2dimage_filter {
 NS_MIA_USE;
@@ -49,18 +49,18 @@ static const CFloatOption param_steep("p", "decision parameter whether fuzzy seg
 static const CIntOption param_class("class", "class to be segmented", 2, 0, 254); 
 
 class C2DWatershedFilter: public C2DFilter {
-	float _M_thresh; 
-	float _M_tol; 
-	float _M_steep; 
-	CProbabilityVector _M_pv;
-	size_t _M_sclass; 
+	float m_thresh; 
+	float m_tol; 
+	float m_steep; 
+	CProbabilityVector m_pv;
+	size_t m_sclass; 
 public:
 	C2DWatershedFilter(float thresh, float steep, float tol, const CProbabilityVector& pv, size_t sclass):
-		_M_thresh(thresh), 
-		_M_tol(tol), 
-		_M_steep(steep),
-		_M_pv(pv), 
-		_M_sclass(sclass)
+		m_thresh(thresh), 
+		m_tol(tol), 
+		m_steep(steep),
+		m_pv(pv), 
+		m_sclass(sclass)
 	{
 	}
 	
@@ -71,8 +71,8 @@ public:
 
 
 class C2DWatershedFilterImageFilter: public C2DImageFilterBase {
-	C2DWatershedFilter _M_filter; 
-	C2DFilterPlugin::ProductPtr _M_var_evaluator; 
+	C2DWatershedFilter m_filter; 
+	C2DFilterPlugin::ProductPtr m_var_evaluator; 
 public:
 	C2DWatershedFilterImageFilter(int hwidth, float thresh, float steep, float tol, const CProbabilityVector& pv, size_t sclass);
 
@@ -213,27 +213,27 @@ typename C2DWatershedFilter::result_type C2DWatershedFilter::operator () (const 
 {
 	const bool is_integral = ::boost::is_integral<typename Data2D::value_type>::value; 
 	
-	return dispatch_filter<Data2D, V, is_integral>::apply(data, _M_pv, _M_steep, _M_thresh, 
-											   _M_tol, var_image,_M_sclass); 
+	return dispatch_filter<Data2D, V, is_integral>::apply(data, m_pv, m_steep, m_thresh, 
+											   m_tol, var_image,m_sclass); 
 }
 
 C2DWatershedFilterImageFilter::C2DWatershedFilterImageFilter(int hwidth, float thresh, float steep, 
 							     float tol, const CProbabilityVector& pv, size_t sclass):
-	_M_filter(thresh, steep, tol, pv, sclass)
+	m_filter(thresh, steep, tol, pv, sclass)
 {
 	C2DImageFilterHandler filter_plugins;
 	stringstream filter_descr; 
 	filter_descr << "variation:w=" << hwidth <<",float=1"; 
 		
-	_M_var_evaluator = C2DFilterPlugin::produce(filter_descr.str().c_str(), filter_plugins); 
-	if (!_M_var_evaluator)
+	m_var_evaluator = C2DFilterPlugin::produce(filter_descr.str().c_str(), filter_plugins); 
+	if (!m_var_evaluator)
 		throw runtime_error("unable to create variation filter"); 
 }
 
 P2DImage C2DWatershedFilterImageFilter::do_filter(const C2DImage& image) const
 {
-	P2DImage var_image = _M_var_evaluator->filter(image); 
-	return wrap_filter(_M_filter,image, var_image); 
+	P2DImage var_image = m_var_evaluator->filter(image); 
+	return wrap_filter(m_filter,image, var_image); 
 }
 
 C2DWatershedFilterImageFilterFactory::C2DWatershedFilterImageFilterFactory():

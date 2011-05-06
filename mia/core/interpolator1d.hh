@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -54,8 +54,10 @@
 NS_MIA_BEGIN
 
 /**
-   Basic Interpolator type for 1D Data.
- */
+   \brief Basic Interpolator type for 1D Data.
+   
+   \remark Why do we need this? 
+*/
 
 class EXPORT_CORE C1DInterpolator {
 public:
@@ -65,6 +67,8 @@ public:
 
 
 /**
+   \brief Interpolator base class providing the full interface 
+   
    Basic Interpolator type for 1D Data.
    \tparam T data type to be interpolated over 
  */
@@ -78,130 +82,134 @@ public:
 	   \returns interpolated value at location x
 	 */
 	virtual T operator () (const double& x) const = 0;
+
+	/**
+	   interface to evaluate the derivative of the spline defined function 
+	   @param x 
+	   @returns interpolated approximate derivative at x 
+	 */
 	virtual typename coeff_map<T>::coeff_type derivative_at (const double& x) const = 0;
 
 
 };
 
-
-/** Base type for interpolators that work directly on the image data */
-template <typename T>
-class EXPORT_CORE T1DDirectInterpolator: public T1DInterpolator<T> {
-public:
-
-	/** Constructor
-	    \param data the source data
-	 */
-	T1DDirectInterpolator(const std::vector<T>& data);
-protected:
-	const std::vector<T>& data()const {
-		return _M_data;
-	}
-private:
-	const std::vector<T>& _M_data;
-};
-
-/**
-    Nearest Neighbor interpolation.
- */
-
-template <class T>
-class EXPORT_CORE T1DNNInterpolator: public T1DDirectInterpolator<T> {
-public:
-	T1DNNInterpolator(const std::vector<T>& image);
-	T operator () (const double& x) const;
-	virtual  typename coeff_map<T>::coeff_type
-		derivative_at (const double& x) const;
-};
-
-/**
-   Tri-linear interpolation
+/** 
+    \brief Interpolator that uses some kind of spaciel kernel. 
+    
+    Base type for interpolators that work with some kind of convolution  
+    \remark currently all interpolators are like this ... 
 */
-
-template <class T>
-class EXPORT_CORE T1DLinearInterpolator: public T1DDirectInterpolator<T> {
-public:
-	T1DLinearInterpolator(const std::vector<T>& image);
-	T operator () (const double& x) const;
-	virtual typename coeff_map<T>::coeff_type derivative_at (const double& x) const;
-private:
-	size_t _M_xy;
-	double _M_size;
-	double _M_sizeb;
-};
-
-/** Base type for interpolators that work with some kind of convolution  */
-
 template <class T>
 class EXPORT_CORE T1DConvoluteInterpolator: public T1DInterpolator<T> {
 public:
-	T1DConvoluteInterpolator(const std::vector<T>& image, PSplineKernel kernel);
+	/**
+	   Construtor to prefilter the input for proper interpolation 
+	   \param data the data used for interpolation 
+	   \param kernel the spline kernel used for interpolation 
+	 */
+	
+	T1DConvoluteInterpolator(const std::vector<T>& data, PBSplineKernel kernel);
+	
 	~T1DConvoluteInterpolator();
+	
+	/**
+	   The actual interpolation operator 
+	   \param x location to interpolate at 
+	   \returns the interpolated value 
+	 */
 	T  operator () (const double& x) const;
+
+	/**
+	   The interpolation funtion for the first order derivative
+	   \param x location to interpolate at 
+	   \returns the interpolated derivative value 
+	 */
 	virtual typename coeff_map<T>::coeff_type derivative_at (const double& x) const;
 
 protected:
+	/// Type of the coefficients after filtering 
 	typedef std::vector< typename coeff_map< T >::coeff_type > TCoeff1D;
 
-	typedef std::vector< typename TCoeff1D::value_type > coeff_vector;
+	/// vector to hold coefficients 
+	typedef TCoeff1D coeff_vector;
 private:
 
-	TCoeff1D _M_coeff;
-	size_t _M_size2;
-	PSplineKernel _M_kernel;
-	T _M_min;
-	T _M_max;
+	TCoeff1D m_coeff;
+	size_t m_size2;
+	PBSplineKernel m_kernel;
+	T m_min;
+	T m_max;
 
 	// not thread save!!!
-	mutable std::vector<int> _M_x_index;
-	mutable std::vector<double> _M_x_weight;
+	mutable std::vector<int> m_x_index;
+	mutable std::vector<double> m_x_weight;
 };
 
 
-/** Factory to create 1D interpolators of a give type using the given input data */
+/** 
+    \brief Factory class for 1D interpolators 
+
+    Factory to create 1D interpolators of a give data type using the given input data.  
+*/
 class EXPORT_CORE C1DInterpolatorFactory {
 public:
-	enum EType {ipt_nn, ipt_linear, ipt_spline, ipt_unknown};
 
-	C1DInterpolatorFactory(EType type);
-	C1DInterpolatorFactory(EType type, std::shared_ptr<CBSplineKernel > kernel);
+	/** Initialize the factory with a certain kernel type and the according B-Spline kernel 
+	    @param type 
+	    @param kernel 
+	 */
+	C1DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel);
 
+	/// Copy constructor 
 	C1DInterpolatorFactory(const C1DInterpolatorFactory& o);
 
+	/// assignment operator 
 	C1DInterpolatorFactory& operator = ( const C1DInterpolatorFactory& o);
 
 	virtual ~C1DInterpolatorFactory();
 
+	/**
+	   Create a 1D interpolator from a set of sampes that 
+	   returns the same values as the original at grid points 
+	   @tparam data type to be interpolated 
+	   @param src input data 
+	   @returns the interpolator 
+	 */
 	template <class T>
 	T1DInterpolator<T> *create(const std::vector<T>& src) const
 		__attribute__ ((warn_unused_result));
 
-	PSplineKernel get_kernel() const;
+	/// @returns the B-spline kernel 
+	PBSplineKernel get_kernel() const;
 
 private:
-	EType _M_type;
-	PSplineKernel _M_kernel;
+	EInterpolationFactory  m_type;
+	PBSplineKernel m_kernel;
 };
+
+/// Pointer type for C1DInterpolatorFactory. 
 typedef std::shared_ptr<const C1DInterpolatorFactory > P1DInterpolatorFactory;
 
-
+/**
+   Create an interpolation factory from a type by also allocating the B-spline kernel if 
+   neccessary. 
+   @todo this should become the work of a plug-in handler 
+ */
 
 C1DInterpolatorFactory EXPORT_CORE  *create_1dinterpolation_factory(EInterpolation type) 
 	__attribute__ ((warn_unused_result));
 
 // implementation
-
 template <class T>
 T1DInterpolator<T> *C1DInterpolatorFactory::create(const std::vector<T>& src) const
 {
-	switch (_M_type) {
-	case ipt_nn:  return new T1DNNInterpolator<T>(src);
-	case ipt_linear: return new T1DLinearInterpolator<T>(src);
-	case ipt_spline: return new T1DConvoluteInterpolator<T>(src, _M_kernel);
+	switch (m_type) {
+	case ipf_spline: return new T1DConvoluteInterpolator<T>(src, m_kernel);
 	default: throw "CInterpolatorFactory::create: Unknown interpolator requested";
 	}
 	return NULL;
 }
+
 
 
 template <typename T>

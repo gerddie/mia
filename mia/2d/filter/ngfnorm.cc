@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
@@ -29,6 +29,28 @@
 #include <mia/core/msgstream.hh>
 #include <mia/2d/nfg.hh>
 #include <mia/2d/filter/ngfnorm.hh>
+
+
+
+/* 
+   LatexBeginPluginDescription{2D image filters}
+   
+   \subsection{Norm of a normalized gradient field of the image}
+   \label{filter2d:ngfnorm}
+   
+   \begin{description}
+   
+   \item [Plugin:] ngfnorm
+   \item [Description:] This filter evaluates the norm of a normalized gradient field of the input image
+   \item [Input:] An abitrary gray scale image. 
+   \item [Input:] The norm of the normalized gradient field of the input image as a single float valued 
+             image of the same dimension as th einput image. 
+   
+   \end{description}
+   This plugin doesn't take parameters. 
+
+   LatexEnd  
+ */
 
 
 

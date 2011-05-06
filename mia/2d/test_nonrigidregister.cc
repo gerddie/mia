@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -57,8 +57,8 @@ private:
 	void do_set_size(); 
 
 
-	C2DBounds _M_real_size; 
-	C2DFVector _M_scale; 
+	C2DBounds m_real_size; 
+	C2DFVector m_scale; 
 }; 
 
 
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE ( test_nonrigid )
 
 C2DFullCostMock::C2DFullCostMock(double weight, const C2DBounds& size):
 	C2DFullCost(weight), 
-	_M_real_size(size)
+	m_real_size(size)
 {
 }
 
@@ -145,18 +145,18 @@ double C2DFullCostMock::do_value(const C2DTransformation& t) const
 
 void C2DFullCostMock::do_set_size()
 {
-	_M_scale.x = float(_M_real_size.x) / get_current_size().x; 
-	_M_scale.y = float(_M_real_size.y) / get_current_size().y; 
+	m_scale.x = float(m_real_size.x) / get_current_size().x; 
+	m_scale.y = float(m_real_size.y) / get_current_size().y; 
 }
 
 double C2DFullCostMock::fx(double x, double y)
 {
-	return 2 * sin(M_PI * _M_scale.x * x / _real_size.x); 
+	return 2 * sin(M_PI * m_scale.x * x / _real_size.x); 
 }
 
 double C2DFullCostMock::fy(double x, double y)
 {
-	return sin(2 * M_PI * _M_scale.y * y / _real_size.y); 
+	return sin(2 * M_PI * m_scale.y * y / _real_size.y); 
 }
 
 

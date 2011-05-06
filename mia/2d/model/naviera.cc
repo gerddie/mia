@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,14 +19,37 @@
  */
 
 /*
-  This plug-in implements the navier-stokes operator like registration model
-  that accounts for linear elastic and fluid dynamic registration.
-  Which model is used depends on the selected time step.
+  LatexBeginPluginDescription{2D model based registration}
 
-  To solve the PDE an adaptive SOR is implemented. Some fine tuninig of
-  the update algorithm might be apropriate.
-*/
+  \subsection{Navier-Stokes PDE, Gauss-Southwell version}
+  \label{model2d:naviera}
+  
+  \begin{description}
+   
+  \item [Plugin:] navier
+   \item [Description:] This plug-in provides a version of the Navier-Stockes based 
+   registration model that allow for linear-elastic or fluid dynamic registration models. 
+   \begin{equation}
+   \mu \nabla ^{2}\vu(\vx)+(\mu +\lambda )\nabla (\nabla \cdot \vu(\vx)) = -[S(\vx)-R(\vx)]\left. \nabla S\right| _{\vx}\ \
+   \end{equation}
+   
+   The plug-in solves the underlying PDE by running a Gauss-Southwell relaxation. 
+   For a version that uses Succesive Overrelaxation use \emph{navier}
+   \ref{model2d:navier}.
 
+   \plugtabstart
+   mu & float & shear parameter $\mu$  & 1.0 \\
+   lambda & float & dilation parameter $\lambda$  & 1.0 \\
+   omega & float & relaxation parameter & 1.0 \\
+   epsilon & float & stopping parameter & 0.0001 \\
+   iter & int & maximum number of iterations & 100 \\
+   \plugtabend
+
+   \end{description}
+
+						
+  LatexEnd 
+*/ 
 #include <limits>
 #include <mia/2d/model/naviera.hh>
 
@@ -37,18 +60,18 @@ using namespace std;
 
 
 C2DNavierRegModel::C2DNavierRegModel(float mu, float lambda, size_t maxiter, float omega, float epsilon):
-	_M_mu(mu),
-	_M_lambda(lambda),
-	_M_omega(omega),
-	_M_epsilon(epsilon),
-	_M_max_iter(maxiter)
+	m_mu(mu),
+	m_lambda(lambda),
+	m_omega(omega),
+	m_epsilon(epsilon),
+	m_max_iter(maxiter)
 {
 	float a = mu;
 	float b = lambda + mu;
 	float c = 1 / (4*a+2*b);
-	_M_b_4 = 0.25 * b * c;
-	_M_a_b = ( a + b ) * c;
-	_M_a = a * c;
+	m_b_4 = 0.25 * b * c;
+	m_a_b = ( a + b ) * c;
+	m_a = a * c;
 }
 
 void set_update(C2DUBImage::iterator isetupt, size_t dx)
@@ -151,7 +174,7 @@ void C2DNavierRegModel::do_solve(const C2DFVectorfield& b, C2DFVectorfield& v) c
 		swap(needupdate_get, needupdate_set);
 
 
-	} while (i < _M_max_iter && residuum / start_residuum > _M_epsilon);
+	} while (i < m_max_iter && residuum / start_residuum > m_epsilon);
 	cverb << "\n";
 }
 
@@ -162,15 +185,15 @@ float  C2DNavierRegModel::solve_at(unsigned int /*x*/, unsigned int /*y*/,
 	C2DFVectorfield::iterator vpp = vp + dx;
 	C2DFVectorfield::iterator vpm = vp - dx;
 
-	C2DFVector p(b.x + _M_a_b * ( vp[-1].x + vp[+1].x ) + _M_a * ( vpp->x   + vpm->x  ),
-		     b.y + _M_a_b * ( vpm->y   + vpp->y   ) + _M_a * ( vp[-1].y + vp[1].y ));
+	C2DFVector p(b.x + m_a_b * ( vp[-1].x + vp[+1].x ) + m_a * ( vpp->x   + vpm->x  ),
+		     b.y + m_a_b * ( vpm->y   + vpp->y   ) + m_a * ( vp[-1].y + vp[1].y ));
 
 
 	C2DFVector q;
-	q.y = ( ( vpm[-1].x + vpp[1].x ) - ( vpm[1].x + vpp[-1].x ) ) * _M_b_4;
-	q.x = ( ( vpm[-1].y + vpp[1].y ) - ( vpm[1].y + vpp[-1].y ) ) * _M_b_4;
+	q.y = ( ( vpm[-1].x + vpp[1].x ) - ( vpm[1].x + vpp[-1].x ) ) * m_b_4;
+	q.x = ( ( vpm[-1].y + vpp[1].y ) - ( vpm[1].y + vpp[-1].y ) ) * m_b_4;
 
-	C2DFVector hmm((( p + q ) - *vp) * _M_omega);
+	C2DFVector hmm((( p + q ) - *vp) * m_omega);
 
 	*vp += hmm;
 	return hmm.norm();
@@ -178,29 +201,29 @@ float  C2DNavierRegModel::solve_at(unsigned int /*x*/, unsigned int /*y*/,
 
 C2DNavierRegModelPlugin::C2DNavierRegModelPlugin():
 	C2DRegModelPlugin("naviera"),
-	_M_mu(1.0),
-	_M_lambda(1.0),
-	_M_omega(1.0),
-	_M_epsilon(0.0001),
-	_M_maxiter(100)
+	m_mu(1.0),
+	m_lambda(1.0),
+	m_omega(1.0),
+	m_epsilon(0.0001),
+	m_maxiter(100)
 {
 	typedef CParamList::PParameter PParameter;
-	add_parameter("mu", new CFloatParameter(_M_mu, 0.0, numeric_limits<float>::max(),
+	add_parameter("mu", new CFloatParameter(m_mu, 0.0, numeric_limits<float>::max(),
 							   false, "isotropic compliance"));
-	add_parameter("lambda", new CFloatParameter(_M_lambda, 0.0, numeric_limits<float>::max(),
+	add_parameter("lambda", new CFloatParameter(m_lambda, 0.0, numeric_limits<float>::max(),
 							       false, "isotropic compression"));
-	add_parameter("omega", new CFloatParameter(_M_omega, 0.1, 10,
+	add_parameter("omega", new CFloatParameter(m_omega, 0.1, 10,
 							      false, "relexation parameter"));
-	add_parameter("epsilon", new CFloatParameter(_M_epsilon, 0.000001, 0.1,
+	add_parameter("epsilon", new CFloatParameter(m_epsilon, 0.000001, 0.1,
 								false, "stopping parameter"));
-	add_parameter("iter", new CIntParameter(_M_maxiter, 10, 10000,
+	add_parameter("iter", new CIntParameter(m_maxiter, 10, 10000,
 							   false, "maximum number of iterations"));
 }
 
 C2DNavierRegModelPlugin::ProductPtr C2DNavierRegModelPlugin::do_create()const
 {
-	return C2DNavierRegModelPlugin::ProductPtr(new C2DNavierRegModel(_M_mu, _M_lambda,
-									 _M_maxiter, _M_omega, _M_epsilon));
+	return C2DNavierRegModelPlugin::ProductPtr(new C2DNavierRegModel(m_mu, m_lambda,
+									 m_maxiter, m_omega, m_epsilon));
 }
 
 bool C2DNavierRegModelPlugin::do_test() const

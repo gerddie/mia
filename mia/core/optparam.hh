@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -35,8 +35,9 @@
 
 NS_MIA_BEGIN
 
-/*! \class CParamList
-    \brief A class to hold a list of named parameters.
+/**
+   \brief A class to hold a list of named parameters.
+
     It takes care of setting the parameters based on its names,
     and can check whether required parameters are really set.
 */
@@ -80,7 +81,7 @@ public:
 	*/
 	void print_help(std::ostream& os)const;
 private:
-	std::map<std::string, PParameter> _M_params;
+	std::map<std::string, PParameter> m_params;
 };
 
 NS_MIA_END

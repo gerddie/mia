@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
  * BIT, ETSI Telecomunicacion, UPM
@@ -47,6 +47,30 @@ template <typename T, typename V>
 void TCost<T,V>::prepare_reference(const T& )
 {
 	
+}
+
+template <typename T, typename V>
+double TCost<T,V>::value(const T& a) const
+{
+	return do_value(a, *m_reference); 
+}
+
+template <typename T, typename V>
+double TCost<T,V>::evaluate_force(const T& a, float scale, V& force) const
+{
+	return do_evaluate_force(a, *m_reference, scale, force); 
+}
+
+template <typename T, typename V>
+void TCost<T,V>::set_reference(const T& ref)
+{
+	m_reference.reset(new RData(ref));
+	post_set_reference(ref); 
+}
+
+template <typename T, typename V>
+void TCost<T,V>::post_set_reference(const T& /*ref*/)
+{
 }
 
 NS_MIA_END

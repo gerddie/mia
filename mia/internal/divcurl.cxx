@@ -28,9 +28,9 @@ NS_MIA_BEGIN
 template <typename T> 
 TDivCurlFullCost<T>::TDivCurlFullCost(double weight_div, double weight_curl, double weight):
 	TFullCost<T>(weight), 
-	_M_weight_div(weight_div), 
-	_M_weight_curl(weight_curl), 
-	_M_size_scale(1.0)
+	m_weight_div(weight_div), 
+	m_weight_curl(weight_curl), 
+	m_size_scale(1.0)
 {
 	this->add(::mia::property_gradient); 
 }
@@ -39,7 +39,7 @@ template <typename T>
 double TDivCurlFullCost<T>::do_evaluate(const T& t, CDoubleVector& gradient) const
 {
 	assert(t.get_size() == this->get_current_size()); 
-	double result = t.get_divcurl_cost(_M_size_scale * _M_weight_div, _M_size_scale *_M_weight_curl, gradient); 
+	double result = t.get_divcurl_cost(m_size_scale * m_weight_div, m_size_scale *m_weight_curl, gradient); 
 	cvdebug() << "TDivCurlFullCost<T>::value = " << result << "\n"; 
 	transform(gradient.begin(), gradient.end(), gradient.begin(), -1.0 * boost::lambda::_1); 
 	return result; 
@@ -48,7 +48,7 @@ double TDivCurlFullCost<T>::do_evaluate(const T& t, CDoubleVector& gradient) con
 template <typename T> 
 double TDivCurlFullCost<T>::do_value(const T& t) const
 {
-	double result = t.get_divcurl_cost(_M_size_scale * _M_weight_div, _M_size_scale * _M_weight_curl); 
+	double result = t.get_divcurl_cost(m_size_scale * m_weight_div, m_size_scale * m_weight_curl); 
 	cvdebug() << "TDivCurlFullCost<T>::value = " << result << "\n"; 
 	return result; 
 }
@@ -63,18 +63,18 @@ double TDivCurlFullCost<T>::do_value() const
 template <typename T> 
 void TDivCurlFullCost<T>::do_set_size()
 {
-	_M_size_scale = 1.0 / (this->get_current_size().product()); 
+	m_size_scale = 1.0 / (this->get_current_size().product()); 
 }
 
 template <typename T> 
 TDivcurlFullCostPlugin<T>::TDivcurlFullCostPlugin():
 	TFullCostPlugin<T>("divcurl"), 
-	_M_div(1.0), 
-	_M_curl(1.0)
+	m_div(1.0), 
+	m_curl(1.0)
 {
-	this->add_parameter("div", new CFloatParameter(_M_div, 0.0f, numeric_limits<float>::max(), 
+	this->add_parameter("div", new CFloatParameter(m_div, 0.0f, numeric_limits<float>::max(), 
 						 false, "penalty weight on divergence"));
-	this->add_parameter("curl", new CFloatParameter(_M_curl, 0.0f, numeric_limits<float>::max(), 
+	this->add_parameter("curl", new CFloatParameter(m_curl, 0.0f, numeric_limits<float>::max(), 
 						  false, "penalty weight on curl"));
 }
 
@@ -82,9 +82,9 @@ template <typename T>
 typename TFullCostPlugin<T>::ProductPtr TDivcurlFullCostPlugin<T>::do_create(float weight) const
 {
 	cvdebug() << "create C2DDivCurlFullCost with weight= " << weight 
-		  << " div=" << _M_div << " curl=" << _M_curl << "\n"; 
+		  << " div=" << m_div << " curl=" << m_curl << "\n"; 
 		
-	return typename TFullCostPlugin<T>::ProductPtr(new TDivCurlFullCost<T>(this->_M_div, this->_M_curl, weight)); 
+	return typename TFullCostPlugin<T>::ProductPtr(new TDivCurlFullCost<T>(this->m_div, this->m_curl, weight)); 
 }
 
 template <typename T> 

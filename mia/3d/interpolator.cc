@@ -44,22 +44,22 @@ CInterpolator::~CInterpolator()
 {
 }
 
-C3DInterpolatorFactory::C3DInterpolatorFactory(EType type, std::shared_ptr<CBSplineKernel > kernel):
-	_M_type(type),
-	_M_kernel(kernel)
+C3DInterpolatorFactory::C3DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel):
+	m_type(type),
+	m_kernel(kernel)
 {
 }
 
 C3DInterpolatorFactory::C3DInterpolatorFactory(const C3DInterpolatorFactory& o):
-	_M_type(o._M_type),
-	_M_kernel(o._M_kernel)
+	m_type(o.m_type),
+	m_kernel(o.m_kernel)
 {
 }
 
 C3DInterpolatorFactory& C3DInterpolatorFactory::operator = ( const C3DInterpolatorFactory& o)
 {
-	_M_type = o._M_type;
-	_M_kernel = o._M_kernel;
+	m_type = o.m_type;
+	m_kernel = o.m_kernel;
 
 	return *this;
 }
@@ -70,45 +70,12 @@ C3DInterpolatorFactory::~C3DInterpolatorFactory()
 
 PBSplineKernel C3DInterpolatorFactory::get_kernel() const
 {
-	return _M_kernel; 
+	return m_kernel; 
 }
 
-EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(int type)
+EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(EInterpolation type)
 {
-	std::shared_ptr<CBSplineKernel > kernel;
-	C3DInterpolatorFactory::EType iptype = C3DInterpolatorFactory::ip_spline;
-
-	switch (type) {
-	case ip_nn:
-		iptype = C3DInterpolatorFactory::ip_nn;
-		break;
-	case ip_linear:
-		iptype = C3DInterpolatorFactory::ip_tri;
-		break;
-	case ip_bspline2:
-		iptype = C3DInterpolatorFactory::ip_spline;
-		kernel.reset(new CBSplineKernel2());
-		break;
-	case ip_bspline3:
-		iptype = C3DInterpolatorFactory::ip_spline;
-		kernel.reset(new CBSplineKernel3());
-		break;
-	case ip_bspline4:
-		iptype = C3DInterpolatorFactory::ip_spline;
-		kernel.reset(new CBSplineKernel4());
-		break;
-	case ip_bspline5:
-		iptype = C3DInterpolatorFactory::ip_spline;
-		kernel.reset(new CBSplineKernel5());
-		break;
-	case ip_omoms3:
-		iptype = C3DInterpolatorFactory::ip_spline;
-		kernel.reset(new CBSplineKernelOMoms3());
-		break;
-	default:
-		throw std::invalid_argument("unknown interpolation method");
-	}
-	return new C3DInterpolatorFactory(iptype, kernel);
+	return create_interpolator_factory<C3DInterpolatorFactory>(type); 
 }
 
 #ifdef __SSE2__
@@ -240,8 +207,6 @@ double add_3d<T3DDatafield< double >, 4>::value(const T3DDatafield< double >&  c
 
 #define INSTANCIATE_INTERPOLATORS(TYPE)			\
 	template class T3DInterpolator<TYPE>;		\
-	template class T3DTrilinearInterpolator<TYPE>;	\
-	template class T3DNNInterpolator<TYPE>;		\
 	template class T3DConvoluteInterpolator<TYPE>
 
 INSTANCIATE_INTERPOLATORS(bool);
@@ -262,13 +227,9 @@ INSTANCIATE_INTERPOLATORS(C3DFVector);
 INSTANCIATE_INTERPOLATORS(C3DDVector);
 
 template class T1DInterpolator<C3DFVector>;
-template class T1DLinearInterpolator<C3DFVector>;
-template class T1DNNInterpolator<C3DFVector>;
 template class T1DConvoluteInterpolator<C3DFVector>;
 
 template class T1DInterpolator<C3DDVector>;
-template class T1DLinearInterpolator<C3DDVector>;
-template class T1DNNInterpolator<C3DDVector>;
 template class T1DConvoluteInterpolator<C3DDVector>;
 
 

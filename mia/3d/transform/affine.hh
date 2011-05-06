@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -68,9 +68,9 @@ public:
 		virtual void do_y_increment(); 
 		virtual void do_z_increment(); 
 
-		const C3DAffineTransformation& _M_trans;
-		C3DFVector _M_value;
-		C3DFVector _M_dx;
+		const C3DAffineTransformation& m_trans;
+		C3DFVector m_value;
+		C3DFVector m_dx;
 
 	};
 
@@ -105,8 +105,8 @@ private:
 	void evaluate_t() const;
 	C3DAffineTransformation(const C3DAffineTransformation& other);
 	C3DAffineTransformation& operator =(const C3DAffineTransformation& other);
-	std::vector<double> _M_t;
-	C3DBounds _M_size;
+	std::vector<double> m_t;
+	C3DBounds m_size;
 };
 
 

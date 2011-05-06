@@ -4,6 +4,7 @@
 #include <mia/2d/SegFrame.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/errormacro.hh>
+#include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/angle.hh>
 
@@ -76,8 +77,8 @@ void CSegFrame::set_imagename(const std::string& name)
 void CSegFrame::rename_base(const std::string& new_base)
 {
 	bfs::path filename(m_filename); 
-	string suffix = filename.extension(); 
-	string name = filename.stem(); 
+	string suffix = __bfs_get_extension(filename); 
+	string name = __bfs_get_stem(filename);
 	auto i = name.rbegin();
 	int k = 0; 
 	while (i != name.rend() && isdigit(*i) ) {

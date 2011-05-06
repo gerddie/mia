@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -21,6 +21,16 @@
  *
  */
 
+/*
+   LatexBeginPluginSection{2D CST filter kernels}
+   \label {sec:cst2dkern}
+   
+   These are kernels for filters that work in the frequency domain on the 
+   image that was transformed by a cosinus or a sinus transform. 
+
+   \LatexEnd
+*/
+
 
 #include <mia/2d/cstkernel.hh>
 
@@ -35,7 +45,7 @@ typedef TCST2DKernel<C2DFImage>       CCST2DImageKernel;
 const char* cst2d_kernel::value = "cst2d-kernel";
 
 template <typename T>
-TCST2DKernel<T>::TCST2DKernel(fftwf_r2r_kind forward):_M_forward(forward)
+TCST2DKernel<T>::TCST2DKernel(fftwf_r2r_kind forward):m_forward(forward)
 {
 }
 
@@ -47,24 +57,24 @@ TCST2DKernel<T>::~TCST2DKernel()
 template <typename T>
 void TCST2DKernel<T>::apply(const T& in, T& out) const
 {
-	assert(_M_plan.get());
+	assert(m_plan.get());
 	assert(in.get_size() == out.get_size());
-	assert(2 == _M_plan->get_size().size() &&
-	       _M_plan->get_size()[0] == (int)out.get_size().x &&
-	       _M_plan->get_size()[1] == (int)out.get_size().y
+	assert(2 == m_plan->get_size().size() &&
+	       m_plan->get_size()[0] == (int)out.get_size().x &&
+	       m_plan->get_size()[1] == (int)out.get_size().y
 		);
 
 
-	_M_plan->execute(in, out);
+	m_plan->execute(in, out);
 }
 
 template <typename T>
 void TCST2DKernel<T>::prepare(const C2DBounds& s)
 {
-	if (_M_plan.get() &&
-	    _M_plan->get_size().size() == 2 &&
-	    _M_plan->get_size()[0] == (int)s.x   &&
-	    _M_plan->get_size()[1] == (int)s.y )
+	if (m_plan.get() &&
+	    m_plan->get_size().size() == 2 &&
+	    m_plan->get_size()[0] == (int)s.x   &&
+	    m_plan->get_size()[1] == (int)s.y )
 		return;
 
 	std::vector<int> size(2);
@@ -73,7 +83,7 @@ void TCST2DKernel<T>::prepare(const C2DBounds& s)
 
 
 	cvdebug() << "size = " << s.x << ", " << s.y << "\n";
-	_M_plan.reset(do_prepare(_M_forward, size));
+	m_plan.reset(do_prepare(m_forward, size));
 }
 
 

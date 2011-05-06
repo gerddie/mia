@@ -109,14 +109,14 @@ void MyErrorHandler(const char *module, const char *fmt,  va_list ap)
 
 struct CErrorHandlerReplacer {
 	CErrorHandlerReplacer():
-		_M_old_handler(TIFFSetErrorHandler(MyErrorHandler))
+		m_old_handler(TIFFSetErrorHandler(MyErrorHandler))
 	{
 	}
 	~CErrorHandlerReplacer() {
-		TIFFSetErrorHandler(_M_old_handler);
+		TIFFSetErrorHandler(m_old_handler);
 	}
 private:
-	TIFFErrorHandler _M_old_handler;
+	TIFFErrorHandler m_old_handler;
 };
 
 void bits2bytes_msb(unsigned char in, C2DBitImage::iterator& out, int max_bit)
@@ -420,9 +420,9 @@ struct CTiffImageSaver {
 	typedef void result_type;
 
 	CTiffImageSaver(CTiffFile& tif, int nimages):
-		_M_tif(tif),
-		_M_nimages(nimages),
-		_M_counter(0)
+		m_tif(tif),
+		m_nimages(nimages),
+		m_counter(0)
 	{
 	}
 
@@ -433,34 +433,34 @@ struct CTiffImageSaver {
 
 		cvdebug() << "CImageSaver::() begin\n";
 
-		TIFFSetField(_M_tif, TIFFTAG_IMAGEWIDTH, image.get_size().x);
-		TIFFSetField(_M_tif, TIFFTAG_IMAGELENGTH, image.get_size().y);
+		TIFFSetField(m_tif, TIFFTAG_IMAGEWIDTH, image.get_size().x);
+		TIFFSetField(m_tif, TIFFTAG_IMAGELENGTH, image.get_size().y);
 
 		uint32 rows_per_strip = dispatcher::get_slice_length(image.get_size().x);
-		TIFFSetField(_M_tif, TIFFTAG_BITSPERSAMPLE, dispatcher::get_bits_per_sample());
-		TIFFSetField(_M_tif, TIFFTAG_SAMPLESPERPIXEL, 1);
-		TIFFSetField(_M_tif, TIFFTAG_ROWSPERSTRIP, rows_per_strip);
-		TIFFSetField(_M_tif, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
-		TIFFSetField(_M_tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
-		TIFFSetField(_M_tif, TIFFTAG_XRESOLUTION, 120.0);
-		TIFFSetField(_M_tif, TIFFTAG_YRESOLUTION, 120.0);
-		TIFFSetField(_M_tif, TIFFTAG_RESOLUTIONUNIT, RESUNIT_INCH);
+		TIFFSetField(m_tif, TIFFTAG_BITSPERSAMPLE, dispatcher::get_bits_per_sample());
+		TIFFSetField(m_tif, TIFFTAG_SAMPLESPERPIXEL, 1);
+		TIFFSetField(m_tif, TIFFTAG_ROWSPERSTRIP, rows_per_strip);
+		TIFFSetField(m_tif, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
+		TIFFSetField(m_tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
+		TIFFSetField(m_tif, TIFFTAG_XRESOLUTION, 120.0);
+		TIFFSetField(m_tif, TIFFTAG_YRESOLUTION, 120.0);
+		TIFFSetField(m_tif, TIFFTAG_RESOLUTIONUNIT, RESUNIT_INCH);
 
-		if (_M_nimages != 1) {
+		if (m_nimages != 1) {
 			/* We are writing single page of the multipage file */
-			TIFFSetField(_M_tif, TIFFTAG_SUBFILETYPE, FILETYPE_PAGE);
+			TIFFSetField(m_tif, TIFFTAG_SUBFILETYPE, FILETYPE_PAGE);
 			/* Set the page number */
-			TIFFSetField(_M_tif, TIFFTAG_PAGENUMBER, _M_counter++, _M_nimages);
+			TIFFSetField(m_tif, TIFFTAG_PAGENUMBER, m_counter++, m_nimages);
 		}
-		dispatcher::write(_M_tif, image, rows_per_strip);
+		dispatcher::write(m_tif, image, rows_per_strip);
 
-		TIFFWriteDirectory(_M_tif);
+		TIFFWriteDirectory(m_tif);
 		cvdebug() << "CImageSaver::() end\n";
 	}
 private:
-	CTiffFile& _M_tif;
-	int _M_nimages;
-	mutable int _M_counter;
+	CTiffFile& m_tif;
+	int m_nimages;
+	mutable int m_counter;
 };
 
 

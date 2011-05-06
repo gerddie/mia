@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * BIT, ETSI Telecomunicacion, UPM
  *
@@ -60,17 +60,17 @@ struct C2DPerfusionAnalysisImpl {
 	vector<vector<float> > create_guess(size_t rows); 
 	void save_coefs(const string&  coefs_name)const; 
 
-	size_t _M_components;
-	bool _M_normalize;  
-	bool _M_meanstrip; 
-	int _M_max_iterations; 
-	unique_ptr<C2DImageSeriesICA> _M_ica; 
-	vector<C2DFImage> _M_series; 
-	C2DBounds _M_image_size; 
-	CSlopeClassifier _M_cls; 
-	size_t _M_length; 
-	int _M_ica_approach; 
-	bool _M_use_guess_model; 
+	size_t m_components;
+	bool m_normalize;  
+	bool m_meanstrip; 
+	int m_max_iterations; 
+	unique_ptr<C2DImageSeriesICA> m_ica; 
+	vector<C2DFImage> m_series; 
+	C2DBounds m_image_size; 
+	CSlopeClassifier m_cls; 
+	size_t m_length; 
+	int m_ica_approach; 
+	bool m_use_guess_model; 
 };
 
 
@@ -88,24 +88,24 @@ C2DPerfusionAnalysis::~C2DPerfusionAnalysis()
 
 void C2DPerfusionAnalysis::set_use_guess_model()
 {
-	impl->_M_use_guess_model = true; 
+	impl->m_use_guess_model = true; 
 }
 
 bool C2DPerfusionAnalysis::has_periodic() const
 {
-	return impl->_M_cls.get_periodic_idx() > -1; 
+	return impl->m_cls.get_periodic_idx() > -1; 
 }
 
 void C2DPerfusionAnalysis::set_max_ica_iterations(size_t maxiter)
 {
 	assert(impl); 
-	impl->_M_max_iterations = maxiter; 
+	impl->m_max_iterations = maxiter; 
 }
 
 void C2DPerfusionAnalysis::set_approach(size_t approach)
 {
 	assert(impl); 
-	impl->_M_ica_approach = approach; 
+	impl->m_ica_approach = approach; 
 }
 
 
@@ -140,13 +140,13 @@ vector<C2DFImage> C2DPerfusionAnalysis::get_references() const
 C2DPerfusionAnalysisImpl::C2DPerfusionAnalysisImpl(size_t components, 
 						   bool normalize, 
 						   bool meanstrip):
-	_M_components(components), 
-	_M_normalize(normalize), 
-	_M_meanstrip(meanstrip),
-	_M_max_iterations(0),
-	_M_length(0), 
-	_M_ica_approach(FICA_APPROACH_DEFL), 
-	_M_use_guess_model(false)
+	m_components(components), 
+	m_normalize(normalize), 
+	m_meanstrip(meanstrip),
+	m_max_iterations(0),
+	m_length(0), 
+	m_ica_approach(FICA_APPROACH_DEFL), 
+	m_use_guess_model(false)
 {
 }
 
@@ -155,13 +155,13 @@ P2DImage C2DPerfusionAnalysisImpl::get_rvlv_delta_from_feature(const string& sav
 	C2DImageSeriesICA::IndexSet plus;
 	C2DImageSeriesICA::IndexSet minus;
 	
-	plus.insert(_M_cls.get_RV_idx());
-	minus.insert(_M_cls.get_LV_idx());
+	plus.insert(m_cls.get_RV_idx());
+	minus.insert(m_cls.get_LV_idx());
 	
-	P2DImage result = _M_ica->get_delta_feature(plus, minus); 
+	P2DImage result = m_ica->get_delta_feature(plus, minus); 
 	if (!save_features.empty()) {
-		save_feature(save_features, "RVic", *_M_ica->get_feature_image(_M_cls.get_RV_idx())); 
-		save_feature(save_features, "LVic", *_M_ica->get_feature_image(_M_cls.get_LV_idx())); 
+		save_feature(save_features, "RVic", *m_ica->get_feature_image(m_cls.get_RV_idx())); 
+		save_feature(save_features, "LVic", *m_ica->get_feature_image(m_cls.get_LV_idx())); 
 		save_feature(save_features, "RVLVica", *result); 
 	}
 	
@@ -170,21 +170,21 @@ P2DImage C2DPerfusionAnalysisImpl::get_rvlv_delta_from_feature(const string& sav
 
 P2DImage C2DPerfusionAnalysisImpl::get_rvlv_delta_from_peaks(const string& save_features) const 
 {
-	const int RV_peak = _M_cls.get_RV_peak();
-	const int LV_peak = _M_cls.get_LV_peak();
+	const int RV_peak = m_cls.get_RV_peak();
+	const int LV_peak = m_cls.get_LV_peak();
 	
 	if (RV_peak < 0 || LV_peak < 0)
 		return P2DImage(); 
 
-	C2DFImage *prvlv_diff= new C2DFImage(_M_image_size);
+	C2DFImage *prvlv_diff= new C2DFImage(m_image_size);
 	P2DImage result(prvlv_diff); 
 
-	transform(_M_series[RV_peak].begin(), _M_series[RV_peak].end(),
-		  _M_series[LV_peak].begin(), prvlv_diff->begin(), _1 - _2);
+	transform(m_series[RV_peak].begin(), m_series[RV_peak].end(),
+		  m_series[LV_peak].begin(), prvlv_diff->begin(), _1 - _2);
 
 	if (!save_features.empty()) {
-		save_feature(save_features, "RVpeak", _M_series[RV_peak]); 
-		save_feature(save_features, "LVpeak", _M_series[LV_peak]); 
+		save_feature(save_features, "RVpeak", m_series[RV_peak]); 
+		save_feature(save_features, "LVpeak", m_series[LV_peak]); 
 		save_feature(save_features, "RVLVdelta", *result); 
 	}
 
@@ -213,11 +213,11 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::get_crop_filter(float scal
 
 vector<C2DFImage> C2DPerfusionAnalysisImpl::get_references() const
 {
-	vector<C2DFImage> result(_M_length); 
+	vector<C2DFImage> result(m_length); 
 	CICAAnalysis::IndexSet component_set = get_all_without_periodic(); 
 	
-	for (size_t i = 0; i < _M_length; ++i) 
-		result[i] = _M_ica->get_partial_mix(i, component_set); 
+	for (size_t i = 0; i < m_length; ++i) 
+		result[i] = m_ica->get_partial_mix(i, component_set); 
 	return result; 
 }
 
@@ -246,69 +246,69 @@ vector<vector<float> > C2DPerfusionAnalysisImpl::create_guess(size_t rows)
 
 bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series) 
 {
-	_M_series = series; 
-	_M_length = series.size(); 
-	if (_M_length < _M_components) 
+	m_series = series; 
+	m_length = series.size(); 
+	if (m_length < m_components) 
 		throw invalid_argument("C2DPerfusionAnalysis::run_ica: input series too short"); 
 
 	srand(time(NULL));
-	_M_image_size = series[0].get_size(); 
+	m_image_size = series[0].get_size(); 
 	bool has_one = false; 
 	unique_ptr<C2DImageSeriesICA> ica(new C2DImageSeriesICA(series, false));
 
 	vector<vector<float> > guess; 
-	if (_M_use_guess_model) 
+	if (m_use_guess_model) 
 		guess = create_guess(series.size()); 
-	if (_M_components > 0) {
-		ica->set_max_iterations(_M_max_iterations);
-		ica->set_approach(_M_ica_approach); 
+	if (m_components > 0) {
+		ica->set_max_iterations(m_max_iterations);
+		ica->set_approach(m_ica_approach); 
 			
-		if (!ica->run(_M_components, _M_meanstrip, _M_normalize, guess) && 
-		    (_M_ica_approach == FICA_APPROACH_DEFL))
+		if (!ica->run(m_components, m_meanstrip, m_normalize, guess) && 
+		    (m_ica_approach == FICA_APPROACH_DEFL))
 			return false; 
-		_M_cls = CSlopeClassifier(ica->get_mixing_curves(), _M_meanstrip);
+		m_cls = CSlopeClassifier(ica->get_mixing_curves(), m_meanstrip);
 	} else {
 
 		float min_cor = 0.0;
 		for (int i = 5; i > 3; --i) {
 			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
-			ica->set_approach(_M_ica_approach); 
-			l_ica->set_max_iterations(_M_max_iterations);
+			ica->set_approach(m_ica_approach); 
+			l_ica->set_max_iterations(m_max_iterations);
 
-			if (!l_ica->run(i, _M_meanstrip, _M_normalize, guess) && (_M_ica_approach == FICA_APPROACH_DEFL)) {
+			if (!l_ica->run(i, m_meanstrip, m_normalize, guess) && (m_ica_approach == FICA_APPROACH_DEFL)) {
 				cvwarn() << "run_ica: " << i << " components didn't return a result\n"; 
 				continue; 
 			}
 
-			CSlopeClassifier cls(l_ica->get_mixing_curves(), _M_meanstrip);
+			CSlopeClassifier cls(l_ica->get_mixing_curves(), m_meanstrip);
 			float max_slope = log2(i) * cls.get_max_slope_length_diff();
 			cvinfo() << "Components = " << i << " max_slope = " << max_slope << "\n";
 			if (min_cor < max_slope) {
 				min_cor = max_slope;
-				_M_components = i;
+				m_components = i;
 				ica.swap(l_ica);
-				_M_cls = cls; 
+				m_cls = cls; 
 			}
 			has_one = true; 
 		}
 	}
-	_M_ica.swap(ica);
+	m_ica.swap(ica);
 
-	cvinfo() << "Periodic: " << _M_cls.get_periodic_idx() << "\n"; 
-	cvinfo() << "RV:       " << _M_cls.get_RV_idx() << "\n"; 
-	cvinfo() << "LV:       " << _M_cls.get_LV_idx() << "\n"; 
-	cvinfo() << "Baseline: " << _M_cls.get_baseline_idx() << "\n"; 
-	cvinfo() << "Perf    : " << _M_cls.get_perfusion_idx() << "\n"; 
+	cvinfo() << "Periodic: " << m_cls.get_periodic_idx() << "\n"; 
+	cvinfo() << "RV:       " << m_cls.get_RV_idx() << "\n"; 
+	cvinfo() << "LV:       " << m_cls.get_LV_idx() << "\n"; 
+	cvinfo() << "Baseline: " << m_cls.get_baseline_idx() << "\n"; 
+	cvinfo() << "Perf    : " << m_cls.get_perfusion_idx() << "\n"; 
 	return has_one; 
 }
 
 CICAAnalysis::IndexSet C2DPerfusionAnalysisImpl::get_all_without_periodic()const 
 {
-	assert(_M_ica); 
-	int periodic_index = _M_cls.get_periodic_idx();
+	assert(m_ica); 
+	int periodic_index = m_cls.get_periodic_idx();
 
 	CICAAnalysis::IndexSet result;
-	for (int i = 0; i < (int)_M_components; ++i) {
+	for (int i = 0; i < (int)m_components; ++i) {
 		if (i != periodic_index)
 			result.insert(i);
 	}
@@ -339,7 +339,7 @@ public:
 
 class GetRegionSize: public TFilter<size_t> {
 public:
-	GetRegionSize(int label):_M_label(label) {
+	GetRegionSize(int label):m_label(label) {
 	}
 	template <typename T>
 	size_t operator() (const T2DImage<T>& image) const {
@@ -347,13 +347,13 @@ public:
 		typename T2DImage<T>::const_iterator i = image.begin();
 		for (size_t y = 0; y < image.get_size().y; ++y)
 			for (size_t x = 0; x < image.get_size().x; ++x, ++i) {
-				if (*i == (T)_M_label)
+				if (*i == (T)m_label)
 					++n;
 			}
 		return n;
 	};
 private: 
-	int _M_label; 
+	int m_label; 
 };
 
 class GetClosestRegionLabel: public TFilter<int> {
@@ -374,8 +374,8 @@ typedef pair<float, size_t> element;
 
 void C2DPerfusionAnalysisImpl::save_coefs(const string&  coefs_name) const 
 {
-	assert(_M_ica); 
-	CSlopeClassifier::Columns mix = _M_ica->get_mixing_curves();
+	assert(m_ica); 
+	CSlopeClassifier::Columns mix = m_ica->get_mixing_curves();
 	ofstream coef_file(coefs_name.c_str());
 
 	for (size_t r = 0; r < mix[0].size(); ++r) {
@@ -499,7 +499,7 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_fea
 		"label"
 	};
 
-	P2DImage RV_candidates = run_filter_chain(_M_ica->get_feature_image(_M_cls.get_RV_idx()),
+	P2DImage RV_candidates = run_filter_chain(m_ica->get_feature_image(m_cls.get_RV_idx()),
 						  sizeof(segment_filter_chain)/sizeof(const char*), 
 						  segment_filter_chain);
 	
@@ -511,7 +511,7 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_fea
 
 	C2DFVector RV_center = ::mia::filter(GetRegionCenter(), *RV);
 
-	P2DImage LV_candidates = run_filter_chain(_M_ica->get_feature_image(_M_cls.get_LV_idx()),
+	P2DImage LV_candidates = run_filter_chain(m_ica->get_feature_image(m_cls.get_LV_idx()),
 						  sizeof(segment_filter_chain)/sizeof(const char*), 
 						  segment_filter_chain);
 
@@ -519,8 +519,8 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_fea
 	size_t lv_pixels = ::mia::filter(GetRegionSize(label), *LV_candidates);
 
 	if (!save_features.empty()) {
-		save_feature(save_features, "RVic", *_M_ica->get_feature_image(_M_cls.get_RV_idx())); 
-		save_feature(save_features, "LVic", *_M_ica->get_feature_image(_M_cls.get_LV_idx())); 
+		save_feature(save_features, "RVic", *m_ica->get_feature_image(m_cls.get_RV_idx())); 
+		save_feature(save_features, "LVic", *m_ica->get_feature_image(m_cls.get_LV_idx())); 
 		save_coefs(save_features + ".txt"); 
 	}
 
@@ -566,12 +566,12 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_fea
 
 int C2DPerfusionAnalysis::get_RV_peak_idx() const
 {
-	return impl->_M_cls.get_RV_peak();
+	return impl->m_cls.get_RV_peak();
 }
 
 int C2DPerfusionAnalysis::get_LV_peak_idx() const
 {
-	return impl->_M_cls.get_LV_peak();
+	return impl->m_cls.get_LV_peak();
 }
 
 

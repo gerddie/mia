@@ -1,7 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
- *
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -22,42 +21,39 @@
  *
  */
 
-#include <mia/2d/transform.hh>
-#include <mia/core/cost.hh>
-
+#include <mia/core/defines.hh>
+#include <memory> 
 
 NS_MIA_BEGIN
 
-struct EXPORT_2D cost_data2d_type {
-	static const char *type_descr;
-};
+/**
+   \brief A class to make a const reference not so const 
+   
+   This is a little hepler class to make it possible to change what 
+   a constant reference member variable points to after construction of a class.
+   \tparam T the type a reference is used form 
+ */
 
-
-class EXPORT_2D C2DCostBase : public CProductBase {
-public:
-	typedef cost_data2d_type plugin_data; 
-	typedef cost_type plugin_type; 
-
+template <typename T> 
+class TRefHolder {
+public: 
+	/// pointer type of this reference holder.  
+	typedef std::shared_ptr<TRefHolder<T> > Pointer; 
 	
-	C2DCostBase(float weight);
-
-	double evaluate(const C2DTransformation& t, C2DFVectorfield& force) const;
-private:
-	virtual double do_evaluate(const C2DTransformation& t, C2DFVectorfield& force) const = 0;
-	float _M_weight;
-};
-
-class EXPORT_CORE C2DCostBasePlugin: public TFactory<C2DCostBase> {
-public:
-	C2DCostBasePlugin(const char *const name);
-protected:
-	float get_weight() const;
-private:
-	float _M_weight;
-};
-
-
-typedef THandlerSingleton<TFactoryPluginHandler<C2DCostBasePlugin> > C2DCostBasePluginHandler;
-typedef std::shared_ptr<C2DCostBase > P2DCostBase;
+	/// the type of the actual reference this class holds
+	typedef const T& const_reference; 
+	
+	/**
+	   Constructor 
+	   \param r the const reference to be hold 
+	 */
+	TRefHolder(const_reference r):
+		m_r(r){}
+	
+	/// returns the reference variable to allow seemless usage 
+	operator const_reference(){return m_r;}
+private: 
+	const_reference m_r; 
+}; 
 
 NS_MIA_END

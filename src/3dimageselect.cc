@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -69,7 +69,9 @@ int do_main( int argc, const char *argv[])
 				    "output file type"));
 	options.push_back(make_opt( num, "number", 'n',  "image number to be selected"));
 
-	options.parse(argc, argv);
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	// read image
 	C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(in_filename);

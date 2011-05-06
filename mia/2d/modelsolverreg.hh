@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -32,9 +32,26 @@
 
 NS_MIA_BEGIN
 
+/**
+   \brief A class for PDE based time-marching non-linear image registration 
+
+   Worker class for a PDE model based non-linear registration. 
+   It runs a multi-resolution registration and at each resolution level 
+    a marchin time-step  appoach is used for registration. 
+   \todo the cost model should probably be changed to C2DFullCost 
+ */
 
 class CModelSolverRegistration  {
 
+	/**
+	   Create the registration framework 
+	   @param model PDE model 
+	   @param time_step model (e.g. fluid or direct) 
+	   @param ft underlying transformation model 
+	   @param start_size multi-grid start size for each coordinate direction 
+	   @param max_iter maximum number of optimizer iterations 
+	   @param outer_epsilon breaking condition for the cost function optimization 
+	 */
 	CModelSolverRegistration(P2DRegModel model,
 				 P2DRegTimeStep time_step,
 				 P2DTransformationFactory tf,
@@ -42,11 +59,14 @@ class CModelSolverRegistration  {
 				 size_t max_iter,
 				 float outer_epsilon);
 
+	/**
+	   Run the regsistration by minimizing the given cost function 
+	 */
 	P2DTransformation operator ()(C2DImageFatCostList& cost) const;
 
  private:
 
-	auto_ptr<struct CModelSolverRegistrationImpl> _M_impl;
+	std::unique_ptr<struct CModelSolverRegistrationImpl> m_impl;
 };
 
 NS_MIA_END

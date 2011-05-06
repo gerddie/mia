@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -60,7 +60,9 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_help_opt( "help-plugins", 0,
 					 "give some help about the filter plugins", 
 					 new TPluginHandlerHelpCallback<C3DImageCombinerPluginHandler>)); 
-	options.parse(argc, argv, false);
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
 
 	cvdebug() << "Load images from '" << in_image1 << "' and '" << in_image2 << "'\n";
 	PImageVector image1list = imageio.load(in_image1);
@@ -93,10 +95,10 @@ int do_main( int argc, const char *argv[] )
 };
 
 
-int main(int argc, const char **args)
+int main(int argc, const char **argv)
 {
 	try {
-		return do_main(argc, args);
+		return do_main(argc, argv);
 	}
 	catch (invalid_argument& err) {
 		cerr << "invalid argument: " << err.what() << "\n";

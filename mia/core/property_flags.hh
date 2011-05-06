@@ -1,6 +1,6 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -28,16 +28,20 @@
 
 NS_MIA_BEGIN
 
+/// constant defining the gradient property 
 extern EXPORT_CORE const char *property_gradient;
 
 
 /**
-   This class holds a set of properties. 
+   \brief This class holds a set of properties. 
+   
+   This class holds a set of properies that can be compared 
    \remark These properties are stored as plain text 
    strings, but in the end only the pointer is compared. 
 */
 class  EXPORT_CORE CPropertyFlagHolder {
 public:
+	/// define the type of the set of flags 
 	typedef std::set<const char *> Set;
 
 	/**
@@ -61,10 +65,15 @@ public:
 	 */
 	bool has_all_in(const CPropertyFlagHolder& testset)const;
 
+	/**
+	   Evalaute the set of properties that is availabe in the testset but not in this one
+	   @param testset 
+	   @return set of missing flags 
+	 */
 	Set get_missing_properties(const CPropertyFlagHolder& testset)const; 
 private:
 	virtual bool do_has(const char *property) const;
-	Set _M_properties;
+	Set m_properties;
 };
 
 NS_MIA_END

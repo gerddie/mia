@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2010
+ * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science
  * Max-Planck-Institute for Evolutionary Anthropology
  * BIT, ETSI Telecomunicacion, UPM
@@ -37,19 +37,21 @@
 NS_MIA_BEGIN
 
 /**
+   \brief A class for general scaling of one-dimensional arrays. 
+
    Class for general scaling of one-dimensional arrays. kernels are the separable B-spline 
    functions.  For upscaling, an interpolator is created by using the provided interpolator factory.
    Downscaling is done solving an overdetermined linear system of equations Ax = y. At construction 
-   time the matrix A is QR decomposed, and later the downscaling is done by applying solving 
-   the QRx=y
+   time the matrix A is QR decomposed, and later the downscaling is done by solving QRx=y
    \todo see if scaling can be expressed by a filter 
+   \todo seems like downscaling isn't done properly 
 */
 
 class EXPORT_CORE C1DScalarFixed {
 public:
 	/**
 	    Create the scaler prividing the given interpolator factory.
-	    \param ipf
+	    \param kernel interpolation kernel 
 	    \param in_size
 	    \param out_size
 	 */
@@ -59,7 +61,7 @@ public:
 	/**
 	   Scaling operator.
 	   \param input input data
-	   \retval output when calling the function, the size of this vector mist be set to the requested
+	   \param[out] output when calling the function, the size of this vector must be set to the requested
 	   size. The path for down or upscaling is automatically selected.
 	 */
 	void operator () (const gsl::DoubleVector& input, gsl::DoubleVector& output) const;
@@ -100,18 +102,18 @@ private:
 		scs_unknown
 	}; 
 
-	size_t _M_in_size; 
-	size_t _M_out_size; 
-	size_t _M_support; 
-	std::vector<double> _M_poles; 
-	EStrategy _M_strategy; 
+	size_t m_in_size; 
+	size_t m_out_size; 
+	size_t m_support; 
+	std::vector<double> m_poles; 
+	EStrategy m_strategy; 
 
-	gsl::DoubleVector _M_input_buffer; 
-	gsl::DoubleVector _M_output_buffer; 
-	std::vector<std::vector<double> > _M_weights; 
-	std::vector<std::vector<int> > _M_indices; 
-	gsl::Matrix _M_A; 	
-	gsl::DoubleVector _M_tau; 
+	gsl::DoubleVector m_input_buffer; 
+	gsl::DoubleVector m_output_buffer; 
+	std::vector<std::vector<double> > m_weights; 
+	std::vector<std::vector<int> > m_indices; 
+	gsl::Matrix m_A; 	
+	gsl::DoubleVector m_tau; 
 };
 
 
