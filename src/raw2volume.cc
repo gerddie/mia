@@ -21,6 +21,57 @@
  *
  */
 
+/*
+  LatexBeginProgramSection{Image conversion}
+  \label{sec:imageconversion}
+  
+  These programs are used to convert raw data to images. 
+
+  LatexEnd
+*/
+
+/*
+  LatexBeginProgramDescription{Image conversion}
+  
+  \begin{description}
+  \item [Program:] \emph{mia-raw2volume}
+  \hrule 
+  \item [Description:] This program is used to convert raw data to a 3D volume file format. 
+
+  The program is called like 
+  \lstset{language=bash}
+  \begin{lstlisting}
+mia-2dimagefilter -i <input data> -o <output image> -s <size of input> ...
+  \end{lstlisting}
+
+  \item [Options:] $\:$
+
+  \tabstart
+  \optinfile
+  \optoutfile
+  \opttypethreed
+  --repn & -r  & input pixel type 
+               (bit|double|float|sbyte|sint|sshort|ubyte|uint|ushort) \\
+  --big-endian & -b  & input data is big endian (default is low endian) \\
+  --scale & -f & physical voxel size \\
+  --skip & -k & skip the given number of bytes from the beginning of the input file \\
+  --size & -s & size of the input data given as 3D vector <NX,NY,NZ> \\
+  --type & -t & 
+  \tabend
+
+  \item [Example:]Conver a data set data.raw of size <10,20,30> of short integer data with a 
+          pixel size of <1.2, 2.3, 3.4>     to an Analyze file image.hdr 
+   \lstset{language=bash}
+  \begin{lstlisting}
+mia-raw2volume -i data.raw -o image.hdr -s "<10,20,30>" -k "<1.2,2.3,3.4>" -r ushort 
+  \end{lstlisting}
+  \item [Remark:] The output file format must support the provided voxel format. 
+  \end{description}
+  
+  LatexEnd
+*/
+
+
 #include <string>
 
 #include <mia/core.hh>

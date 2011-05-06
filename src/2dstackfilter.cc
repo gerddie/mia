@@ -35,7 +35,6 @@
 
 /*
   LatexBeginProgramDescription{2D image stack processing}
-  \label{sec:2dimagestackproc}  
   
   \begin{description}
   \item [Program:] \emph{mia-2dstackfilter}
@@ -62,7 +61,7 @@ mia-2dstackfilter -i <input images> -o <output image basename> \
   \tabend
 
   \item [Example:]Run a mean-least-varaiance filter on a series of images that follow the 
-  numbering pattern inputXXXX.exr and store the output in images filteredXXXX.exr 
+  numbering pattern imageXXXX.exr and store the output in images filteredXXXX.exr 
    \lstset{language=bash}
   \begin{lstlisting}
 mia-2dstackfilter -i image0000.exr -o filtered -t exr mlv:w=2 

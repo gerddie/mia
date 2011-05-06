@@ -19,6 +19,50 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+
+/*
+  LatexBeginProgramDescription{Miscellaneous programs}
+  
+  \begin{description}
+  \item [Program:] \emph{mia-cmeans}
+  \hrule 
+  \item [Description:] This program runs a c-means classification \cite{bezdek91:fuzzy} 
+    based on a histogram and by using an  exponential probability distribution per class. 
+    The histogram should be in the format as written by \emph{mia-multihist} \ref{prog:multihist}. 
+
+  The program is called like 
+  \lstset{language=bash}
+  \begin{lstlisting}
+
+  \end{lstlisting}
+  \item [Options:] $\:$
+
+  \tabstart
+  \optinfile
+  \optoutfile
+  \cmdopt{--nclasses}{-n}{number of classes to partition into}
+  \cmdopt{--max-iter}{-m}{maximum number of iterations}
+  \cmdopt{--even-start}{-e}{set to start with centers evenly distributed over the histogram}
+  \cmdopt{--class-centers}{-c}{initial class centers, giving the class centers supersets --nclasses and --even-start}
+  \cmdopt{--auto}{-a}{atomatic adaption of variance (experimental)}
+  \cmdopt{--cut-histo}{-t}{cut empty histogram at the end}
+  \cmdopt{--variance}{-k}{variance parameter}
+  \tabend
+
+  \item [Example:] Evaluate the cmeans classification of histogram histo.dat into three classes by using 
+  initial class centers 0,120, and 150, and use a variance of 0.01. write the output to cmeans.txt 
+   \lstset{language=bash}
+  \begin{lstlisting}
+mia-cmeans -i histo.dat -c 0,120,150 -k 0.01 -o cmeans.txt
+  \end{lstlisting}
+  \end{description}
+
+  LatexEnd
+*/
+
+
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -27,6 +71,7 @@
 #include <cmath>
 #include <cassert>
 #include <numeric>
+#include <fstream>
 
 #ifdef HAVE_BLAS
 extern "C" {
@@ -358,8 +403,8 @@ void test(double k, bool auto_k)
 
 int main(int argc, const char *argv[])
 {
-	int nclasses; 
-	int max_iter; 
+	int nclasses = 3; 
+	int max_iter = 100; 
 	bool even_start = false; 
 	bool auto_k = false; 
 	bool cut_histo = false; 
@@ -367,10 +412,14 @@ int main(int argc, const char *argv[])
 	double k = 1.0; 
 	bool self_test = false; 
 	
+	string in_filename; 
 	string out_filename; 
 	CDoubleVector class_centers; 
 
 	CCmdOptionList options(g_description);
+
+	options.push_back(make_opt( in_filename, "in-file", 'i', "input file name containing the histogram")); 
+	options.push_back(make_opt( out_filename, "out-file", 'o', "output file name to store probabilities")); 
 	
 	options.push_back(make_opt( nclasses, "nclasses", 'n', "number of classes to partition into","3")); 
 	options.push_back(make_opt( max_iter, "max-iter", 'm', "maximum number of iterations", "100")); 
@@ -381,9 +430,10 @@ int main(int argc, const char *argv[])
 	options.push_back(make_opt( k, "variance", 'k', "variance parameter", "256")); 
 	options.push_back(make_opt( self_test, "self-test", 0, "run self test"));
 	
-	options.push_back(make_opt( out_filename, "out", 'o', "output file name to store probabilities")); 
 
 	try {
+		
+
 		if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 
 
@@ -392,19 +442,22 @@ int main(int argc, const char *argv[])
 			test(0.002, false); 
 			return 0; 
 		}
+		
+		ifstream ifs( in_filename, ifstream::in ); 
 			
 		vector<double> histo; 
 		// read input data
 		size_t sig_size_c = 0; 
 		size_t sig_size = 0; 
-		while (cin.good()) {
+		while (ifs.good()) {
 			float val, cnt;
-			cin >> val >> cnt; 
+			ifs >> val >> cnt; 
 			histo.push_back(cnt); 
 			++sig_size_c; 
 			if (val > 0)
 				sig_size = sig_size_c; 
 		}
+		ifs.close(); 
 		
 		if (sig_size < sig_size_c && cut_histo)
 			histo.resize(sig_size); 

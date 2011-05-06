@@ -24,16 +24,15 @@
 
 /*
   LatexBeginProgramSection{2D image processing}
-  \label{sec:2dprograms}
+  \label{sec:2dimageproc}  
   
-  These programs all take a single 2d image as input. 
+  
 
   LatexEnd
 */
 
 /*
   LatexBeginProgramDescription{2D image processing}
-  \label{sec:2dimageproc}  
   
   \begin{description}
   \item [Program:] \emph{mia-2dimagefilter}

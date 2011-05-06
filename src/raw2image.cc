@@ -22,6 +22,48 @@
  */
 
 
+/*
+  LatexBeginProgramDescription{Image conversion}
+  
+  \begin{description}
+  \item [Program:] \emph{mia-raw2image}
+  \hrule 
+  \item [Description:] This program is used to convert raw data to a 2D file format. 
+
+  The program is called like 
+  \lstset{language=bash}
+  \begin{lstlisting}
+mia-raw2image -i <input data> -o <output image> -s <size of input> ...
+  \end{lstlisting}
+
+  \item [Options:] $\:$
+
+  \tabstart
+  \optinfile
+  \optoutfile
+  \opttypethreed
+  --repn & -r  & input pixel type 
+               (bit|double|float|sbyte|sint|sshort|ubyte|uint|ushort) \\
+  --big-endian & -b  & input data is big endian (default is low endian) \\
+  --scale & -f & physical voxel size given as 2D vector <SX,SY> \\
+  --skip & -k & skip the given number of bytes from the beginning of the input file \\
+  --size & -s & size of the input data given as 2D vector <NX,NY> \\
+  --type & -t & 
+  \tabend
+
+  \item [Example:]Conver a data set data.raw of size <10,20> of short integer data with a 
+          pixel size of <1.2, 2.3> to a PHG file image.png
+   \lstset{language=bash}
+  \begin{lstlisting}
+mia-raw2volume -i data.raw -o image.png -s "<10,20>" -k "<1.2,2.3>" -r ushort 
+  \end{lstlisting}
+  \item [Remark:] The output file format must support the provided pixel format. 
+  \end{description}
+  
+  LatexEnd
+*/
+
+
 #include <string>
 #include <sstream>
 
