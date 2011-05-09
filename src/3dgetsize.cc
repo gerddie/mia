@@ -21,6 +21,35 @@
  *
  */
 
+/*
+  LatexBeginProgramDescription{Miscellaneous programs}
+  
+  \begin{description}
+  \item [Program:] \emph{mia-3dgetsize}
+  \hrule 
+  \item [Description:] This program prints out the size of a 3D image as 3D vector <NX,NY,NZ>. 
+  \lstset{language=bash}
+  \begin{lstlisting}
+mia-3dgetsize -i <input> 
+  \end{lstlisting}
+  \item [Options:] $\:$
+
+  \tabstart
+  \optinfile
+  \tabend
+
+  \item [Example:] Print out the size of image.v: 
+   \lstset{language=bash}
+  \begin{lstlisting}
+mia-3dgetsize -i image.v 
+  \end{lstlisting}
+  \end{description}
+
+  LatexEnd
+*/
+
+
+
 #include <iostream>
 #include <string>
 #include <stdexcept>

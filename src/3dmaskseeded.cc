@@ -24,7 +24,7 @@
 // $Id: 3dmaskseeded.cc,v 1.12 2006-07-12 13:44:23 wollny Exp $
 
 
-/**
+/*
    This program is used to mask an image based on a seeded region grow
 
    input:
@@ -43,6 +43,8 @@
 
    After region growing is finished, this mask is used to zero out the region in the original
    image yielding the resulting image.
+
+   @remark: This program should be moved to filters.  
 
 */
 

@@ -32,6 +32,19 @@
   LatexEnd
 */
 
+/*
+  LatexBeginPluginSection{3D image combiners}
+  \label{sec:combiner3d}
+  
+  3D image combiners take two constant references to C3DImages as parameters and 
+  combines them in a way that is defined in the plug-in. 
+  The output provides a save function. 
+  After constructions, combiners work like functions, i.e. the output is only dependent 
+  on the input images and the construction parameters. 
+  
+  LatexEnd
+*/
+
 
 #include <mia/core/export_handler.hh>
 

@@ -39,8 +39,8 @@ mia-3dvectorfieldcreate -o <file name> [options]
 
   \tabstart
   \optoutfile
-  \cmdopt{--size}{-s}{vector}{size of the vector field given as <NX,NY,NZ>}
-  \cmdopt{--ftype}{-y}{int}{vector field type 
+  \cmdopt{size}{s}{3D-vector}{size of the vector field given as <NX,NY,NZ>}
+  \cmdopt{ftype}{y}{int}{vector field type 
                            \begin{tabular}{ll}
 			   \hline 
 			   0& sin \\
@@ -50,7 +50,7 @@ mia-3dvectorfieldcreate -o <file name> [options]
 			   2& sin cos(fun)\\
 			   \hline 
 			   \end{tabular}}
-  \cmdopt{--fun}{-f}{float}{just some parameter to vary the field vestion 1 and 2 ;-)}
+  \cmdopt{fun}{f}{float}{just some parameter to vary the field vestion 1 and 2 ;-)}
   \tabend
 
   \item [Example:] Create a field of type 2 with fun 3.0 and size $128\times128\times128$. 

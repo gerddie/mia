@@ -21,6 +21,40 @@
  *
  */
 
+/*
+  LatexBeginProgramDescription{3D image processing}
+  
+  \begin{description}
+  \item [Program:] \emph{mia-3ddeform}
+  \hrule 
+  \item [Description:] Transform a 3D image by applying a given 3D transformation that is defined 
+  by a 3D vector field $\vu$ like $\vx \rightarrow \vx - \vu(\vx)$. 
+  The program is called like 
+  \lstset{language=bash}
+  \begin{lstlisting}
+mia-3ddeform -i <input> -t <transformaton> -o <output>
+  \end{lstlisting}
+  \item [Options:] $\:$
+
+  \tabstart
+  \optinfile
+  \optoutfile
+  \cmdopt{transformation}{t}{string}{file name of the transformation}
+  \cmdopt{interpolator}{p}{string}{image interpolation kernel to use}
+  \tabend
+
+  \item [Example:] Transform an image input.v by the transformation defined by the vector field field.v 
+        by using bspline interpolation of degree 4 and store the result in output.v 
+   \lstset{language=bash}
+  \begin{lstlisting}
+mia-3dtransform -i input.v -t field.v  -o output.v  -p bspline4 
+  \end{lstlisting}
+  \end{description}
+
+  LatexEnd
+*/
+
+
 #include <mia/core.hh>
 #include <mia/3d.hh>
 

@@ -21,6 +21,41 @@
  *
  */
 
+
+/*
+  LatexBeginProgramDescription{Miscellaneous programs}
+  
+  \begin{description}
+  \item [Program:] \emph{mia-3dforce}
+  \hrule 
+  \item [Description:] This program evauates the voxel-wise gradient force norm 
+   of the given cost funtion and stores it in a float valued image. 
+  \lstset{language=bash}
+  \begin{lstlisting}
+mia-3dforce  -i <test> -r <reference> -c <cost> -o <output>
+  \end{lstlisting}
+  \item [Options:] $\:$
+
+  \tabstart
+  \optinfile
+  \optreffile
+  \optoutfile
+  \cmdopt{cost}{c}{string}{Cost function as provided by the cost plug-ins (section \ref{sec:cost3d})} 
+  \tabend
+  
+  \item [Example:] Evaluate the weigtes sum of SSD and NGF between image1.v and image2.v 
+   \lstset{language=bash}
+  \begin{lstlisting}
+mia-3dforce  -i src.v -r ref.v -c ssd -o forcenorm.v 
+  \end{lstlisting}
+  \end{description}
+  LatexEnd
+*/
+
+
+
+
+
 #include <boost/algorithm/minmax_element.hpp>
 #include <sstream>
 #include <iomanip>

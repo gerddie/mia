@@ -28,9 +28,9 @@
    \begin{description}
    
    \item [Plugin:] byslice
-   \item [Description:] Runs a filter on a per slice paper. 
-      In essence this is a wrapper that makes it possible to add 2D filters
-      (section \ref{sec:filter2d}) to the pipeline. 
+   \item [Description:] Runs a filter on a per slice basis. 
+      In essence, this is a wrapper that makes it possible to add 2D filters
+      (section \ref{sec:filter2d}) to the stack filter pipeline.
    \item [Input:] Gray scale or binary image(s) 
    \item [Output:] The filtered image(s) 
    

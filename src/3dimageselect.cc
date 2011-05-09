@@ -21,15 +21,37 @@
  *
  */
 
-// $Id: 3dimagefilter.cc,v 1.12 2006-07-12 13:44:23 wollny Exp $
 
-/*! \brief mia-3dimagefilter
+/*
+  LatexBeginProgramDescription{Miscellaneous programs}
+  
+  \begin{description}
+  \item [Program:] \emph{mia-3dimageselect}
+  \hrule 
+  \item [Description:] This program selects one image from a multi-image file and writes it to a seperate file. 
+  The program is called like 
+  \lstset{language=bash}
+  \begin{lstlisting}
+mia-3dimageselect -i <input> -o <output> -n <number> 
+  \end{lstlisting}
+  \item [Options:] $\:$
 
-\sa mia-3dimagefilter.cc
+  \tabstart
+  \optinfile
+  \cmdopt{number}{n}{int}{Number of image to be selected. Counting begins at zero}
+  \opttypethreed
+  \tabend
 
-\file mask.cc
-\author G. Wollny, wollny eva.mpg.de, 2005
+  \item [Example:] Store the third image in multiimage.v to image.v: 
+   \lstset{language=bash}
+  \begin{lstlisting}
+mia-3dimageselect -i multiimage.v -o image.v -n 2 
+  \end{lstlisting}
+  \end{description}
+
+  LatexEnd
 */
+
 
 #include <iostream>
 #include <string>

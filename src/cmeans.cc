@@ -41,13 +41,14 @@
   \tabstart
   \optinfile
   \optoutfile
-  \cmdopt{--nclasses}{-n}{int}{number of classes to partition into}
-  \cmdopt{--max-iter}{-m}{int}{maximum number of iterations}
-  \cmdopt{--even-start}{-e}{bool}{set to start with centers evenly distributed over the histogram}
-  \cmdopt{--class-centers}{-c}{vector}{initial class centers, giving the class centers supersets --nclasses and --even-start}
-  \cmdopt{--auto}{-a}{bool}{atomatic adaption of variance (experimental)}
-  \cmdopt{--cut-histo}{-t}{bool}{cut empty histogram at the end}
-  \cmdopt{--variance}{-k}{float}{variance parameter}
+  \cmdopt{nclasses}{n}{int}{number of classes to partition into}
+  \cmdopt{max-iter}{m}{int}{maximum number of iterations}
+  \cmdopt{even-start}{e}{bool}{set to start with centers evenly distributed over the histogram}
+  \cmdopt{class-centers}{c}{vector <float>}{initial class centers, giving the class centers supersets 
+  \texttt{-{}-nclasses} and \texttt{-{}-even-start}}
+  \cmdopt{auto}{a}{bool}{atomatic adaption of variance (experimental)}
+  \cmdopt{cut-histo}{t}{bool}{cut empty histogram at the end}
+  \cmdopt{variance}{k}{float}{variance parameter}
   \tabend
 
   \item [Example:] Evaluate the cmeans classification of histogram histo.dat into three classes by using 

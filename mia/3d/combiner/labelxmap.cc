@@ -19,7 +19,30 @@
  *
  */
 
-// $Id: vff_3dimage_io.cc,v 1.10 2006-03-01 19:13:26 wollny Exp $
+/* 
+   LatexBeginPluginDescription{3D image combiners}
+   
+   \subsection{Label cross-reference combiner}
+   \label{combiners3d:labelxmap}
+   
+   \begin{description}
+   
+   \item [Plugin:] labelxmap
+   \item [Description:] Takes two images of integral pixel values of the same size and evaluates 
+                      teh overlap count of the combinations of intensities. 
+   \item [Input:] Two integral valued gray scale images. 
+   \item [Output:] A map that gives the number of overlapping voxels for each pair of non-zero 
+                intensity values. 
+   \item [Remark:] I really don't remember what this is used for.
+   This plug-in doesn't take any additional parameters. 
+
+   \end{description}
+
+   LatexEnd  
+ */
+
+
+
 
 #include <iostream>
 #include <sstream>

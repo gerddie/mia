@@ -52,11 +52,10 @@ mia-multihisto -i <input images> -o <output file>
 
   \tabstart
   \optinfile
-  --out & -o & output file to store ths histogram. The values are stored in pairs 
-         (bin-center, count) \\
-  --bins & & number of bins to use \\
-  --min & & minimum of the intensity range, lover intensity values go to the first bin \\
-  --max & & maximum of the intensity range, higher intensity values go to the last bin \\
+  \cmdopt{out}{o}{string}{output file to store ths histogram. The values are stored in pairs (bin-center, count)}
+  \cmdopt{bins}{}{bool}{number of bins to use}
+  \cmdopt{min}{}{float}{minimum of the intensity range, lover intensity values go to the first bin}
+  \cmdopt{max}{}{float}{maximum of the intensity range, higher intensity values go to the last bin}
   \tabend
 
   \item [Example:]Evaluate the histogram over all consecutively numbered images that follow the 

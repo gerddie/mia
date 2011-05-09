@@ -21,15 +21,38 @@
  *
  */
 
-// $Id: 3dimagefilter.cc,v 1.12 2006-07-12 13:44:23 wollny Exp $
+/*
+  LatexBeginProgramDescription{Miscellaneous programs}
+  
+  \begin{description}
+  \item [Program:] \emph{mia-3dimagestats}
+  \hrule 
+  \item [Description:] This program prints out some statistics about the image data. 
+  Currently, this is the average intensity and the intensity variation. 
+  The program is called like 
+  \lstset{language=bash}
+  \begin{lstlisting}
+mia-3dimagestats -i <file name>
+  \end{lstlisting}
+  \item [Options:] $\:$
 
-/*! \brief mia-3dimagefilter
+  \tabstart
+  \optinfile
+  \cmdopt{thresh}{t}{float}{Intensity threshold to ignore when evaluating the statistics}
+  \tabend
 
-\sa mia-3dimagefilter.cc
+  \item [Example:] Evaluate the statistics of image input.v and ignore all voxels with an intensity 
+  below 5: 
+   \lstset{language=bash}
+  \begin{lstlisting}
+mia-3dimagestats -i input.v -t 5 
+  \end{lstlisting}
+  \end{description}
 
-\file mask.cc
-\author G. Wollny, wollny eva.mpg.de, 2005
+  LatexEnd
 */
+
+
 
 #include <sstream>
 #include <mia/core.hh>

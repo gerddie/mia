@@ -32,7 +32,6 @@
 
 /*
   LatexBeginProgramDescription{3D image processing}
-  \label{sec:3dimageproc}  
   
   \begin{description}
   \item [Program:] \emph{mia-3dimagefilter}
@@ -55,11 +54,11 @@ mia-3dimagefilter -i <input image> -o <output image> [<filter>] ...
   \opthelpplugin
   \tabend
 
-  \item [Example:]Run a mean-least-varaiance filter on input.exr, then run a 5-class k-means classification 
+  \item [Example:]Run a mean-least-varaiance filter on input.v, then run a 5-class k-means classification 
            and binarize by selecting the 4th class.
    \lstset{language=bash}
   \begin{lstlisting}
-mia-3dimagefilter -i image.exr -o filtered.png mlv:w=2 \
+mia-3dimagefilter -i image.v -o filtered.v mlv:w=2 \
                                                kmeans:c=5 \
 		                               binarize:min=4,max=4 
   \end{lstlisting}

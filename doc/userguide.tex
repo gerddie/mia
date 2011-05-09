@@ -164,6 +164,13 @@ All programs support the following options:
 \item [Remarks:] additional notes
 \end{description}
 
+For all programs, the \texttt{-{}-help} option will print out additional information, like which parameters 
+  are required and what are the default values (if set).
+Note, when other options are set alongside the \texttt{-{}-help} option, then for these options, the given value 
+  will be shown as default and the \emph{required} tag will not be shown.
+When a program is called with two (ore more) conflicting options then one option takes automatically precedence 
+  as it is documented. 
+
 
 The programs support a variety of 2D and 3D image and data file formats, see tables \ref{tab:2dformats} 
 and \ref{tab:3dformats}. 
@@ -172,15 +179,14 @@ Support for some of these formats depend on external libraries and needs to be e
 \begin{table}[h]
 \caption{\label{tab:2dformats}2D image formats}
 \centering{
-\begin{tabular}{|l|l|c|}
-\hline
-File type description & remark & suffix \\\hline
-DICOM & Only a supset of tags is supported & \\\hline 
+\begin{tabular}{l|l|c}
+\emph{File type description} & \emph{Remark} & \emph{Suffix} \\\hline
+DICOM & Only a supset of tags is supported & dcm \\\hline 
 OpenEXR HDR image format & http://www.openexr.com/ & exr \\\hline
 Portable Network Graphics & http://www.libpng.org & png \\\hline
 Tagged Image File format & http://www.remotesensing.org/libtiff/libtiff.html & tif \\\hline
-Vista & & v \\\hline 
-Windows Bitmap & http://www.daubnet.com/formats/BMP.html & bmp \\\hline
+Vista & http://www.cs.ubc.ca/nest/lci/vista/vista.html & v \\\hline 
+Windows Bitmap & http://www.daubnet.com/formats/BMP.html & bmp
 \end{tabular}
 }	
 \end{table}
@@ -188,13 +194,12 @@ Windows Bitmap & http://www.daubnet.com/formats/BMP.html & bmp \\\hline
 \begin{table}[h]
 \caption{\label{tab:3dformats}3D image formats}
 \centering{
-\begin{tabular}{|l|l|c|}
-\hline
-File type description & remark & suffix \\\hline
+\begin{tabular}{l|l|c}
+\emph{File type description} & \emph{Remark} & \emph{Suffix} \\\hline
 Analyze & & hdr + img \\\hline 
 INRIA 3D File format &http://foveaproject.free.fr/softwareEng.html & inria  \\\hline
 Sun TAAC Image File Format & & vff \\\hline
-Vista File Format & http://www.cs.ubc.ca/nest/lci/vista/vista.html & v \\\hline
+Vista File Format & http://www.cs.ubc.ca/nest/lci/vista/vista.html & v
 \end{tabular}
 }
 \end{table}

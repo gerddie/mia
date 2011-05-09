@@ -100,33 +100,39 @@ files = find_files(root, "*.cc")
 
 # read all files and extract comment blocks 
 for f in files: 
-    infile = open(f,"r")
-    lines = infile.readlines()
 
-    current_block = []
-    is_text = False
+   # ignore some emacs security copies 
+   h = re.search("/\.#[-a-z0-9]*\.cc", f)
+   if h:
+      continue 
 
-    for l in lines: 
-        if is_text: 
-            e = re.search("(?<=LatexEnd)", l)
-            if not e: 
-                current_block.append(l)
-            else:
-                comment_blocks.append(current_block)
-                is_text = False
-        else:
-            m = re.search("LatexBegin", l)
-            if not m: 
-                continue
-            else:
+   
+   infile = open(f,"r")
+   lines = infile.readlines()
 
-                current_block = [l]
-                is_text = True
+   current_block = []
+   is_text = False
+   
+   for l in lines: 
+      if is_text: 
+         e = re.search("(?<=LatexEnd)", l)
+         if not e: 
+            current_block.append(l)
+         else:
+            comment_blocks.append(current_block)
+            is_text = False
+      else:
+         m = re.search("LatexBegin", l)
+         if not m: 
+            continue
+         else:
+            current_block = [l]
+            is_text = True
                
-    if is_text:
-        print "No LatexEnd in {}".format(f)
-        exit(1)
-    infile.close()
+   if is_text:
+      print "No LatexEnd in {}".format(f)
+      exit(1)
+   infile.close()
 
 
 plugin_sections = DocuCharpter()

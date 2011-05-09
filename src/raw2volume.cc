@@ -50,13 +50,13 @@ mia-2dimagefilter -i <input data> -o <output image> -s <size of input> ...
   \optinfile
   \optoutfile
   \opttypethreed
-  \cmdopt{--repn}{-r}{string}{input pixel type
+  \cmdopt{repn}{r}{string}{input pixel type
                (bit|double|float|sbyte|sint|sshort|ubyte|uint|ushort)}
-  \cmdopt{--big-endian}{-b}{bool}{input data is big endian (default is low endian)}
-  \cmdopt{--scale}{-f}{vector}{physical voxel size given as 3D vector <sx,sy,sz>}
-  \cmdopt{--skip}{-k}{int}{skip the given number of bytes from the beginning of the input file}
-  \cmdopt{--size}{-s}{vector}{size of the input data given as 3D vector <NX,NY,NZ>}
-  \cmdopt{--type}{-t}{string}{override output file type deducted from the output file name}
+  \cmdopt{big-endian}{b}{bool}{input data is big endian (default is low endian)}
+  \cmdopt{scale}{f}{3D-vector <float>}{physical voxel size given as 3D vector <sx,sy,sz>}
+  \cmdopt{skip}{k}{int}{skip the given number of bytes from the beginning of the input file}
+  \cmdopt{size}{s}{3D-vector <int>}{size of the input data given as 3D vector <NX,NY,NZ>}
+  \cmdopt{type}{t}{string}{override output file type deducted from the output file name}
   \tabend
 
   \item [Example:]Conver a data set data.raw of size <10,20,30> of short integer data with a 
