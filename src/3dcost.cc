@@ -43,7 +43,7 @@ mia-3dcost  <cost1> [<cost2>] ...
 mia-3dcost ssd:src=image1.v,ref=image2.v,weight=0.1 \
            ngf:src=image1.v,ref=image2.v,weight=1.0 
   \end{lstlisting}
-  \item [Remark:] The used plug-ins should be replaced by fullcost (section \ref{sec:fullcost3d}). 
+  \item [Remark:] The used plug-ins should be replaced by fullcost (section \ref{sec:3dfullcost}).
   \end{description}
 
   LatexEnd
