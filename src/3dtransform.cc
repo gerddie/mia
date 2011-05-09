@@ -22,6 +22,39 @@
  *
  */
 
+/*
+  LatexBeginProgramDescription{3D image processing}
+  
+  \begin{description}
+  \item [Program:] \emph{mia-3dtransform}
+  \hrule 
+  \item [Description:] Transform a 3D image by applying a given 3D transformation.  
+  The program is called like 
+  \lstset{language=bash}
+  \begin{lstlisting}
+mia-3dtransform -i <input> -t <transformaton> -o <output>
+  \end{lstlisting}
+  \item [Options:] $\:$
+
+  \tabstart
+  \optinfile
+  \optoutfile
+  \cmdopt{transformation}{t}{string}{file name of the transformation}
+  \cmdopt{interpolator}{p}{string}{image interpolation kernel to use}
+  \tabend
+
+  \item [Example:] Transform an image input.v by the transfromation stored in trans.v 
+        by using nearest neighbour interpolation ans store the result in output.v 
+   \lstset{language=bash}
+  \begin{lstlisting}
+mia-3dtransform -i input.v -t trans.v  -o output.v  -p nn 
+  \end{lstlisting}
+  \end{description}
+
+  LatexEnd
+*/
+
+
 #define VSTREAM_DOMAIN "mia-3dtransform"
 #include <mia/core/cmdlineparser.hh>
 #include <mia/3d/transformio.hh>
