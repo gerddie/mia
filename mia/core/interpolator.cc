@@ -1025,7 +1025,9 @@ double CBSplineKernel5::get_weight_at(double x, int degree) const
 
 static TDictMap<EInterpolation>::Table InterpolationOptions[] = {
 	{"nn", ip_nn},
-	{"tri", ip_linear},
+	{"linear", ip_linear},
+	{"bspline0", ip_bspline0},
+	{"bspline1", ip_bspline1},
 	{"bspline2", ip_bspline2},
 	{"bspline3", ip_bspline3},
 	{"bspline4", ip_bspline4},
