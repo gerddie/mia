@@ -24,15 +24,16 @@
 
 /*
   LatexBeginProgramDescription{Miscellaneous programs}
+
+  \subsection{mia-3dimagecreator}
+  \label{mia-3dimagecreator}
   
   \begin{description}
-  \item [Program:] \emph{mia-3dimagecreator}
-  \hrule 
   \item [Description:] This program creates a 3D image that contains an object created by one of the object  
      creator plug-ins (section \ref{sec:creator3d}). 
   
   The program is called like 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-3dimagecreator -i <input> -o <output> -n <number> 
   \end{lstlisting}
@@ -49,7 +50,7 @@ mia-3dimagecreator -i <input> -o <output> -n <number>
 
   \item [Example:] Create an image output.v of size $64\times128\times256$ that contains a lattic with 
                    frequencys 8, 16, and 4 in x, y and, z-direction respectively. 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-3dimagecreator -o lattic.v -j lattic:fx=8,fy=16,fz=4 -s "<64,128,256>"
   \end{lstlisting}

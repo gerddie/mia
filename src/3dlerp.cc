@@ -23,15 +23,16 @@
 
 /*
   LatexBeginProgramDescription{3D image processing}
+
+  \subsection{mia-3dlerp}
+  \label{mia-3dlerp}
   
   \begin{description}
-  \item [Program:] \emph{mia-3dlerp}
-  \hrule 
   \item [Description:] This program linearly combines two images $I_1$ and $I_2$ by using time index positions 
   to estimate the weight. 
 
   The program is called like 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-3dlerp -1 <input1> -2 <input2> -o <output> -p n1,p,n2 ... 
   \end{lstlisting}
@@ -53,7 +54,7 @@ mia-3dlerp -1 <input1> -2 <input2> -o <output> -p n1,p,n2 ...
 
   \item [Example:]Interpolate by using the images a.v and b.v for position 7 
   assuming that they are in the series position 5 and 10 and write the result to ab.v 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-3dlerp -1 a.v -2 b.v -o ab.v -p 5,7,10
   \end{lstlisting}

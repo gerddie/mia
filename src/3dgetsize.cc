@@ -23,12 +23,14 @@
 
 /*
   LatexBeginProgramDescription{Miscellaneous programs}
+
+  \subsection{mia-3dgetsize}
+  \label{mia-3dgetsize}
+
   
   \begin{description}
-  \item [Program:] \emph{mia-3dgetsize}
-  \hrule 
   \item [Description:] This program prints out the size of a 3D image as 3D vector <NX,NY,NZ>. 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-3dgetsize -i <input> 
   \end{lstlisting}
@@ -39,7 +41,7 @@ mia-3dgetsize -i <input>
   \tabend
 
   \item [Example:] Print out the size of image.v: 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-3dgetsize -i image.v 
   \end{lstlisting}

@@ -22,7 +22,7 @@
  *
  */
 
-#define VSTREAM_DOMAIN "2dmyocard"
+#define VSTREAM_DOMAIN "2dseriescorr"
 #include <iomanip>
 #include <ostream>
 #include <fstream>

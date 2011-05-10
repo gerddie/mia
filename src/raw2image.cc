@@ -25,13 +25,14 @@
 /*
   LatexBeginProgramDescription{Image conversion}
   
+  \subsection{mia-raw2image}
+  \label{mia-raw2image}
+
   \begin{description}
-  \item [Program:] \emph{mia-raw2image}
-  \hrule 
   \item [Description:] This program is used to convert raw data to a 2D file format. 
 
   The program is called like 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-raw2image -i <input data> -o <output image> -s <size of input> ...
   \end{lstlisting}
@@ -53,7 +54,7 @@ mia-raw2image -i <input data> -o <output image> -s <size of input> ...
 
   \item [Example:]Conver a data set data.raw of size <10,20> of short integer data with a 
           pixel size of <1.2, 2.3> to a PNG file image.png
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-raw2volume -i data.raw -o image.png -s "<10,20>" -k "<1.2,2.3>" -r ushort 
   \end{lstlisting}

@@ -24,12 +24,13 @@
 
 /*
   LatexBeginProgramDescription{Miscellaneous programs}
+
+  \subsection{mia-3dgetslice}
+  \label{mia-3dgetslice}
   
   \begin{description}
-  \item [Program:] \emph{mia-3dgetslice}
-  \hrule 
   \item [Description:] Get a number of slices from a 3D image and store them as 2D images. 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-3dgetslice -i <input> -o <output> -s <start> -n <number> -d <direction>
   \end{lstlisting}
@@ -45,7 +46,7 @@ mia-3dgetslice -i <input> -o <output> -s <start> -n <number> -d <direction>
   \tabend
 
   \item [Example:] Store 5 coronal slices starting at slice 120 coronalXXXX.png from  image.v: 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-3dgetslice -i image.v -o coronal -t png -n 5 -s 120 
   \end{lstlisting}

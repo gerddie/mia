@@ -21,15 +21,73 @@
  *
  */
 
-// $Id: 2dimagefilterstack.cc,v 1.19 2006-07-28 09:37:05 wollny Exp $
+/*
+  LatexBeginProgramSection{Myocardial Perfusion Analysis}
+  \label{sec:2dmyoperf}  
+  
+  The programs in this section are all realted to myocardial perfusion analyis.
+  Most of these programs work on sets of images that are described by a XML-file. 
+  These files holding the names of the images belonging to a perfusion series are
+  either created by running \emph{mia-2dseries2sets}, or by using a GUI that is 
+  currently distributed separately.
 
-/*! \brief eva-2dimagefilter
+  LatexEnd
 
-\sa 3va-2dimagefilter.cc
-
-\file mask.cc
-\author G. Wollny, wollny eva.mpg.de, 2005
 */
+
+/*
+
+  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
+  
+  \subsection{mia-2dseriessmoothgradMAD}
+  \label{mia-2dseriessmoothgradMAD}
+
+  \begin{description} 
+  \item [Description:] 
+           Given a set of images of temporal sucession, this program first 
+             smoothes the pixel-wise time-intensity curves by a Gaussian of given width 
+	     and then evaluates the pixel-wise \emph{median average distance} (MAD) of the 
+             the temporal intensity gradient and stores the result in an image. 
+	   Spacial pre-filtering may be applied as additional plugin(s). 
+
+  The program is called like 
+  \begin{lstlisting}
+mia-2dseriessmoothgradMAD -i <input set> -o <output image> [options] [<filter>] ... 
+  \end{lstlisting}
+  with the filters given as extra parameters as additional command line parameters. 
+
+  \item [Options:] $\:$
+
+  \tabstart
+  \optinfile
+  \optoutfile
+  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
+  \cmdopt{crop}{c}{bool}{Crop the images before evaluating the MAD. Cropping is done by evaluating a bounding box 
+                         that contains the segmentation given in the images. 
+                         If no segmentation is available then the result is undefined.}
+  \cmdopt{enlarge-boundary}{e}{int}{Enlarge the boundary of the obtained crop-box}
+  \cmdopt{gauss}{g}{int}{Apply a temporal pixel-wise Gauss filtering of a filter width (2 * value + 1)}
+  \tabend
+
+  Additional 2D filters may be given at the command line to run a slice-wise filtering (section \ref{sec:filter2d}). 
+
+  \item [Example:]Evaluate the MAD-image of the bounding box surrounding the segmentation 
+                  from a series segment.set after applying a temporal Gaussian 
+                  filter of width 5. No spacial filtering will be applied. 
+		  The bounding box will be enlarged by 3 pixels in all directions.
+		  Store the image in OpenEXR format.  
+  \begin{lstlisting}
+mia-2dseriessmoothgradMAD -i segment.set -o mad.exr -g 2 -c -e 3 
+  \end{lstlisting}
+  \item [Remark:] The MAD image has float-valued pixels and thereby requires an output format that supports 
+                  this pixel type. 
+  \end{description}
+  
+  LatexEnd
+*/
+
+
+
 #define VSTREAM_DOMAIN "SERGRADVAR"
 
 #include <iostream>
@@ -205,7 +263,7 @@ int main( int argc, const char *argv[] )
 	CCmdOptionList options(program_info);
 	options.push_back(make_opt( in_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
 	options.push_back(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
-	options.push_back(make_opt( skip, "skip", 'p', "Skip files at the beginning"));
+	options.push_back(make_opt( skip, "skip", 'k', "Skip files at the beginning"));
 	options.push_back(make_opt( enlarge_boundary,  "enlarge-boundary", 'e', "Enlarge cropbox by number of pixels"));
 	options.push_back(make_opt( crop, "crop", 'c', "crop image before running statistics"));
 	options.push_back(make_opt( gauss_width, "gauss", 'g', "gauss filter width for moothing the gradient"));

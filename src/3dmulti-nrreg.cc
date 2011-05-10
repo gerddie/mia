@@ -24,35 +24,16 @@
 /*
   // currently not compiled 
   Latex BeginProgramDescription{3D image registration}
+
+  \subsection{mia-3dmulti-nrreg}
+  \label{mia-3dmulti-nrreg}
   
   \begin{description}
-  \item [Program:] \emph{mia-3dmulti-nrreg}
-  \hrule 
   \item [Description:]   This program implements 3D gray scale image registration 
   by optimizing a dense vector field that defines a transformation for each pixel. 
   The input images must be of the same size and dimensions. 
   The registration can be achieved by optimizing a combined cost function. 
 
-  The program is called like 
-  \lstset{language=bash}
-  \begin{lstlisting}
-mia-2dtransform -i <input> -t <transformaton> -o <output>
-  \end{lstlisting}
-  \item [Options:] $\:$
-
-  \tabstart
-  \optinfile
-  \optoutfile
-  \cmdopt{transformation}{t}{string}{file name of the transformation}
-  \cmdopt{interpolator}{p}{string}{image interpolation kernel to use}
-  \tabend
-
-  \item [Example:] Transform an image input.png by the transfromation stored in trans.v
-        by using linear interpolation and store the result in output.png 
-   \lstset{language=bash}
-  \begin{lstlisting}
-mia-2dtransform -i input.png -t trans.v  -o output.png  -p linear
-  \end{lstlisting}
   \end{description}
 
   Latex End

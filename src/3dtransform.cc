@@ -24,13 +24,14 @@
 
 /*
   LatexBeginProgramDescription{3D image processing}
+
+  \subsection{mia-3dtransform}
+  \label{mia-3dtransform}
   
   \begin{description}
-  \item [Program:] \emph{mia-3dtransform}
-  \hrule 
   \item [Description:] Transform a 3D image by applying a given 3D transformation.  
   The program is called like 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-3dtransform -i <input> -t <transformaton> -o <output>
   \end{lstlisting}
@@ -45,7 +46,7 @@ mia-3dtransform -i <input> -t <transformaton> -o <output>
 
   \item [Example:] Transform an image input.v by the transfromation stored in trans.v 
         by using nearest neighbour interpolation ans store the result in output.v 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-3dtransform -i input.v -t trans.v  -o output.v  -p nn 
   \end{lstlisting}

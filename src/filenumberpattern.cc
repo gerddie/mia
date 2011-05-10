@@ -33,15 +33,16 @@
 
 /*
   LatexBeginProgramDescription{Miscellaneous programs}
+
+  \subsection{mia-filenumberpattern}
+  \label{mia-filenumberpattern}
   
   \begin{description}
-  \item [Program:] \emph{mia-filenumberpattern}
-  \hrule 
   \item [Description:] This program prints out the number pattern in the numbering of series of 
    files like they are used in the stack image filtering (section \ref{sec:2dstackprograms}). 
    The files must have a pattern like nameXXXXX.ext with XXXXX being digits. 
   The program is called like 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-filenumberpattern -i <file name>
   \end{lstlisting}
@@ -54,7 +55,7 @@ mia-filenumberpattern -i <file name>
   \tabend
 
   \item [Example:] Evaluate the number 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-filenumberpattern -i image0000.exr
   \end{lstlisting}

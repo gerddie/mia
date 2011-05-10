@@ -24,13 +24,14 @@
 
 /*
   LatexBeginProgramDescription{Miscellaneous programs}
+
+  \subsection{mia-3dimageselect}
+  \label{mia-3dimageselect}
   
   \begin{description}
-  \item [Program:] \emph{mia-3dimageselect}
-  \hrule 
   \item [Description:] This program selects one image from a multi-image file and writes it to a seperate file. 
   The program is called like 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-3dimageselect -i <input> -o <output> -n <number> 
   \end{lstlisting}
@@ -43,7 +44,7 @@ mia-3dimageselect -i <input> -o <output> -n <number>
   \tabend
 
   \item [Example:] Store the third image in multiimage.v to image.v: 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-3dimageselect -i multiimage.v -o image.v -n 2 
   \end{lstlisting}

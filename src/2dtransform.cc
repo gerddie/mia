@@ -23,13 +23,14 @@
 
 /*
   LatexBeginProgramDescription{2D image processing}
-  
+
+  \subsection{mia-2dtransform}
+  \label{mia-2dtransform}
+
   \begin{description}
-  \item [Program:] \emph{mia-2dtransform}
-  \hrule 
   \item [Description:] Transform a 2D image by applying a given 2D transformation.  
   The program is called like 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-2dtransform -i <input> -t <transformaton> -o <output>
   \end{lstlisting}
@@ -44,7 +45,7 @@ mia-2dtransform -i <input> -t <transformaton> -o <output>
 
   \item [Example:] Transform an image input.png by the transfromation stored in trans.v
         by using linear interpolation and store the result in output.png 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-2dtransform -i input.png -t trans.v  -o output.png  -p linear
   \end{lstlisting}

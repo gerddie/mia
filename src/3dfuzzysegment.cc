@@ -24,12 +24,13 @@
 /*
   LatexBeginProgramDescription{3D image processing}
   
+  \subsection{mia-fuzzysegment3d}
+  \label{mia-fuzzysegment3d}
+
   \begin{description}
-  \item [Program:] \emph{mia-fuzzysegment3d}
-  \hrule 
   \item [Description:] 	This program runs a combined fuzzy c-means clustering and B-field correction 
   to facilitate a 3D segmentation of 3D image (cf. \cite{pham99fuzzy}). 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-fuzzysegment3d -i <input image> -o <output image> ... 
   \end{lstlisting}
@@ -47,7 +48,7 @@ mia-fuzzysegment3d -i <input image> -o <output image> ...
 
   \item [Example:]Run a 5-class segmentation over inpt image input.v and store the class probability images in cls.v 
      and the B0-field corrected image in b0.v 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-fuzzysegment3d -i input.v -c 5 -o b0.v -c cls.v   
   \end{lstlisting}

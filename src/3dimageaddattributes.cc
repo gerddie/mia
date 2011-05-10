@@ -25,14 +25,15 @@
 
 /*
   LatexBeginProgramDescription{Miscellaneous programs}
+
+  \subsection{mia-3dimageaddattributes}
+  \label{mia-3dimageaddattributes}
   
   \begin{description}
-  \item [Program:] \emph{mia-3dimageaddattributes}
-  \hrule 
   \item [Description:] This program appends all the meta-data attributes found in a 2D input image 
     to a 3D image (if the output format supports such attributes). 
     Attributes that are already present in the 3D image are not overwritten. 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-3dimageaddattributes -i <input> -o <output> -a <2D image with attributes>
   \end{lstlisting}
@@ -45,7 +46,7 @@ mia-3dimageaddattributes -i <input> -o <output> -a <2D image with attributes>
   \tabend
 
   \item [Example:] Append the attributes found in 2d.v to 3d.v and store the result in attr3d.v 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-3dimageaddattributes -i 3d.v -o attr3d.v -a 2d.v 
   \end{lstlisting}

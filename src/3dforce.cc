@@ -24,13 +24,14 @@
 
 /*
   LatexBeginProgramDescription{Miscellaneous programs}
+
+  \subsection{mia-3dforce}
+  \label{mia-3dforce}
   
   \begin{description}
-  \item [Program:] \emph{mia-3dforce}
-  \hrule 
   \item [Description:] This program evauates the voxel-wise gradient force norm 
    of the given cost funtion and stores it in a float valued image. 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-3dforce  -i <test> -r <reference> -c <cost> -o <output>
   \end{lstlisting}
@@ -44,7 +45,7 @@ mia-3dforce  -i <test> -r <reference> -c <cost> -o <output>
   \tabend
   
   \item [Example:] Evaluate the weigtes sum of SSD and NGF between image1.v and image2.v 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-3dforce  -i src.v -r ref.v -c ssd -o forcenorm.v 
   \end{lstlisting}

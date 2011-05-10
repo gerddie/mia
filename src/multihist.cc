@@ -31,10 +31,10 @@
 /*
   LatexBeginProgramDescription{2D image stack processing}
   
+  \subsection{mia-multihist}
+  \label{mia-multihist}
+
   \begin{description}
-  \label{prog:multihist} 
-  \item [Program:] \emph{mia-multihist}
-  \hrule 
   \item [Description:] This program is used to evaluate the histogram of a series of 
    2D gray scale images. 
    If no additional parameters are given, the histogram will have 65536 bins and cover an 
@@ -42,7 +42,7 @@
    No interpolation is used when the histogram is filled. 
    When the histogram is saved, the tail of zero bins is eliminated. 
   The program is called like 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-multihisto -i <input images> -o <output file> 
   \end{lstlisting}
@@ -61,7 +61,7 @@ mia-multihisto -i <input images> -o <output file>
   \item [Example:]Evaluate the histogram over all consecutively numbered images that follow the 
   numbering pattern inputXXXX.exr and store the output histogram in histo.txt.  
   Use the range [0,256] and 64 bins. 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-multihisto -i input0000.exr -o histo.txt --min 0 --max 256 --bins 64
   \end{lstlisting}

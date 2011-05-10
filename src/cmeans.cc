@@ -24,15 +24,16 @@
 /*
   LatexBeginProgramDescription{Miscellaneous programs}
   
+  \subsection{mia-cmeans}
+  \label{mia-cmeans}
+
   \begin{description}
-  \item [Program:] \emph{mia-cmeans}
-  \hrule 
   \item [Description:] This program runs a c-means classification \cite{bezdek91:fuzzy} 
     based on a histogram and by using an  exponential probability distribution per class. 
     The histogram should be in the format as written by \emph{mia-multihist} \ref{prog:multihist}. 
 
   The program is called like 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 
   \end{lstlisting}
@@ -53,7 +54,7 @@
 
   \item [Example:] Evaluate the cmeans classification of histogram histo.dat into three classes by using 
   initial class centers 0,120, and 150, and use a variance of 0.01. write the output to cmeans.txt 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-cmeans -i histo.dat -c 0,120,150 -k 0.01 -o cmeans.txt
   \end{lstlisting}

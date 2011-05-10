@@ -25,13 +25,14 @@
 
 /*
   LatexBeginProgramDescription{Miscellaneous programs}
+
+  \subsection{mia-3dfield2norm}
+  \label{mia-3dfield2norm}
   
   \begin{description}
-  \item [Program:] \emph{mia-3dfield2norm}
-  \hrule 
   \item [Description:] This program evauates the pixel-wise norm of a 3D vector field.
   The output image will be of float voxel representation. 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-3dfield2norm -i <input vector field> -o <output norm image> 
   \end{lstlisting}
@@ -43,7 +44,7 @@ mia-3dfield2norm -i <input vector field> -o <output norm image>
   \tabend
 
   \item [Example:] Evaluate the norm image norm.v from a vector field field.v. 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-3dfield2norm -i field.v -o norm.v
   \end{lstlisting}

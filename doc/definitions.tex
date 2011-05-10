@@ -1,3 +1,4 @@
+
 \newcommand{\vx}{\ensuremath{\mathbf{x}} }
 \newcommand{\vv}{\ensuremath{\mathbf{x}} }
 \newcommand{\vu}{\ensuremath{\mathbf{u}} }
@@ -5,12 +6,12 @@
 \newcommand{\R}{\ensuremath{\mathbb{R}} }
 \newcommand{\curl}[1]{\nabla \times #1} % for curl
 
-\newcommand\tabstart{\begin{tabular}{|p{0.15\textwidth}|p{0.04\textwidth}|
-      p{0.09\textwidth}|p{0.57\textwidth}|}
+\newcommand\tabstart{\begin{tabular}{p{0.15\textwidth}p{0.04\textwidth}
+      p{0.09\textwidth}p{0.57\textwidth}}
                           \hline}
 \newcommand\tabend{\end{tabular}}
 
-\newcommand\cmdopt[4]{\texttt{-{}-#1} & \texttt{-#2} & #3 & #4 \\\hline}
+\newcommand\cmdopt[4]{\texttt{-{}-#1} & \ifthenelse{\equal{#2}{}}{}{\texttt{-#2}} & #3 & #4 \\\hline}
 
 \newcommand\optinfile{\cmdopt{in-file}{i}{string}{input file name}}
 \newcommand\optreffile{\cmdopt{ref-file}{r}{string}{reference image file name}}

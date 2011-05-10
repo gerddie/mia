@@ -33,13 +33,14 @@
 /*
   LatexBeginProgramDescription{Image conversion}
   
+  \subsection{mia-raw2volume}
+  \label{mia-raw2volume}
+
   \begin{description}
-  \item [Program:] \emph{mia-raw2volume}
-  \hrule 
   \item [Description:] This program is used to convert raw data to a 3D volume file format. 
 
   The program is called like 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-2dimagefilter -i <input data> -o <output image> -s <size of input> ...
   \end{lstlisting}
@@ -61,7 +62,7 @@ mia-2dimagefilter -i <input data> -o <output image> -s <size of input> ...
 
   \item [Example:]Conver a data set data.raw of size <10,20,30> of short integer data with a 
           pixel size of <1.2, 2.3, 3.4>     to an Analyze file image.hdr 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-raw2volume -i data.raw -o image.hdr -s "<10,20,30>" -k "<1.2,2.3,3.4>" -r ushort 
   \end{lstlisting}

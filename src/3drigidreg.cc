@@ -35,15 +35,16 @@
 /*
   LatexBeginProgramDescription{3D image registration}
   
+  \subsection{mia-3drigidreg}
+  \label{mia-3drigidreg}
+
   \begin{description}
-  \item [Program:] \emph{mia-3drigidreg}
-  \hrule 
   \item [Description:] This program implements the registration of two gray scale 3D images. 
 	The transformation is not penalized, therefore, one should only use translation, rigid, or affine 
 	transformations as target and run mia-3dnonrigidreg of nonrigid registration is to be achieved.
 
   The program is called like 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-3drigidreg -i <input image> -r <reference image> -o <output image> [options]
   \end{lstlisting}
@@ -55,17 +56,17 @@ mia-3drigidreg -i <input image> -r <reference image> -o <output image> [options]
   \optinfile
   \optreffile
   \optoutfile
-  --cost  & -c & string & Cost function as given in section \ref{sec:cost3d}  \\\hline
-  --levels & -l & int & multiresolution processing levels \\\hline
-  --optimizer & -O & string & optimizer as given in section \ref{sec:minimizers}  \\\hline
-  --trans & -t & string & transformation output file  \\\hline
-  --transForm & -f  & string & transformation type to achieve registration as given in section \ref{sec:3dtransforms} 
-     \\\hline
+  \cmdopt{cost}{c}{string}{Cost function as given in section \ref{sec:cost3d}  }
+  \cmdopt{levels}{l}{int}{multiresolution processing levels }
+  \cmdopt{optimizer}{O}{string}{optimizer as given in section \ref{sec:minimizers}  }
+  \cmdopt{trans}{t}{string}{transformation output file  }
+  \cmdopt{transForm}{f }{string}{transformation type to achieve registration as given in section \ref{sec:3dtransforms} 
+     }
   \tabend
 
   \item [Example:]Register image test.v to image ref.v affine and write the registered image to reg.v. 
   Use two multiresolution levels and ssd as cost function. 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-3drigidreg -i test.v -r ref.v -o reg.v -l 2 -f affine -c ssd 
   \end{lstlisting}

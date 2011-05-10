@@ -23,13 +23,14 @@
 
 /*
   LatexBeginProgramDescription{Miscellaneous programs}
+
+  \subsection{mia-3dcost}
+  \label{mia-3dcost}
   
   \begin{description}
-  \item [Program:] \emph{mia-3dcost}
-  \hrule 
   \item [Description:] This program evauates the cost function as given ba the command line 
   by using the plug-ins provided through (section \ref{sec:fatcost3d}). 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-3dcost  <cost1> [<cost2>] ... 
   \end{lstlisting}
@@ -38,7 +39,7 @@ mia-3dcost  <cost1> [<cost2>] ...
   The Cost function(s) is(are) given as free parameters.  
 
   \item [Example:] Evaluate the weigtes sum of SSD and NGF between image1.v and image2.v 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-3dcost ssd:src=image1.v,ref=image2.v,weight=0.1 \
            ngf:src=image1.v,ref=image2.v,weight=1.0 

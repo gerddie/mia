@@ -21,15 +21,53 @@
  *
  */
 
-// $Id: 2dimagefilterstack.cc,v 1.19 2006-07-28 09:37:05 wollny Exp $
 
-/*! \brief eva-2dimagefilter
+/*
+  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
+  
+  \subsection{mia-2dseriesgradvariation}
+  \label{mia-2dseriesgradvariation}
 
-\sa 3va-2dimagefilter.cc
+  \begin{description} 
+  \item [Description:] 
+           Given a set of images of temporal sucession, this program evaluates the 
+	   gradient variation of the pixel-wise time-intensity curves of this series. 
+	   If the input image set provides a segmentation, then this segmentation can 
+	   be used to create a bounding box and restrict evaluation to this box. 
+  The program is called like 
+  \
+  \begin{lstlisting}
+mia-2dseriesgradvariation -i <input set> -o <output image> [options]... 
+  \end{lstlisting}
 
-\file mask.cc
-\author G. Wollny, wollny eva.mpg.de, 2005
+  \item [Options:] $\:$
+
+  \tabstart
+  \optinfile
+  \optoutfile
+  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
+  \cmdopt{crop}{c}{bool}{Crop the images before further processing. Cropping is done by evaluating a bounding box 
+                         that contains the segmentation given in the images. 
+                         If no segmentation is available then the result is undefined.}
+  \cmdopt{enlarge-boundary}{e}{int}{Enlarge the boundary of the obtained crop-box}
+  \tabend
+
+  \item [Example:]Evaluate the gradient-variation image of the bounding box surrounding the segmentation 
+                  from a series segment.set.  
+		  The bounding box will be enlarged by 3 pixels in all directions.
+		  Store the image in OpenEXR format.  
+   \
+  \begin{lstlisting}
+mia-2dseriesgradvariation -i segment.set -o gradvar.exr -c -e 3 
+  \end{lstlisting}
+  \item [Remark:] The gradient variation image has float-valued pixels and thereby requires an output 
+                  format that supports this pixel type. 
+  \end{description}
+  
+  LatexEnd
 */
+
+
 #define VSTREAM_DOMAIN "SERGRADVAR"
 
 #include <iostream>
@@ -148,7 +186,7 @@ int main( int argc, const char *argv[] )
 	CCmdOptionList options(program_info);
 	options.push_back(make_opt( in_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
 	options.push_back(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
-	options.push_back(make_opt( skip, "skip", 'p', "Skip files at the beginning"));
+	options.push_back(make_opt( skip, "skip", 'k', "Skip files at the beginning"));
 	options.push_back(make_opt( enlarge_boundary,  "enlarge-boundary", 'e', "Enlarge cropbox by number of pixels"));
 	options.push_back(make_opt( crop, "crop", 'c', "crop image before running statistics"));
 

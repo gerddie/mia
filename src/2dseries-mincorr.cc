@@ -1,23 +1,3 @@
-/*
-** Copyright Madrid (c) 2010 BIT ETSIT UPM
-**                    Gert Wollny <gw.fossdev @ gmail.com>
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 3 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
-
-
 /* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
@@ -41,6 +21,45 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/*
+  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
+
+  \subsection{mia-2dseries-mincorr}
+  \label{mia-2dseries-mincorr}
+  
+  \begin{description} 
+  \item [Description:] 
+           Given a set of images of temporal sucession, this program evaluates the 
+	   minimal correlation of the time-intensity curve between neighboring pixels. 
+
+  The program is called like 
+  \
+  \begin{lstlisting}
+mia-2dseriessmoothgradMAD -i <input set> -o <output image> [options] 
+  \end{lstlisting}
+
+  \item [Options:] $\:$
+
+  \tabstart
+  \optinfile
+  \optoutfile
+  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
+  \tabend
+  \item [Example:]Evaluate the minimal correlation image of a series givemn in  segment.set and 
+		  store the image in OpenEXR format.  
+		  Skip two images at the beginning of the series. 
+   \
+  \begin{lstlisting}
+mia-2dseriessmoothgradMAD -i segment.set -o mincorr.exr -k 2 
+  \end{lstlisting}
+  \item [Remark:] The minimal correlation image has float-valued pixels and thereby requires an output 
+                  format that supports this pixel type. 
+  \end{description}
+  
+  LatexEnd
+*/
+
 
 #define VSTREAM_DOMAIN "2dmyocard"
 #include <iomanip>
@@ -112,7 +131,7 @@ int do_main( int argc, const char *argv[] )
 	CCmdOptionList options(g_description);
 	options.push_back(make_opt( src_name, "in", 'i', "input segmentation set"));
 	options.push_back(make_opt( out_name, "out", 'o', "output image of minimal correlation"));
-	options.push_back(make_opt( skip, "skip", 's', "skip images at beginning of series"));
+	options.push_back(make_opt( skip, "skip", 'k', "skip images at beginning of series"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
