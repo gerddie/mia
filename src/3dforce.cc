@@ -43,8 +43,8 @@ mia-3dforce  -i <test> -r <reference> -c <cost> -o <output>
   \optoutfile
   \cmdopt{cost}{c}{string}{Cost function as provided by the cost plug-ins (section \ref{sec:cost3d})} 
   }
-  
-  \item [Example:] Evaluate the weigtes sum of SSD and NGF between image1.v and image2.v 
+    \item [Example:] Evaluate the weigtes sum of SSD between src.v and ref.v and store the result 
+                   in forcenorm.v. 
    \
   \begin{lstlisting}
 mia-3dforce  -i src.v -r ref.v -c ssd -o forcenorm.v 

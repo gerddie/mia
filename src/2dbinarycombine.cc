@@ -15,16 +15,41 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+
  */
+/*
+  LatexBeginProgramDescription{2D image processing}
 
-// $Id: get_reminder.cc,v 1.5 2006-07-12 13:44:29 wollny Exp $
+  \subsection{mia-2dbinarycombiner}
+  \label{mia-2dbinarycombiner}
+  
+  \begin{description}
+  \item [Description:] This program combines two images $I_1$ and $I_2$ by using one of the 
+                       defined binary operations writes the resulting image to a file. 
+		       Both input image must be binary images. 
 
-/*! \brief eva-2dimagefilter
+  The program is called like 
+  \
+  \begin{lstlisting}
+mia-2dbinarycombiner -1 <input1> -2 <input2> -o <output> -p <operation> 
+  \end{lstlisting}
+  \item [Options:] $\:$
 
-\sa 3va-2dimagefilter.cc
+  \optiontable{
+  \cmdopt{first}{1}{string}{First input image}
+  \cmdopt{second}{2}{string}{Second input image}
+  \optoutfile
+  \cmdopt{combiner}{c}{string}{Pixel wise binary image combiner operation (and|nand|nor|nxor|or|xor)} 
+  }
 
-\file mask.cc
-\author G. Wollny, wollny eva.mpg.de, 2005
+  \item [Example:] Take two images l1.v and l2.v and union of the mask. 
+   \
+  \begin{lstlisting}
+mia-2dbinarycombiner -1 l1.v -2 l2.v -c result.png -c or 
+  \end{lstlisting}
+  \end{description}
+  
+  LatexEnd
 */
 
 #ifdef HAVE_CONFIG_H

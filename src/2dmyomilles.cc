@@ -22,6 +22,70 @@
  *
  */
 
+/*
+
+  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
+  
+  \subsection{mia-2dmyomilles}
+  \label{mia-2dmyomilles}
+
+  \begin{description} 
+  \item [Description:] 
+        This program is use to run a modified version of the ICA based rigid registration approach 
+        described in Milles et al. \cite{MvdG+08}. Changes include the extraction 
+	of the quasi-periodic movement in free breathingly acquired data sets and the option to run 
+	affine registration instead of the optimization of translations only.
+	The program takes a segmentation set as input and writes the registered image to the given output 
+         and corrects the segmentation according to the obtained registration. 
+
+  The program is called like 
+  \begin{lstlisting}
+mia-2dmyomilles -i <input set> -o <output set> [options]
+  \end{lstlisting}
+  with the filters given as extra parameters as additional command line parameters. 
+
+  \item [Options:] $\:$
+
+  \optiontable{
+  \cmdopt{in-file}{i}{string}{input segmentation set}
+  \cmdopt{out-file}{o}{string}{output segmentation set}
+  \cmdopt{registered}{r}{string}{File name base for the registered images. Image type and numbering 
+                                 scheme are taken from the input images.}
+  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
+  \cmdopt{save-crop}{}{string}{If given, save the images that result from the intermediate segmentation step}
+  \cmdopt{save-feature}{}{string}{If given, save the feature images from the successfull ICA.}
+  \cmdopt{cost}{c}{string}{Cost function as provided by the \hyperref[sec:cost2d]{cost plug-ins}}
+  \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
+  \cmdopt{transForm}{f}{string}{Transformation space as provided by the 
+                                \hyperref[sec:2dtransforms]{transformation plug-ins.}}
+  \cmdopt{interpolator}{p}{string}{Image interpolator to be used}
+  \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
+  \cmdopt{passes}{P}{int}{Number of ICA+Registration passes to be run}
+  \cmdopt{components}{C}{int}{Number of  ICA components to be used, 0 = automatic estimation}
+  \cmdopt{no-normalize}{}{}{don't normalized ICs}
+  \cmdopt{no-meanstrip}{}{}{don't strip the mean from the mixing curves}
+  \cmdopt{guess}{g}{}{use initial guess for myocardial perfusion (experimental)}
+  \cmdopt{segscale}{s}{float}{segment and scale the crop box around the LV (0=no segmentation)}
+  \cmdopt{skip}{k}{int}{skip images at the beginning of the series (e.g. because they are of other modalities)}
+  \cmdopt{max-ica-iter}{m}{int}{maximum number of iterations within ICA}
+  \cmdopt{segmethod}{E}{string}{Segmentation method - (delta-feature|delta-peak|features)}
+  }
+
+  \item [Example:]Register the perfusion series given in segment.set by using automatic ICA estimation and 
+       affine registration. Run 3 passes and use SSD as cost function.
+       Store the result in affine.set. 
+  \begin{lstlisting}
+mia-2dmyomilles  -i segment.set -o affine.set -F affine -P 3 
+  \end{lstlisting}
+  \item [Remark:] It is not tested whether the original method of Milles et al. \cite{MvdG+08} 
+                  would work. It should with "-C 3" and input images that do not stem from 
+                  free-breathingly aquired images. 
+  \end{description}
+  
+  LatexEnd
+*/
+
+
 #define VSTREAM_DOMAIN "2dmilles"
 
 #include <fstream>
@@ -62,7 +126,7 @@ private:
 
 
 const char *g_description = 
-	"This program is use dto run a modified version of the ICA based rigid registration approach "
+	"This program is use to run a modified version of the ICA based rigid registration approach "
 	"described in Milles et al. 'Fully Automated Motion Correction in First-Pass Myocardial Perfusion "
 	"MR Image Sequences', Trans. Med. Imaging., 27(11), 1611-1621, 2008. Changes include the extraction " 
 	"of the quasi-periodic movement in free breathingly acquired data sets and the option to run "

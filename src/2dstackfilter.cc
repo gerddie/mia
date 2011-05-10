@@ -67,6 +67,9 @@ mia-2dstackfilter -i <input images> -o <output image basename> \
   \begin{lstlisting}
 mia-2dstackfilter -i image0000.exr -o filtered -t exr mlv:w=2 
   \end{lstlisting}
+  \item [Remark:] Note the difference to the program 
+                  \hyperref[mia-2dimagefilterstack]{mia-2dimagefilterstack} 
+                  that runs the filter(s) on the individual images ina 2D manner. 
   \end{description}
   
   LatexEnd

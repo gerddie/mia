@@ -21,11 +21,38 @@
  *
  */
 
-// $Id: 2dimagefilter.cc,v 1.12 2006-07-12 13:44:23 wollny Exp $
+/*
+  LatexBeginProgramDescription{Miscellaneous programs}
 
-/*! \brief mia-2dimagestats Evaluate the histogram across various images.
+  \subsection{mia-2dimagestats}
+  \label{mia-2dimagestats}
+  
+  \begin{description}
+  \item [Description:] 	This progranm is used to evaluate some statistics of a image.
+	Output is Mean, Variation, Median, and Median Average Distance of the intensity values.
 
-\author Gert Wollny <gw.fossdev at gmail.com>
+  The program is called like 
+  \
+  \begin{lstlisting}
+mia-2dimagestats -i <file name>
+  \end{lstlisting}
+  \item [Options:] $\:$
+
+  \optiontable{
+  \optinfile
+  \cmdopt{thresh}{t}{float}{Intensity threshold to ignore when evaluating the statistics}
+  \cmdopt{high-thresh}{g}{float}{Percentage of values to ignore at the upper and of the histogram}
+  }
+
+  \item [Example:] Evaluate the statistics of image input.v and ignore all voxels with an intensity 
+  below 5 and 0.1\% of the high end of the histogram
+   \
+  \begin{lstlisting}
+mia-2dimagestats -i input.v -t 5 -g 0.1
+  \end{lstlisting}
+  \end{description}
+
+  LatexEnd
 */
 
 #include <sstream>
@@ -36,7 +63,7 @@ NS_MIA_USE;
 using namespace std;
 
 const char *g_description = 
-	"This progranm is used to evaluate some statistics of a series of images. " 
+	"This progranm is used to evaluate some statistics of an image. " 
 	"Output is Mean, Variation, Median, and Median Average Distance of the intensity values."
 	; 
 	
@@ -94,7 +121,7 @@ int main( int argc, const char *argv[] )
 
 
 		CCmdOptionList options(g_description);
-		options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
+		options.push_back(make_opt( in_filename, "in-file", 'i', "input image to be analyzed", 
 					    CCmdOption::required));
 		options.push_back(make_opt( thresh, "thresh", 't', "intensity thresh to ignore"));
 		options.push_back(make_opt( high_thresh, "high-thresh", 'g', "upper histogram percentage to ignore"));
