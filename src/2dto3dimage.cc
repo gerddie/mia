@@ -39,11 +39,11 @@ mia-2dto3dimage -i <2D input file pattern> -o <3D output image>
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optoutfile
   \opttypethreed
-  \tabend
+  }
 
   \item [Example:]Convert a series of images imageXXXX.png to a 3D image 3d.v 
    \

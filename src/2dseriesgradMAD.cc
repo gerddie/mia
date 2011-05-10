@@ -44,15 +44,15 @@ mia-2dseriesgradMAD -i <input set> -o <output image> [options] [<filter>] ...
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optoutfile
   \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
-  \cmdopt{crop}{c}{bool}{Crop the images before evaluating the MAD. Cropping is done by evaluating a bounding box 
+  \cmdopt{crop}{c}{}{Crop the images before evaluating the MAD. Cropping is done by evaluating a bounding box 
                          that contains the segmentation given in the images. 
                          If no segmentation is available then the result is undefined.}
   \cmdopt{enlarge-boundary}{e}{int}{Enlarge the boundary of the obtained crop-box}
-  \tabend
+  }
 
   Additional 2D filters may be given at the command line to run a slice-wise filtering (section \ref{sec:filter2d}). 
 

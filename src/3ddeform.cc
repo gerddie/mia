@@ -37,12 +37,12 @@ mia-3ddeform -i <input> -t <transformaton> -o <output>
   \end{lstlisting}
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optoutfile
   \cmdopt{transformation}{t}{string}{file name of the transformation}
   \cmdopt{interpolator}{p}{string}{image interpolation kernel to use}
-  \tabend
+  }
 
   \item [Example:] Transform an image input.v by the transformation defined by the vector field field.v 
         by using bspline interpolation of degree 4 and store the result in output.v 

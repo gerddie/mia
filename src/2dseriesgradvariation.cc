@@ -42,15 +42,15 @@ mia-2dseriesgradvariation -i <input set> -o <output image> [options]...
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optoutfile
   \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
-  \cmdopt{crop}{c}{bool}{Crop the images before further processing. Cropping is done by evaluating a bounding box 
+  \cmdopt{crop}{c}{}{Crop the images before further processing. Cropping is done by evaluating a bounding box 
                          that contains the segmentation given in the images. 
                          If no segmentation is available then the result is undefined.}
   \cmdopt{enlarge-boundary}{e}{int}{Enlarge the boundary of the obtained crop-box}
-  \tabend
+  }
 
   \item [Example:]Evaluate the gradient-variation image of the bounding box surrounding the segmentation 
                   from a series segment.set.  

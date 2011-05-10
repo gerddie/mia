@@ -37,14 +37,14 @@ mia-fuzzysegment3d -i <input image> -o <output image> ...
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \cmdopt{b0-file}{o}{string}{file to store the b0-field corrected image}
   \cmdopt{cls-file}{c}{string}{file to store the class probability images. 
                 The file type must support the storage of multiple images}
   \cmdopt{no-of-classes}{n}{int}{Number of classes to segment}
   \cmdopt{residuum}{r}{float}{relative residuum for the B-field correction optimization}
-  \tabend
+  }
 
   \item [Example:]Run a 5-class segmentation over inpt image input.v and store the class probability images in cls.v 
      and the B0-field corrected image in b0.v 

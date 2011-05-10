@@ -39,14 +39,14 @@ mia-3dimagecreator -i <input> -o <output> -n <number>
   \end{lstlisting}
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optoutfile
   \opttypethreed
   \cmdopt{size}{s}{3D vector <uint>}{size of the output image}
   \optrepn
   \cmdopt{object}{j}{string}{object to be created (see section \ref{sec:creator3d})}
   \opttypethreed
-  \tabend
+  }
 
   \item [Example:] Create an image output.v of size $64\times128\times256$ that contains a lattic with 
                    frequencys 8, 16, and 4 in x, y and, z-direction respectively. 

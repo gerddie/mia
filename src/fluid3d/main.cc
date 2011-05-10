@@ -49,9 +49,10 @@ using namespace std;
 /*
   LatexBeginProgramDescription{3D image registration}
   
+  \subsection{mia-fluid3d}
+  \label{mia-fluid3d}
+  
   \begin{description}
-  \item [Program:] \emph{mia-fluid3d}
-  \hrule 
   \item [Description:] This program is used for non-rigid registration based on fluid dynamics.
   It uses SSD as the sole registration criterion. For details please see \cite{wollny02comput}.
 
@@ -64,23 +65,23 @@ mia-3dnrreg -i <input image> -r <reference image> -o <output image> [options]
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optreffile
-  --out-file & -o & string & output file to store the registering transformation \\\hline 
-  --def-file & -d  & string & transformation output file \\\hline 
-  --epsilon &  & float & threshhold to stop the registration at a multi-grid level \\\hline
-  --interpolator & -p & string & image interpolator
-           (bspline2|bspline3|bspline4|bspline5|nn|omoms3|tri)  \\\hline 
-  --lambda & & float & elasticity constant \\\hline 
-  --maxiter &  & int & maxiumum number of iterations to solve the PDE  \\\hline
-  --max-threads & -t & int & number of threads to use \\\hline 
-  --method & -m & string & solver method to be used for the PDE \\\hline 
-  --mu & & float & elasticity constant \\\hline 
-  --relax &  & float & relaxation factor for PDE solver \\\hline
-  --start-size & -s & int & multiresolution start size \\\hline
-  --step & & float & initial step size \\\hline 
-  \tabend
+  \cmdopt{out-file}{o}{string}{output file to store the registering transformation}
+  \cmdopt{def-file}{d }{string}{transformation output file}
+  \cmdopt{epsilon}{}{float}{threshhold to stop the registration at a multi-grid level }
+  \cmdopt{interpolator}{p}{string}{image interpolator
+           (bspline2|bspline3|bspline4|bspline5|nn|omoms3|tri) }
+  \cmdopt{lambda}{}{float}{elasticity constant}
+  \cmdopt{maxiter}{}{int}{maxiumum number of iterations to solve the PDE  }
+  \cmdopt{max-threads}{t}{int}{number of threads to use}
+  \cmdopt{method}{m}{string}{solver method to be used for the PDE}
+  \cmdopt{mu}{}{float}{elasticity constant}
+  \cmdopt{relax}{}{float}{relaxation factor for PDE solver }
+  \cmdopt{start-size}{s}{int}{multiresolution start size }
+  \cmdopt{step}{}{float}{initial step size}
+  }
 
   \item [Example:]Register image test.v to image ref.v and write the deformation vector field regfield.v. 
   Start registration at the smallest size above 16 pixel. 

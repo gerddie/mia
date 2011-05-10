@@ -37,12 +37,12 @@ mia-3dtransform -i <input> -t <transformaton> -o <output>
   \end{lstlisting}
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optoutfile
   \cmdopt{transformation}{t}{string}{file name of the transformation}
   \cmdopt{interpolator}{p}{string}{image interpolation kernel to use}
-  \tabend
+  }
 
   \item [Example:] Transform an image input.v by the transfromation stored in trans.v 
         by using nearest neighbour interpolation ans store the result in output.v 

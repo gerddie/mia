@@ -40,12 +40,12 @@ mia-3dimagecombine -1 <input1> -2 <input2> -o <output> -c <combiner>
   \end{lstlisting}
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \cmdopt{first}{1}{string}{First input image}
   \cmdopt{second}{2}{string}{Second input image}
   \optoutfile
   \cmdopt{combiner}{c}{string}{Image combiner operation (section \ref{sec:combiner3d})} 
-  \tabend
+  }
 
   \item [Example:] Take two label images l1.v and l2.v and evaluate the label overlap. 
    \

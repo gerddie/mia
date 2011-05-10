@@ -52,7 +52,7 @@ mia-3drigidreg -i <input image> -r <reference image> -o <output image> [options]
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optreffile
   \optoutfile
@@ -62,7 +62,7 @@ mia-3drigidreg -i <input image> -r <reference image> -o <output image> [options]
   \cmdopt{trans}{t}{string}{transformation output file  }
   \cmdopt{transForm}{f }{string}{transformation type to achieve registration as given in section \ref{sec:3dtransforms} 
      }
-  \tabend
+  }
 
   \item [Example:]Register image test.v to image ref.v affine and write the registered image to reg.v. 
   Use two multiresolution levels and ssd as cost function. 

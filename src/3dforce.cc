@@ -37,12 +37,12 @@ mia-3dforce  -i <test> -r <reference> -c <cost> -o <output>
   \end{lstlisting}
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optreffile
   \optoutfile
   \cmdopt{cost}{c}{string}{Cost function as provided by the cost plug-ins (section \ref{sec:cost3d})} 
-  \tabend
+  }
   
   \item [Example:] Evaluate the weigtes sum of SSD and NGF between image1.v and image2.v 
    \

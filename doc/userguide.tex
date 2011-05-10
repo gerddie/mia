@@ -15,6 +15,8 @@
 \usepackage[colorlinks,linkcolor=blue]{hyperref}
 \usepackage{multirow}
 \usepackage{ifthen}
+\usepackage{tabularx}
+
 
 \include{version}
 \include{definitions}
@@ -136,7 +138,7 @@ Currently broken, may work with cygwin.
 
 \lstset{language={}}
 
-This chapter lists all the software tools provided by mia2D. 
+This chapter lists all the software tools provided by mia. 
 The descriptions follow a designated pattern: 
 
 \begin{description}
@@ -145,24 +147,25 @@ The descriptions follow a designated pattern:
 \item [Options:] list of options
 
 \noindent 
-\tabstart
+\optiontable{
 long name & short name & value type & description of the parameter \\
 \hline
-\tabend
-
-\item [Example:] Example how to run the program 
+}
 
 \noindent 
 If no value type is given, then the option accepts no further parameter. 
 All programs support the following options: 
 
-\tabstart
+\optiontable{
 \cmdopt{help}{?}{}{Print out some help}
 \cmdopt{usage}{}{}{Print out a short help}
 \cmdopt{version}{v}{}{Print out version information}
-\cmdopt{copyright{}{}{Print out copyright information}
-\cmdopt{verbose{}V{}string{}set the verbosity of the output out of \{ debug, message, warning, fail, error, fatal\}}
-\tabend
+\cmdopt{copyright}{}{}{Print out copyright information}
+\cmdopt{verbose}{V}{string}{set the verbosity of the output out of (debug, message, warning, fail, error, fatal)}
+}
+
+\item [Example:] Example how to run the program 
+
 \item [Remarks:] additional notes
 \end{description}
 

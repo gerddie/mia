@@ -36,9 +36,9 @@ mia-3dgetsize -i <input>
   \end{lstlisting}
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
-  \tabend
+  }
 
   \item [Example:] Print out the size of image.v: 
    \

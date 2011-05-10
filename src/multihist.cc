@@ -50,13 +50,13 @@ mia-multihisto -i <input images> -o <output file>
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \cmdopt{out}{o}{string}{output file to store ths histogram. The values are stored in pairs (bin-center, count)}
-  \cmdopt{bins}{}{bool}{number of bins to use}
+  \cmdopt{bins}{}{}{number of bins to use}
   \cmdopt{min}{}{float}{minimum of the intensity range, lover intensity values go to the first bin}
   \cmdopt{max}{}{float}{maximum of the intensity range, higher intensity values go to the last bin}
-  \tabend
+  }
 
   \item [Example:]Evaluate the histogram over all consecutively numbered images that follow the 
   numbering pattern inputXXXX.exr and store the output histogram in histo.txt.  

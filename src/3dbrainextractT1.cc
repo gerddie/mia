@@ -41,7 +41,7 @@ mia-3dbrainextract3dT1 -i <input image> -o <output image> [options]
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optoutfile
   \cmdopt{no-of-classes}{n}{int}{Number of classes to segment}
@@ -50,7 +50,7 @@ mia-3dbrainextract3dT1 -i <input image> -o <output image> [options]
                              class probability image}
   \cmdopt{grow-threshold}{t}{int}{low intensity threshold for region growing}
   \cmdopt{grow-shape}{}{string}{Neighbourhood shape for the region growing (section \ref{sec:3dshapes})}.
-  \tabend
+  }
 
   \item [Example:]Create a mask from the input image by running a 5-class segmentation over inpt image input.v 
                 and use class 4 as white matter class and store the masked image in masked.v 

@@ -36,14 +36,14 @@ mia-3dgetslice -i <input> -o <output> -s <start> -n <number> -d <direction>
   \end{lstlisting}
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \cmdopt{out-file}{o}{string}{Base name of the output file(s), slice number(s) and type suffix will be added.}
   \opttypetwod
   \cmdopt{start}{s}{int}{start slice to write out}
   \cmdopt{number}{n}{int}{Number of slices to get (0=all starting from \texttt{-{}-start})}
   \cmdopt{dir}{d}{string}{Slice direction (xy|axial|xz|coronal|yz|saggital)}
-  \tabend
+  }
 
   \item [Example:] Store 5 coronal slices starting at slice 120 coronalXXXX.png from  image.v: 
    \

@@ -37,11 +37,11 @@ mia-3dimageselect -i <input> -o <output> -n <number>
   \end{lstlisting}
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \cmdopt{number}{n}{int}{Number of image to be selected. Counting begins at zero}
   \opttypethreed
-  \tabend
+  }
 
   \item [Example:] Store the third image in multiimage.v to image.v: 
    \

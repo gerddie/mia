@@ -36,12 +36,12 @@ mia-2dtransform -i <input> -t <transformaton> -o <output>
   \end{lstlisting}
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optoutfile
   \cmdopt{transformation}{t}{string}{file name of the transformation}
   \cmdopt{interpolator}{p}{string}{image interpolation kernel to use}
-  \tabend
+  }
 
   \item [Example:] Transform an image input.png by the transfromation stored in trans.v
         by using linear interpolation and store the result in output.png 

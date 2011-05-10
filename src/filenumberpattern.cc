@@ -50,9 +50,9 @@ mia-filenumberpattern -i <file name>
    i.e. an input 'image000.ext' will result in '000' to be printed.  
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
-  \tabend
+  }
 
   \item [Example:] Evaluate the number 
    \

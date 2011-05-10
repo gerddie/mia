@@ -40,7 +40,7 @@ mia-2dnrreg -i <input image> -r <reference image> -o <output image> [options]
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optreffile
   \optoutfile
@@ -53,7 +53,7 @@ mia-2dnrreg -i <input image> -r <reference image> -o <output image> [options]
   \cmdopt{mgsize}{s}{int}{multiresolution start size}
   \cmdopt{regmodel}{m}{string}{registration PDE model as given in section  \ref{sec:regmodel2d} }
   \cmdopt{timestep}{t }{string}{transformation time step model as given in section  \ref{sec:timestep2d}} 
-  \tabend
+  }
 
   \item [Example:]Register image test.v to image ref.v and write the registered image to reg.v. 
   Start registration at the smallest size above 16 pixel and ssd as cost function. 

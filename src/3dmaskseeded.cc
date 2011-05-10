@@ -44,14 +44,14 @@ mia-3dmaskseeded -i <input image> -o <output image> -s "<sx,sy,sz>" [options]
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optoutfile
   \opttypethreed
   \cmdopt{seed}{s}{3D-vector <int>}{Region growing seed point}
   \cmdopt{neighborhood}{n}{string}{Neighbourhood shape as provided by the shape plugins 
                                   (\ref{sec:3dshapes})}
-  \tabend
+  }
 
   \item [Example:]Run a region growing on input.v starting at point <10,23,21> and 
                   use the 18n neighbourhood. 

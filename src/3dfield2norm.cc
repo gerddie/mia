@@ -38,10 +38,10 @@ mia-3dfield2norm -i <input vector field> -o <output norm image>
   \end{lstlisting}
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optoutfile
-  \tabend
+  }
 
   \item [Example:] Evaluate the norm image norm.v from a vector field field.v. 
    \

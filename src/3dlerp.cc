@@ -44,13 +44,13 @@ mia-3dlerp -1 <input1> -2 <input2> -o <output> -p n1,p,n2 ...
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \cmdopt{first}{1}{string}{First input image}
   \cmdopt{second}{2}{string}{Second input image}
   \optoutfile
   \cmdopt{positions}{p}{vector<int>}{Image positions in the series: first,interpolant,second} 
   \opttypethreed
-  \tabend
+  }
 
   \item [Example:]Interpolate by using the images a.v and b.v for position 7 
   assuming that they are in the series position 5 and 10 and write the result to ab.v 

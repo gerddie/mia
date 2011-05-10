@@ -54,12 +54,12 @@ mia-2dstackfilter -i <input images> -o <output image basename> \
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optoutfile
   \opttypetwod
   \opthelpplugin
-  \tabend
+  }
 
   \item [Example:]Run a mean-least-varaiance filter on a series of images that follow the 
   numbering pattern imageXXXX.exr and store the output in images filteredXXXX.exr 

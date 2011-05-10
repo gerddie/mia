@@ -49,11 +49,11 @@ mia-3dimagefilter -i <input image> -o <output image> [<filter>] ...
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optoutfile
   \opthelpplugin
-  \tabend
+  }
 
   \item [Example:]Run a mean-least-varaiance filter on input.v, then run a 5-class k-means classification 
            and binarize by selecting the 4th class.

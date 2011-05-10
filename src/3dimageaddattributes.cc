@@ -39,11 +39,11 @@ mia-3dimageaddattributes -i <input> -o <output> -a <2D image with attributes>
   \end{lstlisting}
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \cmdopt{attr}{a}{string}{2D image to get the attributes from}
   \opttypethreed
-  \tabend
+  }
 
   \item [Example:] Append the attributes found in 2d.v to 3d.v and store the result in attr3d.v 
    \

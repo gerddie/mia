@@ -42,7 +42,7 @@ mia-3drigidreg -i <input image> -r <reference image> -o <output image> \
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optreffile
   \optoutfile
@@ -51,7 +51,7 @@ mia-3drigidreg -i <input image> -r <reference image> -o <output image> \
   \cmdopt{trans}{t}{string}{transformation output file}
   \cmdopt{transForm}{f }{string}{transformation type to achieve registration as given 
           in section \ref{sec:3dtransforms}}
-  \tabend
+  }
 
   The cost functions are given as extra parameters on the command line. 
   These may include any combination of the cost functions given in section \ref{sec:3dfullcost}. 

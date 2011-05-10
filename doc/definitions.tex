@@ -6,10 +6,9 @@
 \newcommand{\R}{\ensuremath{\mathbb{R}} }
 \newcommand{\curl}[1]{\nabla \times #1} % for curl
 
-\newcommand\tabstart{\begin{tabular}{p{0.15\textwidth}p{0.04\textwidth}
-      p{0.09\textwidth}p{0.57\textwidth}}
-                          \hline}
-\newcommand\tabend{\end{tabular}}
+
+
+\newcommand\optiontable[1]{\begin{tabularx}{\linewidth}{llcX}\hline #1 \end{tabularx}}
 
 \newcommand\cmdopt[4]{\texttt{-{}-#1} & \ifthenelse{\equal{#2}{}}{}{\texttt{-#2}} & #3 & #4 \\\hline}
 
@@ -23,7 +22,7 @@
 \newcommand\opttypethreed{\cmdopt{type}{t}{string}{output image file type (see Section \ref{tab:3dformats})}}
 \newcommand\optrepn{\cmdopt{repn}{r}{string}{output pixel type, must be supported by the output file type 
     (bit|double|float|sbyte|sint|sshort|ubyte|uint|ushort) }}
-\newcommand\opthelpplugin{\cmdopt{help-plugins}{}{bool}{print out all plugins and a short description}}
+\newcommand\opthelpplugin{\cmdopt{help-plugins}{}{}{print out all plugins and a short description}}
 
 \newcommand\plugtabstart{\begin{tabular}{|p{0.1\columnwidth}|p{0.1\columnwidth}|p{0.5\columnwidth}|p{0.1\columnwidth}|}\hline
 Name & Type & Description & Default \\\hline\hline} 

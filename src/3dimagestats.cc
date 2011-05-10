@@ -37,10 +37,10 @@ mia-3dimagestats -i <file name>
   \end{lstlisting}
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \cmdopt{thresh}{t}{float}{Intensity threshold to ignore when evaluating the statistics}
-  \tabend
+  }
 
   \item [Example:] Evaluate the statistics of image input.v and ignore all voxels with an intensity 
   below 5: 

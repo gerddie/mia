@@ -41,11 +41,11 @@ mia-2dseriessmoothgradMAD -i <input set> -o <output image> [options]
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optoutfile
   \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
-  \tabend
+  }
   \item [Example:]Evaluate the minimal correlation image of a series givemn in  segment.set and 
 		  store the image in OpenEXR format.  
 		  Skip two images at the beginning of the series. 
