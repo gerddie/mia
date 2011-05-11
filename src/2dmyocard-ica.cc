@@ -20,6 +20,70 @@
  *
  */
 
+/*
+
+  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
+  
+  \subsection{mia-2dmyocard-ica}
+  \label{mia-2dmyocard-ica}
+
+  \begin{description} 
+  \item [Description:] 
+        This program is used to run a ICA on a series of myocardial perfusion images to create 
+        sythetic references that can be used for motion correction by image registration. 
+	If the aim is to run a full motion compensation then it is better to create a 
+	segmentation set and use \sa{mia-2dmyoica-nonrigid} or \sa{mia-2dmyomilles}. 
+	If the input data is given by means of a segmentation set, then on can 
+	also use \sa{mia-2dmyocard-icaseries}
+	The program is essentially used to test different options on how to run the ICA for 
+	reference image creation. 
+  
+  The program is called like 
+  \begin{lstlisting}
+mia-2dmyocard-ica -i <input image pattern> -o <synthetic references> [options]
+  \end{lstlisting}
+
+  \item [Options:] $\:$
+
+  \optiontable{
+  \cmdgroup{File in- and output} 
+  \cmdopt{in-base}{i}{string}{input file name showing the numbering pattern}
+  \cmdopt{out-base}{o}{string}{output file base name}
+  \cmdopt{coefs}{}{string}{Stor the coefficients of the mixing matrix in this file}
+  
+  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
+  \cmdopt{end}{e}{int}{Last input file number plus 1}
+
+  \cmdopt{components}{C}{int}{Number of  ICA components to be used, 0 = automatic estimation}
+  \cmdopt{ica-normalize}{n}{}{dnormalized ICs}
+  \cmdopt{strip-mean}{m}{}{strip the mean from the mixing curves}
+  \cmdopt{save-features}{f}{string}{save IC feature image that correspond to identifiable features, 
+                                    may not include all ICs}
+  \cmdopt{strip-periodic}{p}{}{strip only periodic component from reference image creation, otherwise 
+                               the references are created from LV, RV, and perfusion IC.}
+
+  \cmdopt{max-ica-iter}{x}{int}{maximum number of iterations within ICA}
+  \cmdopt{all-features}{}{string}{all feature images numbered to image with the given base name}
+
+
+  \cmdopt{LV-crop-amp}{L}{float}{segment and scale the crop box around the LV (0=no segmentation)}
+  \cmdopt{auto-components}{s}{}{automatic esitmation of number of components based on correlation. 
+                                Implies -m and -n}
+
+  }
+
+  \item [Example:]Evaluate the synthetic references from images imageXXXX.exr and save them to refXXXX.exr by 
+                  using five independend components, mean stripping, normalizing, and skipping 2 images. 
+  \begin{lstlisting}
+mia-2dmyocard-ica  -i imageXXXX.exr -o ref -k 2 -C 5 -m -n 
+  \end{lstlisting}
+  \item [See also:] \sa{mia-2dmyomilles}, \sa{mia-2dmyoica-nonrigid}, \sa{mia-2dmyocard-icaseries},
+  \end{description}
+  
+  LatexEnd
+*/
+
+
 #define VSTREAM_DOMAIN "2dmyocard"
 #include <iomanip>
 #include <ostream>
@@ -363,17 +427,17 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
 				    "output file type"));
 
-	options.push_back(make_opt( first, "skip", 's', "skip images at beginning of series"));
+	options.push_back(make_opt( first, "skip", 'k', "skip images at beginning of series"));
 	options.push_back(make_opt( last, "end", 'e', "last image in series"));
-	options.push_back(make_opt( components, "components", 'c', "nr. of components, 0=estimate automatically"));
+	options.push_back(make_opt( components, "components", 'C', "nr. of components, 0=estimate automatically"));
 	options.push_back(make_opt( strip_mean, "strip-mean", 'm', "strip mean image from series"));
 	options.push_back(make_opt( feature_image_base, "save-features", 'f', "save feature image"));
 
-	options.push_back(make_opt(skip_only_periodic,"strip_periodic",'p', "strip only periodic component"));
+	options.push_back(make_opt(skip_only_periodic,"strip-periodic",'p', "strip only periodic component"));
 
 	options.push_back(make_opt(max_iterations,"max-ica-iterations",'x', "max ICA solver iterations"));
 
-	options.push_back(make_opt( ica_normalize, "ica_normalize", 'n', "ica_normalize feature images"));
+	options.push_back(make_opt( ica_normalize, "ica-normalize", 'n', "ica_normalize feature images"));
 	options.push_back(make_opt( numbered_feature_image, "all-features", 0, "save all feature images to"));
 
 	options.push_back(make_opt( LV_mask, "LV-crop-amp", 'L', "LV crop mask amplification, 0.0 = don't crop"));

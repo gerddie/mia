@@ -59,7 +59,7 @@ mia-2dmyoica-nonrigid -i <input set> -o <output set> [options]
   \cmdopt{save-refs}{}{string}{for each registration pass save the reference images to files with the given name base}
   \cmdopt{save-regs}{}{string}{for each registration pass save intermediate registered images}
 				 
-  \cmdgroup{Independen component analysis} 
+  \cmdgroup{Independent component analysis} 
   \cmdopt{components}{C}{int}{Number of  ICA components to be used, 0 = automatic estimation}
   \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
   \cmdopt{no-normalize}{}{}{don't normalized ICs}

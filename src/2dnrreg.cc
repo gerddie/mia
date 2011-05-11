@@ -22,7 +22,8 @@
  */
 
 /*
-  LatexBeginProgramDescription{2D image registration}
+  currently not compiled in 
+  Latex BeginProgramDescription{2D image registration}
   
   \subsection{mia-2dnrnreg}
   \label{mia-2dnrnreg}

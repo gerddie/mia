@@ -22,6 +22,8 @@
  */
 
 /*
+  currently not compiled in 
+
   This program implements 2D gray scale image registration. 
   Depending on the available plug-ins it can accomodate various models and cost-functions. 
   So far input images can be given as PNG, TIF, BMP and OpenEXR (depending on the installed plug-ins)

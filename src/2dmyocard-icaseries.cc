@@ -22,6 +22,65 @@
  *
  */
 
+
+/*
+
+  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
+  
+  \subsection{mia-2dmyocard-icaseries}
+  \label{mia-2dmyocard-icaseries}
+
+  \begin{description} 
+  \item [Description:] 
+        This program is used to run a ICA on a series of myocardial perfusion images given in a segmentation set
+        in order to create sythetic references that can be used for motion correction by image registration. 
+	If the aim is to run a full motion compensation then it is better run 
+          \sa{mia-2dmyoica-nonrigid} or \sa{mia-2dmyomilles}.
+	The program is essentially \sa{mia-2dmyoica-nonrigid} without the registration bits. 
+  
+  The program is called like 
+  \begin{lstlisting}
+mia-2dmyocard-icaseries -i <input image pattern> -o <synthetic references> [options]
+  \end{lstlisting}
+
+  \item [Options:] $\:$
+
+  \optiontable{
+  \cmdgroup{File in- and output} 
+  \cmdopt{in-file}{i}{string}{input segmentation set}
+  \cmdopt{save-cropped}{c}{string}{save cropped image set}
+  \cmdopt{references}{r}{string}{File name base for the reference images. Image type and numbering 
+                                 scheme are taken from the input images.}
+  \cmdopt{save-cropped}{}{string}{save cropped set to this file, the image files will use the stem of the 
+                                 name as file name base}
+  \cmdopt{save-feature}{}{string}{save segmentation feature images and initial ICA mixing matrix}
+				 
+  \cmdgroup{Independent component analysis} 
+  \cmdopt{components}{C}{int}{Number of  ICA components to be used, 0 = automatic estimation}
+  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
+  \cmdopt{no-normalize}{}{}{don't normalized ICs}
+  \cmdopt{no-meanstrip}{}{}{don't strip the mean from the mixing curves}
+  \cmdopt{segscale}{s}{float}{segment and scale the crop box around the LV (0=no segmentation)}
+  \cmdopt{max-ica-iter}{m}{int}{maximum number of iterations within ICA}
+  \cmdopt{segmethod}{E}{string}{Segmentation method - (delta-feature|delta-peak|features)}
+  }
+
+  \item [Example:]Evaluate the synthetic references from set segment.set and save them to refXXXX.??? by 
+                  using five independend components, and skipping 2 images. Per default a bounding box 
+                  around the LV will be segmented and scaled by 1.4 and the cropped images will be saved 
+                  to cropXXXX.??? and a segmentation set cropped.set is created. 
+		  The image file type ??? is deducted from the input images in segment.set. 
+  \begin{lstlisting}
+mia-2dmyocard-icaseries  -i segment.set -r ref -o ref -k 2 -C 5
+  \end{lstlisting}
+  \item [See also:] \sa{mia-2dmyomilles}, \sa{mia-2dmyoica-nonrigid}, \sa{mia-2dmyocard-ica},
+  \end{description}
+  
+  LatexEnd
+*/
+
+
+
 #define VSTREAM_DOMAIN "2dmyocard"
 #include <iomanip>
 #include <ostream>
@@ -93,12 +152,13 @@ int do_main( int argc, const char *argv[] )
 	C2DPerfusionAnalysis::EBoxSegmentation segmethod=C2DPerfusionAnalysis::bs_features; 
 
 	CCmdOptionList options(g_description);
+	options.set_group("File-IO"); 
 	options.push_back(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
 	options.push_back(make_opt( reference_filename, "references", 'r', "file name base for refernces files")); 
-	
 	options.push_back(make_opt( cropped_filename, "save-cropped", 'c', "save cropped set to this file")); 
 	options.push_back(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images", NULL)); 
-
+	
+	options.set_group("ICA");
 	options.push_back(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
 	options.push_back(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
 	options.push_back(make_opt( no_meanstrip, "no-meanstrip", 0, 
@@ -108,9 +168,8 @@ int do_main( int argc, const char *argv[] )
 	options.push_back(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
 				    "as they are of other modalities")); 
 	options.push_back(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 
-
-	options.push_back(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
-				   "Segmentation method")); 
+	options.push_back(make_opt( segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
+				    "Segmentation method")); 
 	
 	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 

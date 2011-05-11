@@ -13,6 +13,10 @@
 \newcommand\cmdgroup[1]{\multicolumn{4}{l}{\bf #1}\\\hline}
 \newcommand\cmdopt[4]{\texttt{-{}-#1} & \ifthenelse{\equal{#2}{}}{}{\texttt{-#2}} & #3 & #4 \\\hline}
 
+\newcommand\optinset{\cmdopt{in-file}{i}{string}{input segmentation set}}
+\newcommand\optoutset{\cmdopt{out-file}{o}{string}{output segmentation set}}
+
+
 \newcommand\optinfile{\cmdopt{in-file}{i}{string}{input file name}}
 \newcommand\optreffile{\cmdopt{ref-file}{r}{string}{reference image file name}}
 \newcommand\optoutfile{\cmdopt{out-file}{o}{string}{output file name}}
