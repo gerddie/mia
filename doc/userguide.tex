@@ -141,8 +141,8 @@ Currently broken, may work with cygwin.
 This chapter lists all the software tools provided by mia. 
 The descriptions follow a designated pattern: 
 
+\subsection*{The command line program name}
 \begin{description}
-\item [Program:]\emph{the command line program name}
 \item [Description:]A description of the program
 \item [Options:] list of options
 
@@ -153,7 +153,8 @@ long name & short name & value type & description of the parameter \\
 }
 
 \noindent 
-If no value type is given, then the option accepts no further parameter. 
+If no value type is given, then the option is a flag that defaults to \emph{false} and accepts no 
+     further value. 
 All programs support the following options: 
 
 \optiontable{
@@ -167,6 +168,7 @@ All programs support the following options:
 \item [Example:] Example how to run the program 
 
 \item [Remarks:] additional notes
+\item [See also:] Cross reference to related programs. 
 \end{description}
 
 For all programs, the \texttt{-{}-help} option will print out additional information, like which parameters 
@@ -219,8 +221,6 @@ In all cases only binary and gray scale data is supported.
 \label{ch:plugins}
 
 In this chapter the plug-ins are described that are provided by the library.
-
-
 \include{plugins}
 
 \bibliographystyle{plainnat}

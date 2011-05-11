@@ -22,6 +22,68 @@
  *
  */
 
+/*
+  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
+  
+  \subsection{mia-2dmyopgt-nonrigid}
+  \label{mia-2dmyopgt-nonrigid}
+
+  \begin{description} \item [Description:] This program runs the
+  non-linear registration of an perfusion image series as described in
+  \cite{li09}.  According to the paper, a linear registration should
+  be run before this program is applied.
+  
+  The program is called like 
+  \begin{lstlisting}
+mia-2dmyopgt-nonrigid -i <input set> -o <output set> <cost1> [<cost2>] ...
+  \end{lstlisting}
+
+  \item [Options:] $\:$
+
+  \optiontable{
+  \cmdgroup{File in- and output} 
+  \cmdopt{in-file}{i}{string}{input segmentation set}
+  \cmdopt{out-file}{o}{string}{output segmentation set}
+  \cmdopt{registered}{r}{string}{File name base for the registered images. Image type and numbering 
+                                 scheme are taken from the input images.}
+				 
+  \cmdgroup{Pseudo Ground Thruth Estimation} 
+  \cmdopt{alpha}{A}{float}{spacial neighborhood penalty weight}
+  \cmdopt{beta}{B}{float}{temporal second derivative penalty weight}
+  \cmdopt{rho-thresh}{C}{float}{crorrelation threshhold for neighborhood analysis}
+
+  \cmdgroup{Image registration} 
+  \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
+  \cmdopt{interpolator}{p}{string}{Image interpolator to be used}
+  \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
+  \cmdopt{passes}{P}{int}{Number of registration passes to be run}
+  \cmdopt{start-c-rate}{a}{float}{start coefficinet rate in spines, gets divided by \texttt{-{}-c-rate-divider} 
+                                for each new registration pass}
+  \cmdopt{c-rate-divider}{}{float}{cofficient rate divider for each pass}
+  \cmdopt{start-divcurl}{d}{float}{start divcurl weight, gets divided by \texttt{-{}-divcurl-divider}
+                                for each new registration pass}
+  \cmdopt{ivcurl-divider}{}{float}{divcurl weight scaling with each new pass}
+  \cmdopt{imageweight}{w}{float}{Weight for the image cost function}
+  }
+
+  \item [Example:]Register the perfusion series given in segment.set by using automatic ICA estimation. 
+        Skip two images at the beginning and otherwiese use the default parameters. 
+	Store the result in registered.set. 
+  \begin{lstlisting}
+mia-2dmyopgt-nonrigid  -i segment.set -o registered.set -k 2
+  \end{lstlisting}
+
+  \item [Remark:] This program is here for test purpouses only, the algorithm doesn't work very well. 
+                  It should be better to implement the follow-up paper \citet{Li2011}. 
+  \item [See also:] \sa{mia-2dmyomilles}, \sa{mia-2dmyoperiodic-nonrigid}, 
+                    \sa{mia-2dmyoica-nonrigid}, \sa{mia-2dmyoserial-nonrigid},
+		    \sa{mia-2dsegseriesstats}
+  \end{description}
+  
+  LatexEnd
+*/
+
+
 #define VSTREAM_DOMAIN "2dmyopgt"
 #include <iomanip>
 #include <ostream>
@@ -148,7 +210,7 @@ int do_main( int argc, const char *argv[] )
 	options.set_group("\nPseudo Ground Thruth estimation"); 
 	options.push_back(make_opt( alpha, "alpha", 'A', "spacial neighborhood penalty weight"));
 	options.push_back(make_opt( beta, "beta", 'B', "temporal second derivative penalty weight"));
-	options.push_back(make_opt( rho_thresh, "rho_thresh", 'R', 
+	options.push_back(make_opt( rho_thresh, "rho-thresh", 'R', 
 				    "crorrelation threshhold for neighborhood analysis"));
 
 	

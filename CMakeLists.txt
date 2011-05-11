@@ -244,13 +244,15 @@ LINK_DIRECTORIES(${GSL_LIBRARY_DIRS})
 
 
 #search for cblas, if is now a requirement  
-#try simple one 
-FIND_LIBRARY(CBLAS_LIBRARY NAMES "cblas" PATHS
+#try simple one
+# Note, on Gentoo onr can use 'eselect blas set X' to select the actual BLAS provider
+# 
+FIND_LIBRARY(BLAS_LIBRARY NAMES "blas" PATHS
   /usr/lib
   /usr/local/lib
   )
 
-IF(NOT CBLAS_LIBRARY)
+IF(NOT BLAS_LIBRARY)
   #try mkl 
   FIND_LIBRARY(MKLIF_LIBRARY NAMES "mkl_intel_lp64" PATHS
     /opt/intel/mkl/lib/intel64 
@@ -262,17 +264,17 @@ IF(NOT CBLAS_LIBRARY)
     /opt/intel/mkl/lib/intel64 
     )
   IF (MKL_core_LIBRARY AND MKL_sequential_LIBRARY AND MKLIF_LIBRARY)
-    set(CBLAS_LIBRARY ${MKLIF_LIBRARY} ${MKL_sequential_LIBRARY}
+    set(BLAS_LIBRARY ${MKLIF_LIBRARY} ${MKL_sequential_LIBRARY}
       ${MKL_core_LIBRARY} 
       )
   ENDIF(MKL_core_LIBRARY AND MKL_sequential_LIBRARY AND MKLIF_LIBRARY)
-ENDIF(NOT CBLAS_LIBRARY)
+ENDIF(NOT BLAS_LIBRARY)
 
-IF (CBLAS_LIBRARY) 
+IF (BLAS_LIBRARY) 
   ADD_DEFINITIONS(-DHAVE_BLAS)
-ELSE(CBLAS_LIBRARY) 
-  MESSAGE(FATAL_ERROR "A library that implements the CBLAS interface is required")
-ENDIF(CBLAS_LIBRARY)
+ELSE(BLAS_LIBRARY) 
+  MESSAGE(FATAL_ERROR "A library that implements the BLAS interface is required")
+ENDIF(BLAS_LIBRARY)
 
 
 #

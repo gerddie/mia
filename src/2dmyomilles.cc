@@ -31,7 +31,7 @@
 
   \begin{description} 
   \item [Description:] 
-        This program is use to run a modified version of the ICA based rigid registration approach 
+        This program is used to run a modified version of the ICA based rigid registration approach 
         described in Milles et al. \cite{MvdG+08}. Changes include the extraction 
 	of the quasi-periodic movement in free breathingly acquired data sets and the option to run 
 	affine registration instead of the optimization of translations only.
@@ -42,7 +42,7 @@
   \begin{lstlisting}
 mia-2dmyomilles -i <input set> -o <output set> [options]
   \end{lstlisting}
-  with the filters given as extra parameters as additional command line parameters. 
+
 
   \item [Options:] $\:$
 

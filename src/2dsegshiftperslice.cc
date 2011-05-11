@@ -37,9 +37,9 @@
 
   The program is called like 
   \begin{lstlisting}
-mia-2dsegshiftperslice -i <input set> -o <output set> -g <
+mia-2dsegshiftperslice -i <input set> -o <output set> \
+                       -g <out image basename> -S <shift file basename>
   \end{lstlisting}
-  with the filters given as extra parameters as additional command line parameters. 
 
   \item [Options:] $\:$
 
@@ -57,8 +57,9 @@ mia-2dsegshiftperslice -i <input set> -o <output set> -g <
   \begin{lstlisting}
 mia-2dsegshiftperslice -i segment.set -o translate.set -g translated -S shift 
   \end{lstlisting}
-  \item [Remark:] Obsolete. Use \hyperref[mia-2dmyomilles]{mia-2dmyomilles} to achive registration 
+  \item [Remark:] Obsolete. Use \sa{mia-2dmyomilles} to achive registration 
                   and correct the segmentation. 
+  \item [See also:] \sa{mia-2dsegshift}
   \end{description}
   
   LatexEnd
