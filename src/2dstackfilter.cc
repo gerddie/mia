@@ -35,17 +35,17 @@
 
 /*
   LatexBeginProgramDescription{2D image stack processing}
-  \label{sec:2dimagestackproc}  
+
+  \subsection{mia-2dstackfilter}
+  \label{mia-2dstackfilter}
   
   \begin{description}
-  \item [Program:] \emph{mia-2dstackfilter}
-  \hrule 
   \item [Description:] This program is used to filter and convert a series of 2D gray scale images in a 
   3D fashion by running filters as given on the command line. 
   For available filters see section \ref{sec:fifof}. 
 
   The program is called like 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-2dstackfilter -i <input images> -o <output image basename> \
                   -t <output file type> [<filter>] ... 
@@ -54,19 +54,22 @@ mia-2dstackfilter -i <input images> -o <output image basename> \
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optoutfile
   \opttypetwod
   \opthelpplugin
-  \tabend
+  }
 
   \item [Example:]Run a mean-least-varaiance filter on a series of images that follow the 
-  numbering pattern inputXXXX.exr and store the output in images filteredXXXX.exr 
-   \lstset{language=bash}
+  numbering pattern imageXXXX.exr and store the output in images filteredXXXX.exr 
+   \
   \begin{lstlisting}
 mia-2dstackfilter -i image0000.exr -o filtered -t exr mlv:w=2 
   \end{lstlisting}
+  \item [Remark:] Note the difference to the program 
+                  \hyperref[mia-2dimagefilterstack]{mia-2dimagefilterstack} 
+                  that runs the filter(s) on the individual images ina 2D manner. 
   \end{description}
   
   LatexEnd

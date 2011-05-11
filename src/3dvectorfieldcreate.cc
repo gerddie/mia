@@ -22,6 +22,49 @@
  *
  */
 
+
+/*
+  LatexBeginProgramDescription{Miscellaneous programs}
+
+  \subsection{mia-3dvectorfieldcreate}
+  \label{mia-3dvectorfieldcreate}
+  
+  \begin{description}
+  \item [Description:] This program is used to create a file containing a 3D vector field.
+  The program is called like 
+  \
+  \begin{lstlisting}
+mia-3dvectorfieldcreate -o <file name> [options] 
+  \end{lstlisting}
+    \item [Options:] $\:$
+
+  \optiontable{
+  \optoutfile
+  \cmdopt{size}{s}{3D-vector}{size of the vector field given as <NX,NY,NZ>}
+  \cmdopt{ftype}{y}{int}{vector field type 
+                           \begin{tabular}{ll}
+			   \hline 
+			   0& sin \\
+			   \hline 
+			   1& sin sin(fun)\\
+			   \hline 
+			   2& sin cos(fun)\\
+			   \hline 
+			   \end{tabular}}
+  \cmdopt{fun}{f}{float}{just some parameter to vary the field vestion 1 and 2 ;-)}
+  }
+
+  \item [Example:] Create a field of type 2 with fun 3.0 and size $128\times128\times128$. 
+   \
+  \begin{lstlisting}
+mia-3dvectorfieldcreate -o field.v -s "<128,128,128>" -t 2 -f 3.0 
+  \end{lstlisting}
+  \end{description}
+
+  LatexEnd
+*/
+
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif

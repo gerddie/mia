@@ -21,49 +21,48 @@
  *
  */
 
-// $Id: segment3d.cc 938 2006-07-11 11:57:01Z write1 $
+/*
+  LatexBeginProgramDescription{3D image processing}
+  
+  \subsection{mia-fuzzysegment3d}
+  \label{mia-fuzzysegment3d}
 
-/*! \brief mia-segment3d -- fuzzy clustering of 3D images
+  \begin{description}
+  \item [Description:] 	This program runs a combined fuzzy c-means clustering and B-field correction 
+  to facilitate a 3D segmentation of 3D image (cf. \cite{pham99fuzzy}). 
+  \
+  \begin{lstlisting}
+mia-fuzzysegment3d -i <input image> -o <output image> ... 
+  \end{lstlisting}
 
-\par Program description
+  \item [Options:] $\:$
 
-	Computes a fuzzy clustering to facilitate a 3D segmentation of 3D image.
+  \optiontable{
+  \optinfile
+  \cmdopt{b0-file}{o}{string}{file to store the b0-field corrected image}
+  \cmdopt{cls-file}{c}{string}{file to store the class probability images. 
+                The file type must support the storage of multiple images}
+  \cmdopt{no-of-classes}{n}{int}{Number of classes to segment}
+  \cmdopt{residuum}{r}{float}{relative residuum for the B-field correction optimization}
+  }
 
-\par Usage
+  \item [Example:]Run a 5-class segmentation over inpt image input.v and store the class probability images in cls.v 
+     and the B0-field corrected image in b0.v 
+   \
+  \begin{lstlisting}
+mia-fuzzysegment3d -i input.v -c 5 -o b0.v -c cls.v   
+  \end{lstlisting}
+  \end{description}
+  
+  LatexEnd
+*/
 
-	<code>mia-segment3d --usage</code> (or <code> mia-getmtr --help</code>)
-
-	\param --in-file		image to be segmented
-	\param --b0-image		image corected for intensity non-uniformities
-	\param --cls-file		segmented classes to store probability density values
-	\param --no-of-classes		no of classes to segment image
-	\param --residuum		relative residuum to differentiate clusters
-	\param --verbose		some verbose output (min/max values, etc)
-
-\par Example
-
-	-# Perform a segmentation (WM, GM, CSF) of a 3D T1w VISTA image
-	\code
-		user> mia-segment3d -i image.v -o b0-image.v -c cls.v -r 0.2 -n 3
-	\endcode
-	Note, the image format can be anything covered by the io plugins included in \a libmia.
-
-\par Known bugs
-
-	The program perfomance needs to be significantly improved..
-
-\todo
-	Program cannot cope with negative pixel values
-
-\file segment3d.cc
-
+/*
 \remark The programm was origionall written by D.L. Pham and J.L.Prince, Pat. Rec. Let., 20:57-68,1999.
 \remark The CG optimization was included by Stefan Burckhardt und Carsten Walters
-
 \author Heike J"anicke and M. Tittgemeyer (tittge@cbs.mpg.de), 2004
 */
 
-// $Id: segment3d.cc 938 2006-07-11 11:57:01Z write1 $
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

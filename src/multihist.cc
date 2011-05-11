@@ -27,12 +27,51 @@
 #include <mia/core.hh>
 #include <mia/2d.hh>
 
-/*! \brief Evalaute the histogram across multiple 2D images and write it to an output file
-This Program evaluates the intensity histogram across a series of images.
-The intensities are clamped to thegiven input range and the values are distributed across
-a given number of bins.
+
+/*
+  LatexBeginProgramDescription{2D image stack processing}
+  
+  \subsection{mia-multihist}
+  \label{mia-multihist}
+
+  \begin{description}
+  \item [Description:] This program is used to evaluate the histogram of a series of 
+   2D gray scale images. 
+   If no additional parameters are given, the histogram will have 65536 bins and cover an 
+   intensity range of [0,65535]. 
+   No interpolation is used when the histogram is filled. 
+   When the histogram is saved, the tail of zero bins is eliminated. 
+  The program is called like 
+  \
+  \begin{lstlisting}
+mia-multihisto -i <input images> -o <output file> 
+  \end{lstlisting}
 
 
+  \item [Options:] $\:$
+
+  \optiontable{
+  \optinfile
+  \cmdopt{out}{o}{string}{output file to store ths histogram. The values are stored in pairs (bin-center, count)}
+  \cmdopt{bins}{}{}{number of bins to use}
+  \cmdopt{min}{}{float}{minimum of the intensity range, lover intensity values go to the first bin}
+  \cmdopt{max}{}{float}{maximum of the intensity range, higher intensity values go to the last bin}
+  }
+
+  \item [Example:]Evaluate the histogram over all consecutively numbered images that follow the 
+  numbering pattern inputXXXX.exr and store the output histogram in histo.txt.  
+  Use the range [0,256] and 64 bins. 
+   \
+  \begin{lstlisting}
+mia-multihisto -i input0000.exr -o histo.txt --min 0 --max 256 --bins 64
+  \end{lstlisting}
+  \end{description}
+  
+  LatexEnd
+*/
+
+
+/*
 \autor Gert Wollny <gw.fossdev at gmail.com>
 */
 

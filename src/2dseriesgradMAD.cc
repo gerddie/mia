@@ -21,15 +21,56 @@
  *
  */
 
-// $Id: 2dimagefilterstack.cc,v 1.19 2006-07-28 09:37:05 wollny Exp $
 
-/*! \brief eva-2dimagefilter
+/*
 
-\sa 3va-2dimagefilter.cc
+  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
+  
+  \subsection{mia-2dseriesgradMAD}
+  \label{mia-2dseriesgradMAD}
 
-\file mask.cc
-\author G. Wollny, wollny eva.mpg.de, 2005
+  \begin{description} 
+  \item [Description:] 
+           Given a set of images of temporal sucession, evaluates the pixel-wise 
+	   temporal gradient and then its \emph{median average distance} (MAD) 
+           and stores the result in an image. 
+	   Spacial pre-filtering may be applied as additional plugin(s). 
+
+  The program is called like 
+  \begin{lstlisting}
+mia-2dseriesgradMAD -i <input set> -o <output image> [options] [<filter>] ... 
+  \end{lstlisting}
+  with the filters given as extra parameters as additional command line parameters. 
+
+  \item [Options:] $\:$
+
+  \optiontable{
+  \optinfile
+  \optoutfile
+  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
+  \cmdopt{crop}{c}{}{Crop the images before evaluating the MAD. Cropping is done by evaluating a bounding box 
+                         that contains the segmentation given in the images. 
+                         If no segmentation is available then the result is undefined.}
+  \cmdopt{enlarge-boundary}{e}{int}{Enlarge the boundary of the obtained crop-box}
+  }
+
+  Additional 2D filters may be given at the command line to run a slice-wise filtering (section \ref{sec:filter2d}). 
+
+  \item [Example:]Evaluate the MAD-image of the bounding box surrounding the segmentation 
+                  from a series segment.set. No spacial filtering will be applied. 
+		  The bounding box will be enlarged by 3 pixels in all directions.
+		  Store the image in OpenEXR format.  
+  \begin{lstlisting}
+mia-2dseriesgradMAD -i segment.set -o mad.exr -c -e 3 
+  \end{lstlisting}
+  \item [Remark:] The MAD image has float-valued pixels and thereby requires an output format that supports 
+                  this pixel type. 
+  \end{description}
+  
+  LatexEnd
 */
+
+
 #define VSTREAM_DOMAIN "SERGRADVAR"
 
 #include <iostream>
@@ -191,8 +232,9 @@ int main( int argc, const char *argv[] )
 	CCmdOptionList options(program_info);
 	options.push_back(make_opt( in_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
 	options.push_back(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
-	options.push_back(make_opt( skip, "skip", 'p', "Skip files at the beginning"));
-	options.push_back(make_opt( enlarge_boundary,  "enlarge-boundary", 'e', "Enlarge cropbox by number of pixels"));
+	options.push_back(make_opt( skip, "skip", 'k', "Skip files at the beginning"));
+	options.push_back(make_opt( enlarge_boundary,  "enlarge-boundary", 'e', 
+				    "Enlarge cropbox by number of pixels"));
 	options.push_back(make_opt( crop, "crop", 'c', "crop image before running statistics"));
 
 	try {

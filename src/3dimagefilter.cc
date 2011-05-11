@@ -32,16 +32,16 @@
 
 /*
   LatexBeginProgramDescription{3D image processing}
-  \label{sec:3dimageproc}  
+
+  \subsection{mia-3dimagefilter}
+  \label{mia-3dimagefilter}
   
   \begin{description}
-  \item [Program:] \emph{mia-3dimagefilter}
-  \hrule 
   \item [Description:] This program is used to filter and convert 3D gray scale images by running 
   filters as given on the command line. For available filters see section \ref{sec:3dfilters}. 
 
   The program is called like 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-3dimagefilter -i <input image> -o <output image> [<filter>] ... 
   \end{lstlisting}
@@ -49,17 +49,17 @@ mia-3dimagefilter -i <input image> -o <output image> [<filter>] ...
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optoutfile
   \opthelpplugin
-  \tabend
+  }
 
-  \item [Example:]Run a mean-least-varaiance filter on input.exr, then run a 5-class k-means classification 
+  \item [Example:]Run a mean-least-varaiance filter on input.v, then run a 5-class k-means classification 
            and binarize by selecting the 4th class.
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
-mia-3dimagefilter -i image.exr -o filtered.png mlv:w=2 \
+mia-3dimagefilter -i image.v -o filtered.v mlv:w=2 \
                                                kmeans:c=5 \
 		                               binarize:min=4,max=4 
   \end{lstlisting}

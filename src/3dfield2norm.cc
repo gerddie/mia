@@ -23,6 +23,37 @@
  */
 
 
+/*
+  LatexBeginProgramDescription{Miscellaneous programs}
+
+  \subsection{mia-3dfield2norm}
+  \label{mia-3dfield2norm}
+  
+  \begin{description}
+  \item [Description:] This program evauates the pixel-wise norm of a 3D vector field.
+  The output image will be of float voxel representation. 
+  \
+  \begin{lstlisting}
+mia-3dfield2norm -i <input vector field> -o <output norm image> 
+  \end{lstlisting}
+  \item [Options:] $\:$
+
+  \optiontable{
+  \optinfile
+  \optoutfile
+  }
+
+  \item [Example:] Evaluate the norm image norm.v from a vector field field.v. 
+   \
+  \begin{lstlisting}
+mia-3dfield2norm -i field.v -o norm.v
+  \end{lstlisting}
+  \end{description}
+
+  LatexEnd
+*/
+
+
 #include <mia/3d/3dimageio.hh>
 #include <mia/3d/3dvfio.hh>
 #include <mia/core/cmdlineparser.hh>
@@ -30,7 +61,7 @@
 NS_MIA_USE;
 
 const char *g_description = 
-	"This program converts a 3d vector field to an image ot the norm."; 
+	"This program converts a 3d vector field to an image of its voxel-wise norm."; 
 
 struct FVector2Norm {
 	float operator ()(const C3DFVector& v) const {

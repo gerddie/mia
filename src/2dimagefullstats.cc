@@ -21,15 +21,36 @@
  *
  */
 
-// $Id: 2dimagefilter.cc,v 1.12 2006-07-12 13:44:23 wollny Exp $
+/*
+  LatexBeginProgramDescription{Miscellaneous programs}
 
-/*! \brief mia-2dimagefilter
+  \subsection{mia-2dimagestats}
+  \label{mia-2dimagestats}
+  
+  \begin{description}
+  \item [Description:] This progranm is used to evaluate some statistics of an image.
+	Output is Mean, Variation, Median, Min and Max of the intensity values.
+  The program is called like 
+  \
+  \begin{lstlisting}
+mia-2dimagestats -i <file name>
+  \end{lstlisting}
+  \item [Options:] $\:$
 
-\sa mia-2dimagefilter.cc
+  \optiontable{
+  \optinfile
+  }
 
-\file mask.cc
-\author G. Wollny, wollny eva.mpg.de, 2005
+  \item [Example:] Evaluate the statistics of image input.v.  
+   \
+  \begin{lstlisting}
+mia-2dimagestats -i input.v 
+  \end{lstlisting}
+  \end{description}
+
+  LatexEnd
 */
+
 
 #include <sstream>
 #include <mia/core/fullstats.hh>

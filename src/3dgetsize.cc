@@ -21,6 +21,37 @@
  *
  */
 
+/*
+  LatexBeginProgramDescription{Miscellaneous programs}
+
+  \subsection{mia-3dgetsize}
+  \label{mia-3dgetsize}
+
+  
+  \begin{description}
+  \item [Description:] This program prints out the size of a 3D image as 3D vector <NX,NY,NZ>. 
+  \
+  \begin{lstlisting}
+mia-3dgetsize -i <input> 
+  \end{lstlisting}
+  \item [Options:] $\:$
+
+  \optiontable{
+  \optinfile
+  }
+
+  \item [Example:] Print out the size of image.v: 
+   \
+  \begin{lstlisting}
+mia-3dgetsize -i image.v 
+  \end{lstlisting}
+  \end{description}
+
+  LatexEnd
+*/
+
+
+
 #include <iostream>
 #include <string>
 #include <stdexcept>

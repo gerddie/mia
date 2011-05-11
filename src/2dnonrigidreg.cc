@@ -24,14 +24,15 @@
 
 /*
   LatexBeginProgramDescription{2D image registration}
-  
+
+  \subsection{mia-2dnonrigidreg}
+  \label{mia-2dnonrigidreg}
+
   \begin{description}
-  \item [Program:] \emph{mia-2dnonrigidreg}
-  \hrule 
   \item [Description:] This program implements the non-linear registration of two gray scale 2D images. 
 
   The program is called like 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-2drigidreg -i <input image> -r <reference image> -o <output image> \
                [options] <cost1> [<cost2>] ...
@@ -40,16 +41,16 @@ mia-2drigidreg -i <input image> -r <reference image> -o <output image> \
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optreffile
   \optoutfile
-  --levels & -l & int & multiresolution processing levels  \\\hline
-  --optimizer & -O & string & optimizer as given in section \ref{sec:minimizers}   \\\hline
-  --trans & -t & string & transformation output file \\\hline
-  --transForm & -f  & string & transformation type to achieve registration as given in section \ref{sec:2dtransforms} 
-              \\\hline
-  \tabend
+  \cmdopt{levels}{l}{int}{multiresolution processing levels }
+  \cmdopt{optimizer}{O}{string}{optimizer as given in section \ref{sec:minimizers}  }
+  \cmdopt{trans}{t}{string}{transformation output file}
+  \cmdopt{transForm}{f }{string}{transformation type to achieve registration as given 
+                                 in section \ref{sec:2dtransforms}}
+  }
 
   The cost functions are given as extra parameters on the command line. 
   These may include any combination of the cost functions given in section \ref{sec:2dfullcost}. 
@@ -59,7 +60,7 @@ mia-2drigidreg -i <input image> -r <reference image> -o <output image> \
   coefficient rate of 5  and write the registered image to reg.v. 
   Use two multiresolution levels, ssd as image cost function and divcurl weighted by 10.0 
    as transformation smoothness penalty. 
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-2dnonrigidreg -i test.v -r ref.v -o reg.v -l 2 \
                   -f spline:rate=3  image:cost=ssd divcurl:weight=10

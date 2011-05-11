@@ -21,6 +21,45 @@
  *
  */
 
+/*
+  LatexBeginProgramDescription{Image conversion}
+
+  \subsection{mia-2dto3dimageb}
+  \label{mia-2dto3dimageb}
+  
+  \begin{description}
+  \item [Description:] This program is used to convert a series 2D images into a 3D image. 
+     The 2D images are read as additional command line parameters and the slice 
+     ordering corresponds to the ordering of the file names on the commend line. 
+  The program is called like 
+  \
+  \begin{lstlisting}
+mia-2dto3dimage  -o <3D output image> <slice1> [<slice2>] ...
+  \end{lstlisting}
+
+  \item [Options:] $\:$
+
+  \optiontable{
+  \optinfile
+  \optoutfile
+  \opttypethreed
+  }
+
+  \item [Example:]Convert a series of images imageXXXX.png to a 3D image 3d.v 
+   \
+  \begin{lstlisting}
+mia-2dto3dimage -i imageXXXX.png -o 3d.v
+  \end{lstlisting}
+  \item [Remark:] All input images must be of the same pixel type and size. 
+  See also \ref{mia-2dto3dimage}. 
+
+  \end{description}
+  
+  LatexEnd
+*/
+
+
+
 #include <iostream>
 #include <iomanip>
 #include <string>

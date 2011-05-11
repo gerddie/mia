@@ -20,6 +20,51 @@
  *
  */
 
+/*
+
+  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
+  
+  \subsection{mia-2dsegshiftperslice}
+  \label{mia-2dsegshiftperslice}
+
+  \begin{description} 
+  \item [Description:] 
+	This program move the segmentation(s) of an image series by using a shift 
+          that is given on a per-slice base. 
+        The program can be used to correct the segmentation of the images if 
+    	  a linear registration was executed that only applies a translation and 
+          does not correct the segmentation automatically. 
+
+  The program is called like 
+  \begin{lstlisting}
+mia-2dsegshiftperslice -i <input set> -o <output set> -g <
+  \end{lstlisting}
+  with the filters given as extra parameters as additional command line parameters. 
+
+  \item [Options:] $\:$
+
+  \optiontable{
+  \cmdopt{in-file}{i}{string}{input segmentation set}
+  \cmdopt{out-file}{o}{string}{output segmentation set}
+  \cmdopt{image-file}{g}{}{base name of the output image file. The numbering scheme and the file type of the 
+                           input images will be preserved.These files will not be touched and 
+                             should actually be the result of translation based linear registration.}
+  \cmdopt{shift}{S}{stringh}{File name base for the files containing the shift for each individual slice. 
+                             The file numbering scheme must correspond.}
+			     }
+  \item [Example:]Shift the segmentations of a set segement.set and store it in translate.set. The 
+                  shifts are stored in files "shiftXXXX.txt" and the registered files are named translatedXXXX.png
+  \begin{lstlisting}
+mia-2dsegshiftperslice -i segment.set -o translate.set -g translated -S shift 
+  \end{lstlisting}
+  \item [Remark:] Obsolete. Use \hyperref[mia-2dmyomilles]{mia-2dmyomilles} to achive registration 
+                  and correct the segmentation. 
+  \end{description}
+  
+  LatexEnd
+*/
+
+
 #include <iterator>
 #include <algorithm>
 #include <iostream>

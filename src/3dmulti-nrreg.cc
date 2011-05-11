@@ -22,6 +22,25 @@
  */
 
 /*
+  // currently not compiled 
+  Latex BeginProgramDescription{3D image registration}
+
+  \subsection{mia-3dmulti-nrreg}
+  \label{mia-3dmulti-nrreg}
+  
+  \begin{description}
+  \item [Description:]   This program implements 3D gray scale image registration 
+  by optimizing a dense vector field that defines a transformation for each pixel. 
+  The input images must be of the same size and dimensions. 
+  The registration can be achieved by optimizing a combined cost function. 
+
+  \end{description}
+
+  Latex End
+*/
+
+
+/*
   This program implements 3D gray scale image registration.
   Depending on the available plug-ins it can accomodate various models and cost-functions.
   So far input images can be given as PNG, TIF, BMP and OpenEXR (depending on the installed plug-ins)

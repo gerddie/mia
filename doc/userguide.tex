@@ -14,6 +14,9 @@
 \usepackage{babel}
 \usepackage[colorlinks,linkcolor=blue]{hyperref}
 \usepackage{multirow}
+\usepackage{ifthen}
+\usepackage{tabularx}
+
 
 \include{version}
 \include{definitions}
@@ -89,8 +92,8 @@ In order to use MIA, on these platforms the software is best installed from sour
 To do so, your software environment has to meet the following pre-requisites: 
 
 \begin{enumerate}
-\item You need a ANSI-compatible C++ compiler that supports {\bf auto} from the upcoming 
-   C++0x standard - GNU g++ (>=4.4) (http://gcc.gnu.org) is known to work. 
+\item You need a ANSI-compatible C++ compiler that supports some features of the new C++0x standard 
+   - GNU g++ (>=4.4) (http://gcc.gnu.org) is known to work. 
 \item CMake (http://www.cmake.org) 
 \item The BOOST >= 1.40 (http://www.boost.org) library
 \item gsl (http://) The GNU Scientific Library 
@@ -109,14 +112,14 @@ Additionally, the following packages add to the functionallity of the software:
 \end{description}
 
 
-If all of the above pre-requisites are met, the installation of mia boils down to:
+If all of the above pre-requisites are met, the installation of MIA boils down to:
 
 \lstset{language=bash}
 \begin{lstlisting}
-  tar -zxvf mia-2.0..tgz
+  tar -zxvf mia-2.0.X.tgz
   mkdir build-mia
   cd build-mia
-  cmake -DCMAKE_INSTALL_PREFIX=<path to install> ../mia-2.0.0
+  cmake -DCMAKE_INSTALL_PREFIX=<path to install> ../mia-2.0.X
   make
   make install
 \end{lstlisting}
@@ -124,7 +127,7 @@ In order to test some of the components, you may run ``make test''.
 
 \subsection{MS Windows} 
 
-Currently broken 
+Currently broken, may work with cygwin. 
 
 \chapter{User Guide}
 
@@ -133,8 +136,9 @@ Currently broken
 \chapter{Programs}
 \label{ch:prog}
 
+\lstset{language={}}
 
-This chapter lists all the software tools provided by mia2D. 
+This chapter lists all the software tools provided by mia. 
 The descriptions follow a designated pattern: 
 
 \begin{description}
@@ -143,26 +147,34 @@ The descriptions follow a designated pattern:
 \item [Options:] list of options
 
 \noindent 
-\tabstart
+\optiontable{
 long name & short name & value type & description of the parameter \\
 \hline
-\tabend
-
-\item [Example:] Example how to run the program 
+}
 
 \noindent 
 If no value type is given, then the option accepts no further parameter. 
 All programs support the following options: 
 
-\tabstart
---help & -? & & Print out some help \\\hline
---usage & & & Print out a short help \\\hline
---version & -v & & Print out version information \\\hline
---copyright & & & Print out copyright information \\\hline
---verbose & -V & string & set the verbosity of the output out of \{ debug, message, warning, fail, error, fatal\} \\\hline
-\tabend
+\optiontable{
+\cmdopt{help}{?}{}{Print out some help}
+\cmdopt{usage}{}{}{Print out a short help}
+\cmdopt{version}{v}{}{Print out version information}
+\cmdopt{copyright}{}{}{Print out copyright information}
+\cmdopt{verbose}{V}{string}{set the verbosity of the output out of (debug, message, warning, fail, error, fatal)}
+}
+
+\item [Example:] Example how to run the program 
+
 \item [Remarks:] additional notes
 \end{description}
+
+For all programs, the \texttt{-{}-help} option will print out additional information, like which parameters 
+  are required and what are the default values (if set).
+Note, when other options are set alongside the \texttt{-{}-help} option, then for these options, the given value 
+  will be shown as default and the \emph{required} tag will not be shown.
+When a program is called with two (ore more) conflicting options then one option takes automatically precedence 
+  as it is documented. 
 
 
 The programs support a variety of 2D and 3D image and data file formats, see tables \ref{tab:2dformats} 
@@ -172,15 +184,14 @@ Support for some of these formats depend on external libraries and needs to be e
 \begin{table}[h]
 \caption{\label{tab:2dformats}2D image formats}
 \centering{
-\begin{tabular}{|l|l|c|}
-\hline
-File type description & remark & suffix \\\hline
-DICOM & Only a supset of tags is supported & \\\hline 
+\begin{tabular}{l|l|c}
+\emph{File type description} & \emph{Remark} & \emph{Suffix} \\\hline
+DICOM & Only a supset of tags is supported & dcm \\\hline 
 OpenEXR HDR image format & http://www.openexr.com/ & exr \\\hline
 Portable Network Graphics & http://www.libpng.org & png \\\hline
 Tagged Image File format & http://www.remotesensing.org/libtiff/libtiff.html & tif \\\hline
-Vista & & v \\\hline 
-Windows Bitmap & http://www.daubnet.com/formats/BMP.html & bmp \\\hline
+Vista & http://www.cs.ubc.ca/nest/lci/vista/vista.html & v \\\hline 
+Windows Bitmap & http://www.daubnet.com/formats/BMP.html & bmp
 \end{tabular}
 }	
 \end{table}
@@ -188,13 +199,12 @@ Windows Bitmap & http://www.daubnet.com/formats/BMP.html & bmp \\\hline
 \begin{table}[h]
 \caption{\label{tab:3dformats}3D image formats}
 \centering{
-\begin{tabular}{|l|l|c|}
-\hline
-File type description & on the web & suffix \\\hline
+\begin{tabular}{l|l|c}
+\emph{File type description} & \emph{Remark} & \emph{Suffix} \\\hline
+Analyze & & hdr + img \\\hline 
 INRIA 3D File format &http://foveaproject.free.fr/softwareEng.html & inria  \\\hline
-%%Medical Imaging NetCDF & http://www.bic.mni.mcgill.ca/software/minc/ & mnc \\\hline
 Sun TAAC Image File Format & & vff \\\hline
-Vista File Format & http://www.cs.ubc.ca/nest/lci/vista/vista.html & v \\\hline
+Vista File Format & http://www.cs.ubc.ca/nest/lci/vista/vista.html & v
 \end{tabular}
 }
 \end{table}

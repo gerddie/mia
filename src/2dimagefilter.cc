@@ -24,25 +24,25 @@
 
 /*
   LatexBeginProgramSection{2D image processing}
-  \label{sec:2dprograms}
+  \label{sec:2dimageproc}  
   
-  These programs all take a single 2d image as input. 
+  
 
   LatexEnd
 */
 
 /*
   LatexBeginProgramDescription{2D image processing}
-  \label{sec:2dimageproc}  
+
+  \subsection{mia-2dimagefilter}
+  \label{mia-2dimagefilter}
   
   \begin{description}
-  \item [Program:] \emph{mia-2dimagefilter}
-  \hrule 
   \item [Description:] This program is used to filter and convert 2D gray scale images by running 
   filters as given on the command line. For available filters see section \ref{sec:filter2d}. 
 
   The program is called like 
-  \lstset{language=bash}
+  \
   \begin{lstlisting}
 mia-2dimagefilter -i <input image> -o <output image> [<filter>] ... 
   \end{lstlisting}
@@ -50,15 +50,15 @@ mia-2dimagefilter -i <input image> -o <output image> [<filter>] ...
 
   \item [Options:] $\:$
 
-  \tabstart
+  \optiontable{
   \optinfile
   \optoutfile
   \opthelpplugin
-  \tabend
+  }
 
   \item [Example:]Run a mean-least-varaiance filter on input.exr, then run a 5-class k-means classification 
            and binarize by selecting the 4th class.
-   \lstset{language=bash}
+   \
   \begin{lstlisting}
 mia-2dimagefilter -i image.exr -o filtered.png mlv:w=2 \
                                                kmeans:c=5 \

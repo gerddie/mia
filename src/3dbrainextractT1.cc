@@ -21,6 +21,50 @@
  *
  */
 
+/*
+  LatexBeginProgramDescription{3D image processing}
+  
+  \subsection{mia-3dbrainextractT1}
+  \label{mia-3dbrainextract3dT1}
+
+  \begin{description}
+  \item [Description:] 	This program is used to extract the brain from T1 MR images. 
+  It first runs a combined fuzzy c-means clustering and B-field correction 
+  to facilitate a 3D segmentation of 3D image (cf. \cite{pham99fuzzy}). 
+  Then various fiters are run to obtain a white matter segmentation as initial 
+  mask that is then used to run a region growing to obtain a mask of the whole brain. 
+  Finally, this mask is used to extact the brain from the $B^0$ field corrected images.  
+  \
+  \begin{lstlisting}
+mia-3dbrainextract3dT1 -i <input image> -o <output image> [options]
+  \end{lstlisting}
+
+  \item [Options:] $\:$
+
+  \optiontable{
+  \optinfile
+  \optoutfile
+  \cmdopt{no-of-classes}{n}{int}{Number of classes to segment}
+  \cmdopt{wm-class}{w}{int}{Index of white matter class (normally this should be \texttt{-{}-no-of-classes} - 1)}
+  \cmdopt{wm-prob}{p}{float}{White matter probability to create the initial mask from the white matter 
+                             class probability image}
+  \cmdopt{grow-threshold}{t}{int}{low intensity threshold for region growing}
+  \cmdopt{grow-shape}{}{string}{Neighbourhood shape for the region growing (section \ref{sec:3dshapes})}.
+  }
+
+  \item [Example:]Create a mask from the input image by running a 5-class segmentation over inpt image input.v 
+                and use class 4 as white matter class and store the masked image in masked.v 
+     and the B0-field corrected image in b0.v 
+   \
+  \begin{lstlisting}
+mia-3dbrainextract3dT1 -i input.v -n 5 -w 4 -o masked.v
+  \end{lstlisting}
+  \end{description}
+  
+  LatexEnd
+*/
+
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif

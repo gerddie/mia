@@ -21,6 +21,40 @@
  *
  */
 
+/*
+  LatexBeginProgramDescription{2D image processing}
+
+  \subsection{mia-2dtransform}
+  \label{mia-2dtransform}
+
+  \begin{description}
+  \item [Description:] Transform a 2D image by applying a given 2D transformation.  
+  The program is called like 
+  \
+  \begin{lstlisting}
+mia-2dtransform -i <input> -t <transformaton> -o <output>
+  \end{lstlisting}
+  \item [Options:] $\:$
+
+  \optiontable{
+  \optinfile
+  \optoutfile
+  \cmdopt{transformation}{t}{string}{file name of the transformation}
+  \cmdopt{interpolator}{p}{string}{image interpolation kernel to use}
+  }
+
+  \item [Example:] Transform an image input.png by the transfromation stored in trans.v
+        by using linear interpolation and store the result in output.png 
+   \
+  \begin{lstlisting}
+mia-2dtransform -i input.png -t trans.v  -o output.png  -p linear
+  \end{lstlisting}
+  \end{description}
+
+  LatexEnd
+*/
+
+
 #include <mia/core.hh>
 #include <mia/2d.hh>
 

@@ -19,8 +19,6 @@
  *
  */
 
-// TODO: segment set loading should use the relative path to the segment.set if there is
-//       no absolute path in the file
 
 #include <iterator>
 #include <algorithm>

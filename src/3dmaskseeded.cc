@@ -21,29 +21,48 @@
  *
  */
 
-// $Id: 3dmaskseeded.cc,v 1.12 2006-07-12 13:44:23 wollny Exp $
+/*
+  LatexBeginProgramDescription{3D image processing}
+  
+  \subsection{mia-3dmaskseeded}
+  \label{mia-3dmaskseeded}
+
+  \begin{description}
+  \item [Description:] Based on the original image, a region growing beginning from a 
+        given seed point is executed. 
+      Neighboring points are added, either when their intensity is equal or higher than
+        that of the seed point, or of the intensity is lower or equal 
+        then that of the neigboring point.
+      After region growing is finished, the obtained mask is used to zero out"
+	"the region in the original image yielding the resulting image.
+  The program is called like 
+  \
+  \begin{lstlisting}
+mia-3dmaskseeded -i <input image> -o <output image> -s "<sx,sy,sz>" [options]
+  \end{lstlisting}
 
 
-/**
-   This program is used to mask an image based on a seeded region grow
+  \item [Options:] $\:$
 
-   input:
-   - the image (required)
-   - the seed point (required)
-   - a neighborhood shape
+  \optiontable{
+  \optinfile
+  \optoutfile
+  \opttypethreed
+  \cmdopt{seed}{s}{3D-vector <int>}{Region growing seed point}
+  \cmdopt{neighborhood}{n}{string}{Neighbourhood shape as provided by the shape plugins 
+                                  (\ref{sec:3dshapes})}
+  }
 
-   output:
-   - the filtered image
-
-   Algorithm:
-
-   Based on the original image, a region growing beginning froma a given seed point is executed.
-   Neighboring points are added, either when their intensity is equal or higher than
-   that of the seed point, or of the intensity is lower or equal then that of the neighoring point.
-
-   After region growing is finished, this mask is used to zero out the region in the original
-   image yielding the resulting image.
-
+  \item [Example:]Run a region growing on input.v starting at point <10,23,21> and 
+                  use the 18n neighbourhood. 
+   \
+  \begin{lstlisting}
+mia-3dmaskseeded -i image.v -o masked.v -s "<10,23,21>" -n 18n 
+  \end{lstlisting}
+  \item [Remark:] This program should be moved to filters.  
+  \end{description}
+  
+  LatexEnd
 */
 
 #include <iostream>

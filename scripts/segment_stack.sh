@@ -49,7 +49,7 @@ if [ ! -e histo.dat ] ; then
 fi
 
 if [ ! -e cmeans.done ] ; then 
-    mia-cmeans <histo.dat -c 0,120,150 -V message -k 0.01 -o cmeans.txt && touch cmeans.done
+    mia-cmeans -i histo.dat -c 0,120,150 -V message -k 0.01 -o cmeans.txt && touch cmeans.done
 fi
 
 if [ ! -e enamel.done ] ; then 
