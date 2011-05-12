@@ -62,6 +62,8 @@ mia-2dseriesgradvariation -i segment.set -o gradvar.exr -c -e 3
   \end{lstlisting}
   \item [Remark:] The gradient variation image has float-valued pixels and thereby requires an output 
                   format that supports this pixel type. 
+  \item [See also:] \sa{mia-2dmultiimagevar}, \sa{mia-2dseriesgradMAD}, 
+                    \sa{mia-2dseriessmoothgradMAD}
   \end{description}
   
   LatexEnd

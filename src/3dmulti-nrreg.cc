@@ -36,7 +36,7 @@
 
   \end{description}
 
-  Latex End
+  LatexEnd
 */
 
 

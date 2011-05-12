@@ -22,6 +22,17 @@
  *
  */
 
+/*
+  LatexBeginPluginSection{2D "fat" cost functions}
+  \label{sec:fatcost2d}
+  
+  This cost function implementation is obsolete and will be replaced by 
+  \hyperref[sec:2dfullcost]{2D fullcost}. 
+  
+  LatexEnd
+*/
+
+
 #include <mia/core/export_handler.hh>
 
 #include <stdexcept>

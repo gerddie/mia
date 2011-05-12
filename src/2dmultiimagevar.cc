@@ -21,15 +21,42 @@
  *
  */
 
-// $Id: 2dimagefilter.cc,v 1.12 2006-07-12 13:44:23 wollny Exp $
+/*
+  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
+  
+  \subsection{mia-2dmultiimagevar}
+  \label{mia-2dmultiimagevar}
 
-/*! \brief mia-2dimagefilter
+  \begin{description} 
+  \item [Description:] 
+        This program evauates the pixel-wise variation of a series of images of the same size 
+        and stores the result in an image. 
+  
+  The program is called like 
+  \begin{lstlisting}
+mia-2dmyoica-nonrigid -o <output image> <image> <image> [<image>] ... 
+  \end{lstlisting}
+  The output image will have floating point valued pixels. 
 
-\sa mia-2dimagefilter.cc
+  \item [Options:] $\:$
 
-\file mask.cc
-\author G. Wollny, wollny eva.mpg.de, 2005
+  \optiontable{
+  \cmdopt{out-file}{o}{string}{output image}
+  \opttypetwod
+  }
+
+  \item [Example:]Evaluate the pixel-wise variation over the image series stored in imagesXXXX.png and
+                 store the result in var.exr. 
+  \begin{lstlisting}
+mia-2dmultiimagevar  -o var.exr images*.png
+  \end{lstlisting}
+  \item [See also:] \sa{mia-2dseriesgradMAD}, \sa{mia-2dseriessmoothgradMAD}, 
+                    \sa{mia-2dseriesgradvariation}
+  \end{description}
+  
+  LatexEnd
 */
+
 
 #include <sstream>
 #include <functional>
@@ -101,7 +128,7 @@ int main( int argc, const char *argv[] )
 
 		CCmdOptionList options(g_description);
 		options.push_back(make_opt( out_filename, "out-file", 'o', "output image ", CCmdOption::required));
-		options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',"output file type"));
+		options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',"override output file type"));
 
 		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 

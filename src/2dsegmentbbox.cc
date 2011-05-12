@@ -1,3 +1,14 @@
+
+/*
+
+  Latex BeginProgramDescription{2D image registration}
+  
+  This file is a stub
+
+  LatexEnd
+*/
+
+
 #include <iterator>
 #include <algorithm>
 #include <iostream>

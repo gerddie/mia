@@ -17,6 +17,17 @@
  *
  */
 
+/*
+  LatexBeginPluginSection{3D "fat" cost functions}
+  \label{sec:fatcost3d}
+  
+  This cost function implementation is obsolete and will be replaced by 
+  \hyperref[sec:3dfullcost]{3D fullcost}.
+  
+  LatexEnd
+*/
+
+
 #include <mia/core/export_handler.hh>
 
 

@@ -80,6 +80,10 @@ mia-2dmyomilles  -i segment.set -o affine.set -F affine -P 3
   \item [Remark:] It is not tested whether the original method of Milles et al. \cite{MvdG+08} 
                   would work. It should with "-C 3" and input images that do not stem from 
                   free-breathingly aquired images. 
+  \item [See also:] \sa{mia-2dmyoica-nonrigid}, \sa{mia-2dmyoperiodic-nonrigid}, 
+                    \sa{mia-2dmyoserial-nonrigid}, \sa{mia-2dmyopgt-nonrigid},
+		    \sa{mia-2dsegseriesstats}
+
   \end{description}
   
   LatexEnd

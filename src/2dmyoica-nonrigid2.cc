@@ -22,6 +22,19 @@
  *
  */
 
+
+/*
+  Don't document this in the guide. 
+  Latex BeginProgramDescription{Myocardial Perfusion Analysis}
+  
+  This program is a copy of \sa{mia-2dmyoica-nonrigid} and used as a playground to change the code. 
+  
+  LatexEnd
+*/
+
+
+
+
 #define VSTREAM_DOMAIN "2dmyoica"
 
 #include <fstream>

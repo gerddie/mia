@@ -81,6 +81,9 @@ mia-2dseriessmoothgradMAD -i segment.set -o mad.exr -g 2 -c -e 3
   \end{lstlisting}
   \item [Remark:] The MAD image has float-valued pixels and thereby requires an output format that supports 
                   this pixel type. 
+  \item [See also:] \sa{mia-2dmultiimagevar}, \sa{mia-2dseriesgradMAD}, 
+                    \sa{mia-2dseriesgradvariation}
+
   \end{description}
   
   LatexEnd

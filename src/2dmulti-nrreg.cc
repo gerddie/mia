@@ -22,15 +22,8 @@
  */
 
 /*
-  currently not compiled in 
-
-  This program implements 2D gray scale image registration. 
-  Depending on the available plug-ins it can accomodate various models and cost-functions. 
-  So far input images can be given as PNG, TIF, BMP and OpenEXR (depending on the installed plug-ins)
-  The input images must be of the same dimensions and gray scale (whatever bit-depth). 
-  The vector field will be saved as a EXR image with two frames of float values, one for the X 
-  and one for the Y values of the vectors. 
-  Other vector field output plug-ins might be supported depending on the installed plug-ins. 
+  Don't document this in the guide but trick grep 
+  LatexEnd
 */
 
 #include <mia/core.hh>

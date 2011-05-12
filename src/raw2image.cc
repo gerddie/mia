@@ -43,8 +43,7 @@ mia-raw2image -i <input data> -o <output image> -s <size of input> ...
   \optinfile
   \optoutfile
   \opttypethreed
-  \cmdopt{repn}{r}{string}{input pixel type 
-               (bit|double|float|sbyte|sint|sshort|ubyte|uint|ushort)}
+  \cmdopt{repn}{r}{string}{input pixel type (Table \ref{tab:pixform})}
   \cmdopt{big-endian}{b}{}{input data is big endian (default is low endian)}
   \cmdopt{scale}{f}{2D~vector <float>}{physical voxel size given as 2D vector <SX,SY>}
   \cmdopt{skip}{k}{int}{skip the given number of bytes from the beginning of the input file}

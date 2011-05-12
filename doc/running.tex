@@ -1,9 +1,6 @@
 \section{Command Line Tools}
 
-This part of the user guide fucuses on using the command line interface of the MIA programs. 
-Although it is possible, to run the programs from the MS Windows command interpreter, installing 
-  a UNIX-like environment like Cygwin or MingW is highly advised. 
-The examples given below will all use the Bash shell script syntax. 
+All programs in MIA are available as command line tools. 
 
 \subsection{Converting raw data to images and volumes}
 
@@ -35,7 +32,8 @@ The number of supported image file formats depends on the compiled in support - 
 
 MIA provides a set of standard 2D and 3D filters. 
 These filters can easily combined  to a filter chain. 
-For example in order to filter a 2D image \texttt{image.png} first with a Gaussian of the order 3 (filter width = 2 * 3 + 1), and then with a 
+For example in order to filter a 2D image \texttt{image.png} first with a Gaussian 
+  of the order 3 (filter width = 2 * 3 + 1), and then with a 
   median least square filter of the order 2, issue the command 
 \begin{lstlisting}
 mia-2dimagefilter -i image.png -o filtered.png gauss:w=3 mlv:w=2
@@ -47,9 +45,6 @@ To apply an openin operation to a volume data set \texttt{volume.v}, by using a 
 \begin{lstlisting}
 mia-2dimagefilter -i volume.v -o morphed.v open:shape=[sphere:r=3]
 \end{lstlisting}
-
-The available filters and structuring elements are described in chapter \ref{ch:plugins}. 
-Given the plug-in based architecture, more filters can easyly be added (see programming guide).
 
 \subsection{Non-linear image registration and deformation}
 
