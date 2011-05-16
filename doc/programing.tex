@@ -1,22 +1,59 @@
+\documentclass[english, 10pt, a4paper,headsepline,openany]{scrbook}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage[left=2cm,right=1cm,top=2cm,bottom=2cm,twoside]{geometry}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[numbers]{natbib}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{graphics}
+\usepackage{nonfloat}
+\usepackage{babel}
+\usepackage[colorlinks,linkcolor=blue]{hyperref}
+\usepackage{multirow}
+\usepackage{ifthen}
+\usepackage{tabularx}
+\usepackage{rotating}
+\usepackage{float}
+\usepackage{colortbl}
+\newcommand{\has}{\cellcolor[gray]{0.5}}
 
+\floatstyle{ruled}
+\newfloat{listing}{tbp}{lop}[section]
+
+
+
+\include{version}
+\include{definitions}
+
+%\makeatletter
+\definecolor{listinggray}{gray}{0.9}
+\lstset{backgroundcolor=\color{listinggray}}
+
+
+\makeatother
+
+
+\title{MIA Programming Guide}
 
 \begin{document}
-\chapter{Programming Guide}
 \lstset{numbers=left, numberstyle=\small, numbersep=5pt}
 
-This part of the MIA guide decribes, how to use the interfaces provided to write your own softwrae, 
+This part of the MIA guide decribes, how to use the interfaces provided to write your own software,
   how to extend the the functionallity of MIA without touchting its core, and, finally, how to 
-  change MIA itself. 
+  extend the core funcionallity MIA itself.
 \begin{itemize}
 \item In chapter \ref{ch:simple} an example is provided, that describes how to scan the command line, load an image, 
   run some given filters on it and store the image. 
-\item Chapter \ref{ch:images} focuses images on writing an image filter that can handle various different gray scale pixel formats.
+\item Chapter \ref{ch:images} focuses images on writing an image filter that can handle various different 
+   gray scale pixel formats.
 \item Chapter \ref{ch:io} decribes how to teach MIA to read and write additional image formats. 
-\item Chapter \ref{ch:filterplugin} will teach you, how to write an image filter plugin. 
 \item Chapter \ref{ch:addpluginstype} gives an insight how to create a new class of plug-ins.
 \end{itemize}
 
-\section{A simple program}
+\chapter{A simple program}
 \label{ch:simple}
 
 This chapter will teach you how to use the MIA-tools to scan command line parameters, read and store images, 
@@ -24,7 +61,7 @@ This chapter will teach you how to use the MIA-tools to scan command line parame
 In summary, the program described here is the \texttt{mia-2dimagefilter} from \texttt{src/2dimagefilter.cc}. 
 
 For convenience the full source code is printed in the listning below, and we will go through it line by line. 
-\lstset{language=c++}
+\lstset{language=c++,basicstyle=\small,numberstyle=\small}
 \begin{lstlisting}
 #include <mia/core.hh>
 #include <mia/2d.hh>
@@ -41,11 +78,9 @@ int main( int argc, const char *argv[] )
 
   try 
   {
-    const C2DFilterPluginHandler::Instance& filter_plugins = 
-      C2DFilterPluginHandler::instance();
+    const auto& filter_plugins = C2DFilterPluginHandler::instance();
   
-    const C2DImageIOPluginHandler::Instance& imageio = 
-      C2DImageIOPluginHandler::instance();
+    const auto& imageio =  C2DImageIOPluginHandler::instance();
   
     CCmdOptionList options;  
     options.push_back(make_opt( in_filename, "in-file", 'i', 
@@ -59,12 +94,11 @@ int main( int argc, const char *argv[] )
                       "give some help about the filter plugins", NULL)); 
 
     options.parse(argc, argv); 
-    vector<const char *> filter_chain = options.get_remaining(); 
+    auto filter_chain = options.get_remaining(); 
 
     list<C2DFilterPlugin::ProductPtr> filters;
-    for (vector<string>::const_iterator i = filter_chain.begin(); 
-         i != filter_chain.end(); ++i) {
-       C2DFilterPlugin::ProductPtr filter =  filter_plugins.produce(i->c_str()); 
+    for (auto i = filter_chain.begin(); i != filter_chain.end(); ++i) {
+       auto filter =  filter_plugins.produce(i->c_str()); 
        if (!filter) {
          stringstream error; 
          error << "Filter " << *i << " not found"; 
@@ -73,22 +107,19 @@ int main( int argc, const char *argv[] )
        filters.push_back(filter);
     }
 
-    C2DImageIOPluginHandler::PData  in_image_list = imageio.load(in_filename);  
+    auto  in_image_list = imageio.load(in_filename);  
     if (!in_image_list || in_image_list->empty())
          throw invalid_argument(string("No images found in ")  + in_filename);
 
-    vector<string>::const_iterator filter_name = filter_chain.begin();
-    for (list<C2DFilterPlugin::ProductPtr>::const_iterator f = filters.begin(); 
-         f != filters.end(); ++f) {
-      for (C2DImageIOPluginHandler::Data::iterator   
-         i = in_image_list->begin(); i != in_image_list->end(); ++i)
+    auto filter_name = filter_chain.begin();
+    for (auto f = filters.begin(); f != filters.end(); ++f) {
+      for (auto i = in_image_list->begin(); i != in_image_list->end(); ++i)
     
            *i = (*f)->filter(**i);
     }
     if ( !imageio.save(out_type, out_filename, *in_image_list) )
       throw runtime_error(string("unable to save result to ") + out_filename);
     return EXIT_SUCCESS; 
-
   } 
   catch (const runtime_error &e){
     cerr << argv[0] << " runtime: " << e.what() << endl;
@@ -151,7 +182,7 @@ eva-2dimagefilter -i input.png -o output.png \
     in the main function. 
 \end{description}
 
-\section{Images and Filtering}
+\chapter{Images and Filtering}
 
 \label{ch:images}
 
@@ -161,82 +192,104 @@ If not otherwise noted, 3D images are handled likewise.
 
 \section{How to create and copy images of a certain image type}
 
-The images supported in MIA  may contain different pixel types, e.g. 1-bit, 8-bit, 16-bit, or even float valued ones. 
-MIA uses shared pointers to \texttt{C2DImage}, respectively,  to hold images. 
-However, in order to account for the pixel type, at creation time a derivative class of the used pixel type needs to be specified. 
+The images supported in MIA  may contain different pixel types, e.g. 1-bit, 8-bit, 16-bit, or float valued ones. 
+MIA uses shared pointers \texttt{P2DImage} to \texttt{C2DImage}, respectively,  to hold images. 
+However, in order to account for the pixel type, at creation time a derivative class of the used pixel 
+   type needs to be specified. 
 In order to create an 16-bit image with unsigned pixel values with a given \texttt{size}, use:
 
 \begin{lstlisting}
 P2DImage image = P2DImage(new C2DUSImage(size)); 
 \end{lstlisting}
  
-In order to copy such an image, an image copy filter is provided, that can be invoked like follows: 
+In order to copy such an image, an the image provides the clone function: 
 
 \begin{lstlisting}
-P2DImage image_copy = filter<T2DImage>(FCopyImage(), image); 
+P2DImage image_copy = image->clone();
 \end{lstlisting}
-\emph{Remark: a clone method might come in handy ...}
-
-More about these image filters is described in the next section: 
 
 \section{An Image Filter}
 \label{sec:filter}
 
-In order to access the image data, its type needs to be known. 
+In order to access the image data, its pixel type needs to be known. 
 Of course it is possible to use the \texttt{get\_type} method of the \texttt{C2DImage} class and use
   a switch statement in order to cast to the appropriate derived class. 
 However, since this needs to be done very often, MIA provides various template functions to handle the most cases
   of image access. 
-Namely, functions \texttt{mia::filter} are provided that take a filter functor as argument as well as one image or two images. 
-Examples of its usage follow: 
-Imagine, an image thresh-holding filter, that takes an image, and sets all pixels above or below given thresholds to zero, and 
-  all pixels within the range to one. 
-Such a filter would be defined like follows:     
+These functions are defined in \texttt{<mia/core/filter.hh>} and examples of its use are given below. 
 
-\lstset{language=c++,numbers=left}	
+\subsection{The single image filter}
+
+The simples of all filter functions takes exactly one image as input and returns the filterde image. 
+The filter function is defined as: 
+
 \begin{lstlisting}
-#include <mona/core/filter.hh>
-
-struct FThreshold: public TFilter<P2DImage> {
-  FThreshold(double min, double max):
-    _M_min(min), 
-    _M_max(max)
-    {
-    }
-  typename <template T> 
-  FThreshold::result_type operator()(const T2DImage<T>& image)const {
-    typename T2DImage<T>::const_iterator ii = image.begin(); 
-    typename T2DImage<T>::const_iterator ei = image.end();
-    
-    C2DBitImage *r = new  C2DBitImage(image.get_size(), image.get_attribute_list()); 
-    P2DImage result(r); 
-    C2DBitImage::iterator ir = r->begin();
-    
-    while (ii != ei) {
-      *ir++ = (*ii >= _M_min && *ii < _M_max); 
-      ++ii; 
-    }
-    return result;     
-  }
-private: 
-  double _M_min; 
-  double _M_max; 
-); 
+template <typename Filter, typename Image>
+static typename Filter::result_type filter(const Filter& f, const Image& b)
 \end{lstlisting}
 
-Here, \texttt{TFilter} is a template, that defines the type \texttt{return\_type} that is needed for the call to the actual filter function. 
-The constructor of the filter functor \texttt{FThreshold} initialises the filter with the given parameters. 
-A \texttt{do\_threshold} function that makes use of this filter operator would look like this:   
+In the current implementation of MIA, \texttt{Image} will be either \texttt{C2DImage} or \texttt{C3DImage}. 
+\texttt{Filter} is a functor class that must provied the a type \texttt{result\_type} and an 
+  operator \texttt{()}.
+The most basic declaration of such a filter that takes a 2D image as input and has a 2D image as output would look like 
+\begin{lstlisting}
+class CSimpleFilter {
+public: 
+  typedef mia::P2DImage result_type; 
   
-\begin{lstlisting}
-P2DImage do_threshold(double min, double max, const C2DImage& image)
-{  
-  return  mia::filter<T2DImage>(FThreshold(min,max), image);
-}   
+  template <typename T> 
+  result_type operator()(const T2DImage<T>& image) const; 
+}
 \end{lstlisting}
 
-The \texttt{filter<T2DImage>} function takes care of casting the input image depending on its pixel type, and then invokes 
-  the operator () of \texttt{FThreshold} and returns its result.
+Note, that the operator () is templated with respect to the image pixel type and that its parameter image 
+  and the operator itself is defined as constant. 
+This means logically, a filter should act as a function whose result only depends on the input image 
+(and possible parameters passed to a non-trivial constructor). 
+
+In listing \ref{list:filterthreshold} you can find the complete declaration and definition of a filter 
+  that runs a thresholding operation by setting all pixels in the image below the given threshold to zero 
+  and all values above or equal to one. 
+Obviously, the output will be a bit values image. 
+
+\begin{listing}
+\begin{lstlisting}
+#include <algorithm>
+class C2DTreshholdFilter {
+public: 
+  typedef mia::P2DImage result_type; 
+  
+  C2DTreshholdFilter(double threshold); 
+
+  template <typename T> 
+  result_type operator()(const T2DImage<T>& image) const; 
+private:
+  double m_threshold; 
+}
+
+C2DTreshholdFilter::C2DTreshholdFilter(double threshold):
+  m_threshold(threshold)
+{
+}
+
+template <typename T> 
+typename C2DTreshholdFilter::result_type 
+operator()(const T2DImage<T>& image) const
+{
+  auto r = new C2DBitImage(image.get_size(), image); 
+  P2DImage result(r); 
+  std::transform(image.begin(), image.end(), r->begin(), 
+                 [m_threshold](T x){return x >= m_threshold;});
+  return  result; 
+}
+\end{lstlisting}
+\caption{\label{list:filterthreshold}Thresholding filter}
+\end{listing}
+
+
+
+
+
   
 \section{Pixel Type Dependant Filtering}
 \label{sec:ptdf}

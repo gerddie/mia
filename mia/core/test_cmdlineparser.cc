@@ -198,7 +198,7 @@ BOOST_FIXTURE_TEST_CASE( test_dict_option, CmdlineParserFixture )
 
 	CCmdOptionList olist("Synopis:Tests command line options.");
 
-	olist.push_back(make_opt(value, map, "dict", 'd', "a dictmap option", "dict"));
+	olist.add(make_opt(value, map, "dict", 'd', "a dictmap option", "dict"));
 	vector<const char *> options;
 
 	options.push_back("self");
@@ -224,7 +224,7 @@ BOOST_FIXTURE_TEST_CASE( test_flagstring_option, CmdlineParserFixture )
 
 	CCmdOptionList olist("Synopis:Tests command line options.");
 
-	olist.push_back(make_opt(value, map, "flags", 'f', "a flagstring option", "flags"));
+	olist.add(make_opt(value, map, "flags", 'f', "a flagstring option", "flags"));
 	vector<const char *> options;
 
 	options.push_back("self");
@@ -271,15 +271,15 @@ BOOST_FIXTURE_TEST_CASE( test_parser, CmdlineParserFixture )
 
 	CCmdOptionList olist("Synopis:Tests command line options.");
 
-	olist.push_back(make_opt(int_value1,  "int1", 'i',"a int option", "int1"));
-	olist.push_back(make_opt(int_value2, "int2",  'k', "another int option", "int2"));
-	olist.push_back(make_opt(int_value3,  "int-3", 0, "yet another int option", "int3"));
-	olist.push_back(make_opt(float_value, "float", 'f', "a float option", "float"));
-	olist.push_back(make_opt(s,  "string", 's',"a string option", "string"));
-	olist.push_back(make_opt(bingo,  "bingo", 'b', "a bool option", "bool"));
-	olist.push_back(make_opt(bingo2,  "bingo2", '2', "another bool option", "bool"));
-	olist.push_back(make_opt(usval,  "ushort", 'u', "a short int option", "ushort"));
-	olist.push_back(make_opt(vector_value,  "vector-string", 'S', "a vector of strings", "vstring"));
+	olist.add(make_opt(int_value1,  "int1", 'i',"a int option", "int1"));
+	olist.add(make_opt(int_value2, "int2",  'k', "another int option", "int2"));
+	olist.add(make_opt(int_value3,  "int-3", 0, "yet another int option", "int3"));
+	olist.add(make_opt(float_value, "float", 'f', "a float option", "float"));
+	olist.add(make_opt(s,  "string", 's',"a string option", "string"));
+	olist.add(make_opt(bingo,  "bingo", 'b', "a bool option", "bool"));
+	olist.add(make_opt(bingo2,  "bingo2", '2', "another bool option", "bool"));
+	olist.add(make_opt(usval,  "ushort", 'u', "a short int option", "ushort"));
+	olist.add(make_opt(vector_value,  "vector-string", 'S', "a vector of strings", "vstring"));
 
 	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]),  CCmdOptionList::hr_no);
 
@@ -310,7 +310,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors1, CmdlineParserFixture )
 	bool dummy; 
 
 	CCmdOptionList olist("Synopis:Tests command line options.");
-	olist.push_back(make_opt(bool_value, "bool", 'H', "a bool option", "bool"));
+	olist.add(make_opt(bool_value, "bool", 'H', "a bool option", "bool"));
 
 	BOOST_CHECK_THROW(dummy = (olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no), invalid_argument); 
 }
@@ -324,7 +324,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors2, CmdlineParserFixture )
 	bool bool_value = false;
 	bool dummy; 
 	CCmdOptionList olist("Synopis:Tests command line options.");
-	olist.push_back(make_opt(bool_value, "bool", 'H', "a bool option", "bool"));
+	olist.add(make_opt(bool_value, "bool", 'H', "a bool option", "bool"));
 
 	BOOST_CHECK_THROW(dummy = (olist.parse(options.size(), &options[0], false) == CCmdOptionList::hr_no), invalid_argument); 
 }

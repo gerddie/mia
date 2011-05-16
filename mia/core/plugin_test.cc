@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 
 		CCmdOptionList options(" Sysopsis: run plugin tests");
 
-		options.push_back(make_opt( uninstalled, "uninstalled", 'u', "test uninstalled plugin", NULL));
+		options.add(make_opt( uninstalled, "uninstalled", 'u', "test uninstalled plugin", NULL));
 		if (options.parse(argc, argv)) 
 			return EXIT_SUCCESS; 
 

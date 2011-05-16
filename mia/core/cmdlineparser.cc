@@ -255,6 +255,8 @@ struct CCmdOptionListData {
 	CCmdOptionListData(const string& general_help);
 
 	void add(PCmdOption opt);
+	void add(const string& group, PCmdOption opt);
+	
 	CHistoryRecord get_values() const;
 
 	void set_current_group(const string& name);
@@ -380,6 +382,13 @@ void CCmdOptionListData::set_current_group(const string& name)
 		options[name] = vector<PCmdOption>();
 		current_group = options.find(name);
 	}
+}
+
+void CCmdOptionListData::add(const string& group, PCmdOption opt)
+{
+	if (options.find(group) == options.end()) 
+		options[group] = vector<PCmdOption>();
+	options[group].push_back(opt); 
 }
 
 CHistoryRecord CCmdOptionListData::get_values() const
@@ -552,9 +561,14 @@ void CCmdOptionList::push_back(PCmdOption opt)
 	m_impl->add(opt);
 }
 
-void CCmdOptionList::add(const std::string& /*table*/, PCmdOption opt)
+void CCmdOptionList::add(PCmdOption opt)
 {
 	m_impl->add(opt);
+}
+
+void CCmdOptionList::add(const std::string& table, PCmdOption opt)
+{
+	m_impl->add(table, opt);
 }
 
 void CCmdOptionList::set_group(const std::string& group)

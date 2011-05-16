@@ -137,9 +137,9 @@ int main( int argc, const char *argv[] )
 	const C2DImageIOPluginHandler::Instance& image2dio = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( in_filename, "in-files", 'i', "input image(s)", 
+	options.add(make_opt( in_filename, "in-files", 'i', "input image(s)", 
 				    "in-files", CCmdOption::required));
-	options.push_back(make_opt( mask_filename, "mask-file", 'm', 
+	options.add(make_opt( mask_filename, "mask-file", 'm', 
 				    "mask image, must be of type byte", 
 				    "mask-file", CCmdOption::required));
 

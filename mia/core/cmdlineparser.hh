@@ -547,7 +547,12 @@ public:
         /** add a new option to the option list
 	    \param opt the option to add
         */
-	void push_back(PCmdOption opt);
+	void push_back(PCmdOption opt)__attribute__((deprecated));
+
+        /** add a new option to the option list
+	    \param opt the option to add
+        */
+	void add(PCmdOption opt);
 
         /** Add a new option to an option group
 	    \param group option group to add this option to
