@@ -53,23 +53,22 @@ mia-2dmyocard-ica -i <input image pattern> -o <synthetic references> [options]
   
   \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
   \cmdopt{end}{e}{int}{Last input file number plus 1}
+  \cmdopt{save-features}{f}{string}{save IC feature image that correspond to identifiable features, 
+                                    may not include all ICs}
+  \cmdopt{all-features}{}{string}{all feature images numbered to image with the given base name}
 
+  \cmdgroup{Independend component analysis} 
   \cmdopt{components}{C}{int}{Number of  ICA components to be used, 0 = automatic estimation}
   \cmdopt{ica-normalize}{n}{}{dnormalized ICs}
   \cmdopt{strip-mean}{m}{}{strip the mean from the mixing curves}
-  \cmdopt{save-features}{f}{string}{save IC feature image that correspond to identifiable features, 
-                                    may not include all ICs}
+
   \cmdopt{strip-periodic}{p}{}{strip only periodic component from reference image creation, otherwise 
                                the references are created from LV, RV, and perfusion IC.}
 
   \cmdopt{max-ica-iter}{x}{int}{maximum number of iterations within ICA}
-  \cmdopt{all-features}{}{string}{all feature images numbered to image with the given base name}
-
-
   \cmdopt{LV-crop-amp}{L}{float}{segment and scale the crop box around the LV (0=no segmentation)}
   \cmdopt{auto-components}{s}{}{automatic esitmation of number of components based on correlation. 
                                 Implies -m and -n}
-
   }
 
   \item [Example:]Evaluate the synthetic references from images imageXXXX.exr and save them to refXXXX.exr by 

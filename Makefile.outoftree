@@ -1,0 +1,15 @@
+.PHONY: Default Release Debug 
+
+CXXFLAGS=-std=c++0x
+
+all: Default
+
+Default: build build/CMakeCache.txt
+	cd build && make -j 7 
+
+build/CMakeCache.txt: build.stamp 
+	cd build && cmake -DCMAKE_CXXFLAGS="$(CXXFLAGS)" ..
+
+build.stamp:
+	[ -d build ] || mkdir -p build 	
+

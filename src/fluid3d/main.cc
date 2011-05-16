@@ -16,35 +16,7 @@
 ** You should have received a copy of the GNU General Public License
 ** along with this program; if not, write to the Free Software
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-
-  As an exception to this license, "NEC C&C Research Labs" may use
-  this software under the terms of the GNU Lesser General Public License as
-  published by the Free Software Foundation.
-
-
 */
-
-
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <stdio.h>
-#include <time.h>
-#include <list>
-#include <string>
-#include <mia/core.hh>
-#include <mia/3d/3dimageio.hh>
-#include <mia/3d/3dvfio.hh>
-
-#include "vfluid.hh"
-#include "sor_solver.hh"
-
-
-using namespace mia;
-using namespace std;
-
 
 /*
   LatexBeginProgramDescription{3D image registration}
@@ -59,7 +31,7 @@ using namespace std;
   The program is called like 
   \lstset{language=bash}
   \begin{lstlisting}
-mia-3dnrreg -i <input image> -r <reference image> -o <output image> [options]
+mia-fluid3d -i <input image> -r <reference image> -o <output image> [options]
   \end{lstlisting}
   
 
@@ -94,6 +66,25 @@ mia-fluid3d -i test.v -r ref.v -o regfield.v -s 16
 */
 
 
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <stdio.h>
+#include <time.h>
+#include <list>
+#include <string>
+#include <mia/core.hh>
+#include <mia/3d/3dimageio.hh>
+#include <mia/3d/3dvfio.hh>
+
+#include "vfluid.hh"
+#include "sor_solver.hh"
+
+
+using namespace mia;
+using namespace std;
 
 
 #define MU	  1	// Lame elasticity constants

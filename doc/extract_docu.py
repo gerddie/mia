@@ -84,7 +84,7 @@ class DocuCharpter:
            
    def write(self, output): 
       for s in sorted(self.sections.keys()): 
-         sys.stderr.write("{}\n".format(s))
+         sys.stderr.write("{0}\n".format(s))
          output.write("\\section{{{0}}}".format(s)) 
          self.sections[s].write(output)
 
