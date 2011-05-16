@@ -264,12 +264,12 @@ int main( int argc, const char *argv[] )
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(program_info);
-	options.push_back(make_opt( in_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
-	options.push_back(make_opt( skip, "skip", 'k', "Skip files at the beginning"));
-	options.push_back(make_opt( enlarge_boundary,  "enlarge-boundary", 'e', "Enlarge cropbox by number of pixels"));
-	options.push_back(make_opt( crop, "crop", 'c', "crop image before running statistics"));
-	options.push_back(make_opt( gauss_width, "gauss", 'g', "gauss filter width for moothing the gradient"));
+	options.add(make_opt( in_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
+	options.add(make_opt( skip, "skip", 'k', "Skip files at the beginning"));
+	options.add(make_opt( enlarge_boundary,  "enlarge-boundary", 'e', "Enlarge cropbox by number of pixels"));
+	options.add(make_opt( crop, "crop", 'c', "crop image before running statistics"));
+	options.add(make_opt( gauss_width, "gauss", 'g', "gauss filter width for moothing the gradient"));
 
 	try {
 

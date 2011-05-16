@@ -173,36 +173,36 @@ int do_main( int argc, const char *argv[] )
 	size_t pass = 2; 
 	
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output perfusion data set", CCmdOption::required));
-	options.push_back(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels")); 
+	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output perfusion data set", CCmdOption::required));
+	options.add(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels")); 
 	
-	options.push_back(make_opt( cropped_filename, "save-cropped", 0, "save cropped set to this file", NULL)); 
-	options.push_back(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images", NULL)); 
+	options.add(make_opt( cropped_filename, "save-cropped", 0, "save cropped set to this file", NULL)); 
+	options.add(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images", NULL)); 
 
-	options.push_back(make_opt( cost_function, "cost", 'c', "registration criterion")); 
-	options.push_back(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.push_back(make_opt( transform_creator, "transForm", 'f', "transformation type"));
-	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
+	options.add(make_opt( cost_function, "cost", 'c', "registration criterion")); 
+	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
+	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
-	options.push_back(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
+	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 
-	options.push_back(make_opt( pass, "passes", 'P', "registration passes", "passes")); 
+	options.add(make_opt( pass, "passes", 'P', "registration passes", "passes")); 
 
 
-	options.push_back(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
-	options.push_back(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
-	options.push_back(make_opt( no_meanstrip, "no-meanstrip", 0, 
+	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
+	options.add(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
+	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
 				    "don't strip the mean from the mixing curves", NULL));
-	options.push_back(make_opt( use_guess_model, "guess", 'g', "use initial guess for myocardial perfusion", 
+	options.add(make_opt( use_guess_model, "guess", 'g', "use initial guess for myocardial perfusion", 
 				    NULL)); 
-	options.push_back(make_opt( box_scale, "segscale", 's', 
+	options.add(make_opt( box_scale, "segscale", 's', 
 				    "segment and scale the crop box around the LV (0=no segmentation)"));
-	options.push_back(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
+	options.add(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
 				    "as they are of other modalities")); 
-	options.push_back(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 
+	options.add(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 
 
-	options.push_back(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
+	options.add(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
 				   "Segmentation method")); 
 				    
 

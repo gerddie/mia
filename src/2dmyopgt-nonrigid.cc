@@ -187,30 +187,30 @@ int do_main( int argc, const char *argv[] )
 	CCmdOptionList options(g_description);
 
 	options.set_group("\nFile-IO"); 
-	options.push_back(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output perfusion data set", CCmdOption::required));
-	options.push_back(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels")); 
+	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output perfusion data set", CCmdOption::required));
+	options.add(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels")); 
 
 	options.set_group("\nRegistration"); 
-	options.push_back(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.push_back(make_opt( c_rate, "start-c-rate", 'a', 
+	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( c_rate, "start-c-rate", 'a', 
 				    "start coefficinet rate in spines, gets divided by --c-rate-divider with every pass"));
-	options.push_back(make_opt( c_rate_divider, "c-rate-divider", 0, 
+	options.add(make_opt( c_rate_divider, "c-rate-divider", 0, 
 				    "cofficient rate divider for each pass"));
-	options.push_back(make_opt( divcurlweight, "start-divcurl", 'd',
+	options.add(make_opt( divcurlweight, "start-divcurl", 'd',
 				    "start divcurl weight, gets divided by --divcurl-divider with every pass")); 
-	options.push_back(make_opt( divcurlweight_divider, "divcurl-divider", 0,
+	options.add(make_opt( divcurlweight_divider, "divcurl-divider", 0,
 				    "divcurl weight scaling with each new pass")); 
-	options.push_back(make_opt( imageweight, "imageweight", 'w', "image cost weight")); 
-	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
+	options.add(make_opt( imageweight, "imageweight", 'w', "image cost weight")); 
+	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
-	options.push_back(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
-	options.push_back(make_opt( max_pass, "passes", 'P', "registration passes")); 
+	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
+	options.add(make_opt( max_pass, "passes", 'P', "registration passes")); 
 
 	options.set_group("\nPseudo Ground Thruth estimation"); 
-	options.push_back(make_opt( alpha, "alpha", 'A', "spacial neighborhood penalty weight"));
-	options.push_back(make_opt( beta, "beta", 'B', "temporal second derivative penalty weight"));
-	options.push_back(make_opt( rho_thresh, "rho-thresh", 'R', 
+	options.add(make_opt( alpha, "alpha", 'A', "spacial neighborhood penalty weight"));
+	options.add(make_opt( beta, "beta", 'B', "temporal second derivative penalty weight"));
+	options.add(make_opt( rho_thresh, "rho-thresh", 'R', 
 				    "crorrelation threshhold for neighborhood analysis"));
 
 	

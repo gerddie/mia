@@ -76,8 +76,8 @@ int do_main(int argc, const char *argv[])
 	
 	CCmdOptionList options(g_description);
 	
-	options.push_back(make_opt( src_filename, "in", 'i', "input vector field", CCmdOption::required));
-	options.push_back(make_opt( out_filename, "out", 'o', "output image", CCmdOption::required));
+	options.add(make_opt( src_filename, "in", 'i', "input vector field", CCmdOption::required));
+	options.add(make_opt( out_filename, "out", 'o', "output image", CCmdOption::required));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

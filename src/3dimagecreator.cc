@@ -89,11 +89,11 @@ int do_main(int argc, const char *argv[])
 	const C3DImageCreatorPluginHandler::Instance& creator_ph = C3DImageCreatorPluginHandler::instance();
 	CCmdOptionList options(g_description);
 
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output file for create object", CCmdOption::required));
-	options.push_back(make_opt( type, imageio.get_set(), "type", 't', "Output file type"));
-	options.push_back(make_opt( size, "size", 's', "size of the object"));
-	options.push_back(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type "));
-	options.push_back(make_opt( object,  "object", 'j', "object to be created"));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file for create object", CCmdOption::required));
+	options.add(make_opt( type, imageio.get_set(), "type", 't', "Output file type"));
+	options.add(make_opt( size, "size", 's', "size of the object"));
+	options.add(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type "));
+	options.add(make_opt( object,  "object", 'j', "object to be created"));
 
 	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

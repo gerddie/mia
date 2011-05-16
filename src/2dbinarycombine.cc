@@ -141,13 +141,13 @@ int main( int argc, const char *argv[] )
 
 	CCmdOptionList options(g_description);
 	
-	options.push_back(make_opt( filename1, "file1", '1', 
+	options.add(make_opt( filename1, "file1", '1', 
 				    "input mask image 1", NULL, CCmdOption::required)); 
-	options.push_back(make_opt( filename2, "file2", '2', 
+	options.add(make_opt( filename2, "file2", '2', 
 				    "input input mask image 2", NULL, CCmdOption::required)); 
-	options.push_back(make_opt(op, g_binops_dict, "operation", 'p', 
+	options.add(make_opt(op, g_binops_dict, "operation", 'p', 
 				   "Operation to be applied")); 
-	options.push_back(make_opt( out_filename, "out-file", 'o', 
+	options.add(make_opt( out_filename, "out-file", 'o', 
 					"output mask image", NULL, CCmdOption::required)); 
 
 	try {

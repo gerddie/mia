@@ -138,9 +138,9 @@ int main( int argc, const char *argv[] )
 	const C3DImageIOPluginHandler::Instance& image3dio = C3DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(program_info);
-	options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
-	options.push_back(make_opt( out_type, image3dio.get_set(), "type", 't',"output file type"));
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
+	options.add(make_opt( out_type, image3dio.get_set(), "type", 't',"output file type"));
 
 	try {
 

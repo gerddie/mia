@@ -88,12 +88,12 @@ int do_main( int argc, const char *argv[] )
 	typedef C3DImageIOPluginHandler::Instance::PData PImageVector;
 
 	CCmdOptionList options(program_info);
-	options.push_back(make_opt( in_image1, "image1", '1', "input image  1 to be combined", CCmdOption::required));
-	options.push_back(make_opt( in_image2, "image2", '2', "input image  2 to be combined", CCmdOption::required));
-	options.push_back(make_opt( combiner_descr, "combiner", 'c', "combiner operation", CCmdOption::required));
-	options.push_back(make_opt( out_filename, "out", 'o', "output file", CCmdOption::required));
+	options.add(make_opt( in_image1, "image1", '1', "input image  1 to be combined", CCmdOption::required));
+	options.add(make_opt( in_image2, "image2", '2', "input image  2 to be combined", CCmdOption::required));
+	options.add(make_opt( combiner_descr, "combiner", 'c', "combiner operation", CCmdOption::required));
+	options.add(make_opt( out_filename, "out", 'o', "output file", CCmdOption::required));
 
-	options.push_back(make_help_opt( "help-plugins", 0,
+	options.add(make_help_opt( "help-plugins", 0,
 					 "give some help about the filter plugins", 
 					 new TPluginHandlerHelpCallback<C3DImageCombinerPluginHandler>)); 
 	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)

@@ -419,30 +419,30 @@ int do_main( int argc, const char *argv[] )
 
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 	CCmdOptionList options("Obsolete version of mia-2dmyocard-icaseries."); 
-	options.push_back(make_opt( src_name, "in-base", 'i', "input file name base"));
-	options.push_back(make_opt( coefs_name, "coefs", 0, "output mixing coefficients to this file"));
-	options.push_back(make_opt( out_name, "out-base", 'o', "output file name base"));
+	options.add(make_opt( src_name, "in-base", 'i', "input file name base"));
+	options.add(make_opt( coefs_name, "coefs", 0, "output mixing coefficients to this file"));
+	options.add(make_opt( out_name, "out-base", 'o', "output file name base"));
 
-	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
+	options.add(make_opt( out_type, imageio.get_set(), "type", 't',
 				    "output file type"));
 
-	options.push_back(make_opt( first, "skip", 'k', "skip images at beginning of series"));
-	options.push_back(make_opt( last, "end", 'e', "last image in series"));
-	options.push_back(make_opt( components, "components", 'C', "nr. of components, 0=estimate automatically"));
-	options.push_back(make_opt( strip_mean, "strip-mean", 'm', "strip mean image from series"));
-	options.push_back(make_opt( feature_image_base, "save-features", 'f', "save feature image"));
+	options.add(make_opt( first, "skip", 'k', "skip images at beginning of series"));
+	options.add(make_opt( last, "end", 'e', "last image in series"));
+	options.add(make_opt( components, "components", 'C', "nr. of components, 0=estimate automatically"));
+	options.add(make_opt( strip_mean, "strip-mean", 'm', "strip mean image from series"));
+	options.add(make_opt( feature_image_base, "save-features", 'f', "save feature image"));
 
-	options.push_back(make_opt(skip_only_periodic,"strip-periodic",'p', "strip only periodic component"));
+	options.add(make_opt(skip_only_periodic,"strip-periodic",'p', "strip only periodic component"));
 
-	options.push_back(make_opt(max_iterations,"max-ica-iterations",'x', "max ICA solver iterations"));
+	options.add(make_opt(max_iterations,"max-ica-iterations",'x', "max ICA solver iterations"));
 
-	options.push_back(make_opt( ica_normalize, "ica-normalize", 'n', "ica_normalize feature images"));
-	options.push_back(make_opt( numbered_feature_image, "all-features", 0, "save all feature images to"));
+	options.add(make_opt( ica_normalize, "ica-normalize", 'n', "ica_normalize feature images"));
+	options.add(make_opt( numbered_feature_image, "all-features", 0, "save all feature images to"));
 
-	options.push_back(make_opt( LV_mask, "LV-crop-amp", 'L', "LV crop mask amplification, 0.0 = don't crop"));
+	options.add(make_opt( LV_mask, "LV-crop-amp", 'L', "LV crop mask amplification, 0.0 = don't crop"));
 
 
-	options.push_back(make_opt( auto_comp, "auto-components", 'a',
+	options.add(make_opt( auto_comp, "auto-components", 'a',
 				    "automatic esitmation of number of components based on correlation."
 				    " Implies -m and -n (Experimental)"));
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)

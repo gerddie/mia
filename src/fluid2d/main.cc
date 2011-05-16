@@ -142,17 +142,17 @@ int main(int argc, const char *argv[])
         try {
 
 		CCmdOptionList options(g_description);
-		options.push_back(make_opt( src_filename, "in-image", 'i', "input (model) image to be registered", 
+		options.add(make_opt( src_filename, "in-image", 'i', "input (model) image to be registered", 
 					    CCmdOption::required));
-		options.push_back(make_opt( ref_filename, "ref-image", 'r', "reference image"));
-		options.push_back(make_opt( out_filename, "out", 'o', "output vector field"));
-		options.push_back(make_opt( def_filename, "deformed-image", 'd', "deformed registered image"));
+		options.add(make_opt( ref_filename, "ref-image", 'r', "reference image"));
+		options.add(make_opt( out_filename, "out", 'o', "output vector field"));
+		options.add(make_opt( def_filename, "deformed-image", 'd', "deformed registered image"));
 
-		options.push_back(make_opt( grid_start, "mgstart", 'm', "multigrid start size"));
-		options.push_back(make_opt( epsilon, "epsilon", 'e', "optimization breaking condition"));
-		options.push_back(make_opt( mu, "mu", 0, "elasticity parameter"));
-		options.push_back(make_opt( lambda, "lambda", 0, "elasticity parameter"));
-		options.push_back(make_opt( elastic, "elastic", 0, "use elastic registration"));
+		options.add(make_opt( grid_start, "mgstart", 'm', "multigrid start size"));
+		options.add(make_opt( epsilon, "epsilon", 'e', "optimization breaking condition"));
+		options.add(make_opt( mu, "mu", 0, "elasticity parameter"));
+		options.add(make_opt( lambda, "lambda", 0, "elasticity parameter"));
+		options.add(make_opt( elastic, "elastic", 0, "use elastic registration"));
 
 		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 

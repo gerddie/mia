@@ -207,51 +207,51 @@ int do_main( int argc, const char *argv[] )
 	CCmdOptionList options(g_general_help);
 	
 	options.set_group("\nFile-IO"); 
-	options.push_back(make_opt( in_filename, "in-file", 'i', 
+	options.add(make_opt( in_filename, "in-file", 'i', 
 				    "input perfusion data set", CCmdOption::required));
-	options.push_back(make_opt( out_filename, "out-file", 'o', 
+	options.add(make_opt( out_filename, "out-file", 'o', 
 				    "output perfusion data set", CCmdOption::required));
-	options.push_back(make_opt( registered_filebase, "registered", 'r', 
+	options.add(make_opt( registered_filebase, "registered", 'r', 
 				    "file name base for registered fiels")); 
 	
-	options.push_back(make_opt( cropped_filename, "save-cropped", 0, 
+	options.add(make_opt( cropped_filename, "save-cropped", 0, 
 				    "save cropped set to this file", NULL)); 
-	options.push_back(make_opt( save_crop_feature, "save-feature", 0, 
+	options.add(make_opt( save_crop_feature, "save-feature", 0, 
 				    "save segmentation feature images"
 				    " and initial ICA mixing matrix", NULL)); 
 
 	
 	options.set_group("\nRegistration"); 
-	options.push_back(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.push_back(make_opt( c_rate, "start-c-rate", 'a', 
+	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( c_rate, "start-c-rate", 'a', 
 				    "start coefficinet rate in spines,"
 				    " gets divided by --c-rate-divider with every pass"));
-	options.push_back(make_opt( c_rate_divider, "c-rate-divider", 0, 
+	options.add(make_opt( c_rate_divider, "c-rate-divider", 0, 
 				    "cofficient rate divider for each pass"));
-	options.push_back(make_opt( divcurlweight, "start-divcurl", 'd',
+	options.add(make_opt( divcurlweight, "start-divcurl", 'd',
 				    "start divcurl weight, gets divided by"
 				    " --divcurl-divider with every pass")); 
-	options.push_back(make_opt( divcurlweight_divider, "divcurl-divider", 0,
+	options.add(make_opt( divcurlweight_divider, "divcurl-divider", 0,
 				    "divcurl weight scaling with each new pass")); 
-	options.push_back(make_opt( imageweight, "imageweight", 'w', 
+	options.add(make_opt( imageweight, "imageweight", 'w', 
 				    "image cost weight")); 
-	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
+	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
-	options.push_back(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
-	options.push_back(make_opt( pass, "passes", 'P', "registration passes")); 
+	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
+	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
 	options.set_group("\nICA"); 
-	options.push_back(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
-	options.push_back(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
-	options.push_back(make_opt( no_meanstrip, "no-meanstrip", 0, 
+	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
+	options.add(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
+	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
 				    "don't strip the mean from the mixing curves", NULL));
-	options.push_back(make_opt( box_scale, "segscale", 's', 
+	options.add(make_opt( box_scale, "segscale", 's', 
 				    "segment and scale the crop box around the LV (0=no segmentation)", "segscale"));
-	options.push_back(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
+	options.add(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
 				    "e.g. because as they are of other modalities")); 
-	options.push_back(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 
+	options.add(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 
 
-	options.push_back(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
+	options.add(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
 				   "Segmentation method")); 
 				    
 

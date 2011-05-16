@@ -183,16 +183,16 @@ int main( int argc, const char *argv[] )
 		const C2DImageIOPluginHandler::Instance& imageio2d = C2DImageIOPluginHandler::instance();
 
 		CCmdOptionList options(program_info);
-		options.push_back(make_opt( in_filename, "in-file", 'i', 
+		options.add(make_opt( in_filename, "in-file", 'i', 
 					    "input image(s) to be filtered", CCmdOption::required));
-		options.push_back(make_opt( out_filename, "out-file", 'o', 
+		options.add(make_opt( out_filename, "out-file", 'o', 
 					    "output image(s) that have been filtered", CCmdOption::required));
-		options.push_back(make_opt( out_type, imageio2d.get_set(), "type", 't',
+		options.add(make_opt( out_type, imageio2d.get_set(), "type", 't',
 					    "output file type"));
-		options.push_back(make_opt( start_slice, "start", 's',"start slice number"));
-		options.push_back(make_opt( slice_number, "number", 'n',
+		options.add(make_opt( start_slice, "start", 's',"start slice number"));
+		options.add(make_opt( slice_number, "number", 'n',
 					    "number of slices (all=0)"));
-		options.push_back(make_opt( direction, GDirectionmap, "dir", 'd', 
+		options.add(make_opt( direction, GDirectionmap, "dir", 'd', 
 					    "slice direction (xy=axial, xz=coronal, yz=saggital)"));
 
 		if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)

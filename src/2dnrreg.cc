@@ -106,20 +106,20 @@ int do_main(int argc, const char **argv)
 
 	const C2DImageCostPluginHandler::Instance& icph = C2DImageCostPluginHandler::instance(); 
 
-	options.push_back(make_opt( src_filename, "in-file", 'i', "input image (floating image)", "template", true));
-	options.push_back(make_opt( ref_filename, "ref-file", 'r', "reference image", "reference", true));
-	options.push_back(make_opt( def_filename, "def-file", 'd', "deformed inpout image", NULL, false));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output vector field", "output", true));
-	options.push_back(make_opt( mov_filename, "mov-file", 0, "movie generator image", NULL, false));
-	options.push_back(make_opt( regmodel, "regmodel", 'm', "registration model", "model", false));
-	options.push_back(make_opt( timestep, "timestep", 't', "time setp", "timestep", false));
-	options.push_back(make_opt( start_size, "mgsize", 's', "multigrid start size", "start", false));
-	options.push_back(make_opt( max_iter, "max-iter", 'n', ",maximum number of iterations", "iter", false));
-	options.push_back(make_opt( cost_function, "cost", 'c', "cost function", "cost", false)); 
-	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p', 
+	options.add(make_opt( src_filename, "in-file", 'i', "input image (floating image)", "template", true));
+	options.add(make_opt( ref_filename, "ref-file", 'r', "reference image", "reference", true));
+	options.add(make_opt( def_filename, "def-file", 'd', "deformed inpout image", NULL, false));
+	options.add(make_opt( out_filename, "out-file", 'o', "output vector field", "output", true));
+	options.add(make_opt( mov_filename, "mov-file", 0, "movie generator image", NULL, false));
+	options.add(make_opt( regmodel, "regmodel", 'm', "registration model", "model", false));
+	options.add(make_opt( timestep, "timestep", 't', "time setp", "timestep", false));
+	options.add(make_opt( start_size, "mgsize", 's', "multigrid start size", "start", false));
+	options.add(make_opt( max_iter, "max-iter", 'n', ",maximum number of iterations", "iter", false));
+	options.add(make_opt( cost_function, "cost", 'c', "cost function", "cost", false)); 
+	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p', 
 					"image interpolator", "interpolator", false)); 
-	options.push_back(make_opt( epsilon, "epsilon", 'e', "relative accuracy to stop registration at a multi-grid level", NULL, false)); 
-	options.push_back(make_opt( save_steps, "save-steps", 0, "save the steps of the registration in images", NULL, false));
+	options.add(make_opt( epsilon, "epsilon", 'e', "relative accuracy to stop registration at a multi-grid level", NULL, false)); 
+	options.add(make_opt( save_steps, "save-steps", 0, "save the steps of the registration in images", NULL, false));
 
 	options.parse(argc, argv);
 

@@ -59,14 +59,14 @@ int do_main(int argc, const char **argv)
 	int max_iter = 200; 
 	float epsilon = 0.01; 
 
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output vector field", "output", true));
-	options.push_back(make_opt( regmodel, "regmodel", 'm', "registration model", "model", false));
-	options.push_back(make_opt( timestep, "timestep", 't', "time setp", "timestep", false));
-	options.push_back(make_opt( start_size, "mgsize", 's', "multigrid start size", "start", false));
-	options.push_back(make_opt( max_iter, "max-iter", 'n', ",maximum number of iterations", "iter", false));
-	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p', 
+	options.add(make_opt( out_filename, "out-file", 'o', "output vector field", "output", true));
+	options.add(make_opt( regmodel, "regmodel", 'm', "registration model", "model", false));
+	options.add(make_opt( timestep, "timestep", 't', "time setp", "timestep", false));
+	options.add(make_opt( start_size, "mgsize", 's', "multigrid start size", "start", false));
+	options.add(make_opt( max_iter, "max-iter", 'n', ",maximum number of iterations", "iter", false));
+	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p', 
 					"image interpolator", "interpolator", false)); 
-	options.push_back(make_opt( epsilon, "epsilon", 'e', "relative accuracy to stop registration at a multi-grid level", NULL, false)); 
+	options.add(make_opt( epsilon, "epsilon", 'e', "relative accuracy to stop registration at a multi-grid level", NULL, false)); 
 
 	options.parse(argc, argv);
 

@@ -1,5 +1,4 @@
-
-/*
+/* -*- mia-c++  -*-
 ** Copyrigh (C) 1999 Max-Planck-Institute of Cognitive Neurosience
 **                    Gert Wollny <wollny@cns.mpg.de>
 **
@@ -224,26 +223,26 @@ int main(int argc, const char *argv[])
 	cverb.set_verbosity( vstream::ml_message );
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( in_filename, "in-image", 'i', "input image", CCmdOption::required ));
-	options.push_back(make_opt( ref_filename, "ref-image", 'r', "reference image ", CCmdOption::required ));
-	options.push_back(make_opt( out_filename, "out-deformation", 'o', "output vector field", CCmdOption::required ));
-	options.push_back(make_opt( disable_multigrid, "disable-multigrid", 0, "disable multi-grid processing"));
-	options.push_back(make_opt( disable_fullres, "disable-fullres", 0,
+	options.add(make_opt( in_filename, "in-image", 'i', "input image", CCmdOption::required ));
+	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image ", CCmdOption::required ));
+	options.add(make_opt( out_filename, "out-deformation", 'o', "output vector field", CCmdOption::required ));
+	options.add(make_opt( disable_multigrid, "disable-multigrid", 0, "disable multi-grid processing"));
+	options.add(make_opt( disable_fullres, "disable-fullres", 0,
 				    "disable processing on the full resolution image"));
-	options.push_back(make_opt( params.Lambda,"lambda", 0, "elasticy constant"));
-	options.push_back(make_opt( params.My,"mu", 0, "elasticy constant"));
-	options.push_back(make_opt( STARTSIZE, "start-size", 's', "initial multigrided size" ));
-	options.push_back(make_opt( method, g_method_dict, "method", 'm',  "method for solving PDE"));
-	options.push_back(make_opt( params.InitialStepsize, "step", 0, "Initial stepsize"));
-	options.push_back(make_opt( params.interp_type, GInterpolatorTable, "interpolator", 'p', 
+	options.add(make_opt( params.Lambda,"lambda", 0, "elasticy constant"));
+	options.add(make_opt( params.My,"mu", 0, "elasticy constant"));
+	options.add(make_opt( STARTSIZE, "start-size", 's', "initial multigrided size" ));
+	options.add(make_opt( method, g_method_dict, "method", 'm',  "method for solving PDE"));
+	options.add(make_opt( params.InitialStepsize, "step", 0, "Initial stepsize"));
+	options.add(make_opt( params.interp_type, GInterpolatorTable, "interpolator", 'p', 
 				    "image transformation interpolator"));
-	options.push_back(make_opt( params.Overrelaxation, "relax", 0, "overrelaxation factor vor method sor"));
-	options.push_back(make_opt( params.maxiter, "maxiter", 0, "maxium iterations in sor and cg"));
-	options.push_back(make_opt( params.factor, "epsilon", 0, "truncation condition in sor and cg"));
-	options.push_back(make_opt( statlog_filename, "statlog", 0,"statistics logfilename"));
-	options.push_back(make_opt( params.matter_threshold, "matter", 0, "intensity above which real "
+	options.add(make_opt( params.Overrelaxation, "relax", 0, "overrelaxation factor vor method sor"));
+	options.add(make_opt( params.maxiter, "maxiter", 0, "maxium iterations in sor and cg"));
+	options.add(make_opt( params.factor, "epsilon", 0, "truncation condition in sor and cg"));
+	options.add(make_opt( statlog_filename, "statlog", 0,"statistics logfilename"));
+	options.add(make_opt( params.matter_threshold, "matter", 0, "intensity above which real "
 				    "matter is assumed (experimental)"));
-	options.push_back(make_opt( max_threads, "max-threads", 't', "maximal number of threads for sorap"));
+	options.add(make_opt( max_threads, "max-threads", 't', "maximal number of threads for sorap"));
 
 	try {
 		if (options.parse(argc, argv) != CCmdOptionList::hr_no)

@@ -118,12 +118,12 @@ int do_main(int argc, const char *argv[])
 	float  enlarge_boundary = 5;
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
-	options.push_back(make_opt( override_src_imagepath, "override-imagepath", 'p',
+	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
+	options.add(make_opt( override_src_imagepath, "override-imagepath", 'p',
 				    "overide image path given in the segmentation set"));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output segmentation set", CCmdOption::required));
-	options.push_back(make_opt( image_name, "cropped-base", 'c', "Base name for the cropped image files"));
-	options.push_back(make_opt( enlarge_boundary, "enlarge", 'e',
+	options.add(make_opt( out_filename, "out-file", 'o', "output segmentation set", CCmdOption::required));
+	options.add(make_opt( image_name, "cropped-base", 'c', "Base name for the cropped image files"));
+	options.add(make_opt( enlarge_boundary, "enlarge", 'e',
 				    "enlarge boundary by number of pixels"));
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

@@ -154,12 +154,12 @@ int do_main( int argc, const char *argv[] )
 
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( src_name, "in-base", 'i', "input file name base"));
-	options.push_back(make_opt( out_hor_name, "horizontal", 'z', "horiZontal correlation output file name"));
-	options.push_back(make_opt( out_ver_name, "vertical", 't', "verTical  correlation output file name"));
-	options.push_back(make_opt( out_sum_name, "average", 'a', "Average  correlation output file name"));
-	options.push_back(make_opt( first, "skip", 'k', "skip images at beginning of series"));
-	options.push_back(make_opt( last, "end", 'e', "last image in series"));
+	options.add(make_opt( src_name, "in-base", 'i', "input file name base"));
+	options.add(make_opt( out_hor_name, "horizontal", 'z', "horiZontal correlation output file name"));
+	options.add(make_opt( out_ver_name, "vertical", 't', "verTical  correlation output file name"));
+	options.add(make_opt( out_sum_name, "average", 'a', "Average  correlation output file name"));
+	options.add(make_opt( first, "skip", 'k', "skip images at beginning of series"));
+	options.add(make_opt( last, "end", 'e', "last image in series"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

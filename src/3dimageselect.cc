@@ -84,13 +84,13 @@ int do_main( int argc, const char *argv[])
 
 
 	CCmdOptionList options(program_info);
-	options.push_back(make_opt( in_filename, "in-file", 'i',
+	options.add(make_opt( in_filename, "in-file", 'i',
 				    "input images", CCmdOption::required));
-	options.push_back(make_opt( out_filename, "out-file", 'o',
+	options.add(make_opt( out_filename, "out-file", 'o',
 				    "output image", CCmdOption::required));
-	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
+	options.add(make_opt( out_type, imageio.get_set(), "type", 't',
 				    "output file type"));
-	options.push_back(make_opt( num, "number", 'n',  "image number to be selected"));
+	options.add(make_opt( num, "number", 'n',  "image number to be selected"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

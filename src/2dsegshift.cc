@@ -113,12 +113,12 @@ int do_main(int argc, const char *argv[])
 	C2DFVector shift;
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "input segmentation set", CCmdOption::required));
-	options.push_back(make_opt( shift_filename, "image-file", 'g', "output image filename base"));
+	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "input segmentation set", CCmdOption::required));
+	options.add(make_opt( shift_filename, "image-file", 'g', "output image filename base"));
 
-	options.push_back(make_opt(shift, "shift", 'S', "shift of segmentation"));
-	options.push_back(make_opt(skip, "skip", 'k', "skip frames at the begining"));
+	options.add(make_opt(shift, "shift", 'S', "shift of segmentation"));
+	options.add(make_opt(skip, "skip", 'k', "skip frames at the begining"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

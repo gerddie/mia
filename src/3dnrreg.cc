@@ -105,20 +105,20 @@ int do_main(int argc, const char **argv)
 
 	const C3DImageCostPluginHandler::Instance&  icph = C3DImageCostPluginHandler::instance();
 
-	options.push_back(make_opt( src_filename, "in-file", 'i', "input image (floating image)", CCmdOption::required));
-	options.push_back(make_opt( ref_filename, "ref-file", 'r', "reference image", CCmdOption::required));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output vector field", CCmdOption::required));
-	options.push_back(make_opt( def_filename, "def-file", 'd', "deformed inpout image"));
-	options.push_back(make_opt( regmodel, "regmodel", 'm', "registration model"));
-	options.push_back(make_opt( timestep, "timestep", 't', "time setp"));
-	options.push_back(make_opt( start_size, "mgsize", 's', "multigrid start size"));
-	options.push_back(make_opt( max_iter, "max-iter", 'n', ",maximum number of iterations"));
-	options.push_back(make_opt( cost_function, "cost", 'c', "cost function"));
-	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
+	options.add(make_opt( src_filename, "in-file", 'i', "input image (floating image)", CCmdOption::required));
+	options.add(make_opt( ref_filename, "ref-file", 'r', "reference image", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output vector field", CCmdOption::required));
+	options.add(make_opt( def_filename, "def-file", 'd', "deformed inpout image"));
+	options.add(make_opt( regmodel, "regmodel", 'm', "registration model"));
+	options.add(make_opt( timestep, "timestep", 't', "time setp"));
+	options.add(make_opt( start_size, "mgsize", 's', "multigrid start size"));
+	options.add(make_opt( max_iter, "max-iter", 'n', ",maximum number of iterations"));
+	options.add(make_opt( cost_function, "cost", 'c', "cost function"));
+	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 					"image interpolator"));
-	options.push_back(make_opt( epsilon, "epsilon", 'e', "relative accuracy to stop registration"
+	options.add(make_opt( epsilon, "epsilon", 'e', "relative accuracy to stop registration"
 				    " at a multi-grid level"));
-	options.push_back(make_opt( save_steps, "save-steps", 0, "save the steps of the registration in images"));
+	options.add(make_opt( save_steps, "save-steps", 0, "save the steps of the registration in images"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

@@ -153,22 +153,22 @@ int do_main( int argc, const char *argv[] )
 
 	CCmdOptionList options(g_description);
 	options.set_group("File-IO"); 
-	options.push_back(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
-	options.push_back(make_opt( reference_filename, "references", 'r', "file name base for refernces files")); 
-	options.push_back(make_opt( cropped_filename, "save-cropped", 'c', "save cropped set to this file")); 
-	options.push_back(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images", NULL)); 
+	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
+	options.add(make_opt( reference_filename, "references", 'r', "file name base for refernces files")); 
+	options.add(make_opt( cropped_filename, "save-cropped", 'c', "save cropped set to this file")); 
+	options.add(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images", NULL)); 
 	
 	options.set_group("ICA");
-	options.push_back(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
-	options.push_back(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
-	options.push_back(make_opt( no_meanstrip, "no-meanstrip", 0, 
+	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
+	options.add(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
+	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
 				    "don't strip the mean from the mixing curves", NULL));
-	options.push_back(make_opt( box_scale, "segscale", 's', 
+	options.add(make_opt( box_scale, "segscale", 's', 
 				    "segment and scale the crop box around the LV (0=no segmentation)"));
-	options.push_back(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
+	options.add(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
 				    "as they are of other modalities")); 
-	options.push_back(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 
-	options.push_back(make_opt( segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
+	options.add(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 
+	options.add(make_opt( segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
 				    "Segmentation method")); 
 	
 	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 

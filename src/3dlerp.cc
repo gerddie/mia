@@ -191,14 +191,14 @@ int do_main(int argc, char **argv)
 
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 
-	options.push_back(make_opt( src1_filename, "first", '1', "first input image ", CCmdOption::required));
-	options.push_back(make_opt( src2_filename, "second", '2', "second input image ", CCmdOption::required));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output vector field", CCmdOption::required));
-	options.push_back(make_opt( positions, "positions", 'p', 
+	options.add(make_opt( src1_filename, "first", '1', "first input image ", CCmdOption::required));
+	options.add(make_opt( src2_filename, "second", '2', "second input image ", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output vector field", CCmdOption::required));
+	options.add(make_opt( positions, "positions", 'p', 
 				    "image series positions (first, target, second)", CCmdOption::required));
-	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
+	options.add(make_opt( out_type, imageio.get_set(), "type", 't',
 				    "output file type (if not given deduct from output file name)"));
-	options.push_back(make_opt( self_test, "self-test", 0, "run a self test of the tool"));
+	options.add(make_opt( self_test, "self-test", 0, "run a self test of the tool"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

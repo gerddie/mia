@@ -129,9 +129,9 @@ int do_main( int argc, const char *argv[] )
 
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( src_name, "in", 'i', "input segmentation set"));
-	options.push_back(make_opt( out_name, "out", 'o', "output image of minimal correlation"));
-	options.push_back(make_opt( skip, "skip", 'k', "skip images at beginning of series"));
+	options.add(make_opt( src_name, "in", 'i', "input segmentation set"));
+	options.add(make_opt( out_name, "out", 'o', "output image of minimal correlation"));
+	options.add(make_opt( skip, "skip", 'k', "skip images at beginning of series"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

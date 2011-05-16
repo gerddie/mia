@@ -223,14 +223,14 @@ int run(int argc, const char *argv[])
 
 	CCmdOptionList options(g_description);
 
-	options.push_back(make_opt( in_filename, "in-file", 'i', "input file name", CCmdOption::required));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
-	options.push_back(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type ", CCmdOption::required));
-	options.push_back(make_opt( high_endian, "big-endian", 'b', "input data is big endian"));
-	options.push_back(make_opt( scale, "scale", 'f', "scale of input pixels <FX,FY>"));
-	options.push_back(make_opt( size, "size", 's', "size of input <NX,NY>", CCmdOption::required));
-	options.push_back(make_opt( skip, "skip", 'k', "skip number of bytes from beginning of file"));
-	options.push_back(make_opt( type, imageio.get_set(), "type", 't', "Output file type"));
+	options.add(make_opt( in_filename, "in-file", 'i', "input file name", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
+	options.add(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type ", CCmdOption::required));
+	options.add(make_opt( high_endian, "big-endian", 'b', "input data is big endian"));
+	options.add(make_opt( scale, "scale", 'f', "scale of input pixels <FX,FY>"));
+	options.add(make_opt( size, "size", 's', "size of input <NX,NY>", CCmdOption::required));
+	options.add(make_opt( skip, "skip", 'k', "skip number of bytes from beginning of file"));
+	options.add(make_opt( type, imageio.get_set(), "type", 't', "Output file type"));
 
 	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

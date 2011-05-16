@@ -127,8 +127,8 @@ int main( int argc, const char *argv[] )
 
 
 		CCmdOptionList options(g_description);
-		options.push_back(make_opt( out_filename, "out-file", 'o', "output image ", CCmdOption::required));
-		options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',"override output file type"));
+		options.add(make_opt( out_filename, "out-file", 'o', "output image ", CCmdOption::required));
+		options.add(make_opt( out_type, imageio.get_set(), "type", 't',"override output file type"));
 
 		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 

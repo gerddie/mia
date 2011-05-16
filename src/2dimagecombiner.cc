@@ -83,13 +83,13 @@ int do_main( int argc, const char *argv[] )
 	stringstream combiner_names;
 
 	CCmdOptionList options(program_info);
-	options.push_back(make_opt( in1_filename, "in-file-1", '1', 
+	options.add(make_opt( in1_filename, "in-file-1", '1', 
 				    "first input image to be combined", CCmdOption::required));
-	options.push_back(make_opt( in2_filename, "in-file-2", '2', 
+	options.add(make_opt( in2_filename, "in-file-2", '2', 
 				    "second input image to be combined", CCmdOption::required));
-	options.push_back(make_opt( out_filename, "out-file", 'o',
+	options.add(make_opt( out_filename, "out-file", 'o',
 				    "output image(s) that have been filtered", CCmdOption::required));
-	options.push_back(make_opt( combiner, "operation", 'p', "operation to be applied"));
+	options.add(make_opt( combiner, "operation", 'p', "operation to be applied"));
 	
 	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 

@@ -173,11 +173,11 @@ int do_main(int argc, const char *argv[])
 	
 	CCmdOptionList options(program_info);
 
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output file for the vector field", 
+	options.add(make_opt( out_filename, "out-file", 'o', "output file for the vector field", 
 				    CCmdOption::required));
-	options.push_back(make_opt( Size, "size", 's', "size of the vector field"));
-	options.push_back(make_opt( fieldtype, "ftype", 'y', "vector field type")); 
-	options.push_back(make_opt( funfactor, "fun", 'f', "just some parameter to vary the field ;-)")); 
+	options.add(make_opt( Size, "size", 's', "size of the vector field"));
+	options.add(make_opt( fieldtype, "ftype", 'y', "vector field type")); 
+	options.add(make_opt( funfactor, "fun", 'f', "just some parameter to vary the field ;-)")); 
 	
 	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

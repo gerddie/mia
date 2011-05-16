@@ -128,21 +128,21 @@ int do_main( int argc, const char *argv[] )
 	CCmdOptionList options(g_general_help);
 	
 	options.set_group("\nFile-IO"); 
-	options.push_back(make_opt( in_filename, "in-file", 'i', 
+	options.add(make_opt( in_filename, "in-file", 'i', 
 				    "input perfusion data set", CCmdOption::required));
-	options.push_back(make_opt( out_filename, "out-file", 'o', 
+	options.add(make_opt( out_filename, "out-file", 'o', 
 				    "output perfusion data set", CCmdOption::required));
-	options.push_back(make_opt( registered_filebase, "registered", 'R', 
+	options.add(make_opt( registered_filebase, "registered", 'R', 
 				    "file name base for registered fiels")); 
 	
 	
 	options.set_group("\nRegistration"); 
-	options.push_back(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
+	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
 				    "image interpolator", NULL));
-	options.push_back(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
-	options.push_back(make_opt( transform_creator, "transForm", 'f', "transformation type"));
-	options.push_back(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
+	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
+	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
+	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

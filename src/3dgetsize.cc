@@ -80,7 +80,7 @@ int main( int argc, const char *argv[] )
 		const C3DImageIOPluginHandler::Instance& imageio3d = C3DImageIOPluginHandler::instance();
 
 		CCmdOptionList options(program_info);
-		options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
+		options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
 					    CCmdOption::required));
 
 		if (options.parse(argc, argv) != CCmdOptionList::hr_no)

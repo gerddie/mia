@@ -121,10 +121,10 @@ int main( int argc, const char *argv[] )
 
 
 		CCmdOptionList options(g_description);
-		options.push_back(make_opt( in_filename, "in-file", 'i', "input image to be analyzed", 
+		options.add(make_opt( in_filename, "in-file", 'i', "input image to be analyzed", 
 					    CCmdOption::required));
-		options.push_back(make_opt( thresh, "thresh", 't', "intensity thresh to ignore"));
-		options.push_back(make_opt( high_thresh, "high-thresh", 'g', "upper histogram percentage to ignore"));
+		options.add(make_opt( thresh, "thresh", 't', "intensity thresh to ignore"));
+		options.add(make_opt( high_thresh, "high-thresh", 'g', "upper histogram percentage to ignore"));
 
 		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 

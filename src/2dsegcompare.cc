@@ -102,8 +102,8 @@ int do_main(int argc, const char *argv[])
 	string ref_filename;
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
-	options.push_back(make_opt( ref_filename, "ref-file", 'r', "reference frame", CCmdOption::required));
+	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
+	options.add(make_opt( ref_filename, "ref-file", 'r', "reference frame", CCmdOption::required));
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 

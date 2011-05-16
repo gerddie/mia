@@ -77,11 +77,11 @@ int do_main(int argc, const char **argv)
 	string trans_filename;
 	EInterpolation interpolator = ip_bspline3;
 
-	options.push_back(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required));
-	options.push_back(make_opt( out_filename, "out-file", 'o', "output image", CCmdOption::required));
-	options.push_back(make_opt( trans_filename, "transformation", 't', "transformation file name", 
+	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output image", CCmdOption::required));
+	options.add(make_opt( trans_filename, "transformation", 't', "transformation file name", 
 				    CCmdOption::required));
-	options.push_back(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p', "image interpolator"));
+	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p', "image interpolator"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

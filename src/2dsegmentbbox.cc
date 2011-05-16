@@ -33,8 +33,8 @@ int do_main(int argc, const char *argv[])
 	int  enlarge_boundary = 5; 
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( src_filename, "in-file", 'i', "input segmentation set", "input", true));
-	options.push_back(make_opt( enlarge_boundary, "enlarge", 'e', "enlarge boundary by number of pixels", "enlarge"));
+	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", "input", true));
+	options.add(make_opt( enlarge_boundary, "enlarge", 'e', "enlarge boundary by number of pixels", "enlarge"));
 
 	
 	options.parse(argc, argv);

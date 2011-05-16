@@ -153,11 +153,11 @@ int main( int argc, const char *argv[] )
 		string in_filename;
 		
 		CCmdOptionList options(g_description);
-		options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
-		options.push_back(make_opt( out_filename, "out", 'o', "output file name", CCmdOption::required));
-		options.push_back(make_opt( hmin, "min", 0, "minimum of histogram range"));
-		options.push_back(make_opt( hmax, "max", 0, "maximum of histogram range"));
-		options.push_back(make_opt( bins, "bins", 0, "number of histogram bins"));
+		options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
+		options.add(make_opt( out_filename, "out", 'o', "output file name", CCmdOption::required));
+		options.add(make_opt( hmin, "min", 0, "minimum of histogram range"));
+		options.add(make_opt( hmax, "max", 0, "maximum of histogram range"));
+		options.add(make_opt( bins, "bins", 0, "number of histogram bins"));
 		
 		if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 

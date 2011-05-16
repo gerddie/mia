@@ -113,9 +113,9 @@ int main( int argc, const char *argv[] )
 
 
 		CCmdOptionList options(program_info);
-		options.push_back(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
+		options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
 					    CCmdOption::required));
-		options.push_back(make_opt( thresh, "thresh", 't', "intensity thresh to ignore"));
+		options.add(make_opt( thresh, "thresh", 't', "intensity thresh to ignore"));
 
 		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 

@@ -177,13 +177,13 @@ int main(int argc, const char *argv[])
 
 
 	CCmdOptionList options(program_info);
-	options.push_back(make_opt( in_filename, "in-file", 'i',
+	options.add(make_opt( in_filename, "in-file", 'i',
 				    "input image(s) to be filtered", CCmdOption::required));
-	options.push_back(make_opt( out_filename, "out-file", 'o',
+	options.add(make_opt( out_filename, "out-file", 'o',
 				    "output file name base", CCmdOption::required));
-	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
+	options.add(make_opt( out_type, imageio.get_set(), "type", 't',
 				    "output file type (if not given deduct from output file name)", CCmdOption::required));
-	options.push_back(make_help_opt( "help-plugins", 0,
+	options.add(make_help_opt( "help-plugins", 0,
 					 "give some help about the filter plugins", 
 					 new TPluginHandlerHelpCallback<C2DFifoFilterPluginHandler>)); 
 

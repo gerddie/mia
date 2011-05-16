@@ -181,14 +181,14 @@ int do_main(int argc, const char *argv[] )
 		C3DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_description);
-	options.push_back(make_opt( in_filename, "in-file", 'i',
+	options.add(make_opt( in_filename, "in-file", 'i',
 				    "input image(s) to be filtered", CCmdOption::required));
-	options.push_back(make_opt( out_filename, "out-file", 'o',
+	options.add(make_opt( out_filename, "out-file", 'o',
 				    "output image(s) that have been filtered", CCmdOption::required));
-	options.push_back(make_opt( out_type, imageio.get_set(), "type", 't', "output file type"));
-	options.push_back(make_opt( seed_point, "seed", 's', "seed point"));
+	options.add(make_opt( out_type, imageio.get_set(), "type", 't', "output file type"));
+	options.add(make_opt( seed_point, "seed", 's', "seed point"));
 
-	options.push_back(make_opt( shape_descr, "neighborhood", 'n', "neighborhood shape"));
+	options.add(make_opt( shape_descr, "neighborhood", 'n', "neighborhood shape"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
