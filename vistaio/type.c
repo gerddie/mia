@@ -40,35 +40,35 @@ static VRepnInfoRec builtin_repn_info[] = {
 	{"unknown"},
 
 	/* Integer and floating-point numbers: */
-	{"bit", sizeof (VBit), 1, 0.0, 1.0}
+	{"bit", sizeof (VBit), 1, 0.0, 1.0, NULL}
 	,
-	{"ubyte", sizeof (VUByte), 8, 0.0, 255.0}
+	{"ubyte", sizeof (VUByte), 8, 0.0, 255.0, NULL}
 	,
-	{"sbyte", sizeof (VSByte), 8, -128.0, 127.0}
+	{"sbyte", sizeof (VSByte), 8, -128.0, 127.0, NULL}
 	,
-	{"short", sizeof (VShort), 16, -32768.0, 32767.0}
+	{"short", sizeof (VShort), 16, -32768.0, 32767.0, NULL}
 	,
-	{"long", sizeof (VLong), 32, -2147483648.0, 2147483647.0}
+	{"long", sizeof (VLong), 32, -2147483648.0, 2147483647.0, NULL}
 	,
 	{"float", sizeof (VFloat), 32,
-	 -3.40282346638528860e+38, 3.40282346638528860e+38}
+	 -3.40282346638528860e+38, 3.40282346638528860e+38, NULL}
 	,
 	{"double", sizeof (VDouble), 64,
-	 -1.797693134862315708e+308, 1.797693134862315708e+308}
+	 -1.797693134862315708e+308, 1.797693134862315708e+308, NULL}
 	,
 	
 	/* Miscellaneous representations: */
-	{"attr-list", sizeof (VAttrList), 0, 0.0, 0.0}
+	{"attr-list", sizeof (VAttrList), 0, 0.0, 0.0, NULL}
 	,
-	{"boolean", sizeof (VBoolean), 1, 0.0, 0.0}
+	{"boolean", sizeof (VBoolean), 1, 0.0, 0.0, NULL}
 	,
-	{"bundle", sizeof (VPointer), 0, 0.0, 0.0}
+	{"bundle", sizeof (VPointer), 0, 0.0, 0.0, NULL}
 	,
-	{"list", sizeof (VList), 0, 0.0, 0.0}
+	{"list", sizeof (VList), 0, 0.0, 0.0, NULL}
 	,
-	{"pointer", sizeof (VPointer), 0, 0.0, 0.0}
+	{"pointer", sizeof (VPointer), 0, 0.0, 0.0, NULL}
 	,
-	{"string", sizeof (VString), 0, 0.0, 0.0}
+	{"string", sizeof (VString), 0, 0.0, 0.0, NULL}
 	,
 
 	/* Standard object types: */
