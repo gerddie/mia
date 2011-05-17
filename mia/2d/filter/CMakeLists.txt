@@ -35,6 +35,7 @@ SET(filters2dNew_base
   kmeans
   label 
   mask
+  mean 
   median
   mlv
   morphological
