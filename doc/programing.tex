@@ -309,7 +309,8 @@ These functions are defined in \texttt{<mia/core/filter.hh>} and examples of its
 The simples of all filter functions takes exactly one image as input and returns the filterde image. 
 The filter function is defined as: 
 
-\begin{lstlisting}
+\lstset{numbers=left,firstnumber=auto}
+\begin{lstlisting}{FilterExample}
 template <typename Filter, typename Image>
 static typename Filter::result_type filter(const Filter& f, const Image& b)
 \end{lstlisting}
@@ -319,7 +320,7 @@ In the current implementation of MIA, \texttt{Image} will be either \texttt{C2DI
   operator \texttt{()}.
 The most basic declaration of such a filter that takes a 2D image as input and has a 2D image as 
    output would look like 
-\begin{lstlisting}
+\begin{lstlisting}{FilterExample}
 class CSimpleFilter {
 public: 
   typedef mia::P2DImage result_type; 
@@ -340,7 +341,7 @@ In listing \ref{list:filterthreshold} you can find the complete declaration and 
 The output will be a bit valued image. 
 
 \begin{listing}
-\begin{lstlisting}
+\begin{lstlisting}{ThresholdFilterExample}
 #include <algorithm>
 class C2DTreshholdFilter {
 public: 
@@ -395,7 +396,7 @@ Therefore, we would like to report an error, if the filter is invoked with an bi
 This can be done  by additionally implementing a specialisation of the 
   operator () of \texttt{C2DTreshholdFilter}: 
 \emph{I think another indirection is needed here ...}
-\begin{lstlisting}
+\begin{lstlisting}{ThresholdFilterExample}
 template <>
 C2DTreshholdFilter::result_type C2DTreshholdFilter::operator(const C2DBitImage& image)const 
 {
@@ -580,11 +581,11 @@ Accordingly, the header file \texttt{mean.hh} looks like follows:
 
 First, include the required header
 \lstset{numbers=left,firstnumber=auto}
-\begin{lstlisting}[MeanFilterHeader]
+\begin{lstlisting}{MeanFilterHeader}
 #include <mia/2d/2dfilter.hh>
 \end{lstlisting}
 and start the namespace for the filter: 
-\begin{lstlisting}[MeanFilterHeader]
+\begin{lstlisting}{MeanFilterHeader}
 NS_BEGIN( mean_2dimage_filter)
 \end{lstlisting}
 It is best to put the code of each plug-in into its own, unique name space in oder to avoid 
@@ -595,7 +596,7 @@ Since the programs all access the plug-ins through the interface of the accordin
 
 
 Then follows the declaration of the actual filter: 
-\begin{lstlisting}[MeanFilterHeader]
+\begin{lstlisting}{MeanFilterHeader}
 class C2DMean : public mia::C2DFilter {
 public:
 	C2DMean(int hw);
@@ -613,14 +614,14 @@ As one can see, \texttt{C2DMean} is derived from \texttt{mia::C2DFilter}, which 
 Line three declares the constructor and line eight the filter function that will call 
   \texttt{mia::filter}.
 Unfortunatly, in C++ it is not possible to declare and define virtual template methods. 
-Therefore, \texttt{do_filter} has to be implemented within the actual filter that will 
+Therefore, \texttt{do\_filter} has to be implemented within the actual filter that will 
   be used as parameter to \texttt{mia::filter} to run the \texttt{operator ()} according 
   to the pixel type the input image carries. 
 The actual filter operator \texttt{operator ()} is declared as public function to simplify 
   the access permissions within \texttt{mia::filter}. 
 
 The actual plug-in class is then declared like follows: 
-\begin{lstlisting}[MeanFilterHeader]
+\begin{lstlisting}{MeanFilterHeader}
 class C2DFilterPluginFactory: public mia::C2DFilterPlugin {
 public:
 	C2DFilterPluginFactory();
@@ -632,7 +633,7 @@ private:
 \end{lstlisting}
 
 The implementation of the filter is then very streightforward: 
-\begin{lstlisting}[MeanFilterCode]
+\begin{lstlisting}{MeanFilterCode}
 
 \end{lstlisting}
 
@@ -644,14 +645,14 @@ In the case of a mean filter, the test would look like this:
 
 First include the test framework and the header belonging to the actual filter: 
 \lstset{numbers=left,firstnumber=auto}
-\begin{lstlisting}[MeanFilterExample]
+\begin{lstlisting}{MeanFilterExample}
 #include <mia/internal/autotest.hh>
 #include <mia/2d/filter/mean.hh>
 \end{lstlisting}
 
 \noindent
 Then we add the required {\bf using} statements to save us some typing
-\begin{lstlisting}[MeanFilterExample]
+\begin{lstlisting}{MeanFilterExample}
 NS_MIA_USE
 using namespace std;
 using namespace ::boost;
@@ -660,7 +661,7 @@ using namespace mean_2dimage_filter;
 \end{lstlisting}
 
 Finally, we implement the test itself: 
-\begin{lstlisting}[MeanFilterExample]
+\begin{lstlisting}{MeanFilterExample}
 BOOST_AUTO_TEST_CASE( test_2dfilter_mean )
 {
 	const size_t size_x = 7;
