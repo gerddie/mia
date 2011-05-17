@@ -31,6 +31,7 @@ using namespace std;
 
 CParameter::CParameter(const char type[], bool required, const char *descr):
     m_required(required),
+    m_is_required(required),
     m_type(type),
     m_descr(descr)
 {
@@ -38,6 +39,16 @@ CParameter::CParameter(const char type[], bool required, const char *descr):
 
 CParameter::~CParameter()
 {
+}
+
+void CParameter::reset()
+{
+	m_required = m_is_required; 
+	do_reset(); 
+}
+
+void CParameter::do_reset()
+{	
 }
 
 const char *CParameter::type() const

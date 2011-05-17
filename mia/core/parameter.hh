@@ -76,6 +76,11 @@ public:
 
 	/// @returns the help description of the parameter 
 	const char *get_descr() const;
+
+	/**
+	   clear the required flag and reset to default value
+	 */
+	void reset(); 
 protected:
 
 	/** the actual (abstract) function to write the description to a stream
@@ -91,8 +96,10 @@ private:
 	    \param str_value the parameter value as string
 	*/
 	virtual bool do_set(const std::string& str_value) = 0;
+	virtual void do_reset(); 
 
 	bool m_required;
+	bool m_is_required; 
 	const char *m_type;
 	const char *m_descr;
 };
@@ -115,6 +122,7 @@ public:
 	   \param descr a description of the parameter
 	 */
 	CTParameter(T& value, bool required, const char *descr);
+
 protected:
 	/**
 	   the implementation of the description-function
@@ -122,8 +130,10 @@ protected:
 	virtual void do_descr(std::ostream& os) const;
 private:
 	virtual bool do_set(const std::string& str_value);
+	virtual void do_reset();
 	virtual void adjust(T& value);
 	T& m_value;
+	T m_default_value; 
 };
 
 /**
@@ -174,7 +184,9 @@ protected:
 	virtual void do_descr(std::ostream& os) const;
 private:
 	virtual bool do_set(const std::string& str_value);
+	virtual void do_reset();
 	T& m_value;
+	T m_default_value; 
 	const TDictMap<T> m_dict;
 
 };
@@ -196,7 +208,9 @@ protected:
 	virtual void do_descr(std::ostream& os) const;
 private:
 	virtual bool do_set(const std::string& str_value);
+	virtual void do_reset();
 	T& m_value;
+	T m_default_value; 
 	const std::set<T> m_valid_set;
 
 };
@@ -219,7 +233,9 @@ protected:
 	virtual void do_descr(std::ostream& os) const;
 private:
 	virtual bool do_set(const std::string& str_value);
+	virtual void do_reset();
 	T& m_value;
+	T m_default_value; 
 };
 
 
@@ -259,6 +275,7 @@ template <typename T>
 CDictParameter<T>::CDictParameter(T& value, const TDictMap<T> dict, const char *descr):
 	CParameter("dict", false, descr),
 	m_value(value),
+	m_default_value(value),
 	m_dict(dict)
 {
 }
@@ -290,9 +307,16 @@ bool CDictParameter<T>::do_set(const std::string& str_value)
 }
 
 template <typename T>
+void CDictParameter<T>::do_reset()
+{
+	m_value = m_default_value;
+}
+
+template <typename T>
 CSetParameter<T>::CSetParameter(T& value, const std::set<T>& valid_set, const char *descr):
 	CParameter("set", false, descr),
 	m_value(value),
+	m_default_value(value),
 	m_valid_set(valid_set)
 {
 	if (m_valid_set.empty())
@@ -316,6 +340,12 @@ void CSetParameter<T>::do_descr(std::ostream& os) const
 }
 
 template <typename T>
+void CSetParameter<T>::do_reset()
+{
+	m_value = m_default_value;
+}
+
+template <typename T>
 bool CSetParameter<T>::do_set(const std::string& str_value)
 {
 	std::stringstream s(str_value);
@@ -331,7 +361,8 @@ bool CSetParameter<T>::do_set(const std::string& str_value)
 template <typename T>
 TParameter<T>::TParameter(T& value, bool required, const char *descr):
 	CParameter("streamable",  required, descr),
-	m_value(value)
+	m_value(value),
+	m_default_value(value)
 {
 }
 
@@ -353,6 +384,11 @@ bool TParameter<T>::do_set(const std::string& str_value)
 	return true;
 }
 
+template <typename T>
+void TParameter<T>::do_reset()
+{
+	m_value = m_default_value;
+}
 
 NS_MIA_END
 

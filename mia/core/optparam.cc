@@ -23,6 +23,7 @@
 
 #include <stdexcept>
 #include <sstream>
+#include <algorithm>
 
 #include <mia/core/optparam.hh>
 
@@ -44,10 +45,12 @@ CParamList::PParameter& CParamList::operator [] (const std::string& key)
 
 void CParamList::set(const CParsedOptions& options)
 {
+	typedef std::map<std::string, PParameter>::iterator::value_type MapValue; 
+	for_each(m_params.begin(), m_params.end(), [](MapValue p){p.second.reset();}); 
 
-	for (CParsedOptions::const_iterator i = options.begin();
+	for (auto i = options.begin();
 	     i != options.end(); ++i) {
-		map<string, PParameter>::iterator p = m_params.find(i->first);
+		auto p = m_params.find(i->first);
 		if (p == m_params.end()) {
 			stringstream msg;
 			msg << "unknown parameter '" << i->first << "'";
@@ -65,7 +68,7 @@ void CParamList::set(const CParsedOptions& options)
 
 void CParamList::check_required() const
 {
-	for (map<string, PParameter>::const_iterator i = m_params.begin(); i != m_params.end(); ++i) {
+	for (auto i = m_params.begin(); i != m_params.end(); ++i) {
 		if (i->second->required_set()) {
 			stringstream msg;
 			msg << "parameter '" << i->first << "' required ";

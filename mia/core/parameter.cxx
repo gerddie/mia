@@ -42,7 +42,8 @@ NS_MIA_BEGIN
 template <typename T, const char * const TS> 
 CTParameter<T, TS>::CTParameter(T& value,  bool required, const char *descr):
 	CParameter(TS, required, descr),
-	m_value(value)
+	m_value(value), 
+	m_default_value(value)
 {
 	
 }
@@ -69,6 +70,12 @@ bool CTParameter<T, TS>::do_set(const std::string& str_value)
 	
 	adjust(m_value); 
 	return true; 
+}
+
+template <typename T, const char * const TS>
+void CTParameter<T,TS>::do_reset()
+{
+	m_value = m_default_value;
 }
 
 template <typename T, const char * const TS> 
