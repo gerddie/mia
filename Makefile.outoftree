@@ -8,7 +8,7 @@ Default: build.stamp build/CMakeCache.txt
 	cd build && make -j 7 
 
 build/CMakeCache.txt: build.stamp 
-	cd build && cmake -DCMAKE_CXXFLAGS="$(CXXFLAGS)" ..
+	cd build && cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXXFLAGS="$(CXXFLAGS)" ..
 
 build.stamp:
 	[ -d build ] || mkdir -p build 	
@@ -18,7 +18,7 @@ Debug: build-debug.stamp build-debug/CMakeCache.txt
 	cd build-debug && make -j 7 
 
 build-debug/CMakeCache.txt: build-debug.stamp 
-	cd build-debug && cmake -DCMAKE_CXXFLAGS="$(CXXFLAGS)" ..
+	cd build-debug && cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXXFLAGS="$(CXXFLAGS)" ..
 
 build-debug.stamp:
 	[ -d build-debug ] || mkdir -p build-debug 	
