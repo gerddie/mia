@@ -73,23 +73,17 @@ INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/pluginmacro.cmake)
 INCLUDE (CheckTypeSize)
 
 INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xAuto.cmake)
-
-#make sure we get the c++0x standard 
-#remark: I think this doesn't work, because to know the compiler, the test has already run 
-#and the flags are already in the cache. 
-IF(CMAKE_COMPILER_IS_GNUCXX)
-  ADD_DEFINITIONS(-std=c++0x)
-ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+INCLUDE (${CMAKE_CURRENT_SOURCE_DIR}/cmake/checkCpp0xLambda.cmake)
 
 
-
-IF(NOT "${CXX_HAS_CXX_0X_AUTO}")
-  MESSAGE(FATAL_ERROR "This source code requires the c++0x auto type feature. "
+IF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
+  MESSAGE(FATAL_ERROR 
+    "This source code requires the C++0x auto type and lambda features. "
     "If your compiler is supposed to support this feature, "
-    "please enable the appropriate flags.\n"
-    "for g++ >= 4.4 this is '-std=c++0x' and delete the CMakeCache.txt file before"
-    "re-running cmake")
-ENDIF(NOT "${CXX_HAS_CXX_0X_AUTO}")
+    "please enable the appropriate flags and delete the CMakeCache.txt file before "
+    "re-running cmake.\n"
+    "For g++ >= 4.5 this is '-std=c++0x' ")
+ENDIF(NOT "${CXX_HAS_CXX_0X_AUTO}" OR NOT CXX_HAS_CXX_0X_LAMBDA)
 
 ASSERT_SIZE(char 1)
 ASSERT_SIZE(short 2)

@@ -53,6 +53,9 @@ This part of the MIA guide decribes, how to use the interfaces provided to write
 \item Chapter \ref{ch:addpluginstype} gives an insight how to create a new class of plug-ins.
 \end{itemize}
 
+Note, that the code examples make use of C++0x features like the {\bf auto} for automatic 
+  type deduction and \emph{lambda} expressions. 
+
 \chapter{A simple program}
 \label{ch:simple}
 
@@ -66,98 +69,118 @@ For convenience the full source code is printed in the listning below, and we wi
 #include <mia/core.hh>
 #include <mia/2d.hh>
 
-NS_MIA_USE; 
-using namespace std; 
+NS_MIA_USE;
+using namespace std;
+
+static const char *program_info = 
+	"This program is used to filter and convert gray scale images.\n"
+	"Basic usage:\n"
+	"  mia-2dimagefilter -i <input image> -o <output image> [<plugin>] ...\n"; 
+
+int do_main( int argc, const char *argv[] )
+{
+
+	string in_filename;
+	string out_filename;
+	string out_type;
+
+	const auto& filter_plugins = C2DFilterPluginHandler::instance();
+	const auto& imageio = C2DImageIOPluginHandler::instance();
+
+	CCmdOptionList options(program_info);
+	options.add(make_opt( in_filename, "in-file", 'i', 
+                "input image(s) to be filtered", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o',
+		"output image(s) that have been filtered", CCmdOption::required));
+	options.add(make_opt( out_type, imageio.get_set(), "type", 't',
+		"output file type (override suffix)"));
+	options.add(g_help_optiongroup, 
+	        make_help_opt( "help-plugins", 0,
+		   "give some help about the filter plugins", 
+	  	   new TPluginHandlerHelpCallback<C2DFilterPluginHandler>));
+	
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+	auto filter_chain = options.get_remaining();
+
+	if ( filter_chain.empty() )
+		cvwarn() << "no filters given, just copy\n";
+
+	std::vector<C2DFilterPlugin::ProductPtr> filters(filter_chain.size());
+	transform(filter_chain.begin(), filter_chain.end(), filters.begin(),
+		  [&filter_plugins](const char * name) {
+			  auto filter =  filter_plugins.produce(name); 
+			  if (!filter) {
+				  THROW(invalid_argument, "Filter '" << name << "' not found"); 
+			  }
+			  return filter; 
+		  }
+		); 
+		
+	auto in_image_list = imageio.load(in_filename);
+	if (!in_image_list || in_image_list->empty()) {
+		THROW(invalid_argument, "No images found in " << in_filename); 
+	}
+	
+	for (auto f = filters.begin(); f != filters.end(); ++f) {
+		cvmsg() << "Run filter: " << (*f)->get_init_string() << "\n";
+		transform(in_image_list->begin(), in_image_list->end(), in_image_list->begin(),
+			  [f](const P2DImage& img){return  (*f)->filter(*img);}); 
+	}
+	
+	if ( !imageio.save(out_type, out_filename, *in_image_list) ){
+		THROW(runtime_error, "Unable to save result to " << out_filename);
+	};
+	return EXIT_SUCCESS;
+
+}
 
 int main( int argc, const char *argv[] )
 {
-  string in_filename;
-  string out_filename;
-  string out_type; 
-  bool help_plugins = false; 
+	try {
+		return do_main(argc, argv);
+	}
+	catch (const runtime_error &e){
+		cerr << argv[0] << " runtime: " << e.what() << endl;
+	}
+	catch (const invalid_argument &e){
+		cerr << argv[0] << " error: " << e.what() << endl;
+	}
+	catch (const exception& e){
+		cerr << argv[0] << " error: " << e.what() << endl;
+	}
+	catch (...){
+		cerr << argv[0] << " unknown exception" << endl;
+	}
 
-  try 
-  {
-    const auto& filter_plugins = C2DFilterPluginHandler::instance();
-  
-    const auto& imageio =  C2DImageIOPluginHandler::instance();
-  
-    CCmdOptionList options;  
-    options.push_back(make_opt( in_filename, "in-file", 'i', 
-                      "input image(s) to be filtered", "input", true)); 
-    options.push_back(make_opt( out_filename, "out-file", 'o', 
-                      "output image(s) that have been filtered", "output", true)); 
-    options.push_back(make_opt( out_type, imageio.get_set(), "type", 't',
-                      "output file type (if not given deduct from output file name)" , 
-                      "image-type"));
-    options.push_back(make_opt( help_plugins, "help-plugins", 0, 
-                      "give some help about the filter plugins", NULL)); 
-
-    options.parse(argc, argv); 
-    auto filter_chain = options.get_remaining(); 
-
-    list<C2DFilterPlugin::ProductPtr> filters;
-    for (auto i = filter_chain.begin(); i != filter_chain.end(); ++i) {
-       auto filter =  filter_plugins.produce(i->c_str()); 
-       if (!filter) {
-         stringstream error; 
-         error << "Filter " << *i << " not found"; 
-         throw invalid_argument(error.str());
-       }
-       filters.push_back(filter);
-    }
-
-    auto  in_image_list = imageio.load(in_filename);  
-    if (!in_image_list || in_image_list->empty())
-         throw invalid_argument(string("No images found in ")  + in_filename);
-
-    auto filter_name = filter_chain.begin();
-    for (auto f = filters.begin(); f != filters.end(); ++f) {
-      for (auto i = in_image_list->begin(); i != in_image_list->end(); ++i)
-    
-           *i = (*f)->filter(**i);
-    }
-    if ( !imageio.save(out_type, out_filename, *in_image_list) )
-      throw runtime_error(string("unable to save result to ") + out_filename);
-    return EXIT_SUCCESS; 
-  } 
-  catch (const runtime_error &e){
-    cerr << argv[0] << " runtime: " << e.what() << endl;
-  }
-  catch (const invalid_argument &e){
-    cerr << argv[0] << " error: " << e.what() << endl;
-  }
-  catch (const exception& e){
-    cerr << argv[0] << " error: " << e.what() << endl;
-  }
-  catch (...){
-    cerr << argv[0] << " unknown exception" << endl;
-  }
-  return EXIT_FAILURE;
-}  
+	return EXIT_FAILURE;
+}
 \end{lstlisting}  
 
 \begin{description}
 \item [1:] For option parsing include the core of the MIA library. 
 \item [2:] For 2D image handling pull in the apropriate declaration. 
-\item [4-5:] Using the MIA and STD namespace for short access. 
-\item [7:] Start the main function. 
-\item [9-12:] Declare some variables, that are needed for the command line parsing, namely the input and output file names, 
+\item [4,5:] Using the MIA and STD to save some typing.\footnote{%
+For further reading on when it is okay to use the using statement please consulte \citet{sutter05coding}}
+\item [7-10:] Define the header for the help output. 
+\item [12-74:] The body of the true main function. 
+    To reduce intentions resultin from the global try-catch statement, this body is put into an extra function. 
+\item [15-17:]
+    Declare some variables, that are needed for the command line parsing, namely the input and output file names, 
     the output file format (if not given the file format is deducted from the output file name), and a flag 
     see if the user requests some help on the supported filter plugins. 
     The values given to these variables will be the default values for the options. 
      As an exception, boolean values are always default to ``false''. 
-\item [14-15, 64-77:] The whole code is put into a try catch block, since error handling is done by exceptions. 
-\item [16-20:] Define some short cuts for the plugin handlers.
-\item [22-31:] Define the options for this program using the variables given above. 
+\item [19,20:] Define some short cuts for the plugin handlers.
+\item [22-32:] Define the options for this program using the variables given above. 
     Silently, in the background are some more options available, that deal with common tasks, such as printing out the general
       help, printing out copyright information, and verbosity level of the output. 
     See chapter \ref{ch:prog} for details. 
-\item [33-34:] Parse the command line. 
+\item [34-36:] Parse the command line and check if a help option was used. 
      For this program, the remaining command line parameters describe the filters to be applied. 
-    A command line like 
-    \lstset{language=bash,numbers=none}
-    \begin{lstlisting}
+     A command line like 
+     \lstset{language=bash,numbers=none}
+     \begin{lstlisting}
 eva-2dimagefilter -i input.png -o output.png \
     downscale:bx=2,by=2 bandpass:min=20,max=200
     \end{lstlisting}
@@ -168,29 +191,32 @@ eva-2dimagefilter -i input.png -o output.png \
       \item  \texttt{filter\_chain} = (downscale:bx=2,by=2, bandpass:min=20,max=200)
       \end{itemize}
 
-\item [36-46:] Create the filter chain by using the filter descriptions from the command line. 
-       If the creation of one filter fails, an \texttt{invalid\_argument} exception is thrown, which will terminate the 
-       program with an error message. 
-\item [48-50:] Load the image(s) from the input file. 
-       If no input image is found, throw an \texttt{invalid\_argument} exception that will terminate the program with an error message. 
-\item [52-59:] Apply the filters to all input images replacing the input images. 
+\item [38-39:] Print out some warning if no filters were given. 
+
+\item [41-50:] Create the filter chain by using the filter descriptions from the command line. 
+       If the creation of one filter fails, an \texttt{invalid\_argument} exception is thrown, 
+        which will terminate the  program with an error message. 
+\item [52-55:] Load the image(s) from the input file. 
+       If no input image is found, throw an \texttt{invalid\_argument} exception that will terminate 
+         the program with an error message. 
+\item [57-61:] Apply the filters to all input images replacing the input images. 
        Since the images are all wrapped into shared pointers, no memory leaks will be introduced by this code. 
-\item [60-61:] Save the filtered image(s) in the output file. If not successfull throw an exception.
-\item [62:] Terminate the program with the return value indicating success.
-\item [64-77:] Catch all known and unknown exceptions and report.
-\item [78:] return signalling failure, because somewhere in the program a exception was thrown that could only be reported 
-    in the main function. 
+\item [63-65:] Save the filtered image(s) in the output file. If not successfull throw an exception.
+\item [67:] Terminate the program with the return value indicating success.
+\item [71-90:] The body of the main function that encapsulates the real functionallity into a try 
+      catch block that is used to report error messages. 
 \end{description}
 
-\chapter{Images and Filtering}
+\chapter{Basic operations on Images}
 
 \label{ch:images}
 
 In the following, the basic handling of images is described. 
 All the examples will use 2D images. 
-If not otherwise noted, 3D images are handled likewise. 
+If not otherwise noted, 3D images are handled likewise - you only need to change 2D to 3D in the 
+  class and function names. 
 
-\section{How to create and copy images of a certain image type}
+\section{Creating, copying, loading, and storing images}
 
 The images supported in MIA  may contain different pixel types, e.g. 1-bit, 8-bit, 16-bit, or float valued ones. 
 MIA uses shared pointers \texttt{P2DImage} to \texttt{C2DImage}, respectively,  to hold images. 
@@ -198,24 +224,84 @@ However, in order to account for the pixel type, at creation time a derivative c
    type needs to be specified. 
 In order to create an 16-bit image with unsigned pixel values with a given \texttt{size}, use:
 
+\lstset{numbers=none}
 \begin{lstlisting}
 P2DImage image = P2DImage(new C2DUSImage(size)); 
 \end{lstlisting}
- 
-In order to copy such an image, an the image provides the clone function: 
 
+All images may store meta-data that hold information that may be irrelevant to image processig 
+  but should be preserves to keep track of the image processing. 
+This data is stored in an attribute list that is actually the base class for the image classes. 
+Attributes can be of an abitrary type but only a certain subset of attribute types is predefined. 
+
+Adding an attribute to an image is done like this: 
+\begin{lstlisting}
+PAttribute attr(new CDoubleAttribute(1.2));  
+image->set_attribute("key", attr);
+\end{lstlisting}
+
+Since most of the time attributes that are bound to a certain key are of a specific type, 
+  translater functions exists that enable passing a string to the set\_attribute function,  
+  and the translater will take care of creating the proper attribute type. 
+\begin{lstlisting}
+image->set_attribute("key", "1.2");
+\end{lstlisting}
+
+
+In order to copy all the meta-data of anothe image at creation time, one may give the reference image 
+  as additional parameter to the constructor.
+
+\begin{lstlisting}
+P2DImage new_image = P2DImage(new C2DUSImage(size, *image));
+\end{lstlisting}
+ 
+In order to copy an image with all its meta-data the image class provides the clone function: 
 \begin{lstlisting}
 P2DImage image_copy = image->clone();
 \end{lstlisting}
 
-\section{An Image Filter}
+Of course all images can also be loaded and stored to files. 
+Two options are provided to load and store images: 
+  The generic approach uses the \texttt{load} and \texttt{write} methods of the according image IO 
+    plugin handler. 
+  Since some image formats support storing more than one image frame these methods 
+    handle lists of images. 
+For instance to load all images from a file \texttt{images.tiff} do 
+\begin{lstlisting}
+	auto images = C2DImageIOPluginHandler::instance().load("images.tiff");
+\end{lstlisting}
+In this case images is a \texttt{std::vector<P2DImage>} and you can access the actual images by 
+  using the functions provided by this template. 
+In order to store a series of images to a file \texttt{output.tiff} just call 
+\begin{lstlisting}
+	bool success  = C2DImageIOPluginHandler::instance().save("output.tiff", images);
+\end{lstlisting}
+
+
+If you want to load or store just one image per file, then convenicence functions exists, 
+   that take care of the handling packing and unpacking the image into and from lists. 
+If a file contains more then one frame, with these functions only the first image will be loaded. 
+In this case loading the image from \texttt{image.png} boils down to calling 
+\begin{lstlisting}
+        P2DImage image = load_image2d("image.png"); 
+\end{lstlisting}
+Note, however, that \texttt{load\_image2d} will throw a \texttt{runtime\_exception} of no image 
+  could be loaded. 
+
+Saving an image is done by 
+\begin{lstlisting}
+        bool success = save_image2d("image.png", image); 
+\end{lstlisting}
+
+
+\section{About Image Filters}
 \label{sec:filter}
 
 In order to access the image data, its pixel type needs to be known. 
 Of course it is possible to use the \texttt{get\_type} method of the \texttt{C2DImage} class and use
   a switch statement in order to cast to the appropriate derived class. 
-However, since this needs to be done very often, MIA provides various template functions to handle the most cases
-  of image access. 
+However, since this needs to be done very often, MIA provides various template functions to handle 
+  this conversion.
 These functions are defined in \texttt{<mia/core/filter.hh>} and examples of its use are given below. 
 
 \subsection{The single image filter}
@@ -231,7 +317,8 @@ static typename Filter::result_type filter(const Filter& f, const Image& b)
 In the current implementation of MIA, \texttt{Image} will be either \texttt{C2DImage} or \texttt{C3DImage}. 
 \texttt{Filter} is a functor class that must provied the a type \texttt{result\_type} and an 
   operator \texttt{()}.
-The most basic declaration of such a filter that takes a 2D image as input and has a 2D image as output would look like 
+The most basic declaration of such a filter that takes a 2D image as input and has a 2D image as 
+   output would look like 
 \begin{lstlisting}
 class CSimpleFilter {
 public: 
@@ -244,13 +331,13 @@ public:
 
 Note, that the operator () is templated with respect to the image pixel type and that its parameter image 
   and the operator itself is defined as constant. 
-This means logically, a filter should act as a function whose result only depends on the input image 
+This means, logically a filter should acts as a function whose result only depends on the input image 
 (and possible parameters passed to a non-trivial constructor). 
 
 In listing \ref{list:filterthreshold} you can find the complete declaration and definition of a filter 
   that runs a thresholding operation by setting all pixels in the image below the given threshold to zero 
   and all values above or equal to one. 
-Obviously, the output will be a bit values image. 
+The output will be a bit valued image. 
 
 \begin{listing}
 \begin{lstlisting}
@@ -287,33 +374,52 @@ operator()(const T2DImage<T>& image) const
 \end{listing}
 
 
-
+To call such a filter in order to process an image \texttt{image} of type \texttt{C2DImage} 
+   the following code is used: 
+\begin{lstlisting}
+  C2DTreshholdFilter filter(thresh); 
+  auto filtered = mia::filter(filter, image); 
+\end{lstlisting}
 
 
   
-\section{Pixel Type Dependant Filtering}
+\subsection{Pixel Type Dependant Filtering}
 \label{sec:ptdf}
 
-Imaging the situation, when a filter type is only appropriate for certain pixel types, or should behave differently for different
-   pixel types. 
-Then using template specification comes to the rescue. 
-Imagine, for example, in the above example, using the thresh-holding filter on a bit-valued image doesn't make much sense. 
+In some cases, filters may be defined only for certain input pixel types, or one wants to apply 
+   the filter differently depending of the actual pixel type. 
+In these cases (partial) template specialization should be used. 
+
+E.g. in the above example, using the thresh-holding filter on a bit-valued image doesn't make much sense. 
 Therefore, we would like to report an error, if the filter is invoked with an bit valued image. 
-This can be done  by additionally implementing a specialisation of the operator () of \texttt{FThreshold}: 
+This can be done  by additionally implementing a specialisation of the 
+  operator () of \texttt{C2DTreshholdFilter}: 
 \emph{I think another indirection is needed here ...}
 \begin{lstlisting}
 template <>
-FTreshold::result_type FTreshold::operator(const C2DBitImage& image)const 
+C2DTreshholdFilter::result_type C2DTreshholdFilter::operator(const C2DBitImage& image)const 
 {
-  throw invalid_argument("FTreshold can not be used on bit-valued images"); 
+  throw invalid_argument("C2DTreshholdFilter can not be used on bit-valued images"); 
 }
 \end{lstlisting}
  
-The compiler will take care of the rest, and if the user provides a bit valued image the above exception will be raised. 
+The compiler will take care of the rest, and if the user provides a bit valued image the 
+  above exception will be thrown. 
+For a further introduction into (partial) template specialization see, e.g.  
+  \citet{vandevoorde05}.
+
+Also note, that the implementation of \texttt{std::vector<bool>} uses bit field to represenet entries 
+  and it is, therefore, often necessary to provide specializations to filters for this type.  
 
 
 \section{Extending MIA}
-\label{ch:io}
+\label{ch:extending}
+
+One of the primary reasons for the plug-in based design of the library was to make it easy to extend 
+  the funcionality of the library without altering the core libraries.
+
+
+
 
 \subsection{Adding a Plugin to store/load data in a new file format}
 \label{sec:newfilehandler}

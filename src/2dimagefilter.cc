@@ -69,7 +69,6 @@ mia-2dimagefilter -i image.exr -o filtered.png mlv:w=2 \
   LatexEnd
 */
 
-#include <sstream>
 #include <mia/core.hh>
 #include <mia/2d.hh>
 
@@ -88,10 +87,9 @@ int do_main( int argc, const char *argv[] )
 	string in_filename;
 	string out_filename;
 	string out_type;
-	; 
 
-	const C2DFilterPluginHandler::Instance& filter_plugins = C2DFilterPluginHandler::instance();
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+	const auto& filter_plugins = C2DFilterPluginHandler::instance();
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 
 	stringstream filter_names;
 
@@ -100,19 +98,19 @@ int do_main( int argc, const char *argv[] )
 	CCmdOptionList options(program_info);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o',
-				    "output image(s) that have been filtered", CCmdOption::required));
+			      "output image(s) that have been filtered", CCmdOption::required));
 	options.add(make_opt( out_type, imageio.get_set(), "type", 't',
-				    "output file type (if not given deduct from output file name)"));
-	options.set_group(g_help_optiongroup); 
-	options.add(make_help_opt( "help-plugins", 0,
-					 "give some help about the filter plugins", 
-					 new TPluginHandlerHelpCallback<C2DFilterPluginHandler>));
+			      "output file type (if not given deduct from output file name)"));
+	options.add(g_help_optiongroup, 
+		    make_help_opt( "help-plugins", 0,
+				   "give some help about the filter plugins", 
+				   new TPluginHandlerHelpCallback<C2DFilterPluginHandler>));
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 
-	vector<const char *> filter_chain = options.get_remaining();
+	auto filter_chain = options.get_remaining();
 
 	cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
 	cvdebug() << "supported filters: " << filter_plugins.get_plugin_names() << "\n";
@@ -123,46 +121,38 @@ int do_main( int argc, const char *argv[] )
 
 	//CHistory::instance().append(argv[0], "unknown", options);
 
-	std::list<C2DFilterPlugin::ProductPtr> filters;
-
-	for (std::vector<const char *>::const_iterator i = filter_chain.begin();
-	     i != filter_chain.end(); ++i) {
-		cvdebug() << "Prepare filter '" << *i << "'\n";
-		C2DFilterPlugin::ProductPtr filter = filter_plugins.produce(*i);
-		if (!filter){
-			std::stringstream error;
-			error << "Filter '" << *i << "' not found";
-			throw invalid_argument(error.str());
-		}
-		filters.push_back(filter);
+	std::vector<C2DFilterPlugin::ProductPtr> filters(filter_chain.size());
+	transform(filter_chain.begin(), filter_chain.end(), filters.begin(),
+		  [&filter_plugins](const char * name) {
+			  auto filter =  filter_plugins.produce(name); 
+			  if (!filter) {
+				  THROW(invalid_argument, "Filter '" << name << "' not found"); 
+			  }
+			  return filter; 
+		  }
+		); 
+		
+	auto in_image_list = imageio.load(in_filename);
+	if (!in_image_list || in_image_list->empty()) {
+		THROW(invalid_argument, "No images found in " << in_filename); 
 	}
-
-	C2DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(in_filename);
-	if (in_image_list.get() && in_image_list->size()) {
-		std::vector<const char *>::const_iterator filter_name = filter_chain.begin();
-		for (std::list<C2DFilterPlugin::ProductPtr>::const_iterator f = filters.begin();
-		     f != filters.end(); ++f, ++filter_name) {
-			cvmsg() << "Run filter: " << *filter_name << "\n";
-			for (C2DImageIOPluginHandler::Instance::Data::iterator i = in_image_list->begin();
-			     i != in_image_list->end(); ++i)
-				*i = (*f)->filter(**i);
-		}
-
-		if ( !imageio.save(out_type, out_filename, *in_image_list) ){
-			string not_save = ("unable to save result to ") + out_filename;
-			throw runtime_error(not_save);
-		};
-
+	
+	for (auto f = filters.begin(); f != filters.end(); ++f) {
+		cvmsg() << "Run filter: " << (*f)->get_init_string() << "\n";
+		
+		transform(in_image_list->begin(), in_image_list->end(), in_image_list->begin(),
+			  [f](const P2DImage& img){return  (*f)->filter(*img);}); 
 	}
-
+	
+	if ( !imageio.save(out_type, out_filename, *in_image_list) ){
+		THROW(runtime_error, "Unable to save result to " << out_filename);
+	};
 	return EXIT_SUCCESS;
 
 }
 
 int main( int argc, const char *argv[] )
 {
-
-
 	try {
 		return do_main(argc, argv);
 	}

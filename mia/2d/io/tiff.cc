@@ -65,6 +65,7 @@ CTiff2DImageIO::CTiff2DImageIO():
 	C2DImageIOPlugin("tif")
 {
 	add_supported_type(it_bit);
+	add_supported_type(it_uint);
 	add_supported_type(it_ushort);
 	add_supported_type(it_ubyte);
 }
@@ -258,6 +259,8 @@ CTiff2DImageIO::PData CTiff2DImageIO::do_load(string const& filename)const
 	uint16 bbs;
 	uint16 spp;
 	uint16 photo;
+	uint16 resunit = 1; 
+	C2DFVector resolution(1.0,1.0); 
 
 	PData result(new C2DImageVector());
 
@@ -276,6 +279,21 @@ CTiff2DImageIO::PData CTiff2DImageIO::do_load(string const& filename)const
 		TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &spp);
 		cvdebug() << "TIFFTAG_SAMPLESPERPIXEL:" << spp << "\n";
 
+		TIFFGetField(tif, TIFFTAG_XRESOLUTION, &resolution.x);
+		TIFFGetField(tif, TIFFTAG_YRESOLUTION, &resolution.y);
+		TIFFGetField(tif, TIFFTAG_RESOLUTIONUNIT, &resunit);
+		
+		switch (resunit) {
+		case RESUNIT_NONE: 
+			break; 
+		case RESUNIT_INCH: resolution.x *= 25.4f; 
+			break;	
+		case RESUNIT_CENTIMETER: resolution *= 10.0f; 
+			break; 
+		default:
+			cvwarn() << "Unknown resolution unit '" <<  resunit << "' given\n"; 
+		}
+		
 		if (spp != 1) {
 			stringstream errmsg;
 			errmsg << "CTiff2DImageIO::load: support only one sample per pixel.";
@@ -283,14 +301,15 @@ CTiff2DImageIO::PData CTiff2DImageIO::do_load(string const& filename)const
 		}
 
 		TIFFGetField(tif, TIFFTAG_PHOTOMETRIC, &photo);
-		if (photo !=PHOTOMETRIC_MINISWHITE && photo != PHOTOMETRIC_MINISBLACK && photo != PHOTOMETRIC_PALETTE) {
+		if (photo != PHOTOMETRIC_MINISWHITE && 
+		    photo != PHOTOMETRIC_MINISBLACK && 
+		    photo != PHOTOMETRIC_PALETTE) {
 			stringstream errmsg;
 			errmsg << "CTiff2DImageIO::load: Support only gray scale images.";
 			throw runtime_error(errmsg.str());
 		}
 		if (photo == PHOTOMETRIC_PALETTE)
 			cvwarn() << "CTiff2DImageIO::load: Palette will be ignored, loading image as gray scale\n";
-
 		// check if we have a tiled image
 		if ( TIFFIsTiled(tif) ) {
 			cvdebug() << "tiled image!\n";
@@ -442,9 +461,15 @@ struct CTiffImageSaver {
 		TIFFSetField(m_tif, TIFFTAG_ROWSPERSTRIP, rows_per_strip);
 		TIFFSetField(m_tif, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
 		TIFFSetField(m_tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
-		TIFFSetField(m_tif, TIFFTAG_XRESOLUTION, 120.0);
-		TIFFSetField(m_tif, TIFFTAG_YRESOLUTION, 120.0);
-		TIFFSetField(m_tif, TIFFTAG_RESOLUTIONUNIT, RESUNIT_INCH);
+
+		// we assume pixel size is in mm
+		auto pixel_size = image.get_pixel_size();
+		float xres = 10.0 / pixel_size.x; 
+		float yres = 10.0 / pixel_size.y; 
+		
+		TIFFSetField(m_tif, TIFFTAG_XRESOLUTION, xres);
+		TIFFSetField(m_tif, TIFFTAG_YRESOLUTION, yres);
+		TIFFSetField(m_tif, TIFFTAG_RESOLUTIONUNIT, RESUNIT_CENTIMETER);
 
 		if (m_nimages != 1) {
 			/* We are writing single page of the multipage file */
