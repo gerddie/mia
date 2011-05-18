@@ -75,7 +75,7 @@ T3DDatafield<T>::T3DDatafield(const C3DBounds& size, const T *data):
 	m_xy(size.x * size.y), 
 	m_data(new std::vector<T>(size.x * size.y * size.z))
 {
-	std::copy(data, data + size.x * size.y * size.z, m_data->begin()); 
+	std::copy(data, data + m_data->size(), m_data->begin()); 
 }
 	
 template <typename T>

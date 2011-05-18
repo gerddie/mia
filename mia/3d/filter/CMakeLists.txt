@@ -13,6 +13,7 @@ SET(filters3dNew
   mlv 
   morphological 
   reorient 
+  scale
   selectbig
   sepconv 
   )
