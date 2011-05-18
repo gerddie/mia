@@ -58,6 +58,7 @@ TVector<T>& TVector<T>::operator = (const TVector<T>& other)
 		if (owner)  
 			this->free(data); 
 		cdata = data = d; 
+		owner = true; 
 	}
 	return *this; 
 }
