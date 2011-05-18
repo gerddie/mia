@@ -46,3 +46,9 @@ testbspline4.oct
 testoct.oct
 *.pyc
 
+build*
+callgrind.*
+
+*.bak
+*.mexglx
+
