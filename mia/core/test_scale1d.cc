@@ -84,7 +84,7 @@ BOOST_FIXTURE_TEST_CASE( test_upscale_linear, ScaleFixtureBase)
 	check_result(result);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_downscale, ScaleFixtureBase)
+BOOST_FIXTURE_TEST_CASE( test_downscale_linear, ScaleFixtureBase)
 {
 	const size_t test_size = 3;
 	const float init_test[test_size] = {6, 5, 5};

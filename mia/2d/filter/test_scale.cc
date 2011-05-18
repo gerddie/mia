@@ -32,7 +32,7 @@ using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace scale_2dimage_filter;
 
-BOOST_AUTO_TEST_CASE( test_ngfnormimg )
+BOOST_AUTO_TEST_CASE( test_downscale )
 {
 
 	const short init[16] = {
@@ -53,13 +53,49 @@ BOOST_AUTO_TEST_CASE( test_ngfnormimg )
 
 	BOOST_CHECK_EQUAL(scaled->get_size(),C2DBounds(2, 2));
 
-	const C2DSSImage *fscaled = dynamic_cast<const C2DSSImage *>(scaled.get());
-	BOOST_REQUIRE(fscaled);
+	const C2DSSImage& fscaled = dynamic_cast<const C2DSSImage& >(*scaled);
 	BOOST_REQUIRE(scaled->get_size() == C2DBounds(2, 2));
 
-	BOOST_CHECK_EQUAL(fscaled->get_pixel_size(), C2DFVector(1.0f, 1.5f));
+	BOOST_CHECK_EQUAL(fscaled.get_pixel_size(), C2DFVector(1.0f, 1.5f));
+
+	for (size_t i = 0; i < 4; ++i) {
+		cvdebug() << i << ":" << fscaled[i] << " - " << test[i] << '\n'; 
+		BOOST_CHECK_EQUAL(fscaled[i], test[i]); 
+	}
+		
+
+}
+
+BOOST_AUTO_TEST_CASE( test_downscale_float )
+{
+
+	const float init[16] = {
+		0, 0, 1, 1, /**/ 0, 0, 1, 1, /**/ 2, 2, 3, 3, /**/ 2, 2, 3, 3,
+	};
+
+	const float test[4] = {
+		0, 1, 2, 3
+	};
+
+	C2DFImage fimage(C2DBounds(4, 4), init );
+	fimage.set_pixel_size(C2DFVector(2.0, 3.0));
 
 
-	BOOST_CHECK(equal(fscaled->begin(), fscaled->end(), test));
+	CScale scaler(C2DBounds(2,2), "bspline3");
+
+	P2DImage scaled = scaler.filter(fimage);
+
+	BOOST_CHECK_EQUAL(scaled->get_size(),C2DBounds(2, 2));
+
+	const C2DFImage& fscaled = dynamic_cast<const C2DFImage& >(*scaled);
+	BOOST_REQUIRE(scaled->get_size() == C2DBounds(2, 2));
+
+	BOOST_CHECK_EQUAL(fscaled.get_pixel_size(), C2DFVector(1.0f, 1.5f));
+
+	for (size_t i = 0; i < 4; ++i) {
+		cvdebug() << i << ":" << fscaled[i] << " - " << test[i] << '\n'; 
+		BOOST_CHECK_EQUAL(fscaled[i], test[i]); 
+	}
+		
 
 }

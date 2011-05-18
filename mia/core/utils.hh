@@ -33,9 +33,10 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <cmath>
 #include <stdexcept>
 #include <mia/core/defines.hh>
-
+#include <boost/type_traits/is_floating_point.hpp>
 
 NS_MIA_BEGIN
 
@@ -80,6 +81,29 @@ void sincosf(float x, float *sin, float *cos);
  */
 void sincos(double x, double *sin, double *cos); 
 #endif
+
+
+template <typename T, bool is_float> 
+struct __round {
+	static T apply(double x) {
+		return x; 
+	}
+}; 
+
+template <typename T> 
+struct __round<T, false> {
+	static T apply(double x) {
+		return static_cast<T>(rint(x));
+	}
+};
+
+template <typename T> 
+T mia_round(double x) 
+{
+	const bool is_floating_point = boost::is_floating_point<T>::value; 
+	return __round<T, is_floating_point>::apply(x); 
+}
+
 
 NS_MIA_END
 

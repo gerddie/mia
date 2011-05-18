@@ -113,7 +113,7 @@ Scaler1DFixture::Scaler1DFixture():
 	data(256)
 {
 	for(size_t x = 0; x < 256; ++x)
-		data[x] = f(2 * M_PI * x / 255.0);
+		data[x] = 200*f(2 * M_PI * x / 255.0);
 }
 
 void Scaler1DFixture::test_size(EInterpolation type, size_t target_size)
@@ -130,7 +130,7 @@ void Scaler1DFixture::test_size(EInterpolation type, size_t target_size)
 
 	for(size_t i = 0; i < target_size; ++i) {
 		double x = (2 * M_PI * i) / (target_size - 1); 
-		double fx = f(x); 
+		double fx = 200*f(x); 
 		cvdebug()  << " sin("<< x << ") = " << fx 
 			   << ", interp= " << result[i] 
 			   << ", Q= " << fx/ result[i] 

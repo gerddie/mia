@@ -54,6 +54,8 @@
 #include <sstream>
 #include <mia/core/msgstream.hh>
 #include <mia/core/spacial_kernel.hh>
+#include <mia/core/scaler1d.hh>
+#include <mia/core/utils.hh>
 #include <mia/2d/filter/scale.hh>
 
 
@@ -81,23 +83,32 @@ CScale::result_type CScale::operator () (const T2DImage<T>& src) const
 	if (src.get_size() == m_size)
 		return CScale::result_type(new T2DImage<T>(src));
 
-
-
-
-	unique_ptr<T2DInterpolator<T> > s(m_ipf->create(src.data()));
-
 	T2DImage<T> *result = new T2DImage<T>(m_size);
 	typename T2DImage<T>::iterator i = result->begin();
 	C2DFVector factor(float(src.get_size().x / float(m_size.x) ),
 			  float(src.get_size().y / float(m_size.y) ));
+	
+	C1DScalarFixed scaler_x(*m_ipf->get_kernel(), src.get_size().x, m_size.x);
+	C1DScalarFixed scaler_y(*m_ipf->get_kernel(), src.get_size().y, m_size.y);
 
+	// run x-scaling 
+	T2DImage<double> tmp(C2DBounds(m_size.x, src.get_size().y)); 
+	for (size_t y = 0; y < src.get_size().y; ++y) {
+		copy(src.begin_at(0,y), src.begin_at(0,y+1), scaler_x.input_begin()); 
+		scaler_x.run(); 
+		copy(scaler_x.output_begin(), scaler_x.output_end(), tmp.begin_at(0,y)); 
+	}
 
-	C2DFVector l(0.0, 0.0);
-	for (size_t y = 0; y < m_size.y; ++y, l.y += factor.y) {
-		l.x = 0.0;
-		for (size_t x = 0; x < m_size.x; ++x, l.x += factor.x, ++i) {
-			*i = (*s)(l);
-		}
+	// run y-scaling 
+	vector<double> in_buffer(src.get_size().y); 
+	vector<T> out_buffer(m_size.y);
+	for (size_t x = 0; x < tmp.get_size().x; ++x) {
+		tmp.get_data_line_y(x, in_buffer);
+		copy(in_buffer.begin(), in_buffer.end(), scaler_y.input_begin()); 
+		scaler_y.run(); 
+		transform(scaler_y.output_begin(), scaler_y.output_end(), out_buffer.begin(), 
+			  [](double x){ return mia_round<T>(x); }); 
+		result->put_data_line_y(x, out_buffer);
 	}
 
 	result->set_pixel_size(src.get_pixel_size() / factor);
