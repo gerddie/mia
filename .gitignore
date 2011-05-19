@@ -1,5 +1,6 @@
 test-*
 mia-*
+*.a
 *.so
 *.mia
 *.so.*
@@ -7,10 +8,8 @@ CMakeFiles
 Makefile
 cmake_install.cmake
 CTestTestfile.cmake
-*.a
 Testing
 testsave*dcm
-Testing
 miagui-*
 imgtest_*
 *.pc
@@ -40,15 +39,15 @@ userguide.bbl
 *.pdf
 *.toc
 libdoc
-
 bspline4.oct
 testbspline4.oct
 testoct.oct
 *.pyc
-
 build*
 callgrind.*
-
 *.bak
 *.mexglx
-
+GPATH
+GRTAGS
+GSYMS
+GTAGS

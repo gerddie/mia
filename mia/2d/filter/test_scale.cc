@@ -73,8 +73,12 @@ BOOST_AUTO_TEST_CASE( test_downscale_float )
 		0, 0, 1, 1, /**/ 0, 0, 1, 1, /**/ 2, 2, 3, 3, /**/ 2, 2, 3, 3,
 	};
 
+	// it is not confirmed that this data is correct
 	const float test[4] = {
-		0, 1, 2, 3
+		-0.304008901,
+		 0.8986637,
+		 2.10133624,
+		 3.30400896
 	};
 
 	C2DFImage fimage(C2DBounds(4, 4), init );
@@ -95,6 +99,35 @@ BOOST_AUTO_TEST_CASE( test_downscale_float )
 	for (size_t i = 0; i < 4; ++i) {
 		cvdebug() << i << ":" << fscaled[i] << " - " << test[i] << '\n'; 
 		BOOST_CHECK_EQUAL(fscaled[i], test[i]); 
+	}
+		
+
+}
+
+BOOST_AUTO_TEST_CASE( test_noscale )
+{
+
+	const float init[16] = {
+		0, 0, 1, 1, /**/ 0, 0, 1, 1, /**/ 2, 2, 3, 3, /**/ 2, 2, 3, 3,
+	};
+
+	C2DFImage fimage(C2DBounds(4, 4), init );
+	fimage.set_pixel_size(C2DFVector(2.0, 3.0));
+
+
+	CScale scaler(C2DBounds(0,0), "bspline3");
+
+	P2DImage scaled = scaler.filter(fimage);
+
+	BOOST_CHECK_EQUAL(scaled->get_size(),C2DBounds(4, 4));
+
+	const C2DFImage& fscaled = dynamic_cast<const C2DFImage& >(*scaled);
+
+	BOOST_CHECK_EQUAL(fscaled.get_pixel_size(), C2DFVector(2.0f, 3.0f));
+
+	for (size_t i = 0; i < 16; ++i) {
+		cvdebug() << i << ":" << fscaled[i] << " - " << init[i] << '\n'; 
+		BOOST_CHECK_EQUAL(fscaled[i], init[i]); 
 	}
 		
 

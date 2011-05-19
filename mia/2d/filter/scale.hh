@@ -54,8 +54,7 @@ public:
 	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-	mutable int m_sx;
-	mutable int m_sy;
+	mia::C2DBounds m_s; 
 	std::string m_interp;
 };
 

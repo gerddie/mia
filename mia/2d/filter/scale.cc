@@ -37,8 +37,9 @@
    \item [Input:] The scaled image with the same pixel type.  
    
    \plugtabstart
-   sx & int & target width & 128 \\
-   sy & int & target height & 128 \\
+   sx & int & target width, (0: use input width) & 0 \\
+   sy & int & target height (0: use input height) & 0 \\
+   s & 2D Vector & target size (component=0: use input height) & <0,0> \\
    interp & string & interpolation kernel descriptor & "bspline3" \\\hline 
    \plugtabend
 
@@ -83,16 +84,23 @@ CScale::result_type CScale::operator () (const T2DImage<T>& src) const
 	if (src.get_size() == m_size)
 		return CScale::result_type(new T2DImage<T>(src));
 
-	T2DImage<T> *result = new T2DImage<T>(m_size);
+	// todo: if  the target size equals the input size 
+	// one could avoid the copying
+
+	C2DBounds target_size(m_size.x ? m_size.x  : src.get_size().x, 
+			      m_size.y ? m_size.y  : src.get_size().y); 
+
+
+	T2DImage<T> *result = new T2DImage<T>(target_size);
 	typename T2DImage<T>::iterator i = result->begin();
-	C2DFVector factor(float(src.get_size().x / float(m_size.x) ),
-			  float(src.get_size().y / float(m_size.y) ));
+	C2DFVector factor(float(src.get_size().x / float(target_size.x) ),
+			  float(src.get_size().y / float(target_size.y) ));
 	
-	C1DScalarFixed scaler_x(*m_ipf->get_kernel(), src.get_size().x, m_size.x);
-	C1DScalarFixed scaler_y(*m_ipf->get_kernel(), src.get_size().y, m_size.y);
+	C1DScalarFixed scaler_x(*m_ipf->get_kernel(), src.get_size().x, target_size.x);
+	C1DScalarFixed scaler_y(*m_ipf->get_kernel(), src.get_size().y, target_size.y);
 
 	// run x-scaling 
-	T2DImage<double> tmp(C2DBounds(m_size.x, src.get_size().y)); 
+	T2DImage<double> tmp(C2DBounds(target_size.x, src.get_size().y)); 
 	for (size_t y = 0; y < src.get_size().y; ++y) {
 		copy(src.begin_at(0,y), src.begin_at(0,y+1), scaler_x.input_begin()); 
 		scaler_x.run(); 
@@ -101,7 +109,7 @@ CScale::result_type CScale::operator () (const T2DImage<T>& src) const
 
 	// run y-scaling 
 	vector<double> in_buffer(src.get_size().y); 
-	vector<T> out_buffer(m_size.y);
+	vector<T> out_buffer(target_size.y);
 	for (size_t x = 0; x < tmp.get_size().x; ++x) {
 		tmp.get_data_line_y(x, in_buffer);
 		copy(in_buffer.begin(), in_buffer.end(), scaler_y.input_begin()); 
@@ -123,18 +131,20 @@ CScale::result_type CScale::do_filter(const C2DImage& image) const
 
 C2DScaleFilterPlugin::C2DScaleFilterPlugin():
 	C2DFilterPlugin("scale"),
-	m_sx(128),
-	m_sy(128),
+	m_s(0,0),
 	m_interp("bspline3")
 {
-	add_parameter("sx", new CIntParameter(m_sx, 1,
-					      numeric_limits<int>::max(), true,
-					      "target size in x direction"));
+	add_parameter("sx", new CUIntParameter(m_s.x, 0,
+					       numeric_limits<unsigned int>::max(), false,
+					       "target size in x direction, 0: use input size"));
+	
+	add_parameter("sy", new CUIntParameter(m_s.y, 0,
+					       numeric_limits<unsigned int>::max(), false,
+					       "target size in y direction, 0: use input size"));
+	
+	add_parameter("s", new C2DBoundsParameter(m_s, false, "target size as 2D vector"));
 
-	add_parameter("sy", new CIntParameter(m_sy, 1,
-					      numeric_limits<int>::max(), true,
-					      "target size in y direction"));
-
+	
 	add_parameter("interp", new CStringParameter(m_interp, false,
 						     "interpolation method to be used "));
 }
@@ -142,7 +152,7 @@ C2DScaleFilterPlugin::C2DScaleFilterPlugin():
 
 C2DScaleFilterPlugin::ProductPtr C2DScaleFilterPlugin::do_create()const
 {
-	return C2DScaleFilterPlugin::ProductPtr(new CScale(C2DBounds(m_sx, m_sy), m_interp));
+	return C2DScaleFilterPlugin::ProductPtr(new CScale(m_s, m_interp));
 }
 
 const string C2DScaleFilterPlugin::do_get_descr()const
