@@ -38,9 +38,8 @@
    
    \plugtabstart
    \plugtabend
-   shape & string & shape to define neighbourhood of voxels, only simple neighborhoods are supported & 6n \\ 
+   shape & string & shape to define neighbourhood of voxels, only simple 2D neighborhoods are supported & 4n \\ 
    map & string & file name where the label join map will be saved &  - \ \
-   first & bool & Set true if this is the first labeling pass
    \end{description}
 
    atexEnd  
@@ -219,11 +218,69 @@ void C2DLabelStackFilter::post_finalize()
 		else 
 			m_target[v.y] = v.x; 
 	}
+	if (!m_map_file.empty()) {
+		ofstream outfile(m_map_file.c_str(), ios_base::out );
+		outfile << "MiaLabemap\n" << m_target.size() << "\n"; 
+		
+		for (auto i = m_target.begin(); i != m_target.end(); ++i) 
+			outfile << i->first << " " << i->second << "\n"; 
+		if (!outfile.good()) {
+			cverr() << "C2DLabelStackFilter: unable to write mapping file '" 
+				<< m_map_file << "'\n"; 
+		}
+	}
 }
 
 const C2DLabelStackFilter::JointsMap& C2DLabelStackFilter::get_joints() const
 {
 	return m_target; 
 }
+
+
+class C2DLabelFifoFilterPlugin : public C2DFifoFilterPlugin {
+public:
+	C2DLabelFifoFilterPlugin();
+private:
+
+	virtual const string do_get_descr() const;
+	virtual bool do_test() const;
+	virtual C2DFifoFilterPlugin::ProductPtr do_create()const;
+
+	string m_neighborhood;
+	string m_mapfile;
+};
+
+C2DLabelFifoFilterPlugin::C2DLabelFifoFilterPlugin():
+	C2DFifoFilterPlugin("label"),
+	m_neighborhood("4n")
+{
+	add_parameter("n", new CStringParameter(m_neighborhood, false, 
+						"2D neighborhood shape to define connectedness"));
+	add_parameter("map", new CStringParameter(m_mapfile, true, 
+						  "Mapfile to save label numbers that are joined"));
+}
+
+const string C2DLabelFifoFilterPlugin::do_get_descr() const
+{
+	return "Stack Label filter";
+}
+
+bool C2DLabelFifoFilterPlugin::do_test() const
+{
+	return true;
+}
+
+C2DFifoFilterPlugin::ProductPtr C2DLabelFifoFilterPlugin::do_create()const
+{
+	auto shape = C2DShapePluginHandler::instance().produce(m_neighborhood); 
+	return C2DFifoFilterPlugin::ProductPtr(new C2DLabelStackFilter(m_mapfile, shape));
+}
+
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+
+	return new C2DLabelFifoFilterPlugin();
+}
+
 
 NS_END
