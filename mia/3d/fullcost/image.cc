@@ -140,9 +140,7 @@ void C3DImageFullCost::do_set_size()
 			m_ref_scaled = m_ref;
 		}else{
 			stringstream filter_descr; 
-			filter_descr << "scale:sx=" << get_current_size().x 
-				     << ",sy=" << get_current_size().y
-				     << ",sz=" << get_current_size().z; 
+			filter_descr << "scale:s=" << get_current_size(); 
 			auto scaler = C3DFilterPluginHandler::instance().produce(filter_descr.str()); 
 			assert(scaler); 
 			cvdebug() << "C3DImageFullCost:scale images to " << get_current_size() << 

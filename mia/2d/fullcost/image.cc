@@ -151,7 +151,7 @@ void C2DImageFullCost::do_set_size()
 			m_ref_scaled = m_ref; 
 		}else{
 			stringstream filter_descr; 
-			filter_descr << "scale:sx=" << get_current_size().x << ",sy=" << get_current_size().y; 
+			filter_descr << "scale:s=" << get_current_size(); 
 			auto scaler = C2DFilterPluginHandler::instance().produce(filter_descr.str()); 
 			assert(scaler); 
 			cvdebug() << "C2DImageFullCost:scale images to " << get_current_size() << 
