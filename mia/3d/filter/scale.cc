@@ -37,8 +37,10 @@
    \item [Input:] The scaled image with the same pixel type.  
    
    \plugtabstart
-   sx & int & target width & 128 \\
-   sy & int & target height & 128 \\
+   sx & int & target width (0: use input image value) )& 0 \\
+   sy & int & target height (0: use input image value) & 0 \\
+   sz & int & target height (0: use input image value) & 0 \\
+   s & 3D-Vector & target size (component 0: use input image value)  & <0,0,0> \\
    interp & string & interpolation kernel descriptor & "bspline3" \\\hline 
    \plugtabend
 
@@ -83,19 +85,22 @@ CScale::result_type CScale::operator () (const T3DImage<T>& src) const
 	if (src.get_size() == m_size)
 		return CScale::result_type(new T3DImage<T>(src));
 
-	T3DImage<T> *result = new T3DImage<T>(m_size);
-	typename T3DImage<T>::iterator i = result->begin();
+	C3DBounds target_size( m_size.x ? m_size.x : src.get_size().x, 
+			       m_size.y ? m_size.y : src.get_size().y, 
+			       m_size.z ? m_size.z : src.get_size().z ); 
 	
-	C1DScalarFixed scaler_x(*m_ipf->get_kernel(), src.get_size().x, m_size.x);
-	C1DScalarFixed scaler_y(*m_ipf->get_kernel(), src.get_size().y, m_size.y);
-	C1DScalarFixed scaler_z(*m_ipf->get_kernel(), src.get_size().z, m_size.z);
+	T3DImage<T> *result = new T3DImage<T>(target_size);
+	
+	C1DScalarFixed scaler_x(*m_ipf->get_kernel(), src.get_size().x, target_size.x);
+	C1DScalarFixed scaler_y(*m_ipf->get_kernel(), src.get_size().y, target_size.y);
+	C1DScalarFixed scaler_z(*m_ipf->get_kernel(), src.get_size().z, target_size.z);
 
-	C3DFVector factor(float(m_size.x) / float(src.get_size().x), 
-			  float(m_size.y) / float(src.get_size().y), 
-			  float(m_size.z) / float(src.get_size().z)); 
+	C3DFVector factor(float(target_size.x) / float(src.get_size().x), 
+			  float(target_size.y) / float(src.get_size().y), 
+			  float(target_size.z) / float(src.get_size().z)); 
 
 	// run x-scaling 
-	T3DImage<double> tmp(C3DBounds(m_size.x, src.get_size().y, src.get_size().z)); 
+	T3DImage<double> tmp(C3DBounds(target_size.x, src.get_size().y, src.get_size().z)); 
 	for (size_t z = 0; z < src.get_size().z; ++z) {
 		for (size_t y = 0; y < src.get_size().y; ++y) {
 			copy(src.begin_at(0,y,z), src.begin_at(0,y+1,z), scaler_x.input_begin()); 
@@ -105,11 +110,11 @@ CScale::result_type CScale::operator () (const T3DImage<T>& src) const
 	}
 
 	// run y-scaling 
-	T3DImage<double> tmp2(C3DBounds(m_size.x, m_size.y, src.get_size().z)); 
+	T3DImage<double> tmp2(C3DBounds(target_size.x, target_size.y, src.get_size().z)); 
 	vector<double> in_buffer(src.get_size().y); 
-	vector<double> out_buffer(m_size.y);
+	vector<double> out_buffer(target_size.y);
 	for (size_t z = 0; z < src.get_size().z; ++z) {
-		for (size_t x = 0; x < m_size.x; ++x) {
+		for (size_t x = 0; x < target_size.x; ++x) {
 			tmp.get_data_line_y(x, z, in_buffer);
 			cvdebug() << x << ", " << z << ":" << in_buffer << "\n"; 
 			copy(in_buffer.begin(), in_buffer.end(), scaler_y.input_begin()); 
@@ -121,9 +126,9 @@ CScale::result_type CScale::operator () (const T3DImage<T>& src) const
 
 	// run z-scaling 
 	in_buffer.resize(src.get_size().z); 
-	vector<T> out_buffer_t(m_size.z);
-	for (size_t y = 0; y < m_size.y; ++y) {
-		for (size_t x = 0; x < m_size.x; ++x) {
+	vector<T> out_buffer_t(target_size.z);
+	for (size_t y = 0; y < target_size.y; ++y) {
+		for (size_t x = 0; x < target_size.x; ++x) {
 			tmp2.get_data_line_z(x, y, in_buffer);
 			copy(in_buffer.begin(), in_buffer.end(), scaler_z.input_begin()); 
 			scaler_z.run(); 
@@ -145,24 +150,24 @@ CScale::result_type CScale::do_filter(const C3DImage& image) const
 
 C3DScaleFilterPlugin::C3DScaleFilterPlugin():
 	C3DFilterPlugin("scale"),
-	m_s(128,128,128), 
+	m_s(0,0,0), 
 	m_interp("bspline3")
 {
-	add_parameter("sx", new CUIntParameter(m_s.x, 1,
+	add_parameter("sx", new CUIntParameter(m_s.x, 0,
 					      numeric_limits<unsigned int>::max(), true,
-					      "target size in x direction"));
+					      "target size in x direction (0:use input image size)"));
 
-	add_parameter("sy", new CUIntParameter(m_s.y, 1,
+	add_parameter("sy", new CUIntParameter(m_s.y, 0,
 					      numeric_limits<unsigned int>::max(), true,
-					      "target size in y direction"));
+					      "target size in y direction (0:use input image size)"));
 
-	add_parameter("sz", new CUIntParameter(m_s.z, 1,
+	add_parameter("sz", new CUIntParameter(m_s.z, 0,
 					      numeric_limits<unsigned int>::max(), true,
-					      "target size in y direction"));
-	
-	
-	add_parameter("interp", new CStringParameter(m_interp, false,
-						     "interpolation method to be used "));
+					      "target size in y direction (0:use input image size)"));
+
+	add_parameter("s", new C3DBoundsParameter(m_s, 0,"target size (component 0:use input image size)"));
+
+	add_parameter("interp", new CStringParameter(m_interp, false, "interpolation method to be used "));
 }
 
 

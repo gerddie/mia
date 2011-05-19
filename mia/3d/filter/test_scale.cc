@@ -174,6 +174,30 @@ BOOST_AUTO_TEST_CASE( test_downscale_float )
 
 }
 
+BOOST_AUTO_TEST_CASE( test_noscale_float )
+{
+
+	C3DFImage fimage(C3DBounds(8, 8, 8), init_float );
+	fimage.set_voxel_size(C3DFVector(2.0, 3.0, 4.0));
+
+
+	CScale scaler(C3DBounds(0, 0, 0), "bspline3");
+
+	P3DImage scaled = scaler.filter(fimage);
+
+	BOOST_CHECK_EQUAL(scaled->get_size(),C3DBounds(8, 8, 8));
+
+	const auto fscaled = dynamic_cast<const C3DFImage& >(*scaled);
+
+	BOOST_CHECK_EQUAL(fscaled.get_voxel_size(), C3DFVector(2.0f, 3.0f, 4.0f));
+
+	for (size_t i = 0; i < 512; ++i) {
+		cvdebug() << i << ":" << fscaled[i] << " - " << init_float[i] << '\n'; 
+		BOOST_CHECK_CLOSE(fscaled[i], init_float[i], 0.1); 
+	}
+}
+
+
 const float init_float[8*64] = {
 	0, 0, 0, 0, 1, 1, 1, 1,/**/ 
 	0, 0, 0, 0, 1, 1, 1, 1,/**/ 
