@@ -24,31 +24,104 @@
 #include <mia/3d/fifotestfixture.hh>
 #include <mia/3d/fifof/label.hh>
 
-BOOST_FIXTURE_TEST_CASE( test_fifof_label , RegiongrowFixture )
+NS_MIA_USE; 
+
+using namespace label_2dstack_filter; 
+namespace bfs=::boost::filesystem;
+
+
+BOOST_FIXTURE_TEST_CASE( test_fifof_label , fifof_Fixture )
 {
-	const size_t n_slices = 5; 
-	const C2DBounds size(6,6); 
+	list< bfs::path> shape2dsearchpath;
+	shape2dsearchpath.push_back(bfs::path("..")/bfs::path("..")/
+				   bfs::path("2d")/bfs::path("shapes"));
+	C2DShapePluginHandler::set_search_path(shape2dsearchpath);
+
+
+	const size_t n_slices = 6; 
+	const C2DBounds size(4,4); 
 	
-	unsigned char input_data[n_slices * 6 * 6] = { 
-		  0, 5, 0,   0, 7, 0,   0, 0, 0 , 
-		  0, 1, 0,   0, 6, 0,   0, 0, 0 , 
-		  0, 2, 0,   8, 9, 7,   0, 6, 6 , 
-		  0, 3, 0,   0, 7, 0,   0, 0, 6 , 
-		  6, 4, 0,   0, 0, 0,   0, 0, 6 
+	bool input_data[n_slices * 4 * 4] = { 
+		  0, 0, 0, 0,  
+		  1, 0, 0, 0,   
+		  0, 0, 0, 0,
+		  0, 1, 0, 0,
+
+		  0, 0, 0, 0,  
+		  1, 0, 0, 0,
+		  0, 0, 0, 0,
+		  0, 1, 0, 1,
+		  
+		  1, 0, 0, 0, 
+		  1, 0, 0, 0, 
+		  0, 0, 0, 0, 
+		  0, 1, 0, 1, 
+
+		  0, 1, 0, 0, 
+		  0, 0, 0, 0,  
+		  0, 0, 1, 0,  
+		  0, 1, 0, 1,  
+
+		  0, 0, 0, 0,  
+		  1, 0, 0, 0,   
+		  0, 0, 1, 0,
+		  0, 1, 1, 1,
+
+		  0, 0, 0, 0,  
+		  1, 0, 0, 0,
+		  0, 0, 0, 0,
+		  0, 1, 0, 1,
+
 	};
 
-	bool test_data[n_slices * 6 * 6] = {
-		  0, 0, 0,   0, 1, 0,   0, 0, 0, 
-		  0, 0, 0,   0, 1, 0,   0, 0, 0, 
-		  0, 0, 0,   1, 1, 1,   0, 1, 1, 
-		  0, 0, 0,   0, 1, 0,   0, 0, 1, 
-		  0, 0, 0,   0, 0, 0,   0, 0, 1 
+	unsigned short test_data[n_slices * 4 * 4] = {
+		  0, 0, 0, 0,  
+		  1, 0, 0, 0,   
+		  0, 0, 0, 0,
+		  0, 2, 0, 0,
+
+		  0, 0, 0, 0,  
+		  1, 0, 0, 0,
+		  0, 0, 0, 0,
+		  0, 2, 0, 3,
+		  
+		  1, 0, 0, 0, 
+		  1, 0, 0, 0, 
+		  0, 0, 0, 0, 
+		  0, 2, 0, 3, 
+
+		  0, 4, 0, 0, 
+		  0, 0, 0, 0,  
+		  0, 0, 5, 0,  
+		  0, 2, 0, 3,  
+
+		  0, 0, 0, 0,  
+		  6, 0, 0, 0,   
+		  0, 0, 5, 0,
+		  0, 5, 5, 5,
+
+		  0, 0, 0, 0,  
+		  6, 0, 0, 0,
+		  0, 0, 0, 0,
+		  0, 5, 0, 5,
+
 	};
 
 	prepare(input_data, test_data, size, n_slices); 
 
-	C2DLabelFifoFilter filter;
+	auto shape = C2DShapePluginHandler::instance().produce("4n"); 
+	C2DLabelStackFilter filter("", shape ); 
 	call_test(filter);
+
+	auto jmap = filter.get_joints(); 
+	BOOST_CHECK_EQUAL(jmap.size(), 2); 
+
+	auto val_pair = jmap.begin(); 
+	BOOST_CHECK_EQUAL(val_pair->first, 3); 
+	BOOST_CHECK_EQUAL(val_pair->second, 2); 
+	++val_pair; 
+	BOOST_CHECK_EQUAL(val_pair->first, 5); 
+	BOOST_CHECK_EQUAL(val_pair->second, 2); 
 
 }
 

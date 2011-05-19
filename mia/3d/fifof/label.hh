@@ -1,4 +1,5 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
+ *
  * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
@@ -31,38 +32,47 @@
 #include <limits>
 #include <numeric>
 
+#include <mia/2d/shape.hh>
 #include <mia/3d/2dimagefifofilter.hh>
 
 NS_BEGIN(label_2dstack_filter)
 
 
-class C2DLabelFifoFilter: public mia::C2DImageFifoFilter {
+class C2DLabelStackFilter: public mia::C2DImageFifoFilter {
 public: 
 	typedef mia::C2DImage *result_type; 
+	typedef std::map<unsigned short, unsigned short> JointsMap; 
 
-	C2DLabelFifoFilter(const std::string& mapfile, mia::P2DShape n); 
 
+	C2DLabelStackFilter(const std::string& mapfile, mia::P2DShape n); 
+	~C2DLabelStackFilter(); 
+
+	// this is public for testing 
+	const JointsMap& get_joints() const; 
 private: 
 	virtual void do_initialize(::boost::call_traits<mia::P2DImage>::param_type x); 
 	virtual void do_push(::boost::call_traits<mia::P2DImage>::param_type x); 
 	virtual mia::P2DImage do_filter();
 	virtual void post_finalize(); 
-	void shift_buffer(); 
+
 	
-	void label(C2DBitImage& input); 
-	void new_label(C2DBitImage& input); 
-	void re_label(C2DBitImage& input);
-	void grow( int x, int y, C2DBitImage& input, unsigned short l); 
+	void label(mia::C2DBitImage& input); 
+	void new_label(mia::C2DBitImage& input); 
+	void re_label(mia::C2DBitImage& input);
+	void label_new_regions(mia::C2DBitImage& input); 
+	void grow( int x, int y, mia::C2DBitImage& input, unsigned short l); 
 
 	mia::P2DShape m_neigbourhood; 
 	mutable int   m_last_label;
-	std::set<T2DVector<unsigned short> > m_joints; 
+	std::set<mia::T2DVector<unsigned short>, 
+		 mia::less_vector2d<unsigned short> > m_joints; 
 	std::string   m_map_file;
 	bool m_first_pass; 
 
 	mia::C2DBounds m_slice_size; 
-	mia::C3DUSImage m_out_buffer;
+	mia::C2DUSImage m_out_buffer;
 	
+	JointsMap m_target; 
 	
 
 };

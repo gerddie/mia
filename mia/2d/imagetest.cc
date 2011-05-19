@@ -55,7 +55,7 @@ struct __compare<T,T> {
 	static void apply(const T2DImage<T>& a, const T2DImage<T>& b) {
 		const bool is_fp = is_floating_point<T>::value;
 		typename T2DImage<T>::const_iterator ia = a.begin();
-		typename T2DImage<T>::const_iterator ie = a.begin();
+		typename T2DImage<T>::const_iterator ie = a.end();
 		typename T2DImage<T>::const_iterator ib = b.begin();
 
 

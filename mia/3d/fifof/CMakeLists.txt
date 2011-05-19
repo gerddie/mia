@@ -1,6 +1,7 @@
 SET(fifof2dNew
   byslice
   gauss
+  label
   median
   mlv
   morphological

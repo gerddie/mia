@@ -53,9 +53,7 @@ void fifof_Fixture::call_test(C2DImageFifoFilter& filter)const
 	BOOST_REQUIRE(r.size() == m_test_data.size());
 
 	for (size_t i = 0; i < r.size(); ++i) {
-		BOOST_CHECK_EQUAL(r[i]->get_pixel_type(), m_test_data[i]->get_pixel_type());
-		BOOST_CHECK_EQUAL(r[i]->get_size(), m_test_data[i]->get_size());
-
+		cvdebug() << "fifof_Fixture: test slice " << i << "\n"; 
 		test_image_equal(*r[i], *m_test_data[i]);
 	}
 }

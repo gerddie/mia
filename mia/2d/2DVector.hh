@@ -409,6 +409,14 @@ bool operator < (const T2DVector<T>& a, const T2DVector<S>& b)
 	return a.x < b.x && a.y < b.y; 
 }
 
+template <typename T>
+struct less_vector2d {
+	bool operator() (const T2DVector<T>& a, const T2DVector<T>& b) 
+	{
+		return a.x < b.x || (a.x == b.x && a.y < b.y); 
+	}
+}; 
+
 template <typename T, template <typename> class Vector> 
 struct cross_product {
 	typedef T return_type; 

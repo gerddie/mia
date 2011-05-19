@@ -1,4 +1,5 @@
 /* -*- mia-c++  -*-
+ *
  * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * Max-Planck-Institute for Evolutionary Anthropology 
@@ -19,14 +20,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#include <limits>
-#include <queue>
-#include <ostream>
-#include <fstream>
-#include <set>
-#include <map>
-#include <ctime>
-
 /* 
    atexBeginPluginDescription{2D image stack filters}
    
@@ -53,16 +46,26 @@
    atexEnd  
  */
 
+#include <limits>
+#include <queue>
+#include <ostream>
+#include <fstream>
+#include <set>
+#include <map>
+#include <ctime>
+#include <mia/3d/fifof/label.hh>
+
+
 NS_BEGIN(label_2dstack_filter)
 
 NS_MIA_USE; 
 using namespace std; 
 
 C2DLabelStackFilter::C2DLabelStackFilter(const string& mapfile, P2DShape n):
-	C2DStackFilterBase(1, 1, 1), 
-	m_neighborhood(n), 
-	m_max_label_num(1), 
-	m_map_file(map_file), 
+	C2DImageFifoFilter(1, 1, 0), 
+	m_neigbourhood(n), 
+	m_last_label(1), 
+	m_map_file(mapfile), 
 	m_first_pass(true)
 {
 }
@@ -71,12 +74,12 @@ C2DLabelStackFilter::~C2DLabelStackFilter()
 {
 }
 
-
+static int slice = 0; 
 void C2DLabelStackFilter::do_initialize(::boost::call_traits<mia::P2DImage>::param_type x)
 {
 	m_first_pass = true; 
-	m_label_map.clear(); 
-	m_out_buffer.clear(); 
+	m_joints.clear(); 
+	m_out_buffer = C2DUSImage(x->get_size()); 
 	m_last_label = 1; 
 }
 
@@ -86,26 +89,29 @@ void C2DLabelStackFilter::grow( int x, int y, C2DBitImage& input, unsigned short
 	seed.push_back(C2DBounds(x,y)); 
 	
 	while (!seed.empty()) {
-		C2DBounds l = seed.back(); 
+		C2DBounds loc = seed.back(); 
 		seed.pop_back(); 
-		for (C2DShape::const_iterator si = m_shape.begin(); 
-		     si != m_shape.end(); ++si) {
-			size_t px = si->x + l.x; 
-			size_t py = si->y + l.y; 
+		for (auto si = m_neigbourhood->begin(); 
+		     si != m_neigbourhood->end(); ++si) {
+			size_t px = si->x + loc.x; 
+			size_t py = si->y + loc.y; 
 			if (px >= input.get_size().x ||
 			    py >= input.get_size().y) 
 				continue; 
 			
 			unsigned short lold = m_out_buffer(px, py); 
 			if (lold) {
-				assert( l != lold); 
-				if (lold > l) 
-					m_joints.insert(T2DVector<unsigned short>(l, lold)); 
-				else
-					m_joints.insert(T2DVector<unsigned short>(lold, l)); 
-				continue; 
-			}
-			if (input(px, py)) {
+				if (l != lold) {
+					if (lold > l) 
+						m_joints.insert(T2DVector<unsigned short>(l, lold)); 
+					else
+						m_joints.insert(T2DVector<unsigned short>(lold, l)); 
+					// overwrite old label to reduce numbers of lables. 
+					cvdebug () << "overwrite " << lold << " with " << l << "\n"; 
+					m_out_buffer(px, py) = l; 
+					cvdebug () << "Now at " << m_joints.size() << " joints\n"; 
+				}
+			}else if (input(px, py)) {
 				m_out_buffer(px, py) = l; 
 				input(px, py) = false; 
 				seed.push_back(C2DBounds(px,py)); 
@@ -120,8 +126,10 @@ void C2DLabelStackFilter::label_new_regions(C2DBitImage& input)
 	C3DUSImage::iterator usi = m_out_buffer.begin(); 
 	
 	for (size_t y = 0; y < input.get_size().y; ++y) 
-		for (size_t x = 0; x < input.get_size().x; ++x, ++usi, ++i) {
+		for (size_t x = 0; x < input.get_size().x; ++x, ++usi, ++ii) {
 			if (*ii) {
+				cvdebug() << "("<< x << ", " << y <<"," << slice <<  "):" 
+					  << m_last_label << "\n"; 
 				*usi = m_last_label++;
 				*ii = false; 
 				grow(x,y,input,*usi); 
@@ -145,7 +153,7 @@ void C2DLabelStackFilter::label(C2DBitImage& input)
 
 void C2DLabelStackFilter::new_label(C2DBitImage& input)
 {
-	m_out_buffer = C3DUSImage(input.get_size(), input.get_attribute_list()); 
+	m_out_buffer = C2DUSImage(input.get_size(), input); 
 	label_new_regions(input); 
 }
 
@@ -173,48 +181,49 @@ void  C2DLabelStackFilter::re_label(C2DBitImage& input)
 
 void C2DLabelStackFilter::do_push(::boost::call_traits<mia::P2DImage>::param_type x)
 {
-	const C2DBitImage *b = dynamic_cast<const C2DBitImage *>(x); 
-	if (!b) 
-		throw invalid_argument("C2DLabelStackFilter: input image is not binary"); 
 	
-	C2DBitImage input(*b); 
-
+	const C2DBitImage *inp = dynamic_cast<const C2DBitImage*>(x.get()); 
+	if (!inp) 
+		throw invalid_argument("C2DLabelStackFilter: input images must be binary"); 
+	
+	C2DBitImage input(*inp); 
 	if (m_first_pass) {
-		m_out_buffer = label(input); 
+		new_label(input); 
+		m_first_pass = false; 
 	}else {
-		m_out_buffer = re_label(input);  
+		re_label(input);  
 	}
+	++slice; 
 
 }
 
 mia::P2DImage C2DLabelStackFilter::do_filter()
 {
-	return P2DImage(new C3DUSImage(m_out_buffer)); 
+	return P2DImage(new C2DUSImage(m_out_buffer)); 
 }
 void C2DLabelStackFilter::post_finalize()
 {
-	// removed chained joints in the label map and save it
-	typedef map<unsigned short, unsigned short> CMapMap; 
-	
 	priority_queue<T2DVector<unsigned short> > sorted; 
+	cvdebug()<< "got " << m_joints.size() << " joints\n"; 
 
-	for (std::set<T2DVector<unsigned short> >::const_iterator i = 
-		     m_joints.begin();  i != m_joints.end();  ++i)
+	for (auto i = m_joints.begin();  i != m_joints.end();  ++i)
 		sorted.push(*i); 
-
-	CMapMap target; 
 	
 	while (!sorted.empty()) {
-		T2DVector<unsigned short> v = sorted.front(); 
+		auto v = sorted.top(); 
 		sorted.pop();
 		
-		CMapMap::const_iterator m = target.find(v.y);
-		if (m == target.end())  
-			target[v.y] = v.x;
-		else {
-			target[v.x] = m->y; 
-		}
+		auto m = m_target.find(v.y);
+		if (m != m_target.end())  
+			m_target[v.x] = m->second; 
+		else 
+			m_target[v.y] = v.x; 
 	}
+}
+
+const C2DLabelStackFilter::JointsMap& C2DLabelStackFilter::get_joints() const
+{
+	return m_target; 
 }
 
 NS_END
