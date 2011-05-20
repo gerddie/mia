@@ -21,6 +21,44 @@
  *
  */
 
+/*
+  LatexBeginProgramDescription{2D image processing}
+
+  \subsection{mia-2ddistance}
+  \label{mia-2ddistance}
+  
+  \begin{description}
+  \item [Description:] This program evaluates the maximum or avarage distance of a binary mask 
+                       using a distance map that was evaluated by using the 
+		       \hyperref[filter2d:distance]{distance image filter}. 
+		       The result is written to stdout. 
+
+  The program is called like 
+  \
+  \begin{lstlisting}
+mia-2ddistance -i <mask> -d <distance> [options]
+  \end{lstlisting}
+  \item [Options:] $\:$
+
+  \optiontable{
+  \optinfile
+  \cmdopt{distance-file}{d}{string}{Distance map}
+  \cmdopt{scale}{s}{double}{Scale the values of the distance map by dividing by this value}
+  \cmdopt{method}{m}{string}{Method to combine the values of the distance measure. 
+                            Average(avg) and maximum(max) are supported.} 
+  }
+
+  \item [Example:] Evaluate the distances of the pixels in mask.png by using the map distance.v
+                   and return the maximum distance
+   \
+  \begin{lstlisting}
+mia-2ddistance -i mask.png -d distance.v -m max
+  \end{lstlisting}
+  \end{description}
+  
+  LatexEnd
+*/
+
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -38,9 +76,6 @@
 
 using namespace std;
 NS_MIA_USE
-
-// scaling of the distance field 
-#define SCALE 256
 
 const char *g_general_help = 
 	"This program evaluate the average or maximum distance of a mask\n"
@@ -62,37 +97,6 @@ const TDictMap<EOps>::Table combine_option_table[] = {
 	{NULL, dist_unknown},
 };
 
-
-template <typename T> 
-struct __convert_to_double {
-	static C2DDImage apply(const T2DImage<T>& image, double scale) {
-		if (scale <= 0.0) 
-			THROW(invalid_argument, "Scaling factor must be >= 0 but it is " << scale); 
-		C2DDImage result(image.get_size()); 
-		transform(image.begin(), image.end(),  result.begin(), 
-			  [scale](T x){return x/scale;}); 
-		return result; 
-	}
-};
-
-
-template <> 
-struct __convert_to_double<float> {
-	static C2DDImage apply(const C2DFImage& image, double scale) {
-		cvdebug() << "Input is floating point and will not be scaled\n"; 
-		C2DDImage result(image.get_size()); 
-		copy(image.begin(), image.end(),  result.begin()); 
-		return result; 
-	}
-};
-
-template <> 
-struct __convert_to_double<double> {
-	static C2DDImage apply(const C2DDImage& image, double scale) {
-		return image; 
-	}
-};
-
 class Convert2DoubleAndScale: public TFilter<C2DDImage>{
  public: 
 	Convert2DoubleAndScale(double scale):_M_scale(scale){
@@ -100,7 +104,10 @@ class Convert2DoubleAndScale: public TFilter<C2DDImage>{
 	
 	template <typename T> 
 	C2DDImage operator ()(const T2DImage<T>& image) const {
-		return __convert_to_double<T>::apply(image, _M_scale); 
+		C2DDImage result(image.get_size()); 
+		transform(image.begin(), image.end(),  result.begin(), 
+			  [_M_scale](T x){return x/_M_scale;}); 
+		return result; 
 	}
 private:
 	double _M_scale; 
@@ -161,8 +168,8 @@ int main( int argc, const char *argv[] )
 
 	string in_filename;
 	string dist_filename;
-	float scale = 256.0; 
-	EOps method; 
+	float scale = 1.0; 
+	EOps method = dist_avg; 
 	
 	
 	TDictMap<EOps> combine_option(combine_option_table); 
