@@ -55,7 +55,8 @@ BOOST_AUTO_TEST_CASE(test_transform_io)
 
 	const char *io[] = {
 		"x2dt",
-		"bbs"
+		"bbs",
+		"pbs"
 	}; 
 	const size_t n_io = sizeof(io)/sizeof(char*); 
 
