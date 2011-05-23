@@ -177,19 +177,29 @@ ENDMACRO(GET_BOOST_LINKERFLAG)
 # Handle BOOST
 #
 #find essecial packages
-SET(BOOST_COMPONENTS   filesystem  regex  thread  unit_test_framework serialization)
+SET(BOOST_COMPONENTS   filesystem  regex  thread  unit_test_framework serialization system)
 IF (WIN32)
-  SET(BOOST_COMPONENTS  ${BOOST_COMPONENTS} date_time system)
+  SET(BOOST_COMPONENTS  ${BOOST_COMPONENTS} date_time)
 ENDIF(WIN32)
 
 FIND_PACKAGE( Boost 1.40.0 COMPONENTS
   ${BOOST_COMPONENTS}
   REQUIRED)
 
-
-
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+
+find_path(HAVE_BOOST_PORTABLE_BINARY_ARCHIVE  
+  portable_binary_archive.hpp 
+  ${Boost_INCLUDE_DIR}/boost/archive)
+IF(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
+  ADD_SUBDIRECTORY(backport)
+  INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}/backport")
+ELSE(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
+  #if the portable binary archive has become part of the BOOST distribution 
+  #just link the serialization library 
+  SET(portable_binary_archive ${Boost_SERIALIZATION})
+ENDIF(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
 
 #ADD_DEFINITIONS(-DBOOST_FILESYSTEM_NO_DEPRECATED)
 ADD_DEFINITIONS(-DBOOST_ALL_DYN_LINK)
