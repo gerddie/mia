@@ -28,7 +28,8 @@
 #include <vector>
 #include <mia/3d/3DVector.hh>
 #include <mia/2d/2DImage.hh>
-
+#include <mia/core/iohandler.hh>
+#include <mia/core/ioplugin.hh>
 
 NS_MIA_BEGIN
 
@@ -45,8 +46,13 @@ NS_MIA_BEGIN
      Cornell Computing and Information Science TR2004-1963
 */
 
-class C2DStackDistanceTransform {
+class C2DStackDistanceTransform: public CIOData {
 public: 
+	typedef C2DStackDistanceTransform type; 
+
+	static const char * const value; 
+	static const char * const type_descr; 
+
 
 	/**
 	   Return type for the result of the evaluated distances
@@ -61,14 +67,18 @@ public:
 	}; 
 
 	
-	C2DStackDistanceTransform(); 
+	C2DStackDistanceTransform() = default; 
+	C2DStackDistanceTransform(const C2DStackDistanceTransform& other) = default; 
 
+
+	C2DStackDistanceTransform *clone() const __attribute__((warn_unused_result)); 
 	/**
 	   Construct the distance grid and initialize it
 	   \param size xy-slice of the data to be processed
+	   \param voxel_size size of a voxel
 	 */
 
-	C2DStackDistanceTransform(const C2DBounds& size);
+	C2DStackDistanceTransform(const C2DBounds& size, const C3DFVector& voxel_size = C3DFVector::_1);
 	
 	/**
 	   Read the given slice of the image stack and update the distance maps. 
@@ -93,12 +103,12 @@ public:
 	   \return true if sucessful
 	*/
 	bool save(const std::string& filename); 
-	
+
 private: 	
 	
 	float d(float fq, float q, float fv, float v)const; 
 	
-	void dt1d(vector<float>& f)const; 
+	void dt1d(vector<float>& f, float scale)const; 
 	void dt2d(C2DFImage& image)const; 
 	
 	struct SParabola {
@@ -108,16 +118,33 @@ private:
 		float fv; 
 	};
 	
-	C2DBounds _M_size; 
-	vector<int> _M_k; 
-	vector< vector<SParabola> > _M_zdt;
+	C2DBounds m_size; 
+	C3DFVector m_voxel_size; 
+	vector<int> m_k; 
+	vector< vector<SParabola> > m_zdt;
+	
 };
+
+inline std::ostream& operator << (std::ostream& os, const C2DStackDistanceTransform::DistanceFromPoint& v) 
+{
+	os << "[" << v.point << ":" << v.distance << "]"; 
+}
 
 inline bool operator == (const C2DStackDistanceTransform::DistanceFromPoint& lhs, 
 			 const C2DStackDistanceTransform::DistanceFromPoint& rhs) 
 {
 	return (lhs.point == rhs.point) && (lhs.distance == rhs.distance);
 }
+
+
+/// Base class for the generic IO of transformations 
+typedef TIOPlugin<C2DStackDistanceTransform> C2DStackDistanceTransformIO; 
+
+/// Plug-in handler for the transformation IO plug-ins 
+typedef TIOHandlerSingleton< TIOPluginHandler<C2DStackDistanceTransformIO> > C2DStackDistanceTransformIOPluginHandler;
+
+/// data key type for temporary storage of 3D transformations \sa CDatapool 
+typedef C2DStackDistanceTransformIOPluginHandler::Instance::DataKey C2DStackDistanceTransformIODataKey;
 
 NS_MIA_END
 

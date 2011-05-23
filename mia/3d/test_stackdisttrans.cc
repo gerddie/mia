@@ -30,7 +30,7 @@
 NS_MIA_USE;  
 
 
-BOOST_AUTO_TEST_CASE( test_istropic_data )
+BOOST_AUTO_TEST_CASE( test_isotropic_data )
 {
 	C2DBounds Size2D(3,3); 
 
@@ -71,10 +71,10 @@ BOOST_AUTO_TEST_CASE( test_istropic_data )
 	
 	C2DStackDistanceTransform dt(Size2D); 
 
+	dt.read(mask1, 0); 
 	dt.read(mask2, 1); 
 	dt.read(mask1, 2); 
 	dt.read(mask2, 3); 
-	dt.read(mask1, 4); 
 
 
 	auto result0 = dt.get_slice(0, ref1); 
@@ -85,6 +85,85 @@ BOOST_AUTO_TEST_CASE( test_istropic_data )
 	
 	
 	BOOST_REQUIRE(result0.size() == ref_result.size()); 
-	BOOST_CHECK(!equal(result0.begin(), result0.end(), ref_result.begin())); 
+	for( auto test = result0.begin(), ref = ref_result.begin(); test != result0.end(); 
+	     ++test, ++ref) {
+		BOOST_CHECK_EQUAL(*test, *ref); 
+	}
+
+
 }
+
+
+
+BOOST_AUTO_TEST_CASE( test_anisotropic_data )
+{
+	C2DBounds Size2D(3,3); 
+	C2DFVector pixel_size(2,3); 
+
+	bool in_3d_1[9] = { 1, 0, 0, 0, 0, 0, 0, 0, 0};
+	bool in_3d_2[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0}; 
+
+	C2DBitImage mask1(Size2D, in_3d_1); 
+	C2DBitImage mask2(Size2D, in_3d_2); 
+	mask1.set_pixel_size(pixel_size); 
+	mask2.set_pixel_size(pixel_size); 
+
+	
+	bool ref_3d_1[9] = { 1, 1, 1, 1, 1, 1, 1, 1, 1};
+	bool ref_3d_2[9] = { 0, 1, 1, 1, 1, 1, 0, 1, 1}; 
+
+
+
+	C2DBitImage ref1(Size2D, ref_3d_1); 
+	C2DBitImage ref2(Size2D, ref_3d_2); 
+	ref1.set_pixel_size(pixel_size); 
+	ref2.set_pixel_size(pixel_size); 
+	
+	vector<C2DStackDistanceTransform::DistanceFromPoint> ref_result; 
+	C3DFVector voxel_size(2.0, 3.0, 4.0); 
+	
+	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(0,0,0), 0)); 
+	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(1,0,0), 2)); 
+	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(2,0,0), 4)); 
+	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(0,1,0), 3)); 
+	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(1,1,0), sqrt(13.0f))); 
+	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(2,1,0), 5.0f)); 
+	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(0,2,0), 6)); 
+	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(1,2,0), sqrt(40.0))); 
+	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(2,2,0), sqrt(52.0f))); 
+	
+	//ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(0,0,1), 0)); 
+	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(1,0,1), sqrt(20.0f))); 
+	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(2,0,1), sqrt(32.0f))); 
+	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(0,1,1), 5.0f)); 
+	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(1,1,1), sqrt(29.0f))); 
+	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(2,1,1), sqrt(41.0f))); 
+	//ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(0,2,1), 0)); 
+	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(1,2,1), sqrt(56.0f))); 
+	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(2,2,1), sqrt(68.0f))); 
+			     
+	
+	C2DStackDistanceTransform dt(Size2D, voxel_size); 
+
+	dt.read(mask1, 0); 
+	dt.read(mask2, 1); 
+	dt.read(mask1, 2); 
+	dt.read(mask2, 3); 
+
+
+	auto result0 = dt.get_slice(0, ref1); 
+	auto result1 = dt.get_slice(1, ref2); 
+
+	
+	result0.insert(result0.end(),result1.begin(), result1.end()); 
+	
+	
+	BOOST_REQUIRE(result0.size() == ref_result.size()); 
+	for( auto test = result0.begin(), ref = ref_result.begin(); test != result0.end(); 
+	     ++test, ++ref) {
+		BOOST_CHECK_EQUAL(*test, *ref); 
+	}
+}
+
+
 

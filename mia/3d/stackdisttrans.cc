@@ -21,9 +21,16 @@
  *
  */
 
+#define VSTREAM_DOMAIN "StackDT"
 
 #include <limits>
 #include <mia/3d/stackdisttrans.hh>
+
+#include <mia/core/export_handler.hh>
+
+#include <mia/core/errormacro.hh>
+#include <mia/core/ioplugin.cxx>
+#include <mia/core/iohandler.cxx>
 
 
 NS_MIA_BEGIN
@@ -32,21 +39,27 @@ using namespace std;
 
 const float g_far = numeric_limits<float>::max(); 
 
-C2DStackDistanceTransform::C2DStackDistanceTransform()
+const char * const C2DStackDistanceTransform::value = "dt"; 
+const char * const C2DStackDistanceTransform::type_descr = "stack2d"; 
+
+
+C2DStackDistanceTransform *C2DStackDistanceTransform::clone() const 
 {
+	return new C2DStackDistanceTransform(*this); 
 }
 
-C2DStackDistanceTransform::C2DStackDistanceTransform(const C2DBounds& size):
-	_M_size(size), 
-	_M_k(size.x * size.y, 0), 
-	_M_zdt(size.x * size.y)
+C2DStackDistanceTransform::C2DStackDistanceTransform(const C2DBounds& size, const C3DFVector& voxel_size):
+	m_size(size), 
+	m_voxel_size(voxel_size),
+	m_k(size.x * size.y, 0), 
+	m_zdt(size.x * size.y)
 {
 	TRACE_FUNCTION; 
-	auto izdt = _M_zdt.begin(); 
+	auto izdt = m_zdt.begin(); 
 	
 	SParabola p = {0, 0, -g_far, g_far}; 
 	
-	for (size_t i = 0; i < _M_zdt.size(); ++i, ++izdt)
+	for (size_t i = 0; i < m_zdt.size(); ++i, ++izdt)
 		izdt->push_back(p); 
 }
 
@@ -61,13 +74,20 @@ void C2DStackDistanceTransform::read( const C2DImage& slice, int q)
 	if (!src) 
 		throw runtime_error("input image is not a bit image!");
 	
-	if (src->size() != _M_zdt.size()) 
+	if (src->size() != m_zdt.size()) 
 		throw runtime_error("input image has different size!");
+	
+	C2DFVector pixel_size = slice.get_pixel_size(); 
+	C2DFVector predev_pixel(m_voxel_size.x,  m_voxel_size.y); 
+	if ( pixel_size != predev_pixel) 
+		cvwarn() << "Input image voxel size and predefined voxel size differ: " 
+			 << pixel_size  <<  " != " << predev_pixel
+			 << " the latter takes precedence \n"; 
 	
 	auto si = src->begin(); 
 	auto ei = src->end(); 
-	auto k = _M_k.begin(); 
-	auto p = _M_zdt.begin(); 
+	auto k = m_k.begin(); 
+	auto p = m_zdt.begin(); 
 	
 	// for each point of the input mask run the DT(f) algorithm 
 	// this takes care of the z-diatance parts 
@@ -113,15 +133,22 @@ C2DStackDistanceTransform::get_slice(size_t s, const C2DImage& image) const
 	vector<C2DStackDistanceTransform::DistanceFromPoint>  result; 
 	auto src = dynamic_cast<const C2DBitImage&>(image); 
 
-	if (src.get_size() != _M_size) {
+	if (src.get_size() != m_size) {
 		THROW(invalid_argument, "input image " << s << "has a dffernt size then reference"); 
 	}
+
+	C2DFVector pixel_size = image.get_pixel_size(); 
+	C2DFVector predev_pixel(m_voxel_size.x,  m_voxel_size.y); 
+	if ( pixel_size != predev_pixel) 
+		cvwarn() << "Input image voxel size and predefined voxel size differ: " 
+			 << pixel_size  <<  " != " << predev_pixel
+			 << " the latter takes precedence \n"; 
 	
 	// evaluate the distance image for this slice
-	C2DFImage slice_tmp(_M_size); 
+	C2DFImage slice_tmp(m_size); 
 	auto i = slice_tmp.begin(); 
 	auto e = slice_tmp.end(); 
-	auto p = _M_zdt.begin(); 
+	auto p = m_zdt.begin(); 
 
 	while (i != e) {
 		size_t k = 0; 
@@ -130,7 +157,7 @@ C2DStackDistanceTransform::get_slice(size_t s, const C2DImage& image) const
 			++k; 
 		}
 		
-		float delta = float(s) - (*p)[k].v; 
+		float delta = (float(s) - (*p)[k].v) * m_voxel_size.z; 
 		*i = delta * delta + (*p)[k].fv;
 		++i; 
 		++p; 
@@ -144,8 +171,8 @@ C2DStackDistanceTransform::get_slice(size_t s, const C2DImage& image) const
 	auto isrc = src.begin(); 
 	auto iref = slice_tmp.begin(); 
 	
-	for (size_t y = 0; y < _M_size.y; ++y)
-		for (size_t x = 0; x < _M_size.x; ++x, ++iref, ++isrc)
+	for (size_t y = 0; y < m_size.y; ++y)
+		for (size_t x = 0; x < m_size.x; ++x, ++iref, ++isrc)
 			if (*isrc)
 				result.push_back(DistanceFromPoint(C3DBounds(x,y,s), sqrt(*iref))); 
 	return result; 
@@ -162,7 +189,7 @@ float C2DStackDistanceTransform::d(float fq, float q, float fv, float v)const
 	return ( fq  - fv + q * q - v * v) / (q - v) * 0.5; 
 }
 	
-void C2DStackDistanceTransform::dt1d(vector<float>& r)const
+void C2DStackDistanceTransform::dt1d(vector<float>& r, float scale)const
 {
 	TRACE_FUNCTION; 
 	vector<float> f(r); 
@@ -191,7 +218,7 @@ void C2DStackDistanceTransform::dt1d(vector<float>& r)const
 	for (size_t q = 0; q < f.size(); ++q) {
 		while (z[k+1] < q)
 			++k;
-		float delta = float(q) - v[k]; 
+		float delta = (float(q) - v[k]) * scale; 
 		r[q] = delta * delta + f[v[k]];
 	}
 }
@@ -202,15 +229,21 @@ void C2DStackDistanceTransform::dt2d(C2DFImage& image)const
 	vector<float> buffer(image.get_size().x); 
 	for (size_t y = 0; y < image.get_size().y; ++y) {
 		image.get_data_line_x(y, buffer);
-		dt1d(buffer); 
+		dt1d(buffer, m_voxel_size.x); 
 		image.put_data_line_x(y, buffer);
 	}
 	buffer.resize(image.get_size().y); 
 	for (size_t x = 0; x < image.get_size().x; ++x) {
 		image.get_data_line_y(x, buffer);
-		dt1d(buffer); 
+		dt1d(buffer, m_voxel_size.y); 
 		image.put_data_line_y(x, buffer);
 	}
 }
+
+template class TIOPlugin<C2DStackDistanceTransform>;
+template class THandlerSingleton<TIOPluginHandler<C2DStackDistanceTransformIO> >;
+template class TIOHandlerSingleton<TIOPluginHandler<C2DStackDistanceTransformIO> >;
+template class TIOPluginHandler<C2DStackDistanceTransformIO>;
+template class TPluginHandler<C2DStackDistanceTransformIO>;
 
 NS_MIA_END
