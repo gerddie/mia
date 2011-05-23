@@ -28,6 +28,7 @@ SET(MIA3D_SRC
   transformfactory.cc
   transformio.cc
   shape.cc
+  stackdisttrans.cc
   )
 
 SET(MIA3D_HEADERS
@@ -65,6 +66,7 @@ SET(MIA3D_HEADERS
 	transformio.hh
 	transformmock.hh
 	shape.hh 
+	stackdisttrans.hh
 )
 
 SET(MIA3DTEST_SRC
@@ -160,6 +162,7 @@ TEST_3D(quaternion quaternion)
 TEST_3D(ppmatrix ppmatrix)
 TEST_3D(fullcost fullcost)
 TEST_3D(iterator iterator)
+TEST_3D(stackdisttrans stackdisttrans)
 
 #
 # installation 
