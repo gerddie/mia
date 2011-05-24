@@ -70,7 +70,7 @@ public:
 
 	TNonrigidRegister(FullCostList& costs, PMinimizer minimizer,
 			    PTransformationFactory transform_creation,
-			    const InterpolatorFactory& ipf,  size_t mg_levels);
+			  const InterpolatorFactory& ipf,  size_t mg_levels, int idx = -1);
 	
 	
 	~TNonrigidRegister();

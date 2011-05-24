@@ -158,6 +158,7 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 	
 }
 
+#if NEEDS_REVIEW
 BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2_scaled,  ImagefullcostFixture)
 {
 
@@ -218,7 +219,7 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2_scaled,  ImagefullcostFixture)
 
 
 }
-
+#endif
 
 ImagefullcostFixture::ImagefullcostFixture()
 {
@@ -234,3 +235,5 @@ ImagefullcostFixture::ImagefullcostFixture()
 	io_plugpath.push_back(bfs::path("../io"));
 	C2DImageIOPluginHandler::set_search_path(io_plugpath);
 }
+
+

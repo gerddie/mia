@@ -81,10 +81,10 @@ struct  FPixelConverter {
 	T operator() (const S x)
 	{
 		long double y = m_a * (x - m_mx) + m_my; 
-		y = __dispatch_min<T, boost::is_floating_point<T>::value>::apply(y); 
+		y = __dispatch_min<T, std::is_floating_point<T>::value>::apply(y); 
 		if (y > std::numeric_limits<T>::max())
 			return std::numeric_limits<T>::max(); 
-		return mia_round<T, boost::is_floating_point<T>::value>::apply(y); 
+		return __mia_round<T, std::is_floating_point<T>::value>::apply(y); 
 	}
 
 private:
@@ -116,8 +116,8 @@ typename TConvert<Image>::result_type TConvert<Image>::convert(const Data<S>& sr
 		cvdebug() << "src_minmax = (" << src_minmax.first << ", " << src_minmax.second << ")\n"; 
 		cvdebug() << "trgt_minmax = (" << trgt_minmax.first << ", " << trgt_minmax.second << ")\n"; 
 
-		a = __get_range<T, boost::is_floating_point<T>::value>::apply() / 
-			__get_range<S, boost::is_floating_point<S>::value>::apply(); 
+		a = __get_range<T, std::is_floating_point<T>::value>::apply() / 
+			__get_range<S, std::is_floating_point<S>::value>::apply(); 
 
 		mx = src_minmax.first;
 		my = trgt_minmax.first;
@@ -132,7 +132,7 @@ typename TConvert<Image>::result_type TConvert<Image>::convert(const Data<S>& sr
 		cvdebug() << "trgt_minmax = (" << trgt_minmax.first << ", " << trgt_minmax.second << ")\n"; 
 
 		if (*src_minmax.second != *src_minmax.first) {
-			a = __get_range<T, boost::is_floating_point<T>::value>::apply() / 
+			a = __get_range<T, std::is_floating_point<T>::value>::apply() / 
 				(double(*src_minmax.second) - double(*src_minmax.first)); 
 			my = trgt_minmax.first; 
 			mx = *src_minmax.first; 

@@ -22,7 +22,6 @@
 #ifndef __mia_internal_convert_hh
 #define __mia_internal_convert_hh
 
-#include <boost/type_traits.hpp>
 #include <mia/core/filter.hh>
 
 
@@ -85,14 +84,14 @@ private:
 
 
 template <typename  T, bool is_float>
-struct mia_round {
+struct __mia_round  {
 	static T apply(T x) {
 		return x; 
 	}
 };
 
 template <typename  T>
-struct mia_round<T, false> {
+struct __mia_round<T, false> {
 	static T apply(long double x) {
 		return static_cast<T>(floor(x + 0.5));
 	}
@@ -115,7 +114,7 @@ struct __dispatch_minmax<T, true> {
 template <typename T> 
 struct get_minmax {
 	static std::pair<T, T> apply() {
-		return __dispatch_minmax<T, boost::is_floating_point<T>::value >::apply(); 
+		return __dispatch_minmax<T, std::is_floating_point<T>::value >::apply(); 
 	}
 };
 

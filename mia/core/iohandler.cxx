@@ -160,6 +160,7 @@ TIOPluginHandler<I>::load_to_pool(const std::string& fname) const
 template <typename T>
 const T& TIOHandlerSingleton<T>::instance()
 {
+	CScopedLock lock(THandlerSingleton<T>::m_creation_mutex); 
 	TRACE_FUNCTION; 
 	static TIOHandlerSingleton<T> me; 
 	return me; 

@@ -77,8 +77,8 @@ struct __dispatch_get_range<T, false> {
 	static pair<T, T> apply() {
 		pair<T, T> result = get_minmax<T>::apply();
 		T help = result.first;
-		result.first  = mia_round<T, false>::apply((double(result.second) - double(help)) / 4.0 + help);
-		result.second = mia_round<T, false>::apply((double(result.second) - double(help)) / 2.0 + help);
+		result.first  = __mia_round<T, false>::apply((double(result.second) - double(help)) / 4.0 + help);
+		result.second = __mia_round<T, false>::apply((double(result.second) - double(help)) / 2.0 + help);
 		return result;
 	}
 };

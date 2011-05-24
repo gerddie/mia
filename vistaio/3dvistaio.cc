@@ -66,6 +66,9 @@ void CVista3DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
 {
 	map.insert(pair<string,string>(".v", get_name()));
 	map.insert(pair<string,string>(".V", get_name()));
+	map.insert(pair<string,string>(".vista", get_name()));
+	map.insert(pair<string,string>(".VISTA", get_name()));
+
 }
 
 

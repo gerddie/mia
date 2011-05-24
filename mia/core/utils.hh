@@ -36,7 +36,8 @@
 #include <cmath>
 #include <stdexcept>
 #include <mia/core/defines.hh>
-#include <boost/type_traits/is_floating_point.hpp>
+
+#include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
 
@@ -100,7 +101,7 @@ struct __round<T, false> {
 template <typename T> 
 T mia_round(double x) 
 {
-	const bool is_floating_point = boost::is_floating_point<T>::value; 
+	const bool is_floating_point = std::is_floating_point<T>::value; 
 	return __round<T, is_floating_point>::apply(x); 
 }
 

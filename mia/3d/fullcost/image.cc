@@ -140,7 +140,7 @@ void C3DImageFullCost::do_set_size()
 			m_ref_scaled = m_ref;
 		}else{
 			stringstream filter_descr; 
-			filter_descr << "scale:s=" << get_current_size(); 
+			filter_descr << "scale:s=[" << get_current_size()<<"]"; 
 			auto scaler = C3DFilterPluginHandler::instance().produce(filter_descr.str()); 
 			assert(scaler); 
 			cvdebug() << "C3DImageFullCost:scale images to " << get_current_size() << 
@@ -155,6 +155,7 @@ void C3DImageFullCost::do_set_size()
 void C3DImageFullCost::do_reinit()
 {
 	TRACE_FUNCTION; 
+	//cvmsg() << "C3DImageFullCost: read " << m_src_key << " and " << m_ref_key << "\n"; 
 	m_src = get_from_pool(m_src_key);
 	m_ref = get_from_pool(m_ref_key);
 	m_src_scaled.reset(); 

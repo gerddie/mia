@@ -22,7 +22,7 @@
  */
 #include <mia/core/type_traits.hh>
 #include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+//#include <boost/test/floating_point_comparison.hpp>
 
 #include <mia/2d/imagetest.hh>
 

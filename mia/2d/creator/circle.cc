@@ -45,7 +45,6 @@
 
 #include <limits>
 #include <cmath>
-#include <mia/core/type_traits.hh>
 #include <mia/2d/creator.hh>
 
 NS_BEGIN(creator_circle_2d);

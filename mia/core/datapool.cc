@@ -35,7 +35,7 @@ CDatapool::CDatapool()
 
 boost::any CDatapool::get(const std::string& key) const
 {
-	boost::mutex::scoped_lock lock(m_mutex);
+	CScopedLock lock(m_mutex);
 	Anymap::const_iterator i = get_iterator(key);
 	m_usage[key] = true;
 	cverb << "success\n";
@@ -44,7 +44,7 @@ boost::any CDatapool::get(const std::string& key) const
 
 boost::any CDatapool::get_and_remove(const std::string& key)
 {
-	boost::mutex::scoped_lock lock(m_mutex);
+	CScopedLock lock(m_mutex);
 	Anymap::const_iterator i = get_iterator(key);
 	boost::any retval = i->second;
 	m_map.erase(key);
@@ -54,7 +54,7 @@ boost::any CDatapool::get_and_remove(const std::string& key)
 
 void CDatapool::add(const std::string& key, boost::any value)
 {
-	boost::mutex::scoped_lock lock(m_mutex);
+	CScopedLock lock(m_mutex);
 	cvdebug() << "add '" << key << "'\n";
 	m_usage[key] = false;
 	m_map[key] = value;
@@ -68,13 +68,13 @@ CDatapool& CDatapool::Instance()
 
 bool CDatapool::has_key(const std::string& key) const
 {
-	boost::mutex::scoped_lock lock(m_mutex);
+	CScopedLock lock(m_mutex);
 	return m_map.find(key) != m_map.end();
 }
 
 bool CDatapool::has_unused_data() const
 {
-	boost::mutex::scoped_lock lock(m_mutex);
+	CScopedLock lock(m_mutex);
 	bool result = false;
 	for (Usagemap::const_iterator u = m_usage.begin();
 	     u != m_usage.end(); ++u) {

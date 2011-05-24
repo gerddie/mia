@@ -257,7 +257,9 @@ typename TPluginHandler<I>::Interface *TPluginHandler<I>::plugin(const char *plu
 	if (p == m_plugins.end()) {
 		stringstream msg; 
 		msg << "Plugin '" << plugin << "' not found in '" 
-		    << I::PlugType::value << "/" <<  I::PlugData::type_descr << "'"; 
+		    << I::PlugType::value << "/" <<  I::PlugData::type_descr << "'\n"
+		    << " With search path\n"
+		    << "    '" << get_plugin_root(); 
 		throw invalid_argument(msg.str()); 
 	}
 	return p->second; 
@@ -295,7 +297,7 @@ THandlerSingleton<T>::THandlerSingleton():
 template <typename T> 
 const T& THandlerSingleton<T>::instance()
 {
-	boost::mutex::scoped_lock lock(m_creation_mutex); 
+	CScopedLock lock(m_creation_mutex); 
 	TRACE_FUNCTION; 
 	static THandlerSingleton me; 
 	return me; 
@@ -304,7 +306,7 @@ const T& THandlerSingleton<T>::instance()
 template <typename T>
 void THandlerSingleton<T>::set_search_path(const std::list<boost::filesystem::path>& searchpath)
 {
-	boost::mutex::scoped_lock lock(m_creation_mutex); 
+	CScopedLock lock(m_creation_mutex); 
 	typedef typename  T::Interface IF; 
 	TRACE("THandlerSingleton<T>::set_search_path"); 
 	cvdebug() << "Set path: "  << TPlugin<typename IF::PlugData,typename IF::PlugType>::search_path() << '\n'; 
@@ -331,7 +333,7 @@ template <typename T>
  bool THandlerSingleton<T>::m_is_created = false; 
 
 template <typename T>
-boost::mutex THandlerSingleton<T>::m_creation_mutex; 
+CMutex THandlerSingleton<T>::m_creation_mutex; 
 
 
 NS_MIA_END

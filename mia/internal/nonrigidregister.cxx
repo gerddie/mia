@@ -44,7 +44,7 @@ struct TNonrigidRegisterImpl {
 
 	TNonrigidRegisterImpl(FullCostList& costs, PMinimizer minimizer,
 				PTransformationFactory transform_creator,
-				const InterpolatorFactory& ipf,  size_t mg_levels);
+				const InterpolatorFactory& ipf,  size_t mg_levels, int idx);
 
 	PTransformation run(PImage src, PImage ref) const;
 private:
@@ -54,6 +54,7 @@ private:
 	InterpolatorFactory m_ipf;
 	PTransformationFactory m_transform_creator;
 	size_t m_mg_levels; 
+	int m_idx; 
 };
 
 template <typename T> 
@@ -96,8 +97,8 @@ private:
 template <typename T> 
 TNonrigidRegister<T>::TNonrigidRegister(FullCostList& costs, PMinimizer minimizer,
 					 PTransformationFactory transform_creation,
-					 const InterpolatorFactory& ipf, size_t mg_levels):
-	impl(new TNonrigidRegisterImpl<T>( costs, minimizer, transform_creation, ipf, mg_levels))
+					 const InterpolatorFactory& ipf, size_t mg_levels, int idx):
+	impl(new TNonrigidRegisterImpl<T>( costs, minimizer, transform_creation, ipf, mg_levels, idx))
 {
 }
 
@@ -118,12 +119,13 @@ TNonrigidRegister<T>::run(PImage src, PImage ref) const
 template <typename T> 
 TNonrigidRegisterImpl<T>::TNonrigidRegisterImpl(FullCostList& costs, PMinimizer minimizer,
 						 PTransformationFactory transform_creation, 
-						 const InterpolatorFactory& ipf,size_t mg_levels):
+						const InterpolatorFactory& ipf,size_t mg_levels, int idx):
 	m_costs(costs),
 	m_minimizer(minimizer),
 	m_ipf(ipf),
 	m_transform_creator(transform_creation), 
-	m_mg_levels(mg_levels)
+	m_mg_levels(mg_levels), 
+	m_idx(idx)
 {
 }
 
@@ -198,6 +200,19 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 
 	int shift = m_mg_levels;
 
+	std::string src_name("src.@"); 
+	std::string ref_name("src.@"); 
+
+	if (m_idx >= 0) {
+		std::stringstream src_ss; 
+		std::stringstream ref_ss; 
+
+		src_ss << "src" << m_idx << ".@"; 
+		ref_ss << "ref" << m_idx << ".@"; 
+		src_name = src_ss.str(); 
+		ref_name = ref_ss.str(); 
+	}
+
 	do {
 		shift--;
 
@@ -223,8 +238,9 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 		   and then it forces the cost function to reload the images
 		   However, currently the downscaling does not support a specific target size
 		 */
-		save_image("src.@", src_scaled);
-		save_image("ref.@", ref_scaled);
+		save_image(src_name, src_scaled);
+		save_image(ref_name, ref_scaled);
+		cvmsg() << "set " << src_name << " and " << ref_name << " to pool\n"; 
 		m_costs.reinit(); 
 		
 		// currently this call does nothing, however it should replace the three lines above 

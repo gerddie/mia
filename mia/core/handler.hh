@@ -33,13 +33,24 @@
 #include <mia/core/shared_ptr.hh>
 #include <boost/filesystem/path.hpp>
 #include <boost/utility.hpp>
-#include <boost/thread/mutex.hpp>
+#include <mia/core/utils.hh>
 
 #include <mia/core/defines.hh>
 #include <mia/core/module.hh>
 #include <mia/core/plugin_base.hh>
 
 #include <mia/core/import_handler.hh>
+
+#ifdef BOOST_MUTEX
+#include <boost/thread/mutex.hpp>
+typedef boost::mutex CMutex; 
+typedef boost::mutex::scoped_lock CScopedLock; 
+#else
+#include <tbb/mutex.h>
+typedef tbb::mutex CMutex; 
+typedef tbb::mutex::scoped_lock CScopedLock; 
+#endif
+
 
 NS_MIA_BEGIN
 
@@ -164,11 +175,11 @@ protected:
 	
 	THandlerSingleton(const std::list<boost::filesystem::path>& searchpath); 
 	THandlerSingleton(); 
-	
+	static CMutex m_creation_mutex; 
 private: 
 	static std::list<boost::filesystem::path> m_searchpath; 
 	static bool m_is_created; 
-	static boost::mutex m_creation_mutex; 
+	
 }; 
 
 
