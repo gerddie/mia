@@ -23,6 +23,7 @@
 
 #include <stdexcept>
 #include <climits>
+#include <atomic>
 
 #include <mia/internal/autotest.hh>
 
@@ -32,6 +33,11 @@
 #include <mia/core/msgstream.hh>
 
 #include <mia/core/datapool.hh>
+
+#include <tbb/task_scheduler_init.h>
+#include <tbb/parallel_for.h>
+#include <tbb/blocked_range.h>
+using namespace tbb;
 
 
 NS_MIA_USE
@@ -82,3 +88,45 @@ BOOST_AUTO_TEST_CASE( test_pool_has_key )
 	BOOST_CHECK(CDatapool::Instance().has_key("param1"));
 	BOOST_CHECK(!CDatapool::Instance().has_key("unknown"));
 }
+
+struct PoolAccessTest {
+	std::atomic<int> *n_errors; 
+	PoolAccessTest(std::atomic<int> *_nerr); 
+	void operator()( const blocked_range<int>& range ) const; 
+}; 
+
+PoolAccessTest::PoolAccessTest(std::atomic<int> *_nerr):
+	n_errors(_nerr)
+{ 
+}
+
+void PoolAccessTest::operator() ( const blocked_range<int>& range ) const
+{
+	try {	
+		int sum = 0; 
+		for( int i=range.begin(); i!=range.end(); ++i ) {
+			stringstream name; 
+			name << "parallel" << i; 
+			CDatapool::Instance().add(name.str(), i);
+			any p1 = CDatapool::Instance().get(name.str());
+			int k = any_cast<int>(p1); 
+			if (k != i) 
+				++(*n_errors); 
+		}
+	}
+	catch (std::runtime_error& x) {
+		cout << x.what() << "\n"; 
+	}
+}
+
+BOOST_AUTO_TEST_CASE( test_pool_parallel_access )
+{
+	task_scheduler_init init;
+	std::atomic<int> n_errors(0); 
+	PoolAccessTest ptest(&n_errors); 
+	
+	blocked_range<int> range( 0, 1000, 1 ); 
+	parallel_for(range, ptest); 
+	BOOST_CHECK_EQUAL(n_errors, 0); 
+}
+

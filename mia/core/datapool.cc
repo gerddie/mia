@@ -80,7 +80,7 @@ bool CDatapool::has_unused_data() const
 	     u != m_usage.end(); ++u) {
 		if (!u->second)  {
 			result = true;
-			cvwarn() << "Datapool has unused parameter '" << u->first << "\n";
+			cvinfo() << "Datapool has unused parameter '" << u->first << "\n";
 		}
 	}
 	return result;
