@@ -121,17 +121,23 @@ int do_main( int argc, const char *argv[] )
 
 	//CHistory::instance().append(argv[0], "unknown", options);
 
+	bool want_help = false; 
 	std::vector<C2DFilterPlugin::ProductPtr> filters(filter_chain.size());
 	transform(filter_chain.begin(), filter_chain.end(), filters.begin(),
-		  [&filter_plugins](const char * name) {
+		  [&filter_plugins, &want_help](const char * name) {
 			  auto filter =  filter_plugins.produce(name); 
 			  if (!filter) {
-				  THROW(invalid_argument, "Filter '" << name << "' not found"); 
+				  if (name == plugin_help) 
+					  want_help = true; 
+				  else 
+					  THROW(invalid_argument, "Filter '" << name << "' not found"); 
 			  }
 			  return filter; 
 		  }
 		); 
 		
+	if (want_help) 
+		return EXIT_SUCCESS; 
 	auto in_image_list = imageio.load(in_filename);
 	if (!in_image_list || in_image_list->empty()) {
 		THROW(invalid_argument, "No images found in " << in_filename); 
