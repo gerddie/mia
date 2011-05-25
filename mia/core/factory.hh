@@ -86,6 +86,7 @@ public:
 private:
 	virtual bool do_test() const; 
 	virtual ProductPtr do_create() const = 0;
+	CMutex m_mutex; 
 };
 
 
@@ -180,6 +181,7 @@ TFactory<P>::TFactory(char const * const  name):
 template <typename P>
 typename TFactory<P>::ProductPtr TFactory<P>::create(const CParsedOptions& options, char const *params)
 {
+	CScopedLock lock(m_mutex); 
 	this->set_parameters(options);
 	this->check_parameters();
 	ProductPtr product = this->do_create();

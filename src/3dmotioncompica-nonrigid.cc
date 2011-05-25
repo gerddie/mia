@@ -175,7 +175,7 @@ P3DTransformationFactory create_transform_creator(size_t c_rate)
 struct SeriesRegistration {
 	C3DImageSeries&  input_images; 
 	const C3DImageSeries& references; 
-	PMinimizer minimizer; 
+	string minimizer; 
 	C3DInterpolatorFactory& ipfactory; 
 	size_t mg_levels; 
 	double divcurlweight; 
@@ -185,7 +185,7 @@ struct SeriesRegistration {
 	
 	SeriesRegistration(C3DImageSeries&  _input_images, 
 			   const C3DImageSeries& _references, 
-			   PMinimizer _minimizer, 
+			   const string& _minimizer, 
 			   C3DInterpolatorFactory& _ipfactory, 
 			   size_t _mg_levels, 
 			   double _divcurlweight, 
@@ -204,27 +204,29 @@ struct SeriesRegistration {
 		{
 		}
 	void operator()( const blocked_range<int>& range ) const {
+		auto m =  CMinimizerPluginHandler::instance().produce(minimizer);
 		for( int i=range.begin(); i!=range.end(); ++i ) {
 			cout << "register " << i << "\n"; 
 			auto costs  = create_costs(divcurlweight, imagecostbase, i); 
-			C3DNonrigidRegister nrr(costs, minimizer,  transform_creator, ipfactory, mg_levels, i);
+			C3DNonrigidRegister nrr(costs, m,  transform_creator, ipfactory, mg_levels, i);
 			P3DTransformation transform = nrr.run(input_images[i + skip_images], references[i]);
 			input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], ipfactory);
+			cout << "done " << i << "\n"; 
 		}
 	}
 };  
 
 void run_registration_pass(C3DImageSeries& input_images, const C3DImageSeries& references,  
-			   int skip_images,  PMinimizer minimizer, 
+			   int skip_images,  const string& minimizer, 
 			   C3DInterpolatorFactory& ipfactory, 
 			   size_t mg_levels, double c_rate, double divcurlweight, 
 			   const string&   imagecost) 
 {
+	
 	SeriesRegistration sreg(input_images,references, minimizer, ipfactory, 
 				mg_levels, divcurlweight, create_transform_creator(c_rate), 
 				imagecost, skip_images); 
-	blocked_range<int> range( 0, references.size(), 1 ); 
-	sreg(range); 
+	parallel_for(blocked_range<int>( 0, references.size()), sreg);
 }
 
 void save_references(const string& save_ref, int current_pass, int skip_images, const C3DImageSeries& references)
@@ -242,15 +244,15 @@ int do_main( int argc, const char *argv[] )
 	// IO parameters 
 	string in_filename;
 	string out_filename;
-	string registered_filebase("reg%04d.vista");
+	string registered_filebase("reg%04d.v");
 	string save_mixing_matrix; 
 
 	string save_ref_filename;
 	string save_reg_filename;
 
 	// registration parameters
-	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1");
-	string imagecost = "image:weight=1,cost=ssd,";
+	string minimizer("gsl:opt=gd,step=0.1");
+	string imagecost("image:weight=1,cost=ssd,");
 	double c_rate = 32; 
 	double c_rate_divider = 4; 
 	double divcurlweight = 20.0; 
@@ -321,7 +323,7 @@ int do_main( int argc, const char *argv[] )
 
 	unique_ptr<C3DInterpolatorFactory>   ipfactory(create_3dinterpolation_factory(interpolator));
 
-	//task_scheduler_init init;
+//	task_scheduler_init init(6);
 
 	
 	size_t start_filenum = 0;
@@ -418,6 +420,7 @@ int do_main( int argc, const char *argv[] )
 	auto ii = input_images.begin(); 
 	for (size_t i = start_filenum; i < end_filenum; ++i, ++ii) {
 		string out_name = create_filename(registered_filebase.c_str(), i);
+		cvmsg() << "Save image " << i << " to " << out_name << "\n"; 
 		success &= save_image(out_name, *ii); 
 	}
 	

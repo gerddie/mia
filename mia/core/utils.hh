@@ -37,7 +37,6 @@
 #include <stdexcept>
 #include <mia/core/defines.hh>
 
-#include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
 

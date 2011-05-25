@@ -130,3 +130,46 @@ BOOST_AUTO_TEST_CASE( test_pool_parallel_access )
 	BOOST_CHECK_EQUAL(n_errors, 0); 
 }
 
+struct PoolWriteLaterReadTest {
+	std::atomic<int> *n_errors; 
+	PoolWriteLaterReadTest(std::atomic<int> *_nerr); 
+	void operator()( const blocked_range<int>& range ) const; 
+}; 
+
+PoolWriteLaterReadTest::PoolWriteLaterReadTest(std::atomic<int> *_nerr):
+	n_errors(_nerr)
+{ 
+}
+
+void PoolWriteLaterReadTest::operator() ( const blocked_range<int>& range ) const
+{
+	try {	
+		for( int i=range.begin(); i!=range.end(); ++i ) {
+			stringstream name; 
+			name << "parallel" << i; 
+			CDatapool::Instance().add(name.str(), i);
+		}
+		for( int i=range.begin(); i!=range.end(); ++i ) {
+			stringstream name; 
+			name << "parallel" << i; 
+			any p1 = CDatapool::Instance().get(name.str());
+			int k = any_cast<int>(p1); 
+			if (k != i) 
+				++(*n_errors); 
+		}
+	}
+	catch (std::runtime_error& x) {
+		cout << x.what() << "\n"; 
+	}
+}
+
+BOOST_AUTO_TEST_CASE( test_pool_parallel_access_2 )
+{
+	task_scheduler_init init;
+	std::atomic<int> n_errors(0); 
+	PoolWriteLaterReadTest ptest(&n_errors); 
+	
+	blocked_range<int> range( 0, 1000, 5 ); 
+	parallel_for(range, ptest); 
+	BOOST_CHECK_EQUAL(n_errors, 0); 
+}

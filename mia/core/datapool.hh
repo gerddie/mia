@@ -29,15 +29,6 @@
 #include <boost/any.hpp>
 
 #include <mia/core/defines.hh>
-#ifdef BOOST_MUTEX
-#include <boost/thread/mutex.hpp>
-typedef boost::mutex CMutex; 
-typedef boost::mutex::scoped_lock CScopedLock; 
-#else
-#include <tbb/mutex.h>
-typedef tbb::mutex CMutex; 
-typedef tbb::mutex::scoped_lock CScopedLock; 
-#endif
 
 NS_MIA_BEGIN
 
@@ -102,7 +93,7 @@ private:
 	Anymap m_map;
 	typedef std::map<std::string,bool> Usagemap;
 	mutable Usagemap m_usage;
-	mutable CMutex m_mutex; 
+	static CMutex m_mutex; 
 };
 
 NS_MIA_END
