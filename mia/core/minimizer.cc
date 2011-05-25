@@ -97,6 +97,27 @@ double  CMinimizer::Problem::fdf(const std::vector<double>& x, std::vector<doubl
 	return do_fdf(params_x, params_g); 	
 }
 
+double  CMinimizer::Problem::f(const CDoubleVector& x)
+{
+	assert(x.size() == size()); 
+	return do_f(x); 	
+}
+
+void    CMinimizer::Problem::df(const CDoubleVector& x, CDoubleVector& g)
+{
+	assert(x.size() == size()); 
+	assert(g.size() == size()); 
+	do_df(x, g); 	
+}
+
+double  CMinimizer::Problem::fdf(const CDoubleVector& x, CDoubleVector& g)
+{
+	assert(x.size() == size()); 
+	assert(g.size() == size()); 
+	return do_fdf(x, g); 	
+}
+
+
 CMinimizer::Problem::~Problem()
 {
 }

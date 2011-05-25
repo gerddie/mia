@@ -96,7 +96,9 @@ public:
 			memset(m_data.get(), 0, m_size*sizeof(T)); 
 	}
 
-	/// copy constructor 
+	/* copy constructor, this is a shallow copy, i.e. the data is shared 
+	   between the original and the copied vector 
+	*/
 	Vector(const Vector<T>& other):
 		m_size(other.m_size),
 		m_data(other.m_data),

@@ -138,6 +138,33 @@ public:
 		*/
 		double  fdf(const std::vector<double>& x, std::vector<double>& g); 
 
+		/**
+		   The function that is called by the optimizer to evaluate the 
+		   objective function value.  
+		   @param x vector of parameters 
+		   @returns function value 
+		   
+		*/
+		double  f(const CDoubleVector& x); 
+		
+		/**
+		   The function that is called by the optimizer to evaluate the 
+		   objective function gradient.  
+		   @param x vector of parameters 
+		   @param[out] g vector of gradient  of the objective function 
+		   
+		*/
+		void    df(const CDoubleVector& x, CDoubleVector& g); 
+		
+                /**
+		   The function that is called by the optimizer to evaluate the 
+		   objective function gradient and the function value.  
+		   @param x vector of parameters 
+		   @param[out] g vector of gradient  of the objective function 
+		   @returns objective function value 
+		*/
+		double  fdf(const CDoubleVector& x, CDoubleVector& g); 
+
 
 		/// \returns number of parameters to optimize
 		size_t size() const; 
@@ -179,6 +206,8 @@ protected:
 	
 	/// @returns the size  (degrees of freedom) of the optimization problem
 	size_t size() const; 
+
+	Problem& get_problem(); 
 private: 
 	virtual void do_set_problem();
 	virtual int do_run(CDoubleVector& x) = 0;
@@ -197,6 +226,11 @@ typedef THandlerSingleton<TFactoryPluginHandler<CMinimizerPlugin> > CMinimizerPl
 
 /// Trait to make the minimizer definition parsable on the command line  
 FACTORY_TRAIT(CMinimizerPluginHandler); 
+
+inline CMinimizer::Problem& CMinimizer::get_problem()
+{
+	return *m_problem;
+}
 
 
 	
