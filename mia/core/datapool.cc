@@ -22,7 +22,6 @@
  */
 
 #include <sstream>
-#include <iostream>
 #include <stdexcept>
 #include <mia/core/datapool.hh>
 #include <mia/core/msgstream.hh>
@@ -37,7 +36,6 @@ CDatapool::CDatapool()
 boost::any CDatapool::get(const std::string& key) const
 {
 	CScopedLock lock(m_mutex);
-	std::cout << "read " << key << "\n"; 
 	Anymap::const_iterator i = get_iterator(key);
 	m_usage[key] = true;
 
@@ -57,7 +55,6 @@ boost::any CDatapool::get_and_remove(const std::string& key)
 void CDatapool::add(const std::string& key, boost::any value)
 {
 	CScopedLock lock(m_mutex);
-	std::cout << "add '" << key << "'\n";
 	m_usage[key] = false;
 	m_map[key] = value;
 }

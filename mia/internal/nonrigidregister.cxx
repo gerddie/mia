@@ -240,7 +240,6 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 		 */
 		save_image(src_name, src_scaled);
 		save_image(ref_name, ref_scaled);
-		cvmsg() << "set " << src_name << " and " << ref_name << " to pool\n"; 
 		m_costs.reinit(); 
 		
 		// currently this call does nothing, however it should replace the three lines above 
