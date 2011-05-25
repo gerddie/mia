@@ -30,30 +30,23 @@
   \begin{description} 
   \item [Description:] 
         This program is used to run a ICA based non-linear registration approach 
-        for motion compensation in myocardial perfusion imaging described in Wollny at al. 
-        \cite{wollny11bvm}. 
+        for motion compensation in 3D images. 
 	Specifically, the non-linear transformation is defined in terms of B-splines that 
         is regularized by a DivCurl operator that penalizes the gradients of divergence and 
         curl of the transformation. 
-	In addition, the code supports the automatic extraction of a region of interest 
-        around the left heart ventricle to speed up computation.
+	The registrations are run in parallel, if more then one processor is available. 
   
   The program is called like 
   \begin{lstlisting}
-mia-3dmotioncompica-nonrigid -i <input set> -o <output set> [options]
+mia-3dmotioncompica-nonrigid -i <input images> -o <output set> [options]
   \end{lstlisting}
 
   \item [Options:] $\:$
 
   \optiontable{
   \cmdgroup{File in- and output} 
-  \cmdopt{in-file}{i}{string}{input segmentation set}
-  \cmdopt{out-file}{o}{string}{output segmentation set}
-  \cmdopt{registered}{r}{string}{File name base for the registered images. Image type and numbering 
-                                 scheme are taken from the input images.}
-  \cmdopt{save-cropped}{}{string}{save cropped set to this file, the image files will use the stem of the 
-                                 name as file name base}
-  \cmdopt{save-feature}{}{string}{save segmentation feature images and initial ICA mixing matrix}
+  \cmdopt{in-file}{i}{string}{input file name pattern of style nameXXXX.ext with XXXX being digits of consecutive numbers}
+  \cmdopt{out-file}{o}{string}{output file name pattern of style name%0d.ext to allow ceration of numbered file names}
   \cmdopt{save-refs}{}{string}{for each registration pass save the reference images to files with the given name base}
   \cmdopt{save-regs}{}{string}{for each registration pass save intermediate registered images}
 				 
@@ -62,12 +55,11 @@ mia-3dmotioncompica-nonrigid -i <input set> -o <output set> [options]
   \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
   \cmdopt{no-normalize}{}{}{don't normalized ICs}
   \cmdopt{no-meanstrip}{}{}{don't strip the mean from the mixing curves}
-  \cmdopt{segscale}{s}{float}{segment and scale the crop box around the LV (0=no segmentation)}
   \cmdopt{max-ica-iter}{m}{int}{maximum number of iterations within ICA}
-  \cmdopt{segmethod}{E}{string}{Segmentation method - (delta-feature|delta-peak|features)}
 
   \cmdgroup{Image registration} 
-  \cmdopt{imagecost}{w}{string}{Image similarity measure used (see section \ref{sec:3dfullcost})}
+  \cmdopt{imagecost}{w}{string}{Image similarity measure base part, the name of source and reference images must 
+                               be left alone and will be set by the program internally (see section \ref{sec:3dfullcost})}
   \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
   \cmdopt{interpolator}{p}{string}{Image interpolator to be used}
   \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
@@ -77,18 +69,17 @@ mia-3dmotioncompica-nonrigid -i <input set> -o <output set> [options]
   \cmdopt{c-rate-divider}{}{float}{cofficient rate divider for each pass}
   \cmdopt{start-divcurl}{d}{float}{start divcurl weight, gets divided by \texttt{-{}-divcurl-divider}
                                 for each new registration pass}
-  \cmdopt{ivcurl-divider}{}{float}{divcurl weight scaling with each new pass}
+  \cmdopt{divcurl-divider}{}{float}{divcurl weight scaling with each new pass}
+  \cmdgroup{Processing} 
+  \cmdopt{threads}{t}{int}{Maximum number of threads to use (default:automatic estimation).}
   }
 
-  \item [Example:]Register the perfusion series given in segment.set by using automatic ICA estimation. 
-        Skip two images at the beginning and otherwiese use the default parameters. 
-	Store the result in registered.set. 
+  \item [Example:]Register the perfusion series given in images imagesXXXX.v by using 3-class ICA estimation. 
+        Skip two images at the beginning, use 4 registration threads and otherwiese use the default parameters. 
+	Store the result in registeredXXXX.v 
   \begin{lstlisting}
-mia-3dmotioncompica-nonrigid  -i segment.set -o registered.set -k 2
+mia-3dmotioncompica-nonrigid  -i imagesXXXX.v -o  registered%04d.v  -k 2 -C 3 -t 4 
   \end{lstlisting}
-  \item [See also:] \sa{mia-3dmyomilles}, \sa{mia-3dmyoperiodic-nonrigid}, 
-                    \sa{mia-3dmyoserial-nonrigid}, \sa{mia-3dmyopgt-nonrigid},
-		    \sa{mia-3dsegseriesstats}
   \end{description}
   
   LatexEnd
@@ -270,25 +261,21 @@ int do_main( int argc, const char *argv[] )
 
 	size_t current_pass = 0; 
 	size_t pass = 3; 
+	
+	int max_threads = task_scheduler_init::automatic;
 
 	CCmdOptionList options(g_general_help);
 	
 	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', 
-				    "input perfusion data set", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', 
-				    "output perfusion data set", CCmdOption::required));
-	options.add(make_opt( registered_filebase, "registered", 'r', 
-				    "file name base for registered fiels")); 
+				    "input images (file pattern)", CCmdOption::required));
+	options.add(make_opt( registered_filebase, "out-file", 'o', "output images (file name pattern)"));
 	
 	options.add(make_opt( save_ref_filename, "save-refs", 0, 
 				    "save reference images", NULL)); 
 	options.add(make_opt( save_reg_filename, "save-regs", 0, 
 				    "save intermediate registered images", NULL)); 
 
-	options.add(make_opt(save_mixing_matrix, "save-mix-matrix", 0, 
-			     "save mixing matrix", NULL)); 
-	
 	options.set_group("Registration"); 
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( c_rate, "start-c-rate", 'a', 
@@ -316,6 +303,11 @@ int do_main( int argc, const char *argv[] )
 				    "e.g. because as they are of other modalities")); 
 	options.add(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 
 
+	options.set_group("Processing"); 
+	options.add(make_opt(max_threads, "threads", 't', "Maxiumum number of threads to use for running the registration," 
+			     "This number should be lower or equal to the number of processing cores in the machine"
+			     " (default: automatic estimation)."));  
+
 	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
@@ -323,7 +315,7 @@ int do_main( int argc, const char *argv[] )
 
 	unique_ptr<C3DInterpolatorFactory>   ipfactory(create_3dinterpolation_factory(interpolator));
 
-//	task_scheduler_init init(6);
+	task_scheduler_init init(max_threads);
 
 	
 	size_t start_filenum = 0;
