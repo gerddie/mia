@@ -40,7 +40,7 @@ private:
 
 BOOST_AUTO_TEST_CASE( test_cfdf_multmin ) 
 {
-	CGDSQMinimizer minimizer(0.1, 2.0, 0.0001, 0.0001, 100);
+	CGDSQMinimizer minimizer(0.1, 2.0, 0.0001, 0.0001, 100, 0.0);
 	CMinimizer::PProblem problem(new TestCFDFProblem); 
 	problem->add(property_gradient); 
 	minimizer.set_problem(problem); 

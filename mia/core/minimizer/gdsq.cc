@@ -29,13 +29,15 @@ NS_BEGIN(minimizer_gdsq)
 using namespace mia; 
 
 CGDSQMinimizer::CGDSQMinimizer(double start_step, double step_scale, 
-			       double xtol, double gtol, unsigned int maxiter):
+			       double xtol, double gtol, double ftolr, 
+			       unsigned int maxiter):
 	
 	m_xtol( xtol ), 
 	m_gtol( gtol ), 
 	m_maxiter( maxiter ), 
 	m_step( start_step ),
-	m_step_scale(step_scale)
+	m_step_scale(step_scale), 
+	m_ftolr(ftolr)
 {
 	add(property_gradient); 
 }
@@ -66,9 +68,8 @@ int CGDSQMinimizer::do_run(CDoubleVector& x)
 	
 	double f_old = f_init; 
 	int iter = 0; 
-	bool success = false;
+	bool success = test_tol(g, m_xtol);
 	while (iter++ < m_maxiter && !success) {
-
 		cblas_daxpy(g.size(), -m_step, &g[0], 1, &xwork[0], 1);
 		double f = get_problem().fdf(xwork, gt);
 
@@ -85,14 +86,16 @@ int CGDSQMinimizer::do_run(CDoubleVector& x)
 			copy(gt.begin(), gt.end(), g.begin()); 
 			f_old = f; 
 
-			success |= test_tol(g, m_xtol); 
 			success |= test_tol(gt, m_gtol);
+			if (f != 0.0) 
+				success |= fabs((f_old - f) / f) < m_ftolr;  
 	
 		}else{
 			// recover best solution 
 			copy(x.begin(), x.end(), xwork.begin() ); 
 			m_step /= m_step_scale;
 		}
+		success |= test_tol(g, m_xtol / m_step); 
 		cvmsg() << "[" << iter << "]: f=" << f << " step=" << m_step << "\n"; 
 	}
 	if (iter == m_maxiter) 
@@ -105,6 +108,7 @@ CGDSQMinimizerPlugin::CGDSQMinimizerPlugin():
 	CMinimizerPlugin("gdsq"), 
 	m_xtol(0.0), 
 	m_gtol(0.0), 
+	m_ftolr(0.0), 
 	m_maxiter(100), 
 	m_start_step(0.1), 
 	m_step_scale(2.0)
@@ -118,13 +122,15 @@ CGDSQMinimizerPlugin::CGDSQMinimizerPlugin():
 						    "Stop if the inf-norm of x-update is below this value.")); 
 	add_parameter("gtola", new CDoubleParameter(m_gtol, 0.0, HUGE_VAL, false, 
 						    "Stop if the inf-norm of the gradient is below this value."));
+	add_parameter("ftolr", new CDoubleParameter(m_ftolr, 0.0, HUGE_VAL, false, 
+						    "Stop if the relative change of the criterion is below."));
 }
 
 	
 
 CGDSQMinimizerPlugin::ProductPtr CGDSQMinimizerPlugin::do_create() const
 {
-	return ProductPtr(new CGDSQMinimizer(m_start_step, m_step_scale, m_xtol, m_gtol, m_maxiter)); 
+	return ProductPtr(new CGDSQMinimizer(m_start_step, m_step_scale, m_xtol, m_gtol, m_maxiter, m_ftolr)); 
 }
 
 const std::string CGDSQMinimizerPlugin::do_get_descr() const

@@ -29,7 +29,7 @@ NS_BEGIN(minimizer_gdsq)
 class CGDSQMinimizer : public mia::CMinimizer {
 public: 
 	CGDSQMinimizer(double start_step, double step_scale, 
-			 double xtol, double gtol, unsigned int maxiter);
+		       double xtol, double gtol, double ftolr, unsigned int maxiter);
 	
 private: 
 	virtual void do_set_problem();
@@ -41,6 +41,7 @@ private:
 	unsigned int m_maxiter; 
 	double m_step; 
 	double m_step_scale; 
+	double m_ftolr; 
 }; 
 
 
@@ -57,9 +58,11 @@ private:
 	
 	double m_xtol; 
 	double m_gtol; 
+	double m_ftolr; 
 	unsigned int m_maxiter; 
 	double m_start_step; 
 	double m_step_scale; 
+
 
 }; 
 
