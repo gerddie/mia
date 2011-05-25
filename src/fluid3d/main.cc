@@ -273,7 +273,7 @@ int main(int argc, const char *argv[])
 		C3DIOVectorfield outfield(result->get_size());
 		copy(result->begin(), result->end(), outfield.begin());
 
-		if (!C3DVFIOPluginHandler::instance().save("", out_filename, outfield)){
+		if (!C3DVFIOPluginHandler::instance().save(out_filename, outfield)){
 			cerr << "Unable to save result vector field to " << out_filename << "\n";
 			return EXIT_FAILURE;
 		}

@@ -89,7 +89,10 @@ TIOPluginHandler<I>::prefered_plugin(const std::string& fname) const
 	auto p = m_suffixmap.find(fsuffix);
 	if (p != m_suffixmap.end())
 		return *this->plugin(p->second.c_str());
-	throw invalid_argument(string("no plugin corresponds to '") + fsuffix + "'"); 
+	THROW(invalid_argument, "No plugin from '"
+	      << I::PlugType::value << "/" <<  I::PlugData::type_descr
+	      << "' corresponds to suffix '" <<  fsuffix << "' supported suffixes:" 
+	      << get_supported_suffixes()); 
 }
 
 template <class I> 
@@ -99,6 +102,14 @@ TIOPluginHandler<I>::get_supported_filetype_map() const
 	return m_suffixmap; 
 }
 
+template <class I> 
+const std::string TIOPluginHandler<I>::get_supported_suffixes() const
+{
+	std::stringstream result; 
+	for (auto i = m_suffixmap.begin(); i != m_suffixmap.end(); ++i)
+		result << i->first << ' '; 
+	return result.str(); 
+}
 
 template <class I> 
 typename TIOPluginHandler<I>::PData
@@ -156,6 +167,8 @@ TIOPluginHandler<I>::load_to_pool(const std::string& fname) const
 	throw std::runtime_error(std::string("unable to load from ") + fname);
 }
 
+
+
 /// \returns a reference to the only instance of the plugin handler 
 template <typename T>
 const T& TIOHandlerSingleton<T>::instance()
@@ -168,22 +181,22 @@ const T& TIOHandlerSingleton<T>::instance()
 
 
 template <class I> 
-bool TIOPluginHandler<I>::save(const std::string& type, 
-			       const std::string& fname, const Data& data) const
+bool TIOPluginHandler<I>::save(const std::string& fname, const Data& data) const
 {
 	const I* p = NULL; 
 
-	if (type.empty()) {
-		p = prefered_plugin_ptr(fname); 
-		if (!p) 
-			p = this->plugin(data.get_source_format().c_str()); 
-	}else 
-		p = this->plugin(type.c_str());
-
+	p = prefered_plugin_ptr(fname); 
+	// okay, file name didn't help, let's see if the data knows about its input type 
+	if (!p) 
+		p = this->plugin(data.get_source_format().c_str()); 
+	
+	// todo: no file type given, one should try the best now ... 
+	
+	// bail out with an error
 	if (!p) {
 		stringstream errmsg; 
-		errmsg << "Unable to find an appropriate plugin from type = '" << type
-		       << "' filename = '" << fname 
+		errmsg << "Unable to find an appropriate plugin from "
+		       << "filename = '" << fname 
 		       << "' and source format = '" << data.get_source_format() << "'"; 
 		throw invalid_argument(errmsg.str()); 
 	}

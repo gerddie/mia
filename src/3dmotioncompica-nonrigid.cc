@@ -197,12 +197,10 @@ struct SeriesRegistration {
 	void operator()( const blocked_range<int>& range ) const {
 		auto m =  CMinimizerPluginHandler::instance().produce(minimizer);
 		for( int i=range.begin(); i!=range.end(); ++i ) {
-			cout << "register " << i << "\n"; 
 			auto costs  = create_costs(divcurlweight, imagecostbase, i); 
 			C3DNonrigidRegister nrr(costs, m,  transform_creator, ipfactory, mg_levels, i);
 			P3DTransformation transform = nrr.run(input_images[i + skip_images], references[i]);
 			input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], ipfactory);
-			cout << "done " << i << "\n"; 
 		}
 	}
 };  

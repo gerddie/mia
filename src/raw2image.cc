@@ -42,7 +42,6 @@ mia-raw2image -i <input data> -o <output image> -s <size of input> ...
   \optiontable{
   \optinfile
   \optoutfile
-  \opttypethreed
   \cmdopt{repn}{r}{string}{input pixel type (Table \ref{tab:pixform})}
   \cmdopt{big-endian}{b}{}{input data is big endian (default is low endian)}
   \cmdopt{scale}{f}{2D~vector <float>}{physical voxel size given as 2D vector <SX,SY>}
@@ -230,7 +229,6 @@ int run(int argc, const char *argv[])
 	options.add(make_opt( scale, "scale", 'f', "scale of input pixels <FX,FY>"));
 	options.add(make_opt( size, "size", 's', "size of input <NX,NY>", CCmdOption::required));
 	options.add(make_opt( skip, "skip", 'k', "skip number of bytes from beginning of file"));
-	options.add(make_opt( type, imageio.get_set(), "type", 't', "Output file type"));
 
 	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
@@ -251,7 +249,7 @@ int run(int argc, const char *argv[])
 	fseek(in_file, skip, SEEK_SET);
 	out_images.push_back(read_image(in_file, pixel_type, size, scale, high_endian));
 
-	return !imageio.save(type, out_filename, out_images);
+	return !imageio.save(out_filename, out_images);
 }
 
 

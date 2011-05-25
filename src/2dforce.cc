@@ -140,7 +140,7 @@ int do_main(int argc, const char **argv)
 	C2DImageIOPluginHandler::Instance::Data vout;
 	vout.push_back(result);
 
-	imageio.save("", out_filename, vout);
+	imageio.save(out_filename, vout);
 
 	return EXIT_SUCCESS;
 }

@@ -92,7 +92,6 @@ int main( int argc, const char *argv[] )
 	string in_filename;
 	string out_filename;
 	string cls_filename;
-	string out_type;
 	int    noOfClasses = 3;
 	float  residuum = 0.1;
 
@@ -151,7 +150,7 @@ int main( int argc, const char *argv[] )
 			C3DImageIOPluginHandler::Instance::Data out_list;
 
 			out_list.push_back(b0_corrected);
-			if ( !imageio.save(out_type, out_filename, out_list) ){
+			if ( !imageio.save(out_filename, out_list) ){
 
 				string not_save = ("unable to save result to ") + out_filename;
 				throw runtime_error(not_save);
@@ -162,7 +161,7 @@ int main( int argc, const char *argv[] )
 
 		//CHistory::instance().append(argv[0], revision, opts);
 
-		if ( !imageio.save(out_type, cls_filename, classes) ){
+		if ( !imageio.save(cls_filename, classes) ){
 			string not_save = ("unable to save result to ") + cls_filename;
 			throw runtime_error(not_save);
 

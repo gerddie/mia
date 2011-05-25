@@ -115,7 +115,6 @@ private:
 	size_t m_nslices;
 	size_t m_slice;
 	C2DImageIOPluginHandler::Instance const& m_ifh;
-	string m_filetype;
 	time_t m_start_time;
 };
 
@@ -126,7 +125,6 @@ C2DStackSaver::C2DStackSaver(string const & fnamebase, size_t start_num, size_t 
 	m_nslices(end_num - start_num),
 	m_slice(start_num),
 	m_ifh(ifh),
-	m_filetype(filetype),
 	m_start_time(start_time)
 
 {
@@ -142,7 +140,7 @@ void C2DStackSaver::do_push(::boost::call_traits<P2DImage>::param_type image)
 	img_list.push_back(image);
 	string out_filename = create_filename(m_fnamebase.c_str(), m_slice++);
 
-	cvdebug() << "C2DStackSaver: save image " << out_filename << " to type "<< m_filetype << '\n';
+	cvdebug() << "C2DStackSaver: save image " << out_filename << '\n';
 #ifndef WIN32
 	if (cverb.get_level() == vstream::ml_message) {
 		char esttime[30];
@@ -158,7 +156,7 @@ void C2DStackSaver::do_push(::boost::call_traits<P2DImage>::param_type image)
 	}
 #endif
 
-	bool save_okay = m_ifh.save(m_filetype, out_filename, img_list );
+	bool save_okay = m_ifh.save(out_filename, img_list );
 	if (!save_okay)
 		cverr() << "saving file " << out_filename << "failed\n";
 

@@ -189,7 +189,7 @@ int do_main(int argc, const char *argv[])
 	default:FillField1(Field,Size,funfactor);break;
 	}
 	
-	if (!C3DVFIOPluginHandler::instance().save("", out_filename, Field)){
+	if (!C3DVFIOPluginHandler::instance().save(out_filename, Field)){
 		THROW(runtime_error, "Unable to save result vector field to " << out_filename << "\n"); 
 	}
 	return EXIT_SUCCESS;	

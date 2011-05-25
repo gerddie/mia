@@ -92,7 +92,6 @@ int main( int argc, const char *argv[] )
 	try {
 	string in_filename;
 	string out_filename;
-	string out_type;
 
 	const C3DFilterPluginHandler::Instance& filter_plugins = C3DFilterPluginHandler::instance();
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
@@ -106,7 +105,6 @@ int main( int argc, const char *argv[] )
 				    "input image(s) to be filtered", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o',
 				    "output image(s) that have been filtered", CCmdOption::required));
-	options.add(make_opt( out_type, imageio.get_set(), "type", 't',  "output file type"));
 	options.add(make_help_opt( "help-plugins", 0,
 					 "give some help about the filter plugins", 
 					 new TPluginHandlerHelpCallback<C3DFilterPluginHandler>)); 
@@ -147,7 +145,7 @@ int main( int argc, const char *argv[] )
 				*i = (*f)->filter(**i);
 		}
 
-		if ( !imageio.save(out_type, out_filename, *in_image_list) ){
+		if ( !imageio.save(out_filename, *in_image_list) ){
 			string not_save = ("unable to save result to ") + out_filename;
 			throw runtime_error(not_save);
 		};

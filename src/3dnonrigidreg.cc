@@ -140,7 +140,7 @@ int do_main( int argc, const char *argv[] )
 	P3DImage result = (*transform)(*Model, *ipfactory);
 
 	if (!trans_filename.empty()) {
-		if (!C3DTransformationIOPluginHandler::instance().save("", trans_filename, *transform)) 
+		if (!C3DTransformationIOPluginHandler::instance().save(trans_filename, *transform)) 
 			cverr() << "Saving the transformation to '" << trans_filename << "' failed."; 
 	}
 

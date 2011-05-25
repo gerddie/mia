@@ -125,7 +125,7 @@ C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size,const C2DFV
 {
 }
 
-bool C2DRigidTransformation::save(const std::string& filename, const std::string& /*type*/) const
+bool C2DRigidTransformation::save(const std::string& filename) const
 {
 	ofstream file(filename.c_str());
 	file << "Transformation: 2D\n"

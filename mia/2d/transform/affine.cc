@@ -126,7 +126,7 @@ C2DAffineTransformation::C2DAffineTransformation(const C2DBounds& size,
 {
 }
 
-bool C2DAffineTransformation::save(const std::string& filename, const std::string& /*type*/) const
+bool C2DAffineTransformation::save(const std::string& filename) const
 {
 	ofstream file(filename.c_str());
 	file << "Transformation: 2D\n"

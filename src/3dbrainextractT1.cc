@@ -100,7 +100,6 @@ int main( int argc, const char *argv[] )
 	const char *b0poolkey = "b0.@";
 	string in_filename;
 	string out_filename;
-	string out_type;
 	int    noOfClasses = 3;
 	int    wmclass = noOfClasses - 1;
 	float  residuum = 0.1;
@@ -191,7 +190,7 @@ int main( int argc, const char *argv[] )
 			C3DImageIOPluginHandler::Instance::Data out_list;
 
 			out_list.push_back(result);
-			if ( !imageio.save(out_type, out_filename, out_list) ){
+			if ( !imageio.save(out_filename, out_list) ){
 
 				string not_save = ("unable to save result to ") + out_filename;
 				throw runtime_error(not_save);

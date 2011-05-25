@@ -42,7 +42,6 @@ mia-2dmyoica-nonrigid -o <output image> <image> <image> [<image>] ...
 
   \optiontable{
   \cmdopt{out-file}{o}{string}{output image}
-  \opttypetwod
   }
 
   \item [Example:]Evaluate the pixel-wise variation over the image series stored in imagesXXXX.png and
@@ -128,7 +127,6 @@ int main( int argc, const char *argv[] )
 
 		CCmdOptionList options(g_description);
 		options.add(make_opt( out_filename, "out-file", 'o', "output image ", CCmdOption::required));
-		options.add(make_opt( out_type, imageio.get_set(), "type", 't',"override output file type"));
 
 		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 
@@ -159,7 +157,7 @@ int main( int argc, const char *argv[] )
 		C2DImageVector result;
 		result.push_back(ic.result());
 
-		if (imageio.save(out_type, out_filename, result))
+		if (imageio.save(out_filename, result))
 			return EXIT_SUCCESS;
 		else
 			cerr << argv[0] << " fatal: unable to output image to " <<  out_filename << endl;

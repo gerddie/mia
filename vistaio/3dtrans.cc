@@ -53,7 +53,9 @@ C3DVistaTransformationIO::C3DVistaTransformationIO():
 
 void C3DVistaTransformationIO::do_add_suffixes(std::multimap<std::string, std::string>& map) const
 {
+	cvdebug() << "Add suffixes for '" << get_name() << "': v3dt v\n"; 
 	map.insert(pair<string,string>(".v3dt", get_name()));
+	map.insert(pair<string,string>(".v", get_name()));
 }
 
 P3DTransformation C3DVistaTransformationIO::do_load(const std::string& fname) const

@@ -209,7 +209,7 @@ int main( int argc, const char *argv[] )
 				ss << out_filename << setw(format_width) << setfill('0') << i << "." << out_type;
 				cvdebug() << "Save to " << ss.str() << ", format = " << out_type << "\n";
 
-				if ( !imageio.save(out_type, ss.str(), *in_image_list) ){
+				if ( !imageio.save(ss.str(), *in_image_list) ){
 					string not_save = ("unable to save result to ") + ss.str();
 					throw runtime_error(not_save);
 

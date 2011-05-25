@@ -256,8 +256,7 @@ void C2DSplineTransformation::set_parameters(const CDoubleVector& params)
 	m_interpolator_valid = false; 
 }
 
-bool C2DSplineTransformation::save(const std::string& /*filename*/,
-				   const std::string& /*type*/) const
+bool C2DSplineTransformation::save(const std::string& /*filename*/) const
 {
 	TRACE_FUNCTION;
 	assert(!"not implemented");

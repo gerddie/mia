@@ -91,7 +91,7 @@ public:
 	   \param data the data to be saved
 	   \returns true if saving is successfull, false otherwise. 
 	 */
-	bool save(const std::string& type, const std::string& fname, const Data& data) const;
+	bool save(const std::string& fname, const Data& data) const;
 
 	/** Tolerant search for the plug-in corresponding to the file name suffix
 	    \param fname a file name 
@@ -111,6 +111,9 @@ public:
 
 	/// @returns the a mapping of the supported file suffixes to their plugins 
 	const CSuffixmap& get_supported_filetype_map() const; 
+
+	/// @ returns a string containing the supported file type suffixes
+	const std::string get_supported_suffixes() const; 
 
 protected: 
 	/**

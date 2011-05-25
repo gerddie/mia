@@ -42,7 +42,6 @@ mia-2dto3dimage -i <2D input file pattern> -o <3D output image>
   \optiontable{
   \optinfile
   \optoutfile
-  \opttypethreed
   }
 
   \item [Example:]Convert a series of images imageXXXX.png to a 3D image 3d.v 
@@ -132,7 +131,6 @@ int main( int argc, const char *argv[] )
 
 	string in_filename;
 	string out_filename;
-	string out_type;
 
 	const C2DImageIOPluginHandler::Instance& image2dio = C2DImageIOPluginHandler::instance();
 	const C3DImageIOPluginHandler::Instance& image3dio = C3DImageIOPluginHandler::instance();
@@ -140,7 +138,6 @@ int main( int argc, const char *argv[] )
 	CCmdOptionList options(program_info);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
-	options.add(make_opt( out_type, image3dio.get_set(), "type", 't',"output file type"));
 
 	try {
 
@@ -187,7 +184,7 @@ int main( int argc, const char *argv[] )
 		C3DImageVector result;
 		result.push_back(ic.result());
 
-		if (image3dio.save(out_type, out_filename, result))
+		if (image3dio.save(out_filename, result))
 			return EXIT_SUCCESS;
 		else
 			cerr << argv[0] << " fatal: unable to output image to " <<  out_filename << endl;

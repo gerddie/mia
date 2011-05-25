@@ -84,10 +84,10 @@ const C2DBounds& C2DGridTransformation::get_size() const
 	return m_field.get_size();
 }
 
-bool C2DGridTransformation::save(const std::string& filename, const std::string& type) const
+bool C2DGridTransformation::save(const std::string& filename) const
 {
 	C2DIOVectorfield outfield(m_field);
-	return C2DVFIOPluginHandler::instance().save(type, filename, outfield);
+	return C2DVFIOPluginHandler::instance().save(filename, outfield);
 }
 
 void C2DGridTransformation::add(const C2DTransformation& a)

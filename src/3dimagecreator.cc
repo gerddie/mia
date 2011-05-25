@@ -41,7 +41,6 @@ mia-3dimagecreator -i <input> -o <output> -n <number>
 
   \optiontable{
   \optoutfile
-  \opttypethreed
   \cmdopt{size}{s}{3D vector <uint>}{size of the output image}
   \optrepn
   \cmdopt{object}{j}{string}{object to be created (see section \ref{sec:creator3d})}
@@ -81,7 +80,6 @@ int do_main(int argc, const char *argv[])
 {
 	string object("sphere");
 	string out_filename;
-	string type;
 	EPixelType pixel_type = it_ubyte;
 	C3DBounds size(128,128,128);
 
@@ -90,7 +88,6 @@ int do_main(int argc, const char *argv[])
 	CCmdOptionList options(g_description);
 
 	options.add(make_opt( out_filename, "out-file", 'o', "output file for create object", CCmdOption::required));
-	options.add(make_opt( type, imageio.get_set(), "type", 't', "Output file type"));
 	options.add(make_opt( size, "size", 's', "size of the object"));
 	options.add(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type "));
 	options.add(make_opt( object,  "object", 'j', "object to be created"));
@@ -115,7 +112,7 @@ int do_main(int argc, const char *argv[])
 
 	C3DImageVector out_images;
 	out_images.push_back(image);
-	return !imageio.save(type, out_filename, out_images);
+	return !imageio.save(out_filename, out_images);
 }
 
 

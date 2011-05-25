@@ -71,7 +71,7 @@ public:
 
 	bool refine();
 
-	virtual bool save(const std::string& filename, const std::string& type) const;
+	virtual bool save(const std::string& filename) const;
 	virtual C2DTransformation *invert() const;
 	virtual P2DTransformation do_upscale(const C2DBounds& size) const;
 	virtual void add(const C2DTransformation& a);

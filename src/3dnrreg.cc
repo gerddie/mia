@@ -170,7 +170,7 @@ int do_main(int argc, const char **argv)
 	C3DIOVectorfield outfield(regfield->get_size());
 	copy(regfield->begin(), regfield->end(), outfield.begin());
 
-	if (!C3DVFIOPluginHandler::instance().save("", out_filename, outfield)){
+	if (!C3DVFIOPluginHandler::instance().save(out_filename, outfield)){
 		cerr << "Unable to save result vector field to " << out_filename << "\n";
 		return EXIT_FAILURE;
 	}
@@ -178,7 +178,7 @@ int do_main(int argc, const char **argv)
 	if (!def_filename.empty()) {
 		C3DImageVector vimg;
 		vimg.push_back(filter(FDeformer3D(*regfield, *ipf), **source->begin()));
-		if (!imageio.save("", def_filename, vimg)) {
+		if (!imageio.save(def_filename, vimg)) {
 			cerr << "Unable to save result image to " << def_filename << "\n";
 			return EXIT_FAILURE;
 		}

@@ -228,7 +228,7 @@ int main(int argc, const char *argv[])
 		// write result deformation field
 		if (!out_filename.empty()) {
 			C2DIOVectorfield outfield(transform);
-			if (!C2DVFIOPluginHandler::instance().save("", out_filename, outfield)){
+			if (!C2DVFIOPluginHandler::instance().save(out_filename, outfield)){
 				THROW(runtime_error, "Unable to save result field to '" << out_filename << "'");
 			}
 		}

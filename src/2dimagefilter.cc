@@ -86,7 +86,6 @@ int do_main( int argc, const char *argv[] )
 
 	string in_filename;
 	string out_filename;
-	string out_type;
 
 	const auto& filter_plugins = C2DFilterPluginHandler::instance();
 	const auto& imageio = C2DImageIOPluginHandler::instance();
@@ -99,8 +98,6 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o',
 			      "output image(s) that have been filtered", CCmdOption::required));
-	options.add(make_opt( out_type, imageio.get_set(), "type", 't',
-			      "output file type (if not given deduct from output file name)"));
 	options.add(g_help_optiongroup, 
 		    make_help_opt( "help-plugins", 0,
 				   "give some help about the filter plugins", 
@@ -150,7 +147,7 @@ int do_main( int argc, const char *argv[] )
 			  [f](const P2DImage& img){return  (*f)->filter(*img);}); 
 	}
 	
-	if ( !imageio.save(out_type, out_filename, *in_image_list) ){
+	if ( !imageio.save(out_filename, *in_image_list) ){
 		THROW(runtime_error, "Unable to save result to " << out_filename);
 	};
 	return EXIT_SUCCESS;

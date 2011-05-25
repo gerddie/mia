@@ -128,7 +128,7 @@ void save(P2DImage image, const string& name)
 {
 	C2DImageIOPluginHandler::Instance::Data vlist;
 	vlist.push_back(image);
-	C2DImageIOPluginHandler::instance().save("", name, vlist);
+	C2DImageIOPluginHandler::instance().save(name, vlist);
 }
 
 void test_deformadd()

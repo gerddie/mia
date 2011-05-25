@@ -49,7 +49,6 @@ mia-2dlerp -1 <input1> -2 <input2> -o <output> -p n1,p,n2 ...
   \cmdopt{second}{2}{string}{Second input image}
   \optoutfile
   \cmdopt{positions}{p}{vector<int>}{Image positions in the series: first,interpolant,second} 
-  \opttypethreed
   }
 
   \item [Example:]Interpolate by using the images a.v and b.v for position 7 
@@ -172,7 +171,6 @@ int do_main(int argc, char **argv)
 	string src1_filename;
 	string src2_filename;
 	string out_filename;
-	string out_type;
 	bool self_test = false;
 
 	vector<float> positions;
@@ -184,8 +182,6 @@ int do_main(int argc, char **argv)
 	options.add(make_opt( out_filename, "out-file", 'o', "output vector field", CCmdOption::required));
 	options.add(make_opt( positions, "positions", 'p', 
 				    "image series positions (first, target, second)", CCmdOption::required));
-	options.add(make_opt( out_type, imageio.get_set(), "type", 't',"output file type "
-				    "(if not given deduct from output file name)"));
 	options.add(make_opt( self_test, "self-test", 0, "run a self test of the tool"));
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
@@ -236,7 +232,7 @@ int do_main(int argc, char **argv)
 	}
 
 	// save the result;
-	if ( !imageio.save(out_type, out_filename, *source1) ){
+	if ( !imageio.save(out_filename, *source1) ){
 		string not_save = ("unable to save result to ") + out_filename;
 		throw runtime_error(not_save);
 	};

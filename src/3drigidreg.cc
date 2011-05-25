@@ -121,6 +121,12 @@ int do_main( int argc, const char *argv[] )
 		return EXIT_SUCCESS; 
 
 
+	// sanity checks: These functions will throw if no plugin is found. 
+	if (!trans_filename.empty())
+		C3DTransformationIOPluginHandler::instance().prefered_plugin(trans_filename); 
+	C3DImageIOPluginHandler::instance().prefered_plugin(out_filename);
+	
+
 	P3DImage Model = load_image<P3DImage>(src_filename);
 	P3DImage Reference = load_image<P3DImage>(ref_filename);
 
@@ -138,7 +144,8 @@ int do_main( int argc, const char *argv[] )
 	P3DImage result = (*transform)(*Model, *ipfactory);
 
 	if (!trans_filename.empty()) {
-		if (!C3DTransformationIOPluginHandler::instance().save("", trans_filename, *transform)) 
+		cvmsg() << "Save transformation to file '" << trans_filename << "'\n"; 
+		if (!C3DTransformationIOPluginHandler::instance().save(trans_filename, *transform)) 
 			cverr() << "Saving the transformation to '" << trans_filename << "' failed."; 
 	}
 

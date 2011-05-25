@@ -118,7 +118,7 @@ int do_main(int argc, const char **argv)
 	     i != source->end(); ++i)
 		*i = filter(deformer, **i);
 
-	if ( !imageio.save("", out_filename, *source) ){
+	if ( !imageio.save(out_filename, *source) ){
 		string not_save = ("unable to save result to ") + out_filename;
 		throw runtime_error(not_save);
 	};

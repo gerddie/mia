@@ -157,7 +157,7 @@ public:
 			stringstream out_name;
 			out_name << m_fname << setw(4) << setfill('0') << i << "." << m_type;
 
-			retval &= imageio2d.save(m_type, out_name.str(), out_images);
+			retval &= imageio2d.save(out_name.str(), out_images);
 		}
 		return retval;
 	}

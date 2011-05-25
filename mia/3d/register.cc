@@ -299,7 +299,7 @@ void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DIma
 				temp = filter(FDeformer3D(result, m_ipf), source);
 				vimg.push_back(temp);
 				regmov << "regmov" << setw(5) << setfill('0') << m_mnum - 1 << "regrid.vff";
-				imageio.save("", regmov.str(), vimg);
+				imageio.save(regmov.str(), vimg);
 			}
 
 		}
@@ -343,7 +343,7 @@ void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DIma
 			C3DImageVector vimg;
 			vimg.push_back(temp);
 			regmov << "regmov" << setw(5) << setfill('0') << m_mnum++ << ".vff";
-			imageio.save("vff", regmov.str(), vimg);
+			imageio.save(regmov.str(), vimg);
 		}
 
 
@@ -395,7 +395,7 @@ void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DIma
 		vimg.push_back(filter(FDeformer3D(best_local_shift, m_ipf), source));
 		regmov << "regmov" << setw(5) << setfill('0') << --m_mnum << "final.vff";
 		m_mnum++;
-		imageio.save("vff", regmov.str(), vimg);
+		imageio.save(regmov.str(), vimg);
 	}
 }
 
@@ -477,7 +477,7 @@ void C3DImageRegister::reg_level_regrid(const C3DImage& source, const C3DImage& 
 				temp = filter(FDeformer3D(result, m_ipf), source);
 				vimg.push_back(temp);
 				regmov << "regmov" << setw(5) << setfill('0') << m_mnum - 1 << "regrid.vff";
-				imageio.save("", regmov.str(), vimg);
+				imageio.save(regmov.str(), vimg);
 			}
 
 		}
@@ -492,7 +492,7 @@ void C3DImageRegister::reg_level_regrid(const C3DImage& source, const C3DImage& 
 			C3DImageVector vimg;
 			vimg.push_back(temp);
 			regmov << "regmov" << setw(5) << setfill('0') << m_mnum++ << ".vff";
-			imageio.save("vff", regmov.str(), vimg);
+			imageio.save(regmov.str(), vimg);
 		}
 
 		new_cost_value = m_cost.value(*temp);
@@ -543,7 +543,7 @@ void C3DImageRegister::reg_level_regrid(const C3DImage& source, const C3DImage& 
 		vimg.push_back(filter(FDeformer3D(best_local_shift, m_ipf), source));
 		regmov << "regmov" << setw(5) << setfill('0') << --m_mnum << "final.vff";
 		m_mnum++;
-		imageio.save("vff", regmov.str(), vimg);
+		imageio.save(regmov.str(), vimg);
 	}
 }
 
@@ -614,7 +614,7 @@ void C3DImageRegister::reg_level(const C3DImage& source, const C3DImage& referen
 			C3DImageVector vimg;
 			vimg.push_back(temp);
 			regmov << "regmov" << setw(5) << setfill('0') << m_mnum++ << ".vff";
-			imageio.save("vff", regmov.str(), vimg);
+			imageio.save(regmov.str(), vimg);
 		}
 
 		new_cost_value = m_cost.value(*temp);
@@ -654,7 +654,7 @@ void C3DImageRegister::reg_level(const C3DImage& source, const C3DImage& referen
 		vimg.push_back(filter(FDeformer3D(result, m_ipf), source));
 		regmov << "regmov" << setw(5) << setfill('0') << --m_mnum << "final.vff";
 		m_mnum++;
-		imageio.save("vff", regmov.str(), vimg);
+		imageio.save(regmov.str(), vimg);
 	}
 }
 

@@ -17,7 +17,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
+ * along with this program; if not, write to theFree Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
@@ -300,12 +300,11 @@ double  TNonrigRegGradientProblem<T>::do_f(const CDoubleVector& x)
 		m_start_cost = result; 
 	
 	m_func_evals++; 
-	cvmsg() << "Cost[fg="<<setw(4)<<m_grad_evals 
+	cvinfo() << "Cost[fg="<<setw(4)<<m_grad_evals 
 		<< ",fe="<<setw(4)<<m_func_evals<<"]=" 
 		<< setw(20) << setprecision(12) << result 
 		<< "ratio:" << setw(20) << setprecision(12) 
-		<< result / m_start_cost <<   "\r"; 
-	cvinfo() << "\n";
+		<< result / m_start_cost <<   "\n"; 
 	return result; 
 }
 
@@ -328,12 +327,11 @@ double  TNonrigRegGradientProblem<T>::do_fdf(const CDoubleVector& x, CDoubleVect
 
 	m_grad_evals++; 
 
-	cvmsg() << "Cost[fg="<<setw(4)<<m_grad_evals 
+	cvinfo() << "Cost[fg="<<setw(4)<<m_grad_evals 
 		<< ",fe="<<setw(4)<<m_func_evals<<"]= with " 
 		<< x.size() << " parameters= " 
 		<< setw(20) << setprecision(12) << result 
-		<< " ratio:" << setw(20) << setprecision(12) << result / m_start_cost <<  "\r"; 
-	cvinfo() << "\n"; 
+		<< " ratio:" << setw(20) << setprecision(12) << result / m_start_cost <<  "\n"; 
 	return result; 
 }
 

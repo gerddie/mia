@@ -47,7 +47,6 @@ mia-3dmaskseeded -i <input image> -o <output image> -s "<sx,sy,sz>" [options]
   \optiontable{
   \optinfile
   \optoutfile
-  \opttypethreed
   \cmdopt{seed}{s}{3D-vector <int>}{Region growing seed point}
   \cmdopt{neighborhood}{n}{string}{Neighbourhood shape as provided by the shape plugins 
                                   (\ref{sec:3dshapes})}
@@ -173,7 +172,6 @@ int do_main(int argc, const char *argv[] )
 {
 	string in_filename;
 	string out_filename;
-	string out_type;
 	C3DBounds seed_point(0,0,0);
 	string shape_descr("6n");
 
@@ -185,7 +183,6 @@ int do_main(int argc, const char *argv[] )
 				    "input image(s) to be filtered", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o',
 				    "output image(s) that have been filtered", CCmdOption::required));
-	options.add(make_opt( out_type, imageio.get_set(), "type", 't', "output file type"));
 	options.add(make_opt( seed_point, "seed", 's', "seed point"));
 
 	options.add(make_opt( shape_descr, "neighborhood", 'n', "neighborhood shape"));
@@ -205,7 +202,7 @@ int do_main(int argc, const char *argv[] )
 		for (C3DImageIOPluginHandler::Instance::Data::iterator i = in_image_list->begin();
 		     i != in_image_list->end(); ++i)
 			*i = mia::filter(mask,**i);
-		if ( !imageio.save(out_type, out_filename, *in_image_list) ){
+		if ( !imageio.save(out_filename, *in_image_list) ){
 			string not_save = ("unable to save result to ") + out_filename;
 			throw runtime_error(not_save);
 		};

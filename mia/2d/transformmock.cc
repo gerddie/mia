@@ -45,9 +45,10 @@ C2DTransformation *C2DTransformMock::invert() const
 }
 
 
-bool C2DTransformMock::save(const std::string& , const std::string& ) const
+bool C2DTransformMock::save(const std::string& ) const
 {
 	return false;
+
 }
 
 P2DTransformation C2DTransformMock::do_upscale(const C2DBounds&) const

@@ -138,7 +138,7 @@ P2DImage C2DTranslateTransformation::apply(const C2DImage& image, const C2DInter
 	return transform2d(image, ipf, *this);
 }
 
-bool C2DTranslateTransformation::save(const std::string& /*filename*/, const std::string& /*type*/) const
+bool C2DTranslateTransformation::save(const std::string& /*filename*/) const
 {
 	assert(0 && "not implemented");
 

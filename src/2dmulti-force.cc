@@ -110,7 +110,7 @@ int do_main(int argc, const char **argv)
 	images.push_back(norm_img);
 
 
-	if ( !imageio.save("", out_filename, images) )
+	if ( !imageio.save(out_filename, images) )
 		throw runtime_error(string("unable to save to: ") + out_filename);
 
 	return EXIT_SUCCESS;

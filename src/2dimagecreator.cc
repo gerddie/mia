@@ -40,7 +40,6 @@ mia-2dimagecreator -i <input> -o <output> -n <number>
 
   \optiontable{
   \optoutfile
-  \opttypetwod
   \cmdopt{size}{s}{2D vector <uint>}{size of the output image}
   \optrepn
   \cmdopt{object}{j}{string}{object to be created (see section \ref{sec:creator2d})}
@@ -90,8 +89,6 @@ int do_main(int argc, const char *argv[])
 
 	options.add(make_opt( out_filename, "out-file", 'o', "output file for create object", 
 				    CCmdOption::required));
-	options.add(make_opt( type, imageio.get_set(), "type", 't', 
-				    "Output file type (normally deducted from output file name)"));
 	options.add(make_opt( size, "size", 's', "size of the object"));
 	options.add(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type "));
 	options.add(make_opt( creator,  "object", 'j', "object to be created", CCmdOption::required));
@@ -111,7 +108,7 @@ int do_main(int argc, const char *argv[])
 
 	C2DImageVector out_images;
 	out_images.push_back(image);
-	return !imageio.save(type, out_filename, out_images);
+	return !imageio.save(out_filename, out_images);
 }
 
 int main(int argc, const char *argv[])

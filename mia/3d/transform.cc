@@ -237,7 +237,6 @@ struct F3DTransform : public TFilter<P3DImage> {
 		auto v = m_trans.begin();
 		
 		while (r != timage->end()) {
-			cvdebug() << *v << "\n"; 
 			*r = (*interp)(*v);
 			++r; ++v; 
 		}
