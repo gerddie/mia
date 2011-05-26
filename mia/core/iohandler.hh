@@ -115,6 +115,14 @@ public:
 	/// @ returns a string containing the supported file type suffixes
 	const std::string get_supported_suffixes() const; 
 
+	/**
+	   Translate the file type decriptor to the file suffix. 
+	   \param type type descriptor (plugin name);
+	   \returns preferred suffix of the file type 
+	   \remark if the type is onkown it will throw and std::invalid_argument exception 
+	 */
+	std::string get_prefered_suffix(const std::string& type) const; 
+
 protected: 
 	/**
 	   constructor that is provided with a list of plugin search path. 

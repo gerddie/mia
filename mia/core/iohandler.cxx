@@ -75,6 +75,16 @@ TIOPluginHandler<I>::prefered_plugin_ptr(const std::string& fname) const
 }
 
 template <class I> 
+std::string TIOPluginHandler<I>::get_prefered_suffix(const std::string& type) const
+{
+	auto plugin = this->plugin(type.c_str());
+	if ( !plugin ) {
+		THROW(invalid_argument, "Plug-in '" << type << "' not available"); 
+	}
+	return plugin->get_prefered_suffix(); 
+}
+
+template <class I> 
 const typename TIOPluginHandler<I>::Interface&
 TIOPluginHandler<I>::prefered_plugin(const std::string& fname) const
 {

@@ -81,4 +81,16 @@ bool TIOPlugin<D>::do_test() const
 	return true; 
 }
 
+template <typename D> 
+std::string TIOPlugin<D>::get_prefered_suffix() const
+{
+	return 	this->do_get_prefered_suffix(); 
+}
+
+template <typename D> 
+std::string TIOPlugin<D>::do_get_prefered_suffix() const
+{
+	return this->get_name(); 
+}
+
 NS_MIA_END

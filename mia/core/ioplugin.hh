@@ -97,6 +97,14 @@ public:
 	/// \returns a set of thepixel types, supported by this IO plug-in
 	const PixelTypeSet& supported_pixel_types() const;
 
+
+	/**
+	   Translate the file type decriptor to the file suffix. 
+	   \param type type descriptor (plugin name);
+	   \returns preferred suffix of the file type 
+	   \remark in most cases this is just a pass-throug 
+	 */
+	std::string get_prefered_suffix() const; 
 protected:
 
 	/// add pixel type t to the list of supported types
@@ -126,6 +134,9 @@ private:
 	virtual bool do_save(const std::string& fname, const typename D::type& data) const = 0;
 
 	virtual bool do_test() const;
+
+	virtual std::string do_get_prefered_suffix() const; 
+
 };
 
 EXPORT_CORE extern const char * const io_plugin_property_multi_record;
