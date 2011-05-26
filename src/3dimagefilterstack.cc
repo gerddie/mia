@@ -148,11 +148,8 @@ int main( int argc, const char *argv[] )
 			throw runtime_error("'--out-base' ('o') option required");
 
 		bool use_src_format = out_type.empty();
-
-		if (!imageio.preferred_plugin_ptr(out_type)) {
-			cvwarn() << "Output file format '"<< out_type << "' not supported, revert to input file format\n";
-			use_src_format = true;
-		}
+		
+		string out_suffix = imageio.get_preferred_suffix(out_type); 
 
 
 		//	CHistory::instance().append(argv[0], revision, options);
@@ -206,7 +203,7 @@ int main( int argc, const char *argv[] )
 				}
 
 				stringstream ss;
-				ss << out_filename << setw(format_width) << setfill('0') << i << "." << out_type;
+				ss << out_filename << setw(format_width) << setfill('0') << i << "." << out_suffix;
 				cvdebug() << "Save to " << ss.str() << ", format = " << out_type << "\n";
 
 				if ( !imageio.save(ss.str(), *in_image_list) ){

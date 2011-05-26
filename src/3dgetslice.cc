@@ -150,14 +150,10 @@ public:
 
 		bool retval = true;
 		for(size_t i = m_start; i < end; ++i) {
-			C2DImageVector out_images;
 			P2DImage pimage(new  T2DImage<T>(__dispatch<T, s_dir>::get_slice(i, image)));
-			out_images.push_back(pimage);
-
 			stringstream out_name;
 			out_name << m_fname << setw(4) << setfill('0') << i << "." << m_type;
-
-			retval &= imageio2d.save(out_name.str(), out_images);
+			retval &= save_image(out_name.str(), pimage);
 		}
 		return retval;
 	}
@@ -198,28 +194,29 @@ int main( int argc, const char *argv[] )
 		if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 
 
+		string out_suffix = imageio3d.get_preferred_suffix(out_type); 
 
 		// read image
-		C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio3d.load(in_filename);
+		auto in_image = load_image3d(in_filename);
 
 
 		bool result = false;
-                if (in_image_list.get() && in_image_list->size()) {
+                if (in_image) {
 			switch (direction) {
 			case dir_xy:
 				result = mia::filter(TGetter<dir_xy>(start_slice, slice_number, 
-								     out_filename, out_type), 
-						     **in_image_list->begin());
+								     out_filename, out_suffix), 
+						     *in_image);
 				break;
 			case dir_xz:
 				result = mia::filter(TGetter<dir_xz>(start_slice, slice_number, 
-								     out_filename, out_type), 
-						     **in_image_list->begin());
+								     out_filename, out_suffix), 
+						     *in_image);
 				break;
 			case dir_yz:
 				result = mia::filter(TGetter<dir_yz>(start_slice, slice_number, 
-								     out_filename, out_type), 
-						     **in_image_list->begin());
+								     out_filename, out_suffix), 
+						     *in_image);
 				break;
 			default:
 				assert(!"impossible slice direction");
