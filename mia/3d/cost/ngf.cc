@@ -47,14 +47,14 @@ C3DFVector  FScalar::grad (int nx, int nxy, C3DFVectorfield::const_iterator isrc
 double FCross::cost(const C3DFVector& src, const C3DFVector& ref) const
 {
 	C3DFVector d = cross(src, ref);
-	return d.norm2(); 
+	return 0.5 * d.norm2(); 
 }
 
 C3DFVector  FCross::grad (int nx, int nxy, C3DFVectorfield::const_iterator isrc,
 	      const C3DFVector& ref, double& cost) const 
 {
 	C3DFVector d = cross(*isrc, ref);
-	cost += d.norm2();
+	cost += 0.5 * d.norm2();
 	
 	return C3DFVector  ( dot(d, cross(isrc[1] - isrc[-1], ref)),
 			     dot(d, cross(isrc[nx] - isrc[-nx], ref)),

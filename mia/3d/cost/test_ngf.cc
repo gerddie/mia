@@ -54,6 +54,25 @@ BOOST_FIXTURE_TEST_CASE( test_ngf_evaluator_dot, C3DFVectorfieldFixture )
 	
 }
 
+BOOST_FIXTURE_TEST_CASE( test_ngf_evaluator_cross, C3DFVectorfieldFixture )
+{
+	
+	C3DFVectorfield input(C3DBounds(3,3,3)); 
+	
+	FCross costfunct; 
+
+	BOOST_CHECK_CLOSE( costfunct.cost(field(0,0,0), field(1,1,1)), 5.0f, 0.01f); 
+	
+	double cost = 0.0; 
+	auto grad = costfunct.grad(3, 9, field.begin() + 9 + 3 + 1, field(0,0,0), cost); 
+
+	BOOST_CHECK_CLOSE( cost, 5.0f, 0.01f); 
+	BOOST_CHECK_CLOSE( grad.x, 18.0f, 0.01f); 
+	BOOST_CHECK_CLOSE( grad.y, 2.0f, 0.01f); 
+	BOOST_CHECK_CLOSE( grad.z, -22.0f, 0.01f); 
+	
+}
+
 
 
 
