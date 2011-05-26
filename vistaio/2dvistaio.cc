@@ -43,6 +43,7 @@ private:
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
+	std::string do_get_prefered_suffix() const; 
 };
 
 CVista2DImageIOPlugin::CVista2DImageIOPlugin():
@@ -62,6 +63,8 @@ void CVista2DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
 {
 	map.insert(pair<string,string>(".v", get_name()));
 	map.insert(pair<string,string>(".V", get_name()));
+	map.insert(pair<string,string>(".vista", get_name()));
+	map.insert(pair<string,string>(".VISTA", get_name()));
 }
 
 
@@ -172,6 +175,12 @@ const string CVista2DImageIOPlugin::do_get_descr() const
 {
 	return "a 2dimage io plugin for vista images";
 }
+
+std::string CVista2DImageIOPlugin::do_get_prefered_suffix() const
+{
+	return "v"; 
+}
+
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {

@@ -46,6 +46,7 @@ private:
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
+	std::string do_get_prefered_suffix() const; 
 };
 
 CVista3DImageIOPlugin::CVista3DImageIOPlugin():
@@ -181,6 +182,12 @@ const string CVista3DImageIOPlugin::do_get_descr() const
 {
 	return "a 3dimage io plugin for vista images";
 }
+
+std::string CVista3DImageIOPlugin::do_get_prefered_suffix() const
+{
+	return "v"; 
+}
+
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()
 {
