@@ -47,13 +47,13 @@ void CGDSQMinimizer::do_set_problem()
 {
 }
 
-int CGDSQMinimizer::test_tol(CDoubleVector& dx, double tol)const
+int CGDSQMinimizer::test_tol(CDoubleVector& dx, double tol, int cause)const
 {
 	for (auto ix = dx.begin(); ix != dx.end(); ++ix) {
 		if (fabs(*ix) >=tol)
-			return false; 
+			return 0; 
 	}
-	return true; 
+	return cause; 
 }
 
 int CGDSQMinimizer::do_run(CDoubleVector& x)
@@ -68,7 +68,7 @@ int CGDSQMinimizer::do_run(CDoubleVector& x)
 	
 	double f_old = f_init; 
 	int iter = 0; 
-	bool success = test_tol(g, m_xtol);
+	int success = test_tol(g, m_xtol, SUCCESS_XTOLA);
 	while (iter++ < m_maxiter && !success) {
 		cblas_daxpy(g.size(), -m_step, &g[0], 1, &xwork[0], 1);
 		double f = get_problem().fdf(xwork, gt);
@@ -86,21 +86,32 @@ int CGDSQMinimizer::do_run(CDoubleVector& x)
 			copy(gt.begin(), gt.end(), g.begin()); 
 			f_old = f; 
 
-			success |= test_tol(gt, m_gtol);
-			if (f != 0.0) 
-				success |= fabs((f_old - f) / f) < m_ftolr;  
-	
+			success |= test_tol(gt, m_gtol, SUCCESS_GTOLA);
+			if (f != 0.0 &&  (fabs((f_old - f) / f) < m_ftolr))
+				success |= SUCCESS_FTOLR;  
+			
 		}else{
 			// recover best solution 
 			copy(x.begin(), x.end(), xwork.begin() ); 
 			m_step /= m_step_scale;
 		}
-		success |= test_tol(g, m_xtol / m_step); 
+		success |= test_tol(g, m_xtol / m_step, SUCCESS_XTOLA); 
 		cvmsg() << "[" << iter << "]: f=" << f << " step=" << m_step << "\n"; 
 	}
 	if (iter == m_maxiter) 
 		cvwarn() << "Iteration stopped because maximum number of iterations was reached\n"; 
+	
+	if (success & SUCCESS_XTOLA) 
+		cvmsg() << "Stop: XTOLA\n"; 
+
+	if (success & SUCCESS_GTOLA) 
+		cvmsg() << "Stop: GTOLA\n"; 
 		
+	if (success & SUCCESS_FTOLR) 
+		cvmsg() << "Stop: RTOLR\n"; 
+
+	cvmsg() << "Stop:" << success << " with " << iter << " of " << m_maxiter << "iterations\n"; 
+
 	return CMinimizer::success; 
 }
 
@@ -130,7 +141,8 @@ CGDSQMinimizerPlugin::CGDSQMinimizerPlugin():
 
 CGDSQMinimizerPlugin::ProductPtr CGDSQMinimizerPlugin::do_create() const
 {
-	return ProductPtr(new CGDSQMinimizer(m_start_step, m_step_scale, m_xtol, m_gtol, m_maxiter, m_ftolr)); 
+	TRACE_FUNCTION; 
+	return ProductPtr(new CGDSQMinimizer(m_start_step, m_step_scale, m_xtol, m_gtol, m_ftolr, m_maxiter)); 
 }
 
 const std::string CGDSQMinimizerPlugin::do_get_descr() const

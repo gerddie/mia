@@ -24,6 +24,9 @@
 
 NS_BEGIN(minimizer_gdsq)
 
+#define SUCCESS_FTOLR 1
+#define SUCCESS_XTOLA 2
+#define SUCCESS_GTOLA 4
 
 // The FDF minimizer of the GSL 
 class CGDSQMinimizer : public mia::CMinimizer {
@@ -34,7 +37,7 @@ public:
 private: 
 	virtual void do_set_problem();
 	virtual int do_run(mia::CDoubleVector& x);
-	int test_tol(mia::CDoubleVector& dx, double tol)const; 
+	int test_tol(mia::CDoubleVector& dx, double tol, int cause)const; 
 	
 	double m_xtol; 
 	double m_gtol; 
