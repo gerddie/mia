@@ -86,6 +86,8 @@ BOOST_FIXTURE_TEST_CASE(  test_prefered_suffix, DummyPluginFixture )
 	const CTestIOPluginHandler::Instance&  handler = CTestIOPluginHandler::instance();
 	BOOST_CHECK_EQUAL(handler.get_prefered_suffix("datapool"), "datapool");
 	BOOST_CHECK_EQUAL(handler.get_prefered_suffix("la"), "hey");
+
+	BOOST_CHECK_THROW(handler.get_prefered_suffix("nonsense"), invalid_argument);
 }
 
 BOOST_AUTO_TEST_CASE(  test_datapool_io )
