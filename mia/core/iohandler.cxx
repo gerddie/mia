@@ -46,7 +46,7 @@ TIOPluginHandler<I>::TIOPluginHandler(const std::list<bfs::path>& searchpath):
 
 template <class I> 
 const typename TIOPluginHandler<I>::Interface *
-TIOPluginHandler<I>::prefered_plugin_ptr(const std::string& fname) const
+TIOPluginHandler<I>::preferred_plugin_ptr(const std::string& fname) const
 {
 	// get the suffix - if there is a Z, gz, or bz2, include it in the suffix
 	bfs::path fpath(fname);
@@ -75,18 +75,18 @@ TIOPluginHandler<I>::prefered_plugin_ptr(const std::string& fname) const
 }
 
 template <class I> 
-std::string TIOPluginHandler<I>::get_prefered_suffix(const std::string& type) const
+std::string TIOPluginHandler<I>::get_preferred_suffix(const std::string& type) const
 {
 	auto plugin = this->plugin(type.c_str());
 	if ( !plugin ) {
 		THROW(invalid_argument, "Plug-in '" << type << "' not available"); 
 	}
-	return plugin->get_prefered_suffix(); 
+	return plugin->get_preferred_suffix(); 
 }
 
 template <class I> 
 const typename TIOPluginHandler<I>::Interface&
-TIOPluginHandler<I>::prefered_plugin(const std::string& fname) const
+TIOPluginHandler<I>::preferred_plugin(const std::string& fname) const
 {
 	// get the suffix - if there is a Z, gz, or bz2, include it in the suffix
 	bfs::path fpath(fname);
@@ -125,7 +125,7 @@ template <class I>
 typename TIOPluginHandler<I>::PData
 TIOPluginHandler<I>::load(const std::string& fname) const
 {
-	const Interface *pp = prefered_plugin_ptr(fname); 
+	const Interface *pp = preferred_plugin_ptr(fname); 
 	if (pp) {
 		PData retval = pp->load(fname); 
 		if (retval.get()) 
@@ -150,7 +150,7 @@ TIOPluginHandler<I>::load_to_pool(const std::string& fname) const
 	if (CDatapool::Instance().has_key(fname)) 
 		return result; 
 
-	const Interface *pp = prefered_plugin_ptr(fname); 
+	const Interface *pp = preferred_plugin_ptr(fname); 
 	if (pp) {
 		// if the IO plugin signals, that the data will be loaded later
 		// just return the key 
@@ -195,7 +195,7 @@ bool TIOPluginHandler<I>::save(const std::string& fname, const Data& data) const
 {
 	const I* p = NULL; 
 
-	p = prefered_plugin_ptr(fname); 
+	p = preferred_plugin_ptr(fname); 
 	// okay, file name didn't help, let's see if the data knows about its input type 
 	if (!p) 
 		p = this->plugin(data.get_source_format().c_str()); 

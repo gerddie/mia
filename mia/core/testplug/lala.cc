@@ -34,7 +34,7 @@ private:
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
 	bool do_test()const;
-	std::string do_get_prefered_suffix() const; 
+	std::string do_get_preferred_suffix() const; 
 };
 
 CLalaIOPlugin::CLalaIOPlugin():
@@ -63,7 +63,7 @@ const string CLalaIOPlugin::do_get_descr() const
 	return "a dummy plugin to test io-plugin handling";
 }
 
-std::string CLalaIOPlugin::do_get_prefered_suffix() const
+std::string CLalaIOPlugin::do_get_preferred_suffix() const
 {
 	return "hey"; 
 }

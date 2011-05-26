@@ -149,7 +149,7 @@ int main( int argc, const char *argv[] )
 
 		bool use_src_format = out_type.empty();
 
-		if (!imageio.prefered_plugin_ptr(out_type)) {
+		if (!imageio.preferred_plugin_ptr(out_type)) {
 			cvwarn() << "Output file format '"<< out_type << "' not supported, revert to input file format\n";
 			use_src_format = true;
 		}

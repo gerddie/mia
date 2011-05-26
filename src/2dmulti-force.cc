@@ -100,7 +100,7 @@ int do_main(int argc, const char **argv)
 
 	P2DImage norm_img(result);
 
-	const C2DImageIOPlugin::PixelTypeSet& pts = imageio.prefered_plugin(out_filename).supported_pixel_types();
+	const C2DImageIOPlugin::PixelTypeSet& pts = imageio.preferred_plugin(out_filename).supported_pixel_types();
 
 	// convert optimized to ubyte
 	if (pts.find(it_float) == pts.end())

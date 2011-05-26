@@ -77,17 +77,17 @@ BOOST_FIXTURE_TEST_CASE(  test_dummy_io, DummyPluginFixture )
 
 	string src_fmt = data_lala->get_source_format();
 	cvdebug() << "src_fmt = " << src_fmt << "\n";
-	BOOST_CHECK(handler.prefered_plugin_ptr(src_fmt));
+	BOOST_CHECK(handler.preferred_plugin_ptr(src_fmt));
 
 }
 
-BOOST_FIXTURE_TEST_CASE(  test_prefered_suffix, DummyPluginFixture )
+BOOST_FIXTURE_TEST_CASE(  test_preferred_suffix, DummyPluginFixture )
 {
 	const CTestIOPluginHandler::Instance&  handler = CTestIOPluginHandler::instance();
-	BOOST_CHECK_EQUAL(handler.get_prefered_suffix("datapool"), "datapool");
-	BOOST_CHECK_EQUAL(handler.get_prefered_suffix("la"), "hey");
+	BOOST_CHECK_EQUAL(handler.get_preferred_suffix("datapool"), "datapool");
+	BOOST_CHECK_EQUAL(handler.get_preferred_suffix("la"), "hey");
 
-	BOOST_CHECK_THROW(handler.get_prefered_suffix("nonsense"), invalid_argument);
+	BOOST_CHECK_THROW(handler.get_preferred_suffix("nonsense"), invalid_argument);
 }
 
 BOOST_AUTO_TEST_CASE(  test_datapool_io )

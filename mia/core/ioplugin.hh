@@ -104,7 +104,7 @@ public:
 	   \returns preferred suffix of the file type 
 	   \remark in most cases this is just a pass-throug 
 	 */
-	std::string get_prefered_suffix() const; 
+	std::string get_preferred_suffix() const; 
 protected:
 
 	/// add pixel type t to the list of supported types
@@ -135,7 +135,7 @@ private:
 
 	virtual bool do_test() const;
 
-	virtual std::string do_get_prefered_suffix() const; 
+	virtual std::string do_get_preferred_suffix() const; 
 
 };
 

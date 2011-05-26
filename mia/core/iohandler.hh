@@ -98,7 +98,7 @@ public:
 	    \returns the plug-in that is preferred for the suffix of \a fname, or NULL 
 	    if none was found. 
 	*/
-	const Interface *prefered_plugin_ptr(const std::string& fname) const; 
+	const Interface *preferred_plugin_ptr(const std::string& fname) const; 
 
 	/** 
 	    Search for the plug-in corresponding to the file name suffix, if the 
@@ -107,7 +107,7 @@ public:
 	    \returns the plug-in that is preferred for the suffix of \a fname 
 	*/
 
-	const Interface& prefered_plugin(const std::string& fname) const; 
+	const Interface& preferred_plugin(const std::string& fname) const; 
 
 	/// @returns the a mapping of the supported file suffixes to their plugins 
 	const CSuffixmap& get_supported_filetype_map() const; 
@@ -121,7 +121,7 @@ public:
 	   \returns preferred suffix of the file type 
 	   \remark if the type is onkown it will throw and std::invalid_argument exception 
 	 */
-	std::string get_prefered_suffix(const std::string& type) const; 
+	std::string get_preferred_suffix(const std::string& type) const; 
 
 protected: 
 	/**

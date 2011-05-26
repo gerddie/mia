@@ -123,8 +123,8 @@ int do_main( int argc, const char *argv[] )
 
 	// sanity checks: These functions will throw if no plugin is found. 
 	if (!trans_filename.empty())
-		C3DTransformationIOPluginHandler::instance().prefered_plugin(trans_filename); 
-	C3DImageIOPluginHandler::instance().prefered_plugin(out_filename);
+		C3DTransformationIOPluginHandler::instance().preferred_plugin(trans_filename); 
+	C3DImageIOPluginHandler::instance().preferred_plugin(out_filename);
 	
 
 	P3DImage Model = load_image<P3DImage>(src_filename);
