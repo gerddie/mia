@@ -1,5 +1,6 @@
 SET(cost3d
 	   ssd
+	   ngf
 )
 
 PLUGINGROUP_WITH_TEST_AND_PREFIX(3d-cost "${cost3d}" 
