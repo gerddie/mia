@@ -379,6 +379,15 @@ public:
         /** \returns the end of a read/write forward iterator over a subset of the data. */
         range_iterator end_range(const C3DBounds& begin, const C3DBounds& end); 
 
+
+        /** \returns an read/write forward iterator over a subset of the data. 
+            The functions ensures, that the field uses a single referenced datafield */
+        const_range_iterator begin_range(const C3DBounds& begin, const C3DBounds& end)const; 
+
+        /** \returns the end of a read/write forward iterator over a subset of the data. */
+        const_range_iterator end_range(const C3DBounds& begin, const C3DBounds& end)const; 
+
+
 	/**
 	   Obtain an iterator at position (x,y,z)
 	   The functions ensures, that the field uses a single referenced datafield

@@ -123,6 +123,11 @@ public:
 	bool operator == (const range3d_iterator<T>& left, const range3d_iterator<T>& right); 
 	/// @endcond 
 
+	/**
+	   Return the internal iterator
+	 */
+	internal_iterator get_point(); 
+
 private: 
 
 	void increment_y(); 

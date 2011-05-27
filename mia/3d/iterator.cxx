@@ -124,6 +124,13 @@ void range3d_iterator<I>::increment_z()
 }
 
 template <typename I> 
+typename range3d_iterator<I>::internal_iterator 
+range3d_iterator<I>::get_point()
+{
+	return m_iterator; 
+}
+
+template <typename I> 
 range3d_iterator<I> range3d_iterator<I>::operator ++(int)
 {
 	range3d_iterator result(*this); 
