@@ -63,24 +63,45 @@ C3DFVector  FCross::grad (int nx, int nxy, C3DFVectorfield::const_iterator isrc,
 
 double FDeltaScalar::cost (const C3DFVector& src, const C3DFVector& ref) const
 {
-	double d = get_dot(src, ref);
-	return d * d;
+	double dotss = src.norm2(); 
+	double dotrr = ref.norm2(); 
+	double dotsr = dot(src, ref); 
+	double f = dotss *dotrr; 
+	if ( f > 0.0) 
+		f = dotsr / sqrt(f); 
+	auto delta = ref - f * src; 
+	return 0.5 * dot(delta, delta); 
 }
 
 C3DFVector FDeltaScalar::grad (int nx, int nxy, C3DFVectorfield::const_iterator isrc,
 			     const C3DFVector& ref, double& cost) const
 {
-	double d = get_dot(*isrc,ref);
-	cost += d * d;
-	C3DFVector result ( dot(isrc[1] - isrc[-1], ref),
-			    dot(isrc[nx] - isrc[-nx], ref),
-			    dot(isrc[nxy] - isrc[-nxy], ref));
-	return d * result;
+	const double dotss = isrc->norm2(); 
+	const double dotrr = ref.norm2(); 
+	const double dotsr = dot(*isrc, ref); 
+	const double f = dotss *dotrr; 
+	const double onebydotss = dotss > 0 ? 1.0/dotss: 0.0; 
+	const double onybyf =  f > 0.0 ?  1.0 / sqrt(f) : 0.0; 
+	const double cos_a = dotsr * onybyf; 
+	const auto delta = ref - cos_a * *isrc; 
+	
+	cost += 0.5 * dot(delta, delta); 
+	
+	const C3DFVector s2dx =   0.5 * (isrc[1] -   isrc[-1]); 
+	const C3DFVector s2dy =  0.5 * (isrc[nx] -  isrc[-nx]); 
+	const C3DFVector s2dz = 0.5 * (isrc[nxy] - isrc[-nxy]); 
+	
+	const double p1 = cos_a * onebydotss; 
+	const double p2 =  onybyf; 
+	return C3DFVector( dot(delta, (p1 * dot(*isrc, s2dx)  - p2 * dot(ref, s2dx)) * *isrc - cos_a *s2dx), 
+			   dot(delta, (p1 * dot(*isrc, s2dy)  - p2 * dot(ref, s2dy)) * *isrc - cos_a *s2dy), 
+			   dot(delta, (p1 * dot(*isrc, s2dz)  - p2 * dot(ref, s2dz)) * *isrc - cos_a *s2dz)); 
+	
 }
 
 double FDeltaScalar::get_dot(const C3DFVector& src, const C3DFVector& ref)const 
 {
-	return dot (src, ref) > 0 ? dot(src - ref, ref): dot(src + ref, ref);
+	
 }
 
 
