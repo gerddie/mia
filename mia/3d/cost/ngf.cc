@@ -28,6 +28,11 @@ using namespace boost;
 using namespace mia;
 
 
+double FEvaluator::operator()(const mia::C3DFVector& src, const mia::C3DFVector& ref) const
+{
+	return cost(src, ref); 
+}
+
 double FScalar::cost(const C3DFVector& src, const C3DFVector& ref) const
 {
 	double d = dot(src, ref);
@@ -102,6 +107,114 @@ C3DFVector FDeltaScalar::grad (int nx, int nxy, C3DFVectorfield::const_iterator 
 double FDeltaScalar::get_dot(const C3DFVector& src, const C3DFVector& ref)const 
 {
 	
+}
+
+
+C3DNFGImageCost::C3DNFGImageCost(PEvaluator evaluator):
+	m_evaluator(evaluator)
+{
+	add(property_gradient);
+}
+
+void C3DNFGImageCost::prepare_reference(const C3DImage& ref)
+{
+	post_set_reference(ref); 
+}
+
+void C3DNFGImageCost::post_set_reference(const mia::C3DImage& ref)
+{
+	m_ng_ref =  get_nfg(ref);
+}
+
+
+
+double C3DNFGImageCost::do_value(const mia::C3DImage& a, const mia::C3DImage& /*b*/) const
+{
+	TRACE("CNFG3DImageCost::do_value");
+	const C3DFVectorfield ng_a = get_nfg(a);
+	const double sum = inner_product(ng_a.begin(), ng_a.end(), m_ng_ref.begin(), 0.0, 
+					 [](double x, double y) {return x + y;},
+					 [m_evaluator](const C3DFVector ix, const C3DFVector iy) {
+						 return m_evaluator->cost(ix, iy); 
+					 }); 
+	return 0.5 * sum;
+}
+
+double C3DNFGImageCost::do_evaluate_force(const mia::C3DImage& a, 
+					  const mia::C3DImage& /*b*/, 
+					  float /*scale*/,
+					  mia::C3DFVectorfield& force) const
+{
+	const C3DFVectorfield ng_a = get_nfg(a);
+	double sum = 0.0; 
+	const int nx = ng_a.get_size().x; 
+	const int nxy = nx * ng_a.get_size().y; 
+	
+	auto ia = ng_a.begin_range(C3DBounds::_1, ng_a.get_size() - C3DBounds::_1); 
+	auto ie = ng_a.end_range(C3DBounds::_1, ng_a.get_size() - C3DBounds::_1); 
+	auto ib = m_ng_ref.begin_range(C3DBounds::_1, m_ng_ref.get_size() - C3DBounds::_1); 
+	auto iforce = force.begin_range(C3DBounds::_1, force.get_size() - C3DBounds::_1); 
+
+	while (ia != ie) {
+		*iforce = m_evaluator->grad (nx, nxy, ia.get_point(), *ib, sum);
+		++ia; 
+		++ib; 
+		++iforce; 
+	}; 
+
+	return 0.5 * sum;
+}
+
+C3DNFGImageCostPlugin::C3DNFGImageCostPlugin():
+	C3DImageCostPlugin("ngf"),
+	m_kernel("ds")
+{
+	TRACE("C3DNFGImageCostPlugin::C3DNFGImageCostPlugin()");
+	add_parameter("eval",
+		      new CStringParameter(m_kernel, false, "plugin subtype (sq, ds,dot,cross)"));
+
+}
+
+enum ESubTypes {st_unknown, st_delta_scalar, st_scalar, st_cross};
+
+C3DImageCostPlugin::ProductPtr C3DNFGImageCostPlugin::do_create()const
+{
+	TRACE("C3DNFGImageCostPlugin::do_create");
+
+	const TDictMap<ESubTypes>::Table lut[] = {
+		{"ds", st_delta_scalar},
+		{"dot", st_scalar},
+		{"cross", st_cross},
+		{0, st_unknown}
+	};
+	const TDictMap<ESubTypes> subtypemap(lut);
+
+	PEvaluator eval;
+	switch (subtypemap.get_value(m_kernel.c_str())) {
+	case st_delta_scalar: eval.reset(new FDeltaScalar()); break;
+	case st_scalar: eval.reset(new FScalar()); break;
+	case st_cross: eval.reset(new FCross()); break;
+	default:
+		throw invalid_argument(string("C3DNFGImageCostPlugin: unknown cost sub-type '")
+				       +m_kernel+"'");
+	}
+	return C3DImageCostPlugin::ProductPtr(new C3DNFGImageCost(eval));
+}
+
+bool C3DNFGImageCostPlugin::do_test() const
+{
+	return true;
+}
+
+const string C3DNFGImageCostPlugin::do_get_descr()const
+{
+	return "3D nfg cost function";
+}
+
+
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new C3DNFGImageCostPlugin();
 }
 
 

@@ -22,15 +22,19 @@
 #define mia_3d_cost_ngf_hh
 
 #include <mia/3d/3DVectorfield.hh>
+#include <mia/3d/cost.hh>
 
 NS_BEGIN(ngf_3dimage_cost)
 
 class FEvaluator {
 public:
+	typedef double result_type; 
         virtual ~FEvaluator(){};
 	virtual double cost (const mia::C3DFVector& src, const mia::C3DFVector& ref) const = 0;
 	virtual mia::C3DFVector grad(int nx, int nxy, mia::C3DFVectorfield::const_iterator isrc,
 				     const mia::C3DFVector& ref, double& cost) const = 0;
+
+	double operator()(const mia::C3DFVector& src, const mia::C3DFVector& ref) const; 
 };
 
 class FScalar: public FEvaluator {
@@ -58,6 +62,37 @@ private:
 };
 
 typedef std::shared_ptr<FEvaluator > PEvaluator;
+
+
+class C3DNFGImageCost : public mia::C3DImageCost {
+public:
+	C3DNFGImageCost(PEvaluator evaluator);
+	virtual void prepare_reference(const mia::C3DImage& ref)__attribute__((deprecated)); 
+private:
+	virtual double do_value(const mia::C3DImage& a, const mia::C3DImage& b) const ;
+	virtual double do_evaluate_force(const mia::C3DImage& a, const mia::C3DImage& b, float scale, mia::C3DFVectorfield& force) const;
+
+	virtual void post_set_reference(const mia::C3DImage& ref); 
+
+	mia::C3DFVectorfield m_ng_ref;
+	bool m_jump_levels_valid;
+	float m_cost_baseline;
+
+	PEvaluator m_evaluator;
+	float m_intensity_scale;
+};
+
+class C3DNFGImageCostPlugin: public mia::C3DImageCostPlugin {
+public:
+	C3DNFGImageCostPlugin();
+private:
+	virtual mia::C3DImageCostPlugin::ProductPtr	do_create()const;
+
+	bool do_test() const;
+	const std::string do_get_descr()const;
+	std::string m_kernel;
+};
+
 
 NS_END
 
