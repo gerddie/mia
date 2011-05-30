@@ -90,7 +90,6 @@ public:
 	
 	/// copy constructore 
 	range3d_iterator(const range3d_iterator<I>& other); 
-	
 
 	/// friend iterator type because we may want to copy a iterator to a const_iterator. 
 	template <typename AI> 
@@ -172,6 +171,7 @@ range3d_iterator<I>& range3d_iterator<I>::operator = (const range3d_iterator<AI>
 	m_iterator = other.m_iterator; 
 	m_xstride = other.m_xstride; 
 	m_ystride = other.m_ystride; 
+	m_boundary = other.m_boundary; 
 	return *this; 
 }
 
@@ -184,7 +184,8 @@ range3d_iterator<I>::range3d_iterator(const range3d_iterator<AI>& other):
 	m_end(other.m_end), 
 	m_xstride(other.m_xstride),
 	m_ystride(other.m_ystride),
-	m_iterator(other.m_iterator)
+	m_iterator(other.m_iterator), 
+	m_boundary(other.m_boundary)
 {
 }	
 

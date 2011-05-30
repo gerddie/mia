@@ -61,6 +61,7 @@ range3d_iterator<I>::range3d_iterator(const C3DBounds& pos, const C3DBounds& siz
 	m_iterator(iterator), 
 	m_boundary(eb_none)
 {
+	cvdebug() << "m_boundary=" << m_boundary << "\n"; 
 	m_ystride = (m_size.y - (m_end.y - m_begin.y))*m_size.x; 
 	if (m_pos.x == 0)
 		m_boundary |= eb_xlow; 
@@ -76,6 +77,7 @@ range3d_iterator<I>::range3d_iterator(const C3DBounds& pos, const C3DBounds& siz
 		m_boundary |= eb_zlow; 
 	if (m_pos.z == size.z - 1)
 		m_boundary |= eb_zhigh; 
+	cvdebug() << "m_boundary=" << m_boundary << "\n"; 
 	
 }
 
@@ -89,9 +91,12 @@ range3d_iterator<I>& range3d_iterator<I>::operator = (const range3d_iterator<I>&
 	m_end = other.m_end; 
 	m_iterator = other.m_iterator; 
 	m_xstride = other.m_xstride; 
-	m_ystride = other.m_ystride; 
+	m_ystride = other.m_ystride;
+	m_boundary = other.m_boundary; 
 	return *this; 
 }
+
+
 
 template <typename I> 
 range3d_iterator<I>::range3d_iterator(const range3d_iterator<I>& other):
@@ -101,7 +106,8 @@ range3d_iterator<I>::range3d_iterator(const range3d_iterator<I>& other):
 	m_end(other.m_end), 
 	m_xstride(other.m_xstride),
 	m_ystride(other.m_ystride),
-	m_iterator(other.m_iterator)
+	m_iterator(other.m_iterator), 
+	m_boundary(other.m_boundary)
 {
 }	
 
@@ -152,6 +158,7 @@ void range3d_iterator<I>::increment_z()
 			m_boundary |= eb_zhigh; 
 	}else if (m_pos.z == m_end.z - 1) {
 		m_pos = m_end; 
+
 	}
 }
 
