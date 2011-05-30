@@ -60,8 +60,6 @@ public:
 	virtual double cost (const mia::C3DFVector& src, const mia::C3DFVector& ref) const; 
 	virtual mia::C3DFVector grad(int nx, int nxy, mia::C3DFVectorfield::const_range_iterator isrc,
 				     const mia::C3DFVector& ref, double& cost) const; 
-private:
-	double get_dot(const mia::C3DFVector& src, const mia::C3DFVector& ref)const; 
 };
 
 typedef std::shared_ptr<FEvaluator > PEvaluator;

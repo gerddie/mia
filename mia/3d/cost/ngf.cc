@@ -18,6 +18,51 @@
  *
  */
 
+
+/* 
+   LatexBeginPluginDescription{3D image similarity kernels}
+   
+   \subsection{Normalized Gradient Fields}
+   \label{cost3d:ngf}
+   
+   \begin{description}
+   
+   \item [Plugin:] ngf
+   \item [Description:] This function evaluates the image similarity based on normalized gradient 
+                        fields. Given normalized gradient fields $\n_S$ of the study image and $\n_R$
+			of the reference image various evaluators are implemented: 
+   \begin{itemize}
+   \item cross Cross product based formulation: 
+     \begin{equation}
+       F_{\text{ngf}, \times}(\n_S, \n_R) := \frac{1}{2}\int_{\Omega} \left( \n_S(x) \times \n_R(x) \right)^2 \text{d}x
+     \end{equation}
+   \item dot Dot product based formulation: 
+     \begin{equation}
+        F_{\text{ngf}, \cdot}(\n_S, \n_R) := \frac{1}{2}\int_{\Omega} \left( \n_S(x) \cdot \n_R(x) \right)^2 \text{d}x
+      \end{equation}
+   \item ds 
+     \begin{equation}
+   	F_{\text{ngf}, \cdot\Delta} := \frac{1}{2}  \int_\Omega  
+	\left( \| \n_R(x)\|^2 -
+        \frac{<\n_R(x),\n_S(x)>^2}{\|\n_R(x)\|\|\n_S(x)\|} \right)^2  \text{d}x,
+      \end{equation}
+   \end{itemize}
+
+   \item [Study:] An abitrary gray scale or binary images 
+   \item [Reference:] An abitrary gray scale or binary images 
+   
+   \end{description}
+   
+   \plugtabstart
+   eval &  strimng & Evaluator (cross|dot|ds) & ds  \\
+   \plugtabend
+
+   For further information see \cite{haber05, wollny08a, wollny10b}. 
+
+   LatexEnd  
+ */
+
+
 #include <mia/3d/cost/ngf.hh>
 #include <mia/3d/nfg.hh>
 
@@ -132,12 +177,6 @@ C3DFVector FDeltaScalar::grad (int nx, int nxy, C3DFVectorfield::const_range_ite
 			   dot(dh.delta, (p1 * dot(*irsrc, src_grad.z)  - p2 * dot(ref, src_grad.z)) * *irsrc - dh.cos_a * src_grad.z)); 
 	
 }
-
-double FDeltaScalar::get_dot(const C3DFVector& src, const C3DFVector& ref)const 
-{
-	
-}
-
 
 C3DNFGImageCost::C3DNFGImageCost(PEvaluator evaluator):
 	m_evaluator(evaluator)

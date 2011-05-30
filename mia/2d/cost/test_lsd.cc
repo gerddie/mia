@@ -25,7 +25,7 @@
 NS_MIA_USE
 using namespace std;
 using namespace ::boost::unit_test;
-using namespace lsd_2dimage_cost;
+using namespace mia_2dcost_lsd;
 
 class LSDFixture {
 protected: 

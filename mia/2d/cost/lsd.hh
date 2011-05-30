@@ -1,38 +1,37 @@
+/* -*- mia-c++  -*-
+ *
+ * Copyright (c) Leipzig, Madrid 2004-2011
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+#ifndef mia_2d_cost_ls_hh
+#define mia_2d_cost_ls_hh
+
 #include <mia/2d/cost.hh>
 
+#define NS mia_2dcost_lsd
+#include <mia/internal/lsd.hh>
 
-NS_BEGIN(lsd_2dimage_cost)
+NS_BEGIN(mia_2dcost_lsd)
 
-/**
-   This class implements the least square distance measure proposed in 
-   Stefan Heldmann, "Multi-Modal Registration of MR Images with a Novel 
-   Least-Squares Distance Measure" Medical Imaging 2010: 
-   Image Processing, SPIE, February 2010
-*/
-
-class C2DLSDImageCost : public mia::C2DImageCost {
-public:
-	C2DLSDImageCost();
-private:
-
-	virtual double do_value(const mia::C2DImage& a, const mia::C2DImage& b) const;
-
-	virtual double do_evaluate_force(const mia::C2DImage& a, const mia::C2DImage& b, 
-					 float scale, mia::C2DFVectorfield& force) const;
-
-	virtual void post_set_reference(const mia::C2DImage& ref); 
-
-	std::vector<double> m_QtQinv;
-	std::vector<int>    m_Q_mappping;
-};
-
-class C2DLSDImageCostPlugin: public mia::C2DImageCostPlugin {
-public:
-	C2DLSDImageCostPlugin();
-private:
-	virtual mia::C2DImageCostPlugin::ProductPtr	do_create()const;
-
-	const std::string do_get_descr()const;
-};
+typedef TLSDImageCost<mia::C2DImageCost> C2DLSDImageCost;
+typedef TLSDImageCostPlugin<mia::C2DImageCostPlugin, C2DLSDImageCost> C2DLSDCostPlugin; 
 
 NS_END
+
+
+#endif
