@@ -24,6 +24,8 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/3d/3DVectorfield.hh>
+#include <mia/3d/3DDatafield.cxx>
+#include <mia/3d/iterator.cxx>
 
 NS_MIA_USE;
 
@@ -82,6 +84,30 @@ BOOST_AUTO_TEST_CASE (test_fill_all)
 	}
 }
 
+
+BOOST_AUTO_TEST_CASE (test_access_coordinates) 
+{
+	C3DBounds size(3,4,5); 
+	T3DDatafield<C3DBounds> field(size);
+
+	C3DBounds l; 
+	for(l.z = 0; l.z < size.z; ++l.z) 
+		for(l.y = 0; l.y < size.y; ++l.y) 
+			for(l.x = 0; l.x < size.x; ++l.x) 
+				field(l) = l; 
+
+
+	auto begin = field.begin_range(C3DBounds(0,0,0), size);
+	auto end = field.begin_range(C3DBounds(0,0,0), size);
+	while (begin != end) {
+		BOOST_CHECK_EQUAL(*begin, begin.pos());
+		++begin; 
+	}
+}
+
+
+
+
 BOOST_AUTO_TEST_CASE (test_iterator_boundaries) 
 {
 	C3DBounds size(7,5,6); 
@@ -132,10 +158,8 @@ BOOST_AUTO_TEST_CASE (test_iterator_some_boundaries)
 		BOOST_CHECK_EQUAL(ifield.pos().x == 6, bool(ifield.get_boundary_flags() & C3DFDatafield::range_iterator::eb_xhigh)); 
 		BOOST_CHECK_EQUAL(ifield.pos().y == 4, bool(ifield.get_boundary_flags() & C3DFDatafield::range_iterator::eb_yhigh)); 
 		BOOST_CHECK_EQUAL(ifield.pos().z == 5, bool(ifield.get_boundary_flags() & C3DFDatafield::range_iterator::eb_zhigh)); 
-
 	}
 }
-
 
 BOOST_AUTO_TEST_CASE (test_iterator_no_boundaries) 
 {
