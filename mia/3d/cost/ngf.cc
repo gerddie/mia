@@ -33,20 +33,41 @@ double FEvaluator::operator()(const mia::C3DFVector& src, const mia::C3DFVector&
 	return cost(src, ref); 
 }
 
+C3DFMatrix FEvaluator::get_gradient(C3DFVectorfield::const_range_iterator& irsrc, int nx, int nxy) const
+{
+	cvdebug() << irsrc.get_boundary_flags() << "\n"; 
+	C3DFMatrix result; 
+	C3DFVectorfield::const_iterator isrc = irsrc.get_point(); 
+	
+	if (! (irsrc.get_boundary_flags() & C3DFVectorfield::const_range_iterator::eb_x))
+		result.x = 0.5 * (isrc[1] - isrc[-1]); 
+	
+	if (! (irsrc.get_boundary_flags() & C3DFVectorfield::const_range_iterator::eb_y))
+		result.y = 0.5 * (isrc[nx] - isrc[-nx]); 
+	
+	if (! (irsrc.get_boundary_flags() & C3DFVectorfield::const_range_iterator::eb_z))
+		result.z = 0.5 * (isrc[nxy] - isrc[-nxy]); 
+
+	cvdebug() << irsrc.get_boundary_flags() << "\n"; 
+	cvdebug() << result << "\n"; 
+
+	return result; 
+}
+
 double FScalar::cost(const C3DFVector& src, const C3DFVector& ref) const
 {
 	double d = dot(src, ref);
 	return - d * d * 0.5;
 }
-C3DFVector  FScalar::grad (int nx, int nxy, C3DFVectorfield::const_iterator isrc,
+
+
+
+C3DFVector  FScalar::grad (int nx, int nxy, C3DFVectorfield::const_range_iterator irsrc,
 			   const C3DFVector& ref, double& cost) const	
 {
-	double d = dot(*isrc,ref);
+	double d = dot(*irsrc,ref);
 	cost -= d * d * 0.5;
-	C3DFVector result ( dot(isrc[1] - isrc[-1], ref),
-			    dot(isrc[nx] - isrc[-nx], ref),
-			    dot(isrc[nxy] - isrc[-nxy], ref));
-	return - d * result;
+	return - d * (ref * get_gradient(irsrc, nx, nxy)); 
 }
 
 double FCross::cost(const C3DFVector& src, const C3DFVector& ref) const
@@ -55,15 +76,17 @@ double FCross::cost(const C3DFVector& src, const C3DFVector& ref) const
 	return 0.5 * d.norm2(); 
 }
 
-C3DFVector  FCross::grad (int nx, int nxy, C3DFVectorfield::const_iterator isrc,
+C3DFVector  FCross::grad (int nx, int nxy, C3DFVectorfield::const_range_iterator irsrc,
 	      const C3DFVector& ref, double& cost) const 
 {
-	C3DFVector d = cross(*isrc, ref);
+	C3DFVector d = cross(*irsrc, ref);
 	cost += 0.5 * d.norm2();
 	
-	return C3DFVector  ( dot(d, cross(isrc[1] - isrc[-1], ref)),
-			     dot(d, cross(isrc[nx] - isrc[-nx], ref)),
-			     dot(d, cross(isrc[nxy] - isrc[-nxy], ref)));
+	C3DFMatrix src_grad = get_gradient(irsrc, nx, nxy); 
+	
+	return C3DFVector  ( dot(d, cross(src_grad.x, ref)),
+			     dot(d, cross(src_grad.y, ref)),
+			     dot(d, cross(src_grad.z, ref)));
 }
 
 double FDeltaScalar::cost (const C3DFVector& src, const C3DFVector& ref) const
@@ -72,35 +95,34 @@ double FDeltaScalar::cost (const C3DFVector& src, const C3DFVector& ref) const
 	double dotrr = ref.norm2(); 
 	double dotsr = dot(src, ref); 
 	double f = dotss *dotrr; 
+	double cos_a = 0.0; 
 	if ( f > 0.0) 
-		f = dotsr / sqrt(f); 
-	auto delta = ref - f * src; 
+		cos_a = dotsr / sqrt(f); 
+	auto delta = ref - cos_a * src; 
 	return 0.5 * dot(delta, delta); 
 }
 
-C3DFVector FDeltaScalar::grad (int nx, int nxy, C3DFVectorfield::const_iterator isrc,
+C3DFVector FDeltaScalar::grad (int nx, int nxy, C3DFVectorfield::const_range_iterator irsrc,
 			     const C3DFVector& ref, double& cost) const
 {
-	const double dotss = isrc->norm2(); 
+	const double dotss = irsrc->norm2(); 
 	const double dotrr = ref.norm2(); 
-	const double dotsr = dot(*isrc, ref); 
+	const double dotsr = dot(*irsrc, ref); 
 	const double f = dotss *dotrr; 
 	const double onebydotss = dotss > 0 ? 1.0/dotss: 0.0; 
 	const double onybyf =  f > 0.0 ?  1.0 / sqrt(f) : 0.0; 
 	const double cos_a = dotsr * onybyf; 
-	const auto delta = ref - cos_a * *isrc; 
+	const auto delta = ref - cos_a * *irsrc; 
 	
 	cost += 0.5 * dot(delta, delta); 
-	
-	const C3DFVector s2dx =   0.5 * (isrc[1] -   isrc[-1]); 
-	const C3DFVector s2dy =  0.5 * (isrc[nx] -  isrc[-nx]); 
-	const C3DFVector s2dz = 0.5 * (isrc[nxy] - isrc[-nxy]); 
+
+	C3DFMatrix src_grad = get_gradient(irsrc, nx, nxy); 
 	
 	const double p1 = cos_a * onebydotss; 
 	const double p2 =  onybyf; 
-	return C3DFVector( dot(delta, (p1 * dot(*isrc, s2dx)  - p2 * dot(ref, s2dx)) * *isrc - cos_a *s2dx), 
-			   dot(delta, (p1 * dot(*isrc, s2dy)  - p2 * dot(ref, s2dy)) * *isrc - cos_a *s2dy), 
-			   dot(delta, (p1 * dot(*isrc, s2dz)  - p2 * dot(ref, s2dz)) * *isrc - cos_a *s2dz)); 
+	return C3DFVector( dot(delta, (p1 * dot(*irsrc, src_grad.x)  - p2 * dot(ref, src_grad.x)) * *irsrc - cos_a * src_grad.x), 
+			   dot(delta, (p1 * dot(*irsrc, src_grad.y)  - p2 * dot(ref, src_grad.y)) * *irsrc - cos_a * src_grad.y), 
+			   dot(delta, (p1 * dot(*irsrc, src_grad.z)  - p2 * dot(ref, src_grad.z)) * *irsrc - cos_a * src_grad.z)); 
 	
 }
 
@@ -114,11 +136,6 @@ C3DNFGImageCost::C3DNFGImageCost(PEvaluator evaluator):
 	m_evaluator(evaluator)
 {
 	add(property_gradient);
-}
-
-void C3DNFGImageCost::prepare_reference(const C3DImage& ref)
-{
-	post_set_reference(ref); 
 }
 
 void C3DNFGImageCost::post_set_reference(const mia::C3DImage& ref)
@@ -150,13 +167,14 @@ double C3DNFGImageCost::do_evaluate_force(const mia::C3DImage& a,
 	const int nx = ng_a.get_size().x; 
 	const int nxy = nx * ng_a.get_size().y; 
 	
-	auto ia = ng_a.begin_range(C3DBounds::_1, ng_a.get_size() - C3DBounds::_1); 
-	auto ie = ng_a.end_range(C3DBounds::_1, ng_a.get_size() - C3DBounds::_1); 
-	auto ib = m_ng_ref.begin_range(C3DBounds::_1, m_ng_ref.get_size() - C3DBounds::_1); 
-	auto iforce = force.begin_range(C3DBounds::_1, force.get_size() - C3DBounds::_1); 
+	auto ia = ng_a.begin_range(C3DBounds::_0, ng_a.get_size()); 
+	auto ie = ng_a.end_range(C3DBounds::_0, ng_a.get_size()); 
+	auto ib = m_ng_ref.begin_range(C3DBounds::_0, m_ng_ref.get_size()); 
+	auto iforce = force.begin_range(C3DBounds::_0, force.get_size()); 
 
 	while (ia != ie) {
-		*iforce = m_evaluator->grad (nx, nxy, ia.get_point(), *ib, sum);
+		C3DFVector help = m_evaluator->grad (nx, nxy, ia, *ib, sum);
+		*iforce = help; 
 		++ia; 
 		++ib; 
 		++iforce; 
@@ -216,6 +234,5 @@ extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
 	return new C3DNFGImageCostPlugin();
 }
-
 
 NS_END
