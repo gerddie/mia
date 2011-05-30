@@ -42,12 +42,12 @@ BOOST_FIXTURE_TEST_CASE( test_ngf_evaluator_dot, C3DFVectorfieldFixture )
 	
 	FScalar scalar; 
 
-	BOOST_CHECK_CLOSE( scalar.cost(field(0,0,0), field(1,1,1)), - 26.0f*13.0f, 0.01f); 
+	BOOST_CHECK_CLOSE( scalar.cost(field(0,0,0), field(1,1,1)), - 26.0f*26.0f, 0.01f); 
 	
 	double cost = 0.0; 
 	auto grad = scalar.grad(3, 9, field.begin_range(C3DBounds(1,1,1), C3DBounds(3,3,3)), field(0,0,0), cost); 
 
-	BOOST_CHECK_CLOSE( cost, - 26.0f* 13.0f, 0.01f); 
+	BOOST_CHECK_CLOSE( cost, - 26.0f* 26.0f, 0.01f); 
 	BOOST_CHECK_CLOSE( grad.x, 13.0f * 19.0f, 0.01f); 
 	BOOST_CHECK_CLOSE( grad.y, -13.0f * 15.0f, 0.01f); 
 	BOOST_CHECK_CLOSE( grad.z, -13.0f * 31.0f, 0.01f); 
@@ -61,12 +61,12 @@ BOOST_FIXTURE_TEST_CASE( test_ngf_evaluator_cross, C3DFVectorfieldFixture )
 	
 	FCross costfunct; 
 
-	BOOST_CHECK_CLOSE( costfunct.cost(field(0,0,0), field(1,1,1)), 5.0f, 0.01f); 
+	BOOST_CHECK_CLOSE( costfunct.cost(field(0,0,0), field(1,1,1)),10.0f, 0.01f); 
 	
 	double cost = 0.0; 
 	auto grad = costfunct.grad(3, 9, field.begin_range(C3DBounds(1,1,1), C3DBounds(3,3,3)), field(0,0,0), cost); 
 
-	BOOST_CHECK_CLOSE( cost, 5.0f, 0.01f); 
+	BOOST_CHECK_CLOSE( cost, 10.0f, 0.01f); 
 	BOOST_CHECK_CLOSE( grad.x, 9.0f, 0.01f); 
 	BOOST_CHECK_CLOSE( grad.y, 1.0f, 0.01f); 
 	BOOST_CHECK_CLOSE( grad.z, -11.0f, 0.01f); 
@@ -80,14 +80,14 @@ BOOST_FIXTURE_TEST_CASE( test_ngf_evaluator_delta_scalar, C3DFVectorfieldFixture
 	
 	FDeltaScalar costfunct; 
 
-	BOOST_CHECK_CLOSE( costfunct.cost(field(1,1,1),field(0,0,0)), 5.3330572096f, 0.01f); 
+	BOOST_CHECK_CLOSE( costfunct.cost(field(1,1,1),field(0,0,0)), 2*5.3330572096f, 0.01f); 
 	
 	double cost = 0.0; 
 	auto ifield = field.begin_range(C3DBounds(1,1,1), C3DBounds(3,3,3)); 
 	cvdebug() << "ifield:boundary=" << ifield.get_boundary_flags() << "\n"; 
 	auto grad = costfunct.grad(3, 9, ifield, field(0,0,0), cost); 
 
-	BOOST_CHECK_CLOSE( cost, 5.3330572096f, 0.01f); 
+	BOOST_CHECK_CLOSE( cost, 2*5.3330572096f, 0.01f); 
 
 	BOOST_CHECK_CLOSE( grad.x, -7.7363f, 0.01f); 
 	BOOST_CHECK_CLOSE( grad.y, 6.4125f, 0.01f); 

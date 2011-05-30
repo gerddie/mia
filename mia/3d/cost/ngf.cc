@@ -1,4 +1,5 @@
 /* -*- mia-c++  -*-
+ *
  * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
@@ -57,7 +58,7 @@ C3DFMatrix FEvaluator::get_gradient(C3DFVectorfield::const_range_iterator& irsrc
 double FScalar::cost(const C3DFVector& src, const C3DFVector& ref) const
 {
 	double d = dot(src, ref);
-	return - d * d * 0.5;
+	return - d * d;
 }
 
 
@@ -66,21 +67,21 @@ C3DFVector  FScalar::grad (int nx, int nxy, C3DFVectorfield::const_range_iterato
 			   const C3DFVector& ref, double& cost) const	
 {
 	double d = dot(*irsrc,ref);
-	cost -= d * d * 0.5;
+	cost -= d * d;
 	return - d * (ref * get_gradient(irsrc, nx, nxy)); 
 }
 
 double FCross::cost(const C3DFVector& src, const C3DFVector& ref) const
 {
 	C3DFVector d = cross(src, ref);
-	return 0.5 * d.norm2(); 
+	return d.norm2(); 
 }
 
 C3DFVector  FCross::grad (int nx, int nxy, C3DFVectorfield::const_range_iterator irsrc,
 	      const C3DFVector& ref, double& cost) const 
 {
 	C3DFVector d = cross(*irsrc, ref);
-	cost += 0.5 * d.norm2();
+	cost += d.norm2();
 	
 	C3DFMatrix src_grad = get_gradient(irsrc, nx, nxy); 
 	
@@ -89,40 +90,46 @@ C3DFVector  FCross::grad (int nx, int nxy, C3DFVectorfield::const_range_iterator
 			     dot(d, cross(src_grad.z, ref)));
 }
 
+struct DotHelper {
+	double dotss; 
+	double dotsr; 
+	double f; 
+	double cos_a; 
+	C3DFVector delta; 
+	DotHelper(const C3DFVector& src, const C3DFVector& ref); 
+}; 
+
+DotHelper::DotHelper(const C3DFVector& src, const C3DFVector& ref):
+	dotss(src.norm2()), 
+	dotsr(dot(src, ref)), 
+	f( dotss * ref.norm2()), 
+	cos_a( f > 0.0 ? dotsr / sqrt(f) : 0.0), 
+	delta(ref - cos_a * src)
+{
+}
+
 double FDeltaScalar::cost (const C3DFVector& src, const C3DFVector& ref) const
 {
-	double dotss = src.norm2(); 
-	double dotrr = ref.norm2(); 
-	double dotsr = dot(src, ref); 
-	double f = dotss *dotrr; 
-	double cos_a = 0.0; 
-	if ( f > 0.0) 
-		cos_a = dotsr / sqrt(f); 
-	auto delta = ref - cos_a * src; 
-	return 0.5 * dot(delta, delta); 
+	DotHelper dh(src, ref); 
+	return dot(dh.delta, dh.delta); 
 }
 
 C3DFVector FDeltaScalar::grad (int nx, int nxy, C3DFVectorfield::const_range_iterator irsrc,
 			     const C3DFVector& ref, double& cost) const
 {
-	const double dotss = irsrc->norm2(); 
-	const double dotrr = ref.norm2(); 
-	const double dotsr = dot(*irsrc, ref); 
-	const double f = dotss *dotrr; 
-	const double onebydotss = dotss > 0 ? 1.0/dotss: 0.0; 
-	const double onybyf =  f > 0.0 ?  1.0 / sqrt(f) : 0.0; 
-	const double cos_a = dotsr * onybyf; 
-	const auto delta = ref - cos_a * *irsrc; 
+	DotHelper dh(*irsrc, ref); 
+	const double onebydotss = dh.dotss > 0 ? 1.0/dh.dotss: 0.0; 
+	const double onybyf =  dh.f > 0.0 ?  1.0 / sqrt(dh.f) : 0.0; 
 	
-	cost += 0.5 * dot(delta, delta); 
+	cost += dot(dh.delta, dh.delta); 
 
 	C3DFMatrix src_grad = get_gradient(irsrc, nx, nxy); 
 	
-	const double p1 = cos_a * onebydotss; 
+	const double p1 = dh.cos_a * onebydotss; 
 	const double p2 =  onybyf; 
-	return C3DFVector( dot(delta, (p1 * dot(*irsrc, src_grad.x)  - p2 * dot(ref, src_grad.x)) * *irsrc - cos_a * src_grad.x), 
-			   dot(delta, (p1 * dot(*irsrc, src_grad.y)  - p2 * dot(ref, src_grad.y)) * *irsrc - cos_a * src_grad.y), 
-			   dot(delta, (p1 * dot(*irsrc, src_grad.z)  - p2 * dot(ref, src_grad.z)) * *irsrc - cos_a * src_grad.z)); 
+	return C3DFVector( dot(dh.delta, (p1 * dot(*irsrc, src_grad.x)  - p2 * dot(ref, src_grad.x)) * *irsrc - dh.cos_a * src_grad.x), 
+			   dot(dh.delta, (p1 * dot(*irsrc, src_grad.y)  - p2 * dot(ref, src_grad.y)) * *irsrc - dh.cos_a * src_grad.y), 
+			   dot(dh.delta, (p1 * dot(*irsrc, src_grad.z)  - p2 * dot(ref, src_grad.z)) * *irsrc - dh.cos_a * src_grad.z)); 
 	
 }
 
