@@ -35,7 +35,7 @@
   The program is called like 
   \
   \begin{lstlisting}
-mia-3drigidreg -i <input image> -r <reference image> -o <output image> \
+mia-3dnonrigidreg -i <input image> -r <reference image> -o <output image> \
                [options] <cost1> [<cost2>] ...
   \end{lstlisting}
   

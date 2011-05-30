@@ -46,7 +46,7 @@ mia-3dmotioncompica-nonrigid -i <input images> -o <output set> [options]
   \optiontable{
   \cmdgroup{File in- and output} 
   \cmdopt{in-file}{i}{string}{input file name pattern of style nameXXXX.ext with XXXX being digits of consecutive numbers}
-  \cmdopt{out-file}{o}{string}{output file name pattern of style name%0d.ext to allow ceration of numbered file names}
+  \cmdopt{out-file}{o}{string}{output file name pattern of style name\%0d.ext to allow ceration of numbered file names}
   \cmdopt{save-refs}{}{string}{for each registration pass save the reference images to files with the given name base}
   \cmdopt{save-regs}{}{string}{for each registration pass save intermediate registered images}
 				 
