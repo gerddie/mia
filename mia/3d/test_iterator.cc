@@ -82,6 +82,77 @@ BOOST_AUTO_TEST_CASE (test_fill_all)
 	}
 }
 
+BOOST_AUTO_TEST_CASE (test_iterator_boundaries) 
+{
+	C3DBounds size(7,5,6); 
+	C3DFDatafield field(size);
+
+	C3DBounds start(0,0,0);
+	T3DDatafield<int> test(size); 
+	
+	fill(test.begin(), test.end(), C3DFDatafield::range_iterator::eb_none); 
+
+	fill(test.begin_at(0,0,0), test.begin_at(0,0,1), C3DFDatafield::range_iterator::eb_zlow); 
+	fill(test.begin_at(0,0,size.z - 1), test.begin_at(0,0,size.z), C3DFDatafield::range_iterator::eb_zhigh); 
+
+	for (unsigned int  z = 0; z < size.z; ++z) 
+		for (unsigned int  y = 0; y < size.y; ++y) {
+			test(0,y,z) |= C3DFDatafield::range_iterator::eb_xlow; 
+			test(size.x - 1,y,z) |= C3DFDatafield::range_iterator::eb_xhigh;
+		}
+
+	for (unsigned int  z = 0; z < size.z; ++z) 
+		for (unsigned int  x = 0; x < size.x; ++x) {
+			test(x,0,z) |= C3DFDatafield::range_iterator::eb_ylow; 
+			test(x, size.y-1,z) |= C3DFDatafield::range_iterator::eb_yhigh;
+		}
+	auto ifield = field.begin_range(C3DBounds(0,0,0), size); 
+	auto efield = field.end_range(C3DBounds(0,0,0), size); 
+	auto itest = test.begin(); 
+	
+	for (;ifield != efield; ++ifield, ++itest) {
+		BOOST_CHECK_EQUAL(ifield.get_boundary_flags(), *itest); 
+	}
+}
+
+BOOST_AUTO_TEST_CASE (test_iterator_some_boundaries) 
+{
+	C3DBounds size(7,5,6); 
+	C3DFDatafield field(size);
+
+	auto ifield = field.begin_range(C3DBounds(1,1,0), size - C3DBounds(0,1,1)); 
+	auto efield = field.end_range(C3DBounds(1,1,0), size - C3DBounds(0,1,1)); 
+	
+	for (;ifield != efield; ++ifield) {
+		cvdebug() <<ifield.pos()<< " : " << ifield.get_boundary_flags() << "\n"; 
+		BOOST_CHECK_EQUAL(ifield.pos().x == 0, bool(ifield.get_boundary_flags() & C3DFDatafield::range_iterator::eb_xlow)); 
+		BOOST_CHECK_EQUAL(ifield.pos().y == 0, bool(ifield.get_boundary_flags() & C3DFDatafield::range_iterator::eb_ylow)); 
+		BOOST_CHECK_EQUAL(ifield.pos().z == 0, bool(ifield.get_boundary_flags() & C3DFDatafield::range_iterator::eb_zlow)); 
+		
+		BOOST_CHECK_EQUAL(ifield.pos().x == 6, bool(ifield.get_boundary_flags() & C3DFDatafield::range_iterator::eb_xhigh)); 
+		BOOST_CHECK_EQUAL(ifield.pos().y == 4, bool(ifield.get_boundary_flags() & C3DFDatafield::range_iterator::eb_yhigh)); 
+		BOOST_CHECK_EQUAL(ifield.pos().z == 5, bool(ifield.get_boundary_flags() & C3DFDatafield::range_iterator::eb_zhigh)); 
+
+	}
+}
+
+
+BOOST_AUTO_TEST_CASE (test_iterator_no_boundaries) 
+{
+	C3DBounds size(7,5,6); 
+	C3DFDatafield field(size);
+
+	C3DBounds start(1,1,1);
+	
+	auto ifield = field.begin_range(C3DBounds(1,1,1), size - C3DBounds::_1); 
+	auto efield = field.end_range(C3DBounds(1,1,1), size - C3DBounds::_1); 
+	
+	for (;ifield != efield; ++ifield) {
+		BOOST_CHECK_EQUAL(ifield.get_boundary_flags(), 0); 
+	}
+}
+
+	
 BOOST_AUTO_TEST_CASE (test_fill_part) 
 {
 	C3DBounds size(7,5,6); 

@@ -33,7 +33,8 @@ range3d_iterator<I>::range3d_iterator():
 	m_begin(0,0,0), 
 	m_end(0,0,0), 
 	m_xstride(0),
-	m_ystride(0)
+	m_ystride(0), 
+	m_boundary(eb_none)
 {
 }
 
@@ -44,7 +45,8 @@ range3d_iterator<I>::range3d_iterator(const C3DBounds& pos):
 	m_begin(0,0,0), 
 	m_end(0,0,0), 
 	m_xstride(0),
-	m_ystride(0)
+	m_ystride(0), 
+	m_boundary(eb_none)
 {
 }
 
@@ -56,9 +58,25 @@ range3d_iterator<I>::range3d_iterator(const C3DBounds& pos, const C3DBounds& siz
 	m_begin(begin), 
 	m_end(end),
 	m_xstride(m_size.x - (m_end.x - m_begin.x)),
-	m_iterator(iterator)
+	m_iterator(iterator), 
+	m_boundary(eb_none)
 {
 	m_ystride = (m_size.y - (m_end.y - m_begin.y))*m_size.x; 
+	if (m_pos.x == 0)
+		m_boundary |= eb_xlow; 
+	if (m_pos.x == size.x - 1)
+		m_boundary |= eb_xhigh; 
+	
+	if (m_pos.y == 0)
+		m_boundary |= eb_ylow; 
+	if (m_pos.y == size.y - 1)
+		m_boundary |= eb_yhigh; 
+
+	if (m_pos.z == 0)
+		m_boundary |= eb_zlow; 
+	if (m_pos.z == size.z - 1)
+		m_boundary |= eb_zhigh; 
+	
 }
 
 
@@ -94,8 +112,14 @@ range3d_iterator<I>& range3d_iterator<I>::operator ++()
 	
 	++m_pos.x;
 	++m_iterator; 
-	if (m_pos.x == m_end.x)
+	m_boundary &= ~eb_x;
+	if (m_pos.x == m_end.x) {
 		increment_y(); 
+		if (m_pos.x == 0) 
+			m_boundary |= eb_xlow;
+	}else if (m_pos.x == m_size.x - 1)
+		m_boundary |= eb_xhigh; 
+	
 	return *this; 
 }
 
@@ -105,9 +129,14 @@ void range3d_iterator<I>::increment_y()
 	if (m_pos.y < m_end.y) {
 		m_pos.x = m_begin.x; 
 		++m_pos.y; 
+		m_boundary &= ~eb_y;
 		std::advance(m_iterator, m_xstride);
-		if (m_pos.y == m_end.y) 
+		if (m_pos.y == m_end.y) {
 			increment_z();
+			if (m_pos.y == 0) 
+				m_boundary |= eb_ylow; 
+		} else if (m_pos.y == m_size.y - 1)
+			m_boundary |= eb_yhigh; 
 	} 
 }
 
@@ -117,7 +146,10 @@ void range3d_iterator<I>::increment_z()
 	if (m_pos.z < m_end.z - 1) {
 		m_pos.y = m_begin.y; 
 		++m_pos.z; 
+		m_boundary &= ~eb_zlow; 
 		std::advance(m_iterator, m_ystride);
+		if (m_pos.z == m_size.z - 1)
+			m_boundary |= eb_zhigh; 
 	}else if (m_pos.z == m_end.z - 1) {
 		m_pos = m_end; 
 	}
@@ -177,6 +209,12 @@ template <typename I>
 const C3DBounds& range3d_iterator<I>::pos() const
 {
 	return m_pos; 
+}
+
+template <typename I> 
+int range3d_iterator<I>::get_boundary_flags() const
+{
+	return m_boundary; 
 }
 
 NS_MIA_END

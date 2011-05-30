@@ -49,7 +49,21 @@ public:
 	/// data type for the real iterator in the background 
 	typedef I internal_iterator; 
 	
+	enum EBoundary {
+		eb_none  = 0, 
+		eb_xlow  = 1, 
+		eb_xhigh = 2, 
+		eb_x     = 3,
+		eb_ylow = 4, 
+		eb_yhigh = 8, 
+		eb_y     = 0xC, 
+		eb_zlow = 0x10, 
+		eb_zhigh = 0x20, 
+		eb_z     = 0x30
+	}; 
+	
 
+	
 	/** standard constructor */
 	range3d_iterator(); 
 
@@ -128,6 +142,8 @@ public:
 	 */
 	internal_iterator get_point(); 
 
+	int get_boundary_flags() const; 
+
 private: 
 
 	void increment_y(); 
@@ -140,6 +156,7 @@ private:
 	int m_xstride; 
 	int m_ystride; 
 	I m_iterator; 
+	int m_boundary; 
 }; 
 
 
