@@ -24,51 +24,11 @@
 #define mia_2d_similarity_profile_hh
 
 #include <mia/core/fft1d_r2c.hh>
-#include <mia/2d/SegSetWithImages.hh>
-#include <mia/2d/fullcost.hh>
+#include <mia/2d/trait.hh>
+#include <mia/internal/similarity_profile.hh>
 
 NS_MIA_BEGIN
-/**
-   \brief A class to evaluate image similarity profiles of image series 
-
-   This class evaluates the similarity profile of a series of images 
-   with respect to a certain cost function and a given reference. 
-   It can then be used to evaluate a periodic subset and the 
-   highest frequency coefficient. 
-*/
-class EXPORT_2D C2DSimilarityProfile {
-public: 
-	
-	/**
-	   Contruct and prepare the similarity profile. Throws an std::invalid_argument exception 
-	   on failure. 
-	   \param cost 
-	   \param images
-	   \param reference
-	 */
-	C2DSimilarityProfile(P2DFullCost cost, const C2DImageSeries& images, 
-			     size_t reference); 
-	
-	/// copy constructor 
-	C2DSimilarityProfile(const C2DSimilarityProfile& org); 
-	
-	/// assignment operator 
-	C2DSimilarityProfile& operator = (const C2DSimilarityProfile& org); 
-
-	
-	/// \returns the peak frequency coefficent and its index
-	float get_peak_frequency() const;
-
-	/// @returns a periodic subset including the first and last image of the series
-	std::vector<size_t> get_periodic_subset() const; 
-private: 
-	size_t m_skip; 
-	size_t m_reference; 
-	mutable float m_peak_freq;
-	mutable bool m_peak_freq_valid; 
-	std::vector<CFFT1D_R2C::Real> m_cost_values; 
-}; 
-
+typedef TSimilarityProfile<2> C2DSimilarityProfile; 
 NS_MIA_END
 
 #endif

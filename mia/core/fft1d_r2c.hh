@@ -21,6 +21,9 @@
  *
  */
 
+#ifndef mia_core_fft1d_r2c_hh
+#define mia_core_fft1d_r2c_hh
+
 #include <mia/core/defines.hh>
 #include <vector>
 #include <complex>
@@ -114,3 +117,5 @@ public:
 };
 
 NS_MIA_END
+
+#endif
