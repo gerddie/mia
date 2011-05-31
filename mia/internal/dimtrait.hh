@@ -23,8 +23,6 @@
 #ifndef mia_internal_dimtrait_hh
 #define mia_internal_dimtrait_hh
 
-#include <mia/core/iohandler.hh>
-
 NS_MIA_BEGIN
 
 struct dimension_traits_placeholder {
@@ -40,6 +38,7 @@ struct dimension_traits {
 	typedef dimension_traits_placeholder PImage; 
 	typedef dimension_traits_placeholder PTransformationFactory; 
 	typedef dimension_traits_placeholder FullCostList; 
+	typedef dimension_traits_placeholder PFullCostList; 
 	typedef dimension_traits_placeholder Filter; 
 	typedef dimension_traits_placeholder FilterPluginHandler;
 	typedef dimension_traits_placeholder InterpolatorFactory; 

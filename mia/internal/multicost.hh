@@ -35,6 +35,7 @@ template <typename Transform>
 class EXPORT_HANDLER TFullCostList : public TFullCost<Transform> {
 public: 
 	TFullCostList(); 
+	typedef typename TFullCost<Transform>::Pointer  Pointer; 
 
 	void push(typename TFullCost<Transform>::Pointer cost); 
 private: 
