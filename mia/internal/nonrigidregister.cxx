@@ -215,6 +215,9 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 	}
 
 	do {
+
+		// this should be replaced by a per-dimension shift that honours a minimum size of the 
+		// downscaled images -  this is especially important in 3D
 		shift--;
 
 		Size BlockSize; 
