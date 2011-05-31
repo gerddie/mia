@@ -106,6 +106,10 @@ private:
 /// define a shortcut to the 3D image shared pointer. 
 typedef C3DImage::Pointer P3DImage;
 
+
+/// helper type for image series 
+typedef std::vector<P3DImage> C3DImageSeries;
+
 /**
    @brief Specific type of the 3D images that hold real pixel data 
 

@@ -24,6 +24,7 @@ SET(MIA3D_SRC
   register.cc
   rigidregister.cc
   timestep.cc
+  similarity_profile.cc
   transform.cc
   transformfactory.cc
   transformio.cc
@@ -60,6 +61,7 @@ SET(MIA3D_HEADERS
 	quaternion.hh
 	register.hh
 	rigidregister.hh
+	similarity_profile.hh
 	timestep.hh
 	transform.hh
 	transformfactory.hh
@@ -163,7 +165,7 @@ TEST_3D(ppmatrix ppmatrix)
 TEST_3D(fullcost fullcost)
 TEST_3D(iterator iterator)
 TEST_3D(stackdisttrans stackdisttrans)
-
+TEST_3D(similarity_profile similarity_profile)
 #
 # installation 
 #
