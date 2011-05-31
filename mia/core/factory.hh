@@ -182,14 +182,28 @@ template <typename P>
 typename TFactory<P>::ProductPtr TFactory<P>::create(const CParsedOptions& options, char const *params)
 {
 	CScopedLock lock(m_mutex); 
-	this->set_parameters(options);
-	this->check_parameters();
-	ProductPtr product = this->do_create();
-	if (product) {
-		product->set_module(this->get_module()); 
-		product->set_init_string(params); 
+	try {
+		this->set_parameters(options);
+		this->check_parameters();
+		ProductPtr product = this->do_create();
+		if (product) {
+			product->set_module(this->get_module()); 
+			product->set_init_string(params); 
+		}
+		return product; 
 	}
-	return product; 
+	catch (std::length_error& x) {
+		std::stringstream msg; 
+		msg << "CParamList::set: Some string was not created properly\n"; 
+		msg << "  options were:\n"; 
+		for (auto i = options.begin();
+		     i != options.end(); ++i) {
+			msg << "    " << i->first << "=" << i->second << "\n";
+		}
+		cverr() << msg.str(); 
+		throw logic_error("Probably an error in syncronization"); 
+
+	}
 }
 
 template <typename  P>

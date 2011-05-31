@@ -45,9 +45,10 @@ CParamList::PParameter& CParamList::operator [] (const std::string& key)
 
 void CParamList::set(const CParsedOptions& options)
 {
+	
 	typedef std::map<std::string, PParameter>::iterator::value_type MapValue; 
 	for_each(m_params.begin(), m_params.end(), [](MapValue p){p.second.reset();}); 
-
+	
 	for (auto i = options.begin();
 	     i != options.end(); ++i) {
 		auto p = m_params.find(i->first);
@@ -56,7 +57,7 @@ void CParamList::set(const CParsedOptions& options)
 			msg << "unknown parameter '" << i->first << "'";
 			throw invalid_argument(msg.str());
 		}
-
+		
 		if (!p->second->set(i->second))  {
 			stringstream msg;
 			msg << "Parameter '" << i->first << "' unable to interpret '" << i->second;
@@ -64,7 +65,6 @@ void CParamList::set(const CParsedOptions& options)
 		}
 	}
 }
-
 
 void CParamList::check_required() const
 {
