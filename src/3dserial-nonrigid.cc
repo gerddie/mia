@@ -102,8 +102,6 @@ const char *g_general_help =
 	" mia-3dserial-nonrigid [options] <cost1> <cost2> ..."; 
 
 
-typedef vector<P3DImage> C3DImageSeries; 
-
 int do_main( int argc, const char *argv[] )
 {
 	// IO parameters 

@@ -122,8 +122,6 @@ const char *g_general_help =
 	"Basic usage: \n"
 	" mia-3dmotioncompica-nonrigid [options] "; 
 
-
-typedef vector<P3DImage> C3DImageSeries; 
 class C3DFImage2PImage {
 public: 
 	P3DImage operator () (const C3DFImage& image) const {
