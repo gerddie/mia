@@ -166,7 +166,7 @@ void C3DImageFullCost::do_reinit()
 
 	if (m_src->get_voxel_size() != m_ref->get_voxel_size()) {
 		cverr() << "C3DImageFullCost: src and reference image are of differnet pixel dimensions."
-			<< "This code doesn't honour this and linear registration should be applied first."; 
+			<< "This code doesn't honour this and a proper scaling should be applied first."; 
 	}
 }
 
