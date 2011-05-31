@@ -33,6 +33,6 @@
 NS_MIA_BEGIN
 
 
-template class TNonrigidRegister<C2DTransformation>; 
+template class TNonrigidRegister<2>; 
 
 NS_MIA_END

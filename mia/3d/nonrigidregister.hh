@@ -29,12 +29,13 @@
 
 #include <mia/3d/multicost.hh>
 #include <mia/3d/transformfactory.hh>
+#include <mia/3d/trait.hh>
 #include <mia/internal/nonrigidregister.hh>
 
 
 NS_MIA_BEGIN
 /// specialization of the 3D non-rigid registration 
-typedef TNonrigidRegister<C3DTransformation> C3DNonrigidRegister; 
+typedef TNonrigidRegister<3> C3DNonrigidRegister; 
 NS_MIA_END
 
 #endif

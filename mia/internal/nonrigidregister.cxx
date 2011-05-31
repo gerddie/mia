@@ -29,10 +29,10 @@
 
 NS_MIA_BEGIN
 
-template <typename T> 
+template <int dim> 
 struct TNonrigidRegisterImpl {
-	typedef dim_traits<T> this_dim_traits;
-	typedef typename T::Pointer PTransformation; 
+	typedef dimension_traits<dim> this_dim_traits;
+	typedef typename this_dim_traits::PTransformation PTransformation; 
 	typedef typename this_dim_traits::Size Size; 
 	typedef typename this_dim_traits::Image Image; 
 	typedef typename this_dim_traits::PImage PImage; 
@@ -57,10 +57,11 @@ private:
 	int m_idx; 
 };
 
-template <typename T> 
+template <int dim> 
 class TNonrigRegGradientProblem: public CMinimizer::Problem {
 public:
-	typedef dim_traits<T> this_dim_traits;
+	typedef dimension_traits<dim> this_dim_traits;
+	typedef typename this_dim_traits::Transformation Transformation; 
 	typedef typename this_dim_traits::Size Size; 
 	typedef typename this_dim_traits::Image Image; 
 	typedef typename this_dim_traits::PImage PImage; 
@@ -71,12 +72,12 @@ public:
 	typedef typename this_dim_traits::InterpolatorFactory InterpolatorFactory; 
 
 
-	TNonrigRegGradientProblem(const FullCostList& costs, T& transf,
+	TNonrigRegGradientProblem(const FullCostList& costs, Transformation& transf,
 			      const InterpolatorFactory& m_ipf);
 
 	void reset_counters(); 
 	
-	typedef shared_ptr<TNonrigRegGradientProblem<T> > PNonrigRegGradientProblem; 
+	typedef shared_ptr<TNonrigRegGradientProblem<dim> > PNonrigRegGradientProblem; 
 private:
 	double  do_f(const CDoubleVector& x);
 	void    do_df(const CDoubleVector& x, CDoubleVector&  g);
@@ -87,37 +88,37 @@ private:
 	size_t do_size() const; 
 
 	const FullCostList& m_costs; 
-	T& m_transf;
+	Transformation& m_transf;
 	const InterpolatorFactory& m_ipf;
 	size_t m_func_evals; 
 	size_t m_grad_evals; 
 	double m_start_cost; 
 };
 
-template <typename T> 
-TNonrigidRegister<T>::TNonrigidRegister(FullCostList& costs, PMinimizer minimizer,
+template <int dim> 
+TNonrigidRegister<dim>::TNonrigidRegister(FullCostList& costs, PMinimizer minimizer,
 					 PTransformationFactory transform_creation,
 					 const InterpolatorFactory& ipf, size_t mg_levels, int idx):
-	impl(new TNonrigidRegisterImpl<T>( costs, minimizer, transform_creation, ipf, mg_levels, idx))
+	impl(new TNonrigidRegisterImpl<dim>( costs, minimizer, transform_creation, ipf, mg_levels, idx))
 {
 }
 
-template <typename T> 
-TNonrigidRegister<T>::~TNonrigidRegister()
+template <int dim> 
+TNonrigidRegister<dim>::~TNonrigidRegister()
 {
 	delete impl;
 }
 
-template <typename T> 
-typename TNonrigidRegister<T>::PTransformation 
-TNonrigidRegister<T>::run(PImage src, PImage ref) const
+template <int dim> 
+typename TNonrigidRegister<dim>::PTransformation 
+TNonrigidRegister<dim>::run(PImage src, PImage ref) const
 {
 	return impl->run(src, ref);
 }
 
 
-template <typename T> 
-TNonrigidRegisterImpl<T>::TNonrigidRegisterImpl(FullCostList& costs, PMinimizer minimizer,
+template <int dim> 
+TNonrigidRegisterImpl<dim>::TNonrigidRegisterImpl(FullCostList& costs, PMinimizer minimizer,
 						 PTransformationFactory transform_creation, 
 						const InterpolatorFactory& ipf,size_t mg_levels, int idx):
 	m_costs(costs),
@@ -136,11 +137,11 @@ TNonrigidRegisterImpl<T>::TNonrigidRegisterImpl(FullCostList& costs, PMinimizer 
   and considered what it is, a pre-processing step
 */
 
-template <typename T> 
-class FScaleFilterCreator: public TFilter<typename TNonrigidRegisterImpl<T>::FilterPluginHandler::ProductPtr> {
-	typedef typename TNonrigidRegisterImpl<T>::FilterPluginHandler FilterPluginHandler;
+template <int dim> 
+class FScaleFilterCreator: public TFilter<typename TNonrigidRegisterImpl<dim>::FilterPluginHandler::ProductPtr> {
+	typedef typename TNonrigidRegisterImpl<dim>::FilterPluginHandler FilterPluginHandler;
 public: 
-	typedef typename TFilter<typename TNonrigidRegisterImpl<T>::FilterPluginHandler::ProductPtr>::result_type result_type; 
+	typedef typename TFilter<typename TNonrigidRegisterImpl<dim>::FilterPluginHandler::ProductPtr>::result_type result_type; 
 	template <typename V, typename S>
 	result_type operator ()(const V& a, const S& b) const {
 		double sum = 0.0; 
@@ -173,9 +174,9 @@ public:
 	
 }; 
 
-template <typename T> 
-typename TNonrigidRegisterImpl<T>::PTransformation 
-TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
+template <int dim> 
+typename TNonrigidRegisterImpl<dim>::PTransformation 
+TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 {
 	assert(src);
 	assert(ref);
@@ -185,7 +186,7 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 
 	// convert the images to float ans scale to range [-1,1]
 	// this should be replaced by some kind of general pre-filter plug-in 
-	FScaleFilterCreator<T> fc; 
+	FScaleFilterCreator<dim> fc; 
 	auto tofloat_converter = ::mia::filter(fc, *src, *ref); 
 	
 	if (tofloat_converter) {
@@ -247,8 +248,8 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 
 		m_costs.set_size(src_scaled->get_size()); 
 		
-		std::shared_ptr<TNonrigRegGradientProblem<T> > 
-			gp(new TNonrigRegGradientProblem<T>( m_costs, *transform, m_ipf));
+		std::shared_ptr<TNonrigRegGradientProblem<dim> > 
+			gp(new TNonrigRegGradientProblem<dim>( m_costs, *transform, m_ipf));
 		
 		m_minimizer->set_problem(gp);
 
@@ -270,9 +271,9 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 	return transform;
 }
 
-template <typename T> 
-TNonrigRegGradientProblem<T>::TNonrigRegGradientProblem(const FullCostList& costs, 
-						       T& transf, const InterpolatorFactory& ipf):
+template <int dim> 
+TNonrigRegGradientProblem<dim>::TNonrigRegGradientProblem(const FullCostList& costs, 
+						       Transformation& transf, const InterpolatorFactory& ipf):
 	m_costs(costs),
 	m_transf(transf),
 	m_ipf(ipf), 
@@ -283,14 +284,14 @@ TNonrigRegGradientProblem<T>::TNonrigRegGradientProblem(const FullCostList& cost
 
 }
 
-template <typename T> 
-void TNonrigRegGradientProblem<T>::reset_counters()
+template <int dim> 
+void TNonrigRegGradientProblem<dim>::reset_counters()
 {
 	m_func_evals = m_grad_evals = 0; 
 }
 
-template <typename T> 
-double  TNonrigRegGradientProblem<T>::do_f(const CDoubleVector& x)
+template <int dim> 
+double  TNonrigRegGradientProblem<dim>::do_f(const CDoubleVector& x)
 {
        
 
@@ -308,14 +309,14 @@ double  TNonrigRegGradientProblem<T>::do_f(const CDoubleVector& x)
 	return result; 
 }
 
-template <typename T> 
-void    TNonrigRegGradientProblem<T>::do_df(const CDoubleVector& x, CDoubleVector&  g)
+template <int dim> 
+void    TNonrigRegGradientProblem<dim>::do_df(const CDoubleVector& x, CDoubleVector&  g)
 {
 	do_fdf(x,g); 
 }
 
-template <typename T> 
-double  TNonrigRegGradientProblem<T>::do_fdf(const CDoubleVector& x, CDoubleVector&  g)
+template <int dim> 
+double  TNonrigRegGradientProblem<dim>::do_fdf(const CDoubleVector& x, CDoubleVector&  g)
 {
 
 	m_transf.set_parameters(x);
@@ -335,14 +336,14 @@ double  TNonrigRegGradientProblem<T>::do_fdf(const CDoubleVector& x, CDoubleVect
 	return result; 
 }
 
-template <typename T> 
-bool TNonrigRegGradientProblem<T>::do_has(const char *property) const
+template <int dim> 
+bool TNonrigRegGradientProblem<dim>::do_has(const char *property) const
 {
 	return m_costs.has(property); 
 }
 
-template <typename T> 
-size_t TNonrigRegGradientProblem<T>::do_size() const
+template <int dim> 
+size_t TNonrigRegGradientProblem<dim>::do_size() const
 {
 	return m_transf.degrees_of_freedom(); 
 }

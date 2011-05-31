@@ -27,17 +27,22 @@
 
 NS_MIA_BEGIN
 
+struct dimension_traits_placeholder {
+	typedef std::shared_ptr<dimension_traits_placeholder> Pointer;
+}; 
 
-template <typename Transformation> 
-struct dim_traits{
-	typedef typename Transformation::Size Size; 
-	typedef typename Transformation::Data Image; 
-	typedef typename Image::Pointer PImage; 
-	typedef typename TTransformCreator<Transformation>::Pointer PTransformationFactory; 
-	typedef TFullCostList<Transformation> FullCostList; 
-	typedef TImageFilter<Image> Filter; 
-	typedef THandlerSingleton<TFactoryPluginHandler<TImageFilterPlugin<Image> > > FilterPluginHandler;
-	typedef typename Transformation::InterpolatorFactory InterpolatorFactory; 
+template <int Dimensions> 
+struct dimension_traits {
+	typedef dimension_traits_placeholder Transformation; 
+	typedef dimension_traits_placeholder PTransformation; 
+	typedef dimension_traits_placeholder Size; 
+	typedef dimension_traits_placeholder Image; 
+	typedef dimension_traits_placeholder PImage; 
+	typedef dimension_traits_placeholder PTransformationFactory; 
+	typedef dimension_traits_placeholder FullCostList; 
+	typedef dimension_traits_placeholder Filter; 
+	typedef dimension_traits_placeholder FilterPluginHandler;
+	typedef dimension_traits_placeholder InterpolatorFactory; 
 }; 
 
 NS_MIA_END

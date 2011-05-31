@@ -30,12 +30,13 @@
 #include <mia/2d/multicost.hh>
 #include <mia/2d/transformfactory.hh>
 #include <mia/core/export_handler.hh>
+#include <mia/2d/trait.hh>
 #include <mia/internal/nonrigidregister.hh>
 
 
 NS_MIA_BEGIN
 /// Specialization of TNonrigidRegister for 2D images 
-typedef TNonrigidRegister<C2DTransformation> C2DNonrigidRegister; 
+typedef TNonrigidRegister<2> C2DNonrigidRegister; 
 NS_MIA_END
 
 #endif

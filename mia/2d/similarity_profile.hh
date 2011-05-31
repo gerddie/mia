@@ -26,7 +26,6 @@
 #include <mia/core/fft1d_r2c.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/fullcost.hh>
-#include <boost/thread/mutex.hpp>
 
 NS_MIA_BEGIN
 /**
@@ -48,8 +47,8 @@ public:
 	   \param reference
 	 */
 	C2DSimilarityProfile(P2DFullCost cost, const C2DImageSeries& images, 
-		      size_t reference); 
-
+			     size_t reference); 
+	
 	/// copy constructor 
 	C2DSimilarityProfile(const C2DSimilarityProfile& org); 
 	
@@ -67,8 +66,7 @@ private:
 	size_t m_reference; 
 	mutable float m_peak_freq;
 	mutable bool m_peak_freq_valid; 
-	mutable boost::mutex m_peak_freq_mutex;
-	vector<CFFT1D_R2C::Real> m_cost_values; 
+	std::vector<CFFT1D_R2C::Real> m_cost_values; 
 }; 
 
 NS_MIA_END

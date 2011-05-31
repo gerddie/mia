@@ -41,7 +41,7 @@ NS_MIA_BEGIN
 typedef TImageFilter<C3DImage> C3DFilter;
 typedef TImageFilterPlugin<C3DImage> C3DFilterPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C3DFilterPlugin> > C3DFilterPluginHandler;
-
+typedef std::shared_ptr<C3DFilter> P3DFilter; 
 
 class EXPORT_3D C3DImageCombiner : public TFilter< PCombinerResult >, public CProductBase {
 public:

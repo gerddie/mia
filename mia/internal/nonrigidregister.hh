@@ -34,7 +34,7 @@
 
 NS_MIA_BEGIN
 
-template <typename Transform> 
+template <int dim> 
 struct TNonrigidRegisterImpl; 
 
 /**
@@ -46,11 +46,11 @@ struct TNonrigidRegisterImpl;
    Currently supported minimizers are those available in the GNU scientific library.
 */
 
-template <typename Transform> 
+template <int dim> 
 class EXPORT_HANDLER TNonrigidRegister {
 public:
-	typedef dim_traits<Transform> this_dim_traits;
-	typedef typename Transform::Pointer PTransformation; 
+	typedef dimension_traits<dim> this_dim_traits;
+	typedef typename this_dim_traits::PTransformation PTransformation; 
 	typedef typename this_dim_traits::Image Image; 
 	typedef typename this_dim_traits::PImage PImage; 
 	typedef typename this_dim_traits::PTransformationFactory PTransformationFactory; 
@@ -85,7 +85,7 @@ public:
 	PTransformation  run(PImage src, PImage ref) const;
 
 private:
-	struct TNonrigidRegisterImpl<Transform> *impl;
+	struct TNonrigidRegisterImpl<dim> *impl;
 };
 
 NS_MIA_END
