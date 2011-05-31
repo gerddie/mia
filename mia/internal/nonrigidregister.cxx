@@ -201,7 +201,7 @@ TNonrigidRegisterImpl<T>::run(PImage src, PImage ref) const
 	int shift = m_mg_levels;
 
 	std::string src_name("src.@"); 
-	std::string ref_name("src.@"); 
+	std::string ref_name("ref.@"); 
 
 	if (m_idx >= 0) {
 		std::stringstream src_ss; 
