@@ -86,6 +86,7 @@ DEFEXE(3dimageselect      mia3d )
 DEFEXE(3dbrainextractT1   mia3d )
 DEFEXE(3dimageaddattributes  mia3d )
 DEFEXE(3dvectorfieldcreate  mia3d )
+DEFEXE(3dserial-nonrigid  mia3d )
 SET(PAR3DLIBS mia3d ${TBB_LIBRARIES})
 
 DEFEXE(3dmotioncompica-nonrigid "${PAR3DLIBS}" )
