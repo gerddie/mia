@@ -87,6 +87,7 @@ DEFEXE(3dbrainextractT1   mia3d )
 DEFEXE(3dimageaddattributes  mia3d )
 DEFEXE(3dvectorfieldcreate  mia3d )
 DEFEXE(3dserial-nonrigid  mia3d )
+DEFEXE(3dmany2one-nonrigid  mia3d )
 DEFEXE(3dmyoperiodic-nonrigid mia3d )
 
 SET(PAR3DLIBS mia3d ${TBB_LIBRARIES})
