@@ -233,6 +233,7 @@ int do_main( int argc, const char *argv[] )
 	string out_filename;
 	string registered_filebase("reg%04d.v");
 	string save_mixing_matrix; 
+	string save_features; 
 
 	string save_ref_filename;
 	string save_reg_filename;
@@ -272,6 +273,7 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( save_reg_filename, "save-regs", 0, 
 				    "save intermediate registered images", NULL)); 
 	options.add(make_opt( save_mixing_matrix, "save-coeffs", 0, "save mixing matrix", NULL)); 
+	options.add(make_opt( save_features, "save-features", 0, "save feature images", NULL)); 
 
 
 	options.set_group("Registration"); 
@@ -372,6 +374,15 @@ int do_main( int argc, const char *argv[] )
 		}
 		if (!coef_file.good()) 
 			cverr() << "Unable to save mixing matrix to '" <<  save_mixing_matrix << "\n"; 
+	}
+
+	if (!save_features.empty()) {
+		for (size_t i = 0; i < components; ++i) {
+			stringstream fname; 
+			fname << save_features << "-" << i << ".v"; 
+			auto feat = ica.get_feature_image(i); 
+			save_image(fname.str(), feat); 
+		}
 	}
 	
 	bool do_continue=true; 
