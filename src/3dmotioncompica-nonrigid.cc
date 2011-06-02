@@ -271,6 +271,8 @@ int do_main( int argc, const char *argv[] )
 				    "save reference images", NULL)); 
 	options.add(make_opt( save_reg_filename, "save-regs", 0, 
 				    "save intermediate registered images", NULL)); 
+	options.add(make_opt( save_mixing_matrix, "save-coeffs", 0, "save mixing matrix", NULL)); 
+
 
 	options.set_group("Registration"); 
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
@@ -357,10 +359,20 @@ int do_main( int argc, const char *argv[] )
 	C3DImageSeries references(references_float.size()); 
 	transform(references_float.begin(), references_float.end(), references.begin(), C3DFImage2PImage()); 
 
-	/*
-	if (!save_mixing_matrix.empty()) 
-		ica.save_coefs(save_mixing_matrix); 
-	*/
+	
+	if (!save_mixing_matrix.empty()) {
+		auto mix = ica.get_mixing_curves(); 
+		ofstream coef_file(save_mixing_matrix.c_str());
+		
+		for (size_t r = 0; r < mix[0].size(); ++r) {
+			for (size_t c = 0; c < mix.size(); ++c) {
+				coef_file   << setw(10) << mix[c][r] << " ";
+			}
+			coef_file << "\n";
+		}
+		if (!coef_file.good()) 
+			cverr() << "Unable to save mixing matrix to '" <<  save_mixing_matrix << "\n"; 
+	}
 	
 	bool do_continue=true; 
 	do {
