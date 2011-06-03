@@ -262,7 +262,8 @@ vector<size_t> C2DMyocardPeriodicRegistration::get_prealigned_subset(const C2DIm
 	assert(!candidates.empty()); 
 
 	C2DSimilarityProfile best_series(m_params.series_select_cost, images, candidates[0]); 
-	
+	m_ref = candidates[0]; 	
+
 	// the skip values should be parameters 
 	for (size_t i = 1; i < candidates.size(); ++i) {
 		C2DSimilarityProfile sp(m_params.series_select_cost, images, candidates[i]); 
@@ -362,7 +363,8 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images,
 }
 
 C2DMyocardPeriodicRegistration::C2DMyocardPeriodicRegistration(const RegistrationParams& params):
-	m_params(params)
+	m_params(params), 
+	m_ref(0)
 {
 }
 

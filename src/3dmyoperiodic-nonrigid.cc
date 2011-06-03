@@ -265,7 +265,8 @@ vector<size_t> C3DMyocardPeriodicRegistration::get_prealigned_subset(const C3DIm
 	assert(!candidates.empty()); 
 
 	C3DSimilarityProfile best_series(m_params.series_select_cost, images, candidates[0]); 
-	
+	m_ref = candidates[0]; 
+
 	// the skip values should be parameters 
 	for (size_t i = 1; i < candidates.size(); ++i) {
 		C3DSimilarityProfile sp(m_params.series_select_cost, images, candidates[i]); 
@@ -365,7 +366,8 @@ void C3DMyocardPeriodicRegistration::run_final_pass(C3DImageSeries& images,
 }
 
 C3DMyocardPeriodicRegistration::C3DMyocardPeriodicRegistration(const RegistrationParams& params):
-	m_params(params)
+	m_params(params), 
+	m_ref(0)
 {
 }
 
