@@ -194,7 +194,7 @@ int main( int argc, const char *argv[] )
 		if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 
 
-		string out_suffix = imageio3d.get_preferred_suffix(out_type); 
+		string out_suffix = imageio2d.get_preferred_suffix(out_type); 
 
 		// read image
 		auto in_image = load_image3d(in_filename);
