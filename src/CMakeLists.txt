@@ -96,4 +96,4 @@ SET(PAR3DLIBS mia3d ${TBB_LIBRARIES})
 DEFEXE(3dmotioncompica-nonrigid "${PAR3DLIBS}" )
 
 ADD_SUBDIRECTORY(fluid2d  )
-ADD_SUBDIRECTORY(fluid3d  )
+#ADD_SUBDIRECTORY(fluid3d  )

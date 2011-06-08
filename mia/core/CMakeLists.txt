@@ -33,7 +33,7 @@ SET(MIACORE_SRC_BASE
   noisegen.cc 
   optionparser.cc 
   optparam.cc 
-  parallel.cc 
+#  parallel.cc 
   parameter.cc  
   pixeltype.cc 
   plugin_base.cc  
@@ -93,7 +93,7 @@ SET(MIACORE_HEADER_BASE
   noisegen.hh
   optionparser.hh
   optparam.hh
-  parallel.hh
+#  parallel.hh
   parameter.cxx parameter.hh
   pixeltype.hh
   plugin_base.cxx plugin_base.hh
@@ -115,7 +115,7 @@ SET(MIACORE_HEADER_BASE
   )
 
 SET(MIACORETEST_SRC 
-  test_concurrence.cc
+#  test_concurrence.cc
   test_core.cc
   test_cost.cc
   test_filter.cc
@@ -192,7 +192,7 @@ SET(MIACORE_HEADER ${MIACORE_HEADER_BASE} ${ITPP_HEADER} ${FFTWF_HEADER} ${PWPDF
 
 ADD_LIBRARY(miacore SHARED ${MIACORE_SRC})
 ADD_DEPENDENCIES(miacore revision.hh)
-TARGET_LINK_LIBRARIES(miacore ${BASELIBS} miagsl ${TBB_LIBRARIES})
+TARGET_LINK_LIBRARIES(miacore miagsl ${BASELIBS} ${TBB_LIBRARIES})
 
 
 IF(XMLPP_FOUND)

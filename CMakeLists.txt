@@ -189,6 +189,8 @@ FIND_PACKAGE( Boost 1.40.0 COMPONENTS
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
+
+
 find_path(HAVE_BOOST_PORTABLE_BINARY_ARCHIVE  
   portable_binary_archive.hpp 
   ${Boost_INCLUDE_DIR}/boost/archive)
@@ -211,10 +213,12 @@ IF(TBB_FOUND)
   MESSAGE(STATUS "TBB found: ${TBB_LIBRARIES}")
   include_directories(${TBB_INCLUDE_DIRS})
   link_directories(${TBB_LIBRARY_DIRS})
+ELSE(TBB_FOUND) 
+  MESSAGE(FATAL " TBB not found")
 ENDIF(TBB_FOUND)
 
 
-SET(BOOST_DEPS ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY})
+SET(BOOST_DEPS ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 SET(BOOST_UNITTEST  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
                  
 IF (WIN32 AND NOT UNIX)
@@ -257,7 +261,7 @@ LINK_DIRECTORIES(${GSL_LIBRARY_DIRS})
 
 #search for cblas, if is now a requirement  
 #try simple one
-# Note, on Gentoo onr can use 'eselect blas set X' to select the actual BLAS provider
+# Note, on Gentoo on can use 'eselect blas set X' to select the actual BLAS provider
 # 
 FIND_LIBRARY(BLAS_LIBRARY NAMES "blas" PATHS
   /usr/lib
