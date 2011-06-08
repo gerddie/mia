@@ -52,6 +52,7 @@ SET(MIACORE_SRC_BASE
   sqmin.cc
   streamredir.cc
   testplugin.cc 
+  threadedmsg.cc
   typedescr.cc
   utils.cc 
   watch.cc 
@@ -111,6 +112,7 @@ SET(MIACORE_HEADER_BASE
   streamredir.hh
   typedescr.hh
   testplugin.hh
+  threadedmsg.hh
   watch.hh
   )
 
@@ -269,6 +271,7 @@ NEW_TEST(splineparzenmi miacore)
 NEW_TEST(utils miacore)
 NEW_TEST(Vector miacore)
 NEW_TEST(minimizer miacore)
+NEW_TEST(threadedmsg miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)
