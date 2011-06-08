@@ -94,6 +94,7 @@ mia-3dmotioncompica-nonrigid  -i imagesXXXX.v -o  registered%04d.v  -k 2 -C 3 -t
 #include <boost/filesystem.hpp>
 
 #include <mia/core/msgstream.hh>
+#include <mia/core/threadedmsg.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/factorycmdlineoption.hh>
 #include <mia/core/filetools.hh>
@@ -193,6 +194,7 @@ struct SeriesRegistration {
 		{
 		}
 	void operator()( const blocked_range<int>& range ) const {
+		CThreadMsgStream thread_stream;
 		TRACE_FUNCTION; 
 		auto m =  CMinimizerPluginHandler::instance().produce(minimizer);
 		for( int i=range.begin(); i!=range.end(); ++i ) {
@@ -210,7 +212,7 @@ void run_registration_pass(C3DImageSeries& input_images, const C3DImageSeries& r
 			   size_t mg_levels, double c_rate, double divcurlweight, 
 			   const string&   imagecost) 
 {
-	
+
 	SeriesRegistration sreg(input_images,references, minimizer, ipfactory, 
 				mg_levels, divcurlweight, create_transform_creator(c_rate), 
 				imagecost, skip_images); 
@@ -317,7 +319,7 @@ int do_main( int argc, const char *argv[] )
 	unique_ptr<C3DInterpolatorFactory>   ipfactory(create_3dinterpolation_factory(interpolator));
 
 	task_scheduler_init init(max_threads);
-
+	thread_streamredir::set_master_stream(cerr);
 	
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;
