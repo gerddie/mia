@@ -50,9 +50,9 @@ const TDictMap<vstream::Level>::Table verbose_dict[] = {
 const TDictMap<vstream::Level> g_verbose_dict(verbose_dict);
 
 vstream::vstream(std::ostream& output, Level l):
-	m_output(&output),
 	m_output_level(l)
 {
+	m_output = &output; 
 }
 
 void vstream::set_verbosity(Level l)
@@ -119,6 +119,7 @@ void set_verbose(bool verbose)
 __thread size_t CTrace::m_depth = 0;
 #endif
 
+__thread std::ostream* vstream::m_output;
 __thread vstream::Level vstream::m_message_level = vstream::ml_fatal; 
 
 NS_MIA_END

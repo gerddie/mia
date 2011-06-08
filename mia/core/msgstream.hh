@@ -146,7 +146,7 @@ private:
 	vstream(std::ostream& output, Level l);
 
 	static std::ostream* m_output_target;
-	std::ostream* m_output;
+	static __thread std::ostream* m_output;
 	Level m_output_level;
 	static __thread Level m_message_level;
 
