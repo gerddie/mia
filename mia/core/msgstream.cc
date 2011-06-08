@@ -51,8 +51,7 @@ const TDictMap<vstream::Level> g_verbose_dict(verbose_dict);
 
 vstream::vstream(std::ostream& output, Level l):
 	m_output(&output),
-	m_output_level(l),
-	m_message_level(ml_fatal)
+	m_output_level(l)
 {
 }
 
@@ -117,7 +116,9 @@ void set_verbose(bool verbose)
 }
 
 #ifndef NDEBUG
-size_t CTrace::m_depth = 0;
+__thread size_t CTrace::m_depth = 0;
 #endif
+
+__thread vstream::Level vstream::m_message_level = vstream::ml_fatal; 
 
 NS_MIA_END

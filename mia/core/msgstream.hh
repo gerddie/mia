@@ -148,7 +148,7 @@ private:
 	static std::ostream* m_output_target;
 	std::ostream* m_output;
 	Level m_output_level;
-	Level m_message_level;
+	static __thread Level m_message_level;
 
 };
 
@@ -221,7 +221,7 @@ private:
 	const char *m_domain;
 	std::string m_fill;
 	// should be thread local, or at least protected by a mutex
-	static size_t m_depth;
+	static __thread size_t m_depth;
 };
 
 /// a macro to trace scopes in a debug built

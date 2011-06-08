@@ -193,6 +193,7 @@ struct SeriesRegistration {
 		{
 		}
 	void operator()( const blocked_range<int>& range ) const {
+		TRACE_FUNCTION; 
 		auto m =  CMinimizerPluginHandler::instance().produce(minimizer);
 		for( int i=range.begin(); i!=range.end(); ++i ) {
 			auto costs  = create_costs(divcurlweight, imagecostbase, i); 
