@@ -109,6 +109,7 @@ typedef C3DImage::Pointer P3DImage;
 
 /// helper type for image series 
 typedef std::vector<P3DImage> C3DImageSeries;
+typedef std::shared_ptr<C3DImageSeries> P3DImageSeries; 
 
 /**
    @brief Specific type of the 3D images that hold real pixel data 
