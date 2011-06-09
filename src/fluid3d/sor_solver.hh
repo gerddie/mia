@@ -30,8 +30,6 @@
 #include <config.h>
 #endif
 
-#include <mia/core/parallel.hh>
-
 #include "eqn_solver.hh"
 
 
@@ -98,75 +96,5 @@ protected:
 	};
 };
 
-
-class TSORAParallelSolver: public TSORASolver, private boost::noncopyable{
-	int max_threads;
-
-	boost::mutex global_z_mutex;
-	int  global_z;
-	boost::thread_group threads;
-	boost::barrier iter_barrier;
-	boost::barrier after_barrier;
-
-
-	bool i_do_it;
-	size_t  block_size;
-	TUpdateInfo  *update_needed;
-	TUpdateInfo  *need_update;
-	mia::C3DFDatafield *residua;
-	float  global_res;
-
-	int threads_ready;
-	float  doorstep,lastres,firstres;
-	bool done;
-	int gSize;
-
-	const mia::C3DFVectorfield *pb;
-	mia::C3DFVectorfield *px;
-
-public:
-    	TSORAParallelSolver(int _max_steps, float _rel_res, float _abs_res,
-		    float mu, float lambda,int _max_threads);
-	~TSORAParallelSolver();
-	virtual int solve(const mia::C3DFVectorfield& b,mia::C3DFVectorfield *x);
-	void operator () ();
-private:
-	void solve_p(const mia::C3DFVectorfield& b,mia::C3DFVectorfield *x);
-
-};
-
 #endif
-
-/* Changes to this file
-
-  $Log$
-  Revision 1.5  2005/06/29 13:43:35  wollny
-  cg removed and libmona-0.7
-
-  Revision 1.1.1.1  2005/06/17 10:31:09  gerddie
-  initial import at sourceforge
-
-  Revision 1.4  2005/02/22 10:06:25  wollny
-  enable parallel processing
-
-  Revision 1.3  2005/02/22 09:49:16  wollny
-  removed vistaio dependecy
-
-  Revision 1.1.1.1  2005/02/21 15:00:37  wollny
-  initial import
-
-  Revision 1.14  2004/04/05 15:24:33  gerddie
-  change filter allocation
-
-  Revision 1.13  2003/08/27 10:14:36  gerddie
-  adapt to new debian install location and libtool versioning
-
-  Revision 1.12  2002/08/01 20:38:54  gerddie
-  added new mutex and condition type
-
-  Revision 1.11  2002/06/20 09:59:49  gerddie
-  added cvs-log entry
-
-
-*/
 

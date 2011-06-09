@@ -100,7 +100,7 @@ enum TMethod { meth_sor,
 const TDictMap<TMethod>::Table method_dict[] = {
 	{"sor", meth_sor}
 	,{"sora",meth_sorex}
-	,{"sorap",meth_sorap}
+//	,{"sorap",meth_sorap}
 	,{NULL, meth_sor}
 };
 
@@ -242,7 +242,7 @@ int main(int argc, const char *argv[])
 	options.add(make_opt( statlog_filename, "statlog", 0,"statistics logfilename"));
 	options.add(make_opt( params.matter_threshold, "matter", 0, "intensity above which real "
 				    "matter is assumed (experimental)"));
-	options.add(make_opt( max_threads, "max-threads", 't', "maximal number of threads for sorap"));
+//	options.add(make_opt( max_threads, "max-threads", 't', "maximal number of threads for sorap"));
 
 	try {
 		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
@@ -255,8 +255,6 @@ int main(int argc, const char *argv[])
 		switch (method) {
 		case meth_sor:solver = new TSORSolver(params.maxiter,params.factor,params.factor,params.My,params.Lambda);break;
 		case meth_sorex:solver = new  TSORASolver(params.maxiter,params.factor,params.factor,params.My,params.Lambda);break;
-		case meth_sorap:cvwarn() << "Parallel solver not tested with new thread model\n";
-			solver = new  TSORAParallelSolver(params.maxiter,params.factor,params.factor,params.My,params.Lambda,max_threads);break;
 		default:cverr() << "Unknown solver specified"<< endl; return -1;
 		}
 
