@@ -139,6 +139,8 @@ private:
 }; 
 
 
+typedef shared_ptr<C3DImageSeries> P3DImageSeries; 
+
 C3DFullCostList create_costs(double divcurlweight, const string& imagecostbase, int idx)
 {
 	stringstream cost_descr; 
@@ -327,7 +329,7 @@ int do_main( int argc, const char *argv[] )
 
 	string src_basename = get_filename_pattern_and_range(in_filename, start_filenum, end_filenum, format_width);
 
-	C3DImageSeries input_images; 
+	P3DImageSeries input_images(new C3DImageSeries); 
 	for (size_t i = start_filenum; i < end_filenum; ++i) {
 		string src_name = create_filename(src_basename.c_str(), i);
 		P3DImage image = load_image<P3DImage>(src_name);
@@ -335,12 +337,12 @@ int do_main( int argc, const char *argv[] )
 			THROW(runtime_error, "image " << src_name << " not found");
 
 		cvdebug() << "read '" << src_name << "\n";
-		input_images.push_back(image);
+		input_images->push_back(image);
 	}
 
 	cvmsg() << "skipping " << skip_images << " images\n"; 
-	vector<C3DFImage> series(input_images.size() - skip_images); 
-	transform(input_images.begin() + skip_images, input_images.end(), 
+	vector<C3DFImage> series(input_images->size() - skip_images); 
+	transform(input_images->begin() + skip_images, input_images->end(), 
 		  series.begin(), Convert2Float()); 
 	
 
@@ -361,8 +363,8 @@ int do_main( int argc, const char *argv[] )
 		references_float[i].set_voxel_size(series[i].get_voxel_size()); 
 	}
 	
-	C3DImageSeries references(references_float.size()); 
-	transform(references_float.begin(), references_float.end(), references.begin(), C3DFImage2PImage()); 
+	P3DImageSeries references(new C3DImageSeries(references_float.size())); 
+	transform(references_float.begin(), references_float.end(), references->begin(), C3DFImage2PImage()); 
 
 	
 	if (!save_mixing_matrix.empty()) {
@@ -394,16 +396,16 @@ int do_main( int argc, const char *argv[] )
 		cvmsg() << "Registration pass " << current_pass << "\n"; 
 
 		if (!save_ref_filename.empty())
-			save_references(save_ref_filename, current_pass, skip_images, references); 
+			save_references(save_ref_filename, current_pass, skip_images, *references); 
 
-		run_registration_pass(input_images, references,  skip_images,  minimizer, 
+		run_registration_pass(*input_images, *references,  skip_images,  minimizer, 
 				      *ipfactory, mg_levels, c_rate, divcurlweight, imagecost); 
 		
 		if (!save_reg_filename.empty()) 
-			save_references(save_reg_filename, current_pass, 0, input_images); 
+			save_references(save_reg_filename, current_pass, 0, *input_images); 
 
-		transform(input_images.begin() + skip_images, 
-			  input_images.end(), series.begin(), Convert2Float()); 
+		transform(input_images->begin() + skip_images, 
+			  input_images->end(), series.begin(), Convert2Float()); 
 
 		
 		
@@ -425,13 +427,13 @@ int do_main( int argc, const char *argv[] )
 		}
 
 		transform(references_float.begin(), references_float.end(), 
-			  references.begin(), C3DFImage2PImage()); 
+			  references->begin(), C3DFImage2PImage()); 
 		do_continue =  (current_pass < pass); 
 	} while (do_continue); 
 
 
 	bool success = true; 
-	auto ii = input_images.begin(); 
+	auto ii = input_images->begin(); 
 	for (size_t i = start_filenum; i < end_filenum; ++i, ++ii) {
 		string out_name = create_filename(registered_filebase.c_str(), i);
 		cvmsg() << "Save image " << i << " to " << out_name << "\n"; 
