@@ -139,8 +139,6 @@ private:
 }; 
 
 
-typedef shared_ptr<C3DImageSeries> P3DImageSeries; 
-
 C3DFullCostList create_costs(double divcurlweight, const string& imagecostbase, int idx)
 {
 	stringstream cost_descr; 
