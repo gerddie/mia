@@ -24,22 +24,35 @@
 
 
 /*
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
+    
+  LatexBeginProgramSection{3D registration of series of images}
+
+  The programs in described in this section are to be used for the registration 
+  of series of 3D images. These images have to be given as consecutive numbered 
+   files of the form nameXXXX.ext, with XXXX being digits.  
+
+  LatexEnd
+
+  LatexBeginProgramDescription{3D registration of series of images}
+
+  \subsection{mia-3dprealign-nonrigid}
+  \label{mia-3dprealign-nonrigid}
   
-  \subsection{mia-3dmyoperiodic-nonrigid}
-  \label{mia-3dmyoperiodic-nonrigid}
+  
 
   \begin{description} 
   \item [Description:] 
-	This program runs the non-rigid motion compensation of an cardiac 
-        perfusion image series preferable aquired letting the patient breath freely
-	(cf.\citet{wollny10b}). 
-	Note, this is a complete re-write of the software used in that paper, and therefore, 
-        the optimal parameters reported there are not optimal for this implememntations. 
+	This program runs the non-rigid motion compensation of an image series. 
+	The algorithm used is based on \citet{wollny10b}. 
+	First a subset of images is selected that are distributed over time 
+	and exhibit local minimal in the cost funtion regarding one selected reference. 
+	Then these images are registered to this referenec using one cost function.
+	Finally, synthetic references are created from the pre-registered subset and 
+	the remaining images are registered to these references. 
   
   The program is called like 
   \begin{lstlisting}
-mia-3dmyoperiodic-nonrigid -i <input set> -o <output set> [options]
+mia-3dprealign-nonrigid -i <input set> -o <output set> [options]
   \end{lstlisting}
 
   \item [Options:] $\:$
@@ -50,14 +63,14 @@ mia-3dmyoperiodic-nonrigid -i <input set> -o <output set> [options]
   \cmdopt{out-file}{o}{string}{File name base for the registered images. }
   \cmdopt{save-references}{}{string}{Save the synthetic reference images to files with the given name base}
 				 
-  \cmdgroup{Preconditions} 
+  \cmdgroup{Preconditions \& Preprocessing} 
   \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
   \cmdopt{max-candidates}{}{int}{Maximum number of candidates for global reference image}
   \cmdopt{cost-series}{S}{string}{Const function to use for the analysis of the series 
                                  (see sections \ref{sec:3dfullcost} and \ref{sec:cost3d})}
   \cmdopt{ref-idx}{}{string}{Save the obtained index of the global reference image to this file}
 
-  \cmdgroup{Image registration} 
+  \cmdgroup{Registration} 
   \cmdopt{cost-subset}{1}{string}{Image similarity measure to optimize during the first registration 
                                   phase of the algorithm (see section \ref{sec:3dfullcost})}
   \cmdopt{cost-final}{2}{string}{Image similarity measure to optimize during the second (final) registration 
@@ -71,24 +84,26 @@ mia-3dmyoperiodic-nonrigid -i <input set> -o <output set> [options]
                                 \hyperref[sec:3dtransforms]{transformation plug-ins.}}
   }
 
-  \item [Example:]Register the perfusion series given in segment.set by optimizing a spline based 
+  \item [Example:]Register the image series given by images imageXXXX.v by optimizing a spline based 
                   transformation with a coefficient rate of 16 pixel ,skipping two images at the 
 		  beginning and using \emph{normalized gradient fields} as initial cost measure 
                   and SSD as final measure. 
                   Penalize the transformation by using divcurl with aweight of 2.0. 
+		  As optimizer an nlopt based newton method is used. 
   \begin{lstlisting}
-mia-3dmyoperiodic-nonrigid  -i segment.set -o registered.set -k 2 -F spline:rate=16 -d 2.0 \
-                     -1 image:cost=[ngf:eval=ds] -2 image:cost=ssd
+mia-3dprealign-nonrigid  -i imageXXXX.v -o registered -t vista -k 2 \
+                    -F spline:rate=16 -d 2.0 \
+                    -1 image:cost=[ngf:eval=ds] -2 image:cost=ssd \
+		    -O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300
   \end{lstlisting}
-  \item [See also:] \sa{mia-3dmyomilles}, \sa{mia-3dmyoserial-nonrigid}, 
-                    \sa{mia-3dmyoica-nonrigid}, \sa{mia-3dmyopgt-nonrigid},
-		    \sa{mia-3dsegseriesstats}
+  \item [See also:] \sa{mia-3dmany2one-nonrigid}, \sa{mia-3dprealign-nonrigid}, 
+                    \sa{mia-3dmotioncompica-nonrigid}
   \end{description}
   
   LatexEnd
 */
 
-#define VSTREAM_DOMAIN "3dmyoperiodic"
+#define VSTREAM_DOMAIN "3dprealign"
 
 #include <fstream>
 #include <sstream>
@@ -425,7 +440,7 @@ int do_main( int argc, const char *argv[] )
 				   "Save synthetic references to files refXXXX.v")); 
 
 
-	options.set_group("\nPreconditions"); 
+	options.set_group("\nPreconditions & Preprocessing"); 
 	options.add(make_opt(skip, "skip", 'k', 
 				   "Skip images at the begin of the series")); 
 	options.add(make_opt(params.max_candidates, "max-candidates", 0, 

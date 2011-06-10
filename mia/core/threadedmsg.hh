@@ -42,7 +42,16 @@ NS_MIA_BEGIN
 */
 class EXPORT_CORE CThreadMsgStream : public std::ostream {
 public: 
+	/**
+	   Constructor. This constructor sets the thread-local output of the vstream backend to itself 
+	   and saves to old output. 
+	 */
 	CThreadMsgStream();
+
+	/**
+	   Destructor. This destructor flushes the output and then resets the thread-local vstream backend to the 
+           original output. 
+	 */
 	~CThreadMsgStream();
 
 	/**
@@ -50,7 +59,6 @@ public:
 	   \param master the new master output stream; 
 	   \remark if the new master is of type CThreadMsgStream a deadlock is certain.  
 	 */
-
 	template <typename OS>
 	static void set_master_stream(OS& master); 
 private: 

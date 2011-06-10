@@ -22,7 +22,7 @@
 
 /*
 
-  LatexBeginProgramDescription{Prostate motion compensation}
+  LatexBeginProgramDescription{3D registration of series of images}
   
   \subsection{mia-3dmotioncompica-nonrigid}
   \label{mia-3dmotioncompica-nonrigid}
@@ -49,6 +49,9 @@ mia-3dmotioncompica-nonrigid -i <input images> -o <output set> [options]
   \cmdopt{out-file}{o}{string}{output file name pattern of style name\%0d.ext to allow ceration of numbered file names}
   \cmdopt{save-refs}{}{string}{for each registration pass save the reference images to files with the given name base}
   \cmdopt{save-regs}{}{string}{for each registration pass save intermediate registered images}
+  \cmdopt{save-coeffs}{}{string}{Save the ICA coefficient matrix of the first pass to this file.}
+  \cmdopt{save-features}{}{string}{Save the ICA component images of the first pass to this file.}
+
 				 
   \cmdgroup{Independent component analysis} 
   \cmdopt{components}{C}{int}{Number of  ICA components to be used, 0 = automatic estimation}
@@ -57,7 +60,7 @@ mia-3dmotioncompica-nonrigid -i <input images> -o <output set> [options]
   \cmdopt{no-meanstrip}{}{}{don't strip the mean from the mixing curves}
   \cmdopt{max-ica-iter}{m}{int}{maximum number of iterations within ICA}
 
-  \cmdgroup{Image registration} 
+  \cmdgroup{Registration} 
   \cmdopt{imagecost}{w}{string}{Image similarity measure base part, the name of source and reference images must 
                                be left alone and will be set by the program internally (see section \ref{sec:3dfullcost})}
   \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
@@ -75,10 +78,12 @@ mia-3dmotioncompica-nonrigid -i <input images> -o <output set> [options]
   }
 
   \item [Example:]Register the perfusion series given in images imagesXXXX.v by using 3-class ICA estimation. 
-        Skip two images at the beginning, use 4 registration threads and otherwiese use the default parameters. 
+        Skip two images at the beginning, use at most 4 registration threads, a nlopt based optimizer 
+       and otherwiese use the default parameters. 
 	Store the result in registeredXXXX.v 
   \begin{lstlisting}
-mia-3dmotioncompica-nonrigid  -i imagesXXXX.v -o  registered%04d.v  -k 2 -C 3 -t 4 
+mia-3dmotioncompica-nonrigid  -i imagesXXXX.v -o  registered%04d.v  -k 2 -C 3 -t 4 \
+                              -O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300
   \end{lstlisting}
   \end{description}
   
@@ -319,7 +324,6 @@ int do_main( int argc, const char *argv[] )
 	unique_ptr<C3DInterpolatorFactory>   ipfactory(create_3dinterpolation_factory(interpolator));
 
 	task_scheduler_init init(max_threads);
-	thread_streamredir::set_master_stream(cerr);
 	
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;

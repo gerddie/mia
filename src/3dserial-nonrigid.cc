@@ -21,7 +21,7 @@
  */
 
 /*
-  LatexBeginProgramDescription{Registration of image series}
+  LatexBeginProgramDescription{3D registration of series of images}
   
   \subsection{mia-3dserial-nonrigid}
   \label{mia-3dserial-nonrigid}
@@ -61,12 +61,13 @@ mia-3dserial-nonrigid -i <input set> -o <output set> <cost1> [<cost2>] ...
                  using  a weighted combination of \emph{normalized gradient fields} 
                   and SSD as cost measure, and penalize the transformation by using divcurl with aweight of 2.0. 
   \begin{lstlisting}
-mia-3dserial-nonrigid  -i segment.set -o registered.set -F spline:rate=16 \
-                     image:cost=[ngf:eval=ds],weight=2.0 image:cost=ssd,weight=0.1 divcurl:weight=2.0 
+mia-3dserial-nonrigid  -i segment.set -o registered.set -f spline:rate=16 \
+         image:cost=[ngf:eval=ds],weight=2.0 \
+	 image:cost=ssd,weight=0.1 \
+	 divcurl:weight=2.0 
   \end{lstlisting}
-  \item [See also:] \sa{mia-3dmyomilles}, \sa{mia-3dmyoperiodic-nonrigid}, 
-                    \sa{mia-3dmyoica-nonrigid}, \sa{mia-3dmyopgt-nonrigid},
-		    \sa{mia-3dsegseriesstats}
+  \item [See also:] \sa{mia-3dmany2one-nonrigid}, \sa{mia-3dprealign-nonrigid}, 
+                    \sa{mia-3dmotioncompica-nonrigid}
   \end{description}
   
   LatexEnd

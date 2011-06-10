@@ -21,17 +21,17 @@
  */
 
 /*
-  LatexBeginProgramDescription{Registration of image series}
+  LatexBeginProgramDescription{3D registration of series of images}
   
   \subsection{mia-3dmany2one-nonrigid}
   \label{mia-3dmany2one-nonrigid}
 
   \begin{description} 
   \item [Description:] 
-	This program runs the non-rigid registration of an perfusion image series. 
-	The registration is run in a serial manner, this is, only images in 
-	temporal succession are registered, and the obtained transformations 
-	are applied accumulated to reach full registration (cf. \citet{wollny10a}). 
+  This program runs the non-rigid registration of an image series. 
+  All images are registered to one refernces as given on the command line. 
+  If no reference is given then the image in the middle of the series is selected. 
+  Registration can be run in parallel.
   
   The program is called like 
   \begin{lstlisting}
@@ -64,15 +64,14 @@ mia-3dmany2one-nonrigid -i <input set> -o <output set> <cost1> [<cost2>] ...
 mia-3dmany2one-nonrigid  -i segment.set -o registered.set -F spline:rate=16 \
                      image:cost=[ngf:eval=ds],weight=2.0 image:cost=ssd,weight=0.1 divcurl:weight=2.0 
   \end{lstlisting}
-  \item [See also:] \sa{mia-3dmyomilles}, \sa{mia-3dmyoperiodic-nonrigid}, 
-                    \sa{mia-3dmyoica-nonrigid}, \sa{mia-3dmyopgt-nonrigid},
-		    \sa{mia-3dsegseriesstats}
+  \item [See also:] \sa{mia-3dserial-nonrigid}, \sa{mia-3dprealign-nonrigid}, 
+                    \sa{mia-3dmotioncompica-nonrigid}
   \end{description}
   
   LatexEnd
 */
 
-#define VSTREAM_DOMAIN "3dmyoserial"
+#define VSTREAM_DOMAIN "3dmany3one"
 
 #include <fstream>
 #include <libxml++/libxml++.h>
@@ -186,6 +185,8 @@ int do_main( int argc, const char *argv[] )
 	EInterpolation interpolator = ip_bspline3;
 	size_t mg_levels = 3; 
 	int reference_param = -1; 
+
+	int max_threads = task_scheduler_init::automatic;
 	
 	CCmdOptionList options(g_general_help);
 	
@@ -204,9 +205,16 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
 
+	options.set_group("Processing"); 
+	options.add(make_opt(max_threads, "threads", 't', "Maxiumum number of threads to use for running the registration," 
+			     "This number should be lower or equal to the number of processing cores in the machine"
+			     " (default: automatic estimation)."));  
+
+
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
+	task_scheduler_init init(max_threads);
 	
         // create cost function chain
 	auto cost_functions = options.get_remaining(); 

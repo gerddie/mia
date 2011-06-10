@@ -30,7 +30,7 @@
   \begin{description}
   \item [Description:] This program is used run the very same set of filters on 
     the individual images of a series of 3D gray scale images.
-  For available filters see section \ref{sec:filter3d}. 
+  For available filters see section \ref{sec:3dfilters}. 
 
   The program is called like 
   \
@@ -55,8 +55,6 @@ mia-3dimagefilterstack -i <input images> -o <output image basename> \
   \begin{lstlisting}
 mia-3dimagefilterstack -i image0000.exr -o filtered -t exr mlv:w=2 
   \end{lstlisting}
-  \item [Remark:] Note the difference to the program \hyperref[mia-3dstackfilter]{mia-3dstackfilter} 
-                  that runs the filter(s) by combining the images in a 3D manner. 
   \end{description}
   
   LatexEnd
