@@ -25,11 +25,35 @@
 #include <iostream>
 #include <iomanip>
 #include <mia/core/threadedmsg.hh>
-
+#include <sstream> 
 #include <tbb/mutex.h>
+#include <stdexcept>
+#include <mia/core/msgstream.hh>
+
 NS_MIA_BEGIN
 using std::setw; 
 using std::setfill; 
+using std::logic_error; 
+
+
+class thread_streamredir: public std::streambuf  {
+public: 
+	thread_streamredir(); 
+
+	static void set_master_stream(std::ostream& master); 
+protected: 
+	int sync(); 
+	int overflow(int c); 
+	std::streamsize xsputn ( const char * s, std::streamsize n ); 
+private:
+	void send_to_master(); 
+	
+	std::stringstream m_buffer; 
+	int m_id; 
+	static std::ostream *m_master;
+	static tbb::mutex m_master_lock; 
+	static int m_next_id; 
+}; 
 
 
 thread_streamredir::thread_streamredir()
@@ -46,7 +70,8 @@ void thread_streamredir::set_master_stream(std::ostream& master)
 
 int thread_streamredir::sync()
 {
-	send_to_master(); 
+	if (!m_buffer.str().empty()) 
+		send_to_master(); 
 	
 }
 
@@ -60,8 +85,9 @@ std::streamsize thread_streamredir::xsputn( const char * s, std::streamsize n )
 {
 	int i = 0; 
 	while (i < n) {
-		m_buffer << *s; 
-		if (*s == '\n' || *s == '\r') 
+		if (*s != '\n') 
+			m_buffer << *s; 
+		else
 			send_to_master();
 		++s; 
 		++i; 
@@ -72,7 +98,7 @@ std::streamsize thread_streamredir::xsputn( const char * s, std::streamsize n )
 void thread_streamredir::send_to_master()
 {
 	CScopedLock lock(m_master_lock); 
-	*m_master << "[thread " << setw(3) << setfill('0') << m_id << "]:" << m_buffer.str(); 
+	*m_master << "[thread " << setw(3) << setfill('0') << m_id << "]:" << m_buffer.str() << "\n"; 
 	m_buffer.str(""); 
 	m_buffer.clear(); 
 }
@@ -80,5 +106,29 @@ void thread_streamredir::send_to_master()
 std::ostream *thread_streamredir::m_master = &std::cerr;
 tbb::mutex thread_streamredir::m_master_lock; 
 int thread_streamredir::m_next_id = 0; 
+
+
+CThreadMsgStream::CThreadMsgStream():
+	std::ostream(new thread_streamredir()), 
+	m_old(vstream::instance().set_stream(*this))
+{
+}
+
+CThreadMsgStream::~CThreadMsgStream()
+{
+	flush(); 
+	vstream::instance().set_stream(m_old);
+}
+
+void CThreadMsgStream::do_set_master_stream(std::ostream& master)
+{
+	// if this is actually a CThreadMsgStream, then deadlock is certain 
+	// hence throw and tell the programmer to fix the program
+	if (dynamic_cast<CThreadMsgStream*>(&master)) {
+		throw logic_error("CThreadMsgStream::set_master_stream: trying to set the master stream to a CThreadMsgStream. "
+				  "Since this would make deadlock certain I bail out now.\nPlease fix your program\n"); 
+	}
+	thread_streamredir::set_master_stream(master); 
+}
 
 NS_MIA_END
