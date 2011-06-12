@@ -33,6 +33,7 @@ SET(filters2dNew_base
   invert
   kmeans
   label 
+  labelmap
   mask
   mean 
   median
