@@ -220,18 +220,15 @@ void C2DLabelStackFilter::post_finalize()
 	}
 	if (!m_map_file.empty()) {
 		ofstream outfile(m_map_file.c_str(), ios_base::out );
-		outfile << "MiaLabemap\n" << m_target.size() << "\n"; 
-		
-		for (auto i = m_target.begin(); i != m_target.end(); ++i) 
-			outfile << i->first << " " << i->second << "\n"; 
+		m_target.save(outfile); 
 		if (!outfile.good()) {
-			cverr() << "C2DLabelStackFilter: unable to write mapping file '" 
-				<< m_map_file << "'\n"; 
+			THROW(runtime_error, "C2DLabelStackFilter: failed to save labale join map to '"
+			      << m_map_file << "'"); 
 		}
 	}
 }
 
-const C2DLabelStackFilter::JointsMap& C2DLabelStackFilter::get_joints() const
+const CLabelMap& C2DLabelStackFilter::get_joints() const
 {
 	return m_target; 
 }
