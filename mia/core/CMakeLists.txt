@@ -26,6 +26,7 @@ SET(MIACORE_SRC_BASE
   interpolator1d.cc
   iodata.cc
   ioplugin.cc
+  labelmap.cc
   mitestimages.cc
   module.cc
   msgstream.cc 
@@ -86,6 +87,7 @@ SET(MIACORE_HEADER_BASE
   iodata.hh
   iohandler.cxx iohandler.hh
   ioplugin.cxx ioplugin.hh
+  labelmap.hh
   mitestimages.hh
   module.hh
   msgstream.hh
@@ -269,6 +271,7 @@ NEW_TEST(utils miacore)
 NEW_TEST(Vector miacore)
 NEW_TEST(minimizer miacore)
 NEW_TEST(threadedmsg miacore)
+NEW_TEST(labelmap miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)
