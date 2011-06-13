@@ -129,7 +129,11 @@ void C2DLabelStackFilter::label_new_regions(C2DBitImage& input)
 			if (*ii) {
 				cvdebug() << "("<< x << ", " << y <<"," << slice <<  "):" 
 					  << m_last_label << "\n"; 
-				*usi = m_last_label++;
+				if (m_last_label < numeric_limits<unsigned short>::max()) 
+					*usi = m_last_label++;
+				else 
+					THROW(invalid_argument, "C2DLabelStackFilter: numer of connected components exeeds supported limit of " <<
+					      numeric_limits<unsigned short>::max() << ", sorry can't continue\n");   
 				*ii = false; 
 				grow(x,y,input,*usi); 
 			}

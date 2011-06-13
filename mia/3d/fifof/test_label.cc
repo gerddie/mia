@@ -23,6 +23,7 @@
 #include <mia/internal/autotest.hh>
 #include <mia/3d/fifotestfixture.hh>
 #include <mia/3d/fifof/label.hh>
+#include <mia/2d/shape.hh>
 
 NS_MIA_USE; 
 
@@ -125,3 +126,31 @@ BOOST_FIXTURE_TEST_CASE( test_fifof_label , fifof_Fixture )
 
 }
 
+class C1n2DShape: public C2DShape {
+public:
+	C1n2DShape() {
+		insert(C2DShape::Flat::value_type( 0, 0));
+	}
+};
+
+
+BOOST_AUTO_TEST_CASE( test_overflow ) 
+{
+	const size_t n_slices = 6; 
+	const C2DBounds size(300,300);
+	C2DBitImage *img(new C2DBitImage(size)); 
+	fill(img->begin(), img->end(), 1); 
+	P2DImage pimg(img); 
+	
+	P2DShape shape(new C1n2DShape()); 
+	
+	C2DLabelStackFilter filter("", shape ); 
+
+	typedef TFifoFilterSink<P2DImage> C2DImageFifoFilterSink;
+
+	C2DImageFifoFilterSink::Pointer sink(new C2DImageFifoFilterSink());
+	filter.append_filter(sink);
+	
+	BOOST_CHECK_THROW(filter.push(pimg), invalid_argument); 
+
+}
