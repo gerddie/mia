@@ -82,9 +82,9 @@ void sincosf(float x, float *sin, float *cos);
 void sincos(double x, double *sin, double *cos); 
 #endif
 
-
 template <typename T, bool is_float> 
 struct __round {
+
 	static T apply(double x) {
 		return x; 
 	}
@@ -97,6 +97,14 @@ struct __round<T, false> {
 	}
 };
 
+
+/**
+   A simple class to round floating point numbers onyl if necessary. 
+   If the target is a floating point values then the result is just passed through, 
+   otherwise rint is used for rounding 
+   \param x 
+   \returns rounded value or x
+*/
 template <typename T> 
 T mia_round(double x) 
 {

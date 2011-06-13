@@ -30,12 +30,13 @@
 NS_MIA_BEGIN
 
 /**
-   \brief A simple class to load and store label maps 
+   \brief A simple class to add loadind and storeing to a map of labels. 
 */
-
 class CLabelMap: public std::map<unsigned short,  unsigned short> {
 public: 
 	CLabelMap() = default; 
+
+	/// standard copy construtor 
 	CLabelMap(const CLabelMap& org) = default;
 	
 	/**
