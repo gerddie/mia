@@ -15,6 +15,7 @@ SET(MIA3D_SRC
   ica.cc
   interpolator.cc
   landmark.cc
+  landmarklist.cc
   model.cc
   multicost.cc
   nfg.cc 
@@ -54,6 +55,7 @@ SET(MIA3D_HEADERS
 	iterator.hh iterator.cxx
 	ica.hh
 	landmark.hh
+	landmarklist.hh
 	model.hh
 	multicost.hh
 	nfg.hh

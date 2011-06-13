@@ -25,23 +25,23 @@
 
 NS_MIA_BEGIN
 
-CLandmark::CLandmark(const std::string& _name, const C3DFVector& _position):
+C3DLandmark::C3DLandmark(const std::string& _name, const C3DFVector& _position):
 	m_name(_name), 
 	m_position(_position) 
 {
 }
 
-const std::string& CLandmark::get_name() const
+const std::string& C3DLandmark::get_name() const
 {
 	return m_name; 
 }
 
-const C3DFVector& CLandmark::get_position() const
+const C3DFVector& C3DLandmark::get_position() const
 {
 	return m_position; 
 }
 
-void CLandmark::set_position(const C3DFVector& pos)
+void C3DLandmark::set_position(const C3DFVector& pos)
 {
 	m_position = pos; 
 }

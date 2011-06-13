@@ -1,8 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science	
- * Max-Planck-Institute for Evolutionary Anthropology 
+ * Copyright (c) Leipzig, Madrid 2011
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,6 +23,7 @@
 #ifndef mia_3d_landmarks_hh
 #define mia_3d_landmarks_hh
 
+#include <memory>
 #include <mia/3d/3DVector.hh>
 
 NS_MIA_BEGIN
@@ -35,18 +34,39 @@ NS_MIA_BEGIN
    This class provides the basis for named a 3D landmark 
  */
 
-class CLandmark {
+class C3DLandmark {
 public: 
-	CLandmark(const std::string& _name, const C3DFVector& _position); 
+	typedef std::shared_ptr<C3DLandmark> Pointer; 
 
+	/**
+	   constructor to initialize the landmark. 
+	   \param name Landmark identifier 
+	   \param position 3D coordinate of the landmark 
+	 */
+	C3DLandmark(const std::string& name, const C3DFVector& position); 
+
+	C3DLandmark(const C3DLandmark& other) = default; 
+
+
+	/**
+	   \returns the identifier  of the landmark 
+	 */
 	const std::string& get_name() const; 
+
+	/// \returns the position of the landmark 
 	const C3DFVector& get_position() const; 
+
+	/**
+	   (Re-)set the position of the landmark 
+	   \param pos new position 
+	 */
 	void set_position(const C3DFVector& pos); 
 private: 
 	std::string m_name; 
 	C3DFVector m_position; 
 
 }; 
+typedef C3DLandmark::Pointer P3DLandmark; 
 
 NS_MIA_END
 
