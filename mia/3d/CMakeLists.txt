@@ -14,6 +14,7 @@ SET(MIA3D_SRC
   fuzzyClusterSolverCG.cc
   ica.cc
   interpolator.cc
+  landmark.cc
   model.cc
   multicost.cc
   nfg.cc 
@@ -52,6 +53,7 @@ SET(MIA3D_HEADERS
 	interpolator.hh interpolator.cxx
 	iterator.hh iterator.cxx
 	ica.hh
+	landmark.hh
 	model.hh
 	multicost.hh
 	nfg.hh
@@ -160,6 +162,7 @@ TEST_3D(rigidregister rigidregister)
 TEST_3D(nonrigidregister nonrigidregister)
 TEST_3D(transform transform)
 TEST_3D(transio transio)
+TEST_3D(landmark landmark)
 TEST_3D(quaternion quaternion)
 TEST_3D(ppmatrix ppmatrix)
 TEST_3D(fullcost fullcost)
