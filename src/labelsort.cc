@@ -71,10 +71,9 @@ mia-labelsort -i histo.txt  -o map.txt
 NS_MIA_USE; 
 using namespace std; 
 
-const char g_description[] = "This program is used create a mapping based on a histogram that puts the intensities "
-	"with high values at the beginning of the histogram. The main use case will be to soft labels of connected "
-	" components."; 
-
+const char g_description[] = "This program is used create a mapping based on a histogram that "
+	  "puts the intensities with high values at the beginning of the histogram. The main "
+	  "use case will be to soft labels of connected components in out-of-core image processing.";
 
 typedef pair<double, size_t> CEntry; 
 
@@ -90,12 +89,17 @@ int do_main(int argc, const char *argv[])
 	string out_filename; 
 	CCmdOptionList options(g_description);
 
-	options.add(make_opt( in_filename, "in-file", 'i', "input file name containing the histogram")); 
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name to store probabilities")); 
+	options.add(make_opt( in_filename, "in-file", 'i', "input file name containing the histogram", 
+			      CCmdOption::required)); 
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name to store probabilities", 
+			      CCmdOption::required)); 
+
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 	
 	priority_queue<CEntry> hist; 
 	
-	ifstream ifs( in_filename, ifstream::in ); 
+	ifstream ifs( in_filename); 
 	
 	vector<double> histo; 
 	// read input data
@@ -120,7 +124,7 @@ int do_main(int argc, const char *argv[])
 	}
 
 	
-	unique_ptr<ostream> os(out_filename == string("-") ? &cout : new ofstream(out_filename.c_str())); 
+	unique_ptr<ostream> os(out_filename == string("-") ? &cout : new ofstream(out_filename)); 
 	result.save(*os); 
 	return os->good() ? EXIT_SUCCESS : EXIT_FAILURE; 
 }
