@@ -160,6 +160,7 @@ struct SeriesRegistration {
 		for( int i=range.begin(); i!=range.end(); ++i ) {
 			if (i == reference)
 				continue; 
+			cvmsg() << "Register " << i << " to " << reference << "\n"; 
 			auto cost  = create_costs(costs, i); 
 			C3DNonrigidRegister nrr(cost, m,  transform_creator, ipfactory, mg_levels, i);
 			P3DTransformation transform = nrr.run(input_images[i], input_images[reference]);
