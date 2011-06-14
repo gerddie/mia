@@ -70,8 +70,11 @@ public:
 	C2DStackDistanceTransform() = default; 
 	C2DStackDistanceTransform(const C2DStackDistanceTransform& other) = default; 
 
-
+	/**
+	   Create a copy of this object 
+	 */
 	C2DStackDistanceTransform *clone() const __attribute__((warn_unused_result)); 
+
 	/**
 	   Construct the distance grid and initialize it
 	   \param size xy-slice of the data to be processed
@@ -124,6 +127,13 @@ private:
 	vector< vector<SParabola> > m_zdt;
 	
 };
+
+/**
+   Write a point-distance pair 
+   \param os output stream 
+   \param v the poin-distance 
+   \returns the output stream 
+*/
 
 inline std::ostream& operator << (std::ostream& os, const C2DStackDistanceTransform::DistanceFromPoint& v) 
 {
