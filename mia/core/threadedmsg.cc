@@ -72,13 +72,14 @@ int thread_streamredir::sync()
 {
 	if (!m_buffer.str().empty()) 
 		send_to_master(); 
-	
+	return 0; 
 }
 
 int thread_streamredir::overflow(int c)
 {
 	send_to_master(); 
 	m_buffer << (char)c; 
+	return 0;
 }
 
 std::streamsize thread_streamredir::xsputn( const char * s, std::streamsize n )
