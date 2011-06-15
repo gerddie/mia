@@ -37,7 +37,6 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
-#include <boost/lambda/lambda.hpp>
 #include <mia/3d/deformer.hh>
 
 
@@ -46,8 +45,6 @@
 #include "eqn_solver.hh"
 
 NS_MIA_USE
-using boost::lambda::_1;
-using boost::lambda::_2;
 
 CWatch Clock;
 int  STARTSIZE=16;
@@ -105,7 +102,8 @@ TFluidReg::TFluidReg(const TFluidRegParams& params,TLinEqnSolver *_solver):
 #ifdef OPTIMIZE_REGION
 
 	C3DFImage diff(src->get_size());
-	transform(src->begin(), src->end(), ref.begin(), diff.begin(), _1 - _2);
+	transform(src->begin(), src->end(), ref.begin(), diff.begin(), 
+		  [](float x, float y){return x-y;}); 
 
 	diff->get_region_of_interest(&Start,&End,matter_threshold);
 	Start.x -= 3;

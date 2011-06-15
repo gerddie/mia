@@ -1,4 +1,5 @@
-/*
+/* -*- mia-c++ -*- 
+ *
  * Copyright (c) 2005-2011
  * 
  * Max-Planck-Institute of Evolutionary Anthropologie
@@ -81,8 +82,6 @@ extern "C" {
 }
 #endif
 
-#include <boost/lambda/lambda.hpp>
-
 
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
@@ -90,7 +89,6 @@ extern "C" {
 
 NS_MIA_USE; 
 using namespace std; 
-using namespace boost::lambda; 
 
 const char *g_description = " This Program reads a histogram from stdin and evaluates a "
 	"cmeans classification of the intensity values into the given number of classes."; 
@@ -227,7 +225,9 @@ double CCMeans::update_class_centers(CDoubleVector& class_center, CDoubleVector 
 double CCMeans::adjust_k(CDoubleVector const& class_centers, CDoubleVector const& histogram, CProbabilityVector const & pv)const
 {
 	CDoubleVector cc(class_centers.size()); 
-	transform(class_centers.begin(), class_centers.end(), cc.begin(), _1 * histogram.size());
+	size_t hsize = histogram.size(); 
+	transform(class_centers.begin(), class_centers.end(), cc.begin(), 
+		  [hsize](double x){return x * hsize;}); 
 	
 	// evaluate best mapping of classes based on maximum probability
 	vector<int> classmap(histogram.size(), 0); 
@@ -261,8 +261,8 @@ double CCMeans::adjust_k(CDoubleVector const& class_centers, CDoubleVector const
 	}
 	
 	const double avg = sum / n; 
-	float hsize = histogram.size() - 1; 
-	double new_k = 2 * ((sum2 - avg * sum) / (n-1)) /  (hsize * hsize); 
+	float hist_size = histogram.size() - 1; 
+	double new_k = 2 * ((sum2 - avg * sum) / (n-1)) /  (hist_size * hist_size); 
 	
 	return new_k > 0.001 ? new_k : 0.001; 
 }

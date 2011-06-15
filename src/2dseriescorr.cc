@@ -73,7 +73,6 @@ mia-2dseriescorr -i image0000.png -k 2 -e 30 -z horizontal.exr \
 #include <ostream>
 #include <fstream>
 #include <map>
-#include <boost/lambda/lambda.hpp>
 #include <mia/core.hh>
 #include <queue>
 
@@ -83,9 +82,6 @@ mia-2dseriescorr -i image0000.png -k 2 -e 30 -z horizontal.exr \
 
 
 NS_MIA_USE;
-
-using boost::lambda::_1;
-using boost::lambda::_2;
 
 struct FCorrelationAccumulator : public TFilter<bool> {
 
@@ -111,7 +107,8 @@ private:
 template <typename T>
 struct __dipatch_sum {
 	static void apply (const T2DImage<T>& a, T2DImage<T>& b) {
-		transform(a.begin(), a.end(), b.begin(), b.begin(), 0.5 * (_1 + _2));
+		transform(a.begin(), a.end(), b.begin(), b.begin(), 
+			  [](T x, T y){return (x+y)*0.5;});  
 	}
 };
 
@@ -250,10 +247,12 @@ bool FCorrelationAccumulator::operator ()(const T2DImage<T>& image)
 		THROW(invalid_argument, "Input image size " << size << " expected, but got " <<
 		      image.get_size());
 	// sum x
-	transform(image.begin(), image.end(), sx.begin(), sx.begin(), _1 + _2);
+	transform(image.begin(), image.end(), sx.begin(), sx.begin(), 
+		  [](T x, double y){return x + y;}); 
 
 	// sum x^2
-	transform(image.begin(), image.end(), sx2.begin(), sx2.begin(), _1 *_1 + _2);
+	transform(image.begin(), image.end(), sx2.begin(), sx2.begin(), 
+		  [](double x, double y){return x*x + y;}); 
 
 	// sum horizontal
 	for (size_t y = 0; y < size.y; ++y) {

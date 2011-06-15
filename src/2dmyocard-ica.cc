@@ -90,7 +90,6 @@ mia-2dmyocard-ica  -i imageXXXX.exr -o ref -k 2 -C 5 -m -n
 #include <map>
 #include <ctime>
 #include <cstdlib>
-#include <boost/lambda/lambda.hpp>
 #include <mia/core.hh>
 #include <mia/core/fft1d_r2c.hh>
 #include <queue>
@@ -101,9 +100,6 @@ mia-2dmyocard-ica  -i imageXXXX.exr -o ref -k 2 -C 5 -m -n
 
 
 NS_MIA_USE;
-
-using boost::lambda::_1;
-using boost::lambda::_2;
 
 unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean,
 				      size_t& components, bool ica_normalize, int max_iterations)
@@ -526,7 +522,8 @@ int do_main( int argc, const char *argv[] )
 				P2DImage rvlv_feature(prvlv_diff);
 
 				transform(series[RV_peak].begin(), series[RV_peak].end(),
-					  series[LV_peak].begin(), prvlv_diff->begin(), _2 - _1);
+					  series[LV_peak].begin(), prvlv_diff->begin(), 
+					  [](double x, double y){return y - x;});  
 				cropper = create_LV_cropper(rvlv_feature, LV_mask, feature_image_base, crop_start);
 			}
 			if (!cropper)

@@ -64,12 +64,8 @@ mia-2dmultiimagevar  -o var.exr images*.png
 #include <mia/core/errormacro.hh>
 #include <mia/2d.hh>
 
-#include <boost/lambda/lambda.hpp>
-
-
 NS_MIA_USE;
 using namespace std;
-using namespace boost::lambda;
 
 class CVarAccumulator : public TFilter<bool> {
 public:
@@ -87,8 +83,11 @@ public:
 			THROW(invalid_argument, "input images differ in size");
 		}
 
-		transform(image.begin(), image.end(), m_sum.begin(), m_sum.begin(), _1 + _2);
-		transform(image.begin(), image.end(), m_sum2.begin(), m_sum2.begin(), _1  * _1 + _2);
+		transform(image.begin(), image.end(), m_sum.begin(), m_sum.begin(), 
+			  [](double x, double y){return x + y;});
+		
+		transform(image.begin(), image.end(), m_sum2.begin(), m_sum2.begin(), 
+			  [](double x, double y){return x * x + y;});
 		++m_n;
 		return true;
 	}
@@ -97,9 +96,10 @@ public:
 	{
 		C2DFImage *image = new C2DFImage( m_sum.get_size());
 		P2DImage result(image);
-		transform(m_sum.begin(), m_sum.end(), m_sum2.begin(),
-			  image->begin(), (_2 - _1 * _1 / m_n) / (m_n - 1));
-		transform(image->begin(), image->end(), image->begin(),  ptr_fun(::sqrt));
+		transform(m_sum.begin(), m_sum.end(), m_sum2.begin(), image->begin(), 
+			  [m_n](double sum, double sum2){return (sum2 - sum * sum/m_n)/(m_n - 1);}); 
+		transform(image->begin(), image->end(), image->begin(),  
+			  [](double x) {return sqrt(x);}); 
 		return result;
 
 	}

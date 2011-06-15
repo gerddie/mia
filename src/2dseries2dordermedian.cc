@@ -89,7 +89,6 @@ mia-2dseries2dordermedian -i segment.set -o gradmedian.exr -g 1 \
 #include <limits>
 #include <sstream>
 #include <stdexcept>
-#include <boost/lambda/lambda.hpp>
 #include <boost/algorithm/minmax_element.hpp>
 
 #include <mia/2d/filterchain.hh>
@@ -99,7 +98,6 @@ mia-2dseries2dordermedian -i segment.set -o gradmedian.exr -g 1 \
 
 using namespace std;
 using namespace mia;
-using namespace boost::lambda;
 
 template <typename T>
 struct fabsdelta {
