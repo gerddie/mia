@@ -36,10 +36,7 @@
 #include <mia/3d/deformer.hh>
 
 
-#include <boost/lambda/lambda.hpp>
-
 NS_MIA_BEGIN
-using namespace boost::lambda;
 
 C3DTransformation::C3DTransformation()
 {

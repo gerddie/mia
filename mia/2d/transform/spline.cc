@@ -54,12 +54,9 @@
 #include <mia/2d/transform/spline.hh>
 #include <mia/2d/transformfactory.hh>
 
-#include <boost/lambda/lambda.hpp>
-
 
 NS_MIA_BEGIN
 using namespace std;
-using namespace boost::lambda;
 
 
 C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PBSplineKernel kernel):
@@ -315,7 +312,8 @@ P2DTransformation C2DSplineTransformation::do_upscale(const C2DBounds& size) con
 	C2DSplineTransformation *help = new C2DSplineTransformation(size, m_kernel);
 	C2DFVectorfield new_coefs(m_coefficients.get_size()); 
 	
-	transform(m_coefficients.begin(), m_coefficients.end(), new_coefs.begin(), mx * _1 );
+	transform(m_coefficients.begin(), m_coefficients.end(), new_coefs.begin(), 
+		  [&mx](const C2DFVector& x){return x * mx;});
 	help->set_coefficients(new_coefs);
 	help->m_target_c_rate = m_target_c_rate; 
 	return P2DTransformation(help);

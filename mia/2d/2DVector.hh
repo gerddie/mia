@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
@@ -44,8 +44,8 @@
 #include <cassert>
 #include <stdexcept>
 #include <ostream>
+#include <istream>
 #include <iomanip>
-#include <boost/lambda/lambda.hpp>
 
 // MIA specific
 #include <mia/core/defines.hh>
@@ -450,35 +450,6 @@ typedef T2DVector<unsigned int>   C2DBounds;
 
 
 NS_MIA_END
-
-/*
-  These template specializations are needed when using the T2DVector template 
-  in a boost lambda expression that uses ::boost::lambda::_1 
-  \todo add more operations 
- */
-namespace boost { 
-	namespace lambda {
-		
-		template<class Act> 
-		struct plain_return_type_2<arithmetic_action<Act>, mia::C2DFVector, mia::C2DFVector > {
-			typedef mia::C2DFVector type;
-		};
-		template<> 
-		struct plain_return_type_2<arithmetic_action<multiply_action>, mia::C2DFVector, float> {
-			typedef mia::C2DFVector type;
-		};
-		template<> 
-		struct plain_return_type_2<arithmetic_action<multiply_action>, float, mia::C2DFVector> {
-			typedef mia::C2DFVector type;
-		};
-
-	}
-}
-
-
-
-
-
 
 #endif
 

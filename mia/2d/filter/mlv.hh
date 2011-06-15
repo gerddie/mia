@@ -28,9 +28,6 @@
 
 #include <limits>
 
-#include <boost/lambda/lambda.hpp>
-using namespace boost::lambda;
-
 NS_BEGIN(mlv_2dimage_filter);
 
 class C2DMLV: public mia::C2DFilter {

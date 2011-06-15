@@ -33,13 +33,10 @@
 #include <limits>
 
 #include <boost/type_traits.hpp>
-#include <boost/lambda/lambda.hpp>
 
 NS_MIA_BEGIN;
 
 using namespace std; 
-using namespace boost::lambda;
-
 
 NAMESPACE_BEGIN(rgg_2dstack_filter)
 

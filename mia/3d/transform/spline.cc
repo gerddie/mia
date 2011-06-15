@@ -63,13 +63,8 @@ extern "C" {
 }
 #endif
 
-#include <boost/lambda/lambda.hpp>
-
-
 NS_MIA_BEGIN
 using namespace std;
-using namespace boost::lambda;
-
 
 C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplineKernel kernel):
 	m_range(range),
@@ -396,7 +391,8 @@ P3DTransformation C3DSplineTransformation::do_upscale(const C3DBounds& size) con
 	C3DSplineTransformation *help = new C3DSplineTransformation(size, m_kernel);
 	C3DFVectorfield new_coefs(m_coefficients.get_size()); 
 	
-	transform(m_coefficients.begin(), m_coefficients.end(), new_coefs.begin(), mx * _1 );
+	transform(m_coefficients.begin(), m_coefficients.end(), new_coefs.begin(), 
+		  [&mx](const C3DFVector& x){return mx * x;}); 
 	help->set_coefficients(new_coefs); 
 	help->m_target_c_rate = m_target_c_rate; 
 	return P3DTransformation(help);

@@ -50,7 +50,6 @@
 */
 
 
-#include <boost/lambda/lambda.hpp>
 #include <boost/lambda/if.hpp>
 #include <mia/3d/3dimageio.hh>
 #include <mia/3d/filter/mask.hh>
@@ -59,7 +58,6 @@
 NS_BEGIN(mask_3dimage_filter)
 NS_MIA_USE;
 using namespace std;
-using namespace boost::lambda;
 
 C3DMask::C3DMask(const C3DImageDataKey& image_key):
 	m_image_key(image_key)

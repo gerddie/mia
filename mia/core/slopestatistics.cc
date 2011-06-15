@@ -26,7 +26,6 @@
 #include <cmath>
 #include <iostream>
 #include <numeric>
-#include <boost/lambda/lambda.hpp>
 #include <complex>
 
 #ifndef __GXX_EXPERIMENTAL_CXX0X__
@@ -37,7 +36,7 @@ NS_MIA_BEGIN
 
 using namespace std;
 using namespace boost;
-using boost::lambda::_1;
+
 
 struct CSlopeStatisticsImpl {
 	CSlopeStatisticsImpl(const vector<float>& series);
@@ -191,9 +190,9 @@ void CSlopeStatisticsImpl::evaluate_perfusion_peak() const
 
 	vector<float> help(m_series.size());
 	if (m_series[0] < mean)
-		transform(m_series.begin(), m_series.end(), help.begin(), _1 - mean);
+		transform(m_series.begin(), m_series.end(), help.begin(),[mean](float x){return x - mean;});
 	else
-		transform(m_series.begin(), m_series.end(), help.begin(), mean - _1);
+		transform(m_series.begin(), m_series.end(), help.begin(),[mean](float x){return mean - x;});
 
 	pair<position, position> minmax = minmax_element(help.begin(), help.end());
 	position help_begin = help.begin();

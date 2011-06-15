@@ -29,7 +29,6 @@
 
 #include <algorithm>
 #include <numeric>
-#include <boost/lambda/lambda.hpp> 
 #include <mia/core/interpolator1d.hh>
 #include <mia/core/spacial_kernel.hh>
 #include <mia/core/fft1d_r2c.hh>
@@ -43,7 +42,6 @@
 
 NS_MIA_BEGIN
 using namespace std; 
-using ::boost::lambda::_1; 
 
 struct CParzenWindowHistogramImpl {
 	CParzenWindowHistogramImpl(double low, double high, 

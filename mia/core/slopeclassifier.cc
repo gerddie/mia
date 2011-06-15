@@ -27,7 +27,6 @@
 
 #include <mia/core/msgstream.hh>
 
-#include <boost/lambda/lambda.hpp>
 #include <boost/algorithm/minmax_element.hpp>
 
 
@@ -38,7 +37,6 @@
 NS_MIA_BEGIN
 
 using namespace std;
-using namespace boost::lambda;
 using namespace boost;
 
 

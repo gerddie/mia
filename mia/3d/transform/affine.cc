@@ -53,7 +53,6 @@
 
 
 NS_MIA_BEGIN
-using namespace boost::lambda;
 using namespace std;
 
 C3DFVector C3DAffineTransformation::apply(const C3DFVector& x) const

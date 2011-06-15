@@ -31,16 +31,12 @@
    \LatexEnd
 */
 
-#include <boost/lambda/lambda.hpp>
-
 #include <mia/2d/fftkernel.hh>
 
 #include <mia/core/plugin_base.cxx>
 #include <mia/core/handler.cxx>
 
 NS_MIA_BEGIN
-
-using boost::lambda::_1; 
 
 const char* fft2d_kernel_data::type_descr = "fft2d";
 

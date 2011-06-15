@@ -52,15 +52,10 @@
 */
 
 
-
-
-#include <boost/lambda/lambda.hpp>
 #include <mia/2d/fullcost/image.hh>
 #include <mia/2d/2dfilter.hh>
 
 NS_MIA_BEGIN
-
-using boost::lambda::_1; 
 
 C2DImageFullCost::C2DImageFullCost(const std::string& src, 
 				   const std::string& ref, 

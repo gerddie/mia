@@ -22,16 +22,12 @@
 
 #include <memory>
 #include <fstream>
-#include <boost/lambda/lambda.hpp>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/ica.hh>
 #include <mia/2d/2dimageio.hh>
 
 NS_MIA_BEGIN
 using namespace std; 
-using boost::lambda::_1;
-using boost::lambda::_2;
-
 
 
 /* Implementation class */
@@ -180,7 +176,8 @@ P2DImage C2DPerfusionAnalysisImpl::get_rvlv_delta_from_peaks(const string& save_
 	P2DImage result(prvlv_diff); 
 
 	transform(m_series[RV_peak].begin(), m_series[RV_peak].end(),
-		  m_series[LV_peak].begin(), prvlv_diff->begin(), _1 - _2);
+		  m_series[LV_peak].begin(), prvlv_diff->begin(), 
+		  [](float a, float b){return a - b;});
 
 	if (!save_features.empty()) {
 		save_feature(save_features, "RVpeak", m_series[RV_peak]); 

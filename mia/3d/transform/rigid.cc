@@ -47,7 +47,6 @@
 #include <mia/3d/transform/rigid.hh>
 
 NS_MIA_BEGIN
-using namespace boost::lambda;
 using namespace std;
 
 

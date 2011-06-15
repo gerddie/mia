@@ -34,11 +34,7 @@
 #include <mia/2d/transform.hh>
 #include <mia/2d/deformer.hh>
 
-
-#include <boost/lambda/lambda.hpp>
-
 NS_MIA_BEGIN
-using namespace boost::lambda;
 
 C2DTransformation::C2DTransformation()
 {

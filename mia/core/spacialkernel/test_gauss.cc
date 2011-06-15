@@ -3,7 +3,6 @@
 
 NS_MIA_USE
 using namespace std; 
-using namespace ::boost::lambda; 
 using namespace ::boost::unit_test; 
 using namespace gauss_1d_folding_kernel; 
 

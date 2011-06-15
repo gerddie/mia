@@ -19,7 +19,6 @@
 #include <cmath>
 #include <iostream>
 #include <boost/shared_ptr.hpp>
-#include <boost/lambda/lambda.hpp>
 #include <boost/lambda/if.hpp>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
@@ -48,7 +47,9 @@ template <template <typename> class  Data, typename T>
 struct __eval {
 	static Data<float> *apply(const Data<T> &input, double m, double v) {
 		Data<float> *result = new Data<float>(input.get_size()); 
-		transform(input.begin(), input.end(), result->begin(), (::boost::lambda::_1 - m) / v); 
+		double invv = 1.0/v; 
+		transform(input.begin(), input.end(), result->begin(), 
+			  [invv,m](T x){(x - m) * invv;}); 
 		return result; 
 	}
 }; 
@@ -74,7 +75,7 @@ struct __eval<Data, bool> {
 		float rfalse =  - m / v; 
 		
 		transform(input.begin(), input.end(), result->begin(),
-			  __lambda_doesnt_work(rtrue, rfalse)); 
+			  [rtrue, rfalse](bool x){b ? rtrue : rfalse;});
 		return result; 
 	}
 }; 

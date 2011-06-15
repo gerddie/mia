@@ -25,13 +25,11 @@
 #include <cmath>
 
 #include <gsl/gsl_linalg.h>
-#include <boost/lambda/lambda.hpp>
 #include <mia/core/scaler1d.hh>
 #include <mia/core/msgstream.hh>
 
 NS_MIA_BEGIN
 
-using boost::lambda::_1; 
 using namespace std; 
 C1DScalarFixed::C1DScalarFixed(const CBSplineKernel& kernel, size_t in_size, size_t out_size):
 	m_in_size(in_size), 
@@ -171,7 +169,8 @@ gsl::DoubleVector C1DScalarFixed::filter_line(const gsl::DoubleVector& coeff)con
 	}
 	
 	/* apply the gain */
-	transform(coeff.begin(), coeff.end(), result.begin(), _1 * lambda); 
+	transform(coeff.begin(), coeff.end(), result.begin(), 
+		  [lambda](double x) {return x * lambda;}); 
 	
 	/* loop over all m_poles */
 	for (size_t k = 0; k < m_poles.size(); ++k) {

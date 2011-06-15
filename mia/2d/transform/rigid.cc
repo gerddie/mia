@@ -48,7 +48,6 @@
 
 
 NS_MIA_BEGIN
-using namespace boost::lambda;
 using namespace std;
 
 P2DImage C2DRigidTransformation::apply(const C2DImage& image,

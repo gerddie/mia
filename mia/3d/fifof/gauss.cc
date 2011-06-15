@@ -55,14 +55,8 @@
 #include <numeric>
 
 #include <boost/cast.hpp>
-#include <boost/lambda/lambda.hpp>
-
-
 #include <mia/3d/fifof/gauss.hh>
 
-
-
-using namespace boost::lambda;
 using namespace boost;
 
 NS_BEGIN(gauss_2dstack_filter)
@@ -118,23 +112,26 @@ C2DImage *C2DGaussFifoFilter::operator()(const T3DImage<T>& /*buffer*/) const
 
 	if ((int)get_start() == 0 && get_end() == m_1dfilter->size()) {
 		const float k = (*m_1dfilter)[0];
-		transform(m_buffer->begin(), m_buffer->begin() + help.size(), help.begin(), _1 * k);
-
+		transform(m_buffer->begin(), m_buffer->begin() + help.size(), help.begin(), 
+			  [k](T x){return x * k;}); 
+		
 		for (size_t i =  1; i < get_end(); ++i) {
 			C2DFImage::iterator s_i = m_buffer->begin_at(0,0,i);
 			const float k = (*m_1dfilter)[i];
-			transform(help.begin(), help.end(), s_i, help.begin(), _1 + k * _2);
+			transform(help.begin(), help.end(), s_i, help.begin(),
+				  [k](float x, float y){return x + k * y;}); 
 		}
 	}else{
 		const float k = (*m_1dfilter)[0];
 		transform(m_buffer->begin_at(0,0,get_end() - 1),
 			  m_buffer->begin_at(0,0,get_end()),
-			  help.begin(), _1 * k);
+			  help.begin(), [k](float x){return x*k;}); 
 
 		for (size_t i =  1; i < get_end(); ++i) {
 			C2DFImage::iterator s_i = m_buffer->begin_at(0,0, get_end() - 1 - i);
 			const float k = (*m_1dfilter)[i];
-			transform(help.begin(), help.end(), s_i, help.begin(), _1 + k * _2);
+			transform(help.begin(), help.end(), s_i, help.begin(), 
+				  [k](float x, float y){return x + k * y;}); 
 		}
 
 	}
