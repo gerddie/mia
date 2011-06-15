@@ -37,18 +37,20 @@ NS_MIA_USE;
 
 class CImageDisplay: public wxWindow {
 public:
-	CImageDisplay(wxWindow *parent, CCurveDisplay* curve_display);
+	CImageDisplay(wxWindow *parent, CCurveDisplay* curve_display, wxSlider *image_select);
 
 	void SetImage(const wxImage& image);
 
 	void OnPaint(wxPaintEvent& event);
 	void  OnLeftButton(wxMouseEvent& event);
-
+	void OnMouseWheel(wxMouseEvent& event);
 private:
 	DECLARE_EVENT_TABLE();
 
 	wxBitmap m_currentBitmap;
 	CCurveDisplay* m_curve_display;
+	wxSlider *m_image_select; 
+	int m_wheel_accumulator; 
 };
 
 
@@ -81,6 +83,8 @@ void CSeriesPanelImpl::set_series(const C2DImageIOPluginHandler::Instance::PData
 
 	if (m_series.get()) {
 		m_series_shadow.resize(series->size());
+		auto first_image = *m_series->begin(); 
+		m_image_display->SetSize(first_image->get_size().x, first_image->get_size().y); 
 
 		C2DFilterPlugin::ProductPtr converter = C2DFilterPluginHandler::instance().produce("convert:repn=ubyte");
 
@@ -93,7 +97,7 @@ void CSeriesPanelImpl::set_series(const C2DImageIOPluginHandler::Instance::PData
 			unsigned char *buf = (unsigned char *)malloc(3 * image->size());
 
 			unsigned char* bi = buf;
-			for (C2DUBImage::const_iterator k = image->begin(); k != image->end(); ++k, bi += 3)
+			for (auto k = image->begin(); k != image->end(); ++k, bi += 3)
 				bi[0] = bi[1] = bi[2] = *k;
 
 			m_series_shadow[pos] = wxImage(image->get_size().x, image->get_size().y, buf);
@@ -123,7 +127,7 @@ CSeriesPanelImpl::CSeriesPanelImpl(wxWindow *parent)
 	m_curve_display = new CCurveDisplay(parent);
 	m_curve_display->Show();
 
-	m_image_display = new CImageDisplay(parent, m_curve_display);
+	m_image_display = new CImageDisplay(parent, m_curve_display, m_image_select);
 	m_image_display->Show();
 
 	sizer->Add(m_image_display, sizer_flags);
@@ -158,19 +162,18 @@ void CSeriesPanel::OnImageSelect(wxCommandEvent& /*event*/)
 }
 
 
-CImageDisplay::CImageDisplay(wxWindow *parent, CCurveDisplay* curve_display):
+CImageDisplay::CImageDisplay(wxWindow *parent, CCurveDisplay* curve_display, wxSlider *image_select):
 	wxWindow(parent, wxID_ANY, wxPoint(0,0), wxSize(300,300)),
-	m_curve_display(curve_display)
+	m_curve_display(curve_display), 
+	m_image_select(image_select),
+	m_wheel_accumulator(0)
 {
 }
 
 void CImageDisplay::SetImage(const wxImage& image)
 {
 
-	wxSize sz = GetClientSize();
-	int size = sz.x <  sz.y ? sz.x : sz.y;
-	m_currentBitmap = wxBitmap(image.Scale(size, size));
-	// now redraw
+	m_currentBitmap = wxBitmap(image);
 	Refresh();
 }
 
@@ -194,12 +197,24 @@ void CImageDisplay::OnPaint(wxPaintEvent& /*event*/)
 void  CImageDisplay::OnLeftButton(wxMouseEvent& event)
 {
 	wxPoint pos = event.GetPosition();
-	wxSize  sz = GetClientSize();
+	m_curve_display->set_coordinates(pos);
+}
 
-	wxPoint p( (pos.x * 128 + (sz.x >> 1)) / sz.x,
-		   (pos.y * 128 + (sz.y >> 1)) / sz.y);
-
-	m_curve_display->set_coordinates(p);
+void CImageDisplay::OnMouseWheel(wxMouseEvent& event)
+{
+	const int wheel_delta = event.GetWheelDelta(); 
+	m_wheel_accumulator -= event.GetWheelRotation(); 
+	int step = m_wheel_accumulator / wheel_delta; 
+	if (step) {
+		m_wheel_accumulator -= step * wheel_delta; 
+		int frame = m_image_select->GetValue() + step; 
+		if (frame < 0) 
+			frame = 0; 
+		if (frame >= m_image_select->GetMax()) 
+			frame = m_image_select->GetMax(); 
+		m_image_select->SetValue(frame); 
+		wxCommand
+	}
 }
 
 BEGIN_EVENT_TABLE(CSeriesPanel, wxPanel)
@@ -209,4 +224,5 @@ BEGIN_EVENT_TABLE(CSeriesPanel, wxPanel)
 BEGIN_EVENT_TABLE(CImageDisplay, wxWindow)
 	EVT_PAINT(CImageDisplay::OnPaint)
 	EVT_LEFT_DOWN( CImageDisplay::OnLeftButton)
+	EVT_MOUSEWHEEL( CImageDisplay::OnMouseWheel)
 	END_EVENT_TABLE();
