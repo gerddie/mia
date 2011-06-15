@@ -263,7 +263,6 @@ public:
 	/**
 	   Save the transformation to some file
 	   \param filename name of the file to save to
-	   \param type file type description
 	   \returns \a true if saving was successfull and \a false if not
 	 */
 	virtual bool save(const std::string& filename) const = 0;

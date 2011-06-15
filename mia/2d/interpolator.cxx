@@ -203,15 +203,15 @@ T T2DConvoluteInterpolator<T>::evaluate(const std::vector<double>& xweight,
 	// interpolation loop by creating some fixed size calls  
 	switch (m_kernel->size()) {
 	case 2: result = add_2d<TCoeff2D,2>::apply(m_coeff, xweight, yweight, 
-					    xindex, yindex); break; 
+						   xindex, yindex); break; 
 	case 3: result = add_2d<TCoeff2D,3>::apply(m_coeff, xweight, yweight, 
-					    xindex, yindex); break; 
+						   xindex, yindex); break; 
 	case 4: result = add_2d<TCoeff2D,4>::apply(m_coeff, xweight, yweight, 
-					    xindex, yindex); break; 
+						   xindex, yindex); break; 
 	case 5: result = add_2d<TCoeff2D,5>::apply(m_coeff, xweight, yweight, 
-					    xindex, yindex); break; 
+						   xindex, yindex); break; 
 	case 6: result = add_2d<TCoeff2D,6>::apply(m_coeff, xweight, yweight, 
-					    xindex, yindex); break; 
+						   xindex, yindex); break; 
 	default: {
 		/* perform interpolation */
 		for (size_t y = 0; y < m_kernel->size(); ++y) {

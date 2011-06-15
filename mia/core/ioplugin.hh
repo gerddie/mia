@@ -100,9 +100,8 @@ public:
 
 	/**
 	   Translate the file type decriptor to the file suffix. 
-	   \param type type descriptor (plugin name);
 	   \returns preferred suffix of the file type 
-	   \remark in most cases this is just a pass-throug 
+	   \remark in most cases this is just a pass-through 
 	 */
 	std::string get_preferred_suffix() const; 
 protected:

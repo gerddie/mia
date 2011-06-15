@@ -164,6 +164,9 @@ protected:
 	
 	THandlerSingleton(const std::list<boost::filesystem::path>& searchpath); 
 	THandlerSingleton(); 
+
+	/** This mutex ensures that each Singleton is indeed only created once and 
+	    no race condition happens within a multi-threaded environmnet */ 
 	static CMutex m_creation_mutex; 
 private: 
 	static std::list<boost::filesystem::path> m_searchpath; 

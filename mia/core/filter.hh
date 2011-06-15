@@ -87,7 +87,7 @@ public:
 	
 	virtual ~TImageFilter();
 
-	/* run the filter 
+	/** run the filter 
 	   \param image must be of a type that has Binder trait defined.  
 	 */ 
 	result_type filter(const D& image) const;

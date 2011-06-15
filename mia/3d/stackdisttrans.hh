@@ -48,9 +48,13 @@ NS_MIA_BEGIN
 
 class C2DStackDistanceTransform: public CIOData {
 public: 
+	/// helper type for IO plugin handling 
 	typedef C2DStackDistanceTransform type; 
 
+	/// search path component for the plugin handling 
 	static const char * const value; 
+	
+	/// search path component for the plugin handling 
 	static const char * const type_descr; 
 
 
@@ -58,6 +62,12 @@ public:
 	   Return type for the result of the evaluated distances
 	 */
 	struct DistanceFromPoint {
+
+		/**
+		   Initializing constructor for the distance type 
+		   \param _point location 
+		   \param _distance of the point to whatever is measured 
+		 */
 		DistanceFromPoint(C3DBounds _point, float _distance):
 			point(_point), 
 			distance(_distance) 
@@ -68,6 +78,10 @@ public:
 
 	
 	C2DStackDistanceTransform() = default; 
+
+	/**
+	   The copy constructor 
+	 */
 	C2DStackDistanceTransform(const C2DStackDistanceTransform& other) = default; 
 
 	/**

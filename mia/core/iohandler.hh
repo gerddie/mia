@@ -86,7 +86,6 @@ public:
 	   Save the data to a file. If type is empty, then the output plugin is derived from 
            the fname suffix. if this fails, saving fails. If type is provided, the output plugin 
            is selected accordingly. 
-	   \param type output plugin name - leave empty to derive from fname suffix
 	   \param fname output file name 
 	   \param data the data to be saved
 	   \returns true if saving is successfull, false otherwise. 

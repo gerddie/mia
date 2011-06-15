@@ -98,24 +98,53 @@ struct coeff_map<T2DVector<U> > {
    This class provides the interface for 2D interpolation based on some kind of 
    spacial convolution, like e.g. by using B-splines. 
 */
-
 template <class T>
 class EXPORT_2D T2DConvoluteInterpolator: public T2DInterpolator<T> {
 public:
+	/**
+	   Constructor for the interpolator. The input data is pre-filtered in order to 
+	   ensure that the interpolation at grid points returns the original data values. 
+	   \param image input data to base th einterpolation on 
+	   \param kernel the B-spline kernel to be used. 
+	*/
 	T2DConvoluteInterpolator(const T2DDatafield<T>& image, std::shared_ptr<CBSplineKernel > kernel);
+
 	~T2DConvoluteInterpolator();
+
+	
 	T  operator () (const C2DFVector& x) const;
 
+	/**
+	   Evaluate the interolation based on the given weights and coefficient indices.
+	   \param xweight B-spline weights in x-direction
+	   \param yweight B-spline weights in y-direction
+	   \param xindex indices into the coefficient field in x-direction
+	   \param yindex indices into the coefficient field in y-direction
+	*/
 	T evaluate(const std::vector<double>& xweight, const std::vector<double>& yweight,
 		   const std::vector<int>&    xindex,  const std::vector<int>&    yindex) const; 
 
+	
+	/**
+	   Evaluate the first order derivative on the given coordinate 
+	   \param x location 
+	   \returns teh drivatives in all coordinate directions as 2D vector 
+	 */
 	T2DVector<T> derivative_at(const C2DFVector& x) const;
 
+	/** Data type of the field that holds the cofficients. Essentially, it uses 
+	    the coeff_map template to translate whatever T is composed of to something that 
+	    is composed of double float values to provide the required accuracy for interpolation. 
+	 */
 	typedef T2DDatafield< typename coeff_map< T >::coeff_type > TCoeff2D;
 
-	const TCoeff2D& get_coefficients() const; 
+	/**
+	   \returns the current coefficient field 
+	 */
+	const TCoeff2D& get_coefficients() const __attribute__((deprecated)); 
 
 protected:
+	/// helper class for the coefficient field 
 	typedef std::vector< typename TCoeff2D::value_type > coeff_vector;
 private:
 

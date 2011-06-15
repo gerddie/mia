@@ -41,7 +41,7 @@ public:
 	/// read only iterator 
 	typedef CMap::const_iterator const_iterator; 
 
-	// read-write iterator 
+	/// read-write iterator 
 	typedef CMap::iterator iterator;  
 
 	/**
@@ -57,10 +57,14 @@ public:
 	 */
 	P3DLandmark get(const std::string& name) const; 
 
+	/// \returns a read-only STL iterator to the landmarks 
 	const_iterator begin() const; 
+	/// \returns a read-only STL iterator to the landmarks 
 	const_iterator end() const; 
 
+	/// \returns a read-write STL iterator to the landmarks 
 	iterator begin(); 
+	/// \returns a read-write STL iterator to the landmarks 
 	iterator end(); 
 
 private: 

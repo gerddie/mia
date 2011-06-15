@@ -207,6 +207,7 @@ protected:
 	/// @returns the size  (degrees of freedom) of the optimization problem
 	size_t size() const; 
 
+	/// \returns a read/write reference to the current optimization problem
 	Problem& get_problem(); 
 private: 
 	virtual void do_set_problem();

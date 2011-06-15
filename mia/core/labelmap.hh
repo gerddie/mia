@@ -50,7 +50,7 @@ public:
 	   \param os  output stream 
 	   \returns true if successfull and false otherwise 
 	 */
-	void save(std::ostream& is); 
+	void save(std::ostream& os); 
 };
 
 NS_MIA_END

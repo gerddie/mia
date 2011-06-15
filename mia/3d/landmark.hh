@@ -36,6 +36,8 @@ NS_MIA_BEGIN
 
 class C3DLandmark {
 public: 
+
+	/// Shared pointer type of the landmark 
 	typedef std::shared_ptr<C3DLandmark> Pointer; 
 
 	/**
@@ -45,6 +47,7 @@ public:
 	 */
 	C3DLandmark(const std::string& name, const C3DFVector& position); 
 
+	/// Standard copy constructor 
 	C3DLandmark(const C3DLandmark& other) = default; 
 
 

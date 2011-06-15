@@ -53,14 +53,14 @@ public:
 	/**
 	   Apply the time step based on an input vector field to an output transformation 
 	   \param infield input vector field to add
-	   \param[in,out] at input: vector field that is to be changed, at output: updated field 
-	   \param a scaling to apply to the input field prior to applying it 
+	   \param[in,out] outfield at input: vector field that is to be changed, at output: updated field 
+	   \param scale a scaling to apply to the input field prior to applying it 
 	 */
 	void apply(const C3DFVectorfield& infield, C3DFVectorfield& outfield, float scale);
 
 	/**
 	   Evaluate the pertuberation related to the time step type and transformation 
-	   \param[in,out] at input: the field to pertoperate, output: pertuperated field 
+	   \param[in,out] io at input: the field to pertoperate, output: pertuperated field 
 	   \param shift related current transformation to base the pertuberation on 
 	 */
 	float calculate_pertuberation(C3DFVectorfield& io, const C3DFVectorfield& shift) const;
@@ -125,8 +125,11 @@ public:
 	/// Constructor to create the plug-in with its name 
 	C3DRegTimeStepPlugin(const char *name);
 protected:
+	/// \returns the minimal allowed time step 
 	float get_min_timestep() const;
+	/// \returns the maximum allowed time step 
 	float get_max_timestep() const;
+private: 
 	float m_min;
 	float m_max;
 };

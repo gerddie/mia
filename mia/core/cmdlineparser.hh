@@ -526,12 +526,16 @@ class TPluginHandlerHelpCallback: public CHelpOption::Callback {
 */
 class EXPORT_CORE CCmdOptionList {
 public:
+
+	/**
+	   This enum describes the type of help information that has been requested 
+	*/
 	enum EHelpRequested {
-		hr_no = 0,
-		hr_help,
-		hr_help_xml,
-		hr_usage, 
-		hr_copyright
+		hr_no = 0,    /**< no help has been requested */
+		hr_help,      /**< standard help output has been requested */
+		hr_help_xml,  /**< XML-formatted help has been requested */
+		hr_usage,     /**< a short usage description has been requested */ 
+		hr_copyright  /**< The long copyright information has been requested */
 	};
 
         /**
