@@ -67,6 +67,7 @@ const SLookupInit lookup_init[] = {
 	{IDPatientOrientation, DCM_PatientOrientation, false, false},
 	{IDMediaStorageSOPClassUID, DCM_MediaStorageSOPClassUID, true, true},
 	{IDSOPClassUID, DCM_SOPClassUID, false, false},
+	{IDProtocolName, DCM_ProtocolName, false, false},
 	{IDTestValue, DcmTagKey(), false, false},
 	{NULL, DcmTagKey(), false, false}
 };

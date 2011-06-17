@@ -30,6 +30,7 @@ SET(GSLPP_HEADERS
   multimin.hh
   vector.hh
   vector_template.hh
+  gsldefines.hh
   )
 
 ADD_LIBRARY(miagsl SHARED ${GSLPP_SOURCE})

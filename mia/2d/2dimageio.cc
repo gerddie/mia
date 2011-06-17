@@ -80,6 +80,69 @@ bool  EXPORT_2D save_image(const std::string& filename, P2DImage image)
 	return C2DImageIOPluginHandler::instance().save(filename, out_image_list);
 }
 
+C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string>& filenames)
+{
+	C2DImageGroupedSeries result; 
+	const static string unknown_protocol("Unknown"); 
+	int instance_nr = 0; 
+	
+	for (auto f = filenames.begin(); f != filenames.end(); ++f) {
+		C2DImageIOPluginHandler::Instance::PData  in_image_list =
+			C2DImageIOPluginHandler::instance().load(*f);
+		if (!in_image_list) {
+			cverr() << "load_image_series: File '" << *f 
+				<< "' doesn't provide images this software can read\n"; 
+			continue; 
+		}
+		for (auto i = in_image_list->begin(); i != in_image_list->end(); ++i) {
+			// look for protocol attribute 
+			auto protocol = (*i)->get_attribute_as_string(IDProtocolName); 
+			std::string key = protocol.empty() ? unknown_protocol : protocol;
+			if (result.find(key) == result.end())
+				result[key] = C2DImageSeriesGroup(); 
+			C2DImageSeriesGroup& group = result[key]; 
+
+			// look for acquisition number 
+			auto attr = (*i)->get_attribute(IDAcquisitionNumber); 
+			const CIntAttribute *paq = dynamic_cast<const CIntAttribute *>(attr.get());
+			int aqnr = -1; 
+			if (paq) 
+				aqnr = *paq; 
+			if (group.find(aqnr) == group.end()) 
+				group[aqnr] = C2DImageSeries(); 
+
+			// look for series number, if non exists fake one
+			attr = (*i)->get_attribute(IDInstanceNumber);
+			const CIntAttribute *pinst = dynamic_cast<const CIntAttribute *>(attr.get());
+			int ino; 
+			if (!pinst) {
+				ino = instance_nr++; 
+				(*i)->set_attribute(IDInstanceNumber, PAttribute(new CIntAttribute(ino))); 
+			} else 
+				ino = *pinst; 
+			
+			group[aqnr].push_back(*i); 
+			cvdebug() << "Add '" <<* f  
+				  << "' to Protocol group '" << protocol
+				  << "' with acquisition no. " << aqnr 
+				  << "' and series no. " << ino << "\n"; 
+		}
+	}
+	for (auto g = result.begin(); g != result.end(); ++g) {
+		for (auto aq = g->second.begin(); aq != g->second.end(); ++aq) {
+			sort(aq->second.begin(), aq->second.end(), 
+			     [](const P2DImage& lhs, const P2DImage& rhs) {
+				     const auto lhs_attr = lhs->get_attribute(IDInstanceNumber);
+				     const auto rhs_attr = lhs->get_attribute(IDInstanceNumber);
+				     const int lhs_inr = dynamic_cast<const CIntAttribute&>(*lhs_attr); 
+				     const int rhs_inr = dynamic_cast<const CIntAttribute&>(*rhs_attr); 
+				     return lhs_inr < rhs_inr; 
+			     }); 
+		}
+	}
+	return result; 
+}
+
 EXPORT_2D const char * IDAcquisitionDate =   "AcquisitionDate";
 EXPORT_2D const char * IDImageType =         "ImageType";
 EXPORT_2D const char * IDAcquisitionNumber = "AcquisitionNumber";
@@ -92,5 +155,5 @@ EXPORT_2D const char * IDPatientPosition = "PatientPosition";
 EXPORT_2D const char * IDSmallestImagePixelValue = "SmallestImagePixelValue";
 EXPORT_2D const char * IDLargestImagePixelValue = "LargestImagePixelValue";
 EXPORT_2D const char * IDStudyID = "StudyID";
-
+EXPORT_2D const char * IDProtocolName = "ProtocolName"; 
 NS_MIA_END
