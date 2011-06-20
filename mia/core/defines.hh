@@ -31,7 +31,6 @@
 #ifndef mia_core_defines_hh
 #define mia_core_defines_hh
 
-#include <config.h>
 #include <gsl++/gsldefines.hh>
 #include <tbb/mutex.h>
 

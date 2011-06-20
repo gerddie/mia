@@ -111,31 +111,31 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 			if (group.find(aqnr) == group.end()) 
 				group[aqnr] = C2DImageSeries(); 
 
-			// look for series number, if non exists fake one
-			attr = (*i)->get_attribute(IDInstanceNumber);
-			const CIntAttribute *pinst = dynamic_cast<const CIntAttribute *>(attr.get());
-			int ino; 
+			// look for slice location number, if non exists fake one
+			attr = (*i)->get_attribute(IDSliceLocation);
+			const CFloatAttribute *pinst = dynamic_cast<const CFloatAttribute *>(attr.get());
+			float location; 
 			if (!pinst) {
-				ino = instance_nr++; 
-				(*i)->set_attribute(IDInstanceNumber, PAttribute(new CIntAttribute(ino))); 
+				location = 0.0; 
+				(*i)->set_attribute(IDInstanceNumber, PAttribute(new CIntAttribute(location))); 
 			} else 
-				ino = *pinst; 
+				location = floor(1000.0 * *pinst) / 1000.0; 
 			
 			group[aqnr].push_back(*i); 
 			cvdebug() << "Add '" <<* f  
 				  << "' to Protocol group '" << protocol
 				  << "' with acquisition no. " << aqnr 
-				  << "' and series no. " << ino << "\n"; 
+				  << "' and location no. " << location << "\n"; 
 		}
 	}
 	for (auto g = result.begin(); g != result.end(); ++g) {
 		for (auto aq = g->second.begin(); aq != g->second.end(); ++aq) {
 			sort(aq->second.begin(), aq->second.end(), 
 			     [](const P2DImage& lhs, const P2DImage& rhs) {
-				     const auto lhs_attr = lhs->get_attribute(IDInstanceNumber);
-				     const auto rhs_attr = lhs->get_attribute(IDInstanceNumber);
-				     const int lhs_inr = dynamic_cast<const CIntAttribute&>(*lhs_attr); 
-				     const int rhs_inr = dynamic_cast<const CIntAttribute&>(*rhs_attr); 
+				     const auto lhs_attr = lhs->get_attribute(IDSliceLocation);
+				     const auto rhs_attr = lhs->get_attribute(IDSliceLocation);
+				     const int lhs_inr = dynamic_cast<const CFloatAttribute&>(*lhs_attr); 
+				     const int rhs_inr = dynamic_cast<const CFloatAttribute&>(*rhs_attr); 
 				     return lhs_inr < rhs_inr; 
 			     }); 
 		}

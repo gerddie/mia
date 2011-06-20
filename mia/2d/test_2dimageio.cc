@@ -41,7 +41,7 @@ static P2DImage create_test_image(int acquisition, int instance, const string& p
 	(*image)(0,1) = instance;
 	image->set_attribute(IDProtocolName, protocol); 
 	image->set_attribute(IDAcquisitionNumber, PAttribute(new CIntAttribute(acquisition)));  
-	image->set_attribute(IDInstanceNumber, PAttribute(new CIntAttribute(instance)));  
+	image->set_attribute(IDSliceLocation, PAttribute(new CFloatAttribute(instance)));  
 	return result; 
 }
 

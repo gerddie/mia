@@ -22,7 +22,6 @@
 
 #ifndef mia_gsldefines_hh
 #define mia_gsldefines_hh
-#include <config.h>
 
 #if defined(_MSC_VER)
 #  define DO_EXPORT __declspec(dllexport) 
