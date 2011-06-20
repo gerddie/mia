@@ -122,13 +122,14 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 				location = floor(1000.0 * *pinst) / 1000.0; 
 			
 			group[aqnr].push_back(*i); 
-			cvdebug() << "Add '" <<* f  
+			cvinfo() << "Add '" <<* f  
 				  << "' to Protocol group '" << protocol
 				  << "' with acquisition no. " << aqnr 
 				  << "' and location no. " << location << "\n"; 
 		}
 	}
 	for (auto g = result.begin(); g != result.end(); ++g) {
+		cvinfo() << "Protocol '" << g->first << "'\n"; 
 		for (auto aq = g->second.begin(); aq != g->second.end(); ++aq) {
 			sort(aq->second.begin(), aq->second.end(), 
 			     [](const P2DImage& lhs, const P2DImage& rhs) {
@@ -138,6 +139,7 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 				     const int rhs_inr = dynamic_cast<const CFloatAttribute&>(*rhs_attr); 
 				     return lhs_inr < rhs_inr; 
 			     }); 
+			cvinfo() << "  Acquisition " << aq->first << " with "<< aq->second.size() <<" slices\n"; 
 		}
 	}
 	return result; 
