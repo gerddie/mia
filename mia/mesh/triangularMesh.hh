@@ -41,9 +41,6 @@ class for triangular meshes and some basic algorithms
 #endif
 
 #include <string>
-#include <mia/core/shared_ptr.hh>
-
-// MONA specific
 #include <mia/core/iodata.hh>
 #include <mia/core/ioplugin.hh>
 #include <mia/core/iohandler.hh>

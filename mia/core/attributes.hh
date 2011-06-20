@@ -27,8 +27,8 @@
 
 #include <mia/core/msgstream.hh>
 #include <mia/core/errormacro.hh>
-#include <mia/core/shared_ptr.hh>
 #include <map>
+#include <memory>
 #include <string>
 #include <cstring>
 #include <vector>

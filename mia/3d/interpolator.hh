@@ -1,6 +1,7 @@
-/*
-** Copyrigh (C) 2004 MPI of Human Cognitive and Brain Sience
-**                    Gert Wollny <wollny@cbs.mpg.de>
+/* -*- mia-c++ -*- 
+**
+** Copyrigh (C) 2004-2011 Gert Wollny <gw.fossdev@gmail.com>
+**                    
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -40,7 +41,6 @@
 
 
 #include <vector>
-#include <mia/core/shared_ptr.hh>
 #include <mia/core/interpolator.hh>
 #include <mia/3d/3DImage.hh>
 

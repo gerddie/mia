@@ -22,7 +22,6 @@
  *
  */
 
-#include <mia/core/shared_ptr.hh>
 #include <mia/internal/autotest.hh>
 #include <mia/2d/filter/scale.hh>
 

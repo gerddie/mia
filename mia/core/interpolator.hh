@@ -26,11 +26,9 @@
 
 #include <vector>
 #include <cmath>
-#include <mia/core/shared_ptr.hh>
 #include <mia/core/defines.hh>
 #include <mia/core/dictmap.hh>
-
-#include <boost/lambda/lambda.hpp>
+#include <memory>
 
 NS_MIA_BEGIN
 

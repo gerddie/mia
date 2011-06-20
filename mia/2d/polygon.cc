@@ -51,9 +51,9 @@
 */
 
 #include <vector>
-#include <mia/core/shared_ptr.hh>
-#include <mia/2d/polygon.hh>
+#include <memory>
 #include <mia/core/msgstream.hh>
+#include <mia/2d/polygon.hh>
 #include <mia/2d/distances.hh>
 
 NS_MIA_BEGIN

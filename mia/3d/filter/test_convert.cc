@@ -25,7 +25,6 @@
 #include <mia/internal/autotest.hh>
 #include <boost/mpl/vector.hpp>
 #include <boost/test/test_case_template.hpp>
-#include <mia/core/shared_ptr.hh>
 #include <mia/core/type_traits.hh>
 #include <mia/3d/filter/convert.hh>
 #include <boost/mpl/insert_range.hpp>

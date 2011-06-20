@@ -22,9 +22,7 @@
  *
  */
 
-#include <mia/core/shared_ptr.hh>
 #include <mia/internal/autotest.hh>
-
 #include <mia/core/msgstream.hh>
 #include <mia/3d/filter/mlv.hh>
 

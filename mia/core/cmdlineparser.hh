@@ -26,12 +26,12 @@
 
 #include <vector>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <iostream>
 #include <string>
 #include <iterator>
 #include <mia/core/defines.hh>
-#include <mia/core/shared_ptr.hh>
 #include <mia/core/dictmap.hh>
 #include <mia/core/flagstring.hh>
 

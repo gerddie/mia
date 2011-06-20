@@ -37,7 +37,7 @@ The class holds all types of data stored in two dimensional fields.
 
 
 #include <vector>
-#include <mia/core/shared_ptr.hh>
+#include <memory>
 
 // MIA specific
 #include <mia/2d/defines2d.hh>

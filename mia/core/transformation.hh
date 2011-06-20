@@ -27,7 +27,6 @@
 
 #include <mia/core/iodata.hh>
 
-#include <mia/core/shared_ptr.hh>
 NS_MIA_BEGIN
 
 

@@ -169,7 +169,7 @@ BOOST_FIXTURE_TEST_CASE(test_create_dicom, DicomFixture)
 	image.set_attribute(IDSliceLocation, "1.231");
 	image.set_attribute(IDSmallestImagePixelValue, "10");
 	image.set_attribute(IDLargestImagePixelValue, "2000");
-	image.set_attribute(IDProtocalName, "My Protocol");
+	image.set_attribute(IDProtocolName, "My Protocol");
 
 	CDicomWriter writer(image);
 

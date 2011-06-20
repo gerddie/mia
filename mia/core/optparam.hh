@@ -25,8 +25,7 @@
 #define ph_optparam_hh
 
 #include <ostream>
-
-#include <mia/core/shared_ptr.hh>
+#include <memory>
 
 #include <mia/core/parameter.hh>
 #include <mia/core/optionparser.hh>

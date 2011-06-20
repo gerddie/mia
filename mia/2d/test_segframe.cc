@@ -26,7 +26,6 @@
 #include <mia/internal/autotest.hh>
 
 #include <numeric>
-#include <mia/core/shared_ptr.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/BoundingBox.hh>
 #include <mia/2d/transformfactory.hh>

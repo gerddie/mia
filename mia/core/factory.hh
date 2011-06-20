@@ -36,8 +36,6 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include <mia/core/shared_ptr.hh>
-
 #include <mia/core/handler.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/plugin_base.hh>

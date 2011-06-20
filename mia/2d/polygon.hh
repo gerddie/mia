@@ -26,8 +26,6 @@
 #define mia_2d_polygon_hh
 
 #include <vector>
-#include <mia/core/shared_ptr.hh>
-
 #include <mia/2d/2DVector.hh>
 #include <mia/2d/defines2d.hh>
 

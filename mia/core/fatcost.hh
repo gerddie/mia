@@ -24,10 +24,8 @@
 #ifndef mia_core_fatcost_hh
 #define mia_core_fatcost_hh
 
-#include <mia/core/shared_ptr.hh>
-#include <mia/core/product_base.hh>
 #include <mia/core/defines.hh>
-
+#include <mia/core/product_base.hh>
 
 #ifndef EXPORT_HANDLER
 #  ifdef WIN32

@@ -30,7 +30,6 @@
 #include <vector>
 #include <ostream>
 #include <boost/any.hpp>
-#include <mia/core/shared_ptr.hh>
 #include <boost/filesystem/path.hpp>
 #include <boost/utility.hpp>
 #include <mia/core/utils.hh>

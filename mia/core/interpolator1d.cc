@@ -29,7 +29,6 @@
 
 #include <cassert>
 
-#include <mia/core/shared_ptr.hh>
 #include <mia/core/interpolator1d.hh>
 #include <mia/core/interpolator1d.cxx>
 

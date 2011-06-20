@@ -19,7 +19,6 @@
  */
 
 
-#include <mia/core/shared_ptr.hh>
 #include <mia/internal/autotest.hh>
 #include <dicom/dcm2d.hh>
 #include <dicom/dicom4mia.hh>

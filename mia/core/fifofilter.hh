@@ -28,8 +28,6 @@
 #include <memory>
 #include <cstdlib>
 #include <boost/call_traits.hpp>
-#include <mia/core/shared_ptr.hh>
-
 #include <mia/core/msgstream.hh>
 
 #ifndef EXPORT_HANDLER 

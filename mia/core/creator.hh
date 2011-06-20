@@ -24,7 +24,6 @@
 #ifndef mia_core_creator_hh
 #define mia_core_creator_hh
 
-#include <mia/core/shared_ptr.hh>
 #include <mia/core/pixeltype.hh>
 #include <mia/core/factory.hh>
 #include <mia/core/handler.hh>

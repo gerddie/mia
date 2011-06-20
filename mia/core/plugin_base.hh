@@ -30,7 +30,6 @@
 #include <string>
 #include <ostream>
 
-#include <mia/core/shared_ptr.hh>
 #include <boost/filesystem/path.hpp>
 
 #include <mia/core/defines.hh>

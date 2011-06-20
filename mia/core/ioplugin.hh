@@ -29,7 +29,6 @@
 #include <mia/core/plugin_base.hh>
 #include <mia/core/pixeltype.hh>
 #include <mia/core/iodata.hh>
-#include <mia/core/shared_ptr.hh>
 
 NS_MIA_BEGIN
 

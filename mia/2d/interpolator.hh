@@ -43,9 +43,6 @@
 #define mia_2d_interpolator_hh
 
 #include <vector>
-#include <mia/core/shared_ptr.hh>
-
-#include <mia/core/defines.hh>
 #include <mia/core/interpolator.hh>
 #include <mia/2d/2DImage.hh>
 

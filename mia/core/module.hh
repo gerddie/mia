@@ -24,8 +24,8 @@
 #ifndef ph_modules_hh
 #define ph_modules_hh
 
+#include <memory>
 #include <string>
-#include <mia/core/shared_ptr.hh>
 #include <mia/core/defines.hh>
 #include <mia/core/dlloader.hh>
 

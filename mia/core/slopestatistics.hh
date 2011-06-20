@@ -24,7 +24,7 @@
 #define mia_core_slopestatistics_hh
 
 #include <vector>
-#include <mia/core/shared_ptr.hh>
+#include <memory>
 #include <mia/core/defines.hh>
 
 NS_MIA_BEGIN

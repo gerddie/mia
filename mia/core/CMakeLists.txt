@@ -72,6 +72,7 @@ SET(MIACORE_HEADER_BASE
   dlloader.hh
   dummyhandler.hh
   errormacro.hh
+  export_handler.hh
   factory.hh
   fatcost.hh fatcost.cxx
   file.hh
@@ -84,6 +85,7 @@ SET(MIACORE_HEADER_BASE
   histogram.hh
   index.hh
   interpolator.hh
+  import_handler.hh
   iodata.hh
   iohandler.cxx iohandler.hh
   ioplugin.cxx ioplugin.hh
@@ -111,6 +113,7 @@ SET(MIACORE_HEADER_BASE
   sqmin.hh
   streamredir.hh
   typedescr.hh
+  traits.hh
   testplugin.hh
   threadedmsg.hh
   watch.hh
