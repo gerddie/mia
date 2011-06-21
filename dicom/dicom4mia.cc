@@ -289,14 +289,16 @@ void CDicomReaderData::getPixelData(T2DImage<T>& image)
 
 	if (transfer_syntax == string(UID_LittleEndianImplicitTransferSyntax)) {
 		getPixelData_LittleEndianImplicitTransfer(image);
-	}else if (transfer_syntax == string(UID_JPEGProcess14SV1TransferSyntax)) {
+	} else if (transfer_syntax == string(UID_LittleEndianExplicitTransferSyntax)) {
+		getPixelData_LittleEndianImplicitTransfer(image);
+	} else if (transfer_syntax == string(UID_JPEGProcess14SV1TransferSyntax)) {
 		status = dcm.getDataset()->chooseRepresentation(EXS_LittleEndianExplicit, NULL);
 		OFCondition status = dcm.loadAllDataIntoMemory();
 		if (status.bad()) {
 			THROW(runtime_error, "DICOM: error loading pixel data:"<< status.text());
 		}
 		getPixelData_LittleEndianImplicitTransfer(image);
-	}else {
+	} else {
 		THROW(invalid_argument, "Unsupported transfer syntax:'" << transfer_syntax << "'");
 	}
 }
