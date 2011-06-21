@@ -34,9 +34,11 @@ public:
 	virtual ~CProgressCallback(); 
 	void set_range(int range); 
 	void update(int step);
+	void pulse();
 private:
 	virtual void do_update(int step) = 0;
 	virtual void do_set_range(int range) = 0; 
+	virtual void do_pulse() = 0;
 }; 
 
 class CMsgStreamPrintCallback: public CProgressCallback {
@@ -46,6 +48,8 @@ public:
 private: 
 	virtual void do_update(int step);
 	virtual void do_set_range(int range); 
+	virtual void do_pulse();
+	
 	struct CMsgStreamPrintCallbackImpl *impl; 
 }; 
 

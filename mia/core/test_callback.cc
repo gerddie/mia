@@ -34,4 +34,8 @@ BOOST_AUTO_TEST_CASE( test_callback )
 	for (size_t i = 0; i < 100; i++) {
 		cb.update(i); 
 	}
+	for (size_t i = 0; i < 10; i++) {
+		cb.pulse(); 
+	}
+
 }

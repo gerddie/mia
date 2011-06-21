@@ -41,6 +41,12 @@ void CProgressCallback::set_range(int range)
 	do_set_range(range); 
 }
 
+void CProgressCallback::pulse() 
+{
+	do_pulse(); 
+}
+
+
 struct CMsgStreamPrintCallbackImpl {
 	CMsgStreamPrintCallbackImpl(const std::string& f); 
 	boost::format format; 
@@ -69,6 +75,11 @@ void CMsgStreamPrintCallback::do_update(int step)
 	impl->format % step % impl->range; 
 	auto str = impl->format.str(); 
 	cvmsg() << str << "\r"; 
+}
+
+void CMsgStreamPrintCallback::do_pulse()
+{
+	cverb << '.'; 
 }
 
 CMsgStreamPrintCallbackImpl::CMsgStreamPrintCallbackImpl(const std::string& f):
