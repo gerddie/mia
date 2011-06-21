@@ -92,8 +92,10 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 		cb->set_range(filenames.size()); 
 	for (auto f = filenames.begin(); f != filenames.end(); ++f, ++step) {
 		// give some feedback 
-		if (cb)
+		if (cb && ! (step & 0x1f) ) {
+			
 			cb->update(step); 
+		}
 		
 		C2DImageIOPluginHandler::Instance::PData  in_image_list =
 			C2DImageIOPluginHandler::instance().load(*f);
