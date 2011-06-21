@@ -102,7 +102,7 @@ struct CDicomReaderData {
 	void getPixelData(T2DImage<T>& image);
 
 	template <typename T>
-	void getPixelData_LittleEndianImplicitTransfer(T2DImage<T>& image);
+	void getPixelData_LittleEndianExplicitTransfer(T2DImage<T>& image);
 
 
 	C2DFVector getPixelSize();
@@ -255,7 +255,7 @@ string CDicomReaderData::getAttribute(const string& key, bool required)
 }
 
 template <typename T>
-void CDicomReaderData::getPixelData_LittleEndianImplicitTransfer(T2DImage<T>& image)
+void CDicomReaderData::getPixelData_LittleEndianExplicitTransfer(T2DImage<T>& image)
 {
 	OFCondition status = dcm.loadAllDataIntoMemory();
 	if (status.bad()) {
@@ -284,23 +284,14 @@ void CDicomReaderData::getPixelData(T2DImage<T>& image)
 	if (success.bad()) {
 		THROW(runtime_error, "Unable to determine transfer syntax");
 	}
-
-	string transfer_syntax(of_transfer_syntax.data());
-
-	if (transfer_syntax == string(UID_LittleEndianImplicitTransferSyntax)) {
-		getPixelData_LittleEndianImplicitTransfer(image);
-	} else if (transfer_syntax == string(UID_LittleEndianExplicitTransferSyntax)) {
-		getPixelData_LittleEndianImplicitTransfer(image);
-	} else if (transfer_syntax == string(UID_JPEGProcess14SV1TransferSyntax)) {
-		status = dcm.getDataset()->chooseRepresentation(EXS_LittleEndianExplicit, NULL);
-		OFCondition status = dcm.loadAllDataIntoMemory();
-		if (status.bad()) {
-			THROW(runtime_error, "DICOM: error loading pixel data:"<< status.text());
-		}
-		getPixelData_LittleEndianImplicitTransfer(image);
-	} else {
-		THROW(invalid_argument, "Unsupported transfer syntax:'" << transfer_syntax << "'");
+	dcm.getDataset()->chooseRepresentation(EXS_LittleEndianExplicit, NULL);
+	
+	if (!dcm.getDataset()->canWriteXfer(EXS_LittleEndianExplicit)) {
+		string transfer_syntax(of_transfer_syntax.data());
+		THROW(runtime_error, "DICOM: Unsupported data encoding '" <<  transfer_syntax << "'");
 	}
+
+	getPixelData_LittleEndianExplicitTransfer(image);
 }
 
 C2DFVector CDicomReaderData::getPixelSize()
