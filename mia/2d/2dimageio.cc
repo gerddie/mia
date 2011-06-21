@@ -80,13 +80,21 @@ bool  EXPORT_2D save_image(const std::string& filename, P2DImage image)
 	return C2DImageIOPluginHandler::instance().save(filename, out_image_list);
 }
 
-C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string>& filenames)
+C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string>& filenames, 
+						   CProgressCallback *cb)
 {
 	C2DImageGroupedSeries result; 
 	const static string unknown_protocol("Unknown"); 
 	int instance_nr = 0; 
 	
-	for (auto f = filenames.begin(); f != filenames.end(); ++f) {
+	int step = 0; 
+	if (cb) 
+		cb->set_range(filenames.size()); 
+	for (auto f = filenames.begin(); f != filenames.end(); ++f, ++step) {
+		// give some feedback 
+		if (cb)
+			cb->update(step); 
+		
 		C2DImageIOPluginHandler::Instance::PData  in_image_list =
 			C2DImageIOPluginHandler::instance().load(*f);
 		if (!in_image_list) {

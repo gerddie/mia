@@ -28,7 +28,7 @@
 #include <vector>
 #include <mia/core/ioplugin.hh>
 #include <mia/core/iohandler.hh>
-#include <mia/core/iohandler.hh>
+#include <mia/core/callback.hh>
 
 #include <mia/2d/2DImage.hh>
 
@@ -124,10 +124,12 @@ bool  EXPORT_2D save_image(const std::string& filename, P2DImage image);
    If these parameters are not available, then the order of the input files is used
    to sort the files but no grouping takes place. 
    \param filenames list of file names 
+   \param cb optionally provide a call back function that shows loading progress
    \returns grouped set of files. 
 */
 
-C2DImageGroupedSeries EXPORT_2D load_image_series(const std::vector<std::string>& filenames); 
+C2DImageGroupedSeries EXPORT_2D load_image_series(const std::vector<std::string>& filenames, 
+						  CProgressCallback *cb = NULL); 
 
 
 /**

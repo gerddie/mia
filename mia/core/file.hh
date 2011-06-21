@@ -111,21 +111,6 @@ public:
 	COutputFile(const std::string& filename, bool from_stdin);
 };
 
-/** 
-    \brief A callback interface to show progess. 
-    
-    This class provides the base for showing sime kind of progress bar during some operation 
-*/
-class EXPORT_CORE CProgressCallback {
-public:
-	virtual ~CProgressCallback();
-	/** this routine shows the progress
-	    \param pos current file io position
-	    \param length file size
-	*/
-	virtual void show_progress(int pos, int length);
-};
-
 NS_MIA_END
 
 #endif
