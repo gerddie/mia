@@ -78,23 +78,23 @@ BOOST_AUTO_TEST_CASE( test_load_series )
 	// proto 1 has 2 acquisitions 
 	BOOST_CHECK_EQUAL(proto1->second.size(), 2u);
 	
-	BOOST_CHECK_EQUAL(proto1->second[1].size(), 5u);
-	BOOST_CHECK_EQUAL(proto1->second[2].size(), 1u);
+	BOOST_CHECK_EQUAL(proto1->second[0].size(), 5u);
+	BOOST_CHECK_EQUAL(proto1->second[1].size(), 1u);
 	
 
 	auto proto2 = images.find("proto2"); 
 	BOOST_REQUIRE(proto2 !=  images.end()); 
 	BOOST_CHECK_EQUAL(proto2->second.size(), 3u);
 	
-	BOOST_CHECK_EQUAL(proto2->second[1].size(), 2u);
+	BOOST_CHECK_EQUAL(proto2->second[0].size(), 2u);
+	BOOST_CHECK_EQUAL(proto2->second[1].size(), 1u);
 	BOOST_CHECK_EQUAL(proto2->second[2].size(), 1u);
-	BOOST_CHECK_EQUAL(proto2->second[3].size(), 1u);
 
 	auto proto3 = images.find("proto3"); 
 	BOOST_REQUIRE(proto3 !=  images.end()); 
 
 	BOOST_CHECK_EQUAL(proto3->second.size(), 1u);
-	BOOST_CHECK_EQUAL(proto3->second[1].size(), 2u);
+	BOOST_CHECK_EQUAL(proto3->second[0].size(), 2u);
 
 	BOOST_CHECK(images.find("proto4") ==  images.end()); 
 	

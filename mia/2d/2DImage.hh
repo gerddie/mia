@@ -101,7 +101,7 @@ typedef C2DImage::Pointer P2DImage;
 /// helper type for image series 
 typedef std::vector<P2DImage> C2DImageSeries;
 
-typedef std::map<int, C2DImageSeries> C2DImageSeriesGroup; 
+typedef std::vector<C2DImageSeries> C2DImageSeriesGroup; 
 typedef std::map<std::string, C2DImageSeriesGroup> C2DImageGroupedSeries; 
 
 

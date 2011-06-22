@@ -83,7 +83,11 @@ bool  EXPORT_2D save_image(const std::string& filename, P2DImage image)
 C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string>& filenames, 
 						   CProgressCallback *cb)
 {
-	C2DImageGroupedSeries result; 
+	typedef map<int, C2DImageSeries> C2DImageSeriesGroupHelper; 
+	typedef map<string, C2DImageSeriesGroupHelper> C2DImageGroupedSeriesHelper; 
+
+
+	C2DImageGroupedSeriesHelper collector; 
 	const static string unknown_protocol("Unknown"); 
 	int instance_nr = 0; 
 	
@@ -92,10 +96,8 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 		cb->set_range(filenames.size()); 
 	for (auto f = filenames.begin(); f != filenames.end(); ++f, ++step) {
 		// give some feedback 
-		if (cb && ! (step & 0x1f) ) {
-			
+		if (cb && ! (step & 0x1f) )
 			cb->update(step); 
-		}
 		
 		C2DImageIOPluginHandler::Instance::PData  in_image_list =
 			C2DImageIOPluginHandler::instance().load(*f);
@@ -108,9 +110,9 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 			// look for protocol attribute 
 			auto protocol = (*i)->get_attribute_as_string(IDProtocolName); 
 			std::string key = protocol.empty() ? unknown_protocol : protocol;
-			if (result.find(key) == result.end())
-				result[key] = C2DImageSeriesGroup(); 
-			C2DImageSeriesGroup& group = result[key]; 
+			if (collector.find(key) == collector.end())
+				collector[key] = C2DImageSeriesGroupHelper(); 
+			C2DImageSeriesGroupHelper& group = collector[key]; 
 
 			// look for acquisition number 
 			auto attr = (*i)->get_attribute(IDAcquisitionNumber); 
@@ -138,9 +140,13 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 				  << "' and location no. " << location << "\n"; 
 		}
 	}
-	for (auto g = result.begin(); g != result.end(); ++g) {
+	// now sort the slices and move the groups to a zero-index based vector 
+	C2DImageGroupedSeries result; 
+	for (auto g = collector.begin(); g != collector.end(); ++g) {
 		cvinfo() << "Protocol '" << g->first << "'\n"; 
-		for (auto aq = g->second.begin(); aq != g->second.end(); ++aq) {
+		int gi = 0; 
+		C2DImageSeriesGroup group(g->second.size()); 
+		for (auto aq = g->second.begin(); aq != g->second.end(); ++aq, ++gi) {
 			sort(aq->second.begin(), aq->second.end(), 
 			     [](const P2DImage& lhs, const P2DImage& rhs) {
 				     const auto lhs_attr = lhs->get_attribute(IDSliceLocation);
@@ -150,7 +156,9 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 				     return lhs_inr < rhs_inr; 
 			     }); 
 			cvinfo() << "  Acquisition " << aq->first << " with "<< aq->second.size() <<" slices\n"; 
+			group[gi] = aq->second; 
 		}
+		result[g->first] = group; 
 	}
 	return result; 
 }
