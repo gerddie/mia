@@ -22,6 +22,7 @@
  */
 
 #include <limits>
+#include <cmath>
 #include <mia/core/seriesstats.hh>
 
 NS_MIA_BEGIN
@@ -45,7 +46,7 @@ void FIntensityStatsAccumulator::finalize()
 	if (m_stats.n > 0) 
 		m_stats.mean = m_stats.sum / m_stats.n; 
 	if (m_stats.n > 1) 
-		m_stats.variation = ( m_stats.sumsq - m_stats.sum * m_stats.mean) / (m_stats.n - 1);
+		m_stats.variation = sqrt(( m_stats.sumsq - m_stats.sum * m_stats.mean) / (m_stats.n - 1));
 }
 
 const SIntensityStats& FIntensityStatsAccumulator::get_result() const

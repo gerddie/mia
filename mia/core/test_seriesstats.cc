@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE( test_seriesstats )
 	BOOST_CHECK_EQUAL(result.max, 6); 
 	
 	BOOST_CHECK_CLOSE(result.mean, 45.0/13.0, 0.001); 
-	BOOST_CHECK_CLOSE(result.variation, 2.6025641026, 0.001); 
+	BOOST_CHECK_CLOSE(result.variation, sqrt(2.6025641026), 0.001); 
 	
 	
 	
