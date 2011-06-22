@@ -151,8 +151,8 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 			     [](const P2DImage& lhs, const P2DImage& rhs) {
 				     const auto lhs_attr = lhs->get_attribute(IDSliceLocation);
 				     const auto rhs_attr = lhs->get_attribute(IDSliceLocation);
-				     const int lhs_inr = dynamic_cast<const CFloatAttribute&>(*lhs_attr); 
-				     const int rhs_inr = dynamic_cast<const CFloatAttribute&>(*rhs_attr); 
+				     const float lhs_inr = dynamic_cast<const CFloatAttribute&>(*lhs_attr); 
+				     const float rhs_inr = dynamic_cast<const CFloatAttribute&>(*rhs_attr); 
 				     return lhs_inr < rhs_inr; 
 			     }); 
 			cvinfo() << "  Acquisition " << aq->first << " with "<< aq->second.size() <<" slices\n"; 
