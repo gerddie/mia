@@ -84,7 +84,8 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 						   CProgressCallback *cb)
 {
 	typedef map<int, C2DImageSeries> C2DImageSeriesGroupHelper; 
-	typedef map<string, C2DImageSeriesGroupHelper> C2DImageGroupedSeriesHelper; 
+	typedef map<int, C2DImageSeriesGroupHelper> C2DGroupSeriesHelper; 
+	typedef map<string, C2DGroupSeriesHelper> C2DImageGroupedSeriesHelper; 
 
 
 	C2DImageGroupedSeriesHelper collector; 
@@ -111,8 +112,19 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 			auto protocol = (*i)->get_attribute_as_string(IDProtocolName); 
 			std::string key = protocol.empty() ? unknown_protocol : protocol;
 			if (collector.find(key) == collector.end())
-				collector[key] = C2DImageSeriesGroupHelper(); 
-			C2DImageSeriesGroupHelper& group = collector[key]; 
+				collector[key] = C2DGroupSeriesHelper(); 
+			C2DGroupSeriesHelper& group = collector[key]; 
+
+			// look for series number 
+			auto seriesnr = (*i)->get_attribute(IDSeriesNumber);
+			const CIntAttribute *psn = dynamic_cast<const CIntAttribute *>(seriesnr.get());
+			int saqnr = -1; 
+			if (psn) 
+				saqnr = *psn; 
+
+			if (group.find(saqnr) == group.end())
+				group[saqnr] = C2DImageSeriesGroupHelper(); 
+			C2DImageSeriesGroupHelper& subgroup = group[saqnr]; 
 
 			// look for acquisition number 
 			auto attr = (*i)->get_attribute(IDAcquisitionNumber); 
@@ -120,9 +132,9 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 			int aqnr = -1; 
 			if (paq) 
 				aqnr = *paq; 
-			if (group.find(aqnr) == group.end()) 
-				group[aqnr] = C2DImageSeries(); 
-
+			if (subgroup.find(aqnr) == subgroup.end()) 
+				subgroup[aqnr] = C2DImageSeries(); 
+			
 			// look for slice location number, if non exists fake one
 			attr = (*i)->get_attribute(IDSliceLocation);
 			const CFloatAttribute *pinst = dynamic_cast<const CFloatAttribute *>(attr.get());
@@ -133,7 +145,7 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 			} else 
 				location = floor(1000.0 * *pinst) / 1000.0; 
 			
-			group[aqnr].push_back(*i); 
+			subgroup[aqnr].push_back(*i); 
 			cvinfo() << "Add '" <<* f  
 				  << "' to Protocol group '" << protocol
 				  << "' with acquisition no. " << aqnr 
@@ -144,21 +156,22 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 	C2DImageGroupedSeries result; 
 	for (auto g = collector.begin(); g != collector.end(); ++g) {
 		cvinfo() << "Protocol '" << g->first << "'\n"; 
-		int gi = 0; 
-		C2DImageSeriesGroup group(g->second.size()); 
-		for (auto aq = g->second.begin(); aq != g->second.end(); ++aq, ++gi) {
-			sort(aq->second.begin(), aq->second.end(), 
-			     [](const P2DImage& lhs, const P2DImage& rhs) {
-				     const auto lhs_attr = lhs->get_attribute(IDSliceLocation);
-				     const auto rhs_attr = lhs->get_attribute(IDSliceLocation);
-				     const float lhs_inr = dynamic_cast<const CFloatAttribute&>(*lhs_attr); 
-				     const float rhs_inr = dynamic_cast<const CFloatAttribute&>(*rhs_attr); 
-				     return lhs_inr < rhs_inr; 
-			     }); 
-			cvinfo() << "  Acquisition " << aq->first << " with "<< aq->second.size() <<" slices\n"; 
-			group[gi] = aq->second; 
+		C2DImageSeriesGroup group; 
+		for (auto saq = g->second.begin(); saq != g->second.end(); ++saq) {
+			for (auto aq = saq->second.begin(); aq != saq->second.end(); ++aq) {
+				sort(aq->second.begin(), aq->second.end(), 
+				     [](const P2DImage& lhs, const P2DImage& rhs) {
+					     const auto lhs_attr = lhs->get_attribute(IDSliceLocation);
+					     const auto rhs_attr = rhs->get_attribute(IDSliceLocation);
+					     const float lhs_inr = dynamic_cast<const CFloatAttribute&>(*lhs_attr); 
+					     const float rhs_inr = dynamic_cast<const CFloatAttribute&>(*rhs_attr); 
+					     return lhs_inr < rhs_inr; 
+				     }); 
+				cvinfo() << "  Acquisition " << aq->first << " with "<< aq->second.size() <<" slices\n"; 
+				group.push_back(aq->second); 
+			}
+			result[g->first] = group; 
 		}
-		result[g->first] = group; 
 	}
 	return result; 
 }
