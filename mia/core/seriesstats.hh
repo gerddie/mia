@@ -30,6 +30,10 @@
 
 NS_MIA_BEGIN
 
+/**
+   \brief data structure to store te results of a statistical analyis of images 
+ */
+
 struct SIntensityStats {
 	double sum; 
 	double sumsq; 
@@ -40,6 +44,14 @@ struct SIntensityStats {
 	size_t n; 
 }; 
 
+/**
+   \brief Functor to accumulate statistics of data. 
+   
+   This functior is used to accumulate the statistics over the data various 
+   containers or images. 
+
+ */
+
 class FIntensityStatsAccumulator : public TFilter<void> {
 public: 
 	FIntensityStatsAccumulator(); 
@@ -47,16 +59,16 @@ public:
 	template <typename Container> 
 	void operator () ( const Container& data); 
 	
-	void finalize(); 
-
 	const SIntensityStats& get_result() const; 
 private: 
-	SIntensityStats m_stats; 
+	mutable SIntensityStats m_stats; 
+	mutable bool m_stats_valid; 
 };  
 
 template <typename Container> 
 void FIntensityStatsAccumulator::operator () ( const Container& data)
 {
+	m_stats_valid = false; 
 	m_stats.n += data.size(); 
 	for (auto i = data.begin(); i != data.end(); ++i) {
 		m_stats.sum += *i; 

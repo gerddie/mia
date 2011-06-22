@@ -30,7 +30,8 @@ NS_MIA_BEGIN
 using std::numeric_limits; 
 
 
-FIntensityStatsAccumulator::FIntensityStatsAccumulator()
+FIntensityStatsAccumulator::FIntensityStatsAccumulator():
+	m_stats_valid(false)
 {
 	m_stats.sum = 0; 
 	m_stats.sumsq = 0;
@@ -41,16 +42,15 @@ FIntensityStatsAccumulator::FIntensityStatsAccumulator()
 	m_stats.n = 0; 
 }
 		
-void FIntensityStatsAccumulator::finalize()
-{
-	if (m_stats.n > 0) 
-		m_stats.mean = m_stats.sum / m_stats.n; 
-	if (m_stats.n > 1) 
-		m_stats.variation = sqrt(( m_stats.sumsq - m_stats.sum * m_stats.mean) / (m_stats.n - 1));
-}
-
 const SIntensityStats& FIntensityStatsAccumulator::get_result() const
 {
+	if (!m_stats_valid) {
+		if (m_stats.n > 0) 
+			m_stats.mean = m_stats.sum / m_stats.n; 
+		if (m_stats.n > 1) 
+			m_stats.variation = sqrt(( m_stats.sumsq - m_stats.sum * m_stats.mean) / (m_stats.n - 1));
+		m_stats_valid = true; 
+	}
 	return m_stats; 
 }
 

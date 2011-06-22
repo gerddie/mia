@@ -38,8 +38,6 @@ BOOST_AUTO_TEST_CASE( test_seriesstats )
 	acc(b); 
 	acc(a); 
 
-	acc.finalize(); 
-
 	auto result = acc.get_result(); 
 
 	BOOST_CHECK_EQUAL(result.n, 2 * a.size() + b.size()); 
