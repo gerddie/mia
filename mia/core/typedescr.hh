@@ -34,7 +34,7 @@ NS_MIA_BEGIN
  */
 struct EXPORT_CORE timestep_type {
 	/// value for plug-in search path component 
-	static const char *value;
+	static const char *type_descr;
 };
 
 

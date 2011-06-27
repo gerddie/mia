@@ -39,7 +39,7 @@ NS_MIA_BEGIN
 /// plugin-helper structure 
 struct EXPORT_2D cst2d_kernel {
 	/// plugin path helper value 
-	static const char *value;
+	static const char *type_descr;
 };
 
 /**

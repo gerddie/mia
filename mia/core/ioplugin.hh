@@ -33,7 +33,7 @@
 NS_MIA_BEGIN
 
 struct EXPORT_CORE io_plugin_type {
-	static  const char *value;
+	static  const char *type_descr;
 
 };
 

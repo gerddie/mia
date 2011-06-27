@@ -41,7 +41,7 @@ public:
 	typedef TFullCost<Transform> plugin_type;
 
 	static const char *type_descr;
-	static const char *value;
+	static const char *data_descr;
 
 	typedef std::shared_ptr<TFullCost<Transform> > Pointer; 
 	

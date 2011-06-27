@@ -252,7 +252,7 @@ P3DImage C3DTransformation::apply(const C3DImage& input, const C3DInterpolatorFa
 
 }
 
-const char *C3DTransformation::type_descr = "3dtransform";
+const char *C3DTransformation::data_descr = "3dtransform";
 const char *C3DTransformation::dim_descr = "3d";
 
 NS_MIA_END

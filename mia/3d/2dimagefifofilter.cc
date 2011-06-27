@@ -54,7 +54,7 @@
 
 NS_MIA_BEGIN
 
-const char *image2d_stack::type_descr = "2dstack";
+const char *image2d_stack::data_descr = "2dstack";
 
 C2DImageFifoFilter::C2DImageFifoFilter(size_t fill, size_t min_fill, size_t read_start):
 	TFifoFilter<P2DImage>(fill, min_fill, read_start)

@@ -257,7 +257,7 @@ typename TPluginHandler<I>::Interface *TPluginHandler<I>::plugin(const char *plu
 	if (p == m_plugins.end()) {
 		stringstream msg; 
 		msg << "Plugin '" << plugin << "' not found in '" 
-		    << I::PlugType::value << "/" <<  I::PlugData::type_descr << "'\n"
+		    << I::PlugType::type_descr << "/" <<  I::PlugData::data_descr << "'\n"
 		    << " With search path\n"
 		    << "    '" << get_plugin_root(); 
 		throw invalid_argument(msg.str()); 

@@ -39,8 +39,8 @@ using namespace std;
 
 const float g_far = numeric_limits<float>::max(); 
 
-const char * const C2DStackDistanceTransform::value = "dt"; 
-const char * const C2DStackDistanceTransform::type_descr = "stack2d"; 
+const char * const C2DStackDistanceTransform::type_descr = "dt"; 
+const char * const C2DStackDistanceTransform::data_descr = "stack2d"; 
 
 
 C2DStackDistanceTransform *C2DStackDistanceTransform::clone() const 

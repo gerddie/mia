@@ -52,14 +52,14 @@ public:
 };
 
 ///@cond LAZY 
-struct io_3dvf_type {
+struct io_3dvf_data {
 	typedef  C3DIOVectorfield type;
-	static const char *type_descr;
+	static const char *data_descr;
 };
 ///@endcond 
 
 /// Base class for vector field IO plug-ins 
-typedef TIOPlugin<io_3dvf_type> C3DVFIOPlugin;
+typedef TIOPlugin<io_3dvf_data> C3DVFIOPlugin;
 
 /// Plug-in handler for vector field IO 
 typedef THandlerSingleton<TIOPluginHandler<C3DVFIOPlugin> > C3DVFIOPluginHandler;

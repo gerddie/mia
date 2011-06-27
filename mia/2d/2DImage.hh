@@ -48,7 +48,7 @@ class EXPORT_2D C2DImage: public CAttributedData {
 public:
 	/** The type description provides information about the data type that is
         used by the plug-in system */
-        static const char *type_descr;
+        static const char *data_descr;
 
         /// a definition of the image dimension type for
 	typedef C2DBounds dimsize_type;

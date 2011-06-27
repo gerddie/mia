@@ -25,6 +25,6 @@
 
 NS_MIA_BEGIN
 
-const char *regmodel_type::value = "model";
+const char *regmodel_type::type_descr = "model";
 
 NS_MIA_END

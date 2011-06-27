@@ -62,7 +62,7 @@ public:
 
 struct io_2dvf_type {
 	typedef  C2DIOVectorfield type;
-	static const char *type_descr;
+	static const char *data_descr;
 };
 
 /// Base class for 2D vector field IO plugins 

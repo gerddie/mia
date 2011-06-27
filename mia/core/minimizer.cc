@@ -45,8 +45,8 @@
 
 NS_MIA_BEGIN
 
-const char *const CMinimizer::value = "minimizer"; 
-const char *const CMinimizer::type_descr = "singlecost"; 
+const char *const CMinimizer::type_descr = "minimizer"; 
+const char *const CMinimizer::data_descr = "singlecost"; 
 
 
 size_t CMinimizer::Problem::size() const

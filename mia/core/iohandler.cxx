@@ -100,7 +100,7 @@ TIOPluginHandler<I>::preferred_plugin(const std::string& fname) const
 	if (p != m_suffixmap.end())
 		return *this->plugin(p->second.c_str());
 	THROW(invalid_argument, "No plugin from '"
-	      << I::PlugType::value << "/" <<  I::PlugData::type_descr
+	      << I::PlugType::type_descr << "/" <<  I::PlugData::data_descr
 	      << "' corresponds to suffix '" <<  fsuffix << "' supported suffixes:" 
 	      << get_supported_suffixes()); 
 }

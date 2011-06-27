@@ -45,7 +45,7 @@ class Transformation :public CIOData {
 public: 
 
 	/// interface type for plugin implementation and search 
-	static const char *value; 
+	static const char *type_descr; 
 	
         virtual ~Transformation(); 
 
@@ -80,7 +80,7 @@ std::shared_ptr<D > Transformation<D,I>::operator() (const D& input, const I& ip
 }
 
 template <typename D, typename I>
-const char *Transformation<D, I>::value = "transform";
+const char *Transformation<D, I>::type_descr = "transform";
 
 NS_MIA_END
 

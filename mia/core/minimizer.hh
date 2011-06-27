@@ -57,10 +57,10 @@ public:
 	}; 
 
 	/// plug-in searchpath helper
-	static const char *const value; 
+	static const char *const type_descr; 
 	
 	/// plug-in searchpath helper
-	static const char *const type_descr; 
+	static const char *const data_descr; 
 	
 	/**
 	   \brief Base class for all optimization problems that can be run 

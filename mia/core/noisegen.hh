@@ -32,12 +32,12 @@
 NS_MIA_BEGIN
 
 struct EXPORT_CORE grayscale_noise_data {
-	static const char *type_descr;
+	static const char *data_descr;
 };
 
 
 struct EXPORT_CORE generator_type {
-	static const char *value;
+	static const char *type_descr;
 };
 
 /**

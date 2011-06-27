@@ -25,8 +25,8 @@
 
 NS_MIA_BEGIN
 
-const char *combiner_type::value = "combiner";
-const char *filter_type::value = "filter";
+const char *combiner_type::type_descr = "combiner";
+const char *filter_type::type_descr = "filter";
 
 
 NS_MIA_END

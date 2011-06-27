@@ -59,7 +59,7 @@ protected:
 	C3DImage();
 public:
 	/// data type description for the plug-in path component 
-	static const char *type_descr;
+	static const char *data_descr;
 	
 	/// generic type for the dimension of the image 
 	typedef C3DBounds dimsize_type;

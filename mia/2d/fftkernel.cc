@@ -38,7 +38,7 @@
 
 NS_MIA_BEGIN
 
-const char* fft2d_kernel_data::type_descr = "fft2d";
+const char* fft2d_kernel_data::data_descr = "fft2d";
 
 CFFT2DKernel::CFFT2DKernel():
 	m_size(0,0),

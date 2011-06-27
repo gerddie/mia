@@ -56,7 +56,7 @@ public:
 	typedef C3DInterpolatorFactory InterpolatorFactory;
 	typedef C3DTransformation type; 
 	typedef std::shared_ptr<C3DTransformation> Pointer; 
-	static const char *type_descr;
+	static const char *data_descr;
 	static const char *dim_descr;
 	/// @endcond 
 protected: 

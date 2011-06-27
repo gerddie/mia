@@ -32,7 +32,7 @@
 NS_MIA_BEGIN
 
 struct EXPORT_CORE creator_type {
-	static const char *value;
+	static const char *type_descr;
 };
 
 /**

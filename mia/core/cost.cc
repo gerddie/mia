@@ -27,7 +27,7 @@
 
 NS_MIA_BEGIN
 
-const char *cost_type::value = "cost";
+const char *cost_type::type_descr = "cost";
 
 NS_MIA_END
 

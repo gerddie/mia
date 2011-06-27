@@ -24,10 +24,10 @@
 NS_MIA_BEGIN
 
 template <typename T> 
-const char *TFullCost<T>::type_descr = T::dim_descr; 
+const char *TFullCost<T>::data_descr = T::dim_descr; 
 
 template <typename T> 
-const char *TFullCost<T>::value = "fullcost";
+const char *TFullCost<T>::type_descr = "fullcost";
 
 template <typename T> 
 TFullCost<T>::TFullCost(double weight):

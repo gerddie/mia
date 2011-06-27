@@ -49,7 +49,7 @@ public:
 class EXPORT_2D io_2dimage_type {
 public:
 	typedef  C2DImageVector type;
-	static const char *type_descr;
+	static const char *data_descr;
 };
 
 /// Base type for 2D image IO plugins 

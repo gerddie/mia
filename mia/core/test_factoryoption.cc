@@ -38,7 +38,7 @@ public:
 	typedef CProductMock plugin_type; 
 	typedef CProductMock plugin_data; 
 
-	static const char *value; 
+	static const char *data_descr; 
 	static const char *type_descr; 
 	CProductMock(const char *s):m_value(s){
 	}; 
@@ -46,8 +46,8 @@ private:
 	string m_value;
 }; 
 
-const char *CProductMock::value ="mock";  
-const char *CProductMock::type_descr ="product";  
+const char *CProductMock::type_descr ="mock";  
+const char *CProductMock::data_descr ="product";  
 
 class CFactoryMock: public TFactory<CProductMock>  {
 public: 

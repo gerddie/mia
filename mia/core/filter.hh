@@ -35,11 +35,11 @@
 NS_MIA_BEGIN
 
 struct EXPORT_CORE combiner_type {
-	static const char *value;
+	static const char *type_descr;
 };
 
 struct EXPORT_CORE filter_type {
-	static const char *value;
+	static const char *type_descr;
 };
 
 #define DC(T, D) dynamic_cast<const T&>(D)

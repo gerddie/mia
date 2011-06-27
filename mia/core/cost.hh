@@ -41,7 +41,7 @@ NS_MIA_BEGIN
 /// plugin helper type
 struct EXPORT_CORE cost_type {
 	/// plugin path helper variable 
-	static const char *value;
+	static const char *type_descr;
 };
 
 

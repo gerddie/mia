@@ -49,8 +49,8 @@
 NS_MIA_BEGIN
 
 
-const char *grayscale_noise_data::type_descr = "noise";
-const char *generator_type::value = "generator";
+const char *grayscale_noise_data::data_descr = "noise";
+const char *generator_type::type_descr = "generator";
 
 CNoiseGenerator::CNoiseGenerator(unsigned int seed)
 {

@@ -37,8 +37,8 @@ template <typename D, typename T>
 void TPlugin<D, T>::get_help(std::ostream& os) const
 {
 	os << "\nPlugin: "<< get_name() << "\n";
-	os << " Type: " << T::value << "\n"
-	   << " Data: " << D::type_descr << "\n";
+	os << " Type: " << T::type_descr << "\n"
+	   << " Data: " << D::data_descr << "\n";
 	os << " Description: " << get_descr() << "\n";
 	CPluginBase::get_help(os);
 	os  << "\n";
@@ -48,15 +48,15 @@ template <typename D, typename T>
 const std::string TPlugin<D, T>::get_long_name() const
 {
 	std::stringstream msg;
-	msg << get_name() << '-' << T::value << '-' << D::type_descr;
+	msg << get_name() << '-' << T::type_descr << '-' << D::data_descr;
 	return msg.str();
 }
 
 template <typename D, typename T>
 ::boost::filesystem::path TPlugin<D, T>::search_path()
 {
-	return ::boost::filesystem::path(T::value) /
-		::boost::filesystem::path(D::type_descr);
+	return ::boost::filesystem::path(T::type_descr) /
+		::boost::filesystem::path(D::data_descr);
 }
 
 

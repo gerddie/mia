@@ -38,7 +38,7 @@ template <typename T>
 class EXPORT_2D T2DVectorfield: public T2DDatafield<T>, public CAttributedData {
 public:
 	/// plug.in related type description string 
-	static const char *type_descr;
+	static const char *data_descr;
 
 	T2DVectorfield(){};
 

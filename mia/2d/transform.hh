@@ -62,7 +62,7 @@ public:
 	typedef std::shared_ptr<C2DTransformation > Pointer; 
 
 	/// plug-in search path element "type" 
-	static const char *type_descr;
+	static const char *data_descr;
 	
 	/// plug-in search path element "data" 
 	static const char *dim_descr; 

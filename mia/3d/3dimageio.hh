@@ -41,12 +41,12 @@ public:
 
 };
 
-struct EXPORT_3D io_3dimage_type {
+struct EXPORT_3D io_3dimage_data {
 	typedef  C3DImageVector type;
-	static const char *type_descr;
+	static const char *data_descr;
 };
 
-typedef TIOPlugin<io_3dimage_type> C3DImageIOPlugin;
+typedef TIOPlugin<io_3dimage_data> C3DImageIOPlugin;
 typedef TIOHandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> > C3DImageIOPluginHandler;
 typedef C3DImageIOPluginHandler::Instance::DataKey C3DImageDataKey;
 typedef C3DImageIOPluginHandler::Instance::PData P3DImageVector;

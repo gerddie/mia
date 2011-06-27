@@ -29,7 +29,7 @@
 NS_MIA_BEGIN
 
 struct EXPORT_CORE regmodel_type {
-	static const char *value;
+	static const char *type_descr;
 };
 
 template <int Dim> 

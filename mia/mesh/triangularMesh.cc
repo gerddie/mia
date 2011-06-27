@@ -465,7 +465,7 @@ void CTriangleMesh::evaluate_normals()
 	data->evaluate_normals();
 }
 
-const char *io_mesh_type::type_descr = "mesh";
+const char *io_mesh_type::data_descr = "mesh";
 NS_MIA_END
 
 #include <mia/core/ioplugin.cxx>

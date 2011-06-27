@@ -30,7 +30,7 @@
 
 NS_MIA_BEGIN
 
-const char *io_2dimage_type::type_descr = "2dimage";
+const char *io_2dimage_type::data_descr = "2dimage";
 
 C2DImageVector *C2DImageVector::clone() const
 {

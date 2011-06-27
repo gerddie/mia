@@ -176,8 +176,8 @@ private:
     \brief The generic base for all plug-ins 
 
     Templated plugin base class. The classes \a D and \a T must define a
-    static const char *type_descr and static const char *value respectively.  
-    The combination D::type_descr and T::value is will be part of the plugin search path.
+    static const char *data_descr and static const char *type_descr respectively.  
+    The combination D::data_descr and T::type_descr is will be part of the plugin search path.
     \tparam D data type descriptior 
     \tparam T plugin type descriptor 
    

@@ -24,6 +24,7 @@
 #define mia_3d_landmarks_hh
 
 #include <memory>
+#include <vector>
 #include <mia/3d/3DVector.hh>
 
 NS_MIA_BEGIN
@@ -70,6 +71,8 @@ private:
 
 }; 
 typedef C3DLandmark::Pointer P3DLandmark; 
+
+typedef std::vector<P3DLandmark> CLandmarkList; 
 
 NS_MIA_END
 

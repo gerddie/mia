@@ -34,12 +34,12 @@
 NS_MIA_BEGIN
 
 struct EXPORT_CORE spacial_kernel_data {
-	static const char *type_descr;
+	static const char *data_descr;
 };
 
 
 struct EXPORT_CORE kernel_plugin_type {
-	static const char *value;
+	static const char *type_descr;
 };
 
 /**

@@ -29,7 +29,7 @@
 NS_MIA_BEGIN
 using namespace std;
 
-const char *C2DImage::type_descr = "2dimage";
+const char *C2DImage::data_descr = "2dimage";
 
 
 C2DImage::C2DImage(const C2DBounds& size, EPixelType pixel_type):

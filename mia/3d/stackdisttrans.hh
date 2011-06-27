@@ -52,7 +52,7 @@ public:
 	typedef C2DStackDistanceTransform type; 
 
 	/// search path component for the plugin handling 
-	static const char * const value; 
+	static const char * const data_descr; 
 	
 	/// search path component for the plugin handling 
 	static const char * const type_descr; 

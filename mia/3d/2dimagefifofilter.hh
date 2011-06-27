@@ -36,7 +36,7 @@
 NS_MIA_BEGIN
 
 struct EXPORT_3D image2d_stack {
-	static const char *type_descr;
+	static const char *data_descr;
 };
 
 template <>
