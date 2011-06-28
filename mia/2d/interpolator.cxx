@@ -74,8 +74,8 @@ T2DConvoluteInterpolator<T>::T2DConvoluteInterpolator(const T2DDatafield<T>& ima
 	m_y_index(kernel->size()),
 	m_x_weight(kernel->size()),
 	m_y_weight(kernel->size()), 
-	m_x_cache(kernel->size(), image.get_size().x, m_size2.x), 
-	m_y_cache(kernel->size(), image.get_size().y, m_size2.y)
+	m_x_cache(kernel->size(), image.get_size().x, m_size2.x, false), 
+	m_y_cache(kernel->size(), image.get_size().y, m_size2.y, true)
 {
 	min_max<typename T2DDatafield<T>::const_iterator >::get(image.begin(), image.end(), m_min, m_max);
 	
@@ -237,16 +237,24 @@ struct add_2d_new {
 					    const CBSplineKernel::SCache& yc) 
 	{
 		U result = U();
-		for (size_t y = 0; y < size; ++y) {
-			U rx = U();
-			int yidx = !yc.is_mirrored ? yc.start_idx + y : yc.index[y]; 
-			const U *p = &coeff(0, yidx);
-			
-			for (size_t x = 0; x < size; ++x) {
-				int xidx = !xc.is_mirrored ? xc.start_idx + x : xc.index[x]; 
-				rx += xc.weights[x] * p[xidx];
+		if (!xc.is_mirrored) {
+			for (size_t y = 0; y < size; ++y) {
+				U rx = U();
+				const U *p = &coeff(0, yc.index[y]);
+				for (size_t x = 0; x < size; ++x) {
+					rx += xc.weights[x] * p[xc.start_idx + x];
+				}
+				result += yc.weights[y] * rx; 
 			}
-			result += yc.weights[y] * rx; 
+		}else{
+			for (size_t y = 0; y < size; ++y) {
+				U rx = U();
+				const U *p = &coeff(0, yc.index[y]);
+				for (size_t x = 0; x < size; ++x) {
+					rx += xc.weights[x] * p[xc.index[x]];
+				}
+				result += yc.weights[y] * rx; 
+			}
 		}
 		return result; 
 	}
@@ -286,6 +294,7 @@ T  T2DConvoluteInterpolator<T>::operator () (const C2DFVector& x) const
 	
 	U result = U();
 	
+	// give the compiler some chance to optimize 
 	switch (m_kernel->size()) {
 	case 1: result = add_2d_new<TCoeff2D,1>::value(m_coeff, m_x_cache, m_y_cache); break; 
 	case 2: result = add_2d_new<TCoeff2D,2>::value(m_coeff, m_x_cache, m_y_cache); break; 
@@ -295,17 +304,7 @@ T  T2DConvoluteInterpolator<T>::operator () (const C2DFVector& x) const
 	case 6: result = add_2d_new<TCoeff2D,6>::value(m_coeff, m_x_cache, m_y_cache); break; 
 	default: {
 		/* perform interpolation */
-		for (size_t y = 0; y < m_kernel->size(); ++y) {
-			U rx = U();
-			int yidx = !m_y_cache.is_mirrored ? m_y_cache.start_idx + y : m_y_cache.index[y];
-			const typename  TCoeff2D::value_type *p = &m_coeff(0, yidx);
-			
-			for (size_t x = 0; x < m_kernel->size(); ++x) {
-				int xidx = !m_x_cache.is_mirrored ? m_x_cache.start_idx + x : m_x_cache.index[x];
-				rx += m_x_cache.weights[x] * p[xidx];
-			}
-			result += m_y_cache.weights[y] * rx;
-		}
+		assert(0 && "spline degree > 5 not implemented");
 	}
 	} // end switch 
 	

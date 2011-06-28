@@ -67,7 +67,7 @@ public:
 		   @param cs1 size of the 1D coefficient array accessed when interpolating with this spline 
 		   @param cs2 2*cs1
 		 */
-		SCache(size_t s, int cs1, int cs2); 
+		SCache(size_t s, int cs1, int cs2, bool am); 
 
 		/** last location the B-spline was evaluated at. This  value is initialized to NaN
 		    to make sure we 
@@ -91,6 +91,9 @@ public:
 
 		/// store whether indices were mirrored 
 		bool is_mirrored; 
+
+		/// always use mirror
+		bool always_mirror; 
 	}; 
 
 	/**

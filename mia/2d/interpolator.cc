@@ -91,8 +91,7 @@ double add_2d_new<T2DDatafield< double >, 4>::value(const T2DDatafield< double >
 	int idx = 0; 
 	if (!xc.is_mirrored) {
 		for (size_t y = 0; y < 4; ++y, idx+=4) {
-			const int yidx = !yc.is_mirrored ? yc.start_idx + y: yc.index[y]; 
-			const double *p = &coeff[yidx * dx];
+			const double *p = &coeff[yc.index[y] * dx];
 			v2df y1 = _mm_loadu_pd(&p[xc.start_idx]);
 			v2df y2 = _mm_loadu_pd(&p[xc.start_idx+2]);
 			_mm_store_pd(&cache[idx  ], y1); 
@@ -100,8 +99,7 @@ double add_2d_new<T2DDatafield< double >, 4>::value(const T2DDatafield< double >
 		}
 	}else{
 		for (size_t y = 0; y < 4; ++y, idx+=4) {
-			const int yidx = !yc.is_mirrored ? yc.start_idx + y: yc.index[y]; 
-			const double *p = &coeff[yidx * dx];
+			const double *p = &coeff[yc.index[y] * dx];
 			cache[idx  ] = p[xc.index[0]]; 
 			cache[idx+1] = p[xc.index[1]]; 
 			cache[idx+2] = p[xc.index[2]]; 

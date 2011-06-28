@@ -183,11 +183,9 @@ double add_3d<T3DDatafield< double >, 4>::value(const T3DDatafield< double >&  c
 	// this should happen more often 
 	if (!xc.is_mirrored) {
 		for (size_t z = 0; z < 4; ++z) {
-			int zidx = zc.is_mirrored ? zc.index[z] : zc.start_idx + z; 
-			const double *slice = &coeff[zidx * dxy]; 
+			const double *slice = &coeff[zc.index[z] * dxy]; 
 			for (size_t y = 0; y < 4; ++y, idx+=4) {
-				int yidx = yc.is_mirrored ? yc.index[y] : yc.start_idx + y; 
-				const double *p = &slice[yidx * dx];
+				const double *p = &slice[yc.index[y] * dx];
 				v2df y1 = _mm_loadu_pd(&p[xc.start_idx]);
 				v2df y2 = _mm_loadu_pd(&p[xc.start_idx+2]);
 				_mm_store_pd(&cache[idx  ], y1); 
@@ -196,16 +194,13 @@ double add_3d<T3DDatafield< double >, 4>::value(const T3DDatafield< double >&  c
 		}
 	}else{
 		for (size_t z = 0; z < 4; ++z) {
-			int zidx = zc.is_mirrored ? zc.index[z] : zc.start_idx + z; 
-			const double *slice = &coeff[zidx * dxy]; 
+			const double *slice = &coeff[zc.index[z] * dxy]; 
 			for (size_t y = 0; y < 4; ++y, idx+=4) {
-				int yidx = yc.is_mirrored ? yc.index[y] : yc.start_idx + y; 
-				const double *p = &slice[yidx * dx];
+				const double *p = &slice[yc.index[y] * dx];
 				cache[idx  ] = p[xc.index[0]]; 
 				cache[idx+1] = p[xc.index[1]]; 
 				cache[idx+2] = p[xc.index[2]]; 
 				cache[idx+3] = p[xc.index[3]]; 
-				
 			}
 		}
 	}

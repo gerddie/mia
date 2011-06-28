@@ -663,7 +663,7 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_equivalence )
 {
 	CBSplineKernel3 kernel;
 	
-	CBSplineKernel::SCache cache(kernel.size(), 10, 12); 
+	CBSplineKernel::SCache cache(kernel.size(), 10, 12, false); 
 	std::vector<double> weights(kernel.size()); 
 	std::vector<int> indices(kernel.size()); 
 

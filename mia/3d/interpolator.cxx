@@ -67,9 +67,9 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 	m_coeff(image.get_size()), 
 	m_size2(image.get_size() + image.get_size() - C3DBounds(2,2,2)),
 	m_kernel(kernel),
-	m_x_cache(kernel->size(), m_coeff.get_size().x, m_size2.x), 
-	m_y_cache(kernel->size(), m_coeff.get_size().y, m_size2.y), 
-	m_z_cache(kernel->size(), m_coeff.get_size().z, m_size2.z)
+	m_x_cache(kernel->size(), m_coeff.get_size().x, m_size2.x, false), 
+	m_y_cache(kernel->size(), m_coeff.get_size().y, m_size2.y, true), 
+	m_z_cache(kernel->size(), m_coeff.get_size().z, m_size2.z, true)
 {
 	min_max_3d<T>::get(image, &m_min, &m_max);
 	
@@ -142,12 +142,9 @@ struct add_3d {
 		
 		for (size_t z = 0; z < size; ++z) {
 			U ry = U();
-			int zinx = !zc.is_mirrored ? zc.start_idx +z : zc.index[z]; 
 			for (size_t y = 0; y < size; ++y) {
 				U rx = U();
-				int yinx = !yc.is_mirrored ? yc.start_idx + y : yc.index[y]; 
-				const U *p = &coeff(0, yinx, zinx);
-				
+				const U *p = &coeff(0, yc.index[y], zc.index[z]);
 				for (size_t x = 0; x < size; ++x) {
 					int xinx = !xc.is_mirrored ? xc.start_idx +x : xc.index[x]; 
 					rx += xc.weights[x] * p[xinx];
@@ -202,22 +199,7 @@ T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x) const
 	case 5: result = add_3d<TCoeff3D,5>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
 	case 6: result = add_3d<TCoeff3D,6>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
 	default: {
-		/* perform interpolation */
-		assert(0 && "kernel sizes above 6 are not implemented"); 
-		for (size_t z = 0; z < m_kernel->size(); ++z) {
-			U ry = U();
-			for (size_t y = 0; y < m_kernel->size(); ++y) {
-				U rx = U();
-				const typename  TCoeff3D::value_type *p = &m_coeff(0, m_y_cache.index[y], 
-										    m_z_cache.index[z]);
-				
-				for (size_t x = 0; x < m_kernel->size(); ++x) {
-					rx += m_x_cache.weights[x] * p[m_x_cache.index[x]];
-				}
-				ry += m_y_cache.weights[y] * rx; 
-			}
-			result += m_z_cache.weights[z] * ry; 
-		}
+		assert(0 && "kernel sizes above 5 are not implemented"); 
 	}
 	} // end switch 
 	
