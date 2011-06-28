@@ -180,6 +180,17 @@ struct add_3d<T3DDatafield< double >, 4> {
 };
 #endif
 
+#ifdef __SSE__
+template <>
+struct add_3d<T3DDatafield< float >, 4> {
+	static float value(const T3DDatafield< float >&  coeff, 
+			    const CBSplineKernel::SCache& xc, 
+			    const CBSplineKernel::SCache& yc,
+			    const CBSplineKernel::SCache& zc); 
+	
+};
+#endif
+
 template <typename T>
 T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x) const
 {

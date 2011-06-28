@@ -225,6 +225,123 @@ double add_3d<T3DDatafield< double >, 4>::value(const T3DDatafield< double >&  c
 
 #endif
 
+#ifdef __SSE__
+typedef float v4df __attribute__ ((vector_size (16)));
+inline void my_daxpy_16_zero(float weight, float *in, float *out)
+{
+	v4df w=_mm_set1_ps(weight); 
+	
+	for (int i = 0; i < 2; ++i, in += 8, out += 8) {
+		
+		v4df x1 = _mm_load_ps(&in[0]); 
+		v4df x3 = _mm_load_ps(&in[4]); 
+		x1 *= w; 
+		x3 *= w; 
+		_mm_store_ps(&out[0], x1); 
+		_mm_store_ps(&out[4], x3); 
+	}
+}
+
+inline void my_daxpy_16(float weight, float *in, float *out)
+{
+	v4df w=_mm_set1_ps(weight); 
+	
+	for (int i = 0; i < 2; ++i, in += 8, out += 8) {
+		
+		v4df x1 = _mm_load_ps(&in[0]); 
+		v4df x3 = _mm_load_ps(&in[4]); 
+		v4df y1 = _mm_load_ps(&out[0]); 
+		v4df y3 = _mm_load_ps(&out[4]); 
+		x1 *= w; 
+		x3 *= w; 
+		y1 += x1; 
+		y3 += x3; 
+		_mm_store_ps(&out[0], y1); 
+		_mm_store_ps(&out[4], y3); 
+	}
+}
+
+inline void my_daxpy_4_zero(float weight, float *in, float *out)
+{
+
+	v4df w=_mm_set1_ps(weight); 
+	
+	v4df x1 = _mm_load_ps(&in[0]); 
+	x1 *= w; 
+	_mm_store_ps(&out[0], x1); 
+}
+
+inline void my_daxpy_4(float weight, float *in, float *out)
+{
+
+	v4df w=_mm_set1_ps(weight); 
+	
+	v4df x1 = _mm_load_ps(&in[0]); 
+	v4df y1 = _mm_load_ps(&out[0]); 
+	
+	x1 *= w; 
+	y1 += x1; 
+	_mm_store_ps(&out[0], y1); 
+}
+
+/*
+  In this function the registration algorithm spends approx 30% of the time 
+*/
+float add_3d<T3DDatafield< float >, 4>::value(const T3DDatafield< float >&  coeff, 
+		    const CBSplineKernel::SCache& xc, 
+		    const CBSplineKernel::SCache& yc,
+		    const CBSplineKernel::SCache& zc) 
+{
+	const int dx = coeff.get_size().x; 
+	const int dxy = coeff.get_size().x *coeff.get_size().y; 
+	
+	float  __attribute__((aligned(16))) cache[64]; 
+	// cache data 
+	int idx = 0; 
+
+	// if the boundaries are not mirrored, then we can load without looking at each index 
+	// this should happen more often 
+	if (!xc.is_mirrored) {
+		for (size_t z = 0; z < 4; ++z) {
+			const float *slice = &coeff[zc.index[z] * dxy]; 
+			for (size_t y = 0; y < 4; ++y, idx+=4) {
+				const float *p = &slice[yc.index[y] * dx];
+				v4df y1 = _mm_loadu_ps(&p[xc.start_idx]);
+				_mm_store_ps(&cache[idx  ], y1); 
+			}
+		}
+	}else{
+		for (size_t z = 0; z < 4; ++z) {
+			const float *slice = &coeff[zc.index[z] * dxy]; 
+			for (size_t y = 0; y < 4; ++y, idx+=4) {
+				const float *p = &slice[yc.index[y] * dx];
+				cache[idx  ] = p[xc.index[0]]; 
+				cache[idx+1] = p[xc.index[1]]; 
+				cache[idx+2] = p[xc.index[2]]; 
+				cache[idx+3] = p[xc.index[3]]; 
+			}
+		}
+	}
+	float __attribute__((aligned(16))) target1[16]; 
+	// apply splines 
+	my_daxpy_16_zero(zc.weights[0], &cache[ 0], target1);
+	my_daxpy_16(zc.weights[1], &cache[16], target1);
+	my_daxpy_16(zc.weights[2], &cache[32], target1);
+	my_daxpy_16(zc.weights[3], &cache[48], target1);
+
+	float __attribute__((aligned(16))) target2[4];
+
+	my_daxpy_4_zero(yc.weights[0], &target1[ 0], target2);
+	my_daxpy_4(yc.weights[1], &target1[ 4], target2);
+	my_daxpy_4(yc.weights[2], &target1[ 8], target2);
+	my_daxpy_4(yc.weights[3], &target1[12], target2);
+	
+	return target2[0] * xc.weights[0] + target2[1] * xc.weights[1] + 
+		target2[2] * xc.weights[2] + target2[3] * xc.weights[3]; 
+}
+
+#endif
+
 #define INSTANCIATE_INTERPOLATORS(TYPE)			\
 	template class T3DInterpolator<TYPE>;		\
 	template class T3DConvoluteInterpolator<TYPE>
