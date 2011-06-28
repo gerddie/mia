@@ -252,6 +252,7 @@ private:
 	size_t m_support_size;
 	
 	EInterpolation m_type; 
+	std::vector<int> m_indices;
 };
 
 /// Pointer type for B-Spline kernels 

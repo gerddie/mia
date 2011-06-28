@@ -74,8 +74,11 @@ CBSplineKernel::CBSplineKernel(size_t degree, double shift, EInterpolation type)
 	m_half_degree(degree >> 1),
 	m_shift(shift),
 	m_support_size(degree + 1), 
-	m_type(type)
+	m_type(type), 
+	m_indices(m_support_size)
 {
+	for(int i = 0; i < m_support_size; ++i) 
+		m_indices[i] = i; 
 }
 
 CBSplineKernel::~CBSplineKernel()
@@ -104,8 +107,14 @@ void CBSplineKernel::operator () (double x, SCache& cache) const
 		return; 
 	cache.start_idx = start_idx; 
 
-	fill_index(start_idx, cache.index); 
-	cache.is_mirrored = mirror_boundary_conditions(cache.index, cache.csize1, cache.csize2); 
+	if (start_idx < 0 || start_idx + m_support_size - 1 >= cache.csize1 ) {
+		cache.is_mirrored = true; 
+		fill_index(start_idx, cache.index); 
+		mirror_boundary_conditions(cache.index, cache.csize1, cache.csize2); 
+	}else {
+		cache.index[0] = start_idx; 
+		cache.is_mirrored = false; 
+	}
 }
 
 
@@ -141,13 +150,9 @@ inline int fastfloor(double val)
 
 void CBSplineKernel::fill_index(int i, std::vector<int>& index) const 
 {
-	auto ib = index.begin(); 
-	const auto ie = index.end(); 
-	while (ib != ie) {
-		*ib = i; 
-		++ib; 
-		++i; 
-	}
+	int k= 0; 
+	while (k < m_support_size)
+		index[k] = i + m_indices[k++]; 	
 }
 
 int CBSplineKernel::get_indices(double x, std::vector<int>& index) const

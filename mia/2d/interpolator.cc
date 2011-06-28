@@ -89,12 +89,24 @@ double add_2d_new<T2DDatafield< double >, 4>::value(const T2DDatafield< double >
 	
 	const int dx = coeff.get_size().x; 
 	int idx = 0; 
-	for (size_t y = 0; y < 4; ++y, idx+=4) {
-		const double *p = &coeff[yc.index[y] * dx];
-		cache[idx  ] = p[xc.index[0]]; 
-		cache[idx+1] = p[xc.index[1]]; 
-		cache[idx+2] = p[xc.index[2]]; 
-		cache[idx+3] = p[xc.index[3]]; 
+	if (!xc.is_mirrored) {
+		for (size_t y = 0; y < 4; ++y, idx+=4) {
+			const int yidx = !yc.is_mirrored ? yc.start_idx + y: yc.index[y]; 
+			const double *p = &coeff[yidx * dx];
+			v2df y1 = _mm_loadu_pd(&p[xc.start_idx]);
+			v2df y2 = _mm_loadu_pd(&p[xc.start_idx+2]);
+			_mm_store_pd(&cache[idx  ], y1); 
+			_mm_store_pd(&cache[idx+2], y2); 
+		}
+	}else{
+		for (size_t y = 0; y < 4; ++y, idx+=4) {
+			const int yidx = !yc.is_mirrored ? yc.start_idx + y: yc.index[y]; 
+			const double *p = &coeff[yidx * dx];
+			cache[idx  ] = p[xc.index[0]]; 
+			cache[idx+1] = p[xc.index[1]]; 
+			cache[idx+2] = p[xc.index[2]]; 
+			cache[idx+3] = p[xc.index[3]]; 
+		}
 	}
 	
 	v2df w0  = _mm_set1_pd(yc.weights[0]);

@@ -650,9 +650,9 @@ BOOST_FIXTURE_TEST_CASE( test_splines_refine, TransformSplineFixture )
 				C3DFVector ff(f(X));
 				cvdebug() << X  << " have " << (X - *k) << " exp " << ff <<"\n"; 
 				
-				BOOST_CHECK_CLOSE(ff.x, x -  k->x, 0.2);
-				BOOST_CHECK_CLOSE(ff.y, y -  k->y, 0.2);
-				BOOST_CHECK_CLOSE(ff.z, z -  k->z, 0.2);
+				BOOST_CHECK_CLOSE(ff.x, x - k->x, 0.2);
+				BOOST_CHECK_CLOSE(ff.y, y - k->y, 0.2);
+				BOOST_CHECK_CLOSE(ff.z, z - k->z, 0.2);
 			}
 		}
 	}

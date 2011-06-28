@@ -1,4 +1,5 @@
-/*
+/* -*- mia-c++ -*-
+**
 ** Copyrigh (C) 2004 MPI of Human Cognitive and Brain Sience
 **                    Gert Wollny <wollny@cbs.mpg.de>
 **
@@ -77,6 +78,7 @@ EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(EInterpolation 
 {
 	return create_interpolator_factory<C3DInterpolatorFactory>(type); 
 }
+
 
 #ifdef __SSE2__
 typedef double v2df __attribute__ ((vector_size (16)));
@@ -162,6 +164,9 @@ inline void my_daxpy_4(double weight, double *in, double *out)
 	_mm_store_pd(&out[2], y2); 
 }
 
+/*
+  In this function the registration algorithm spends approx 30% of the time 
+*/
 double add_3d<T3DDatafield< double >, 4>::value(const T3DDatafield< double >&  coeff, 
 		    const CBSplineKernel::SCache& xc, 
 		    const CBSplineKernel::SCache& yc,
@@ -173,15 +178,35 @@ double add_3d<T3DDatafield< double >, 4>::value(const T3DDatafield< double >&  c
 	double  __attribute__((aligned(16))) cache[64]; 
 	// cache data 
 	int idx = 0; 
-	for (size_t z = 0; z < 4; ++z) {
-		for (size_t y = 0; y < 4; ++y, idx+=4) {
-			const double *p = &coeff[yc.index[y] * dx + zc.index[z] * dxy];
 
-			cache[idx  ] = p[xc.index[0]]; 
-			cache[idx+1] = p[xc.index[1]]; 
-			cache[idx+2] = p[xc.index[2]]; 
-			cache[idx+3] = p[xc.index[3]]; 
-			
+	// if the boundaries are not mirrored, then we can load without looking at each index 
+	// this should happen more often 
+	if (!xc.is_mirrored) {
+		for (size_t z = 0; z < 4; ++z) {
+			int zidx = zc.is_mirrored ? zc.index[z] : zc.start_idx + z; 
+			const double *slice = &coeff[zidx * dxy]; 
+			for (size_t y = 0; y < 4; ++y, idx+=4) {
+				int yidx = yc.is_mirrored ? yc.index[y] : yc.start_idx + y; 
+				const double *p = &slice[yidx * dx];
+				v2df y1 = _mm_loadu_pd(&p[xc.start_idx]);
+				v2df y2 = _mm_loadu_pd(&p[xc.start_idx+2]);
+				_mm_store_pd(&cache[idx  ], y1); 
+				_mm_store_pd(&cache[idx+2], y2); 
+			}
+		}
+	}else{
+		for (size_t z = 0; z < 4; ++z) {
+			int zidx = zc.is_mirrored ? zc.index[z] : zc.start_idx + z; 
+			const double *slice = &coeff[zidx * dxy]; 
+			for (size_t y = 0; y < 4; ++y, idx+=4) {
+				int yidx = yc.is_mirrored ? yc.index[y] : yc.start_idx + y; 
+				const double *p = &slice[yidx * dx];
+				cache[idx  ] = p[xc.index[0]]; 
+				cache[idx+1] = p[xc.index[1]]; 
+				cache[idx+2] = p[xc.index[2]]; 
+				cache[idx+3] = p[xc.index[3]]; 
+				
+			}
 		}
 	}
 	double __attribute__((aligned(16))) target1[16]; 

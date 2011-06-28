@@ -1,4 +1,4 @@
-/*
+/* -*- mia-c++ -*-
 ** Copyrigh (C) 2004 MPI of Human Cognitive and Brain Sience
 **                    Gert Wollny <wollny@cbs.mpg.de>
 **  
@@ -131,36 +131,6 @@ struct bounded<T3DVector<T>, T3DVector<U> > {
 };
 
 template <class C, int size>
-struct add_3d_old {
-	typedef typename C::value_type U; 
-	
-	static typename C::value_type value(const C&  coeff, const std::vector<double>& xweight, 
-					    const std::vector<double>& yweight,
-					    const std::vector<double>& zweight,
-					    const std::vector<int>& xindex, 
-					    const std::vector<int>& yindex, 				
-					    const std::vector<int>& zindex) 
-	{
-		U result = U();
-		
-		for (size_t z = 0; z < size; ++z) {
-			U ry = U();
-			for (size_t y = 0; y < size; ++y) {
-				U rx = U();
-				const U *p = &coeff(0, yindex[y], zindex[z]);
-				
-				for (size_t x = 0; x < size; ++x) {
-					rx += xweight[x] * p[xindex[x]];
-				}
-				ry += yweight[y] * rx; 
-			}
-			result += zweight[z] * ry; 
-		}
-		return result; 
-	}
-};
-
-template <class C, int size>
 struct add_3d {
 	typedef typename C::value_type U; 
 	
@@ -172,12 +142,15 @@ struct add_3d {
 		
 		for (size_t z = 0; z < size; ++z) {
 			U ry = U();
+			int zinx = !zc.is_mirrored ? zc.start_idx +z : zc.index[z]; 
 			for (size_t y = 0; y < size; ++y) {
 				U rx = U();
-				const U *p = &coeff(0, yc.index[y], zc.index[z]);
+				int yinx = !yc.is_mirrored ? yc.start_idx + y : yc.index[y]; 
+				const U *p = &coeff(0, yinx, zinx);
 				
 				for (size_t x = 0; x < size; ++x) {
-					rx += xc.weights[x] * p[xc.index[x]];
+					int xinx = !xc.is_mirrored ? xc.start_idx +x : xc.index[x]; 
+					rx += xc.weights[x] * p[xinx];
 				}
 				ry += yc.weights[y] * rx; 
 			}
@@ -186,6 +159,18 @@ struct add_3d {
 		return result; 
 	}
 };
+
+template <typename T>
+struct add_3d<T3DDatafield< T >, 1> {
+	static T value(const T3DDatafield< T >&  coeff, 
+		       const CBSplineKernel::SCache& xc, 
+		       const CBSplineKernel::SCache& yc,
+		       const CBSplineKernel::SCache& zc) 
+		{
+			return coeff(xc.index[0], yc.index[0], zc.index[0] ) ; 
+		}
+};
+
 
 #ifdef __SSE2__
 template <>
@@ -210,6 +195,7 @@ T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x) const
 	U result = U();
 	
 	switch (m_kernel->size()) {
+	case 1: result = add_3d<TCoeff3D,1>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
 	case 2: result = add_3d<TCoeff3D,2>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
 	case 3: result = add_3d<TCoeff3D,3>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
 	case 4: result = add_3d<TCoeff3D,4>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
@@ -217,6 +203,7 @@ T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x) const
 	case 6: result = add_3d<TCoeff3D,6>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
 	default: {
 		/* perform interpolation */
+		assert(0 && "kernel sizes above 6 are not implemented"); 
 		for (size_t z = 0; z < m_kernel->size(); ++z) {
 			U ry = U();
 			for (size_t y = 0; y < m_kernel->size(); ++y) {

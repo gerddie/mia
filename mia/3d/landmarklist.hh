@@ -64,6 +64,7 @@ public:
 
 	/// \returns a read-write STL iterator to the landmarks 
 	iterator begin(); 
+
 	/// \returns a read-write STL iterator to the landmarks 
 	iterator end(); 
 

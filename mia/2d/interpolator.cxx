@@ -239,16 +239,29 @@ struct add_2d_new {
 		U result = U();
 		for (size_t y = 0; y < size; ++y) {
 			U rx = U();
-			const U *p = &coeff(0, yc.index[y]);
+			int yidx = !yc.is_mirrored ? yc.start_idx + y : yc.index[y]; 
+			const U *p = &coeff(0, yidx);
 			
 			for (size_t x = 0; x < size; ++x) {
-				rx += xc.weights[x] * p[xc.index[x]];
+				int xidx = !xc.is_mirrored ? xc.start_idx + x : xc.index[x]; 
+				rx += xc.weights[x] * p[xidx];
 			}
 			result += yc.weights[y] * rx; 
 		}
 		return result; 
 	}
 };
+
+template <typename T>
+struct add_2d_new<T2DDatafield< T >, 1> {
+	
+
+	static T value(const T2DDatafield< T >&  coeff, 
+		       const CBSplineKernel::SCache& xc, 
+		       const CBSplineKernel::SCache& yc) {
+		return coeff(xc.index[0], yc.index[0]); 
+	}
+}; 
 
 #ifdef __SSE2__
 
@@ -274,6 +287,7 @@ T  T2DConvoluteInterpolator<T>::operator () (const C2DFVector& x) const
 	U result = U();
 	
 	switch (m_kernel->size()) {
+	case 1: result = add_2d_new<TCoeff2D,1>::value(m_coeff, m_x_cache, m_y_cache); break; 
 	case 2: result = add_2d_new<TCoeff2D,2>::value(m_coeff, m_x_cache, m_y_cache); break; 
 	case 3: result = add_2d_new<TCoeff2D,3>::value(m_coeff, m_x_cache, m_y_cache); break; 
 	case 4: result = add_2d_new<TCoeff2D,4>::value(m_coeff, m_x_cache, m_y_cache); break; 
@@ -283,12 +297,14 @@ T  T2DConvoluteInterpolator<T>::operator () (const C2DFVector& x) const
 		/* perform interpolation */
 		for (size_t y = 0; y < m_kernel->size(); ++y) {
 			U rx = U();
-			const typename  TCoeff2D::value_type *p = &m_coeff(0, m_y_cache.index[y]);
+			int yidx = !m_y_cache.is_mirrored ? m_y_cache.start_idx + y : m_y_cache.index[y];
+			const typename  TCoeff2D::value_type *p = &m_coeff(0, yidx);
 			
 			for (size_t x = 0; x < m_kernel->size(); ++x) {
-				rx += m_x_cache.weights[x] * p[m_x_cache.index[x]];
+				int xidx = !m_x_cache.is_mirrored ? m_x_cache.start_idx + x : m_x_cache.index[x];
+				rx += m_x_cache.weights[x] * p[xidx];
 			}
-			result += m_y_cache.weights[y] * rx; 
+			result += m_y_cache.weights[y] * rx;
 		}
 	}
 	} // end switch 
@@ -302,7 +318,7 @@ template <typename T>
 T2DVector<T> T2DConvoluteInterpolator<T>::derivative_at(const C2DFVector& x) const
 {
 	T2DVector<T> result;
-
+	
 	// cut at boundary maybe we can do better
 	if (x.x < 0.0 || x.y < 0.0 || x.x >= m_coeff.get_size().x || x.y >= m_coeff.get_size().y)
 		return result;
