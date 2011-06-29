@@ -59,13 +59,13 @@ struct bspline<0,0> {
 	}
 };
 
-CBSplineKernel::SCache::SCache(size_t s, int cs1, int cs2, bool am):
+CBSplineKernel::SCache::SCache(size_t s, PBoundaryCondition bc, bool am):
 	x(numeric_limits<double>::quiet_NaN()), 
 	start_idx(-1000), 
+	index_limit(bc->get_width() - s), 
 	weights(s), 
 	index(s), 
-	csize1(cs1), 
-	csize2(cs2), 
+	boundary_condition(bc), 
 	is_flat(false), 
 	never_flat(am)
 {
@@ -108,10 +108,10 @@ void CBSplineKernel::operator () (double x, SCache& cache) const
 		return; 
 	cache.start_idx = start_idx; 
 
-	if (cache.never_flat || start_idx < 0 || start_idx + m_support_size - 1 >= cache.csize1 ) {
+	if (cache.never_flat || start_idx < 0 || start_idx > cache.index_limit ) {
 		cache.is_flat = false; 
 		fill_index(start_idx, cache.index); 
-		mirror_boundary_conditions(cache.index, cache.csize1, cache.csize2); 
+		cache.boundary_condition->apply(cache.index, cache.weights); 
 	}else {
 		cache.index[0] = start_idx; 
 		cache.is_flat = true; 

@@ -74,8 +74,8 @@ T2DConvoluteInterpolator<T>::T2DConvoluteInterpolator(const T2DDatafield<T>& ima
 	m_y_index(kernel->size()),
 	m_x_weight(kernel->size()),
 	m_y_weight(kernel->size()), 
-	m_x_cache(kernel->size(), image.get_size().x, m_size2.x, false), 
-	m_y_cache(kernel->size(), image.get_size().y, m_size2.y, true)
+	m_x_cache(kernel->size(), PBoundaryCondition(new CMirrorOnBoundary(image.get_size().x)), false), 
+	m_y_cache(kernel->size(), PBoundaryCondition(new CMirrorOnBoundary(image.get_size().y)), true)
 {
 	min_max<typename T2DDatafield<T>::const_iterator >::get(image.begin(), image.end(), m_min, m_max);
 	

@@ -160,6 +160,8 @@ private:
 	mutable CBSplineKernel::SCache m_x_cache; 
 	mutable CBSplineKernel::SCache m_y_cache; 
 
+	
+
 };
 
 /**

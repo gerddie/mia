@@ -133,7 +133,7 @@ double add_3d<T3DDatafield< double >, 4>::value(const T3DDatafield< double >&  c
 
 	// if the boundaries are not mirrored, then we can load without looking at each index 
 	// this should happen more often 
-	if (!xc.is_mirrored) {
+	if (xc.is_flat) {
 		for (size_t z = 0; z < 4; ++z) {
 			const double *slice = &coeff[zc.index[z] * dxy]; 
 			for (size_t y = 0; y < 4; ++y, idx+=2) {
@@ -241,7 +241,7 @@ float add_3d<T3DDatafield< float >, 4>::value(const T3DDatafield< float >&  coef
 
 	// if the boundaries are not mirrored, then we can load without looking at each index 
 	// this should happen more often 
-	if (!xc.is_mirrored) {
+	if (xc.is_flat) {
 		for (size_t z = 0; z < 4; ++z) {
 			const float *slice = &coeff[zc.index[z] * dxy]; 
 			for (size_t y = 0; y < 4; ++y, ++idx) {

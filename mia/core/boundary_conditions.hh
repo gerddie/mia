@@ -23,6 +23,7 @@
 
 #include <mia/core/defines.hh>
 #include <vector>
+#include <memory>
 
 NS_MIA_BEGIN
 
@@ -50,7 +51,8 @@ public:
 	   \returns true if the index set was in the coefficient domain 
 	 */
 	bool apply(std::vector<int>& index, std::vector<double>& weights) const;
-protected: 
+
+	/// \returns the width of the coefficient domain 
 	int get_width() const {
 		return m_width; 
 	}
@@ -61,6 +63,7 @@ private:
 	int m_width; 
 }; 
 
+typedef std::shared_ptr<CBoundaryCondition> PBoundaryCondition; 
 /**
    \brief Class for mirroring on the the boundary
  */
@@ -111,9 +114,5 @@ private:
 	int m_widthm1; 
 }; 
 
-
-
 NS_MIA_END
-
-
 #endif

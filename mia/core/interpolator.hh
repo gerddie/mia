@@ -28,6 +28,7 @@
 #include <cmath>
 #include <mia/core/defines.hh>
 #include <mia/core/dictmap.hh>
+#include <mia/core/boundary_conditions.hh>
 #include <memory>
 
 NS_MIA_BEGIN
@@ -67,7 +68,7 @@ public:
 		   @param cs1 size of the 1D coefficient array accessed when interpolating with this spline 
 		   @param cs2 2*cs1
 		 */
-		SCache(size_t s, int cs1, int cs2, bool am); 
+		SCache(size_t s, PBoundaryCondition bc, bool am); 
 
 		/** last location the B-spline was evaluated at. This  value is initialized to NaN
 		    to make sure we 
@@ -76,6 +77,9 @@ public:
 		
 		/// last start index the B-spline was evaluated for 
 		int start_idx; 
+
+		/// last possible start index 
+		int index_limit; 
 		
 		/// cached weights 
 		std::vector<double> weights; 
@@ -83,12 +87,9 @@ public:
 		/// cached indices 
 		std::vector<int> index; 
 
-		/// coefficient index range 
-		int csize1;
+		/// the boundary condition to be applied
+		PBoundaryCondition boundary_condition; 
 		
-		/// double coefficient index range 
-		int csize2;
-
 		/// store whether indices were mirrored 
 		bool is_flat; 
 
@@ -256,6 +257,7 @@ private:
 	
 	EInterpolation m_type; 
 	std::vector<int> m_indices;
+	
 };
 
 /// Pointer type for B-Spline kernels 

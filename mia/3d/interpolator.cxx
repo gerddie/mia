@@ -67,9 +67,9 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 	m_coeff(image.get_size()), 
 	m_size2(image.get_size() + image.get_size()-C3DBounds(2,2,2)),
 	m_kernel(kernel),
-	m_x_cache(kernel->size(), m_coeff.get_size().x, m_size2.x, false), 
-	m_y_cache(kernel->size(), m_coeff.get_size().y, m_size2.y, true), 
-	m_z_cache(kernel->size(), m_coeff.get_size().z, m_size2.z, true)
+	m_x_cache(kernel->size(), PBoundaryCondition(new CMirrorOnBoundary(image.get_size().x)), false), 
+	m_y_cache(kernel->size(), PBoundaryCondition(new CMirrorOnBoundary(image.get_size().y)), true), 
+	m_z_cache(kernel->size(), PBoundaryCondition(new CMirrorOnBoundary(image.get_size().z)), true)
 {
 	min_max_3d<T>::get(image, &m_min, &m_max);
 	
@@ -146,7 +146,7 @@ struct add_3d {
 				U rx = U();
 				const U *p = &coeff(0, yc.index[y], zc.index[z]);
 				for (size_t x = 0; x < size; ++x) {
-					int xinx = !xc.is_mirrored ? xc.start_idx +x : xc.index[x]; 
+					int xinx = xc.is_flat ? xc.start_idx +x : xc.index[x]; 
 					rx += xc.weights[x] * p[xinx];
 				}
 				ry += yc.weights[y] * rx; 
