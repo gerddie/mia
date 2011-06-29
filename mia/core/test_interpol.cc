@@ -677,7 +677,7 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_equivalence )
 	BOOST_CHECK_EQUAL(cache.weights[2], weights[2]); 
 	BOOST_CHECK_EQUAL(cache.weights[3], weights[3]); 
 	
-	if (cache.is_mirrored) {
+	if (!cache.is_flat) {
 		BOOST_CHECK_EQUAL(cache.index[0], indices[0]); 
 		BOOST_CHECK_EQUAL(cache.index[1], indices[1]); 
 		BOOST_CHECK_EQUAL(cache.index[2], indices[2]); 

@@ -90,10 +90,10 @@ public:
 		int csize2;
 
 		/// store whether indices were mirrored 
-		bool is_mirrored; 
+		bool is_flat; 
 
 		/// always use mirror
-		bool always_mirror; 
+		bool never_flat; 
 	}; 
 
 	/**
@@ -275,6 +275,13 @@ struct coeff_map {
 	typedef T     value_type;
 	typedef double coeff_type;
 };
+
+template <>
+struct coeff_map<float> {
+	typedef float value_type;
+	typedef float coeff_type;
+};
+
 
 inline size_t CBSplineKernel::size()const
 {

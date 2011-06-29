@@ -89,7 +89,7 @@ double add_2d_new<T2DDatafield< double >, 4>::value(const T2DDatafield< double >
 	
 	const int dx = coeff.get_size().x; 
 	int idx = 0; 
-	if (!xc.is_mirrored) {
+	if (xc.is_flat) {
 		for (size_t y = 0; y < 4; ++y, idx+=4) {
 			const double *p = &coeff[yc.index[y] * dx];
 			v2df y1 = _mm_loadu_pd(&p[xc.start_idx]);

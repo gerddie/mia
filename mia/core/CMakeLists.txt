@@ -6,6 +6,7 @@
 
 SET(MIACORE_SRC_BASE 
   attributes.cc 
+  boundary_conditions.cc
   callback.cc 
   cost.cc 
   combiner.cc
@@ -62,6 +63,7 @@ SET(MIACORE_SRC_BASE
 
 SET(MIACORE_HEADER_BASE
   attributes.hh
+  boundary_conditions.hh
   callback.hh
   cmdlineparser.hh
   cost.hh
@@ -250,6 +252,8 @@ ADD_SUBDIRECTORY(noise         )
 ADD_SUBDIRECTORY(minimizer     ) 
 
 NEW_TEST(attributes miacore)
+NEW_TEST(boundary_conditions
+ miacore)
 NEW_TEST(callback miacore)
 NEW_TEST(cmdlineparser miacore)
 NEW_TEST(datapool miacore)

@@ -195,61 +195,33 @@ double add_3d<T3DDatafield< double >, 4>::value(const T3DDatafield< double >&  c
 
 #ifdef __SSE__
 typedef float v4df __attribute__ ((vector_size (16)));
-inline void my_daxpy_16_zero(float weight, float *in, float *out)
+inline void my_daxpy_16_zero(float weight, v4df *in, v4df *out)
 {
 	v4df w=_mm_set1_ps(weight); 
 	
-	for (int i = 0; i < 2; ++i, in += 8, out += 8) {
-		
-		v4df x1 = _mm_load_ps(&in[0]); 
-		v4df x3 = _mm_load_ps(&in[4]); 
-		x1 *= w; 
-		x3 *= w; 
-		_mm_store_ps(&out[0], x1); 
-		_mm_store_ps(&out[4], x3); 
+	for (int i = 0; i < 4; ++i) {
+		out[i] = in[i] * w; 
 	}
 }
 
-inline void my_daxpy_16(float weight, float *in, float *out)
+inline void my_daxpy_16(float weight, v4df *in, v4df *out)
 {
 	v4df w=_mm_set1_ps(weight); 
-	
-	for (int i = 0; i < 2; ++i, in += 8, out += 8) {
-		
-		v4df x1 = _mm_load_ps(&in[0]); 
-		v4df x3 = _mm_load_ps(&in[4]); 
-		v4df y1 = _mm_load_ps(&out[0]); 
-		v4df y3 = _mm_load_ps(&out[4]); 
-		x1 *= w; 
-		x3 *= w; 
-		y1 += x1; 
-		y3 += x3; 
-		_mm_store_ps(&out[0], y1); 
-		_mm_store_ps(&out[4], y3); 
+	for (int i = 0; i < 4; ++i) {
+		out[i] += in[i] * w; 
 	}
 }
 
-inline void my_daxpy_4_zero(float weight, float *in, float *out)
+inline void my_daxpy_4_zero(float weight, v4df* in, v4df *out)
 {
-
 	v4df w=_mm_set1_ps(weight); 
-	
-	v4df x1 = _mm_load_ps(&in[0]); 
-	x1 *= w; 
-	_mm_store_ps(&out[0], x1); 
+	out[0] = w * in[0]; 
 }
 
-inline void my_daxpy_4(float weight, float *in, float *out)
+inline void my_daxpy_4(float weight, v4df* in, v4df *out)
 {
-
 	v4df w=_mm_set1_ps(weight); 
-	
-	v4df x1 = _mm_load_ps(&in[0]); 
-	v4df y1 = _mm_load_ps(&out[0]); 
-	
-	x1 *= w; 
-	y1 += x1; 
-	_mm_store_ps(&out[0], y1); 
+	out[0] += w * in[0]; 
 }
 
 /*
@@ -263,7 +235,7 @@ float add_3d<T3DDatafield< float >, 4>::value(const T3DDatafield< float >&  coef
 	const int dx = coeff.get_size().x; 
 	const int dxy = coeff.get_size().x *coeff.get_size().y; 
 	
-	float  __attribute__((aligned(16))) cache[64]; 
+	v4df cache[16]; 
 	// cache data 
 	int idx = 0; 
 
@@ -272,40 +244,59 @@ float add_3d<T3DDatafield< float >, 4>::value(const T3DDatafield< float >&  coef
 	if (!xc.is_mirrored) {
 		for (size_t z = 0; z < 4; ++z) {
 			const float *slice = &coeff[zc.index[z] * dxy]; 
-			for (size_t y = 0; y < 4; ++y, idx+=4) {
+			for (size_t y = 0; y < 4; ++y, ++idx) {
 				const float *p = &slice[yc.index[y] * dx];
-				v4df y1 = _mm_loadu_ps(&p[xc.start_idx]);
-				_mm_store_ps(&cache[idx  ], y1); 
+				cache[idx] = _mm_loadu_ps(&p[xc.start_idx]);
 			}
 		}
 	}else{
+		float __attribute__((aligned(16))) c[4]; 
 		for (size_t z = 0; z < 4; ++z) {
 			const float *slice = &coeff[zc.index[z] * dxy]; 
-			for (size_t y = 0; y < 4; ++y, idx+=4) {
+			for (size_t y = 0; y < 4; ++y, ++idx) {
 				const float *p = &slice[yc.index[y] * dx];
-				cache[idx  ] = p[xc.index[0]]; 
-				cache[idx+1] = p[xc.index[1]]; 
-				cache[idx+2] = p[xc.index[2]]; 
-				cache[idx+3] = p[xc.index[3]]; 
+				c[0] = p[xc.index[0]]; 
+				c[1] = p[xc.index[1]]; 
+				c[2] = p[xc.index[2]]; 
+				c[3] = p[xc.index[3]]; 
+				cache[idx] = _mm_load_ps(c);
 			}
 		}
 	}
-	float __attribute__((aligned(16))) target1[16]; 
+	float wy = yc.weights[0]; 
+	v4df  target1[4]; 
 	// apply splines 
 	my_daxpy_16_zero(zc.weights[0], &cache[ 0], target1);
-	my_daxpy_16(zc.weights[1], &cache[16], target1);
-	my_daxpy_16(zc.weights[2], &cache[32], target1);
-	my_daxpy_16(zc.weights[3], &cache[48], target1);
+	my_daxpy_16(zc.weights[1],      &cache[ 4], target1);
+	my_daxpy_16(zc.weights[2],      &cache[ 8], target1);
+	my_daxpy_16(zc.weights[3],      &cache[12], target1);
 
-	float __attribute__((aligned(16))) target2[4];
+	;
 
-	my_daxpy_4_zero(yc.weights[0], &target1[ 0], target2);
-	my_daxpy_4(yc.weights[1], &target1[ 4], target2);
-	my_daxpy_4(yc.weights[2], &target1[ 8], target2);
-	my_daxpy_4(yc.weights[3], &target1[12], target2);
+	v4df w=_mm_set1_ps(wy); 
+	v4df target2 = w * target1[0]; 
 	
-	return target2[0] * xc.weights[0] + target2[1] * xc.weights[1] + 
-		target2[2] * xc.weights[2] + target2[3] * xc.weights[3]; 
+//	my_daxpy_4_zero(yc.weights[0], &target1[0], &target2);
+	my_daxpy_4(yc.weights[1],      &target1[1], &target2);
+	my_daxpy_4(yc.weights[2],      &target1[2], &target2);
+	my_daxpy_4(yc.weights[3],      &target1[3], &target2);
+	
+	float __attribute__((aligned(16)))  wxa[4]; 
+	copy(xc.weights.begin(), xc.weights.end(), wxa); 
+	v4df wx = _mm_load_ps(wxa); 
+	target2 *= wx; 
+#ifdef __SSE3__	
+	float result; 
+	target2 = _mm_hadd_ps(target2, target2); 
+	target2 = _mm_hadd_ps(target2, target2); 
+
+	_mm_store_ss(&result, target2); 
+	return result; 
+#else
+	float __attribute__((aligned(16))) r[4]; 
+	_mm_store_ps(&r, target2); 
+	return r[0] + r[1] +r[2] + r[3] 
+#endif
 }
 
 #endif

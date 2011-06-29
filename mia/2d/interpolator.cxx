@@ -237,7 +237,7 @@ struct add_2d_new {
 					    const CBSplineKernel::SCache& yc) 
 	{
 		U result = U();
-		if (!xc.is_mirrored) {
+		if (xc.is_flat) {
 			for (size_t y = 0; y < size; ++y) {
 				U rx = U();
 				const U *p = &coeff(0, yc.index[y]);

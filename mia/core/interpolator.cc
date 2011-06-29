@@ -66,8 +66,8 @@ CBSplineKernel::SCache::SCache(size_t s, int cs1, int cs2, bool am):
 	index(s), 
 	csize1(cs1), 
 	csize2(cs2), 
-	is_mirrored(true), 
-	always_mirror(am)
+	is_flat(false), 
+	never_flat(am)
 {
 }
 
@@ -108,13 +108,13 @@ void CBSplineKernel::operator () (double x, SCache& cache) const
 		return; 
 	cache.start_idx = start_idx; 
 
-	if (cache.always_mirror || start_idx < 0 || start_idx + m_support_size - 1 >= cache.csize1 ) {
-		cache.is_mirrored = true; 
+	if (cache.never_flat || start_idx < 0 || start_idx + m_support_size - 1 >= cache.csize1 ) {
+		cache.is_flat = false; 
 		fill_index(start_idx, cache.index); 
 		mirror_boundary_conditions(cache.index, cache.csize1, cache.csize2); 
 	}else {
 		cache.index[0] = start_idx; 
-		cache.is_mirrored = false; 
+		cache.is_flat = true; 
 	}
 }
 
