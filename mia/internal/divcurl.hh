@@ -32,12 +32,14 @@ NS_MIA_BEGIN
 template <typename Transform> 
 class EXPORT TDivCurlFullCost : public TFullCost<Transform> {
 public: 
+	typedef typename TFullCost<Transform>::Size Size; 
 	TDivCurlFullCost(double weight_div, double weight_curl, double weight); 
 private: 
 	double do_evaluate(const Transform& t, CDoubleVector& gradient) const;
 	double do_value(const Transform& t) const;
 	double do_value() const;
 	void do_set_size(); 
+	bool do_get_full_size(Size& size) const; 
 	double m_weight_div; 
 	double m_weight_curl; 
 	double m_size_scale; 

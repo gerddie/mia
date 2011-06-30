@@ -46,6 +46,7 @@ private:
 
 	bool do_has(const char *property) const; 
 	double do_value(const C2DTransformation& t) const; 
+	bool do_get_full_size(C2DBounds& size) const; 
 
 	double do_value() const; 
 	void do_reinit(); 

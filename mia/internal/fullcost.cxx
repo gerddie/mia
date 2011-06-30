@@ -85,6 +85,18 @@ void TFullCost<T>::set_size(const Size& size)
 }
 
 template <typename T> 
+bool TFullCost<T>::get_full_size(Size& size) const
+{
+	return do_get_full_size(size); 
+}
+
+template <typename T> 
+bool TFullCost<T>::do_get_full_size(Size& size) const
+{
+	return (m_current_size == size);  
+}
+
+template <typename T> 
 void TFullCost<T>::do_reinit()
 {
 }

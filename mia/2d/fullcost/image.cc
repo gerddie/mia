@@ -78,6 +78,18 @@ bool C2DImageFullCost::do_has(const char *property) const
 	return m_cost_kernel->has(property); 
 }
 
+bool C2DImageFullCost::do_get_full_size(C2DBounds& size) const
+{
+	TRACE_FUNCTION; 
+	assert(m_src); 
+	if (size == C2DBounds::_0) {
+		size = m_src->get_size(); 
+		return true; 
+	}else
+		return 	size == m_src->get_size(); 
+}
+
+
 double C2DImageFullCost::do_value(const C2DTransformation& t) const
 {
 	TRACE_FUNCTION; 

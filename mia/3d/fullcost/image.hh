@@ -49,6 +49,7 @@ private:
 
 	double do_value() const; 
 	void do_reinit(); 
+	bool do_get_full_size(C3DBounds& size) const; 
 
 	C3DImageDataKey m_src_key;
 	C3DImageDataKey m_ref_key;

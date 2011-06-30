@@ -47,6 +47,7 @@ struct TNonrigidRegisterImpl {
 				const InterpolatorFactory& ipf,  size_t mg_levels, int idx);
 
 	PTransformation run(PImage src, PImage ref) const;
+	PTransformation run() const;
 private:
 
 	FullCostList& m_costs;
@@ -114,6 +115,13 @@ typename TNonrigidRegister<dim>::PTransformation
 TNonrigidRegister<dim>::run(PImage src, PImage ref) const
 {
 	return impl->run(src, ref);
+}
+
+template <int dim> 
+typename TNonrigidRegister<dim>::PTransformation 
+TNonrigidRegister<dim>::run() const
+{
+	return impl->run();
 }
 
 
@@ -250,6 +258,61 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 		// and the cost function should handle the image scaling 
 
 		m_costs.set_size(src_scaled->get_size()); 
+		
+		std::shared_ptr<TNonrigRegGradientProblem<dim> > 
+			gp(new TNonrigRegGradientProblem<dim>( m_costs, *transform, m_ipf));
+		
+		m_minimizer->set_problem(gp);
+
+		auto x = transform->get_parameters();
+		cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
+		m_minimizer->run(x);
+		transform->set_parameters(x);
+		
+		// run the registration at refined splines 
+		if (transform->refine()) {
+			m_minimizer->set_problem(gp);
+			x = transform->get_parameters();
+			cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
+			m_minimizer->run(x);
+			transform->set_parameters(x);
+		}
+
+	} while (shift); 
+	return transform;
+}
+
+
+template <int dim> 
+typename TNonrigidRegisterImpl<dim>::PTransformation 
+TNonrigidRegisterImpl<dim>::run() const
+{
+	PTransformation transform;
+
+	m_costs.reinit(); 
+	Size global_size; 
+	if (!m_costs.get_full_size(global_size))
+		throw invalid_argument("Nonrigidregister: the given combination of cost functions don't "
+				       "agree on the size of the registration problem"); 
+
+	int shift = m_mg_levels;
+
+	do {
+
+		// this should be replaced by a per-dimension scale that honours a minimum size of the 
+		// downscaled images -  this is especially important in 3D
+		shift--;
+		int scale_factor = 1 << shift; 
+		Size local_size = global_size / scale_factor; 
+		
+		if (transform)
+			transform = transform->upscale(local_size);
+		else
+			transform = m_transform_creator->create(local_size);
+
+		cvinfo() << "register at " << local_size << "\n";
+		m_costs.reinit(); 
+		m_costs.set_size(local_size); 
 		
 		std::shared_ptr<TNonrigRegGradientProblem<dim> > 
 			gp(new TNonrigRegGradientProblem<dim>( m_costs, *transform, m_ipf));

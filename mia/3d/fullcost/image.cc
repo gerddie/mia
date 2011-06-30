@@ -153,6 +153,17 @@ void C3DImageFullCost::do_set_size()
 	}
 }
 
+bool C3DImageFullCost::do_get_full_size(C3DBounds& size) const
+{
+	TRACE_FUNCTION; 
+	assert(m_src); 
+	if (size == C3DBounds::_0) {
+		size = m_src->get_size(); 
+		return true; 
+	}else
+		return 	size == m_src->get_size(); 
+}
+
 void C3DImageFullCost::do_reinit()
 {
 	TRACE_FUNCTION; 

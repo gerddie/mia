@@ -110,6 +110,15 @@ void TFullCostList<T>::do_set_size()
 }
 
 template <typename T> 
+bool TFullCostList<T>::do_get_full_size(Size& size) const
+{
+	bool result = true; 
+	for (auto i = m_costs.begin(); i != m_costs.end() && result; ++i) 
+		result = (*i)->get_full_size(size); 
+	return result; 
+}
+
+template <typename T> 
 void TFullCostList<T>::do_reinit()
 {
 	for (auto i = m_costs.begin(); i != m_costs.end(); ++i) 

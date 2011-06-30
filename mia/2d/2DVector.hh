@@ -73,6 +73,9 @@ public:
 	
 	/// a static for the value <1,1>. 
 	static const T2DVector<T> _1; 
+
+	/// a static for the value <0,0>. 
+	static const T2DVector<T> _0; 
 		
 	T2DVector():x(T()),y(T()){}
 
@@ -246,6 +249,9 @@ struct atomic_data<T2DVector<T> > {
 
 template <typename T> 
 const T2DVector<T> T2DVector<T>::_1 = T2DVector<T>(1,1); 
+
+template <typename T> 
+const T2DVector<T> T2DVector<T>::_0 = T2DVector<T>(0,0); 
 
 /**
    operator to write a 2D vector to a stream 

@@ -84,6 +84,14 @@ public:
 	 */
 	PTransformation  run(PImage src, PImage ref) const;
 
+
+	/**
+	   Run the registration by optimizing whatever is given with the cost functions 
+	   \returns the transformation registering that minimizes the constructor given 
+	   cost function 
+	 */
+	PTransformation  run() const;
+
 private:
 	struct TNonrigidRegisterImpl<dim> *impl;
 };
