@@ -112,6 +112,11 @@ double Scaler1DFixture::f(double x) const
 Scaler1DFixture::Scaler1DFixture():
 	data(256)
 {
+
+	list< bfs::path> sksearchpath; 
+	sksearchpath.push_back( bfs::path("splinekernel"));
+	CSplineKernelPluginHandler::set_search_path(sksearchpath); 
+
 	for(size_t x = 0; x < 256; ++x)
 		data[x] = 200*f(2 * M_PI * x / 255.0);
 }

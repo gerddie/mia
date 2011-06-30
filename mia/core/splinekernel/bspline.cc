@@ -859,5 +859,58 @@ double CBSplineKernel5::get_weight_at(double x, int degree) const
 	}
 }
 
+
+CBSplineKernelPlugin::CBSplineKernelPlugin():
+	CSplineKernelPlugin("bspline"), 
+	m_degree(3)
+{
+	add_parameter("d", new CIntParameter(m_degree, 0, 5, false, "Spline degree"));
+}
+	
+CSplineKernelPlugin::ProductPtr CBSplineKernelPlugin::do_create() const
+{
+	switch (m_degree) {
+	case 0: return CSplineKernelPlugin::ProductPtr(new CBSplineKernel0); 
+	case 1: return CSplineKernelPlugin::ProductPtr(new CBSplineKernel1); 
+	case 2: return CSplineKernelPlugin::ProductPtr(new CBSplineKernel2); 
+	case 3: return CSplineKernelPlugin::ProductPtr(new CBSplineKernel3); 
+	case 4: return CSplineKernelPlugin::ProductPtr(new CBSplineKernel4); 
+	case 5: return CSplineKernelPlugin::ProductPtr(new CBSplineKernel5); 
+	default:
+		assert(0 && "add parameter didn't catch the proper range"); 
+	}
+	return CSplineKernelPlugin::ProductPtr(); 
+}
+
+const std::string CBSplineKernelPlugin::do_get_descr()const
+{
+	return "B-spline kernel creation "; 
+}
+
+
+COMomsSplineKernelPlugin::COMomsSplineKernelPlugin():
+	CSplineKernelPlugin("omoms"), 
+	m_degree(3)
+{
+	add_parameter("d", new CIntParameter(m_degree, 3, 3, false, "Spline degree"));
+}
+
+CSplineKernelPlugin::ProductPtr COMomsSplineKernelPlugin::do_create() const
+{
+	return CSplineKernelPlugin::ProductPtr(new CBSplineKernelOMoms3); 
+}
+
+const std::string COMomsSplineKernelPlugin::do_get_descr()const
+{
+	return "OMoms-spline kernel creation"; 
+}
+
+extern "C" EXPORT CPluginBase  *get_plugin_interface()
+{
+	CPluginBase  *result = new COMomsSplineKernelPlugin(); 
+	result->append_interface(new CBSplineKernelPlugin()); 
+	return result;
+}
+
 NS_END
 NS_MIA_END

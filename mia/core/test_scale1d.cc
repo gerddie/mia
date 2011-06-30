@@ -32,7 +32,6 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/msgstream.hh>
 
-
 #include <mia/core/scale1d.hh>
 
 
@@ -101,6 +100,11 @@ BOOST_FIXTURE_TEST_CASE( test_downscale_linear, ScaleFixtureBase)
 
 ScaleFixtureBase::ScaleFixtureBase()
 {
+	list< bfs::path> sksearchpath; 
+	sksearchpath.push_back( bfs::path("splinekernel"));
+	CSplineKernelPluginHandler::set_search_path(sksearchpath); 
+
+
 	list< bfs::path> kernelsearchpath;
 	kernelsearchpath.push_back(bfs::path("spacialkernel"));
 	C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);

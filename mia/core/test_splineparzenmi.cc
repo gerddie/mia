@@ -27,10 +27,12 @@
 #include <mia/internal/autotest.hh>
 #include <mia/core/mitestimages.hh>
 #include <mia/core/splineparzenmi.hh>
+#include <boost/filesystem.hpp>
 
 NS_MIA_USE; 
 using namespace std; 
 using namespace boost::unit_test;
+namespace bfs=boost::filesystem; 
 
 struct SplineMutualInformationFixture  {
 	SplineMutualInformationFixture();
@@ -48,7 +50,7 @@ struct SplineMutualInformationFixture  {
 
 BOOST_FIXTURE_TEST_CASE( test_same_image_entropy, SplineMutualInformationFixture ) 
 {
-        PSplineKernel haar = CSplineKernelPluginHandler::instance().produce("bspline0"); 
+        PSplineKernel haar = CSplineKernelPluginHandler::instance().produce("bspline:d=0"); 
         CSplineParzenMI smi(256, haar, 256, haar); 
 	smi.fill(reference.begin(), reference.end(), reference.begin(), reference.end()); 
         BOOST_CHECK_CLOSE(smi.value(), -5.1013951881429653, 0.1); 
@@ -57,7 +59,7 @@ BOOST_FIXTURE_TEST_CASE( test_same_image_entropy, SplineMutualInformationFixture
 
 BOOST_FIXTURE_TEST_CASE( test_different_image_entropy, SplineMutualInformationFixture ) 
 {
-        PSplineKernel haar = CSplineKernelPluginHandler::instance().produce("bspline0"); 
+        PSplineKernel haar = CSplineKernelPluginHandler::instance().produce("bspline:d=0"); 
         CSplineParzenMI smi(256, haar, 256, haar); 
 	smi.fill(moving.begin(), moving.end(), reference.begin(), reference.end()); 
 	
@@ -113,10 +115,16 @@ SplineMutualInformationFixture::SplineMutualInformationFixture():
         size(mi_test_size.width * mi_test_size.height), 
         reference(reverence_init_data, reverence_init_data + size),
         moving(moving_init_data, moving_init_data + size), 
-        bins(64),
-        rkernel(CSplineKernelPluginHandler::instance().produce("bspline0")), 
-        mkernel(CSplineKernelPluginHandler::instance().produce("bspline3"))
+        bins(64)
 {        
+	list< bfs::path> sksearchpath; 
+	sksearchpath.push_back( bfs::path("splinekernel"));
+	CSplineKernelPluginHandler::set_search_path(sksearchpath); 
+
+        rkernel = CSplineKernelPluginHandler::instance().produce("bspline:d=0");  
+        mkernel = CSplineKernelPluginHandler::instance().produce("bspline:d=3"); 
+
+
 }
 
 

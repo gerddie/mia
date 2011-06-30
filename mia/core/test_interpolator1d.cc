@@ -22,12 +22,14 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/core/interpolator1d.hh>
+#include <boost/filesystem.hpp>
 
 #include <cmath>
 #include <memory>
 
 using namespace std;
 using namespace mia;
+namespace bfs=boost::filesystem; 
 
 struct InterpolatorIDFixture  {
 
@@ -39,6 +41,15 @@ struct InterpolatorIDFixture  {
 
 };
 
+struct Initialiaze {
+	Initialiaze() {
+		list< bfs::path> sksearchpath; 
+		sksearchpath.push_back( bfs::path("splinekernel"));
+		CSplineKernelPluginHandler::set_search_path(sksearchpath); 
+	}
+}; 
+
+Initialiaze set_path; 
 
 BOOST_FIXTURE_TEST_CASE( test_linear, InterpolatorIDFixture)
 {

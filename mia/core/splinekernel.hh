@@ -273,14 +273,14 @@ F *create_interpolator_factory(EInterpolation type)
 	PSplineKernel kernel; 
 	switch (type) {
 	case ip_nn: 
-	case ip_bspline0: kernel = CSplineKernelPluginHandler::instance().produce("bspline0"); break; 
+	case ip_bspline0: kernel = CSplineKernelPluginHandler::instance().produce("bspline:d=0"); break; 
 	case ip_linear:
-	case ip_bspline1: kernel = CSplineKernelPluginHandler::instance().produce("bspline1"); break; 
-	case ip_bspline2: kernel = CSplineKernelPluginHandler::instance().produce("bspline2"); break; 
-	case ip_bspline3: kernel = CSplineKernelPluginHandler::instance().produce("bspline3"); break; 
-	case ip_bspline4: kernel = CSplineKernelPluginHandler::instance().produce("bspline4"); break; 
-	case ip_bspline5: kernel = CSplineKernelPluginHandler::instance().produce("bspline5"); break; 
-	case ip_omoms3:   kernel = CSplineKernelPluginHandler::instance().produce("omoms3"); break;
+	case ip_bspline1: kernel = CSplineKernelPluginHandler::instance().produce("bspline:d=1"); break; 
+	case ip_bspline2: kernel = CSplineKernelPluginHandler::instance().produce("bspline:d=2"); break; 
+	case ip_bspline3: kernel = CSplineKernelPluginHandler::instance().produce("bspline:d=3"); break; 
+	case ip_bspline4: kernel = CSplineKernelPluginHandler::instance().produce("bspline:d=4"); break; 
+	case ip_bspline5: kernel = CSplineKernelPluginHandler::instance().produce("bspline:d=5"); break; 
+	case ip_omoms3:   kernel = CSplineKernelPluginHandler::instance().produce("omoms:d=3"); break;
 	default: 
 		throw invalid_argument("create_interpolator_factory:Unknown interpolator type requested"); 
 	}; 
