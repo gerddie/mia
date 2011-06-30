@@ -57,7 +57,7 @@ void __dispatch_copy<I,O>::apply(const I& input, O& output)
 }
  
 template <typename T>
-T1DConvoluteInterpolator<T>::T1DConvoluteInterpolator(const std::vector<T>& data, PBSplineKernel  kernel):
+T1DConvoluteInterpolator<T>::T1DConvoluteInterpolator(const std::vector<T>& data, PSplineKernel  kernel):
 	m_coeff(data.size()), 
 	m_size2(data.size() + data.size() - 2),
 	m_kernel(kernel),

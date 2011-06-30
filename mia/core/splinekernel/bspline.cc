@@ -19,30 +19,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
-  The spline kernels are based on code by
-  Philippe Thevenaz http://bigwww.epfl.ch/thevenaz/interpolation/
-
  */
-
-
-#include <cmath>
-#include <cassert>
-#include <iomanip>
-#include <limits>
-#include <mia/core/unaryfunction.hh>
-#include <mia/core/interpolator.hh>
-#include <mia/core/errormacro.hh>
-#include <mia/core/msgstream.hh>
-#include <mia/core/simpson.hh>
 
 #if defined(__SSE2__)
 #include <emmintrin.h>
 #endif
 
-#define USE_FASTFLOOR
+
+#include <mia/core/splinekernel/bspline.hh>
+
 
 NS_MIA_BEGIN
-using namespace std;
+NS_BEGIN(bsplinekernel)
 
 template <int sd, int degree>
 struct bspline {
@@ -52,6 +40,7 @@ struct bspline {
 	}
 };
 
+
 template <>
 struct bspline<0,0> {
 	static double apply(double x) {
@@ -59,166 +48,8 @@ struct bspline<0,0> {
 	}
 };
 
-CBSplineKernel::SCache::SCache(size_t s, PBoundaryCondition bc, bool am):
-	x(numeric_limits<double>::quiet_NaN()), 
-	start_idx(-1000), 
-	index_limit(bc->get_width() - s), 
-	weights(s), 
-	index(s), 
-	boundary_condition(bc), 
-	is_flat(false), 
-	never_flat(am)
-{
-}
-
-CBSplineKernel::CBSplineKernel(size_t degree, double shift, EInterpolation type):
-	m_half_degree(degree >> 1),
-	m_shift(shift),
-	m_support_size(degree + 1), 
-	m_type(type), 
-	m_indices(m_support_size)
-{
-	for(int i = 0; i < m_support_size; ++i) 
-		m_indices[i] = i; 
-}
-
-CBSplineKernel::~CBSplineKernel()
-{
-}
-
-EInterpolation CBSplineKernel::get_type() const
-{
-	return m_type; 
-}
-
-void CBSplineKernel::operator () (double x, std::vector<double>& weight, std::vector<int>& index)const
-{
-	assert(index.size() == m_support_size);
-	int ix = get_indices(x, index);
-	get_weights(x - ix, weight);
-}
-
-void CBSplineKernel::operator () (double x, SCache& cache) const
-{
-	if (x == cache.x)
-		return; 
-	int start_idx  = get_start_idx_and_value_weights(x, cache.weights); 
-	cache.x = x; 
-	if (start_idx == cache.start_idx) 
-		return; 
-	cache.start_idx = start_idx; 
-
-	if (cache.never_flat || start_idx < 0 || start_idx > cache.index_limit ) {
-		cache.is_flat = false; 
-		fill_index(start_idx, cache.index); 
-		cache.boundary_condition->apply(cache.index, cache.weights); 
-	}else {
-		cache.index[0] = start_idx; 
-		cache.is_flat = true; 
-	}
-}
-
-
-#ifdef USE_FASTFLOOR
-// code taken from http://www.stereopsis.com/FPU.html
-// Michael Herf
-const double _double2fixmagic = 68719476736.0*1.5;     //2^36 * 1.5,  (52-_shiftamt=36) uses limited precisicion to floor
-const int    _shiftamt        = 16;                    //16.16 fixed point representation,
-
-#if BIGENDIAN_
-	#define iexp_				0
-	#define iman_				1
-#else
-	#define iexp_				1
-	#define iman_				0
-#endif //BigEndian_
-
-// ================================================================================================
-// Real2Int
-// ================================================================================================
-inline int fastfloor(double val)
-{
-	union {
-		double dval; 
-		int ival[2]; 
-	} v; 
-	v.dval = val + _double2fixmagic;
-	return v.ival[iman_] >> _shiftamt; 
-}
-#else
-#define fastfloor floor
-#endif
-
-void CBSplineKernel::fill_index(int i, std::vector<int>& index) const 
-{
-	int k= 0; 
-	while (k < m_support_size)
-		index[k] = i + m_indices[k++]; 	
-}
-
-int CBSplineKernel::get_indices(double x, std::vector<int>& index) const
-{
-	const int ix = fastfloor(x + m_shift);
-	fill_index(ix - (int)m_half_degree, index); 
-	return ix;
-}
-
-double CBSplineKernel::get_weight_at(double /*x*/, int degree) const
-{
-	THROW(invalid_argument, "B-Spline: derivative degree "
-	      <<  degree << " not supported" );
-}
-
-const std::vector<double>& CBSplineKernel::get_poles() const
-{
-	return m_poles;
-}
-
-void CBSplineKernel::add_pole(double x)
-{
-	m_poles.push_back(x);
-}
-
-void CBSplineKernel::derivative(double x, std::vector<double>& weight, std::vector<int>& index)const
-{
-	assert(index.size() == m_support_size);
-	int ix = get_indices(x, index);
-	get_derivative_weights(x - ix, weight);
-}
-
-void CBSplineKernel::derivative(double x, std::vector<double>& weight, std::vector<int>& index, int degree)const
-{
-	assert(index.size() == m_support_size);
-	int ix = get_indices(x, index);
-	get_derivative_weights(x - ix, weight, degree);
-}
-
-double CBSplineKernel::get_nonzero_radius() const
-{
-	return m_support_size / 2.0;
-}
-
-int CBSplineKernel::get_active_halfrange() const   
-{
-	return (m_support_size  + 1) / 2;
-}
-
-int CBSplineKernel::get_start_idx_and_value_weights(double x, std::vector<double>& weights) const
-{
-	const int result = fastfloor(x + m_shift);
-	get_weights(x - result, weights); 
-	return result - (int)m_half_degree; 
-}
-
-int CBSplineKernel::get_start_idx_and_derivative_weights(double x, std::vector<double>& weights) const
-{
-	const int result = fastfloor(x + m_shift);
-	get_derivative_weights(x - result, weights); 
-	return result - (int)m_half_degree; 
-}
-
 CBSplineKernel0::CBSplineKernel0():
-	CBSplineKernel(0, 0.5, ip_bspline0)
+	CSplineKernel(0, 0.5, ip_bspline0)
 {
 }
 	
@@ -254,7 +85,7 @@ void CBSplineKernel0::get_derivative_weights(double /*x*/, std::vector<double>& 
 
 
 CBSplineKernel1::CBSplineKernel1():
-	CBSplineKernel(1, 0.0, ip_bspline1)
+	CSplineKernel(1, 0.0, ip_bspline1)
 {
 }
 	
@@ -316,7 +147,7 @@ void CBSplineKernel1::get_derivative_weights(double x, std::vector<double>& weig
 
 
 CBSplineKernel2::CBSplineKernel2():
-	CBSplineKernel(2, 0.5, ip_bspline2)
+	CSplineKernel(2, 0.5, ip_bspline2)
 {
 	add_pole(sqrt(8.0) - 3.0);
 }
@@ -389,7 +220,7 @@ void CBSplineKernel2::get_derivative_weights(double x, std::vector<double>& weig
 }
 
 CBSplineKernel3::CBSplineKernel3():
-	CBSplineKernel(3, 0.0, ip_bspline3)
+	CSplineKernel(3, 0.0, ip_bspline3)
 {
 	add_pole(sqrt(3.0) - 2.0);
 }
@@ -517,7 +348,7 @@ double CBSplineKernel3::get_weight_at(double x, int degree) const
 
 
 CBSplineKernelOMoms3::CBSplineKernelOMoms3():
-	CBSplineKernel(3, 0.0, ip_omoms3)
+	CSplineKernel(3, 0.0, ip_omoms3)
 {
 	add_pole((sqrt(105.0) - 13.0)/8.0);
 }
@@ -680,7 +511,7 @@ double CBSplineKernel4::get_weight_at(double x, int degree) const
 }
 
 CBSplineKernel4::CBSplineKernel4():
-	CBSplineKernel(4, 0.5, ip_bspline4)
+	CSplineKernel(4, 0.5, ip_bspline4)
 {
 	add_pole(sqrt(664.0 - sqrt(438976.0)) + sqrt(304.0) - 19.0);
 	add_pole(sqrt(664.0 + sqrt(438976.0)) - sqrt(304.0) - 19.0);
@@ -756,7 +587,7 @@ void CBSplineKernel4::get_derivative_weights(double x, std::vector<double>& weig
 
 
 CBSplineKernel5::CBSplineKernel5():
-	CBSplineKernel(5, 0.0, ip_bspline5)
+	CSplineKernel(5, 0.0, ip_bspline5)
 {
 	add_pole((sqrt(270.0 - sqrt(70980.0)) + sqrt(105.0)- 13.0) / 2.0);
 	add_pole((sqrt(270.0 + sqrt(70980.0)) - sqrt(105.0)- 13.0) / 2.0);
@@ -1028,64 +859,5 @@ double CBSplineKernel5::get_weight_at(double x, int degree) const
 	}
 }
 
-
-static TDictMap<EInterpolation>::Table InterpolationOptions[] = {
-	{"nn", ip_nn},
-	{"linear", ip_linear},
-	{"bspline0", ip_bspline0},
-	{"bspline1", ip_bspline1},
-	{"bspline2", ip_bspline2},
-	{"bspline3", ip_bspline3},
-	{"bspline4", ip_bspline4},
-	{"bspline5", ip_bspline5},
-	{"omoms3", ip_omoms3},
-	{NULL, ip_unknown}
-};
-
-EXPORT_CORE TDictMap<EInterpolation> GInterpolatorTable(InterpolationOptions);
-
-
-struct F2DKernelIntegrator: public FUnary {
-	F2DKernelIntegrator(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2):
-		m_spline(spline), m_s1(s1), m_s2(s2), m_deg1(deg1), m_deg2(deg2)
-		{
-		}
-	virtual double operator() (double x) const {
-		return m_spline.get_weight_at(x - m_s1, m_deg1) *
-			m_spline.get_weight_at(x - m_s2, m_deg2);
-	}
-private:
-	const CBSplineKernel& m_spline;
-	double m_s1, m_s2, m_deg1, m_deg2;
-};
-
-
-double  EXPORT_CORE integrate2(const CBSplineKernel& spline, double s1, double s2, int deg1, int deg2, double n, double x0, double L)
-{
-	double sum = 0.0;
-	x0 /= n;
-	L  /= n;
-
-	// evaluate interval to integrate over
-	double start_int = s1 - spline.get_nonzero_radius();
-	double end_int = s1 + spline.get_nonzero_radius();
-	if (start_int < s2 - spline.get_nonzero_radius())
-		start_int = s2 - spline.get_nonzero_radius();
-	if (start_int < x0)
-		start_int = x0;
-	if (end_int > s2 + spline.get_nonzero_radius())
-		end_int = s2 + spline.get_nonzero_radius();
-	if (end_int > L)
-		end_int = L;
-
-	// Simpson formula
-	if (end_int <= start_int)
-		return sum;
-	const size_t intervals = size_t(8 * (end_int - start_int));
-
-	sum = simpson( start_int, end_int, intervals, F2DKernelIntegrator(spline, s1, s2, deg1, deg2));
-	return sum * n;
-}
-
-
+NS_END
 NS_MIA_END

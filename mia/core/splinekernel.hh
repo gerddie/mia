@@ -21,25 +21,19 @@
  *
  */
 
-#ifndef mia_core_interpolator_hh
-#define mia_core_interpolator_hh
+#ifndef mia_core_splinekernel_hh
+#define mia_core_splinekernel_hh
 
 #include <vector>
+#include <memory>
 #include <cmath>
 #include <mia/core/defines.hh>
 #include <mia/core/dictmap.hh>
 #include <mia/core/boundary_conditions.hh>
-#include <memory>
+#include <mia/core/factory.hh>
+#include <mia/core/product_base.hh>
 
 NS_MIA_BEGIN
-
-/**
-   \file core/interpolator.hh
-   \todo move kernels into plugins 
- */
-
-/// Table to define value-enum relations between interpolator types and strings 
-extern EXPORT_CORE TDictMap<EInterpolation> GInterpolatorTable;
 
 /**
    \brief Base class for all spline based interpolation kernels.  
@@ -48,15 +42,14 @@ extern EXPORT_CORE TDictMap<EInterpolation> GInterpolatorTable;
    evaluate weights and indices into the coefficient field. 
    
  */
-class EXPORT_CORE CBSplineKernel {
+class EXPORT_CORE CSplineKernel : public CProductBase{
 public:
-	/// @cond OBSOLETE 
-	enum EIntegralType { integral_11, 
-			     integral_20, 
-			     integral_02, 
-			     integral_unknown }; 
-	/// @endcond 
-	
+
+	typedef CSplineKernel plugin_data; 
+	typedef CSplineKernel plugin_type; 
+	static const char *type_descr; 
+	static const char *data_descr; 
+
 	/**
 	   A struture to cache B-spline weights and indices 
 	 */
@@ -103,12 +96,12 @@ public:
 	   @param type interpolation type 
 	   @remark why to I give the type, it should alwas be bspline
 	 */
-	CBSplineKernel(size_t degree, double shift, EInterpolation type);
+	CSplineKernel(size_t degree, double shift, EInterpolation type);
 
 	/**
 	   The virtual destructor is just here to avoid some warning
 	 */
-	virtual ~CBSplineKernel();
+	virtual ~CSplineKernel();
 
 	/**
 	    This operator evaluates the weights and indices of the interpolation
@@ -260,12 +253,40 @@ private:
 	
 };
 
-/// Pointer type for B-Spline kernels 
-typedef std::shared_ptr<CBSplineKernel> PBSplineKernel;
+/// Pointer type for spline kernels 
+typedef std::shared_ptr<CSplineKernel> PSplineKernel;
 
-/// convolution kernel type enums 
-enum ci_type {ci_bspline, /**< B-Spline kernels */
-	      ci_omoms};  /**< O-Moms kernels  */
+/// base plugin for spline kernels
+typedef TFactory<CSplineKernel> CSplineKernelPlugin; 
+
+/// plugin handler for spaciel filter kernels 
+typedef THandlerSingleton<TFactoryPluginHandler<CSplineKernelPlugin> > CSplineKernelPluginHandler;
+
+FACTORY_TRAIT(CSplineKernelPluginHandler); 
+
+template <typename F>
+F *create_interpolator_factory(EInterpolation type) __attribute__((deprecated)); 
+
+template <typename F>
+F *create_interpolator_factory(EInterpolation type) 
+{
+	PSplineKernel kernel; 
+	switch (type) {
+	case ip_nn: 
+	case ip_bspline0: kernel = CSplineKernelPluginHandler::instance().produce("bspline0"); break; 
+	case ip_linear:
+	case ip_bspline1: kernel = CSplineKernelPluginHandler::instance().produce("bspline1"); break; 
+	case ip_bspline2: kernel = CSplineKernelPluginHandler::instance().produce("bspline2"); break; 
+	case ip_bspline3: kernel = CSplineKernelPluginHandler::instance().produce("bspline3"); break; 
+	case ip_bspline4: kernel = CSplineKernelPluginHandler::instance().produce("bspline4"); break; 
+	case ip_bspline5: kernel = CSplineKernelPluginHandler::instance().produce("bspline5"); break; 
+	case ip_omoms3:   kernel = CSplineKernelPluginHandler::instance().produce("omoms3"); break;
+	default: 
+		throw invalid_argument("create_interpolator_factory:Unknown interpolator type requested"); 
+	}; 
+	return new F(ipf_spline, kernel); 
+};
+
 
 template <typename T>
 struct max_hold_type {
@@ -285,82 +306,11 @@ struct coeff_map<float> {
 };
 
 
-inline size_t CBSplineKernel::size()const
+inline size_t CSplineKernel::size()const
 {
 	return m_support_size;
 }
 
-/** implements a B-Spline kernel of degree 0 */
-class EXPORT_CORE CBSplineKernel0: public  CBSplineKernel{
-public:
-	CBSplineKernel0();
-	virtual void get_weights(double x, std::vector<double>& weight)const;
-	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	virtual double get_weight_at(double x, int order) const;
-	virtual void get_derivative_weights(double x, std::vector<double>& weight, int order) const;
-};
-
-/** implements a B-Spline kernel of degree 0 */
-class EXPORT_CORE CBSplineKernel1: public  CBSplineKernel{
-public:
-	CBSplineKernel1();
-	virtual void get_weights(double x, std::vector<double>& weight)const;
-	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	virtual double get_weight_at(double x, int order) const;
-	virtual void get_derivative_weights(double x, std::vector<double>& weight, int order) const;
-};
-
-
-/** implements a B-Spline kernel of degree 2 */
-class EXPORT_CORE CBSplineKernel2: public  CBSplineKernel{
-public:
-	CBSplineKernel2();
-	virtual void get_weights(double x, std::vector<double>& weight)const;
-	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	virtual double get_weight_at(double x, int order) const;
-	virtual void get_derivative_weights(double x, std::vector<double>& weight, int order) const;
-};
-
-/** implements a B-Spline kernel of degree 3 */
-class EXPORT_CORE CBSplineKernel3: public  CBSplineKernel{
-public:
-	CBSplineKernel3();
-	virtual void get_weights(double x, std::vector<double>& weight)const;
-	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	virtual double get_weight_at(double x, int order) const;
-	void get_derivative_weights(double x, std::vector<double>& weight, int order) const;
-private: 
-};
-
-/** implements a B-Spline kernel of degree 4 */
-class EXPORT_CORE CBSplineKernel4: public  CBSplineKernel{
-public:
-	CBSplineKernel4();
-	virtual void get_weights(double x, std::vector<double>& weight)const;
-	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	virtual double get_weight_at(double x, int order) const;
-	void get_derivative_weights(double x, std::vector<double>& weight, int order) const;
-private: 
-};
-
-/** implements a B-Spline kernel of degree 5 */
-class EXPORT_CORE CBSplineKernel5: public  CBSplineKernel{
-public:
-	CBSplineKernel5();
-	virtual void get_weights(double x, std::vector<double>& weight)const;
-	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	virtual double get_weight_at(double x, int order) const;
-	void get_derivative_weights(double x, std::vector<double>& weight, int order) const;
-};
-
-/** implements a o-Moms kernel of degree 3 */
-class EXPORT_CORE CBSplineKernelOMoms3 : public  CBSplineKernel{
-public:
-	CBSplineKernelOMoms3();
-	virtual void get_weights(double x, std::vector<double>& weight)const;
-	virtual void get_derivative_weights(double x, std::vector<double>& weight) const;
-	void get_derivative_weights(double x, std::vector<double>& weight, int order) const;
-};
 
 /**
    Approximate integration of a B-Spline kernel product 
@@ -380,7 +330,7 @@ public:
    @returns value of integral 
    
 */
-double  EXPORT_CORE integrate2(const CBSplineKernel& spline, double s1, double s2, int d1, int d2, double n, double x0, double L);
+double  EXPORT_CORE integrate2(const CSplineKernel& spline, double s1, double s2, int d1, int d2, double n, double x0, double L);
 
 /**
    Function to apply mirrored boundary conditions so that the indices fit into [0,width)
@@ -423,7 +373,7 @@ private:
 
 
 template <typename C>
-void CBSplineKernel::filter_line(std::vector<C>& coeff)
+void CSplineKernel::filter_line(std::vector<C>& coeff)
 {
 	/* special case required by mirror boundaries */
 	if (coeff.size() < 2) {
@@ -458,7 +408,7 @@ void CBSplineKernel::filter_line(std::vector<C>& coeff)
 }
 
 template <typename C>
-C CBSplineKernel::initial_coeff(const std::vector<C>& coeff, double pole)
+C CSplineKernel::initial_coeff(const std::vector<C>& coeff, double pole)
 {
 	
 	/* full loop */
@@ -479,62 +429,11 @@ C CBSplineKernel::initial_coeff(const std::vector<C>& coeff, double pole)
 }
 
 template <typename C>
-C CBSplineKernel::initial_anti_coeff(const std::vector<C>& coeff, double pole)
+C CSplineKernel::initial_anti_coeff(const std::vector<C>& coeff, double pole)
 {
 	return ((pole / (pole * pole - 1.0)) * 
 		(pole * coeff[coeff.size() - 2] + coeff[coeff.size() - 1]));
 }
-
-/**
-   Generic implementaation to create and interpolation factory 
-   \tparam InterpolatorFactory target factory 
-   \param type interpolation type to be used 
-   \returns the newly created interpolation factory  
- */
-
-template <typename InterpolatorFactory> 
-InterpolatorFactory *create_interpolator_factory(EInterpolation type) 
-{
-	std::shared_ptr<CBSplineKernel > kernel;
-	EInterpolationFactory iptype = ipf_unknown; 
-	switch (type) {
-	case ip_nn:
-	case ip_bspline0:
-		iptype = ipf_spline;
-		kernel.reset(new CBSplineKernel0());
-		break;
-	case ip_linear:
-	case ip_bspline1:
-		iptype = ipf_spline;
-		kernel.reset(new CBSplineKernel1());
-		break;
-	case ip_bspline2:
-		iptype = ipf_spline;
-		kernel.reset(new CBSplineKernel2());
-		break;
-	case ip_bspline3:
-		iptype = ipf_spline;
-		kernel.reset(new CBSplineKernel3());
-		break;
-	case ip_bspline4:
-		iptype = ipf_spline;
-		kernel.reset(new CBSplineKernel4());
-		break;
-	case ip_bspline5:
-		iptype = ipf_spline;
-		kernel.reset(new CBSplineKernel5());
-		break;
-	case ip_omoms3:
-		iptype = ipf_spline;
-		kernel.reset(new CBSplineKernelOMoms3());
-		break;
-	default:
-		throw std::invalid_argument("unknown interpolation method");
-	}
-	return new InterpolatorFactory(iptype, kernel); 
-
-}
-
 
 NS_MIA_END
 

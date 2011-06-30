@@ -56,7 +56,7 @@ public:
 	    \param out_size
 	 */
 
-	C1DScalarFixed(const CBSplineKernel& kernel, size_t in_size, size_t out_size);
+	C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size_t out_size);
 
 	/**
 	   Scaling operator.

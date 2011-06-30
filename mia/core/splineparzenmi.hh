@@ -25,7 +25,7 @@
 
 #include <boost/concept/requires.hpp>
 #include <boost/concept_check.hpp>
-#include <mia/core/interpolator.hh>
+#include <mia/core/splinekernel.hh>
 
 NS_MIA_BEGIN
 
@@ -50,8 +50,8 @@ public:
 	   @param mbins number of bins in moving intensity range
 	   @param mkernel B-spline kernel for filling and evaluating moving intensities
 	*/
-	CSplineParzenMI(size_t rbins, PBSplineKernel rkernel,
-			size_t mbins, PBSplineKernel mkernel); 
+	CSplineParzenMI(size_t rbins, PSplineKernel rkernel,
+			size_t mbins, PSplineKernel mkernel); 
 	
 
 	/**
@@ -95,7 +95,7 @@ private:
 	void evaluate_log_cache();  
         
         size_t m_ref_bins;
-	PBSplineKernel  m_ref_kernel; 
+	PSplineKernel  m_ref_kernel; 
 	size_t m_ref_border; 
 	size_t m_ref_real_bins; 
         double m_ref_max;
@@ -104,7 +104,7 @@ private:
 
 	size_t m_mov_bins;
 	
-	PBSplineKernel  m_mov_kernel; 
+	PSplineKernel  m_mov_kernel; 
 	size_t m_mov_border; 
 	size_t m_mov_real_bins; 
         double m_mov_max;

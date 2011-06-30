@@ -24,7 +24,7 @@ SET(MIACORE_SRC_BASE
   history.cc
   index.cc
   info.cc
-  interpolator.cc
+  splinekernel.cc
   interpolator1d.cc
   iodata.cc
   ioplugin.cc
@@ -89,7 +89,7 @@ SET(MIACORE_HEADER_BASE
   history.hh
   histogram.hh
   index.hh
-  interpolator.hh
+  splinekernel.hh
   import_handler.hh
   iodata.hh
   iohandler.cxx iohandler.hh
@@ -250,6 +250,7 @@ ADD_SUBDIRECTORY(testplug      )
 ADD_SUBDIRECTORY(spacialkernel )
 ADD_SUBDIRECTORY(noise         ) 
 ADD_SUBDIRECTORY(minimizer     ) 
+ADD_SUBDIRECTORY(splinekernel  ) 
 
 NEW_TEST(attributes miacore)
 NEW_TEST(boundary_conditions

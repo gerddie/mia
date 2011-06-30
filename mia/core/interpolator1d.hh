@@ -47,7 +47,7 @@
 #include <vector>
 
 #include <mia/core/defines.hh>
-#include <mia/core/interpolator.hh>
+#include <mia/core/splinekernel.hh>
 
 
 NS_MIA_BEGIN
@@ -107,7 +107,7 @@ public:
 	   \param kernel the spline kernel used for interpolation 
 	 */
 	
-	T1DConvoluteInterpolator(const std::vector<T>& data, PBSplineKernel kernel);
+	T1DConvoluteInterpolator(const std::vector<T>& data, PSplineKernel kernel);
 	
 	~T1DConvoluteInterpolator();
 	
@@ -135,7 +135,7 @@ private:
 
 	TCoeff1D m_coeff;
 	size_t m_size2;
-	PBSplineKernel m_kernel;
+	PSplineKernel m_kernel;
 	T m_min;
 	T m_max;
 
@@ -157,7 +157,7 @@ public:
 	    @param type 
 	    @param kernel 
 	 */
-	C1DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel);
+	C1DInterpolatorFactory(EInterpolationFactory type, PSplineKernel kernel);
 
 	/// Copy constructor 
 	C1DInterpolatorFactory(const C1DInterpolatorFactory& o);
@@ -179,11 +179,11 @@ public:
 		__attribute__ ((warn_unused_result));
 
 	/// @returns the B-spline kernel 
-	PBSplineKernel get_kernel() const;
+	PSplineKernel get_kernel() const;
 
 private:
 	EInterpolationFactory  m_type;
-	PBSplineKernel m_kernel;
+	PSplineKernel m_kernel;
 };
 
 /// Pointer type for C1DInterpolatorFactory. 

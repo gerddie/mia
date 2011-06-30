@@ -31,7 +31,7 @@
 NS_MIA_BEGIN
 
 using namespace std; 
-C1DScalarFixed::C1DScalarFixed(const CBSplineKernel& kernel, size_t in_size, size_t out_size):
+C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size_t out_size):
 	m_in_size(in_size), 
 	m_out_size(out_size), 
 	m_support(kernel.size()), 

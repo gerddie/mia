@@ -39,8 +39,8 @@ struct SplineMutualInformationFixture  {
 	vector<double> reference;
 	vector<double> moving;
 	size_t bins; 
-        PBSplineKernel rkernel; 
-        PBSplineKernel mkernel; 
+        PSplineKernel rkernel; 
+        PSplineKernel mkernel; 
        
 
 };
@@ -48,7 +48,7 @@ struct SplineMutualInformationFixture  {
 
 BOOST_FIXTURE_TEST_CASE( test_same_image_entropy, SplineMutualInformationFixture ) 
 {
-        PBSplineKernel haar(new CBSplineKernel0); 
+        PSplineKernel haar = CSplineKernelPluginHandler::instance().produce("bspline0"); 
         CSplineParzenMI smi(256, haar, 256, haar); 
 	smi.fill(reference.begin(), reference.end(), reference.begin(), reference.end()); 
         BOOST_CHECK_CLOSE(smi.value(), -5.1013951881429653, 0.1); 
@@ -57,7 +57,7 @@ BOOST_FIXTURE_TEST_CASE( test_same_image_entropy, SplineMutualInformationFixture
 
 BOOST_FIXTURE_TEST_CASE( test_different_image_entropy, SplineMutualInformationFixture ) 
 {
-        PBSplineKernel haar(new CBSplineKernel0); 
+        PSplineKernel haar = CSplineKernelPluginHandler::instance().produce("bspline0"); 
         CSplineParzenMI smi(256, haar, 256, haar); 
 	smi.fill(moving.begin(), moving.end(), reference.begin(), reference.end()); 
 	
@@ -114,8 +114,8 @@ SplineMutualInformationFixture::SplineMutualInformationFixture():
         reference(reverence_init_data, reverence_init_data + size),
         moving(moving_init_data, moving_init_data + size), 
         bins(64),
-        rkernel(new CBSplineKernel0), 
-        mkernel(new CBSplineKernel3)
+        rkernel(CSplineKernelPluginHandler::instance().produce("bspline0")), 
+        mkernel(CSplineKernelPluginHandler::instance().produce("bspline3"))
 {        
 }
 

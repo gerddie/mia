@@ -37,8 +37,8 @@ using std::setw;
 using std::vector; 
 using std::invalid_argument; 
 
-CSplineParzenMI::CSplineParzenMI(size_t rbins, PBSplineKernel rkernel,
-				 size_t mbins, PBSplineKernel mkernel):
+CSplineParzenMI::CSplineParzenMI(size_t rbins, PSplineKernel rkernel,
+				 size_t mbins, PSplineKernel mkernel):
 
 	m_ref_bins(rbins), 
 	m_ref_kernel(rkernel), 
