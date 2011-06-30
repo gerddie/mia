@@ -69,7 +69,7 @@ namespace bfs= ::boost::filesystem;
 
 CScale::CScale(const C2DBounds& size, const string& filter):
 	m_size(size),
-	m_ipf(create_2dinterpolation_factory(GInterpolatorTable.get_value(filter.c_str())))
+	m_ipf(new C2DInterpolatorFactory(ipf_spline, CSplineKernelPluginHandler::instance().produce(filter)))
 {
 
 }

@@ -44,7 +44,7 @@ C2DInterpolator::~C2DInterpolator()
 }
 
 
-C2DInterpolatorFactory::C2DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel):
+C2DInterpolatorFactory::C2DInterpolatorFactory(EInterpolationFactory type, PSplineKernel kernel):
 	m_type(type),
 	m_kernel(kernel)
 {
@@ -68,7 +68,7 @@ C2DInterpolatorFactory::~C2DInterpolatorFactory()
 {
 }
 
-const CBSplineKernel* C2DInterpolatorFactory::get_kernel() const
+const CSplineKernel* C2DInterpolatorFactory::get_kernel() const
 {
 	return m_kernel.get();
 }
@@ -81,8 +81,8 @@ C2DInterpolatorFactory *create_2dinterpolation_factory(EInterpolation type)
 
 #ifdef __SSE2__
 double add_2d_new<T2DDatafield< double >, 4>::value(const T2DDatafield< double >&  coeff, 
-							   const CBSplineKernel::SCache& xc, 
-							   const CBSplineKernel::SCache& yc) 
+							   const CSplineKernel::SCache& xc, 
+							   const CSplineKernel::SCache& yc) 
 {
 	typedef double v2df __attribute__ ((vector_size (16)));
 	double __attribute__((aligned(16))) cache[16]; 

@@ -32,13 +32,13 @@ NS_MIA_BEGIN
 class C2DPPDivcurlMatrixImpl {
 public: 
 	C2DPPDivcurlMatrixImpl(const C2DBounds& size, const C2DFVector& range, 
-			       const CBSplineKernel& kernel, double wd, double wr); 
+			       const CSplineKernel& kernel, double wd, double wr); 
 
 	template <typename Field>
 	double multiply(const Field& coefficients) const; 
 	double evaluate(const C2DFVectorfield& coefficients, CDoubleVector& gradient) const; 
 	double evaluate(const T2DDatafield<C2DDVector>& coefficients, CDoubleVector& gradient) const; 
-	void reset(const C2DBounds& size, const C2DFVector& range, const CBSplineKernel& kernel, 
+	void reset(const C2DBounds& size, const C2DFVector& range, const CSplineKernel& kernel, 
 		   double wd, double wr); 
 	C2DBounds m_size; 
 private: 
@@ -59,7 +59,7 @@ private:
 
 
 C2DPPDivcurlMatrix::C2DPPDivcurlMatrix(const C2DBounds& size, const C2DFVector& range, 
-				       const CBSplineKernel& kernel, double wd, double wr):
+				       const CSplineKernel& kernel, double wd, double wr):
 	impl(new C2DPPDivcurlMatrixImpl(size, range, kernel, wd, wr))
 {
 	TRACE_FUNCTION; 
@@ -98,17 +98,17 @@ double C2DPPDivcurlMatrix::evaluate(const C2DFVectorfield& coefficients, CDouble
 /**\todo helper class to evaluate values only once, should be re-done and moved to the spline kernel */
 class CIntegralCache {
 public: 
-	CIntegralCache(const CBSplineKernel& kernel); 
+	CIntegralCache(const CSplineKernel& kernel); 
 	double get(int s1, int s2, int deg1, int deg2, int range) const; 
 private: 
-	const CBSplineKernel& m_kernel; 
+	const CSplineKernel& m_kernel; 
 	int m_max_skip; 
 	int m_row_length; 
 	int m_hr; 
 	mutable map<int,double> m_values; 
 }; 
 
-CIntegralCache::CIntegralCache(const CBSplineKernel& kernel):
+CIntegralCache::CIntegralCache(const CSplineKernel& kernel):
 	m_kernel(kernel), 
 	m_max_skip((kernel.size() + 1) & ~1), 
 	m_row_length(kernel.size()), 
@@ -162,13 +162,13 @@ double CIntegralCache::get(int s1, int s2, int deg1, int deg2, int range) const
 
 
 C2DPPDivcurlMatrixImpl::C2DPPDivcurlMatrixImpl(const C2DBounds& size, const C2DFVector& range, 
-					       const CBSplineKernel& kernel,
+					       const CSplineKernel& kernel,
 					       double wd, double wr)
 {
 	reset(size, range, kernel,  wd,  wr); 
 }						
 
-void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& range, const CBSplineKernel& kernel, 
+void C2DPPDivcurlMatrixImpl::reset(const C2DBounds& size, const C2DFVector& range, const CSplineKernel& kernel, 
 				   double wd, double wr)
 {
 	if (  m_size == size && wd == m_wd && wr == m_wr && m_range == range && kernel.get_type()  == m_type)
@@ -361,7 +361,7 @@ const C2DBounds& C2DPPDivcurlMatrix::get_size() const
 	return impl->m_size; 
 }
 
-void C2DPPDivcurlMatrix::reset(const C2DBounds& size, const C2DFVector& range, const CBSplineKernel& kernel, 
+void C2DPPDivcurlMatrix::reset(const C2DBounds& size, const C2DFVector& range, const CSplineKernel& kernel, 
 			       double wd, double wr)
 {
 	TRACE_FUNCTION; 

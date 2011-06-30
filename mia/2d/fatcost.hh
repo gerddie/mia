@@ -29,6 +29,7 @@
 
 #include <mia/core/factory.hh>
 #include <mia/2d/2DImage.hh>
+#include <mia/core/splinekernel.hh>
 #include <mia/2d/transform.hh>
 
 NS_MIA_BEGIN
@@ -105,7 +106,7 @@ private:
 
 	std::string m_src_name;
 	std::string m_ref_name;
-	EInterpolation m_interpolator;
+	PSplineKernel m_interpolator;
 	float m_weight;
 };
 

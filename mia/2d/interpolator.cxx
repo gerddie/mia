@@ -66,7 +66,7 @@ struct __dispatch_copy<C2DFVectorfield, C2DDVectorfield > {
 
 
 template <typename T>
-T2DConvoluteInterpolator<T>::T2DConvoluteInterpolator(const T2DDatafield<T>& image, std::shared_ptr<CBSplineKernel >  kernel):
+T2DConvoluteInterpolator<T>::T2DConvoluteInterpolator(const T2DDatafield<T>& image, PSplineKernel  kernel):
 	m_coeff(image.get_size()), 
 	m_size2(image.get_size() + image.get_size() - C2DBounds(2,2)),
 	m_kernel(kernel),
@@ -233,8 +233,8 @@ template <class C, int size>
 struct add_2d_new {
 	typedef typename C::value_type U; 
 	
-	static typename C::value_type value(const C&  coeff, const CBSplineKernel::SCache& xc, 
-					    const CBSplineKernel::SCache& yc) 
+	static typename C::value_type value(const C&  coeff, const CSplineKernel::SCache& xc, 
+					    const CSplineKernel::SCache& yc) 
 	{
 		U result = U();
 		if (xc.is_flat) {
@@ -265,8 +265,8 @@ struct add_2d_new<T2DDatafield< T >, 1> {
 	
 
 	static T value(const T2DDatafield< T >&  coeff, 
-		       const CBSplineKernel::SCache& xc, 
-		       const CBSplineKernel::SCache& yc) {
+		       const CSplineKernel::SCache& xc, 
+		       const CSplineKernel::SCache& yc) {
 		return coeff(xc.index[0], yc.index[0]); 
 	}
 }; 
@@ -278,8 +278,8 @@ struct add_2d_new<T2DDatafield< double >, 4> {
 	
 
 	static double value(const T2DDatafield< double >&  coeff, 
-			    const CBSplineKernel::SCache& xc, 
-			    const CBSplineKernel::SCache& yc); 
+			    const CSplineKernel::SCache& xc, 
+			    const CSplineKernel::SCache& yc); 
 }; 
 #endif
 

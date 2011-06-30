@@ -43,7 +43,7 @@
 #define mia_2d_interpolator_hh
 
 #include <vector>
-#include <mia/core/interpolator.hh>
+#include <mia/core/splinekernel.hh>
 #include <mia/2d/2DImage.hh>
 
 
@@ -104,7 +104,7 @@ public:
 	   \param image input data to base th einterpolation on 
 	   \param kernel the B-spline kernel to be used. 
 	*/
-	T2DConvoluteInterpolator(const T2DDatafield<T>& image, std::shared_ptr<CBSplineKernel > kernel);
+	T2DConvoluteInterpolator(const T2DDatafield<T>& image, PSplineKernel kernel);
 
 	~T2DConvoluteInterpolator();
 
@@ -149,7 +149,7 @@ private:
 
 	TCoeff2D m_coeff;
 	C2DBounds m_size2;
-	std::shared_ptr<CBSplineKernel > m_kernel;
+	PSplineKernel m_kernel;
 	T m_min;
 	T m_max;
 
@@ -157,8 +157,8 @@ private:
 	mutable std::vector<int> m_y_index; 
 	mutable std::vector<double> m_x_weight; 
 	mutable std::vector<double> m_y_weight; 
-	mutable CBSplineKernel::SCache m_x_cache; 
-	mutable CBSplineKernel::SCache m_y_cache; 
+	mutable CSplineKernel::SCache m_x_cache; 
+	mutable CSplineKernel::SCache m_y_cache; 
 
 	
 
@@ -177,7 +177,7 @@ public:
 	   \param type 
 	   \param kernel
 	 */
-	C2DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel);
+	C2DInterpolatorFactory(EInterpolationFactory type, PSplineKernel kernel);
 
 	/// Copy constructor 
 	C2DInterpolatorFactory(const C2DInterpolatorFactory& o);
@@ -203,11 +203,11 @@ public:
 	/**
 	   \returns raw pointer to the interpolation kernel. 
 	 */
-	const CBSplineKernel* get_kernel() const;
+	const CSplineKernel* get_kernel() const;
 
 private:
 	EInterpolationFactory m_type;
-	std::shared_ptr<CBSplineKernel > m_kernel;
+	PSplineKernel m_kernel;
 };
 
 /// Pointer type for the 2D interpolationfactory 
