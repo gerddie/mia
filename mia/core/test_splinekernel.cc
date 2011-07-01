@@ -36,14 +36,10 @@ NS_MIA_USE
 using namespace std;
 using namespace boost;
 
+CSplineKernelTestPath init_path; 
 
 BOOST_AUTO_TEST_CASE( test_plugin_availability ) 
 {
-	list< bfs::path> searchpath; 
-	searchpath.push_back( bfs::path("splinekernel"));
-	
-	CSplineKernelPluginHandler::set_search_path(searchpath); 
-
 	const auto& handler = CSplineKernelPluginHandler::instance();
 
 	BOOST_CHECK_EQUAL(handler.size(), 2u); 

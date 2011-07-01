@@ -33,6 +33,8 @@ using namespace boost;
 
 namespace bmpl=boost::mpl;
 
+CSplineKernelTestPath init_splinekernel_path; 
+
 struct TestIntegral2DFixture {
 
 	void check(double x0, double xF, double s1, double s2, double n, int n1, int n2);
@@ -72,9 +74,9 @@ BOOST_FIXTURE_TEST_CASE( test_integral, TestIntegral2DFixture)
 
 void TestIntegral2DFixture::check(double x0, double xF, double s1, double s2, double n, int n1, int n2)
 {
-	CBSplineKernel3 kernel;
+	auto kernel = CSplineKernelPluginHandler::instance().produce("bspline:d=3"); 
 	double spregval = computeIntegralAA(x0, xF, s1, s2, n, n1, n2);
-	double mycode = integrate2(kernel, s1, s2, n1, n2, n, x0, xF);
+	double mycode = integrate2(*kernel, s1, s2, n1, n2, n, x0, xF);
 	cvdebug() << "mycode = " << mycode << ", spregval = "  << spregval << "\n";
 	BOOST_CHECK_CLOSE(mycode,  spregval, 1);
 

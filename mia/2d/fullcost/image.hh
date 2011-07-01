@@ -35,7 +35,7 @@ public:
 	C2DImageFullCost(const std::string& src, 
 			 const std::string& ref, 
 			 const std::string& cost, 
-			 EInterpolation ip_type, 
+			 P2DInterpolatorFactory ipf,
 			 double weight, 
 			 bool debug); 
 private: 

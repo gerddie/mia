@@ -36,8 +36,8 @@ public:
 	using C2DTransformation::operator ();
 
 	C2DSplineTransformation(const C2DSplineTransformation& org);
-	C2DSplineTransformation(const C2DBounds& range, PBSplineKernel kernel);
-	C2DSplineTransformation(const C2DBounds& range, PBSplineKernel kernel, const C2DFVector& c_rate);
+	C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel);
+	C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, const C2DFVector& c_rate);
 
 	void set_coefficients(const C2DFVectorfield& field);
 	void set_coefficients_and_prefilter(const C2DFVectorfield& field);
@@ -108,7 +108,7 @@ private:
 	C2DBounds m_range;
 	C2DFVector m_target_c_rate;
 	C2DFVectorfield m_coefficients;
-	PBSplineKernel m_kernel; 
+	PSplineKernel m_kernel; 
 	int m_shift; 
 	int m_enlarge; 
 	mutable C2DFVector m_scale;

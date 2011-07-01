@@ -27,6 +27,8 @@ using namespace std;
 using namespace ::boost::unit_test;
 using namespace nfg_2dimage_cost;
 
+CSplineKernelTestPath spline_kernel_path_init; 
+
 const size_t g_nx = 4;
 const size_t g_ny = 3;
 

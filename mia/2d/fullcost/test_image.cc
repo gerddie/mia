@@ -33,8 +33,32 @@ namespace bfs=::boost::filesystem;
 
 struct ImagefullcostFixture {
 	ImagefullcostFixture(); 
-	
+
+	P2DInterpolatorFactory ipf; 
 }; 
+
+struct InitSplinekernelTestPath {
+	InitSplinekernelTestPath() {
+		list< bfs::path> sksearchpath; 
+		sksearchpath.push_back( bfs::path("../../core/splinekernel"));
+		CSplineKernelPluginHandler::set_search_path(sksearchpath); 
+		
+		list< bfs::path> cost_plugpath;
+		cost_plugpath.push_back(bfs::path("../cost"));
+		C2DImageCostPluginHandler::set_search_path(cost_plugpath);
+		
+		list< bfs::path> filter_plugpath;
+		filter_plugpath.push_back(bfs::path("../filter"));
+		C2DFilterPluginHandler::set_search_path(filter_plugpath);
+		
+		list< bfs::path> io_plugpath;
+		io_plugpath.push_back(bfs::path("../io"));
+		C2DImageIOPluginHandler::set_search_path(io_plugpath);
+		
+	}
+}; 
+
+InitSplinekernelTestPath init_path; 
 
 BOOST_FIXTURE_TEST_CASE( test_imagefullcost,  ImagefullcostFixture ) 
 {
@@ -60,7 +84,7 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost,  ImagefullcostFixture )
 	BOOST_REQUIRE(save_image("src.@", src)); 
 	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
-	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
+	C2DImageFullCost cost("src.@", "ref.@", "ssd", ipf, 1.0, false); 
 	cost.reinit(); 
 	cost.set_size(size);
 	C2DTransformMock t(size); 
@@ -104,7 +128,8 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_no_translate,  ImagefullcostFixture 
 	BOOST_REQUIRE(save_image("src.@", src)); 
 	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
-	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
+	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(ipf_spline, CSplineKernelPluginHandler::instance().produce("bspline:d=3"))); 
+	C2DImageFullCost cost("src.@", "ref.@", "ssd", ipf, 1.0, false); 
 	cost.reinit(); 
 	cost.set_size(size);
 	double value = cost.cost_value();
@@ -138,7 +163,8 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 	BOOST_REQUIRE(save_image("src.@", src)); 
 	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
-	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
+	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(ipf_spline, CSplineKernelPluginHandler::instance().produce("bspline:d=3"))); 
+	C2DImageFullCost cost("src.@", "ref.@", "ssd", ipf, 1.0, false); 
 	cost.reinit(); 
 	cost.set_size(size);
 	
@@ -191,7 +217,8 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2_scaled,  ImagefullcostFixture)
 	BOOST_REQUIRE(save_image("src.@", src)); 
 	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
-	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
+	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(ipf_spline, CSplineKernelPluginHandler::instance().produce("bspline:d=3"))); 
+	C2DImageFullCost cost("src.@", "ref.@", "ssd", ipf, 1.0, false); 
 	cost.reinit(); 
 	cost.set_size(size);
 	
@@ -221,19 +248,9 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2_scaled,  ImagefullcostFixture)
 }
 #endif
 
-ImagefullcostFixture::ImagefullcostFixture()
+ImagefullcostFixture::ImagefullcostFixture():
+	ipf(new C2DInterpolatorFactory(ipf_spline, CSplineKernelPluginHandler::instance().produce("bspline:d=3")))
 {
-	list< bfs::path> cost_plugpath;
-	cost_plugpath.push_back(bfs::path("../cost"));
-	C2DImageCostPluginHandler::set_search_path(cost_plugpath);
-
-	list< bfs::path> filter_plugpath;
-	filter_plugpath.push_back(bfs::path("../filter"));
-	C2DFilterPluginHandler::set_search_path(filter_plugpath);
-
-	list< bfs::path> io_plugpath;
-	io_plugpath.push_back(bfs::path("../io"));
-	C2DImageIOPluginHandler::set_search_path(io_plugpath);
 }
 
 

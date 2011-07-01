@@ -155,33 +155,40 @@ void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
 	// now try to load the interfaces and put them in the map
 	for (vector<PPluginModule>::const_iterator i = m_modules.begin(); 
 	     i != m_modules.end(); ++i) {
-		CPluginBase *pp = (*i)->get_interface();
-		if (!pp) 
-			cverr() << "Module '" << (*i)->get_name() << "' doesn't provide an interface\n"; 
-
-		while (pp) {
-			cvdebug() << "Got type '" << typeid(*pp).name() 
-				  << "', expect '"<< typeid(Interface).name() << "'\n"; 
-			Interface *p = dynamic_cast<Interface*>(pp); 
-			CPluginBase *pold = pp; 
-
-			pp = pp->next_interface(); 
+		try {
+			CPluginBase *pp = (*i)->get_interface();
+			if (!pp) 
+				cverr() << "Module '" << (*i)->get_name() << "' doesn't provide an interface\n"; 
 			
-			if (p) {
-				cvdebug() << "add plugin '" << p->get_name() << "'\n"; 
-				if (m_plugins.find(p->get_name()) ==  m_plugins.end()) {
-					p->set_module(*i);
-					add_plugin(p); 
-				} else {
-					cvwarn() << "Plugin with name '" << p->get_name() 
-						<< "' already loaded, ignoring new one.\n"; 
-					delete p; 
-				}
+			while (pp) {
+				cvdebug() << "Got type '" << typeid(*pp).name() 
+					  << "', expect '"<< typeid(Interface).name() << "'\n"; 
+				Interface *p = dynamic_cast<Interface*>(pp); 
+				CPluginBase *pold = pp; 
 				
-			}else {
-				cvdebug() << "discard '" << pold->get_name() << "'\n"; 
-				delete pold; 
+				pp = pp->next_interface(); 
+				
+				if (p) {
+					cvdebug() << "add plugin '" << p->get_name() << "'\n"; 
+					if (m_plugins.find(p->get_name()) ==  m_plugins.end()) {
+						p->set_module(*i);
+						add_plugin(p); 
+					} else {
+						cvwarn() << "Plugin with name '" << p->get_name() 
+							 << "' already loaded, ignoring new one.\n"; 
+						delete p; 
+					}
+					
+				}else {
+					cvdebug() << "discard '" << pold->get_name() << "'\n"; 
+					delete pold; 
+				}
 			}
+		}
+		catch(std::invalid_argument& x) {
+			cvdebug() << "Module '" << (*i)->get_name() 
+				  << "' was not loaded because '" 
+				  << x.what() << "'\n"; 
 		}
 	}
 }

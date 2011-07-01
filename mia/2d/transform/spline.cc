@@ -59,7 +59,7 @@ NS_MIA_BEGIN
 using namespace std;
 
 
-C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PBSplineKernel kernel):
+C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel):
 	m_range(range),
 	m_target_c_rate(1,1),
 	m_kernel(kernel),
@@ -98,7 +98,7 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DSplineTransformation& 
 {
 }
 
-C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PBSplineKernel kernel, 
+C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, 
 						 const C2DFVector& c_rate):
 	m_range(range),
 	m_target_c_rate(c_rate),
@@ -748,35 +748,17 @@ double C2DSplineTransformation::get_divcurl_cost(double wd, double wr) const
 
 class C2DSplineTransformCreator: public C2DTransformCreator {
 public:
-	C2DSplineTransformCreator(EInterpolation ip, const C2DFVector& rates);
+	C2DSplineTransformCreator(PSplineKernel kernel, const C2DFVector& rates); 
 	virtual P2DTransformation do_create(const C2DBounds& size) const;
 private:
-	PBSplineKernel m_kernel;
+	PSplineKernel m_kernel;
 	C2DFVector m_rates;
 };
 
-C2DSplineTransformCreator::C2DSplineTransformCreator(EInterpolation ip, const C2DFVector& rates):
+C2DSplineTransformCreator::C2DSplineTransformCreator(PSplineKernel kernel, const C2DFVector& rates):
+	m_kernel(kernel),
 	m_rates(rates)
 {
-
-	switch (ip){
-	case ip_bspline2:
-		m_kernel.reset(new CBSplineKernel2());
-		break;
-	case ip_bspline3:
-		m_kernel.reset(new CBSplineKernel3());
-		break;
-	case ip_bspline4:
-		m_kernel.reset(new CBSplineKernel4());
-		break;
-	case ip_bspline5:
-		m_kernel.reset(new CBSplineKernel5());
-		break;
-	case ip_omoms3:
-		m_kernel.reset(new CBSplineKernelOMoms3());
-	default:
-		throw invalid_argument("Spline kernel type required"); 
-	}
 }
 
 
@@ -796,26 +778,25 @@ public:
 	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 private:
-	EInterpolation m_ip;
+	PSplineKernel m_interpolator;
 	float m_rate;
 };
 
 C2DSplineTransformCreatorPlugin::C2DSplineTransformCreatorPlugin():
 	C2DTransformCreatorPlugin("spline"),
-	m_ip(ip_bspline3),
+	m_interpolator(CSplineKernelPluginHandler::instance().produce("bspline:d=3")),
 	m_rate(10)
 {
-	add_parameter("interp",
-            new CDictParameter<EInterpolation>(m_ip, GInterpolatorTable, "image interpolator"));
-	add_parameter("rate",
-		      new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
-					  "isotropic coefficient rate in pixels"));
+	add_parameter("interp", new CFactoryParameter<CSplineKernelPluginHandler>(m_interpolator, 
+										  "image interpolator kernel"));
+	add_parameter("rate",   new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
+						    "isotropic coefficient rate in pixels"));
 }
 
 C2DSplineTransformCreatorPlugin::ProductPtr
 C2DSplineTransformCreatorPlugin::do_create() const
 {
-	return ProductPtr(new C2DSplineTransformCreator(m_ip, C2DFVector(m_rate, m_rate)));
+	return ProductPtr(new C2DSplineTransformCreator(m_interpolator, C2DFVector(m_rate, m_rate)));
 }
 
 bool C2DSplineTransformCreatorPlugin::do_test() const

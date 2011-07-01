@@ -264,6 +264,10 @@ typedef THandlerSingleton<TFactoryPluginHandler<CSplineKernelPlugin> > CSplineKe
 
 FACTORY_TRAIT(CSplineKernelPluginHandler); 
 
+struct CSplineKernelTestPath {
+	CSplineKernelTestPath(); 
+}; 
+
 template <typename F>
 F *create_interpolator_factory(EInterpolation type) __attribute__((deprecated)); 
 

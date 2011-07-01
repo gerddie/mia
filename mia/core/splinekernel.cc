@@ -36,6 +36,7 @@
 #include <mia/core/simpson.hh>
 #include <mia/core/plugin_base.cxx>
 #include <mia/core/handler.cxx>
+#include <boost/filesystem.hpp>
 
 
 #if defined(__SSE2__)
@@ -251,5 +252,14 @@ double  EXPORT_CORE integrate2(const CSplineKernel& spline, double s1, double s2
 }
 
 EXPLICIT_INSTANCE_HANDLER(CSplineKernel); 
+
+using boost::filesystem::path; 
+CSplineKernelTestPath::CSplineKernelTestPath()
+{
+	list< path> sksearchpath; 
+	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/core/splinekernel"));
+	CSplineKernelPluginHandler::set_search_path(sksearchpath); 
+	
+}
 
 NS_MIA_END

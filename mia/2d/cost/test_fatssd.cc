@@ -27,6 +27,8 @@ using namespace mia;
 
 using namespace ssd_2dimage_fatcost;
 
+CSplineKernelTestPath spline_kernel_path_init; 
+
 struct C2DSSDFixture {
 	C2DSSDFixture() {
 		cvdebug() << "Init fixture\n";

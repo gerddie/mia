@@ -34,6 +34,8 @@ using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
+CSplineKernelTestPath init_splinekernel_path; 
+
 struct HandlerTestFixture {
 	HandlerTestFixture();
 
@@ -71,7 +73,7 @@ BOOST_FIXTURE_TEST_CASE(test_spline_creator, HandlerTestFixture)
 	const C2DTransformCreatorHandler::Instance& handler =
 		C2DTransformCreatorHandler::instance();
 	P2DTransformationFactory spline_creater =
-		handler.produce("spline:interp=bspline4,rate=4");
+		handler.produce("spline:interp=[bspline:d=4],rate=4");
 	P2DTransformation transform = spline_creater->create(C2DBounds(16,32));
 	BOOST_CHECK_EQUAL(transform->get_size(), C2DBounds(16,32));
 

@@ -1,4 +1,5 @@
-/*
+/* -*- mia-c++ -* 
+**
 ** Copyright Madrid (c) 2010 BIT ETSIT UPM
 **                      Gert Wollny <gw.fossdev @ gmail.com>
 **
@@ -33,6 +34,8 @@
 
 NS_MIA_USE
 namespace bfs=boost::filesystem;
+
+CSplineKernelTestPath init_splinekernel_path; 
 
 class PluginPathInitFixture {
 protected:
