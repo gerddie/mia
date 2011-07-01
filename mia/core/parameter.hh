@@ -347,7 +347,7 @@ CFactoryParameter<T>::CFactoryParameter(typename T::ProductPtr& value, const cha
 template <typename T>
 void CFactoryParameter<T>::do_descr(std::ostream& os) const
 {
-	T::instance().print_help(os); 
+	os << "(default=[" << m_default_value->get_init_string() <<"])"; 
 }
 
 template <typename T>

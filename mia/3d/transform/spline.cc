@@ -1096,8 +1096,7 @@ bool C3DSplineTransformCreatorPlugin::do_test() const
 
 const std::string C3DSplineTransformCreatorPlugin::do_get_descr() const
 {
-	return "plugin to create spline transformations, use more value pre-caching, and therefore, it needs more" 
-		" working memory then 'spline'.";
+	return "plugin to create spline based transformations";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

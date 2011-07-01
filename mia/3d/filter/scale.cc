@@ -151,7 +151,7 @@ CScale::result_type CScale::do_filter(const C3DImage& image) const
 C3DScaleFilterPlugin::C3DScaleFilterPlugin():
 	C3DFilterPlugin("scale"),
 	m_s(0,0,0), 
-	m_interp("bspline3")
+	m_interp("bspline:d=3")
 {
 	add_parameter("sx", new CUIntParameter(m_s.x, 0,
 					      numeric_limits<unsigned int>::max(), true,
