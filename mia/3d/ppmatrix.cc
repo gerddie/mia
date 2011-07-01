@@ -32,13 +32,13 @@ NS_MIA_BEGIN
 class C3DPPDivcurlMatrixImpl {
 public: 
 	C3DPPDivcurlMatrixImpl(const C3DBounds& size, const C3DFVector& range, 
-			       const CBSplineKernel& kernel, double wdiv, double wrot); 
+			       const CSplineKernel& kernel, double wdiv, double wrot); 
 
 	template <typename Field>
 	double multiply(const Field& coefficients) const; 
 	double evaluate(const C3DFVectorfield& coefficients, CDoubleVector& gradient) const; 
 	double evaluate(const T3DDatafield<C3DDVector>& coefficients, CDoubleVector& gradient) const; 
-	void reset(const C3DBounds& size, const C3DFVector& range, const CBSplineKernel& kernel, 
+	void reset(const C3DBounds& size, const C3DFVector& range, const CSplineKernel& kernel, 
 		   double wdiv, double wrot); 
 	C3DBounds m_size; 
 private: 
@@ -71,7 +71,7 @@ C3DPPDivcurlMatrixImpl::SMatrixCell::SMatrixCell()
 
 
 C3DPPDivcurlMatrix::C3DPPDivcurlMatrix(const C3DBounds& size, const C3DFVector& range, 
-				       const CBSplineKernel& kernel, double wdiv, double wrot):
+				       const CSplineKernel& kernel, double wdiv, double wrot):
 	impl(new C3DPPDivcurlMatrixImpl(size, range, kernel, wdiv, wrot))
 {
 	TRACE_FUNCTION; 
@@ -110,10 +110,10 @@ double C3DPPDivcurlMatrix::evaluate(const C3DFVectorfield& coefficients, CDouble
 /**\todo helper class to evaluate values only once, should be re-done and moved to the spline kernel */
 class CIntegralCache2 {
 public: 
-	CIntegralCache2(const CBSplineKernel& kernel, int deg1, int deg2); 
+	CIntegralCache2(const CSplineKernel& kernel, int deg1, int deg2); 
 	double get(int delta) const; 
 private: 
-	const CBSplineKernel& m_kernel; 
+	const CSplineKernel& m_kernel; 
 	int m_shift; 
 	int m_deg1; 
 	int m_deg2; 
@@ -121,7 +121,7 @@ private:
 	mutable vector<double> m_values; 
 }; 
 
-CIntegralCache2::CIntegralCache2(const CBSplineKernel& kernel, int deg1, int deg2):
+CIntegralCache2::CIntegralCache2(const CSplineKernel& kernel, int deg1, int deg2):
 	m_kernel(kernel), 
 	m_shift(kernel.size()),
 	m_deg1(deg1), 
@@ -152,13 +152,13 @@ double CIntegralCache2::get(int delta) const
 
 
 C3DPPDivcurlMatrixImpl::C3DPPDivcurlMatrixImpl(const C3DBounds& size, const C3DFVector& range, 
-					       const CBSplineKernel& kernel,
+					       const CSplineKernel& kernel,
 					       double wdiv, double wrot)
 {
 	reset(size, range, kernel,  wdiv,  wrot); 
 }						
 
-void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& range, const CBSplineKernel& kernel, 
+void C3DPPDivcurlMatrixImpl::reset(const C3DBounds& size, const C3DFVector& range, const CSplineKernel& kernel, 
 				   double wdiv, double wrot)
 {
 	if (  m_size == size && wdiv == m_wdiv && wrot == m_wrot &&
@@ -563,7 +563,7 @@ const C3DBounds& C3DPPDivcurlMatrix::get_size() const
 	return impl->m_size; 
 }
 
-void C3DPPDivcurlMatrix::reset(const C3DBounds& size, const C3DFVector& range, const CBSplineKernel& kernel, 
+void C3DPPDivcurlMatrix::reset(const C3DBounds& size, const C3DFVector& range, const CSplineKernel& kernel, 
 			       double wdiv, double wrot)
 {
 	TRACE_FUNCTION; 

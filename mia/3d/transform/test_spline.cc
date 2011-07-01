@@ -36,10 +36,12 @@ using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
+CSplineKernelTestPath splinekernel_init_path; 
+
 struct TransformSplineFixture {
 	TransformSplineFixture():
 		size(40,65,25),
-		kernel(new CBSplineKernel3()),
+		kernel(produce_spline_kernel("bspline:d=3")),
 		range(50, 80, 30),
 		r(range.x - 1, range.y - 1, range.z - 1),
 		stransf(range, kernel), 
@@ -79,7 +81,7 @@ struct TransformSplineFixture {
 	C3DBounds size;
 	C3DFVector ivscale; 
 	C3DFVector cs; 
-	PBSplineKernel kernel;
+	PSplineKernel kernel;
 
 	C3DBounds range;
 	C3DBounds r;
@@ -341,8 +343,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 	
 	C3DFImage test_image(range);
 	
-	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(ipf_spline,
-							      std::shared_ptr<CBSplineKernel > (new CBSplineKernel3()))); 
+	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(ipf_spline, produce_spline_kernel("bspline:d=3"))); 
 	auto_ptr<T3DInterpolator<float> > src(ipf->create(image.data()));
 
 	C3DFImage::iterator t = test_image.begin();
@@ -564,7 +565,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_get_jacobian, TransformSplineFixture )
 
 BOOST_AUTO_TEST_CASE( test_spline_c_rate_create )
 {
-	PBSplineKernel kernel(new CBSplineKernel3()); 
+	PSplineKernel kernel = produce_spline_kernel("bspline:d=3"); 
 	C3DBounds size(20, 32, 25);
 	C3DFVector c_rate(2.5, 3.2, 5.0);
 	C3DSplineTransformation  stransf(size, kernel, c_rate);
@@ -687,10 +688,9 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 	};
 	const C3DBounds size(10,10, 10);
 	
-	PBSplineKernel kernel(new CBSplineKernel3()); 
+	PSplineKernel kernel = produce_spline_kernel("bspline:d=3"); 
 
-	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(ipf_spline,
-							      kernel));
+	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(ipf_spline,  kernel));
 
 	C3DSplineTransformation trans(size, kernel);
 
@@ -727,7 +727,7 @@ struct TransformSplineFixtureFieldBase {
 	TransformSplineFixtureFieldBase():
 		size(16,16,16),
 		field(size),
-		kernel(new CBSplineKernel3()), 
+		kernel(produce_spline_kernel("bspline:d=3")), 
 		ipf(new C3DInterpolatorFactory(ipf_spline, kernel)),
 		range(16, 16,16),
 		stransf(range, kernel),
@@ -755,7 +755,7 @@ struct TransformSplineFixtureFieldBase {
 	}
 	C3DBounds size;
 	C3DFVectorfield field;
-	PBSplineKernel kernel; 
+	PSplineKernel kernel; 
 	P3DInterpolatorFactory ipf;
 
 	C3DBounds range;
@@ -793,7 +793,7 @@ public:
 
 	C3DBounds size; 
 	Cost3DMock cost; 
-	PBSplineKernel kernel; 
+	PSplineKernel kernel; 
 	C3DFVector x; 
 	C3DFVectorfield gradient; 
 }; 
@@ -802,7 +802,7 @@ BOOST_AUTO_TEST_CASE (test_spline_set_parameter)
 {
 	C3DBounds size(20,30,25); 
 	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3)); 
-	PBSplineKernel kernel(new CBSplineKernel3()); 
+	PSplineKernel kernel(produce_spline_kernel("bspline:d=3")); 
 	C3DSplineTransformation t(size, kernel, C3DFVector(5.0,5.0,5.0));
 	auto params = t.get_parameters();
 	
@@ -849,8 +849,7 @@ BOOST_AUTO_TEST_CASE (test_3d_cost_mock )
 
 BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture) 
 {
-	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3)); 
-	C3DSplineTransformation t(size, kernel);
+	C3DSplineTransformation t(size, produce_spline_kernel("bspline:d=3"));
 	C3DFVectorfield coefs(C3DBounds(12,12,12)); 
 	t.set_coefficients(coefs); 
 	t.reinit(); 
@@ -898,7 +897,7 @@ BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture)
 TransformGradientFixture::TransformGradientFixture():
 	size(10,10,10), 
 	cost(size),
-	kernel(new CBSplineKernel3()), 
+	kernel(produce_spline_kernel("bspline:d=3")), 
 	x(11,16,22), 
 	gradient(size)
 
@@ -1013,7 +1012,7 @@ double Cost3DMock::ref_value(const C3DFVector& x) const
 /////////////////////////////////////
 struct TransformSplineFixtureFieldBase2 {
 	TransformSplineFixtureFieldBase2():
-		kernel(new CBSplineKernel4())
+		kernel(produce_spline_kernel("bspline:d=4"))
 	{
 
 	}
@@ -1052,7 +1051,7 @@ struct TransformSplineFixtureFieldBase2 {
 	}
 	C3DBounds size;
 
-	PBSplineKernel kernel;
+	PSplineKernel kernel;
 	C3DFVector field_range;
 	double range; 
 	P3DTransformation transform; 

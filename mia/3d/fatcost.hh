@@ -57,7 +57,7 @@ private:
 	std::string m_src_name;
 	std::string m_ref_name;
 	float m_weight;
-	EInterpolation m_interpolator;
+	PSplineKernel m_interpolator;
 };
 
 class EXPORT_3D C3DImageFatCostList : public std::vector<P3DImageFatCost> {

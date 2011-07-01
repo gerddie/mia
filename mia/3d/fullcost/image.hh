@@ -35,7 +35,7 @@ public:
 	C3DImageFullCost(const std::string& src, 
 			 const std::string& ref, 
 			 const std::string& cost, 
-			 EInterpolation ip_type, 
+			 PSplineKernel ip, 
 			 double weight, 
 			 bool debug); 
 private: 

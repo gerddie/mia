@@ -41,7 +41,7 @@
 
 
 #include <vector>
-#include <mia/core/interpolator.hh>
+#include <mia/core/splinekernel.hh>
 #include <mia/3d/3DImage.hh>
 
 
@@ -93,7 +93,7 @@ public:
 	   \param data
 	   \param kernel
 	 */
-	T3DConvoluteInterpolator(const T3DDatafield<T>& data, std::shared_ptr<CBSplineKernel > kernel);
+	T3DConvoluteInterpolator(const T3DDatafield<T>& data, PSplineKernel kernel);
 
 	/// Standart constructor for factory prototyping
 	~T3DConvoluteInterpolator();
@@ -117,13 +117,13 @@ private:
 
 	TCoeff3D m_coeff;
 	C3DBounds m_size2;
-	PBSplineKernel m_kernel;
+	PSplineKernel m_kernel;
 	T m_min;
 	T m_max;
 
- 	mutable CBSplineKernel::SCache m_x_cache; 
-	mutable CBSplineKernel::SCache m_y_cache; 
-	mutable CBSplineKernel::SCache m_z_cache; 
+ 	mutable CSplineKernel::SCache m_x_cache; 
+	mutable CSplineKernel::SCache m_y_cache; 
+	mutable CSplineKernel::SCache m_z_cache; 
 };
 
 
@@ -140,7 +140,7 @@ public:
 	   \param type interpolator type id
 	   \param kernel spline kernel
 	*/
-	C3DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel);
+	C3DInterpolatorFactory(EInterpolationFactory type, PSplineKernel kernel);
 
 	/// Copy constructor
 	C3DInterpolatorFactory(const C3DInterpolatorFactory& o);
@@ -160,10 +160,10 @@ public:
 		__attribute__ ((warn_unused_result));
 
 	/// @returns the B-spline kernel used for interpolator creation 
-	PBSplineKernel get_kernel() const; 
+	PSplineKernel get_kernel() const; 
 private:
 	EInterpolationFactory m_type;
-	PBSplineKernel m_kernel;
+	PSplineKernel m_kernel;
 };
 
 

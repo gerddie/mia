@@ -1,4 +1,5 @@
-/*
+/* -*- mia-c++ -*-
+**
 ** Copyrigh (C) 2004 MPI of Human Cognitive and Brain Sience
 **                    Gert Wollny <wollny at cbs.mpg.de>
 **
@@ -30,6 +31,8 @@ NS_MIA_USE
 using namespace std;
 using namespace boost;
 
+CSplineKernelTestPath spline_kernel_init_path; 
+
 template <class Data3D, class Interpolator>
 bool test_interpolator(const Data3D& data, const Interpolator& src)
 {
@@ -60,7 +63,7 @@ static bool test_direct_interpolator(const T3DDatafield<T>& data)
 
 
 template <class T>
-static bool test_conv_interpolator(const T3DDatafield<T>& data, PBSplineKernel kernel)
+static bool test_conv_interpolator(const T3DDatafield<T>& data, PSplineKernel kernel)
 {
 	T3DConvoluteInterpolator<T>  src(data, kernel);
 	bool result = test_interpolator(data, src);
@@ -79,25 +82,25 @@ static void test_type()
 				*i = z;
 
 
-	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel0())))
+	if (!test_conv_interpolator<T>(data, produce_spline_kernel("bspline:d=0")))
 		BOOST_FAIL(" NN Interpolator FAIL");
 
-	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel1())))
+	if (!test_conv_interpolator<T>(data, produce_spline_kernel("bspline:d=1")))
 		BOOST_FAIL(" Tri Interpolator FAIL");
 
-	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel2())))
+	if (!test_conv_interpolator<T>(data, produce_spline_kernel("bspline:d=2")))
 		BOOST_FAIL(" BSpline 2 Interpolator FAIL");
 
-	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel3())))
+	if (!test_conv_interpolator<T>(data, produce_spline_kernel("bspline:d=3")))
 		BOOST_FAIL(" BSpline 3 Interpolator FAIL");
-
-	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel4())))
+	
+	if (!test_conv_interpolator<T>(data, produce_spline_kernel("bspline:d=4")))
 		BOOST_FAIL(" BSpline 4 Interpolator FAIL");
-
-	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel5())))
+	
+	if (!test_conv_interpolator<T>(data, produce_spline_kernel("bspline:d=5")))
 		BOOST_FAIL(" BSpline 5 Interpolator FAIL\n");
-
-	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernelOMoms3())))
+	
+	if (!test_conv_interpolator<T>(data, produce_spline_kernel("omoms:d=3")))
 		BOOST_FAIL(" oMoms 3 Interpolator FAIL\n");
 }
 
@@ -117,9 +120,9 @@ static double omoms3(double x)
 static void test_omoms3()
 {
 	const double x = 0.2;
-	CBSplineKernelOMoms3 kernel;
-	std::vector<double> weights(kernel.size());
-	kernel.get_weights(x, weights);
+	auto kernel = produce_spline_kernel("omoms:d=3"); 
+	std::vector<double> weights(kernel->size());
+	kernel->get_weights(x, weights);
 
 	for (size_t i = 0; i < weights.size(); ++i) {
 		if (fabs(weights[3 - i] - omoms3( x - 2.0 + i)) > 1e-4)

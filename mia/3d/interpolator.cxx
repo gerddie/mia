@@ -63,7 +63,7 @@ struct min_max_3d<T3DVector<T> > {
 
 
 template <typename T>
-T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& image, std::shared_ptr<CBSplineKernel >  kernel):
+T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& image, PSplineKernel  kernel):
 	m_coeff(image.get_size()), 
 	m_size2(image.get_size() + image.get_size()-C3DBounds(2,2,2)),
 	m_kernel(kernel),
@@ -134,9 +134,9 @@ template <class C, int size>
 struct add_3d {
 	typedef typename C::value_type U; 
 	
-	static typename C::value_type value(const C&  coeff, const CBSplineKernel::SCache& xc, 
-					    const CBSplineKernel::SCache& yc,
-					    const CBSplineKernel::SCache& zc) 
+	static typename C::value_type value(const C&  coeff, const CSplineKernel::SCache& xc, 
+					    const CSplineKernel::SCache& yc,
+					    const CSplineKernel::SCache& zc) 
 	{
 		U result = U();
 		
@@ -160,9 +160,9 @@ struct add_3d {
 template <typename T>
 struct add_3d<T3DDatafield< T >, 1> {
 	static T value(const T3DDatafield< T >&  coeff, 
-		       const CBSplineKernel::SCache& xc, 
-		       const CBSplineKernel::SCache& yc,
-		       const CBSplineKernel::SCache& zc) 
+		       const CSplineKernel::SCache& xc, 
+		       const CSplineKernel::SCache& yc,
+		       const CSplineKernel::SCache& zc) 
 		{
 			return coeff(xc.index[0], yc.index[0], zc.index[0] ) ; 
 		}
@@ -173,9 +173,9 @@ struct add_3d<T3DDatafield< T >, 1> {
 template <>
 struct add_3d<T3DDatafield< double >, 4> {
 	static double value(const T3DDatafield< double >&  coeff, 
-			    const CBSplineKernel::SCache& xc, 
-			    const CBSplineKernel::SCache& yc,
-			    const CBSplineKernel::SCache& zc); 
+			    const CSplineKernel::SCache& xc, 
+			    const CSplineKernel::SCache& yc,
+			    const CSplineKernel::SCache& zc); 
 	
 };
 #endif
@@ -184,9 +184,9 @@ struct add_3d<T3DDatafield< double >, 4> {
 template <>
 struct add_3d<T3DDatafield< float >, 4> {
 	static float value(const T3DDatafield< float >&  coeff, 
-			    const CBSplineKernel::SCache& xc, 
-			    const CBSplineKernel::SCache& yc,
-			    const CBSplineKernel::SCache& zc); 
+			    const CSplineKernel::SCache& xc, 
+			    const CSplineKernel::SCache& yc,
+			    const CSplineKernel::SCache& zc); 
 	
 };
 #endif

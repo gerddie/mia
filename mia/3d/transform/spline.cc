@@ -66,7 +66,7 @@ extern "C" {
 NS_MIA_BEGIN
 using namespace std;
 
-C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplineKernel kernel):
+C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel):
 	m_range(range),
 	m_target_c_rate(1,1,1),
 	m_kernel(kernel),
@@ -114,7 +114,7 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DSplineTransformation& 
 	TRACE_FUNCTION;
 }
 
-C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplineKernel kernel, 
+C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, 
 						 const C3DFVector& c_rate):
 	m_range(range),
 	m_target_c_rate(c_rate),
@@ -1020,37 +1020,20 @@ double C3DSplineTransformation::get_divcurl_cost(double wd, double wr) const
 
 class C3DSplinebigTransformCreator: public C3DTransformCreator {
 public:
-	C3DSplinebigTransformCreator(EInterpolation ip, const C3DFVector& rates, bool debug);
+	C3DSplinebigTransformCreator(PSplineKernel ip, const C3DFVector& rates, bool debug);
 	virtual P3DTransformation do_create(const C3DBounds& size) const;
 private:
-	PBSplineKernel m_kernel;
+	PSplineKernel m_kernel;
 	C3DFVector m_rates;
 	bool m_debug; 
 };
 
-C3DSplinebigTransformCreator::C3DSplinebigTransformCreator(EInterpolation ip, const C3DFVector& rates, bool debug):
+C3DSplinebigTransformCreator::C3DSplinebigTransformCreator(PSplineKernel kernel, const C3DFVector& rates, bool debug):
+	m_kernel(kernel),
 	m_rates(rates), 
 	m_debug(debug)
 {
 	TRACE_FUNCTION;
-	switch (ip){
-	case ip_bspline2:
-		m_kernel.reset(new CBSplineKernel2());
-		break;
-	case ip_bspline3:
-		m_kernel.reset(new CBSplineKernel3());
-		break;
-	case ip_bspline4:
-		m_kernel.reset(new CBSplineKernel4());
-		break;
-	case ip_bspline5:
-		m_kernel.reset(new CBSplineKernel5());
-		break;
-	case ip_omoms3:
-		m_kernel.reset(new CBSplineKernelOMoms3());
-	default:
-		throw invalid_argument("Spline kernel type required"); 
-	}
 }
 
 
@@ -1075,19 +1058,19 @@ public:
 	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 private:
-	EInterpolation m_ip;
+	PSplineKernel m_kernel;
 	float m_rate;
 	bool m_debug; 
 };
 
 C3DSplineTransformCreatorPlugin::C3DSplineTransformCreatorPlugin():
 	C3DTransformCreatorPlugin("spline"),
-	m_ip(ip_bspline3),
+	m_kernel(produce_spline_kernel("bspline:d=3")),
 	m_rate(10), 
 	m_debug(false)
 {
 	add_parameter("interp",
-            new CDictParameter<EInterpolation>(m_ip, GInterpolatorTable, "image interpolator"));
+            new CFactoryParameter<CSplineKernelPluginHandler>(m_kernel, "image interpolator kernel"));
 	add_parameter("rate",
 		      new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
 					  "isotropic coefficient rate in pixels"));
@@ -1100,7 +1083,7 @@ C3DSplineTransformCreatorPlugin::ProductPtr
 C3DSplineTransformCreatorPlugin::do_create() const
 {
 	TRACE_FUNCTION;
-	return ProductPtr(new C3DSplinebigTransformCreator(m_ip, C3DFVector(m_rate, m_rate, m_rate), m_debug));
+	return ProductPtr(new C3DSplinebigTransformCreator(m_kernel, C3DFVector(m_rate, m_rate, m_rate), m_debug));
 }
 
 bool C3DSplineTransformCreatorPlugin::do_test() const

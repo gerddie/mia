@@ -27,7 +27,7 @@
 
 NS_MIA_USE
 
-
+CSplineKernelTestPath splinekernel_init_path; 
 
 struct TranslateTransformFixture {
 

@@ -267,6 +267,7 @@ C3DFatImageCostPlugin::ProductPtr C3DNFGFatImageCostPlugin::do_create(P3DImage s
 bool C3DNFGFatImageCostPlugin::do_test() const
 {
 
+	CSplineKernelTestPath splinekernel_init_path; 
 	bool success = true;
 
 	const C3DBounds size(7,7,7);

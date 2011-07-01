@@ -1,6 +1,7 @@
 SET(cost3d
 	   ssd
 	   ngf
+	   fatssd
 )
 
 PLUGINGROUP_WITH_TEST_AND_PREFIX(3d-cost "${cost3d}" 
@@ -9,7 +10,7 @@ PLUGINGROUP_WITH_TEST_AND_PREFIX(3d-cost "${cost3d}"
 
 SET(fatcostplugins3d
 	    fatngf
-	    fatssd
+
 )
 
 PLUGIN_GROUP_PRE("3d" "${fatcostplugins3d}" "${MIA3DLIBS}" "${PLUGIN_INSTALL_PATH}/fatcost/3dimage")

@@ -73,12 +73,12 @@ C3DBounds C3DImageFatCost::get_size() const
 C3DFatImageCostPlugin::C3DFatImageCostPlugin(const char *name):
 	TFactory<C3DImageFatCost>(name),
 	m_weight(1.0f),
-	m_interpolator(ip_bspline3)
+	m_interpolator(CSplineKernelPluginHandler::instance().produce("bspline:d=3"))
 {
 	TRACE("C3DFatImageCostPlugin::C3DFatImageCostPlugin");
 	add_parameter("src", new CStringParameter(m_src_name, true, "study image"));
 	add_parameter("ref", new CStringParameter(m_ref_name, true, "reference image"));
-	add_parameter("interp", new CDictParameter<EInterpolation>(m_interpolator, GInterpolatorTable, "image interpolator"));
+	add_parameter("interp", new CFactoryParameter<CSplineKernelPluginHandler>(m_interpolator, "image interpolator kernel"));
 	add_parameter("weight", new CFloatParameter(m_weight, 1e-10f, 1e+10f,
 						    false, "weight of cost function"));
 }
@@ -116,7 +116,7 @@ C3DFatImageCostPlugin::ProductPtr C3DFatImageCostPlugin::do_create()const
 	if (reference->size() > 1)
 		cvwarn() << "'" << m_ref_name << "' contains more then one image, using only first\n";
 
-	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(m_interpolator));
+	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(ipf_spline, m_interpolator));
 	return do_create((*source)[0], (*reference)[0], ipf, m_weight);
 }
 

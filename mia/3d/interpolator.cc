@@ -48,7 +48,7 @@ CInterpolator::~CInterpolator()
 {
 }
 
-C3DInterpolatorFactory::C3DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel):
+C3DInterpolatorFactory::C3DInterpolatorFactory(EInterpolationFactory type, PSplineKernel kernel):
 	m_type(type),
 	m_kernel(kernel)
 {
@@ -72,7 +72,7 @@ C3DInterpolatorFactory::~C3DInterpolatorFactory()
 {
 }
 
-PBSplineKernel C3DInterpolatorFactory::get_kernel() const
+PSplineKernel C3DInterpolatorFactory::get_kernel() const
 {
 	return m_kernel; 
 }
@@ -120,9 +120,9 @@ inline void my_daxpy_4(double weight, v2df *in, v2df *out)
   In this function the registration algorithm spends approx 30% of the time 
 */
 double add_3d<T3DDatafield< double >, 4>::value(const T3DDatafield< double >&  coeff, 
-		    const CBSplineKernel::SCache& xc, 
-		    const CBSplineKernel::SCache& yc,
-		    const CBSplineKernel::SCache& zc) 
+		    const CSplineKernel::SCache& xc, 
+		    const CSplineKernel::SCache& yc,
+		    const CSplineKernel::SCache& zc) 
 {
 	const int dx = coeff.get_size().x; 
 	const int dxy = coeff.get_size().x *coeff.get_size().y; 
@@ -228,9 +228,9 @@ inline void my_daxpy_4(float weight, v4df* in, v4df *out)
   In this function the registration algorithm spends approx 30% of the time 
 */
 float add_3d<T3DDatafield< float >, 4>::value(const T3DDatafield< float >&  coeff, 
-		    const CBSplineKernel::SCache& xc, 
-		    const CBSplineKernel::SCache& yc,
-		    const CBSplineKernel::SCache& zc) 
+		    const CSplineKernel::SCache& xc, 
+		    const CSplineKernel::SCache& yc,
+		    const CSplineKernel::SCache& zc) 
 {
 	const int dx = coeff.get_size().x; 
 	const int dxy = coeff.get_size().x *coeff.get_size().y; 

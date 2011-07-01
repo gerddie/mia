@@ -59,14 +59,14 @@ NS_MIA_BEGIN
 C3DImageFullCost::C3DImageFullCost(const std::string& src, 
 				   const std::string& ref, 
 				   const std::string& cost, 
-				   EInterpolation ip_type, 
+				   PSplineKernel kernel, 
 				   double weight, 
 				   bool debug):
 	C3DFullCost(weight), 
 	m_src_key(C3DImageIOPluginHandler::instance().load_to_pool(src)), 
 	m_ref_key(C3DImageIOPluginHandler::instance().load_to_pool(ref)), 
 	m_cost_kernel(C3DImageCostPluginHandler::instance().produce(cost)), 
-	m_ipf(create_3dinterpolation_factory(ip_type)), 
+	m_ipf(new C3DInterpolatorFactory(ipf_spline, kernel)), 
 	m_debug(debug)
 {
 	assert(m_cost_kernel); 
@@ -203,7 +203,7 @@ private:
 	std::string m_src_name;
 	std::string m_ref_name;
 	std::string m_cost_kernel;
-	EInterpolation m_interpolator;
+	PSplineKernel m_interpolator;
 	bool m_debug; 
 }; 
 
@@ -212,14 +212,13 @@ C3DImageFullCostPlugin::C3DImageFullCostPlugin():
 	m_src_name("src.@"), 
 	m_ref_name("ref.@"), 
 	m_cost_kernel("ssd"), 
-	m_interpolator(ip_bspline3), 
+	m_interpolator(CSplineKernelPluginHandler::instance().produce("bspline:d=3")),
 	m_debug(false)
 {
 	add_parameter("src", new CStringParameter(m_src_name, false, "Study image"));
 	add_parameter("ref", new CStringParameter(m_ref_name, false, "Reference image"));
 	add_parameter("cost", new CStringParameter(m_cost_kernel, false, "Cost function kernel"));
-	add_parameter("interp", new CDictParameter<EInterpolation>(m_interpolator, 
-								   GInterpolatorTable, "image interpolator"));
+	add_parameter("interp", new CFactoryParameter<CSplineKernelPluginHandler>(m_interpolator, "image interpolator kernel"));
 	add_parameter("debug", new CBoolParameter(m_debug, false, "Save intermediate resuts for debugging")); 
 }
 

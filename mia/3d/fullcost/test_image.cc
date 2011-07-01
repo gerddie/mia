@@ -36,6 +36,8 @@ struct ImagefullcostFixture {
 	
 }; 
 
+CSplineKernelTestPath splinekernel_init_path; 
+
 BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 {
 
@@ -76,7 +78,8 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 	BOOST_REQUIRE(save_image("src.@", src)); 
 	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
-	C3DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
+	auto kernel = produce_spline_kernel("bspline:d=3"); 
+	C3DImageFullCost cost("src.@", "ref.@", "ssd", kernel, 1.0, false); 
 	cost.reinit(); 
 	cost.set_size(size);
 	

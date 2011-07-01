@@ -262,6 +262,11 @@ typedef TFactory<CSplineKernel> CSplineKernelPlugin;
 /// plugin handler for spaciel filter kernels 
 typedef THandlerSingleton<TFactoryPluginHandler<CSplineKernelPlugin> > CSplineKernelPluginHandler;
 
+inline PSplineKernel produce_spline_kernel(const std::string& descr) 
+{
+	return CSplineKernelPluginHandler::instance().produce(descr); 
+}
+
 FACTORY_TRAIT(CSplineKernelPluginHandler); 
 
 struct CSplineKernelTestPath {

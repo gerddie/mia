@@ -34,6 +34,8 @@
 NS_MIA_USE
 namespace bfs=boost::filesystem;
 
+CSplineKernelTestPath splinekernel_init_path; 
+
 class PluginPathInitFixture {
 protected:
 	PluginPathInitFixture() {

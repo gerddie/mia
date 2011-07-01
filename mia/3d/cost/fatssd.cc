@@ -16,28 +16,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
 #include <mia/core/msgstream.hh>
-#include <mia/3d/cost.hh>
 #include <mia/3d/3dimageio.hh>
-#include <mia/3d/fatcost.hh>
+#include <mia/3d/cost/fatssd.hh>
 
 using namespace std;
 using namespace boost;
 namespace bfs=::boost::filesystem;
 using namespace mia;
 
+
 NS_BEGIN(ssd_3dimage_fatcost)
 
-class CFatSSD3DImageCost : public C3DImageFatCost {
-public:
-	CFatSSD3DImageCost(P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight);
-private:
-	virtual P3DImageFatCost cloned(P3DImage src, P3DImage ref) const;
-	virtual double do_value() const;
-	virtual double do_evaluate_force(C3DFVectorfield& force) const;
-	C3DImageCostPlugin::ProductPtr m_evaluator;
-};
 
 
 CFatSSD3DImageCost::CFatSSD3DImageCost(P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight):
@@ -120,6 +110,8 @@ void C3DSSDFatImageCostPlugin::prepare_path() const
 
 	cvdebug() << "C3DImageCostPluginHandler::instance().size(): " <<
 		C3DImageCostPluginHandler::instance().size()<<"\n" ;
+
+	CSplineKernelTestPath splinekernel_init_path; 
 }
 
 const string C3DSSDFatImageCostPlugin::do_get_descr()const
