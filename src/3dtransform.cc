@@ -58,6 +58,7 @@ mia-3dtransform -i input.v -t trans.v  -o output.v  -p nn
 
 #define VSTREAM_DOMAIN "mia-3dtransform"
 #include <mia/core/cmdlineparser.hh>
+#include <mia/core/factorycmdlineoption.hh>
 #include <mia/3d/transformio.hh>
 #include <mia/3d/3dimageio.hh>
 
@@ -79,13 +80,13 @@ int do_main(int argc, const char **argv)
 	string src_filename;
 	string out_filename;
 	string trans_filename;
-	EInterpolation interpolator = ip_bspline3;
+	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 
 	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "reference image", CCmdOption::required));
 	options.add(make_opt( trans_filename, "transformation", 't', "transformation file", 
-				    CCmdOption::required));
-	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p', "image interpolator"));
+			      CCmdOption::required));
+	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
@@ -94,7 +95,7 @@ int do_main(int argc, const char **argv)
 
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 	auto transformation = C3DTransformationIOPluginHandler::instance().load(trans_filename);
-
+	
 	auto source = imageio.load(src_filename);
 
 	if (!source || source->size() < 1) {
@@ -106,12 +107,12 @@ int do_main(int argc, const char **argv)
 		cerr << "no vector field found in " << trans_filename << "\n";
 		return EXIT_FAILURE;
 	}
-
-	std::shared_ptr<C3DInterpolatorFactory > ipf(create_3dinterpolation_factory(interpolator));
-
+	
+	C3DInterpolatorFactory ipfactory(ipf_spline, interpolator_kernel);
+	
 	for (auto i = source->begin(); i != source->end(); ++i)
-		*i = (*transformation)(**i, *ipf);
-
+		*i = (*transformation)(**i, ipfactory);
+	
 	if ( !imageio.save(out_filename, *source) ){
 		string not_save = ("unable to save result to ") + out_filename;
 		throw runtime_error(not_save);

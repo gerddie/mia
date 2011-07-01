@@ -188,7 +188,7 @@ int do_main( int argc, const char *argv[] )
 	double divcurlweight_divider = 4.0; 
 	double imageweight = 1.0; 
 
-	EInterpolation interpolator = ip_bspline3;
+	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 	size_t mg_levels = 3; 
 
 	// ICA parameters 
@@ -235,8 +235,7 @@ int do_main( int argc, const char *argv[] )
 				    "divcurl weight scaling with each new pass")); 
 	options.add(make_opt( imageweight, "imageweight", 'w', 
 				    "image cost weight")); 
-	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
-				    "image interpolator", NULL));
+	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
@@ -262,7 +261,7 @@ int do_main( int argc, const char *argv[] )
 
 	// this cost will always be used 
 
-	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(interpolator));
+	P2DInterpolatorFactory ipfactory(new C2DInterpolatorFactory(ipf_spline, interpolator_kernel));
 
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);

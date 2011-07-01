@@ -233,6 +233,11 @@ inline CMinimizer::Problem& CMinimizer::get_problem()
 	return *m_problem;
 }
 
+inline 
+PMinimizer produce_minimizer(const std::string& descr) 
+{
+	return CMinimizerPluginHandler::instance().produce(descr); 
+}
 
 	
 NS_MIA_END

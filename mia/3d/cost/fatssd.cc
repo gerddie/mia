@@ -62,8 +62,6 @@ private:
 	virtual C3DFatImageCostPlugin::ProductPtr do_create(P3DImage src,
 							    P3DImage ref, P3DInterpolatorFactory ipf, float weight)const;
 	bool  do_test() const;
-	void prepare_path() const;
-
 	const string do_get_descr()const;
 
 };
@@ -99,19 +97,6 @@ bool  C3DSSDFatImageCostPlugin::do_test() const
 	}
 
 	return true;
-}
-
-void C3DSSDFatImageCostPlugin::prepare_path() const
-{
-	TRACE("C3DSSDFatImageCostPlugin::prepare_path");
-	list< bfs::path> costsearchpath;
-	costsearchpath.push_back( bfs::path("."));
-	C3DImageCostPluginHandler::set_search_path(costsearchpath);
-
-	cvdebug() << "C3DImageCostPluginHandler::instance().size(): " <<
-		C3DImageCostPluginHandler::instance().size()<<"\n" ;
-
-	CSplineKernelTestPath splinekernel_init_path; 
 }
 
 const string C3DSSDFatImageCostPlugin::do_get_descr()const

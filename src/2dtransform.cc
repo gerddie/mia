@@ -75,13 +75,13 @@ int do_main(int argc, const char **argv)
 	string src_filename;
 	string out_filename;
 	string trans_filename;
-	EInterpolation interpolator = ip_bspline3;
+	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 
 	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output image", CCmdOption::required));
 	options.add(make_opt( trans_filename, "transformation", 't', "transformation file name", 
 				    CCmdOption::required));
-	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p', "image interpolator"));
+	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
@@ -104,7 +104,7 @@ int do_main(int argc, const char **argv)
 		return EXIT_FAILURE;
 	}
 
-	std::shared_ptr<C2DInterpolatorFactory > ipf(create_2dinterpolation_factory(interpolator));
+	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(ipf_spline, interpolator_kernel));
 
 	for (C2DImageIOPluginHandler::Instance::Data::iterator i = source->begin();
 	     i != source->end(); ++i)

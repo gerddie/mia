@@ -1,4 +1,4 @@
-/*
+/* -*- mia-c++ -*- 
 ** copyright(C) 1999 Max-Planck-Institute of Cognitive Neurosience
 **                    Gert Wollny <wollny@cns.mpg.de>
 **
@@ -57,7 +57,6 @@ typedef struct {
 	bool useMutual;
 	bool checkerboard;
 	float matter_threshold;
-	mia::EInterpolation interp_type;
 } TFluidRegParams;
 
 typedef struct {
@@ -102,7 +101,7 @@ private:
 	TLinEqnSolver *solver;
 
 	float  initialStepsize;       // step size
-	std::auto_ptr<mia::C3DInterpolatorFactory> ipf;
+	const mia::C3DInterpolatorFactory& ipf;
 
 	void  InitTemps();
 	void  DeleteTemps();
@@ -117,7 +116,7 @@ private:
         float  calculateJacobian()const;
 	unsigned int GetLinCoord(unsigned int x,unsigned int y,unsigned int z) const;
 public:
-        TFluidReg(const TFluidRegParams& params, TLinEqnSolver *solver);
+        TFluidReg(const TFluidRegParams& params, TLinEqnSolver *solver, const mia::C3DInterpolatorFactory& _ipf);
 	~TFluidReg();
 
 	float work(mia::P3DImage NewSource, mia::C3DFVectorfield& Shift);

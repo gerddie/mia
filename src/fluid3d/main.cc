@@ -195,6 +195,8 @@ int main(int argc, const char *argv[])
 	TLinEqnSolver *solver=NULL;
 
     	TFluidRegParams params;
+	
+	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 
 	params.InitialStepsize = MAX_STEP;
 	params.Lambda = LAMBDA;
@@ -206,7 +208,6 @@ int main(int argc, const char *argv[])
 	params.factor = 0.01;
 	params.checkerboard = false;
 	params.matter_threshold = 4.0;
-	params.interp_type = ip_bspline3;
 
 
 	//	bool in_found;
@@ -234,8 +235,7 @@ int main(int argc, const char *argv[])
 	options.add(make_opt( STARTSIZE, "start-size", 's', "initial multigrided size" ));
 	options.add(make_opt( method, g_method_dict, "method", 'm',  "method for solving PDE"));
 	options.add(make_opt( params.InitialStepsize, "step", 0, "Initial stepsize"));
-	options.add(make_opt( params.interp_type, GInterpolatorTable, "interpolator", 'p', 
-				    "image transformation interpolator"));
+	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( params.Overrelaxation, "relax", 0, "overrelaxation factor vor method sor"));
 	options.add(make_opt( params.maxiter, "maxiter", 0, "maxium iterations in sor and cg"));
 	options.add(make_opt( params.factor, "epsilon", 0, "truncation condition in sor and cg"));
@@ -258,14 +258,14 @@ int main(int argc, const char *argv[])
 		default:cverr() << "Unknown solver specified"<< endl; return -1;
 		}
 
-		std::shared_ptr<C3DInterpolatorFactory > ipf(create_3dinterpolation_factory(params.interp_type));
+		C3DInterpolatorFactory ipf(ipf_spline, interpolator_kernel);
 
 		std::shared_ptr<TLinEqnSolver > ensure_solver_delete(solver);
 
 		g_start = Clock.get_seconds();
 
 		P3DFVectorfield result = fluid_transform(params,solver,!disable_multigrid,
-							 !disable_fullres,&g_MeasureList, *ipf);
+							 !disable_fullres,&g_MeasureList, ipf);
 
 
 		C3DIOVectorfield outfield(result->get_size());

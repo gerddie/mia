@@ -59,10 +59,10 @@ CMsgStreamPrintCallback::CMsgStreamPrintCallback(const std::string& format):
 {
 }
 
-
 CMsgStreamPrintCallback::~CMsgStreamPrintCallback()
 {
 	cvmsg() << "\n";
+	delete impl; 
 }
 
 void CMsgStreamPrintCallback::do_set_range(int range)

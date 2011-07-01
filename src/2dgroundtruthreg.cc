@@ -150,7 +150,7 @@ int do_main( int argc, const char *argv[] )
 	double c_rate_divider = 4; 
 	double divcurlweight_divider = 4.0; 
 
-	EInterpolation interpolator = ip_bspline3;
+	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 
 	CCmdOptionList options(g_description);
 	options.set_group("\nFile-IO"); 
@@ -175,8 +175,7 @@ int do_main( int argc, const char *argv[] )
 	options.set_group("\nRegistration"); 
 	
 	options.add(make_opt( reg_params.minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
-				    "image interpolator", NULL));
+	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( reg_params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));
 	
 	options.add(make_opt( reg_params.divcurlweight, "divcurl", 'd', 
@@ -195,7 +194,7 @@ int do_main( int argc, const char *argv[] )
 		return EXIT_SUCCESS; 
 	
 	
-	reg_params.ipfactory.reset(create_2dinterpolation_factory(interpolator));
+	reg_params.ipfactory.reset(new C2DInterpolatorFactory(ipf_spline, interpolator_kernel));
 		
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);

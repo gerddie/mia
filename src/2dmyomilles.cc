@@ -156,7 +156,7 @@ int do_main( int argc, const char *argv[] )
 	string cost_function("ssd"); 
 	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=simplex,step=1.0");
 	auto transform_creator = C2DTransformCreatorHandler::instance().produce("rigid"); 
-	EInterpolation interpolator = ip_bspline3;
+	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 	size_t mg_levels = 3; 
 	
 	// ICA parameters 
@@ -183,8 +183,7 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( cost_function, "cost", 'c', "registration criterion")); 
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
-	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
-				    "image interpolator", NULL));
+	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 
 	options.add(make_opt( pass, "passes", 'P', "registration passes", "passes")); 
@@ -211,7 +210,7 @@ int do_main( int argc, const char *argv[] )
 
 	// prepare registration class
 	
-	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(interpolator));
+	P2DInterpolatorFactory ipfactory(new C2DInterpolatorFactory(ipf_spline, interpolator_kernel));
 	C2DRigidRegister rigid_register(C2DImageCostPluginHandler::instance().produce("ssd"), 
 					minimizer, transform_creator, *ipfactory, mg_levels); 
 	

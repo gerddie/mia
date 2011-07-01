@@ -1,4 +1,4 @@
-/*
+/* -*- mia-c++ -*- 
 ** Copyright (c) Leipzig, Madrid 1999-2011
 **
 **     Gert Wollny <gw.fossdev@gmail.com>
@@ -77,7 +77,7 @@ struct FC2DImage2Type: public TFilter< T3DImage<T> > {
 };
 
 
-TFluidReg::TFluidReg(const TFluidRegParams& params,TLinEqnSolver *_solver):
+TFluidReg::TFluidReg(const TFluidRegParams& params,TLinEqnSolver *_solver, const C3DInterpolatorFactory& _ipf):
 	lambda(params.Lambda),
 	my(params.My),
 	Start(0,0,0),
@@ -85,7 +85,7 @@ TFluidReg::TFluidReg(const TFluidRegParams& params,TLinEqnSolver *_solver):
 	matter_threshold(params.matter_threshold),
 	solver(_solver),
 	initialStepsize(params.InitialStepsize),
-	ipf(create_3dinterpolation_factory(params.interp_type))
+	ipf(_ipf)
 {
 	FC2DImage2Type<float> Image2Float;
 	src = mia::filter(Image2Float, *params.source);
@@ -401,7 +401,7 @@ void  TFluidReg::ApplyShift()
 
 
 
-	FDeformer3D deformer(*u, *ipf);
+	FDeformer3D deformer(*u, ipf);
 	::mia::filter_equal_inplace<FDeformer3D,C3DImage>(deformer, src, tmp);
 
 }
@@ -578,7 +578,7 @@ static P3DFVectorfield do_transform(const TFluidRegParams& params,
 	double mismatch = HUGE;
 	bool do_continue = true;
 
-	auto_ptr< TFluidReg> Register(new TFluidReg(params,solver));
+	unique_ptr< TFluidReg> Register(new TFluidReg(params,solver, ipf));
 
 	cvmsg() << "size:" << params.source->get_size() << endl;
 

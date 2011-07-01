@@ -50,5 +50,13 @@ template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C3DImageCo
 template class TFactoryPluginHandler<C3DImageCostPlugin>;
 template class TPluginHandler<C3DImageCostPlugin>;
 
+using boost::filesystem::path; 
+C3DImageCostPluginHandlerPathInit::C3DImageCostPluginHandlerPathInit()
+{
+	list< bfs::path> costsearchpath;
+	costsearchpath.push_back( path(MIA_BUILD_ROOT"/mia/3d/cost") );
+	C3DImageCostPluginHandler::set_search_path(costsearchpath);
+	
+}
 
 NS_MIA_END

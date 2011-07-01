@@ -183,7 +183,7 @@ int do_main( int argc, const char *argv[] )
 
 	// registration parameters
 	string minimizer("gsl:opt=gd,step=0.1");
-	EInterpolation interpolator = ip_bspline3;
+	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 	size_t mg_levels = 3; 
 	int reference_param = -1; 
 
@@ -200,8 +200,7 @@ int do_main( int argc, const char *argv[] )
 	
 	options.set_group("\nRegistration"); 
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
-				    "image interpolator", NULL));
+	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
@@ -222,7 +221,7 @@ int do_main( int argc, const char *argv[] )
 	if (cost_functions.empty())
 		throw invalid_argument("No cost function given - nothing to register"); 
 
-	unique_ptr<C3DInterpolatorFactory>   ipfactory(create_3dinterpolation_factory(interpolator));
+	P3DInterpolatorFactory ipfactory(new C3DInterpolatorFactory(ipf_spline, interpolator_kernel));
 
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;
