@@ -67,9 +67,9 @@ using namespace std;
 using namespace boost;
 namespace bfs= ::boost::filesystem;
 
-CScale::CScale(const C2DBounds& size, const string& filter):
+CScale::CScale(const C2DBounds& size, const string& kernel):
 	m_size(size),
-	m_ipf(new C2DInterpolatorFactory(ipf_spline, CSplineKernelPluginHandler::instance().produce(filter)))
+	m_ipf(new C2DInterpolatorFactory(ipf_spline, produce_spline_kernel(kernel)))
 {
 
 }
@@ -132,7 +132,7 @@ CScale::result_type CScale::do_filter(const C2DImage& image) const
 C2DScaleFilterPlugin::C2DScaleFilterPlugin():
 	C2DFilterPlugin("scale"),
 	m_s(0,0),
-	m_interp("bspline3")
+	m_interp("bspline:d=3")
 {
 	add_parameter("sx", new CUIntParameter(m_s.x, 0,
 					       numeric_limits<unsigned int>::max(), false,
