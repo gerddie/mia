@@ -25,6 +25,19 @@
  */
 
 
+/*
+  LatexBeginPluginSection{Spline Interpolation Kernels}
+  \label{sec:splinekernels}
+  
+  These kernels are used for spline based interpolation. 
+  
+  The kernels are created by calling \a produce_spline_kernel. 
+  
+  LatexEnd
+*/
+
+
+
 #include <cmath>
 #include <cassert>
 #include <iomanip>

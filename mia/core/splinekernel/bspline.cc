@@ -21,6 +21,42 @@
  *
  */
 
+
+/* 
+   LatexBeginPluginDescription{Spline Interpolation Kernels}
+   
+   \subsection{B-Spline kernels}
+   \label{splinekernel:bspline}
+   
+   \begin{description}
+   
+   \item [Plugin:] bspline
+   \item [Description:] This plug-in provides B-spline kernels for convolution based interpolators 
+   \plugtabstart
+   d & int & spline degree [0,5] &  3 \\
+   \plugtabend
+   \end{description}
+
+   \subsection{O-Moms kernels}
+   \label{splinekernel:omoms}
+   
+   \begin{description}
+   
+   \item [Plugin:] omoms
+   \item [Description:] This plug-in provides O-moms spline kernels for convolution based interpolators 
+   \plugtabstart
+   d & int & spline degree [3] &  3 \\
+   \plugtabend
+   
+   
+   \end{description}
+
+
+   LatexEnd  
+ */
+
+
+
 #if defined(__SSE2__)
 #include <emmintrin.h>
 #endif
