@@ -46,11 +46,11 @@ CComplexOptionParser::CComplexOptionParser(const string& param)
 	if (split(param, m_parts_seperator, parts)== 0)
 		return;
 
-	string_list::const_iterator i = parts.begin();
-	string_list::const_iterator e = parts.end();
+	auto i = parts.begin();
+	auto e = parts.end();
 
 	while (i != e) {
-		pair<string, string>  part = split_pair(*i,m_part_options);
+		auto  part = split_pair(*i,m_part_options);
 		CParsedOptions options;
 
 		cvdebug() << "CComplexOptionParser: '" << part.first << "' : '" << part.second 
@@ -60,12 +60,12 @@ CComplexOptionParser::CComplexOptionParser(const string& param)
 
 		while (!help.empty()) {
 			cvdebug() << "split '"<< help << "'\n";
-			pair<string, string> next_option = split_pair(help, m_assignment_seperator);
+			auto next_option = split_pair(help, m_assignment_seperator);
 
 			if (next_option.second.empty()) {
 				help = next_option.second;
 			}else {
-				pair<string, string> tail = split_pair_b(next_option.second, m_option_seperator);
+				auto tail = split_pair_b(next_option.second, m_option_seperator);
 				next_option.second = tail.first;
 				help = tail.second;
 			}
