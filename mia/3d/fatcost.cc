@@ -72,9 +72,9 @@ C3DBounds C3DImageFatCost::get_size() const
 
 C3DFatImageCostPlugin::C3DFatImageCostPlugin(const char *name):
 	TFactory<C3DImageFatCost>(name),
-	m_weight(1.0f),
-	m_interpolator(CSplineKernelPluginHandler::instance().produce("bspline:d=3"))
+	m_weight(1.0f)
 {
+	m_interpolator = CSplineKernelPluginHandler::instance().produce("bspline:d=3"); 
 	TRACE("C3DFatImageCostPlugin::C3DFatImageCostPlugin");
 	add_parameter("src", new CStringParameter(m_src_name, true, "study image"));
 	add_parameter("ref", new CStringParameter(m_ref_name, true, "reference image"));

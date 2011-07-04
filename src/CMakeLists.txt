@@ -113,6 +113,14 @@ DEFEXE(3dmany2one-nonrigid  mia3d )
 DEFEXE(3dprealign-nonrigid mia3d )
 DEFEXE(3dseries-track-intensity mia3d )
 
+ADD_EXECUTABLE(mia-test-plugins-as-installed test_plugins_as_installed.cc)  
+TARGET_LINK_LIBRARIES(mia-test-plugins-as-installed miamesh)
+TARGET_LINK_LIBRARIES(mia-test-plugins-as-installed ${BOOST_UNITTEST})
+IF(WIN32)
+  SET_TARGET_PROPERTIES(test-3d-${name} PROPERTIES LINKER_FLAGS "/NODEFAULTLIB:MSVCRT")
+ENDIF(WIN32)
+
+
 IF(ITPP_FOUND) 
   DEFEXE(3dmotioncompica-nonrigid mia3d )
 ENDIF(ITPP_FOUND) 

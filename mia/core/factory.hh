@@ -199,7 +199,7 @@ typename TFactory<P>::ProductPtr TFactory<P>::create(const CParsedOptions& optio
 			msg << "    " << i->first << "=" << i->second << "\n";
 		}
 		cverr() << msg.str(); 
-		throw logic_error("Probably an error in syncronization"); 
+		throw logic_error("Probably a race condition"); 
 
 	}
 }

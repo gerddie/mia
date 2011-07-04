@@ -294,8 +294,8 @@ float add_3d<T3DDatafield< float >, 4>::value(const T3DDatafield< float >&  coef
 	return result; 
 #else
 	float __attribute__((aligned(16))) r[4]; 
-	_mm_store_ps(&r, target2); 
-	return r[0] + r[1] +r[2] + r[3] 
+	_mm_store_ps(r, target2); 
+	return r[0] + r[1] +r[2] + r[3]; 
 #endif
 }
 

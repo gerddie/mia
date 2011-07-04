@@ -35,6 +35,7 @@
 #include <mia/core/histogram.hh>
 #include <mia/core/iohandler.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/noisegen.hh>
 #include <mia/core/optparam.hh>
 #include <mia/core/spacial_kernel.hh>
 #include <mia/core/streamredir.hh>
