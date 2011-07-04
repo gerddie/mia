@@ -1070,7 +1070,7 @@ C3DSplineTransformCreatorPlugin::C3DSplineTransformCreatorPlugin():
 	m_debug(false)
 {
 	add_parameter("interp",
-            new CFactoryParameter<CSplineKernelPluginHandler>(m_kernel, "image interpolator kernel"));
+		      new CFactoryParameter<CSplineKernelPluginHandler>(m_kernel, false, "image interpolator kernel"));
 	add_parameter("rate",
 		      new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
 					  "isotropic coefficient rate in pixels"));

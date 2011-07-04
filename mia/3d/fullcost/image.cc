@@ -218,7 +218,7 @@ C3DImageFullCostPlugin::C3DImageFullCostPlugin():
 	add_parameter("src", new CStringParameter(m_src_name, false, "Study image"));
 	add_parameter("ref", new CStringParameter(m_ref_name, false, "Reference image"));
 	add_parameter("cost", new CStringParameter(m_cost_kernel, false, "Cost function kernel"));
-	add_parameter("interp", new CFactoryParameter<CSplineKernelPluginHandler>(m_interpolator, "image interpolator kernel"));
+	add_parameter("interp", new CFactoryParameter<CSplineKernelPluginHandler>(m_interpolator, false, "image interpolator kernel"));
 	add_parameter("debug", new CBoolParameter(m_debug, false, "Save intermediate resuts for debugging")); 
 }
 

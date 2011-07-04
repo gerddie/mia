@@ -787,7 +787,7 @@ C2DSplineTransformCreatorPlugin::C2DSplineTransformCreatorPlugin():
 	m_interpolator(CSplineKernelPluginHandler::instance().produce("bspline:d=3")),
 	m_rate(10)
 {
-	add_parameter("interp", new CFactoryParameter<CSplineKernelPluginHandler>(m_interpolator, 
+	add_parameter("interp", new CFactoryParameter<CSplineKernelPluginHandler>(m_interpolator, false, 
 										  "image interpolator kernel"));
 	add_parameter("rate",   new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
 						    "isotropic coefficient rate in pixels"));

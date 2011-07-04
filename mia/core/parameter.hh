@@ -198,9 +198,10 @@ class CFactoryParameter : public CParameter{
 public:
 	/** Constructor
 	   \param value reference to the parameter handled by this parameter object
+	   \param required set to true when the parameter is required 
 	   \param descr a description of the parameter
 	 */
-	CFactoryParameter(typename F::ProductPtr& value, const char *descr);
+	CFactoryParameter(typename F::ProductPtr& value, bool required, const char *descr);
 protected:
 	/**
 	   the implementation of the description-function
@@ -337,8 +338,8 @@ void CDictParameter<T>::do_reset()
 
 
 template <typename T>
-CFactoryParameter<T>::CFactoryParameter(typename T::ProductPtr& value, const char *descr):
-	CParameter("factory", false, descr),
+CFactoryParameter<T>::CFactoryParameter(typename T::ProductPtr& value, bool required, const char *descr):
+	CParameter("factory", required, descr),
 	m_value(value),
 	m_default_value(value)
 {
