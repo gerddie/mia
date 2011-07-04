@@ -32,8 +32,9 @@
    
    \item [Plugin:] bspline
    \item [Description:] This plug-in provides B-spline kernels for convolution based interpolators 
+
    \plugtabstart
-   d & int & spline degree [0,5] &  3 \\
+   d & int & spline degree $\in \{0,1, \ldots, 5\} $&  3 \\
    \plugtabend
    \end{description}
 
@@ -44,8 +45,9 @@
    
    \item [Plugin:] omoms
    \item [Description:] This plug-in provides O-moms spline kernels for convolution based interpolators 
+
    \plugtabstart
-   d & int & spline degree [3] &  3 \\
+   d & int & spline degree $\in \{3\} $&  3 \\
    \plugtabend
    
    

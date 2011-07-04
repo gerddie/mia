@@ -31,7 +31,7 @@
   
   These kernels are used for spline based interpolation. 
   
-  The kernels are created by calling \a produce_spline_kernel. 
+  The kernels are created by calling \emph{produce\_spline\_kernel}. 
   
   LatexEnd
 */
