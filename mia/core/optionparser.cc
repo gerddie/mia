@@ -145,8 +145,15 @@ CComplexOptionParser::split_pair_b(const string& s, char c)const
 	bool has_protector = (s[0] == '[');
 
 	if (has_protector) {
-
-		size_t i = s.find(']');
+		int pdepth = 0; 
+		size_t i = 1; 
+		while ( ( pdepth || (s[i] != ']')) && (i < s.size())) {
+			if (s[i] == '[') 
+				++pdepth; 
+			else if (s[i] == ']') 
+				--pdepth;
+			++i; 
+		}
 		if (i >= s.size())
 			throw runtime_error(string("Parsing option ") + s + string(" failed"));
 
