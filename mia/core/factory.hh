@@ -241,7 +241,7 @@ TFactoryPluginHandler<I>::produce(char const *params)const
 
 	cvdebug() << "TFactoryPluginHandler<>::produce: Create plugin from '" << factory_name << "'\n"; 
 
-	P *factory = this->plugin(factory_name.c_str());
+	auto factory = this->plugin(factory_name.c_str());
 	if (factory) 
 		return factory->create(param_list.begin()->second,params);
 	else 
