@@ -27,7 +27,9 @@
 #include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
-/**  \brief Portabe Dynamic Link Library Loader
+/**  
+     \ingroup infrastructure 
+     \brief Portabe Dynamic Link Library Loader
      
      This class provides a portable way to load dynamic link libraries
 */

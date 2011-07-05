@@ -45,6 +45,15 @@ struct dimension_traits {
 	typedef dimension_traits_placeholder InterpolatorFactory; 
 }; 
 
+template <int Dimensions> 
+struct scale_factor_helpers {
+	typedef int DIntVector;  
+
+	static DIntVector log2(const DIntVector& x); 
+	static DIntVector shift(const DIntVector& x); 
+}; 
+
+
 NS_MIA_END
 
 #endif

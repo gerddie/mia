@@ -36,6 +36,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup interpol 
    \brief Base class for all spline based interpolation kernels.  
 
    The kernel of spline based interpolations that provides the interface to 
@@ -45,9 +46,15 @@ NS_MIA_BEGIN
 class EXPORT_CORE CSplineKernel : public CProductBase{
 public:
 
+	/// helper typedef for plugin handling 
 	typedef CSplineKernel plugin_data; 
+	/// helper typedef for plugin handling 
 	typedef CSplineKernel plugin_type; 
+
+	/// plugin handling type description 
 	static const char *type_descr; 
+
+	/// plugin handling data description 
 	static const char *data_descr; 
 
 	/**
@@ -58,8 +65,8 @@ public:
 		   Initialize the case by setting the index and weight array size and 
 		   mirror boundary sizes 
 		   @param s support size of the kernel which equals the size of the index and weight arrays 
-		   @param cs1 size of the 1D coefficient array accessed when interpolating with this spline 
-		   @param cs2 2*cs1
+		   @param bc Boundary conditions to be used 
+		   @param am set to true if indices always need to be set 
 		 */
 		SCache(size_t s, PBoundaryCondition bc, bool am); 
 
@@ -253,14 +260,27 @@ private:
 	
 };
 
-/// Pointer type for spline kernels 
+/**
+   \ingroup interpol 
+   Pointer type for spline kernels 
+*/
 typedef std::shared_ptr<CSplineKernel> PSplineKernel;
 
 /// base plugin for spline kernels
 typedef TFactory<CSplineKernel> CSplineKernelPlugin; 
 
-/// plugin handler for spaciel filter kernels 
+/**
+   \ingroup interpol 
+   Plugin handler for the creation of spline kernels 
+*/
 typedef THandlerSingleton<TFactoryPluginHandler<CSplineKernelPlugin> > CSplineKernelPluginHandler;
+
+/**
+   \ingroup interpol 
+   Create a spline kernel by using the provided plug-ins 
+   \param descr the spline kernel description (e.g. "bspline:d=3" for a B-spline kernel of degree 3)
+   \returns the spline kernel stored in a shared pointer PSplineKernel. 
+*/
 
 inline PSplineKernel produce_spline_kernel(const std::string& descr) 
 {

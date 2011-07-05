@@ -34,6 +34,7 @@ NS_MIA_BEGIN
 
 
 /**
+   \ingroup classes
    \brief A class for generalized minimization problems 
    
    This class defined the interface for a generalized minimizer that may use 

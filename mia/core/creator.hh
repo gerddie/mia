@@ -36,6 +36,8 @@ struct EXPORT_CORE creator_type {
 };
 
 /**
+   \ingroup templates 
+
    \brief The base class for generic image creation 
 
    This template defines a generic base class for a creator of images containing some shapes. 

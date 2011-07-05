@@ -52,6 +52,7 @@ struct less_then {
 
 
 /**
+   \ingroup templates 
    \brief a generic class for morphological shapes 
    
    Pixel representation of shapes and masks around the origin.

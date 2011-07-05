@@ -48,6 +48,8 @@ NS_MIA_BEGIN
 
 
 /** 
+   \ingroup infrastructure 
+
     @brief This is tha base of all plugins that create "things", like filters, cost functions 
     time step operatores and the like. 
     
@@ -89,12 +91,14 @@ private:
 
 
 /**
+   \ingroup infrastructure 
+
    @brief the Base class for all plugn handlers that deal with factory plugins.  
    
    Base class for all plugin handlers that are derived from TFactory. 
  */
-template <typename  P>
-class EXPORT_HANDLER TFactoryPluginHandler: public  TPluginHandler< P > {
+template <typename  I>
+class EXPORT_HANDLER TFactoryPluginHandler: public  TPluginHandler< I > {
 protected: 
 	//! \name Constructors
         //@{
@@ -107,7 +111,7 @@ protected:
         //@}
 public: 
 	/// The pointer type of the the object this plug in hander produces 
-	typedef typename P::ProductPtr ProductPtr; 
+	typedef typename I::ProductPtr ProductPtr; 
 
 	/**
 	   Create an object according to the given description. If creation fails, an empty 
@@ -142,6 +146,8 @@ class FactoryTrait {
 }; 
 
 /**
+   \ingroup traits 
+
    \brief Type trait to enable the use of a factory product as command 
       line option 
       
@@ -155,6 +161,8 @@ public:
 }; 
 
 /**
+   \ingroup traits 
+
    Specialize the FactoryTrait template for the given TFactoryPluginHandler 
 */
 #define FACTORY_TRAIT(F)			\
@@ -170,14 +178,14 @@ public:
   Implementation of the factory
 */
 
-template <typename P>
-TFactory<P>::TFactory(char const * const  name):
-	TPlugin<typename P::plugin_data, typename P::plugin_type>(name)
+template <typename I>
+TFactory<I>::TFactory(char const * const  name):
+	TPlugin<typename I::plugin_data, typename I::plugin_type>(name)
 {
 }
 
-template <typename P>
-typename TFactory<P>::ProductPtr TFactory<P>::create(const CParsedOptions& options, char const *params)
+template <typename I>
+typename TFactory<I>::ProductPtr TFactory<I>::create(const CParsedOptions& options, char const *params)
 {
 	CScopedLock lock(m_mutex); 
 	try {
@@ -204,16 +212,16 @@ typename TFactory<P>::ProductPtr TFactory<P>::create(const CParsedOptions& optio
 	}
 }
 
-template <typename  P>
-TFactoryPluginHandler<P>::TFactoryPluginHandler(const std::list<boost::filesystem::path>& searchpath):
-	TPluginHandler< P >(searchpath)
+template <typename  I>
+TFactoryPluginHandler<I>::TFactoryPluginHandler(const std::list<boost::filesystem::path>& searchpath):
+	TPluginHandler< I >(searchpath)
 {
 }
 
 	
-template <typename  P>
-typename TFactoryPluginHandler<P>::ProductPtr 
-TFactoryPluginHandler<P>::produce(char const *params)const
+template <typename  I>
+typename TFactoryPluginHandler<I>::ProductPtr 
+TFactoryPluginHandler<I>::produce(char const *params)const
 {
 	assert(params); 
 	CComplexOptionParser param_list(params);
@@ -240,8 +248,8 @@ TFactoryPluginHandler<P>::produce(char const *params)const
 		return ProductPtr(); 
 }
 
-template <typename P>
-bool TFactory<P>::do_test() const
+template <typename I>
+bool TFactory<I>::do_test() const
 {
 	cvfail() << "do_test() is obsolete\n"; 
 	return false; 

@@ -31,20 +31,28 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup helpers 
    \brief data structure to store te results of a statistical analyis of images 
  */
-
 struct SIntensityStats {
+	/// Sum of all values 
 	double sum; 
+	/// Sum of the squares of all values 
 	double sumsq; 
+	/// mean of all values 
 	double mean; 
+	/// variation of the values 
 	double variation; 
+	/// minimum value 
 	double min; 
+	/// masimum values 
 	double max; 
+	/// number of values 
 	size_t n; 
 }; 
 
 /**
+   \ingroup functors  
    \brief Functor to accumulate statistics of data. 
    
    This functior is used to accumulate the statistics over the data various 
@@ -56,9 +64,19 @@ class FIntensityStatsAccumulator : public TFilter<void> {
 public: 
 	FIntensityStatsAccumulator(); 
 	
+	/**
+	   This function gets called for each entity from the input that the statistics is 
+	   evaluated for. 
+	   \param @data the data container to be processed
+	 */
 	template <typename Container> 
 	void operator () ( const Container& data); 
 	
+
+	/**
+	   Evaluate the statistics and return it 
+	   \returns the statistical measures of the accumulated data 
+	 */
 	const SIntensityStats& get_result() const; 
 private: 
 	mutable SIntensityStats m_stats; 

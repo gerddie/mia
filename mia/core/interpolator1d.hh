@@ -53,6 +53,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup interpol 
    \brief Basic Interpolator type for 1D Data.
    
    \remark Why do we need this? 
@@ -66,6 +67,8 @@ public:
 
 
 /**
+   \ingroup interpol 
+
    \brief Interpolator base class providing the full interface 
    
    Basic Interpolator type for 1D Data.
@@ -93,6 +96,8 @@ public:
 };
 
 /** 
+   \ingroup interpol 
+
     \brief Interpolator that uses some kind of spaciel kernel. 
     
     Base type for interpolators that work with some kind of convolution  
@@ -146,9 +151,10 @@ private:
 
 
 /** 
-    \brief Factory class for 1D interpolators 
-
-    Factory to create 1D interpolators of a give data type using the given input data.  
+   \ingroup interpol 
+   \brief Factory class for 1D interpolators 
+   
+   Factory to create 1D interpolators of a give data type using the given input data.  
 */
 class EXPORT_CORE C1DInterpolatorFactory {
 public:
@@ -186,7 +192,10 @@ private:
 	PSplineKernel m_kernel;
 };
 
-/// Pointer type for C1DInterpolatorFactory. 
+/** 
+   \ingroup interpol 
+    Pointer type for C1DInterpolatorFactory. 
+ */
 typedef std::shared_ptr<const C1DInterpolatorFactory > P1DInterpolatorFactory;
 
 /**

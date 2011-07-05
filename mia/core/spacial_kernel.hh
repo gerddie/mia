@@ -43,6 +43,7 @@ struct EXPORT_CORE kernel_plugin_type {
 };
 
 /**
+   \ingroup filters
    \brief base class for 1D filter kernels 
 
    prototype for a 1D spacial convolution kernel
@@ -94,6 +95,7 @@ private:
 };
 
 /**
+   \ingroup filters
    \brief Base class for folding kernal types.
  */
 

@@ -21,13 +21,6 @@
  *
  */
 
-/**
-   \file type_traits.hh
-  This header was intended to use either the BOOST or the STL version 
-  of the type_trait is_float (depending on whether std+0x is enabled. 
-  \todo remove since we now require a compiler capable of some std+0x
- */
-
 #ifndef mia_core_typetraits_hh
 #define mia_core_typetraits_hh
 

@@ -28,10 +28,14 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup interpol 
+
    \brief Base class for B-spline interpolation boundary conditions 
    
    This class is the base class for B-spline interpolation boundary conditions. 
    In order to obtain a usable derivative, the do_apply method has to be implemented. 
+
+   \todo for spline degrees large then 1, the pre-filtering has to tale the boundary conditionsinto account. 
  */
 
 class CBoundaryCondition {
@@ -64,11 +68,14 @@ private:
 }; 
 
 typedef std::shared_ptr<CBoundaryCondition> PBoundaryCondition; 
+
+
 /**
-   \brief Class for mirroring on the the boundary
- */
-
-
+   \ingroup interpol 
+   \brief Class for mirroring on the boundary
+   
+   This is based directly on the implementation provided by Philip Thevenaz 
+*/
 class CMirrorOnBoundary : public CBoundaryCondition {
 public: 
 	/**
@@ -82,10 +89,11 @@ private:
 }; 
 
 /**
+   \ingroup interpol 
    \brief Boundary condition that sets all the values outside the coefficient domain to zero 
-
+   
+   \todo the pre-filtering is not yet implemented 
 */
-
 class CZeroBoundary : public CBoundaryCondition {
 public: 
 	/**
@@ -99,8 +107,9 @@ private:
 
 
 /**
+   \ingroup interpol 
    \brief Boundary condition that repeats the value at the boundary 
-
+   \todo the pre-filtering is not yet implemented 
 */
 class CRepeatBoundary : public CBoundaryCondition {
 public: 

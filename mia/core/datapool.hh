@@ -33,6 +33,8 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup infrastructure 
+
    \brief temporary data storage to avoid storing on disk
 
    This class implements a data storage pool as a singelton

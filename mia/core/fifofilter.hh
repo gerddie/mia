@@ -43,6 +43,9 @@ NS_MIA_BEGIN
 using namespace std; 
 
 /**
+   \ingroup filtering
+
+   
    \brief Generic base class for out-of-core FIFO filters. 
 
   Base class for a First-in-first out filter that does not need 
@@ -147,6 +150,9 @@ private:
 }; 
 
 /**
+   \ingroup tests 
+
+
    \brief Helper class for testing FIFO filter chains. 
 
    Generic data sink as end of the filter chain that is used for testing purpouses. 

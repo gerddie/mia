@@ -55,6 +55,8 @@ typedef std::map<char,  CCmdOption *>        CShortoptionMap;
 typedef std::map<std::string,  CCmdOption *> CLongoptionMap;
 
 /** 
+    \ingroup infrastructure 
+
     \brief The base class for all command line options. 
 
     The base class of all possible command line options. It defines the interface

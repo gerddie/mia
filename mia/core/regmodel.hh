@@ -41,6 +41,7 @@ struct RegistrationTraits {
 }; 
 
 /**
+   \ingroup templates 
    \brief Base class for PDE model based registrations
    
    Base class template for PDE based image registration models.

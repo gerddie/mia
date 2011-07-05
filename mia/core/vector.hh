@@ -60,6 +60,7 @@ struct array_void_destructor {
 /// \endcond 
 
 /**
+   \ingroup templates
    \brief A wrapper around the c-array to provide an STL like interface for iterators 
 
    c-array envelope that supports some facilities of STL like vectors and that 

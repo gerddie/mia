@@ -32,6 +32,8 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup classes
+
    \brief a class to real-to-complex 1D FFTs 
 
    Class to run a 1D real-to-complex FFT and its inverse. This class makes use of fftw.

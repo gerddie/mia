@@ -37,9 +37,10 @@ NS_MIA_BEGIN
 
 
 /** 
-    \brief This class holds the complete history list of a data set. 
-    
-    \todo Use it. 
+   \ingroup infrastructure 
+   \brief This class holds the complete history list of a data set. 
+   
+   \todo Use it. 
 */
 
 

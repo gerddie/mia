@@ -29,7 +29,11 @@
 #include <cassert>
 #include <stdexcept>
 
-/// helper macro to create exceptions using stream output for its message 
+/** 
+    \ingroup helpers
+
+    helper macro to create exceptions using stream output for its message 
+ */
 #define THROW(EXCEPTION, MESSAGE)		\
 	do {					\
 		std::stringstream msg;		\

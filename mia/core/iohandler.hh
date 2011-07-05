@@ -32,6 +32,8 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup infrastructure 
+
    \brief Template for all plug-in handlers that are responsible for data IO 
    
    Input/Output plugin handler base class, derived privately from the 
@@ -153,6 +155,10 @@ private:
 }; 
 
 /**
+   \ingroup infrastructure 
+   
+   \brief Singleton of the IO plugin handler 
+
    This makes a singleton from the IO plugin handler. This specification is needed 
    to enable tests on plugin loading, where the search path has to be changed to 
    the location of the uninstalled plug-ins. 

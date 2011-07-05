@@ -42,7 +42,6 @@
 #include <cassert>
 #include <iomanip>
 #include <limits>
-#include <mia/core/unaryfunction.hh>
 #include <mia/core/splinekernel.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/msgstream.hh>
@@ -222,12 +221,12 @@ int CSplineKernel::get_start_idx_and_derivative_weights(double x, std::vector<do
 
 
 
-struct F2DKernelIntegrator: public FUnary {
+struct F2DKernelIntegrator {
 	F2DKernelIntegrator(const CSplineKernel& spline, double s1, double s2, int deg1, int deg2):
 		m_spline(spline), m_s1(s1), m_s2(s2), m_deg1(deg1), m_deg2(deg2)
 		{
 		}
-	virtual double operator() (double x) const {
+	double operator() (double x) const {
 		return m_spline.get_weight_at(x - m_s1, m_deg1) *
 			m_spline.get_weight_at(x - m_s2, m_deg2);
 	}

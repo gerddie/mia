@@ -41,6 +41,7 @@ struct EXPORT_CORE generator_type {
 };
 
 /**
+   \ingroup classes
    \brief Base class for the noise generators.
 
    This class defines the interface for noise generators. Real implementations 

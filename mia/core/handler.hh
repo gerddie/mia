@@ -43,7 +43,10 @@
 NS_MIA_BEGIN
 
 
-/** \brief The basic %template of all plugin handlers
+/** 
+    \ingroup infrastructure 
+    
+    \brief The basic %template of all plugin handlers
 
     The template TPluginHandler provides the base interface to all plug-in handlers. 
     \tparam I the plugin interface derived from \sa CPluginBase.
@@ -128,6 +131,8 @@ private:
 
 
 /**
+    \ingroup infrastructure 
+
    \brief the singleton that a plug-in handler really is 
    
    Class to make a singleton out of a plugin handler by deriving from it.

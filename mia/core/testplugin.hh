@@ -36,6 +36,7 @@ struct test_plugin_data;
 EXPORT_CORE extern const char *const test_property;
 
 /**
+   \ingroup test 
    \brief Class to test plugin handling. 
 */
 
@@ -52,6 +53,7 @@ private:
 
 
 /**
+   \ingroup test 
    \brief Class to test plugin handling. 
 */
 class EXPORT_CORE CTestPluginHandlerImpl : public  TPluginHandler<CTestPlugin> {
@@ -72,7 +74,9 @@ public:
 };
 
 
-/// Test plugin handler only used internally for thesing the plugin handler 
+/** \ingroup test  
+    Test plugin handler, only used internally for thesing the plugin handler 
+*/
 typedef THandlerSingleton<CTestPluginHandlerImpl> CTestPluginHandler;
 NS_MIA_END
 

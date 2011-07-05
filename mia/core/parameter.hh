@@ -35,6 +35,8 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup infrastructure 
+
    \brief The base class for parameters used in complex options 
 
    The base class for parameters that might be set based on strings.

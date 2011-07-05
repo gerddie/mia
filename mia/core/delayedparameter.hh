@@ -37,6 +37,8 @@ NS_MIA_BEGIN
 
 
 /**
+   \ingroup infrastructure 
+
    \brief A parameter proxy object with a key to identify it.  
 
    Class for a parameter that can be stored in the internal data pool. 

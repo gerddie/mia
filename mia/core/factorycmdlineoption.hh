@@ -30,6 +30,8 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup infrastructure 
+   
    \brief A command line option class to use a TFactory to create the value from the parameter string. 
 
    Command line option that uses a factory singleton to create the target object from 

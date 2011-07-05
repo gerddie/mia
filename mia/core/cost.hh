@@ -46,6 +46,8 @@ struct EXPORT_CORE cost_type {
 
 
 /**
+   \ingroup templates 
+
    \brief The generic cost function interface. 
 
    The class defines an abstract interface for a cost function between two entities of the same 

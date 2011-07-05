@@ -29,11 +29,40 @@
 
 NS_MIA_BEGIN
 
+/**
+   \ingroup helpers 
+   \brief a class to provide a feedback mechanism to show progress 
+
+   This class is used as a base class in order to show feedback about the 
+   progress of certain operations that may take a long time. 
+   The indicator supports two modes of operation: If the number if steps 
+   is known beforehand, the indicator will act like a classical progress bar, and 
+   If the number of stels is unknown, some kind of change indicator is applied 
+   to show that "something happens". 
+*/
+
 class CProgressCallback {
 public: 
 	virtual ~CProgressCallback(); 
+
+	/**
+	   Set the maximum number of the possible steps some operatoion may take 
+	   \param range  
+	 */
 	void set_range(int range); 
+
+	/**
+	   Update the progress indicator by using the given value  - it should be 
+	   less or equal to the value given in set_range(). 
+	   \param step 
+	 */
 	void update(int step);
+
+	/**
+	   Update the progress indicator in some way to show that something is happening 
+	   but without giving real target informations. 
+
+	 */
 	void pulse();
 private:
 	virtual void do_update(int step) = 0;
@@ -41,8 +70,21 @@ private:
 	virtual void do_pulse() = 0;
 }; 
 
+/**
+   \ingroup helpers 
+   \brief a class to provide a feedback mechanism to show progress based on textual output 
+   
+   This class provides progress feedback on textual outputs. The range based output 
+   shows progress in percent, and the pluse output prints a '.' whenever it is called. 
+*/
 class CMsgStreamPrintCallback: public CProgressCallback {
 public: 
+
+	/**
+	   Constructor for the text based callback that uses msgstream for output. 
+	   \param format the output format. It should contain the format descriptors 
+	   %1% for the current progress and %2% for the progress range. 
+	 */
 	CMsgStreamPrintCallback(const std::string& format); 
 	virtual ~CMsgStreamPrintCallback(); 
 private: 

@@ -35,6 +35,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup infrastructure 
    \brief A class to hold a list of named parameters.
 
     It takes care of setting the parameters based on its names,

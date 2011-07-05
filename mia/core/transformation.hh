@@ -31,6 +31,7 @@ NS_MIA_BEGIN
 
 
 /**
+   \ingroup templates 
    \brief generic  base class for transformations 
 
    Template of a generic tranformation function 

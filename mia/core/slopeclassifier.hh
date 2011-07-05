@@ -30,6 +30,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup helpers 
    \brief Curve classifier for heart perfusion data 
    
    Classify a set of curves. This class is mostly usefull for the analysis

@@ -47,6 +47,8 @@ struct EXPORT_CORE filter_type {
 
 
 /**
+   \ingroup filtering 
+   
    \brief base class for all filer type functors. 
 
    Base class for all filters that can be used with the pixel type transparent
@@ -66,6 +68,8 @@ struct TFilter {
 };
 
 /**
+   \ingroup filtering
+
    \brief Generic interface class to data filters. 
 
    This class provides the basic interface to image filtering.  
@@ -96,6 +100,8 @@ private:
 };
 
 /**
+   \ingroup filtering
+
    \brief Generic image filter plugin base 
 
    This class provides the generic base class for image filter 
@@ -118,6 +124,7 @@ private:
 	};
 };
 
+
 template <template <class> class  D>
 struct __bind_all {
 	typedef D<bool> Dbool;
@@ -137,6 +144,8 @@ struct __bind_all {
 
 
 /**
+   \ingroup traits 
+
    \brief a trait to define types for images of all pixel types that are derived 
    from a common base class. 
 
@@ -151,6 +160,8 @@ struct Binder {
 
 
 /**
+   \ingroup filtering
+
    A filter type that handles data containers of different types.
    The data container is provided by a pointer or reference to its type independedn base class.
    Data type dependency is introduced by using a templated derivative.
@@ -191,6 +202,8 @@ static typename F::result_type filter(const F& f, const B& b)
 }
 
 /**
+   \ingroup filtering
+
    The in-place type of the function typename F::result_type filter(const F& f, const B& b). 
    A filter type that handles data containers of different types.
    The data container is provided by a pointer or reference to its type independedn base class.
@@ -225,6 +238,8 @@ static typename F::result_type filter_inplace(const F& f, B& b)
 }
 
 /**
+   \ingroup filtering
+
    A accumulator function that handles data containers of different types.
    The data container is provided by a pointer or reference to its type independen base class.
    Data type dependency is introduced by using a templated derivative.
@@ -258,6 +273,8 @@ static typename F::result_type accumulate(F& f, const B& data)
 }
 
 /**
+   \ingroup filtering
+
    A filter type that handles data containers of different types.
    The data container is provided by a pointer or reference to its type independedn base class.
    Data type dependency is introduced by using a templated derivative.
@@ -294,6 +311,8 @@ static typename F::result_type filter_equal(const F& f, const B& a, const B& b)
 
 
 /**
+   \ingroup filtering
+
    A filter type that handles data containers of equal types.
    The data container is provided by a pointer or reference to its type independedn base class.
    Data type dependency is introduced by using a templated derivative.
@@ -329,6 +348,8 @@ static void filter_equal_inplace(const F& f, const B& a, B& b)
 
 
 /**
+   \ingroup filtering
+
    A filter type that handles data containers of equal types.
    The data container is provided by a pointer or reference to its type independedn base class.
    Data type dependency is introduced by using a templated derivative.
@@ -390,6 +411,8 @@ static typename F::result_type _filter(const F& f, const A& a, const B& b)
 
 
 /**
+   \ingroup filtering
+
    A filter type that handles data containers of different types.
    The data container is provided by a pointer or reference to its type independedn base class.
    Data type dependency is introduced by using a templated derivative.
@@ -451,6 +474,8 @@ static typename F::result_type _accumulate(F& f, const A& a, const B& b)
 /// \endcond
 
 /**
+   \ingroup filtering
+
    A accumulatro type that handles data containers of different types.
    The data container is provided by a pointer or reference to its type independedn base class.
    Data type dependency is introduced by using a templated derivative.

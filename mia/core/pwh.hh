@@ -31,6 +31,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup classes
    \brief This class implements a 1D histogram using Parzen Windows. 
 
    This class uses NFFT to implement the Parzen windows probability estimation. 

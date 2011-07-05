@@ -40,6 +40,8 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup classes
+
    \brief Templated representation of a ICA series analyis 
 
    This class provides a generic implementation for the ICA analysis 

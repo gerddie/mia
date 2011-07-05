@@ -38,6 +38,8 @@ struct EXPORT_CORE io_plugin_type {
 };
 
 /**
+   \ingroup infrastructure 
+
    \brief The templatex basis class of all IO plug-ins.
 
    The basis of all IO plug-ins. The type \a D must provied a typedef \a type the referes to the

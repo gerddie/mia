@@ -34,6 +34,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup helpers
    Function to convert a streamable type from a string to a value
    \tparam T some type that supports the >> stream operator 
    \param s the c-string holding the value 
@@ -51,6 +52,7 @@ T from_string(const char *s)
 }
 
 /**
+   \ingroup helpers
    Function to convert a streamable type from a string to a value
    \tparam T some type that supports the >> stream operator 
    \param s the c++string holding the value 
@@ -69,6 +71,7 @@ const T from_string(const std::string& s)
 
 
 /**
+   \ingroup helpers
    Function to convert a streamable type from to a string 
    \tparam T some type that supports the << stream operator 
    \param v the value to be converted 

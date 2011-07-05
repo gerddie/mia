@@ -31,6 +31,7 @@ NS_MIA_BEGIN
 
 
 /**
+   \ingroup helpers 
    @brief Runs some statistics over a one-dimensional curve 
    
    Evaluates some statistics about a one-dimensional mapping [0, 1,..., N-1] -> R.
