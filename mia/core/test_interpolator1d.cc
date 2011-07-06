@@ -54,7 +54,7 @@ Initialiaze set_path;
 BOOST_FIXTURE_TEST_CASE( test_linear, InterpolatorIDFixture)
 {
 
-	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(ip_linear));
+	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(ip_linear, bc_mirror_on_bounds));
 	vector<double> data(512);
 
 
@@ -110,7 +110,7 @@ double InterpolatorIDFixture::df(double x) const
 
 void InterpolatorIDFixture::test_case(EInterpolation type, double tolerance)
 {
-	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(type));
+	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(type,bc_mirror_on_bounds));
 	vector<double> data(512); 
 	for(size_t x = 0; x < 512; ++x)
 		data[x] = f(x) ;

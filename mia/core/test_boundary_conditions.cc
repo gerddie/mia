@@ -23,6 +23,11 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/core/boundary_conditions.hh>
+#include <mia/core/splinekernel.hh>
+#include <gsl/gsl_linalg.h>
+#include <gsl++/vector.hh>
+#include <gsl++/matrix.hh>
+
 
 BOOST_AUTO_TEST_CASE( test_mirror_on_boundary_needed ) 
 {
@@ -79,5 +84,106 @@ BOOST_AUTO_TEST_CASE( test_CRepeatBoundary_needed )
 	for (int i = 0; i < 10; ++i) {
 		BOOST_CHECK_EQUAL(index[i], result[i]); 
 	}
+}
+
+class BoundaryFixture {
+protected: 
+	void run(std::vector<double> f, const CBoundaryCondition& bc, PSplineKernel kernel); 
+}; 
+
+
+void BoundaryFixture::run(std::vector<double> f, const CBoundaryCondition& bc, PSplineKernel kernel)
+{
+	vector<double> weights(kernel->size()); 
+	vector<int>    indices(kernel->size()); 
+
+	auto m_A = gsl::Matrix(f.size(), f.size(),  true);
+	auto m_tau = gsl::DoubleVector(f.size() ); 
+
+	for(size_t i = 0; i < f.size(); ++i) {
+		(*kernel)(i, weights, indices);
+		bc.apply(indices, weights);
+		
+		for(int j = 0; j < indices.size(); ++j) { 
+			double v = m_A(i, indices[j]); 
+			m_A.set(i, indices[j], v + weights[j]);
+		}
+	}
+	gsl_linalg_QR_decomp(m_A, m_tau); 
+	
+
+	gsl::DoubleVector coefs(f.size()); 
+	gsl::DoubleVector residual(f.size()); 
+	gsl::DoubleVector input(f.size()); 
+	copy(f.begin(), f.end(), input.begin()); 
+
+	gsl_linalg_QR_lssolve (m_A, m_tau, input, coefs, residual); 
+
+	bc.filter_line(f, kernel->get_poles()); 
+	for (int i = 0; i < f.size(); ++i) {
+		BOOST_CHECK_CLOSE(f[i], coefs[i], 0.01); 
+	}
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat1, BoundaryFixture ) 
+{
+	std::vector<double> f = { 8, 5, 3, 7, 5, 6, 2, 6, 1}; 
+//	std::vector<double> f = { 9, 9, 9, 9, 9, 9, 9, 9, 9}; 
+
+	CRepeatBoundary bc(f.size());
+	auto kernel = produce_spline_kernel("bspline:d=3"); 
+
+	run(f, bc, kernel); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat2, BoundaryFixture ) 
+{
+	std::vector<double> f = { 9, 9, 9, 9, 9, 9, 9, 9, 9}; 
+
+	CRepeatBoundary bc(f.size());
+	auto kernel = produce_spline_kernel("bspline:d=3"); 
+
+	run(f, bc, kernel); 
+}
+
+
+BOOST_AUTO_TEST_CASE( test_CRepeatBoundary_coefs_mirror ) 
+{
+	std::vector<double> f = { 9, 5, 3, 7, 5, 6, 2, 6, 1}; 
+
+	CMirrorOnBoundary bc(f.size());
+	auto kernel = produce_spline_kernel("bspline:d=5"); 
+
+	vector<double> weights(kernel->size()); 
+	vector<int>    indices(kernel->size()); 
+
+	auto m_A = gsl::Matrix(f.size(), f.size(),  true);
+	auto m_tau = gsl::DoubleVector(f.size() ); 
+
+	for(size_t i = 0; i < f.size(); ++i) {
+		(*kernel)(i, weights, indices);
+		bc.apply(indices, weights);
+		
+		for(int j = 0; j < indices.size(); ++j) { 
+			double v = m_A(i, indices[j]); 
+			m_A.set(i, indices[j], v + weights[j]);
+		}
+	}
+	gsl_linalg_QR_decomp(m_A, m_tau); 
+	
+
+	gsl::DoubleVector coefs(f.size()); 
+	gsl::DoubleVector residual(f.size()); 
+	gsl::DoubleVector input(f.size()); 
+	copy(f.begin(), f.end(), input.begin()); 
+
+	gsl_linalg_QR_lssolve (m_A, m_tau, input, coefs, residual); 
+
+	bc.filter_line(f, kernel->get_poles()); 
+	for (int i = 0; i < f.size(); ++i) {
+		BOOST_CHECK_CLOSE(f[i], coefs[i], 0.01); 
+	}
+	
 }
 

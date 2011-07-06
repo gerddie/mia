@@ -293,29 +293,6 @@ struct CSplineKernelTestPath {
 	CSplineKernelTestPath(); 
 }; 
 
-template <typename F>
-F *create_interpolator_factory(EInterpolation type) __attribute__((deprecated)); 
-
-template <typename F>
-F *create_interpolator_factory(EInterpolation type) 
-{
-	PSplineKernel kernel; 
-	switch (type) {
-	case ip_nn: 
-	case ip_bspline0: kernel = CSplineKernelPluginHandler::instance().produce("bspline:d=0"); break; 
-	case ip_linear:
-	case ip_bspline1: kernel = CSplineKernelPluginHandler::instance().produce("bspline:d=1"); break; 
-	case ip_bspline2: kernel = CSplineKernelPluginHandler::instance().produce("bspline:d=2"); break; 
-	case ip_bspline3: kernel = CSplineKernelPluginHandler::instance().produce("bspline:d=3"); break; 
-	case ip_bspline4: kernel = CSplineKernelPluginHandler::instance().produce("bspline:d=4"); break; 
-	case ip_bspline5: kernel = CSplineKernelPluginHandler::instance().produce("bspline:d=5"); break; 
-	case ip_omoms3:   kernel = CSplineKernelPluginHandler::instance().produce("omoms:d=3"); break;
-	default: 
-		throw invalid_argument("create_interpolator_factory:Unknown interpolator type requested"); 
-	}; 
-	return new F(ipf_spline, kernel); 
-};
-
 
 template <typename T>
 struct max_hold_type {
@@ -415,7 +392,7 @@ void CSplineKernel::filter_line(std::vector<C>& coeff)
 	}
 	
 	/* apply the gain */
-	for_each(coeff.begin(), coeff.end(), FMultBy<C>(lambda));
+	for_each(coeff.begin(), coeff.end(), [lambda](C& x) { x *= lambda;});
 	
 	/* loop over all poles */
 	for (size_t k = 0; k < m_poles.size(); ++k) {

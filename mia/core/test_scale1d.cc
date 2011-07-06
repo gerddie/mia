@@ -62,7 +62,7 @@ BOOST_FIXTURE_TEST_CASE( test_upscale_NN, ScaleFixtureBase)
 
 	initialize( in_size, init_src, test_size, init_test);
 
-	C1DScalar scaler(P1DInterpolatorFactory(create_1dinterpolation_factory(ip_bspline0)));
+	C1DScalar scaler(P1DInterpolatorFactory(create_1dinterpolation_factory(ip_bspline0,bc_mirror_on_bounds)));
 	vector<float> result(test_size);
 	scaler(src, result);
 	check_result(result);
@@ -77,7 +77,7 @@ BOOST_FIXTURE_TEST_CASE( test_upscale_linear, ScaleFixtureBase)
 
 	initialize( in_size, init_src, test_size, init_test);
 
-	C1DScalar scaler(P1DInterpolatorFactory(create_1dinterpolation_factory(ip_bspline1)));
+	C1DScalar scaler(P1DInterpolatorFactory(create_1dinterpolation_factory(ip_bspline1, bc_mirror_on_bounds)));
 	vector<float> result(test_size);
 	scaler(src, result);
 	check_result(result);
@@ -92,7 +92,7 @@ BOOST_FIXTURE_TEST_CASE( test_downscale_linear, ScaleFixtureBase)
 
 	initialize( src_size, init_src, test_size, init_test);
 
-	C1DScalar scaler(P1DInterpolatorFactory(create_1dinterpolation_factory(ip_bspline1)));
+	C1DScalar scaler(P1DInterpolatorFactory(create_1dinterpolation_factory(ip_bspline1, bc_mirror_on_bounds)));
 	vector<float> result(test_size);
 	scaler(src, result);
 	check_result(result);

@@ -57,19 +57,23 @@ void __dispatch_copy<I,O>::apply(const I& input, O& output)
 }
  
 template <typename T>
-T1DConvoluteInterpolator<T>::T1DConvoluteInterpolator(const std::vector<T>& data, PSplineKernel  kernel):
+T1DConvoluteInterpolator<T>::T1DConvoluteInterpolator(const std::vector<T>& data, PSplineKernel  kernel, 
+						      PBoundaryCondition boundary_conditions):
 	m_coeff(data.size()), 
 	m_size2(data.size() + data.size() - 2),
 	m_kernel(kernel),
+	m_boundary_conditions(boundary_conditions),
 	m_x_index(kernel->size()),
 	m_x_weight(kernel->size())
 {
+	m_boundary_conditions->set_width(data.size()); 
+
 	min_max<typename std::vector<T>::const_iterator>::get(data.begin(), data.end(), m_min, m_max);
 	
 	// copy the data
 	__dispatch_copy<std::vector<T>, TCoeff1D >::apply(data, m_coeff); 
 	
-	m_kernel->filter_line(m_coeff);
+	boundary_conditions->filter_line(m_coeff, m_kernel->get_poles());
 }
 
 template <typename T>
@@ -176,7 +180,7 @@ T  T1DConvoluteInterpolator<T>::operator () (const double& x) const
 		return T();
 	
 	(*m_kernel)(x, m_x_weight, m_x_index);
-	mirror_boundary_conditions(m_x_index, m_coeff.size(), m_size2);
+	m_boundary_conditions->apply(m_x_index, m_x_weight); 
 
 	U result = U();
 	

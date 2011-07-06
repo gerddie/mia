@@ -125,7 +125,7 @@ void Scaler1DFixture::test_size(EInterpolation type, size_t target_size)
 {
 	gsl::DoubleVector result(target_size); 
 	
-	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(type));	
+	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(type, bc_mirror_on_bounds));	
 	C1DScalarFixed scaler(*ipf->get_kernel(), data.size(), target_size); 
 	copy(data.begin(), data.end(), scaler.input_begin()); 
 	

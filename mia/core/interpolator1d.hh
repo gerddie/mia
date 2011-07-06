@@ -48,6 +48,7 @@
 
 #include <mia/core/defines.hh>
 #include <mia/core/splinekernel.hh>
+#include <mia/core/boundary_conditions.hh>
 
 
 NS_MIA_BEGIN
@@ -112,7 +113,8 @@ public:
 	   \param kernel the spline kernel used for interpolation 
 	 */
 	
-	T1DConvoluteInterpolator(const std::vector<T>& data, PSplineKernel kernel);
+	T1DConvoluteInterpolator(const std::vector<T>& data, PSplineKernel kernel, 
+				 PBoundaryCondition boundary_conditions);
 	
 	~T1DConvoluteInterpolator();
 	
@@ -141,6 +143,7 @@ private:
 	TCoeff1D m_coeff;
 	size_t m_size2;
 	PSplineKernel m_kernel;
+	PBoundaryCondition m_boundary_conditions; 
 	T m_min;
 	T m_max;
 
@@ -163,7 +166,7 @@ public:
 	    @param type 
 	    @param kernel 
 	 */
-	C1DInterpolatorFactory(EInterpolationFactory type, PSplineKernel kernel);
+	C1DInterpolatorFactory(PSplineKernel kernel, PBoundaryCondition bc);
 
 	/// Copy constructor 
 	C1DInterpolatorFactory(const C1DInterpolatorFactory& o);
@@ -188,8 +191,8 @@ public:
 	PSplineKernel get_kernel() const;
 
 private:
-	EInterpolationFactory  m_type;
 	PSplineKernel m_kernel;
+	PBoundaryCondition m_bc; 
 };
 
 /** 
@@ -204,18 +207,14 @@ typedef std::shared_ptr<const C1DInterpolatorFactory > P1DInterpolatorFactory;
    @todo this should become the work of a plug-in handler 
  */
 
-C1DInterpolatorFactory EXPORT_CORE  *create_1dinterpolation_factory(EInterpolation type) 
+C1DInterpolatorFactory EXPORT_CORE  *create_1dinterpolation_factory(EInterpolation type, EBoundaryConditions bc) 
 	__attribute__ ((warn_unused_result));
 
 // implementation
 template <class T>
 T1DInterpolator<T> *C1DInterpolatorFactory::create(const std::vector<T>& src) const
 {
-	switch (m_type) {
-	case ipf_spline: return new T1DConvoluteInterpolator<T>(src, m_kernel);
-	default: throw "CInterpolatorFactory::create: Unknown interpolator requested";
-	}
-	return NULL;
+	return new T1DConvoluteInterpolator<T>(src, m_kernel, m_bc);
 }
 
 
@@ -228,6 +227,40 @@ struct __dispatch_min_max {
 template <typename I, typename O>
 struct __dispatch_copy {
 	static void apply(const I& input, O& output);
+};
+
+
+template <typename F>
+F *create_interpolator_factory(EInterpolation type, EBoundaryConditions bc) __attribute__((deprecated)); 
+
+template <typename F>
+F *create_interpolator_factory(EInterpolation type, EBoundaryConditions bc) 
+{
+	PSplineKernel kernel; 
+	switch (type) {
+	case ip_nn: 
+	case ip_bspline0: kernel = produce_spline_kernel("bspline:d=0"); break; 
+	case ip_linear:
+	case ip_bspline1: kernel = produce_spline_kernel("bspline:d=1"); break; 
+	case ip_bspline2: kernel = produce_spline_kernel("bspline:d=2"); break; 
+	case ip_bspline3: kernel = produce_spline_kernel("bspline:d=3"); break; 
+	case ip_bspline4: kernel = produce_spline_kernel("bspline:d=4"); break; 
+	case ip_bspline5: kernel = produce_spline_kernel("bspline:d=5"); break; 
+	case ip_omoms3:   kernel = produce_spline_kernel("omoms:d=3"); break;
+	default: 
+		throw invalid_argument("create_interpolator_factory:Unknown interpolator type requested"); 
+	}; 
+	PBoundaryCondition pbc; 
+	switch (bc) {
+	case bc_mirror_on_bounds: pbc.reset(new CMirrorOnBoundary()); break; 
+	case bc_repeat:           pbc.reset(new CRepeatBoundary()); break; 
+	case bc_zero:             pbc.reset(new CZeroBoundary()); break;   
+	default: 
+		throw invalid_argument("create_interpolator_factory:Unknown boundary condition requested"); 
+		
+	}
+	
+	return new F(kernel, pbc); 
 };
 
 

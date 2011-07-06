@@ -42,7 +42,7 @@ struct __dispatch_compare {
 template <typename T>
 struct __dispatch_compare<T, true> {
 	static void apply(T a, T b) {
-		BOOST_CHECK_CLOSE(1.0 + a, 1.0 + b, 0.01);
+		BOOST_CHECK_CLOSE(1.0 + a, 1.0 + b, 0.001);
 	}
 };
 
@@ -59,17 +59,17 @@ void test_interpolator(const vector<T>& data, const Interpolator& src)
 }
 
 template <class T>
-void test_conv_interpolator(const vector<T>& data, PSplineKernel kernel, EInterpolation type)
+void test_conv_interpolator(const vector<T>& data, PSplineKernel kernel, EInterpolation type, PBoundaryCondition bc)
 {
-	cvdebug() << "test type " << type << "\n"; 
+	cvdebug() << "test type " << type << ":" << typeid(T).name()<<"\n"; 
 	BOOST_CHECK_EQUAL(kernel->get_type(), type); 
-	T1DConvoluteInterpolator<T>  src(data, kernel);
+	T1DConvoluteInterpolator<T>  src(data, kernel, bc);
 	test_interpolator(data, src);
 }
 
 
 template <class T>
-void test_type()
+void test_type_mirror()
 {
 	vector<T> data(10);
 
@@ -79,13 +79,53 @@ void test_type()
 	for (size_t x = 1; x < data.size() + 1; ++x, ++i)
 		*i = T(x);
 
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel0()), ip_bspline0);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel3()), ip_bspline3);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel4()), ip_bspline4);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel5()), ip_bspline5);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernelOMoms3()), ip_omoms3);
+	PBoundaryCondition bc(new CMirrorOnBoundary()); 
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel0()), ip_bspline0, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel3()), ip_bspline3, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel4()), ip_bspline4, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel5()), ip_bspline5, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernelOMoms3()), ip_omoms3, bc);
+}
+
+
+template <class T>
+void test_type_repeat()
+{
+	vector<T> data = {3,4,8,10,2,3,9,6,7,11,8};
+
+
+
+	PBoundaryCondition bc(new CRepeatBoundary()); 
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel0()), ip_bspline0, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel3()), ip_bspline3, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel4()), ip_bspline4, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel5()), ip_bspline5, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernelOMoms3()), ip_omoms3, bc);
+}
+
+template <class T>
+void test_type_zero()
+{
+	vector<T> data(10);
+
+
+	typename vector<T>::iterator i = data.begin();
+
+	for (size_t x = 1; x < data.size() + 1; ++x, ++i)
+		*i = T(x);
+
+	PBoundaryCondition bc(new CZeroBoundary()); 
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel0()), ip_bspline0, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel3()), ip_bspline3, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel4()), ip_bspline4, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel5()), ip_bspline5, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernelOMoms3()), ip_omoms3, bc);
 }
 
 
@@ -128,20 +168,53 @@ BOOST_AUTO_TEST_CASE(  test_omoms3_derivative )
 	}
 }
 
-BOOST_AUTO_TEST_CASE( test_types )
+BOOST_AUTO_TEST_CASE( test_types_mirror )
 {
-	test_type<unsigned char>();
-	test_type<signed char>();
-	test_type<unsigned short>();
-	test_type<signed short>();
+	test_type_mirror<unsigned char>();
+	test_type_mirror<signed char>();
+	test_type_mirror<unsigned short>();
+	test_type_mirror<signed short>();
 #ifdef HAVE_INT64
-	test_type<mia_uint64>();
-	test_type<mia_int64>();
+	test_type_mirror<mia_uint64>();
+	test_type_mirror<mia_int64>();
 #endif
-	test_type<float>();
-	test_type<double>();
+	test_type_mirror<float>();
+	test_type_mirror<double>();
 
 }
+
+
+
+BOOST_AUTO_TEST_CASE( test_types_repeat )
+{
+	test_type_repeat<unsigned char>();
+	test_type_repeat<signed char>();
+	test_type_repeat<unsigned short>();
+	test_type_repeat<signed short>();
+#ifdef HAVE_INT64
+	test_type_repeat<mia_uint64>();
+	test_type_repeat<mia_int64>();
+#endif
+	test_type_repeat<float>();
+	test_type_repeat<double>();
+
+}
+
+#if 0
+BOOST_AUTO_TEST_CASE( test_types_zero )
+{
+	test_type_zero<unsigned char>();
+	test_type_zero<signed char>();
+	test_type_zero<unsigned short>();
+	test_type_zero<signed short>();
+#ifdef HAVE_INT64
+	test_type_zero<mia_uint64>();
+	test_type_zero<mia_int64>();
+#endif
+	test_type_zero<float>();
+	test_type_zero<double>();
+}
+#endif 
 
 // these tests need a review
 #define TEST_HIGHORDER_DRIVATIVES 1

@@ -39,23 +39,24 @@ C1DInterpolator::~C1DInterpolator()
 }
 
 
-C1DInterpolatorFactory::C1DInterpolatorFactory(EInterpolationFactory  type, PSplineKernel kernel):
-	m_type(type),
-	m_kernel(kernel)
+C1DInterpolatorFactory::C1DInterpolatorFactory(PSplineKernel kernel, PBoundaryCondition bc):
+	m_kernel(kernel),
+	m_bc(bc)
 {
 	assert(m_kernel);
+	assert(m_bc); 
 }
 
 C1DInterpolatorFactory::C1DInterpolatorFactory(const C1DInterpolatorFactory& o):
-	m_type(o.m_type),
-	m_kernel(o.m_kernel)
+	m_kernel(o.m_kernel), 
+	m_bc(o.m_bc)
 {
 }
 
 C1DInterpolatorFactory& C1DInterpolatorFactory::operator = ( const C1DInterpolatorFactory& o)
 {
-	m_type = o.m_type;
 	m_kernel = o.m_kernel;
+	m_bc = o.m_bc; 
 
 	return *this;
 }
@@ -69,9 +70,9 @@ C1DInterpolatorFactory::~C1DInterpolatorFactory()
 {
 }
 
-C1DInterpolatorFactory *create_1dinterpolation_factory(EInterpolation type)
+C1DInterpolatorFactory *create_1dinterpolation_factory(EInterpolation type, EBoundaryConditions bc)
 {
-	return create_interpolator_factory<C1DInterpolatorFactory>(type); 
+	return create_interpolator_factory<C1DInterpolatorFactory>(type, bc); 
 }
 
 
