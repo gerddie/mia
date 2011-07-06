@@ -222,7 +222,7 @@ T CBoundaryCondition::initial_coeff(const std::vector<T>& coeff, double pole)con
 	double zn = pole;
 
 	if (idx_butlast == 0) 
-		return 1.0 / (1 - pole) * coeff[0];
+		return 1 / (1 - pole) * coeff[0];
 
 
 	double iz = 1.0 / pole;
@@ -249,7 +249,7 @@ T CBoundaryCondition::initial_anti_coeff(const std::vector<T>& coeff, double pol
 			(pole * coeff[coeff.size() - 2] + coeff[coeff.size() - 1]));
 	
 	if (idx_butlast == 0)
-		return - ( 1.0 / (1 - pole) -1) * coeff[coeff.size() - 1];
+		return - ( 1.0 / (1 - pole) - 1.0) * coeff[coeff.size() - 1];
 
 	return T(); 
 }
