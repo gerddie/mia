@@ -221,8 +221,18 @@ T CBoundaryCondition::initial_coeff(const std::vector<T>& coeff, double pole)con
 
 	double zn = pole;
 
-	if (idx_butlast == 0) 
-		return 1 / (1 - pole) * coeff[0];
+	if (idx_butlast == 0) {
+		T sum = coeff[0]; 
+		for (size_t n = 0; n < coeff.size(); n++) {
+			sum += coeff[n] * zn; 
+			zn *= pole; 
+		}
+		for (int n = coeff.size() - 1; n >= 0; --n) {
+			sum += coeff[n] * zn; 
+			zn *= pole; 
+		}
+		return sum; 
+	}
 
 
 	double iz = 1.0 / pole;
