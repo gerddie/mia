@@ -227,7 +227,11 @@ public:
 template <typename T> 
 struct atomic_data<T3DVector<T> > {
 	typedef T type; 
+	static const int size; 
 }; 
+
+template <typename T> 
+const int atomic_data<T3DVector<T> >::size = 3; 
 
 /**
    Cross product of two 3D vectors 

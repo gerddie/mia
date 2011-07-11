@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(test_shift_image)
 	
 	C2DTranslateTransformation transform(size,  C2DFVector(1.0, 2.0));
 	
-	unique_ptr<C2DInterpolatorFactory> ipf(create_2dinterpolation_factory(ip_bspline0)); 
+	unique_ptr<C2DInterpolatorFactory> ipf(create_2dinterpolation_factory(ip_bspline0, bc_mirror_on_bounds)); 
 
 	P2DImage result = transform.apply(*src, *ipf);
 	

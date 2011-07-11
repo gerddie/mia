@@ -551,8 +551,8 @@ double CBSplineKernel4::get_weight_at(double x, int degree) const
 CBSplineKernel4::CBSplineKernel4():
 	CSplineKernel(4, 0.5, ip_bspline4)
 {
-	add_pole(sqrt(664.0 - sqrt(438976.0)) + sqrt(304.0) - 19.0);
 	add_pole(sqrt(664.0 + sqrt(438976.0)) - sqrt(304.0) - 19.0);
+	add_pole(sqrt(664.0 - sqrt(438976.0)) + sqrt(304.0) - 19.0);
 }
 
 void CBSplineKernel4::get_weights(double x, std::vector<double>&  weight)const

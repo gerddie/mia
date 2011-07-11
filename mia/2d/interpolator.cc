@@ -44,22 +44,26 @@ C2DInterpolator::~C2DInterpolator()
 }
 
 
-C2DInterpolatorFactory::C2DInterpolatorFactory(EInterpolationFactory type, PSplineKernel kernel):
-	m_type(type),
-	m_kernel(kernel)
+C2DInterpolatorFactory::C2DInterpolatorFactory(PSplineKernel kernel, PBoundaryCondition xbc, PBoundaryCondition ybc):
+	m_kernel(kernel), 
+	m_xbc(xbc),
+	m_ybc(ybc)
 {
 }
 
 C2DInterpolatorFactory::C2DInterpolatorFactory(const C2DInterpolatorFactory& o):
-	m_type(o.m_type),
-	m_kernel(o.m_kernel)
+	m_kernel(o.m_kernel), 
+	m_xbc(o.m_xbc),
+	m_ybc(o.m_ybc)
+
 {
 }
 
 C2DInterpolatorFactory& C2DInterpolatorFactory::operator = ( const C2DInterpolatorFactory& o)
 {
-	m_type = o.m_type;
 	m_kernel = o.m_kernel;
+	m_xbc = o.m_xbc; 
+	m_ybc = o.m_ybc; 
 
 	return *this;
 }
@@ -73,9 +77,44 @@ const CSplineKernel* C2DInterpolatorFactory::get_kernel() const
 	return m_kernel.get();
 }
 
-C2DInterpolatorFactory *create_2dinterpolation_factory(EInterpolation type)
+C2DInterpolatorFactory *create_2dinterpolation_factory(EInterpolation type, EBoundaryConditions bc)
 {
-	return create_interpolator_factory<C2DInterpolatorFactory>(type); 
+	PBoundaryCondition xbc; 
+	PBoundaryCondition ybc; 
+	switch (bc) {
+	case bc_mirror_on_bounds: 
+		xbc.reset(new CMirrorOnBoundary); 
+		ybc.reset(new CMirrorOnBoundary); 
+		break; 
+		
+	case bc_repeat: 
+		xbc.reset(new CRepeatBoundary); 
+		ybc.reset(new CRepeatBoundary); 
+		break; 
+	case bc_zero: 
+		xbc.reset(new CZeroBoundary); 
+		ybc.reset(new CZeroBoundary); 
+		break; 
+	default: 
+		throw invalid_argument("Unknown boundary consitions requested"); 
+	}
+	
+	PSplineKernel kernel; 
+	switch (type) {
+	case ip_nn: 
+	case ip_bspline0: kernel = produce_spline_kernel("bspline:d=0"); break; 
+	case ip_linear:
+	case ip_bspline1: kernel = produce_spline_kernel("bspline:d=1"); break; 
+	case ip_bspline2: kernel = produce_spline_kernel("bspline:d=2"); break; 
+	case ip_bspline3: kernel = produce_spline_kernel("bspline:d=3"); break; 
+	case ip_bspline4: kernel = produce_spline_kernel("bspline:d=4"); break; 
+	case ip_bspline5: kernel = produce_spline_kernel("bspline:d=5"); break; 
+	case ip_omoms3:   kernel = produce_spline_kernel("omoms:d=3"); break;
+	default: 
+		throw invalid_argument("create_interpolator_factory:Unknown interpolator type requested"); 
+	}; 
+
+	return new C2DInterpolatorFactory(kernel, xbc, ybc); 
 }
 
 

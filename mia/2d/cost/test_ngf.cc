@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE( test_fatngf_2d )
 
 
 	PEvaluator eval(new CCostEvaluatorTest());
-	P2DInterpolatorFactory ipf(create_2dinterpolation_factory(ip_bspline3));
+	P2DInterpolatorFactory ipf(create_2dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
 
 	C2DNFGImageCost cost(eval);
 	double test_cost = 0.5 * weight * 18 * 36 / 200.0;

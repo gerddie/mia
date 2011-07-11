@@ -36,7 +36,7 @@ struct TransformSplineFixtureFieldBase {
 		init2d(T2DVector<int>(dsize,dsize), range, type); 
 	}
 	void init2d(const T2DVector<int>& dsize, float range, EInterpolation type) {
-		ipf.reset(create_2dinterpolation_factory(type));
+		ipf.reset(create_2dinterpolation_factory(type, bc_mirror_on_bounds));
 		size = C2DBounds(2 * dsize.x + 1,2 * dsize.y + 1);
 		field = C2DFVectorfield(size);
 		scale.x = range / dsize.x;

@@ -22,6 +22,7 @@
 #define mia_core_boundary_conditions_hh
 
 #include <mia/core/msgstream.hh>
+#include <mia/core/type_traits.hh>
 #include <vector>
 #include <memory>
 
@@ -78,24 +79,30 @@ public:
 	}
 	
 	template <typename T> 
-	void filter_line(std::vector<T>& coeff, const std::vector<double>& poles)const;
-private:
-	template <typename T> 
-	T initial_coeff(const std::vector<T>& coeff, double pole)const;
-	
-	template <typename T>
-	T initial_anti_coeff(const std::vector<T>& coeff, double pole)const;
+	void filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const;
 
-	virtual int get_index(int idx) const = 0; 
+	void filter_line(std::vector<double>& coeff, const std::vector<double>& poles) const;
+
+	template <typename T> 
+	void template_filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const;
+private:
 
 	virtual void do_apply(std::vector<int>& index, std::vector<double>& weights) const = 0;
+	virtual void test_supported(int npoles) const = 0;
 	
 	virtual void do_set_width(int width); 
+
+	
+	virtual double initial_coeff(const std::vector<double>& coeff, double pole) const = 0;
+	virtual double initial_anti_coeff(const std::vector<double>& coeff, double pole)const = 0;
+
 
 	int m_width; 
 }; 
 
 typedef std::shared_ptr<CBoundaryCondition> PBoundaryCondition; 
+
+
 
 
 /**
@@ -117,6 +124,10 @@ private:
 	void do_set_width(int width); 
 	int get_index(int idx) const; 
 	void do_apply(std::vector<int>& index, std::vector<double>& weights) const;
+	virtual void test_supported(int npoles) const;
+	virtual double initial_coeff(const std::vector<double>& coeff, double pole) const;
+	virtual double initial_anti_coeff(const std::vector<double>& coeff, double pole)const ;
+
 	int m_width2; 
 }; 
 
@@ -136,8 +147,11 @@ public:
 	 */
 	CZeroBoundary(int width); 
 private: 
-	int get_index(int idx) const; 
 	void do_apply(std::vector<int>& index, std::vector<double>& weights) const;
+	virtual void test_supported(int npoles) const;
+	virtual double initial_coeff(const std::vector<double>& coeff, double pole) const;
+	virtual double initial_anti_coeff(const std::vector<double>& coeff, double pole)const ;
+
 }; 
 
 
@@ -156,113 +170,65 @@ public:
 	 */
 	CRepeatBoundary(int width); 
 private: 
-	int get_index(int idx) const; 
 	void do_set_width(int width); 
 	void do_apply(std::vector<int>& index, std::vector<double>& weights) const;
+
+	virtual void test_supported(int npoles) const;
+	virtual double initial_coeff(const std::vector<double>& coeff, double pole) const;
+	virtual double initial_anti_coeff(const std::vector<double>& coeff, double pole)const;
 	int m_widthm1; 
 }; 
 
 
+template <typename T, int size>
+struct __dispatch_filter_line {
+	static void apply(const CBoundaryCondition& bc, std::vector<T>& coeff, const std::vector<double>& poles); 
+}; 
+
+template <typename T, int size>
+void __dispatch_filter_line<T, size>::apply(const CBoundaryCondition& bc, std::vector<T>& coeff, 
+					 const std::vector<double>& poles) 
+{
+	std::vector<double> temp(coeff.size());
+	for (int i = 0; i < size; ++i) {
+		std::transform(coeff.begin(), coeff.end(), temp.begin(), 
+			       [i](const T& x) { return x[i]; }); 
+		bc.filter_line(temp, poles); 
+		for (size_t j = 0; j < coeff.size(); ++j)
+			coeff[j][i] = temp[j]; 
+	}
+}
+
+template <typename T>
+struct __dispatch_filter_line<T,1> {
+	static void apply(const CBoundaryCondition& bc, std::vector<T>& coeff, const std::vector<double>& poles); 
+}; 
+
+template <typename T>
+void __dispatch_filter_line<T, 1>::apply(const CBoundaryCondition& bc, std::vector<T>& coeff, 
+					 const std::vector<double>& poles) 
+{
+	bc.template_filter_line(coeff, poles); 
+}
+
 ////
-template <typename T>
-void CBoundaryCondition::filter_line(std::vector<T>& coeff, const std::vector<double>& poles)const
+template <typename T> 
+void CBoundaryCondition::filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const
 {
-	/* special case required by mirror boundaries */
-	if (coeff.size() < 2) {
-		return;
-	}
-
-	/// interpolating splines? 
-	if (poles.empty()) 
-		return; 
-	
-	/* compute the overall gain */
-	double	lambda = 1.0;
-	for (size_t k = 0; k < poles.size() ; ++k) {
-		lambda  *=  2 - poles[k] - 1.0 / poles[k];
-	}
-	
-	/* apply the gain */
-	for_each(coeff.begin(), coeff.end(), [lambda](T& x) { x *= lambda;});
-	
-	/* loop over all poles */
-	for (size_t k = 0; k < poles.size(); ++k) {
-		/* causal initialization */
-		coeff[0] = initial_coeff(coeff, poles[k]);
-		cvdebug() << "initial coeff  ["<< k <<"]= " << coeff[0] << "\n"; 
-
-		/* causal recursion */
-		for (size_t n = 1; n < coeff.size(); ++n) {
-			coeff[n] += poles[k] * coeff[n - 1];
-			cvdebug() << "causal[" << n << "] = "<<coeff[n] << "\n"; 
-		}
-		
-		/* anticausal initialization */
-		coeff[coeff.size() - 1] = initial_anti_coeff(coeff, poles[k]);
-		cvdebug() << "initial anti- coeff  ["<< coeff.size() - 1 <<"]= " << coeff[coeff.size() - 1] << "\n"; 
-		/* anticausal recursion */
-		for (int n = coeff.size() - 2; 0 <= n; n--) {
-			cvdebug() << "anticoeff["<< n <<"]= " 
-				  << poles[k] << " * (" << coeff[n + 1]  << " - " << coeff[n] << ") = " ; 
-			coeff[n] = poles[k] * (coeff[n + 1] - coeff[n]);
-			cverb << coeff[n] << "\n"; 
-		}
-	}
+	typedef atomic_data<T> atom; 
+	__dispatch_filter_line<T, atom::size>::apply(*this, coeff, poles); 
 }
 
-template <typename T>
-T CBoundaryCondition::initial_coeff(const std::vector<T>& coeff, double pole)const
-{ 
-	/* full loop */
-	int idx_butlast = this->get_index(coeff.size() - 1); 
 
-	if (idx_butlast < 0) 
-		return T();
-
-	double zn = pole;
-
-	if (idx_butlast == 0) {
-		T sum = coeff[0]; 
-		for (size_t n = 0; n < coeff.size(); n++) {
-			sum += coeff[n] * zn; 
-			zn *= pole; 
-		}
-		for (int n = coeff.size() - 1; n >= 0; --n) {
-			sum += coeff[n] * zn; 
-			zn *= pole; 
-		}
-		return sum; 
-	}
-
-
-	double iz = 1.0 / pole;
-	double z2n = pow(pole, (double)(coeff.size() - 1));
-	T sum = coeff[0] + z2n * coeff[coeff.size() - 1];
-	
-	z2n *= z2n * iz;
-	
-	for (size_t n = 1; n < coeff.size()  - 1; n++) {
-		sum += (zn + z2n) * coeff[n];
-		zn *= pole;
-		z2n *= iz;
-	}
-	
-	return(sum / (1.0 - zn * zn));
-}
-
-template <typename T>
-T CBoundaryCondition::initial_anti_coeff(const std::vector<T>& coeff, double pole)const
+template <typename T> 
+void CBoundaryCondition::template_filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const
 {
-	int idx_butlast = this->get_index(coeff.size() - 1); 
-	if (idx_butlast == coeff.size() - 1) 
-		return ((pole / (pole * pole - 1.0)) * 
-			(pole * coeff[coeff.size() - 2] + coeff[coeff.size() - 1]));
-	
-	if (idx_butlast == 0)
-		return - ( 1.0 / (1 - pole) - 1.0) * coeff[coeff.size() - 1];
-
-	return T(); 
+	std::vector<double> temp(coeff.size()); 
+	std::copy(coeff.begin(), coeff.end(), temp.begin()); 
+	filter_line(temp, poles); 
+	std::transform(temp.begin(), temp.end(), coeff.begin(), [](double x) {return static_cast<T>(x);});
 }
+
 
 
 NS_MIA_END

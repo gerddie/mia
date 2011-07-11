@@ -106,6 +106,9 @@ public:
 	*/
 	T2DConvoluteInterpolator(const T2DDatafield<T>& image, PSplineKernel kernel);
 
+	T2DConvoluteInterpolator(const T2DDatafield<T>& image, PSplineKernel kernel, 
+				 PBoundaryCondition xbc, PBoundaryCondition ybc);
+
 	~T2DConvoluteInterpolator();
 
 	
@@ -144,12 +147,16 @@ protected:
 	/// helper class for the coefficient field 
 	typedef std::vector< typename TCoeff2D::value_type > coeff_vector;
 private:
+	
+	void prefilter(const T2DDatafield<T>& image); 
 
 	typename TCoeff2D::value_type evaluate() const;
 
 	TCoeff2D m_coeff;
 	C2DBounds m_size2;
 	PSplineKernel m_kernel;
+	PBoundaryCondition m_x_boundary; 
+	PBoundaryCondition m_y_boundary; 
 	T m_min;
 	T m_max;
 
@@ -177,7 +184,7 @@ public:
 	   \param type 
 	   \param kernel
 	 */
-	C2DInterpolatorFactory(EInterpolationFactory type, PSplineKernel kernel);
+	C2DInterpolatorFactory(PSplineKernel kernel, PBoundaryCondition xbc, PBoundaryCondition ybc);
 
 	/// Copy constructor 
 	C2DInterpolatorFactory(const C2DInterpolatorFactory& o);
@@ -206,8 +213,9 @@ public:
 	const CSplineKernel* get_kernel() const;
 
 private:
-	EInterpolationFactory m_type;
 	PSplineKernel m_kernel;
+	PBoundaryCondition m_xbc;
+	PBoundaryCondition m_ybc;
 };
 
 /// Pointer type for the 2D interpolationfactory 
@@ -217,7 +225,7 @@ typedef std::shared_ptr<C2DInterpolatorFactory > P2DInterpolatorFactory;
 /**
    create a 2D interpolation factory of a certain interpolation type 
 */
-C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(EInterpolation type)
+C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(EInterpolation type, EBoundaryConditions bc)
 	__attribute__ ((warn_unused_result));
 
 // implementation
@@ -225,11 +233,7 @@ C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(EInterpolation
 template <class T>
 T2DInterpolator<T> *C2DInterpolatorFactory::create(const T2DDatafield<T>& src) const
 {
-	switch (m_type) {
-	case ipf_spline: return new T2DConvoluteInterpolator<T>(src, m_kernel);
-	default: throw "CInterpolatorFactory::create: Unknown interpolator requested";
-	}
-	return NULL;
+	return new T2DConvoluteInterpolator<T>(src, m_kernel, m_xbc, m_ybc);
 }
 
 NS_MIA_END

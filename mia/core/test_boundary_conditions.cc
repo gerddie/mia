@@ -21,6 +21,7 @@
  *
  */
 
+#include <iomanip> 
 #include <mia/internal/autotest.hh>
 #include <mia/core/boundary_conditions.hh>
 #include <mia/core/splinekernel.hh>
@@ -88,11 +89,11 @@ BOOST_AUTO_TEST_CASE( test_CRepeatBoundary_needed )
 
 class BoundaryFixture {
 protected: 
-	double  run(std::vector<double> f, const CBoundaryCondition& bc, PSplineKernel kernel); 
+	vector<double>  run(std::vector<double> f, const CBoundaryCondition& bc, PSplineKernel kernel); 
+	void prepare_and_run(CBoundaryCondition& bc, PSplineKernel kernel); 
 }; 
 
-
-double BoundaryFixture::run(std::vector<double> f, const CBoundaryCondition& bc, PSplineKernel kernel)
+vector<double> BoundaryFixture::run(std::vector<double> f, const CBoundaryCondition& bc, PSplineKernel kernel)
 {
 	vector<double> weights(kernel->size()); 
 	vector<int>    indices(kernel->size());
@@ -108,6 +109,7 @@ double BoundaryFixture::run(std::vector<double> f, const CBoundaryCondition& bc,
 		for(int j = 0; j < indices.size(); ++j) { 
 			double v = m_A(i, indices[j]); 
 			m_A.set(i, indices[j], v + weights[j]);
+			cvdebug() << "A(" << i << ", " << indices[j] << ")=" << weights[j] << "\n"; 
 		}
 	}
 	gsl_linalg_QR_decomp(m_A, m_tau); 
@@ -125,224 +127,83 @@ double BoundaryFixture::run(std::vector<double> f, const CBoundaryCondition& bc,
 	for (int i = 0; i < f.size(); ++i) {
 		BOOST_CHECK_CLOSE(f[i], coefs[i], 0.01); 
 		double delta = f[i] - coefs[i]; 
-		cvdebug() << "delta = " << delta  << ", q=" << delta / old_delta  << "\n"; 
+		cvdebug() << "i=" << i << ", delta = " << delta  << ", q=" << delta / old_delta  << "\n"; 
 		old_delta  =  delta; 
 	}
-	double expect = coefs[1] - coefs[0] / kernel->get_poles()[0]; 
-	double series_limit = 1 / (1 - kernel->get_poles()[0]); 
-	double gain = 2 - kernel->get_poles()[0] - 1.0 / kernel->get_poles()[0];
-	cvinfo() << "expected initital coeff would be " << f[0] <<": " 
-		  << expect
-		  << " series = " << series_limit
-		  << " gain = " << gain
-		  << " Q = " << expect / series_limit / gain
-		  << "\n"; 
-	return expect / gain 
-		- orig[0] 
-		- orig[0] * kernel->get_poles()[0] 
-		- orig[1] * kernel->get_poles()[0] * kernel->get_poles()[0]
-		- orig[2] * kernel->get_poles()[0] * kernel->get_poles()[0] * kernel->get_poles()[0]
-		- orig[3] * kernel->get_poles()[0] * kernel->get_poles()[0] * kernel->get_poles()[0]* kernel->get_poles()[0]
-		; 
+	auto p = kernel->get_poles();
+	auto pol = p[p.size() - 1]; 
+
+	transform(f.begin(), f.end(), coefs.begin(), f.begin(), [](double x, double y){return x - y;}); 
+	return f; 
 }
 
-
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat90, BoundaryFixture ) 
+void BoundaryFixture::prepare_and_run(CBoundaryCondition& bc, PSplineKernel kernel)
 {
-	std::vector<double> f = { 0, 9, 9, 9, 9, 9, 9, 9, 9}; 
+	std::vector<double> f = { 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10}; 
 
-	CRepeatBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=3"); 
+	bc.set_width(f.size());
 
-	run(f, bc, kernel); 
-}
 
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat91, BoundaryFixture ) 
-{
-	std::vector<double> f = { 1, 9, 9, 9, 9, 9, 9, 9, 9}; 
+	for (int i = 0; i < 12; ++i) { 
+		std::vector<double> t = f; 
+		t[i] = 8; 
+		cvinfo() << "i=" << i << "\n"; 
+		cverb << setprecision(10); 
+		cvinfo() << "values=" << run(t, bc, kernel) << "\n";; 
+	}
 
-	CRepeatBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=3"); 
-
-	run(f, bc, kernel); 
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat92, BoundaryFixture ) 
-{
-	std::vector<double> f = { 2, 9, 9, 9, 9, 9, 9, 9, 9}; 
 
-	CRepeatBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=3"); 
-
-	run(f, bc, kernel); 
-}
-
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat93, BoundaryFixture ) 
-{
-	std::vector<double> f = { 3, 9, 9, 9, 9, 9, 9, 9, 9}; 
-
-	CRepeatBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=3"); 
-
-	run(f, bc, kernel); 
-}
-
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat94, BoundaryFixture ) 
-{
-	std::vector<double> f = { 4, 9, 9, 9, 9, 9, 9, 9, 9}; 
-
-	CRepeatBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=3"); 
-
-	run(f, bc, kernel); 
-}
-
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat95, BoundaryFixture ) 
-{
-	std::vector<double> f = { 5, 9, 9, 9, 9, 9, 9, 9, 9}; 
-
-	CRepeatBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=3"); 
-
-	run(f, bc, kernel); 
-}
-
-
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat5_90, BoundaryFixture ) 
-{
-	std::vector<double> f = { 0, 9, 9, 9, 9, 9, 9, 9, 9}; 
-
-	CRepeatBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=5"); 
-
-	run(f, bc, kernel); 
-}
-
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat5_91, BoundaryFixture ) 
-{
-	std::vector<double> f = { 1, 9, 9, 9, 9, 9, 9, 9, 9}; 
-
-	CRepeatBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=5"); 
-
-	run(f, bc, kernel); 
-}
-
-
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat5_92, BoundaryFixture ) 
-{
-	std::vector<double> f = { 2, 9, 9, 9, 9, 9, 9, 9, 9}; 
-
-	CRepeatBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=5"); 
-
-	run(f, bc, kernel); 
-}
-
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat5_93, BoundaryFixture ) 
-{
-	std::vector<double> f = { 3, 9, 9, 9, 9, 9, 9, 9, 9}; 
-
-	CRepeatBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=5"); 
-
-	run(f, bc, kernel); 
-}
-
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat5_94, BoundaryFixture ) 
-{
-	std::vector<double> f = { 4, 9, 9, 9, 9, 9, 9, 9, 9}; 
-
-	CRepeatBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=5"); 
-
-	run(f, bc, kernel); 
-}
-
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat5_95, BoundaryFixture ) 
-{
-	std::vector<double> f = { 5, 9, 9, 9, 9, 9, 9, 9, 9}; 
-
-	CRepeatBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=5"); 
-
-	run(f, bc, kernel); 
-}
-
-#if 1
 BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat_4  , BoundaryFixture ) 
 {
-
-	std::vector<double> f = { 10, 10, 10, 10, 10, 10, 10, 10, 10}; 
-
-	CRepeatBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=4"); 
-	
-	for (int i = 0; i < 11; ++i) { 
-		std::vector<double> t = f; 
-		t[0] = i; 
-		for (int j = 0; j < 11; ++j) { 
-			t[1] = j; 
-			cerr << run(t, bc, kernel) << " "; 
-		}
-		cerr<<"\n"; 
-	}
-}
-#endif 
-
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat0, BoundaryFixture ) 
-{
-	std::vector<double> f = { 9, 8, 7, 6, 5, 4, 3, 2, 1}; 
-//	std::vector<double> f = { 9, 9, 9, 9, 9, 9, 9, 9, 9}; 
-
-	CRepeatBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=3"); 
-
-	run(f, bc, kernel); 
+	CRepeatBoundary bc; 
+	BOOST_CHECK_THROW(prepare_and_run(bc, produce_spline_kernel("bspline:d=4")), 
+			  invalid_argument); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat3, BoundaryFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat_5  , BoundaryFixture ) 
 {
-	std::vector<double> f = { 11, 11, 3, 7, 5, 6, 2, 11, 11}; 
-//	std::vector<double> f = { 9, 9, 9, 9, 9, 9, 9, 9, 9}; 
-
-	CRepeatBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=3"); 
-
-	run(f, bc, kernel); 
+	CRepeatBoundary bc; 
+	BOOST_CHECK_THROW(prepare_and_run(bc, produce_spline_kernel("bspline:d=5")), 
+			  invalid_argument); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat4, BoundaryFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat_2  , BoundaryFixture ) 
 {
-	std::vector<double> f = { 1, 5, 3, 7, 5, 6, 2, 6, 11}; 
-//	std::vector<double> f = { 9, 9, 9, 9, 9, 9, 9, 9, 9}; 
-
-	CRepeatBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=3"); 
-
-	run(f, bc, kernel); 
+	CRepeatBoundary bc; 
+	prepare_and_run(bc, produce_spline_kernel("bspline:d=2")); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat2, BoundaryFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_repeat_3  , BoundaryFixture ) 
 {
-	std::vector<double> f = { 9, 9, 9, 9, 9, 9, 9, 9, 9}; 
-
-	CRepeatBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=3"); 
-
-	run(f, bc, kernel); 
+	CRepeatBoundary bc; 
+	prepare_and_run(bc, produce_spline_kernel("bspline:d=3")); 
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_mirror , BoundaryFixture ) 
+BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_mirror_3 , BoundaryFixture ) 
 {
-	std::vector<double> f = { 9, 9, 9, 7, 5, 6, 1, 1, 1}; 
+	CMirrorOnBoundary bc; 
+	prepare_and_run(bc, produce_spline_kernel("bspline:d=3")); 
+}
 
-	CMirrorOnBoundary bc(f.size());
-	auto kernel = produce_spline_kernel("bspline:d=3"); 
+BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_mirror_4 , BoundaryFixture ) 
+{
+	CMirrorOnBoundary bc; 
+	prepare_and_run(bc, produce_spline_kernel("bspline:d=4")); 
+}
 
-	run(f, bc, kernel); 
+BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_mirror_5 , BoundaryFixture ) 
+{
+	CMirrorOnBoundary bc; 
+	prepare_and_run(bc, produce_spline_kernel("bspline:d=5")); 
+}
 
+BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_mirror_2 , BoundaryFixture ) 
+{
+	CMirrorOnBoundary bc; 
+	prepare_and_run(bc, produce_spline_kernel("bspline:d=2")); 
 }
 

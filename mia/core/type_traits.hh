@@ -36,7 +36,11 @@ struct plugin_data_type {
 template <typename T> 
 struct atomic_data {
 	typedef T type; 
+	static const int size; 
 }; 
+
+template <typename T> 
+const int atomic_data<T>::size = 1; 
 
 NS_MIA_END
 

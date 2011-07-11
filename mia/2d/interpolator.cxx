@@ -70,18 +70,47 @@ T2DConvoluteInterpolator<T>::T2DConvoluteInterpolator(const T2DDatafield<T>& ima
 	m_coeff(image.get_size()), 
 	m_size2(image.get_size() + image.get_size() - C2DBounds(2,2)),
 	m_kernel(kernel),
+	m_x_boundary(new CMirrorOnBoundary(image.get_size().x)), 
+	m_y_boundary(new CMirrorOnBoundary(image.get_size().y)), 
 	m_x_index(kernel->size()),
 	m_y_index(kernel->size()),
 	m_x_weight(kernel->size()),
 	m_y_weight(kernel->size()), 
-	m_x_cache(kernel->size(), PBoundaryCondition(new CMirrorOnBoundary(image.get_size().x)), false), 
-	m_y_cache(kernel->size(), PBoundaryCondition(new CMirrorOnBoundary(image.get_size().y)), true)
+	m_x_cache(kernel->size(), m_x_boundary, false), 
+	m_y_cache(kernel->size(), m_y_boundary, true)
+{
+	prefilter(image); 
+}
+template <typename T>
+T2DConvoluteInterpolator<T>::T2DConvoluteInterpolator(const T2DDatafield<T>& image, PSplineKernel kernel, 
+						      PBoundaryCondition xbc, PBoundaryCondition ybc):
+	m_coeff(image.get_size()), 
+	m_size2(image.get_size() + image.get_size() - C2DBounds(2,2)),
+	m_kernel(kernel),
+	m_x_boundary(xbc), 
+	m_y_boundary(ybc), 
+	m_x_index(kernel->size()),
+	m_y_index(kernel->size()),
+	m_x_weight(kernel->size()),
+	m_y_weight(kernel->size()), 
+	m_x_cache(kernel->size(), m_x_boundary, false), 
+	m_y_cache(kernel->size(), m_y_boundary, true)
+{
+	m_x_boundary->set_width(image.get_size().x); 
+	m_y_boundary->set_width(image.get_size().y); 
+	prefilter(image); 
+}
+
+template <typename T>
+void T2DConvoluteInterpolator<T>::prefilter(const T2DDatafield<T>& image)
 {
 	min_max<typename T2DDatafield<T>::const_iterator >::get(image.begin(), image.end(), m_min, m_max);
 	
 	// copy the data
 	__dispatch_copy<T2DDatafield<T>, TCoeff2D >::apply(image, m_coeff); 
-	
+	if (m_kernel->get_poles().empty()) 
+		return; 
+
 	int cachXSize = image.get_size().x;	
 	int cachYSize = image.get_size().y;
 	
@@ -89,7 +118,7 @@ T2DConvoluteInterpolator<T>::T2DConvoluteInterpolator(const T2DDatafield<T>& ima
 		coeff_vector buffer(cachXSize);
 		for (int y = 0; y < cachYSize; y++) {
 			m_coeff.get_data_line_x(y,buffer);
-			m_kernel->filter_line(buffer);
+			m_x_boundary->filter_line(buffer, m_kernel->get_poles());
 			m_coeff.put_data_line_x(y,buffer);
 		}
 	}
@@ -98,11 +127,10 @@ T2DConvoluteInterpolator<T>::T2DConvoluteInterpolator(const T2DDatafield<T>& ima
 		coeff_vector buffer(cachYSize);
 		for (int x = 0; x < cachXSize; x++) {
 			m_coeff.get_data_line_y(x,buffer);
-			m_kernel->filter_line(buffer);
+			m_y_boundary->filter_line(buffer, m_kernel->get_poles());
 			m_coeff.put_data_line_y(x,buffer);
 		}
 	}
-	
 }
 
 template <typename T>

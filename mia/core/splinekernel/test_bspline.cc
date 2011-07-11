@@ -102,9 +102,13 @@ void test_type_repeat()
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1, bc);
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2, bc);
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel3()), ip_bspline3, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel4()), ip_bspline4, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel5()), ip_bspline5, bc);
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernelOMoms3()), ip_omoms3, bc);
+
+	BOOST_CHECK_THROW(test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel4()), ip_bspline4, bc), 
+			  invalid_argument);
+	BOOST_CHECK_THROW(test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel5()), ip_bspline5, bc), 
+			  invalid_argument);
+
 }
 
 template <class T>

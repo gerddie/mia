@@ -69,7 +69,9 @@ namespace bfs= ::boost::filesystem;
 
 CScale::CScale(const C2DBounds& size, const string& kernel):
 	m_size(size),
-	m_ipf(new C2DInterpolatorFactory(ipf_spline, produce_spline_kernel(kernel)))
+	m_ipf(new C2DInterpolatorFactory(produce_spline_kernel(kernel), 
+					 PBoundaryCondition(new CMirrorOnBoundary), 
+					 PBoundaryCondition(new CMirrorOnBoundary)))
 {
 
 }

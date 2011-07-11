@@ -123,8 +123,11 @@ C2DFatImageCostPlugin::ProductPtr C2DFatImageCostPlugin::do_create()const
 		if (reference->size() > 1)
 			cvwarn() << "'" << m_ref_name << "' contains more then one image, using only first\n";
 
-		P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(ipf_spline, m_interpolator));
-
+		P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(m_interpolator, 
+								      PBoundaryCondition(new CMirrorOnBoundary), 
+								      PBoundaryCondition(new CMirrorOnBoundary)
+						   ));  
+					   
 		return do_create((*source)[0], (*reference)[0], ipf, m_weight);
 	}
 

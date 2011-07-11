@@ -244,7 +244,8 @@ public:
 
 template <typename T> 
 struct atomic_data<T2DVector<T> > {
-	typedef T type; 
+	typedef T type;
+	static const int size; 
 }; 
 
 template <typename T> 
@@ -253,6 +254,8 @@ const T2DVector<T> T2DVector<T>::_1 = T2DVector<T>(1,1);
 template <typename T> 
 const T2DVector<T> T2DVector<T>::_0 = T2DVector<T>(0,0); 
 
+template <typename T> 
+const int atomic_data<T2DVector<T> >::size = 2; 
 /**
    operator to write a 2D vector to a stream 
    \tparam type of the vector values 

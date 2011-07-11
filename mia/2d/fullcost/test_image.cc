@@ -128,7 +128,9 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_no_translate,  ImagefullcostFixture 
 	BOOST_REQUIRE(save_image("src.@", src)); 
 	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
-	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(ipf_spline, CSplineKernelPluginHandler::instance().produce("bspline:d=3"))); 
+	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(produce_spline_kernel("bspline:d=3"), 
+							      PBoundaryCondition(new CMirrorOnBoundary), 
+							      PBoundaryCondition(new CMirrorOnBoundary)));  
 	C2DImageFullCost cost("src.@", "ref.@", "ssd", ipf, 1.0, false); 
 	cost.reinit(); 
 	cost.set_size(size);
@@ -163,7 +165,9 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 	BOOST_REQUIRE(save_image("src.@", src)); 
 	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
-	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(ipf_spline, CSplineKernelPluginHandler::instance().produce("bspline:d=3"))); 
+	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(produce_spline_kernel("bspline:d=3"), 
+							      PBoundaryCondition(new CMirrorOnBoundary), 
+							      PBoundaryCondition(new CMirrorOnBoundary)));  
 	C2DImageFullCost cost("src.@", "ref.@", "ssd", ipf, 1.0, false); 
 	cost.reinit(); 
 	cost.set_size(size);
@@ -249,7 +253,9 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2_scaled,  ImagefullcostFixture)
 #endif
 
 ImagefullcostFixture::ImagefullcostFixture():
-	ipf(new C2DInterpolatorFactory(ipf_spline, CSplineKernelPluginHandler::instance().produce("bspline:d=3")))
+	ipf(new C2DInterpolatorFactory(produce_spline_kernel("bspline:d=3"), 
+				       PBoundaryCondition(new CMirrorOnBoundary), 
+				       PBoundaryCondition(new CMirrorOnBoundary)))
 {
 }
 

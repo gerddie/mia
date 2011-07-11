@@ -48,7 +48,7 @@ BOOST_FIXTURE_TEST_CASE( test_SSD2D_self, C2DSSDFixture )
 
 	P2DImage src(new C2DUBImage(size));
 
-	P2DInterpolatorFactory ipf(create_2dinterpolation_factory(ip_bspline3));
+	P2DInterpolatorFactory ipf(create_2dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
 	CFatSSD2DImageCost cost(src, src, ipf, 1.0);
 
 	BOOST_CHECK_CLOSE(1.0 + cost.value(), 1.0, 0.1);
@@ -75,7 +75,7 @@ BOOST_FIXTURE_TEST_CASE( test_SSD2D_simple, C2DSSDFixture )
 	fill(psrc->begin(), psrc->end(), 1.0);
 	fill(pref->begin(), pref->end(), 2.0);
 
-	P2DInterpolatorFactory ipf(create_2dinterpolation_factory(ip_bspline3));
+	P2DInterpolatorFactory ipf(create_2dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
 	CFatSSD2DImageCost cost(P2DImage(psrc), P2DImage(pref), ipf, 2.0);
 	BOOST_CHECK_CLOSE(cost.value(), 200.0, 0.1);
 

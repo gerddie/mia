@@ -140,7 +140,7 @@ void test_deformadd()
 	C2DUSImage *fimage = new C2DUSImage(size);
 	P2DImage image(fimage);
 
-	std::shared_ptr<C2DInterpolatorFactory > ipf(create_2dinterpolation_factory(ip_linear));
+	std::shared_ptr<C2DInterpolatorFactory > ipf(create_2dinterpolation_factory(ip_linear, bc_mirror_on_bounds));
 
 	C2DFVectorfield A(size);
 	C2DFVectorfield B(size);
