@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE(test_shift_image)
 	
 	C3DTranslateTransformation trans(size,  C3DFVector(1.0, 2.0, -1));
 	
-	unique_ptr<C3DInterpolatorFactory> ipf(create_3dinterpolation_factory(ip_nn)); 
+	unique_ptr<C3DInterpolatorFactory> ipf(create_3dinterpolation_factory(ip_nn, bc_mirror_on_bounds)); 
 
 	P3DImage result = trans(*src, *ipf);
 	

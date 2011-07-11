@@ -136,7 +136,7 @@ int do_main( int argc, const char *argv[] )
 	}
 
 	auto cost = C3DImageCostPluginHandler::instance().produce(cost_function);
-	unique_ptr<C3DInterpolatorFactory>   ipfactory(create_3dinterpolation_factory(ip_bspline3));
+	unique_ptr<C3DInterpolatorFactory>   ipfactory(create_3dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
 
 	C3DRigidRegister rr(cost, minimizer,  transform_creator, *ipfactory, mg_levels);
 

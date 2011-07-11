@@ -67,14 +67,50 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 	m_coeff(image.get_size()), 
 	m_size2(image.get_size() + image.get_size()-C3DBounds(2,2,2)),
 	m_kernel(kernel),
-	m_x_cache(kernel->size(), PBoundaryCondition(new CMirrorOnBoundary(image.get_size().x)), false), 
-	m_y_cache(kernel->size(), PBoundaryCondition(new CMirrorOnBoundary(image.get_size().y)), true), 
-	m_z_cache(kernel->size(), PBoundaryCondition(new CMirrorOnBoundary(image.get_size().z)), true)
+	m_xbc(new CMirrorOnBoundary(image.get_size().x)), 
+	m_ybc(new CMirrorOnBoundary(image.get_size().y)),
+	m_zbc(new CMirrorOnBoundary(image.get_size().z)),
+	m_x_cache(kernel->size(), m_xbc, false), 
+	m_y_cache(kernel->size(), m_ybc, true), 
+	m_z_cache(kernel->size(), m_zbc, true)
 {
-	min_max_3d<T>::get(image, &m_min, &m_max);
+
+	prefilter(image); 
+}
 	
-	// copy the data
+template <typename T>
+T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& image, PSplineKernel  kernel, 
+				 PBoundaryCondition xbc,  
+				 PBoundaryCondition ybc, 
+				 PBoundaryCondition zbc):
+	m_coeff(image.get_size()), 
+	m_size2(image.get_size() + image.get_size()-C3DBounds(2,2,2)),
+	m_kernel(kernel),
+	m_xbc(xbc), 
+	m_ybc(ybc),
+	m_zbc(zbc),
+	m_x_cache(kernel->size(), m_xbc, false), 
+	m_y_cache(kernel->size(), m_ybc, true), 
+	m_z_cache(kernel->size(), m_zbc, true)
+{
+	m_xbc->set_width(image.get_size().x); 
+	m_ybc->set_width(image.get_size().y); 
+	m_zbc->set_width(image.get_size().z);
+	prefilter(image); 
+}
+
+
+template <typename T>
+void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image) 
+{
+
+	min_max_3d<T>::get(image, &m_min, &m_max);
 	std::copy(image.begin(), image.end(), m_coeff.begin());
+
+
+	auto poles = m_kernel->get_poles(); 
+	if (poles.empty()) 
+		return; 
 	
 	int cachXSize = image.get_size().x;	
 	int cachYSize = image.get_size().y;
@@ -85,7 +121,7 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 		for (int z = 0; z < cachZSize; z++){
 			for (int y = 0; y < cachYSize; y++) {
 				m_coeff.get_data_line_x(y,z,buffer);
-				m_kernel->filter_line(buffer);
+				m_xbc->filter_line(buffer, poles);
 				m_coeff.put_data_line_x(y,z,buffer);
 			}
 		}
@@ -96,7 +132,7 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 		for (int z = 0; z < cachZSize; z++){
 			for (int x = 0; x < cachXSize; x++) {
 				m_coeff.get_data_line_y(x,z,buffer);
-				m_kernel->filter_line(buffer);
+				m_ybc->filter_line(buffer, poles);
 				m_coeff.put_data_line_y(x,z,buffer);
 			}
 		}
@@ -107,7 +143,7 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 		for (int y = 0; y < cachYSize; y++){
 			for (int x = 0; x < cachXSize; x++) {
 				m_coeff.get_data_line_z(x,y,buffer);
-				m_kernel->filter_line(buffer);
+				m_zbc->filter_line(buffer, poles);
 				m_coeff.put_data_line_z(x,y,buffer);
 			}
 		}

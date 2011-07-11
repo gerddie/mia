@@ -93,8 +93,14 @@ public:
 	   \param data
 	   \param kernel
 	 */
-	T3DConvoluteInterpolator(const T3DDatafield<T>& data, PSplineKernel kernel);
 
+	T3DConvoluteInterpolator(const T3DDatafield<T>& data, PSplineKernel kernel); 
+	
+	T3DConvoluteInterpolator(const T3DDatafield<T>& data, PSplineKernel kernel, 
+				 PBoundaryCondition xbc,  
+				 PBoundaryCondition ybc, 
+				 PBoundaryCondition zbc);
+	
 	/// Standart constructor for factory prototyping
 	~T3DConvoluteInterpolator();
 
@@ -115,9 +121,15 @@ protected:
 	typedef std::vector< typename TCoeff3D::value_type > coeff_vector;
 private:
 
+	void prefilter(const T3DDatafield<T>& image); 
+
 	TCoeff3D m_coeff;
 	C3DBounds m_size2;
 	PSplineKernel m_kernel;
+	PBoundaryCondition m_xbc; 
+	PBoundaryCondition m_ybc; 
+	PBoundaryCondition m_zbc; 
+
 	T m_min;
 	T m_max;
 
@@ -140,8 +152,11 @@ public:
 	   \param type interpolator type id
 	   \param kernel spline kernel
 	*/
-	C3DInterpolatorFactory(EInterpolationFactory type, PSplineKernel kernel);
-
+	C3DInterpolatorFactory(PSplineKernel kernel, 
+			       PBoundaryCondition xbc,  
+			       PBoundaryCondition ybc, 
+			       PBoundaryCondition zbc);
+	
 	/// Copy constructor
 	C3DInterpolatorFactory(const C3DInterpolatorFactory& o);
 
@@ -162,12 +177,14 @@ public:
 	/// @returns the B-spline kernel used for interpolator creation 
 	PSplineKernel get_kernel() const; 
 private:
-	EInterpolationFactory m_type;
 	PSplineKernel m_kernel;
+	PBoundaryCondition m_xbc; 
+	PBoundaryCondition m_ybc; 
+	PBoundaryCondition m_zbc; 
 };
 
 
-EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(EInterpolation type)
+EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(EInterpolation type, EBoundaryConditions bc)
 	__attribute__ ((warn_unused_result));
 
 // implementation
@@ -175,11 +192,7 @@ EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(EInterpolation 
 template <class T>
 T3DInterpolator<T> *C3DInterpolatorFactory::create(const T3DDatafield<T>& src) const
 {
-	switch (m_type) {
-	case ipf_spline: return new T3DConvoluteInterpolator<T>(src, m_kernel);
-	default: throw "C3DInterpolatorFactory::create: Unknown interpolator requested";
-	}
-	return NULL;
+	return new T3DConvoluteInterpolator<T>(src, m_kernel, m_xbc, m_ybc, m_zbc);
 }
 
 /// Pointer type of the 3D interpolation factory 

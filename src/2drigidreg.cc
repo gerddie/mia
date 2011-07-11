@@ -130,7 +130,7 @@ int do_main( int argc, const char *argv[] )
 	}
 
 	auto cost = C2DImageCostPluginHandler::instance().produce(cost_function);
-	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3));
+	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
 
 	C2DRigidRegister rr(cost, minimizer,  transform_creator, *ipfactory, mg_levels);
 

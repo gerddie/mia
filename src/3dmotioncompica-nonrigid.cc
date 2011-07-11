@@ -320,7 +320,10 @@ int do_main( int argc, const char *argv[] )
 
 	// this cost will always be used 
 
-	P3DInterpolatorFactory ipfactory(new C3DInterpolatorFactory(ipf_spline, interpolator_kernel));
+	P3DInterpolatorFactory ipfactory(new C3DInterpolatorFactory(interpolator_kernel, 
+								    PBoundaryCondition(new CMirrorOnBoundary), 
+								    PBoundaryCondition(new CMirrorOnBoundary), 
+								    PBoundaryCondition(new CMirrorOnBoundary)));
 
 	task_scheduler_init init(max_threads);
 	

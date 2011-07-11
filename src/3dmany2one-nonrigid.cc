@@ -221,7 +221,10 @@ int do_main( int argc, const char *argv[] )
 	if (cost_functions.empty())
 		throw invalid_argument("No cost function given - nothing to register"); 
 
-	P3DInterpolatorFactory ipfactory(new C3DInterpolatorFactory(ipf_spline, interpolator_kernel));
+	P3DInterpolatorFactory ipfactory(new C3DInterpolatorFactory(interpolator_kernel, 
+								    PBoundaryCondition(new CMirrorOnBoundary), 
+								    PBoundaryCondition(new CMirrorOnBoundary),
+								    PBoundaryCondition(new CMirrorOnBoundary)));
 
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;

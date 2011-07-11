@@ -136,7 +136,7 @@ int do_main( int argc, const char *argv[] )
 	if (GlobalSize != Reference->get_size())
 		throw std::invalid_argument("Images have different size");
 
-	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3));
+	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
 	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory, mg_levels);
 	P2DTransformation transform = nrr.run(Model, Reference);
 	P2DImage result = (*transform)(*Model, *ipfactory);

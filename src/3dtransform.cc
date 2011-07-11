@@ -108,7 +108,10 @@ int do_main(int argc, const char **argv)
 		return EXIT_FAILURE;
 	}
 	
-	C3DInterpolatorFactory ipfactory(ipf_spline, interpolator_kernel);
+	C3DInterpolatorFactory ipfactory(interpolator_kernel, 
+					 PBoundaryCondition(new CMirrorOnBoundary), 
+					 PBoundaryCondition(new CMirrorOnBoundary), 
+					 PBoundaryCondition(new CMirrorOnBoundary));
 	
 	for (auto i = source->begin(); i != source->end(); ++i)
 		*i = (*transformation)(**i, ipfactory);

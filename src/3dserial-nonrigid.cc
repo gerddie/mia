@@ -152,8 +152,11 @@ int do_main( int argc, const char *argv[] )
 		costs.push(cost); 
 	}
 	
-	C3DInterpolatorFactory ipfactory(ipf_spline, interpolator_kernel);
-
+	C3DInterpolatorFactory ipfactory(interpolator_kernel, 
+					 PBoundaryCondition(new CMirrorOnBoundary), 
+					 PBoundaryCondition(new CMirrorOnBoundary), 
+					 PBoundaryCondition(new CMirrorOnBoundary));
+	
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;
 	size_t format_width = 0;

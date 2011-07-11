@@ -458,8 +458,10 @@ int do_main( int argc, const char *argv[] )
 	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
-	params.interpolator.reset(new C2DInterpolatorFactory(ipf_spline, interpolator_kernel));
-
+	params.interpolator.reset(new C2DInterpolatorFactory(interpolator_kernel, 
+							     PBoundaryCondition(new CMirrorOnBoundary), 
+							     PBoundaryCondition(new CMirrorOnBoundary)));
+	
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
 	C2DImageSeries in_images = input_set.get_images(); 

@@ -87,7 +87,7 @@ bool  C3DSSDFatImageCostPlugin::do_test() const
 	P3DImage test_image(new C3DFImage(size, &init_test[0]));
 	P3DImage ref_image(new C3DFImage(size, &init_ref[0]));
 
-	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3));
+	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
 	CFatSSD3DImageCost cost(test_image, ref_image, ipf, 1.0);
 	double scale = 1.0; 
 

@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE ( test_fatssd )
 	P3DImage ref_image(pref);
 
 
-	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3));
+	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
 
 
 	CFatSSD3DImageCost cost(test_image, ref_image, ipf, 1.0);

@@ -194,7 +194,9 @@ int do_main( int argc, const char *argv[] )
 		return EXIT_SUCCESS; 
 	
 	
-	reg_params.ipfactory.reset(new C2DInterpolatorFactory(ipf_spline, interpolator_kernel));
+	reg_params.ipfactory.reset(new C2DInterpolatorFactory(interpolator_kernel, 
+							      PBoundaryCondition(new CMirrorOnBoundary), 
+							      PBoundaryCondition(new CMirrorOnBoundary)));
 		
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);

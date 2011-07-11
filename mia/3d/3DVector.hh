@@ -120,6 +120,25 @@ public:
 		x = y = z = v;
 	}
 
+	const T operator [](size_t i) const {
+		switch (i) {
+		case 0:return x; 
+		case 1:return y; 
+		case 2:return z; 
+		default:
+			assert(0 && "Try to access element beyond range"); 
+		}
+	}
+
+	T& operator [](size_t i) {
+		switch (i) {
+		case 0:return x; 
+		case 1:return y; 
+		case 2:return z; 
+		default:
+			assert(0 && "Try to access element beyond range"); 
+		}
+	}
 	
 	/// inplace addition 
 	T3DVector<T>& operator +=(const T3DVector<T>& a){

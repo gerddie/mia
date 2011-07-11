@@ -343,7 +343,11 @@ BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 	
 	C3DFImage test_image(range);
 	
-	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(ipf_spline, produce_spline_kernel("bspline:d=3"))); 
+	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(produce_spline_kernel("bspline:d=3"), 
+							      PBoundaryCondition(new CMirrorOnBoundary), 
+							      PBoundaryCondition(new CMirrorOnBoundary), 
+							      PBoundaryCondition(new CMirrorOnBoundary)	      
+					   )); 
 	auto_ptr<T3DInterpolator<float> > src(ipf->create(image.data()));
 
 	C3DFImage::iterator t = test_image.begin();
@@ -690,7 +694,10 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 	
 	PSplineKernel kernel = produce_spline_kernel("bspline:d=3"); 
 
-	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(ipf_spline,  kernel));
+	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(kernel, 
+					 PBoundaryCondition(new CMirrorOnBoundary), 
+					 PBoundaryCondition(new CMirrorOnBoundary), 
+					 PBoundaryCondition(new CMirrorOnBoundary)));
 
 	C3DSplineTransformation trans(size, kernel);
 
@@ -728,7 +735,10 @@ struct TransformSplineFixtureFieldBase {
 		size(16,16,16),
 		field(size),
 		kernel(produce_spline_kernel("bspline:d=3")), 
-		ipf(new C3DInterpolatorFactory(ipf_spline, kernel)),
+		ipf(new C3DInterpolatorFactory(kernel, 
+					 PBoundaryCondition(new CMirrorOnBoundary), 
+					 PBoundaryCondition(new CMirrorOnBoundary), 
+					 PBoundaryCondition(new CMirrorOnBoundary))),
 		range(16, 16,16),
 		stransf(range, kernel),
 		scale(1.0 / range.x, 1.0 / range.y, 1.0 / range.z)
@@ -801,7 +811,7 @@ public:
 BOOST_AUTO_TEST_CASE (test_spline_set_parameter) 
 {
 	C3DBounds size(20,30,25); 
-	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3)); 
+	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds)); 
 	PSplineKernel kernel(produce_spline_kernel("bspline:d=3")); 
 	C3DSplineTransformation t(size, kernel, C3DFVector(5.0,5.0,5.0));
 	auto params = t.get_parameters();

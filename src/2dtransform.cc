@@ -104,7 +104,9 @@ int do_main(int argc, const char **argv)
 		return EXIT_FAILURE;
 	}
 
-	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(ipf_spline, interpolator_kernel));
+	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(interpolator_kernel, 
+							      PBoundaryCondition(new CMirrorOnBoundary), 
+							      PBoundaryCondition(new CMirrorOnBoundary)));
 
 	for (C2DImageIOPluginHandler::Instance::Data::iterator i = source->begin();
 	     i != source->end(); ++i)

@@ -173,7 +173,7 @@ int main(int argc, const char *argv[])
 		unsigned int y_shift = 0;
 
 
-		auto_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3));
+		auto_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
 
 
 		while (GlobalSize.x >> x_shift > grid_start){
