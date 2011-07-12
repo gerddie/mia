@@ -90,11 +90,6 @@ private:
 	void upscale(const gsl::DoubleVector& input, gsl::DoubleVector& output) const; 
 	void downscale(const gsl::DoubleVector& input, gsl::DoubleVector& output) const; 
 
-
-	gsl::DoubleVector filter_line(const gsl::DoubleVector& coeff)const; 
-	double initial_coeff(const gsl::DoubleVector& coeff, double pole)const; 
-	double initial_anti_coeff(const gsl::DoubleVector& coeff, double pole)const;
-	
 	enum EStrategy {
 		scs_fill_output, 
 		scs_upscale, 
@@ -108,6 +103,7 @@ private:
 	size_t m_support; 
 	std::vector<double> m_poles; 
 	EStrategy m_strategy; 
+	CMirrorOnBoundary m_bc; 
 
 	gsl::DoubleVector m_input_buffer; 
 	gsl::DoubleVector m_output_buffer; 

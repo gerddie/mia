@@ -124,6 +124,9 @@ private:
 	mutable CSplineDerivativeRow  m_my; 
 	mutable bool m_grid_valid; 
 
+	CZeroBoundary m_xbc; 
+	CZeroBoundary m_ybc; 
+
 };
 
 NS_MIA_END

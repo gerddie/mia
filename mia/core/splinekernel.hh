@@ -221,13 +221,6 @@ public:
 	*/
 	int get_start_idx_and_derivative_weights(double x, std::vector<double>& weights) const; 
 
-	/**
-	   Pre-filter a 1D line of coefficients 
-	   \param coeff data to be filtered in-place 
-	 */
-	template <typename C>
-	void filter_line(std::vector<C>& coeff);
-
 protected:
 	/** add a pole to the list of poles
 	    \param x
@@ -235,12 +228,6 @@ protected:
 	void add_pole(double x);
 
 private:
-	template <typename C>
-	C initial_coeff(const std::vector<C>& coeff, double pole);
-	
-	template <typename C>
-	C initial_anti_coeff(const std::vector<C>& coeff, double pole);
-
 	/**
 	   Helper function to fill the array index with consecutive values starting with i 
 	 */
@@ -338,6 +325,9 @@ inline size_t CSplineKernel::size()const
 */
 double  EXPORT_CORE integrate2(const CSplineKernel& spline, double s1, double s2, int d1, int d2, double n, double x0, double L);
 
+
+bool mirror_boundary_conditions(std::vector<int>& index, int width, int width2) __attribute__((deprecated)); 
+
 /**
    Function to apply mirrored boundary conditions so that the indices fit into [0,width)
    @param[in,out] index index array to be adjusted
@@ -376,70 +366,6 @@ struct FMultBy {
 private: 
 	double m_f; 
 };
-
-
-template <typename C>
-void CSplineKernel::filter_line(std::vector<C>& coeff)
-{
-	/* special case required by mirror boundaries */
-	if (coeff.size() < 2) {
-		return;
-	}
-	/* compute the overall gain */
-	double	lambda = 1.0;
-	for (size_t k = 0; k < m_poles.size() ; ++k) {
-		lambda  *=  2 - m_poles[k] - 1.0 / m_poles[k];
-	}
-	
-	/* apply the gain */
-	for_each(coeff.begin(), coeff.end(), [lambda](C& x) { x *= lambda;});
-	
-	/* loop over all poles */
-	for (size_t k = 0; k < m_poles.size(); ++k) {
-		/* causal initialization */
-		coeff[0] = initial_coeff(coeff, m_poles[k]);
-		
-		/* causal recursion */
-		for (size_t n = 1; n < coeff.size(); ++n) {
-			coeff[n] += m_poles[k] * coeff[n - 1];
-		}
-		
-		/* anticausal initialization */
-		coeff[coeff.size() - 1] = initial_anti_coeff(coeff, m_poles[k]);
-		/* anticausal recursion */
-		for (int n = coeff.size() - 2; 0 <= n; n--) {
-			coeff[n] = m_poles[k] * (coeff[n + 1] - coeff[n]);
-		}
-	}
-}
-
-template <typename C>
-C CSplineKernel::initial_coeff(const std::vector<C>& coeff, double pole)
-{
-	
-	/* full loop */
-	double zn = pole;
-	double iz = 1.0 / pole;
-	double z2n = pow(pole, (double)(coeff.size() - 1));
-	C sum = coeff[0] + z2n * coeff[coeff.size() - 1];
-	
-	z2n *= z2n * iz;
-	
-	for (size_t n = 1; n <= coeff.size()  - 2L; n++) {
-		sum += (zn + z2n) * coeff[n];
-		zn *= pole;
-		z2n *= iz;
-	}
-	
-	return(sum / (1.0 - zn * zn));
-}
-
-template <typename C>
-C CSplineKernel::initial_anti_coeff(const std::vector<C>& coeff, double pole)
-{
-	return ((pole / (pole * pole - 1.0)) * 
-		(pole * coeff[coeff.size() - 2] + coeff[coeff.size() - 1]));
-}
 
 NS_MIA_END
 

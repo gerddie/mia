@@ -219,7 +219,7 @@ T1DConvoluteInterpolator<T>::derivative_at (const double& x) const
 		return typename coeff_map<T>::coeff_type();
 	
 	m_kernel->derivative(x, m_x_weight, m_x_index);
-	mirror_boundary_conditions(m_x_index, m_coeff.size(), m_size2);
+	m_boundary_conditions->apply(m_x_index, m_x_weight); 
 
 	U result = U();
 	

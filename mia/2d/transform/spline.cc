@@ -124,6 +124,9 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSpline
 	C2DBounds csize(size_t((range.x + c_rate.x - 1) / c_rate.x) + m_enlarge,
 			size_t((range.y + c_rate.y - 1) / c_rate.y) + m_enlarge);
 	m_coefficients = C2DFVectorfield(csize);
+	m_xbc.set_width(m_coefficients.get_size().x); 
+	m_ybc.set_width(m_coefficients.get_size().y); 
+
 	reinit();
 }
 
@@ -131,19 +134,21 @@ void C2DSplineTransformation::set_coefficients_and_prefilter(const C2DFVectorfie
 {
 	vector<C2DFVector> buffer(field.get_size().y); 
 	C2DFVectorfield help1(field.get_size());
+	m_xbc.set_width(field.get_size().x); 
+	m_ybc.set_width(field.get_size().y); 
+
 	for(size_t x = 0; x < field.get_size().x; ++x) {
 		field.get_data_line_y(x, buffer); 
-		m_kernel->filter_line(buffer); 
+		m_xbc.filter_line(buffer, m_kernel->get_poles()); 
 		help1.put_data_line_y(x, buffer); 
 	}
-	C2DFVectorfield help2(field.get_size());
 	buffer.resize(field.get_size().x); 
 	for(size_t y = 0; y < field.get_size().y; ++y) {
 		help1.get_data_line_x(y, buffer); 
-		m_kernel->filter_line(buffer); 
-		help2.put_data_line_x(y, buffer); 
+		m_ybc.filter_line(buffer, m_kernel->get_poles()); 
+		help1.put_data_line_x(y, buffer); 
 	}
-	set_coefficients(help2); 
+	set_coefficients(help1); 
 }
 
 void C2DSplineTransformation::set_coefficients(const C2DFVectorfield& field)
@@ -151,6 +156,10 @@ void C2DSplineTransformation::set_coefficients(const C2DFVectorfield& field)
 	TRACE_FUNCTION;
 	m_interpolator_valid &= (m_coefficients.get_size() != field.get_size());
 	m_coefficients = field;
+
+	m_xbc.set_width(field.get_size().x); 
+	m_ybc.set_width(field.get_size().y); 
+
 /*
 	m_target_c_rate.x = float(m_range.x) / (field.get_size().x - m_enlarge);
 	m_target_c_rate.y = float(m_range.y) / (field.get_size().y - m_enlarge);
@@ -161,6 +170,7 @@ void C2DSplineTransformation::reinit() const
 {
 	TRACE_FUNCTION;
 	if (!m_interpolator_valid) {
+
 		cvdebug() << "C2DSplineTransformation::reinit applies\n";
 		m_scale.x = float(m_coefficients.get_size().x - 1 - m_enlarge) / (m_range.x - 1);
 		m_scale.y = float(m_coefficients.get_size().y - 1 - m_enlarge) / (m_range.y - 1);

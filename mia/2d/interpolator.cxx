@@ -351,17 +351,15 @@ T2DVector<T> T2DConvoluteInterpolator<T>::derivative_at(const C2DFVector& x) con
 		return result;
 
 	const int xi = m_kernel->get_indices(x.x, m_x_index); 
-	mirror_boundary_conditions(m_x_index, m_coeff.get_size().x, m_size2.x);
+	const double fx = x.x - xi; 
+	m_kernel->get_derivative_weights(fx, m_x_weight); 
+	m_x_boundary->apply(m_x_index, m_x_weight);
 	
 	const int yi = m_kernel->get_indices(x.y, m_y_index); 
-	mirror_boundary_conditions(m_y_index, m_coeff.get_size().y, m_size2.y);
-
-	const double fx = x.x - xi; 
 	const double fy = x.y - yi; 
-	
-	m_kernel->get_derivative_weights(fx, m_x_weight); 
 	m_kernel->get_weights(fy, m_y_weight);
-
+	m_y_boundary->apply(m_y_index, m_y_weight);
+	
 
 	typename TCoeff2D::value_type r = evaluate();	
 	result.x = round_to<typename TCoeff2D::value_type, T>::value(r);  
