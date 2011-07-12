@@ -134,7 +134,6 @@ vector<double> BoundaryFixture::run(std::vector<double> f, const CBoundaryCondit
 	auto pol = p[p.size() - 1]; 
 
 	transform(f.begin(), f.end(), coefs.begin(), f.begin(), [](double x, double y){return x - y;}); 
-//	transform(coefs.begin(), coefs.end(), f.begin(), [pol](double x){return x - 10;}); 
 	return f ; 
 }
 
@@ -145,15 +144,12 @@ void BoundaryFixture::prepare_and_run(CBoundaryCondition& bc, PSplineKernel kern
 	bc.set_width(f.size());
 
 	for (int j = -1; j < 12; ++j) { 
-//		for (int i = 0; i < 12; ++i) { 
-			std::vector<double> t = f; 
-			if (j >= 0) 
-				t[j] = 1; 
-			cverb << setprecision(10); 
-			cvinfo() << "values[" << j << "]=" << run(t, bc, kernel) << "\n";; 
-//		}
+		std::vector<double> t = f; 
+		if (j >= 0) 
+			t[j] = 1; 
+		cverb << setprecision(10); 
+		cvinfo() << "values[" << j << "]=" << run(t, bc, kernel) << "\n";; 
 	}
-
 }
 
 
@@ -219,7 +215,7 @@ BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_zero_3 , BoundaryFixture )
 BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_zero_4 , BoundaryFixture ) 
 {
 	CZeroBoundary bc; 
-	BOOST_CHECK_THROW(prepare_and_run(bc, produce_spline_kernel("bspline:d=4")), 
+	BOOST_CHECK_THROW(prepare_and_run(bc, produce_spline_kernel("bspline:d=5")), 
 			  invalid_argument); 
 }
 
@@ -230,9 +226,23 @@ BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_zero_5 , BoundaryFixture )
 			  invalid_argument); 
 }
 
-BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_zero_2 , BoundaryFixture ) 
+#if SUPPORT_MORE_THEN_ONE_POLE_ON_ZERO_BOUNDARY_CONDITION
+BOOST_FIXTURE_TEST_CASE( test_CZeroBoundary_coefs_large_5 , BoundaryFixture ) 
 {
+
+	std::vector<double> f(30); 
+	cverb << setprecision(10); 
+	fill(f.begin(), f.end(), 2.0); 
+	CZeroBoundary bc(30); 
+	cvinfo() << run(f, bc, produce_spline_kernel("bspline:d=5")) << "\n"; 
+}
+#endif
+
+BOOST_FIXTURE_TEST_CASE( test_CRepeatBoundary_coefs_zero_2, BoundaryFixture ) 
+{
+
 	CZeroBoundary bc; 
-	prepare_and_run(bc, produce_spline_kernel("bspline:d=2")); 
+	prepare_and_run(bc, produce_spline_kernel("bspline:d=2"));
+
 }
 

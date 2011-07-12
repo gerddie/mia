@@ -217,7 +217,7 @@ double CZeroBoundary::initial_coeff(const std::vector<double>& coeff, double pol
 
 double CZeroBoundary::initial_anti_coeff(const std::vector<double>& coeff, double pole)const
 {
-	return -coeff[coeff.size() - 1] * pole; 
+	return - coeff[coeff.size() - 1] * pole; 
 }
 
 CRepeatBoundary::CRepeatBoundary():
