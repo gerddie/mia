@@ -23,6 +23,9 @@
 
 #include <mia/core/msgstream.hh>
 #include <mia/core/type_traits.hh>
+#include <mia/core/factory.hh>
+#include <mia/core/product_base.hh>
+
 #include <vector>
 #include <memory>
 
@@ -46,8 +49,14 @@ enum EBoundaryConditions  {
    \todo for spline degrees large then 1, the pre-filtering has to tale the boundary conditionsinto account. 
  */
 
-class CBoundaryCondition {
+class CBoundaryCondition : public CProductBase{
 public: 
+
+	typedef CBoundaryCondition plugin_data; 
+	typedef CBoundaryCondition plugin_type; 
+
+	static const char * const type_descr; 
+	static const char * const data_descr; 
 
 	CBoundaryCondition(); 
 
@@ -101,6 +110,30 @@ private:
 }; 
 
 typedef std::shared_ptr<CBoundaryCondition> PBoundaryCondition; 
+
+
+/// base plugin for spline boundary conditions
+class CSplineBoundaryConditionPlugin: public TFactory<CBoundaryCondition> {
+public: 
+	typedef typename TFactory<CBoundaryCondition>::ProductPtr ProductPtr; 
+	
+	CSplineBoundaryConditionPlugin(const char * name); 
+	
+	virtual ProductPtr do_create() const;
+private: 
+	virtual ProductPtr do_create(int width) const = 0; 
+	int m_width; 
+}; 
+
+/**
+   \ingroup interpol 
+   Plugin handler for the creation of spline boundary conditions
+*/
+typedef THandlerSingleton<TFactoryPluginHandler<CSplineBoundaryConditionPlugin> > CSplineBoundaryConditionPluginHandler;
+
+struct CSplineBoundaryConditionTestPath {
+	CSplineBoundaryConditionTestPath(); 
+}; 
 
 
 PBoundaryCondition produce_spline_boundary_condition(const std::string& descr); 

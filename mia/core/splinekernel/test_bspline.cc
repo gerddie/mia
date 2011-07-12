@@ -32,6 +32,8 @@ using namespace mia;
 using namespace mia::bsplinekernel;
 namespace bmpl=boost::mpl;
 
+CSplineBoundaryConditionTestPath bc_path; 
+
 template <typename T, bool is_float>
 struct __dispatch_compare {
 	static void apply(T a, T b) {

@@ -31,6 +31,8 @@ using namespace std;
 using namespace mia;
 namespace bfs=boost::filesystem; 
 
+CSplineBoundaryConditionTestPath bc_path; 
+
 struct InterpolatorIDFixture  {
 
 	double f(double x) const;

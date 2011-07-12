@@ -22,17 +22,20 @@
 #include <cassert>
 #include <mia/core/msgstream.hh>
 #include <mia/core/boundary_conditions.hh>
-#include <mia/core/boundary_conditions_shadow.hh>
 #include <mia/core/optionparser.hh>
 #include <mia/core/optparam.hh>
+#include <mia/core/plugin_base.cxx>
+#include <mia/core/handler.cxx>
+#include <boost/filesystem.hpp>
+
 
 NS_MIA_BEGIN
 using std::vector; 
 using std::invalid_argument; 
 using std::numeric_limits; 
 
-
-
+const char * const CBoundaryCondition::type_descr = "1d"; 
+const char * const CBoundaryCondition::data_descr = "splinebc"; 
 
 CBoundaryCondition::CBoundaryCondition():
 	m_width(0)
@@ -107,26 +110,7 @@ void CBoundaryCondition::filter_line(std::vector<double>& coeff, const std::vect
 
 PBoundaryCondition produce_spline_boundary_condition(const std::string& descr)
 {
-	CComplexOptionParser param_list(descr);
-
-	if (param_list.size() != 1) 
-		THROW(invalid_argument, "produce_spline_boundary_condition: Don't understand '" << descr << "'"); 
-		
-	int width = 0; 
-	// this is to be replaced by the plugin handler 
-	CParamList params; 
-	params["w"] = CParamList::PParameter(new CIntParameter(width, 0, numeric_limits<int>::max(), false, "index range")); 
-	auto p = param_list.begin(); 
-	params.set(p->second);	
-
-	if ( p->first == "mirror") 
-		return PBoundaryCondition( new CMirrorOnBoundary(width)); 
-	else if (p->first == "repeat") 
-		return PBoundaryCondition( new CRepeatBoundary(width)); 
-	else if (p->first == "zero") 
-		return PBoundaryCondition( new CZeroBoundary(width)); 
-	else 
-		THROW(invalid_argument, "Unknown boundary condition '" << descr << "'"); 
+	return CSplineBoundaryConditionPluginHandler::instance().produce(descr); 
 }
 
 
@@ -139,173 +123,30 @@ bool CBoundaryCondition::apply(std::vector<int>& index, std::vector<double>& wei
 	return false; 
 }
 
-CMirrorOnBoundary::CMirrorOnBoundary():
-	m_width2(0)
+
+CSplineBoundaryConditionPlugin::CSplineBoundaryConditionPlugin(const char * name):
+	TFactory<CBoundaryCondition>(name), 
+	m_width(0)
 {
+	add_parameter("w", new CIntParameter(m_width, 0, numeric_limits<int>::max(), false, "index range")); 
 }
-
-CMirrorOnBoundary::CMirrorOnBoundary(int width):
-	CBoundaryCondition(width), 
-	m_width2(2*width - 2)
-{
-}
-
-
-void CMirrorOnBoundary::do_set_width(int width)
-{
-	m_width2 = 2*width - 2; 
-}
-
-void CMirrorOnBoundary::test_supported(int npoles) const
-{
-}
-
-void CMirrorOnBoundary::do_apply(std::vector<int>& index, std::vector<double>& weights) const
-{
-	for (size_t k = 0; k < index.size(); k++) {
-		int idx = (index[k] < 0) ? -index[k] : index[k]; 
-		
-		idx = (get_width() == 1) ? (0) : ((idx < m_width2) ? idx : idx % m_width2);
-		if (get_width() <= idx) {
-			cvdebug() << "yes:" << idx << "\n"; 
-			idx = m_width2 - idx;
-		}
-		index[k] = idx; 
-		cvdebug() << k << ": " << index[k] << "\n"; 
-	}
-}
-
-
-double CMirrorOnBoundary::initial_coeff(const std::vector<double>& coeff, double pole)const
-{ 
-	double zn = pole;
-	double iz = 1.0 / pole;
-	double z2n = pow(pole, (double)(coeff.size() - 1));
-	double sum = coeff[0] + z2n * coeff[coeff.size() - 1];
 	
-	z2n *= z2n * iz;
-	
-	for (size_t n = 1; n < coeff.size()  - 1; n++) {
-		sum += (zn + z2n) * coeff[n];
-		zn *= pole;
-		z2n *= iz;
-	}
-	
-	return(sum / (1.0 - zn * zn));
+CSplineBoundaryConditionPlugin::ProductPtr CSplineBoundaryConditionPlugin::do_create() const
+{
+	return do_create(m_width); 
 }
 
-double CMirrorOnBoundary::initial_anti_coeff(const std::vector<double>& coeff, double pole)const
+EXPLICIT_INSTANCE_HANDLER(CBoundaryCondition); 
+
+using boost::filesystem::path; 
+CSplineBoundaryConditionTestPath::CSplineBoundaryConditionTestPath()
 {
-	return ((pole / (pole * pole - 1.0)) * 
-		(pole * coeff[coeff.size() - 2] + coeff[coeff.size() - 1]));
+	list< path> sksearchpath; 
+	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/core/splinebc"));
+	CSplineBoundaryConditionPluginHandler::set_search_path(sksearchpath); 
 	
 }
 
-
-CZeroBoundary::CZeroBoundary(int width):
-	CBoundaryCondition(width)
-{
-}
-void CZeroBoundary::test_supported(int npoles) const
-{
-	/**
-	   Unfortunately, the current pre-filtering does not work properly 
-	   for splines with more then one pole. 
-	 */
-
-	if (npoles > 1) {
-		THROW(invalid_argument, "Currently, zero-boundary not supported for splines with more then one pole");  
-	}
-}
-
-
-void CZeroBoundary::do_apply(std::vector<int>& index, std::vector<double>& weights) const
-{
-	for (size_t k = 0; k < index.size(); k++) {
-		if (index[k] < 0 || index[k] >= get_width()) {
-			index[k] = 0; 
-			weights[k] = 0; 
-		}	
-	}
-}
-
-double CZeroBoundary::initial_coeff(const std::vector<double>& coeff, double pole) const
-{
-	double zn = pole  * pole;
-	double ip = 1.0/ pole; 
-	double z2n = pow(pole, 2.0 * coeff.size()+2) ;
-
-	double sum = 0.0; 
-	for (size_t n = 0; n < coeff.size() - 1; n++) {
-		sum -= (zn + z2n) * coeff [n]; 
-		zn *= pole;
-		z2n *= ip; 
-	}
-	
-	sum -= zn * coeff [coeff.size() - 1]; 
-	return coeff [0] + sum / ( 1- zn * zn); 
-
-}
-
-double CZeroBoundary::initial_anti_coeff(const std::vector<double>& coeff, double pole)const
-{
-	return - coeff[coeff.size() - 1] * pole; 
-}
-
-CRepeatBoundary::CRepeatBoundary():
-	m_widthm1(0)
-{
-}
-
-CRepeatBoundary::CRepeatBoundary(int width):
-	CBoundaryCondition(width), 
-	m_widthm1(width-1)
-{
-}
-
-void CRepeatBoundary::test_supported(int npoles) const
-{
-	if (npoles > 1) {
-		THROW(invalid_argument, "Currently, repeat-boundary not supported for splines woth more then one pole");  
-	}
-}
-
-void CRepeatBoundary::do_set_width(int width)
-{
-	m_widthm1 = width-1; 
-}
-
-void CRepeatBoundary::do_apply(std::vector<int>& index, std::vector<double>& weights) const
-{
-	for (size_t k = 0; k < index.size(); k++) {
-		if (index[k] < 0) 
-			index[k] = 0; 
-		else if (index[k] > m_widthm1) {
-			index[k] = m_widthm1; 
-		}	
-	}
-}
-
-
-double CRepeatBoundary::initial_coeff(const std::vector<double>& coeff, double pole)const
-{ 
-	double zn = pole;
-	double iz = 1.0 / pole;
-	double z2n = pow(pole, (double)(2 * coeff.size()));
-
-	double sum = 0.0; 
-	for (size_t n = 0; n < coeff.size(); n++) {
-		sum += (zn  + z2n) * coeff [n]; 
-		zn *= pole;
-		z2n *= iz;
-	}
-	return coeff[0] + sum / ( 1 - zn * zn); 
-}
-
-double CRepeatBoundary::initial_anti_coeff(const std::vector<double>& coeff, double pole)const
-{
-	return - pole / (1 - pole) * coeff[coeff.size() - 1];
-}
 
 
 NS_MIA_END
