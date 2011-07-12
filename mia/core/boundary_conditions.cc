@@ -182,7 +182,7 @@ void CZeroBoundary::test_supported(int npoles) const
 	 */
 
 	if (npoles > 1) {
-		THROW(invalid_argument, "Currently, repeat-boundary not supported for splines woth more then one pole");  
+		THROW(invalid_argument, "Currently, zero-boundary not supported for splines with more then one pole");  
 	}
 }
 
@@ -199,12 +199,25 @@ void CZeroBoundary::do_apply(std::vector<int>& index, std::vector<double>& weigh
 
 double CZeroBoundary::initial_coeff(const std::vector<double>& coeff, double pole) const
 {
-	return 0.0; 
+	double zn = pole  * pole;
+	double ip = 1.0/ pole; 
+	double z2n = pow(pole, 2.0 * coeff.size()+2) ;
+
+	double sum = 0.0; 
+	for (size_t n = 0; n < coeff.size() - 1; n++) {
+		sum -= (zn + z2n) * coeff [n]; 
+		zn *= pole;
+		z2n *= ip; 
+	}
+	
+	sum -= zn * coeff [coeff.size() - 1]; 
+	return coeff [0] + sum / ( 1- zn * zn); 
+
 }
 
 double CZeroBoundary::initial_anti_coeff(const std::vector<double>& coeff, double pole)const
 {
-	return 0.0; 
+	return -coeff[coeff.size() - 1] * pole; 
 }
 
 CRepeatBoundary::CRepeatBoundary():
