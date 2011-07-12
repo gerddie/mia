@@ -113,9 +113,9 @@ int do_main(int argc, const char **argv)
 	}
 
 	P3DInterpolatorFactory ipfactory(new C3DInterpolatorFactory(interpolator_kernel, 
-								    PBoundaryCondition(new CMirrorOnBoundary), 
-								    PBoundaryCondition(new CMirrorOnBoundary), 
-								    PBoundaryCondition(new CMirrorOnBoundary)));
+								    produce_spline_boundary_condition("mirror"), 
+								    produce_spline_boundary_condition("mirror"), 
+								    produce_spline_boundary_condition("mirror")));
 
 	FDeformer3D deformer(*transformation,*ipfactory);
 

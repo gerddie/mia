@@ -63,18 +63,19 @@ struct TransformSplineFixture {
 			}
 		vector<C2DFVector> buffer(size.y); 
 		C2DFVectorfield help1(size);
-		CMirrorOnBoundary bc(size.y); 
+		auto bc = produce_spline_boundary_condition("mirror"); 
+		bc->set_width(size.y); 
 		for(size_t x = 0; x < size.x; ++x) {
 			field.get_data_line_y(x, buffer); 
-			bc.filter_line(buffer, kernel->get_poles()); 
+			bc->filter_line(buffer, kernel->get_poles()); 
 			help1.put_data_line_y(x, buffer); 
 		}
 		C2DFVectorfield help2(size);
 		buffer.resize(size.x); 
-		bc.set_width(size.x); 
+		bc->set_width(size.x); 
 		for(size_t y = 0; y < size.y; ++y) {
 			help1.get_data_line_x(y, buffer); 
-			bc.filter_line(buffer, kernel->get_poles()); 
+			bc->filter_line(buffer, kernel->get_poles()); 
 			help2.put_data_line_x(y, buffer); 
 		}
 
@@ -289,8 +290,8 @@ BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 	C2DFImage test_image(range);
 	
 	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(produce_spline_kernel("bspline:d=3"), 
-							      PBoundaryCondition(new CMirrorOnBoundary), 
-							      PBoundaryCondition(new CMirrorOnBoundary))); 
+							      produce_spline_boundary_condition("mirror"), 
+							      produce_spline_boundary_condition("mirror"))); 
 	auto_ptr<T2DInterpolator<float> > src(ipf->create(image.data()));
 
 	C2DFImage::iterator t = test_image.begin();
@@ -589,8 +590,8 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 	PSplineKernel kernel = produce_spline_kernel("bspline:d=3"); 
 
 	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(kernel, 
-							      PBoundaryCondition(new CMirrorOnBoundary), 
-							      PBoundaryCondition(new CMirrorOnBoundary))); 
+							      produce_spline_boundary_condition("mirror"), 
+							      produce_spline_boundary_condition("mirror"))); 
 
 	C2DSplineTransformation trans(size, kernel);
 
@@ -680,8 +681,8 @@ struct TransformSplineFixtureFieldBase {
 		field(size),
 		kernel(CSplineKernelPluginHandler::instance().produce("bspline:d=3")), 
 		ipf( new C2DInterpolatorFactory(kernel, 
-						PBoundaryCondition(new CMirrorOnBoundary), 
-						PBoundaryCondition(new CMirrorOnBoundary))), 
+						produce_spline_boundary_condition("mirror"), 
+						produce_spline_boundary_condition("mirror"))), 
 		range(16, 16),
 		stransf(range, kernel),
 		scale(1.0 / range.x, 1.0 / range.y)

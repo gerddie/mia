@@ -236,8 +236,8 @@ C2DFullCostPlugin::ProductPtr C2DImageFullCostPlugin::do_create(float weight) co
 		  << " src=" << m_src_name << " ref=" << m_ref_name 
 		  << " cost=" << m_cost_kernel << "\n";
 	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(m_interpolator,
-							      PBoundaryCondition(new CMirrorOnBoundary), 
-							      PBoundaryCondition(new CMirrorOnBoundary)));
+							      produce_spline_boundary_condition("mirror"), 
+							      produce_spline_boundary_condition("mirror")));
 	return C2DFullCostPlugin::ProductPtr(
 		new C2DImageFullCost(m_src_name, m_ref_name, 
 				     m_cost_kernel, ipf, weight, m_debug)); 

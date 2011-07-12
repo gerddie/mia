@@ -211,8 +211,8 @@ int do_main( int argc, const char *argv[] )
 	// prepare registration class
 	
 	P2DInterpolatorFactory ipfactory(new C2DInterpolatorFactory(interpolator_kernel, 
-								    PBoundaryCondition(new CMirrorOnBoundary), 
-								    PBoundaryCondition(new CMirrorOnBoundary)));
+								    produce_spline_boundary_condition("mirror"), 
+								    produce_spline_boundary_condition("mirror")));
 	C2DRigidRegister rigid_register(C2DImageCostPluginHandler::instance().produce("ssd"), 
 					minimizer, transform_creator, *ipfactory, mg_levels); 
 	

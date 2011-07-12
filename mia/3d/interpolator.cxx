@@ -67,9 +67,9 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 	m_coeff(image.get_size()), 
 	m_size2(image.get_size() + image.get_size()-C3DBounds(2,2,2)),
 	m_kernel(kernel),
-	m_xbc(new CMirrorOnBoundary(image.get_size().x)), 
-	m_ybc(new CMirrorOnBoundary(image.get_size().y)),
-	m_zbc(new CMirrorOnBoundary(image.get_size().z)),
+	m_xbc(produce_spline_boundary_condition("mirror")), 
+	m_ybc(produce_spline_boundary_condition("mirror")),
+	m_zbc(produce_spline_boundary_condition("mirror")),
 	m_x_cache(kernel->size(), m_xbc, false), 
 	m_y_cache(kernel->size(), m_ybc, true), 
 	m_z_cache(kernel->size(), m_zbc, true)
@@ -93,9 +93,6 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 	m_y_cache(kernel->size(), m_ybc, true), 
 	m_z_cache(kernel->size(), m_zbc, true)
 {
-	m_xbc->set_width(image.get_size().x); 
-	m_ybc->set_width(image.get_size().y); 
-	m_zbc->set_width(image.get_size().z);
 	prefilter(image); 
 }
 
@@ -103,6 +100,10 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 template <typename T>
 void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image) 
 {
+
+	m_xbc->set_width(image.get_size().x); 
+	m_ybc->set_width(image.get_size().y); 
+	m_zbc->set_width(image.get_size().z);
 
 	min_max_3d<T>::get(image, &m_min, &m_max);
 	std::copy(image.begin(), image.end(), m_coeff.begin());

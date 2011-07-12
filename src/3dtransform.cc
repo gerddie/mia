@@ -109,9 +109,9 @@ int do_main(int argc, const char **argv)
 	}
 	
 	C3DInterpolatorFactory ipfactory(interpolator_kernel, 
-					 PBoundaryCondition(new CMirrorOnBoundary), 
-					 PBoundaryCondition(new CMirrorOnBoundary), 
-					 PBoundaryCondition(new CMirrorOnBoundary));
+					 produce_spline_boundary_condition("mirror"), 
+					 produce_spline_boundary_condition("mirror"), 
+					 produce_spline_boundary_condition("mirror"));
 	
 	for (auto i = source->begin(); i != source->end(); ++i)
 		*i = (*transformation)(**i, ipfactory);

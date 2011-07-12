@@ -117,9 +117,9 @@ C3DFatImageCostPlugin::ProductPtr C3DFatImageCostPlugin::do_create()const
 		cvwarn() << "'" << m_ref_name << "' contains more then one image, using only first\n";
 
 	P3DInterpolatorFactory ipf( new C3DInterpolatorFactory(m_interpolator, 
-							       PBoundaryCondition(new CMirrorOnBoundary), 
-							       PBoundaryCondition(new CMirrorOnBoundary), 
-							       PBoundaryCondition(new CMirrorOnBoundary))); 
+							       produce_spline_boundary_condition("mirror"), 
+							       produce_spline_boundary_condition("mirror"), 
+							       produce_spline_boundary_condition("mirror"))); 
 	return do_create((*source)[0], (*reference)[0], ipf, m_weight);
 }
 

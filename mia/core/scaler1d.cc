@@ -37,6 +37,7 @@ C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size
 	m_support(kernel.size()), 
 	m_poles(kernel.get_poles()),
 	m_strategy(scs_unknown), 
+	m_bc(produce_spline_boundary_condition("mirror")), 
 	m_input_buffer(in_size), 
 	m_output_buffer(out_size)
 {
@@ -45,7 +46,7 @@ C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size
 
 	if (in_size < out_size) {
 		// prepare for upscaling 
-		m_bc.set_width(in_size); 
+		m_bc->set_width(in_size); 
 		
 		if (in_size == 1) {
 			m_strategy = scs_fill_output; 
@@ -57,16 +58,16 @@ C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size
 				std::vector<double> weight(m_support); 
 				std::vector<int> index(m_support); 
 				kernel(x, weight, index); 
-				m_bc.apply(index, weight); 
+				m_bc->apply(index, weight); 
 				m_weights.push_back(weight); 
 				m_indices.push_back(index); 
 			}
 		}
 	} else if (in_size == out_size){
 		m_strategy = scs_copy; 
-		m_bc.set_width(in_size); 
+		m_bc->set_width(in_size); 
 	} else {
-		m_bc.set_width(out_size), 
+		m_bc->set_width(out_size), 
 		m_strategy = scs_downscale; 
 		// prepare for downscaling 
 		const double dx = double(out_size-1) / (in_size-1); 
@@ -79,7 +80,7 @@ C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size
 			double x = 0; 
 			for (size_t j = 0; j < in_size; ++j, x+=dx) {
 				kernel(x, weight, index);
-				m_bc.apply(index, weight); 
+				m_bc->apply(index, weight); 
 				for (size_t i = 0; i < m_support; ++i) {
 					double v = m_A(j, index[i]); 
 					m_A.set(j, index[i], v + weight[i]);
@@ -90,7 +91,7 @@ C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size
 			std::vector<double> weight(m_support); 
 			std::vector<int> index(m_support); 
 			kernel(i, weight, index); 
-			m_bc.apply(index, weight); 
+			m_bc->apply(index, weight); 
 			m_weights.push_back(weight); 
 			m_indices.push_back(index); 
 		}
@@ -164,7 +165,7 @@ void C1DScalarFixed::upscale(const gsl::DoubleVector& input, gsl::DoubleVector& 
 	// the input should be filtered 
 
 	vector<double> coeffs(input.begin(), input.end()); 
-	m_bc.filter_line(coeffs, m_poles); 
+	m_bc->filter_line(coeffs, m_poles); 
 
 	for (size_t i = 0; i < output.size(); ++i, ++io) {
 		const vector<double>& weight = m_weights[i]; 

@@ -18,13 +18,21 @@
  *
  */
 
+#include <limits>
 #include <cassert>
 #include <mia/core/msgstream.hh>
 #include <mia/core/boundary_conditions.hh>
+#include <mia/core/boundary_conditions_shadow.hh>
+#include <mia/core/optionparser.hh>
+#include <mia/core/optparam.hh>
 
 NS_MIA_BEGIN
 using std::vector; 
 using std::invalid_argument; 
+using std::numeric_limits; 
+
+
+
 
 CBoundaryCondition::CBoundaryCondition():
 	m_width(0)
@@ -95,6 +103,30 @@ void CBoundaryCondition::filter_line(std::vector<double>& coeff, const std::vect
 			cverb << coeff[n] << "\n"; 
 		}
 	}
+}
+
+PBoundaryCondition produce_spline_boundary_condition(const std::string& descr)
+{
+	CComplexOptionParser param_list(descr);
+
+	if (param_list.size() != 1) 
+		THROW(invalid_argument, "produce_spline_boundary_condition: Don't understand '" << descr << "'"); 
+		
+	int width = 0; 
+	// this is to be replaced by the plugin handler 
+	CParamList params; 
+	params["w"] = CParamList::PParameter(new CIntParameter(width, 0, numeric_limits<int>::max(), false, "index range")); 
+	auto p = param_list.begin(); 
+	params.set(p->second);	
+
+	if ( p->first == "mirror") 
+		return PBoundaryCondition( new CMirrorOnBoundary(width)); 
+	else if (p->first == "repeat") 
+		return PBoundaryCondition( new CRepeatBoundary(width)); 
+	else if (p->first == "zero") 
+		return PBoundaryCondition( new CZeroBoundary(width)); 
+	else 
+		THROW(invalid_argument, "Unknown boundary condition '" << descr << "'"); 
 }
 
 

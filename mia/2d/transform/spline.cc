@@ -71,7 +71,9 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSpline
 	m_x_indices(m_range.x), 
 	m_y_weights(m_range.y),
 	m_y_indices(m_range.y), 
-	m_grid_valid(false)
+	m_grid_valid(false), 
+	m_xbc(produce_spline_boundary_condition("zero")), 
+	m_ybc(produce_spline_boundary_condition("zero"))
 {
 	
 	m_shift = m_kernel->get_active_halfrange() - 1; 
@@ -94,7 +96,9 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DSplineTransformation& 
 	m_x_indices(m_range.x), 
 	m_y_weights(m_range.y),
 	m_y_indices(m_range.y),
-	m_grid_valid(false)
+	m_grid_valid(false), 
+	m_xbc(produce_spline_boundary_condition("zero")), 
+	m_ybc(produce_spline_boundary_condition("zero"))
 {
 }
 
@@ -108,7 +112,9 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSpline
 	m_x_indices(m_range.x), 
 	m_y_weights(m_range.y),
 	m_y_indices(m_range.y),
-	m_grid_valid(false)
+	m_grid_valid(false), 
+	m_xbc(produce_spline_boundary_condition("zero")), 
+	m_ybc(produce_spline_boundary_condition("zero"))
 {
 	TRACE_FUNCTION;
 	assert(m_range.x > 0);
@@ -124,8 +130,8 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSpline
 	C2DBounds csize(size_t((range.x + c_rate.x - 1) / c_rate.x) + m_enlarge,
 			size_t((range.y + c_rate.y - 1) / c_rate.y) + m_enlarge);
 	m_coefficients = C2DFVectorfield(csize);
-	m_xbc.set_width(m_coefficients.get_size().x); 
-	m_ybc.set_width(m_coefficients.get_size().y); 
+	m_xbc->set_width(m_coefficients.get_size().x); 
+	m_ybc->set_width(m_coefficients.get_size().y); 
 
 	reinit();
 }
@@ -134,18 +140,18 @@ void C2DSplineTransformation::set_coefficients_and_prefilter(const C2DFVectorfie
 {
 	vector<C2DFVector> buffer(field.get_size().y); 
 	C2DFVectorfield help1(field.get_size());
-	m_xbc.set_width(field.get_size().x); 
-	m_ybc.set_width(field.get_size().y); 
+	m_xbc->set_width(field.get_size().x); 
+	m_ybc->set_width(field.get_size().y); 
 
 	for(size_t x = 0; x < field.get_size().x; ++x) {
 		field.get_data_line_y(x, buffer); 
-		m_xbc.filter_line(buffer, m_kernel->get_poles()); 
+		m_xbc->filter_line(buffer, m_kernel->get_poles()); 
 		help1.put_data_line_y(x, buffer); 
 	}
 	buffer.resize(field.get_size().x); 
 	for(size_t y = 0; y < field.get_size().y; ++y) {
 		help1.get_data_line_x(y, buffer); 
-		m_ybc.filter_line(buffer, m_kernel->get_poles()); 
+		m_ybc->filter_line(buffer, m_kernel->get_poles()); 
 		help1.put_data_line_x(y, buffer); 
 	}
 	set_coefficients(help1); 
@@ -157,8 +163,8 @@ void C2DSplineTransformation::set_coefficients(const C2DFVectorfield& field)
 	m_interpolator_valid &= (m_coefficients.get_size() != field.get_size());
 	m_coefficients = field;
 
-	m_xbc.set_width(field.get_size().x); 
-	m_ybc.set_width(field.get_size().y); 
+	m_xbc->set_width(field.get_size().x); 
+	m_ybc->set_width(field.get_size().y); 
 
 /*
 	m_target_c_rate.x = float(m_range.x) / (field.get_size().x - m_enlarge);

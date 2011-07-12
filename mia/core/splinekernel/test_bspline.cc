@@ -79,7 +79,7 @@ void test_type_mirror()
 	for (size_t x = 1; x < data.size() + 1; ++x, ++i)
 		*i = T(x);
 
-	PBoundaryCondition bc(new CMirrorOnBoundary()); 
+	PBoundaryCondition bc = produce_spline_boundary_condition("mirror"); ; 
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel0()), ip_bspline0, bc);
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1, bc);
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2, bc);
@@ -97,7 +97,7 @@ void test_type_repeat()
 
 
 
-	PBoundaryCondition bc(new CRepeatBoundary()); 
+	PBoundaryCondition bc = produce_spline_boundary_condition("repeat"); ; 
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel0()), ip_bspline0, bc);
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1, bc);
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2, bc);
@@ -122,7 +122,7 @@ void test_type_zero()
 	for (size_t x = 1; x < data.size() + 1; ++x, ++i)
 		*i = T(x);
 
-	PBoundaryCondition bc(new CZeroBoundary()); 
+	PBoundaryCondition bc = produce_spline_boundary_condition("zero"); ; 
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel0()), ip_bspline0, bc);
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1, bc);
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2, bc);
@@ -731,7 +731,7 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_equivalence )
 {
 	CBSplineKernel3 kernel;
 	
-	CSplineKernel::SCache cache(kernel.size(), PBoundaryCondition(new CMirrorOnBoundary(10)), false); 
+	CSplineKernel::SCache cache(kernel.size(), produce_spline_boundary_condition("mirror:w=10"), false); 
 	std::vector<double> weights(kernel.size()); 
 	std::vector<int> indices(kernel.size()); 
 

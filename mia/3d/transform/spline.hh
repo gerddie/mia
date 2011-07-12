@@ -133,9 +133,9 @@ private:
 	mutable CSplineDerivativeRow  m_mz; 
 	mutable bool m_grid_valid; 
 	mutable P3DFVectorfield m_current_grid; 
-	CMirrorOnBoundary m_x_boundary; 
-	CMirrorOnBoundary m_y_boundary; 
-	CMirrorOnBoundary m_z_boundary; 
+	PBoundaryCondition m_x_boundary; 
+	PBoundaryCondition m_y_boundary; 
+	PBoundaryCondition m_z_boundary; 
 };
 
 NS_MIA_END

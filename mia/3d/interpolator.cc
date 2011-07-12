@@ -93,20 +93,20 @@ EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(EInterpolation 
 	PBoundaryCondition zbc; 
 	switch (bc) {
 	case bc_mirror_on_bounds: 
-		xbc.reset(new CMirrorOnBoundary); 
-		ybc.reset(new CMirrorOnBoundary); 
-		zbc.reset(new CMirrorOnBoundary); 
+		xbc = produce_spline_boundary_condition("mirror"); 
+		ybc = produce_spline_boundary_condition("mirror"); 
+		zbc = produce_spline_boundary_condition("mirror"); 
 		break; 
 		
 	case bc_repeat: 
-		xbc.reset(new CRepeatBoundary); 
-		ybc.reset(new CRepeatBoundary); 
-		zbc.reset(new CRepeatBoundary); 
+		xbc = produce_spline_boundary_condition("repeat"); 
+		ybc = produce_spline_boundary_condition("repeat"); 
+		zbc = produce_spline_boundary_condition("repeat"); 
 		break; 
 	case bc_zero: 
-		xbc.reset(new CZeroBoundary); 
-		ybc.reset(new CZeroBoundary); 
-		zbc.reset(new CZeroBoundary); 
+		xbc = produce_spline_boundary_condition("zero"); 
+		ybc = produce_spline_boundary_condition("zero"); 
+		zbc = produce_spline_boundary_condition("zero"); 
 		break; 
 	default: 
 		throw invalid_argument("Unknown boundary consitions requested"); 

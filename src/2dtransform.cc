@@ -105,8 +105,8 @@ int do_main(int argc, const char **argv)
 	}
 
 	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(interpolator_kernel, 
-							      PBoundaryCondition(new CMirrorOnBoundary), 
-							      PBoundaryCondition(new CMirrorOnBoundary)));
+							      produce_spline_boundary_condition("mirror"), 
+							      produce_spline_boundary_condition("mirror")));
 
 	for (C2DImageIOPluginHandler::Instance::Data::iterator i = source->begin();
 	     i != source->end(); ++i)

@@ -459,8 +459,8 @@ int do_main( int argc, const char *argv[] )
 		return EXIT_SUCCESS; 
 
 	params.interpolator.reset(new C2DInterpolatorFactory(interpolator_kernel, 
-							     PBoundaryCondition(new CMirrorOnBoundary), 
-							     PBoundaryCondition(new CMirrorOnBoundary)));
+							     produce_spline_boundary_condition("mirror"), 
+							     produce_spline_boundary_condition("mirror")));
 	
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);

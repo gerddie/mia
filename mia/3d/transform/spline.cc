@@ -78,7 +78,10 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSpline
 	m_y_indices(m_range.y), 
 	m_z_weights(m_range.z),
 	m_z_indices(m_range.z), 
-	m_grid_valid(false)
+	m_grid_valid(false), 
+	m_x_boundary(produce_spline_boundary_condition("mirror")),  
+	m_y_boundary(produce_spline_boundary_condition("mirror")),
+	m_z_boundary(produce_spline_boundary_condition("mirror"))
 {
 	TRACE_FUNCTION;
 	unsigned int s = m_kernel->get_active_halfrange() - 1; 
@@ -109,7 +112,10 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DSplineTransformation& 
 	m_y_indices(m_range.y),
 	m_z_weights(m_range.z),
 	m_z_indices(m_range.z),
-	m_grid_valid(false)
+	m_grid_valid(false), 
+	m_x_boundary(produce_spline_boundary_condition("mirror")),  
+	m_y_boundary(produce_spline_boundary_condition("mirror")),
+	m_z_boundary(produce_spline_boundary_condition("mirror"))
 {
 	TRACE_FUNCTION;
 }
@@ -126,7 +132,10 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSpline
 	m_y_indices(m_range.y),
 	m_z_weights(m_range.z),
 	m_z_indices(m_range.z),
-	m_grid_valid(false)
+	m_grid_valid(false), 
+	m_x_boundary(produce_spline_boundary_condition("mirror")),  
+	m_y_boundary(produce_spline_boundary_condition("mirror")),
+	m_z_boundary(produce_spline_boundary_condition("mirror"))
 {
 	TRACE_FUNCTION;
 
@@ -152,9 +161,9 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSpline
 		csize.z = 2; 
 	csize += m_enlarge;
 	m_coefficients = C3DFVectorfield(csize);
-	m_x_boundary.set_width(m_coefficients.get_size().x); 
-	m_y_boundary.set_width(m_coefficients.get_size().y); 
-	m_z_boundary.set_width(m_coefficients.get_size().z); 
+	m_x_boundary->set_width(m_coefficients.get_size().x); 
+	m_y_boundary->set_width(m_coefficients.get_size().y); 
+	m_z_boundary->set_width(m_coefficients.get_size().z); 
 
 	reinit();
 }
@@ -168,9 +177,9 @@ void C3DSplineTransformation::set_coefficients(const C3DFVectorfield& field)
 	TRACE_FUNCTION;
 	m_scales_valid = (m_coefficients.get_size() == field.get_size());
 	m_coefficients = field;
-	m_x_boundary.set_width(m_coefficients.get_size().x); 
-	m_y_boundary.set_width(m_coefficients.get_size().y); 
-	m_z_boundary.set_width(m_coefficients.get_size().z); 
+	m_x_boundary->set_width(m_coefficients.get_size().x); 
+	m_y_boundary->set_width(m_coefficients.get_size().y); 
+	m_z_boundary->set_width(m_coefficients.get_size().z); 
 //	m_target_c_rate =  C3DFVector(m_range) / C3DFVector(field.get_size() - m_enlarge);
 }
 
@@ -178,15 +187,15 @@ void C3DSplineTransformation::set_coefficients_and_prefilter(const C3DFVectorfie
 {
 	TRACE_FUNCTION;
 	C3DFVectorfield help1(field.get_size());
-	m_x_boundary.set_width(field.get_size().x); 
-	m_y_boundary.set_width(field.get_size().y); 
-	m_z_boundary.set_width(field.get_size().z); 
+	m_x_boundary->set_width(field.get_size().x); 
+	m_y_boundary->set_width(field.get_size().y); 
+	m_z_boundary->set_width(field.get_size().z); 
 
 	vector<C3DFVector> buffer(field.get_size().x); 
 	for(size_t z = 0; z < field.get_size().z; ++z)
 		for(size_t y = 0; y < field.get_size().y; ++y) {
 			field.get_data_line_x(y, z, buffer); 
-			m_x_boundary.filter_line(buffer, m_kernel->get_poles()); 
+			m_x_boundary->filter_line(buffer, m_kernel->get_poles()); 
 			help1.put_data_line_x(y, z, buffer); 
 		}
 	
@@ -194,7 +203,7 @@ void C3DSplineTransformation::set_coefficients_and_prefilter(const C3DFVectorfie
 	for(size_t z = 0; z < field.get_size().z; ++z)
 		for(size_t x = 0; x < field.get_size().x; ++x) {
 			help1.get_data_line_y(x, z, buffer); 
-			m_y_boundary.filter_line(buffer, m_kernel->get_poles()); 
+			m_y_boundary->filter_line(buffer, m_kernel->get_poles()); 
 			help1.put_data_line_y(x, z, buffer); 
 		}
 	
@@ -202,7 +211,7 @@ void C3DSplineTransformation::set_coefficients_and_prefilter(const C3DFVectorfie
 	for(size_t y = 0; y < field.get_size().y; ++y)
 		for(size_t x = 0; x < field.get_size().x; ++x) {
 			help1.get_data_line_z(x, y, buffer); 
-			m_z_boundary.filter_line(buffer, m_kernel->get_poles()); 
+			m_z_boundary->filter_line(buffer, m_kernel->get_poles()); 
 			help1.put_data_line_z(x, y, buffer); 
 		}
 	

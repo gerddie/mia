@@ -229,42 +229,6 @@ struct __dispatch_copy {
 	static void apply(const I& input, O& output);
 };
 
-
-template <typename F>
-F *create_interpolator_factory(EInterpolation type, EBoundaryConditions bc) __attribute__((deprecated)); 
-
-template <typename F>
-F *create_interpolator_factory(EInterpolation type, EBoundaryConditions bc) 
-{
-	PSplineKernel kernel; 
-	switch (type) {
-	case ip_nn: 
-	case ip_bspline0: kernel = produce_spline_kernel("bspline:d=0"); break; 
-	case ip_linear:
-	case ip_bspline1: kernel = produce_spline_kernel("bspline:d=1"); break; 
-	case ip_bspline2: kernel = produce_spline_kernel("bspline:d=2"); break; 
-	case ip_bspline3: kernel = produce_spline_kernel("bspline:d=3"); break; 
-	case ip_bspline4: kernel = produce_spline_kernel("bspline:d=4"); break; 
-	case ip_bspline5: kernel = produce_spline_kernel("bspline:d=5"); break; 
-	case ip_omoms3:   kernel = produce_spline_kernel("omoms:d=3"); break;
-	default: 
-		throw invalid_argument("create_interpolator_factory:Unknown interpolator type requested"); 
-	}; 
-	PBoundaryCondition pbc; 
-	switch (bc) {
-	case bc_mirror_on_bounds: pbc.reset(new CMirrorOnBoundary()); break; 
-	case bc_repeat:           pbc.reset(new CRepeatBoundary()); break; 
-	case bc_zero:             pbc.reset(new CZeroBoundary()); break;   
-	default: 
-		throw invalid_argument("create_interpolator_factory:Unknown boundary condition requested"); 
-		
-	}
-	
-	return new F(kernel, pbc); 
-};
-
-
-
 NS_MIA_END
 
 #endif

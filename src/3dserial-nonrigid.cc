@@ -153,9 +153,9 @@ int do_main( int argc, const char *argv[] )
 	}
 	
 	C3DInterpolatorFactory ipfactory(interpolator_kernel, 
-					 PBoundaryCondition(new CMirrorOnBoundary), 
-					 PBoundaryCondition(new CMirrorOnBoundary), 
-					 PBoundaryCondition(new CMirrorOnBoundary));
+					 produce_spline_boundary_condition("mirror"), 
+					 produce_spline_boundary_condition("mirror"), 
+					 produce_spline_boundary_condition("mirror"));
 	
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;

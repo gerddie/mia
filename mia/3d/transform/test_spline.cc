@@ -344,9 +344,9 @@ BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 	C3DFImage test_image(range);
 	
 	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(produce_spline_kernel("bspline:d=3"), 
-							      PBoundaryCondition(new CMirrorOnBoundary), 
-							      PBoundaryCondition(new CMirrorOnBoundary), 
-							      PBoundaryCondition(new CMirrorOnBoundary)	      
+							      produce_spline_boundary_condition("mirror"), 
+							      produce_spline_boundary_condition("mirror"), 
+							      produce_spline_boundary_condition("mirror")     
 					   )); 
 	auto_ptr<T3DInterpolator<float> > src(ipf->create(image.data()));
 
@@ -695,9 +695,9 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 	PSplineKernel kernel = produce_spline_kernel("bspline:d=3"); 
 
 	P3DInterpolatorFactory ipf(new C3DInterpolatorFactory(kernel, 
-					 PBoundaryCondition(new CMirrorOnBoundary), 
-					 PBoundaryCondition(new CMirrorOnBoundary), 
-					 PBoundaryCondition(new CMirrorOnBoundary)));
+					 produce_spline_boundary_condition("mirror"), 
+					 produce_spline_boundary_condition("mirror"), 
+					 produce_spline_boundary_condition("mirror")));
 
 	C3DSplineTransformation trans(size, kernel);
 
@@ -736,9 +736,9 @@ struct TransformSplineFixtureFieldBase {
 		field(size),
 		kernel(produce_spline_kernel("bspline:d=3")), 
 		ipf(new C3DInterpolatorFactory(kernel, 
-					 PBoundaryCondition(new CMirrorOnBoundary), 
-					 PBoundaryCondition(new CMirrorOnBoundary), 
-					 PBoundaryCondition(new CMirrorOnBoundary))),
+					 produce_spline_boundary_condition("mirror"), 
+					 produce_spline_boundary_condition("mirror"), 
+					 produce_spline_boundary_condition("mirror"))),
 		range(16, 16,16),
 		stransf(range, kernel),
 		scale(1.0 / range.x, 1.0 / range.y, 1.0 / range.z)

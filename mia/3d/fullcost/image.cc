@@ -67,9 +67,9 @@ C3DImageFullCost::C3DImageFullCost(const std::string& src,
 	m_ref_key(C3DImageIOPluginHandler::instance().load_to_pool(ref)), 
 	m_cost_kernel(C3DImageCostPluginHandler::instance().produce(cost)), 
 	m_ipf(new C3DInterpolatorFactory(kernel, 
-					 PBoundaryCondition(new CMirrorOnBoundary), 
-					 PBoundaryCondition(new CMirrorOnBoundary), 
-					 PBoundaryCondition(new CMirrorOnBoundary))), 
+					 produce_spline_boundary_condition("mirror"), 
+					 produce_spline_boundary_condition("mirror"), 
+					 produce_spline_boundary_condition("mirror"))), 
 	m_debug(debug)
 {
 	assert(m_cost_kernel); 

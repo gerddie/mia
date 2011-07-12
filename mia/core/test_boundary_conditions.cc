@@ -24,6 +24,7 @@
 #include <iomanip> 
 #include <mia/internal/autotest.hh>
 #include <mia/core/boundary_conditions.hh>
+#include <mia/core/boundary_conditions_shadow.hh>
 #include <mia/core/splinekernel.hh>
 #include <gsl/gsl_linalg.h>
 #include <gsl++/vector.hh>

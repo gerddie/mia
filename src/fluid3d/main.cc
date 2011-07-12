@@ -259,9 +259,9 @@ int main(int argc, const char *argv[])
 		}
 
 		C3DInterpolatorFactory ipf(interpolator_kernel, 
-					   PBoundaryCondition(new CMirrorOnBoundary), 
-					   PBoundaryCondition(new CMirrorOnBoundary), 
-					   PBoundaryCondition(new CMirrorOnBoundary));
+					   produce_spline_boundary_condition("mirror"), 
+					   produce_spline_boundary_condition("mirror"), 
+					   produce_spline_boundary_condition("mirror"));
 
 		std::shared_ptr<TLinEqnSolver > ensure_solver_delete(solver);
 

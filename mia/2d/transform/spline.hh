@@ -124,8 +124,8 @@ private:
 	mutable CSplineDerivativeRow  m_my; 
 	mutable bool m_grid_valid; 
 
-	CZeroBoundary m_xbc; 
-	CZeroBoundary m_ybc; 
+	PBoundaryCondition m_xbc; 
+	PBoundaryCondition m_ybc; 
 
 };
 
