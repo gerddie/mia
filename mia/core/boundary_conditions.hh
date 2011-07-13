@@ -52,10 +52,16 @@ enum EBoundaryConditions  {
 class CBoundaryCondition : public CProductBase{
 public: 
 
+	/// helper typedef for plug-in handling 
 	typedef CBoundaryCondition plugin_data; 
+	
+	/// helper typedef for plug-in handling 
 	typedef CBoundaryCondition plugin_type; 
 
+	/// type portion of the plugin search path 
 	static const char * const type_descr; 
+	
+	/// data portion of the plugin search path 
 	static const char * const data_descr; 
 
 	CBoundaryCondition(); 
@@ -87,11 +93,35 @@ public:
 		return m_width; 
 	}
 	
+	/**
+	   Prefiltering function to convert a vector of input data to spline coefficients 
+	   \tparam T must either be a scalar type or an array of scalar data types whose elements 
+	   can be accessed by using the operator[]. This restriction is currently necessary to 
+	   allow a dynamic polymorphic implementation  of the pre-filtering step needed for 
+           different boundary condition models. 
+	   \param[in,out] coeff vector of function values that will be converted to spline coefficients 
+	   \param poles the poles of the B-spline the coefficients are created for 
+	   
+	 */
 	template <typename T> 
 	void filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const;
 
+        /**
+	   Prefiltering function to convert a vector of double valued input data to spline coefficients 
+	   This is the actual work routine that will be called by the other filter_line functions 
+	   after type conversion and decomposition has been executed 
+	   \param[in,out] coeff vector of function values that will be converted to spline coefficients 
+	   \param poles the poles of the B-spline the coefficients are created for 
+	*/
 	void filter_line(std::vector<double>& coeff, const std::vector<double>& poles) const;
 
+	/**
+	   Prefiltering function to convert a vector of scalar valued input data to spline coefficients. 
+	   \tparam T a scalar type. 
+	   \param[in,out] coeff vector of function values that will be converted to spline coefficients 
+	   \param poles the poles of the B-spline the coefficients are created for 
+	*/
+	
 	template <typename T> 
 	void template_filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const;
 private:
@@ -108,20 +138,28 @@ private:
 
 	int m_width; 
 }; 
-
+/**  \ingroup interpol 
+     Pointer type of the boundary conditions. 
+*/
 typedef std::shared_ptr<CBoundaryCondition> PBoundaryCondition; 
 
-
-/// base plugin for spline boundary conditions
+/**  \ingroup interpol 
+     \brief Base plugin for spline boundary conditions
+*/
 class CSplineBoundaryConditionPlugin: public TFactory<CBoundaryCondition> {
 public: 
 	typedef typename TFactory<CBoundaryCondition>::ProductPtr ProductPtr; 
 	
+	/**
+	   Constructor for the spline boundary conditions plug-ins. 
+	 */
+
 	CSplineBoundaryConditionPlugin(const char * name); 
-	
-	virtual ProductPtr do_create() const;
 private: 
+	virtual ProductPtr do_create() const;
+	
 	virtual ProductPtr do_create(int width) const = 0; 
+
 	int m_width; 
 }; 
 

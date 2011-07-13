@@ -275,6 +275,11 @@ bool TFactory<I>::do_test() const
 	template class TFactoryPluginHandler<TFactory<T> >;		\
 	template class THandlerSingleton<TFactoryPluginHandler<TFactory<T> > >;
 
+/**
+   Do an explicit instanciation of plug-in classes and handlers for plugins that are 
+   explicitely derived from TFactory.  
+ */
+
 #define EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(T, F)		\
 	template class TPlugin<T::plugin_data, T::plugin_type>; \
 	template class TFactory<T>;					\

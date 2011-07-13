@@ -96,6 +96,16 @@ public:
 
 	T3DConvoluteInterpolator(const T3DDatafield<T>& data, PSplineKernel kernel); 
 	
+	/**
+	   Construtor to prefilter the input for proper interpolation 
+	   \param data the data used for interpolation 
+	   \param kernel the spline kernel used for interpolation 
+	   \param xbc boundary conditions to be applied along the x-axis when interpolating  
+	   \param ybc boundary conditions to be applied along the y-axis when interpolating  
+	   \param zbc boundary conditions to be applied along the z-axis when interpolating  
+	 */
+
+
 	T3DConvoluteInterpolator(const T3DDatafield<T>& data, PSplineKernel kernel, 
 				 PBoundaryCondition xbc,  
 				 PBoundaryCondition ybc, 
@@ -146,12 +156,15 @@ private:
 
 class EXPORT_3D C3DInterpolatorFactory {
 public:
-
+	
 	/**
-	   Initialise the factory by providing a interpolator type id and a kernel (if needed)
-	   \param type interpolator type id
-	   \param kernel spline kernel
-	*/
+	   Construct the factory the interpolation  kernel and according boundary conditions 
+	   \param kernel
+	   \param xbc boundary conditions along the x-axis 
+	   \param ybc boundary conditions along the y-axis 
+	   \param zbc boundary conditions along the z-axis 
+	 */
+
 	C3DInterpolatorFactory(PSplineKernel kernel, 
 			       PBoundaryCondition xbc,  
 			       PBoundaryCondition ybc, 

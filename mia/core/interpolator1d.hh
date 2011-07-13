@@ -111,6 +111,7 @@ public:
 	   Construtor to prefilter the input for proper interpolation 
 	   \param data the data used for interpolation 
 	   \param kernel the spline kernel used for interpolation 
+	   \param boundary_conditions boundary conditions to be applied when interpolating 
 	 */
 	
 	T1DConvoluteInterpolator(const std::vector<T>& data, PSplineKernel kernel, 
@@ -162,9 +163,9 @@ private:
 class EXPORT_CORE C1DInterpolatorFactory {
 public:
 
-	/** Initialize the factory with a certain kernel type and the according B-Spline kernel 
-	    @param type 
+	/** Initialize the factory according B-Spline kernel and a boundary condition  
 	    @param kernel 
+	    @param bc 
 	 */
 	C1DInterpolatorFactory(PSplineKernel kernel, PBoundaryCondition bc);
 

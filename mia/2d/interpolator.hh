@@ -101,12 +101,20 @@ public:
 	/**
 	   Constructor for the interpolator. The input data is pre-filtered in order to 
 	   ensure that the interpolation at grid points returns the original data values. 
-	   \param image input data to base th einterpolation on 
+	   \param data input data to base th einterpolation on 
 	   \param kernel the B-spline kernel to be used. 
 	*/
-	T2DConvoluteInterpolator(const T2DDatafield<T>& image, PSplineKernel kernel);
+	T2DConvoluteInterpolator(const T2DDatafield<T>& data, PSplineKernel kernel);
 
-	T2DConvoluteInterpolator(const T2DDatafield<T>& image, PSplineKernel kernel, 
+	/**
+	   Construtor to prefilter the input for proper interpolation 
+	   \param data the data used for interpolation 
+	   \param kernel the spline kernel used for interpolation 
+	   \param xbc boundary conditions to be applied along the x-axis when interpolating  
+	   \param ybc boundary conditions to be applied along the y-axis when interpolating  
+	 */
+
+	T2DConvoluteInterpolator(const T2DDatafield<T>& data, PSplineKernel kernel, 
 				 PBoundaryCondition xbc, PBoundaryCondition ybc);
 
 	~T2DConvoluteInterpolator();
@@ -179,10 +187,10 @@ class EXPORT_2D C2DInterpolatorFactory {
 public:
 
 	/**
-	   Construct the factory by giving the interpolator type and the 
-	   kernel used for interpolation. 
-	   \param type 
+	   Construct the factory the interpolation  kernel and according boundary conditions 
 	   \param kernel
+	   \param xbc boundary conditions along the x-axis 
+	   \param ybc boundary conditions along the y-axis 
 	 */
 	C2DInterpolatorFactory(PSplineKernel kernel, PBoundaryCondition xbc, PBoundaryCondition ybc);
 
