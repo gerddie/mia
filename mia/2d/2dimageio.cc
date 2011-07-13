@@ -141,7 +141,7 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 			float location; 
 			if (!pinst) {
 				location = 0.0; 
-				(*i)->set_attribute(IDInstanceNumber, PAttribute(new CIntAttribute(location))); 
+				(*i)->set_attribute(IDSliceLocation, PAttribute(new CFloatAttribute(location))); 
 			} else 
 				location = floor(1000.0 * *pinst) / 1000.0; 
 			
