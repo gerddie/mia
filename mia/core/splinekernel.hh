@@ -278,6 +278,8 @@ FACTORY_TRAIT(CSplineKernelPluginHandler);
 
 struct CSplineKernelTestPath {
 	CSplineKernelTestPath(); 
+private: 
+	CSplineBoundaryConditionTestPath bcpath; 
 }; 
 
 

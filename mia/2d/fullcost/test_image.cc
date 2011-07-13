@@ -37,12 +37,11 @@ struct ImagefullcostFixture {
 	P2DInterpolatorFactory ipf; 
 }; 
 
+
+CSplineKernelTestPath init_splinekernel_path; 
+
 struct InitSplinekernelTestPath {
 	InitSplinekernelTestPath() {
-		list< bfs::path> sksearchpath; 
-		sksearchpath.push_back( bfs::path("../../core/splinekernel"));
-		CSplineKernelPluginHandler::set_search_path(sksearchpath); 
-		
 		list< bfs::path> cost_plugpath;
 		cost_plugpath.push_back(bfs::path("../cost"));
 		C2DImageCostPluginHandler::set_search_path(cost_plugpath);

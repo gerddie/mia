@@ -29,6 +29,7 @@ namespace bfs=boost::filesystem;
 
 CSplineKernelTestPath spline_kernel_path_init; 
 
+
 class SegPointSplineTransformFixture {
 protected: 
 	SegPointSplineTransformFixture(); 

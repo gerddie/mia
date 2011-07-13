@@ -52,6 +52,8 @@ using namespace boost;
 using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem;
 
+CSplineKernelTestPath init_path; 
+
 template <typename T>
 void check_value(CAttributeMap& attr_map, const string& key,  T value)
 {
@@ -269,10 +271,10 @@ static void test_3dtransform_io()
 	const char *transforms[] = {
 		"translate",
 		"rigid",
-		"affine" 
-#if 0  
+		"affine", 
 		"spline:rate=3", 
 		"spline:rate=6", 
+#if 0  
 		"vf"
 #endif 
 	}; 
