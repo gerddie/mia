@@ -37,7 +37,8 @@ NS_MIA_BEGIN
    
    To use it, just declare a variable of type CThreadMsgStream at the beginning of the 
    threaded function. 
-   Output is only written to the master output stream if a newline is sent or explicit syncronization via flush() is requested.
+   Output is only written to the master output stream if a newline is sent or explicit 
+   syncronization via flush() is requested.
    
    Note, that a CThreadMsgStream itself can not serve as master stream since it would deadlock. 
 */
