@@ -42,6 +42,7 @@
 #include <cassert>
 #include <iomanip>
 #include <limits>
+#include <mia/core/export_handler.hh>
 #include <mia/core/splinekernel.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/msgstream.hh>

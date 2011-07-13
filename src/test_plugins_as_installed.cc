@@ -291,6 +291,16 @@ BOOST_FIXTURE_TEST_CASE(test_CCST2DImgKernelPluginHandler,PluginTestFixture)
 }
 
 
+BOOST_FIXTURE_TEST_CASE(test_SplineBoundaryConditions, PluginTestFixture) 
+{
+	set<string> test_data = {
+		"mirror", "repeat", "zero"
+	}; 
+	test(CSplineBoundaryConditionPluginHandler::instance().get_set(), test_data);
+}
+
+
+
 void PluginTestFixture::test(const set< string >& plugins, const set<string>& test_data) const
 {
 	BOOST_CHECK_EQUAL(plugins.size(), test_data.size()); 

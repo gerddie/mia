@@ -254,6 +254,7 @@ ADD_SUBDIRECTORY(splinekernel  )
 ADD_SUBDIRECTORY(splinebc  ) 
 
 NEW_TEST(attributes miacore)
+NEW_TEST(boundary_conditions  miacore)
 NEW_TEST(callback miacore)
 NEW_TEST(cmdlineparser miacore)
 NEW_TEST(datapool miacore)

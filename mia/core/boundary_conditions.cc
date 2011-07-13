@@ -20,6 +20,7 @@
 
 #include <limits>
 #include <cassert>
+#include <mia/core/export_handler.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/boundary_conditions.hh>
 #include <mia/core/optionparser.hh>
@@ -136,7 +137,7 @@ CSplineBoundaryConditionPlugin::ProductPtr CSplineBoundaryConditionPlugin::do_cr
 	return do_create(m_width); 
 }
 
-EXPLICIT_INSTANCE_HANDLER(CBoundaryCondition); 
+EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(CBoundaryCondition, CSplineBoundaryConditionPlugin); 
 
 using boost::filesystem::path; 
 CSplineBoundaryConditionTestPath::CSplineBoundaryConditionTestPath()
