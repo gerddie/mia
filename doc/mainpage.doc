@@ -24,21 +24,22 @@
   
   Names for template classes that provide interfaces start with a capital "T" e.g. TShape, or TFactory.
   Names of classes start with a capital "C" like CSegSet, or CSplineKernel. 
-  Classes and structures that work as functors are mamed starting with a capital "F", e.g. FMeanValue. 
-  Names of Plain old data structures begin with a "S". 
+  Classes and structures that work as functors are named starting with a capital "F", e.g. FMeanValue. 
+  Names of PODs \emph{plain old data structures} begin with a "S".
 
 
 /** 
     \defgroup infrastructure Infrastructure 
-    These classes and functions are related to the infrastructure provided by the MIA libraies. 
-    This includes the menas for plug-in handling, option parsing, and logging.
+    These classes and functions are related to the infrastructure provided by the MIA libraries. 
+    This includes the means for plug-in handling, option parsing, and logging.
 
     \defgroup filtering Filtering
 
-    These classes and functions are related to image filtering.  
+    These classes and functions are related to image filtering. 
 
     \defgroup interpol Interpolation 
 
+    These classes deal with the tasks related to interpolation
     
 
     \defgroup classes Classes that provide primary funcionality 
