@@ -76,7 +76,7 @@ void RigidRegisterFixture::run(C3DTransformation& t, const std::string& minimize
 {
 	auto minimizer = CMinimizerPluginHandler::instance().produce(minimizer_descr); 
 	P3DImageCost cost = C3DImageCostPluginHandler::instance().produce("ssd:norm=1");
-	unique_ptr<C3DInterpolatorFactory>   ipfactory(create_3dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
+	unique_ptr<C3DInterpolatorFactory> ipfactory(new C3DInterpolatorFactory("bspline:d=3", "mirror"));
 	auto tr_creator = C3DTransformCreatorHandler::instance().produce(t.get_creator_string());
 
 	C3DRigidRegister rr(cost, minimizer, tr_creator, *ipfactory, 1);

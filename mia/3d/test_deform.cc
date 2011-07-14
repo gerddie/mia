@@ -60,7 +60,7 @@ DeformFixture::DeformFixture():
 
 void DeformFixture::check(EInterpolation ip)
 {
-	auto_ptr<C3DInterpolatorFactory> ipf(create_3dinterpolation_factory(ip,bc_mirror_on_bounds));
+	unique_ptr<C3DInterpolatorFactory> ipf(create_3dinterpolation_factory(ip,bc_mirror_on_bounds));
 	FDeformer3D d(transform, *ipf);
 	C3DImage& img = image;
 	P3DImage result = mia::filter(d, img);

@@ -157,6 +157,14 @@ private:
 class EXPORT_3D C3DInterpolatorFactory {
 public:
 	
+
+        /**
+	   Construct the factory the interpolation  kernel and according boundary conditions 
+	   \param kernel description of the interpolation kernel
+	   \param boundary_conditions description of the boundary conditions 
+	*/
+	C3DInterpolatorFactory(const std::string& kernel, const std::string& boundary_conditions);
+
 	/**
 	   Construct the factory the interpolation  kernel and according boundary conditions 
 	   \param kernel
