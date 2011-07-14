@@ -80,9 +80,9 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 	
 template <typename T>
 T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& image, PSplineKernel  kernel, 
-				 PBoundaryCondition xbc,  
-				 PBoundaryCondition ybc, 
-				 PBoundaryCondition zbc):
+				 PSplineBoundaryCondition xbc,  
+				 PSplineBoundaryCondition ybc, 
+				 PSplineBoundaryCondition zbc):
 	m_coeff(image.get_size()), 
 	m_size2(image.get_size() + image.get_size()-C3DBounds(2,2,2)),
 	m_kernel(kernel),

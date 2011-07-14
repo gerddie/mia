@@ -31,7 +31,7 @@ NS_MIA_BEGIN
    
    This is based directly on the implementation provided by Philip Thevenaz 
 */
-class CMirrorOnBoundary : public CBoundaryCondition {
+class CMirrorOnBoundary : public CSplineBoundaryCondition {
 public: 
 
 	CMirrorOnBoundary(); 
@@ -57,7 +57,7 @@ private:
    
    \todo the pre-filtering is not yet implemented 
 */
-class CZeroBoundary : public CBoundaryCondition {
+class CZeroBoundary : public CSplineBoundaryCondition {
 public: 
 
 	CZeroBoundary() = default; 
@@ -80,7 +80,7 @@ private:
    \brief Boundary condition that repeats the value at the boundary 
    \todo the pre-filtering is not yet implemented 
 */
-class CRepeatBoundary : public CBoundaryCondition {
+class CRepeatBoundary : public CSplineBoundaryCondition {
 public: 
 
 	CRepeatBoundary(); 

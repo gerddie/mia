@@ -107,9 +107,9 @@ public:
 
 
 	T3DConvoluteInterpolator(const T3DDatafield<T>& data, PSplineKernel kernel, 
-				 PBoundaryCondition xbc,  
-				 PBoundaryCondition ybc, 
-				 PBoundaryCondition zbc);
+				 PSplineBoundaryCondition xbc,  
+				 PSplineBoundaryCondition ybc, 
+				 PSplineBoundaryCondition zbc);
 	
 	/// Standart constructor for factory prototyping
 	~T3DConvoluteInterpolator();
@@ -136,9 +136,9 @@ private:
 	TCoeff3D m_coeff;
 	C3DBounds m_size2;
 	PSplineKernel m_kernel;
-	PBoundaryCondition m_xbc; 
-	PBoundaryCondition m_ybc; 
-	PBoundaryCondition m_zbc; 
+	PSplineBoundaryCondition m_xbc; 
+	PSplineBoundaryCondition m_ybc; 
+	PSplineBoundaryCondition m_zbc; 
 
 	T m_min;
 	T m_max;
@@ -166,9 +166,9 @@ public:
 	 */
 
 	C3DInterpolatorFactory(PSplineKernel kernel, 
-			       PBoundaryCondition xbc,  
-			       PBoundaryCondition ybc, 
-			       PBoundaryCondition zbc);
+			       PSplineBoundaryCondition xbc,  
+			       PSplineBoundaryCondition ybc, 
+			       PSplineBoundaryCondition zbc);
 	
 	/// Copy constructor
 	C3DInterpolatorFactory(const C3DInterpolatorFactory& o);
@@ -191,9 +191,9 @@ public:
 	PSplineKernel get_kernel() const; 
 private:
 	PSplineKernel m_kernel;
-	PBoundaryCondition m_xbc; 
-	PBoundaryCondition m_ybc; 
-	PBoundaryCondition m_zbc; 
+	PSplineBoundaryCondition m_xbc; 
+	PSplineBoundaryCondition m_ybc; 
+	PSplineBoundaryCondition m_zbc; 
 };
 
 

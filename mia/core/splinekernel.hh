@@ -68,7 +68,7 @@ public:
 		   @param bc Boundary conditions to be used 
 		   @param am set to true if indices always need to be set 
 		 */
-		SCache(size_t s, PBoundaryCondition bc, bool am); 
+		SCache(size_t s, PSplineBoundaryCondition bc, bool am); 
 
 		/** last location the B-spline was evaluated at. This  value is initialized to NaN
 		    to make sure we 
@@ -88,7 +88,7 @@ public:
 		std::vector<int> index; 
 
 		/// the boundary condition to be applied
-		PBoundaryCondition boundary_condition; 
+		PSplineBoundaryCondition boundary_condition; 
 		
 		/// store whether indices were mirrored 
 		bool is_flat; 

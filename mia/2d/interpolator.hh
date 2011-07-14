@@ -115,7 +115,7 @@ public:
 	 */
 
 	T2DConvoluteInterpolator(const T2DDatafield<T>& data, PSplineKernel kernel, 
-				 PBoundaryCondition xbc, PBoundaryCondition ybc);
+				 PSplineBoundaryCondition xbc, PSplineBoundaryCondition ybc);
 
 	~T2DConvoluteInterpolator();
 
@@ -163,8 +163,8 @@ private:
 	TCoeff2D m_coeff;
 	C2DBounds m_size2;
 	PSplineKernel m_kernel;
-	PBoundaryCondition m_x_boundary; 
-	PBoundaryCondition m_y_boundary; 
+	PSplineBoundaryCondition m_x_boundary; 
+	PSplineBoundaryCondition m_y_boundary; 
 	T m_min;
 	T m_max;
 
@@ -185,6 +185,12 @@ private:
 
 class EXPORT_2D C2DInterpolatorFactory {
 public:
+        /**
+	   Construct the factory the interpolation  kernel and according boundary conditions 
+	   \param kernel description of the interpolation kernel
+	   \param boundary_conditions description of the boundary conditions 
+	*/
+	C2DInterpolatorFactory(const std::string& kernel, const std::string& boundary_conditions);
 
 	/**
 	   Construct the factory the interpolation  kernel and according boundary conditions 
@@ -192,7 +198,7 @@ public:
 	   \param xbc boundary conditions along the x-axis 
 	   \param ybc boundary conditions along the y-axis 
 	 */
-	C2DInterpolatorFactory(PSplineKernel kernel, PBoundaryCondition xbc, PBoundaryCondition ybc);
+	C2DInterpolatorFactory(PSplineKernel kernel, PSplineBoundaryCondition xbc, PSplineBoundaryCondition ybc);
 
 	/// Copy constructor 
 	C2DInterpolatorFactory(const C2DInterpolatorFactory& o);
@@ -222,8 +228,8 @@ public:
 
 private:
 	PSplineKernel m_kernel;
-	PBoundaryCondition m_xbc;
-	PBoundaryCondition m_ybc;
+	PSplineBoundaryCondition m_xbc;
+	PSplineBoundaryCondition m_ybc;
 };
 
 /// Pointer type for the 2D interpolationfactory 

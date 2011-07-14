@@ -48,31 +48,31 @@ using std::vector;
 using std::invalid_argument; 
 using std::numeric_limits; 
 
-const char * const CBoundaryCondition::type_descr = "1d"; 
-const char * const CBoundaryCondition::data_descr = "splinebc"; 
+const char * const CSplineBoundaryCondition::type_descr = "1d"; 
+const char * const CSplineBoundaryCondition::data_descr = "splinebc"; 
 
-CBoundaryCondition::CBoundaryCondition():
+CSplineBoundaryCondition::CSplineBoundaryCondition():
 	m_width(0)
 {
 	
 }
 
-CBoundaryCondition::CBoundaryCondition(int width):
+CSplineBoundaryCondition::CSplineBoundaryCondition(int width):
 	m_width(width)
 {
 }
 
-void CBoundaryCondition::set_width(int width)
+void CSplineBoundaryCondition::set_width(int width)
 {
 	m_width = width; 
 	do_set_width(width); 
 }
 
-void CBoundaryCondition::do_set_width(int width)
+void CSplineBoundaryCondition::do_set_width(int width)
 {
 }
 
-void CBoundaryCondition::filter_line(std::vector<double>& coeff, const std::vector<double>& poles)const
+void CSplineBoundaryCondition::filter_line(std::vector<double>& coeff, const std::vector<double>& poles)const
 {
 	/* special case required by mirror boundaries */
 	if (coeff.size() < 2) {
@@ -122,13 +122,7 @@ void CBoundaryCondition::filter_line(std::vector<double>& coeff, const std::vect
 	}
 }
 
-PBoundaryCondition produce_spline_boundary_condition(const std::string& descr)
-{
-	return CSplineBoundaryConditionPluginHandler::instance().produce(descr); 
-}
-
-
-bool CBoundaryCondition::apply(std::vector<int>& index, std::vector<double>& weights) const
+bool CSplineBoundaryCondition::apply(std::vector<int>& index, std::vector<double>& weights) const
 {
 	assert(m_width > 0); 
 	if ( (index[0] >= 0) && index[index.size()-1] < m_width) 
@@ -139,7 +133,7 @@ bool CBoundaryCondition::apply(std::vector<int>& index, std::vector<double>& wei
 
 
 CSplineBoundaryConditionPlugin::CSplineBoundaryConditionPlugin(const char * name):
-	TFactory<CBoundaryCondition>(name), 
+	TFactory<CSplineBoundaryCondition>(name), 
 	m_width(0)
 {
 	add_parameter("w", new CIntParameter(m_width, 0, numeric_limits<int>::max(), false, "index range")); 
@@ -150,7 +144,7 @@ CSplineBoundaryConditionPlugin::ProductPtr CSplineBoundaryConditionPlugin::do_cr
 	return do_create(m_width); 
 }
 
-EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(CBoundaryCondition, CSplineBoundaryConditionPlugin); 
+EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(CSplineBoundaryCondition, CSplineBoundaryConditionPlugin); 
 
 using boost::filesystem::path; 
 CSplineBoundaryConditionTestPath::CSplineBoundaryConditionTestPath()

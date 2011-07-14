@@ -61,7 +61,7 @@ void test_interpolator(const vector<T>& data, const Interpolator& src)
 }
 
 template <class T>
-void test_conv_interpolator(const vector<T>& data, PSplineKernel kernel, EInterpolation type, PBoundaryCondition bc)
+void test_conv_interpolator(const vector<T>& data, PSplineKernel kernel, EInterpolation type, PSplineBoundaryCondition bc)
 {
 	cvdebug() << "test type " << type << ":" << typeid(T).name()<<"\n"; 
 	BOOST_CHECK_EQUAL(kernel->get_type(), type); 
@@ -76,12 +76,12 @@ void test_type_mirror()
 	vector<T> data(10);
 
 
-	typename vector<T>::iterator i = data.begin();
+	auto i = data.begin();
 
 	for (size_t x = 1; x < data.size() + 1; ++x, ++i)
 		*i = T(x);
 
-	PBoundaryCondition bc = produce_spline_boundary_condition("mirror"); ; 
+	auto bc = produce_spline_boundary_condition("mirror"); ; 
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel0()), ip_bspline0, bc);
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1, bc);
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2, bc);
@@ -99,7 +99,7 @@ void test_type_repeat()
 
 
 
-	PBoundaryCondition bc = produce_spline_boundary_condition("repeat"); ; 
+	auto bc = produce_spline_boundary_condition("repeat"); ; 
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel0()), ip_bspline0, bc);
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1, bc);
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2, bc);
@@ -124,7 +124,7 @@ void test_type_zero()
 	for (size_t x = 1; x < data.size() + 1; ++x, ++i)
 		*i = T(x);
 
-	PBoundaryCondition bc = produce_spline_boundary_condition("zero"); ; 
+	auto bc = produce_spline_boundary_condition("zero"); ; 
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel0()), ip_bspline0, bc);
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1, bc);
 	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2, bc);

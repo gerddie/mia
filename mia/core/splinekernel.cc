@@ -62,7 +62,7 @@ using namespace std;
 const char *CSplineKernel::type_descr = "1d"; 
 const char *CSplineKernel::data_descr = "splinekernel"; 
 
-CSplineKernel::SCache::SCache(size_t s, PBoundaryCondition bc, bool am):
+CSplineKernel::SCache::SCache(size_t s, PSplineBoundaryCondition bc, bool am):
 	x(numeric_limits<double>::quiet_NaN()), 
 	start_idx(-1000), 
 	index_limit(bc->get_width() - s), 

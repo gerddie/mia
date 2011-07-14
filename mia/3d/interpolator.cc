@@ -49,9 +49,9 @@ CInterpolator::~CInterpolator()
 }
 
 C3DInterpolatorFactory::C3DInterpolatorFactory(PSplineKernel kernel, 
-					       PBoundaryCondition xbc,  
-					       PBoundaryCondition ybc, 
-					       PBoundaryCondition zbc):
+					       PSplineBoundaryCondition xbc,  
+					       PSplineBoundaryCondition ybc, 
+					       PSplineBoundaryCondition zbc):
 	m_kernel(kernel), 
 	m_xbc(xbc),  
 	m_ybc(ybc),  
@@ -88,9 +88,9 @@ PSplineKernel C3DInterpolatorFactory::get_kernel() const
 
 EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(EInterpolation type, EBoundaryConditions bc)
 {
-	PBoundaryCondition xbc; 
-	PBoundaryCondition ybc; 
-	PBoundaryCondition zbc; 
+	PSplineBoundaryCondition xbc; 
+	PSplineBoundaryCondition ybc; 
+	PSplineBoundaryCondition zbc; 
 	switch (bc) {
 	case bc_mirror_on_bounds: 
 		xbc = produce_spline_boundary_condition("mirror"); 

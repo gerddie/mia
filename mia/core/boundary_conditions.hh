@@ -41,22 +41,21 @@ enum EBoundaryConditions  {
 /**
    \ingroup interpol 
 
-   \brief Base class for B-spline interpolation boundary conditions 
+   \brief Abstract base class for B-spline interpolation boundary conditions 
    
-   This class is the base class for B-spline interpolation boundary conditions. 
-   In order to obtain a usable derivative, the do_apply method has to be implemented. 
+   This class is the abstract base class for B-spline interpolation boundary conditions. 
 
-   \todo for spline degrees large then 1, the pre-filtering has to tale the boundary conditionsinto account. 
- */
-
-class CBoundaryCondition : public CProductBase{
+   The actual boundary conditions are implemented as plug-ins and instances are 
+   created by calling produce_spline_boundary_condition. 
+*/
+class CSplineBoundaryCondition : public CProductBase{
 public: 
 
 	/// helper typedef for plug-in handling 
-	typedef CBoundaryCondition plugin_data; 
+	typedef CSplineBoundaryCondition plugin_data; 
 	
 	/// helper typedef for plug-in handling 
-	typedef CBoundaryCondition plugin_type; 
+	typedef CSplineBoundaryCondition plugin_type; 
 
 	/// type portion of the plugin search path 
 	static const char * const type_descr; 
@@ -64,14 +63,14 @@ public:
 	/// data portion of the plugin search path 
 	static const char * const data_descr; 
 
-	CBoundaryCondition(); 
+	CSplineBoundaryCondition(); 
 
 	/**
 	   Constructor for the boundary conditions. 
 	   \param width size of the coefficent domain 
 	 */
 
-	CBoundaryCondition(int width); 
+	CSplineBoundaryCondition(int width); 
 
 	/**
 	   Apply the boundary conditions 
@@ -141,14 +140,14 @@ private:
 /**  \ingroup interpol 
      Pointer type of the boundary conditions. 
 */
-typedef std::shared_ptr<CBoundaryCondition> PBoundaryCondition; 
+typedef std::shared_ptr<CSplineBoundaryCondition> PSplineBoundaryCondition; 
 
 /**  \ingroup interpol 
      \brief Base plugin for spline boundary conditions
 */
-class CSplineBoundaryConditionPlugin: public TFactory<CBoundaryCondition> {
+class CSplineBoundaryConditionPlugin: public TFactory<CSplineBoundaryCondition> {
 public: 
-	typedef typename TFactory<CBoundaryCondition>::ProductPtr ProductPtr; 
+	typedef typename TFactory<CSplineBoundaryCondition>::ProductPtr ProductPtr; 
 	
 	/**
 	   Constructor for the spline boundary conditions plug-ins. 
@@ -174,15 +173,26 @@ struct CSplineBoundaryConditionTestPath {
 }; 
 
 
-PBoundaryCondition produce_spline_boundary_condition(const std::string& descr); 
+/**
+   Create a specific instance of a spline interpolation boundary condition. 
+   \param descr Description of the requested boundary conditions
+   \returns the actual boundary condition 
+*/
+inline 
+PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& descr)
+{
+	return CSplineBoundaryConditionPluginHandler::instance().produce(descr); 
+}
+
+
 
 template <typename T, int size>
 struct __dispatch_filter_line {
-	static void apply(const CBoundaryCondition& bc, std::vector<T>& coeff, const std::vector<double>& poles); 
+	static void apply(const CSplineBoundaryCondition& bc, std::vector<T>& coeff, const std::vector<double>& poles); 
 }; 
 
 template <typename T, int size>
-void __dispatch_filter_line<T, size>::apply(const CBoundaryCondition& bc, std::vector<T>& coeff, 
+void __dispatch_filter_line<T, size>::apply(const CSplineBoundaryCondition& bc, std::vector<T>& coeff, 
 					 const std::vector<double>& poles) 
 {
 	std::vector<double> temp(coeff.size());
@@ -197,11 +207,11 @@ void __dispatch_filter_line<T, size>::apply(const CBoundaryCondition& bc, std::v
 
 template <typename T>
 struct __dispatch_filter_line<T,1> {
-	static void apply(const CBoundaryCondition& bc, std::vector<T>& coeff, const std::vector<double>& poles); 
+	static void apply(const CSplineBoundaryCondition& bc, std::vector<T>& coeff, const std::vector<double>& poles); 
 }; 
 
 template <typename T>
-void __dispatch_filter_line<T, 1>::apply(const CBoundaryCondition& bc, std::vector<T>& coeff, 
+void __dispatch_filter_line<T, 1>::apply(const CSplineBoundaryCondition& bc, std::vector<T>& coeff, 
 					 const std::vector<double>& poles) 
 {
 	bc.template_filter_line(coeff, poles); 
@@ -209,7 +219,7 @@ void __dispatch_filter_line<T, 1>::apply(const CBoundaryCondition& bc, std::vect
 
 ////
 template <typename T> 
-void CBoundaryCondition::filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const
+void CSplineBoundaryCondition::filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const
 {
 	typedef atomic_data<T> atom; 
 	__dispatch_filter_line<T, atom::size>::apply(*this, coeff, poles); 
@@ -217,7 +227,7 @@ void CBoundaryCondition::filter_line(std::vector<T>& coeff, const std::vector<do
 
 
 template <typename T> 
-void CBoundaryCondition::template_filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const
+void CSplineBoundaryCondition::template_filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const
 {
 	std::vector<double> temp(coeff.size()); 
 	std::copy(coeff.begin(), coeff.end(), temp.begin()); 

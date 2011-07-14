@@ -103,7 +103,7 @@ private:
 	size_t m_support; 
 	std::vector<double> m_poles; 
 	EStrategy m_strategy; 
-	PBoundaryCondition m_bc; 
+	PSplineBoundaryCondition m_bc; 
 
 	gsl::DoubleVector m_input_buffer; 
 	gsl::DoubleVector m_output_buffer; 

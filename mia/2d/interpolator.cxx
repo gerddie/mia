@@ -83,7 +83,7 @@ T2DConvoluteInterpolator<T>::T2DConvoluteInterpolator(const T2DDatafield<T>& ima
 }
 template <typename T>
 T2DConvoluteInterpolator<T>::T2DConvoluteInterpolator(const T2DDatafield<T>& image, PSplineKernel kernel, 
-						      PBoundaryCondition xbc, PBoundaryCondition ybc):
+						      PSplineBoundaryCondition xbc, PSplineBoundaryCondition ybc):
 	m_coeff(image.get_size()), 
 	m_size2(image.get_size() + image.get_size() - C2DBounds(2,2)),
 	m_kernel(kernel),

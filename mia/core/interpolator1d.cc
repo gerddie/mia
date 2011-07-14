@@ -39,7 +39,7 @@ C1DInterpolator::~C1DInterpolator()
 }
 
 
-C1DInterpolatorFactory::C1DInterpolatorFactory(PSplineKernel kernel, PBoundaryCondition bc):
+C1DInterpolatorFactory::C1DInterpolatorFactory(PSplineKernel kernel, PSplineBoundaryCondition bc):
 	m_kernel(kernel),
 	m_bc(bc)
 {
@@ -86,7 +86,7 @@ C1DInterpolatorFactory *create_1dinterpolation_factory(EInterpolation type, EBou
 	default: 
 		throw invalid_argument("create_interpolator_factory:Unknown interpolator type requested"); 
 	}; 
-	PBoundaryCondition pbc; 
+	PSplineBoundaryCondition pbc; 
 	switch (bc) {
 	case bc_mirror_on_bounds: pbc = produce_spline_boundary_condition("mirror"); break; 
 	case bc_repeat:           pbc = produce_spline_boundary_condition("repeat"); break; 

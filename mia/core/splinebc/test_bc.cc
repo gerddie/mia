@@ -90,11 +90,11 @@ BOOST_AUTO_TEST_CASE( test_CRepeatBoundary_needed )
 
 class BoundaryFixture {
 protected: 
-	vector<double>  run(std::vector<double> f, const CBoundaryCondition& bc, PSplineKernel kernel); 
-	void prepare_and_run(CBoundaryCondition& bc, PSplineKernel kernel); 
+	vector<double>  run(std::vector<double> f, const CSplineBoundaryCondition& bc, PSplineKernel kernel); 
+	void prepare_and_run(CSplineBoundaryCondition& bc, PSplineKernel kernel); 
 }; 
 
-vector<double> BoundaryFixture::run(std::vector<double> f, const CBoundaryCondition& bc, PSplineKernel kernel)
+vector<double> BoundaryFixture::run(std::vector<double> f, const CSplineBoundaryCondition& bc, PSplineKernel kernel)
 {
 	vector<double> weights(kernel->size()); 
 	vector<int>    indices(kernel->size());
@@ -138,7 +138,7 @@ vector<double> BoundaryFixture::run(std::vector<double> f, const CBoundaryCondit
 	return f ; 
 }
 
-void BoundaryFixture::prepare_and_run(CBoundaryCondition& bc, PSplineKernel kernel)
+void BoundaryFixture::prepare_and_run(CSplineBoundaryCondition& bc, PSplineKernel kernel)
 {
 	std::vector<double> f = { 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10}; 
 
