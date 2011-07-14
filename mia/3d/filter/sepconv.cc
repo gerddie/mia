@@ -63,9 +63,9 @@ using namespace std;
 using namespace boost;
 namespace bfs=::boost::filesystem;
 
-CSeparableConvolute::CSeparableConvolute(C1DSpacialKernelPlugin::ProductPtr kx,
-					 C1DSpacialKernelPlugin::ProductPtr ky,
-					 C1DSpacialKernelPlugin::ProductPtr kz):
+CSeparableConvolute::CSeparableConvolute(P1DSpacialKernel kx,
+					 P1DSpacialKernel ky,
+					 P1DSpacialKernel kz):
 	m_kx(kx),
 	m_ky(ky),
 	m_kz(kz)
@@ -156,11 +156,10 @@ C3DSeparableConvoluteFilterPlugin::C3DSeparableConvoluteFilterPlugin():
 
 C3DFilter *C3DSeparableConvoluteFilterPlugin::do_create()const
 {
-	C1DSpacialKernelPlugin::ProductPtr kx, ky, kz;
 	const C1DSpacialKernelPluginHandler::Instance&  skp = C1DSpacialKernelPluginHandler::instance();
-	kx = skp.produce(m_kx.c_str());
-	ky = skp.produce(m_ky.c_str());
-	kz = skp.produce(m_kz.c_str());
+	auto kx = skp.produce(m_kx.c_str());
+	auto ky = skp.produce(m_ky.c_str());
+	auto kz = skp.produce(m_kz.c_str());
 
 
 	return new CSeparableConvolute(kx, ky, kz);
@@ -191,12 +190,11 @@ C3DGaussFilterPlugin::C3DGaussFilterPlugin():
 
 C3DFilter *C3DGaussFilterPlugin::do_create()const
 {
-	C1DSpacialKernelPlugin::ProductPtr k;
 	const C1DSpacialKernelPluginHandler::Instance&  skp = C1DSpacialKernelPluginHandler::instance();
 
 	stringstream fdescr;
 	fdescr << "gauss:w=" << m_w;
-	k = skp.produce(fdescr.str().c_str());
+	auto k = skp.produce(fdescr.str().c_str());
 
 	return new CSeparableConvolute(k, k, k);
 }

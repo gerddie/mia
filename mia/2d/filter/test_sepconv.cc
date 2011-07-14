@@ -49,11 +49,9 @@ BOOST_AUTO_TEST_CASE( test_sepconv )
 
 	P2DImage image(src);
 
-	C1DSpacialKernelPlugin::ProductPtr k1, k2;
-
 	const C1DSpacialKernelPluginHandler::Instance&  skp = C1DSpacialKernelPluginHandler::instance();
-	k1 = skp.produce("gauss:w=1");
-	k2 = skp.produce("gauss:w=1");
+	auto k1 = skp.produce("gauss:w=1");
+	auto k2 = skp.produce("gauss:w=1");
 
 	CSeparableConvolute sp(k1,k2);
 

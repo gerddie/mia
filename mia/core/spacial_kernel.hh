@@ -165,6 +165,8 @@ private:
 /// base class for filters kernels working in the spacial domain 
 typedef TFactory<C1DFoldingKernel> C1DSpacialKernelPlugin;
 
+typedef std::shared_ptr<C1DFoldingKernel> P1DSpacialKernel; 
+
 /// plugin handler for spaciel filter kernels 
 typedef THandlerSingleton<TFactoryPluginHandler<C1DSpacialKernelPlugin> > C1DSpacialKernelPluginHandler;
 

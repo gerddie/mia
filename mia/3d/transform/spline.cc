@@ -1070,8 +1070,6 @@ P3DTransformation C3DSplinebigTransformCreator::do_create(const C3DBounds& size)
 
 class C3DSplineTransformCreatorPlugin: public C3DTransformCreatorPlugin {
 public:
-	typedef C3DTransformCreatorPlugin::ProductPtr ProductPtr;
-
 	C3DSplineTransformCreatorPlugin();
 	virtual C3DTransformCreator *do_create() const;
 	virtual bool do_test() const;

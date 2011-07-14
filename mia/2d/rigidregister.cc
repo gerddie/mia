@@ -153,8 +153,7 @@ P2DTransformation C2DRigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 
 		stringstream downscale_descr;
 		downscale_descr << "downscale:bx=" << BlockSize.x << ",by=" << BlockSize.y;
-		C2DFilterPlugin::ProductPtr downscaler =
-			C2DFilterPluginHandler::instance().produce(downscale_descr.str().c_str());
+		auto downscaler = C2DFilterPluginHandler::instance().produce(downscale_descr.str().c_str());
 
 		P2DImage src_scaled = x_shift && y_shift ? downscaler->filter(*src) : src;
 		P2DImage ref_scaled = x_shift && y_shift ? downscaler->filter(*ref) : ref;

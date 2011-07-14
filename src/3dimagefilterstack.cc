@@ -152,12 +152,12 @@ int main( int argc, const char *argv[] )
 
 		//	CHistory::instance().append(argv[0], revision, options);
 
-		list<C3DFilterPlugin::ProductPtr> filters;
+		list<P3DFilter> filters;
 
 		for (vector<const char *>::const_iterator i = filter_chain.begin();
 		     i != filter_chain.end(); ++i) {
 			cvdebug() << "Prepare filter " << *i << endl;
-			C3DFilterPlugin::ProductPtr filter = filter_plugins.produce(*i);
+			auto filter = filter_plugins.produce(*i);
 			if (!filter){
 				stringstream error;
 				error << "Filter " << *i << " not found";
@@ -182,8 +182,7 @@ int main( int argc, const char *argv[] )
 
 			string src_name = create_filename(src_basename.c_str(), i);
 			cvmsg() << new_line << "Filter: " << i <<" out of "<< "[" << start_filenum<< "," << end_filenum << "]" ;
-			C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(src_name);
-
+			auto in_image_list = imageio.load(src_name);
 			if (in_image_list.get() && in_image_list->size()) {
 
 				if (use_src_format)
@@ -191,10 +190,9 @@ int main( int argc, const char *argv[] )
 
 				vector<const char *>::const_iterator filter_name = filter_chain.begin();
 
-				for (list<C3DFilterPlugin::ProductPtr>::const_iterator f = filters.begin();
-				     f != filters.end(); ++f, ++filter_name) {
+				for (auto f = filters.begin(); f != filters.end(); ++f, ++filter_name) {
 					cvdebug() << "Run filter: " << *filter_name << "\n";
-					for (C3DImageVector::iterator i = in_image_list->begin();
+					for (auto i = in_image_list->begin();
 					     i != in_image_list->end(); ++i) {
 						*i = (*f)->filter(**i);
 					}

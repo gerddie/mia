@@ -77,6 +77,8 @@ private:
 
 };
 
+typedef std::shared_ptr<CNoiseGenerator> PNoiseGenerator; 
+
 /// Base class for al noise generator plugins 
 typedef TFactory<CNoiseGenerator> CNoiseGeneratorPlugin;
 

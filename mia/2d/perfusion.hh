@@ -91,7 +91,7 @@ public:
 	   @param save_features if not empty store feature images in files with this prefix 
 	   @returns the cropping filter or C2DFilterPlugin::ProductPtr() if the segmentation fails. 
 	 */
-	C2DFilterPlugin::ProductPtr get_crop_filter(float scale, C2DBounds& crop_start,
+	P2DFilter get_crop_filter(float scale, C2DBounds& crop_start,
 						    EBoxSegmentation approach, 
 						    const std::string& save_features="") const; 
 

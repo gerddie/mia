@@ -162,8 +162,6 @@ typedef CSplineBoundaryCondition::Pointer PSplineBoundaryCondition;
 */
 class CSplineBoundaryConditionPlugin: public TFactory<CSplineBoundaryCondition> {
 public: 
-	typedef typename TFactory<CSplineBoundaryCondition>::ProductPtr ProductPtr; 
-	
 	/**
 	   Constructor for the spline boundary conditions plug-ins. 
 	 */

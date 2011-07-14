@@ -274,8 +274,6 @@ P3DTransformation C3DTranslateTransformCreator::do_create(const C3DBounds& size)
 
 class C3DTranslateTransformCreatorPlugin: public C3DTransformCreatorPlugin {
 public:
-	typedef C3DTransformCreatorPlugin::ProductPtr ProductPtr;
-
 	C3DTranslateTransformCreatorPlugin();
 	virtual C3DTransformCreator *do_create() const;
 	virtual bool do_test() const;

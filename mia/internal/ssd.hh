@@ -160,7 +160,6 @@ double TSSDCost<TCost>::do_evaluate_force(const Data& a, const Data& b, float sc
 template <typename CP, typename C> 
 class TSSDCostPlugin: public CP {
 public: 
-	typedef typename CP::ProductPtr ProductPtr; 
 	TSSDCostPlugin();
 	C *do_create()const;
 private:

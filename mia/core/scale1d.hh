@@ -78,7 +78,7 @@ private:
 
 	P1DInterpolatorFactory m_ipf;
 	mutable int m_fwidth;
-	mutable C1DSpacialKernelPlugin::ProductPtr m_kernel;
+	mutable C1DSpacialKernelPlugin::SharedProduct m_kernel;
 };
 
 template <typename T>

@@ -61,9 +61,9 @@ private:
 	virtual void post_finalize();
 	void shift_buffer();
 	size_t m_hw;
-	mia::C2DFilterPlugin::ProductPtr m_gauss2d;
+	mia::P2DFilter m_gauss2d;
 	mia::C2DBounds m_slice_size;
-	mia::C1DSpacialKernelPlugin::ProductPtr m_1dfilter;
+	mia::P1DSpacialKernel m_1dfilter;
 	std::auto_ptr<mia::C3DFImage> m_buffer;
 	std::auto_ptr<mia::C3DImage> m_dummy;
 };

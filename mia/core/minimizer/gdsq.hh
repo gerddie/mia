@@ -52,8 +52,7 @@ private:
 class CGDSQMinimizerPlugin: public mia::CMinimizerPlugin {
 public: 
 	CGDSQMinimizerPlugin();
-	typedef mia::CMinimizerPlugin::ProductPtr ProductPtr; 
-	
+
 private:
 
 	mia::CMinimizer *do_create() const;

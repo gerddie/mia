@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE( test_mlv )
 		int w = width / 2;
 		cvdebug() << "test filter of width " << w << "\n";
 
-		C2DExtKuwaImageFilterFactory::ProductPtr filter(new C2DMLV(w));
+		C2DMLV filter(w);
 
 		int isize = 4 * w + 1;
 		int fwidth = 2 * w;
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE( test_mlv )
 
 
 		P2DImage src_wrap(src);
-		P2DImage res_wrap = filter->filter(*src_wrap);
+		P2DImage res_wrap = filter.filter(*src_wrap);
 		C2DFImage * res = dynamic_cast<C2DFImage *>(res_wrap.get());
 		BOOST_REQUIRE(res);
 

@@ -66,7 +66,11 @@ public:
 	typedef P Product; 
 	
 	/// typedef to give the output pointer type a nice name 
-	typedef std::shared_ptr<P > ProductPtr; 
+	typedef std::shared_ptr<P > SharedProduct; 
+
+
+	/// typedef to give the output pointer type a nice name 
+	typedef std::unique_ptr<P > UniqueProduct; 
 	
 	/** initialise the plugin by the names 
 	    \remark what are these names and types good for?
@@ -111,8 +115,11 @@ protected:
 	TFactoryPluginHandler(const std::list<boost::filesystem::path>& searchpath); 
         //@}
 public: 
-	/// The pointer type of the the object this plug in hander produces 
-	typedef typename I::ProductPtr ProductPtr; 
+	/// The shared pointer type of the the object this plug in hander produces 
+	typedef typename I::SharedProduct ProductPtr; 
+
+	/// The unique pointer type of the the object this plug in hander produces 
+	typedef typename I::UniqueProduct UniqueProduct; 
 
 	/**
 	   Create an object according to the given description. If creation fails, an empty 
@@ -125,6 +132,20 @@ public:
 	ProductPtr produce(const std::string& params)const {
 		return produce(params.c_str()); 
 	}
+	/**
+	   Create an object according to the given description. If creation fails, an empty 
+	   pointer is returned. if plugindescr is set to "help" then print out some help.  
+	   
+	 */
+	UniqueProduct produce_unique(const char *plugindescr) const;
+
+	/// \overload produce(const char *plugindescr)
+	UniqueProduct produce_unique(const std::string& params)const {
+		return produce_unique(params.c_str()); 
+	}
+
+private: 
+	typename I::Product *produce_raw(const char *plugindescr) const;
 
 }; 
 
@@ -219,16 +240,28 @@ TFactoryPluginHandler<I>::TFactoryPluginHandler(const std::list<boost::filesyste
 {
 }
 
-	
 template <typename  I>
 typename TFactoryPluginHandler<I>::ProductPtr 
-TFactoryPluginHandler<I>::produce(char const *params)const
+TFactoryPluginHandler<I>::produce(const char *plugindescr) const
+{
+	return ProductPtr(this->produce_raw(plugindescr)); 
+}
+
+template <typename  I>
+typename TFactoryPluginHandler<I>::UniqueProduct
+TFactoryPluginHandler<I>::produce_unique(const char *plugindescr) const
+{
+	return UniqueProduct(this->produce_raw(plugindescr)); 
+}
+	
+template <typename  I>
+typename I::Product *TFactoryPluginHandler<I>::produce_raw(char const *params)const
 {
 	assert(params); 
 	CComplexOptionParser param_list(params);
 		
 	if (param_list.size() < 1) 
-		return ProductPtr(); 
+		return NULL; 
 		
 	cvdebug() << "TFactoryPluginHandler<P>::produce use '" << param_list.begin()->first << "'\n"; 
 	const std::string& factory_name = param_list.begin()->first; 
@@ -237,16 +270,16 @@ TFactoryPluginHandler<I>::produce(char const *params)const
 		cvdebug() << "print help\n"; 
 		cvmsg() << "\n"; 
 		this->print_help(cverb);
-		return ProductPtr(); 
+		return NULL; 
 	}
 
 	cvdebug() << "TFactoryPluginHandler<>::produce: Create plugin from '" << factory_name << "'\n"; 
 
 	auto factory = this->plugin(factory_name.c_str());
 	if (factory) 
-		return ProductPtr(factory->create(param_list.begin()->second,params));
+		return factory->create(param_list.begin()->second,params);
 	else 
-		return ProductPtr(); 
+		return NULL; 
 }
 
 template <typename I>

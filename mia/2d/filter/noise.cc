@@ -100,10 +100,7 @@ C2DNoiseImageFilterFactory::C2DNoiseImageFilterFactory():
 
 C2DFilter *C2DNoiseImageFilterFactory::do_create()const
 {
-
-	const CNoiseGeneratorPluginHandler::Instance& ng = CNoiseGeneratorPluginHandler::instance();
-
-	CNoiseGeneratorPlugin::ProductPtr generator(ng.produce(m_noise_gen.c_str()));
+	auto  generator = CNoiseGeneratorPluginHandler::instance().produce(m_noise_gen.c_str());
 	if (!generator)
 		throw invalid_argument(m_noise_gen + " does not describe a noise generator");
 

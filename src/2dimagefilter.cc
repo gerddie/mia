@@ -119,7 +119,7 @@ int do_main( int argc, const char *argv[] )
 	//CHistory::instance().append(argv[0], "unknown", options);
 
 	bool want_help = false; 
-	std::vector<C2DFilterPlugin::ProductPtr> filters(filter_chain.size());
+	std::vector<P2DFilter> filters(filter_chain.size());
 	transform(filter_chain.begin(), filter_chain.end(), filters.begin(),
 		  [&filter_plugins, &want_help](const char * name) {
 			  auto filter =  filter_plugins.produce(name); 

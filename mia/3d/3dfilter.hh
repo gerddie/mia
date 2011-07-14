@@ -68,14 +68,14 @@ typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCombinerPlugin> > C3DIma
  */
 
 template <typename S>
-std::vector<C3DFilterPlugin::ProductPtr> create_filter_chain(const std::vector<S>& chain)
+std::vector<P3DFilter> create_filter_chain(const std::vector<S>& chain)
 {
-	std::vector<C3DFilterPlugin::ProductPtr> filters;
+	std::vector<P3DFilter> filters;
 
 	for (typename std::vector<S>::const_iterator i = chain.begin();
 	     i != chain.end(); ++i) {
 		cvdebug() << "Prepare filter " << *i << std::endl;
-		C3DFilterPlugin::ProductPtr filter = C3DFilterPluginHandler::instance().produce(*i);
+		auto filter = C3DFilterPluginHandler::instance().produce(*i);
 		if (!filter){
 			std::stringstream error;
 			error << "Filter " << *i << " not found";

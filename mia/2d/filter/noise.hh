@@ -30,10 +30,10 @@
 NS_BEGIN(noise_2dimage_filter)
 
 class C2DNoise: public mia::C2DFilter {
-	mia::CNoiseGeneratorPlugin::ProductPtr m_generator;
+	mia::PNoiseGenerator m_generator;
 	bool m_modulated;
 public:
-	C2DNoise(mia::CNoiseGeneratorPlugin::ProductPtr generator, bool modulate):
+	C2DNoise(mia::PNoiseGenerator generator, bool modulate):
 		m_generator(generator),
 		m_modulated(modulate)
 	{

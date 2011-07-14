@@ -29,7 +29,7 @@ private:
 	virtual mia::P3DImageFatCost cloned(mia::P3DImage src, mia::P3DImage ref) const;
 	virtual double do_value() const;
 	virtual double do_evaluate_force(mia::C3DFVectorfield& force) const;
-	mia::C3DImageCostPlugin::ProductPtr m_evaluator;
+	mia::P3DImageCost m_evaluator;
 };
 
 NS_END 

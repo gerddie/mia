@@ -192,7 +192,7 @@ int main(int argc, const char *argv[])
 
 			stringstream downscale_descr;
 			downscale_descr << "downscale:bx=" << BlockSize.x << ",by=" << BlockSize.y;
-			C2DFilterPlugin::ProductPtr downscaler =
+			auto downscaler =
 				C2DFilterPluginHandler::instance().produce(downscale_descr.str().c_str());
 
 			P2DImage ModelScale = downscaler->filter(*Model);

@@ -175,10 +175,9 @@ int main( int argc, const char *argv[] )
 		filter_chain.push_back("open:shape=[sphere:r=3]");
 		filter_chain.push_back(string("mask:input=") + b0poolkey);
 
-		vector<C3DFilterPlugin::ProductPtr> filters = create_filter_chain(filter_chain);
+		vector<P3DFilter> filters = create_filter_chain(filter_chain);
 
-		for (vector<C3DFilterPlugin::ProductPtr>::const_iterator f = filters.begin();
-		     f != filters.end(); ++f) {
+		for (auto f = filters.begin(); f != filters.end(); ++f) {
 			result = (*f)->filter(*result);
 		}
 

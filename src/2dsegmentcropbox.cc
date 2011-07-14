@@ -92,14 +92,14 @@ namespace bfs=boost::filesystem;
 
 struct 	CSegFrameCropper {
 	CSegFrameCropper(const C2DIVector& shift,
-			 C2DFilterPlugin::ProductPtr filter,
+			 P2DFilter filter,
 			 const string& image_name);
 
 	CSegFrame operator()(const CSegFrame& frame, const C2DImage& image) const;
 
 private:
 	C2DIVector m_shift;
-	C2DFilterPlugin::ProductPtr m_filter;
+	P2DFilter m_filter;
 	bfs::path m_image_outpath;
 };
 
@@ -140,8 +140,7 @@ int do_main(int argc, const char *argv[])
 
 	cvdebug() << "Crop with " << crop_descr.str() << "\r";
 
-	C2DFilterPlugin::ProductPtr filter = C2DFilterPluginHandler::instance().
-		produce(crop_descr.str().c_str());
+	auto filter = C2DFilterPluginHandler::instance().produce(crop_descr.str().c_str());
 
 	CSegSet cropped;
 
@@ -193,7 +192,7 @@ int main(int argc, const char *argv[] )
 
 
 CSegFrameCropper::CSegFrameCropper(const C2DIVector& shift,
-				   C2DFilterPlugin::ProductPtr filter,
+				   P2DFilter filter,
 				   const string& image_name):
 	m_shift(shift),
 	m_filter(filter),

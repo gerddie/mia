@@ -203,7 +203,7 @@ int main( int argc, const char *argv[] )
 
 		CSegSetWithImages  segset(in_filename, true);
 
-		C2DFilterPlugin::ProductPtr  crop_filter;
+		P2DFilter  crop_filter;
 		if (crop) {
 			C2DBoundingBox box = segset.get_boundingbox();
 			box.enlarge(enlarge_boundary);

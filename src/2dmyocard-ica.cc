@@ -266,7 +266,7 @@ private:
 
 typedef pair<float, size_t> element;
 
-C2DFilterPlugin::ProductPtr create_LV_cropper(P2DImage rvlv_feature,
+P2DFilter create_LV_cropper(P2DImage rvlv_feature,
 					      float LV_mask_amplify,
 					      const string& feature_image_base,
 					      C2DBounds& crop_start
@@ -310,7 +310,7 @@ C2DFilterPlugin::ProductPtr create_LV_cropper(P2DImage rvlv_feature,
 	} while (10 * npixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y && nc < 5);
 
 	if (nc == 5)
-		return C2DFilterPlugin::ProductPtr();
+		return P2DFilter();
 
 
 	P2DImage LV_candidates = run_filter_chain(kmeans, 2, LVcandidate_filter_chain);
@@ -335,7 +335,7 @@ C2DFilterPlugin::ProductPtr create_LV_cropper(P2DImage rvlv_feature,
 
 	// this is ugly and should be replaced
 	if (crop_start.x > LV_center.x ||crop_start.y > LV_center.y)
-		return C2DFilterPlugin::ProductPtr();
+		return P2DFilter();
 
 	mask_lv << "crop:start=[" << crop_start
 		<< "],end=[" << C2DBounds(int(LV_center.x + r), int(LV_center.y + r)) << "]";
@@ -496,7 +496,7 @@ int do_main( int argc, const char *argv[] )
 	cvinfo() << "Perfusion series = " << cls.get_perfusion_idx() << "\n";
 	cvinfo() << "Baseline series = " << cls.get_baseline_idx() << "\n";
 
-	C2DFilterPlugin::ProductPtr cropper;
+	P2DFilter cropper;
 	C2DBounds crop_start;
 	try {
 		// create crop filter and store source files too.

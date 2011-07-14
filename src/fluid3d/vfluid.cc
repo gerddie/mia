@@ -685,7 +685,7 @@ P3DFVectorfield fluid_transform(const TFluidRegParams& params,TLinEqnSolver *sol
 					<< ",by=" << BlockSize.y
 					<< ",bz=" << BlockSize.z;
 
-			C3DFilterPlugin::ProductPtr downscaler =
+			auto downscaler =
 				C3DFilterPluginHandler::instance().produce(downscale_descr.str().c_str());
 
 

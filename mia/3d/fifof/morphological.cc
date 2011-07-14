@@ -189,7 +189,7 @@ C2DImageFifoFilter *C2DMorphFifoFilterPlugin<Compare>::do_create()const
 {
 	TRACE("C2DMorphFifoFilterPlugin<Compare>::do_create()");
 	const C3DShapePluginHandler::Instance& sh = C3DShapePluginHandler::instance();
-	C3DShapePlugin::ProductPtr shape = sh.produce(get_shape_descr().c_str());
+	auto shape = sh.produce(get_shape_descr().c_str());
 	if (!shape) {
 		stringstream errmsg;
 		errmsg << "C2DDilateFifoFilterPlugin: unable to create shape from '"
@@ -234,14 +234,14 @@ C2DImageFifoFilter *C2DOpenFifoFilterPlugin::do_create()const
 {
 	TRACE("C2DOpenFifoFilterPlugin::do_create()");
 	const C3DShapePluginHandler::Instance& sh = C3DShapePluginHandler::instance();
-	C3DShapePlugin::ProductPtr shape = sh.produce(get_shape_descr().c_str());
+	auto shape = sh.produce(get_shape_descr().c_str());
 	if (!shape) {
 		stringstream errmsg;
 		errmsg << "C2DDilateFifoFilterPlugin: unable to create shape from '"
 		       << get_shape_descr() << "'";
 		throw invalid_argument(errmsg.str());
 	}
-	C2DFifoFilterPlugin::ProductPtr inm(new C2DMorphFifoFilter<DilateCompare>(shape));
+	P2DImageFifoFilter inm(new C2DMorphFifoFilter<DilateCompare>(shape));
 	auto result = new C2DMorphFifoFilter<ErodeCompare>(shape);
 	result->append_filter(inm);
 	return result;
@@ -262,14 +262,14 @@ C2DImageFifoFilter *C2DCloseFifoFilterPlugin::do_create()const
 {
 	TRACE("C2DCloseFifoFilterPlugin::do_create()");
 	const C3DShapePluginHandler::Instance& sh = C3DShapePluginHandler::instance();
-	C3DShapePlugin::ProductPtr shape = sh.produce(get_shape_descr().c_str());
+	auto shape = sh.produce(get_shape_descr().c_str());
 	if (!shape) {
 		stringstream errmsg;
 		errmsg << "C2DDilateFifoFilterPlugin: unable to create shape from '"
 		       << get_shape_descr() << "'";
 		throw invalid_argument(errmsg.str());
 	}
-	C2DFifoFilterPlugin::ProductPtr inm(new C2DMorphFifoFilter<ErodeCompare>(shape));
+	P2DImageFifoFilter inm(new C2DMorphFifoFilter<ErodeCompare>(shape));
 	auto result = new C2DMorphFifoFilter<DilateCompare>(shape);
 	result->append_filter(inm);
 	return result;

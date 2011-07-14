@@ -30,8 +30,8 @@ NS_BEGIN(SeparableConvolute_2dimage_filter)
 
 class CSeparableConvolute: public mia::C2DFilter {
 public:
-	CSeparableConvolute(mia::C1DSpacialKernelPlugin::ProductPtr kx,
-			    mia::C1DSpacialKernelPlugin::ProductPtr ky);
+	CSeparableConvolute(mia::P1DSpacialKernel kx,
+			    mia::P1DSpacialKernel ky);
 
 	template <typename  T>
 	CSeparableConvolute::result_type operator () (const mia::T2DImage<T>& data) const;
@@ -42,8 +42,8 @@ public:
 private:
 	CSeparableConvolute::result_type do_filter(const mia::C2DImage& image) const;
 
-	mia::C1DSpacialKernelPlugin::ProductPtr m_kx;
-	mia::C1DSpacialKernelPlugin::ProductPtr m_ky;
+	mia::P1DSpacialKernel m_kx;
+	mia::P1DSpacialKernel m_ky;
 };
 
 

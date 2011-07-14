@@ -54,8 +54,8 @@ using namespace std;
 using namespace boost;
 namespace bfs=::boost::filesystem;
 
-CSeparableConvolute::CSeparableConvolute(C1DSpacialKernelPlugin::ProductPtr kx,
-					 C1DSpacialKernelPlugin::ProductPtr ky):
+CSeparableConvolute::CSeparableConvolute(P1DSpacialKernel kx,
+					 P1DSpacialKernel ky):
 	m_kx(kx),
 	m_ky(ky)
 {
@@ -129,11 +129,10 @@ C2DSeparableConvoluteFilterPlugin::C2DSeparableConvoluteFilterPlugin():
 
 C2DFilter *C2DSeparableConvoluteFilterPlugin::do_create()const
 {
-	C1DSpacialKernelPlugin::ProductPtr kx, ky, kz;
 	const C1DSpacialKernelPluginHandler::Instance& skp = C1DSpacialKernelPluginHandler::instance();
 
-	kx = skp.produce(m_kx.c_str());
-	ky = skp.produce(m_ky.c_str());
+	auto kx = skp.produce(m_kx.c_str());
+	auto ky = skp.produce(m_ky.c_str());
 
 	return new CSeparableConvolute(kx, ky);
 }
@@ -160,12 +159,11 @@ C2DGaussFilterPlugin::C2DGaussFilterPlugin():
 
 C2DFilter *C2DGaussFilterPlugin::do_create()const
 {
-	C1DSpacialKernelPlugin::ProductPtr k;
 	const C1DSpacialKernelPluginHandler::Instance&  skp = C1DSpacialKernelPluginHandler::instance();
 
 	stringstream fdescr;
 	fdescr << "gauss:w=" << m_w;
-	k = skp.produce(fdescr.str().c_str());
+	auto k = skp.produce(fdescr.str().c_str());
 
 	return new CSeparableConvolute(k, k);
 }

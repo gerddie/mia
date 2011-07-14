@@ -453,8 +453,6 @@ P3DTransformation C3DAffineTransformCreator::do_create(const C3DBounds& size) co
 
 class C3DAffineTransformCreatorPlugin: public C3DTransformCreatorPlugin {
 public:
-	typedef C3DTransformCreatorPlugin::ProductPtr ProductPtr;
-
 	C3DAffineTransformCreatorPlugin();
 	virtual C3DTransformCreator *do_create() const;
 	virtual bool do_test() const;

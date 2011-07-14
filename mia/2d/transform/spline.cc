@@ -787,8 +787,6 @@ P2DTransformation C2DSplineTransformCreator::do_create(const C2DBounds& size) co
 
 class C2DSplineTransformCreatorPlugin: public C2DTransformCreatorPlugin {
 public:
-	typedef C2DTransformCreatorPlugin::ProductPtr ProductPtr;
-
 	C2DSplineTransformCreatorPlugin();
 	virtual C2DTransformCreator *do_create() const;
 	virtual bool do_test() const;

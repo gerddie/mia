@@ -74,7 +74,7 @@ struct DilateTestFixture: SetPathFixture  {
 	}
 
 	template <typename T>
-	void do_test_T(const C3DShape::Mask& /*mask*/, const C3DShape::Size& size, C3DShapePlugin::ProductPtr shape) const
+	void do_test_T(const C3DShape::Mask& /*mask*/, const C3DShape::Size& size, P3DShape shape) const
 	{
 		T3DImage<T> *src = new T3DImage<T>(C3DBounds(size));
 		typename T3DImage<T>::iterator i_src = src->begin();
@@ -106,8 +106,7 @@ struct DilateTestFixture: SetPathFixture  {
 			for (size_t y = 0; y < src->get_size().y; ++y)
 				for (size_t x = 0; x < src->get_size().x; ++x, ++ref_i, ++i_src) {
 					*ref_i = *i_src;
-					for (C3DShape::const_iterator si = shape->begin(),
-						     se = shape->end(); si != se; ++si) {
+					for (auto si = shape->begin(),  se = shape->end(); si != se; ++si) {
 
 						C3DBounds h(x + si->x, y + si->y, z + si->z);
 						if (h < src->get_size()) {
@@ -191,7 +190,7 @@ struct ErodeTestFixture: SetPathFixture {
 	}
 
 	template <typename T>
-	void do_test_T(const C3DShape::Mask& /*mask*/, const C3DShape::Size& size, C3DShapePlugin::ProductPtr shape) const
+	void do_test_T(const C3DShape::Mask& /*mask*/, const C3DShape::Size& size, P3DShape shape) const
 	{
 		T3DImage<T> *src = new T3DImage<T>(C3DBounds(size));
 		typename T3DImage<T>::iterator i_src = src->begin();
@@ -222,7 +221,7 @@ struct ErodeTestFixture: SetPathFixture {
 			for (size_t y = 0; y < src->get_size().y; ++y)
 				for (size_t x = 0; x < src->get_size().x; ++x, ++ref_i, ++i_src) {
 					*ref_i = *i_src;
-					for (C3DShape::const_iterator si = shape->begin(),
+					for (auto si = shape->begin(),
 						     se = shape->end(); si != se; ++si) {
 
 						C3DBounds h(x + si->x, y + si->y, z + si->z);
