@@ -21,8 +21,8 @@
  */
 
 
-#ifndef mia_2d_gridtransfromation_hh
-#define mia_2d_gridtransfromation_hh
+#ifndef mia_2d_gridtransformation_hh
+#define mia_2d_gridtransformation_hh
 
 
 #include <iterator>
@@ -124,6 +124,8 @@ private:
 	double grad_curl(double weight, CDoubleVector& gradient) const; 
 	virtual C2DFMatrix field_derivative_at(int x, int y) const;
 	C2DFVectorfield m_field;
+
+	C2DInterpolatorFactory m_upscale_interpolator_factory; 
 };
 
 inline C2DFVector C2DGridTransformation::apply(const  C2DFVector& x) const

@@ -49,33 +49,42 @@ NS_MIA_BEGIN
 using namespace std;
 
 C2DGridTransformation::C2DGridTransformation(const C2DBounds& size):
-	m_field(size)
+	m_field(size), 
+	m_upscale_interpolator_factory("bspline:d=1", "zero")
 {
 }
 
 P2DTransformation C2DGridTransformation::do_upscale(const C2DBounds& size) const
 {
+	/* This implementation could be improved by using something like the spline interpolator 
+	   that applies the scaling in a separable way. */
+
 	TRACE("C2DGridTransformation::upscale");
+	DEBUG_ASSERT_RELEASE_THROW(m_field.get_size().x != 0 && m_field.get_size().y != 0, 
+				   "C2DGridTransformation::do_upscale: input field has a zero dimension"); 
+
+
 	C2DGridTransformation *result = new C2DGridTransformation(size);
 
-	// initial upscale
-	if (m_field.get_size().x != 0 && m_field.get_size().y != 0) {
+	unique_ptr<T2DInterpolator<C2DFVector> >
+		interp(m_upscale_interpolator_factory.create(m_field)); 
+	
 
-		float x_mult = float(size.x) / (float)m_field.get_size().x;
-		float y_mult = float(size.y) / (float)m_field.get_size().y;
-		float ix_mult = 1.0f / x_mult;
-		float iy_mult = 1.0f / y_mult;
-
-		C2DFVectorfield::iterator i = result->m_field.begin();
-
-		for (unsigned int y = 0; y < size.y; y++){
-			for (unsigned int x = 0; x < size.x; x++,++i){
-				C2DFVector help(ix_mult * x, iy_mult * y);
-				C2DFVector val = m_field.get_interpol_val_at(help);
-				*i = C2DFVector(val.x * x_mult,val.y * y_mult);
-			}
+	float x_mult = float(size.x) / (float)m_field.get_size().x;
+	float y_mult = float(size.y) / (float)m_field.get_size().y;
+	float ix_mult = 1.0f / x_mult;
+	float iy_mult = 1.0f / y_mult;
+	
+	auto i = result->m_field.begin();
+	
+	for (unsigned int y = 0; y < size.y; y++){
+		for (unsigned int x = 0; x < size.x; x++,++i){
+			C2DFVector help(ix_mult * x, iy_mult * y);
+			C2DFVector val = (*interp)(help);
+			*i = C2DFVector(val.x * x_mult,val.y * y_mult);
 		}
 	}
+	
 	return P2DTransformation(result);
 }
 

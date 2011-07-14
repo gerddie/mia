@@ -124,8 +124,8 @@ private:
 	mutable CSplineDerivativeRow  m_my; 
 	mutable bool m_grid_valid; 
 
-	PBoundaryCondition m_xbc; 
-	PBoundaryCondition m_ybc; 
+	PSplineBoundaryCondition m_xbc; 
+	PSplineBoundaryCondition m_ybc; 
 
 };
 

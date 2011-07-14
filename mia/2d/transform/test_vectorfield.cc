@@ -32,7 +32,7 @@ using namespace std;
 using namespace ::boost;
 using namespace boost::unit_test;
 
-
+CSplineKernelTestPath kernel_path_init; 
 
 struct GridTransformFixture {
 	GridTransformFixture():
