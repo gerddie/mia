@@ -170,9 +170,9 @@ public:
 
 	CSplineBoundaryConditionPlugin(const char * name); 
 private: 
-	virtual ProductPtr do_create() const;
+	virtual CSplineBoundaryCondition *do_create() const;
 	
-	virtual ProductPtr do_create(int width) const = 0; 
+	virtual CSplineBoundaryCondition *do_create(int width) const = 0; 
 
 	int m_width; 
 }; 

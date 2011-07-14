@@ -83,12 +83,12 @@ C3DFatImageCostPlugin::C3DFatImageCostPlugin(const char *name):
 						    false, "weight of cost function"));
 }
 
-P3DImageFatCost C3DFatImageCostPlugin::create_directly( P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight)
+C3DImageFatCost *C3DFatImageCostPlugin::create_directly( P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight)
 {
 	return do_create(src, ref, ipf, weight);
 }
 
-C3DFatImageCostPlugin::ProductPtr C3DFatImageCostPlugin::do_create()const
+C3DImageFatCost *C3DFatImageCostPlugin::do_create()const
 {
 	TRACE("C3DFatImageCostPlugin::do_create");
 
@@ -171,7 +171,7 @@ C3DFatImageCostPluginHandlerImpl::C3DFatImageCostPluginHandlerImpl(const std::li
 {
 }
 
-P3DImageFatCost C3DFatImageCostPluginHandlerImpl::create_directly(const std::string& plugin, P3DImage src,
+C3DImageFatCost *C3DFatImageCostPluginHandlerImpl::create_directly(const std::string& plugin, P3DImage src,
 								  P3DImage ref, P3DInterpolatorFactory ipf,
 								  float weight) const
 {

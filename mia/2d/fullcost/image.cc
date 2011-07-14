@@ -206,7 +206,7 @@ class C2DImageFullCostPlugin: public C2DFullCostPlugin {
 public: 
 	C2DImageFullCostPlugin(); 
 private: 
-	C2DFullCostPlugin::ProductPtr do_create(float weight) const;
+	C2DFullCost *do_create(float weight) const;
 	const std::string do_get_descr() const;
 	std::string m_src_name;
 	std::string m_ref_name;
@@ -230,7 +230,7 @@ C2DImageFullCostPlugin::C2DImageFullCostPlugin():
 	add_parameter("debug", new CBoolParameter(m_debug, false, "Save intermediate resuts for debugging")); 
 }
 
-C2DFullCostPlugin::ProductPtr C2DImageFullCostPlugin::do_create(float weight) const
+C2DFullCost *C2DImageFullCostPlugin::do_create(float weight) const
 {
 	cvdebug() << "create C2DImageFullCostPlugin with weight= " << weight 
 		  << " src=" << m_src_name << " ref=" << m_ref_name 
@@ -238,9 +238,8 @@ C2DFullCostPlugin::ProductPtr C2DImageFullCostPlugin::do_create(float weight) co
 	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(m_interpolator,
 							      produce_spline_boundary_condition("mirror"), 
 							      produce_spline_boundary_condition("mirror")));
-	return C2DFullCostPlugin::ProductPtr(
-		new C2DImageFullCost(m_src_name, m_ref_name, 
-				     m_cost_kernel, ipf, weight, m_debug)); 
+	return 	new C2DImageFullCost(m_src_name, m_ref_name, 
+				     m_cost_kernel, ipf, weight, m_debug); 
 }
 
 const std::string C2DImageFullCostPlugin::do_get_descr() const

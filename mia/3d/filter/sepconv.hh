@@ -54,7 +54,7 @@ private:
 class C3DSeparableConvoluteFilterPlugin: public mia::C3DFilterPlugin {
 public:
 	C3DSeparableConvoluteFilterPlugin();
-	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
 
@@ -70,7 +70,7 @@ private:
 class C3DGaussFilterPlugin: public mia::C3DFilterPlugin {
 public:
 	C3DGaussFilterPlugin();
-	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
 	virtual bool do_test() const;

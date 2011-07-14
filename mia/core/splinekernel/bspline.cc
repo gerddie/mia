@@ -905,19 +905,19 @@ CBSplineKernelPlugin::CBSplineKernelPlugin():
 	add_parameter("d", new CIntParameter(m_degree, 0, 5, false, "Spline degree"));
 }
 	
-CSplineKernelPlugin::ProductPtr CBSplineKernelPlugin::do_create() const
+CSplineKernel *CBSplineKernelPlugin::do_create() const
 {
 	switch (m_degree) {
-	case 0: return CSplineKernelPlugin::ProductPtr(new CBSplineKernel0); 
-	case 1: return CSplineKernelPlugin::ProductPtr(new CBSplineKernel1); 
-	case 2: return CSplineKernelPlugin::ProductPtr(new CBSplineKernel2); 
-	case 3: return CSplineKernelPlugin::ProductPtr(new CBSplineKernel3); 
-	case 4: return CSplineKernelPlugin::ProductPtr(new CBSplineKernel4); 
-	case 5: return CSplineKernelPlugin::ProductPtr(new CBSplineKernel5); 
+	case 0: return new CBSplineKernel0; 
+	case 1: return new CBSplineKernel1; 
+	case 2: return new CBSplineKernel2; 
+	case 3: return new CBSplineKernel3; 
+	case 4: return new CBSplineKernel4; 
+	case 5: return new CBSplineKernel5; 
 	default:
 		assert(0 && "add parameter didn't catch the proper range"); 
 	}
-	return CSplineKernelPlugin::ProductPtr(); 
+	return NULL; 
 }
 
 const std::string CBSplineKernelPlugin::do_get_descr()const
@@ -933,9 +933,9 @@ COMomsSplineKernelPlugin::COMomsSplineKernelPlugin():
 	add_parameter("d", new CIntParameter(m_degree, 3, 3, false, "Spline degree"));
 }
 
-CSplineKernelPlugin::ProductPtr COMomsSplineKernelPlugin::do_create() const
+CSplineKernel *COMomsSplineKernelPlugin::do_create() const
 {
-	return CSplineKernelPlugin::ProductPtr(new CBSplineKernelOMoms3); 
+	return new CBSplineKernelOMoms3; 
 }
 
 const std::string COMomsSplineKernelPlugin::do_get_descr()const

@@ -182,9 +182,9 @@ C2DAdaptMedianImageFilterFactory::C2DAdaptMedianImageFilterFactory():
 					     false, "half filter width"));
 }
 
-C2DFilterPlugin::ProductPtr C2DAdaptMedianImageFilterFactory::do_create()const
+C2DFilter *C2DAdaptMedianImageFilterFactory::do_create()const
 {
-	return C2DFilterPlugin::ProductPtr(new C2DAdaptMedian(m_hw));
+	return new C2DAdaptMedian(m_hw);
 }
 
 const string C2DAdaptMedianImageFilterFactory::do_get_descr()const

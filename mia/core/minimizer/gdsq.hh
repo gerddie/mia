@@ -56,7 +56,7 @@ public:
 	
 private:
 
-	ProductPtr do_create() const;
+	mia::CMinimizer *do_create() const;
 	const std::string do_get_descr() const;
 	
 	double m_xtol; 

@@ -137,10 +137,10 @@ C2DFilterPluginFactory::C2DFilterPluginFactory():
 	add_parameter("k", new CStringParameter(m_kernel, true, "filter kernel"));
 }
 
-C2DFilterPluginFactory::ProductPtr C2DFilterPluginFactory::do_create()const
+C2DFilter *C2DFilterPluginFactory::do_create()const
 {
 	PCST2DImageKernel k = CCST2DImgKernelPluginHandler::instance().produce(m_kernel.c_str());
-	return C2DFilterPluginFactory::ProductPtr(new C2DCst(k));
+	return new C2DCst(k);
 }
 
 const string C2DFilterPluginFactory::do_get_descr()const

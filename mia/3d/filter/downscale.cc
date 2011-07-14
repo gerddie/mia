@@ -154,9 +154,9 @@ C3DDownscaleFilterPlugin::C3DDownscaleFilterPlugin():
                                                 "smoothing filter kernel to be applied"));
 }
 
-C3DDownscaleFilterPlugin::ProductPtr C3DDownscaleFilterPlugin::do_create()const
+C3DFilter *C3DDownscaleFilterPlugin::do_create()const
 {
-	return C3DDownscaleFilterPlugin::ProductPtr(new CDownscale(m_b, m_filter));
+	return new CDownscale(m_b, m_filter);
 }
 
 void C3DDownscaleFilterPlugin::prepare_path() const

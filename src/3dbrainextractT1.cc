@@ -136,9 +136,8 @@ int main( int argc, const char *argv[] )
 		if ( out_filename.empty() )
 			throw runtime_error("'--out-file' ('c') option required\n");
 
-		const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
-
-		C3DImageIOPluginHandler::Instance::PData inImage_list = imageio.load(in_filename);
+		auto& imageio = C3DImageIOPluginHandler::instance();
+		auto inImage_list = imageio.load(in_filename);
 
 		if (!inImage_list.get() || !inImage_list->size() ) {
 			string not_found = ("No supported data found in ") + in_filename;
@@ -155,7 +154,7 @@ int main( int argc, const char *argv[] )
 		C3DImageVector classes;
 
 		P3DImage b0_corrected = fuzzy_segment_3d(**inImage_list->begin(), noOfClasses, residuum, classes);
-		CDatapool::Instance().add(b0poolkey, create_image3d_vector(b0_corrected));
+		CDatapool::instance().add(b0poolkey, create_image3d_vector(b0_corrected));
 
 
 		P3DImage result = classes[wmclass];

@@ -790,7 +790,7 @@ public:
 	typedef C2DTransformCreatorPlugin::ProductPtr ProductPtr;
 
 	C2DSplineTransformCreatorPlugin();
-	virtual ProductPtr do_create() const;
+	virtual C2DTransformCreator *do_create() const;
 	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 private:
@@ -809,10 +809,9 @@ C2DSplineTransformCreatorPlugin::C2DSplineTransformCreatorPlugin():
 						    "isotropic coefficient rate in pixels"));
 }
 
-C2DSplineTransformCreatorPlugin::ProductPtr
-C2DSplineTransformCreatorPlugin::do_create() const
+C2DTransformCreator *C2DSplineTransformCreatorPlugin::do_create() const
 {
-	return ProductPtr(new C2DSplineTransformCreator(m_interpolator, C2DFVector(m_rate, m_rate)));
+	return new C2DSplineTransformCreator(m_interpolator, C2DFVector(m_rate, m_rate));
 }
 
 bool C2DSplineTransformCreatorPlugin::do_test() const

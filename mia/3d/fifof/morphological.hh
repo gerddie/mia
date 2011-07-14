@@ -123,7 +123,7 @@ template <template <typename, bool> class Compare>
 class PRIVATE C2DMorphFifoFilterPlugin : public C2DMorphFifoFilterPluginBase {
  protected:
 	C2DMorphFifoFilterPlugin(const char *name);
-	virtual C2DFifoFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C2DImageFifoFilter *do_create()const;
  private:
 
 };
@@ -147,7 +147,7 @@ class PRIVATE C2DOpenFifoFilterPlugin : public C2DMorphFifoFilterPluginBase {
 public:
 	C2DOpenFifoFilterPlugin();
 private:
-	virtual mia::C2DFifoFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C2DImageFifoFilter *do_create()const;
 	virtual bool do_test() const;
 
 };
@@ -156,7 +156,7 @@ class PRIVATE C2DCloseFifoFilterPlugin : public C2DMorphFifoFilterPluginBase {
 public:
 	C2DCloseFifoFilterPlugin();
 private:
-	virtual mia::C2DFifoFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C2DImageFifoFilter *do_create()const;
 	virtual bool do_test() const;
 
 };

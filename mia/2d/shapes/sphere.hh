@@ -34,7 +34,7 @@ public:
 	CSphere2DShapeFactory();
 private:
 	virtual const string do_get_descr() const;
-	virtual C2DShapePlugin::ProductPtr do_create()const;
+	virtual C2DShape *do_create()const;
 	virtual bool do_test() const;
 	float m_r;
 };

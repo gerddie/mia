@@ -59,7 +59,7 @@ public:
 class CHarmonicMean2DImageFilterFactory: public C2DFilterPlugin {
 public: 
 	CHarmonicMean2DImageFilterFactory();
-	virtual C2DFilterPlugin::ProductPtr create(const CParsedOptions& options) const;
+	virtual C2DFilter *create(const CParsedOptions& options) const;
 	virtual const string do_get_descr()const; 
 private: 
 	virtual int do_test() const; 
@@ -122,11 +122,11 @@ CHarmonicMean2DImageFilterFactory::CHarmonicMean2DImageFilterFactory():
 	add_help(param_width);
 }
 
-C2DFilterPlugin::ProductPtr CHarmonicMean2DImageFilterFactory::create(const CParsedOptions& options) const
+C2DFilter *CHarmonicMean2DImageFilterFactory::create(const CParsedOptions& options) const
 {
 	int hwidth = param_width.get_value(options); 
 
-	return C2DFilterPlugin::ProductPtr(new CHarmonicMean2DImageFilter(hwidth)); 
+	return new CHarmonicMean2DImageFilter(hwidth); 
 }
 
 const string CHarmonicMean2DImageFilterFactory::do_get_descr()const

@@ -55,8 +55,8 @@ public:
 		
 	typedef shared_ptr<CProductMock> ProductPtr; 
 	
-	ProductPtr do_create() const{
-		return ProductPtr(new CProductMock("teststring")); 
+	CProductMock *do_create() const{
+		return new CProductMock("teststring"); 
 	}
 	const std::string do_get_descr() const{return "test mock";}
 }; 
@@ -95,8 +95,7 @@ BOOST_AUTO_TEST_CASE( test_a_factory_option )
 BOOST_AUTO_TEST_CASE( test_another_factory_option )
 {
 
-	CFactoryHandlerMock::ProductPtr product = 
-		CFactoryHandlerMock::instance().produce("lala"); 
+	auto product = 	CFactoryHandlerMock::instance().produce("lala"); 
 	BOOST_CHECK_EQUAL(product->get_init_string(), "lala"); 
 	
 	PCmdOption option = make_opt(product, "lala", 'l',"Some help", "help"); 

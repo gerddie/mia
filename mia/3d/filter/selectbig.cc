@@ -145,9 +145,9 @@ C3DSelectBigImageFilterFactory::C3DSelectBigImageFilterFactory():
 }
 
 /* The factory create function creates and returns the filter with the given options*/
-C3DFilterPlugin::ProductPtr C3DSelectBigImageFilterFactory::do_create()const
+C3DFilter *C3DSelectBigImageFilterFactory::do_create()const
 {
-	return C3DFilterPlugin::ProductPtr(new C3DSelectBig);
+	return new C3DSelectBig;
 }
 
 /* This function sreturns a short description of the filter */

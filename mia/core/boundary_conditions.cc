@@ -139,7 +139,7 @@ CSplineBoundaryConditionPlugin::CSplineBoundaryConditionPlugin(const char * name
 	add_parameter("w", new CIntParameter(m_width, 0, numeric_limits<int>::max(), false, "index range")); 
 }
 	
-CSplineBoundaryConditionPlugin::ProductPtr CSplineBoundaryConditionPlugin::do_create() const
+CSplineBoundaryCondition *CSplineBoundaryConditionPlugin::do_create() const
 {
 	return do_create(m_width); 
 }

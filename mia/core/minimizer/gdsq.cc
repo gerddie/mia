@@ -139,10 +139,10 @@ CGDSQMinimizerPlugin::CGDSQMinimizerPlugin():
 
 	
 
-CGDSQMinimizerPlugin::ProductPtr CGDSQMinimizerPlugin::do_create() const
+CMinimizer *CGDSQMinimizerPlugin::do_create() const
 {
 	TRACE_FUNCTION; 
-	return ProductPtr(new CGDSQMinimizer(m_start_step, m_step_scale, m_xtol, m_gtol, m_ftolr, m_maxiter)); 
+	return new CGDSQMinimizer(m_start_step, m_step_scale, m_xtol, m_gtol, m_ftolr, m_maxiter); 
 }
 
 const std::string CGDSQMinimizerPlugin::do_get_descr() const

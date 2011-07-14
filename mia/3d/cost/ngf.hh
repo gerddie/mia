@@ -86,7 +86,7 @@ class C3DNFGImageCostPlugin: public mia::C3DImageCostPlugin {
 public:
 	C3DNFGImageCostPlugin();
 private:
-	virtual mia::C3DImageCostPlugin::ProductPtr	do_create()const;
+	virtual mia::C3DImageCost *do_create()const;
 
 	bool do_test() const;
 	const std::string do_get_descr()const;

@@ -71,7 +71,7 @@ C2DMaskImageFilterFactory::C2DMaskImageFilterFactory():
 						  "whether the mask should be inverted"));
 }
 
-C2DFilterPlugin::ProductPtr C2DMaskImageFilterFactory::do_create()const
+C2DFilter *C2DMaskImageFilterFactory::do_create()const
 {
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 	C2DImageIOPluginHandler::Instance::PData inImage_list = imageio.load(m_mask_name);
@@ -92,7 +92,7 @@ C2DFilterPlugin::ProductPtr C2DMaskImageFilterFactory::do_create()const
 	if (m_invert)
 		transform(image->begin(), image->end(), image->begin(), logical_not<bool>());
 
-	return C2DFilterPlugin::ProductPtr(new C2DMask(*image));
+	return new C2DMask(*image);
 }
 
 const string C2DMaskImageFilterFactory::do_get_descr()const

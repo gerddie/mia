@@ -132,7 +132,7 @@ class C3DLatticCreatorPlugin : public  C3DImageCreatorPlugin {
 public:
 	C3DLatticCreatorPlugin();
 private:
-	virtual C3DImageCreatorPlugin::ProductPtr do_create()const;
+	virtual C3DImageCreator *do_create()const;
 	virtual const string do_get_descr()const;
 	virtual bool do_test() const;
 	C3DFVector m_freq;
@@ -147,9 +147,9 @@ C3DLatticCreatorPlugin::C3DLatticCreatorPlugin():
 	add_parameter("fz", new CFloatParameter(m_freq.z, 1, 64, false, "frequency in z-dir"));
 }
 
-C3DImageCreatorPlugin::ProductPtr C3DLatticCreatorPlugin::do_create()const
+C3DImageCreator *C3DLatticCreatorPlugin::do_create()const
 {
-	return C3DImageCreatorPlugin::ProductPtr(new C3DLatticCreator(m_freq));
+	return new C3DLatticCreator(m_freq);
 }
 
 const string C3DLatticCreatorPlugin::do_get_descr()const

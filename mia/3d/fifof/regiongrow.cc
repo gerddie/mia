@@ -209,7 +209,7 @@ public:
 private:
 	virtual const string do_get_descr() const;
 	virtual bool do_test() const;
-	virtual C2DFifoFilterPlugin::ProductPtr do_create()const;
+	virtual C2DImageFifoFilter *do_create()const;
 
 	string m_map;
 	float m_low;
@@ -250,11 +250,10 @@ bool C2DRegiongrowFifoFilterPlugin::do_test() const
 	return true;
 }
 
-C2DFifoFilterPlugin::ProductPtr C2DRegiongrowFifoFilterPlugin::do_create()const
+C2DImageFifoFilter *C2DRegiongrowFifoFilterPlugin::do_create()const
 {
-	return C2DFifoFilterPlugin::ProductPtr(
-		 new C2DRegiongrowFifoFilter(CProbabilityVector(m_map),
-					     m_low, m_seed, m_class, m_depth));
+	return  new C2DRegiongrowFifoFilter(CProbabilityVector(m_map),
+					    m_low, m_seed, m_class, m_depth);
 }
 
 

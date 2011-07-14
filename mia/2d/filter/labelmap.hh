@@ -42,7 +42,7 @@ private:
 class C2DLabelMapFilterPlugin: public mia::C2DFilterPlugin {
 public: 
 	C2DLabelMapFilterPlugin();
-	virtual mia::C2DFilterPlugin::ProductPtr do_create()const; 
+	virtual mia::C2DFilter *do_create()const; 
 	virtual const std::string do_get_descr()const; 
 
 private: 

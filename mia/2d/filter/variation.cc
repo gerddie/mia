@@ -61,7 +61,7 @@ public:
 class C2DVarFilterImageFilterFactory: public C2DFilterPlugin {
 public: 
 	C2DVarFilterImageFilterFactory();
-	virtual C2DFilterPlugin::ProductPtr create(const CParsedOptions& options) const;
+	virtual C2DFilter *create(const CParsedOptions& options) const;
 	virtual const string do_get_descr()const; 
 private: 
 //	virtual int do_test() const; 
@@ -145,13 +145,13 @@ C2DVarFilterImageFilterFactory::C2DVarFilterImageFilterFactory():
 	add_help(param_scale); 
 }
 
-C2DFilterPlugin::ProductPtr C2DVarFilterImageFilterFactory::create(const CParsedOptions& options) const
+C2DFilter *C2DVarFilterImageFilterFactory::create(const CParsedOptions& options) const
 {
 	int w = param_width.get_value(options); 
 	bool need_float = (param_need_float.get_value(options) == 1);
 	bool scale = (param_scale.get_value(options) == 1);
 	
-	return C2DFilterPlugin::ProductPtr(new C2DVarFilterImageFilter(w, need_float, scale)); 
+	return new C2DVarFilterImageFilter(w, need_float, scale); 
 }
 
 const string C2DVarFilterImageFilterFactory::do_get_descr()const

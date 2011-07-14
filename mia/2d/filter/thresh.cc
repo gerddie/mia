@@ -104,10 +104,10 @@ C2DThreshNImageFilterFactory::C2DThreshNImageFilterFactory():
 						     false, "The threshhold value"));
 }
 
-C2DFilterPlugin::ProductPtr C2DThreshNImageFilterFactory::do_create()const
+C2DFilter *C2DThreshNImageFilterFactory::do_create()const
 {
 	auto shape = C2DShapePluginHandler::instance().produce(m_shape); 
-	return C2DFilterPlugin::ProductPtr(new C2DThreshNImageFilter(shape, m_thresh));
+	return new C2DThreshNImageFilter(shape, m_thresh);
 }
 
 const std::string C2DThreshNImageFilterFactory::do_get_descr() const

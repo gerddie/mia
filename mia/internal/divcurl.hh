@@ -50,7 +50,7 @@ class TDivcurlFullCostPlugin: public TFullCostPlugin<T> {
 public: 
 	TDivcurlFullCostPlugin(); 
 private:
-	typename TFullCostPlugin<T>::ProductPtr do_create(float weight) const;
+	TFullCost<T> *do_create(float weight) const;
 	const std::string do_get_descr() const;
 	float m_div;
 	float m_curl;

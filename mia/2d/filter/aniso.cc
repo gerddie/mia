@@ -333,9 +333,9 @@ CAnisoDiff2DImageFilterFactory::CAnisoDiff2DImageFilterFactory():
 	add_parameter("n", new CSetParameter<int>(m_neighbourhood, nset, "neighbourhood"));
 }
 
-C2DFilterPlugin::ProductPtr CAnisoDiff2DImageFilterFactory::do_create() const
+C2DFilter *CAnisoDiff2DImageFilterFactory::do_create() const
 {
-	return C2DFilterPlugin::ProductPtr(new C2DAnisoDiff(m_maxiter, m_epsilon, m_k, m_edge_stop, m_neighbourhood));
+	return new C2DAnisoDiff(m_maxiter, m_epsilon, m_k, m_edge_stop, m_neighbourhood);
 }
 
 const string CAnisoDiff2DImageFilterFactory::do_get_descr()const

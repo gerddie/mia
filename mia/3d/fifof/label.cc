@@ -245,7 +245,7 @@ private:
 
 	virtual const string do_get_descr() const;
 	virtual bool do_test() const;
-	virtual C2DFifoFilterPlugin::ProductPtr do_create()const;
+	virtual C2DImageFifoFilter *do_create()const;
 
 	string m_neighborhood;
 	string m_mapfile;
@@ -271,10 +271,10 @@ bool C2DLabelFifoFilterPlugin::do_test() const
 	return true;
 }
 
-C2DFifoFilterPlugin::ProductPtr C2DLabelFifoFilterPlugin::do_create()const
+C2DImageFifoFilter *C2DLabelFifoFilterPlugin::do_create()const
 {
 	auto shape = C2DShapePluginHandler::instance().produce(m_neighborhood); 
-	return C2DFifoFilterPlugin::ProductPtr(new C2DLabelStackFilter(m_mapfile, shape));
+	return new C2DLabelStackFilter(m_mapfile, shape);
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

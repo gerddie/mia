@@ -104,7 +104,7 @@ public:
 class CBSplineKernelPlugin: public CSplineKernelPlugin {
 public: 
 	CBSplineKernelPlugin(); 
-	virtual CSplineKernelPlugin::ProductPtr do_create() const;
+	virtual CSplineKernel *do_create() const;
 	virtual const std::string do_get_descr()const;
 private: 
 	int m_degree; 
@@ -114,7 +114,7 @@ private:
 class COMomsSplineKernelPlugin: public CSplineKernelPlugin {
 public: 
 	COMomsSplineKernelPlugin(); 
-	virtual CSplineKernelPlugin::ProductPtr do_create() const;
+	virtual CSplineKernel *do_create() const;
 	virtual const std::string do_get_descr()const;
 private: 
 	int m_degree; 

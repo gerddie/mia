@@ -58,7 +58,7 @@ typedef C2DImageFilter<C2DKuwahara> C2DKuwaharaImageFilter;
 class C2DKuwaharaImageFilterFactory: public C2DFilterPlugin {
 public: 
 	C2DKuwaharaImageFilterFactory();
-	virtual C2DFilterPlugin::ProductPtr create(const CParsedOptions& options) const;
+	virtual C2DFilter *create(const CParsedOptions& options) const;
 	virtual const string do_get_descr()const; 
 };
 
@@ -138,9 +138,9 @@ C2DKuwaharaImageFilterFactory::C2DKuwaharaImageFilterFactory():
 	add_help(param_hw); 
 }
 
-C2DFilterPlugin::ProductPtr C2DKuwaharaImageFilterFactory::create(const CParsedOptions& options) const
+C2DFilter *C2DKuwaharaImageFilterFactory::create(const CParsedOptions& options) const
 {
-	return C2DFilterPlugin::ProductPtr(new C2DKuwaharaImageFilter(options)); 
+	return new C2DKuwaharaImageFilter(options); 
 }
 
 const string C2DKuwaharaImageFilterFactory::do_get_descr()const

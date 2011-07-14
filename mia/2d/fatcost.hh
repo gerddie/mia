@@ -99,8 +99,8 @@ public:
 					 P2DInterpolatorFactory ipf,
 					 float weight);
 private:
-	virtual C2DFatImageCostPlugin::ProductPtr do_create() const;
-	virtual C2DFatImageCostPlugin::ProductPtr do_create(P2DImage src, P2DImage ref,
+	virtual C2DImageFatCost *do_create() const;
+	virtual C2DImageFatCost *do_create(P2DImage src, P2DImage ref,
 							    P2DInterpolatorFactory ipf,
 							    float weight) const = 0;
 

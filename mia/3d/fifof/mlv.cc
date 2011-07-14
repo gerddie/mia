@@ -284,7 +284,7 @@ private:
 
 	virtual const string do_get_descr() const;
 	virtual bool do_test() const;
-	virtual C2DFifoFilterPlugin::ProductPtr do_create()const;
+	virtual C2DImageFifoFilter *do_create()const;
 
 	mutable int m_hw;
 };
@@ -307,9 +307,9 @@ bool C2DMLVnFifoFilterPlugin::do_test() const
 	return true;
 }
 
-C2DFifoFilterPlugin::ProductPtr C2DMLVnFifoFilterPlugin::do_create()const
+C2DImageFifoFilter *C2DMLVnFifoFilterPlugin::do_create()const
 {
-	return ProductPtr(new C2DMLVnFifoFilter(m_hw));
+	return new C2DMLVnFifoFilter(m_hw);
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

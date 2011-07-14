@@ -162,7 +162,7 @@ class TSSDCostPlugin: public CP {
 public: 
 	typedef typename CP::ProductPtr ProductPtr; 
 	TSSDCostPlugin();
-	virtual typename TSSDCostPlugin<CP,C>::ProductPtr do_create()const;
+	C *do_create()const;
 private:
 	bool m_normalize; 
 };
@@ -187,9 +187,9 @@ TSSDCostPlugin<CP,C>::TSSDCostPlugin():
    The creator routine is also generic
 */
 template <typename CP, typename C> 
-typename TSSDCostPlugin<CP,C>::ProductPtr TSSDCostPlugin<CP,C>::do_create() const
+C *TSSDCostPlugin<CP,C>::do_create() const
 {
-	return typename TSSDCostPlugin<CP,C>::ProductPtr(new TSSDCost<C>(m_normalize));
+	return new TSSDCost<C>(m_normalize);
 }
 
 NS_END

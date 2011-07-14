@@ -38,9 +38,8 @@ class C2DSSDFatImageCostPlugin: public mia::C2DFatImageCostPlugin {
 public:
 	C2DSSDFatImageCostPlugin();
 private:
-	virtual mia::C2DFatImageCostPlugin::ProductPtr do_create(mia::P2DImage src,
-								 mia::P2DImage ref,
-								 mia::P2DInterpolatorFactory ipf, float weight)const;
+	virtual mia::C2DImageFatCost *do_create(mia::P2DImage src, mia::P2DImage ref,
+						mia::P2DInterpolatorFactory ipf, float weight)const;
 	bool  do_test() const;
 	void prepare_path() const;
 

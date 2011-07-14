@@ -54,7 +54,7 @@ private:
 class C2DSelectBigImageFilterFactory: public mia::C2DFilterPlugin {
 public:
 	C2DSelectBigImageFilterFactory();
-	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 	virtual bool do_test()const {return true;};
 };

@@ -92,10 +92,10 @@ P2DImageFatCost C2DFatImageCostPlugin::create_directly( P2DImage src, P2DImage r
 							P2DInterpolatorFactory ipf,
 							float weight)
 {
-	return do_create(src, ref, ipf, weight);
+	return P2DImageFatCost(do_create(src, ref, ipf, weight));
 }
 
-C2DFatImageCostPlugin::ProductPtr C2DFatImageCostPlugin::do_create()const
+C2DImageFatCost *C2DFatImageCostPlugin::do_create()const
 {
 	TRACE("C2DFatImageCostPlugin::do_create");
 

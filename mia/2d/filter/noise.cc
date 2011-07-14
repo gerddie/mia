@@ -98,7 +98,7 @@ C2DNoiseImageFilterFactory::C2DNoiseImageFilterFactory():
 	add_parameter("mod", new TParameter<bool>(m_modulate,false, "additive or modulated noise"));
 }
 
-C2DFilterPlugin::ProductPtr C2DNoiseImageFilterFactory::do_create()const
+C2DFilter *C2DNoiseImageFilterFactory::do_create()const
 {
 
 	const CNoiseGeneratorPluginHandler::Instance& ng = CNoiseGeneratorPluginHandler::instance();
@@ -107,7 +107,7 @@ C2DFilterPlugin::ProductPtr C2DNoiseImageFilterFactory::do_create()const
 	if (!generator)
 		throw invalid_argument(m_noise_gen + " does not describe a noise generator");
 
-	return C2DFilterPlugin::ProductPtr(new C2DNoise(generator, m_modulate));
+	return new C2DNoise(generator, m_modulate);
 }
 
 const string C2DNoiseImageFilterFactory::do_get_descr()const

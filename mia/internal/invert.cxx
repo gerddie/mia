@@ -63,9 +63,9 @@ TInvertFilterPlugin<Image>::TInvertFilterPlugin():
 }
 
 template <class Image> 
-typename TImageFilterPlugin<Image>::ProductPtr TInvertFilterPlugin<Image>::do_create()const
+TImageFilter<Image> *TInvertFilterPlugin<Image>::do_create()const
 {
-	return typename TImageFilterPlugin<Image>::ProductPtr(new TInvert<Image>()); 
+	return new TInvert<Image>(); 
 }
 
 template <class Image> 

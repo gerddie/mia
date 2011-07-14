@@ -84,7 +84,7 @@ class C2DDirectRegTimeStepPlugin : public C2DRegTimeStepPlugin {
 public:
 	C2DDirectRegTimeStepPlugin();
 private:
-	C2DRegTimeStepPlugin::ProductPtr do_create()const;
+	C2DRegTimeStep *do_create()const;
 	bool do_test() const;
 	const string do_get_descr()const;
 };
@@ -95,9 +95,9 @@ C2DDirectRegTimeStepPlugin::C2DDirectRegTimeStepPlugin():
 {
 }
 
-C2DRegTimeStepPlugin::ProductPtr C2DDirectRegTimeStepPlugin::do_create()const
+C2DRegTimeStep *C2DDirectRegTimeStepPlugin::do_create()const
 {
-	return C2DRegTimeStepPlugin::ProductPtr(new C2DDirectRegTimeStep(get_min_timestep(), get_max_timestep()));
+	return new C2DDirectRegTimeStep(get_min_timestep(), get_max_timestep());
 }
 
 bool C2DDirectRegTimeStepPlugin::do_test() const

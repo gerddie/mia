@@ -201,7 +201,7 @@ class C3DImageFullCostPlugin: public C3DFullCostPlugin {
 public: 
 	C3DImageFullCostPlugin(); 
 private: 
-	C3DFullCostPlugin::ProductPtr do_create(float weight) const;
+	C3DFullCost *do_create(float weight) const;
 	const std::string do_get_descr() const;
 	std::string m_src_name;
 	std::string m_ref_name;
@@ -225,15 +225,14 @@ C3DImageFullCostPlugin::C3DImageFullCostPlugin():
 	add_parameter("debug", new CBoolParameter(m_debug, false, "Save intermediate resuts for debugging")); 
 }
 
-C3DFullCostPlugin::ProductPtr C3DImageFullCostPlugin::do_create(float weight) const
+C3DFullCost *C3DImageFullCostPlugin::do_create(float weight) const
 {
 	cvdebug() << "create C3DImageFullCostPlugin with weight= " << weight 
 		  << " src=" << m_src_name << " ref=" << m_ref_name 
 		  << " cost=" << m_cost_kernel << "\n";
 
-	return C3DFullCostPlugin::ProductPtr(
-		new C3DImageFullCost(m_src_name, m_ref_name, 
-				     m_cost_kernel, m_interpolator, weight, m_debug)); 
+	return new C3DImageFullCost(m_src_name, m_ref_name, 
+				    m_cost_kernel, m_interpolator, weight, m_debug); 
 }
 
 const std::string C3DImageFullCostPlugin::do_get_descr() const

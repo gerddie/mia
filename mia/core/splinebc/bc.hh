@@ -113,7 +113,7 @@ class CMirrorOnBoundaryPlugin: public CSplineBoundaryConditionPlugin {
 public: 
 	CMirrorOnBoundaryPlugin(); 
 private: 
-	virtual ProductPtr do_create(int width) const; 
+	virtual CSplineBoundaryCondition *do_create(int width) const; 
 	virtual const std::string do_get_descr() const; 
 }; 
 
@@ -121,7 +121,7 @@ class CRepeatBoundaryPlugin: public CSplineBoundaryConditionPlugin {
 public: 
 	CRepeatBoundaryPlugin(); 
 private: 
-	virtual ProductPtr do_create(int width) const; 
+	virtual CSplineBoundaryCondition *do_create(int width) const; 
 	virtual const std::string do_get_descr() const; 
 }; 
 
@@ -129,7 +129,7 @@ class CZeroBoundaryPlugin: public CSplineBoundaryConditionPlugin {
 public: 
 	CZeroBoundaryPlugin(); 
 private: 
-	virtual ProductPtr do_create(int width) const; 
+	virtual CSplineBoundaryCondition *do_create(int width) const; 
 	virtual const std::string do_get_descr() const; 
 }; 
 

@@ -174,9 +174,9 @@ C3DScaleFilterPlugin::C3DScaleFilterPlugin():
 }
 
 
-C3DScaleFilterPlugin::ProductPtr C3DScaleFilterPlugin::do_create()const
+C3DFilter *C3DScaleFilterPlugin::do_create()const
 {
-	return C3DScaleFilterPlugin::ProductPtr(new CScale(m_s, m_interp));
+	return new CScale(m_s, m_interp);
 }
 
 const string C3DScaleFilterPlugin::do_get_descr()const

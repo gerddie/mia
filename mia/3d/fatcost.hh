@@ -48,11 +48,11 @@ private:
 class EXPORT_3D C3DFatImageCostPlugin: public TFactory<C3DImageFatCost> {
 public:
 	C3DFatImageCostPlugin(const char *name);
-	P3DImageFatCost create_directly( P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight);
+	C3DImageFatCost *create_directly( P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight);
 private:
-	virtual C3DFatImageCostPlugin::ProductPtr do_create() const;
-	virtual C3DFatImageCostPlugin::ProductPtr do_create(P3DImage src, P3DImage ref,
-							    P3DInterpolatorFactory ipf, float weight) const = 0;
+	virtual C3DImageFatCost *do_create() const;
+	virtual C3DImageFatCost *do_create(P3DImage src, P3DImage ref,
+					   P3DInterpolatorFactory ipf, float weight) const = 0;
 
 	std::string m_src_name;
 	std::string m_ref_name;
@@ -76,7 +76,7 @@ public:
 class EXPORT_3D C3DFatImageCostPluginHandlerImpl: public TFactoryPluginHandler<C3DFatImageCostPlugin> {
 public:
 	C3DFatImageCostPluginHandlerImpl(const std::list<boost::filesystem::path>& searchpath);
-	P3DImageFatCost create_directly(const std::string& plugin, P3DImage src, P3DImage ref,
+	C3DImageFatCost *create_directly(const std::string& plugin, P3DImage src, P3DImage ref,
 					P3DInterpolatorFactory ipf, float weight) const;
 };
 

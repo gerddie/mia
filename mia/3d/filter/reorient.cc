@@ -256,9 +256,9 @@ C3DReorientImageFilterFactory::C3DReorientImageFilterFactory():
 }
 
 /* The factory create function creates and returns the filter with the given options*/
-C3DFilterPlugin::ProductPtr C3DReorientImageFilterFactory::do_create()const
+C3DFilter *C3DReorientImageFilterFactory::do_create()const
 {
-	return C3DFilterPlugin::ProductPtr(new C3DReorient(m_orientation));
+	return new C3DReorient(m_orientation);
 }
 
 /* This function sreturns a short description of the filter */

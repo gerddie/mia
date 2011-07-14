@@ -78,11 +78,11 @@ TDelayedParameter<T>::TDelayedParameter(const std::string& key):
 template <typename T>
 const T TDelayedParameter<T>::get() const
 {
-	if (!(CDatapool::Instance().has_key(m_key))) {
+	if (!(CDatapool::instance().has_key(m_key))) {
 		THROW(std::invalid_argument, "TDelayedParameter::get(): Key '" << m_key 
 		      << "' is not availabe in the data pool");  
 	}
-	return boost::any_cast<T>(CDatapool::Instance().get(m_key)); 
+	return boost::any_cast<T>(CDatapool::instance().get(m_key)); 
 }
 
 NS_MIA_END

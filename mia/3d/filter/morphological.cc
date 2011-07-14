@@ -184,7 +184,7 @@ C3DMorphFilterFactory::C3DMorphFilterFactory(const char *name):
 }
 
 
-C3DFilterPlugin::ProductPtr C3DMorphFilterFactory::do_create()const
+C3DFilter *C3DMorphFilterFactory::do_create()const
 {
 	cvdebug() << "create shape from " << m_shape_descr << '\n';
 	P3DShape shape(C3DShapePluginHandler::instance().produce(m_shape_descr.c_str()));
@@ -204,9 +204,9 @@ C3DFilterPlugin::ProductPtr C3DMorphFilterFactory::do_create()const
 }
 
 
-C3DDilateFilterFactory::ProductPtr C3DDilateFilterFactory::dodo_create(P3DShape shape, bool bhint) const
+C3DFilter *C3DDilateFilterFactory::dodo_create(P3DShape shape, bool bhint) const
 {
-	return C3DDilateFilterFactory::ProductPtr (new C3DDilate(shape, bhint));
+	return new C3DDilate(shape, bhint);
 }
 
 const string C3DDilateFilterFactory::do_get_descr()const
@@ -333,9 +333,9 @@ C3DErodeFilterFactory::C3DErodeFilterFactory():
 {
 }
 
-C3DErodeFilterFactory::ProductPtr C3DErodeFilterFactory::dodo_create(P3DShape shape, bool bhint) const
+C3DFilter *C3DErodeFilterFactory::dodo_create(P3DShape shape, bool bhint) const
 {
-	return C3DErodeFilterFactory::ProductPtr (new C3DErode(shape, bhint));
+	return new C3DErode(shape, bhint);
 }
 
 const string C3DErodeFilterFactory::do_get_descr()const
@@ -372,9 +372,9 @@ C3DOpenFilterFactory::C3DOpenFilterFactory():
 {
 }
 
-C3DFilterPlugin::ProductPtr C3DOpenFilterFactory::dodo_create(P3DShape shape, bool hint) const
+C3DFilter *C3DOpenFilterFactory::dodo_create(P3DShape shape, bool hint) const
 {
-	return C3DFilterPlugin::ProductPtr(new C3DOpenClose(shape, hint, true));
+	return new C3DOpenClose(shape, hint, true);
 }
 
 const string C3DOpenFilterFactory::do_get_descr()const
@@ -393,9 +393,9 @@ C3DCloseFilterFactory::C3DCloseFilterFactory():
 {
 }
 
-C3DFilterPlugin::ProductPtr C3DCloseFilterFactory::dodo_create(P3DShape shape, bool hint)const
+C3DFilter *C3DCloseFilterFactory::dodo_create(P3DShape shape, bool hint)const
 {
-	return C3DFilterPlugin::ProductPtr(new C3DOpenClose(shape, hint, false));
+	return new C3DOpenClose(shape, hint, false);
 }
 
 const string C3DCloseFilterFactory::do_get_descr()const

@@ -180,9 +180,9 @@ C3DMLVImageFilterFactory::C3DMLVImageFilterFactory():
 
 }
 
-C3DFilterPlugin::ProductPtr C3DMLVImageFilterFactory::do_create()const
+C3DFilter *C3DMLVImageFilterFactory::do_create()const
 {
-	return C3DFilterPlugin::ProductPtr(new C3DMLVImageFilter(m_hw));
+	return new C3DMLVImageFilter(m_hw);
 }
 
 const string C3DMLVImageFilterFactory::do_get_descr()const

@@ -123,11 +123,11 @@ CGaussNoiseGeneratorFactory::CGaussNoiseGeneratorFactory():
 
 }
 
-CNoiseGeneratorPlugin::ProductPtr
+CNoiseGenerator *
 CGaussNoiseGeneratorFactory::do_create() const
 {
 
-	return CNoiseGeneratorPlugin::ProductPtr(new CGaussNoiseGenerator(m_param_seed, m_param_mu, m_param_sigma));
+	return new CGaussNoiseGenerator(m_param_seed, m_param_mu, m_param_sigma);
 }
 
 const string CGaussNoiseGeneratorFactory::do_get_descr()const

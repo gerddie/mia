@@ -79,7 +79,7 @@ C2DLabelMapFilterPlugin::C2DLabelMapFilterPlugin():
 }
 
 
-C2DFilterPlugin::ProductPtr C2DLabelMapFilterPlugin::do_create() const
+C2DFilter *C2DLabelMapFilterPlugin::do_create() const
 {
 	ifstream is(m_map.c_str()); 
 
@@ -88,7 +88,7 @@ C2DFilterPlugin::ProductPtr C2DLabelMapFilterPlugin::do_create() const
 		      "Unable to open file '" << m_map << "'"); 
 	
 	CLabelMap map(is);
-	return C2DFilterPlugin::ProductPtr(new C2DLabelMapFilter(map)); 
+	return new C2DLabelMapFilter(map); 
 }
 
 const string C2DLabelMapFilterPlugin::do_get_descr()const

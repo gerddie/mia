@@ -84,9 +84,9 @@ CSphere3DShapeFactory::CSphere3DShapeFactory():
 	add_parameter("r", new CFloatParameter(m_r, 0, numeric_limits<float>::max(), false, "sphere radius"));
 }
 
-C3DShapePlugin::ProductPtr CSphere3DShapeFactory::do_create()const
+C3DShape *CSphere3DShapeFactory::do_create()const
 {
-	return CSphere3DShapeFactory::ProductPtr(new CSphere3DShape(m_r));
+	return new CSphere3DShape(m_r);
 }
 
 

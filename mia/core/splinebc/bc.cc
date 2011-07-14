@@ -305,9 +305,9 @@ CMirrorOnBoundaryPlugin::CMirrorOnBoundaryPlugin():
 {
 }
 
-CSplineBoundaryConditionPlugin::ProductPtr CMirrorOnBoundaryPlugin::do_create(int width) const
+CSplineBoundaryCondition *CMirrorOnBoundaryPlugin::do_create(int width) const
 {
-	return CSplineBoundaryConditionPlugin::ProductPtr(new CMirrorOnBoundary(width)); 
+	return new CMirrorOnBoundary(width); 
 }
 
 const std::string CMirrorOnBoundaryPlugin::do_get_descr() const
@@ -321,9 +321,9 @@ CRepeatBoundaryPlugin::CRepeatBoundaryPlugin():
 {
 }
 
-CSplineBoundaryConditionPlugin::ProductPtr CRepeatBoundaryPlugin::do_create(int width) const
+CSplineBoundaryCondition *CRepeatBoundaryPlugin::do_create(int width) const
 {
-	return CSplineBoundaryConditionPlugin::ProductPtr(new CRepeatBoundary(width)); 
+	return new CRepeatBoundary(width); 
 }
 
 const std::string CRepeatBoundaryPlugin::do_get_descr() const
@@ -337,9 +337,9 @@ CZeroBoundaryPlugin::CZeroBoundaryPlugin():
 {
 }
 
-CSplineBoundaryConditionPlugin::ProductPtr CZeroBoundaryPlugin::do_create(int width) const
+CSplineBoundaryCondition *CZeroBoundaryPlugin::do_create(int width) const
 {
-	return CSplineBoundaryConditionPlugin::ProductPtr(new CZeroBoundary(width));
+	return new CZeroBoundary(width);
 }
 	
 const std::string CZeroBoundaryPlugin::do_get_descr() const

@@ -88,7 +88,7 @@ C2DAnisoDiff::C2DAnisoDiff(int maxiter, float epsilon):
 class CAnisoDiff2DImageFilterFactory: public C2DFilterPlugin {
 public: 
 	CAnisoDiff2DImageFilterFactory();
-	virtual C2DFilterPlugin::ProductPtr create(const CParsedOptions& options) const;
+	virtual C2DFilter *create(const CParsedOptions& options) const;
 	virtual const string do_get_descr()const; 
 };
 
@@ -313,11 +313,11 @@ CAnisoDiff2DImageFilterFactory::CAnisoDiff2DImageFilterFactory():
 	add_help(param_epsilon); 
 }
 
-C2DFilterPlugin::ProductPtr CAnisoDiff2DImageFilterFactory::create(const CParsedOptions& options) const
+C2DFilter *CAnisoDiff2DImageFilterFactory::create(const CParsedOptions& options) const
 {
 	int max_iter = param_iterations.get_value(options); 
 	float epsilon = param_epsilon.get_value(options); 
-	return C2DFilterPlugin::ProductPtr(new CAnisoDiff2DImageFilter(max_iter, epsilon)); 
+	return C2DFilter *new CAnisoDiff2DImageFilter(max_iter, epsilon); 
 }
 
 const string CAnisoDiff2DImageFilterFactory::do_get_descr()const

@@ -127,7 +127,7 @@ C2DSeparableConvoluteFilterPlugin::C2DSeparableConvoluteFilterPlugin():
 	add_parameter("ky", new CStringParameter(m_ky, false, "filter kernel in y-direction"));
 }
 
-C2DSeparableConvoluteFilterPlugin::ProductPtr C2DSeparableConvoluteFilterPlugin::do_create()const
+C2DFilter *C2DSeparableConvoluteFilterPlugin::do_create()const
 {
 	C1DSpacialKernelPlugin::ProductPtr kx, ky, kz;
 	const C1DSpacialKernelPluginHandler::Instance& skp = C1DSpacialKernelPluginHandler::instance();
@@ -135,7 +135,7 @@ C2DSeparableConvoluteFilterPlugin::ProductPtr C2DSeparableConvoluteFilterPlugin:
 	kx = skp.produce(m_kx.c_str());
 	ky = skp.produce(m_ky.c_str());
 
-	return C2DSeparableConvoluteFilterPlugin::ProductPtr(new CSeparableConvolute(kx, ky));
+	return new CSeparableConvolute(kx, ky);
 }
 
 const string C2DSeparableConvoluteFilterPlugin::do_get_descr()const
@@ -158,7 +158,7 @@ C2DGaussFilterPlugin::C2DGaussFilterPlugin():
 					     false, "filter width parameter"));
 }
 
-C2DFilterPlugin::ProductPtr C2DGaussFilterPlugin::do_create()const
+C2DFilter *C2DGaussFilterPlugin::do_create()const
 {
 	C1DSpacialKernelPlugin::ProductPtr k;
 	const C1DSpacialKernelPluginHandler::Instance&  skp = C1DSpacialKernelPluginHandler::instance();
@@ -167,7 +167,7 @@ C2DFilterPlugin::ProductPtr C2DGaussFilterPlugin::do_create()const
 	fdescr << "gauss:w=" << m_w;
 	k = skp.produce(fdescr.str().c_str());
 
-	return C2DSeparableConvoluteFilterPlugin::ProductPtr(new CSeparableConvolute(k, k));
+	return new CSeparableConvolute(k, k);
 }
 
 const string C2DGaussFilterPlugin::do_get_descr()const

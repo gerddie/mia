@@ -152,9 +152,9 @@ C2DScaleFilterPlugin::C2DScaleFilterPlugin():
 }
 
 
-C2DScaleFilterPlugin::ProductPtr C2DScaleFilterPlugin::do_create()const
+C2DFilter *C2DScaleFilterPlugin::do_create()const
 {
-	return C2DScaleFilterPlugin::ProductPtr(new CScale(m_s, m_interp));
+	return new CScale(m_s, m_interp);
 }
 
 const string C2DScaleFilterPlugin::do_get_descr()const

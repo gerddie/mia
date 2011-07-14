@@ -109,7 +109,7 @@ public:
 class C2DClassMapFilterImageFilterFactory: public C2DFilterPlugin {
 public: 
 	C2DClassMapFilterImageFilterFactory();
-	virtual C2DFilterPlugin::ProductPtr create(const CParsedOptions& options) const;
+	virtual C2DFilter *create(const CParsedOptions& options) const;
 	virtual const string do_get_descr()const; 
 private: 
 //	virtual int do_test() const; 
@@ -134,7 +134,7 @@ C2DClassMapFilterImageFilterFactory::C2DClassMapFilterImageFilterFactory():
 	add_help(param_class);
 }
 
-C2DFilterPlugin::ProductPtr C2DClassMapFilterImageFilterFactory::create(const CParsedOptions& options) const
+C2DFilter *C2DClassMapFilterImageFilterFactory::create(const CParsedOptions& options) const
 {
 	string map_name = param_map.get_value(options); 
 	size_t sclass = param_class.get_value(options); 
@@ -149,7 +149,7 @@ C2DFilterPlugin::ProductPtr C2DClassMapFilterImageFilterFactory::create(const CP
 		throw invalid_argument(errmsg.str()); 
 	}
 	
-	return C2DFilterPlugin::ProductPtr(new C2DClassMapFilterImageFilter(pv[sclass])); 		
+	return new C2DClassMapFilterImageFilter(pv[sclass]); 		
 }
 	
 const string C2DClassMapFilterImageFilterFactory::do_get_descr()const

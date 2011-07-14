@@ -1,4 +1,5 @@
-/*
+/* -*- mia-c++ -*- 
+**
 ** Copyrigh (C) 2007 Gert Wollny <gert at die.upm.es>
 **   E.S.T.I. Telecomunication, Universidad Politecnica, Madrid
 **
@@ -73,8 +74,8 @@ public:
 	C3DMorphFilterFactory(const char *name);
 
 private:
-	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
-	virtual mia::C3DFilterPlugin::ProductPtr dodo_create(mia::P3DShape shape, bool hint) const = 0;
+	virtual mia::C3DFilter *do_create()const;
+	virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const = 0;
 	virtual void prepare_path() const;
 
 
@@ -86,7 +87,7 @@ class C3DDilateFilterFactory: public C3DMorphFilterFactory {
 public:
 	C3DDilateFilterFactory();
 private:
-	virtual mia::C3DFilterPlugin::ProductPtr dodo_create(mia::P3DShape shape, bool hint) const;
+	virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const;
 
 	virtual const std::string do_get_descr()const;
 
@@ -98,7 +99,7 @@ class C3DErodeFilterFactory: public C3DMorphFilterFactory {
 public:
 	C3DErodeFilterFactory();
 private:
-	virtual mia::C3DFilterPlugin::ProductPtr dodo_create(mia::P3DShape shape, bool hint) const;
+	virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const;
 
 	virtual const std::string do_get_descr()const;
 
@@ -111,7 +112,7 @@ class C3DOpenFilterFactory: public C3DMorphFilterFactory {
 public:
 	C3DOpenFilterFactory();
 private:
-	virtual mia::C3DFilterPlugin::ProductPtr dodo_create(mia::P3DShape shape, bool hint) const;
+	virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const;
 
 	virtual const std::string do_get_descr()const;
 
@@ -123,7 +124,7 @@ class C3DCloseFilterFactory: public C3DMorphFilterFactory {
 public:
 	C3DCloseFilterFactory();
 private:
-	virtual mia::C3DFilterPlugin::ProductPtr dodo_create(mia::P3DShape shape, bool hint) const;
+	virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const;
 
 	virtual const std::string do_get_descr()const;
 

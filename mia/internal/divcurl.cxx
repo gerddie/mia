@@ -86,12 +86,12 @@ TDivcurlFullCostPlugin<T>::TDivcurlFullCostPlugin():
 }
 
 template <typename T> 
-typename TFullCostPlugin<T>::ProductPtr TDivcurlFullCostPlugin<T>::do_create(float weight) const
+TFullCost<T> *TDivcurlFullCostPlugin<T>::do_create(float weight) const
 {
 	cvdebug() << "create C2DDivCurlFullCost with weight= " << weight 
 		  << " div=" << m_div << " curl=" << m_curl << "\n"; 
 		
-	return typename TFullCostPlugin<T>::ProductPtr(new TDivCurlFullCost<T>(this->m_div, this->m_curl, weight)); 
+	return new TDivCurlFullCost<T>(this->m_div, this->m_curl, weight); 
 }
 
 template <typename T> 

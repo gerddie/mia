@@ -176,7 +176,7 @@ class CLabelXMapPlugin: public C3DImageCombinerPlugin {
 public:
 	CLabelXMapPlugin();
 private:
-	virtual C3DImageCombinerPlugin::ProductPtr do_create()const;
+	virtual C3DImageCombiner *do_create()const;
 	virtual const string do_get_descr() const;
 	virtual bool do_test() const;
 
@@ -187,9 +187,9 @@ CLabelXMapPlugin::CLabelXMapPlugin():
 {
 }
 
-C3DImageCombinerPlugin::ProductPtr CLabelXMapPlugin::do_create()const
+C3DImageCombiner *CLabelXMapPlugin::do_create()const
 {
-	return C3DImageCombinerPlugin::ProductPtr(new CLabelXMap);
+	return new CLabelXMap;
 }
 
 const string CLabelXMapPlugin::do_get_descr() const

@@ -129,9 +129,9 @@ C2DFilterPluginFactory::C2DFilterPluginFactory():
 	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(), false, "half filter width"));
 }
 
-C2DFilterPluginFactory::ProductPtr C2DFilterPluginFactory::do_create()const
+C2DFilter *C2DFilterPluginFactory::do_create()const
 {
-	return C2DFilterPluginFactory::ProductPtr(new C2DMedian(m_hw));
+	return new C2DMedian(m_hw);
 }
 
 const string C2DFilterPluginFactory::do_get_descr()const
@@ -184,9 +184,9 @@ C2DSaltAndPepperFilterFactory::C2DSaltAndPepperFilterFactory():
 	add_parameter("thresh", new CFloatParameter(m_thresh, 0, numeric_limits<float>::max(), false, "thresh value"));
 }
 
-C2DFilterPlugin::ProductPtr C2DSaltAndPepperFilterFactory::do_create()const
+C2DFilter *C2DSaltAndPepperFilterFactory::do_create()const
 {
-	return C2DFilterPlugin::ProductPtr(new C2DSaltAndPepperFilter(m_hw, m_thresh));
+	return new C2DSaltAndPepperFilter(m_hw, m_thresh);
 }
 const string  C2DSaltAndPepperFilterFactory::do_get_descr() const
 {

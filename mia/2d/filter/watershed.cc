@@ -83,7 +83,7 @@ public:
 class C2DWatershedFilterImageFilterFactory: public C2DFilterPlugin {
 public: 
 	C2DWatershedFilterImageFilterFactory();
-	virtual C2DFilterPlugin::ProductPtr create(const CParsedOptions& options) const;
+	virtual C2DFilter *create(const CParsedOptions& options) const;
 	virtual const string do_get_descr()const; 
 private: 
 //	virtual int do_test() const; 
@@ -242,7 +242,7 @@ C2DWatershedFilterImageFilterFactory::C2DWatershedFilterImageFilterFactory():
 	add_help(param_width);
 }
 
-C2DFilterPlugin::ProductPtr C2DWatershedFilterImageFilterFactory::create(const CParsedOptions& options) const
+C2DFilter *C2DWatershedFilterImageFilterFactory::create(const CParsedOptions& options) const
 {
 	string map = param_map.get_value(options); 
 	float thresh = param_thresh.get_value(options);
@@ -256,12 +256,12 @@ C2DFilterPlugin::ProductPtr C2DWatershedFilterImageFilterFactory::create(const C
 		throw invalid_argument(string("Unable to load probability map from ") + map); 
 	
 	if (sclass < pv.size())
-		return C2DFilterPlugin::ProductPtr(new C2DWatershedFilterImageFilter(hwidth, thresh, steep, tol, pv, sclass)); 
+		return C2DFilter *new C2DWatershedFilterImageFilter(hwidth, thresh, steep, tol, pv, sclass); 
 	else {
 		stringstream errmsg; 
 		errmsg << "selected class '" << sclass << "' out of probability map range"; 
 		throw invalid_argument(errmsg.str()); 
-		return C2DFilterPlugin::ProductPtr();
+		return NUlL;
 	}
 		
 }

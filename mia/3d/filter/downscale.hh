@@ -49,7 +49,7 @@ private:
 class C3DDownscaleFilterPlugin: public mia::C3DFilterPlugin {
 public:
 	C3DDownscaleFilterPlugin();
-	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
 

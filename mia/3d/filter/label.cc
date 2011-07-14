@@ -128,12 +128,12 @@ C3DLabelFilterPlugin::C3DLabelFilterPlugin():
 	add_parameter("n", new CStringParameter(m_mask_descr, false, "neighborhood mask")) ;
 }
 
-C3DFilterPlugin::ProductPtr C3DLabelFilterPlugin::do_create()const
+C3DFilter *C3DLabelFilterPlugin::do_create()const
 {
 	P3DShape mask = C3DShapePluginHandler::instance().produce(m_mask_descr.c_str());
 	if (!mask)
-		return C3DFilterPlugin::ProductPtr();
-	return C3DFilterPlugin::ProductPtr(new CLabel(mask));
+		return NULL;
+	return new CLabel(mask);
 }
 
 const string C3DLabelFilterPlugin::do_get_descr()const

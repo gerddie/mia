@@ -90,6 +90,7 @@ private:
 
 
 /// Base class for image combiners 
+
 typedef TFactory<C2DImageCombiner> C2DImageCombinerPlugin;
 
 /// Plugin handler for image combiner plugins 

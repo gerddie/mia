@@ -53,7 +53,7 @@ void C2DIdentityRegModel::do_solve(const mia::C2DFVectorfield& b, mia::C2DFVecto
 class C2DIdentityRegModelPlugin: public C2DRegModelPlugin {
 public:
 	C2DIdentityRegModelPlugin();
-	C2DIdentityRegModelPlugin::ProductPtr do_create()const;
+	C2DRegModel *do_create()const;
 
 private:
 	bool do_test() const;
@@ -65,10 +65,9 @@ C2DIdentityRegModelPlugin::C2DIdentityRegModelPlugin():
 {
 }
 
-C2DIdentityRegModelPlugin::ProductPtr C2DIdentityRegModelPlugin::do_create()const
+C2DRegModel *C2DIdentityRegModelPlugin::do_create()const
 {
-	return C2DIdentityRegModelPlugin::ProductPtr(
-		new C2DIdentityRegModel());
+	return new C2DIdentityRegModel();
 }
 
 bool C2DIdentityRegModelPlugin::do_test() const

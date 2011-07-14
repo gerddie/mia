@@ -303,9 +303,9 @@ C2DExtKuwaImageFilterFactory::C2DExtKuwaImageFilterFactory():
 	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(), false, "filter width parameter"));
 }
 
-C2DExtKuwaImageFilterFactory::ProductPtr C2DExtKuwaImageFilterFactory::do_create()const
+C2DFilter *C2DExtKuwaImageFilterFactory::do_create()const
 {
-	return C2DExtKuwaImageFilterFactory::ProductPtr(new C2DMLV(m_hw));
+	return new C2DMLV(m_hw);
 }
 
 const string C2DExtKuwaImageFilterFactory::do_get_descr()const

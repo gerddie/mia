@@ -30,7 +30,7 @@ class T2DImageCombinerPlugin: public C2DImageCombinerPlugin {
 public:
 	T2DImageCombinerPlugin(); 
 private:
-	virtual mia::C2DImageCombinerPlugin::ProductPtr do_create()const;
+	virtual Combiner *do_create()const;
 	virtual const std::string do_get_descr() const;
 }; 
 
@@ -42,10 +42,9 @@ T2DImageCombinerPlugin<Combiner, name>::T2DImageCombinerPlugin():
 }
 	
 template <typename Combiner, const char * const name> 
-C2DImageCombinerPlugin::ProductPtr 
-T2DImageCombinerPlugin<Combiner, name>::do_create()const
+Combiner *T2DImageCombinerPlugin<Combiner, name>::do_create()const
 {
-	return C2DImageCombinerPlugin::ProductPtr (new Combiner); 
+	return new Combiner; 
 }
 
 template <typename Combiner, const char name[]> 

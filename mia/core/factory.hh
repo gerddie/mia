@@ -1,3 +1,4 @@
+
 /* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
@@ -81,11 +82,11 @@ public:
 	    @param params original parameter string 
 	    @returns an instance of the requested object
 	*/
-	virtual ProductPtr create(const CParsedOptions& options, char const *params);
+	virtual Product *create(const CParsedOptions& options, char const *params) __attribute__((warn_unused_result));
 	
 private:
 	virtual bool do_test() const; 
-	virtual ProductPtr do_create() const = 0;
+	virtual Product *do_create() const __attribute__((warn_unused_result)) = 0 ;
 	CMutex m_mutex; 
 };
 
@@ -185,13 +186,13 @@ TFactory<I>::TFactory(char const * const  name):
 }
 
 template <typename I>
-typename TFactory<I>::ProductPtr TFactory<I>::create(const CParsedOptions& options, char const *params)
+typename TFactory<I>::Product *TFactory<I>::create(const CParsedOptions& options, char const *params)
 {
 	CScopedLock lock(m_mutex); 
 	try {
 		this->set_parameters(options);
 		this->check_parameters();
-		ProductPtr product = this->do_create();
+		auto product = this->do_create();
 		if (product) {
 			product->set_module(this->get_module()); 
 			product->set_init_string(params); 
@@ -243,7 +244,7 @@ TFactoryPluginHandler<I>::produce(char const *params)const
 
 	auto factory = this->plugin(factory_name.c_str());
 	if (factory) 
-		return factory->create(param_list.begin()->second,params);
+		return ProductPtr(factory->create(param_list.begin()->second,params));
 	else 
 		return ProductPtr(); 
 }

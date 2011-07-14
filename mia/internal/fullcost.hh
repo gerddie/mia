@@ -114,8 +114,8 @@ class EXPORT_HANDLER TFullCostPlugin: public TFactory<TFullCost<Transform> > {
 public:
 	TFullCostPlugin(const char *name);
 private:
-	virtual typename TFullCostPlugin<Transform>::ProductPtr do_create() const;
-	virtual typename TFullCostPlugin<Transform>::ProductPtr do_create(float weight) const = 0;
+	virtual TFullCost<Transform> *do_create() const;
+	virtual TFullCost<Transform> *do_create(float weight) const = 0;
 	float m_weight;
 }; 
 

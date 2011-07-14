@@ -274,7 +274,7 @@ public:
 	typedef C2DTransformCreatorPlugin::ProductPtr ProductPtr;
 
 	C2DTranslateTransformCreatorPlugin();
-	virtual ProductPtr do_create() const;
+	virtual C2DTransformCreator *do_create() const;
 	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
@@ -284,10 +284,9 @@ C2DTranslateTransformCreatorPlugin::C2DTranslateTransformCreatorPlugin():
 {
 }
 
-C2DTranslateTransformCreatorPlugin::ProductPtr
-C2DTranslateTransformCreatorPlugin::do_create() const
+C2DTransformCreator *C2DTranslateTransformCreatorPlugin::do_create() const
 {
-	return ProductPtr(new C2DTranslateTransformCreator());
+	return new C2DTranslateTransformCreator();
 }
 
 bool C2DTranslateTransformCreatorPlugin::do_test() const

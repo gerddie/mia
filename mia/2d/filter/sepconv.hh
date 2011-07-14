@@ -50,7 +50,7 @@ private:
 class C2DSeparableConvoluteFilterPlugin: public mia::C2DFilterPlugin {
 public:
 	C2DSeparableConvoluteFilterPlugin();
-	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
 
@@ -63,7 +63,7 @@ private:
 class C2DGaussFilterPlugin: public mia::C2DFilterPlugin {
 public:
 	C2DGaussFilterPlugin();
-	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
 	int m_w;

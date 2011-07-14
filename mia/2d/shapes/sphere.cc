@@ -82,9 +82,9 @@ CSphere2DShapeFactory::CSphere2DShapeFactory():
 	add_parameter("r", new CFloatParameter(m_r, 0, numeric_limits<float>::max(), false, "sphere radius"));
 }
 
-C2DShapePlugin::ProductPtr CSphere2DShapeFactory::do_create()const
+C2DShape *CSphere2DShapeFactory::do_create()const
 {
-	return CSphere2DShapeFactory::ProductPtr(new CSphere2DShape(m_r));
+	return new CSphere2DShape(m_r);
 }
 
 

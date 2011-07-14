@@ -193,9 +193,8 @@ class C3DNFGFatImageCostPlugin: public C3DFatImageCostPlugin {
 public:
 	C3DNFGFatImageCostPlugin();
 private:
-	virtual C3DFatImageCostPlugin::ProductPtr do_create(P3DImage src,
-							    P3DImage ref, P3DInterpolatorFactory ipf,
-							    float weight)const;
+	virtual C3DImageFatCost *do_create(P3DImage src, P3DImage ref, 
+					   P3DInterpolatorFactory ipf, float weight)const;
 	bool do_test() const;
 	const string do_get_descr()const;
 	string m_type;
@@ -213,7 +212,8 @@ C3DNFGFatImageCostPlugin::C3DNFGFatImageCostPlugin():
 
 enum ESubTypes {st_unknown, st_delta, st_scalar, st_cross};
 
-C3DFatImageCostPlugin::ProductPtr C3DNFGFatImageCostPlugin::do_create(P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight)const
+C3DImageFatCost *C3DNFGFatImageCostPlugin::do_create(P3DImage src, P3DImage ref, 
+						     P3DInterpolatorFactory ipf, float weight)const
 {
 	TRACE("C3DNFGFatImageCostPlugin::do_create");
 
@@ -235,7 +235,7 @@ C3DFatImageCostPlugin::ProductPtr C3DNFGFatImageCostPlugin::do_create(P3DImage s
 	default:
 		throw invalid_argument(string("C3DNFGFatImageCostPlugin: unknown cost sub-type '")+m_type+"'");
 	}
-	return C3DFatImageCostPlugin::ProductPtr(new CFatNFG3DImageCost(src, ref, ipf, weight, eval));
+	return new CFatNFG3DImageCost(src, ref, ipf, weight, eval);
 }
 
 bool C3DNFGFatImageCostPlugin::do_test() const

@@ -141,10 +141,10 @@ C2DFilterPluginFactory::C2DFilterPluginFactory():
 	add_parameter("k", new CStringParameter(m_kernel, true, "filter kernel"));
 }
 
-C2DFilterPluginFactory::ProductPtr C2DFilterPluginFactory::do_create()const
+C2DFilter *C2DFilterPluginFactory::do_create()const
 {
 	PFFT2DKernel k = CFFT2DKernelPluginHandler::instance().produce(m_kernel.c_str());
-	return C2DFilterPluginFactory::ProductPtr(new C2DFft(k));
+	return new C2DFft(k);
 }
 
 	const string C2DFilterPluginFactory::do_get_descr()const

@@ -1073,7 +1073,7 @@ public:
 	typedef C3DTransformCreatorPlugin::ProductPtr ProductPtr;
 
 	C3DSplineTransformCreatorPlugin();
-	virtual ProductPtr do_create() const;
+	virtual C3DTransformCreator *do_create() const;
 	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 private:
@@ -1098,11 +1098,10 @@ C3DSplineTransformCreatorPlugin::C3DSplineTransformCreatorPlugin():
 
 }
 
-C3DSplineTransformCreatorPlugin::ProductPtr
-C3DSplineTransformCreatorPlugin::do_create() const
+C3DTransformCreator *C3DSplineTransformCreatorPlugin::do_create() const
 {
 	TRACE_FUNCTION;
-	return ProductPtr(new C3DSplinebigTransformCreator(m_kernel, C3DFVector(m_rate, m_rate, m_rate), m_debug));
+	return new C3DSplinebigTransformCreator(m_kernel, C3DFVector(m_rate, m_rate, m_rate), m_debug);
 }
 
 bool C3DSplineTransformCreatorPlugin::do_test() const

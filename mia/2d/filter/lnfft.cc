@@ -76,7 +76,7 @@ public:
 class C2DImageLnFFTFilterFactory: public C2DFilterPlugin {
 public: 
 	C2DImageLnFFTFilterFactory();
-	virtual C2DFilterPlugin::ProductPtr create(const CParsedOptions& options) const;
+	virtual C2DFilter *create(const CParsedOptions& options) const;
 	virtual const string do_get_descr()const; 
 private: 
 	virtual int do_test() const; 
@@ -242,7 +242,7 @@ C2DImageLnFFTFilterFactory::C2DImageLnFFTFilterFactory():
 {
 }
 
-C2DFilterPlugin::ProductPtr C2DImageLnFFTFilterFactory::create(const CParsedOptions& options) const
+C2DFilter *C2DImageLnFFTFilterFactory::create(const CParsedOptions& options) const
 {
 	string kernel_descr = param_kernel.get_value(options); 
 	if (kernel_descr.empty())

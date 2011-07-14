@@ -61,10 +61,10 @@ C2DSSDFatImageCostPlugin::C2DSSDFatImageCostPlugin():
 	TRACE("C2DSSDFatImageCostPlugin::C2DSSDFatImageCostPlugin()");
 }
 
-C2DFatImageCostPlugin::ProductPtr C2DSSDFatImageCostPlugin::do_create(P2DImage src, P2DImage ref,
+C2DImageFatCost *C2DSSDFatImageCostPlugin::do_create(P2DImage src, P2DImage ref,
 								      P2DInterpolatorFactory ipf, float weight)const
 {
-	return C2DFatImageCostPlugin::ProductPtr(new CFatSSD2DImageCost(src, ref, ipf, weight));
+	return new CFatSSD2DImageCost(src, ref, ipf, weight);
 }
 
 bool  C2DSSDFatImageCostPlugin::do_test() const

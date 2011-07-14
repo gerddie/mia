@@ -103,9 +103,9 @@ C3DCropImageFilterFactory::C3DCropImageFilterFactory():
 	add_parameter("end", new TParameter<C3DBounds>(m_end, false, "end of cropping range, maximum = (-1,-1,-1)"));
 }
 
-C3DFilterPlugin::ProductPtr C3DCropImageFilterFactory::do_create()const
+C3DFilter *C3DCropImageFilterFactory::do_create()const
 {
-	return ProductPtr(new C3DCrop(m_begin, m_end));
+	return new C3DCrop(m_begin, m_end);
 }
 const std::string C3DCropImageFilterFactory::do_get_descr()const
 {

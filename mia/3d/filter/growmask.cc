@@ -147,7 +147,7 @@ C3DGrowmaskImageFilterFactory::C3DGrowmaskImageFilterFactory():
 }
 
 /* The factory create function creates and returns the filter with the given options*/
-C3DFilterPlugin::ProductPtr C3DGrowmaskImageFilterFactory::do_create()const
+C3DFilter *C3DGrowmaskImageFilterFactory::do_create()const
 {
 	// create neigborhood shape
 
@@ -155,7 +155,7 @@ C3DFilterPlugin::ProductPtr C3DGrowmaskImageFilterFactory::do_create()const
 
 	// load reference image
 	C3DImageDataKey ref_data = C3DImageIOPluginHandler::instance().load_to_pool(m_ref_filename);
-	return C3DFilterPlugin::ProductPtr(new C3DGrowmask(ref_data,shape, m_min));
+	return new C3DGrowmask(ref_data,shape, m_min);
 }
 
 /* This function sreturns a short description of the filter */

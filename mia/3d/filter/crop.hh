@@ -41,7 +41,7 @@ private:
 class C3DCropImageFilterFactory: public mia::C3DFilterPlugin {
 public:
 	C3DCropImageFilterFactory();
-	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 	virtual bool do_test()const {return true;};
 private:

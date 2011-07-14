@@ -111,7 +111,7 @@ TFullCostPlugin<T>::TFullCostPlugin(const char *name):
 }
 	
 template <typename T> 
-typename TFullCostPlugin<T>::ProductPtr TFullCostPlugin<T>::do_create() const
+TFullCost<T> *TFullCostPlugin<T>::do_create() const
 {
 	return do_create(m_weight); 
 }

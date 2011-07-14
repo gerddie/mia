@@ -83,12 +83,12 @@ C1DSpacialGaussKernelPlugin::C1DSpacialGaussKernelPlugin():
 					     false, "half filter width"));
 }
 
-C1DSpacialGaussKernelPlugin::ProductPtr C1DSpacialGaussKernelPlugin::do_create() const
+C1DFoldingKernel *C1DSpacialGaussKernelPlugin::do_create() const
 {
 	if (m_w > 0)
-		return C1DSpacialGaussKernelPlugin::ProductPtr(new C1DGaussFilterKernel(m_w));
+		return new C1DGaussFilterKernel(m_w);
 	else
-		return C1DSpacialGaussKernelPlugin::ProductPtr();
+		return NULL;
 }
 
 std::vector<double> C1DGaussFilterKernel::do_apply(const std::vector<double>& data) const

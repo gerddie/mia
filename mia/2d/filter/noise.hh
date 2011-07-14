@@ -49,7 +49,7 @@ private:
 class C2DNoiseImageFilterFactory: public mia::C2DFilterPlugin {
 public:
 	C2DNoiseImageFilterFactory();
-	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
 	std::string m_noise_gen;

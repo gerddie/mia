@@ -59,8 +59,8 @@ class C3DSSDFatImageCostPlugin: public C3DFatImageCostPlugin {
 public:
 	C3DSSDFatImageCostPlugin();
 private:
-	virtual C3DFatImageCostPlugin::ProductPtr do_create(P3DImage src,
-							    P3DImage ref, P3DInterpolatorFactory ipf, float weight)const;
+	virtual C3DImageFatCost *do_create(P3DImage src, P3DImage ref, 
+					   P3DInterpolatorFactory ipf, float weight)const;
 	bool  do_test() const;
 	const string do_get_descr()const;
 
@@ -72,10 +72,10 @@ C3DSSDFatImageCostPlugin::C3DSSDFatImageCostPlugin():
 	TRACE("C3DSSDFatImageCostPlugin::C3DSSDFatImageCostPlugin()");
 }
 
-C3DFatImageCostPlugin::ProductPtr C3DSSDFatImageCostPlugin::do_create(P3DImage src, P3DImage ref,
-								      P3DInterpolatorFactory ipf, float weight)const
+C3DImageFatCost *C3DSSDFatImageCostPlugin::do_create(P3DImage src, P3DImage ref,
+						     P3DInterpolatorFactory ipf, float weight)const
 {
-	return C3DFatImageCostPlugin::ProductPtr(new CFatSSD3DImageCost(src, ref, ipf, weight));
+	return new CFatSSD3DImageCost(src, ref, ipf, weight);
 }
 
 bool  C3DSSDFatImageCostPlugin::do_test() const
