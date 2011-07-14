@@ -69,6 +69,10 @@ public:
 
 	CSplineBoundaryCondition(); 
 
+
+	/**
+	   Default copy constructor 
+	 */
 	CSplineBoundaryCondition(const CSplineBoundaryCondition& other) = default; 
 
 	/**
@@ -130,7 +134,9 @@ public:
 	template <typename T> 
 	void template_filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const;
 
-
+	/**
+	   \returns a copy of the (derived) instance of this boundary condition 
+	 */
 	virtual Pointer clone() const = 0; 
 private:
 

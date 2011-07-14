@@ -147,7 +147,7 @@ TIOPluginHandler<I>::load_to_pool(const std::string& fname) const
 	TDelayedParameter<PData> result(fname); 
 	
 	// load to pool reuses available copies. 
-	if (CDatapool::Instance().has_key(fname)) 
+	if (CDatapool::instance().has_key(fname)) 
 		return result; 
 
 	const Interface *pp = preferred_plugin_ptr(fname); 
@@ -161,7 +161,7 @@ TIOPluginHandler<I>::load_to_pool(const std::string& fname) const
 		// on sucess put it into the pool and return the key 
 		PData retval = pp->load(fname); 
 		if (retval.get()) {
-			CDatapool::Instance().add(fname, retval); 
+			CDatapool::instance().add(fname, retval); 
 			return result; 
 		}
 	}
@@ -170,7 +170,7 @@ TIOPluginHandler<I>::load_to_pool(const std::string& fname) const
 	for (const_iterator i = this->begin(); i != this->end(); ++i) {
 		PData retval = 	i->second->load(fname); 
 		if (retval.get()) {
-			CDatapool::Instance().add(fname, retval); 
+			CDatapool::instance().add(fname, retval); 
 			return result; 
 		}
 	}
@@ -232,8 +232,8 @@ template <class I>
 typename TIOPluginHandler<I>::PData 
 TIOPluginHandler<I>::CDatapoolPlugin::do_load(const std::string& fname) const
 {
-	if (CDatapool::Instance().has_key(fname)) {
-		boost::any value = CDatapool::Instance().get(fname); 
+	if (CDatapool::instance().has_key(fname)) {
+		boost::any value = CDatapool::instance().get(fname); 
 		return boost::any_cast<typename Interface::PData>(value);
 	}else
 		return typename TIOPluginHandler<I>::PData(); 
@@ -246,7 +246,7 @@ bool TIOPluginHandler<I>::CDatapoolPlugin::do_save(const std::string& fname,
 	// why do I need to clone this? Being a shared pointer should be sufficient
 	typename Interface::PData value = 
 		typename Interface::PData(data.clone()); 
-	CDatapool::Instance().add(fname, value);
+	CDatapool::instance().add(fname, value);
 	return true; 
 }
 

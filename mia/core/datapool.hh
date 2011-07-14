@@ -41,7 +41,8 @@ NS_MIA_BEGIN
    that can be used to store some
    data temporarly like it would be stored on disk.
    Each IO plugin automatically defines an interface to store in and load
-   from this pool. The extension, by which this behaviour is triggered is ".datapool".
+   from this pool. The extension, by which this behaviour is triggered is ".@".
+
    \todo add delete key function,
    \todo add automatic key generation
    \todo all plugins that load data should load to the pool first to enable
@@ -53,8 +54,8 @@ public:
 
 	/**
 	   add some data to the pool, if the key already exists, the value  is replaced
-	   \param key: unique identifier
-	   \param value: value to be stored
+	   \param key unique identifier
+	   \param value value to be stored
 	 */
 	void add(const std::string& key, boost::any value);
 	/**
@@ -65,20 +66,20 @@ public:
 
 	/**
 	   gets some data and remove this data from the pool
-	   \param key: key of data to be retrieved
+	   \param key key of data to be retrieved
 	   \returns value indexed by key, and throws \a invalid argument if value not exists
 	 */
 	boost::any get_and_remove(const std::string& key);
 
 	/**
-	   \param key
+	   \param key 
 	   \returns \a true if key exists in pool and \a false if not
 	*/
 	bool has_key(const std::string& key) const;
 	/**
 	   \returns the unique instance of the data pool
 	 */
-	static CDatapool& Instance();
+	static CDatapool& instance();
 
 	/**
 	   function to be used for debugging purpouses
