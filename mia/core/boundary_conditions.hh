@@ -63,13 +63,19 @@ public:
 	/// data portion of the plugin search path 
 	static const char * const data_descr; 
 
+
+	/// pointer type to this boundary condition
+	typedef std::shared_ptr<CSplineBoundaryCondition> Pointer; 
+
 	CSplineBoundaryCondition(); 
+
+	CSplineBoundaryCondition(const CSplineBoundaryCondition& other) = default; 
 
 	/**
 	   Constructor for the boundary conditions. 
 	   \param width size of the coefficent domain 
 	 */
-
+	
 	CSplineBoundaryCondition(int width); 
 
 	/**
@@ -123,6 +129,9 @@ public:
 	
 	template <typename T> 
 	void template_filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const;
+
+
+	virtual Pointer clone() const = 0; 
 private:
 
 	virtual void do_apply(std::vector<int>& index, std::vector<double>& weights) const = 0;
@@ -140,7 +149,7 @@ private:
 /**  \ingroup interpol 
      Pointer type of the boundary conditions. 
 */
-typedef std::shared_ptr<CSplineBoundaryCondition> PSplineBoundaryCondition; 
+typedef CSplineBoundaryCondition::Pointer PSplineBoundaryCondition; 
 
 /**  \ingroup interpol 
      \brief Base plugin for spline boundary conditions

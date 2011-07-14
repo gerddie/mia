@@ -35,11 +35,14 @@ class CMirrorOnBoundary : public CSplineBoundaryCondition {
 public: 
 
 	CMirrorOnBoundary(); 
+	CMirrorOnBoundary(const CMirrorOnBoundary& other) = default; 
 	/**
 	   Constructor for the boundary conditions. 
 	   \param width size of the coefficent domain 
 	 */
+
 	CMirrorOnBoundary(int width); 
+	CSplineBoundaryCondition::Pointer clone() const; 
 private: 
 	void do_set_width(int width); 
 	int get_index(int idx) const; 
@@ -66,6 +69,9 @@ public:
 	   \param width size of the coefficent domain 
 	 */
 	CZeroBoundary(int width); 
+	CZeroBoundary(const CZeroBoundary& other) = default; 
+
+	CSplineBoundaryCondition::Pointer clone() const; 
 private: 
 	void do_apply(std::vector<int>& index, std::vector<double>& weights) const;
 	virtual void test_supported(int npoles) const;
@@ -89,6 +95,9 @@ public:
 	   \param width size of the coefficent domain 
 	 */
 	CRepeatBoundary(int width); 
+	CRepeatBoundary(const CRepeatBoundary& other) = default; 
+	
+	CSplineBoundaryCondition::Pointer clone() const; 
 private: 
 	void do_set_width(int width); 
 	void do_apply(std::vector<int>& index, std::vector<double>& weights) const;
