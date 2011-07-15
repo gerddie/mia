@@ -77,6 +77,8 @@ private:
 class EXPORT_DICOM CDicomWriter {
 public:
 	CDicomWriter(const C2DImage& image);
+	~CDicomWriter();
+
 	bool write(const char *filename) const;
 
 	friend CDicomReader ugly_trick_writer_dcm_to_reader_dcm(CDicomWriter& writer);

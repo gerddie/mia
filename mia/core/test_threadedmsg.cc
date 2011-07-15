@@ -99,6 +99,7 @@ BOOST_AUTO_TEST_CASE( test_threaded_msg )
 	BOOST_REQUIRE(s);
 
 	int lines = 0; 
+	BOOST_REQUIRE(s); 
 	while (*s)  {
 		int counter = 0; 
 		while (*s && *s != '\n') {

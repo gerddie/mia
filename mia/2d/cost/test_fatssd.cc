@@ -46,7 +46,7 @@ BOOST_FIXTURE_TEST_CASE( test_SSD2D_self, C2DSSDFixture )
 	for (size_t i = 0; i < size.x * size.y; ++i, ++isrc)
 		*isrc = i;
 
-	P2DImage src(new C2DUBImage(size));
+	P2DImage src(img);
 
 	P2DInterpolatorFactory ipf(create_2dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
 	CFatSSD2DImageCost cost(src, src, ipf, 1.0);

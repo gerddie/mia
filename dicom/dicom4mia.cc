@@ -459,6 +459,12 @@ CDicomWriter::CDicomWriter(const C2DImage& image):
 {
 }
 
+CDicomWriter::~CDicomWriter()
+{
+	delete impl;
+}
+
+
 bool CDicomWriter::write(const char *filename) const
 {
 	return impl->write(filename);
