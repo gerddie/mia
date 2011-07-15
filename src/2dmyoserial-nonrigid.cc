@@ -158,9 +158,7 @@ int do_main( int argc, const char *argv[] )
 		costs.push(cost); 
 	}
 	
-	P2DInterpolatorFactory ipfactory(new C2DInterpolatorFactory(interpolator_kernel, 
-							      produce_spline_boundary_condition("mirror"), 
-							      produce_spline_boundary_condition("mirror")));
+	P2DInterpolatorFactory ipfactory(new C2DInterpolatorFactory(interpolator_kernel, "mirror"));
 
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);

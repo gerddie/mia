@@ -112,10 +112,7 @@ int do_main(int argc, const char **argv)
 		return EXIT_FAILURE;
 	}
 
-	P3DInterpolatorFactory ipfactory(new C3DInterpolatorFactory(interpolator_kernel, 
-								    produce_spline_boundary_condition("mirror"), 
-								    produce_spline_boundary_condition("mirror"), 
-								    produce_spline_boundary_condition("mirror")));
+	P3DInterpolatorFactory ipfactory(new C3DInterpolatorFactory(interpolator_kernel, "mirror"));
 
 	FDeformer3D deformer(*transformation,*ipfactory);
 

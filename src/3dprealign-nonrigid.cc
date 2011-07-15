@@ -474,10 +474,7 @@ int do_main( int argc, const char *argv[] )
 	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
-	params.interpolator.reset(new C3DInterpolatorFactory(interpolator_kernel, 
-							     produce_spline_boundary_condition("mirror"), 
-							     produce_spline_boundary_condition("mirror"), 
-							     produce_spline_boundary_condition("mirror"))); 
+	params.interpolator.reset(new C3DInterpolatorFactory(interpolator_kernel, "mirror")); 
 
 		size_t start_filenum = 0;
 	size_t end_filenum  = 0;

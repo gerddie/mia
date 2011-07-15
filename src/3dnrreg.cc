@@ -159,10 +159,7 @@ int do_main(int argc, const char **argv)
 		return EXIT_FAILURE;
 	}
 
-	C3DInterpolatorFactory ipfactory(interpolator_kernel, 
-					 produce_spline_boundary_condition("mirror"), 
-					 produce_spline_boundary_condition("mirror"), 
-					 produce_spline_boundary_condition("mirror"));
+	C3DInterpolatorFactory ipfactory(interpolator_kernel, "mirror");
 
 	C3DImageRegister reg(start_size, *cost, max_iter, *model, *time_step, ipfactory, epsilon, save_steps);
 

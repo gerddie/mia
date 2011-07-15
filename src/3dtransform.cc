@@ -108,10 +108,7 @@ int do_main(int argc, const char **argv)
 		return EXIT_FAILURE;
 	}
 	
-	C3DInterpolatorFactory ipfactory(interpolator_kernel, 
-					 produce_spline_boundary_condition("mirror"), 
-					 produce_spline_boundary_condition("mirror"), 
-					 produce_spline_boundary_condition("mirror"));
+	C3DInterpolatorFactory ipfactory(interpolator_kernel, "mirror");
 	
 	for (auto i = source->begin(); i != source->end(); ++i)
 		*i = (*transformation)(**i, ipfactory);

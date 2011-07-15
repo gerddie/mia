@@ -258,10 +258,7 @@ int main(int argc, const char *argv[])
 		default:cverr() << "Unknown solver specified"<< endl; return -1;
 		}
 
-		C3DInterpolatorFactory ipf(interpolator_kernel, 
-					   produce_spline_boundary_condition("mirror"), 
-					   produce_spline_boundary_condition("mirror"), 
-					   produce_spline_boundary_condition("mirror"));
+		C3DInterpolatorFactory ipf(interpolator_kernel, "mirror");
 
 		std::shared_ptr<TLinEqnSolver > ensure_solver_delete(solver);
 

@@ -152,10 +152,7 @@ int do_main( int argc, const char *argv[] )
 		costs.push(cost); 
 	}
 	
-	C3DInterpolatorFactory ipfactory(interpolator_kernel, 
-					 produce_spline_boundary_condition("mirror"), 
-					 produce_spline_boundary_condition("mirror"), 
-					 produce_spline_boundary_condition("mirror"));
+	C3DInterpolatorFactory ipfactory(interpolator_kernel, "mirror");
 	
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;
