@@ -94,7 +94,7 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T3DImage<T>& /*dummy*/) const
 
 	for (size_t z = get_start(); z < get_end(); ++z) {
 		for (size_t iy = 0; iy < m_w; ++iy)
-			for (size_t ix = 0; ix <= m_w; ++ix) {
+			for (size_t ix = 0; ix < m_w; ++ix) {
 				for (size_t y = 0; y < m_slice_size.y; ++y) {
 					C3DFImage::const_iterator mu_i = m_mu_buffer[z].begin_at(ix, y + iy);
 					C3DFImage::const_iterator si_i = m_sigma_buffer[z].begin_at(ix, y + iy);
