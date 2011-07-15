@@ -65,7 +65,7 @@ public:
 
 
 	/// pointer type to this boundary condition
-	typedef std::shared_ptr<CSplineBoundaryCondition> Pointer; 
+	typedef std::unique_ptr<CSplineBoundaryCondition> Pointer; 
 
 	CSplineBoundaryCondition(); 
 
@@ -137,7 +137,8 @@ public:
 	/**
 	   \returns a copy of the (derived) instance of this boundary condition 
 	 */
-	virtual Pointer clone() const = 0; 
+	virtual 
+CSplineBoundaryCondition *clone() const __attribute__((warn_unused_result)) = 0 ; 
 private:
 
 	virtual void do_apply(std::vector<int>& index, std::vector<double>& weights) const = 0;
@@ -194,9 +195,16 @@ struct CSplineBoundaryConditionTestPath {
 inline 
 PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& descr)
 {
-	return CSplineBoundaryConditionPluginHandler::instance().produce(descr); 
+	return CSplineBoundaryConditionPluginHandler::instance().produce_unique(descr); 
 }
 
+/**
+   Create a specific instance of a spline interpolation boundary condition. 
+   \param descr Description of the requested boundary conditions
+   \param width width of the input domain 
+   \returns the actual boundary condition 
+*/
+PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& descr, int width); 
 
 
 template <typename T, int size>

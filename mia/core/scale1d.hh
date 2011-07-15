@@ -52,7 +52,7 @@ public:
 	    \param ipf
 	 */
 
-	C1DScalar(P1DInterpolatorFactory ipf);
+	C1DScalar(P1DInterpolatorFactory ipf) __attribute__((deprecated));
 
 
 	/**

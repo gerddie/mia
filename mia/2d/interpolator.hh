@@ -115,7 +115,7 @@ public:
 	 */
 
 	T2DConvoluteInterpolator(const T2DDatafield<T>& data, PSplineKernel kernel, 
-				 PSplineBoundaryCondition xbc, PSplineBoundaryCondition ybc);
+				 const CSplineBoundaryCondition& xbc, const CSplineBoundaryCondition& ybc);
 
 	~T2DConvoluteInterpolator();
 
@@ -192,13 +192,21 @@ public:
 	*/
 	C2DInterpolatorFactory(const std::string& kernel, const std::string& boundary_conditions);
 
+
+        /**
+	   Construct the factory the interpolation  kernel and according boundary conditions 
+	   \param kernel  interpolation kernel
+	   \param boundary_conditions description of the boundary conditions 
+	*/
+	C2DInterpolatorFactory(PSplineKernel kernel, const std::string& boundary_conditions);
+
 	/**
 	   Construct the factory the interpolation  kernel and according boundary conditions 
 	   \param kernel
 	   \param xbc boundary conditions along the x-axis 
 	   \param ybc boundary conditions along the y-axis 
 	 */
-	C2DInterpolatorFactory(PSplineKernel kernel, PSplineBoundaryCondition xbc, PSplineBoundaryCondition ybc);
+	C2DInterpolatorFactory(PSplineKernel kernel, const CSplineBoundaryCondition& xbc, const CSplineBoundaryCondition& ybc);
 
 	/// Copy constructor 
 	C2DInterpolatorFactory(const C2DInterpolatorFactory& o);
@@ -247,7 +255,7 @@ C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(EInterpolation
 template <class T>
 T2DInterpolator<T> *C2DInterpolatorFactory::create(const T2DDatafield<T>& src) const
 {
-	return new T2DConvoluteInterpolator<T>(src, m_kernel, m_xbc, m_ybc);
+	return new T2DConvoluteInterpolator<T>(src, m_kernel, *m_xbc, *m_ybc);
 }
 
 NS_MIA_END

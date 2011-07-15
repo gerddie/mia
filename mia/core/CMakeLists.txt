@@ -44,7 +44,6 @@ SET(MIACORE_SRC_BASE
   probmap.cc
   regmodel.cc
   revision.cc 
-  scale1d.cc
   scaler1d.cc
   seriesstats.cc 
   shape.cc 
@@ -274,7 +273,6 @@ NEW_TEST(meanvar  miacore)
 NEW_TEST(minimizer miacore)
 NEW_TEST(property_flags  miacore)
 NEW_TEST(scaler1d miacore)
-NEW_TEST(scale1d miacore)
 NEW_TEST(slopestatistics miacore)
 NEW_TEST(slopeclassifier miacore)
 NEW_TEST(statistics miacore)

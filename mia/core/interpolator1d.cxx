@@ -58,11 +58,10 @@ void __dispatch_copy<I,O>::apply(const I& input, O& output)
  
 template <typename T>
 T1DConvoluteInterpolator<T>::T1DConvoluteInterpolator(const std::vector<T>& data, PSplineKernel  kernel, 
-						      PSplineBoundaryCondition boundary_conditions):
+						      const CSplineBoundaryCondition& boundary_conditions):
 	m_coeff(data.size()), 
-	m_size2(data.size() + data.size() - 2),
 	m_kernel(kernel),
-	m_boundary_conditions(boundary_conditions),
+	m_boundary_conditions(boundary_conditions.clone()),
 	m_x_index(kernel->size()),
 	m_x_weight(kernel->size())
 {
@@ -73,7 +72,7 @@ T1DConvoluteInterpolator<T>::T1DConvoluteInterpolator(const std::vector<T>& data
 	// copy the data
 	__dispatch_copy<std::vector<T>, TCoeff1D >::apply(data, m_coeff); 
 	
-	boundary_conditions->filter_line(m_coeff, m_kernel->get_poles());
+	m_boundary_conditions->filter_line(m_coeff, m_kernel->get_poles());
 }
 
 template <typename T>

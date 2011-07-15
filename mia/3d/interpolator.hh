@@ -107,9 +107,9 @@ public:
 
 
 	T3DConvoluteInterpolator(const T3DDatafield<T>& data, PSplineKernel kernel, 
-				 PSplineBoundaryCondition xbc,  
-				 PSplineBoundaryCondition ybc, 
-				 PSplineBoundaryCondition zbc);
+				 const CSplineBoundaryCondition& xbc,  
+				 const CSplineBoundaryCondition& ybc, 
+				 const CSplineBoundaryCondition& zbc);
 	
 	/// Standart constructor for factory prototyping
 	~T3DConvoluteInterpolator();
@@ -174,9 +174,18 @@ public:
 	 */
 
 	C3DInterpolatorFactory(PSplineKernel kernel, 
-			       PSplineBoundaryCondition xbc,  
-			       PSplineBoundaryCondition ybc, 
-			       PSplineBoundaryCondition zbc);
+			       const CSplineBoundaryCondition&xbc,  
+			       const CSplineBoundaryCondition&ybc, 
+			       const CSplineBoundaryCondition&zbc);
+
+        /**
+	   Construct the factory from an interpolation  kernel and according boundary conditions description
+	   \param kernel interpolation kernel
+	   \param boundary_conditions description of the boundary conditions 
+	*/
+
+	C3DInterpolatorFactory(PSplineKernel kernel, const std::string& bc); 
+
 	
 	/// Copy constructor
 	C3DInterpolatorFactory(const C3DInterpolatorFactory& o);
@@ -213,7 +222,7 @@ EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(EInterpolation 
 template <class T>
 T3DInterpolator<T> *C3DInterpolatorFactory::create(const T3DDatafield<T>& src) const
 {
-	return new T3DConvoluteInterpolator<T>(src, m_kernel, m_xbc, m_ybc, m_zbc);
+	return new T3DConvoluteInterpolator<T>(src, m_kernel, *m_xbc, *m_ybc, *m_zbc);
 }
 
 /// Pointer type of the 3D interpolation factory 

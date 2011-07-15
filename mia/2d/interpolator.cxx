@@ -68,33 +68,31 @@ struct __dispatch_copy<C2DFVectorfield, C2DDVectorfield > {
 template <typename T>
 T2DConvoluteInterpolator<T>::T2DConvoluteInterpolator(const T2DDatafield<T>& image, PSplineKernel  kernel):
 	m_coeff(image.get_size()), 
-	m_size2(image.get_size() + image.get_size() - C2DBounds(2,2)),
 	m_kernel(kernel),
-	m_x_boundary(produce_spline_boundary_condition("mirror")), 
-	m_y_boundary(produce_spline_boundary_condition("mirror")), 
+	m_x_boundary(produce_spline_boundary_condition("mirror", image.get_size().x)), 
+	m_y_boundary(produce_spline_boundary_condition("mirror", image.get_size().y)), 
 	m_x_index(kernel->size()),
 	m_y_index(kernel->size()),
 	m_x_weight(kernel->size()),
 	m_y_weight(kernel->size()), 
-	m_x_cache(kernel->size(), m_x_boundary, false), 
-	m_y_cache(kernel->size(), m_y_boundary, true)
+	m_x_cache(kernel->size(), *m_x_boundary, false), 
+	m_y_cache(kernel->size(), *m_y_boundary, true)
 {
 	prefilter(image); 
 }
 template <typename T>
 T2DConvoluteInterpolator<T>::T2DConvoluteInterpolator(const T2DDatafield<T>& image, PSplineKernel kernel, 
-						      PSplineBoundaryCondition xbc, PSplineBoundaryCondition ybc):
+						      const CSplineBoundaryCondition& xbc, const CSplineBoundaryCondition& ybc):
 	m_coeff(image.get_size()), 
-	m_size2(image.get_size() + image.get_size() - C2DBounds(2,2)),
 	m_kernel(kernel),
-	m_x_boundary(xbc), 
-	m_y_boundary(ybc), 
+	m_x_boundary(xbc.clone()), 
+	m_y_boundary(ybc.clone()), 
 	m_x_index(kernel->size()),
 	m_y_index(kernel->size()),
 	m_x_weight(kernel->size()),
 	m_y_weight(kernel->size()), 
-	m_x_cache(kernel->size(), m_x_boundary, false), 
-	m_y_cache(kernel->size(), m_y_boundary, true)
+	m_x_cache(kernel->size(), *m_x_boundary, false), 
+	m_y_cache(kernel->size(), *m_y_boundary, true)
 {
 	prefilter(image); 
 }
@@ -103,7 +101,11 @@ template <typename T>
 void T2DConvoluteInterpolator<T>::prefilter(const T2DDatafield<T>& image)
 {
 	m_x_boundary->set_width(image.get_size().x); 
+	m_x_cache.reset();
 	m_y_boundary->set_width(image.get_size().y); 
+	m_y_cache.reset();
+	
+
 
 	min_max<typename T2DDatafield<T>::const_iterator >::get(image.begin(), image.end(), m_min, m_max);
 	

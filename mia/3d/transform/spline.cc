@@ -610,7 +610,7 @@ void C3DSplineTransformation::init_grid()const
 			
 			memset(&out_buffer[0], 0, size_s1 * sizeof(float)); 
 			
-			for (unsigned int i = 0; i < nelm; ++i) {
+			for (unsigned int i = 0; i < w.size(); ++i) {
 				cblas_saxpy(size_s1, w[i], &in_buffer[idxz.value(i)][0], 1, 
 					    &out_buffer[0], 1);
 			}
@@ -640,7 +640,7 @@ void C3DSplineTransformation::init_grid()const
 			
 			memset(&out_buffer[0], 0, size_s2 * sizeof(float)); 
 			
-			for (unsigned int i = 0; i < nelm; ++i) {
+			for (unsigned int i = 0; i < w.size(); ++i) {
 				cblas_saxpy(size_s2, w[i], &in_buffer[idxy.value(i)][0], 1, 
 					    &out_buffer[0], 1);
 			}
@@ -666,7 +666,7 @@ void C3DSplineTransformation::init_grid()const
 			
 			memset(&out_buffer[0], 0, size_s3 * sizeof(float)); 
 			
-			for (unsigned int i = 0; i < nelm; ++i) {
+			for (unsigned int i = 0; i < w.size(); ++i) {
 				cblas_saxpy(size_s3, w[i], &in_buffer[idxx.value(i)][0], 1, 
 					    &out_buffer[0], 1);
 			}

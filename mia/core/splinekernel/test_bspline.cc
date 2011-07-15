@@ -61,7 +61,7 @@ void test_interpolator(const vector<T>& data, const Interpolator& src)
 }
 
 template <class T>
-void test_conv_interpolator(const vector<T>& data, PSplineKernel kernel, EInterpolation type, PSplineBoundaryCondition bc)
+void test_conv_interpolator(const vector<T>& data, PSplineKernel kernel, EInterpolation type, const CSplineBoundaryCondition& bc)
 {
 	cvdebug() << "test type " << type << ":" << typeid(T).name()<<"\n"; 
 	BOOST_CHECK_EQUAL(kernel->get_type(), type); 
@@ -82,13 +82,13 @@ void test_type_mirror()
 		*i = T(x);
 
 	auto bc = produce_spline_boundary_condition("mirror"); ; 
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel0()), ip_bspline0, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel3()), ip_bspline3, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel4()), ip_bspline4, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel5()), ip_bspline5, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernelOMoms3()), ip_omoms3, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel0()), ip_bspline0, *bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1, *bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2, *bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel3()), ip_bspline3, *bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel4()), ip_bspline4, *bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel5()), ip_bspline5, *bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernelOMoms3()), ip_omoms3, *bc);
 }
 
 
@@ -100,15 +100,15 @@ void test_type_repeat()
 
 
 	auto bc = produce_spline_boundary_condition("repeat"); ; 
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel0()), ip_bspline0, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel3()), ip_bspline3, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernelOMoms3()), ip_omoms3, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel0()), ip_bspline0, *bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1, *bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2, *bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel3()), ip_bspline3, *bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernelOMoms3()), ip_omoms3, *bc);
 
-	BOOST_CHECK_THROW(test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel4()), ip_bspline4, bc), 
+	BOOST_CHECK_THROW(test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel4()), ip_bspline4, *bc), 
 			  invalid_argument);
-	BOOST_CHECK_THROW(test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel5()), ip_bspline5, bc), 
+	BOOST_CHECK_THROW(test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel5()), ip_bspline5, *bc), 
 			  invalid_argument);
 
 }
@@ -125,13 +125,13 @@ void test_type_zero()
 		*i = T(x);
 
 	auto bc = produce_spline_boundary_condition("zero"); ; 
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel0()), ip_bspline0, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel3()), ip_bspline3, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel4()), ip_bspline4, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel5()), ip_bspline5, bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernelOMoms3()), ip_omoms3, bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel0()), ip_bspline0, *bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1, *bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2, *bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel3()), ip_bspline3, *bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel4()), ip_bspline4, *bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel5()), ip_bspline5, *bc);
+	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernelOMoms3()), ip_omoms3, *bc);
 }
 
 
@@ -733,7 +733,7 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_equivalence )
 {
 	CBSplineKernel3 kernel;
 	
-	CSplineKernel::SCache cache(kernel.size(), produce_spline_boundary_condition("mirror:w=10"), false); 
+	CSplineKernel::SCache cache(kernel.size(), *produce_spline_boundary_condition("mirror:w=10"), false); 
 	std::vector<double> weights(kernel.size()); 
 	std::vector<int> indices(kernel.size()); 
 

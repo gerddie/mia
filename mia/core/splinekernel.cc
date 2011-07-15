@@ -62,16 +62,21 @@ using namespace std;
 const char *CSplineKernel::type_descr = "1d"; 
 const char *CSplineKernel::data_descr = "splinekernel"; 
 
-CSplineKernel::SCache::SCache(size_t s, PSplineBoundaryCondition bc, bool am):
+CSplineKernel::SCache::SCache(size_t s, const CSplineBoundaryCondition& bc, bool am):
 	x(numeric_limits<double>::quiet_NaN()), 
 	start_idx(-1000), 
-	index_limit(bc->get_width() - s), 
+	index_limit(bc.get_width() - s), 
 	weights(s), 
 	index(s), 
 	boundary_condition(bc), 
 	is_flat(false), 
 	never_flat(am)
 {
+}
+
+void CSplineKernel::SCache::reset()
+{
+	index_limit = boundary_condition.get_width() - weights.size(); 
 }
 
 CSplineKernel::CSplineKernel(size_t degree, double shift, EInterpolation type):
@@ -103,6 +108,7 @@ void CSplineKernel::operator () (double x, std::vector<double>& weight, std::vec
 
 void CSplineKernel::operator () (double x, SCache& cache) const
 {
+	assert(cache.index_limit == cache.boundary_condition.get_width() - cache.weights.size()); 
 	if (x == cache.x)
 		return; 
 	int start_idx  = get_start_idx_and_value_weights(x, cache.weights); 
@@ -114,7 +120,7 @@ void CSplineKernel::operator () (double x, SCache& cache) const
 	if (cache.never_flat || start_idx < 0 || start_idx > cache.index_limit ) {
 		cache.is_flat = false; 
 		fill_index(start_idx, cache.index); 
-		cache.boundary_condition->apply(cache.index, cache.weights); 
+		cache.boundary_condition.apply(cache.index, cache.weights); 
 	}else {
 		cache.index[0] = start_idx; 
 		cache.is_flat = true; 

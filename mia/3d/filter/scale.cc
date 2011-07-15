@@ -70,10 +70,7 @@ namespace bfs= ::boost::filesystem;
 
 CScale::CScale(const C3DBounds& size, const string& filter):
 	m_size(size),
-	m_ipf(new C3DInterpolatorFactory(produce_spline_kernel(filter), 
-					 produce_spline_boundary_condition("mirror"), 
-					 produce_spline_boundary_condition("mirror"), 
-					 produce_spline_boundary_condition("mirror")))
+	m_ipf(new C3DInterpolatorFactory(produce_spline_kernel(filter), "mirror"))
 {
 
 }

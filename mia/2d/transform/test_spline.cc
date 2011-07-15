@@ -290,8 +290,8 @@ BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 	C2DFImage test_image(range);
 	
 	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(produce_spline_kernel("bspline:d=3"), 
-							      produce_spline_boundary_condition("mirror"), 
-							      produce_spline_boundary_condition("mirror"))); 
+							      *produce_spline_boundary_condition("mirror"), 
+							      *produce_spline_boundary_condition("mirror"))); 
 	auto_ptr<T2DInterpolator<float> > src(ipf->create(image.data()));
 
 	C2DFImage::iterator t = test_image.begin();
@@ -590,8 +590,8 @@ BOOST_AUTO_TEST_CASE( test_splines_transform )
 	PSplineKernel kernel = produce_spline_kernel("bspline:d=3"); 
 
 	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(kernel, 
-							      produce_spline_boundary_condition("mirror"), 
-							      produce_spline_boundary_condition("mirror"))); 
+							      *produce_spline_boundary_condition("mirror"), 
+							      *produce_spline_boundary_condition("mirror"))); 
 
 	C2DSplineTransformation trans(size, kernel);
 
@@ -681,8 +681,8 @@ struct TransformSplineFixtureFieldBase {
 		field(size),
 		kernel(CSplineKernelPluginHandler::instance().produce("bspline:d=3")), 
 		ipf( new C2DInterpolatorFactory(kernel, 
-						produce_spline_boundary_condition("mirror"), 
-						produce_spline_boundary_condition("mirror"))), 
+						*produce_spline_boundary_condition("mirror"), 
+						*produce_spline_boundary_condition("mirror"))), 
 		range(16, 16),
 		stransf(range, kernel),
 		scale(1.0 / range.x, 1.0 / range.y)

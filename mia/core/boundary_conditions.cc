@@ -156,5 +156,13 @@ CSplineBoundaryConditionTestPath::CSplineBoundaryConditionTestPath()
 }
 
 
+PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& descr, int width)
+{
+	stringstream d; 
+	d << descr << ":w=" << width; 
+	return CSplineBoundaryConditionPluginHandler::instance().produce_unique(d.str()); 
+}
+
+
 
 NS_MIA_END

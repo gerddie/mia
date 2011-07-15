@@ -65,10 +65,15 @@ public:
 		   Initialize the case by setting the index and weight array size and 
 		   mirror boundary sizes 
 		   @param s support size of the kernel which equals the size of the index and weight arrays 
-		   @param bc Boundary conditions to be used 
+		   @param bc Boundary conditions to be used, this is a reference to the parent interpolator object 
 		   @param am set to true if indices always need to be set 
 		 */
-		SCache(size_t s, PSplineBoundaryCondition bc, bool am); 
+		SCache(size_t s, const CSplineBoundaryCondition& bc, bool am); 
+
+		/**
+		   reset the parameters of the cache
+		 */
+		void reset(); 
 
 		/** last location the B-spline was evaluated at. This  value is initialized to NaN
 		    to make sure we 
@@ -88,7 +93,7 @@ public:
 		std::vector<int> index; 
 
 		/// the boundary condition to be applied
-		PSplineBoundaryCondition boundary_condition; 
+		const CSplineBoundaryCondition& boundary_condition; 
 		
 		/// store whether indices were mirrored 
 		bool is_flat; 

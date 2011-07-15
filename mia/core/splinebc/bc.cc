@@ -63,9 +63,9 @@ CMirrorOnBoundary::CMirrorOnBoundary(int width):
 {
 }
 
-CSplineBoundaryCondition::Pointer CMirrorOnBoundary::clone () const
+CSplineBoundaryCondition *CMirrorOnBoundary::clone () const
 {
-	return Pointer(new CMirrorOnBoundary(*this)); 
+	return new CMirrorOnBoundary(*this); 
 }
 
 void CMirrorOnBoundary::do_set_width(int width)
@@ -157,9 +157,9 @@ CZeroBoundary::CZeroBoundary(int width):
 {
 }
 
-CSplineBoundaryCondition::Pointer CZeroBoundary::clone ()const
+CSplineBoundaryCondition *CZeroBoundary::clone ()const
 {
-	return Pointer(new CZeroBoundary(*this)); 
+	return new CZeroBoundary(*this); 
 }
 
 void CZeroBoundary::test_supported(int npoles) const
@@ -244,9 +244,9 @@ CRepeatBoundary::CRepeatBoundary():
 {
 }
 
-CSplineBoundaryCondition::Pointer CRepeatBoundary::clone ()const
+CSplineBoundaryCondition *CRepeatBoundary::clone ()const
 {
-	return Pointer(new CRepeatBoundary(*this)); 
+	return new CRepeatBoundary(*this); 
 }
 
 CRepeatBoundary::CRepeatBoundary(int width):

@@ -115,7 +115,7 @@ public:
 	 */
 	
 	T1DConvoluteInterpolator(const std::vector<T>& data, PSplineKernel kernel, 
-				 PSplineBoundaryCondition boundary_conditions);
+				 const CSplineBoundaryCondition& boundary_conditions);
 	
 	~T1DConvoluteInterpolator();
 	
@@ -142,7 +142,6 @@ protected:
 private:
 
 	TCoeff1D m_coeff;
-	size_t m_size2;
 	PSplineKernel m_kernel;
 	PSplineBoundaryCondition m_boundary_conditions; 
 	T m_min;
@@ -167,7 +166,7 @@ public:
 	    @param kernel 
 	    @param bc 
 	 */
-	C1DInterpolatorFactory(PSplineKernel kernel, PSplineBoundaryCondition bc);
+	C1DInterpolatorFactory(PSplineKernel kernel, const CSplineBoundaryCondition& bc);
 
 	/// Copy constructor 
 	C1DInterpolatorFactory(const C1DInterpolatorFactory& o);
@@ -215,7 +214,7 @@ C1DInterpolatorFactory EXPORT_CORE  *create_1dinterpolation_factory(EInterpolati
 template <class T>
 T1DInterpolator<T> *C1DInterpolatorFactory::create(const std::vector<T>& src) const
 {
-	return new T1DConvoluteInterpolator<T>(src, m_kernel, m_bc);
+	return new T1DConvoluteInterpolator<T>(src, m_kernel, *m_bc);
 }
 
 

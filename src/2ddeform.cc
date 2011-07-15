@@ -108,9 +108,7 @@ int do_main(int argc, const char **argv)
 		return EXIT_FAILURE;
 	}
 
-	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(interpolator_kernel, 
-							      produce_spline_boundary_condition("mirror"), 
-							      produce_spline_boundary_condition("mirror")));
+	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(interpolator_kernel, "mirror"));
 
 	FDeformer2D deformer(*transformation,*ipf);
 

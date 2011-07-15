@@ -42,7 +42,7 @@ public:
 	 */
 
 	CMirrorOnBoundary(int width); 
-	CSplineBoundaryCondition::Pointer clone() const; 
+	CSplineBoundaryCondition *clone() const; 
 private: 
 	void do_set_width(int width); 
 	int get_index(int idx) const; 
@@ -71,7 +71,7 @@ public:
 	CZeroBoundary(int width); 
 	CZeroBoundary(const CZeroBoundary& other) = default; 
 
-	CSplineBoundaryCondition::Pointer clone() const; 
+	CSplineBoundaryCondition *clone() const; 
 private: 
 	void do_apply(std::vector<int>& index, std::vector<double>& weights) const;
 	virtual void test_supported(int npoles) const;
@@ -97,7 +97,7 @@ public:
 	CRepeatBoundary(int width); 
 	CRepeatBoundary(const CRepeatBoundary& other) = default; 
 	
-	CSplineBoundaryCondition::Pointer clone() const; 
+	CSplineBoundaryCondition *clone() const; 
 private: 
 	void do_set_width(int width); 
 	void do_apply(std::vector<int>& index, std::vector<double>& weights) const;

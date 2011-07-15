@@ -1,4 +1,4 @@
-/* -*- mia-c++ -* 
+/* -*- mia-c++ -*-
 **
 ** Copyright Madrid (c) 2010 BIT ETSIT UPM
 **                      Gert Wollny <gw.fossdev @ gmail.com>
@@ -254,6 +254,6 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_rigid_gd, RigidRegisterFixture )
 	// this is a rather high tolerance, especially in light that the 
 	// nm_simplex algorithm passes with a 0.1% tolerance 
 	
-	run(*transformation, "gsl:opt=cg-pr", 5); 
+	run(*transformation, "gsl:opt=gd", 5); 
 }
 

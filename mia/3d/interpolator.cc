@@ -56,33 +56,40 @@ C3DInterpolatorFactory::C3DInterpolatorFactory(const std::string& kernel, const 
 {
 }
 		
+C3DInterpolatorFactory::C3DInterpolatorFactory(PSplineKernel kernel, const std::string& bc):
+	m_kernel(kernel), 
+	m_xbc(produce_spline_boundary_condition(bc)),
+	m_ybc(produce_spline_boundary_condition(bc)),
+	m_zbc(produce_spline_boundary_condition(bc))
+{
+}
 
 C3DInterpolatorFactory::C3DInterpolatorFactory(PSplineKernel kernel, 
-					       PSplineBoundaryCondition xbc,  
-					       PSplineBoundaryCondition ybc, 
-					       PSplineBoundaryCondition zbc):
+					       const CSplineBoundaryCondition& xbc,  
+					       const CSplineBoundaryCondition& ybc, 
+					       const CSplineBoundaryCondition& zbc):
 	m_kernel(kernel), 
-	m_xbc(xbc),  
-	m_ybc(ybc),  
-	m_zbc(zbc)
+	m_xbc(xbc.clone()),  
+	m_ybc(ybc.clone()),  
+	m_zbc(zbc.clone())
 {
 }
 
 C3DInterpolatorFactory::C3DInterpolatorFactory(const C3DInterpolatorFactory& o):
 	m_kernel(o.m_kernel), 
-	m_xbc(o.m_xbc),  
-	m_ybc(o.m_ybc),  
-	m_zbc(o.m_zbc)
+	m_xbc(o.m_xbc->clone()),  
+	m_ybc(o.m_ybc->clone()),  
+	m_zbc(o.m_zbc->clone())
 {
 }
 
 C3DInterpolatorFactory& C3DInterpolatorFactory::operator = ( const C3DInterpolatorFactory& o)
 {
 	m_kernel = o.m_kernel;
-	m_xbc = o.m_xbc; 
-	m_ybc = o.m_ybc; 
-	m_zbc = o.m_zbc; 
-
+	m_xbc.reset(o.m_xbc->clone()); 
+	m_ybc.reset(o.m_ybc->clone()); 
+	m_zbc.reset(o.m_zbc->clone()); 
+		    
 	return *this;
 }
 

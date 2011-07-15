@@ -42,8 +42,8 @@ struct FieldSplineFixture {
 		size(30, 32),
 		field(size),
 		ipf(produce_spline_kernel("bspline:d=4"), 
-		    produce_spline_boundary_condition("mirror"), 
-		    produce_spline_boundary_condition("mirror"))
+		    *produce_spline_boundary_condition("mirror"), 
+		    *produce_spline_boundary_condition("mirror"))
 	{
 		C2DFVectorfield::iterator i = field.begin();
 		for (size_t y = 0; y < size.y; ++y)

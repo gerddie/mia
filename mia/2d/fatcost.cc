@@ -124,8 +124,8 @@ C2DImageFatCost *C2DFatImageCostPlugin::do_create()const
 			cvwarn() << "'" << m_ref_name << "' contains more then one image, using only first\n";
 
 		P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(m_interpolator, 
-								      produce_spline_boundary_condition("mirror"),  
-								      produce_spline_boundary_condition("mirror")));  
+								      *produce_spline_boundary_condition("mirror"),  
+								      *produce_spline_boundary_condition("mirror")));  
 					   
 		return do_create((*source)[0], (*reference)[0], ipf, m_weight);
 	}

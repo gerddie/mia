@@ -51,17 +51,25 @@ C2DInterpolatorFactory::C2DInterpolatorFactory(const std::string& kernel, const 
 {
 }
 
-C2DInterpolatorFactory::C2DInterpolatorFactory(PSplineKernel kernel, PSplineBoundaryCondition xbc, PSplineBoundaryCondition ybc):
+C2DInterpolatorFactory::C2DInterpolatorFactory(PSplineKernel kernel, 
+					       const CSplineBoundaryCondition& xbc, const CSplineBoundaryCondition& ybc):
 	m_kernel(kernel), 
-	m_xbc(xbc),
-	m_ybc(ybc)
+	m_xbc(xbc.clone()),
+	m_ybc(ybc.clone())
+{
+}
+
+C2DInterpolatorFactory::C2DInterpolatorFactory(PSplineKernel kernel, const std::string& bc):
+	m_kernel(kernel), 
+	m_xbc(produce_spline_boundary_condition(bc)),
+	m_ybc(produce_spline_boundary_condition(bc))
 {
 }
 
 C2DInterpolatorFactory::C2DInterpolatorFactory(const C2DInterpolatorFactory& o):
 	m_kernel(o.m_kernel), 
-	m_xbc(o.m_xbc),
-	m_ybc(o.m_ybc)
+	m_xbc(o.m_xbc->clone()),
+	m_ybc(o.m_ybc->clone())
 
 {
 }
@@ -69,9 +77,9 @@ C2DInterpolatorFactory::C2DInterpolatorFactory(const C2DInterpolatorFactory& o):
 C2DInterpolatorFactory& C2DInterpolatorFactory::operator = ( const C2DInterpolatorFactory& o)
 {
 	m_kernel = o.m_kernel;
-	m_xbc = o.m_xbc; 
-	m_ybc = o.m_ybc; 
-
+	m_xbc.reset(o.m_xbc->clone()); 
+	m_ybc.reset(o.m_ybc->clone()); 
+		    
 	return *this;
 }
 
