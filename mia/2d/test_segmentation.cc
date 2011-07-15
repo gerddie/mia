@@ -359,6 +359,48 @@ BOOST_FIXTURE_TEST_CASE(test_segsection_draw2, SectionTestRead)
 }
 
 
+BOOST_FIXTURE_TEST_CASE(test_segsection_error_attribute, SectionTestRead)
+{
+	const char *sestsection_error_x = 
+		"<?xml version=\"1.0\"?>\n<test><section color=\"white\">"
+		"<point y=\"2\" x=\"1a\"/>"
+		"</section></test>\n";
+
+
+	BOOST_CHECK_THROW(init(sestsection_error_x), runtime_error); 
+
+	const char *sestsection_error_y = 
+		"<?xml version=\"1.0\"?>\n<test><section color=\"white\">"
+		"<point y=\"2a\" x=\"1\"/>"
+		"</section></test>\n";
+
+	BOOST_CHECK_THROW(init(sestsection_error_y), runtime_error); 
+
+}
+
+
+BOOST_AUTO_TEST_CASE(test_segstart_error_attribute)
+{
+	const char *sestsection_error_r = 
+		"<?xml version=\"1.0\"?>\n<test>"
+		"<star y=\"118\" x=\"109\" r=\"21a\">"
+		"<point y=\"20\" x=\"10\"/>"
+		"<point y=\"10\" x=\"20\"/>"
+		"<point y=\"4\" x=\"0\"/>"
+		"</star>"
+		"</test>"; 
+
+
+	xmlpp::DomParser parser;
+	parser.parse_memory(sestsection_error_r);
+	const xmlpp::Document *document = parser.get_document();
+	const xmlpp::Element *root = document->get_root_node ();
+	const xmlpp::Node::NodeList nodes = root->get_children();
+	BOOST_CHECK_EQUAL(nodes.size(),1u);
+	BOOST_CHECK_THROW(CSegStar(**nodes.begin()), runtime_error); 
+}
+
+
 /*
 input_set.save_images(); 
 */

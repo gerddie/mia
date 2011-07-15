@@ -60,10 +60,7 @@ typedef std::map<std::string,  CCmdOption *> CLongoptionMap;
     \brief The base class for all command line options. 
 
     The base class of all possible command line options. It defines the interface
-    of the options as well as some basic functionality to create help strings
-    \todo "Add a start or set group command"
-    \todo "Add a parameter to the parse command that tells whether additional parameters 
-    are allowed. 
+    of the options as well as some basic functionality to create help strings. 
 */
 class EXPORT_CORE CCmdOption  {
 public:
@@ -165,7 +162,9 @@ typedef std::shared_ptr<CCmdOption > PCmdOption;
 /**
    \brief The base class for command line options that hold "normal" values.  
 
-   The base class to options that really hold values
+   The base class to options that really hold values. 
+   \remark Why does this additional class exsist in the hierarchy?  
+   
 */
 class EXPORT_CORE CCmdOptionValue: public CCmdOption {
 public:

@@ -36,9 +36,32 @@ using namespace boost;
 
 BOOST_AUTO_TEST_CASE( test_mia_tools )
 {
-	BOOST_CHECK_EQUAL(from_string<int>("10"), 10);
-	BOOST_CHECK_EQUAL(from_string<int>(string("10")), 10);
 	BOOST_CHECK_EQUAL(to_string<int>(10), string("10"));
+}
+
+BOOST_AUTO_TEST_CASE( test_mia_tools_new )
+{
+	int test = 0; 
+	BOOST_CHECK(from_string<int>("10", test)); 
+	BOOST_CHECK_EQUAL(test, 10);
+
+	BOOST_CHECK(from_string(string("11"), test));
+	BOOST_CHECK_EQUAL(test, 11);
+	
+	
+	BOOST_CHECK_EQUAL(to_string<int>(10), string("10"));
+
+	BOOST_CHECK(!from_string(string("a11a"), test));
+	BOOST_CHECK(!from_string("a11a", test));
+	
+	BOOST_CHECK(!from_string(string("11_"), test));
+	BOOST_CHECK(!from_string("11.", test));
+
+	BOOST_CHECK(from_string("12 ", test));
+	BOOST_CHECK_EQUAL(test, 12);
+
+	BOOST_CHECK(from_string("\t13 ", test));
+	BOOST_CHECK_EQUAL(test, 13);
 }
 
 
