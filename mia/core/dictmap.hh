@@ -53,7 +53,7 @@ public:
 	*/
 	typedef struct { 
 		/// parameter name 
-		const char *name; 
+		const char * const name; 
 		/// parameter value 
 		const T value; 
 	} Table; 

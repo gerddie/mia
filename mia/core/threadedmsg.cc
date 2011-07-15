@@ -119,6 +119,7 @@ CThreadMsgStream::~CThreadMsgStream()
 {
 	flush(); 
 	vstream::instance().set_stream(m_old);
+	delete rdbuf();
 }
 
 void CThreadMsgStream::do_set_master_stream(std::ostream& master)

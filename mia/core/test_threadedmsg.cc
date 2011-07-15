@@ -94,7 +94,8 @@ BOOST_AUTO_TEST_CASE( test_threaded_msg )
 	
 	cvdebug()  << master_stream.str(); 
 	
-	const char *s = master_stream.str().c_str(); 
+	string help = master_stream.str(); 
+	const char *s = help.c_str(); 
 
 	BOOST_REQUIRE(s);
 
@@ -127,8 +128,9 @@ BOOST_AUTO_TEST_CASE( test_threaded_msg_sync )
 	cverb.set_verbosity(old_level); 
 	
 	cvdebug()  << master_stream.str(); 
-	
-	const char *s = master_stream.str().c_str(); 
+
+	string help = master_stream.str(); 
+	const char *s = help.c_str(); 
 
 	BOOST_REQUIRE(s);
 

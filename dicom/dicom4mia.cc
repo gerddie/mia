@@ -93,6 +93,7 @@ struct CDicomReaderData {
 	OFCondition status;
 
 	CDicomReaderData();
+	~CDicomReaderData(); 
 
 	Uint16 getUint16(const DcmTagKey &tagKey, bool required);
 
@@ -225,6 +226,11 @@ CDicomReaderData::CDicomReaderData()
 {
 	DJDecoderRegistration::registerCodecs();
 }
+CDicomReaderData::~CDicomReaderData()
+{
+	DJDecoderRegistration::cleanup();
+}
+
 
 Uint16 CDicomReaderData::getUint16(const DcmTagKey &tagKey, bool required)
 {
