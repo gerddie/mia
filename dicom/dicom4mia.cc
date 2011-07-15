@@ -93,6 +93,7 @@ struct CDicomReaderData {
 	OFCondition status;
 
 	CDicomReaderData();
+	CDicomReaderData(const DcmFileFormat& dcm); 
 	~CDicomReaderData(); 
 
 	Uint16 getUint16(const DcmTagKey &tagKey, bool required);
@@ -226,6 +227,13 @@ CDicomReaderData::CDicomReaderData()
 {
 	DJDecoderRegistration::registerCodecs();
 }
+
+CDicomReaderData::CDicomReaderData(const DcmFileFormat& _dcm):
+	dcm(_dcm)
+{
+	DJDecoderRegistration::registerCodecs();
+}
+
 CDicomReaderData::~CDicomReaderData()
 {
 	DJDecoderRegistration::cleanup();
@@ -514,9 +522,7 @@ CDicomReader::CDicomReader(struct CDicomReaderData *yeah):
 
 CDicomReader EXPORT_DICOM ugly_trick_writer_dcm_to_reader_dcm(CDicomWriter& writer)
 {
-	CDicomReaderData *yeah = new CDicomReaderData;
-	yeah->dcm =  writer.impl->dcm;
-	return CDicomReader(yeah);
+	return CDicomReader(new CDicomReaderData(writer.impl->dcm));
 }
 
 EXPORT_DICOM const char * IDMediaStorageSOPClassUID= "MediaStorageSOPClassUID";
