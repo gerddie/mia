@@ -69,7 +69,6 @@ C2DStackDistanceTransform::C2DStackDistanceTransform(const C2DBounds& size, cons
 void C2DStackDistanceTransform::read( const C2DImage& slice, int q)
 {
 	TRACE_FUNCTION; 
-	
 	const C2DBitImage *src = dynamic_cast<const C2DBitImage*>(&slice); 
 	if (!src) 
 		throw runtime_error("input image is not a bit image!");
@@ -99,9 +98,11 @@ void C2DStackDistanceTransform::read( const C2DImage& slice, int q)
 		float s  = d (f, q, parabola.fv, parabola.v);
 		while (s <= parabola.z) {
 			--(*k);
+			assert(*k >= 0); 
 			parabola = (*p)[*k]; 
 			s  = d (f, q, parabola.fv, parabola.v);
 		}
+		
 		++(*k);
 		
 		if (*k > p->size()) {
