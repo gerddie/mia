@@ -733,7 +733,8 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_equivalence )
 {
 	CBSplineKernel3 kernel;
 	
-	CSplineKernel::SCache cache(kernel.size(), *produce_spline_boundary_condition("mirror:w=10"), false); 
+	auto bc = produce_spline_boundary_condition("mirror:w=10"); 
+	CSplineKernel::SCache cache(kernel.size(), *bc, false); 
 	std::vector<double> weights(kernel.size()); 
 	std::vector<int> indices(kernel.size()); 
 
