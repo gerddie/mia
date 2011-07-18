@@ -68,7 +68,6 @@ public:
 
 private:
 	CDLLoader m_loader;
-	size_t m_refs;
 	std::string m_name;
 };
 
