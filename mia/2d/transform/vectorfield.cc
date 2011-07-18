@@ -213,7 +213,8 @@ C2DGridTransformation::iterator_impl::iterator_impl(const C2DBounds& pos, const 
 	C2DTransformation::iterator_impl(pos, size), 
 	m_current(start)
 {
-	m_value = C2DFVector(get_pos()) - *m_current; 
+	if (pos.y < size.y && pos.x < size.x ) 
+		m_value = C2DFVector(get_pos()) - *m_current; 
 }
 
 C2DTransformation::iterator_impl * C2DGridTransformation::iterator_impl::clone() const
