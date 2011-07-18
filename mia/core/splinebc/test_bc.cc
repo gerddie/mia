@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE( test_CRepeatBoundary_needed )
 	CRepeatBoundary bc(6);
 	BOOST_CHECK(!bc.apply(index, weights)); 
 
-	for (int i = 0; i < 10; ++i) {
+	for (int i = 0; i < index.size(); ++i) {
 		BOOST_CHECK_EQUAL(index[i], result[i]); 
 	}
 }
