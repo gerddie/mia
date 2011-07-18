@@ -49,8 +49,7 @@
 NS_MIA_BEGIN
 
 CPluginModule::CPluginModule(const char *path):
-	m_loader(path, DLL_FLAGS )
-
+	m_loader(path, DLL_FLAGS ), 
 	m_name(path)
 
 {
