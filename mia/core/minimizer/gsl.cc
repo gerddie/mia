@@ -229,10 +229,14 @@ void CGSLFMinimizer::do_set_problem()
 	if (!m_s) 
 		throw std::runtime_error("CFMinimizer:Not enough memory to allocate the minimizer"); 
 	
-	if (m_step_init && m_step_init->size != size()) 
-		gsl_vector_free(m_step_init); 
+	if (m_step_init) {
+		if (m_step_init->size != size()) {
+			gsl_vector_free(m_step_init); 
+			m_step_init= gsl_vector_alloc(size());
+		}
+	}else 
+		m_step_init= gsl_vector_alloc(size());
 	
-	m_step_init= gsl_vector_alloc(size());
 }
 
 int CGSLFMinimizer::do_run(CDoubleVector& x)
