@@ -48,19 +48,26 @@ C2DStackDistanceTransform *C2DStackDistanceTransform::clone() const
 	return new C2DStackDistanceTransform(*this); 
 }
 
-C2DStackDistanceTransform::C2DStackDistanceTransform(const C2DBounds& size, const C3DFVector& voxel_size):
-	m_size(size), 
+C2DStackDistanceTransform::C2DStackDistanceTransform(const C2DImage& slice, const C3DFVector& voxel_size):
+	m_size(slice.get_size()), 
 	m_voxel_size(voxel_size),
-	m_k(size.x * size.y, 0), 
-	m_zdt(size.x * size.y)
+	m_k(m_size.x * m_size.y, 0), 
+	m_zdt(m_size.x * m_size.y)
 {
 	TRACE_FUNCTION; 
+
+	const C2DBitImage *src = dynamic_cast<const C2DBitImage*>(&slice); 
+	if (!src) 
+		throw runtime_error("input image is not a bit image!");
+	
 	auto izdt = m_zdt.begin(); 
 	
 	SParabola p = {0, 0, -g_far, g_far}; 
-	
-	for (size_t i = 0; i < m_zdt.size(); ++i, ++izdt)
+	auto pixel = src->begin(); 
+	for (size_t i = 0; i < m_zdt.size(); ++i, ++izdt, ++pixel) {
+		p.fv = *pixel ? 0.0f : g_far; 
 		izdt->push_back(p); 
+	}
 }
 
 /*
