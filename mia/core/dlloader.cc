@@ -45,6 +45,8 @@ using namespace std;
 struct CDLLoaderData {
 
 	CDLLoaderData(const char *name, int flags):
+		// valgrind will report reachable memory blocks on this call, 
+		// see destructor for a justification 
 	        m_module(dlopen(name, flags)),
 		m_name(name) 	{
 		if (!m_module) {
