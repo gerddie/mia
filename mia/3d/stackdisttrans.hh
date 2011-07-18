@@ -91,11 +91,11 @@ public:
 
 	/**
 	   Construct the distance grid and initialize it
-	   \param size xy-slice of the data to be processed
+	   \param slice first image of the image stack 
 	   \param voxel_size size of a voxel
 	 */
 
-	C2DStackDistanceTransform(const C2DBounds& size, const C3DFVector& voxel_size = C3DFVector::_1);
+	C2DStackDistanceTransform(const C2DImage& slice, const C3DFVector& voxel_size = C3DFVector::_1);
 	
 	/**
 	   Read the given slice of the image stack and update the distance maps. 
