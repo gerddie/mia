@@ -36,6 +36,7 @@ public:
 			 const std::string& ref, 
 			 const std::string& cost, 
 			 PSplineKernel ip, 
+			 const std::string& bc, 
 			 double weight, 
 			 bool debug); 
 private: 
