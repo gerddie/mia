@@ -40,7 +40,7 @@ NS_MIA_BEGIN
    The string may contain whitespaces before and after the value but no other characters. 
    \tparam T some type that supports the >> stream operator 
    \param s the c-string holding the value 
-   \param [out] value of T corresponding to s
+   \param [out] result value of T corresponding to s
    \returns true if s could be parsed sucessfully, and false if not 
  */
 
@@ -69,7 +69,7 @@ bool from_string(const char *s, T& result)
    The string may contain whitespaces before and after the value but no other characters. 
    \tparam T some type that supports the >> stream operator 
    \param s the c-string holding the value 
-   \param [out] value of T corresponding to s
+   \param [out] result value of T corresponding to s
    \returns true if s could be parsed sucessfully, and false if not 
  */
 

@@ -27,8 +27,16 @@
   Classes and structures that work as functors are named starting with a capital "F", e.g. FMeanValue. 
   Names of PODs \emph{plain old data structures} begin with a "S".
 
+  \section refactor_sec Planned refactoring and changes
+    
+  - Registration algorithms should make it possible to select a lowest resolution directly in  
+    multi resolution processing 
 
-/** 
+  - All factory plugin handlers should provide a helper function that eliminates the need to use 
+       the actual class name plus instance 
+
+
+
     \defgroup infrastructure Infrastructure 
     These classes and functions are related to the infrastructure provided by the MIA libraries. 
     This includes the means for plug-in handling, option parsing, and logging.
@@ -48,4 +56,5 @@
     \defgroup helpers Helper classes and functions 
     \defgroup traits Template metaprogramming classes
     \defgroup tests Classes used for tests only 
+    
 */

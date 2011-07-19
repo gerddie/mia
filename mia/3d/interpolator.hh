@@ -181,7 +181,7 @@ public:
         /**
 	   Construct the factory from an interpolation  kernel and according boundary conditions description
 	   \param kernel interpolation kernel
-	   \param boundary_conditions description of the boundary conditions 
+	   \param bc description of the boundary conditions 
 	*/
 
 	C3DInterpolatorFactory(PSplineKernel kernel, const std::string& bc); 
