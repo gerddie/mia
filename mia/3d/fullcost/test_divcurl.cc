@@ -29,13 +29,14 @@
 
 NS_MIA_USE
 namespace bfs=::boost::filesystem;
+CSplineKernelTestPath splinekernel_init_path; 
 
 BOOST_AUTO_TEST_CASE( test_divcurl_cost ) 
 {
 	C3DDivCurlFullCost  div(4.0, 6.0, 1.0); 
 
 	C3DBounds size(1, 2, 1); 
-	C3DTransformMock t(size); 
+	C3DTransformMock t(size, C3DInterpolatorFactory("bspline:d=3", "mirror")); 
 	div.set_size(size); 
 
 	CDoubleVector gradient(t.degrees_of_freedom()); 
@@ -50,7 +51,7 @@ BOOST_AUTO_TEST_CASE( test_div_cost )
 	C3DDivCurlFullCost  div(4.0, 0.0, 0.5); 
 
 	C3DBounds size(1, 2, 1); 
-	C3DTransformMock t(size); 
+	C3DTransformMock t(size, C3DInterpolatorFactory("bspline:d=3", "mirror")); 
 	div.set_size(size); 
 
 	CDoubleVector gradient(t.degrees_of_freedom()); 
@@ -65,7 +66,7 @@ BOOST_AUTO_TEST_CASE( test_curl_cost )
 	C3DDivCurlFullCost  div(0.0, 3.0, 2.0); 
 
 	C3DBounds size(1,2,1); 
-	C3DTransformMock t(size); 
+	C3DTransformMock t(size, C3DInterpolatorFactory("bspline:d=3", "mirror")); 
 	div.set_size(size); 
 
 	CDoubleVector gradient(t.degrees_of_freedom()); 

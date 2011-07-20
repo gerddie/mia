@@ -35,8 +35,6 @@ public:
 	C3DImageFullCost(const std::string& src, 
 			 const std::string& ref, 
 			 const std::string& cost, 
-			 PSplineKernel ip, 
-			 const std::string& bc, 
 			 double weight, 
 			 bool debug); 
 private: 
@@ -63,7 +61,6 @@ private:
 
 
 	P3DImageCost m_cost_kernel; 
-	P3DInterpolatorFactory m_ipf; 
 	bool m_debug;
 }; 
 

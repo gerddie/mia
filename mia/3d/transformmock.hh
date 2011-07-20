@@ -79,7 +79,7 @@ protected:
 private:
 	virtual P3DTransformation do_upscale(const C3DBounds& size) const;
 	virtual C3DTransformation *do_clone() const;
-        virtual P3DImage apply(const C3DImage& image, const C3DInterpolatorFactory& ipf) const;
+	virtual P3DImage do_transform(const C3DImage& src, const C3DInterpolatorFactory&) const; 
 	C3DBounds m_size;
 	///@endcond 
 };

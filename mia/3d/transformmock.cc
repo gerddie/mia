@@ -142,7 +142,7 @@ float C3DTransformMock::get_jacobian(const C3DFVectorfield&, float delta) const
 	return delta;
 }
 
-P3DImage C3DTransformMock::apply(const C3DImage& src, const C3DInterpolatorFactory&) const
+P3DImage C3DTransformMock::do_transform(const C3DImage& src, const C3DInterpolatorFactory&) const
 {
 	return P3DImage(src.clone());
 }

@@ -98,7 +98,7 @@ void RigidRegisterFixture::run(C3DTransformation& t, const std::string& minimize
 		}
 	}
 	P3DImage src(psrc);
-	P3DImage ref = t(*src, *ipfactory);
+	P3DImage ref = t(*src);
 
 	const C3DFImage& rsrc = dynamic_cast<const C3DFImage&>(*src); 
 	const C3DFImage& rref = dynamic_cast<const C3DFImage&>(*ref); 
@@ -137,7 +137,7 @@ void RigidRegisterFixture::run(C3DTransformation& t, const std::string& minimize
 	if ( cverb.get_level() <= vstream::ml_info ) {
 		save_image("src.hdr", src);
 		save_image("ref.hdr", ref);
-		P3DImage reg = (*transform)(*src, *ipfactory); 
+		P3DImage reg = (*transform)(*src); 
 		stringstream out_name; 
 		out_name << "reg-" << t.get_creator_string()
 			 << "-" << minimizer->get_init_string() << ".hdr"; 
