@@ -291,7 +291,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_deform, TransformSplineFixture )
 	
 	C2DFImage::iterator t = test_image.begin();
 	C2DInterpolatorFactory ipf("bspline:d=3", "mirror"); 
-	auto src = ipf.create(image.data()); 
+	unique_ptr<T2DInterpolator<float> > src(ipf.create(image.data())); 
 
 
 	for (size_t y = 0; y < range.y; ++y)
