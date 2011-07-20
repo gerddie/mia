@@ -64,7 +64,6 @@ mia-3dmotioncompica-nonrigid -i <input images> -o <output set> [options]
   \cmdopt{imagecost}{w}{string}{Image similarity measure base part, the name of source and reference images must 
                                be left alone and will be set by the program internally (see section \ref{sec:3dfullcost})}
   \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{interpolator}{p}{string}{Image interpolator to be used}
   \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
   \cmdopt{passes}{P}{int}{Number of ICA+Registration passes to be run}
   \cmdopt{start-c-rate}{a}{float}{start coefficinet rate in spines, gets divided by \texttt{-{}-c-rate-divider} 

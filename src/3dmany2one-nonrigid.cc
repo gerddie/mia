@@ -48,7 +48,6 @@ mia-3dmany2one-nonrigid -i <input set> -o <output set> <cost1> [<cost2>] ...
   \cmdgroup{Image registration} 
   \cmdopt{ref}{r}{int}{Reference frame to base the registration on}
   \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{interpolator}{p}{string}{Image interpolator to be used}
   \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
   \cmdopt{transForm}{f}{string}{Transformation space as provided by the 
                                 \hyperref[sec:3dtransforms]{transformation plug-ins.}}
@@ -197,7 +196,6 @@ int do_main( int argc, const char *argv[] )
 	
 	options.set_group("\nRegistration"); 
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
@@ -217,8 +215,6 @@ int do_main( int argc, const char *argv[] )
 	auto cost_functions = options.get_remaining(); 
 	if (cost_functions.empty())
 		throw invalid_argument("No cost function given - nothing to register"); 
-
-	P3DInterpolatorFactory ipfactory(new C3DInterpolatorFactory(interpolator_kernel, "mirror"));
 
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;

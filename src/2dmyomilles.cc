@@ -58,7 +58,6 @@ mia-2dmyomilles -i <input set> -o <output set> [options]
   \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
   \cmdopt{transForm}{f}{string}{Transformation space as provided by the 
                                 \hyperref[sec:2dtransforms]{transformation plug-ins.}}
-  \cmdopt{interpolator}{p}{string}{Image interpolator to be used}
   \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
   \cmdopt{passes}{P}{int}{Number of ICA+Registration passes to be run}
   \cmdopt{components}{C}{int}{Number of  ICA components to be used, 0 = automatic estimation}
@@ -156,7 +155,6 @@ int do_main( int argc, const char *argv[] )
 	string cost_function("ssd"); 
 	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=simplex,step=1.0");
 	auto transform_creator = C2DTransformCreatorHandler::instance().produce("rigid"); 
-	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 	size_t mg_levels = 3; 
 	
 	// ICA parameters 
@@ -183,7 +181,6 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( cost_function, "cost", 'c', "registration criterion")); 
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
-	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 
 	options.add(make_opt( pass, "passes", 'P', "registration passes", "passes")); 

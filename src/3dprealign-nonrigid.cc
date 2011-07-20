@@ -76,7 +76,6 @@ mia-3dprealign-nonrigid -i <input set> -o <output set> [options]
   \cmdopt{cost-final}{2}{string}{Image similarity measure to optimize during the second (final) registration 
                                   phase of the algorithm (see section \ref{sec:3dfullcost})}
   \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{interpolator}{p}{string}{Image interpolator to be used}
   \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
   \cmdopt{passes}{P}{int}{Number of ICA+Registration passes to be run}
   \cmdopt{divcurl}{d}{float}{divcurl regularization weight}
@@ -423,8 +422,6 @@ int do_main( int argc, const char *argv[] )
 	// this parameter is currently not exported - reading the image data is 
 	// therefore done from the path given in the segmentation set 
 	bool override_src_imagepath = true;
-	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
-
 	C3DMyocardPeriodicRegistration::RegistrationParams params;
 
 	CCmdOptionList options(g_general_help);
@@ -452,7 +449,6 @@ int do_main( int argc, const char *argv[] )
 
 
 	options.add(make_opt( params.minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));
 
 	options.add(make_opt( params.divcurlweight, "divcurl", 'd', 

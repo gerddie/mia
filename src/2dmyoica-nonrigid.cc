@@ -71,7 +71,6 @@ mia-2dmyoica-nonrigid -i <input set> -o <output set> [options]
   \cmdgroup{Image registration} 
   \cmdopt{imagecost}{w}{string}{Image similarity measure used (see section \ref{sec:2dfullcost})}
   \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{interpolator}{p}{string}{Image interpolator to be used}
   \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
   \cmdopt{passes}{P}{int}{Number of ICA+Registration passes to be run}
   \cmdopt{start-c-rate}{a}{float}{start coefficinet rate in spines, gets divided by \texttt{-{}-c-rate-divider} 
@@ -256,7 +255,6 @@ int do_main( int argc, const char *argv[] )
 	double divcurlweight = 20.0; 
 	double divcurlweight_divider = 4.0; 
 
-	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 	size_t mg_levels = 3; 
 
 	// ICA parameters 
@@ -308,7 +306,6 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( divcurlweight_divider, "divcurl-divider", 0,
 				    "divcurl weight scaling with each new pass")); 
 	options.add(make_opt( imagecost, "imagecost", 'w', "image cost")); 
-	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
