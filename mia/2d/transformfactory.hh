@@ -39,19 +39,7 @@ typedef TTransformCreator<C2DTransformation>  C2DTransformCreator;
 /// Pointer type to the transformation factory
 typedef std::shared_ptr<C2DTransformCreator > P2DTransformationFactory;
 
-/// this is the Factory class that is used to create the transformation creator 
-class C2DTransformCreatorPlugin : public TFactory<C2DTransformCreator> {
-public: 
-	typedef TFactory<C2DTransformCreator>::Product Product; 
-
-	C2DTransformCreatorPlugin(const char *const name); 
-private: 
-	virtual Product *do_create() const __attribute__((warn_unused_result));
-	virtual Product *do_create(const C2DInterpolatorFactory& factory) const __attribute__((warn_unused_result)) = 0 ;
-
-	std::string m_image_interpolator; 
-	std::string m_image_boundary; 
-}; 
+typedef TTransformCreatorPlugin<C2DTransformation>  C2DTransformCreatorPlugin; 
 
 /// The plugin handler to manage the transformation creators
 typedef THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin> > C2DTransformCreatorHandler;

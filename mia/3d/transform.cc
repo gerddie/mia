@@ -38,7 +38,8 @@
 
 NS_MIA_BEGIN
 
-C3DTransformation::C3DTransformation()
+C3DTransformation::C3DTransformation(const C3DInterpolatorFactory& ipf):
+	Transformation<C3DImage, C3DInterpolatorFactory>(ipf)
 {
 
 }
@@ -246,7 +247,7 @@ private:
 
 
 
-P3DImage C3DTransformation::apply(const C3DImage& input, const C3DInterpolatorFactory& ipf) const
+P3DImage C3DTransformation::do_transform(const C3DImage& input, const C3DInterpolatorFactory& ipf) const
 {
 	return mia::filter(F3DTransform(ipf, *this), input);
 

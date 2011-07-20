@@ -160,7 +160,7 @@ public:
 	/**
 	   Standard constructor place holder
 	 */
-	C3DTransformation();
+	C3DTransformation(const C3DInterpolatorFactory& ipf);
 
 	/**
 	   Set the descrition string that was used to create this transformstion 

@@ -76,6 +76,24 @@ private:
 	InterpolatorFactory m_ipf; 
 };
 
+
+/// this is the Factory class that is used to create the transformation creator 
+template <typename Transform> 
+class TTransformCreatorPlugin : public TFactory<TTransformCreator<Transform> > {
+public: 
+	typedef typename TFactory<TTransformCreator<Transform> >::Product Product; 
+	typedef typename Transform::InterpolatorFactory InterpolatorFactory; 
+
+	TTransformCreatorPlugin(const char *const name); 
+private: 
+	virtual Product *do_create() const __attribute__((warn_unused_result));
+	virtual Product *do_create(const InterpolatorFactory& factory) const __attribute__((warn_unused_result)) = 0 ;
+
+	std::string m_image_interpolator; 
+	std::string m_image_boundary; 
+}; 
+
+
 NS_MIA_END
 
 #endif
