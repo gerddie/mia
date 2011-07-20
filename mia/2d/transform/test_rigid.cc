@@ -33,9 +33,11 @@ using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
+CSplineKernelTestPath kernel_test_path; 
+
 struct TranslateTransFixture {
 	TranslateTransFixture():size(60, 80),
-				rtrans(size)
+				rtrans(size, C2DInterpolatorFactory("bspline:d=3", "mirror"))
 		{
 			rtrans.translate(1.0, 2.0);
 		}
@@ -78,9 +80,17 @@ BOOST_FIXTURE_TEST_CASE(derivative_TranslateTransFixture, TranslateTransFixture)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_rigid2d)
+struct ipfFixture {
+	ipfFixture():
+		ipf("bspline:d=3", "mirror")
+		{
+		} 
+	C2DInterpolatorFactory ipf; 
+}; 
+
+BOOST_FIXTURE_TEST_CASE(test_rigid2d, ipfFixture)
 {
-	C2DRigidTransformation t1(C2DBounds(10,20));
+	C2DRigidTransformation t1(C2DBounds(10,20), ipf);
 
 	BOOST_CHECK_EQUAL(t1.degrees_of_freedom(), 3u);
 
@@ -97,18 +107,18 @@ BOOST_AUTO_TEST_CASE(test_rigid2d)
 	BOOST_CHECK_CLOSE(yr1.x ,-4.0, 0.1f);
 	BOOST_CHECK_CLOSE(yr1.y , 2.0, 0.1f);
 
-	C2DRigidTransformation t2(C2DBounds(10,20));
+	C2DRigidTransformation t2(C2DBounds(10,20), ipf);
 	t2.rotate(M_PI / 2.0);
 	C2DFVector yr = t2(x0);
 	BOOST_CHECK_CLOSE(yr.x ,  -2.0f, 0.1f);
 	BOOST_CHECK_CLOSE(yr.y ,   1.0f, 0.1f);
 }
 
-BOOST_AUTO_TEST_CASE( test_rigid2d_iterator )
+BOOST_FIXTURE_TEST_CASE( test_rigid2d_iterator, ipfFixture )
 {
 	C2DBounds size(10,20);
 
-	C2DRigidTransformation t1(size);
+	C2DRigidTransformation t1(size, ipf);
 	C2DRigidTransformation::const_iterator ti = t1.begin();
 
 	for (size_t y = 0; y < size.y; ++y)
@@ -120,10 +130,10 @@ BOOST_AUTO_TEST_CASE( test_rigid2d_iterator )
 }
 
 
-struct RotateTransFixture {
+struct RotateTransFixture : public ipfFixture {
 	RotateTransFixture():
 		size(60, 80),
-		rtrans(size),
+		rtrans(size, ipf),
 		rot_cos(cos(M_PI / 4.0)),
 		rot_sin(sin(M_PI / 4.0))
 	{
@@ -204,7 +214,7 @@ BOOST_FIXTURE_TEST_CASE(derivative_RotateTransFixture, RotateTransFixture)
 	BOOST_CHECK_CLOSE(d.y.y, rot_cos, 0.1);
 }
 
-struct RigidGrad2ParamFixtureRigid {
+struct RigidGrad2ParamFixtureRigid : public ipfFixture{
 	RigidGrad2ParamFixtureRigid();
 
 
@@ -228,7 +238,7 @@ BOOST_FIXTURE_TEST_CASE (test_upscale, RigidGrad2ParamFixtureRigid)
 
 RigidGrad2ParamFixtureRigid::RigidGrad2ParamFixtureRigid():
 	size(80,80),
-	trans(size)
+	trans(size, ipf)
 {
 	trans.translate(-1, -3);
 //	trans.rotate(0.0);
@@ -236,10 +246,10 @@ RigidGrad2ParamFixtureRigid::RigidGrad2ParamFixtureRigid():
 
 
 
-BOOST_AUTO_TEST_CASE (test_inverse_rigid)
+BOOST_FIXTURE_TEST_CASE (test_inverse_rigid, ipfFixture)
 {
 	C2DBounds size(10,2);
-	C2DRigidTransformation trans(size);
+	C2DRigidTransformation trans(size, ipf);
 	auto a = trans.get_parameters();
 	a[0] = -1; 
 	a[1] = -3;

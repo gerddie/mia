@@ -31,6 +31,7 @@
 NS_MIA_USE
 namespace bfs=::boost::filesystem;
 
+CSplineKernelTestPath kernel_test_path; 
 struct ImagefullcostFixture {
 	ImagefullcostFixture(); 
 

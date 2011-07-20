@@ -42,7 +42,7 @@ public:
 	typedef C2DFVectorfield::iterator field_iterator;
 	typedef C2DFVectorfield::const_iterator const_field_iterator;
 
-	C2DGridTransformation(const C2DBounds& size);
+	C2DGridTransformation(const C2DBounds& size, const C2DInterpolatorFactory& ipf);
 
 	//	operator C2DFVectorfield&();
 
@@ -82,7 +82,6 @@ public:
 	virtual P2DTransformation do_upscale(const C2DBounds& size) const;
 	virtual void add(const C2DTransformation& a);
 	virtual size_t degrees_of_freedom() const;
-        virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
 	virtual void translate(const C2DFVectorfield& gradient, CDoubleVector& params) const;
 	virtual void update(float step, const C2DFVectorfield& a);
 	virtual C2DFMatrix derivative_at(int x, int y) const;
@@ -126,6 +125,9 @@ private:
 	C2DFVectorfield m_field;
 
 	C2DInterpolatorFactory m_upscale_interpolator_factory; 
+
+	friend 
+	EXPORT_2D C2DGridTransformation operator + (const C2DGridTransformation& a, const C2DGridTransformation& b);
 };
 
 inline C2DFVector C2DGridTransformation::apply(const  C2DFVector& x) const

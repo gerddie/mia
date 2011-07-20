@@ -59,7 +59,8 @@ NS_MIA_BEGIN
 using namespace std;
 
 
-C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel):
+C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, const C2DInterpolatorFactory& ipf):
+	C2DTransformation(ipf), 
 	m_range(range),
 	m_target_c_rate(1,1),
 	m_kernel(kernel),
@@ -85,6 +86,7 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSpline
 }
 
 C2DSplineTransformation::C2DSplineTransformation(const C2DSplineTransformation& org):
+	C2DTransformation(org), 
    	m_range(org.m_range),
 	m_target_c_rate(org.m_target_c_rate),
 	m_coefficients( org.m_coefficients),
@@ -103,7 +105,8 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DSplineTransformation& 
 }
 
 C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, 
-						 const C2DFVector& c_rate):
+						 const C2DFVector& c_rate, const C2DInterpolatorFactory& ipf):
+	C2DTransformation(ipf), 
 	m_range(range),
 	m_target_c_rate(c_rate),
 	m_kernel(kernel),
@@ -325,7 +328,7 @@ P2DTransformation C2DSplineTransformation::do_upscale(const C2DBounds& size) con
 	C2DFVector mx(((float)size.x)/ ((float)m_range.x),
 		      ((float)size.y)/ ((float)m_range.y));
 
-	C2DSplineTransformation *help = new C2DSplineTransformation(size, m_kernel);
+	C2DSplineTransformation *help = new C2DSplineTransformation(size, m_kernel, get_interpolator_factory());
 	C2DFVectorfield new_coefs(m_coefficients.get_size()); 
 	
 	transform(m_coefficients.begin(), m_coefficients.end(), new_coefs.begin(), 
@@ -362,13 +365,6 @@ void C2DSplineTransformation::add(const C2DTransformation& a)
 size_t C2DSplineTransformation::degrees_of_freedom() const
 {
 	return m_coefficients.size() * 2;
-}
-
-P2DImage C2DSplineTransformation::apply(const C2DImage& image,
-					const C2DInterpolatorFactory& ipf) const
-{
-	TRACE_FUNCTION;
-	return transform2d(image, ipf, *this);
 }
 
 void C2DSplineTransformation::update(float step, const C2DFVectorfield& a)
@@ -764,31 +760,32 @@ double C2DSplineTransformation::get_divcurl_cost(double wd, double wr) const
 
 class C2DSplineTransformCreator: public C2DTransformCreator {
 public:
-	C2DSplineTransformCreator(PSplineKernel kernel, const C2DFVector& rates); 
-	virtual P2DTransformation do_create(const C2DBounds& size) const;
+	C2DSplineTransformCreator(PSplineKernel kernel, const C2DFVector& rates, const C2DInterpolatorFactory& ipf); 
+	virtual P2DTransformation do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const;
 private:
 	PSplineKernel m_kernel;
 	C2DFVector m_rates;
 };
 
-C2DSplineTransformCreator::C2DSplineTransformCreator(PSplineKernel kernel, const C2DFVector& rates):
+C2DSplineTransformCreator::C2DSplineTransformCreator(PSplineKernel kernel, const C2DFVector& rates, const C2DInterpolatorFactory& ipf):
+	C2DTransformCreator(ipf), 
 	m_kernel(kernel),
 	m_rates(rates)
 {
 }
 
 
-P2DTransformation C2DSplineTransformCreator::do_create(const C2DBounds& size) const
+P2DTransformation C2DSplineTransformCreator::do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const
 {
 	assert(m_kernel); 
-	return P2DTransformation(new C2DSplineTransformation(size, m_kernel, m_rates));
+	return P2DTransformation(new C2DSplineTransformation(size, m_kernel, m_rates, ipf));
 }
 
 
 class C2DSplineTransformCreatorPlugin: public C2DTransformCreatorPlugin {
 public:
 	C2DSplineTransformCreatorPlugin();
-	virtual C2DTransformCreator *do_create() const;
+	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
 	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 private:
@@ -801,15 +798,15 @@ C2DSplineTransformCreatorPlugin::C2DSplineTransformCreatorPlugin():
 	m_interpolator(CSplineKernelPluginHandler::instance().produce("bspline:d=3")),
 	m_rate(10)
 {
-	add_parameter("interp", new CFactoryParameter<CSplineKernelPluginHandler>(m_interpolator, false, 
-										  "image interpolator kernel"));
+	add_parameter("kernel", new CFactoryParameter<CSplineKernelPluginHandler>(m_interpolator, false, 
+										  "transformation spline kernel"));
 	add_parameter("rate",   new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
 						    "isotropic coefficient rate in pixels"));
 }
 
-C2DTransformCreator *C2DSplineTransformCreatorPlugin::do_create() const
+C2DTransformCreator *C2DSplineTransformCreatorPlugin::do_create(const C2DInterpolatorFactory& ipf) const
 {
-	return new C2DSplineTransformCreator(m_interpolator, C2DFVector(m_rate, m_rate));
+	return new C2DSplineTransformCreator(m_interpolator, C2DFVector(m_rate, m_rate), ipf);
 }
 
 bool C2DSplineTransformCreatorPlugin::do_test() const

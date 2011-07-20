@@ -26,7 +26,7 @@ NS_BEGIN(ssd_2dimage_fatcost)
 
 class CFatSSD2DImageCost : public mia::C2DImageFatCost {
 public:
-	CFatSSD2DImageCost(mia::P2DImage src, mia::P2DImage ref, mia::P2DInterpolatorFactory ipf, float weight);
+	CFatSSD2DImageCost(mia::P2DImage src, mia::P2DImage ref, float weight);
 private:
 	virtual mia::P2DImageFatCost cloned(mia::P2DImage src, mia::P2DImage ref) const;
 	virtual double do_value() const;

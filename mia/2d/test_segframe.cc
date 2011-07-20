@@ -34,6 +34,8 @@
 
 
 namespace bfs=boost::filesystem;
+C2DImageIOPluginHandlerTestPath test_imageio_path; 
+C2DTransformCreatorHandlerTestPath test_transform_creator_path; 
 
 NS_MIA_USE
 using namespace std;
@@ -191,9 +193,6 @@ const char *testframe_shifted = "<?xml version=\"1.0\"?>\n<test>"
 
 BOOST_FIXTURE_TEST_CASE(segframe_transform, FrameTestRead)
 {
-	list< bfs::path> kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("transform"));
-	C2DTransformCreatorHandler::set_search_path(kernelsearchpath);
 
 	P2DTransformationFactory transform_creater = C2DTransformCreatorHandler::instance().produce("translate");
 	P2DTransformation transform = transform_creater->create(C2DBounds(10,20));

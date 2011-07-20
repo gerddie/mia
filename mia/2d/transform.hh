@@ -220,7 +220,7 @@ public:
 	/**
 	   Standard constructor place holder
 	 */
-	C2DTransformation();
+	C2DTransformation(const C2DInterpolatorFactory& ipf);
 
 	/**
 	   Set the descrition string that was used to create this transformstion 
@@ -393,6 +393,9 @@ private:
 	std::string m_creator_string;  
 	virtual C2DTransformation *do_clone() const __attribute__((warn_unused_result)) = 0;
 
+
+	P2DImage do_transform(const C2DImage& input, const C2DInterpolatorFactory& ipf) const;
+
 };
 
 /// Pointer type for the 2D transformation 
@@ -428,68 +431,6 @@ inline std::ostream& operator << (std::ostream& os,
 */
 EXPORT_2D bool operator != (const C2DTransformation::const_iterator& a, 
 			    const C2DTransformation::const_iterator& b); 
-
-
-/**
-   @brief Helper functor for 2D image transformations 
-   
-   Helper Functor to evaluate a transformed image by applying a given 
-   transformation and using the provided interpolator type
-*/
-
-template <typename Transform>
-struct C2DTransform : public TFilter<P2DImage> {
-
-	/**
-	   Construtor 
-	   @param ipf interpolation factory to use 
-	   @param trans tranformation to be applied 
-	 */
-	C2DTransform(const C2DInterpolatorFactory& ipf, const Transform& trans):
-		m_ipf(ipf),
-		m_trans(trans){
-	}
-	
-	/**
-	   Operator to run the 2D transform. The output image size is defined by the 
-	   support of the transformation 
-	   @param image 
-	   @returns transformed image. 
-	 */
-	template <typename T>
-	P2DImage operator ()(const T2DImage<T>& image) const {
-		T2DImage<T> *timage = new T2DImage<T>(m_trans.get_size(), image);
-
-		std::auto_ptr<T2DInterpolator<T> > interp(m_ipf.create(image.data()));
-
-		typename T2DImage<T>::iterator r = timage->begin();
-		typename Transform::const_iterator v = m_trans.begin();
-
-		for (size_t y = 0; y < image.get_size().y; ++y)
-			for (size_t x = 0; x < image.get_size().x; ++x, ++r, ++v) {
-				*r = (*interp)(*v);
-			}
-
-		return P2DImage(timage);
-	}
-private:
-	const C2DInterpolatorFactory& m_ipf;
-	const Transform& m_trans;
-};
-
-
-/**
-   Transform an image by a given transform using the provided interpolation method.
-   \param image the image to be transformed
-   \param ipf interpolator factory holding the information which interpolation method will be used
-   \param trans transformation
-   \returns transformed image
-*/
-template <typename Transform>
-P2DImage transform2d(const C2DImage& image, const C2DInterpolatorFactory& ipf, const Transform& trans)
-{
-	return mia::filter(C2DTransform<Transform>(ipf, trans), image);
-}
 
 NS_MIA_END
 

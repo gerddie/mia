@@ -54,20 +54,32 @@ public:
 	typedef D Data; 
 
 	/// type of the interpolator used by this transformation 
-	typedef I Interpolator; 
+	typedef I InterpolatorFactory; 
 	
+	Transformation(const I& ipf); 
+
 	/** Apply the transformation to the input data 
 	    \param input 
 	    \param ipf interpolator factory 
 	    \returns a shared pointer to the transformed input data
 	*/
-	std::shared_ptr<D> operator () (const D& input, const I& ipf) const; 
+	std::shared_ptr<D> operator () (const D& input) const; 
+protected: 
+	const I& get_interpolator_factory() const; 
 private: 
-        virtual std::shared_ptr<D> apply(const D& input, const I& ipf) const = 0;
+        virtual std::shared_ptr<D> do_transform(const D& input, const I& ipf) const = 0;
+
+	I m_ipf;
 
 }; 
 
 // implementation 
+template <typename D, typename I>
+Transformation<D, I>::Transformation(const I& ipf):
+	m_ipf(ipf)
+{
+	
+}
 
 template <typename D, typename I>
 Transformation<D, I>::~Transformation()
@@ -75,9 +87,15 @@ Transformation<D, I>::~Transformation()
 }
 
 template <typename D, typename I>
-std::shared_ptr<D > Transformation<D,I>::operator() (const D& input, const I& ipf) const
+const I& Transformation<D, I>::get_interpolator_factory() const
 {
-	return apply(input, ipf); 
+	return m_ipf;
+}
+
+template <typename D, typename I>
+std::shared_ptr<D > Transformation<D,I>::operator() (const D& input) const
+{
+	return do_transform(input, m_ipf); 
 }
 
 template <typename D, typename I>

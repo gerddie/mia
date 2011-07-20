@@ -97,7 +97,7 @@ void RigidRegisterFixture::run(C2DTransformation& t, const string& minimizer_des
 
 
 	P2DImage src(new C2DFImage(size, src_image_init));
-	P2DImage ref = t(*src, *ipfactory);
+	P2DImage ref = t(*src);
 
 	P2DTransformation transform = rr.run(src, ref);
 	auto params = transform->get_parameters();

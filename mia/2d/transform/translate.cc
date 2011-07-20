@@ -46,13 +46,15 @@
 
 NS_MIA_BEGIN
 using namespace std;
-C2DTranslateTransformation::C2DTranslateTransformation(const C2DBounds& size):
+C2DTranslateTransformation::C2DTranslateTransformation(const C2DBounds& size, const C2DInterpolatorFactory& ipf):
+	C2DTransformation(ipf),
 	m_transform(0,0),
 	m_size(size)
 {
 }
 
-C2DTranslateTransformation::C2DTranslateTransformation(const C2DBounds& size,const C2DFVector& transform):
+C2DTranslateTransformation::C2DTranslateTransformation(const C2DBounds& size,const C2DFVector& transform, const C2DInterpolatorFactory& ipf):
+	C2DTransformation(ipf),
 	m_transform(transform),
 	m_size(size)
 {
@@ -130,14 +132,6 @@ C2DTransformation *C2DTranslateTransformation::invert() const
 	return result; 
 }
 
-P2DImage C2DTranslateTransformation::apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const
-{
-	if (image.get_size() != get_size()) {
-		cvwarn() << "C2DTranslateTransformation::apply: size of input differs from transformation target size\n";
-	}
-	return transform2d(image, ipf, *this);
-}
-
 bool C2DTranslateTransformation::save(const std::string& /*filename*/) const
 {
 	assert(0 && "not implemented");
@@ -149,7 +143,9 @@ P2DTransformation C2DTranslateTransformation::do_upscale(const C2DBounds& size) 
 
 	return P2DTransformation(new C2DTranslateTransformation(size,
 								C2DFVector((m_transform.x * size.x) / m_size.x,
-									   (m_transform.y * size.y) / m_size.y)));
+									   (m_transform.y * size.y) / m_size.y), 
+								get_interpolator_factory()
+					 ));
 }
 
 
@@ -261,18 +257,26 @@ double C2DTranslateTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/
 
 
 class C2DTranslateTransformCreator: public C2DTransformCreator {
-	virtual P2DTransformation do_create(const C2DBounds& size) const;
+public: 
+	C2DTranslateTransformCreator(const C2DInterpolatorFactory& ipf); 
+private: 
+	virtual P2DTransformation do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const;
 };
 
-P2DTransformation C2DTranslateTransformCreator::do_create(const C2DBounds& size) const
+C2DTranslateTransformCreator::C2DTranslateTransformCreator(const C2DInterpolatorFactory& ipf):
+	C2DTransformCreator(ipf) 
 {
-	return P2DTransformation(new C2DTranslateTransformation(size));
+}
+
+P2DTransformation C2DTranslateTransformCreator::do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const
+{
+	return P2DTransformation(new C2DTranslateTransformation(size, ipf));
 }
 
 class C2DTranslateTransformCreatorPlugin: public C2DTransformCreatorPlugin {
 public:
 	C2DTranslateTransformCreatorPlugin();
-	virtual C2DTransformCreator *do_create() const;
+	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
 	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
@@ -282,9 +286,9 @@ C2DTranslateTransformCreatorPlugin::C2DTranslateTransformCreatorPlugin():
 {
 }
 
-C2DTransformCreator *C2DTranslateTransformCreatorPlugin::do_create() const
+C2DTransformCreator *C2DTranslateTransformCreatorPlugin::do_create(const C2DInterpolatorFactory& ipf) const
 {
-	return new C2DTranslateTransformCreator();
+	return new C2DTranslateTransformCreator(ipf);
 }
 
 bool C2DTranslateTransformCreatorPlugin::do_test() const

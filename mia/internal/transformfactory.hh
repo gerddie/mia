@@ -41,18 +41,21 @@ class EXPORT_HANDLER TTransformCreator: public CProductBase {
 public:
 	typedef typename Transform::Data plugin_data; 
 	typedef Transform plugin_type; 
+
+	typedef typename Transform::InterpolatorFactory InterpolatorFactory; 
+	typedef typename Transform::Size Size; 
 	typedef std::shared_ptr<TTransformCreator<Transform> > Pointer; 
 
 	/** Standard constructor 
 	    \remark it is empty, so why it is defined? 
 	 */
-	TTransformCreator();
+	TTransformCreator(const InterpolatorFactory& ipf);
 
 	/**
 	   Creates a transformation according to the given model and defined 
 	   on a grid [(0,0), size}
 	 */
-	typename Transform::Pointer create(const typename Transform::Size& size) const;
+	typename Transform::Pointer create(const Size& size) const;
 	
 	/**
 	   This function checks for a given property of the transformation creator. 
@@ -67,9 +70,10 @@ protected:
 	 */
 	void add_property(const char *property);
 private:
-	virtual	typename Transform::Pointer do_create(const typename Transform::Size& size) const = 0;
+	virtual	typename Transform::Pointer do_create(const Size& size, const InterpolatorFactory& ipf) const = 0;
 
 	std::set<std::string> m_properties;
+	InterpolatorFactory m_ipf; 
 };
 
 NS_MIA_END

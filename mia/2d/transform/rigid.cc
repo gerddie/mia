@@ -50,15 +50,6 @@
 NS_MIA_BEGIN
 using namespace std;
 
-P2DImage C2DRigidTransformation::apply(const C2DImage& image,
-					const C2DInterpolatorFactory& ipf) const
-{
-	if (image.get_size() != get_size()) {
-		cvwarn() << "C2DRigidTransformation::apply: size of input differs from transformation target size\n";
-	}
-	return transform2d(image, ipf, *this);
-}
-
 C2DFVector C2DRigidTransformation::apply(const C2DFVector& x) const
 {
 	return transform(x);
@@ -77,7 +68,8 @@ C2DFVector C2DRigidTransformation::transform(const C2DFVector& x)const
 			  );
 }
 
-C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size):
+C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size, const C2DInterpolatorFactory& ipf):
+	C2DTransformation(ipf),
 	m_t(6),
 	m_size(size),
 	m_translation(0.0, 0.0),
@@ -88,11 +80,12 @@ C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size):
 }
 
 C2DRigidTransformation::C2DRigidTransformation(const C2DRigidTransformation& other):
+	C2DTransformation(other),
 	m_t(other.m_t),
 	m_size(other.m_size),
 	m_translation(other.m_translation),
 	m_rotation(other.m_rotation),
-	m_matrix_valid(m_matrix_valid)
+	m_matrix_valid(other.m_matrix_valid)
 {
 }
 
@@ -115,7 +108,8 @@ C2DTransformation *C2DRigidTransformation::invert()const
 
 
 C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size,const C2DFVector& translation,
-					       float rotation):
+					       float rotation, const C2DInterpolatorFactory& ipf):
+	C2DTransformation(ipf),
 	m_t(6),
 	m_size(size),
 	m_translation(translation),
@@ -228,7 +222,7 @@ P2DTransformation C2DRigidTransformation::do_upscale(const C2DBounds& size) cons
 {
 	C2DFVector new_trans(float(size.x) / (float)get_size().x * m_translation.x,
 			     float(size.y) / (float)get_size().y * m_translation.y);
-	return P2DTransformation(new C2DRigidTransformation(size, new_trans, m_rotation));
+	return P2DTransformation(new C2DRigidTransformation(size, new_trans, m_rotation, get_interpolator_factory()));
 }
 
 C2DFMatrix C2DRigidTransformation::derivative_at(int /*x*/, int /*y*/) const
@@ -367,18 +361,26 @@ float C2DRigidTransformation::pertuberate(C2DFVectorfield& /*v*/) const
 }
 
 class C2DRigidTransformCreator: public C2DTransformCreator {
-	virtual P2DTransformation do_create(const C2DBounds& size) const;
+public: 
+	C2DRigidTransformCreator(const C2DInterpolatorFactory& ipf); 
+private: 
+	virtual P2DTransformation do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const;
 };
 
-P2DTransformation C2DRigidTransformCreator::do_create(const C2DBounds& size) const
+C2DRigidTransformCreator::C2DRigidTransformCreator(const C2DInterpolatorFactory& ipf):
+	C2DTransformCreator(ipf)
 {
-	return P2DTransformation(new C2DRigidTransformation(size));
+}
+
+P2DTransformation C2DRigidTransformCreator::do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const
+{
+	return P2DTransformation(new C2DRigidTransformation(size, ipf));
 }
 
 class C2DRigidTransformCreatorPlugin: public C2DTransformCreatorPlugin {
 public:
 	C2DRigidTransformCreatorPlugin();
-	virtual C2DTransformCreator *do_create() const;
+	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
 	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
@@ -388,9 +390,9 @@ C2DRigidTransformCreatorPlugin::C2DRigidTransformCreatorPlugin():
 {
 }
 
-C2DTransformCreator *C2DRigidTransformCreatorPlugin::do_create() const
+C2DTransformCreator *C2DRigidTransformCreatorPlugin::do_create(const C2DInterpolatorFactory& ipf) const
 {
-	return new C2DRigidTransformCreator();
+	return new C2DRigidTransformCreator(ipf);
 }
 
 bool C2DRigidTransformCreatorPlugin::do_test() const

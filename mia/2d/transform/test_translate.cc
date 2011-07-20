@@ -32,16 +32,17 @@ CSplineKernelTestPath init_path;
 struct TranslateTransformFixture {
 
 	TranslateTransformFixture();
-
+	C2DInterpolatorFactory ipf; 
 	C2DBounds size;
 	C2DFVector value;
 	C2DTranslateTransformation transf;
 };
 
 TranslateTransformFixture::TranslateTransformFixture():
+	ipf("bspline:d=3", "mirror"), 
 	size(5,6),
 	value(-2, 3),
-	transf(size, value)
+	transf(size, value, ipf)
 {
 }
 
@@ -122,6 +123,7 @@ BOOST_FIXTURE_TEST_CASE(test_invert_params, TranslateTransformFixture)
 
 BOOST_AUTO_TEST_CASE(test_shift_image)
 {
+
 	float src_image_init[10 * 9] = {
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 1, 2, 3, 0, 0, 0,
@@ -147,12 +149,14 @@ BOOST_AUTO_TEST_CASE(test_shift_image)
 	};
 	const C2DBounds size(10,9);
 	P2DImage src(new C2DFImage(size, src_image_init));
-	
-	C2DTranslateTransformation transform(size,  C2DFVector(1.0, 2.0));
-	
-	unique_ptr<C2DInterpolatorFactory> ipf(create_2dinterpolation_factory(ip_bspline0, bc_mirror_on_bounds)); 
 
-	P2DImage result = transform.apply(*src, *ipf);
+
+	C2DInterpolatorFactory ipf("bspline:d=0", "mirror"); 	
+	C2DTranslateTransformation transform(size,  C2DFVector(1.0, 2.0), ipf);
+	C2DTransformation& help = transform; 
+
+
+	P2DImage result = help(*src);
 	
 	const C2DFImage& r = dynamic_cast<const C2DFImage&>(*result); 
 	

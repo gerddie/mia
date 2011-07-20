@@ -78,6 +78,10 @@ typedef C2DImageIOPluginHandler::Instance::DataKey C2DImageDataKey;
  */
 typedef C2DImageIOPluginHandler::Instance::PData P2DImageVector;
 
+struct C2DImageIOPluginHandlerTestPath {
+	C2DImageIOPluginHandlerTestPath(); 
+}; 
+
 
 /**
    Convenience function to create a vector of images wrapping one image

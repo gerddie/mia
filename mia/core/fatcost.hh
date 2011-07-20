@@ -60,7 +60,6 @@ public:
 	typedef T Transform;
 	typedef F Force;
 	typedef typename T::Data Data;
-	typedef typename T::Interpolator Interpolator;
 	
 	typedef typename T::Data plugin_data;
 	typedef fatcost_type plugin_type;
@@ -70,8 +69,7 @@ public:
 
 	 */
 
-	TFatCost(std::shared_ptr<Data > src, std::shared_ptr<Data > ref,
-		 std::shared_ptr<Interpolator > ipf, float weight = 1.0);
+	TFatCost(std::shared_ptr<Data > src, std::shared_ptr<Data > ref, float weight = 1.0);
 
 	/// ensure virtual destruction, since we have virtual functions
 	virtual ~TFatCost();
@@ -103,9 +101,6 @@ public:
 		return *m_floating;
 	}
 
-	std::shared_ptr<Interpolator > get_ipf() const {
-		return m_ipf;
-	}
 	float get_weight() const {
 		return m_weight;
 	}
@@ -115,7 +110,6 @@ private:
 
 	const std::shared_ptr<Data >  m_src;
 	const std::shared_ptr<Data >  m_ref;
-	std::shared_ptr<Interpolator > m_ipf;
 	std::shared_ptr<Data > m_floating;
 	float m_weight;
 	

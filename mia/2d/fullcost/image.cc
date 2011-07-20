@@ -94,7 +94,7 @@ double C2DImageFullCost::do_value(const C2DTransformation& t) const
 {
 	TRACE_FUNCTION; 
 	assert(m_src_scaled); 
-	P2DImage temp  = t(*m_src_scaled, *m_ipf);
+	P2DImage temp  = t(*m_src_scaled);
 	const double result = m_cost_kernel->value(*temp); 
 	cvdebug() << "C2DImageFullCost::value = " << result << "\n"; 
 	return result; 
@@ -120,7 +120,7 @@ double C2DImageFullCost::do_evaluate(const C2DTransformation& t, CDoubleVector& 
 	static int idx = 0; 
 	static auto  toubyte_converter = 
 		C2DFilterPluginHandler::instance().produce("convert:repn=ubyte"); 
-	P2DImage temp  = t(*m_src_scaled, *m_ipf);
+	P2DImage temp  = t(*m_src_scaled);
 
 	if (m_debug) {
 		stringstream fname; 

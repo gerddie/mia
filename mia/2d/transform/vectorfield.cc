@@ -48,7 +48,8 @@
 NS_MIA_BEGIN
 using namespace std;
 
-C2DGridTransformation::C2DGridTransformation(const C2DBounds& size):
+C2DGridTransformation::C2DGridTransformation(const C2DBounds& size, const C2DInterpolatorFactory& ipf):
+	C2DTransformation(ipf),
 	m_field(size), 
 	m_upscale_interpolator_factory("bspline:d=1", "zero")
 {
@@ -64,7 +65,7 @@ P2DTransformation C2DGridTransformation::do_upscale(const C2DBounds& size) const
 				   "C2DGridTransformation::do_upscale: input field has a zero dimension"); 
 
 
-	C2DGridTransformation *result = new C2DGridTransformation(size);
+	C2DGridTransformation *result = new C2DGridTransformation(size, get_interpolator_factory());
 
 	unique_ptr<T2DInterpolator<C2DFVector> >
 		interp(m_upscale_interpolator_factory.create(m_field)); 
@@ -239,12 +240,6 @@ void C2DGridTransformation::iterator_impl::do_y_increment()
 	m_value = C2DFVector(get_pos()) - *m_current; 
 }
 
-
-P2DImage C2DGridTransformation::apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const
-{
-	assert(image.get_size() == m_field.get_size());
-	return transform2d(image, ipf, *this);
-}
 
 C2DFVector C2DGridTransformation::operator ()(const  C2DFVector& x) const
 {
@@ -544,7 +539,7 @@ EXPORT_2D C2DGridTransformation operator + (const C2DGridTransformation& a, cons
 {
 	assert( a.get_size() == b.get_size());
 
-	C2DGridTransformation result(a.get_size());
+	C2DGridTransformation result(a.get_size(), a.get_interpolator_factory());
 
 	C2DFVectorfield::iterator ri = result.field_begin();
 	C2DFVectorfield::const_iterator bi = b.field_begin();
@@ -562,12 +557,20 @@ EXPORT_2D C2DGridTransformation operator + (const C2DGridTransformation& a, cons
    Transformation creator 
  */
 class C2DGridTransformCreator: public C2DTransformCreator {
-	virtual P2DTransformation do_create(const C2DBounds& size) const;
+public: 
+	C2DGridTransformCreator(const C2DInterpolatorFactory& ipf); 
+private: 
+	virtual P2DTransformation do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const;
 };
 
-P2DTransformation C2DGridTransformCreator::do_create(const C2DBounds& size) const
+C2DGridTransformCreator::C2DGridTransformCreator(const C2DInterpolatorFactory& ipf):
+	C2DTransformCreator(ipf)
 {
-	return P2DTransformation(new C2DGridTransformation(size));
+}
+
+P2DTransformation C2DGridTransformCreator::do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const
+{
+	return P2DTransformation(new C2DGridTransformation(size, ipf));
 }
 
 
@@ -578,7 +581,7 @@ P2DTransformation C2DGridTransformCreator::do_create(const C2DBounds& size) cons
 class C2DGridTransformCreatorPlugin: public C2DTransformCreatorPlugin {
 public:
 	C2DGridTransformCreatorPlugin();
-	virtual C2DTransformCreator *do_create() const;
+	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
 	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
@@ -588,9 +591,9 @@ C2DGridTransformCreatorPlugin::C2DGridTransformCreatorPlugin():
 {
 }
 
-C2DTransformCreator *C2DGridTransformCreatorPlugin::do_create() const
+C2DTransformCreator *C2DGridTransformCreatorPlugin::do_create(const C2DInterpolatorFactory& ipf) const
 {
-	return new C2DGridTransformCreator();
+	return new C2DGridTransformCreator(ipf);
 }
 
 bool C2DGridTransformCreatorPlugin::do_test() const

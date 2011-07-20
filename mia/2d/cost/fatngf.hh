@@ -71,8 +71,7 @@ typedef std::shared_ptr<CCostEvaluator > PEvaluator;
 
 class CFatNFG2DImageCost : public mia::C2DImageFatCost {
 public:
-	CFatNFG2DImageCost(mia::P2DImage src, mia::P2DImage ref, mia::P2DInterpolatorFactory ipf, float weight,
-			   PEvaluator evaluator);
+	CFatNFG2DImageCost(mia::P2DImage src, mia::P2DImage ref, float weight, PEvaluator evaluator);
 private:
 	virtual mia::P2DImageFatCost cloned(mia::P2DImage src, mia::P2DImage ref) const;
 	virtual double do_value() const;

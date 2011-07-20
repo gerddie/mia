@@ -176,6 +176,13 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 	return result; 
 }
 
+C2DImageIOPluginHandlerTestPath::C2DImageIOPluginHandlerTestPath()
+{
+	std::list< bfs::path> searchpath;
+	searchpath.push_back(bfs::path("."));
+	C2DImageIOPluginHandler::set_search_path(searchpath);
+}
+
 EXPORT_2D const char * IDAcquisitionDate =   "AcquisitionDate";
 EXPORT_2D const char * IDImageType =         "ImageType";
 EXPORT_2D const char * IDAcquisitionNumber = "AcquisitionNumber";

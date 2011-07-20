@@ -36,8 +36,8 @@ public:
 	using C2DTransformation::operator ();
 
 	C2DSplineTransformation(const C2DSplineTransformation& org);
-	C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel);
-	C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, const C2DFVector& c_rate);
+	C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, const C2DInterpolatorFactory& ipf);
+	C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, const C2DFVector& c_rate, const C2DInterpolatorFactory& ipf);
 
 	void set_coefficients(const C2DFVectorfield& field);
 	void set_coefficients_and_prefilter(const C2DFVectorfield& field);
@@ -76,7 +76,6 @@ public:
 	virtual P2DTransformation do_upscale(const C2DBounds& size) const;
 	virtual void add(const C2DTransformation& a);
 	virtual size_t degrees_of_freedom() const;
-        virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
 	virtual void update(float step, const C2DFVectorfield& a);
 	virtual void translate(const C2DFVectorfield& gradient, CDoubleVector& params) const;
 	virtual C2DFMatrix derivative_at(int x, int y) const;

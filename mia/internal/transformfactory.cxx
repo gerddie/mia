@@ -26,14 +26,15 @@
 NS_MIA_BEGIN
 
 template <typename T> 
-TTransformCreator<T>::TTransformCreator()
+TTransformCreator<T>::TTransformCreator(const InterpolatorFactory& ipf):
+	m_ipf(ipf)
 {
 }
 
 template <typename T> 
 typename T::Pointer TTransformCreator<T>::create(const typename T::Size& size) const
 {
-	typename T::Pointer result = do_create(size);
+	typename T::Pointer result = do_create(size, m_ipf);
 	result->set_creator_string(get_init_string()); 
 	return result; 
 }

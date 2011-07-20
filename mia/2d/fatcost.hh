@@ -54,7 +54,7 @@ public:
 	   @param ipf interpolation factory 
 	   @param weight of this cost function 
 	 */
-	C2DImageFatCost(P2DImage src, P2DImage ref, P2DInterpolatorFactory ipf, float weight);
+	C2DImageFatCost(P2DImage src, P2DImage ref, float weight);
 
 	/**
 	   return a copy of this cost function that holds downscaled versions of the images, 

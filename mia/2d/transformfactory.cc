@@ -28,6 +28,32 @@
 NS_MIA_BEGIN
 
 template class TTransformCreator<C2DTransformation>; 
-EXPLICIT_INSTANCE_HANDLER(C2DTransformCreator); 
+
+C2DTransformCreatorPlugin::C2DTransformCreatorPlugin(const char *const name):
+	TFactory<C2DTransformCreator>(name), 
+	m_image_interpolator("bspline:d=3"),
+	m_image_boundary("mirror")
+{
+	add_parameter("imgkernel", new CStringParameter(m_image_interpolator, false, "image interpolator kernel")); 
+	add_parameter("imgboundary", new CStringParameter(m_image_boundary, false, "image interpolation boundary conditions")); 
+}
+
+
+C2DTransformCreatorPlugin::Product *C2DTransformCreatorPlugin::do_create() const
+{
+	C2DInterpolatorFactory ipf(m_image_interpolator, m_image_boundary); 
+	return do_create(ipf); 
+}
+
+C2DTransformCreatorHandlerTestPath::C2DTransformCreatorHandlerTestPath()
+{
+	list< bfs::path> kernelsearchpath;
+	kernelsearchpath.push_back(bfs::path("transform"));
+	C2DTransformCreatorHandler::set_search_path(kernelsearchpath);
+}
+
+
+EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C2DTransformCreator, C2DTransformCreatorPlugin); 
+
 
 NS_MIA_END

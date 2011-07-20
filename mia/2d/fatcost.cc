@@ -49,9 +49,8 @@ NS_MIA_BEGIN
 using namespace std;
 using namespace boost;
 
-C2DImageFatCost::C2DImageFatCost(P2DImage src, P2DImage ref,
-				 P2DInterpolatorFactory ipf, float weight):
-	TFatCost<C2DTransformation, C2DFVectorfield>(src, ref, ipf, weight)
+C2DImageFatCost::C2DImageFatCost(P2DImage src, P2DImage ref, float weight):
+	TFatCost<C2DTransformation, C2DFVectorfield>(src, ref, weight)
 {
 	if (src->get_size() != ref->get_size()) {
 		throw invalid_argument("C2DImageFatCost: input images must be of same size");
