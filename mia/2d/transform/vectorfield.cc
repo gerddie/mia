@@ -34,7 +34,11 @@
    \item [Degrees of Freedom:] with the grid size $(n_x,n_y)$: $2* nx * ny$
   
    \end{description}
-   This plug-in doesn't  take parameters. 
+   \plugtabstart
+   imgkernel & string " & interpolation kernel used to interpolate images when they are transformed & bspline:d=3 \\ 
+   imgboundary& string & interpolation boundary conditions used when transforming an image & mirror \\
+   \plugtabend
+
 
    LatexEnd  
  */

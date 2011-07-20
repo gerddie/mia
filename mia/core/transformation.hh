@@ -56,11 +56,14 @@ public:
 	/// type of the interpolator used by this transformation 
 	typedef I InterpolatorFactory; 
 	
+	/**
+	   Constructor to create the transformstion 
+	   \param ipf the interpolator factory to be used to create the interpolators for image interpolation 
+	 */
 	Transformation(const I& ipf); 
 
 	/** Apply the transformation to the input data 
 	    \param input 
-	    \param ipf interpolator factory 
 	    \returns a shared pointer to the transformed input data
 	*/
 	std::shared_ptr<D> operator () (const D& input) const; 
@@ -71,6 +74,8 @@ public:
 	 */
 	void set_interpolator_factory(const I& ipf); 
 protected: 
+
+	/// \returns the interpolator factory 
 	const I& get_interpolator_factory() const; 
 private: 
         virtual std::shared_ptr<D> do_transform(const D& input, const I& ipf) const = 0;

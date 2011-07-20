@@ -38,7 +38,11 @@
    \item [Degrees of Freedom:] 6 
   
    \end{description}
-   This plug-in doesn't take parameters 
+   \plugtabstart
+   imgkernel & string " & interpolation kernel used to interpolate images when they are transformed & bspline:d=3 \\ 
+   imgboundary& string & interpolation boundary conditions used when transforming an image & mirror \\
+   \plugtabend
+
 
    LatexEnd  
  */

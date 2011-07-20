@@ -51,7 +51,6 @@ public:
 	   Cunstructor to create the cost base 
 	   @param src floating image 
 	   @param ref reference image 
-	   @param ipf interpolation factory 
 	   @param weight of this cost function 
 	 */
 	C2DImageFatCost(P2DImage src, P2DImage ref, float weight);

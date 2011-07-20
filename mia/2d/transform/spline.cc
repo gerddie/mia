@@ -38,7 +38,9 @@
    \end{description}
 
    \plugtabstart
-   interp & string & interpolating B-spline kernel (bsplineX, omoms3) with X the degree (2-5)& bspline3 \\ 
+   imgkernel & string " & interpolation kernel used to interpolate images when they are transformed & bspline:d=3 \\ 
+   imgboundary& string & interpolation boundary conditions used when transforming an image & mirror \\
+   kernel & string & B-spline kernel (bsplineX, omoms3) with X the degree (2-5) used for evaluating the transformation & bspline;:d=3 \\ 
    rate   & float  & coefficient rate (currently the same in all dimenions & 10 \\
    \plugtabend
 

@@ -25,7 +25,7 @@
   Names for template classes that provide interfaces start with a capital "T" e.g. TShape, or TFactory.
   Names of classes start with a capital "C" like CSegSet, or CSplineKernel. 
   Classes and structures that work as functors are named starting with a capital "F", e.g. FMeanValue. 
-  Names of PODs \emph{plain old data structures} begin with a "S".
+  Names of PODs (plain old data structures) begin with a "S".
 
   \section refactor_sec Planned refactoring and changes
     
