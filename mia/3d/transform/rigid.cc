@@ -68,7 +68,8 @@ C3DFVector C3DRigidTransformation::transform(const C3DFVector& x)const
 		m_t[8] * x.x + m_t[9] * x.y + m_t[10] * x.z + m_t[11]);
 }
 
-C3DRigidTransformation::C3DRigidTransformation(const C3DBounds& size):
+C3DRigidTransformation::C3DRigidTransformation(const C3DBounds& size, const C3DInterpolatorFactory& ipf):
+	C3DTransformation(ipf), 
 	m_t(12),
 	m_size(size),
 	m_translation(0.0, 0.0, 0.0),
@@ -78,6 +79,7 @@ C3DRigidTransformation::C3DRigidTransformation(const C3DBounds& size):
 }
 
 C3DRigidTransformation::C3DRigidTransformation(const C3DRigidTransformation& other):
+	C3DTransformation(other), 
 	m_t(other.m_t),
 	m_size(other.m_size),
 	m_translation(other.m_translation),
@@ -102,7 +104,8 @@ C3DTransformation *C3DRigidTransformation::invert()const
 
 
 C3DRigidTransformation::C3DRigidTransformation(const C3DBounds& size,const C3DFVector& translation,
-					       const C3DFVector& rotation):
+					       const C3DFVector& rotation, const C3DInterpolatorFactory& ipf):
+	C3DTransformation(ipf), 
 	m_t(12),
 	m_size(size),
 	m_translation(translation),
@@ -235,7 +238,7 @@ P3DTransformation C3DRigidTransformation::do_upscale(const C3DBounds& size) cons
 	C3DFVector new_trans(float(size.x) / (float)get_size().x * m_translation.x,
 			     float(size.y) / (float)get_size().y * m_translation.y,
 			     float(size.z) / (float)get_size().z * m_translation.z);
-	return P3DTransformation(new C3DRigidTransformation(size, new_trans, m_rotation));
+	return P3DTransformation(new C3DRigidTransformation(size, new_trans, m_rotation, get_interpolator_factory()));
 }
 
 C3DFMatrix C3DRigidTransformation::derivative_at(int /*x*/, int /*y*/, int /* y */) const
@@ -402,18 +405,26 @@ float C3DRigidTransformation::pertuberate(C3DFVectorfield& /*v*/) const
 }
 
 class C3DRigidTransformCreator: public C3DTransformCreator {
-	virtual P3DTransformation do_create(const C3DBounds& size) const;
+public: 
+	C3DRigidTransformCreator(const C3DInterpolatorFactory& ipf); 
+private: 
+	virtual P3DTransformation do_create(const C3DBounds& size, const C3DInterpolatorFactory& ipf) const;
 };
 
-P3DTransformation C3DRigidTransformCreator::do_create(const C3DBounds& size) const
+C3DRigidTransformCreator::C3DRigidTransformCreator(const C3DInterpolatorFactory& ipf):
+	C3DTransformCreator(ipf)
 {
-	return P3DTransformation(new C3DRigidTransformation(size));
+}
+
+P3DTransformation C3DRigidTransformCreator::do_create(const C3DBounds& size, const C3DInterpolatorFactory& ipf) const
+{
+	return P3DTransformation(new C3DRigidTransformation(size, ipf));
 }
 
 class C3DRigidTransformCreatorPlugin: public C3DTransformCreatorPlugin {
 public:
 	C3DRigidTransformCreatorPlugin();
-	virtual C3DTransformCreator *do_create() const;
+	virtual C3DTransformCreator *do_create(const C3DInterpolatorFactory& ipf) const;
 	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
@@ -423,9 +434,9 @@ C3DRigidTransformCreatorPlugin::C3DRigidTransformCreatorPlugin():
 {
 }
 
-C3DTransformCreator *C3DRigidTransformCreatorPlugin::do_create() const
+C3DTransformCreator *C3DRigidTransformCreatorPlugin::do_create(const C3DInterpolatorFactory& ipf) const
 {
-	return new C3DRigidTransformCreator();
+	return new C3DRigidTransformCreator(ipf);
 }
 
 bool C3DRigidTransformCreatorPlugin::do_test() const

@@ -36,7 +36,7 @@ public:
 	typedef  C3DImage plugin_data; 
 	typedef  fatcost_type plugin_type; 
 
-	C3DImageFatCost(P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight);
+	C3DImageFatCost(P3DImage src, P3DImage ref, float weight);
 
 	P3DImageFatCost get_downscaled(const C3DBounds& scale) const;
 

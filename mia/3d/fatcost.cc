@@ -46,8 +46,8 @@ NS_MIA_BEGIN
 using namespace std;
 using namespace boost;
 
-C3DImageFatCost::C3DImageFatCost(P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight):
-	TFatCost<C3DTransformation, C3DFVectorfield>(src, ref, ipf, weight)
+C3DImageFatCost::C3DImageFatCost(P3DImage src, P3DImage ref, float weight):
+	TFatCost<C3DTransformation, C3DFVectorfield>(src, ref, weight)
 {
 	if (src->get_size() != ref->get_size()) {
 		throw invalid_argument("C3DImageFatCost: input images must be of same size");

@@ -46,13 +46,15 @@
 
 NS_MIA_BEGIN
 using namespace std;
-C3DTranslateTransformation::C3DTranslateTransformation(const C3DBounds& size):
+C3DTranslateTransformation::C3DTranslateTransformation(const C3DBounds& size, const C3DInterpolatorFactory& ipf):
+	C3DTransformation(ipf), 
 	m_transform(0,0,0),
 	m_size(size)
 {
 }
 
-C3DTranslateTransformation::C3DTranslateTransformation(const C3DBounds& size,const C3DFVector& transform):
+C3DTranslateTransformation::C3DTranslateTransformation(const C3DBounds& size,const C3DFVector& transform, const C3DInterpolatorFactory& ipf):
+	C3DTransformation(ipf), 
 	m_transform(transform),
 	m_size(size)
 {
@@ -149,7 +151,9 @@ P3DTransformation C3DTranslateTransformation::do_upscale(const C3DBounds& size) 
 	return P3DTransformation(new C3DTranslateTransformation(size,
 								C3DFVector((m_transform.x * size.x) / m_size.x,
 									   (m_transform.y * size.y) / m_size.y,
-									   (m_transform.z * size.z) / m_size.z)));
+									   (m_transform.z * size.z) / m_size.z), 
+								get_interpolator_factory()
+					 ));
 }
 
 
@@ -264,18 +268,26 @@ double C3DTranslateTransformation::get_divcurl_cost(double /*wd*/, double /*wr*/
 
 
 class C3DTranslateTransformCreator: public C3DTransformCreator {
-	virtual P3DTransformation do_create(const C3DBounds& size) const;
+public: 
+	C3DTranslateTransformCreator(const C3DInterpolatorFactory& ipf); 
+private: 
+	virtual P3DTransformation do_create(const C3DBounds& size, const C3DInterpolatorFactory& ipf) const;
 };
 
-P3DTransformation C3DTranslateTransformCreator::do_create(const C3DBounds& size) const
+C3DTranslateTransformCreator::C3DTranslateTransformCreator(const C3DInterpolatorFactory& ipf):
+	C3DTransformCreator(ipf) 
 {
-	return P3DTransformation(new C3DTranslateTransformation(size));
+}
+
+P3DTransformation C3DTranslateTransformCreator::do_create(const C3DBounds& size, const C3DInterpolatorFactory& ipf) const
+{
+	return P3DTransformation(new C3DTranslateTransformation(size, ipf));
 }
 
 class C3DTranslateTransformCreatorPlugin: public C3DTransformCreatorPlugin {
 public:
 	C3DTranslateTransformCreatorPlugin();
-	virtual C3DTransformCreator *do_create() const;
+	virtual C3DTransformCreator *do_create(const C3DInterpolatorFactory& ipf) const;
 	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
@@ -285,9 +297,9 @@ C3DTranslateTransformCreatorPlugin::C3DTranslateTransformCreatorPlugin():
 {
 }
 
-C3DTransformCreator *C3DTranslateTransformCreatorPlugin::do_create() const
+C3DTransformCreator *C3DTranslateTransformCreatorPlugin::do_create(const C3DInterpolatorFactory& ipf) const
 {
-	return new C3DTranslateTransformCreator();
+	return new C3DTranslateTransformCreator(ipf);
 }
 
 bool C3DTranslateTransformCreatorPlugin::do_test() const

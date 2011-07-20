@@ -62,8 +62,7 @@ BOOST_AUTO_TEST_CASE ( test_fatngf )
 
 	C3DFVectorfield force_self(size);
 
-	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
-	CFatNFG3DImageCost cost_self(ref, ref, ipf, 1.0, PEvaluator(new FDeltaScalar()));
+	CFatNFG3DImageCost cost_self(ref, ref, 1.0, PEvaluator(new FDeltaScalar()));
 	double cost_value_self = cost_self.evaluate_force(force_self);
 	cvdebug() << "cost_value_self = " <<cost_value_self << "\n"; 
 	BOOST_CHECK(fabs(cost_value_self) < 0.01); 

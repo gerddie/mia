@@ -66,7 +66,7 @@ template <typename T>
 typename TTransformCreatorPlugin<T>::Product *
 TTransformCreatorPlugin<T>::do_create() const
 {
-	C2DInterpolatorFactory ipf(m_image_interpolator, m_image_boundary); 
+	InterpolatorFactory ipf(m_image_interpolator, m_image_boundary); 
 	return do_create(ipf); 
 }
 

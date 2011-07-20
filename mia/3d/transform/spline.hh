@@ -36,8 +36,8 @@ public:
 	using C3DTransformation::operator ();
 
 	C3DSplineTransformation(const C3DSplineTransformation& org);
-	C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel);
-	C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, const C3DFVector& c_rate);
+	C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, const C3DInterpolatorFactory& ipf);
+	C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, const C3DFVector& c_rate, const C3DInterpolatorFactory& ipf);
 	~C3DSplineTransformation(); 
 
 	void set_coefficients(const C3DFVectorfield& field);

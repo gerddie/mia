@@ -103,8 +103,8 @@ struct FGetMinMax : public TFilter<float> {
 };
 
 
-CFatNFG3DImageCost::CFatNFG3DImageCost(P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight, PEvaluator evaluator):
-	C3DImageFatCost(src,  ref,  ipf, weight),
+CFatNFG3DImageCost::CFatNFG3DImageCost(P3DImage src, P3DImage ref, float weight, PEvaluator evaluator):
+	C3DImageFatCost(src,  ref,  weight),
 	m_jump_levels_valid(false),
 	m_evaluator(evaluator),
 	m_intensity_scale(1.0)
@@ -120,7 +120,7 @@ CFatNFG3DImageCost::CFatNFG3DImageCost(P3DImage src, P3DImage ref, P3DInterpolat
 
 P3DImageFatCost CFatNFG3DImageCost::cloned(P3DImage src, P3DImage ref) const
 {
-	return P3DImageFatCost(new CFatNFG3DImageCost(src, ref,  get_ipf(), get_weight(), m_evaluator));
+	return P3DImageFatCost(new CFatNFG3DImageCost(src, ref,  get_weight(), m_evaluator));
 }
 
 void CFatNFG3DImageCost::prepare() const
@@ -235,7 +235,7 @@ C3DImageFatCost *C3DNFGFatImageCostPlugin::do_create(P3DImage src, P3DImage ref,
 	default:
 		throw invalid_argument(string("C3DNFGFatImageCostPlugin: unknown cost sub-type '")+m_type+"'");
 	}
-	return new CFatNFG3DImageCost(src, ref, ipf, weight, eval);
+	return new CFatNFG3DImageCost(src, ref, weight, eval);
 }
 
 bool C3DNFGFatImageCostPlugin::do_test() const

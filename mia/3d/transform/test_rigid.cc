@@ -33,9 +33,21 @@ using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
-struct TranslateTransFixture {
+
+CSplineKernelTestPath kernel_test_path; 
+
+struct ipfFixture {
+	ipfFixture():
+		ipf("bspline:d=3", "mirror")
+		{
+		} 
+	C3DInterpolatorFactory ipf; 
+}; 
+
+
+struct TranslateTransFixture : public ipfFixture {
 	TranslateTransFixture():size(60, 80, 40),
-				rtrans(size)
+				rtrans(size, ipf)
 		{
 			rtrans.translate(1.0, 2.0, 3.0);
 		}
@@ -84,9 +96,9 @@ BOOST_FIXTURE_TEST_CASE(derivative_TranslateTransFixture, TranslateTransFixture)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_rigid3d)
+BOOST_FIXTURE_TEST_CASE(test_rigid3d, ipfFixture)
 {
-	C3DRigidTransformation t1(C3DBounds(10,20,30)); 
+	C3DRigidTransformation t1(C3DBounds(10,20,30), ipf); 
 
 	BOOST_CHECK_EQUAL(t1.degrees_of_freedom(), 6u);
 
@@ -127,7 +139,7 @@ BOOST_AUTO_TEST_CASE(test_rigid3d)
 	}
 
 
-	C3DRigidTransformation t2(C3DBounds(10,20,30));
+	C3DRigidTransformation t2(C3DBounds(10,20,30), ipf);
 	t2.rotate(M_PI / 2.0, 0, 0);
 	C3DFVector yr = t2(x0);
 	BOOST_CHECK_CLOSE(yr.x ,  -2.0f, 0.1f);
@@ -135,11 +147,11 @@ BOOST_AUTO_TEST_CASE(test_rigid3d)
 	BOOST_CHECK_CLOSE(yr.z ,  -1.0f, 0.1f);
 }
 
-BOOST_AUTO_TEST_CASE( test_rigid3d_iterator )
+BOOST_FIXTURE_TEST_CASE( test_rigid3d_iterator, ipfFixture)
 {
 	C3DBounds size(10,20,5);
 
-	C3DRigidTransformation t1(size);
+	C3DRigidTransformation t1(size, ipf);
 	C3DRigidTransformation::const_iterator ti = t1.begin();
 
 	for (size_t z = 0; z < size.z; ++z)

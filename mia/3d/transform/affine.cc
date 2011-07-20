@@ -70,7 +70,8 @@ C3DFVector C3DAffineTransformation::transform(const C3DFVector& x)const
 		m_t[8] * x.x + m_t[9] * x.y + m_t[10] * x.z + m_t[11]);
 }
 
-C3DAffineTransformation::C3DAffineTransformation(const C3DBounds& size):
+C3DAffineTransformation::C3DAffineTransformation(const C3DBounds& size, const C3DInterpolatorFactory& ipf):
+	C3DTransformation(ipf), 
 	m_t(12,0.0f),
 	m_size(size)
 {
@@ -78,6 +79,7 @@ C3DAffineTransformation::C3DAffineTransformation(const C3DBounds& size):
 }
 
 C3DAffineTransformation::C3DAffineTransformation(const C3DAffineTransformation& other):
+	C3DTransformation(other), 
 	m_t(other.m_t),
 	m_size(other.m_size)
 {
@@ -130,8 +132,9 @@ C3DTransformation *C3DAffineTransformation::invert()const
 }
 
 
-C3DAffineTransformation::C3DAffineTransformation(const C3DBounds& size,
-						 std::vector<double> transform):
+C3DAffineTransformation::C3DAffineTransformation(const C3DBounds& size, std::vector<double> transform, 
+						 const C3DInterpolatorFactory& ipf):
+	C3DTransformation(ipf), 
 	m_t(transform),
 	m_size(size)
 {
@@ -443,18 +446,26 @@ float C3DAffineTransformation::pertuberate(C3DFVectorfield& /*v*/) const
 }
 
 class C3DAffineTransformCreator: public C3DTransformCreator {
-	virtual P3DTransformation do_create(const C3DBounds& size) const;
+public: 
+	C3DAffineTransformCreator(const C3DInterpolatorFactory& ipf); 
+private: 
+	virtual P3DTransformation do_create(const C3DBounds& size, const C3DInterpolatorFactory& ipf) const;
 };
 
-P3DTransformation C3DAffineTransformCreator::do_create(const C3DBounds& size) const
+C3DAffineTransformCreator::C3DAffineTransformCreator(const C3DInterpolatorFactory& ipf):
+	C3DTransformCreator(ipf) 
 {
-	return P3DTransformation(new C3DAffineTransformation(size));
+}
+
+P3DTransformation C3DAffineTransformCreator::do_create(const C3DBounds& size, const C3DInterpolatorFactory& ipf) const
+{
+	return P3DTransformation(new C3DAffineTransformation(size, ipf));
 }
 
 class C3DAffineTransformCreatorPlugin: public C3DTransformCreatorPlugin {
 public:
-	C3DAffineTransformCreatorPlugin();
-	virtual C3DTransformCreator *do_create() const;
+	C3DAffineTransformCreatorPlugin(); 
+	virtual C3DTransformCreator *do_create(const C3DInterpolatorFactory& ipf) const;
 	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
@@ -464,9 +475,9 @@ C3DAffineTransformCreatorPlugin::C3DAffineTransformCreatorPlugin():
 {
 }
 
-C3DTransformCreator *C3DAffineTransformCreatorPlugin::do_create() const
+C3DTransformCreator *C3DAffineTransformCreatorPlugin::do_create(const C3DInterpolatorFactory& ipf) const
 {
-	return new C3DAffineTransformCreator();
+	return new C3DAffineTransformCreator(ipf);
 }
 
 bool C3DAffineTransformCreatorPlugin::do_test() const

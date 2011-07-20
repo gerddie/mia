@@ -24,7 +24,7 @@ NS_BEGIN(ssd_3dimage_fatcost)
 
 class CFatSSD3DImageCost : public mia::C3DImageFatCost {
 public:
-	CFatSSD3DImageCost(mia::P3DImage src, mia::P3DImage ref, mia::P3DInterpolatorFactory ipf, float weight);
+	CFatSSD3DImageCost(mia::P3DImage src, mia::P3DImage ref, float weight);
 private:
 	virtual mia::P3DImageFatCost cloned(mia::P3DImage src, mia::P3DImage ref) const;
 	virtual double do_value() const;

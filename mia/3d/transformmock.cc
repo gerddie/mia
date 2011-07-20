@@ -25,11 +25,13 @@
 
 NS_MIA_BEGIN
 
-C3DTransformMock::C3DTransformMock()
+C3DTransformMock::C3DTransformMock():
+	C3DTransformation(C3DInterpolatorFactory("bspline:d=0", "mirror"))
 {
 }
 
-C3DTransformMock::C3DTransformMock(const C3DBounds& size):
+C3DTransformMock::C3DTransformMock(const C3DBounds& size, const C3DInterpolatorFactory& ipf):
+	C3DTransformation(ipf),
 	m_size(size)
 {
 

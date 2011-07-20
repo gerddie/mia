@@ -338,7 +338,7 @@ protected:
 	bool get_debug()const; 
 
 private: 
-        virtual P3DImage apply(const C3DImage& input, const C3DInterpolatorFactory& ipf) const;
+	P3DImage do_transform(const C3DImage& input, const C3DInterpolatorFactory& ipf) const; 
 
 	virtual P3DTransformation do_upscale(const C3DBounds& size) const = 0;
 

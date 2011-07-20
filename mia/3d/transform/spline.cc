@@ -66,7 +66,8 @@ extern "C" {
 NS_MIA_BEGIN
 using namespace std;
 
-C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel):
+C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, const C3DInterpolatorFactory& ipf):
+	C3DTransformation(ipf), 
 	m_range(range),
 	m_target_c_rate(1,1,1),
 	m_kernel(kernel),
@@ -99,6 +100,7 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSpline
 }
 
 C3DSplineTransformation::C3DSplineTransformation(const C3DSplineTransformation& org):
+	C3DTransformation(org), 
    	m_range(org.m_range),
 	m_target_c_rate(org.m_target_c_rate),
 	m_coefficients( org.m_coefficients),
@@ -121,7 +123,8 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DSplineTransformation& 
 }
 
 C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, 
-						 const C3DFVector& c_rate):
+						 const C3DFVector& c_rate, const C3DInterpolatorFactory& ipf):
+	C3DTransformation(ipf), 
 	m_range(range),
 	m_target_c_rate(c_rate),
 	m_kernel(kernel),
@@ -407,7 +410,7 @@ P3DTransformation C3DSplineTransformation::do_upscale(const C3DBounds& size) con
 
 	C3DFVector mx(C3DFVector(size) / C3DFVector(m_range));
 
-	C3DSplineTransformation *help = new C3DSplineTransformation(size, m_kernel);
+	C3DSplineTransformation *help = new C3DSplineTransformation(size, m_kernel, get_interpolator_factory());
 	C3DFVectorfield new_coefs(m_coefficients.get_size()); 
 	
 	transform(m_coefficients.begin(), m_coefficients.end(), new_coefs.begin(), 
@@ -1039,15 +1042,16 @@ double C3DSplineTransformation::get_divcurl_cost(double wd, double wr) const
 
 class C3DSplinebigTransformCreator: public C3DTransformCreator {
 public:
-	C3DSplinebigTransformCreator(PSplineKernel ip, const C3DFVector& rates, bool debug);
-	virtual P3DTransformation do_create(const C3DBounds& size) const;
+	C3DSplinebigTransformCreator(PSplineKernel ip, const C3DFVector& rates, const C3DInterpolatorFactory& ipf, bool debug);
 private:
+	virtual P3DTransformation do_create(const C3DBounds& size, const C3DInterpolatorFactory& ipf) const;
 	PSplineKernel m_kernel;
 	C3DFVector m_rates;
 	bool m_debug; 
 };
 
-C3DSplinebigTransformCreator::C3DSplinebigTransformCreator(PSplineKernel kernel, const C3DFVector& rates, bool debug):
+C3DSplinebigTransformCreator::C3DSplinebigTransformCreator(PSplineKernel kernel, const C3DFVector& rates, const C3DInterpolatorFactory& ipf, bool debug):
+	C3DTransformCreator(ipf), 
 	m_kernel(kernel),
 	m_rates(rates), 
 	m_debug(debug)
@@ -1056,12 +1060,12 @@ C3DSplinebigTransformCreator::C3DSplinebigTransformCreator(PSplineKernel kernel,
 }
 
 
-P3DTransformation C3DSplinebigTransformCreator::do_create(const C3DBounds& size) const
+P3DTransformation C3DSplinebigTransformCreator::do_create(const C3DBounds& size, const C3DInterpolatorFactory& ipf) const
 {
 	TRACE_FUNCTION;
 
 	assert(m_kernel); 
-	P3DTransformation result(new C3DSplineTransformation(size, m_kernel, m_rates));
+	P3DTransformation result(new C3DSplineTransformation(size, m_kernel, m_rates, ipf));
 	if (m_debug) 
 		result->set_debug(); 
 	return result;
@@ -1071,7 +1075,7 @@ P3DTransformation C3DSplinebigTransformCreator::do_create(const C3DBounds& size)
 class C3DSplineTransformCreatorPlugin: public C3DTransformCreatorPlugin {
 public:
 	C3DSplineTransformCreatorPlugin();
-	virtual C3DTransformCreator *do_create() const;
+	virtual C3DTransformCreator *do_create(const C3DInterpolatorFactory& ipf) const;
 	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 private:
@@ -1096,10 +1100,10 @@ C3DSplineTransformCreatorPlugin::C3DSplineTransformCreatorPlugin():
 
 }
 
-C3DTransformCreator *C3DSplineTransformCreatorPlugin::do_create() const
+C3DTransformCreator *C3DSplineTransformCreatorPlugin::do_create(const C3DInterpolatorFactory& ipf) const
 {
 	TRACE_FUNCTION;
-	return new C3DSplinebigTransformCreator(m_kernel, C3DFVector(m_rate, m_rate, m_rate), m_debug);
+	return new C3DSplinebigTransformCreator(m_kernel, C3DFVector(m_rate, m_rate, m_rate), ipf, m_debug);
 }
 
 bool C3DSplineTransformCreatorPlugin::do_test() const
