@@ -48,7 +48,6 @@ mia-3dserial-nonrigid -i <input set> -o <output set> <cost1> [<cost2>] ...
   \cmdgroup{Image registration} 
   \cmdopt{ref}{r}{int}{Reference frame to base the registration on}
   \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{interpolator}{p}{string}{Image interpolator to be used}
   \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
   \cmdopt{transForm}{f}{string}{Transformation space as provided by the 
                                 \hyperref[sec:3dtransforms]{transformation plug-ins.}}
@@ -132,7 +131,6 @@ int do_main( int argc, const char *argv[] )
 	
 	options.set_group("\nRegistration"); 
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
@@ -151,8 +149,6 @@ int do_main( int argc, const char *argv[] )
 		auto cost = C3DFullCostPluginHandler::instance().produce(*c); 
 		costs.push(cost); 
 	}
-	
-	C3DInterpolatorFactory ipfactory(interpolator_kernel, "mirror");
 	
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;
@@ -175,7 +171,7 @@ int do_main( int argc, const char *argv[] )
 	size_t reference = reference_param < 0 ? input_images.size() / 2 : reference_param; 
 
 	// prepare registration framework 
-	C3DNonrigidRegister nrr(costs, minimizer,  transform_creator, ipfactory, mg_levels);
+	C3DNonrigidRegister nrr(costs, minimizer,  transform_creator, mg_levels);
 	
 	if ( input_images.empty() ) 
 		throw invalid_argument("No input images to register"); 
@@ -190,7 +186,7 @@ int do_main( int argc, const char *argv[] )
 	for (size_t i = 0; i < reference; ++i) {
 		P3DTransformation transform = nrr.run(input_images[i], input_images[i+1]);
 		for (size_t j = 0; j <=i ; ++j) {
-			input_images[j] = (*transform)(*input_images[j], ipfactory);
+			input_images[j] = (*transform)(*input_images[j]);
 		}
 	}
 	
@@ -198,7 +194,7 @@ int do_main( int argc, const char *argv[] )
 	for (size_t i = input_images.size() - 1; i > reference; --i) {
 		P3DTransformation transform = nrr.run(input_images[i], input_images[i-1]);
 		for (size_t j = input_images.size() - 1; j >= i ; --j) {
-			input_images[j] = (*transform)(*input_images[j], ipfactory);
+			input_images[j] = (*transform)(*input_images[j]);
 		}
 	}
 	

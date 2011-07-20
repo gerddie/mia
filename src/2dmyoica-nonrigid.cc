@@ -200,16 +200,14 @@ void segment_and_crop_input(CSegSetWithImages&  input_set,
 
 void run_registration_pass(CSegSetWithImages&  input_set, 
 			   const C2DImageSeries& references, 
-			   int skip_images, PMinimizer minimizer, 
-			   C2DInterpolatorFactory& ipfactory, size_t mg_levels, 
+			   int skip_images, PMinimizer minimizer, size_t mg_levels, 
 			   double c_rate, double divcurlweight, P2DFullCost imagecost) 
 {
 	CSegSetWithImages::Frames& frames = input_set.get_frames();
 	C2DImageSeries input_images = input_set.get_images(); 
 	auto costs  = create_costs(divcurlweight, imagecost); 
 	auto transform_creator = create_transform_creator(c_rate); 
-	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, 
-				ipfactory, mg_levels);
+	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, mg_levels);
 
 	// this loop could be parallized 
 	for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
@@ -217,7 +215,7 @@ void run_registration_pass(CSegSetWithImages&  input_set,
 		P2DTransformation transform = nrr.run(input_images[i + skip_images], 
 						      references[i]);
 		input_images[i + skip_images] = 
-			(*transform)(*input_images[i + skip_images], ipfactory);
+			(*transform)(*input_images[i + skip_images]);
 		frames[i + skip_images].inv_transform(*transform);
 	}
 	input_set.set_images(input_images); 
@@ -331,10 +329,6 @@ int do_main( int argc, const char *argv[] )
 	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
-	// this cost will always be used 
-
-	P2DInterpolatorFactory ipfactory(new C2DInterpolatorFactory(interpolator_kernel, "mirror"));
-
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
 	C2DImageSeries input_images = input_set.get_images(); 
@@ -394,7 +388,7 @@ int do_main( int argc, const char *argv[] )
 			save_references(save_ref_filename, current_pass, skip_images, references); 
 
 		run_registration_pass(input_set, references,  skip_images,  minimizer, 
-				      *ipfactory, mg_levels, c_rate, divcurlweight, imagecost); 
+				      mg_levels, c_rate, divcurlweight, imagecost); 
 		
 		if (!save_reg_filename.empty()) 
 			save_references(save_reg_filename, current_pass, 0, input_set.get_images()); 

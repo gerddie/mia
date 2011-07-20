@@ -135,9 +135,9 @@ int do_main( int argc, const char *argv[] )
 		throw std::invalid_argument("Images have different size");
 
 	unique_ptr<C3DInterpolatorFactory>   ipfactory(create_3dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
-	C3DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory, mg_levels);
+	C3DNonrigidRegister nrr(costs, minimizer,  transform_creator, mg_levels);
 	P3DTransformation transform = nrr.run(Model, Reference);
-	P3DImage result = (*transform)(*Model, *ipfactory);
+	P3DImage result = (*transform)(*Model);
 
 	if (!trans_filename.empty()) {
 		if (!C3DTransformationIOPluginHandler::instance().save(trans_filename, *transform)) 

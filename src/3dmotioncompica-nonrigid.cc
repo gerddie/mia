@@ -171,7 +171,6 @@ struct SeriesRegistration {
 	C3DImageSeries&  input_images; 
 	const C3DImageSeries& references; 
 	string minimizer; 
-	C3DInterpolatorFactory& ipfactory; 
 	size_t mg_levels; 
 	double divcurlweight; 
 	P3DTransformationFactory transform_creator; 
@@ -181,7 +180,6 @@ struct SeriesRegistration {
 	SeriesRegistration(C3DImageSeries&  _input_images, 
 			   const C3DImageSeries& _references, 
 			   const string& _minimizer, 
-			   C3DInterpolatorFactory& _ipfactory, 
 			   size_t _mg_levels, 
 			   double _divcurlweight, 
 			   P3DTransformationFactory _transform_creator, 
@@ -190,7 +188,6 @@ struct SeriesRegistration {
 		input_images(_input_images), 
 		references(_references), 
 		minimizer(_minimizer), 
-		ipfactory(_ipfactory), 
 		mg_levels(_mg_levels), 
 		divcurlweight(_divcurlweight), 
 		transform_creator(_transform_creator), 
@@ -204,21 +201,20 @@ struct SeriesRegistration {
 		auto m =  CMinimizerPluginHandler::instance().produce(minimizer);
 		for( int i=range.begin(); i!=range.end(); ++i ) {
 			auto costs  = create_costs(divcurlweight, imagecostbase, i); 
-			C3DNonrigidRegister nrr(costs, m,  transform_creator, ipfactory, mg_levels, i);
+			C3DNonrigidRegister nrr(costs, m,  transform_creator, mg_levels, i);
 			P3DTransformation transform = nrr.run(input_images[i + skip_images], references[i]);
-			input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], ipfactory);
+			input_images[i + skip_images] = (*transform)(*input_images[i + skip_images]);
 		}
 	}
 };  
 
 void run_registration_pass(C3DImageSeries& input_images, const C3DImageSeries& references,  
 			   int skip_images,  const string& minimizer, 
-			   C3DInterpolatorFactory& ipfactory, 
 			   size_t mg_levels, double c_rate, double divcurlweight, 
 			   const string&   imagecost) 
 {
 
-	SeriesRegistration sreg(input_images,references, minimizer, ipfactory, 
+	SeriesRegistration sreg(input_images,references, minimizer, 
 				mg_levels, divcurlweight, create_transform_creator(c_rate), 
 				imagecost, skip_images); 
 	parallel_for(blocked_range<int>( 0, references.size()), sreg);
@@ -254,7 +250,6 @@ int do_main( int argc, const char *argv[] )
 	double divcurlweight = 20.0; 
 	double divcurlweight_divider = 4.0; 
 
-	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 	size_t mg_levels = 3; 
 
 	// ICA parameters 
@@ -297,7 +292,6 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( divcurlweight_divider, "divcurl-divider", 0,
 				    "divcurl weight scaling with each new pass")); 
 	options.add(make_opt( imagecost, "imagecost", 'w', "image cost")); 
-	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
@@ -317,10 +311,6 @@ int do_main( int argc, const char *argv[] )
 
 	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
-
-	// this cost will always be used 
-
-	P3DInterpolatorFactory ipfactory(new C3DInterpolatorFactory(interpolator_kernel, "mirror"));
 
 	task_scheduler_init init(max_threads);
 	
@@ -400,7 +390,7 @@ int do_main( int argc, const char *argv[] )
 			save_references(save_ref_filename, current_pass, skip_images, *references); 
 
 		run_registration_pass(*input_images, *references,  skip_images,  minimizer, 
-				      *ipfactory, mg_levels, c_rate, divcurlweight, imagecost); 
+				      mg_levels, c_rate, divcurlweight, imagecost); 
 		
 		if (!save_reg_filename.empty()) 
 			save_references(save_reg_filename, current_pass, 0, *input_images); 

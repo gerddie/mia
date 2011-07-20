@@ -208,7 +208,6 @@ public:
 		P3DFullCost pass2_cost;
 		P3DFullCost series_select_cost;  
 		P3DTransformationFactory transform_creator; 
-		shared_ptr<C3DInterpolatorFactory> interpolator; 
 		size_t mg_levels; 
 		size_t max_candidates; 
 		bool save_ref; 
@@ -309,7 +308,6 @@ void C3DMyocardPeriodicRegistration::run_initial_pass(C3DImageSeries& images,
 	C3DNonrigidRegister nr(costs, 
 			       m_params.minimizer, 
 			       m_params.transform_creator, 
-			       *m_params.interpolator,  
 			       m_params.mg_levels);
 	
 	P3DImage ref = images[m_ref]; 
@@ -319,7 +317,7 @@ void C3DMyocardPeriodicRegistration::run_initial_pass(C3DImageSeries& images,
 		cvmsg() << "Register " << *i << " to " << m_ref << "\n"; 
 		P3DImage src = images[*i]; 
 		P3DTransformation transform = nr.run(src, ref);
-		images[*i] = (*transform)(*images[*i], *m_params.interpolator);
+		images[*i] = (*transform)(*images[*i]);
 		transforms[*i] = transform; 
 	}
 }
@@ -339,7 +337,6 @@ void C3DMyocardPeriodicRegistration::run_final_pass(C3DImageSeries& images,
 	C3DNonrigidRegister nr(costs, 
 			       m_params.minimizer, 
 			       m_params.transform_creator, 
-			       *m_params.interpolator,  
 			       m_params.mg_levels);
 
 	auto low_index = subset.begin(); 
@@ -375,7 +372,7 @@ void C3DMyocardPeriodicRegistration::run_final_pass(C3DImageSeries& images,
 
 		cvmsg() << "Register image " << i << "\n"; 		
 		P3DTransformation transform = nr.run(images[i], ref);
-		images[i] = (*transform)(*images[i], *m_params.interpolator);
+		images[i] = (*transform)(*images[i]);
 		transforms[i] = transform; 
 	}
 }
@@ -474,9 +471,7 @@ int do_main( int argc, const char *argv[] )
 	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
-	params.interpolator.reset(new C3DInterpolatorFactory(interpolator_kernel, "mirror")); 
-
-		size_t start_filenum = 0;
+	size_t start_filenum = 0;
 	size_t end_filenum  = 0;
 	size_t format_width = 0;
 

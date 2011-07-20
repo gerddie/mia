@@ -40,11 +40,10 @@ struct TNonrigidRegisterImpl {
 	typedef typename this_dim_traits::FullCostList FullCostList; 
 	typedef typename this_dim_traits::Filter Filter; 
 	typedef typename this_dim_traits::FilterPluginHandler FilterPluginHandler;
-	typedef typename this_dim_traits::InterpolatorFactory InterpolatorFactory; 
 
 	TNonrigidRegisterImpl(FullCostList& costs, PMinimizer minimizer,
 				PTransformationFactory transform_creator,
-				const InterpolatorFactory& ipf,  size_t mg_levels, int idx);
+			      size_t mg_levels, int idx);
 
 	PTransformation run(PImage src, PImage ref) const;
 	PTransformation run() const;
@@ -52,7 +51,6 @@ private:
 
 	FullCostList& m_costs;
 	PMinimizer m_minimizer;
-	InterpolatorFactory m_ipf;
 	PTransformationFactory m_transform_creator;
 	size_t m_mg_levels; 
 	int m_idx; 
@@ -70,11 +68,9 @@ public:
 	typedef typename this_dim_traits::FullCostList FullCostList; 
 	typedef typename this_dim_traits::Filter Filter; 
 	typedef typename this_dim_traits::FilterPluginHandler FilterPluginHandler;
-	typedef typename this_dim_traits::InterpolatorFactory InterpolatorFactory; 
 
 
-	TNonrigRegGradientProblem(const FullCostList& costs, Transformation& transf,
-			      const InterpolatorFactory& m_ipf);
+	TNonrigRegGradientProblem(const FullCostList& costs, Transformation& transf);
 
 	void reset_counters(); 
 	
@@ -90,7 +86,6 @@ private:
 
 	const FullCostList& m_costs; 
 	Transformation& m_transf;
-	const InterpolatorFactory& m_ipf;
 	size_t m_func_evals; 
 	size_t m_grad_evals; 
 	double m_start_cost; 
@@ -98,9 +93,9 @@ private:
 
 template <int dim> 
 TNonrigidRegister<dim>::TNonrigidRegister(FullCostList& costs, PMinimizer minimizer,
-					 PTransformationFactory transform_creation,
-					 const InterpolatorFactory& ipf, size_t mg_levels, int idx):
-	impl(new TNonrigidRegisterImpl<dim>( costs, minimizer, transform_creation, ipf, mg_levels, idx))
+					  PTransformationFactory transform_creation,
+					  size_t mg_levels, int idx):
+	impl(new TNonrigidRegisterImpl<dim>( costs, minimizer, transform_creation, mg_levels, idx))
 {
 }
 
@@ -127,11 +122,9 @@ TNonrigidRegister<dim>::run() const
 
 template <int dim> 
 TNonrigidRegisterImpl<dim>::TNonrigidRegisterImpl(FullCostList& costs, PMinimizer minimizer,
-						 PTransformationFactory transform_creation, 
-						const InterpolatorFactory& ipf,size_t mg_levels, int idx):
+						 PTransformationFactory transform_creation, size_t mg_levels, int idx):
 	m_costs(costs),
 	m_minimizer(minimizer),
-	m_ipf(ipf),
 	m_transform_creator(transform_creation), 
 	m_mg_levels(mg_levels), 
 	m_idx(idx)
@@ -260,7 +253,7 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 		m_costs.set_size(src_scaled->get_size()); 
 		
 		std::shared_ptr<TNonrigRegGradientProblem<dim> > 
-			gp(new TNonrigRegGradientProblem<dim>( m_costs, *transform, m_ipf));
+			gp(new TNonrigRegGradientProblem<dim>( m_costs, *transform));
 		
 		m_minimizer->set_problem(gp);
 
@@ -315,7 +308,7 @@ TNonrigidRegisterImpl<dim>::run() const
 		m_costs.set_size(local_size); 
 		
 		std::shared_ptr<TNonrigRegGradientProblem<dim> > 
-			gp(new TNonrigRegGradientProblem<dim>( m_costs, *transform, m_ipf));
+			gp(new TNonrigRegGradientProblem<dim>( m_costs, *transform));
 		
 		m_minimizer->set_problem(gp);
 
@@ -338,11 +331,9 @@ TNonrigidRegisterImpl<dim>::run() const
 }
 
 template <int dim> 
-TNonrigRegGradientProblem<dim>::TNonrigRegGradientProblem(const FullCostList& costs, 
-						       Transformation& transf, const InterpolatorFactory& ipf):
+TNonrigRegGradientProblem<dim>::TNonrigRegGradientProblem(const FullCostList& costs, Transformation& transf):
 	m_costs(costs),
 	m_transf(transf),
-	m_ipf(ipf), 
 	m_func_evals(0),
 	m_grad_evals(0), 
 	m_start_cost(0.0)

@@ -65,7 +65,6 @@ mia-2dmyoperiodic-nonrigid -i <input set> -o <output set> [options]
   \cmdopt{cost-final}{2}{string}{Image similarity measure to optimize during the second (final) registration 
                                   phase of the algorithm (see section \ref{sec:2dfullcost})}
   \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{interpolator}{p}{string}{Image interpolator to be used}
   \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
   \cmdopt{passes}{P}{int}{Number of ICA+Registration passes to be run}
   \cmdopt{divcurl}{d}{float}{divcurl regularization weight}
@@ -190,7 +189,6 @@ public:
 		P2DFullCost pass2_cost;
 		P2DFullCost series_select_cost;  
 		P2DTransformationFactory transform_creator; 
-		shared_ptr<C2DInterpolatorFactory> interpolator; 
 		size_t mg_levels; 
 		size_t max_candidates; 
 		bool save_ref; 
@@ -291,7 +289,6 @@ void C2DMyocardPeriodicRegistration::run_initial_pass(C2DImageSeries& images,
 	C2DNonrigidRegister nr(costs, 
 			       m_params.minimizer, 
 			       m_params.transform_creator, 
-			       *m_params.interpolator,  
 			       m_params.mg_levels);
 	
 	P2DImage ref = images[m_ref]; 
@@ -301,7 +298,7 @@ void C2DMyocardPeriodicRegistration::run_initial_pass(C2DImageSeries& images,
 		cvmsg() << "Register " << *i << " to " << m_ref << "\n"; 
 		P2DImage src = images[*i]; 
 		P2DTransformation transform = nr.run(src, ref);
-		images[*i] = (*transform)(*images[*i], *m_params.interpolator);
+		images[*i] = (*transform)(*images[*i]);
 		transforms[*i] = transform; 
 	}
 }
@@ -321,7 +318,6 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images,
 	C2DNonrigidRegister nr(costs, 
 			       m_params.minimizer, 
 			       m_params.transform_creator, 
-			       *m_params.interpolator,  
 			       m_params.mg_levels);
 
 	auto low_index = subset.begin(); 
@@ -357,7 +353,7 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images,
 
 		cvmsg() << "Register image " << i << "\n"; 		
 		P2DTransformation transform = nr.run(images[i], ref);
-		images[i] = (*transform)(*images[i], *m_params.interpolator);
+		images[i] = (*transform)(*images[i]);
 		transforms[i] = transform; 
 	}
 }
@@ -439,7 +435,6 @@ int do_main( int argc, const char *argv[] )
 
 
 	options.add(make_opt( params.minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));
 
 	options.add(make_opt( params.divcurlweight, "divcurl", 'd', 
@@ -458,8 +453,6 @@ int do_main( int argc, const char *argv[] )
 	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
-	params.interpolator.reset(new C2DInterpolatorFactory(interpolator_kernel, "mirror"));
-	
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
 	C2DImageSeries in_images = input_set.get_images(); 

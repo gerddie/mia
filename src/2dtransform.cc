@@ -40,14 +40,16 @@ mia-2dtransform -i <input> -t <transformaton> -o <output>
   \optinfile
   \optoutfile
   \cmdopt{transformation}{t}{string}{file name of the transformation}
-  \cmdopt{interpolator}{p}{string}{image interpolation kernel to use}
+  \cmdopt{interpolator}{p}{string}{image interpolation kernel to use instead of those given with the transformation}
+  \cmdopt{boundary}{b}{string}{image interpolation boundary conditions to use to use instead of those given with the transformation. 
+  This value is only used if an alternative interpolator is given.}
   }
 
   \item [Example:] Transform an image input.png by the transfromation stored in trans.v
-        by using linear interpolation and store the result in output.png 
+        by using linear interpolation and zero boundary conditions and store the result in output.png 
    \
   \begin{lstlisting}
-mia-2dtransform -i input.png -t trans.v  -o output.png  -p linear
+mia-2dtransform -i input.png -t trans.v  -o output.png  -p bspline:d=1 -b zero 
   \end{lstlisting}
   \end{description}
 
@@ -75,13 +77,18 @@ int do_main(int argc, const char **argv)
 	string src_filename;
 	string out_filename;
 	string trans_filename;
-	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
+	string interpolator_kernel;
+	string interpolator_bc("mirror");
 
 	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output image", CCmdOption::required));
 	options.add(make_opt( trans_filename, "transformation", 't', "transformation file name", 
 				    CCmdOption::required));
-	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
+
+	options.add(make_opt( interpolator_kernel, "interpolator", 'p', "override the interpolator provided by the transformation"));
+	options.add(make_opt( interpolator_bc, "boundary", 'b', "override the boundary conditions provided by the transformation."
+			      " This is only used if the interpolator is overridden."));
+	
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
@@ -104,11 +111,17 @@ int do_main(int argc, const char **argv)
 		return EXIT_FAILURE;
 	}
 
-	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(interpolator_kernel, "mirror"));
-
+	if (!interpolator_kernel.empty()) { 
+		cvdebug() << "override the interpolator by '" 
+			  << interpolator_kernel << "' and boundary conditions '" 
+			  << interpolator_bc << "'\n"; 
+		C2DInterpolatorFactory ipf(interpolator_kernel, interpolator_bc);
+		transformation->set_interpolator_factory(ipf); 
+	}
+	
 	for (C2DImageIOPluginHandler::Instance::Data::iterator i = source->begin();
 	     i != source->end(); ++i)
-		*i = (*transformation)(**i, *ipf);
+		*i = (*transformation)(**i);
 	
 	if ( !imageio.save(out_filename, *source) ){
 		string not_save = ("unable to save result to ") + out_filename;

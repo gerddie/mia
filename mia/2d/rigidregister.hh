@@ -59,8 +59,7 @@ public:
 	 */
 
 	C2DRigidRegister(P2DImageCost cost, PMinimizer minimizer,
-			 P2DTransformationFactory transform_creator,
-			 const C2DInterpolatorFactory& ipf,  size_t mg_levels);
+			 P2DTransformationFactory transform_creator, size_t mg_levels);
 
 	
 	~C2DRigidRegister();

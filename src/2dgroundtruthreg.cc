@@ -65,7 +65,6 @@ struct SRegistrationParams {
 	size_t c_rate; 
 	double divcurlweight; 
 	double imageweight; 
-	shared_ptr<C2DInterpolatorFactory> ipfactory; 
 	size_t mg_levels; 
 	SRegistrationParams(); 
 }; 
@@ -116,14 +115,13 @@ run_registration_pass(const CSegSetWithImages&  input_set, C2DImageSeries& serie
 	C2DImageSeries input_images = input_set.get_images(); 
 	auto costs  = create_costs(params.divcurlweight, params.imageweight); 
 	auto transform_creator = create_transform_creator(params.c_rate); 
-	C2DNonrigidRegister nrr(costs, params.minimizer,  transform_creator, 
-				*params.ipfactory, params.mg_levels);
+	C2DNonrigidRegister nrr(costs, params.minimizer,  transform_creator, params.mg_levels);
 
 	// this loop could be parallized 
 	for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
 		cvmsg() << "Register frame " << i << "\n"; 
 		P2DTransformation transform = nrr.run(input_images[i + skip_images], references[i]);
-		series[i] = (*transform)(*input_images[i + skip_images], *params.ipfactory);
+		series[i] = (*transform)(*input_images[i + skip_images]);
 		result.push_back(transform); 
 	}
 	return result; 
@@ -194,8 +192,6 @@ int do_main( int argc, const char *argv[] )
 		return EXIT_SUCCESS; 
 	
 	
-	reg_params.ipfactory.reset(new C2DInterpolatorFactory(interpolator_kernel, "mirror"));
-		
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
 	

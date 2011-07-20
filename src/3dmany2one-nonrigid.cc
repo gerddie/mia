@@ -130,7 +130,6 @@ struct SeriesRegistration {
 	C3DImageSeries&  input_images; 
 	string minimizer; 
 	const std::vector<const char *>& costs; 
-	C3DInterpolatorFactory& ipfactory; 
 	size_t mg_levels; 
 	P3DTransformationFactory transform_creator; 
 	int reference; 
@@ -138,14 +137,12 @@ struct SeriesRegistration {
 	SeriesRegistration(C3DImageSeries&  _input_images, 
 			   const string& _minimizer, 
 			   const std::vector<const char *>& _costs, 
-			   C3DInterpolatorFactory& _ipfactory, 
 			   size_t _mg_levels, 
 			   P3DTransformationFactory _transform_creator, 
 			   int _reference):
 		input_images(_input_images), 
 		minimizer(_minimizer), 
 		costs(_costs),
-		ipfactory(_ipfactory), 
 		mg_levels(_mg_levels), 
 		transform_creator(_transform_creator), 
 		reference(_reference)
@@ -162,9 +159,9 @@ struct SeriesRegistration {
 				continue; 
 			cvmsg() << "Register " << i << " to " << reference << "\n"; 
 			auto cost  = create_costs(costs, i); 
-			C3DNonrigidRegister nrr(cost, m,  transform_creator, ipfactory, mg_levels, i);
+			C3DNonrigidRegister nrr(cost, m,  transform_creator,  mg_levels, i);
 			P3DTransformation transform = nrr.run(input_images[i], input_images[reference]);
-			input_images[i] = (*transform)(*input_images[i], ipfactory);
+			input_images[i] = (*transform)(*input_images[i]);
 		}
 	}
 };  
@@ -251,7 +248,7 @@ int do_main( int argc, const char *argv[] )
 		cvwarn() << "Reference was out of range, adjusted to " << reference << "\n"; 
 	}
 
-	SeriesRegistration sreg(*input_images, minimizer, cost_functions, *ipfactory, 
+	SeriesRegistration sreg(*input_images, minimizer, cost_functions, 
 				mg_levels, transform_creator, reference); 
 
 	parallel_for(blocked_range<int>( 0, input_images->size()), sreg);

@@ -79,7 +79,7 @@ void RigidRegisterFixture::run(C2DTransformation& t, const string& minimizer_des
 	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
 	auto tr_creator = C2DTransformCreatorHandler::instance().produce(t.get_creator_string());
 
-	C2DRigidRegister rr(cost, minimizer, tr_creator, *ipfactory, 1);
+	C2DRigidRegister rr(cost, minimizer, tr_creator, 1);
 
 
 	float src_image_init[10 * 10] = {

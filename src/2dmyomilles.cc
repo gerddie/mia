@@ -209,10 +209,8 @@ int do_main( int argc, const char *argv[] )
 		return EXIT_SUCCESS; 
 
 	// prepare registration class
-	
-	P2DInterpolatorFactory ipfactory(new C2DInterpolatorFactory(interpolator_kernel, "mirror"));
 	C2DRigidRegister rigid_register(C2DImageCostPluginHandler::instance().produce("ssd"), 
-					minimizer, transform_creator, *ipfactory, mg_levels); 
+					minimizer, transform_creator, mg_levels); 
 	
 	cvwarn() << "save_crop_feature:" << save_crop_feature << "\n"; 
 	
@@ -291,7 +289,7 @@ int do_main( int argc, const char *argv[] )
 	for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
 		cvmsg() << "Register 1st pass, frame " << i << "\n"; 
 		P2DTransformation transform = rigid_register.run(input_images[i + skip_images], references[i]);
-		input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], *ipfactory);
+		input_images[i + skip_images] = (*transform)(*input_images[i + skip_images]);
 		P2DTransformation inverse(transform->invert()); 
 		frames[i + skip_images].transform(*inverse);
 	}
@@ -316,7 +314,7 @@ int do_main( int argc, const char *argv[] )
 				cvmsg() << "Register " << current_pass + 1 <<  " pass, frame " << i << "\n"; 
 				P2DTransformation transform = rigid_register.run(input_images[i + skip_images] , 
 										 references[i]); 
-				input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], *ipfactory);
+				input_images[i + skip_images] = (*transform)(*input_images[i + skip_images]);
 				P2DTransformation inverse(transform->invert()); 
 				frames[i + skip_images].transform(*inverse);
 			}

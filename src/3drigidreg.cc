@@ -141,7 +141,7 @@ int do_main( int argc, const char *argv[] )
 	C3DRigidRegister rr(cost, minimizer,  transform_creator, *ipfactory, mg_levels);
 
 	P3DTransformation transform = rr.run(Model, Reference);
-	P3DImage result = (*transform)(*Model, *ipfactory);
+	P3DImage result = (*transform)(*Model);
 
 	if (!trans_filename.empty()) {
 		cvmsg() << "Save transformation to file '" << trans_filename << "'\n"; 

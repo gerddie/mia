@@ -64,6 +64,12 @@ public:
 	    \returns a shared pointer to the transformed input data
 	*/
 	std::shared_ptr<D> operator () (const D& input) const; 
+
+	/**
+	   Set the interpolator factory 
+	   \param ipf the new interpolator factory 
+	 */
+	void set_interpolator_factory(const I& ipf); 
 protected: 
 	const I& get_interpolator_factory() const; 
 private: 
@@ -84,6 +90,12 @@ Transformation<D, I>::Transformation(const I& ipf):
 template <typename D, typename I>
 Transformation<D, I>::~Transformation()
 {
+}
+
+template <typename D, typename I>
+void Transformation<D, I>::set_interpolator_factory(const I& ipf)
+{
+	m_ipf = ipf; 
 }
 
 template <typename D, typename I>
