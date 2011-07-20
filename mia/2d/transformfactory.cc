@@ -48,7 +48,7 @@ C2DTransformCreatorPlugin::Product *C2DTransformCreatorPlugin::do_create() const
 C2DTransformCreatorHandlerTestPath::C2DTransformCreatorHandlerTestPath()
 {
 	list< bfs::path> kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("transform"));
+	kernelsearchpath.push_back(bfs::path(MIA_BUILD_ROOT"/mia/2d/transform"));
 	C2DTransformCreatorHandler::set_search_path(kernelsearchpath);
 }
 

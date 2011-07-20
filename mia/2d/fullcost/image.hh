@@ -35,7 +35,6 @@ public:
 	C2DImageFullCost(const std::string& src, 
 			 const std::string& ref, 
 			 const std::string& cost, 
-			 P2DInterpolatorFactory ipf,
 			 double weight, 
 			 bool debug); 
 private: 
@@ -61,7 +60,6 @@ private:
 	P2DImage m_ref_scaled; 
 
 	P2DImageCost m_cost_kernel; 
-	P2DInterpolatorFactory m_ipf; 
 	bool m_debug;
 }; 
 

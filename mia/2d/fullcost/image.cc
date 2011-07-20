@@ -60,14 +60,12 @@ NS_MIA_BEGIN
 C2DImageFullCost::C2DImageFullCost(const std::string& src, 
 				   const std::string& ref, 
 				   const std::string& cost, 
-				   P2DInterpolatorFactory ipf, 
 				   double weight, 
 				   bool debug):
 	C2DFullCost(weight), 
 	m_src_key(C2DImageIOPluginHandler::instance().load_to_pool(src)), 
 	m_ref_key(C2DImageIOPluginHandler::instance().load_to_pool(ref)), 
 	m_cost_kernel(C2DImageCostPluginHandler::instance().produce(cost)), 
-	m_ipf(ipf), 
 	m_debug(debug)
 {
 	assert(m_cost_kernel); 
@@ -220,13 +218,11 @@ C2DImageFullCostPlugin::C2DImageFullCostPlugin():
 	m_src_name("src.@"), 
 	m_ref_name("ref.@"), 
 	m_cost_kernel("ssd"), 
-	m_interpolator(CSplineKernelPluginHandler::instance().produce("bspline:d=3")),
 	m_debug(false)
 {
 	add_parameter("src", new CStringParameter(m_src_name, false, "Study image"));
 	add_parameter("ref", new CStringParameter(m_ref_name, false, "Reference image"));
 	add_parameter("cost", new CStringParameter(m_cost_kernel, false, "Cost function kernel"));
-	add_parameter("interp", new CFactoryParameter<CSplineKernelPluginHandler>(m_interpolator, false, "image interpolator kernel"));
 	add_parameter("debug", new CBoolParameter(m_debug, false, "Save intermediate resuts for debugging")); 
 }
 
@@ -239,7 +235,7 @@ C2DFullCost *C2DImageFullCostPlugin::do_create(float weight) const
 							      *produce_spline_boundary_condition("mirror"), 
 							      *produce_spline_boundary_condition("mirror")));
 	return 	new C2DImageFullCost(m_src_name, m_ref_name, 
-				     m_cost_kernel, ipf, weight, m_debug); 
+				     m_cost_kernel, weight, m_debug); 
 }
 
 const std::string C2DImageFullCostPlugin::do_get_descr() const
