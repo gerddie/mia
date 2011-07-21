@@ -48,7 +48,7 @@ enum EBoundaryConditions  {
    The actual boundary conditions are implemented as plug-ins and instances are 
    created by calling produce_spline_boundary_condition. 
 */
-class CSplineBoundaryCondition : public CProductBase{
+class EXPORT_CORE CSplineBoundaryCondition : public CProductBase{
 public: 
 
 	/// helper typedef for plug-in handling 
@@ -138,7 +138,7 @@ public:
 	   \returns a copy of the (derived) instance of this boundary condition 
 	 */
 	virtual 
-CSplineBoundaryCondition *clone() const __attribute__((warn_unused_result)) = 0 ; 
+		CSplineBoundaryCondition *clone() const __attribute__((warn_unused_result)) = 0 ; 
 private:
 
 	virtual void do_apply(std::vector<int>& index, std::vector<double>& weights) const = 0;
@@ -161,7 +161,7 @@ typedef CSplineBoundaryCondition::Pointer PSplineBoundaryCondition;
 /**  \ingroup interpol 
      \brief Base plugin for spline boundary conditions
 */
-class CSplineBoundaryConditionPlugin: public TFactory<CSplineBoundaryCondition> {
+class EXPORT_CORE CSplineBoundaryConditionPlugin: public TFactory<CSplineBoundaryCondition> {
 public: 
 	/**
 	   Constructor for the spline boundary conditions plug-ins. 
@@ -182,7 +182,7 @@ private:
 */
 typedef THandlerSingleton<TFactoryPluginHandler<CSplineBoundaryConditionPlugin> > CSplineBoundaryConditionPluginHandler;
 
-struct CSplineBoundaryConditionTestPath {
+struct EXPORT_CORE CSplineBoundaryConditionTestPath {
 	CSplineBoundaryConditionTestPath(); 
 }; 
 
@@ -204,7 +204,7 @@ PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& de
    \param width width of the input domain 
    \returns the actual boundary condition 
 */
-PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& descr, int width); 
+EXPORT_CORE PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& descr, int width); 
 
 
 template <typename T, int size>

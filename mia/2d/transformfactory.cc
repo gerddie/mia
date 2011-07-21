@@ -21,7 +21,6 @@
  */
 
 #include <mia/core/export_handler.hh>
-
 #include <mia/2d/transformfactory.hh>
 #include <mia/internal/transformfactory.cxx>
 

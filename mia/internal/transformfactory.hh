@@ -79,7 +79,7 @@ private:
 
 /// this is the Factory class that is used to create the transformation creator 
 template <typename Transform> 
-class TTransformCreatorPlugin : public TFactory<TTransformCreator<Transform> > {
+class EXPORT_HANDLER TTransformCreatorPlugin : public TFactory<TTransformCreator<Transform> > {
 public: 
 	typedef typename TFactory<TTransformCreator<Transform> >::Product Product; 
 	typedef typename Transform::InterpolatorFactory InterpolatorFactory; 

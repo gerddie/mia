@@ -281,7 +281,7 @@ inline PSplineKernel produce_spline_kernel(const std::string& descr)
 
 FACTORY_TRAIT(CSplineKernelPluginHandler); 
 
-struct CSplineKernelTestPath {
+struct EXPORT_CORE CSplineKernelTestPath {
 	CSplineKernelTestPath(); 
 private: 
 	CSplineBoundaryConditionTestPath bcpath; 

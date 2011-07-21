@@ -99,6 +99,7 @@ public:
 
 	/** copy constructor, this is a shallow copy, i.e. the data is shared 
 	    between the original and the copied vector 
+	    \param other
 	*/
 	Vector(const Vector<T>& other):
 		m_size(other.m_size),

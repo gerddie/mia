@@ -25,6 +25,7 @@
 
 #include <memory>
 #include <vector>
+#include <mia/3d/defines3d.hh>
 #include <mia/3d/3DVector.hh>
 
 NS_MIA_BEGIN
@@ -35,7 +36,7 @@ NS_MIA_BEGIN
    This class provides the basis for named a 3D landmark 
  */
 
-class C3DLandmark {
+class EXPORT_3D C3DLandmark {
 public: 
 
 	/// Shared pointer type of the landmark 
@@ -71,8 +72,6 @@ private:
 
 }; 
 typedef C3DLandmark::Pointer P3DLandmark; 
-
-typedef std::vector<P3DLandmark> CLandmarkList; 
 
 NS_MIA_END
 

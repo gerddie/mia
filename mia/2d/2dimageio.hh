@@ -78,7 +78,7 @@ typedef C2DImageIOPluginHandler::Instance::DataKey C2DImageDataKey;
  */
 typedef C2DImageIOPluginHandler::Instance::PData P2DImageVector;
 
-struct C2DImageIOPluginHandlerTestPath {
+struct EXPORT_2D C2DImageIOPluginHandlerTestPath {
 	C2DImageIOPluginHandlerTestPath(); 
 }; 
 

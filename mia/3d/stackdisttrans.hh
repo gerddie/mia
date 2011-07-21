@@ -26,6 +26,7 @@
 #define mia_3d_stackdisttrans_hh
 
 #include <vector>
+#include <mia/3d/defines3d.hh>
 #include <mia/3d/3DVector.hh>
 #include <mia/2d/2DImage.hh>
 #include <mia/core/iohandler.hh>
@@ -46,7 +47,7 @@ NS_MIA_BEGIN
      Cornell Computing and Information Science TR2004-1963
 */
 
-class C2DStackDistanceTransform: public CIOData {
+class EXPORT_3D C2DStackDistanceTransform: public CIOData {
 public: 
 	/// helper type for IO plugin handling 
 	typedef C2DStackDistanceTransform type; 

@@ -44,7 +44,7 @@ typedef TTransformCreatorPlugin<C2DTransformation>  C2DTransformCreatorPlugin;
 /// The plugin handler to manage the transformation creators
 typedef THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin> > C2DTransformCreatorHandler;
 
-struct C2DTransformCreatorHandlerTestPath {
+struct EXPORT_2D C2DTransformCreatorHandlerTestPath {
 	C2DTransformCreatorHandlerTestPath(); 
 private: 
 	CSplineKernelTestPath spktp; 

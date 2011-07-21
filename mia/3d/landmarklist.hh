@@ -34,7 +34,7 @@ NS_MIA_BEGIN
    
  */
 
-class C3DLandmarklist {
+class EXPORT_3D C3DLandmarklist {
 	typedef std::map<std::string, P3DLandmark> CMap; 
 public: 
 

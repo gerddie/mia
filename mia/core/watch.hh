@@ -30,7 +30,7 @@ NS_MIA_BEGIN
 /** \ingroup helpers
     \brief A class for measuring time. 
     
-    This is a  class to measure time with  milisecond accuracy.  
+    This is a class to measure time with  millisecond accuracy. 
     \remark On WIN32 this class is currently a fake that always returns 0.0; 
  */
 class EXPORT_CORE CWatch {

@@ -60,7 +60,7 @@ struct SIntensityStats {
 
  */
 
-class FIntensityStatsAccumulator : public TFilter<void> {
+class EXPORT_CORE FIntensityStatsAccumulator : public TFilter<void> {
 public: 
 	FIntensityStatsAccumulator(); 
 	

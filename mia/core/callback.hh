@@ -41,7 +41,7 @@ NS_MIA_BEGIN
    to show that "something happens". 
 */
 
-class CProgressCallback {
+class EXPORT_CORE CProgressCallback {
 public: 
 	virtual ~CProgressCallback(); 
 
@@ -77,7 +77,7 @@ private:
    This class provides progress feedback on textual outputs. The range based output 
    shows progress in percent, and the pluse output prints a '.' whenever it is called. 
 */
-class CMsgStreamPrintCallback: public CProgressCallback {
+class  EXPORT_CORE CMsgStreamPrintCallback: public CProgressCallback {
 public: 
 
 	/**
