@@ -229,6 +229,15 @@ struct add_3d<T3DDatafield< float >, 4> {
 			    const CSplineKernel::SCache& zc); 
 	
 };
+template <>
+struct add_3d<T3DDatafield< float >, 2> {
+	static float value(const T3DDatafield< float >&  coeff, 
+			    const CSplineKernel::SCache& xc, 
+			    const CSplineKernel::SCache& yc,
+			    const CSplineKernel::SCache& zc); 
+	
+};
+
 #endif
 
 template <typename T>

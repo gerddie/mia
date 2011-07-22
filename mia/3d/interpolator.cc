@@ -280,6 +280,72 @@ inline void my_daxpy_4(float weight, v4df* in, v4df *out)
 	out[0] += w * in[0]; 
 }
 
+
+float add_3d<T3DDatafield< float >, 2>::value(const T3DDatafield< float >&  coeff, 
+					      const CSplineKernel::SCache& xc, 
+					      const CSplineKernel::SCache& yc,
+					      const CSplineKernel::SCache& zc)
+{
+	const int dx = coeff.get_size().x; 
+	const int dxy = coeff.get_size().x *coeff.get_size().y; 
+	int idx = 0; 
+	
+	float __attribute__((aligned(16))) c[8];
+	float __attribute__((aligned(16))) w[4];
+	
+	w[0] = xc.weights[0]; 
+	w[1] = xc.weights[1]; 
+	w[2] = yc.weights[0]; 
+	w[3] = yc.weights[1]; 
+	v4df weights = _mm_load_ps(w); 
+	
+	if (xc.is_flat) {
+
+		for (size_t z = 0; z < 2; ++z) {
+			const float *slice = &coeff[zc.index[z] * dxy]; 
+			for (size_t y = 0; y < 2; ++y, idx +=2 ) {
+				const float *p = &slice[yc.index[y] * dx];
+				c[idx    ] = p[xc.start_idx];
+				c[idx + 1] = p[xc.start_idx + 1];
+			}
+		}
+	}else{
+		for (size_t z = 0; z < 2; ++z) {
+			const float *slice = &coeff[zc.index[z] * dxy]; 
+			for (size_t y = 0; y < 2; ++y, ++idx) {
+				const float *p = &slice[yc.index[y] * dx];
+				c[idx    ] = p[xc.index[0]]; 
+				c[idx + 1] = p[xc.index[1]]; 
+			}
+		}
+	}
+
+	v4df wz0 = _mm_set1_ps(zc.weights[0]); 
+	v4df wz1 = _mm_set1_ps(zc.weights[1]);
+	v4df whx = _mm_shuffle_ps(weights, weights, _MM_SHUFFLE(1,0,1,0)); 
+	v4df why = _mm_shuffle_ps(weights, weights, _MM_SHUFFLE(3,3,2,2)); 
+	v4df z0  = _mm_load_ps(&c[0]); 
+	v4df z1  = _mm_load_ps(&c[4]);
+	v4df z = wz0 * z0 + wz1 * z1; 
+	v4df wp = whx * why; 
+	v4df res = wp * z;
+
+#ifdef __SSE3__	
+	float result; 
+	res = _mm_hadd_ps(res, res); 
+	res = _mm_hadd_ps(res, res); 
+
+	_mm_store_ss(&result, res); 
+	return result; 
+#else
+
+	float __attribute__((aligned(16))) r[4]; 
+	_mm_store_ps(r, res); 
+	return r[0] + r[1] + r[2] + r[3]; 
+#endif 	
+}
+	
+
 /*
   In this function the registration algorithm spends approx 30% of the time 
 */
