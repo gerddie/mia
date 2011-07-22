@@ -56,6 +56,8 @@
 #include <emmintrin.h>
 #endif
 
+
+#define USE_FASTFLOOR
 NS_MIA_BEGIN
 using namespace std;
 
