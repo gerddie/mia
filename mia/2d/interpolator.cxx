@@ -302,13 +302,23 @@ struct add_2d_new<T2DDatafield< T >, 1> {
 	}
 }; 
 
+
+#ifdef __SSE__
+template <>
+struct add_2d_new<T2DDatafield< double >, 4> {
+	static double value(const T2DDatafield< double >&  coeff, 
+			    const CSplineKernel::SCache& xc, 
+			    const CSplineKernel::SCache& yc); 
+}; 
+#endif
+
 #ifdef __SSE2__
 
 template <>
-struct add_2d_new<T2DDatafield< double >, 4> {
+struct add_2d_new<T2DDatafield< float >, 4> {
 	
 
-	static double value(const T2DDatafield< double >&  coeff, 
+	static float value(const T2DDatafield< float >&  coeff, 
 			    const CSplineKernel::SCache& xc, 
 			    const CSplineKernel::SCache& yc); 
 }; 

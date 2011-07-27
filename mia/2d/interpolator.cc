@@ -28,6 +28,12 @@
 */
 
 #include <cassert>
+#include <cstring>
+
+#ifdef __SSE3__
+#include <pmmintrin.h>
+#endif
+
 
 #include <mia/core/interpolator1d.hh>
 #include <mia/2d/interpolator.hh>
@@ -127,6 +133,62 @@ C2DInterpolatorFactory *create_2dinterpolation_factory(EInterpolation type, EBou
 
 	return new C2DInterpolatorFactory(kernel, boundary); 
 }
+
+
+#ifdef __SSE__
+float add_2d_new<T2DDatafield< float >, 4>::value(const T2DDatafield< float >&  coeff, 
+							   const CSplineKernel::SCache& xc, 
+							   const CSplineKernel::SCache& yc) 
+{
+	typedef float v4df __attribute__ ((vector_size (16)));
+	float __attribute__((aligned(16))) cache[16]; 
+	float __attribute__((aligned(16))) xweight[4]; 
+	copy(xc.weights.begin(), xc.weights.end(), xweight); 
+	
+	const int dx = coeff.get_size().x; 
+	int idx = 0; 
+	if (xc.is_flat) {
+		for (size_t y = 0; y < 4; ++y, idx+=4) {
+			const float *p = &coeff[yc.index[y] * dx];
+			memcpy(&cache[idx], &p[xc.start_idx], 4*sizeof(float));
+		}
+	}else{
+		for (size_t y = 0; y < 4; ++y, idx+=4) {
+			const float *p = &coeff[yc.index[y] * dx];
+			cache[idx  ] = p[xc.index[0]]; 
+			cache[idx+1] = p[xc.index[1]]; 
+			cache[idx+2] = p[xc.index[2]]; 
+			cache[idx+3] = p[xc.index[3]]; 
+		}
+	}
+
+	v4df wx  = _mm_loadu_ps(xweight);
+	v4df w0  = _mm_set1_ps(yc.weights[0]);
+	v4df w1  = _mm_set1_ps(yc.weights[1]);
+	v4df w2  = _mm_set1_ps(yc.weights[2]);
+	v4df w3  = _mm_set1_ps(yc.weights[3]);
+
+	v4df x0 = _mm_load_ps(&cache[0]); 
+	v4df x1 = _mm_load_ps(&cache[4]); 
+	v4df x2 = _mm_load_ps(&cache[8]); 
+	v4df x3 = _mm_load_ps(&cache[12]); 
+	
+	v4df res = (x0 * w0 + x1 * w1 + x2 * w2 + x3 * w3 )* wx; 
+
+#ifdef __SSE3__	
+	float result; 
+	res = _mm_hadd_ps(res, res); 
+	res = _mm_hadd_ps(res, res); 
+
+	_mm_store_ss(&result, res); 
+	return result; 
+#else
+	float __attribute__((aligned(16))) r[4]; 
+	_mm_store_ps(r, res); 
+	return r[0] + r[1] +r[2] + r[3]; 
+#endif
+}
+#endif
 
 
 #ifdef __SSE2__
