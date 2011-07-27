@@ -24,12 +24,14 @@
 
 
 #include <mia/2d/cost.hh>
+#include <mia/core/splinekernel.hh>
 #include <mia/internal/autotest.hh>
 
 NS_MIA_USE
 namespace bfs=::boost::filesystem; 
-
 using namespace boost::unit_test;
+
+CSplineKernelTestPath spline_kernel_set_test_path; 
 
 BOOST_AUTO_TEST_CASE( test_2dimage_cost_avail )
 {

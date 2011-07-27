@@ -44,6 +44,7 @@
 
 #include <vector>
 #include <mia/core/splinekernel.hh>
+#include <mia/core/boundary_conditions.hh>
 #include <mia/2d/2DImage.hh>
 
 
@@ -129,8 +130,8 @@ public:
 	   \param xindex indices into the coefficient field in x-direction
 	   \param yindex indices into the coefficient field in y-direction
 	*/
-	T evaluate(const std::vector<double>& xweight, const std::vector<double>& yweight,
-		   const std::vector<int>&    xindex,  const std::vector<int>&    yindex) const; 
+	T evaluate(const CSplineKernel::VWeight& xweight, const CSplineKernel::VWeight& yweight,
+		   const CSplineKernel::VIndex&  xindex,  const CSplineKernel::VIndex&  yindex) const; 
 
 	
 	/**
@@ -168,10 +169,11 @@ private:
 	T m_min;
 	T m_max;
 
-	mutable std::vector<int> m_x_index; 
-	mutable std::vector<int> m_y_index; 
-	mutable std::vector<double> m_x_weight; 
-	mutable std::vector<double> m_y_weight; 
+	/// This part makes the class to be not thread save 
+	mutable CSplineKernel::VIndex m_x_index; 
+	mutable CSplineKernel::VIndex m_y_index; 
+	mutable CSplineKernel::VWeight m_x_weight; 
+	mutable CSplineKernel::VWeight m_y_weight; 
 	mutable CSplineKernel::SCache m_x_cache; 
 	mutable CSplineKernel::SCache m_y_cache; 
 

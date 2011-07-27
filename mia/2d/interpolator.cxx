@@ -163,10 +163,10 @@ template <class C, int size>
 struct add_2d {
 	typedef typename C::value_type U; 
 	
-	static typename C::value_type apply(const C&  coeff, const std::vector<double>& xweight, 
-					    const std::vector<double>& yweight,
-					    const std::vector<int>& xindex, 
-					    const std::vector<int>& yindex) 
+	static typename C::value_type apply(const C&  coeff, const CSplineKernel::VWeight& xweight, 
+					    const CSplineKernel::VWeight& yweight,
+					    const CSplineKernel::VIndex& xindex, 
+					    const CSplineKernel::VIndex& yindex) 
 	{
 		U result = U();
 		for (size_t y = 0; y < size; ++y) {
@@ -220,10 +220,10 @@ typename T2DConvoluteInterpolator<T>::TCoeff2D::value_type T2DConvoluteInterpola
 }
 
 template <typename T>
-T T2DConvoluteInterpolator<T>::evaluate(const std::vector<double>& xweight,
-					const std::vector<double>& yweight,
-					const std::vector<int>&    xindex, 
-					const std::vector<int>&    yindex
+T T2DConvoluteInterpolator<T>::evaluate(const CSplineKernel::VWeight& xweight,
+					const CSplineKernel::VWeight& yweight,
+					const CSplineKernel::VIndex&    xindex, 
+					const CSplineKernel::VIndex&    yindex
 					) const
 {
 	typedef typename TCoeff2D::value_type U; 
