@@ -211,6 +211,15 @@ struct add_3d<T3DDatafield< T >, 1> {
 
 #ifdef __SSE2__
 template <>
+struct add_3d<T3DDatafield< double >, 2> {
+	static double value(const T3DDatafield< double >&  coeff, 
+			    const CSplineKernel::SCache& xc, 
+			    const CSplineKernel::SCache& yc,
+			    const CSplineKernel::SCache& zc); 
+	
+};
+
+template <>
 struct add_3d<T3DDatafield< double >, 4> {
 	static double value(const T3DDatafield< double >&  coeff, 
 			    const CSplineKernel::SCache& xc, 

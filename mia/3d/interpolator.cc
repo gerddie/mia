@@ -172,6 +172,73 @@ inline void my_daxpy_4(double weight, v2df *in, v2df *out)
 	out[1] += w * in[1]; 
 }
 
+
+/*
+  In this function the registration algorithm spends approx 7% of the time 
+  if B-spline 1 is used 
+*/
+
+double add_3d<T3DDatafield< double >, 2>::value(const T3DDatafield< double >&  coeff, 
+					       const CSplineKernel::SCache& xc, 
+					       const CSplineKernel::SCache& yc,
+					       const CSplineKernel::SCache& zc)
+{
+	const int dx = coeff.get_size().x;
+	const int dxy = coeff.get_size().x *coeff.get_size().y;
+	int idx = 0;
+	
+	double __attribute__((aligned(16))) c[8];
+	
+	v2df xweights = _mm_loadu_pd(&xc.weights[0]);
+	v2df yweight0 = _mm_loadu_pd(&yc.weights[0]);
+	v2df yweight1 = _mm_loadu_pd(&yc.weights[1]);
+	v2df zweight0 = _mm_load1_pd(&zc.weights[0]);
+	v2df zweight1 = _mm_load1_pd(&zc.weights[1]);
+	
+	if (xc.is_flat) {
+		
+		for (size_t z = 0; z < 2; ++z) {
+			const double *slice = &coeff[zc.index[z] * dxy]; 
+			for (size_t y = 0; y < 2; ++y, idx +=2 ) {
+				const double *p = &slice[yc.index[y] * dx];
+				c[idx    ] = p[xc.start_idx];
+				c[idx + 1] = p[xc.start_idx + 1];
+			}
+		}
+	}else{
+		for (size_t z = 0; z < 2; ++z) {
+			const double *slice = &coeff[zc.index[z] * dxy]; 
+			for (size_t y = 0; y < 2; ++y, idx += 2) {
+				const double *p = &slice[yc.index[y] * dx];
+				c[idx    ] = p[xc.index[0]]; 
+				c[idx + 1] = p[xc.index[1]]; 
+			}
+		}
+	}
+
+	v2df z0y0 = _mm_load_pd(&c[0]); 
+	v2df z0y1 = _mm_load_pd(&c[2]);
+	v2df z1y0 = _mm_load_pd(&c[4]); 
+	v2df z1y1 = _mm_load_pd(&c[6]);
+
+	v2df zsum_y0 = z0y0 * zweight0 + z1y0 * zweight1; 
+	v2df zsum_y1 = z0y1 * zweight0 + z1y1 * zweight1; 
+
+	v2df zysum = (zsum_y0 * yweight0 + zsum_y1 * yweight1) * xweights; 
+
+#ifdef __SSE3__	
+	double result; 
+	zysum = _mm_hadd_pd(zysum, zysum); 
+	_mm_store_sd(&result, zysum); 
+	return result; 
+#else
+	double __attribute__((aligned(16))) r[2]; 
+	_mm_store_pd(r, res); 
+	return r[0] + r[1]; 
+#endif 	
+#endif // 1
+}
+
 /*
   In this function the registration algorithm spends approx 30% of the time 
 */
@@ -247,7 +314,6 @@ double add_3d<T3DDatafield< double >, 4>::value(const T3DDatafield< double >&  c
 #endif
 }
 
-#endif
 
 #ifdef __SSE__
 typedef float v4df __attribute__ ((vector_size (16)));
@@ -280,6 +346,10 @@ inline void my_daxpy_4(float weight, v4df* in, v4df *out)
 	out[0] += w * in[0]; 
 }
 
+/*
+  In this function the registration algorithm spends approx 7% of the time 
+  if B-spline 1 is used 
+*/
 
 float add_3d<T3DDatafield< float >, 2>::value(const T3DDatafield< float >&  coeff, 
 					      const CSplineKernel::SCache& xc, 
@@ -312,7 +382,7 @@ float add_3d<T3DDatafield< float >, 2>::value(const T3DDatafield< float >&  coef
 	}else{
 		for (size_t z = 0; z < 2; ++z) {
 			const float *slice = &coeff[zc.index[z] * dxy]; 
-			for (size_t y = 0; y < 2; ++y, ++idx) {
+			for (size_t y = 0; y < 2; ++y, idx += 2) {
 				const float *p = &slice[yc.index[y] * dx];
 				c[idx    ] = p[xc.index[0]]; 
 				c[idx + 1] = p[xc.index[1]]; 
@@ -348,6 +418,7 @@ float add_3d<T3DDatafield< float >, 2>::value(const T3DDatafield< float >&  coef
 
 /*
   In this function the registration algorithm spends approx 30% of the time 
+  if B-spline 3 is used 
 */
 float add_3d<T3DDatafield< float >, 4>::value(const T3DDatafield< float >&  coeff, 
 		    const CSplineKernel::SCache& xc, 
