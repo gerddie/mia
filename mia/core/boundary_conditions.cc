@@ -113,7 +113,7 @@ void CSplineBoundaryCondition::filter_line(std::vector<double>& coeff, const std
 	}
 }
 
-bool CSplineBoundaryCondition::apply(std::vector<int>& index, std::vector<double>& weights) const
+bool CSplineBoundaryCondition::apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const
 {
 	assert(m_width > 0); 
 	if ( (index[0] >= 0) && index[index.size()-1] < m_width) 

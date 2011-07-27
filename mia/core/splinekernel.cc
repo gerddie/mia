@@ -49,6 +49,8 @@
 #include <mia/core/simpson.hh>
 #include <mia/core/plugin_base.cxx>
 #include <mia/core/handler.cxx>
+#include <mia/core/boundary_conditions.hh>
+
 #include <boost/filesystem.hpp>
 
 
@@ -81,7 +83,7 @@ void CSplineKernel::SCache::reset()
 	index_limit = boundary_condition.get_width() - weights.size(); 
 }
 
-CSplineKernel::CSplineKernel(size_t degree, double shift, EInterpolation type):
+CSplineKernel::CSplineKernel(int degree, double shift, EInterpolation type):
 	m_half_degree(degree >> 1),
 	m_shift(shift),
 	m_support_size(degree + 1), 
@@ -101,7 +103,7 @@ EInterpolation CSplineKernel::get_type() const
 	return m_type; 
 }
 
-void CSplineKernel::operator () (double x, std::vector<double>& weight, std::vector<int>& index)const
+void CSplineKernel::operator () (double x, VWeight& weight, VIndex& index)const
 {
 	assert(index.size() == m_support_size);
 	int ix = get_indices(x, index);
@@ -160,14 +162,14 @@ inline int fastfloor(double val)
 #define fastfloor floor
 #endif
 
-void CSplineKernel::fill_index(int i, std::vector<int>& index) const 
+void CSplineKernel::fill_index(short i, VIndex& index) const 
 {
 	int k= 0; 
 	while (k < m_support_size)
 		index[k] = i + m_indices[k++]; 	
 }
 
-int CSplineKernel::get_indices(double x, std::vector<int>& index) const
+int CSplineKernel::get_indices(double x, VIndex& index) const
 {
 	const int ix = fastfloor(x + m_shift);
 	fill_index(ix - (int)m_half_degree, index); 
@@ -180,7 +182,7 @@ double CSplineKernel::get_weight_at(double /*x*/, int degree) const
 	      <<  degree << " not supported" );
 }
 
-const std::vector<double>& CSplineKernel::get_poles() const
+const vector<double>& CSplineKernel::get_poles() const
 {
 	return m_poles;
 }
@@ -190,14 +192,14 @@ void CSplineKernel::add_pole(double x)
 	m_poles.push_back(x);
 }
 
-void CSplineKernel::derivative(double x, std::vector<double>& weight, std::vector<int>& index)const
+void CSplineKernel::derivative(double x, VWeight& weight, VIndex& index)const
 {
 	assert(index.size() == m_support_size);
 	int ix = get_indices(x, index);
 	get_derivative_weights(x - ix, weight);
 }
 
-void CSplineKernel::derivative(double x, std::vector<double>& weight, std::vector<int>& index, int degree)const
+void CSplineKernel::derivative(double x, VWeight& weight, VIndex& index, int degree)const
 {
 	assert(index.size() == m_support_size);
 	int ix = get_indices(x, index);
@@ -214,14 +216,14 @@ int CSplineKernel::get_active_halfrange() const
 	return (m_support_size  + 1) / 2;
 }
 
-int CSplineKernel::get_start_idx_and_value_weights(double x, std::vector<double>& weights) const
+int CSplineKernel::get_start_idx_and_value_weights(double x, VWeight& weights) const
 {
 	const int result = fastfloor(x + m_shift);
 	get_weights(x - result, weights); 
 	return result - (int)m_half_degree; 
 }
 
-int CSplineKernel::get_start_idx_and_derivative_weights(double x, std::vector<double>& weights) const
+int CSplineKernel::get_start_idx_and_derivative_weights(double x, VWeight& weights) const
 {
 	const int result = fastfloor(x + m_shift);
 	get_derivative_weights(x - result, weights); 
@@ -277,6 +279,7 @@ EXPLICIT_INSTANCE_HANDLER(CSplineKernel);
 using boost::filesystem::path; 
 CSplineKernelTestPath::CSplineKernelTestPath()
 {
+	CSplineBoundaryConditionTestPath bcpath;
 	list< path> sksearchpath; 
 	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/core/splinekernel"));
 	CSplineKernelPluginHandler::set_search_path(sksearchpath); 

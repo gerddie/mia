@@ -29,11 +29,13 @@
 #include <cmath>
 #include <mia/core/defines.hh>
 #include <mia/core/dictmap.hh>
-#include <mia/core/boundary_conditions.hh>
 #include <mia/core/factory.hh>
 #include <mia/core/product_base.hh>
 
 NS_MIA_BEGIN
+
+
+class CSplineBoundaryCondition; 
 
 /**
    \ingroup interpol 
@@ -56,6 +58,10 @@ public:
 
 	/// plugin handling data description 
 	static const char *data_descr; 
+
+	typedef std::vector<double> VWeight; 
+
+	typedef std::vector<short> VIndex; 
 
 	/**
 	   A struture to cache B-spline weights and indices 
@@ -87,10 +93,10 @@ public:
 		int index_limit; 
 		
 		/// cached weights 
-		std::vector<double> weights; 
+		VWeight weights; 
 		
 		/// cached indices 
-		std::vector<int> index; 
+		VIndex index; 
 
 		/// the boundary condition to be applied
 		const CSplineBoundaryCondition& boundary_condition; 
@@ -108,7 +114,7 @@ public:
 	   @param type interpolation type 
 	   @remark why to I give the type, it should alwas be bspline
 	 */
-	CSplineKernel(size_t degree, double shift, EInterpolation type);
+	CSplineKernel(int degree, double shift, EInterpolation type);
 
 	/**
 	   The virtual destructor is just here to avoid some warning
@@ -121,7 +127,7 @@ public:
 	    \param[out] weight weights of the interpolation
 	    \param[out] index indices corresponding to the weights
 	 */
-	void operator () (double x, std::vector<double>& weight, std::vector<int>& index)const;
+	void operator () (double x, VWeight& weight, VIndex& index)const;
 
 	/**
 	   This operator evaluates the weights and indices of the interpolation at a given position. 
@@ -139,7 +145,7 @@ public:
 	   @param[out] index the interpolation coefficient intices are stored here 
 	*/
 	
-	void derivative(double x, std::vector<double>& weight, std::vector<int>& index)const;
+	void derivative(double x, VWeight& weight, VIndex& index)const;
 	
         /**
 	   Evaluate the derivative weights of the B-Spline at the given position
@@ -149,7 +155,7 @@ public:
 	   @param order order of the derivative to be evaluated 
 	 */
 	
-	void derivative(double x, std::vector<double>& weight, std::vector<int>& index, int order)const;
+	void derivative(double x, VWeight& weight, VIndex& index, int order)const;
 	
         /**
 	   Evaluate the indices of the coefficients that would be used for interpolation 
@@ -157,21 +163,21 @@ public:
 	   @param[out] index the interpolation coefficient indices are stored here 
 	   @returns start index 
 	 */
-	int get_indices(double x, std::vector<int>& index) const;
+	int get_indices(double x, VIndex& index) const;
 
 	/** evaluate the weights, this needs to be implemented for a specific spline
 	    \param x coordinate
 	    \param[out] weight the weights
 	    \remark why is this not a private function? 
 	 */
-	virtual void get_weights(double x, std::vector<double>& weight) const = 0;
+	virtual void get_weights(double x, VWeight& weight) const = 0;
 
 	/** evaluate the first order derivative weights, this needs to be implemented for a specific spline
 	    \param x coordinate
 	    \param[out] weight the weights
 	    \remark why is this not a private function? 
 	 */
-	virtual void get_derivative_weights(double x, std::vector<double>& weight) const = 0;
+	virtual void get_derivative_weights(double x, VWeight& weight) const = 0;
 
 	/** evaluate the first order derivative weights, this needs to be implemented for a specific spline
 	    \param x coordinate
@@ -179,7 +185,7 @@ public:
 	    \param order derivative order 
 	    \remark why is this not a private function? 
 	 */
-	virtual void get_derivative_weights(double x, std::vector<double>& weight, int order) const = 0;
+	virtual void get_derivative_weights(double x, VWeight& weight, int order) const = 0;
 
 
 	/**
@@ -216,7 +222,7 @@ public:
 	   \param[out] weights weights of the B-spline 
 	   \returns first index into the coefficient field to be used - note this may be a negiative value 
 	*/
-	int get_start_idx_and_value_weights(double x, std::vector<double>& weights) const; 
+	int get_start_idx_and_value_weights(double x, VWeight& weights) const; 
 
 	/**
 	   Evaluate the first coefficient index and the derivative weights vor B-spline interpolation
@@ -224,7 +230,7 @@ public:
 	   \param[out] weights weights of the B-spline 
 	   \returns first index into the coefficient field to be used - note this may be a negiative value 
 	*/
-	int get_start_idx_and_derivative_weights(double x, std::vector<double>& weights) const; 
+	int get_start_idx_and_derivative_weights(double x, VWeight& weights) const; 
 
 protected:
 	/** add a pole to the list of poles
@@ -236,7 +242,7 @@ private:
 	/**
 	   Helper function to fill the array index with consecutive values starting with i 
 	 */
-	void fill_index(int i, std::vector<int>& index) const; 
+	void fill_index(short i, VIndex& index) const; 
 
 	
 	size_t m_half_degree;
@@ -248,7 +254,7 @@ private:
 	size_t m_support_size;
 	
 	EInterpolation m_type; 
-	std::vector<int> m_indices;
+	std::vector<short> m_indices;
 	
 };
 
@@ -283,8 +289,6 @@ FACTORY_TRAIT(CSplineKernelPluginHandler);
 
 struct EXPORT_CORE CSplineKernelTestPath {
 	CSplineKernelTestPath(); 
-private: 
-	CSplineBoundaryConditionTestPath bcpath; 
 }; 
 
 
@@ -332,33 +336,6 @@ inline size_t CSplineKernel::size()const
 */
 double  EXPORT_CORE integrate2(const CSplineKernel& spline, double s1, double s2, int d1, int d2, double n, double x0, double L);
 
-
-bool mirror_boundary_conditions(std::vector<int>& index, int width, int width2) __attribute__((deprecated)); 
-
-/**
-   Function to apply mirrored boundary conditions so that the indices fit into [0,width)
-   @param[in,out] index index array to be adjusted
-   @param width width of the supported index range 
-   @param width2 2*width to allow repitition over the range
-   @returns true if mirroring was applied 
-*/
-inline bool mirror_boundary_conditions(std::vector<int>& index, int width, 
-				       int width2)
-{
-	// skip the cases where nothing happens
-	if (index[0] >= 0 && index[index.size()-1] < width)
-		return false; 
-	for (size_t k = 0; k < index.size(); k++) {
-		int idx = (index[k] < 0) ? -index[k] : index[k]; 
-		
-		idx = (width == 1) ? (0) : ((idx < width2) ? idx : idx % width2);
-		if (width <= idx) {
-			idx = width2 - idx;
-		}
-		index[k] = idx; 
-	}
-	return true; 
-}
 
 template <typename A>
 struct FMultBy {

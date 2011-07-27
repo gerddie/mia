@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(  test_omoms3 )
 {
 	const double x = 0.2;
 	CBSplineKernelOMoms3 kernel;
-	std::vector<double> weights(kernel.size());
+	CSplineKernel::VWeight weights(kernel.size());
 	kernel.get_weights(x, weights);
 
 	for (size_t i = 0; i < weights.size(); ++i) {
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(  test_omoms3_derivative )
 {
 	const double x = 0.2;
 	CBSplineKernelOMoms3 kernel;
-	std::vector<double> weights(kernel.size());
+	CSplineKernel::VWeight weights(kernel.size());
 	kernel.get_derivative_weights(x, weights);
 
 	for (size_t i = 0; i < weights.size(); ++i) {
@@ -236,9 +236,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_derivatives, T, test_kernels)
 {
 	const double x = 0.2;
 	T kernel;
-	std::vector<double> weights(kernel.size());
-	std::vector<double> pweights(kernel.size());
-	std::vector<double> mweights(kernel.size());
+	CSplineKernel::VWeight weights(kernel.size());
+	CSplineKernel::VWeight pweights(kernel.size());
+	CSplineKernel::VWeight mweights(kernel.size());
 	kernel.get_derivative_weights(x, weights);
 	kernel.get_weights(x + 0.00005, pweights);
 	kernel.get_weights(x - 0.00005, mweights);
@@ -260,10 +260,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_derivatives2, T, test_kernels2)
 {
 	const double x = 0.2;
 	T kernel;
-	vector<double> weights(kernel.size());
-	vector<double> pweights(kernel.size());
-	vector<double> mweights(kernel.size());
-	vector<int> index(kernel.size());
+	CSplineKernel::VWeight weights(kernel.size());
+	CSplineKernel::VWeight pweights(kernel.size());
+	CSplineKernel::VWeight mweights(kernel.size());
+	CSplineKernel::VIndex index(kernel.size());
 
 	kernel.derivative(x, weights, index, 2);
 	kernel.get_derivative_weights(x + 0.00005, pweights);
@@ -289,7 +289,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_derivatives3, T, test_kernels3)
 	vector<double> weights(kernel.size());
 	vector<double> pweights(kernel.size());
 	vector<double> mweights(kernel.size());
-	vector<int> index(kernel.size());
+	CSplineKernel::VIndex index(kernel.size());
 
 	kernel.derivative(x, weights, index, 3);
 	kernel.get_derivative_weights(x + 0.00005, pweights, 2);
@@ -337,8 +337,8 @@ BOOST_AUTO_TEST_CASE(  test_bspline3_weight_at )
 {
 	CBSplineKernel3 kernel;
 
-	std::vector<double> weight(4);
-	std::vector<int> index(4);
+	CSplineKernel::VWeight weight(4);
+	CSplineKernel::VIndex index(4);
 	kernel(-.5, weight, index);
 
 	BOOST_CHECK_CLOSE(kernel.get_weight_at(-2.5, 0) + 1.0, 1.0, 0.1);
@@ -382,8 +382,8 @@ BOOST_AUTO_TEST_CASE(  test_bspline3_weight_at_b )
 {
 	CBSplineKernel3 kernel;
 
-	std::vector<double> weight(4);
-	std::vector<int> index(4);
+	CSplineKernel::VWeight weight(4);
+	CSplineKernel::VIndex index(4);
 	kernel(1.75, weight, index);
 
 	BOOST_CHECK_CLOSE(kernel.get_weight_at( -1.25, 0), weight[3], 0.1);
@@ -406,8 +406,8 @@ BOOST_AUTO_TEST_CASE(  test_bspline3_weight_at_b )
 BOOST_AUTO_TEST_CASE(  test_bspline2_derivatives )
 {
 	CBSplineKernel2 kernel;
-	vector<double> weight(kernel.size());
-	vector<int>    index(kernel.size());
+	CSplineKernel::VWeight weight(kernel.size());
+	CSplineKernel::VIndex index(kernel.size());
 	kernel.derivative(1.0, weight, index, 0);
 	BOOST_CHECK_CLOSE(weight[0], 0.125, 0.1);
 	BOOST_CHECK_CLOSE(weight[1], 0.75, 0.1);
@@ -429,8 +429,8 @@ BOOST_AUTO_TEST_CASE(  test_bspline2_derivatives )
 BOOST_AUTO_TEST_CASE(  test_bspline3_derivatives )
 {
 	CBSplineKernel3 kernel;
-	vector<double> weight(kernel.size());
-	vector<int>    index(kernel.size());
+	CSplineKernel::VWeight weight(kernel.size());
+	CSplineKernel::VIndex  index(kernel.size());
 	kernel.derivative(0.5, weight, index, 0);
 	BOOST_CHECK_CLOSE(weight[3], 0.020833, 0.1);
 	BOOST_CHECK_CLOSE(weight[2], 0.47917, 0.1);
@@ -460,8 +460,8 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_weight_at )
 {
 	CBSplineKernel4 kernel;
 
-	std::vector<double> weight(5);
-	std::vector<int> index(5);
+	CSplineKernel::VWeight weight(5);
+	CSplineKernel::VIndex index(5);
 	kernel(0.0, weight, index);
 
 	BOOST_CHECK_CLOSE(kernel.get_weight_at(-3, 0) + 1.0, 1.0, 0.1);
@@ -534,8 +534,8 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_weights_d3 )
 {
 	CBSplineKernel4 kernel;
 
-	std::vector<double> weight(5);
-	std::vector<int> index(5);
+	CSplineKernel::VWeight weight(5);
+	CSplineKernel::VIndex index(5);
 	kernel.derivative(0.0, weight, index, 3);
 	BOOST_CHECK_CLOSE(weight[4], kernel.get_weight_at(-2.0, 3), 0.1);
 	BOOST_CHECK_CLOSE(weight[3], kernel.get_weight_at(-1.0, 3), 0.1);
@@ -577,8 +577,8 @@ BOOST_AUTO_TEST_CASE(  test_bspline5_weight_at )
 {
 	CBSplineKernel5 kernel;
 
-	std::vector<double> weight(6);
-	std::vector<int> index(6);
+	CSplineKernel::VWeight weight(6);
+	CSplineKernel::VIndex index(6);
 	kernel(0.0, weight, index);
 
 	BOOST_CHECK_CLOSE(kernel.get_weight_at(-3.5, 0) + 1.0, 1.0, 0.1);
@@ -735,8 +735,8 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_equivalence )
 	
 	auto bc = produce_spline_boundary_condition("mirror:w=10"); 
 	CSplineKernel::SCache cache(kernel.size(), *bc, false); 
-	std::vector<double> weights(kernel.size()); 
-	std::vector<int> indices(kernel.size()); 
+	CSplineKernel::VWeight weights(kernel.size()); 
+	CSplineKernel::VIndex indices(kernel.size()); 
 
 	double x1 = 1.4; 
 	

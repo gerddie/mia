@@ -107,8 +107,8 @@ private:
 
 	gsl::DoubleVector m_input_buffer; 
 	gsl::DoubleVector m_output_buffer; 
-	std::vector<std::vector<double> > m_weights; 
-	std::vector<std::vector<int> > m_indices; 
+	std::vector<CSplineKernel::VWeight> m_weights; 
+	std::vector<CSplineKernel::VIndex> m_indices; 
 	gsl::Matrix m_A; 	
 	gsl::DoubleVector m_tau; 
 };

@@ -77,7 +77,7 @@ void CMirrorOnBoundary::test_supported(int npoles) const
 {
 }
 
-void CMirrorOnBoundary::do_apply(std::vector<int>& index, std::vector<double>& weights) const
+void CMirrorOnBoundary::do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const
 {
 	for (size_t k = 0; k < index.size(); k++) {
 		int idx = (index[k] < 0) ? -index[k] : index[k]; 
@@ -173,7 +173,7 @@ void CZeroBoundary::test_supported(int npoles) const
 }
 
 
-void CZeroBoundary::do_apply(std::vector<int>& index, std::vector<double>& weights) const
+void CZeroBoundary::do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const
 {
 	for (size_t k = 0; k < index.size(); k++) {
 		if (index[k] < 0 || index[k] >= get_width()) {
@@ -265,7 +265,7 @@ void CRepeatBoundary::do_set_width(int width)
 	m_widthm1 = width-1; 
 }
 
-void CRepeatBoundary::do_apply(std::vector<int>& index, std::vector<double>& weights) const
+void CRepeatBoundary::do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const
 {
 	for (size_t k = 0; k < index.size(); k++) {
 		if (index[k] < 0) 

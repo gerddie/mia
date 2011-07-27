@@ -55,8 +55,8 @@ C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size
 			const double dx = double(in_size - 1) / (out_size-1); 
 			double x = 0; 
 			for(size_t i = 0; i < out_size; ++i, x+= dx) {
-				std::vector<double> weight(m_support); 
-				std::vector<int> index(m_support); 
+				CSplineKernel::VWeight weight(m_support); 
+				CSplineKernel::VIndex index(m_support); 
 				kernel(x, weight, index); 
 				m_bc->apply(index, weight); 
 				m_weights.push_back(weight); 
@@ -71,8 +71,8 @@ C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size
 		m_strategy = scs_downscale; 
 		// prepare for downscaling 
 		const double dx = double(out_size-1) / (in_size-1); 
-		std::vector<double> weight(m_support); 
-		std::vector<int> index(m_support); 
+		CSplineKernel::VWeight weight(m_support); 
+		CSplineKernel::VIndex index(m_support); 
 
 		m_A = gsl::Matrix(in_size, out_size,  true);
 		m_tau = gsl::DoubleVector(out_size); 
@@ -88,8 +88,8 @@ C1DScalarFixed::C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size
 			}
 		}
 		for(size_t i = 0; i < out_size; ++i) {
-			std::vector<double> weight(m_support); 
-			std::vector<int> index(m_support); 
+			CSplineKernel::VWeight weight(m_support); 
+			CSplineKernel::VIndex index(m_support); 
 			kernel(i, weight, index); 
 			m_bc->apply(index, weight); 
 			m_weights.push_back(weight); 
@@ -168,8 +168,8 @@ void C1DScalarFixed::upscale(const gsl::DoubleVector& input, gsl::DoubleVector& 
 	m_bc->filter_line(coeffs, m_poles); 
 
 	for (size_t i = 0; i < output.size(); ++i, ++io) {
-		const vector<double>& weight = m_weights[i]; 
-		const vector<int>& index = m_indices[i]; 
+		const auto& weight = m_weights[i]; 
+		const auto& index = m_indices[i]; 
 		double v = 0.0; 
 		for (size_t k = 0; k < m_support; ++k)
 			v += weight[k] * coeffs[index[k]]; 
@@ -184,8 +184,8 @@ void C1DScalarFixed::downscale(const gsl::DoubleVector& input, gsl::DoubleVector
 	gsl_linalg_QR_lssolve (m_A, m_tau, input, coefs, residual); 
 	
 	for (size_t i = 0; i < output.size(); ++i) {
-		const vector<double>& weight = m_weights[i]; 
-		const vector<int>& index = m_indices[i]; 
+		const auto& weight = m_weights[i]; 
+		const auto& index = m_indices[i]; 
 		double v = 0.0;
 		for (size_t k = 0; k < m_support; ++k)
 			v += weight[k] * coefs[index[k]]; 

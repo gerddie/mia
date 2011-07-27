@@ -46,7 +46,7 @@ public:
 private: 
 	void do_set_width(int width); 
 	int get_index(int idx) const; 
-	void do_apply(std::vector<int>& index, std::vector<double>& weights) const;
+	void do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const;
 	virtual void test_supported(int npoles) const;
 	virtual double initial_coeff(const std::vector<double>& coeff, double pole) const;
 	virtual double initial_anti_coeff(const std::vector<double>& coeff, double pole)const ;
@@ -73,7 +73,7 @@ public:
 
 	CSplineBoundaryCondition *clone() const; 
 private: 
-	void do_apply(std::vector<int>& index, std::vector<double>& weights) const;
+	void do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const;
 	virtual void test_supported(int npoles) const;
 	virtual double initial_coeff(const std::vector<double>& coeff, double pole) const;
 	virtual double initial_anti_coeff(const std::vector<double>& coeff, double pole)const ;
@@ -100,7 +100,7 @@ public:
 	CSplineBoundaryCondition *clone() const; 
 private: 
 	void do_set_width(int width); 
-	void do_apply(std::vector<int>& index, std::vector<double>& weights) const;
+	void do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const;
 
 	virtual void test_supported(int npoles) const;
 	virtual double initial_coeff(const std::vector<double>& coeff, double pole) const;

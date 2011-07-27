@@ -91,13 +91,13 @@ CBSplineKernel0::CBSplineKernel0():
 {
 }
 	
-void CBSplineKernel0::get_weights(double /*x*/, std::vector<double>& weight)const
+void CBSplineKernel0::get_weights(double /*x*/, VWeight& weight)const
 {
 	assert(weight.size() == 1); 
 	weight[0] = 1; 
 }
 
-void CBSplineKernel0::get_derivative_weights(double /*x*/, std::vector<double>& /*weight*/) const
+void CBSplineKernel0::get_derivative_weights(double /*x*/, VWeight& /*weight*/) const
 {
 	assert(false && "get_derivative_weights is not defined for the Haar spline"); 
 	throw runtime_error("CBSplineKernel0::get_derivative_weights: not supported for Haar spline"); 
@@ -111,7 +111,7 @@ double CBSplineKernel0::get_weight_at(double x, int degree) const
 	}
 	return abs(x) < 0.5 ? 1.0 : 0.0; 
 }
-void CBSplineKernel0::get_derivative_weights(double /*x*/, std::vector<double>& weight, int degree) const
+void CBSplineKernel0::get_derivative_weights(double /*x*/, VWeight& weight, int degree) const
 {
 	if (degree == 0)
 		weight[0] = 1.0; 
@@ -127,7 +127,7 @@ CBSplineKernel1::CBSplineKernel1():
 {
 }
 	
-void CBSplineKernel1::get_weights(double x, std::vector<double>& weight)const
+void CBSplineKernel1::get_weights(double x, VWeight& weight)const
 {
 	assert(weight.size() == 2); 
 	
@@ -136,7 +136,7 @@ void CBSplineKernel1::get_weights(double x, std::vector<double>& weight)const
 
 }
 
-void CBSplineKernel1::get_derivative_weights(double x, std::vector<double>& weight) const
+void CBSplineKernel1::get_derivative_weights(double x, VWeight& weight) const
 {
 	assert(weight.size() == 2); 
 	
@@ -165,7 +165,7 @@ double CBSplineKernel1::get_weight_at(double x, int degree) const
 	}
 }
 
-void CBSplineKernel1::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
+void CBSplineKernel1::get_derivative_weights(double x, VWeight& weight, int degree) const
 {
 	assert(weight.size() == 2); 
 	switch (degree) {
@@ -190,7 +190,7 @@ CBSplineKernel2::CBSplineKernel2():
 	add_pole(sqrt(8.0) - 3.0);
 }
 
-void CBSplineKernel2::get_weights(double x, std::vector<double>&  weight)const
+void CBSplineKernel2::get_weights(double x, VWeight&  weight)const
 {
 	weight[1] = 0.75 - x * x;
 	weight[2] = 0.5 * (x - weight[1] + 1.0);
@@ -233,14 +233,14 @@ double CBSplineKernel2::get_weight_at(double x, int degree) const
 	}
 }
 
-void CBSplineKernel2::get_derivative_weights(double x, std::vector<double>& weight) const
+void CBSplineKernel2::get_derivative_weights(double x, VWeight& weight) const
 {
 	weight[1] =  - 2 * x;
 	weight[2] = 0.5 * (1 - weight[1]);
 	weight[0] = - weight[1] - weight[2];
 }
 
-void CBSplineKernel2::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
+void CBSplineKernel2::get_derivative_weights(double x, VWeight& weight, int degree) const
 {
 	switch (degree) {
 	case 0: get_weights(x, weight);
@@ -270,7 +270,7 @@ typedef double v2df __attribute__ ((vector_size (16)));
 const double oneby6[2] __attribute__((aligned(16))) = { 1.0/6.0,  1.0/6.0 };
 #endif
 
-void CBSplineKernel3::get_weights(double x, std::vector<double>&  weight)const
+void CBSplineKernel3::get_weights(double x, VWeight&  weight)const
 {
 	const double xm1 = 1 - x; 
 #ifdef __SSE2__
@@ -298,7 +298,7 @@ void CBSplineKernel3::get_weights(double x, std::vector<double>&  weight)const
 #endif
 }
 
-void CBSplineKernel3::get_derivative_weights(double x, std::vector<double>& weight) const
+void CBSplineKernel3::get_derivative_weights(double x, VWeight& weight) const
 {
 	weight[3] = 0.5 * x * x;
 	weight[0] = x - 0.5 - weight[3];
@@ -306,7 +306,7 @@ void CBSplineKernel3::get_derivative_weights(double x, std::vector<double>& weig
 	weight[1] = - weight[0] - weight[2] - weight[3];
 }
 
-void CBSplineKernel3::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
+void CBSplineKernel3::get_derivative_weights(double x, VWeight& weight, int degree) const
 {
 	switch (degree) {
 	case 0: get_weights(x, weight);
@@ -391,7 +391,7 @@ CBSplineKernelOMoms3::CBSplineKernelOMoms3():
 	add_pole((sqrt(105.0) - 13.0)/8.0);
 }
 
-void CBSplineKernelOMoms3::get_weights(double x, std::vector<double>&  weight)const
+void CBSplineKernelOMoms3::get_weights(double x, VWeight&  weight)const
 {
 	double x2 = x*x;
 	double x3 = x2 * x;
@@ -403,7 +403,7 @@ void CBSplineKernelOMoms3::get_weights(double x, std::vector<double>&  weight)co
 
 }
 
-void CBSplineKernelOMoms3::get_derivative_weights(double x, std::vector<double>& weight) const
+void CBSplineKernelOMoms3::get_derivative_weights(double x, VWeight& weight) const
 {
 	double x2 = 2.0 * x;
 	double x3 = 3.0 * x * x;
@@ -414,7 +414,7 @@ void CBSplineKernelOMoms3::get_derivative_weights(double x, std::vector<double>&
 	weight[0] =  - weight[3] - weight[1] - weight[2];
 }
 
-void CBSplineKernelOMoms3::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
+void CBSplineKernelOMoms3::get_derivative_weights(double x, VWeight& weight, int degree) const
 {
 	switch (degree) {
 	case 0: get_weights(x, weight);
@@ -555,7 +555,7 @@ CBSplineKernel4::CBSplineKernel4():
 	add_pole(sqrt(664.0 - sqrt(438976.0)) + sqrt(304.0) - 19.0);
 }
 
-void CBSplineKernel4::get_weights(double x, std::vector<double>&  weight)const
+void CBSplineKernel4::get_weights(double x, VWeight&  weight)const
 {
 	double x2 = x * x;
 	double t = (1.0 / 6.0) * x2;
@@ -572,7 +572,7 @@ void CBSplineKernel4::get_weights(double x, std::vector<double>&  weight)const
 	weight[2] = 1.0 - weight[0] - weight[1] - weight[3] - weight[4];
 }
 
-void CBSplineKernel4::get_derivative_weights(double x, std::vector<double>& weight) const
+void CBSplineKernel4::get_derivative_weights(double x, VWeight& weight) const
 {
 	const double x2 = x * x;
 	weight[0] = 1.0 / 2.0 - x;
@@ -590,7 +590,7 @@ void CBSplineKernel4::get_derivative_weights(double x, std::vector<double>& weig
 
 }
 
-void CBSplineKernel4::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
+void CBSplineKernel4::get_derivative_weights(double x, VWeight& weight, int degree) const
 {
 	switch (degree) {
 	case 0: get_weights(x, weight);
@@ -632,7 +632,7 @@ CBSplineKernel5::CBSplineKernel5():
 }
 
 
-void CBSplineKernel5::get_weights(double x, std::vector<double>&  weight)const
+void CBSplineKernel5::get_weights(double x, VWeight&  weight)const
 {
 	double w2 = x * x;
 	weight[5] = (1.0 / 120.0) * x * w2 * w2;
@@ -651,7 +651,7 @@ void CBSplineKernel5::get_weights(double x, std::vector<double>&  weight)const
 	weight[4] = t0 - t1;
 }
 
-void CBSplineKernel5::get_derivative_weights(double x, std::vector<double>& weight) const
+void CBSplineKernel5::get_derivative_weights(double x, VWeight& weight) const
 {
 	double w2 = x * x;
 	weight[5] = (1.0 / 24.0) * w2 * w2;
@@ -822,7 +822,7 @@ struct bspline<5, 5> {
 };
 #endif
 
-void CBSplineKernel5::get_derivative_weights(double x, std::vector<double>& weight, int degree) const
+void CBSplineKernel5::get_derivative_weights(double x, VWeight& weight, int degree) const
 {
 	switch (degree) {
 	case 0: get_weights(x, weight);

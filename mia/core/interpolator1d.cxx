@@ -156,8 +156,8 @@ template <class C, int size>
 struct add_1d {
 	typedef typename C::value_type U; 
 	
-	static typename C::value_type value(const C&  coeff, const std::vector<double>& xweight, 
-					    const std::vector<int>& xindex) 
+	static typename C::value_type value(const C&  coeff, const CSplineKernel::VWeight& xweight, 
+					    const CSplineKernel::VIndex& xindex) 
 	{
 		U result = U();
 		

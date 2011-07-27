@@ -25,6 +25,7 @@
 #include <mia/core/type_traits.hh>
 #include <mia/core/factory.hh>
 #include <mia/core/product_base.hh>
+#include <mia/core/splinekernel.hh>
 
 #include <vector>
 #include <memory>
@@ -88,7 +89,7 @@ public:
 	   \param weights - according weights
 	   \returns true if the index set was in the coefficient domain 
 	 */
-	bool apply(std::vector<int>& index, std::vector<double>& weights) const;
+	bool apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const;
 	
 	/**
 	   (re-)set the width of the supported index range 
@@ -141,7 +142,7 @@ public:
 		CSplineBoundaryCondition *clone() const __attribute__((warn_unused_result)) = 0 ; 
 private:
 
-	virtual void do_apply(std::vector<int>& index, std::vector<double>& weights) const = 0;
+	virtual void do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const = 0;
 	virtual void test_supported(int npoles) const = 0;
 	
 	virtual void do_set_width(int width); 

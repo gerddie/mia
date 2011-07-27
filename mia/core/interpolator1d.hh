@@ -148,8 +148,8 @@ private:
 	T m_max;
 
 	// not thread save!!!
-	mutable std::vector<int> m_x_index;
-	mutable std::vector<double> m_x_weight;
+	mutable CSplineKernel::VIndex m_x_index;
+	mutable CSplineKernel::VWeight m_x_weight;
 };
 
 

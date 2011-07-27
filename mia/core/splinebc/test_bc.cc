@@ -33,9 +33,9 @@ CSplineKernelTestPath kernel_test_path;
 
 BOOST_AUTO_TEST_CASE( test_mirror_on_boundary_needed ) 
 {
-	std::vector<int> index  = {-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }; 
-	std::vector<int> result = { 1, 0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0, 1 }; 
-	std::vector<double> weights(12); 
+	CSplineKernel::VIndex index  = {-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }; 
+	CSplineKernel::VIndex result = { 1, 0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0, 1 }; 
+	CSplineKernel::VWeight weights(12); 
 	
 	CMirrorOnBoundary bc(6);
 	BOOST_CHECK(!bc.apply(index, weights)); 
@@ -46,9 +46,9 @@ BOOST_AUTO_TEST_CASE( test_mirror_on_boundary_needed )
 
 BOOST_AUTO_TEST_CASE( test_mirror_on_boundary_notneeded ) 
 {
-	std::vector<int> index  = {0, 1, 2, 3, 4, 5, 6, 7, 8 }; 
-	std::vector<int> result = {0, 1, 2, 3, 4, 5, 6, 7, 8 }; 
-	std::vector<double> weights(9); 
+	CSplineKernel::VIndex index  = {0, 1, 2, 3, 4, 5, 6, 7, 8 }; 
+	CSplineKernel::VIndex result = {0, 1, 2, 3, 4, 5, 6, 7, 8 }; 
+	CSplineKernel::VWeight weights(9); 
 	
 	CMirrorOnBoundary bc(9);
 	BOOST_CHECK(bc.apply(index, weights)); 
@@ -60,10 +60,10 @@ BOOST_AUTO_TEST_CASE( test_mirror_on_boundary_notneeded )
 
 BOOST_AUTO_TEST_CASE( test_zero_boundary_needed ) 
 {
-	std::vector<int> index  =     {-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11}; 
-	std::vector<int> result =     { 0, 0, 1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0}; 
-	std::vector<double> weights = { 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13}; 
-	std::vector<double> test    = { 0, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 0, 0}; 
+	CSplineKernel::VIndex index  =     {-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11}; 
+	CSplineKernel::VIndex result =     { 0, 0, 1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0}; 
+	CSplineKernel::VWeight weights = { 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13}; 
+	CSplineKernel::VWeight test    = { 0, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 0, 0}; 
 
 	CZeroBoundary bc(6);
 	BOOST_CHECK(!bc.apply(index, weights)); 
@@ -76,9 +76,9 @@ BOOST_AUTO_TEST_CASE( test_zero_boundary_needed )
 
 BOOST_AUTO_TEST_CASE( test_CRepeatBoundary_needed ) 
 {
-	std::vector<int> index  =     {-1, 0, 1, 2, 3, 4, 5, 6, 7}; 
-	std::vector<int> result =     { 0, 0, 1, 2, 3, 4, 5, 5, 5}; 
-	std::vector<double> weights = { 1, 2, 3, 4, 5, 6, 7, 6, 8}; 
+	CSplineKernel::VIndex index  =     {-1, 0, 1, 2, 3, 4, 5, 6, 7}; 
+	CSplineKernel::VIndex result =     { 0, 0, 1, 2, 3, 4, 5, 5, 5}; 
+	CSplineKernel::VWeight weights = { 1, 2, 3, 4, 5, 6, 7, 6, 8}; 
 
 	CRepeatBoundary bc(6);
 	BOOST_CHECK(!bc.apply(index, weights)); 
@@ -96,9 +96,9 @@ protected:
 
 vector<double> BoundaryFixture::run(std::vector<double> f, const CSplineBoundaryCondition& bc, PSplineKernel kernel)
 {
-	vector<double> weights(kernel->size()); 
-	vector<int>    indices(kernel->size());
-	std::vector<double> orig(f); 
+	CSplineKernel::VWeight weights(kernel->size()); 
+	CSplineKernel::VIndex    indices(kernel->size());
+	CSplineKernel::VWeight orig(f); 
 
 	auto m_A = gsl::Matrix(f.size(), f.size(),  true);
 	auto m_tau = gsl::DoubleVector(f.size() ); 

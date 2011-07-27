@@ -256,9 +256,9 @@ double add_3d<T3DDatafield< double >, 4>::value(const T3DDatafield< double >&  c
 	// if the boundaries are not mirrored, then we can load without looking at each index 
 	// this should happen more often 
 	if (xc.is_flat) {
-		for (size_t z = 0; z < 4; ++z) {
+		for (int z = 0; z < 4; ++z) {
 			const double *slice = &coeff[zc.index[z] * dxy]; 
-			for (size_t y = 0; y < 4; ++y, idx+=2) {
+			for (int y = 0; y < 4; ++y, idx+=2) {
 				const double *p = &slice[yc.index[y] * dx];
 				cache[idx  ] = _mm_loadu_pd(&p[xc.start_idx]);
 				cache[idx+1] = _mm_loadu_pd(&p[xc.start_idx+2]);
@@ -266,9 +266,9 @@ double add_3d<T3DDatafield< double >, 4>::value(const T3DDatafield< double >&  c
 		}
 	}else{
 		double __attribute__((aligned(16))) c[4]; 
-		for (size_t z = 0; z < 4; ++z) {
+		for (int z = 0; z < 4; ++z) {
 			const double *slice = &coeff[zc.index[z] * dxy]; 
-			for (size_t y = 0; y < 4; ++y, idx+=2) {
+			for (int y = 0; y < 4; ++y, idx+=2) {
 				const double *p = &slice[yc.index[y] * dx];
 				c[0] = p[xc.index[0]]; 
 				c[1] = p[xc.index[1]]; 
@@ -370,18 +370,18 @@ float add_3d<T3DDatafield< float >, 2>::value(const T3DDatafield< float >&  coef
 	
 	if (xc.is_flat) {
 
-		for (size_t z = 0; z < 2; ++z) {
+		for (int z = 0; z < 2; ++z) {
 			const float *slice = &coeff[zc.index[z] * dxy]; 
-			for (size_t y = 0; y < 2; ++y, idx +=2 ) {
+			for (int y = 0; y < 2; ++y, idx +=2 ) {
 				const float *p = &slice[yc.index[y] * dx];
 				c[idx    ] = p[xc.start_idx];
 				c[idx + 1] = p[xc.start_idx + 1];
 			}
 		}
 	}else{
-		for (size_t z = 0; z < 2; ++z) {
+		for (int z = 0; z < 2; ++z) {
 			const float *slice = &coeff[zc.index[z] * dxy]; 
-			for (size_t y = 0; y < 2; ++y, idx += 2) {
+			for (int y = 0; y < 2; ++y, idx += 2) {
 				const float *p = &slice[yc.index[y] * dx];
 				c[idx    ] = p[xc.index[0]]; 
 				c[idx + 1] = p[xc.index[1]]; 
@@ -434,18 +434,18 @@ float add_3d<T3DDatafield< float >, 4>::value(const T3DDatafield< float >&  coef
 	// if the boundaries are not mirrored, then we can load without looking at each index 
 	// this should happen more often 
 	if (xc.is_flat) {
-		for (size_t z = 0; z < 4; ++z) {
+		for (int z = 0; z < 4; ++z) {
 			const float *slice = &coeff[zc.index[z] * dxy]; 
-			for (size_t y = 0; y < 4; ++y, ++idx) {
+			for (int y = 0; y < 4; ++y, ++idx) {
 				const float *p = &slice[yc.index[y] * dx];
 				cache[idx] = _mm_loadu_ps(&p[xc.start_idx]);
 			}
 		}
 	}else{
 		float __attribute__((aligned(16))) c[4]; 
-		for (size_t z = 0; z < 4; ++z) {
+		for (int z = 0; z < 4; ++z) {
 			const float *slice = &coeff[zc.index[z] * dxy]; 
-			for (size_t y = 0; y < 4; ++y, ++idx) {
+			for (int y = 0; y < 4; ++y, ++idx) {
 				const float *p = &slice[yc.index[y] * dx];
 				c[0] = p[xc.index[0]]; 
 				c[1] = p[xc.index[1]]; 
