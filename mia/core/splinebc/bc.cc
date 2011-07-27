@@ -84,11 +84,9 @@ void CMirrorOnBoundary::do_apply(std::vector<int>& index, std::vector<double>& w
 		
 		idx = (get_width() == 1) ? (0) : ((idx < m_width2) ? idx : idx % m_width2);
 		if (get_width() <= idx) {
-			cvdebug() << "yes:" << idx << "\n"; 
 			idx = m_width2 - idx;
 		}
 		index[k] = idx; 
-		cvdebug() << k << ": " << index[k] << "\n"; 
 	}
 }
 

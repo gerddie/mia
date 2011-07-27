@@ -34,7 +34,7 @@
 #include <limits>
 #include <cassert>
 #include <mia/core/export_handler.hh>
-#include <mia/core/msgstream.hh>
+//#include <mia/core/msgstream.hh>
 #include <mia/core/boundary_conditions.hh>
 #include <mia/core/optionparser.hh>
 #include <mia/core/optparam.hh>
@@ -98,26 +98,17 @@ void CSplineBoundaryCondition::filter_line(std::vector<double>& coeff, const std
 		auto p = poles[k]; 
 
 		coeff[0] = initial_coeff(coeff, p);
-		cvdebug() << "initial coeff  ["<< k <<"]= " << coeff[0] << "\n"; 
 
 		/* causal recursion */
 		for (size_t n = 1; n < coeff.size(); ++n) {
-			cvdebug() << "causal[" << n << "] = "<< coeff[n - 1] << " * " << p << " + " << coeff[n] << "\n"; 
 			coeff[n] += p * coeff[n - 1];
-			cvdebug() << "causal[" << n << "] = "<<coeff[n] << "\n"; 
 		}
 		
 		/* anticausal initialization */
 		coeff[coeff.size() - 1] = initial_anti_coeff(coeff, p);
-
-		cvdebug() << "initial anti- coeff  ["<< coeff.size() - 1 <<"]= " << coeff[coeff.size() - 1] << "\n"; 
 		/* anticausal recursion */
 		for (int n = coeff.size() - 2; 0 <= n; n--) {
-			cvdebug() << "anticoeff["<< n <<"]= " 
-				  << p << " * (" << coeff[n + 1]  << " - " << coeff[n] << ") = " ; 
-			
 			coeff[n] = p * (coeff[n + 1] - coeff[n]);
-			cverb << coeff[n] << "\n"; 
 		}
 	}
 }
