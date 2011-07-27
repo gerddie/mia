@@ -236,7 +236,6 @@ double add_3d<T3DDatafield< double >, 2>::value(const T3DDatafield< double >&  c
 	_mm_store_pd(r, res); 
 	return r[0] + r[1]; 
 #endif 	
-#endif // 1
 }
 
 /*
@@ -313,7 +312,7 @@ double add_3d<T3DDatafield< double >, 4>::value(const T3DDatafield< double >&  c
 	return r[0] + r[1]; 
 #endif
 }
-
+#endif
 
 #ifdef __SSE__
 typedef float v4df __attribute__ ((vector_size (16)));
