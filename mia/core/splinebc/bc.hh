@@ -23,6 +23,10 @@
 
 #include <mia/core/boundary_conditions.hh>
 
+#if defined(__SSE2__)
+#include <emmintrin.h>
+#endif
+
 NS_MIA_BEGIN
 
 /*
@@ -106,6 +110,10 @@ private:
 	virtual double initial_coeff(const std::vector<double>& coeff, double pole) const;
 	virtual double initial_anti_coeff(const std::vector<double>& coeff, double pole)const;
 	int m_widthm1; 
+#ifdef __SSE2__
+	__m128i zero; 
+	__m128i maxv;
+#endif
 }; 
 
 
