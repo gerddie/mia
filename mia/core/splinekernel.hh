@@ -125,18 +125,42 @@ public:
 	    This operator evaluates the weights and indices of the interpolation
 	    \param x input coordinate
 	    \param[out] weight weights of the interpolation
-	    \param[out] index indices corresponding to the weights
+	    \param[out] index indices corresponding to the weights, No boundary conditions are applied. 
 	 */
 	void operator () (double x, VWeight& weight, VIndex& index)const;
 
 	/**
 	   This operator evaluates the weights and indices of the interpolation at a given position. 
+	   The boundary conditions given in the value cache are applied.  
 	   The result is stored in the return value cache and this cache is only updated if neccesary 
 	   \param x location for which to evaluate weights and indices 
 	   \param[in,out] cache storage for returned value
 	   
 	 */
 	void operator () (double x, SCache& cache)const;
+
+	/**
+	   This operator evaluates the weights and indices of the interpolation at a given position. 
+	   The boundary conditions given in the value cache are applied.  
+	   The result is stored in the return value cache and this cache is only updated if neccesary. 
+	   The index set is always fully set. 
+
+	   \param x location for which to evaluate weights and indices 
+	   \param[in,out] cache storage for returned value
+	   
+	 */
+	void get_cached(double x, SCache& cache)const;
+
+	/**
+	   This operator evaluates the weights and indices of the interpolation at a given position. 
+	   The boundary conditions given in the value cache are applied.  
+	   The result is stored in the return value cache and this cache is always updated.
+	   The index set will only be set correctly if the boundary conditions had to be applied.
+	   \param x location for which to evaluate weights and indices 
+	   \param[in,out] cache storage for returned value
+	   
+	 */
+	void get_uncached(double x, SCache& cache)const;
 
 	/**
 	   Evaluate the first order derivative weights of the B-Spline at the given position
