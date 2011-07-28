@@ -190,8 +190,8 @@ double add_3d<T3DDatafield< double >, 2>::value(const T3DDatafield< double >&  c
 	double __attribute__((aligned(16))) c[8];
 	
 	v2df xweights = _mm_loadu_pd(&xc.weights[0]);
-	v2df yweight0 = _mm_loadu_pd(&yc.weights[0]);
-	v2df yweight1 = _mm_loadu_pd(&yc.weights[1]);
+	v2df yweight0 = _mm_load1_pd(&yc.weights[0]);
+	v2df yweight1 = _mm_load1_pd(&yc.weights[1]);
 	v2df zweight0 = _mm_load1_pd(&zc.weights[0]);
 	v2df zweight1 = _mm_load1_pd(&zc.weights[1]);
 	
@@ -359,6 +359,7 @@ float add_3d<T3DDatafield< float >, 2>::value(const T3DDatafield< float >&  coef
 	const int dxy = coeff.get_size().x *coeff.get_size().y; 
 	int idx = 0; 
 	
+
 	float __attribute__((aligned(16))) c[8];
 	float __attribute__((aligned(16))) w[4];
 	
