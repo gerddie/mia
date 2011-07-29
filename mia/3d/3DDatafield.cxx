@@ -144,15 +144,94 @@ T3DDatafield<T>::get_trilin_interpol_val_at(const T3DVector<float >& p) const
         }
 }
 
+template <typename T>
+struct __copy_dispatch {
+	typedef typename atomic_data<T>::type atomic_type; 
+	typedef std::vector<atomic_type> atomic_type_vector;
+	typedef std::vector<T> type_vector;
+	
+	static void apply_write(type_vector& dest, size_t dest_start, 
+				const atomic_type_vector& src, 
+				size_t src_start, size_t nelm) {
+		static_assert(__has_trivial_copy(T), "this copy mechanism can only be used if T has "
+			      "a trivial assignment operator"); 
+		memcpy(&dest[dest_start], &src[src_start], nelm * sizeof(T));
+	}
+	static void apply_read(atomic_type_vector& dest, size_t dest_start, 
+			       const type_vector& src, size_t src_start, 
+			       size_t nelm) {
+		static_assert(__has_trivial_copy(T), "this copy mechanism can only be used if T has "
+			      "a trivial assignment operator"); 
+		memcpy(&dest[dest_start], &src[src_start], nelm * sizeof(T));
+	}
+};
+
+template <>
+struct __copy_dispatch<bool> {
+	static void apply_write(std::vector<bool>& dest, size_t dest_start, 
+				const std::vector<bool>& src, size_t src_start, size_t nelm) {
+		copy(src.begin() + src_start, src.begin() + src_start + nelm, dest.begin() + dest_start); 
+	}
+	static void apply_read(std::vector<bool>& dest, size_t dest_start, 
+			       const std::vector<bool>& src, size_t src_start, 
+			       size_t nelm) {
+		copy(src.begin() + src_start, src.begin() + src_start + nelm, 
+		     dest.begin() + dest_start); 
+	}
+
+};
+
+template <typename T, bool trivial_copy> 
+struct __mia_copy_dispatch_1 {
+	static void apply_read(std::vector<T>& dest, const std::vector<T>& src, size_t start, size_t n) {
+		std::copy(src.begin() + start, src.begin() + start + n, dest.begin()); 
+	}
+	static void apply_write(std::vector<T>& dest, const std::vector<T>& src, size_t start, size_t n) {
+		std::copy(src.begin(), src.begin() + n, dest.begin() + start); 
+	}
+}; 
+
+template <typename T> 
+struct __mia_copy_dispatch_1<T, true> {
+	static void apply_read(std::vector<T>& dest, const std::vector<T>& src, size_t start, size_t n) {
+		memcpy(&dest[0], &src[start], n * sizeof(T)); 
+	}
+	static void apply_write(std::vector<T>& dest, const std::vector<T>& src, size_t start, size_t n) {
+		memcpy(&dest[start], &src[0], n * sizeof(T)); 
+	}
+}; 
+
+template <typename T> 
+struct __mia_copy_dispatch {
+	static void apply_read(std::vector<T>& dest, const std::vector<T>& src, size_t start, size_t n) {
+		__mia_copy_dispatch_1<T, __has_trivial_copy(T)>::apply_read(dest, src, start, n); 
+	}
+	static void apply_write(std::vector<T>& dest, const std::vector<T>& src, size_t start, size_t n) {
+		__mia_copy_dispatch_1<T, __has_trivial_copy(T)>::apply_write(dest, src, start, n);
+	}
+}; 
+
+
+template <> 
+struct __mia_copy_dispatch<bool> {
+	static void apply_read(std::vector<bool>& dest, const std::vector<bool>& src, size_t start, size_t n) {
+		std::copy(src.begin() + start, 
+			  src.begin() + start + n, dest.begin()); 
+	}
+	static void apply_write(std::vector<bool>& dest, const std::vector<bool>& src, size_t start, size_t n) {
+		std::copy(src.begin(), src.begin() + n, dest.begin() + start); 
+	}
+}; 
+
+
 
 
 template <typename T>
 void T3DDatafield<T>::get_data_line_x(int y, int z, std::vector<T>& result)const
 {
         result.resize(m_size.x);
-	size_t start = m_size.x * (y  + m_size.y * z); 
-	
-	std::copy(m_data->begin() + start, m_data->begin() + start + m_size.x, result.begin()); 
+	const int start = m_size.x * (y + z * m_size.y); 
+	__mia_copy_dispatch<T>::apply_read(result, *m_data, start, m_size.x); 
 }
 
 template <typename T>
@@ -204,12 +283,9 @@ template <typename T>
 void T3DDatafield<T>::put_data_line_x(int y, int z, const std::vector<T>& input)
 {
         assert(input.size() == m_size.x);
-	
 	make_single_ref();
-		
-        size_t start = m_size.x * (y  + m_size.y * z);
-	
-	std::copy(input.begin(), input.end(), m_data->begin() + start); 
+	size_t start = m_size.x * (y + z * m_size.y); 
+	__mia_copy_dispatch<T>::apply_write(*m_data, input, start, m_size.x); 		
 }
 
 template <typename T>
@@ -274,42 +350,6 @@ T2DDatafield<T> T3DDatafield<T>::get_data_plane_xy(size_t  z)const
 	return result; 
 }
 
-template <typename T>
-struct __copy_dispatch {
-	typedef typename atomic_data<T>::type atomic_type; 
-	typedef std::vector<atomic_type> atomic_type_vector;
-	typedef std::vector<T> type_vector;
-	
-	static void apply_write(type_vector& dest, size_t dest_start, 
-				const atomic_type_vector& src, 
-				size_t src_start, size_t nelm) {
-		static_assert(__has_trivial_copy(T), "this copy mechanism can only be used if T has "
-			      "a trivial assignment operator"); 
-		memcpy(&dest[dest_start], &src[src_start], nelm * sizeof(T));
-	}
-	static void apply_read(atomic_type_vector& dest, size_t dest_start, 
-			       const type_vector& src, size_t src_start, 
-			       size_t nelm) {
-		static_assert(__has_trivial_copy(T), "this copy mechanism can only be used if T has "
-			      "a trivial assignment operator"); 
-		memcpy(&dest[dest_start], &src[src_start], nelm * sizeof(T));
-	}
-};
-
-template <>
-struct __copy_dispatch<bool> {
-	static void apply_write(std::vector<bool>& dest, size_t dest_start, 
-				const std::vector<bool>& src, size_t src_start, size_t nelm) {
-		copy(src.begin() + src_start, src.begin() + src_start + nelm, dest.begin() + dest_start); 
-	}
-	static void apply_read(std::vector<bool>& dest, size_t dest_start, 
-			       const std::vector<bool>& src, size_t src_start, 
-			       size_t nelm) {
-		copy(src.begin() + src_start, src.begin() + src_start + nelm, 
-		     dest.begin() + dest_start); 
-	}
-
-};
 
 
 template <typename T>
