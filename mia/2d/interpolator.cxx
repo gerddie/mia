@@ -331,7 +331,9 @@ T  T2DConvoluteInterpolator<T>::operator () (const C2DFVector& x) const
 	typedef typename TCoeff2D::value_type U; 
 	
 	m_kernel->get_uncached(x.x, m_x_cache);
-	m_kernel->get_cached(x.y, m_y_cache);
+	
+	if (x.y != m_y_cache.x) 
+		m_kernel->get_cached(x.y, m_y_cache);
 	
 	U result = U();
 	

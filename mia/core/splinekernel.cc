@@ -133,8 +133,6 @@ void CSplineKernel::operator () (double x, SCache& cache) const
 
 void CSplineKernel::get_cached(double x, SCache& cache)const
 {
-	if (x == cache.x)
-		return; 
 	int start_idx  = get_start_idx_and_value_weights(x, cache.weights); 
 	cache.x = x; 
 	if (start_idx == cache.start_idx) 

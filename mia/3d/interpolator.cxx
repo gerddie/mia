@@ -254,14 +254,17 @@ T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x) const
 {
 	typedef typename TCoeff3D::value_type U; 
 	
-	// x will usually be the fasted changing index, therefore, it is of no use to use the cache 
+	// x will usually be the fastest changing index, therefore, it is of no use to use the cache 
 	// at the same time it's access may be handled "flat" 
 	m_kernel->get_uncached(x.x, m_x_cache);
 
 	// the other two coordinates are changing slowly and caching makes sense 
 	// however, the index set will always be fully evaluated 
-	m_kernel->get_cached(x.y, m_y_cache);
-	m_kernel->get_cached(x.z, m_z_cache);	
+	if (x.y != m_y_cache.x) 
+		m_kernel->get_cached(x.y, m_y_cache);
+	
+	if (x.z != m_z_cache.x) 
+		m_kernel->get_cached(x.z, m_z_cache);	
 	
 	U result = U();
 	// now we give the compiler a chance to optimize based on kernel size and data type.  
