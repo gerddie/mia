@@ -570,6 +570,8 @@ float C3DSplineTransformation::get_max_transform() const
   implements a separable filtering of the slices using cblas for fast addition of large ranges.  
   
 */
+
+
 void C3DSplineTransformation::init_grid()const
 {
 	TRACE_FUNCTION; 
@@ -653,36 +655,32 @@ void C3DSplineTransformation::init_grid()const
 		}
 
 
-		CCircularIndex idxx(nelm, m_y_indices[0]); 
-		for(size_t x = 0; x < m_range.x; ++x) {
-			auto w = m_x_weights[x]; 
-			int start = m_x_indices[x];
-			
-			cvdebug() << "x = " << x << "\n"; 
-			idxx.new_start(start); 
-			
-			// fill with slices 
-			auto fill = idxx.fill(); 
-			while (fill < nelm && start + fill < m_coefficients.get_size().x) {
-				tmp2.read_xslice_flat(start + fill, in_buffer[idxx.next()]);
-				idxx.insert_one(); 
-				fill = idxx.fill(); 
+		// the x-filtering is better done by row, if writing back like above, the 
+		// cache is completely threashed and init_grid spends 35% of the time 
+		// in copying back the data (according to valgrind) 
+
+		vector<C3DFVector> vout_buffer(m_range.x); 
+		vector<C3DFVector> vin_buffer(m_coefficients.get_size().x);
+
+		C3DFVector X; 
+		for (size_t iz = 0; iz < tmp2.get_size().z; ++iz) {
+			X.z = iz; 
+			for (size_t iy = 0; iy < tmp2.get_size().y; ++iy) {
+				X.y = iy;
+				tmp2.get_data_line_x(iy, iz, vin_buffer);
+				for(size_t x = 0; x < m_range.x; ++x) {
+					X.x = x; 
+					int start = m_x_indices[x];
+					auto w = m_x_weights[x]; 
+					
+					vout_buffer[x] = X - 
+						inner_product(w.begin(), w.end(), 
+							      vin_buffer.begin() + start, C3DFVector());
+				}
+				m_current_grid->put_data_line_x(iy, iz, vout_buffer);
 			}
-			
-			memset(&out_buffer[0], 0, size_s3 * sizeof(float)); 
-			
-			for (unsigned int i = 0; i < w.size(); ++i) {
-				cblas_saxpy(size_s3, w[i], &in_buffer[idxx.value(i)][0], 1, 
-					    &out_buffer[0], 1);
-			}
-			m_current_grid->write_xslice_flat(x, out_buffer); 
 		}
-		
-		auto i = m_current_grid->begin(); 
-		for (size_t z = 0; z < m_range.z; ++z) 
-			for (size_t y = 0; y < m_range.y; ++y) 
-				for (size_t x = 0; x < m_range.x; ++x, ++i)
-					*i = C3DFVector(x,y,z) - *i; 
+
 
 		m_grid_valid = true; 
 	}

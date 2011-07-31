@@ -131,6 +131,31 @@ void CSplineKernel::operator () (double x, SCache& cache) const
 	}
 }
 
+void CSplineKernel::get_cached(double x, SCache& cache)const
+{
+	int start_idx  = get_start_idx_and_value_weights(x, cache.weights); 
+	cache.x = x; 
+	if (start_idx == cache.start_idx) 
+		return; 
+	cache.start_idx = start_idx; 
+	cache.is_flat = false; 
+	fill_index(start_idx, cache.index); 
+	cache.boundary_condition.apply(cache.index, cache.weights); 
+}
+
+void CSplineKernel::get_uncached(double x, SCache& cache)const
+{
+	assert(cache.index_limit == cache.boundary_condition.get_width() - cache.weights.size()); 
+	cache.start_idx  = get_start_idx_and_value_weights(x, cache.weights); 
+	if (cache.start_idx < 0 || cache.start_idx > cache.index_limit ) {
+		cache.is_flat = false; 
+		fill_index(cache.start_idx, cache.index); 
+		cache.boundary_condition.apply(cache.index, cache.weights); 
+	}else {
+		cache.index[0] = cache.start_idx; 
+		cache.is_flat = true; 
+	}
+}
 
 #ifdef USE_FASTFLOOR
 // code taken from http://www.stereopsis.com/FPU.html

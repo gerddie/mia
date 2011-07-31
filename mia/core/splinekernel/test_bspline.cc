@@ -183,36 +183,6 @@ BOOST_AUTO_TEST_CASE(  test_omoms3_derivative )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_types_repeat )
-{
-	test_type_repeat<unsigned char>();
-	test_type_repeat<signed char>();
-	test_type_repeat<unsigned short>();
-	test_type_repeat<signed short>();
-#ifdef HAVE_INT64
-	test_type_repeat<mia_uint64>();
-	test_type_repeat<mia_int64>();
-#endif
-	test_type_repeat<float>();
-	test_type_repeat<double>();
-
-}
-
-#if 0
-BOOST_AUTO_TEST_CASE( test_types_zero )
-{
-	test_type_zero<unsigned char>();
-	test_type_zero<signed char>();
-	test_type_zero<unsigned short>();
-	test_type_zero<signed short>();
-#ifdef HAVE_INT64
-	test_type_zero<mia_uint64>();
-	test_type_zero<mia_int64>();
-#endif
-	test_type_zero<float>();
-	test_type_zero<double>();
-}
-#endif 
 
 // these tests need a review
 #define TEST_HIGHORDER_DRIVATIVES 1
@@ -302,6 +272,27 @@ BOOST_AUTO_TEST_CASE(test_half_size)
 	BOOST_CHECK_EQUAL(CBSplineKernel3().get_active_halfrange(), 2); 
 	BOOST_CHECK_EQUAL(CBSplineKernel4().get_active_halfrange(), 3); 
 	BOOST_CHECK_EQUAL(CBSplineKernel5().get_active_halfrange(), 3); 
+}
+
+
+BOOST_AUTO_TEST_CASE(  test_spline1_get_weights )
+{
+	CBSplineKernel1 kernel;
+	CSplineKernel::VWeight weight(2); 
+
+	BOOST_CHECK_EQUAL(kernel.get_start_idx_and_value_weights(1.0, weight), 1); 
+	BOOST_CHECK_EQUAL(weight[0], 1.0);
+	BOOST_CHECK_EQUAL(weight[1], 0.0); 
+
+	BOOST_CHECK_EQUAL(kernel.get_start_idx_and_value_weights(1.2, weight), 1); 
+	BOOST_CHECK_CLOSE(weight[0], 0.8, 0.1);
+	BOOST_CHECK_CLOSE(weight[1], 0.2, 0.1);
+
+	BOOST_CHECK_EQUAL(kernel.get_start_idx_and_value_weights(2.5, weight), 2); 
+	BOOST_CHECK_CLOSE(weight[0], 0.5, 0.1);
+	BOOST_CHECK_CLOSE(weight[1], 0.5, 0.1);
+	
+
 }
 
 
@@ -748,5 +739,95 @@ BOOST_AUTO_TEST_CASE(  test_bspline4_equivalence )
 	}else{
 		BOOST_CHECK_EQUAL(cache.start_idx, indices[0]); 
 	}
+}
+
+
+BOOST_AUTO_TEST_CASE(  test_bspline3_uncached_flat )
+{
+	CBSplineKernel3 kernel;
+	
+	auto bc = produce_spline_boundary_condition("mirror:w=10"); 
+	CSplineKernel::SCache cache(kernel.size(), *bc, false); 
+	CSplineKernel::VWeight weights(kernel.size()); 
+	CSplineKernel::VIndex indices(kernel.size()); 
+
+	double x1 = 2.4; 
+	
+	kernel.get_uncached(x1, cache); 
+	kernel(x1, weights, indices); 
+
+	BOOST_CHECK_EQUAL(cache.weights[0], weights[0]); 
+	BOOST_CHECK_EQUAL(cache.weights[1], weights[1]); 
+	BOOST_CHECK_EQUAL(cache.weights[2], weights[2]); 
+	BOOST_CHECK_EQUAL(cache.weights[3], weights[3]); 
+	
+	BOOST_CHECK(cache.is_flat); 
+	BOOST_CHECK_EQUAL(cache.start_idx, indices[0]); 
+}
+
+BOOST_AUTO_TEST_CASE(  test_bspline3_uncached_nonflat )
+{
+	CBSplineKernel3 kernel;
+	
+	auto bc = produce_spline_boundary_condition("mirror:w=10"); 
+	CSplineKernel::SCache cache(kernel.size(), *bc, false); 
+	CSplineKernel::VWeight weights(kernel.size()); 
+	CSplineKernel::VIndex indices(kernel.size()); 
+
+	double x1 = 0.4; 
+	
+	kernel.get_uncached(x1, cache); 
+	kernel(x1, weights, indices); 
+
+	BOOST_CHECK_EQUAL(cache.weights[0], weights[0]); 
+	BOOST_CHECK_EQUAL(cache.weights[1], weights[1]); 
+	BOOST_CHECK_EQUAL(cache.weights[2], weights[2]); 
+	BOOST_CHECK_EQUAL(cache.weights[3], weights[3]); 
+	
+	BOOST_CHECK(!cache.is_flat); 
+	BOOST_CHECK_EQUAL(cache.index[0],  1); 
+	BOOST_CHECK_EQUAL(cache.index[1],  0); 
+	BOOST_CHECK_EQUAL(cache.index[2],  1); 
+	BOOST_CHECK_EQUAL(cache.index[3],  2); 
+}
+
+BOOST_AUTO_TEST_CASE(  test_bspline3_cached )
+{
+	CBSplineKernel3 kernel;
+	
+	auto bc = produce_spline_boundary_condition("mirror:w=10"); 
+	CSplineKernel::SCache cache(kernel.size(), *bc, false); 
+	CSplineKernel::VWeight weights(kernel.size()); 
+	CSplineKernel::VIndex indices(kernel.size()); 
+
+	double x1 = 2.4; 
+	
+	kernel.get_cached(x1, cache); 
+	kernel(x1, weights, indices); 
+
+	BOOST_CHECK_EQUAL(cache.weights[0], weights[0]); 
+	BOOST_CHECK_EQUAL(cache.weights[1], weights[1]); 
+	BOOST_CHECK_EQUAL(cache.weights[2], weights[2]); 
+	BOOST_CHECK_EQUAL(cache.weights[3], weights[3]); 
+	
+	BOOST_CHECK(!cache.is_flat); 
+	BOOST_CHECK_EQUAL(cache.index[0], indices[0]); 
+	BOOST_CHECK_EQUAL(cache.index[1], indices[1]); 
+	BOOST_CHECK_EQUAL(cache.index[2], indices[2]); 
+	BOOST_CHECK_EQUAL(cache.index[3], indices[3]); 
+
+	kernel.get_cached(x1, cache); 
+
+	BOOST_CHECK_EQUAL(cache.weights[0], weights[0]); 
+	BOOST_CHECK_EQUAL(cache.weights[1], weights[1]); 
+	BOOST_CHECK_EQUAL(cache.weights[2], weights[2]); 
+	BOOST_CHECK_EQUAL(cache.weights[3], weights[3]); 
+	
+	BOOST_CHECK(!cache.is_flat); 
+	BOOST_CHECK_EQUAL(cache.index[0], indices[0]); 
+	BOOST_CHECK_EQUAL(cache.index[1], indices[1]); 
+	BOOST_CHECK_EQUAL(cache.index[2], indices[2]); 
+	BOOST_CHECK_EQUAL(cache.index[3], indices[3]); 
+
 }
 

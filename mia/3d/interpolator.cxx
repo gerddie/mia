@@ -254,12 +254,23 @@ T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x) const
 {
 	typedef typename TCoeff3D::value_type U; 
 	
-	(*m_kernel)(x.x, m_x_cache);
-	(*m_kernel)(x.y, m_y_cache);
-	(*m_kernel)(x.z, m_z_cache);	
+	// x will usually be the fastest changing index, therefore, it is of no use to use the cache 
+	// at the same time it's access may be handled "flat" 
+	m_kernel->get_uncached(x.x, m_x_cache);
+
+	// the other two coordinates are changing slowly and caching makes sense 
+	// however, the index set will always be fully evaluated 
+	if (x.y != m_y_cache.x) 
+		m_kernel->get_cached(x.y, m_y_cache);
+	
+	if (x.z != m_z_cache.x) 
+		m_kernel->get_cached(x.z, m_z_cache);	
 	
 	U result = U();
-	
+	// now we give the compiler a chance to optimize based on kernel size and data type.  
+	// Some of these call also use template specialization to provide an optimized code path.  
+	// With SSE and SSE2 available kernel sizes 2 and 4 and the use of float and double 
+	// scalar fields are optimized.
 	switch (m_kernel->size()) {
 	case 1: result = add_3d<TCoeff3D,1>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
 	case 2: result = add_3d<TCoeff3D,2>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
