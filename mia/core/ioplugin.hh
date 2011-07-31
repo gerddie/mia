@@ -29,16 +29,17 @@
 #include <mia/core/plugin_base.hh>
 #include <mia/core/pixeltype.hh>
 #include <mia/core/iodata.hh>
-#include <mia/core/shared_ptr.hh>
 
 NS_MIA_BEGIN
 
 struct EXPORT_CORE io_plugin_type {
-	static  const char *value;
+	static  const char *type_descr;
 
 };
 
 /**
+   \ingroup infrastructure 
+
    \brief The templatex basis class of all IO plug-ins.
 
    The basis of all IO plug-ins. The type \a D must provied a typedef \a type the referes to the
@@ -100,9 +101,8 @@ public:
 
 	/**
 	   Translate the file type decriptor to the file suffix. 
-	   \param type type descriptor (plugin name);
 	   \returns preferred suffix of the file type 
-	   \remark in most cases this is just a pass-throug 
+	   \remark in most cases this is just a pass-through 
 	 */
 	std::string get_preferred_suffix() const; 
 protected:

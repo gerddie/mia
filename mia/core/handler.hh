@@ -30,7 +30,6 @@
 #include <vector>
 #include <ostream>
 #include <boost/any.hpp>
-#include <mia/core/shared_ptr.hh>
 #include <boost/filesystem/path.hpp>
 #include <boost/utility.hpp>
 #include <mia/core/utils.hh>
@@ -44,7 +43,10 @@
 NS_MIA_BEGIN
 
 
-/** \brief The basic %template of all plugin handlers
+/** 
+    \ingroup infrastructure 
+    
+    \brief The basic %template of all plugin handlers
 
     The template TPluginHandler provides the base interface to all plug-in handlers. 
     \tparam I the plugin interface derived from \sa CPluginBase.
@@ -129,6 +131,8 @@ private:
 
 
 /**
+    \ingroup infrastructure 
+
    \brief the singleton that a plug-in handler really is 
    
    Class to make a singleton out of a plugin handler by deriving from it.
@@ -164,6 +168,9 @@ protected:
 	
 	THandlerSingleton(const std::list<boost::filesystem::path>& searchpath); 
 	THandlerSingleton(); 
+
+	/** This mutex ensures that each Singleton is indeed only created once and 
+	    no race condition happens within a multi-threaded environmnet */ 
 	static CMutex m_creation_mutex; 
 private: 
 	static std::list<boost::filesystem::path> m_searchpath; 

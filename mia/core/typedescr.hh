@@ -30,11 +30,12 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup helpers 
    Template type parameter for time-step plugins 
  */
 struct EXPORT_CORE timestep_type {
 	/// value for plug-in search path component 
-	static const char *value;
+	static const char *type_descr;
 };
 
 

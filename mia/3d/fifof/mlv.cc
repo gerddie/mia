@@ -53,7 +53,6 @@
 #include <limits>
 
 #include <boost/cast.hpp>
-#include <boost/lambda/lambda.hpp>
 
 #include <mia/3d/fifof/mlv.hh>
 
@@ -61,7 +60,6 @@ NS_BEGIN(mlv_2dstack_filter)
 
 NS_MIA_USE
 using namespace std;
-using namespace boost::lambda;
 using namespace boost;
 
 
@@ -96,7 +94,7 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T3DImage<T>& /*dummy*/) const
 
 	for (size_t z = get_start(); z < get_end(); ++z) {
 		for (size_t iy = 0; iy < m_w; ++iy)
-			for (size_t ix = 0; ix <= m_w; ++ix) {
+			for (size_t ix = 0; ix < m_w; ++ix) {
 				for (size_t y = 0; y < m_slice_size.y; ++y) {
 					C3DFImage::const_iterator mu_i = m_mu_buffer[z].begin_at(ix, y + iy);
 					C3DFImage::const_iterator si_i = m_sigma_buffer[z].begin_at(ix, y + iy);
@@ -188,7 +186,8 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T2DImage<T>& input)
 
 	for (size_t y = 0; y < m_slice_size.y; ++y) {
 		copy(input.begin_at(0,y), input.begin_at(0,y + 1), m_buf1.begin());
-		transform(m_buf1.begin(), m_buf1.end(), m_buf2.begin(), _1 * _1);
+		transform(m_buf1.begin(), m_buf1.end(), m_buf2.begin(), 
+			  [](float x) {return x * x;}); 
 
 		typename T2DImage<T>::const_iterator is = input.begin_at(0,y);
 		typename T2DImage<T>::const_iterator ie = input.begin_at(0,y + 1);
@@ -198,10 +197,13 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T2DImage<T>& input)
 				for (size_t ix = 0; ix < m_w; ++ix) {
 					transform(m_buf1.begin(), m_buf1.end(),
 						  m_mu_buffer[iz].begin_at(ix, y + iy),
-						  m_mu_buffer[iz].begin_at(ix, y + iy), _1 + _2);
+						  m_mu_buffer[iz].begin_at(ix, y + iy), 
+						  [](float x, float y){return x+y;}); 
 					transform(m_buf2.begin(), m_buf2.end(),
 						  m_sigma_buffer[iz].begin_at(ix, y + iy),
-						  m_sigma_buffer[iz].begin_at(ix, y + iy), _1 + _2);
+						  m_sigma_buffer[iz].begin_at(ix, y + iy), 
+						  [](float x, float y){return x+y;}
+						);
 				}
 	}
 
@@ -211,7 +213,7 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T2DImage<T>& input)
 	for (size_t iz = 0; iz < m_w; ++iz) {
 		transform(ntmpl_b, ntmpl_e,
 			  m_n[iz].begin_at(0, 0),
-			  m_n[iz].begin_at(0, 0), _1 + _2);
+			  m_n[iz].begin_at(0, 0), [](float x, float y){return x+y;});
 	}
 	return NULL;
 }
@@ -282,7 +284,7 @@ private:
 
 	virtual const string do_get_descr() const;
 	virtual bool do_test() const;
-	virtual C2DFifoFilterPlugin::ProductPtr do_create()const;
+	virtual C2DImageFifoFilter *do_create()const;
 
 	mutable int m_hw;
 };
@@ -305,9 +307,9 @@ bool C2DMLVnFifoFilterPlugin::do_test() const
 	return true;
 }
 
-C2DFifoFilterPlugin::ProductPtr C2DMLVnFifoFilterPlugin::do_create()const
+C2DImageFifoFilter *C2DMLVnFifoFilterPlugin::do_create()const
 {
-	return ProductPtr(new C2DMLVnFifoFilter(m_hw));
+	return new C2DMLVnFifoFilter(m_hw);
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

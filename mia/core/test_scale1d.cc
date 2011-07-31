@@ -32,7 +32,6 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/msgstream.hh>
 
-
 #include <mia/core/scale1d.hh>
 
 
@@ -40,6 +39,8 @@ NS_MIA_USE
 using namespace std;
 using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem;
+
+CSplineBoundaryConditionTestPath bc_path; 
 
 class ScaleFixtureBase {
 
@@ -63,7 +64,7 @@ BOOST_FIXTURE_TEST_CASE( test_upscale_NN, ScaleFixtureBase)
 
 	initialize( in_size, init_src, test_size, init_test);
 
-	C1DScalar scaler(P1DInterpolatorFactory(create_1dinterpolation_factory(ip_bspline0)));
+	C1DScalar scaler(P1DInterpolatorFactory(create_1dinterpolation_factory(ip_bspline0,bc_mirror_on_bounds)));
 	vector<float> result(test_size);
 	scaler(src, result);
 	check_result(result);
@@ -78,7 +79,7 @@ BOOST_FIXTURE_TEST_CASE( test_upscale_linear, ScaleFixtureBase)
 
 	initialize( in_size, init_src, test_size, init_test);
 
-	C1DScalar scaler(P1DInterpolatorFactory(create_1dinterpolation_factory(ip_bspline1)));
+	C1DScalar scaler(P1DInterpolatorFactory(create_1dinterpolation_factory(ip_bspline1, bc_mirror_on_bounds)));
 	vector<float> result(test_size);
 	scaler(src, result);
 	check_result(result);
@@ -93,7 +94,7 @@ BOOST_FIXTURE_TEST_CASE( test_downscale_linear, ScaleFixtureBase)
 
 	initialize( src_size, init_src, test_size, init_test);
 
-	C1DScalar scaler(P1DInterpolatorFactory(create_1dinterpolation_factory(ip_bspline1)));
+	C1DScalar scaler(P1DInterpolatorFactory(create_1dinterpolation_factory(ip_bspline1, bc_mirror_on_bounds)));
 	vector<float> result(test_size);
 	scaler(src, result);
 	check_result(result);
@@ -101,6 +102,11 @@ BOOST_FIXTURE_TEST_CASE( test_downscale_linear, ScaleFixtureBase)
 
 ScaleFixtureBase::ScaleFixtureBase()
 {
+	list< bfs::path> sksearchpath; 
+	sksearchpath.push_back( bfs::path("splinekernel"));
+	CSplineKernelPluginHandler::set_search_path(sksearchpath); 
+
+
 	list< bfs::path> kernelsearchpath;
 	kernelsearchpath.push_back(bfs::path("spacialkernel"));
 	C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);

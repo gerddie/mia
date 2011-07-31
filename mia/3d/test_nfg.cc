@@ -17,11 +17,8 @@
  *
  */
 
-
-#include <mia/internal/autotest.hh>
 #include <climits>
-#include <mia/core/shared_ptr.hh>
-
+#include <mia/internal/autotest.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/3d/nfg.hh>
 

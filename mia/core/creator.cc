@@ -25,6 +25,6 @@
 
 NS_MIA_BEGIN
 
-const char *creator_type::value = "creator";
+const char *creator_type::type_descr = "creator";
 
 NS_MIA_END

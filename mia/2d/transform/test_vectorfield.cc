@@ -32,13 +32,13 @@ using namespace std;
 using namespace ::boost;
 using namespace boost::unit_test;
 
-
+CSplineKernelTestPath kernel_path_init; 
 
 struct GridTransformFixture {
 	GridTransformFixture():
 		size(256, 128),
 		r(size.x - 1,size.y - 1),
-		field(size),
+		field(size, C2DInterpolatorFactory("bspline:d=1", "mirror")),
 		scale(2 * M_PI / r.x, 2 * M_PI / r.y)
 	{
 		C2DGridTransformation::field_iterator i = field.field_begin();
@@ -129,7 +129,8 @@ BOOST_FIXTURE_TEST_CASE(test_gridtransform_set_identity, GridTransformFixture)
 BOOST_AUTO_TEST_CASE( test_grid2d_iterator )
 {
 	C2DBounds size(5,10);
-	C2DGridTransformation gt(size);
+	C2DInterpolatorFactory ipf("bspline:d=1", "mirror"); 
+	C2DGridTransformation gt(size, ipf);
 
 	C2DGridTransformation::field_iterator i = gt.field_begin();
 	C2DFVector value(0.12, 0.32);
@@ -168,10 +169,11 @@ BOOST_AUTO_TEST_CASE( test_gridtransform_add )
 
 
 	C2DBounds size(3,3);
-	C2DGridTransformation a(size);
+	C2DInterpolatorFactory ipf("bspline:d=1", "mirror"); 
+	C2DGridTransformation a(size, ipf);
 	std::copy(init_a, init_a + 9, a.field_begin());
 
-	C2DGridTransformation b(size);
+	C2DGridTransformation b(size, ipf);
 	std::copy(init_b, init_b + 9, b.field_begin());
 
 	C2DGridTransformation c = a + b;
@@ -282,7 +284,7 @@ DivGradFixture::DivGradFixture():
 	scale(range / dsize), 
 	scale2(scale*scale),
 	corr(dsize /range), 
-	field(size)
+	field(size, C2DInterpolatorFactory("bspline:d=1", "mirror") )
 {
 	auto i = field.field_begin(); 
 	for (int y = 0; y < (int)size.y; ++y) 
@@ -440,7 +442,7 @@ CurlGradFixture::CurlGradFixture():
 	scale(range / dsize), 
 	scale2(scale*scale),
 	corr(dsize /range), 
-	field(size)
+	field(size, C2DInterpolatorFactory("bspline:d=3", "mirror"))
 {
 	auto i = field.field_begin(); 
 	for (int y = 0; y < (int)size.y; ++y) 
@@ -736,7 +738,7 @@ BOOST_AUTO_TEST_CASE( test_grid_curl )
 
 	cvinfo() << size << "\n"; 
 
-	C2DGridTransformation field(size); 
+	C2DGridTransformation field(size, C2DInterpolatorFactory("bspline:d=1", "mirror")); 
 	
 	auto i = field.field_begin(); 
 	for (int y = 0; y < (int)size.y; ++y) 

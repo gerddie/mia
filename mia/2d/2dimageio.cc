@@ -30,7 +30,7 @@
 
 NS_MIA_BEGIN
 
-const char *io_2dimage_type::type_descr = "2dimage";
+const char *io_2dimage_type::data_descr = "2dimage";
 
 C2DImageVector *C2DImageVector::clone() const
 {
@@ -80,6 +80,109 @@ bool  EXPORT_2D save_image(const std::string& filename, P2DImage image)
 	return C2DImageIOPluginHandler::instance().save(filename, out_image_list);
 }
 
+C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string>& filenames, 
+						   CProgressCallback *cb)
+{
+	typedef map<int, C2DImageSeries> C2DImageSeriesGroupHelper; 
+	typedef map<int, C2DImageSeriesGroupHelper> C2DGroupSeriesHelper; 
+	typedef map<string, C2DGroupSeriesHelper> C2DImageGroupedSeriesHelper; 
+
+
+	C2DImageGroupedSeriesHelper collector; 
+	const static string unknown_protocol("Unknown"); 
+	int instance_nr = 0; 
+	
+	int step = 0; 
+	if (cb) 
+		cb->set_range(filenames.size()); 
+	for (auto f = filenames.begin(); f != filenames.end(); ++f, ++step) {
+		// give some feedback 
+		if (cb && ! (step & 0x1f) )
+			cb->update(step); 
+		
+		C2DImageIOPluginHandler::Instance::PData  in_image_list =
+			C2DImageIOPluginHandler::instance().load(*f);
+		if (!in_image_list) {
+			cverr() << "load_image_series: File '" << *f 
+				<< "' doesn't provide images this software can read\n"; 
+			continue; 
+		}
+		for (auto i = in_image_list->begin(); i != in_image_list->end(); ++i) {
+			// look for protocol attribute 
+			auto protocol = (*i)->get_attribute_as_string(IDProtocolName); 
+			std::string key = protocol.empty() ? unknown_protocol : protocol;
+			if (collector.find(key) == collector.end())
+				collector[key] = C2DGroupSeriesHelper(); 
+			C2DGroupSeriesHelper& group = collector[key]; 
+
+			// look for series number 
+			auto seriesnr = (*i)->get_attribute(IDSeriesNumber);
+			const CIntAttribute *psn = dynamic_cast<const CIntAttribute *>(seriesnr.get());
+			int saqnr = -1; 
+			if (psn) 
+				saqnr = *psn; 
+
+			if (group.find(saqnr) == group.end())
+				group[saqnr] = C2DImageSeriesGroupHelper(); 
+			C2DImageSeriesGroupHelper& subgroup = group[saqnr]; 
+
+			// look for acquisition number 
+			auto attr = (*i)->get_attribute(IDAcquisitionNumber); 
+			const CIntAttribute *paq = dynamic_cast<const CIntAttribute *>(attr.get());
+			int aqnr = -1; 
+			if (paq) 
+				aqnr = *paq; 
+			if (subgroup.find(aqnr) == subgroup.end()) 
+				subgroup[aqnr] = C2DImageSeries(); 
+			
+			// look for slice location number, if non exists fake one
+			attr = (*i)->get_attribute(IDSliceLocation);
+			const CFloatAttribute *pinst = dynamic_cast<const CFloatAttribute *>(attr.get());
+			float location; 
+			if (!pinst) {
+				location = 0.0; 
+				(*i)->set_attribute(IDSliceLocation, PAttribute(new CFloatAttribute(location))); 
+			} else 
+				location = floor(1000.0 * *pinst) / 1000.0; 
+			
+			subgroup[aqnr].push_back(*i); 
+			cvinfo() << "Add '" <<* f  
+				  << "' to Protocol group '" << protocol
+				  << "' with acquisition no. " << aqnr 
+				  << "' and location no. " << location << "\n"; 
+		}
+	}
+	// now sort the slices and move the groups to a zero-index based vector 
+	C2DImageGroupedSeries result; 
+	for (auto g = collector.begin(); g != collector.end(); ++g) {
+		cvinfo() << "Protocol '" << g->first << "'\n"; 
+		C2DImageSeriesGroup group; 
+		for (auto saq = g->second.begin(); saq != g->second.end(); ++saq) {
+			for (auto aq = saq->second.begin(); aq != saq->second.end(); ++aq) {
+				sort(aq->second.begin(), aq->second.end(), 
+				     [](const P2DImage& lhs, const P2DImage& rhs) {
+					     const auto lhs_attr = lhs->get_attribute(IDSliceLocation);
+					     const auto rhs_attr = rhs->get_attribute(IDSliceLocation);
+					     const float lhs_inr = dynamic_cast<const CFloatAttribute&>(*lhs_attr); 
+					     const float rhs_inr = dynamic_cast<const CFloatAttribute&>(*rhs_attr); 
+					     return lhs_inr < rhs_inr; 
+				     }); 
+				cvinfo() << "  Acquisition " << aq->first << " with "<< aq->second.size() <<" slices\n"; 
+				group.push_back(aq->second); 
+			}
+			result[g->first] = group; 
+		}
+	}
+	return result; 
+}
+
+C2DImageIOPluginHandlerTestPath::C2DImageIOPluginHandlerTestPath()
+{
+	std::list< bfs::path> searchpath;
+	searchpath.push_back(bfs::path("."));
+	C2DImageIOPluginHandler::set_search_path(searchpath);
+}
+
 EXPORT_2D const char * IDAcquisitionDate =   "AcquisitionDate";
 EXPORT_2D const char * IDImageType =         "ImageType";
 EXPORT_2D const char * IDAcquisitionNumber = "AcquisitionNumber";
@@ -92,5 +195,5 @@ EXPORT_2D const char * IDPatientPosition = "PatientPosition";
 EXPORT_2D const char * IDSmallestImagePixelValue = "SmallestImagePixelValue";
 EXPORT_2D const char * IDLargestImagePixelValue = "LargestImagePixelValue";
 EXPORT_2D const char * IDStudyID = "StudyID";
-
+EXPORT_2D const char * IDProtocolName = "ProtocolName"; 
 NS_MIA_END

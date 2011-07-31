@@ -134,14 +134,14 @@ P2DImage C2DMean::do_filter(const C2DImage& image) const
 }
 
 C2DMeanFilterPlugin::C2DMeanFilterPlugin():
-	C2DFilterPlugin("median")
+	C2DFilterPlugin("mean")
 {
 	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(), false, "half filter width"));
 }
 
-C2DFilterPlugin::ProductPtr C2DMeanFilterPlugin::do_create()const
+C2DFilter *C2DMeanFilterPlugin::do_create()const
 {
-	return C2DFilterPlugin::ProductPtr(new C2DMean(m_hw));
+	return new C2DMean(m_hw);
 }
 
 const string C2DMeanFilterPlugin::do_get_descr()const

@@ -87,7 +87,6 @@ private:
 class CGSLMinimizerPlugin: public mia::CMinimizerPlugin {
 public: 
 	CGSLMinimizerPlugin();
-	typedef mia::CMinimizerPlugin::ProductPtr ProductPtr; 
 
 	enum EGSLOptimizer {
 		opt_simplex2, 
@@ -102,7 +101,7 @@ public:
 	
 private:
 
-	ProductPtr do_create() const;
+	mia::CMinimizer *do_create() const;
 	const std::string do_get_descr() const;
 	
 	EGSLOptimizer m_ot;

@@ -34,7 +34,11 @@
    \item [Degrees of Freedom:] with the grid size $(n_x,n_y)$: $2* nx * ny$
   
    \end{description}
-   This plug-in doesn't  take parameters. 
+   \plugtabstart
+   imgkernel & string " & interpolation kernel used to interpolate images when they are transformed & bspline:d=3 \\ 
+   imgboundary& string & interpolation boundary conditions used when transforming an image & mirror \\
+   \plugtabend
+
 
    LatexEnd  
  */
@@ -48,34 +52,44 @@
 NS_MIA_BEGIN
 using namespace std;
 
-C2DGridTransformation::C2DGridTransformation(const C2DBounds& size):
-	m_field(size)
+C2DGridTransformation::C2DGridTransformation(const C2DBounds& size, const C2DInterpolatorFactory& ipf):
+	C2DTransformation(ipf),
+	m_field(size), 
+	m_upscale_interpolator_factory("bspline:d=1", "zero")
 {
 }
 
 P2DTransformation C2DGridTransformation::do_upscale(const C2DBounds& size) const
 {
+	/* This implementation could be improved by using something like the spline interpolator 
+	   that applies the scaling in a separable way. */
+
 	TRACE("C2DGridTransformation::upscale");
-	C2DGridTransformation *result = new C2DGridTransformation(size);
+	DEBUG_ASSERT_RELEASE_THROW(m_field.get_size().x != 0 && m_field.get_size().y != 0, 
+				   "C2DGridTransformation::do_upscale: input field has a zero dimension"); 
 
-	// initial upscale
-	if (m_field.get_size().x != 0 && m_field.get_size().y != 0) {
 
-		float x_mult = float(size.x) / (float)m_field.get_size().x;
-		float y_mult = float(size.y) / (float)m_field.get_size().y;
-		float ix_mult = 1.0f / x_mult;
-		float iy_mult = 1.0f / y_mult;
+	C2DGridTransformation *result = new C2DGridTransformation(size, get_interpolator_factory());
 
-		C2DFVectorfield::iterator i = result->m_field.begin();
+	unique_ptr<T2DInterpolator<C2DFVector> >
+		interp(m_upscale_interpolator_factory.create(m_field)); 
+	
 
-		for (unsigned int y = 0; y < size.y; y++){
-			for (unsigned int x = 0; x < size.x; x++,++i){
-				C2DFVector help(ix_mult * x, iy_mult * y);
-				C2DFVector val = m_field.get_interpol_val_at(help);
-				*i = C2DFVector(val.x * x_mult,val.y * y_mult);
-			}
+	float x_mult = float(size.x) / (float)m_field.get_size().x;
+	float y_mult = float(size.y) / (float)m_field.get_size().y;
+	float ix_mult = 1.0f / x_mult;
+	float iy_mult = 1.0f / y_mult;
+	
+	auto i = result->m_field.begin();
+	
+	for (unsigned int y = 0; y < size.y; y++){
+		for (unsigned int x = 0; x < size.x; x++,++i){
+			C2DFVector help(ix_mult * x, iy_mult * y);
+			C2DFVector val = (*interp)(help);
+			*i = C2DFVector(val.x * x_mult,val.y * y_mult);
 		}
 	}
+	
 	return P2DTransformation(result);
 }
 
@@ -204,7 +218,8 @@ C2DGridTransformation::iterator_impl::iterator_impl(const C2DBounds& pos, const 
 	C2DTransformation::iterator_impl(pos, size), 
 	m_current(start)
 {
-	m_value = C2DFVector(get_pos()) - *m_current; 
+	if (pos.y < size.y && pos.x < size.x ) 
+		m_value = C2DFVector(get_pos()) - *m_current; 
 }
 
 C2DTransformation::iterator_impl * C2DGridTransformation::iterator_impl::clone() const
@@ -229,12 +244,6 @@ void C2DGridTransformation::iterator_impl::do_y_increment()
 	m_value = C2DFVector(get_pos()) - *m_current; 
 }
 
-
-P2DImage C2DGridTransformation::apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const
-{
-	assert(image.get_size() == m_field.get_size());
-	return transform2d(image, ipf, *this);
-}
 
 C2DFVector C2DGridTransformation::operator ()(const  C2DFVector& x) const
 {
@@ -534,7 +543,7 @@ EXPORT_2D C2DGridTransformation operator + (const C2DGridTransformation& a, cons
 {
 	assert( a.get_size() == b.get_size());
 
-	C2DGridTransformation result(a.get_size());
+	C2DGridTransformation result(a.get_size(), a.get_interpolator_factory());
 
 	C2DFVectorfield::iterator ri = result.field_begin();
 	C2DFVectorfield::const_iterator bi = b.field_begin();
@@ -552,12 +561,20 @@ EXPORT_2D C2DGridTransformation operator + (const C2DGridTransformation& a, cons
    Transformation creator 
  */
 class C2DGridTransformCreator: public C2DTransformCreator {
-	virtual P2DTransformation do_create(const C2DBounds& size) const;
+public: 
+	C2DGridTransformCreator(const C2DInterpolatorFactory& ipf); 
+private: 
+	virtual P2DTransformation do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const;
 };
 
-P2DTransformation C2DGridTransformCreator::do_create(const C2DBounds& size) const
+C2DGridTransformCreator::C2DGridTransformCreator(const C2DInterpolatorFactory& ipf):
+	C2DTransformCreator(ipf)
 {
-	return P2DTransformation(new C2DGridTransformation(size));
+}
+
+P2DTransformation C2DGridTransformCreator::do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const
+{
+	return P2DTransformation(new C2DGridTransformation(size, ipf));
 }
 
 
@@ -567,10 +584,8 @@ P2DTransformation C2DGridTransformCreator::do_create(const C2DBounds& size) cons
  */
 class C2DGridTransformCreatorPlugin: public C2DTransformCreatorPlugin {
 public:
-	typedef C2DTransformCreatorPlugin::ProductPtr ProductPtr;
-
 	C2DGridTransformCreatorPlugin();
-	virtual ProductPtr do_create() const;
+	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
 	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
@@ -580,10 +595,9 @@ C2DGridTransformCreatorPlugin::C2DGridTransformCreatorPlugin():
 {
 }
 
-C2DGridTransformCreatorPlugin::ProductPtr
-C2DGridTransformCreatorPlugin::do_create() const
+C2DTransformCreator *C2DGridTransformCreatorPlugin::do_create(const C2DInterpolatorFactory& ipf) const
 {
-	return ProductPtr(new C2DGridTransformCreator());
+	return new C2DGridTransformCreator(ipf);
 }
 
 bool C2DGridTransformCreatorPlugin::do_test() const

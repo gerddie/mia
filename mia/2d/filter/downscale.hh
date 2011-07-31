@@ -36,7 +36,7 @@ public:
 private:
 	CDownscale::result_type do_filter(const mia::C2DImage& image) const;
 
- 	mia::C2DFilterPlugin::ProductPtr m_smoothing;
+	mia::P2DFilter m_smoothing;
 	const mia::C2DBounds m_block_size;
 
 
@@ -45,7 +45,7 @@ private:
 class C2DDownscaleFilterPlugin: public mia::C2DFilterPlugin {
 public:
 	C2DDownscaleFilterPlugin();
-	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
 	mia::C2DBounds m_b;

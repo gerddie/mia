@@ -50,7 +50,6 @@
 */
 
 
-#include <boost/lambda/lambda.hpp>
 #include <boost/lambda/if.hpp>
 #include <mia/3d/3dimageio.hh>
 #include <mia/3d/filter/mask.hh>
@@ -59,7 +58,6 @@
 NS_BEGIN(mask_3dimage_filter)
 NS_MIA_USE;
 using namespace std;
-using namespace boost::lambda;
 
 C3DMask::C3DMask(const C3DImageDataKey& image_key):
 	m_image_key(image_key)
@@ -142,10 +140,10 @@ C3DMaskImageFilterFactory::C3DMaskImageFilterFactory():
 	add_parameter("input", new CStringParameter(m_mask_filename, true, "second input image file name"));
 }
 
-mia::C3DFilterPlugin::ProductPtr C3DMaskImageFilterFactory::do_create()const
+C3DFilter *C3DMaskImageFilterFactory::do_create()const
 {
 	C3DImageDataKey mask_data = C3DImageIOPluginHandler::instance().load_to_pool(m_mask_filename);
-	return C3DFilterPlugin::ProductPtr(new C3DMask(mask_data));
+	return new C3DMask(mask_data);
 }
 
 const std::string C3DMaskImageFilterFactory::do_get_descr()const

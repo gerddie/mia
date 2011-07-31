@@ -37,6 +37,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup classes
    \brief A class for general scaling of one-dimensional arrays. 
 
    Class for general scaling of one-dimensional arrays. kernels are the separable B-spline 
@@ -56,7 +57,7 @@ public:
 	    \param out_size
 	 */
 
-	C1DScalarFixed(const CBSplineKernel& kernel, size_t in_size, size_t out_size);
+	C1DScalarFixed(const CSplineKernel& kernel, size_t in_size, size_t out_size);
 
 	/**
 	   Scaling operator.
@@ -89,11 +90,6 @@ private:
 	void upscale(const gsl::DoubleVector& input, gsl::DoubleVector& output) const; 
 	void downscale(const gsl::DoubleVector& input, gsl::DoubleVector& output) const; 
 
-
-	gsl::DoubleVector filter_line(const gsl::DoubleVector& coeff)const; 
-	double initial_coeff(const gsl::DoubleVector& coeff, double pole)const; 
-	double initial_anti_coeff(const gsl::DoubleVector& coeff, double pole)const;
-	
 	enum EStrategy {
 		scs_fill_output, 
 		scs_upscale, 
@@ -107,11 +103,12 @@ private:
 	size_t m_support; 
 	std::vector<double> m_poles; 
 	EStrategy m_strategy; 
+	PSplineBoundaryCondition m_bc; 
 
 	gsl::DoubleVector m_input_buffer; 
 	gsl::DoubleVector m_output_buffer; 
-	std::vector<std::vector<double> > m_weights; 
-	std::vector<std::vector<int> > m_indices; 
+	std::vector<CSplineKernel::VWeight> m_weights; 
+	std::vector<CSplineKernel::VIndex> m_indices; 
 	gsl::Matrix m_A; 	
 	gsl::DoubleVector m_tau; 
 };

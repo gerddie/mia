@@ -76,7 +76,7 @@ public:
 class C2DReagiongrowImageFilterFactory: public C2DFilterPlugin {
 public: 
 	C2DReagiongrowImageFilterFactory();
-	virtual C2DFilterPlugin::ProductPtr create(const CParsedOptions& options) const;
+	virtual C2DFilter *create(const CParsedOptions& options) const;
 	virtual const string do_get_descr()const; 
 };
 
@@ -186,7 +186,7 @@ C2DReagiongrowImageFilterFactory::C2DReagiongrowImageFilterFactory():
 	add_help(param_thresh);
 }
 
-C2DFilterPlugin::ProductPtr C2DReagiongrowImageFilterFactory::create(const CParsedOptions& options) const
+C2DFilter *C2DReagiongrowImageFilterFactory::create(const CParsedOptions& options) const
 {
 	string map_name = param_map.get_value(options); 
 	float seed_thresh = param_seed.get_value(options); 
@@ -201,10 +201,10 @@ C2DFilterPlugin::ProductPtr C2DReagiongrowImageFilterFactory::create(const CPars
 		stringstream errmsg; 
 		errmsg << "selected class '" << sclass << "' out of probability map range"; 
 		throw invalid_argument(errmsg.str()); 
-		return C2DFilterPlugin::ProductPtr();
+		return NULL;
 	}
 	
-	return C2DFilterPlugin::ProductPtr(new C2DReagiongrowImageFilter(low_thresh, seed_thresh, pv[sclass]));
+	return new C2DReagiongrowImageFilter(low_thresh, seed_thresh, pv[sclass]);
 }
 
 const string C2DReagiongrowImageFilterFactory::do_get_descr()const

@@ -41,9 +41,6 @@ class for triangular meshes and some basic algorithms
 #endif
 
 #include <string>
-#include <mia/core/shared_ptr.hh>
-
-// MONA specific
 #include <mia/core/iodata.hh>
 #include <mia/core/ioplugin.hh>
 #include <mia/core/iohandler.hh>
@@ -340,7 +337,7 @@ CTriangleMesh colorize_mesh(const CTriangleMesh& mesh, const Deformation& deform
 
 struct io_mesh_type {
     typedef CTriangleMesh type;
-    static const char *type_descr;
+    static const char *data_descr;
 };
 
 /// IO plugin for triangular meshes

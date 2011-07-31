@@ -37,21 +37,29 @@ NS_MIA_BEGIN
 
 
 /**
+   \ingroup infrastructure 
+
    \brief A parameter proxy object with a key to identify it.  
 
-   Class for a parameter that can be stored in the internal data pool. 
- */
+   This template is used to hold reference to data that may not yet be available and 
+   will be/or is stored in the internal data pool. 
+   One axample for its usage is to pass parameters to the filters in a filter 
+   pipeline that are only created after the filters itself is created.
+   \sa CDatapool.
+*/
 template <typename T>
 class TDelayedParameter {
 public: 
 
 	/**
 	   Assosiate the parameter with its key in the data pool. 
+	   At creation time, the data doesn't have to be available in the 
+	   data pool. 
 	 */
 	TDelayedParameter(const std::string& key); 
 	
 	/**
-	   Get the data assosiated with this parameter. Throws \a invalid_argument if the 
+	   Get the data assosiated with this parameter. Throws \a std::invalid_argument if the 
 	   key is not available in the data pool 
 	 */
 	const T get() const; 
@@ -70,11 +78,11 @@ TDelayedParameter<T>::TDelayedParameter(const std::string& key):
 template <typename T>
 const T TDelayedParameter<T>::get() const
 {
-	if (!(CDatapool::Instance().has_key(m_key))) {
+	if (!(CDatapool::instance().has_key(m_key))) {
 		THROW(std::invalid_argument, "TDelayedParameter::get(): Key '" << m_key 
 		      << "' is not availabe in the data pool");  
 	}
-	return boost::any_cast<T>(CDatapool::Instance().get(m_key)); 
+	return boost::any_cast<T>(CDatapool::instance().get(m_key)); 
 }
 
 NS_MIA_END

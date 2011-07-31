@@ -465,7 +465,7 @@ void CTriangleMesh::evaluate_normals()
 	data->evaluate_normals();
 }
 
-const char *io_mesh_type::type_descr = "mesh";
+const char *io_mesh_type::data_descr = "mesh";
 NS_MIA_END
 
 #include <mia/core/ioplugin.cxx>
@@ -474,6 +474,7 @@ NS_MIA_END
 NS_MIA_BEGIN
 
 template class TIOPlugin<io_mesh_type>;
+template class TPluginHandler<CMeshIOPlugin>;
 template class TIOPluginHandler<CMeshIOPlugin>;
 template class THandlerSingleton<TIOPluginHandler<CMeshIOPlugin> >;
 template class TIOHandlerSingleton<TIOPluginHandler<CMeshIOPlugin> >;

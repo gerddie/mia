@@ -32,6 +32,8 @@
 NS_MIA_USE; 
 namespace bfs=boost::filesystem;
 
+CSplineKernelTestPath spline_test_path; 
+
 class Cost3DMock {
 public: 
 	Cost3DMock(const C3DBounds& size); 

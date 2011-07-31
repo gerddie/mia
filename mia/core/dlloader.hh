@@ -27,9 +27,14 @@
 #include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
-/**  \brief Portabe Dynamic Link Library Loader
+/**  
+     \ingroup infrastructure 
+     \brief Portabe Dynamic Link Library Loader
      
-     This class provides a portable way to load dynamic link libraries
+     This class provides a portable way to load dynamic link libraries. 
+     \remark This class doesn't release the loaded library when it is destroyed.
+     
+     
 */
 class EXPORT_CORE CDLLoader {
 public:

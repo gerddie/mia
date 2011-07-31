@@ -66,7 +66,6 @@ mia-2dseriessmoothgradMAD -i segment.set -o mincorr.exr -k 2
 #include <ostream>
 #include <fstream>
 #include <map>
-#include <boost/lambda/lambda.hpp>
 #include <mia/core.hh>
 #include <queue>
 
@@ -75,9 +74,6 @@ mia-2dseriessmoothgradMAD -i segment.set -o mincorr.exr -k 2
 #include <mia/2d/SegSetWithImages.hh>
 
 NS_MIA_USE;
-
-using boost::lambda::_1;
-using boost::lambda::_2;
 
 const char *g_description = 
 	"This program is used to evaluate the temporal intensity correlation of neighboring pixels "

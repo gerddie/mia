@@ -42,6 +42,7 @@ NS_MIA_BEGIN
 #endif
 
 /**
+   \ingroup infrastructure 
    \brief A output stream to enable certain levels of verbosity 
 
    This class impelemtns a std::ostream like class to output messages during run-time, 
@@ -226,6 +227,8 @@ private:
 
 /// a macro to trace scopes in a debug built
 #define TRACE(DOMAIN) ::mia::CTrace _xxx_trace(DOMAIN)
+
+/// a macro to trace functions ina a debug build 
 #define TRACE_FUNCTION ::mia::CTrace _xxx_trace(__PRETTY_FUNCTION__)
 
 /// a macro to indicate that there are no tests for a function 
@@ -301,6 +304,7 @@ inline vstream& cvmsg()
 #define cverb ::mia::vstream::instance()
 
 /**
+   \ingroup infrastructure 
    Impelment the direct streaming of std::vectors. 
 */
 template <typename T> 

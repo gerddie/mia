@@ -45,8 +45,8 @@ NS_MIA_BEGIN
 template class TRegModel<2>;
 template class TPlugin<C2DImage, regmodel_type>;
 template class TFactory<C2DRegModel>;
-template class THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin> >;
 template class TFactoryPluginHandler<C2DRegModelPlugin>;
 template class TPluginHandler<C2DRegModelPlugin>;
+template class THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin> >; 
 
 NS_MIA_END

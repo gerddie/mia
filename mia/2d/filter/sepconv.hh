@@ -30,8 +30,8 @@ NS_BEGIN(SeparableConvolute_2dimage_filter)
 
 class CSeparableConvolute: public mia::C2DFilter {
 public:
-	CSeparableConvolute(mia::C1DSpacialKernelPlugin::ProductPtr kx,
-			    mia::C1DSpacialKernelPlugin::ProductPtr ky);
+	CSeparableConvolute(mia::P1DSpacialKernel kx,
+			    mia::P1DSpacialKernel ky);
 
 	template <typename  T>
 	CSeparableConvolute::result_type operator () (const mia::T2DImage<T>& data) const;
@@ -42,15 +42,15 @@ public:
 private:
 	CSeparableConvolute::result_type do_filter(const mia::C2DImage& image) const;
 
-	mia::C1DSpacialKernelPlugin::ProductPtr m_kx;
-	mia::C1DSpacialKernelPlugin::ProductPtr m_ky;
+	mia::P1DSpacialKernel m_kx;
+	mia::P1DSpacialKernel m_ky;
 };
 
 
 class C2DSeparableConvoluteFilterPlugin: public mia::C2DFilterPlugin {
 public:
 	C2DSeparableConvoluteFilterPlugin();
-	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
 
@@ -63,7 +63,7 @@ private:
 class C2DGaussFilterPlugin: public mia::C2DFilterPlugin {
 public:
 	C2DGaussFilterPlugin();
-	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
 	int m_w;

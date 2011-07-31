@@ -19,7 +19,6 @@
  */
 
 
-#include <mia/core/shared_ptr.hh>
 #include <mia/internal/autotest.hh>
 #include <mia/3d/fifotestfixture.hh>
 #include <mia/3d/fifof/morphological.hh>
@@ -34,7 +33,7 @@ namespace bfs=boost::filesystem;
 struct MorpologicalFilter_Fixture: public fifof_Fixture  {
 
 	MorpologicalFilter_Fixture();
-	C3DShapePlugin::ProductPtr m_shape;
+	P3DShape m_shape;
 };
 
 MorpologicalFilter_Fixture::MorpologicalFilter_Fixture()

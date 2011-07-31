@@ -57,19 +57,22 @@ void __dispatch_copy<I,O>::apply(const I& input, O& output)
 }
  
 template <typename T>
-T1DConvoluteInterpolator<T>::T1DConvoluteInterpolator(const std::vector<T>& data, PBSplineKernel  kernel):
+T1DConvoluteInterpolator<T>::T1DConvoluteInterpolator(const std::vector<T>& data, PSplineKernel  kernel, 
+						      const CSplineBoundaryCondition& boundary_conditions):
 	m_coeff(data.size()), 
-	m_size2(data.size() + data.size() - 2),
 	m_kernel(kernel),
+	m_boundary_conditions(boundary_conditions.clone()),
 	m_x_index(kernel->size()),
 	m_x_weight(kernel->size())
 {
+	m_boundary_conditions->set_width(data.size()); 
+
 	min_max<typename std::vector<T>::const_iterator>::get(data.begin(), data.end(), m_min, m_max);
 	
 	// copy the data
 	__dispatch_copy<std::vector<T>, TCoeff1D >::apply(data, m_coeff); 
 	
-	m_kernel->filter_line(m_coeff);
+	m_boundary_conditions->filter_line(m_coeff, m_kernel->get_poles());
 }
 
 template <typename T>
@@ -77,69 +80,35 @@ T1DConvoluteInterpolator<T>::~T1DConvoluteInterpolator()
 {
 }
 	
-template <class In, class Out>
-struct round_to {
-	
+
+
+template <class In, class Out, bool must_round>
+struct __dispatch_round_to {	
 	static Out value(In x) {
-		return (Out)x;
+		return Out(x); 
 	}
 };
 
-template <class In>
-struct round_to<In, unsigned char> {	
-	static unsigned char value(In x) {
-		return (unsigned char)floor(x + 0.5);
-	}
-};
-
-template <class In>
-struct round_to<In, signed char> {	
-	static signed char value(In x) {
-		return (signed char)floor(x + 0.5);
-	}
-};
-
-template <class In>
-struct round_to<In, unsigned short> {	
-	static unsigned short value(In x) {
-		return (unsigned short)floor(x + 0.5);
-	}
-};
-
-template <class In>
-struct round_to<In, signed short> {	
-	static signed short value(In x) {
-		return (signed short)floor(x + 0.5);
+template <class In, class Out>
+struct __dispatch_round_to<In, Out, true> {
+	static Out value(In x) {
+		return static_cast<Out>(rint(x)); 
 	}
 };
 
 
-template <class In>
-struct round_to<In, unsigned int> {	
-	static unsigned long value(In x) {
-		return (unsigned long)floor(x + 0.5);
+template <typename In, typename Out>
+struct round_to {
+	static Out value(In x) {
+		const bool out_is_int = std::is_integral<Out>::value; 
+		const bool in_is_int = std::is_integral<In>::value; 
+		const bool must_round = out_is_int && !in_is_int; 
+		
+		return __dispatch_round_to<In, Out, must_round>::value(x); 
 	}
 };
 
-template <class In>
-struct round_to<In, signed int> {	
-	static signed long value(In x) {
-		return (signed long)floor(x + 0.5);
-	}
-};
-template <class In>
-struct round_to<In, unsigned long> {	
-	static unsigned long value(In x) {
-		return (unsigned long)floor(x + 0.5);
-	}
-};
 
-template <class In>
-struct round_to<In, signed long> {	
-	static signed long value(In x) {
-		return (signed long)floor(x + 0.5);
-	}
-};
 
 template <class T, class U>
 struct bounded {
@@ -153,8 +122,8 @@ template <class C, int size>
 struct add_1d {
 	typedef typename C::value_type U; 
 	
-	static typename C::value_type value(const C&  coeff, const std::vector<double>& xweight, 
-					    const std::vector<int>& xindex) 
+	static typename C::value_type value(const C&  coeff, const CSplineKernel::VWeight& xweight, 
+					    const CSplineKernel::VIndex& xindex) 
 	{
 		U result = U();
 		
@@ -176,7 +145,7 @@ T  T1DConvoluteInterpolator<T>::operator () (const double& x) const
 		return T();
 	
 	(*m_kernel)(x, m_x_weight, m_x_index);
-	mirror_boundary_conditions(m_x_index, m_coeff.size(), m_size2);
+	m_boundary_conditions->apply(m_x_index, m_x_weight); 
 
 	U result = U();
 	
@@ -215,7 +184,7 @@ T1DConvoluteInterpolator<T>::derivative_at (const double& x) const
 		return typename coeff_map<T>::coeff_type();
 	
 	m_kernel->derivative(x, m_x_weight, m_x_index);
-	mirror_boundary_conditions(m_x_index, m_coeff.size(), m_size2);
+	m_boundary_conditions->apply(m_x_index, m_x_weight); 
 
 	U result = U();
 	

@@ -49,44 +49,44 @@ using namespace boost;
 BOOST_AUTO_TEST_CASE( test_pool_inout )
 {
 
-	CDatapool::Instance().add("param1", 10);
-	CDatapool::Instance().add("param2", string("fun"));
+	CDatapool::instance().add("param1", 10);
+	CDatapool::instance().add("param2", string("fun"));
 
-	any p1 = CDatapool::Instance().get("param1");
+	any p1 = CDatapool::instance().get("param1");
 
 	BOOST_CHECK(p1.type() == typeid(int));
 	BOOST_CHECK_EQUAL(any_cast<int>(p1), 10);
 
-	any p2 = CDatapool::Instance().get("param2");
+	any p2 = CDatapool::instance().get("param2");
 	BOOST_CHECK(p2.type() == typeid(string));
 	BOOST_CHECK_EQUAL(any_cast<string>(p2), string("fun"));
 
-	BOOST_CHECK(!CDatapool::Instance().has_unused_data());
+	BOOST_CHECK(!CDatapool::instance().has_unused_data());
 }
 
 BOOST_AUTO_TEST_CASE( test_pool_out_noexists )
 {
-	BOOST_CHECK_THROW(CDatapool::Instance().get("param3"), invalid_argument);
+	BOOST_CHECK_THROW(CDatapool::instance().get("param3"), invalid_argument);
 }
 
 BOOST_AUTO_TEST_CASE( test_pool_get_and_remove )
 {
-	CDatapool::Instance().add("param1", 10);
-	any p1 = CDatapool::Instance().get_and_remove("param1");
-	BOOST_CHECK(!CDatapool::Instance().has_key("param1"));
+	CDatapool::instance().add("param1", 10);
+	any p1 = CDatapool::instance().get_and_remove("param1");
+	BOOST_CHECK(!CDatapool::instance().has_key("param1"));
 }
 
 BOOST_AUTO_TEST_CASE( test_pool_has_unused )
 {
-	CDatapool::Instance().add("param1", 10);
-	BOOST_CHECK(CDatapool::Instance().has_unused_data());
+	CDatapool::instance().add("param1", 10);
+	BOOST_CHECK(CDatapool::instance().has_unused_data());
 }
 
 BOOST_AUTO_TEST_CASE( test_pool_has_key )
 {
-	CDatapool::Instance().add("param1", 10);
-	BOOST_CHECK(CDatapool::Instance().has_key("param1"));
-	BOOST_CHECK(!CDatapool::Instance().has_key("unknown"));
+	CDatapool::instance().add("param1", 10);
+	BOOST_CHECK(CDatapool::instance().has_key("param1"));
+	BOOST_CHECK(!CDatapool::instance().has_key("unknown"));
 }
 
 struct PoolAccessTest {
@@ -107,8 +107,8 @@ void PoolAccessTest::operator() ( const blocked_range<int>& range ) const
 		for( int i=range.begin(); i!=range.end(); ++i ) {
 			stringstream name; 
 			name << "parallel" << i; 
-			CDatapool::Instance().add(name.str(), i);
-			any p1 = CDatapool::Instance().get(name.str());
+			CDatapool::instance().add(name.str(), i);
+			any p1 = CDatapool::instance().get(name.str());
 			int k = any_cast<int>(p1); 
 			if (k != i) 
 				++(*n_errors); 
@@ -147,12 +147,12 @@ void PoolWriteLaterReadTest::operator() ( const blocked_range<int>& range ) cons
 		for( int i=range.begin(); i!=range.end(); ++i ) {
 			stringstream name; 
 			name << "parallel" << i; 
-			CDatapool::Instance().add(name.str(), i);
+			CDatapool::instance().add(name.str(), i);
 		}
 		for( int i=range.begin(); i!=range.end(); ++i ) {
 			stringstream name; 
 			name << "parallel" << i; 
-			any p1 = CDatapool::Instance().get(name.str());
+			any p1 = CDatapool::instance().get(name.str());
 			int k = any_cast<int>(p1); 
 			if (k != i) 
 				++(*n_errors); 

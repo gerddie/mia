@@ -36,8 +36,8 @@ public:
 	using C3DTransformation::operator ();
 
 	C3DSplineTransformation(const C3DSplineTransformation& org);
-	C3DSplineTransformation(const C3DBounds& range, PBSplineKernel kernel);
-	C3DSplineTransformation(const C3DBounds& range, PBSplineKernel kernel, const C3DFVector& c_rate);
+	C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, const C3DInterpolatorFactory& ipf);
+	C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, const C3DFVector& c_rate, const C3DInterpolatorFactory& ipf);
 	~C3DSplineTransformation(); 
 
 	void set_coefficients(const C3DFVectorfield& field);
@@ -114,7 +114,7 @@ private:
 	C3DBounds m_range;
 	C3DFVector m_target_c_rate;
 	C3DFVectorfield m_coefficients;
-	PBSplineKernel m_kernel; 
+	PSplineKernel m_kernel; 
 	C3DBounds m_shift; 
 	C3DBounds m_enlarge; 
 	mutable C3DFVector m_scale;
@@ -133,6 +133,9 @@ private:
 	mutable CSplineDerivativeRow  m_mz; 
 	mutable bool m_grid_valid; 
 	mutable P3DFVectorfield m_current_grid; 
+	PSplineBoundaryCondition m_x_boundary; 
+	PSplineBoundaryCondition m_y_boundary; 
+	PSplineBoundaryCondition m_z_boundary; 
 };
 
 NS_MIA_END

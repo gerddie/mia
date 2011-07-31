@@ -229,10 +229,14 @@ void CGSLFMinimizer::do_set_problem()
 	if (!m_s) 
 		throw std::runtime_error("CFMinimizer:Not enough memory to allocate the minimizer"); 
 	
-	if (m_step_init && m_step_init->size != size()) 
-		gsl_vector_free(m_step_init); 
+	if (m_step_init) {
+		if (m_step_init->size != size()) {
+			gsl_vector_free(m_step_init); 
+			m_step_init= gsl_vector_alloc(size());
+		}
+	}else 
+		m_step_init= gsl_vector_alloc(size());
 	
-	m_step_init= gsl_vector_alloc(size());
 }
 
 int CGSLFMinimizer::do_run(CDoubleVector& x)
@@ -305,13 +309,13 @@ const std::string CGSLMinimizerPlugin::do_get_descr() const
 		"the GNU Scientific Library (GSL)"; 
 }
 
-CGSLMinimizerPlugin::ProductPtr CGSLMinimizerPlugin::do_create() const
+CMinimizer *CGSLMinimizerPlugin::do_create() const
 {
 	const gsl_multimin_fdfminimizer_type *ot; 
 	
 	switch (m_ot) {
-	case opt_simplex2 : return ProductPtr(new CGSLFMinimizer(gsl_multimin_fminimizer_nmsimplex2, 
-							     m_stop_eps, m_maxiter, m_start_step));
+	case opt_simplex2 : return new CGSLFMinimizer(gsl_multimin_fminimizer_nmsimplex2, 
+							     m_stop_eps, m_maxiter, m_start_step);
 	case opt_cg_fr: ot = gsl_multimin_fdfminimizer_conjugate_fr; break;   
 	case opt_cg_pr: ot = gsl_multimin_fdfminimizer_conjugate_pr; break;   
 	case opt_bfgs: ot = gsl_multimin_fdfminimizer_vector_bfgs; break;   
@@ -320,9 +324,9 @@ CGSLMinimizerPlugin::ProductPtr CGSLMinimizerPlugin::do_create() const
 	default:
 		throw invalid_argument("Unknown GSL optimizer given"); 
 	}
-	return ProductPtr(new CGSLFDFMinimizer(ot, m_gorth_tolerance, 
-					       m_stop_eps, m_maxiter, 
-					       m_start_step));
+	return new CGSLFDFMinimizer(ot, m_gorth_tolerance, 
+				    m_stop_eps, m_maxiter, 
+				    m_start_step);
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

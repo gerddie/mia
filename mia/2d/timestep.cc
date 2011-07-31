@@ -117,6 +117,7 @@ float C2DRegTimeStepPlugin::get_max_timestep() const
 }
 
 
-EXPLICIT_INSTANCE_HANDLER(C2DRegTimeStep); 
+EXPLICIT_INSTANCE_PLUGIN(C2DRegTimeStep); 
+EXPLICIT_INSTANCE_PLUGIN_HANDLER(C2DRegTimeStepPlugin); 
 
 NS_MIA_END

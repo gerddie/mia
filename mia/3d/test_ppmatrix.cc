@@ -25,13 +25,15 @@
 
 NS_MIA_USE;
 
+CSplineKernelTestPath splinekernel_init_path; 
+
 struct TransformSplineFixtureFieldBase {
 	TransformSplineFixtureFieldBase()
 	{
 
 	}
 	void init(int dsize, double r, EInterpolation type) {
-		ipf.reset(create_3dinterpolation_factory(type));
+		ipf.reset(create_3dinterpolation_factory(type, bc_mirror_on_bounds));
 		size = C3DBounds(2 * dsize + 1,2 * dsize + 1,2 * dsize + 1);
 		field = C3DFVectorfield(size);
 		range = r; 
@@ -331,7 +333,7 @@ struct TransformSplineFixtureFieldNonuniform {
 
 	}
 	void init(const C3DBounds& dsize, double r, EInterpolation type) {
-		ipf.reset(create_3dinterpolation_factory(type));
+		ipf.reset(create_3dinterpolation_factory(type, bc_mirror_on_bounds));
 		size = C3DBounds(2*dsize.x + 1, 2*dsize.y + 1, 2*dsize.z + 1); 
 		field = C3DFVectorfield(size);
 		range = r; 

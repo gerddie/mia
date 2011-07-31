@@ -81,7 +81,6 @@ mia-2dseriesgradMAD -i segment.set -o mad.exr -c -e 3
 #include <limits>
 #include <sstream>
 #include <stdexcept>
-#include <boost/lambda/lambda.hpp>
 #include <boost/algorithm/minmax_element.hpp>
 
 #include <mia/2d/filterchain.hh>
@@ -91,7 +90,6 @@ mia-2dseriesgradMAD -i segment.set -o mad.exr -c -e 3
 
 using namespace std;
 using namespace mia;
-using namespace boost::lambda;
 
 static const char *program_info = 
 	"Given a set of images of temporal sucession, evaluate the temporal \n"

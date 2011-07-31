@@ -29,6 +29,16 @@
 NS_MIA_BEGIN
 
 template class TTransformCreator<C3DTransformation>; 
-EXPLICIT_INSTANCE_HANDLER(C3DTransformCreator); 
+template class TTransformCreatorPlugin<C3DTransformation>; 
+
+C3DTransformCreatorHandlerTestPath::C3DTransformCreatorHandlerTestPath()
+{
+	list< bfs::path> kernelsearchpath;
+	kernelsearchpath.push_back(bfs::path(MIA_BUILD_ROOT"/mia/3d/transform"));
+	C3DTransformCreatorHandler::set_search_path(kernelsearchpath);
+}
+
+EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C3DTransformCreator, C3DTransformCreatorPlugin); 
+
 
 NS_MIA_END

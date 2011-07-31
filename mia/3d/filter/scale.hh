@@ -51,7 +51,7 @@ private:
 class C3DScaleFilterPlugin: public mia::C3DFilterPlugin {
 public:
 	C3DScaleFilterPlugin();
-	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
 	mia::C3DBounds m_s; 

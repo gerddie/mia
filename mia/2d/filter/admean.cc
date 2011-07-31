@@ -125,9 +125,9 @@ CAdmean2DImageFilterFactory::CAdmean2DImageFilterFactory() :
 					     false, "half filter width"));
 }
 
-C2DFilterPlugin::ProductPtr CAdmean2DImageFilterFactory::do_create()const
+C2DFilter *CAdmean2DImageFilterFactory::do_create()const
 {
-	return C2DFilterPlugin::ProductPtr ( new C2DAdmean ( m_hwidth ) );
+	return new C2DAdmean ( m_hwidth );
 }
 
 const string CAdmean2DImageFilterFactory::do_get_descr() const

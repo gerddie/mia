@@ -224,7 +224,7 @@ P3DImage C3DRegGradientProblem::apply(const CDoubleVector& x)
 	cverb << "\n"; 
 
 	m_transf.set_parameters(x);
-	return m_transf(m_model, m_ipf);
+	return m_transf(m_model);
 }
 
 double  C3DRegGradientProblem::do_f(const CDoubleVector& x)
@@ -306,7 +306,7 @@ double  C3DRegProblem::do_f(const CDoubleVector& x)
 	cverb << "\n"; 
 
 	m_transf.set_parameters(x);
-	P3DImage test =  m_transf(m_model, m_ipf);
+	P3DImage test =  m_transf(m_model);
 
 	const double value = m_cost.value(*test);
 	cvmsg() << "Cost = " << value << "\r";

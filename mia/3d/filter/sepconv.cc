@@ -63,9 +63,9 @@ using namespace std;
 using namespace boost;
 namespace bfs=::boost::filesystem;
 
-CSeparableConvolute::CSeparableConvolute(C1DSpacialKernelPlugin::ProductPtr kx,
-					 C1DSpacialKernelPlugin::ProductPtr ky,
-					 C1DSpacialKernelPlugin::ProductPtr kz):
+CSeparableConvolute::CSeparableConvolute(P1DSpacialKernel kx,
+					 P1DSpacialKernel ky,
+					 P1DSpacialKernel kz):
 	m_kx(kx),
 	m_ky(ky),
 	m_kz(kz)
@@ -154,16 +154,15 @@ C3DSeparableConvoluteFilterPlugin::C3DSeparableConvoluteFilterPlugin():
 	add_parameter("kz", new CStringParameter(m_ky, false, "filter kernel in z-direction"));
 }
 
-C3DSeparableConvoluteFilterPlugin::ProductPtr C3DSeparableConvoluteFilterPlugin::do_create()const
+C3DFilter *C3DSeparableConvoluteFilterPlugin::do_create()const
 {
-	C1DSpacialKernelPlugin::ProductPtr kx, ky, kz;
 	const C1DSpacialKernelPluginHandler::Instance&  skp = C1DSpacialKernelPluginHandler::instance();
-	kx = skp.produce(m_kx.c_str());
-	ky = skp.produce(m_ky.c_str());
-	kz = skp.produce(m_kz.c_str());
+	auto kx = skp.produce(m_kx.c_str());
+	auto ky = skp.produce(m_ky.c_str());
+	auto kz = skp.produce(m_kz.c_str());
 
 
-	return C3DSeparableConvoluteFilterPlugin::ProductPtr(new CSeparableConvolute(kx, ky, kz));
+	return new CSeparableConvolute(kx, ky, kz);
 }
 
 void C3DSeparableConvoluteFilterPlugin::prepare_path() const
@@ -189,16 +188,15 @@ C3DGaussFilterPlugin::C3DGaussFilterPlugin():
 	add_parameter("w", new CIntParameter(m_w, 0,numeric_limits<int>::max(), false, "filter width parameter"));
 }
 
-C3DFilterPlugin::ProductPtr C3DGaussFilterPlugin::do_create()const
+C3DFilter *C3DGaussFilterPlugin::do_create()const
 {
-	C1DSpacialKernelPlugin::ProductPtr k;
 	const C1DSpacialKernelPluginHandler::Instance&  skp = C1DSpacialKernelPluginHandler::instance();
 
 	stringstream fdescr;
 	fdescr << "gauss:w=" << m_w;
-	k = skp.produce(fdescr.str().c_str());
+	auto k = skp.produce(fdescr.str().c_str());
 
-	return C3DSeparableConvoluteFilterPlugin::ProductPtr(new CSeparableConvolute(k, k, k));
+	return new CSeparableConvolute(k, k, k);
 }
 
 const string C3DGaussFilterPlugin::do_get_descr()const

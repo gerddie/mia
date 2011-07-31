@@ -41,7 +41,7 @@ public:
 	typedef TFullCost<Transform> plugin_type;
 
 	static const char *type_descr;
-	static const char *value;
+	static const char *data_descr;
 
 	typedef std::shared_ptr<TFullCost<Transform> > Pointer; 
 	
@@ -83,6 +83,15 @@ public:
 	   Set the size of the cost function 
 	 */
 	void set_size(const Size& size); 
+	
+	/**
+	   Get the full size of the registration problem and see if everybody agrees on it. 
+	   \param size if it is at Size() at input  input it will simply be overwritten, if 
+	           it is not equal to Size(), it will be checked that the size is equal to the local one 
+	   \returns true if the cost function has setthe size or has the same size as the nonzero one give  at input
+	 */
+	bool get_full_size(Size& size) const; 
+	
 protected: 
 	/** \returns cost function weight  */
 	double get_weight() const; 
@@ -93,6 +102,7 @@ private:
 	virtual double do_value() const = 0;
 	virtual void do_reinit();
 	virtual void do_set_size() = 0; 
+	virtual bool do_get_full_size(Size& size) const; 
 	
 	double m_weight;
 	Size m_current_size; 
@@ -104,8 +114,8 @@ class EXPORT_HANDLER TFullCostPlugin: public TFactory<TFullCost<Transform> > {
 public:
 	TFullCostPlugin(const char *name);
 private:
-	virtual typename TFullCostPlugin<Transform>::ProductPtr do_create() const;
-	virtual typename TFullCostPlugin<Transform>::ProductPtr do_create(float weight) const = 0;
+	virtual TFullCost<Transform> *do_create() const;
+	virtual TFullCost<Transform> *do_create(float weight) const = 0;
 	float m_weight;
 }; 
 

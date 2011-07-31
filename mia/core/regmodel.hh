@@ -29,7 +29,7 @@
 NS_MIA_BEGIN
 
 struct EXPORT_CORE regmodel_type {
-	static const char *value;
+	static const char *type_descr;
 };
 
 template <int Dim> 
@@ -41,6 +41,7 @@ struct RegistrationTraits {
 }; 
 
 /**
+   \ingroup templates 
    \brief Base class for PDE model based registrations
    
    Base class template for PDE based image registration models.

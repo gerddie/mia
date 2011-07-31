@@ -16,6 +16,45 @@
 
   If you use this software to prepare a scientific publication, please reference it as 
   
-  Gert Wollny et al., "MIA - A plugin-based Framework for Medical Image Processing", http://mia.sf.net 
+  Gert Wollny, "MIA - A plugin-based Framework for Medical Image Processing", http://mia.sf.net 
 
+  \section naming_sec About naming schemes
+
+  The following naming scheme is employed for most of the classes and data structurs: 
+  
+  Names for template classes that provide interfaces start with a capital "T" e.g. TShape, or TFactory.
+  Names of classes start with a capital "C" like CSegSet, or CSplineKernel. 
+  Classes and structures that work as functors are named starting with a capital "F", e.g. FMeanValue. 
+  Names of PODs (plain old data structures) begin with a "S".
+
+  \section refactor_sec Planned refactoring and changes
+    
+  - Registration algorithms should make it possible to select a lowest resolution directly in  
+    multi resolution processing 
+
+  - All factory plugin handlers should provide a helper function that eliminates the need to use 
+       the actual class name plus instance 
+
+
+
+    \defgroup infrastructure Infrastructure 
+    These classes and functions are related to the infrastructure provided by the MIA libraries. 
+    This includes the means for plug-in handling, option parsing, and logging.
+
+    \defgroup filtering Filtering
+
+    These classes and functions are related to image filtering. 
+
+    \defgroup interpol Interpolation 
+
+    These classes deal with the tasks related to interpolation
+    
+
+    \defgroup classes Classes that provide primary funcionality 
+    \defgroup templates Templates that provide primary funcionality 
+    \defgroup functors Functors
+    \defgroup helpers Helper classes and functions 
+    \defgroup traits Template metaprogramming classes
+    \defgroup tests Classes used for tests only 
+    
 */

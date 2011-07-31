@@ -129,7 +129,11 @@ void C2DLabelStackFilter::label_new_regions(C2DBitImage& input)
 			if (*ii) {
 				cvdebug() << "("<< x << ", " << y <<"," << slice <<  "):" 
 					  << m_last_label << "\n"; 
-				*usi = m_last_label++;
+				if (m_last_label < numeric_limits<unsigned short>::max()) 
+					*usi = m_last_label++;
+				else 
+					THROW(invalid_argument, "C2DLabelStackFilter: numer of connected components exeeds supported limit of " <<
+					      numeric_limits<unsigned short>::max() << ", sorry can't continue\n");   
 				*ii = false; 
 				grow(x,y,input,*usi); 
 			}
@@ -220,18 +224,15 @@ void C2DLabelStackFilter::post_finalize()
 	}
 	if (!m_map_file.empty()) {
 		ofstream outfile(m_map_file.c_str(), ios_base::out );
-		outfile << "MiaLabemap\n" << m_target.size() << "\n"; 
-		
-		for (auto i = m_target.begin(); i != m_target.end(); ++i) 
-			outfile << i->first << " " << i->second << "\n"; 
+		m_target.save(outfile); 
 		if (!outfile.good()) {
-			cverr() << "C2DLabelStackFilter: unable to write mapping file '" 
-				<< m_map_file << "'\n"; 
+			THROW(runtime_error, "C2DLabelStackFilter: failed to save labale join map to '"
+			      << m_map_file << "'"); 
 		}
 	}
 }
 
-const C2DLabelStackFilter::JointsMap& C2DLabelStackFilter::get_joints() const
+const CLabelMap& C2DLabelStackFilter::get_joints() const
 {
 	return m_target; 
 }
@@ -244,7 +245,7 @@ private:
 
 	virtual const string do_get_descr() const;
 	virtual bool do_test() const;
-	virtual C2DFifoFilterPlugin::ProductPtr do_create()const;
+	virtual C2DImageFifoFilter *do_create()const;
 
 	string m_neighborhood;
 	string m_mapfile;
@@ -270,10 +271,10 @@ bool C2DLabelFifoFilterPlugin::do_test() const
 	return true;
 }
 
-C2DFifoFilterPlugin::ProductPtr C2DLabelFifoFilterPlugin::do_create()const
+C2DImageFifoFilter *C2DLabelFifoFilterPlugin::do_create()const
 {
 	auto shape = C2DShapePluginHandler::instance().produce(m_neighborhood); 
-	return C2DFifoFilterPlugin::ProductPtr(new C2DLabelStackFilter(m_mapfile, shape));
+	return new C2DLabelStackFilter(m_mapfile, shape);
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

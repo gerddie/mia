@@ -49,17 +49,24 @@ public:
 	/// data type for the real iterator in the background 
 	typedef I internal_iterator; 
 	
+	/**
+	   Enumerate to describe the various positions on the domain boundarys. 
+	   These boundaries correspond to the full domain of the data, not to 
+           the sub-range this iteratior works on. 
+	   I.e. if the sub-range is a subset of the \a open domain (i.e. without its boundary) 
+	   then the iterator will never touch the domain boundary. 
+	 */
 	enum EBoundary {
-		eb_none  = 0, 
-		eb_xlow  = 1, 
-		eb_xhigh = 2, 
-		eb_x     = 3,
-		eb_ylow = 4, 
-		eb_yhigh = 8, 
-		eb_y     = 0xC, 
-		eb_zlow = 0x10, 
-		eb_zhigh = 0x20, 
-		eb_z     = 0x30
+		eb_none  = 0, /**< no boundary */
+		eb_xlow  = 1, /**< at low x-boundary */ 
+		eb_xhigh = 2, /**< at high x-boundary */  
+		eb_x     = 3, /**< at one of the x-boundaries */  
+		eb_ylow = 4,  /**< at low y-boundary */ 
+		eb_yhigh = 8, /**< at high y-boundary */
+		eb_y     = 0xC, /**< at one of the y-boundaries */  
+		eb_zlow = 0x10, /**< at low x-boundary */ 
+		eb_zhigh = 0x20,/**< at high z-boundary */
+		eb_z     = 0x30 /**< at one of the z-boundaries */  
 	}; 
 	
 
@@ -141,6 +148,7 @@ public:
 	 */
 	internal_iterator get_point(); 
 
+	/// \returns the flags describing whether the iterator is on a domain boundary. 
 	int get_boundary_flags() const; 
 
 private: 

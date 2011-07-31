@@ -24,11 +24,13 @@
 
 NS_MIA_BEGIN
 
-C2DTransformMock::C2DTransformMock()
+C2DTransformMock::C2DTransformMock():
+	C2DTransformation(C2DInterpolatorFactory("bspline:d=3", "mirror"))
 {
 }
 
 C2DTransformMock::C2DTransformMock(const C2DBounds& size):
+	C2DTransformation(C2DInterpolatorFactory("bspline:d=3", "mirror")), 
 	m_size(size)
 {
 

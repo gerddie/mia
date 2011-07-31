@@ -69,7 +69,7 @@ void CVista2DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
 
 
 template <typename T>
-void read_image(VImage image, CVista2DImageIOPlugin::Data& result_list)
+void read_image(VImage image, CVista2DImageIOPlugin::Data& result_list, int aqnr)
 {
 	size_t n = VImageNBands(image);
 	size_t slice_size = VImageNColumns(image)* VImageNRows(image);
@@ -77,30 +77,35 @@ void read_image(VImage image, CVista2DImageIOPlugin::Data& result_list)
 	O *begin = (O*)VPixelPtr(image,0,0,0);
 	O *end = begin + slice_size;
 
-	while (n--) {
+	size_t idx = 0; 
+	while (idx < n) {
 
 		T2DImage<T> *result = new T2DImage<T>(C2DBounds(VImageNColumns(image), VImageNRows(image)));
 		P2DImage presult(result);
 		std::copy(begin, end, result->begin());
 		copy_attr_list(*result->get_attribute_list(), VImageAttrList(image));
+		presult->set_attribute(IDInstanceNumber, PAttribute(new CIntAttribute(idx))); 
+		if (!presult->has_attribute(IDAcquisitionNumber))
+			presult->set_attribute(IDAcquisitionNumber, PAttribute(new CIntAttribute(aqnr)));
 		result_list.push_back(presult);
 		begin += slice_size;
 		end   += slice_size;
+		++idx; 
 	}
 }
 
-void copy_from_vista(VImage image, CVista2DImageIOPlugin::Data& result)
+void copy_from_vista(VImage image, CVista2DImageIOPlugin::Data& result, int i)
 {
 	// this could be changed to add a bunch of images
 	// however, then one would also have to write these as such ...
 	switch (VPixelRepn(image)) {
-	case VBitRepn : return read_image<bool>(image, result);
-	case VUByteRepn : return read_image<unsigned char>(image, result);
-	case VSByteRepn : return read_image<signed char>(image, result);
-	case VShortRepn : return read_image<signed short>(image, result);
-	case VLongRepn : return read_image<signed int>(image, result);
-	case VFloatRepn : return read_image<float>(image, result);
-	case VDoubleRepn : return read_image<double>(image, result);
+	case VBitRepn : return read_image<bool>(image, result, i);
+	case VUByteRepn : return read_image<unsigned char>(image, result, i);
+	case VSByteRepn : return read_image<signed char>(image, result, i);
+	case VShortRepn : return read_image<signed short>(image, result, i);
+	case VLongRepn : return read_image<signed int>(image, result, i);
+	case VFloatRepn : return read_image<float>(image, result, i);
+	case VDoubleRepn : return read_image<double>(image, result, i);
 	default:
 		throw invalid_argument("2d vista load: Unknown pixel format");
 	}
@@ -119,7 +124,7 @@ CVista2DImageIOPlugin::PData  CVista2DImageIOPlugin::do_load(const string& fname
 	CVista2DImageIOPlugin::PData result(new CVista2DImageIOPlugin::Data());
 
 	for (int i = 0; i < nimages; ++i) {
-		copy_from_vista(images[i], *result);
+		copy_from_vista(images[i], *result, i);
 		VDestroyImage(images[i]);
 	}
 

@@ -67,6 +67,7 @@ const SLookupInit lookup_init[] = {
 	{IDPatientOrientation, DCM_PatientOrientation, false, false},
 	{IDMediaStorageSOPClassUID, DCM_MediaStorageSOPClassUID, true, true},
 	{IDSOPClassUID, DCM_SOPClassUID, false, false},
+	{IDProtocolName, DCM_ProtocolName, false, false},
 	{IDTestValue, DcmTagKey(), false, false},
 	{NULL, DcmTagKey(), false, false}
 };
@@ -92,6 +93,8 @@ struct CDicomReaderData {
 	OFCondition status;
 
 	CDicomReaderData();
+	CDicomReaderData(const DcmFileFormat& dcm); 
+	~CDicomReaderData(); 
 
 	Uint16 getUint16(const DcmTagKey &tagKey, bool required);
 
@@ -101,7 +104,7 @@ struct CDicomReaderData {
 	void getPixelData(T2DImage<T>& image);
 
 	template <typename T>
-	void getPixelData_LittleEndianImplicitTransfer(T2DImage<T>& image);
+	void getPixelData_LittleEndianExplicitTransfer(T2DImage<T>& image);
 
 
 	C2DFVector getPixelSize();
@@ -225,6 +228,18 @@ CDicomReaderData::CDicomReaderData()
 	DJDecoderRegistration::registerCodecs();
 }
 
+CDicomReaderData::CDicomReaderData(const DcmFileFormat& _dcm):
+	dcm(_dcm)
+{
+	DJDecoderRegistration::registerCodecs();
+}
+
+CDicomReaderData::~CDicomReaderData()
+{
+	DJDecoderRegistration::cleanup();
+}
+
+
 Uint16 CDicomReaderData::getUint16(const DcmTagKey &tagKey, bool required)
 {
 	Uint16 value;
@@ -254,7 +269,7 @@ string CDicomReaderData::getAttribute(const string& key, bool required)
 }
 
 template <typename T>
-void CDicomReaderData::getPixelData_LittleEndianImplicitTransfer(T2DImage<T>& image)
+void CDicomReaderData::getPixelData_LittleEndianExplicitTransfer(T2DImage<T>& image)
 {
 	OFCondition status = dcm.loadAllDataIntoMemory();
 	if (status.bad()) {
@@ -283,21 +298,14 @@ void CDicomReaderData::getPixelData(T2DImage<T>& image)
 	if (success.bad()) {
 		THROW(runtime_error, "Unable to determine transfer syntax");
 	}
-
-	string transfer_syntax(of_transfer_syntax.data());
-
-	if (transfer_syntax == string(UID_LittleEndianImplicitTransferSyntax)) {
-		getPixelData_LittleEndianImplicitTransfer(image);
-	}else if (transfer_syntax == string(UID_JPEGProcess14SV1TransferSyntax)) {
-		status = dcm.getDataset()->chooseRepresentation(EXS_LittleEndianExplicit, NULL);
-		OFCondition status = dcm.loadAllDataIntoMemory();
-		if (status.bad()) {
-			THROW(runtime_error, "DICOM: error loading pixel data:"<< status.text());
-		}
-		getPixelData_LittleEndianImplicitTransfer(image);
-	}else {
-		THROW(invalid_argument, "Unsupported transfer syntax:'" << transfer_syntax << "'");
+	dcm.getDataset()->chooseRepresentation(EXS_LittleEndianExplicit, NULL);
+	
+	if (!dcm.getDataset()->canWriteXfer(EXS_LittleEndianExplicit)) {
+		string transfer_syntax(of_transfer_syntax.data());
+		THROW(runtime_error, "DICOM: Unsupported data encoding '" <<  transfer_syntax << "'");
 	}
+
+	getPixelData_LittleEndianExplicitTransfer(image);
 }
 
 C2DFVector CDicomReaderData::getPixelSize()
@@ -465,6 +473,12 @@ CDicomWriter::CDicomWriter(const C2DImage& image):
 {
 }
 
+CDicomWriter::~CDicomWriter()
+{
+	delete impl;
+}
+
+
 bool CDicomWriter::write(const char *filename) const
 {
 	return impl->write(filename);
@@ -508,9 +522,7 @@ CDicomReader::CDicomReader(struct CDicomReaderData *yeah):
 
 CDicomReader EXPORT_DICOM ugly_trick_writer_dcm_to_reader_dcm(CDicomWriter& writer)
 {
-	CDicomReaderData *yeah = new CDicomReaderData;
-	yeah->dcm =  writer.impl->dcm;
-	return CDicomReader(yeah);
+	return CDicomReader(new CDicomReaderData(writer.impl->dcm));
 }
 
 EXPORT_DICOM const char * IDMediaStorageSOPClassUID= "MediaStorageSOPClassUID";

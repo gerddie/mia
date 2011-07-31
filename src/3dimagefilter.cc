@@ -129,19 +129,17 @@ int main( int argc, const char *argv[] )
 
 	//CHistory::instance().append(argv[0], "unknown", options);
 
-	std::vector<C3DFilterPlugin::ProductPtr> filters = create_filter_chain(filter_chain);
+	auto filters = create_filter_chain(filter_chain);
 
 	// read image
-	C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(in_filename);
+	auto  in_image_list = imageio.load(in_filename);
 
 
 	if (in_image_list.get() && in_image_list->size()) {
-		vector<const char *>::const_iterator filter_name = filter_chain.begin();
-		for (vector<C3DFilterPlugin::ProductPtr>::const_iterator f = filters.begin();
-		     f != filters.end(); ++f, ++filter_name) {
+		auto filter_name = filter_chain.begin();
+		for (auto f = filters.begin();  f != filters.end(); ++f, ++filter_name) {
 			cvmsg() << "Run filter: " << *filter_name << "\n";
-			for (C3DImageIOPluginHandler::Instance::Data::iterator i = in_image_list->begin();
-			     i != in_image_list->end(); ++i)
+			for (auto i = in_image_list->begin(); i != in_image_list->end(); ++i)
 				*i = (*f)->filter(**i);
 		}
 

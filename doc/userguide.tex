@@ -66,7 +66,7 @@ A copy of the license is available at http://www.gnu.org/copyleft/fdl.html
 Date  & Description\\
 \hline
 \hline 
-01/06/2011 & Second Public Release  \\
+01/08/2011 & Second Public Release  \\
 01/10/2007 & First Public Release  \\
 01/03/2007 & Second Beta \\
 13/06/2007 & First Beta  \\
@@ -103,6 +103,7 @@ To do so, your software environment has to meet the following pre-requisites:
 \begin{enumerate}
 \item You need a ANSI-compatible C++ compiler that supports some features of the new C++0x standard 
        (most likely dubbed C++2011) -- GNU g++ (>=4.5) \url{http://gcc.gnu.org} is known to work. 
+\item Intel Threading Building Blocks for Open Source \url{http://threadingbuildingblocks.org/}
 \item CMake \url{http://www.cmake.org}
 \item The BOOST >= 1.40 \url{http://www.boost.org} library
 \item gsl The GNU Scientific Library \url{http://www.gnu.org/software/gsl/}
@@ -292,7 +293,7 @@ Note, when other options are set alongside the \texttt{-{}-help} option, then fo
 When a program is called with two (ore more) conflicting options then one option takes automatically precedence 
   as it is documented. 
 
-\subsection*{An additional not is required for command line options}
+\subsection*{An additional note for setting command line options}
 
 Option values, that belong to one option \emph{must not} contain whitespace characters, otherwise, 
   the command line parser will seperate the parts. 

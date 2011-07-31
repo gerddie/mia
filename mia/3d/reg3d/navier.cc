@@ -210,7 +210,7 @@ bool C3DNavierRegModel::test_kernel()
 class C3DNavierRegModelPlugin: public C3DRegModelPlugin {
 public:
 	C3DNavierRegModelPlugin();
-	C3DNavierRegModelPlugin::ProductPtr do_create()const;
+	C3DRegModel *do_create()const;
 
 private:
 	bool do_test() const;
@@ -244,10 +244,9 @@ C3DNavierRegModelPlugin::C3DNavierRegModelPlugin():
 							   false, "maximum number of iterations"));
 }
 
-C3DNavierRegModelPlugin::ProductPtr C3DNavierRegModelPlugin::do_create()const
+C3DRegModel *C3DNavierRegModelPlugin::do_create()const
 {
-	return C3DNavierRegModelPlugin::ProductPtr(new C3DNavierRegModel(m_mu, m_lambda,
-									 m_maxiter, m_omega, m_epsilon));
+	return new C3DNavierRegModel(m_mu, m_lambda, m_maxiter, m_omega, m_epsilon);
 }
 
 bool  C3DNavierRegModelPlugin::do_test() const

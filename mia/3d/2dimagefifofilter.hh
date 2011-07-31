@@ -26,9 +26,6 @@
 #ifndef __mia_2dfifofilterstack_hh
 #define __mia_2dfifofilterstack_hh
 
-
-#include <mia/core/shared_ptr.hh>
-
 #include <mia/2d/2DImage.hh>
 #include <mia/3d/3DImage.hh>
 #include <mia/core/factory.hh>
@@ -39,7 +36,7 @@
 NS_MIA_BEGIN
 
 struct EXPORT_3D image2d_stack {
-	static const char *type_descr;
+	static const char *data_descr;
 };
 
 template <>

@@ -28,6 +28,8 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup helpers 
+   
    \brief A class to adress a circulat bufer of a fixed size. 
 
    This class provides the structure for the translation of a linear index to 

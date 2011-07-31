@@ -22,7 +22,6 @@
  *
  */
 
-#include <mia/core/shared_ptr.hh>
 #include <mia/internal/autotest.hh>
 #include <mia/3d/filter/scale.hh>
 
@@ -31,6 +30,8 @@ using namespace std;
 using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace scale_3dimage_filter;
+
+CSplineKernelTestPath splinekernel_init_path; 
 
 BOOST_AUTO_TEST_CASE( test_downscale )
 {
@@ -127,7 +128,7 @@ BOOST_AUTO_TEST_CASE( test_downscale )
 	fimage.set_voxel_size(C3DFVector(2.0, 3.0, 4.0));
 
 
-	CScale scaler(C3DBounds(4,4,4), "bspline3");
+	CScale scaler(C3DBounds(4,4,4), "bspline:d=3");
 
 	P3DImage scaled = scaler.filter(fimage);
 
@@ -156,7 +157,7 @@ BOOST_AUTO_TEST_CASE( test_downscale_float )
 	fimage.set_voxel_size(C3DFVector(2.0, 3.0, 4.0));
 
 
-	CScale scaler(C3DBounds(4, 4, 4), "bspline3");
+	CScale scaler(C3DBounds(4, 4, 4), "bspline:d=3");
 
 	P3DImage scaled = scaler.filter(fimage);
 
@@ -181,7 +182,7 @@ BOOST_AUTO_TEST_CASE( test_noscale_float )
 	fimage.set_voxel_size(C3DFVector(2.0, 3.0, 4.0));
 
 
-	CScale scaler(C3DBounds(0, 0, 0), "bspline3");
+	CScale scaler(C3DBounds(0, 0, 0), "bspline:d=3");
 
 	P3DImage scaled = scaler.filter(fimage);
 

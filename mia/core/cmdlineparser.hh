@@ -26,12 +26,12 @@
 
 #include <vector>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <iostream>
 #include <string>
 #include <iterator>
 #include <mia/core/defines.hh>
-#include <mia/core/shared_ptr.hh>
 #include <mia/core/dictmap.hh>
 #include <mia/core/flagstring.hh>
 
@@ -55,13 +55,12 @@ typedef std::map<char,  CCmdOption *>        CShortoptionMap;
 typedef std::map<std::string,  CCmdOption *> CLongoptionMap;
 
 /** 
+    \ingroup infrastructure 
+
     \brief The base class for all command line options. 
 
     The base class of all possible command line options. It defines the interface
-    of the options as well as some basic functionality to create help strings
-    \todo "Add a start or set group command"
-    \todo "Add a parameter to the parse command that tells whether additional parameters 
-    are allowed. 
+    of the options as well as some basic functionality to create help strings. 
 */
 class EXPORT_CORE CCmdOption  {
 public:
@@ -163,7 +162,9 @@ typedef std::shared_ptr<CCmdOption > PCmdOption;
 /**
    \brief The base class for command line options that hold "normal" values.  
 
-   The base class to options that really hold values
+   The base class to options that really hold values. 
+   \remark Why does this additional class exsist in the hierarchy?  
+   
 */
 class EXPORT_CORE CCmdOptionValue: public CCmdOption {
 public:
@@ -526,12 +527,16 @@ class TPluginHandlerHelpCallback: public CHelpOption::Callback {
 */
 class EXPORT_CORE CCmdOptionList {
 public:
+
+	/**
+	   This enum describes the type of help information that has been requested 
+	*/
 	enum EHelpRequested {
-		hr_no = 0,
-		hr_help,
-		hr_help_xml,
-		hr_usage, 
-		hr_copyright
+		hr_no = 0,    /**< no help has been requested */
+		hr_help,      /**< standard help output has been requested */
+		hr_help_xml,  /**< XML-formatted help has been requested */
+		hr_usage,     /**< a short usage description has been requested */ 
+		hr_copyright  /**< The long copyright information has been requested */
 	};
 
         /**

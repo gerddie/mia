@@ -28,9 +28,6 @@
 
 #include <limits>
 
-#include <boost/lambda/lambda.hpp>
-using namespace boost::lambda;
-
 NS_BEGIN(mlv_2dimage_filter);
 
 class C2DMLV: public mia::C2DFilter {
@@ -66,7 +63,7 @@ class C2DExtKuwaImageFilterFactory: public mia::C2DFilterPlugin {
 public:
 	C2DExtKuwaImageFilterFactory();
 private:
-	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr() const;
 	int m_hw;
 };

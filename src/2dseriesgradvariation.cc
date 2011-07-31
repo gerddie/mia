@@ -78,8 +78,7 @@ mia-2dseriesgradvariation -i segment.set -o gradvar.exr -c -e 3
 #include <limits>
 #include <sstream>
 #include <stdexcept>
-#include <boost/lambda/lambda.hpp>
-#include <boost/algorithm/minmax_element.hpp>
+//#include <boost/algorithm/minmax_element.hpp>
 
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/2dimageio.hh>
@@ -88,7 +87,6 @@ mia-2dseriesgradvariation -i segment.set -o gradvar.exr -c -e 3
 
 using namespace std;
 using namespace mia;
-using namespace boost::lambda;
 
 static const char *program_info = 
 	"This program is used to evaluate the temporal pixel wise gradient variation\n"
@@ -96,12 +94,6 @@ static const char *program_info =
 	"Usage:\n"
 	"  mia-2dseriesgradvariation -i <input set> -o <output image> [<options>]\n";
 
-template <typename T>
-struct fabsdelta {
-	T operator () (T x, T y) const {
-		return fabs(x - y);
-	}
-};
 struct C2DVarAccumulator : public TFilter<bool> {
 
 	C2DVarAccumulator():
@@ -121,12 +113,15 @@ struct C2DVarAccumulator : public TFilter<bool> {
 				throw invalid_argument("Input image and mask differ in size");
 
 			transform(image.begin(), image.end(), m_old.begin(), m_delta.begin(),
-				  fabsdelta<float>());
-			transform(m_delta.begin(), m_delta.end(), m_sum.begin(), m_sum.begin(),  _1 + _2);
-			transform(m_delta.begin(), m_delta.end(), m_sum2.begin(), m_sum2.begin(),  _1 * _1 + _2);
-
-			pair<typename T2DImage<T>::const_iterator, typename T2DImage<T>::const_iterator>
-				src_minmax = ::boost::minmax_element(image.begin(), image.end());
+				  [](float x, float y){return fabs(x - y);}); 
+			
+			transform(m_delta.begin(), m_delta.end(), m_sum.begin(), m_sum.begin(),  
+				  [](float x, float y){return x + y;}); 
+			
+			transform(m_delta.begin(), m_delta.end(), m_sum2.begin(), m_sum2.begin(), 
+				  [](float x, float y){return x * x + y;}); 
+			
+			auto src_minmax = minmax_element(image.begin(), image.end());
 			if (m_min > *src_minmax.first)
 				m_min = *src_minmax.first;
 			if (m_max < *src_minmax.second)
@@ -150,10 +145,10 @@ struct C2DVarAccumulator : public TFilter<bool> {
 		C2DFImage *variation = new C2DFImage(m_sum2.get_size());
 		float n = m_n - 1;
 		transform(m_sum2.begin(), m_sum2.end(), m_sum.begin(), variation->begin(),
-			  (_1 - _2 * _2 / n )/ (n - 1));
+			  [n](float sum2, float sum){ return (sum2 - sum * sum / n )/ (n - 1);}); 
 
-		for (C2DFImage::iterator i = variation->begin(); i!= variation->end(); ++i)
-			*i = range * sqrt(*i);
+		transform(variation->begin(), variation->end(), variation->begin(), 
+			  [range](float x) {return range * sqrt(x);});
 
 		return P2DImage(variation);
 	}
@@ -208,7 +203,7 @@ int main( int argc, const char *argv[] )
 
 		CSegSetWithImages  segset(in_filename, true);
 
-		C2DFilterPlugin::ProductPtr  crop_filter;
+		P2DFilter  crop_filter;
 		if (crop) {
 			C2DBoundingBox box = segset.get_boundingbox();
 			box.enlarge(enlarge_boundary);

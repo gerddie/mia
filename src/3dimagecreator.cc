@@ -96,7 +96,7 @@ int do_main(int argc, const char *argv[])
 		return EXIT_SUCCESS; 
 
 
-	C3DImageCreatorPlugin::ProductPtr creator = creator_ph.produce(object.c_str());
+	auto creator = creator_ph.produce(object.c_str());
 	if (!creator) {
 		std::stringstream error;
 		error << "Creator " << object << " not found";

@@ -16,32 +16,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
 #include <mia/core/msgstream.hh>
-#include <mia/3d/cost.hh>
 #include <mia/3d/3dimageio.hh>
-#include <mia/3d/fatcost.hh>
+#include <mia/3d/cost/fatssd.hh>
 
 using namespace std;
 using namespace boost;
 namespace bfs=::boost::filesystem;
 using namespace mia;
 
+
 NS_BEGIN(ssd_3dimage_fatcost)
 
-class CFatSSD3DImageCost : public C3DImageFatCost {
-public:
-	CFatSSD3DImageCost(P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight);
-private:
-	virtual P3DImageFatCost cloned(P3DImage src, P3DImage ref) const;
-	virtual double do_value() const;
-	virtual double do_evaluate_force(C3DFVectorfield& force) const;
-	C3DImageCostPlugin::ProductPtr m_evaluator;
-};
 
 
-CFatSSD3DImageCost::CFatSSD3DImageCost(P3DImage src, P3DImage ref, P3DInterpolatorFactory ipf, float weight):
-	C3DImageFatCost(src,  ref,  ipf, weight),
+CFatSSD3DImageCost::CFatSSD3DImageCost(P3DImage src, P3DImage ref, float weight):
+	C3DImageFatCost(src,  ref,  weight),
 	m_evaluator(C3DImageCostPluginHandler::instance().produce("ssd"))
 {
 	m_evaluator->set_reference(*ref); 
@@ -49,7 +39,7 @@ CFatSSD3DImageCost::CFatSSD3DImageCost(P3DImage src, P3DImage ref, P3DInterpolat
 
 P3DImageFatCost CFatSSD3DImageCost::cloned(P3DImage src, P3DImage ref) const
 {
-	return P3DImageFatCost(new CFatSSD3DImageCost(src, ref,  get_ipf(), get_weight()));
+	return P3DImageFatCost(new CFatSSD3DImageCost(src, ref,  get_weight()));
 }
 
 double CFatSSD3DImageCost::do_value() const
@@ -69,11 +59,9 @@ class C3DSSDFatImageCostPlugin: public C3DFatImageCostPlugin {
 public:
 	C3DSSDFatImageCostPlugin();
 private:
-	virtual C3DFatImageCostPlugin::ProductPtr do_create(P3DImage src,
-							    P3DImage ref, P3DInterpolatorFactory ipf, float weight)const;
+	virtual C3DImageFatCost *do_create(P3DImage src, P3DImage ref, 
+					   P3DInterpolatorFactory ipf, float weight)const;
 	bool  do_test() const;
-	void prepare_path() const;
-
 	const string do_get_descr()const;
 
 };
@@ -84,10 +72,10 @@ C3DSSDFatImageCostPlugin::C3DSSDFatImageCostPlugin():
 	TRACE("C3DSSDFatImageCostPlugin::C3DSSDFatImageCostPlugin()");
 }
 
-C3DFatImageCostPlugin::ProductPtr C3DSSDFatImageCostPlugin::do_create(P3DImage src, P3DImage ref,
-								      P3DInterpolatorFactory ipf, float weight)const
+C3DImageFatCost *C3DSSDFatImageCostPlugin::do_create(P3DImage src, P3DImage ref,
+						     P3DInterpolatorFactory ipf, float weight)const
 {
-	return C3DFatImageCostPlugin::ProductPtr(new CFatSSD3DImageCost(src, ref, ipf, weight));
+	return new CFatSSD3DImageCost(src, ref, weight);
 }
 
 bool  C3DSSDFatImageCostPlugin::do_test() const
@@ -99,8 +87,8 @@ bool  C3DSSDFatImageCostPlugin::do_test() const
 	P3DImage test_image(new C3DFImage(size, &init_test[0]));
 	P3DImage ref_image(new C3DFImage(size, &init_ref[0]));
 
-	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3));
-	CFatSSD3DImageCost cost(test_image, ref_image, ipf, 1.0);
+	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
+	CFatSSD3DImageCost cost(test_image, ref_image, 1.0);
 	double scale = 1.0; 
 
 	if (scale * cost.value() > 8 * 16 * 7 * 1.001 * 0.5 || scale * cost.value() <  8 * 16 * 7 *0.999 * 0.5 ) {
@@ -109,17 +97,6 @@ bool  C3DSSDFatImageCostPlugin::do_test() const
 	}
 
 	return true;
-}
-
-void C3DSSDFatImageCostPlugin::prepare_path() const
-{
-	TRACE("C3DSSDFatImageCostPlugin::prepare_path");
-	list< bfs::path> costsearchpath;
-	costsearchpath.push_back( bfs::path("."));
-	C3DImageCostPluginHandler::set_search_path(costsearchpath);
-
-	cvdebug() << "C3DImageCostPluginHandler::instance().size(): " <<
-		C3DImageCostPluginHandler::instance().size()<<"\n" ;
 }
 
 const string C3DSSDFatImageCostPlugin::do_get_descr()const

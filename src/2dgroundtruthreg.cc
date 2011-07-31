@@ -65,7 +65,6 @@ struct SRegistrationParams {
 	size_t c_rate; 
 	double divcurlweight; 
 	double imageweight; 
-	shared_ptr<C2DInterpolatorFactory> ipfactory; 
 	size_t mg_levels; 
 	SRegistrationParams(); 
 }; 
@@ -116,14 +115,13 @@ run_registration_pass(const CSegSetWithImages&  input_set, C2DImageSeries& serie
 	C2DImageSeries input_images = input_set.get_images(); 
 	auto costs  = create_costs(params.divcurlweight, params.imageweight); 
 	auto transform_creator = create_transform_creator(params.c_rate); 
-	C2DNonrigidRegister nrr(costs, params.minimizer,  transform_creator, 
-				*params.ipfactory, params.mg_levels);
+	C2DNonrigidRegister nrr(costs, params.minimizer,  transform_creator, params.mg_levels);
 
 	// this loop could be parallized 
 	for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
 		cvmsg() << "Register frame " << i << "\n"; 
 		P2DTransformation transform = nrr.run(input_images[i + skip_images], references[i]);
-		series[i] = (*transform)(*input_images[i + skip_images], *params.ipfactory);
+		series[i] = (*transform)(*input_images[i + skip_images]);
 		result.push_back(transform); 
 	}
 	return result; 
@@ -150,7 +148,7 @@ int do_main( int argc, const char *argv[] )
 	double c_rate_divider = 4; 
 	double divcurlweight_divider = 4.0; 
 
-	EInterpolation interpolator = ip_bspline3;
+	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 
 	CCmdOptionList options(g_description);
 	options.set_group("\nFile-IO"); 
@@ -175,8 +173,7 @@ int do_main( int argc, const char *argv[] )
 	options.set_group("\nRegistration"); 
 	
 	options.add(make_opt( reg_params.minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
-				    "image interpolator", NULL));
+	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( reg_params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));
 	
 	options.add(make_opt( reg_params.divcurlweight, "divcurl", 'd', 
@@ -195,8 +192,6 @@ int do_main( int argc, const char *argv[] )
 		return EXIT_SUCCESS; 
 	
 	
-	reg_params.ipfactory.reset(create_2dinterpolation_factory(interpolator));
-		
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
 	

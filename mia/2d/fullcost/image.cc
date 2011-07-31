@@ -52,27 +52,20 @@
 */
 
 
-
-
-#include <boost/lambda/lambda.hpp>
 #include <mia/2d/fullcost/image.hh>
 #include <mia/2d/2dfilter.hh>
 
 NS_MIA_BEGIN
 
-using boost::lambda::_1; 
-
 C2DImageFullCost::C2DImageFullCost(const std::string& src, 
 				   const std::string& ref, 
 				   const std::string& cost, 
-				   EInterpolation ip_type, 
 				   double weight, 
 				   bool debug):
 	C2DFullCost(weight), 
 	m_src_key(C2DImageIOPluginHandler::instance().load_to_pool(src)), 
 	m_ref_key(C2DImageIOPluginHandler::instance().load_to_pool(ref)), 
 	m_cost_kernel(C2DImageCostPluginHandler::instance().produce(cost)), 
-	m_ipf(create_2dinterpolation_factory(ip_type)), 
 	m_debug(debug)
 {
 	assert(m_cost_kernel); 
@@ -83,11 +76,23 @@ bool C2DImageFullCost::do_has(const char *property) const
 	return m_cost_kernel->has(property); 
 }
 
+bool C2DImageFullCost::do_get_full_size(C2DBounds& size) const
+{
+	TRACE_FUNCTION; 
+	assert(m_src); 
+	if (size == C2DBounds::_0) {
+		size = m_src->get_size(); 
+		return true; 
+	}else
+		return 	size == m_src->get_size(); 
+}
+
+
 double C2DImageFullCost::do_value(const C2DTransformation& t) const
 {
 	TRACE_FUNCTION; 
 	assert(m_src_scaled); 
-	P2DImage temp  = t(*m_src_scaled, *m_ipf);
+	P2DImage temp  = t(*m_src_scaled);
 	const double result = m_cost_kernel->value(*temp); 
 	cvdebug() << "C2DImageFullCost::value = " << result << "\n"; 
 	return result; 
@@ -113,7 +118,7 @@ double C2DImageFullCost::do_evaluate(const C2DTransformation& t, CDoubleVector& 
 	static int idx = 0; 
 	static auto  toubyte_converter = 
 		C2DFilterPluginHandler::instance().produce("convert:repn=ubyte"); 
-	P2DImage temp  = t(*m_src_scaled, *m_ipf);
+	P2DImage temp  = t(*m_src_scaled);
 
 	if (m_debug) {
 		stringstream fname; 
@@ -199,12 +204,12 @@ class C2DImageFullCostPlugin: public C2DFullCostPlugin {
 public: 
 	C2DImageFullCostPlugin(); 
 private: 
-	C2DFullCostPlugin::ProductPtr do_create(float weight) const;
+	C2DFullCost *do_create(float weight) const;
 	const std::string do_get_descr() const;
 	std::string m_src_name;
 	std::string m_ref_name;
 	std::string m_cost_kernel;
-	EInterpolation m_interpolator;
+	CSplineKernelPluginHandler::ProductPtr m_interpolator;
 	bool m_debug; 
 }; 
 
@@ -213,26 +218,24 @@ C2DImageFullCostPlugin::C2DImageFullCostPlugin():
 	m_src_name("src.@"), 
 	m_ref_name("ref.@"), 
 	m_cost_kernel("ssd"), 
-	m_interpolator(ip_bspline3), 
 	m_debug(false)
 {
 	add_parameter("src", new CStringParameter(m_src_name, false, "Study image"));
 	add_parameter("ref", new CStringParameter(m_ref_name, false, "Reference image"));
 	add_parameter("cost", new CStringParameter(m_cost_kernel, false, "Cost function kernel"));
-	add_parameter("interp", new CDictParameter<EInterpolation>(m_interpolator, 
-								   GInterpolatorTable, "image interpolator"));
 	add_parameter("debug", new CBoolParameter(m_debug, false, "Save intermediate resuts for debugging")); 
 }
 
-C2DFullCostPlugin::ProductPtr C2DImageFullCostPlugin::do_create(float weight) const
+C2DFullCost *C2DImageFullCostPlugin::do_create(float weight) const
 {
 	cvdebug() << "create C2DImageFullCostPlugin with weight= " << weight 
 		  << " src=" << m_src_name << " ref=" << m_ref_name 
 		  << " cost=" << m_cost_kernel << "\n";
-
-	return C2DFullCostPlugin::ProductPtr(
-		new C2DImageFullCost(m_src_name, m_ref_name, 
-				     m_cost_kernel, m_interpolator, weight, m_debug)); 
+	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(m_interpolator,
+							      *produce_spline_boundary_condition("mirror"), 
+							      *produce_spline_boundary_condition("mirror")));
+	return 	new C2DImageFullCost(m_src_name, m_ref_name, 
+				     m_cost_kernel, weight, m_debug); 
 }
 
 const std::string C2DImageFullCostPlugin::do_get_descr() const

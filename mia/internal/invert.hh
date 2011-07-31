@@ -43,7 +43,7 @@ template <class Image>
 class TInvertFilterPlugin: public TImageFilterPlugin<Image>  {
 public: 
 	TInvertFilterPlugin();
-	virtual typename TImageFilterPlugin<Image>::ProductPtr do_create()const;
+	virtual TImageFilter<Image> *do_create()const;
 	virtual const std::string do_get_descr()const; 
 };
 

@@ -92,7 +92,7 @@ class C2DNFGImageCostPlugin: public mia::C2DImageCostPlugin {
 public:
 	C2DNFGImageCostPlugin();
 private:
-	virtual mia::C2DImageCostPlugin::ProductPtr	do_create()const;
+	virtual mia::C2DImageCost *do_create()const;
 
 	bool do_test() const;
 	const std::string do_get_descr()const;

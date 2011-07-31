@@ -150,7 +150,7 @@ bool C2DNavierRegModel::test_kernel()
 class C2DNavierRegModelPlugin: public C2DRegModelPlugin {
 public:
 	C2DNavierRegModelPlugin();
-	C2DNavierRegModelPlugin::ProductPtr do_create()const;
+	C2DRegModel *do_create()const;
 
 private:
 	bool do_test() const;
@@ -184,11 +184,10 @@ C2DNavierRegModelPlugin::C2DNavierRegModelPlugin():
 						false, "maximum number of iterations"));
 }
 
-C2DNavierRegModelPlugin::ProductPtr C2DNavierRegModelPlugin::do_create()const
+C2DRegModel *C2DNavierRegModelPlugin::do_create()const
 {
-	return C2DNavierRegModelPlugin::ProductPtr(
-		new C2DNavierRegModel(m_mu, m_lambda,
-				      m_maxiter, m_omega, m_epsilon));
+	return new C2DNavierRegModel(m_mu, m_lambda,
+				     m_maxiter, m_omega, m_epsilon);
 }
 
 bool C2DNavierRegModelPlugin::do_test() const

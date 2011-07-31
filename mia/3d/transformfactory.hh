@@ -38,13 +38,20 @@ typedef TTransformCreator<C3DTransformation>  C3DTransformCreator;
 typedef std::shared_ptr<C3DTransformCreator > P3DTransformationFactory;
 
 /// Base class for the transform creator plugins 
-typedef TFactory<C3DTransformCreator> C3DTransformCreatorPlugin;
+typedef TTransformCreatorPlugin<C3DTransformation>  C3DTransformCreatorPlugin; 
 
 /// Transform creator plugin handler 
 typedef THandlerSingleton<TFactoryPluginHandler<C3DTransformCreatorPlugin> > C3DTransformCreatorHandler;
 
 /// trait to make the transform creator comman-line parseble
 FACTORY_TRAIT(C3DTransformCreatorHandler); 
+
+struct C3DTransformCreatorHandlerTestPath {
+	C3DTransformCreatorHandlerTestPath(); 
+private: 
+	CSplineKernelTestPath spktp; 
+}; 
+
 
 NS_MIA_END
 

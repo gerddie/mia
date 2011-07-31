@@ -25,8 +25,8 @@
 #ifndef mia_core_combiner_hh
 #define mia_core_combiner_hh
 
+#include <memory>
 #include <string>
-#include <mia/core/shared_ptr.hh>
 #include <mia/core/defines.hh>
 
 

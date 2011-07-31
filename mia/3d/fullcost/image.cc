@@ -59,14 +59,12 @@ NS_MIA_BEGIN
 C3DImageFullCost::C3DImageFullCost(const std::string& src, 
 				   const std::string& ref, 
 				   const std::string& cost, 
-				   EInterpolation ip_type, 
 				   double weight, 
 				   bool debug):
 	C3DFullCost(weight), 
 	m_src_key(C3DImageIOPluginHandler::instance().load_to_pool(src)), 
 	m_ref_key(C3DImageIOPluginHandler::instance().load_to_pool(ref)), 
 	m_cost_kernel(C3DImageCostPluginHandler::instance().produce(cost)), 
-	m_ipf(create_3dinterpolation_factory(ip_type)), 
 	m_debug(debug)
 {
 	assert(m_cost_kernel); 
@@ -81,7 +79,7 @@ double C3DImageFullCost::do_value(const C3DTransformation& t) const
 {
 	TRACE_FUNCTION; 
 	assert(m_src); 
-	P3DImage temp  = t(*m_src, *m_ipf);
+	P3DImage temp  = t(*m_src);
 	const double result = m_cost_kernel->value(*temp); 
 	cvdebug() << "C3DImageFullCost::value = " << result << "\n"; 
 	return result; 
@@ -102,7 +100,7 @@ double C3DImageFullCost::do_evaluate(const C3DTransformation& t, CDoubleVector& 
 	TRACE_FUNCTION; 
 	assert(m_src); 
 	
-	P3DImage temp  = t(*m_src, *m_ipf);
+	P3DImage temp  = t(*m_src);
 
 	if (m_debug) {
 		// not thread save 
@@ -153,6 +151,17 @@ void C3DImageFullCost::do_set_size()
 	}
 }
 
+bool C3DImageFullCost::do_get_full_size(C3DBounds& size) const
+{
+	TRACE_FUNCTION; 
+	assert(m_src); 
+	if (size == C3DBounds::_0) {
+		size = m_src->get_size(); 
+		return true; 
+	}else
+		return 	size == m_src->get_size(); 
+}
+
 void C3DImageFullCost::do_reinit()
 {
 	TRACE_FUNCTION; 
@@ -187,12 +196,11 @@ class C3DImageFullCostPlugin: public C3DFullCostPlugin {
 public: 
 	C3DImageFullCostPlugin(); 
 private: 
-	C3DFullCostPlugin::ProductPtr do_create(float weight) const;
+	C3DFullCost *do_create(float weight) const;
 	const std::string do_get_descr() const;
 	std::string m_src_name;
 	std::string m_ref_name;
 	std::string m_cost_kernel;
-	EInterpolation m_interpolator;
 	bool m_debug; 
 }; 
 
@@ -201,26 +209,21 @@ C3DImageFullCostPlugin::C3DImageFullCostPlugin():
 	m_src_name("src.@"), 
 	m_ref_name("ref.@"), 
 	m_cost_kernel("ssd"), 
-	m_interpolator(ip_bspline3), 
 	m_debug(false)
 {
 	add_parameter("src", new CStringParameter(m_src_name, false, "Study image"));
 	add_parameter("ref", new CStringParameter(m_ref_name, false, "Reference image"));
 	add_parameter("cost", new CStringParameter(m_cost_kernel, false, "Cost function kernel"));
-	add_parameter("interp", new CDictParameter<EInterpolation>(m_interpolator, 
-								   GInterpolatorTable, "image interpolator"));
 	add_parameter("debug", new CBoolParameter(m_debug, false, "Save intermediate resuts for debugging")); 
 }
 
-C3DFullCostPlugin::ProductPtr C3DImageFullCostPlugin::do_create(float weight) const
+C3DFullCost *C3DImageFullCostPlugin::do_create(float weight) const
 {
 	cvdebug() << "create C3DImageFullCostPlugin with weight= " << weight 
 		  << " src=" << m_src_name << " ref=" << m_ref_name 
 		  << " cost=" << m_cost_kernel << "\n";
 
-	return C3DFullCostPlugin::ProductPtr(
-		new C3DImageFullCost(m_src_name, m_ref_name, 
-				     m_cost_kernel, m_interpolator, weight, m_debug)); 
+	return new C3DImageFullCost(m_src_name, m_ref_name, m_cost_kernel, weight, m_debug); 
 }
 
 const std::string C3DImageFullCostPlugin::do_get_descr() const

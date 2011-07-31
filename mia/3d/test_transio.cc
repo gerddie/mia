@@ -27,6 +27,8 @@
 #include <mia/3d/transformfactory.hh>
 #include <boost/static_assert.hpp>
 
+CSplineKernelTestPath splinekernel_init_path; 
+
 NS_MIA_USE; 
 namespace bfs=::boost::filesystem; 
 class PrepareTransIOTests {

@@ -21,13 +21,22 @@
  */
 
 #include <mia/core/export_handler.hh>
-
 #include <mia/2d/transformfactory.hh>
 #include <mia/internal/transformfactory.cxx>
 
 NS_MIA_BEGIN
 
 template class TTransformCreator<C2DTransformation>; 
-EXPLICIT_INSTANCE_HANDLER(C2DTransformCreator); 
+template class TTransformCreatorPlugin<C2DTransformation>; 
+
+C2DTransformCreatorHandlerTestPath::C2DTransformCreatorHandlerTestPath()
+{
+	list< bfs::path> kernelsearchpath;
+	kernelsearchpath.push_back(bfs::path(MIA_BUILD_ROOT"/mia/2d/transform"));
+	C2DTransformCreatorHandler::set_search_path(kernelsearchpath);
+}
+
+EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C2DTransformCreator, C2DTransformCreatorPlugin); 
+
 
 NS_MIA_END

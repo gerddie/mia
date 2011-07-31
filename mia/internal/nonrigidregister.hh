@@ -57,7 +57,6 @@ public:
 	typedef typename this_dim_traits::FullCostList FullCostList; 
 	typedef typename this_dim_traits::Filter Filter; 
 	typedef typename this_dim_traits::FilterPluginHandler FilterPluginHandler;
-	typedef typename this_dim_traits::InterpolatorFactory InterpolatorFactory; 
 
 	/**
 	   Constructor for the registration tool
@@ -69,8 +68,8 @@ public:
 	 */
 
 	TNonrigidRegister(FullCostList& costs, PMinimizer minimizer,
-			    PTransformationFactory transform_creation,
-			  const InterpolatorFactory& ipf,  size_t mg_levels, int idx = -1);
+			  PTransformationFactory transform_creation,
+			  size_t mg_levels, int idx = -1);
 	
 	
 	~TNonrigidRegister();
@@ -83,6 +82,14 @@ public:
 	   cost function 
 	 */
 	PTransformation  run(PImage src, PImage ref) const;
+
+
+	/**
+	   Run the registration by optimizing whatever is given with the cost functions 
+	   \returns the transformation registering that minimizes the constructor given 
+	   cost function 
+	 */
+	PTransformation  run() const;
 
 private:
 	struct TNonrigidRegisterImpl<dim> *impl;

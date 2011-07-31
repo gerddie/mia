@@ -24,10 +24,10 @@
 NS_MIA_BEGIN
 
 template <typename T> 
-const char *TFullCost<T>::type_descr = T::dim_descr; 
+const char *TFullCost<T>::data_descr = T::dim_descr; 
 
 template <typename T> 
-const char *TFullCost<T>::value = "fullcost";
+const char *TFullCost<T>::type_descr = "fullcost";
 
 template <typename T> 
 TFullCost<T>::TFullCost(double weight):
@@ -85,6 +85,18 @@ void TFullCost<T>::set_size(const Size& size)
 }
 
 template <typename T> 
+bool TFullCost<T>::get_full_size(Size& size) const
+{
+	return do_get_full_size(size); 
+}
+
+template <typename T> 
+bool TFullCost<T>::do_get_full_size(Size& size) const
+{
+	return (m_current_size == size);  
+}
+
+template <typename T> 
 void TFullCost<T>::do_reinit()
 {
 }
@@ -99,7 +111,7 @@ TFullCostPlugin<T>::TFullCostPlugin(const char *name):
 }
 	
 template <typename T> 
-typename TFullCostPlugin<T>::ProductPtr TFullCostPlugin<T>::do_create() const
+TFullCost<T> *TFullCostPlugin<T>::do_create() const
 {
 	return do_create(m_weight); 
 }

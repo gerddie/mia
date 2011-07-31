@@ -53,7 +53,7 @@ public:
 	C3DMLVImageFilterFactory();
 private:
 
-	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr() const;
 	virtual bool  do_test() const;
 	int m_hw;

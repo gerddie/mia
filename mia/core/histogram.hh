@@ -38,6 +38,8 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup helpers 
+   
    \brief A class to normalize and quantizize input data to 
    a given histogram range with its given number of bins. 
 
@@ -87,6 +89,8 @@ private:
 };
 
 /**
+   \ingroup helpers 
+   
    \brief specialization of the THistogramFeeder for unsigned byte input data 
 
    This specialization always uses the full range [0,256) of the input data 
@@ -117,6 +121,8 @@ public:
 typedef THistogramFeeder<unsigned char> CUBHistogramFeeder; 
 
 /**
+   \ingroup helpers 
+   
    \brief a simple histogram that uses an instance of THistogramFeeder 
    as input converter
 

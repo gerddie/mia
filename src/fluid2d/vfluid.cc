@@ -1,4 +1,5 @@
-/*
+/* -*- mia-c++ -*-
+**
 ** Copyright (c) Leipzig, Madrid 1999-2011
 **                    Gert Wollny <wollny@cns.mpg.de>
 **

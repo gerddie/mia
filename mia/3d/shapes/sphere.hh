@@ -33,7 +33,7 @@ public:
 	CSphere3DShapeFactory();
 private:
 	virtual const string do_get_descr() const;
-	virtual C3DShapePlugin::ProductPtr do_create()const;
+	virtual C3DShape *do_create()const;
 	virtual bool do_test() const;
 	float m_r;
 };

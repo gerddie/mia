@@ -46,14 +46,15 @@
 
 #include <vector>
 
-#include <mia/core/shared_ptr.hh>
 #include <mia/core/defines.hh>
-#include <mia/core/interpolator.hh>
+#include <mia/core/splinekernel.hh>
+#include <mia/core/boundary_conditions.hh>
 
 
 NS_MIA_BEGIN
 
 /**
+   \ingroup interpol 
    \brief Basic Interpolator type for 1D Data.
    
    \remark Why do we need this? 
@@ -67,6 +68,8 @@ public:
 
 
 /**
+   \ingroup interpol 
+
    \brief Interpolator base class providing the full interface 
    
    Basic Interpolator type for 1D Data.
@@ -94,6 +97,8 @@ public:
 };
 
 /** 
+   \ingroup interpol 
+
     \brief Interpolator that uses some kind of spaciel kernel. 
     
     Base type for interpolators that work with some kind of convolution  
@@ -106,9 +111,11 @@ public:
 	   Construtor to prefilter the input for proper interpolation 
 	   \param data the data used for interpolation 
 	   \param kernel the spline kernel used for interpolation 
+	   \param boundary_conditions boundary conditions to be applied when interpolating 
 	 */
 	
-	T1DConvoluteInterpolator(const std::vector<T>& data, PBSplineKernel kernel);
+	T1DConvoluteInterpolator(const std::vector<T>& data, PSplineKernel kernel, 
+				 const CSplineBoundaryCondition& boundary_conditions);
 	
 	~T1DConvoluteInterpolator();
 	
@@ -135,30 +142,31 @@ protected:
 private:
 
 	TCoeff1D m_coeff;
-	size_t m_size2;
-	PBSplineKernel m_kernel;
+	PSplineKernel m_kernel;
+	PSplineBoundaryCondition m_boundary_conditions; 
 	T m_min;
 	T m_max;
 
 	// not thread save!!!
-	mutable std::vector<int> m_x_index;
-	mutable std::vector<double> m_x_weight;
+	mutable CSplineKernel::VIndex m_x_index;
+	mutable CSplineKernel::VWeight m_x_weight;
 };
 
 
 /** 
-    \brief Factory class for 1D interpolators 
-
-    Factory to create 1D interpolators of a give data type using the given input data.  
+   \ingroup interpol 
+   \brief Factory class for 1D interpolators 
+   
+   Factory to create 1D interpolators of a give data type using the given input data.  
 */
 class EXPORT_CORE C1DInterpolatorFactory {
 public:
 
-	/** Initialize the factory with a certain kernel type and the according B-Spline kernel 
-	    @param type 
+	/** Initialize the factory according B-Spline kernel and a boundary condition  
 	    @param kernel 
+	    @param bc 
 	 */
-	C1DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel);
+	C1DInterpolatorFactory(PSplineKernel kernel, const CSplineBoundaryCondition& bc);
 
 	/// Copy constructor 
 	C1DInterpolatorFactory(const C1DInterpolatorFactory& o);
@@ -180,14 +188,17 @@ public:
 		__attribute__ ((warn_unused_result));
 
 	/// @returns the B-spline kernel 
-	PBSplineKernel get_kernel() const;
+	PSplineKernel get_kernel() const;
 
 private:
-	EInterpolationFactory  m_type;
-	PBSplineKernel m_kernel;
+	PSplineKernel m_kernel;
+	PSplineBoundaryCondition m_bc; 
 };
 
-/// Pointer type for C1DInterpolatorFactory. 
+/** 
+   \ingroup interpol 
+    Pointer type for C1DInterpolatorFactory. 
+ */
 typedef std::shared_ptr<const C1DInterpolatorFactory > P1DInterpolatorFactory;
 
 /**
@@ -196,18 +207,14 @@ typedef std::shared_ptr<const C1DInterpolatorFactory > P1DInterpolatorFactory;
    @todo this should become the work of a plug-in handler 
  */
 
-C1DInterpolatorFactory EXPORT_CORE  *create_1dinterpolation_factory(EInterpolation type) 
+C1DInterpolatorFactory EXPORT_CORE  *create_1dinterpolation_factory(EInterpolation type, EBoundaryConditions bc) 
 	__attribute__ ((warn_unused_result));
 
 // implementation
 template <class T>
 T1DInterpolator<T> *C1DInterpolatorFactory::create(const std::vector<T>& src) const
 {
-	switch (m_type) {
-	case ipf_spline: return new T1DConvoluteInterpolator<T>(src, m_kernel);
-	default: throw "CInterpolatorFactory::create: Unknown interpolator requested";
-	}
-	return NULL;
+	return new T1DConvoluteInterpolator<T>(src, m_kernel, *m_bc);
 }
 
 
@@ -221,8 +228,6 @@ template <typename I, typename O>
 struct __dispatch_copy {
 	static void apply(const I& input, O& output);
 };
-
-
 
 NS_MIA_END
 

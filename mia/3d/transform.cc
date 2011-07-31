@@ -36,12 +36,10 @@
 #include <mia/3d/deformer.hh>
 
 
-#include <boost/lambda/lambda.hpp>
-
 NS_MIA_BEGIN
-using namespace boost::lambda;
 
-C3DTransformation::C3DTransformation()
+C3DTransformation::C3DTransformation(const C3DInterpolatorFactory& ipf):
+	Transformation<C3DImage, C3DInterpolatorFactory>(ipf)
 {
 
 }
@@ -249,13 +247,13 @@ private:
 
 
 
-P3DImage C3DTransformation::apply(const C3DImage& input, const C3DInterpolatorFactory& ipf) const
+P3DImage C3DTransformation::do_transform(const C3DImage& input, const C3DInterpolatorFactory& ipf) const
 {
 	return mia::filter(F3DTransform(ipf, *this), input);
 
 }
 
-const char *C3DTransformation::type_descr = "3dtransform";
+const char *C3DTransformation::data_descr = "3dtransform";
 const char *C3DTransformation::dim_descr = "3d";
 
 NS_MIA_END

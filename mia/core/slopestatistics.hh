@@ -24,13 +24,14 @@
 #define mia_core_slopestatistics_hh
 
 #include <vector>
-#include <mia/core/shared_ptr.hh>
+#include <memory>
 #include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
 
 
 /**
+   \ingroup helpers 
    @brief Runs some statistics over a one-dimensional curve 
    
    Evaluates some statistics about a one-dimensional mapping [0, 1,..., N-1] -> R.

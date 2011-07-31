@@ -20,17 +20,17 @@
  */
 
 
-#ifndef SplineMutualInformation_h 
-#define SplineMutualInformation_h
+#ifndef mia_core_splineparzenmi_hh
+#define mia_core_splineparzenmi_hh
 
 #include <boost/concept/requires.hpp>
 #include <boost/concept_check.hpp>
-#include <mia/core/interpolator.hh>
-#include <boost/lambda/lambda.hpp>
+#include <mia/core/splinekernel.hh>
 
 NS_MIA_BEGIN
 
 /**
+   \ingroup classes 
    \brief Implementation of mutual information based on B-splines 
 
 This class implements a spline parzen windows based evaluation of the 
@@ -42,7 +42,7 @@ For details see
 	vol. 9, no. 12, pp. 2083-2099, December 2000. 
 
 */
-class EXPORT_CORE CSplineParzenMI{
+class EXPORT_CORE CSplineParzenMI {
 public: 
 	/**
 	   Constructor of the mutual information class 
@@ -51,8 +51,8 @@ public:
 	   @param mbins number of bins in moving intensity range
 	   @param mkernel B-spline kernel for filling and evaluating moving intensities
 	*/
-	CSplineParzenMI(size_t rbins, PBSplineKernel rkernel,
-			size_t mbins, PBSplineKernel mkernel); 
+	CSplineParzenMI(size_t rbins, PSplineKernel rkernel,
+			size_t mbins, PSplineKernel mkernel); 
 	
 
 	/**
@@ -96,7 +96,7 @@ private:
 	void evaluate_log_cache();  
         
         size_t m_ref_bins;
-	PBSplineKernel  m_ref_kernel; 
+	PSplineKernel  m_ref_kernel; 
 	size_t m_ref_border; 
 	size_t m_ref_real_bins; 
         double m_ref_max;
@@ -105,7 +105,7 @@ private:
 
 	size_t m_mov_bins;
 	
-	PBSplineKernel  m_mov_kernel; 
+	PSplineKernel  m_mov_kernel; 
 	size_t m_mov_border; 
 	size_t m_mov_real_bins; 
         double m_mov_max;
@@ -164,8 +164,9 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
                 for (size_t r = 0; r < m_ref_kernel->size(); ++r) {
                         auto inbeg = m_joined_histogram.begin() + 
 				m_mov_real_bins * (ref_start + r) + mov_start; 
+			double rw = rweights[r]; 
                         std::transform(mweights.begin(), mweights.end(), inbeg, inbeg, 
-				       boost::lambda::_1 * rweights[r] + boost::lambda::_2); 
+				       [rw](double mw, double jhvalue){ return mw * rw + jhvalue;});
                 }
 		
                 ++N; 
@@ -177,8 +178,8 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
 	// normalize joined histogram 
 	const double scale = 1.0/N; 
 	transform(m_joined_histogram.begin(), m_joined_histogram.end(), m_joined_histogram.begin(), 
-		  boost::lambda::_1 * scale); 
-
+		  [scale](double jhvalue){return jhvalue * scale;}); 
+	
 	evaluate_histograms();  
 	evaluate_log_cache(); 
 }

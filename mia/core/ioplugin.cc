@@ -26,7 +26,7 @@
 
 NS_MIA_BEGIN
 
-const char * io_plugin_type::value = "io";
+const char * io_plugin_type::type_descr = "io";
 const char * const io_plugin_property_multi_record = "multi-record";
 const char * const io_plugin_property_history_split = "history-split";
 const char * const io_plugin_property_has_attributes = "has_attributes";

@@ -24,7 +24,6 @@
 
 */
 
-#include <boost/lambda/lambda.hpp>
 #include <mia/internal/autotest.hh>
 #include <mia/2d/timestep/fluid.hh>
 #include <mia/2d/transformmock.hh>
@@ -32,7 +31,7 @@
 NS_USE(fluid_timestep_2d);
 NS_MIA_USE;
 
-using namespace boost::lambda;
+CSplineKernelTestPath kernel_test_path; 
 
 class C2DDummyTransformation: public C2DTransformMock {
 	virtual C2DTransformation *clone() const {
@@ -70,7 +69,8 @@ class C2DDummyTransformation: public C2DTransformMock {
 		return s;
 	}
 	virtual float pertuberate(C2DFVectorfield& v) const {
-		transform(v.begin(), v.end(), v.begin(), _1 + C2DFVector(1,2));
+		C2DFVector v12(1,2); 
+		transform(v.begin(), v.end(), v.begin(), [&v12](const C2DFVector& v) {return v + C2DFVector(1,2);});
 		return v(0,0).norm();
 	}
 	virtual C2DFVector apply(const C2DFVector& x) const {

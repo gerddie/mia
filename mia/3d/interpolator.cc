@@ -1,4 +1,5 @@
-/*
+/* -*- mia-c++ -*-
+**
 ** Copyrigh (C) 2004 MPI of Human Cognitive and Brain Sience
 **                    Gert Wollny <wollny@cbs.mpg.de>
 **
@@ -26,6 +27,9 @@
 #if defined(__SSE2__)
 #include <emmintrin.h>
 #endif
+#ifdef __SSE3__
+#include <pmmintrin.h>
+#endif
 
 
 #include <mia/core/interpolator1d.hh>
@@ -44,23 +48,48 @@ CInterpolator::~CInterpolator()
 {
 }
 
-C3DInterpolatorFactory::C3DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel):
-	m_type(type),
-	m_kernel(kernel)
+C3DInterpolatorFactory::C3DInterpolatorFactory(const std::string& kernel, const std::string& bc):
+	m_kernel(produce_spline_kernel(kernel)), 
+	m_xbc(produce_spline_boundary_condition(bc)),
+	m_ybc(produce_spline_boundary_condition(bc)),
+	m_zbc(produce_spline_boundary_condition(bc))
+{
+}
+		
+C3DInterpolatorFactory::C3DInterpolatorFactory(PSplineKernel kernel, const std::string& bc):
+	m_kernel(kernel), 
+	m_xbc(produce_spline_boundary_condition(bc)),
+	m_ybc(produce_spline_boundary_condition(bc)),
+	m_zbc(produce_spline_boundary_condition(bc))
+{
+}
+
+C3DInterpolatorFactory::C3DInterpolatorFactory(PSplineKernel kernel, 
+					       const CSplineBoundaryCondition& xbc,  
+					       const CSplineBoundaryCondition& ybc, 
+					       const CSplineBoundaryCondition& zbc):
+	m_kernel(kernel), 
+	m_xbc(xbc.clone()),  
+	m_ybc(ybc.clone()),  
+	m_zbc(zbc.clone())
 {
 }
 
 C3DInterpolatorFactory::C3DInterpolatorFactory(const C3DInterpolatorFactory& o):
-	m_type(o.m_type),
-	m_kernel(o.m_kernel)
+	m_kernel(o.m_kernel), 
+	m_xbc(o.m_xbc->clone()),  
+	m_ybc(o.m_ybc->clone()),  
+	m_zbc(o.m_zbc->clone())
 {
 }
 
 C3DInterpolatorFactory& C3DInterpolatorFactory::operator = ( const C3DInterpolatorFactory& o)
 {
-	m_type = o.m_type;
 	m_kernel = o.m_kernel;
-
+	m_xbc.reset(o.m_xbc->clone()); 
+	m_ybc.reset(o.m_ybc->clone()); 
+	m_zbc.reset(o.m_zbc->clone()); 
+		    
 	return *this;
 }
 
@@ -68,139 +97,399 @@ C3DInterpolatorFactory::~C3DInterpolatorFactory()
 {
 }
 
-PBSplineKernel C3DInterpolatorFactory::get_kernel() const
+PSplineKernel C3DInterpolatorFactory::get_kernel() const
 {
 	return m_kernel; 
 }
 
-EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(EInterpolation type)
+C3DInterpolatorFactory *create_3dinterpolation_factory(EInterpolation type, EBoundaryConditions bc)
 {
-	return create_interpolator_factory<C3DInterpolatorFactory>(type); 
+	string boundary; 
+	switch (bc) {
+	case bc_mirror_on_bounds: 
+		boundary = "mirror"; 
+		break; 
+		
+	case bc_repeat: 
+		boundary = "repeat"; 
+		break; 
+	case bc_zero: 
+		boundary = "zero"; 
+		break; 
+	default: 
+		throw invalid_argument("Unknown boundary consitions requested"); 
+	}
+	
+	string kernel; 
+	switch (type) {
+	case ip_nn: 
+	case ip_bspline0: kernel = "bspline:d=0"; break; 
+	case ip_linear:
+	case ip_bspline1: kernel = "bspline:d=1"; break; 
+	case ip_bspline2: kernel = "bspline:d=2"; break; 
+	case ip_bspline3: kernel = "bspline:d=3"; break; 
+	case ip_bspline4: kernel = "bspline:d=4"; break; 
+	case ip_bspline5: kernel = "bspline:d=5"; break; 
+	case ip_omoms3:   kernel = "omoms:d=3"; break;
+	default: 
+		throw invalid_argument("create_interpolator_factory:Unknown interpolator type requested"); 
+	}; 
+
+	return new C3DInterpolatorFactory(kernel, boundary); 
 }
+
 
 #ifdef __SSE2__
 typedef double v2df __attribute__ ((vector_size (16)));
-inline void my_daxpy_16_zero(double weight, double *in, double *out)
+inline void my_daxpy_16_zero(double weight, v2df *in, v2df *out)
 {
 	v2df w=_mm_set1_pd(weight); 
 	
-	for (int i = 0; i < 2; ++i, in += 8, out += 8) {
+	for (int i = 0; i < 8; ++i) 
+		out[i] = in[i] * w;  
+}
+
+inline void my_daxpy_16(double weight,  v2df *in,  v2df *out)
+{
+	v2df w=_mm_set1_pd(weight); 
+	
+	for (int i = 0; i < 8; ++i)
+		out[i] += in[i] * w;
+
+}
+
+inline void my_daxpy_4_zero(double weight, v2df *in, v2df *out)
+{
+	v2df w=_mm_set1_pd(weight); 
+	out[0] = w * in[0]; 
+	out[1] = w * in[1]; 
+}
+
+inline void my_daxpy_4(double weight, v2df *in, v2df *out)
+{
+	v2df w=_mm_set1_pd(weight); 
+	out[0] += w * in[0]; 
+	out[1] += w * in[1]; 
+}
+
+
+/*
+  In this function the registration algorithm spends approx 7% of the time 
+  if B-spline 1 is used 
+*/
+
+double add_3d<T3DDatafield< double >, 2>::value(const T3DDatafield< double >&  coeff, 
+					       const CSplineKernel::SCache& xc, 
+					       const CSplineKernel::SCache& yc,
+					       const CSplineKernel::SCache& zc)
+{
+	const int dx = coeff.get_size().x;
+	const int dxy = coeff.get_size().x *coeff.get_size().y;
+	int idx = 0;
+	
+	double __attribute__((aligned(16))) c[8];
+	
+	v2df xweights = _mm_loadu_pd(&xc.weights[0]);
+	v2df yweight0 = _mm_load1_pd(&yc.weights[0]);
+	v2df yweight1 = _mm_load1_pd(&yc.weights[1]);
+	v2df zweight0 = _mm_load1_pd(&zc.weights[0]);
+	v2df zweight1 = _mm_load1_pd(&zc.weights[1]);
+	
+	if (xc.is_flat) {
 		
-		v2df x1 = _mm_load_pd(&in[0]); 
-		v2df x2 = _mm_load_pd(&in[2]); 
-		v2df x3 = _mm_load_pd(&in[4]); 
-		v2df x4 = _mm_load_pd(&in[6]); 
-		x1 *= w; 
-		x2 *= w; 
-		x3 *= w; 
-		x4 *= w; 
-		_mm_store_pd(&out[0], x1); 
-		_mm_store_pd(&out[2], x2); 
-		_mm_store_pd(&out[4], x3); 
-		_mm_store_pd(&out[6], x4); 
+		for (size_t z = 0; z < 2; ++z) {
+			const double *slice = &coeff[zc.index[z] * dxy]; 
+			for (size_t y = 0; y < 2; ++y, idx +=2 ) {
+				const double *p = &slice[yc.index[y] * dx];
+				c[idx    ] = p[xc.start_idx];
+				c[idx + 1] = p[xc.start_idx + 1];
+			}
+		}
+	}else{
+		for (size_t z = 0; z < 2; ++z) {
+			const double *slice = &coeff[zc.index[z] * dxy]; 
+			for (size_t y = 0; y < 2; ++y, idx += 2) {
+				const double *p = &slice[yc.index[y] * dx];
+				c[idx    ] = p[xc.index[0]]; 
+				c[idx + 1] = p[xc.index[1]]; 
+			}
+		}
 	}
+
+	v2df z0y0 = _mm_load_pd(&c[0]); 
+	v2df z0y1 = _mm_load_pd(&c[2]);
+	v2df z1y0 = _mm_load_pd(&c[4]); 
+	v2df z1y1 = _mm_load_pd(&c[6]);
+
+	v2df zsum_y0 = z0y0 * zweight0 + z1y0 * zweight1; 
+	v2df zsum_y1 = z0y1 * zweight0 + z1y1 * zweight1; 
+
+	v2df zysum = (zsum_y0 * yweight0 + zsum_y1 * yweight1) * xweights; 
+
+#ifdef __SSE3__	
+	double result; 
+	zysum = _mm_hadd_pd(zysum, zysum); 
+	_mm_store_sd(&result, zysum); 
+	return result; 
+#else
+	double __attribute__((aligned(16))) r[2]; 
+	_mm_store_pd(r, res); 
+	return r[0] + r[1]; 
+#endif 	
 }
 
-inline void my_daxpy_16(double weight, double *in, double *out)
-{
-	v2df w=_mm_set1_pd(weight); 
-	
-	for (int i = 0; i < 2; ++i, in += 8, out += 8) {
-		
-		v2df x1 = _mm_load_pd(&in[0]); 
-		v2df x2 = _mm_load_pd(&in[2]); 
-		v2df x3 = _mm_load_pd(&in[4]); 
-		v2df x4 = _mm_load_pd(&in[6]); 
-		v2df y1 = _mm_load_pd(&out[0]); 
-		v2df y2 = _mm_load_pd(&out[2]); 
-		v2df y3 = _mm_load_pd(&out[4]); 
-		v2df y4 = _mm_load_pd(&out[6]); 
-		x1 *= w; 
-		x2 *= w; 
-		x3 *= w; 
-		x4 *= w; 
-		y1 += x1; 
-		y2 += x2; 
-		y3 += x3; 
-		y4 += x4; 
-		_mm_store_pd(&out[0], y1); 
-		_mm_store_pd(&out[2], y2); 
-		_mm_store_pd(&out[4], y3); 
-		_mm_store_pd(&out[6], y4); 
-	}
-}
-
-inline void my_daxpy_4_zero(double weight, double *in, double *out)
-{
-
-	v2df w=_mm_set1_pd(weight); 
-	
-	v2df x1 = _mm_load_pd(&in[0]); 
-	v2df x2 = _mm_load_pd(&in[2]); 
-	
-	x1 *= w; 
-	x2 *= w; 
-	_mm_store_pd(&out[0], x1); 
-	_mm_store_pd(&out[2], x2); 
-}
-
-inline void my_daxpy_4(double weight, double *in, double *out)
-{
-
-	v2df w=_mm_set1_pd(weight); 
-	
-	v2df x1 = _mm_load_pd(&in[0]); 
-	v2df x2 = _mm_load_pd(&in[2]); 
-	v2df y1 = _mm_load_pd(&out[0]); 
-	v2df y2 = _mm_load_pd(&out[2]); 
-	
-	x1 *= w; 
-	x2 *= w; 
-	y1 += x1; 
-	y2 += x2; 
-	_mm_store_pd(&out[0], y1); 
-	_mm_store_pd(&out[2], y2); 
-}
-
+/*
+  In this function the registration algorithm spends approx 30% of the time 
+*/
 double add_3d<T3DDatafield< double >, 4>::value(const T3DDatafield< double >&  coeff, 
-		    const CBSplineKernel::SCache& xc, 
-		    const CBSplineKernel::SCache& yc,
-		    const CBSplineKernel::SCache& zc) 
+		    const CSplineKernel::SCache& xc, 
+		    const CSplineKernel::SCache& yc,
+		    const CSplineKernel::SCache& zc) 
+{
+	const int dx = coeff.get_size().x; 
+	const int dxy = coeff.get_size().x *coeff.get_size().y; 
+
+	v2df  cache[32]; 
+	// cache data 
+	int idx = 0; 
+
+	// if the boundaries are not mirrored, then we can load without looking at each index 
+	// this should happen more often 
+	if (xc.is_flat) {
+		for (int z = 0; z < 4; ++z) {
+			const double *slice = &coeff[zc.index[z] * dxy]; 
+			for (int y = 0; y < 4; ++y, idx+=2) {
+				const double *p = &slice[yc.index[y] * dx];
+				cache[idx  ] = _mm_loadu_pd(&p[xc.start_idx]);
+				cache[idx+1] = _mm_loadu_pd(&p[xc.start_idx+2]);
+			}
+		}
+	}else{
+		double __attribute__((aligned(16))) c[4]; 
+		for (int z = 0; z < 4; ++z) {
+			const double *slice = &coeff[zc.index[z] * dxy]; 
+			for (int y = 0; y < 4; ++y, idx+=2) {
+				const double *p = &slice[yc.index[y] * dx];
+				c[0] = p[xc.index[0]]; 
+				c[1] = p[xc.index[1]]; 
+				c[2] = p[xc.index[2]]; 
+				c[3] = p[xc.index[3]]; 
+
+				cache[idx  ] = 	_mm_load_pd(&c[0]); 
+				cache[idx+1] = 	_mm_load_pd(&c[2]); 
+			}
+		}
+	}
+	v2df  target1[8]; 
+	// apply splines 
+	my_daxpy_16_zero(zc.weights[0], &cache[ 0], target1);
+	my_daxpy_16(zc.weights[1], &cache[8], target1);
+	my_daxpy_16(zc.weights[2], &cache[16], target1);
+	my_daxpy_16(zc.weights[3], &cache[24], target1);
+
+	v2df target2[2];
+	my_daxpy_4_zero(yc.weights[0], &target1[ 0], target2);
+	my_daxpy_4(yc.weights[1], &target1[ 2], target2);
+	my_daxpy_4(yc.weights[2], &target1[ 4], target2);
+	my_daxpy_4(yc.weights[3], &target1[6], target2);
+
+	v2df wx[2]; 
+	wx[0] = _mm_loadu_pd(&xc.weights[0]); 
+	wx[1] = _mm_loadu_pd(&xc.weights[2]);
+	
+	target2[0] *= wx[0]; 
+	target2[1] *= wx[1]; 
+	
+	target2[0] += target2[1]; 
+#ifdef __SSE3__
+	double result; 
+	target2[0] = _mm_hadd_pd(target2[0], target2[0]); 
+	_mm_store_sd(&result, target2[0]); 
+	return result; 
+#else
+	double __attribute__((aligned(16))) r[2]; 
+	_mm_store_pd(r, target2[0]); 
+	return r[0] + r[1]; 
+#endif
+}
+#endif
+
+#ifdef __SSE__
+typedef float v4df __attribute__ ((vector_size (16)));
+inline void my_daxpy_16_zero(float weight, v4df *in, v4df *out)
+{
+	v4df w=_mm_set1_ps(weight); 
+	
+	for (int i = 0; i < 4; ++i) {
+		out[i] = in[i] * w; 
+	}
+}
+
+inline void my_daxpy_16(float weight, v4df *in, v4df *out)
+{
+	v4df w=_mm_set1_ps(weight); 
+	for (int i = 0; i < 4; ++i) {
+		out[i] += in[i] * w; 
+	}
+}
+
+inline void my_daxpy_4_zero(float weight, v4df* in, v4df *out)
+{
+	v4df w=_mm_set1_ps(weight); 
+	out[0] = w * in[0]; 
+}
+
+inline void my_daxpy_4(float weight, v4df* in, v4df *out)
+{
+	v4df w=_mm_set1_ps(weight); 
+	out[0] += w * in[0]; 
+}
+
+/*
+  In this function the registration algorithm spends approx 7% of the time 
+  if B-spline 1 is used 
+*/
+
+float add_3d<T3DDatafield< float >, 2>::value(const T3DDatafield< float >&  coeff, 
+					      const CSplineKernel::SCache& xc, 
+					      const CSplineKernel::SCache& yc,
+					      const CSplineKernel::SCache& zc)
+{
+	const int dx = coeff.get_size().x; 
+	const int dxy = coeff.get_size().x *coeff.get_size().y; 
+	int idx = 0; 
+	
+
+	float __attribute__((aligned(16))) c[8];
+	float __attribute__((aligned(16))) w[4];
+	
+	w[0] = xc.weights[0]; 
+	w[1] = xc.weights[1]; 
+	w[2] = yc.weights[0]; 
+	w[3] = yc.weights[1]; 
+	v4df weights = _mm_load_ps(w); 
+	
+	if (xc.is_flat) {
+
+		for (int z = 0; z < 2; ++z) {
+			const float *slice = &coeff[zc.index[z] * dxy]; 
+			for (int y = 0; y < 2; ++y, idx +=2 ) {
+				const float *p = &slice[yc.index[y] * dx];
+				c[idx    ] = p[xc.start_idx];
+				c[idx + 1] = p[xc.start_idx + 1];
+			}
+		}
+	}else{
+		for (int z = 0; z < 2; ++z) {
+			const float *slice = &coeff[zc.index[z] * dxy]; 
+			for (int y = 0; y < 2; ++y, idx += 2) {
+				const float *p = &slice[yc.index[y] * dx];
+				c[idx    ] = p[xc.index[0]]; 
+				c[idx + 1] = p[xc.index[1]]; 
+			}
+		}
+	}
+
+	v4df wz0 = _mm_set1_ps(zc.weights[0]); 
+	v4df wz1 = _mm_set1_ps(zc.weights[1]);
+	v4df whx = _mm_shuffle_ps(weights, weights, _MM_SHUFFLE(1,0,1,0)); 
+	v4df why = _mm_shuffle_ps(weights, weights, _MM_SHUFFLE(3,3,2,2)); 
+	v4df z0  = _mm_load_ps(&c[0]); 
+	v4df z1  = _mm_load_ps(&c[4]);
+	v4df z = wz0 * z0 + wz1 * z1; 
+	v4df wp = whx * why; 
+	v4df res = wp * z;
+
+#ifdef __SSE3__	
+	float result; 
+	res = _mm_hadd_ps(res, res); 
+	res = _mm_hadd_ps(res, res); 
+
+	_mm_store_ss(&result, res); 
+	return result; 
+#else
+
+	float __attribute__((aligned(16))) r[4]; 
+	_mm_store_ps(r, res); 
+	return r[0] + r[1] + r[2] + r[3]; 
+#endif 	
+}
+	
+
+/*
+  In this function the registration algorithm spends approx 30% of the time 
+  if B-spline 3 is used 
+*/
+float add_3d<T3DDatafield< float >, 4>::value(const T3DDatafield< float >&  coeff, 
+		    const CSplineKernel::SCache& xc, 
+		    const CSplineKernel::SCache& yc,
+		    const CSplineKernel::SCache& zc) 
 {
 	const int dx = coeff.get_size().x; 
 	const int dxy = coeff.get_size().x *coeff.get_size().y; 
 	
-	double  __attribute__((aligned(16))) cache[64]; 
+	v4df cache[16]; 
 	// cache data 
 	int idx = 0; 
-	for (size_t z = 0; z < 4; ++z) {
-		for (size_t y = 0; y < 4; ++y, idx+=4) {
-			const double *p = &coeff[yc.index[y] * dx + zc.index[z] * dxy];
 
-			cache[idx  ] = p[xc.index[0]]; 
-			cache[idx+1] = p[xc.index[1]]; 
-			cache[idx+2] = p[xc.index[2]]; 
-			cache[idx+3] = p[xc.index[3]]; 
-			
+	// if the boundaries are not mirrored, then we can load without looking at each index 
+	// this should happen more often 
+	if (xc.is_flat) {
+		for (int z = 0; z < 4; ++z) {
+			const float *slice = &coeff[zc.index[z] * dxy]; 
+			for (int y = 0; y < 4; ++y, ++idx) {
+				const float *p = &slice[yc.index[y] * dx];
+				cache[idx] = _mm_loadu_ps(&p[xc.start_idx]);
+			}
+		}
+	}else{
+		float __attribute__((aligned(16))) c[4]; 
+		for (int z = 0; z < 4; ++z) {
+			const float *slice = &coeff[zc.index[z] * dxy]; 
+			for (int y = 0; y < 4; ++y, ++idx) {
+				const float *p = &slice[yc.index[y] * dx];
+				c[0] = p[xc.index[0]]; 
+				c[1] = p[xc.index[1]]; 
+				c[2] = p[xc.index[2]]; 
+				c[3] = p[xc.index[3]]; 
+				cache[idx] = _mm_load_ps(c);
+			}
 		}
 	}
-	double __attribute__((aligned(16))) target1[16]; 
-	memset(target1, 0, 16 * sizeof(double)); 
+	float wy = yc.weights[0]; 
+	v4df  target1[4]; 
 	// apply splines 
 	my_daxpy_16_zero(zc.weights[0], &cache[ 0], target1);
-	my_daxpy_16(zc.weights[1], &cache[16], target1);
-	my_daxpy_16(zc.weights[2], &cache[32], target1);
-	my_daxpy_16(zc.weights[3], &cache[48], target1);
+	my_daxpy_16(zc.weights[1],      &cache[ 4], target1);
+	my_daxpy_16(zc.weights[2],      &cache[ 8], target1);
+	my_daxpy_16(zc.weights[3],      &cache[12], target1);
 
-	double __attribute__((aligned(16))) target2[4];
+	;
 
-	my_daxpy_4_zero(yc.weights[0], &target1[ 0], target2);
-	my_daxpy_4(yc.weights[1], &target1[ 4], target2);
-	my_daxpy_4(yc.weights[2], &target1[ 8], target2);
-	my_daxpy_4(yc.weights[3], &target1[12], target2);
+	v4df w=_mm_set1_ps(wy); 
+	v4df target2 = w * target1[0]; 
 	
-	return target2[0] * xc.weights[0] + target2[1] * xc.weights[1] + 
-		target2[2] * xc.weights[2] + target2[3] * xc.weights[3]; 
+//	my_daxpy_4_zero(yc.weights[0], &target1[0], &target2);
+	my_daxpy_4(yc.weights[1],      &target1[1], &target2);
+	my_daxpy_4(yc.weights[2],      &target1[2], &target2);
+	my_daxpy_4(yc.weights[3],      &target1[3], &target2);
+	
+	float __attribute__((aligned(16)))  wxa[4]; 
+	copy(xc.weights.begin(), xc.weights.end(), wxa); 
+	v4df wx = _mm_load_ps(wxa); 
+	target2 *= wx; 
+#ifdef __SSE3__	
+	float result; 
+	target2 = _mm_hadd_ps(target2, target2); 
+	target2 = _mm_hadd_ps(target2, target2); 
+
+	_mm_store_ss(&result, target2); 
+	return result; 
+#else
+	float __attribute__((aligned(16))) r[4]; 
+	_mm_store_ps(r, target2); 
+	return r[0] + r[1] +r[2] + r[3]; 
+#endif
 }
 
 #endif

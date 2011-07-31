@@ -25,11 +25,13 @@
 
 NS_MIA_BEGIN
 
-C3DTransformMock::C3DTransformMock()
+C3DTransformMock::C3DTransformMock():
+	C3DTransformation(C3DInterpolatorFactory("bspline:d=0", "mirror"))
 {
 }
 
-C3DTransformMock::C3DTransformMock(const C3DBounds& size):
+C3DTransformMock::C3DTransformMock(const C3DBounds& size, const C3DInterpolatorFactory& ipf):
+	C3DTransformation(ipf),
 	m_size(size)
 {
 
@@ -140,7 +142,7 @@ float C3DTransformMock::get_jacobian(const C3DFVectorfield&, float delta) const
 	return delta;
 }
 
-P3DImage C3DTransformMock::apply(const C3DImage& src, const C3DInterpolatorFactory&) const
+P3DImage C3DTransformMock::do_transform(const C3DImage& src, const C3DInterpolatorFactory&) const
 {
 	return P3DImage(src.clone());
 }

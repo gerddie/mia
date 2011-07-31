@@ -1,4 +1,5 @@
 /*  -*- mia-c++  -*-
+ *
  * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
  * 2007 Gert Wollny
@@ -119,6 +120,39 @@ public:
 		x = y = z = v;
 	}
 
+	/**
+	   Implement the const operator [] for this type of vector 
+	   \param i index 
+	   \returns value at index 
+	   \remark the performance of this needs to be analyzed. The compiler should be able 
+	   to translate this to a simple memory access.  
+	 */
+
+	const T operator [](size_t i) const {
+		assert(i < 3); 
+		switch (i) {
+		case 0:return x; 
+		case 1:return y; 
+		case 2:return z; 
+		}
+	}
+
+	/**
+	   Implement the writable operator [] for this type of vector 
+	   \param i index 
+	   \returns reference value at index 
+	   \remark the performance of this needs to be analyzed. The compiler should be able 
+	   to translate this to a simple memory access.  
+	 */
+
+	T& operator [](size_t i) {
+		assert(i < 3); 
+		switch (i) {
+		case 0:return x; 
+		case 1:return y; 
+		case 2:return z; 
+		}
+	}
 	
 	/// inplace addition 
 	T3DVector<T>& operator +=(const T3DVector<T>& a){
@@ -226,7 +260,11 @@ public:
 template <typename T> 
 struct atomic_data<T3DVector<T> > {
 	typedef T type; 
+	static const int size; 
 }; 
+
+template <typename T> 
+const int atomic_data<T3DVector<T> >::size = 3; 
 
 /**
    Cross product of two 3D vectors 

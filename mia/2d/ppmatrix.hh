@@ -49,7 +49,7 @@ public:
 	   \param wr weight for rotation (curl)
 	 */
 
-	C2DPPDivcurlMatrix(const C2DBounds& size, const C2DFVector& range, const CBSplineKernel& kernel, 
+	C2DPPDivcurlMatrix(const C2DBounds& size, const C2DFVector& range, const CSplineKernel& kernel, 
 			   double wd, double wr); 
 
 	~C2DPPDivcurlMatrix(); 
@@ -95,7 +95,7 @@ public:
 	/**
 	   re-initialize the matrix (if the values are changed)
 	 */
-	void reset(const C2DBounds& size, const C2DFVector& range, const CBSplineKernel& kernel, 
+	void reset(const C2DBounds& size, const C2DFVector& range, const CSplineKernel& kernel, 
 		   double wd, double wr); 
 private: 
 	struct C2DPPDivcurlMatrixImpl *impl; 

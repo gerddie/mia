@@ -36,8 +36,8 @@ NS_MIA_BEGIN
 class C3DTranslateTransformation;
 class EXPORT_3D C3DTranslateTransformation : public C3DTransformation {
 public:
-	C3DTranslateTransformation(const C3DBounds& size);
-	C3DTranslateTransformation(const C3DBounds& size,const C3DFVector& transform);
+	C3DTranslateTransformation(const C3DBounds& size, const C3DInterpolatorFactory& ipf);
+	C3DTranslateTransformation(const C3DBounds& size,const C3DFVector& transform, const C3DInterpolatorFactory& ipf);
 
 	void translate(float x, float y, float z);
 

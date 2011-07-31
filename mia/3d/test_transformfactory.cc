@@ -27,13 +27,15 @@
 #include <mia/3d/transformfactory.hh>
 #include <mia/core/factorycmdlineoption.hh>
 
-
 NS_MIA_USE
+
 
 using namespace std;
 using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
+
+CSplineKernelTestPath splinekernel_init_path; 
 
 struct HandlerTestFixture {
 	HandlerTestFixture();
@@ -93,7 +95,7 @@ BOOST_FIXTURE_TEST_CASE(test_spline_creator, HandlerTestFixture)
 	const C3DTransformCreatorHandler::Instance& handler =
 		C3DTransformCreatorHandler::instance();
 	P3DTransformationFactory spline_creater =
-		handler.produce("spline:interp=bspline4,rate=4");
+		handler.produce("spline:interp=[bspline:d=4],rate=4");
 	P3DTransformation transform = spline_creater->create(C3DBounds(16,32));
 	BOOST_CHECK_EQUAL(transform->get_size(), C3DBounds(16,32));
 

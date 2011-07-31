@@ -152,7 +152,7 @@ class C3DSphereCreatorPlugin : public  C3DImageCreatorPlugin {
 public:
 	C3DSphereCreatorPlugin();
 private:
-	virtual C3DImageCreatorPlugin::ProductPtr do_create()const;
+	virtual C3DImageCreator *do_create()const;
 	virtual const string do_get_descr()const;
 	virtual bool do_test() const;
 	float m_f;
@@ -168,9 +168,9 @@ C3DSphereCreatorPlugin::C3DSphereCreatorPlugin():
 	add_parameter("p", new CFloatParameter(m_p, 0.1, 100, false, "spherical shape parameter (2.0 = sphere)"));
 }
 
-C3DImageCreatorPlugin::ProductPtr C3DSphereCreatorPlugin::do_create()const
+C3DImageCreator *C3DSphereCreatorPlugin::do_create()const
 {
-	return C3DImageCreatorPlugin::ProductPtr(new C3DSphereCreator(m_f, m_p));
+	return new C3DSphereCreator(m_f, m_p);
 }
 
 const string C3DSphereCreatorPlugin::do_get_descr()const

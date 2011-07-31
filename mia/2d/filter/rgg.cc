@@ -76,7 +76,7 @@ public:
 class C2DRGGImageFilterFactory: public C2DFilterPlugin {
 public: 
 	C2DRGGImageFilterFactory();
-	virtual C2DFilterPlugin::ProductPtr create(const CParsedOptions& options) const;
+	virtual C2DFilter *create(const CParsedOptions& options) const;
 	virtual const string do_get_descr()const; 
 };
 
@@ -177,7 +177,7 @@ C2DRGGImageFilterFactory::C2DRGGImageFilterFactory():
 	add_help(param_seed);
 }
 
-C2DFilterPlugin::ProductPtr C2DRGGImageFilterFactory::create(const CParsedOptions& options) const
+C2DFilter *C2DRGGImageFilterFactory::create(const CParsedOptions& options) const
 {
 	string map_name = param_map.get_value(options); 
 	float seed_thresh = param_seed.get_value(options); 
@@ -188,7 +188,7 @@ C2DFilterPlugin::ProductPtr C2DRGGImageFilterFactory::create(const CParsedOption
 	
 	
 	
-	return C2DFilterPlugin::ProductPtr(new C2DRGGImageFilter(seed_thresh, pv));
+	return new C2DRGGImageFilter(seed_thresh, pv);
 }
 
 const string C2DRGGImageFilterFactory::do_get_descr()const

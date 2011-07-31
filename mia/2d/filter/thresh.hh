@@ -48,7 +48,7 @@ class C2DThreshNImageFilterFactory: public mia::C2DFilterPlugin {
 public:
 	C2DThreshNImageFilterFactory();
 private:
-	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr() const;
 	std::string m_shape;
 	double m_thresh;

@@ -45,7 +45,7 @@ class C3DKMeansFilterPluginFactory: public mia::C3DFilterPlugin {
 public:
 	C3DKMeansFilterPluginFactory();
 private:
-	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 	int m_classes;
 };

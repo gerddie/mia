@@ -23,7 +23,7 @@
 
 NS_MIA_BEGIN
 
-const char *C3DImage::type_descr = "3dimage";
+const char *C3DImage::data_descr = "3dimage";
 
 C3DImage::C3DImage(EPixelType pixel_type):
 	m_pixel_type(pixel_type)

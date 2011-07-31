@@ -1,4 +1,4 @@
-/*
+/* -*- mia-c++ -*-
 ** Copyrigh (C) 2004 MPI of Human Cognitive and Brain Sience
 **                    Gert Wollny <wollny@cbs.mpg.de>
 **  
@@ -63,18 +63,58 @@ struct min_max_3d<T3DVector<T> > {
 
 
 template <typename T>
-T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& image, std::shared_ptr<CBSplineKernel >  kernel):
+T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& image, PSplineKernel  kernel):
 	m_coeff(image.get_size()), 
-	m_size2(image.get_size() + image.get_size() - C3DBounds(2,2,2)),
+	m_size2(image.get_size() + image.get_size()-C3DBounds(2,2,2)),
 	m_kernel(kernel),
-	m_x_cache(kernel->size(), m_coeff.get_size().x, m_size2.x), 
-	m_y_cache(kernel->size(), m_coeff.get_size().y, m_size2.y), 
-	m_z_cache(kernel->size(), m_coeff.get_size().z, m_size2.z)
+	m_xbc(produce_spline_boundary_condition("mirror")), 
+	m_ybc(produce_spline_boundary_condition("mirror")),
+	m_zbc(produce_spline_boundary_condition("mirror")),
+	m_x_cache(kernel->size(), *m_xbc, false), 
+	m_y_cache(kernel->size(), *m_ybc, true), 
+	m_z_cache(kernel->size(), *m_zbc, true)
 {
-	min_max_3d<T>::get(image, &m_min, &m_max);
+
+	prefilter(image); 
+}
 	
-	// copy the data
+template <typename T>
+T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& image, PSplineKernel  kernel, 
+				 const CSplineBoundaryCondition& xbc,  
+				 const CSplineBoundaryCondition& ybc, 
+				 const CSplineBoundaryCondition& zbc):
+	m_coeff(image.get_size()), 
+	m_size2(image.get_size() + image.get_size()-C3DBounds(2,2,2)),
+	m_kernel(kernel),
+	m_xbc(xbc.clone()), 
+	m_ybc(ybc.clone()),
+	m_zbc(zbc.clone()),
+	m_x_cache(kernel->size(), *m_xbc, false), 
+	m_y_cache(kernel->size(), *m_ybc, true), 
+	m_z_cache(kernel->size(), *m_zbc, true)
+{
+	prefilter(image); 
+}
+
+
+template <typename T>
+void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image) 
+{
+
+	m_xbc->set_width(image.get_size().x); 
+	m_x_cache.reset(); 
+	m_ybc->set_width(image.get_size().y); 
+	m_y_cache.reset(); 
+	m_zbc->set_width(image.get_size().z);
+	m_z_cache.reset(); 
+
+	min_max_3d<T>::get(image, &m_min, &m_max);
 	std::copy(image.begin(), image.end(), m_coeff.begin());
+
+
+	auto poles = m_kernel->get_poles(); 
+	if (poles.empty()) 
+		return; 
 	
 	int cachXSize = image.get_size().x;	
 	int cachYSize = image.get_size().y;
@@ -85,7 +125,7 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 		for (int z = 0; z < cachZSize; z++){
 			for (int y = 0; y < cachYSize; y++) {
 				m_coeff.get_data_line_x(y,z,buffer);
-				m_kernel->filter_line(buffer);
+				m_xbc->filter_line(buffer, poles);
 				m_coeff.put_data_line_x(y,z,buffer);
 			}
 		}
@@ -96,7 +136,7 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 		for (int z = 0; z < cachZSize; z++){
 			for (int x = 0; x < cachXSize; x++) {
 				m_coeff.get_data_line_y(x,z,buffer);
-				m_kernel->filter_line(buffer);
+				m_ybc->filter_line(buffer, poles);
 				m_coeff.put_data_line_y(x,z,buffer);
 			}
 		}
@@ -107,7 +147,7 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 		for (int y = 0; y < cachYSize; y++){
 			for (int x = 0; x < cachXSize; x++) {
 				m_coeff.get_data_line_z(x,y,buffer);
-				m_kernel->filter_line(buffer);
+				m_zbc->filter_line(buffer, poles);
 				m_coeff.put_data_line_z(x,y,buffer);
 			}
 		}
@@ -131,42 +171,12 @@ struct bounded<T3DVector<T>, T3DVector<U> > {
 };
 
 template <class C, int size>
-struct add_3d_old {
-	typedef typename C::value_type U; 
-	
-	static typename C::value_type value(const C&  coeff, const std::vector<double>& xweight, 
-					    const std::vector<double>& yweight,
-					    const std::vector<double>& zweight,
-					    const std::vector<int>& xindex, 
-					    const std::vector<int>& yindex, 				
-					    const std::vector<int>& zindex) 
-	{
-		U result = U();
-		
-		for (size_t z = 0; z < size; ++z) {
-			U ry = U();
-			for (size_t y = 0; y < size; ++y) {
-				U rx = U();
-				const U *p = &coeff(0, yindex[y], zindex[z]);
-				
-				for (size_t x = 0; x < size; ++x) {
-					rx += xweight[x] * p[xindex[x]];
-				}
-				ry += yweight[y] * rx; 
-			}
-			result += zweight[z] * ry; 
-		}
-		return result; 
-	}
-};
-
-template <class C, int size>
 struct add_3d {
 	typedef typename C::value_type U; 
 	
-	static typename C::value_type value(const C&  coeff, const CBSplineKernel::SCache& xc, 
-					    const CBSplineKernel::SCache& yc,
-					    const CBSplineKernel::SCache& zc) 
+	static typename C::value_type value(const C&  coeff, const CSplineKernel::SCache& xc, 
+					    const CSplineKernel::SCache& yc,
+					    const CSplineKernel::SCache& zc) 
 	{
 		U result = U();
 		
@@ -175,9 +185,9 @@ struct add_3d {
 			for (size_t y = 0; y < size; ++y) {
 				U rx = U();
 				const U *p = &coeff(0, yc.index[y], zc.index[z]);
-				
 				for (size_t x = 0; x < size; ++x) {
-					rx += xc.weights[x] * p[xc.index[x]];
+					int xinx = xc.is_flat ? xc.start_idx +x : xc.index[x]; 
+					rx += xc.weights[x] * p[xinx];
 				}
 				ry += yc.weights[y] * rx; 
 			}
@@ -187,15 +197,56 @@ struct add_3d {
 	}
 };
 
+template <typename T>
+struct add_3d<T3DDatafield< T >, 1> {
+	static T value(const T3DDatafield< T >&  coeff, 
+		       const CSplineKernel::SCache& xc, 
+		       const CSplineKernel::SCache& yc,
+		       const CSplineKernel::SCache& zc) 
+		{
+			return coeff(xc.index[0], yc.index[0], zc.index[0] ) ; 
+		}
+};
+
+
 #ifdef __SSE2__
+template <>
+struct add_3d<T3DDatafield< double >, 2> {
+	static double value(const T3DDatafield< double >&  coeff, 
+			    const CSplineKernel::SCache& xc, 
+			    const CSplineKernel::SCache& yc,
+			    const CSplineKernel::SCache& zc); 
+	
+};
+
 template <>
 struct add_3d<T3DDatafield< double >, 4> {
 	static double value(const T3DDatafield< double >&  coeff, 
-			    const CBSplineKernel::SCache& xc, 
-			    const CBSplineKernel::SCache& yc,
-			    const CBSplineKernel::SCache& zc); 
+			    const CSplineKernel::SCache& xc, 
+			    const CSplineKernel::SCache& yc,
+			    const CSplineKernel::SCache& zc); 
 	
 };
+#endif
+
+#ifdef __SSE__
+template <>
+struct add_3d<T3DDatafield< float >, 4> {
+	static float value(const T3DDatafield< float >&  coeff, 
+			    const CSplineKernel::SCache& xc, 
+			    const CSplineKernel::SCache& yc,
+			    const CSplineKernel::SCache& zc); 
+	
+};
+template <>
+struct add_3d<T3DDatafield< float >, 2> {
+	static float value(const T3DDatafield< float >&  coeff, 
+			    const CSplineKernel::SCache& xc, 
+			    const CSplineKernel::SCache& yc,
+			    const CSplineKernel::SCache& zc); 
+	
+};
+
 #endif
 
 template <typename T>
@@ -203,34 +254,32 @@ T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x) const
 {
 	typedef typename TCoeff3D::value_type U; 
 	
-	(*m_kernel)(x.x, m_x_cache);
-	(*m_kernel)(x.y, m_y_cache);
-	(*m_kernel)(x.z, m_z_cache);	
+	// x will usually be the fastest changing index, therefore, it is of no use to use the cache 
+	// at the same time it's access may be handled "flat" 
+	m_kernel->get_uncached(x.x, m_x_cache);
+
+	// the other two coordinates are changing slowly and caching makes sense 
+	// however, the index set will always be fully evaluated 
+	if (x.y != m_y_cache.x) 
+		m_kernel->get_cached(x.y, m_y_cache);
+	
+	if (x.z != m_z_cache.x) 
+		m_kernel->get_cached(x.z, m_z_cache);	
 	
 	U result = U();
-	
+	// now we give the compiler a chance to optimize based on kernel size and data type.  
+	// Some of these call also use template specialization to provide an optimized code path.  
+	// With SSE and SSE2 available kernel sizes 2 and 4 and the use of float and double 
+	// scalar fields are optimized.
 	switch (m_kernel->size()) {
+	case 1: result = add_3d<TCoeff3D,1>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
 	case 2: result = add_3d<TCoeff3D,2>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
 	case 3: result = add_3d<TCoeff3D,3>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
 	case 4: result = add_3d<TCoeff3D,4>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
 	case 5: result = add_3d<TCoeff3D,5>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
 	case 6: result = add_3d<TCoeff3D,6>::value(m_coeff, m_x_cache, m_y_cache, m_z_cache); break; 
 	default: {
-		/* perform interpolation */
-		for (size_t z = 0; z < m_kernel->size(); ++z) {
-			U ry = U();
-			for (size_t y = 0; y < m_kernel->size(); ++y) {
-				U rx = U();
-				const typename  TCoeff3D::value_type *p = &m_coeff(0, m_y_cache.index[y], 
-										    m_z_cache.index[z]);
-				
-				for (size_t x = 0; x < m_kernel->size(); ++x) {
-					rx += m_x_cache.weights[x] * p[m_x_cache.index[x]];
-				}
-				ry += m_y_cache.weights[y] * rx; 
-			}
-			result += m_z_cache.weights[z] * ry; 
-		}
+		assert(0 && "kernel sizes above 5 are not implemented"); 
 	}
 	} // end switch 
 	

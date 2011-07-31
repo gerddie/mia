@@ -23,7 +23,6 @@
  */
 
 #include <mia/internal/autotest.hh>
-#include <mia/core/shared_ptr.hh>
 #include <mia/core/type_traits.hh>
 #include <mia/2d/filter/convert.hh>
 

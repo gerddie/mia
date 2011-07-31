@@ -106,14 +106,14 @@ const C2DImageSeries& CSegSetWithImages::get_images()const
 
 struct 	CSegFrameCropper {
 	CSegFrameCropper(const C2DIVector& shift,
-			 C2DFilterPlugin::ProductPtr filter,
+			 P2DFilter filter,
 			 const string& image_name);
 
 	CSegFrame operator()(const CSegFrame& frame, const C2DImage& image) const;
 
 private:
 	C2DIVector m_shift;
-	C2DFilterPlugin::ProductPtr m_filter;
+	P2DFilter m_filter;
 	bfs::path m_image_outpath;
 };
 
@@ -127,8 +127,7 @@ CSegSetWithImages CSegSetWithImages::crop(const C2DIVector&  start, const C2DIVe
 	mask_lv << "crop:start=[" << start
 		<< "],end=[" << end << "]";
 	cvinfo() << "crop region = '" << mask_lv.str() << "'\n";
-	C2DFilterPlugin::ProductPtr image_cropper =
-		C2DFilterPluginHandler::instance().produce(mask_lv.str().c_str());
+	auto image_cropper = C2DFilterPluginHandler::instance().produce(mask_lv.str().c_str());
 
 	CSegFrameCropper frame_cropper(start, image_cropper, crop_filename_base);
 
@@ -149,7 +148,7 @@ CSegSetWithImages CSegSetWithImages::crop(const C2DIVector&  start, const C2DIVe
 
 
 CSegFrameCropper::CSegFrameCropper(const C2DIVector& shift,
-				   C2DFilterPlugin::ProductPtr filter,
+				   P2DFilter filter,
 				   const string& image_name):
 	m_shift(shift),
 	m_filter(filter),

@@ -21,17 +21,17 @@
  */
 
 /*
-  LatexBeginProgramDescription{Registration of image series}
+  LatexBeginProgramDescription{3D registration of series of images}
   
   \subsection{mia-3dmany2one-nonrigid}
   \label{mia-3dmany2one-nonrigid}
 
   \begin{description} 
   \item [Description:] 
-	This program runs the non-rigid registration of an perfusion image series. 
-	The registration is run in a serial manner, this is, only images in 
-	temporal succession are registered, and the obtained transformations 
-	are applied accumulated to reach full registration (cf. \citet{wollny10a}). 
+  This program runs the non-rigid registration of an image series. 
+  All images are registered to one refernces as given on the command line. 
+  If no reference is given then the image in the middle of the series is selected. 
+  Registration can be run in parallel.
   
   The program is called like 
   \begin{lstlisting}
@@ -48,7 +48,6 @@ mia-3dmany2one-nonrigid -i <input set> -o <output set> <cost1> [<cost2>] ...
   \cmdgroup{Image registration} 
   \cmdopt{ref}{r}{int}{Reference frame to base the registration on}
   \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{interpolator}{p}{string}{Image interpolator to be used}
   \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
   \cmdopt{transForm}{f}{string}{Transformation space as provided by the 
                                 \hyperref[sec:3dtransforms]{transformation plug-ins.}}
@@ -64,15 +63,14 @@ mia-3dmany2one-nonrigid -i <input set> -o <output set> <cost1> [<cost2>] ...
 mia-3dmany2one-nonrigid  -i segment.set -o registered.set -F spline:rate=16 \
                      image:cost=[ngf:eval=ds],weight=2.0 image:cost=ssd,weight=0.1 divcurl:weight=2.0 
   \end{lstlisting}
-  \item [See also:] \sa{mia-3dmyomilles}, \sa{mia-3dmyoperiodic-nonrigid}, 
-                    \sa{mia-3dmyoica-nonrigid}, \sa{mia-3dmyopgt-nonrigid},
-		    \sa{mia-3dsegseriesstats}
+  \item [See also:] \sa{mia-3dserial-nonrigid}, \sa{mia-3dprealign-nonrigid}, 
+                    \sa{mia-3dmotioncompica-nonrigid}
   \end{description}
   
   LatexEnd
 */
 
-#define VSTREAM_DOMAIN "3dmyoserial"
+#define VSTREAM_DOMAIN "3dmany3one"
 
 #include <fstream>
 #include <libxml++/libxml++.h>
@@ -81,6 +79,7 @@ mia-3dmany2one-nonrigid  -i segment.set -o registered.set -F spline:rate=16 \
 
 #include <mia/core/filetools.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/threadedmsg.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/factorycmdlineoption.hh>
 #include <mia/core/errormacro.hh>
@@ -88,6 +87,11 @@ mia-3dmany2one-nonrigid  -i segment.set -o registered.set -F spline:rate=16 \
 #include <mia/3d/transformfactory.hh>
 #include <mia/3d/3dimageio.hh>
 
+#include <tbb/task_scheduler_init.h>
+#include <tbb/parallel_for.h>
+#include <tbb/blocked_range.h>
+
+using namespace tbb;
 using namespace std;
 using namespace mia;
 
@@ -102,6 +106,65 @@ const char *g_general_help =
 	" mia-3dmany2one-nonrigid [options] <cost1> <cost2> ..."; 
 
 
+C3DFullCostList create_costs(const std::vector<const char *>& costs, int idx)
+{
+	stringstream cost_descr; 
+	cost_descr << ",src=src" << idx << ".@,ref=ref" << idx << ".@"; 
+	C3DFullCostList result; 
+
+	for (auto c = costs.begin(); c != costs.end(); ++c) {
+		string cc(*c); 
+
+		if (cc.find("image") == 0) 
+			cc.append(cost_descr.str()); 
+		cvdebug() << "create cost:"  << *c << " as " << cc << "\n"; 
+		auto imagecost = C3DFullCostPluginHandler::instance().produce(cc);
+		result.push(imagecost); 
+	}
+
+	return result; 
+}
+
+struct SeriesRegistration {
+	C3DImageSeries&  input_images; 
+	string minimizer; 
+	const std::vector<const char *>& costs; 
+	size_t mg_levels; 
+	P3DTransformationFactory transform_creator; 
+	int reference; 
+	
+	SeriesRegistration(C3DImageSeries&  _input_images, 
+			   const string& _minimizer, 
+			   const std::vector<const char *>& _costs, 
+			   size_t _mg_levels, 
+			   P3DTransformationFactory _transform_creator, 
+			   int _reference):
+		input_images(_input_images), 
+		minimizer(_minimizer), 
+		costs(_costs),
+		mg_levels(_mg_levels), 
+		transform_creator(_transform_creator), 
+		reference(_reference)
+		{
+		}
+	void operator()( const blocked_range<int>& range ) const {
+		CThreadMsgStream thread_stream;
+		TRACE_FUNCTION; 
+		auto m =  CMinimizerPluginHandler::instance().produce(minimizer);
+
+		
+		for( int i=range.begin(); i!=range.end(); ++i ) {
+			if (i == reference)
+				continue; 
+			cvmsg() << "Register " << i << " to " << reference << "\n"; 
+			auto cost  = create_costs(costs, i); 
+			C3DNonrigidRegister nrr(cost, m,  transform_creator,  mg_levels, i);
+			P3DTransformation transform = nrr.run(input_images[i], input_images[reference]);
+			input_images[i] = (*transform)(*input_images[i]);
+		}
+	}
+};  
+
 int do_main( int argc, const char *argv[] )
 {
 	// IO parameters 
@@ -115,10 +178,12 @@ int do_main( int argc, const char *argv[] )
 	bool override_src_imagepath = true;
 
 	// registration parameters
-	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1");
-	EInterpolation interpolator = ip_bspline3;
+	string minimizer("gsl:opt=gd,step=0.1");
+	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 	size_t mg_levels = 3; 
 	int reference_param = -1; 
+
+	int max_threads = task_scheduler_init::automatic;
 	
 	CCmdOptionList options(g_general_help);
 	
@@ -131,28 +196,25 @@ int do_main( int argc, const char *argv[] )
 	
 	options.set_group("\nRegistration"); 
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
-				    "image interpolator", NULL));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
 
+	options.set_group("Processing"); 
+	options.add(make_opt(max_threads, "threads", 't', "Maxiumum number of threads to use for running the registration," 
+			     "This number should be lower or equal to the number of processing cores in the machine"
+			     " (default: automatic estimation)."));  
+
+
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
+	task_scheduler_init init(max_threads);
 	
         // create cost function chain
 	auto cost_functions = options.get_remaining(); 
 	if (cost_functions.empty())
 		throw invalid_argument("No cost function given - nothing to register"); 
-
-	C3DFullCostList costs; 
-	for (auto c = cost_functions.begin(); c != cost_functions.end(); ++c) {
-		auto cost = C3DFullCostPluginHandler::instance().produce(*c); 
-		costs.push(cost); 
-	}
-	
-	unique_ptr<C3DInterpolatorFactory>   ipfactory(create_3dinterpolation_factory(interpolator));
 
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;
@@ -160,7 +222,7 @@ int do_main( int argc, const char *argv[] )
 
 	string src_basename = get_filename_pattern_and_range(in_filename, start_filenum, end_filenum, format_width);
 
-	C3DImageSeries input_images; 
+	P3DImageSeries input_images(new C3DImageSeries); 
 	for (size_t i = start_filenum; i < end_filenum; ++i) {
 		string src_name = create_filename(src_basename.c_str(), i);
 		P3DImage image = load_image<P3DImage>(src_name);
@@ -168,36 +230,27 @@ int do_main( int argc, const char *argv[] )
 			THROW(runtime_error, "image " << src_name << " not found");
 
 		cvdebug() << "read '" << src_name << "\n";
-		input_images.push_back(image);
+		input_images->push_back(image);
 	}
 
 	// if reference is not given, use half range 
-	size_t reference = reference_param < 0 ? input_images.size() / 2 : reference_param; 
+	size_t reference = reference_param < 0 ? input_images->size() / 2 : reference_param; 
 
-	// prepare registration framework 
-	C3DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory, mg_levels);
-	
-	if ( input_images.empty() ) 
+	if ( input_images->empty() ) 
 		throw invalid_argument("No input images to register"); 
 
-	if (reference > input_images.size() - 1) {
-		reference = input_images.size() - 1; 
+	if (reference > input_images->size() - 1) {
+		reference = input_images->size() - 1; 
 		cvwarn() << "Reference was out of range, adjusted to " << reference << "\n"; 
 	}
 
-	
-	// run registrations 
-	for (size_t i = 0; i < input_images.size(); ++i) {
-		if (i != reference) {
-			cvmsg() << "Register " << i << " to " << reference << "\n"; 
-			P3DTransformation transform = nrr.run(input_images[i], input_images[reference]);
-			input_images[i] = (*transform)(*input_images[i], *ipfactory);
-		}
-	}
-	
+	SeriesRegistration sreg(*input_images, minimizer, cost_functions, 
+				mg_levels, transform_creator, reference); 
+
+	parallel_for(blocked_range<int>( 0, input_images->size()), sreg);
 
 	bool success = true; 
-	auto ii = input_images.begin(); 
+	auto ii = input_images->begin(); 
 	for (size_t i = start_filenum; i < end_filenum; ++i, ++ii) {
 		string out_name = create_filename(registered_filebase.c_str(), i);
 		cvmsg() << "Save image " << i << " to " << out_name << "\n"; 

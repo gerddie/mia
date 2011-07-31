@@ -35,7 +35,6 @@ public:
 	C2DImageFullCost(const std::string& src, 
 			 const std::string& ref, 
 			 const std::string& cost, 
-			 EInterpolation ip_type, 
 			 double weight, 
 			 bool debug); 
 private: 
@@ -46,6 +45,7 @@ private:
 
 	bool do_has(const char *property) const; 
 	double do_value(const C2DTransformation& t) const; 
+	bool do_get_full_size(C2DBounds& size) const; 
 
 	double do_value() const; 
 	void do_reinit(); 
@@ -60,7 +60,6 @@ private:
 	P2DImage m_ref_scaled; 
 
 	P2DImageCost m_cost_kernel; 
-	P2DInterpolatorFactory m_ipf; 
 	bool m_debug;
 }; 
 

@@ -27,6 +27,8 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup helpers 
+
    \brief A class to make a const reference not so const 
    
    This is a little hepler class to make it possible to change what 

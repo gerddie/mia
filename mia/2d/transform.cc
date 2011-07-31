@@ -34,13 +34,10 @@
 #include <mia/2d/transform.hh>
 #include <mia/2d/deformer.hh>
 
-
-#include <boost/lambda/lambda.hpp>
-
 NS_MIA_BEGIN
-using namespace boost::lambda;
 
-C2DTransformation::C2DTransformation()
+C2DTransformation::C2DTransformation(const C2DInterpolatorFactory& ipf):
+	Transformation<C2DImage, C2DInterpolatorFactory>(ipf)
 {
 
 }
@@ -237,7 +234,54 @@ bool C2DTransformation::refine()
 	return false; 
 }
 
-const char *C2DTransformation::type_descr = "2dtransform";
+
+/**
+   @brief Helper functor for 2D image transformations 
+   
+   Helper Functor to evaluate a transformed image by applying a given 
+   transformation and using the provided interpolator type
+*/
+
+struct F2DTransform : public TFilter<P2DImage> {
+
+	/**
+	   Construtor 
+	   @param ipf interpolation factory to use 
+	   @param trans tranformation to be applied 
+	 */
+	F2DTransform(const C2DInterpolatorFactory& ipf, const C2DTransformation& trans):
+		m_ipf(ipf),
+		m_trans(trans)
+		{
+		}
+	
+	template <typename T>
+	P2DImage operator ()(const T2DImage<T>& image) const {
+		T2DImage<T> *timage = new T2DImage<T>(m_trans.get_size(), image);
+		
+		unique_ptr<T2DInterpolator<T>> interp(m_ipf.create(image.data()));
+		
+		auto r = timage->begin();
+		auto v = m_trans.begin();
+		
+		for (size_t y = 0; y < image.get_size().y; ++y)
+			for (size_t x = 0; x < image.get_size().x; ++x, ++r, ++v) {
+				*r = (*interp)(*v);
+			}
+		return P2DImage(timage);
+	}
+private:
+	const C2DInterpolatorFactory& m_ipf;
+	const C2DTransformation& m_trans;
+};
+
+P2DImage C2DTransformation::do_transform(const C2DImage& image, const C2DInterpolatorFactory& ipf) const
+{
+	return mia::filter(F2DTransform(ipf, *this), image);
+}
+
+
+const char *C2DTransformation::data_descr = "2dtransform";
 const char *C2DTransformation::dim_descr = "2d"; 
 
 NS_MIA_END

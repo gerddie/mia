@@ -55,8 +55,8 @@ MaskFixture::MaskFixture():
 
 
 
-	CDatapool::Instance().add("binary", create_image3d_vector(mask));
-	CDatapool::Instance().add("uint", create_image3d_vector(src));
+	CDatapool::instance().add("binary", create_image3d_vector(mask));
+	CDatapool::instance().add("uint", create_image3d_vector(src));
 }
 
 BOOST_FIXTURE_TEST_CASE( test_mask ,MaskFixture )

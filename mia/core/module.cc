@@ -49,9 +49,7 @@
 NS_MIA_BEGIN
 
 CPluginModule::CPluginModule(const char *path):
-	m_loader(path, DLL_FLAGS ),
-	m_refs(0),
-
+	m_loader(path, DLL_FLAGS ), 
 	m_name(path)
 
 {
@@ -61,9 +59,6 @@ CPluginModule::CPluginModule(const char *path):
 CPluginModule::~CPluginModule()
 {
 	TRACE("CPluginModule::~CPluginModule()");
-	if (m_refs)
-		cverr() << "Module _'" << m_name << "' deleted with " << m_refs << " references\n";
-
 }
 
 const std::string& CPluginModule::get_name() const

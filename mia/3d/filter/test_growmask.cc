@@ -87,7 +87,7 @@ GrowMaskFixture::GrowMaskFixture():
 
 	ref.reset(new C3DUSImage(size, init_ref));
 
-	CDatapool::Instance().add("reference.datapool", create_image3d_vector(ref));
+	CDatapool::instance().add("reference.datapool", create_image3d_vector(ref));
 
 	copy(init_mask, init_mask + nx * ny * nz, mask.begin());
 }

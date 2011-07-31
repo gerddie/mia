@@ -53,7 +53,7 @@ public:
 class C2DMidpointImageFilterFactory: public C2DFilterPlugin {
 public: 
 	C2DMidpointImageFilterFactory();
-	virtual C2DFilterPlugin::ProductPtr create(const CParsedOptions& options) const;
+	virtual C2DFilter *create(const CParsedOptions& options) const;
 	virtual const string do_get_descr()const; 
 };
 
@@ -140,11 +140,11 @@ C2DMidpointImageFilterFactory::C2DMidpointImageFilterFactory():
 	add_help(param_hw); 
 }
 
-C2DFilterPlugin::ProductPtr C2DMidpointImageFilterFactory::create(const CParsedOptions& options) const
+C2DFilter *C2DMidpointImageFilterFactory::create(const CParsedOptions& options) const
 {
 	int  hw = param_hw.get_value(options); 
 
-	return C2DFilterPlugin::ProductPtr(new C2DMidpointImageFilter(hw)); 
+	return new C2DMidpointImageFilter(hw); 
 }
 
 const string C2DMidpointImageFilterFactory::do_get_descr()const

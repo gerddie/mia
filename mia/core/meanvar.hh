@@ -29,6 +29,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup helpers 
    Evaluate the mean and the variance of a series of scalars 
    \tparam ForwardIterator 
    \param begin 

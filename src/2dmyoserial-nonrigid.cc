@@ -50,7 +50,6 @@ mia-2dmyoserial-nonrigid -i <input set> -o <output set> <cost1> [<cost2>] ...
   \cmdgroup{Image registration} 
   \cmdopt{ref}{r}{int}{Reference frame to base the registration on}
   \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{interpolator}{p}{string}{Image interpolator to be used}
   \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
   \cmdopt{transForm}{f}{string}{Transformation space as provided by the 
                                 \hyperref[sec:2dtransforms]{transformation plug-ins.}}
@@ -121,7 +120,7 @@ int do_main( int argc, const char *argv[] )
 
 	// registration parameters
 	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1");
-	EInterpolation interpolator = ip_bspline3;
+	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 	size_t mg_levels = 3; 
 	int reference_param = -1; 
 	
@@ -138,8 +137,6 @@ int do_main( int argc, const char *argv[] )
 	
 	options.set_group("\nRegistration"); 
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
-				    "image interpolator", NULL));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
@@ -158,8 +155,6 @@ int do_main( int argc, const char *argv[] )
 		auto cost = C2DFullCostPluginHandler::instance().produce(*c); 
 		costs.push(cost); 
 	}
-	
-	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(interpolator));
 
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
@@ -171,7 +166,7 @@ int do_main( int argc, const char *argv[] )
 
 	// prepare registration framework 
 	CSegSetWithImages::Frames& frames = input_set.get_frames();
-	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory, mg_levels);
+	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, mg_levels);
 	
 	if ( input_images.empty() ) 
 		throw invalid_argument("No input images to register"); 
@@ -186,7 +181,7 @@ int do_main( int argc, const char *argv[] )
 	for (size_t i = 0; i < reference; ++i) {
 		P2DTransformation transform = nrr.run(input_images[i], input_images[i+1]);
 		for (size_t j = 0; j <=i ; ++j) {
-			input_images[j] = (*transform)(*input_images[j], *ipfactory);
+			input_images[j] = (*transform)(*input_images[j]);
 			frames[j].inv_transform(*transform); 
 		}
 	}
@@ -195,7 +190,7 @@ int do_main( int argc, const char *argv[] )
 	for (size_t i = input_images.size() - 1; i > reference; --i) {
 		P2DTransformation transform = nrr.run(input_images[i], input_images[i-1]);
 		for (size_t j = input_images.size() - 1; j >= i ; --j) {
-			input_images[j] = (*transform)(*input_images[j], *ipfactory);
+			input_images[j] = (*transform)(*input_images[j]);
 			frames[j].inv_transform(*transform); 
 		}
 	}

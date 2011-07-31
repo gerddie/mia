@@ -237,11 +237,11 @@ C3DAnisoFilterFactory::C3DAnisoFilterFactory():
 
 }
 
-C3DFilterPlugin::ProductPtr C3DAnisoFilterFactory::do_create()const
+C3DFilter *C3DAnisoFilterFactory::do_create()const
 {
 	FEdgeStopping estop = m_edge_stop_idmap.get_value(m_edge_stop_func.c_str()); 
 
-	return C3DFilterPlugin::ProductPtr(new C3DAnisoDiffFilter(estop, m_maxiter, m_epsilon, m_edge_stop)); 
+	return new C3DAnisoDiffFilter(estop, m_maxiter, m_epsilon, m_edge_stop); 
 }
 
 const string C3DAnisoFilterFactory::do_get_descr()const

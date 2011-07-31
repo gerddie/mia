@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
@@ -29,6 +29,15 @@
 #include <mia/2d/interpolator.hh>
 #include <mia/2d/cost.hh>
 #include <mia/2d/fatcost.hh>
+#include <mia/2d/fullcost.hh>
+#include <mia/2d/fftkernel.hh>
+#include <mia/2d/cstkernel.hh>
+#include <mia/2d/transformfactory.hh>
+#include <mia/2d/transformio.hh>
+#include <mia/2d/shape.hh>
+#include <mia/2d/model.hh>
+#include <mia/2d/timestep.hh>
+
 #include <mia/2d/creator.hh>
 //#include <mia/2d/register.hh>
 #include <mia/2d/2dvfio.hh>

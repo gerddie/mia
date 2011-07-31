@@ -33,13 +33,10 @@
 #include <limits>
 
 #include <boost/type_traits.hpp>
-#include <boost/lambda/lambda.hpp>
 
 NS_MIA_BEGIN;
 
 using namespace std; 
-using namespace boost::lambda;
-
 
 NAMESPACE_BEGIN(rgg_2dstack_filter)
 
@@ -155,7 +152,7 @@ private:
 	
 	virtual const string do_get_descr() const;
 	virtual bool do_test() const; 
-	virtual C2DFifoFilterPlugin::ProductPtr do_create()const;
+	virtual C2DImageFifoFilter *do_create()const;
 
 	string m_seed_map; 
 	float  m_seed_thresh; 
@@ -190,7 +187,7 @@ bool C2DRGGStackFilterFactory::do_test() const
 	return true; 
 }
 
-C2DFifoFilterPlugin::ProductPtr C2DRGGStackFilterFactory::do_create()const
+C2DImageFifoFilter *C2DRGGStackFilterFactory::do_create()const
 {
 	CProbabilityVector pv(m_seed_map);
 	return C2DFifoFilterPlugin::ProductPtr(

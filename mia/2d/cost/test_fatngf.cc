@@ -27,6 +27,8 @@ using namespace std;
 using namespace ::boost::unit_test;
 using namespace nfg_2dimage_fatcost;
 
+CSplineKernelTestPath spline_kernel_path_init; 
+
 const size_t g_nx = 4;
 const size_t g_ny = 3;
 
@@ -152,9 +154,8 @@ BOOST_AUTO_TEST_CASE( test_fatngf_2d )
 
 
 	PEvaluator eval(new CCostEvaluatorTest());
-	P2DInterpolatorFactory ipf(create_2dinterpolation_factory(ip_bspline3));
 
-	CFatNFG2DImageCost cost(src, ref, ipf, weight, eval);
+	CFatNFG2DImageCost cost(src, ref, weight, eval);
 	double test_cost = 0.5 * weight * 18 * 36 / 200.0;
 
 	BOOST_CHECK_CLOSE(cost.value(), test_cost, 0.1);

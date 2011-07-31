@@ -339,9 +339,9 @@ CNLOptMinimizerPlugin::CNLOptMinimizerPlugin():
 					 "Initial step size for gradient free methods")); 
 }
 	
-CNLOptMinimizerPlugin::ProductPtr CNLOptMinimizerPlugin::do_create() const
+CMinimizer *CNLOptMinimizerPlugin::do_create() const
 {
-	return ProductPtr(new CNLOptFDFMinimizer(m_options)); 
+	return new CNLOptFDFMinimizer(m_options); 
 }
 
 const std::string CNLOptMinimizerPlugin::do_get_descr() const

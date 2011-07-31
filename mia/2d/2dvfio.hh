@@ -53,12 +53,16 @@ public:
 	/** copy from normal vectorfield constructor */
 	C2DIOVectorfield(const C2DFVectorfield& org);
 
+	/**
+	   Create a copy of this object (needed for CDatapool) 
+	   \returns a dynamically allocated copy 
+	 */
 	C2DIOVectorfield *clone() const __attribute__((warn_unused_result));
 };
 
 struct io_2dvf_type {
 	typedef  C2DIOVectorfield type;
-	static const char *type_descr;
+	static const char *data_descr;
 };
 
 /// Base class for 2D vector field IO plugins 

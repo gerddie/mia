@@ -32,12 +32,6 @@ Quaternion::Quaternion():
 {
 }
 
-Quaternion::Quaternion(const Quaternion& other):
-	m_v(other.m_v),
-	m_w(other.m_w)
-{
-}
-
 Quaternion::Quaternion(const C3DDVector& rot):
 	m_v(0.0, 0.0, 0.0), 
 	m_w(1.0)

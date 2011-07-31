@@ -52,7 +52,7 @@ template <class Image>
 class TBinarizeImageFilterFactory: public TImageFilterPlugin<Image> {
 public: 
 	TBinarizeImageFilterFactory();
-	virtual typename TImageFilterPlugin<Image>::ProductPtr do_create()const;
+	virtual TImageFilter<Image> *do_create()const;
 	virtual const std::string do_get_descr()const; 
 private: 
 	float m_min; 

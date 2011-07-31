@@ -32,15 +32,16 @@
 NS_MIA_BEGIN
 
 struct EXPORT_CORE grayscale_noise_data {
-	static const char *type_descr;
+	static const char *data_descr;
 };
 
 
 struct EXPORT_CORE generator_type {
-	static const char *value;
+	static const char *type_descr;
 };
 
 /**
+   \ingroup classes
    \brief Base class for the noise generators.
 
    This class defines the interface for noise generators. Real implementations 
@@ -75,6 +76,8 @@ private:
 	virtual double get() const = 0;
 
 };
+
+typedef std::shared_ptr<CNoiseGenerator> PNoiseGenerator; 
 
 /// Base class for al noise generator plugins 
 typedef TFactory<CNoiseGenerator> CNoiseGeneratorPlugin;

@@ -24,11 +24,11 @@
 #include <vector>
 #include <cassert>
 #include <stdexcept>
+#include <memory>
 #include <miaconfig.h>
 #include <mia/core/ica.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/core/shared_ptr.hh>
 
 
 NS_MIA_BEGIN

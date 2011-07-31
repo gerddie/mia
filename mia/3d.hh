@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
@@ -24,12 +24,23 @@
 #ifndef mia_3d_hh
 #define mia_3d_hh
 
+#include <mia/3d/2dimagefifofilter.hh>
 #include <mia/3d/3dimageio.hh>
+#include <mia/3d/3dvfio.hh>
 #include <mia/3d/3dfilter.hh>
-#include <mia/3d/interpolator.hh>
 #include <mia/3d/cost.hh>
 #include <mia/3d/creator.hh>
+#include <mia/3d/fullcost.hh>
+#include <mia/3d/fatcost.hh>
+#include <mia/3d/interpolator.hh>
+#include <mia/3d/model.hh>
+#include <mia/3d/transformfactory.hh>
+#include <mia/3d/transformio.hh>
 #include <mia/3d/register.hh>
-#include <mia/3d/3dvfio.hh>
+#include <mia/3d/rigidregister.hh>
+#include <mia/3d/stackdisttrans.hh>
+#include <mia/3d/nonrigidregister.hh>
+#include <mia/3d/shape.hh>
+
 
 #endif

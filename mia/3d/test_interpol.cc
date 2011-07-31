@@ -1,4 +1,5 @@
-/*
+/* -*- mia-c++ -*-
+**
 ** Copyrigh (C) 2004 MPI of Human Cognitive and Brain Sience
 **                    Gert Wollny <wollny at cbs.mpg.de>
 **
@@ -30,44 +31,97 @@ NS_MIA_USE
 using namespace std;
 using namespace boost;
 
-template <class Data3D, class Interpolator>
-bool test_interpolator(const Data3D& data, const Interpolator& src)
-{
-	bool result = true;
+CSplineKernelTestPath spline_kernel_init_path; 
 
-	typename Data3D::const_iterator i = data.begin();
+
+template <typename T, typename  I, bool is_int>
+struct __dispatch_check {
+	static void apply(T x, T y) {
+		BOOST_CHECK_EQUAL(x,y); 
+	}
+	static void apply_xyz(const I& src, int x, int y, int z) {
+/*
+		C3DFVector locx(x + 0.4,y,z);
+		const T value  = T(rint(x + y + z + 0.4)); 
+		BOOST_CHECK_EQUAL(src(locx), value); 
+		
+		C3DFVector locy(x,y + 0.4,z);
+		BOOST_CHECK_EQUAL(src(locy), value); 
+		
+		C3DFVector locz(x,y,z + 0.4);
+		BOOST_CHECK_EQUAL(src(locz), value); 
+*/
+	}
+}; 
+
+template <typename T, typename I>
+struct __dispatch_check<T, I, false> {
+	static void apply(T x, T y) {
+		BOOST_CHECK_CLOSE(x,y, 0.01); 
+	}
+	static void apply_xyz(const I& src, int x, int y, int z) {
+		C3DFVector locx(x + 0.5,y,z);
+		const double value  = x + y + z + 1.5; 
+		BOOST_CHECK_CLOSE(src(locx), value, 2); 
+		
+		C3DFVector locy(x,y + 0.5,z);
+		BOOST_CHECK_CLOSE(src(locy), value, 2); 
+		
+		C3DFVector locz(x,y,z + 0.5);
+		BOOST_CHECK_CLOSE(src(locz), value, 2); 
+	}
+}; 
+
+template <class Data3D, class Interpolator>
+void test_interpolator(const Data3D& data, const Interpolator& src)
+{
+	typedef typename Data3D::value_type T; 
+	const bool is_int = std::is_integral<T>::value; 
+
+	auto i = data.begin();
 
 	for (size_t z = 0; z < data.get_size().z; ++z)
 		for (size_t y = 0; y < data.get_size().y; ++y)
 			for (size_t x = 0; x < data.get_size().x; ++x, ++i) {
 				C3DFVector loc(x,y,z);
-				typename Data3D::value_type v = src(loc);
-				double delta = v - *i;
-				if ( fabs(delta) > 1e-4 ) {
-					cvdebug() << loc << " fails: (" << v <<") vs. ("  << *i << ")\t ->  delta = " << v-*i <<   std::endl; 					result =  false;
-				}
+				auto v = src(loc);
+				__dispatch_check<T, Interpolator, is_int>::apply(v, *i); 
 			}
-	return result;
+}
+
+
+template <class Data3D, class Interpolator>
+void test_interpolator_zerofive(const Data3D& data, const Interpolator& src)
+{
+	typedef typename Data3D::value_type T; 
+	const bool is_int = std::is_integral<T>::value; 
+
+	for (size_t z = 0; z < data.get_size().z - 1; ++z)
+		for (size_t y = 0; y < data.get_size().y - 1; ++y)
+			for (size_t x = 0; x < data.get_size().x - 1; ++x) {
+				__dispatch_check<T, Interpolator, is_int>::apply_xyz(src, x, y, z); 
+			}
 }
 
 
 template <class T, template <class> class Interpolator>
-static bool test_direct_interpolator(const T3DDatafield<T>& data)
+static void  test_direct_interpolator(const T3DDatafield<T>& data)
 {
 	Interpolator<T> src(data);
-	return test_interpolator(data, src);
+	test_interpolator(data, src);
 }
 
 
 template <class T>
-static bool test_conv_interpolator(const T3DDatafield<T>& data, PBSplineKernel kernel)
+static void test_conv_interpolator(const T3DDatafield<T>& data, PSplineKernel kernel)
 {
 	T3DConvoluteInterpolator<T>  src(data, kernel);
-	bool result = test_interpolator(data, src);
-	return result;
+	test_interpolator(data, src);
+	if (kernel->size() == 2) 
+		test_interpolator_zerofive(data, src);
 }
 
-template <class T>
+template <class T, const char *kernel>
 static void test_type()
 {
 	T3DDatafield<T> data(C3DBounds(10, 12, 11));
@@ -76,30 +130,17 @@ static void test_type()
 	for (size_t z = 0; z < data.get_size().z; ++z)
 		for (size_t y = 0; y < data.get_size().y; ++y)
 			for (size_t x = 0; x < data.get_size().x; ++x, ++i)
-				*i = z;
-
-
-	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel0())))
-		BOOST_FAIL(" NN Interpolator FAIL");
-
-	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel1())))
-		BOOST_FAIL(" Tri Interpolator FAIL");
-
-	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel2())))
-		BOOST_FAIL(" BSpline 2 Interpolator FAIL");
-
-	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel3())))
-		BOOST_FAIL(" BSpline 3 Interpolator FAIL");
-
-	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel4())))
-		BOOST_FAIL(" BSpline 4 Interpolator FAIL");
-
-	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernel5())))
-		BOOST_FAIL(" BSpline 5 Interpolator FAIL\n");
-
-	if (!test_conv_interpolator<T>(data, PBSplineKernel (new CBSplineKernelOMoms3())))
-		BOOST_FAIL(" oMoms 3 Interpolator FAIL\n");
+				*i = x + y + z + 1;
+	test_conv_interpolator<T>(data, produce_spline_kernel(kernel)); 
 }
+
+extern const char bspline0[] = "bspline:d=0"; 
+extern const char bspline1[] = "bspline:d=1"; 
+extern const char bspline2[] = "bspline:d=2"; 
+extern const char bspline3[] = "bspline:d=3"; 
+extern const char bspline4[] = "bspline:d=4"; 
+extern const char bspline5[] = "bspline:d=5"; 
+extern const char omomsspl3[] = "omoms:d=3"; 
 
 static double omoms3(double x)
 {
@@ -117,9 +158,9 @@ static double omoms3(double x)
 static void test_omoms3()
 {
 	const double x = 0.2;
-	CBSplineKernelOMoms3 kernel;
-	std::vector<double> weights(kernel.size());
-	kernel.get_weights(x, weights);
+	auto kernel = produce_spline_kernel("omoms:d=3"); 
+	std::vector<double> weights(kernel->size());
+	kernel->get_weights(x, weights);
 
 	for (size_t i = 0; i < weights.size(); ++i) {
 		if (fabs(weights[3 - i] - omoms3( x - 2.0 + i)) > 1e-4)
@@ -130,14 +171,89 @@ static void test_omoms3()
 void add_3dinterpol_tests( boost::unit_test::test_suite* suite)
 {
 	suite->add( BOOST_TEST_CASE( &test_omoms3));
-	suite->add( BOOST_TEST_CASE( &test_type<unsigned char>));
-	suite->add( BOOST_TEST_CASE( &test_type<signed char>));
-	suite->add( BOOST_TEST_CASE( &test_type<unsigned short>));
-	suite->add( BOOST_TEST_CASE( &test_type<signed short>));
+
+
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned char, bspline1>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline1>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline1>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline1>)));
 #ifdef HAVE_INT64
-	suite->add( BOOST_TEST_CASE( &test_type<mia_int64>));
-	suite->add( BOOST_TEST_CASE( &test_type<mia_uint64>));
+	suite->add( BOOST_TEST_CASE(( &test_type<mia_int64, bspline1>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<mia_uint64, bspline1>)));
 #endif
-	suite->add( BOOST_TEST_CASE( &test_type<float>));
-	suite->add( BOOST_TEST_CASE( &test_type<double>));
+	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline1>)));
+	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline1>)));
+
+
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned char, bspline2>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline2>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline2>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline2>)));
+#ifdef HAVE_INT64
+	suite->add( BOOST_TEST_CASE(( &test_type<mia_int64, bspline2>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<mia_uint64, bspline2>)));
+#endif
+	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline2>)));
+	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline2>)));
+
+
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned char, bspline3>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline3>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline3>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline3>)));
+#ifdef HAVE_INT64
+	suite->add( BOOST_TEST_CASE(( &test_type<mia_int64, bspline3>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<mia_uint64, bspline3>)));
+#endif
+	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline3>)));
+	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline3>)));
+
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned char, bspline4>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline4>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline4>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline4>)));
+#ifdef HAVE_INT64
+	suite->add( BOOST_TEST_CASE(( &test_type<mia_int64, bspline4>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<mia_uint64, bspline4>)));
+#endif
+	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline4>)));
+	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline4>)));
+
+
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned char, bspline5>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline5>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline5>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline5>)));
+#ifdef HAVE_INT64
+	suite->add( BOOST_TEST_CASE(( &test_type<mia_int64, bspline5>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<mia_uint64, bspline5>)));
+#endif
+	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline5>)));
+	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline5>)));
+
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned char, bspline0>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline0>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline0>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline0>)));
+#ifdef HAVE_INT64
+	suite->add( BOOST_TEST_CASE(( &test_type<mia_int64, bspline0>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<mia_uint64, bspline0>)));
+#endif
+	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline0>)));
+	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline0>)));
+
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned char, omomsspl3>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<signed char, omomsspl3>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, omomsspl3>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<signed short, omomsspl3>)));
+#ifdef HAVE_INT64
+	suite->add( BOOST_TEST_CASE(( &test_type<mia_int64, omomsspl3>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<mia_uint64, omomsspl3>)));
+#endif
+	suite->add( BOOST_TEST_CASE( (&test_type<float, omomsspl3>)));
+	suite->add( BOOST_TEST_CASE( (&test_type<double, omomsspl3>)));
+
+
+
+
 }

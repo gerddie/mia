@@ -37,13 +37,24 @@ NS_MIA_BEGIN
    \tparam Polygon The type of the Polygon   
 
 */
-
-
 template <class VertexVector, class Polygon>
 class TPolyTriangulator {
 public:
+	/**
+	   Constructor to be initializes with a vector of vertices that used when defining the polygon 
+	   \param vv the vertices
+	 */
 	TPolyTriangulator(const VertexVector& vv);
 	
+	/**
+	   Evaluate the triangulation of the polygon that is defined by the vertices given above and 
+	   their ordering by indices as given in poly. 
+	   \param [out] output the list of triangles as list of index triples into the vertex arrey given in the 
+	   constructor 
+	   \param [in] poly the index array into the vertex array describing the polygon 
+	   \returns true of the triangulation was successfull and false if the polygon only consisted only 
+	   of two corners.
+	 */
 	template <class TriangleList>
 	bool triangulate(TriangleList& output, const Polygon& poly) const;
 

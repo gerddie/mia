@@ -21,24 +21,38 @@
  *
  */
 
-#ifndef mia_core_unaryfunction_hh
-#define mia_core_unaryfunction_hh
 
-#include <mia/core/defines.hh>
+#include <mia/internal/autotest.hh>
+#include <mia/core/seriesstats.hh>
 
-NS_MIA_BEGIN
+NS_MIA_USE; 
+
+BOOST_AUTO_TEST_CASE( test_seriesstats )
+{
+	FIntensityStatsAccumulator acc; 
+
+	vector<double> a = {1,2,3,4,5}; 
+	vector<double> b = {5,6,4}; 
+	
+	acc(a); 
+	acc(b); 
+	acc(a); 
+
+	auto result = acc.get_result(); 
+
+	BOOST_CHECK_EQUAL(result.n, 2 * a.size() + b.size()); 
+	BOOST_CHECK_EQUAL(result.sum, 45); 
+	BOOST_CHECK_EQUAL(result.sumsq, 110 + 25+16+36); 
+	BOOST_CHECK_EQUAL(result.min, 1); 
+	BOOST_CHECK_EQUAL(result.max, 6); 
+	
+	BOOST_CHECK_CLOSE(result.mean, 45.0/13.0, 0.001); 
+	BOOST_CHECK_CLOSE(result.variation, sqrt(2.6025641026), 0.001); 
+	
+	
+	
+	
+	
 
 
-/**
-   Abstract base class for an Unary function. 
-   \remark is this actually used? 
-*/
-class FUnary {
-public: 
-	/// this would be the operator 
-	virtual double operator () (double x) const = 0; 
-}; 
-
-NS_MIA_END
-
-#endif
+}

@@ -27,6 +27,8 @@ using namespace mia;
 
 using namespace ssd_2dimage_fatcost;
 
+CSplineKernelTestPath spline_kernel_path_init; 
+
 struct C2DSSDFixture {
 	C2DSSDFixture() {
 		cvdebug() << "Init fixture\n";
@@ -44,10 +46,9 @@ BOOST_FIXTURE_TEST_CASE( test_SSD2D_self, C2DSSDFixture )
 	for (size_t i = 0; i < size.x * size.y; ++i, ++isrc)
 		*isrc = i;
 
-	P2DImage src(new C2DUBImage(size));
+	P2DImage src(img);
 
-	P2DInterpolatorFactory ipf(create_2dinterpolation_factory(ip_bspline3));
-	CFatSSD2DImageCost cost(src, src, ipf, 1.0);
+	CFatSSD2DImageCost cost(src, src, 1.0);
 
 	BOOST_CHECK_CLOSE(1.0 + cost.value(), 1.0, 0.1);
 
@@ -73,8 +74,7 @@ BOOST_FIXTURE_TEST_CASE( test_SSD2D_simple, C2DSSDFixture )
 	fill(psrc->begin(), psrc->end(), 1.0);
 	fill(pref->begin(), pref->end(), 2.0);
 
-	P2DInterpolatorFactory ipf(create_2dinterpolation_factory(ip_bspline3));
-	CFatSSD2DImageCost cost(P2DImage(psrc), P2DImage(pref), ipf, 2.0);
+	CFatSSD2DImageCost cost(P2DImage(psrc), P2DImage(pref),  2.0);
 	BOOST_CHECK_CLOSE(cost.value(), 200.0, 0.1);
 
 	C2DFVectorfield force(size);

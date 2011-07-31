@@ -42,7 +42,6 @@
 
 NS_MIA_USE
 using namespace std;
-using namespace ::boost::lambda;
 using namespace gauss_1d_folding_kernel;
 
 C1DGaussFilterKernel::C1DGaussFilterKernel(int fsize):
@@ -61,12 +60,13 @@ C1DGaussFilterKernel::C1DGaussFilterKernel(int fsize):
 
 	for (size_t i = 2; i < n; i++){
 		(*this)[i] = 1.0;
-                transform(begin(), begin() + i, begin() + 1, tmp.begin() + 1, _1 + _2);
+                transform(begin(), begin() + i, begin() + 1, tmp.begin() + 1, 
+			  [](double a, double b){return a + b;}); 
                 copy(tmp.begin() + 1, tmp.begin()+i, begin() +1);
 	}
 
 	const double norm = pow(2.0,n-1);
-	transform(begin(), end(), begin(), _1 / norm);
+	transform(begin(), end(), begin(), [norm](double x){return x / norm;});
 
 	vec_mask::iterator ider    = dbegin();
 	vec_mask::iterator ikern   = begin();
@@ -83,12 +83,12 @@ C1DSpacialGaussKernelPlugin::C1DSpacialGaussKernelPlugin():
 					     false, "half filter width"));
 }
 
-C1DSpacialGaussKernelPlugin::ProductPtr C1DSpacialGaussKernelPlugin::do_create() const
+C1DFoldingKernel *C1DSpacialGaussKernelPlugin::do_create() const
 {
 	if (m_w > 0)
-		return C1DSpacialGaussKernelPlugin::ProductPtr(new C1DGaussFilterKernel(m_w));
+		return new C1DGaussFilterKernel(m_w);
 	else
-		return C1DSpacialGaussKernelPlugin::ProductPtr();
+		return NULL;
 }
 
 std::vector<double> C1DGaussFilterKernel::do_apply(const std::vector<double>& data) const

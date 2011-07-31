@@ -91,10 +91,9 @@ CUniformNoiseGeneratorFactory::CUniformNoiseGeneratorFactory():
 
 }
 
-CNoiseGeneratorPlugin::ProductPtr
-CUniformNoiseGeneratorFactory::do_create()const
+CNoiseGenerator *CUniformNoiseGeneratorFactory::do_create()const
 {
-	return CNoiseGeneratorPlugin::ProductPtr(new CUniformNoiseGenerator(m_param_seed, m_param_a, m_param_b));
+	return new CUniformNoiseGenerator(m_param_seed, m_param_a, m_param_b);
 }
 
 const string CUniformNoiseGeneratorFactory::do_get_descr()const

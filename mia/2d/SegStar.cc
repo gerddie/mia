@@ -61,10 +61,10 @@ CSegStar::CSegStar(const xmlpp::Node& n)
 	m_center = CSegPoint2D(node);
 	xmlpp::Attribute *rx = node.get_attribute ("r");
 	if (!rx)
-		throw invalid_argument("CSegStar: attribute r not found");
+		throw runtime_error("CSegStar: attribute r not found");
 
-	m_radius = from_string<float>(rx->get_value());
-
+	if (!from_string(rx->get_value(), m_radius)) 
+		THROW(runtime_error, "CSegStar: radius attribute '" << rx->get_value() << "' is not a floating point value");  
 	cvdebug() << "Got star center (" << m_center.x << ", " << m_center.y << " @ " << m_radius << ")\n";
 
 	xmlpp::Node::NodeList points = node.get_children("point");

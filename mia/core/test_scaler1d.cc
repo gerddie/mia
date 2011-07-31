@@ -42,6 +42,8 @@ using namespace std;
 using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem;
 
+CSplineBoundaryConditionTestPath bc_path; 
+
 struct Scaler1DFixture  {
 	Scaler1DFixture(); 
 
@@ -112,6 +114,11 @@ double Scaler1DFixture::f(double x) const
 Scaler1DFixture::Scaler1DFixture():
 	data(256)
 {
+
+	list< bfs::path> sksearchpath; 
+	sksearchpath.push_back( bfs::path("splinekernel"));
+	CSplineKernelPluginHandler::set_search_path(sksearchpath); 
+
 	for(size_t x = 0; x < 256; ++x)
 		data[x] = 200*f(2 * M_PI * x / 255.0);
 }
@@ -120,7 +127,7 @@ void Scaler1DFixture::test_size(EInterpolation type, size_t target_size)
 {
 	gsl::DoubleVector result(target_size); 
 	
-	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(type));	
+	unique_ptr<C1DInterpolatorFactory>  ipf(create_1dinterpolation_factory(type, bc_mirror_on_bounds));	
 	C1DScalarFixed scaler(*ipf->get_kernel(), data.size(), target_size); 
 	copy(data.begin(), data.end(), scaler.input_begin()); 
 	

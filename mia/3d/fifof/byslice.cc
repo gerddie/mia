@@ -84,7 +84,7 @@ private:
 
 	virtual const string do_get_descr() const;
 	virtual bool do_test() const;
-	virtual C2DFifoFilterPlugin::ProductPtr do_create()const;
+	virtual C2DImageFifoFilter *do_create()const;
 
 	string m_filter;
 };
@@ -106,10 +106,10 @@ bool C2DBysliceFifoFilterPlugin::do_test() const
 	return true;
 }
 
-C2DFifoFilterPlugin::ProductPtr C2DBysliceFifoFilterPlugin::do_create()const
+C2DImageFifoFilter *C2DBysliceFifoFilterPlugin::do_create()const
 {
 	
-	return ProductPtr(new C2DBysliceFifoFilter(m_filter));
+	return new C2DBysliceFifoFilter(m_filter);
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

@@ -71,12 +71,8 @@ private:
 class CNLOptMinimizerPlugin: public mia::CMinimizerPlugin {
 public: 
 	CNLOptMinimizerPlugin();
-	typedef mia::CMinimizerPlugin::ProductPtr ProductPtr; 
-
-
 private:
-
-	ProductPtr do_create() const;
+	mia::CMinimizer *do_create() const;
 	const std::string do_get_descr() const;
 
 	SOpt m_options;

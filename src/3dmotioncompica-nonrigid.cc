@@ -22,7 +22,7 @@
 
 /*
 
-  LatexBeginProgramDescription{Prostate motion compensation}
+  LatexBeginProgramDescription{3D registration of series of images}
   
   \subsection{mia-3dmotioncompica-nonrigid}
   \label{mia-3dmotioncompica-nonrigid}
@@ -49,6 +49,9 @@ mia-3dmotioncompica-nonrigid -i <input images> -o <output set> [options]
   \cmdopt{out-file}{o}{string}{output file name pattern of style name\%0d.ext to allow ceration of numbered file names}
   \cmdopt{save-refs}{}{string}{for each registration pass save the reference images to files with the given name base}
   \cmdopt{save-regs}{}{string}{for each registration pass save intermediate registered images}
+  \cmdopt{save-coeffs}{}{string}{Save the ICA coefficient matrix of the first pass to this file.}
+  \cmdopt{save-features}{}{string}{Save the ICA component images of the first pass to this file.}
+
 				 
   \cmdgroup{Independent component analysis} 
   \cmdopt{components}{C}{int}{Number of  ICA components to be used, 0 = automatic estimation}
@@ -57,11 +60,10 @@ mia-3dmotioncompica-nonrigid -i <input images> -o <output set> [options]
   \cmdopt{no-meanstrip}{}{}{don't strip the mean from the mixing curves}
   \cmdopt{max-ica-iter}{m}{int}{maximum number of iterations within ICA}
 
-  \cmdgroup{Image registration} 
+  \cmdgroup{Registration} 
   \cmdopt{imagecost}{w}{string}{Image similarity measure base part, the name of source and reference images must 
                                be left alone and will be set by the program internally (see section \ref{sec:3dfullcost})}
   \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{interpolator}{p}{string}{Image interpolator to be used}
   \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
   \cmdopt{passes}{P}{int}{Number of ICA+Registration passes to be run}
   \cmdopt{start-c-rate}{a}{float}{start coefficinet rate in spines, gets divided by \texttt{-{}-c-rate-divider} 
@@ -75,10 +77,12 @@ mia-3dmotioncompica-nonrigid -i <input images> -o <output set> [options]
   }
 
   \item [Example:]Register the perfusion series given in images imagesXXXX.v by using 3-class ICA estimation. 
-        Skip two images at the beginning, use 4 registration threads and otherwiese use the default parameters. 
+        Skip two images at the beginning, use at most 4 registration threads, a nlopt based optimizer 
+       and otherwiese use the default parameters. 
 	Store the result in registeredXXXX.v 
   \begin{lstlisting}
-mia-3dmotioncompica-nonrigid  -i imagesXXXX.v -o  registered%04d.v  -k 2 -C 3 -t 4 
+mia-3dmotioncompica-nonrigid  -i imagesXXXX.v -o  registered%04d.v  -k 2 -C 3 -t 4 \
+                              -O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300
   \end{lstlisting}
   \end{description}
   
@@ -166,7 +170,6 @@ struct SeriesRegistration {
 	C3DImageSeries&  input_images; 
 	const C3DImageSeries& references; 
 	string minimizer; 
-	C3DInterpolatorFactory& ipfactory; 
 	size_t mg_levels; 
 	double divcurlweight; 
 	P3DTransformationFactory transform_creator; 
@@ -176,7 +179,6 @@ struct SeriesRegistration {
 	SeriesRegistration(C3DImageSeries&  _input_images, 
 			   const C3DImageSeries& _references, 
 			   const string& _minimizer, 
-			   C3DInterpolatorFactory& _ipfactory, 
 			   size_t _mg_levels, 
 			   double _divcurlweight, 
 			   P3DTransformationFactory _transform_creator, 
@@ -185,7 +187,6 @@ struct SeriesRegistration {
 		input_images(_input_images), 
 		references(_references), 
 		minimizer(_minimizer), 
-		ipfactory(_ipfactory), 
 		mg_levels(_mg_levels), 
 		divcurlweight(_divcurlweight), 
 		transform_creator(_transform_creator), 
@@ -199,21 +200,20 @@ struct SeriesRegistration {
 		auto m =  CMinimizerPluginHandler::instance().produce(minimizer);
 		for( int i=range.begin(); i!=range.end(); ++i ) {
 			auto costs  = create_costs(divcurlweight, imagecostbase, i); 
-			C3DNonrigidRegister nrr(costs, m,  transform_creator, ipfactory, mg_levels, i);
+			C3DNonrigidRegister nrr(costs, m,  transform_creator, mg_levels, i);
 			P3DTransformation transform = nrr.run(input_images[i + skip_images], references[i]);
-			input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], ipfactory);
+			input_images[i + skip_images] = (*transform)(*input_images[i + skip_images]);
 		}
 	}
 };  
 
 void run_registration_pass(C3DImageSeries& input_images, const C3DImageSeries& references,  
 			   int skip_images,  const string& minimizer, 
-			   C3DInterpolatorFactory& ipfactory, 
 			   size_t mg_levels, double c_rate, double divcurlweight, 
 			   const string&   imagecost) 
 {
 
-	SeriesRegistration sreg(input_images,references, minimizer, ipfactory, 
+	SeriesRegistration sreg(input_images,references, minimizer, 
 				mg_levels, divcurlweight, create_transform_creator(c_rate), 
 				imagecost, skip_images); 
 	parallel_for(blocked_range<int>( 0, references.size()), sreg);
@@ -249,7 +249,6 @@ int do_main( int argc, const char *argv[] )
 	double divcurlweight = 20.0; 
 	double divcurlweight_divider = 4.0; 
 
-	EInterpolation interpolator = ip_bspline3;
 	size_t mg_levels = 3; 
 
 	// ICA parameters 
@@ -292,8 +291,6 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( divcurlweight_divider, "divcurl-divider", 0,
 				    "divcurl weight scaling with each new pass")); 
 	options.add(make_opt( imagecost, "imagecost", 'w', "image cost")); 
-	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
-				    "image interpolator", NULL));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
@@ -314,12 +311,7 @@ int do_main( int argc, const char *argv[] )
 	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
-	// this cost will always be used 
-
-	unique_ptr<C3DInterpolatorFactory>   ipfactory(create_3dinterpolation_factory(interpolator));
-
 	task_scheduler_init init(max_threads);
-	thread_streamredir::set_master_stream(cerr);
 	
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;
@@ -327,7 +319,7 @@ int do_main( int argc, const char *argv[] )
 
 	string src_basename = get_filename_pattern_and_range(in_filename, start_filenum, end_filenum, format_width);
 
-	C3DImageSeries input_images; 
+	P3DImageSeries input_images(new C3DImageSeries); 
 	for (size_t i = start_filenum; i < end_filenum; ++i) {
 		string src_name = create_filename(src_basename.c_str(), i);
 		P3DImage image = load_image<P3DImage>(src_name);
@@ -335,12 +327,12 @@ int do_main( int argc, const char *argv[] )
 			THROW(runtime_error, "image " << src_name << " not found");
 
 		cvdebug() << "read '" << src_name << "\n";
-		input_images.push_back(image);
+		input_images->push_back(image);
 	}
 
 	cvmsg() << "skipping " << skip_images << " images\n"; 
-	vector<C3DFImage> series(input_images.size() - skip_images); 
-	transform(input_images.begin() + skip_images, input_images.end(), 
+	vector<C3DFImage> series(input_images->size() - skip_images); 
+	transform(input_images->begin() + skip_images, input_images->end(), 
 		  series.begin(), Convert2Float()); 
 	
 
@@ -361,8 +353,8 @@ int do_main( int argc, const char *argv[] )
 		references_float[i].set_voxel_size(series[i].get_voxel_size()); 
 	}
 	
-	C3DImageSeries references(references_float.size()); 
-	transform(references_float.begin(), references_float.end(), references.begin(), C3DFImage2PImage()); 
+	P3DImageSeries references(new C3DImageSeries(references_float.size())); 
+	transform(references_float.begin(), references_float.end(), references->begin(), C3DFImage2PImage()); 
 
 	
 	if (!save_mixing_matrix.empty()) {
@@ -394,16 +386,16 @@ int do_main( int argc, const char *argv[] )
 		cvmsg() << "Registration pass " << current_pass << "\n"; 
 
 		if (!save_ref_filename.empty())
-			save_references(save_ref_filename, current_pass, skip_images, references); 
+			save_references(save_ref_filename, current_pass, skip_images, *references); 
 
-		run_registration_pass(input_images, references,  skip_images,  minimizer, 
-				      *ipfactory, mg_levels, c_rate, divcurlweight, imagecost); 
+		run_registration_pass(*input_images, *references,  skip_images,  minimizer, 
+				      mg_levels, c_rate, divcurlweight, imagecost); 
 		
 		if (!save_reg_filename.empty()) 
-			save_references(save_reg_filename, current_pass, 0, input_images); 
+			save_references(save_reg_filename, current_pass, 0, *input_images); 
 
-		transform(input_images.begin() + skip_images, 
-			  input_images.end(), series.begin(), Convert2Float()); 
+		transform(input_images->begin() + skip_images, 
+			  input_images->end(), series.begin(), Convert2Float()); 
 
 		
 		
@@ -425,13 +417,13 @@ int do_main( int argc, const char *argv[] )
 		}
 
 		transform(references_float.begin(), references_float.end(), 
-			  references.begin(), C3DFImage2PImage()); 
+			  references->begin(), C3DFImage2PImage()); 
 		do_continue =  (current_pass < pass); 
 	} while (do_continue); 
 
 
 	bool success = true; 
-	auto ii = input_images.begin(); 
+	auto ii = input_images->begin(); 
 	for (size_t i = start_filenum; i < end_filenum; ++i, ++ii) {
 		string out_name = create_filename(registered_filebase.c_str(), i);
 		cvmsg() << "Save image " << i << " to " << out_name << "\n"; 

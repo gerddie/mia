@@ -134,7 +134,7 @@ class C2DLabelFilterPlugin: public C2DFilterPlugin {
 public:
 	C2DLabelFilterPlugin();
 private:
-	virtual C2DFilterPlugin::ProductPtr do_create()const;
+	virtual C2DFilter *do_create()const;
 	virtual const string do_get_descr()const;
 
 	virtual bool do_test() const;
@@ -153,12 +153,12 @@ C2DLabelFilterPlugin::C2DLabelFilterPlugin():
 	add_parameter("n", new CStringParameter(m_mask_descr, false, "neighborhood mask")) ;
 }
 
-C2DFilterPlugin::ProductPtr C2DLabelFilterPlugin::do_create()const
+C2DFilter *C2DLabelFilterPlugin::do_create()const
 {
 	P2DShape mask = C2DShapePluginHandler::instance().produce(m_mask_descr.c_str());
 	if (!mask)
-		return C2DFilterPlugin::ProductPtr();
-	return C2DFilterPlugin::ProductPtr(new CLabel(mask));
+		return NULL;
+	return new CLabel(mask);
 }
 
 const string C2DLabelFilterPlugin::do_get_descr()const

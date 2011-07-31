@@ -37,12 +37,12 @@ string parts2string(CComplexOptionParser::const_iterator b, CComplexOptionParser
 {
 	string result("");
 
-	for (CComplexOptionParser::const_iterator i = b; i != e; ++i){
+	for (auto i = b; i != e; ++i){
 		if (i != b)
 			result.append("+");
 		result.append(i->first);
 		result.append(":");
-		for (CParsedOptions::const_iterator j = i->second.begin();
+		for (auto j = i->second.begin();
 		     j != i->second.end(); ++j) {
 			if (j != i->second.begin())
 				result.append(",");
@@ -108,3 +108,17 @@ BOOST_AUTO_TEST_CASE( test_parsing)
 }
 
 
+BOOST_AUTO_TEST_CASE( test_parsing_two_layer )
+{
+	const char *paramstr="ssd:a=[b:c=[e:d=0]]";
+	CComplexOptionParser scanner(paramstr);
+	BOOST_REQUIRE(scanner.size() == 1);
+
+	const auto part = scanner.begin();
+
+	BOOST_CHECK(part->first == "ssd");
+	BOOST_CHECK(part->second.size() == 1);
+	auto a = part->second.find("a"); 
+	BOOST_CHECK( a != part->second.end()); 
+	BOOST_CHECK_EQUAL(a->second, "b:c=[e:d=0]"); 
+}

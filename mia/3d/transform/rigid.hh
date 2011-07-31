@@ -46,9 +46,9 @@ public:
 	};
 
 
-	C3DRigidTransformation(const C3DBounds& size);
+	C3DRigidTransformation(const C3DBounds& size, const C3DInterpolatorFactory& ipf);
 	C3DRigidTransformation(const C3DBounds& size,const C3DFVector& translation,
-			       const C3DFVector&  rotation);
+			       const C3DFVector&  rotation, const C3DInterpolatorFactory& ipf);
 
 	C3DRigidTransformation(const C3DRigidTransformation& other);
 	C3DRigidTransformation& operator =(const C3DRigidTransformation& other);

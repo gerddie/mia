@@ -130,12 +130,11 @@ int do_main( int argc, const char *argv[] )
 	}
 
 	auto cost = C2DImageCostPluginHandler::instance().produce(cost_function);
-	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3));
 
-	C2DRigidRegister rr(cost, minimizer,  transform_creator, *ipfactory, mg_levels);
+	C2DRigidRegister rr(cost, minimizer,  transform_creator, mg_levels);
 
 	P2DTransformation transform = rr.run(Model, Reference);
-	P2DImage result = (*transform)(*Model, *ipfactory);
+	P2DImage result = (*transform)(*Model);
 
 	if (!trans_filename.empty()) {
 		if (!C2DTransformationIOPluginHandler::instance().save(trans_filename, *transform)) 

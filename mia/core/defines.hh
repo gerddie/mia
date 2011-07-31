@@ -31,10 +31,13 @@
 #ifndef mia_core_defines_hh
 #define mia_core_defines_hh
 
-#include <config.h>
 #include <gsl++/gsldefines.hh>
 #include <tbb/mutex.h>
+
+/// The mutex renamed to MIA style
 typedef tbb::mutex CMutex; 
+
+/// The scoped lock renamed to MIA style
 typedef tbb::mutex::scoped_lock CScopedLock; 
 
 

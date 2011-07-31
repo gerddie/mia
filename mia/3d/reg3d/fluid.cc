@@ -178,7 +178,7 @@ class C3DFluidRegTimeStepPlugin : public C3DRegTimeStepPlugin {
 public:
 	C3DFluidRegTimeStepPlugin();
 private:
-	C3DRegTimeStepPlugin::ProductPtr do_create()const;
+	C3DRegTimeStep *do_create()const;
 	bool do_test() const;
 	const string do_get_descr()const;
 };
@@ -189,9 +189,9 @@ C3DFluidRegTimeStepPlugin::C3DFluidRegTimeStepPlugin():
 {
 }
 
-C3DRegTimeStepPlugin::ProductPtr C3DFluidRegTimeStepPlugin::do_create()const
+C3DRegTimeStep *C3DFluidRegTimeStepPlugin::do_create()const
 {
-	return C3DRegTimeStepPlugin::ProductPtr(new C3DFluidRegTimeStep(get_min_timestep(), get_max_timestep()));
+	return new C3DFluidRegTimeStep(get_min_timestep(), get_max_timestep());
 }
 
 bool C3DFluidRegTimeStepPlugin::do_test() const

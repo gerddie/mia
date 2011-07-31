@@ -31,9 +31,9 @@ NS_BEGIN(sepconv_3dimage_filter)
 
 class CSeparableConvolute: public mia::C3DFilter {
 public:
-	CSeparableConvolute(mia::C1DSpacialKernelPlugin::ProductPtr kx,
-			    mia::C1DSpacialKernelPlugin::ProductPtr ky,
-			    mia::C1DSpacialKernelPlugin::ProductPtr kz);
+	CSeparableConvolute(mia::P1DSpacialKernel kx,
+			    mia::P1DSpacialKernel ky,
+			    mia::P1DSpacialKernel kz);
 
 	template <typename  T>
 	CSeparableConvolute::result_type operator () (const mia::T3DImage<T>& data) const;
@@ -44,9 +44,9 @@ public:
 private:
 	mia::C3DFilter::result_type do_filter(const mia::C3DImage& image) const;
 
-	mia::C1DSpacialKernelPlugin::ProductPtr m_kx;
-	mia::C1DSpacialKernelPlugin::ProductPtr m_ky;
-	mia::C1DSpacialKernelPlugin::ProductPtr m_kz;
+	mia::P1DSpacialKernel m_kx;
+	mia::P1DSpacialKernel m_ky;
+	mia::P1DSpacialKernel m_kz;
 
 };
 
@@ -54,7 +54,7 @@ private:
 class C3DSeparableConvoluteFilterPlugin: public mia::C3DFilterPlugin {
 public:
 	C3DSeparableConvoluteFilterPlugin();
-	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
 
@@ -70,7 +70,7 @@ private:
 class C3DGaussFilterPlugin: public mia::C3DFilterPlugin {
 public:
 	C3DGaussFilterPlugin();
-	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
 	virtual bool do_test() const;

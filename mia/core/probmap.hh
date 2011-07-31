@@ -34,9 +34,14 @@
 
 NS_MIA_BEGIN
 
+/**
+   \ingroup helpers 
+   A simple typedef for convenience 
+ */
 typedef std::vector<double> CDoubleVector;
 
 /**
+   \ingroup helpers 
    \brief A vector of probablility values. 
    
    A vector of probablility values that supports loading and storing 

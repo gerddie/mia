@@ -27,9 +27,18 @@
 
 NS_MIA_USE
 
+CSplineKernelTestPath splinekernel_init_path; 
+
+struct ipfFixture {
+	ipfFixture():
+		ipf("bspline:d=3", "mirror")
+		{
+		} 
+	C3DInterpolatorFactory ipf; 
+}; 
 
 
-struct TranslateTransformFixture {
+struct TranslateTransformFixture: public ipfFixture {
 
 	TranslateTransformFixture();
 
@@ -41,7 +50,7 @@ struct TranslateTransformFixture {
 TranslateTransformFixture::TranslateTransformFixture():
 	size(5,6,3),
 	value(-2, 3, 1),
-	transf(size, value)
+	transf(size, value, ipf)
 {
 }
 
@@ -180,11 +189,12 @@ BOOST_AUTO_TEST_CASE(test_shift_image)
 	const C3DBounds size(10,9,2);
 	P3DImage src(new C3DFImage(size, src_image_init));
 	
-	C3DTranslateTransformation trans(size,  C3DFVector(1.0, 2.0, -1));
+	C3DInterpolatorFactory ipf("bspline:d=0","mirror"); 
+	C3DTranslateTransformation trans(size,  C3DFVector(1.0, 2.0, -1), ipf);
 	
-	unique_ptr<C3DInterpolatorFactory> ipf(create_3dinterpolation_factory(ip_nn)); 
 
-	P3DImage result = trans(*src, *ipf);
+
+	P3DImage result = trans(*src);
 	
 	const C3DFImage& r = dynamic_cast<const C3DFImage&>(*result); 
 	

@@ -22,7 +22,6 @@
  *
  */
 
-#include <mia/core/shared_ptr.hh>
 #include <mia/internal/autotest.hh>
 #include <mia/2d/filter/scale.hh>
 
@@ -31,6 +30,8 @@ using namespace std;
 using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace scale_2dimage_filter;
+
+CSplineKernelTestPath init_path; 
 
 BOOST_AUTO_TEST_CASE( test_downscale )
 {
@@ -47,7 +48,7 @@ BOOST_AUTO_TEST_CASE( test_downscale )
 	fimage.set_pixel_size(C2DFVector(2.0, 3.0));
 
 
-	CScale scaler(C2DBounds(2,2), "bspline3");
+	CScale scaler(C2DBounds(2,2), "bspline:d=3");
 
 	P2DImage scaled = scaler.filter(fimage);
 
@@ -85,7 +86,7 @@ BOOST_AUTO_TEST_CASE( test_downscale_float )
 	fimage.set_pixel_size(C2DFVector(2.0, 3.0));
 
 
-	CScale scaler(C2DBounds(2,2), "bspline3");
+	CScale scaler(C2DBounds(2,2), "bspline:d=3");
 
 	P2DImage scaled = scaler.filter(fimage);
 
@@ -115,7 +116,7 @@ BOOST_AUTO_TEST_CASE( test_noscale )
 	fimage.set_pixel_size(C2DFVector(2.0, 3.0));
 
 
-	CScale scaler(C2DBounds(0,0), "bspline3");
+	CScale scaler(C2DBounds(0,0), "bspline:d=3");
 
 	P2DImage scaled = scaler.filter(fimage);
 

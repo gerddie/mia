@@ -90,7 +90,6 @@ mia-2dmyocard-ica  -i imageXXXX.exr -o ref -k 2 -C 5 -m -n
 #include <map>
 #include <ctime>
 #include <cstdlib>
-#include <boost/lambda/lambda.hpp>
 #include <mia/core.hh>
 #include <mia/core/fft1d_r2c.hh>
 #include <queue>
@@ -101,9 +100,6 @@ mia-2dmyocard-ica  -i imageXXXX.exr -o ref -k 2 -C 5 -m -n
 
 
 NS_MIA_USE;
-
-using boost::lambda::_1;
-using boost::lambda::_2;
 
 unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean,
 				      size_t& components, bool ica_normalize, int max_iterations)
@@ -270,7 +266,7 @@ private:
 
 typedef pair<float, size_t> element;
 
-C2DFilterPlugin::ProductPtr create_LV_cropper(P2DImage rvlv_feature,
+P2DFilter create_LV_cropper(P2DImage rvlv_feature,
 					      float LV_mask_amplify,
 					      const string& feature_image_base,
 					      C2DBounds& crop_start
@@ -314,7 +310,7 @@ C2DFilterPlugin::ProductPtr create_LV_cropper(P2DImage rvlv_feature,
 	} while (10 * npixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y && nc < 5);
 
 	if (nc == 5)
-		return C2DFilterPlugin::ProductPtr();
+		return P2DFilter();
 
 
 	P2DImage LV_candidates = run_filter_chain(kmeans, 2, LVcandidate_filter_chain);
@@ -339,7 +335,7 @@ C2DFilterPlugin::ProductPtr create_LV_cropper(P2DImage rvlv_feature,
 
 	// this is ugly and should be replaced
 	if (crop_start.x > LV_center.x ||crop_start.y > LV_center.y)
-		return C2DFilterPlugin::ProductPtr();
+		return P2DFilter();
 
 	mask_lv << "crop:start=[" << crop_start
 		<< "],end=[" << C2DBounds(int(LV_center.x + r), int(LV_center.y + r)) << "]";
@@ -500,7 +496,7 @@ int do_main( int argc, const char *argv[] )
 	cvinfo() << "Perfusion series = " << cls.get_perfusion_idx() << "\n";
 	cvinfo() << "Baseline series = " << cls.get_baseline_idx() << "\n";
 
-	C2DFilterPlugin::ProductPtr cropper;
+	P2DFilter cropper;
 	C2DBounds crop_start;
 	try {
 		// create crop filter and store source files too.
@@ -526,7 +522,8 @@ int do_main( int argc, const char *argv[] )
 				P2DImage rvlv_feature(prvlv_diff);
 
 				transform(series[RV_peak].begin(), series[RV_peak].end(),
-					  series[LV_peak].begin(), prvlv_diff->begin(), _2 - _1);
+					  series[LV_peak].begin(), prvlv_diff->begin(), 
+					  [](double x, double y){return y - x;});  
 				cropper = create_LV_cropper(rvlv_feature, LV_mask, feature_image_base, crop_start);
 			}
 			if (!cropper)

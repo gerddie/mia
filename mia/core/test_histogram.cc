@@ -192,8 +192,7 @@ BOOST_AUTO_TEST_CASE ( test_histogram_gauss_noise )
 
 	const CNoiseGeneratorPluginHandler::Instance&  ngp = CNoiseGeneratorPluginHandler::instance();
 
-	CNoiseGeneratorPlugin::ProductPtr ng[3];
-	ng[0] = ngp.produce("gauss:mu=127,sigma=16,seed=1");
+	auto ng = ngp.produce("gauss:mu=127,sigma=16,seed=1");
 
 	FNormalDistribution n1(127, 16);
 
@@ -201,7 +200,7 @@ BOOST_AUTO_TEST_CASE ( test_histogram_gauss_noise )
 	CDoubleHistogram histo(THistogramFeeder<double>(0,256,64));
 
 	for (size_t k = 0; k < 1; ++k) {
-		const CNoiseGenerator& g = *ng[k];
+		const CNoiseGenerator& g = *ng;
 		size_t i = 0;
 		while ( i < size ) {
 			double h = g();

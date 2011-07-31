@@ -40,7 +40,7 @@ private:
 class C1DSpacialGaussKernelPlugin: public mia::C1DSpacialKernelPlugin {
 public:
 	C1DSpacialGaussKernelPlugin();
-	virtual mia::C1DSpacialKernelPlugin::ProductPtr do_create() const;
+	virtual mia::C1DFoldingKernel *do_create() const;
 	virtual const std::string do_get_descr()const;
 private:
 

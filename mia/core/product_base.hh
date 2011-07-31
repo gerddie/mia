@@ -29,6 +29,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup infrastructure 
    \brief The base class for all plug-in created object. 
    
    Base of all objects that are created from within plug-ins using a factory method. 

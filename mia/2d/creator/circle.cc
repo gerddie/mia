@@ -141,7 +141,7 @@ class C2DCircleCreatorPlugin : public  C2DImageCreatorPlugin {
 public:
 	C2DCircleCreatorPlugin();
 private:
-	virtual C2DImageCreatorPlugin::ProductPtr do_create()const;
+	virtual C2DImageCreator *do_create()const;
 	virtual const string do_get_descr()const;
 	virtual bool do_test() const;
 	float m_f;
@@ -157,9 +157,9 @@ C2DCircleCreatorPlugin::C2DCircleCreatorPlugin():
 	add_parameter("p", new CFloatParameter(m_p, 0.1, 100, false, "spherical shape parameter (2.0 = circle)"));
 }
 
-C2DImageCreatorPlugin::ProductPtr C2DCircleCreatorPlugin::do_create()const
+C2DImageCreator *C2DCircleCreatorPlugin::do_create()const
 {
-	return C2DImageCreatorPlugin::ProductPtr(new C2DCircleCreator(m_f, m_p));
+	return new C2DCircleCreator(m_f, m_p);
 }
 
 const string C2DCircleCreatorPlugin::do_get_descr()const

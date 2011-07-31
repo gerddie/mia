@@ -43,10 +43,8 @@
 #define mia_2d_interpolator_hh
 
 #include <vector>
-#include <mia/core/shared_ptr.hh>
-
-#include <mia/core/defines.hh>
-#include <mia/core/interpolator.hh>
+#include <mia/core/splinekernel.hh>
+#include <mia/core/boundary_conditions.hh>
 #include <mia/2d/2DImage.hh>
 
 
@@ -98,41 +96,88 @@ struct coeff_map<T2DVector<U> > {
    This class provides the interface for 2D interpolation based on some kind of 
    spacial convolution, like e.g. by using B-splines. 
 */
-
 template <class T>
 class EXPORT_2D T2DConvoluteInterpolator: public T2DInterpolator<T> {
 public:
-	T2DConvoluteInterpolator(const T2DDatafield<T>& image, std::shared_ptr<CBSplineKernel > kernel);
+	/**
+	   Constructor for the interpolator. The input data is pre-filtered in order to 
+	   ensure that the interpolation at grid points returns the original data values. 
+	   \param data input data to base th einterpolation on 
+	   \param kernel the B-spline kernel to be used. 
+	*/
+	T2DConvoluteInterpolator(const T2DDatafield<T>& data, PSplineKernel kernel);
+
+	/**
+	   Construtor to prefilter the input for proper interpolation 
+	   \param data the data used for interpolation 
+	   \param kernel the spline kernel used for interpolation 
+	   \param xbc boundary conditions to be applied along the x-axis when interpolating  
+	   \param ybc boundary conditions to be applied along the y-axis when interpolating  
+	 */
+
+	T2DConvoluteInterpolator(const T2DDatafield<T>& data, PSplineKernel kernel, 
+				 const CSplineBoundaryCondition& xbc, const CSplineBoundaryCondition& ybc);
+
 	~T2DConvoluteInterpolator();
+
+	
 	T  operator () (const C2DFVector& x) const;
 
-	T evaluate(const std::vector<double>& xweight, const std::vector<double>& yweight,
-		   const std::vector<int>&    xindex,  const std::vector<int>&    yindex) const; 
+	/**
+	   Evaluate the interolation based on the given weights and coefficient indices.
+	   \param xweight B-spline weights in x-direction
+	   \param yweight B-spline weights in y-direction
+	   \param xindex indices into the coefficient field in x-direction
+	   \param yindex indices into the coefficient field in y-direction
+	*/
+	T evaluate(const CSplineKernel::VWeight& xweight, const CSplineKernel::VWeight& yweight,
+		   const CSplineKernel::VIndex&  xindex,  const CSplineKernel::VIndex&  yindex) const; 
 
+	
+	/**
+	   Evaluate the first order derivative on the given coordinate 
+	   \param x location 
+	   \returns teh drivatives in all coordinate directions as 2D vector 
+	 */
 	T2DVector<T> derivative_at(const C2DFVector& x) const;
 
+	/** Data type of the field that holds the cofficients. Essentially, it uses 
+	    the coeff_map template to translate whatever T is composed of to something that 
+	    is composed of double float values to provide the required accuracy for interpolation. 
+	 */
 	typedef T2DDatafield< typename coeff_map< T >::coeff_type > TCoeff2D;
 
-	const TCoeff2D& get_coefficients() const; 
+	/**
+	   \returns the current coefficient field 
+	 */
+	const TCoeff2D& get_coefficients() const __attribute__((deprecated)); 
 
 protected:
+	/// helper class for the coefficient field 
 	typedef std::vector< typename TCoeff2D::value_type > coeff_vector;
 private:
+	
+	void prefilter(const T2DDatafield<T>& image); 
 
 	typename TCoeff2D::value_type evaluate() const;
 
 	TCoeff2D m_coeff;
 	C2DBounds m_size2;
-	std::shared_ptr<CBSplineKernel > m_kernel;
+	PSplineKernel m_kernel;
+	PSplineBoundaryCondition m_x_boundary; 
+	PSplineBoundaryCondition m_y_boundary; 
 	T m_min;
 	T m_max;
 
-	mutable std::vector<int> m_x_index; 
-	mutable std::vector<int> m_y_index; 
-	mutable std::vector<double> m_x_weight; 
-	mutable std::vector<double> m_y_weight; 
-	mutable CBSplineKernel::SCache m_x_cache; 
-	mutable CBSplineKernel::SCache m_y_cache; 
+	/// This part makes the class to be not thread save 
+	mutable CSplineKernel::VIndex m_x_index; 
+	mutable CSplineKernel::VIndex m_y_index; 
+	mutable CSplineKernel::VWeight m_x_weight; 
+	mutable CSplineKernel::VWeight m_y_weight; 
+	mutable CSplineKernel::SCache m_x_cache; 
+	mutable CSplineKernel::SCache m_y_cache; 
+
+	
 
 };
 
@@ -142,14 +187,28 @@ private:
 
 class EXPORT_2D C2DInterpolatorFactory {
 public:
+        /**
+	   Construct the factory the interpolation  kernel and according boundary conditions 
+	   \param kernel description of the interpolation kernel
+	   \param boundary_conditions description of the boundary conditions 
+	*/
+	C2DInterpolatorFactory(const std::string& kernel, const std::string& boundary_conditions);
+
+
+        /**
+	   Construct the factory the interpolation  kernel and according boundary conditions 
+	   \param kernel  interpolation kernel
+	   \param boundary_conditions description of the boundary conditions 
+	*/
+	C2DInterpolatorFactory(PSplineKernel kernel, const std::string& boundary_conditions);
 
 	/**
-	   Construct the factory by giving the interpolator type and the 
-	   kernel used for interpolation. 
-	   \param type 
+	   Construct the factory the interpolation  kernel and according boundary conditions 
 	   \param kernel
+	   \param xbc boundary conditions along the x-axis 
+	   \param ybc boundary conditions along the y-axis 
 	 */
-	C2DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel);
+	C2DInterpolatorFactory(PSplineKernel kernel, const CSplineBoundaryCondition& xbc, const CSplineBoundaryCondition& ybc);
 
 	/// Copy constructor 
 	C2DInterpolatorFactory(const C2DInterpolatorFactory& o);
@@ -175,11 +234,12 @@ public:
 	/**
 	   \returns raw pointer to the interpolation kernel. 
 	 */
-	const CBSplineKernel* get_kernel() const;
+	const CSplineKernel* get_kernel() const;
 
 private:
-	EInterpolationFactory m_type;
-	std::shared_ptr<CBSplineKernel > m_kernel;
+	PSplineKernel m_kernel;
+	PSplineBoundaryCondition m_xbc;
+	PSplineBoundaryCondition m_ybc;
 };
 
 /// Pointer type for the 2D interpolationfactory 
@@ -189,7 +249,7 @@ typedef std::shared_ptr<C2DInterpolatorFactory > P2DInterpolatorFactory;
 /**
    create a 2D interpolation factory of a certain interpolation type 
 */
-C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(EInterpolation type)
+C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(EInterpolation type, EBoundaryConditions bc)
 	__attribute__ ((warn_unused_result));
 
 // implementation
@@ -197,11 +257,7 @@ C2DInterpolatorFactory EXPORT_2D  *create_2dinterpolation_factory(EInterpolation
 template <class T>
 T2DInterpolator<T> *C2DInterpolatorFactory::create(const T2DDatafield<T>& src) const
 {
-	switch (m_type) {
-	case ipf_spline: return new T2DConvoluteInterpolator<T>(src, m_kernel);
-	default: throw "CInterpolatorFactory::create: Unknown interpolator requested";
-	}
-	return NULL;
+	return new T2DConvoluteInterpolator<T>(src, m_kernel, *m_xbc, *m_ybc);
 }
 
 NS_MIA_END

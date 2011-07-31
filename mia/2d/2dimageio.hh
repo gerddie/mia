@@ -28,12 +28,11 @@
 #include <vector>
 #include <mia/core/ioplugin.hh>
 #include <mia/core/iohandler.hh>
-#include <mia/core/iohandler.hh>
+#include <mia/core/callback.hh>
 
 #include <mia/2d/2DImage.hh>
 
 NS_MIA_BEGIN
-
 
 /**
    Vector of 2D images to 
@@ -50,7 +49,7 @@ public:
 class EXPORT_2D io_2dimage_type {
 public:
 	typedef  C2DImageVector type;
-	static const char *type_descr;
+	static const char *data_descr;
 };
 
 /// Base type for 2D image IO plugins 
@@ -78,6 +77,10 @@ typedef C2DImageIOPluginHandler::Instance::DataKey C2DImageDataKey;
     Data type of what is actually loaded by the image plugins handler 
  */
 typedef C2DImageIOPluginHandler::Instance::PData P2DImageVector;
+
+struct EXPORT_2D C2DImageIOPluginHandlerTestPath {
+	C2DImageIOPluginHandlerTestPath(); 
+}; 
 
 
 /**
@@ -119,6 +122,19 @@ inline P2DImage load_image<P2DImage>(const std::string& filename)
 
 bool  EXPORT_2D save_image(const std::string& filename, P2DImage image);
 
+/**
+   Convenience function to load a series of images and group them into sets based 
+   on the acuisition parameters if available. 
+   If these parameters are not available, then the order of the input files is used
+   to sort the files but no grouping takes place. 
+   \param filenames list of file names 
+   \param cb optionally provide a call back function that shows loading progress
+   \returns grouped set of files. 
+*/
+
+C2DImageGroupedSeries EXPORT_2D load_image_series(const std::vector<std::string>& filenames, 
+						  CProgressCallback *cb = NULL); 
+
 
 /**
    some DICOM tags that may be used 
@@ -137,6 +153,7 @@ extern EXPORT_2D const char * IDSliceLocation;
 extern EXPORT_2D const char * IDStudyID;
 extern EXPORT_2D const char * IDSmallestImagePixelValue;
 extern EXPORT_2D const char * IDLargestImagePixelValue;
+extern EXPORT_2D const char * IDProtocolName; 
 /// @endcond 
 
 NS_MIA_END

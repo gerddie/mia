@@ -142,8 +142,7 @@ vector<P2DTransformation>
 run_registration_pass(CSegSetWithImages&  input_set, 
 		      C2DImageSeries& registered,
 		      const C2DImageSeries& references, 
-		      int skip_images, PMinimizer minimizer, 
-		      C2DInterpolatorFactory& ipfactory, size_t mg_levels, 
+		      int skip_images, PMinimizer minimizer, size_t mg_levels, 
 			   double c_rate, double divcurlweight, double imageweight) 
 {
 	vector<P2DTransformation> result; 
@@ -151,15 +150,14 @@ run_registration_pass(CSegSetWithImages&  input_set,
 	registered.resize(input_images.size()); 
 	auto costs  = create_costs(divcurlweight, imageweight); 
 	auto transform_creator = create_transform_creator(c_rate); 
-	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, 
-				ipfactory, mg_levels);
+	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, mg_levels);
 
 	// this loop could be parallized 
 	for (size_t i = skip_images; i < input_images.size(); ++i) {
 		cvmsg() << "Register frame " << i << "\n"; 
 		P2DTransformation transform = nrr.run(input_images[i], 
 						      references[i - skip_images]);
-		registered[i] = (*transform)(*input_images[i], ipfactory);
+		registered[i] = (*transform)(*input_images[i]);
 		result.push_back(transform); 
 	}
 	return result; 
@@ -188,7 +186,7 @@ int do_main( int argc, const char *argv[] )
 	double divcurlweight_divider = 4.0; 
 	double imageweight = 1.0; 
 
-	EInterpolation interpolator = ip_bspline3;
+	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 	size_t mg_levels = 3; 
 
 	// ICA parameters 
@@ -235,8 +233,7 @@ int do_main( int argc, const char *argv[] )
 				    "divcurl weight scaling with each new pass")); 
 	options.add(make_opt( imageweight, "imageweight", 'w', 
 				    "image cost weight")); 
-	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
-				    "image interpolator", NULL));
+	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
@@ -261,8 +258,6 @@ int do_main( int argc, const char *argv[] )
 
 
 	// this cost will always be used 
-
-	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(interpolator));
 
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
@@ -318,7 +313,7 @@ int do_main( int argc, const char *argv[] )
 		cvmsg() << "Registration pass " << current_pass << "\n"; 
 		transformations = 
 			run_registration_pass(input_set, registered, references,  skip_images,  minimizer, 
-					      *ipfactory, mg_levels, c_rate, divcurlweight, imageweight); 
+					      mg_levels, c_rate, divcurlweight, imageweight); 
 		
 		C2DPerfusionAnalysis ica2(components, !no_normalize, !no_meanstrip); 
 		if (max_ica_iterations) 

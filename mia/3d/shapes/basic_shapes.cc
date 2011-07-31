@@ -109,7 +109,7 @@ public:
 	C6n3DShapeFactory();
 private:
 	virtual const string do_get_descr() const;
-	virtual C3DShapePlugin::ProductPtr do_create()const;
+	virtual C3DShape *do_create()const;
 	virtual bool do_test() const;
 };
 
@@ -118,9 +118,9 @@ C6n3DShapeFactory::C6n3DShapeFactory():
 {
 }
 
-C3DShapePlugin::ProductPtr C6n3DShapeFactory::do_create()const
+C3DShape *C6n3DShapeFactory::do_create()const
 {
-	return C3DShapePlugin::ProductPtr(new C6n3DShape());
+	return new C6n3DShape();
 }
 
 
@@ -183,7 +183,7 @@ public:
 	C18n3DShapeFactory();
 private:
 	virtual const string do_get_descr() const;
-	virtual C3DShapePlugin::ProductPtr do_create()const;
+	virtual C3DShape *do_create()const;
 	virtual bool  do_test() const;
 };
 
@@ -192,9 +192,9 @@ C18n3DShapeFactory::C18n3DShapeFactory():
 {
 }
 
-C3DShapePlugin::ProductPtr C18n3DShapeFactory::do_create()const
+C3DShape *C18n3DShapeFactory::do_create()const
 {
-	return C3DShapePlugin::ProductPtr(new C18n3DShape());
+	return new C18n3DShape();
 }
 
 
@@ -250,7 +250,7 @@ public:
 	C26n3DShapeFactory();
 private:
 	virtual const string do_get_descr() const;
-	virtual C3DShapePlugin::ProductPtr do_create()const;
+	virtual C3DShape *do_create()const;
 	virtual bool do_test() const;
 };
 
@@ -259,9 +259,9 @@ C26n3DShapeFactory::C26n3DShapeFactory():
 {
 }
 
-C3DShapePlugin::ProductPtr C26n3DShapeFactory::do_create()const
+C3DShape *C26n3DShapeFactory::do_create()const
 {
-	return C3DShapePlugin::ProductPtr(new C26n3DShape());
+	return new C26n3DShape();
 }
 
 

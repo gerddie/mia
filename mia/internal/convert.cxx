@@ -219,7 +219,7 @@ TConvertFilterPlugin<Image>::TConvertFilterPlugin():
 }
 
 template <class Image>
-typename TImageFilterPlugin<Image>::ProductPtr TConvertFilterPlugin<Image>::do_create()const
+TImageFilter<Image> *TConvertFilterPlugin<Image>::do_create()const
 {
 	EPixelType pt = CPixelTypeDict.get_value(m_pixeltype.c_str());
 	EPixelConversion ct = CPixelConversionDict.get_value(m_convert.c_str()); 
@@ -227,7 +227,7 @@ typename TImageFilterPlugin<Image>::ProductPtr TConvertFilterPlugin<Image>::do_c
 	if (pt == it_bit)
 		throw invalid_argument("TConvert: for conversion to bit images you better use the 'binarize' filter"); 
 
-	return typename TImageFilterPlugin<Image>::ProductPtr(new TConvert<Image>(pt,ct,m_a,m_b));
+	return new TConvert<Image>(pt,ct,m_a,m_b);
 }
 
 template <class Image>

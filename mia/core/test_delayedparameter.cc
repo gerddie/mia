@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE( test_pool_inout )
 {
 	TDelayedParameter<int> a("code");
 
-	CDatapool::Instance().add("code", 10);
+	CDatapool::instance().add("code", 10);
 
 	try {
 		BOOST_CHECK_EQUAL(10, a.get());

@@ -32,12 +32,22 @@ using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
-struct TranslateTransFixture {
-	TranslateTransFixture():size(60, 80),
-				rtrans(size)
+CSplineKernelTestPath kernel_test_path; 
+
+struct ipfFixture {
+	ipfFixture():ipf("bspline:d=3", "mirror") {}
+	C2DInterpolatorFactory ipf; 
+}; 
+
+struct TranslateTransFixture : public ipfFixture {
+	TranslateTransFixture():
+	
+		size(60, 80),
+		rtrans(size, ipf)
 		{
 			rtrans.translate(1.0, 2.0);
 		}
+	
 	C2DBounds size;
 	C2DAffineTransformation rtrans;
 };
@@ -77,9 +87,9 @@ BOOST_FIXTURE_TEST_CASE(derivative_TranslateTransFixture, TranslateTransFixture)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_affine2d)
+BOOST_FIXTURE_TEST_CASE(test_affine2d, ipfFixture)
 {
-	C2DAffineTransformation t1(C2DBounds(10,20));
+	C2DAffineTransformation t1(C2DBounds(10,20), ipf);
 
 	BOOST_CHECK_EQUAL(t1.degrees_of_freedom(), 6u);
 
@@ -102,7 +112,7 @@ BOOST_AUTO_TEST_CASE(test_affine2d)
 	BOOST_CHECK_CLOSE(yr1.x ,-8.0, 0.1f);
 	BOOST_CHECK_CLOSE(yr1.y , 3.0, 0.1f);
 
-	C2DAffineTransformation t2(C2DBounds(10,20));
+	C2DAffineTransformation t2(C2DBounds(10,20), ipf);
 	t2.rotate(M_PI / 2.0);
 	C2DFVector yr = t2(x0);
 	BOOST_CHECK_CLOSE(yr.x ,  -2.0f, 0.1f);
@@ -111,11 +121,11 @@ BOOST_AUTO_TEST_CASE(test_affine2d)
 }
 
 
-BOOST_AUTO_TEST_CASE( test_affine2d_iterator )
+BOOST_FIXTURE_TEST_CASE( test_affine2d_iterator , ipfFixture)
 {
 	C2DBounds size(10,20);
 
-	C2DAffineTransformation t1(size);
+	C2DAffineTransformation t1(size, ipf);
 	C2DAffineTransformation::const_iterator ti = t1.begin();
 
 	for (size_t y = 0; y < size.y; ++y)
@@ -127,10 +137,10 @@ BOOST_AUTO_TEST_CASE( test_affine2d_iterator )
 }
 
 
-struct RotateTransFixture {
+struct RotateTransFixture : public ipfFixture{
 	RotateTransFixture():
 		size(60, 80),
-		rtrans(size),
+		rtrans(size, ipf),
 		rot_cos(cos(M_PI / 4.0)),
 		rot_sin(sin(M_PI / 4.0))
 	{
@@ -215,7 +225,7 @@ BOOST_FIXTURE_TEST_CASE(derivative_RotateTransFixture, RotateTransFixture)
 }
 
 
-struct AffineGrad2ParamFixtureAffine {
+struct AffineGrad2ParamFixtureAffine : public ipfFixture {
 	AffineGrad2ParamFixtureAffine();
 
 
@@ -277,7 +287,7 @@ BOOST_FIXTURE_TEST_CASE (test_upscale, AffineGrad2ParamFixtureAffine)
 
 AffineGrad2ParamFixtureAffine::AffineGrad2ParamFixtureAffine():
 	size(2,2),
-	trans(size)
+	trans(size, ipf)
 {
 	trans.translate(-1, -3);
 	trans.rotate(1.0);
@@ -285,10 +295,10 @@ AffineGrad2ParamFixtureAffine::AffineGrad2ParamFixtureAffine():
 }
 
 
-BOOST_AUTO_TEST_CASE (test_invers)
+BOOST_FIXTURE_TEST_CASE (test_invers, ipfFixture)
 {
 	C2DBounds size(10,20); 
-	C2DAffineTransformation trans(size); 
+	C2DAffineTransformation trans(size, ipf); 
 
 	auto params = trans.get_parameters(); 
 	BOOST_REQUIRE(params.size()== 6); 
@@ -319,10 +329,10 @@ BOOST_AUTO_TEST_CASE (test_invers)
 	
 }
 
-BOOST_AUTO_TEST_CASE (test_invers2)
+BOOST_FIXTURE_TEST_CASE (test_invers2, ipfFixture)
 {
 	C2DBounds size(10,20); 
-	C2DAffineTransformation trans(size); 
+	C2DAffineTransformation trans(size, ipf); 
 
 	auto params = trans.get_parameters(); 
 //	BOOST_REQUIRE(params.size()== 6); 

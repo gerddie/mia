@@ -30,7 +30,7 @@
 
 NS_MIA_BEGIN
 
-const char *io_2dvf_type::type_descr = "2dvf";
+const char *io_2dvf_type::data_descr = "2dvf";
 
 C2DIOVectorfield::C2DIOVectorfield()
 {

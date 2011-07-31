@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef mia_2d_fftkernel_hh
-#define mia_2d_fftkernel_hh
+#ifndef mia_2d_cstkernel_hh
+#define mia_2d_cstkernel_hh
 
 #include <complex>
 #include <fftw3.h>
@@ -39,7 +39,7 @@ NS_MIA_BEGIN
 /// plugin-helper structure 
 struct EXPORT_2D cst2d_kernel {
 	/// plugin path helper value 
-	static const char *value;
+	static const char *type_descr;
 };
 
 /**
@@ -104,8 +104,7 @@ typedef  std::shared_ptr<CCST2DImageKernel > PCST2DImageKernel;
 typedef  std::shared_ptr<CCST2DVectorKernel > PCST2DVectorKernel;
 
 typedef TFactory<CCST2DVectorKernel> CCST2DVectorKernelPlugin;
-typedef THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> > 
-CCST2DVectorKernelPluginHandler;
+typedef THandlerSingleton<TFactoryPluginHandler<CCST2DVectorKernelPlugin> > CCST2DVectorKernelPluginHandler;
 
 typedef TFactory<CCST2DImageKernel> CCST2DImgKernelPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<CCST2DImgKernelPlugin> > CCST2DImgKernelPluginHandler;

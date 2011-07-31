@@ -140,13 +140,23 @@ void CSegSet::read(const xmlpp::Document& node)
 			const Attribute *attr = elm.get_attribute("value"); 
 			if (!attr)
 				cvwarn() << "CSegFrame: LVpeak without attribute"; 
-			m_RV_peak = from_string<int>(attr->get_value());
+			else 
+				if (!from_string(attr->get_value(), m_RV_peak)) {
+					cvwarn() << "Could't convert RV_peak attribute '" << attr->get_value() 
+						 <<"' to an integer; ignoring\n"; 
+					m_RV_peak = -1; 
+				}
 		} else if ((*i)->get_name() == "LVpeak") {
 			const Element& elm = dynamic_cast<const Element&>(**i); 
 			const Attribute *attr = elm.get_attribute("value"); 
 			if (!attr)
 				cvwarn() << "CSegFrame: LVpeak without attribute"; 
-			m_LV_peak = from_string<int>(attr->get_value());
+			else 	
+				if (!from_string(attr->get_value(), m_LV_peak)) {
+					cvwarn() << "Could't convert LV_peak attribute '" << attr->get_value() 
+						 <<"' to an integer; ignoring\n"; 
+					m_LV_peak = -1; 
+				}
 		} else {
 			cvinfo() << "Ignoring unknown element '" << (*i)->get_name() << "'\n"; 
 		}

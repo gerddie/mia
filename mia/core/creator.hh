@@ -24,7 +24,6 @@
 #ifndef mia_core_creator_hh
 #define mia_core_creator_hh
 
-#include <mia/core/shared_ptr.hh>
 #include <mia/core/pixeltype.hh>
 #include <mia/core/factory.hh>
 #include <mia/core/handler.hh>
@@ -33,10 +32,12 @@
 NS_MIA_BEGIN
 
 struct EXPORT_CORE creator_type {
-	static const char *value;
+	static const char *type_descr;
 };
 
 /**
+   \ingroup templates 
+
    \brief The base class for generic image creation 
 
    This template defines a generic base class for a creator of images containing some shapes. 

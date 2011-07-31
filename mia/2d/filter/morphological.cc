@@ -183,7 +183,7 @@ C2DMorphFilterFactory::C2DMorphFilterFactory(const char *name):
 }
 
 
-C2DFilterPlugin::ProductPtr C2DMorphFilterFactory::do_create()const
+C2DFilter *C2DMorphFilterFactory::do_create()const
 {
 	cvdebug() << "create shape from " << m_shape_descr << '\n';
 	P2DShape shape(C2DShapePluginHandler::instance().produce(m_shape_descr.c_str()));
@@ -203,9 +203,9 @@ C2DFilterPlugin::ProductPtr C2DMorphFilterFactory::do_create()const
 }
 
 
-C2DDilateFilterFactory::ProductPtr C2DDilateFilterFactory::dodo_create(P2DShape shape, bool bhint) const
+C2DFilter *C2DDilateFilterFactory::dodo_create(P2DShape shape, bool bhint) const
 {
-	return C2DDilateFilterFactory::ProductPtr (new C2DDilate(shape, bhint));
+	return new C2DDilate(shape, bhint);
 }
 
 const string C2DDilateFilterFactory::do_get_descr()const
@@ -325,9 +325,9 @@ C2DErodeFilterFactory::C2DErodeFilterFactory():
 {
 }
 
-C2DErodeFilterFactory::ProductPtr C2DErodeFilterFactory::dodo_create(P2DShape shape, bool bhint) const
+C2DFilter *C2DErodeFilterFactory::dodo_create(P2DShape shape, bool bhint) const
 {
-	return C2DErodeFilterFactory::ProductPtr (new C2DErode(shape, bhint));
+	return new C2DErode(shape, bhint);
 }
 
 const string C2DErodeFilterFactory::do_get_descr()const
@@ -359,9 +359,9 @@ C2DOpenFilterFactory::C2DOpenFilterFactory():
 {
 }
 
-C2DFilterPlugin::ProductPtr C2DOpenFilterFactory::dodo_create(P2DShape shape, bool hint) const
+C2DFilter *C2DOpenFilterFactory::dodo_create(P2DShape shape, bool hint) const
 {
-	return C2DFilterPlugin::ProductPtr(new C2DOpenClose(shape, hint, true));
+	return new C2DOpenClose(shape, hint, true);
 }
 
 const string C2DOpenFilterFactory::do_get_descr()const
@@ -374,9 +374,9 @@ C2DCloseFilterFactory::C2DCloseFilterFactory():
 {
 }
 
-C2DFilterPlugin::ProductPtr C2DCloseFilterFactory::dodo_create(P2DShape shape, bool hint)const
+C2DFilter *C2DCloseFilterFactory::dodo_create(P2DShape shape, bool hint)const
 {
-	return C2DFilterPlugin::ProductPtr(new C2DOpenClose(shape, hint, false));
+	return new C2DOpenClose(shape, hint, false);
 }
 
 const string C2DCloseFilterFactory::do_get_descr()const

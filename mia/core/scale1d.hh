@@ -37,6 +37,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup classes
    \brief Class for scaling of one-dimensional arrays. 
    
    Class for scaling of one-dimensional arrays. For downscaling always a gaussian smoothing is used.
@@ -51,7 +52,7 @@ public:
 	    \param ipf
 	 */
 
-	C1DScalar(P1DInterpolatorFactory ipf);
+	C1DScalar(P1DInterpolatorFactory ipf) __attribute__((deprecated));
 
 
 	/**
@@ -77,7 +78,7 @@ private:
 
 	P1DInterpolatorFactory m_ipf;
 	mutable int m_fwidth;
-	mutable C1DSpacialKernelPlugin::ProductPtr m_kernel;
+	mutable C1DSpacialKernelPlugin::SharedProduct m_kernel;
 };
 
 template <typename T>

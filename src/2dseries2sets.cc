@@ -67,7 +67,7 @@ mia-2dseries2sets -i /home/user/series /net/dicoms/patient1/series1/*.dcm
   LatexEnd
 */
 
-
+#define VSTREAM_DOMAIN "series2set" 
 #include <fstream>
 #include <libxml++/libxml++.h>
 #include <mia/core/cmdlineparser.hh>
@@ -107,8 +107,10 @@ vector<C2DImageVectorWithName> separate_slices(const C2DImageVectorWithName &ima
 			// round the location ,because we want to compare it 
 			slice_location = floor(1000.0 * *pslice_location) / 1000.0; 
 		}
-		if (series.find(slice_location) == series.end())
+		if (series.find(slice_location) == series.end()) {
+			cvmsg() << "Add location " << slice_location << "\n"; 
 			series[slice_location] = AquisitionSeries(); 
+		}
 		
 		AquisitionSeries& aqs = series[slice_location]; 
 		
@@ -118,6 +120,7 @@ vector<C2DImageVectorWithName> separate_slices(const C2DImageVectorWithName &ima
 		}else {
 			++aq_number; 
 		}
+		cvmsg() << "Add aquisition " << aq_number << "\n"; 
 		if (aqs.find(aq_number) != aqs.end()) {
 			cverr() << "Will ignore  '" << i->second 
 				<< "' because '" << aqs.find(aq_number)->second.second  
@@ -171,6 +174,8 @@ bool save_series(int index, const C2DImageVectorWithName& series, const string& 
 	ofstream outfile(outfilename.string().c_str(), ios_base::out );
 	if (outfile.good())
 		outfile << outset->write_to_string_formatted();
+	else 
+		cverr() << "Unable to open file '" << outfilename.string() << "'\n"; 
 	return outfile.good();
 }
 
@@ -209,8 +214,13 @@ int do_main( int argc, const char *argv[] )
 	// now read the image attributes to sort the series 
 	vector<C2DImageVectorWithName> sliced_series = separate_slices(images); 
 	bool success = true; 
-	for (size_t  i = 0; i < sliced_series.size(); ++i)
+	for (size_t  i = 0; i < sliced_series.size(); ++i) {
 		success &= save_series(i, sliced_series[i], out_directory, no_copy_images); 
+		if (success) 
+			cvmsg() << "Wrote set " << i << "\n"; 
+		else 
+			cverr() << "unable to save set " << i << "\n"; 
+	}
 	
 	return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }

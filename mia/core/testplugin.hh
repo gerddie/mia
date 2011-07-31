@@ -36,6 +36,7 @@ struct test_plugin_data;
 EXPORT_CORE extern const char *const test_property;
 
 /**
+   \ingroup test 
    \brief Class to test plugin handling. 
 */
 
@@ -52,17 +53,30 @@ private:
 
 
 /**
+   \ingroup test 
    \brief Class to test plugin handling. 
 */
 class EXPORT_CORE CTestPluginHandlerImpl : public  TPluginHandler<CTestPlugin> {
 protected:
+
+	/**
+	   Constructor to use a specialized search path 
+	 */
 	CTestPluginHandlerImpl(const std::list<boost::filesystem::path>& searchpath);
 public:
+
+	/**
+	   Public version  of the TPluginHandler::plugin function to be used for testing
+	   \param name name of the requested plug-in 
+	   \returns the plugin if found, or NULL 
+	 */
 	CTestPlugin *get_plugin(const char *name) const;
 };
 
 
-/// Test plugin handler only used internally for theting the plugin handler 
+/** \ingroup test  
+    Test plugin handler, only used internally for thesing the plugin handler 
+*/
 typedef THandlerSingleton<CTestPluginHandlerImpl> CTestPluginHandler;
 NS_MIA_END
 

@@ -102,9 +102,8 @@ inline bool operator < (const valpos& a, const valpos& b)
 template <typename CP, typename C> 
 class TLSDImageCostPlugin: public CP {
 public: 
-	typedef typename CP::ProductPtr ProductPtr; 
 	TLSDImageCostPlugin();
-	virtual typename TLSDImageCostPlugin<CP,C>::ProductPtr do_create()const;
+	virtual TLSDImageCost<C> *do_create()const;
 	const std::string do_get_descr()const; 
 };
 
@@ -238,10 +237,9 @@ TLSDImageCostPlugin<CP,C>::TLSDImageCostPlugin():
 }
 
 template <typename CP, typename C> 
-typename TLSDImageCostPlugin<CP,C>::ProductPtr	
-TLSDImageCostPlugin<CP,C>::do_create()const
+TLSDImageCost<C> *TLSDImageCostPlugin<CP,C>::do_create()const
 {
-	return typename TLSDImageCostPlugin<CP,C>::ProductPtr(new TLSDImageCost<C>()); 
+	return new TLSDImageCost<C>(); 
 }
 
 template <typename CP, typename C> 

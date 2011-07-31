@@ -32,9 +32,19 @@ using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
-struct TranslateTransFixture {
+CSplineKernelTestPath kernel_test_path; 
+
+struct ipfFixture {
+	ipfFixture():
+		ipf("bspline:d=3", "mirror")
+		{
+		} 
+	C3DInterpolatorFactory ipf; 
+}; 
+
+struct TranslateTransFixture: public  ipfFixture{
 	TranslateTransFixture():size(60, 80, 20),
-				rtrans(size)
+				rtrans(size, ipf)
 		{
 			rtrans.translate(1.0, 2.0, 3.0);
 		}
@@ -84,9 +94,9 @@ BOOST_FIXTURE_TEST_CASE(derivative_TranslateTransFixture, TranslateTransFixture)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_affine3d)
+BOOST_FIXTURE_TEST_CASE(test_affine3d, ipfFixture)
 {
-	C3DAffineTransformation t1(C3DBounds(10,20,15)); 
+	C3DAffineTransformation t1(C3DBounds(10,20,15), ipf); 
 
 	BOOST_CHECK_EQUAL(t1.degrees_of_freedom(), 12u);
 
@@ -106,11 +116,11 @@ BOOST_AUTO_TEST_CASE(test_affine3d)
 }
 
 
-BOOST_AUTO_TEST_CASE( test_affine3d_iterator )
+BOOST_FIXTURE_TEST_CASE( test_affine3d_iterator, ipfFixture )
 {
 	C3DBounds size(10,20,15);
 
-	C3DAffineTransformation t1(size);
+	C3DAffineTransformation t1(size, ipf);
 	C3DAffineTransformation::const_iterator ti = t1.begin();
 	
 	for (size_t z = 0; z < size.z; ++z)
@@ -142,10 +152,10 @@ BOOST_FIXTURE_TEST_CASE( test_affine_clone, TranslateTransFixture )
 	}
 }
 
-BOOST_AUTO_TEST_CASE (test_invers)
+BOOST_FIXTURE_TEST_CASE (test_invers, ipfFixture)
 {
 	C3DBounds size(10,20, 30); 
-	C3DAffineTransformation trans(size); 
+	C3DAffineTransformation trans(size, ipf); 
 
 	auto params = trans.get_parameters(); 
 	BOOST_REQUIRE(params.size()== 12); 

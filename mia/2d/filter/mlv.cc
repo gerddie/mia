@@ -50,9 +50,6 @@
 
 #include <limits>
 
-#include <boost/lambda/lambda.hpp>
-using namespace boost::lambda;
-
 #ifdef HAVE_BLAS
 extern "C" {
 #include <cblas.h>
@@ -131,7 +128,7 @@ T C2DMLV::get(int x, int y, float ref)const
 template <typename CI>
 struct __dispatch_trasform {
 	static void apply(CI beginA, CI endA, C2DFImage::iterator out) {
-		transform(beginA, endA,  out,  _1 * _1);
+		transform(beginA, endA,  out,  [](typename CI::value_type x){return x  * x;});
 	}
 	static void apply_add(C2DFImage::iterator beginA, C2DFImage::iterator endA, CI beginB) {
 		while (beginA != endA)
@@ -251,12 +248,15 @@ C2DMLV::result_type C2DMLV::operator () (const T2DImage<T>& data) const
 												     data.begin() + data.get_size().x * y);
 
 				start = m_sigma_l1.begin() + x;
-				transform(start, start + data.get_size().x, m_sqbuf.begin(), start, _1 + _2);
+				transform(start, start + data.get_size().x, m_sqbuf.begin(), start, 
+					  [][float a, float b](return a+b;});
 			}
 
 			for (size_t iy= 0; iy < m_kh; ++iy) {
-				transform(m_mu_l1.begin(), m_mu_l1.end(), m_mu.begin_at(0,y + iy), m_mu.begin_at(0,y + iy), _1 + _2);
-				transform(m_sigma_l1.begin(), m_sigma_l1.end(), m_sigma.begin_at(0,y + iy), m_sigma.begin_at(0,y + iy), _1 + _2);
+				transform(m_mu_l1.begin(), m_mu_l1.end(), m_mu.begin_at(0,y + iy), 
+					  m_mu.begin_at(0,y + iy), [](float a, float b)(return a+b;});
+				transform(m_sigma_l1.begin(), m_sigma_l1.end(), m_sigma.begin_at(0,y + iy), 
+					  m_sigma.begin_at(0,y + iy), [](float a, float b)(return a+b;});
 			}
 #endif
 
@@ -303,9 +303,9 @@ C2DExtKuwaImageFilterFactory::C2DExtKuwaImageFilterFactory():
 	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(), false, "filter width parameter"));
 }
 
-C2DExtKuwaImageFilterFactory::ProductPtr C2DExtKuwaImageFilterFactory::do_create()const
+C2DFilter *C2DExtKuwaImageFilterFactory::do_create()const
 {
-	return C2DExtKuwaImageFilterFactory::ProductPtr(new C2DMLV(m_hw));
+	return new C2DMLV(m_hw);
 }
 
 const string C2DExtKuwaImageFilterFactory::do_get_descr()const

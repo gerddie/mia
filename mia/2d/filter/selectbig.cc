@@ -142,9 +142,9 @@ C2DSelectBigImageFilterFactory::C2DSelectBigImageFilterFactory():
 }
 
 /* The factory create function creates and returns the filter with the given options*/
-C2DFilterPlugin::ProductPtr C2DSelectBigImageFilterFactory::do_create()const
+C2DFilter *C2DSelectBigImageFilterFactory::do_create()const
 {
-	return C2DFilterPlugin::ProductPtr(new C2DSelectBig);
+	return new C2DSelectBig;
 }
 
 /* This function sreturns a short description of the filter */

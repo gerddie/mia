@@ -29,7 +29,7 @@
 
 NS_MIA_BEGIN
 
-const char *io_3dimage_type::type_descr = "3dimage";
+const char *io_3dimage_data::data_descr = "3dimage";
 
 C3DImageVector *C3DImageVector::clone() const
 {
@@ -37,7 +37,7 @@ C3DImageVector *C3DImageVector::clone() const
 }
 
 
-template class TIOPlugin<io_3dimage_type>;
+template class TIOPlugin<io_3dimage_data>;
 template class THandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> >;
 template class TIOHandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> >;
 template class TIOPluginHandler<C3DImageIOPlugin>;

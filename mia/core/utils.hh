@@ -40,7 +40,8 @@
 
 NS_MIA_BEGIN
 
-/** \brief A Scope based helper class to save and restore the current working directory 
+/** \ingroup helpers 
+    \brief A Scope based helper class to save and restore the current working directory 
 
    A helper class that stores the current working directory on construction
    and goes back to the it when the class intance is destroyed. 
@@ -53,7 +54,9 @@ public:
 };
 
 #ifndef WIN32
-/*! a functor to search  for files */
+/*! \ingroup functors   
+  \brief a functor to search  for files 
+*/
 class  FSearchFiles  {
 	std::list<std::string>& result;
 	const std::string pattern;
@@ -72,19 +75,21 @@ public:
 
 #ifndef _GNU_SOURCE
 /**
+   \ingroup helpers 
    Provide sincosf conveniance functions for sin and cos if the GNU GCC extension is not available. 
  */
 void sincosf(float x, float *sin, float *cos); 
 
 /**
+   \ingroup helpers 
    Provide sincosf conveniance functions for sin and cos if the GNU GCC extension is not available. 
  */
 void sincos(double x, double *sin, double *cos); 
 #endif
 
-
 template <typename T, bool is_float> 
 struct __round {
+
 	static T apply(double x) {
 		return x; 
 	}
@@ -97,6 +102,16 @@ struct __round<T, false> {
 	}
 };
 
+
+/**
+   \ingroup helpers 
+   
+   A simple class to round floating point numbers onyl if necessary. 
+   If the target is a floating point values then the result is just passed through, 
+   otherwise rint is used for rounding 
+   \param x 
+   \returns rounded value or x
+*/
 template <typename T> 
 T mia_round(double x) 
 {

@@ -129,14 +129,6 @@ COutputFile::COutputFile(const string& filename, bool to_stdout):
 {
 }
 
-CProgressCallback::~CProgressCallback()
-{
-}
-
-void CProgressCallback::show_progress(int /*pos*/, int /*length*/)
-{
-}
-
 NS_MIA_END
 
 

@@ -39,6 +39,8 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup helper 
+   
    \brief A mapper from emums to string values. - usefull for names flags 
 
    \todo extend it to also contain help strings for each flag. 
@@ -51,7 +53,7 @@ public:
 	*/
 	typedef struct { 
 		/// parameter name 
-		const char *name; 
+		const char * const name; 
 		/// parameter value 
 		const T value; 
 	} Table; 

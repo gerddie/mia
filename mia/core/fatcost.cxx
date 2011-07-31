@@ -25,11 +25,9 @@
 
 NS_MIA_BEGIN
 template <typename T, typename F>
-TFatCost<T,F>::TFatCost(std::shared_ptr<Data > src, std::shared_ptr<Data > ref, 
-			std::shared_ptr<Interpolator >  ipf, float weight):
+TFatCost<T,F>::TFatCost(std::shared_ptr<Data > src, std::shared_ptr<Data > ref, float weight):
 	m_src(src), 
 	m_ref(ref), 
-	m_ipf(ipf), 
 	m_floating(src), 
 	m_weight(weight),
 	m_cost_valid(false)
@@ -67,7 +65,7 @@ void TFatCost<T,F>::transform(const T& t)
 {
 	TRACE("TFatCost<T,F>::transform"); 
 	m_cost_valid = false; 
-	m_floating = t(*m_src, *m_ipf); 
+	m_floating = t(*m_src); 
 }
 
 

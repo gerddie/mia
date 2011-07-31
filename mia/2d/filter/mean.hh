@@ -40,7 +40,7 @@ class C2DMeanFilterPlugin: public mia::C2DFilterPlugin {
 public:
 	C2DMeanFilterPlugin();
 private:
-	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 	int m_hw;
 };

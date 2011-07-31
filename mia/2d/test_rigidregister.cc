@@ -1,4 +1,5 @@
-/*
+/* -*- mia-c++ -*-
+**
 ** Copyright Madrid (c) 2010 BIT ETSIT UPM
 **                      Gert Wollny <gw.fossdev @ gmail.com>
 **
@@ -33,6 +34,8 @@
 
 NS_MIA_USE
 namespace bfs=boost::filesystem;
+
+CSplineKernelTestPath init_splinekernel_path; 
 
 class PluginPathInitFixture {
 protected:
@@ -73,10 +76,10 @@ void RigidRegisterFixture::run(C2DTransformation& t, const string& minimizer_des
 
 	auto minimizer = CMinimizerPluginHandler::instance().produce(minimizer_descr); 
 	P2DImageCost cost = C2DImageCostPluginHandler::instance().produce("ssd");
-	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3));
+	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
 	auto tr_creator = C2DTransformCreatorHandler::instance().produce(t.get_creator_string());
 
-	C2DRigidRegister rr(cost, minimizer, tr_creator, *ipfactory, 1);
+	C2DRigidRegister rr(cost, minimizer, tr_creator, 1);
 
 
 	float src_image_init[10 * 10] = {
@@ -94,7 +97,7 @@ void RigidRegisterFixture::run(C2DTransformation& t, const string& minimizer_des
 
 
 	P2DImage src(new C2DFImage(size, src_image_init));
-	P2DImage ref = t(*src, *ipfactory);
+	P2DImage ref = t(*src);
 
 	P2DTransformation transform = rr.run(src, ref);
 	auto params = transform->get_parameters();
@@ -251,6 +254,6 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_rigid_gd, RigidRegisterFixture )
 	// this is a rather high tolerance, especially in light that the 
 	// nm_simplex algorithm passes with a 0.1% tolerance 
 	
-	run(*transformation, "gsl:opt=cg-pr", 5); 
+	run(*transformation, "gsl:opt=gd", 5); 
 }
 

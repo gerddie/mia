@@ -42,7 +42,7 @@ NS_MIA_BEGIN
 typedef TCST2DKernel<C2DFVectorfield> CCST2DVectorKernel;
 typedef TCST2DKernel<C2DFImage>       CCST2DImageKernel;
 
-const char* cst2d_kernel::value = "cst2d-kernel";
+const char* cst2d_kernel::type_descr = "cst2d-kernel";
 
 template <typename T>
 TCST2DKernel<T>::TCST2DKernel(fftwf_r2r_kind forward):m_forward(forward)

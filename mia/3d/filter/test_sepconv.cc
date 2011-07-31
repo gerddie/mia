@@ -22,7 +22,6 @@
  *
  */
 
-#include <mia/core/shared_ptr.hh>
 #include <mia/internal/autotest.hh>
 #include <mia/3d/filter/sepconv.hh>
 
@@ -54,12 +53,10 @@ BOOST_AUTO_TEST_CASE( test_sepconv )
 	d1[0] = d1[2] = 0;
 	d1[1] = 4;
 
-	C1DSpacialKernelPlugin::ProductPtr k1, k2, k3;
-
 	const C1DSpacialKernelPluginHandler::Instance&  skp = C1DSpacialKernelPluginHandler::instance();
-	k1 = skp.produce("gauss:w=1");
-	k2 = skp.produce("gauss:w=1");
-	k3 = skp.produce("gauss:w=1");
+	auto k1 = skp.produce("gauss:w=1");
+	auto k2 = skp.produce("gauss:w=1");
+	auto k3 = skp.produce("gauss:w=1");
 
 	CSeparableConvolute sp(k1,k2,k3);
 
@@ -77,6 +74,6 @@ BOOST_AUTO_TEST_CASE( test_sepconv )
 
 	int j = 0;
 
-	for (C3DFImage::const_iterator i = r.begin(); i != r.end(); ++i, ++j)
+	for (auto i = r.begin(); i != r.end(); ++i, ++j)
 		BOOST_CHECK_CLOSE(*i, gauss_ref[j], 0.01);
 }

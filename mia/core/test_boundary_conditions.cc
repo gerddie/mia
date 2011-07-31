@@ -21,18 +21,19 @@
  *
  */
 
-#include <wx/wx.h>
-#include <mia/2d/2dimageio.hh>
+#include <iomanip> 
+#include <mia/internal/autotest.hh>
+#include <mia/core/boundary_conditions.hh>
 
-class CSeriesPanel: public wxPanel {
 
-public:
-	CSeriesPanel(wxWindow *parent, wxWindowID id, const wxString& name);
-	~CSeriesPanel();
-	void set_series(const mia::C2DImageIOPluginHandler::Instance::PData& series);
-	void OnImageSelect(wxCommandEvent& event);
-	void OnLeftButton(wxMouseEvent& event);
-private:
-	DECLARE_EVENT_TABLE();
-	struct  CSeriesPanelImpl *impl;
-};
+CSplineBoundaryConditionTestPath  bc_test_path; 
+
+BOOST_AUTO_TEST_CASE( test_BoundaryConditionsPlugins ) 
+{
+	const auto& handler = CSplineBoundaryConditionPluginHandler::instance();
+
+	BOOST_CHECK_EQUAL(handler.size(), 3u); 
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "mirror repeat zero "); 
+
+}
+

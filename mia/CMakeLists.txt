@@ -1,5 +1,5 @@
 
-SET(MIA_HEADERS core.hh 2d.hh 3d.hh)
+SET(MIA_HEADERS core.hh 2d.hh 3d.hh mesh.hh)
 
 IF (WIN32)
 ADD_SUBDIRECTORY(core ${OUTPUT_ROOT})

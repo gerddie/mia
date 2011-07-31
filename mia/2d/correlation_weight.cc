@@ -1,4 +1,4 @@
-/*
+/* -*- mia-c++ -*-
 ** Copyright Madrid (c) 2010 BIT ETSIT UPM
 **                    Gert Wollny <gw.fossdev @ gmail.com>
 **
@@ -16,16 +16,12 @@
 ** along with this program; if not, write to the Free Software
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
-#include <boost/lambda/lambda.hpp>
-
 #include <mia/2d/correlation_weight.hh>
 #include <mia/core/errormacro.hh>
 
 NS_MIA_BEGIN
 using namespace std;
 
-using boost::lambda::_1;
-using boost::lambda::_2;
 
 
 struct CCorrelationEvaluatorImpl {
@@ -119,10 +115,10 @@ bool FCorrelationAccumulator::operator ()(const T2DImage<T>& image)
 		THROW(invalid_argument, "Input image size " << size << " expected, but got " <<
 		      image.get_size());
 	// sum x
-	transform(image.begin(), image.end(), sx.begin(), sx.begin(), _1 + _2);
+	transform(image.begin(), image.end(), sx.begin(), sx.begin(), [](T a, T b){ return a + b; });
 
 	// sum x^2
-	transform(image.begin(), image.end(), sx2.begin(), sx2.begin(), _1 *_1 + _2);
+	transform(image.begin(), image.end(), sx2.begin(), sx2.begin(), [](T a, T b){return a * a + b; }); 
 
 	// sum horizontal
 	for (size_t y = 0; y < size.y; ++y) {

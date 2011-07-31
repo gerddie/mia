@@ -61,7 +61,7 @@ void CDatapool::add(const std::string& key, boost::any value)
 
 CMutex CDatapool::m_mutex; 
 
-CDatapool& CDatapool::Instance()
+CDatapool& CDatapool::instance()
 {
 	CScopedLock lock(m_mutex);
 	static CDatapool pool;

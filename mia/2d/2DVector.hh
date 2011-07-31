@@ -1,4 +1,4 @@
-/* -*- mona-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  * Max-Planck-Institute for Human Cognitive and Brain Science	
@@ -44,8 +44,8 @@
 #include <cassert>
 #include <stdexcept>
 #include <ostream>
+#include <istream>
 #include <iomanip>
-#include <boost/lambda/lambda.hpp>
 
 // MIA specific
 #include <mia/core/defines.hh>
@@ -73,6 +73,9 @@ public:
 	
 	/// a static for the value <1,1>. 
 	static const T2DVector<T> _1; 
+
+	/// a static for the value <0,0>. 
+	static const T2DVector<T> _0; 
 		
 	T2DVector():x(T()),y(T()){}
 
@@ -241,12 +244,18 @@ public:
 
 template <typename T> 
 struct atomic_data<T2DVector<T> > {
-	typedef T type; 
+	typedef T type;
+	static const int size; 
 }; 
 
 template <typename T> 
 const T2DVector<T> T2DVector<T>::_1 = T2DVector<T>(1,1); 
 
+template <typename T> 
+const T2DVector<T> T2DVector<T>::_0 = T2DVector<T>(0,0); 
+
+template <typename T> 
+const int atomic_data<T2DVector<T> >::size = 2; 
 /**
    operator to write a 2D vector to a stream 
    \tparam type of the vector values 
@@ -450,35 +459,6 @@ typedef T2DVector<unsigned int>   C2DBounds;
 
 
 NS_MIA_END
-
-/*
-  These template specializations are needed when using the T2DVector template 
-  in a boost lambda expression that uses ::boost::lambda::_1 
-  \todo add more operations 
- */
-namespace boost { 
-	namespace lambda {
-		
-		template<class Act> 
-		struct plain_return_type_2<arithmetic_action<Act>, mia::C2DFVector, mia::C2DFVector > {
-			typedef mia::C2DFVector type;
-		};
-		template<> 
-		struct plain_return_type_2<arithmetic_action<multiply_action>, mia::C2DFVector, float> {
-			typedef mia::C2DFVector type;
-		};
-		template<> 
-		struct plain_return_type_2<arithmetic_action<multiply_action>, float, mia::C2DFVector> {
-			typedef mia::C2DFVector type;
-		};
-
-	}
-}
-
-
-
-
-
 
 #endif
 

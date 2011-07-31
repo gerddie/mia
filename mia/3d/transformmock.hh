@@ -38,7 +38,7 @@ NS_MIA_BEGIN
 struct  EXPORT_3D C3DTransformMock: public C3DTransformation {
 	/// @cond TESTINTERFACE 
 	C3DTransformMock();
-	C3DTransformMock(const C3DBounds& size);
+	C3DTransformMock(const C3DBounds& size, const C3DInterpolatorFactory& ipf);
 	virtual C3DTransformation *invert() const;
 	virtual bool save(const std::string& filename, const std::string& type) const;
 	virtual void add(const C3DTransformation& a);
@@ -79,7 +79,7 @@ protected:
 private:
 	virtual P3DTransformation do_upscale(const C3DBounds& size) const;
 	virtual C3DTransformation *do_clone() const;
-        virtual P3DImage apply(const C3DImage& image, const C3DInterpolatorFactory& ipf) const;
+	virtual P3DImage do_transform(const C3DImage& src, const C3DInterpolatorFactory&) const; 
 	C3DBounds m_size;
 	///@endcond 
 };

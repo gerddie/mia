@@ -58,7 +58,7 @@ public:
 class CWMean2DImageFilterFactory: public C2DFilterPlugin {
 public: 
 	CWMean2DImageFilterFactory();
-	virtual C2DFilterPlugin::ProductPtr create(const CParsedOptions& options) const;
+	virtual C2DFilter *create(const CParsedOptions& options) const;
 	virtual const string do_get_descr()const; 
 private: 
 	virtual int do_test() const; 
@@ -113,12 +113,12 @@ CWMean2DImageFilterFactory::CWMean2DImageFilterFactory():
 	add_help(param_weight);
 }
 
-C2DFilterPlugin::ProductPtr CWMean2DImageFilterFactory::create(const CParsedOptions& options) const
+C2DFilter *CWMean2DImageFilterFactory::create(const CParsedOptions& options) const
 {
 	int hwidth = param_width.get_value(options); 
 	float weight = param_weight.get_value(options); 
 
-	return C2DFilterPlugin::ProductPtr(new CWMean2DImageFilter(hwidth, weight)); 
+	return new CWMean2DImageFilter(hwidth, weight); 
 }
 
 const string CWMean2DImageFilterFactory::do_get_descr()const

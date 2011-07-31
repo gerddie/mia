@@ -70,7 +70,7 @@ namespace bfs= ::boost::filesystem;
 
 CScale::CScale(const C3DBounds& size, const string& filter):
 	m_size(size),
-	m_ipf(create_3dinterpolation_factory(GInterpolatorTable.get_value(filter.c_str())))
+	m_ipf(new C3DInterpolatorFactory(produce_spline_kernel(filter), "mirror"))
 {
 
 }
@@ -151,7 +151,7 @@ CScale::result_type CScale::do_filter(const C3DImage& image) const
 C3DScaleFilterPlugin::C3DScaleFilterPlugin():
 	C3DFilterPlugin("scale"),
 	m_s(0,0,0), 
-	m_interp("bspline3")
+	m_interp("bspline:d=3")
 {
 	add_parameter("sx", new CUIntParameter(m_s.x, 0,
 					      numeric_limits<unsigned int>::max(), true,
@@ -171,9 +171,9 @@ C3DScaleFilterPlugin::C3DScaleFilterPlugin():
 }
 
 
-C3DScaleFilterPlugin::ProductPtr C3DScaleFilterPlugin::do_create()const
+C3DFilter *C3DScaleFilterPlugin::do_create()const
 {
-	return C3DScaleFilterPlugin::ProductPtr(new CScale(m_s, m_interp));
+	return new CScale(m_s, m_interp);
 }
 
 const string C3DScaleFilterPlugin::do_get_descr()const

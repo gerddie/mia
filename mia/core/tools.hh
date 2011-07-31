@@ -30,45 +30,58 @@
 #include <string>
 #include <boost/call_traits.hpp>
 #include <mia/core/defines.hh>
+#include <mia/core/errormacro.hh>
 
 NS_MIA_BEGIN
 
 /**
-   Function to convert a streamable type from a string to a value
+   \ingroup helpers
+   Function to convert a streamable type from a string to a value. 
+   The string may contain whitespaces before and after the value but no other characters. 
    \tparam T some type that supports the >> stream operator 
    \param s the c-string holding the value 
-   \returns value of T corresponding to s
-   \todo some error checking should be included
+   \param [out] result value of T corresponding to s
+   \returns true if s could be parsed sucessfully, and false if not 
  */
 
 template <typename T> 
-T from_string(const char *s) 
+bool from_string(const char *s, T& result) 
 {
-	T result; 
 	std::istringstream sx(s); 
 	sx >> result; 
-	return result; 
+	if (sx.fail()) 
+		return false; 
+	if (sx.eof())
+		return true; 
+	
+	std::string remaining; 
+	sx >> remaining; 
+	bool retval = true; 
+	for(auto i = remaining.begin(); i != remaining.end(); ++i) 
+		retval &= isspace(remaining[0]); 
+	return retval; 
+
 }
 
 /**
-   Function to convert a streamable type from a string to a value
+   \ingroup helpers
+   Function to convert a streamable type from a string to a value. 
+   The string may contain whitespaces before and after the value but no other characters. 
    \tparam T some type that supports the >> stream operator 
-   \param s the c++string holding the value 
-   \returns value of T corresponding to s
-   \todo some error checking should be included
+   \param s the c-string holding the value 
+   \param [out] result value of T corresponding to s
+   \returns true if s could be parsed sucessfully, and false if not 
  */
 
 template <typename T> 
-const T from_string(const std::string& s) 
+bool from_string(const std::string& s, T& result) 
 {
-	T result; 
-	std::istringstream sx(s); 
-	sx >> result; 
-	return result; 
+	return from_string(s.c_str(), result); 
 }
 
 
 /**
+   \ingroup helpers
    Function to convert a streamable type from to a string 
    \tparam T some type that supports the << stream operator 
    \param v the value to be converted 

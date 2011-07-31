@@ -26,7 +26,7 @@
 
 NS_MIA_BEGIN
 
-const char *fatcost_type::value = "fatcost";
+const char *fatcost_type::type_descr = "fatcost";
 
 NS_MIA_END
 

@@ -36,7 +36,7 @@
 NS_MIA_BEGIN
 
 struct EXPORT_2D fft2d_kernel_data {
-	static const char *type_descr;
+	static const char *data_descr;
 };
 
 /**

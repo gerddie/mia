@@ -60,6 +60,7 @@ struct array_void_destructor {
 /// \endcond 
 
 /**
+   \ingroup templates
    \brief A wrapper around the c-array to provide an STL like interface for iterators 
 
    c-array envelope that supports some facilities of STL like vectors and that 
@@ -96,8 +97,9 @@ public:
 			memset(m_data.get(), 0, m_size*sizeof(T)); 
 	}
 
-	/* copy constructor, this is a shallow copy, i.e. the data is shared 
-	   between the original and the copied vector 
+	/** copy constructor, this is a shallow copy, i.e. the data is shared 
+	    between the original and the copied vector 
+	    \param other
 	*/
 	Vector(const Vector<T>& other):
 		m_size(other.m_size),

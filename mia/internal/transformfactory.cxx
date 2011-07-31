@@ -26,14 +26,15 @@
 NS_MIA_BEGIN
 
 template <typename T> 
-TTransformCreator<T>::TTransformCreator()
+TTransformCreator<T>::TTransformCreator(const InterpolatorFactory& ipf):
+	m_ipf(ipf)
 {
 }
 
 template <typename T> 
 typename T::Pointer TTransformCreator<T>::create(const typename T::Size& size) const
 {
-	typename T::Pointer result = do_create(size);
+	typename T::Pointer result = do_create(size, m_ipf);
 	result->set_creator_string(get_init_string()); 
 	return result; 
 }
@@ -48,6 +49,25 @@ template <typename T>
 void TTransformCreator<T>::add_property(const char *property)
 {
 	m_properties.insert(property);
+}
+
+
+template <typename T> 
+TTransformCreatorPlugin<T>::TTransformCreatorPlugin(const char *const name):
+	TFactory<TTransformCreator<T> >(name), 
+	m_image_interpolator("bspline:d=3"),
+	m_image_boundary("mirror")
+{
+	this->add_parameter("imgkernel", new CStringParameter(m_image_interpolator, false, "image interpolator kernel")); 
+	this->add_parameter("imgboundary", new CStringParameter(m_image_boundary, false, "image interpolation boundary conditions")); 
+}
+
+template <typename T> 
+typename TTransformCreatorPlugin<T>::Product *
+TTransformCreatorPlugin<T>::do_create() const
+{
+	InterpolatorFactory ipf(m_image_interpolator, m_image_boundary); 
+	return do_create(ipf); 
 }
 
 NS_MIA_END

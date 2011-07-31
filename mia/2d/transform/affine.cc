@@ -38,7 +38,11 @@
    \item [Degrees of Freedom:] 6 
   
    \end{description}
-   This plug-in doesn't take parameters 
+   \plugtabstart
+   imgkernel & string " & interpolation kernel used to interpolate images when they are transformed & bspline:d=3 \\ 
+   imgboundary& string & interpolation boundary conditions used when transforming an image & mirror \\
+   \plugtabend
+
 
    LatexEnd  
  */
@@ -52,17 +56,8 @@
 
 
 NS_MIA_BEGIN
-using namespace boost::lambda;
-using namespace std;
 
-P2DImage C2DAffineTransformation::apply(const C2DImage& image,
-					const C2DInterpolatorFactory& ipf) const
-{
-	if (image.get_size() != get_size()) {
-		cvwarn() << "C2DAffineTransformation::apply: size of input differs from transformation target size\n";
-	}
-	return transform2d(image, ipf, *this);
-}
+using namespace std;
 
 C2DFVector C2DAffineTransformation::apply(const C2DFVector& x) const
 {
@@ -79,7 +74,8 @@ C2DFVector C2DAffineTransformation::transform(const C2DFVector& x)const
 			  );
 }
 
-C2DAffineTransformation::C2DAffineTransformation(const C2DBounds& size):
+C2DAffineTransformation::C2DAffineTransformation(const C2DBounds& size, const C2DInterpolatorFactory& ipf):
+	C2DTransformation(ipf),
 	m_t(6,0.0f),
 	m_size(size)
 {
@@ -87,6 +83,7 @@ C2DAffineTransformation::C2DAffineTransformation(const C2DBounds& size):
 }
 
 C2DAffineTransformation::C2DAffineTransformation(const C2DAffineTransformation& other):
+	C2DTransformation(other),
 	m_t(other.m_t),
 	m_size(other.m_size)
 {
@@ -120,7 +117,8 @@ C2DTransformation *C2DAffineTransformation::invert()const
 
 
 C2DAffineTransformation::C2DAffineTransformation(const C2DBounds& size,
-						 std::vector<double> transform):
+						 std::vector<double> transform, const C2DInterpolatorFactory& ipf):
+	C2DTransformation(ipf),
 	m_t(transform),
 	m_size(size)
 {
@@ -389,20 +387,26 @@ float C2DAffineTransformation::pertuberate(C2DFVectorfield& /*v*/) const
 }
 
 class C2DAffineTransformCreator: public C2DTransformCreator {
-	virtual P2DTransformation do_create(const C2DBounds& size) const;
+public: 
+	C2DAffineTransformCreator(const C2DInterpolatorFactory& ipf); 
+private: 
+	virtual P2DTransformation do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const;
 };
 
-P2DTransformation C2DAffineTransformCreator::do_create(const C2DBounds& size) const
+C2DAffineTransformCreator::C2DAffineTransformCreator(const C2DInterpolatorFactory& ipf):
+	C2DTransformCreator(ipf)
 {
-	return P2DTransformation(new C2DAffineTransformation(size));
+}
+
+P2DTransformation C2DAffineTransformCreator::do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const
+{
+	return P2DTransformation(new C2DAffineTransformation(size, ipf));
 }
 
 class C2DAffineTransformCreatorPlugin: public C2DTransformCreatorPlugin {
 public:
-	typedef C2DTransformCreatorPlugin::ProductPtr ProductPtr;
-
 	C2DAffineTransformCreatorPlugin();
-	virtual ProductPtr do_create() const;
+	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
 	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
@@ -412,10 +416,9 @@ C2DAffineTransformCreatorPlugin::C2DAffineTransformCreatorPlugin():
 {
 }
 
-C2DAffineTransformCreatorPlugin::ProductPtr
-C2DAffineTransformCreatorPlugin::do_create() const
+C2DTransformCreator *C2DAffineTransformCreatorPlugin::do_create(const C2DInterpolatorFactory& ipf) const
 {
-	return ProductPtr(new C2DAffineTransformCreator());
+	return new C2DAffineTransformCreator(ipf);
 }
 
 bool C2DAffineTransformCreatorPlugin::do_test() const

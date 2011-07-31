@@ -19,7 +19,6 @@
  */
 
 
-#include <mia/core/shared_ptr.hh>
 #include <mia/internal/autotest.hh>
 #include <mia/2d/filter/noise.hh>
 
@@ -70,7 +69,7 @@ BOOST_FIXTURE_TEST_CASE( test_noise_add, NoiseFixture )
 {
 	unsigned char test_result[4] = { 2, 130, 129, 255 };
 
-	CNoiseGeneratorPlugin::ProductPtr  generator(new CTestNoiseGenerator());
+	PNoiseGenerator  generator(new CTestNoiseGenerator());
 	C2DNoise f(generator, false);
 
 	P2DImage result = f.filter(src_image);
@@ -84,7 +83,7 @@ BOOST_FIXTURE_TEST_CASE( test_noise_modulate, NoiseFixture )
 {
 	unsigned char test_result[4] = { 0, 255, 254, 255 };
 
-	CNoiseGeneratorPlugin::ProductPtr  generator(new CTestNoiseGenerator());
+	PNoiseGenerator generator(new CTestNoiseGenerator());
 	C2DNoise f(generator, true);
 
 	P2DImage result = f.filter(src_image);

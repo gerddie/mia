@@ -41,7 +41,7 @@ CDummyType* CDummyType::clone() const
 	return new CDummyType(c_str());
 }
 
-const char *test_io_data::type_descr = "test";
+const char *test_io_data::data_descr = "test";
 
 CTestIOPlugin::CTestIOPlugin(const char *name):
 	TIOPlugin<test_io_data>(name)

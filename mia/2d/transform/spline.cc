@@ -38,7 +38,9 @@
    \end{description}
 
    \plugtabstart
-   interp & string & interpolating B-spline kernel (bsplineX, omoms3) with X the degree (2-5)& bspline3 \\ 
+   imgkernel & string " & interpolation kernel used to interpolate images when they are transformed & bspline:d=3 \\ 
+   imgboundary& string & interpolation boundary conditions used when transforming an image & mirror \\
+   kernel & string & B-spline kernel (bsplineX, omoms3) with X the degree (2-5) used for evaluating the transformation & bspline;:d=3 \\ 
    rate   & float  & coefficient rate (currently the same in all dimenions & 10 \\
    \plugtabend
 
@@ -54,15 +56,13 @@
 #include <mia/2d/transform/spline.hh>
 #include <mia/2d/transformfactory.hh>
 
-#include <boost/lambda/lambda.hpp>
-
 
 NS_MIA_BEGIN
 using namespace std;
-using namespace boost::lambda;
 
 
-C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PBSplineKernel kernel):
+C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, const C2DInterpolatorFactory& ipf):
+	C2DTransformation(ipf), 
 	m_range(range),
 	m_target_c_rate(1,1),
 	m_kernel(kernel),
@@ -74,7 +74,9 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PBSplin
 	m_x_indices(m_range.x), 
 	m_y_weights(m_range.y),
 	m_y_indices(m_range.y), 
-	m_grid_valid(false)
+	m_grid_valid(false), 
+	m_xbc(produce_spline_boundary_condition("zero")), 
+	m_ybc(produce_spline_boundary_condition("zero"))
 {
 	
 	m_shift = m_kernel->get_active_halfrange() - 1; 
@@ -86,6 +88,7 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PBSplin
 }
 
 C2DSplineTransformation::C2DSplineTransformation(const C2DSplineTransformation& org):
+	C2DTransformation(org), 
    	m_range(org.m_range),
 	m_target_c_rate(org.m_target_c_rate),
 	m_coefficients( org.m_coefficients),
@@ -97,12 +100,15 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DSplineTransformation& 
 	m_x_indices(m_range.x), 
 	m_y_weights(m_range.y),
 	m_y_indices(m_range.y),
-	m_grid_valid(false)
+	m_grid_valid(false), 
+	m_xbc(produce_spline_boundary_condition("zero")), 
+	m_ybc(produce_spline_boundary_condition("zero"))
 {
 }
 
-C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PBSplineKernel kernel, 
-						 const C2DFVector& c_rate):
+C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSplineKernel kernel, 
+						 const C2DFVector& c_rate, const C2DInterpolatorFactory& ipf):
+	C2DTransformation(ipf), 
 	m_range(range),
 	m_target_c_rate(c_rate),
 	m_kernel(kernel),
@@ -111,7 +117,9 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PBSplin
 	m_x_indices(m_range.x), 
 	m_y_weights(m_range.y),
 	m_y_indices(m_range.y),
-	m_grid_valid(false)
+	m_grid_valid(false), 
+	m_xbc(produce_spline_boundary_condition("zero")), 
+	m_ybc(produce_spline_boundary_condition("zero"))
 {
 	TRACE_FUNCTION;
 	assert(m_range.x > 0);
@@ -127,6 +135,9 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PBSplin
 	C2DBounds csize(size_t((range.x + c_rate.x - 1) / c_rate.x) + m_enlarge,
 			size_t((range.y + c_rate.y - 1) / c_rate.y) + m_enlarge);
 	m_coefficients = C2DFVectorfield(csize);
+	m_xbc->set_width(m_coefficients.get_size().x); 
+	m_ybc->set_width(m_coefficients.get_size().y); 
+
 	reinit();
 }
 
@@ -134,19 +145,21 @@ void C2DSplineTransformation::set_coefficients_and_prefilter(const C2DFVectorfie
 {
 	vector<C2DFVector> buffer(field.get_size().y); 
 	C2DFVectorfield help1(field.get_size());
+	m_xbc->set_width(field.get_size().x); 
+	m_ybc->set_width(field.get_size().y); 
+
 	for(size_t x = 0; x < field.get_size().x; ++x) {
 		field.get_data_line_y(x, buffer); 
-		m_kernel->filter_line(buffer); 
+		m_xbc->filter_line(buffer, m_kernel->get_poles()); 
 		help1.put_data_line_y(x, buffer); 
 	}
-	C2DFVectorfield help2(field.get_size());
 	buffer.resize(field.get_size().x); 
 	for(size_t y = 0; y < field.get_size().y; ++y) {
 		help1.get_data_line_x(y, buffer); 
-		m_kernel->filter_line(buffer); 
-		help2.put_data_line_x(y, buffer); 
+		m_ybc->filter_line(buffer, m_kernel->get_poles()); 
+		help1.put_data_line_x(y, buffer); 
 	}
-	set_coefficients(help2); 
+	set_coefficients(help1); 
 }
 
 void C2DSplineTransformation::set_coefficients(const C2DFVectorfield& field)
@@ -154,6 +167,10 @@ void C2DSplineTransformation::set_coefficients(const C2DFVectorfield& field)
 	TRACE_FUNCTION;
 	m_interpolator_valid &= (m_coefficients.get_size() != field.get_size());
 	m_coefficients = field;
+
+	m_xbc->set_width(field.get_size().x); 
+	m_ybc->set_width(field.get_size().y); 
+
 /*
 	m_target_c_rate.x = float(m_range.x) / (field.get_size().x - m_enlarge);
 	m_target_c_rate.y = float(m_range.y) / (field.get_size().y - m_enlarge);
@@ -164,6 +181,7 @@ void C2DSplineTransformation::reinit() const
 {
 	TRACE_FUNCTION;
 	if (!m_interpolator_valid) {
+
 		cvdebug() << "C2DSplineTransformation::reinit applies\n";
 		m_scale.x = float(m_coefficients.get_size().x - 1 - m_enlarge) / (m_range.x - 1);
 		m_scale.y = float(m_coefficients.get_size().y - 1 - m_enlarge) / (m_range.y - 1);
@@ -312,10 +330,11 @@ P2DTransformation C2DSplineTransformation::do_upscale(const C2DBounds& size) con
 	C2DFVector mx(((float)size.x)/ ((float)m_range.x),
 		      ((float)size.y)/ ((float)m_range.y));
 
-	C2DSplineTransformation *help = new C2DSplineTransformation(size, m_kernel);
+	C2DSplineTransformation *help = new C2DSplineTransformation(size, m_kernel, get_interpolator_factory());
 	C2DFVectorfield new_coefs(m_coefficients.get_size()); 
 	
-	transform(m_coefficients.begin(), m_coefficients.end(), new_coefs.begin(), mx * _1 );
+	transform(m_coefficients.begin(), m_coefficients.end(), new_coefs.begin(), 
+		  [&mx](const C2DFVector& x){return x * mx;});
 	help->set_coefficients(new_coefs);
 	help->m_target_c_rate = m_target_c_rate; 
 	return P2DTransformation(help);
@@ -348,13 +367,6 @@ void C2DSplineTransformation::add(const C2DTransformation& a)
 size_t C2DSplineTransformation::degrees_of_freedom() const
 {
 	return m_coefficients.size() * 2;
-}
-
-P2DImage C2DSplineTransformation::apply(const C2DImage& image,
-					const C2DInterpolatorFactory& ipf) const
-{
-	TRACE_FUNCTION;
-	return transform2d(image, ipf, *this);
 }
 
 void C2DSplineTransformation::update(float step, const C2DFVectorfield& a)
@@ -750,74 +762,53 @@ double C2DSplineTransformation::get_divcurl_cost(double wd, double wr) const
 
 class C2DSplineTransformCreator: public C2DTransformCreator {
 public:
-	C2DSplineTransformCreator(EInterpolation ip, const C2DFVector& rates);
-	virtual P2DTransformation do_create(const C2DBounds& size) const;
+	C2DSplineTransformCreator(PSplineKernel kernel, const C2DFVector& rates, const C2DInterpolatorFactory& ipf); 
+	virtual P2DTransformation do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const;
 private:
-	PBSplineKernel m_kernel;
+	PSplineKernel m_kernel;
 	C2DFVector m_rates;
 };
 
-C2DSplineTransformCreator::C2DSplineTransformCreator(EInterpolation ip, const C2DFVector& rates):
+C2DSplineTransformCreator::C2DSplineTransformCreator(PSplineKernel kernel, const C2DFVector& rates, const C2DInterpolatorFactory& ipf):
+	C2DTransformCreator(ipf), 
+	m_kernel(kernel),
 	m_rates(rates)
 {
-
-	switch (ip){
-	case ip_bspline2:
-		m_kernel.reset(new CBSplineKernel2());
-		break;
-	case ip_bspline3:
-		m_kernel.reset(new CBSplineKernel3());
-		break;
-	case ip_bspline4:
-		m_kernel.reset(new CBSplineKernel4());
-		break;
-	case ip_bspline5:
-		m_kernel.reset(new CBSplineKernel5());
-		break;
-	case ip_omoms3:
-		m_kernel.reset(new CBSplineKernelOMoms3());
-	default:
-		throw invalid_argument("Spline kernel type required"); 
-	}
 }
 
 
-P2DTransformation C2DSplineTransformCreator::do_create(const C2DBounds& size) const
+P2DTransformation C2DSplineTransformCreator::do_create(const C2DBounds& size, const C2DInterpolatorFactory& ipf) const
 {
 	assert(m_kernel); 
-	return P2DTransformation(new C2DSplineTransformation(size, m_kernel, m_rates));
+	return P2DTransformation(new C2DSplineTransformation(size, m_kernel, m_rates, ipf));
 }
 
 
 class C2DSplineTransformCreatorPlugin: public C2DTransformCreatorPlugin {
 public:
-	typedef C2DTransformCreatorPlugin::ProductPtr ProductPtr;
-
 	C2DSplineTransformCreatorPlugin();
-	virtual ProductPtr do_create() const;
+	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
 	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 private:
-	EInterpolation m_ip;
+	PSplineKernel m_interpolator;
 	float m_rate;
 };
 
 C2DSplineTransformCreatorPlugin::C2DSplineTransformCreatorPlugin():
 	C2DTransformCreatorPlugin("spline"),
-	m_ip(ip_bspline3),
+	m_interpolator(CSplineKernelPluginHandler::instance().produce("bspline:d=3")),
 	m_rate(10)
 {
-	add_parameter("interp",
-            new CDictParameter<EInterpolation>(m_ip, GInterpolatorTable, "image interpolator"));
-	add_parameter("rate",
-		      new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
-					  "isotropic coefficient rate in pixels"));
+	add_parameter("kernel", new CFactoryParameter<CSplineKernelPluginHandler>(m_interpolator, false, 
+										  "transformation spline kernel"));
+	add_parameter("rate",   new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
+						    "isotropic coefficient rate in pixels"));
 }
 
-C2DSplineTransformCreatorPlugin::ProductPtr
-C2DSplineTransformCreatorPlugin::do_create() const
+C2DTransformCreator *C2DSplineTransformCreatorPlugin::do_create(const C2DInterpolatorFactory& ipf) const
 {
-	return ProductPtr(new C2DSplineTransformCreator(m_ip, C2DFVector(m_rate, m_rate)));
+	return new C2DSplineTransformCreator(m_interpolator, C2DFVector(m_rate, m_rate), ipf);
 }
 
 bool C2DSplineTransformCreatorPlugin::do_test() const

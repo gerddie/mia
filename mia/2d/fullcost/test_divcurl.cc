@@ -31,6 +31,8 @@
 NS_MIA_USE
 namespace bfs=::boost::filesystem;
 
+CSplineKernelTestPath kernel_test_path; 
+
 BOOST_AUTO_TEST_CASE( test_divcurl_cost ) 
 {
 	C2DDivCurlFullCost  div(4.0, 6.0, 1.0); 

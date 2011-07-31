@@ -24,8 +24,8 @@
 #ifndef ph_modules_hh
 #define ph_modules_hh
 
+#include <memory>
 #include <string>
-#include <mia/core/shared_ptr.hh>
 #include <mia/core/defines.hh>
 #include <mia/core/dlloader.hh>
 
@@ -33,17 +33,19 @@ NS_MIA_BEGIN
 using namespace std;
 
 /// definition of the Plugin interface loading function
-
 class CPluginBase;
 
-/// C function type that is provided by the plug-ins as entry point 
+/**    \ingroup infrastructure 
+    C function type that is provided by the plug-ins as entry point 
+*/
 typedef  CPluginBase* (*FPluginInterface)(void);
 
 /** 
-    \brief  The plugin module loading class. 
-
-    This class handles the loading of shared object modules and hides all the 
-    ugliness of platform dependency. 
+   \ingroup infrastructure 
+   \brief  The plugin module loading class. 
+   
+   This class handles the loading of shared object modules and hides all the 
+   ugliness of platform dependency. 
  */
 class EXPORT_CORE CPluginModule {
 public:
@@ -66,11 +68,13 @@ public:
 
 private:
 	CDLLoader m_loader;
-	size_t m_refs;
 	std::string m_name;
 };
 
-/// Shared pointer type of the CPluginModule
+/** 
+    \ingroup infrastructure 
+    Shared pointer type of the CPluginModule 
+*/
 typedef std::shared_ptr<CPluginModule > PPluginModule;
 
 NS_MIA_END

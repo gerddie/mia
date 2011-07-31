@@ -149,9 +149,9 @@ const string  C3DMedianFilterFactory::do_get_descr() const
 	return "median 3d filter";
 }
 
-C3DFilterPlugin::ProductPtr C3DMedianFilterFactory::do_create() const
+C3DFilter *C3DMedianFilterFactory::do_create() const
 {
-	return C3DFilterPlugin::ProductPtr(new C3DMedianFilter(m_hw));
+	return new C3DMedianFilter(m_hw);
 }
 
 
@@ -199,9 +199,9 @@ C3DSaltAndPepperFilterFactory::C3DSaltAndPepperFilterFactory():
 	add_parameter("thresh", new CFloatParameter(m_thresh, 0, numeric_limits<float>::max(), false, "thresh value"));
 }
 
-C3DFilterPlugin::ProductPtr C3DSaltAndPepperFilterFactory::do_create()const
+C3DFilter *C3DSaltAndPepperFilterFactory::do_create()const
 {
-	return C3DFilterPlugin::ProductPtr(new C3DSaltAndPepperFilter(m_hw, m_thresh));
+	return new C3DSaltAndPepperFilter(m_hw, m_thresh);
 }
 const string  C3DSaltAndPepperFilterFactory::do_get_descr() const
 {

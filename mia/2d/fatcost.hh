@@ -29,6 +29,7 @@
 
 #include <mia/core/factory.hh>
 #include <mia/2d/2DImage.hh>
+#include <mia/core/splinekernel.hh>
 #include <mia/2d/transform.hh>
 
 NS_MIA_BEGIN
@@ -50,10 +51,9 @@ public:
 	   Cunstructor to create the cost base 
 	   @param src floating image 
 	   @param ref reference image 
-	   @param ipf interpolation factory 
 	   @param weight of this cost function 
 	 */
-	C2DImageFatCost(P2DImage src, P2DImage ref, P2DInterpolatorFactory ipf, float weight);
+	C2DImageFatCost(P2DImage src, P2DImage ref, float weight);
 
 	/**
 	   return a copy of this cost function that holds downscaled versions of the images, 
@@ -98,14 +98,14 @@ public:
 					 P2DInterpolatorFactory ipf,
 					 float weight);
 private:
-	virtual C2DFatImageCostPlugin::ProductPtr do_create() const;
-	virtual C2DFatImageCostPlugin::ProductPtr do_create(P2DImage src, P2DImage ref,
+	virtual C2DImageFatCost *do_create() const;
+	virtual C2DImageFatCost *do_create(P2DImage src, P2DImage ref,
 							    P2DInterpolatorFactory ipf,
 							    float weight) const = 0;
 
 	std::string m_src_name;
 	std::string m_ref_name;
-	EInterpolation m_interpolator;
+	PSplineKernel m_interpolator;
 	float m_weight;
 };
 

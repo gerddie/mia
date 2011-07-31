@@ -29,7 +29,7 @@
 
 NS_MIA_BEGIN
 
-const char *io_3dvf_type::type_descr = "3dvf";
+const char *io_3dvf_data::data_descr = "3dvf";
 
 C3DIOVectorfield::C3DIOVectorfield()
 {
@@ -59,7 +59,7 @@ C3DIOVectorfield *C3DIOVectorfield::clone() const
 
 
 
-template class TIOPlugin<io_3dvf_type>;
+template class TIOPlugin<io_3dvf_data>;
 template class THandlerSingleton<TIOPluginHandler<C3DVFIOPlugin> >;
 template class TIOPluginHandler<C3DVFIOPlugin>;
 template class TPluginHandler<C3DVFIOPlugin>;

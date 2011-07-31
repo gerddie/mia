@@ -29,7 +29,6 @@
 
 #include <algorithm>
 #include <numeric>
-#include <boost/lambda/lambda.hpp> 
 #include <mia/core/interpolator1d.hh>
 #include <mia/core/spacial_kernel.hh>
 #include <mia/core/fft1d_r2c.hh>
@@ -43,7 +42,6 @@
 
 NS_MIA_BEGIN
 using namespace std; 
-using ::boost::lambda::_1; 
 
 struct CParzenWindowHistogramImpl {
 	CParzenWindowHistogramImpl(double low, double high, 
@@ -103,7 +101,7 @@ CParzenWindowHistogramImpl::CParzenWindowHistogramImpl(double low, double high,
 	if (!result) 
 		throw invalid_argument("CParzenWindowHistogram: input data bogus (bad range or number of samples"); 
 
-	interp.reset(new T1DConvoluteInterpolator<double>(fast_sumresult, PSplineKernel(new CBSplineKernel3()))); 
+	interp.reset(new T1DConvoluteInterpolator<double>(fast_sumresult, PSplineKernel(new CSplineKernel3()))); 
 }
 
 CParzenWindowHistogramImpl::~CParzenWindowHistogramImpl()

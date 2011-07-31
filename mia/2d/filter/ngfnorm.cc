@@ -110,9 +110,9 @@ C2DNgfnormFilterPlugin::C2DNgfnormFilterPlugin():
 {
 }
 
-C2DNgfnormFilterPlugin::ProductPtr C2DNgfnormFilterPlugin::do_create()const
+C2DFilter *C2DNgfnormFilterPlugin::do_create()const
 {
-	return C2DNgfnormFilterPlugin::ProductPtr(new CNgfnorm());
+	return new CNgfnorm();
 }
 
 const string C2DNgfnormFilterPlugin::do_get_descr()const

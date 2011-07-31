@@ -36,6 +36,8 @@ struct ImagefullcostFixture {
 	
 }; 
 
+CSplineKernelTestPath splinekernel_init_path; 
+
 BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 {
 
@@ -76,11 +78,11 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 	BOOST_REQUIRE(save_image("src.@", src)); 
 	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
-	C3DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
+	C3DImageFullCost cost("src.@", "ref.@", "ssd", 1.0, false); 
 	cost.reinit(); 
 	cost.set_size(size);
 	
-	C3DTransformMock t(size); 
+	C3DTransformMock t(size, C3DInterpolatorFactory("bspline:d=3", "mirror")); 
 	
 	CDoubleVector gradient(t.degrees_of_freedom()); 
 	double cost_value = cost.evaluate(t, gradient);

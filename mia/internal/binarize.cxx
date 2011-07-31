@@ -105,9 +105,9 @@ TBinarizeImageFilterFactory<Image>::TBinarizeImageFilterFactory():
 }
 
 template <class Image> 
-typename TImageFilterPlugin<Image>::ProductPtr TBinarizeImageFilterFactory<Image>::do_create()const
+TImageFilter<Image> *TBinarizeImageFilterFactory<Image>::do_create()const
 {
-	return typename TImageFilterPlugin<Image>::ProductPtr(new TBinarize<Image>(m_min, m_max)); 
+	return new TBinarize<Image>(m_min, m_max); 
 }
 
 template <class Image> 

@@ -32,6 +32,8 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup infrastructure 
+
    \brief Template for all plug-in handlers that are responsible for data IO 
    
    Input/Output plugin handler base class, derived privately from the 
@@ -86,7 +88,6 @@ public:
 	   Save the data to a file. If type is empty, then the output plugin is derived from 
            the fname suffix. if this fails, saving fails. If type is provided, the output plugin 
            is selected accordingly. 
-	   \param type output plugin name - leave empty to derive from fname suffix
 	   \param fname output file name 
 	   \param data the data to be saved
 	   \returns true if saving is successfull, false otherwise. 
@@ -154,6 +155,10 @@ private:
 }; 
 
 /**
+   \ingroup infrastructure 
+   
+   \brief Singleton of the IO plugin handler 
+
    This makes a singleton from the IO plugin handler. This specification is needed 
    to enable tests on plugin loading, where the search path has to be changed to 
    the location of the uninstalled plug-ins. 

@@ -34,6 +34,7 @@ NS_MIA_BEGIN
 
 
 /**
+   \ingroup classes
    \brief A class for generalized minimization problems 
    
    This class defined the interface for a generalized minimizer that may use 
@@ -57,10 +58,10 @@ public:
 	}; 
 
 	/// plug-in searchpath helper
-	static const char *const value; 
+	static const char *const type_descr; 
 	
 	/// plug-in searchpath helper
-	static const char *const type_descr; 
+	static const char *const data_descr; 
 	
 	/**
 	   \brief Base class for all optimization problems that can be run 
@@ -207,6 +208,7 @@ protected:
 	/// @returns the size  (degrees of freedom) of the optimization problem
 	size_t size() const; 
 
+	/// \returns a read/write reference to the current optimization problem
 	Problem& get_problem(); 
 private: 
 	virtual void do_set_problem();
@@ -232,6 +234,11 @@ inline CMinimizer::Problem& CMinimizer::get_problem()
 	return *m_problem;
 }
 
+inline 
+PMinimizer produce_minimizer(const std::string& descr) 
+{
+	return CMinimizerPluginHandler::instance().produce(descr); 
+}
 
 	
 NS_MIA_END

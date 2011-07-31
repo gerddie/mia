@@ -41,11 +41,13 @@ NS_MIA_BEGIN
 /// plugin helper type
 struct EXPORT_CORE cost_type {
 	/// plugin path helper variable 
-	static const char *value;
+	static const char *type_descr;
 };
 
 
 /**
+   \ingroup templates 
+
    \brief The generic cost function interface. 
 
    The class defines an abstract interface for a cost function between two entities of the same 

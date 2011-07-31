@@ -67,9 +67,11 @@ using namespace std;
 using namespace boost;
 namespace bfs= ::boost::filesystem;
 
-CScale::CScale(const C2DBounds& size, const string& filter):
+CScale::CScale(const C2DBounds& size, const string& kernel):
 	m_size(size),
-	m_ipf(create_2dinterpolation_factory(GInterpolatorTable.get_value(filter.c_str())))
+	m_ipf(new C2DInterpolatorFactory(produce_spline_kernel(kernel), 
+					 *produce_spline_boundary_condition("mirror"), 
+					 *produce_spline_boundary_condition("mirror")))
 {
 
 }
@@ -132,7 +134,7 @@ CScale::result_type CScale::do_filter(const C2DImage& image) const
 C2DScaleFilterPlugin::C2DScaleFilterPlugin():
 	C2DFilterPlugin("scale"),
 	m_s(0,0),
-	m_interp("bspline3")
+	m_interp("bspline:d=3")
 {
 	add_parameter("sx", new CUIntParameter(m_s.x, 0,
 					       numeric_limits<unsigned int>::max(), false,
@@ -150,9 +152,9 @@ C2DScaleFilterPlugin::C2DScaleFilterPlugin():
 }
 
 
-C2DScaleFilterPlugin::ProductPtr C2DScaleFilterPlugin::do_create()const
+C2DFilter *C2DScaleFilterPlugin::do_create()const
 {
-	return C2DScaleFilterPlugin::ProductPtr(new CScale(m_s, m_interp));
+	return new CScale(m_s, m_interp);
 }
 
 const string C2DScaleFilterPlugin::do_get_descr()const

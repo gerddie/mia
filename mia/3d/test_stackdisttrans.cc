@@ -69,9 +69,8 @@ BOOST_AUTO_TEST_CASE( test_isotropic_data )
 	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(2,2,1), 3)); 
 	
 	
-	C2DStackDistanceTransform dt(Size2D); 
+	C2DStackDistanceTransform dt(mask1); 
 
-	dt.read(mask1, 0); 
 	dt.read(mask2, 1); 
 	dt.read(mask1, 2); 
 	dt.read(mask2, 3); 
@@ -143,9 +142,8 @@ BOOST_AUTO_TEST_CASE( test_anisotropic_data )
 	ref_result.push_back(C2DStackDistanceTransform::DistanceFromPoint(C3DBounds(2,2,1), sqrt(68.0f))); 
 			     
 	
-	C2DStackDistanceTransform dt(Size2D, voxel_size); 
+	C2DStackDistanceTransform dt(mask1, voxel_size); 
 
-	dt.read(mask1, 0); 
 	dt.read(mask2, 1); 
 	dt.read(mask1, 2); 
 	dt.read(mask2, 3); 

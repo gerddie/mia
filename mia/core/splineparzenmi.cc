@@ -30,7 +30,6 @@
 #include <stdexcept>
 #include <mia/core/msgstream.hh>
 #include <mia/core/splineparzenmi.hh>
-#include <boost/lambda/lambda.hpp>
 
 NS_MIA_BEGIN
 using std::string; 
@@ -38,12 +37,8 @@ using std::setw;
 using std::vector; 
 using std::invalid_argument; 
 
-using boost::lambda::_1;
-using boost::lambda::_2;
-
-
-CSplineParzenMI::CSplineParzenMI(size_t rbins, PBSplineKernel rkernel,
-				 size_t mbins, PBSplineKernel mkernel):
+CSplineParzenMI::CSplineParzenMI(size_t rbins, PSplineKernel rkernel,
+				 size_t mbins, PSplineKernel mkernel):
 
 	m_ref_bins(rbins), 
 	m_ref_kernel(rkernel), 

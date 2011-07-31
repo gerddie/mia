@@ -34,21 +34,25 @@
 NS_MIA_BEGIN
 
 
-/// a map of parsed options as pairs key:value pairs
+/** 
+    \ingroup infrastructure 
+    a map of parsed options as pairs key:value pairs 
+*/
 typedef std::map<std::string, std::string> CParsedOptions;
 
 
 /** 
-    \brief Parser for complex command line options
-    
-    This is a little parser to parse more complex command line options.
-    The syntax of the command line is
-    "ssd:src=img1.v,ref=img2.v+lm:src=lm1.lmx,ref=lm2.lmx,f=[tsp:r=3]"
-    with one level of brackets allowed
-    
-    Above options string will be split off like:
-    < ssd, { < src, img1.v  >, < ref, img2.v  > } >
-    <   lm, ( < src, lm1.lmx >, < ref, lm2.lmx >, < f, tsp:r=3 > } >
+   \ingroup infrastructure 
+   \brief Parser for complex command line options
+   
+   This is a little parser to parse more complex command line options.
+   The syntax of the command line is
+   "ssd:src=img1.v,ref=img2.v+lm:src=lm1.lmx,ref=lm2.lmx,f=[tsp:r=3]"
+   with one level of brackets allowed
+   
+   Above options string will be split off like:
+   < ssd, { < src, img1.v  >, < ref, img2.v  > } >
+   <   lm, ( < src, lm1.lmx >, < ref, lm2.lmx >, < f, tsp:r=3 > } >
 */
 
 class EXPORT_CORE CComplexOptionParser {

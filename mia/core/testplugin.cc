@@ -44,17 +44,17 @@ static const char *test_plugin_data_str = "none";
 const char * const test_property = "testprop";
 
 struct test_plugin_type {
-	static  const char *value;
+	static  const char *type_descr;
 };
 
-const char * test_plugin_type::value =  test_plugin_type_str;
+const char * test_plugin_type::type_descr =  test_plugin_type_str;
 
 struct test_plugin_data {
-	static  const char *type_descr;
+	static  const char *data_descr;
 
 };
 
-const char * test_plugin_data::type_descr = test_plugin_data_str;
+const char * test_plugin_data::data_descr = test_plugin_data_str;
 
 
 CTestPlugin::CTestPlugin(const char *name):

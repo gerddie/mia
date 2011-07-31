@@ -26,21 +26,20 @@ NS_BEGIN(ssd_2dimage_fatcost)
 
 class CFatSSD2DImageCost : public mia::C2DImageFatCost {
 public:
-	CFatSSD2DImageCost(mia::P2DImage src, mia::P2DImage ref, mia::P2DInterpolatorFactory ipf, float weight);
+	CFatSSD2DImageCost(mia::P2DImage src, mia::P2DImage ref, float weight);
 private:
 	virtual mia::P2DImageFatCost cloned(mia::P2DImage src, mia::P2DImage ref) const;
 	virtual double do_value() const;
 	virtual double do_evaluate_force(mia::C2DFVectorfield& force) const;
-	mia::C2DImageCostPlugin::ProductPtr m_evaluator;
+	mia::P2DImageCost m_evaluator;
 };
 
 class C2DSSDFatImageCostPlugin: public mia::C2DFatImageCostPlugin {
 public:
 	C2DSSDFatImageCostPlugin();
 private:
-	virtual mia::C2DFatImageCostPlugin::ProductPtr do_create(mia::P2DImage src,
-								 mia::P2DImage ref,
-								 mia::P2DInterpolatorFactory ipf, float weight)const;
+	virtual mia::C2DImageFatCost *do_create(mia::P2DImage src, mia::P2DImage ref,
+						mia::P2DInterpolatorFactory ipf, float weight)const;
 	bool  do_test() const;
 	void prepare_path() const;
 

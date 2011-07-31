@@ -24,6 +24,7 @@
 #define mia_internal_similarity_profile_hh
 
 #include <mia/core/fft1d_r2c.hh>
+#include <mia/core/import_handler.hh>
 
 NS_MIA_BEGIN
 /**
@@ -35,7 +36,7 @@ NS_MIA_BEGIN
    highest frequency coefficient. 
 */
 template <int dim>
-class TSimilarityProfile {
+class EXPORT_HANDLER TSimilarityProfile {
 public: 
 	typedef dimension_traits<dim> this_dim_trait; 
 	typedef typename this_dim_trait::PFullCost PFullCost; 

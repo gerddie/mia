@@ -54,13 +54,11 @@ public:
 	   @param  cost cost function model
 	   @param  minimizer GSL provided minimizer
 	   @param  transform_creator object used to create the transformation type 
-	   @param  ipf interpolator
 	   @param mg_levels number of used multi-resolution levels 
 	 */
 
 	C2DRigidRegister(P2DImageCost cost, PMinimizer minimizer,
-			 P2DTransformationFactory transform_creator,
-			 const C2DInterpolatorFactory& ipf,  size_t mg_levels);
+			 P2DTransformationFactory transform_creator, size_t mg_levels);
 
 	
 	~C2DRigidRegister();

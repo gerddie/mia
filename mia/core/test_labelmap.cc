@@ -1,8 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Max-Planck-Institute for Evolutionary Anthropology
+ * Copyright (c) Leipzig, Madrid 2011
  * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
@@ -12,7 +10,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -22,22 +20,34 @@
  */
 
 
-#ifndef gui_curvedisplay_hh
-#define gui_curvedisplay_hh
+#include <sstream> 
+#include <mia/internal/autotest.hh>
+#include <mia/core/labelmap.hh>
 
+NS_MIA_USE
 
-#include <wx/wx.h>
-#include <mia/2d/2dimageio.hh>
+using std::istringstream; 
+using std::ostringstream; 
 
-class CCurveDisplay: public wxPanel {
-public:
-	CCurveDisplay(wxWindow *parent);
-	~CCurveDisplay();
-	void set_series(const mia::C2DImageIOPluginHandler::Instance::PData& series);
-	void set_coordinates(const wxPoint& point);
-	void OnPaint(wxPaintEvent& event);
-private:
-	DECLARE_EVENT_TABLE();
-	struct CCurveDisplayImpl* impl;
-};
-#endif
+BOOST_AUTO_TEST_CASE ( test_labelmap ) 
+{
+	CLabelMap map; 
+
+	map[2] = 3; 
+	map[4] = 2; 
+	map[9] = 7; 
+
+	ostringstream os; 
+	map.save(os); 
+
+	istringstream is(os.str()); 
+
+	CLabelMap new_map(is); 
+	
+	BOOST_CHECK_EQUAL(new_map.size(), map.size()); 
+
+	BOOST_CHECK_EQUAL(map[2], 3); 
+	BOOST_CHECK_EQUAL(map[4], 2); 
+	BOOST_CHECK_EQUAL(map[9], 7); 
+}
+

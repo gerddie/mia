@@ -98,7 +98,7 @@ int do_main(int argc, const char **argv)
 	string regmodel("navier");
 	string timestep("fluid");
 	int start_size = 16;
-	EInterpolation interpolator = ip_bspline3;
+	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 	int max_iter = 200;
 	float epsilon = 0.01;
 	bool save_steps = false;
@@ -114,8 +114,7 @@ int do_main(int argc, const char **argv)
 	options.add(make_opt( start_size, "mgsize", 's', "multigrid start size"));
 	options.add(make_opt( max_iter, "max-iter", 'n', ",maximum number of iterations"));
 	options.add(make_opt( cost_function, "cost", 'c', "cost function"));
-	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
-					"image interpolator"));
+	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( epsilon, "epsilon", 'e', "relative accuracy to stop registration"
 				    " at a multi-grid level"));
 	options.add(make_opt( save_steps, "save-steps", 0, "save the steps of the registration in images"));
@@ -160,11 +159,9 @@ int do_main(int argc, const char **argv)
 		return EXIT_FAILURE;
 	}
 
-	std::shared_ptr<C3DInterpolatorFactory > ipf(create_3dinterpolation_factory(interpolator));
-	if (!ipf)
-		throw invalid_argument("unknown interpolator requested");
+	C3DInterpolatorFactory ipfactory(interpolator_kernel, "mirror");
 
-	C3DImageRegister reg(start_size, *cost, max_iter, *model, *time_step, *ipf, epsilon, save_steps);
+	C3DImageRegister reg(start_size, *cost, max_iter, *model, *time_step, ipfactory, epsilon, save_steps);
 
 	P3DFVectorfield regfield = reg(**source->begin(), **reference->begin());
 	C3DIOVectorfield outfield(regfield->get_size());
@@ -177,7 +174,7 @@ int do_main(int argc, const char **argv)
 
 	if (!def_filename.empty()) {
 		C3DImageVector vimg;
-		vimg.push_back(filter(FDeformer3D(*regfield, *ipf), **source->begin()));
+		vimg.push_back(filter(FDeformer3D(*regfield, ipfactory), **source->begin()));
 		if (!imageio.save(def_filename, vimg)) {
 			cerr << "Unable to save result image to " << def_filename << "\n";
 			return EXIT_FAILURE;

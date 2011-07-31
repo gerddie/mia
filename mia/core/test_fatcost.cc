@@ -65,7 +65,12 @@ float operator * (float f, const TestInt& ti)
 typedef std::shared_ptr<TestInt > PTestInt;
 
 class TestTransformation: public Transformation<TestInt, TestInt> {
-        virtual PTestInt apply(const TestInt& input, const TestInt& /*dummy*/) const {
+public: 
+	TestTransformation(const TestInt& interp):
+		Transformation<TestInt, TestInt>(interp){
+	}
+private:
+        virtual PTestInt do_transform(const TestInt& input, const TestInt& /*ipf*/ ) const {
 		return PTestInt(new TestInt(input - 1));
 	}
 };
@@ -74,15 +79,15 @@ class TestTransformation: public Transformation<TestInt, TestInt> {
 class TTestFatCost: public TFatCost<TestTransformation, float>
 {
 public:
-	TTestFatCost(PTestInt a, PTestInt b, PTestInt interp, float w);
+	TTestFatCost(PTestInt a, PTestInt b, float w);
 private:
 	typedef TestTransformation::Data MyData;
 	virtual double do_value() const;
 	virtual double do_evaluate_force(float& force) const;
 };
 
-TTestFatCost::TTestFatCost(PTestInt a, PTestInt b, PTestInt interp, float w):
-	TFatCost<TestTransformation, float>(a,b,interp,w)
+TTestFatCost::TTestFatCost(PTestInt a, PTestInt b, float w):
+	TFatCost<TestTransformation, float>(a,b,w)
 {}
 
 double TTestFatCost::do_value() const
@@ -104,7 +109,7 @@ BOOST_AUTO_TEST_CASE( test_fatcost_basics)
 	float force = 1.0f;
 	PTestInt interp(new TestInt(1));
 
-	TTestFatCost cost(a, b, interp, 0.5f);
+	TTestFatCost cost(a, b, 0.5f);
 
 	BOOST_CHECK_EQUAL(cost.get_src().value, 1);
 	BOOST_CHECK_EQUAL(cost.get_ref().value, 2);
@@ -116,7 +121,7 @@ BOOST_AUTO_TEST_CASE( test_fatcost_basics)
 
 	BOOST_CHECK_CLOSE(force, 1.5f, 0.001);
 
-	TestTransformation tt;
+	TestTransformation tt(*interp);
 
 	cost.transform(tt);
 

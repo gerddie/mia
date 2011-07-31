@@ -1,19 +1,38 @@
+/* -*- mia-c++  -*-
+ *
+ * Copyright (c) Leipzig, Madrid 2010-2011
+ * BIT, ETSI Telecomunicacion, UPM
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
 #include <cmath>
 #include <climits>
 #include <iomanip>
 
 
 #include <mia/internal/autotest.hh>
-#include <boost/lambda/lambda.hpp>
-
 #include <mia/core/mitestimages.hh>
 #include <mia/core/splineparzenmi.hh>
+#include <boost/filesystem.hpp>
 
 NS_MIA_USE; 
 using namespace std; 
 using namespace boost::unit_test;
-using boost::lambda::_1; 
-
+namespace bfs=boost::filesystem; 
 
 struct SplineMutualInformationFixture  {
 	SplineMutualInformationFixture();
@@ -22,8 +41,8 @@ struct SplineMutualInformationFixture  {
 	vector<double> reference;
 	vector<double> moving;
 	size_t bins; 
-        PBSplineKernel rkernel; 
-        PBSplineKernel mkernel; 
+        PSplineKernel rkernel; 
+        PSplineKernel mkernel; 
        
 
 };
@@ -31,7 +50,7 @@ struct SplineMutualInformationFixture  {
 
 BOOST_FIXTURE_TEST_CASE( test_same_image_entropy, SplineMutualInformationFixture ) 
 {
-        PBSplineKernel haar(new CBSplineKernel0); 
+        PSplineKernel haar = CSplineKernelPluginHandler::instance().produce("bspline:d=0"); 
         CSplineParzenMI smi(256, haar, 256, haar); 
 	smi.fill(reference.begin(), reference.end(), reference.begin(), reference.end()); 
         BOOST_CHECK_CLOSE(smi.value(), -5.1013951881429653, 0.1); 
@@ -40,7 +59,7 @@ BOOST_FIXTURE_TEST_CASE( test_same_image_entropy, SplineMutualInformationFixture
 
 BOOST_FIXTURE_TEST_CASE( test_different_image_entropy, SplineMutualInformationFixture ) 
 {
-        PBSplineKernel haar(new CBSplineKernel0); 
+        PSplineKernel haar = CSplineKernelPluginHandler::instance().produce("bspline:d=0"); 
         CSplineParzenMI smi(256, haar, 256, haar); 
 	smi.fill(moving.begin(), moving.end(), reference.begin(), reference.end()); 
 	
@@ -96,10 +115,16 @@ SplineMutualInformationFixture::SplineMutualInformationFixture():
         size(mi_test_size.width * mi_test_size.height), 
         reference(reverence_init_data, reverence_init_data + size),
         moving(moving_init_data, moving_init_data + size), 
-        bins(64),
-        rkernel(new CBSplineKernel0), 
-        mkernel(new CBSplineKernel3)
+        bins(64)
 {        
+	list< bfs::path> sksearchpath; 
+	sksearchpath.push_back( bfs::path("splinekernel"));
+	CSplineKernelPluginHandler::set_search_path(sksearchpath); 
+
+        rkernel = CSplineKernelPluginHandler::instance().produce("bspline:d=0");  
+        mkernel = CSplineKernelPluginHandler::instance().produce("bspline:d=3"); 
+
+
 }
 
 

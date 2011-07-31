@@ -47,7 +47,7 @@ public:
 	   \param wr weight for rotation (curl)
 	 */
 
-	C3DPPDivcurlMatrix(const C3DBounds& size, const C3DFVector& range, const CBSplineKernel& kernel, 
+	C3DPPDivcurlMatrix(const C3DBounds& size, const C3DFVector& range, const CSplineKernel& kernel, 
 			   double wd, double wr); 
 
 	~C3DPPDivcurlMatrix(); 
@@ -92,7 +92,7 @@ public:
 	/**
 	   re-initialize the matrix (if the values are changed)
 	 */
-	void reset(const C3DBounds& size, const C3DFVector& range, const CBSplineKernel& kernel, 
+	void reset(const C3DBounds& size, const C3DFVector& range, const CSplineKernel& kernel, 
 		   double wd, double wr); 
 private: 
 	struct C3DPPDivcurlMatrixImpl *impl; 

@@ -22,16 +22,12 @@
 
 #include <memory>
 #include <fstream>
-#include <boost/lambda/lambda.hpp>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/ica.hh>
 #include <mia/2d/2dimageio.hh>
 
 NS_MIA_BEGIN
 using namespace std; 
-using boost::lambda::_1;
-using boost::lambda::_2;
-
 
 
 /* Implementation class */
@@ -41,18 +37,18 @@ struct C2DPerfusionAnalysisImpl {
 	
 	vector<C2DFImage> get_references() const; 
 	bool run_ica(const vector<C2DFImage>& series);
-	C2DFilterPlugin::ProductPtr get_crop_filter(float scale, C2DBounds& crop_start,
-						    C2DPerfusionAnalysis::EBoxSegmentation approach, 
-						    const std::string& save_features) const; 
-	C2DFilterPlugin::ProductPtr create_LV_cropper_from_delta(P2DImage rvlv_feature,
-						      float LV_mask_amplify,
-						      C2DBounds& crop_start,
-						      const std::string& save_features)const; 
-
-	C2DFilterPlugin::ProductPtr create_LV_cropper_from_features(float LV_mask_amplify,
-								    C2DBounds& crop_start, 
-								    const string& save_features)const; 
-		
+	P2DFilter get_crop_filter(float scale, C2DBounds& crop_start,
+				  C2DPerfusionAnalysis::EBoxSegmentation approach, 
+				  const std::string& save_features) const; 
+	P2DFilter create_LV_cropper_from_delta(P2DImage rvlv_feature,
+					       float LV_mask_amplify,
+					       C2DBounds& crop_start,
+					       const std::string& save_features)const; 
+	
+	P2DFilter create_LV_cropper_from_features(float LV_mask_amplify,
+						  C2DBounds& crop_start, 
+						  const string& save_features)const; 
+	
 	CICAAnalysis::IndexSet get_all_without_periodic()const; 
 	void save_feature(const string& base, const string& feature, const C2DImage& image)const; 
 	P2DImage get_rvlv_delta_from_feature(const string& save_features)const; 
@@ -115,9 +111,9 @@ void C2DPerfusionAnalysis::save_coefs(const string&  coefs_name)const
 	impl->save_coefs(coefs_name); 
 }
 
-C2DFilterPlugin::ProductPtr C2DPerfusionAnalysis::get_crop_filter(float scale, C2DBounds& crop_start,
-								  EBoxSegmentation approach, 
-								  const std::string& save_features) const
+P2DFilter C2DPerfusionAnalysis::get_crop_filter(float scale, C2DBounds& crop_start,
+						EBoxSegmentation approach, 
+						const std::string& save_features) const
 
 {
 	assert(impl); 
@@ -180,7 +176,8 @@ P2DImage C2DPerfusionAnalysisImpl::get_rvlv_delta_from_peaks(const string& save_
 	P2DImage result(prvlv_diff); 
 
 	transform(m_series[RV_peak].begin(), m_series[RV_peak].end(),
-		  m_series[LV_peak].begin(), prvlv_diff->begin(), _1 - _2);
+		  m_series[LV_peak].begin(), prvlv_diff->begin(), 
+		  [](float a, float b){return a - b;});
 
 	if (!save_features.empty()) {
 		save_feature(save_features, "RVpeak", m_series[RV_peak]); 
@@ -191,9 +188,9 @@ P2DImage C2DPerfusionAnalysisImpl::get_rvlv_delta_from_peaks(const string& save_
 	return result; 
 }
 
-C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::get_crop_filter(float scale, C2DBounds& crop_start,
-								      C2DPerfusionAnalysis::EBoxSegmentation approach, 
-								      const string& save_features) const
+P2DFilter C2DPerfusionAnalysisImpl::get_crop_filter(float scale, C2DBounds& crop_start,
+						    C2DPerfusionAnalysis::EBoxSegmentation approach, 
+						    const string& save_features) const
 {
 	switch (approach) {
 	case C2DPerfusionAnalysis::bs_delta_feature: 
@@ -389,12 +386,12 @@ void C2DPerfusionAnalysisImpl::save_coefs(const string&  coefs_name) const
 }
 
 
-C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_delta(P2DImage rvlv_feature,
-									float LV_mask_amplify,
-									C2DBounds& crop_start, 
-									const string& save_features)const 
+P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_delta(P2DImage rvlv_feature,
+								 float LV_mask_amplify,
+								 C2DBounds& crop_start, 
+								 const string& save_features)const 
 {
-	C2DFilterPlugin::ProductPtr result; 
+	P2DFilter result; 
 	const char *kmeans_filter_chain[] = {
 		"close:shape=[sphere:r=2]",
 		"open:shape=[sphere:r=2]"
@@ -487,9 +484,9 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_del
 }
 
 
-C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_features(float LV_mask_amplify,
-										      C2DBounds& crop_start, 
-										      const string& save_features)const 
+P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_features(float LV_mask_amplify,
+								    C2DBounds& crop_start, 
+								    const string& save_features)const 
 {
 	const char *segment_filter_chain[] = {
 		"close:shape=[sphere:r=2]",
@@ -507,7 +504,7 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_fea
 	size_t npixels = ::mia::filter(GetRegionSize(1), *RV);
 	
 	if (10 * npixels > RV->get_size().x * RV->get_size().y)
-		return C2DFilterPlugin::ProductPtr();
+		return P2DFilter();
 
 	C2DFVector RV_center = ::mia::filter(GetRegionCenter(), *RV);
 
@@ -526,7 +523,7 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_fea
 
 	if (10 * lv_pixels > RV->get_size().x * RV->get_size().y) {
 		cvmsg() << "RV segmentation failed\n"; 
-		return C2DFilterPlugin::ProductPtr();
+		return P2DFilter();
 	}
 
 	stringstream binarize_lv;
@@ -547,7 +544,7 @@ C2DFilterPlugin::ProductPtr C2DPerfusionAnalysisImpl::create_LV_cropper_from_fea
 	// this is ugly and should be replaced
 	if (crop_start.x > LV_center.x ||crop_start.y > LV_center.y) {
 		cvmsg() << "LV segmentation failed\n"; 
-		return C2DFilterPlugin::ProductPtr();
+		return P2DFilter();
 	}
 
 	mask_lv << "crop:start=[" << crop_start

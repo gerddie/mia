@@ -27,11 +27,11 @@
 
 #include <mia/core/iodata.hh>
 
-#include <mia/core/shared_ptr.hh>
 NS_MIA_BEGIN
 
 
 /**
+   \ingroup templates 
    \brief generic  base class for transformations 
 
    Template of a generic tranformation function 
@@ -46,7 +46,7 @@ class Transformation :public CIOData {
 public: 
 
 	/// interface type for plugin implementation and search 
-	static const char *value; 
+	static const char *type_descr; 
 	
         virtual ~Transformation(); 
 
@@ -54,20 +54,43 @@ public:
 	typedef D Data; 
 
 	/// type of the interpolator used by this transformation 
-	typedef I Interpolator; 
+	typedef I InterpolatorFactory; 
 	
+	/**
+	   Constructor to create the transformstion 
+	   \param ipf the interpolator factory to be used to create the interpolators for image interpolation 
+	 */
+	Transformation(const I& ipf); 
+
 	/** Apply the transformation to the input data 
 	    \param input 
-	    \param ipf interpolator factory 
 	    \returns a shared pointer to the transformed input data
 	*/
-	std::shared_ptr<D> operator () (const D& input, const I& ipf) const; 
+	std::shared_ptr<D> operator () (const D& input) const; 
+
+	/**
+	   Set the interpolator factory 
+	   \param ipf the new interpolator factory 
+	 */
+	void set_interpolator_factory(const I& ipf); 
+protected: 
+
+	/// \returns the interpolator factory 
+	const I& get_interpolator_factory() const; 
 private: 
-        virtual std::shared_ptr<D> apply(const D& input, const I& ipf) const = 0;
+        virtual std::shared_ptr<D> do_transform(const D& input, const I& ipf) const = 0;
+
+	I m_ipf;
 
 }; 
 
 // implementation 
+template <typename D, typename I>
+Transformation<D, I>::Transformation(const I& ipf):
+	m_ipf(ipf)
+{
+	
+}
 
 template <typename D, typename I>
 Transformation<D, I>::~Transformation()
@@ -75,13 +98,25 @@ Transformation<D, I>::~Transformation()
 }
 
 template <typename D, typename I>
-std::shared_ptr<D > Transformation<D,I>::operator() (const D& input, const I& ipf) const
+void Transformation<D, I>::set_interpolator_factory(const I& ipf)
 {
-	return apply(input, ipf); 
+	m_ipf = ipf; 
 }
 
 template <typename D, typename I>
-const char *Transformation<D, I>::value = "transform";
+const I& Transformation<D, I>::get_interpolator_factory() const
+{
+	return m_ipf;
+}
+
+template <typename D, typename I>
+std::shared_ptr<D > Transformation<D,I>::operator() (const D& input) const
+{
+	return do_transform(input, m_ipf); 
+}
+
+template <typename D, typename I>
+const char *Transformation<D, I>::type_descr = "transform";
 
 NS_MIA_END
 

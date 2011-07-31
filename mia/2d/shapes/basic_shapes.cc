@@ -96,7 +96,7 @@ public:
 	C4n2DShapeFactory();
 private:
 	virtual const string do_get_descr() const;
-	virtual C2DShapePlugin::ProductPtr do_create()const;
+	virtual C2DShape *do_create()const;
 	virtual bool do_test() const;
 };
 
@@ -105,9 +105,9 @@ C4n2DShapeFactory::C4n2DShapeFactory():
 {
 }
 
-C2DShapePlugin::ProductPtr C4n2DShapeFactory::do_create()const
+C2DShape *C4n2DShapeFactory::do_create()const
 {
-	return C2DShapePlugin::ProductPtr(new C4n2DShape());
+	return new C4n2DShape();
 }
 
 
@@ -154,7 +154,7 @@ public:
 	C8n2DShapeFactory();
 private:
 	virtual const string do_get_descr() const;
-	virtual C2DShapePlugin::ProductPtr do_create()const;
+	virtual C2DShape *do_create()const;
 	virtual bool  do_test() const;
 };
 
@@ -163,9 +163,9 @@ C8n2DShapeFactory::C8n2DShapeFactory():
 {
 }
 
-C2DShapePlugin::ProductPtr C8n2DShapeFactory::do_create()const
+C2DShape *C8n2DShapeFactory::do_create()const
 {
-	return C2DShapePlugin::ProductPtr(new C8n2DShape());
+	return new C8n2DShape();
 }
 
 

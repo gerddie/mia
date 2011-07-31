@@ -58,7 +58,6 @@ mia-2dmyomilles -i <input set> -o <output set> [options]
   \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
   \cmdopt{transForm}{f}{string}{Transformation space as provided by the 
                                 \hyperref[sec:2dtransforms]{transformation plug-ins.}}
-  \cmdopt{interpolator}{p}{string}{Image interpolator to be used}
   \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
   \cmdopt{passes}{P}{int}{Number of ICA+Registration passes to be run}
   \cmdopt{components}{C}{int}{Number of  ICA components to be used, 0 = automatic estimation}
@@ -156,7 +155,6 @@ int do_main( int argc, const char *argv[] )
 	string cost_function("ssd"); 
 	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=simplex,step=1.0");
 	auto transform_creator = C2DTransformCreatorHandler::instance().produce("rigid"); 
-	EInterpolation interpolator = ip_bspline3;
 	size_t mg_levels = 3; 
 	
 	// ICA parameters 
@@ -183,8 +181,6 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( cost_function, "cost", 'c', "registration criterion")); 
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
-	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
-				    "image interpolator", NULL));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 
 	options.add(make_opt( pass, "passes", 'P', "registration passes", "passes")); 
@@ -210,10 +206,8 @@ int do_main( int argc, const char *argv[] )
 		return EXIT_SUCCESS; 
 
 	// prepare registration class
-	
-	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(interpolator));
 	C2DRigidRegister rigid_register(C2DImageCostPluginHandler::instance().produce("ssd"), 
-					minimizer, transform_creator, *ipfactory, mg_levels); 
+					minimizer, transform_creator, mg_levels); 
 	
 	cvwarn() << "save_crop_feature:" << save_crop_feature << "\n"; 
 	
@@ -292,7 +286,7 @@ int do_main( int argc, const char *argv[] )
 	for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
 		cvmsg() << "Register 1st pass, frame " << i << "\n"; 
 		P2DTransformation transform = rigid_register.run(input_images[i + skip_images], references[i]);
-		input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], *ipfactory);
+		input_images[i + skip_images] = (*transform)(*input_images[i + skip_images]);
 		P2DTransformation inverse(transform->invert()); 
 		frames[i + skip_images].transform(*inverse);
 	}
@@ -317,7 +311,7 @@ int do_main( int argc, const char *argv[] )
 				cvmsg() << "Register " << current_pass + 1 <<  " pass, frame " << i << "\n"; 
 				P2DTransformation transform = rigid_register.run(input_images[i + skip_images] , 
 										 references[i]); 
-				input_images[i + skip_images] = (*transform)(*input_images[i + skip_images], *ipfactory);
+				input_images[i + skip_images] = (*transform)(*input_images[i + skip_images]);
 				P2DTransformation inverse(transform->invert()); 
 				frames[i + skip_images].transform(*inverse);
 			}

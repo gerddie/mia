@@ -66,7 +66,7 @@ public:
 class C2DImageFFTFilterFactory: public C2DFilterPlugin {
 public: 
 	C2DImageFFTFilterFactory();
-	virtual C2DFilterPlugin::ProductPtr create(const CParsedOptions& options) const;
+	virtual C2DFilter *create(const CParsedOptions& options) const;
 	virtual const string do_get_descr()const; 
 private: 
 	virtual int do_test() const; 
@@ -211,7 +211,7 @@ C2DImageFFTFilterFactory::C2DImageFFTFilterFactory():
 {
 }
 
-C2DFilterPlugin::ProductPtr C2DImageFFTFilterFactory::create(const CParsedOptions& options) const
+C2DFilter *C2DImageFFTFilterFactory::create(const CParsedOptions& options) const
 {
 	return ProductPtr(new C2DImageFFTFilter()); 
 }

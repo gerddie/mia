@@ -26,7 +26,7 @@
 
 NS_MIA_BEGIN
 
-const char * shape_type::value = "shape";
+const char * shape_type::type_descr = "shape";
 
 NS_MIA_END
 

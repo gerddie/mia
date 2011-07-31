@@ -22,6 +22,7 @@
 
 #include <cassert>
 #include <stdexcept>
+#include <mia/core/export_handler.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/similarity_profile.hh>
 #include <mia/internal/similarity_profile.cxx>

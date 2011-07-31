@@ -1,4 +1,5 @@
-/*
+/* -*- mia-++ -*- 
+**
 ** Copyright Madrid (c) 2010 BIT ETSIT UPM
 **                      Gert Wollny <gw.fossdev @ gmail.com>
 **
@@ -33,6 +34,8 @@
 
 NS_MIA_USE
 namespace bfs=boost::filesystem;
+
+CSplineKernelTestPath splinekernel_init_path; 
 
 class PluginPathInitFixture {
 protected:
@@ -73,7 +76,7 @@ void RigidRegisterFixture::run(C3DTransformation& t, const std::string& minimize
 {
 	auto minimizer = CMinimizerPluginHandler::instance().produce(minimizer_descr); 
 	P3DImageCost cost = C3DImageCostPluginHandler::instance().produce("ssd:norm=1");
-	unique_ptr<C3DInterpolatorFactory>   ipfactory(create_3dinterpolation_factory(ip_bspline3));
+	unique_ptr<C3DInterpolatorFactory> ipfactory(new C3DInterpolatorFactory("bspline:d=3", "mirror"));
 	auto tr_creator = C3DTransformCreatorHandler::instance().produce(t.get_creator_string());
 
 	C3DRigidRegister rr(cost, minimizer, tr_creator, *ipfactory, 1);
@@ -95,7 +98,7 @@ void RigidRegisterFixture::run(C3DTransformation& t, const std::string& minimize
 		}
 	}
 	P3DImage src(psrc);
-	P3DImage ref = t(*src, *ipfactory);
+	P3DImage ref = t(*src);
 
 	const C3DFImage& rsrc = dynamic_cast<const C3DFImage&>(*src); 
 	const C3DFImage& rref = dynamic_cast<const C3DFImage&>(*ref); 
@@ -134,7 +137,7 @@ void RigidRegisterFixture::run(C3DTransformation& t, const std::string& minimize
 	if ( cverb.get_level() <= vstream::ml_info ) {
 		save_image("src.hdr", src);
 		save_image("ref.hdr", ref);
-		P3DImage reg = (*transform)(*src, *ipfactory); 
+		P3DImage reg = (*transform)(*src); 
 		stringstream out_name; 
 		out_name << "reg-" << t.get_creator_string()
 			 << "-" << minimizer->get_init_string() << ".hdr"; 

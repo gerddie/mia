@@ -35,12 +35,15 @@ using namespace ::boost;
 using namespace boost::unit_test;
 namespace bfs=boost::filesystem;
 
+CSplineKernelTestPath init_splinekernel_path; 
+
 struct FieldSplineFixture {
 	FieldSplineFixture():
 		size(30, 32),
 		field(size),
-		ipf(ipf_spline,
-		    std::shared_ptr<CBSplineKernel> (new CBSplineKernel4()))
+		ipf(produce_spline_kernel("bspline:d=4"), 
+		    *produce_spline_boundary_condition("mirror"), 
+		    *produce_spline_boundary_condition("mirror"))
 	{
 		C2DFVectorfield::iterator i = field.begin();
 		for (size_t y = 0; y < size.y; ++y)

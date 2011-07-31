@@ -30,6 +30,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup traits
    \brief A trait to obtaine information about of dimensions of a class 
 
    A template to get an generic dimension vector 
@@ -42,6 +43,7 @@ struct dim_traits {
 };
 
 /**
+   \ingroup traits
    \brief Structure to enable the use of the dim_traits class for std::vector 
  */
 struct vector_dimsize {

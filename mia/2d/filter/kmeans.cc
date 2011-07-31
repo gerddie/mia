@@ -89,9 +89,9 @@ C2DKMeansFilterPluginFactory::C2DKMeansFilterPluginFactory():
 					     false, "number of classes"));
 }
 
-C2DKMeansFilterPluginFactory::ProductPtr C2DKMeansFilterPluginFactory::do_create()const
+C2DFilter *C2DKMeansFilterPluginFactory::do_create()const
 {
-	return C2DKMeansFilterPluginFactory::ProductPtr(new C2DKMeans(m_classes));
+	return new C2DKMeans(m_classes);
 }
 
 const string C2DKMeansFilterPluginFactory::do_get_descr()const

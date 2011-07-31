@@ -78,7 +78,7 @@ class C3DDirectRegTimeStepPlugin : public C3DRegTimeStepPlugin {
 public:
 	C3DDirectRegTimeStepPlugin();
 private:
-	C3DRegTimeStepPlugin::ProductPtr do_create()const;
+	C3DRegTimeStep *do_create()const;
 	bool  do_test() const;
 	const string do_get_descr()const;
 };
@@ -89,10 +89,10 @@ C3DDirectRegTimeStepPlugin::C3DDirectRegTimeStepPlugin():
 {
 }
 
-C3DRegTimeStepPlugin::ProductPtr C3DDirectRegTimeStepPlugin::do_create()const
+C3DRegTimeStep *C3DDirectRegTimeStepPlugin::do_create()const
 {
 	cverr() << get_name() << ": This time step code is currently not working properly\n";
-	return C3DRegTimeStepPlugin::ProductPtr(new C3DDirectRegTimeStep(get_min_timestep(), get_max_timestep()));
+	return new C3DDirectRegTimeStep(get_min_timestep(), get_max_timestep());
 }
 
 bool C3DDirectRegTimeStepPlugin::do_test() const

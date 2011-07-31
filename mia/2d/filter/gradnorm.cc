@@ -104,9 +104,9 @@ C2DGradnormFilterPlugin::C2DGradnormFilterPlugin():
 {
 }
 
-C2DGradnormFilterPlugin::ProductPtr C2DGradnormFilterPlugin::do_create()const
+C2DFilter *C2DGradnormFilterPlugin::do_create()const
 {
-	return C2DGradnormFilterPlugin::ProductPtr(new CGradnorm());
+	return new CGradnorm();
 }
 
 const string C2DGradnormFilterPlugin::do_get_descr()const

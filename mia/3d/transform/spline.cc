@@ -37,6 +37,8 @@
    \end{description}
 
    \plugtabstart
+   imgkernel & string " & interpolation kernel used to interpolate images when they are transformed & bspline:d=3 \\ 
+   imgboundary& string & interpolation boundary conditions used when transforming an image & mirror \\
    interp & string & interpolating B-spline kernel (bsplineX, omoms3) with X the degree (2-5)& bspline3 \\ 
    rate   & float  & coefficient rate (currently the same in all dimenions & 10 \\
    \plugtabend
@@ -63,15 +65,11 @@ extern "C" {
 }
 #endif
 
-#include <boost/lambda/lambda.hpp>
-
-
 NS_MIA_BEGIN
 using namespace std;
-using namespace boost::lambda;
 
-
-C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplineKernel kernel):
+C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, const C3DInterpolatorFactory& ipf):
+	C3DTransformation(ipf), 
 	m_range(range),
 	m_target_c_rate(1,1,1),
 	m_kernel(kernel),
@@ -83,7 +81,10 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplin
 	m_y_indices(m_range.y), 
 	m_z_weights(m_range.z),
 	m_z_indices(m_range.z), 
-	m_grid_valid(false)
+	m_grid_valid(false), 
+	m_x_boundary(produce_spline_boundary_condition("mirror")),  
+	m_y_boundary(produce_spline_boundary_condition("mirror")),
+	m_z_boundary(produce_spline_boundary_condition("mirror"))
 {
 	TRACE_FUNCTION;
 	unsigned int s = m_kernel->get_active_halfrange() - 1; 
@@ -101,6 +102,7 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplin
 }
 
 C3DSplineTransformation::C3DSplineTransformation(const C3DSplineTransformation& org):
+	C3DTransformation(org), 
    	m_range(org.m_range),
 	m_target_c_rate(org.m_target_c_rate),
 	m_coefficients( org.m_coefficients),
@@ -114,13 +116,17 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DSplineTransformation& 
 	m_y_indices(m_range.y),
 	m_z_weights(m_range.z),
 	m_z_indices(m_range.z),
-	m_grid_valid(false)
+	m_grid_valid(false), 
+	m_x_boundary(produce_spline_boundary_condition("mirror")),  
+	m_y_boundary(produce_spline_boundary_condition("mirror")),
+	m_z_boundary(produce_spline_boundary_condition("mirror"))
 {
 	TRACE_FUNCTION;
 }
 
-C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplineKernel kernel, 
-						 const C3DFVector& c_rate):
+C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSplineKernel kernel, 
+						 const C3DFVector& c_rate, const C3DInterpolatorFactory& ipf):
+	C3DTransformation(ipf), 
 	m_range(range),
 	m_target_c_rate(c_rate),
 	m_kernel(kernel),
@@ -131,7 +137,10 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplin
 	m_y_indices(m_range.y),
 	m_z_weights(m_range.z),
 	m_z_indices(m_range.z),
-	m_grid_valid(false)
+	m_grid_valid(false), 
+	m_x_boundary(produce_spline_boundary_condition("mirror")),  
+	m_y_boundary(produce_spline_boundary_condition("mirror")),
+	m_z_boundary(produce_spline_boundary_condition("mirror"))
 {
 	TRACE_FUNCTION;
 
@@ -157,6 +166,10 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PBSplin
 		csize.z = 2; 
 	csize += m_enlarge;
 	m_coefficients = C3DFVectorfield(csize);
+	m_x_boundary->set_width(m_coefficients.get_size().x); 
+	m_y_boundary->set_width(m_coefficients.get_size().y); 
+	m_z_boundary->set_width(m_coefficients.get_size().z); 
+
 	reinit();
 }
 
@@ -169,6 +182,9 @@ void C3DSplineTransformation::set_coefficients(const C3DFVectorfield& field)
 	TRACE_FUNCTION;
 	m_scales_valid = (m_coefficients.get_size() == field.get_size());
 	m_coefficients = field;
+	m_x_boundary->set_width(m_coefficients.get_size().x); 
+	m_y_boundary->set_width(m_coefficients.get_size().y); 
+	m_z_boundary->set_width(m_coefficients.get_size().z); 
 //	m_target_c_rate =  C3DFVector(m_range) / C3DFVector(field.get_size() - m_enlarge);
 }
 
@@ -176,12 +192,15 @@ void C3DSplineTransformation::set_coefficients_and_prefilter(const C3DFVectorfie
 {
 	TRACE_FUNCTION;
 	C3DFVectorfield help1(field.get_size());
-	C3DFVectorfield help2(field.get_size());
+	m_x_boundary->set_width(field.get_size().x); 
+	m_y_boundary->set_width(field.get_size().y); 
+	m_z_boundary->set_width(field.get_size().z); 
+
 	vector<C3DFVector> buffer(field.get_size().x); 
 	for(size_t z = 0; z < field.get_size().z; ++z)
 		for(size_t y = 0; y < field.get_size().y; ++y) {
 			field.get_data_line_x(y, z, buffer); 
-			m_kernel->filter_line(buffer); 
+			m_x_boundary->filter_line(buffer, m_kernel->get_poles()); 
 			help1.put_data_line_x(y, z, buffer); 
 		}
 	
@@ -189,15 +208,15 @@ void C3DSplineTransformation::set_coefficients_and_prefilter(const C3DFVectorfie
 	for(size_t z = 0; z < field.get_size().z; ++z)
 		for(size_t x = 0; x < field.get_size().x; ++x) {
 			help1.get_data_line_y(x, z, buffer); 
-			m_kernel->filter_line(buffer); 
-			help2.put_data_line_y(x, z, buffer); 
+			m_y_boundary->filter_line(buffer, m_kernel->get_poles()); 
+			help1.put_data_line_y(x, z, buffer); 
 		}
 	
 	buffer.resize(field.get_size().z); 
 	for(size_t y = 0; y < field.get_size().y; ++y)
 		for(size_t x = 0; x < field.get_size().x; ++x) {
-			help2.get_data_line_z(x, y, buffer); 
-			m_kernel->filter_line(buffer); 
+			help1.get_data_line_z(x, y, buffer); 
+			m_z_boundary->filter_line(buffer, m_kernel->get_poles()); 
 			help1.put_data_line_z(x, y, buffer); 
 		}
 	
@@ -393,10 +412,11 @@ P3DTransformation C3DSplineTransformation::do_upscale(const C3DBounds& size) con
 
 	C3DFVector mx(C3DFVector(size) / C3DFVector(m_range));
 
-	C3DSplineTransformation *help = new C3DSplineTransformation(size, m_kernel);
+	C3DSplineTransformation *help = new C3DSplineTransformation(size, m_kernel, get_interpolator_factory());
 	C3DFVectorfield new_coefs(m_coefficients.get_size()); 
 	
-	transform(m_coefficients.begin(), m_coefficients.end(), new_coefs.begin(), mx * _1 );
+	transform(m_coefficients.begin(), m_coefficients.end(), new_coefs.begin(), 
+		  [&mx](const C3DFVector& x){return mx * x;}); 
 	help->set_coefficients(new_coefs); 
 	help->m_target_c_rate = m_target_c_rate; 
 	return P3DTransformation(help);
@@ -550,6 +570,8 @@ float C3DSplineTransformation::get_max_transform() const
   implements a separable filtering of the slices using cblas for fast addition of large ranges.  
   
 */
+
+
 void C3DSplineTransformation::init_grid()const
 {
 	TRACE_FUNCTION; 
@@ -595,7 +617,7 @@ void C3DSplineTransformation::init_grid()const
 			
 			memset(&out_buffer[0], 0, size_s1 * sizeof(float)); 
 			
-			for (unsigned int i = 0; i < nelm; ++i) {
+			for (unsigned int i = 0; i < w.size(); ++i) {
 				cblas_saxpy(size_s1, w[i], &in_buffer[idxz.value(i)][0], 1, 
 					    &out_buffer[0], 1);
 			}
@@ -625,7 +647,7 @@ void C3DSplineTransformation::init_grid()const
 			
 			memset(&out_buffer[0], 0, size_s2 * sizeof(float)); 
 			
-			for (unsigned int i = 0; i < nelm; ++i) {
+			for (unsigned int i = 0; i < w.size(); ++i) {
 				cblas_saxpy(size_s2, w[i], &in_buffer[idxy.value(i)][0], 1, 
 					    &out_buffer[0], 1);
 			}
@@ -633,36 +655,32 @@ void C3DSplineTransformation::init_grid()const
 		}
 
 
-		CCircularIndex idxx(nelm, m_y_indices[0]); 
-		for(size_t x = 0; x < m_range.x; ++x) {
-			auto w = m_x_weights[x]; 
-			int start = m_x_indices[x];
-			
-			cvdebug() << "x = " << x << "\n"; 
-			idxx.new_start(start); 
-			
-			// fill with slices 
-			auto fill = idxx.fill(); 
-			while (fill < nelm && start + fill < m_coefficients.get_size().x) {
-				tmp2.read_xslice_flat(start + fill, in_buffer[idxx.next()]);
-				idxx.insert_one(); 
-				fill = idxx.fill(); 
+		// the x-filtering is better done by row, if writing back like above, the 
+		// cache is completely threashed and init_grid spends 35% of the time 
+		// in copying back the data (according to valgrind) 
+
+		vector<C3DFVector> vout_buffer(m_range.x); 
+		vector<C3DFVector> vin_buffer(m_coefficients.get_size().x);
+
+		C3DFVector X; 
+		for (size_t iz = 0; iz < tmp2.get_size().z; ++iz) {
+			X.z = iz; 
+			for (size_t iy = 0; iy < tmp2.get_size().y; ++iy) {
+				X.y = iy;
+				tmp2.get_data_line_x(iy, iz, vin_buffer);
+				for(size_t x = 0; x < m_range.x; ++x) {
+					X.x = x; 
+					int start = m_x_indices[x];
+					auto w = m_x_weights[x]; 
+					
+					vout_buffer[x] = X - 
+						inner_product(w.begin(), w.end(), 
+							      vin_buffer.begin() + start, C3DFVector());
+				}
+				m_current_grid->put_data_line_x(iy, iz, vout_buffer);
 			}
-			
-			memset(&out_buffer[0], 0, size_s3 * sizeof(float)); 
-			
-			for (unsigned int i = 0; i < nelm; ++i) {
-				cblas_saxpy(size_s3, w[i], &in_buffer[idxx.value(i)][0], 1, 
-					    &out_buffer[0], 1);
-			}
-			m_current_grid->write_xslice_flat(x, out_buffer); 
 		}
-		
-		auto i = m_current_grid->begin(); 
-		for (size_t z = 0; z < m_range.z; ++z) 
-			for (size_t y = 0; y < m_range.y; ++y) 
-				for (size_t x = 0; x < m_range.x; ++x, ++i)
-					*i = C3DFVector(x,y,z) - *i; 
+
 
 		m_grid_valid = true; 
 	}
@@ -1024,46 +1042,30 @@ double C3DSplineTransformation::get_divcurl_cost(double wd, double wr) const
 
 class C3DSplinebigTransformCreator: public C3DTransformCreator {
 public:
-	C3DSplinebigTransformCreator(EInterpolation ip, const C3DFVector& rates, bool debug);
-	virtual P3DTransformation do_create(const C3DBounds& size) const;
+	C3DSplinebigTransformCreator(PSplineKernel ip, const C3DFVector& rates, const C3DInterpolatorFactory& ipf, bool debug);
 private:
-	PBSplineKernel m_kernel;
+	virtual P3DTransformation do_create(const C3DBounds& size, const C3DInterpolatorFactory& ipf) const;
+	PSplineKernel m_kernel;
 	C3DFVector m_rates;
 	bool m_debug; 
 };
 
-C3DSplinebigTransformCreator::C3DSplinebigTransformCreator(EInterpolation ip, const C3DFVector& rates, bool debug):
+C3DSplinebigTransformCreator::C3DSplinebigTransformCreator(PSplineKernel kernel, const C3DFVector& rates, const C3DInterpolatorFactory& ipf, bool debug):
+	C3DTransformCreator(ipf), 
+	m_kernel(kernel),
 	m_rates(rates), 
 	m_debug(debug)
 {
 	TRACE_FUNCTION;
-	switch (ip){
-	case ip_bspline2:
-		m_kernel.reset(new CBSplineKernel2());
-		break;
-	case ip_bspline3:
-		m_kernel.reset(new CBSplineKernel3());
-		break;
-	case ip_bspline4:
-		m_kernel.reset(new CBSplineKernel4());
-		break;
-	case ip_bspline5:
-		m_kernel.reset(new CBSplineKernel5());
-		break;
-	case ip_omoms3:
-		m_kernel.reset(new CBSplineKernelOMoms3());
-	default:
-		throw invalid_argument("Spline kernel type required"); 
-	}
 }
 
 
-P3DTransformation C3DSplinebigTransformCreator::do_create(const C3DBounds& size) const
+P3DTransformation C3DSplinebigTransformCreator::do_create(const C3DBounds& size, const C3DInterpolatorFactory& ipf) const
 {
 	TRACE_FUNCTION;
 
 	assert(m_kernel); 
-	P3DTransformation result(new C3DSplineTransformation(size, m_kernel, m_rates));
+	P3DTransformation result(new C3DSplineTransformation(size, m_kernel, m_rates, ipf));
 	if (m_debug) 
 		result->set_debug(); 
 	return result;
@@ -1072,26 +1074,24 @@ P3DTransformation C3DSplinebigTransformCreator::do_create(const C3DBounds& size)
 
 class C3DSplineTransformCreatorPlugin: public C3DTransformCreatorPlugin {
 public:
-	typedef C3DTransformCreatorPlugin::ProductPtr ProductPtr;
-
 	C3DSplineTransformCreatorPlugin();
-	virtual ProductPtr do_create() const;
+	virtual C3DTransformCreator *do_create(const C3DInterpolatorFactory& ipf) const;
 	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 private:
-	EInterpolation m_ip;
+	PSplineKernel m_kernel;
 	float m_rate;
 	bool m_debug; 
 };
 
 C3DSplineTransformCreatorPlugin::C3DSplineTransformCreatorPlugin():
 	C3DTransformCreatorPlugin("spline"),
-	m_ip(ip_bspline3),
+	m_kernel(produce_spline_kernel("bspline:d=3")),
 	m_rate(10), 
 	m_debug(false)
 {
 	add_parameter("interp",
-            new CDictParameter<EInterpolation>(m_ip, GInterpolatorTable, "image interpolator"));
+		      new CFactoryParameter<CSplineKernelPluginHandler>(m_kernel, false, "image interpolator kernel"));
 	add_parameter("rate",
 		      new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
 					  "isotropic coefficient rate in pixels"));
@@ -1100,11 +1100,10 @@ C3DSplineTransformCreatorPlugin::C3DSplineTransformCreatorPlugin():
 
 }
 
-C3DSplineTransformCreatorPlugin::ProductPtr
-C3DSplineTransformCreatorPlugin::do_create() const
+C3DTransformCreator *C3DSplineTransformCreatorPlugin::do_create(const C3DInterpolatorFactory& ipf) const
 {
 	TRACE_FUNCTION;
-	return ProductPtr(new C3DSplinebigTransformCreator(m_ip, C3DFVector(m_rate, m_rate, m_rate), m_debug));
+	return new C3DSplinebigTransformCreator(m_kernel, C3DFVector(m_rate, m_rate, m_rate), ipf, m_debug);
 }
 
 bool C3DSplineTransformCreatorPlugin::do_test() const
@@ -1117,8 +1116,7 @@ bool C3DSplineTransformCreatorPlugin::do_test() const
 
 const std::string C3DSplineTransformCreatorPlugin::do_get_descr() const
 {
-	return "plugin to create spline transformations, use more value pre-caching, and therefore, it needs more" 
-		" working memory then 'spline'.";
+	return "plugin to create spline based transformations";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

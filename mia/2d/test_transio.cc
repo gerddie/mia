@@ -29,6 +29,9 @@
 
 NS_MIA_USE; 
 namespace bfs=::boost::filesystem; 
+
+CSplineKernelTestPath spline_kernel_path_init; 
+
 class PrepareTransIOTests {
 public: 
 	static const PrepareTransIOTests& instance(); 

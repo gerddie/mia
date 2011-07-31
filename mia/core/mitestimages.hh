@@ -6,6 +6,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup test 
    Simple structure for test images 
  */
 

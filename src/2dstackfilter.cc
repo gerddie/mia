@@ -205,10 +205,10 @@ int main(int argc, const char *argv[])
 		//first count the number of slices
 		vector<const char *>::const_iterator i = filter_chain.begin();
 
-		C2DFifoFilterPlugin::ProductPtr filter = sfh.produce(*i);
+		auto filter = sfh.produce(*i);
 		++i;
 		while ( i != filter_chain.end()) {
-			C2DFifoFilterPlugin::ProductPtr f = sfh.produce(*i);
+			auto f = sfh.produce(*i);
 			if (!filter){
 				stringstream error;
 				error << "Filter " << *i << " not found";

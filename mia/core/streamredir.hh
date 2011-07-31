@@ -35,6 +35,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup infrastructure 
    \brief base class to redirect output streams
 
    This class implements the abstract base class for stream output redirection

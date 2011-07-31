@@ -96,7 +96,7 @@ class C2DDistanceImageFilterFactory: public C2DFilterPlugin {
 public:
 	C2DDistanceImageFilterFactory();
 private:
-	virtual C2DFilterPlugin::ProductPtr do_create()const;
+	virtual C2DFilter *do_create()const;
 	virtual const std::string do_get_descr() const;
 };
 
@@ -105,9 +105,9 @@ C2DDistanceImageFilterFactory::C2DDistanceImageFilterFactory():
 {
 }
 
-C2DFilterPlugin::ProductPtr C2DDistanceImageFilterFactory::do_create() const
+C2DFilter *C2DDistanceImageFilterFactory::do_create() const
 {
-	return C2DFilterPlugin::ProductPtr(new C2DDistance()); 
+	return new C2DDistance(); 
 }
 
 const string C2DDistanceImageFilterFactory::do_get_descr()const

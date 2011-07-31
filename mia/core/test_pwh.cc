@@ -21,7 +21,6 @@
  */
 
 #include <mia/internal/autotest.hh>
-#include <boost/lambda/lambda.hpp>
 #include <mia/core/noisegen.hh>
 #include <mia/core/histogram.hh>
 
@@ -33,7 +32,6 @@
 
 NS_MIA_USE
 using namespace std; 
-using boost::lambda::_1; 
 namespace bfs=::boost::filesystem;
 
 struct FNormalDistribution {

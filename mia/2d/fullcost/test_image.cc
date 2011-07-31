@@ -22,7 +22,7 @@
 
 
 #include <mia/2d/fullcost/image.hh>
-#include <mia/2d/transformmock.hh>
+#include <mia/2d/transformfactory.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dfilter.hh>
 
@@ -33,11 +33,38 @@ namespace bfs=::boost::filesystem;
 
 struct ImagefullcostFixture {
 	ImagefullcostFixture(); 
-	
+
+	P2DInterpolatorFactory ipf; 
+	P2DTransformationFactory tff; 
 }; 
+
+
+CSplineKernelTestPath init_splinekernel_path; 
+
+struct InitSplinekernelTestPath {
+	InitSplinekernelTestPath() {
+		list< bfs::path> cost_plugpath;
+		cost_plugpath.push_back(bfs::path("../cost"));
+		C2DImageCostPluginHandler::set_search_path(cost_plugpath);
+		
+		list< bfs::path> filter_plugpath;
+		filter_plugpath.push_back(bfs::path("../filter"));
+		C2DFilterPluginHandler::set_search_path(filter_plugpath);
+		
+		list< bfs::path> io_plugpath;
+		io_plugpath.push_back(bfs::path("../io"));
+		C2DImageIOPluginHandler::set_search_path(io_plugpath);
+		
+	}
+}; 
+
+C2DTransformCreatorHandlerTestPath tfc_test_path; 
+
+InitSplinekernelTestPath init_path; 
 
 BOOST_FIXTURE_TEST_CASE( test_imagefullcost,  ImagefullcostFixture ) 
 {
+
 
 	// create two images 
 	const float src_data[16] = {
@@ -54,28 +81,32 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost,  ImagefullcostFixture )
 	};
 	C2DBounds size(4,4); 
 
+	auto t = tff->create(size); 
+	auto params = t->get_parameters(); 
+	fill(params.begin(), params.end(), 0.0); 
+	t->set_parameters(params); 
+
 	P2DImage src(new C2DFImage(size, src_data ));
 	P2DImage ref(new C2DFImage(size, ref_data ));
 	
 	BOOST_REQUIRE(save_image("src.@", src)); 
 	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
-	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
+	C2DImageFullCost cost("src.@", "ref.@", "ssd", 1.0, false); 
 	cost.reinit(); 
 	cost.set_size(size);
-	C2DTransformMock t(size); 
 	
-	CDoubleVector gradient(t.degrees_of_freedom()); 
-	double cost_value = cost.evaluate(t, gradient);
+	CDoubleVector gradient(t->degrees_of_freedom()); 
+	double cost_value = cost.evaluate(*t, gradient);
 
 	BOOST_CHECK_CLOSE(cost_value, 0.5 * 55.0, 0.1);
 
-	double value = cost.cost_value(t);
+	double value = cost.cost_value(*t);
 
 	BOOST_CHECK_CLOSE(value, 0.5 * 55.0, 0.1);
 	
-	BOOST_CHECK_CLOSE(gradient[10], 0.5f, 0.1);
-	BOOST_CHECK_CLOSE(gradient[11], 3.0f, 0.1);
+	BOOST_CHECK_CLOSE(gradient[10], -0.5f, 0.1);
+	BOOST_CHECK_CLOSE(gradient[11], -3.0f, 0.1);
 	
 }
 
@@ -104,7 +135,10 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_no_translate,  ImagefullcostFixture 
 	BOOST_REQUIRE(save_image("src.@", src)); 
 	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
-	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
+	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(produce_spline_kernel("bspline:d=3"), 
+							      *produce_spline_boundary_condition("mirror"), 
+							      *produce_spline_boundary_condition("mirror")));  
+	C2DImageFullCost cost("src.@", "ref.@", "ssd", 1.0, false); 
 	cost.reinit(); 
 	cost.set_size(size);
 	double value = cost.cost_value();
@@ -132,29 +166,36 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 	};
 	C2DBounds size(4,4); 
 
+	auto t = tff->create(size); 
+	auto params = t->get_parameters(); 
+	fill(params.begin(), params.end(), 0.0); 
+	t->set_parameters(params); 
+
 	P2DImage src(new C2DUBImage(size, src_data ));
 	P2DImage ref(new C2DUBImage(size, ref_data ));
 	
 	BOOST_REQUIRE(save_image("src.@", src)); 
 	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
-	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
+	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(produce_spline_kernel("bspline:d=3"), 
+							      *produce_spline_boundary_condition("mirror"), 
+							      *produce_spline_boundary_condition("mirror")));  
+	C2DImageFullCost cost("src.@", "ref.@", "ssd", 1.0, false); 
 	cost.reinit(); 
 	cost.set_size(size);
 	
-	C2DTransformMock t(size); 
 	
-	CDoubleVector gradient(t.degrees_of_freedom()); 
-	double cost_value = cost.evaluate(t, gradient);
+	CDoubleVector gradient(t->degrees_of_freedom()); 
+	double cost_value = cost.evaluate(*t, gradient);
 
 	BOOST_CHECK_CLOSE(cost_value, 0.5 * 255 * 255.0 * 4.0, 0.1);
 
-	double value = cost.cost_value(t);
+	double value = cost.cost_value(*t);
 
 	BOOST_CHECK_CLOSE(value, 0.5 * 255 * 255.0 * 4.0, 0.1);
 	
-	BOOST_CHECK_CLOSE(gradient[10], 255 * 255 * 0.5f, 0.1);
-	BOOST_CHECK_CLOSE(gradient[11], 255 * 255 * 0.5f, 0.1);
+	BOOST_CHECK_CLOSE(gradient[10], -255 * 255 * 0.5f, 0.1);
+	BOOST_CHECK_CLOSE(gradient[11], -255 * 255 * 0.5f, 0.1);
 	
 }
 
@@ -191,7 +232,8 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2_scaled,  ImagefullcostFixture)
 	BOOST_REQUIRE(save_image("src.@", src)); 
 	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
-	C2DImageFullCost cost("src.@", "ref.@", "ssd", ip_bspline3, 1.0, false); 
+	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(ipf_spline, CSplineKernelPluginHandler::instance().produce("bspline:d=3"))); 
+	C2DImageFullCost cost("src.@", "ref.@", "ssd", ipf, 1.0, false); 
 	cost.reinit(); 
 	cost.set_size(size);
 	
@@ -221,19 +263,12 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2_scaled,  ImagefullcostFixture)
 }
 #endif
 
-ImagefullcostFixture::ImagefullcostFixture()
+ImagefullcostFixture::ImagefullcostFixture():
+	ipf(new C2DInterpolatorFactory(produce_spline_kernel("bspline:d=3"), 
+				       *produce_spline_boundary_condition("mirror"), 
+				       *produce_spline_boundary_condition("mirror"))), 
+	tff(C2DTransformCreatorHandler::instance().produce("vf"))
 {
-	list< bfs::path> cost_plugpath;
-	cost_plugpath.push_back(bfs::path("../cost"));
-	C2DImageCostPluginHandler::set_search_path(cost_plugpath);
-
-	list< bfs::path> filter_plugpath;
-	filter_plugpath.push_back(bfs::path("../filter"));
-	C2DFilterPluginHandler::set_search_path(filter_plugpath);
-
-	list< bfs::path> io_plugpath;
-	io_plugpath.push_back(bfs::path("../io"));
-	C2DImageIOPluginHandler::set_search_path(io_plugpath);
 }
 
 

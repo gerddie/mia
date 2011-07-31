@@ -89,9 +89,9 @@ C3DKMeansFilterPluginFactory::C3DKMeansFilterPluginFactory():
 					     false, "number of classes"));
 }
 
-C3DKMeansFilterPluginFactory::ProductPtr C3DKMeansFilterPluginFactory::do_create()const
+C3DFilter *C3DKMeansFilterPluginFactory::do_create()const
 {
-	return C3DKMeansFilterPluginFactory::ProductPtr(new C3DKMeans(m_classes));
+	return new C3DKMeans(m_classes);
 }
 
 const string C3DKMeansFilterPluginFactory::do_get_descr()const

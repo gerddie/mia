@@ -52,7 +52,7 @@ private:
 class C2DCropImageFilterFactory: public mia::C2DFilterPlugin {
 public:
 	C2DCropImageFilterFactory();
-	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
 	C2DCrop::C2DSize m_start;

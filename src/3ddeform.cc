@@ -81,13 +81,13 @@ int do_main(int argc, const char **argv)
 	string src_filename;
 	string out_filename;
 	string vf_filename;
-	EInterpolation interpolator = ip_bspline3;
+	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 
 	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "reference image", CCmdOption::required));
 	options.add(make_opt( vf_filename, "transformation", 't', "transformation vector field", 
 				    CCmdOption::required));
-	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p', "image interpolator"));
+	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
@@ -112,9 +112,9 @@ int do_main(int argc, const char **argv)
 		return EXIT_FAILURE;
 	}
 
-	std::shared_ptr<C3DInterpolatorFactory > ipf(create_3dinterpolation_factory(interpolator));
+	P3DInterpolatorFactory ipfactory(new C3DInterpolatorFactory(interpolator_kernel, "mirror"));
 
-	FDeformer3D deformer(*transformation,*ipf);
+	FDeformer3D deformer(*transformation,*ipfactory);
 
 
 	for (C3DImageIOPluginHandler::Instance::Data::iterator i = source->begin();

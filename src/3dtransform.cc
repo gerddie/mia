@@ -41,7 +41,10 @@ mia-3dtransform -i <input> -t <transformaton> -o <output>
   \optinfile
   \optoutfile
   \cmdopt{transformation}{t}{string}{file name of the transformation}
-  \cmdopt{interpolator}{p}{string}{image interpolation kernel to use}
+  \cmdopt{interpolator}{p}{string}{image interpolation kernel to use instead of those given with the transformation}
+  \cmdopt{boundary}{b}{string}{image interpolation boundary conditions to use to use instead of those given with the transformation. 
+  This value is only used if an alternative interpolator is given.}
+
   }
 
   \item [Example:] Transform an image input.v by the transfromation stored in trans.v 
@@ -58,6 +61,7 @@ mia-3dtransform -i input.v -t trans.v  -o output.v  -p nn
 
 #define VSTREAM_DOMAIN "mia-3dtransform"
 #include <mia/core/cmdlineparser.hh>
+#include <mia/core/factorycmdlineoption.hh>
 #include <mia/3d/transformio.hh>
 #include <mia/3d/3dimageio.hh>
 
@@ -79,13 +83,17 @@ int do_main(int argc, const char **argv)
 	string src_filename;
 	string out_filename;
 	string trans_filename;
-	EInterpolation interpolator = ip_bspline3;
+	string interpolator_kernel;
+	string interpolator_bc("mirror"); 
 
 	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "reference image", CCmdOption::required));
 	options.add(make_opt( trans_filename, "transformation", 't', "transformation file", 
-				    CCmdOption::required));
-	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p', "image interpolator"));
+			      CCmdOption::required));
+	options.add(make_opt( interpolator_kernel, "interpolator", 'p', "override the interpolator provided by the transformation"));
+	options.add(make_opt( interpolator_bc, "boundary", 'b', "override the boundary conditions provided by the transformation."
+			      " This is only used if the interpolator is overridden."));
+
 
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
@@ -94,7 +102,7 @@ int do_main(int argc, const char **argv)
 
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 	auto transformation = C3DTransformationIOPluginHandler::instance().load(trans_filename);
-
+	
 	auto source = imageio.load(src_filename);
 
 	if (!source || source->size() < 1) {
@@ -107,11 +115,17 @@ int do_main(int argc, const char **argv)
 		return EXIT_FAILURE;
 	}
 
-	std::shared_ptr<C3DInterpolatorFactory > ipf(create_3dinterpolation_factory(interpolator));
-
+	if (!interpolator_kernel.empty()) { 
+		cvdebug() << "override the interpolator by '" 
+			  << interpolator_kernel << "' and boundary conditions '" 
+			  << interpolator_bc << "'\n"; 
+		C3DInterpolatorFactory ipf(interpolator_kernel, interpolator_bc);
+		transformation->set_interpolator_factory(ipf); 
+	}
+	
 	for (auto i = source->begin(); i != source->end(); ++i)
-		*i = (*transformation)(**i, *ipf);
-
+		*i = (*transformation)(**i);
+	
 	if ( !imageio.save(out_filename, *source) ){
 		string not_save = ("unable to save result to ") + out_filename;
 		throw runtime_error(not_save);

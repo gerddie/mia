@@ -39,7 +39,7 @@ public:
 
 struct test_io_data {
 	typedef CDummyType type;
-	static const char *type_descr;
+	static const char *data_descr;
 };
 
 

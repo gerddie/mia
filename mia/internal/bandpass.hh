@@ -47,7 +47,7 @@ template <class Image>
 class TBandPassFilterPlugin: public TImageFilterPlugin<Image>  {
 public: 
 	TBandPassFilterPlugin();
-	virtual typename TImageFilterPlugin<Image>::ProductPtr do_create()const;
+	virtual TImageFilter<Image> *do_create()const;
 	virtual const std::string do_get_descr()const; 
 private: 
 	float m_min; 

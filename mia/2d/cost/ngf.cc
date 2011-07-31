@@ -284,7 +284,7 @@ C2DNFGImageCostPlugin::C2DNFGImageCostPlugin():
 
 enum ESubTypes {st_unknown, st_delta, st_delta_scalar, st_scalar, st_cross};
 
-C2DImageCostPlugin::ProductPtr C2DNFGImageCostPlugin::do_create()const
+C2DImageCost *C2DNFGImageCostPlugin::do_create()const
 {
 	TRACE("C2DNFGImageCostPlugin::do_create");
 
@@ -307,7 +307,7 @@ C2DImageCostPlugin::ProductPtr C2DNFGImageCostPlugin::do_create()const
 		throw invalid_argument(string("C2DNFGImageCostPlugin: unknown cost sub-type '")
 				       +m_kernel+"'");
 	}
-	return C2DImageCostPlugin::ProductPtr(new C2DNFGImageCost(eval));
+	return new C2DNFGImageCost(eval);
 }
 
 bool C2DNFGImageCostPlugin::do_test() const

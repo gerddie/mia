@@ -21,16 +21,11 @@
  *
  */
 
-#include <boost/filesystem/convenience.hpp>
+#include <mia/internal/autotest.hh>
 #include <boost/filesystem/path.hpp>
-#include <boost/test/unit_test_suite.hpp>
-#include <boost/test/unit_test.hpp>
 
 #include <mia/core/msgstream.hh>
-#include <mia/core/history.hh>
 #include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dimageiotest.hh>
-#include <mia/core/filter.hh>
 
 NS_MIA_USE
 using namespace std; 
@@ -38,80 +33,72 @@ using namespace boost;
 using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem; 
 
-typedef C2DImageIOPluginHandler::Instance::Interface Interface; 
+C2DImageIOPluginHandlerTestPath test_imageio_path; 
 
-// remove the warnings: 
-template <typename T> 
-struct check_pixels {
-	static bool apply(const T2DImage<T>& image)  {
-		BOOST_CHECK(image(0,0) == 0); 
-		BOOST_CHECK(image(1,0) == 140); 
-		BOOST_CHECK(image(0,1) == 90); 
-		BOOST_CHECK(image(1,1) == 255); 
-		return true;
-	}
-}; 
-
-template <> 
-struct check_pixels<signed char> {
-	static bool apply(const T2DImage<signed char>& image)  {
-		BOOST_FAIL("expect an unsiged valued image"); 
-		return false;
-	}
-}; 
-
-struct CCheckFilter: public TFilter<bool> {
-	template <typename T> 
-	CCheckFilter::result_type operator ()(const T2DImage<T>& image)const {
-		return check_pixels<T>::apply(image); 
-	}
-};
-
-
-
-static void handler_setup()
+static P2DImage create_test_image(int acquisition, int instance, const string& protocol) 
 {
-	std::list< bfs::path> searchpath; 
-
-	searchpath.push_back( bfs::path("2d") / bfs::path("io")); 
-	searchpath.push_back(bfs::path("io")); 
-	C2DImageIOPluginHandler::set_search_path(searchpath); 	
+	C2DSIImage *image = new C2DSIImage(C2DBounds(1,2)); 
+	P2DImage result(image); 
+	(*image)(0,0) = acquisition; 
+	(*image)(0,1) = instance;
+	image->set_attribute(IDProtocolName, protocol); 
+	image->set_attribute(IDAcquisitionNumber, PAttribute(new CIntAttribute(acquisition)));  
+	image->set_attribute(IDSliceLocation, PAttribute(new CFloatAttribute(instance)));  
+	return result; 
 }
 
-#if 0
-static void test_2dimage_plugin_handler()
+BOOST_AUTO_TEST_CASE( test_load_series ) 
 {
-	const C2DImageIOPluginHandler::Instance& handler = C2DImageIOPluginHandler::instance(); 
-	BOOST_REQUIRE(handler.size() == 4); 
-	BOOST_REQUIRE(handler.get_plugin_names() == "bmp datapool png tif ");
-}
+	C2DImageIOPluginHandler::Instance::Data test_image_list1;
+	test_image_list1.push_back(create_test_image(1,0,"proto1")); 
+	test_image_list1.push_back(create_test_image(1,0,"proto2")); 
+	test_image_list1.push_back(create_test_image(1,2,"proto1")); 
+	test_image_list1.push_back(create_test_image(1,3,"proto1")); 
+	test_image_list1.push_back(create_test_image(2,0,"proto2"));
+	test_image_list1.push_back(create_test_image(1,0,"proto3"));
 
-
-static void test_2dimage_io_png()
-{
+	C2DImageIOPluginHandler::Instance::Data test_image_list2;
+	test_image_list2.push_back(create_test_image(2,4,"proto1")); 
+	test_image_list2.push_back(create_test_image(1,1,"proto2")); 
+	test_image_list2.push_back(create_test_image(1,5,"proto1")); 
+	test_image_list2.push_back(create_test_image(1,6,"proto1")); 
+	test_image_list2.push_back(create_test_image(3,2,"proto2"));
+	test_image_list2.push_back(create_test_image(1,1,"proto3"));
 	
-	const C2DImageIOPluginHandler::Instance& handler = C2DImageIOPluginHandler::instance(); 
-	bfs::path file = bfs::path(SOURCE_ROOT) / bfs::path("mia") / bfs::path("2d")/bfs::path("gray8.png"); 
-	C2DImageIOPluginHandler::Instance::PData gray8 = handler.load(file.native_file_string()); 
 
-	BOOST_REQUIRE(gray8.get()); 
-	BOOST_REQUIRE(gray8->size() == 1); 
+	C2DImageIOPluginHandler::instance().save("test0.@", test_image_list1); 
+	C2DImageIOPluginHandler::instance().save("test1.@", test_image_list2); 
+	vector<string> filenames = {"test0.@","test1.@"}; 
+		
+	auto images = load_image_series(filenames); 
+	// test three protocol types 
+	BOOST_CHECK_EQUAL(images.size(), 3); 
 	
-	// test the image
-	CCheckFilter check; 
-	BOOST_CHECK(filter(check, **gray8->begin())); 
+	// check first protocol 
+	auto proto1 = images.find("proto1"); 
+	BOOST_REQUIRE(proto1 !=  images.end()); 
+	// proto 1 has 2 acquisitions 
+	BOOST_CHECK_EQUAL(proto1->second.size(), 2u);
+	
+	BOOST_CHECK_EQUAL(proto1->second[0].size(), 5u);
+	BOOST_CHECK_EQUAL(proto1->second[1].size(), 1u);
+	
+
+	auto proto2 = images.find("proto2"); 
+	BOOST_REQUIRE(proto2 !=  images.end()); 
+	BOOST_CHECK_EQUAL(proto2->second.size(), 3u);
+	
+	BOOST_CHECK_EQUAL(proto2->second[0].size(), 2u);
+	BOOST_CHECK_EQUAL(proto2->second[1].size(), 1u);
+	BOOST_CHECK_EQUAL(proto2->second[2].size(), 1u);
+
+	auto proto3 = images.find("proto3"); 
+	BOOST_REQUIRE(proto3 !=  images.end()); 
+
+	BOOST_CHECK_EQUAL(proto3->second.size(), 1u);
+	BOOST_CHECK_EQUAL(proto3->second[0].size(), 2u);
+
+	BOOST_CHECK(images.find("proto4") ==  images.end()); 
+	
 }
-#endif
 
-void add_2dimageio_tests(test_suite* test)
-{	
-	handler_setup(); 
-
-#if 0
-	test->add( BOOST_TEST_CASE( &test_2dimage_plugin_handler));
-	test->add( BOOST_TEST_CASE( &test_2dimage_io_png)); 
-#endif
-
-	test->add( BOOST_TEST_CASE( &test_2dimageio_plugins));
-
-}

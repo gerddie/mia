@@ -52,11 +52,10 @@ private:
 class CGDSQMinimizerPlugin: public mia::CMinimizerPlugin {
 public: 
 	CGDSQMinimizerPlugin();
-	typedef mia::CMinimizerPlugin::ProductPtr ProductPtr; 
-	
+
 private:
 
-	ProductPtr do_create() const;
+	mia::CMinimizer *do_create() const;
 	const std::string do_get_descr() const;
 	
 	double m_xtol; 

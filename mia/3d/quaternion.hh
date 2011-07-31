@@ -30,36 +30,105 @@ NS_MIA_BEGIN
 
 /**
    \brief a class to implement a quaternion
- */
+
+   This class implements some operations of a quaternion. 
+*/
 
 class EXPORT_3D Quaternion {
 
 public: 
+	/**
+	   The standard constructor that sets all values of the quaternion to zero. 
+	 */
 	Quaternion(); 
-	Quaternion(const Quaternion& other); 
+
+	/**
+	   The copy constructor. 
+	   \param other 
+	 */
+	Quaternion(const Quaternion& other) = default; 
+
+	/**
+	   This constructor creates a quaternion from three Euler angles that are applied 
+	   with the <a href="https://secure.wikimedia.org/wikipedia/en/wiki/Conversion_between_quaternions_and_Euler_angles">x-y-z convention</a>. 
+	   \param rot 
+	*/
 	Quaternion(const C3DDVector& rot); 
+
+	/**
+	   Constructor to create a quaternion by directly setting its elements. 
+	 */
 	Quaternion(double  x, double y, double z, double w); 
 
+	/**
+	   \param a
+	   \param b 
+	   \returns true if the quaternions are element-wise equal
+	 */
+	
 	friend bool operator == (const Quaternion& a, const Quaternion& b); 
 
+	/// \returns the norm of the quaternion 
 	double norm() const; 
+
+	/// normalizes to quaternion 
 	void normalize(); 
 
+	/// \returns the inverse of the quaternion assuming it is normalized 
 	Quaternion inverse() const;
+
+	/// \returns the Euler angles that correspond to the rotation described by this quaternion 
 	C3DDVector get_euler_angles() const;
 
+
+	/**
+	   Evaluate the rotation of a point by this quaternion 
+	   \tparam value type of the vector elements 
+	   \param x input coordinates
+	   \ŗeturns rotated point coordinates 
+	 */
 	template <typename T> 
 	T3DVector<T> rotate(const T3DVector<T>& x) const; 
 
+
+	/**
+	   in-place adding  
+	   \param other 
+	   \returns reference to the updated quaternion 
+	 */
 	Quaternion& operator += (const Quaternion& other); 
+
+	/**
+	   in-place substraction 
+	   \param other 
+	   \returns reference to the updated quaternion 
+	 */
 	Quaternion& operator -= (const Quaternion& other); 
+
+	/**
+	   in-place multiplication 
+	   \param other 
+	   \returns reference to the updated quaternion 
+	 */
+
 	Quaternion& operator *= (const Quaternion& other); 
 
+	/**
+	   Print the quaternion to an output stream 
+	   \param os the output stream 
+	 */
 	void print(std::ostream& os) const; 
 
+	/// \returns the w- or $x_0$ component of the quaternion 
 	double w() const; 
+	
+	/// \returns the x- or $x_1$ component of the quaternion 
 	double x() const; 
+	
+	/// \returns the y- or $x_2$ component of the quaternion 
 	double y() const; 
+
+	/// \returns the z- or $x_3$ component of the quaternion 
 	double z() const; 
 
 private:
@@ -72,6 +141,11 @@ T3DVector<T> Quaternion::rotate(const T3DVector<T>& x) const
 {
 	
 }
+
+
+bool EXPORT_3D operator == (const Quaternion& a, const Quaternion& b); 
+bool EXPORT_3D operator != (const Quaternion& a, const Quaternion& b); 
+
 
 
 
@@ -95,8 +169,7 @@ inline double Quaternion::z() const
 	return m_v.z; 
 }
 
-bool EXPORT_3D operator == (const Quaternion& a, const Quaternion& b); 
-bool EXPORT_3D operator != (const Quaternion& a, const Quaternion& b); 
+
 
 inline std::ostream& operator << (std::ostream& os, const Quaternion& a) 
 {

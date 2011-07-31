@@ -6,6 +6,8 @@
 
 SET(MIACORE_SRC_BASE 
   attributes.cc 
+  boundary_conditions.cc
+  callback.cc 
   cost.cc 
   combiner.cc
   cmdlineparser.cc
@@ -22,10 +24,11 @@ SET(MIACORE_SRC_BASE
   history.cc
   index.cc
   info.cc
-  interpolator.cc
+  splinekernel.cc
   interpolator1d.cc
   iodata.cc
   ioplugin.cc
+  labelmap.cc
   mitestimages.cc
   module.cc
   msgstream.cc 
@@ -41,8 +44,8 @@ SET(MIACORE_SRC_BASE
   probmap.cc
   regmodel.cc
   revision.cc 
-  scale1d.cc
   scaler1d.cc
+  seriesstats.cc 
   shape.cc 
   slopestatistics.cc
   slopeclassifier.cc
@@ -59,6 +62,8 @@ SET(MIACORE_SRC_BASE
 
 SET(MIACORE_HEADER_BASE
   attributes.hh
+  boundary_conditions.hh
+  callback.hh
   cmdlineparser.hh
   cost.hh
   cost.cxx
@@ -71,6 +76,7 @@ SET(MIACORE_HEADER_BASE
   dlloader.hh
   dummyhandler.hh
   errormacro.hh
+  export_handler.hh
   factory.hh
   fatcost.hh fatcost.cxx
   file.hh
@@ -82,10 +88,12 @@ SET(MIACORE_HEADER_BASE
   history.hh
   histogram.hh
   index.hh
-  interpolator.hh
+  splinekernel.hh
+  import_handler.hh
   iodata.hh
   iohandler.cxx iohandler.hh
   ioplugin.cxx ioplugin.hh
+  labelmap.hh
   mitestimages.hh
   module.hh
   msgstream.hh
@@ -102,6 +110,7 @@ SET(MIACORE_HEADER_BASE
   regmodel.hh
   scaler1d.hh
   shape.hh shape.cxx
+  seriesstats.hh
   slopestatistics.hh
   slopeclassifier.hh
   splineparzenmi.hh
@@ -109,6 +118,7 @@ SET(MIACORE_HEADER_BASE
   sqmin.hh
   streamredir.hh
   typedescr.hh
+  traits.hh
   testplugin.hh
   threadedmsg.hh
   watch.hh
@@ -239,36 +249,41 @@ ADD_SUBDIRECTORY(testplug      )
 ADD_SUBDIRECTORY(spacialkernel )
 ADD_SUBDIRECTORY(noise         ) 
 ADD_SUBDIRECTORY(minimizer     ) 
+ADD_SUBDIRECTORY(splinekernel  ) 
+ADD_SUBDIRECTORY(splinebc  ) 
 
 NEW_TEST(attributes miacore)
+NEW_TEST(boundary_conditions  miacore)
+NEW_TEST(callback miacore)
 NEW_TEST(cmdlineparser miacore)
 NEW_TEST(datapool miacore)
 NEW_TEST(delayedparameter miacore)
 NEW_TEST(factoryoption miacore)
 NEW_TEST(fatcost  miacore)
 NEW_TEST(filetools miacore)
+NEW_TEST(flagstring  miacore)
 NEW_TEST(fullstats miacore)
 NEW_TEST(histogram miacore)
 NEW_TEST(index miacore)
 NEW_TEST(iohandler miacore)
 NEW_TEST(interpolator1d miacore)
-NEW_TEST(scale1d miacore)
+NEW_TEST(kmeans miacore)
+NEW_TEST(labelmap miacore)
+NEW_TEST(meanvar  miacore)
+NEW_TEST(minimizer miacore)
+NEW_TEST(property_flags  miacore)
+NEW_TEST(scaler1d miacore)
 NEW_TEST(slopestatistics miacore)
 NEW_TEST(slopeclassifier miacore)
-NEW_TEST(tools miacore)
-NEW_TEST(kmeans miacore)
-NEW_TEST(interpol miacore)
-NEW_TEST(simpson miacore)
-NEW_TEST(property_flags  miacore)
-NEW_TEST(flagstring  miacore)
-NEW_TEST(meanvar  miacore)
-NEW_TEST(scaler1d miacore)
 NEW_TEST(statistics miacore)
 NEW_TEST(splineparzenmi miacore)
+NEW_TEST(seriesstats miacore)
+NEW_TEST(simpson miacore)
+NEW_TEST(splinekernel miacore)
+NEW_TEST(threadedmsg miacore)
+NEW_TEST(tools miacore)
 NEW_TEST(utils miacore)
 NEW_TEST(Vector miacore)
-NEW_TEST(minimizer miacore)
-NEW_TEST(threadedmsg miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)

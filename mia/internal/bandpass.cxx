@@ -71,9 +71,9 @@ TBandPassFilterPlugin<Image>::TBandPassFilterPlugin():
 }
 
 template <class Image> 
-typename TImageFilterPlugin<Image>::ProductPtr TBandPassFilterPlugin<Image>::do_create()const
+TImageFilter<Image> *TBandPassFilterPlugin<Image>::do_create()const
 {
-	return typename TImageFilterPlugin<Image>::ProductPtr(new TBandPass<Image>(m_min, m_max)); 
+	return new TBandPass<Image>(m_min, m_max); 
 }
 
 template <class Image> 

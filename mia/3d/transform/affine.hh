@@ -46,8 +46,8 @@ public:
 	};
 
 
-	C3DAffineTransformation(const C3DBounds& size);
-	C3DAffineTransformation(const C3DBounds& size,std::vector<double> transform);
+	C3DAffineTransformation(const C3DBounds& size, const C3DInterpolatorFactory& ipf);
+	C3DAffineTransformation(const C3DBounds& size,std::vector<double> transform, const C3DInterpolatorFactory& ipf);
 
 	// these functions should be removed 
 	void scale(float x, float y, float z);

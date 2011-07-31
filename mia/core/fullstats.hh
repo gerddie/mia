@@ -32,6 +32,8 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup helpers 
+
    \brief This class is used to evaluate the statistics of a series of input data. 
    
    This class is used to evaluate the mean, variation, median, minimum and the maximum 

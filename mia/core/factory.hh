@@ -1,3 +1,4 @@
+
 /* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
@@ -36,8 +37,6 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include <mia/core/shared_ptr.hh>
-
 #include <mia/core/handler.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/plugin_base.hh>
@@ -50,6 +49,8 @@ NS_MIA_BEGIN
 
 
 /** 
+   \ingroup infrastructure 
+
     @brief This is tha base of all plugins that create "things", like filters, cost functions 
     time step operatores and the like. 
     
@@ -65,7 +66,11 @@ public:
 	typedef P Product; 
 	
 	/// typedef to give the output pointer type a nice name 
-	typedef std::shared_ptr<P > ProductPtr; 
+	typedef std::shared_ptr<P > SharedProduct; 
+
+
+	/// typedef to give the output pointer type a nice name 
+	typedef std::unique_ptr<P > UniqueProduct; 
 	
 	/** initialise the plugin by the names 
 	    \remark what are these names and types good for?
@@ -81,22 +86,24 @@ public:
 	    @param params original parameter string 
 	    @returns an instance of the requested object
 	*/
-	virtual ProductPtr create(const CParsedOptions& options, char const *params);
+	virtual Product *create(const CParsedOptions& options, char const *params) __attribute__((warn_unused_result));
 	
 private:
 	virtual bool do_test() const; 
-	virtual ProductPtr do_create() const = 0;
+	virtual Product *do_create() const __attribute__((warn_unused_result)) = 0 ;
 	CMutex m_mutex; 
 };
 
 
 /**
+   \ingroup infrastructure 
+
    @brief the Base class for all plugn handlers that deal with factory plugins.  
    
    Base class for all plugin handlers that are derived from TFactory. 
  */
-template <typename  P>
-class EXPORT_HANDLER TFactoryPluginHandler: public  TPluginHandler< P > {
+template <typename  I>
+class EXPORT_HANDLER TFactoryPluginHandler: public  TPluginHandler< I > {
 protected: 
 	//! \name Constructors
         //@{
@@ -108,8 +115,11 @@ protected:
 	TFactoryPluginHandler(const std::list<boost::filesystem::path>& searchpath); 
         //@}
 public: 
-	/// The pointer type of the the object this plug in hander produces 
-	typedef typename P::ProductPtr ProductPtr; 
+	/// The shared pointer type of the the object this plug in hander produces 
+	typedef typename I::SharedProduct ProductPtr; 
+
+	/// The unique pointer type of the the object this plug in hander produces 
+	typedef typename I::UniqueProduct UniqueProduct; 
 
 	/**
 	   Create an object according to the given description. If creation fails, an empty 
@@ -122,6 +132,20 @@ public:
 	ProductPtr produce(const std::string& params)const {
 		return produce(params.c_str()); 
 	}
+	/**
+	   Create an object according to the given description. If creation fails, an empty 
+	   pointer is returned. if plugindescr is set to "help" then print out some help.  
+	   
+	 */
+	UniqueProduct produce_unique(const char *plugindescr) const;
+
+	/// \overload produce(const char *plugindescr)
+	UniqueProduct produce_unique(const std::string& params)const {
+		return produce_unique(params.c_str()); 
+	}
+
+private: 
+	typename I::Product *produce_raw(const char *plugindescr) const;
 
 }; 
 
@@ -144,6 +168,8 @@ class FactoryTrait {
 }; 
 
 /**
+   \ingroup traits 
+
    \brief Type trait to enable the use of a factory product as command 
       line option 
       
@@ -157,6 +183,8 @@ public:
 }; 
 
 /**
+   \ingroup traits 
+
    Specialize the FactoryTrait template for the given TFactoryPluginHandler 
 */
 #define FACTORY_TRAIT(F)			\
@@ -172,20 +200,20 @@ public:
   Implementation of the factory
 */
 
-template <typename P>
-TFactory<P>::TFactory(char const * const  name):
-	TPlugin<typename P::plugin_data, typename P::plugin_type>(name)
+template <typename I>
+TFactory<I>::TFactory(char const * const  name):
+	TPlugin<typename I::plugin_data, typename I::plugin_type>(name)
 {
 }
 
-template <typename P>
-typename TFactory<P>::ProductPtr TFactory<P>::create(const CParsedOptions& options, char const *params)
+template <typename I>
+typename TFactory<I>::Product *TFactory<I>::create(const CParsedOptions& options, char const *params)
 {
 	CScopedLock lock(m_mutex); 
 	try {
 		this->set_parameters(options);
 		this->check_parameters();
-		ProductPtr product = this->do_create();
+		auto product = this->do_create();
 		if (product) {
 			product->set_module(this->get_module()); 
 			product->set_init_string(params); 
@@ -201,27 +229,39 @@ typename TFactory<P>::ProductPtr TFactory<P>::create(const CParsedOptions& optio
 			msg << "    " << i->first << "=" << i->second << "\n";
 		}
 		cverr() << msg.str(); 
-		throw logic_error("Probably an error in syncronization"); 
+		throw logic_error("Probably a race condition"); 
 
 	}
 }
 
-template <typename  P>
-TFactoryPluginHandler<P>::TFactoryPluginHandler(const std::list<boost::filesystem::path>& searchpath):
-	TPluginHandler< P >(searchpath)
+template <typename  I>
+TFactoryPluginHandler<I>::TFactoryPluginHandler(const std::list<boost::filesystem::path>& searchpath):
+	TPluginHandler< I >(searchpath)
 {
 }
 
+template <typename  I>
+typename TFactoryPluginHandler<I>::ProductPtr 
+TFactoryPluginHandler<I>::produce(const char *plugindescr) const
+{
+	return ProductPtr(this->produce_raw(plugindescr)); 
+}
+
+template <typename  I>
+typename TFactoryPluginHandler<I>::UniqueProduct
+TFactoryPluginHandler<I>::produce_unique(const char *plugindescr) const
+{
+	return UniqueProduct(this->produce_raw(plugindescr)); 
+}
 	
-template <typename  P>
-typename TFactoryPluginHandler<P>::ProductPtr 
-TFactoryPluginHandler<P>::produce(char const *params)const
+template <typename  I>
+typename I::Product *TFactoryPluginHandler<I>::produce_raw(char const *params)const
 {
 	assert(params); 
 	CComplexOptionParser param_list(params);
 		
 	if (param_list.size() < 1) 
-		return ProductPtr(); 
+		return NULL; 
 		
 	cvdebug() << "TFactoryPluginHandler<P>::produce use '" << param_list.begin()->first << "'\n"; 
 	const std::string& factory_name = param_list.begin()->first; 
@@ -230,20 +270,20 @@ TFactoryPluginHandler<P>::produce(char const *params)const
 		cvdebug() << "print help\n"; 
 		cvmsg() << "\n"; 
 		this->print_help(cverb);
-		return ProductPtr(); 
+		return NULL; 
 	}
 
 	cvdebug() << "TFactoryPluginHandler<>::produce: Create plugin from '" << factory_name << "'\n"; 
 
-	P *factory = this->plugin(factory_name.c_str());
+	auto factory = this->plugin(factory_name.c_str());
 	if (factory) 
 		return factory->create(param_list.begin()->second,params);
 	else 
-		return ProductPtr(); 
+		return NULL; 
 }
 
-template <typename P>
-bool TFactory<P>::do_test() const
+template <typename I>
+bool TFactory<I>::do_test() const
 {
 	cvfail() << "do_test() is obsolete\n"; 
 	return false; 
@@ -268,6 +308,18 @@ bool TFactory<P>::do_test() const
 	template class TPluginHandler<TFactory<T> >;			\
 	template class TFactoryPluginHandler<TFactory<T> >;		\
 	template class THandlerSingleton<TFactoryPluginHandler<TFactory<T> > >;
+
+/**
+   Do an explicit instanciation of plug-in classes and handlers for plugins that are 
+   explicitely derived from TFactory.  
+ */
+
+#define EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(T, F)		\
+	template class TPlugin<T::plugin_data, T::plugin_type>; \
+	template class TFactory<T>;					\
+	template class TPluginHandler<F>;			\
+	template class TFactoryPluginHandler<F>;		\
+	template class THandlerSingleton<TFactoryPluginHandler<F> >;
 
 
 

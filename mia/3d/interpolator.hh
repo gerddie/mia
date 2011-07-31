@@ -1,6 +1,7 @@
-/*
-** Copyrigh (C) 2004 MPI of Human Cognitive and Brain Sience
-**                    Gert Wollny <wollny@cbs.mpg.de>
+/* -*- mia-c++ -*- 
+**
+** Copyrigh (C) 2004-2011 Gert Wollny <gw.fossdev@gmail.com>
+**                    
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -40,8 +41,8 @@
 
 
 #include <vector>
-#include <mia/core/shared_ptr.hh>
-#include <mia/core/interpolator.hh>
+#include <mia/core/splinekernel.hh>
+#include <mia/core/boundary_conditions.hh>
 #include <mia/3d/3DImage.hh>
 
 
@@ -93,8 +94,24 @@ public:
 	   \param data
 	   \param kernel
 	 */
-	T3DConvoluteInterpolator(const T3DDatafield<T>& data, std::shared_ptr<CBSplineKernel > kernel);
 
+	T3DConvoluteInterpolator(const T3DDatafield<T>& data, PSplineKernel kernel); 
+	
+	/**
+	   Construtor to prefilter the input for proper interpolation 
+	   \param data the data used for interpolation 
+	   \param kernel the spline kernel used for interpolation 
+	   \param xbc boundary conditions to be applied along the x-axis when interpolating  
+	   \param ybc boundary conditions to be applied along the y-axis when interpolating  
+	   \param zbc boundary conditions to be applied along the z-axis when interpolating  
+	 */
+
+
+	T3DConvoluteInterpolator(const T3DDatafield<T>& data, PSplineKernel kernel, 
+				 const CSplineBoundaryCondition& xbc,  
+				 const CSplineBoundaryCondition& ybc, 
+				 const CSplineBoundaryCondition& zbc);
+	
 	/// Standart constructor for factory prototyping
 	~T3DConvoluteInterpolator();
 
@@ -115,15 +132,21 @@ protected:
 	typedef std::vector< typename TCoeff3D::value_type > coeff_vector;
 private:
 
+	void prefilter(const T3DDatafield<T>& image); 
+
 	TCoeff3D m_coeff;
 	C3DBounds m_size2;
-	PBSplineKernel m_kernel;
+	PSplineKernel m_kernel;
+	PSplineBoundaryCondition m_xbc; 
+	PSplineBoundaryCondition m_ybc; 
+	PSplineBoundaryCondition m_zbc; 
+
 	T m_min;
 	T m_max;
 
- 	mutable CBSplineKernel::SCache m_x_cache; 
-	mutable CBSplineKernel::SCache m_y_cache; 
-	mutable CBSplineKernel::SCache m_z_cache; 
+ 	mutable CSplineKernel::SCache m_x_cache; 
+	mutable CSplineKernel::SCache m_y_cache; 
+	mutable CSplineKernel::SCache m_z_cache; 
 };
 
 
@@ -134,14 +157,37 @@ private:
 
 class EXPORT_3D C3DInterpolatorFactory {
 public:
+	
+
+        /**
+	   Construct the factory the interpolation  kernel and according boundary conditions 
+	   \param kernel description of the interpolation kernel
+	   \param boundary_conditions description of the boundary conditions 
+	*/
+	C3DInterpolatorFactory(const std::string& kernel, const std::string& boundary_conditions);
 
 	/**
-	   Initialise the factory by providing a interpolator type id and a kernel (if needed)
-	   \param type interpolator type id
-	   \param kernel spline kernel
-	*/
-	C3DInterpolatorFactory(EInterpolationFactory type, PBSplineKernel kernel);
+	   Construct the factory the interpolation  kernel and according boundary conditions 
+	   \param kernel
+	   \param xbc boundary conditions along the x-axis 
+	   \param ybc boundary conditions along the y-axis 
+	   \param zbc boundary conditions along the z-axis 
+	 */
 
+	C3DInterpolatorFactory(PSplineKernel kernel, 
+			       const CSplineBoundaryCondition&xbc,  
+			       const CSplineBoundaryCondition&ybc, 
+			       const CSplineBoundaryCondition&zbc);
+
+        /**
+	   Construct the factory from an interpolation  kernel and according boundary conditions description
+	   \param kernel interpolation kernel
+	   \param bc description of the boundary conditions 
+	*/
+
+	C3DInterpolatorFactory(PSplineKernel kernel, const std::string& bc); 
+
+	
 	/// Copy constructor
 	C3DInterpolatorFactory(const C3DInterpolatorFactory& o);
 
@@ -160,14 +206,16 @@ public:
 		__attribute__ ((warn_unused_result));
 
 	/// @returns the B-spline kernel used for interpolator creation 
-	PBSplineKernel get_kernel() const; 
+	PSplineKernel get_kernel() const; 
 private:
-	EInterpolationFactory m_type;
-	PBSplineKernel m_kernel;
+	PSplineKernel m_kernel;
+	PSplineBoundaryCondition m_xbc; 
+	PSplineBoundaryCondition m_ybc; 
+	PSplineBoundaryCondition m_zbc; 
 };
 
 
-EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(EInterpolation type)
+EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(EInterpolation type, EBoundaryConditions bc)
 	__attribute__ ((warn_unused_result));
 
 // implementation
@@ -175,11 +223,7 @@ EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(EInterpolation 
 template <class T>
 T3DInterpolator<T> *C3DInterpolatorFactory::create(const T3DDatafield<T>& src) const
 {
-	switch (m_type) {
-	case ipf_spline: return new T3DConvoluteInterpolator<T>(src, m_kernel);
-	default: throw "C3DInterpolatorFactory::create: Unknown interpolator requested";
-	}
-	return NULL;
+	return new T3DConvoluteInterpolator<T>(src, m_kernel, *m_xbc, *m_ybc, *m_zbc);
 }
 
 /// Pointer type of the 3D interpolation factory 

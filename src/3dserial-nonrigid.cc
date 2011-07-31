@@ -21,7 +21,7 @@
  */
 
 /*
-  LatexBeginProgramDescription{Registration of image series}
+  LatexBeginProgramDescription{3D registration of series of images}
   
   \subsection{mia-3dserial-nonrigid}
   \label{mia-3dserial-nonrigid}
@@ -48,7 +48,6 @@ mia-3dserial-nonrigid -i <input set> -o <output set> <cost1> [<cost2>] ...
   \cmdgroup{Image registration} 
   \cmdopt{ref}{r}{int}{Reference frame to base the registration on}
   \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{interpolator}{p}{string}{Image interpolator to be used}
   \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
   \cmdopt{transForm}{f}{string}{Transformation space as provided by the 
                                 \hyperref[sec:3dtransforms]{transformation plug-ins.}}
@@ -61,12 +60,13 @@ mia-3dserial-nonrigid -i <input set> -o <output set> <cost1> [<cost2>] ...
                  using  a weighted combination of \emph{normalized gradient fields} 
                   and SSD as cost measure, and penalize the transformation by using divcurl with aweight of 2.0. 
   \begin{lstlisting}
-mia-3dserial-nonrigid  -i segment.set -o registered.set -F spline:rate=16 \
-                     image:cost=[ngf:eval=ds],weight=2.0 image:cost=ssd,weight=0.1 divcurl:weight=2.0 
+mia-3dserial-nonrigid  -i segment.set -o registered.set -f spline:rate=16 \
+         image:cost=[ngf:eval=ds],weight=2.0 \
+	 image:cost=ssd,weight=0.1 \
+	 divcurl:weight=2.0 
   \end{lstlisting}
-  \item [See also:] \sa{mia-3dmyomilles}, \sa{mia-3dmyoperiodic-nonrigid}, 
-                    \sa{mia-3dmyoica-nonrigid}, \sa{mia-3dmyopgt-nonrigid},
-		    \sa{mia-3dsegseriesstats}
+  \item [See also:] \sa{mia-3dmany2one-nonrigid}, \sa{mia-3dprealign-nonrigid}, 
+                    \sa{mia-3dmotioncompica-nonrigid}
   \end{description}
   
   LatexEnd
@@ -115,8 +115,8 @@ int do_main( int argc, const char *argv[] )
 	bool override_src_imagepath = true;
 
 	// registration parameters
-	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1");
-	EInterpolation interpolator = ip_bspline3;
+	auto minimizer = produce_minimizer("gsl:opt=gd,step=0.1");
+	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 	size_t mg_levels = 3; 
 	int reference_param = -1; 
 	
@@ -131,8 +131,6 @@ int do_main( int argc, const char *argv[] )
 	
 	options.set_group("\nRegistration"); 
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( interpolator, GInterpolatorTable ,"interpolator", 'p',
-				    "image interpolator", NULL));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
@@ -152,8 +150,6 @@ int do_main( int argc, const char *argv[] )
 		costs.push(cost); 
 	}
 	
-	unique_ptr<C3DInterpolatorFactory>   ipfactory(create_3dinterpolation_factory(interpolator));
-
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;
 	size_t format_width = 0;
@@ -175,7 +171,7 @@ int do_main( int argc, const char *argv[] )
 	size_t reference = reference_param < 0 ? input_images.size() / 2 : reference_param; 
 
 	// prepare registration framework 
-	C3DNonrigidRegister nrr(costs, minimizer,  transform_creator, *ipfactory, mg_levels);
+	C3DNonrigidRegister nrr(costs, minimizer,  transform_creator, mg_levels);
 	
 	if ( input_images.empty() ) 
 		throw invalid_argument("No input images to register"); 
@@ -190,7 +186,7 @@ int do_main( int argc, const char *argv[] )
 	for (size_t i = 0; i < reference; ++i) {
 		P3DTransformation transform = nrr.run(input_images[i], input_images[i+1]);
 		for (size_t j = 0; j <=i ; ++j) {
-			input_images[j] = (*transform)(*input_images[j], *ipfactory);
+			input_images[j] = (*transform)(*input_images[j]);
 		}
 	}
 	
@@ -198,7 +194,7 @@ int do_main( int argc, const char *argv[] )
 	for (size_t i = input_images.size() - 1; i > reference; --i) {
 		P3DTransformation transform = nrr.run(input_images[i], input_images[i-1]);
 		for (size_t j = input_images.size() - 1; j >= i ; --j) {
-			input_images[j] = (*transform)(*input_images[j], *ipfactory);
+			input_images[j] = (*transform)(*input_images[j]);
 		}
 	}
 	

@@ -155,9 +155,8 @@ struct FGetMinMax : public TFilter<float> {
 };
 
 
-CFatNFG2DImageCost::CFatNFG2DImageCost(P2DImage src, P2DImage ref, P2DInterpolatorFactory ipf,
-				       float weight, PEvaluator evaluator):
-	C2DImageFatCost(src,  ref,  ipf, weight),
+CFatNFG2DImageCost::CFatNFG2DImageCost(P2DImage src, P2DImage ref, float weight, PEvaluator evaluator):
+	C2DImageFatCost(src,  ref,  weight),
 	m_jump_levels_valid(false),
 	m_evaluator(evaluator),
 	m_intensity_scale(1.0)
@@ -170,7 +169,7 @@ CFatNFG2DImageCost::CFatNFG2DImageCost(P2DImage src, P2DImage ref, P2DInterpolat
 
 P2DImageFatCost CFatNFG2DImageCost::cloned(P2DImage src, P2DImage ref) const
 {
-	return P2DImageFatCost(new CFatNFG2DImageCost(src, ref,  get_ipf(), get_weight(), m_evaluator));
+	return P2DImageFatCost(new CFatNFG2DImageCost(src, ref,  get_weight(), m_evaluator));
 }
 
 void CFatNFG2DImageCost::prepare() const
@@ -244,7 +243,7 @@ C2DNFGFatImageCostPlugin::C2DNFGFatImageCostPlugin():
 
 enum ESubTypes {st_unknown, st_delta, st_delta_scalar, st_scalar, st_cross};
 
-C2DFatImageCostPlugin::ProductPtr C2DNFGFatImageCostPlugin::do_create(P2DImage src,
+C2DImageFatCost *C2DNFGFatImageCostPlugin::do_create(P2DImage src,
 								      P2DImage ref, P2DInterpolatorFactory ipf, float weight)const
 {
 	TRACE("C2DNFGFatImageCostPlugin::do_create");
@@ -268,7 +267,7 @@ C2DFatImageCostPlugin::ProductPtr C2DNFGFatImageCostPlugin::do_create(P2DImage s
 		throw invalid_argument(string("C2DNFGFatImageCostPlugin: unknown cost sub-type '")
 				       +m_type+"'");
 	}
-	return C2DFatImageCostPlugin::ProductPtr(new CFatNFG2DImageCost(src, ref, ipf, weight, eval));
+	return new CFatNFG2DImageCost(src, ref, weight, eval);
 }
 
 bool C2DNFGFatImageCostPlugin::do_test() const

@@ -36,6 +36,8 @@ NS_MIA_BEGIN
 typedef FILE * PFILE;
 
 /**
+   \ingroup helpers
+   
    \brief A wrapper for the \a cstdio file type that closes the file  automatically when 
    the scope is left. 
 
@@ -70,10 +72,13 @@ private:
 
 
 /** 
-    \brief A stdio FILE for opening a file for reading. 
-    
-    A simple wrapper for the stdio FILE type that handles opening and closing for
-    reading and takes care, whether \a stdin should be used */
+   \ingroup helpers
+   
+   \brief A stdio FILE for opening a file for reading. 
+   
+   A simple wrapper for the stdio FILE type that handles opening and closing for
+   reading and takes care, whether \a stdin should be used 
+*/
 class EXPORT_CORE CInputFile: public CFile {
 public:
 
@@ -91,10 +96,12 @@ public:
 };
 
 /** 
+    \ingroup helpers
     \brief A stdio FILE for opening a file for writing. 
     
     A simple wrapper for the stdio FILE type that handles opening and closing for
-    writing and takes care, whether \a stdout should be used */
+    writing and takes care, whether \a stdout should be used 
+*/
 class EXPORT_CORE COutputFile: public CFile {
 public:
 
@@ -109,21 +116,6 @@ public:
 	    \param from_stdin force usage of \a stdin
 	*/
 	COutputFile(const std::string& filename, bool from_stdin);
-};
-
-/** 
-    \brief A callback interface to show progess. 
-    
-    This class provides the base for showing sime kind of progress bar during some operation 
-*/
-class EXPORT_CORE CProgressCallback {
-public:
-	virtual ~CProgressCallback();
-	/** this routine shows the progress
-	    \param pos current file io position
-	    \param length file size
-	*/
-	virtual void show_progress(int pos, int length);
 };
 
 NS_MIA_END

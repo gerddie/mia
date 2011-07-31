@@ -23,45 +23,81 @@
 #define mia_core_threadedmsg_hh
 
 #include <ostream>
-#include <sstream> 
-#include <tbb/mutex.h>
-#include <mia/core/msgstream.hh>
+
+#include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
 
-class EXPORT_CORE thread_streamredir: public std::streambuf  {
-public: 
-	thread_streamredir(); 
+/**
+   \ingroup infrastructure 
+   \brief This class is used to handle syncronizized output of logging output in a multi-threaded environment
 
-	static void set_master_stream(std::ostream& master); 
-protected: 
-	int sync(); 
-	int overflow(int c); 
-	std::streamsize xsputn ( const char * s, std::streamsize n ); 
-private:
-	void send_to_master(); 
-	
-	std::stringstream m_buffer; 
-	int m_id; 
-	static std::ostream *m_master;
-	static tbb::mutex m_master_lock; 
-	static int m_next_id; 
-}; 
-
-class CThreadMsgStream : public std::ostream {
+   This class is used to syncronize the output of the logging stream cverb and its
+   helper functions cvmsg(), cvdebug(), cverror(), cvwarning() ... 
+   
+   To use it, just declare a variable of type CThreadMsgStream at the beginning of the 
+   threaded function. 
+   Output is only written to the master output stream if a newline is sent or explicit 
+   syncronization via flush() is requested.
+   
+   Note, that a CThreadMsgStream itself can not serve as master stream since it would deadlock. 
+*/
+class EXPORT_CORE CThreadMsgStream : public std::ostream {
 public: 
-	CThreadMsgStream():std::ostream(new thread_streamredir()), 
-			   m_old(vstream::instance().set_stream(*this))
-	{
-		
-	}
-	~CThreadMsgStream()
-	{
-		vstream::instance().set_stream(m_old);
-	}
+	/**
+	   Constructor. This constructor sets the thread-local output of the vstream backend to itself 
+	   and saves to old output. 
+	 */
+	CThreadMsgStream();
+
+	/**
+	   Destructor. This destructor flushes the output and then resets the thread-local vstream backend to the 
+           original output. 
+	 */
+	~CThreadMsgStream();
+
+	/**
+	   Set the master output stream. The default is std::cerr. 
+	   \param master the new master output stream; 
+	   \remark if the new master is of type CThreadMsgStream a deadlock is certain.  
+	 */
+	template <typename OS>
+	static void set_master_stream(OS& master); 
 private: 
+	
+	static void do_set_master_stream(std::ostream& master); 
+	
+	template <typename OS, typename stupid>
+	struct __dispatch_set_master_stream {
+		static void apply(OS &os); 
+	}; 
+	
+	template <typename OS, typename stupid> friend struct  __dispatch_set_master_stream; 
 	std::ostream& m_old; 
 }; 
+
+//  Some logic to tell the user that passing a CThreadMsgStream as master stream is not possible 
+template <typename OS, typename stupid>
+void CThreadMsgStream::__dispatch_set_master_stream<OS, stupid>::apply(OS& master)
+{
+	CThreadMsgStream::do_set_master_stream(master); 
+}
+
+template <typename stupid>
+struct CThreadMsgStream::__dispatch_set_master_stream<CThreadMsgStream, stupid> {
+	static void apply(CThreadMsgStream& master)
+	{
+		static_assert(sizeof(stupid) == 0, "CThreadMsgStream can't be used as master stream because it would deadlock."); 
+	}
+}; 
+
+template <typename OS>
+void CThreadMsgStream::set_master_stream(OS& master)
+{
+	__dispatch_set_master_stream<OS, int>::apply(master); 
+}
+
+
 
 NS_MIA_END
 

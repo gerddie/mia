@@ -57,7 +57,7 @@ private:
 class C2DNavierRegModelPlugin: public mia::C2DRegModelPlugin {
 public:
 	C2DNavierRegModelPlugin();
-	C2DNavierRegModelPlugin::ProductPtr do_create()const;
+	mia::C2DRegModel *do_create()const;
 
 private:
 	bool do_test() const;

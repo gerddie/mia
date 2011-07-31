@@ -40,7 +40,7 @@ public:
 private:
 	mia::C3DFilter::result_type do_filter(const mia::C3DImage& image) const;
 
-	mia::C3DFilterPlugin::ProductPtr m_smoothing;
+	mia::P3DFilter m_smoothing;
 	const mia::C3DBounds m_block_size;
 
 
@@ -49,7 +49,7 @@ private:
 class C3DDownscaleFilterPlugin: public mia::C3DFilterPlugin {
 public:
 	C3DDownscaleFilterPlugin();
-	virtual mia::C3DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
 

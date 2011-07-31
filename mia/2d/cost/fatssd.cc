@@ -29,8 +29,8 @@ NS_BEGIN(ssd_2dimage_fatcost)
 
 
 
-CFatSSD2DImageCost::CFatSSD2DImageCost(P2DImage src, P2DImage ref, P2DInterpolatorFactory ipf, float weight):
-C2DImageFatCost(src,  ref,  ipf, weight),
+CFatSSD2DImageCost::CFatSSD2DImageCost(P2DImage src, P2DImage ref, float weight):
+C2DImageFatCost(src,  ref,  weight),
 	m_evaluator(C2DImageCostPluginHandler::instance().produce("ssd"))
 {
 	add(property_gradient);
@@ -39,7 +39,7 @@ C2DImageFatCost(src,  ref,  ipf, weight),
 
 P2DImageFatCost CFatSSD2DImageCost::cloned(P2DImage src, P2DImage ref) const
 {
-	return P2DImageFatCost(new CFatSSD2DImageCost(src, ref,  get_ipf(), get_weight()));
+	return P2DImageFatCost(new CFatSSD2DImageCost(src, ref,  get_weight()));
 }
 
 double CFatSSD2DImageCost::do_value() const
@@ -61,10 +61,10 @@ C2DSSDFatImageCostPlugin::C2DSSDFatImageCostPlugin():
 	TRACE("C2DSSDFatImageCostPlugin::C2DSSDFatImageCostPlugin()");
 }
 
-C2DFatImageCostPlugin::ProductPtr C2DSSDFatImageCostPlugin::do_create(P2DImage src, P2DImage ref,
+C2DImageFatCost *C2DSSDFatImageCostPlugin::do_create(P2DImage src, P2DImage ref,
 								      P2DInterpolatorFactory ipf, float weight)const
 {
-	return C2DFatImageCostPlugin::ProductPtr(new CFatSSD2DImageCost(src, ref, ipf, weight));
+	return new CFatSSD2DImageCost(src, ref, weight);
 }
 
 bool  C2DSSDFatImageCostPlugin::do_test() const

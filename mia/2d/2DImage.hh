@@ -48,7 +48,7 @@ class EXPORT_2D C2DImage: public CAttributedData {
 public:
 	/** The type description provides information about the data type that is
         used by the plug-in system */
-        static const char *type_descr;
+        static const char *data_descr;
 
         /// a definition of the image dimension type for
 	typedef C2DBounds dimsize_type;
@@ -100,6 +100,9 @@ typedef C2DImage::Pointer P2DImage;
 
 /// helper type for image series 
 typedef std::vector<P2DImage> C2DImageSeries;
+
+typedef std::vector<C2DImageSeries> C2DImageSeriesGroup; 
+typedef std::map<std::string, C2DImageSeriesGroup> C2DImageGroupedSeries; 
 
 
 /**

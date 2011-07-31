@@ -62,9 +62,15 @@ CSegPoint2D::CSegPoint2D(const Node& node)
 	Attribute *ax = elm.get_attribute ("x");
 	Attribute *ay = elm.get_attribute ("y");
 	if (!ax || !ay)
-		throw invalid_argument("SegSection:Point attribute x or y not found");
-	x = from_string<float>(ax->get_value());
-	y = from_string<float>(ay->get_value());
+		throw runtime_error("SegSection:Point attribute x or y not found");
+	
+	if (!from_string(ax->get_value(), x)) 
+		THROW(runtime_error, "CSegPoint2D: x attribute '" 
+		      << ax->get_value() << "' is not a floating point value"); 
+
+	if (!from_string(ay->get_value(), y)) 
+		THROW(runtime_error, "CSegPoint2D: y attribute '" 
+		      << ay->get_value() << "' is not a floating point value"); 
 }
 
 void CSegPoint2D::write(Node& node) const

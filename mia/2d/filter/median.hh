@@ -38,7 +38,7 @@ class C2DFilterPluginFactory: public mia::C2DFilterPlugin {
 public:
 	C2DFilterPluginFactory();
 private:
-	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 	int m_hw;
 };
@@ -62,7 +62,7 @@ class C2DSaltAndPepperFilterFactory: public mia::C2DFilterPlugin {
 public:
 	C2DSaltAndPepperFilterFactory();
 private:
-	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
+	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string  do_get_descr() const;
 	int m_hw;
 	float m_thresh;

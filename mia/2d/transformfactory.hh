@@ -39,12 +39,16 @@ typedef TTransformCreator<C2DTransformation>  C2DTransformCreator;
 /// Pointer type to the transformation factory
 typedef std::shared_ptr<C2DTransformCreator > P2DTransformationFactory;
 
-/// this is the Factory class that is used to create the transformation creator 
-typedef TFactory<C2DTransformCreator> C2DTransformCreatorPlugin;
+typedef TTransformCreatorPlugin<C2DTransformation>  C2DTransformCreatorPlugin; 
 
 /// The plugin handler to manage the transformation creators
 typedef THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin> > C2DTransformCreatorHandler;
 
+struct EXPORT_2D C2DTransformCreatorHandlerTestPath {
+	C2DTransformCreatorHandlerTestPath(); 
+private: 
+	CSplineKernelTestPath spktp; 
+}; 
 
 FACTORY_TRAIT(C2DTransformCreatorHandler); 
 

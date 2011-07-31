@@ -35,7 +35,7 @@
 
 NS_MIA_USE
 namespace bfs=::boost::filesystem; 
-
+CSplineKernelTestPath splinekernel_init_path; 
 
 class C3DFullCostMock: public C3DFullCost {
 public: 
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE( test_fullcost )
 	const double mgz   = 4.0; 
 
 	C3DFullCostMock c(0.5, mcost, mgx, mgy, mgz); 
-	C3DTransformMock t(C3DBounds(2,1,1)); 
+	C3DTransformMock t(C3DBounds(2,1,1), C3DInterpolatorFactory("bspline:d=3", "mirror")); 
 	CDoubleVector gradient(t.degrees_of_freedom()); 
 	c.set_size(t.get_size()); 
 	
@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE( test_multicost )
 	costs.push(c1); 
 	costs.push(c2); 
 	
-	C3DTransformMock t(C3DBounds(2,1,1)); 
+	C3DTransformMock t(C3DBounds(2,1,1), C3DInterpolatorFactory("bspline:d=3", "mirror")); 
 	CDoubleVector gradient(t.degrees_of_freedom()); 
 	costs.set_size(t.get_size()); 
 	
@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE( test_multicost2 )
 	costs.push(c1); 
 
 	
-	C3DTransformMock t(C3DBounds(2,1,1)); 
+	C3DTransformMock t(C3DBounds(2,1,1), C3DInterpolatorFactory("bspline:d=3", "mirror")); 
 	CDoubleVector gradient(t.degrees_of_freedom(), true); 
 	costs.set_size(t.get_size()); 
 	

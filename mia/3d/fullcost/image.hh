@@ -35,7 +35,6 @@ public:
 	C3DImageFullCost(const std::string& src, 
 			 const std::string& ref, 
 			 const std::string& cost, 
-			 EInterpolation ip_type, 
 			 double weight, 
 			 bool debug); 
 private: 
@@ -49,6 +48,7 @@ private:
 
 	double do_value() const; 
 	void do_reinit(); 
+	bool do_get_full_size(C3DBounds& size) const; 
 
 	C3DImageDataKey m_src_key;
 	C3DImageDataKey m_ref_key;
@@ -61,7 +61,6 @@ private:
 
 
 	P3DImageCost m_cost_kernel; 
-	P3DInterpolatorFactory m_ipf; 
 	bool m_debug;
 }; 
 

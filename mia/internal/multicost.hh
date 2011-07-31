@@ -36,6 +36,7 @@ class EXPORT_HANDLER TFullCostList : public TFullCost<Transform> {
 public: 
 	TFullCostList(); 
 	typedef typename TFullCost<Transform>::Pointer  Pointer; 
+	typedef typename TFullCost<Transform>::Size     Size; 
 
 	void push(typename TFullCost<Transform>::Pointer cost); 
 private: 
@@ -44,8 +45,9 @@ private:
 	virtual double do_evaluate(const Transform& t, CDoubleVector& gradient) const;
 	double do_value(const Transform& t) const; 
 	double do_value() const; 
-	virtual void do_set_size(); 
-	virtual void do_reinit(); 
+	void do_set_size(); 
+	void do_reinit(); 
+	bool do_get_full_size(Size& size) const; 
 	std::vector<typename TFullCost<Transform>::Pointer> m_costs; 
 }; 
 

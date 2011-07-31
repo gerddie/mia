@@ -35,6 +35,8 @@ build
 *.wxm
 userguide.bbl
 *.blg
+*.bbl
+*.out
 *.log
 *.pdf
 *.toc
@@ -51,3 +53,9 @@ GPATH
 GRTAGS
 GSYMS
 GTAGS
+doc/find_files.py
+repeatboundary.tex
+plugins.tex
+programs.tex
+test_lsd.oct
+testds.oct

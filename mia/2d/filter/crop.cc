@@ -118,9 +118,9 @@ C2DCropImageFilterFactory::C2DCropImageFilterFactory():
 	add_parameter("end",   new TParameter<C2DCrop::C2DSize>(m_end, false, "end of crop region"));
 }
 
-C2DFilterPlugin::ProductPtr C2DCropImageFilterFactory::do_create()const
+C2DFilter *C2DCropImageFilterFactory::do_create()const
 {
-	return C2DFilterPlugin::ProductPtr (new C2DCrop(m_start, m_end));
+	return new C2DCrop(m_start, m_end);
 }
 
 const string C2DCropImageFilterFactory::do_get_descr()const

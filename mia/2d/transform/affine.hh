@@ -46,8 +46,8 @@ public:
 	};
 
 
-	C2DAffineTransformation(const C2DBounds& size);
-	C2DAffineTransformation(const C2DBounds& size,std::vector<double> transform);
+	C2DAffineTransformation(const C2DBounds& size, const C2DInterpolatorFactory& ipf);
+	C2DAffineTransformation(const C2DBounds& size,std::vector<double> transform, const C2DInterpolatorFactory& ipf);
 
 	void scale(float x, float y);
 	void translate(float x, float y);
@@ -77,7 +77,6 @@ public:
 
 	virtual const C2DBounds& get_size() const;
 	virtual C2DTransformation *invert() const;
-	virtual P2DImage apply(const C2DImage& image, const C2DInterpolatorFactory& ipf) const;
 	virtual bool save(const std::string& filename) const;
 	virtual P2DTransformation do_upscale(const C2DBounds& size) const;
 	virtual void add(const C2DTransformation& a);

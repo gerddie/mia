@@ -25,6 +25,6 @@
 
 NS_MIA_BEGIN
 
-const char *timestep_type::value = "timestep";
+const char *timestep_type::type_descr = "timestep";
 
 NS_MIA_END

@@ -72,7 +72,7 @@ class TConvertFilterPlugin: public TImageFilterPlugin<Image> {
 public: 
 	TConvertFilterPlugin();
 private: 
-	virtual typename TImageFilterPlugin<Image>::ProductPtr do_create()const;
+	virtual TImageFilter<Image> *do_create()const;
 	virtual const std::string do_get_descr()const; 
 	
 	std::string m_pixeltype; 

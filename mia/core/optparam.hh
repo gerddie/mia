@@ -25,8 +25,7 @@
 #define ph_optparam_hh
 
 #include <ostream>
-
-#include <mia/core/shared_ptr.hh>
+#include <memory>
 
 #include <mia/core/parameter.hh>
 #include <mia/core/optionparser.hh>
@@ -36,6 +35,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup infrastructure 
    \brief A class to hold a list of named parameters.
 
     It takes care of setting the parameters based on its names,

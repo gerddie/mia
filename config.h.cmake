@@ -17,6 +17,7 @@
 #define PACKAGE "@MIA_NAME@"
 #define VENDOR  "@VENDOR@"
 #define MIA_SOURCE_ROOT "@SOURCE_ROOT@"
+#define MIA_BUILD_ROOT "@BUILD_ROOT@"
 
 #if defined(_MSC_VER)
 #  define DO_EXPORT __declspec(dllexport) 

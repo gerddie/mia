@@ -30,7 +30,6 @@
 #include <string>
 #include <ostream>
 
-#include <mia/core/shared_ptr.hh>
 #include <boost/filesystem/path.hpp>
 
 #include <mia/core/defines.hh>
@@ -47,6 +46,7 @@ NS_MIA_BEGIN
 EXPORT_CORE extern const std::string plugin_help;
 
 /**
+   \ingroup infrastructure 
    \brief The base class for all plug-ins.
 
    The base class for all plug-ins. It supports handling parameters 
@@ -174,13 +174,15 @@ private:
 
 
 /** 
-    \brief The generic base for all plug-ins 
+   \ingroup infrastructure 
 
-    Templated plugin base class. The classes \a D and \a T must define a
-    static const char *type_descr and static const char *value respectively.  
-    The combination D::type_descr and T::value is will be part of the plugin search path.
-    \tparam D data type descriptior 
-    \tparam T plugin type descriptor 
+   \brief The generic base for all plug-ins 
+   
+   Templated plugin base class. The classes \a D and \a T must define a
+   static const char *data_descr and static const char *type_descr respectively.  
+   The combination D::data_descr and T::type_descr is will be part of the plugin search path.
+   \tparam D data type descriptior 
+   \tparam T plugin type descriptor 
    
 */
 template <typename D, typename T>

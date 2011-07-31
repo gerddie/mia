@@ -35,6 +35,8 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup infrastructure 
+
    \brief The base class for parameters used in complex options 
 
    The base class for parameters that might be set based on strings.
@@ -191,6 +193,30 @@ private:
 
 };
 
+
+template <typename F>
+class CFactoryParameter : public CParameter{
+
+public:
+	/** Constructor
+	   \param value reference to the parameter handled by this parameter object
+	   \param required set to true when the parameter is required 
+	   \param descr a description of the parameter
+	 */
+	CFactoryParameter(typename F::ProductPtr& value, bool required, const char *descr);
+protected:
+	/**
+	   the implementation of the description-function
+	 */
+	virtual void do_descr(std::ostream& os) const;
+private:
+	virtual bool do_set(const std::string& str_value);
+	virtual void do_reset();
+	typename F::ProductPtr& m_value;
+	typename F::ProductPtr m_default_value; 
+};
+
+
 template <typename T>
 class CSetParameter : public CParameter{
 
@@ -308,6 +334,34 @@ bool CDictParameter<T>::do_set(const std::string& str_value)
 
 template <typename T>
 void CDictParameter<T>::do_reset()
+{
+	m_value = m_default_value;
+}
+
+
+template <typename T>
+CFactoryParameter<T>::CFactoryParameter(typename T::ProductPtr& value, bool required, const char *descr):
+	CParameter("factory", required, descr),
+	m_value(value),
+	m_default_value(value)
+{
+}
+
+template <typename T>
+void CFactoryParameter<T>::do_descr(std::ostream& os) const
+{
+	os << "(default=[" << m_default_value->get_init_string() <<"])"; 
+}
+
+template <typename T>
+bool CFactoryParameter<T>::do_set(const std::string& str_value)
+{
+	m_value = T::instance().produce(str_value); 
+	return true;
+}
+
+template <typename T>
+void CFactoryParameter<T>::do_reset()
 {
 	m_value = m_default_value;
 }

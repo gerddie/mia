@@ -73,8 +73,8 @@ public:
 	C2DMorphFilterFactory(const char *name);
 
 private:
-	virtual mia::C2DFilterPlugin::ProductPtr do_create()const;
-	virtual mia::C2DFilterPlugin::ProductPtr dodo_create(mia::P2DShape shape, bool hint) const = 0;
+	virtual mia::C2DFilter *do_create()const;
+	virtual mia::C2DFilter *dodo_create(mia::P2DShape shape, bool hint) const = 0;
 
 	virtual void prepare_path() const;
 
@@ -86,7 +86,7 @@ class C2DDilateFilterFactory: public C2DMorphFilterFactory {
 public:
 	C2DDilateFilterFactory();
 private:
-	virtual mia::C2DFilterPlugin::ProductPtr dodo_create(mia::P2DShape shape, bool hint) const;
+	virtual mia::C2DFilter *dodo_create(mia::P2DShape shape, bool hint) const;
 	virtual const std::string do_get_descr()const;
 };
 
@@ -95,7 +95,7 @@ class C2DErodeFilterFactory: public C2DMorphFilterFactory {
 public:
 	C2DErodeFilterFactory();
 private:
-	virtual mia::C2DFilterPlugin::ProductPtr dodo_create(mia::P2DShape shape, bool hint) const;
+	virtual mia::C2DFilter *dodo_create(mia::P2DShape shape, bool hint) const;
 
 	virtual const std::string do_get_descr()const;
 
@@ -106,7 +106,7 @@ class C2DOpenFilterFactory: public C2DMorphFilterFactory {
 public:
 	C2DOpenFilterFactory();
 private:
-	virtual mia::C2DFilterPlugin::ProductPtr dodo_create(mia::P2DShape shape, bool hint) const;
+	virtual mia::C2DFilter *dodo_create(mia::P2DShape shape, bool hint) const;
 	virtual const std::string do_get_descr()const;
 };
 
@@ -114,7 +114,7 @@ class C2DCloseFilterFactory: public C2DMorphFilterFactory {
 public:
 	C2DCloseFilterFactory();
 private:
-	virtual mia::C2DFilterPlugin::ProductPtr dodo_create(mia::P2DShape shape, bool hint) const;
+	virtual mia::C2DFilter *dodo_create(mia::P2DShape shape, bool hint) const;
 
 	virtual const std::string do_get_descr()const;
 };
