@@ -654,6 +654,7 @@ void C3DSplineTransformation::init_grid()const
 		}
 
 		
+		// prepare the output field 
 		auto i = m_current_grid->begin(); 
 		C3DFVector X; 
 		for (size_t z = 0; z < m_range.z; ++z) {
@@ -666,29 +667,16 @@ void C3DSplineTransformation::init_grid()const
 				}
 			}
 		}
+		for(size_t iz = 0; iz < m_range.z; ++iz) {
+			auto zweight = m_z_weights[iz]; 
+			int i = m_z_indices[iz];
 
-		CCircularIndex idxz(nelm, m_z_indices[0]); 
-		for(size_t z = 0; z < m_range.z; ++z) {
-			auto w = m_z_weights[z]; 
-			int start = m_z_indices[z];
-			
-			cvdebug() << "z = " << z << "\n"; 
-			idxz.new_start(start); 
-			
-			// fill with slices 
-			auto fill = idxz.fill(); 
-			while (fill < nelm && start + fill < m_coefficients.get_size().z) {
-				tmp2.read_zslice_flat(start + fill, in_buffer[idxz.next()]);
-				idxz.insert_one(); 
-				fill = idxz.fill(); 
-			}
-			
-			for (unsigned int i = 0; i < w.size(); ++i) {
-				cblas_saxpy(size_xy, -w[i], &in_buffer[idxz.value(i)][0], 1, 
-					    &(*m_current_grid)(0,0,z).x, 1);
+			// warning: this code assumes that the 3DVector is a POD-like structure, i.e. no VMT 
+			// and that x is the first stored element 
+			for (auto w  = zweight.begin(); w != zweight.end(); ++w, ++i) {
+				cblas_saxpy(size_xy, -(*w), &tmp2(0,0,i).x, 1, &(*m_current_grid)(0,0,iz).x, 1); 
 			}
 		}
-
 		m_grid_valid = true; 
 	}
 }
