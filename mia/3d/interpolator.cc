@@ -233,7 +233,7 @@ double add_3d<T3DDatafield< double >, 2>::value(const T3DDatafield< double >&  c
 	return result; 
 #else
 	double __attribute__((aligned(16))) r[2]; 
-	_mm_store_pd(r, res); 
+	_mm_store_pd(r, zysum); 
 	return r[0] + r[1]; 
 #endif 	
 }
