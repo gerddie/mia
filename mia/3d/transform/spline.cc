@@ -683,8 +683,6 @@ void C3DSplineTransformation::init_grid()const
 				fill = idxz.fill(); 
 			}
 			
-			memset(&out_buffer[0], 0, size_xy * sizeof(float)); 
-			
 			for (unsigned int i = 0; i < w.size(); ++i) {
 				cblas_saxpy(size_xy, -w[i], &in_buffer[idxz.value(i)][0], 1, 
 					    &(*m_current_grid)(0,0,z).x, 1);
