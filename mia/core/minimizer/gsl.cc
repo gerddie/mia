@@ -97,7 +97,8 @@ CGSLFDFMinimizer::CGSLFDFMinimizer(const gsl_multimin_fdfminimizer_type *ot,
 
 CGSLFDFMinimizer::~CGSLFDFMinimizer()
 {
-	gsl_multimin_fdfminimizer_free (m_s);	
+	if (m_s) 
+		gsl_multimin_fdfminimizer_free (m_s);	
 }
 
 double CGSLFDFMinimizer::f(const gsl_vector * x, void * obj)
