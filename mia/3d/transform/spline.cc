@@ -580,11 +580,11 @@ void C3DSplineTransformation::init_grid()const
 			cvdebug() << "initialize grid field\n"; 
 			m_current_grid.reset(new C3DFVectorfield(m_range)); 
 		}
-		const int size_s1 = m_coefficients.get_size().x * m_coefficients.get_size().y * 3; 
-		const int size_s2 = m_coefficients.get_size().x * m_range.z * 3; 
-		const int size_s3 = m_range.z * m_range.y * 3; 
+		const int size_xy = m_range.x * m_range.y * 3; 
+		const int size_xz = m_range.x * m_coefficients.get_size().z * 3; 
+		const int size_yz = m_coefficients.get_size().z * m_coefficients.get_size().y * 3; 
 		
-		const int max_data_length = max( max(size_s1, size_s2), size_s3);
+		const int max_data_length = max( max(size_xy, size_xz), size_yz);
 
 		// create the buffers 
 		unsigned int nelm = m_kernel->size(); 
@@ -593,39 +593,40 @@ void C3DSplineTransformation::init_grid()const
 			in_buffer.push_back(vector<float>(max_data_length));
 		vector<float> out_buffer(max_data_length);
 		
-		C3DFVectorfield tmp(C3DBounds(m_coefficients.get_size().x, 
+		
+		C3DFVectorfield tmp(C3DBounds(m_range.x, 
 					      m_coefficients.get_size().y, 
-					      m_range.z));
-
-		CCircularIndex idxz(nelm, m_z_indices[0]); 
-		for(size_t z = 0; z < m_range.z; ++z) {
-			auto w = m_z_weights[z]; 
-			int start = m_z_indices[z];
+					      m_coefficients.get_size().z));
+		
+		
+		CCircularIndex idxx(nelm, m_y_indices[0]); 
+		for(size_t x = 0; x < m_range.x; ++x) {
+			auto w = m_x_weights[x]; 
+			int start = m_x_indices[x];
 			
-			cvdebug() << "z = " << z << "\n"; 
-			idxz.new_start(start); 
+			cvdebug() << "x = " << x << "\n"; 
+			idxx.new_start(start); 
 			
 			// fill with slices 
-			auto fill = idxz.fill(); 
-			while (fill < nelm && start + fill < m_coefficients.get_size().z) {
-				m_coefficients.read_zslice_flat(start + fill, in_buffer[idxz.next()]);
-				idxz.insert_one(); 
-				fill = idxz.fill(); 
+			auto fill = idxx.fill(); 
+			while (fill < nelm && start + fill < m_coefficients.get_size().x) {
+				m_coefficients.read_xslice_flat(start + fill, in_buffer[idxx.next()]);
+				idxx.insert_one(); 
+				fill = idxx.fill(); 
 			}
 			
-			memset(&out_buffer[0], 0, size_s1 * sizeof(float)); 
+			memset(&out_buffer[0], 0, size_yz * sizeof(float)); 
 			
 			for (unsigned int i = 0; i < w.size(); ++i) {
-				cblas_saxpy(size_s1, w[i], &in_buffer[idxz.value(i)][0], 1, 
+				cblas_saxpy(size_yz, w[i], &in_buffer[idxx.value(i)][0], 1, 
 					    &out_buffer[0], 1);
 			}
-			tmp.write_zslice_flat(z, out_buffer); 
+			tmp.write_xslice_flat(x, out_buffer); 
 		}
-		
 
-		C3DFVectorfield tmp2(C3DBounds(m_coefficients.get_size().x, 
+		C3DFVectorfield tmp2(C3DBounds(m_range.x, 
 					       m_range.y, 
-					       m_range.z));
+					       m_coefficients.get_size().z));
 		
 		CCircularIndex idxy(nelm, m_y_indices[0]); 
 		for(size_t y = 0; y < m_range.y; ++y) {
@@ -643,46 +644,52 @@ void C3DSplineTransformation::init_grid()const
 				fill = idxy.fill(); 
 			}
 			
-			memset(&out_buffer[0], 0, size_s2 * sizeof(float)); 
+			memset(&out_buffer[0], 0, size_xz * sizeof(float)); 
 			
 			for (unsigned int i = 0; i < w.size(); ++i) {
-				cblas_saxpy(size_s2, w[i], &in_buffer[idxy.value(i)][0], 1, 
+				cblas_saxpy(size_xz, w[i], &in_buffer[idxy.value(i)][0], 1, 
 					    &out_buffer[0], 1);
 			}
 			tmp2.write_yslice_flat(y, out_buffer); 
 		}
 
-
-		CCircularIndex idxx(nelm, m_y_indices[0]); 
-		for(size_t x = 0; x < m_range.x; ++x) {
-			auto w = m_x_weights[x]; 
-			int start = m_x_indices[x];
-			
-			cvdebug() << "x = " << x << "\n"; 
-			idxx.new_start(start); 
-			
-			// fill with slices 
-			auto fill = idxx.fill(); 
-			while (fill < nelm && start + fill < m_coefficients.get_size().x) {
-				tmp2.read_xslice_flat(start + fill, in_buffer[idxx.next()]);
-				idxx.insert_one(); 
-				fill = idxx.fill(); 
-			}
-			
-			memset(&out_buffer[0], 0, size_s3 * sizeof(float)); 
-			
-			for (unsigned int i = 0; i < w.size(); ++i) {
-				cblas_saxpy(size_s3, w[i], &in_buffer[idxx.value(i)][0], 1, 
-					    &out_buffer[0], 1);
-			}
-			m_current_grid->write_xslice_flat(x, out_buffer); 
-		}
 		
 		auto i = m_current_grid->begin(); 
-		for (size_t z = 0; z < m_range.z; ++z) 
-			for (size_t y = 0; y < m_range.y; ++y) 
-				for (size_t x = 0; x < m_range.x; ++x, ++i)
-					*i = C3DFVector(x,y,z) - *i; 
+		C3DFVector X; 
+		for (size_t z = 0; z < m_range.z; ++z) {
+			X.z = z; 
+			for (size_t y = 0; y < m_range.y; ++y) {
+				X.y = y; 
+				for (size_t x = 0; x < m_range.x; ++x, ++i) {
+					X.x = x; 
+					*i = X; 
+				}
+			}
+		}
+
+		CCircularIndex idxz(nelm, m_z_indices[0]); 
+		for(size_t z = 0; z < m_range.z; ++z) {
+			auto w = m_z_weights[z]; 
+			int start = m_z_indices[z];
+			
+			cvdebug() << "z = " << z << "\n"; 
+			idxz.new_start(start); 
+			
+			// fill with slices 
+			auto fill = idxz.fill(); 
+			while (fill < nelm && start + fill < m_coefficients.get_size().z) {
+				tmp2.read_zslice_flat(start + fill, in_buffer[idxz.next()]);
+				idxz.insert_one(); 
+				fill = idxz.fill(); 
+			}
+			
+			memset(&out_buffer[0], 0, size_xy * sizeof(float)); 
+			
+			for (unsigned int i = 0; i < w.size(); ++i) {
+				cblas_saxpy(size_xy, -w[i], &in_buffer[idxz.value(i)][0], 1, 
+					    &(*m_current_grid)(0,0,z).x, 1);
+			}
+		}
 
 		m_grid_valid = true; 
 	}
