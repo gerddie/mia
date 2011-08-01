@@ -835,18 +835,18 @@ void C3DSplineTransformation::translate(const C3DFVectorfield& gradient, CDouble
 				      gradient.get_size().y, 
 				      m_coefficients.get_size().z));
 	
-	vector<C3DFVector> in_buffer(gradient.get_size().z); 
-	vector<C3DFVector> out_buffer(m_coefficients.get_size().z);
 	
-	for (size_t iy = 0; iy < gradient.get_size().y; ++iy) {
-		for (size_t ix = 0; ix < gradient.get_size().x; ++ix) {
-			gradient.get_data_line_z(ix, iy, in_buffer);
-			for(size_t i = 0; i < m_coefficients.get_size().z; ++i) {
-				const CSplineDerivativeRow::value_type& myrow = m_mz[i]; 
-				out_buffer[i] = inner_product(myrow.second.begin(), myrow.second.end(), 
-							      in_buffer.begin() + myrow.first, C3DFVector());
-			}
-			tmp.put_data_line_z(ix, iy, out_buffer);
+
+
+	const int slice_size = 3 * gradient.get_size().y * gradient.get_size().x; 
+	
+	for(size_t iz = 0; iz < m_coefficients.get_size().z; ++iz) {
+		const CSplineDerivativeRow::value_type& myrow = m_mz[iz]; 
+		int i = myrow.first; 
+		// warning: this code assumes that the 3DVector is a POD-like structure, i.e. no VMT 
+		// and that x is the first stored element 
+		for (auto w  = myrow.second.begin(); w != myrow.second.end(); ++w, ++i) {
+			cblas_saxpy(slice_size, *w, &gradient(0,0,i).x, 1, &tmp(0,0,iz).x, 1); 
 		}
 	}
 
@@ -854,8 +854,8 @@ void C3DSplineTransformation::translate(const C3DFVectorfield& gradient, CDouble
 				       m_coefficients.get_size().y, 
 				       m_coefficients.get_size().z));
 
-	in_buffer.resize(gradient.get_size().y); 
-	out_buffer.resize(m_coefficients.get_size().y);
+	vector<C3DFVector> in_buffer(gradient.get_size().y); 
+	vector<C3DFVector> out_buffer(m_coefficients.get_size().y);
 
 	for (size_t iz = 0; iz < m_coefficients.get_size().z; ++iz) {
 		for (size_t ix = 0; ix < gradient.get_size().x; ++ix) {
