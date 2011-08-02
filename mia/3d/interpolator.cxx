@@ -70,7 +70,7 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 	m_xbc(produce_spline_boundary_condition("mirror")), 
 	m_ybc(produce_spline_boundary_condition("mirror")),
 	m_zbc(produce_spline_boundary_condition("mirror")),
-	m_x_cache(kernel->size(), *m_xbc, false), 
+	m_x_cache(kernel->size(), *m_xbc, true), 
 	m_y_cache(kernel->size(), *m_ybc, true), 
 	m_z_cache(kernel->size(), *m_zbc, true)
 {
@@ -89,7 +89,7 @@ T3DConvoluteInterpolator<T>::T3DConvoluteInterpolator(const T3DDatafield<T>& ima
 	m_xbc(xbc.clone()), 
 	m_ybc(ybc.clone()),
 	m_zbc(zbc.clone()),
-	m_x_cache(kernel->size(), *m_xbc, false), 
+	m_x_cache(kernel->size(), *m_xbc, true), 
 	m_y_cache(kernel->size(), *m_ybc, true), 
 	m_z_cache(kernel->size(), *m_zbc, true)
 {

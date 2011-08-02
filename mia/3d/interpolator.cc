@@ -367,29 +367,17 @@ float add_3d<T3DDatafield< float >, 2>::value(const T3DDatafield< float >&  coef
 	w[1] = xc.weights[1]; 
 	w[2] = yc.weights[0]; 
 	w[3] = yc.weights[1]; 
-	v4df weights = _mm_load_ps(w); 
-	
-	if (xc.is_flat) {
 
-		for (int z = 0; z < 2; ++z) {
-			const float *slice = &coeff[zc.index[z] * dxy]; 
-			for (int y = 0; y < 2; ++y, idx +=2 ) {
-				const float *p = &slice[yc.index[y] * dx];
-				c[idx    ] = p[xc.start_idx];
-				c[idx + 1] = p[xc.start_idx + 1];
-			}
-		}
-	}else{
-		for (int z = 0; z < 2; ++z) {
-			const float *slice = &coeff[zc.index[z] * dxy]; 
-			for (int y = 0; y < 2; ++y, idx += 2) {
-				const float *p = &slice[yc.index[y] * dx];
-				c[idx    ] = p[xc.index[0]]; 
-				c[idx + 1] = p[xc.index[1]]; 
-			}
+	for (int z = 0; z < 2; ++z) {
+		const float *slice = &coeff[zc.index[z] * dxy]; 
+		for (int y = 0; y < 2; ++y, idx += 2) {
+			const float *p = &slice[yc.index[y] * dx];
+			c[idx    ] = p[xc.index[0]]; 
+			c[idx + 1] = p[xc.index[1]]; 
 		}
 	}
 
+	v4df weights = _mm_load_ps(w); 
 	v4df wz0 = _mm_set1_ps(zc.weights[0]); 
 	v4df wz1 = _mm_set1_ps(zc.weights[1]);
 	v4df whx = _mm_shuffle_ps(weights, weights, _MM_SHUFFLE(1,0,1,0)); 

@@ -147,7 +147,7 @@ void CSplineKernel::get_uncached(double x, SCache& cache)const
 {
 	assert(cache.index_limit == cache.boundary_condition.get_width() - cache.weights.size()); 
 	cache.start_idx  = get_start_idx_and_value_weights(x, cache.weights); 
-	if (cache.start_idx < 0 || cache.start_idx > cache.index_limit ) {
+	if (cache.never_flat ||cache.start_idx < 0 || cache.start_idx > cache.index_limit ) {
 		cache.is_flat = false; 
 		fill_index(cache.start_idx, cache.index); 
 		cache.boundary_condition.apply(cache.index, cache.weights); 
