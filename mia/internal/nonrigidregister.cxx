@@ -80,6 +80,8 @@ private:
 	void    do_df(const CDoubleVector& x, CDoubleVector&  g);
 	double  do_fdf(const CDoubleVector& x, CDoubleVector&  g);
 
+	double  evaluate_fdf(const CDoubleVector& x, CDoubleVector&  g);
+
 	bool do_has(const char *property) const; 
 
 	size_t do_size() const; 
@@ -261,9 +263,10 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 		cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
 		m_minimizer->run(x);
 		transform->set_parameters(x);
-		
+	
 		// run the registration at refined splines 
 		if (transform->refine()) {
+			gp->reset_counters(); 
 			m_minimizer->set_problem(gp);
 			x = transform->get_parameters();
 			cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
@@ -369,13 +372,22 @@ double  TNonrigRegGradientProblem<dim>::do_f(const CDoubleVector& x)
 template <int dim> 
 void    TNonrigRegGradientProblem<dim>::do_df(const CDoubleVector& x, CDoubleVector&  g)
 {
-	do_fdf(x,g); 
+	this->evaluate_fdf(x,g); 
+	m_grad_evals++; 
 }
 
 template <int dim> 
 double  TNonrigRegGradientProblem<dim>::do_fdf(const CDoubleVector& x, CDoubleVector&  g)
 {
+	const double result = this->evaluate_fdf(x,g); 
+	m_grad_evals++; 
+	m_func_evals++; 
+	return result; 
+}
 
+template <int dim> 
+double  TNonrigRegGradientProblem<dim>::evaluate_fdf(const CDoubleVector& x, CDoubleVector&  g)
+{
 	m_transf.set_parameters(x);
 	fill(g.begin(), g.end(), 0.0); 
 	double result = m_costs.evaluate(m_transf, g);
@@ -383,7 +395,7 @@ double  TNonrigRegGradientProblem<dim>::do_fdf(const CDoubleVector& x, CDoubleVe
 	if (!m_func_evals && !m_grad_evals) 
 		m_start_cost = result; 
 
-	m_grad_evals++; 
+
 
 	cvinfo() << "Cost[fg="<<setw(4)<<m_grad_evals 
 		<< ",fe="<<setw(4)<<m_func_evals<<"]= with " 
