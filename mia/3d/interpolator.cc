@@ -358,7 +358,8 @@ float add_3d<T3DDatafield< float >, 2>::value(const T3DDatafield< float >&  coef
 	const int dx = coeff.get_size().x; 
 	const int dxy = coeff.get_size().x *coeff.get_size().y; 
 	int idx = 0; 
-	
+
+	assert(!xc.is_flat); 
 
 	float __attribute__((aligned(16))) c[8];
 	float __attribute__((aligned(16))) w[4];

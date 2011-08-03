@@ -320,7 +320,8 @@ double C3DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 				for (int xi = 0; xi < nx; ++xi, ++ci) {
 					for (int zj = max(0,zi - m_ksize); zj < min(zi + m_ksize, nz); ++zj) {
 						int dz = zi - zj + m_ksize; 
-						for (int yj = max(0,yi - m_ksize); yj < min(yi + m_ksize, ny); ++yj) {							int dy = yi - yj + m_ksize;
+						for (int yj = max(0,yi - m_ksize); yj < min(yi + m_ksize, ny); ++yj) {
+							int dy = yi - yj + m_ksize;
 							int xstart = max(0,xi - m_ksize); 
 							auto cj = coefficients.begin_at(xstart, yj, zj); 
 							auto p = m_P.begin_at(xi - xstart + m_ksize, dy, dz);
@@ -556,6 +557,7 @@ double C3DPPDivcurlMatrixImpl::evaluate(const C3DFVectorfield& coefficients,
 		result[3] + result[4] + result[5]; 
 
 }
+
 
 const C3DBounds& C3DPPDivcurlMatrix::get_size() const
 {
