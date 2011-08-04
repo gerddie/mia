@@ -113,7 +113,6 @@ BOOST_AUTO_TEST_CASE( test_taggedssd_separate )
 
 	};
 
-
 	const unsigned char src_data_z[64] = {
 		2, 4, 6, 8,   0, 0, 0, 0,    0, 0, 0, 0,   0, 0, 0, 0,
  		0, 0, 0, 0,   6, 8, 4, 2,    0, 0, 0, 0,   0, 0, 0, 0,
@@ -166,8 +165,6 @@ BOOST_AUTO_TEST_CASE( test_taggedssd_separate )
 	P3DImage srcz(new C3DUBImage(size, src_data_z ));
 	P3DImage refz(new C3DUBImage(size, ref_data_z ));
 
-
-	
 	BOOST_REQUIRE(save_image("srcx.@", srcx)); 
 	BOOST_REQUIRE(save_image("refx.@", refx)); 
 	BOOST_REQUIRE(save_image("srcy.@", srcy)); 
@@ -187,7 +184,6 @@ BOOST_AUTO_TEST_CASE( test_taggedssd_separate )
 	double cost_value = cost.evaluate(t, gradient);
 	BOOST_CHECK_EQUAL(gradient.size(), 3u * 64u); 
 
-
 	const double test_cost = (3 * 48 + 8 * ( 1 + 9 + 25 + 49 ) + 
 				  4 * ( 4 + 16 + 36 + 64)) / 6.0;  
 
@@ -197,17 +193,9 @@ BOOST_AUTO_TEST_CASE( test_taggedssd_separate )
 
 	BOOST_CHECK_CLOSE(value, test_cost , 0.1);
 		
-
-	
 	for (int i = 0; i < 64; ++i) {
 		BOOST_CHECK_CLOSE(gradient[3*i  ], grad_x[i], 0.1);
 		BOOST_CHECK_CLOSE(gradient[3*i+1], grad_y[i], 0.1);
 		BOOST_CHECK_CLOSE(gradient[3*i+2], grad_z[i], 0.1);
 	}
-
-	
-	
-	
 }
-
-
