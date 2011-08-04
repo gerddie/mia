@@ -172,7 +172,6 @@ struct FTaggedSSDAccumulatorZ : public TFilter<double> {
 		for (size_t y = 0; y < src.get_size().y; ++y) {
 			for (size_t x = 0; x < src.get_size().x; ++x, ++is, ++ir, ++iforce) {
 				result += sqd(*is, *ir); 
-				cvdebug() << (int)*is  << " " << (int)*ir << ": " <<  result << "\n"; 
 			}
 		}
 
@@ -182,14 +181,12 @@ struct FTaggedSSDAccumulatorZ : public TFilter<double> {
 					double delta = *is - *ir; 
 					iforce->z = 0.5 * delta * (is[dxy] - is[-dxy]); 
 					result += delta * delta; 
-					cvdebug() << (int)*is  << " " << (int)*ir << ": " <<  result << "\n"; 
 				}
 			}
 		}
 		for (size_t y = 0; y < src.get_size().y; ++y) {
 			for (size_t x = 0; x < src.get_size().x; ++x, ++is, ++ir, ++iforce) {
 				result += sqd(*is, *ir); 
-				cvdebug() << (int)*is  << " " << (int)*ir << ": " <<  result << "\n"; 
 			}
 		}
 		return result; 
