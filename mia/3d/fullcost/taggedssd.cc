@@ -78,8 +78,8 @@ C3DTaggedSSDCost::C3DTaggedSSDCost(const std::string& src_x,
 	m_src_key[2] = imgio.load_to_pool(src_z);
 	
 	m_ref_key[0] = imgio.load_to_pool(ref_x);
-	m_ref_key[1] = imgio.load_to_pool(ref_x);
-	m_ref_key[2] = imgio.load_to_pool(ref_x);
+	m_ref_key[1] = imgio.load_to_pool(ref_y);
+	m_ref_key[2] = imgio.load_to_pool(ref_z);
 
 	
 
@@ -90,43 +90,44 @@ inline double sqd(double x, double y) {
 	return h * h; 
 }
 
-struct FTaggedSSDAccumulatorX : public TFilter<bool> {
-	FTaggedSSDAccumulatorX(double& value, C3DFVectorfield& force):
-		m_value(value), m_force(force) {} 
+struct FTaggedSSDAccumulatorX : public TFilter<double> {
+	FTaggedSSDAccumulatorX(C3DFVectorfield& force):
+		m_force(force) {} 
 	
 	template <typename T, typename S> 
-	bool operator () ( const T3DImage<T>& src, const T3DImage<S>& ref) {
+	double operator () ( const T3DImage<T>& src, const T3DImage<S>& ref) {
 		assert(src.size() == ref.size()); 
 		
+		double result = 0.0; 
 		auto is = src.begin(); 
 		auto ir = ref.begin(); 
 		auto iforce = m_force.begin() + 1; 
 		for (size_t z = 0; z < src.get_size().z; ++z) 
 			for (size_t y = 0; y < src.get_size().y; ++y) {
-				m_value += sqd(*is++, *ir++); 
+				result += sqd(*is++, *ir++); 
 				for (size_t x = 1; x < src.get_size().x - 1; ++x, is++, ir++, ++iforce) {
 					double delta = *is - *ir; 
 					iforce->x = 0.5 * delta * (is[1] - is[-1]); 
-					m_value += delta * delta; 
+					result += delta * delta; 
 				}
-				m_value += sqd(*is++, *ir++); 
+				result += sqd(*is++, *ir++); 
 				iforce += 2; 
 			} 
-		return true; 
+		return result; 
 	}; 
 private: 
-	double& m_value; 
 	C3DFVectorfield& m_force; 
 }; 
 
 
-struct FTaggedSSDAccumulatorY : public TFilter<bool> {
-	FTaggedSSDAccumulatorY(double& value, C3DFVectorfield& force):
-		m_value(value), m_force(force) {} 
+struct FTaggedSSDAccumulatorY : public TFilter<double> {
+	FTaggedSSDAccumulatorY(C3DFVectorfield& force):
+		m_force(force) {} 
 	
 	template <typename T, typename S> 
-	bool operator () ( const T3DImage<T>& src, const T3DImage<S>& ref) {
+	double operator () ( const T3DImage<T>& src, const T3DImage<S>& ref) {
 		assert(src.size() == ref.size()); 
+		double result = 0.0; 
 		
 		int dx = src.get_size().x; 
 		auto is = src.begin(); 
@@ -134,35 +135,35 @@ struct FTaggedSSDAccumulatorY : public TFilter<bool> {
 		auto iforce = m_force.begin(); 
 		for (size_t z = 0; z < src.get_size().z; ++z) {
 			for (size_t x = 0; x < src.get_size().x; ++x, ++is, ++ir, ++iforce) {
-				m_value += sqd(*is, *ir); 
+				result += sqd(*is, *ir); 
 			}
 			for (size_t y = 1; y < src.get_size().y - 1; ++y) {
 				for (size_t x = 0; x < src.get_size().x; ++x, is++, ir++, ++iforce) {
 					double delta = *is - *ir; 
 					iforce->y = 0.5 * delta * (is[dx] - is[-dx]); 
-					m_value += delta * delta; 
+					result += delta * delta; 
 				}
 			}
 			for (size_t x = 0; x < src.get_size().x; ++x, ++is, ++ir, ++iforce) {
-				m_value += sqd(*is, *ir); 
+				result += sqd(*is, *ir); 
 			}
 		}
-		return true; 
+		return result; 
 	}; 
 private: 
-	double& m_value; 
 	C3DFVectorfield& m_force;
 }; 
 
 
-struct FTaggedSSDAccumulatorZ : public TFilter<bool> {
-	FTaggedSSDAccumulatorZ(double& value, C3DFVectorfield& force):
-		m_value(value), m_force(force) {} 
+struct FTaggedSSDAccumulatorZ : public TFilter<double> {
+	FTaggedSSDAccumulatorZ(C3DFVectorfield& force):
+		m_force(force) {} 
 	
 	template <typename T, typename S> 
-	bool operator () ( const T3DImage<T>& src, const T3DImage<S>& ref) {
+	double operator () ( const T3DImage<T>& src, const T3DImage<S>& ref) {
 		assert(src.size() == ref.size()); 
 		
+		double result = 0.0; 
 		int dxy = src.get_size().x * src.get_size().y; 
 		auto is = src.begin(); 
 		auto ir = ref.begin(); 
@@ -170,7 +171,8 @@ struct FTaggedSSDAccumulatorZ : public TFilter<bool> {
 		
 		for (size_t y = 0; y < src.get_size().y; ++y) {
 			for (size_t x = 0; x < src.get_size().x; ++x, ++is, ++ir, ++iforce) {
-				m_value += sqd(*is, *ir); 
+				result += sqd(*is, *ir); 
+				cvdebug() << (int)*is  << " " << (int)*ir << ": " <<  result << "\n"; 
 			}
 		}
 
@@ -179,19 +181,20 @@ struct FTaggedSSDAccumulatorZ : public TFilter<bool> {
 				for (size_t x = 0; x < src.get_size().x; ++x, is++, ir++, ++iforce) {
 					double delta = *is - *ir; 
 					iforce->z = 0.5 * delta * (is[dxy] - is[-dxy]); 
-					m_value += delta * delta; 
+					result += delta * delta; 
+					cvdebug() << (int)*is  << " " << (int)*ir << ": " <<  result << "\n"; 
 				}
 			}
 		}
 		for (size_t y = 0; y < src.get_size().y; ++y) {
 			for (size_t x = 0; x < src.get_size().x; ++x, ++is, ++ir, ++iforce) {
-				m_value += sqd(*is, *ir); 
+				result += sqd(*is, *ir); 
+				cvdebug() << (int)*is  << " " << (int)*ir << ": " <<  result << "\n"; 
 			}
 		}
-		return true; 
+		return result; 
 	}; 
 private: 
-	double& m_value; 
 	C3DFVectorfield& m_force; 
 }; 
 
@@ -202,18 +205,24 @@ double C3DTaggedSSDCost::do_evaluate(const C3DTransformation& t, CDoubleVector& 
 	double value = 0.0; 
 	{
 		auto temp = t(*m_src_scaled[0]); 
-		FTaggedSSDAccumulatorX acc(value, force);
-		mia::accumulate(acc, *temp, *m_ref_scaled[0]);
+		FTaggedSSDAccumulatorX acc(force);
+		double r = mia::accumulate(acc, *temp, *m_ref_scaled[0]);
+		cvdebug() << "value(x) = " << r << "\n"; 
+		value += r; 
 	}
 	{
 		auto temp = t(*m_src_scaled[1]); 
-		FTaggedSSDAccumulatorY acc(value, force);
-		mia::accumulate(acc, *temp, *m_ref_scaled[1]);
+		FTaggedSSDAccumulatorY acc(force);
+		double r = mia::accumulate(acc, *temp, *m_ref_scaled[1]);
+		cvdebug() << "value(y) = " << r << "\n"; 
+		value += r; 
 	}
 	{
 		auto temp = t(*m_src_scaled[2]); 
-		FTaggedSSDAccumulatorZ acc(value, force);
-		mia::accumulate(acc, *temp, *m_ref_scaled[2]);
+		FTaggedSSDAccumulatorZ acc(force);
+		double r = mia::accumulate(acc, *temp, *m_ref_scaled[2]);
+		cvdebug() << "value(z) = " << r << "\n"; 
+		value += r; 
 	}
 	
 	t.translate(force, gradient); 

@@ -33,14 +33,10 @@ NS_USE(taggedssd_3d);
 
 namespace bfs=::boost::filesystem;
 
-struct ImagefullcostFixture {
-	ImagefullcostFixture(); 
-	
-}; 
 
 CSplineKernelTestPath splinekernel_init_path; 
 
-BOOST_FIXTURE_TEST_CASE( test_taggedssd,  ImagefullcostFixture)
+BOOST_AUTO_TEST_CASE( test_taggedssd)
 {
 
 	// create two images 
@@ -89,6 +85,129 @@ BOOST_FIXTURE_TEST_CASE( test_taggedssd,  ImagefullcostFixture)
 	
 }
 
-ImagefullcostFixture::ImagefullcostFixture()
+
+BOOST_AUTO_TEST_CASE( test_taggedssd_separate )
 {
+
+	// create two images 
+	const unsigned char src_data_x[64] = {
+		1, 3, 1, 1,   1, 1, 5, 1,   1, 1, 1, 5,   7, 1, 1, 1,
+ 		1, 5, 1, 1,   1, 1, 7, 1,   1, 1, 1, 3,   9, 1, 1, 1,
+ 		1, 7, 1, 1,   1, 1, 9, 1,   1, 1, 1, 9,   3, 1, 1, 1,
+		1, 9, 1, 1,   1, 1, 3, 1,   1, 1, 1, 7,   5, 1, 1, 1
+
+	};
+	const unsigned char ref_data_x[64] = {
+		0, 1, 0, 0,   0, 0, 1, 0,   0, 0, 0, 1,   1, 0, 0, 0,
+		0, 1, 0, 0,   0, 0, 1, 0,   0, 0, 0, 1,   1, 0, 0, 0,
+		0, 1, 0, 0,   0, 0, 1, 0,   0, 0, 0, 1,   1, 0, 0, 0,
+		0, 1, 0, 0,   0, 0, 1, 0,   0, 0, 0, 1,   1, 0, 0, 0
+
+	};
+
+	const float grad_x[64] = {
+		0, 0,-1, 0,   0, 2, 0, 0,   0, 0, 2, 0,  0, -3, 0, 0,
+ 		0, 0,-2, 0,   0, 3, 0, 0,   0, 0, 1, 0,  0, -4, 0, 0,
+ 		0, 0,-3, 0,   0, 4, 0, 0,   0, 0, 4, 0,  0, -1, 0, 0,
+		0, 0,-4, 0,   0, 1, 0, 0,   0, 0, 3, 0,  0, -2, 0, 0
+
+	};
+
+
+	const unsigned char src_data_z[64] = {
+		2, 4, 6, 8,   0, 0, 0, 0,    0, 0, 0, 0,   0, 0, 0, 0,
+ 		0, 0, 0, 0,   6, 8, 4, 2,    0, 0, 0, 0,   0, 0, 0, 0,
+ 		0, 0, 0, 0,   0, 0, 0, 0,    4, 2, 6, 8,   0, 0, 0, 0,
+		0, 0, 0, 0,   0, 0, 0, 0,    0, 0, 0, 0,   8, 4, 2, 6
+
+	};
+	const unsigned char ref_data_z[64] = {
+		1, 1, 1, 1,   1, 1, 1, 1,    1, 1, 1, 1,   1, 1, 1, 1,
+		1, 1, 1, 1,   1, 1, 1, 1,    1, 1, 1, 1,   1, 1, 1, 1,
+		1, 1, 1, 1,   1, 1, 1, 1,    1, 1, 1, 1,   1, 1, 1, 1,
+		1, 1, 1, 1,   1, 1, 1, 1,    1, 1, 1, 1,   1, 1, 1, 1
+
+	};
+	const float grad_z[64] = {
+		0, 0, 0, 0,   0, 0, 0, 0,    0, 0, 0, 0,   0, 0, 0, 0,
+ 		1, 2, 3, 4,   0, 0, 0, 0,   -2,-1,-3,-4,   0, 0, 0, 0,
+ 		0, 0, 0, 0,   3, 4, 2, 1,    0, 0, 0, 0,  -4,-2,-1,-3,
+		0, 0, 0, 0,   0, 0, 0, 0,    0, 0, 0, 0,   0, 0, 0, 0
+	};
+	
+
+
+	const unsigned char src_data_y[64] = {
+		0, 2, 0, 0,   0, 0, 2, 0,   0,  0,  0,  4,   8, 0, 0, 0,
+ 		0, 4, 0, 0,   0, 0, 4, 0,   0,  0,  0,  6,   6, 0, 0, 0,
+ 		0, 6, 0, 0,   0, 0, 6, 0,   0,  0,  0,  8,   4, 0, 0, 0,
+		0, 8, 0, 0,   0, 0, 8, 0,   0,  0,  0,  2,   2, 0, 0, 0
+
+	};
+	const unsigned char ref_data_y[64] = {
+		1, 1, 1, 1,   1, 1, 1, 1,    1, 1, 1, 1,   1, 1, 1, 1,
+		1, 1, 1, 1,   1, 1, 1, 1,    1, 1, 1, 1,   1, 1, 1, 1,
+		1, 1, 1, 1,   1, 1, 1, 1,    1, 1, 1, 1,   1, 1, 1, 1,
+		1, 1, 1, 1,   1, 1, 1, 1,    1, 1, 1, 1,   1, 1, 1, 1
+	};
+	const float grad_y[64] = {
+		0, 0, 0, 0,   0, 1, 0,-2,  -4,  0,  1,  0,   0, 0, 0, 0,
+ 		0, 0, 0, 0,   0, 2, 0,-3,  -3,  0,  2,  0,   0, 0, 0, 0,
+ 		0, 0, 0, 0,   0, 3, 0,-4,  -2,  0,  3,  0,   0, 0, 0, 0,
+		0, 0, 0, 0,   0, 4, 0,-1,  -1,  0,  4,  0,   0, 0, 0, 0
+	};
+
+	C3DBounds size(4,4,4); 
+
+	P3DImage srcx(new C3DUBImage(size, src_data_x ));
+	P3DImage refx(new C3DUBImage(size, ref_data_x ));
+	P3DImage srcy(new C3DUBImage(size, src_data_y ));
+	P3DImage refy(new C3DUBImage(size, ref_data_y ));
+	P3DImage srcz(new C3DUBImage(size, src_data_z ));
+	P3DImage refz(new C3DUBImage(size, ref_data_z ));
+
+
+	
+	BOOST_REQUIRE(save_image("srcx.@", srcx)); 
+	BOOST_REQUIRE(save_image("refx.@", refx)); 
+	BOOST_REQUIRE(save_image("srcy.@", srcy)); 
+	BOOST_REQUIRE(save_image("refy.@", refy)); 
+	BOOST_REQUIRE(save_image("refz.@", refz)); 
+	BOOST_REQUIRE(save_image("srcz.@", srcz)); 
+
+
+	C3DTaggedSSDCost cost("srcx.@", "refx.@",  "srcy.@",  "refy.@",  "srcz.@",  "refz.@",  1.0,  false); 
+
+	cost.reinit(); 
+	cost.set_size(size);
+	
+	C3DTransformMock t(size, C3DInterpolatorFactory("bspline:d=3", "mirror")); 
+	
+	CDoubleVector gradient(t.degrees_of_freedom()); 
+	double cost_value = cost.evaluate(t, gradient);
+	BOOST_CHECK_EQUAL(gradient.size(), 3u * 64u); 
+
+
+	const double test_cost = (3 * 48 + 8 * ( 1 + 9 + 25 + 49 ) + 
+				  4 * ( 4 + 16 + 36 + 64)) / 6.0;  
+
+	BOOST_CHECK_CLOSE(cost_value, test_cost , 0.1);
+
+	double value = cost.cost_value(t);
+
+	BOOST_CHECK_CLOSE(value, test_cost , 0.1);
+		
+
+	
+	for (int i = 0; i < 64; ++i) {
+		BOOST_CHECK_CLOSE(gradient[3*i  ], grad_x[i], 0.1);
+		BOOST_CHECK_CLOSE(gradient[3*i+1], grad_y[i], 0.1);
+		BOOST_CHECK_CLOSE(gradient[3*i+2], grad_z[i], 0.1);
+	}
+
+	
+	
+	
 }
+
+
