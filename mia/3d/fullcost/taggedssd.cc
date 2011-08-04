@@ -40,10 +40,18 @@
 				    \right)
    \end{equation}
    \item [Studys:] Tagged  gray scale images 
-   \item [Reference:] Tagged  gray scale images 
+   \item [References:] Tagged  gray scale images 
    \end{description}
+
+   \plugtabstart
+   srcx &  string & source image with X-tags & (required)  \\
+   refx &  string & reference image with X-tags & (required)  \\
+   srcy &  string & source image with Y-tags & (required)  \\
+   refy &  string & reference image with Y-tags & (required)  \\
+   srcz &  string & source image with Z-tags & (required)  \\
+   refz &  string & reference image with Z-tags & (required) 
+   \plugtabend
    
-   This plug-in doesn't take additional parameters. 
 
    LatexEnd  
  */
@@ -65,10 +73,8 @@ C3DTaggedSSDCost::C3DTaggedSSDCost(const std::string& src_x,
 				   const std::string& ref_y, 
 				   const std::string& src_z, 
 				   const std::string& ref_z,
-				   double weight, 
-				   bool debug):
-	C3DFullCost(weight),
-	m_debug(debug)
+				   double weight):
+	C3DFullCost(weight)
 	
 {
 	auto& imgio = C3DImageIOPluginHandler::instance();  
@@ -81,8 +87,7 @@ C3DTaggedSSDCost::C3DTaggedSSDCost(const std::string& src_x,
 	m_ref_key[1] = imgio.load_to_pool(ref_y);
 	m_ref_key[2] = imgio.load_to_pool(ref_z);
 
-	
-
+	add(property_gradient);
 }
 
 inline double sqd(double x, double y) {
@@ -204,21 +209,18 @@ double C3DTaggedSSDCost::do_evaluate(const C3DTransformation& t, CDoubleVector& 
 		auto temp = t(*m_src_scaled[0]); 
 		FTaggedSSDAccumulatorX acc(force);
 		double r = mia::accumulate(acc, *temp, *m_ref_scaled[0]);
-		cvdebug() << "value(x) = " << r << "\n"; 
 		value += r; 
 	}
 	{
 		auto temp = t(*m_src_scaled[1]); 
 		FTaggedSSDAccumulatorY acc(force);
 		double r = mia::accumulate(acc, *temp, *m_ref_scaled[1]);
-		cvdebug() << "value(y) = " << r << "\n"; 
 		value += r; 
 	}
 	{
 		auto temp = t(*m_src_scaled[2]); 
 		FTaggedSSDAccumulatorZ acc(force);
 		double r = mia::accumulate(acc, *temp, *m_ref_scaled[2]);
-		cvdebug() << "value(z) = " << r << "\n"; 
 		value += r; 
 	}
 	
@@ -357,6 +359,54 @@ bool C3DTaggedSSDCost::do_get_full_size(C3DBounds& size) const
 		return 	size == m_ref[0]->get_size(); 
 
 }
+
+
+// plugin implementation 
+class C3DTaggedSSDCostPlugin: public C3DFullCostPlugin {
+public: 
+	C3DTaggedSSDCostPlugin(); 
+private: 
+	C3DFullCost *do_create(float weight) const;
+	const std::string do_get_descr() const;
+	std::string m_srcx_name;
+	std::string m_refx_name;
+	std::string m_srcy_name;
+	std::string m_refy_name;
+	std::string m_srcz_name;
+	std::string m_refz_name;
+}; 
+
+C3DTaggedSSDCostPlugin::C3DTaggedSSDCostPlugin():
+	C3DFullCostPlugin("taggedssd")
+{
+	add_parameter("srcx", new CStringParameter(m_srcx_name, true, "Study image X-tag"));
+	add_parameter("refx", new CStringParameter(m_refx_name, true, "Reference image  X-tag"));
+	add_parameter("srcy", new CStringParameter(m_srcy_name, true, "Study image Y-tag"));
+	add_parameter("refy", new CStringParameter(m_refy_name, true, "Reference image  Y-tag"));
+	add_parameter("srcz", new CStringParameter(m_srcz_name, true, "Study image Z-tag"));
+	add_parameter("refz", new CStringParameter(m_refz_name, true, "Reference image  Z-tag"));
+}
+
+C3DFullCost *C3DTaggedSSDCostPlugin::do_create(float weight) const
+{
+	return new C3DTaggedSSDCost(m_srcx_name, m_refx_name, 
+				    m_srcy_name, m_refy_name, 
+				    m_srcz_name, m_refz_name, 
+				    weight); 
+}
+
+const std::string C3DTaggedSSDCostPlugin::do_get_descr() const
+{
+	return "SSD image similarity cost function for tagged MRI"; 
+}
+
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new C3DTaggedSSDCostPlugin();
+}
+
+
+
 NS_END
 
 

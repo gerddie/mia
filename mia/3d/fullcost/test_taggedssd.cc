@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE( test_taggedssd)
 	BOOST_REQUIRE(save_image("src.@", src)); 
 	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
-	C3DTaggedSSDCost cost("src.@", "ref.@",  "src.@",  "ref.@",  "src.@",  "ref.@",  1.0,  false); 
+	C3DTaggedSSDCost cost("src.@", "ref.@",  "src.@",  "ref.@",  "src.@",  "ref.@",  1.0); 
 
 	cost.reinit(); 
 	cost.set_size(size);
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE( test_taggedssd_separate )
 	BOOST_REQUIRE(save_image("srcz.@", srcz)); 
 
 
-	C3DTaggedSSDCost cost("srcx.@", "refx.@",  "srcy.@",  "refy.@",  "srcz.@",  "refz.@",  1.0,  false); 
+	C3DTaggedSSDCost cost("srcx.@", "refx.@",  "srcy.@",  "refy.@",  "srcz.@",  "refz.@",  1.0); 
 
 	cost.reinit(); 
 	cost.set_size(size);

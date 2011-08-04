@@ -38,8 +38,7 @@ class EXPORT C3DTaggedSSDCost : public mia::C3DFullCost {
 			 const std::string& ref_y, 
 			 const std::string& src_z, 
 			 const std::string& ref_z,
-			 double weight, 
-			 bool debug); 
+			 double weight); 
  private: 
 	double do_evaluate(const mia::C3DTransformation& t, mia::CDoubleVector& gradient) const;
 	void do_set_size(); 
