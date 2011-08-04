@@ -459,7 +459,7 @@ static typename F::result_type _accumulate(F& f, const A& a, const B& b)
 	case it_sshort:return f(DC(typename D::Dss,   a), b);
 	case it_ushort:return f(DC(typename D::Dus,   a), b);
 	case it_sint:  return f(DC(typename D::Dsi,   a), b);
-	case it_uint:	 return f(DC(typename D::Dui,   a), b);
+	case it_uint:  return f(DC(typename D::Dui,   a), b);
 #ifdef HAVE_INT64
 	case it_slong: return f(DC(typename D::Dsl,   a), b);
 	case it_ulong: return f(DC(typename D::Dul,   a), b);
@@ -496,7 +496,7 @@ static typename F::result_type accumulate(F& f, const A& a, const B& b)
 	case it_sshort:return _accumulate(f, a, DC(typename D::Dss,    b));
 	case it_ushort:return _accumulate(f, a, DC(typename D::Dus,    b));
 	case it_sint:  return _accumulate(f, a, DC(typename D::Dsi,    b));
-	case it_uint:	 return _accumulate(f, a, DC(typename D::Dui,    b));
+	case it_uint:  return _accumulate(f, a, DC(typename D::Dui,    b));
 #ifdef HAVE_INT64
 	case it_slong: return _accumulate(f, a, DC(typename D::Dsl,    b));
 	case it_ulong: return _accumulate(f, a, DC(typename D::Dul,    b));

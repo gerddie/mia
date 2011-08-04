@@ -60,9 +60,8 @@ typedef tbb::mutex::scoped_lock CScopedLock;
 #define NS_USE(NS) using namespace NS
 
 
-/**
-   \brief The main namespace of this library. 
-   
+/*
+  
    The mia namespace is the general namespace of this library.  
    Currently, only plug-ins have additional namespace to avoid name clashes
    between dynamically loaded modules that might have been developed outside 
@@ -96,7 +95,7 @@ NS_MIA_END
 #define MIA_MODULE_SUFFIX "mia"
 
 #ifndef __GNUC__
-/// remove the __attribute__ syntax if the compiler is not GCC compatible 
+// remove the __attribute__ syntax if the compiler is not GCC compatible 
 #  define __attribute__(x) 
 #endif
 

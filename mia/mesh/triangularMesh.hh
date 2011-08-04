@@ -54,6 +54,7 @@ class for triangular meshes and some basic algorithms
 #  endif
 #else
 #  ifdef __GNUC__
+/// define visibility for proper export 
 #    define EXPORT_MESH __attribute__((visibility("default")))
 #  else
 #    define EXPORT_MESH
