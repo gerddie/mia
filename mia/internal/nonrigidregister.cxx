@@ -288,7 +288,7 @@ TNonrigidRegisterImpl<dim>::run() const
 	m_costs.reinit(); 
 	Size global_size; 
 	if (!m_costs.get_full_size(global_size))
-		throw invalid_argument("Nonrigidregister: the given combination of cost functions don't "
+		throw invalid_argument("Nonrigidregister: the given combination of cost functions doesn't"
 				       "agree on the size of the registration problem"); 
 
 	int shift = m_mg_levels;
