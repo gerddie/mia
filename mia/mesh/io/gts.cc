@@ -39,7 +39,6 @@
 
 #include <gts.h>
 
-// MONA specific
 #include <libmia/plugin_handler.hh>
 #include <libmia/triangularMesh.hh>
 #include <libmia/monaFileIO.hh>

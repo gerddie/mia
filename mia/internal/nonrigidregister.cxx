@@ -124,7 +124,7 @@ TNonrigidRegister<dim>::run() const
 
 template <int dim> 
 TNonrigidRegisterImpl<dim>::TNonrigidRegisterImpl(FullCostList& costs, PMinimizer minimizer,
-						 PTransformationFactory transform_creation, size_t mg_levels, int idx):
+						  PTransformationFactory transform_creation, size_t mg_levels, int idx):
 	m_costs(costs),
 	m_minimizer(minimizer),
 	m_transform_creator(transform_creation), 
@@ -306,7 +306,6 @@ TNonrigidRegisterImpl<dim>::run() const
 		else
 			transform = m_transform_creator->create(local_size);
 
-		m_costs.reinit(); 
 		m_costs.set_size(local_size); 
 		
 		std::shared_ptr<TNonrigRegGradientProblem<dim> > 

@@ -21,49 +21,6 @@
  *
  */
 
-// $Id: segment3d.cc 938 2006-07-11 11:57:01Z write1 $
-
-/*! \brief mona-segment3d -- fuzzy clustering of 3D images
-
-\par Program description
-
-	Computes a fuzzy clustering to facilitate a 3D segmentation of 3D image.
-
-\par Usage
-
-	<code>mona-segment3d --usage</code> (or <code> mona-getmtr --help</code>)
-
-	\param --in-file		image to be segmented
-	\param --b0-image		image corected for intensity non-uniformities
-	\param --cls-file		segmented classes to store probability density values
-	\param --no-of-classes		no of classes to segment image
-	\param --residuum		relative residuum to differentiate clusters
-	\param --verbose		some verbose output (min/max values, etc)
-
-\par Example
-
-	-# Perform a segmentation (WM, GM, CSF) of a 3D T1w VISTA image
-	\code
-		user> mona-segment3d -i image.v -o b0-image.v -c cls.v -r 0.2 -n 3
-	\endcode
-	Note, the image format can be anything covered by the io plugins included in \a libmona.
-
-\par Known bugs
-
-	The program perfomance needs to be significantly improved..
-
-\todo
-	Program cannot cope with negative pixel values
-
-\remark The programm was origionall written by D.L. Pham and J.L.Prince, Pat. Rec. Let., 20:57-68,1999.
-\remark The CG optimization was included by Stefan Burckhardt und Carsten Walters
-\remark Adapted to mia2 by Gert Wollny gw.fossdev@gmail.com, 2009
-
-\author Heike J"anicke and M. Tittgemeyer (tittge@cbs.mpg.de), 2004
-*/
-
-// $Id: segment3d.cc 938 2006-07-11 11:57:01Z write1 $
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
