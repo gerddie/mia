@@ -72,16 +72,20 @@ BOOST_AUTO_TEST_CASE( test_taggedssd)
 	CDoubleVector gradient(t.degrees_of_freedom()); 
 	double cost_value = cost.evaluate(t, gradient);
 	BOOST_CHECK_EQUAL(gradient.size(), 3u * 64u); 
+	
+	const double v = 255.0 * 0.0202146; 
 
-	BOOST_CHECK_CLOSE(cost_value, 0.5 * 255 * 255.0 * 5.0 , 0.1);
+	double test_cost = (0.5 * v * v  * 5.0)/64.0; 
+
+	BOOST_CHECK_CLOSE(cost_value, test_cost , 0.1);
 
 	double value = cost.cost_value(t);
 
-	BOOST_CHECK_CLOSE(value, 0.5 * 255 * 255.0 * 5.0 , 0.1);
+	BOOST_CHECK_CLOSE(value, test_cost , 0.1);
 	
-	BOOST_CHECK_CLOSE(gradient[111], 255 * 255 * 0.5f , 0.1);
-	BOOST_CHECK_CLOSE(gradient[112], 255 * 255 * 0.5f , 0.1);
-	BOOST_CHECK_CLOSE(gradient[113], 255 * 255 * 0.5f , 0.1);
+	BOOST_CHECK_CLOSE(gradient[111], v * v * 0.5f / 64 , 0.1);
+	BOOST_CHECK_CLOSE(gradient[112], v * v * 0.5f / 64 , 0.1);
+	BOOST_CHECK_CLOSE(gradient[113], v * v * 0.5f / 64 , 0.1);
 	
 }
 
@@ -134,8 +138,6 @@ BOOST_AUTO_TEST_CASE( test_taggedssd_separate )
 		0, 0, 0, 0,   0, 0, 0, 0,    0, 0, 0, 0,   0, 0, 0, 0
 	};
 	
-
-
 	const unsigned char src_data_y[64] = {
 		0, 2, 0, 0,   0, 0, 2, 0,   0,  0,  0,  4,   8, 0, 0, 0,
  		0, 4, 0, 0,   0, 0, 4, 0,   0,  0,  0,  6,   6, 0, 0, 0,
@@ -185,17 +187,18 @@ BOOST_AUTO_TEST_CASE( test_taggedssd_separate )
 	BOOST_CHECK_EQUAL(gradient.size(), 3u * 64u); 
 
 	const double test_cost = (3 * 48 + 8 * ( 1 + 9 + 25 + 49 ) + 
-				  4 * ( 4 + 16 + 36 + 64)) / 6.0;  
+				  4 * ( 4 + 16 + 36 + 64)) / 6.0 / 64.0 * 0.545873 * 0.545873;   
 
 	BOOST_CHECK_CLOSE(cost_value, test_cost , 0.1);
 
 	double value = cost.cost_value(t);
 
 	BOOST_CHECK_CLOSE(value, test_cost , 0.1);
+	double scale = 0.545873 * 0.545873 / 64.0; 
 		
 	for (int i = 0; i < 64; ++i) {
-		BOOST_CHECK_CLOSE(gradient[3*i  ], grad_x[i], 0.1);
-		BOOST_CHECK_CLOSE(gradient[3*i+1], grad_y[i], 0.1);
-		BOOST_CHECK_CLOSE(gradient[3*i+2], grad_z[i], 0.1);
+		BOOST_CHECK_CLOSE(gradient[3*i  ], grad_x[i] * scale, 0.1);
+		BOOST_CHECK_CLOSE(gradient[3*i+1], grad_y[i] * scale, 0.1);
+		BOOST_CHECK_CLOSE(gradient[3*i+2], grad_z[i] * scale, 0.1);
 	}
 }

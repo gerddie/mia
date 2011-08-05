@@ -96,8 +96,8 @@ inline double sqd(double x, double y) {
 }
 
 struct FTaggedSSDAccumulatorX : public TFilter<double> {
-	FTaggedSSDAccumulatorX(C3DFVectorfield& force):
-		m_force(force) {} 
+	FTaggedSSDAccumulatorX(C3DFVectorfield& force, float scale):
+		m_force(force), m_scale(scale) {} 
 	
 	template <typename T, typename S> 
 	double operator () ( const T3DImage<T>& src, const T3DImage<S>& ref) {
@@ -112,7 +112,7 @@ struct FTaggedSSDAccumulatorX : public TFilter<double> {
 				result += sqd(*is++, *ir++); 
 				for (size_t x = 1; x < src.get_size().x - 1; ++x, is++, ir++, ++iforce) {
 					double delta = *is - *ir; 
-					iforce->x = 0.5 * delta * (is[1] - is[-1]); 
+					iforce->x = m_scale * delta * (is[1] - is[-1]); 
 					result += delta * delta; 
 				}
 				result += sqd(*is++, *ir++); 
@@ -122,12 +122,13 @@ struct FTaggedSSDAccumulatorX : public TFilter<double> {
 	}; 
 private: 
 	C3DFVectorfield& m_force; 
+	float m_scale; 
 }; 
 
 
 struct FTaggedSSDAccumulatorY : public TFilter<double> {
-	FTaggedSSDAccumulatorY(C3DFVectorfield& force):
-		m_force(force) {} 
+	FTaggedSSDAccumulatorY(C3DFVectorfield& force, float scale):
+		m_force(force), m_scale(scale) {} 
 	
 	template <typename T, typename S> 
 	double operator () ( const T3DImage<T>& src, const T3DImage<S>& ref) {
@@ -145,7 +146,7 @@ struct FTaggedSSDAccumulatorY : public TFilter<double> {
 			for (size_t y = 1; y < src.get_size().y - 1; ++y) {
 				for (size_t x = 0; x < src.get_size().x; ++x, is++, ir++, ++iforce) {
 					double delta = *is - *ir; 
-					iforce->y = 0.5 * delta * (is[dx] - is[-dx]); 
+					iforce->y = m_scale * delta * (is[dx] - is[-dx]); 
 					result += delta * delta; 
 				}
 			}
@@ -157,12 +158,13 @@ struct FTaggedSSDAccumulatorY : public TFilter<double> {
 	}; 
 private: 
 	C3DFVectorfield& m_force;
+	float m_scale; 
 }; 
 
 
 struct FTaggedSSDAccumulatorZ : public TFilter<double> {
-	FTaggedSSDAccumulatorZ(C3DFVectorfield& force):
-		m_force(force) {} 
+	FTaggedSSDAccumulatorZ(C3DFVectorfield& force, float scale):
+		m_force(force), m_scale(scale) {} 
 	
 	template <typename T, typename S> 
 	double operator () ( const T3DImage<T>& src, const T3DImage<S>& ref) {
@@ -184,7 +186,7 @@ struct FTaggedSSDAccumulatorZ : public TFilter<double> {
 			for (size_t y = 0; y < src.get_size().y; ++y) {
 				for (size_t x = 0; x < src.get_size().x; ++x, is++, ir++, ++iforce) {
 					double delta = *is - *ir; 
-					iforce->z = 0.5 * delta * (is[dxy] - is[-dxy]); 
+					iforce->z = m_scale * delta * (is[dxy] - is[-dxy]); 
 					result += delta * delta; 
 				}
 			}
@@ -198,6 +200,7 @@ struct FTaggedSSDAccumulatorZ : public TFilter<double> {
 	}; 
 private: 
 	C3DFVectorfield& m_force; 
+	float m_scale; 
 }; 
 
 
@@ -205,27 +208,28 @@ double C3DTaggedSSDCost::do_evaluate(const C3DTransformation& t, CDoubleVector& 
 {
 	C3DFVectorfield force(get_current_size()); 
 	double value = 0.0; 
+	float scale = 0.5f / m_ref_scaled[0]->size(); 
 	{
 		auto temp = t(*m_src_scaled[0]); 
-		FTaggedSSDAccumulatorX acc(force);
+		FTaggedSSDAccumulatorX acc(force, scale);
 		double r = mia::accumulate(acc, *temp, *m_ref_scaled[0]);
 		value += r; 
 	}
 	{
 		auto temp = t(*m_src_scaled[1]); 
-		FTaggedSSDAccumulatorY acc(force);
+		FTaggedSSDAccumulatorY acc(force, scale);
 		double r = mia::accumulate(acc, *temp, *m_ref_scaled[1]);
 		value += r; 
 	}
 	{
 		auto temp = t(*m_src_scaled[2]); 
-		FTaggedSSDAccumulatorZ acc(force);
+		FTaggedSSDAccumulatorZ acc(force, scale);
 		double r = mia::accumulate(acc, *temp, *m_ref_scaled[2]);
 		value += r; 
 	}
 	
 	t.translate(force, gradient); 
-	return value / 6.0; 	
+	return value / (6.0 * m_ref_scaled[0]->size()); 	
 }
 
 void C3DTaggedSSDCost::do_set_size()
@@ -307,7 +311,7 @@ double C3DTaggedSSDCost::do_value(const C3DTransformation& t) const
 		mia::accumulate(acc, *temp[i], *m_ref_scaled[i]); 
 	}
 
-	return acc.get_value() / 6.0; 
+	return acc.get_value() / (6.0 * m_ref_scaled[0]->size()); 
 
 }
 
@@ -316,16 +320,72 @@ double C3DTaggedSSDCost::do_value() const
 	FTaggedSSDAccumulator acc;
 	for (int i = 0; i < 3; ++i)
 		mia::accumulate(acc, *m_src_scaled[i], *m_ref_scaled[i]); 
-	return acc.get_value() / 6.0; 
+	return acc.get_value() / (6.0 * m_ref_scaled[0]->size()); 
 }
+
+struct FAccumulateMeanVariance: public TFilter<int>  {
+	FAccumulateMeanVariance(); 
+	
+	template <typename T> 
+	int operator() (const T3DImage<T>& image); 
+
+	P3DFilter get_intensity_scaling_filter() const; 
+private: 
+	double sum; 
+	double sum2; 
+	double n; 
+};
+	
+FAccumulateMeanVariance::FAccumulateMeanVariance():
+	sum(0.0), 
+	sum2(0.0), 
+	n(0.0)
+{
+}
+
+template <typename T> 
+int FAccumulateMeanVariance::operator() (const T3DImage<T>& image)
+{
+	n += image.size(); 
+	for (auto i = image.begin(); i != image.end(); ++i) {
+		sum += *i; 
+		sum2 += *i * *i; 
+	}
+	return 0; 
+}
+
+P3DFilter FAccumulateMeanVariance::get_intensity_scaling_filter() const
+{
+	double mean = sum / n; 
+	double sigma = sqrt((sum2 - sum * sum / n) / (n - 1));
+
+	// both images are of the same single color 
+	if (sigma == 0.0) 
+		return P3DFilter(); 
+
+	// I want a conversion filter, that makes the images together zero mean 
+	// and diversion 1
+	stringstream filter_descr; 
+	filter_descr << "convert:repn=float,map=linear,b=" << -mean/sigma << ",a=" << 1.0/sigma; 
+	cvinfo() << "Will convert using the filter:" << filter_descr.str() << "\n"; 
+	
+	return C3DFilterPluginHandler::instance().produce(filter_descr.str()); 
+}
+
 
 void C3DTaggedSSDCost::do_reinit()
 {
 	TRACE_FUNCTION; 
+
+	FAccumulateMeanVariance filter_creator; 
 	//cvmsg() << "C3DImageFullCost: read " << m_src_key << " and " << m_ref_key << "\n"; 
 	for (int i = 0; i < 3; ++i) {
 		m_src[i] = get_from_pool(m_src_key[i]);
 		m_ref[i] = get_from_pool(m_ref_key[i]);
+		
+		mia::accumulate(filter_creator, *m_src[i]); 
+		mia::accumulate(filter_creator, *m_ref[i]); 
+
 		m_src_scaled[i].reset(); 
 		m_ref_scaled[i].reset(); 
 
@@ -345,6 +405,16 @@ void C3DTaggedSSDCost::do_reinit()
 	if (m_ref[0]->get_size() != m_ref[1]->get_size() ||
 	    m_ref[0]->get_size() != m_ref[2]->get_size()) {
 		throw invalid_argument("Input reference images are of different sizes"); 
+	}
+
+	// run intensity normalization to zero mean, variation one. 
+	auto filter = filter_creator.get_intensity_scaling_filter(); 
+	if (!filter)
+		throw invalid_argument("Input images have constant intensity"); 
+
+	for (int i = 0; i < 3; ++i) {
+		m_src[i] = filter->filter(*m_src[i]); 
+		m_ref[i] = filter->filter(*m_ref[i]); 
 	}
 }
 

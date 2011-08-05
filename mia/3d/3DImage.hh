@@ -74,6 +74,12 @@ public:
 	 */
 	EPixelType get_pixel_type() const;
 
+
+	/**
+	   \returns the number of voxels 
+	 */
+	virtual size_t size() const =  0;
+
 	/**
 	   \returns the 3D size of the image
 	 */

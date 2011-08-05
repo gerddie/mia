@@ -154,15 +154,15 @@ C3DScaleFilterPlugin::C3DScaleFilterPlugin():
 	m_interp("bspline:d=3")
 {
 	add_parameter("sx", new CUIntParameter(m_s.x, 0,
-					      numeric_limits<unsigned int>::max(), true,
+					      numeric_limits<unsigned int>::max(), false,
 					      "target size in x direction (0:use input image size)"));
 
 	add_parameter("sy", new CUIntParameter(m_s.y, 0,
-					      numeric_limits<unsigned int>::max(), true,
+					      numeric_limits<unsigned int>::max(), false,
 					      "target size in y direction (0:use input image size)"));
 
 	add_parameter("sz", new CUIntParameter(m_s.z, 0,
-					      numeric_limits<unsigned int>::max(), true,
+					      numeric_limits<unsigned int>::max(), false,
 					      "target size in y direction (0:use input image size)"));
 
 	add_parameter("s", new C3DBoundsParameter(m_s, 0,"target size (component 0:use input image size)"));
