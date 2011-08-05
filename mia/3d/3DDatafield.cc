@@ -1,6 +1,7 @@
-/*  -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2011
- *   Max-Planck-Institute for Human Cognitive and Brain Science
+/* -*- mia-c++ -*- 
+ *
+ * Copyright (c) Leipzig, Madrid 1999-2011
+ *     Gert Wollny <gw.fossdev@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,20 +15,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
-
-// $Id: 3DImage.hh 732 2005-11-14 18:06:39Z write1 $
-
-/*! \brief A 3D templated image class
-
-2A fully templated class for 3D images
-
-\file 3DImage.hh
-\author Gert Wollny <wollny@cbs.mpg.de>
-
-*/
 
 #ifdef WIN32
 #  define EXPORT_2DDATAFIELD __declspec(dllexport)

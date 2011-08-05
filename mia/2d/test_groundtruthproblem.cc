@@ -1,4 +1,5 @@
-/*
+/* -*- mia-c++ -*- 
+ *
 ** Copyright Madrid (c) 2010 BIT ETSIT UPM
 **                    Gert Wollny <gw.fossdev @ gmail.com>
 **

@@ -1,9 +1,7 @@
-/* -*- mia-c++  -*-
+/* -*- mia-c++ -*- 
  *
- * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Max-Planck-Institute for Evolutionary Anthropology
- * BIT, ETSI Telecomunicacion, UPM
+ * Copyright (c) Leipzig, Madrid 1999-2011
+ *     Gert Wollny <gw.fossdev@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,25 +10,14 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
-
-// $Id: 2DDatafield.hh 921 2006-06-22 10:43:30Z write1 $
-
-/*! \brief A templated 2D datafield class
-
-The class holds all types of data stored in two dimensional fields.
-
-\file 2DDatafield.hh
-\author Gert Wollny <wollny@cbs.mpg.de>, 2004
-
-*/
 
 #ifndef __MIA_2DDATAFIELD_HH
 #define __MIA_2DDATAFIELD_HH 1

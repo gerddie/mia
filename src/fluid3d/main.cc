@@ -1,6 +1,7 @@
 /* -*- mia-c++  -*-
-** Copyrigh (C) 1999 Max-Planck-Institute of Cognitive Neurosience
-**                    Gert Wollny <wollny@cns.mpg.de>
+ *
+ * Copyrigh (C) 1999-2011 Leipzig, Madrid
+ *     Gert Wollny <gw.fossdev@gmail.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by

@@ -1,9 +1,6 @@
 /* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science	
- * Max-Planck-Institute for Evolutionary Anthropology 
- * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,22 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-// $Id: 2DVector.hh 841 2006-02-15 16:58:25Z write1 $
-
-/*! \brief A templated 2D vector class
-
-  The tempate class T2DVector provides a a class for two-dimentional vectors
-  The element-class T must provide the following functions/operators:
-  Copy-contructor T(const T& org)
-  Standard constructor T() should generate the element which is not
-  allowed to be a divisor
-  operators +, -, *, /, +=, -=, *=, /=, ==, != 
-
-\file 2DVector.hh
-\author Gert Wollny <wollny@cbs.mpg.de>, 2004
-
-*/
 
 #ifndef MIA_2D_VECTOR_HH
 #define MIA_2D_VECTOR_HH

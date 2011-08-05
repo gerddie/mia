@@ -1,7 +1,7 @@
-/*  -*- mia-c++ -*-
- * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * 2007 Gert Wollny
+/* -*- mia-c++ -*- 
+ *
+ * Copyright (c) Leipzig, Madrid 1999-2011
+ *     Gert Wollny <gw.fossdev@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,18 +15,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
-
-// $Id: inria_3dimage_io.cc 896 2006-03-27 10:01:12Z write1 $
-
-/*! \brief plugin function to handle VTK-format IO
-
-\file vtk.cc
-\author Gert Wollny <wollny@cbs.mpg.de>
-
-*/
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

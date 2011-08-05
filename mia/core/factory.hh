@@ -1,10 +1,6 @@
-
 /* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science	
- * Max-Planck-Institute for Evolutionary Anthropology 
- * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,15 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-// $Id: factory.hh,v 1.4 2005/06/03 11:00:38 gerddie Exp $
-
-/** 
-    \file; core/factory.hh
-    \author: Gert Wollny < wollny at cbs mpg de >
-    Defines and implements tha infrastructor for factories and 
-    plugins that provide factories. 
-*/
 
 #ifndef FACTORY_HH
 #define FACTORY_HH
