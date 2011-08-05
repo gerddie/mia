@@ -157,7 +157,7 @@ C3DSplineTransformation::C3DSplineTransformation(const C3DBounds& range, PSpline
 	m_shift = C3DBounds(s,s,s); 
 	m_enlarge = 2 * m_shift;
 
-	C3DBounds csize(C3DFVector(range - C3DBounds::_1 ) / c_rate); 
+	C3DBounds csize( (C3DFVector(range - C3DBounds::_1 ) + c_rate )/ c_rate); 
 	if (csize.x < 2)
 		csize.x = 2; 
 	if (csize.y < 2)
