@@ -239,7 +239,7 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 		else
 			transform = m_transform_creator->create(src_scaled->get_size());
 
-		cvinfo() << "register at " << src_scaled->get_size() << "\n";
+		cvmsg() << "register at " << src_scaled->get_size() << "\n";
 		/**
 		   This code is somewhat ugly, it stored the images in the internal buffer 
 		   and then it forces the cost function to reload the images
@@ -306,7 +306,6 @@ TNonrigidRegisterImpl<dim>::run() const
 		else
 			transform = m_transform_creator->create(local_size);
 
-		cvinfo() << "register at " << local_size << "\n";
 		m_costs.reinit(); 
 		m_costs.set_size(local_size); 
 		
@@ -316,16 +315,18 @@ TNonrigidRegisterImpl<dim>::run() const
 		m_minimizer->set_problem(gp);
 
 		auto x = transform->get_parameters();
-		cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
+		cvmsg() << "Registration at " << local_size << " with " << x.size() <<  " parameters\n";
 		m_minimizer->run(x);
+		cvmsg() << "\ndone\n";
 		transform->set_parameters(x);
 		
 		// run the registration at refined splines 
 		if (transform->refine()) {
 			m_minimizer->set_problem(gp);
 			x = transform->get_parameters();
-			cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
+			cvmsg() << "Registration at " << local_size << " with " << x.size() <<  " parameters\n";
 			m_minimizer->run(x);
+			cvmsg() << "\ndone\n";
 			transform->set_parameters(x);
 		}
 
@@ -360,12 +361,13 @@ double  TNonrigRegGradientProblem<dim>::do_f(const CDoubleVector& x)
 	if (!m_func_evals && !m_grad_evals) 
 		m_start_cost = result; 
 	
+	char endline = (cverb.get_level() < vstream::ml_message) ? '\n' : '\r'; 
 	m_func_evals++; 
-	cvinfo() << "Cost[fg="<<setw(4)<<m_grad_evals 
+	cvmsg() << "Cost[fg="<<setw(4)<<m_grad_evals 
 		<< ",fe="<<setw(4)<<m_func_evals<<"]=" 
 		<< setw(20) << setprecision(12) << result 
 		<< "ratio:" << setw(20) << setprecision(12) 
-		<< result / m_start_cost <<   "\n"; 
+		<< result / m_start_cost << endline; 
 	return result; 
 }
 
@@ -395,13 +397,12 @@ double  TNonrigRegGradientProblem<dim>::evaluate_fdf(const CDoubleVector& x, CDo
 	if (!m_func_evals && !m_grad_evals) 
 		m_start_cost = result; 
 
+	char endline = (cverb.get_level() < vstream::ml_message) ? '\n' : '\r'; 
 
-
-	cvinfo() << "Cost[fg="<<setw(4)<<m_grad_evals 
+	cvmsg() << "Cost[fg="<<setw(4)<<m_grad_evals 
 		<< ",fe="<<setw(4)<<m_func_evals<<"]= with " 
-		<< x.size() << " parameters= " 
 		<< setw(20) << setprecision(12) << result 
-		<< " ratio:" << setw(20) << setprecision(12) << result / m_start_cost <<  "\n"; 
+		<< " ratio:" << setw(20) << setprecision(12) << result / m_start_cost <<  endline; 
 	return result; 
 }
 
