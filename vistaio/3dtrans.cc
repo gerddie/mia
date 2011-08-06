@@ -82,7 +82,7 @@ P3DTransformation C3DVistaTransformationIO::do_load(const std::string& fname) co
 		goto fail; 
 	}
 	if (VGetAttr (vlist, "size_z", NULL, VLongRepn, &sz) != VAttrFound) {
-		errmsg << fname << ":Bogus input, attribute size_y not found"; 
+		errmsg << fname << ":Bogus input, attribute size_z not found"; 
 		goto fail; 
 	}
 
@@ -107,7 +107,8 @@ P3DTransformation C3DVistaTransformationIO::do_load(const std::string& fname) co
 		auto params = t->get_parameters(); 
 		
 		if ((long)params.size() != VImageNPixels(blob)){
-			errmsg << fname << ":Bogus input, expected number of parameters differs from provided one"; 
+			errmsg << fname << ":Bogus input, expected number of parameters ("
+			       << params.size()<<") differs from provided one (" << VImageNPixels(blob) << ")"; 
 			goto fail; 
 		}
 		{

@@ -1,25 +1,26 @@
-/* -*- mia-c++ -*-
-**
-** Copyrigh (C) 2004 MPI of Human Cognitive and Brain Sience
-**                    Gert Wollny <wollny@cbs.mpg.de>
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 3 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+/* -*- mia-c++ -*- 
+ *
+ * Copyright (c) Leipzig, Madrid 1999-2011
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ */
 
+/*
   The weight evaluation of the b-splines is based on code by Philippe Thevenaz
   http://bigwww.epfl.ch/
-
 */
 
 #include <cassert>
@@ -358,7 +359,8 @@ float add_3d<T3DDatafield< float >, 2>::value(const T3DDatafield< float >&  coef
 	const int dx = coeff.get_size().x; 
 	const int dxy = coeff.get_size().x *coeff.get_size().y; 
 	int idx = 0; 
-	
+
+	assert(!xc.is_flat); 
 
 	float __attribute__((aligned(16))) c[8];
 	float __attribute__((aligned(16))) w[4];
@@ -367,29 +369,17 @@ float add_3d<T3DDatafield< float >, 2>::value(const T3DDatafield< float >&  coef
 	w[1] = xc.weights[1]; 
 	w[2] = yc.weights[0]; 
 	w[3] = yc.weights[1]; 
-	v4df weights = _mm_load_ps(w); 
-	
-	if (xc.is_flat) {
 
-		for (int z = 0; z < 2; ++z) {
-			const float *slice = &coeff[zc.index[z] * dxy]; 
-			for (int y = 0; y < 2; ++y, idx +=2 ) {
-				const float *p = &slice[yc.index[y] * dx];
-				c[idx    ] = p[xc.start_idx];
-				c[idx + 1] = p[xc.start_idx + 1];
-			}
-		}
-	}else{
-		for (int z = 0; z < 2; ++z) {
-			const float *slice = &coeff[zc.index[z] * dxy]; 
-			for (int y = 0; y < 2; ++y, idx += 2) {
-				const float *p = &slice[yc.index[y] * dx];
-				c[idx    ] = p[xc.index[0]]; 
-				c[idx + 1] = p[xc.index[1]]; 
-			}
+	for (int z = 0; z < 2; ++z) {
+		const float *slice = &coeff[zc.index[z] * dxy]; 
+		for (int y = 0; y < 2; ++y, idx += 2) {
+			const float *p = &slice[yc.index[y] * dx];
+			c[idx    ] = p[xc.index[0]]; 
+			c[idx + 1] = p[xc.index[1]]; 
 		}
 	}
 
+	v4df weights = _mm_load_ps(w); 
 	v4df wz0 = _mm_set1_ps(zc.weights[0]); 
 	v4df wz1 = _mm_set1_ps(zc.weights[1]);
 	v4df whx = _mm_shuffle_ps(weights, weights, _MM_SHUFFLE(1,0,1,0)); 

@@ -59,8 +59,10 @@ public:
 	/// plugin handling data description 
 	static const char *data_descr; 
 
+	/// type for the weight vector 
 	typedef std::vector<double> VWeight; 
 
+	/// type for the index vector 
 	typedef std::vector<short> VIndex; 
 
 	/**

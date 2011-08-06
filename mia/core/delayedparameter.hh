@@ -51,6 +51,8 @@ template <typename T>
 class TDelayedParameter {
 public: 
 
+	TDelayedParameter() = default; 
+
 	/**
 	   Assosiate the parameter with its key in the data pool. 
 	   At creation time, the data doesn't have to be available in the 

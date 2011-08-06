@@ -1,4 +1,5 @@
-/*
+/* -*- mia-c++ -*- 
+ *
 ** Copyrigh (C) 2007 Gert Wollny <gert at die.upm.es>
 **   E.S.T.I. Telecomunication, Universidad Politecnica, Madrid
 **

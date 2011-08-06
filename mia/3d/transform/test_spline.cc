@@ -402,6 +402,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_translate, TransformSplineFixture )
 				if (y > 2 && y < stransf.get_coeff_size().y - 2 && 
 				    x > 2 && x < stransf.get_coeff_size().x - 2 && 
 				    z > 2 && z < stransf.get_coeff_size().z - 2) {
+					cvdebug() << "l = " << x << ", " << y << ", " << z << "\n"; 
 					BOOST_CHECK_CLOSE( i[0] * scale, -1.0f, 1.0);
 					BOOST_CHECK_CLOSE( i[1] * scale, -2.0f, 1.0);
 					BOOST_CHECK_CLOSE( i[2] * scale, -3.0f, 1.0);
@@ -579,9 +580,9 @@ BOOST_FIXTURE_TEST_CASE( test_spline_c_rate_create, ipfFixture )
 	C3DSplineTransformation  stransf(size, kernel, c_rate, ipf);
 
 	C3DBounds gridsize = stransf.get_coeff_size();
-	BOOST_CHECK_EQUAL(gridsize.x, 9u);
-	BOOST_CHECK_EQUAL(gridsize.y, 11u);
-	BOOST_CHECK_EQUAL(gridsize.z,  6u);
+	BOOST_CHECK_EQUAL(gridsize.x, 10u);
+	BOOST_CHECK_EQUAL(gridsize.y, 12u);
+	BOOST_CHECK_EQUAL(gridsize.z,  7u);
 
 	C3DSplineTransformation::const_iterator i = stransf.begin();
 	for(size_t z = 0; z < size.z; ++z)
