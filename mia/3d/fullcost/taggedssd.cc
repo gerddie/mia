@@ -51,7 +51,7 @@
    srcy &  string & source image with Y-tags & (required)  \\
    refy &  string & reference image with Y-tags & (required)  \\
    srcz &  string & source image with Z-tags & (required)  \\
-   refz &  string & reference image with Z-tags & (required) 
+   refz &  string & reference image with Z-tags & (required) \\
    \plugtabend
    
 
