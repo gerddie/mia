@@ -1,8 +1,6 @@
 /* -*- mia-c++  -*-
+ *
  * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Max-Planck-Institute for Evolutionary Anthropology
- * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +18,6 @@
  *
  */
 
-
-// this is for the definition of the 2D image plugin base classes
 #include <mia/core/dictmap.hh>
 #include <mia/3d/3dfilter.hh>
 

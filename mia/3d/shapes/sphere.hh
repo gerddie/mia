@@ -2,9 +2,6 @@
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  *
- * Max-Planck-Institute for Evolutionary Anthropoloy
- * BIT, ETSI Telecomunicacion, UPM
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -20,7 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
 
 #ifndef _mia_3d_sphere_creator_hh
 #define _mia_3d_sphere_creator_hh

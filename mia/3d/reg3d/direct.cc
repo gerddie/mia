@@ -18,10 +18,6 @@
  *
  */
 
-/*
-  This plug-in implements a direct time step update of a deformation field.
-*/
-
 
 #include <limits>
 #include <mia/3d/timestep.hh>

@@ -1,5 +1,6 @@
-/*  -*- mia-c++ -*-
-
+/* -*- mia-c++  -*-
+ *
+ * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-// $Id: tiff_2dimage_io.cc,v 1.14 2006-06-13 10:20:54 wollny Exp $
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

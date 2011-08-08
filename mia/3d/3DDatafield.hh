@@ -1,8 +1,6 @@
 /* -*- mia-c++  -*-
+ *
  * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Max-Planck-Institute for Evolutionary Anthropology
- * Gert Wollny <gert.wollny at web.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,16 +18,6 @@
  *
  */
 
-// $Id: 3DDatafield.hh 831 2006-02-06 18:32:09Z write1 $
-
-/*! \brief A templated datafield class
-
-The class holds all types of data stored in three dimensional fields.
-
-\file 3DDatafield.hh
-\author Gert Wollny <wollny@cbs.mpg.de>
-
-*/
 #ifndef __MIA_3DDATAFIELD_HH
 #define __MIA_3DDATAFIELD_HH 1
 
@@ -48,7 +36,7 @@ The class holds all types of data stored in three dimensional fields.
 NS_MIA_BEGIN
 
 /**
-   A templated class of a 3D data field.
+   \brief A templated class of a 3D data field.
 */
 template <class T>
 class  EXPORT_3D T3DDatafield {

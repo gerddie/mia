@@ -18,11 +18,6 @@
  *
  */
 
-/*
-\author Gert Wollny <wollny at die.upm.ed>
-
-*/
-
 /* 
    LatexBeginPluginDescription{2D image similarity kernels}
    

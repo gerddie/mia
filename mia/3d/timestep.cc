@@ -18,6 +18,7 @@
  *
  */
 
+
 /*
   LatexBeginPluginSection{3D time steps for model based registration}
   \label{sec:timestep3d}

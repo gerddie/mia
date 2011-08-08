@@ -1,4 +1,3 @@
-
 /* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
@@ -18,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
 
 #include <mia/core/export_handler.hh>
 

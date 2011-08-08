@@ -18,6 +18,7 @@
  *
  */
 
+
 /*
   LatexBeginPluginSection{3D model based registration}
   \label{sec:regmodel3d}

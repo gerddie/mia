@@ -18,10 +18,6 @@
  *
  */
 
-/*
-  This plug-in implements a direct time step update of a deformation field.
-*/
-
 #include <mia/2d/timestep.hh>
 
 NS_BEGIN(direct_timestep_2d)

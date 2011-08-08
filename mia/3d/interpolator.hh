@@ -1,40 +1,22 @@
-/* -*- mia-c++ -*- 
-**
-** Copyrigh (C) 2004-2011 Gert Wollny <gw.fossdev@gmail.com>
-**                    
-**
-** This program is free software; you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation; either version 3 of the License, or
-** (at your option) any later version.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with this program; if not, write to the Free Software
-** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-
-  The filter routines for splines and omoms is based on code by
-  Philippe Thevenaz http://bigwww.epfl.ch/thevenaz/interpolation/
-  see also:
-
-  [1] M. Unser,
- 	"Splines: A Perfect Fit for Signal and Image Processing,"
- 	IEEE Signal Processing Magazine, vol. 16, no. 6, pp. 22-38,
- 	November 1999.
-  [2] M. Unser, A. Aldroubi and M. Eden,
- 	"B-Spline Signal Processing: Part I--Theory,"
- 	IEEE Transactions on Signal Processing, vol. 41, no. 2, pp. 821-832,
- 	February 1993.
-  [3]  M. Unser, A. Aldroubi and M. Eden,
- 	"B-Spline Signal Processing: Part II--Efficient Design and Applications,"
- 	IEEE Transactions on Signal Processing, vol. 41, no. 2, pp. 834-848,
- 	February 1993.
-
-*/
+/* -*- mia-c++  -*-
+ *
+ * Copyright (c) Leipzig, Madrid 2004-2011
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
 
 #ifndef mia_3d_interpolator_hh
 #define mia_3d_interpolator_hh

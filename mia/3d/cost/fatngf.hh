@@ -18,6 +18,7 @@
  *
  */
 
+
 #include <mia/3d/cost.hh>
 #include <mia/3d/fatcost.hh>
 

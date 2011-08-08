@@ -1,8 +1,6 @@
-/*  -*- mia-c++  -*-
+/* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science	
- * 2007 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,16 +18,6 @@
  *
  */
 
-// $Id: 3DVector.hh 752 2005-11-22 20:56:24Z write1 $
-
-/*! \brief A 3D templated vector class
-
-A fully templated class for all types of 3D vectors
-
-\file 3DVector.hh
-\author Gert Wollny <wollny@cbs.mpg.de>
-
-*/
 
 #ifndef __MIA_3DVECTOR_HH
 #define __MIA_3DVECTOR_HH 1

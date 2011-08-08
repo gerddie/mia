@@ -1,8 +1,6 @@
 /* -*- mia-c++  -*-
+ *
  * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Max-Planck-Institute for Evolutionary Anthropology
- * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
 
 #define BOOST_TEST_MODULE FIFO_FILTER_TEST
 #define BOOST_TEST_NO_MAIN

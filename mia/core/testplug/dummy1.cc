@@ -18,7 +18,6 @@
  *
  */
 
-// TESTPLUGIN
 
 #include <mia/core/testplugin.hh>
 

@@ -18,6 +18,7 @@
  *
  */
 
+
 /*
   things to optimize:
   cache the ngf of the reference image, since it never changes

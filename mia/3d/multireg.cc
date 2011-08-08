@@ -18,6 +18,7 @@
  *
  */
 
+
 /*
   This program implements 3D gray scale image registration.
   Depending on the available plug-ins it can accomodate various models and cost-functions.

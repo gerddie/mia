@@ -1,4 +1,5 @@
 /* -*- mia-c++  -*-
+ *
  * Copyright (c) Leipzig, Madrid 2004-2011
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,13 +18,6 @@
  *
  */
 
-/*
-\author Gert Wollny <wollny at die.upm.ed>
-
-*/
-
-// the actual implementation is here, shared between
-// 2d and 3d
 #include <mia/internal/autotest.hh>
 #include <mia/2d/transformmock.hh>
 #include <mia/2d/cost/ssd2.hh>

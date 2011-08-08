@@ -18,7 +18,6 @@
  *
  */
 
-
 /* LatexBeginPluginDescription{2D image filters}
    
    \subsection{K-means classification}

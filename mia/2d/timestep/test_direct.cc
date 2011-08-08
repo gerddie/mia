@@ -2,8 +2,6 @@
  *
  * Copyright (c) Leipzig, Madrid 2004-2011
  *
- * BIT, ETSI Telecomunicacion, UPM
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -19,11 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-/*
-\author Gert Wollny <wollny at die.upm.ed>
-
-*/
 
 #include <mia/internal/autotest.hh>
 #include <mia/2d/timestep/direct.hh>

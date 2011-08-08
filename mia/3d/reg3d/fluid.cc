@@ -18,12 +18,6 @@
  *
  */
 
-
-/*
-  This plug-in implements the fluid time-step that translates a velocity field
-  to a deformation. It also provides the means to test ans suggest re-gridding.
- */
-
 #include <limits>
 #include <mia/3d/timestep.hh>
 

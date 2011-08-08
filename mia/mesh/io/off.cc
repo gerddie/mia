@@ -1,8 +1,6 @@
 /* -*- mia-c++  -*-
+ *
  * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Max-Planck-Institute for Evolutionary Anthropology
- * BIT, ETSI Telecomunicacion, UPM
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +18,6 @@
  *
  */
 
-// $Id: off_mesh_io.cc 931 2006-06-28 12:00:08Z write1 $
-
-/*! \brief plugin function to handle ply mesh- format IO
-
-
-\author Gert Wollny <gw.fossdev@gmail.com>
-
-*/
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

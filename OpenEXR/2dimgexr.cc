@@ -18,7 +18,6 @@
  *
  */
 
-
 #include <sstream>
 
 #include <ImfOutputFile.h>

@@ -1,7 +1,6 @@
-/*  -*- mia-c++ -*-
+/* -*- mia-c++  -*-
+ *
  * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Gert Wollny <gert.wollny at web.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
 
 /* 
    LatexBeginPluginDescription{3D image combiners}

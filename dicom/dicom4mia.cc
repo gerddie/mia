@@ -18,7 +18,6 @@
  *
  */
 
-
 #include <mia/core/errormacro.hh>
 #include <map>
 #include <boost/algorithm/minmax_element.hpp>
