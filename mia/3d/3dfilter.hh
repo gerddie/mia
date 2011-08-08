@@ -27,6 +27,7 @@
 #include <mia/core/combiner.hh>
 #include <mia/core/factory.hh>
 #include <mia/core/filter.hh>
+#include <mia/core/spacial_kernel.hh>
 
 NS_MIA_BEGIN
 
@@ -39,6 +40,13 @@ typedef TImageFilter<C3DImage> C3DFilter;
 typedef TImageFilterPlugin<C3DImage> C3DFilterPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C3DFilterPlugin> > C3DFilterPluginHandler;
 typedef std::shared_ptr<C3DFilter> P3DFilter; 
+
+class EXPORT_3D C3DFilterPluginHandlerTestPath {
+public: 
+	C3DFilterPluginHandlerTestPath(); 
+private: 
+	C1DSpacialKernelPluginHandlerTestPath spk_path; 
+}; 
 
 class EXPORT_3D C3DImageCombiner : public TFilter< PCombinerResult >, public CProductBase {
 public:

@@ -58,6 +58,15 @@ NS_MIA_BEGIN
 using namespace boost;
 
 
+using boost::filesystem::path; 
+C3DFilterPluginHandlerTestPath::C3DFilterPluginHandlerTestPath()
+{
+	list< path> searchpath; 
+	searchpath.push_back( path(MIA_BUILD_ROOT"/mia/3d/filter"));
+	C3DFilterPluginHandler::set_search_path(searchpath); 
+}
+
+
 C3DImageCombiner::~C3DImageCombiner()
 {
 }

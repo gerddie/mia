@@ -129,5 +129,12 @@ size_t C1DFoldingKernel::do_size()const
 
 EXPLICIT_INSTANCE_HANDLER(C1DFoldingKernel); 
 
+using boost::filesystem::path; 
+C1DSpacialKernelPluginHandlerTestPath::C1DSpacialKernelPluginHandlerTestPath()
+{
+	list< path> searchpath; 
+	searchpath.push_back( path(MIA_BUILD_ROOT"/mia/core/spacialkernel"));
+	C1DSpacialKernelPluginHandler::set_search_path(searchpath); 
+}
 
 NS_MIA_END

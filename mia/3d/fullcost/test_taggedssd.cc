@@ -32,6 +32,8 @@ namespace bfs=::boost::filesystem;
 
 
 CSplineKernelTestPath splinekernel_init_path; 
+C3DFilterPluginHandlerTestPath filter_init_path; 
+
 
 BOOST_AUTO_TEST_CASE( test_taggedssd)
 {
