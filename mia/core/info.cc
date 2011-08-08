@@ -24,10 +24,8 @@
 
 static const char info[] =
 	"%s is Copyright\n"
-	"    (c) 2002-2011 Leipzig, Germany and Madrid, Spain \n"
-        "         MPI for Human Cognitive and Brain Sciences \n"
-	"         MPI for Evolutionary Anthropology\n"
-	"         ETSI Telecomunicacion, UPM\n"
+	"    (c) 1999-2011 Leipzig, Germany and Madrid, Spain \n"
+        "         Gert Wollny \n"
 	""
 	"and it comes with  ABSOLUTELY NO WARRANTY. You may redistribute .\n"
 	"it under the terms of the GNU GENERAL PUBLIC LICENSE (see below).\n"
