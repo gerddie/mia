@@ -38,6 +38,8 @@ public:
 };
 
 /**
+   \ingroup interpol 
+
    \brief Basic Interpolator type for 3D Data.
  */
 
@@ -134,6 +136,9 @@ private:
 
 
 /**
+   \ingroup interpol 
+      
+
    @brief A factory to create interpolators of a given type by providing input data.
    
  */

@@ -60,6 +60,8 @@ public:
 };
 
 /**
+   \ingroup interpol 
+
    \brief The base class for 2D interpolators 
 
    Basic Interpolator type for 2D Data.
@@ -176,6 +178,8 @@ private:
 };
 
 /**
+   \ingroup interpol 
+
    \brief The factory to create an interpolator from some input data 
 */
 
