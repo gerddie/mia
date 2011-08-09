@@ -30,7 +30,10 @@
 
 
 NS_MIA_BEGIN
-/// specialization of the 3D non-rigid registration 
+/**
+   \ingroup registration 
+   Specialization of TNonrigidRegister for 3D data 
+*/
 typedef TNonrigidRegister<3> C3DNonrigidRegister; 
 NS_MIA_END
 

@@ -27,21 +27,35 @@
 
 NS_MIA_BEGIN
 
-/// 2D image filter 
+/**   
+      \ingroup filtering 
+      2D image filter 
+*/
 typedef TImageFilter<C2DImage> C2DFilter;
 
-/// 2D image filter plugin 
+/**
+   \ingroup filtering 
+   2D image filter plugin 
+*/
 typedef TImageFilterPlugin<C2DImage> C2DFilterPlugin;
 
-/// shared pointer type for the C2DFilter class 
+/**   
+      \ingroup filtering 
+      shared pointer type for the C2DFilter class 
+*/
 typedef std::shared_ptr<C2DFilter > P2DFilter;
 
-/// 2D filter plugin handler
+/**
+   \ingroup filtering 
+   2D filter plugin handler
+*/
 typedef THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> > C2DFilterPluginHandler;
 
 
 /**
-   convenience function: run a filter chain on a image 
+   \ingroup filtering 
+   
+   convenience function: run a filter chain on an image 
    @param image input image 
    @param nfilters number of filter definitions following 
    @param filters array of strings defining the filter to be applied 
@@ -50,7 +64,8 @@ typedef THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> > C2DFilterPlug
 P2DImage  EXPORT_2D run_filter_chain(P2DImage image, size_t nfilters, const char *filters[]);
 
 /**
-   convenience function: run a filter chain on a image 
+   \ingroup filtering 
+   convenience function: create and run a filter on an image 
    @param image input image 
    @param filter string defining the filter to be applied 
    @returns the filtered image 

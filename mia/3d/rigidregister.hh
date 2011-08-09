@@ -31,6 +31,8 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup registration
+   
    \brief 3D linear registration class 
    
    Class for registration without regularization - i.e. should only be used

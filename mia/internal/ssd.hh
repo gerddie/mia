@@ -27,10 +27,6 @@
 #include <limits>
 
 NS_BEGIN(NS)
-/**
-   This is the generic const function that gets derived from the 
-   cost function type of the data 
-*/
 
 template <typename TCost> 
 class TSSDCost: public TCost {
@@ -47,9 +43,6 @@ private:
 };
 
 
-/**
-   this is a filter to measure the actual cost
-*/
 struct FEvalSSD : public mia::TFilter<double> {
 	FEvalSSD(bool normalize):m_normalize(normalize){}
 	
@@ -71,10 +64,6 @@ struct FEvalSSD : public mia::TFilter<double> {
 }; 
 
 
-/**
-   This is the implementation of the cost function
-*/
-
 template <typename TCost> 
 TSSDCost<TCost>::TSSDCost():
 	m_normalize(true)
@@ -95,10 +84,6 @@ double TSSDCost<TCost>::do_value(const Data& a, const Data& b) const
 	FEvalSSD essd(m_normalize); 
 	return filter(essd, a, b); 
 }
-
-/**
-   This is a force evaluation filter 
-*/
 
 template <typename Force>
 struct FEvalForce: public mia::TFilter<float> {

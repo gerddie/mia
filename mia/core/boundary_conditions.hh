@@ -183,6 +183,12 @@ private:
 */
 typedef THandlerSingleton<TFactoryPluginHandler<CSplineBoundaryConditionPlugin> > CSplineBoundaryConditionPluginHandler;
 
+
+/**   
+      \ingroup tests 
+      Class to set up the plug-in search path for boundary conditions when running tests
+      in the build tree 
+*/
 struct EXPORT_CORE CSplineBoundaryConditionTestPath {
 	CSplineBoundaryConditionTestPath(); 
 }; 

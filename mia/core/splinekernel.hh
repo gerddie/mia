@@ -311,6 +311,12 @@ inline PSplineKernel produce_spline_kernel(const std::string& descr)
 
 FACTORY_TRAIT(CSplineKernelPluginHandler); 
 
+
+/**   
+      \ingroup tests 
+      Class to set up the plug-in search path for spline kernels when running tests
+      in the build tree 
+*/
 struct EXPORT_CORE CSplineKernelTestPath {
 	CSplineKernelTestPath(); 
 }; 

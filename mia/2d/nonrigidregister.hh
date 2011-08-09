@@ -30,7 +30,10 @@
 
 
 NS_MIA_BEGIN
-/// Specialization of TNonrigidRegister for 2D images 
+/**
+   \ingroup registration 
+   Specialization of TNonrigidRegister for 2D data 
+*/
 typedef TNonrigidRegister<2> C2DNonrigidRegister; 
 NS_MIA_END
 

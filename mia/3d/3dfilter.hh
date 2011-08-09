@@ -33,14 +33,36 @@ NS_MIA_BEGIN
 
 
 /**
-   Base class for 3D image filters. Real filters are implemented as implemented plug-ins.
- */
+   \ingroup filtering 
+   Base class for 3D image filters. Filters are implemented as plug-ins.
+
+*/
 
 typedef TImageFilter<C3DImage> C3DFilter;
+
+/**   
+      \ingroup filtering 
+      The 3D filter plugin type 
+*/
 typedef TImageFilterPlugin<C3DImage> C3DFilterPlugin;
+
+/**   
+      \ingroup filtering 
+      The 3D filter plugin handler
+*/
 typedef THandlerSingleton<TFactoryPluginHandler<C3DFilterPlugin> > C3DFilterPluginHandler;
+
+/**   
+      \ingroup filtering 
+      The 3D filter shared pointer 
+*/
 typedef std::shared_ptr<C3DFilter> P3DFilter; 
 
+/**   
+      \ingroup tests 
+      Class to set up the plug-in search path for filters when running tests
+      in the build tree 
+*/
 class EXPORT_3D C3DFilterPluginHandlerTestPath {
 public: 
 	C3DFilterPluginHandlerTestPath(); 
@@ -67,6 +89,8 @@ typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCombinerPlugin> > C3DIma
 
 
 /**
+   \ingroup filtering 
+
    Convenience function to create a filter chain from a series of filter descriptions 
    \param chain the descriptions 
    \returns the filter chain as a vector 

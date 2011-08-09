@@ -49,12 +49,13 @@
 
     These classes deal with the tasks related to interpolation
     
+    \defgroup registration Image Registration 
 
     \defgroup classes Classes that provide primary funcionality 
     \defgroup templates Templates that provide primary funcionality 
     \defgroup functors Functors
     \defgroup helpers Helper classes and functions 
     \defgroup traits Template metaprogramming classes
-    \defgroup tests Classes used for tests only 
+    \defgroup tests Test classes and functions
     
 */

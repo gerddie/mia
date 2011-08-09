@@ -26,15 +26,27 @@
 NS_MIA_BEGIN
 
 /**
-   A accumulation of cost functions that are weigted against each other 
+   \ingroup registration 
+   \tparam Transform the transformation type used to achieve registration by optimizing the cost function 
+   \brief A accumulation of cost functions that are weigted against each other 
+
+   This class is used to accumulate various cost measures to be optimized for image registration. 
  */
 template <typename Transform>
 class EXPORT_HANDLER TFullCostList : public TFullCost<Transform> {
 public: 
 	TFullCostList(); 
+
+	/// The pointer type of this cost function 
 	typedef typename TFullCost<Transform>::Pointer  Pointer; 
+
+	/// The size type of this cost function type 
 	typedef typename TFullCost<Transform>::Size     Size; 
 
+	/**
+	   Append a new cost function to the list 
+	   \param cost a shared pointer to the new cost measure. 
+	 */
 	void push(typename TFullCost<Transform>::Pointer cost); 
 private: 
 	bool do_has(const char *property) const;

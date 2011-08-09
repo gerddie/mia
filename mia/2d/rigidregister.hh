@@ -32,6 +32,8 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup registration
+
    @brief Linear Registration of 2D images.  
    
    Class for registration without regularization - i.e. should only be used

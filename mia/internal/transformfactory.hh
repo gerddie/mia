@@ -37,15 +37,23 @@ NS_MIA_BEGIN
 template <typename Transform> 
 class EXPORT_HANDLER TTransformCreator: public CProductBase {
 public:
+
+	/// helper type for plug-in handling 
 	typedef typename Transform::Data plugin_data; 
+
+	/// helper type for plug-in handling 
 	typedef Transform plugin_type; 
 
+	/// the type of the interpolation factory used by this transformation 
 	typedef typename Transform::InterpolatorFactory InterpolatorFactory; 
+
+	/// the size type of this transformation 
 	typedef typename Transform::Size Size; 
+
+	/// the pointer type for this transformation creator 
 	typedef std::shared_ptr<TTransformCreator<Transform> > Pointer; 
 
-	/** Standard constructor 
-	    \remark it is empty, so why it is defined? 
+	/** Copy constructor 
 	 */
 	TTransformCreator(const InterpolatorFactory& ipf);
 
@@ -75,13 +83,22 @@ private:
 };
 
 
-/// this is the Factory class that is used to create the transformation creator 
+/**
+   \brief Factory class that is used to create the transformation creator 
+   \tparam Transform the type of the transformation to be created 
+*/ 
 template <typename Transform> 
 class EXPORT_HANDLER TTransformCreatorPlugin : public TFactory<TTransformCreator<Transform> > {
 public: 
 	typedef typename TFactory<TTransformCreator<Transform> >::Product Product; 
+
+	/// the type of the interpolation factory used by the transformation 
 	typedef typename Transform::InterpolatorFactory InterpolatorFactory; 
 
+	/**
+	   Plug-in constructor 
+	   \param name name of the plug-in 
+	 */
 	TTransformCreatorPlugin(const char *const name); 
 private: 
 	virtual Product *do_create() const __attribute__((warn_unused_result));
