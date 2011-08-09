@@ -27,6 +27,17 @@
   Classes and structures that work as functors are named starting with a capital "F", e.g. FMeanValue. 
   Names of PODs (plain old data structures) begin with a "S".
 
+  \section naming_sec File names
+  
+  C++ Header files use the suffix ".hh",  C++ implementation files use ".cc". 
+  For specific template implementations are only included for explicit template instanciations, the 
+  files use the suffic ".cxx". 
+  
+  File names do not necessarily correspond directly to classes defined and implemented in these files,
+       but usually hint at the funcionallity provided. 
+   
+  A file may contain more then one class and additional functions. 
+    
   \section refactor_sec Planned refactoring and changes
     
   - Registration algorithms should make it possible to select a lowest resolution directly in  
