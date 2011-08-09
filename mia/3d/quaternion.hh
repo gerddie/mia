@@ -86,7 +86,7 @@ public:
 	   Evaluate the rotation of a point by this quaternion 
 	   \tparam value type of the vector elements 
 	   \param x input coordinates
-	   \ŗeturns rotated point coordinates 
+	   \returns rotated point coordinates 
 	 */
 	template <typename T> 
 	T3DVector<T> rotate(const T3DVector<T>& x) const; 
