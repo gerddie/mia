@@ -39,7 +39,7 @@ public:
 
 /**
    \ingroup interpol 
-
+   \tparam T data type to be interpolated 
    \brief Basic Interpolator type for 3D Data.
  */
 
@@ -63,6 +63,9 @@ struct coeff_map<T3DVector<U> > {
 
 
 /**
+   \ingroup interpol 
+   \tparam T data type to be interpolated 
+
    \brief Interpolator that is based on convolution,like b-splines an o-moms.
 */
 
