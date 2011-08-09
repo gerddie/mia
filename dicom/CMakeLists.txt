@@ -30,7 +30,7 @@ IF (WITH_DCMTK)
   FIND_PACKAGE(DCMTKnew)
   IF(DCMTK_FOUND)
     SET(dicom4mia_deps mia2d ${DCMTK_LIBRARIES})
-    MIA_TARGET_LIBRARY(dicom4mia "${dicom4mia_SOURCES}" "${dicom4mia_deps}")
+    MIA_ADD_LIBRARY(dicom4mia "${dicom4mia_SOURCES}" "${dicom4mia_deps}")
     INSTALL_BASE(dicom4mia)
 
     SET(DCMTK_LINK_LIBS_2D dicom4mia)

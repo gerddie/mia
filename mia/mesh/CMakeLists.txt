@@ -26,7 +26,7 @@ SET(MIAMESH_HEADERS
   triangularMesh.hh
 )
 
-MIA_TARGET_LIBRARY(miamesh "${MIAMESH_SRC}" mia3d)
+MIA_ADD_LIBRARY(miamesh "${MIAMESH_SRC}" mia3d)
 
 MACRO(TEST_MESH name)
   ADD_EXECUTABLE(test-${name} test_${name}.cc)  

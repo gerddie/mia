@@ -18,7 +18,7 @@
 #
 #
 
-MACRO(MIA_TARGET_LIBRARY name sources deps)
+MACRO(MIA_ADD_LIBRARY name sources deps)
   ADD_LIBRARY(${name} SHARED ${sources})
   TARGET_LINK_LIBRARIES(${name} ${deps})
   SET_TARGET_PROPERTIES(${name} PROPERTIES 
@@ -26,10 +26,7 @@ MACRO(MIA_TARGET_LIBRARY name sources deps)
     VERSION ${LIBRARY_VERSION_INFO}
     OUTPUT_NAME ${name}-${VERSION}
     )
-
-
-ENDMACRO(MIA_TARGET_LIBRARY)
-
+ENDMACRO(MIA_ADD_LIBRARY)
 
 
 MACRO(DEFPLUGIN plugin file libs)

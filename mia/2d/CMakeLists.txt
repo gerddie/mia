@@ -138,7 +138,7 @@ SET(MIA2D_HEADERS ${MIA2D_HEADERS_BASE} ${SEG_HEADER} ${ITPP_HEADER})
 #
 # the main 2D library
 # 
-MIA_TARGET_LIBRARY(mia2d "${MIA2D_SRC}" miacore)
+MIA_ADD_LIBRARY(mia2d "${MIA2D_SRC}" miacore)
 
 #
 # What we need to link from here on 
@@ -159,7 +159,7 @@ SET(mia2dtestsrc
   )
 SET(mia2dlibdeps mia2d ${BOOST_UNITTEST})
 
-MIA_TARGET_LIBRARY(mia2dtest "${mia2dtestsrc}" "${mia2dlibdeps}")
+MIA_ADD_LIBRARY(mia2dtest "${mia2dtestsrc}" "${mia2dlibdeps}")
 SET_TARGET_PROPERTIES(mia2dtest PROPERTIES COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
 
 
@@ -230,10 +230,7 @@ SET(MIA2D_MYOCARDPERF_HEADER
   groundtruthproblem.hh
 )  
 
-ADD_LIBRARY(mia2dmyocardperf SHARED ${MIA2D_MYOCARDPERF_SRC})
-TARGET_LINK_LIBRARIES(mia2dmyocardperf mia2d)
-SET_TARGET_PROPERTIES(mia2dmyocardperf PROPERTIES VERSION ${LIBRARY_VERSION_INFO}
-)
+MIA_ADD_LIBRARY(mia2dmyocardperf "${MIA2D_MYOCARDPERF_SRC}" mia2d)
 
 INSTALL_WITH_EXPORT(mia2dmyocardperf)
 INSTALL(FILES ${MIA2D_MYOCARDPERF_HEADER} DESTINATION ${INCLUDE_INSTALL_PATH}/mia/2d)

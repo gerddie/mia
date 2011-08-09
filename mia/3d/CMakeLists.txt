@@ -108,7 +108,7 @@ SET(MIA3DTEST_SRC
 #
 # The main 3D library
 #
-MIA_TARGET_LIBRARY(mia3d "${MIA3D_SRC}" mia2d)
+MIA_ADD_LIBRARY(mia3d "${MIA3D_SRC}" mia2d)
 
 MACRO(TEST_3D name)
   ADD_EXECUTABLE(test-3d-${name} test_${name}.cc)  
@@ -133,7 +133,7 @@ SET(mia3dtestsrc
   )
 SET(mia3dtestdeps ${MIA3DLIBS} mia2dtest ${BOOST_UNITTEST})
 
-MIA_TARGET_LIBRARY(mia3dtest "${mia3dtestsrc}" "${mia3dtestdeps}")
+MIA_ADD_LIBRARY(mia3dtest "${mia3dtestsrc}" "${mia3dtestdeps}")
 SET_TARGET_PROPERTIES(mia3dtest PROPERTIES COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
 
 IF(APPLE)

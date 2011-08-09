@@ -36,7 +36,7 @@ IF(USE_SYSTEM_VISTAIO)
   LINK_DIRECTORIES(${VISTAIO_LIBRARY_DIRS})
   SET(VISTAIO_SRC vista4mia.cc)
   SET(VISTAIO4MIALIBS miacore ${VISTAIO_LIBRARIES})
-  MIA_TARGET_LIBRARY(vista4mia "${VISTAIO_SRC}" "${VISTAIO4MIALIBS}")
+  MIA_ADD_LIBRARY(vista4mia "${VISTAIO_SRC}" "${VISTAIO4MIALIBS}")
 ELSE(USE_SYSTEM_VISTAIO)
   MESSAGE(STATUS "using internal version")
   SET(VISTAIO_SRC 
@@ -64,7 +64,7 @@ ELSE(USE_SYSTEM_VISTAIO)
     )
 
   
-  MIA_TARGET_LIBRARY(vista4mia "${VISTAIO_SRC}" miacore)
+  MIA_ADD_LIBRARY(vista4mia "${VISTAIO_SRC}" miacore)
   
   # test programs for internal use code
   ADD_EXECUTABLE(test-3dfield   test3dfield.c)
