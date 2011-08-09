@@ -235,7 +235,6 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 		else
 			transform = m_transform_creator->create(src_scaled->get_size());
 
-		cvmsg() << "register at " << src_scaled->get_size() << "\n";
 		/**
 		   This code is somewhat ugly, it stored the images in the internal buffer 
 		   and then it forces the cost function to reload the images
@@ -256,8 +255,9 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 		m_minimizer->set_problem(gp);
 
 		auto x = transform->get_parameters();
-		cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
+		cvmsg() << "Registration at " << src_scaled->get_size() << " with " << x.size() <<  " parameters\n";
 		m_minimizer->run(x);
+		cvmsg() << "\ndone\n";
 		transform->set_parameters(x);
 	
 		// run the registration at refined splines 
@@ -265,8 +265,9 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 			gp->reset_counters(); 
 			m_minimizer->set_problem(gp);
 			x = transform->get_parameters();
-			cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
+			cvmsg() << "Registration at " << src_scaled->get_size() << " with " << x.size() <<  " parameters\n";
 			m_minimizer->run(x);
+			cvmsg() << "\ndone\n";
 			transform->set_parameters(x);
 		}
 
