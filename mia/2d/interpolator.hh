@@ -62,7 +62,9 @@ public:
 /**
    \ingroup interpol 
 
-   \brief The base class for 2D interpolators 
+   \tparam T data type to be interpolated 
+
+   \brief The base class template for all kinds of interpolators 
 
    Basic Interpolator type for 2D Data.
 */
@@ -91,6 +93,10 @@ struct coeff_map<T2DVector<U> > {
 };
 
 /**
+   \ingroup interpol 
+
+   \tparam T data type to be interpolated 
+
    \brief The base class for 2D interpolators that use some kind of spacial convolution 
 
    This class provides the interface for 2D interpolation based on some kind of 
