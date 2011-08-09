@@ -138,33 +138,30 @@ SET(MIA2D_HEADERS ${MIA2D_HEADERS_BASE} ${SEG_HEADER} ${ITPP_HEADER})
 #
 # the main 2D library
 # 
-ADD_LIBRARY(mia2d SHARED ${MIA2D_SRC})
-TARGET_LINK_LIBRARIES(mia2d miacore)
+MIA_TARGET_LIBRARY(mia2d "${MIA2D_SRC}" miacore)
 
 #
 # What we need to link from here on 
 #
 SET(MIA2DLIBS mia2d  ${LIBS})
 
+
 #
 # The test library: On MS windows it needs to be static, 
 # because it doesen't resolve all
-# symbols, and in Windows, this is not supported
-# 
-ADD_LIBRARY(mia2dtest SHARED 
+# symbols, and in Windows, this is not supported# 
+SET(mia2dtestsrc 
   2dimageiotest.cc 
   2dvfiotest.cc 
   filtertest.cc 
   imagetest.cc
   transformmock.cc
   )
+SET(mia2dlibdeps mia2d ${BOOST_UNITTEST})
 
-TARGET_LINK_LIBRARIES(mia2dtest mia2d ${BOOST_UNITTEST})
+MIA_TARGET_LIBRARY(mia2dtest "${mia2dtestsrc}" "${mia2dlibdeps}")
 SET_TARGET_PROPERTIES(mia2dtest PROPERTIES COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
 
-SET_TARGET_PROPERTIES(mia2d mia2dtest PROPERTIES 
-  VERSION ${LIBRARY_VERSION_INFO}
-)
 
 IF(APPLE)
    SET_TARGET_PROPERTIES(mia2dtest PROPERTIES LINK_FLAGS "-single_module -Wl,-flat_namespace -Wl,-undefined -Wl,suppress")
