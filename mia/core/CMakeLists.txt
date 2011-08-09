@@ -1,7 +1,21 @@
 #
-# The miacore build definitions
-# Copyright (c) Leipzig, Madrid 2004-2010
-# Redistribution according to the GPL 
+# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#
 #
 
 SET(MIACORE_SRC_BASE 
@@ -196,13 +210,13 @@ ENDIF (UNIX)
 #
 # the library target 
 #
-SET(MIACORE_SRC ${MIACORE_SRC_BASE} ${ITPP_SRC} ${FFTWF_SRC} ${PWPDF_SRC})
+SET(MIACORE_SRC ${MIACORE_SRC_BASE} ${ITPP_SRC} ${FFTWF_SRC} ${PWPDF_SRC} revision.hh)
 SET(MIACORE_HEADER ${MIACORE_HEADER_BASE} ${ITPP_HEADER} ${FFTWF_HEADER} ${PWPDF_HEADER})
 
-ADD_LIBRARY(miacore SHARED ${MIACORE_SRC})
-ADD_DEPENDENCIES(miacore revision.hh)
-TARGET_LINK_LIBRARIES(miacore miagsl ${BASELIBS} ${TBB_LIBRARIES})
 
+SET(miacore_deps miagsl ${BASELIBS} ${TBB_LIBRARIES})
+MIA_ADD_LIBRARY(miacore "${MIACORE_SRC}" "${miacore_deps}")
+ADD_DEPENDENCIES(miacore revision.hh)
 
 IF(XMLPP_FOUND)
   TARGET_LINK_LIBRARIES(miacore ${XMLPP_LIBRARIES})
@@ -223,8 +237,12 @@ ENDIF(ITPP_FOUND)
 
 SET(MIACORE miacore ${BASELIBS})
 SET_TARGET_PROPERTIES(miacore PROPERTIES 
+  SOVERSION ${LIBRARY_SOVERSION_INFO}
   VERSION ${LIBRARY_VERSION_INFO}
 )
+
+
+
 #
 # the test targets 
 #

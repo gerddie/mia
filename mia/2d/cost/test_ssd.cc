@@ -1,5 +1,6 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2011
+ *
+ * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +18,6 @@
  *
  */
 
-/*
-\author Gert Wollny <wollny at die.upm.ed>
-
-*/
-
-// the actual implementation is here, shared between
-// 2d and 3d
 #include <mia/internal/autotest.hh>
 #include <mia/2d/cost/ssd.hh>
 

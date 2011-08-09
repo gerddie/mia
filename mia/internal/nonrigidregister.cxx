@@ -1,10 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2011
- *
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Max-Planck-Institute for Evolutionary Anthropology
- * BIT, ETSI Telecomunicacion, UPM
+ * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to theFree Software
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
@@ -239,7 +235,6 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 		else
 			transform = m_transform_creator->create(src_scaled->get_size());
 
-		cvmsg() << "register at " << src_scaled->get_size() << "\n";
 		/**
 		   This code is somewhat ugly, it stored the images in the internal buffer 
 		   and then it forces the cost function to reload the images
@@ -260,8 +255,9 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 		m_minimizer->set_problem(gp);
 
 		auto x = transform->get_parameters();
-		cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
+		cvmsg() << "Registration at " << src_scaled->get_size() << " with " << x.size() <<  " parameters\n";
 		m_minimizer->run(x);
+		cvmsg() << "\ndone\n";
 		transform->set_parameters(x);
 	
 		// run the registration at refined splines 
@@ -269,8 +265,9 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 			gp->reset_counters(); 
 			m_minimizer->set_problem(gp);
 			x = transform->get_parameters();
-			cvinfo() << "Start Registration of " << x.size() <<  " parameters\n"; 
+			cvmsg() << "Registration at " << src_scaled->get_size() << " with " << x.size() <<  " parameters\n";
 			m_minimizer->run(x);
+			cvmsg() << "\ndone\n";
 			transform->set_parameters(x);
 		}
 

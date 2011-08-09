@@ -1,5 +1,6 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2011
+ *
+ * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +19,10 @@
  */
 
 #include <mia/internal/autotest.hh>
-
 #include <boost/filesystem/convenience.hpp>
 #include <boost/filesystem/path.hpp>
-
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dimageiotest.hh>
-
 #include <mia/2d/2dvfio.hh>
 
 NS_MIA_USE

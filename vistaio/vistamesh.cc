@@ -1,9 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Max-Planck-Institute for Evolutionary Anthropology
- * BIT, ETSI Telecomunicacion, UPM
+ * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-// $Id: vista_meshio.cc 896 2006-03-27 10:01:12Z write1 $
-
-/*! \brief plugin function to handle vista- format mesh IO
-
-\file vista_meshio.cc
-\author Gert Wollny <gw.fossdev at gmail.com>
-*/
 
 
 #ifdef HAVE_CONFIG_H

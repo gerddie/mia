@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science	
+ *
+ * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-// $Id: 3DDatafield.hh 732 2005-11-14 18:06:39Z write1 $
-
-/*! \brief A templated datafield class
- 
-The class holds all types of data stored in three dimensional fields.
- 
-\file 3DDatafield.cxx
-\author Gert Wollny <wollny@cbs.mpg.de>
- 
-*/
 
 #ifndef __3ddatafield_cxx
 #define __3ddatafield_cxx

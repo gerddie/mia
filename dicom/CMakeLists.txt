@@ -1,3 +1,23 @@
+#
+# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#
+#
+
 OPTION(WITH_DCMTK "enable support for DCMTK DICOM IO" ${SEARCH_LIBS_DEFAULT})
 
 
@@ -9,9 +29,8 @@ SET(image3dio_path ${PLUGIN_INSTALL_PATH}/io/3dimage)
 IF (WITH_DCMTK)
   FIND_PACKAGE(DCMTKnew)
   IF(DCMTK_FOUND)
-    ADD_LIBRARY(dicom4mia SHARED ${dicom4mia_SOURCES})
-    TARGET_LINK_LIBRARIES(dicom4mia mia2d ${DCMTK_LIBRARIES})
-    SET_TARGET_PROPERTIES(dicom4mia PROPERTIES VERSION ${LIBRARY_VERSION_INFO})
+    SET(dicom4mia_deps mia2d ${DCMTK_LIBRARIES})
+    MIA_ADD_LIBRARY(dicom4mia "${dicom4mia_SOURCES}" "${dicom4mia_deps}")
     INSTALL_BASE(dicom4mia)
 
     SET(DCMTK_LINK_LIBS_2D dicom4mia)

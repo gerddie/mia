@@ -1,6 +1,6 @@
-/*  -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science
+/* -*- mia-c++  -*-
+ *
+ * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,15 @@
 NS_MIA_BEGIN
 
 using namespace boost;
+
+
+using boost::filesystem::path; 
+C3DFilterPluginHandlerTestPath::C3DFilterPluginHandlerTestPath()
+{
+	list< path> searchpath; 
+	searchpath.push_back( path(MIA_BUILD_ROOT"/mia/3d/filter"));
+	C3DFilterPluginHandler::set_search_path(searchpath); 
+}
 
 
 C3DImageCombiner::~C3DImageCombiner()

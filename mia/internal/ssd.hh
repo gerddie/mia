@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Evolutionary Anthropoloy
+ *
+ * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,15 +18,6 @@
  *
  */
 
-/*! \brief basic type of a plugin handler 
-
-A generic SSD implementation for plugins
-
-\author Gert Wollny <gw.fossdev@gmail.com>
-
-*/
-
-
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/parameter.hh>
@@ -36,10 +27,6 @@ A generic SSD implementation for plugins
 #include <limits>
 
 NS_BEGIN(NS)
-/**
-   This is the generic const function that gets derived from the 
-   cost function type of the data 
-*/
 
 template <typename TCost> 
 class TSSDCost: public TCost {
@@ -56,9 +43,6 @@ private:
 };
 
 
-/**
-   this is a filter to measure the actual cost
-*/
 struct FEvalSSD : public mia::TFilter<double> {
 	FEvalSSD(bool normalize):m_normalize(normalize){}
 	
@@ -80,10 +64,6 @@ struct FEvalSSD : public mia::TFilter<double> {
 }; 
 
 
-/**
-   This is the implementation of the cost function
-*/
-
 template <typename TCost> 
 TSSDCost<TCost>::TSSDCost():
 	m_normalize(true)
@@ -104,10 +84,6 @@ double TSSDCost<TCost>::do_value(const Data& a, const Data& b) const
 	FEvalSSD essd(m_normalize); 
 	return filter(essd, a, b); 
 }
-
-/**
-   This is a force evaluation filter 
-*/
 
 template <typename Force>
 struct FEvalForce: public mia::TFilter<float> {

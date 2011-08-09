@@ -25,7 +25,7 @@ elif [ ! -f $1/revision.hh ] ; then
     echo "WARNING: Unable to obtain revision info from git tree"
     echo "WARNING: Either you're not using a working copy of the git version"
     echo "WARNING: or the git  client is not available"
-    echo "WARNING: As a workaround you may create a 'revision.hh' by hand in the <source root>/mia/core directory"
+    echo "WARNING: As a workaround you may create a 'revision.hh' by hand in the <build root>/mia/core directory"
     echo "WARNING: with the line '#define LIBMIA_REVISION \"unknown\"'"
     echo "WARNING: otherwise build will fail with 'revision.cc: revision.hh: No such file or directory'"
 fi

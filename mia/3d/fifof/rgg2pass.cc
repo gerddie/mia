@@ -1,8 +1,6 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science	
- * Max-Planck-Institute for Evolutionary Anthropology 
- * BIT, ETSI Telecomunicacion, UPM
+ *
+ * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +18,6 @@
  *
  */
 
-/*! \brief basic type of a plugin handler 
-
-A gradient based region growing filter seeded based on a fuzzy c-means classification. 
-
-\author Gert Wollny <wollny at eva.mpg.de>
-
-*/
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif

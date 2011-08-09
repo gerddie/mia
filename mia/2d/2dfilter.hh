@@ -1,9 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Max-Planck-Institute for Evolutionary Anthropology
- * BIT, ETSI Telecomunicacion, UPM
+ * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -30,21 +27,35 @@
 
 NS_MIA_BEGIN
 
-/// 2D image filter 
+/**   
+      \ingroup filtering 
+      2D image filter 
+*/
 typedef TImageFilter<C2DImage> C2DFilter;
 
-/// 2D image filter plugin 
+/**
+   \ingroup filtering 
+   2D image filter plugin 
+*/
 typedef TImageFilterPlugin<C2DImage> C2DFilterPlugin;
 
-/// shared pointer type for the C2DFilter class 
+/**   
+      \ingroup filtering 
+      shared pointer type for the C2DFilter class 
+*/
 typedef std::shared_ptr<C2DFilter > P2DFilter;
 
-/// 2D filter plugin handler
+/**
+   \ingroup filtering 
+   2D filter plugin handler
+*/
 typedef THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> > C2DFilterPluginHandler;
 
 
 /**
-   convenience function: run a filter chain on a image 
+   \ingroup filtering 
+   
+   convenience function: run a filter chain on an image 
    @param image input image 
    @param nfilters number of filter definitions following 
    @param filters array of strings defining the filter to be applied 
@@ -53,7 +64,8 @@ typedef THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> > C2DFilterPlug
 P2DImage  EXPORT_2D run_filter_chain(P2DImage image, size_t nfilters, const char *filters[]);
 
 /**
-   convenience function: run a filter chain on a image 
+   \ingroup filtering 
+   convenience function: create and run a filter on an image 
    @param image input image 
    @param filter string defining the filter to be applied 
    @returns the filtered image 

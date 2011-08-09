@@ -1,3 +1,23 @@
+#
+# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#
+#
+
 SET(MIA3D_SRC 
   cost.cc
   creator.cc
@@ -76,31 +96,19 @@ SET(MIA3D_HEADERS
 )
 
 SET(MIA3DTEST_SRC
-#	test_cost.cc
-#	test_combiner.cc
 	test_3d.cc
 	test_3ddatafield.cc
-#	test_3dfilter.cc
 	test_3dimage.cc
-#	test_3dimageio.cc
-#	test_3dregplugins.cc
 	test_3dvector.cc
-#	test_3dvfio.cc
 	test_interpol.cc
-#	test_shape.cc
 )
 
-#
-# inherit what we always need 
-#
-SET(LIBS miacore)
 
 
 #
 # The main 3D library
 #
-ADD_LIBRARY(mia3d SHARED ${MIA3D_SRC})
-TARGET_LINK_LIBRARIES(mia3d mia2d ${LIBS})
+MIA_ADD_LIBRARY(mia3d "${MIA3D_SRC}" mia2d)
 
 MACRO(TEST_3D name)
   ADD_EXECUTABLE(test-3d-${name} test_${name}.cc)  
@@ -117,18 +125,16 @@ SET(MIA3DLIBS mia3d  ${LIBS})
 # io test library 
 #
 
-ADD_LIBRARY(mia3dtest SHARED 
+SET(mia3dtestsrc 
   3dimageiotest.cc 
   3dvfiotest.cc 
   fifotestfixture.cc
   transformmock.cc
   )
-TARGET_LINK_LIBRARIES(mia3dtest ${MIA3DLIBS} mia2dtest ${BOOST_UNITTEST})
-SET_TARGET_PROPERTIES(mia3dtest PROPERTIES COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
+SET(mia3dtestdeps ${MIA3DLIBS} mia2dtest ${BOOST_UNITTEST})
 
-SET_TARGET_PROPERTIES(mia3d mia3dtest PROPERTIES 
-  VERSION ${LIBRARY_VERSION_INFO}
-)
+MIA_ADD_LIBRARY(mia3dtest "${mia3dtestsrc}" "${mia3dtestdeps}")
+SET_TARGET_PROPERTIES(mia3dtest PROPERTIES COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
 
 IF(APPLE)
   SET_TARGET_PROPERTIES(mia3dtest PROPERTIES LINK_FLAGS "-single_module -Wl,-flat_namespace -Wl,-undefined -Wl,suppress")

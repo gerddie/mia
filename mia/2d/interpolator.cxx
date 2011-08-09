@@ -1,9 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science	
- * Max-Planck-Institute for Evolutionary Anthropology 
- * BIT, ETSI Telecomunicacion, UPM
+ * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,17 +9,18 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
 
+/*
   The filter routines for splines and omoms is based on code by 
   Philippe Thevenaz http://bigwww.epfl.ch/thevenaz/interpolation/
-   
 */
 
 #include <cmath>
@@ -217,47 +215,6 @@ typename T2DConvoluteInterpolator<T>::TCoeff2D::value_type T2DConvoluteInterpola
 	} // end switch 
 
 	return result; 
-}
-
-template <typename T>
-T T2DConvoluteInterpolator<T>::evaluate(const CSplineKernel::VWeight& xweight,
-					const CSplineKernel::VWeight& yweight,
-					const CSplineKernel::VIndex&    xindex, 
-					const CSplineKernel::VIndex&    yindex
-					) const
-{
-	typedef typename TCoeff2D::value_type U; 
-
-	U result = U();
-	
-	// give the compiler some chance to optimize and unroll the 
-	// interpolation loop by creating some fixed size calls  
-	switch (m_kernel->size()) {
-	case 2: result = add_2d<TCoeff2D,2>::apply(m_coeff, xweight, yweight, 
-						   xindex, yindex); break; 
-	case 3: result = add_2d<TCoeff2D,3>::apply(m_coeff, xweight, yweight, 
-						   xindex, yindex); break; 
-	case 4: result = add_2d<TCoeff2D,4>::apply(m_coeff, xweight, yweight, 
-						   xindex, yindex); break; 
-	case 5: result = add_2d<TCoeff2D,5>::apply(m_coeff, xweight, yweight, 
-						   xindex, yindex); break; 
-	case 6: result = add_2d<TCoeff2D,6>::apply(m_coeff, xweight, yweight, 
-						   xindex, yindex); break; 
-	default: {
-		/* perform interpolation */
-		for (size_t y = 0; y < m_kernel->size(); ++y) {
-			U rx = U();
-			const typename  TCoeff2D::value_type *p = &m_coeff(0, yindex[y]);
-			for (size_t x = 0; x < m_kernel->size(); ++x) {
-				rx += xweight[x] * p[xindex[x]];
-			}
-			result += yweight[y] * rx; 
-		}
-	}
-	} // end switch 
-	
-	bounded<U, T>::apply(result, m_min, m_max);
-	return round_to<U, T>::value(result); 
 }
 
 template <class C, int size>

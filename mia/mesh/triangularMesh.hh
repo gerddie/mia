@@ -1,8 +1,6 @@
 /* -*- mia-c++  -*-
- * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Max-Planck-Institute for Evolutionary Anthropology
- * BIT, ETSI Telecomunicacion, UPM
+ *
+ * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,17 +18,6 @@
  *
  */
 
-// $Id: triangularMesh.hh 825 2006-01-31 14:22:38Z write1 $
-
-/*! \brief class for triangular meshes
-
-class for triangular meshes and some basic algorithms
-
-\file triangularMesh.hh
-\todo add a disance transform to evaluate the distance between two meshes
-\author Gert Wollny <wollny@cbs.mpg.de>
-
-*/
 
 #ifndef __TRIANGULARMESH_HH
 #define __TRIANGULARMESH_HH 1

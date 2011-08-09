@@ -1,9 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Max-Planck-Institute for Evolutionary Anthropology
- * BIT, ETSI Telecomunicacion, UPM
+ * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,12 +9,13 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
 
 /*
@@ -62,7 +60,11 @@ public:
 };
 
 /**
-   \brief The base class for 2D interpolators 
+   \ingroup interpol 
+
+   \tparam T data type to be interpolated 
+
+   \brief The base class template for all kinds of interpolators 
 
    Basic Interpolator type for 2D Data.
 */
@@ -91,6 +93,10 @@ struct coeff_map<T2DVector<U> > {
 };
 
 /**
+   \ingroup interpol 
+
+   \tparam T data type to be interpolated 
+
    \brief The base class for 2D interpolators that use some kind of spacial convolution 
 
    This class provides the interface for 2D interpolation based on some kind of 
@@ -120,24 +126,20 @@ public:
 
 	~T2DConvoluteInterpolator();
 
-	
-	T  operator () (const C2DFVector& x) const;
 
 	/**
-	   Evaluate the interolation based on the given weights and coefficient indices.
-	   \param xweight B-spline weights in x-direction
-	   \param yweight B-spline weights in y-direction
-	   \param xindex indices into the coefficient field in x-direction
-	   \param yindex indices into the coefficient field in y-direction
-	*/
-	T evaluate(const CSplineKernel::VWeight& xweight, const CSplineKernel::VWeight& yweight,
-		   const CSplineKernel::VIndex&  xindex,  const CSplineKernel::VIndex&  yindex) const; 
+	   Interpolate at the given input point 
+	   \param x input point 
+	   \returns interpolated value 
+	   \remark this method is not thread save 
+	 */
+	T  operator () (const C2DFVector& x) const;
 
-	
 	/**
 	   Evaluate the first order derivative on the given coordinate 
 	   \param x location 
 	   \returns teh drivatives in all coordinate directions as 2D vector 
+	   \remark this method is not thread save 
 	 */
 	T2DVector<T> derivative_at(const C2DFVector& x) const;
 
@@ -182,6 +184,8 @@ private:
 };
 
 /**
+   \ingroup interpol 
+
    \brief The factory to create an interpolator from some input data 
 */
 

@@ -1,10 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2011
- *
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Max-Planck-Institute for Evolutionary Anthropology
- * BIT, ETSI Telecomunicacion, UPM
+ * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -21,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
 #ifndef mia_internal_multicost_hh
 #define mia_internal_multicost_hh
 
@@ -29,15 +26,27 @@
 NS_MIA_BEGIN
 
 /**
-   A accumulation of cost functions that are weigted against each other 
+   \ingroup registration 
+   \tparam Transform the transformation type used to achieve registration by optimizing the cost function 
+   \brief A accumulation of cost functions that are weigted against each other 
+
+   This class is used to accumulate various cost measures to be optimized for image registration. 
  */
 template <typename Transform>
 class EXPORT_HANDLER TFullCostList : public TFullCost<Transform> {
 public: 
 	TFullCostList(); 
+
+	/// The pointer type of this cost function 
 	typedef typename TFullCost<Transform>::Pointer  Pointer; 
+
+	/// The size type of this cost function type 
 	typedef typename TFullCost<Transform>::Size     Size; 
 
+	/**
+	   Append a new cost function to the list 
+	   \param cost a shared pointer to the new cost measure. 
+	 */
 	void push(typename TFullCost<Transform>::Pointer cost); 
 private: 
 	bool do_has(const char *property) const;

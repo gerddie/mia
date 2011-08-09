@@ -1,7 +1,6 @@
-/*  -*- mia-c++ -*-
- * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * 2007 Gert Wollny
+/* -*- mia-c++  -*-
+ *
+ * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,22 +18,12 @@
  *
  */
 
-// $Id: inria_3dimage_io.cc 896 2006-03-27 10:01:12Z write1 $
-
-/*! \brief plugin function to handle INRIA- format IO
-
-\author Gert Wollny <gw.fossdev@gmail.com>
-
-*/
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
 #include <cassert>
 #include <errno.h>
-// MIA specific
-
 #include <cstring>
 #include <string>
 #include <sstream>

@@ -1,9 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Max-Planck-Institute for Evolutionary Anthropology
- * BIT, ETSI Telecomunicacion, UPM
+ * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -132,5 +129,12 @@ size_t C1DFoldingKernel::do_size()const
 
 EXPLICIT_INSTANCE_HANDLER(C1DFoldingKernel); 
 
+using boost::filesystem::path; 
+C1DSpacialKernelPluginHandlerTestPath::C1DSpacialKernelPluginHandlerTestPath()
+{
+	list< path> searchpath; 
+	searchpath.push_back( path(MIA_BUILD_ROOT"/mia/core/spacialkernel"));
+	C1DSpacialKernelPluginHandler::set_search_path(searchpath); 
+}
 
 NS_MIA_END

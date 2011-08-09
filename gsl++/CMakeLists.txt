@@ -1,10 +1,9 @@
 #
-# Copyright (c) Madrid 2010
-# BIT, ETSI Telecomunicacion, UPM
+# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -33,9 +32,7 @@ SET(GSLPP_HEADERS
   gsldefines.hh
   )
 
-ADD_LIBRARY(miagsl SHARED ${GSLPP_SOURCE})
-TARGET_LINK_LIBRARIES(miagsl ${GSL_LIBRARIES})
-SET_TARGET_PROPERTIES(miagsl PROPERTIES  VERSION ${LIBRARY_VERSION_INFO})
+MIA_ADD_LIBRARY(miagsl "${GSLPP_SOURCE}" "${GSL_LIBRARIES}")
 
 INSTALL_WITH_EXPORT(miagsl)
 

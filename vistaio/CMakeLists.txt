@@ -1,3 +1,22 @@
+#
+# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#
+#
 
 OPTION(VISTAIO_SYSTEM "use system version of libvistaio" TRUE)
 
@@ -15,10 +34,9 @@ ENDIF(VISTAIO_SYSTEM)
 IF(USE_SYSTEM_VISTAIO)
   INCLUDE_DIRECTORIES(${VISTAIO_INCLUDE_DIRS})
   LINK_DIRECTORIES(${VISTAIO_LIBRARY_DIRS})
-  ADD_LIBRARY(vista4mia SHARED vista4mia.cc)
-  SET_TARGET_PROPERTIES(vista4mia PROPERTIES VERSION ${LIBRARY_VERSION_INFO})
-  TARGET_LINK_LIBRARIES(vista4mia ${miacore})
-  TARGET_LINK_LIBRARIES(vista4mia ${VISTAIO_LIBRARIES})
+  SET(VISTAIO_SRC vista4mia.cc)
+  SET(VISTAIO4MIALIBS miacore ${VISTAIO_LIBRARIES})
+  MIA_ADD_LIBRARY(vista4mia "${VISTAIO_SRC}" "${VISTAIO4MIALIBS}")
 ELSE(USE_SYSTEM_VISTAIO)
   MESSAGE(STATUS "using internal version")
   SET(VISTAIO_SRC 
@@ -42,11 +60,11 @@ ELSE(USE_SYSTEM_VISTAIO)
     vfield2d.c
     volumes.c
     volumesType.c
+    vista4mia.cc
     )
 
-  ADD_LIBRARY(vista4mia SHARED vista4mia.cc ${VISTAIO_SRC})
-  TARGET_LINK_LIBRARIES(vista4mia miacore)
-  SET_TARGET_PROPERTIES(vista4mia PROPERTIES VERSION ${LIBRARY_VERSION_INFO})
+  
+  MIA_ADD_LIBRARY(vista4mia "${VISTAIO_SRC}" miacore)
   
   # test programs for internal use code
   ADD_EXECUTABLE(test-3dfield   test3dfield.c)

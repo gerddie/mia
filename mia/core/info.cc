@@ -1,9 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 2004-2011
- * Max-Planck-Institute for Human Cognitive and Brain Science
- * Max-Planck-Institute for Evolutionary Anthropology
- * BIT, ETSI Telecomunicacion, UPM
+ * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PUcRPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -27,10 +24,8 @@
 
 static const char info[] =
 	"%s is Copyright\n"
-	"    (c) 2002-2011 Leipzig, Germany and Madrid, Spain \n"
-        "         MPI for Human Cognitive and Brain Sciences \n"
-	"         MPI for Evolutionary Anthropology\n"
-	"         ETSI Telecomunicacion, UPM\n"
+	"    (c) 1999-2011 Leipzig, Germany and Madrid, Spain \n"
+        "         Gert Wollny \n"
 	""
 	"and it comes with  ABSOLUTELY NO WARRANTY. You may redistribute .\n"
 	"it under the terms of the GNU GENERAL PUBLIC LICENSE (see below).\n"
