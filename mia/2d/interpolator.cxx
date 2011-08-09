@@ -217,47 +217,6 @@ typename T2DConvoluteInterpolator<T>::TCoeff2D::value_type T2DConvoluteInterpola
 	return result; 
 }
 
-template <typename T>
-T T2DConvoluteInterpolator<T>::evaluate(const CSplineKernel::VWeight& xweight,
-					const CSplineKernel::VWeight& yweight,
-					const CSplineKernel::VIndex&    xindex, 
-					const CSplineKernel::VIndex&    yindex
-					) const
-{
-	typedef typename TCoeff2D::value_type U; 
-
-	U result = U();
-	
-	// give the compiler some chance to optimize and unroll the 
-	// interpolation loop by creating some fixed size calls  
-	switch (m_kernel->size()) {
-	case 2: result = add_2d<TCoeff2D,2>::apply(m_coeff, xweight, yweight, 
-						   xindex, yindex); break; 
-	case 3: result = add_2d<TCoeff2D,3>::apply(m_coeff, xweight, yweight, 
-						   xindex, yindex); break; 
-	case 4: result = add_2d<TCoeff2D,4>::apply(m_coeff, xweight, yweight, 
-						   xindex, yindex); break; 
-	case 5: result = add_2d<TCoeff2D,5>::apply(m_coeff, xweight, yweight, 
-						   xindex, yindex); break; 
-	case 6: result = add_2d<TCoeff2D,6>::apply(m_coeff, xweight, yweight, 
-						   xindex, yindex); break; 
-	default: {
-		/* perform interpolation */
-		for (size_t y = 0; y < m_kernel->size(); ++y) {
-			U rx = U();
-			const typename  TCoeff2D::value_type *p = &m_coeff(0, yindex[y]);
-			for (size_t x = 0; x < m_kernel->size(); ++x) {
-				rx += xweight[x] * p[xindex[x]];
-			}
-			result += yweight[y] * rx; 
-		}
-	}
-	} // end switch 
-	
-	bounded<U, T>::apply(result, m_min, m_max);
-	return round_to<U, T>::value(result); 
-}
-
 template <class C, int size>
 struct add_2d_new {
 	typedef typename C::value_type U; 

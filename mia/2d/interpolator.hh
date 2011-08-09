@@ -118,24 +118,20 @@ public:
 
 	~T2DConvoluteInterpolator();
 
-	
-	T  operator () (const C2DFVector& x) const;
 
 	/**
-	   Evaluate the interolation based on the given weights and coefficient indices.
-	   \param xweight B-spline weights in x-direction
-	   \param yweight B-spline weights in y-direction
-	   \param xindex indices into the coefficient field in x-direction
-	   \param yindex indices into the coefficient field in y-direction
-	*/
-	T evaluate(const CSplineKernel::VWeight& xweight, const CSplineKernel::VWeight& yweight,
-		   const CSplineKernel::VIndex&  xindex,  const CSplineKernel::VIndex&  yindex) const; 
+	   Interpolate at the given input point 
+	   \param x input point 
+	   \returns interpolated value 
+	   \remark this method is not thread save 
+	 */
+	T  operator () (const C2DFVector& x) const;
 
-	
 	/**
 	   Evaluate the first order derivative on the given coordinate 
 	   \param x location 
 	   \returns teh drivatives in all coordinate directions as 2D vector 
+	   \remark this method is not thread save 
 	 */
 	T2DVector<T> derivative_at(const C2DFVector& x) const;
 
