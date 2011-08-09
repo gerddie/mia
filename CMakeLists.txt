@@ -91,30 +91,6 @@ ASSERT_SIZE(float 4)
 ASSERT_SIZE(double 8)
 
 SET(HAVE_INT64 "/* #undef HAVE_INT64 */")
-#
-# currently 64 bit integers are disabled, because most of the tests fail
-# and they are not used anyway
-#
-#CHECK_TYPE_SIZE(long  MIA_SIZEOF_LONG)
-#SET(HAVE_INT64 "#define HAVE_INT64")
-#IF(${MIA_SIZEOF_LONG} EQUAL 8)
-#  SET(INT64 long)
-#  SET(LONG_IS_INT64 "#define LONG_IS_INT64")
-#ELSE (${MIA_SIZEOF_LONG} EQUAL 8)
-#    SET(LONG_IS_INT64 "/*#undef LONG_IS_INT64 */")
-#  CHECK_TYPE_SIZE("long long"   MIA_SIZEOF_LONG_LONG)
-#  IF (HAVE_MIA_SIZEOF_LONG_LONG AND ${MIA_SIZEOF_LONG_LONG} EQUAL 8)
-#    SET(INT64 "long long")
-#  ELSE (HAVE_MIA_SIZEOF_LONG_LONG AND ${MIA_SIZEOF_LONG_LONG} EQUAL 8)
-#    CHECK_TYPE_SIZE("__int64"   MIA_SIZEOF_INT64)
-#    IF (HAVE_MIA_SIZEOF_INT64)
-#      SET(INT64 __int64)
-#    ELSE(HAVE_MIA_SIZEOF_INT64)
-#      SET(HAVE_INT64 "/* #undef HAVE_INT64 */")
-#    ENDIF(HAVE_MIA_SIZEOF_INT64)
-#  ENDIF(HAVE_MIA_SIZEOF_LONG_LONG AND ${MIA_SIZEOF_LONG_LONG} EQUAL 8)
-#ENDIF(${MIA_SIZEOF_LONG} EQUAL 8)
-
 
 TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
 CHECK_INCLUDE_FILES (unistd.h HAVE_UNISTD_H)
@@ -164,6 +140,11 @@ SET(LIBRARY_INSTALL_PATH "lib")
 SET(INCLUDE_INSTALL_PATH "include/${MIA_NAME}")
 
 
+######################################################################################
+#
+# Handle BOOST
+#
+#
 MACRO(GET_BOOST_LINKERFLAG VAR LIBNAMES)
   FOREACH(L  ${LIBNAMES})
     STRING(REGEX MATCH "boost_[-_a-z0-9]*" temp ${L})
@@ -176,11 +157,6 @@ MACRO(GET_BOOST_LINKERFLAG VAR LIBNAMES)
   SET(${VAR} "${flags}")
 ENDMACRO(GET_BOOST_LINKERFLAG)
 
-
-#
-# Handle BOOST
-#
-#find essecial packages
 SET(BOOST_COMPONENTS   filesystem  regex unit_test_framework serialization system)
 IF (WIN32)
   SET(BOOST_COMPONENTS  ${BOOST_COMPONENTS} date_time)
@@ -195,22 +171,26 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 
 
-find_path(HAVE_BOOST_PORTABLE_BINARY_ARCHIVE  
-  portable_binary_archive.hpp 
-  ${Boost_INCLUDE_DIR}/boost/archive)
-IF(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
-  ADD_SUBDIRECTORY(backport)
-  INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}/backport")
-ELSE(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
-  #if the portable binary archive has become part of the BOOST distribution 
-  #just link the serialization library 
-  SET(portable_binary_archive ${Boost_SERIALIZATION})
-ENDIF(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
+IF(FALSE) 
+  find_path(HAVE_BOOST_PORTABLE_BINARY_ARCHIVE  
+    portable_binary_archive.hpp 
+    ${Boost_INCLUDE_DIR}/boost/archive)
+  IF(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
+    ADD_SUBDIRECTORY(backport)
+    INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}/backport")
+  ELSE(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
+    #if the portable binary archive has become part of the BOOST distribution 
+    #just link the serialization library 
+    SET(portable_binary_archive ${Boost_SERIALIZATION})
+  ENDIF(NOT HAVE_BOOST_PORTABLE_BINARY_ARCHIVE)
+ENDIF(FALSE)
 
-#ADD_DEFINITIONS(-DBOOST_FILESYSTEM_NO_DEPRECATED)
 ADD_DEFINITIONS(-DBOOST_ALL_DYN_LINK)
-ADD_DEFINITIONS(-DBOOST_FILESYSTEM_VERSION=2)
-
+ADD_DEFINITIONS(-DBOOST_FILESYSTEM_VERSION=3)
+#
+# end BOOST 
+#
+################################################################################
 
 FIND_PACKAGE(TBB REQUIRED)
 IF(TBB_FOUND) 
@@ -320,45 +300,25 @@ SET(PLUGSUFFIX ".mia")
 OPTION(WARN_OLD_PLUGINSTYLE "Warn if plugins use old implementation style" OFF)
 
 
-#
-# optional global dependencies for the core libraries
-#
-# Deal with FFT v3 Options
-OPTION(WITH_FFTW "Use FFTW" ${SEARCH_LIBS_DEFAULT})
 
-IF(WITH_FFTW)
-  MARK_AS_ADVANCED(WITH_FFTWD)
-  OPTION(WITH_FFTWD "Use double precision FFTW if found" ON)
+pkg_check_modules(FFTWF fftw3f REQUIRED)
+IF(FFTWF_FOUND)
+    INCLUDE_DIRECTORIES(${FFTWF_INCLUDE_DIRS})
+    LINK_DIRECTORIES(${FFTWF_LIBRARY_DIRS})
+    SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} fftw3f")
+ENDIF(FFTWF_FOUND)
 
-  MARK_AS_ADVANCED(WITH_FFTWF)
-  OPTION(WITH_FFTWF "Use single precision FFTW if found" ON)
+MARK_AS_ADVANCED(WITH_FFTWD)
+OPTION(WITH_FFTWD "Use double precision FFTW if found" ON)
 
-  IF( WITH_FFTWD OR WITH_FFTWF )
-    FIND_PACKAGE( FFTW )
-    IF(FFTWF_FOUND AND WITH_FFTWF)
-      SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} fftw3f")
-      MESSAGE(STATUS "use FFTWF")
-    ELSE(FFTWF_FOUND AND WITH_FFTWF)
-      MESSAGE(STATUS "no FFTWF found")
-    ENDIF(FFTWF_FOUND  AND WITH_FFTWF)
-    IF(FFTWD_FOUND AND WITH_FFTWD)
-      SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} fftw3")
-      MESSAGE(STATUS "use FFTWD")
-    ENDIF(FFTWD_FOUND  AND WITH_FFTWD)
-  ENDIF( WITH_FFTWD OR WITH_FFTWF )
-  IF(WITH_FFTWD)
-    OPTION(WITH_PWPDF "Use PWPDF for parzen windows PDF estimation" ${SEARCH_LIBS_DEFAULT})
-    IF(WITH_NFFT)
-      pkg_check_modules(PWPDF libpwpdf)
-      IF (PWPDF_FOUND)
-	INCLUDE_DIRECTORIES(${PWPDF_INCLUDE_DIRS})
-	LINK_DIRECTORIES(${PWPDF_LIBRARY_DIRS})
-	SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} pwpdf")
-	MESSAGE(STATUS "found PWPDF libs ${PWPDF_LIBRARIES}")
-      ENDIF (PWPDF_FOUND)
-    ENDIF(WITH_NFFT)
-  ENDIF(WITH_FFTWD)
-ENDIF(WITH_FFTW)
+IF(WITH_FFTWD)
+  pkg_check_modules(FFTWD fftw3 REQUIRED)
+  IF(FFTWD_FOUND)
+    INCLUDE_DIRECTORIES(${FFTWD_INCLUDE_DIRS})
+    LINK_DIRECTORIES(${FFTWD_LIBRARY_DIRS})
+    SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} fftw3")
+  ENDIF(FFTWD_FOUND)
+ENDIF(WITH_FFTWD)
 
 #
 # add xml library for some fun with segmentations
