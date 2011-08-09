@@ -101,6 +101,7 @@ public:
 	   get the interpolated value at a given location \a x
 	   \param x
 	   \returns the interpolated value
+	   \remark This method is not thread save
 	 */
 	T  operator () (const C3DFVector& x) const;
 
