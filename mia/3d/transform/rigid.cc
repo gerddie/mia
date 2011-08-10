@@ -263,6 +263,8 @@ void C3DRigidTransformation::set_identity()
 
 void C3DRigidTransformation::evaluate_matrix() const
 {
+	CScopedLock lock(m_mutex); 
+	
 	float sx,cx,sy,cy,sz,cz; 
 	sincosf(m_rotation.z, &sz, &cz); 
 	sincosf(m_rotation.y, &sy, &cy);

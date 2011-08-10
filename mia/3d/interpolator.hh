@@ -222,9 +222,9 @@ public:
 	   \returns an interpolator with the given input data and the predefined interpolation type
 	 */
 	template <class T>
-	T3DInterpolator<T> *create(const T3DDatafield<T>& src) const
+	T3DConvoluteInterpolator<T> *create(const T3DDatafield<T>& src) const
 		__attribute__ ((warn_unused_result));
-
+	
 	/// @returns the B-spline kernel used for interpolator creation 
 	PSplineKernel get_kernel() const; 
 private:
@@ -241,7 +241,7 @@ EXPORT_3D C3DInterpolatorFactory *create_3dinterpolation_factory(EInterpolation 
 // implementation
 
 template <class T>
-T3DInterpolator<T> *C3DInterpolatorFactory::create(const T3DDatafield<T>& src) const
+T3DConvoluteInterpolator<T> *C3DInterpolatorFactory::create(const T3DDatafield<T>& src) const
 {
 	return new T3DConvoluteInterpolator<T>(src, m_kernel, *m_xbc, *m_ybc, *m_zbc);
 }

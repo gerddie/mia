@@ -30,9 +30,13 @@
 */
 
 
+#include <tbb/parallel_for.h>
+#include <tbb/blocked_range.h>
+
 #define VSTREAM_DOMAIN "3dtransform"
 #include <mia/3d/transform.hh>
 #include <mia/3d/deformer.hh>
+#include <mia/core/threadedmsg.hh>
 
 
 NS_MIA_BEGIN
@@ -246,6 +250,21 @@ bool C3DTransformation::refine()
 	return false; 
 }
 
+template <typename T> 
+struct F3DTransformer {
+	F3DTransformer(const C3DTransformation& _trans, 
+		       const T3DConvoluteInterpolator<T>& _interp, 
+		       T3DImage<T>& _result); 
+
+	void operator() ( const tbb::blocked_range<int>& range ) const; 
+
+	const C3DTransformation& trans; 
+	T3DImage<T>& result; 
+	const T3DConvoluteInterpolator<T>& interp; 
+	
+}; 
+
+
 struct F3DTransform : public TFilter<P3DImage> {
 	F3DTransform(const C3DInterpolatorFactory& ipf, const C3DTransformation& trans):
 		m_ipf(ipf),
@@ -257,15 +276,10 @@ struct F3DTransform : public TFilter<P3DImage> {
 		auto *timage = new T3DImage<T>(m_trans.get_size(), image);
 		P3DImage result(timage);
 
-		std::auto_ptr<T3DInterpolator<T> > interp(m_ipf.create(image.data()));
+		std::unique_ptr<T3DConvoluteInterpolator<T> > interp(m_ipf.create(image.data()));
 
-		auto r = timage->begin();
-		auto v = m_trans.begin();
-		
-		while (r != timage->end()) {
-			*r = (*interp)(*v);
-			++r; ++v; 
-		}
+		F3DTransformer<T> worker(m_trans, *interp, *timage); 
+		tbb::parallel_for(tbb::blocked_range<int>( 0, timage->get_size().z), worker);
 		return result;
 	}
 private:
@@ -279,6 +293,40 @@ P3DImage C3DTransformation::do_transform(const C3DImage& input, const C3DInterpo
 {
 	return mia::filter(F3DTransform(ipf, *this), input);
 
+}
+
+
+template <typename T> 
+F3DTransformer<T>::F3DTransformer(const C3DTransformation& _trans, 
+			       const T3DConvoluteInterpolator<T>& _interp, 
+			       T3DImage<T>& _result): 
+	trans(_trans), 
+	result(_result), 
+	interp(_interp)
+{
+
+}
+
+template <typename T> 
+void F3DTransformer<T>::operator() ( const tbb::blocked_range<int>& range ) const
+{
+	CThreadMsgStream thread_stream;
+	auto cache = interp.create_cache(); 
+	
+	auto r = result.begin_at(0,0,range.begin()); 
+	C3DBounds begin(0,0,range.begin()); 
+	C3DBounds end(result.get_size().x,result.get_size().y, range.end());
+	
+	cvdebug() << "range = " << begin << " - " << end << "\n"; 
+
+	auto ti = trans.begin_range(begin, end); 
+	auto te = trans.end_range(begin, end); 
+
+	while (ti != te) {
+		*r = interp(*ti, cache); 
+		++ti; 
+		++r; 
+	}
 }
 
 const char *C3DTransformation::data_descr = "3dtransform";

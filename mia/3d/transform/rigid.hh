@@ -114,6 +114,7 @@ private:
 	C3DFVector m_translation;
 	C3DFVector m_rotation;
 	mutable bool m_matrix_valid;
+	mutable CMutex m_mutex; 
 };
 
 

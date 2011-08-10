@@ -140,6 +140,8 @@ private:
 	PSplineBoundaryCondition m_x_boundary; 
 	PSplineBoundaryCondition m_y_boundary; 
 	PSplineBoundaryCondition m_z_boundary; 
+	
+	mutable CMutex m_mutex; 
 };
 
 NS_MIA_END

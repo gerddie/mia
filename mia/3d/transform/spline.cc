@@ -231,6 +231,7 @@ C3DBounds C3DSplineTransformation::get_enlarge() const
 void C3DSplineTransformation::reinit() const
 {
 	TRACE_FUNCTION;
+	CScopedLock lock(m_mutex); 
 	if (!m_scales_valid) {
 		TRACE("C3DSplineTransformation::reinit applies");
 		m_scale = C3DFVector(m_coefficients.get_size() - C3DBounds::_1 - m_enlarge) / 
@@ -572,6 +573,7 @@ void C3DSplineTransformation::init_grid()const
 {
 	TRACE_FUNCTION; 
 	reinit();
+	CScopedLock lock(m_mutex); 
 	if (!m_grid_valid) {
 		cvdebug() << "initialize grid\n"; 
 		if (!m_current_grid || (m_current_grid->get_size() != m_range)) {
@@ -690,6 +692,7 @@ void C3DSplineTransformation::init_grid()const
 {
 	TRACE_FUNCTION; 
 	reinit();
+	CScopedLock lock(m_mutex); 
 	if (!m_grid_valid) {
 		cvdebug() << "initialize grid\n"; 
 		if (!m_current_grid || (m_current_grid->get_size() != m_range)) {
