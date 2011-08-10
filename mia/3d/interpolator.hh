@@ -62,6 +62,17 @@ struct coeff_map<T3DVector<U> > {
 };
 
 
+struct CWeightCache {
+	CSplineKernel::SCache x; 
+	CSplineKernel::SCache y; 
+	CSplineKernel::SCache z; 
+	
+	CWeightCache(int kernel_size, 
+		    const CSplineBoundaryCondition& xbc, 
+		    const CSplineBoundaryCondition& ybc, 
+		    const CSplineBoundaryCondition& zbc); 
+}; 
+
 /**
    \ingroup interpol 
    \tparam T data type to be interpolated 
@@ -102,6 +113,23 @@ public:
 	/// Standart constructor for factory prototyping
 	~T3DConvoluteInterpolator();
 
+
+	/**
+	   Create the cache structure needed to run the interpolation in a multi-threaded 
+	   environment. This function must be called in each thread once. 
+	   \returns the cache structure 
+	*/
+	CWeightCache create_cache() const; 
+
+	/**
+	   get the interpolated value at a given location \a x
+	   \param x
+	   \param cache the cache structure created by calling create_cache()- 
+	   \returns the interpolated value
+	   \remark This method is thread save if the cache structure is thread local 
+	 */
+	T  operator () (const C3DFVector& x, CWeightCache& cache) const;
+
 	/**
 	   get the interpolated value at a given location \a x
 	   \param x
@@ -109,6 +137,7 @@ public:
 	   \remark This method is not thread save
 	 */
 	T  operator () (const C3DFVector& x) const;
+
 
 	/// \returns the coefficients 
 	const TCoeff3D& get_coefficients() const {

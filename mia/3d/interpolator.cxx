@@ -153,6 +153,12 @@ void T3DConvoluteInterpolator<T>::prefilter(const T3DDatafield<T>& image)
 }
 
 template <typename T>
+CWeightCache T3DConvoluteInterpolator<T>::create_cache() const
+{
+	return CWeightCache(m_kernel->size(), *m_xbc, *m_ybc, *m_zbc); 
+}
+
+template <typename T>
 T3DConvoluteInterpolator<T>::~T3DConvoluteInterpolator()
 {
 }
@@ -245,6 +251,45 @@ struct add_3d<T3DDatafield< float >, 2> {
 };
 
 #endif
+
+template <typename T>
+T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x, CWeightCache& cache) const
+{
+	typedef typename TCoeff3D::value_type U; 
+	
+	// x will usually be the fastest changing index, therefore, it is of no use to use the cache 
+	// at the same time it's access may be handled "flat" 
+	m_kernel->get_uncached(x.x, cache.x);
+
+	// the other two coordinates are changing slowly and caching makes sense 
+	// however, the index set will always be fully evaluated 
+	if (x.y != cache.y.x) 
+		m_kernel->get_cached(x.y, cache.y);
+	
+	if (x.z != cache.z.x) 
+		m_kernel->get_cached(x.z, cache.z);	
+	
+	U result = U();
+	// now we give the compiler a chance to optimize based on kernel size and data type.  
+	// Some of these call also use template specialization to provide an optimized code path.  
+	// With SSE and SSE2 available kernel sizes 2 and 4 and the use of float and double 
+	// scalar fields are optimized.
+	switch (m_kernel->size()) {
+	case 1: result = add_3d<TCoeff3D,1>::value(m_coeff, cache.x, cache.y, cache.z); break; 
+	case 2: result = add_3d<TCoeff3D,2>::value(m_coeff, cache.x, cache.y, cache.z); break; 
+	case 3: result = add_3d<TCoeff3D,3>::value(m_coeff, cache.x, cache.y, cache.z); break; 
+	case 4: result = add_3d<TCoeff3D,4>::value(m_coeff, cache.x, cache.y, cache.z); break; 
+	case 5: result = add_3d<TCoeff3D,5>::value(m_coeff, cache.x, cache.y, cache.z); break; 
+	case 6: result = add_3d<TCoeff3D,6>::value(m_coeff, cache.x, cache.y, cache.z); break; 
+	default: {
+		assert(0 && "kernel sizes above 5 are not implemented"); 
+	}
+	} // end switch 
+	
+	bounded<U, T>::apply(result, m_min, m_max);
+	
+	return round_to<U, T>::value(result); 
+}
 
 template <typename T>
 T  T3DConvoluteInterpolator<T>::operator () (const C3DFVector& x) const

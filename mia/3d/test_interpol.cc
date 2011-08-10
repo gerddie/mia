@@ -24,6 +24,8 @@
 #include <boost/test/unit_test_suite.hpp>
 #include <boost/test/unit_test.hpp>
 
+#include <tbb/parallel_for.h>
+#include <tbb/blocked_range.h>
 
 #include <mia/3d/interpolator.hh>
 #include <mia/core/msgstream.hh>
@@ -62,6 +64,7 @@ struct __dispatch_check<T, I, false> {
 	}
 	static void apply_xyz(const I& src, int x, int y, int z) {
 		C3DFVector locx(x + 0.5,y,z);
+
 		const double value  = x + y + z + 1.5; 
 		BOOST_CHECK_CLOSE(src(locx), value, 2); 
 		
@@ -142,6 +145,83 @@ extern const char bspline3[] = "bspline:d=3";
 extern const char bspline4[] = "bspline:d=4"; 
 extern const char bspline5[] = "bspline:d=5"; 
 extern const char omomsspl3[] = "omoms:d=3"; 
+
+
+static void test_external_cache_interpolator() 
+{
+	T3DDatafield<float> data(C3DBounds(10, 12, 11));
+	auto kernel = produce_spline_kernel(bspline3); 
+	
+	auto i = data.begin();
+	for (size_t z = 0; z < data.get_size().z; ++z)
+		for (size_t y = 0; y < data.get_size().y; ++y)
+			for (size_t x = 0; x < data.get_size().x; ++x, ++i)
+				*i = x + y + z + 1;
+
+	T3DConvoluteInterpolator<float>  src(data, kernel);
+	
+	auto cache = src.create_cache(); 
+	i = data.begin();
+
+	for (size_t z = 0; z < data.get_size().z; ++z)
+		for (size_t y = 0; y < data.get_size().y; ++y)
+			for (size_t x = 0; x < data.get_size().x; ++x, ++i) {
+				C3DFVector loc(x,y,z);
+				auto v = src(loc, cache);
+				BOOST_CHECK_CLOSE(v, *i, 0.01); 
+			}
+}
+
+
+struct FParallelInterpolator {
+	T3DDatafield<float>& output; 
+	const T3DConvoluteInterpolator<float>& src; 
+	
+	FParallelInterpolator(T3DDatafield<float>& _output, 
+			      const T3DConvoluteInterpolator<float>& _src):
+		output(_output), 
+		src(_src)
+		{
+		}
+
+	void operator()( const tbb::blocked_range<int>& range ) const {
+		
+		auto cache = src.create_cache(); 
+		for (auto z = range.begin(); z != range.end(); ++z)
+			for (size_t y = 0; y < output.get_size().y; ++y)
+				for (size_t x = 0; x < output.get_size().x; ++x) {
+					C3DFVector loc(x,y,z);
+					output(x,y,z) = src(loc, cache);
+				}
+		
+	}
+}; 
+
+
+static void test_parallel_interpolator() 
+{
+	T3DDatafield<float> data(C3DBounds(10, 12, 11));
+	auto kernel = produce_spline_kernel(bspline3); 
+	
+	auto i = data.begin();
+	for (size_t z = 0; z < data.get_size().z; ++z)
+		for (size_t y = 0; y < data.get_size().y; ++y)
+			for (size_t x = 0; x < data.get_size().x; ++x, ++i)
+				*i = x + y + z + 1;
+
+	T3DConvoluteInterpolator<float>  src(data, kernel);
+	
+	T3DDatafield<float> output(data.get_size());
+	FParallelInterpolator worker(output, src); 
+	
+	tbb::parallel_for(tbb::blocked_range<int>( 0, data.get_size().z), worker);
+	for (size_t z = 0; z < data.get_size().z; ++z)
+		for (size_t y = 0; y < data.get_size().y; ++y)
+			for (size_t x = 0; x < data.get_size().x; ++x)
+				BOOST_CHECK_CLOSE(output(x,y,z), data(x,y,z), 0.01); 
+	
+}
+
 
 static double omoms3(double x)
 {
@@ -254,7 +334,7 @@ void add_3dinterpol_tests( boost::unit_test::test_suite* suite)
 	suite->add( BOOST_TEST_CASE( (&test_type<float, omomsspl3>)));
 	suite->add( BOOST_TEST_CASE( (&test_type<double, omomsspl3>)));
 
-
-
+	suite->add( BOOST_TEST_CASE( (&test_external_cache_interpolator))); 
+	suite->add( BOOST_TEST_CASE( (&test_parallel_interpolator))); 
 
 }

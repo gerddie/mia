@@ -44,6 +44,17 @@ CInterpolator::~CInterpolator()
 {
 }
 
+CWeightCache::CWeightCache(int kernel_size, 
+			   const CSplineBoundaryCondition& xbc, 
+			   const CSplineBoundaryCondition& ybc, 
+			   const CSplineBoundaryCondition& zbc):
+	x(kernel_size, xbc, kernel_size < 3), 
+	y(kernel_size, ybc, true), 
+	z(kernel_size, zbc, true)
+{ 
+}
+
+
 C3DInterpolatorFactory::C3DInterpolatorFactory(const std::string& kernel, const std::string& bc):
 	m_kernel(produce_spline_kernel(kernel)), 
 	m_xbc(produce_spline_boundary_condition(bc)),
