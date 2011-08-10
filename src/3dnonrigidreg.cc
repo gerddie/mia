@@ -70,6 +70,8 @@ mia-3dnonrigidreg -i test.v -r ref.v -o reg.v -l 2 \
 */
 
 #include <sstream>
+#include <tbb/task_scheduler_init.h>
+
 #include <mia/core.hh>
 #include <mia/3d.hh>
 #include <mia/3d/nonrigidregister.hh>
@@ -96,6 +98,7 @@ int do_main( int argc, const char *argv[] )
 	string trans_filename;
 	string transform_type("spline");
 	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1"); 
+	int max_threads = tbb::task_scheduler_init::automatic;
 
 	cvdebug() << "auto transform_creator\n"; 
 	auto transform_creator = C3DTransformCreatorHandler::instance().produce("spline:rate=10"); 
@@ -105,17 +108,27 @@ int do_main( int argc, const char *argv[] )
 	size_t mg_levels = 3;
 
 	CCmdOptionList options(g_general_help);
+	options.set_group("IO"); 
 	options.add(make_opt( src_filename, "in", 'i', "test image", CCmdOption::required));
 	options.add(make_opt( ref_filename, "ref", 'r', "reference image", CCmdOption::required));
 	options.add(make_opt( out_filename, "out", 'o', "registered output image", CCmdOption::required));
 	options.add(make_opt( trans_filename, "trans", 't', "output transformation"));
+	
+	options.set_group("Registration"); 
 	options.add(make_opt( mg_levels, "levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 
+	options.set_group("Processing"); 
+	options.add(make_opt(max_threads, "threads", 'T', "Maxiumum number of threads to use for running the registration," 
+			     "This number should be lower or equal to the number of processing cores in the machine"
+			     " (default: automatic estimation)."));  
+
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
+
+	tbb::task_scheduler_init init(max_threads);
 	
 	auto cost_descrs = options.get_remaining(); 
 
