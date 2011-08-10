@@ -58,7 +58,7 @@ public:
 	   \param coefficients B-Spline coefficient field c 
 	   \returns <c^T, P, c>
 	 */
-	double operator * (const C3DFVectorfield& coefficients) const; 
+	double operator * (const T3DDatafield<C3DFVector>& coefficients) const; 
 
 	/**
 	   Given this matrix P and the coefficient field c evaluate the value for c^T P c 
@@ -75,7 +75,7 @@ public:
 	   \returns <c^T, P, c>
 	 */
 	
-	double evaluate(const C3DFVectorfield& coefficients, CDoubleVector& gradient) const; 
+	double evaluate(const T3DDatafield<C3DFVector>& coefficients, CDoubleVector& gradient) const; 
 	
 	/**
 	   Given this matrix P and the coefficient field c evaluate the value for c^T P c 
