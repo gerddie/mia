@@ -44,6 +44,8 @@ public:
 	class EXPORT_3D iterator_impl: public C3DTransformation::iterator_impl  {
 	public:
 		iterator_impl(const C3DBounds& pos, const C3DBounds& size, const C3DFVector& m_value); 
+		iterator_impl(const C3DBounds& pos, const C3DBounds& begin, const C3DBounds& end, 
+			      const C3DBounds& size, const C3DFVector& trans); 
 	private: 
 		virtual C3DTransformation::iterator_impl * clone() const; 
 		virtual const C3DFVector&  do_get_value()const; 
@@ -54,9 +56,12 @@ public:
 		C3DFVector m_value;
 	};
 
-	C3DTransformation::const_iterator begin() const;
-	C3DTransformation::const_iterator end() const;
+	const_iterator begin() const;
+	const_iterator end() const;
+	const_iterator begin_range(const C3DBounds& begin, const C3DBounds& end) const; 
+	const_iterator end_range(const C3DBounds& begin, const C3DBounds& end) const; 
 
+	
 	virtual const C3DBounds& get_size() const;
 	virtual C3DTransformation *invert() const;
 	virtual bool save(const std::string& filename, const std::string& type) const;

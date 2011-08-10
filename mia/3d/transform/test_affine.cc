@@ -130,6 +130,24 @@ BOOST_FIXTURE_TEST_CASE( test_affine3d_iterator, ipfFixture )
 	BOOST_CHECK(ti == t1.end());
 }
 
+BOOST_FIXTURE_TEST_CASE( test_affine3d_ranged_iterator, ipfFixture)
+{
+	C3DBounds size(10,20,30);
+	C3DBounds delta(1,2,3); 
+
+	C3DAffineTransformation t1(size, ipf);
+	auto ti = t1.begin_range(delta, size - delta);
+
+	for (size_t z = delta.z; z < size.z - delta.z; ++z)
+		for (size_t y = delta.y; y < size.y - delta.y; ++y)
+			for (size_t x = delta.x; x < size.x - delta.x; ++x, ++ti) {
+				BOOST_CHECK_EQUAL(*ti, C3DFVector(x, y, z));
+			}
+
+	BOOST_CHECK(ti == t1.end_range(delta, size - delta));
+}
+
+
 BOOST_FIXTURE_TEST_CASE( test_affine_clone, TranslateTransFixture )
 {
 	P3DTransformation clone(rtrans.clone());

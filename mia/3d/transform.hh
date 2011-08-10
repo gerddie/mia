@@ -73,6 +73,8 @@ protected:
 		 */
 		iterator_impl(const C3DBounds& pos, const C3DBounds& size); 
 
+		
+		iterator_impl(const C3DBounds& pos, const C3DBounds& begin, const C3DBounds& end, const C3DBounds& size); 
 		/// move to next position 
 		void increment(); 
 
@@ -101,6 +103,9 @@ protected:
 		
 		C3DBounds m_pos; 
 		C3DBounds m_size; 
+		C3DBounds m_start; 
+		C3DBounds m_end; 
+
 
 	}; 
 public: 
@@ -154,6 +159,7 @@ public:
 
 	}; 
 
+
 	using Transformation<C3DImage, C3DInterpolatorFactory>::operator ();
 
 	/**
@@ -193,6 +199,20 @@ public:
 	 */
 	
 	virtual const_iterator end() const = 0; 
+
+
+	/**
+	   @returns the start iterator of the transformation that iterates over the grid 
+	   of the area the ransformation is defined on 
+	 */
+	virtual const_iterator begin_range(const C3DBounds& begin, const C3DBounds& end) const = 0; 
+
+	/**
+	   @returns the end iterator of the transformation that iterates over the grid 
+	   of the area the ransformation is defined on 
+	 */
+	
+	virtual const_iterator end_range(const C3DBounds& begin, const C3DBounds& end) const = 0; 
 
 	/**
 	   Placeholder for transformations that might need special initializations

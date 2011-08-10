@@ -58,6 +58,10 @@ public:
 	public:
 		iterator_impl(const C3DBounds& pos, const C3DBounds& size, 
 			      const C3DAffineTransformation& trans); 
+
+		iterator_impl(const C3DBounds& pos, const C3DBounds& begin, 
+			      const C3DBounds& end, const C3DBounds& size, 
+			      const C3DAffineTransformation& trans); 
 	private: 
 		virtual C3DTransformation::iterator_impl * clone() const; 
 		virtual const C3DFVector&  do_get_value()const; 
@@ -73,6 +77,9 @@ public:
 
 	const_iterator begin() const;
 	const_iterator end() const;
+	const_iterator begin_range(const C3DBounds& begin, const C3DBounds& end) const; 
+	const_iterator end_range(const C3DBounds& begin, const C3DBounds& end) const; 
+
 
 	virtual const C3DBounds& get_size() const;
 	virtual C3DTransformation *invert() const;

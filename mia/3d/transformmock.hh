@@ -60,11 +60,15 @@ struct  EXPORT_3D C3DTransformMock: public C3DTransformation {
 
 	virtual C3DTransformation::const_iterator begin() const; 
 	virtual C3DTransformation::const_iterator end() const; 
+	virtual C3DTransformation::const_iterator begin_range(const C3DBounds& begin, const C3DBounds& end) const;  
+	virtual C3DTransformation::const_iterator end_range(const C3DBounds& begin, const C3DBounds& end) const; 
 	
 protected: 
 	class iterator_impl:  public C3DTransformation::iterator_impl {
 		friend class C3DTransformMock; 
 		iterator_impl(const C3DBounds& pos, const C3DBounds& size);  
+		iterator_impl(const C3DBounds& pos, const C3DBounds& size, 
+			      const C3DBounds& begin, const C3DBounds& end);  
 
 		C3DTransformation::iterator_impl *clone()const; 
 		virtual const C3DFVector& do_get_value()const; 

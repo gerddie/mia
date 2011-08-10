@@ -110,7 +110,7 @@ BOOST_FIXTURE_TEST_CASE(test_set_params, TranslateTransformFixture)
 	auto a = transf.get_parameters();
 	a[0] = 2;
 	a[1] = -1;
-	a[1] = 4;
+	a[2] = 4;
 	transf.set_parameters(a);
 	auto b = transf.get_parameters();
 	BOOST_CHECK_EQUAL(b.size(), 3u);
@@ -136,6 +136,25 @@ BOOST_FIXTURE_TEST_CASE(test_invert_params, TranslateTransformFixture)
 	BOOST_CHECK_EQUAL(b[1],-a[1]);
 	BOOST_CHECK_EQUAL(b[2],-a[2]);
 }
+
+BOOST_FIXTURE_TEST_CASE( test_translate3d_ranged_iterator, ipfFixture)
+{
+	C3DBounds size(10,20,30);
+	C3DBounds delta(1,2,3); 
+	C3DFVector value(5,4,3); 
+
+	C3DTranslateTransformation transf(size, value, ipf); 
+	auto ti = transf.begin_range(delta, size - delta);
+
+	for (size_t z = delta.z; z < size.z - delta.z; ++z)
+		for (size_t y = delta.y; y < size.y - delta.y; ++y)
+			for (size_t x = delta.x; x < size.x - delta.x; ++x, ++ti) {
+				BOOST_CHECK_EQUAL(*ti, C3DFVector(x,y,z) - value);
+			}
+
+	BOOST_CHECK(ti == transf.end_range(delta, size - delta));
+}
+
 
 BOOST_AUTO_TEST_CASE(test_shift_image)
 {

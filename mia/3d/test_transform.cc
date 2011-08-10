@@ -31,6 +31,7 @@ namespace bfs=boost::filesystem;
 
 CSplineKernelTestPath spline_test_path; 
 
+
 class Cost3DMock {
 public: 
 	Cost3DMock(const C3DBounds& size); 
@@ -145,6 +146,18 @@ BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture)
 #endif
 
 
+struct TransformPluginPathFixture {
+	TransformPluginPathFixture(); 
+}; 
+
+TransformPluginPathFixture::TransformPluginPathFixture()
+{
+	list< bfs::path> kernelsearchpath;
+	kernelsearchpath.push_back(bfs::path("transform"));
+	C3DTransformCreatorHandler::set_search_path(kernelsearchpath);
+}
+
+TransformPluginPathFixture transform_plugin_test_path_init; 
 
 TransformGradientFixture::TransformGradientFixture():
 	size(20, 28, 16), 
@@ -153,10 +166,6 @@ TransformGradientFixture::TransformGradientFixture():
 	gradient(size)
 
 {
-	list< bfs::path> kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("transform"));
-	C3DTransformCreatorHandler::set_search_path(kernelsearchpath);
-
 	cost.value_and_gradient(gradient);
 	
 }
@@ -259,5 +268,7 @@ double Cost3DMock::ref_value(const C3DFVector& x)const
 }
 
 
-
-
+BOOST_AUTO_TEST_CASE (test_iterator_range) 
+{
+	
+}

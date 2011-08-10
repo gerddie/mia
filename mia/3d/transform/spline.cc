@@ -782,6 +782,27 @@ C3DTransformation::const_iterator C3DSplineTransformation::end() const
 								   m_current_grid->end()));
 }
 
+C3DTransformation::const_iterator C3DSplineTransformation::begin_range(const C3DBounds& begin, const C3DBounds& end) const
+{
+	TRACE_FUNCTION;
+	init_grid(); 
+	assert(m_current_grid); 
+	return C3DTransformation::const_iterator(new iterator_impl(begin, begin, end, get_size(), 
+								   m_current_grid->begin_at(begin.x, begin.y, begin.z)));
+}
+
+C3DTransformation::const_iterator C3DSplineTransformation::end_range(const C3DBounds& begin, const C3DBounds& end) const
+{
+	TRACE_FUNCTION;
+	init_grid(); 
+	assert(m_current_grid); 
+
+	return C3DTransformation::const_iterator(new iterator_impl(end, begin, end, get_size(), 
+								   m_current_grid->begin_at(end.x, end.y, end.z)));
+
+}
+
+
 /*
    This function evaluates the weights of the derivative  of the spline transformation 
    w.r.t. the coefficients. 
@@ -968,14 +989,25 @@ const C3DBounds& C3DSplineTransformation::get_coeff_size() const
 C3DSplineTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& size, 
 							 C3DFVectorfield::const_iterator value_it):
 	C3DTransformation::iterator_impl(pos,size), 
-	m_value_it(value_it)
+	m_value_it(value_it), 
+	m_delta(1,1,1)
 {
 }
+
+C3DSplineTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& begin, const C3DBounds& end, 
+						      const C3DBounds& size, C3DFVectorfield::const_iterator value_it):
+	C3DTransformation::iterator_impl(pos, begin, end, size), 
+	m_value_it(value_it)
+{
+	m_delta.y = size.x - (end.x - begin.x) + 1; 
+	m_delta.z = m_delta.y +  size.x * (size.y - (end.y - begin.y)); 
+}
+
  
 C3DTransformation::iterator_impl * C3DSplineTransformation::iterator_impl::clone() const
 {
 	TRACE_FUNCTION;
-	return new C3DSplineTransformation::iterator_impl(get_pos(), get_size(), m_value_it); 
+	return new iterator_impl(*this); 
 }
 
 const C3DFVector&  C3DSplineTransformation::iterator_impl::do_get_value()const
@@ -989,11 +1021,11 @@ void C3DSplineTransformation::iterator_impl::do_x_increment()
 }
 void C3DSplineTransformation::iterator_impl::do_y_increment()
 {
-	++m_value_it; 
+	m_value_it += m_delta.y; 
 }
 void C3DSplineTransformation::iterator_impl::do_z_increment()
 {
-	++m_value_it; 
+	m_value_it += m_delta.z; 
 }
 
 double C3DSplineTransformation::get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const

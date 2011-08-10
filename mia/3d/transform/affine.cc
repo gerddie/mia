@@ -403,9 +403,19 @@ C3DAffineTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, cons
 	m_dx = m_trans.apply(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
 }
 
+C3DAffineTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& begin, 
+						      const C3DBounds& end, const C3DBounds& size, 
+						      const C3DAffineTransformation& trans):
+	C3DTransformation::iterator_impl(pos, begin, end, size),
+	m_trans(trans), 
+	m_value(trans.apply(C3DFVector(pos)))
+{
+	m_dx = m_trans.apply(C3DFVector(pos.x + 1.0, pos.y, pos.z)) - m_value;
+}
+
 C3DTransformation::iterator_impl * C3DAffineTransformation::iterator_impl::clone() const
 {
-	return new iterator_impl(get_pos(), get_size(), m_trans); 
+	return new iterator_impl(*this); 
 }
 
 const C3DFVector&  C3DAffineTransformation::iterator_impl::do_get_value()const
@@ -440,6 +450,17 @@ C3DTransformation::const_iterator C3DAffineTransformation::end() const
 {
 	return C3DTransformation::const_iterator(new iterator_impl(get_size(), get_size(), *this)); 
 }
+
+C3DTransformation::const_iterator C3DAffineTransformation::begin_range(const C3DBounds& begin, const C3DBounds& end) const
+{
+	return C3DTransformation::const_iterator(new iterator_impl(begin, begin, end, get_size(), *this)); 
+}
+
+C3DTransformation::const_iterator C3DAffineTransformation::end_range(const C3DBounds& begin, const C3DBounds& end) const
+{
+	return C3DTransformation::const_iterator(new iterator_impl(end, begin, end, get_size(), *this)); 
+}
+
 
 
 float C3DAffineTransformation::pertuberate(C3DFVectorfield& /*v*/) const

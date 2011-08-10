@@ -180,6 +180,17 @@ C3DTransformation::const_iterator C3DTransformMock::end() const
 	return C3DTransformation::const_iterator(new iterator_impl(m_size, m_size)); 
 }
 
+C3DTransformation::const_iterator C3DTransformMock::begin_range(const C3DBounds& begin, const C3DBounds& end) const 
+{
+	return C3DTransformation::const_iterator(new iterator_impl(C3DBounds(0,0,0), begin, end, m_size)); 
+}
+
+C3DTransformation::const_iterator C3DTransformMock::end_range(const C3DBounds& begin, const C3DBounds& end) const
+{
+	return C3DTransformation::const_iterator(new iterator_impl(m_size, begin, end, m_size)); 
+}
+
+
 C3DTransformation::iterator_impl *C3DTransformMock::iterator_impl::clone()const
 {
 	return new C3DTransformMock::iterator_impl(get_pos(), get_size()); 
@@ -187,6 +198,13 @@ C3DTransformation::iterator_impl *C3DTransformMock::iterator_impl::clone()const
 
 C3DTransformMock::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& size):
 	C3DTransformation::iterator_impl(pos, size), 
+	m_value(-1.2, -2.3,-4.3)
+{
+}
+
+C3DTransformMock::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& begin, 
+	      const C3DBounds& end, const C3DBounds& size):
+	C3DTransformation::iterator_impl(pos, begin, end, size), 
 	m_value(-1.2, -2.3,-4.3)
 {
 }

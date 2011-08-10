@@ -52,6 +52,9 @@ public:
 	public:
 		iterator_impl(const C3DBounds& pos, const C3DBounds& size, 
 			      C3DFVectorfield::const_iterator value_it); 
+		iterator_impl(const C3DBounds& pos, const C3DBounds& begin, const C3DBounds& end, 
+			      const C3DBounds& size, C3DFVectorfield::const_iterator value_it); 
+
 	private: 
 		virtual C3DTransformation::iterator_impl * clone() const; 
 		virtual const C3DFVector&  do_get_value()const; 
@@ -60,13 +63,16 @@ public:
 		virtual void do_z_increment(); 
 
 		C3DFVectorfield::const_iterator m_value_it; 
-		
+		C3DBounds m_delta; 
 
 	};
 
 
-	C3DTransformation::const_iterator begin() const;
-	C3DTransformation::const_iterator end() const;
+	const_iterator begin() const;
+	const_iterator end() const;
+	const_iterator begin_range(const C3DBounds& begin, const C3DBounds& end) const; 
+	const_iterator end_range(const C3DBounds& begin, const C3DBounds& end) const; 
+
 
 	bool refine();
 

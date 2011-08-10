@@ -297,6 +297,36 @@ BOOST_FIXTURE_TEST_CASE( test_splinestransform_prefix_iterator, TransformSplineF
 			}
 }
 
+BOOST_FIXTURE_TEST_CASE( test_splinestransform_prefix_ranged_iterator, TransformSplineFixture )
+{
+	
+	auto i = stransf.begin_range(C3DBounds(3,2,1), range - C3DBounds(3,2,1));
+
+	for (size_t z = 1; z < range.z - 1; ++z)
+		for (size_t y = 2; y < range.y - 2; ++y)
+			for (size_t x = 3; x < range.x - 3; ++x, ++i) {
+				C3DBounds X(x,y,z); 
+				cvdebug() << X  << *i << "\n"; 
+				if (fabs(x - fx(x,y,z)) < 1e-8) 
+					BOOST_CHECK_CLOSE(1.0 + x - fx(x,y,z), 1.0 + i->x, .41);
+				else
+					BOOST_CHECK_CLOSE(x - fx(x,y,z), i->x, .41);
+
+				if (fabs(y - fy(x,y,z)) < 1e-8) 
+					BOOST_CHECK_CLOSE(1.0 + y - fy(x,y,z), 1.0 + i->y, 0.21);
+				else 
+					BOOST_CHECK_CLOSE(y - fy(x,y,z), i->y, 0.21);
+				
+				if (fabs(z - fz(x,y,z)) < 1e-8) 
+					BOOST_CHECK_CLOSE(1.0 + z - fz(x,y,z), 1.0 + i->z, 0.3);
+				else 
+					BOOST_CHECK_CLOSE(z - fz(x,y,z), i->z, .8);
+			}
+	
+	BOOST_CHECK(i == stransf.end_range(C3DBounds(3,2,1), range - C3DBounds(3,2,1)));
+}
+
+
 BOOST_FIXTURE_TEST_CASE( test_splinestransform_prefix_iterator2, TransformSplineFixture )
 {
 	

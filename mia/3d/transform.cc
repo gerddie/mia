@@ -78,22 +78,51 @@ P3DTransformation C3DTransformation::upscale(const C3DBounds& size) const
 
 C3DTransformation::iterator_impl::iterator_impl():
 	m_pos(0,0,0), 
-	m_size(0,0,0)
+	m_size(0,0,0), 
+	m_start(0,0,0), 
+	m_end(0,0,0)
+
 {
 }
 
 C3DTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& size):
 	m_pos(pos), 
-	m_size(size)
+	m_size(size), 
+	m_start(0,0,0), 
+	m_end(size)
 {
+}
+
+C3DTransformation::iterator_impl::iterator_impl(const C3DBounds& pos, const C3DBounds& begin, 
+						const C3DBounds& end, const C3DBounds& size):
+	m_pos(pos), 
+	m_size(size), 
+	m_start(begin), 
+	m_end(end)
+{
+	assert(begin.x <= end.x); 
+	assert(begin.y <= end.y); 
+	assert(begin.z <= end.z);
+
+	assert(pos.x <= end.x); 
+	assert(pos.y <= end.y); 
+	assert(pos.z <= end.z);
+
+	assert(begin.x <= pos.x); 
+	assert(begin.y <= pos.y); 
+	assert(begin.z <= pos.z);
+
+	assert(size.x >= end.x); 
+	assert(size.y >= end.y); 
+	assert(size.z >= end.z);
 }
 
 void C3DTransformation::iterator_impl::increment()
 {
 
-	if (m_pos.x < m_size.x) {
+	if (m_pos.x < m_end.x) {
 		++m_pos.x;
-		if (m_pos.x < m_size.x) {
+		if (m_pos.x < m_end.x) {
 			do_x_increment();
 			return; 
 		}
@@ -104,16 +133,16 @@ void C3DTransformation::iterator_impl::increment()
 	}
 	
 	++m_pos.y;
-	if (m_pos.y < m_size.y) {
-		m_pos.x = 0;
+	if (m_pos.y < m_end.y) {
+		m_pos.x = m_start.x;
 		do_y_increment();
 		return; 
 	}
 	
 	++m_pos.z; 
-	if (m_pos.z < m_size.z) {
-		m_pos.y = 0;
-		m_pos.x = 0;
+	if (m_pos.z < m_end.z) {
+		m_pos.y = m_start.y;
+		m_pos.x = m_start.x;
 		do_z_increment();
 		return; 
 	}
