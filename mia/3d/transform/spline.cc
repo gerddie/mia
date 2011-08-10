@@ -230,6 +230,9 @@ C3DBounds C3DSplineTransformation::get_enlarge() const
 
 void C3DSplineTransformation::reinit() const
 {
+	if (m_scales_valid) 
+		return; 
+	
 	TRACE_FUNCTION;
 	CScopedLock lock(m_mutex); 
 	if (!m_scales_valid) {
@@ -571,8 +574,11 @@ float C3DSplineTransformation::get_max_transform() const
 */
 void C3DSplineTransformation::init_grid()const
 {
-	TRACE_FUNCTION; 
 	reinit();
+	if (m_grid_valid) 
+		return; 
+
+	TRACE_FUNCTION; 
 	CScopedLock lock(m_mutex); 
 	if (!m_grid_valid) {
 		cvdebug() << "initialize grid\n"; 
@@ -690,8 +696,11 @@ void C3DSplineTransformation::init_grid()const
 */
 void C3DSplineTransformation::init_grid()const
 {
-	TRACE_FUNCTION; 
 	reinit();
+	if (m_grid_valid) 
+		return; 
+
+	TRACE_FUNCTION; 
 	CScopedLock lock(m_mutex); 
 	if (!m_grid_valid) {
 		cvdebug() << "initialize grid\n"; 
