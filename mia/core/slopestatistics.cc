@@ -45,10 +45,12 @@ struct CSlopeStatisticsImpl {
 	std::pair<size_t, float>  get_second_peak() const;
 	std::pair<size_t, float>  get_perfusion_high_peak() const;
 	float get_mean_frequency() const;
+	float get_energy() const;
 private:
 	void evaluate_curve_length() const;
 	void evaluate_range() const;
 	void evaluate_perfusion_peak() const;
+	void evaluate_frequency() const; 
 
 	vector<float> m_series;
 	mutable bool m_curve_length_valid;
@@ -57,6 +59,7 @@ private:
 	mutable bool m_perfusion_peak_valid;
 	mutable float m_range;
 	mutable float m_mean_freq;
+	mutable float m_energy;
 	mutable bool m_mean_freq_valid;
 
 	mutable std::pair<size_t, float>  m_first_peak;
@@ -85,6 +88,12 @@ float CSlopeStatistics::get_mean_frequency() const
 {
 	return impl->get_mean_frequency();
 }
+
+float CSlopeStatistics::get_energy() const
+{
+	return impl->get_energy();
+}
+
 
 CSlopeStatisticsImpl::CSlopeStatisticsImpl(const vector<float>& series):
 	m_series(series),
@@ -143,24 +152,36 @@ std::pair<size_t, float>  CSlopeStatisticsImpl::get_perfusion_high_peak() const
 	return m_perfusion_peak;
 }
 
+void CSlopeStatisticsImpl::evaluate_frequency() const
+{
+	m_mean_freq = 0.0;
+	m_energy = 0.0;
+	CFFT1D_R2C fft(m_series.size());
+	vector<CFFT1D_R2C::Complex> freq = fft.forward(m_series);
+	int k = 1;
+	for (vector<CFFT1D_R2C::Complex>::const_iterator i =
+		     freq.begin() + 1; i != freq.end(); ++i, ++k) {
+		const float n = norm<float>(*i);
+		float snorm = sqrt(n);
+		m_mean_freq += k * snorm;
+		m_energy += snorm;
+	}
+	m_mean_freq /= m_energy;
+	m_mean_freq_valid = true;
+	
+}
+
+float CSlopeStatisticsImpl::get_energy() const
+{
+	if (!m_mean_freq_valid)
+		evaluate_frequency(); 
+	return m_energy;
+}
+
 float CSlopeStatisticsImpl::get_mean_frequency() const
 {
-	if (!m_mean_freq_valid) {
-		m_mean_freq = 0.0;
-		float sum_freq = 0.0;
-		CFFT1D_R2C fft(m_series.size());
-		vector<CFFT1D_R2C::Complex> freq = fft.forward(m_series);
-		int k = 1;
-		for (vector<CFFT1D_R2C::Complex>::const_iterator i =
-			     freq.begin() + 1; i != freq.end(); ++i, ++k) {
-			const float n = norm<float>(*i);
-			float snorm = sqrt(n);
-			m_mean_freq += k * snorm;
-			sum_freq += snorm;
-		}
-		m_mean_freq /= sum_freq;
-		m_mean_freq_valid = true;
-	}
+	if (!m_mean_freq_valid)
+		evaluate_frequency(); 
 	return m_mean_freq;
 }
 

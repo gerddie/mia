@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE( test_perfusion_series )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_perfusion_mean_freq )
+BOOST_AUTO_TEST_CASE( test_perfusion_mean_freq_and_energy )
 {
 	const size_t curve_length = 20;
 	const float init_curve[curve_length] = {
@@ -85,6 +85,8 @@ BOOST_AUTO_TEST_CASE( test_perfusion_mean_freq )
 	CSlopeStatistics stats(curve);
 
 	BOOST_CHECK_CLOSE(stats.get_mean_frequency(),3.51f, 0.1);
+
+	BOOST_CHECK_CLOSE(stats.get_energy(),238.83f, 0.1);
 
 }
 

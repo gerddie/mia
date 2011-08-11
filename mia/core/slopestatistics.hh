@@ -55,6 +55,9 @@ public:
 	/// \returns the mean of the norms of the positive terms of the FFT of this curve
 	float get_mean_frequency() const;
 
+	/// \returns the sum of the mean of the norms of the positive terms of the FFT of this curve
+	float get_energy() const; 
+
 	/// \returns index and value for the minimum or the maximum (whichever has a lower index) of the curve
 	std::pair<size_t, float>  get_first_peak() const;
 
