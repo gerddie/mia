@@ -433,6 +433,45 @@ void CICAAnalysisImpl::check_set(const CICAAnalysis::IndexSet& s) const
 
 void CICAAnalysisImpl::normalize_ICs()
 {
+#if 1
+	// scale all ICs to have a variance of 1.0 
+	for (size_t c = 0; c < m_ncomponents; ++c) {
+		// evaluate range of IC
+		double v = m_ICs(c, 0);
+	
+		double sum = v; 
+		double sum2 = v * v;
+		for (size_t k = 1; k < m_nlength; ++k) {
+			const double v = m_ICs(c, k);
+			sum += v;
+			sum2 += v * v;
+		}
+		const double ic_shift = sum / m_nlength;
+		const double sigma = sqrt((sum2 - m_nlength * ic_shift * ic_shift) / (m_nlength - 1));
+
+		// we want to start all slopes with the negative value
+		// makes only truely sense, if the 1allover mean was stripped
+		float invert = 1.0;
+		if (m_Mix(0, c) > 0) {
+			cvdebug() << "Component " << c << " invert sign\n";
+			invert = -1.0;
+		}
+		
+		if (sigma > 0) {
+			const double ic_factor = invert * 2.0 / sigma;
+			const double mix_factor = 1.0 / ic_factor;
+			
+			for (size_t k = 0; k < m_nlength; ++k)
+				m_ICs(c, k) = (m_ICs(c, k) - ic_shift) * ic_factor;
+			
+			for (size_t r = 0; r < m_rows; ++r) {
+				m_mean[r] += m_Mix(r, c) * ic_shift;
+				m_Mix(r, c) *= mix_factor;
+			}
+		}
+	}
+	
+#else 
 	// scale all ICs to have a range of 2.0 and are shifted to the mean
 	for (size_t c = 0; c < m_ncomponents; ++c) {
 		// evaluate range of IC
@@ -473,6 +512,7 @@ void CICAAnalysisImpl::normalize_ICs()
 			m_Mix(r, c) *= mix_factor;
 		}
 	}
+#endif 
 }
 
 std::vector<float> CICAAnalysisImpl::normalize_Mix()
