@@ -434,6 +434,9 @@ void CICAAnalysisImpl::check_set(const CICAAnalysis::IndexSet& s) const
 void CICAAnalysisImpl::normalize_ICs()
 {
 #if 1
+	if (m_nlength < 2) 
+		throw invalid_argument("ICAAnalysis: input should have at least two pixels"); 
+
 	// scale all ICs to have a variance of 1.0 
 	for (size_t c = 0; c < m_ncomponents; ++c) {
 		// evaluate range of IC
