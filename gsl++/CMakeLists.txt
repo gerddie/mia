@@ -22,6 +22,7 @@ SET(GSLPP_SOURCE
   matrix.cc
   multimin.cc
   vector.cc
+  wavelet.cc
   )
 
 SET(GSLPP_HEADERS 
@@ -29,6 +30,7 @@ SET(GSLPP_HEADERS
   multimin.hh
   vector.hh
   vector_template.hh
+  wavelet.hh
   gsldefines.hh
   )
 
