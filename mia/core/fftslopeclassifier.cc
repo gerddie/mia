@@ -38,7 +38,7 @@ using namespace std;
 using namespace boost;
 
 
-struct CSlopeClassifierImpl {
+struct CFFTSlopeClassifierImpl {
 	int RV_peak;
 	int LV_peak;
 	int RV_idx;
@@ -47,90 +47,85 @@ struct CSlopeClassifierImpl {
 	int Perfusion_idx;
 	int Baseline_idx;
 	float max_freq_energy;
-	
+	float max_slope_length_diff;
 
 	typedef vector<float>::const_iterator position;
 	typedef pair<position, position> extrems;
 	typedef pair<size_t, size_t> extrems_pos;
-	CSlopeClassifierImpl(const CSlopeClassifier::Columns& series, float breah_rate, bool mean_stripped);
-	CSlopeClassifierImpl(); 
+	CFFTSlopeClassifierImpl(const CFFTSlopeClassifier::Columns& series, float breah_rate, bool mean_stripped);
+	CFFTSlopeClassifierImpl(); 
 };
 
 
-CSlopeClassifier::CSlopeClassifier(const CSlopeClassifier::Columns& m, float min_freq, bool mean_stripped)
+CFFTSlopeClassifier::CFFTSlopeClassifier(const CFFTSlopeClassifier::Columns& m, float min_freq, bool mean_stripped)
 {
 	if (m.size() < 3)
-		throw invalid_argument("CSlopeClassifier: require at least 3 curves");
-	impl = new CSlopeClassifierImpl(m, min_freq, mean_stripped);
+		throw invalid_argument("CFFTSlopeClassifier: require at least 3 curves");
+	impl = new CFFTSlopeClassifierImpl(m, min_freq, mean_stripped);
 }
 
-CSlopeClassifier::CSlopeClassifier(const CSlopeClassifier& other):
-	impl(new CSlopeClassifierImpl(*other.impl)) 
+CFFTSlopeClassifier::CFFTSlopeClassifier(const CFFTSlopeClassifier& other):
+	impl(new CFFTSlopeClassifierImpl(*other.impl)) 
 {
 }
-CSlopeClassifier::CSlopeClassifier():
-	impl(new CSlopeClassifierImpl())
+CFFTSlopeClassifier::CFFTSlopeClassifier():
+	impl(new CFFTSlopeClassifierImpl())
 {
 }
 		     
-CSlopeClassifier& CSlopeClassifier::operator =(const CSlopeClassifier& other)
+CFFTSlopeClassifier& CFFTSlopeClassifier::operator =(const CFFTSlopeClassifier& other)
 {
 	if (this != &other) {
-		auto help = new CSlopeClassifierImpl(*other.impl); 
+		auto help = new CFFTSlopeClassifierImpl(*other.impl); 
 		delete impl; 
 		impl = help; 
 	}
 	return *this;
 }
 
-CSlopeClassifier::~CSlopeClassifier()
+CFFTSlopeClassifier::~CFFTSlopeClassifier()
 {
 	delete impl;
 }
 
-float CSlopeClassifier::get_max_slope_length_diff() const
+float CFFTSlopeClassifier::get_max_slope_length_diff() const
 {
 	assert(impl); 
 	return impl->max_slope_length_diff;
 }
 
-CSlopeClassifier::SCorrelation CSlopeClassifier::max_selfcorrelation()const
-{
-	return impl->selfcorr;
-}
-
-vector<int> CSlopeClassifier::get_periodic_idx() const
+vector<int> CFFTSlopeClassifier::get_periodic_indices() const
 {
 	return impl->Periodic_idx;
 }
 
-int CSlopeClassifier::get_perfusion_idx() const
+int CFFTSlopeClassifier::get_perfusion_idx() const
 {
 	return impl->Perfusion_idx;
 }
 
 
-int CSlopeClassifier::get_RV_idx()const
+int CFFTSlopeClassifier::get_RV_idx()const
 {
 	return impl->RV_idx;
 }
 
-int CSlopeClassifier::get_LV_idx() const
+int CFFTSlopeClassifier::get_LV_idx() const
 {
 	return impl->LV_idx;
 }
 
-int CSlopeClassifier::get_RV_peak()const
+int CFFTSlopeClassifier::get_RV_peak()const
 {
 	return impl->RV_peak;
 }
 
-int CSlopeClassifier::get_LV_peak() const
+int CFFTSlopeClassifier::get_LV_peak() const
 {
 	return impl->LV_peak;
 }
 
-int CSlopeClassifier::get_baseline_idx() const
+int CFFTSlopeClassifier::get_baseline_idx() const
 {
 	return impl->Baseline_idx;
 }
@@ -162,12 +157,12 @@ struct compare_perfusion_peak {
 struct compare_freq_enery {
 	bool operator () (const statmap& a, const statmap& b) const
 	{
-		return  (a.first->get_mean_frequency() * a.first->get_enery() < 
-			 b.first->get_mean_frequency() * b.first->get_enery());
+		return  (a.first->get_mean_frequency() * a.first->get_energy() < 
+			 b.first->get_mean_frequency() * b.first->get_energy());
 	}
 };
 
-CSlopeClassifierImpl::CSlopeClassifierImpl():
+CFFTSlopeClassifierImpl::CFFTSlopeClassifierImpl():
 	RV_peak(-1), 
 	LV_peak(-1), 
 	RV_idx(-1), 
@@ -178,33 +173,46 @@ CSlopeClassifierImpl::CSlopeClassifierImpl():
 {
 }
 
-// command line parameter? 
-const float MIN_ENERGY = 20.0; 
 
-CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& series, float breah_rate, bool mean_stripped):
+CFFTSlopeClassifierImpl::CFFTSlopeClassifierImpl(const CFFTSlopeClassifier::Columns& series, float breath_rate, bool mean_stripped):
 	Perfusion_idx(-1),
-	Baseline_idx(-1)
+	Baseline_idx(-1), 
+	max_freq_energy(0.0)
 
 {
 	size_t n = series.size();
 	vector<statmap> stats(n);
 	vector<statmap> nonperiodic;
-	float min_freq = series[0].size() / breah_rate;
+	float min_freq = series[0].size() / breath_rate;
 	
 	for(size_t i = 0; i < n; ++i) {
 		statmap sm;
 		sm.first = PSlopeStatistics(new CSlopeStatistics(series[i]));
-		freq_energy = a.first->get_mean_frequency() * a.first->get_energy(); 
+		float freq_energy = sm.first->get_energy(); 
 		if (max_freq_energy < freq_energy) 
 			max_freq_energy = freq_energy; 
 		sm.second = i;
 		stats[i] = sm;
-
-		if (sm.first->get_mean_frequency() > min_freq && sm.first->get_energy() > MIN_ENERGY) 
-			Periodic_idx.push_back(i); 
-		else 
-			nonperiodic.push_back(sm); 
 	}
+	
+	double thresh_energy = max_freq_energy / 4.0; 
+	
+
+	for(size_t i = 0; i < n; ++i) {
+		const statmap& sm = stats[i]; 
+		
+		cvdebug() << "[" << i << "] freq = " << sm.first->get_mean_frequency() 
+			  << ", energy = " << sm.first->get_energy(); 
+		if (sm.first->get_mean_frequency() > min_freq && sm.first->get_energy() > thresh_energy) {
+			cverb << " <periodic>\n";
+			Periodic_idx.push_back(i);
+		}else {
+			cverb << " <non-periodic>\n"; 
+			nonperiodic.push_back(sm); 
+		}
+	}
+
+	
 	
 	/* mechanics for classifying the mixing curves:
 	   - sort the slopes that are below the periodic threshhold for high range and eliminate the 
@@ -212,7 +220,8 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 	   - sort these two curves by the order in which the high peaks appear to identify
              which is RV (peak comes first) and which LV
 	*/
-	if (nonperiodic.size() > 2) {	
+	int remaining = nonperiodic.size(); 
+	if (remaining > 2) {	
 		sort(nonperiodic.begin(), nonperiodic.end(), compare_range()); 
 		
 		int of_interest = 2; 
@@ -229,8 +238,8 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 	RV_idx = nonperiodic[0].second;
 	LV_idx = nonperiodic[1].second;
 
-	RV_peak = stats[0].first->get_perfusion_high_peak().first;
-	LV_peak = stats[1].first->get_perfusion_high_peak().first;
+	RV_peak = nonperiodic[0].first->get_perfusion_high_peak().first;
+	LV_peak = nonperiodic[1].first->get_perfusion_high_peak().first;
 
 	// one could trail this by estimating base line and perfusion index 
 }

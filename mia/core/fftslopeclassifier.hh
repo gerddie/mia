@@ -22,8 +22,8 @@
 #include <mia/core/defines.hh>
 
 
-#ifndef mia_core_classifier_hh
-#define mia_core_classifier_hh
+#ifndef mia_core_fftslopeclassifier_hh
+#define mia_core_fftslopeclassifier_hh
 
 NS_MIA_BEGIN
 
@@ -35,43 +35,35 @@ NS_MIA_BEGIN
    of series of perfusion images that are aquired using free breathing.
 */
 
-class  EXPORT_CORE  CSlopeClassifier {
+class  EXPORT_CORE  CFFTSlopeClassifier {
 public:
 	/// typedef to define the matrix of curves 
 	typedef std::vector<std::vector<float> > Columns;
 
 
 	/**
-	   Helper structure to store the correlation of two curves 
-	 */
-	typedef struct  {
-		/// correlation 
-		float corr; 
-		/// index of first row 
-		int row1;
-		/// index of second row 
-		int row2;
-	} SCorrelation;
-
-	/**
 	   Initialize the classifier with the given curves and the information whether the means were stripped 
 	   @param m matrix of curves 
+	   @param breah_rate approximate frames per breathing cycle
 	   @param mean_stripped
 	 */
-	CSlopeClassifier(const Columns& m, bool mean_stripped=false);
+	CFFTSlopeClassifier(const Columns& m, float breath_rate, bool mean_stripped=false);
 
 	/** copy constructor */
-	CSlopeClassifier(const CSlopeClassifier& other);
+	CFFTSlopeClassifier(const CFFTSlopeClassifier& other);
 	
-	CSlopeClassifier(); 
+	CFFTSlopeClassifier(); 
 	
 	/// assignment operator 
-	CSlopeClassifier& operator =(const CSlopeClassifier& other);
+	CFFTSlopeClassifier& operator =(const CFFTSlopeClassifier& other);
 
-	~CSlopeClassifier();
+	~CFFTSlopeClassifier();
 
-	/// @return the index of the periodic curve or -1 if none was found 
-	int get_periodic_idx() const;
+	/// @returns the indices of periodic curves or an empty vector if none was found 
+	std::vector<int> get_periodic_indices() const;
+	
+	/// @returns all the indices that are not considered to be periodic curves
+	std::vector<int> get_mixing_indices() const;
 	
 	/// @return the index of the RV enhancement curve or -1 if not identified 
 	int get_RV_idx()const;
@@ -91,18 +83,11 @@ public:
 	/// @return the time index of the LV peak image or  -1 if not identified 
 	int get_LV_peak() const;
 
-	/// \returns the absolute difference between the length ofthe longest and second longest curve in the list
+	/// \returns the absolute difference between the length of the longest and second longest curve in the list
 	float get_max_slope_length_diff() const;
-
-	/// \returns the maximum value of the correlation between the curves and the rows for which it occures 
-	SCorrelation  max_selfcorrelation()const;
-
 private:
-	struct CSlopeClassifierImpl *impl;
+	struct CFFTSlopeClassifierImpl *impl;
 };
-
-/// \returns Pearsons correlation coefficient between two series
-float  EXPORT_CORE correlation(const std::vector<float>& a, const std::vector<float>& b);
 
 NS_MIA_END
 

@@ -33,6 +33,7 @@ SET(MIACORE_SRC_BASE
   file.cc 
   filetools.cc 
   filter.cc
+  fftslopeclassifier.cc
   flagstring.cc
   fullstats.cc
   history.cc
@@ -96,6 +97,7 @@ SET(MIACORE_HEADER_BASE
   file.hh
   filetools.hh
   filter.hh
+  fftslopeclassifier.hh
   flagstring.hh
   fullstats.hh
   handler.cxx handler.hh
@@ -292,6 +294,7 @@ NEW_TEST(minimizer miacore)
 NEW_TEST(property_flags  miacore)
 NEW_TEST(scaler1d miacore)
 NEW_TEST(slopestatistics miacore)
+NEW_TEST(fftslopeclassifier miacore)
 NEW_TEST(slopeclassifier miacore)
 NEW_TEST(statistics miacore)
 NEW_TEST(splineparzenmi miacore)
