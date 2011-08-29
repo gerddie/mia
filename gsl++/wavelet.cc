@@ -20,6 +20,7 @@
  */
 
 #include <stdexcept>
+#include <iostream>
 #include <gsl++/wavelet.hh>
 #include <gsl/gsl_wavelet.h>
 
@@ -87,12 +88,14 @@ vector<double> C1DWaveletImpl::forward(const vector<double>& x) const
 {
 	size_t s = x.size(); 
 	size_t s1 = 1; 
-	while (s / 2)
+	while (s) {
+		s /= 2; 
 		s1 *=2; 
+	}
 	
 	if (s1 < x.size()) 
 		s1 *=2;
-	
+		
 	vector<double> x_size_to_pow2(s1); 
 	copy(x.begin(), x.end(), x_size_to_pow2.begin());
 

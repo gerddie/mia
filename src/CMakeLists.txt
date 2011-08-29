@@ -27,6 +27,7 @@ LINK_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../mia/3d)
 DEFEXE(filenumberpattern  miacore )
 DEFEXE(cmeans             miacore )
 DEFEXE(labelsort          miacore )
+DEFEXE(wavelettrans       miacore )
 
 #2D programs 
 DEFEXE(2dimagefilter      mia2d )
