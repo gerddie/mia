@@ -28,6 +28,7 @@ DEFEXE(filenumberpattern  miacore )
 DEFEXE(cmeans             miacore )
 DEFEXE(labelsort          miacore )
 DEFEXE(wavelettrans       miacore )
+DEFEXE(myowavelettest     miacore )
 
 #2D programs 
 DEFEXE(2dimagefilter      mia2d )
