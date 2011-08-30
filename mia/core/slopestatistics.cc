@@ -18,6 +18,8 @@
  *
  */
 
+#include <gsl++/wavelet.hh>
+
 #include <mia/core/slopestatistics.hh>
 #include <mia/core/fft1d_r2c.hh>
 #include <mia/core/msgstream.hh>
@@ -32,6 +34,7 @@
 
 NS_MIA_BEGIN
 
+using namespace gsl; 
 using namespace std;
 using namespace boost;
 
@@ -46,12 +49,18 @@ struct CSlopeStatisticsImpl {
 	std::pair<size_t, float>  get_perfusion_high_peak() const;
 	float get_mean_frequency() const;
 	float get_energy() const;
+
+	float get_mean_frequency_level() const;
+	std::pair<int, int> get_peak_level_and_time_index() const; 
+	float get_peak_wavelet_coefficient() const; 
 private:
 	void evaluate_curve_length() const;
 	void evaluate_range() const;
 	void evaluate_perfusion_peak() const;
 	void evaluate_frequency() const; 
 
+	void evaluate_wt() const; 
+	
 	vector<float> m_series;
 	mutable bool m_curve_length_valid;
 	mutable float m_curve_length;
@@ -61,10 +70,14 @@ private:
 	mutable float m_mean_freq;
 	mutable float m_energy;
 	mutable bool m_mean_freq_valid;
+	mutable bool m_wt_valid;
 
 	mutable std::pair<size_t, float>  m_first_peak;
 	mutable std::pair<size_t, float>  m_second_peak;
 	mutable std::pair<size_t, float>  m_perfusion_peak;
+	mutable std::pair<int, int>  m_wt_peak_level_and_index;
+	mutable float m_wt_peak_coefficient;
+	mutable float m_wt_mean_wt_level;
 	typedef vector<float>::const_iterator position;
 
 };
@@ -100,7 +113,8 @@ CSlopeStatisticsImpl::CSlopeStatisticsImpl(const vector<float>& series):
 	m_curve_length_valid(false),
 	m_range_valid(false),
 	m_perfusion_peak_valid(false),
-	m_mean_freq_valid(false)
+	m_mean_freq_valid(false), 
+	m_wt_valid(false)
 {
 }
 
@@ -233,5 +247,79 @@ void CSlopeStatisticsImpl::evaluate_range() const
 	m_second_peak.first = delta1 < delta2 ? delta2 : delta1;
 	m_second_peak.second = m_series[m_second_peak.first];
 }
+
+
+float CSlopeStatisticsImpl::get_mean_frequency_level() const
+{
+	if (!m_wt_valid) 
+		evaluate_wt(); 
+	return m_wt_mean_wt_level; 
+}
+
+float CSlopeStatisticsImpl::get_peak_wavelet_coefficient() const
+{
+	if (!m_wt_valid) 
+		evaluate_wt(); 
+	return m_wt_peak_coefficient; 
+}
+
+
+pair<int,int> CSlopeStatisticsImpl::get_peak_level_and_time_index() const
+{
+	if (!m_wt_valid) 
+		evaluate_wt(); 
+	return m_wt_peak_level_and_index; 
+
+}
+
+void CSlopeStatisticsImpl::evaluate_wt() const
+{
+	C1DWavelet wt(wt_daubechies_centered, 10);
+	
+	auto wt_transformed = wt.forward(m_series); 
+	
+	transform(wt_transformed.begin(), wt_transformed.end(), wt_transformed.begin(), 
+		  [](double x) { return fabs(x);}); 
+	
+	int levels = log2(wt_transformed.size()); 
+	int ncoeffs = 1; 
+	m_wt_peak_coefficient = 0.0; 
+	auto c = wt_transformed.begin() + 1; 
+	float mean_level = 0;
+	float sum_level_peaks = 0; 
+	for (int l = 0; l < levels; ++l, ncoeffs *= 2) {
+		float peak_level_coeff = 0.0; 
+		for (int i = 0; i < ncoeffs; ++i, ++c) {
+			if ( m_wt_peak_coefficient < *c) {
+				m_wt_peak_coefficient = *c; 
+				m_wt_peak_level_and_index.first = l; 
+				m_wt_peak_level_and_index.second = i;
+			}
+			if (peak_level_coeff < *c)
+				peak_level_coeff = *c; 
+		}
+		mean_level += peak_level_coeff * l; 
+		sum_level_peaks += peak_level_coeff; 
+	}
+	m_wt_mean_wt_level = mean_level / sum_level_peaks; 
+}
+
+
+float CSlopeStatistics::get_mean_frequency_level() const
+{
+	return impl->get_mean_frequency_level(); 
+}
+
+float CSlopeStatistics::get_peak_wavelet_coefficient() const
+{
+	return impl->get_peak_wavelet_coefficient(); 
+}
+
+
+std::pair<int, int> CSlopeStatistics::get_peak_level_and_time_index() const
+{
+	return impl->get_peak_level_and_time_index(); 
+}
+
 
 NS_MIA_END
