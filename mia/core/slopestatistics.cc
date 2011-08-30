@@ -53,6 +53,7 @@ struct CSlopeStatisticsImpl {
 	float get_mean_frequency_level() const;
 	std::pair<int, int> get_peak_level_and_time_index() const; 
 	float get_peak_wavelet_coefficient() const; 
+	float get_wavelet_energy() const; 
 private:
 	void evaluate_curve_length() const;
 	void evaluate_range() const;
@@ -78,6 +79,7 @@ private:
 	mutable std::pair<int, int>  m_wt_peak_level_and_index;
 	mutable float m_wt_peak_coefficient;
 	mutable float m_wt_mean_wt_level;
+	mutable float m_wt_energy;
 	typedef vector<float>::const_iterator position;
 
 };
@@ -248,6 +250,12 @@ void CSlopeStatisticsImpl::evaluate_range() const
 	m_second_peak.second = m_series[m_second_peak.first];
 }
 
+float CSlopeStatisticsImpl::get_wavelet_energy() const
+{
+	if (!m_wt_valid) 
+		evaluate_wt(); 
+	return m_wt_energy; 
+}
 
 float CSlopeStatisticsImpl::get_mean_frequency_level() const
 {
@@ -287,6 +295,7 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 	auto c = wt_transformed.begin() + 1; 
 	float mean_level = 0;
 	float sum_level_peaks = 0; 
+	m_wt_energy = 0.0; 
 	for (int l = 0; l < levels; ++l, ncoeffs *= 2) {
 		float peak_level_coeff = 0.0; 
 		for (int i = 0; i < ncoeffs; ++i, ++c) {
@@ -297,6 +306,7 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 			}
 			if (peak_level_coeff < *c)
 				peak_level_coeff = *c; 
+			m_wt_energy += *c; 
 		}
 		mean_level += peak_level_coeff * l; 
 		sum_level_peaks += peak_level_coeff; 
@@ -308,6 +318,11 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 float CSlopeStatistics::get_mean_frequency_level() const
 {
 	return impl->get_mean_frequency_level(); 
+}
+
+float CSlopeStatistics::get_wavelet_energy() const
+{
+	return impl->get_wavelet_energy(); 
 }
 
 float CSlopeStatistics::get_peak_wavelet_coefficient() const

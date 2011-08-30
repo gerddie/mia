@@ -67,6 +67,8 @@ public:
 	/// \returns the absolute value of the peak wavelet coefficient
 	float get_peak_wavelet_coefficient() const; 
 
+	/// \returns the sum of the absolute values of the wavelet coefficient
+	float get_wavelet_energy() const; 
 
 	/// \returns index and value for the minimum or the maximum (whichever has a lower index) of the curve
 	std::pair<size_t, float>  get_first_peak() const;
