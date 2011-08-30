@@ -37,7 +37,8 @@ public:
 
 	~C1DWaveletImpl(); 
 
-	vector<double> forward(const vector<double>& x) const; 
+	template <typename T> 
+	vector<double> forward(const vector<T>& x) const; 
 
 private: 
 	gsl_wavelet *m_wavelet;
@@ -55,6 +56,11 @@ C1DWavelet::~C1DWavelet()
 }
 
 std::vector<double> C1DWavelet::forward(const std::vector<double>& x) const
+{
+	return impl->forward(x); 
+}
+
+std::vector<double> C1DWavelet::forward(const std::vector<float>& x) const
 {
 	return impl->forward(x); 
 }
@@ -83,8 +89,8 @@ C1DWaveletImpl::~C1DWaveletImpl()
 }
 
 
-
-vector<double> C1DWaveletImpl::forward(const vector<double>& x) const
+template <typename T> 
+vector<double> C1DWaveletImpl::forward(const vector<T>& x) const
 {
 	size_t s = x.size(); 
 	size_t s1 = 1; 

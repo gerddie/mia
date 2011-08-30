@@ -44,6 +44,7 @@ public:
 	~C1DWavelet(); 
 
 	std::vector<double> forward(const std::vector<double>& x) const; 
+	std::vector<double> forward(const std::vector<float>& x) const; 
 
 private: 
 	struct C1DWaveletImpl *impl; 
