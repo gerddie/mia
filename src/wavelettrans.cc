@@ -89,7 +89,7 @@ int do_main( int argc, const char *argv[] )
 	while (first_row.good()) {
 		float x;
 		first_row >> x; 
-		if (first_row.good()) 
+		if (!first_row.fail()) 
 			vx.push_back(x); 
 	}
 	if ( vx.empty() ) 
