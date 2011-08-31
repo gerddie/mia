@@ -78,6 +78,8 @@ public:
 
 	/// \returns index of the global maximum if the curve is shifted to start at zero and raises first
 	std::pair<size_t, float>  get_perfusion_high_peak() const;
+
+	const std::vector<float>& get_level_coefficient_sums() const;
 private:
 	struct CSlopeStatisticsImpl *impl;
 };
