@@ -54,6 +54,7 @@ struct CSlopeStatisticsImpl {
 	std::pair<int, int> get_peak_level_and_time_index() const; 
 	float get_peak_wavelet_coefficient() const; 
 	float get_wavelet_energy() const; 
+	const std::vector<float>& get_level_coefficient_sums() const; 
 private:
 	void evaluate_curve_length() const;
 	void evaluate_range() const;
@@ -80,6 +81,9 @@ private:
 	mutable float m_wt_peak_coefficient;
 	mutable float m_wt_mean_wt_level;
 	mutable float m_wt_energy;
+	mutable vector<float> m_wt_level_coefficient_sums; 
+	mutable vector<float> m_wt_level_mean_pos; 
+
 	typedef vector<float>::const_iterator position;
 
 };
@@ -209,6 +213,13 @@ float CSlopeStatisticsImpl::get_range() const
 }
 
 
+const std::vector<float>& CSlopeStatisticsImpl::get_level_coefficient_sums() const
+{
+	if (!m_wt_valid) 
+		evaluate_wt(); 
+	return m_wt_level_coefficient_sums; 
+}
+
 void CSlopeStatisticsImpl::evaluate_curve_length() const
 {
 	m_curve_length = 0.0f;
@@ -298,6 +309,8 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 	m_wt_energy = 0.0; 
 	for (int l = 0; l < levels; ++l, ncoeffs *= 2) {
 		float peak_level_coeff = 0.0; 
+		m_wt_level_coefficient_sums[l] = 0; 
+		m_wt_level_mean_pos[l] = 0; 
 		for (int i = 0; i < ncoeffs; ++i, ++c) {
 			if ( m_wt_peak_coefficient < *c) {
 				m_wt_peak_coefficient = *c; 
@@ -307,9 +320,13 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 			if (peak_level_coeff < *c)
 				peak_level_coeff = *c; 
 			m_wt_energy += *c; 
+			m_wt_level_coefficient_sums[l] += *c; 
+			m_wt_level_mean_pos[l] += *c * l;
 		}
 		mean_level += peak_level_coeff * l; 
 		sum_level_peaks += peak_level_coeff; 
+		if (m_wt_level_coefficient_sums[l]) 
+			m_wt_level_mean_pos[l] /= m_wt_level_coefficient_sums[l];
 	}
 	m_wt_mean_wt_level = mean_level / sum_level_peaks; 
 }
@@ -330,6 +347,10 @@ float CSlopeStatistics::get_peak_wavelet_coefficient() const
 	return impl->get_peak_wavelet_coefficient(); 
 }
 
+const std::vector<float>& CSlopeStatistics::get_level_coefficient_sums() const
+{
+	return impl->get_level_coefficient_sums(); 
+}
 
 std::pair<int, int> CSlopeStatistics::get_peak_level_and_time_index() const
 {
