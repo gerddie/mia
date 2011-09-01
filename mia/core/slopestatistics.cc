@@ -44,18 +44,20 @@ struct CSlopeStatisticsImpl {
 
 	float get_curve_length() const;
 	float get_range() const;
-	std::pair<size_t, float>  get_first_peak() const;
-	std::pair<size_t, float>  get_second_peak() const;
-	std::pair<size_t, float>  get_perfusion_high_peak() const;
+	pair<size_t, float>  get_first_peak() const;
+	pair<size_t, float>  get_second_peak() const;
+	pair<size_t, float>  get_perfusion_high_peak() const;
 	float get_mean_frequency() const;
 	float get_energy() const;
 
 	float get_mean_frequency_level() const;
-	std::pair<int, int> get_peak_level_and_time_index() const; 
+	pair<int, int> get_peak_level_and_time_index() const; 
 	float get_peak_wavelet_coefficient() const; 
 	float get_wavelet_energy() const; 
-	const std::vector<float>& get_level_coefficient_sums() const; 
+	const vector<float>& get_level_coefficient_sums() const; 
+	const vector<CSlopeStatistics::EEnergyCenterpos>& get_level_mean_energy_position() const; 
 private:
+
 	void evaluate_curve_length() const;
 	void evaluate_range() const;
 	void evaluate_perfusion_peak() const;
@@ -74,21 +76,21 @@ private:
 	mutable bool m_mean_freq_valid;
 	mutable bool m_wt_valid;
 
-	mutable std::pair<size_t, float>  m_first_peak;
-	mutable std::pair<size_t, float>  m_second_peak;
-	mutable std::pair<size_t, float>  m_perfusion_peak;
-	mutable std::pair<int, int>  m_wt_peak_level_and_index;
+	mutable pair<size_t, float>  m_first_peak;
+	mutable pair<size_t, float>  m_second_peak;
+	mutable pair<size_t, float>  m_perfusion_peak;
+	mutable pair<int, int>  m_wt_peak_level_and_index;
 	mutable float m_wt_peak_coefficient;
 	mutable float m_wt_mean_wt_level;
 	mutable float m_wt_energy;
 	mutable vector<float> m_wt_level_coefficient_sums; 
-	mutable vector<float> m_wt_level_mean_pos; 
+	mutable vector<CSlopeStatistics::EEnergyCenterpos> m_wt_level_mean_energy_pos; 
 
 	typedef vector<float>::const_iterator position;
 
 };
 
-CSlopeStatistics::CSlopeStatistics(const std::vector<float>& series):
+CSlopeStatistics::CSlopeStatistics(const vector<float>& series):
 	impl(new CSlopeStatisticsImpl(series))
 {
 }
@@ -136,36 +138,36 @@ float CSlopeStatistics::get_range() const
 	return impl->get_range();
 }
 
-std::pair<size_t, float>  CSlopeStatistics::get_first_peak() const
+pair<size_t, float>  CSlopeStatistics::get_first_peak() const
 {
 	return impl->get_first_peak();
 }
 
-std::pair<size_t, float>  CSlopeStatistics::get_second_peak() const
+pair<size_t, float>  CSlopeStatistics::get_second_peak() const
 {
 	return impl->get_second_peak();
 }
 
-std::pair<size_t, float>  CSlopeStatistics::get_perfusion_high_peak() const
+pair<size_t, float>  CSlopeStatistics::get_perfusion_high_peak() const
 {
 	return impl->get_perfusion_high_peak();
 }
 
-std::pair<size_t, float>  CSlopeStatisticsImpl::get_first_peak() const
+pair<size_t, float>  CSlopeStatisticsImpl::get_first_peak() const
 {
 	if (!m_range_valid)
 		evaluate_range();
 	return m_first_peak;
 }
 
-std::pair<size_t, float>  CSlopeStatisticsImpl::get_second_peak() const
+pair<size_t, float>  CSlopeStatisticsImpl::get_second_peak() const
 {
 	if (!m_range_valid)
 		evaluate_range();
 	return m_second_peak;
 }
 
-std::pair<size_t, float>  CSlopeStatisticsImpl::get_perfusion_high_peak() const
+pair<size_t, float>  CSlopeStatisticsImpl::get_perfusion_high_peak() const
 {
 	if (!m_perfusion_peak_valid)
 		evaluate_perfusion_peak();
@@ -213,12 +215,26 @@ float CSlopeStatisticsImpl::get_range() const
 }
 
 
-const std::vector<float>& CSlopeStatisticsImpl::get_level_coefficient_sums() const
+const vector<float>& CSlopeStatisticsImpl::get_level_coefficient_sums() const
 {
 	if (!m_wt_valid) 
 		evaluate_wt(); 
 	return m_wt_level_coefficient_sums; 
 }
+
+const vector<CSlopeStatistics::EEnergyCenterpos>& CSlopeStatisticsImpl::get_level_mean_energy_position() const
+{
+	if (!m_wt_valid) 
+		evaluate_wt(); 
+	return m_wt_level_mean_energy_pos; 
+}
+
+
+const vector<CSlopeStatistics::EEnergyCenterpos>& CSlopeStatistics::get_level_mean_energy_position() const
+{
+	return impl->get_level_mean_energy_position(); 
+}
+
 
 void CSlopeStatisticsImpl::evaluate_curve_length() const
 {
@@ -307,10 +323,12 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 	float mean_level = 0;
 	float sum_level_peaks = 0; 
 	m_wt_energy = 0.0; 
+	m_wt_level_coefficient_sums.resize(levels); 
+	m_wt_level_mean_energy_pos.resize(levels); 
 	for (int l = 0; l < levels; ++l, ncoeffs *= 2) {
 		float peak_level_coeff = 0.0; 
 		m_wt_level_coefficient_sums[l] = 0; 
-		m_wt_level_mean_pos[l] = 0; 
+		float wt_level_mean_pos = 0; 
 		for (int i = 0; i < ncoeffs; ++i, ++c) {
 			if ( m_wt_peak_coefficient < *c) {
 				m_wt_peak_coefficient = *c; 
@@ -321,14 +339,43 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 				peak_level_coeff = *c; 
 			m_wt_energy += *c; 
 			m_wt_level_coefficient_sums[l] += *c; 
-			m_wt_level_mean_pos[l] += *c * l;
+			wt_level_mean_pos += *c * i;
 		}
 		mean_level += peak_level_coeff * l; 
 		sum_level_peaks += peak_level_coeff; 
-		if (m_wt_level_coefficient_sums[l]) 
-			m_wt_level_mean_pos[l] /= m_wt_level_coefficient_sums[l];
+		if (!m_wt_level_coefficient_sums[l]) {
+			CSlopeStatistics::ecp_none;
+			continue; 
+		}
+		
+		if (ncoeffs == 1)
+			m_wt_level_mean_energy_pos[l] = CSlopeStatistics::ecp_center;
+		else if (ncoeffs == 2) {
+			cvdebug() << "ncoeffs = 2: weighted pos = " << wt_level_mean_pos  
+				  << " sum = " << m_wt_level_coefficient_sums[l]
+				  << "\n"; 
+			wt_level_mean_pos /= m_wt_level_coefficient_sums[l];
+
+			m_wt_level_mean_energy_pos[l] = (wt_level_mean_pos < 0.5) ? CSlopeStatistics::ecp_begin : 
+				( wt_level_mean_pos == 0.5 ? CSlopeStatistics::ecp_center: CSlopeStatistics::ecp_end );
+		}else {
+			cvdebug() << "level = " << l 
+				  << " wt_level_mean_pos = " << wt_level_mean_pos 
+				  << " m_wt_level_coefficient_sums = " << m_wt_level_coefficient_sums[l] 
+				  << " ncoeffs = " << ncoeffs 
+				  << "\n"; 
+			wt_level_mean_pos /= m_wt_level_coefficient_sums[l] * ncoeffs / 3.0;
+			cvdebug() << "corrected = " << wt_level_mean_pos << "\n"; 
+			if (wt_level_mean_pos <= 1.0 && ncoeffs > 1)
+				m_wt_level_mean_energy_pos[l] = CSlopeStatistics::ecp_begin;
+			else if ((wt_level_mean_pos <= 2.0 && ncoeffs > 3) || ncoeffs == 1 ) 
+				m_wt_level_mean_energy_pos[l] = CSlopeStatistics::ecp_center; 
+			else 
+				m_wt_level_mean_energy_pos[l] = CSlopeStatistics::ecp_end;
+		}
 	}
 	m_wt_mean_wt_level = mean_level / sum_level_peaks; 
+	m_wt_valid = true; 
 }
 
 
@@ -347,12 +394,12 @@ float CSlopeStatistics::get_peak_wavelet_coefficient() const
 	return impl->get_peak_wavelet_coefficient(); 
 }
 
-const std::vector<float>& CSlopeStatistics::get_level_coefficient_sums() const
+const vector<float>& CSlopeStatistics::get_level_coefficient_sums() const
 {
 	return impl->get_level_coefficient_sums(); 
 }
 
-std::pair<int, int> CSlopeStatistics::get_peak_level_and_time_index() const
+pair<int, int> CSlopeStatistics::get_peak_level_and_time_index() const
 {
 	return impl->get_peak_level_and_time_index(); 
 }

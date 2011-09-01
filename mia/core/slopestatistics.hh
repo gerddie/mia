@@ -39,6 +39,13 @@ NS_MIA_BEGIN
 
 class  EXPORT_CORE CSlopeStatistics {
 public:
+	enum EEnergyCenterpos {
+		ecp_none = 0, 
+		ecp_begin, 
+		ecp_center, 
+		ecp_end
+	}; 
+
 	/**
 	   Initialize the statistice with the data of a curve 
 	   @param series 
@@ -80,6 +87,8 @@ public:
 	std::pair<size_t, float>  get_perfusion_high_peak() const;
 
 	const std::vector<float>& get_level_coefficient_sums() const;
+
+	const std::vector<EEnergyCenterpos>& get_level_mean_energy_position() const;
 private:
 	struct CSlopeStatisticsImpl *impl;
 };
