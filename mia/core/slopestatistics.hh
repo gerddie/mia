@@ -51,6 +51,8 @@ public:
 	   @param series 
 	 */
 	CSlopeStatistics(const std::vector<float>& series);
+
+	CSlopeStatistics(const CSlopeStatistics& other);
 	~CSlopeStatistics();
 
 	/// \returns the curve length evaluated discretly, i.e. taking the \f$\Delta\f$ x = 1 into account

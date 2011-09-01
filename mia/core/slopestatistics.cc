@@ -95,6 +95,11 @@ CSlopeStatistics::CSlopeStatistics(const vector<float>& series):
 {
 }
 
+CSlopeStatistics::CSlopeStatistics(const CSlopeStatistics& other):
+	impl(new CSlopeStatisticsImpl(*other.impl))
+{
+}
+
 CSlopeStatistics::~CSlopeStatistics()
 {
 	delete impl;
