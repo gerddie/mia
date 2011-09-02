@@ -357,7 +357,7 @@ CICAAnalysis::IndexSet get_LV_RV_Perfusion(const CSlopeClassifier::Columns& curv
 	element e;
 	for(CSlopeClassifier::Columns::const_iterator i = curves.begin();
 	    i != curves.end(); ++i, ++e.second) {
-		CSlopeStatistics stat(*i);
+		CSlopeStatistics stat(*i, 0);
 		e.first = - stat.get_curve_length() / stat.get_range();
 		sorted.push(e);
 	}

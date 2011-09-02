@@ -111,20 +111,18 @@ int do_main( int argc, const char *argv[] )
 			      << i << " has " << table[i].size() << " rows"); 
 		}
 
-	vector<CSlopeStatistics> vstats; 
+	vector<PSlopeStatistics> vstats; 
 	for (int i = 0; i < table.size(); ++i) {
-		CSlopeStatistics stats(table[i]);
-		auto idx = stats.get_peak_level_and_time_index(); 
-		vstats.push_back(stats); 
+		vstats.push_back(PSlopeStatistics(new CSlopeStatistics(table[i], i))); 
 	}
 
 	/// classify 
-	int movement_idx = vstats[0].get_level_coefficient_sums().size() - 2; 
+	int movement_idx = vstats[0]->get_level_coefficient_sums().size() - 2; 
 	
 	// first estimate if this is free breathing or breath holding 
 	vector<float> movement_pos(4, 0); 
 	for (size_t i = 0; i < table.size(); ++i)
-		movement_pos[vstats[i].get_level_mean_energy_position()[movement_idx]] += vstats[i].get_level_coefficient_sums()[movement_idx];
+		movement_pos[vstats[i]->get_level_mean_energy_position()[movement_idx]] += vstats[i]->get_level_coefficient_sums()[movement_idx];
 	
 	bool is_free_breathing = (movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_begin] && 
 				  movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_end]); 
@@ -140,7 +138,7 @@ int do_main( int argc, const char *argv[] )
 	float min_energy = numeric_limits<float>::max(); 
 
 	for (size_t i = 0; i < table.size(); ++i) {
-		auto e = vstats[i].get_level_coefficient_sums(); 
+		auto e = vstats[i]->get_level_coefficient_sums(); 
 		cvdebug() << "energies: "  << e 
 			  << " start= "<< low_energy_start_idx
 			  << " end= " << movement_idx - 2 
@@ -148,8 +146,8 @@ int do_main( int argc, const char *argv[] )
 		float low_freq = accumulate(e.begin() + low_energy_start_idx, e.begin() + movement_idx - 1, 0.0); 
 		cvdebug() << i << ": low " << low_freq << " vs  high " << e[movement_idx] << "\n"; 
 
-		if (min_energy > vstats[i].get_wavelet_energy()) {
-			min_energy = vstats[i].get_wavelet_energy(); 
+		if (min_energy > vstats[i]->get_wavelet_energy()) {
+			min_energy = vstats[i]->get_wavelet_energy(); 
 			min_energy_idx = i; 
 		}
 		
@@ -171,7 +169,7 @@ int do_main( int argc, const char *argv[] )
 	int max_movment_idx = -1; 
 	
 	for (auto k = movement_indices.begin(); k != movement_indices.end(); ++k) {
-		float energy = vstats[*k].get_level_coefficient_sums()[movement_idx]; 
+		float energy = vstats[*k]->get_level_coefficient_sums()[movement_idx]; 
 		if (max_movment_energy < energy ) {
 			max_movment_energy = energy; 
 			max_movment_idx = *k;
@@ -191,7 +189,7 @@ int do_main( int argc, const char *argv[] )
 	}
 
 	for (auto k = remaining_indices.begin(); k != remaining_indices.end(); ++k) {
-		if (vstats[*k].get_level_coefficient_sums()[movement_idx] > max_movment_energy) {
+		if (vstats[*k]->get_level_coefficient_sums()[movement_idx] > max_movment_energy) {
 			cvmsg() << "Estimated maximum movement component " << max_movment_idx 
 				<< " has less movement frequency energy than other component " << *k << " , time to stop?\n"; 
 			return EXIT_SUCCESS; 
@@ -200,7 +198,7 @@ int do_main( int argc, const char *argv[] )
 	
 	cvmsg() << "max movement idx = " << max_movment_idx 
 		<< " with movment energy " << max_movment_energy 
-		<< " and full energy " <<  vstats[max_movment_idx].get_wavelet_energy()
+		<< " and full energy " <<  vstats[max_movment_idx]->get_wavelet_energy()
 		<< "\n"; 
 	
 	if (movement_energies.size() > 1) {
