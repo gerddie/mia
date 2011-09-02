@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE( test_check_simple_series )
 		4, 5, 6, 5, 4, 3, 2, 2, 1, 4
 	};
 	
-	CSlopeStatistics stats(curve);
+	CSlopeStatistics stats(curve, 0);
 
 	BOOST_CHECK_CLOSE(stats.get_curve_length(),
 			  7.0f * sqrt(2.0f)+ 1.0f + sqrt(10.0f), 0.1);
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE( test_perfusion_series )
 	vector<float> curve(curve_length);
 	copy(init_curve, init_curve + curve_length, curve.begin());
 
-	CSlopeStatistics stats(curve);
+	CSlopeStatistics stats(curve, 0);
 
 	BOOST_CHECK_CLOSE(stats.get_range(), 27.0f, 0.1);
 
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE( test_perfusion_mean_freq_and_energy )
 	vector<float> curve = {
 		15, 12, 12, 5, 4,0, -12, -10, -8, -9,-7, -6, -5, -6, -4, -2, -1, -1, -1, -1
 	};
-	CSlopeStatistics stats(curve);
+	CSlopeStatistics stats(curve, 0);
 
 	BOOST_CHECK_CLOSE(stats.get_mean_frequency(),3.51f, 0.1);
 
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE( test_perfusion_mean_freq2 )
 		4.0949e+01
 
 	};
-	CSlopeStatistics stats(curve);
+	CSlopeStatistics stats(curve, 0);
 
 	BOOST_CHECK_CLOSE(stats.get_mean_frequency(), 5.23036051f, 0.1);
 
@@ -140,7 +140,7 @@ struct WaveletFixture {
 
 void WaveletFixture::check(const vector<float>& x, const Expect& e) const
 {
-	CSlopeStatistics stats(x);
+	CSlopeStatistics stats(x, 0);
 
 	BOOST_CHECK_CLOSE(stats.get_mean_frequency_level(), e.mean_level, 0.1);
 

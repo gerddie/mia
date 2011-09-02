@@ -58,7 +58,7 @@ public:
 	   @param m matrix of curves 
 	   @param mean_stripped
 	 */
-	CSlopeClassifier(const Columns& m, bool mean_stripped=false);
+	CSlopeClassifier(const Columns& m, bool mean_stripped);
 
 	/** copy constructor */
 	CSlopeClassifier(const CSlopeClassifier& other);
@@ -95,7 +95,10 @@ public:
 	float get_max_slope_length_diff() const;
 
 	/// \returns the maximum value of the correlation between the curves and the rows for which it occures 
-	SCorrelation  max_selfcorrelation()const;
+	SCorrelation  max_selfcorrelation() const;
+
+	/// \returnd the column index of this slope
+	int index() const; 
 
 private:
 	struct CSlopeClassifierImpl *impl;

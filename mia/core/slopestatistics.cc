@@ -40,7 +40,7 @@ using namespace boost;
 
 
 struct CSlopeStatisticsImpl {
-	CSlopeStatisticsImpl(const vector<float>& series);
+	CSlopeStatisticsImpl(const vector<float>& series, int index);
 
 	float get_curve_length() const;
 	float get_range() const;
@@ -56,6 +56,7 @@ struct CSlopeStatisticsImpl {
 	float get_wavelet_energy() const; 
 	const vector<float>& get_level_coefficient_sums() const; 
 	const vector<CSlopeStatistics::EEnergyCenterpos>& get_level_mean_energy_position() const; 
+	int get_index() const; 
 private:
 
 	void evaluate_curve_length() const;
@@ -86,18 +87,25 @@ private:
 	mutable vector<float> m_wt_level_coefficient_sums; 
 	mutable vector<CSlopeStatistics::EEnergyCenterpos> m_wt_level_mean_energy_pos; 
 
+	int m_index; 
+
 	typedef vector<float>::const_iterator position;
 
 };
 
-CSlopeStatistics::CSlopeStatistics(const vector<float>& series):
-	impl(new CSlopeStatisticsImpl(series))
+CSlopeStatistics::CSlopeStatistics(const vector<float>& series, int index):
+	impl(new CSlopeStatisticsImpl(series, index))
 {
 }
 
-CSlopeStatistics::CSlopeStatistics(const CSlopeStatistics& other):
-	impl(new CSlopeStatisticsImpl(*other.impl))
+int CSlopeStatistics::get_index() const
 {
+	return impl->get_index(); 
+}
+
+int CSlopeStatisticsImpl::get_index() const
+{
+	return m_index; 
 }
 
 CSlopeStatistics::~CSlopeStatistics()
@@ -121,13 +129,14 @@ float CSlopeStatistics::get_energy() const
 }
 
 
-CSlopeStatisticsImpl::CSlopeStatisticsImpl(const vector<float>& series):
+CSlopeStatisticsImpl::CSlopeStatisticsImpl(const vector<float>& series, int index):
 	m_series(series),
 	m_curve_length_valid(false),
 	m_range_valid(false),
 	m_perfusion_peak_valid(false),
 	m_mean_freq_valid(false), 
-	m_wt_valid(false)
+	m_wt_valid(false), 
+	m_index(index)
 {
 }
 

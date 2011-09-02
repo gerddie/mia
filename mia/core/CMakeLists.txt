@@ -73,6 +73,7 @@ SET(MIACORE_SRC_BASE
   typedescr.cc
   utils.cc 
   watch.cc 
+  waveletslopeclassifier.cc
   )
 
 SET(MIACORE_HEADER_BASE
@@ -138,6 +139,7 @@ SET(MIACORE_HEADER_BASE
   testplugin.hh
   threadedmsg.hh
   watch.hh
+  waveletslopeclassifier.hh
   )
 
 SET(MIACORETEST_SRC 
@@ -305,6 +307,7 @@ NEW_TEST(threadedmsg miacore)
 NEW_TEST(tools miacore)
 NEW_TEST(utils miacore)
 NEW_TEST(Vector miacore)
+NEW_TEST(waveletslopeclassifier miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)

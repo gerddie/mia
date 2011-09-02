@@ -49,10 +49,12 @@ public:
 	/**
 	   Initialize the statistice with the data of a curve 
 	   @param series 
+	   @param index colum index of the series 
 	 */
-	CSlopeStatistics(const std::vector<float>& series);
+	CSlopeStatistics(const std::vector<float>& series, int index);
 
-	CSlopeStatistics(const CSlopeStatistics& other);
+	CSlopeStatistics(const CSlopeStatistics& other) = delete;
+
 	~CSlopeStatistics();
 
 	/// \returns the curve length evaluated discretly, i.e. taking the \f$\Delta\f$ x = 1 into account
@@ -91,6 +93,8 @@ public:
 	const std::vector<float>& get_level_coefficient_sums() const;
 
 	const std::vector<EEnergyCenterpos>& get_level_mean_energy_position() const;
+	
+	int get_index() const; 
 private:
 	struct CSlopeStatisticsImpl *impl;
 };

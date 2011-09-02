@@ -187,7 +187,7 @@ CFFTSlopeClassifierImpl::CFFTSlopeClassifierImpl(const CFFTSlopeClassifier::Colu
 	
 	for(size_t i = 0; i < n; ++i) {
 		statmap sm;
-		sm.first = PSlopeStatistics(new CSlopeStatistics(series[i]));
+		sm.first = PSlopeStatistics(new CSlopeStatistics(series[i], i));
 		float freq_energy = sm.first->get_energy(); 
 		if (max_freq_energy < freq_energy) 
 			max_freq_energy = freq_energy; 

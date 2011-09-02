@@ -235,14 +235,13 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 	Periodic_idx(-1),
 	Perfusion_idx(-1),
 	Baseline_idx(-1)
-
 {
 	size_t n = series.size();
 	vector<statmap> stats(n);
 
 	for(size_t i = 0; i < n; ++i) {
 		statmap sm;
-		sm.first = PSlopeStatistics(new CSlopeStatistics(series[i]));
+		sm.first = PSlopeStatistics(new CSlopeStatistics(series[i], i));
 		sm.second = i;
 		stats[i] = sm;
 	}
