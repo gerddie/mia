@@ -30,6 +30,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/slopestatistics.hh>
+#include <mia/core/waveletslopeclassifier.hh>
 
 using namespace std; 
 
@@ -87,7 +88,7 @@ int do_main( int argc, const char *argv[] )
 	if ( vx.empty() ) 
 		throw runtime_error("Empty input file"); 
 
-	vector<vector<float> > table(vx.size());
+	CWaveletSlopeClassifier::Columns table(vx.size());
 	for (int i = 0; i < vx.size(); ++i) 
 		table[i].push_back(vx[i]); 
 
@@ -111,109 +112,30 @@ int do_main( int argc, const char *argv[] )
 			      << i << " has " << table[i].size() << " rows"); 
 		}
 
-	vector<PSlopeStatistics> vstats; 
-	for (int i = 0; i < table.size(); ++i) {
-		vstats.push_back(PSlopeStatistics(new CSlopeStatistics(table[i], i))); 
+	CWaveletSlopeClassifier classifier(table, false);
+	
+	switch (classifier.result()) {
+	case CWaveletSlopeClassifier::wsc_fail: 
+		throw invalid_argument("The input data could not be classified into LV, RV and additional components"); 
+	case CWaveletSlopeClassifier::wsc_low_movement: 
+		cout << "The input data set doesn't contain significant motion\n"; 
+		cout << "RV: idx = "<< classifier.get_RV_idx() << " with peak at " << classifier.get_RV_peak() << "\n"; 
+		cout << "LV: idx = "<< classifier.get_LV_idx() << " with peak at " << classifier.get_LV_peak() << "\n"; 
+		cout << "Baseline: "<< classifier.get_baseline_idx() << "\n";
+		cout << "Perfusion:"<< classifier.get_perfusion_idx() << " (uncertain) \n";
+		break; 
+	case CWaveletSlopeClassifier::wsc_normal: 
+		cout << "The input data set was properly classified\n";
+		cout << "RV: idx = "<< classifier.get_RV_idx() << " with peak at " << classifier.get_RV_peak() << "\n"; 
+		cout << "LV: idx = "<< classifier.get_LV_idx() << " with peak at " << classifier.get_LV_peak() << "\n"; 
+		cout << "Baseline: "<< classifier.get_baseline_idx() << "\n";
+		cout << "Motion:   "<< classifier.get_movement_idx() << " with energy " << classifier.get_movement_indicator() << "\n";
+		cout << "Perfusion:"<< classifier.get_perfusion_idx() << " (uncertain) \n";
+		break; 
+
+	default: 
+		cout << "hu?\n";
 	}
-
-	/// classify 
-	int movement_idx = vstats[0]->get_level_coefficient_sums().size() - 2; 
-	
-	// first estimate if this is free breathing or breath holding 
-	vector<float> movement_pos(4, 0); 
-	for (size_t i = 0; i < table.size(); ++i)
-		movement_pos[vstats[i]->get_level_mean_energy_position()[movement_idx]] += vstats[i]->get_level_coefficient_sums()[movement_idx];
-	
-	bool is_free_breathing = (movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_begin] && 
-				  movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_end]); 
-		
-	cvmsg() << "Detected free breathing data set\n"; 
-	int low_energy_start_idx = is_free_breathing ? 0 : 1; 
-	
-	// get movement components 
-	vector<int> movement_indices; 
-	vector<int> remaining_indices; 
-
-	int min_energy_idx = -1; 
-	float min_energy = numeric_limits<float>::max(); 
-
-	for (size_t i = 0; i < table.size(); ++i) {
-		auto e = vstats[i]->get_level_coefficient_sums(); 
-		cvdebug() << "energies: "  << e 
-			  << " start= "<< low_energy_start_idx
-			  << " end= " << movement_idx - 2 
-			  << "\n"; 
-		float low_freq = accumulate(e.begin() + low_energy_start_idx, e.begin() + movement_idx - 1, 0.0); 
-		cvdebug() << i << ": low " << low_freq << " vs  high " << e[movement_idx] << "\n"; 
-
-		if (min_energy > vstats[i]->get_wavelet_energy()) {
-			min_energy = vstats[i]->get_wavelet_energy(); 
-			min_energy_idx = i; 
-		}
-		
-		if (low_freq < e[movement_idx]) 
-			movement_indices.push_back(i); 
-		else 
-			remaining_indices.push_back(i); 
-	}
-	cvmsg() << "Baseline " << min_energy_idx 
-		<<  " with energy " << min_energy 
-		<< "\n"; 
-	cvmsg() << "Detect movement candidates " << movement_indices << "\n"; 
-	
-	if (movement_indices.empty()) 
-		throw runtime_error("no candidate component for movement\n"); 
-	
-	vector<float> movement_energies; 
-	float max_movment_energy = 0.0; 
-	int max_movment_idx = -1; 
-	
-	for (auto k = movement_indices.begin(); k != movement_indices.end(); ++k) {
-		float energy = vstats[*k]->get_level_coefficient_sums()[movement_idx]; 
-		if (max_movment_energy < energy ) {
-			max_movment_energy = energy; 
-			max_movment_idx = *k;
-		}
-		if (*k == min_energy_idx) 
-			continue; 
-		movement_energies.push_back(energy);
-	}
-	if (max_movment_idx < 0) {
-		cvmsg() << "No movement detected\n";  
-		return EXIT_SUCCESS; 
-	}	
-
-	if (max_movment_idx == min_energy_idx) {
-		cvmsg() << "Movement coincedes with the base line, time to stop\n"; 
-		return EXIT_SUCCESS; 
-	}
-
-	for (auto k = remaining_indices.begin(); k != remaining_indices.end(); ++k) {
-		if (vstats[*k]->get_level_coefficient_sums()[movement_idx] > max_movment_energy) {
-			cvmsg() << "Estimated maximum movement component " << max_movment_idx 
-				<< " has less movement frequency energy than other component " << *k << " , time to stop?\n"; 
-			return EXIT_SUCCESS; 
-		}
-	}
-	
-	cvmsg() << "max movement idx = " << max_movment_idx 
-		<< " with movment energy " << max_movment_energy 
-		<< " and full energy " <<  vstats[max_movment_idx]->get_wavelet_energy()
-		<< "\n"; 
-	
-	if (movement_energies.size() > 1) {
-		sort(movement_energies.begin(), movement_energies.end(), [](float x, float y){return x > y;}); 
-		cvmsg() << "movement_energys = " << movement_energies << "\n";
-		
-		cvmsg() << " Min Movement energy delta = " << movement_energies[0] - movement_energies[1] << "\n"; 
-	}else{
-		cvmsg() << "got exactly one movement candidate\n"; 
-	}
-	
-	// classification of the remaining components 
-	if (remaining_indices.size() < 2) 
-		throw invalid_argument("too few components to separate LV and RV enhancement"); 
-
 	return EXIT_SUCCESS; 
 }
 
