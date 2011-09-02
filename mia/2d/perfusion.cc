@@ -61,7 +61,7 @@ struct C2DPerfusionAnalysisImpl {
 	unique_ptr<C2DImageSeriesICA> m_ica; 
 	vector<C2DFImage> m_series; 
 	C2DBounds m_image_size; 
-	CSlopeClassifier m_cls; 
+	CWaveletSlopeClassifier m_cls; 
 	size_t m_length; 
 	int m_ica_approach; 
 	bool m_use_guess_model; 
@@ -85,9 +85,9 @@ void C2DPerfusionAnalysis::set_use_guess_model()
 	impl->m_use_guess_model = true; 
 }
 
-bool C2DPerfusionAnalysis::has_periodic() const
+bool C2DPerfusionAnalysis::has_movement() const
 {
-	return impl->m_cls.get_periodic_idx() > -1; 
+	return impl->m_cls.result() == CWaveletSlopeClassifier::wsc_normal; 
 }
 
 void C2DPerfusionAnalysis::set_max_ica_iterations(size_t maxiter)
@@ -261,11 +261,11 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 		if (!ica->run(m_components, m_meanstrip, m_normalize, guess) && 
 		    (m_ica_approach == FICA_APPROACH_DEFL))
 			return false; 
-		m_cls = CSlopeClassifier(ica->get_mixing_curves(), m_meanstrip);
+		m_cls = CWaveletSlopeClassifier(ica->get_mixing_curves(), m_meanstrip);
 	} else {
 
-		float min_cor = 0.0;
-		for (int i = 5; i > 3; --i) {
+		float max_energy = 0.0;
+		for (int i = 4; i <= 7; ++i) {
 			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
 			ica->set_approach(m_ica_approach); 
 			l_ica->set_max_iterations(m_max_iterations);
@@ -275,11 +275,14 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 				continue; 
 			}
 
-			CSlopeClassifier cls(l_ica->get_mixing_curves(), m_meanstrip);
-			float max_slope = log2(i) * cls.get_max_slope_length_diff();
-			cvinfo() << "Components = " << i << " max_slope = " << max_slope << "\n";
-			if (min_cor < max_slope) {
-				min_cor = max_slope;
+			CWaveletSlopeClassifier cls(l_ica->get_mixing_curves(), m_meanstrip);
+			if (cls.result() == CWaveletSlopeClassifier::wsc_fail)
+				continue; 
+			
+			float movement_energy = cls.get_movement_indicator();
+			cvinfo() << "Components = " << i << " energy = " << movement_energy << "\n";
+			if (max_energy < movement_energy) {
+				max_energy = movement_energy;
 				m_components = i;
 				ica.swap(l_ica);
 				m_cls = cls; 
@@ -289,7 +292,7 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 	}
 	m_ica.swap(ica);
 
-	cvinfo() << "Periodic: " << m_cls.get_periodic_idx() << "\n"; 
+	cvinfo() << "Movement: " << m_cls.get_movement_idx() << "\n"; 
 	cvinfo() << "RV:       " << m_cls.get_RV_idx() << "\n"; 
 	cvinfo() << "LV:       " << m_cls.get_LV_idx() << "\n"; 
 	cvinfo() << "Baseline: " << m_cls.get_baseline_idx() << "\n"; 
@@ -300,11 +303,11 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 CICAAnalysis::IndexSet C2DPerfusionAnalysisImpl::get_all_without_periodic()const 
 {
 	assert(m_ica); 
-	int periodic_index = m_cls.get_periodic_idx();
+	int movement_index = m_cls.get_movement_idx();
 
 	CICAAnalysis::IndexSet result;
 	for (int i = 0; i < (int)m_components; ++i) {
-		if (i != periodic_index)
+		if (i != movement_index)
 			result.insert(i);
 	}
 	return result;
@@ -370,7 +373,7 @@ typedef pair<float, size_t> element;
 void C2DPerfusionAnalysisImpl::save_coefs(const string&  coefs_name) const 
 {
 	assert(m_ica); 
-	CSlopeClassifier::Columns mix = m_ica->get_mixing_curves();
+	auto mix = m_ica->get_mixing_curves();
 	ofstream coef_file(coefs_name.c_str());
 
 	for (size_t r = 0; r < mix[0].size(); ++r) {

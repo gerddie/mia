@@ -130,6 +130,7 @@ SET(MIACORE_HEADER_BASE
   seriesstats.hh
   slopestatistics.hh
   slopeclassifier.hh
+  slopevector.hh
   splineparzenmi.hh
   spacial_kernel.hh
   sqmin.hh

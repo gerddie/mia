@@ -19,7 +19,7 @@
  */
 
 #include <vector>
-#include <mia/core/defines.hh>
+#include <mia/core/slopevector.hh>
 
 
 #ifndef mia_core_classifier_hh
@@ -38,7 +38,7 @@ NS_MIA_BEGIN
 class  EXPORT_CORE  CSlopeClassifier {
 public:
 	/// typedef to define the matrix of curves 
-	typedef std::vector<std::vector<float> > Columns;
+	typedef CSlopeColumns Columns; 
 
 
 	/**

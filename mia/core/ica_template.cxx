@@ -127,7 +127,7 @@ Data TDataSeriesICA<Data>::get_partial_mix(size_t idx, const IndexSet& comps) co
 }
 
 template <class Data> 
-CSlopeClassifier::Columns TDataSeriesICA<Data>::get_mixing_curves() const
+CSlopeColumns TDataSeriesICA<Data>::get_mixing_curves() const
 {
 	TRACE_FUNCTION; 
 	return m_analysis.get_mixing_curves();

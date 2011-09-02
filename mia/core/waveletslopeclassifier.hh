@@ -19,7 +19,7 @@
  */
 
 #include <vector>
-#include <mia/core/defines.hh>
+#include <mia/core/slopevector.hh>
 
 
 #ifndef mia_core_waveletslopeclassifier_hh
@@ -39,7 +39,7 @@ NS_MIA_BEGIN
 class  EXPORT_CORE  CWaveletSlopeClassifier {
 public:
 	/// typedef to define the matrix of curves 
-	typedef std::vector<std::vector<float> > Columns;
+	typedef CSlopeColumns Columns; 
 
 	enum EAnalysisResult {
 		wsc_fail, 

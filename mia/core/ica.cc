@@ -296,10 +296,10 @@ void CICAAnalysisImpl::set_mixing_series(size_t index, const std::vector<float>&
 }
 
 
-CSlopeClassifier::Columns CICAAnalysis::get_mixing_curves() const
+CSlopeColumns CICAAnalysis::get_mixing_curves() const
 {
 	TRACE_FUNCTION;
-	CSlopeClassifier::Columns result(impl->m_ncomponents);
+	CSlopeColumns result(impl->m_ncomponents);
 	for (size_t c = 0; c < impl->m_ncomponents; ++c)
 		impl->get_mixing_curve(c, result[c]);
 	return result;

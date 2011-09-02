@@ -95,7 +95,7 @@ mia-2dmyocard-ica  -i imageXXXX.exr -o ref -k 2 -C 5 -m -n
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/ica.hh>
-
+#include <mia/core/slopeclassifier.hh>
 
 NS_MIA_USE;
 

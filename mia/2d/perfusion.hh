@@ -23,8 +23,10 @@
 
 #include <vector>
 #include <mia/core/dictmap.hh>
+#include <mia/core/waveletslopeclassifier.hh>
 #include <mia/2d/2DImage.hh>
 #include <mia/2d/2dfilter.hh>
+
 
 NS_MIA_BEGIN
 
@@ -73,7 +75,7 @@ public:
 	/**
 	   \returns \a true if a periodic component could be identified in the given series
 	 */
-	bool has_periodic() const; 
+	bool has_movement() const; 
 
 	/**
 	   Evaluate an image cropping filter. This code is specifically designed to deal 

@@ -129,7 +129,7 @@ public:
 	Data get_partial_mix(size_t idx, const IndexSet& comps) const;
 	
 	/// \returns the mixing curves as vector of vectors
-	CSlopeClassifier::Columns get_mixing_curves() const;
+	CSlopeColumns get_mixing_curves() const;
 
 	/// \returns the feature data relating to component \a idx
 	PData get_feature_image(size_t idx) const; 

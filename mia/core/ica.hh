@@ -25,7 +25,7 @@
 #include <set>
 #include <vector>
 #include <mia/core/defines.hh>
-#include <mia/core/slopeclassifier.hh>
+#include <mia/core/slopevector.hh>
 #include <itpp/signal/fastica.h>
 #include <boost/concept/requires.hpp>
 #include <boost/concept_check.hpp>
@@ -134,7 +134,7 @@ public:
 	void set_mixing_series(size_t index, const std::vector<float>& series);
 
 	/// \returns a vector containing all mixing curves
-	CSlopeClassifier::Columns get_mixing_curves() const;
+	CSlopeColumns   get_mixing_curves() const;
 
 	/**
 	   Normalize the ICs in the following manner:
