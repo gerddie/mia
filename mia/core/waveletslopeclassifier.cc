@@ -258,10 +258,14 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 		}else{
 			cvinfo() << "got exactly one movement candidate\n"; 
 		}
+	}else{
+		cvmsg() << "No movement component identified\n"; 
+		result = CWaveletSlopeClassifier::wsc_low_movement; 
 	}
 	
 	// classification of the remaining components 
 	if (remaining_indices.size() < 2) {
+		cvmsg() << "Classification failed because too few remaining components.\n"; 
 		result = CWaveletSlopeClassifier::wsc_fail; 
 		return; 
 	}
@@ -271,7 +275,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	if (remaining_indices.size() > 2) {
 		sort(remaining_indices.begin(), remaining_indices.end(), 
 		     [](PSlopeStatistics lhs, PSlopeStatistics rhs) {
-			     return lhs->get_perfusion_high_peak().second > rhs->get_perfusion_high_peak().second;
+			     return lhs->get_range() > rhs->get_range();
 		     });
 	}
 	
@@ -288,8 +292,9 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 
 	if (remaining_indices.size() > 2)
 		Perfusion_idx = remaining_indices[2]->get_index();
-	
-	result = CWaveletSlopeClassifier::wsc_normal; 
+
+	if (!movement_indices.empty())
+		result = CWaveletSlopeClassifier::wsc_normal; 
 }
 
 NS_MIA_END

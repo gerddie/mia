@@ -261,10 +261,10 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 		if (!ica->run(m_components, m_meanstrip, m_normalize, guess) && 
 		    (m_ica_approach == FICA_APPROACH_DEFL))
 			return false; 
-		m_cls = CWaveletSlopeClassifier(ica->get_mixing_curves(), m_meanstrip);
+		m_cls = CWaveletSlopeClassifier(ica->get_mixing_curves(), false);
 	} else {
 
-		float max_energy = 0.0;
+		float max_energy = -1.0;
 		for (int i = 4; i <= 7; ++i) {
 			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
 			ica->set_approach(m_ica_approach); 
@@ -275,12 +275,14 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 				continue; 
 			}
 
-			CWaveletSlopeClassifier cls(l_ica->get_mixing_curves(), m_meanstrip);
-			if (cls.result() == CWaveletSlopeClassifier::wsc_fail)
+			CWaveletSlopeClassifier cls(l_ica->get_mixing_curves(), false);
+			if (cls.result() == CWaveletSlopeClassifier::wsc_fail) {
+				cvwarn() << "Classification: for " << i << " components failed\n"; 
 				continue; 
+			}
 			
 			float movement_energy = cls.get_movement_indicator();
-			cvinfo() << "Components = " << i << " energy = " << movement_energy << "\n";
+			cvmsg() << "Components = " << i << " energy = " << movement_energy << "\n";
 			if (max_energy < movement_energy) {
 				max_energy = movement_energy;
 				m_components = i;
@@ -291,12 +293,12 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 		}
 	}
 	m_ica.swap(ica);
-
-	cvinfo() << "Movement: " << m_cls.get_movement_idx() << "\n"; 
-	cvinfo() << "RV:       " << m_cls.get_RV_idx() << "\n"; 
-	cvinfo() << "LV:       " << m_cls.get_LV_idx() << "\n"; 
-	cvinfo() << "Baseline: " << m_cls.get_baseline_idx() << "\n"; 
-	cvinfo() << "Perf    : " << m_cls.get_perfusion_idx() << "\n"; 
+	cvmsg() << "Components: " << m_components << "\n"; 
+	cvmsg() << "  Movement: " << m_cls.get_movement_idx() << "\n"; 
+	cvmsg() << "  RV:       " << m_cls.get_RV_idx() << "\n"; 
+	cvmsg() << "  LV:       " << m_cls.get_LV_idx() << "\n"; 
+	cvmsg() << "  Baseline: " << m_cls.get_baseline_idx() << "\n"; 
+	cvmsg() << "  Perf    : " << m_cls.get_perfusion_idx() << "\n"; 
 	return has_one; 
 }
 

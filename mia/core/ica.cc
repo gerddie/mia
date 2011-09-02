@@ -533,6 +533,16 @@ std::vector<float> CICAAnalysisImpl::normalize_Mix()
 		for (size_t k = 0; k < m_nlength; ++k)
 			result[k] += mean * m_ICs(c, k);
 	}
+	for (size_t c = 0; c < m_ncomponents; ++c) {
+		// invert sign so that all mixing curves start with a value < 0 
+		if (m_Mix(0, c) > 0) {
+			for (size_t r = 0; r < m_rows; ++r)
+				m_Mix(r, c) *= -1;
+			for (size_t k = 0; k < m_nlength; ++k)
+				m_ICs(c, k) *= -1; 
+		}
+	}
+	
 	return result;
 }
 
