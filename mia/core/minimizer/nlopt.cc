@@ -266,14 +266,14 @@ int CNLOptFDFMinimizer::do_run(CDoubleVector& x)
 	cvinfo() << "\n"; 
 	if (retval < 0) {
 		switch (retval) {
-		case NLOPT_FAILURE: cvwarn() << "CNLOptFDFMinimizer: optimization failed for ungiven reasons\n"; 
+		case NLOPT_FAILURE: cvinfo() << "CNLOptFDFMinimizer: optimization failed for ungiven reasons\n"; 
 			// okay, it's a lie
 			return CMinimizer::success; 
 		case NLOPT_INVALID_ARGS: throw invalid_argument("CNLOptFDFMinimizer: invalid arguments given");
 		case NLOPT_OUT_OF_MEMORY: throw runtime_error("CNLOptFDFMinimizer: out of memory"); 
 		case NLOPT_FORCED_STOP: throw runtime_error("CNLOptFDFMinimizer: optimization was forced to stop"); 
 		case NLOPT_ROUNDOFF_LIMITED:  
-			cvwarn() << "optimization stopped due to roundoff errors\n"; 
+			cvinfo() << "CNLOptFDFMinimizer: optimization stopped due to roundoff errors\n"; 
 			return CMinimizer::success; 
 		default: 
 			throw runtime_error("CNLOptFDFMinimizer: optimization failed with unknown error code"); 
