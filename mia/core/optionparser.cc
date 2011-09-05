@@ -111,11 +111,25 @@ void CComplexOptionParser::set_seperators(SSeperators s)
 int CComplexOptionParser::split(const string& s, char c, list<string>& result)const
 {
 	string::size_type i = 0;
-
+	
+	
 	while (i < s.size()) {
 		string::size_type start = i;
-		i = s.find(c, start);
-
+		int level = 0; 
+		while (i < s.size() && ( s[i] != c || level > 0 )) {
+			if (s[i] == '[') 
+				++level; 
+			if (s[i] == ']') {
+				if (level > 0)
+					--level; 
+				else
+					throw invalid_argument("CComplexOptionParser: encountered ']' without leading '['"); 
+			}
+			++i; 
+		}
+		if (level > 0) 
+			throw invalid_argument("CComplexOptionParser: miss closing ']' ");
+		
 		if (i < s.size()) {
 			result.push_back(s.substr(start,i-start));
 			++i;
