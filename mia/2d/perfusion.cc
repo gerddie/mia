@@ -87,7 +87,8 @@ void C2DPerfusionAnalysis::set_use_guess_model()
 
 bool C2DPerfusionAnalysis::has_movement() const
 {
-	return impl->m_cls.result() == CWaveletSlopeClassifier::wsc_normal; 
+	return  impl->m_cls.result() == CWaveletSlopeClassifier::wsc_normal ||
+		impl->m_cls.result() == CWaveletSlopeClassifier::wsc_low_movement; 
 }
 
 void C2DPerfusionAnalysis::set_max_ica_iterations(size_t maxiter)

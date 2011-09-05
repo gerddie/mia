@@ -43,6 +43,7 @@ public:
 
 	enum EAnalysisResult {
 		wsc_fail, 
+		wsc_no_movement, 
 		wsc_low_movement, 
 		wsc_normal
 	}; 

@@ -233,9 +233,14 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 				continue; 
 			movement_energies.push_back(energy);
 		}
+
+		// if no special movement component could be identified, or the component has an 
+		// movement energy below the baseline mark it as no movement 
 		if (max_movment_idx < 0 || max_movment_idx == min_energy_idx) {
-			result = CWaveletSlopeClassifier::wsc_low_movement; 
+			result = CWaveletSlopeClassifier::wsc_no_movement; 
 		} else {
+			// if the movement energy is below one of the remaining components 
+			// then mark it as low movement 
 			for (auto k = remaining_indices.begin(); k != remaining_indices.end(); ++k) {
 				if ((*k)->get_level_coefficient_sums()[movement_idx] > max_movment_energy) {
 					cvinfo() << "Estimated maximum movement component " << max_movment_idx 
@@ -260,7 +265,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 		}
 	}else{
 		cvmsg() << "No movement component identified\n"; 
-		result = CWaveletSlopeClassifier::wsc_low_movement; 
+		result = CWaveletSlopeClassifier::wsc_no_movement; 
 	}
 	
 	// classification of the remaining components 
