@@ -13,5 +13,5 @@ Description: A library for 2D/3D grayscale image processing
 Version: @PACKAGE_VERSION@
 Conflicts:
 Requires: @PKG_CONFIG_DEPS@ 
-Libs: -lmia3d -lmia2d -lmiacore @MIA_DEPEND_LIBRARIES@ -L${prefix}/@LIBRARY_INSTALL_PATH@
+Libs: -lmia3d-@VERSION@ -lmia2d-@VERSION@ -lmiacore-@VERSION@ @MIA_DEPEND_LIBRARIES@ -L${prefix}/@LIBRARY_INSTALL_PATH@
 Cflags: -I${prefix}/@INCLUDE_INSTALL_PATH@ -I${prefix}/@LIB_INCLUDE_INSTALL_PATH@
