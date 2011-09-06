@@ -58,7 +58,7 @@ mia-2dmyomilles -i <input set> -o <output set> [options]
   \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
   \cmdopt{passes}{P}{int}{Number of ICA+Registration passes to be run}
   \cmdopt{components}{C}{int}{Number of  ICA components to be used, 0 = automatic estimation}
-  \cmdopt{no-normalize}{}{}{don't normalized ICs}
+  \cmdopt{normalize}{}{}{normalize independent components}
   \cmdopt{no-meanstrip}{}{}{don't strip the mean from the mixing curves}
   \cmdopt{guess}{g}{}{use initial guess for myocardial perfusion (experimental)}
   \cmdopt{segscale}{s}{float}{segment and scale the crop box around the LV (0=no segmentation)}
@@ -156,7 +156,7 @@ int do_main( int argc, const char *argv[] )
 	
 	// ICA parameters 
 	size_t components = 0;
-	bool no_normalize = false; 
+	bool normalize = false; 
 	bool no_meanstrip = false; 
 	bool use_guess_model = false; 
 	float box_scale = 1.4;
@@ -184,7 +184,7 @@ int do_main( int argc, const char *argv[] )
 
 
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
-	options.add(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
+	options.add(make_opt( normalize, "no-normalize", 0, "don't normalized ICs", NULL));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
 				    "don't strip the mean from the mixing curves", NULL));
 	options.add(make_opt( use_guess_model, "guess", 'g', "use initial guess for myocardial perfusion", 
@@ -219,7 +219,7 @@ int do_main( int argc, const char *argv[] )
 	
 	
 	// run ICA
-	C2DPerfusionAnalysis ica(components, !no_normalize, !no_meanstrip); 
+	C2DPerfusionAnalysis ica(components, normalize, !no_meanstrip); 
 	if (max_ica_iterations) 
 		ica.set_max_ica_iterations(max_ica_iterations); 
 	if (use_guess_model) 
@@ -291,7 +291,7 @@ int do_main( int argc, const char *argv[] )
 	// run the specified number of passes 
 	// break early if ICA fails
 	while (++current_pass < pass) {
-		C2DPerfusionAnalysis ica2(components, !no_normalize, !no_meanstrip); 
+		C2DPerfusionAnalysis ica2(components, normalize, !no_meanstrip); 
 		if (max_ica_iterations) 
 			ica2.set_max_ica_iterations(max_ica_iterations); 
 	

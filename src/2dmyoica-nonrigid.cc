@@ -58,7 +58,7 @@ mia-2dmyoica-nonrigid -i <input set> -o <output set> [options]
   \cmdgroup{Independent component analysis} 
   \cmdopt{components}{C}{int}{Number of  ICA components to be used, 0 = automatic estimation}
   \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
-  \cmdopt{no-normalize}{}{}{don't normalized ICs}
+  \cmdopt{normalize}{}{}{normalize independent components}
   \cmdopt{no-meanstrip}{}{}{don't strip the mean from the mixing curves}
   \cmdopt{segscale}{s}{float}{segment and scale the crop box around the LV (0=no segmentation)}
   \cmdopt{max-ica-iter}{m}{int}{maximum number of iterations within ICA}
@@ -150,7 +150,7 @@ C2DFullCostList create_costs(double divcurlweight, P2DFullCost imagecost)
 	result.push(imagecost); 
 
 	stringstream divcurl_descr; 
-	divcurl_descr << "divcurl:weight=" << divcurlweight; 
+	divcurl_descr << "divcurl:weight=[" << divcurlweight <<"]"; 
 	result.push(C2DFullCostPluginHandler::instance().produce(divcurl_descr.str())); 
 	return result; 
 }
@@ -158,7 +158,7 @@ C2DFullCostList create_costs(double divcurlweight, P2DFullCost imagecost)
 P2DTransformationFactory create_transform_creator(size_t c_rate)
 {
 	stringstream transf; 
-	transf << "spline:rate=" << c_rate; 
+	transf << "spline:rate=" << c_rate << ",imgboundary=zero,imgkernel=[bspline:d=1]";
 	return C2DTransformCreatorHandler::instance().produce(transf.str()); 
 }
 	
@@ -255,7 +255,7 @@ int do_main( int argc, const char *argv[] )
 
 	// ICA parameters 
 	size_t components = 0;
-	bool no_normalize = false; 
+	bool normalize = false; 
 	bool no_meanstrip = false; 
 	float box_scale = 0.0;
 	size_t skip_images = 0; 
@@ -307,7 +307,7 @@ int do_main( int argc, const char *argv[] )
 
 	options.set_group("ICA"); 
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
-	options.add(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
+	options.add(make_opt( normalize, "normalize", 0, "normalized ICs", NULL));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
 				    "don't strip the mean from the mixing curves", NULL));
 	options.add(make_opt( box_scale, "segscale", 's', 
@@ -333,7 +333,7 @@ int do_main( int argc, const char *argv[] )
 	
 
 	// run ICA
-	C2DPerfusionAnalysis ica(components, !no_normalize, !no_meanstrip); 
+	C2DPerfusionAnalysis ica(components, normalize, !no_meanstrip); 
 	if (max_ica_iterations) 
 		ica.set_max_ica_iterations(max_ica_iterations); 
 	if (!ica.run(series)) {
@@ -386,17 +386,18 @@ int do_main( int argc, const char *argv[] )
 		if (!save_reg_filename.empty()) 
 			save_references(save_reg_filename, current_pass, 0, input_set.get_images()); 
 
-		C2DPerfusionAnalysis ica2(components, !no_normalize, !no_meanstrip); 
+		C2DPerfusionAnalysis ica2(components, normalize, !no_meanstrip); 
 		if (max_ica_iterations) 
 			ica2.set_max_ica_iterations(max_ica_iterations); 
 	
 		transform(input_set.get_images().begin() + skip_images, 
 			  input_set.get_images().end(), series.begin(), Convert2Float()); 
 
-		if (!ica2.run(series))
+		if (!ica2.run(series)) {
 			ica2.set_approach(FICA_APPROACH_SYMM); 
-
-		ica2.run(series); 
+			ica2.run(series); 
+		}
+		
 		divcurlweight /= divcurlweight_divider; 
 		if (c_rate > 1) 
 			c_rate /= c_rate_divider; 

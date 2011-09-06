@@ -117,15 +117,23 @@ int do_main( int argc, const char *argv[] )
 	switch (classifier.result()) {
 	case CWaveletSlopeClassifier::wsc_fail: 
 		throw invalid_argument("The input data could not be classified into LV, RV and additional components"); 
-	case CWaveletSlopeClassifier::wsc_low_movement: 
+	case CWaveletSlopeClassifier::wsc_no_movement: 
 		cout << "The input data set doesn't contain significant motion\n"; 
 		cout << "RV: idx = "<< classifier.get_RV_idx() << " with peak at " << classifier.get_RV_peak() << "\n"; 
 		cout << "LV: idx = "<< classifier.get_LV_idx() << " with peak at " << classifier.get_LV_peak() << "\n"; 
 		cout << "Baseline: "<< classifier.get_baseline_idx() << "\n";
 		cout << "Perfusion:"<< classifier.get_perfusion_idx() << " (uncertain) \n";
 		break; 
+	case CWaveletSlopeClassifier::wsc_low_movement: 
+		cout << "The input data set contains some motion\n"; 
+		cout << "RV: idx = "<< classifier.get_RV_idx() << " with peak at " << classifier.get_RV_peak() << "\n"; 
+		cout << "LV: idx = "<< classifier.get_LV_idx() << " with peak at " << classifier.get_LV_peak() << "\n"; 
+		cout << "Baseline: "<< classifier.get_baseline_idx() << "\n";
+		cout << "Motion:   "<< classifier.get_movement_idx() << " with energy " << classifier.get_movement_indicator() << "\n";
+		cout << "Perfusion:"<< classifier.get_perfusion_idx() << " (uncertain) \n";
+		break; 
 	case CWaveletSlopeClassifier::wsc_normal: 
-		cout << "The input data set was properly classified\n";
+		cout << "The input data set contains motion\n";
 		cout << "RV: idx = "<< classifier.get_RV_idx() << " with peak at " << classifier.get_RV_peak() << "\n"; 
 		cout << "LV: idx = "<< classifier.get_LV_idx() << " with peak at " << classifier.get_LV_peak() << "\n"; 
 		cout << "Baseline: "<< classifier.get_baseline_idx() << "\n";

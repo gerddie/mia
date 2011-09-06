@@ -61,8 +61,8 @@ int do_main( int argc, const char *argv[] )
 	string in_filename;
 	string out_filename;
 
-	EWaveletType wt_type = wt_haar; 
-	int k = 2; 
+	EWaveletType wt_type = wt_daubechies_centered; 
+	int k = 10; 
 
 
 	options.set_group("File-IO"); 

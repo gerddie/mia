@@ -82,10 +82,12 @@ int do_main(int argc, const char *argv[])
 {
 	string src_filename;
 	size_t reference = 0;
+	size_t skip = 0; 
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
 	options.add(make_opt( reference, "ref-frame", 'r', "reference frame", CCmdOption::required));
+	options.add(make_opt( skip, "skip", 'k', "skip frames at the beginning"));
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
@@ -104,9 +106,13 @@ int do_main(int argc, const char *argv[])
 	if (reference >= frames.size())
 		throw invalid_argument("Reference frame outside range");
 
+	if (skip >= frames.size())
+		throw invalid_argument("Can't skip the whole series");
+
+
 	const CSegFrame& ref = segset.get_frames()[reference];
 
-	CSegSet::Frames::const_iterator iframe = segset.get_frames().begin();
+	CSegSet::Frames::const_iterator iframe = segset.get_frames().begin() + skip;
 	CSegSet::Frames::const_iterator eframe = segset.get_frames().end();
 
 	size_t i = 0;
