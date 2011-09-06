@@ -93,6 +93,8 @@ public:
 	const std::vector<float>& get_level_coefficient_sums() const;
 
 	const std::vector<EEnergyCenterpos>& get_level_mean_energy_position() const;
+
+	float get_positive_time_mean() const; 
 	
 	int get_index() const; 
 private:

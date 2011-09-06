@@ -94,6 +94,7 @@ SET(MIACORE_HEADER_BASE
   errormacro.hh
   export_handler.hh
   factory.hh
+  factorycmdlineoption.hh
   fatcost.hh fatcost.cxx
   file.hh
   filetools.hh
@@ -137,8 +138,10 @@ SET(MIACORE_HEADER_BASE
   streamredir.hh
   typedescr.hh
   traits.hh
+  transformation.hh
   testplugin.hh
   threadedmsg.hh
+  vector.hh
   watch.hh
   waveletslopeclassifier.hh
   )
@@ -215,7 +218,7 @@ ENDIF (UNIX)
 #
 # the library target 
 #
-SET(MIACORE_SRC ${MIACORE_SRC_BASE} ${ITPP_SRC} ${FFTWF_SRC} ${PWPDF_SRC} revision.hh)
+SET(MIACORE_SRC ${MIACORE_SRC_BASE} ${ITPP_SRC} ${FFTWF_SRC} ${PWPDF_SRC})
 SET(MIACORE_HEADER ${MIACORE_HEADER_BASE} ${ITPP_HEADER} ${FFTWF_HEADER} ${PWPDF_HEADER})
 
 

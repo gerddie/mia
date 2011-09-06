@@ -50,6 +50,8 @@ struct CSlopeStatisticsImpl {
 	float get_mean_frequency() const;
 	float get_energy() const;
 
+	float get_positive_time_mean() const; 
+
 	float get_mean_frequency_level() const;
 	pair<int, int> get_peak_level_and_time_index() const; 
 	float get_peak_wavelet_coefficient() const; 
@@ -86,7 +88,7 @@ private:
 	mutable float m_wt_energy;
 	mutable vector<float> m_wt_level_coefficient_sums; 
 	mutable vector<CSlopeStatistics::EEnergyCenterpos> m_wt_level_mean_energy_pos; 
-
+	mutable float m_energy_time_mean; 
 	int m_index; 
 
 	typedef vector<float>::const_iterator position;
@@ -187,6 +189,19 @@ pair<size_t, float>  CSlopeStatisticsImpl::get_perfusion_high_peak() const
 		evaluate_perfusion_peak();
 	return m_perfusion_peak;
 }
+float CSlopeStatisticsImpl::get_positive_time_mean() const
+{
+	if (!m_perfusion_peak_valid)
+		evaluate_perfusion_peak();
+	return m_energy_time_mean;
+}
+
+
+float CSlopeStatistics::get_positive_time_mean() const
+{
+	impl->get_positive_time_mean(); 
+}
+
 
 void CSlopeStatisticsImpl::evaluate_frequency() const
 {
@@ -263,6 +278,17 @@ void CSlopeStatisticsImpl::evaluate_curve_length() const
 void CSlopeStatisticsImpl::evaluate_perfusion_peak() const
 {
 	float mean = accumulate(m_series.begin(), m_series.end(), 0.0) / m_series.size();
+
+	float timmean = 0.0; 
+	float sum = 0.0;  
+	for (int i = 0; i < m_series.size(); ++i) {
+		if (m_series[i] > 0.0) {
+			timmean += i * m_series[i]; 
+			sum += m_series[i];
+		}
+	}
+	if ( sum > 0.0) 
+		m_energy_time_mean = timmean / sum; 
 
 	vector<float> help(m_series.size());
 	if (m_series[0] < mean)

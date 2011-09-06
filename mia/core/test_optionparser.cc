@@ -119,3 +119,18 @@ BOOST_AUTO_TEST_CASE( test_parsing_two_layer )
 	BOOST_CHECK( a != part->second.end()); 
 	BOOST_CHECK_EQUAL(a->second, "b:c=[e:d=0]"); 
 }
+
+BOOST_AUTO_TEST_CASE( test_parsing_exponents )
+{
+	const char *paramstr="ssd:c=[1e+6]";
+	CComplexOptionParser scanner(paramstr);
+	BOOST_REQUIRE(scanner.size() == 1);
+
+	const auto part = scanner.begin();
+
+	BOOST_CHECK(part->first == "ssd");
+	BOOST_CHECK(part->second.size() == 1);
+	auto a = part->second.find("c"); 
+	BOOST_CHECK( a != part->second.end()); 
+	BOOST_CHECK_EQUAL(a->second, "1e+6"); 
+}

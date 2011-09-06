@@ -275,20 +275,22 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 		return; 
 	}
 	
-	// sort according to the highest intensity - perfusion doesn't reach anintensity as high as the 
-	// RV/LV peak enhancements 
-	if (remaining_indices.size() > 2) {
+	// sort according to the weighted time point of positive curve values. 
+	// LV and RV curves have positive values on the left, perfusion has positive values 
+	// on the right (later) 
+	//if (remaining_indices.size() > 2) {
 		sort(remaining_indices.begin(), remaining_indices.end(), 
 		     [](PSlopeStatistics lhs, PSlopeStatistics rhs) {
-			     return lhs->get_range() > rhs->get_range();
+			     return lhs->get_positive_time_mean() < rhs->get_positive_time_mean();
 		     });
-	}
+		//}
+	
 	
 	// RV enhancement comes before LV enhancement 
-	sort(remaining_indices.begin(), remaining_indices.begin() + 2, 
-	     [](PSlopeStatistics lhs, PSlopeStatistics rhs) {
-		     return lhs->get_perfusion_high_peak().first < rhs->get_perfusion_high_peak().first;
-	     });
+	//sort(remaining_indices.begin(), remaining_indices.begin() + 2, 
+//	     [](PSlopeStatistics lhs, PSlopeStatistics rhs) {
+//		     return lhs->get_perfusion_high_peak().first < rhs->get_perfusion_high_peak().first;
+//	     });
 	
 	RV_peak = remaining_indices[0]->get_perfusion_high_peak().first; 
 	LV_peak = remaining_indices[1]->get_perfusion_high_peak().first; 
