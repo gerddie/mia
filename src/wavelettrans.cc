@@ -54,12 +54,51 @@ const TDictMap<EWaveletType>::Table wavelet_dict[] = {
 const TDictMap<EWaveletType> g_wavelet_dict(wavelet_dict);
 
 
+void save_wavelet(const string& filenamebase, const vector<double>& coeffs, int column)
+{
+	
+	auto c = coeffs.begin() + 1; 
+	int repeat = coeffs.size();
+	int length = coeffs.size();
+	int level = 0; 
+	vector<vector<double> > help; 
+	vector<double> index(length); 
+	for (int i = 0; i < length; ++i) 
+		index[i] = i; 
+	while (repeat > 1)  {
+		int i = 0; 
+		vector<double> col(length); 
+		while ( i < length ) {
+			int k = 0; 
+			for ( int k = 0; k < repeat; ++k, ++i) 
+				col[i] = fabs(*c); 
+			++c; 
+		}
+		help.push_back(col); 
+		repeat /=2; 
+		++level; 
+	}
+	help.push_back(index); 
+	stringstream fname; 
+	fname << filenamebase << column << ".txt"; 
+	ofstream file(fname.str().c_str()); 
+	for (int i = 0; i < length; ++i) {
+		for (int k = help.size() - 1; k >= 0; --k) {
+			file << fabs(help[k][i]) << " "; 
+		}
+		file << '\n'; 
+	}
+	
+
+}
+
 int do_main( int argc, const char *argv[] )
 {
 	CCmdOptionList options(g_general_help);
 
 	string in_filename;
 	string out_filename;
+	string out2_filenamebase;
 
 	EWaveletType wt_type = wt_daubechies_centered; 
 	int k = 10; 
@@ -70,6 +109,9 @@ int do_main( int argc, const char *argv[] )
 				    "input data set", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', 
 			      "output data set", CCmdOption::required));
+
+	options.add(make_opt(out2_filenamebase, "save-wave", 's', 
+			     "base name of the output files that will store the wavelet coefficients as matrix")); 
 
 	options.set_group("Wavelet"); 
 	options.add(make_opt( wt_type, g_wavelet_dict, "wavelet", 'w', "wavelet to be used"));
@@ -135,6 +177,14 @@ int do_main( int argc, const char *argv[] )
 			result << fabs(table[c][r]) << " "; 
 		}
 		result << "\n"; 
+	}
+
+	if (!out2_filenamebase.empty())  {
+		// save the wavelet coefrficents as matrix 
+		for (int c = 0; c < table.size(); ++c) {
+			save_wavelet(out2_filenamebase, table[c], c); 
+		}
+		
 	}
 	
 	return !result.good();
