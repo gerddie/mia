@@ -59,6 +59,7 @@ struct CSlopeStatisticsImpl {
 	float get_wavelet_energy() const; 
 	const vector<float>& get_level_coefficient_sums() const; 
 	const vector<CSlopeStatistics::EEnergyCenterpos>& get_level_mean_energy_position() const; 
+	CSlopeStatistics::EEnergyCenterpos get_mean_energy_position() const; 
 	int get_index() const; 
 private:
 
@@ -91,6 +92,7 @@ private:
 	mutable float m_wt_energy;
 	mutable vector<float> m_wt_level_coefficient_sums; 
 	mutable vector<CSlopeStatistics::EEnergyCenterpos> m_wt_level_mean_energy_pos; 
+	mutable CSlopeStatistics::EEnergyCenterpos m_energy_pos; 
 	mutable float m_energy_time_mean; 
 	int m_index; 
 
@@ -261,6 +263,17 @@ const vector<CSlopeStatistics::EEnergyCenterpos>& CSlopeStatisticsImpl::get_leve
 	return m_wt_level_mean_energy_pos; 
 }
 
+CSlopeStatistics::EEnergyCenterpos CSlopeStatisticsImpl::get_mean_energy_position() const
+{
+	if (!m_wt_valid) 
+		evaluate_wt(); 
+	return m_energy_pos; 
+}
+
+CSlopeStatistics::EEnergyCenterpos CSlopeStatistics::get_mean_energy_position() const
+{
+	return impl->get_mean_energy_position(); 
+}
 
 const vector<CSlopeStatistics::EEnergyCenterpos>& CSlopeStatistics::get_level_mean_energy_position() const
 {
@@ -384,6 +397,8 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 	m_wt_energy = 0.0; 
 	m_wt_level_coefficient_sums.resize(levels); 
 	m_wt_level_mean_energy_pos.resize(levels); 
+
+
 	for (int l = 0; l < levels; ++l, ncoeffs *= 2) {
 		float peak_level_coeff = 0.0; 
 		m_wt_level_coefficient_sums[l] = 0; 
@@ -426,15 +441,36 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 				  << "\n"; 
 			wt_level_mean_pos /= m_wt_level_coefficient_sums[l] * ncoeffs / 3.0;
 			cvdebug() << "corrected = " << wt_level_mean_pos << "\n"; 
-			if (wt_level_mean_pos <= 1.0 && ncoeffs > 1)
+			if (wt_level_mean_pos <= 1.0 && ncoeffs > 1) {
 				m_wt_level_mean_energy_pos[l] = CSlopeStatistics::ecp_begin;
-			else if ((wt_level_mean_pos <= 2.0 && ncoeffs > 3) || ncoeffs == 1 ) 
+			}else if ((wt_level_mean_pos <= 2.0 && ncoeffs > 3) || ncoeffs == 1 ) {
 				m_wt_level_mean_energy_pos[l] = CSlopeStatistics::ecp_center; 
-			else 
+			} else {
 				m_wt_level_mean_energy_pos[l] = CSlopeStatistics::ecp_end;
+			}
 		}
 		
 	}
+
+	int at_begin = 0; 
+	int at_center = 0; // the highest level is always centered 
+	int at_end = 0; 
+	
+	for (int l = 2; l < levels; ++l) {
+		switch (m_wt_level_mean_energy_pos[l]) {
+		case CSlopeStatistics::ecp_begin: ++at_begin; break; 
+		case CSlopeStatistics::ecp_end: ++at_end; break; 
+		case CSlopeStatistics::ecp_center: ++at_center; break; 
+		}	
+	}
+	
+	if ( at_begin > at_center && at_begin > at_end ) 
+		m_energy_pos = CSlopeStatistics::ecp_begin; 
+	else if ( at_end > at_center && at_begin < at_end ) 
+		m_energy_pos = CSlopeStatistics::ecp_end; 
+	else 
+		m_energy_pos = CSlopeStatistics::ecp_center;
+	
 	m_wt_mean_wt_level = mean_level / sum_level_peaks; 
 	m_wt_valid = true; 
 }

@@ -94,6 +94,8 @@ public:
 
 	const std::vector<EEnergyCenterpos>& get_level_mean_energy_position() const;
 
+	CSlopeStatistics::EEnergyCenterpos get_mean_energy_position() const; 
+
 	float get_positive_time_mean() const; 
 	
 	int get_index() const; 
