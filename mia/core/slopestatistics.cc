@@ -20,6 +20,7 @@
 
 #include <gsl++/wavelet.hh>
 
+#include <mia/core/spacial_kernel.hh>
 #include <mia/core/slopestatistics.hh>
 #include <mia/core/fft1d_r2c.hh>
 #include <mia/core/msgstream.hh>
@@ -69,6 +70,8 @@ private:
 	void evaluate_wt() const; 
 	
 	vector<float> m_series;
+	
+	mutable vector<double> m_series_lowpass;
 	mutable bool m_curve_length_valid;
 	mutable float m_curve_length;
 	mutable bool m_range_valid;
@@ -278,29 +281,45 @@ void CSlopeStatisticsImpl::evaluate_curve_length() const
 void CSlopeStatisticsImpl::evaluate_perfusion_peak() const
 {
 	float mean = accumulate(m_series.begin(), m_series.end(), 0.0) / m_series.size();
-
-	float timmean = 0.0; 
-	float sum = 0.0;  
-	for (int i = 0; i < m_series.size(); ++i) {
-		if (m_series[i] > 0.0) {
-			timmean += i * m_series[i]; 
-			sum += m_series[i];
-		}
-	}
-	if ( sum > 0.0) 
-		m_energy_time_mean = timmean / sum; 
-
-	vector<float> help(m_series.size());
+	vector<double> help(m_series.size());
 	if (m_series[0] < mean)
 		transform(m_series.begin(), m_series.end(), help.begin(),[mean](float x){return x - mean;});
 	else
 		transform(m_series.begin(), m_series.end(), help.begin(),[mean](float x){return mean - x;});
 
-	pair<position, position> minmax = minmax_element(help.begin(), help.end());
-	position help_begin = help.begin();
+	auto filter = C1DSpacialKernelPluginHandler::instance().produce("gauss:w=2"); 
+	help = filter->apply(help); 
+	
+	auto minmax = minmax_element(help.begin(), help.end());
+	auto help_begin = help.begin();
 	size_t peak_pos = distance(help_begin, minmax.second);
 	m_perfusion_peak.first = peak_pos;
-	m_perfusion_peak.second =  m_series[m_perfusion_peak.first];
+	m_perfusion_peak.second =  help[m_perfusion_peak.first];
+	m_perfusion_peak_valid = true; 
+
+
+	int start_peak_area = peak_pos; 
+	while (help[start_peak_area] > 0 && start_peak_area > 0) 
+		--start_peak_area; 
+	if (help[start_peak_area] < 0) 
+		++start_peak_area; 
+
+	cvinfo() << m_index <<" peak pos = " << peak_pos 
+		 << " start peak area = " << start_peak_area
+		 << "\n"; 	
+	float timmean = 0.0; 
+	float sum = 0.0;  
+	bool stop = false; 
+	for (int i = start_peak_area; i < help.size(); ++i) {
+		if (help[i]>0) {
+			timmean += i * m_series[i]; 
+			sum += help[i];
+		}else
+			break; 
+	}
+	if ( sum > 0.0) 
+		m_energy_time_mean = timmean / sum; 
+
 }
 
 void CSlopeStatisticsImpl::evaluate_range() const
@@ -388,6 +407,7 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 			continue; 
 		}
 		
+		// evalaute the mean time position of the energy
 		if (ncoeffs == 1)
 			m_wt_level_mean_energy_pos[l] = CSlopeStatistics::ecp_center;
 		else if (ncoeffs == 2) {
@@ -413,6 +433,7 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 			else 
 				m_wt_level_mean_energy_pos[l] = CSlopeStatistics::ecp_end;
 		}
+		
 	}
 	m_wt_mean_wt_level = mean_level / sum_level_peaks; 
 	m_wt_valid = true; 

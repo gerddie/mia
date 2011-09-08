@@ -39,6 +39,8 @@ public:
 
 	template <typename T> 
 	vector<double> forward(const vector<T>& x) const; 
+	
+	vector<double> backward(const vector<double>& x) const; 
 
 private: 
 	gsl_wavelet *m_wavelet;
@@ -53,6 +55,11 @@ C1DWavelet::C1DWavelet(EWaveletType wt, size_t k):
 C1DWavelet::~C1DWavelet()
 {
 	delete impl; 
+}
+
+std::vector<double> C1DWavelet::backward(const std::vector<double>& x) const
+{
+	return impl->forward(x); 
 }
 
 std::vector<double> C1DWavelet::forward(const std::vector<double>& x) const
@@ -88,6 +95,16 @@ C1DWaveletImpl::~C1DWaveletImpl()
 	gsl_wavelet_free(m_wavelet); 
 }
 
+vector<double> C1DWaveletImpl::backward(const vector<double>& x) const
+{
+	vector<double> result(x); 
+
+	gsl_wavelet_workspace * ws = gsl_wavelet_workspace_alloc (x.size()); 
+	gsl_wavelet_transform_inverse(m_wavelet, &result[0], 1, x.size(), ws);
+	gsl_wavelet_workspace_free (ws); 
+
+	return result;
+}
 
 template <typename T> 
 vector<double> C1DWaveletImpl::forward(const vector<T>& x) const
@@ -111,5 +128,7 @@ vector<double> C1DWaveletImpl::forward(const vector<T>& x) const
 	gsl_wavelet_workspace_free (ws); 
 	return x_size_to_pow2; 
 }
+
+
 
 }
