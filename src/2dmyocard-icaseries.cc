@@ -182,8 +182,10 @@ int do_main( int argc, const char *argv[] )
 	C2DPerfusionAnalysis ica(components, !no_normalize, !no_meanstrip); 
 	if (max_ica_iterations) 
 		ica.set_max_ica_iterations(max_ica_iterations); 
-
+	
+	ica.set_approach(FICA_APPROACH_SYMM); 
 	if (!ica.run(series)) {
+		cvmsg() << "DEFL failed, retry with SYMM\n";  
 		ica.set_approach(FICA_APPROACH_SYMM); 
 		ica.run(series); // SYMM always returns some result - it might just not converge 
 	}

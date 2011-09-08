@@ -173,8 +173,11 @@ void segment_and_crop_input(CSegSetWithImages&  input_set,
 	C2DBounds crop_start; 
 	auto cropper = ica.get_crop_filter(box_scale, crop_start, 
 					   segmethod, save_crop_feature); 
-	if (!cropper)
-		THROW(runtime_error, "Cropping was requested, but segmentation failed"); 
+	if (!cropper) {
+		cvwarn() << "Cropping was requested, but segmentation failed - continuing at full image size\n";
+		return; 
+	}
+	
 	C2DImageSeries input_images = input_set.get_images(); 
 	for(auto i = input_images.begin(); i != input_images.end(); ++i)
 		*i = cropper->filter(**i); 
@@ -336,11 +339,12 @@ int do_main( int argc, const char *argv[] )
 	C2DPerfusionAnalysis ica(components, normalize, !no_meanstrip); 
 	if (max_ica_iterations) 
 		ica.set_max_ica_iterations(max_ica_iterations); 
-	if (!ica.run(series)) {
-		ica.set_approach(FICA_APPROACH_SYMM); 
-		if (!ica.run(series))
-			cvwarn() << "ICA not converged, but the SYMM approach has given something to work with ...\n";
-	}
+
+	ica.set_approach(FICA_APPROACH_SYMM); 
+	if (!ica.run(series))
+		cvwarn() << "ICA not converged, but the SYMM approach has given something to work with ...\n";
+	
+
 	vector<C2DFImage> references_float = ica.get_references(); 
 	
 	C2DImageSeries references(references_float.size()); 
