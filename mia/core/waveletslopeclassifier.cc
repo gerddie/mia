@@ -170,22 +170,24 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 		vstats.push_back(PSlopeStatistics(new CSlopeStatistics(series[i], i))); 
 	
 	/// classify 
-	int movement_idx = vstats[0]->get_level_coefficient_sums().size() - 2; 
+	int movement_idx = vstats[0]->get_level_coefficient_sums().size() - 2;
 	
 	// first estimate if this is free breathing or breath holding 
-	vector<float> movement_pos(4, 0); 
+	vector<float> movement_pos(4, 0);
 	for (size_t i = 0; i < series.size(); ++i)
 		movement_pos[vstats[i]->get_level_mean_energy_position()[movement_idx]] += vstats[i]->get_level_coefficient_sums()[movement_idx];
 	
-	bool ifree_breathing = (movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_begin] && 
-				movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_end]); 
+	bool ifree_breathing = (movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_begin] &&
+				movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_end]);
+
+	bool at_begin = (!ifree_breathing) && (movement_pos[CSlopeStatistics::ecp_end] < movement_pos[CSlopeStatistics::ecp_begin]); 
 		
-	cvmsg() << "Detected free breathing data set\n"; 
-	int low_energy_start_idx = free_breathing ? 0 : 1; 
+	cvmsg() << "Detected free breathing data set\n";
+	int low_energy_start_idx = free_breathing ? 0 : 1;
 	
 	// get movement components 
-	vector<PSlopeStatistics> movement_indices; 
-	vector<PSlopeStatistics> remaining_indices; 
+	vector<PSlopeStatistics> movement_indices;
+	vector<PSlopeStatistics> remaining_indices;
 
 	int min_energy_idx = -1; 
 	float min_energy = numeric_limits<float>::max(); 
@@ -206,7 +208,13 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 			min_energy_idx = i; 
 		}
 		
-		is_high_freq[i] = (low_freq < high_freq); 
+		is_high_freq[i] = (low_freq < high_freq);
+		if (!at_begin && is_high_freq[i])
+			if (vstats[i]->get_mean_energy_position() == CSlopeStatistics::ecp_begin) {
+				cvinfo() << "c=" << i << ":override motion because we assume it's RV enhacement\n";
+				is_high_freq[i] = false; 
+			}
+		
 	}
 
 	
