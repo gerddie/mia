@@ -263,6 +263,7 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 		    (m_ica_approach == FICA_APPROACH_DEFL))
 			return false; 
 		m_cls = CWaveletSlopeClassifier(ica->get_mixing_curves(), false);
+		has_one = true; 
 	} else {
 
 		float max_energy = -1.0;
