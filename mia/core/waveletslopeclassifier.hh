@@ -89,6 +89,9 @@ public:
 	/** @returns  get main breathing movement component energy.  */ 
 	float get_movement_indicator() const; 
 
+	/** @returns  get number of movement components.  */ 
+	size_t get_number_of_movement_components() const; 
+
 	EAnalysisResult result() const; 
 	
 private:

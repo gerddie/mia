@@ -266,8 +266,8 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 		has_one = true; 
 	} else {
 
-		float max_energy = -1.0;
-		for (int i = 4; i <= 7; ++i) {
+		size_t min_components_nonzero = 100;
+		for (int i = 7; i >= 4; --i) {
 			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
 			ica->set_approach(m_ica_approach); 
 			l_ica->set_max_iterations(m_max_iterations);
@@ -283,17 +283,21 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 				continue; 
 			}
 			
-			float movement_energy = cls.get_movement_indicator();
-			cvmsg() << "Components = " << i << " energy = " << movement_energy << "\n";
-			if (max_energy < movement_energy) {
-				max_energy = movement_energy;
+			size_t movement_components  = cls.get_number_of_movement_components();
+
+			cvmsg() << "Components = " << i << " number of components = " << movement_components << "\n";
+			if (movement_components < min_components_nonzero && movement_components != 0) {
+				min_components_nonzero = movement_components;
 				m_components = i;
 				ica.swap(l_ica);
 				m_cls = cls; 
 			}
 			has_one = true; 
 		}
+		if (min_components_nonzero == 100) 
+			min_components_nonzero = 0; 
 	}
+	
 	m_ica.swap(ica);
 	cvmsg() << "Components: " << m_components << "\n"; 
 	cvmsg() << "  Movement: " << m_cls.get_movement_idx() << "\n"; 

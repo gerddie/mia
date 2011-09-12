@@ -75,6 +75,12 @@ public:
 	/// \returns the level and the time index of the wavelet conefficient with the largest absolute value 
 	std::pair<int, int> get_peak_level_and_time_index() const; 
 
+	/**
+	   \returns the maximum value f(x)/x for this slope. This indicates the relation between the absolute value 
+	   of the first intensity peak and its position in time. The larger the earlier in time and the higher. 
+	 */
+	float get_maximum_gradient_from_zero() const; 
+
 	/// \returns the absolute value of the peak wavelet coefficient
 	float get_peak_wavelet_coefficient() const; 
 

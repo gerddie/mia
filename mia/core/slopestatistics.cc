@@ -60,6 +60,7 @@ struct CSlopeStatisticsImpl {
 	const vector<float>& get_level_coefficient_sums() const; 
 	const vector<CSlopeStatistics::EEnergyCenterpos>& get_level_mean_energy_position() const; 
 	CSlopeStatistics::EEnergyCenterpos get_mean_energy_position() const; 
+	float get_maximum_gradient_from_zero() const; 
 	int get_index() const; 
 private:
 
@@ -94,6 +95,7 @@ private:
 	mutable vector<CSlopeStatistics::EEnergyCenterpos> m_wt_level_mean_energy_pos; 
 	mutable CSlopeStatistics::EEnergyCenterpos m_energy_pos; 
 	mutable float m_energy_time_mean; 
+	mutable float m_maximum_gradient_from_zero; 
 	int m_index; 
 
 	typedef vector<float>::const_iterator position;
@@ -291,6 +293,13 @@ void CSlopeStatisticsImpl::evaluate_curve_length() const
 	m_curve_length_valid = true;
 }
 
+float CSlopeStatisticsImpl::get_maximum_gradient_from_zero() const
+{
+	if (!m_perfusion_peak_valid) 
+		evaluate_perfusion_peak(); 
+	return m_maximum_gradient_from_zero; 
+}
+
 void CSlopeStatisticsImpl::evaluate_perfusion_peak() const
 {
 	float mean = accumulate(m_series.begin(), m_series.end(), 0.0) / m_series.size();
@@ -303,21 +312,28 @@ void CSlopeStatisticsImpl::evaluate_perfusion_peak() const
 	auto filter = C1DSpacialKernelPluginHandler::instance().produce("gauss:w=2"); 
 	help = filter->apply(help); 
 	
-	auto minmax = minmax_element(help.begin(), help.end());
-	auto help_begin = help.begin();
-	size_t peak_pos = distance(help_begin, minmax.second);
-	m_perfusion_peak.first = peak_pos;
-	m_perfusion_peak.second =  help[m_perfusion_peak.first];
-	m_perfusion_peak_valid = true; 
+	m_maximum_gradient_from_zero = 0.0; 
+	for (int i = 1; i < help.size(); ++i) {
+		float h = help[i] / i; 
+		if (m_maximum_gradient_from_zero < h) {
+			m_maximum_gradient_from_zero = h; 
+			m_perfusion_peak.first = i; 
+			m_perfusion_peak.second = help[i]; 
+		}
+	}
+	cvinfo() << "Slope: " << get_index() 
+		 << ": max(f(x)/x)@x= " 
+		 <<  m_perfusion_peak.first 
+		 << " = " 
+		 << m_maximum_gradient_from_zero << "\n"; 
 
-
-	int start_peak_area = peak_pos; 
+	int start_peak_area = m_perfusion_peak.first; 
 	while (help[start_peak_area] > 0 && start_peak_area > 0) 
 		--start_peak_area; 
 	if (help[start_peak_area] < 0) 
 		++start_peak_area; 
 
-	cvinfo() << m_index <<" peak pos = " << peak_pos 
+	cvinfo() << m_index <<" peak pos = " << m_perfusion_peak.first
 		 << " start peak area = " << start_peak_area
 		 << "\n"; 	
 	float timmean = 0.0; 
@@ -333,6 +349,7 @@ void CSlopeStatisticsImpl::evaluate_perfusion_peak() const
 	if ( sum > 0.0) 
 		m_energy_time_mean = timmean / sum; 
 
+	m_perfusion_peak_valid = true; 
 }
 
 void CSlopeStatisticsImpl::evaluate_range() const
@@ -499,6 +516,11 @@ const vector<float>& CSlopeStatistics::get_level_coefficient_sums() const
 pair<int, int> CSlopeStatistics::get_peak_level_and_time_index() const
 {
 	return impl->get_peak_level_and_time_index(); 
+}
+
+float CSlopeStatistics::get_maximum_gradient_from_zero() const
+{
+	return impl->get_maximum_gradient_from_zero(); 
 }
 
 
