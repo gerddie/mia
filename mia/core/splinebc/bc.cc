@@ -175,41 +175,7 @@ void CZeroBoundary::test_supported(int npoles) const
 
 void CZeroBoundary::do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const
 {
-#ifdef __SSE2__ // is this faster ? 
-	const int size = index.size(); 
-	if (size == 4) {
-		__m128i buffer; 
-		__m128i dbuf[2]; 
-		memcpy(dbuf, &weights[0], size * sizeof(double)); 
-		__m128i zero = _mm_setzero_si128();
-		__m128i maxv = _mm_set1_epi16 (get_width() - 1);
-
-		memcpy(&buffer, &index[0], size * sizeof(short));
-		__m128i idx = _mm_load_si128(&buffer);
-		__m128i old_idx = idx; 
-		idx = _mm_max_epi16(idx, zero);
-		idx = _mm_min_epi16(idx, maxv);
-		_mm_store_si128(&buffer, idx); 
-		memcpy(&index[0], &buffer, size * sizeof(short));
-
-		// now the weights 
-		maxv = _mm_set1_epi16 (get_width());
-		auto lower_bound_mask =  _mm_cmpgt_epi16(zero, old_idx); 
-		auto higher_bound_mask =  _mm_cmplt_epi16(old_idx, maxv);
-		auto mask = _mm_andnot_si128(lower_bound_mask, higher_bound_mask); 
-		// convert mask 
-		auto mask_low =  _mm_unpacklo_epi16(mask, mask); 
-		auto mask_high = mask_low; 
-		mask_low = _mm_unpacklo_epi32(mask_low, mask_low); 
-		mask_high = _mm_unpackhi_epi32(mask_high, mask_high);
-		
-		dbuf[0] = _mm_and_si128(mask_low, dbuf[0]); 
-		dbuf[1] = _mm_and_si128(mask_high, dbuf[1]);
-		
-		memcpy(&weights[0], dbuf, size * sizeof(double)); 
-	} else 
-#endif	
-
+	
 	for (size_t k = 0; k < index.size(); k++) {
 		if (index[k] < 0 || index[k] >= get_width()) {
 			index[k] = 0; 
@@ -307,25 +273,13 @@ void CRepeatBoundary::do_set_width(int width)
 
 void CRepeatBoundary::do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const
 {
-#ifdef __SSE2__
-	const int size = index.size(); 
-	if (size < 9) {
-		__m128i buffer; 
-		memcpy(&buffer, &index[0], size * sizeof(short));
-		__m128i idx = _mm_load_si128(&buffer);
-		idx = _mm_max_epi16(idx, zero);
-		idx = _mm_min_epi16(idx, maxv);
-		_mm_store_si128(&buffer, idx); 
-		memcpy(&index[0], &buffer, size * sizeof(short));
-	} else 
-#endif	
-		for (size_t k = 0; k < index.size(); k++) {
-			if (index[k] < 0) 
-				index[k] = 0; 
-			else if (index[k] > m_widthm1) {
-				index[k] = m_widthm1; 
-			}	
-		}
+	for (size_t k = 0; k < index.size(); k++) {
+		if (index[k] < 0) 
+			index[k] = 0; 
+		else if (index[k] > m_widthm1) {
+			index[k] = m_widthm1; 
+		}	
+	}
 }
 
 

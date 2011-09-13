@@ -122,25 +122,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_type_repeat, T, test_pixeltypes)
 
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(test_type_zero, T, test_pixeltypes)
-{
-	vector<T> data = {3,4,8,10,2,3,9,6,7,11,8};
-
-
-	auto bc = produce_spline_boundary_condition("zero"); ; 
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel0()), ip_bspline0, *bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel1()), ip_bspline1, *bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel2()), ip_bspline2, *bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel3()), ip_bspline3, *bc);
-	test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernelOMoms3()), ip_omoms3, *bc);
-
-	BOOST_CHECK_THROW(test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel4()), ip_bspline4, *bc), 
-			  invalid_argument);
-	BOOST_CHECK_THROW(test_conv_interpolator<T>(data, PSplineKernel(new CBSplineKernel5()), ip_bspline5, *bc), 
-			  invalid_argument);
-
-}
-
 
 double omoms3(double x)
 {

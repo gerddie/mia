@@ -61,7 +61,7 @@ public:
 	typedef std::vector<double> VWeight; 
 
 	/// type for the index vector 
-	typedef std::vector<short> VIndex; 
+	typedef std::vector<int> VIndex; 
 
 	/**
 	   A struture to cache B-spline weights and indices 
