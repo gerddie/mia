@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE( test_mirror_on_boundary_needed_large )
 	CMirrorOnBoundary bc(10);
 	BOOST_CHECK(!bc.apply(index, weights)); 
 
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < index.size(); ++i)
 		BOOST_CHECK_EQUAL(index[i], result[i]); 
 }
 
@@ -123,9 +123,9 @@ vector<double> BoundaryFixture::run(std::vector<double> f, const CSplineBoundary
 		bc.apply(indices, weights);
 		
 		for(int j = 0; j < indices.size(); ++j) { 
+			cvinfo() << "A(" << i << ", " << indices[j] << ")=" << weights[j] << "\n"; 
 			double v = m_A(i, indices[j]); 
 			m_A.set(i, indices[j], v + weights[j]);
-			cvdebug() << "A(" << i << ", " << indices[j] << ")=" << weights[j] << "\n"; 
 		}
 	}
 	gsl_linalg_QR_decomp(m_A, m_tau); 
