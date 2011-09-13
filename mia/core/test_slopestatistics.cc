@@ -35,13 +35,16 @@ BOOST_AUTO_TEST_CASE( test_check_simple_series )
 	vector<float> curve = {
 		4, 5, 6, 5, 4, 3, 2, 2, 1, 4
 	};
-	
-	CSlopeStatistics stats(curve, 0);
+	int index = 3; 
+
+	CSlopeStatistics stats(curve, index);
 
 	BOOST_CHECK_CLOSE(stats.get_curve_length(),
 			  7.0f * sqrt(2.0f)+ 1.0f + sqrt(10.0f), 0.1);
 
 	BOOST_CHECK_CLOSE(stats.get_range(), 5.0f, 0.1);
+
+	BOOST_CHECK_EQUAL(stats.get_index(), index);
 
 	BOOST_CHECK_EQUAL(stats.get_first_peak().first, 2u);
 	BOOST_CHECK_EQUAL(stats.get_second_peak().first, 8u);
@@ -52,22 +55,19 @@ BOOST_AUTO_TEST_CASE( test_check_simple_series )
 
 BOOST_AUTO_TEST_CASE( test_perfusion_series )
 {
-	const size_t curve_length = 20;
-	const float init_curve[curve_length] = {
-		15, 12, 12, 5, 4,
-		0, -12, -10, -8, -9,
-		-7, -6, -5, -6, -4,
-		-2, -1, -1, -1, -1
+	vector<float> curve= {
+		-15, -12, -12, -5, -4,
+		0, 12, 10, 8, 9,
+		7, 6, 5, 6, 4,
+		2, 1, 1, 1, 1
 	};
-	vector<float> curve(curve_length);
-	copy(init_curve, init_curve + curve_length, curve.begin());
 
 	CSlopeStatistics stats(curve, 0);
 
 	BOOST_CHECK_CLOSE(stats.get_range(), 27.0f, 0.1);
 
 	BOOST_CHECK_EQUAL(stats.get_perfusion_high_peak().first, 6u);
-	BOOST_CHECK_EQUAL(stats.get_perfusion_high_peak().second, -12);
+	BOOST_CHECK_EQUAL(stats.get_perfusion_high_peak().second, 12);
 }
 
 
@@ -134,6 +134,7 @@ struct WaveletFixture {
 		int peak_index; 
 		vector<float> energy_levels; 
 		vector<CSlopeStatistics::EEnergyCenterpos> energy_timepos; 
+		CSlopeStatistics::EEnergyCenterpos mean_energy_timepos; 
 	}; 
 	void check(const vector<float>& x, const Expect& e) const; 
 }; 
@@ -156,14 +157,17 @@ void WaveletFixture::check(const vector<float>& x, const Expect& e) const
 		BOOST_CHECK_CLOSE(le[i], e.energy_levels[i], 0.1); 
 
 
+	BOOST_CHECK_CLOSE(stats.get_wavelet_energy(), 
+			  accumulate(e.energy_levels.begin(), e.energy_levels.end(), 0.0), 0.1); 
+
 	auto etp = stats.get_level_mean_energy_position(); 
 	BOOST_REQUIRE(etp.size()== e.energy_timepos.size()); 
 	for (int i = 0; i < etp.size(); ++i) {
 		cvdebug() <<  i << ": got " << etp[i] << " expect " << e.energy_timepos[i] << "\n"; 
 		BOOST_CHECK_EQUAL(etp[i], e.energy_timepos[i]);
 	}
-
 	
+	BOOST_CHECK_EQUAL(stats.get_mean_energy_position(), e.mean_energy_timepos); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_wavelet_statistics_baseline, WaveletFixture )
@@ -236,7 +240,8 @@ BOOST_FIXTURE_TEST_CASE( test_wavelet_statistics_baseline, WaveletFixture )
 		1, 
 		{0.57569, 1.26270, 1.61808, 1.08937, 2.30959, 4.21920 }, 
 		{CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_end, CSlopeStatistics::ecp_center, 
-		 CSlopeStatistics::ecp_begin, CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center }
+		 CSlopeStatistics::ecp_begin, CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center }, 
+		CSlopeStatistics::ecp_center
 	}; 
 	check(curve, e); 
 }
@@ -310,7 +315,8 @@ BOOST_FIXTURE_TEST_CASE( test_wavelet_statistics_RV, WaveletFixture )
 		1, 
 		{6.9179, 12.1628, 18.4302, 30.5213, 9.1098, 7.6350}, 
 		{CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_end, CSlopeStatistics::ecp_begin, 
-		 CSlopeStatistics::ecp_begin, CSlopeStatistics::ecp_begin, CSlopeStatistics::ecp_center }
+		 CSlopeStatistics::ecp_begin, CSlopeStatistics::ecp_begin, CSlopeStatistics::ecp_center }, 
+		CSlopeStatistics::ecp_begin
 
 	}; 
 	check(curve, e); 
@@ -385,7 +391,8 @@ BOOST_FIXTURE_TEST_CASE( test_wavelet_statistics_perf, WaveletFixture )
 		1, 
 		{5.9352,  18.0967,  8.2709,    5.0151,    4.6476,    6.4534 }, 
 		{CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_end, CSlopeStatistics::ecp_center, 
-		 CSlopeStatistics::ecp_begin, CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center }
+		 CSlopeStatistics::ecp_begin, CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center }, 
+		CSlopeStatistics::ecp_center
 		
 	}; 
 	check(curve, e); 
@@ -460,7 +467,8 @@ BOOST_FIXTURE_TEST_CASE( test_wavelet_statistics_mov, WaveletFixture )
 		17, 
 		{ 2.3575, 4.6265,  6.2766,   10.5313,   41.1598,   76.7153  }, 
 		{CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_end, CSlopeStatistics::ecp_center, 
-		 CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center }
+		 CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center }, 
+		CSlopeStatistics::ecp_center
 
 	}; 
 	check(curve, e); 
@@ -535,7 +543,8 @@ BOOST_FIXTURE_TEST_CASE( test_wavelet_statistics_LV, WaveletFixture )
 		1, 
 		{6.6206, 7.5725, 24.8336, 16.9259,  6.4489, 6.6958}, 
 		{CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_end, CSlopeStatistics::ecp_center, 
-		 CSlopeStatistics::ecp_begin, CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center }
+		 CSlopeStatistics::ecp_begin, CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center }, 
+		CSlopeStatistics::ecp_center
 	}; 
 	check(curve, e); 
 }
