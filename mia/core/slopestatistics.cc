@@ -176,6 +176,57 @@ pair<size_t, float>  CSlopeStatistics::get_perfusion_high_peak() const
 	return impl->get_perfusion_high_peak();
 }
 
+
+float CSlopeStatistics::get_mean_frequency_level() const
+{
+	return impl->get_mean_frequency_level(); 
+}
+
+float CSlopeStatistics::get_wavelet_energy() const
+{
+	return impl->get_wavelet_energy(); 
+}
+
+float CSlopeStatistics::get_peak_wavelet_coefficient() const
+{
+	return impl->get_peak_wavelet_coefficient(); 
+}
+
+const vector<float>& CSlopeStatistics::get_level_coefficient_sums() const
+{
+	return impl->get_level_coefficient_sums(); 
+}
+
+pair<int, int> CSlopeStatistics::get_peak_level_and_time_index() const
+{
+	return impl->get_peak_level_and_time_index(); 
+}
+
+float CSlopeStatistics::get_maximum_gradient_from_zero() const
+{
+	FUNCTION_NOT_TESTED; 
+	return impl->get_maximum_gradient_from_zero(); 
+}
+
+float CSlopeStatistics::get_positive_time_mean() const
+{
+	FUNCTION_NOT_TESTED; 
+	impl->get_positive_time_mean(); 
+}
+
+CSlopeStatistics::EEnergyCenterpos CSlopeStatistics::get_mean_energy_position() const
+{
+	return impl->get_mean_energy_position(); 
+}
+
+const vector<CSlopeStatistics::EEnergyCenterpos>& CSlopeStatistics::get_level_mean_energy_position() const
+{
+	return impl->get_level_mean_energy_position(); 
+}
+
+
+
+
 pair<size_t, float>  CSlopeStatisticsImpl::get_first_peak() const
 {
 	if (!m_range_valid)
@@ -204,10 +255,6 @@ float CSlopeStatisticsImpl::get_positive_time_mean() const
 }
 
 
-float CSlopeStatistics::get_positive_time_mean() const
-{
-	impl->get_positive_time_mean(); 
-}
 
 
 void CSlopeStatisticsImpl::evaluate_frequency() const
@@ -272,16 +319,6 @@ CSlopeStatistics::EEnergyCenterpos CSlopeStatisticsImpl::get_mean_energy_positio
 	return m_energy_pos; 
 }
 
-CSlopeStatistics::EEnergyCenterpos CSlopeStatistics::get_mean_energy_position() const
-{
-	return impl->get_mean_energy_position(); 
-}
-
-const vector<CSlopeStatistics::EEnergyCenterpos>& CSlopeStatistics::get_level_mean_energy_position() const
-{
-	return impl->get_level_mean_energy_position(); 
-}
-
 
 void CSlopeStatisticsImpl::evaluate_curve_length() const
 {
@@ -303,14 +340,13 @@ float CSlopeStatisticsImpl::get_maximum_gradient_from_zero() const
 void CSlopeStatisticsImpl::evaluate_perfusion_peak() const
 {
 	float mean = accumulate(m_series.begin(), m_series.end(), 0.0) / m_series.size();
+	cvinfo()<< "Slope[" << get_index() << "] mean = " << mean << "\n"; 
 	vector<double> help(m_series.size());
 	if (m_series[0] < mean)
 		transform(m_series.begin(), m_series.end(), help.begin(),[mean](float x){return x - mean;});
 	else
 		transform(m_series.begin(), m_series.end(), help.begin(),[mean](float x){return mean - x;});
 
-	auto filter = C1DSpacialKernelPluginHandler::instance().produce("gauss:w=2"); 
-	help = filter->apply(help); 
 	
 	m_maximum_gradient_from_zero = 0.0; 
 	for (int i = 1; i < help.size(); ++i) {
@@ -318,7 +354,7 @@ void CSlopeStatisticsImpl::evaluate_perfusion_peak() const
 		if (m_maximum_gradient_from_zero < h) {
 			m_maximum_gradient_from_zero = h; 
 			m_perfusion_peak.first = i; 
-			m_perfusion_peak.second = help[i]; 
+			m_perfusion_peak.second = m_series[i]; 
 		}
 	}
 	cvinfo() << "Slope: " << get_index() 
@@ -357,6 +393,9 @@ void CSlopeStatisticsImpl::evaluate_range() const
 	pair<position, position> minmax = minmax_element(m_series.begin(), m_series.end());
 	m_range = *minmax.second - *minmax.first;
 	m_range_valid = true;
+
+	cvinfo() << "Slope[" << get_index() << "] Range: [" 
+		 << *minmax.first  << ", " << *minmax.second << "] = " << m_range << "\n"; 
 
 	size_t delta1 = distance(m_series.begin(), minmax.first);
 	size_t delta2 = distance(m_series.begin(), minmax.second);
@@ -493,35 +532,7 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 }
 
 
-float CSlopeStatistics::get_mean_frequency_level() const
-{
-	return impl->get_mean_frequency_level(); 
-}
 
-float CSlopeStatistics::get_wavelet_energy() const
-{
-	return impl->get_wavelet_energy(); 
-}
-
-float CSlopeStatistics::get_peak_wavelet_coefficient() const
-{
-	return impl->get_peak_wavelet_coefficient(); 
-}
-
-const vector<float>& CSlopeStatistics::get_level_coefficient_sums() const
-{
-	return impl->get_level_coefficient_sums(); 
-}
-
-pair<int, int> CSlopeStatistics::get_peak_level_and_time_index() const
-{
-	return impl->get_peak_level_and_time_index(); 
-}
-
-float CSlopeStatistics::get_maximum_gradient_from_zero() const
-{
-	return impl->get_maximum_gradient_from_zero(); 
-}
 
 
 NS_MIA_END
