@@ -158,7 +158,7 @@ C2DFullCostList create_costs(double divcurlweight, P2DFullCost imagecost)
 P2DTransformationFactory create_transform_creator(size_t c_rate)
 {
 	stringstream transf; 
-	transf << "spline:rate=" << c_rate << ",imgboundary=zero,imgkernel=[bspline:d=1]";
+	transf << "spline:rate=" << c_rate << ",imgboundary=repeat,imgkernel=[bspline:d=3]";
 	return C2DTransformCreatorHandler::instance().produce(transf.str()); 
 }
 	
@@ -336,28 +336,31 @@ int do_main( int argc, const char *argv[] )
 	
 
 	// run ICA
-	C2DPerfusionAnalysis ica(components, normalize, !no_meanstrip); 
+	unique_ptr<C2DPerfusionAnalysis> ica(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip)); 
 	if (max_ica_iterations) 
-		ica.set_max_ica_iterations(max_ica_iterations); 
+		ica->set_max_ica_iterations(max_ica_iterations); 
 
-	ica.set_approach(FICA_APPROACH_SYMM); 
-	if (!ica.run(series))
-		cvwarn() << "ICA not converged, but the SYMM approach has given something to work with ...\n";
+	ica->set_approach(FICA_APPROACH_DEFL); 
+	if (!ica->run(series)) {
+		ica.reset(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip)); 
+		ica->set_approach(FICA_APPROACH_SYMM); 
+		if (!ica->run(series)) 
+			box_scale = false; 
+	}
 	
-
-	vector<C2DFImage> references_float = ica.get_references(); 
+	vector<C2DFImage> references_float = ica->get_references(); 
 	
 	C2DImageSeries references(references_float.size()); 
 	transform(references_float.begin(), references_float.end(), references.begin(), C2DFImage2PImage()); 
 
 	// crop if requested
 	if (box_scale) {
-		segment_and_crop_input(input_set, ica, box_scale, segmethod, references, save_crop_feature); 
+		segment_and_crop_input(input_set, *ica, box_scale, segmethod, references, save_crop_feature); 
 		input_images = input_set.get_images(); 
 	}else if (!save_crop_feature.empty()) {
 		stringstream cfile; 
-		cfile << save_crop_feature << ".txt"; 
-		ica.save_coefs(cfile.str()); 
+		cfile << save_crop_feature << "-coeff.txt"; 
+		ica->save_coefs(cfile.str()); 
 	}
 
 	// save cropped images if requested
@@ -409,6 +412,11 @@ int do_main( int argc, const char *argv[] )
 		transform(references_float.begin(), references_float.end(), 
 			  references.begin(), C2DFImage2PImage()); 
 		do_continue =  (!pass || current_pass < pass) && ica2.has_movement(); 
+		if (!do_continue && !save_crop_feature.empty()) {
+			stringstream cfile; 
+			cfile << save_crop_feature << "-final.txt"; 
+			ica2.save_coefs(cfile.str()); 
+		}
 	} while (do_continue); 
 
 	input_set.rename_base(registered_filebase); 
