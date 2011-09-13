@@ -45,6 +45,20 @@ BOOST_AUTO_TEST_CASE( test_mirror_on_boundary_needed )
 		BOOST_CHECK_EQUAL(index[i], result[i]); 
 }
 
+BOOST_AUTO_TEST_CASE( test_mirror_on_boundary_needed_large ) 
+{
+	CSplineKernel::VIndex index  = {-32000, 32001}; 
+	CSplineKernel::VIndex result = { 4, 3}; 
+	CSplineKernel::VWeight weights(2); 
+	
+	CMirrorOnBoundary bc(10);
+	BOOST_CHECK(!bc.apply(index, weights)); 
+
+	for (int i = 0; i < 10; ++i)
+		BOOST_CHECK_EQUAL(index[i], result[i]); 
+}
+
+
 BOOST_AUTO_TEST_CASE( test_mirror_on_boundary_notneeded ) 
 {
 	CSplineKernel::VIndex index  = {0, 1, 2, 3, 4, 5, 6, 7, 8 }; 
