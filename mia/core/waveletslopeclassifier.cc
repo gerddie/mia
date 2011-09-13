@@ -176,7 +176,9 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	for (int i = 0; i < series.size(); ++i)
 		vstats.push_back(PSlopeStatistics(new CSlopeStatistics(series[i], i))); 
 	
-	/// classify 
+	// 
+	// the movement wavelet level is the second higest one (this is opposite to the 
+	// usual wavelet notation) 
 	int movement_idx = vstats[0]->get_level_coefficient_sums().size() - 2;
 	
 	// first estimate if this is free breathing or breath holding 
@@ -192,7 +194,9 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	cvmsg() << "Detected free breathing data set\n";
 	int low_energy_start_idx = free_breathing ? 0 : 1;
 	
-	// get movement components based on coefficient sums 
+	// 
+	// get movement components based on wavelet coefficient sums
+	//
 	vector<PSlopeStatistics> movement_indices;
 	vector<PSlopeStatistics> remaining_indices;
 
@@ -209,10 +213,10 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 			  << " start= "<< low_energy_start_idx
 			  << " end= " << movement_idx - 1
 			  << "\n"; 
-		float low_freq = accumulate(e.begin() + low_energy_start_idx, e.begin() + movement_idx, 0.0); 
-		cvdebug() << i << ": low " << low_freq << " vs  high " << e[movement_idx] << "\n"; 
-		float high_freq = accumulate(e.begin() + movement_idx, e.end(), 0.0); 
 
+		float low_freq = accumulate(e.begin() + low_energy_start_idx, e.begin() + movement_idx, 0.0); 
+		float high_freq = e[movement_idx] + e[movement_idx + 1];
+		
 		if (min_energy > vstats[i]->get_wavelet_energy()) {
 			min_energy = vstats[i]->get_wavelet_energy(); 
 			min_energy_idx = i; 
@@ -220,9 +224,15 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 		
 		if (min_range > vstats[i]->get_range()) {
 			min_range = vstats[i]->get_range(); 
-			min_range_idx = i; 
+			min_range_idx = vstats[i]->get_index(); 
+			cvinfo() << "New minrange: " << min_range << " at idx = " << min_range_idx << "\n"; 
 		}
 
+		cvinfo() << "Slope[" << vstats[i]->get_index() 
+			 << "] LF " << low_freq 
+			 << " HF = " << high_freq 
+			 << " range = " << vstats[i]->get_range() 
+			 << "\n"; 
 
 		is_high_freq[i] = (low_freq < high_freq);
 		if (!at_begin && is_high_freq[i])
@@ -230,41 +240,40 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 				cvinfo() << "c=" << i << ":override motion because we assume it's RV enhacement\n";
 				is_high_freq[i] = false; 
 			}
-		
 	}
 
 
 	// if the mean is stripped, the baseline vanishes 
 	if (!mean_stripped) {
 		Baseline_idx =  min_range_idx; 
-		cvinfo() << "Baseline " << min_energy_idx 
-			 <<  " with range  " << min_range
-			 << "\n"; 
+		cvinfo() << "Baseline " << min_energy_idx <<  " with range  " << min_range << "\n"; 
 	}
 	
-	// now store the componnets and ignore the baseline 
+	// now store the componnets according to their classification but ignore the baseline 
+	// if it is identified as movement 
 	for (size_t i = 0; i < series.size(); ++i) {
-		if (i == Baseline_idx) 
-			continue; 
-		if (is_high_freq[i]) 
-			movement_indices.push_back(vstats[i]); 
-		else 
+		if (is_high_freq[i]) {
+			if (i != Baseline_idx) 
+				movement_indices.push_back(vstats[i]); 
+		} else 
 			remaining_indices.push_back(vstats[i]); 
 	}
 	n_movement_components = movement_indices.size(); 
 
-	/// end of movement component estimation 
-	
+	// 
+	// end of movement component estimation 
+	// 
 
 	vector<int> mi(movement_indices.size()); 
 	transform(movement_indices.begin(), movement_indices.end(), mi.begin(), 
 		  [](PSlopeStatistics i){return i->get_index();}); 
 	cvinfo() << "Detect movement candidates " << mi << "\n"; 
 	
-	/// find movement component with the largest energy
+	// 
+	// find movement component with the largest energy
+	// 
 	if (!movement_indices.empty()) {
 		result = CWaveletSlopeClassifier::wsc_normal; 
-		vector<float> movement_energies;
 		max_movment_energy = 0.0;
 		int max_movment_idx = -1;
 		
@@ -274,9 +283,6 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 				max_movment_energy = energy; 
 				max_movment_idx = (*k)->get_index();
 			}
-			if ( (*k)->get_index() == min_energy_idx )
-				continue; 
-			movement_energies.push_back(energy);
 		}
 		
 		// if no special movement component could be identified, or the component has an 
@@ -311,29 +317,37 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 		  [](PSlopeStatistics i){return i->get_index();}); 
 	cvinfo() << "Remaining elements: " << ri << "\n"; 
 	
-	/// ldentify  LV and RV 
+	// 
+	// identify  LV and RV 
+	// 
 	if (remaining_indices.size() < 2) {
 		cvmsg() << "Classification failed because too few remaining components.\n"; 
 		result = CWaveletSlopeClassifier::wsc_fail; 
 		return; 
 	}
 	
-	// sort according to the maximum ration f(x)/x 
-	// RV has the highest value, followed by LV and perfusion 
-	
+	// 
+	// The perfusion high peak was estimated based on the maximum ration f(x)/x 
+	// but we acually rely on the positions for sorting, because these gradients may 
+	// be larger for peaks that come later 
+	// 
 	sort(remaining_indices.begin(), remaining_indices.end(), 
 	     [](PSlopeStatistics lhs, PSlopeStatistics rhs) {
 		     return lhs->get_perfusion_high_peak().first < rhs->get_perfusion_high_peak().first;
 	     });
 	
-	
-	// these two values are not a good indication 
+	// 
+	// this will only be needed if the LV-ROI segmentation is based on the 
+	// RV/LV peak images 
+	// 
 	RV_peak = remaining_indices[0]->get_perfusion_high_peak().first; 
 	LV_peak = remaining_indices[1]->get_perfusion_high_peak().first; 
 	
 	RV_idx  = remaining_indices[0]->get_index(); 
 	LV_idx  = remaining_indices[1]->get_index();
 
+	// that's just assuming, if more then 3 components are 
+	// non-movement, then this dosn't have to be myocardial perfusion 
 	if (remaining_indices.size() > 2)
 		Perfusion_idx = remaining_indices[2]->get_index();
 
