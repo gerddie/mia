@@ -183,11 +183,13 @@ int do_main( int argc, const char *argv[] )
 	if (max_ica_iterations) 
 		ica.set_max_ica_iterations(max_ica_iterations); 
 	
-	ica.set_approach(FICA_APPROACH_SYMM); 
+
 	if (!ica.run(series)) {
-		cvmsg() << "DEFL failed, retry with SYMM\n";  
-		ica.set_approach(FICA_APPROACH_SYMM); 
-		ica.run(series); // SYMM always returns some result - it might just not converge 
+		// ICA + classifictaion failed, 
+		// save the mixing matrix if requested 
+		if (!save_crop_feature.empty()) 
+			ica.save_coefs(save_crop_feature + ".txt");
+		throw runtime_error("ICA + Classification failed"); 
 	}
 	vector<C2DFImage> references_float = ica.get_references(); 
 	
