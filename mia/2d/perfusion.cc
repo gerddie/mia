@@ -263,11 +263,12 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 		    (m_ica_approach == FICA_APPROACH_DEFL))
 			return false; 
 		m_cls = CWaveletSlopeClassifier(ica->get_mixing_curves(), false);
-		has_one = true; 
+		if (m_cls.result() != CWaveletSlopeClassifier::wsc_fail)
+			has_one = true;
 	} else {
 
 		size_t min_components_nonzero = 100;
-		for (int i = 7; i >= 4; --i) {
+		for (int i = 6; i >= 4; --i) {
 			unique_ptr<C2DImageSeriesICA> l_ica(new C2DImageSeriesICA(series, false));
 			ica->set_approach(m_ica_approach); 
 			l_ica->set_max_iterations(m_max_iterations);
@@ -278,24 +279,30 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 			}
 
 			CWaveletSlopeClassifier cls(l_ica->get_mixing_curves(), false);
+			size_t movement_components  = cls.get_number_of_movement_components();
 			if (cls.result() == CWaveletSlopeClassifier::wsc_fail) {
-				cvwarn() << "Classification: for " << i << " components failed\n"; 
+				// save this since we can still process without bounding box creation 
+				if (min_components_nonzero == 100) {
+					min_components_nonzero = movement_components + 10;
+					m_components = i;
+					m_cls = cls; 
+				}
+				cvwarn() << "LV/RV Classification: for " << i << " components failed\n"; 
 				continue; 
 			}
 			
-			size_t movement_components  = cls.get_number_of_movement_components();
+
 
 			cvmsg() << "Components = " << i << " number of components = " << movement_components << "\n";
-			if (movement_components < min_components_nonzero && movement_components != 0) {
+			if (min_components_nonzero == 100 || 
+			    (movement_components < min_components_nonzero && movement_components != 0)) {
 				min_components_nonzero = movement_components;
 				m_components = i;
 				ica.swap(l_ica);
 				m_cls = cls; 
+				has_one = true; 
 			}
-			has_one = true; 
 		}
-		if (min_components_nonzero == 100) 
-			min_components_nonzero = 0; 
 	}
 	
 	m_ica.swap(ica);
@@ -421,39 +428,47 @@ P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_delta(P2DImage rvlv_f
 	P2DImage kmeans;
 	size_t nc = 1;
 	size_t npixels;
+	C2DFVector RV_center; 
+	P2DImage LV_candidates; 
+	size_t lv_pixels;
+	int label;  
+retry:
 	do {
-		++nc;
-		stringstream kfd;
-		kfd << "kmeans:c=" << 2*nc + 1;
-		kmeans = run_filter(*pre_kmeans, kfd.str().c_str());
-		stringstream kfb;
-		kfb << "binarize:min="<<2*nc<<",max="<<2*nc;
-		P2DImage kmeans_binarized = run_filter(*kmeans, kfb.str().c_str());
+		do {
+			++nc;
+			stringstream kfd;
+			kfd << "kmeans:c=" << 2*nc + 1;
+			kmeans = run_filter(*pre_kmeans, kfd.str().c_str());
+			stringstream kfb;
+			kfb << "binarize:min="<<2*nc<<",max="<<2*nc;
+			P2DImage kmeans_binarized = run_filter(*kmeans, kfb.str().c_str());
+			
+			RV = run_filter_chain(kmeans_binarized, 2, RV_filter_chain);
+			
+			npixels = ::mia::filter(GetRegionSize(1), *RV);
+			
+		} while (10 * npixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y && nc < 7);
+		
+		if (!save_features.empty()) {
+			save_feature(save_features, "kmeans", *kmeans); 
+			save_coefs(save_features + ".txt"); 
+		}
+		if (nc == 7) {
+			cvmsg() << "RV classification failed\n"; 
+			return result; 
+		}
+		
+		RV_center = ::mia::filter(GetRegionCenter(), *RV);
 
-		RV = run_filter_chain(kmeans_binarized, 2, RV_filter_chain);
-
-		npixels = ::mia::filter(GetRegionSize(1), *RV);
-
-	} while (10 * npixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y && nc < 5);
-
-	if (!save_features.empty()) {
-		save_feature(save_features, "kmeans", *kmeans); 
-		save_coefs(save_features + ".txt"); 
-	}
-	if (nc == 5) {
-		cvmsg() << "RV classification failed\n"; 
-		return result; 
-	}
-
-	C2DFVector RV_center = ::mia::filter(GetRegionCenter(), *RV);
-
-	P2DImage LV_candidates = run_filter_chain(kmeans, 2, LVcandidate_filter_chain);
-
-
-	int label = ::mia::filter(GetClosestRegionLabel(RV_center), *LV_candidates);
-	size_t lv_pixels = ::mia::filter(GetRegionSize(label), *LV_candidates);
-
-	if (10 * lv_pixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y) {
+		LV_candidates = run_filter_chain(kmeans, 2, LVcandidate_filter_chain);
+		
+		
+		label = ::mia::filter(GetClosestRegionLabel(RV_center), *LV_candidates);
+		lv_pixels = ::mia::filter(GetRegionSize(label), *LV_candidates);
+		
+	} while (10 * npixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y && nc < 7);
+	
+	if (10 * lv_pixels > rvlv_feature->get_size().x * rvlv_feature->get_size().y && nc == 7) {
 		cvmsg() << "LV classification failed\n"; 
 		return result;
 	}
@@ -475,6 +490,8 @@ P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_delta(P2DImage rvlv_f
 
 	// this is ugly and should be replaced
 	if (crop_start.x > LV_center.x ||crop_start.y > LV_center.y) {
+		if (nc < 7) 
+			goto retry; 
 		cvmsg() << "Directional assumtion failed\n"; 
 		return result;
 	}
@@ -521,17 +538,21 @@ P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_features(float LV_mas
 						  sizeof(segment_filter_chain)/sizeof(const char*), 
 						  segment_filter_chain);
 
+
 	int label = ::mia::filter(GetClosestRegionLabel(RV_center), *LV_candidates);
 	size_t lv_pixels = ::mia::filter(GetRegionSize(label), *LV_candidates);
 
 	if (!save_features.empty()) {
 		save_feature(save_features, "RVic", *m_ica->get_feature_image(m_cls.get_RV_idx())); 
 		save_feature(save_features, "LVic", *m_ica->get_feature_image(m_cls.get_LV_idx())); 
+		save_feature(save_features, "RV_candidates", *RV_candidates); 
+		save_feature(save_features, "LV_candidates", *LV_candidates); 
+
 		save_coefs(save_features + ".txt"); 
 	}
 
 	if (10 * lv_pixels > RV->get_size().x * RV->get_size().y) {
-		cvmsg() << "RV segmentation failed\n"; 
+		cvmsg() << "LV segmentation failed\n"; 
 		return P2DFilter();
 	}
 
@@ -561,8 +582,6 @@ P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_features(float LV_mas
 	cvmsg() << "crop region = '" << mask_lv.str() << "'\n";
 
 	if (!save_features.empty()) {
-		save_feature(save_features, "RV_candidates", *RV_candidates); 
-		save_feature(save_features, "LV_candidates", *LV_candidates); 
 		save_feature(save_features, "LV", *LV); 
 		save_feature(save_features, "RV", *RV); 
 	}
