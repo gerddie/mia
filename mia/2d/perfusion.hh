@@ -134,6 +134,12 @@ public:
 	   @param coefs_name output file name 
 	 */
 	void save_coefs(const string&  coefs_name)const; 
+
+	/**
+	   Save the feature image to some PNG files. 
+	   @param base_name output file name base 
+	 */
+	void save_feature_images(const string&  base_name)const; 
 private: 
 	struct C2DPerfusionAnalysisImpl *impl; 
 

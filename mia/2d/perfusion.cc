@@ -53,6 +53,7 @@ struct C2DPerfusionAnalysisImpl {
 	P2DImage get_rvlv_delta_from_peaks(const string& save_features)const; 
 	vector<vector<float> > create_guess(size_t rows); 
 	void save_coefs(const string&  coefs_name)const; 
+	void save_feature_images(const string&  base_name)const; 
 
 	size_t m_components;
 	bool m_normalize;  
@@ -131,6 +132,11 @@ vector<C2DFImage> C2DPerfusionAnalysis::get_references() const
 	return impl->get_references(); 
 }
 
+void C2DPerfusionAnalysis::save_feature_images(const string&  base_name)const
+{
+	assert(impl); 
+	impl->save_feature_images(base_name); 
+}
 
 C2DPerfusionAnalysisImpl::C2DPerfusionAnalysisImpl(size_t components, 
 						   bool normalize, 
@@ -640,7 +646,17 @@ int GetClosestRegionLabel::operator() (const T2DImage<T>& image) const
 
 void C2DPerfusionAnalysisImpl::save_feature(const string& base, const string& feature, const C2DImage& image)const
 {
-	save_image(base + feature + ".png", run_filter(image, "convert")); 
+	save_image(base + feature + ".png", run_filter(image, "convert:repn=ubyte,map=opt")); 
+}
+
+void C2DPerfusionAnalysisImpl::save_feature_images(const string&  base_name)const
+{
+	for (size_t i = 0; i < m_ica->get_mixing_curves().size(); ++i) {
+		stringstream feat; 
+		feat << "_" << i; 
+		save_feature(base_name, feat.str(), *m_ica->get_feature_image(i)); 
+	}
+	save_feature(base_name, "_mean", m_ica->get_mean_image());
 }
 
 TDictMap<C2DPerfusionAnalysis::EBoxSegmentation>::Table segmethod_table[] ={
