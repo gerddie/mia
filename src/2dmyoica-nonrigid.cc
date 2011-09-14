@@ -158,7 +158,7 @@ C2DFullCostList create_costs(double divcurlweight, P2DFullCost imagecost)
 P2DTransformationFactory create_transform_creator(size_t c_rate)
 {
 	stringstream transf; 
-	transf << "spline:rate=" << c_rate << ",imgboundary=repeat,imgkernel=[bspline:d=3]";
+	transf << "spline:rate=" << c_rate << ",imgboundary=mirror,imgkernel=[bspline:d=3]";
 	return C2DTransformCreatorHandler::instance().produce(transf.str()); 
 }
 	
@@ -380,6 +380,7 @@ int do_main( int argc, const char *argv[] )
 	}
 
 	bool do_continue=true; 
+	bool lastpass = false; 
 	do {
 		++current_pass; 
 		cvmsg() << "Registration pass " << current_pass << "\n"; 
@@ -404,6 +405,8 @@ int do_main( int argc, const char *argv[] )
 			ica2.set_approach(FICA_APPROACH_SYMM); 
 			ica2.run(series); 
 		}
+		if (lastpass) 
+			break; 
 		
 		divcurlweight /= divcurlweight_divider; 
 		if (c_rate > 1) 
@@ -416,8 +419,15 @@ int do_main( int argc, const char *argv[] )
 			stringstream cfile; 
 			cfile << save_crop_feature << "-final.txt"; 
 			ica2.save_coefs(cfile.str()); 
+			stringstream new_base; 
+			new_base << save_crop_feature << "-p"<< pass << "-final"; 
+			ica2.save_feature_images(new_base.str()); 
 		}
-	} while (do_continue); 
+		
+		// run one more pass if the limit is not reached and no movement identified
+		lastpass = (!do_continue && (!pass || current_pass < pass)); 
+		
+	} while (do_continue || lastpass); 
 
 	input_set.rename_base(registered_filebase); 
 	input_set.save_images(out_filename); 
