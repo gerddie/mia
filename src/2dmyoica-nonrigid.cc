@@ -415,20 +415,33 @@ int do_main( int argc, const char *argv[] )
 		transform(references_float.begin(), references_float.end(), 
 			  references.begin(), C2DFImage2PImage()); 
 		do_continue =  (!pass || current_pass < pass) && ica2.has_movement(); 
-		if (!do_continue && !save_crop_feature.empty()) {
-			stringstream cfile; 
-			cfile << save_crop_feature << "-final.txt"; 
-			ica2.save_coefs(cfile.str()); 
-			stringstream new_base; 
-			new_base << save_crop_feature << "-p"<< pass << "-final"; 
-			ica2.save_feature_images(new_base.str()); 
-		}
 		
 		// run one more pass if the limit is not reached and no movement identified
 		lastpass = (!do_continue && (!pass || current_pass < pass)); 
 		
 	} while (do_continue || lastpass); 
 
+	if (!save_crop_feature.empty()) {
+		C2DPerfusionAnalysis ica_final(4, normalize, !no_meanstrip); 
+		if (max_ica_iterations) 
+			ica_final.set_max_ica_iterations(max_ica_iterations); 
+	
+		transform(input_set.get_images().begin() + skip_images, 
+			  input_set.get_images().end(), series.begin(), Convert2Float()); 
+
+		if (!ica_final.run(series)) {
+			ica_final.set_approach(FICA_APPROACH_SYMM); 
+			ica_final.run(series); 
+		}
+		
+		stringstream cfile; 
+		cfile << save_crop_feature << "-final.txt"; 
+		ica_final.save_coefs(cfile.str()); 
+		stringstream new_base; 
+		new_base << save_crop_feature << "-p"<< pass << "-final"; 
+		ica_final.save_feature_images(new_base.str()); 
+	}
+	
 	input_set.rename_base(registered_filebase); 
 	input_set.save_images(out_filename); 
 	

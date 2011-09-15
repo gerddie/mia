@@ -187,7 +187,7 @@ int do_main( int argc, const char *argv[] )
 
 	// ICA parameters 
 	size_t components = 0;
-	bool no_normalize = false; 
+	bool normalize = false; 
 	bool no_meanstrip = false; 
 	float box_scale = 0.0;
 	size_t skip_images = 0; 
@@ -235,7 +235,7 @@ int do_main( int argc, const char *argv[] )
 
 	options.set_group("\nICA"); 
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
-	options.add(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
+	options.add(make_opt( normalize, "normalize", 0, "don't normalized ICs", NULL));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
 				    "don't strip the mean from the mixing curves", NULL));
 	options.add(make_opt( box_scale, "segscale", 's', 
@@ -266,22 +266,26 @@ int do_main( int argc, const char *argv[] )
 	
 
 	// run ICA
-	C2DPerfusionAnalysis ica(components, !no_normalize, !no_meanstrip); 
+	unique_ptr<C2DPerfusionAnalysis> ica(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip)); 
 	if (max_ica_iterations) 
-		ica.set_max_ica_iterations(max_ica_iterations); 
-	if (!ica.run(series)) {
-		ica.set_approach(FICA_APPROACH_SYMM); 
-		if (!ica.run(series))
-			cvwarn() << "ICA not converged, but the SYMM approach has given something to work with ...\n";
+		ica->set_max_ica_iterations(max_ica_iterations); 
+
+	ica->set_approach(FICA_APPROACH_DEFL); 
+	if (!ica->run(series)) {
+		ica.reset(new C2DPerfusionAnalysis(components, normalize, !no_meanstrip)); 
+		ica->set_approach(FICA_APPROACH_SYMM); 
+		if (!ica->run(series)) 
+			box_scale = false; 
 	}
-	vector<C2DFImage> references_float = ica.get_references(); 
+
+	vector<C2DFImage> references_float = ica->get_references(); 
 	
 	C2DImageSeries references(references_float.size()); 
 	transform(references_float.begin(), references_float.end(), references.begin(), C2DFImage2PImage()); 
 
 	// crop if requested
 	if (box_scale) {
-		segment_and_crop_input(input_set, ica, box_scale, segmethod, references, save_crop_feature); 
+		segment_and_crop_input(input_set, *ica, box_scale, segmethod, references, save_crop_feature); 
 		input_images = input_set.get_images(); 
 	}
 
@@ -303,7 +307,9 @@ int do_main( int argc, const char *argv[] )
 	vector<P2DTransformation> transformations; 
 	C2DImageSeries registered;
 
-	bool do_continue = ica.has_movement(); 
+	bool do_continue=true; 
+	bool lastpass = false; 
+
 	while (do_continue){
 		++current_pass; 
 		cvmsg() << "Registration pass " << current_pass << "\n"; 
@@ -311,7 +317,10 @@ int do_main( int argc, const char *argv[] )
 			run_registration_pass(input_set, registered, references,  skip_images,  minimizer, 
 					      mg_levels, c_rate, divcurlweight, imageweight); 
 		
-		C2DPerfusionAnalysis ica2(components, !no_normalize, !no_meanstrip); 
+		if (lastpass) 
+			break; 
+
+		C2DPerfusionAnalysis ica2(components, normalize, !no_meanstrip); 
 		if (max_ica_iterations) 
 			ica2.set_max_ica_iterations(max_ica_iterations); 
 	
@@ -329,6 +338,18 @@ int do_main( int argc, const char *argv[] )
 		transform(references_float.begin(), references_float.end(), 
 			  references.begin(), C2DFImage2PImage()); 
 		do_continue =  (!pass || current_pass < pass) && ica2.has_movement(); 
+		if (!do_continue && !save_crop_feature.empty()) {
+			stringstream cfile; 
+			cfile << save_crop_feature << "-final.txt"; 
+			ica2.save_coefs(cfile.str()); 
+			stringstream new_base; 
+			new_base << save_crop_feature << "-p"<< pass << "-final"; 
+			ica2.save_feature_images(new_base.str()); 
+		}
+		
+		// run one more pass if the limit is not reached and no movement identified
+		lastpass = (!do_continue && (!pass || current_pass < pass)); 
+
 	}
 
 	CSegSetWithImages::Frames& frames = input_set.get_frames();
