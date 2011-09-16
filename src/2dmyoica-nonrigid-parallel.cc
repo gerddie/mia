@@ -153,7 +153,7 @@ private:
 C2DFullCostList create_costs(double divcurlweight, const string& imagecostbase, int idx)
 {
 	stringstream cost_descr; 
-	cost_descr << imagecostbase << "src=src" << idx << ".@,ref=ref" << idx << ".@"; 
+	cost_descr << imagecostbase << ",src=src" << idx << ".@,ref=ref" << idx << ".@"; 
 	auto imagecost = C2DFullCostPluginHandler::instance().produce(cost_descr.str()); 
 
 	C2DFullCostList result; 
@@ -483,7 +483,7 @@ int do_main( int argc, const char *argv[] )
 	} while (do_continue || lastpass); 
 
 	if (!save_crop_feature.empty()) {
-		C2DPerfusionAnalysis ica_final(4, normalize, !no_meanstrip); 
+		C2DPerfusionAnalysis ica_final(5, normalize, !no_meanstrip); 
 		if (max_ica_iterations) 
 			ica_final.set_max_ica_iterations(max_ica_iterations); 
 	
