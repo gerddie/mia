@@ -109,17 +109,18 @@ void C2DStackDistanceTransform::read( const C2DImage& slice, int q)
 		
 		++(*k);
 		
-		if (*k > p->size()) {
+		const int psize = p->size(); 
+		if ( *k > psize ) {
 			cverr() << "k = " << *k << " but p->size() = " << p->size() <<"\n"; 
 			assert(0 && "can't do");
 		}
 		
 		SParabola new_p = {*k, q, s, f};
-		if ( *k == p->size() ) {
+		if ( *k == psize ) {
 			p->push_back(new_p);
 		}else {
 			(*p)[*k] = new_p; 
-			if (*k < p->size() - 1)
+			if ( *k < psize - 1 )
 				p->resize(*k + 1); 
 		}
 		++si; 

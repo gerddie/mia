@@ -151,6 +151,7 @@ private:
 inline std::ostream& operator << (std::ostream& os, const C2DStackDistanceTransform::DistanceFromPoint& v) 
 {
 	os << "[" << v.point << ":" << v.distance << "]"; 
+	return os; 
 }
 
 inline bool operator == (const C2DStackDistanceTransform::DistanceFromPoint& lhs, 

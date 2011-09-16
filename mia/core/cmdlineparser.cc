@@ -41,7 +41,8 @@ extern void print_full_copyright(const char *name);
 NS_MIA_BEGIN
 using namespace std;
 
-CCmdOption::CCmdOption(char short_opt, const char *long_opt, const char *long_help, Flags flags):
+CCmdOption::CCmdOption(char short_opt, const char *long_opt, 
+		       const char *long_help, Flags flags):
 	m_short_opt(short_opt), 
 	m_long_opt(long_opt),
 	m_long_help(long_help), 

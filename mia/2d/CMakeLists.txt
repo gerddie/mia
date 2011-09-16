@@ -30,9 +30,11 @@ SET(MIA2D_SRC_BASE
   cost.cc
   correlation_weight.cc 
   creator.cc
+  cstkernel.cc 
   distances.cc
   interpolator.cc 
   fatcost.cc
+  fftkernel.cc
   fullcost.cc
   filterchain.cc
   model.cc
@@ -51,11 +53,6 @@ SET(MIA2D_SRC_BASE
   transformfactory.cc
   )
 
-IF(FFTWF_FOUND AND WITH_FFTWF)
-  SET(MIA2D_FFTW_CODE     
-    cstkernel.cc 
-    fftkernel.cc )
-ENDIF(FFTWF_FOUND AND WITH_FFTWF)
 
 IF(XMLPP_FOUND)
   SET(SEG_SRC 
@@ -103,6 +100,7 @@ SET(MIA2D_HEADERS_BASE
   cost.hh
   correlation_weight.hh 
   creator.hh
+  cstkernel.hh 
   defines2d.hh
   deformer.hh
   distances.hh

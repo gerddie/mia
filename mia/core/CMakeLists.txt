@@ -33,6 +33,7 @@ SET(MIACORE_SRC_BASE
   file.cc 
   filetools.cc 
   filter.cc
+  fft1d_r2c.cc 
   fftslopeclassifier.cc
   flagstring.cc
   fullstats.cc
@@ -99,6 +100,7 @@ SET(MIACORE_HEADER_BASE
   file.hh
   filetools.hh
   filter.hh
+  fft1d_r2c.hh
   fftslopeclassifier.hh
   flagstring.hh
   fullstats.hh
@@ -173,15 +175,6 @@ IF(ITPP_FOUND)
     )
 ENDIF(ITPP_FOUND)
 
-IF(FFTWF_FOUND AND WITH_FFTWF)
-  SET(FFTWF_SRC 
-    fft1d_r2c.cc 
-    )
-  SET(FFTWF_HEADER 
-    fft1d_r2c.hh
-    )
-ENDIF(FFTWF_FOUND AND WITH_FFTWF)
-
 IF(PWPDF_FOUND) 
   SET(PWPDF_SRC 
     pwh.cc
@@ -221,19 +214,13 @@ ENDIF (UNIX)
 SET(MIACORE_SRC ${MIACORE_SRC_BASE} ${ITPP_SRC} ${FFTWF_SRC} ${PWPDF_SRC})
 SET(MIACORE_HEADER ${MIACORE_HEADER_BASE} ${ITPP_HEADER} ${FFTWF_HEADER} ${PWPDF_HEADER})
 
-
-SET(miacore_deps miagsl ${BASELIBS} ${TBB_LIBRARIES})
+SET(miacore_deps miagsl ${BASELIBS} ${TBB_LIBRARIES} ${FFTWF_LIBRARIES})
 MIA_ADD_LIBRARY(miacore "${MIACORE_SRC}" "${miacore_deps}")
 ADD_DEPENDENCIES(miacore revision.hh)
 
 IF(XMLPP_FOUND)
   TARGET_LINK_LIBRARIES(miacore ${XMLPP_LIBRARIES})
 ENDIF(XMLPP_FOUND)
-
-
-IF(FFTWF_FOUND AND WITH_FFTWF)
-  TARGET_LINK_LIBRARIES(miacore ${FFTWF_LIB})
-ENDIF(FFTWF_FOUND AND WITH_FFTWF)
 
 IF(PWPDF_FOUND AND FFTWD_FOUND)
   TARGET_LINK_LIBRARIES(miacore ${PWPDF_LIBRARIES})
