@@ -340,7 +340,8 @@ float CSlopeStatisticsImpl::get_maximum_gradient_from_zero() const
 void CSlopeStatisticsImpl::evaluate_perfusion_peak() const
 {
 	float mean = accumulate(m_series.begin(), m_series.end(), 0.0) / m_series.size();
-	cvinfo()<< "Slope[" << get_index() << "] mean = " << mean << "\n"; 
+	cvdebug() << "=== Slope[" << get_index() << "] evaluate perfusion peak\n"; 
+	cvdebug() << "  mean = " << mean << "\n"; 
 	vector<double> help(m_series.size());
 	if (m_series[0] < mean)
 		transform(m_series.begin(), m_series.end(), help.begin(),[mean](float x){return x - mean;});
@@ -354,24 +355,35 @@ void CSlopeStatisticsImpl::evaluate_perfusion_peak() const
 		if (m_maximum_gradient_from_zero < h) {
 			m_maximum_gradient_from_zero = h; 
 			m_perfusion_peak.first = i; 
-			m_perfusion_peak.second = m_series[i]; 
+			m_perfusion_peak.second = help[i]; 
 		}
 	}
-	cvinfo() << "Slope: " << get_index() 
-		 << ": max(f(x)/x)@x= " 
-		 <<  m_perfusion_peak.first 
-		 << " = " 
-		 << m_maximum_gradient_from_zero << "\n"; 
+	// now find true local maximum 
+	for(int i = m_perfusion_peak.first + 1; i < help.size(); ++i) {
+		cvdebug() << "  test " << i << " " << help[i]<< " vs " << m_perfusion_peak.second << "\n"; 
+		if (help[i] > m_perfusion_peak.second) {
+			m_perfusion_peak.first = i; 
+			m_perfusion_peak.second = help[i]; 
+		}else if (help[i] < 0.0) 
+			break; 
+	}
 
+	m_perfusion_peak.second = m_series[m_perfusion_peak.first]; 
+	cvdebug() << "   max(f(x)/x)@x= " 
+		  <<  m_perfusion_peak.first 
+		  << " = " 
+		  << m_maximum_gradient_from_zero << "\n"; 
+	
 	int start_peak_area = m_perfusion_peak.first; 
 	while (help[start_peak_area] > 0 && start_peak_area > 0) 
 		--start_peak_area; 
 	if (help[start_peak_area] < 0) 
 		++start_peak_area; 
 
-	cvinfo() << m_index <<" peak pos = " << m_perfusion_peak.first
-		 << " start peak area = " << start_peak_area
-		 << "\n"; 	
+	cvdebug() << "   peak pos = " << m_perfusion_peak.first
+		  << " start peak area = " << start_peak_area
+		  << "\n"; 
+	
 	float timmean = 0.0; 
 	float sum = 0.0;  
 	bool stop = false; 
@@ -386,6 +398,8 @@ void CSlopeStatisticsImpl::evaluate_perfusion_peak() const
 		m_energy_time_mean = timmean / sum; 
 
 	m_perfusion_peak_valid = true; 
+
+	cvdebug() << "======================\n"; 
 }
 
 void CSlopeStatisticsImpl::evaluate_range() const

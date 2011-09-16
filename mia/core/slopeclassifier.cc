@@ -275,7 +275,7 @@ CSlopeClassifierImpl::CSlopeClassifierImpl(const CSlopeClassifier::Columns& seri
 	}else
 		has_periodic = false; 
 
-	if (n > 4) {
+	if (n - sort_skip > 2) {
 		sort(stats.begin(), stats.end() - sort_skip, compare_mean_freq());
 		for (auto k = stats.rbegin() + sort_skip; k != stats.rend(); ++k)
 			if (k->first->get_mean_frequency() > rate) {
