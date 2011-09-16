@@ -43,14 +43,10 @@ struct SlopeClassifierFixture {
 	void check_equal(int a, int b, const char *descr); 
 };
 
-#define BOOST_CHECK_EQUAL_DESCR( L, R, D )				\
-	BOOST_CHECK_WITH_ARGS_IMPL( ::boost::test_tools::tt_detail::equal_impl_frwd(), D, CHECK, CHECK_EQUAL, (L)(R) )
-
-
 void SlopeClassifierFixture::check_equal(int value, int expect, const char *descr)
 {
 	if (expect != -2) 
-		BOOST_CHECK_EQUAL_DESCR( value, expect, descr ); 
+		BOOST_CHECK_MESSAGE( value == expect, descr << ": got '" << value << "' expect '" << expect ); 
 }
 
 void SlopeClassifierFixture::run(size_t length, size_t components, const float *data, const Result& result, bool mean_removed)
@@ -313,7 +309,7 @@ BOOST_FIXTURE_TEST_CASE( test_fftclassifier_5_mean_stripped_normalized_A0, Slope
 
 	r.periodic_indices = {0,2};
 	r.RV_idx = 1;
-	r.LV_idx = 3;
+	r.LV_idx = 4;
 	r.baseline_idx = 0;
 	r.perfusion_idx = -1;
 
@@ -390,7 +386,7 @@ BOOST_FIXTURE_TEST_CASE( test_fftclassifier_6_mean_stripped_normalized_A0, Slope
 
 	Result r;
 
-	r.periodic_indices = {2,3};
+	r.periodic_indices = {2,3,5};
 	r.RV_idx = 0;
 	r.LV_idx = 1;
 	r.baseline_idx = 4;
@@ -550,10 +546,10 @@ BOOST_FIXTURE_TEST_CASE( test_fftclassifier_5_mean_stripped_normalized_case_f2, 
 
 	Result r;
 
-	r.periodic_indices = {4};
+	r.periodic_indices = {3, 4};
 	r.RV_idx = 0;
 	r.LV_idx = 1;
-	r.baseline_idx = 3;
+	r.baseline_idx = -2;
 	r.perfusion_idx = 2;
 
 	r.RV_peak = 12;

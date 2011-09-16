@@ -227,7 +227,7 @@ CFFTSlopeClassifierImpl::CFFTSlopeClassifierImpl(const CFFTSlopeClassifier::Colu
 		int of_interest = 2; 
 		double max_range = stats[0].first->get_range(); 
 		while (of_interest < remaining && 
-		       max_range - stats[of_interest].first->get_range() < 0.5 * max_range)
+		       stats[of_interest].first->get_range() < 0.5 * max_range)
 			++of_interest; 
 		remaining = of_interest; 
 	}
