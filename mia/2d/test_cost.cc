@@ -38,8 +38,8 @@ BOOST_AUTO_TEST_CASE( test_2dimage_cost_avail )
 	
 	const auto& handler = C2DImageCostPluginHandler::instance(); 
 
-	BOOST_CHECK_EQUAL(handler.size(), 3u); 
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "lsd ngf ssd "); 
+	BOOST_CHECK_EQUAL(handler.size(), 4u); 
+	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "lsd mi ngf ssd "); 
 }
 
 

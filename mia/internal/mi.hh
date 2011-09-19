@@ -148,7 +148,7 @@ private:
 */
 template <typename CP, typename C> 
 TMIImageCostPlugin<CP,C>::TMIImageCostPlugin():
-	CP("ssd"), 
+	CP("mi"), 
 	m_normalize(false), 
 	m_rbins(64), 
 	m_mbins(64), 
