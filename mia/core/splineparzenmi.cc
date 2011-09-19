@@ -59,7 +59,12 @@ CSplineParzenMI::CSplineParzenMI(size_t rbins, PSplineKernel rkernel,
 void CSplineParzenMI::evaluate_histograms()
 {
 	TRACE_FUNCTION; 
-	// evaluate reference and moving histogram 
+
+	// clean reference and moving histogram 
+	std::fill(m_mov_histogram.begin(), m_mov_histogram.end(), 0.0); 
+	std::fill(m_ref_histogram.begin(), m_ref_histogram.end(), 0.0); 
+	
+	// evaluate reference and moving histogram from joined histogram 
 	auto jhi = m_joined_histogram.begin(); 
 	auto rhi = m_ref_histogram.begin(); 
 	for(size_t r = 0; r < m_ref_real_bins; ++r, ++rhi) {
