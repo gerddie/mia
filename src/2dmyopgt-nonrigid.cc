@@ -205,7 +205,8 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( beta, "beta", 'B', "temporal second derivative penalty weight"));
 	options.add(make_opt( rho_thresh, "rho-thresh", 'R', 
 				    "crorrelation threshhold for neighborhood analysis"));
-
+	options.add(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
+				    "e.g. because as they are of other modalities")); 
 	
 	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
