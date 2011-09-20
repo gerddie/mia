@@ -421,19 +421,25 @@ int do_main( int argc, const char *argv[] )
 		
 	} while (do_continue || lastpass); 
 
-	if (!save_crop_feature.empty()) {
-		C2DPerfusionAnalysis ica_final(4, normalize, !no_meanstrip); 
-		if (max_ica_iterations) 
-			ica_final.set_max_ica_iterations(max_ica_iterations); 
-	
-		transform(input_set.get_images().begin() + skip_images, 
-			  input_set.get_images().end(), series.begin(), Convert2Float()); 
 
-		if (!ica_final.run(series)) {
+	// run a final ICA pass to update the RV/LV peak 
+	C2DPerfusionAnalysis ica_final(4, normalize, !no_meanstrip); 
+	if (max_ica_iterations) 
+		ica_final.set_max_ica_iterations(max_ica_iterations); 
+	
+	transform(input_set.get_images().begin() + skip_images, 
+		  input_set.get_images().end(), series.begin(), Convert2Float()); 
+	
+	if (!ica_final.run(series)) {
 			ica_final.set_approach(FICA_APPROACH_SYMM); 
 			ica_final.run(series); 
-		}
-		
+	}
+	input_set.set_RV_peak(ica_final.get_RV_peak_idx()); 
+	input_set.set_LV_peak(ica_final.get_LV_peak_idx());
+
+	if (!save_crop_feature.empty()) {
+	
+
 		stringstream cfile; 
 		cfile << save_crop_feature << "-final.txt"; 
 		ica_final.save_coefs(cfile.str()); 
