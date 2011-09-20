@@ -123,7 +123,7 @@ int do_main(int argc, const char *argv[])
 {
 	string src_filename;
 	size_t reference = 20;
-	size_t  skip = 0; 
+	int  skip = 0; 
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
@@ -147,7 +147,7 @@ int do_main(int argc, const char *argv[])
 		throw invalid_argument("The requested reference frame is larger then the size of the set."); 
 	
 	if (skip >= src_frames.size()) 
-		throw invalid_argument("Can't skip the whole series"); 
+		THROW(invalid_argument, "Try to skip " << skip << " frames, but series has only " << src_frames.size()); 
 
 	auto isrc_frame = src_frames.begin() + skip;
 	auto esrc_frame = src_frames.end();
