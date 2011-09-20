@@ -153,7 +153,7 @@ int do_main( int argc, const char *argv[] )
 	string varcurves_filename("varcurves.txt"); 
 	
 	size_t n_sections = 0; 
-	size_t skip = 2; 
+	int skip = 2; 
 	size_t reference = 20; 
 
 	CCmdOptionList options(g_description);
