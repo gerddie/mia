@@ -159,7 +159,7 @@ int do_main( int argc, const char *argv[] )
 	CCmdOptionList options(g_description);
 	options.add(make_opt( org_filename, "original", 'o', "original segmentation set", CCmdOption::required));
 	options.add(make_opt( reg_filename, "registered", 'g', "registered segmentation set", CCmdOption::required));
-	options.add(make_opt( skip, "skip", 'k', "images to skip atthe bgin of the series")); 
+	options.add(make_opt( skip, "skip", 'k', "images to skip at the begin of the series, if (k < 0) use RV peak of the registered set if set")); 
 	options.add(make_opt( reference, "reference", 'r', "reference image")); 
 	options.add(make_opt( curves_filename, "curves", 'c', "region average value curves"));
 	options.add(make_opt( varcurves_filename, "varcurves", 'v', "region variation values"));
@@ -172,6 +172,13 @@ int do_main( int argc, const char *argv[] )
 
 	CSegSetWithImages original(org_filename, true); 
 	CSegSetWithImages registered(reg_filename, true); 
+
+	if (skip < 0) {
+                // if RV peak is given in the segmentation file, use it, otherwiese use 
+		// absolue value of skip 
+		int sk = registered.get_RV_peak(); 
+		skip = (sk < 0 ) ? -skip : sk; 
+	}
 
 	auto original_frames = original.get_frames(); 
 	auto registered_frames = registered.get_frames(); 
