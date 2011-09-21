@@ -121,6 +121,7 @@ public:
 	template <typename T> 
 	CGetDistance::result_type operator()(const T2DImage<T>& image) const 
 	{
+		
 		auto d = _M_distance.begin(); 
 		auto i = image.begin(); 
 		auto e = image.end(); 
@@ -137,7 +138,6 @@ public:
 				++d; 
 				++i; 
 			}
-			
 			return n == 0 ? 0 : result / n; 
 		}
 		case dist_max: {
@@ -185,7 +185,7 @@ int main( int argc, const char *argv[] )
 		
 		
                 auto in_image = load_image2d(in_filename);
-                auto dist_image = load_image2d(in_filename);
+                auto dist_image = load_image2d(dist_filename);
 
 		
 		Convert2DoubleAndScale create_dist(scale); 
