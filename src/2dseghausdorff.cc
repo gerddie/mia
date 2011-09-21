@@ -82,7 +82,7 @@ int do_main(int argc, const char *argv[])
 {
 	string src_filename;
 	size_t reference = 0;
-	size_t skip = 0; 
+	int skip = 0; 
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
@@ -100,6 +100,14 @@ int do_main(int argc, const char *argv[])
 		throw runtime_error(string("Unable to parse input file:") + src_filename);
 
 	CSegSet segset(*parser.get_document());
+
+	if (skip < 0) {
+                // if RV peak is given in the segmentation file, use it, otherwiese use 
+		// absolue value of skip 
+		int sk = segset.get_RV_peak(); 
+		skip = (sk < 0 ) ? -skip : sk; 
+	}
+
 
 	const CSegSet::Frames& frames = segset.get_frames();
 
