@@ -192,7 +192,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	bool at_begin = (!ifree_breathing) && (movement_pos[CSlopeStatistics::ecp_end] < movement_pos[CSlopeStatistics::ecp_begin]); 
 		
 	cvmsg() << "Detected free breathing data set\n";
-	int low_energy_start_idx = free_breathing ? 0 : 1;
+	int low_energy_start_idx = ifree_breathing ? 0 : 1;
 	
 	// 
 	// get movement components based on wavelet coefficient sums
@@ -244,17 +244,21 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 
 
 	// if the mean is stripped, the baseline vanishes 
-	if (!mean_stripped) {
-		Baseline_idx =  min_range_idx; 
-		cvinfo() << "Baseline " << min_energy_idx <<  " with range  " << min_range << "\n"; 
-	}
-	
+	if (mean_stripped)
+		min_energy_idx = -1; 
+
 	// now store the componnets according to their classification but ignore the baseline 
 	// if it is identified as movement 
 	for (size_t i = 0; i < series.size(); ++i) {
 		if (is_high_freq[i]) {
-			if (i != Baseline_idx) 
+			if (i != min_energy_idx) 
 				movement_indices.push_back(vstats[i]); 
+			else {
+				Baseline_idx = min_energy_idx; 
+				cvinfo() << "Baseline " << min_energy_idx <<  " with range  " << min_range << "\n"; 
+				min_energy_idx = -1; 
+			}
+				
 		} else 
 			remaining_indices.push_back(vstats[i]); 
 	}
@@ -320,12 +324,20 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	// 
 	// identify  LV and RV 
 	// 
+
 	if (remaining_indices.size() < 2) {
 		cvmsg() << "Classification failed because too few remaining components.\n"; 
 		result = CWaveletSlopeClassifier::wsc_fail; 
 		return; 
 	}
-	
+
+	// baseline still in there, then remove it, but only if there are more then two components 
+	if (remaining_indices.size() > 2 && min_energy_idx >= 0) {
+		auto new_last = remove_if(remaining_indices.begin(), remaining_indices.end(), 
+			  [min_energy_idx](PSlopeStatistics stat) {return stat->get_index() == min_energy_idx;}); 
+		remaining_indices.erase(new_last, remaining_indices.end());
+	}
+
 	// 
 	// The perfusion high peak was estimated based on the maximum ration f(x)/x 
 	// but we acually rely on the positions for sorting, because these gradients may 
