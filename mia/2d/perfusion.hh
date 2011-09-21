@@ -140,6 +140,12 @@ public:
 	   @param base_name output file name base 
 	 */
 	void save_feature_images(const string&  base_name)const; 
+
+	/**
+	   @param index of the feature image requested, set negative to request the mean image. 
+	   \returns the requested feature image 
+	 */
+	P2DImage get_feature_image(int index) const; 
 private: 
 	struct C2DPerfusionAnalysisImpl *impl; 
 

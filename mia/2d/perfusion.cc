@@ -54,6 +54,7 @@ struct C2DPerfusionAnalysisImpl {
 	vector<vector<float> > create_guess(size_t rows); 
 	void save_coefs(const string&  coefs_name)const; 
 	void save_feature_images(const string&  base_name)const; 
+	P2DImage get_feature_image(int index) const; 
 
 	size_t m_components;
 	bool m_normalize;  
@@ -658,6 +659,19 @@ void C2DPerfusionAnalysisImpl::save_feature_images(const string&  base_name)cons
 	}
 	save_feature(base_name, "_mean", m_ica->get_mean_image());
 }
+
+P2DImage C2DPerfusionAnalysisImpl::get_feature_image(int index) const
+{
+	if (index < 0) 
+		return P2DImage(m_ica->get_mean_image().clone()); 
+	return m_ica->get_feature_image(index); 
+}
+
+P2DImage C2DPerfusionAnalysis::get_feature_image(int index) const
+{
+	return impl->get_feature_image(index); 
+}
+
 
 TDictMap<C2DPerfusionAnalysis::EBoxSegmentation>::Table segmethod_table[] ={
 	{"delta-feature", C2DPerfusionAnalysis::bs_delta_feature},
