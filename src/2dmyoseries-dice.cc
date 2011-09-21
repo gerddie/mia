@@ -102,7 +102,7 @@ float dice_value(const C2DUBImage& mask1, const C2DUBImage& mask2)
 int do_main( int argc, const char *argv[] )
 {
 	string org_filename;
-	size_t skip = 2; 
+	int skip = 2; 
 	size_t reference = 20; 
 
 	CCmdOptionList options(g_description);
@@ -116,8 +116,14 @@ int do_main( int argc, const char *argv[] )
 
 	CSegSetWithImages original(org_filename, true); 
 
+	if (skip < 0) {
+                // if RV peak is given in the segmentation file, use it, otherwiese use 
+		// absolue value of skip 
+		int sk = original.get_RV_peak(); 
+		skip = (sk < 0 ) ? -skip : sk; 
+	}
+	
 	auto original_frames = original.get_frames(); 
-
 	
 	if (reference < skip || reference >= original_frames.size())
 		THROW(invalid_argument, "reference frame must be larger then skip="<<
