@@ -434,8 +434,10 @@ int do_main( int argc, const char *argv[] )
 			ica_final.set_approach(FICA_APPROACH_SYMM); 
 			ica_final.run(series); 
 	}
-	input_set.set_RV_peak(ica_final.get_RV_peak_idx()); 
-	input_set.set_LV_peak(ica_final.get_LV_peak_idx());
+	if( input_set.get_RV_peak() < 0) 
+		input_set.set_RV_peak(ica_final.get_RV_peak_idx()); 
+	if( input_set.get_LV_peak() < 0) 
+		input_set.set_LV_peak(ica_final.get_LV_peak_idx());
 
 	if (!save_crop_feature.empty()) {
 	
