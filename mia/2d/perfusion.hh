@@ -109,12 +109,12 @@ public:
 	void set_approach(size_t approach); 
 
 	/**
-	   \returns the RV peak enhancement index of -1 if ir could not be identified
+	   \returns the RV peak enhancement index of -1 if it could not be identified
 	 */
 	int get_RV_peak_idx() const; 
 	
 	/**
-	   \returns the LV peak enhancement index of -1 if ir could not be identified
+	   \returns the LV peak enhancement index of -1 if it could not be identified
 	*/
 	int get_LV_peak_idx() const; 
 
@@ -146,6 +146,17 @@ public:
 	   \returns the requested feature image 
 	 */
 	P2DImage get_feature_image(int index) const; 
+	
+	/**
+	   @returns the LV maximum peak enhancement time index, or -1 if not identified 
+	 */
+	int get_LV_peak_time() const; 
+
+	/**
+	   @returns the RV maximum peak enhancement time index, or -1 if not identified 
+	 */
+	int get_RV_peak_time() const; 
+
 private: 
 	struct C2DPerfusionAnalysisImpl *impl; 
 

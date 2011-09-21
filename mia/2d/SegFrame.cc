@@ -304,4 +304,9 @@ CSegFrame::SectionsStats CSegFrame::get_stats(size_t n_sections) const
 	return get_stats(mask); 
 }
 
+size_t CSegFrame::get_nsections() const
+{
+	return m_sections.size(); 
+}
+
 NS_MIA_END

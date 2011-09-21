@@ -176,6 +176,11 @@ public:
 	   @returns the statustics 
 	 */
 	SectionsStats get_stats(size_t n_sections) const; 
+
+	/**
+	   \returns number of segmented sections 
+	 */
+	size_t get_nsections() const; 
 private:
 	void load_image() const; 
 

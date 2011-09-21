@@ -596,9 +596,20 @@ P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_features(float LV_mas
 	return C2DFilterPluginHandler::instance().produce(mask_lv.str().c_str());
 }
 
+
+int C2DPerfusionAnalysis::get_RV_peak_time() const
+{
+	return impl->m_cls.get_RV_peak(); 
+}
+
 int C2DPerfusionAnalysis::get_RV_peak_idx() const
 {
 	return impl->m_cls.get_RV_peak();
+}
+
+int C2DPerfusionAnalysis::get_LV_peak_time() const
+{
+	return impl->m_cls.get_LV_peak(); 
 }
 
 int C2DPerfusionAnalysis::get_LV_peak_idx() const
