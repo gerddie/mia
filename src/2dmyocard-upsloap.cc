@@ -1,0 +1,228 @@
+/* -*- mia-c++  -*-
+ *
+ * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+
+#define VSTREAM_DOMAIN "2dmyocard"
+#include <iomanip>
+#include <ostream>
+#include <fstream>
+#include <map>
+#include <boost/lambda/lambda.hpp>
+#include <boost/filesystem.hpp>
+
+
+//#include <mia/core/fft1d_r2c.hh>
+#include <queue>
+#include <libxml++/libxml++.h>
+
+
+#include <mia/core.hh>
+#include <mia/core/bfsv23dispatch.hh>
+#include <mia/2d/2dimageio.hh>
+#include <mia/2d/2dfilter.hh>
+#include <mia/2d/ica.hh>
+#include <mia/2d/SegSetWithImages.hh>
+#include <mia/2d/perfusion.hh>
+#include <mia/2d/transformfactory.hh>
+NS_MIA_USE;
+
+namespace bfs=boost::filesystem; 
+
+class C2DFImage2PImage {
+public: 
+	P2DImage operator () (const C2DFImage& image) const {
+		return P2DImage(new C2DFImage(image)); 
+	}
+}; 
+
+class Convert2Float {
+public: 
+	C2DFImage operator () (P2DImage image) const  {
+		return ::mia::filter(m_converter, *image); 		
+	}
+private: 
+	FConvert2DImage2float m_converter; 
+}; 
+
+void get_feature_mask(P2DImage feature_image, int id, C2DUBImage& mask) 
+{
+	const char *filters[5] ={
+		"kmeans,nc=5", 
+		"binarize:min=4,max=4", 
+		"close:shape=[sphere:r=4]", 
+		"label", 
+		"selectbig"
+	};
+	
+	// run cmeans + binarize + get largest connected component
+	auto feature_mask = run_filter_chain(feature_image, 5, filters); 
+	auto bitmask = dynamic_cast<const C2DBitImage&>(*feature_mask);
+	
+	assert(bitmask.get_size() == mask.get_size()); 
+	
+	transform(bitmask.begin(), bitmask.end(), mask.begin(), mask.begin(), 
+		  [id](bool feature, unsigned char m) {return feature ? id : m;})
+}
+
+
+int do_main( int argc, const char *argv[] )
+{
+	// IO parameters 
+	string in_filename;
+	string reference_filename; 
+
+	// debug options: save some intermediate steps 
+	string cropped_filename("cropped.set");
+	string save_crop_feature; 
+
+	// this parameter is currently not exported - reading the image data is 
+	// therefore done from the path given in the segmentation set 
+	bool override_src_imagepath = true;
+
+	// ICA parameters 
+	size_t components = 0;
+	bool normalize = false; 
+	bool no_meanstrip = false; 
+	size_t skip_images = 0; 
+	size_t max_ica_iterations = 400; 
+
+	int reference = -1; 
+	int nsegments = 12; 
+
+	CCmdOptionList options(g_description);
+	options.set_group("File-IO"); 
+	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
+
+	options.set_group("ICA");
+	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
+	options.add(make_opt( normalize, "normalize", 0, "normalized ICs", NULL));
+	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
+				    "don't strip the mean from the mixing curves", NULL));
+	options.add(make_opt( box_scale, "segscale", 's', 
+				    "segment and scale the crop box around the LV (0=no segmentation)"));
+	options.add(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
+				    "as they are of other modalities")); 
+	options.add(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 
+	options.add(make_opt( segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
+				    "Segmentation method")); 
+
+	options.set_group("Evaluation");
+	options.add(make_opt( reference, "reference", 'r', "reference frame for curve mask (-1 = use LV peak)")); 
+	options.add(make_opt( nsegments, "nsegments", 'n', "number of myocardial segments to use (0=use segmented)"));
+	
+
+	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+		return EXIT_SUCCESS; 
+
+	// load input data set
+	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
+	C2DImageSeries input_images = input_set.get_images(); 
+	
+	vector<C2DFImage> series(input_images.size() - skip_images); 
+	transform(input_images.begin() + skip_images, input_images.end(), 
+		  series.begin(), Convert2Float()); 
+	
+
+	// run ICA
+	C2DPerfusionAnalysis ica(components, !no_normalize, !no_meanstrip); 
+	if (max_ica_iterations) 
+		ica.set_max_ica_iterations(max_ica_iterations); 
+	
+
+	if (!ica.run(series)) {
+		// ICA + classifictaion failed, 
+		// save the mixing matrix if requested 
+		if (!save_crop_feature.empty()) 
+			ica.save_coefs(save_crop_feature + ".txt");
+		throw runtime_error("ICA + Classification failed"); 
+	}
+
+	if (reference == -1) 
+		reference = ica.get_LV_peak_time(); 
+	if (reference == -1) 
+		throw runtime_error("LV peak time based reference requested, but it can't be identified"); 
+	
+	
+	const auto& ref = input_set.get_frames()[reference]; 
+	C2DUBImage mask = ref->get_section_masks(nsegments);
+	
+	int rv_id = nsegments > 0 ? nsegments + 1 : ref->get_nsections(); 
+	int lv_id = rv_id + 1; 
+	
+	int rv_idx = ica.get_RV_peak_idx(); 
+	if (rv_idx < 0) 
+		throw runtime_error(" no RV feature identified"); 
+	add_feature_mask(ica.get_feature_image(rv_idx), rv_id, mask); 
+
+	int lv_idx = ica.get_LV_peak_idx(); 
+	if (lv_idx < 0) 
+		throw runtime_error(" no LV feature identified"); 
+	add_feature_mask(ica.get_feature_image(lv_idx), lv_id, mask);
+	
+	// evaluate time-intensity curves with skipping initial frames 
+	vector<CSegFrame::SectionsStats> intensity_curves(series.size()); 
+	transform(input_set.get_frames.begin() + skip_images, input_set.get_frames.end(), intensity_curves, 
+		  [&lv_mask](const CSegFrame& f){return f.get_stats(lv_mask);});
+	
+	// now I have all the curves in "intensity_curves"
+	int rv_lv_equal = ica.get_RV_peak_time();
+	const auto rv_slope = intensity_curves[rv_idx]; 
+	const auto lv_slope = intensity_curves[lv_idx]; 
+
+	while (rv_lv_equal < ica.get_LV_peak_time() && 
+	       rv_slope[rv_lv_equal] > lv_slope[rv_lv_equal]) 
+		++rv_lv_equal; 
+
+	if (rv_lv_equal == ica.get_LV_peak_time())
+		throw runtime_error("RV slope above LV peak, that's bad"); 
+
+	// from rv_lv_equal we start the analysis 
+	
+	
+	
+	
+	
+	
+
+}
+
+int main( int argc, const char *argv[] )
+{
+
+
+	try {
+		return do_main(argc, argv);
+	}
+	catch (const runtime_error &e){
+		cerr << argv[0] << " runtime: " << e.what() << endl;
+	}
+	catch (const invalid_argument &e){
+		cerr << argv[0] << " error: " << e.what() << endl;
+	}
+	catch (const exception& e){
+		cerr << argv[0] << " error: " << e.what() << endl;
+	}
+	catch (...){
+		cerr << argv[0] << " unknown exception" << endl;
+	}
+
+	return EXIT_FAILURE;
+}
+
