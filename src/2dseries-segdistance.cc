@@ -52,6 +52,7 @@ mia-2dseries-segdistance -i segment.set -r 20
   LatexEnd
 */
 
+#define VSTREAM_DOMAIN "SEGBORDERDIST" 
 
 #include <iterator>
 #include <algorithm>
@@ -88,18 +89,24 @@ double mean_frame_border_distance(const C2DDImage& distance, const C2DBitImage& 
 
 	while (im != em) {
 		if (*im) {
-			result += *id; 
+			result += *id * *id; 
 			++n; 
 		}
 		++id; 
 		++im; 
 	}
-	return n ? result / n : 0.0; 
+	return n ? sqrt(result / n) : 0.0; 
 }
 
 C2DBitImage get_boundary(const C2DUBImage& mask) 
 {
-	auto orig_mask = run_filter(mask, "binarize:min=1"); 
+	const char *filters[2] = {
+		"binarize:min=1", 
+		"close:shape=8n"
+	}; 
+
+	
+	auto orig_mask = run_filter_chain(P2DImage(mask.clone()), 2, filters); 
 	auto enlarged_mask = run_filter(*orig_mask, "dilate:shape=8n");
 	
 	const C2DBitImage& om = dynamic_cast<const C2DBitImage&>(*orig_mask); 
@@ -153,19 +160,21 @@ int do_main(int argc, const char *argv[])
 	auto esrc_frame = src_frames.end();
 
 	auto reference_boundary = get_boundary(src_frames[reference].get_section_masks(1)); 
+	P2DImage img(reference_boundary.clone()); 
 	auto dtf = get_distance_transform(reference_boundary); 
-		
 	const C2DDImage& fdtf = dynamic_cast<const C2DDImage&>(*dtf); 
 	
 	vector<double> mean_frame_dist(src_frames.size() - skip); 
 	auto im = mean_frame_dist.begin(); 
 	
+	int k = skip; 
 	while (isrc_frame != esrc_frame) {
 		auto boundary = get_boundary(isrc_frame->get_section_masks(1));
 		*im = mean_frame_border_distance(fdtf, boundary); 
-		cvmsg() << *im << "\n"; 
+		cvmsg() << k << ": " << *im << "\n"; 
 		++isrc_frame; 
 		++im; 
+		++k; 
 	}
 	double mean = accumulate(mean_frame_dist.begin(), mean_frame_dist.end(), 0.0) / mean_frame_dist.size(); 
 	cout << mean << "\n"; 
