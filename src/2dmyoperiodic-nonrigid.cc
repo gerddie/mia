@@ -333,9 +333,11 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images,
 		// the last images may be registered using SSD without interpolating references 
 		P2DImage ref; 
 		if (high_index != subset.end()) {
+
 			float w = float(*high_index - i)/(*high_index - *low_index);  
 			FAddWeighted lerp(w);
 			
+			cvmsg() << "create " << i << " from [" << *low_index << ", " << *high_index << "] w = "<< w <<"\n"; 
 			ref = mia::filter(lerp, *images[*high_index], *images[*low_index]); 
 			if (m_params.save_ref) {
 				stringstream refname; 
