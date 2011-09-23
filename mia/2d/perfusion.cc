@@ -604,7 +604,7 @@ int C2DPerfusionAnalysis::get_RV_peak_time() const
 
 int C2DPerfusionAnalysis::get_RV_peak_idx() const
 {
-	return impl->m_cls.get_RV_peak();
+	return impl->m_cls.get_RV_idx();
 }
 
 int C2DPerfusionAnalysis::get_LV_peak_time() const
@@ -614,7 +614,7 @@ int C2DPerfusionAnalysis::get_LV_peak_time() const
 
 int C2DPerfusionAnalysis::get_LV_peak_idx() const
 {
-	return impl->m_cls.get_LV_peak();
+	return impl->m_cls.get_LV_idx();
 }
 
 
