@@ -43,6 +43,8 @@
 #include <mia/2d/transformfactory.hh>
 NS_MIA_USE;
 
+const char g_description[] = "A description"; 
+
 namespace bfs=boost::filesystem; 
 
 class C2DFImage2PImage {
@@ -61,10 +63,10 @@ private:
 	FConvert2DImage2float m_converter; 
 }; 
 
-void get_feature_mask(P2DImage feature_image, int id, C2DUBImage& mask) 
+void add_feature_mask(P2DImage feature_image, int id, C2DUBImage& mask) 
 {
 	const char *filters[5] ={
-		"kmeans,nc=5", 
+		"kmeans:c=5", 
 		"binarize:min=4,max=4", 
 		"close:shape=[sphere:r=4]", 
 		"label", 
@@ -78,7 +80,7 @@ void get_feature_mask(P2DImage feature_image, int id, C2DUBImage& mask)
 	assert(bitmask.get_size() == mask.get_size()); 
 	
 	transform(bitmask.begin(), bitmask.end(), mask.begin(), mask.begin(), 
-		  [id](bool feature, unsigned char m) {return feature ? id : m;})
+		  [id](bool feature, unsigned char m) {return feature ? id : m;}); 
 }
 
 
@@ -86,11 +88,7 @@ int do_main( int argc, const char *argv[] )
 {
 	// IO parameters 
 	string in_filename;
-	string reference_filename; 
-
-	// debug options: save some intermediate steps 
-	string cropped_filename("cropped.set");
-	string save_crop_feature; 
+	string out_filename; 
 
 	// this parameter is currently not exported - reading the image data is 
 	// therefore done from the path given in the segmentation set 
@@ -109,19 +107,16 @@ int do_main( int argc, const char *argv[] )
 	CCmdOptionList options(g_description);
 	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file with curves", CCmdOption::required));
 
 	options.set_group("ICA");
 	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
 	options.add(make_opt( normalize, "normalize", 0, "normalized ICs", NULL));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
 				    "don't strip the mean from the mixing curves", NULL));
-	options.add(make_opt( box_scale, "segscale", 's', 
-				    "segment and scale the crop box around the LV (0=no segmentation)"));
 	options.add(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
 				    "as they are of other modalities")); 
 	options.add(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 
-	options.add(make_opt( segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
-				    "Segmentation method")); 
 
 	options.set_group("Evaluation");
 	options.add(make_opt( reference, "reference", 'r', "reference frame for curve mask (-1 = use LV peak)")); 
@@ -141,17 +136,14 @@ int do_main( int argc, const char *argv[] )
 	
 
 	// run ICA
-	C2DPerfusionAnalysis ica(components, !no_normalize, !no_meanstrip); 
+	C2DPerfusionAnalysis ica(components, normalize, !no_meanstrip); 
 	if (max_ica_iterations) 
 		ica.set_max_ica_iterations(max_ica_iterations); 
 	
 
 	if (!ica.run(series)) {
-		// ICA + classifictaion failed, 
-		// save the mixing matrix if requested 
-		if (!save_crop_feature.empty()) 
-			ica.save_coefs(save_crop_feature + ".txt");
-		throw runtime_error("ICA + Classification failed"); 
+		ica.set_approach(FICA_APPROACH_SYMM); 
+		ica.run(series); 
 	}
 
 	if (reference == -1) 
@@ -161,9 +153,9 @@ int do_main( int argc, const char *argv[] )
 	
 	
 	const auto& ref = input_set.get_frames()[reference]; 
-	C2DUBImage mask = ref->get_section_masks(nsegments);
+	C2DUBImage mask = ref.get_section_masks(nsegments);
 	
-	int rv_id = nsegments > 0 ? nsegments + 1 : ref->get_nsections(); 
+	int rv_id = nsegments > 0 ? nsegments + 1 : ref.get_nsections(); 
 	int lv_id = rv_id + 1; 
 	
 	int rv_idx = ica.get_RV_peak_idx(); 
@@ -178,29 +170,18 @@ int do_main( int argc, const char *argv[] )
 	
 	// evaluate time-intensity curves with skipping initial frames 
 	vector<CSegFrame::SectionsStats> intensity_curves(series.size()); 
-	transform(input_set.get_frames.begin() + skip_images, input_set.get_frames.end(), intensity_curves, 
-		  [&lv_mask](const CSegFrame& f){return f.get_stats(lv_mask);});
+	transform(input_set.get_frames().begin() + skip_images, input_set.get_frames().end(), intensity_curves.begin(), 
+		  [&mask](const CSegFrame& f){return f.get_stats(mask);});
 	
-	// now I have all the curves in "intensity_curves"
-	int rv_lv_equal = ica.get_RV_peak_time();
-	const auto rv_slope = intensity_curves[rv_idx]; 
-	const auto lv_slope = intensity_curves[lv_idx]; 
-
-	while (rv_lv_equal < ica.get_LV_peak_time() && 
-	       rv_slope[rv_lv_equal] > lv_slope[rv_lv_equal]) 
-		++rv_lv_equal; 
-
-	if (rv_lv_equal == ica.get_LV_peak_time())
-		throw runtime_error("RV slope above LV peak, that's bad"); 
-
-	// from rv_lv_equal we start the analysis 
-	
-	
-	
-	
-	
-	
-
+	ofstream output(out_filename.c_str()); 
+	int k = skip_images; 
+	for (auto i = intensity_curves.begin(); i != intensity_curves.end(); ++i, ++k) {
+		output << k << " "; 
+		for (auto ii = i->begin(); ii != i->end(); ++ii)
+			output << ii->first << " " << ii->second << " "; 
+		output << "\n"; 
+	}
+	return EXIT_SUCCESS; 
 }
 
 int main( int argc, const char *argv[] )
