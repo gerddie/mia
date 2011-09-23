@@ -93,12 +93,14 @@ vector<size_t> TSimilarityProfile<dim>::get_periodic_subset() const
 	
 	result.push_back(m_reference); 
 	size_t i = m_reference - 1; 
-	
+	cvinfo()  << "Similarity profile["<< m_reference <<"]:" 
+		  << m_cost_values << "\n"; 
+
 	while (i > 2) {
 		if (m_cost_values[i] < m_cost_values[i + 1] 
 		    && m_cost_values[i] < m_cost_values[i + 2]
 		    && m_cost_values[i] < m_cost_values[i - 1]
-		    && m_cost_values[i] < m_cost_values[i - 2]) {
+		    && m_cost_values[i] < m_cost_values[i - 2])  {
 			result.push_back(i); 
 			i -= 3; 
 		}else
