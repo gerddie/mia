@@ -40,8 +40,28 @@ class DrawTool:
         self.curLines = []
         self.pos = None
         return result
-        
+
+    def ClearLast(self):
+        result = len(self.curLines) > 1
+        if result:
+            self.curLines = self.curLines[0:-1]
+            self.pos = self.curLines[-1]
+        return result
+
+    def DrawCurrent(self, dc):
+        dc.SetPen(wx.Pen("white", 2, wx.SOLID))
+        if len(self.curLines) > 1:
+            p1 = self.curLines[0]
+            for p2 in self.curLines[1:]:
+                coords = p1 + p2
+                dc.DrawLine(*coords)
+                p1 = p2
+        elif len(self.curLines) > 0:
+            p1 = self.curLines[0]
+            dc.DrawPoint(p1[0], p1[1])
+
     def LeftMouseDown(self, event, dc):
+        dc.SetPen(wx.Pen("white", 2, wx.SOLID))
         if self.pos: 
             newPos = event.GetPositionTuple()
             coords = self.pos + newPos
@@ -156,7 +176,8 @@ class DrawingArea (wx.Panel):
         dc.Clear()
         self.DrawCurrentBitmap(dc)
         self.DrawStar(dc)
-        self.Drawsections(dc)          
+        self.current_tool.DrawCurrent(dc)
+        self.Drawsections(dc)
         self.reInitBuffer = False
         
     def OnSize(self, size):
@@ -305,11 +326,11 @@ class DrawingArea (wx.Panel):
         self.Pen = wx.Pen(GlobalColors[self.index], 1, wx.SOLID)
         
     def RestartSection(self,event):
-        if not self.current_tool.Clear():
+        if not self.current_tool.ClearLast():
             if len(self.sections) > 0:
                 self.sections = self.sections[0:-1]            
                 self.index = len(self.sections)
-                self.Pen = wx.Pen(GlobalColors[self.index], 1, wx.SOLID)
+        self.Pen = wx.Pen(GlobalColors[self.index], 1, wx.SOLID)
         self.InitBuffer()
         self.Refresh(False)
 
@@ -317,7 +338,7 @@ class DrawingArea (wx.Panel):
         colors = []
         for s in self.sections:
             colors.append(s.color)
-        return clors
+        return colors
 
 
     def DeleteSectionWithColor(self, color):
