@@ -200,9 +200,6 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	vector<PSlopeStatistics> movement_indices;
 	vector<PSlopeStatistics> remaining_indices;
 
-	int min_energy_idx = -1; 
-	float min_energy = numeric_limits<float>::max(); 
-
 	int min_range_idx = -1; 
 	float min_range  = numeric_limits<float>::max(); 
 
@@ -216,11 +213,6 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 
 		float low_freq = accumulate(e.begin() + low_energy_start_idx, e.begin() + movement_idx, 0.0); 
 		float high_freq = e[movement_idx] + e[movement_idx + 1];
-		
-		if (min_energy > vstats[i]->get_wavelet_energy()) {
-			min_energy = vstats[i]->get_wavelet_energy(); 
-			min_energy_idx = i; 
-		}
 		
 		if (min_range > vstats[i]->get_range()) {
 			min_range = vstats[i]->get_range(); 
@@ -244,19 +236,21 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 
 
 	// if the mean is stripped, the baseline vanishes 
-	if (mean_stripped)
-		min_energy_idx = -1; 
+	if (mean_stripped) {
+		cvinfo() << "mean stripped hence no baseline\n"; 
+		min_range_idx = -1; 
+	}
 
 	// now store the componnets according to their classification but ignore the baseline 
 	// if it is identified as movement 
 	for (size_t i = 0; i < series.size(); ++i) {
 		if (is_high_freq[i]) {
-			if (i != min_energy_idx) 
+			if (vstats[i]->get_index() != min_range_idx) 
 				movement_indices.push_back(vstats[i]); 
 			else {
-				Baseline_idx = min_energy_idx; 
-				cvinfo() << "Baseline " << min_energy_idx <<  " with range  " << min_range << "\n"; 
-				min_energy_idx = -1; 
+				Baseline_idx = min_range_idx; 
+				cvinfo() << "Baseline " << min_range_idx <<  " with range  " << min_range << "\n"; 
+				min_range_idx = -1; 
 			}
 				
 		} else 
@@ -332,9 +326,9 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	}
 
 	// baseline still in there, then remove it, but only if there are more then two components 
-	if (remaining_indices.size() > 2 && min_energy_idx >= 0) {
+	if (remaining_indices.size() > 2 && min_range_idx >= 0) {
 		auto new_last = remove_if(remaining_indices.begin(), remaining_indices.end(), 
-			  [min_energy_idx](PSlopeStatistics stat) {return stat->get_index() == min_energy_idx;}); 
+			  [min_range_idx](PSlopeStatistics stat) {return stat->get_index() == min_range_idx;}); 
 		remaining_indices.erase(new_last, remaining_indices.end());
 	}
 
