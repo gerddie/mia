@@ -224,16 +224,25 @@ int do_main( int argc, const char *argv[] )
 		ica.set_max_ica_iterations(max_ica_iterations); 
 	if (use_guess_model) 
 		ica.set_use_guess_model(); 
-	if (!ica.run(series)) 
+	if (!ica.run(series)) {
 		ica.set_approach(FICA_APPROACH_SYMM); 
-	if (!ica.run(series) )
-		cvwarn() << "ICA analysis didn't converge, results might by bougus";
-	
+		if (!ica.run(series) )
+			cvwarn() << "ICA analysis didn't converge, results might by bougus\n";
+	}
+
+	int RV_peak_idx = ica.get_RV_peak_idx(); 
+	int LV_peak_idx = ica.get_LV_peak_idx(); 
+
+	if (RV_peak_idx < 0 || LV_peak_idx < 0) 
+		throw runtime_error("RV or LV identification failed"); 
+
 	if( input_set.get_RV_peak() < 0) 
 		input_set.set_RV_peak(ica.get_RV_peak_idx()); 
 	if( input_set.get_LV_peak() < 0) 
 		input_set.set_LV_peak(ica.get_LV_peak_idx());
 
+
+	
 	vector<C2DFImage> references_float = ica.get_references();
 	
 	C2DImageSeries references(references_float.size()); 
