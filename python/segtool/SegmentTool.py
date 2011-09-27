@@ -48,6 +48,7 @@ class MainWindow (wx.Frame):
 
         if len(sys.argv) > 1:
             self.__read_workspace(sys.argv[1])
+        self.dirty = False
     
     def CreateMenu(self):
         menuBar = wx.MenuBar()
@@ -204,7 +205,14 @@ class MainWindow (wx.Frame):
             self.change_slice()
 
     def OnFileExit(self, event):
-        self.Close(True)
+        result = wx.MessageDialog(self, "Save set before exiting?", "End program",
+                               wx.CANCEL | wx.YES_NO | wx.ICON_QUESTION).ShowModal()
+        if result == wx.ID_YES:
+            self.SaveSet()
+            self.Close(True)
+        if result == wx.ID_NO:
+            self.Close(True)
+        
 
     def SetInitialImage(self):
         self.nimages = self.current_set.GetFrameNumber()
