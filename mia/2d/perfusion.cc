@@ -341,18 +341,21 @@ public:
 	C2DFVector operator() (const T2DImage<T>& image) const {
 		C2DFVector result;
 		size_t n = 0;
+		int left = image.get_size().x; 
+		int right = 0; 
+		int top = image.get_size().y;
+		int bottom = 0; 
 		typename T2DImage<T>::const_iterator i = image.begin();
 		for (size_t y = 0; y < image.get_size().y; ++y)
 			for (size_t x = 0; x < image.get_size().x; ++x, ++i) {
 				if (*i) {
-					result.x += x;
-					result.y += y;
-					++n;
+					if (top > y) top = y; 
+					if (bottom < y) bottom = y; 
+					if (left > x) left = x; 
+					if (right < x) right = x; 
 				}
 			}
-		if (!n)
-			THROW(invalid_argument, "GetRegionCenter: provided an empty region");
-		return result / float(n);
+		return C2DFVector((left - right)/ 2.0, (bottom - top) / 2.0);
 	};
 };
 
@@ -386,6 +389,8 @@ private:
 	struct Collector {
 		size_t size;
 		C2DFVector center;
+		C2DFVector topleft;
+		C2DFVector bottomright;
 	};
 
 };
@@ -433,7 +438,7 @@ P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_delta(P2DImage rvlv_f
 
 	P2DImage RV;
 	P2DImage kmeans;
-	size_t nc = 1;
+	size_t nc = 3;
 	size_t npixels;
 	C2DFVector RV_center; 
 	P2DImage LV_candidates; 
@@ -632,12 +637,19 @@ int GetClosestRegionLabel::operator() (const T2DImage<T>& image) const
 			if (ic ==  collector_map.end()) {
 				Collector col;
 				col.size = 1;
-				col.center = C2DFVector(x,y);
+				col.bottomright = col.topleft = C2DFVector(x,y);
 				collector_map[*i] = col;
 			} else {
 				++ic->second.size;
-				ic->second.center.x += x;
-				ic->second.center.y += y;
+				if (ic->second.bottomright.x < x) 
+					ic->second.bottomright.x = x; 
+				if (ic->second.bottomright.y < y) 
+					ic->second.bottomright.y = y; 
+
+				if (ic->second.topleft.x > x) 
+					ic->second.topleft.x = x; 
+				if (ic->second.topleft.y > y) 
+					ic->second.topleft.y = y; 
 			}
 		}
 
@@ -645,7 +657,7 @@ int GetClosestRegionLabel::operator() (const T2DImage<T>& image) const
 	int label = 0;
 	for (coll_iterator i = collector_map.begin();
 	     i != collector_map.end(); ++i) {
-		i->second.center /= i->second.size;
+		i->second.center = 0.5f * (i->second.bottomright - i->second.topleft);
 		float wdist = (i->second.center - m_point).norm() / i->second.size;
 		if ( min_weighted_distance > wdist ) {
 			min_weighted_distance = wdist;
