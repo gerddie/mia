@@ -341,8 +341,8 @@ public:
 	C2DFVector operator() (const T2DImage<T>& image) const {
 		C2DFVector result;
 		size_t n = 0;
-		int left = image.get_size().x; 
-		int right = 0; 
+		int right= image.get_size().x; 
+		int left = 0; 
 		int top = image.get_size().y;
 		int bottom = 0; 
 		typename T2DImage<T>::const_iterator i = image.begin();
@@ -351,11 +351,11 @@ public:
 				if (*i) {
 					if (top > y) top = y; 
 					if (bottom < y) bottom = y; 
-					if (left > x) left = x; 
-					if (right < x) right = x; 
+					if (left < x) left = x; 
+					if (right > x) right = x; 
 				}
 			}
-		return C2DFVector((left - right)/ 2.0, (bottom - top) / 2.0);
+		return C2DFVector((left + right)/ 2.0, (bottom + top) / 2.0);
 	};
 };
 
@@ -657,7 +657,7 @@ int GetClosestRegionLabel::operator() (const T2DImage<T>& image) const
 	int label = 0;
 	for (coll_iterator i = collector_map.begin();
 	     i != collector_map.end(); ++i) {
-		i->second.center = 0.5f * (i->second.bottomright - i->second.topleft);
+		i->second.center = 0.5f * (i->second.bottomright + i->second.topleft);
 		float wdist = (i->second.center - m_point).norm() / i->second.size;
 		if ( min_weighted_distance > wdist ) {
 			min_weighted_distance = wdist;
