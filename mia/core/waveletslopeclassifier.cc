@@ -192,7 +192,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	bool at_begin = (!ifree_breathing) && (movement_pos[CSlopeStatistics::ecp_end] < movement_pos[CSlopeStatistics::ecp_begin]); 
 		
 	cvmsg() << "Detected free breathing data set\n";
-	int low_energy_start_idx = ifree_breathing ? 0 : 1;
+	int low_energy_start_idx = 1; //ifree_breathing ? 0 : 1;
 	
 	// 
 	// get movement components based on wavelet coefficient sums
