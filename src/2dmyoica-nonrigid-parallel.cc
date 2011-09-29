@@ -483,7 +483,7 @@ int do_main( int argc, const char *argv[] )
 	} while (do_continue || lastpass); 
 
 
-	C2DPerfusionAnalysis ica_final(5, normalize, !no_meanstrip); 
+	C2DPerfusionAnalysis ica_final(4, normalize, !no_meanstrip); 
 	if (max_ica_iterations) 
 		ica_final.set_max_ica_iterations(max_ica_iterations); 
 	
@@ -495,9 +495,9 @@ int do_main( int argc, const char *argv[] )
 			ica_final.run(series); 
 	}
 	if( input_set.get_RV_peak() < 0) 
-		input_set.set_RV_peak(ica_final.get_RV_peak_time()); 
+		input_set.set_RV_peak(ica_final.get_RV_peak_time() + skip_images); 
 	if( input_set.get_LV_peak() < 0) 
-		input_set.set_LV_peak(ica_final.get_LV_peak_time());
+		input_set.set_LV_peak(ica_final.get_LV_peak_time() + skip_images);
 
 	if (!save_crop_feature.empty()) {
 		stringstream cfile; 
