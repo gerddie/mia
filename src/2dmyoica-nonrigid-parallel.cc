@@ -482,19 +482,24 @@ int do_main( int argc, const char *argv[] )
 		
 	} while (do_continue || lastpass); 
 
-	if (!save_crop_feature.empty()) {
-		C2DPerfusionAnalysis ica_final(5, normalize, !no_meanstrip); 
-		if (max_ica_iterations) 
-			ica_final.set_max_ica_iterations(max_ica_iterations); 
-	
-		transform(input_set.get_images().begin() + skip_images, 
-			  input_set.get_images().end(), series.begin(), Convert2Float()); 
 
-		if (!ica_final.run(series)) {
+	C2DPerfusionAnalysis ica_final(5, normalize, !no_meanstrip); 
+	if (max_ica_iterations) 
+		ica_final.set_max_ica_iterations(max_ica_iterations); 
+	
+	transform(input_set.get_images().begin() + skip_images, 
+		  input_set.get_images().end(), series.begin(), Convert2Float()); 
+	
+	if (!ica_final.run(series)) {
 			ica_final.set_approach(FICA_APPROACH_SYMM); 
 			ica_final.run(series); 
-		}
-		
+	}
+	if( input_set.get_RV_peak() < 0) 
+		input_set.set_RV_peak(ica_final.get_RV_peak_time()); 
+	if( input_set.get_LV_peak() < 0) 
+		input_set.set_LV_peak(ica_final.get_LV_peak_time());
+
+	if (!save_crop_feature.empty()) {
 		stringstream cfile; 
 		cfile << save_crop_feature << "-final.txt"; 
 		ica_final.save_coefs(cfile.str()); 
@@ -502,7 +507,7 @@ int do_main( int argc, const char *argv[] )
 		new_base << save_crop_feature << "-p"<< pass << "-final"; 
 		ica_final.save_feature_images(new_base.str()); 
 	}
-	
+
 	input_set.rename_base(registered_filebase); 
 	input_set.save_images(out_filename); 
 	
