@@ -324,8 +324,8 @@ bool C2DSplineTransformation::refine()
 P2DTransformation C2DSplineTransformation::do_upscale(const C2DBounds& size) const
 {
 	TRACE_FUNCTION;
-	C2DFVector mx(((float)size.x)/ ((float)m_range.x),
-		      ((float)size.y)/ ((float)m_range.y));
+	C2DFVector mx(((float)size.x - 1)/ ((float)m_range.x - 1),
+		      ((float)size.y - 1)/ ((float)m_range.y - 1));
 
 	C2DSplineTransformation *help = new C2DSplineTransformation(size, m_kernel, get_interpolator_factory());
 	C2DFVectorfield new_coefs(m_coefficients.get_size()); 

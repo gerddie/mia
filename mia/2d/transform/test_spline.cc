@@ -190,7 +190,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation, TransformSplineFixture )
 
 }
 
-
+#define REVIEW_THIS_TEST
 #ifdef REVIEW_THIS_TEST
 BOOST_FIXTURE_TEST_CASE( test_splines_transformation_upscale, TransformSplineFixture )
 {
@@ -205,12 +205,12 @@ BOOST_FIXTURE_TEST_CASE( test_splines_transformation_upscale, TransformSplineFix
 
 	stransf_upscaled->reinit();
 
-	C2DFVector test2(34.4, 90.3);
+	C2DFVector test2(15.4, 20.3);
 
 	C2DFVector result2 = stransf_upscaled->apply(fscale * test2);
 
-	BOOST_CHECK_CLOSE(result2.x, scale.x * fx(test2.x, test2.y), 0.1);
-	BOOST_CHECK_CLOSE(result2.y, scale.y * fy(test2.x, test2.y), 0.1);
+	BOOST_CHECK_CLOSE(result2.x, fscale.x * fx(test2.x, test2.y), 0.1);
+	BOOST_CHECK_CLOSE(result2.y, fscale.y * fy(test2.x, test2.y), 0.1);
 
 }
 #endif

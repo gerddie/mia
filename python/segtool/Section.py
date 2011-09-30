@@ -341,7 +341,6 @@ def GetVariation(image, mask):
 class ImageSegmentation:
        
     def __init__(self, image=None, sections=None, node=None, basepath=None):
-
         self.star = None
         self.Sections = []
         if image is not None:
@@ -567,7 +566,7 @@ class ImageSegmentation:
         for s in self.Sections:
             s.shift(dx,dy)
         self.star.shift(dx,dy)
-        
+       
 
     def __eq__(self, other):
 
@@ -587,6 +586,7 @@ class WorkSet:
             self.__init_from_xmlfile(xmlpath)
         else:
             self.__init(images)
+        self.dirty = False
 
     def __init_from_xmlfile(self, xmlpath):
         file=open(xmlpath, "r")
@@ -646,14 +646,25 @@ class WorkSet:
         root = etree.Element("workset")    
         for f in self.frames:
             f.Save(root)
+        self.ClearDirty() 
         return etree.tostring(root, pretty_print=True)
 
 
     def shift(self, dx, dy):
         for f in self.frames:
             f.shift(dx,dy)
+        self.SetDirty()
 
     def GetFilenameFormat(name):
         fileroot = rsplit(filename, '.', 1)
         
+
+    def SetDirty(self):
+        self.dirty = True
+
+    def ClearDirty(self):
+        self.dirty = False
+
+    def IsDirty(self):
+        return self.dirty
 
