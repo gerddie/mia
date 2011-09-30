@@ -237,9 +237,9 @@ int do_main( int argc, const char *argv[] )
 		throw runtime_error("RV or LV identification failed"); 
 
 	if( input_set.get_RV_peak() < 0) 
-		input_set.set_RV_peak(ica.get_RV_peak_idx()); 
+		input_set.set_RV_peak(ica.get_RV_peak_time() + skip_images); 
 	if( input_set.get_LV_peak() < 0) 
-		input_set.set_LV_peak(ica.get_LV_peak_idx());
+		input_set.set_LV_peak(ica.get_LV_peak_time() + skip_images);
 
 
 	
