@@ -171,7 +171,7 @@ BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3, TransformSplineFixtureDivOnly )
 
 BOOST_FIXTURE_TEST_CASE( test_nocurl_bspline3_noniso, TransformSplineFixtureDivOnly )
 {
-	init2d(T2DVector<int>(16, 14), 4, ip_bspline4);
+	init2d(T2DVector<int>(32, 14), 4, ip_bspline4);
 
 	const T2DConvoluteInterpolator<C2DFVector>& interp = 
 		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
@@ -330,6 +330,90 @@ BOOST_FIXTURE_TEST_CASE( test_rotation_expm2_bspline3_grad, TransformSplineFixtu
 			
 			if (abs(test_grad) > 0.0001)
 				BOOST_CHECK_CLOSE(ig[1], test_grad, 2);
+		}
+}
+
+BOOST_FIXTURE_TEST_CASE( test_divergence_expm2_bspline3_grad_noiso, TransformSplineFixtureexpm2Field_44 )
+{
+	init2d(T2DVector<int>(12, 9), 4, ip_bspline4);
+
+	const T2DConvoluteInterpolator<C2DFVector>& interp = 
+		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+	
+	auto coeffs = interp.get_coefficients(); 
+	C2DPPDivcurlMatrix div(field.get_size(), field_range, *ipf->get_kernel(), 1.0, 0.0);
+
+
+	CDoubleVector gradient(field.size() * 2, true); 
+	div.evaluate(coeffs, gradient); 
+	
+
+	auto ig = gradient.begin(); 
+	auto ic = coeffs.begin(); 
+	for(size_t y = 0; y < field.get_size().y; ++y) 
+		for(size_t x = 0; x < field.get_size().x; ++x, ig += 2, ++ic) {
+			ic->x += 0.001; 
+			double graddivp = div * coeffs; 
+			ic->x -= 0.002; 
+			double graddivm = div * coeffs; 
+			ic->x += 0.001; 
+			double test_grad = (graddivp - graddivm)/ 0.002; 
+			cvdebug() << x << " " << y << " (x)\n"; 
+			if (abs(test_grad) > 0.0001)
+				BOOST_CHECK_CLOSE(ig[0], test_grad, 1);
+			
+			ic->y += 0.001; 
+			graddivp = div * coeffs; 
+			ic->y -= 0.002; 
+			graddivm = div * coeffs; 
+			ic->y += 0.001; 
+			test_grad = (graddivp - graddivm)/ 0.002; 
+			cvdebug() << x << " " << y << " (y)\n"; 
+			
+			if (abs(test_grad) > 0.0001)
+				BOOST_CHECK_CLOSE(ig[1], test_grad, 1);
+		}
+}
+
+BOOST_FIXTURE_TEST_CASE( test_rotation_expm2_bspline3_grad_noiso, TransformSplineFixtureexpm2Field_44 )
+{
+	init2d(T2DVector<int>(12, 9), 4, ip_bspline4);
+
+	const T2DConvoluteInterpolator<C2DFVector>& interp = 
+		dynamic_cast<const T2DConvoluteInterpolator<C2DFVector>&>(*source); 
+	
+	auto coeffs = interp.get_coefficients(); 
+	C2DPPDivcurlMatrix rot(field.get_size(), field_range, *ipf->get_kernel(), 0.0, 1.0);
+
+
+	CDoubleVector gradient(field.size() * 2, true); 
+	rot.evaluate(coeffs, gradient); 
+	
+
+	auto ig = gradient.begin(); 
+	auto ic = coeffs.begin(); 
+	for(size_t y = 0; y < field.get_size().y; ++y) 
+		for(size_t x = 0; x < field.get_size().x; ++x, ig += 2, ++ic) {
+			ic->x += 0.001; 
+			double graddivp = rot * coeffs; 
+			ic->x -= 0.002; 
+			double graddivm = rot * coeffs; 
+			ic->x += 0.001; 
+			double test_grad = (graddivp - graddivm)/ 0.002; 
+			cvdebug() << x << " " << y << " (x)\n"; 
+			if (abs(test_grad) > 0.0001)
+				BOOST_CHECK_CLOSE(ig[0], test_grad, 1);
+			
+			ic->y += 0.001; 
+			graddivp = rot * coeffs; 
+			ic->y -= 0.002; 
+			graddivm = rot * coeffs; 
+			ic->y += 0.001; 
+			test_grad = (graddivp - graddivm)/ 0.002; 
+			cvdebug() << x << " " << y << " (y)\n"; 
+			
+			if (abs(test_grad) > 0.0001)
+				BOOST_CHECK_CLOSE(ig[1], test_grad, 1);
 		}
 }
 
