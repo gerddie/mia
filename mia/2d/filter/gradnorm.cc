@@ -86,7 +86,7 @@ CGradnorm::result_type CGradnorm::operator () (const T2DImage<T>& data) const
 	cvdebug() << "Gradnorm: max = " << max << "\n";
 	if (max > 0) {
 		max = 1.0 / max;
-		transform(result->begin(), result->end(), result->begin(), bind2nd(multiplies<float>(), max));
+		transform(result->begin(), result->end(), result->begin(), [max](float x){return x * max;});
 	}
 
 	return CGradnorm::result_type(result);
