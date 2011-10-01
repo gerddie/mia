@@ -415,9 +415,6 @@ int do_main( int argc, const char *argv[] )
 
 	size_t skip = 0; 
 	
-	// this parameter is currently not exported - reading the image data is 
-	// therefore done from the path given in the segmentation set 
-	bool override_src_imagepath = true;
 	C3DMyocardPeriodicRegistration::RegistrationParams params;
 
 	CCmdOptionList options(g_general_help);

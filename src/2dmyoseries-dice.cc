@@ -22,8 +22,8 @@
 
   LatexBeginProgramDescription{Myocardial Perfusion Analysis}
   
-  \subsection{mia-2dsegseriesstats}
-  \label{mia-2dsegseriesstats}
+  \subsection{mia-2dmyoseries-dice}
+  \label{mia-2dmyoseries-dice}
 
   \begin{description} 
   \item [Description:] 
@@ -32,13 +32,13 @@
 
   The program is called like 
   \begin{lstlisting}
-mia-2dsegseriesstats -i <segmenation set> -r <reference frame> 
+mia-2dmyoseries-dice -i <segmenation set> -r <reference frame> 
   \end{lstlisting}
 
   \item [Options:] $\:$
 
   \optiontable{
-  \cmdopt{original}{i]{string}{segmentation set}
+  \cmdopt{original}{i}{string}{segmentation set}
   \cmdopt{reference}{r}{int}{Reference frame to base evaluation on.}
   \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
   }
@@ -46,11 +46,10 @@ mia-2dsegseriesstats -i <segmenation set> -r <reference frame>
   \item [Example:]Evaluate the dice index of segmentation set \emph{segment.set} with reference 30 and 
                   skipping the first two frames. 
   \begin{lstlisting}
-mia-2dsegseriesstats -i segment.set -r 30 -k 2
+mia-2dmyoseries-dice -i segment.set -r 30 -k 2
   \end{lstlisting}
   \item [Remark:] This program is used to validate motion compensation algorithms. 
-  \item [See also:] \sa{mia-2dmyomilles}, \sa{mia-2dmyoserial-nonrigid}, \sa{mia-2dmyoperiodic-nonrigid}, 
-                    \sa{mia-2dmyoica-nonrigid}, \sa{mia-2dmyopgt-nonrigid}
+  \item [See also:] \sa{mia-2dmyoseries-compdice}, 
   \end{description}
   
   LatexEnd
@@ -116,23 +115,24 @@ int do_main( int argc, const char *argv[] )
 
 	CSegSetWithImages original(org_filename, true); 
 
+	size_t real_skip = skip; 
 	if (skip < 0) {
                 // if RV peak is given in the segmentation file, use it, otherwiese use 
 		// absolue value of skip 
 		int sk = original.get_RV_peak(); 
-		skip = (sk < 0 ) ? -skip : sk; 
+		real_skip = (sk < 0 ) ? -skip : sk; 
 	}
 	
 	auto original_frames = original.get_frames(); 
 	
-	if (reference < skip || reference >= original_frames.size())
+	if (reference < real_skip || reference >= original_frames.size())
 		THROW(invalid_argument, "reference frame must be larger then skip="<<
 		      skip << " and smaller then the length of the series " << original_frames.size()); 
 	
 
 	C2DUBImage reference_mask = original_frames[reference].get_section_masks(1); 
 
-	for (size_t i = skip; i < original_frames.size(); ++i)  {
+	for (size_t i = real_skip; i < original_frames.size(); ++i)  {
 		auto current = original_frames[i].get_section_masks(1);
 		cout << dice_value(current, reference_mask) << '\n'; 
 	}

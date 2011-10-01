@@ -44,7 +44,7 @@ public:
 	/**
 	   Initialize the classifier with the given curves and the information whether the means were stripped 
 	   @param m matrix of curves 
-	   @param breah_rate approximate frames per breathing cycle
+	   @param breath_rate approximate frames per breathing cycle
 	   @param mean_stripped
 	 */
 	CFFTSlopeClassifier(const Columns& m, float breath_rate, bool mean_stripped=false);

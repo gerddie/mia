@@ -87,7 +87,6 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 
 	C2DImageGroupedSeriesHelper collector; 
 	const static string unknown_protocol("Unknown"); 
-	int instance_nr = 0; 
 	
 	int step = 0; 
 	if (cb) 

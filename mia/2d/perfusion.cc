@@ -340,11 +340,10 @@ public:
 	template <typename T>
 	C2DFVector operator() (const T2DImage<T>& image) const {
 		C2DFVector result;
-		size_t n = 0;
-		int right= image.get_size().x; 
-		int left = 0; 
-		int top = image.get_size().y;
-		int bottom = 0; 
+		unsigned int right= image.get_size().x; 
+		unsigned int left = 0; 
+		unsigned int top = image.get_size().y;
+		unsigned int bottom = 0; 
 		typename T2DImage<T>::const_iterator i = image.begin();
 		for (size_t y = 0; y < image.get_size().y; ++y)
 			for (size_t x = 0; x < image.get_size().x; ++x, ++i) {

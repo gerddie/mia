@@ -40,8 +40,9 @@ private:
 	virtual double do_value(const Data& a, const Data& b) const; 
 	virtual double do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const; 
 
-	mutable mia::CSplineParzenMI m_parzen_mi; 
 	bool m_normalize; 
+	mutable mia::CSplineParzenMI m_parzen_mi; 
+
 };
 
 

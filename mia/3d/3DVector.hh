@@ -122,6 +122,8 @@ public:
 		case 0:return x; 
 		case 1:return y; 
 		case 2:return z; 
+		default: 
+			throw std::logic_error("Access to vectorelement out of range"); 
 		}
 	}
 
@@ -139,6 +141,8 @@ public:
 		case 0:return x; 
 		case 1:return y; 
 		case 2:return z; 
+		default: 
+			throw std::logic_error("Access to vectorelement out of range"); 
 		}
 	}
 	

@@ -33,7 +33,7 @@ NS_MIA_BEGIN
    
    Classify a set of curves by using a wavelet analysis. 
    This class is mostly usefull for the analysis of series of perfusion images 
-   that are aquired using free breathing.
+   that are aquired using free breathing or with initial breath holding.
 */
 
 class  EXPORT_CORE  CWaveletSlopeClassifier {
@@ -41,11 +41,15 @@ public:
 	/// typedef to define the matrix of curves 
 	typedef CSlopeColumns Columns; 
 
+	/**
+	   Enumerate to signal the result of the classification
+	 */
+
 	enum EAnalysisResult {
-		wsc_fail, 
-		wsc_no_movement, 
-		wsc_low_movement, 
-		wsc_normal
+		wsc_fail, /*!< no proper identification of slopes could be achieved */
+		wsc_no_movement,  /*!< no movement detected */
+		wsc_low_movement, /*!< low level movement detected */
+		wsc_normal         /*!< normal movement detected */
 	}; 
 	
         /**
@@ -92,6 +96,7 @@ public:
 	/** @returns  get number of movement components.  */ 
 	size_t get_number_of_movement_components() const; 
 
+	/** @returns the general result of the identification */
 	EAnalysisResult result() const; 
 	
 private:

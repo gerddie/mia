@@ -153,7 +153,7 @@ void WaveletFixture::check(const vector<float>& x, const Expect& e) const
 
 	auto le = stats.get_level_coefficient_sums(); 
 	BOOST_REQUIRE(le.size() == e.energy_levels.size()); 
-	for (int i = 0; i < le.size(); ++i) 
+	for (size_t i = 0; i < le.size(); ++i) 
 		BOOST_CHECK_CLOSE(le[i], e.energy_levels[i], 0.1); 
 
 
@@ -162,7 +162,7 @@ void WaveletFixture::check(const vector<float>& x, const Expect& e) const
 
 	auto etp = stats.get_level_mean_energy_position(); 
 	BOOST_REQUIRE(etp.size()== e.energy_timepos.size()); 
-	for (int i = 0; i < etp.size(); ++i) {
+	for (size_t i = 0; i < etp.size(); ++i) {
 		cvdebug() <<  i << ": got " << etp[i] << " expect " << e.energy_timepos[i] << "\n"; 
 		BOOST_CHECK_EQUAL(etp[i], e.energy_timepos[i]);
 	}

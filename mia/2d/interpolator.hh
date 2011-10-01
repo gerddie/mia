@@ -152,7 +152,7 @@ public:
 	/**
 	   \returns the current coefficient field 
 	 */
-	const TCoeff2D& get_coefficients() const __attribute__((deprecated)); 
+	const TCoeff2D& get_coefficients() const;
 
 protected:
 	/// helper class for the coefficient field 

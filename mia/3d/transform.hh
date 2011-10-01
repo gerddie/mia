@@ -73,8 +73,16 @@ protected:
 		 */
 		iterator_impl(const C3DBounds& pos, const C3DBounds& size); 
 
+		/**
+		   Initialize the iterator with its current position, 
+		   the subarea to be traveresed, and 
+		   the size of the domain the complete domain is: 
+		   \f$[0,size.x-1]\times [0,size.y-1]\times [0,size.z-1]\f$
+		   
+		 */
+		iterator_impl(const C3DBounds& pos, const C3DBounds& begin, 
+			      const C3DBounds& end, const C3DBounds& size); 
 		
-		iterator_impl(const C3DBounds& pos, const C3DBounds& begin, const C3DBounds& end, const C3DBounds& size); 
 		/// move to next position 
 		void increment(); 
 

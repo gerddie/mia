@@ -211,7 +211,7 @@ float CSlopeStatistics::get_maximum_gradient_from_zero() const
 float CSlopeStatistics::get_positive_time_mean() const
 {
 	FUNCTION_NOT_TESTED; 
-	impl->get_positive_time_mean(); 
+	return impl->get_positive_time_mean(); 
 }
 
 CSlopeStatistics::EEnergyCenterpos CSlopeStatistics::get_mean_energy_position() const
@@ -350,7 +350,7 @@ void CSlopeStatisticsImpl::evaluate_perfusion_peak() const
 
 	
 	m_maximum_gradient_from_zero = 0.0; 
-	for (int i = 1; i < help.size(); ++i) {
+	for (size_t i = 1; i < help.size(); ++i) {
 		float h = help[i] / i; 
 		if (m_maximum_gradient_from_zero < h) {
 			m_maximum_gradient_from_zero = h; 
@@ -359,7 +359,7 @@ void CSlopeStatisticsImpl::evaluate_perfusion_peak() const
 		}
 	}
 	// now find true local maximum 
-	for(int i = m_perfusion_peak.first + 1; i < help.size(); ++i) {
+	for(size_t i = m_perfusion_peak.first + 1; i < help.size(); ++i) {
 		cvdebug() << "  test " << i << " " << help[i]<< " vs " << m_perfusion_peak.second << "\n"; 
 		if (help[i] > m_perfusion_peak.second) {
 			m_perfusion_peak.first = i; 
@@ -386,8 +386,7 @@ void CSlopeStatisticsImpl::evaluate_perfusion_peak() const
 	
 	float timmean = 0.0; 
 	float sum = 0.0;  
-	bool stop = false; 
-	for (int i = start_peak_area; i < help.size(); ++i) {
+	for (size_t i = start_peak_area; i < help.size(); ++i) {
 		if (help[i]>0) {
 			timmean += i * m_series[i]; 
 			sum += help[i];
@@ -488,7 +487,7 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 		mean_level += peak_level_coeff * l; 
 		sum_level_peaks += peak_level_coeff; 
 		if (!m_wt_level_coefficient_sums[l]) {
-			CSlopeStatistics::ecp_none;
+			m_wt_level_mean_energy_pos[l] = CSlopeStatistics::ecp_none;
 			continue; 
 		}
 		
@@ -531,6 +530,8 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 		case CSlopeStatistics::ecp_begin: ++at_begin; break; 
 		case CSlopeStatistics::ecp_end: ++at_end; break; 
 		case CSlopeStatistics::ecp_center: ++at_center; break; 
+		default: 
+			cvdebug() << "Level "<< l  << " no movement position\n"; 
 		}	
 	}
 	

@@ -89,13 +89,13 @@ int do_main( int argc, const char *argv[] )
 		throw runtime_error("Empty input file"); 
 
 	CWaveletSlopeClassifier::Columns table(vx.size());
-	for (int i = 0; i < vx.size(); ++i) 
+	for (size_t i = 0; i < vx.size(); ++i) 
 		table[i].push_back(vx[i]); 
 
 	cvdebug() << "Read " << vx.size() << " columns\n"; 	
 	// read the reminder of the table 
 	while (input.good()) {
-		for (int i = 0; i < vx.size() && input.good(); ++i) {
+		for (size_t i = 0; i < vx.size() && input.good(); ++i) {
 			float x; 
 			input >> x; 
 			if (input.good()) 
@@ -103,10 +103,10 @@ int do_main( int argc, const char *argv[] )
 		}
 	}
 
-	int nrows = table[0].size(); 
+	size_t nrows = table[0].size(); 
 	cvdebug() << "got " << nrows << "  rows\n"; 
 
-	for (int i = 1; i < vx.size(); ++i) 
+	for (size_t i = 1; i < vx.size(); ++i) 
 		if (table[i].size() != nrows) {
 			THROW(runtime_error, "bogus input table, expect " << nrows  << ", but column " 
 			      << i << " has " << table[i].size() << " rows"); 

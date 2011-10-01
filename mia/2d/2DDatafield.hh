@@ -108,7 +108,7 @@ public:
 
 	
 	/// This function should really go away 
-	T get_interpol_val_at(const C2DFVector& p) const __attribute__((deprecated));
+	T get_interpol_val_at(const C2DFVector& p) const; // __attribute__((deprecated));
 
 	/**
 	   Since the data is internally stored by a shared pointer, this 

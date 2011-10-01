@@ -114,7 +114,7 @@ BOOST_FIXTURE_TEST_CASE( test_fifof_label , fifof_Fixture )
 	call_test(filter);
 
 	auto jmap = filter.get_joints(); 
-	BOOST_CHECK_EQUAL(jmap.size(), 2); 
+	BOOST_CHECK_EQUAL(jmap.size(), 2u); 
 
 	auto val_pair = jmap.begin(); 
 	BOOST_CHECK_EQUAL(val_pair->first, 3); 
@@ -135,7 +135,6 @@ public:
 
 BOOST_AUTO_TEST_CASE( test_overflow ) 
 {
-	const size_t n_slices = 6; 
 	const C2DBounds size(300,300);
 	C2DBitImage *img(new C2DBitImage(size)); 
 	fill(img->begin(), img->end(), 1); 

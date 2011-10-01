@@ -34,16 +34,19 @@ NS_MIA_BEGIN
    @brief Runs some statistics over a one-dimensional curve 
    
    Evaluates some statistics about a one-dimensional mapping [0, 1,..., N-1] -> R.
-   This is mostly used for perfusion analysis.  
+   This is mostly used for myocardial perfusion analysis.  
  */
 
 class  EXPORT_CORE CSlopeStatistics {
 public:
+	/**
+	   Ths enumerate is used to identify the time position of the  movement */
+
 	enum EEnergyCenterpos {
-		ecp_none = 0, 
-		ecp_begin, 
-		ecp_center, 
-		ecp_end
+		ecp_none = 0, /*!< no identifictaion */
+		ecp_begin,    /*!< movement only beginning of sequence  */
+		ecp_center,   /*!< movement throuout the sequence or only in the middle */
+		ecp_end       /*!< movement only end of sequence  */
 	}; 
 
 	/**
@@ -53,6 +56,9 @@ public:
 	 */
 	CSlopeStatistics(const std::vector<float>& series, int index);
 
+	/**
+	   The copy constructor is not allowed 
+	 */
 	CSlopeStatistics(const CSlopeStatistics& other) = delete;
 
 	~CSlopeStatistics();
@@ -96,14 +102,32 @@ public:
 	/// \returns index of the global maximum if the curve is shifted to start at zero and raises first
 	std::pair<size_t, float>  get_perfusion_high_peak() const;
 
+	/**
+	   \returns the sums of the absolute coefficient values per wavelet frequency level 
+	 */
 	const std::vector<float>& get_level_coefficient_sums() const;
-
+	
+        /**
+	   \returns a vector containing the time point of identification 
+	   of main movement 
+	 */
 	const std::vector<EEnergyCenterpos>& get_level_mean_energy_position() const;
 
+
+	/**
+	   \returns the mean of the movement positions over all frequency levels 
+	 */
 	CSlopeStatistics::EEnergyCenterpos get_mean_energy_position() const; 
 
+	/**
+	   \return mean time position of the first positive slope region 
+	   \remark experimental means to identify LV/RV enhancement slopes 
+	 */
 	float get_positive_time_mean() const; 
 	
+	/**
+	   \returns the index of this slope as it was stored 
+	 */
 	int get_index() const; 
 private:
 	struct CSlopeStatisticsImpl *impl;

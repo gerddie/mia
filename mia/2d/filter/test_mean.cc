@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE( test_2dfilter_mean_int )
 	const size_t size_x = 7;
 	const size_t size_y = 5;
 	
-	const int src[size_y][size_x] =
+	const unsigned int src[size_y][size_x] =
 		{{ 0, 1, 2, 3, 2, 3, 5},
 		 { 2, 5, 2, 3, 5, 3, 2},
 		 { 1, 2, 7, 6, 4, 2, 1},
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE( test_2dfilter_mean_int )
 	
 	// "hand filtered" w = 1 -> 3x3 using zero boundary conditions 
         //
-	const int src_ref[size_y][size_x] =
+	const unsigned int src_ref[size_y][size_x] =
 		{{ 2,  2, 3, 3, 3, 3, 3},
 		 { 2,  2, 3, 4, 3, 3, 3},
 		 { 3,  3, 4, 4, 4, 3, 2},

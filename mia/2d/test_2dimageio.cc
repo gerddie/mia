@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( test_load_series )
 		
 	auto images = load_image_series(filenames); 
 	// test three protocol types 
-	BOOST_CHECK_EQUAL(images.size(), 3); 
+	BOOST_CHECK_EQUAL(images.size(), 3u); 
 	
 	// check first protocol 
 	auto proto1 = images.find("proto1"); 

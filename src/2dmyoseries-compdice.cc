@@ -38,7 +38,7 @@ mia-2dsegseriesstats -i <segmenation set> -r <reference frame>
   \item [Options:] $\:$
 
   \optiontable{
-  \cmdopt{original}{i]{string}{segmentation set}
+  \cmdopt{original}{i}{string}{segmentation set}
   \cmdopt{reference}{r}{int}{Reference frame to base evaluation on.}
   \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
   }

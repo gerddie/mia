@@ -109,10 +109,6 @@ int do_main( int argc, const char *argv[] )
 	                        
 	auto transform_creator = C3DTransformCreatorHandler::instance().produce("spline"); 
 
-	// this parameter is currently not exported - reading the image data is 
-	// therefore done from the path given in the segmentation set 
-	bool override_src_imagepath = true;
-
 	// registration parameters
 	auto minimizer = produce_minimizer("gsl:opt=gd,step=0.1");
 	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");

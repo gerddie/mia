@@ -97,7 +97,7 @@ public:
 	/// \returns the maximum value of the correlation between the curves and the rows for which it occures 
 	SCorrelation  max_selfcorrelation() const;
 
-	/// \returnd the column index of this slope
+	/// \returns the column index of this slope
 	int index() const; 
 
 private:

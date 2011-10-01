@@ -58,7 +58,7 @@ mia-2dseries2sets -o <output directory> [options] <image> [<image>] ...
   \item [Example:]Create the segmentation sets from a series of DICOM images and copy the files to 
                   the output directory. 
   \begin{lstlisting}
-mia-2dseries2sets -i /home/user/series /net/dicoms/patient1/series1/*.dcm 
+mia-2dseries2sets -i /home/user/series /net/dicoms/patient1/series1/{}*.dcm 
   \end{lstlisting}
   \end{description}
   

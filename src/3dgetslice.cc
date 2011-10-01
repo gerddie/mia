@@ -140,8 +140,6 @@ public:
 	template <typename T>
 	bool operator ()(const T3DImage<T>& image) const
 	{
-		const C2DImageIOPluginHandler::Instance& imageio2d = C2DImageIOPluginHandler::instance();
-
 		size_t end  = __dispatch<T, s_dir>::get_end(m_start, m_n, image.get_size());
 
 		bool retval = true;
@@ -171,7 +169,6 @@ int main( int argc, const char *argv[] )
 	EDirection direction = dir_xy;
 
 	try {
-		const C3DImageIOPluginHandler::Instance& imageio3d = C3DImageIOPluginHandler::instance();
 		const C2DImageIOPluginHandler::Instance& imageio2d = C2DImageIOPluginHandler::instance();
 
 		CCmdOptionList options(program_info);
