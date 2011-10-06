@@ -40,7 +40,7 @@ struct SImageSize {
 
 extern EXPORT_CORE const SImageSize mi_test_size; 
 extern EXPORT_CORE const int moving_init_data[]; 
-extern EXPORT_CORE const int reverence_init_data[]; 
+extern EXPORT_CORE const int reference_init_data[]; 
 
 NS_MIA_END
 
