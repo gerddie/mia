@@ -34,17 +34,27 @@
 */
 
 
-#include <mia/core/export_handler.hh>
 
+#include <mia/core/export_handler.hh>
 #include <mia/2d/cost.hh>
 #include <mia/core/handler.cxx>
 #include <mia/core/plugin_base.cxx>
 #include <mia/core/cost.cxx>
 
+
 NS_MIA_BEGIN
+namespace bfs=::boost::filesystem; 
 
 template class EXPORT_HANDLER TCost<C2DImage, C2DFVectorfield>;
 EXPLICIT_INSTANCE_HANDLER(C2DImageCost);
+
+C2DImageCostPluginHandlerTestPath::C2DImageCostPluginHandlerTestPath()
+{
+	list< bfs::path> cost_kernel_plugpath;
+	cost_kernel_plugpath.push_back(bfs::path("cost"));
+	C2DImageCostPluginHandler::set_search_path(cost_kernel_plugpath);
+
+}
 
 NS_MIA_END
 

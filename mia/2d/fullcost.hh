@@ -22,6 +22,7 @@
 #define mia_2d_fullcost_hh
 
 #include <mia/2d/transform.hh>
+#include <mia/2d/cost.hh>
 #include <mia/core/export_handler.hh>
 #include <mia/internal/fullcost.hh>
 
@@ -32,6 +33,19 @@ typedef C2DFullCost::Pointer P2DFullCost;
 
 typedef TFullCostPlugin<C2DTransformation> C2DFullCostPlugin; 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DFullCostPlugin> > C2DFullCostPluginHandler;
+
+struct EXPORT_2D C2DFullCostPluginHandlerTestPath {
+	C2DFullCostPluginHandlerTestPath(); 
+private: 
+	C2DImageCostPluginHandlerTestPath cost_path_init; 
+};
+
+inline P2DFullCost produce_2dfullcost(const std::string& descr) 
+{
+	return C2DFullCostPluginHandler::instance().produce(descr); 
+}
+
+
 FACTORY_TRAIT(C2DFullCostPluginHandler); 
 
 NS_MIA_END

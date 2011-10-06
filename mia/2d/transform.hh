@@ -399,6 +399,8 @@ private:
 /// Pointer type for the 2D transformation 
 typedef C2DTransformation::Pointer P2DTransformation;
 
+
+
 ///Move an 2D transformation iterator forward by using its provided += operator 
 // don't use a reference to the iterator, because we use the created copy as result 
 inline C2DTransformation::const_iterator operator + (C2DTransformation::const_iterator i, size_t delta) 

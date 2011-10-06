@@ -48,6 +48,13 @@ private:
 	CSplineKernelTestPath spktp; 
 }; 
 
+
+inline P2DTransformationFactory produce_2dtransform_factory(const std::string& descr) 
+{
+	return C2DTransformCreatorHandler::instance().produce(descr); 
+}
+
+
 FACTORY_TRAIT(C2DTransformCreatorHandler); 
 
 NS_MIA_END

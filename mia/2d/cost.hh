@@ -38,6 +38,10 @@ typedef THandlerSingleton<TFactoryPluginHandler<C2DImageCostPlugin> > C2DImageCo
 /// pointer type of simple 2D image cost functions 
 typedef std::shared_ptr<C2DImageCost > P2DImageCost;
 
+struct EXPORT_2D C2DImageCostPluginHandlerTestPath {
+	C2DImageCostPluginHandlerTestPath(); 
+}; 
+
 NS_MIA_END
 
 #endif

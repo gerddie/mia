@@ -43,6 +43,7 @@
 #include <mia/core/handler.cxx>
 
 NS_MIA_BEGIN
+namespace bfs=::boost::filesystem; 
 
 EXPLICIT_INSTANCE_PLUGIN(C2DFullCost);
 EXPLICIT_INSTANCE_PLUGIN_HANDLER(C2DFullCostPlugin); 
@@ -50,5 +51,11 @@ EXPLICIT_INSTANCE_PLUGIN_HANDLER(C2DFullCostPlugin);
 template class TFullCostPlugin<C2DTransformation>; 
 template class TFullCost<C2DTransformation>; 
 
+C2DFullCostPluginHandlerTestPath::C2DFullCostPluginHandlerTestPath()
+{
+	list< bfs::path> cost_plugpath;
+	cost_plugpath.push_back(bfs::path("fullcost"));
+	C2DFullCostPluginHandler::set_search_path(cost_plugpath);
+}
 
 NS_MIA_END
