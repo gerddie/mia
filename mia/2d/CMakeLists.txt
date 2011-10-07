@@ -196,6 +196,7 @@ TEST_2DMIA(similarity_profile mia2dtest)
 TEST_2DMIA(transio mia2d)
 TEST_2DMIA(transform mia2dtest)
 TEST_2DMIA(2dimageio mia2dtest)
+TEST_2DMIA(fullcost_mi_spline  mia2dtest)
 
 IF(CMAKE_BUILD_TYPE)
   SET(CONFIG ${CMAKE_BUILD_TYPE})
