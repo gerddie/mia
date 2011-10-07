@@ -50,7 +50,7 @@ BOOST_FIXTURE_TEST_CASE( test_MI_2D_self, MIFixture )
 {
 	cost->set_reference(*ref);
 	
-	const double test_cost_value = 0.66225930770747476; 
+	const double test_cost_value = -0.66225930770747476; 
 
 	double cost_value = cost->value(*ref);
 	BOOST_CHECK_CLOSE(cost_value, test_cost_value, 0.1);
@@ -59,8 +59,8 @@ BOOST_FIXTURE_TEST_CASE( test_MI_2D_self, MIFixture )
 
 	BOOST_CHECK_CLOSE(cost->evaluate_force(*ref, 0.5, force), 0.5 * test_cost_value, 0.1);
 
-	BOOST_CHECK_EQUAL(force(1,1).x, 0.0f);
-	BOOST_CHECK_EQUAL(force(1,1).y, 0.0f);
+	BOOST_CHECK_EQUAL(force(3,3).x, 0.0f);
+	BOOST_CHECK_EQUAL(force(3,3).y, 0.0f);
 	
 }
 
@@ -87,30 +87,28 @@ MIFixture::MIFixture():
 	size(8,8), 
 	grad(size)
 {
-	const float src_data[64] = {
-		1, 1, 2, 2, 2, 3, 4, 4, 
-		4, 4, 3, 3, 2, 2, 2, 1,
-		2, 2, 3, 4, 5, 6, 7, 8, 
-		9,10, 2, 8, 3, 4, 2, 2,
-		3, 1, 3, 4, 5, 6, 7, 8, 
-		3, 4, 4, 5, 6, 4, 2, 2,
-	        0, 2, 3, 4, 5, 3, 1, 4, 
-		5, 6, 7, 3, 2, 1, 2,10
-	};
+	const float src_data[64] = {           /*   0  1  2  3  4  5  6  7  8  9     */    
+		1, 1, 2, 2, 2, 3, 4, 4,        /*1     2  2  1  2  1               8 */
+		4, 4, 3, 3, 2, 2, 2, 1,        /*2     1  3  1  2     1            8 */
+		2, 2, 3, 4, 5, 6, 7, 8,        /*3        2  2     1  1  1  1      8 */
+		8, 7, 2, 8, 3, 4, 2, 2,        /*4     1     1  1     2  1  2      8 */ 
+		3, 1, 3, 4, 5, 6, 7, 8,        /*5     1     3  1        2  1      8 */
+		3, 4, 4, 5, 6, 4, 2, 2,        /*6        3  1  3     1            8 */
+	        3, 2, 3, 4, 5, 3, 1, 4,        /*7     1  1  3  2  1               8 */
+		5, 6, 7, 3, 2, 1, 2, 6         /*8     1  2  1     1  2  1         8 */
+	};                                     /*      7 13 13 11  4  7  5  3        */
+	
 	const float ref_data[64] = {
-		1, 1, 1, 1, 1, 1, 1, 1, 
-		2, 2, 2, 2, 2, 2, 2, 2,
-		3, 3, 3, 3, 3, 3, 3, 3, 
-		4, 4, 4, 4, 4, 4, 4, 4,
-		5, 5, 5, 5, 5, 5, 5, 5, 
-		6, 6, 6, 6, 6, 6, 6, 6,
-	        7, 7, 7, 7, 7, 7, 7, 7, 
+		1, 1, 1, 5, 1, 1, 1, 1, 
+		2, 2, 2, 7, 2, 2, 2, 2,
+		3, 3, 3, 5, 3, 3, 3, 3, 
+		4, 4, 6, 4, 3, 4, 4, 4,
+		5, 5, 5, 6, 4, 2, 1, 5, 
+		6, 6, 4, 5, 6, 6, 6, 6,
+	        7, 7, 7, 7, 7, 5, 7, 7, 
 		8, 8, 8, 8, 8, 8, 8, 8
 	};
 
-
-	// test numbers are based on octave evaluation 
-	// the gradient at the boundaries is forced to zero 
 	const float grady[64] = {
 		+0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000,
 		+0.00000, 0.00000,-1.30000, 0.00000,-0.35294,-0.35294,-0.35294, 0.00000,
@@ -140,5 +138,6 @@ MIFixture::MIFixture():
 		ig->x = gradx[i]; 
 		ig->y = grady[i];
 	}
-	cost.reset(new 	C2DMIImageCost(false, 8, produce_spline_kernel("bspline:d=0"), 8, produce_spline_kernel("bspline:d=3"))); 
+	cost.reset(new 	C2DMIImageCost(false, 8, produce_spline_kernel("bspline:d=0"), 
+				              8, produce_spline_kernel("bspline:d=3"))); 
 }
