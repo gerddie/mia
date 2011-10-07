@@ -201,7 +201,7 @@ int do_main( int argc, const char *argv[] )
 			     " (default: automatic estimation)."));  
 
 
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, true) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 	task_scheduler_init init(max_threads);
