@@ -175,16 +175,16 @@ int do_main( int argc, const char *argv[] )
 	string in_filename;
 	string registered_filebase("reg");
 	string out_filename;
-	                        
+	
 	auto transform_creator = C2DTransformCreatorHandler::instance().produce("spline"); 
-
+	
 	// registration parameters
 	string minimizer("gsl:opt=gd,step=0.1");
 	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 	size_t mg_levels = 3; 
 	int reference_param = -1; 
-	int skip; 
-
+	int skip = 0; 
+	
 	int max_threads = task_scheduler_init::automatic;
 	
 	CCmdOptionList options(g_general_help);
@@ -207,13 +207,13 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt(max_threads, "threads", 't', "Maxiumum number of threads to use for running the registration," 
 			     "This number should be lower or equal to the number of processing cores in the machine"
 			     " (default: automatic estimation)."));  
-
+	
 
 	if (options.parse(argc, argv, true) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
-
+	
 	task_scheduler_init init(max_threads);
-
+	
 	CSegSetWithImages  input_set(in_filename, true);
 	C2DImageSeries input_images = input_set.get_images(); 
 	
@@ -221,14 +221,14 @@ int do_main( int argc, const char *argv[] )
 	auto cost_functions = options.get_remaining(); 
 	if (cost_functions.empty())
 		throw invalid_argument("No cost function given - nothing to register"); 
-
-
+	
+	
 	// if reference is not given, use half range 
-	size_t reference = reference_param < 0 ? input_images.size() / 2 : reference_param; 
-
+	size_t reference = reference_param < 0  ? input_images.size() / 2 : reference_param; 
+	
 	if ( input_images.empty() ) 
 		throw invalid_argument("No input images to register"); 
-
+	
 	if (reference > input_images.size() - 1) {
 		reference = input_images.size() - 1; 
 		cvwarn() << "Reference was out of range, adjusted to " << reference << "\n"; 
@@ -237,13 +237,14 @@ int do_main( int argc, const char *argv[] )
 	if (skip > reference - 1) {
 		throw invalid_argument("Skipping past reference\n");  
 	}
-
+	
 	SeriesRegistration sreg(input_set, input_images, minimizer, cost_functions, 
 				mg_levels, transform_creator, reference); 
-
+	
 	parallel_for(blocked_range<int>( skip, input_images.size()), sreg);
-									  
-									  
+	
+	
+	input_set.set_images(input_images); 									  
 	input_set.rename_base(registered_filebase); 
 	input_set.save_images(out_filename); 
 	
