@@ -44,7 +44,6 @@
    LatexEnd  
  */
 
-
 #include <cstdlib>
 #include <cassert>
 #include <limits>
@@ -421,7 +420,7 @@ C2DFMatrix C2DSplineTransformation::derivative_at(int x, int y) const
 	assert(m_interpolator_valid);
 	const C2DFVector l = scale(C2DFVector(x,y));
 	C2DFMatrix d = derivative_at(l);
-	cvinfo() << C2DFVector(x,y) << ":" << l << " = [" <<  d.x << d.y << "]\n"; 
+	cvdebug() << C2DFVector(x,y) << ":" << l << " = [" <<  d.x << d.y << "]\n"; 
 	d.x.x = 1.0f - d.x.x * m_scale.x;
 	d.x.y =      - d.x.y * m_scale.x;
 	d.y.x =      - d.y.x * m_scale.y;

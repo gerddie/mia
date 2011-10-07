@@ -243,7 +243,7 @@ void    C2DRegFakeGradientProblem::do_df(const CDoubleVector& x, CDoubleVector& 
 		double cost_m = do_f(x_tmp); 
 		x_tmp[i] += 0.01;
 		g[i] = (cost_p - cost_m) * 50.0; 
-		cvinfo() << "g[" << i << "] = " << g[i] << "\n"; 
+		cvdebug() << "g[" << i << "] = " << g[i] << "\n"; 
 	}
 }
 
