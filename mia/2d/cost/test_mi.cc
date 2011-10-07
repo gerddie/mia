@@ -42,12 +42,15 @@ protected:
 	unique_ptr<C2DMIImageCost> cost; 
 }; 
 
+/**
+   currently all tests fail, because the test values are not yet evaluated
+ */
 
 BOOST_FIXTURE_TEST_CASE( test_MI_2D_self, MIFixture )
 {
 	cost->set_reference(*ref);
 	
-	const double test_cost_value = -0.66225930770747476; 
+	const double test_cost_value = 0.66225930770747476; 
 
 	double cost_value = cost->value(*ref);
 	BOOST_CHECK_CLOSE(cost_value, test_cost_value, 0.1);
@@ -66,11 +69,11 @@ BOOST_FIXTURE_TEST_CASE( test_MI_2D, MIFixture )
 	cost->set_reference(*ref);
 	
 	double cost_value = cost->value(*src);
-	BOOST_CHECK_CLOSE(cost_value, 74.402, 0.1);
+	BOOST_CHECK_CLOSE(cost_value, -74.402 / 64.0, 0.1);
 
 	C2DFVectorfield force(C2DBounds(8,8));
 
-	BOOST_CHECK_CLOSE(cost->evaluate_force(*src, 1.0, force), 74.402, 0.1);
+	BOOST_CHECK_CLOSE(cost->evaluate_force(*src, 1.0, force), -74.402, 0.1);
 
 
 	for (auto iforce = force.begin(), ig = grad.begin(); ig != grad.end(); ++ig, ++iforce) {
