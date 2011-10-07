@@ -113,7 +113,7 @@ BOOST_FIXTURE_TEST_CASE( test_different_image_gradient, SplineMutualInformationF
 }
 SplineMutualInformationFixture::SplineMutualInformationFixture():
         size(mi_test_size.width * mi_test_size.height), 
-        reference(reverence_init_data, reverence_init_data + size),
+        reference(reference_init_data, reference_init_data + size),
         moving(moving_init_data, moving_init_data + size), 
         bins(64)
 {        

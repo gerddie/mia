@@ -115,6 +115,7 @@ private:
 	std::vector<double> m_mov_histogram; 
 
 	std::vector<std::vector<double> > m_pdfLogCache; 
+	double m_nscale; 
 };   
 
 template <typename MovIterator, typename RefIterator>
@@ -174,9 +175,9 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
 
 	cvdebug() << "CSplineParzenMI::fill: counted " << N << " pixels\n"; 
 	// normalize joined histogram 
-	const double scale = 1.0/N; 
+	m_nscale = 1.0/N; 
 	transform(m_joined_histogram.begin(), m_joined_histogram.end(), m_joined_histogram.begin(), 
-		  [scale](double jhvalue){return jhvalue * scale;}); 
+		  [m_nscale](double jhvalue){return jhvalue * m_nscale;}); 
 	
 	evaluate_histograms();  
 	evaluate_log_cache(); 

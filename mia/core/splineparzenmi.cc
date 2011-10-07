@@ -167,7 +167,7 @@ double CSplineParzenMI::get_gradient(double moving, double reference) const
 				* rv_by_et * moving_parzen_derivatives[ m ];
 		}
 	}
-	return result; 
+	return result * m_nscale; 
 }
 
 NS_MIA_END
