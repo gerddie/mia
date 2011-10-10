@@ -30,4 +30,6 @@
 #  define DO_IMPORT
 #endif
 
+#cmakedefine HAVE_SYS_IOCTL_H 1
+
 #endif

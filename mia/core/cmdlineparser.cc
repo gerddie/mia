@@ -19,6 +19,7 @@
  */
 
 
+#include <config.h>
 #include <miaconfig.h>
 #include <cstdlib>
 #include <cstring>
@@ -27,6 +28,10 @@
 #include <map>
 #include <ctype.h>
 #include <stdexcept>
+
+#ifdef HAVE_SYS_IOCTL_H
+#include <sys/ioctl.h>
+#endif
 
 #ifdef HAVE_LIBXMLPP
 #include <libxml++/libxml++.h>
@@ -272,7 +277,8 @@ struct CCmdOptionListData {
 	void print_usage() const;
 
 	vector<const char *> has_unset_required_options() const; 
-	void write(size_t tab1, size_t width, const string& s)const; 
+	size_t write(size_t pos, size_t tab1, size_t width, const string& s)const; 
+	void writeln(size_t pos, size_t tab1, size_t width, const string& s) const; 
 
 	string m_general_help; 
 	string m_program_group;  
@@ -329,7 +335,7 @@ const std::string CCmdSetOption::do_get_value_as_string() const
 const char *g_help_optiongroup="Help & Info"; 
 const char *g_basic_copyright = 
         "Copyright:\n"
-	"This software is copyright (c) Gert Wollny et al.\n"
+	"This software is copyright (c) Gert Wollny et al. "
 	"It comes with  ABSOLUTELY NO WARRANTY and you may redistribute it "
 	"under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later). "
 	"For more information run the program with the option '--copyright'.\n"; 
@@ -443,30 +449,56 @@ vector<const char *> CCmdOptionListData::has_unset_required_options() const
 	return result; 
 }
 
+void CCmdOptionListData::writeln(size_t pos, size_t tab1, size_t width, const string& s) const 
+{
+	write(pos, tab1, width, s); 
+	clog << '\n'; 
+}
 
-void CCmdOptionListData::write(size_t tab1, size_t width, const string& s) const 
+size_t  CCmdOptionListData::write(size_t pos, size_t tab1, size_t width, const string& s) const 
 {
 	auto is = s.begin(); 
 	auto es = s.end(); 
 	bool newline = false; 
-	size_t pos = 0; 
 	while (is != es) {
-		if (newline) {
-			if (tab1) 
-				clog << setw(tab1) << " "; 
-			newline = false; 
-			pos = tab1; 
-		}
-		if (*is == '\n' || 
-		    (pos >= width && isspace(*is))) {
+		if (*is == '\n') {
 			clog << '\n'; 
-			newline = true; 
-		}else {
-			clog << *is; 
+			if(tab1) {
+				clog << setw(tab1) << " "; 
+			}
+			pos = tab1;
+			*is++;
+		}else if (isspace(*is)) {
 			++pos; 
+			clog << *is++; 
+		}else {
+			auto hs = is;
+			size_t endpos = pos; 
+			
+			// search end of next word 
+			while (*hs != *es && !isspace(*hs)) {
+				++endpos;
+				++hs; 
+			}
+			// word fits, so write it 
+			if (endpos < width) {
+				pos = endpos; 
+				while (is != hs) 
+					clog << *is++;
+			}else { //  newline, tab and write word regardless of size 
+				clog << '\n';
+				if (tab1) {
+					clog << setw(tab1) << " "; 
+				}
+				pos = tab1; 
+				while (is != hs) {
+					clog << *is++;
+					++pos;
+				}
+			}
 		}
-		++is; 
 	}
+	return pos; 
 }
 
 #ifdef HAVE_LIBXMLPP
@@ -536,16 +568,26 @@ void CCmdOptionListData::print_help_xml(const char *name_help, bool has_addition
 void CCmdOptionListData::print_help(const char *name_help, bool has_additional) const
 {
 	const size_t max_opt_width = 30;
-	// this should come from the terminal 
-	const size_t max_width = 70;
+	
+	size_t max_width = 70;
+#ifdef HAVE_SYS_IOCTL_H
+	struct winsize ws; 
+	if (ioctl(0,TIOCGWINSZ,&ws)==0) {
+		max_width = ws.ws_col;
+		if (max_width < max_opt_width + 20) 
+			max_width = max_opt_width + 20; 
+		
+	} 
+#endif
 
 	vector<string> opt_table;
 	vector<string> help_table;
+	size_t pos; 
 	
-	write(0, max_width, "\nProgram group:  "); 
-	write(0, max_width, m_program_group); 
-	write(0, max_width, "\n\n  "); 
-	write(2, max_width, m_general_help); 
+	pos = write(0, 0, max_width, "\nProgram group:  "); 
+	writeln(pos, 0, max_width, m_program_group); 
+	write(0, 0, max_width, "\n  "); 
+	writeln(2, 2, max_width, m_general_help); 
 	
 	
 	stringstream usage_text; 
@@ -556,8 +598,10 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 	clog << setiosflags(ios_base::left);
 	for (auto i = options.begin(); i != options.end(); ++i) {
 
+		if (i->second.empty()) 
+			continue;
 		stringstream group;
-		group << "\n"  << i->first; 
+		group << "\n" << i->first; 
 		opt_table.push_back(group.str());
 		help_table.push_back("  ");
 		
@@ -591,33 +635,32 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 
 	usage_text << "[options]"; 
 	if (has_additional) 
-		usage_text << " &lt;Additional parameters&gt;"; 
+		usage_text << " [<Additional parameters>]"; 
 
-	write(0, max_width, "\nBasic usage:\n"); 
-	write(8, max_width, usage_text.str()); 
+	writeln(0, 0, max_width, "Basic usage:\n"); 
+	writeln(4, 4, max_width, usage_text.str()); 
 
 
 
-	write(0, max_width, "\n\nThe program supports the following command line options:"); 
+	writeln(0, 0, max_width, "\nThe program supports the following command line options:"); 
 
 	auto t  = opt_table.begin();
 	for (auto i = help_table.begin(); i != help_table.end(); ++i, ++t) {
 		clog << setw(opt_size) << *t << " ";
 		if (t->length() > opt_size) 
 			clog << "\n " << setw(opt_size) << " "; 
-		write(opt_size+1, max_width, *i); 
-		write(opt_size+1, max_width, "\n");
+		writeln(opt_size+1, opt_size+1, max_width, *i); 
 	}
 	
-	write(0, max_width, "\n\nExample usage:\n  "); 
-	write(2, max_width, m_program_example_descr);
-	write(4, max_width, "\n ");
-	write(2, max_width, m_program_example_code);
-	write(0, max_width, "\n\n");
+	write(0,0, max_width, "\n\nExample usage:\n"); 
+	write(0,0, max_width,"  "); 
+	writeln(2,2, max_width, m_program_example_descr);
+	write(0,0, max_width,"    "); 
+	writeln(4, 4, max_width, m_program_example_code);
+	write(0,0, max_width, "\n");
 
-	
-	write(2, 80, g_basic_copyright); 
-	clog << '\n' << setiosflags(ios_base::right);
+	writeln(0, 2, max_width, g_basic_copyright); 
+	clog << setiosflags(ios_base::right);
 
 
 }

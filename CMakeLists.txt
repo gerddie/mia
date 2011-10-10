@@ -95,6 +95,7 @@ SET(HAVE_INT64 "/* #undef HAVE_INT64 */")
 
 TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
 CHECK_INCLUDE_FILES (unistd.h HAVE_UNISTD_H)
+CHECK_INCLUDE_FILES (sys/ioctl.h HAVE_SYS_IOCTL_H)
 
 # find additional packages
 #
