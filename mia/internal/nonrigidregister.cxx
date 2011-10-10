@@ -363,7 +363,7 @@ double  TNonrigRegGradientProblem<dim>::do_f(const CDoubleVector& x)
 		<< ",fe="<<setw(4)<<m_func_evals<<"]=" 
 		<< setw(20) << setprecision(12) << result 
 		<< "ratio:" << setw(20) << setprecision(12) 
-		<< result / m_start_cost << endline; 
+		<< (m_start_cost != result) ? result / m_start_cost :  << endline; 
 	return result; 
 }
 
