@@ -52,6 +52,22 @@ typedef std::map<char,  CCmdOption *>        CShortoptionMap;
 /// Class to provide a maping from long option names to options
 typedef std::map<std::string,  CCmdOption *> CLongoptionMap;
 
+
+/**
+    Data structure to provied help information oabout the program 
+ */
+struct SProgramDescrption {
+	
+	/// group ths program belongs to
+	const char *group; 
+	
+	/// a basic description of the program 
+	const char *description; 
+	
+	/// an example of the usage 
+	const char *example; 
+}; 
+
 /** 
     \ingroup infrastructure 
 
@@ -541,6 +557,7 @@ public:
 	   Constructor creates the options list and adds some defaut options like
 	   --help, --verbose, --copyright, and --usage
         */
+	CCmdOptionList(const SProgramDescrption& description); 
 	CCmdOptionList(const std::string& general_help);
 	CCmdOptionList()__attribute__((deprecated));
 

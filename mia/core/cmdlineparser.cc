@@ -21,6 +21,7 @@
 
 #include <miaconfig.h>
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <iomanip>
 #include <map>
@@ -251,6 +252,7 @@ struct CCmdOptionListData {
 	bool copyright;
 	vstream::Level verbose;
 
+	CCmdOptionListData(const SProgramDescrption& description); 
 	CCmdOptionListData(const string& general_help);
 
 	void add(PCmdOption opt);
@@ -264,7 +266,7 @@ struct CCmdOptionListData {
 	CCmdOption *find_option(char key) const;
 
 #ifdef HAVE_LIBXMLPP
-	void print_help_xml() const; 
+	void print_help_xml(const char *progname) const; 
 #endif
 	void print_help() const;
 	void print_usage() const;
@@ -273,8 +275,9 @@ struct CCmdOptionListData {
 	void write(size_t tab1, size_t width, const string& s)const; 
 
 	string m_general_help; 
+	string m_program_group;  
+	string m_program_example;
 };
-
 
 CCmdSetOption::CCmdSetOption(std::string& val, const std::set<std::string>& set, 
 			     char short_opt, const char *long_opt, const char *long_help,
@@ -329,6 +332,34 @@ const char *g_basic_copyright =
 	" It comes with  ABSOLUTELY NO WARRANTY and you may redistribute it\n"
 	" under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later).\n"
 	" For more information run the program with the option '--copyright'\n"; 
+
+CCmdOptionListData::CCmdOptionListData(const SProgramDescrption& description):
+	help(false),
+	help_xml(false), 
+	usage(false),
+	copyright(false),
+	verbose(vstream::ml_warning), 
+	m_general_help(description.description), 
+	m_program_group(description.group), 
+	m_program_example(description.example)
+{
+	options[""] = vector<PCmdOption>();
+
+	set_current_group(g_help_optiongroup);
+	add(make_opt(verbose, g_verbose_dict, "verbose",  'V', "verbosity of output", 
+		     CCmdOption::not_required));
+	add(make_opt(copyright,  "copyright", 0, "print copyright information", 
+		     CCmdOption::not_required));
+	add(make_opt(help,  "help", 'h', "print this help", 
+		     CCmdOption::not_required));
+#ifdef HAVE_LIBXMLPP
+	add(make_opt(help_xml,  "help-xml", 0, "print help formatted as XML", 
+		     CCmdOption::not_required));
+#endif
+	add(make_opt(usage,  "usage", '?', "print a short help", 
+		     CCmdOption::not_required));
+	set_current_group("");
+}
 
 CCmdOptionListData::CCmdOptionListData(const string& general_help):
 	help(false),
@@ -439,13 +470,24 @@ void CCmdOptionListData::write(size_t tab1, size_t width, const string& s) const
 
 #ifdef HAVE_LIBXMLPP
 using xmlpp::Element; 
-void CCmdOptionListData::print_help_xml() const
+void CCmdOptionListData::print_help_xml(const char *progname) const
 {
+	const char *name_help = strrchr(progname, '/'); 
+	name_help  = name_help ? name_help + 1 : progname; 
+
 	unique_ptr<xmlpp::Document> doc(new xmlpp::Document);
 	
 	Element* nodeRoot = doc->create_root_node("program");
+	Element* program_name = nodeRoot->add_child("name"); 
+	program_name->set_child_text(name_help); 
+
+	Element* program_group = nodeRoot->add_child("section"); 
+	program_group->set_child_text(m_program_group); 
 	Element* description = nodeRoot->add_child("description"); 
 	description->set_child_text(m_general_help); 
+	Element* basic_usage = nodeRoot->add_child("basic_usage"); 
+	stringstream usage_text; 
+	usage_text << name_help << " "; 
 
 	for (auto g = options.begin(); g != options.end(); ++g) {
 		Element* group = nodeRoot->add_child("group"); 
@@ -462,8 +504,22 @@ void CCmdOptionListData::print_help_xml() const
 			option->set_attribute("required", to_string<bool>(opt.is_required())); 
 			option->set_attribute("default", opt.get_value_as_string()); 
 			option->set_child_text(opt.long_help()); 
+
+			
+			if (opt.is_required()) {
+				if (opt.get_short_option())
+					usage_text << "-" << opt.get_short_option() << " &lt;" << opt.get_long_option() << "&gt; "; 
+				else
+					usage_text << "--" << opt.get_long_option() << " &lt;value&gt; ";
+			}
 		}
 	}
+	usage_text << "[options]"; 
+	basic_usage->set_child_text(usage_text.str()); 
+
+	Element* example = nodeRoot->add_child("Example");
+	example->set_child_text(m_program_example); 
+
 	cout << doc->write_to_string_formatted();
 	cout << "\n"; 
 }
@@ -544,6 +600,11 @@ void CCmdOptionListData::print_usage() const
 	}
 	clog << '\n';
 }
+
+CCmdOptionList::CCmdOptionList(const SProgramDescrption& description):
+	m_impl(new CCmdOptionListData(description))
+{
+}	
 
 CCmdOptionList::CCmdOptionList(const string& general_help):
 	m_impl(new CCmdOptionListData(general_help))
@@ -678,7 +739,7 @@ CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
 		return hr_help;
 #ifdef HAVE_LIBXMLPP
 	}else if (m_impl->help_xml) {
-		m_impl->print_help_xml();
+		m_impl->print_help_xml(args[0]);
 		return hr_help_xml;
 #endif 
 	} else if (m_impl->usage) {

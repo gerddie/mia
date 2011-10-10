@@ -117,6 +117,8 @@ using namespace mia;
 
 namespace bfs=boost::filesystem; 
 
+const char *g_program_group = "Myocardial Perfusion Analysis"; 
+
 const char *g_general_help = 
 	"This program runs the non-rigid registration of an perfusion image series.\n"
 	"In each pass, first an ICA analysis is run to estimate and eliminate \n" 
