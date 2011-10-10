@@ -179,6 +179,7 @@ public:
 	public: 
 		RegistrationParams(); 
 		PMinimizer minimizer;
+		PMinimizer refinement_minimizer;
 		double divcurlweight; 
 		P2DFullCost pass1_cost;  
 		P2DFullCost pass2_cost;
@@ -285,6 +286,8 @@ void C2DMyocardPeriodicRegistration::run_initial_pass(C2DImageSeries& images,
 			       m_params.minimizer, 
 			       m_params.transform_creator, 
 			       m_params.mg_levels);
+
+	nr.set_refinement_minimizer(m_params.refinement_minimizer); 
 	
 	P2DImage ref = images[m_ref]; 
 	for (auto i = subset.begin(); i != subset.end(); ++i) {
@@ -314,6 +317,8 @@ void C2DMyocardPeriodicRegistration::run_final_pass(C2DImageSeries& images,
 			       m_params.minimizer, 
 			       m_params.transform_creator, 
 			       m_params.mg_levels);
+
+	nr.set_refinement_minimizer(m_params.refinement_minimizer); 
 
 	auto low_index = subset.begin(); 
 	auto high_index = low_index + 1; 
@@ -377,7 +382,7 @@ size_t C2DMyocardPeriodicRegistration::get_ref_idx()const
 
 
 C2DMyocardPeriodicRegistration::RegistrationParams::RegistrationParams():
-	minimizer(CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1")), 
+	minimizer(CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.01")), 
 	divcurlweight(5),
 	pass1_cost(C2DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=ds]")), 
 	pass2_cost(C2DFullCostPluginHandler::instance().produce("image:cost=ssd")), 
@@ -432,6 +437,7 @@ int do_main( int argc, const char *argv[] )
 
 
 	options.add(make_opt( params.minimizer, "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( params.refinement_minimizer, "refiner", 'R', "optimizer used for additional minimization"));
 	options.add(make_opt( params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));
 
 	options.add(make_opt( params.divcurlweight, "divcurl", 'd', 

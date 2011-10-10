@@ -88,6 +88,14 @@ public:
 	
 	~TNonrigidRegister();
 
+
+	/**
+	   Set an additional minimizer to refine the initial result. 
+	   \param minimizer the additional minimizer; 
+	 */
+	void set_refinement_minimizer(PMinimizer minimizer); 
+
+
 	/**
 	   Run the registration of an image pair. 
 	   \param src source (moving) image 

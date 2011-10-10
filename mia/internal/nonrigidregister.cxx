@@ -43,10 +43,13 @@ struct TNonrigidRegisterImpl {
 
 	PTransformation run(PImage src, PImage ref) const;
 	PTransformation run() const;
+
+	void set_refinement_minimizer(PMinimizer minimizer); 
 private:
 
 	FullCostList& m_costs;
 	PMinimizer m_minimizer;
+	PMinimizer m_refinement_minimizer;
 	PTransformationFactory m_transform_creator;
 	size_t m_mg_levels; 
 	int m_idx; 
@@ -119,6 +122,12 @@ TNonrigidRegister<dim>::run() const
 
 
 template <int dim> 
+void TNonrigidRegister<dim>::set_refinement_minimizer(PMinimizer minimizer)
+{
+	impl->set_refinement_minimizer(minimizer); 
+}
+
+template <int dim> 
 TNonrigidRegisterImpl<dim>::TNonrigidRegisterImpl(FullCostList& costs, PMinimizer minimizer,
 						  PTransformationFactory transform_creation, size_t mg_levels, int idx):
 	m_costs(costs),
@@ -172,6 +181,12 @@ public:
 	}; 
 	
 }; 
+
+template <int dim> 
+void TNonrigidRegisterImpl<dim>::set_refinement_minimizer(PMinimizer minimizer)
+{
+	m_refinement_minimizer = minimizer; 
+}
 
 template <int dim> 
 typename TNonrigidRegisterImpl<dim>::PTransformation 
@@ -257,6 +272,10 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 		auto x = transform->get_parameters();
 		cvmsg() << "Registration at " << src_scaled->get_size() << " with " << x.size() <<  " parameters\n";
 		m_minimizer->run(x);
+		if (m_refinement_minimizer) {
+			m_refinement_minimizer->set_problem(gp);
+			m_refinement_minimizer->run(x);
+		}
 		cvmsg() << "\ndone\n";
 		transform->set_parameters(x);
 	
@@ -267,6 +286,10 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 			x = transform->get_parameters();
 			cvmsg() << "Registration at " << src_scaled->get_size() << " with " << x.size() <<  " parameters\n";
 			m_minimizer->run(x);
+			if (m_refinement_minimizer) {
+				m_refinement_minimizer->set_problem(gp);
+				m_refinement_minimizer->run(x);
+			}
 			cvmsg() << "\ndone\n";
 			transform->set_parameters(x);
 		}
@@ -363,7 +386,7 @@ double  TNonrigRegGradientProblem<dim>::do_f(const CDoubleVector& x)
 		<< ",fe="<<setw(4)<<m_func_evals<<"]=" 
 		<< setw(20) << setprecision(12) << result 
 		<< "ratio:" << setw(20) << setprecision(12) 
-		<< result / m_start_cost << endline; 
+		<< result / m_start_cost  << endline; 
 	return result; 
 }
 
@@ -413,5 +436,7 @@ size_t TNonrigRegGradientProblem<dim>::do_size() const
 {
 	return m_transf.degrees_of_freedom(); 
 }
+
+
 
 NS_MIA_END
