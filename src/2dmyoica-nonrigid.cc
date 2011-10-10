@@ -129,16 +129,18 @@ const char *g_general_help =
 	"In the first pass a bounding box around the LV myocardium may be extracted " 
 	"to speed up computation\n"; 
 
-const char *g_program_example = 
-	"Register the perfusion series given in segment.set by using automatic ICA estimation. " 
+const char *g_program_example_descr = 
+	"Register the perfusion series given in 'segment.set' by using automatic ICA estimation. " 
         "Skip two images at the beginning and otherwiese use the default parameters. "
-	"Store the result in registered.set.\n"
-	"    mia-2dmyoica-nonrigid  -i segment.set -o registered.set -k 2"; 
+	"Store the result in 'registered.set'.\n"; 
+const char *g_program_example_code = 
+	"mia-2dmyoica-nonrigid  -i segment.set -o registered.set -k 2"; 
 
 const SProgramDescrption description = {
 	g_program_group, 
 	g_general_help, 
-	g_program_example 
+	g_program_example_descr, 
+	g_program_example_code
 }; 
 
 class C2DFImage2PImage {

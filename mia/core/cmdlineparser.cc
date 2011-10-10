@@ -276,7 +276,8 @@ struct CCmdOptionListData {
 
 	string m_general_help; 
 	string m_program_group;  
-	string m_program_example;
+	string m_program_example_descr;
+	string m_program_example_code; 
 };
 
 CCmdSetOption::CCmdSetOption(std::string& val, const std::set<std::string>& set, 
@@ -327,11 +328,11 @@ const std::string CCmdSetOption::do_get_value_as_string() const
 
 const char *g_help_optiongroup="Help & Info"; 
 const char *g_basic_copyright = 
-        "\n"
-	" This software is copyright (c) Gert Wollny et al.\n"
-	" It comes with  ABSOLUTELY NO WARRANTY and you may redistribute it\n"
-	" under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later).\n"
-	" For more information run the program with the option '--copyright'\n"; 
+        "Copyright:\n"
+	"This software is copyright (c) Gert Wollny et al.\n"
+	"It comes with  ABSOLUTELY NO WARRANTY and you may redistribute it "
+	"under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later). "
+	"For more information run the program with the option '--copyright'.\n"; 
 
 CCmdOptionListData::CCmdOptionListData(const SProgramDescrption& description):
 	help(false),
@@ -341,7 +342,8 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescrption& description):
 	verbose(vstream::ml_warning), 
 	m_general_help(description.description), 
 	m_program_group(description.group), 
-	m_program_example(description.example)
+	m_program_example_descr(description.example_descr),
+	m_program_example_code(description.example_code)
 {
 	options[""] = vector<PCmdOption>();
 
@@ -504,9 +506,11 @@ void CCmdOptionListData::print_help_xml(const char *name_help, bool has_addition
 			
 			if (opt.is_required()) {
 				if (opt.get_short_option())
-					usage_text << "-" << opt.get_short_option() << " &lt;" << opt.get_long_option() << "&gt; "; 
+					usage_text << "-" << opt.get_short_option() << " &lt;" 
+						   << opt.get_long_option() << "&gt; "; 
 				else
-					usage_text << "--" << opt.get_long_option() << " &lt;value&gt; ";
+					usage_text << "--" << opt.get_long_option() 
+						   << " &lt;value&gt; ";
 			}
 		}
 	}
@@ -516,7 +520,10 @@ void CCmdOptionListData::print_help_xml(const char *name_help, bool has_addition
 	basic_usage->set_child_text(usage_text.str()); 
 
 	Element* example = nodeRoot->add_child("Example");
-	example->set_child_text(m_program_example); 
+	example->set_child_text(m_program_example_descr); 
+	Element* example_code = example->add_child("Code"); 
+	example_code->set_child_text(m_program_example_code); 
+	
 
 	cout << doc->write_to_string_formatted();
 	cout << "\n"; 
@@ -537,7 +544,7 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 	
 	write(0, max_width, "\nProgram group:  "); 
 	write(0, max_width, m_program_group); 
-	write(2, max_width, "\n\n"); 
+	write(0, max_width, "\n\n  "); 
 	write(2, max_width, m_general_help); 
 	
 	
@@ -602,7 +609,14 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 		write(opt_size+1, max_width, "\n");
 	}
 	
-	write(1, 80, g_basic_copyright); 
+	write(0, max_width, "\n\nExample usage:\n  "); 
+	write(2, max_width, m_program_example_descr);
+	write(4, max_width, "\n ");
+	write(2, max_width, m_program_example_code);
+	write(0, max_width, "\n\n");
+
+	
+	write(2, 80, g_basic_copyright); 
 	clog << '\n' << setiosflags(ios_base::right);
 
 

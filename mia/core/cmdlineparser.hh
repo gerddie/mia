@@ -64,8 +64,11 @@ struct SProgramDescrption {
 	/// a basic description of the program 
 	const char *description; 
 	
-	/// an example of the usage 
-	const char *example; 
+	/// an example of the usage (description)
+	const char *example_descr; 
+	
+	/// an example of the usage (sell code) 
+	const char *example_code; 
 }; 
 
 /** 
@@ -538,6 +541,7 @@ class TPluginHandlerHelpCallback: public CHelpOption::Callback {
 
    This class holds all the user defined and default command line option, 
    handles the parsing and the printing of help. 
+   \todo the whole command line option class structure needs a code cleanup 
 */
 class EXPORT_CORE CCmdOptionList {
 public:
