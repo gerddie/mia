@@ -266,9 +266,9 @@ struct CCmdOptionListData {
 	CCmdOption *find_option(char key) const;
 
 #ifdef HAVE_LIBXMLPP
-	void print_help_xml(const char *progname) const; 
+	void print_help_xml(const char *progname, bool has_additional) const; 
 #endif
-	void print_help() const;
+	void print_help(const char *name_help, bool has_additional) const;
 	void print_usage() const;
 
 	vector<const char *> has_unset_required_options() const; 
@@ -465,16 +465,12 @@ void CCmdOptionListData::write(size_t tab1, size_t width, const string& s) const
 		}
 		++is; 
 	}
-	clog << endl; 
 }
 
 #ifdef HAVE_LIBXMLPP
 using xmlpp::Element; 
-void CCmdOptionListData::print_help_xml(const char *progname) const
+void CCmdOptionListData::print_help_xml(const char *name_help, bool has_additional) const
 {
-	const char *name_help = strrchr(progname, '/'); 
-	name_help  = name_help ? name_help + 1 : progname; 
-
 	unique_ptr<xmlpp::Document> doc(new xmlpp::Document);
 	
 	Element* nodeRoot = doc->create_root_node("program");
@@ -487,7 +483,7 @@ void CCmdOptionListData::print_help_xml(const char *progname) const
 	description->set_child_text(m_general_help); 
 	Element* basic_usage = nodeRoot->add_child("basic_usage"); 
 	stringstream usage_text; 
-	usage_text << name_help << " "; 
+	usage_text << " " << name_help << " "; 
 
 	for (auto g = options.begin(); g != options.end(); ++g) {
 		Element* group = nodeRoot->add_child("group"); 
@@ -515,6 +511,8 @@ void CCmdOptionListData::print_help_xml(const char *progname) const
 		}
 	}
 	usage_text << "[options]"; 
+	if (has_additional) 
+		usage_text << " &lt;Additional parameters&gt;"; 
 	basic_usage->set_child_text(usage_text.str()); 
 
 	Element* example = nodeRoot->add_child("Example");
@@ -528,7 +526,7 @@ void CCmdOptionListData::print_help_xml(const char *progname) const
 /**
    This help printing is a mess ...
  */
-void CCmdOptionListData::print_help() const
+void CCmdOptionListData::print_help(const char *name_help, bool has_additional) const
 {
 	const size_t max_opt_width = 30;
 	// this should come from the terminal 
@@ -537,9 +535,16 @@ void CCmdOptionListData::print_help() const
 	vector<string> opt_table;
 	vector<string> help_table;
 	
-	write(0, max_width, m_general_help); 
-	write(0, max_width, "\nThe program supports the following command line options:"); 
-
+	write(0, max_width, "\nProgram group:  "); 
+	write(0, max_width, m_program_group); 
+	write(2, max_width, "\n\n"); 
+	write(2, max_width, m_general_help); 
+	
+	
+	stringstream usage_text; 
+	usage_text <<"  " <<name_help << " "; 
+	
+	
 	size_t opt_size = 0;
 	clog << setiosflags(ios_base::left);
 	for (auto i = options.begin(); i != options.end(); ++i) {
@@ -564,10 +569,29 @@ void CCmdOptionListData::print_help() const
 			k->get_long_help(shelp);
 			help_table.push_back(shelp.str());
 
+			if (k->is_required()) {
+				if (k->get_short_option())
+					usage_text << "-" << k->get_short_option() << " <" << k->get_long_option() << "> "; 
+				else
+					usage_text << "--" << k->get_long_option() << " <value> ";
+			}
+
+
 		}
 	}
 	if (opt_size > max_opt_width)
 		opt_size = max_opt_width;
+
+	usage_text << "[options]"; 
+	if (has_additional) 
+		usage_text << " &lt;Additional parameters&gt;"; 
+
+	write(0, max_width, "\nBasic usage:\n"); 
+	write(8, max_width, usage_text.str()); 
+
+
+
+	write(0, max_width, "\n\nThe program supports the following command line options:"); 
 
 	auto t  = opt_table.begin();
 	for (auto i = help_table.begin(); i != help_table.end(); ++i, ++t) {
@@ -575,9 +599,10 @@ void CCmdOptionListData::print_help() const
 		if (t->length() > opt_size) 
 			clog << "\n " << setw(opt_size) << " "; 
 		write(opt_size+1, max_width, *i); 
+		write(opt_size+1, max_width, "\n");
 	}
 	
-	write(0, 80, g_basic_copyright); 
+	write(1, 80, g_basic_copyright); 
 	clog << '\n' << setiosflags(ios_base::right);
 
 
@@ -734,19 +759,22 @@ CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
 
 	}
 
+	const char *name_help = strrchr(args[0], '/'); 
+	name_help  = name_help ? name_help + 1 : args[0]; 
+
 	if (m_impl->help) {
-		m_impl->print_help();
+		m_impl->print_help(name_help, has_additional);
 		return hr_help;
 #ifdef HAVE_LIBXMLPP
 	}else if (m_impl->help_xml) {
-		m_impl->print_help_xml(args[0]);
+		m_impl->print_help_xml(name_help, has_additional);
 		return hr_help_xml;
 #endif 
 	} else if (m_impl->usage) {
 		m_impl->print_usage();
 		return hr_usage;
 	} else if (m_impl->copyright) {
-		::print_full_copyright(args[0]);
+		::print_full_copyright(name_help);
 		return hr_copyright;
 	}
 
