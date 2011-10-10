@@ -652,13 +652,15 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 		writeln(opt_size+1, opt_size+1, max_width, *i); 
 	}
 	
-	write(0,0, max_width, "\n\nExample usage:\n"); 
-	write(0,0, max_width,"  "); 
-	writeln(2,2, max_width, m_program_example_descr);
-	write(0,0, max_width,"    "); 
-	writeln(4, 4, max_width, m_program_example_code);
-	write(0,0, max_width, "\n");
-
+	if (!m_program_example_descr.empty() && !m_program_example_code.empty()) { 
+		write(0,0, max_width, "\n\nExample usage:\n"); 
+		write(0,0, max_width,"  "); 
+		writeln(2,2, max_width, m_program_example_descr);
+		write(0,0, max_width,"    "); 
+		writeln(4, 4, max_width, m_program_example_code);
+		write(0,0, max_width, "\n");
+	}
+	
 	writeln(0, 2, max_width, g_basic_copyright); 
 	clog << setiosflags(ios_base::right);
 
