@@ -68,7 +68,7 @@ NS_BEGIN(nlopt)
 using namespace std; 
 using namespace mia; 
 
-const TDictMap<nlopt_algorithm>::Table optimizer_table[NLOPT_NUM_ALGORITHMS+1] = {
+const TDictMap<nlopt_algorithm>::Table optimizer_table[] = {
 	{"gn-direct",                NLOPT_GN_DIRECT, "Dividing Rectangles"}, 
 	{"gn-direct-l",              NLOPT_GN_DIRECT_L, "Dividing Rectangles (locally biased)"},
 	{"gn-direct-l-rand",         NLOPT_GN_DIRECT_L_RAND, "Dividing Rectangles (locally biased, randomized)"},
@@ -116,6 +116,50 @@ const TDictMap<nlopt_algorithm>::Table optimizer_table[NLOPT_NUM_ALGORITHMS+1] =
 	{"g-mlsl-lds", NLOPT_G_MLSL_LDS, "Multi-Level Single-Linkage (low-discrepancy-sequence, require local gradient based optimization and bounds)"},
 	
 	{"ld-slsqp", NLOPT_LD_SLSQP, "Sequential Least-Squares Quadratic Programming"},
+	
+	{NULL, NLOPT_NUM_ALGORITHMS, ""}, 
+}; 
+
+
+const TDictMap<nlopt_algorithm>::Table local_optimizer_table[] = {
+	{"gn-direct",                NLOPT_GN_DIRECT, "Dividing Rectangles"}, 
+	{"gn-direct-l",              NLOPT_GN_DIRECT_L, "Dividing Rectangles (locally biased)"},
+	{"gn-direct-l-rand",         NLOPT_GN_DIRECT_L_RAND, "Dividing Rectangles (locally biased, randomized)"},
+	{"gn-direct-noscal",         NLOPT_GN_DIRECT_NOSCAL, "Dividing Rectangles (unscaled)"},
+	{"gn-direct-l-noscal",       NLOPT_GN_DIRECT_L_NOSCAL, "Dividing Rectangles (unscaled, locally biased)"},
+	{"gn-direct-l-rand-noscale", NLOPT_GN_DIRECT_L_RAND_NOSCAL, "Dividing Rectangles (unscaled, locally biased, randomized)"},
+	
+	{"gn-orig-direct",           NLOPT_GN_ORIG_DIRECT, "Dividing Rectangles (original implementation)"},
+	{"gn-orig-direct-l",         NLOPT_GN_ORIG_DIRECT_L, "Dividing Rectangles (original implementation, locally biased)"},
+	
+	{"ld-lbfgs-nocedal",         NLOPT_LD_LBFGS_NOCEDAL, ""},
+	
+	{"ld-lbfgs",                 NLOPT_LD_LBFGS, "Low-storage BFGS"},
+	
+	{"ln-praxis",                NLOPT_LN_PRAXIS, "Gradient-free Local Optimization via the Principal-Axis Method"},
+	
+	{"ld-var1",                  NLOPT_LD_VAR1, "Shifted Limited-Memory Variable-Metric, Rank 1"},
+	{"ld-var2",                  NLOPT_LD_VAR2, "Shifted Limited-Memory Variable-Metric, Rank 2"},
+	
+	{"ld-tnewton",               NLOPT_LD_TNEWTON, "Truncated Newton"},
+	{"ld-tnewton-restart",       NLOPT_LD_TNEWTON_RESTART, "Truncated Newton with steepest-descent restarting"},
+	{"ld-tnewton-precond",       NLOPT_LD_TNEWTON_PRECOND, "Preconditioned Truncated Newton"},
+	{"ld-tnewton-precond-restart", NLOPT_LD_TNEWTON_PRECOND_RESTART, "Preconditioned Truncated Newton with steepest-descent restarting"},
+	
+	{"gn-crs2-lm",               NLOPT_GN_CRS2_LM, "Controlled Random Search with Local Mutation"},
+	
+	{"ld-mma",                   NLOPT_LD_MMA, "Method of Moving Asymptotes"},
+	
+	{"ln-cobyla",                NLOPT_LN_COBYLA, "Constrained Optimization BY Linear Approximation"},
+	
+	{"ln-newuoa", NLOPT_LN_NEWUOA, "Derivative-free Unconstrained Optimization by Iteratively Constructed Quadratic Approximation"},
+	{"ln-newuoa-bound", NLOPT_LN_NEWUOA_BOUND, "Derivative-free Bound-constrained Optimization by Iteratively Constructed Quadratic Approximation"},
+	
+	{"ln-neldermead", NLOPT_LN_NELDERMEAD,  "Nelder-Mead simplex algorithm"},
+	{"ln-sbplx", NLOPT_LN_SBPLX, "Subplex variant of Nelder-Mead"},
+	
+	{"ln-bobyqa", NLOPT_LN_BOBYQA, "Derivative-free Bound-constrained Optimization"},
+	{"gn-isres", NLOPT_GN_ISRES, "Improved Stochastic Ranking Evolution Strategy"},
 	
 	{NULL, NLOPT_NUM_ALGORITHMS, ""}, 
 }; 
@@ -290,16 +334,17 @@ typedef CDictParameter<nlopt_algorithm> CNLOptMinimizerParam;
 typedef TDictMap<nlopt_algorithm> CNLOptMinimizerDict;  
 
 CNLOptMinimizerDict dict(optimizer_table); 
+CNLOptMinimizerDict local_dict(local_optimizer_table); 
 
 
 CNLOptMinimizerPlugin::CNLOptMinimizerPlugin():
 	CMinimizerPlugin("nlopt")
 {
 	add_parameter("opt", new CNLOptMinimizerParam(m_options.algo, dict, "main minimization algorithm")); 
-	add_parameter("local-opt", new CNLOptMinimizerParam(m_options.local_opt, dict, 
+	// todo this should be done by another plugin 
+	add_parameter("local-opt", new CNLOptMinimizerParam(m_options.local_opt, local_dict, 
 						  "local minimization algorithm that may be required for the"
-						  " main minimization algorithm. Currently, it uses the same"
-						  " stopping criteria as the main algorithm"));
+						  " main minimization algorithm."));
 	
 	add_parameter("stop", new CDoubleParameter(m_options.stopval, -HUGE_VAL, HUGE_VAL, false, 
 				  "Stopping criterion: function value falls below this value")); 
