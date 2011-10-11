@@ -104,7 +104,7 @@ void TCmdFactoryOption<F>::do_write_value(std::ostream& os) const
 		if (is_required())
 			os << "[required]"; 
 		else
-			os << "NULL"; 
+			os << "=NULL"; 
 }
 
 template <typename F>
