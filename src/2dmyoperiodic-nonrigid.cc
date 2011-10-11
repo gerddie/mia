@@ -110,16 +110,28 @@ using namespace mia;
 
 namespace bfs=boost::filesystem; 
 
-const char *g_general_help = 
-	"This program runs the non-rigid registration of an perfusion image series\n"
-	"preferable aquired letting the patient breath freely.\n" 
-	"The registration algoritm implementes\n"
-	"G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting \n"
-	"Quasiperiodicity in Motion Correction of Free-Breathing,\" \n"
-	"IEEE Transactions on Medical Imaging, 29(8), 2010\n\n"
-	"Basic usage: \n"
-	" mia-2dmyoperiodix-nonrigid [options] "; 
 
+const SProgramDescrption g_general_help = {
+	// .g_program_group =  
+	"Myocardial Perfusion Analysis", 
+	
+	// .g_general_help = 
+	"This program runs the non-rigid registration of an perfusion image series "
+	"preferable aquired letting the patient breath freely. " 
+	"The registration algoritm implementes "
+	"G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting "
+	"Quasiperiodicity in Motion Correction of Free-Breathing,\" "
+	"IEEE Transactions on Medical Imaging, 29(8), 2010\n", 
+
+	//.g_program_example_descr = 
+	"Register the perfusion series given in 'segment.set'. " 
+        "Skip two images at the beginning, usa spline transformation of a knot rate 16 pixels, "
+	"and penalize the transformation by divcurl with weight 5. "
+	"Store the result in 'registered.set'.\n", 
+	
+	//.g_program_example_code = 
+	"  -i segment.set -o registered.set -k 2 -d 5 -f spline:rate=16"
+}; 
 
 class C2DFImage2PImage {
 public: 
