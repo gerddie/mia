@@ -89,10 +89,10 @@ BOOST_FIXTURE_TEST_CASE( test_differnt_image_gradient_is_not_zero, SplineMutualI
         for (double m = 0; m < 256; m += 1)
                 for (double r = 0; r < 256; r += 1) {
                         if (smi.get_gradient(m,r) != 0.0)
-                                ++cnt; 
+                                ++cnt;
                 }
         BOOST_CHECK(cnt > 0); 
-        cvdebug() << "nozero gradient values =" << cnt <<"\n"; 
+        cvdebug() << "nozero gradient values =" << cnt <<"\n";
                 
 }
 
@@ -106,6 +106,10 @@ BOOST_FIXTURE_TEST_CASE( test_different_image_gradient, SplineMutualInformationF
                 for (double r = 0; r < 256; r += 1) {
                         if (smi.get_gradient(m,r) != 0.0)
                                 ++cnt; 
+			cvdebug() << "( "
+				  << setw(3) << m << ","
+				  << setw(3) << r << ") = "
+				  << smi.get_gradient(m,r) << "\n";
                 }
                 BOOST_CHECK(cnt > 0); 
         cvdebug() << "nozero gradient values =" << cnt <<"\n"; 
