@@ -51,6 +51,10 @@ typedef TIOHandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> > C3DImageIOPlugi
 typedef C3DImageIOPluginHandler::Instance::DataKey C3DImageDataKey;
 typedef C3DImageIOPluginHandler::Instance::PData P3DImageVector;
 
+struct C3DImageIOPluginHandlerTestPath {
+	C3DImageIOPluginHandlerTestPath(); 
+}; 
+
 /** convenience function to create an image vector from a single image 
     \param image 
     \returns the vector containing the image 
