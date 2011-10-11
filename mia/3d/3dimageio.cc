@@ -76,3 +76,4 @@ C3DImageIOPluginHandlerTestPath::C3DImageIOPluginHandlerTestPath()
 }
 
 NS_MIA_END
+
