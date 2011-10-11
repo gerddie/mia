@@ -96,14 +96,24 @@ using namespace mia;
 
 namespace bfs=boost::filesystem; 
 
-const char *g_general_help = 
-	"This program runs the non-rigid registration of an perfusion image series. "
-	"The registration is run in a serial manner, this is, only images in "
-	"temporal succession are registered, and the obtained transformations "
-	"are applied accumulated to reach full registration. "
-  	"Basic usage: \n"
-	" mia-2dmany2one-nonrigid [options] <cost1> <cost2> ..."; 
 
+const SProgramDescrption g_general_help = {
+	// .g_program_group =  
+	"Myocardial Perfusion Analysis", 
+	
+	// .g_general_help = 
+	"This program runs the non-rigid motion compensation of an perfusion image series. "
+	"The motion compensation is run by registering all images to one common reference.\n",
+	
+	//.g_program_example_descr = 
+	"Register the perfusion series given in 'segment.set' to reference image 30. " 
+        "Skip two images at the beginning and using mutual information as cost function, "
+	"and penalize the transformation by divcurl with weight 5. "
+	"Store the result in 'registered.set'.\n", 
+	
+	//.g_program_example_code = 
+	"  -i segment.set -o registered.set -k 2 -r 30 mi divcurl:weight=5"
+}; 
 
 C2DFullCostList create_costs(const std::vector<const char *>& costs, int idx)
 {

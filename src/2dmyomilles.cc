@@ -124,14 +124,27 @@ private:
 	FConvert2DImage2float m_converter; 
 }; 
 
-
-const char *g_description = 
-	"This program is use to run a modified version of the ICA based rigid registration approach "
+const SProgramDescrption g_description = {
+	// .g_program_group =  
+	"Myocardial Perfusion Analysis", 
+	
+	// .g_general_help = 
+	"This program is use to run a modified version of the ICA based registration approach "
 	"described in Milles et al. 'Fully Automated Motion Correction in First-Pass Myocardial Perfusion "
 	"MR Image Sequences', Trans. Med. Imaging., 27(11), 1611-1621, 2008. Changes include the extraction " 
 	"of the quasi-periodic movement in free breathingly acquired data sets and the option to run "
-	"affine registration instead of the optimization of translations only." 
-	;
+	"affine or rigid registration instead of the optimization of translations only.\n", 
+	
+	//.g_program_example_descr = 
+	"Register the perfusion series given in 'segment.set' by using automatic ICA estimation. " 
+        "Skip two images at the beginning and otherwiese use the default parameters. "
+	"Store the result in 'registered.set'.\n", 
+	
+	//.g_program_example_code = 
+	"  -i segment.set -o registered.set -k 2"
+}; 
+
+
 
 int do_main( int argc, const char *argv[] )
 {

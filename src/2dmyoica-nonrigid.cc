@@ -134,7 +134,7 @@ const char *g_program_example_descr =
         "Skip two images at the beginning and otherwiese use the default parameters. "
 	"Store the result in 'registered.set'.\n"; 
 const char *g_program_example_code = 
-	"mia-2dmyoica-nonrigid  -i segment.set -o registered.set -k 2"; 
+	"  -i segment.set -o registered.set -k 2"; 
 
 const SProgramDescrption description = {
 	g_program_group, 

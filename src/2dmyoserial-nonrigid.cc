@@ -93,14 +93,26 @@ using namespace mia;
 
 namespace bfs=boost::filesystem; 
 
-const char *g_general_help = 
-	"This program runs the non-rigid registration of an perfusion image series. "
+
+const SProgramDescrption g_general_help = {
+	// .g_program_group =  
+	"Myocardial Perfusion Analysis", 
+	
+	// .g_general_help = 
+	"This program runs the non-rigid motion compensation registration of an perfusion image series. "
 	"The registration is run in a serial manner, this is, only images in "
 	"temporal succession are registered, and the obtained transformations "
-	"are applied accumulated to reach full registration. "
-  	"Basic usage: \n"
-	" mia-2dmyoserial-nonrigid [options] <cost1> <cost2> ..."; 
-
+	"are applied accumulated to reach full registration.\n", 
+	
+	//.g_program_example_descr = 
+	"Register the perfusion series given in 'segment.set' to reference image 30. " 
+        "Skip two images at the beginning and using mutual information as cost function, "
+	"and penalize the transformation by divcurl with weight 5. "
+	"Store the result in 'registered.set'.\n", 
+	
+	//.g_program_example_code = 
+	"  -i segment.set -o registered.set -k 2  -r 30 mi divcurl:weight=5"
+}; 
 
 
 int do_main( int argc, const char *argv[] )
