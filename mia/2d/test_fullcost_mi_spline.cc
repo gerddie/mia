@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE (test_image_spline_gradinet )
 	save_image("src.@", mov); 
 	save_image("ref.@", ref); 
 
-	auto tff = produce_2dtransform_factory("spline:rate=2"); 
+	auto tff = produce_2dtransform_factory("spline:rate=16"); 
 	auto transform = tff->create(size); 
 	auto cost = produce_2dfullcost("image:cost=[mi:rbins=16,mbins=16],src=src.@,ref=ref.@");
 	cost->reinit(); 
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE (test_image_spline_gradinet )
 	cost->evaluate(*transform, grad);
 	const double h = 0.1; 
 
-	for (size_t i = 0; i < params.size(); ++i) {
+	for (size_t i = 0; i < params.size(); i += 10) {
 		params[i] += h; 
 		transform->set_parameters(params); 
 		double pcost = cost->cost_value(*transform);
