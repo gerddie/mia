@@ -827,16 +827,10 @@ const std::string TCmdDictOption<T>::do_get_value_as_string() const
 template <typename T>
 void TCmdDictOption<T>::do_get_long_help_really( std::ostream& os ) const
 {
-        const std::set<std::string> names = m_map.get_name_set();
-        if ( names.size() > 0 ) {
-                os << "\n(" ;
-                std::set<std::string>::const_iterator i = names.begin();
-                os << *i;
-                ++i;
-                while ( i != names.end() )
-                        os << '|' << *i++;
-                os << ")";
-        }
+        const std::set<std::string> names_help = m_map.get_name_set();
+	for (auto i = m_map.get_help_begin(); i != m_map.get_help_end(); ++i) {
+		os << "\n  " << i->first << ": " << i->second; 
+	}
 }
 
 NS_MIA_END

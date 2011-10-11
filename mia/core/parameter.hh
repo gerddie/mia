@@ -307,20 +307,9 @@ CDictParameter<T>::CDictParameter(T& value, const TDictMap<T> dict, const char *
 template <typename T>
 void CDictParameter<T>::do_descr(std::ostream& os) const
 {
-	const std::set<std::string> names = m_dict.get_name_set();
-	os << '(';
-
-	std::set<std::string>::const_iterator i = names.begin();
-	std::set<std::string>::const_iterator e = names.end();
-	if ( i == e ) {
-		throw std::invalid_argument("Dictmap without entries");
+	for (auto i = m_dict.get_help_begin(); i != m_dict.get_help_end(); ++i) {
+		os << "\n  " << i->first << ": " << i->second; 
 	}
-	os << *i;
-	++i;
-
-	while (i != e)
-	       os << '|' << *i++;
-	os << ')';
 }
 
 template <typename T>
