@@ -101,8 +101,7 @@ PoolAccessTest::PoolAccessTest(std::atomic<int> *_nerr):
 void PoolAccessTest::operator() ( const blocked_range<int>& range ) const
 {
 	try {	
-		int sum = 0; 
-		for( int i=range.begin(); i!=range.end(); ++i ) {
+		for(auto i=range.begin(); i!=range.end(); ++i ) {
 			stringstream name; 
 			name << "parallel" << i; 
 			CDatapool::instance().add(name.str(), i);

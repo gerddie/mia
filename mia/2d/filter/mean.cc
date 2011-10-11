@@ -60,9 +60,9 @@ struct __dispatch_filter {
 		double result = 0.0; 
 		int n = 0; 
 		for (int y = cy - hw; y <= cy + hw; ++y) {
-			if ( y >= 0 && y < data.get_size().y) 
+			if ( y >= 0 && y < (int)data.get_size().y) 
 				for (int x = cx - hw; x <= cx + hw; ++x) {
-					if ( x >= 0 && x < data.get_size().x) {
+					if ( x >= 0 && x < (int)data.get_size().x) {
 						result += data(x,y); 
 						++n; 
 					}
@@ -78,9 +78,9 @@ struct __dispatch_filter<T, true> {
 		double result = 0.0; 
 		int n = 0; 
 		for (int y = cy - hw; y <= cy + hw; ++y) {
-			if ( y >= 0 && y < data.get_size().y) 
+			if ( y >= 0 && y < (int)data.get_size().y) 
 				for (int x = cx - hw; x <= cx + hw; ++x) {
-					if ( x >= 0 && x < data.get_size().x) {
+					if ( x >= 0 && x < (int)data.get_size().x) {
 						result += data(x,y); 
 						++n; 
 					}
@@ -97,9 +97,9 @@ struct __dispatch_filter<bool, false> {
 	static bool apply(const T2DImage<bool>& data, int cx, int cy, int hw) {
 		int balance = 0; 
 		for (int y = cy - hw; y <= cy + hw; ++y) {
-			if ( y >= 0 && y < data.get_size().y) 
+			if ( y >= 0 && y < (int)data.get_size().y) 
 				for (int x = cx - hw; x <= cx + hw; ++x) {
-					if ( x >= 0 && x < data.get_size().x) {
+					if ( x >= 0 && x < (int)data.get_size().x) {
 						balance += data(x,y) ? 1 : -1; 
 					}
 				}

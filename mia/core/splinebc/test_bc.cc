@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE( test_mirror_on_boundary_needed_large )
 	CMirrorOnBoundary bc(10);
 	BOOST_CHECK(!bc.apply(index, weights)); 
 
-	for (int i = 0; i < index.size(); ++i)
+	for (size_t i = 0; i < index.size(); ++i)
 		BOOST_CHECK_EQUAL(index[i], result[i]); 
 }
 
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE( test_CRepeatBoundary_needed )
 	CRepeatBoundary bc(6);
 	BOOST_CHECK(!bc.apply(index, weights)); 
 
-	for (int i = 0; i < index.size(); ++i) {
+	for (size_t i = 0; i < index.size(); ++i) {
 		BOOST_CHECK_EQUAL(index[i], result[i]); 
 	}
 }
@@ -122,7 +122,7 @@ vector<double> BoundaryFixture::run(std::vector<double> f, const CSplineBoundary
 		(*kernel)(i, weights, indices);
 		bc.apply(indices, weights);
 		
-		for(int j = 0; j < indices.size(); ++j) { 
+		for(size_t j = 0; j < indices.size(); ++j) { 
 			cvinfo() << "A(" << i << ", " << indices[j] << ")=" << weights[j] << "\n"; 
 			double v = m_A(i, indices[j]); 
 			m_A.set(i, indices[j], v + weights[j]);
@@ -140,14 +140,12 @@ vector<double> BoundaryFixture::run(std::vector<double> f, const CSplineBoundary
 
 	bc.filter_line(f, kernel->get_poles()); 
 	double old_delta = 1.0; 
-	for (int i = 0; i < f.size(); ++i) {
+	for (size_t i = 0; i < f.size(); ++i) {
 		BOOST_CHECK_CLOSE(f[i], coefs[i], 0.01); 
 		double delta = f[i] - coefs[i]; 
 		cvdebug() << "i=" << i << ", delta = " << delta  << ", q=" << delta / old_delta  << "\n"; 
 		old_delta  =  delta; 
 	}
-	auto p = kernel->get_poles();
-	auto pol = p[p.size() - 1]; 
 
 	transform(f.begin(), f.end(), coefs.begin(), f.begin(), [](double x, double y){return x - y;}); 
 	return f ; 

@@ -459,7 +459,7 @@ size_t  CCmdOptionListData::write(size_t pos, size_t tab1, size_t width, const s
 {
 	auto is = s.begin(); 
 	auto es = s.end(); 
-	bool newline = false; 
+
 	while (is != es) {
 		if (*is == '\n') {
 			clog << '\n'; 

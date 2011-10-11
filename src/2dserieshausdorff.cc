@@ -115,7 +115,7 @@ int do_main(int argc, const char *argv[])
 	if (src_frames.size() != ref_frames.size())
 		throw invalid_argument("Input data sets must have the same number of slices"); 
 	
-	if (skip >= src_frames.size()) 
+	if (skip >= (int)src_frames.size()) 
 		throw invalid_argument("Can't skip the whole series"); 
 
 	auto isrc_frame = srcset.get_frames().begin() + skip;

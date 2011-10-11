@@ -99,14 +99,10 @@ int do_main(int argc, const char *argv[])
 	
 	ifstream ifs( in_filename); 
 	
-	vector<double> histo; 
-	// read input data
-
 	CEntry entry; 
 	while (ifs.good()) {
-		float val, cnt;
 		ifs >> entry.first >> entry.second; 
-		histo.push_back(cnt); 
+		hist.push(entry); 
 	}
 	ifs.close(); 
 		

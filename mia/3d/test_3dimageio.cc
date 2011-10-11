@@ -58,13 +58,13 @@ BOOST_AUTO_TEST_CASE(test_3dimageio_plugin_avail)
 
 }
 
+
+C3DImageIOPluginHandlerTestPath init_3dimage_path; 
+
 bool init_unit_test_suite( )
 {
-	cvdebug() << "init\n";
-	std::list< bfs::path> searchpath;
-	searchpath.push_back(bfs::path("io"));
-	C3DImageIOPluginHandler::set_search_path(searchpath);
 
+	cvdebug() << "init\n";
 	init_unit_test();
 	add_3dimageio_plugin_tests( &framework::master_test_suite());
 	return true;

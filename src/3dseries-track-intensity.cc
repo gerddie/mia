@@ -121,11 +121,6 @@ int do_main( int argc, const char *argv[] )
 	string in_filename;
 	string out_filename;
 	                        
-
-	// this parameter is currently not exported - reading the image data is 
-	// therefore done from the path given in the segmentation set 
-	bool override_src_imagepath = true;
-
 	CCmdOptionList options(g_general_help);
 	
 	options.set_group("\nFile-IO"); 

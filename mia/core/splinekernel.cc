@@ -91,7 +91,7 @@ CSplineKernel::CSplineKernel(int degree, double shift, EInterpolation type):
 	m_type(type), 
 	m_indices(m_support_size)
 {
-	for(int i = 0; i < m_support_size; ++i) 
+	for(unsigned int i = 0; i < m_support_size; ++i) 
 		m_indices[i] = i; 
 }
 
@@ -113,7 +113,7 @@ void CSplineKernel::operator () (double x, VWeight& weight, VIndex& index)const
 
 void CSplineKernel::operator () (double x, SCache& cache) const
 {
-	assert(cache.index_limit == cache.boundary_condition.get_width() - cache.weights.size()); 
+	assert(cache.index_limit == (int)cache.boundary_condition.get_width() - (int)cache.weights.size()); 
 	if (x == cache.x)
 		return; 
 	int start_idx  = get_start_idx_and_value_weights(x, cache.weights); 
@@ -146,7 +146,7 @@ void CSplineKernel::get_cached(double x, SCache& cache)const
 
 void CSplineKernel::get_uncached(double x, SCache& cache)const
 {
-	assert(cache.index_limit == cache.boundary_condition.get_width() - cache.weights.size()); 
+	assert(cache.index_limit == (int)cache.boundary_condition.get_width() - (int)cache.weights.size()); 
 	cache.start_idx  = get_start_idx_and_value_weights(x, cache.weights); 
 	if (cache.never_flat ||cache.start_idx < 0 || cache.start_idx > cache.index_limit ) {
 		cache.is_flat = false; 
@@ -190,9 +190,11 @@ inline int fastfloor(double val)
 
 void CSplineKernel::fill_index(short i, VIndex& index) const 
 {
-	int k= 0; 
-	while (k < m_support_size)
-		index[k] = i + m_indices[k++]; 	
+	unsigned int k= 0; 
+	while (k < m_support_size){
+		index[k] = i + m_indices[k]; 	
+		++k; 
+	}
 }
 
 int CSplineKernel::get_indices(double x, VIndex& index) const

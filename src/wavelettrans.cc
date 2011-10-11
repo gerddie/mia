@@ -69,7 +69,6 @@ void save_wavelet(const string& filenamebase, const vector<double>& coeffs, int 
 		int i = 0; 
 		vector<double> col(length); 
 		while ( i < length ) {
-			int k = 0; 
 			for ( int k = 0; k < repeat; ++k, ++i) 
 				col[i] = fabs(*c); 
 			++c; 
@@ -138,13 +137,13 @@ int do_main( int argc, const char *argv[] )
 		throw runtime_error("Empty input file"); 
 
 	vector<vector<double> > table(vx.size());
-	for (int i = 0; i < vx.size(); ++i) 
+	for (unsigned int i = 0; i < vx.size(); ++i) 
 		table[i].push_back(vx[i]); 
 
 	cvdebug() << "Read " << vx.size() << " columns\n"; 	
 	// read the reminder of the table 
 	while (input.good()) {
-		for (int i = 0; i < vx.size() && input.good(); ++i) {
+		for (unsigned int i = 0; i < vx.size() && input.good(); ++i) {
 			float x; 
 			input >> x; 
 			if (input.good()) 
@@ -155,7 +154,7 @@ int do_main( int argc, const char *argv[] )
 	int nrows = table[0].size(); 
 	cvdebug() << "got " << nrows << "  rows\n"; 
 
-	for (int i = 1; i < vx.size(); ++i) 
+	for (unsigned int i = 1; i < vx.size(); ++i) 
 		if (table[i].size() != nrows) {
 			THROW(runtime_error, "bogus input table, expect " << nrows  << ", but column " 
 			      << i << " has " << table[i].size() << " rows"); 
@@ -163,7 +162,7 @@ int do_main( int argc, const char *argv[] )
 	
 	// run the wavelet tranform for each column 
 	C1DWavelet wt(wt_type, k); 
-	for (int i = 0; i < vx.size(); ++i) {
+	for (unsigned int i = 0; i < vx.size(); ++i) {
 		cvdebug() << "transfrom column of size " << table[i].size() <<"\n"; 
 		table[i] = wt.forward(table[i]); 
 		cverb << " result size = " << table[i].size() << "\n"; 
@@ -172,8 +171,8 @@ int do_main( int argc, const char *argv[] )
 	// save the result
 	ofstream result(out_filename); 
 
-	for (int r = 0; r < table[0].size(); ++r) {
-		for (int c = 0; c < table.size(); ++c) {
+	for (unsigned int r = 0; r < table[0].size(); ++r) {
+		for (unsigned int c = 0; c < table.size(); ++c) {
 			result << fabs(table[c][r]) << " "; 
 		}
 		result << "\n"; 
@@ -181,7 +180,7 @@ int do_main( int argc, const char *argv[] )
 
 	if (!out2_filenamebase.empty())  {
 		// save the wavelet coefrficents as matrix 
-		for (int c = 0; c < table.size(); ++c) {
+		for (unsigned int c = 0; c < table.size(); ++c) {
 			save_wavelet(out2_filenamebase, table[c], c); 
 		}
 		

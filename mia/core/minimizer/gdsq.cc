@@ -68,7 +68,7 @@ int CGDSQMinimizer::do_run(CDoubleVector& x)
 	double step = m_step; 
 	
 	double f_old = f_init; 
-	int iter = 0; 
+	unsigned int iter = 0; 
 	int success = test_tol(g, m_xtol, SUCCESS_XTOLA);
 	while (iter++ < m_maxiter && step > m_min_step && !success) {
 		cblas_daxpy(g.size(), -step, &g[0], 1, &xwork[0], 1);

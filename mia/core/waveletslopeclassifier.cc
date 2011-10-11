@@ -173,7 +173,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	result(CWaveletSlopeClassifier::wsc_fail)
 {
 	vector<PSlopeStatistics> vstats; 
-	for (int i = 0; i < series.size(); ++i)
+	for (unsigned int i = 0; i < series.size(); ++i)
 		vstats.push_back(PSlopeStatistics(new CSlopeStatistics(series[i], i))); 
 	
 	// 
