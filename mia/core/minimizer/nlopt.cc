@@ -346,7 +346,7 @@ CMinimizer *CNLOptMinimizerPlugin::do_create() const
 const std::string CNLOptMinimizerPlugin::do_get_descr() const
 {
 	return "Minimizer algorithms using the NLOPT library, for a "
-		"description of the optimizers please see\n" 
+		"description of the optimizers please see" 
 		" 'http://ab-initio.mit.edu/wiki/index.php/NLopt_Algorithms'"; 
 }
 

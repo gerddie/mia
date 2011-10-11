@@ -107,6 +107,13 @@ const std::string CPluginBase::get_descr() const
 }
 
 
+void CPluginBase::get_short_help(std::ostream& os) const
+{
+	os << get_name() << ": " << get_descr() << "\n";
+	m_parameters.print_help(os);
+	os  << "\n";
+}
+
 void CPluginBase::get_help(std::ostream& os) const
 {
 	m_parameters.print_help(os);

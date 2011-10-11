@@ -270,6 +270,13 @@ typename TPluginHandler<I>::Interface *TPluginHandler<I>::plugin(const char *plu
 	return p->second; 
 }
 
+template <typename I>
+void TPluginHandler<I>::print_short_help(std::ostream& os) const
+{
+	for (const_iterator i = begin(); i != end(); ++i) {
+		i->second->get_short_help(os);
+	}
+}
 
 template <typename I>
 void TPluginHandler<I>::print_help(std::ostream& os) const

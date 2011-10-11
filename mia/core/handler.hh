@@ -78,6 +78,13 @@ public:
 	/** \returns the names of the plug-ins as a set */
 	const std::set<std::string> get_set() const; 
 
+
+	/**
+	   Print out the short help to an output stream 
+	   @param os
+	 */
+	void print_short_help(std::ostream& os) const; 
+
 	/**
 	   Print out the help to an output stream 
 	   @param os

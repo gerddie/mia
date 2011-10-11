@@ -30,7 +30,6 @@ TPlugin<D, T>::TPlugin(const char* name):
 {
 }
 
-
 template <typename D, typename T>
 void TPlugin<D, T>::get_help(std::ostream& os) const
 {

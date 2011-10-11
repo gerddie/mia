@@ -657,7 +657,9 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 		write(0,0, max_width,"  "); 
 		writeln(2,2, max_width, m_program_example_descr);
 		write(0,0, max_width,"    "); 
-		writeln(4, 4, max_width, m_program_example_code);
+		pos = write(4, 4, max_width, name_help); 
+		pos = write(pos, 4, max_width, " "); 
+		writeln(pos, 4, max_width, m_program_example_code);
 		write(0,0, max_width, "\n");
 	}
 	

@@ -93,6 +93,13 @@ public:
 	/// \returns the name of the plug-in
 	const std::string get_descr() const;
 
+
+	/**
+	   Write a help regarding the plugin to the output stream
+	   \param os
+	 */
+	void get_short_help(std::ostream& os) const;
+
 	/** prints out a help text to the given output stream
 	    \param os
 	*/
@@ -202,6 +209,8 @@ public:
 	   \param os
 	 */
 	virtual void get_help(std::ostream& os) const;
+
+
 
 	/// \returns the plugin specific part of the plugin search path
 	static ::boost::filesystem::path search_path();

@@ -110,7 +110,8 @@ void TCmdFactoryOption<F>::do_write_value(std::ostream& os) const
 template <typename F>
 void TCmdFactoryOption<F>::do_get_long_help_really(std::ostream& os) const
 {
-	os << ", set option to 'help' for more information."; 
+	os << "; give as 'plugin:param1=x,param2=y,...'\nSupported plugins with parameters are:\n\n"; 
+	F::instance().print_short_help(os);
 }
 
 template <typename F>
