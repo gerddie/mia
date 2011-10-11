@@ -69,69 +69,55 @@ using namespace std;
 using namespace mia; 
 
 const TDictMap<nlopt_algorithm>::Table optimizer_table[NLOPT_NUM_ALGORITHMS+1] = {
-	{"gn-direct",                NLOPT_GN_DIRECT}, 
-	{"gn-direct-l",              NLOPT_GN_DIRECT_L},
-	{"gn-direct-l-rand",         NLOPT_GN_DIRECT_L_RAND},
-	{"gn-direct-noscal",         NLOPT_GN_DIRECT_NOSCAL},
-	{"gn-direct-l-noscal",       NLOPT_GN_DIRECT_L_NOSCAL},
-	{"gn-direct-l-rand-noscale", NLOPT_GN_DIRECT_L_RAND_NOSCAL},
+	{"gn-direct",                NLOPT_GN_DIRECT, "Dividing Rectangles"}, 
+	{"gn-direct-l",              NLOPT_GN_DIRECT_L, "Dividing Rectangles (locally biased)"},
+	{"gn-direct-l-rand",         NLOPT_GN_DIRECT_L_RAND, "Dividing Rectangles (locally biased, randomized)"},
+	{"gn-direct-noscal",         NLOPT_GN_DIRECT_NOSCAL, "Dividing Rectangles (unscaled)"},
+	{"gn-direct-l-noscal",       NLOPT_GN_DIRECT_L_NOSCAL, "Dividing Rectangles (unscaled, locally biased)"},
+	{"gn-direct-l-rand-noscale", NLOPT_GN_DIRECT_L_RAND_NOSCAL, "Dividing Rectangles (unscaled, locally biased, randomized)"},
 	
-	{"gn-orig-direct",           NLOPT_GN_ORIG_DIRECT},
-	{"gn-orig-direct-l",         NLOPT_GN_ORIG_DIRECT_L},
+	{"gn-orig-direct",           NLOPT_GN_ORIG_DIRECT, "Dividing Rectangles (original implementation)"},
+	{"gn-orig-direct-l",         NLOPT_GN_ORIG_DIRECT_L, "Dividing Rectangles (original implementation, locally biased)"},
 	
-	{"gd-stogo",                 NLOPT_GD_STOGO},
-	{"gd-stogo-rand",            NLOPT_GD_STOGO_RAND},
+	{"ld-lbfgs-nocedal",         NLOPT_LD_LBFGS_NOCEDAL, ""},
 	
-	{"ld-lbfgs-nocedal",         NLOPT_LD_LBFGS_NOCEDAL},
+	{"ld-lbfgs",                 NLOPT_LD_LBFGS, "Low-storage BFGS"},
 	
-	{"ld-lbfgs",                 NLOPT_LD_LBFGS},
+	{"ln-praxis",                NLOPT_LN_PRAXIS, "Gradient-free Local Optimization via the Principal-Axis Method"},
 	
-	{"ln-praxis",                NLOPT_LN_PRAXIS},
+	{"ld-var1",                  NLOPT_LD_VAR1, "Shifted Limited-Memory Variable-Metric, Rank 1"},
+	{"ld-var2",                  NLOPT_LD_VAR2, "Shifted Limited-Memory Variable-Metric, Rank 2"},
 	
-	{"ld-var1",                  NLOPT_LD_VAR1},
-	{"ld-var2",                  NLOPT_LD_VAR2},
+	{"ld-tnewton",               NLOPT_LD_TNEWTON, "Truncated Newton"},
+	{"ld-tnewton-restart",       NLOPT_LD_TNEWTON_RESTART, "Truncated Newton with steepest-descent restarting"},
+	{"ld-tnewton-precond",       NLOPT_LD_TNEWTON_PRECOND, "Preconditioned Truncated Newton"},
+	{"ld-tnewton-precond-restart", NLOPT_LD_TNEWTON_PRECOND_RESTART, "Preconditioned Truncated Newton with steepest-descent restarting"},
 	
-	{"ld-tnewton",               NLOPT_LD_TNEWTON},
-	{"ld-tnewton-restart",       NLOPT_LD_TNEWTON_RESTART},
-	{"ld-tnewton-precond",       NLOPT_LD_TNEWTON_PRECOND},
-	{"ld-tnewton-precond-restart", NLOPT_LD_TNEWTON_PRECOND_RESTART},
+	{"gn-crs2-lm",               NLOPT_GN_CRS2_LM, "Controlled Random Search with Local Mutation"},
 	
-	{"gn-crs2-lm",               NLOPT_GN_CRS2_LM},
+	{"ld-mma",                   NLOPT_LD_MMA, "Method of Moving Asymptotes"},
 	
-	{"gn-mlsl",                  NLOPT_GN_MLSL},
-	{"gd-mlsl",                  NLOPT_GD_MLSL},
-	{"gn-mlsl-lds",              NLOPT_GN_MLSL_LDS},
-	{"gd-mlsl-lds",              NLOPT_GD_MLSL_LDS},
+	{"ln-cobyla",                NLOPT_LN_COBYLA, "Constrained Optimization BY Linear Approximation"},
 	
-	{"ld-mma",                   NLOPT_LD_MMA},
+	{"ln-newuoa", NLOPT_LN_NEWUOA, "Derivative-free Unconstrained Optimization by Iteratively Constructed Quadratic Approximation"},
+	{"ln-newuoa-bound", NLOPT_LN_NEWUOA_BOUND, "Derivative-free Bound-constrained Optimization by Iteratively Constructed Quadratic Approximation"},
 	
-	{"ln-cobyla",                NLOPT_LN_COBYLA},
+	{"ln-neldermead", NLOPT_LN_NELDERMEAD,  "Nelder-Mead simplex algorithm"},
+	{"ln-sbplx", NLOPT_LN_SBPLX, "Subplex variant of Nelder-Mead"},
 	
-	{"ln-newuoa", NLOPT_LN_NEWUOA},
-	{"ln-newuoa-bound", NLOPT_LN_NEWUOA_BOUND},
-	
-	{"ln-neldermead", NLOPT_LN_NELDERMEAD},
-	{"ln-sbplx", NLOPT_LN_SBPLX},
-	
-	{"ln-auglag", NLOPT_LN_AUGLAG},
-	{"ld-auglag", NLOPT_LD_AUGLAG},
-	{"ln-auglag-eq", NLOPT_LN_AUGLAG_EQ},
-	{"ld-auglag-eq", NLOPT_LD_AUGLAG_EQ},
-	
-	{"ln-bobyqa", NLOPT_LN_BOBYQA},
-	
-	{"gn-isres", NLOPT_GN_ISRES},
+	{"ln-bobyqa", NLOPT_LN_BOBYQA, "Derivative-free Bound-constrained Optimization"},
+	{"gn-isres", NLOPT_GN_ISRES, "Improved Stochastic Ranking Evolution Strategy"},
 	
 	/* new variants that require local_optimizer to be set},
 	   not with older constants for backwards compatibility */
-	{"auglag", NLOPT_AUGLAG},
-	{"auglag-eq", NLOPT_AUGLAG_EQ},
-	{"g-mlsl", NLOPT_G_MLSL},
-	{"g-mlsl-lds", NLOPT_G_MLSL_LDS},
+	{"auglag", NLOPT_AUGLAG, "Augmented Lagrangian algorithm"},
+	{"auglag-eq", NLOPT_AUGLAG_EQ, "Augmented Lagrangian algorithm with equality constraints only"},
+	{"g-mlsl", NLOPT_G_MLSL, "Multi-Level Single-Linkage (require local optimization and bounds)"},
+	{"g-mlsl-lds", NLOPT_G_MLSL_LDS, "Multi-Level Single-Linkage (low-discrepancy-sequence, require local gradient based optimization and bounds)"},
 	
-	{"ld-slsqp", NLOPT_LD_SLSQP},
+	{"ld-slsqp", NLOPT_LD_SLSQP, "Sequential Least-Squares Quadratic Programming"},
 	
-	{NULL, NLOPT_NUM_ALGORITHMS}, 
+	{NULL, NLOPT_NUM_ALGORITHMS, ""}, 
 }; 
 
 const nlopt_algorithm g_require_gradient[] = {

@@ -74,13 +74,13 @@ static const char *program_info =
 enum EDirection {dir_unkown, dir_xy, dir_xz, dir_yz};
 
 const TDictMap<EDirection>::Table GDirectionmapTable[] = {
-	{"xy", dir_xy},
-	{"axial", dir_xy},
-	{"xz", dir_xz},
-	{"coronal", dir_xz},
-	{"yz", dir_yz},
-	{"saggital", dir_yz},
-	{NULL, dir_unkown}
+	{"xy", dir_xy, "get xy (axial) slice"},
+	{"axial", dir_xy, "get xy (axial) slice"},
+	{"xz", dir_xz, "get xz (coronal) slice"},
+	{"coronal", dir_xz, "get xz (coronal) slice"},
+	{"yz", dir_yz, "get yz (saggital) slice"},
+	{"saggital", dir_yz, "get xz (saggital) slice"},
+	{NULL, dir_unkown, ""}
 };
 
 const TDictMap<EDirection> GDirectionmap(GDirectionmapTable);

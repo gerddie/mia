@@ -97,11 +97,11 @@ float psi_pm2(float x, float sigma)
 }
 
 static const TDictMap<C2DAnisoDiff::FEdgeStopping>::Table edge_stop_table[] = {
-	{ "tuckey", psi_tuckey},
-	{ "pm1", psi_pm1},
-	{ "pm2", psi_pm2},
-	{ "guess", psi_guess},
-	{ NULL, NULL}
+	{ "tuckey", psi_tuckey, "tukey stopping function"},
+	{ "pm1", psi_pm1, "stopping function 1"},
+	{ "pm2", psi_pm2, "stopping function 2"},
+	{ "guess", psi_guess, "test stopping function"},
+	{ NULL, NULL, ""}
 };
 
 static const TDictMap<C2DAnisoDiff::FEdgeStopping> edge_stop_dict(edge_stop_table);

@@ -185,10 +185,10 @@ BOOST_FIXTURE_TEST_CASE( test_dict_option, CmdlineParserFixture )
 
 	TDictMap<ETestEnums>::Table table[] =
 		{
-			{"one", te_one},
-			{"two", te_two},
-			{"three", te_three},
-			{NULL, te_undefined}
+			{"one", te_one, "test 1"},
+			{"two", te_two, "test 2"},
+			{"three", te_three, "test 3"},
+			{NULL, te_undefined, ""}
 		};
 	TDictMap<ETestEnums> map(table);
 

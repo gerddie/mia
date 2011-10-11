@@ -139,16 +139,16 @@ typedef struct
 } COMPLEX;
 
 const TDictMap<EPixelType>::Table analyze_type_table[] = {
-	{"UNKNOWN",  it_unknown},
-	{"BINARY",   it_bit},
-	{"CHAR",     it_ubyte},
-	{"SHORT",    it_sshort},
-	{"INT",      it_sint},
-	{"FLOAT",    it_float},
-	{"COMPLEX",  it_unknown},
-	{"DOUBLE",   it_double},
-	{"RGB",      it_unknown},
-        {0, it_unknown}
+	{"UNKNOWN",  it_unknown, "unkown pixel type"},
+	{"BINARY",   it_bit,     "binary pixel type"},
+	{"CHAR",     it_ubyte,   "unsigned 8 bit"},
+	{"SHORT",    it_sshort,  "signed 16 bit"},
+	{"INT",      it_sint,    "signed 32 bit"},
+	{"FLOAT",    it_float,   "single floating point"},
+	{"COMPLEX",  it_unknown, "complex, not supported"},
+	{"DOUBLE",   it_double,  "double floating point"},
+	{"RGB",      it_unknown, "RGB, not supported"},
+        {0, it_unknown, ""}
 };
 
 

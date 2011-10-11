@@ -89,9 +89,9 @@ enum EOps {dist_avg,
 
 
 const TDictMap<EOps>::Table combine_option_table[] = {
-	{"avg", dist_avg},
-	{"max", dist_max},
-	{NULL, dist_unknown},
+	{"avg", dist_avg, "use average"},
+	{"max", dist_max, "use maximum" },
+	{NULL, dist_unknown, ""},
 };
 
 class Convert2DoubleAndScale: public TFilter<C2DDImage>{

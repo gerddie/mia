@@ -45,6 +45,7 @@ NS_MIA_BEGIN
 template <typename T>
 class TDictMap {
 public: 
+	typedef std::map<std::string, std::string> THelpMap; 
 	/**
 	   The initialisation table. The last entry must have the name pointer pointing to 0. 
 	*/
@@ -53,6 +54,8 @@ public:
 		const char * const name; 
 		/// parameter value 
 		const T value; 
+		/// help text 
+		const char * const help; 
 	} Table; 
 	
 	/** Create the map by providing an initialisation map
@@ -80,14 +83,26 @@ public:
 	
 	/// \returns a set of all available names
 	const std::set<std::string> get_name_set() const; 
+
+	/**
+	   \returns start of help map
+	*/
+	THelpMap::const_iterator get_help_begin() const; 
+
+	/**
+	   \returns end of help map
+	*/
+	THelpMap::const_iterator get_help_end() const; 
 	
 private: 
+
 	typedef std::map<std::string, T> TMap; 
 	typedef std::map<T, std::string> TBackMap; 
 
 	bool      m_last_is_default; 
 	TMap      m_table;
         TBackMap  m_back_table;
+	THelpMap  m_help; 
 	T         m_default; 
 
 	struct Insert {
@@ -114,6 +129,7 @@ TDictMap<T>::TDictMap(const Table *table, bool last_is_default):
 						    std::string(t->name) + 
 						    std::string("' already present")); 
 		m_back_table.insert(typename TBackMap::value_type(t->value, t->name)); 
+		m_help.insert(typename  THelpMap::value_type(t->name, t->help ? t->help : "")); 
 		++t; 
 	}
 	m_default = t->value; 
@@ -155,6 +171,17 @@ const std::set<std::string> TDictMap<T>::get_name_set() const
 	return result; 
 }
 
+template <typename T>
+typename TDictMap<T>::THelpMap::const_iterator TDictMap<T>::get_help_begin() const
+{
+	return m_help.begin(); 
+}
+
+template <typename T>
+typename TDictMap<T>::THelpMap::const_iterator TDictMap<T>::get_help_end() const
+{
+	return m_help.end(); 
+}
 
 NS_MIA_END
 #endif

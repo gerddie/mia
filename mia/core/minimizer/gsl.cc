@@ -69,13 +69,13 @@ using namespace mia;
 
 
 const TDictMap<CGSLMinimizerPlugin::EGSLOptimizer>::Table minimizer_table[] = {
-	{"simplex", CGSLMinimizerPlugin::opt_simplex2},
-	{"cg-fr",   CGSLMinimizerPlugin::opt_cg_fr},
-	{"cg-pr",   CGSLMinimizerPlugin::opt_cg_pr},
-	{"bfgs",    CGSLMinimizerPlugin::opt_bfgs},
-	{"bfgs2",   CGSLMinimizerPlugin::opt_bfgs2},
-	{"gd",      CGSLMinimizerPlugin::opt_gd},
-	{NULL, CGSLMinimizerPlugin::opt_unknown}
+	{"simplex", CGSLMinimizerPlugin::opt_simplex2, "Simplex algorithm of Nelder and Mead"},
+	{"cg-fr",   CGSLMinimizerPlugin::opt_cg_fr, "Flecher-Reeves conjugate gradient algorithm"},
+	{"cg-pr",   CGSLMinimizerPlugin::opt_cg_pr, "Polak-Ribiere conjugate gradient algorithm"},
+	{"bfgs",    CGSLMinimizerPlugin::opt_bfgs, "Broyden-Fletcher-Goldfarb-Shann"},
+	{"bfgs2",   CGSLMinimizerPlugin::opt_bfgs2, "Broyden-Fletcher-Goldfarb-Shann (most efficient version)"},
+	{"gd",      CGSLMinimizerPlugin::opt_gd, "Gradient descent."},
+	{NULL, CGSLMinimizerPlugin::opt_unknown, ""}
 };
 
 

@@ -95,10 +95,10 @@ BOOST_AUTO_TEST_CASE( test_dict_params)
 {
 
 	static const TDictMap<ETest>::Table table[] = {
-		{"a", te_a},
-		{"b", te_b},
-		{"c", te_c},
-		{NULL, te_unknown}
+		{"a", te_a, "test a"},
+		{"b", te_b, "test b"},
+		{"c", te_c, "test c"},
+		{NULL, te_unknown, ""}
 	};
 
 	const TDictMap<ETest> map(table, true);

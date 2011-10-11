@@ -42,13 +42,13 @@ const char *g_general_help =
 	" mia-wavelettrans [options] "; 
 
 const TDictMap<EWaveletType>::Table wavelet_dict[] = {
-	{"haar", wt_haar},
-	{"c-haar", wt_haar_centered},
-	{"daubechies", wt_daubechies},
-	{"c-daubechies", wt_daubechies_centered},
-	{"bspline", wt_bspline},
-	{"c-bspline", wt_bspline_centered},
-	{NULL, wt_none}
+	{"haar", wt_haar, "HAAR wavelet"},
+	{"c-haar", wt_haar_centered, "HAAR wavelet (centered)"},
+	{"daubechies", wt_daubechies, "Daubechies wavelet"},
+	{"c-daubechies", wt_daubechies_centered, "Daubechies wavelet (centered)"},
+	{"bspline", wt_bspline, "B-Spline wavelet"},
+	{"c-bspline", wt_bspline_centered, "B-Spline wavelet (centered)"},
+	{NULL, wt_none, ""}
 };
 
 const TDictMap<EWaveletType> g_wavelet_dict(wavelet_dict);

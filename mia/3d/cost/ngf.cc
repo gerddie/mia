@@ -246,10 +246,10 @@ C3DImageCost *C3DNFGImageCostPlugin::do_create()const
 	TRACE("C3DNFGImageCostPlugin::do_create");
 
 	const TDictMap<ESubTypes>::Table lut[] = {
-		{"ds", st_delta_scalar},
-		{"dot", st_scalar},
-		{"cross", st_cross},
-		{0, st_unknown}
+		{"ds", st_delta_scalar, "square of scaled difference"},
+		{"dot", st_scalar, "scalar product kernel"},
+		{"cross", st_cross, "cross product kernel"},
+		{0, st_unknown, ""}
 	};
 	const TDictMap<ESubTypes> subtypemap(lut);
 

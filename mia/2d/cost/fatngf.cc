@@ -245,11 +245,11 @@ C2DImageFatCost *C2DNFGFatImageCostPlugin::do_create(P2DImage src,
 	TRACE("C2DNFGFatImageCostPlugin::do_create");
 
 	const TDictMap<ESubTypes>::Table lut[] = {
-		{"ngfsq", st_delta},
-		{"nfg-d", st_delta_scalar},
-		{"ngf-s", st_scalar},
-		{"ngf-x", st_cross},
-		{0, st_unknown}
+		{"ngfsq", st_delta, "square of difference"},
+		{"nfg-d", st_delta_scalar, "square of scaled difference"},
+		{"ngf-s", st_scalar, "scalar product kernel"},
+		{"ngf-x", st_cross, "cross product kernel"},
+		{0, st_unknown, ""}
 	};
 	const TDictMap<ESubTypes> subtypemap(lut);
 

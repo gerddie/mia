@@ -26,16 +26,16 @@ NS_MIA_BEGIN
 
 const TDictMap<vstream::Level>::Table verbose_dict[] = {
 #ifndef NDEBUG
-	{"trace", vstream::ml_trace},
-	{"debug", vstream::ml_debug},
+	{"trace", vstream::ml_trace, "Function call trace information"},
+	{"debug", vstream::ml_debug, "Full debug output"},
 #endif
-	{"info", vstream::ml_info},
-	{"message", vstream::ml_message},
-	{"warning", vstream::ml_warning},
-	{"error", vstream::ml_error},
-	{"fail", vstream::ml_fail},
-	{"fatal", vstream::ml_fatal},
-	{NULL, vstream::ml_undefined},
+	{"info", vstream::ml_info, "Low level messages"},
+	{"message", vstream::ml_message, "Normal messages"},
+	{"warning", vstream::ml_warning, "Warnings and more serious messages"},
+	{"error", vstream::ml_error, "Report only errors"},
+	{"fail", vstream::ml_fail, "Report test failures"},
+	{"fatal", vstream::ml_fatal, "Report only fatal errors"},
+	{NULL, vstream::ml_undefined, ""},
 };
 
 const TDictMap<vstream::Level> g_verbose_dict(verbose_dict);

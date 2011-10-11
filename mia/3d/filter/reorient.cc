@@ -266,13 +266,13 @@ const string C3DReorientImageFilterFactory::do_get_descr()const
 
 const TDictMap<C3DReorient::EOrientations>::Table
 C3DReorientImageFilterFactory::table[] = {
-	{"xyz", C3DReorient::xyz },
-	{"xzy", C3DReorient::xzy },
-	{"yxz", C3DReorient::yzx },
-	{"yzx", C3DReorient::yxz },
-	{"zxy", C3DReorient::zxy },
-	{"zyx", C3DReorient::zxy },
-	{NULL,  C3DReorient::ooo },
+	{"xyz", C3DReorient::xyz, "keep orientation"},
+	{"xzy", C3DReorient::xzy, "switch y-z" },
+	{"yxz", C3DReorient::yzx, "switch x-y" },
+	{"yzx", C3DReorient::yxz, "rotate x->z->y->x" },
+	{"zxy", C3DReorient::zxy, "rotate x->y->z->x" },
+	{"zyx", C3DReorient::zxy, "switch x-z" },
+	{NULL,  C3DReorient::ooo, "" },
 };
 const TDictMap<C3DReorient::EOrientations>
 C3DReorientImageFilterFactory::map(C3DReorientImageFilterFactory::table);

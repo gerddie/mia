@@ -44,10 +44,10 @@ static const char *revision = "$Revision: 937 $:";
 
 typedef TDictMap<int> CDict;
 const CDict::Table dict[] = {
-	{"testa", 1},
-	{"testb", 2},
-	{"testc", 3},
-	{NULL, 0}
+	{"testa", 1, "test A"},
+	{"testb", 2, "test B"},
+	{"testc", 3, "test C"},
+	{NULL, 0, ""}
 };
 
 CDict the_dict(dict);

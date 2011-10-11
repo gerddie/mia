@@ -696,10 +696,10 @@ P2DImage C2DPerfusionAnalysis::get_feature_image(int index) const
 
 
 TDictMap<C2DPerfusionAnalysis::EBoxSegmentation>::Table segmethod_table[] ={
-	{"delta-feature", C2DPerfusionAnalysis::bs_delta_feature},
-	{"delta-peak", C2DPerfusionAnalysis::bs_delta_peak},
-	{"features", C2DPerfusionAnalysis::bs_features},      
-	{NULL, C2DPerfusionAnalysis::bs_unknown}
+	{"delta-feature", C2DPerfusionAnalysis::bs_delta_feature, "difference of the feature images"},
+	{"delta-peak", C2DPerfusionAnalysis::bs_delta_peak, "difference of the peak enhancement images"},
+	{"features", C2DPerfusionAnalysis::bs_features, "feature images"},      
+	{NULL, C2DPerfusionAnalysis::bs_unknown, ""}
 };
 
 TDictMap<C2DPerfusionAnalysis::EBoxSegmentation> C2DPerfusionAnalysis::segmethod_dict(segmethod_table); 

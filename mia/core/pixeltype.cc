@@ -23,31 +23,31 @@
 
 NS_MIA_BEGIN
 const TDictMap<EPixelType>::Table PixelTypeTable[] = {
-	{"bit",   it_bit},
-	{"ubyte", it_ubyte},
-	{"sbyte", it_sbyte},
-	{"sshort",it_sshort},
-	{"ushort",it_ushort},
-	{"sint",  it_sint},
-	{"uint",  it_uint},
+	{"bit",   it_bit, "binary data"},
+	{"ubyte", it_ubyte, "unsigned 8 bit"},
+	{"sbyte", it_sbyte, "signed 8 bit"},
+	{"sshort",it_sshort, "unsigned 16 bit"},
+	{"ushort",it_ushort, "signed 16 bit"},
+	{"sint",  it_sint, "unsigned 32 bit"},
+	{"uint",  it_uint, "signed 32 bit"},
 #ifdef HAVE_INT64
-	{"slong", it_slong},
-	{"ulong", it_ulong},
+	{"slong", it_slong, "unsigned 64 bit"},
+	{"ulong", it_ulong}, "signed 64 bit",
 #endif
-	{"float", it_float},
-	{"double",it_double},
-	{NULL, it_unknown}
+	{"float", it_float, "single floating point values (32 bit)"},
+	{"double",it_double, "souble floating point values (64 bit)"},
+	{NULL, it_unknown, ""}
 };
 const TDictMap<EPixelType> CPixelTypeDict(PixelTypeTable);
 
 
 const TDictMap<EPixelConversion>::Table ConversionTypeTable[] = {
-	{"copy", pc_copy},
-	{"linear", pc_linear},
-	{"range", pc_range},
-	{"opt", pc_opt},
-	{"optstat", pc_opt_stat},
-	{NULL, pc_unknown}
+	{"copy", pc_copy, "copy data when converting"},
+	{"linear", pc_linear, "apply linear transform x-> ax+b"},
+	{"range", pc_range, "apply linear transform that maps input data type range to output data type range"},
+	{"opt", pc_opt, "apply a linear transform that applies the real input range to map to the full output range"},
+	{"optstat", pc_opt_stat, "apply a linear transform that mappes based on input mean and variation the full output range"},
+	{NULL, pc_unknown, ""}
 };
 const TDictMap<EPixelConversion> CPixelConversionDict(ConversionTypeTable);
 

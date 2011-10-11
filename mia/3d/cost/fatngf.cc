@@ -221,10 +221,10 @@ C3DImageFatCost *C3DNFGFatImageCostPlugin::do_create(P3DImage src, P3DImage ref,
 
 
 	const TDictMap<ESubTypes>::Table lut[] = {
-		{"delta", st_delta},
-		{"scalar", st_scalar},
-		{"cross", st_cross},
-		{0, st_unknown}
+		{"ngfsq", st_delta, "square of difference"},
+		{"ngf-s", st_scalar, "scalar product kernel"},
+		{"ngf-x", st_cross, "cross product kernel"},
+		{0, st_unknown, ""}
 	};
 	const TDictMap<ESubTypes> subtypemap(lut);
 

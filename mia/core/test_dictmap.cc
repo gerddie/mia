@@ -42,10 +42,10 @@ BOOST_AUTO_TEST_CASE( test_dictmap )
 {
 
 	static const TDictMap<ETest>::Table table[] = {
-		{"a", te_a},
-		{"b", te_b},
-		{"c", te_c},
-		{NULL, te_unknown}
+		{"a", te_a, "test a"},
+		{"b", te_b, "test b"},
+		{"c", te_c, "test c"},
+		{NULL, te_unknown, ""}
 	};
 	const TDictMap<ETest> map(table);
 
@@ -77,11 +77,11 @@ BOOST_AUTO_TEST_CASE( test_kill_double_entries )
 
 
 	static const TDictMap<ETest>::Table table[] = {
-		{"a", te_a},
-		{"b", te_b},
-		{"c", te_c},
-		{"c", te_b},
-		{NULL, te_unknown}
+		{"a", te_a, "test A"},
+		{"b", te_b, "test B"},
+		{"c", te_c, "test C"},
+		{"c", te_b, "test C2"},
+		{NULL, te_unknown, ""}
 	};
 
 	try {
@@ -100,10 +100,10 @@ BOOST_AUTO_TEST_CASE( test_default_entry )
 {
 
 	static const TDictMap<ETest>::Table table[] = {
-		{"a", te_a},
-		{"b", te_b},
-		{"c", te_c},
-		{NULL, te_unknown}
+		{"a", te_a, "test A"},
+		{"b", te_b, "test B"},
+		{"c", te_c, "test C"},
+		{NULL, te_unknown, ""}
 	};
 	const TDictMap<ETest> map(table, true);
 

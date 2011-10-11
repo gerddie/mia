@@ -290,11 +290,11 @@ C2DImageCost *C2DNFGImageCostPlugin::do_create()const
 	TRACE("C2DNFGImageCostPlugin::do_create");
 
 	const TDictMap<ESubTypes>::Table lut[] = {
-		{"sq", st_delta},
-		{"ds", st_delta_scalar},
-		{"dot", st_scalar},
-		{"cross", st_cross},
-		{0, st_unknown}
+		{"sq", st_delta, "square of difference"},
+		{"ds", st_delta_scalar, "square of scaled difference"},
+		{"dot", st_scalar, "scalar product kernel"},
+		{"cross", st_cross, "cross product kernel"},
+		{0, st_unknown, ""}
 	};
 	const TDictMap<ESubTypes> subtypemap(lut);
 

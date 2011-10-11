@@ -118,13 +118,13 @@ P2DImage binary_op(const C2DBitImage& a, const C2DBitImage& b, EBinops op)
 
 
 const TDictMap<EBinops>::Table g_binops_table[] = {
-	{"or", bin_or}, 
-	{"nor", bin_nor}, 
-	{"and", bin_and}, 
-	{"nand", bin_nand}, 
-	{"xor", bin_xor}, 
-	{"nxor", bin_nxor}, 
-	{NULL,bin_unknown}, 
+	{"or", bin_or, "logocal or"}, 
+	{"nor", bin_nor, "logocal nor"}, 
+	{"and", bin_and, "logocal and"}, 
+	{"nand", bin_nand, "logocal nand"}, 
+	{"xor", bin_xor, "logocal xor"}, 
+	{"nxor", bin_nxor, "logocal nxor"}, 
+	{NULL,bin_unknown, ""}, 
 }; 
 
 const TDictMap<EBinops> g_binops_dict(g_binops_table);
