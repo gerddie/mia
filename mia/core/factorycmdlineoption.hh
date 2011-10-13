@@ -110,8 +110,9 @@ void TCmdFactoryOption<F>::do_write_value(std::ostream& os) const
 template <typename F>
 void TCmdFactoryOption<F>::do_get_long_help(std::ostream& os) const
 {
-	os << "; give as 'plugin:param1=x,param2=y,...'\nSupported plugins with parameters are:\n\n"; 
-	F::instance().print_short_help(os);
+	os << "; give as 'plugin:param1=x,param2=y,...'\n"; 
+	os << "For help on supported plugins and parameters run:\n"; 
+	os << "   mia-plugin-help " << F::instance().get_search_descriptor() <<"\n"; 
 }
 
 template <typename F>

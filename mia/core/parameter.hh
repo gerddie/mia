@@ -308,7 +308,7 @@ template <typename T>
 void CDictParameter<T>::do_descr(std::ostream& os) const
 {
 	for (auto i = m_dict.get_help_begin(); i != m_dict.get_help_end(); ++i) {
-		os << "\n  " << i->first << ": " << i->second; 
+		os << "\n\t  " << i->first << ": " << i->second; 
 	}
 }
 

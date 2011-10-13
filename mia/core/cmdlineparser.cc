@@ -40,6 +40,7 @@
 #include <mia/core/tools.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
+#include <mia/core/fixedwidthoutput.hh>
 
 extern void print_full_copyright(const char *name);
 
@@ -236,8 +237,8 @@ struct CCmdOptionListData {
 	void print_usage(const char *name_help) const;
 
 	vector<const char *> has_unset_required_options() const; 
-	size_t write(size_t pos, size_t tab1, size_t width, const string& s)const; 
-	void writeln(size_t pos, size_t tab1, size_t width, const string& s) const; 
+//	size_t write(size_t pos, size_t tab1, size_t width, const string& s)const; 
+//	void writeln(size_t pos, size_t tab1, size_t width, const string& s) const; 
 
 	string m_general_help; 
 	string m_program_group;  
@@ -293,7 +294,6 @@ const std::string CCmdSetOption::do_get_value_as_string() const
 
 const char *g_help_optiongroup="Help & Info"; 
 const char *g_basic_copyright = 
-        "Copyright:\n"
 	"This software is copyright (c) Gert Wollny et al. "
 	"It comes with  ABSOLUTELY NO WARRANTY and you may redistribute it "
 	"under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later). "
@@ -408,6 +408,7 @@ vector<const char *> CCmdOptionListData::has_unset_required_options() const
 	return result; 
 }
 
+#if 0 
 void CCmdOptionListData::writeln(size_t pos, size_t tab1, size_t width, const string& s) const 
 {
 	write(pos, tab1, width, s); 
@@ -459,6 +460,7 @@ size_t  CCmdOptionListData::write(size_t pos, size_t tab1, size_t width, const s
 	}
 	return pos; 
 }
+#endif
 
 #ifdef HAVE_LIBXMLPP
 using xmlpp::Element; 
@@ -538,16 +540,20 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 		
 	} 
 #endif
+	CFixedWidthOutput console(clog, max_width); 
 
 	vector<string> opt_table;
 	vector<string> help_table;
 	size_t pos; 
 	
-	pos = write(0, 0, max_width, "\nProgram group:  "); 
-	writeln(pos, 0, max_width, m_program_group); 
-	write(0, 0, max_width, "\n  "); 
-	writeln(2, 2, max_width, m_general_help); 
+	console.write("\nProgram group:  "); 
+	console.write(m_program_group); 
+	console.push_offset(4); 
+	console.newline(); 
 	
+	console.write(m_general_help);
+	console.pop_offset();
+	console.newline(); 
 	
 	stringstream usage_text; 
 	usage_text <<"  " <<name_help << " "; 
@@ -596,35 +602,42 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 	if (has_additional) 
 		usage_text << " [<Additional parameters>]"; 
 
-	writeln(0, 0, max_width, "Basic usage:\n"); 
-	writeln(4, 4, max_width, usage_text.str()); 
+	console.write("\nBasic usage:"); 
+	console.push_offset(4); 
+	console.write(usage_text.str()); 
+	console.pop_offset(); 
+	console.newline(); 
 
-
-
-	writeln(0, 0, max_width, "\nThe program supports the following command line options:"); 
-
+	console.write("\nThe program supports the following command line options:");
+	console.push_offset(opt_size+1); 
+		
 	auto t  = opt_table.begin();
 	for (auto i = help_table.begin(); i != help_table.end(); ++i, ++t) {
-		clog << setw(opt_size) << *t << " ";
+		clog <<'\n'<< setw(opt_size) << *t << " ";
 		if (t->length() > opt_size) 
 			clog << "\n " << setw(opt_size) << " "; 
-		writeln(opt_size+1, opt_size+1, max_width, *i); 
+		console.write(*i);
 	}
-	
-	if (!m_program_example_descr.empty() && !m_program_example_code.empty()) { 
-		write(0,0, max_width, "\n\nExample usage:\n"); 
-		write(0,0, max_width,"  "); 
-		writeln(2,2, max_width, m_program_example_descr);
-		write(0,0, max_width,"    "); 
-		pos = write(4, 4, max_width, name_help); 
-		pos = write(pos, 4, max_width, " "); 
-		writeln(pos, 4, max_width, m_program_example_code);
-		write(0,0, max_width, "\n");
-	}
-	
-	writeln(0, 2, max_width, g_basic_copyright); 
-	clog << setiosflags(ios_base::right);
+	console.pop_offset();
 
+	if (!m_program_example_descr.empty() && !m_program_example_code.empty()) { 
+		console.write("\n\nExample usage:\n"); 
+		console.push_offset(2);
+		console.write(m_program_example_descr); 
+		console.push_offset(2);
+		console.write(name_help); 
+		console.write(" "); 
+		console.write(m_program_example_code);
+		console.reset_offset(); 
+		console.write("\n"); 
+	}
+	
+	console.write("\n\nCopyright:");
+	console.push_offset(2);
+	console.write(g_basic_copyright);
+	console.pop_offset(); 
+	console.write("\n");
+	clog << setiosflags(ios_base::right);
 
 }
 

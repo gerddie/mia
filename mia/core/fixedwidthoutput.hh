@@ -33,9 +33,8 @@ public:
 	void pop_offset();  
 	void reset_offset();  
 	void write(const std::string& text);
-private: 
 	void newline(); 
-
+private: 
 	std::ostream& m_os; 
 	size_t m_width; 
 	size_t m_pos; 
