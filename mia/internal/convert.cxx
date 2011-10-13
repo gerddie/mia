@@ -203,8 +203,8 @@ typename TConvert<Image>::result_type TConvert<Image>::do_filter(const Image& im
 template <class Image>
 TConvertFilterPlugin<Image>::TConvertFilterPlugin():
 	TImageFilterPlugin<Image>("convert"), 
-	m_pixeltype("ubyte"), 
-	m_convert("opt"),  
+	m_pixeltype(it_ubyte), 
+	m_convert(pc_opt),  
 	m_a(1.0), 
 	m_b(0.0)
 {
@@ -214,21 +214,18 @@ TConvertFilterPlugin<Image>::TConvertFilterPlugin():
 	this->add_parameter("b", new CFloatParameter(m_b, -std::numeric_limits<float>::max(), 
 					       std::numeric_limits<float>::max(), false, 
 					       "linear conversion parameter b")); 
-	this->add_parameter("repn",new CStringParameter(m_pixeltype, false, "output pixel type")); 
-	this->add_parameter("map", new CStringParameter(m_convert, false, "conversion mapping"));
+	this->add_parameter("repn",new CDictParameter<EPixelType>(m_pixeltype, CPixelTypeDict, "output pixel type")); 
+	this->add_parameter("map", new CDictParameter<EPixelConversion>(m_convert, CPixelConversionDict, "conversion mapping"));
 
 }
 
 template <class Image>
 TImageFilter<Image> *TConvertFilterPlugin<Image>::do_create()const
 {
-	EPixelType pt = CPixelTypeDict.get_value(m_pixeltype.c_str());
-	EPixelConversion ct = CPixelConversionDict.get_value(m_convert.c_str()); 
-
-	if (pt == it_bit)
+	if (m_pixeltype == it_bit)
 		throw invalid_argument("TConvert: for conversion to bit images you better use the 'binarize' filter"); 
 
-	return new TConvert<Image>(pt,ct,m_a,m_b);
+	return new TConvert<Image>(m_pixeltype,m_convert,m_a,m_b);
 }
 
 template <class Image>

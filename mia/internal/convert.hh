@@ -75,8 +75,8 @@ private:
 	virtual TImageFilter<Image> *do_create()const;
 	virtual const std::string do_get_descr()const; 
 	
-	std::string m_pixeltype; 
-	std::string m_convert; 
+	EPixelType m_pixeltype; 
+	EPixelConversion m_convert; 
 	float m_a; 
 	float m_b; 
 
