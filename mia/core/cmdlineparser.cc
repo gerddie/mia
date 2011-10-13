@@ -237,9 +237,6 @@ struct CCmdOptionListData {
 	void print_usage(const char *name_help) const;
 
 	vector<const char *> has_unset_required_options() const; 
-//	size_t write(size_t pos, size_t tab1, size_t width, const string& s)const; 
-//	void writeln(size_t pos, size_t tab1, size_t width, const string& s) const; 
-
 	string m_general_help; 
 	string m_program_group;  
 	string m_program_example_descr;
@@ -408,59 +405,6 @@ vector<const char *> CCmdOptionListData::has_unset_required_options() const
 	return result; 
 }
 
-#if 0 
-void CCmdOptionListData::writeln(size_t pos, size_t tab1, size_t width, const string& s) const 
-{
-	write(pos, tab1, width, s); 
-	clog << '\n'; 
-}
-
-size_t  CCmdOptionListData::write(size_t pos, size_t tab1, size_t width, const string& s) const 
-{
-	auto is = s.begin(); 
-	auto es = s.end(); 
-
-	while (is != es) {
-		if (*is == '\n') {
-			clog << '\n'; 
-			if(tab1) {
-				clog << setw(tab1) << " "; 
-			}
-			pos = tab1;
-			*is++;
-		}else if (isspace(*is)) {
-			++pos; 
-			clog << *is++; 
-		}else {
-			auto hs = is;
-			size_t endpos = pos; 
-			
-			// search end of next word 
-			while (*hs != *es && !isspace(*hs)) {
-				++endpos;
-				++hs; 
-			}
-			// word fits, so write it 
-			if (endpos < width) {
-				pos = endpos; 
-				while (is != hs) 
-					clog << *is++;
-			}else { //  newline, tab and write word regardless of size 
-				clog << '\n';
-				if (tab1) {
-					clog << setw(tab1) << " "; 
-				}
-				pos = tab1; 
-				while (is != hs) {
-					clog << *is++;
-					++pos;
-				}
-			}
-		}
-	}
-	return pos; 
-}
-#endif
 
 #ifdef HAVE_LIBXMLPP
 using xmlpp::Element; 
@@ -539,6 +483,8 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 			max_width = max_opt_width + 20; 
 		
 	} 
+	if (max_width > 100) 
+		max_width = 100; 
 #endif
 	CFixedWidthOutput console(clog, max_width); 
 
@@ -548,9 +494,9 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 	
 	console.write("\nProgram group:  "); 
 	console.write(m_program_group); 
+
 	console.push_offset(4); 
-	console.newline(); 
-	
+	console.write("\n\n"); 
 	console.write(m_general_help);
 	console.pop_offset();
 	console.newline(); 
@@ -602,38 +548,46 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 	if (has_additional) 
 		usage_text << " [<Additional parameters>]"; 
 
-	console.write("\nBasic usage:"); 
 	console.push_offset(4); 
+	console.write("Basic usage:\n"); 
 	console.write(usage_text.str()); 
 	console.pop_offset(); 
 	console.newline(); 
 
 	console.write("\nThe program supports the following command line options:");
-	console.push_offset(opt_size+1); 
+
 		
 	auto t  = opt_table.begin();
 	for (auto i = help_table.begin(); i != help_table.end(); ++i, ++t) {
-		clog <<'\n'<< setw(opt_size) << *t << " ";
+		console.write(*t); 
+		console.push_offset(opt_size+1); 
 		if (t->length() > opt_size) 
-			clog << "\n " << setw(opt_size) << " "; 
+			console.newline(); 
+		else 
+			for (size_t i = t->length(); i <= opt_size; ++i) 
+				console.write(" ");
 		console.write(*i);
+		console.pop_offset(); 
+		console.newline(); 
 	}
-	console.pop_offset();
+	console.write("\n\n"); 
 
 	if (!m_program_example_descr.empty() && !m_program_example_code.empty()) { 
-		console.write("\n\nExample usage:\n"); 
 		console.push_offset(2);
+		console.write("Example usage:\n"); 
 		console.write(m_program_example_descr); 
 		console.push_offset(2);
+		console.newline(); 
 		console.write(name_help); 
 		console.write(" "); 
 		console.write(m_program_example_code);
 		console.reset_offset(); 
-		console.write("\n"); 
+		console.newline();
 	}
 	
-	console.write("\n\nCopyright:");
+	console.write("\n\n"); 
 	console.push_offset(2);
+	console.write("Copyright:\n");
 	console.write(g_basic_copyright);
 	console.pop_offset(); 
 	console.write("\n");

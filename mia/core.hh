@@ -28,6 +28,7 @@
 #include <mia/core/errormacro.hh>
 #include <mia/core/filetools.hh>
 #include <mia/core/filter.hh>
+#include <mia/core/fixedwidthoutput.hh>
 #include <mia/core/history.hh>
 #include <mia/core/histogram.hh>
 #include <mia/core/iohandler.hh>

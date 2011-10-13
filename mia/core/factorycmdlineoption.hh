@@ -111,8 +111,8 @@ template <typename F>
 void TCmdFactoryOption<F>::do_get_long_help(std::ostream& os) const
 {
 	os << "; give as 'plugin:param1=x,param2=y,...'\n"; 
-	os << "For help on supported plugins and parameters run:\n"; 
-	os << "   mia-plugin-help " << F::instance().get_search_descriptor() <<"\n"; 
+	os << "For help on supported plugins and parameters run from the command line:\n"; 
+	os << "   'mia-plugin-help " << F::instance().get_search_descriptor() <<"'\n"; 
 }
 
 template <typename F>

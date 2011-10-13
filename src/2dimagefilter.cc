@@ -93,14 +93,13 @@ int do_main( int argc, const char *argv[] )
 
 	CCmdOptionList options(program_info);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o',
-			      "output image(s) that have been filtered", CCmdOption::required));
-	options.add(g_help_optiongroup, 
-		    make_help_opt( "help-plugins", 0,
+	options.add(make_opt( out_filename, "out-file", 'o', "output image(s) that have been filtered", CCmdOption::required));
+	options.set_group(g_help_optiongroup); 
+	options.add(make_help_opt( "help-plugins", 0,
 				   "give some help about the filter plugins", 
 				   new TPluginHandlerHelpCallback<C2DFilterPluginHandler>));
 	
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, true) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 
@@ -130,8 +129,6 @@ int do_main( int argc, const char *argv[] )
 		  }
 		); 
 		
-	if (want_help) 
-		return EXIT_SUCCESS; 
 	auto in_image_list = imageio.load(in_filename);
 	if (!in_image_list || in_image_list->empty()) {
 		THROW(invalid_argument, "No images found in " << in_filename); 

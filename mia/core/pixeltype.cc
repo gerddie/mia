@@ -35,7 +35,7 @@ const TDictMap<EPixelType>::Table PixelTypeTable[] = {
 	{"ulong", it_ulong}, "signed 64 bit",
 #endif
 	{"float", it_float, "single floating point values (32 bit)"},
-	{"double",it_double, "souble floating point values (64 bit)"},
+	{"double",it_double, "double floating point values (64 bit)"},
 	{NULL, it_unknown, ""}
 };
 const TDictMap<EPixelType> CPixelTypeDict(PixelTypeTable);
@@ -43,10 +43,10 @@ const TDictMap<EPixelType> CPixelTypeDict(PixelTypeTable);
 
 const TDictMap<EPixelConversion>::Table ConversionTypeTable[] = {
 	{"copy", pc_copy, "copy data when converting"},
-	{"linear", pc_linear, "apply linear transform x-> ax+b"},
-	{"range", pc_range, "apply linear transform that maps input data type range to output data type range"},
-	{"opt", pc_opt, "apply a linear transform that applies the real input range to map to the full output range"},
-	{"optstat", pc_opt_stat, "apply a linear transform that mappes based on input mean and variation the full output range"},
+	{"linear", pc_linear, "apply linear transformation x -> a*x+b"},
+	{"range", pc_range, "apply linear transformation that maps the input data type range to the output data type range"},
+	{"opt", pc_opt, "apply a linear transformation that maps the real input range to the full output range"},
+	{"optstat", pc_opt_stat, "apply a linear transform that maps based on input mean and variation to the full output range"},
 	{NULL, pc_unknown, ""}
 };
 const TDictMap<EPixelConversion> CPixelConversionDict(ConversionTypeTable);

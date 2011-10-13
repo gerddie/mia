@@ -38,7 +38,6 @@ void CFixedWidthOutput::push_offset(size_t offset)
 {
 	m_stack.push(m_offset); 
 	m_offset += offset;
-	newline(); 
 }
 
 void CFixedWidthOutput::pop_offset()
@@ -50,8 +49,10 @@ void CFixedWidthOutput::pop_offset()
 
 void CFixedWidthOutput::reset_offset()
 {
-	while (!m_stack.empty()) 
+	while (!m_stack.empty()) {
 		m_stack.pop(); 
+	}
+	m_offset = 0;
 }
 
 void CFixedWidthOutput::newline()
@@ -70,14 +71,22 @@ void CFixedWidthOutput::write(const std::string& text)
 	while (is != es) {
 		if (*is == '\n') {
 			newline(); 
-			is++;
+			++is;
+		}else if (*is == '\t') {
+			if (m_pos + 8 < m_width) {
+				m_pos += 8; 
+				m_os << setw(8) << " "; 
+			}else {
+				newline(); 
+			}
+			++is; 
 		}else if (isspace(*is)) {
 			++m_pos;
 			if (m_pos < m_width) 
 				m_os << *is; 
-			else 
+			else
 				newline(); 
-			is++; 
+			++is; 
 		}else {
 			auto hs = is;
 			size_t endpos = m_pos; 

@@ -98,35 +98,36 @@ static const char *program_info =
 int main( int argc, const char *argv[] )
 {
 
-	string in_filename;
-	string out_filename;
-	string out_type;
-	vector<string> filter_chain;
-	bool help_plugins = false;
-
-	const C2DFilterPluginHandler::Instance& filter_plugins = C2DFilterPluginHandler::instance();
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
-
-	stringstream filter_names(program_info);
-
-	filter_names << "filters in the order to be applied (out of: " << filter_plugins.get_plugin_names() << ")";
-
-
-	CCmdOptionList options(program_info);
-	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name base", CCmdOption::required));
-	options.add(make_opt( out_type, imageio.get_set(), "type", 't',"output file type", CCmdOption::required));
-	
-	options.add(make_help_opt( "help-plugins", 0,
-					 "give some help about the filter plugins", 
-					 new TPluginHandlerHelpCallback<C2DFilterPluginHandler>)); 
 	try {
+		string in_filename;
+		string out_filename;
+		string out_type;
+		bool help_plugins = false;
+		
+		const C2DFilterPluginHandler::Instance& filter_plugins = C2DFilterPluginHandler::instance();
+		const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+		
+		stringstream filter_names(program_info);
+		
+		filter_names << "filters in the order to be applied (out of: " << filter_plugins.get_plugin_names() << ")";
+		
+		
+		CCmdOptionList options(program_info);
+		options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
+		options.add(make_opt( out_filename, "out-file", 'o', "output file name base", CCmdOption::required));
+		options.add(make_opt( out_type, imageio.get_set(), "type", 't',"output file type", CCmdOption::required));
+		
+		options.set_group(g_help_optiongroup); 
+		options.add(make_help_opt( "help-plugins", 0,
+					   "give some help about the filter plugins", 
+					   new TPluginHandlerHelpCallback<C2DFilterPluginHandler>)); 
+		
 		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 
-
-
+		
+		
 		vector<const char *> filter_chain = options.get_remaining();
-
+		
 		cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
 		cvdebug() << "supported filters: " << filter_plugins.get_plugin_names() << "\n";
 
@@ -156,7 +157,7 @@ int main( int argc, const char *argv[] )
 
 		list<P2DFilter> filters;
 
-		for (vector<const char *>::const_iterator i = filter_chain.begin();
+		for (auto i = filter_chain.begin();
 		     i != filter_chain.end(); ++i) {
 			cvdebug() << "Prepare filter " << *i << endl;
 			auto filter = filter_plugins.produce(*i);
