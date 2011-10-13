@@ -92,21 +92,20 @@ map<string, const CPluginHandlerBase*> collect_handlers()
 int main( int argc, const char *argv[] )
 {
 	try {
-		bool list_available_descriptors = false; 
 
 		CCmdOptionList options(description);
-		options.add(make_opt( list_available_descriptors, "list-availabel", 'l', "List all available plug-in descriptors"));
 		if (options.parse(argc, argv, true) != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 
 		
-		
 		auto handlers = collect_handlers(); 
 		
-		if (list_available_descriptors) {
-			clog << "descriptors: \n"; 
+		if (argc == 1) {
+			clog << "The following plugin-descriptors are available. To list the plug-ins of a descriptor "; 
+			clog << "run: 'mia-plugin-help <descriptor>'\n\n"; 
 			for (auto h = handlers.begin(); h != handlers.end(); ++h) {
 				clog << "  " << h->first << "\n"; 
 			}
+			clog << "\n"; 
 			return EXIT_SUCCESS; 
 		}
 
