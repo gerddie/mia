@@ -33,6 +33,7 @@ SET(MIACORE_SRC_BASE
   file.cc 
   filetools.cc 
   filter.cc
+  fixedwidthoutput.cc
   fft1d_r2c.cc 
   fftslopeclassifier.cc
   flagstring.cc
@@ -101,6 +102,7 @@ SET(MIACORE_HEADER_BASE
   file.hh
   filetools.hh
   filter.hh
+  fixedwidthoutput.hh
   fft1d_r2c.hh
   fftslopeclassifier.hh
   flagstring.hh
@@ -301,6 +303,7 @@ NEW_TEST(tools miacore)
 NEW_TEST(utils miacore)
 NEW_TEST(Vector miacore)
 NEW_TEST(waveletslopeclassifier miacore)
+NEW_TEST(fixedwidthoutput miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)
