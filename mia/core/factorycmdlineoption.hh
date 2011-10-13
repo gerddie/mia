@@ -60,10 +60,10 @@ public:
 	TCmdFactoryOption(typename F::ProductPtr& val, char short_opt, const char *long_opt,
 			   const char *long_help, const char *short_help, CCmdOption::Flags flags);
 private:
-	virtual bool do_set_value_really(const char *str_value);
+	virtual bool do_set_value(const char *str_value);
 	virtual size_t do_get_needed_args() const;
 	virtual void do_write_value(std::ostream& os) const;
-	virtual void do_get_long_help_really(std::ostream& os) const;
+	virtual void do_get_long_help(std::ostream& os) const;
 	virtual const std::string do_get_value_as_string() const;
 
 	typename F::ProductPtr& m_value;
@@ -83,7 +83,7 @@ TCmdFactoryOption<F>::TCmdFactoryOption(typename F::ProductPtr& val, char short_
 }
 
 template <typename F>
-bool TCmdFactoryOption<F>::do_set_value_really(const char *str_value)
+bool TCmdFactoryOption<F>::do_set_value(const char *str_value)
 {
 	m_value = F::instance().produce(str_value); 
 	return !(!m_value); 
@@ -108,7 +108,7 @@ void TCmdFactoryOption<F>::do_write_value(std::ostream& os) const
 }
 
 template <typename F>
-void TCmdFactoryOption<F>::do_get_long_help_really(std::ostream& os) const
+void TCmdFactoryOption<F>::do_get_long_help(std::ostream& os) const
 {
 	os << "; give as 'plugin:param1=x,param2=y,...'\nSupported plugins with parameters are:\n\n"; 
 	F::instance().print_short_help(os);

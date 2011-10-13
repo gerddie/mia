@@ -122,6 +122,8 @@ DEFEXE(3dmany2one-nonrigid  mia3d )
 DEFEXE(3dprealign-nonrigid mia3d )
 DEFEXE(3dseries-track-intensity mia3d )
 
+DEFEXE(plugin-help miamesh )
+
 ADD_EXECUTABLE(mia-test-plugins-as-installed test_plugins_as_installed.cc)  
 TARGET_LINK_LIBRARIES(mia-test-plugins-as-installed miamesh)
 TARGET_LINK_LIBRARIES(mia-test-plugins-as-installed ${BOOST_UNITTEST})

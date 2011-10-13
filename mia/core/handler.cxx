@@ -30,8 +30,8 @@
 #include <climits> 
 
 #include <boost/regex.hpp>
-#include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <mia/core/bfsv23dispatch.hh>
 
 #include <mia/core/module.hh>
 #include <mia/core/plugin_base.hh>
@@ -92,6 +92,12 @@ void TPluginHandler<I>::global_searchpath(list<bfs::path>& searchpath)
 		
 		searchpath.push_back( subdir ); 
 	}	
+}
+
+template <typename I>
+const std::string TPluginHandler<I>::get_search_descriptor() const
+{
+	return TPlugin<typename I::PlugData,typename I::PlugType>::search_path().string(); 
 }
 
 template <typename I>

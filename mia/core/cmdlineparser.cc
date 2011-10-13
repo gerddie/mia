@@ -120,11 +120,6 @@ void   CCmdOption::write_value(std::ostream& os) const
 	do_write_value(os);
 }
 
-void CCmdOption::set_value(const char *str_value)
-{
-	do_set_value(str_value);
-}
-
 const std::string CCmdOption::get_value_as_string() const
 {
 	return do_get_value_as_string();
@@ -140,9 +135,11 @@ size_t CCmdOption::do_get_needed_args() const
 	return 1; 
 }
 
+#if 0 
 void CCmdOption::do_get_long_help(std::ostream& /*os*/) const
 {
 }
+#endif 
 
 void CCmdOption::do_print_short_help(std::ostream& os) const
 {
@@ -165,12 +162,12 @@ void CCmdOption::do_get_opt_help(std::ostream& os) const
 	os << " ";
 }
 
-void CCmdOption::do_set_value(const char *str_value)
+void CCmdOption::set_value(const char *str_value)
 {
 	bool result;
 
 	try {
-		result = do_set_value_really(str_value);
+		result = do_set_value(str_value);
 	}
 
 	catch (std::invalid_argument& x) {
@@ -258,7 +255,7 @@ CCmdSetOption::CCmdSetOption(std::string& val, const std::set<std::string>& set,
 }
 
 
-bool CCmdSetOption::do_set_value_really(const char *str_value)
+bool CCmdSetOption::do_set_value(const char *str_value)
 {
 	if (m_set.find(str_value) == m_set.end())
 		return false;
@@ -873,7 +870,7 @@ void CHelpOption::print(std::ostream& os) const
 	m_callback->print(os);
 }
 
-bool CHelpOption::do_set_value_really(const char */*str_value*/)
+bool CHelpOption::do_set_value(const char */*str_value*/)
 {
 	print(clog); 
 	exit(0); 
@@ -881,6 +878,10 @@ bool CHelpOption::do_set_value_really(const char */*str_value*/)
 size_t CHelpOption::do_get_needed_args() const
 {
 	return 0; 
+}
+
+void CHelpOption::do_get_long_help(std::ostream& os) const
+{
 }
 
 void CHelpOption::do_write_value(std::ostream& /*os*/) const
@@ -913,7 +914,7 @@ const std::string CCmdFlagOption::do_get_value_as_string() const
 }
 
 
-bool CCmdFlagOption::do_set_value_really(const char *str_value)
+bool CCmdFlagOption::do_set_value(const char *str_value)
 {
 	m_value = m_map.get(str_value);
 	return true;
