@@ -48,10 +48,11 @@ NS_MIA_BEGIN
 using namespace std;
 
 CCmdOption::CCmdOption(char short_opt, const char *long_opt, 
-		       const char *long_help, Flags flags):
+		       const char *long_help, const char *short_help, Flags flags):
 	m_short_opt(short_opt), 
 	m_long_opt(long_opt),
 	m_long_help(long_help), 
+	m_short_help(short_help),
 	m_flags(flags)
 {
         assert(long_opt);
@@ -80,6 +81,7 @@ void CCmdOption::print_short_help(std::ostream& os) const
 
 void CCmdOption::get_long_help(std::ostream& os) const
 {
+	os << long_help();
 	do_get_long_help(os);
 }
 
@@ -108,18 +110,9 @@ bool CCmdOption::is_required() const
 	return (m_flags & required ) == required; 
 }
 
-void CCmdOption::do_get_long_help(std::ostream& /* os */) const
-{
-}
-
 void CCmdOption::get_opt_help(std::ostream& os) const
 {
 	do_get_opt_help(os);
-}
-
-void CCmdOption::do_get_opt_help(std::ostream& os) const
-{
-	os << m_long_help;
 }
 
 void   CCmdOption::write_value(std::ostream& os) const
@@ -142,52 +135,26 @@ const std::string CCmdOption::do_get_value_as_string() const
 	return "";
 }
 
-struct CCmdOptionData {
-	CCmdOptionData(const char *short_help);
-	const char *m_short_help;
-};
+size_t CCmdOption::do_get_needed_args() const
+{
+	return 1; 
+}
 
-CCmdOptionData::CCmdOptionData(const char *short_help):
-	m_short_help(short_help)
+void CCmdOption::do_get_long_help(std::ostream& /*os*/) const
 {
 }
 
-CCmdOptionValue::CCmdOptionValue(char short_opt, const char *long_opt, 
-				 const char *long_help, 
-				 const char *short_help, Flags flags):
-	CCmdOption(short_opt, long_opt, long_help, flags),
-	m_impl(new CCmdOptionData(short_help))
+void CCmdOption::do_print_short_help(std::ostream& os) const
 {
-}
-
-const char *CCmdOptionValue::get_short_help() const
-{
-	return m_impl->m_short_help;
-}
-
-void CCmdOptionValue::do_print_short_help(std::ostream&   os  ) const
-{
-	if ( get_short_option() ) {
-		os << '-' << get_short_option(); 
-		if (  get_short_help() )
-			os << " " << get_short_help();
+	if ( m_short_opt ) {
+		os << '-' << m_short_opt; 
+		if (  m_short_help )
+			os << " " << m_short_help;
 		os  << " ";
 	}
 }
 
-void CCmdOptionValue::do_get_long_help(std::ostream& os) const
-{
-	os << long_help();
-	do_get_long_help_really(os);
-}
-
-void CCmdOptionValue::do_get_long_help_really(std::ostream& /*os*/) const
-{
-
-}
-
-
-void CCmdOptionValue::do_get_opt_help(std::ostream& os) const
+void CCmdOption::do_get_opt_help(std::ostream& os) const
 {
 	if ( get_short_option() )
 		os  << "  -" << get_short_option() << " ";
@@ -198,7 +165,7 @@ void CCmdOptionValue::do_get_opt_help(std::ostream& os) const
 	os << " ";
 }
 
-void CCmdOptionValue::do_set_value(const char *str_value)
+void CCmdOption::do_set_value(const char *str_value)
 {
 	bool result;
 
@@ -221,7 +188,7 @@ void CCmdOptionValue::do_set_value(const char *str_value)
 	clear_required();
 }
 
-void CCmdOptionValue::do_add_option(CShortoptionMap& sm, CLongoptionMap& lm)
+void CCmdOption::do_add_option(CShortoptionMap& sm, CLongoptionMap& lm)
 {
 	TRACE_FUNCTION;
 	if (get_short_option() != 0) {
@@ -235,11 +202,6 @@ void CCmdOptionValue::do_add_option(CShortoptionMap& sm, CLongoptionMap& lm)
 		       "don't add the same long option twice");
 		lm[get_long_option()] = this;
 	}
-}
-
-CCmdOptionValue::~CCmdOptionValue()
-{
-	delete m_impl;
 }
 
 struct CCmdOptionListData {
@@ -274,7 +236,7 @@ struct CCmdOptionListData {
 	void print_help_xml(const char *progname, bool has_additional) const; 
 #endif
 	void print_help(const char *name_help, bool has_additional) const;
-	void print_usage() const;
+	void print_usage(const char *name_help) const;
 
 	vector<const char *> has_unset_required_options() const; 
 	size_t write(size_t pos, size_t tab1, size_t width, const string& s)const; 
@@ -289,7 +251,7 @@ struct CCmdOptionListData {
 CCmdSetOption::CCmdSetOption(std::string& val, const std::set<std::string>& set, 
 			     char short_opt, const char *long_opt, const char *long_help,
 			     const char *short_help, Flags flags):
-	CCmdOptionValue(short_opt, long_opt, long_help, short_help,  flags),
+	CCmdOption(short_opt, long_opt, long_help, short_help,  flags),
 	m_value(val),
 	m_set(set)
 {
@@ -314,7 +276,7 @@ void CCmdSetOption::do_write_value(std::ostream& os) const
 	os << "=" << m_value;
 }
 
-void CCmdSetOption::do_get_long_help_really(std::ostream& os) const
+void CCmdSetOption::do_get_long_help(std::ostream& os) const
 {
 	if (m_set.size() > 0) {
 		os << "\n(" ;
@@ -669,9 +631,10 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 
 }
 
-void CCmdOptionListData::print_usage() const
+void CCmdOptionListData::print_usage(const char *name) const
 {
-	clog << "Usage: ";
+	clog << "Usage:\n";
+	clog << "  " << name << " ";
 	for (COptionsMap::const_iterator i = options.begin();
 	     i != options.end(); ++i) {
 		COptionsGroup::const_iterator g_i = i->second.begin();
@@ -832,7 +795,7 @@ CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
 		return hr_help_xml;
 #endif 
 	} else if (m_impl->usage) {
-		m_impl->print_usage();
+		m_impl->print_usage(name_help);
 		return hr_usage;
 	} else if (m_impl->copyright) {
 		::print_full_copyright(name_help);
@@ -900,7 +863,7 @@ CHistoryRecord CCmdOptionList::get_values() const
 }
 
 CHelpOption::CHelpOption(Callback *cb, char short_opt, const char *long_opt, const char *long_help):
-	CCmdOptionValue(short_opt, long_opt, long_help, NULL, not_required), 
+	CCmdOption(short_opt, long_opt, long_help, NULL, not_required), 
 	m_callback(cb)
 {
 }
@@ -928,7 +891,7 @@ CCmdFlagOption::CCmdFlagOption(int& val, const CFlagString& map, char short_opt,
 			       const char *long_opt, const char *long_help, 
 			       const char *short_help, 
 			       CCmdOption::Flags flags):
-	CCmdOptionValue(short_opt, long_opt, long_help,short_help, flags),
+	CCmdOption(short_opt, long_opt, long_help,short_help, flags),
 	m_value(val),
 	m_map(map)
 {
@@ -939,7 +902,7 @@ void CCmdFlagOption::do_write_value(std::ostream& os) const
 	os << m_map.get(m_value);
 }
 
-void CCmdFlagOption::do_get_long_help_really(std::ostream& os) const
+void CCmdFlagOption::do_get_long_help(std::ostream& os) const
 {
 	os << " supported flags:(" <<m_map.get_flagnames() << os << ")";
 }

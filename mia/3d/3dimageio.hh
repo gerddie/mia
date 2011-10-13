@@ -51,7 +51,7 @@ typedef TIOHandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> > C3DImageIOPlugi
 typedef C3DImageIOPluginHandler::Instance::DataKey C3DImageDataKey;
 typedef C3DImageIOPluginHandler::Instance::PData P3DImageVector;
 
-struct C3DImageIOPluginHandlerTestPath {
+struct EXPORT_3D C3DImageIOPluginHandlerTestPath {
 	C3DImageIOPluginHandlerTestPath(); 
 }; 
 

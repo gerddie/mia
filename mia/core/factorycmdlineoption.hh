@@ -45,7 +45,7 @@ NS_MIA_BEGIN
 */
 
 template <typename F>
-class TCmdFactoryOption: public  CCmdOptionValue{
+class TCmdFactoryOption: public  CCmdOption{
 
 public:
         /** Constructor of the command option
@@ -77,7 +77,7 @@ TCmdFactoryOption<F>::TCmdFactoryOption(typename F::ProductPtr& val, char short_
 					const char *long_opt,
 					const char *long_help, const char *short_help, 
 					CCmdOption::Flags flags):
-	CCmdOptionValue( short_opt, long_opt, long_help, short_help, flags ),
+	CCmdOption( short_opt, long_opt, long_help, short_help, flags ),
 	m_value( val )
 {
 }

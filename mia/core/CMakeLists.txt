@@ -37,6 +37,7 @@ SET(MIACORE_SRC_BASE
   fftslopeclassifier.cc
   flagstring.cc
   fullstats.cc
+  handlerbase.cc
   history.cc
   index.cc
   info.cc
@@ -104,6 +105,7 @@ SET(MIACORE_HEADER_BASE
   fftslopeclassifier.hh
   flagstring.hh
   fullstats.hh
+  handlerbase.hh
   handler.cxx handler.hh
   history.hh
   histogram.hh

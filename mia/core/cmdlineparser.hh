@@ -95,7 +95,8 @@ public:
 	    \param long_help a long help string
 	    @param flags option flags 
         */
-	CCmdOption(char short_opt, const char *long_opt, const char *long_help, Flags flags);
+	CCmdOption(char short_opt, const char *long_opt, const char *long_help, 
+		   const char *short_help, Flags flags);
 
         /// ensure virtual destruction
 	virtual ~CCmdOption();
@@ -156,64 +157,30 @@ protected:
 	/// clear the "required" flag 
 	void clear_required(); 
 private:
-	virtual void do_add_option(CShortoptionMap& sm, CLongoptionMap& lm)  = 0;
-	virtual void do_set_value(const char *str_value) = 0;
-	virtual size_t do_get_needed_args() const = 0;
-	virtual void do_write_value(std::ostream& os) const = 0;
-
-	virtual void do_print_short_help(std::ostream& os) const = 0;
-	virtual void do_get_long_help(std::ostream& os) const;
-	virtual void do_get_opt_help(std::ostream& os) const;
-	virtual const std::string do_get_value_as_string() const;
-
-	char m_short_opt; 
-	const char *m_long_opt;
-	const char *m_long_help;
-	Flags m_flags;
-};
-
-/// a shared pointer definition of the Option
-typedef std::shared_ptr<CCmdOption > PCmdOption;
-
-
-/**
-   \brief The base class for command line options that hold "normal" values.  
-
-   The base class to options that really hold values. 
-   \remark Why does this additional class exsist in the hierarchy?  
-   
-*/
-class EXPORT_CORE CCmdOptionValue: public CCmdOption {
-public:
-        /** Construct the option with all the meta-data
-	    \param short_opt short option name (or 0)
-	    \param long_opt long option name (must not be NULL)
-	    \param long_help long help string (must not be NULL)
-	    \param short_help short help string
-	    \param flags if this is set to true, extra checking will be done weather
-	    the option is really set on the command line
-        */
-	CCmdOptionValue(char short_opt, const char *long_opt, const char *long_help,
-                        const char *short_help, Flags flags = not_required);
-
-        /// destroy some of the strings
-	virtual ~CCmdOptionValue();
-private:
-
 	const char *get_short_help() const;
+
+
 
 	virtual void do_add_option(CShortoptionMap& sm, CLongoptionMap& lm);
 	virtual void do_print_short_help(std::ostream& os) const;
 	virtual void do_get_opt_help(std::ostream& os) const;
 	virtual void do_get_long_help(std::ostream& os) const;
-	virtual void do_get_long_help_really(std::ostream& os) const;
 	virtual void do_set_value(const char *str_value);
 	virtual bool do_set_value_really(const char *str_value) = 0;
+	virtual size_t do_get_needed_args() const;
+	virtual void do_write_value(std::ostream& os) const = 0;
 
-	struct CCmdOptionData *m_impl;
+	virtual const std::string do_get_value_as_string() const;
+
+	char m_short_opt; 
+	const char *m_long_opt;
+	const char *m_long_help;
+	const char *m_short_help;
+	Flags m_flags;
 };
 
-
+/// a shared pointer definition of the Option
+typedef std::shared_ptr<CCmdOption > PCmdOption;
 
 /** 
     \brief Templated version based on CCmdOptionValue for values that can be converted to 
@@ -231,7 +198,7 @@ private:
     the list of N values needs to be  given like value1,value2,...,valueN.
 */
 template <typename T>
-class TCmdOption: public  CCmdOptionValue{
+class TCmdOption: public  CCmdOption{
 
 public:
         /** Constructor of the command option
@@ -265,7 +232,7 @@ private:
 */
 
 template <typename T>
-class TCmdDictOption: public  CCmdOptionValue{
+class TCmdDictOption: public  CCmdOption{
 
 public:
         /** Constructor of the command option
@@ -284,7 +251,7 @@ private:
 	virtual bool do_set_value_really(const char *str_value);
 	virtual size_t do_get_needed_args() const;
 	virtual void do_write_value(std::ostream& os) const;
-	virtual void do_get_long_help_really(std::ostream& os) const;
+	virtual void do_get_long_help(std::ostream& os) const;
 	virtual const std::string do_get_value_as_string() const;
 
 	T& m_value;
@@ -296,7 +263,7 @@ private:
     \brief Command line option that translates a string to a set of flags.
 */
 
-class CCmdFlagOption: public  CCmdOptionValue{
+class CCmdFlagOption: public  CCmdOption{
 
 public:
         /** Constructor of the command option
@@ -315,7 +282,7 @@ private:
 	virtual bool do_set_value_really(const char *str_value);
 	virtual size_t do_get_needed_args() const;
 	virtual void do_write_value(std::ostream& os) const;
-	virtual void do_get_long_help_really(std::ostream& os) const;
+	virtual void do_get_long_help(std::ostream& os) const;
 	virtual const std::string do_get_value_as_string() const;
 	int& m_value;
 	const CFlagString m_map;
@@ -328,7 +295,7 @@ private:
     If the string given to the option is not element of the set of allowed values, 
     the \a set_value method will throw a \a std::invalid_argument exception.
 */
-class EXPORT_CORE CCmdSetOption: public CCmdOptionValue{
+class EXPORT_CORE CCmdSetOption: public CCmdOption{
 public:
          /** Constructor of the command option
 	     \param[in,out] val variable to hold the parsed option value - pass in the default value -
@@ -348,7 +315,7 @@ private:
 	virtual bool do_set_value_really(const char *str_value);
 	virtual size_t do_get_needed_args() const;
 	virtual void do_write_value(std::ostream& os) const;
-	virtual void do_get_long_help_really(std::ostream& os) const;
+	virtual void do_get_long_help(std::ostream& os) const;
 	virtual const std::string do_get_value_as_string() const;
 
 	std::string& m_value;
@@ -363,7 +330,7 @@ private:
    always terminate the program after printing out the requested 
    help. 
  */
-class EXPORT_CORE CHelpOption: public CCmdOptionValue {
+class EXPORT_CORE CHelpOption: public CCmdOption {
 public:
 
 	
@@ -755,7 +722,7 @@ template <typename T>
 TCmdOption<T>::TCmdOption(T& val, char short_opt, const char *long_opt, const char *long_help,
                         const char *short_help, 
 			  CCmdOption::Flags flags):
-        CCmdOptionValue(short_opt, long_opt, long_help, short_help, flags),
+        CCmdOption(short_opt, long_opt, long_help, short_help, flags),
         m_value(val)
 {
         __dispatch_opt<T>::init(m_value);
@@ -795,7 +762,7 @@ template <typename T>
 TCmdDictOption<T>::TCmdDictOption( T& val, const TDictMap<T>& map, char short_opt, 
 				   const char *long_opt, const char *long_help,
                                    const char *short_help, Flags flags ) :
-                CCmdOptionValue( short_opt, long_opt, long_help, short_help, flags ),
+                CCmdOption( short_opt, long_opt, long_help, short_help, flags ),
                 m_value( val ),
 m_map( map ) {}
 
@@ -825,7 +792,7 @@ const std::string TCmdDictOption<T>::do_get_value_as_string() const
 }
 
 template <typename T>
-void TCmdDictOption<T>::do_get_long_help_really( std::ostream& os ) const
+void TCmdDictOption<T>::do_get_long_help( std::ostream& os ) const
 {
         const std::set<std::string> names_help = m_map.get_name_set();
 	for (auto i = m_map.get_help_begin(); i != m_map.get_help_end(); ++i) {

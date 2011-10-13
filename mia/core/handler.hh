@@ -28,12 +28,12 @@
 #include <ostream>
 #include <boost/any.hpp>
 #include <boost/filesystem/path.hpp>
-#include <boost/utility.hpp>
 #include <mia/core/utils.hh>
 
 #include <mia/core/defines.hh>
 #include <mia/core/module.hh>
 #include <mia/core/plugin_base.hh>
+#include <mia/core/handlerbase.hh>
 
 #include <mia/core/import_handler.hh>
 
@@ -50,7 +50,7 @@ NS_MIA_BEGIN
 */
 
 template <class I> 
-class  EXPORT_HANDLER TPluginHandler: boost::noncopyable {
+class  EXPORT_HANDLER TPluginHandler: public CPluginHandlerBase {
 public: 
 	/// typedef for the plug-in interface provided by the class 
 	typedef I Interface; 
@@ -78,19 +78,6 @@ public:
 	/** \returns the names of the plug-ins as a set */
 	const std::set<std::string> get_set() const; 
 
-
-	/**
-	   Print out the short help to an output stream 
-	   @param os
-	 */
-	void print_short_help(std::ostream& os) const; 
-
-	/**
-	   Print out the help to an output stream 
-	   @param os
-	 */
-	void print_help(std::ostream& os) const; 
-	
 	
 	/// \returns an iterator to the plug-ins
 	const_iterator begin()const; 
@@ -130,6 +117,9 @@ private:
 	
 	std::vector<PPluginModule> m_modules;
 	CPluginMap m_plugins; 
+
+	virtual void do_print_short_help(std::ostream& os) const; 
+	virtual void do_print_help(std::ostream& os) const; 
 	
 }; 
 
