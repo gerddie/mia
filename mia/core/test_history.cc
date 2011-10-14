@@ -42,6 +42,17 @@ NS_MIA_USE
 static const char *revision = "$Revision: 937 $:";
 
 
+const SProgramDescrption g_general_help = {
+	"Test", 
+	"This program tests the history entries.", 
+	NULL, 
+	NULL, 
+	"N/A"
+}; 
+
+
+
+
 typedef TDictMap<int> CDict;
 const CDict::Table dict[] = {
 	{"testa", 1, "test A"},
@@ -126,7 +137,7 @@ bool check_entry(const string& key, const string& val, const CHistoryRecord& hr)
 int main(int argc, const char *argv[])
 {
 
-	CCmdOptionList options("Test History funcionallity");
+	CCmdOptionList options(g_general_help);
 	options.add(make_opt( options::some_single_string, "string", 's', 
 				    "some string option", "oldstring", CCmdOption::required ));
 	options.add(make_opt( options::some_float, "float", 'f', "some float option", "-1.0", 
@@ -147,10 +158,8 @@ int main(int argc, const char *argv[])
 				    CCmdOption::required));
 #endif
 
-	vector<string> non_options;
-
 	try {
-		if (options.parse(argc, argv)) 
+		if (options.parse(argc, argv, false)) 
 			return EXIT_SUCCESS; 
 	}
 	catch (invalid_argument& x) {

@@ -49,6 +49,15 @@ private:
 
 };
 
+const SProgramDescrption general_help = {
+	"Test", 
+	"This program tests the command line parser.", 
+	NULL, 
+	NULL, 
+	"something"
+}; 
+
+
 BOOST_FIXTURE_TEST_CASE( test_set_option, CmdlineParserFixture )
 {
 	string value ="false";
@@ -194,14 +203,14 @@ BOOST_FIXTURE_TEST_CASE( test_dict_option, CmdlineParserFixture )
 
 	ETestEnums value = te_undefined;
 
-	CCmdOptionList olist("Synopis:Tests command line options.");
+	CCmdOptionList olist(general_help);
 
 	olist.add(make_opt(value, map, "dict", 'd', "a dictmap option", "dict"));
 	vector<const char *> options;
 
 	options.push_back("self");
 	options.push_back("-dtwo");
-	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_no); 
+	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0], false), CCmdOptionList::hr_no); 
 
 	BOOST_CHECK( olist.get_remaining().size() == 0);
 	BOOST_CHECK(value == te_two);
@@ -220,7 +229,7 @@ BOOST_FIXTURE_TEST_CASE( test_flagstring_option, CmdlineParserFixture )
 
 	int value = te_undefined;
 
-	CCmdOptionList olist("Synopis:Tests command line options.");
+	CCmdOptionList olist(general_help);
 
 	olist.add(make_opt(value, map, "flags", 'f', "a flagstring option", "flags"));
 	vector<const char *> options;
@@ -228,7 +237,7 @@ BOOST_FIXTURE_TEST_CASE( test_flagstring_option, CmdlineParserFixture )
 	options.push_back("self");
 	options.push_back("-f");
 	options.push_back("ot");
-	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_no); 
+	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0], false), CCmdOptionList::hr_no); 
 
 	BOOST_CHECK( olist.get_remaining().size() == 0);
 	BOOST_CHECK(value == te_two || te_one);
@@ -267,7 +276,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser, CmdlineParserFixture )
 	options.push_back("leftover2");
 
 
-	CCmdOptionList olist("Synopis:Tests command line options.");
+	CCmdOptionList olist(general_help);
 
 	olist.add(make_opt(int_value1,  "int1", 'i',"a int option", "int1"));
 	olist.add(make_opt(int_value2, "int2",  'k', "another int option", "int2"));
@@ -279,7 +288,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser, CmdlineParserFixture )
 	olist.add(make_opt(usval,  "ushort", 'u', "a short int option", "ushort"));
 	olist.add(make_opt(vector_value,  "vector-string", 'S', "a vector of strings", "vstring"));
 
-	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]),  CCmdOptionList::hr_no);
+	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0], true),  CCmdOptionList::hr_no);
 
 	for( vector<const char *>::const_iterator i = olist.get_remaining().begin(); i != olist.get_remaining().end(); ++i)
 		BOOST_MESSAGE(*i);
@@ -307,10 +316,10 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors1, CmdlineParserFixture )
 	bool bool_value = false;
 	bool dummy; 
 
-	CCmdOptionList olist("Synopis:Tests command line options.");
+	CCmdOptionList olist(general_help);
 	olist.add(make_opt(bool_value, "bool", 'H', "a bool option", "bool"));
 
-	BOOST_CHECK_THROW(dummy = (olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no), invalid_argument); 
+	BOOST_CHECK_THROW(dummy = (olist.parse(options.size(), &options[0], false) == CCmdOptionList::hr_no), invalid_argument); 
 }
 
 
@@ -321,7 +330,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors2, CmdlineParserFixture )
 	options.push_back("-H2u16");
 	bool bool_value = false;
 	bool dummy; 
-	CCmdOptionList olist("Synopis:Tests command line options.");
+	CCmdOptionList olist(general_help);
 	olist.add(make_opt(bool_value, "bool", 'H', "a bool option", "bool"));
 
 	BOOST_CHECK_THROW(dummy = (olist.parse(options.size(), &options[0], false) == CCmdOptionList::hr_no), invalid_argument); 

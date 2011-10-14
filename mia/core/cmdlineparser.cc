@@ -311,9 +311,9 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescrption& description):
 	verbose(vstream::ml_warning), 
 	m_general_help(description.description), 
 	m_program_group(description.group), 
-	m_program_example_descr(description.example_descr),
-	m_program_example_code(description.example_code), 
-	m_free_parametertype(description.free_parametertype)
+	m_program_example_descr(description.example_descr?description.example_descr:"" ),
+	m_program_example_code(description.example_code?description.example_code:""), 
+	m_free_parametertype(description.free_parametertype?description.free_parametertype:"")
 {
 	options[""] = vector<PCmdOption>();
 

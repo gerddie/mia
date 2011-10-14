@@ -529,7 +529,7 @@ public:
 	   --help, --verbose, --copyright, and --usage
         */
 	CCmdOptionList(const SProgramDescrption& description); 
-	CCmdOptionList(const std::string& general_help);
+	CCmdOptionList(const std::string& general_help) __attribute__((deprecated));
 	CCmdOptionList()__attribute__((deprecated));
 
         /// cleanup
@@ -558,10 +558,10 @@ public:
 	    be accessable by the function get_remaining(), otherwiese the occurence of unknown arguments 
 	    will be reported as error. 
         */
-	EHelpRequested parse(size_t argc, const char *args[], bool has_additional = true) __attribute__((warn_unused_result));
+	EHelpRequested parse(size_t argc, const char *args[], bool has_additional) __attribute__((warn_unused_result));
 	
 	/** \overload parse(size_t argc, const char *args[], bool has_additional) */
-        EHelpRequested parse(size_t argc, char *args[], bool has_additional = true) __attribute__((warn_unused_result));
+        EHelpRequested parse(size_t argc, char *args[], bool has_additional) __attribute__((warn_unused_result));
 
         /// \returns a vector of the remaining arguments
 	const std::vector<const char *>& get_remaining() const;

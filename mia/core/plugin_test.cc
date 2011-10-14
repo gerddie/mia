@@ -31,6 +31,14 @@ using namespace std;
 bool uninstalled = false;
 bool passed = true;
 
+const SProgramDescrption g_general_help = {
+	"Test", 
+	"This program runs plugin-tests.", 
+	NULL, 
+	NULL, 
+	"plugin"
+}; 
+
 static void test_plugin(const char *modname)
 {
 
@@ -56,10 +64,9 @@ int main(int argc, char *argv[])
 {
 	try {
 
-		CCmdOptionList options(" Sysopsis: run plugin tests");
-
+		CCmdOptionList options(g_general_help);
 		options.add(make_opt( uninstalled, "uninstalled", 'u', "test uninstalled plugin", NULL));
-		if (options.parse(argc, argv)) 
+		if (options.parse(argc, argv, true)) 
 			return EXIT_SUCCESS; 
 
 		for_each(options.get_remaining().begin(),

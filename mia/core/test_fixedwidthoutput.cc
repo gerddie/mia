@@ -35,8 +35,10 @@ BOOST_AUTO_TEST_CASE ( test_fixedwidth_writing )
 
 	ts.write("This is the first line"); 
 	ts.push_offset(5); 
+	ts.newline(); 
 	ts.write("Some more text that is really long and doesn't fit on a line");
 	ts.push_offset(5); 
+	ts.newline(); 
 	ts.write("yet some more text that is really long and doesn't fit on a line\n");
 	ts.write("123456789 123456789 123456789 123456789 Let's see.");
 	ts.pop_offset();
