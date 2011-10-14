@@ -20,16 +20,22 @@
 
 #include <stdexcept>
 #include <iostream>
-#include <mia/core/defines.hh>
+#include <cstdlib>
+#include <mia/core/msgstream.hh>
 
 
 #define MIA_MAIN(callback) \
 	int main( int argc, const char *argv[] ) \
 	{					 \
 	        try {				 \
-  	              return do_main(argc, argv);\
-	        }                                \   
-                 catch (const std::runtime_error &e)                                 \
+		      auto verb = getenv("MIA_INITIAL_VERBOSITY");      \
+		      if (verb) {                                       \
+                            auto level = g_verbose_dict.get_value(verb);\
+			    vstream::instance().set_verbosity(level);   \
+                      }                                                 \
+  	              return do_main(argc, argv);                       \
+	        }                                                       \
+		catch (const std::runtime_error &e){			\
 			 std::cerr << argv[0] << " runtime error: " << e.what() << endl; \
  	        }                                                                    \
  	        catch (const std::invalid_argument &e){                              \
@@ -43,6 +49,6 @@
 	        }                                                                    \
 	        catch (...){                                                         \
 		       std::cerr << argv[0] << " unknown exception" << endl;         \
-	}                                                                            \ 
-	return EXIT_FAILURE;                                                         \ 
+	}                                                                            \
+	return EXIT_FAILURE;                                                         \
 }
