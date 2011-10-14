@@ -79,11 +79,13 @@ mia-filenumberpattern -i image0000.exr
 using namespace std;
 using namespace mia;
 
-const char *g_description = 
-	"This program is used to extract a extract the number pattern for \n"
-	"file012312.ext type file names\n"
-	"Basic usage:\n"
-	"  mia-filenumberpattern [options] \n";
+const SProgramDescrption g_description = {
+	"Little helper", 
+	"This program is used to extract a extract the number pattern for "
+	"file012312.ext type file names.", 
+	NULL, 
+	NULL
+}; 
 
 int main( int argc, const char *argv[] )
 {

@@ -142,16 +142,6 @@ int main( int argc, const char *argv[] )
 			return EXIT_SUCCESS; 
 
 
-		if (!options.get_remaining().empty())
-			throw runtime_error("unknown option given ...");
-
-		if ( in_filename.empty() )
-			throw runtime_error("'--in-file' ('i') option required");
-
-		if ( out_filename.empty() )
-			throw runtime_error("'--out-base' ('o') option required");
-
-
 		CHistory::instance().append(argv[0], revision, options);
 
 		size_t start_filenum = 0;

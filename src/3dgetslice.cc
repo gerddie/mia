@@ -184,7 +184,7 @@ int main( int argc, const char *argv[] )
 		options.add(make_opt( direction, GDirectionmap, "dir", 'd', 
 					    "slice direction (xy=axial, xz=coronal, yz=saggital)"));
 
-		if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
+		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 
 
 		string out_suffix = imageio2d.get_preferred_suffix(out_type); 

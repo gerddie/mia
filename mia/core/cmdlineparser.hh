@@ -69,8 +69,6 @@ struct SProgramDescrption {
 	
 	/// an example of the usage (sell code) 
 	const char *example_code; 
-
-	const char *free_parametertype; 
 }; 
 
 /** 
@@ -552,17 +550,22 @@ public:
 	void add(const std::string& group, PCmdOption opt);
 
         /** the work routine, can take the arguemnts straight from \a main
+	    This version parses the command line and allows for additional arguments that can be 
+	    read by get_remaining(). 
 	    \param argc number of arguments
 	    \param args array of arguments strings
-	    @param has_additional allow additional arguments, if true the unparsed arguments will 
-	    be accessable by the function get_remaining(), otherwiese the occurence of unknown arguments 
-	    will be reported as error. 
+	    \param additional_type will is a help string to describe the type of free parameters
         */
-	EHelpRequested parse(size_t argc, const char *args[], bool has_additional) __attribute__((warn_unused_result));
-	
-	/** \overload parse(size_t argc, const char *args[], bool has_additional) */
-        EHelpRequested parse(size_t argc, char *args[], bool has_additional) __attribute__((warn_unused_result));
+	EHelpRequested parse(size_t argc, const char *args[], const std::string& additional_type) 
+		__attribute__((warn_unused_result));
 
+        /** the work routine, can take the arguemnts straight from \a main
+	    This version parses doesn't allow additional parameters. 
+	    \param argc number of arguments
+	    \param args array of arguments strings
+        */
+	EHelpRequested parse(size_t argc, const char *args[]) __attribute__((warn_unused_result));
+	
         /// \returns a vector of the remaining arguments
 	const std::vector<const char *>& get_remaining() const;
 
@@ -577,6 +580,7 @@ public:
 	 */
 	void set_group(const std::string& group); 
  private:
+	EHelpRequested do_parse(size_t argc, const char *args[], bool has_additional) __attribute__((warn_unused_result));
 	int handle_shortargs(const char *arg, size_t argc, const char *args[]);
 	struct CCmdOptionListData *m_impl;
 };

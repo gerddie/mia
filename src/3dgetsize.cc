@@ -83,14 +83,6 @@ int main( int argc, const char *argv[] )
 		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 
 
-
-		if ( !options.get_remaining().empty())
-			throw invalid_argument("Unknown options given");
-
-		if ( in_filename.empty() )
-			throw runtime_error("'--in-image' ('i') option required");
-
-
 		C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio3d.load(in_filename);
 
 

@@ -120,11 +120,6 @@ int do_main(int argc, const char **argv)
 
 	options.parse(argc, argv);
 
-	if (!options.get_remaining().empty()) {
-		cerr << "Unknown options found\n"; 
-		return EXIT_FAILURE;
-	}
-
 	P2DImageCost cost = icph.produce(cost_function.c_str());
 	P2DRegModel model = C2DRegModelPluginHandler::instance().produce(regmodel.c_str()); 
 	P2DRegTimeStep time_step = C2DRegTimeStepPluginHandler::instance().produce(timestep.c_str()); 

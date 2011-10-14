@@ -58,8 +58,13 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
-const char *g_description = 
-	"This program is used to evaluate the cost between two images by using a given cost function.";  
+
+const SProgramDescrption g_description = {
+	"2D image registration", 
+	"This program is used to evaluate the cost between two images by using a given cost function.", 
+	NULL, 
+	NULL
+}; 
 
 // set op the command line parameters and run the registration
 int do_main(int argc, const char **argv)
@@ -67,7 +72,7 @@ int do_main(int argc, const char **argv)
 
 	CCmdOptionList options(g_description);
 
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "cost") != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 

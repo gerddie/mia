@@ -157,7 +157,7 @@ int main( int argc, const char *argv[] )
 		options.add(make_opt( hmax, "max", 0, "maximum of histogram range"));
 		options.add(make_opt( bins, "bins", 0, "number of histogram bins"));
 		
-		if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
+		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 
 
 

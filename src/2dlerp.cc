@@ -181,14 +181,8 @@ int do_main(int argc, char **argv)
 				    "image series positions (first, target, second)", CCmdOption::required));
 	options.add(make_opt( self_test, "self-test", 0, "run a self test of the tool"));
 	
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+	if (options.parse(argc, (const char**)argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
-
-
-	if (!options.get_remaining().empty()) {
-		cerr << "Unknown options found\n";
-		return EXIT_FAILURE;
-	}
 
 	if (self_test) {
 		return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );

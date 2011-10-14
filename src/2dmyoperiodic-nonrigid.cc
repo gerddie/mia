@@ -131,9 +131,6 @@ const SProgramDescrption g_general_help = {
 	
 	//.g_program_example_code = 
 	"  -i segment.set -o registered.set -k 2 -d 5 -f spline:rate=16"
-, 
-	
-	"N/A"
 }; 
 
 class C2DFImage2PImage {
@@ -468,7 +465,7 @@ int do_main( int argc, const char *argv[] )
 				   "Cost function for registration during the final registration")); 
 	
 
-	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
 	// load input data set

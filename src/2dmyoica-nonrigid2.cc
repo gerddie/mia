@@ -248,7 +248,7 @@ int do_main( int argc, const char *argv[] )
 				   "Segmentation method")); 
 				    
 
-	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
 

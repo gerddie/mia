@@ -37,11 +37,13 @@ using namespace std;
 NS_MIA_USE; 
 using namespace gsl; 
 
-const char *g_general_help = 
+const SProgramDescrption g_general_help = {
+	"Little helper", 
 	"This program runs the wavelet based slope-statistics on the mixing matrix \n"
-	"of a ICA perfusion series\n\n"
-	"Basic usage: \n"
-	" mia-wavelettrans [options] "; 
+	"of a ICA perfusion series.", 
+	NULL, 
+	NULL
+}; 
 
 const TDictMap<EWaveletType>::Table wavelet_dict[] = {
 	{"haar", wt_haar, "HAAR wavelet"},
@@ -68,7 +70,7 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( in_filename, "in-file", 'i', 
 				    "input data set", CCmdOption::required));
 
-	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 	
 	

@@ -312,8 +312,7 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescrption& description):
 	m_general_help(description.description), 
 	m_program_group(description.group), 
 	m_program_example_descr(description.example_descr?description.example_descr:"" ),
-	m_program_example_code(description.example_code?description.example_code:""), 
-	m_free_parametertype(description.free_parametertype?description.free_parametertype:"")
+	m_program_example_code(description.example_code?description.example_code:"")
 {
 	options[""] = vector<PCmdOption>();
 
@@ -342,9 +341,7 @@ CCmdOptionListData::CCmdOptionListData(const string& general_help):
 	m_general_help(general_help), 
 	m_program_group("no group"), 
 	m_program_example_descr(NULL),
-	m_program_example_code(NULL), 
-	m_free_parametertype("parameter")
-
+	m_program_example_code(NULL)
 {
 	options[""] = vector<PCmdOption>();
 
@@ -575,7 +572,7 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 	console.pop_offset(); 
 	console.newline(); 
 
-	console.write("\nThe program supports the following command line options:");
+	console.write("\nThe program supports the following command line options:\n");
 
 		
 	auto t  = opt_table.begin();
@@ -591,9 +588,9 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 		console.pop_offset(); 
 		console.newline(); 
 	}
-	console.write("\n\n"); 
 
 	if (!m_program_example_descr.empty() && !m_program_example_code.empty()) { 
+		console.newline();
 		console.push_offset(2);
 		console.write("Example usage:\n"); 
 		console.write(m_program_example_descr); 
@@ -610,7 +607,7 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 		console.newline();
 	}
 	
-	console.write("\n\n"); 
+	console.write("\n"); 
 	console.push_offset(2);
 	console.write("Copyright:\n");
 	console.write(g_basic_copyright);
@@ -713,13 +710,20 @@ int CCmdOptionList::handle_shortargs(const char *arg, size_t /*argc*/, const cha
 }
 
 CCmdOptionList::EHelpRequested
-CCmdOptionList::parse(size_t argc, char *args[], bool has_additional)
+CCmdOptionList::parse(size_t argc, const char *args[])
 {
-	return parse(argc, (const char **)args, has_additional);
+	return do_parse(argc, args, false);
 }
 
 CCmdOptionList::EHelpRequested
-CCmdOptionList::parse(size_t argc, const char *args[], bool has_additional)
+CCmdOptionList::parse(size_t argc, const char *args[], const string& additional_type)
+{
+	m_impl->m_free_parametertype = additional_type; 
+	return do_parse(argc, args, true);
+}
+
+CCmdOptionList::EHelpRequested
+CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional)
 {
 
 	size_t idx = 1;

@@ -69,9 +69,14 @@ mia-labelsort -i histo.txt  -o map.txt
 NS_MIA_USE; 
 using namespace std; 
 
-const char g_description[] = "This program is used create a mapping based on a histogram that "
-	  "puts the intensities with high values at the beginning of the histogram. The main "
-	  "use case will be to soft labels of connected components in out-of-core image processing.";
+const SProgramDescrption g_description = {
+	"Little helper", 
+	"This program is used create a mapping based on a histogram that "
+	"puts the intensities with high values at the beginning of the histogram. The main "
+	"use case will be to sort labels of connected components in out-of-core image processing.", 
+	NULL, 
+	NULL
+}; 
 
 typedef pair<double, size_t> CEntry; 
 
@@ -92,7 +97,7 @@ int do_main(int argc, const char *argv[])
 	options.add(make_opt( out_filename, "out-file", 'o', "output file name to store probabilities", 
 			      CCmdOption::required)); 
 
-	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 	
 	priority_queue<CEntry> hist; 

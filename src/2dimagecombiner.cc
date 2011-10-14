@@ -89,7 +89,7 @@ int do_main( int argc, const char *argv[] )
 				    "output image(s) that have been filtered", CCmdOption::required));
 	options.add(make_opt( combiner, "operation", 'p', "operation to be applied"));
 	
-	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
 		

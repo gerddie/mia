@@ -112,9 +112,7 @@ const SProgramDescrption g_general_help = {
 	"Store the result in 'registered.set'.\n", 
 	
 	//.g_program_example_code = 
-	"  -i segment.set -o registered.set -k 2 -r 30 mi divcurl:weight=5",
-
-	"cost"
+	"  -i segment.set -o registered.set -k 2 -r 30 mi divcurl:weight=5"
 }; 
 
 C2DFullCostList create_costs(const std::vector<const char *>& costs, int idx)
@@ -213,7 +211,7 @@ int do_main( int argc, const char *argv[] )
 			     " (default: automatic estimation)."));  
 
 
-	if (options.parse(argc, argv, true) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "cost") != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 	task_scheduler_init init(max_threads);

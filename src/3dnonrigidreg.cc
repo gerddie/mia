@@ -73,6 +73,7 @@ mia-3dnonrigidreg -i test.v -r ref.v -o reg.v -l 2 \
 #include <tbb/task_scheduler_init.h>
 
 #include <mia/core.hh>
+#include <mia/internal/main.hh>
 #include <mia/3d.hh>
 #include <mia/3d/nonrigidregister.hh>
 #include <mia/core/minimizer.hh>
@@ -124,7 +125,7 @@ int do_main( int argc, const char *argv[] )
 			     "This number should be lower or equal to the number of processing cores in the machine"
 			     " (default: automatic estimation)."));  
 
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "cost") != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 
@@ -155,24 +156,4 @@ int do_main( int argc, const char *argv[] )
 	return save_image(out_filename, result);
 }
 
-
-int main( int argc, const char *argv[] )
-{
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
-}
+MIA_MAIN(do_main); 

@@ -307,7 +307,7 @@ int do_main( int argc, const char *argv[] )
 			     "This number should be lower or equal to the number of processing cores in the machine"
 			     " (default: automatic estimation)."));  
 
-	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
 	task_scheduler_init init(max_threads);

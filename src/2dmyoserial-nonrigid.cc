@@ -111,9 +111,7 @@ const SProgramDescrption g_general_help = {
 	"Store the result in 'registered.set'.\n", 
 	
 	//.g_program_example_code = 
-	"  -i segment.set -o registered.set -k 2  -r 30 mi divcurl:weight=5", 
-
-	"cost"
+	"  -i segment.set -o registered.set -k 2  -r 30 mi divcurl:weight=5"
 }; 
 
 
@@ -153,7 +151,7 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
 
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "cost") != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 	

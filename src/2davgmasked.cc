@@ -70,10 +70,13 @@ NS_MIA_USE
 using namespace std;
 using namespace boost;
 
-const char *g_description = 
+const SProgramDescrption g_description = {
+	"2D image processing", 
 	"This program is used to evaluate the average intensity and its variation of a series "
-	"of images in a given masked region."
-	; 
+	"of images in a given masked region.", 
+	NULL, 
+	NULL
+}; 
 
 struct C2DStat : public TFilter<bool> {
 
@@ -142,7 +145,7 @@ int main( int argc, const char *argv[] )
 
 	try {
 
-		if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
+		if (options.parse(argc, argv, "image") != CCmdOptionList::hr_no) 
 			return EXIT_SUCCESS; 
 
 		if (!options.get_remaining().empty())

@@ -141,9 +141,7 @@ const SProgramDescrption g_description = {
 	"Store the result in 'registered.set'.\n", 
 	
 	//.g_program_example_code = 
-	"  -i segment.set -o registered.set -k 2", 
-	
-	"N/A"
+	"  -i segment.set -o registered.set -k 2"
 }; 
 
 
@@ -214,7 +212,7 @@ int do_main( int argc, const char *argv[] )
 				   "Segmentation method")); 
 				    
 
-	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
 	// prepare registration class

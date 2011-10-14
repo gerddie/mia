@@ -129,8 +129,12 @@ const TDictMap<EBinops>::Table g_binops_table[] = {
 
 const TDictMap<EBinops> g_binops_dict(g_binops_table);
 
-/* Revision string */
-const char g_description[] = "This program is used to combine two binary images";
+const SProgramDescrption g_description = {
+	"2D image processing", 
+	"This program is used to combine two binary images by some kind of operation.", 
+	NULL, 
+	NULL
+}; 
 
 int main( int argc, const char *argv[] )
 {
@@ -153,7 +157,7 @@ int main( int argc, const char *argv[] )
 
 	try {
 
-		if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+		if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 			return EXIT_SUCCESS; 
 
 	

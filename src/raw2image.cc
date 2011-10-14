@@ -226,7 +226,7 @@ int run(int argc, const char *argv[])
 	options.add(make_opt( size, "size", 's', "size of input <NX,NY>", CCmdOption::required));
 	options.add(make_opt( skip, "skip", 'k', "skip number of bytes from beginning of file"));
 
-	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 

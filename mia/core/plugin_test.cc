@@ -35,8 +35,7 @@ const SProgramDescrption g_general_help = {
 	"Test", 
 	"This program runs plugin-tests.", 
 	NULL, 
-	NULL, 
-	"plugin"
+	NULL
 }; 
 
 static void test_plugin(const char *modname)
@@ -60,13 +59,13 @@ static void test_plugin(const char *modname)
 	delete plugin;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
 	try {
 
 		CCmdOptionList options(g_general_help);
 		options.add(make_opt( uninstalled, "uninstalled", 'u', "test uninstalled plugin", NULL));
-		if (options.parse(argc, argv, true)) 
+		if (options.parse(argc, argv, "plugin"))
 			return EXIT_SUCCESS; 
 
 		for_each(options.get_remaining().begin(),

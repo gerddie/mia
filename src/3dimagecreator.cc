@@ -88,7 +88,7 @@ int do_main(int argc, const char *argv[])
 	options.add(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type "));
 	options.add(make_opt( object,  "object", 'j', "object to be created"));
 
-	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 

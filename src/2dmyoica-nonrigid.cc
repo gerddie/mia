@@ -140,8 +140,7 @@ const SProgramDescrption description = {
 	g_program_group, 
 	g_general_help, 
 	g_program_example_descr, 
-	g_program_example_code, 
-	"N/A"
+	g_program_example_code
 }; 
 
 class C2DFImage2PImage {
@@ -343,7 +342,7 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt(segmethod , C2DPerfusionAnalysis::segmethod_dict, "segmethod", 'E', 
 				   "Segmentation method")); 
 
-	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
 	// load input data set

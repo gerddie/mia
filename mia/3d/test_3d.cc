@@ -1,3 +1,4 @@
+
 /* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
@@ -34,13 +35,12 @@ extern void add_3ddatafield_tests(test_suite* suite);
 extern void add_3dimage_tests(test_suite* suite);
 extern void add_3dinterpol_tests(test_suite* suite);
 
-//extern void add_3dimageio_tests(test_suite* suite);
-//extern void add_3dvfio_tests(test_suite* test);
-//extern void add_3dimagecost_tests(test_suite* suite);
-//extern void add_3dfilter_plugin_tests(test_suite* suite);
-//extern void add_3dshape_plugin_tests(test_suite* suite);
-//extern void add_3dcombiner_plugin_tests(test_suite* suite);
-//extern void add_regplugin_tests(test_suite* test);
+const SProgramDescrption g_general_help = {
+	"Tests", 
+	"Run various test for 3D data.", 
+	NULL, 
+	NULL
+}; 
 
 bool init_unit_test_suite( )
 {
@@ -51,20 +51,13 @@ bool init_unit_test_suite( )
 	add_3ddatafield_tests(suite);
 	add_3dimage_tests(suite);
 	add_3dinterpol_tests(suite);
-//	add_3dvfio_tests(suite);
-//	add_3dimageio_tests(suite);
-//	add_3dfilter_plugin_tests(suite);
-//	add_3dimagecost_tests(suite);
-//	add_3dshape_plugin_tests(suite);
-//	add_3dcombiner_plugin_tests(suite);
-//	add_regplugin_tests(suite);
 	return true;
 }
 
 int BOOST_TEST_CALL_DECL
 main( int argc, char* argv[] )
 {
-	if (CCmdOptionList(" Sysopsis: run tests").parse(argc, argv) != CCmdOptionList::hr_no) 
+	if (CCmdOptionList(g_general_help).parse(argc, (const char**)argv) != CCmdOptionList::hr_no) 
 		return 0; 
 	return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );
 }

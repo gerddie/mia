@@ -86,8 +86,14 @@ extern "C" {
 NS_MIA_USE; 
 using namespace std; 
 
-const char *g_description = " This Program reads a histogram from stdin and evaluates a "
-	"cmeans classification of the intensity values into the given number of classes."; 
+
+const SProgramDescrption g_description = {
+	"Little helper", 
+	"This Program reads a histogram from stdin and evaluates a "
+	"cmeans classification of the intensity values into the given number of classes.", 
+	NULL, 
+	NULL
+}; 
 
 typedef pair<int, int> CClassRange; 
 typedef map<double, CClassRange> CClassMap; 
@@ -432,7 +438,7 @@ int main(int argc, const char *argv[])
 	try {
 		
 
-		if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
+		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 
 
 		

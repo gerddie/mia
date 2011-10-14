@@ -119,12 +119,6 @@ int do_main(int argc, const char **argv)
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
-
-	if (! options.get_remaining().empty()) {
-		cerr << "Unknown options found\n";
-		return EXIT_FAILURE;
-	}
-
 	P3DImageCost cost = icph.produce(cost_function.c_str());
 	P3DRegModel model = C3DRegModelPluginHandler::instance().produce(regmodel.c_str());
 	P3DRegTimeStep time_step = C3DRegTimeStepPluginHandler::instance().produce(timestep.c_str());

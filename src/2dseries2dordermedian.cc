@@ -256,19 +256,12 @@ int main( int argc, const char *argv[] )
 
 	try {
 
-		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		if (options.parse(argc, argv, "filter") != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 
 
 		C2DFilterChain filter_chain(options.get_remaining());
 
 		cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
-
-
-		if ( in_filename.empty() )
-			throw runtime_error("'--in-file' ('i') option required");
-
-		if ( out_filename.empty() )
-			throw runtime_error("'--out-base' ('o') option required");
 
 		CSegSetWithImages  segset(in_filename, true);
 

@@ -122,18 +122,6 @@ int main( int argc, const char *argv[] )
 		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 
 
-		vector<const char *> non_options = options.get_remaining();
-
-		// what to do with unrecognized options
-		if ( non_options.size() > 0 )
-			throw invalid_argument("unknown options");
-
-		// required options (anything that has no default value)
-		if ( in_filename.empty() )
-			throw runtime_error("'--in-file'  ('i') option required\n");
-		if ( out_filename.empty() )
-			throw runtime_error("'--out-file' ('c') option required\n");
-
 		auto& imageio = C3DImageIOPluginHandler::instance();
 		auto inImage_list = imageio.load(in_filename);
 

@@ -88,9 +88,7 @@ const SProgramDescrption g_general_help = {
 	"Register the image 'moving.png' to the image 'reference.png' by using a rigid transformation model "
         " and ssd as cost function. Write the result to output.png", 
 	
-	"  -i moving.png -r reference.png -o output.png -f rigid image:cost=ssd", 
-
-	"cost"
+	"  -i moving.png -r reference.png -o output.png -f rigid image:cost=ssd"
 }; 
 
 int do_main( int argc, const char *argv[] )
@@ -122,7 +120,7 @@ int do_main( int argc, const char *argv[] )
 	
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "cost") != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 	

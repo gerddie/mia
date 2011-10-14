@@ -62,7 +62,7 @@ int do_main(int argc, const char **argv)
 
 	options.add(make_opt( out_filename, "out-file", 'o', "output norm image", CCmdOption::required));
 
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "cost") != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 

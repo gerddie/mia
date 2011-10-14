@@ -44,8 +44,7 @@ const SProgramDescrption description = {
 	g_program_group, 
 	g_general_help, 
 	g_program_example_descr, 
-	g_program_example_code,
-	"plugin-descriptor"
+	g_program_example_code
 }; 
 
 
@@ -95,7 +94,7 @@ int main( int argc, const char *argv[] )
 	try {
 
 		CCmdOptionList options(description);
-		if (options.parse(argc, argv, true) != CCmdOptionList::hr_no)
+		if (options.parse(argc, argv, "plugin-descriptor") != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 
 		
 		auto handlers = collect_handlers(); 

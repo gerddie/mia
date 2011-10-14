@@ -49,6 +49,14 @@ using namespace std;
 using namespace boost::unit_test;
 namespace bfs=::boost::filesystem;
 
+const SProgramDescrption g_general_help = {
+	"Tests", 
+	"Run various test for 3D image IO.", 
+	NULL, 
+	NULL
+}; 
+
+
 BOOST_AUTO_TEST_CASE(test_3dimageio_plugin_avail)
 {
 	const C3DImageIOPluginHandler::Instance&  handler = C3DImageIOPluginHandler::instance();
@@ -81,7 +89,7 @@ main( int argc, char* argv[] )
 	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
 #endif
-	if (CCmdOptionList(" Sysopsis: run tests").parse(argc, argv) != CCmdOptionList::hr_no) 
+	if (CCmdOptionList(g_general_help).parse(argc, (const char **)argv) != CCmdOptionList::hr_no) 
 		return 0; 
 	cvdebug() << "Initialize test ...\n"; 
 	return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );

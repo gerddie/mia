@@ -84,7 +84,7 @@ size_t log10(size_t x)
 }
 
 const SProgramDescrption g_general_help = {
-	"Image Filtering", 
+	"2D image processing", 
 	
 	"This program runs a series filters on a series of consecutive numbered input image. "
 	"The filters are given as extra parameters "
@@ -93,9 +93,7 @@ const SProgramDescrption g_general_help = {
 	"Run a kmeans classification of 5 classes on images inputXXXX.png (X being digits) "
 	"and then a binarization of the 4th class and store the result in resultXXXX.png", 
 	
-	"-i input0000.png -o result -t png kmeans:c=5 binarize:min=4,max=4", 
-	
-	"filter"
+	"-i input0000.png -o result -t png kmeans:c=5 binarize:min=4,max=4" 
 }; 
 
 int do_main( int argc, const char *argv[] )
@@ -120,7 +118,7 @@ int do_main( int argc, const char *argv[] )
 				   "give some help about the filter plugins", 
 				   new TPluginHandlerHelpCallback<C2DFilterPluginHandler>)); 
 		
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "filter") != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 		
 		

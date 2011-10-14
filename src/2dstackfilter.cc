@@ -182,16 +182,10 @@ int main(int argc, const char *argv[])
 					 new TPluginHandlerHelpCallback<C2DFifoFilterPluginHandler>)); 
 
 	try{
-		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		if (options.parse(argc, argv, "filter") != CCmdOptionList::hr_no)
 			return EXIT_SUCCESS; 
 
 		vector<const char *> filter_chain = options.get_remaining();
-
-		if (help_plugins) {
-			sfh.print_help(cout);
-			return EXIT_SUCCESS;
-		}
-
 
 		if (filter_chain.empty()) {
 			cvwarn() << "No filters given, will only copy files ";

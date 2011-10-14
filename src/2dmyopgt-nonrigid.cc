@@ -208,7 +208,7 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
 				    "e.g. because as they are of other modalities")); 
 	
-	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 	// load input data set
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);

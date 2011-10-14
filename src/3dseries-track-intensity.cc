@@ -62,6 +62,7 @@ mia-3dseries-track-intensity -i images0000.v -o curves.txt "<12,13,14>" "<222,11
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
+#include <mia/internal/main.hh>
 #include <mia/3d/3dimageio.hh>
 
 using namespace std;
@@ -130,7 +131,7 @@ int do_main( int argc, const char *argv[] )
 				    "file name for output intensity slopes")); 
 	
 	
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "points") != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 	
@@ -169,24 +170,5 @@ int do_main( int argc, const char *argv[] )
 	return intensity_getter.write(out_filename) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-int main( int argc, const char *argv[] )
-{
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-	return EXIT_FAILURE;
-}
-
+MIA_MAIN(do_main); 
 

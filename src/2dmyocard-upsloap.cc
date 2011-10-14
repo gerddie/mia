@@ -123,7 +123,7 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( nsegments, "nsegments", 'n', "number of myocardial segments to use (0=use segmented)"));
 	
 
-	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 
 	// load input data set

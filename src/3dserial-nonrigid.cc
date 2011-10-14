@@ -86,6 +86,7 @@ mia-3dserial-nonrigid  -i segment.set -o registered.set -f spline:rate=16 \
 #include <mia/3d/nonrigidregister.hh>
 #include <mia/3d/transformfactory.hh>
 #include <mia/3d/3dimageio.hh>
+#include <mia/internal/main.hh>
 
 using namespace std;
 using namespace mia;
@@ -130,7 +131,7 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
 
-	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "cost") != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 	
@@ -204,24 +205,4 @@ int do_main( int argc, const char *argv[] )
 	return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-int main( int argc, const char *argv[] )
-{
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-	return EXIT_FAILURE;
-}
-
-
+MIA_MAIN(do_main); 

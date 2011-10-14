@@ -46,8 +46,7 @@ const SProgramDescrption g_general_help = {
 	"Test", 
 	"This program tests the history entries.", 
 	NULL, 
-	NULL, 
-	"N/A"
+	NULL
 }; 
 
 
@@ -159,7 +158,7 @@ int main(int argc, const char *argv[])
 #endif
 
 	try {
-		if (options.parse(argc, argv, false)) 
+		if (options.parse(argc, argv)) 
 			return EXIT_SUCCESS; 
 	}
 	catch (invalid_argument& x) {

@@ -75,7 +75,7 @@ using namespace std;
 
 
 const SProgramDescrption g_general_help = {
-	"Image Filtering", 
+	"2D image processing", 
 	
 	"This program runs a series filters on a given input image. The filters are given as extra parameters "
 	"on the command line and are run in the order in which they are given.", 
@@ -83,9 +83,7 @@ const SProgramDescrption g_general_help = {
 	"Run a kmeans classification of 5 classes on input.png and then a binarization of the 4th class and store the result"
 	" in result.png", 
 	
-	"-i input.png -o result.png kmeans:c=5 binarize:min=4,max=4", 
-	
-	"filter"
+	"-i input.png -o result.png kmeans:c=5 binarize:min=4,max=4"
 }; 
 
 int do_main( int argc, const char *argv[] )
@@ -105,7 +103,7 @@ int do_main( int argc, const char *argv[] )
 				   "give some help about the filter plugins", 
 				   new TPluginHandlerHelpCallback<C2DFilterPluginHandler>));
 	
-	if (options.parse(argc, argv, true) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "filter") != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 

@@ -35,11 +35,13 @@ using namespace std;
 NS_MIA_USE; 
 using namespace gsl; 
 
-const char *g_general_help = 
-	"This program runs the a column-wise discret wavelet forward transform on\n"
-	"the data given by an input text file \n\n"
-	"Basic usage: \n"
-	" mia-wavelettrans [options] "; 
+const SProgramDescrption g_general_help = {
+	"Little helper", 
+	"This program runs the a column-wise discret wavelet forward transform on "
+	"the data given by an input text file.", 
+	NULL, 
+	NULL
+}; 
 
 const TDictMap<EWaveletType>::Table wavelet_dict[] = {
 	{"haar", wt_haar, "HAAR wavelet"},
@@ -116,7 +118,7 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( wt_type, g_wavelet_dict, "wavelet", 'w', "wavelet to be used"));
 	options.add(make_opt( k, "member", 'm', "wavelet member ID"));
 
-	if (options.parse(argc, argv, false) != CCmdOptionList::hr_no) 
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 	
 	
