@@ -212,13 +212,17 @@ void segment_and_crop_input(CSegSetWithImages&  input_set,
 void run_registration_pass(CSegSetWithImages&  input_set, 
 			   const C2DImageSeries& references, 
 			   int skip_images, PMinimizer minimizer, size_t mg_levels, 
-			   double c_rate, double divcurlweight, P2DFullCost imagecost) 
+			   double c_rate, double divcurlweight, P2DFullCost imagecost, 
+			   PMinimizer refinement_minimizer)
 {
 	CSegSetWithImages::Frames& frames = input_set.get_frames();
 	C2DImageSeries input_images = input_set.get_images(); 
 	auto costs  = create_costs(divcurlweight, imagecost); 
 	auto transform_creator = create_transform_creator(c_rate); 
 	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, mg_levels);
+	if (refinement_minimizer)
+		nrr.set_refinement_minimizer(refinement_minimizer); 
+
 
 	// this loop could be parallized 
 	for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
@@ -261,6 +265,7 @@ int do_main( int argc, const char *argv[] )
 
 	// registration parameters
 	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1");
+	PMinimizer refinement_minimizer;
 	auto imagecost = C2DFullCostPluginHandler::instance().produce("image:weight=1,cost=ssd");
 	double c_rate = 32; 
 	double c_rate_divider = 4; 
@@ -307,6 +312,8 @@ int do_main( int argc, const char *argv[] )
 	
 	options.set_group("Registration"); 
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( refinement_minimizer, "refiner", 'R',
+			      "optimizer used for refinement after the main optimizer was called"));
 	options.add(make_opt( c_rate, "start-c-rate", 'a', 
 				    "start coefficinet rate in spines,"
 				    " gets divided by --c-rate-divider with every pass"));
@@ -402,8 +409,9 @@ int do_main( int argc, const char *argv[] )
 			save_references(save_ref_filename, current_pass, skip_images, references); 
 
 		run_registration_pass(input_set, references,  skip_images,  minimizer, 
-				      mg_levels, c_rate, divcurlweight, imagecost); 
+				      mg_levels, c_rate, divcurlweight, imagecost, refinement_minimizer); 
 		
+
 		if (!save_reg_filename.empty()) 
 			save_references(save_reg_filename, current_pass, 0, input_set.get_images()); 
 
