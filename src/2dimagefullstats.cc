@@ -50,6 +50,7 @@ mia-2dimagestats -i input.v
 
 
 #include <sstream>
+#include <mia/internal/main.hh>
 #include <mia/core/fullstats.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/2d/2dimageio.hh>
@@ -57,6 +58,19 @@ mia-2dimagestats -i input.v
 
 NS_MIA_USE;
 using namespace std;
+
+
+const SProgramDescrption g_general_help = {
+	"2D image processing", 
+	
+	"This progranm is used to evaluate some statistics of an image. " 
+	"Output is Mean, Variation, Median, Min and Max of the intensity values.", 
+	
+	"Evaluate the statistics of image input.png", 
+	
+	"-i input.png"
+}; 
+
 
 class CStatsEvaluator : public TFilter<CFullStats> {
 public:
@@ -66,48 +80,27 @@ public:
 	}
 };
 
-const char *g_description = 
-	"This progranm is used to evaluate some statistics of an image. " 
-	"Output is Mean, Variation, Median, Min and Max of the intensity values."
-	; 
-
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 	string in_filename;
-	try {
+	CCmdOptionList options(g_general_help);
+	options.add(make_opt( in_filename, "in-file", 'i', "input image", CCmdOption::required));
+	
+	if (options.parse(argc, argv, "cost") != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+	
+	
+	
+	// read image
+	P2DImage image = load_image2d(in_filename);
+	
+	
+	CFullStats stats = mia::filter(CStatsEvaluator(), *image);
+	cout << stats << "\n";
+	
+	return EXIT_SUCCESS;
 
-
-		CCmdOptionList options(g_description);
-		options.add(make_opt( in_filename, "in-file", 'i', "input image", CCmdOption::required));
-
-		if (options.parse(argc, argv, "cost") != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
-
-
-
-		// read image
-		P2DImage image = load_image2d(in_filename);
-
-
-		CFullStats stats = mia::filter(CStatsEvaluator(), *image);
-		cout << stats << "\n";
-
-		return EXIT_SUCCESS;
-
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
 }
+
+MIA_MAIN(do_main); 

@@ -54,15 +54,27 @@ mia-2dmultiimagevar  -o var.exr images*.png
 */
 
 
-#include <sstream>
-#include <functional>
 #include <cmath>
 #include <mia/core.hh>
-#include <mia/core/errormacro.hh>
 #include <mia/2d.hh>
+#include <mia/internal/main.hh>
 
 NS_MIA_USE;
 using namespace std;
+
+
+const SProgramDescrption g_description = {
+	"Miscellaneous", 
+	
+	"This program evaluates the pixel-wise accumulated intensity variation a set of image given on the command line. "
+	"If the input image files contain more then one image all images are used. "
+	"All images must be of the same size.", 
+	
+	"Evaluate the pixel-vise intensity variation of images i1.png, i2.png, i3.png, and i4.png and store the result to var.v."
+
+	"-o var.v i1.png i2.png i3.png i4.png"
+}; 
+
 
 class CVarAccumulator : public TFilter<bool> {
 public:
@@ -106,74 +118,44 @@ private:
 	size_t m_n;
 };
 
-
-const char *g_description = 
-	"This program evaluates the intensity variation of a set of image sgiven on the command line"; 
-
-
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
-
+	
 	string out_filename;
 	string out_type("vista");
 
-	try {
-
-		const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 
 
-		CCmdOptionList options(g_description);
-		options.add(make_opt( out_filename, "out-file", 'o', "output image ", CCmdOption::required));
+	CCmdOptionList options(g_description);
+	options.add(make_opt( out_filename, "out-file", 'o', "output image ", CCmdOption::required));
 
-		if (options.parse(argc, argv, "image") != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
-
-
-		if (options.get_remaining().empty())
-			throw runtime_error("no input images given ...");
-
-		if ( out_filename.empty() )
-			throw runtime_error("'--out-base' ('o') option required");
+	if (options.parse(argc, argv, "image") != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 
 
-		vector<const char *> input_images = options.get_remaining();
+	if (options.get_remaining().empty())
+		throw runtime_error("no input images given ...");
 
-		CVarAccumulator ic;
+	vector<const char *> input_images = options.get_remaining();
 
-		for (vector<const char *>::const_iterator  i = input_images.begin(); i != input_images.end(); ++i) {
+	CVarAccumulator ic;
 
-			cvmsg() << "Load " << *i << "\r";
-			C2DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(*i);
-
-			if (in_image_list.get() && in_image_list->size()) {
-				accumulate(ic, **in_image_list->begin());
-			}
+	for (vector<const char *>::const_iterator  i = input_images.begin(); i != input_images.end(); ++i) {
+		cvmsg() << "Load " << *i << "\r";
+		auto in_image_list = imageio.load(*i);
+		if (in_image_list.get() && in_image_list->size()) {
+			accumulate(ic, **in_image_list->begin());
 		}
-		cvmsg() << "\n";
+	}
+	cvmsg() << "\n";
 
-		C2DImageVector result;
-		result.push_back(ic.result());
-
-		if (imageio.save(out_filename, result))
-			return EXIT_SUCCESS;
-		else
-			cerr << argv[0] << " fatal: unable to output image to " <<  out_filename << endl;
-
+	if (save_image(out_filename, ic.result()))
 		return EXIT_SUCCESS;
+	else
+		cerr << argv[0] << " fatal: unable to output image to " <<  out_filename << endl;
 
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
+	return EXIT_SUCCESS;
 }
+
+MIA_MAIN(do_main); 

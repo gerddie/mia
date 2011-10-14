@@ -55,16 +55,24 @@ mia-2dimagestats -i input.v -t 5 -g 0.1
 #include <sstream>
 #include <mia/core.hh>
 #include <mia/2d.hh>
+#include <mia/internal/main.hh>
 
 NS_MIA_USE;
 using namespace std;
 
-const char *g_description = 
+const SProgramDescrption g_general_help = {
+	"Miscellaneous", 
+	
 	"This progranm is used to evaluate some statistics of an image. " 
-	"Output is Mean, Variation, Median, and Median Average Distance of the intensity values."
-	; 
+	"Output is Mean, Variation, Median, and Median Average Distance of the intensity values. "
+	"The program allows to set a lower threshold and to cut off a percentage of the high intensity pixels", 
 	
-	
+	"Evaluate the statistics of image input.png. Don't include the upper 1% of intensities in the statistics. "
+	"The result is written to stdout", 
+
+	"-i input.png -g 1"
+}; 
+
 
 class CHistAccumulator : public TFilter<bool> {
 public:
@@ -106,56 +114,39 @@ private:
 
 
 
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 	string in_filename;
 	float thresh = 10.0;
 	float high_thresh = 0.05;
-	try {
 
-		const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
-
-
-		CCmdOptionList options(g_description);
-		options.add(make_opt( in_filename, "in-file", 'i', "input image to be analyzed", 
-					    CCmdOption::required));
-		options.add(make_opt( thresh, "thresh", 't', "intensity thresh to ignore"));
-		options.add(make_opt( high_thresh, "high-thresh", 'g', "upper histogram percentage to ignore"));
-
-		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
-
-
-		//CHistory::instance().append(argv[0], "unknown", options);
-
-		// read image
-		C2DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(in_filename);
-
-		if (in_image_list.get() && in_image_list->size()) {
-			CHistAccumulator histo(0, 4096, 1024, thresh);
-			for (C2DImageIOPluginHandler::Instance::Data::iterator i = in_image_list->begin();
-			     i != in_image_list->end(); ++i)
-				accumulate(histo, **i);
-			histo.print_stats(high_thresh);
-		}else
-			throw runtime_error(string("No errors found in ") + in_filename);
-
-		return EXIT_SUCCESS;
-
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
+	
+	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+	
+	
+	CCmdOptionList options(g_general_help);
+	options.add(make_opt( in_filename, "in-file", 'i', "input image to be analyzed", 
+			      CCmdOption::required));
+	options.add(make_opt( thresh, "thresh", 't', "intensity thresh to ignore"));
+	options.add(make_opt( high_thresh, "high-thresh", 'g', "upper histogram percentage to ignore"));
+	
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+	
+	
+	C2DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(in_filename);
+	if (in_image_list.get() && in_image_list->size()) {
+		CHistAccumulator histo(0, 4096, 1024, thresh);
+		for (C2DImageIOPluginHandler::Instance::Data::iterator i = in_image_list->begin();
+		     i != in_image_list->end(); ++i)
+			accumulate(histo, **i);
+		histo.print_stats(high_thresh);
+	}else
+		throw runtime_error(string("No errors found in ") + in_filename);
+	
+	return EXIT_SUCCESS;
+	
 }
+
+MIA_MAIN(do_main); 

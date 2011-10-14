@@ -93,14 +93,19 @@ using namespace mia;
 
 namespace bfs=boost::filesystem; 
 
-const char *g_general_help = 
-	"This program runs the non-rigid registration of an perfusion image series. "
+const SProgramDescrption g_general_help = {
+	"3D image registration ", 
+	
+	"This program runs the image registration of a consecutively numbered image series. "
 	"The registration is run in a serial manner, this is, only images in "
-	"temporal succession are registered, and the obtained transformations "
-	"are applied accumulated to reach full registration. "
-  	"Basic usage: \n"
-	" mia-3dserial-nonrigid [options] <cost1> <cost2> ..."; 
+	"temporal succession (i.e. consecutive numbers) are registered, and the obtained transformations "
+	"are applied accumulated to reach full registration. ", 
+	
+	"Run a serial registration of images inputXXXX.v (X digit) to reference image 20 and store the result in regXXXX.v. "
+	"Optimize the sum of squared differences and spline transformations with coefficient rate 10.", 
 
+	"-i input0000.v -o 'reg%04d.v' -f spline:rate=10 -r 20 ssd"
+}; 
 
 int do_main( int argc, char *argv[] )
 {
