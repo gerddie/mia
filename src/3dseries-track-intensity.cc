@@ -68,13 +68,16 @@ mia-3dseries-track-intensity -i images0000.v -o curves.txt "<12,13,14>" "<222,11
 using namespace std;
 using namespace mia;
 
-//namespace bfs=boost::filesystem; 
+const SProgramDescrption g_description = {
+	"Analysis of image series", 
+	
+	"This program tracks the intensity of a pixel at the given coordinates.", 
 
-const char *g_general_help = 
-	"This program tracks the intensity of a pixel at the given coordinates."
-  	"Basic usage: \n"
-	" mia-3dseries-track-intensity [options] <cost1> <cost2> ..."; 
+	"Evaluate the intensity-time curves at points <12,13,14> and <222,113,214>", 
 
+	"-i images0000.v -o curves.txt '<12,13,14>' '<222,113,214>'"
+}; 
+	
 
 class FIntensityGetter: public TFilter<void> { 
 public: 
@@ -122,7 +125,7 @@ int do_main( int argc, char *argv[] )
 	string in_filename;
 	string out_filename;
 	                        
-	CCmdOptionList options(g_general_help);
+	CCmdOptionList options(g_description);
 	
 	options.set_group("\nFile-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', 

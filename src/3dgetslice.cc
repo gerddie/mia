@@ -65,11 +65,16 @@ mia-3dgetslice -i image.v -o coronal -t png -n 5 -s 120
 
 using namespace mia;
 
-static const char *program_info = 
-	"This program is used to extract 2D slices from a 3D data set and store them\n"
-	"in separate files. Output files will be numbered according to their slice index\n"
-	"Basic usage:\n"
-	"  mia-3dgetslince -i <input> -o <output-base> [options] ...\n"; 
+const SProgramDescrption g_description = {
+	"Miscellaneous programs", 
+	
+	"This program is used to extract 2D slices from a 3D data set and store them "
+	"in separate files. Output files will be numbered according to their slice index."
+	
+	"Store 5 coronal slices starting at slice 120 coronalXXXX.png from  image.v."
+
+	"-i image.v -o coronal -t png -n 5 -s 120" 
+}; 
 
 enum EDirection {dir_unkown, dir_xy, dir_xz, dir_yz};
 
@@ -171,7 +176,7 @@ int main( int argc, const char *argv[] )
 	try {
 		const C2DImageIOPluginHandler::Instance& imageio2d = C2DImageIOPluginHandler::instance();
 
-		CCmdOptionList options(program_info);
+		CCmdOptionList options(g_description);
 		options.add(make_opt( in_filename, "in-file", 'i', 
 					    "input image(s) to be filtered", CCmdOption::required));
 		options.add(make_opt( out_filename, "out-file", 'o', 

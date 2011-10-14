@@ -121,10 +121,24 @@ using namespace mia;
 
 namespace bfs=boost::filesystem; 
 
-const char *g_general_help = 
-	"This program runs the non-rigid registration of a 3D perfusion image series.\n"
-	"Basic usage: \n"
-	" mia-3dmotioncompica-nonrigid [options] "; 
+const SProgramDescrption g_description = {
+	"3D registration of series of images", 
+	
+	"for motion compensation in 3D images. "
+	"Specifically, the non-linear transformation is defined in terms of B-splines that "
+        "is regularized by a DivCurl operator that penalizes the gradients of divergence and "
+        "curl of the transformation. "
+	"The registrations are run in parallel, if more then one processor is available. ", 
+	
+	"Register the perfusion series given in images imagesXXXX.v by using 3-class ICA estimation. "
+        "Skip two images at the beginning, use at most 4 registration threads, a nlopt based optimizer "
+	"and otherwiese use the default parameters. "
+	"Store the result in registeredXXXX.v ", 
+	
+	"-i imagesXXXX.v -o  registered%04d.v  -k 2 -C 3 -t 4 "
+	"-O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300"
+}; 
+
 
 class C3DFImage2PImage {
 public: 
@@ -262,7 +276,7 @@ int do_main( int argc, const char *argv[] )
 	
 	int max_threads = task_scheduler_init::automatic;
 
-	CCmdOptionList options(g_general_help);
+	CCmdOptionList options(g_description);
 	
 	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', 

@@ -66,11 +66,16 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
-static const char *program_info = 
-	"This program is used to create an image comprising the pixel-wise norm\n"
-	"of the ggradient of a given cost function\n"
-	"Usage:\n"
-	"  mia-3dforce -i <input image> -t <reference image > -o <output> [options]\n";
+const SProgramDescrption g_description = {
+	"Miscellaneous programs", 
+	
+	"This program is used to create an image comprising the pixel-wise norm "
+	"of the ggradient of a given cost function.", 
+
+	"Evaluate the weigtes sum of SSD between src.v and ref.v and store the result in forcenorm.v.", 
+
+	"-i src.v -r ref.v -c ssd -o forcenorm.v"
+}; 
 
 
 struct FVectorNorm {
@@ -93,7 +98,7 @@ private:
 
 int do_main(int argc, const char **argv)
 {
-	CCmdOptionList options(program_info);
+	CCmdOptionList options(g_description);
 	string src_filename;
 	string out_filename;
 	string ref_filename;

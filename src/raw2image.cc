@@ -46,7 +46,7 @@ mia-raw2image -i <input data> -o <output image> -s <size of input> ...
   \cmdopt{type}{t}{string}{override output file type deducted from the output file name}
   }
 
-  \item [Example:]Conver a data set data.raw of size <10,20> of short integer data with a 
+  \item [Example:]Convert a data set data.raw of size <10,20> of short integer data with a 
           pixel size of <1.2, 2.3> to a PNG file image.png
    \
   \begin{lstlisting}
@@ -69,11 +69,16 @@ NS_MIA_USE;
 using namespace std;
 using namespace boost;
 
-static const char *g_description = 
-	"This program is used to convert raw data to 2D image\n"
-	"with apropriate metadata.\n"
-	"Basic usage:\n"
-	"  mia-raw2image [options] \n";
+const SProgramDescrption g_description = {
+	"Image conversion", 
+	
+	"This program is used to convert raw data to a 2D file format.", 
+	
+	"Convert a data set data.raw of size <10,20> of short integer data with a "
+	"pixel size of <1.2, 2.3> to a PNG file image.png", 
+	
+	"-i data.raw -o image.png -s '<10,20>' -k '<1.2,2.3>' -r ushort"
+}; 
 
 inline bool am_big_endian()
 {

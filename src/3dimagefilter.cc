@@ -77,10 +77,18 @@ mia-3dimagefilter -i image.v -o filtered.v mlv:w=2 \
 using namespace std;
 NS_MIA_USE;
 
-static const char *program_info = 
-	"This program is used to filter and convert gray scale 3D images.\n"
-	"Basic usage:\n"
-	"  mia-3dimagefilter -i <input image> -o <output image> [<plugin>] ...\n"; 
+const SProgramDescrption g_description = {
+
+	"3D image processing", 
+	
+	"This program is used to filter and convert gray scale 3D images.", 
+
+	"Run a mean-least-varaiance filter on input.v, then run a 5-class k-means classification"
+	"and binarize by selecting the 4th class.", 
+
+	"-i image.v -o filtered.v mlv:w=2 kmeans:c=5 binarize:min=4,max=4" 
+}; 
+	
 
 int main( int argc, const char *argv[] )
 {
@@ -97,7 +105,7 @@ int main( int argc, const char *argv[] )
 
 	filter_names << "filters in the order to be applied (out of: " << filter_plugins.get_plugin_names() << ")";
 
-	CCmdOptionList options(program_info);
+	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i',
 				    "input image(s) to be filtered", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o',

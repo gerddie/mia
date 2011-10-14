@@ -66,11 +66,15 @@ mia-3dimagecombine -1 l1.v -2 l2.v -c map.txt -c labelxmap
 using namespace std;
 NS_MIA_USE;
 
-const char *program_info = 
-	"This program is used to combine two images using a given combiner\n"
-	"Basic usage:\n"
-	"  mia-3dimagecombine [options] \n"; 
+const SProgramDescrption g_description = {
+	"3D image processing", 
+	 
+	"This program is used to combine two images using a given image combiner plug-in (combiner/3dimage).", 
+	
+	"Take two label images l1.v and l2.v and evaluate the label overlap.", 
 
+	"-1 l1.v -2 l2.v -c map.txt -c labelxmap" 
+};  
 
 int do_main( int argc, const char *argv[] )
 {
@@ -83,7 +87,7 @@ int do_main( int argc, const char *argv[] )
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 	typedef C3DImageIOPluginHandler::Instance::PData PImageVector;
 
-	CCmdOptionList options(program_info);
+	CCmdOptionList options(g_description);
 	options.add(make_opt( in_image1, "image1", '1', "input image  1 to be combined", CCmdOption::required));
 	options.add(make_opt( in_image2, "image2", '2', "input image  2 to be combined", CCmdOption::required));
 	options.add(make_opt( combiner_descr, "combiner", 'c', "combiner operation", CCmdOption::required));

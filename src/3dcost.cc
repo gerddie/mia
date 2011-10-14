@@ -54,21 +54,24 @@ mia-3dcost ssd:src=image1.v,ref=image2.v,weight=0.1 \
 #include <iomanip>
 #include <mia/3d/fatcost.hh>
 
-
-static const char *program_info = 
-	"This program is used to evaluate the combinde cost value as given.\n"
-	"Basic usage:\n"
-	"  mia-3dcost  <cost plugin> [<cost plugin>] ...\n"; 
-
 NS_MIA_USE
-using namespace boost;
 using namespace std;
+using namespace boost;
+
+
+const SProgramDescrption g_description = {
+	"Miscellaneous programs", 
+	
+	"This program evauates the cost function as given on the command line.", 
+
+	NULL, NULL
+}; 
 
 // set op the command line parameters and run the registration
 int do_main(int argc, const char **argv)
 {
 
-	CCmdOptionList options(program_info);
+	CCmdOptionList options(g_description);
 
 	if (options.parse(argc, argv, "cost") != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

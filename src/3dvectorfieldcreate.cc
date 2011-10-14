@@ -78,6 +78,16 @@ mia-3dvectorfieldcreate -o field.v -s "<128,128,128>" -t 2 -f 3.0
 
 NS_MIA_USE; 
 
+const SProgramDescrption g_description = {
+	"Miscellaneous programs", 
+	
+	"This program is used to create a file containing a 3D vector field.", 
+	
+	"Create a field of type 2 with fun 3.0 and size 128x128x128.", 
+	
+	"-o field.v -s '<128,128,128>' -t 2 -f 3.0"
+}; 
+
 typedef unsigned int uint32; 
 
 void FillField0(C3DFVectorfield& Field, const C3DBounds& Size, float /*fun*/)
@@ -153,8 +163,6 @@ void FillField2(C3DFVectorfield& Field,const C3DBounds& Size,float fun)
 	}
 }
 
-const char program_info[] = "This is a program to create 3D vector fields."; 
-
 int do_main(int argc, const char *argv[])
 {
 
@@ -166,7 +174,7 @@ int do_main(int argc, const char *argv[])
 	string out_filename;
 
 	
-	CCmdOptionList options(program_info);
+	CCmdOptionList options(g_description);
 
 	options.add(make_opt( out_filename, "out-file", 'o', "output file for the vector field", 
 				    CCmdOption::required));

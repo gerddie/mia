@@ -84,11 +84,18 @@ mia-3dnonrigidreg -i test.v -r ref.v -o reg.v -l 2 \
 NS_MIA_USE;
 using namespace std;
 
-const char *g_general_help = 
-	"This program runs the non-rigid registration of two images using certain"
-	"cost measures and a given transformation model.\n"
-	"Basic usage: \n"
-	" mia-3dnonrigidreg [options] cost1 cost2 "; 
+const SProgramDescrption g_description = {
+	"3D image registration", 
+	
+	"This program implements the registration of two gray scale 3D images.", 
+	
+	"Register image test.v to image ref.v by using a spline transformation with a "
+	"coefficient rate of 5  and write the registered image to reg.v. "
+	"Use two multiresolution levels, ssd as image cost function and divcurl weighted by 10.0 "
+	"as transformation smoothness penalty. ",
+	
+	"-i test.v -r ref.v -o reg.v -l 2 -f spline:rate=3  image:cost=ssd divcurl:weight=10"
+};
 
 int do_main( int argc, char *argv[] )
 {
@@ -108,7 +115,7 @@ int do_main( int argc, char *argv[] )
 
 	size_t mg_levels = 3;
 
-	CCmdOptionList options(g_general_help);
+	CCmdOptionList options(g_description);
 	options.set_group("IO"); 
 	options.add(make_opt( src_filename, "in", 'i', "test image", CCmdOption::required));
 	options.add(make_opt( ref_filename, "ref", 'r', "reference image", CCmdOption::required));

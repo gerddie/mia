@@ -73,14 +73,21 @@ mia-multihisto -i input0000.exr -o histo.txt --min 0 --max 256 --bins 64
 \autor Gert Wollny <gw.fossdev at gmail.com>
 */
 
-const char *g_description = 
-	"This program evaluates the histogram over a series of\n"
-	"2D images\n"
-	"Basic usage:\n"
-	"  mia-multihist [options] <image-files>\n";
-
 NS_MIA_USE;
 using namespace std;
+
+const SProgramDescrption g_description = {
+	"2D image stack processing", 
+	
+	"This program evaluates the histogram over a series of 2D images", 
+	
+	"Evaluate the histogram over all consecutively numbered images that follow the "
+	"numbering pattern inputXXXX.exr and store the output histogram in histo.txt. "
+	"Use the range [0,256] and 64 bins.", 
+
+	"-i input0000.exr -o histo.txt --min 0 --max 256 --bins 64"
+}; 
+
 
 class CHistAccumulator : public TFilter<bool> {
 public:

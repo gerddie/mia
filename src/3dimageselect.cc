@@ -64,10 +64,15 @@ using namespace std;
 NS_MIA_USE;
 
 
-static const char *program_info = 
-	"This program is used to select one 3D images from a multi-image file.\n"
-	"Basic usage:\n"
-	"  mia-3dimageselect -i <input image> -o <output image> [<options>] ...\n"; 
+const SProgramDescrption g_description = {
+	"Miscellaneous programs", 
+	
+	"This program is used to select one 3D images from a multi-image file.", 
+	
+	"Store the third image in multiimage.v to image.v (note: counting starts with zero).", 
+
+	"-i multiimage.v -o image.v -n 2"
+}; 
 
 int do_main( int argc, const char *argv[])
 {
@@ -79,7 +84,7 @@ int do_main( int argc, const char *argv[])
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 
 
-	CCmdOptionList options(program_info);
+	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i',
 				    "input images", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o',

@@ -72,19 +72,27 @@ mia-3dmaskseeded -i image.v -o masked.v -s "<10,23,21>" -n 18n
 #include <mia/3d/shape.hh>
 #include <mia/core.hh>
 
-const char *g_description = 
-	"3D image segmentation based on region growing from a seed point.\n"
-	"Neighboring points are added, either when their intensity is\n"
-	"equal or higher than that of the seed point, or of the intensity\n"
-	"is lower or equal then that of the neighoring point.\n"
-	"After region growing is finished, this mask is used to zero out\n"
-	"the region in the original image yielding the resulting image.\n"
-	"Basic use:\n"
-	"  mia-3dmaskseeded [options] -i <input> -o <outpu>"; 
-
-
 using namespace std;
 NS_MIA_USE;
+
+const SProgramDescrption g_description = {
+	"3D image processing", 
+	
+	
+	"3D image segmentation based on region growing from a seed point. "
+	"Neighboring points are added, either when their intensity is "
+	"equal or higher than that of the seed point, or of the intensity "
+	"is lower or equal then that of the neighoring point. "
+	"After region growing is finished, this mask is used to zero out "
+	"the region in the original image yielding the resulting image. ", 
+	
+	"Run a region growing on input.v starting at point <10,23,21> and "
+	"use the 18n neighbourhood.", 
+	
+	"-i image.v -o masked.v -s '<10,23,21>' -n 18n" 
+}; 
+
+
 
 class FMask : public TFilter <P3DImage> {
 public:

@@ -63,11 +63,17 @@ mia-3dimageaddattributes -i 3d.v -o attr3d.v -a 2d.v
 using namespace std;
 NS_MIA_USE;
 
-const char *g_description = 
-	"This program is used to add metadata attributes to a 3D image file (if supported)\n"
-	"Basic usage:\n"
-	"  mia-3dimageaddattributes [options] \n"; 
+const SProgramDescrption g_description = {
+	"Miscellaneous programs", 
+	
+	"This program appends all the meta-data attributes found in a 2D input image "
+	"to a 3D image (if the output format supports such attributes). "
+	"Attributes that are already present in the 3D image are not overwritten.", 
+	
+	"Append the attributes found in 2d.v to 3d.v and store the result in attr3d.v", 
 
+	" -i 3d.v -o attr3d.v -a 2d.v"
+}; 
 
 int main( int argc, const char *argv[] )
 {

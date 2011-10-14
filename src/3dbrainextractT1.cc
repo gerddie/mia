@@ -85,11 +85,23 @@ NS_MIA_USE
 using namespace std;
 namespace bfs = ::boost::filesystem;
 
-static const char *program_info = 
-	"This program is used to mask the brain in T1 MR images by using fuzzy c-means\n"
-	"combined with a series of other filters.\n"
-	"Basic usage:\n"
-	"  mia-3dimagefilter -i <input image> -o <output image> [<options>]\n"; 
+const SProgramDescrption g_description = {
+	"3D image processing", 
+	
+	"This program is used to extract the brain from T1 MR images. "
+	"It first runs a combined fuzzy c-means clustering and B-field correction "
+	"to facilitate a 3D segmentation of 3D image. "
+	"Then various fiters are run to obtain a white matter segmentation as initial "
+	"mask that is then used to run a region growing to obtain a mask of the whole brain. "
+	"Finally, this mask is used to extact the brain from the B0 field corrected images.", 
+
+	"Create a mask from the input image by running a 5-class segmentation over inpt image input.v "
+        "and use class 4 as white matter class and store the masked image in masked.v "
+	"and the B0-field corrected image in b0.v", 
+	
+	"-i input.v -n 5 -w 4 -o masked.v"
+}; 
+	
 
 
 int main( int argc, const char *argv[] )
@@ -107,7 +119,7 @@ int main( int argc, const char *argv[] )
 
 	try {
 
-		CCmdOptionList options(program_info);
+		CCmdOptionList options(g_description);
 		options.add(make_opt( in_filename, "in-file", 'i',
 					    "input image(s) to be segmented", CCmdOption::required));
 		options.add(make_opt( out_filename, "out-file", 'o', "brain mask", CCmdOption::required ));

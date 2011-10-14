@@ -65,16 +65,21 @@ mia-2dto3dimage -i imageXXXX.png -o 3d.v
 #include <mia/2d/2dimageio.hh>
 #include <mia/3d/3dimageio.hh>
 
-static const char *program_info = 
-	"This program is used to combine a series of 2D images of equal \n"
-	"size and type images following a certain numbering scheme to a 3D image.\n"
-	"Basic usage:\n"
-	"  mia-2dto3dimage  -i <input> -o <output image> \n"; 
-
-
 NS_MIA_USE
 using namespace std;
 using namespace boost;
+
+const SProgramDescrption g_description = {
+	"Image conversion", 
+
+	"This program is used to combine a series of 2D images of equal "
+	"size and type images following a certain numbering scheme to a 3D image.", 
+
+	"Convert a series of images imageXXXX.png to a 3D image 3d.v", 
+	
+	"-i imageXXXX.png -o 3d.v"
+}; 
+
 
 struct C3DImageCollector : public TFilter<bool> {
 
@@ -132,7 +137,7 @@ int main( int argc, const char *argv[] )
 	const C2DImageIOPluginHandler::Instance& image2dio = C2DImageIOPluginHandler::instance();
 	const C3DImageIOPluginHandler::Instance& image3dio = C3DImageIOPluginHandler::instance();
 
-	CCmdOptionList options(program_info);
+	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
 

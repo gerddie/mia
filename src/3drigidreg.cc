@@ -85,11 +85,18 @@ mia-3drigidreg -i test.v -r ref.v -o reg.v -l 2 -f affine -c ssd
 NS_MIA_USE;
 using namespace std;
 
-const char *g_description = 
+const SProgramDescrption g_description = {
+	"3D image registration", 
+	
 	"This program implements the registration of two gray scale 3D images. "
 	"The transformation is not penalized, therefore, one should only use translation, rigid, or affine "
-	"transformations as target and run mia-3dnonrigidreg of nonrigid registration is to be achieved." 
-	; 
+	"transformations as target and run mia-3dnonrigidreg of nonrigid registration is to be achieved.", 
+	
+	"Register image test.v to image ref.v affine and write the registered image to reg.v. "
+	"Use two multiresolution levels and ssd as cost function.",
+	
+	"-i test.v -r ref.v -o reg.v -l 2 -f affine -c ssd"
+}; 
 
 int do_main( int argc, const char *argv[] )
 {

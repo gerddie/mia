@@ -75,11 +75,13 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
-const char *g_description = 
-	"This program implements 3D gray scale image registration but\n"
-	"is currently not funcioning\n"
-	"Basic usage:\n"
-	"  mia-3dnrreg [options] \n";
+const SProgramDescrption g_description = {
+	"Obsolete", 
+	
+	"This program implements 3D gray scale image registration but "
+	"is currently not funcioning", 
+	NULL, NULL
+}; 
 
 
 // set op the command line parameters and run the registration

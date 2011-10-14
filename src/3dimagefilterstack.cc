@@ -47,10 +47,10 @@ mia-3dimagefilterstack -i <input images> -o <output image basename> \
   }
 
   \item [Example:]Run a mean-least-varaiance filter on a series of images that follow the 
-  numbering pattern imageXXXX.exr and store the output in images filteredXXXX.exr 
+  numbering pattern imageXXXX.hdr and store the output in images filteredXXXX.hdr 
    \
   \begin{lstlisting}
-mia-3dimagefilterstack -i image0000.exr -o filtered -t exr mlv:w=2 
+mia-3dimagefilterstack -i image0000.hdr -o filtered -t hdr mlv:w=2 
   \end{lstlisting}
   \end{description}
   
@@ -80,18 +80,18 @@ size_t log10(size_t x)
 	return result;
 }
 
-/* Revision string */
-const char revision[] = "not specified";
-
-static const char *program_info = 
-	"This program is used to filter and convert a consecutive numbered series\n"
-	"gray of scale images. File names must follow the pattern 'dataXXXX.v' \n"
-	"(X being digits), i.e. the numbering comes right before the dot.\n"
-	"\n"
-	"Basic usage:\n"
-	"  mia-3dimagefilter -i <input image> -o <output base> \\\n"
-	"                    -t <output type> [<plugin>]  [<plugin>] ...\n"; 
-
+const SProgramDescrption g_description = {
+	"3D image processing", 
+	
+	"This program is used to filter and convert a consecutive numbered series "
+	"gray of scale images. File names must follow the pattern 'dataXXXX.v' "
+	"(X being digits), i.e. the numbering comes right before the dot. ", 
+	
+	"Run a mean-least-varaiance filter on a series of images that follow the " 
+	"numbering pattern imageXXXX.hdr and store the output in images filteredXXXX.hdr", 
+	
+	"-i image0000.hdr -o filtered -t hdr mlv:w=2"
+}; 
 
 int main( int argc, const char *argv[] )
 {
@@ -105,12 +105,8 @@ int main( int argc, const char *argv[] )
 	const C3DFilterPluginHandler::Instance& filter_plugins = C3DFilterPluginHandler::instance();
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 
-	stringstream filter_names(program_info);
 
-	filter_names << "filters in the order to be applied (out of: " << filter_plugins.get_plugin_names() << ")";
-
-
-	CCmdOptionList options(program_info);
+	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output file name base", CCmdOption::required));
 	options.add(make_opt( out_type, imageio.get_set(), "type", 't',"output file type", CCmdOption::required));

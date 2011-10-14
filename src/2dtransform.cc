@@ -65,9 +65,17 @@ using namespace boost;
 using namespace std;
 
 
-const char *g_description = 
-	"This program is used to deform a 2D image using a given transformation."
-;
+const SProgramDescrption g_description = {
+	"2D image processing", 
+	
+	"This program is used to deform a 2D image using a given transformation.", 
+
+	"Transform an image input.png by the transfromation stored in trans.v "
+        "by using linear interpolation and zero boundary conditions and store the result in output.png", 
+	
+	"-i input.png -t trans.v  -o output.png  -p bspline:d=1 -b zero",
+	
+};
 
 int do_main(int argc, const char **argv)
 {

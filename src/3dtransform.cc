@@ -62,19 +62,24 @@ mia-3dtransform -i input.v -t trans.v  -o output.v  -p nn
 #include <mia/3d/3dimageio.hh>
 
 
-static const char *program_info = 
-	"This program is used to transform an 3D image by using a given generic transformation.\n"
-	"Basic usage:\n"
-	"  mia-3dimagefilter -i <input> -t <transformation> -o <output> \n"; 
-
-
-
 NS_MIA_USE
 using namespace std;
 
+const SProgramDescrption g_description = {
+	"3D image processing", 
+
+	"Transform a 3D image by applying a given 3D transformation.", 
+	
+	"Transform an image input.v by the transfromation stored in trans.v "
+        "by using nearest neighbour interpolation ans store the result in output.v",
+	
+	"-i input.v -t trans.v  -o output.v  -p bspline:d=0"
+	
+}; 
+
 int do_main(int argc, const char **argv)
 {
-	CCmdOptionList options(program_info);
+	CCmdOptionList options(g_description);
 
 	string src_filename;
 	string out_filename;

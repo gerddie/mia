@@ -60,11 +60,17 @@ mia-3dimagestats -i input.v -t 5
 NS_MIA_USE;
 using namespace std;
 
-const char *program_info = 
-	"This program is used to evaluate certain image statistics\n"
-	"and print them out on the command line\n"
-	"Basic usage:\n"
-	"  mia-3dimagestats [options] [<filter1>] [<filter1>] ...\n";
+const SProgramDescrption g_description = {
+	"Miscellaneous programs", 
+	
+	"This program is used to evaluate certain image statistics "
+	"and print them out on the console.", 
+	
+	"Evaluate the statistics of image input.v and ignore all voxels with an intensity "
+	"below 5.", 
+
+	"-i input.v -t 5"
+};
 
 class CHistAccumulator : public TFilter<bool> {
 public:
@@ -110,7 +116,7 @@ int main( int argc, const char *argv[] )
 		const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 
 
-		CCmdOptionList options(program_info);
+		CCmdOptionList options(g_description);
 		options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
 					    CCmdOption::required));
 		options.add(make_opt( thresh, "thresh", 't', "intensity thresh to ignore"));

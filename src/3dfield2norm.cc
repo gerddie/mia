@@ -57,8 +57,15 @@ mia-3dfield2norm -i field.v -o norm.v
 
 NS_MIA_USE;
 
-const char *g_description = 
-	"This program converts a 3d vector field to an image of its voxel-wise norm."; 
+const SProgramDescrption g_description = {
+	"Miscellaneous programs", 
+	
+	"This program converts a 3d vector field to an image of its voxel-wise norm.", 
+
+	"Evaluate the norm image norm.v from a vector field field.v.", 
+	
+	"-i field.v -o norm.v"
+}; 
 
 struct FVector2Norm {
 	float operator ()(const C3DFVector& v) const {

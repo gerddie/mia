@@ -96,14 +96,23 @@ using namespace mia;
 
 namespace bfs=boost::filesystem; 
 
-const char *g_general_help = 
+const SProgramDescrption g_description = {
+	"3D registration of series of images", 
+	
 	"This program runs the non-rigid registration of an perfusion image series. "
 	"The registration is run in a serial manner, this is, only images in "
 	"temporal succession are registered, and the obtained transformations "
-	"are applied accumulated to reach full registration. "
-  	"Basic usage: \n"
-	" mia-3dmany2one-nonrigid [options] <cost1> <cost2> ..."; 
+	"are applied accumulated to reach full registration. ", 
 
+	"Register the perfusion series given in segment.set by optimizing a spline based " 
+        "transformation with a coefficient rate of 16 pixel "
+        "using  a weighted combination of \emph{normalized gradient fields} "
+        "and SSD as cost measure, and penalize the transformation by using divcurl with aweight of 2.0.", 
+
+	"-i segment.set -o registered.set -F spline:rate=16 "
+	"image:cost=[ngf:eval=ds],weight=2.0 image:cost=ssd,weight=0.1 divcurl:weight=2.0"
+	
+}; 
 
 C3DFullCostList create_costs(const std::vector<const char *>& costs, int idx)
 {
@@ -180,7 +189,7 @@ int do_main( int argc, const char *argv[] )
 
 	int max_threads = task_scheduler_init::automatic;
 	
-	CCmdOptionList options(g_general_help);
+	CCmdOptionList options(g_description);
 	
 	options.set_group("\nFile-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', 

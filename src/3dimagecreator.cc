@@ -67,10 +67,20 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
-static const char *g_description = 
-	"This program is used to create certain 3D image shapes\n"
-	"Basic usage:\n"
-	"  mia-raw2image [options] \n";
+const SProgramDescrption g_description = {
+	"Miscellaneous programs", 
+	
+	"This program creates a 3D image that contains an object created by one of the object "  
+	"creator plug-ins (creator/3dimage)",
+	
+	"Create an image output.v of size <64,128,256> that contains a lattic with "
+	"frequencys 8, 16, and 4 in x, y and, z-direction respectively."
+	
+	"-o lattic.v -j lattic:fx=8,fy=16,fz=4 -s \"<64,128,256>\""
+}; 
+	
+	
+	
 
 int do_main(int argc, const char *argv[])
 {

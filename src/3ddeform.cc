@@ -46,7 +46,7 @@ mia-3ddeform -i <input> -t <transformaton> -o <output>
         by using bspline interpolation of degree 4 and store the result in output.v 
    \
   \begin{lstlisting}
-mia-3dtransform -i input.v -t field.v  -o output.v  -p bspline4 
+mia-3dtransform -i input.v -t field.v  -o output.v  -p bspline:d=4 
   \end{lstlisting}
   \end{description}
 
@@ -59,22 +59,28 @@ mia-3dtransform -i input.v -t field.v  -o output.v  -p bspline4
 
 #include <mia/3d/deformer.hh>
 
-static const char *program_info = 
-	"This program is used to transform an 3D image by using a given transformation.\n"
-	"Basic usage:\n"
-	"  mia-3dimagefilter -i <input> -t <transformation> -o <output> [<plugin>]\n"; 
-
-
 NS_MIA_USE
-using namespace boost;
 using namespace std;
+using namespace boost;
+
+const SProgramDescrption g_description = {
+	"3D image processing", 
+	
+	"Transform a 3D image by applying a given 3D transformation that is defined "
+	"by a 3D vector field v according to x:=x-v(x)", 
+	
+	"Transform an image input.v by the transformation defined by the vector field field.v "
+        "by using bspline interpolation of degree 4 and store the result in output.v", 
+	
+	"-i input.v -t field.v  -o output.v  -p bspline:d=4" 
+}; 
 
 typedef std::shared_ptr<C3DFVectorfield > P3DFVectorfield;
 
 
 int do_main(int argc, const char **argv)
 {
-	CCmdOptionList options(program_info);
+	CCmdOptionList options(g_description);
 
 	string src_filename;
 	string out_filename;

@@ -59,12 +59,17 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
-const char *g_description = 
-	"This program implements non-rigid registration of 3D image\n"
-	" using multiple cost functions\n"
-	"Basic usage:\n"
-	"  mia-3dmulti-nrreg [options] <cost functions>\n";
+const SProgramDescrption g_description = {
+	"3D image registration", 
+	
+	"This program implements 3D gray scale image registration "
+	"by optimizing a dense vector field that defines a transformation for each pixel. "
+	"The input images must be of the same size and dimensions. "
+	"The registration can be achieved by optimizing a combined cost function. ", 
 
+	NULL, NULL
+}; 
+	
 // set op the command line parameters and run the registration
 int do_main(int argc, const char **argv)
 {

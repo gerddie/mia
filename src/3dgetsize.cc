@@ -64,11 +64,15 @@ mia-3dgetsize -i image.v
 using namespace std;
 NS_MIA_USE;
 
-static const char *program_info = 
-	"Write the dimensions of the input 3d image to stdout.\n"
-	"Usage:\n"
-	"  mia-2dimagefilter -i <input image> \n"; 
-
+const SProgramDescrption g_description = {
+	"Miscellaneous programs", 
+	
+	"Write the dimensions of the input 3d image to stdout.", 
+	
+	"Print out the size of image.v.", 
+	
+	"-i image.v"
+}; 
 
 int main( int argc, const char *argv[] )
 {
@@ -76,7 +80,7 @@ int main( int argc, const char *argv[] )
 	try {
 		const C3DImageIOPluginHandler::Instance& imageio3d = C3DImageIOPluginHandler::instance();
 
-		CCmdOptionList options(program_info);
+		CCmdOptionList options(g_description);
 		options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
 					    CCmdOption::required));
 

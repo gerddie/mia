@@ -77,10 +77,19 @@ mia-fuzzysegment3d -i input.v -c 5 -o b0.v -c cls.v
 NS_MIA_USE
 using namespace std;
 
-static const char *program_info = 
-	"This program runs a fuzzy c-means segmentation of a 3D data set.\n"
-	"Basic usage:\n"
-	"  mia-3dimagefilter -i <input image> -c <output image> [<options>]\n"; 
+const SProgramDescrption g_description = {
+	"3D image processing", 
+	
+	"This program runs a combined fuzzy c-means clustering and B-field correction "
+	"to facilitate a 3D segmentation of 3D image", 
+	
+	"Run a 5-class segmentation over inpt image input.v and store the class "
+	"probability images in cls.v and the B0-field corrected image in b0.v.", 
+	
+	"-i input.v -c 5 -o b0.v -c cls.v"
+}; 
+
+
 
 int main( int argc, const char *argv[] )
 {
@@ -95,7 +104,7 @@ int main( int argc, const char *argv[] )
 
 	try {
 
-		CCmdOptionList options(program_info);
+		CCmdOptionList options(g_description);
 		options.add(make_opt( in_filename, "in-file", 'i',
 					    "input image(s) to be segmenetd", CCmdOption::required));
 		options.add(make_opt( cls_filename, "cls-file", 'c',

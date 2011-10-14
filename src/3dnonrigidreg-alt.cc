@@ -77,11 +77,19 @@ mia-3dnonrigidreg -o reg.vf -l 2 -f spline:rate=3  \
 NS_MIA_USE;
 using namespace std;
 
-const char *g_general_help = 
+const SProgramDescrption g_description = {
+	"3D image registration", 
+	
 	"This program runs a non-rigid registration based on the given cost criteria "
-	"and a given transformation model.\n"
-	"Basic usage: \n"
-	" mia-3dnonrigidreg [options] cost1 cost2 "; 
+	"and a given transformation model. ", 
+
+	"Register image test.v to image ref.v by using a spline transformation with a "
+	"coefficient rate of 5  and write the registered image to reg.v. "
+	"Use two multiresolution levels, ssd as image cost function and divcurl weighted by 10.0 "
+	"as transformation smoothness penalty. The resulting transformation is saved in reg.vf.",
+
+	"-o reg.vf -l 2 -f spline:rate=3 image:cost=ssd,src=test.v,ref=ref.v divcurl:weight=10"
+};
 
 int do_main( int argc, const char *argv[] )
 {
@@ -93,7 +101,7 @@ int do_main( int argc, const char *argv[] )
 		cverr() << "something's wrong\n"; 
 
 
-	CCmdOptionList options(g_general_help);
+	CCmdOptionList options(g_description);
 	options.add(make_opt( trans_filename, "out-transform", 'o', "output transformation", CCmdOption::required));
 	options.add(make_opt( mg_levels, "levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));

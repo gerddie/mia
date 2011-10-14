@@ -88,15 +88,20 @@ mia-2dstackfilter -i image0000.exr -o filtered -t exr mlv:w=2
 #include <mia/2d/2dimageio.hh>
 #include <mia/3d/2dimagefifofilter.hh>
 
-
-static const char *program_info = 
-	"This program is used to filter conscutive numbered 2D images in a 3D manner.\n"
-	"This is useful for out-of-core processing of large files.\n"
-	"Usage:\n"
-	"  mia-2dstackfilter -i <input> -o <output> -t <output-type> <plugin> [<plugin>] ...\n"; 
-
 using namespace std;
 using namespace mia;
+
+const SProgramDescrption g_description = {
+	"2D image stack processing", 
+	
+	"This program is used to filter and convert a series of 2D gray scale images in a "
+	"W3D fashion by running filters (filter/2dimage) as given on the command line."
+
+	"Run a mean-least-varaiance filter on a series of images that follow the "
+	"numbering pattern imageXXXX.exr and store the output in images filteredXXXX.exr", 
+	
+	"-i image0000.exr -o filtered -t exr mlv:w=2"
+}; 
 
 class C2DStackSaver: public  TFifoFilter<P2DImage> {
 
@@ -170,7 +175,7 @@ int main(int argc, const char *argv[])
 	const C2DFifoFilterPluginHandler::Instance& sfh = C2DFifoFilterPluginHandler::instance();
 
 
-	CCmdOptionList options(program_info);
+	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i',
 				    "input image(s) to be filtered", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o',

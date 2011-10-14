@@ -87,12 +87,17 @@ inline bool am_big_endian()
 #endif
 }
 
-const char *g_description = 
-	"This program is used to convert raw data to 3D volumes\n"
-	"with apropriate metadata.\n"
-	"Basic usage:\n"
-	"  mia-raw2volume [options] \n"; 
-
+ 
+const SProgramDescrption g_description = {
+	"Image conversion", 
+	
+	"This program is used to convert raw data into 3D volumes."
+	"with apropriate metadata.", 
+	
+	"pixel size of <1.2, 2.3, 3.4> to an Analyze file image.hdr", 
+	
+	"-i data.raw -o image.hdr -s \"<10,20,30>\" -k \"<1.2,2.3,3.4>\" -r ushort"
+}; 
 
 template <typename I>
 void handle_endian(I b, I e)

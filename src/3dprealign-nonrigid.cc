@@ -124,15 +124,25 @@ using namespace mia;
 
 namespace bfs=boost::filesystem; 
 
-const char *g_general_help = 
-	"This program runs the non-rigid registration of an perfusion image series\n"
-	"preferable aquired letting the patient breath freely.\n" 
-	"The registration algoritm implementes\n"
-	"G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting \n"
-	"Quasiperiodicity in Motion Correction of Free-Breathing,\" \n"
-	"IEEE Transactions on Medical Imaging, 29(8), 2010\n\n"
-	"Basic usage: \n"
-	" mia-3dmyoperiodix-nonrigid [options] "; 
+const SProgramDescrption g_description = {
+	"3D registration of series of images", 
+	
+	"This program runs the non-rigid registration of an image series "
+	"The registration algoritm implementes a 3D version of "
+	"G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting "
+	"Quasiperiodicity in Motion Correction of Free-Breathing,\" "
+	"IEEE Transactions on Medical Imaging, 29(8), 2010.", 
+	
+	"Register the image series given by images imageXXXX.v by optimizing a spline based "
+	"transformation with a coefficient rate of 16 pixel ,skipping two images at the "
+	"beginning and using \emph{normalized gradient fields} as initial cost measure "
+	"and SSD as final measure. Penalize the transformation by using divcurl with aweight of 2.0. "
+	"As optimizer an nlopt based newton method is used.", 
+	
+	"mia-3dprealign-nonrigid  -i imageXXXX.v -o registered -t vista -k 2"
+	"-F spline:rate=16 -d 2.0 -1 image:cost=[ngf:eval=ds] -2 image:cost=ssd "
+	"-O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300"
+}; 
 
 
 class C3DFImage2PImage {
@@ -417,7 +427,7 @@ int do_main( int argc, const char *argv[] )
 	
 	C3DMyocardPeriodicRegistration::RegistrationParams params;
 
-	CCmdOptionList options(g_general_help);
+	CCmdOptionList options(g_description);
 	
 	options.set_group("\nFile-IO");
 	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
