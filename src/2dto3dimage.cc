@@ -125,10 +125,7 @@ private:
 	std::shared_ptr<C3DImage > m_image;
 };
 
-/* Revision string */
-const char revision[] = "not specified";
-
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 	string in_filename;
@@ -141,58 +138,46 @@ int main( int argc, const char *argv[] )
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
 
-	try {
 
-		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 
 
-		CHistory::instance().append(argv[0], revision, options);
+	CHistory::instance().append(argv[0], "", options);
 
-		size_t start_filenum = 0;
-		size_t end_filenum  = 0;
-		size_t format_width = 0;
+	size_t start_filenum = 0;
+	size_t end_filenum  = 0;
+	size_t format_width = 0;
 
-		std::string src_basename = get_filename_pattern_and_range(in_filename, start_filenum, end_filenum, format_width);
-		if (start_filenum >= end_filenum)
-			throw invalid_argument(string("no files match pattern ") + src_basename);
+	std::string src_basename = get_filename_pattern_and_range(in_filename, start_filenum, end_filenum, format_width);
+	if (start_filenum >= end_filenum)
+		throw invalid_argument(string("no files match pattern ") + src_basename);
 
-		char new_line = cverb.show_debug() ? '\n' : '\r';
+	char new_line = cverb.show_debug() ? '\n' : '\r';
 
-		C3DImageCollector ic(end_filenum - start_filenum);
+	C3DImageCollector ic(end_filenum - start_filenum);
 
-		for (size_t i = start_filenum; i < end_filenum; ++i) {
+	for (size_t i = start_filenum; i < end_filenum; ++i) {
 
-			string src_name = create_filename(src_basename.c_str(), i);
-			cvmsg() << new_line << "Read: " << i <<" out of "<< "[" << start_filenum<< "," << end_filenum << "]" ;
-			C2DImageIOPluginHandler::Instance::PData  in_image_list = image2dio.load(in_filename);
+		string src_name = create_filename(src_basename.c_str(), i);
+		cvmsg() << new_line << "Read: " << i <<" out of "<< "[" << start_filenum<< "," << end_filenum << "]" ;
+		C2DImageIOPluginHandler::Instance::PData  in_image_list = image2dio.load(in_filename);
 
-			if (in_image_list.get() && in_image_list->size()) {
-				accumulate(ic, **in_image_list->begin());
-			}
+		if (in_image_list.get() && in_image_list->size()) {
+			accumulate(ic, **in_image_list->begin());
 		}
-		cvmsg() << "\n";
+	}
+	cvmsg() << "\n";
 
-		C3DImageVector result;
-		result.push_back(ic.result());
+	C3DImageVector result;
+	result.push_back(ic.result());
 
-		if (image3dio.save(out_filename, result))
-			return EXIT_SUCCESS;
-		else
-			cerr << argv[0] << " fatal: unable to output image to " <<  out_filename << endl;
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const std::exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
+	if (image3dio.save(out_filename, result))
+		return EXIT_SUCCESS;
+	else
+		cerr << argv[0] << " fatal: unable to output image to " <<  out_filename << endl;
 	return EXIT_FAILURE;
 }
+
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

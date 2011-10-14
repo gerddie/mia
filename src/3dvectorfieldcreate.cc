@@ -163,7 +163,7 @@ void FillField2(C3DFVectorfield& Field,const C3DBounds& Size,float fun)
 	}
 }
 
-int do_main(int argc, const char *argv[])
+int do_main(int argc, char *argv[])
 {
 
 	C3DBounds Size(64,64,64);
@@ -199,23 +199,6 @@ int do_main(int argc, const char *argv[])
 
 }
 
-int main(int argc, const char *argv[])
-{
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const std::exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
 
-	return EXIT_FAILURE;
-}
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main)

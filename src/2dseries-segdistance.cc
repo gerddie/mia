@@ -66,6 +66,7 @@ mia-2dseries-segdistance -i segment.set -r 20
 #include <libxml++/libxml++.h>
 
 #include <mia/core.hh>
+#include <mia/internal/main.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dfilter.hh>
@@ -75,8 +76,17 @@ using namespace mia;
 using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
-const char *g_description = 
-	"Get mean average distance of the myocardium border to the border of a given reference frame."; 
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+	
+	"Get the mean distance of a segmentation boundary to the reference boundary.", 
+
+	"Evaluate the mean absolute border distanceof the segmentations of set segment.set with "
+	"respect to the segmentation given in frame 20.", 
+	
+	" -i segment.set -r 20"
+}; 
+	
 
 
 double mean_frame_border_distance(const C2DDImage& distance, const C2DBitImage& mask) 
@@ -126,7 +136,7 @@ P2DImage get_distance_transform(const C2DImage& image)
 	return run_filter(image, "distance"); 
 }
 
-int do_main(int argc, const char *argv[])
+int do_main(int argc, char *argv[])
 {
 	string src_filename;
 	size_t reference = 20;
@@ -181,26 +191,4 @@ int do_main(int argc, const char *argv[])
 	return 0;
 }
 
-int main(int argc, const char *argv[] )
-{
-	try {
-		return do_main(argc, argv);
-
-
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-	return EXIT_FAILURE;
-}
-
-
+MIA_MAIN(do_main);

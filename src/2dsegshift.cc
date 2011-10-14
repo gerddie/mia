@@ -78,16 +78,28 @@ mia-2dsegshift -i segment.set -o translate.set -g translated -S "<20,30>"
 #include <mia/2d/SegSet.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dfilter.hh>
-
-
-
-
+#include <mia/internal/main.hh>
 
 using namespace std;
 using namespace mia;
 using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
+
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+	
+	"This program move the segmentation(s) of an image series by using a shift "
+	"that is equal for all slices. The program also may remove images from the "
+	"begin of the series. The program can be used to correct the segmentation "
+	"of the images if the images where cropped.", 
+
+	"Shift the segmentations of a set segement.set by -20 pixels in horizontal direction and -30 "
+	"pixels in vertical direction (as if the images where cropped starting at (20,30) "
+	"and store it in translate.set. The shiftes files are named translatedXXXX.png", 
+	
+	"-i segment.set -o translate.set -g translated -S \"<20,30>\""
+}; 
 
 CSegSet load_segmentation(const string& s)
 {
@@ -97,12 +109,7 @@ CSegSet load_segmentation(const string& s)
 	return CSegSet(*parser.get_document());
 }
 
-const char *g_description = 
-	"This program is used to remove images from the beginning of a segmentation set and at the "
-	"same time move the segmentation by a given offset." 
-	;
-
-int do_main(int argc, const char *argv[])
+int do_main(int argc, char *argv[])
 {
 	string src_filename;
 	string out_filename;
@@ -137,26 +144,4 @@ int do_main(int argc, const char *argv[])
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-int main(int argc, const char *argv[] )
-{
-	try {
-		return do_main(argc, argv);
-
-
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-	return EXIT_FAILURE;
-}
-
-
+MIA_MAIN(do_main); 

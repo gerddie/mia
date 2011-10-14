@@ -70,16 +70,25 @@ mia-2dsegcompare -i segment.set -r 20
 #include <mia/2d/SegSet.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dfilter.hh>
-
-
-
-
+#include <mia/internal/main.hh>
 
 using namespace std;
 using namespace mia;
 using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
+
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+
+	"This program is used to evaluate the Hausdorff distance between each frame "
+	"of a perfusion time series of the input set to the corresponding frame of the reference set "
+	"and prints the result to stdout.", 
+
+	"Evaluate the per-slice Hausdorff distance of input.set and reference.set."
+	
+	"-i input.set -r reference.set"
+}; 
 
 CSegSet load_segmentation(const string& s)
 {
@@ -89,18 +98,14 @@ CSegSet load_segmentation(const string& s)
 	return CSegSet(*parser.get_document());
 }
 
-const char *g_description = 
-	"This program is used to evaluate the Hausdorff distance between each frame "
-	"of a perfusion time series and a reference frame.";
-
-int do_main(int argc, const char *argv[])
+int do_main(int argc, char *argv[])
 {
 	string src_filename;
 	string ref_filename;
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
-	options.add(make_opt( ref_filename, "ref-file", 'r', "reference frame", CCmdOption::required));
+	options.add(make_opt( ref_filename, "ref-file", 'r', "reference  segmentation set", CCmdOption::required));
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
@@ -115,17 +120,20 @@ int do_main(int argc, const char *argv[])
 		throw invalid_argument("segmentations have different frame numbers");
 
 
-	CSegSet::Frames::const_iterator iframe = src_frames.begin();
-	CSegSet::Frames::const_iterator rframe = ref_frames.begin();
-	CSegSet::Frames::const_iterator eframe = src_frames.end();
+	auto iframe = src_frames.begin();
+	auto rframe = ref_frames.begin();
+	auto eframe = src_frames.end();
 
 	while (iframe != eframe) {
-		const CSegFrame::Sections& src_sections = iframe->get_sections();
-		const CSegFrame::Sections& ref_sections = rframe->get_sections();
+		const auto& src_sections = iframe->get_sections();
+		const auto& ref_sections = rframe->get_sections();
 
 		cout << iframe->get_hausdorff_distance(*rframe) << " ";
-		for (size_t j = 0; j < src_sections.size(); ++j)
-			cout << src_sections[j].get_hausdorff_distance(ref_sections[j]) << " ";
+		if (src_sections.size() == ref_sections.size() ) 
+			for (size_t j = 0; j < src_sections.size(); ++j)
+				cout << src_sections[j].get_hausdorff_distance(ref_sections[j]) << " ";
+		else 
+			cout << "slice segmented with different number of sections"; 
 		cout << "\n";
 
 		++iframe;
@@ -135,26 +143,4 @@ int do_main(int argc, const char *argv[])
 
 }
 
-int main(int argc, const char *argv[] )
-{
-	try {
-		return do_main(argc, argv);
-
-
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-	return EXIT_FAILURE;
-}
-
-
+MIA_MAIN(do_main); 

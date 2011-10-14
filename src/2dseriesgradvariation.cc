@@ -84,11 +84,20 @@ mia-2dseriesgradvariation -i segment.set -o gradvar.exr -c -e 3
 using namespace std;
 using namespace mia;
 
-static const char *program_info = 
-	"This program is used to evaluate the temporal pixel wise gradient variation\n"
-	"of a set of images in temporal sucession\n"
-	"Usage:\n"
-	"  mia-2dseriesgradvariation -i <input set> -o <output image> [<options>]\n";
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+
+	"Given a set of images of temporal sucession, this program evaluates the "
+	"gradient variation of the pixel-wise time-intensity curves of this series. "
+	"If the input image set provides a segmentation, then this segmentation can "
+	"be used to create a bounding box and restrict evaluation to this box. ", 
+
+	"Evaluate the gradient-variation image of the bounding box surrounding the segmentation "
+	"from a series 'segment.set'. The bounding box will be enlarged by 3 pixels in all directions. "
+	"Store the image in OpenEXR format.", 
+	
+	" -i segment.set -o gradvar.exr -c -e 3"
+}; 
 
 struct C2DVarAccumulator : public TFilter<bool> {
 
@@ -160,10 +169,7 @@ private:
 };
 
 
-/* Revision string */
-const char revision[] = "not specified";
-
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 	string in_filename;
@@ -176,77 +182,64 @@ int main( int argc, const char *argv[] )
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 
 
-	CCmdOptionList options(program_info);
+	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
 	options.add(make_opt( skip, "skip", 'k', "Skip files at the beginning"));
 	options.add(make_opt( enlarge_boundary,  "enlarge-boundary", 'e', "Enlarge cropbox by number of pixels"));
 	options.add(make_opt( crop, "crop", 'c', "crop image before running statistics"));
 
-	try {
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+
+	cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
+
+	if ( in_filename.empty() )
+		throw runtime_error("'--in-file' ('i') option required");
+
+	if ( out_filename.empty() )
+		throw runtime_error("'--out-base' ('o') option required");
+
+	CSegSetWithImages  segset(in_filename, true);
+
+	P2DFilter  crop_filter;
+	if (crop) {
+		C2DBoundingBox box = segset.get_boundingbox();
+		box.enlarge(enlarge_boundary);
+		stringstream crop_descr;
+		crop_descr << "crop:"
+			   << "start=[" << box.get_grid_begin()
+			   << "],end=[" << box.get_grid_end() << "]";
+		cvdebug() << "Crop with " << crop_descr.str() << "\r";
 
 
-		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
-
-		cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
-
-		if ( in_filename.empty() )
-			throw runtime_error("'--in-file' ('i') option required");
-
-		if ( out_filename.empty() )
-			throw runtime_error("'--out-base' ('o') option required");
-
-		CSegSetWithImages  segset(in_filename, true);
-
-		P2DFilter  crop_filter;
-		if (crop) {
-			C2DBoundingBox box = segset.get_boundingbox();
-			box.enlarge(enlarge_boundary);
-			stringstream crop_descr;
-			crop_descr << "crop:"
-				   << "start=[" << box.get_grid_begin()
-				   << "],end=[" << box.get_grid_end() << "]";
-			cvdebug() << "Crop with " << crop_descr.str() << "\r";
-
-
-			crop_filter = C2DFilterPluginHandler::instance().
-				produce(crop_descr.str().c_str());
-		}
-
-
-		if (skip >= segset.get_images().size())
-			throw invalid_argument("Skip is equal or larger then image series");
-
-		C2DImageSeries::const_iterator iimages = segset.get_images().begin();
-		C2DImageSeries::const_iterator eimages = segset.get_images().end();
-		advance(iimages, skip);
-
-		C2DVarAccumulator acc;
-		for (; iimages != eimages; ++iimages) {
-
-			P2DImage in_image = *iimages;
-			if (crop)
-				in_image = crop_filter->filter(*in_image);
-			mia::accumulate(acc, *in_image);
-		}
-
-		if (save_image(out_filename, acc.result()))
-		    return  EXIT_SUCCESS;
-
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
+		crop_filter = C2DFilterPluginHandler::instance().
+			produce(crop_descr.str().c_str());
 	}
 
-	return EXIT_FAILURE;
+
+	if (skip >= segset.get_images().size())
+		throw invalid_argument("Skip is equal or larger then image series");
+
+	C2DImageSeries::const_iterator iimages = segset.get_images().begin();
+	C2DImageSeries::const_iterator eimages = segset.get_images().end();
+	advance(iimages, skip);
+
+	C2DVarAccumulator acc;
+	for (; iimages != eimages; ++iimages) {
+
+		P2DImage in_image = *iimages;
+		if (crop)
+			in_image = crop_filter->filter(*in_image);
+		mia::accumulate(acc, *in_image);
+	}
+
+	if (save_image(out_filename, acc.result()))
+		return  EXIT_SUCCESS;
+	
+	return  EXIT_FAILURE;
+	
 }
+	
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

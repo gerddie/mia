@@ -66,16 +66,24 @@ mia-2dseriessmoothgradMAD -i segment.set -o mincorr.exr -k 2
 #include <mia/core.hh>
 #include <queue>
 
+#include <mia/internal/main.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/correlation_weight.hh>
 #include <mia/2d/SegSetWithImages.hh>
 
 NS_MIA_USE;
 
-const char *g_description = 
-	"This program is used to evaluate the temporal intensity correlation of neighboring pixels "
-	"in a series of images."
-	; 
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+	
+	"Given a set of images of temporal sucession, this program evaluates the "
+	"minimal correlation of the time-intensity curve between neighboring pixels.", 
+	
+	"Evaluate the minimal correlation image of a series givemn in  segment.set and "
+	"store the image in OpenEXR format. Skip two images at the beginning of the series.", 
+
+	"-i segment.set -o mincorr.exr -k 2"
+}; 
 
 
 P2DImage get_minimal_correlation(const CCorrelationEvaluator::result_type& correlation)
@@ -114,7 +122,7 @@ P2DImage get_minimal_correlation(const CCorrelationEvaluator::result_type& corre
 	return presult; 
 }
 
-int do_main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 	string src_name("segment.set");
 	string out_name("min-correlation.v");
@@ -141,26 +149,4 @@ int do_main( int argc, const char *argv[] )
 
 };
 
-int main( int argc, const char *argv[] )
-{
-
-
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
-}
-
+MIA_MAIN(do_main); 

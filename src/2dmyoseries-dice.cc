@@ -62,6 +62,7 @@ mia-2dmyoseries-dice -i segment.set -r 30 -k 2
 #include <libxml++/libxml++.h>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
+#include <mia/internal/main.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <ostream>
 #include <fstream>
@@ -72,9 +73,18 @@ using namespace mia;
 using namespace std; 
 
 
-const char *g_description = 
-	"This program is used to evaluate the per-frame dice index of \n"
-	"segmented regions of an image"; 
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+
+	"This program is used to evaluate the per-frame dice index of "
+	"segmented regions of an image with respect to the segmentation of a reference frame "
+	"from the same series.", 
+
+	"Evaluate the dice index of segmentation set \emph{segment.set} with reference 30 and " 
+	"skipping the first two frames.", 
+	
+	"-i segment.set -r 30 -k 2"
+}; 
 
 
 float dice_value(const C2DUBImage& mask1, const C2DUBImage& mask2) 
@@ -98,7 +108,7 @@ float dice_value(const C2DUBImage& mask1, const C2DUBImage& mask2)
 	return sum ? (2.0f * schnitt) / sum : 1.0f; 
 }
 
-int do_main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 	string org_filename;
 	int skip = 2; 
@@ -140,27 +150,4 @@ int do_main( int argc, const char *argv[] )
 	return EXIT_SUCCESS; 
 }
 
-
-
-int main( int argc, const char *argv[] )
-{
-
-
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
-}
+MIA_MAIN(do_main); 

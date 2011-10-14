@@ -163,13 +163,12 @@ void C2DStackSaver::do_push(::boost::call_traits<P2DImage>::param_type image)
 
 }
 
-int main(int argc, const char *argv[])
+int do_main(int argc, char *argv[])
 {
 	string in_filename;
 	string out_filename;
 	string out_type;
 	vector<int> new_size;
-	bool help_plugins = false;
 
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 	const C2DFifoFilterPluginHandler::Instance& sfh = C2DFifoFilterPluginHandler::instance();
@@ -177,103 +176,88 @@ int main(int argc, const char *argv[])
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i',
-				    "input image(s) to be filtered", CCmdOption::required));
+			      "input image(s) to be filtered", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o',
-				    "output file name base", CCmdOption::required));
+			      "output file name base", CCmdOption::required));
 	options.add(make_opt( out_type, imageio.get_set(), "type", 't',
-				    "output file type (if not given deduct from output file name)", CCmdOption::required));
+			      "output file type (if not given deduct from output file name)", CCmdOption::required));
 	options.add(make_help_opt( "help-plugins", 0,
-					 "give some help about the filter plugins", 
-					 new TPluginHandlerHelpCallback<C2DFifoFilterPluginHandler>)); 
+				   "give some help about the filter plugins", 
+				   new TPluginHandlerHelpCallback<C2DFifoFilterPluginHandler>)); 
 
-	try{
-		if (options.parse(argc, argv, "filter") != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
+	if (options.parse(argc, argv, "filter") != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 
-		vector<const char *> filter_chain = options.get_remaining();
+	vector<const char *> filter_chain = options.get_remaining();
 
-		if (filter_chain.empty()) {
-			cvwarn() << "No filters given, will only copy files ";
+	if (filter_chain.empty()) {
+		cvwarn() << "No filters given, will only copy files ";
+	}
+
+	// now start the fun part
+	//first count the number of slices
+	vector<const char *>::const_iterator i = filter_chain.begin();
+
+	auto filter = sfh.produce(*i);
+	++i;
+	while ( i != filter_chain.end()) {
+		auto f = sfh.produce(*i);
+		if (!filter){
+			stringstream error;
+			error << "Filter " << *i << " not found";
+			throw invalid_argument(error.str());
 		}
+		filter->append_filter(f);
+		++i; 
+	}
 
-		// now start the fun part
-		//first count the number of slices
-		vector<const char *>::const_iterator i = filter_chain.begin();
-
-		auto filter = sfh.produce(*i);
-		++i;
-		while ( i != filter_chain.end()) {
-			auto f = sfh.produce(*i);
-			if (!filter){
-				stringstream error;
-				error << "Filter " << *i << " not found";
-				throw invalid_argument(error.str());
-			}
-			filter->append_filter(f);
-			++i; 
-		}
-
-		size_t start_filenum = 0;
-		size_t end_filenum  = 0;
-		size_t format_width = 0;
+	size_t start_filenum = 0;
+	size_t end_filenum  = 0;
+	size_t format_width = 0;
 
 
 
-		string src_basename = get_filename_pattern_and_range(in_filename, start_filenum,
-								     end_filenum, format_width);
+	string src_basename = get_filename_pattern_and_range(in_filename, start_filenum,
+							     end_filenum, format_width);
 	       
-		if (start_filenum >= end_filenum)
-			throw invalid_argument(string("no files match pattern ") + src_basename);
+	if (start_filenum >= end_filenum)
+		throw invalid_argument(string("no files match pattern ") + src_basename);
 
 
-		std::shared_ptr<C2DStackSaver >
-			  endchain(new C2DStackSaver(out_filename, start_filenum, end_filenum, format_width,
-						     out_type, imageio, time(NULL)));
+	std::shared_ptr<C2DStackSaver >
+		endchain(new C2DStackSaver(out_filename, start_filenum, end_filenum, format_width,
+					   out_type, imageio, time(NULL)));
 
-		filter->append_filter(endchain);
+	filter->append_filter(endchain);
 
 
-		//		char new_line = cverb.show_debug() ? '\n' : '\r';
+	//		char new_line = cverb.show_debug() ? '\n' : '\r';
 
-		cvmsg() << "will filter " << end_filenum - start_filenum << " images\n";
+	cvmsg() << "will filter " << end_filenum - start_filenum << " images\n";
 
-		// read all the files
-		for (size_t i = start_filenum; i < end_filenum; ++i) {
+	// read all the files
+	for (size_t i = start_filenum; i < end_filenum; ++i) {
 
-			string src_name = create_filename(src_basename.c_str(), i);
+		string src_name = create_filename(src_basename.c_str(), i);
 
-			C2DImageIOPluginHandler::Instance::PData in_image_list = imageio.load(src_name);
+		C2DImageIOPluginHandler::Instance::PData in_image_list = imageio.load(src_name);
 
-			if (!in_image_list.get() || !in_image_list->size()) {
-				cverr() << "expected " << end_filenum - start_filenum <<
-					" images, got only" << i - start_filenum <<"\n";
-				break;
-			}
-
-			filter->push(*in_image_list->begin());
-
+		if (!in_image_list.get() || !in_image_list->size()) {
+			cverr() << "expected " << end_filenum - start_filenum <<
+				" images, got only" << i - start_filenum <<"\n";
+			break;
 		}
 
-		cvdebug() << "\nrun finalize\n";  
-		filter->finalize();
-		cvdebug() << "done";  
+		filter->push(*in_image_list->begin());
+
+	}
+
+	cvdebug() << "\nrun finalize\n";  
+	filter->finalize();
+	cvdebug() << "done";  
 		
-		cvmsg() << '\n';
-		return EXIT_SUCCESS;
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
+	cvmsg() << '\n';
+	return EXIT_SUCCESS;
 }
-
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

@@ -70,15 +70,26 @@ mia-2dseghausdorff -i segment.set -r 20
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dfilter.hh>
 
+#include <mia/internal/main.hh>
+
 using namespace std;
 using namespace mia;
 using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
-const char *g_description = 
-	"Get the per-slice Hausdorff distance of a segmentation with respectto a given reference frame."; 
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
 
-int do_main(int argc, const char *argv[])
+	"Get the per-slice Hausdorff distance of a segmentation with respect to a given reference frame "
+	"and print it to stdout.",
+	
+	"Evaluate the Hausdorff distance of the segmentations of set segment.set with "
+	"respect to the segmentation given in frame 20.",
+	
+	" -i segment.set -r 20"
+}; 
+
+int do_main(int argc, char *argv[])
 {
 	string src_filename;
 	size_t reference = 0;
@@ -137,26 +148,4 @@ int do_main(int argc, const char *argv[])
 
 }
 
-int main(int argc, const char *argv[] )
-{
-	try {
-		return do_main(argc, argv);
-
-
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-	return EXIT_FAILURE;
-}
-
-
+MIA_MAIN(do_main); 

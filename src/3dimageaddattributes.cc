@@ -75,10 +75,9 @@ const SProgramDescrption g_description = {
 	" -i 3d.v -o attr3d.v -a 2d.v"
 }; 
 
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
-	try {
 	string in_filename;
 	string out_filename;
 	string attr_image;
@@ -120,7 +119,7 @@ int main( int argc, const char *argv[] )
 				if (!(*i)->has_attribute(a->first))
 					(*i)->set_attribute(a->first, a->second);
 			}
-
+		
 	}
 	if ( !imageio.save(out_filename, *in_image_list) ){
 		string not_save = ("unable to save result to ") + out_filename;
@@ -128,21 +127,8 @@ int main( int argc, const char *argv[] )
 	}
 
 	return EXIT_SUCCESS;
-
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
+	
 }
 
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main)

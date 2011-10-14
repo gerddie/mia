@@ -86,7 +86,7 @@ bool operator < (const CEntry& a, const CEntry& b)
 }
 
 
-int do_main(int argc, const char *argv[]) 
+int do_main(int argc, char *argv[]) 
 {
 	string in_filename; 
 	string out_filename; 
@@ -128,22 +128,5 @@ int do_main(int argc, const char *argv[])
 	return os->good() ? EXIT_SUCCESS : EXIT_FAILURE; 
 }
 
-int main(int argc, const char *args[]) 
-{
-	try {
-		return do_main(argc, args); 
-	}
-	catch (const runtime_error &e){
-		cerr << args[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << args[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << args[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << args[0] << " unknown exception" << endl;
-	}
-	return EXIT_FAILURE;	
-}
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

@@ -58,6 +58,7 @@ mia-2dimagecombiner -1 l1.png -2 l2.png -c result.png -c add
 #include <mia/2d.hh>
 #include <mia/2d/2dfilter.hh>
 #include <mia/core/factorycmdlineoption.hh>
+#include <mia/internal/main.hh>
 
 NS_MIA_USE;
 using namespace std;
@@ -74,7 +75,7 @@ const SProgramDescrption g_description = {
 	"-i A.exr -r B.exr -o sum.exr -p add"
 }; 
 
-int do_main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 	string in1_filename;
@@ -111,26 +112,7 @@ int do_main( int argc, const char *argv[] )
 	return EXIT_SUCCESS;
 }
 
-int main( int argc, const char *argv[] )
-{
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 
 
-
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
-}
 

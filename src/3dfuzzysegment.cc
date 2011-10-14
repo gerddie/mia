@@ -91,7 +91,7 @@ const SProgramDescrption g_description = {
 
 
 
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 
@@ -102,84 +102,72 @@ int main( int argc, const char *argv[] )
 	float  residuum = 0.1;
 
 
-	try {
+	CCmdOptionList options(g_description);
+	options.add(make_opt( in_filename, "in-file", 'i',
+			      "input image(s) to be segmenetd", CCmdOption::required));
+	options.add(make_opt( cls_filename, "cls-file", 'c',
+			      "output class probability images", CCmdOption::required));
+	options.add(make_opt( out_filename, "b0-file", 'o',
+			      "image corrected for intensity non-uniformity" ));
+	options.add(make_opt( noOfClasses, "no-of-classes", 'n',
+			      "number of classes"));
+	options.add(make_opt( residuum, "residuum", 'r',
+			      "relative residuum"));
 
-		CCmdOptionList options(g_description);
-		options.add(make_opt( in_filename, "in-file", 'i',
-					    "input image(s) to be segmenetd", CCmdOption::required));
-		options.add(make_opt( cls_filename, "cls-file", 'c',
-					    "output class probability images", CCmdOption::required));
-		options.add(make_opt( out_filename, "b0-file", 'o',
-					    "image corrected for intensity non-uniformity" ));
-		options.add(make_opt( noOfClasses, "no-of-classes", 'n',
-					    "number of classes"));
-		options.add(make_opt( residuum, "residuum", 'r',
-					    "relative residuum"));
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 
-		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
+	// required options (anything that has no default value)
+	if ( in_filename.empty() )
+		throw runtime_error("'--in-file'  ('i') option required\n");
+	if ( in_filename.empty() )
+		throw runtime_error("'--cls-file' ('c') option required\n");
 
-		// required options (anything that has no default value)
-		if ( in_filename.empty() )
-			throw runtime_error("'--in-file'  ('i') option required\n");
-		if ( in_filename.empty() )
-			throw runtime_error("'--cls-file' ('c') option required\n");
+	const C3DImageIOPluginHandler::Instance&
+		imageio = C3DImageIOPluginHandler::instance();
 
-		const C3DImageIOPluginHandler::Instance&
-			imageio = C3DImageIOPluginHandler::instance();
+	C3DImageIOPluginHandler::Instance::PData inImage_list = imageio.load(in_filename);
 
-		C3DImageIOPluginHandler::Instance::PData inImage_list = imageio.load(in_filename);
+	if (!inImage_list.get() || !inImage_list->size() ) {
+		string not_found = ("No supported data found in ") + in_filename;
+		throw runtime_error(not_found);
+	}
 
-		if (!inImage_list.get() || !inImage_list->size() ) {
-			string not_found = ("No supported data found in ") + in_filename;
-			throw runtime_error(not_found);
-		}
+	// segment image
+	if (inImage_list->size() > 1)
+		cvwarn() << "Only segmenting first input image\n";
 
-		// segment image
-		if (inImage_list->size() > 1)
-			cvwarn() << "Only segmenting first input image\n";
+	C3DImageVector classes;
 
-		C3DImageVector classes;
+	P3DImage b0_corrected = fuzzy_segment_3d(**inImage_list->begin(), noOfClasses, residuum, classes);
 
-		P3DImage b0_corrected = fuzzy_segment_3d(**inImage_list->begin(), noOfClasses, residuum, classes);
+	if (!out_filename.empty()) {
 
-		if (!out_filename.empty()) {
+		// save corrected image to out-file
+		C3DImageIOPluginHandler::Instance::Data out_list;
 
-			// save corrected image to out-file
-			C3DImageIOPluginHandler::Instance::Data out_list;
+		out_list.push_back(b0_corrected);
+		if ( !imageio.save(out_filename, out_list) ){
 
-			out_list.push_back(b0_corrected);
-			if ( !imageio.save(out_filename, out_list) ){
-
-				string not_save = ("unable to save result to ") + out_filename;
-				throw runtime_error(not_save);
-
-			};
+			string not_save = ("unable to save result to ") + out_filename;
+			throw runtime_error(not_save);
 
 		};
 
-		//CHistory::instance().append(argv[0], revision, opts);
+	};
 
-		if ( !imageio.save(cls_filename, classes) ){
-			string not_save = ("unable to save result to ") + cls_filename;
-			throw runtime_error(not_save);
+	//CHistory::instance().append(argv[0], revision, opts);
 
-		}
-
-
-		return EXIT_SUCCESS;
+	if ( !imageio.save(cls_filename, classes) ){
+		string not_save = ("unable to save result to ") + cls_filename;
+		throw runtime_error(not_save);
 
 	}
 
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
- 	catch (...){
- 		cerr << argv[0] << " unknown exception" << endl;
- 	}
 
-	return EXIT_FAILURE;
+	return EXIT_SUCCESS;
+
 }
+
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

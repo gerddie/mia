@@ -90,11 +90,8 @@ const SProgramDescrption g_description = {
 }; 
 	
 
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
-	bool help_plugins = false;
-
-	try {
 	string in_filename;
 	string out_filename;
 
@@ -156,24 +153,7 @@ int main( int argc, const char *argv[] )
 	}
 	return EXIT_SUCCESS;
 
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		if (help_plugins) {
-			C3DFilterPluginHandler::instance().print_help(cout);
-			return EXIT_SUCCESS;
-		}
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
 }
 
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main)

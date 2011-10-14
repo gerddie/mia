@@ -99,6 +99,7 @@ mia-2dmyoica-nonrigid  -i segment.set -o registered.set -k 2
 #include <itpp/signal/fastica.h>
 #include <boost/filesystem.hpp>
 
+#include <mia/internal/main.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/factorycmdlineoption.hh>
@@ -246,7 +247,7 @@ void save_references(const string& save_ref, int current_pass, int skip_images, 
 	}
 }
 
-int do_main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 	// IO parameters 
 	string in_filename;
@@ -483,30 +484,7 @@ int do_main( int argc, const char *argv[] )
 
 }
 
-
-
-int main( int argc, const char *argv[] )
-{
-
-
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
-}
+MIA_MAIN(do_main); 
 
 inline C2DFImage Convert2Float::operator () (P2DImage image) const
 {

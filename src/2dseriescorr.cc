@@ -45,17 +45,16 @@ mia-2dseriescorr -i <input images> -z <horizontal> \
       All images need to be numbered consecutivly like imageXXXX.ext with the digits XXXX.}
   \cmdopt{horizontal}{z}{string}{output file name for horizontal correlation}
   \cmdopt{vertical}{t}{string}{output file name for vertical correlation}
-  \cmdopt{average}{a}{string}{output file name for average correlation}
   \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
   \cmdopt{end}{e}{int}{Last image index}
   }
 
   \item [Example:]Evaluate the time-intensity correaltions for an image series 
                 imageXXXX.png starting at image 2 and stop at image 30. 
-		Store the results in horizontal.exr, vertical.exr, and average.exr. 
+		Store the results in horizontal.exr, and vertical.exr. 
   \begin{lstlisting}
 mia-2dseriescorr -i image0000.png -k 2 -e 30 -z horizontal.exr \
-                             -t vertical.exr -a average.exr
+                             -t vertical.exr
   \end{lstlisting}
   \item [Remark:] The correlations are given as floating point values and thereby 
                   requires an output format that supports this pixel type. 
@@ -73,12 +72,30 @@ mia-2dseriescorr -i image0000.png -k 2 -e 30 -z horizontal.exr \
 #include <mia/core.hh>
 #include <queue>
 
+#include <mia/internal/main.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/ica.hh>
 
 
 NS_MIA_USE;
+
+
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+
+	"Given a set of images of temporal sucession, evaluates images that represent "
+	"the time-intensity correlation in horizontal and vertical direction as "
+	"well as average correlation of each pixel with its neighbors. "
+	"All input images must be of the same pixel type and size.", 
+
+	"Evaluate the time-intensity correaltions for an image series "
+	"imageXXXX.png starting at image 2 and stop at image 30. "
+	"Store the results in horizontal.exr, and vertical.exr.", 
+	
+	"-i image0000.png -k 2 -e 30 -z horizontal.exr -t vertical.exr"
+}; 
+
 
 struct FCorrelationAccumulator : public TFilter<bool> {
 
@@ -101,46 +118,11 @@ private:
 	size_t len;
 };
 
-template <typename T>
-struct __dipatch_sum {
-	static void apply (const T2DImage<T>& a, T2DImage<T>& b) {
-		transform(a.begin(), a.end(), b.begin(), b.begin(), 
-			  [](T x, T y){return (x+y)*0.5;});  
-	}
-};
-
-template <>
-struct __dipatch_sum<bool> {
-	static void apply (const T2DImage<bool>& /*a*/, T2DImage<bool>& /*b*/) {
-		throw invalid_argument("Can't sum images of pixel type 'bool'");
-	}
-};
-
-
-
-struct FImageAvg : public TFilter<bool> {
-	template <typename T>
-	bool operator () (const T2DImage<T>& a, T2DImage<T>& b) const {
-		if (a.size() != b.size())
-			THROW(invalid_argument, "input images should be equal in size");
-		__dipatch_sum<T>::apply(a,b);
-
-		return true;
-	}
-};
-
-const char *g_description = 
-	"This program is used to evaluate the temporal intensity correlation of neighboring pixels "
-	"in a series of images."
-	; 
-
-
-int do_main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 	string src_name("data0000.exr");
 	string out_hor_name("horizontal.exr");
 	string out_ver_name("vertical.exr");
-	string out_sum_name("average.exr");
 	string out_type("exr");
 	size_t first =  2;
 	size_t last  = 60;
@@ -151,7 +133,6 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( src_name, "in-base", 'i', "input file name base"));
 	options.add(make_opt( out_hor_name, "horizontal", 'z', "horiZontal correlation output file name"));
 	options.add(make_opt( out_ver_name, "vertical", 't', "verTical  correlation output file name"));
-	options.add(make_opt( out_sum_name, "average", 'a', "Average  correlation output file name"));
 	options.add(make_opt( first, "skip", 'k', "skip images at beginning of series"));
 	options.add(make_opt( last, "end", 'e', "last image in series"));
 
@@ -194,37 +175,10 @@ int do_main( int argc, const char *argv[] )
 		THROW(runtime_error, "unable to save vertical correlation to '"<<out_ver_name<<"'");
 
 
-	FImageAvg avg;
-	filter_equal_inplace(avg, *hor, *ver);
-	if (!save_image(out_sum_name, ver))
-		THROW(runtime_error, "unable to save summed correlation to '"<<out_ver_name<<"'");
-
 	return EXIT_SUCCESS;
 
 };
 
-int main( int argc, const char *argv[] )
-{
-
-
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
-}
 
 
 FCorrelationAccumulator::FCorrelationAccumulator(const C2DBounds & _size):
@@ -343,3 +297,4 @@ P2DImage FCorrelationAccumulator::get_vertical_corr() const
 	return presult;
 }
 
+MIA_MAIN(do_main); 

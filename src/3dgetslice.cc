@@ -163,7 +163,7 @@ private:
 	string m_type;
 };
 
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 	string in_filename;
@@ -173,72 +173,57 @@ int main( int argc, const char *argv[] )
 	size_t slice_number = 0;
 	EDirection direction = dir_xy;
 
-	try {
-		const C2DImageIOPluginHandler::Instance& imageio2d = C2DImageIOPluginHandler::instance();
+	const C2DImageIOPluginHandler::Instance& imageio2d = C2DImageIOPluginHandler::instance();
 
-		CCmdOptionList options(g_description);
-		options.add(make_opt( in_filename, "in-file", 'i', 
-					    "input image(s) to be filtered", CCmdOption::required));
-		options.add(make_opt( out_filename, "out-file", 'o', 
-					    "output image(s) that have been filtered", CCmdOption::required));
-		options.add(make_opt( out_type, imageio2d.get_set(), "type", 't',
-					    "output file type"));
-		options.add(make_opt( start_slice, "start", 's',"start slice number"));
-		options.add(make_opt( slice_number, "number", 'n',
-					    "number of slices (all=0)"));
-		options.add(make_opt( direction, GDirectionmap, "dir", 'd', 
-					    "slice direction (xy=axial, xz=coronal, yz=saggital)"));
+	CCmdOptionList options(g_description);
+	options.add(make_opt( in_filename, "in-file", 'i', 
+			      "input image(s) to be filtered", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', 
+			      "output image(s) that have been filtered", CCmdOption::required));
+	options.add(make_opt( out_type, imageio2d.get_set(), "type", 't',
+			      "output file type"));
+	options.add(make_opt( start_slice, "start", 's',"start slice number"));
+	options.add(make_opt( slice_number, "number", 'n',
+			      "number of slices (all=0)"));
+	options.add(make_opt( direction, GDirectionmap, "dir", 'd', 
+			      "slice direction (xy=axial, xz=coronal, yz=saggital)"));
 
-		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 
-		string out_suffix = imageio2d.get_preferred_suffix(out_type); 
+	string out_suffix = imageio2d.get_preferred_suffix(out_type); 
 
-		// read image
-		auto in_image = load_image3d(in_filename);
+	// read image
+	auto in_image = load_image3d(in_filename);
 
 
-		bool result = false;
-                if (in_image) {
-			switch (direction) {
-			case dir_xy:
-				result = mia::filter(TGetter<dir_xy>(start_slice, slice_number, 
-								     out_filename, out_suffix), 
-						     *in_image);
-				break;
-			case dir_xz:
-				result = mia::filter(TGetter<dir_xz>(start_slice, slice_number, 
-								     out_filename, out_suffix), 
-						     *in_image);
-				break;
-			case dir_yz:
-				result = mia::filter(TGetter<dir_yz>(start_slice, slice_number, 
-								     out_filename, out_suffix), 
-						     *in_image);
-				break;
-			default:
-				assert(!"impossible slice direction");
-				throw invalid_argument( "impossible slice direction");
-			}
+	bool result = false;
+	if (in_image) {
+		switch (direction) {
+		case dir_xy:
+			result = mia::filter(TGetter<dir_xy>(start_slice, slice_number, 
+							     out_filename, out_suffix), 
+					     *in_image);
+			break;
+		case dir_xz:
+			result = mia::filter(TGetter<dir_xz>(start_slice, slice_number, 
+							     out_filename, out_suffix), 
+					     *in_image);
+			break;
+		case dir_yz:
+			result = mia::filter(TGetter<dir_yz>(start_slice, slice_number, 
+							     out_filename, out_suffix), 
+					     *in_image);
+			break;
+		default:
+			assert(!"impossible slice direction");
+			throw invalid_argument( "impossible slice direction");
 		}
-
-		return result ? EXIT_SUCCESS : EXIT_FAILURE;
-
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
 	}
 
-	return EXIT_FAILURE;
+	return result ? EXIT_SUCCESS : EXIT_FAILURE;
+
 }
 
-
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main)

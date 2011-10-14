@@ -191,7 +191,7 @@ std::shared_ptr<C3DImage > read_image(CInputFile& in_file, int pixel_type, const
 	};
 }
 
-int run(int argc, const char *argv[])
+int do_main(int argc, char *argv[])
 {
 	EPixelType pixel_type = it_ubyte;
 	bool high_endian = false;
@@ -241,25 +241,5 @@ int run(int argc, const char *argv[])
 }
 
 
-int main(int argc, const char *argv[])
-{
-	try {
-		return run(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const std::exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
-
-}
-
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

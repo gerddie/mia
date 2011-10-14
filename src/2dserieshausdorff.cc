@@ -75,10 +75,18 @@ using namespace mia;
 using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
-const char *g_description = 
-	"Get the per-slice Hausdorff distance of a segmentation with respectto a given reference segmentation set."; 
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
 
-int do_main(int argc, const char *argv[])
+	"Get the per-slice Hausdorff distance of a segmentation with respect to a given reference segmentation set.", 
+	
+	"Evaluate the per-frame Hausdorff distance of the segmentations of set segment.set with "
+        "respect to the segmentation set reference.set skipping two images at the beginning.",
+	
+	" -i segment.set -r reference.set -k 2"
+}; 
+
+int do_main(int argc, char *argv[])
 {
 	string src_filename;
 	string ref_filename;
@@ -130,26 +138,5 @@ int do_main(int argc, const char *argv[])
 	return 0;
 }
 
-int main(int argc, const char *argv[] )
-{
-	try {
-		return do_main(argc, argv);
-
-
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-	return EXIT_FAILURE;
-}
-
-
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

@@ -48,94 +48,89 @@ const SProgramDescrption description = {
 }; 
 
 
+
 map<string, const CPluginHandlerBase*> collect_handlers()
 {
+#define ADD(Handler) \
+	result[Handler ().get_search_descriptor()] =&Handler ();
+
 	map<string, const CPluginHandlerBase*> result; 
-	result[C1DSpacialKernelPluginHandler::instance().get_search_descriptor()] =&C1DSpacialKernelPluginHandler::instance();
-	result[C2DFifoFilterPluginHandler::instance().get_search_descriptor()] =&C2DFifoFilterPluginHandler::instance();
-	result[C2DFilterPluginHandler::instance().get_search_descriptor()] =&C2DFilterPluginHandler::instance();
-	result[C2DFullCostPluginHandler::instance().get_search_descriptor()] =&C2DFullCostPluginHandler::instance();
-	result[C2DImageCombinerPluginHandler::instance().get_search_descriptor()] =&C2DImageCombinerPluginHandler::instance();
-	result[C2DImageCostPluginHandler::instance().get_search_descriptor()] =&C2DImageCostPluginHandler::instance();
-	result[C2DImageCreatorPluginHandler::instance().get_search_descriptor()] =&C3DImageCreatorPluginHandler::instance();
-	result[C2DImageIOPluginHandler::instance().get_search_descriptor()] =&C2DImageIOPluginHandler::instance();
-	result[C2DRegModelPluginHandler::instance().get_search_descriptor()] =&C2DRegModelPluginHandler::instance();
-	result[C2DShapePluginHandler::instance().get_search_descriptor()] =&C2DShapePluginHandler::instance();
-	result[C2DStackDistanceTransformIOPluginHandler::instance().get_search_descriptor()] =&C2DStackDistanceTransformIOPluginHandler::instance();
-	result[C2DTransformationIOPluginHandler::instance().get_search_descriptor()] =&C2DTransformationIOPluginHandler::instance();
-	result[C2DVFIOPluginHandler::instance().get_search_descriptor()] =&C2DVFIOPluginHandler::instance();
-	result[C3DFatImageCostPluginHandler::instance().get_search_descriptor()] =&C3DFatImageCostPluginHandler::instance();
-	result[C3DFilterPluginHandler::instance().get_search_descriptor()] =&C3DFilterPluginHandler::instance();
-	result[C3DFullCostPluginHandler::instance().get_search_descriptor()] =&C3DFullCostPluginHandler::instance();
-	result[C3DImageCombinerPluginHandler::instance().get_search_descriptor()] =&C3DImageCombinerPluginHandler::instance();
-	result[C3DImageCostPluginHandler::instance().get_search_descriptor()] =&C3DImageCostPluginHandler::instance();
-	result[C3DImageCreatorPluginHandler::instance().get_search_descriptor()] =&C3DImageCreatorPluginHandler::instance();
-	result[C3DImageIOPluginHandler::instance().get_search_descriptor()] =&C3DImageIOPluginHandler::instance();
-	result[C3DRegModelPluginHandler::instance().get_search_descriptor()] =&C3DRegModelPluginHandler::instance();
-	result[C3DRegTimeStepPluginHandler::instance().get_search_descriptor()] =&C3DRegTimeStepPluginHandler::instance();
-	result[C3DShapePluginHandler::instance().get_search_descriptor()] =&C3DShapePluginHandler::instance();
-	result[C3DTransformationIOPluginHandler::instance().get_search_descriptor()] =&C3DTransformationIOPluginHandler::instance();
-	result[C3DTransformCreatorHandler::instance().get_search_descriptor()] =&C3DTransformCreatorHandler::instance();
-	result[C3DVFIOPluginHandler::instance().get_search_descriptor()] =&C3DVFIOPluginHandler::instance();
-	result[CCST2DImgKernelPluginHandler::instance().get_search_descriptor()] =&CCST2DImgKernelPluginHandler::instance();
-	result[CCST2DVectorKernelPluginHandler::instance().get_search_descriptor()] =&CCST2DVectorKernelPluginHandler::instance();
-	result[CFFT2DKernelPluginHandler::instance().get_search_descriptor()] =&CFFT2DKernelPluginHandler::instance();
-	result[CMeshIOPluginHandler::instance().get_search_descriptor()] =&CMeshIOPluginHandler::instance();
-	result[CMinimizerPluginHandler::instance().get_search_descriptor()] =&CMinimizerPluginHandler::instance();
-	result[CNoiseGeneratorPluginHandler::instance().get_search_descriptor()] =&CNoiseGeneratorPluginHandler::instance();
-	result[CSplineBoundaryConditionPluginHandler::instance().get_search_descriptor()] =&CSplineBoundaryConditionPluginHandler::instance();
-	result[CSplineKernelPluginHandler::instance().get_search_descriptor()] =&CSplineKernelPluginHandler::instance();
+
+
+	ADD(C1DSpacialKernelPluginHandler::instance); 
+	ADD(C1DSpacialKernelPluginHandler::instance);
+	ADD(C2DFifoFilterPluginHandler::instance);
+	ADD(C2DFilterPluginHandler::instance);
+	ADD(C2DFullCostPluginHandler::instance);
+	ADD(C2DImageCombinerPluginHandler::instance);
+	ADD(C2DImageCostPluginHandler::instance);
+	ADD(C2DImageCreatorPluginHandler::instance);
+	ADD(C2DImageIOPluginHandler::instance);
+	ADD(C2DRegModelPluginHandler::instance);
+	ADD(C2DShapePluginHandler::instance);
+	ADD(C2DStackDistanceTransformIOPluginHandler::instance);
+	ADD(C2DTransformationIOPluginHandler::instance);
+	ADD(C2DVFIOPluginHandler::instance);
+	ADD(C3DFatImageCostPluginHandler::instance);
+	ADD(C3DFilterPluginHandler::instance);
+	ADD(C3DFullCostPluginHandler::instance);
+	ADD(C3DImageCombinerPluginHandler::instance);
+	ADD(C3DImageCostPluginHandler::instance);
+	ADD(C3DImageCreatorPluginHandler::instance);
+	ADD(C3DImageIOPluginHandler::instance);
+	ADD(C3DRegModelPluginHandler::instance);
+	ADD(C3DRegTimeStepPluginHandler::instance);
+	ADD(C3DShapePluginHandler::instance);
+	ADD(C3DTransformationIOPluginHandler::instance);
+	ADD(C3DTransformCreatorHandler::instance);
+	ADD(C3DVFIOPluginHandler::instance);
+	ADD(CCST2DImgKernelPluginHandler::instance);
+	ADD(CCST2DVectorKernelPluginHandler::instance);
+	ADD(CFFT2DKernelPluginHandler::instance);
+	ADD(CMeshIOPluginHandler::instance);
+	ADD(CMinimizerPluginHandler::instance);
+	ADD(CNoiseGeneratorPluginHandler::instance);
+	ADD(CSplineBoundaryConditionPluginHandler::instance);
+	ADD(CSplineKernelPluginHandler::instance);
+
+#undef ADD
 	
 	return result; 
 }
 
 
 
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
-	try {
-
-		CCmdOptionList options(description);
-		if (options.parse(argc, argv, "plugin-descriptor") != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
+	CCmdOptionList options(description);
+	if (options.parse(argc, argv, "plugin-descriptor") != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 		
-		auto handlers = collect_handlers(); 
+	auto handlers = collect_handlers(); 
 		
-		if (argc == 1) {
-			clog << "The following plugin-descriptors are available. To list the plug-ins of a descriptor "; 
-			clog << "run: 'mia-plugin-help <descriptor>'\n\n"; 
-			for (auto h = handlers.begin(); h != handlers.end(); ++h) {
-				clog << "  " << h->first << "\n"; 
-			}
-			clog << "\n"; 
-			return EXIT_SUCCESS; 
+	if (argc == 1) {
+		clog << "The following plugin-descriptors are available. To list the plug-ins of a descriptor "; 
+		clog << "run: 'mia-plugin-help <descriptor>'\n\n"; 
+		for (auto h = handlers.begin(); h != handlers.end(); ++h) {
+			clog << "  " << h->first << "\n"; 
 		}
-
-		auto descriptors = options.get_remaining(); 
-		for(auto i = descriptors.begin(); i != descriptors.end(); ++i) {
-			auto h = handlers.find(*i);
-			if (h == handlers.end()) {
-				cerr << "No help available for '" << *i  << "'\n"; 
-			}else {
-				clog << "Available plug-ins for '" << *i << "':\n"; 
-				h->second->print_short_help(clog);
-				clog << "\n";
-			}
-		}
+		clog << "\n"; 
 		return EXIT_SUCCESS; 
 	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " invalid argument: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
 
-	return EXIT_FAILURE;
+	auto descriptors = options.get_remaining(); 
+	for(auto i = descriptors.begin(); i != descriptors.end(); ++i) {
+		auto h = handlers.find(*i);
+		if (h == handlers.end()) {
+			cerr << "No help available for '" << *i  << "'\n"; 
+		}else {
+			clog << "Available plug-ins for '" << *i << "':\n"; 
+			h->second->print_short_help(clog);
+			clog << "\n";
+		}
+	}
+	return EXIT_SUCCESS; 
 }
+
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

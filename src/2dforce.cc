@@ -94,7 +94,7 @@ private:
 	float m_max_norm;
 };
 
-int do_main(int argc, const char **argv)
+int do_main(int argc, char **argv)
 {
 	CCmdOptionList options(g_description);
 	string src_filename;
@@ -147,23 +147,5 @@ int do_main(int argc, const char **argv)
 	return EXIT_SUCCESS;
 }
 
-
-int main(int argc, const char **argv)
-{
-	try {
-		return do_main(argc, argv);
-	}
-	catch (invalid_argument& err) {
-		cerr << "invalid argument: " << err.what() << "\n";
-	}
-	catch (runtime_error& err) {
-		cerr << "runtime error: " << err.what() << "\n";
-	}
-	catch (std::exception& err) {
-		cerr << "exception: " << err.what() << "\n";
-	}
-	catch (...) {
-		cerr << "unknown exception\n";
-	}
-	return EXIT_FAILURE;
-}
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

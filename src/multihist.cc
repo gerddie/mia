@@ -146,75 +146,60 @@ private:
 
 
 
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
-	try {
+	float hmin = 0;
+	float hmax = 65536;
+	size_t bins = 65536;
 
-		float hmin = 0;
-		float hmax = 65536;
-		size_t bins = 65536;
-
-		string out_filename;
-		string in_filename;
+	string out_filename;
+	string in_filename;
 		
-		CCmdOptionList options(g_description);
-		options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
-		options.add(make_opt( out_filename, "out", 'o', "output file name", CCmdOption::required));
-		options.add(make_opt( hmin, "min", 0, "minimum of histogram range"));
-		options.add(make_opt( hmax, "max", 0, "maximum of histogram range"));
-		options.add(make_opt( bins, "bins", 0, "number of histogram bins"));
+	CCmdOptionList options(g_description);
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
+	options.add(make_opt( out_filename, "out", 'o', "output file name", CCmdOption::required));
+	options.add(make_opt( hmin, "min", 0, "minimum of histogram range"));
+	options.add(make_opt( hmax, "max", 0, "maximum of histogram range"));
+	options.add(make_opt( bins, "bins", 0, "number of histogram bins"));
 		
-		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 
 
-		const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 
-		size_t start_filenum = 0;
-		size_t end_filenum  = 0;
-		size_t format_width = 0;
+	size_t start_filenum = 0;
+	size_t end_filenum  = 0;
+	size_t format_width = 0;
 
-		string src_basename = get_filename_pattern_and_range(in_filename, start_filenum, end_filenum, format_width);
+	string src_basename = get_filename_pattern_and_range(in_filename, start_filenum, end_filenum, format_width);
 		
-		if (start_filenum >= end_filenum)
-			throw invalid_argument(string("no files match pattern ") + src_basename);
+	if (start_filenum >= end_filenum)
+		throw invalid_argument(string("no files match pattern ") + src_basename);
 
 
-		CHistAccumulator histo_accu(hmin, hmax, bins);
-		for (size_t i = start_filenum; i < end_filenum; ++i) {
-			string src_name = create_filename(src_basename.c_str(), i);
-			C2DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(src_name);
-			cvmsg() << "Read:" << src_name << "\r";
-			if (in_image_list.get() && in_image_list->size()) {
-				for (auto k = in_image_list->begin(); k != in_image_list->end(); ++k)
-					accumulate(histo_accu, **k);
-			}
+	CHistAccumulator histo_accu(hmin, hmax, bins);
+	for (size_t i = start_filenum; i < end_filenum; ++i) {
+		string src_name = create_filename(src_basename.c_str(), i);
+		C2DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(src_name);
+		cvmsg() << "Read:" << src_name << "\r";
+		if (in_image_list.get() && in_image_list->size()) {
+			for (auto k = in_image_list->begin(); k != in_image_list->end(); ++k)
+				accumulate(histo_accu, **k);
 		}
-		cvmsg() << "\n";
+	}
+	cvmsg() << "\n";
 		
-		histo_accu.resize(); 
+	histo_accu.resize(); 
 		
-		if (!histo_accu.save(out_filename))
-			throw runtime_error(string("Error writing output file:") + out_filename);
+	if (!histo_accu.save(out_filename))
+		throw runtime_error(string("Error writing output file:") + out_filename);
 		
 		
 
-		cout << histo_accu.propose_threshold(); 
-		return EXIT_SUCCESS;
+	cout << histo_accu.propose_threshold(); 
+	return EXIT_SUCCESS;
 
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
 }
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

@@ -74,41 +74,27 @@ const SProgramDescrption g_description = {
 	"-i image.v"
 }; 
 
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 	string in_filename;
-	try {
-		const C3DImageIOPluginHandler::Instance& imageio3d = C3DImageIOPluginHandler::instance();
-
-		CCmdOptionList options(g_description);
-		options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
-					    CCmdOption::required));
-
-		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
-
-		C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio3d.load(in_filename);
-
-
-		if (in_image_list.get() && in_image_list->size()) {
-			cout << (*in_image_list->begin())->get_size() << "\n";
-			return EXIT_SUCCESS;
-		}
+	const C3DImageIOPluginHandler::Instance& imageio3d = C3DImageIOPluginHandler::instance();
+	
+	CCmdOptionList options(g_description);
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
+			      CCmdOption::required));
+	
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
+	
+	C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio3d.load(in_filename);
+	
+	
+	if (in_image_list.get() && in_image_list->size()) {
+		cout << (*in_image_list->begin())->get_size() << "\n";
+		return EXIT_SUCCESS;
 	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
 	return EXIT_FAILURE;
-
 }
 
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main)

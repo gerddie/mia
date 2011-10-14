@@ -104,7 +104,7 @@ const SProgramDescrption g_description = {
 	
 
 
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 	const char *b0poolkey = "b0.@";
@@ -117,101 +117,85 @@ int main( int argc, const char *argv[] )
 	string growshape("18n");
 	float  wmclassprob = 0.7;
 
-	try {
-
-		CCmdOptionList options(g_description);
-		options.add(make_opt( in_filename, "in-file", 'i',
-					    "input image(s) to be segmented", CCmdOption::required));
-		options.add(make_opt( out_filename, "out-file", 'o', "brain mask", CCmdOption::required ));
-		options.add(make_opt( noOfClasses, "no-of-classes", 'n', "number of classes"));
-		options.add(make_opt( wmclass,     "wm-class",      'w', "index of white matter"));
-		options.add(make_opt( wmclassprob, "wm-prob", 'p',
-					    "white matter class probability for initial mask creation"));
-		options.add(make_opt( growthresh, "grow-threshold", 't', "intensity threshold for region growing"));
-		options.add(make_opt( growshape, "grow-shape", 0, "neighbourhood mask region growing"));
+	CCmdOptionList options(g_description);
+	options.add(make_opt( in_filename, "in-file", 'i',
+			      "input image(s) to be segmented", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "brain mask", CCmdOption::required ));
+	options.add(make_opt( noOfClasses, "no-of-classes", 'n', "number of classes"));
+	options.add(make_opt( wmclass,     "wm-class",      'w', "index of white matter"));
+	options.add(make_opt( wmclassprob, "wm-prob", 'p',
+			      "white matter class probability for initial mask creation"));
+	options.add(make_opt( growthresh, "grow-threshold", 't', "intensity threshold for region growing"));
+	options.add(make_opt( growshape, "grow-shape", 0, "neighbourhood mask region growing"));
 
 
-		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 
-		auto& imageio = C3DImageIOPluginHandler::instance();
-		auto inImage_list = imageio.load(in_filename);
+	auto& imageio = C3DImageIOPluginHandler::instance();
+	auto inImage_list = imageio.load(in_filename);
 
-		if (!inImage_list.get() || !inImage_list->size() ) {
-			string not_found = ("No supported data found in ") + in_filename;
-			throw runtime_error(not_found);
-		}
+	if (!inImage_list.get() || !inImage_list->size() ) {
+		string not_found = ("No supported data found in ") + in_filename;
+		throw runtime_error(not_found);
+	}
 
-		if (wmclass >= noOfClasses)
-			throw invalid_argument("number of classes should be smaller then number of classes");
+	if (wmclass >= noOfClasses)
+		throw invalid_argument("number of classes should be smaller then number of classes");
 
-		// segment image
-		if (inImage_list->size() > 1)
-			cvwarn() << "Only segmenting first input image\n";
+	// segment image
+	if (inImage_list->size() > 1)
+		cvwarn() << "Only segmenting first input image\n";
 
-		C3DImageVector classes;
+	C3DImageVector classes;
 
-		P3DImage b0_corrected = fuzzy_segment_3d(**inImage_list->begin(), noOfClasses, residuum, classes);
-		CDatapool::instance().add(b0poolkey, create_image3d_vector(b0_corrected));
-
-
-		P3DImage result = classes[wmclass];
-
-		// create filter chain
-		vector<string> filter_chain;
-		stringstream binarize;
-		binarize << "binarize:min=" << wmclassprob;
-		filter_chain.push_back(binarize.str());
-
-		filter_chain.push_back("erode:shape=6n");
-		filter_chain.push_back("label");
-		filter_chain.push_back("selectbig");
-		stringstream grow;
-		grow << "growmask:ref="<< b0poolkey <<",min=" << growthresh << ",shape=" << growshape;
-		filter_chain.push_back(grow.str());
-		filter_chain.push_back("close:shape=[sphere:r=3]");
-		filter_chain.push_back("open:shape=[sphere:r=3]");
-		filter_chain.push_back(string("mask:input=") + b0poolkey);
-
-		vector<P3DFilter> filters = create_filter_chain(filter_chain);
-
-		for (auto f = filters.begin(); f != filters.end(); ++f) {
-			result = (*f)->filter(*result);
-		}
+	P3DImage b0_corrected = fuzzy_segment_3d(**inImage_list->begin(), noOfClasses, residuum, classes);
+	CDatapool::instance().add(b0poolkey, create_image3d_vector(b0_corrected));
 
 
-		if (!out_filename.empty()) {
+	P3DImage result = classes[wmclass];
 
-			// save corrected image to out-file
-			C3DImageIOPluginHandler::Instance::Data out_list;
+	// create filter chain
+	vector<string> filter_chain;
+	stringstream binarize;
+	binarize << "binarize:min=" << wmclassprob;
+	filter_chain.push_back(binarize.str());
 
-			out_list.push_back(result);
-			if ( !imageio.save(out_filename, out_list) ){
+	filter_chain.push_back("erode:shape=6n");
+	filter_chain.push_back("label");
+	filter_chain.push_back("selectbig");
+	stringstream grow;
+	grow << "growmask:ref="<< b0poolkey <<",min=" << growthresh << ",shape=" << growshape;
+	filter_chain.push_back(grow.str());
+	filter_chain.push_back("close:shape=[sphere:r=3]");
+	filter_chain.push_back("open:shape=[sphere:r=3]");
+	filter_chain.push_back(string("mask:input=") + b0poolkey);
 
-				string not_save = ("unable to save result to ") + out_filename;
-				throw runtime_error(not_save);
+	vector<P3DFilter> filters = create_filter_chain(filter_chain);
 
-			};
+	for (auto f = filters.begin(); f != filters.end(); ++f) {
+		result = (*f)->filter(*result);
+	}
+
+
+	if (!out_filename.empty()) {
+
+		// save corrected image to out-file
+		C3DImageIOPluginHandler::Instance::Data out_list;
+
+		out_list.push_back(result);
+		if ( !imageio.save(out_filename, out_list) ){
+
+			string not_save = ("unable to save result to ") + out_filename;
+			throw runtime_error(not_save);
 
 		};
 
-		return EXIT_SUCCESS;
+	};
 
-	}
+	return EXIT_SUCCESS;
 
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " invalid argument: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " general error: " << e.what() << endl;
-	}
- 	catch (...){
- 		cerr << argv[0] << " unknown exception" << endl;
- 	}
-
-	return EXIT_FAILURE;
 }
+
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

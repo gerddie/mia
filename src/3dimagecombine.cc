@@ -76,7 +76,7 @@ const SProgramDescrption g_description = {
 	"-1 l1.v -2 l2.v -c map.txt -c labelxmap" 
 };  
 
-int do_main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 	string in_image1;
@@ -131,22 +131,6 @@ int do_main( int argc, const char *argv[] )
 };
 
 
-int main(int argc, const char **argv)
-{
-	try {
-		return do_main(argc, argv);
-	}
-	catch (invalid_argument& err) {
-		cerr << "invalid argument: " << err.what() << "\n";
-	}
-	catch (runtime_error& err) {
-		cerr << "runtime error: " << err.what() << "\n";
-	}
-	catch (exception& err) {
-		cerr << "exception: " << err.what() << "\n";
-	}
-	catch (...) {
-		cerr << "unknown exception\n";
-	}
-	return EXIT_FAILURE;
-}
+
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main)

@@ -77,6 +77,22 @@ BOOST_FIXTURE_TEST_CASE(test_C3DImageIOPluginHandler,PluginTestFixture)
 	test(C3DImageIOPluginHandler::instance().get_set(), test_data); 
 }
 
+BOOST_FIXTURE_TEST_CASE(test_C2DImageCreatorPluginHandler,PluginTestFixture) 
+{
+	set<string> test_data = { 
+		"circle"
+	}; 
+	test(C2DImageCreatorPluginHandler::instance().get_set(), test_data); 
+}
+
+BOOST_FIXTURE_TEST_CASE(test_C3DImageCreatorPluginHandler,PluginTestFixture) 
+{
+	set<string> test_data = { 
+		"lattic", "sphere"
+	}; 
+	test(C3DImageCreatorPluginHandler::instance().get_set(), test_data); 
+}
+
 BOOST_FIXTURE_TEST_CASE(test_C3DTransformCreatorHandler,PluginTestFixture) 
 {
 	set<string> test_data = { 

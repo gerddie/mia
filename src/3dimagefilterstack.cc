@@ -93,13 +93,12 @@ const SProgramDescrption g_description = {
 	"-i image0000.hdr -o filtered -t hdr mlv:w=2"
 }; 
 
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 	string in_filename;
 	string out_filename;
 	string out_type;
-	vector<string> filter_chain;
 	bool help_plugins = false;
 
 	const C3DFilterPluginHandler::Instance& filter_plugins = C3DFilterPluginHandler::instance();
@@ -112,126 +111,108 @@ int main( int argc, const char *argv[] )
 	options.add(make_opt( out_type, imageio.get_set(), "type", 't',"output file type", CCmdOption::required));
 	
 	options.add(make_help_opt( "help-plugins", 0,
-					 "give some help about the filter plugins", 
-					 new TPluginHandlerHelpCallback<C3DFilterPluginHandler>)); 
-	try {
-		if (options.parse(argc, argv, "filter") != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
+				   "give some help about the filter plugins", 
+				   new TPluginHandlerHelpCallback<C3DFilterPluginHandler>)); 
+
+	if (options.parse(argc, argv, "filter") != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 
 
-		vector<const char *> filter_chain = options.get_remaining();
+	auto filter_chain = options.get_remaining();
 
-		cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
-		cvdebug() << "supported filters: " << filter_plugins.get_plugin_names() << "\n";
+	cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
+	cvdebug() << "supported filters: " << filter_plugins.get_plugin_names() << "\n";
 
-		if (help_plugins) {
-			filter_plugins.print_help(cout);
-			return EXIT_SUCCESS;
-		}
+	if ( filter_chain.empty() )
+		cvwarn() << "no filters given, just copy\n";
 
-		if ( filter_chain.empty() )
-			cvwarn() << "no filters given, just copy\n";
+	if ( in_filename.empty() )
+		throw runtime_error("'--in-file' ('i') option required");
 
-		if ( in_filename.empty() )
-			throw runtime_error("'--in-file' ('i') option required");
+	if ( out_filename.empty() )
+		throw runtime_error("'--out-base' ('o') option required");
 
-		if ( out_filename.empty() )
-			throw runtime_error("'--out-base' ('o') option required");
-
-		bool use_src_format = out_type.empty();
+	bool use_src_format = out_type.empty();
 		
-		string out_suffix = imageio.get_preferred_suffix(out_type); 
+	string out_suffix = imageio.get_preferred_suffix(out_type); 
 
 
-		//	CHistory::instance().append(argv[0], revision, options);
+	//	CHistory::instance().append(argv[0], revision, options);
 
-		list<P3DFilter> filters;
+	list<P3DFilter> filters;
 
-		for (vector<const char *>::const_iterator i = filter_chain.begin();
-		     i != filter_chain.end(); ++i) {
-			cvdebug() << "Prepare filter " << *i << endl;
-			auto filter = filter_plugins.produce(*i);
-			if (!filter){
-				stringstream error;
-				error << "Filter " << *i << " not found";
-				throw invalid_argument(error.str());
-			}
-			filters.push_back(filter);
+	for (auto i = filter_chain.begin();  i != filter_chain.end(); ++i) {
+		cvdebug() << "Prepare filter " << *i << endl;
+		auto filter = filter_plugins.produce(*i);
+		if (!filter){
+			stringstream error;
+			error << "Filter " << *i << " not found";
+			throw invalid_argument(error.str());
 		}
+		filters.push_back(filter);
+	}
 
-		size_t start_filenum = 0;
-		size_t end_filenum  = 0;
-		size_t format_width = 0;
+	size_t start_filenum = 0;
+	size_t end_filenum  = 0;
+	size_t format_width = 0;
 
-		string src_basename = get_filename_pattern_and_range(in_filename, start_filenum, end_filenum, format_width);
-		if (start_filenum >= end_filenum)
-			throw invalid_argument(string("no files match pattern ") + src_basename);
+	string src_basename = get_filename_pattern_and_range(in_filename, start_filenum, end_filenum, format_width);
+	if (start_filenum >= end_filenum)
+		throw invalid_argument(string("no files match pattern ") + src_basename);
 
-		char new_line = cverb.show_debug() ? '\n' : '\r';
+	char new_line = cverb.show_debug() ? '\n' : '\r';
 #ifndef WIN32
-		time_t start_time = time(NULL);
+	time_t start_time = time(NULL);
 #endif
-		for (size_t i = start_filenum; i < end_filenum; ++i) {
+	for (size_t i = start_filenum; i < end_filenum; ++i) {
 
-			string src_name = create_filename(src_basename.c_str(), i);
-			cvmsg() << new_line << "Filter: " << i <<" out of "<< "[" << start_filenum<< "," << end_filenum << "]" ;
-			auto in_image_list = imageio.load(src_name);
-			if (in_image_list.get() && in_image_list->size()) {
+		string src_name = create_filename(src_basename.c_str(), i);
+		cvmsg() << new_line << "Filter: " << i <<" out of "<< "[" << start_filenum<< "," << end_filenum << "]" ;
+		auto in_image_list = imageio.load(src_name);
+		if (in_image_list.get() && in_image_list->size()) {
 
-				if (use_src_format)
-					out_type = in_image_list->get_source_format();
+			if (use_src_format)
+				out_type = in_image_list->get_source_format();
 
-				vector<const char *>::const_iterator filter_name = filter_chain.begin();
+			auto filter_name = filter_chain.begin();
 
-				for (auto f = filters.begin(); f != filters.end(); ++f, ++filter_name) {
-					cvdebug() << "Run filter: " << *filter_name << "\n";
-					for (auto i = in_image_list->begin();
-					     i != in_image_list->end(); ++i) {
-						*i = (*f)->filter(**i);
-					}
-				}
-
-				stringstream ss;
-				ss << out_filename << setw(format_width) << setfill('0') << i << "." << out_suffix;
-				cvdebug() << "Save to " << ss.str() << ", format = " << out_type << "\n";
-
-				if ( !imageio.save(ss.str(), *in_image_list) ){
-					string not_save = ("unable to save result to ") + ss.str();
-					throw runtime_error(not_save);
-
+			for (auto f = filters.begin(); f != filters.end(); ++f, ++filter_name) {
+				cvdebug() << "Run filter: " << *filter_name << "\n";
+				for (auto i = in_image_list->begin();
+				     i != in_image_list->end(); ++i) {
+					*i = (*f)->filter(**i);
 				}
 			}
-#ifndef WIN32
-			if (cverb.shows(vstream::ml_message)) {
-				char esttime[30];
-				time_t est_end = (( end_filenum - start_filenum) * (time(NULL) - start_time)) /
-				                  (i - start_filenum + 1) + start_time;
-				ctime_r(&est_end, esttime);
-				char *est = esttime;
-				while (*est != '\n' && *est != 0)
-					++est;
-				if (*est == '\n')
-					*est = ' ';
-				cvmsg() << ", estimated finish at: " <<  esttime;
+
+			stringstream ss;
+			ss << out_filename << setw(format_width) << setfill('0') << i << "." << out_suffix;
+			cvdebug() << "Save to " << ss.str() << ", format = " << out_type << "\n";
+
+			if ( !imageio.save(ss.str(), *in_image_list) ){
+				string not_save = ("unable to save result to ") + ss.str();
+				throw runtime_error(not_save);
+
 			}
-#endif
 		}
-		cvmsg() << "\n";
-		return EXIT_SUCCESS;
+#ifndef WIN32
+		if (cverb.shows(vstream::ml_message)) {
+			char esttime[30];
+			time_t est_end = (( end_filenum - start_filenum) * (time(NULL) - start_time)) /
+				(i - start_filenum + 1) + start_time;
+			ctime_r(&est_end, esttime);
+			char *est = esttime;
+			while (*est != '\n' && *est != 0)
+				++est;
+			if (*est == '\n')
+				*est = ' ';
+			cvmsg() << ", estimated finish at: " <<  esttime;
+		}
+#endif
+	}
+	cvmsg() << "\n";
+	return EXIT_SUCCESS;
 
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
 }
+
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main)

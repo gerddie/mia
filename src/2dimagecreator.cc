@@ -63,6 +63,7 @@ mia-2dimagecreator -o circle.v -j circle:f=2,p=2 -s "<64,128,256>"
 
 #include <mia/core.hh>
 #include <mia/2d.hh>
+#include <mia/internal/main.hh>
 
 NS_MIA_USE
 using namespace boost;
@@ -79,7 +80,7 @@ const SProgramDescrption g_description = {
 	"-o lattic.v -s '<64,128>' -r float -j lattic"
 }; 
 
-int do_main(int argc, const char *argv[])
+int do_main(int argc, char *argv[])
 {
 	C2DImageCreatorPluginHandler::ProductPtr creator;
 	string out_filename;
@@ -114,26 +115,5 @@ int do_main(int argc, const char *argv[])
 	return !imageio.save(out_filename, out_images);
 }
 
-int main(int argc, const char *argv[])
-{
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const std::exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
-}
-
-
-
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

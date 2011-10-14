@@ -73,6 +73,7 @@ mia-filenumberpattern -i image0000.exr
 #include <string>
 
 
+#include <mia/internal/main.hh>
 #include <mia/core/filetools.hh>
 #include <mia/core/cmdlineparser.hh>
 
@@ -87,7 +88,7 @@ const SProgramDescrption g_description = {
 	NULL
 }; 
 
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 	string in_filename;
 	CCmdOptionList options(g_description);
@@ -101,3 +102,4 @@ int main( int argc, const char *argv[] )
 	return 0;
 }
 
+MIA_MAIN(do_main); 

@@ -132,7 +132,7 @@ private:
 /* Revision string */
 const char revision[] = "not specified";
 
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 	string in_filename;
@@ -145,58 +145,44 @@ int main( int argc, const char *argv[] )
 	CCmdOptionList options(g_description);
 	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
 
-	try {
-
-		if (options.parse(argc, argv, "sliceimage") != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
+	if (options.parse(argc, argv, "sliceimage") != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 		
-		if (options.get_remaining().empty())
-			throw runtime_error("no slices given ...");
+	if (options.get_remaining().empty())
+		throw runtime_error("no slices given ...");
 
 
-		CHistory::instance().append(argv[0], revision, options);
+	CHistory::instance().append(argv[0], revision, options);
 
-		//size_t start_filenum = 0;
-		//size_t end_filenum  = 0;
-		//size_t format_width = 0;
+	//size_t start_filenum = 0;
+	//size_t end_filenum  = 0;
+	//size_t format_width = 0;
 
-		char new_line = cverb.show_debug() ? '\n' : '\r';
+	char new_line = cverb.show_debug() ? '\n' : '\r';
 
-		vector<const char *> input_images = options.get_remaining();
+	vector<const char *> input_images = options.get_remaining();
 
-		C3DImageCollector ic(input_images.size());
+	C3DImageCollector ic(input_images.size());
 
-		for (vector<const char *>::const_iterator  i = input_images.begin(); i != input_images.end(); ++i) {
+	for (vector<const char *>::const_iterator  i = input_images.begin(); i != input_images.end(); ++i) {
 
-			cvmsg() << "Load " << *i << new_line;
-			C2DImageIOPluginHandler::Instance::PData  in_image_list = image2dio.load(*i);
+		cvmsg() << "Load " << *i << new_line;
+		C2DImageIOPluginHandler::Instance::PData  in_image_list = image2dio.load(*i);
 
-			if (in_image_list.get() && in_image_list->size()) {
-				accumulate(ic, **in_image_list->begin());
-			}
+		if (in_image_list.get() && in_image_list->size()) {
+			accumulate(ic, **in_image_list->begin());
 		}
-		cvmsg() << "\n";
+	}
+	cvmsg() << "\n";
 
-		C3DImageVector result;
-		result.push_back(ic.result());
+	C3DImageVector result;
+	result.push_back(ic.result());
 
-		if (image3dio.save(out_filename, result))
-			return EXIT_SUCCESS;
-		else
-			cerr << argv[0] << " fatal: unable to output image to " <<  out_filename << endl;
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const std::exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
+	if (image3dio.save(out_filename, result))
+		return EXIT_SUCCESS;
+	else
+		cerr << argv[0] << " fatal: unable to output image to " <<  out_filename << endl;
 	return EXIT_FAILURE;
 }
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

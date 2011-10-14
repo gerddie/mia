@@ -500,7 +500,6 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 
 	vector<string> opt_table;
 	vector<string> help_table;
-	size_t pos; 
 	
 	console.write("\nProgram group:  "); 
 	console.write(m_program_group); 

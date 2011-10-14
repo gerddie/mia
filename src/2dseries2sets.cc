@@ -74,16 +74,31 @@ mia-2dseries2sets -i /home/user/series /net/dicoms/patient1/series1/{}*.dcm
 #include <mia/2d/SegSetWithImages.hh>
 #include <boost/filesystem.hpp>
 
+#include <mia/internal/main.hh>
+
 
 namespace bfs=boost::filesystem; 
 using namespace std; 
 NS_MIA_USE; 
 
-const char *g_description = 
-	"This program is used to create per slice time series sets from " 
-	"2D perfusion imaging data. The input files are given as additional "
-	"parameters on the command line."
-	; 
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+
+	"This program takes all image files that are given as free parameters on the command line "
+	"and creates segmentation sets based on information found in the images. "
+	"Used information is the z-location of the slice and the acquisition number. "
+	"The code is taylored to used the according descriptors defined in the DICOM standard. "
+	"All images with the same slice location will be grouped together in one segmentation "
+	"set and ordered according to their aquisition number. "
+	"Slice locations are rounded to three digits accuracy to make proper comparison "
+	"of floating point values feasable.", 
+
+	"Create the segmentation sets from a series of DICOM images and copy the files to "
+        "the output directory (copying is the default).", 
+	
+	"-o /home/user/series /net/dicoms/patient1/series1/*.dcm"
+	
+}; 
 
 
 
@@ -177,7 +192,7 @@ bool save_series(int index, const C2DImageVectorWithName& series, const string& 
 	return outfile.good();
 }
 
-int do_main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 	string out_directory; 
 	bool no_copy_images = false; 
@@ -224,23 +239,4 @@ int do_main( int argc, const char *argv[] )
 }
 
 
-int main( int argc, const char *argv[] )
-{
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-	return EXIT_FAILURE;
-}
-
+MIA_MAIN(do_main); 

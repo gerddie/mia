@@ -136,7 +136,7 @@ const SProgramDescrption g_description = {
 	NULL
 }; 
 
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 	string filename1;
@@ -155,43 +155,32 @@ int main( int argc, const char *argv[] )
 	options.add(make_opt( out_filename, "out-file", 'o', 
 					"output mask image", NULL, CCmdOption::required)); 
 
-	try {
 
-		if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
-			return EXIT_SUCCESS; 
+
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
+		return EXIT_SUCCESS; 
 
 	
-		// read images
-		P2DImage image1 = load_image2d(filename1); 
-		P2DImage image2 = load_image2d(filename2); 
+	// read images
+	P2DImage image1 = load_image2d(filename1); 
+	P2DImage image2 = load_image2d(filename2); 
 
-		try {
-			const C2DBitImage& img1 = dynamic_cast<const C2DBitImage&>(*image1); 
-			const C2DBitImage& img2 = dynamic_cast<const C2DBitImage&>(*image2); 
-			P2DImage result = binary_op(img1, img2, op); 
+	try {
+		const C2DBitImage& img1 = dynamic_cast<const C2DBitImage&>(*image1); 
+		const C2DBitImage& img2 = dynamic_cast<const C2DBitImage&>(*image2); 
+		P2DImage result = binary_op(img1, img2, op); 
 			
-			if ( !save_image(out_filename, result) ){
-				THROW(runtime_error, "cannot save result to " << out_filename); 
-			}
-			
-		}catch (bad_cast& x) {
-			throw invalid_argument("Input images are not binary masks"); 
+		if ( !save_image(out_filename, result) ){
+			THROW(runtime_error, "cannot save result to " << out_filename); 
 		}
+			
+	}catch (bad_cast& x) {
+		throw invalid_argument("Input images are not binary masks"); 
+	}
 		
-		return EXIT_SUCCESS; 
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
+	return EXIT_SUCCESS; 
 }
+
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 
+

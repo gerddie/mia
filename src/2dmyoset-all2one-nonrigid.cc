@@ -74,16 +74,15 @@ mia-2dmyoset-all2one-nonrigid  -i segment.set -o registered.set -F spline:rate=1
 #include <libxml++/libxml++.h>
 #include <boost/filesystem.hpp>
 
-#include <mia/core/filetools.hh>
-#include <mia/core/msgstream.hh>
+#include <mia/core.hh>
 #include <mia/core/threadedmsg.hh>
-#include <mia/core/cmdlineparser.hh>
-#include <mia/core/factorycmdlineoption.hh>
-#include <mia/core/errormacro.hh>
+
+#include <mia/internal/main.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/SegSetWithImages.hh>
+
 
 #include <tbb/task_scheduler_init.h>
 #include <tbb/parallel_for.h>
@@ -95,14 +94,20 @@ using namespace mia;
 
 namespace bfs=boost::filesystem; 
 
-const char *g_general_help = 
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+
 	"This program runs the non-rigid registration of an perfusion image series. "
 	"The registration is run in a serial manner, this is, only images in "
 	"temporal succession are registered, and the obtained transformations "
-	"are applied accumulated to reach full registration. "
-  	"Basic usage: \n"
-	" mia-2dmany2one-nonrigid [options] <cost1> <cost2> ..."; 
+	"are applied accumulated to reach full registration.", 
 
+	"Register the perfusion series given in segment.set by optimizing a spline based "
+	"transformation with a coefficient rate of 16 pixel "
+	"using Mutual Information and penalize the transformation by using divcurl with aweight of 2.0.", 
+
+	"-i segment.set -o registered.set -F spline:rate=16 image:cost=mi,weight=2.0 divcurl:weight=2.0"
+}; 
 
 C2DFullCostList create_costs(const std::vector<const char *>& costs, int idx)
 {
@@ -169,7 +174,7 @@ struct SeriesRegistration {
 	}
 };  
 
-int do_main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 	// IO parameters 
 	string in_filename;
@@ -187,7 +192,7 @@ int do_main( int argc, const char *argv[] )
 	
 	int max_threads = task_scheduler_init::automatic;
 	
-	CCmdOptionList options(g_general_help);
+	CCmdOptionList options(g_description);
 	
 	options.set_group("\nFile-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', 
@@ -256,24 +261,4 @@ int do_main( int argc, const char *argv[] )
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-int main( int argc, const char *argv[] )
-{
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " invalid argument: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-	return EXIT_FAILURE;
-}
-
-
+MIA_MAIN(do_main); 

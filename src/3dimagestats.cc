@@ -90,15 +90,15 @@ public:
 	}
 
 	void print_stats()const
-	{
-		cout   <<  m_histo.average() << " " << m_histo.deviation()  << '\n';
-	}
+		{
+			cout   <<  m_histo.average() << " " << m_histo.deviation()  << '\n';
+		}
 
 	void print_stats(double thresh_high)const
-	{
-		THistogram<THistogramFeeder<float > > tmp(m_histo, thresh_high);
-		cout   <<  tmp.average() << " " << tmp.deviation()  << '\n';
-	}
+		{
+			THistogram<THistogramFeeder<float > > tmp(m_histo, thresh_high);
+			cout   <<  tmp.average() << " " << tmp.deviation()  << '\n';
+		}
 private:
 	THistogram<THistogramFeeder<float > > m_histo;
 	float m_thresh;
@@ -106,54 +106,40 @@ private:
 
 
 
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 	string in_filename;
 	float thresh = 10.0;
-	try {
-
-		const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
+	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 
 
-		CCmdOptionList options(g_description);
-		options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
-					    CCmdOption::required));
-		options.add(make_opt( thresh, "thresh", 't', "intensity thresh to ignore"));
+	CCmdOptionList options(g_description);
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
+			      CCmdOption::required));
+	options.add(make_opt( thresh, "thresh", 't', "intensity thresh to ignore"));
 
-		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 
 
-		//CHistory::instance().append(argv[0], "unknown", options);
+	//CHistory::instance().append(argv[0], "unknown", options);
 
-		// read image
-		C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(in_filename);
+	// read image
+	C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(in_filename);
 
-		if (in_image_list.get() && in_image_list->size()) {
-			CHistAccumulator histo(0, 4096, 1024, thresh);
-			for (C3DImageIOPluginHandler::Instance::Data::iterator i = in_image_list->begin();
-			     i != in_image_list->end(); ++i)
-				accumulate(histo, **i);
-			histo.print_stats(0.05);
-		}else
-			throw runtime_error(string("No errors found in ") + in_filename);
+	if (in_image_list.get() && in_image_list->size()) {
+		CHistAccumulator histo(0, 4096, 1024, thresh);
+		for (C3DImageIOPluginHandler::Instance::Data::iterator i = in_image_list->begin();
+		     i != in_image_list->end(); ++i)
+			accumulate(histo, **i);
+		histo.print_stats(0.05);
+	}else
+		throw runtime_error(string("No errors found in ") + in_filename);
 
-		return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
 }
+
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main)

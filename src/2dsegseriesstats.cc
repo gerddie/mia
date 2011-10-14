@@ -87,6 +87,7 @@ mia-2dsegseriesstats -i org.set -g reg.set -c curves.txt -v varcurves.txt -n 12 
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/2d/SegSetWithImages.hh>
+#include <mia/internal/main.hh>
 #include <ostream>
 #include <fstream>
 
@@ -95,11 +96,22 @@ using xmlpp::DomParser;
 using namespace mia; 
 using namespace std; 
 
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
 
-const char *g_description = 
-	"This program is used to evaluate average intensities over given\n"
-	"segmented regions of an image"; 
+	
+	"This program is used evaluate various time-intensity curves over a series of images "
+	"given by a segmentation set. Specifically, the program is taylored to evaluate average "
+	"intensities and variations of sections the left ventricle myocardium. "
+	"The segmentation set must contain the segmentations for all slices that will be accessed "
+        "during evaluation.", 
 
+	"Evaluate the two curve typed for 12 sections from segemntation sets orig.set "
+	"and reg.set skipping the first 2 frames. The output will be written to curves.txt "
+	"and varcurves.txt respectively.", 
+	
+	"-i org.set -g reg.set -c curves.txt -v varcurves.txt -n 12 -k 2"
+}; 
 
 struct SResult {
 	float original; 
@@ -145,7 +157,7 @@ bool normalize_and_save_curves(vector<vector<SResult> >& curves, const string& c
 	return outfile.good(); 
 }
 
-int do_main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 	string org_filename;
 	string reg_filename;
@@ -237,27 +249,4 @@ int do_main( int argc, const char *argv[] )
 	return EXIT_SUCCESS; 
 }
 
-
-
-int main( int argc, const char *argv[] )
-{
-
-
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
-}
+MIA_MAIN(do_main); 

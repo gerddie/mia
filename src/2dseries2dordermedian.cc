@@ -87,6 +87,7 @@ mia-2dseries2dordermedian -i segment.set -o gradmedian.exr -g 1 \
 #include <stdexcept>
 #include <boost/algorithm/minmax_element.hpp>
 
+#include <mia/internal/main.hh>
 #include <mia/2d/filterchain.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/SegSetWithImages.hh>
@@ -94,6 +95,22 @@ mia-2dseries2dordermedian -i segment.set -o gradmedian.exr -g 1 \
 
 using namespace std;
 using namespace mia;
+
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+
+	"This program evaluates the pixel-wise median of the absolute values of the gauss filtered "
+	"2nd order temporal derivative of a series of images. In addition, it can be used to "
+	"output the time-intensity curve of a given pixel."
+	"The program supports slice-wise spacial pre-filtering by giving additional filters as free "
+	"parameters (filter/2dimage).", 
+
+	"Evaluate the median of the 2nd order derivative of the series given in segmentation set "
+	"segment.set after filtering with a Gaussian of width 3. In addition write "
+	"the time intensity curve of pixel <128,64> to curve.txt.", 
+	
+	"-i segment.set -o gradmedian.exr -g 1 --itc-file curve.txt --itc-loc \"<128,64>\""
+}; 
 
 template <typename T>
 struct fabsdelta {
@@ -217,17 +234,7 @@ private:
 	std::shared_ptr<C1DFilterKernel > gauss;
 };
 
-
-/* Revision string */
-const char revision[] = "not specified";
-
-const char *g_descriptions = 
-	"This program evaluates the pixel-wise median of the absolute gauss filtered " 
-	"2nd order derivative of a series of images. In addition, it can be used to "
-	"output the time-intensity curve of a given pixel."
-	;
-
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 	string in_filename;
@@ -243,7 +250,7 @@ int main( int argc, const char *argv[] )
 
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 
-	CCmdOptionList options(g_descriptions);
+	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
 	options.add(make_opt( skip, "skip", 'k', "Skip files at the beginning"));
@@ -254,83 +261,69 @@ int main( int argc, const char *argv[] )
 	options.add(make_opt( itc_location, "itc-loc", 0, "intensity time curve output pixel coordinates"));
 
 
-	try {
+	if (options.parse(argc, argv, "filter") != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 
-		if (options.parse(argc, argv, "filter") != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
+	C2DFilterChain filter_chain(options.get_remaining());
 
-		C2DFilterChain filter_chain(options.get_remaining());
+	cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
 
-		cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
+	CSegSetWithImages  segset(in_filename, true);
 
-		CSegSetWithImages  segset(in_filename, true);
+	if (crop) {
+		C2DBoundingBox box = segset.get_boundingbox();
+		box.enlarge(enlarge_boundary);
+		stringstream crop_descr;
+		crop_descr << "crop:"
+			   << "start=[" << box.get_grid_begin()
+			   << "],end=[" << box.get_grid_end() << "]";
+		cvdebug() << "Crop with " << crop_descr.str() << "\r";
 
-		if (crop) {
-			C2DBoundingBox box = segset.get_boundingbox();
-			box.enlarge(enlarge_boundary);
-			stringstream crop_descr;
-			crop_descr << "crop:"
-				   << "start=[" << box.get_grid_begin()
-				   << "],end=[" << box.get_grid_end() << "]";
-			cvdebug() << "Crop with " << crop_descr.str() << "\r";
+		filter_chain.push_front(C2DFilterPluginHandler::instance().
+					produce(crop_descr.str().c_str()));
+	}
 
-			filter_chain.push_front(C2DFilterPluginHandler::instance().
-						produce(crop_descr.str().c_str()));
+	if (skip >= segset.get_images().size())
+		throw invalid_argument("Skip is equal or larger then image series");
+
+	auto iimages = segset.get_images().begin();
+	auto eimages = segset.get_images().end();
+	advance(iimages, skip);
+
+	C2DAccumulator acc(distance(iimages, eimages), gauss_width);
+	for (; iimages != eimages; ++iimages) {
+
+		P2DImage in_image = *iimages;
+		if (!filter_chain.empty() )
+			in_image = filter_chain.filter(*in_image);
+		mia::accumulate(acc, *in_image);
+	}
+
+	C2DAccumulator::CBuffer itc_absolute;
+	if (!itc_file.empty())
+		itc_absolute = acc.get_curve_at(itc_location);
+
+	acc.evaluate_gradients();
+	auto itc_d2 = acc.get_curve_at(itc_location);
+
+	P2DImage  result = acc.result();
+
+	if (!itc_file.empty()) {
+		auto itc_d2help = acc.absgradient_2(itc_absolute);
+		ofstream itc(itc_file.c_str(), ios_base::out);
+
+		auto ia = itc_absolute.begin() + 1;
+		auto id2 = itc_d2.begin();
+		auto ihelp = itc_d2help.begin();
+		while (id2 != itc_d2.end()) {
+			itc << *ia++ << " " << *id2++ << " " << *ihelp++ << "\n";
 		}
-
-		if (skip >= segset.get_images().size())
-			throw invalid_argument("Skip is equal or larger then image series");
-
-		C2DImageSeries::const_iterator iimages = segset.get_images().begin();
-		C2DImageSeries::const_iterator eimages = segset.get_images().end();
-		advance(iimages, skip);
-
-		C2DAccumulator acc(distance(iimages, eimages), gauss_width);
-		for (; iimages != eimages; ++iimages) {
-
-			P2DImage in_image = *iimages;
-			if (!filter_chain.empty() )
-				in_image = filter_chain.filter(*in_image);
-			mia::accumulate(acc, *in_image);
-		}
-
-		C2DAccumulator::CBuffer itc_absolute;
-		if (!itc_file.empty())
-			itc_absolute = acc.get_curve_at(itc_location);
-
-		acc.evaluate_gradients();
-		C2DAccumulator::CBuffer itc_d2 = acc.get_curve_at(itc_location);
-
-		P2DImage  result = acc.result();
-
-		if (!itc_file.empty()) {
-			C2DAccumulator::CBuffer itc_d2help = acc.absgradient_2(itc_absolute);
-			ofstream itc(itc_file.c_str(), ios_base::out);
-
-			C2DAccumulator::CBuffer::const_iterator ia = itc_absolute.begin() + 1;
-			C2DAccumulator::CBuffer::const_iterator id2 = itc_d2.begin();
-			C2DAccumulator::CBuffer::const_iterator ihelp = itc_d2help.begin();
-			while (id2 != itc_d2.end()) {
-				itc << *ia++ << " " << *id2++ << " " << *ihelp++ << "\n";
-			}
-		}
-
-		if (save_image(out_filename, result))
-		    return  EXIT_SUCCESS;
-
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
 	}
 
-	return EXIT_FAILURE;
+	if (save_image(out_filename, result))
+		return  EXIT_SUCCESS;
+	return  EXIT_FAILURE;
+
 }
+
+MIA_MAIN(do_main); 

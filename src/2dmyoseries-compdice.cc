@@ -22,17 +22,16 @@
 
   LatexBeginProgramDescription{Myocardial Perfusion Analysis}
   
-  \subsection{mia-2dsegseriesstats}
-  \label{mia-2dsegseriesstats}
+  \subsection{mia-2dsegseries-compdice}
+  \label{mia-2dsegseries-compdice}
 
   \begin{description} 
   \item [Description:] 
-        This program is used evaluate the dice index for each frame of a segmentation set 
-	with reference to a specific frame. The result is printed to stdout. 
+        This program is used evaluate the dice index for each frame of two  segmentation sets. The result is printed to stdout. 
 
   The program is called like 
   \begin{lstlisting}
-mia-2dsegseriesstats -i <segmenation set> -r <reference frame> 
+mia-2dsegseries-compdice -i <segmenation set> -r <reference set> 
   \end{lstlisting}
 
   \item [Options:] $\:$
@@ -43,10 +42,10 @@ mia-2dsegseriesstats -i <segmenation set> -r <reference frame>
   \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
   }
 
-  \item [Example:]Evaluate the dice index of segmentation set \emph{segment.set} with reference 30 and 
-                  skipping the first two frames. 
+  \item [Example:]Evaluate the dice index of segmentation set \emph{segment.set} and \emph{reference.set} and 
+                  skip the first two frames. 
   \begin{lstlisting}
-mia-2dsegseriesstats -i segment.set -r 30 -k 2
+mia-2dsegseries-compdice -i segment.set -r reference.set -k 2
   \end{lstlisting}
   \item [Remark:] This program is used to validate motion compensation algorithms. 
   \item [See also:] \sa{mia-2dmyomilles}, \sa{mia-2dmyoserial-nonrigid}, \sa{mia-2dmyoperiodic-nonrigid}, 
@@ -62,6 +61,7 @@ mia-2dsegseriesstats -i segment.set -r 30 -k 2
 
 #include <libxml++/libxml++.h>
 #include <mia/core/msgstream.hh>
+#include <mia/internal/main.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <ostream>
@@ -72,11 +72,18 @@ using xmlpp::DomParser;
 using namespace mia; 
 using namespace std; 
 
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+	
+	"This program is used to evaluate the per-frame dice index of "
+	"segmented regions of two image series", 
+	
+	"Evaluate the per-frame dice index of the segmentations of set segment.set with "
+        "respect to the segmentation set reference.set skipping two images at the beginning.",
 
-const char *g_description = 
-	"This program is used to evaluate the per-frame dice index of \n"
-	"segmented regions of two image series"; 
+	"-i segment.set -r reference.set -k 2"
 
+}; 
 
 float dice_value(const C2DUBImage& mask1, const C2DUBImage& mask2) 
 {
@@ -99,7 +106,7 @@ float dice_value(const C2DUBImage& mask1, const C2DUBImage& mask2)
 	return sum ? (2.0f * schnitt) / sum : 1.0f; 
 }
 
-int do_main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 	string org_filename;
 	string ref_filename;
@@ -138,27 +145,4 @@ int do_main( int argc, const char *argv[] )
 	return EXIT_SUCCESS; 
 }
 
-
-
-int main( int argc, const char *argv[] )
-{
-
-
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
-}
+MIA_MAIN(do_main); 

@@ -93,7 +93,7 @@ void save_wavelet(const string& filenamebase, const vector<double>& coeffs, int 
 
 }
 
-int do_main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 	CCmdOptionList options(g_general_help);
 
@@ -157,7 +157,7 @@ int do_main( int argc, const char *argv[] )
 	cvdebug() << "got " << nrows << "  rows\n"; 
 
 	for (unsigned int i = 1; i < vx.size(); ++i) 
-		if (table[i].size() != nrows) {
+		if (table[i].size() != (unsigned)nrows) {
 			THROW(runtime_error, "bogus input table, expect " << nrows  << ", but column " 
 			      << i << " has " << table[i].size() << " rows"); 
 		}
@@ -192,25 +192,5 @@ int do_main( int argc, const char *argv[] )
 
 }
 
-int main( int argc, const char *argv[] )
-{
-
-
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
-}
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

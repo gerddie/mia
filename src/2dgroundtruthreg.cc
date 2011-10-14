@@ -37,7 +37,7 @@
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/fullcost.hh>
 #include <mia/2d/similarity_profile.hh>
-
+#include <mia/internal/main.hh>
 
 using namespace std;
 using namespace mia;
@@ -124,7 +124,7 @@ run_registration_pass(const CSegSetWithImages&  input_set, C2DImageSeries& serie
 }
 
 
-int do_main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 	SPGTParams pgt_params; 
 	
@@ -243,24 +243,5 @@ int do_main( int argc, const char *argv[] )
 
 }
 
-int main( int argc, const char *argv[] )
-{
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
-}
-
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

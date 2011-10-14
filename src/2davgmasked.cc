@@ -128,7 +128,7 @@ private:
 /* Revision string */
 const char revision[] = "not specified";
 
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 	string in_filename;
@@ -141,73 +141,59 @@ int main( int argc, const char *argv[] )
 				    "in-files", CCmdOption::required));
 	options.add(make_opt( mask_filename, "mask-file", 'm', 
 				    "mask image, must be of type byte", 
-				    "mask-file", CCmdOption::required));
+			      "mask-file", CCmdOption::required));
 
-	try {
+	if (options.parse(argc, argv, "image") != CCmdOptionList::hr_no) 
+		return EXIT_SUCCESS; 
 
-		if (options.parse(argc, argv, "image") != CCmdOptionList::hr_no) 
-			return EXIT_SUCCESS; 
-
-		if (!options.get_remaining().empty())
-			throw runtime_error("unknown option given ...");
+	if (!options.get_remaining().empty())
+		throw runtime_error("unknown option given ...");
 
 
-		CHistory::instance().append(argv[0], revision, options);
+	CHistory::instance().append(argv[0], revision, options);
 
-		size_t start_filenum = 0;
-		size_t end_filenum  = 0;
-		size_t format_width = 0;
+	size_t start_filenum = 0;
+	size_t end_filenum  = 0;
+	size_t format_width = 0;
 
-		std::string src_basename = get_filename_pattern_and_range(in_filename, start_filenum, end_filenum, format_width);
-		if (start_filenum >= end_filenum)
-			throw invalid_argument(string("no files match pattern ") + src_basename);
+	std::string src_basename = get_filename_pattern_and_range(in_filename, start_filenum, end_filenum, format_width);
+	if (start_filenum >= end_filenum)
+		throw invalid_argument(string("no files match pattern ") + src_basename);
 
-		char new_line = cverb.show_debug() ? '\n' : '\r';
+	char new_line = cverb.show_debug() ? '\n' : '\r';
 
-		C2DImageIOPluginHandler::Instance::PData  mask_image_list = image2dio.load(mask_filename);
-		if (!mask_image_list.get() || mask_image_list->empty())
-			throw invalid_argument("no mask found");
+	C2DImageIOPluginHandler::Instance::PData  mask_image_list = image2dio.load(mask_filename);
+	if (!mask_image_list.get() || mask_image_list->empty())
+		throw invalid_argument("no mask found");
 
-		const C2DUBImage *mask = dynamic_cast<const C2DUBImage *>( mask_image_list->begin()->get() );
+	const C2DUBImage *mask = dynamic_cast<const C2DUBImage *>( mask_image_list->begin()->get() );
 
-		C2DStat stat(*mask);
+	C2DStat stat(*mask);
 
-		for (size_t i = start_filenum; i < end_filenum; ++i) {
+	for (size_t i = start_filenum; i < end_filenum; ++i) {
 
-			string src_name = create_filename(src_basename.c_str(), i);
-			cvmsg() << new_line << "Read: " << i <<" out of "<< "[" 
-				<< start_filenum<< "," << end_filenum << "] = " << src_name ;
-			C2DImageIOPluginHandler::Instance::PData  in_image_list = image2dio.load(src_name);
+		string src_name = create_filename(src_basename.c_str(), i);
+		cvmsg() << new_line << "Read: " << i <<" out of "<< "[" 
+			<< start_filenum<< "," << end_filenum << "] = " << src_name ;
+		C2DImageIOPluginHandler::Instance::PData  in_image_list = image2dio.load(src_name);
 
-			if (in_image_list.get() && in_image_list->size()) {
-				accumulate(stat, **in_image_list->begin());
-			}
+		if (in_image_list.get() && in_image_list->size()) {
+			accumulate(stat, **in_image_list->begin());
 		}
-		cvmsg() << "\n";
+	}
+	cvmsg() << "\n";
 
-		const vector<C2DStat::TSliceStat>& ss = stat.result();
+	const vector<C2DStat::TSliceStat>& ss = stat.result();
 
-		for (vector<C2DStat::TSliceStat>::const_iterator i = ss.begin(); i != ss.end(); ++i) {
-			for (C2DStat::TSliceStat::const_iterator k = i->begin(); k != i->end(); ++k) {
-				cout << k->second.second / k->second.first << " ";
-			}
-			cout << "\n";
+	for (vector<C2DStat::TSliceStat>::const_iterator i = ss.begin(); i != ss.end(); ++i) {
+		for (C2DStat::TSliceStat::const_iterator k = i->begin(); k != i->end(); ++k) {
+			cout << k->second.second / k->second.first << " ";
 		}
-
-		return EXIT_SUCCESS;
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const std::exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
+		cout << "\n";
 	}
 
-	return EXIT_FAILURE;
+	return EXIT_SUCCESS;
 }
+
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

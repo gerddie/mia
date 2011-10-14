@@ -28,6 +28,7 @@
 #include <sstream>
 #include <iomanip>
 #include <boost/algorithm/minmax_element.hpp>
+#include <mia/internal/main.hh>
 
 NS_MIA_USE
 using namespace boost; 
@@ -44,7 +45,7 @@ const char *g_description =
 
 
 // set op the command line parameters and run the registration 
-int do_main(int argc, const char **argv)
+int do_main(int argc, char **argv)
 {
 
 	CCmdOptionList options(g_description);
@@ -106,23 +107,5 @@ int do_main(int argc, const char **argv)
 	return EXIT_SUCCESS; 
 }
 
-// for readablility the real main function encapsulates the do_main in a try-catch block
-int main(int argc, const char **argv)
-{
-	try {
-		return do_main(argc, argv); 
-	}
-	catch (invalid_argument& err) {
-		cerr << "invalid argument: " << err.what() << "\n"; 
-	}
-	catch (runtime_error& err) {
-		cerr << "runtime error: " << err.what() << "\n"; 
-	}
-	catch (std::exception& err) {
-		cerr << "exception: " << err.what() << "\n"; 
-	}
-	catch (...) {
-		cerr << "unknown exception\n";
-	}
-	return EXIT_FAILURE; 
-}
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

@@ -405,7 +405,7 @@ void test(double k, bool auto_k)
 }
 
 
-int main(int argc, const char *argv[])
+int do_main(int argc, char *argv[])
 {
 	int nclasses = 3; 
 	int max_iter = 100; 
@@ -435,67 +435,52 @@ int main(int argc, const char *argv[])
 	options.add(make_opt( self_test, "self-test", 0, "run self test"));
 	
 
-	try {
-		
-
-		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 
 		
-		if (self_test) {
-			test(0.002, false); 
-			return 0; 
-		}
+	if (self_test) {
+		test(0.002, false); 
+		return 0; 
+	}
 		
-		ifstream ifs( in_filename, ifstream::in ); 
+	ifstream ifs( in_filename, ifstream::in ); 
 			
-		vector<double> histo; 
-		// read input data
-		size_t sig_size_c = 0; 
-		size_t sig_size = 0; 
-		while (ifs.good()) {
-			float val, cnt;
-			ifs >> val >> cnt; 
-			histo.push_back(cnt); 
-			++sig_size_c; 
-			if (val > 0)
-				sig_size = sig_size_c; 
-		}
-		ifs.close(); 
+	vector<double> histo; 
+	// read input data
+	size_t sig_size_c = 0; 
+	size_t sig_size = 0; 
+	while (ifs.good()) {
+		float val, cnt;
+		ifs >> val >> cnt; 
+		histo.push_back(cnt); 
+		++sig_size_c; 
+		if (val > 0)
+			sig_size = sig_size_c; 
+	}
+	ifs.close(); 
 		
-		if (sig_size < sig_size_c && cut_histo)
-			histo.resize(sig_size); 
+	if (sig_size < sig_size_c && cut_histo)
+		histo.resize(sig_size); 
 
-		cvmsg() << "got a histogram with " << histo.size() << " values\n"; 
-		bool initialise = false; 
+	cvmsg() << "got a histogram with " << histo.size() << " values\n"; 
+	bool initialise = false; 
 		
-		if (class_centers.empty()) {
-			class_centers.resize(nclasses); 
-			initialise = true; 
-		}
+	if (class_centers.empty()) {
+		class_centers.resize(nclasses); 
+		initialise = true; 
+	}
 		
-		CCMeans cmeans(k, even_start, epsilon); 
+	CCMeans cmeans(k, even_start, epsilon); 
 			
-		CProbabilityVector pv = cmeans(histo, class_centers, initialise, auto_k); 
+	CProbabilityVector pv = cmeans(histo, class_centers, initialise, auto_k); 
 		
-		if (!pv.save(out_filename)) {
-			cverr() << "runtime: unable to save probability map\n"; 
-			return EXIT_FAILURE; 
-		}
-		return EXIT_SUCCESS;
+	if (!pv.save(out_filename)) {
+		cverr() << "runtime: unable to save probability map\n"; 
+		return EXIT_FAILURE; 
 	}
-	
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-	return EXIT_FAILURE;
+	return EXIT_SUCCESS;
 }
+
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main)

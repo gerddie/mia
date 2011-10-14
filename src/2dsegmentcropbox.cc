@@ -77,15 +77,30 @@ mia-2dsegmentcropbox -i segment.set -o cropped.set -e 3
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dfilter.hh>
-
-
-
+#include <mia/internal/main.hh>
 
 
 using namespace std;
 using namespace mia;
 using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
+
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+
+	"This program is used on a segmentation set and evaluates a bounding box "
+	"that encloses the segmentation in all slices. "
+	"This bounding box is then used to crop the original images, correct "
+        "the segmentation and store a new segmentation set with the cropped images. "
+        "The cropped images will be of the same type as the original images. "
+	"If no segmentation is given in the set, the result is undefined.", 
+
+	"Evaluate the optimal cropping for a segmentation set segment.set and enlarge it by "
+	"3 pixels. Store the resulting set in the file cropped.set.", 
+	
+	"-i segment.set -o cropped.set -e 3"
+}; 
+
 
 
 struct 	CSegFrameCropper {
@@ -101,12 +116,7 @@ private:
 	bfs::path m_image_outpath;
 };
 
-const char *g_description = 
-	"This program is used to crop the images of a segmented image series to contain "
-	"the segmentation over the full image series. An boundary enlargement factor can be given."
-	;
-
-int do_main(int argc, const char *argv[])
+int do_main(int argc, char *argv[])
 {
 	string src_filename;
 	string out_filename;
@@ -167,27 +177,6 @@ int do_main(int argc, const char *argv[])
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-int main(int argc, const char *argv[] )
-{
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-	return EXIT_FAILURE;
-}
-
-
 
 CSegFrameCropper::CSegFrameCropper(const C2DIVector& shift,
 				   P2DFilter filter,
@@ -214,3 +203,5 @@ CSegFrame CSegFrameCropper::operator()(const CSegFrame& frame, const C2DImage& i
 	return result;
 
 }
+
+MIA_MAIN(do_main); 

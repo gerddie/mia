@@ -66,6 +66,7 @@ mia-2dnrreg -i test.v -r ref.v -o reg.v -s 16 -c ssd
 
 #include <mia/core.hh>
 #include <mia/2d.hh>
+#include <mia/internal/main.hh>
 #include <sstream>
 #include <iomanip>
 #include <boost/algorithm/minmax_element.hpp>
@@ -74,16 +75,25 @@ NS_MIA_USE
 using namespace boost; 
 using namespace std; 
 
-const *g_description = 
+const SProgramDescrption g_description = {
+	"2D Image Registration", 
+
 	"This program is used to run a model based non-rigid registration of two 2D images. "
-	"Optimization is done using a time marching algorithm."
+	"Optimization is done using a time marching algorithm. "
 	"Remark: The implementation currently only supports a per pixel transformation and "
-	"it is not well tested."; 
+	"it is not well tested.", 
+	
+	"Register image test.v to image ref.v and write the registered image to reg.v. "
+	"Start registration at the smallest size above 16 pixel and ssd as cost function.", 
+	
+	"-i test.v -r ref.v -o reg.v -s 16 -c ssd", 
+	
+}; 
 
 
 
 // set op the command line parameters and run the registration 
-int do_main(int argc, const char **argv)
+int do_main(int argc, char **argv)
 {
 
 	CCmdOptionList options(g_description);
@@ -180,23 +190,4 @@ int do_main(int argc, const char **argv)
 	return EXIT_SUCCESS; 
 }
 
-// for readablility the real main function encapsulates the do_main in a try-catch block
-int main(int argc, const char **argv)
-{
-	try {
-		return do_main(argc, argv); 
-	}
-	catch (invalid_argument& err) {
-		cerr << "invalid argument: " << err.what() << "\n"; 
-	}
-	catch (runtime_error& err) {
-		cerr << "runtime error: " << err.what() << "\n"; 
-	}
-	catch (std::exception& err) {
-		cerr << "exception: " << err.what() << "\n"; 
-	}
-	catch (...) {
-		cerr << "unknown exception\n";
-	}
-	return EXIT_FAILURE; 
-}
+MIA_MAIN(do_main); 

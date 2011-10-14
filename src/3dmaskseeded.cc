@@ -173,7 +173,7 @@ P3DImage FMask::operator() (const T3DImage<T>& image) const
 		throw invalid_argument("Seed point outside image domain");
 }
 
-int do_main(int argc, const char *argv[] )
+int do_main(int argc, char *argv[] )
 {
 	string in_filename;
 	string out_filename;
@@ -215,23 +215,6 @@ int do_main(int argc, const char *argv[] )
 	return EXIT_SUCCESS;
 }
 
-int main( int argc, const char *argv[] )
-{
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const std::exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
 
-	return EXIT_FAILURE;
-}
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main)

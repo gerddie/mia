@@ -77,8 +77,8 @@ mia-2dseriesgradMAD -i segment.set -o mad.exr -c -e 3
 #include <limits>
 #include <sstream>
 #include <stdexcept>
-#include <boost/algorithm/minmax_element.hpp>
 
+#include <mia/internal/main.hh>
 #include <mia/2d/filterchain.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/SegSetWithImages.hh>
@@ -87,13 +87,21 @@ mia-2dseriesgradMAD -i segment.set -o mad.exr -c -e 3
 using namespace std;
 using namespace mia;
 
-static const char *program_info = 
-	"Given a set of images of temporal sucession, evaluate the temporal \n"
-	"pixel-wise gradient MAD.\n" 
-	"A spacial pre-filtering may be applied as additional plugins\n"
-	"Usage:\n"
-	"  mia-2dseriesgradMAD -i <input set> -o <output image> [<options>] [<spacial filter(s)>]\n"; 
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
 
+	"Given a set of images of temporal sucession, evaluates the pixel-wise "
+	"temporal gradient and then its \emph{median average distance} (MAD) "
+	"and stores the result in an image. "
+	"Spacial pre-filtering may be applied as given additional plugin(s) (filter/2dimage).", 
+	
+	"Evaluate the MAD-image of the bounding box surrounding the segmentation "
+	"from a series segment.set. No spacial filtering will be applied. "
+	"The bounding box will be enlarged by 3 pixels in all directions. "
+	"Store the image in OpenEXR format.", 
+	
+	" -i segment.set -o mad.exr -c -e 3"
+}; 
 
 template <typename T>
 struct fabsdelta {
@@ -123,15 +131,14 @@ struct C2DVarAccumulator : public TFilter<bool> {
 
 			transform(image.begin(), image.end(), m_old.begin(), m_delta.begin(),
 				  fabsdelta<float>());
-			C2DFImage::const_iterator i = m_delta.begin();
-			C2DFImage::const_iterator e = m_delta.end();
-			vector<CBuffer>::iterator v = m_field.begin();
+			auto i = m_delta.begin();
+			auto e = m_delta.end();
+			auto v = m_field.begin();
 
 			for(; i != e; ++i, ++v)
 				v->push_back(*i);
 
-			pair<typename T2DImage<T>::const_iterator, typename T2DImage<T>::const_iterator>
-				src_minmax = ::boost::minmax_element(image.begin(), image.end());
+			auto src_minmax = minmax_element(image.begin(), image.end());
 			if (m_min > *src_minmax.first)
 				m_min = *src_minmax.first;
 			if (m_max < *src_minmax.second)
@@ -151,14 +158,14 @@ struct C2DVarAccumulator : public TFilter<bool> {
 			     CBuffer::iterator end, size_t len)
 	{
 		if (len & 1) {
-			CBuffer::iterator i = begin + (len - 1) / 2;
-			std::nth_element(begin, i, end);
+			auto i = begin + (len - 1) / 2;
+			nth_element(begin, i, end);
 			return *i;
 		}else {
-			CBuffer::iterator i1 = begin + len / 2 - 1;
-			CBuffer::iterator i2 = begin + len / 2;
-			std::nth_element(begin, i1, end);
-			std::nth_element(begin, i2, end);
+			auto i1 = begin + len / 2 - 1;
+			auto i2 = begin + len / 2;
+			nth_element(begin, i1, end);
+			nth_element(begin, i2, end);
 			return (*i1 + *i2) / 2.0;
 		}
 	}
@@ -168,9 +175,9 @@ struct C2DVarAccumulator : public TFilter<bool> {
 
 		C2DFImage *variation = new C2DFImage(m_delta.get_size());
 
-		C2DFImage::iterator ii = variation->begin();
-		vector<CBuffer>::iterator iv = m_field.begin();
-		vector<CBuffer>::iterator ev = m_field.end();
+		auto ii = variation->begin();
+		auto iv = m_field.begin();
+		auto ev = m_field.end();
 		while (iv != ev) {
 			*ii++ = median(iv->begin(), iv->end(), m_n);
 			++iv;
@@ -180,8 +187,8 @@ struct C2DVarAccumulator : public TFilter<bool> {
 		iv = m_field.begin();
 
 		while (iv != ev) {
-			CBuffer::iterator ip = iv->begin();
-			CBuffer::iterator ep = iv->end();
+			auto ip = iv->begin();
+			auto ep = iv->end();
 
 			while (ip != ep) {
 				*ip = fabs(*ip - *ii);
@@ -209,11 +216,7 @@ private:
 	bool m_initialized;
 };
 
-
-/* Revision string */
-const char revision[] = "not specified";
-
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 	string in_filename;
@@ -223,9 +226,9 @@ int main( int argc, const char *argv[] )
 	size_t skip = 0;
 	size_t enlarge_boundary = 5;
 
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 
-	CCmdOptionList options(program_info);
+	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
 	options.add(make_opt( skip, "skip", 'k', "Skip files at the beginning"));
@@ -233,71 +236,56 @@ int main( int argc, const char *argv[] )
 				    "Enlarge cropbox by number of pixels"));
 	options.add(make_opt( crop, "crop", 'c', "crop image before running statistics"));
 
-	try {
-
-		if (options.parse(argc, argv, "filter") != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
+	if (options.parse(argc, argv, "filter") != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 		
-		C2DFilterChain filter_chain(options.get_remaining());
+	C2DFilterChain filter_chain(options.get_remaining());
 
-		cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
-
-
-		if ( in_filename.empty() )
-			throw runtime_error("'--in-file' ('i') option required");
-
-		if ( out_filename.empty() )
-			throw runtime_error("'--out-base' ('o') option required");
-
-		CSegSetWithImages  segset(in_filename, true);
-
-		if (crop) {
-			C2DBoundingBox box = segset.get_boundingbox();
-			box.enlarge(enlarge_boundary);
-			stringstream crop_descr;
-			crop_descr << "crop:"
-				   << "start=[" << box.get_grid_begin()
-				   << "],end=[" << box.get_grid_end() << "]";
-			cvdebug() << "Crop with " << crop_descr.str() << "\r";
+	cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
 
 
-			filter_chain.push_front(C2DFilterPluginHandler::instance().
-						produce(crop_descr.str().c_str()));
-		}
+	if ( in_filename.empty() )
+		throw runtime_error("'--in-file' ('i') option required");
+
+	if ( out_filename.empty() )
+		throw runtime_error("'--out-base' ('o') option required");
+
+	CSegSetWithImages  segset(in_filename, true);
+
+	if (crop) {
+		C2DBoundingBox box = segset.get_boundingbox();
+		box.enlarge(enlarge_boundary);
+		stringstream crop_descr;
+		crop_descr << "crop:"
+			   << "start=[" << box.get_grid_begin()
+			   << "],end=[" << box.get_grid_end() << "]";
+		cvdebug() << "Crop with " << crop_descr.str() << "\r";
 
 
-		if (skip >= segset.get_images().size())
-			throw invalid_argument("Skip is equal or larger then image series");
-
-		C2DImageSeries::const_iterator iimages = segset.get_images().begin();
-		C2DImageSeries::const_iterator eimages = segset.get_images().end();
-		advance(iimages, skip);
-
-		C2DVarAccumulator acc(distance(iimages, eimages));
-		for (; iimages != eimages; ++iimages) {
-
-			P2DImage in_image = *iimages;
-			if (!filter_chain.empty() )
-				in_image = filter_chain.filter(*in_image);
-			mia::accumulate(acc, *in_image);
-		}
-
-		if (save_image(out_filename, acc.result()))
-		    return  EXIT_SUCCESS;
-
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
+		filter_chain.push_front(C2DFilterPluginHandler::instance().
+					produce(crop_descr.str().c_str()));
 	}
 
-	return EXIT_FAILURE;
+
+	if (skip >= segset.get_images().size())
+		throw invalid_argument("Skip is equal or larger then image series");
+
+	C2DImageSeries::const_iterator iimages = segset.get_images().begin();
+	C2DImageSeries::const_iterator eimages = segset.get_images().end();
+	advance(iimages, skip);
+
+	C2DVarAccumulator acc(distance(iimages, eimages));
+	for (; iimages != eimages; ++iimages) {
+
+		P2DImage in_image = *iimages;
+		if (!filter_chain.empty() )
+			in_image = filter_chain.filter(*in_image);
+		mia::accumulate(acc, *in_image);
+	}
+
+	if (save_image(out_filename, acc.result()))
+		return  EXIT_SUCCESS;
+
 }
+	
+MIA_MAIN(do_main); 

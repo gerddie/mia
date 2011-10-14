@@ -80,7 +80,7 @@ mia-2dsegshiftperslice -i segment.set -o translate.set -g translated -S shift
 #include <mia/2d/SegSet.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dfilter.hh>
-
+#include <mia/internal/main.hh>
 
 
 
@@ -90,6 +90,16 @@ using namespace mia;
 using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+	
+	"This program move the segmentation(s) of an image series by using a shift "
+	"that is given on a per-slice base. The program can be used to correct the "
+	"segmentation of the images if a linear registration was executed that only "
+	"applies a translation and does not correct the segmentation automatically. ", 
+
+	NULL, NULL,  
+}; 
 
 CSegSet load_segmentation(const string& s)
 {
@@ -110,12 +120,7 @@ static string get_number(const string& fname)
 	return result;
 }
 
-const char *g_description = 
-	"This program is used to shift the 2d segmentation of a segmentation set individually "
-	"on a per slice base." 
-	;
-
-int do_main(int argc, const char *argv[])
+int do_main(int argc, char *argv[])
 {
 	string src_filename;
 	string out_filename;
@@ -159,24 +164,4 @@ int do_main(int argc, const char *argv[])
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-int main(int argc, const char *argv[] )
-{
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-	return EXIT_FAILURE;
-}
-
-
+MIA_MAIN(do_main); 
