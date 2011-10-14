@@ -73,22 +73,23 @@ mia-2dnonrigidreg -i test.v -r ref.v -o reg.v -l 2 \
 #include <sstream>
 #include <mia/core.hh>
 #include <mia/2d.hh>
-#include <mia/2d/nonrigidregister.hh>
-#include <gsl++/multimin.hh>
-#include <mia/2d/transformfactory.hh>
-#include <mia/2d/transformio.hh>
 #include <mia/core/factorycmdlineoption.hh>
+#include <mia/internal/main.hh>
 
 NS_MIA_USE;
 using namespace std;
-using namespace gsl;
 
-
-const char *g_general_help = 
-	"This program runs the non-rigid registration of two images using certain"
-	"cost measures and a given transformation model.\n"
-	"Basic usage: \n"
-	" mia-2dnonrigidreg [options] cost1 cost2 "; 
+const SProgramDescrption g_general_help = {
+	"Image Registration", 
+	
+	"This program runs registration of two images using certain"
+	"cost measures and a given transformation model.\n", 
+	
+	"Register the image 'moving.png' to the image 'reference.png' by using a rigid transformation model "
+        " and ssd as cost function. Write the result to output.png", 
+	
+	"  -i moving.png -r reference.png -o output.png -f rigid image:cost=ssd"
+}; 
 
 int do_main( int argc, const char *argv[] )
 {
@@ -99,7 +100,7 @@ int do_main( int argc, const char *argv[] )
 	string trans_filename;
 	string transform_type("spline");
 	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1");
-
+	PMinimizer refinement_minimizer;
 	cvdebug() << "auto transform_creator\n"; 
 	auto transform_creator = C2DTransformCreatorHandler::instance().produce("spline"); 
 	if (!transform_creator && transform_creator->get_init_string() != string("spline"))
@@ -114,6 +115,9 @@ int do_main( int argc, const char *argv[] )
 	options.add(make_opt( trans_filename, "trans", 't', "output transformation"));
 	options.add(make_opt( mg_levels, "levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( refinement_minimizer, "refiner", 'R',
+			      "optimizer used for refinement after the main optimizer was called"));
+	
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
@@ -133,6 +137,9 @@ int do_main( int argc, const char *argv[] )
 		throw std::invalid_argument("Images have different size");
 
 	C2DNonrigidRegister nrr(costs, minimizer,  transform_creator, mg_levels);
+	if (refinement_minimizer)
+		nrr.set_refinement_minimizer(refinement_minimizer); 
+	
 	P2DTransformation transform = nrr.run(Model, Reference);
 	P2DImage result = (*transform)(*Model);
 
@@ -144,24 +151,5 @@ int do_main( int argc, const char *argv[] )
 	return save_image(out_filename, result);
 }
 
+MIA_MAIN(do_main); 
 
-int main( int argc, const char *argv[] )
-{
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
-}
