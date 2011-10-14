@@ -69,6 +69,8 @@ struct SProgramDescrption {
 	
 	/// an example of the usage (sell code) 
 	const char *example_code; 
+
+	const char *free_parametertype; 
 }; 
 
 /** 

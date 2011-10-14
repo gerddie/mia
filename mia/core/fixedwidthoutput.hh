@@ -34,11 +34,13 @@ public:
 	void reset_offset();  
 	void write(const std::string& text);
 	void newline(); 
+	void set_linecontinue(bool value); 
 private: 
 	std::ostream& m_os; 
 	size_t m_width; 
 	size_t m_pos; 
 	size_t m_offset;
+	bool m_line_continue; 
 	std::stack<size_t> m_stack; 
 }; 
 

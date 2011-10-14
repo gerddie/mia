@@ -30,7 +30,8 @@ CFixedWidthOutput::CFixedWidthOutput(std::ostream& os, size_t width):
 	m_os(os), 
 	m_width(width), 
 	m_pos(0), 
-	m_offset(0)
+	m_offset(0), 
+	m_line_continue(false)
 {
 }
 
@@ -55,8 +56,15 @@ void CFixedWidthOutput::reset_offset()
 	m_offset = 0;
 }
 
+void CFixedWidthOutput::set_linecontinue(bool value)
+{
+	m_line_continue = value; 
+}
+
 void CFixedWidthOutput::newline()
 {
+	if (m_line_continue) 
+		m_os << '\\'; 
 	m_os << '\n'; 
 	if ( m_offset )
 		m_os << setw(m_offset) << " "; 
@@ -65,6 +73,8 @@ void CFixedWidthOutput::newline()
 
 void CFixedWidthOutput::write(const std::string& text)
 {
+	size_t cur_width = m_line_continue ? m_width -1 : m_width; 
+
 	auto is = text.begin(); 
 	auto es = text.end(); 
 
@@ -73,7 +83,7 @@ void CFixedWidthOutput::write(const std::string& text)
 			newline(); 
 			++is;
 		}else if (*is == '\t') {
-			if (m_pos + 8 < m_width) {
+			if (m_pos + 8 < cur_width) {
 				m_pos += 8; 
 				m_os << setw(8) << " "; 
 			}else {
@@ -82,7 +92,7 @@ void CFixedWidthOutput::write(const std::string& text)
 			++is; 
 		}else if (isspace(*is)) {
 			++m_pos;
-			if (m_pos < m_width) 
+			if (m_pos < cur_width) 
 				m_os << *is; 
 			else
 				newline(); 
@@ -97,7 +107,7 @@ void CFixedWidthOutput::write(const std::string& text)
 				++hs; 
 			}
 			// word fits, so write it 
-			if (endpos < m_width) {
+			if (endpos < cur_width) {
 				m_pos = endpos; 
 				while (is != hs) 
 					m_os << *is++;

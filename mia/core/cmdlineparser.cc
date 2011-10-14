@@ -241,6 +241,7 @@ struct CCmdOptionListData {
 	string m_program_group;  
 	string m_program_example_descr;
 	string m_program_example_code; 
+	string m_free_parametertype; 
 };
 
 CCmdSetOption::CCmdSetOption(std::string& val, const std::set<std::string>& set, 
@@ -268,7 +269,13 @@ size_t CCmdSetOption::do_get_needed_args() const
 
 void CCmdSetOption::do_write_value(std::ostream& os) const
 {
-	os << "=" << m_value;
+	if (m_value.empty()) 
+		if (required)
+			os << "[required] "; 
+		else
+			os << "=NULL ";
+	else 
+		os << "=" << m_value;
 }
 
 void CCmdSetOption::do_get_long_help(std::ostream& os) const
@@ -305,7 +312,8 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescrption& description):
 	m_general_help(description.description), 
 	m_program_group(description.group), 
 	m_program_example_descr(description.example_descr),
-	m_program_example_code(description.example_code)
+	m_program_example_code(description.example_code), 
+	m_free_parametertype(description.free_parametertype)
 {
 	options[""] = vector<PCmdOption>();
 
@@ -331,7 +339,12 @@ CCmdOptionListData::CCmdOptionListData(const string& general_help):
 	usage(false),
 	copyright(false),
 	verbose(vstream::ml_warning), 
-	m_general_help(general_help)
+	m_general_help(general_help), 
+	m_program_group("no group"), 
+	m_program_example_descr(NULL),
+	m_program_example_code(NULL), 
+	m_free_parametertype("parameter")
+
 {
 	options[""] = vector<PCmdOption>();
 
@@ -502,7 +515,7 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 	console.newline(); 
 	
 	stringstream usage_text; 
-	usage_text <<"  " <<name_help << " "; 
+	usage_text <<name_help << " "; 
 	
 	
 	size_t opt_size = 0;
@@ -545,12 +558,20 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 		opt_size = max_opt_width;
 
 	usage_text << "[options]"; 
-	if (has_additional) 
-		usage_text << " [<Additional parameters>]"; 
+	if (has_additional) {
+		usage_text << " [<" << m_free_parametertype <<">]"
+			   << " [<" << m_free_parametertype <<">]"
+			   << " ..."; 
+	}
 
+	console.write("\nBasic usage:"); 
 	console.push_offset(4); 
-	console.write("Basic usage:\n"); 
+	console.newline(); 
+	console.push_offset(4); 
+	console.set_linecontinue(true); 
 	console.write(usage_text.str()); 
+	console.set_linecontinue(false); 
+	console.pop_offset(); 
 	console.pop_offset(); 
 	console.newline(); 
 
@@ -578,9 +599,13 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 		console.write(m_program_example_descr); 
 		console.push_offset(2);
 		console.newline(); 
+		console.newline(); 
 		console.write(name_help); 
 		console.write(" "); 
+		console.set_linecontinue(true); 
+		console.push_offset(4);
 		console.write(m_program_example_code);
+		console.set_linecontinue(false); 
 		console.reset_offset(); 
 		console.newline();
 	}
