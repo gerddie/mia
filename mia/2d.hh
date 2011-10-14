@@ -34,6 +34,9 @@
 #include <mia/2d/shape.hh>
 #include <mia/2d/model.hh>
 #include <mia/2d/timestep.hh>
+#include <mia/2d/nonrigidregister.hh>
+#include <mia/2d/transformfactory.hh>
+#include <mia/2d/transformio.hh>
 
 #include <mia/2d/creator.hh>
 //#include <mia/2d/register.hh>
