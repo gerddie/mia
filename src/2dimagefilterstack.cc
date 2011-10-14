@@ -96,7 +96,7 @@ const SProgramDescrption g_general_help = {
 	"-i input0000.png -o result -t png kmeans:c=5 binarize:min=4,max=4" 
 }; 
 
-int do_main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 	string in_filename;

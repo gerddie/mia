@@ -25,7 +25,7 @@
 
 
 #define MIA_MAIN(callback) \
-	int main( int argc, const char *argv[] ) \
+	int main( int argc, char *argv[] ) \
 	{					 \
 	        try {				 \
 		      auto verb = getenv("MIA_INITIAL_VERBOSITY");      \
@@ -33,7 +33,7 @@
                             auto level = g_verbose_dict.get_value(verb);\
 			    vstream::instance().set_verbosity(level);   \
                       }                                                 \
-  	              return do_main(argc, argv);                       \
+  	              return callback(argc, argv);                       \
 	        }                                                       \
 		catch (const std::runtime_error &e){			\
 			 std::cerr << argv[0] << " runtime error: " << e.what() << endl; \

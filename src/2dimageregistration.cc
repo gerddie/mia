@@ -91,7 +91,7 @@ const SProgramDescrption g_general_help = {
 	"  -i moving.png -r reference.png -o output.png -f rigid image:cost=ssd"
 }; 
 
-int do_main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 	string cost_function("ssd"); 
 	string src_filename;

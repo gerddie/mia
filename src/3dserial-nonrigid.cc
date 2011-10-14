@@ -102,7 +102,7 @@ const char *g_general_help =
 	" mia-3dserial-nonrigid [options] <cost1> <cost2> ..."; 
 
 
-int do_main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 	// IO parameters 
 	string in_filename;

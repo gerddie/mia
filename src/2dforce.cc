@@ -64,10 +64,15 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
-
-const char *g_description = 
-	"This program is used to evaluate a registration force norm image between two images."
-	;
+const SProgramDescrption g_description = {
+	"2D image registration", 
+	
+	"This image evaluate the force field between two images based on a given cost function.", 
+	
+	"Evaluate the force between test.v and reference.v by using SSD ans save the norm of the force to forcenorm.v", 
+	
+	"-i test.v -r reference.v -c ssd -o forcenorm.v"
+}; 
 
 typedef std::shared_ptr<C2DFVectorfield > P2DFVectorfield;
 

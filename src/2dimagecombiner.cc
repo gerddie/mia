@@ -64,10 +64,15 @@ using namespace std;
 using boost::any_cast; 
 
 
-static const char *program_info = 
-	"This program is used to combine two images.\n"
-	"Basic usage:\n"
-	"  mia-2dimagecombiner -1 <image 1> -2 <image 2>  -o <output image> [<plugin>]\n";
+const SProgramDescrption g_description = {
+	"2D image processing", 
+	
+	"Combine two image by a given operation.", 
+	
+	"Combine image A.exr and image B.exr  by adding the intensity values and save the output to sum.exr.", 
+	
+	"-i A.exr -r B.exr -o sum.exr -p add"
+}; 
 
 int do_main( int argc, const char *argv[] )
 {
@@ -80,7 +85,7 @@ int do_main( int argc, const char *argv[] )
 
 	stringstream combiner_names;
 
-	CCmdOptionList options(program_info);
+	CCmdOptionList options(g_description);
 	options.add(make_opt( in1_filename, "in-file-1", '1', 
 				    "first input image to be combined", CCmdOption::required));
 	options.add(make_opt( in2_filename, "in-file-2", '2', 

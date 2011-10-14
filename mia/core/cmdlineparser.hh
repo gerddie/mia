@@ -556,6 +556,16 @@ public:
 	    \param args array of arguments strings
 	    \param additional_type will is a help string to describe the type of free parameters
         */
+	EHelpRequested parse(size_t argc, char *args[], const std::string& additional_type) 
+		__attribute__((warn_unused_result));
+
+        /** the work routine, can take the arguemnts straight from \a main
+	    This version parses the command line and allows for additional arguments that can be 
+	    read by get_remaining(). 
+	    \param argc number of arguments
+	    \param args array of arguments strings
+	    \param additional_type will is a help string to describe the type of free parameters
+        */
 	EHelpRequested parse(size_t argc, const char *args[], const std::string& additional_type) 
 		__attribute__((warn_unused_result));
 
@@ -564,9 +574,16 @@ public:
 	    \param argc number of arguments
 	    \param args array of arguments strings
         */
+	EHelpRequested parse(size_t argc, char *args[]) __attribute__((warn_unused_result));
+	
+	/** the work routine, can take the arguemnts straight from \a main
+	    This version parses doesn't allow additional parameters. 
+	    \param argc number of arguments
+	    \param args array of arguments strings
+        */
 	EHelpRequested parse(size_t argc, const char *args[]) __attribute__((warn_unused_result));
 	
-        /// \returns a vector of the remaining arguments
+		/// \returns a vector of the remaining arguments
 	const std::vector<const char *>& get_remaining() const;
 
         /** \returns the values of all arguments as a history record to support tracking

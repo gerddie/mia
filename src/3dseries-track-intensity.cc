@@ -116,7 +116,7 @@ bool FIntensityGetter::write(const string& fname) const
 	return os.good();
 }
 
-int do_main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 	// IO parameters 
 	string in_filename;

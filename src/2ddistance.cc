@@ -67,6 +67,7 @@ mia-2ddistance -i mask.png -d distance.v -m max
 #include <algorithm>
 
 #include <mia/core/cmdlineparser.hh>
+#include <mia/internal/main.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/2dimageio.hh>
@@ -74,12 +75,20 @@ mia-2ddistance -i mask.png -d distance.v -m max
 using namespace std;
 NS_MIA_USE
 
-const char *g_general_help = 
-	"This program evaluate the average or maximum distance of a mask\n"
-	"given by a binary image to an image representing a distance map\n"
-	"and prints the result to stdout.\n\n"
-	"Basic usage: \n"
-	"  mia-2ddistance -i <mask> -d <distance>  [options]"; 
+
+const SProgramDescrption g_general_help = {
+	"Little helpers", 
+	"This program evaluate the average or maximum distance of a mask "
+	"given by a binary image to an image representing a distance map "
+	"and prints the result to stdout. The distance map can be obtained by "
+	"running the filter 'diatance' on a binary image.", 
+	"Evaluate the maximum distance of mask m.v by using the distance field "
+	"distance.v and scale by factor 2.0. The result is written to stdout", 
+	"-i m.v -d distance.v -s 2.0 -m max", 
+}; 
+
+
+
 
 
 enum EOps {dist_avg, 
@@ -160,7 +169,7 @@ private:
 	EOps _M_method; 
 };
 
-int main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 
 	string in_filename;
@@ -171,7 +180,6 @@ int main( int argc, const char *argv[] )
 	
 	TDictMap<EOps> combine_option(combine_option_table); 
 
-
 	CCmdOptionList options(g_general_help);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image", CCmdOption::required)); 
 	options.add(make_opt( dist_filename, "distance-file", 'd', "distance field image", CCmdOption::required)); 
@@ -179,35 +187,21 @@ int main( int argc, const char *argv[] )
 	options.add(make_opt( method, combine_option, "method", 'm', "distance measuring method")); 
 	
 
-	try {
-		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
-		
-		
-                auto in_image = load_image2d(in_filename);
-                auto dist_image = load_image2d(dist_filename);
-
-		
-		Convert2DoubleAndScale create_dist(scale); 
-		C2DDImage dist = mia::filter(create_dist, *dist_image); 
-
-		CGetDistance get_distance(dist, method); 
-		cout << filter(get_distance, *in_image) <<"\n";
+	
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
-
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
+	
+	
+	auto in_image = load_image2d(in_filename);
+	auto dist_image = load_image2d(dist_filename);
+	
+	
+	Convert2DoubleAndScale create_dist(scale); 
+	C2DDImage dist = mia::filter(create_dist, *dist_image); 
+	
+	CGetDistance get_distance(dist, method); 
+	cout << filter(get_distance, *in_image) <<"\n";
+	return EXIT_SUCCESS; 
 }
+
+MIA_MAIN(do_main); 

@@ -57,6 +57,7 @@ map<string, const CPluginHandlerBase*> collect_handlers()
 	result[C2DFullCostPluginHandler::instance().get_search_descriptor()] =&C2DFullCostPluginHandler::instance();
 	result[C2DImageCombinerPluginHandler::instance().get_search_descriptor()] =&C2DImageCombinerPluginHandler::instance();
 	result[C2DImageCostPluginHandler::instance().get_search_descriptor()] =&C2DImageCostPluginHandler::instance();
+	result[C2DImageCreatorPluginHandler::instance().get_search_descriptor()] =&C3DImageCreatorPluginHandler::instance();
 	result[C2DImageIOPluginHandler::instance().get_search_descriptor()] =&C2DImageIOPluginHandler::instance();
 	result[C2DRegModelPluginHandler::instance().get_search_descriptor()] =&C2DRegModelPluginHandler::instance();
 	result[C2DShapePluginHandler::instance().get_search_descriptor()] =&C2DShapePluginHandler::instance();
@@ -68,6 +69,7 @@ map<string, const CPluginHandlerBase*> collect_handlers()
 	result[C3DFullCostPluginHandler::instance().get_search_descriptor()] =&C3DFullCostPluginHandler::instance();
 	result[C3DImageCombinerPluginHandler::instance().get_search_descriptor()] =&C3DImageCombinerPluginHandler::instance();
 	result[C3DImageCostPluginHandler::instance().get_search_descriptor()] =&C3DImageCostPluginHandler::instance();
+	result[C3DImageCreatorPluginHandler::instance().get_search_descriptor()] =&C3DImageCreatorPluginHandler::instance();
 	result[C3DImageIOPluginHandler::instance().get_search_descriptor()] =&C3DImageIOPluginHandler::instance();
 	result[C3DRegModelPluginHandler::instance().get_search_descriptor()] =&C3DRegModelPluginHandler::instance();
 	result[C3DRegTimeStepPluginHandler::instance().get_search_descriptor()] =&C3DRegTimeStepPluginHandler::instance();

@@ -715,11 +715,26 @@ CCmdOptionList::parse(size_t argc, const char *args[])
 	return do_parse(argc, args, false);
 }
 
+
+CCmdOptionList::EHelpRequested
+CCmdOptionList::parse(size_t argc, char *args[])
+{
+	return do_parse(argc, (const char **)args, false);
+}
+
+
 CCmdOptionList::EHelpRequested
 CCmdOptionList::parse(size_t argc, const char *args[], const string& additional_type)
 {
 	m_impl->m_free_parametertype = additional_type; 
 	return do_parse(argc, args, true);
+}
+
+CCmdOptionList::EHelpRequested
+CCmdOptionList::parse(size_t argc, char *args[], const string& additional_type)
+{
+	m_impl->m_free_parametertype = additional_type; 
+	return do_parse(argc, (const char **)args, true);
 }
 
 CCmdOptionList::EHelpRequested

@@ -66,6 +66,7 @@ mia-2dlerp -1 a.v -2 b.v -o ab.v -p 5,7,10
 #include <boost/test/floating_point_comparison.hpp>
 
 #include <mia/core.hh>
+#include <mia/internal/main.hh>
 #include <mia/2d.hh>
 #include <mia/2d/2dfilter.hh>
 #include <sstream>
@@ -75,10 +76,12 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
-const char *g_description = 
-	"This program is used to evaluate an image that is the linear combination of "
-	"two gray scale images"; 
-
+const SProgramDescrption g_description = {
+	"3D image processing", 
+	"merge two images by linear combination.", 
+	"Combine image inputA.v and inputB.v by using position coordinates 4, 7, and 9 and write the result to output.v", 
+	"-1 inputA.v -2 inputB.v -p 4,7,9 -o output.v"
+}; 
 
 struct FAddWeighted: public TFilter<P2DImage> {
 	FAddWeighted(float w):
@@ -181,11 +184,11 @@ int do_main(int argc, char **argv)
 				    "image series positions (first, target, second)", CCmdOption::required));
 	options.add(make_opt( self_test, "self-test", 0, "run a self test of the tool"));
 	
-	if (options.parse(argc, (const char**)argv) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 	if (self_test) {
-		return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );
+		return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, (char **)argv );
 	}
 
 	if (positions.size() != 3) {
@@ -213,12 +216,15 @@ int do_main(int argc, char **argv)
 
 
 	if (source1->size() != source2->size())
-		cvwarn() << "Number of images differ, only combining first " << (source1->size() < source2->size() ? source1->size() : source2->size()) << "images\n";
+		cvwarn() << "Number of images differ, only combining first " 
+			 << (source1->size() < source2->size() ? source1->size() : source2->size()) << "images\n";
 
 	if (source1->size() <= source2->size())
-		transform( source1->begin(), source1->end(), source2->begin(), source1->begin(), FFilter<FAddWeighted>(FAddWeighted(w)));
+		transform( source1->begin(), source1->end(), source2->begin(), 
+			   source1->begin(), FFilter<FAddWeighted>(FAddWeighted(w)));
 	else {
-		transform( source2->begin(), source2->end(), source1->begin(), source2->begin(), FFilter<FAddWeighted>(FAddWeighted(w)));
+		transform( source2->begin(), source2->end(), source1->begin(), 
+			   source2->begin(), FFilter<FAddWeighted>(FAddWeighted(w)));
 		source1 = source2;
 	}
 
@@ -231,23 +237,4 @@ int do_main(int argc, char **argv)
 	return EXIT_SUCCESS;
 }
 
-// for readablility the real main function encapsulates the do_main in a try-catch block
-int main(int argc, char **argv)
-{
-	try {
-		return do_main(argc, argv);
-	}
-	catch (invalid_argument& err) {
-		cerr << "invalid argument: " << err.what() << "\n";
-	}
-	catch (runtime_error& err) {
-		cerr << "runtime error: " << err.what() << "\n";
-	}
-	catch (std::exception& err) {
-		cerr << "exception: " << err.what() << "\n";
-	}
-	catch (...) {
-		cerr << "unknown exception\n";
-	}
-	return EXIT_FAILURE;
-}
+MIA_MAIN(do_main); 

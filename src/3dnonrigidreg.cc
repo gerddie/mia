@@ -90,7 +90,7 @@ const char *g_general_help =
 	"Basic usage: \n"
 	" mia-3dnonrigidreg [options] cost1 cost2 "; 
 
-int do_main( int argc, const char *argv[] )
+int do_main( int argc, char *argv[] )
 {
 	string cost_function("ssd"); 
 	string src_filename;

@@ -68,11 +68,16 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
-static const char *program_info = 
-	"This program is used to create an image with some object.\n"
-	"Basic usage:\n"
-	"  mia-2dimagecreator <options>\n"; 
-
+const SProgramDescrption g_description = {
+	"2D image processing", 
+	
+	"This program is used to create test images.", 
+	
+	"Create a 2D image containing a lattic with standard parameters of size <64,128> and pixel type"
+	" 'float' and save the result to lattic.v", 
+	
+	"-o lattic.v -s '<64,128>' -r float -j lattic"
+}; 
 
 int do_main(int argc, const char *argv[])
 {
@@ -83,7 +88,7 @@ int do_main(int argc, const char *argv[])
 	C2DBounds size(128,128);
 
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
-	CCmdOptionList options(program_info);
+	CCmdOptionList options(g_description);
 
 	options.add(make_opt( out_filename, "out-file", 'o', "output file for create object", 
 				    CCmdOption::required));
