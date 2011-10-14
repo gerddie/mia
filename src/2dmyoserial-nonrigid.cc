@@ -111,7 +111,9 @@ const SProgramDescrption g_general_help = {
 	"Store the result in 'registered.set'.\n", 
 	
 	//.g_program_example_code = 
-	"  -i segment.set -o registered.set -k 2  -r 30 mi divcurl:weight=5"
+	"  -i segment.set -o registered.set -k 2  -r 30 mi divcurl:weight=5", 
+
+	"cost"
 }; 
 
 

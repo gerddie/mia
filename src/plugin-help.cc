@@ -44,7 +44,8 @@ const SProgramDescrption description = {
 	g_program_group, 
 	g_general_help, 
 	g_program_example_descr, 
-	g_program_example_code
+	g_program_example_code,
+	"plugin-descriptor"
 }; 
 
 

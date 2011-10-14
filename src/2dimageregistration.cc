@@ -88,7 +88,9 @@ const SProgramDescrption g_general_help = {
 	"Register the image 'moving.png' to the image 'reference.png' by using a rigid transformation model "
         " and ssd as cost function. Write the result to output.png", 
 	
-	"  -i moving.png -r reference.png -o output.png -f rigid image:cost=ssd"
+	"  -i moving.png -r reference.png -o output.png -f rigid image:cost=ssd", 
+
+	"cost"
 }; 
 
 int do_main( int argc, const char *argv[] )

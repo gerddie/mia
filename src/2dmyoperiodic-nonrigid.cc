@@ -131,6 +131,9 @@ const SProgramDescrption g_general_help = {
 	
 	//.g_program_example_code = 
 	"  -i segment.set -o registered.set -k 2 -d 5 -f spline:rate=16"
+, 
+	
+	"N/A"
 }; 
 
 class C2DFImage2PImage {

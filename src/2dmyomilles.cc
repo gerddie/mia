@@ -141,7 +141,9 @@ const SProgramDescrption g_description = {
 	"Store the result in 'registered.set'.\n", 
 	
 	//.g_program_example_code = 
-	"  -i segment.set -o registered.set -k 2"
+	"  -i segment.set -o registered.set -k 2", 
+	
+	"N/A"
 }; 
 
 

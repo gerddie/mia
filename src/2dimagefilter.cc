@@ -83,7 +83,9 @@ const SProgramDescrption g_general_help = {
 	"Run a kmeans classification of 5 classes on input.png and then a binarization of the 4th class and store the result"
 	" in result.png", 
 	
-	"-i input.png -o result.png kmeans:c=5 binarize:min=4,max=4"
+	"-i input.png -o result.png kmeans:c=5 binarize:min=4,max=4", 
+	
+	"filter"
 }; 
 
 int do_main( int argc, const char *argv[] )
