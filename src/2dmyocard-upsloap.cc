@@ -43,7 +43,14 @@
 #include <mia/2d/transformfactory.hh>
 NS_MIA_USE;
 
-const char g_description[] = "A description"; 
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+
+	"This program is work in progress", 
+	
+	NULL, NULL
+}; 
+
 
 namespace bfs=boost::filesystem; 
 

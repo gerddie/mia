@@ -87,6 +87,17 @@ mia-fluid3d -i test.v -r ref.v -o regfield.v -s 16
 using namespace mia;
 using namespace std;
 
+const SProgramDescrption g_description = {
+	"Image Registration", 
+	
+	"This program is used for non-rigid registration based on fluid dynamics. "
+	"It uses SSD as the sole registration criterion.", 
+	
+	"Register image test.v to image ref.v and write the deformation vector field regfield.v. "
+	"Start registration at the smallest size above 16 pixel.", 
+	
+	"-i test.v -r ref.v -o regfield.v -s 16"
+}; 
 
 #define MU	  1	// Lame elasticity constants
 #define LAMBDA	  1	//
@@ -100,10 +111,10 @@ enum TMethod { meth_sor,
 
 
 const TDictMap<TMethod>::Table method_dict[] = {
-	{"sor", meth_sor}
-	,{"sora",meth_sorex}
+	{"sor", meth_sor, "succesive overrelaxation"}
+	,{"sora",meth_sorex, "Gauss Southwell relexation"}
 //	,{"sorap",meth_sorap}
-	,{NULL, meth_sor}
+	,{NULL, meth_sor, ""}
 };
 
 const TDictMap<TMethod> g_method_dict(method_dict);
@@ -185,9 +196,6 @@ void WriteStats(FILE *f,double wholetime,const TFluidRegParams& params,int metho
 
 #endif
 
-const char *g_description = "This code implements non-rigid image registration "
-	"by implementing a fluid-dynamic transformation model."; 
-
 int main(int argc, const char *argv[])
 {
 	//	FILE *srcf,*reff,*outf;
@@ -211,9 +219,6 @@ int main(int argc, const char *argv[])
 	params.checkerboard = false;
 	params.matter_threshold = 4.0;
 
-
-	//	bool in_found;
-	int  max_threads = 2;
 
 	string in_filename;
 	string out_filename;

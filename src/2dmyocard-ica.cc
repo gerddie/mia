@@ -99,6 +99,25 @@ mia-2dmyocard-ica  -i imageXXXX.exr -o ref -k 2 -C 5 -m -n
 
 NS_MIA_USE;
 
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+
+	"This program is used to run a ICA on a series of myocardial perfusion images to create "
+        "sythetic references that can be used for motion correction by image registration. "
+	"If the aim is to run a full motion compensation then it is better to create a "
+	"segmentation set and use mia-2dmyoica-nonrigid. "
+	"If the input data is given by means of a segmentation set, then on can "
+	"also use mia-2dmyocard-icaseries.\n"
+	"This program is essentially used to test different options on how to run the ICA for" 
+	"reference image creation.", 
+
+	"Evaluate the synthetic references from images imageXXXX.exr and save them to "
+	"refXXXX.exr by using five independend components, mean stripping, normalizing, "
+	"and skipping 2 images.", 
+	
+	"-i imageXXXX.exr -o ref -k 2 -C 5 -m -n"
+}; 
+
 unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean,
 				      size_t& components, bool ica_normalize, int max_iterations)
 {
@@ -412,7 +431,8 @@ int do_main( int argc, char *argv[] )
 	int max_iterations = 0;
 
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
-	CCmdOptionList options("Obsolete version of mia-2dmyocard-icaseries."); 
+	
+	CCmdOptionList options(g_description); 
 	options.add(make_opt( src_name, "in-base", 'i', "input file name base"));
 	options.add(make_opt( coefs_name, "coefs", 0, "output mixing coefficients to this file"));
 	options.add(make_opt( out_name, "out-base", 'o', "output file name base"));
@@ -613,13 +633,12 @@ template <typename T>
 int GetClosestRegionLabel::operator() (const T2DImage<T>& image) const
 {
 	map<int, Collector> collector_map;
-	typedef map<int, Collector>::iterator coll_iterator;
-	typename T2DImage<T>::const_iterator i = image.begin();
+	auto i = image.begin();
 	for (size_t y = 0; y < image.get_size().y; ++y)
 		for (size_t x = 0; x < image.get_size().x; ++x, ++i) {
 			if (!*i)
 				continue;
-			coll_iterator ic = collector_map.find(*i);
+			auto ic = collector_map.find(*i);
 			if (ic ==  collector_map.end()) {
 				Collector col;
 				col.size = 1;
@@ -634,8 +653,7 @@ int GetClosestRegionLabel::operator() (const T2DImage<T>& image) const
 
 	float min_weighted_distance = numeric_limits<float>::max();
 	int label = 0;
-	for (coll_iterator i = collector_map.begin();
-	     i != collector_map.end(); ++i) {
+	for (auto i = collector_map.begin(); i != collector_map.end(); ++i) {
 		i->second.center /= i->second.size;
 		float wdist = (i->second.center - m_point).norm() / i->second.size;
 		if ( min_weighted_distance > wdist ) {

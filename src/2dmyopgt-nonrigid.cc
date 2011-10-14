@@ -62,9 +62,9 @@ mia-2dmyopgt-nonrigid -i <input set> -o <output set> <cost1> [<cost2>] ...
   \cmdopt{imageweight}{w}{float}{Weight for the image cost function}
   }
 
-  \item [Example:]Register the perfusion series given in segment.set by using automatic ICA estimation. 
-        Skip two images at the beginning and otherwiese use the default parameters. 
-	Store the result in registered.set. 
+  \item [Example:]Register the perfusion series given in segment.set by using automatic 
+        Pseudo Ground Truth estimation. Skip two images at the beginning and otherwiese 
+	use the default parameters. Store the result in registered.set. 
   \begin{lstlisting}
 mia-2dmyopgt-nonrigid  -i segment.set -o registered.set -k 2
   \end{lstlisting}
@@ -102,11 +102,20 @@ mia-2dmyopgt-nonrigid  -i segment.set -o registered.set -k 2
 using namespace std;
 using namespace mia;
 
-const char *g_description = 
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+	
 	"This program is used Pseudo Ground Thruth for motion compensation "
 	"of series of myocardial perfusion images as decribed in Chao Li and Ying Sun, "
 	"'Nonrigid Registration of Myocardial Perfusion MRI Using Pseudo Ground Truth' , In Proc. "
-	"Medical Image Computing and Computer-Assisted Intervention – MICCAI 2009, 165-172, 2009 "; 
+	"Medical Image Computing and Computer-Assisted Intervention – MICCAI 2009, 165-172, 2009 ", 
+
+	"Register the perfusion series given in 'segment.set' by using Pseudo Ground Truth estimation. "
+        "Skip two images at the beginning and otherwiese use the default parameters. "
+	"Store the result in 'registered.set'.", 
+	
+	"-i segment.set -o registered.set -k 2"
+};
 
 
 C2DFullCostList create_costs(double divcurlweight, double imageweight)

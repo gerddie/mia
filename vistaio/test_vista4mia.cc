@@ -336,10 +336,17 @@ bool init_unit_test_suite( )
 	return true;
 }
 
+const SProgramDescrption description = {
+	"Tests", 
+	"This program runs a set of tests.", 
+	NULL, 
+	NULL
+};
+
 int BOOST_TEST_CALL_DECL
 main( int argc, char* argv[] )
 {
-	if (CCmdOptionList("Test vista plugins").parse(argc, argv) != CCmdOptionList::hr_no)
+	if (CCmdOptionList(description).parse(argc, argv) != CCmdOptionList::hr_no)
 		return 0; 
 	return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );
 }

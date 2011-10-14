@@ -42,11 +42,21 @@
 using namespace std;
 using namespace mia;
 
-const char *g_description = 
-	"This program is used to evaluate an estimate of Ground Thruth for motion compensation "
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+	
+	"This program is used Pseudo Ground Thruth for motion compensation "
 	"of series of myocardial perfusion images as decribed in Chao Li and Ying Sun, "
 	"'Nonrigid Registration of Myocardial Perfusion MRI Using Pseudo Ground Truth' , In Proc. "
-	" Medical Image Computing and Computer-Assisted Intervention – MICCAI 2009, 165-172, 2009 "; 
+	"Medical Image Computing and Computer-Assisted Intervention – MICCAI 2009, 165-172, 2009 ", 
+
+	"Register the perfusion series given by images imageXXXX.exr by using Pseudo Ground Truth estimation. "
+        "Skip two images at the beginning and otherwiese use the default parameters. "
+	"Store the result images to  'regXXXX.exr'.", 
+	
+	"-i imageXXXX.exr -o regXXXX.exr -k 2"
+};
+
 
 struct SPGTParams {
 	double alpha; 

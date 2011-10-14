@@ -112,6 +112,7 @@ struct C3DImageCollector : public TFilter<bool> {
 			copy(image.begin(), image.end(), out);
 		}
 		return true;
+
 	}
 
 	std::shared_ptr<C3DImage > result() const {

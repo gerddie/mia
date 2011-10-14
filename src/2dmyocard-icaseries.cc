@@ -99,8 +99,26 @@ mia-2dmyocard-icaseries  -i segment.set -r ref -o ref -k 2 -C 5
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/transformfactory.hh>
 NS_MIA_USE;
-
 namespace bfs=boost::filesystem; 
+
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
+
+	"This program is used to run a ICA on a series of myocardial perfusion "
+	"images given in a segmentation set in order to create sythetic references "
+	"that can be used for motion correction by image registration. "
+	"If the aim is to run a full motion compensation then it is better run "
+        "mia-2dmyoica-nonrigid, since this program is essentially the same without "
+	"the registration bits.", 
+
+	"Evaluate the synthetic references from set segment.set and save them to refXXXX.??? by "
+	"using five independend components, and skipping 2 images. Per default a bounding box "
+	"around the LV will be segmented and scaled by 1.4 and the cropped images will be saved "
+	"to cropXXXX.??? and a segmentation set cropped.set is created. "
+	"The image file type ??? is deducted from the input images in segment.set.", 
+	
+	"-i segment.set -r ref -o ref -k 2 -C 5"
+}; 
 
 class C2DFImage2PImage {
 public: 
@@ -115,13 +133,6 @@ public:
 private: 
 	FConvert2DImage2float m_converter; 
 }; 
-
-
-const char *g_description = 
-	"This program is used to run an ICA analysis on a perfusion series of heart images. "
-	"As a result of the analysis, a set of syntetic reference images can be created, "
-	"that have movement removed and that are cropped to contain only the LV myocardium." 
-	;
 
 int do_main( int argc, char *argv[] )
 {

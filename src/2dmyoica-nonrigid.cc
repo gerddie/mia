@@ -133,7 +133,7 @@ const char *g_general_help =
 const char *g_program_example_descr = 
 	"Register the perfusion series given in 'segment.set' by using automatic ICA estimation. " 
         "Skip two images at the beginning and otherwiese use the default parameters. "
-	"Store the result in 'registered.set'.\n"; 
+	"Store the result in 'registered.set'."; 
 const char *g_program_example_code = 
 	"  -i segment.set -o registered.set -k 2"; 
 

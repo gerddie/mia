@@ -122,18 +122,25 @@ using namespace mia;
 
 namespace bfs=boost::filesystem; 
 
-const char *g_general_help = 
-	"This program runs the non-rigid registration of an perfusion image series.\n"
-	"In each pass, first an ICA analysis is run to estimate and eliminate \n" 
-	"the periodic movement and create reference images with intensities similar\n"
-	"to the corresponding original image. Then non-rigid registration is run \n"
-	"using the an \"ssd + divcurl\" cost model. The B-spline c-rate and the \n"
-	"divcurl cost weight are changed in each pass according to given parameters.\n"
-	"In the first pass a bounding box around the LV myocardium may be extracted\n" 
-	"to speed up computation\n\n"
-	"Basic usage: \n"
-	" mia-2dmyoica-nonrigid [options] "; 
+const SProgramDescrption g_description = {
+	"Myocardial Perfusion Analysis", 
 
+	"This program runs the non-rigid registration of an perfusion image series."
+	"In each pass, first an ICA analysis is run to estimate and eliminate " 
+	"the periodic movement and create reference images with intensities similar "
+	"to the corresponding original image. Then non-rigid registration is run "
+	"using the an \"ssd + divcurl\" cost model. The B-spline c-rate and the "
+	"divcurl cost weight are changed in each pass according to given parameters."
+	"In the first pass a bounding box around the LV myocardium may be extracted " 
+	"to speed up computation. This version of the program may run all registrations "
+	" in parallel.", 
+	
+	"Register the perfusion series given in 'segment.set' by using automatic ICA estimation. " 
+        "Skip two images at the beginning and otherwiese use the default parameters. "
+	"Store the result in 'registered.set'.", 
+
+	"  -i segment.set -o registered.set -k 2"
+}; 
 
 class C2DFImage2PImage {
 public: 
@@ -322,7 +329,7 @@ int do_main( int argc, char *argv[] )
 	int max_threads = task_scheduler_init::automatic;
 
 
-	CCmdOptionList options(g_general_help);
+	CCmdOptionList options(g_description);
 	
 	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', 
