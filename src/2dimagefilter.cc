@@ -68,15 +68,23 @@ mia-2dimagefilter -i image.exr -o filtered.png mlv:w=2 \
 
 #include <mia/core.hh>
 #include <mia/2d.hh>
+#include <mia/internal/main.hh>
 
 NS_MIA_USE;
 using namespace std;
 
 
-static const char *program_info = 
-	"This program is used to filter and convert gray scale images.\n"
-	"Basic usage:\n"
-	"  mia-2dimagefilter -i <input image> -o <output image> [<plugin>] ...\n"; 
+const SProgramDescrption g_general_help = {
+	"Image Filtering", 
+	
+	"This program runs a series filters on a given input image. The filters are given as extra parameters "
+	"on the command line and are run in the order in which they are given.", 
+	
+	"Run a kmeans classification of 5 classes on input.png and then a binarization of the 4th class and store the result"
+	" in result.png", 
+	
+	"-i input.png -o result.png kmeans:c=5 binarize:min=4,max=4"
+}; 
 
 int do_main( int argc, const char *argv[] )
 {
@@ -87,15 +95,11 @@ int do_main( int argc, const char *argv[] )
 	const auto& filter_plugins = C2DFilterPluginHandler::instance();
 	const auto& imageio = C2DImageIOPluginHandler::instance();
 
-	stringstream filter_names;
-
-	filter_names << "filters in the order to be applied (out of: " << filter_plugins.get_plugin_names() << ")";
-
-	CCmdOptionList options(program_info);
+	CCmdOptionList options(g_general_help);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output image(s) that have been filtered", CCmdOption::required));
 	options.set_group(g_help_optiongroup); 
-	options.add(make_help_opt( "help-plugins", 0,
+	options.add(make_help_opt( "help-filters", 0,
 				   "give some help about the filter plugins", 
 				   new TPluginHandlerHelpCallback<C2DFilterPluginHandler>));
 	
@@ -148,23 +152,4 @@ int do_main( int argc, const char *argv[] )
 
 }
 
-int main( int argc, const char *argv[] )
-{
-	try {
-		return do_main(argc, argv);
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
-}
+MIA_MAIN(do_main); 

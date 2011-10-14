@@ -82,8 +82,8 @@ using namespace std;
 const SProgramDescrption g_general_help = {
 	"Image Registration", 
 	
-	"This program runs registration of two images using certain"
-	"cost measures and a given transformation model.\n", 
+	"This program runs registration of two images optimizing a transformation of the given transformation model "
+	"by optimizing certain cost measures.\n", 
 	
 	"Register the image 'moving.png' to the image 'reference.png' by using a rigid transformation model "
         " and ssd as cost function. Write the result to output.png", 
