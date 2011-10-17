@@ -34,7 +34,7 @@ struct PluginTestFixture {
 
 BOOST_FIXTURE_TEST_CASE(test_C3DFullCostPluginHandler,PluginTestFixture) 
 { 
-	set<string> test_data = { "divcurl", "image"}; 
+	set<string> test_data = { "divcurl", "image", "taggedssd"}; 
 
 	test(C3DFullCostPluginHandler::instance().get_set(), test_data); 
 }
@@ -227,7 +227,7 @@ BOOST_FIXTURE_TEST_CASE(test_C2DFullCostPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C2DImageCostPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data =  {
-		"lsd", "ssd", "ngf" 
+		"lsd", "ssd", "mi", "ngf"
 	}; 
 	test(C2DImageCostPluginHandler::instance().get_set(), test_data); 
 }
@@ -279,7 +279,7 @@ BOOST_FIXTURE_TEST_CASE(test_C2DImageCombinerPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C2DTransformationIOPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"vista", "datapool", "bbs", "pbs", "xml"
+		"vista", "datapool", "bbs", "xml"
 	}; 
 	test(C2DTransformationIOPluginHandler::instance().get_set(), test_data); 
 }
