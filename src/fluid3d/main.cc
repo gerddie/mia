@@ -79,6 +79,7 @@ mia-fluid3d -i test.v -r ref.v -o regfield.v -s 16
 #include <mia/core.hh>
 #include <mia/3d/3dimageio.hh>
 #include <mia/3d/3dvfio.hh>
+#include <mia/internal/main.hh>
 
 #include "vfluid.hh"
 #include "sor_solver.hh"
@@ -196,7 +197,7 @@ void WriteStats(FILE *f,double wholetime,const TFluidRegParams& params,int metho
 
 #endif
 
-int main(int argc, const char *argv[])
+int do_main(int argc, char *argv[])
 {
 	//	FILE *srcf,*reff,*outf;
 
@@ -236,7 +237,7 @@ int main(int argc, const char *argv[])
 	options.add(make_opt( out_filename, "out-deformation", 'o', "output vector field", CCmdOption::required ));
 	options.add(make_opt( disable_multigrid, "disable-multigrid", 0, "disable multi-grid processing"));
 	options.add(make_opt( disable_fullres, "disable-fullres", 0,
-				    "disable processing on the full resolution image"));
+			      "disable processing on the full resolution image"));
 	options.add(make_opt( params.Lambda,"lambda", 0, "elasticy constant"));
 	options.add(make_opt( params.My,"mu", 0, "elasticy constant"));
 	options.add(make_opt( STARTSIZE, "start-size", 's', "initial multigrided size" ));
@@ -248,59 +249,42 @@ int main(int argc, const char *argv[])
 	options.add(make_opt( params.factor, "epsilon", 0, "truncation condition in sor and cg"));
 	options.add(make_opt( statlog_filename, "statlog", 0,"statistics logfilename"));
 	options.add(make_opt( params.matter_threshold, "matter", 0, "intensity above which real "
-				    "matter is assumed (experimental)"));
+			      "matter is assumed (experimental)"));
 //	options.add(make_opt( max_threads, "max-threads", 't', "maximal number of threads for sorap"));
 
-	try {
-		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
+
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 
 
-		params.source = load_image<P3DImage>(in_filename);
-		params.reference = load_image<P3DImage>(ref_filename);
+	params.source = load_image<P3DImage>(in_filename);
+	params.reference = load_image<P3DImage>(ref_filename);
 
-		switch (method) {
-		case meth_sor:solver = new TSORSolver(params.maxiter,params.factor,params.factor,params.My,params.Lambda);break;
-		case meth_sorex:solver = new  TSORASolver(params.maxiter,params.factor,params.factor,params.My,params.Lambda);break;
-		default:cverr() << "Unknown solver specified"<< endl; return -1;
-		}
-
-		C3DInterpolatorFactory ipf(interpolator_kernel, "mirror");
-
-		std::shared_ptr<TLinEqnSolver > ensure_solver_delete(solver);
-
-		g_start = Clock.get_seconds();
-
-		P3DFVectorfield result = fluid_transform(params,solver,!disable_multigrid,
-							 !disable_fullres,&g_MeasureList, ipf);
-
-
-		C3DIOVectorfield outfield(result->get_size());
-		copy(result->begin(), result->end(), outfield.begin());
-
-		if (!C3DVFIOPluginHandler::instance().save(out_filename, outfield)){
-			cerr << "Unable to save result vector field to " << out_filename << "\n";
-			return EXIT_FAILURE;
-		}
-
-		return EXIT_SUCCESS;
+	switch (method) {
+	case meth_sor:solver = new TSORSolver(params.maxiter,params.factor,params.factor,params.My,params.Lambda);break;
+	case meth_sorex:solver = new  TSORASolver(params.maxiter,params.factor,params.factor,params.My,params.Lambda);break;
+	default:cverr() << "Unknown solver specified"<< endl; return -1;
 	}
 
-	catch (runtime_error& error) {
-		cverr() << error.what() << endl;
+	C3DInterpolatorFactory ipf(interpolator_kernel, "mirror");
+
+	std::shared_ptr<TLinEqnSolver > ensure_solver_delete(solver);
+
+	g_start = Clock.get_seconds();
+
+	P3DFVectorfield result = fluid_transform(params,solver,!disable_multigrid,
+						 !disable_fullres,&g_MeasureList, ipf);
+
+
+	C3DIOVectorfield outfield(result->get_size());
+	copy(result->begin(), result->end(), outfield.begin());
+
+	if (!C3DVFIOPluginHandler::instance().save(out_filename, outfield)){
+		cerr << "Unable to save result vector field to " << out_filename << "\n";
+		return EXIT_FAILURE;
 	}
 
-	catch (invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-
-	return EXIT_FAILURE;
-
+	return EXIT_SUCCESS;
 }
 
+MIA_MAIN(do_main); 

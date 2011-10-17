@@ -76,6 +76,7 @@ mia-fluid2d -i test.v -r ref.v -o regfield.v -s 16
 #include <mia/2d.hh>
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/deformer.hh>
+#include <mia/internal/main.hh>
 
 
 #include "vfluid.hh"
@@ -132,7 +133,7 @@ C2DFVectorfield upscale( const C2DFVectorfield& vf, C2DBounds size)
 }
 
 
-int main(int argc, const char *argv[])
+int do_main(int argc, char *argv[])
 {
 	float regrid_thresh = 0.5;
 
@@ -148,116 +149,109 @@ int main(int argc, const char *argv[])
 	float mu = 1.0;
 	float lambda = 1.0;
 
-        try {
+	CCmdOptionList options(g_description);
+	options.add(make_opt( src_filename, "in-image", 'i', "input (model) image to be registered", 
+			      CCmdOption::required));
+	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image", 
+			      CCmdOption::required));
+	options.add(make_opt( out_filename, "out", 'o', "output vector field"));
+	options.add(make_opt( def_filename, "deformed-image", 'd', "deformed registered image"));
 
-		CCmdOptionList options(g_description);
-		options.add(make_opt( src_filename, "in-image", 'i', "input (model) image to be registered", 
-					    CCmdOption::required));
-		options.add(make_opt( ref_filename, "ref-image", 'r', "reference image"));
-		options.add(make_opt( out_filename, "out", 'o', "output vector field"));
-		options.add(make_opt( def_filename, "deformed-image", 'd', "deformed registered image"));
+	options.add(make_opt( grid_start, "mgstart", 'm', "multigrid start size"));
+	options.add(make_opt( epsilon, "epsilon", 'e', "optimization breaking condition"));
+	options.add(make_opt( mu, "mu", 0, "elasticity parameter"));
+	options.add(make_opt( lambda, "lambda", 0, "elasticity parameter"));
+	options.add(make_opt( elastic, "elastic", 0, "use elastic registration"));
 
-		options.add(make_opt( grid_start, "mgstart", 'm', "multigrid start size"));
-		options.add(make_opt( epsilon, "epsilon", 'e', "optimization breaking condition"));
-		options.add(make_opt( mu, "mu", 0, "elasticity parameter"));
-		options.add(make_opt( lambda, "lambda", 0, "elasticity parameter"));
-		options.add(make_opt( elastic, "elastic", 0, "use elastic registration"));
-
-		if (options.parse(argc, argv) != CCmdOptionList::hr_no)
-			return EXIT_SUCCESS; 
-
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
+		return EXIT_SUCCESS; 
 
 
-		P2DImage Model = load_image<P2DImage>(src_filename);
-		P2DImage Reference = load_image<P2DImage>(ref_filename);
 
-		C2DBounds GlobalSize = Model->get_size();
-		if (GlobalSize != Reference->get_size()){
-			throw std::invalid_argument("Images have different size");
+	P2DImage Model = load_image<P2DImage>(src_filename);
+	P2DImage Reference = load_image<P2DImage>(ref_filename);
+
+	C2DBounds GlobalSize = Model->get_size();
+	if (GlobalSize != Reference->get_size()){
+		throw std::invalid_argument("Images have different size");
+	}
+
+	time_t start_time = time(NULL);
+
+	unsigned int x_shift = 0;
+	unsigned int y_shift = 0;
+
+
+	unique_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
+
+
+	while (GlobalSize.x >> x_shift > grid_start){
+		x_shift++;
+	}
+	while (GlobalSize.y >> y_shift > grid_start){
+		y_shift++;
+	}
+
+	C2DFVectorfield transform(C2DBounds(GlobalSize.x >> x_shift,GlobalSize.y >> y_shift));
+
+	bool alter = true;
+	while (x_shift && y_shift) {
+		C2DBounds BlockSize(1 << x_shift, 1 << y_shift);
+		cvmsg() << "Blocksize = " << BlockSize.x << "x"<< BlockSize.y << "\n";
+
+		stringstream downscale_descr;
+		downscale_descr << "downscale:bx=" << BlockSize.x << ",by=" << BlockSize.y;
+		auto downscaler =
+			C2DFilterPluginHandler::instance().produce(downscale_descr.str().c_str());
+
+		P2DImage ModelScale = downscaler->filter(*Model);
+		P2DImage RefScale   = downscaler->filter(*Reference);
+
+		if (transform.get_size() != ModelScale->get_size())
+			transform = upscale(transform, ModelScale->get_size());
+
+		register_level(*ModelScale,*RefScale,transform,regrid_thresh,epsilon,
+			       (x_shift >y_shift ? x_shift : y_shift)+1,elastic,mu, lambda, *ipfactory);
+
+		if (alter)
+			alter = !alter;
+		else {
+			if (x_shift)
+				x_shift--;
+			if (y_shift)
+				y_shift--;
 		}
 
-		time_t start_time = time(NULL);
-
-		unsigned int x_shift = 0;
-		unsigned int y_shift = 0;
-
-
-		auto_ptr<C2DInterpolatorFactory>   ipfactory(create_2dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
-
-
-		while (GlobalSize.x >> x_shift > grid_start){
-			x_shift++;
-		}
-		while (GlobalSize.y >> y_shift > grid_start){
-			y_shift++;
-		}
-
-		C2DFVectorfield transform(C2DBounds(GlobalSize.x >> x_shift,GlobalSize.y >> y_shift));
-
-		bool alter = true;
-		while (x_shift && y_shift) {
-			C2DBounds BlockSize(1 << x_shift, 1 << y_shift);
-			cvmsg() << "Blocksize = " << BlockSize.x << "x"<< BlockSize.y << "\n";
-
-			stringstream downscale_descr;
-			downscale_descr << "downscale:bx=" << BlockSize.x << ",by=" << BlockSize.y;
-			auto downscaler =
-				C2DFilterPluginHandler::instance().produce(downscale_descr.str().c_str());
-
-			P2DImage ModelScale = downscaler->filter(*Model);
-			P2DImage RefScale   = downscaler->filter(*Reference);
-
-			if (transform.get_size() != ModelScale->get_size())
-				transform = upscale(transform, ModelScale->get_size());
-
-			register_level(*ModelScale,*RefScale,transform,regrid_thresh,epsilon,
-				       (x_shift >y_shift ? x_shift : y_shift)+1,elastic,mu, lambda, *ipfactory);
-
-			if (alter)
-				alter = !alter;
-			else {
-				if (x_shift)
-					x_shift--;
-				if (y_shift)
-					y_shift--;
-			}
-
-
-		}
-
-
-		//final Registration at pixel-level
-		cvmsg() << "Finales Level" << transform.get_size() << "\n";
-
-		transform = upscale(transform, Model->get_size());
-		register_level(*Model,*Reference,transform,regrid_thresh,epsilon,1,elastic,mu, lambda, *ipfactory);
-
-		cvmsg() << "Gesamtzeit: " << time(NULL)-start_time << "\n";
-
-		// write result deformation field
-		if (!out_filename.empty()) {
-			C2DIOVectorfield outfield(transform);
-			if (!C2DVFIOPluginHandler::instance().save(out_filename, outfield)){
-				THROW(runtime_error, "Unable to save result field to '" << out_filename << "'");
-			}
-		}
-
-		if (!def_filename.empty()) {
-			FDeformer2D deformer(transform, *ipfactory);
-			P2DImage result = ::mia::filter(deformer, *Model);
-			if (!save_image(def_filename, result))
-				THROW(runtime_error, "Unable to save result to '" << def_filename << "'");
-		}
-
-		return EXIT_SUCCESS;
 
 	}
-	catch(std::invalid_argument& x) {
-		cverr()<< argv[0] << ": invalid argument: "<< x.what() << "\n";
+
+
+	//final Registration at pixel-level
+	cvmsg() << "Finales Level" << transform.get_size() << "\n";
+
+	transform = upscale(transform, Model->get_size());
+	register_level(*Model,*Reference,transform,regrid_thresh,epsilon,1,elastic,mu, lambda, *ipfactory);
+
+	cvmsg() << "Gesamtzeit: " << time(NULL)-start_time << "\n";
+
+	// write result deformation field
+	if (!out_filename.empty()) {
+		C2DIOVectorfield outfield(transform);
+		if (!C2DVFIOPluginHandler::instance().save(out_filename, outfield)){
+			THROW(runtime_error, "Unable to save result field to '" << out_filename << "'");
+		}
 	}
-	catch(std::exception& x) {
-		cverr()<< argv[0] << ": exception " << x.what() << "\n";
+
+	if (!def_filename.empty()) {
+		FDeformer2D deformer(transform, *ipfactory);
+		P2DImage result = ::mia::filter(deformer, *Model);
+		if (!save_image(def_filename, result))
+			THROW(runtime_error, "Unable to save result to '" << def_filename << "'");
 	}
-	return EXIT_FAILURE;
+
+	return EXIT_SUCCESS;
+
 }
 
+
+MIA_MAIN(do_main); 
