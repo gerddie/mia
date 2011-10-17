@@ -23,14 +23,10 @@
 #define BOOST_TEST_NO_MAIN
 #define BOOST_TEST_DYN_LINK
 
+#include <mia/internal/autotest.hh>
 
 #include <vector>
 #include <iostream>
-
-#include <boost/test/unit_test_suite.hpp>
-#include <boost/test/unit_test.hpp>
-//#include <boost/test/floating_point_comparison.hpp>
-
 
 #include <mia/core/cmdlineparser.hh>
 #include <mia/3d/3DVector.hh>
@@ -82,13 +78,5 @@ BOOST_AUTO_TEST_CASE(  test_trianguale )
 
 	BOOST_CHECK_EQUAL(triangles.size(), 10u);
 
-}
-
-int BOOST_TEST_CALL_DECL
-main( int argc, char* argv[] )
-{
-	if (mia::CCmdOptionList(" Sysopsis: run tests").parse(argc, argv) != CCmdOptionList::hr_no)
-		return 0; 
-	return ::boost::unit_test::unit_test_main( &init_unit_test, argc, argv );
 }
 
