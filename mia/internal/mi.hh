@@ -35,20 +35,18 @@ public:
 	typedef typename T::Data Data; 
 	typedef typename T::Force Force; 
 
-	TMIImageCost(bool normalize, size_t fbins, mia::PSplineKernel fkernel, size_t rbins, mia::PSplineKernel rkernel); 
+	TMIImageCost(size_t fbins, mia::PSplineKernel fkernel, size_t rbins, mia::PSplineKernel rkernel); 
 private: 
 	virtual double do_value(const Data& a, const Data& b) const; 
 	virtual double do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const; 
 
-	bool m_normalize; 
 	mutable mia::CSplineParzenMI m_parzen_mi; 
 
 };
 
 
 struct FEvalMI : public mia::TFilter<double> {
-	FEvalMI(bool normalize, mia::CSplineParzenMI& parzen_mi):
-		m_normalize(normalize), 
+	FEvalMI( mia::CSplineParzenMI& parzen_mi):
 		m_parzen_mi(parzen_mi)
 		{}
 	
@@ -56,8 +54,7 @@ struct FEvalMI : public mia::TFilter<double> {
 	template <typename  T, typename  R>
 	FEvalMI::result_type operator () (const T& a, const R& b) const {
 		m_parzen_mi.fill(a.begin(), a.end(), b.begin(), b.end()); 
-		
-		return  ( m_normalize ? 0.5 / a.size() : 0.5 ) * m_parzen_mi.value(); 
+		return  m_parzen_mi.value(); 
 	}
 	bool m_normalize; 
 	mia::CSplineParzenMI& m_parzen_mi; 
@@ -65,8 +62,7 @@ struct FEvalMI : public mia::TFilter<double> {
 
 
 template <typename T> 
-TMIImageCost<T>::TMIImageCost(bool normalize, size_t rbins, mia::PSplineKernel rkernel, size_t mbins, mia::PSplineKernel mkernel):
-	m_normalize(normalize), 
+TMIImageCost<T>::TMIImageCost(size_t rbins, mia::PSplineKernel rkernel, size_t mbins, mia::PSplineKernel mkernel):
 	m_parzen_mi(rbins, rkernel, mbins,  mkernel)
 	
 {
@@ -76,16 +72,15 @@ TMIImageCost<T>::TMIImageCost(bool normalize, size_t rbins, mia::PSplineKernel r
 template <typename T> 
 double TMIImageCost<T>::do_value(const Data& a, const Data& b) const
 {
-	FEvalMI essd(m_normalize, m_parzen_mi); 
+	FEvalMI essd(m_parzen_mi); 
 	return filter(essd, a, b); 
 }
 
 template <typename Force>
 struct FEvalForce: public mia::TFilter<float> {
-	FEvalForce(Force& force, float scale, bool normalize, mia::CSplineParzenMI& parzen_mi):
+	FEvalForce(Force& force, float scale, mia::CSplineParzenMI& parzen_mi):
 		m_force(force), 
 		m_scale(scale),
-		m_normalize(normalize), 
 		m_parzen_mi(parzen_mi)
 		{
 		}
@@ -95,18 +90,16 @@ struct FEvalForce: public mia::TFilter<float> {
 		m_parzen_mi.fill(a.begin(), a.end(), b.begin(), b.end()); 
 		typename T::const_iterator ai = a.begin();
 		typename R::const_iterator bi = b.begin();
-		float scale = m_normalize ? m_scale / a.size() : m_scale; 
-		
+	
 		for (size_t i = 0; i < a.size(); ++i, ++ai, ++bi) {
 			float delta = m_parzen_mi.get_gradient(*ai, *bi); 
-			m_force[i] = gradient[i] * delta * scale;
+			m_force[i] = gradient[i] * delta * m_scale;
 		}
-		return 0.5 * m_parzen_mi.value() * scale; 
+		return m_parzen_mi.value() * m_scale; 
 	}
 private: 
 	mutable Force& m_force; 
 	float m_scale; 
-	bool m_normalize; 
 	mia::CSplineParzenMI& m_parzen_mi;
 }; 
 		
@@ -119,7 +112,7 @@ double TMIImageCost<T>::do_evaluate_force(const Data& a, const Data& b, float sc
 {
 	assert(a.get_size() == b.get_size()); 
 	assert(a.get_size() == force.get_size()); 
-	FEvalForce<Force> ef(force, scale, m_normalize, m_parzen_mi); 
+	FEvalForce<Force> ef(force, scale, m_parzen_mi); 
 	return filter(ef, a, b); 
 }
 
@@ -136,7 +129,6 @@ public:
 	C *do_create()const;
 private: 
 	const std::string do_get_descr() const; 
-	bool m_normalize; 
 	unsigned int m_rbins;  
 	unsigned int m_mbins;  
 	std::string m_mkernel; 
@@ -150,7 +142,6 @@ private:
 template <typename CP, typename C> 
 TMIImageCostPlugin<CP,C>::TMIImageCostPlugin():
 	CP("mi"), 
-	m_normalize(false), 
 	m_rbins(64), 
 	m_mbins(64), 
 	m_mkernel("bspline:d=3"), 
@@ -158,9 +149,6 @@ TMIImageCostPlugin<CP,C>::TMIImageCostPlugin():
 {
 	TRACE("TMIImageCostPlugin<CP,C>::TMIImageCostPlugin()"); 
 	this->add_property(::mia::property_gradient); 
-	this->add_parameter("norm", new mia::CBoolParameter(m_normalize, false, 
-			    "Set whether the metric should be normalized by the number of image pixels")); 
-
 	this->add_parameter("rbins", new mia::CUIntParameter(m_rbins, 1, 256, false, 
 				     "Number of histogram bins used for the reference image")); 
 
@@ -182,7 +170,7 @@ C *TMIImageCostPlugin<CP,C>::do_create() const
 {
 	auto mkernel = mia::produce_spline_kernel(m_mkernel); 
 	auto rkernel = mia::produce_spline_kernel(m_rkernel); 
-	return new TMIImageCost<C>(m_normalize, m_rbins, rkernel, m_mbins,  mkernel); 
+	return new TMIImageCost<C>(m_rbins, rkernel, m_mbins,  mkernel); 
 }
 
 template <typename CP, typename C> 

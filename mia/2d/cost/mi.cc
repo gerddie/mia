@@ -26,15 +26,19 @@
    
    \begin{description}
    
-   \item [Plugin:] lsd
-   \item [Description:] Evaluates the Least Squares Difference similarity measure between two images 
-   \cite{heldmann10lsd}
-   \item [Study:] An abitrary gray scale or binary images 
-   \item [Reference:] A gray scale or binary images that should have a limited number of gray scale values 
-                 and a histogram that is not too close to a uniform distribution. 
+   \item [Plugin:] mi
+   \item [Description:] Evaluates the Mutual Information between two images by using splines 
+   \cite{thevenaz00mi}
+   \item [Study:] An abitrary gray scale  image 
+   \item [Reference:] An abitrary gray scale  image.  
    \end{description}
    
-   This plug-in doesn't take additional parameters. 
+   \plugtabstart
+   mbins & uint	    & Number of histogram bins used for the moving image \ \
+   mkernel & string & Spline kernel for moving image parzen hinstogram  \\
+   rbins & uint	 & Number of histogram bins used for the reference image \\
+   rkernel & string  & Spline kernel for reference image parzen hinstogram \\
+   \plugtabend
   
 
    LatexEnd  
