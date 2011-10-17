@@ -201,7 +201,7 @@ int do_main(int argc, char *argv[])
 {
 	//	FILE *srcf,*reff,*outf;
 
-	TMethod method = meth_sorap;
+	TMethod method = meth_sorex;
 
 	TLinEqnSolver *solver=NULL;
 
@@ -245,8 +245,8 @@ int do_main(int argc, char *argv[])
 	options.add(make_opt( params.InitialStepsize, "step", 0, "Initial stepsize"));
 	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( params.Overrelaxation, "relax", 0, "overrelaxation factor vor method sor"));
-	options.add(make_opt( params.maxiter, "maxiter", 0, "maxium iterations in sor and cg"));
-	options.add(make_opt( params.factor, "epsilon", 0, "truncation condition in sor and cg"));
+	options.add(make_opt( params.maxiter, "maxiter", 0, "maxium iterations"));
+	options.add(make_opt( params.factor, "epsilon", 0, "truncation condition"));
 	options.add(make_opt( statlog_filename, "statlog", 0,"statistics logfilename"));
 	options.add(make_opt( params.matter_threshold, "matter", 0, "intensity above which real "
 			      "matter is assumed (experimental)"));
