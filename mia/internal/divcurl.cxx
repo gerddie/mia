@@ -65,7 +65,7 @@ void TDivCurlFullCost<T>::do_set_size()
 }
 
 template <typename T> 
-bool TDivCurlFullCost<T>::do_get_full_size(Size& size) const
+bool TDivCurlFullCost<T>::do_get_full_size(Size& /*size*/) const
 {
 	return true; 
 }

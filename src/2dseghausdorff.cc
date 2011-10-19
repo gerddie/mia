@@ -125,7 +125,7 @@ int do_main(int argc, char *argv[])
 	if (reference >= frames.size())
 		throw invalid_argument("Reference frame outside range");
 
-	if (skip >= frames.size())
+	if (skip >= static_cast<long>(frames.size()))
 		throw invalid_argument("Can't skip the whole series");
 
 

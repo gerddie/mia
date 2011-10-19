@@ -184,7 +184,7 @@ C2DStackDistanceTransform::get_slice(size_t s, const C2DImage& image) const
 	return result; 
 }
 
-bool C2DStackDistanceTransform::save(const string& filename)
+bool C2DStackDistanceTransform::save(const string& /*filename*/)
 {
 	return false; 
 }

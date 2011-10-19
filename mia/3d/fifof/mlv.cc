@@ -187,9 +187,6 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T2DImage<T>& input)
 		transform(m_buf1.begin(), m_buf1.end(), m_buf2.begin(), 
 			  [](float x) {return x * x;}); 
 
-		typename T2DImage<T>::const_iterator is = input.begin_at(0,y);
-		typename T2DImage<T>::const_iterator ie = input.begin_at(0,y + 1);
-
 		for (size_t iz = 0; iz < m_w; ++iz)
 			for (size_t iy = 0; iy < m_w; ++iy)
 				for (size_t ix = 0; ix < m_w; ++ix) {

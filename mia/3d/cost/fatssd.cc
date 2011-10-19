@@ -75,7 +75,7 @@ C3DSSDFatImageCostPlugin::C3DSSDFatImageCostPlugin():
 }
 
 C3DImageFatCost *C3DSSDFatImageCostPlugin::do_create(P3DImage src, P3DImage ref,
-						     P3DInterpolatorFactory ipf, float weight)const
+						     P3DInterpolatorFactory /*ipf*/, float weight)const
 {
 	return new CFatSSD3DImageCost(src, ref, weight);
 }

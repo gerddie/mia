@@ -199,7 +199,7 @@ EXPORT_3D bool operator != (const C3DTransformation::const_iterator& a,
 
 
 C3DTransformation::const_iterator::const_iterator():
-	m_holder(NULL)
+	m_holder((iterator_impl *)NULL)
 {
 }
 

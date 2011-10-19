@@ -770,7 +770,7 @@ size_t TCmdOption<T>::do_get_needed_args() const
 }
 
 template <typename T>
-void TCmdOption<T>::do_get_long_help(std::ostream& os) const
+void TCmdOption<T>::do_get_long_help(std::ostream& /*os*/) const
 {
 }
 

@@ -81,7 +81,7 @@ public:
 	/**
 	   The copy constructor 
 	 */
-	C2DStackDistanceTransform(const C2DStackDistanceTransform& other) = default; 
+	C2DStackDistanceTransform(const C2DStackDistanceTransform& /*other*/) = default; 
 
 	/**
 	   Create a copy of this object 

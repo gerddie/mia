@@ -47,7 +47,7 @@ P2DImage C2DLabelMapFilter::do_filter(const C2DImage& image) const
 
 template <typename T> 
 struct dispatch_label_map {
-	static P2DImage apply(const T& image, const vector<size_t>& lmap){
+	static P2DImage apply(const T& /*image*/, const vector<size_t>& /*lmap*/){
 		throw invalid_argument("Only unsigned short images are supported"); 
 	}
 };

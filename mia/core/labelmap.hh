@@ -38,7 +38,7 @@ public:
 	CLabelMap() = default; 
 
 	/// standard copy construtor 
-	CLabelMap(const CLabelMap& org) = default;
+	CLabelMap(const CLabelMap& /*org*/) = default;
 	
 	/**
 	   Constructor to load the map from a file

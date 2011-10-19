@@ -891,7 +891,7 @@ size_t CHelpOption::do_get_needed_args() const
 	return 0; 
 }
 
-void CHelpOption::do_get_long_help(std::ostream& os) const
+void CHelpOption::do_get_long_help(std::ostream& /*os*/) const
 {
 }
 

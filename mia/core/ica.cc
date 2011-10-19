@@ -104,7 +104,7 @@ bool CICAAnalysis::run(size_t nica, vector<vector<float> > guess)
 #if ICA_ALWAYS_USE_SYMM
 	// approach APPROACH_DEFL may not return in the unpached itpp 
 	// therefore, always use APPROACH_SYMM 
-	fastICA.set_approach( APPROACH_SYMM );
+	fastICA.set_approach( FICA_APPROACH_SYMM );
 #else
 	fastICA.set_approach( impl->m_approach );
 #endif

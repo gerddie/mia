@@ -70,7 +70,7 @@ const SProgramDescrption g_description = {
 	"If the input image files contain more then one image all images are used. "
 	"All images must be of the same size.", 
 	
-	"Evaluate the pixel-vise intensity variation of images i1.png, i2.png, i3.png, and i4.png and store the result to var.v."
+	"Evaluate the pixel-vise intensity variation of images i1.png, i2.png, i3.png, and i4.png and store the result to var.v.",
 
 	"-o var.v i1.png i2.png i3.png i4.png"
 }; 

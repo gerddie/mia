@@ -23,6 +23,7 @@
 #define gslpp_wavelet_hh
 
 #include <gsl++/gsldefines.hh>
+#include <cstdlib>
 #include <vector>
 
 namespace gsl {

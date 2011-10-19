@@ -89,7 +89,6 @@ CScale::result_type CScale::operator () (const T2DImage<T>& src) const
 
 
 	T2DImage<T> *result = new T2DImage<T>(target_size);
-	typename T2DImage<T>::iterator i = result->begin();
 	C2DFVector factor(float(src.get_size().x / float(target_size.x) ),
 			  float(src.get_size().y / float(target_size.y) ));
 	

@@ -240,7 +240,7 @@ C2DNFGFatImageCostPlugin::C2DNFGFatImageCostPlugin():
 enum ESubTypes {st_unknown, st_delta, st_delta_scalar, st_scalar, st_cross};
 
 C2DImageFatCost *C2DNFGFatImageCostPlugin::do_create(P2DImage src,
-								      P2DImage ref, P2DInterpolatorFactory ipf, float weight)const
+						     P2DImage ref, P2DInterpolatorFactory /*ipf*/, float weight)const
 {
 	TRACE("C2DNFGFatImageCostPlugin::do_create");
 

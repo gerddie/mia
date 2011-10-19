@@ -285,6 +285,7 @@ int do_main( int argc, char *argv[] )
 
 	if (save_image(out_filename, acc.result()))
 		return  EXIT_SUCCESS;
+	return  EXIT_FAILURE;
 
 }
 	

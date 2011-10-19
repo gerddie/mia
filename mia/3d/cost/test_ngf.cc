@@ -144,12 +144,12 @@ C3DFVectorfieldFixture::C3DFVectorfieldFixture():
 
 class FEvaluatorMock: public FEvaluator {
 public:
-	double cost (const C3DFVector& src, const C3DFVector& ref) const {
+	double cost (const C3DFVector& /*src*/, const C3DFVector& /*ref*/) const {
 		return 1.0; 
 	}
 	
-	C3DFVector grad(int nx, int nxy, C3DFVectorfield::const_range_iterator irsrc,
-			     const C3DFVector& ref, double& cost) const {
+	C3DFVector grad(int /*nx*/, int /*nxy*/, C3DFVectorfield::const_range_iterator irsrc,
+			const C3DFVector& /*ref*/, double& cost) const {
 		cost += 1; 
 		C3DFVector result; 
 		if (! (irsrc.get_boundary_flags() & C3DFVectorfield::const_range_iterator::eb_x))

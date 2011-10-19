@@ -214,7 +214,7 @@ C3DNFGFatImageCostPlugin::C3DNFGFatImageCostPlugin():
 enum ESubTypes {st_unknown, st_delta, st_scalar, st_cross};
 
 C3DImageFatCost *C3DNFGFatImageCostPlugin::do_create(P3DImage src, P3DImage ref, 
-						     P3DInterpolatorFactory ipf, float weight)const
+						     P3DInterpolatorFactory /*ipf*/, float weight)const
 {
 	TRACE("C3DNFGFatImageCostPlugin::do_create");
 

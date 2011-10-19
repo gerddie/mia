@@ -166,7 +166,7 @@ int do_main( int argc, char *argv[] )
 	
 	size_t n_sections = 0; 
 	int skip = 2; 
-	size_t reference = 20; 
+	int reference = 20; 
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( org_filename, "original", 'o', "original segmentation set", CCmdOption::required));
@@ -198,7 +198,7 @@ int do_main( int argc, char *argv[] )
 	
 	if (original_frames.size() != registered_frames.size()) 
 		THROW(invalid_argument, "original and reference series must have same size"); 
-	if (reference < skip || reference >= original_frames.size())
+	if (reference < skip || reference >= static_cast<long>(original_frames.size()))
 		THROW(invalid_argument, "reference frame must be larger then skip="<<
 		      skip << " and smaller then the length of the series " << original_frames.size()); 
 	

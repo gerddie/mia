@@ -206,7 +206,7 @@ bool CLabelXMapPlugin::do_test() const
 
 	CXLabelResult right_answer;
 
-    right_answer.add(1,2);
+	right_answer.add(1,2);
 	right_answer.add(1,2);
 	right_answer.add(2,1);
 	right_answer.add(2,1);
@@ -249,7 +249,7 @@ bool CLabelXMapPlugin::do_test() const
 		return false;
 	}
 
-	return (*xlr == right_answer);
+	return success && (*xlr == right_answer);
 
 }
 

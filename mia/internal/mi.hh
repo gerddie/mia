@@ -98,7 +98,7 @@ struct FEvalForce: public mia::TFilter<float> {
 		return m_parzen_mi.value() * m_scale; 
 	}
 private: 
-	mutable Force& m_force; 
+	Force& m_force; 
 	float m_scale; 
 	mia::CSplineParzenMI& m_parzen_mi;
 }; 

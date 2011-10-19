@@ -210,9 +210,6 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 	else // both images have only one value, and are, therefore, already registered
 		return m_transform_creator->create(src->get_size());
 
-
-	Size global_size = src->get_size();
-
 	int shift = m_mg_levels;
 
 	std::string src_name("src.@"); 

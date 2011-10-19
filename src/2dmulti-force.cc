@@ -48,7 +48,7 @@ const SProgramDescrption g_description = {
 	"The input images must be of the same dimensions and gray scale (whatever bit-depth). ", 
 	
 	"Evaluate the force normimage weighted sum of costs SSD and NGF of image1.v and image2.v. and store the "
-	"result to force.v."
+	"result to force.v.",
 
 	"-o force.v ssd:src=image1.v,ref=image2.v,weight=0.1 ngf:src=image1.v,ref=image2.v,weight=2.0"
 }; 

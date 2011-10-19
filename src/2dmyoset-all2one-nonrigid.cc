@@ -229,12 +229,12 @@ int do_main( int argc, char *argv[] )
 	
 	
 	// if reference is not given, use half range 
-	size_t reference = reference_param < 0  ? input_images.size() / 2 : reference_param; 
+	int reference = reference_param < 0  ? input_images.size() / 2 : reference_param; 
 	
 	if ( input_images.empty() ) 
 		throw invalid_argument("No input images to register"); 
 	
-	if (reference > input_images.size() - 1) {
+	if (reference > static_cast<long>(input_images.size()) - 1) {
 		reference = input_images.size() - 1; 
 		cvwarn() << "Reference was out of range, adjusted to " << reference << "\n"; 
 	}

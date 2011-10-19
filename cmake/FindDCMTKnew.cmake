@@ -59,7 +59,7 @@ IF (ZLIB_FOUND)
   ENDMACRO(FIND_DCMTKLIBS target name)
 
   
-  SET(NAMES ofstd dcmdata dcmimgle dcmjpeg ijg12 ijg16 ijg8)
+  SET(NAMES dcmdata dcmjpeg dcmimgle ofstd oflog ijg12 ijg16 ijg8)
   FIND_DCMTKLIBS(DCMTK_LIBS "${NAMES}")
   SET(DCMTK_LIBRARIES ${DCMTK_LIBS} ${ZLIB_LIBRARIES})
 

@@ -63,7 +63,7 @@ C2DSSDFatImageCostPlugin::C2DSSDFatImageCostPlugin():
 }
 
 C2DImageFatCost *C2DSSDFatImageCostPlugin::do_create(P2DImage src, P2DImage ref,
-								      P2DInterpolatorFactory ipf, float weight)const
+						     P2DInterpolatorFactory /*ipf*/, float weight)const
 {
 	return new CFatSSD2DImageCost(src, ref, weight);
 }

@@ -85,7 +85,7 @@ const SProgramDescrption g_description = {
 	"of a perfusion time series of the input set to the corresponding frame of the reference set "
 	"and prints the result to stdout.", 
 
-	"Evaluate the per-slice Hausdorff distance of input.set and reference.set."
+	"Evaluate the per-slice Hausdorff distance of input.set and reference.set.",
 	
 	"-i input.set -r reference.set"
 }; 

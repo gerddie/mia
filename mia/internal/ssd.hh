@@ -109,7 +109,7 @@ struct FEvalForce: public mia::TFilter<float> {
 		return 0.5 * cost * scale; 
 	}
 private: 
-	mutable Force& m_force; 
+	Force& m_force; 
 	float m_scale; 
 	bool m_normalize; 
 }; 

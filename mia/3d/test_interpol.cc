@@ -42,7 +42,7 @@ struct __dispatch_check {
 	static void apply(T x, T y) {
 		BOOST_CHECK_EQUAL(x,y); 
 	}
-	static void apply_xyz(const I& src, int x, int y, int z) {
+	static void apply_xyz(const I& /*src*/, int /*x*/, int /*y*/, int /*z*/) {
 /*
 		C3DFVector locx(x + 0.4,y,z);
 		const T value  = T(rint(x + y + z + 0.4)); 

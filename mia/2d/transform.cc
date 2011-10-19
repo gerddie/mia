@@ -181,7 +181,7 @@ EXPORT_2D bool operator != (const C2DTransformation::const_iterator& a,
 
 
 C2DTransformation::const_iterator::const_iterator():
-	m_holder(NULL)
+	m_holder((iterator_impl*)0)
 {
 }
 
