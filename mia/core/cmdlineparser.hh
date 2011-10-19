@@ -93,7 +93,8 @@ public:
 	    \param short_opt the short option character 
 	    \param long_opt the long option name
 	    \param long_help a long help string
-	    @param flags option flags 
+	    \param short_help help to print out when only usage information is requested 
+	    \param flags option flags 
         */
 	CCmdOption(char short_opt, const char *long_opt, const char *long_help, 
 		   const char *short_help, Flags flags);
@@ -525,8 +526,15 @@ public:
         /**
 	   Constructor creates the options list and adds some defaut options like
 	   --help, --verbose, --copyright, and --usage
+
+	   \param description give a description of the program 
         */
 	CCmdOptionList(const SProgramDescrption& description); 
+
+	/**
+	   Obsolete constructor 
+	   \param general_help
+	 */
 	CCmdOptionList(const std::string& general_help) __attribute__((deprecated));
 	CCmdOptionList()__attribute__((deprecated));
 
@@ -822,7 +830,7 @@ void TCmdDictOption<T>::do_get_long_help( std::ostream& os ) const
 {
         const std::set<std::string> names_help = m_map.get_name_set();
 	for (auto i = m_map.get_help_begin(); i != m_map.get_help_end(); ++i) {
-		os << "\n  " << i->first << ": " << i->second; 
+		os << "\n  " << i->second.first << ": " << i->second.second; 
 	}
 }
 

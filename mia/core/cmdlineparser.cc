@@ -317,7 +317,8 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescrption& description):
 	options[""] = vector<PCmdOption>();
 
 	set_current_group(g_help_optiongroup);
-	add(make_opt(verbose, g_verbose_dict, "verbose",  'V', "verbosity of output", 
+	add(make_opt(verbose, g_verbose_dict, "verbose",  'V', 
+		     "verbosity of output, print messages of given level and higher priorities. Supported priorities starting at lowest level are:",
 		     CCmdOption::not_required));
 	add(make_opt(copyright,  "copyright", 0, "print copyright information", 
 		     CCmdOption::not_required));

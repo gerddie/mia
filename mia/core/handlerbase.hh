@@ -37,6 +37,8 @@ NS_MIA_BEGIN
     \brief The base class for all plugin handlers
 
     This clas provides aome basic funcionallity that is common to all plugin handlers. 
+    In addition, the copy constructor and assigment operator are deleted in order to forbit copying 
+    of instances of this class. 
     
 */
 
@@ -44,7 +46,15 @@ NS_MIA_BEGIN
 class EXPORT_CORE CPluginHandlerBase  {
  public: 
 	CPluginHandlerBase() = default; 
+
+	/**
+	   forbid copying - doxygen should drop these from the documentation 
+	 */
 	CPluginHandlerBase(const CPluginHandlerBase& other) = delete; 
+
+	/**
+	   forbid copying - doxygen should drop these from the documentation 
+	 */
 	CPluginHandlerBase& operator  = (const CPluginHandlerBase& other) = delete;
 
 	virtual ~CPluginHandlerBase();

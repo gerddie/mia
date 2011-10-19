@@ -45,7 +45,10 @@ NS_MIA_BEGIN
 template <typename T>
 class TDictMap {
 public: 
-	typedef std::map<std::string, std::string> THelpMap; 
+	/**
+	   This map is used to reference the help strings 
+	 */
+	typedef std::map<T, std::pair<std::string, std::string> > THelpMap; 
 	/**
 	   The initialisation table. The last entry must have the name pointer pointing to 0. 
 	*/
@@ -87,12 +90,12 @@ public:
 	/**
 	   \returns start of help map
 	*/
-	THelpMap::const_iterator get_help_begin() const; 
+	typename THelpMap::const_iterator get_help_begin() const; 
 
 	/**
 	   \returns end of help map
 	*/
-	THelpMap::const_iterator get_help_end() const; 
+	typename THelpMap::const_iterator get_help_end() const; 
 	
 private: 
 
@@ -129,7 +132,8 @@ TDictMap<T>::TDictMap(const Table *table, bool last_is_default):
 						    std::string(t->name) + 
 						    std::string("' already present")); 
 		m_back_table.insert(typename TBackMap::value_type(t->value, t->name)); 
-		m_help.insert(typename  THelpMap::value_type(t->name, t->help ? t->help : "")); 
+		m_help.insert(typename  THelpMap::value_type(t->value, 
+							     std::pair<std::string, std::string>(t->name, t->help ? t->help : ""))); 
 		++t; 
 	}
 	m_default = t->value; 
