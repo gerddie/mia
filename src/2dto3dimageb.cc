@@ -76,7 +76,7 @@ const SProgramDescrption g_description = {
 	
 	"This program is used to convert a series 2D images into a 3D image. "
 	"The 2D images are read as additional command line parameters and the slice "
-	"ordering corresponds to the ordering of the file names on the commend line."
+	"ordering corresponds to the ordering of the file names on the commend line.", 
 	
 	"Convert a series of images imageXXXX.png to a 3D image 3d.v", 
 	
