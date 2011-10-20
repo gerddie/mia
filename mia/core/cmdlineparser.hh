@@ -531,20 +531,8 @@ public:
         */
 	CCmdOptionList(const SProgramDescrption& description); 
 
-	/**
-	   Obsolete constructor 
-	   \param general_help
-	 */
-	CCmdOptionList(const std::string& general_help) __attribute__((deprecated));
-	CCmdOptionList()__attribute__((deprecated));
-
         /// cleanup
 	~CCmdOptionList();
-
-        /** add a new option to the option list
-	    \param opt the option to add
-        */
-	void push_back(PCmdOption opt)__attribute__((deprecated));
 
         /** add a new option to the option list
 	    \param opt the option to add

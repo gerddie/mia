@@ -218,7 +218,6 @@ struct CCmdOptionListData {
 	vstream::Level verbose;
 
 	CCmdOptionListData(const SProgramDescrption& description); 
-	CCmdOptionListData(const string& general_help);
 
 	void add(PCmdOption opt);
 	void add(const string& group, PCmdOption opt);
@@ -319,35 +318,6 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescrption& description):
 	set_current_group(g_help_optiongroup);
 	add(make_opt(verbose, g_verbose_dict, "verbose",  'V', 
 		     "verbosity of output, print messages of given level and higher priorities. Supported priorities starting at lowest level are:",
-		     CCmdOption::not_required));
-	add(make_opt(copyright,  "copyright", 0, "print copyright information", 
-		     CCmdOption::not_required));
-	add(make_opt(help,  "help", 'h', "print this help", 
-		     CCmdOption::not_required));
-#ifdef HAVE_LIBXMLPP
-	add(make_opt(help_xml,  "help-xml", 0, "print help formatted as XML", 
-		     CCmdOption::not_required));
-#endif
-	add(make_opt(usage,  "usage", '?', "print a short help", 
-		     CCmdOption::not_required));
-	set_current_group("");
-}
-
-CCmdOptionListData::CCmdOptionListData(const string& general_help):
-	help(false),
-	help_xml(false), 
-	usage(false),
-	copyright(false),
-	verbose(vstream::ml_warning), 
-	m_general_help(general_help), 
-	m_program_group("no group"), 
-	m_program_example_descr(NULL),
-	m_program_example_code(NULL)
-{
-	options[""] = vector<PCmdOption>();
-
-	set_current_group(g_help_optiongroup);
-	add(make_opt(verbose, g_verbose_dict, "verbose",  'V', "verbosity of output", 
 		     CCmdOption::not_required));
 	add(make_opt(copyright,  "copyright", 0, "print copyright information", 
 		     CCmdOption::not_required));
@@ -640,21 +610,6 @@ CCmdOptionList::CCmdOptionList(const SProgramDescrption& description):
 	m_impl(new CCmdOptionListData(description))
 {
 }	
-
-CCmdOptionList::CCmdOptionList(const string& general_help):
-	m_impl(new CCmdOptionListData(general_help))
-{
-}
-
-CCmdOptionList::CCmdOptionList():
-	m_impl(new CCmdOptionListData("This is a MIA toolchain program."))
-{
-}
-
-void CCmdOptionList::push_back(PCmdOption opt)
-{
-	m_impl->add(opt);
-}
 
 void CCmdOptionList::add(PCmdOption opt)
 {
