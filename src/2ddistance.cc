@@ -77,7 +77,7 @@ NS_MIA_USE
 
 
 const SProgramDescrption g_general_help = {
-	"Little helpers", 
+	"Miscellaneous programs", 
 	"This program evaluate the average or maximum distance of a mask "
 	"given by a binary image to an image representing a distance map "
 	"and prints the result to stdout. The distance map can be obtained by "

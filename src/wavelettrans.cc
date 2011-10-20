@@ -36,7 +36,7 @@ NS_MIA_USE;
 using namespace gsl; 
 
 const SProgramDescrption g_general_help = {
-	"Little helper", 
+	"Miscellaneous programs", 
 	"This program runs the a column-wise discret wavelet forward transform on "
 	"the data given by an input text file.", 
 	NULL, 
