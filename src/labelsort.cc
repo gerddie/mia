@@ -70,7 +70,7 @@ NS_MIA_USE;
 using namespace std; 
 
 const SProgramDescrption g_description = {
-	"Little helper", 
+	"Miscellaneous programs", 
 	"This program is used create a mapping based on a histogram that "
 	"puts the intensities with high values at the beginning of the histogram. The main "
 	"use case will be to sort labels of connected components in out-of-core image processing.", 

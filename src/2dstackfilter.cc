@@ -95,7 +95,7 @@ const SProgramDescrption g_description = {
 	"2D image stack processing", 
 	
 	"This program is used to filter and convert a series of 2D gray scale images in a "
-	"W3D fashion by running filters (filter/2dimage) as given on the command line."
+	"W3D fashion by running filters (filter/2dimage) as given on the command line.",
 
 	"Run a mean-least-varaiance filter on a series of images that follow the "
 	"numbering pattern imageXXXX.exr and store the output in images filteredXXXX.exr", 

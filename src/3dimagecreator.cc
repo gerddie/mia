@@ -74,7 +74,7 @@ const SProgramDescrption g_description = {
 	"creator plug-ins (creator/3dimage)",
 	
 	"Create an image output.v of size <64,128,256> that contains a lattic with "
-	"frequencys 8, 16, and 4 in x, y and, z-direction respectively."
+	"frequencys 8, 16, and 4 in x, y and, z-direction respectively.",
 	
 	"-o lattic.v -j lattic:fx=8,fy=16,fz=4 -s \"<64,128,256>\""
 }; 

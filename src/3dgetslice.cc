@@ -69,9 +69,9 @@ const SProgramDescrption g_description = {
 	"Miscellaneous programs", 
 	
 	"This program is used to extract 2D slices from a 3D data set and store them "
-	"in separate files. Output files will be numbered according to their slice index."
+	"in separate files. Output files will be numbered according to their slice index.", 
 	
-	"Store 5 coronal slices starting at slice 120 coronalXXXX.png from  image.v."
+	"Store 5 coronal slices starting at slice 120 coronalXXXX.png from  image.v.", 
 
 	"-i image.v -o coronal -t png -n 5 -s 120" 
 }; 

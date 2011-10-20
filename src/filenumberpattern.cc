@@ -81,7 +81,7 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescrption g_description = {
-	"Little helper", 
+	"Miscellaneous programs", 
 	"This program is used to extract a extract the number pattern for "
 	"file012312.ext type file names.", 
 	NULL, 

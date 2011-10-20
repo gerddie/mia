@@ -38,7 +38,7 @@ NS_MIA_USE;
 using namespace gsl; 
 
 const SProgramDescrption g_general_help = {
-	"Little helper", 
+	"Miscellaneous programs", 
 	"This program runs the wavelet based slope-statistics on the mixing matrix \n"
 	"of a ICA perfusion series.", 
 	NULL, 

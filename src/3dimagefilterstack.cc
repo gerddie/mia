@@ -99,7 +99,6 @@ int do_main( int argc, char *argv[] )
 	string in_filename;
 	string out_filename;
 	string out_type;
-	bool help_plugins = false;
 
 	const C3DFilterPluginHandler::Instance& filter_plugins = C3DFilterPluginHandler::instance();
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
