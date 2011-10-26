@@ -186,12 +186,17 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	for (size_t i = 0; i < series.size(); ++i)
 		movement_pos[vstats[i]->get_level_mean_energy_position()[movement_idx]] += vstats[i]->get_level_coefficient_sums()[movement_idx];
 	
-	bool ifree_breathing = (movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_begin] &&
-				movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_end]);
+	cvdebug() << "Movement coeff weights:" << movement_pos << "\n"; 
+	bool ifree_breathing = ((movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_begin]) &&
+				(movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_end]));
 
 	bool at_begin = (!ifree_breathing) && (movement_pos[CSlopeStatistics::ecp_end] < movement_pos[CSlopeStatistics::ecp_begin]); 
 		
-	cvmsg() << "Detected free breathing data set\n";
+	if (ifree_breathing) 
+		cvmsg() << "Detected free breathing data set\n"; 
+	else 
+		cvmsg() << "Detected breath holding data set\n"; 
+	
 	int low_energy_start_idx = 1; //ifree_breathing ? 0 : 1;
 	
 	// 

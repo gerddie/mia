@@ -102,6 +102,10 @@ public:
 	/// \returns index of the global maximum if the curve is shifted to start at zero and raises first
 	std::pair<size_t, float>  get_perfusion_high_peak() const;
 
+	/// \returns index and value for the maximum gradient of the curve
+	std::pair<size_t, float>  get_gradient_peak() const;
+
+
 	/**
 	   \returns the sums of the absolute coefficient values per wavelet frequency level 
 	 */
