@@ -30,11 +30,13 @@ NS_MIA_BEGIN
 using std::string; 
 using std::invalid_argument; 
 
+static const char l_header[] = "MiaLabelmap"; 
+
 CLabelMap::CLabelMap(std::istream& is)
 {
 	string header; 
 	is >> header; 
-	if (header != "MiaLabemap") 
+	if (header != l_header) 
 		THROW(invalid_argument, 
 		      "C2DLabelMapImageFilterFactory: input does not contain a label map"); 
 	
@@ -42,18 +44,24 @@ CLabelMap::CLabelMap(std::istream& is)
 	is >> n; 
 	int idx; 
 	int new_label; 
-	while (is.good() && n--) {
+	int k = 0; 
+	while (is.good() && k < n) {
 		is >> idx >> new_label; 
 		(*this)[idx] = new_label; 
+		k++; 
 	}
 	if (is.fail()) 
 		THROW(invalid_argument, "C2DLabelMapImageFilterFactory: bogus label map"); 
+	
+	if (k < n) 
+	    THROW(invalid_argument, "C2DLabelMapImageFilterFactory: expected " << n 
+		  << " records but got only "<< k); 
 	
 }
 
 void CLabelMap::save(std::ostream& os)
 {
-	os << "MiaLabemap\n" << size() << "\n"; 
+	os << l_header << "\n" << size() << "\n"; 
 	for (auto i = begin(); i != end() && os.good(); ++i) 
 		os << i->first << " " << i->second << "\n"; 
 }
