@@ -62,14 +62,14 @@ struct CSlopeStatisticsImpl {
 	CSlopeStatistics::EEnergyCenterpos get_mean_energy_position() const; 
 	float get_maximum_gradient_from_zero() const; 
 	int get_index() const; 
-	std::pair<size_t, float>  get_gradient_peak() const; 
+	std::pair<size_t, float>  get_gradient_peak(int start_movement) const; 
 private:
 
 	void evaluate_curve_length() const;
 	void evaluate_range() const;
 	void evaluate_perfusion_peak() const;
 	void evaluate_frequency() const; 
-	void evaluate_gradient_peak() const;
+	void evaluate_gradient_peak(int start_movement) const;
 	void evaluate_wt() const; 
 	
 	vector<float> m_series;
@@ -83,6 +83,7 @@ private:
 	mutable float m_mean_freq;
 	mutable float m_energy;
 	mutable bool m_mean_freq_valid;
+	mutable int m_start_movement;
 	mutable bool m_gradient_peak_valid;
 	mutable bool m_wt_valid;
 
@@ -147,6 +148,7 @@ CSlopeStatisticsImpl::CSlopeStatisticsImpl(const vector<float>& series, int inde
 	m_range_valid(false),
 	m_perfusion_peak_valid(false),
 	m_mean_freq_valid(false), 
+	m_start_movement(-1), 
 	m_gradient_peak_valid(false), 
 	m_wt_valid(false), 
 	m_index(index)
@@ -551,30 +553,31 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 }
 
 
-std::pair<size_t, float>  CSlopeStatistics::get_gradient_peak() const
+std::pair<size_t, float>  CSlopeStatistics::get_gradient_peak(int start_movement) const
 {
-	FUNCTION_NOT_TESTED; 
-	return impl->get_gradient_peak(); 
+	return impl->get_gradient_peak(start_movement); 
 }
 
-std::pair<size_t, float>  CSlopeStatisticsImpl::get_gradient_peak() const
+std::pair<size_t, float>  CSlopeStatisticsImpl::get_gradient_peak(int start_movement) const
 {
-	if (!m_gradient_peak_valid) 
-		evaluate_gradient_peak(); 
+	if (!m_gradient_peak_valid || m_start_movement != start_movement) 
+		evaluate_gradient_peak(start_movement); 
 	return m_gradient_peak; 
 	
 }
 
-void CSlopeStatisticsImpl::evaluate_gradient_peak() const
+void CSlopeStatisticsImpl::evaluate_gradient_peak(int start_movement) const
 {
-	m_gradient_peak.first = 0; 
-	m_gradient_peak.second = m_series.size();
+	m_start_movement = start_movement; 
+	m_gradient_peak.first = m_series.size(); 
+	m_gradient_peak.second = 0 ;
 
 	const double f1 = 1.0/ 48.0; 
 	const double f2 = 11.0/ 24.0; 
-
-	for (size_t i = 2; i < m_series.size() - 2; ++i) {
-		const double gradient = f1 * (m_series[i + 2] - m_series[i] - 2) + 
+	size_t end = start_movement > 2 ? start_movement - 2 : m_series.size() - 2; 
+	
+	for (size_t i = 2; i < end; ++i) {
+		const double gradient = f1 * (m_series[i + 2] - m_series[i - 2]) + 
 			f2 * (m_series[i + 1] - m_series[i - 1]); 
 		if (m_gradient_peak.second < gradient) {
 			m_gradient_peak.second =  gradient; 

@@ -103,7 +103,7 @@ public:
 	std::pair<size_t, float>  get_perfusion_high_peak() const;
 
 	/// \returns index and value for the maximum gradient of the curve
-	std::pair<size_t, float>  get_gradient_peak() const;
+	std::pair<size_t, float>  get_gradient_peak(int start_movement) const;
 
 
 	/**

@@ -174,7 +174,7 @@ CFFTSlopeClassifierImpl::CFFTSlopeClassifierImpl():
 }
 
 
-CFFTSlopeClassifierImpl::CFFTSlopeClassifierImpl(const CFFTSlopeClassifier::Columns& series, float breath_rate, bool mean_stripped):
+CFFTSlopeClassifierImpl::CFFTSlopeClassifierImpl(const CFFTSlopeClassifier::Columns& series, float breath_rate, bool /*mean_stripped*/):
 	Perfusion_idx(-1),
 	Baseline_idx(-1), 
 	max_freq_energy(0.0)
