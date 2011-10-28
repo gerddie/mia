@@ -334,7 +334,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	
 	cvinfo() << "set start movement to "  << start_movement << "\n"; 
 	// 
-	// The perfusion high peak was estimated based on the maximum gradient 
+
 	sort(remaining_indices.begin(), remaining_indices.end(), 
 	     [&start_movement](PSlopeStatistics lhs, PSlopeStatistics rhs) {
 		     auto lhsgp = lhs->get_gradient_peak(start_movement); 
@@ -342,6 +342,13 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 		     return lhsgp.second / lhsgp.first > rhsgp.second / rhsgp.first;
 	     });
 
+	
+	sort(remaining_indices.begin(), remaining_indices.begin() + 2, 
+	     [&start_movement](PSlopeStatistics lhs, PSlopeStatistics rhs) 
+	     { return lhs->get_gradient_peak(start_movement).first < rhs->get_gradient_peak(start_movement).first;});
+
+	RV_idx  = remaining_indices[0]->get_index(); 
+	LV_idx  = remaining_indices[1]->get_index();
 	// 
 	// this will only be needed if the LV-ROI segmentation is based on the 
 	// RV/LV peak images 
@@ -349,8 +356,6 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	RV_peak = remaining_indices[0]->get_perfusion_high_peak().first; 
 	LV_peak = remaining_indices[1]->get_perfusion_high_peak().first; 
 	
-	RV_idx  = remaining_indices[0]->get_index(); 
-	LV_idx  = remaining_indices[1]->get_index();
 
 	// that's just assuming, if more then 3 components are 
 	// non-movement, then this dosn't have to be myocardial perfusion 
