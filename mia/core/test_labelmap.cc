@@ -27,6 +27,7 @@ NS_MIA_USE
 using std::istringstream; 
 using std::ostringstream; 
 
+
 BOOST_AUTO_TEST_CASE ( test_labelmap ) 
 {
 	CLabelMap map; 
@@ -49,3 +50,21 @@ BOOST_AUTO_TEST_CASE ( test_labelmap )
 	BOOST_CHECK_EQUAL(map[9], 7); 
 }
 
+
+BOOST_AUTO_TEST_CASE ( test_labelmap_fail_1 ) 
+{
+	istringstream test_false("nothing real"); 
+	BOOST_CHECK_THROW(CLabelMap test(test_false), std::invalid_argument); 
+}
+
+BOOST_AUTO_TEST_CASE ( test_labelmap_fail_2 ) 
+{
+	istringstream test_false("MiaLabelmap\n 2\n 3 1"); 
+	BOOST_CHECK_THROW(CLabelMap test(test_false), std::invalid_argument); 
+}
+
+BOOST_AUTO_TEST_CASE ( test_labelmap_fail_3 ) 
+{
+	istringstream test_false("MiaLabelmap\n 2\n 3 1\n 4"); 
+	BOOST_CHECK_THROW(CLabelMap test(test_false), std::invalid_argument); 
+}

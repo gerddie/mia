@@ -84,6 +84,27 @@ BOOST_AUTO_TEST_CASE( test_perfusion_mean_freq_and_energy )
 
 }
 
+BOOST_AUTO_TEST_CASE( test_gradient  )
+{
+	vector<float> curve = {
+		 15, 12, 12,  5,-10, 
+		 -5,  0,  5, 10, -5,
+		 -6, -4,-20,-10, 0, 
+		 10, 20, 20, 19, 10 
+	};
+	CSlopeStatistics stats(curve, 0);
+
+	BOOST_CHECK_EQUAL(stats.get_gradient_peak(0).first, 14u);
+	BOOST_CHECK_EQUAL(stats.get_gradient_peak(0).second, 10.0);
+
+	BOOST_CHECK_EQUAL(stats.get_gradient_peak(12).first, 6u);
+	BOOST_CHECK_EQUAL(stats.get_gradient_peak(12).second, 5.0);
+
+
+
+}
+
+
 BOOST_AUTO_TEST_CASE( test_perfusion_mean_freq2 )
 {
 	vector<float> curve =  {

@@ -59,3 +59,4 @@ plugins.tex
 programs.tex
 test_lsd.oct
 testds.oct
+*.gcov

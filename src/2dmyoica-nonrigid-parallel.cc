@@ -413,7 +413,11 @@ int do_main( int argc, char *argv[] )
 		ica->set_approach(FICA_APPROACH_SYMM); 
 		if (!ica->run(series)) 
 			box_scale = false; 
-	}
+
+	}		
+	if (!save_crop_feature.empty())
+		ica->save_feature_images(save_crop_feature);
+	
 	
 	vector<C2DFImage> references_float = ica->get_references(); 
 	
@@ -428,6 +432,7 @@ int do_main( int argc, char *argv[] )
 		stringstream cfile; 
 		cfile << save_crop_feature << "-coeff.txt"; 
 		ica->save_coefs(cfile.str()); 
+		
 	}
 
 	// save cropped images if requested

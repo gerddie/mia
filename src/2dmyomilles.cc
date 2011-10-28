@@ -100,6 +100,7 @@ mia-2dmyomilles  -i segment.set -o affine.set -F affine -P 3
 #include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/rigidregister.hh>
 #include <mia/2d/perfusion.hh>
+#include <mia/2d/2dimageio.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/transformfactory.hh>
 #include <mia/core/factorycmdlineoption.hh>
@@ -144,6 +145,15 @@ const SProgramDescrption g_description = {
 	"  -i segment.set -o registered.set -k 2"
 }; 
 
+void save_references(const string& save_ref, int current_pass, int skip_images, const C2DImageSeries& references)
+{
+	for(size_t i = 0 ; i < references.size(); ++i) {
+		stringstream filename; 
+		filename << save_ref << current_pass << "-" 
+			 << setw(4) << setfill('0') << skip_images + i << ".v"; 
+		save_image(filename.str(), references[i]);
+	}
+}
 
 
 int do_main( int argc, char *argv[] )
@@ -152,6 +162,7 @@ int do_main( int argc, char *argv[] )
 	string in_filename;
 	string out_filename;
 	string registered_filebase("reg");
+	string ref_filebase;
 
 	// debug options: save some intermediate steps 
 	string cropped_filename;
@@ -183,7 +194,8 @@ int do_main( int argc, char *argv[] )
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output perfusion data set", CCmdOption::required));
-	options.add(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels")); 
+	options.add(make_opt( registered_filebase, "registered", 'r', "file name base for registered files")); 
+	options.add(make_opt( ref_filebase, "save-references", 0, "save reference images to this file base")); 
 	
 	options.add(make_opt( cropped_filename, "save-cropped", 0, "save cropped set to this file", NULL)); 
 	options.add(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images", NULL)); 
@@ -325,8 +337,13 @@ int do_main( int argc, char *argv[] )
 			ica2.set_approach(FICA_APPROACH_SYMM); 
 		if (ica2.run(series) ) {
 			references_float = ica2.get_references(); 
+
 			transform(references_float.begin(), references_float.end(), 
 				  references.begin(), C2DFImage2PImage()); 
+
+			if (!ref_filebase.empty())
+				save_references(ref_filebase, current_pass, skip_images, references); 
+
 			
 			for (size_t i = 0; i < input_images.size() - skip_images; ++i) {
 				cvmsg() << "Register " << current_pass + 1 <<  " pass, frame " << i << "\n"; 

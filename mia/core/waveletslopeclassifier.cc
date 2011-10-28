@@ -186,12 +186,17 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	for (size_t i = 0; i < series.size(); ++i)
 		movement_pos[vstats[i]->get_level_mean_energy_position()[movement_idx]] += vstats[i]->get_level_coefficient_sums()[movement_idx];
 	
-	bool ifree_breathing = (movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_begin] &&
-				movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_end]);
+	cvdebug() << "Movement coeff weights:" << movement_pos << "\n"; 
+	bool ifree_breathing = ((movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_begin]) &&
+				(movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_end]));
 
 	bool at_begin = (!ifree_breathing) && (movement_pos[CSlopeStatistics::ecp_end] < movement_pos[CSlopeStatistics::ecp_begin]); 
 		
-	cvmsg() << "Detected free breathing data set\n";
+	if (ifree_breathing) 
+		cvmsg() << "Detected free breathing data set\n"; 
+	else 
+		cvmsg() << "Detected breath holding data set\n"; 
+	
 	int low_energy_start_idx = 1; //ifree_breathing ? 0 : 1;
 	
 	// 
@@ -325,23 +330,25 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 		return; 
 	}
 
-	// baseline still in there, then remove it, but only if there are more then two components 
-	if (remaining_indices.size() > 2 && min_range_idx >= 0) {
-		auto new_last = remove_if(remaining_indices.begin(), remaining_indices.end(), 
-			  [min_range_idx](PSlopeStatistics stat) {return stat->get_index() == min_range_idx;}); 
-		remaining_indices.erase(new_last, remaining_indices.end());
-	}
-
-	// 
-	// The perfusion high peak was estimated based on the maximum ration f(x)/x 
-	// but we acually rely on the positions for sorting, because these gradients may 
-	// be larger for peaks that come later 
-	// 
-	sort(remaining_indices.begin(), remaining_indices.end(), 
-	     [](PSlopeStatistics lhs, PSlopeStatistics rhs) {
-		     return lhs->get_perfusion_high_peak().first < rhs->get_perfusion_high_peak().first;
-	     });
+	const int start_movement = (ifree_breathing ||  at_begin) ? 0 : (2 * series[0].size()) / 3; 
 	
+	cvinfo() << "set start movement to "  << start_movement << "\n"; 
+	// 
+
+	sort(remaining_indices.begin(), remaining_indices.end(), 
+	     [&start_movement](PSlopeStatistics lhs, PSlopeStatistics rhs) {
+		     auto lhsgp = lhs->get_gradient_peak(start_movement); 
+		     auto rhsgp = rhs->get_gradient_peak(start_movement); 
+		     return lhsgp.second / lhsgp.first > rhsgp.second / rhsgp.first;
+	     });
+
+	
+	sort(remaining_indices.begin(), remaining_indices.begin() + 2, 
+	     [&start_movement](PSlopeStatistics lhs, PSlopeStatistics rhs) 
+	     { return lhs->get_gradient_peak(start_movement).first < rhs->get_gradient_peak(start_movement).first;});
+
+	RV_idx  = remaining_indices[0]->get_index(); 
+	LV_idx  = remaining_indices[1]->get_index();
 	// 
 	// this will only be needed if the LV-ROI segmentation is based on the 
 	// RV/LV peak images 
@@ -349,8 +356,6 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	RV_peak = remaining_indices[0]->get_perfusion_high_peak().first; 
 	LV_peak = remaining_indices[1]->get_perfusion_high_peak().first; 
 	
-	RV_idx  = remaining_indices[0]->get_index(); 
-	LV_idx  = remaining_indices[1]->get_index();
 
 	// that's just assuming, if more then 3 components are 
 	// non-movement, then this dosn't have to be myocardial perfusion 
