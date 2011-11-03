@@ -56,9 +56,9 @@ namespace bfs = ::boost::filesystem;
 CSplineKernelTestPath init_path; 
 
 template <typename T>
-void check_value(CAttributeMap& attr_map, const string& key,  T value)
+void check_value(const CAttributedData& attr_map, const string& key,  T value)
 {
-	const PAttribute pattr = attr_map[key];
+	const PAttribute pattr = attr_map.get_attribute(key);
 	cvdebug() << "check_value(" << key << ") = '" << value << "'\n";
 	const TAttribute<T> * attr = dynamic_cast<const TAttribute<T> *>(pattr.get());
 	BOOST_REQUIRE(attr);
@@ -125,7 +125,7 @@ void check_translation()
         VSetAttr(vista_list1, "double", NULL, VDoubleRepn, double_value);
         VSetAttr(vista_list1, "string", NULL, VStringRepn, string_value.c_str());
 
-	CAttributeMap attr_map;
+	CAttributedData attr_map;
 
 	copy_attr_list(attr_map, vista_list1);
 

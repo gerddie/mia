@@ -145,22 +145,10 @@ static bool check_entry(const string& key, const string& val, const CHistoryReco
 #endif
 
 
-static void test_attributes_equal(const C3DImage& a, const C3DImage& b)
+static void test_attributes_equal(const CAttributedData& a, const CAttributedData& b)
 {
-	const PAttributeMap ad = a.get_attribute_list();
-	const PAttributeMap bd = b.get_attribute_list();
 
-	BOOST_CHECK_EQUAL(ad->size(), bd->size());
-
-	for (CAttributeMap::const_iterator ai = ad->begin(); ai != ad->end(); ++ai) {
-		CAttributeMap::const_iterator bi = bd->find(ai->first);
-		if (bi == bd->end()) {
-			BOOST_FAIL(ai->first);
-			continue;
-		}
-		cvdebug() << ai->first << "\n";
-		BOOST_CHECK(ai->second->is_equal(*bi->second));
-	}
+	BOOST_CHECK(a == b);
 }
 
 static void check_save_load(const C3DImageVector& images, const C3DImageIOPlugin& imgio, bool /*test_history_split*/)

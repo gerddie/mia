@@ -64,7 +64,7 @@ CGradnorm::result_type CGradnorm::operator () (const T2DImage<T>& data) const
 
 	const C2DFVectorfield vf = get_gradient(data);
 
-	T2DImage<float> *result = new T2DImage<float>(data.get_size(), data.get_attribute_list());
+	T2DImage<float> *result = new T2DImage<float>(data.get_size(), data);
 	float max;
 
 	C2DFVectorfield::const_iterator  pfb = vf.begin();

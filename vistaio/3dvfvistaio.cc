@@ -92,10 +92,12 @@ CVista3DVFIOPlugin::PData  CVista3DVFIOPlugin::do_load(const string& fname) cons
 			continue;
 		}
 
+
 		result = CVista3DVFIOPlugin::PData(new C3DIOVectorfield(C3DBounds(field->x_dim, field->y_dim, field->z_dim)));
+		
 		T3DVector<VFloat> * input  = (T3DVector<VFloat> *)field->p.data;
 		copy(input, input + result->size(), result->begin());
-		copy_attr_list(*result->get_attribute_list(), field->attr);
+		copy_attr_list(*result, field->attr);
 	}
 
 	return result;
@@ -115,7 +117,7 @@ bool CVista3DVFIOPlugin::do_save(const string& fname, const C3DIOVectorfield& da
 					    VFloatRepn);
 	T3DVector<VFloat> * output  = (T3DVector<VFloat> *)out_field->p.data;
 	copy(data.begin(), data.end(), output);
-	copy_attr_list(out_field->attr, *data.get_attribute_list());
+	copy_attr_list(out_field->attr, data);
 	VSetAttr(vlist, "3DFVectorfield", NULL, VField3DRepn, out_field);
 
 	bool result = VWriteFile(f,vlist);
@@ -217,7 +219,7 @@ CScaled3DVFIOPlugin::PData CScaled3DVFIOPlugin::do_load(const string& fname) con
 		default: 
 			throw invalid_argument("CScaled3DVFIOPlugin::do_load: unsupported representation"); 
 		}
-		copy_attr_list(*result->get_attribute_list(), data);
+		copy_attr_list(*result, data);
 	}
 	return result; 
 }

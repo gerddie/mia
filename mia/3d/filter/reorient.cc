@@ -77,13 +77,13 @@ C3DReorient::result_type C3DReorient::operator () (const mia::T3DImage<T>& data)
 	cvdebug() << "strategy = " << strategy << "(" << m_strategy <<")\n";
 	switch (strategy) {
 	case xyz: {
-		result = new T3DImage<T>(data.get_size(), data.get_attribute_list());
+		result = new T3DImage<T>(data.get_size(), data);
 		copy(data.begin(), data.end(), result->begin());
 		break;
 	}
 	case xzy: {
 		C3DBounds out_size(data.get_size().xzy() );
-		result = new T3DImage<T>(out_size, data.get_attribute_list());
+		result = new T3DImage<T>(out_size, data);
 		result->set_voxel_size(data.get_voxel_size().xzy());
 		for (size_t z = 0; z < data.get_size().z; ++z) {
 			for (size_t y = 0; y < data.get_size().y; ++y) {
@@ -95,7 +95,7 @@ C3DReorient::result_type C3DReorient::operator () (const mia::T3DImage<T>& data)
 	}
 	case yxz: {
 		C3DBounds out_size(data.get_size().yxz() );
-		result = new T3DImage<T>(out_size, data.get_attribute_list());
+		result = new T3DImage<T>(out_size, data);
 		result->set_voxel_size(data.get_voxel_size().yxz());
 		for (size_t z = 0; z < data.get_size().z; ++z) {
 			for (size_t y = 0; y < data.get_size().y; ++y) {
@@ -108,7 +108,7 @@ C3DReorient::result_type C3DReorient::operator () (const mia::T3DImage<T>& data)
 	}
 	case yzx: {
 		C3DBounds out_size(data.get_size().yzx());
-		result = new T3DImage<T>(out_size, data.get_attribute_list());
+		result = new T3DImage<T>(out_size, data);
 		result->set_voxel_size(data.get_voxel_size().yzx());
 		for (size_t z = 0; z < data.get_size().z; ++z) {
 			for (size_t y = 0; y < data.get_size().y; ++y) {
@@ -121,7 +121,7 @@ C3DReorient::result_type C3DReorient::operator () (const mia::T3DImage<T>& data)
 	}
 	case zxy: {
 		C3DBounds out_size(data.get_size().zxy() );
-		result = new T3DImage<T>(out_size, data.get_attribute_list());
+		result = new T3DImage<T>(out_size, data);
 		result->set_voxel_size(data.get_voxel_size().zxy());
 		for (size_t z = 0; z < data.get_size().z; ++z) {
 			for (size_t y = 0; y < data.get_size().y; ++y) {
@@ -134,7 +134,7 @@ C3DReorient::result_type C3DReorient::operator () (const mia::T3DImage<T>& data)
 	}
 	case zyx: {
 		C3DBounds out_size(data.get_size().zyx() );
-		result = new T3DImage<T>(out_size, data.get_attribute_list());
+		result = new T3DImage<T>(out_size, data);
 		result->set_voxel_size(data.get_voxel_size().zyx());
 		for (size_t z = 0; z < data.get_size().z; ++z) {
 			for (size_t y = 0; y < data.get_size().y; ++y) {

@@ -242,11 +242,8 @@ public:
 	*/
 	const PAttribute get_attribute(const std::string& key) const;
 
-	/// \returns the attribute list writable
-	PAttributeMap get_attribute_list();
-
-	/// \returns the attribute list read only
-	const PAttributeMap get_attribute_list() const;
+	CAttributeMap::const_iterator begin_attributes() const; 
+	CAttributeMap::const_iterator end_attributes() const; 
 
 	/**
 	   Sets the attribute \a name to value \a attr. If \a attr is \a NULL, then

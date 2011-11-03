@@ -111,11 +111,10 @@ int do_main( int argc, char *argv[] )
 	     attr_image_list.get() && attr_image_list->size() ) {
 
 		P2DImage attr_image = *attr_image_list->begin();
-		PAttributeMap attr = attr_image->get_attribute_list();
 		for (C3DImageIOPluginHandler::Instance::Data::iterator i = in_image_list->begin();
 			     i != in_image_list->end(); ++i)
-			for (CAttributeMap::const_iterator a = attr->begin();
-			     a != attr->end(); ++a) {
+			for (CAttributeMap::const_iterator a = attr_image->begin_attributes();
+			     a != attr_image->end_attributes(); ++a) {
 				if (!(*i)->has_attribute(a->first))
 					(*i)->set_attribute(a->first, a->second);
 			}

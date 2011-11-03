@@ -592,8 +592,15 @@ public:
 	   @param group 
 	 */
 	void set_group(const std::string& group); 
- private:
-	EHelpRequested do_parse(size_t argc, const char *args[], bool has_additional) __attribute__((warn_unused_result));
+	
+	/**
+	   Set the output stream for help/usage messages
+	   \param os new output stream
+	 */
+	void set_logstream(std::ostream& os); 
+private:
+	EHelpRequested do_parse(size_t argc, const char *args[], bool has_additional) 
+		__attribute__((warn_unused_result));
 	int handle_shortargs(const char *arg, size_t argc, const char *args[]);
 	struct CCmdOptionListData *m_impl;
 };

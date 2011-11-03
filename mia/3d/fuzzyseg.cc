@@ -327,7 +327,7 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 	}
 
 	// Create and initialize gain-field
-	C3DFImage gain_image( data.get_size(), data.get_attribute_list() );
+	C3DFImage gain_image( data.get_size(), data);
 
 	C3DFImage::iterator gainBegin = gain_image.begin();
 	C3DFImage::iterator gainEnd   = gain_image.end();
@@ -347,8 +347,7 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 
 	C3DFImageVec cls_image;
 	for (size_t i = 0; i < m_nClasses; ++i)  {
-		cls_image.push_back(new C3DFImage ( data.get_size(),
-						    data.get_attribute_list()));
+		cls_image.push_back(new C3DFImage ( data.get_size(), data));
 	}
 
 	for (unsigned int t = 0; t < _MAXIT; t++)  {
@@ -430,8 +429,7 @@ CSegment3d::result_type CSegment3d::operator () (const T3DImage<T>& data)
 
 
 	// compute corrected image
-	T3DImage<T> *corrected_image = new T3DImage<T> (data.get_size(),
-							data.get_attribute_list());
+	T3DImage<T> *corrected_image = new T3DImage<T> (data.get_size(), data);
 	C3DFImage::iterator gain_itr = gain_image.begin();
 	typename T3DImage<T>::iterator corrected_itr = corrected_image->begin();
 

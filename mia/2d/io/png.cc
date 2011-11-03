@@ -352,14 +352,16 @@ CPngImageSaver::result_type CPngImageSaver::operator ()(const T2DImage<T>& image
 	sig_bit.gray = pixel_trait<T>::pixel_size;
 	png_set_sBIT(png_ptr, info_ptr, &sig_bit);
 
-	const PAttributeMap attr_map = image.get_attribute_list();
-	vector<png_text>  text_ptr(attr_map->size());
-	CAttributeMap::const_iterator iattr = attr_map->begin();
 
-	for (size_t i = 0; i < text_ptr.size(); ++i, ++iattr) {
-		text_ptr[i].key = strdup(iattr->first.c_str());
-		text_ptr[i].text = strdup(iattr->second->as_string().c_str());
-		text_ptr[i].compression = PNG_TEXT_COMPRESSION_NONE;
+
+	vector<png_text>  text_ptr;
+
+	for (auto iattr = image.begin_attributes(); iattr != image.end_attributes(); ++iattr) {
+		png_text p; 
+		p.key = strdup(iattr->first.c_str());
+		p.text = strdup(iattr->second->as_string().c_str());
+		p.compression = PNG_TEXT_COMPRESSION_NONE;
+		text_ptr.push_back(p); 
 	}
 
 	png_set_text(png_ptr, info_ptr, &text_ptr[0], text_ptr.size());

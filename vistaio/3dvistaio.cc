@@ -84,7 +84,7 @@ P3DImage read_image(VImage image)
 	O *end = begin + result->size();
 	std::copy(begin, end, result->begin());
 
-	copy_attr_list(*result->get_attribute_list(), VImageAttrList(image));
+	copy_attr_list(*result, VImageAttrList(image));
 
 	return presult;
 }
@@ -126,9 +126,10 @@ CVista3DImageIOPlugin::PData  CVista3DImageIOPlugin::do_load(const string& fname
 	CVista3DImageIOPlugin::PData result(new CVista3DImageIOPlugin::Data());
 
 	for (int i = 0; i < nimages; ++i) {
+
 		P3DImage r = copy_from_vista(images[i]);
-		copy_attr_list(*r->get_attribute_list(), VImageAttrList(images[i]));
 		result->push_back(r);
+
 		VDestroyImage(images[i]);
 	}
 
@@ -152,7 +153,7 @@ VImage CVImageCreator::operator ()( const T3DImage<T>& image) const
 		typename vista_repnkind<T>::type> dispatcher;
 	VImage result =  dispatcher::apply(image.begin(), image.end(),
 					   image.get_size().x, image.get_size().y, image.get_size().z);
-	copy_attr_list(VImageAttrList(result), *image.get_attribute_list());
+	copy_attr_list(VImageAttrList(result), image);
 	return result;
 }
 

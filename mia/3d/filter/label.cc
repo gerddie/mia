@@ -91,7 +91,7 @@ CLabel::result_type CLabel::do_filter(const C3DImage& image) const
 	const C3DBitImage& input = dynamic_cast<const C3DBitImage&>(image);
 
 	unsigned short current_label = 1;
-	C3DUSImage *result = new C3DUSImage(image.get_size(), image.get_attribute_list());
+	C3DUSImage *result = new C3DUSImage(image.get_size(), image);
 	P3DImage presult(result);
 	fill(result->begin(), result->end(), 0);
 
@@ -114,7 +114,7 @@ CLabel::result_type CLabel::do_filter(const C3DImage& image) const
 
 	cvmsg() << "\n";
 	if (current_label < 256) {
-		C3DUBImage *real_result = new C3DUBImage(image.get_size(), image.get_attribute_list());
+		C3DUBImage *real_result = new C3DUBImage(image.get_size(), image);
 		copy(result->begin(), result->end(), real_result->begin());
 		presult.reset(real_result);
 	}

@@ -109,7 +109,7 @@ struct __dispatch_dilate<bool> {
 		C2DBitImage *result = 0;
 
 		if (more_black) {
-			result = new C2DBitImage(size, image.get_attribute_list());
+			result = new C2DBitImage(size, image);
 			C2DBitImage::const_iterator src_i = image.begin();
 			for (size_t y = 0; y < size.y; ++y)
 				for (size_t x = 0; x < size.x; ++x,  ++src_i) {
@@ -281,7 +281,7 @@ struct __dispatch_erode<bool> {
 					}
 				}
 		}else {
-			result = new C2DBitImage(size, image.get_attribute_list());
+			result = new C2DBitImage(size, image);
 			fill(result->begin(), result->end(), true);
 			C2DBitImage::const_iterator src_i = image.begin();
 			for (size_t y = 0; y < size.y; ++y)

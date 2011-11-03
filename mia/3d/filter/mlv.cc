@@ -148,7 +148,7 @@ typename C3DMLVImageFilter::result_type C3DMLVImageFilter::operator () (const T3
 	cvdebug() << "evaluated mu sigma\n";
 
 
-	T3DImage<T> *result  = new T3DImage<T>(data.get_size(), data.get_attribute_list());
+	T3DImage<T> *result  = new T3DImage<T>(data.get_size(), data);
 	typename T3DImage<T>::iterator i = result->begin();
 
 	for (int z = 0; z < (int)data.get_size().z; ++z) {

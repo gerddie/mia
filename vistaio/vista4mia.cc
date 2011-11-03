@@ -28,28 +28,22 @@ using namespace boost;
 
 
 NS_MIA_BEGIN
-void copy_attr_list(VAttrList target, const CAttributeMap& attributes);
 
-
-
-
-template <>
-void add_attribute(CAttributeMap& attributes, const string& name, VString value)
+void vistaio_add_attribute(CAttributedData& attr, const string& name, VString value)
 {
 	cvdebug() << "add attribute " << name << " of type 'string' and value '" << value << "'\n";
-	attributes[name] = CStringAttrTranslatorMap::instance().to_attr(name, value);
+	attr.set_attribute(name, CStringAttrTranslatorMap::instance().to_attr(name, value)); 
 }
 
-template <>
-void add_attribute(CAttributeMap& attributes, const string& name, VBit value)
+void vistaio_add_attribute(CAttributedData& attr, const string& name, VBit value)
 {
 	cvdebug() << "add attribute " << name << " of type " << typeid(VBit).name() << " and value '" << value << "'\n";
-	attributes[name] = PAttribute(new TAttribute<bool>(value));
+	attr.set_attribute(name, PAttribute(new TAttribute<bool>(value))); 
 }
 
 
 
-VISTA4MIA_EXPORT void copy_attr_list(CAttributeMap& attributes, const VAttrList in_list)
+VISTA4MIA_EXPORT void copy_attr_list(CAttributedData& attributes, const VAttrList in_list)
 {
 	VAttrListPosn pos;
 	VFirstAttr(in_list, &pos);
@@ -60,42 +54,42 @@ VISTA4MIA_EXPORT void copy_attr_list(CAttributeMap& attributes, const VAttrList 
 		case VStringRepn:{
 			VString s;
 			VGetAttrValue(&pos,NULL,VStringRepn,&s);
-			add_attribute(attributes, name, s);
+			vistaio_add_attribute(attributes, name, s);
 		}break;
 		case VFloatRepn:{
 			float f;
 			VGetAttrValue(&pos,NULL,VFloatRepn,&f);
-			add_attribute(attributes, name, f);
+			vistaio_add_attribute(attributes, name, f);
 		}break;
 		case VDoubleRepn:{
 			double f;
 			VGetAttrValue(&pos,NULL,VDoubleRepn,&f);
-			add_attribute(attributes, name, f);
+			vistaio_add_attribute(attributes, name, f);
 		}break;
 		case VShortRepn:{
 			short f;
 			VGetAttrValue(&pos,NULL,VShortRepn,&f);
-			add_attribute(attributes, name, f);
+			vistaio_add_attribute(attributes, name, f);
 		}break;
 		case VLongRepn:{
 			long f;
 			VGetAttrValue(&pos,NULL,VLongRepn,&f);
-			add_attribute(attributes, name, f);
+			vistaio_add_attribute(attributes, name, f);
 		}break;
 		case VUByteRepn:{
 			unsigned char f;
 			VGetAttrValue(&pos,NULL,VUByteRepn,&f);
-			add_attribute(attributes, name, f);
+			vistaio_add_attribute(attributes, name, f);
 		}break;
 		case VSByteRepn:{
 			signed char f;
 			VGetAttrValue(&pos,NULL,VSByteRepn,&f);
-			add_attribute(attributes, name, f);
+			vistaio_add_attribute(attributes, name, f);
 		}break;
 		case VBitRepn:{
 			VBit b;
 			VGetAttrValue(&pos,NULL,VBitRepn,&b);
-			add_attribute(attributes, name, b);
+			vistaio_add_attribute(attributes, name, b);
 		}break;
 		default:
 			cvwarn() << "Not yet implemented\n";
@@ -105,10 +99,9 @@ VISTA4MIA_EXPORT void copy_attr_list(CAttributeMap& attributes, const VAttrList 
 }
 
 
-VISTA4MIA_EXPORT void copy_attr_list(VAttrList target, const CAttributeMap& attributes)
+VISTA4MIA_EXPORT void copy_attr_list(VAttrList target, const CAttributedData& data)
 {
-	for (CAttributeMap::const_iterator i = attributes.begin();
-	     i != attributes.end(); ++i) {
+	for (auto i = data.begin_attributes(); i != data.end_attributes(); ++i) {
 		VSetAttr(target, i->first.c_str(), NULL, VStringRepn, i->second->as_string().c_str());
 	}
 }

@@ -109,7 +109,7 @@ struct __dispatch_dilate<bool> {
 		C3DBitImage *result = 0;
 
 		if (more_black) {
-			result = new C3DBitImage(size, image.get_attribute_list());
+			result = new C3DBitImage(size, image);
 			C3DBitImage::const_iterator src_i = image.begin();
 			for (size_t z = 0; z < size.z; ++z)
 				for (size_t y = 0; y < size.y; ++y)
@@ -289,7 +289,7 @@ struct __dispatch_erode<bool> {
 						}
 					}
 		}else {
-			result = new C3DBitImage(size, image.get_attribute_list());
+			result = new C3DBitImage(size, image);
 			fill(result->begin(), result->end(), true);
 			C3DBitImage::const_iterator src_i = image.begin();
 			for (size_t z = 0; z < size.z; ++z)

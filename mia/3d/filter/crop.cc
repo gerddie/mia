@@ -77,7 +77,7 @@ C3DCrop::result_type C3DCrop::operator () (const T3DImage<T>& data) const
 	C3DBounds size = end - begin;
 	cvdebug() << "crop (" << begin << " - " << end << "\n";
 
-	T3DImage<T> * result = new T3DImage<T>(size, data.get_attribute_list());
+	T3DImage<T> * result = new T3DImage<T>(size, data);
 
 	for (size_t z = 0; z < size.z; ++z)
 		for (size_t y = 0; y < size.y; ++y) {

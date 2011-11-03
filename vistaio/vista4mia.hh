@@ -113,8 +113,8 @@ struct dispatch_creat_vimage<I, void> {
 
 NS_MIA_BEGIN
 
-VISTA4MIA_EXPORT void copy_attr_list(VAttrList target, const mia::CAttributeMap& attributes);
-VISTA4MIA_EXPORT void copy_attr_list(mia::CAttributeMap& attributes, const VAttrList target);
+VISTA4MIA_EXPORT void copy_attr_list(VAttrList target, const mia::CAttributedData& attributes);
+VISTA4MIA_EXPORT void copy_attr_list(mia::CAttributedData& attributes, const VAttrList target);
 
 /**
    Helper class to indice atomatic destruction of vista attribute lists. 

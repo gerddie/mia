@@ -332,8 +332,83 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors2, CmdlineParserFixture )
 	CCmdOptionList olist(general_help);
 	olist.add(make_opt(bool_value, "bool", 'H', "a bool option", "bool"));
 
-	BOOST_CHECK_THROW(dummy = (olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no), invalid_argument); 
+	BOOST_CHECK_THROW(dummy = (olist.parse(options.size(), &options[0]) 
+				   == CCmdOptionList::hr_no), invalid_argument); 
 }
+
+const SProgramDescrption general_help_test = {
+	"Test", 
+	"This program tests the command line parser.", 
+	"Example text", 
+	"Example command"
+}; 
+
+BOOST_FIXTURE_TEST_CASE( test_parser_usage_output, CmdlineParserFixture )
+{
+	vector<const char *> options;
+	options.push_back("test-program");
+	options.push_back("-?");
+
+	CCmdOptionList olist(general_help_test);
+	stringstream output; 
+	olist.set_logstream(output);
+	
+	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_usage); 
+	
+	const string test("Usage:\n  test-program -V verbose -h help -? usage \n"); 
+
+	BOOST_CHECK_EQUAL(output.str(), test); 
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
+{
+	vector<const char *> options;
+	options.push_back("test-program");
+	options.push_back("-h");
+
+	CCmdOptionList olist(general_help_test);
+	ostringstream output; 
+	olist.set_logstream(output);
+	
+	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_help); 
+	
+	const string test("\nProgram group:  Test\n"
+			  "    \n    This program tests the command line parser.\n\n"
+			  "Basic usage:\n    test-program [options]\n\n"
+			  "The program supports the following command line options:\n\n"
+			  "Help & Info              \n"
+			  "  -V --verbose=warning  verbosity of output, "
+			  "print messages of given \n"
+			  "                        level and higher priorities. Supported \n"
+			  "                        priorities starting at lowest level are:\n"
+			  "                          trace: Function call trace\n"
+			  "                          debug: Debug output\n"
+			  "                          info: Low level messages\n"
+			  "                          message: Normal messages\n"
+			  "                          warning: Warnings\n"
+			  "                          fail: Report test failures\n"
+			  "                          error: Report errors\n"
+			  "                          fatal: Report only fatal errors\n"
+			  "     --copyright        print copyright information\n"
+			  "  -h --help             print this help\n"
+			  "     --help-xml         print help formatted as XML\n"
+			  "  -? --usage            print a short help\n\n"
+			  "Example usage:\n  Example text\n"
+			  "    \n    test-program Example command\n\n"
+			  "Copyright:\n"
+			  "  This software is copyright (c) Gert Wollny et al. It comes with  \n"
+			  "  ABSOLUTELY NO WARRANTY and you may redistribute it under the terms \n"
+			  "  of the GNU GENERAL PUBLIC LICENSE Version 3 (or later). For more \n"
+			  "  information run the program with the option '--copyright'.\n  \n"); 
+  
+
+	BOOST_CHECK_EQUAL(output.str().size(), test.size()); 
+	BOOST_CHECK_EQUAL(output.str(), test); 
+}
+
+
+
 
 NS_MIA_USE; 
 int BOOST_TEST_CALL_DECL
