@@ -46,7 +46,13 @@ extern void print_full_copyright(const char *name);
 
 
 NS_MIA_BEGIN
-using namespace std;
+using std::ostream;
+using std::stringstream;
+using std::string;
+using std::invalid_argument; 
+using std::vector; 
+using std::map; 
+using std::unique_ptr; 
 
 CCmdOption::CCmdOption(char short_opt, const char *long_opt, 
 		       const char *long_help, const char *short_help, Flags flags):
@@ -236,12 +242,20 @@ struct CCmdOptionListData {
 	void print_usage(const char *name_help) const;
 
 	vector<const char *> has_unset_required_options() const; 
+	void set_logstream(std::ostream& os); 
+	
 	string m_general_help; 
 	string m_program_group;  
 	string m_program_example_descr;
 	string m_program_example_code; 
 	string m_free_parametertype; 
+	ostream *m_log; 
 };
+
+void CCmdOptionListData::set_logstream(ostream& os)
+{
+	m_log  = &os; 
+}
 
 CCmdSetOption::CCmdSetOption(std::string& val, const std::set<std::string>& set, 
 			     char short_opt, const char *long_opt, const char *long_help,
@@ -311,7 +325,8 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescrption& description):
 	m_general_help(description.description), 
 	m_program_group(description.group), 
 	m_program_example_descr(description.example_descr?description.example_descr:"" ),
-	m_program_example_code(description.example_code?description.example_code:"")
+	m_program_example_code(description.example_code?description.example_code:""), 
+	m_log(&std::clog)
 {
 	options[""] = vector<PCmdOption>();
 
@@ -443,8 +458,8 @@ void CCmdOptionListData::print_help_xml(const char *name_help, bool has_addition
 	example_code->set_child_text(m_program_example_code); 
 	
 
-	cout << doc->write_to_string_formatted();
-	cout << "\n"; 
+	*m_log << doc->write_to_string_formatted();
+	*m_log << "\n"; 
 }
 #endif 
 
@@ -467,7 +482,7 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 	if (max_width > 100) 
 		max_width = 100; 
 #endif
-	CFixedWidthOutput console(clog, max_width); 
+	CFixedWidthOutput console(*m_log, max_width); 
 
 	vector<string> opt_table;
 	vector<string> help_table;
@@ -486,7 +501,7 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 	
 	
 	size_t opt_size = 0;
-	clog << setiosflags(ios_base::left);
+	*m_log << setiosflags(std::ios_base::left);
 	for (auto i = options.begin(); i != options.end(); ++i) {
 
 		if (i->second.empty()) 
@@ -583,14 +598,14 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 	console.write(g_basic_copyright);
 	console.pop_offset(); 
 	console.write("\n");
-	clog << setiosflags(ios_base::right);
+	*m_log << setiosflags(std::ios_base::right);
 
 }
 
 void CCmdOptionListData::print_usage(const char *name) const
 {
-	clog << "Usage:\n";
-	clog << "  " << name << " ";
+	*m_log << "Usage:\n";
+	*m_log << "  " << name << " ";
 	for (COptionsMap::const_iterator i = options.begin();
 	     i != options.end(); ++i) {
 		COptionsGroup::const_iterator g_i = i->second.begin();
@@ -599,11 +614,11 @@ void CCmdOptionListData::print_usage(const char *name) const
 		while (g_i != g_e) {
 
 			const PCmdOption& k = *g_i;
-			k->print_short_help(clog);
+			k->print_short_help(*m_log);
 			++g_i;
 		}
 	}
-	clog << '\n';
+	*m_log << '\n';
 }
 
 CCmdOptionList::CCmdOptionList(const SProgramDescrption& description):
@@ -791,6 +806,11 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional)
 	return hr_no; 
 }
 
+void CCmdOptionList::set_logstream(std::ostream& os)
+{
+	m_impl->set_logstream(os); 
+}
+
 const vector<const char *>& CCmdOptionList::get_remaining() const
 {
 	return m_impl->remaining;
@@ -838,7 +858,6 @@ void CHelpOption::print(std::ostream& os) const
 
 bool CHelpOption::do_set_value(const char */*str_value*/)
 {
-	print(clog); 
 	exit(0); 
 }
 size_t CHelpOption::do_get_needed_args() const

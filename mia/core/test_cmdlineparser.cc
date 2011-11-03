@@ -332,8 +332,36 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors2, CmdlineParserFixture )
 	CCmdOptionList olist(general_help);
 	olist.add(make_opt(bool_value, "bool", 'H', "a bool option", "bool"));
 
-	BOOST_CHECK_THROW(dummy = (olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no), invalid_argument); 
+	BOOST_CHECK_THROW(dummy = (olist.parse(options.size(), &options[0]) 
+				   == CCmdOptionList::hr_no), invalid_argument); 
 }
+
+const SProgramDescrption general_help_test = {
+	"Test", 
+	"This program tests the command line parser.", 
+	"Example text", 
+	"Example command"
+}; 
+
+BOOST_FIXTURE_TEST_CASE( test_parser_usage_output, CmdlineParserFixture )
+{
+	vector<const char *> options;
+	options.push_back("test-program");
+	options.push_back("-?");
+
+	CCmdOptionList olist(general_help_test);
+	stringstream output; 
+	olist.set_logstream(output);
+	
+	BOOST_CHECK_EQUAL(olist.parse(options.size(), &options[0]), CCmdOptionList::hr_usage); 
+	
+	const string test("Usage:\n  test-program -V verbose -h help -? usage \n"); 
+
+	BOOST_CHECK_EQUAL(output.str(), test); 
+}
+
+
+
 
 NS_MIA_USE; 
 int BOOST_TEST_CALL_DECL
