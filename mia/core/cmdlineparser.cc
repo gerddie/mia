@@ -47,7 +47,7 @@ extern void print_full_copyright(const char *name);
 
 NS_MIA_BEGIN
 using std::ostream;
-using std::stringstream;
+using std::ostringstream;
 using std::string;
 using std::invalid_argument; 
 using std::vector; 
@@ -178,7 +178,7 @@ void CCmdOption::set_value(const char *str_value)
 	}
 
 	catch (std::invalid_argument& x) {
-		stringstream msg;
+		ostringstream msg;
 		msg << "Error parsing --" << get_long_option() << ":" << x.what();
 		throw std::invalid_argument(msg.str());
 	}
@@ -417,7 +417,7 @@ void CCmdOptionListData::print_help_xml(const char *name_help, bool has_addition
 	Element* description = nodeRoot->add_child("description"); 
 	description->set_child_text(m_general_help); 
 	Element* basic_usage = nodeRoot->add_child("basic_usage"); 
-	stringstream usage_text; 
+	ostringstream usage_text; 
 	usage_text << " " << name_help << " "; 
 
 	for (auto g = options.begin(); g != options.end(); ++g) {
@@ -472,15 +472,19 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 	
 	size_t max_width = 70;
 #ifdef HAVE_SYS_IOCTL_H
-	struct winsize ws; 
-	if (ioctl(0,TIOCGWINSZ,&ws)==0) {
-		max_width = ws.ws_col;
-		if (max_width < max_opt_width + 20) 
-			max_width = max_opt_width + 20; 
-		
-	} 
-	if (max_width > 100) 
-		max_width = 100; 
+	// the test cases require a fixed width handling and write to a ostringstream 
+	auto log_to_string = dynamic_cast<ostringstream*>(m_log); 
+	if (!log_to_string) {
+		struct winsize ws; 
+		if (ioctl(0,TIOCGWINSZ,&ws)==0) {
+			max_width = ws.ws_col;
+			if (max_width < max_opt_width + 20) 
+				max_width = max_opt_width + 20; 
+			
+		} 
+		if (max_width > 100) 
+			max_width = 100; 
+	}
 #endif
 	CFixedWidthOutput console(*m_log, max_width); 
 
@@ -496,7 +500,7 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 	console.pop_offset();
 	console.newline(); 
 	
-	stringstream usage_text; 
+	ostringstream usage_text; 
 	usage_text <<name_help << " "; 
 	
 	
@@ -506,14 +510,14 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 
 		if (i->second.empty()) 
 			continue;
-		stringstream group;
+		ostringstream group;
 		group << "\n" << i->first; 
 		opt_table.push_back(group.str());
 		help_table.push_back("  ");
 		
 		for (auto g_i = i->second.begin(); g_i != i->second.end(); ++g_i) {
-			stringstream opt;
-			stringstream shelp;
+			ostringstream opt;
+			ostringstream shelp;
 
 			const PCmdOption& k = *g_i;
 			k->get_opt_help(opt);
@@ -782,7 +786,7 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional)
 
 	cverb.set_verbosity(m_impl->verbose);
 	if (!has_additional && !m_impl->remaining.empty()) {
-		stringstream msg; 
+		ostringstream msg; 
 		msg << "Unknown options given: "; 
 		for (auto i = m_impl->remaining.begin(); m_impl->remaining.end() != i; ++i)
 			msg << " '" << *i << "' "; 
@@ -791,7 +795,7 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional)
 	
 	auto unset_but_required = m_impl->has_unset_required_options(); 
 	if (!unset_but_required.empty()) {
-		stringstream msg; 
+		ostringstream msg; 
 		if (unset_but_required.size() > 1) 
 			msg << "Some required options were not set:"; 
 		else
