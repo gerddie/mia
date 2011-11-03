@@ -91,10 +91,11 @@ CVista2DVFIOPlugin::PData  CVista2DVFIOPlugin::do_load(const string& fname) cons
 			continue;
 		}
 
+
 		result = CVista2DVFIOPlugin::PData(new C2DIOVectorfield(C2DBounds(field->x_dim, field->y_dim)));
 		T2DVector<VFloat> * input  = (T2DVector<VFloat> *)field->p.data;
 		copy(input, input + result->size(), result->begin());
-		copy_attr_list(*result->get_attribute_list(), field->attr);
+		copy_attr_list(*result, field->attr);
 	}
 
 
@@ -116,7 +117,7 @@ bool CVista2DVFIOPlugin::do_save(const string& fname, const C2DIOVectorfield& da
 	T2DVector<VFloat> * output  = (T2DVector<VFloat> *)out_field->p.data;
 	copy(data.begin(), data.end(), output);
 
-	copy_attr_list(out_field->attr, *data.get_attribute_list());
+	copy_attr_list(out_field->attr, data);
 	VSetAttr(vlist, "2DFVectorfield", NULL, VField2DRepn, out_field);
 
 	bool result = VWriteFile(f,vlist);

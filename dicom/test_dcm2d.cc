@@ -182,8 +182,7 @@ BOOST_FIXTURE_TEST_CASE( test_dicom_save_load, DicomSaveLoadFixture )
 	P2DImage pimage = *images->begin();
 	BOOST_REQUIRE(pimage);
 
-	BOOST_CHECK(*pimage->get_attribute_list() ==
-		    *org_image->get_attribute_list());
+	BOOST_CHECK(*pimage ==  *org_image);
 
 	const C2DUSImage& load_image = dynamic_cast<const C2DUSImage&>(*pimage);
 

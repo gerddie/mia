@@ -179,7 +179,7 @@ BOOST_FIXTURE_TEST_CASE(test_create_dicom, DicomFixture)
 	BOOST_CHECK_EQUAL(reader.get_pixel_size(), pixel_size);
 
 	P2DImage read_img = reader.get_image();
-	BOOST_CHECK_EQUAL(*read_img->get_attribute_list(), *image.get_attribute_list());
+	BOOST_CHECK(*read_img ==  image);
 }
 
 DicomFixture::DicomFixture()

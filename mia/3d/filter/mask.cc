@@ -87,7 +87,7 @@ public:
 	template <typename T>
 	C3DMaskDispatch::result_type operator () (const mia::T3DImage<T>& data) const 	{
 
-		T3DImage<T> * result = new T3DImage<T>(data.get_size(), data.get_attribute_list());
+		T3DImage<T> * result = new T3DImage<T>(data.get_size(), data);
 		transform(m_mask->begin(), m_mask->end(), data.begin(),  result->begin(),
 			  __ifthenelse<T>());
 		return C3DMask::result_type(result);

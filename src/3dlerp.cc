@@ -103,7 +103,7 @@ struct FAddWeighted: public TFilter<P3DImage> {
 		}
 
 
-		C3DFImage *result = new C3DFImage(a.get_size(), a.get_attribute_list());
+		C3DFImage *result = new C3DFImage(a.get_size(), a);
 		C3DFImage::iterator r = result->begin();
 		C3DFImage::iterator e = result->end();
 

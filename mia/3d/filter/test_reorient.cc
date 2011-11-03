@@ -73,7 +73,7 @@ BOOST_FIXTURE_TEST_CASE( test_reorient_xzy, ReorientMock )
 	C3DReorient f(C3DReorient::xzy);
 	C3DBounds test_size(size.x, size.z, size.y);
 
-	C3DUSImage  test_image(test_size, src.get_attribute_list());
+	C3DUSImage  test_image(test_size, src);
 
 	for (size_t z = 0; z < src.get_size().z; ++z)
 		for (size_t y = 0; y < src.get_size().y; ++y)
@@ -90,7 +90,7 @@ BOOST_FIXTURE_TEST_CASE( test_reorient_yxz, ReorientMock )
 	C3DReorient f(C3DReorient::yxz);
 	C3DBounds test_size(size.y, size.x, size.z);
 
-	C3DUSImage  test_image(test_size, src.get_attribute_list());
+	C3DUSImage  test_image(test_size, src);
 
 	for (size_t z = 0; z < src.get_size().z; ++z)
 		for (size_t y = 0; y < src.get_size().y; ++y)
@@ -106,7 +106,7 @@ BOOST_FIXTURE_TEST_CASE( test_reorient_yzx, ReorientMock )
 	C3DReorient f(C3DReorient::yzx);
 	C3DBounds test_size(size.y, size.z, size.x);
 
-	C3DUSImage  test_image(test_size, src.get_attribute_list());
+	C3DUSImage  test_image(test_size, src);
 
 	for (size_t z = 0; z < src.get_size().z; ++z)
 		for (size_t y = 0; y < src.get_size().y; ++y)
@@ -122,7 +122,7 @@ BOOST_FIXTURE_TEST_CASE( test_reorient_zxy, ReorientMock )
 	C3DReorient f(C3DReorient::zxy);
 	C3DBounds test_size(size.z, size.x, size.y);
 
-	C3DUSImage  test_image(test_size, src.get_attribute_list());
+	C3DUSImage  test_image(test_size, src);
 
 	for (size_t z = 0; z < src.get_size().z; ++z)
 		for (size_t y = 0; y < src.get_size().y; ++y)
@@ -137,7 +137,7 @@ BOOST_FIXTURE_TEST_CASE( test_reorient_zyx, ReorientMock )
 	C3DReorient f(C3DReorient::zyx);
 	C3DBounds test_size(size.z, size.y, size.x);
 
-	C3DUSImage  test_image(test_size, src.get_attribute_list());
+	C3DUSImage  test_image(test_size, src);
 
 	for (size_t z = 0; z < src.get_size().z; ++z)
 		for (size_t y = 0; y < src.get_size().y; ++y)

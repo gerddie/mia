@@ -406,8 +406,7 @@ CDicomWriterData::CDicomWriterData(const C2DImage& image)
 	setSize(image.get_size());
 	setPixelSpacing(image.get_pixel_size());
 
-	for(CAttributeMap::const_iterator i = image.get_attribute_list()->begin();
-	    i != image.get_attribute_list()->end(); ++i)
+	for(auto i = image.begin_attributes(); i != image.end_attributes(); ++i)
 		setValueStringIfKeyExists(*i);
 
 	if (!image.has_attribute(IDMediaStorageSOPClassUID))

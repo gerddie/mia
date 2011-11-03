@@ -83,18 +83,10 @@ void  EXPORT_2D test_image_equal(const C2DImage& test, const C2DImage& expect)
 	C2DImageCompare c;
 	mia::filter(c, test, expect);
 
-	PAttributeMap attr_test = test.get_attribute_list();
-	PAttributeMap attr_expect = expect.get_attribute_list();
+	const CAttributedData& attr_test = test;
+	const CAttributedData& attr_expect = expect;
 
-	BOOST_CHECK_EQUAL(attr_test->size(), attr_expect->size());
-
-	for (CAttributeMap::const_iterator amap = attr_test->begin();
-	     amap != attr_test->end(); ++amap) {
-		CAttributeMap::const_iterator bmap = attr_expect->find(amap->first);
-		BOOST_CHECK(amap != attr_expect->end());
-		if (amap != attr_expect->end())
-			BOOST_CHECK_EQUAL(*amap->second, *bmap->second);
-	}
+	BOOST_CHECK(attr_test == attr_expect);
 }
 
 NS_MIA_END

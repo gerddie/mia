@@ -115,7 +115,7 @@ C2DSelectBig::result_type C2DSelectBig::operator () (const mia::T2DImage<T>& dat
 
 	T idx = __get_big_index<T, is_integral>::apply(data);
 
-	C2DBitImage *result = new C2DBitImage(data.get_size(), data.get_attribute_list());
+	C2DBitImage *result = new C2DBitImage(data.get_size(), data);
 	if (!result) {
 		stringstream err;
 		err << "selectbig: unable to allocate image of size " << data.get_size().x << "x" << data.get_size().y;

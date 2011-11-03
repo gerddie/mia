@@ -79,11 +79,11 @@ void read_image(VImage image, CVista2DImageIOPlugin::Data& result_list, int aqnr
 
 	size_t idx = 0; 
 	while (idx < n) {
-
 		T2DImage<T> *result = new T2DImage<T>(C2DBounds(VImageNColumns(image), VImageNRows(image)));
 		P2DImage presult(result);
 		std::copy(begin, end, result->begin());
-		copy_attr_list(*result->get_attribute_list(), VImageAttrList(image));
+		copy_attr_list(*result, VImageAttrList(image));
+
 		presult->set_attribute(IDInstanceNumber, PAttribute(new CIntAttribute(idx))); 
 		if (!presult->has_attribute(IDAcquisitionNumber))
 			presult->set_attribute(IDAcquisitionNumber, PAttribute(new CIntAttribute(aqnr)));
@@ -149,7 +149,7 @@ VImage CVImageCreator::operator ()( const T2DImage<T>& image) const
 {
 	typedef dispatch_creat_vimage<typename T2DImage<T>::const_iterator, typename vista_repnkind<T>::type> dispatcher;
 	VImage result = dispatcher::apply(image.begin(), image.end(), image.get_size().x, image.get_size().y, 1);
-	copy_attr_list(VImageAttrList(result), *image.get_attribute_list());
+	copy_attr_list(VImageAttrList(result), image);
 	return result;
 }
 

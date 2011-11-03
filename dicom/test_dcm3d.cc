@@ -155,7 +155,7 @@ BOOST_FIXTURE_TEST_CASE( test_dicom_save_load, DicomSaveLoadFixture )
 	}
 
 	BOOST_CHECK_EQUAL(load_image.get_voxel_size(), org_image->get_voxel_size());
-	BOOST_CHECK_EQUAL(*load_image.get_attribute_list(), *org_image->get_attribute_list());
+	BOOST_CHECK(load_image ==  *org_image);
 
 }
 

@@ -107,7 +107,7 @@ struct __dispatch_median_3dfilter<C3DBitImage> {
 template <typename T>
 P3DImage C3DMedianFilter::operator () (const T3DImage<T>& data) const
 {
-	T3DImage<T> *result = new T3DImage<T>(data.get_size(), data.get_attribute_list());
+	T3DImage<T> *result = new T3DImage<T>(data.get_size(), data);
 
 
 	typename T3DImage<T>::iterator i = result->begin();

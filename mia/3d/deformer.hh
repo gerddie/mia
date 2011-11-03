@@ -38,7 +38,7 @@ struct FDeformer3D: public TFilter<P3DImage> {
 		}
 	template <typename T> 
 	P3DImage operator () (const T3DImage<T>& image) const {
-		T3DImage<T> *timage = new T3DImage<T>(image.get_size(), image.get_attribute_list()); 
+		T3DImage<T> *timage = new T3DImage<T>(image.get_size(), image); 
 		P3DImage result(timage); 
 		std::auto_ptr<T3DInterpolator<T> > interp(m_ipfac.create(image.data())); 
 		

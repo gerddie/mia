@@ -98,7 +98,7 @@ CLabel::result_type CLabel::do_filter(const C2DImage& image) const
 	const C2DBitImage& input = dynamic_cast<const C2DBitImage&>(image);
 
 	unsigned short current_label = 1;
-	C2DUSImage *result = new C2DUSImage(image.get_size(), image.get_attribute_list());
+	C2DUSImage *result = new C2DUSImage(image.get_size(), image);
 	P2DImage presult(result);
 	fill(result->begin(), result->end(), 0);
 

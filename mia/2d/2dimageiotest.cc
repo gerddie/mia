@@ -58,9 +58,9 @@ static bool is_equal(const C2DImage& a, const C2DImage& b)
 	return filter_equal(compare, a, b);
 }
 
-static void test_attributes_equal(const C2DImage& a, const C2DImage& b)
+static void test_attributes_equal(const CAttributedData& a, const CAttributedData& b)
 {
-	BOOST_CHECK(*a.get_attribute_list() == *b.get_attribute_list());
+	BOOST_CHECK(a == b);
 }
 
 static void check_save_load(const C2DImageVector& images, const Interface& imgio)

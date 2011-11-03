@@ -78,19 +78,6 @@ const PAttribute CAttributedData::get_attribute(const std::string& name) const
 	return PAttribute();
 }
 
-
-PAttributeMap CAttributedData::get_attribute_list()
-{
-	if ( !m_attr.unique() )
-		m_attr = PAttributeMap(new CAttributeMap(*m_attr));
-	return m_attr;
-}
-
-const PAttributeMap CAttributedData::get_attribute_list() const
-{
-	return m_attr;
-}
-
 bool CAttributedData::has_attribute(const std::string& name)const
 {
 	CAttributeMap::const_iterator i = m_attr->find(name);
@@ -141,6 +128,16 @@ const string CAttributedData::get_attribute_as_string(const std::string& name)co
 		return i->second->as_string();
 	else
 		return "";
+}
+
+CAttributeMap::const_iterator CAttributedData::begin_attributes() const
+{
+	return m_attr->begin(); 
+}
+
+CAttributeMap::const_iterator CAttributedData::end_attributes() const
+{
+	return m_attr->end(); 
 }
 
 CStringAttrTranslatorMap::CStringAttrTranslatorMap()
