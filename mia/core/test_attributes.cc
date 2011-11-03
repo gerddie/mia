@@ -116,14 +116,13 @@ BOOST_AUTO_TEST_CASE( test_translator )
 	CFloatTranslator::register_for("float");
 
 	CBitTranslator::register_for("bit");
-	try {
-		CUSTranslator::register_for("bit");
-		BOOST_FAIL( "Should already be registered");
-	}
-	catch (invalid_argument& x) {
-		BOOST_CHECK( x.what() == string("translator with key 'bit' already defined otherwise"));
+	
+	// registering the key to the same result type is allowed
+	BOOST_CHECK_NO_THROW(CBitTranslator::register_for("bit")); 
 
-	}
+	// registering the key to a different result type will throw 
+	BOOST_CHECK_THROW(CUSTranslator::register_for("bit"), invalid_argument); 
+
 
 	check_translate_type("bit", true, "1");
 	check_translate_type("double", 1.9, "1.9");
@@ -447,3 +446,41 @@ BOOST_AUTO_TEST_CASE( test_get_attribute_as_wrong_type )
 	data.set_attribute("dummy", PAttribute(new CFloatAttribute(1.0f)));
 	BOOST_CHECK_THROW(data.get_attribute_as<int>("dummy"), bad_cast);
 }
+
+
+BOOST_AUTO_TEST_CASE( test_attribute_map_equal_test )
+{
+	CAttributeMap map1;
+	map1["dummy"] = PAttribute(new CFloatAttribute(1.0f));
+	CAttributeMap map2;
+	map2["dummy"] = PAttribute(new CFloatAttribute(1.0f));
+	
+	BOOST_CHECK(map1 == map2); 
+
+	map1["bla"] = PAttribute(new CFloatAttribute(2.0f));
+	map2["ble"] = PAttribute(new CFloatAttribute(2.0f));
+	BOOST_CHECK(!(map1 == map2)); 
+}
+
+BOOST_AUTO_TEST_CASE( test_attribute_map_get_attribute_as_string_not_exist )
+{
+	CAttributedData data;
+	auto s = data.get_attribute_as_string("test"); 
+	BOOST_CHECK_EQUAL(s.size(), 0u); 
+		
+}
+
+BOOST_AUTO_TEST_CASE( Ensure_some_copy_on_write )
+{
+	CAttributedData data;
+	data.set_attribute("dummy", PAttribute(new CFloatAttribute(2.0f))); 
+	
+	CAttributedData data2(data); 
+
+	data.delete_attribute("dummy"); 
+	BOOST_CHECK(!data.has_attribute("dummy")); 
+	BOOST_CHECK(data2.has_attribute("dummy")); 
+}
+
+
+
