@@ -31,6 +31,17 @@ void don_t_optimize_x_away(double /*x*/)
 {
 }
 
+/*
+  If this test fails, that this is most likely because "CWatch" measures 
+  the running time of the program only when the program is active, while 
+  the test ist against gettimeofday, which returns the real world time 
+  that passed. 
+  In other words, if the program gets stalled because of some other process 
+  the real time passed may be a lot larger than the time the test program 
+  runs. Unfortunaly, the only available method to measure the program active 
+  run time is used by CWatch, so theer is no real source to get a true 
+  test value. 
+*/
 BOOST_AUTO_TEST_CASE( test_watch ) 
 {
 	CWatch watch; 
@@ -40,8 +51,8 @@ BOOST_AUTO_TEST_CASE( test_watch )
 	gettimeofday(&tv_start, NULL); 
 	
 	double x = 0.1; 
-	for (long int i = 0; i < 100000000L; ++i) 
-		x += 0.1; 
+	for (long int i = 0; i < 10000000L; ++i) 
+		x += log(x); 
 	// keep this line, or the compiler will remove the loop above
 	don_t_optimize_x_away(x); 
 
