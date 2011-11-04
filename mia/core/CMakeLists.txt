@@ -302,6 +302,7 @@ NEW_TEST(threadedmsg miacore)
 NEW_TEST(tools miacore)
 NEW_TEST(utils miacore)
 NEW_TEST(Vector miacore)
+NEW_TEST(watch miacore)
 NEW_TEST(waveletslopeclassifier miacore)
 NEW_TEST(fixedwidthoutput miacore)
 

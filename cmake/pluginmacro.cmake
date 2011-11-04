@@ -60,8 +60,16 @@ MACRO(CREATE_PLUGIN_COMMON plugname files libs)
 ENDMACRO(CREATE_PLUGIN_COMMON plugname libs) 
 
 MACRO(CREATE_PLUGIN_MODULE plugname)
-  add_library(${plugname} MODULE "${PROJECT_SOURCE_DIR}/mia/internal/dummy.cc")
-  set_target_properties(${plugname} PROPERTIES PREFIX ""  SUFFIX ${PLUGSUFFIX})
+#  add_library(${plugname} MODULE NO_SOURCE_FILES)
+  add_library(${plugname} MODULE)
+  set_target_properties(${plugname} PROPERTIES 
+    PREFIX ""  
+    SUFFIX ${PLUGSUFFIX})
+  IF(NOT WIN32)
+    set_target_properties(${plugname} PROPERTIES 
+      LINK_FLAGS "-Wl,--no-gc-sections -Wl,--undefined,get_plugin_interface"
+      )
+  ENDIF(NOT WIN32)
   target_link_libraries(${plugname} ${plugname}-common)
 ENDMACRO(CREATE_PLUGIN_MODULE plugname)
 

@@ -45,7 +45,7 @@ protected:
 private:
 	void send_to_master(); 
 	
-	std::stringstream m_buffer; 
+	std::ostringstream m_buffer; 
 	int m_id; 
 	static std::ostream *m_master;
 	static tbb::mutex m_master_lock; 
@@ -74,6 +74,8 @@ int thread_streamredir::sync()
 
 int thread_streamredir::overflow(int c)
 {
+	// this function probably never gets called, because we use a stringstream 
+	// to buffer the output that can grow until the memory is filled
 	send_to_master(); 
 	m_buffer << (char)c; 
 	return 0;
@@ -83,8 +85,15 @@ std::streamsize thread_streamredir::xsputn( const char * s, std::streamsize n )
 {
 	int i = 0; 
 	while (i < n) {
-		if (*s != '\n') 
+		// newline forces syncronization and output to the master stream 
+		if (*s != '\n') {
 			m_buffer << *s; 
+			// since the ostringstream grows 
+			// dynamically, this should never happen.  
+			// Should the size be limited? 
+			if (m_buffer.fail())
+				break; 
+		}
 		else
 			send_to_master();
 		++s; 
