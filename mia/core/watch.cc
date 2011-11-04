@@ -47,23 +47,20 @@ CWatch::CWatch()
 	value.it_value.tv_sec  = TIMERSPAN;
 	value.it_value.tv_usec = 0;
 
-	if (signal(SIGVTALRM,CWatch::overlap_handler)==SIG_ERR){
-		fprintf(stderr,"Unable to catch  signal:%s\n",strerror(errno));
-	}
-
-
-	if (setitimer(ITIMER_VIRTUAL,&value,&oldvalue)) {
-		fprintf(stderr,"Warning: setitimer returned with %s\n",strerror(errno));
-	}
+	if (signal(SIGVTALRM,CWatch::overlap_handler)==SIG_ERR)
+		cvwarn() << "Unable to catch  signal:" << strerror(errno) << "\n"; 
+	
+	if (setitimer(ITIMER_VIRTUAL,&value,&oldvalue))
+		cvwarn() << "setitimer failed:" << strerror(errno) << "\n"; 
 }
 
 double CWatch::get_seconds() const
 {
 	itimerval value;
 
-	if (getitimer(ITIMER_VIRTUAL,&value)){
-		fprintf(stderr,"Warning: setitimer returned %s\n",strerror(errno));
-	}
+	if (getitimer(ITIMER_VIRTUAL,&value))
+		cvwarn() << "setitimer failed:" << strerror(errno) << "\n"; 
+
 	double result = TIMERSPAN - value.it_value.tv_sec;
 	double resultlow = value.it_value.tv_usec/1e+6;
 	return (result - resultlow) + TIMERSPAN*double(overlaps);
