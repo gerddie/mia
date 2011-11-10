@@ -95,7 +95,7 @@ typename TFilterChain<Handler>::PData
 TFilterChain<Handler>::run(typename TFilterChain<Handler>::PData input) const
 {
 	for ( auto i = m_chain.begin(); i != m_chain.end(); ++i) {
-		input = (*i)->filter(*input); 
+		input = (*i)->filter(input); 
 	}
 	return input; 
 }
