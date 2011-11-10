@@ -25,75 +25,96 @@ NS_BEGIN(mask_2dimage_filter)
 NS_MIA_USE;
 using namespace std;
 
-static char const * plugin_name = "mask";
-
-template <class Data2D>
-typename C2DMask::result_type C2DMask::operator () (const Data2D& data) const
+C2DMask::C2DMask(const C2DImageDataKey& image_key):
+	m_image_key(image_key)
 {
-	if (data.get_size() != m_mask.get_size())
-		throw runtime_error("Input image and mask differ in size");
-
-	const typename Data2D::value_type zero = typename Data2D::value_type();
-
-	Data2D *result = new Data2D(data);
-
-	C2DBitImage::const_iterator im = m_mask.begin();
-	typename Data2D::iterator id = result->begin();
-	typename Data2D::iterator ie = result->end();
-
-	while (id != ie) {
-		if (!*im)
-			*id = zero;
-		++im;
-		++id;
-	}
-
-	return P2DImage(result);
 }
 
+template <typename T>
+struct __ifthenelse {
+	T operator() ( bool yes, T value) const {
+		return yes ? value : T();
+	}
+};
 
-P2DImage C2DMask::do_filter(const C2DImage& image) const
+template <typename T>
+struct __dispatch_mask {
+	static P2DImage apply(const T2DImage<T> */*mask*/, const C2DImage& /*data*/) {
+		throw invalid_argument("one of the input image must be binary");
+	}
+};
+
+class C2DMaskDispatch : public TFilter< P2DImage > {
+public:
+	C2DMaskDispatch(const C2DBitImage *mask):
+		m_mask(mask)
+		{
+		}
+
+	template <typename T>
+	C2DMaskDispatch::result_type operator () (const mia::T2DImage<T>& data) const 	{
+
+		T2DImage<T> * result = new T2DImage<T>(data.get_size(), data);
+		transform(m_mask->begin(), m_mask->end(), data.begin(),  result->begin(),
+			  __ifthenelse<T>());
+		return C2DMask::result_type(result);
+	}
+private:
+	const C2DBitImage *m_mask;
+};
+
+
+template <>
+struct __dispatch_mask<bool> {
+	static P2DImage apply(const C2DBitImage *mask, const C2DImage& data) {
+		if (data.get_size() != mask->get_size()) {
+			throw invalid_argument("Mask: input image and mask must be of same size");
+		}
+
+		C2DMaskDispatch m(mask);
+		return mia::filter(m, data);
+	}
+};
+
+template <typename T>
+C2DMask::result_type C2DMask::operator () (const T2DImage<T>& data) const
+{
+	C2DImageIOPlugin::PData in_image_list = m_image_key.get();
+
+	if (!in_image_list || in_image_list->empty())
+		throw invalid_argument("C2DMaskImage: no image available in data pool");
+
+	P2DImage image = (*in_image_list)[0];
+
+	if (image->get_pixel_type() == it_bit) {
+		const C2DBitImage *mask = dynamic_cast<const C2DBitImage*>(image.get());
+		C2DMaskDispatch m(mask);
+		return m(data);
+	} else {
+		return __dispatch_mask<T>::apply(&data, *image);
+	}
+}
+
+mia::P2DImage C2DMask::do_filter(const mia::C2DImage& image) const
 {
 	return mia::filter(*this, image);
 }
 
 C2DMaskImageFilterFactory::C2DMaskImageFilterFactory():
-	C2DFilterPlugin(plugin_name),
-	m_invert(false)
+	C2DFilterPlugin("mask")
 {
-	add_parameter("img", new CStringParameter(m_mask_name, true,
-						  "mask image (must be in bit representation)"));
-	add_parameter("inv", new TParameter<bool>(m_invert, false,
-						  "whether the mask should be inverted"));
+	add_parameter("input", new CStringParameter(m_mask_filename, true, "second input image file name"));
 }
 
 C2DFilter *C2DMaskImageFilterFactory::do_create()const
 {
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
-	C2DImageIOPluginHandler::Instance::PData inImage_list = imageio.load(m_mask_name);
-
-	if (!inImage_list.get() || !inImage_list->size() ) {
-		string not_found = string("No image data found in ") + m_mask_name;
-		throw runtime_error(not_found);
-	}
-
-	C2DImageIOPluginHandler::Instance::Data::iterator mask = inImage_list->begin();
-
-	if ((*mask)->get_pixel_type() != it_bit)
-		throw runtime_error("Binary image needed for mask ");
-
-	C2DBitImage *image = dynamic_cast<C2DBitImage *>(mask->get());
-
-	assert(image);
-	if (m_invert)
-		transform(image->begin(), image->end(), image->begin(), logical_not<bool>());
-
-	return new C2DMask(*image);
+	C2DImageDataKey mask_data = C2DImageIOPluginHandler::instance().load_to_pool(m_mask_filename);
+	return new C2DMask(mask_data);
 }
 
-const string C2DMaskImageFilterFactory::do_get_descr()const
+const std::string C2DMaskImageFilterFactory::do_get_descr()const
 {
-	return "2D image mask filter";
+	return "2D masking";
 }
 
 

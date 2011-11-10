@@ -23,20 +23,19 @@
 
 NS_BEGIN(mask_2dimage_filter)
 
-class C2DMask : public mia::C2DFilter {
-	const mia::C2DBitImage m_mask;
-public:
-	C2DMask(const mia::C2DBitImage& mask):
-		m_mask(mask)
-	{
-	}
 
-	template <class Data2D>
-	typename C2DMask::result_type operator () (const Data2D& data) const ;
+class C2DMask: public mia::C2DFilter {
+public:
+	C2DMask(const mia::C2DImageDataKey& mask_image);
+
+	template <typename T>
+	C2DMask::result_type operator () (const mia::T2DImage<T>& data) const;
 private:
 	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 
+	mia::C2DImageDataKey m_image_key;
 };
+
 
 class C2DMaskImageFilterFactory: public mia::C2DFilterPlugin {
 public:
@@ -44,7 +43,7 @@ public:
 	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-	std::string m_mask_name;
+	std::string m_mask_filename;
 	bool m_invert;
 };
 
