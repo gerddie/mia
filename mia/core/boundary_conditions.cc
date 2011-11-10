@@ -68,7 +68,7 @@ void CSplineBoundaryCondition::set_width(int width)
 	do_set_width(width); 
 }
 
-void CSplineBoundaryCondition::do_set_width(int width)
+void CSplineBoundaryCondition::do_set_width(int /*width*/)
 {
 }
 
