@@ -63,6 +63,7 @@ struct CSlopeStatisticsImpl {
 	float get_maximum_gradient_from_zero() const; 
 	int get_index() const; 
 	std::pair<size_t, float>  get_gradient_peak(int start_movement) const; 
+	float get_level_change(size_t center) const; 
 private:
 
 	void evaluate_curve_length() const;
@@ -453,6 +454,21 @@ pair<int,int> CSlopeStatisticsImpl::get_peak_level_and_time_index() const
 	return m_wt_peak_level_and_index; 
 
 }
+
+float CSlopeStatistics::get_level_change(size_t center) const
+{
+	FUNCTION_NOT_TESTED; 
+	return impl->get_level_change(center); 
+}
+
+float CSlopeStatisticsImpl::get_level_change(size_t center) const
+{
+	assert(center < m_series.size() - 1 && center > 0);
+	
+	float before = accumulate(m_series.begin(), m_series.begin() + center, 0.0f) / center; 
+	float after = accumulate(m_series.begin() + center + 1, m_series.end(), 0.0f) / (m_series.size() - center - 1);
+	return after - before; 
+}						
 
 void CSlopeStatisticsImpl::evaluate_wt() const
 {

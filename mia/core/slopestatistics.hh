@@ -130,6 +130,14 @@ public:
 	float get_positive_time_mean() const; 
 	
 	/**
+	   Evaluate the change in mean from before the indicated center to the mean 
+	   after the indicated center. 
+	   \param center balance point to evaluate change 
+	   \returns absolute difference in means 
+	 */
+	float get_level_change(size_t center) const; 
+	
+	/**
 	   \returns the index of this slope as it was stored 
 	 */
 	int get_index() const; 
