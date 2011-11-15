@@ -97,6 +97,7 @@ int do_main( int argc, char *argv[] )
 
 	string in_filename;
 	string out_filename;
+	string gain_filename;
 	string cls_filename;
 	int    noOfClasses = 3;
 	float  residuum = 0.1;
@@ -109,6 +110,9 @@ int do_main( int argc, char *argv[] )
 			      "output class probability images", CCmdOption::required));
 	options.add(make_opt( out_filename, "b0-file", 'o',
 			      "image corrected for intensity non-uniformity" ));
+	options.add(make_opt( gain_filename, "gain-file", 'g',
+			      "gain field (floating point valued)" ));
+
 	options.add(make_opt( noOfClasses, "no-of-classes", 'n',
 			      "number of classes"));
 	options.add(make_opt( residuum, "residuum", 'r',
@@ -138,8 +142,8 @@ int do_main( int argc, char *argv[] )
 		cvwarn() << "Only segmenting first input image\n";
 
 	C2DImageVector classes;
-
-	P2DImage b0_corrected = fuzzy_segment_2d(**inImage_list->begin(), noOfClasses, residuum, classes);
+	P2DImage gain; 
+	P2DImage b0_corrected = fuzzy_segment_2d(**inImage_list->begin(), noOfClasses, residuum, classes, gain);
 
 	if (!out_filename.empty()) {
 
@@ -164,7 +168,11 @@ int do_main( int argc, char *argv[] )
 
 	}
 
-
+	if (!gain_filename.empty()) {
+		if (!save_image(gain_filename, gain)) 
+			THROW(runtime_error, "unable to save gain field to '" << gain_filename << "'"); 
+	}
+	
 	return EXIT_SUCCESS;
 
 }
