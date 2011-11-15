@@ -61,50 +61,51 @@ class C2DSolveCG {
 
   private:
 
-	C2DFImage& __gain;
+	C2DFImage& m_weight;
+	C2DFImage& m_gain;
 
-	double __lambda1;
-	double __lambda2;
+	double m_lambda1;
+	double m_lambda2;
 
 	// Dimension of images
-	long __iter;
-	int  __nx, __ny;
-	unsigned long __count;
+	long m_iter;
+	int  m_nx, m_ny;
+	unsigned long m_count;
 
 	// Pointer to Elements of w
-	float *__weight_imagePtr;
-	float *__fptr;
-	float *__gain_image_ptr;
+	float *m_weight_imagePtr;
+	float *m_fptr;
+	float *m_gain_image_ptr;
 
 
 
 	// b and x for solution of system
-	std::vector<double> __b;
-	std::vector<double> __v;
+	std::vector<double> m_b;
+	std::vector<double> m_v;
 
 	// counts iterations
 
 
 	// help pointers for one iteration cycle
-	std::vector<double> __r;	   // r^(k)
-	std::vector<double> __rho;     // p^(k)
-	std::vector<double> __g;
-	std::vector<double> __Ag;	   // speichert A * p
+	std::vector<double> m_r;	   // r^(k)
+	std::vector<double> m_rho;     // p^(k)
+	std::vector<double> m_g;
+	std::vector<double> m_Ag;	   // speichert A * p
 	// Field of scaling factors
-	std::vector<double> __scale;
-	std::vector<double> __scale2;
+	std::vector<double> m_scale;
+	std::vector<double> m_scale2;
 
 	// field for border voxels
-	std::vector<bool> __border;
+	std::vector<bool> m_border;
 
 
-	double __r1rho1;   // speichert r1 * rho1
-	double __r2rho2;   // speichert r2 * rho2
-	double __normr, __normr0;
-	double __q, __e, __sprod;
+	double m_r1rho1;   // speichert r1 * rho1
+	double m_r2rho2;   // speichert r2 * rho2
+	double m_normr, m_normr0;
+	double m_q, m_e, m_sprod;
 
 	// minimal residuum
-	double __min_res, __relres;
+	double m_min_res, m_relres;
 
 	/** function for initialising
          */
@@ -134,7 +135,7 @@ class C2DSolveCG {
 	/** Function to get preset number of iterations
 	    \returns Number of iterations
 	 */
-	inline long get_iterations() {return __iter;}
+	inline long get_iterations() {return m_iter;}
 
 	/** Multiplication of vector and matrix
 

@@ -32,6 +32,7 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/histogram.hh>
 #include <mia/2d/fuzzyClusterSolverCG.hh>
+#include <mia/2d/fuzzyClusterSolverSOR.hh>
 #include <mia/2d/fuzzyseg.hh>
 
 NS_MIA_BEGIN
@@ -39,7 +40,7 @@ using namespace std;
 
 
 /* maximum number of iterations for EM-Algorithm */
-#define _MAXIT 5
+#define _MAXIT 200 
 
 
 typedef vector<C2DFImage*> C2DFImageVec;
@@ -50,6 +51,7 @@ public:
 	CSegment2d(const unsigned int& nClasses, const float& res);
 	~CSegment2d ();
 	P2DImage get_out_image () const;
+	P2DImage get_gain_image () const;
 
 	template <typename T>
 	CSegment2d::result_type operator () (const T2DImage<T>& data);
@@ -57,13 +59,14 @@ private:
 	unsigned int m_nClasses;
 	float 	     m_res;
 	P2DImage     m_out;
+	P2DImage     m_gain_image;
 
 };
 
 
 /// regularization for the clustring PDE
-#define _LAMBDA1	2e4
-#define _LAMBDA2	2e5
+#define _LAMBDA1	2e5
+#define _LAMBDA2	2e6
 /// maximum number of iterations for the solver
 #define _MAX_ITER_PDE 	1000
 
@@ -178,10 +181,15 @@ vector<double> Isodata2d (const Data2D& src_image, unsigned int nClasses, unsign
 // solves the PDE  (W + lambda1 * H1 + lambda2 * H2) = f
 void solvePDE (C2DFImage& weight_image, C2DFImage& force_image, C2DFImage& gain_image, double lambda1, double lambda2, double *firstnormr0, double relres, double min_res)
 {
+#if 0 
 
 	C2DSolveCG solver(weight_image, force_image, gain_image, lambda1, lambda2, relres, min_res);
 	solver.solve ( _MAX_ITER_PDE, firstnormr0);
 	solver.get_solution (gain_image);
+#else 
+	C2DFuzzyClusterSolver solver(weight_image,lambda1, lambda2, 1000);
+	solver.solve (force_image, gain_image);
+#endif 
 }
 
 template <class Data2D>
@@ -211,13 +219,13 @@ int estimateGain (C2DFImage& gain_image, const Data2D& src_image, vector<C2DFIma
 			};
 			
 			forcePixel *= src_image(x, y);
-			
+#if 0 			
 			// korrigiere randbedingungen
 			long i = y*nx + x;
-			if (!border[i-nx])    forcePixel += _LAMBDA1 + 12 * _LAMBDA2;
-			if (!border[i-1])     forcePixel += _LAMBDA1 + 12 * _LAMBDA2;
-			if (!border[i+1])     forcePixel += _LAMBDA1 + 12 * _LAMBDA2;
-			if (!border[i+nx])    forcePixel += _LAMBDA1 + 12 * _LAMBDA2;
+			if (!border[i-nx])    forcePixel += _LAMBDA1 + 8 * _LAMBDA2;
+			if (!border[i-1])     forcePixel += _LAMBDA1 + 8 * _LAMBDA2;
+			if (!border[i+1])     forcePixel += _LAMBDA1 + 8 * _LAMBDA2;
+			if (!border[i+nx])    forcePixel += _LAMBDA1 + 8 * _LAMBDA2;
 		
 			if (!border[i-nx-1])       forcePixel -= 2 * _LAMBDA2;
 			if (!border[i-nx+1])       forcePixel -= 2 * _LAMBDA2;
@@ -228,7 +236,7 @@ int estimateGain (C2DFImage& gain_image, const Data2D& src_image, vector<C2DFIma
 			if (!border[i - 2])       forcePixel -= _LAMBDA2;
 			if (!border[i + 2])       forcePixel -= _LAMBDA2;
 			if (!border[i + 2*nx])    forcePixel -= _LAMBDA2;
-			
+#endif 			
 			force_image(x, y) = (float)(forcePixel);
 			weight_image(x, y) = (float)(weightPixel);
 		};
@@ -258,6 +266,11 @@ P2DImage CSegment2d::get_out_image () const
 	return m_out;
 }
 
+P2DImage CSegment2d::get_gain_image () const
+{
+	return m_gain_image;
+}
+
 
 /*! Functor operator
   \param data any data struture that hold an (STL- style) iterator
@@ -279,7 +292,7 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 	vector<char> border(noOfPixels);
 
 	double firstnormr0 = 1.0;
-	double dumax, sum, nom, den, dist;
+	double nom, den, dist;
 
 	// get type of iterator
 	typedef T itype;
@@ -301,16 +314,14 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 		if ( fborder(k, nx, ny) )
 			border[k] = 0;
 		else
-			border[k]=1;
+			border[k] = 1;
 
 	}
 
 	// Create and initialize gain-field
 	C2DFImage gain_image( data.get_size(), data);
 
-	C2DFImage::iterator gainBegin = gain_image.begin();
-	C2DFImage::iterator gainEnd   = gain_image.end();
-	fill (gainBegin, gainEnd, 1.0);
+	fill (gain_image.begin(), gain_image.end(), 1.0);
 
 	// class probability image, compute initial class centers
 	vector<double> clCenter = Isodata2d (data, m_nClasses, (unsigned int) iMax);
@@ -328,6 +339,28 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 	for (size_t i = 0; i < m_nClasses; ++i)  {
 		cls_image.push_back(new C2DFImage ( data.get_size(), data));
 	}
+	if (0) {
+		vector<C2DFImage::iterator> cls_it( m_nClasses ); 
+		transform(cls_image.begin(), cls_image.end(), cls_it.begin(), 
+			  [](C2DFImage *cls) { return cls->begin(); }); 
+			
+		for(auto sp = data.begin(); sp != data.end(); ++sp) {
+			double pixVal = *sp;
+			if (pixVal == 0)
+				continue;
+			double sum = 0;
+			for (unsigned int k = 0; k < m_nClasses; k++)  {
+				dist = pixVal - clCenter[k];
+				u[k] = dist? 1/(dist*dist): HUGE;
+				sum += u[k];
+			};
+				
+			for (unsigned int k = 0; k < m_nClasses; k++)  {
+				double un = u[k]/sum;
+				*cls_it[k] = un;
+			}
+		}
+	}
 
 	for (unsigned int t = 0; t < _MAXIT; t++)  {
 
@@ -341,8 +374,8 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 
 		// Algorithm step 3:
 		// recompute class memberships
-		dumax = 0;
-		typename T2DImage<T>::const_iterator sp  = data.begin();
+		double dumax = 0;
+		auto sp  = data.begin();
 
 		// Compute each pixel of the layer
 		
@@ -352,7 +385,7 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 				double pixVal = *sp;
 				if (pixVal == 0)
 					continue;
-				sum = 0;
+				double sum = 0;
 				// get difference from gain-field
 				double gainVal = gain_image(x, y);
 				for (unsigned int k = 0; k < m_nClasses; k++)  {
@@ -392,7 +425,7 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 			
 		}
 		
-		cvmsg() << "\r[" << t << "/4]" << flush;
+		cvmsg() << "\r[" << t << "]" << flush;
 		cvmsg() << " class centers:";
 		
 		for (unsigned int k = 0; k < m_nClasses; k++)
@@ -427,6 +460,7 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 		cls_image[i]->set_attribute("class_centers",
 					    PAttribute(new CVDoubleAttribute( clCenter)));
 	}
+	m_gain_image.reset(new C2DFImage(gain_image)); 
 	return cls_image;
 }
 
@@ -438,7 +472,8 @@ CSegment2d::result_type CSegment2d::operator () (const C2DBitImage& /*data*/) {
 
 
 
-EXPORT_2D P2DImage fuzzy_segment_2d(const C2DImage& src, size_t noOfClasses, float residuum, C2DImageVector& classes)
+EXPORT_2D P2DImage fuzzy_segment_2d(const C2DImage& src, size_t noOfClasses, float residuum, 
+				    C2DImageVector& classes, P2DImage& gain)
 {
 	CSegment2d segment2D (noOfClasses, residuum);
 	C2DFImageVec imagesVector = mia::accumulate (segment2D, src);
@@ -446,6 +481,7 @@ EXPORT_2D P2DImage fuzzy_segment_2d(const C2DImage& src, size_t noOfClasses, flo
 	for (size_t i=0; i < noOfClasses; i++) {
 		classes.push_back( P2DImage(imagesVector[i]) );
 	}
+	gain = segment2D.get_gain_image(); 
 	return segment2D.get_out_image();
 }
 

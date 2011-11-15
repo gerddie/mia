@@ -46,31 +46,32 @@ bool fborder (long index, long nx, long ny)
 
 
 C2DSolveCG::C2DSolveCG (C2DFImage& w1, C2DFImage& f1, C2DFImage& gain_image, double l1, double l2, double r_res, double m_res):
-	__gain(gain_image),
-	__lambda1(l1),
-	__lambda2(l2),
-	__iter(0),
-	__nx(w1.get_size().x),
-	__ny(w1.get_size().y),
-	__count(__nx*__ny),
-	__weight_imagePtr(&w1(0, 0)),
-	__fptr(&f1(0, 0)),
-	__gain_image_ptr(&gain_image(0, 0)),
+	m_weight(w1),
+	m_gain(gain_image),
+	m_lambda1(l1),
+	m_lambda2(l2),
+	m_iter(0),
+	m_nx(w1.get_size().x),
+	m_ny(w1.get_size().y),
+	m_count(m_nx*m_ny),
+	m_weight_imagePtr(&w1(0, 0)),
+	m_fptr(&f1(0, 0)),
+	m_gain_image_ptr(&gain_image(0, 0)),
 
-	__b(__count),
-	__v(__count),
-	__r(__count),
+	m_b(m_count),
+	m_v(m_count),
+	m_r(m_count),
 
-	__rho(__count),   // p^(k)
-	__g(__count),
-	__Ag(__count),   // speichert A * p
+	m_rho(m_count),   // p^(k)
+	m_g(m_count),
+	m_Ag(m_count),   // speichert A * p
 
-	__scale(__count),
-	__scale2(__count),
-	__border(__count),
+	m_scale(m_count),
+	m_scale2(m_count),
+	m_border(m_count),
 
-	__min_res(m_res),
-	__relres(r_res)
+	m_min_res(m_res),
+	m_relres(r_res)
 
 {
 	TRACE_FUNCTION; 
@@ -122,65 +123,65 @@ void C2DSolveCG::solvepar(long *maxit, double *normr, double *firstnormr0)
     // Setze me, start und ende
     me = 0;
     start = 0;
-    ende = __count;
+    ende = m_count;
 
     // Initialisierung
     cvmsg() << "mult = " << start << ", " << ende << "\n"; 
-    multA(__v, __r, start, ende);
+    multA(m_v, m_r, start, ende);
 
     // Berechnung normr0;
     double tmp_normr0 = 0;
     for(long i = start; i < ende; i++) {
-      __r[i] += __b[i];
-      double square = __r[i]/__scale[i];
+      m_r[i] += m_b[i];
+      double square = m_r[i]/m_scale[i];
       tmp_normr0 += square*square;
     }
 
-    __normr0 = tmp_normr0;
+    m_normr0 = tmp_normr0;
 
     if (me == 0)
-	    *normr = __normr0 = sqrt(__normr0);
+	    *normr = m_normr0 = sqrt(m_normr0);
 
 
-    if (*firstnormr0 == 1.0 && __normr0 > 1.0)
-	    *firstnormr0 = __normr0;
+    if (*firstnormr0 == 1.0 && m_normr0 > 1.0)
+	    *firstnormr0 = m_normr0;
 
 
     // Iterationen
-    while (*normr >= __min_res && __iter < *maxit && *normr / *firstnormr0 > __relres){
+    while (*normr >= m_min_res && m_iter < *maxit && *normr / *firstnormr0 > m_relres){
 
     	if (me == 0) {
-	  		__iter++;
-			copy(__r.begin(), __r.end(), __rho.begin()); 
-	  		__r2rho2 = __r1rho1;
+	  		m_iter++;
+			copy(m_r.begin(), m_r.end(), m_rho.begin()); 
+	  		m_r2rho2 = m_r1rho1;
         }
 
 
 	// r1rho1 = r * rho
-	if (me == 0) __r1rho1 = 0;
+	if (me == 0) m_r1rho1 = 0;
 
 	double tmp_r1rho1 = 0;
 	for(long i = start; i < ende; i++) {
-	  tmp_r1rho1 += __r[i] * __rho[i];
+	  tmp_r1rho1 += m_r[i] * m_rho[i];
 	}
 
-	__r1rho1 = tmp_r1rho1;
+	m_r1rho1 = tmp_r1rho1;
 
-	if (__iter >= 2 && me == 0) __e = __r1rho1 / __r2rho2; else __e = 0;
+	if (m_iter >= 2 && me == 0) m_e = m_r1rho1 / m_r2rho2; else m_e = 0;
 
-	for(long i = start; i < ende; i++) __g[i] = -__rho[i] + __e * __g[i];
+	for(long i = start; i < ende; i++) m_g[i] = -m_rho[i] + m_e * m_g[i];
 
-	multA(__g, __Ag, start, ende);
+	multA(m_g, m_Ag, start, ende);
 
 	// q = r1rho1 / (g * Ag)
-	if (me == 0) __sprod = 0;
+	if (me == 0) m_sprod = 0;
 	double tmp_sprod = 0;
 
-	for(long i = start; i < ende; i++) tmp_sprod += __g[i] * __Ag[i];
+	for(long i = start; i < ende; i++) tmp_sprod += m_g[i] * m_Ag[i];
 
-	__sprod = tmp_sprod;
+	m_sprod = tmp_sprod;
 
-	if (me == 0) __q = __r1rho1 / __sprod;
+	if (me == 0) m_q = m_r1rho1 / m_sprod;
 
 	// v = v1 + q * g, r = r1 + q * Ag
 	if (me == 0) *normr = 0;
@@ -188,9 +189,9 @@ void C2DSolveCG::solvepar(long *maxit, double *normr, double *firstnormr0)
 
 	for(long i = start; i < ende; i++) {
 
-	  __v[i] += __q * __g[i];
-	  __r[i] += __q * __Ag[i];
-	  tmp_normr += pow(__r[i]/__scale[i], 2);
+	  m_v[i] += m_q * m_g[i];
+	  m_r[i] += m_q * m_Ag[i];
+	  tmp_normr += pow(m_r[i]/m_scale[i], 2);
 
 	}
 
@@ -213,33 +214,32 @@ void C2DSolveCG::solvepar(long *maxit, double *normr, double *firstnormr0)
 void C2DSolveCG::multA(vector<double>& x, vector<double>& result, long start, long ende) 
 {
 	assert(x.size() == result.size()); 
-	assert(x.size() == __border.size()); 
-	assert(x.size() == __scale2.size()); 
-	assert(x.size() == __count); 
+	assert(x.size() == m_border.size()); 
+	assert(x.size() == m_scale2.size()); 
+	assert(x.size() == m_count); 
 
-	auto bord2 = __border.begin(); 
+	auto bord2 = m_border.begin(); 
 	auto res2 = result.begin(); 
 	auto x2 = x.begin(); 
-	auto sc2 = __scale2.begin(); 
+	auto sc2 = m_scale2.begin(); 
 	vector<double> help(x.size()); 
 	
-	transform(x.begin(), x.end(), __scale2.begin(), help.begin(), 
+	transform(x.begin(), x.end(), m_scale2.begin(), help.begin(), 
 		  [](double x, double s) {return x * s; }); 
 
 	auto value = help.begin(); 
 	
 	for(int i = start; i < ende; i++, ++bord2, ++res2, ++x2, ++value, ++sc2) {
-		
 		if (*bord2) {
 			*res2 = *x2;
-			continue;
+		}else {
+			
+			double s1= value[-m_nx      ] + value[-1] + value[+1] + value[+m_nx]; 
+			double s2= value[-m_nx   - 1] + value[-m_nx + 1]	+ value[+ m_nx -1]  + value[+m_nx + 1]; 
+			double s3= value[ - 2 * m_nx] + value[ - 2     ]  + value[+ 2]        + value[ + 2*m_nx];
+			
+			*res2 += ((s3 + 2*s2 - 8*s1) * m_lambda2 - m_lambda1 * s1) * *sc2;
 		}
-
-		double s1= value[-__nx    ] + value[-1] + value[+1] + value[+__nx]; 
-		double s2= value[-__nx  -1] + value[-__nx + 1]	+ value[+ __nx -1]  + value[+__nx + 1]; 
-		double s3= value[ - 2*__nx] + value[ - 2     ]  + value[+ 2]        + value[ + 2*__nx];
-
-		*res2 = (*x2 + ((s3 + 2*s2 - 12*s1) * __lambda2 - __lambda1 * s1) * *sc2);
 	}
 
 }
@@ -249,10 +249,10 @@ void C2DSolveCG::multA(vector<double>& x, vector<double>& result, long start, lo
 
 void C2DSolveCG::multA_float(float *x, float *result) {
 
-	auto bord2 = __border.begin(); 
+	auto bord2 = m_border.begin(); 
 	float *x2, *res2;
 	
-	for(unsigned long i = 0; i < __count; i++, ++bord2) {
+	for(unsigned long i = 0; i < m_count; i++, ++bord2) {
 		
 		double s1, s2, s3;
 		
@@ -260,59 +260,59 @@ void C2DSolveCG::multA_float(float *x, float *result) {
 		x2    = x + i;
 		
 		if (*bord2) {
-			*res2 = (__weight_imagePtr[i] + 6*__lambda1 + 42*__lambda2) * *x2;
+			*res2 = (m_weight_imagePtr[i] + 4*m_lambda1 + 20*m_lambda2) * *x2;
 			continue;
 		}
 		
-		s1 = VALUE2(-__nx)    + VALUE2(-1) + VALUE2(+1) + VALUE2(+__nx);
+		s1 = VALUE2(-m_nx)    + VALUE2(-1) + VALUE2(+1) + VALUE2(+m_nx);
 		
-		s2= VALUE2(-__nx-1)     + VALUE2(-__nx+1)	 + VALUE2(+__nx-1)     + VALUE2(+__nx+1);
+		s2= VALUE2(-m_nx-1)     + VALUE2(-m_nx+1)	 + VALUE2(+m_nx-1)     + VALUE2(+m_nx+1);
 		
-		s3= VALUE2( - 2*__nx) + VALUE2( - 2)	+ VALUE2( + 2) + VALUE2( + 2*__nx);
+		s3= VALUE2( - 2*m_nx) + VALUE2( - 2)	+ VALUE2( + 2) + VALUE2( + 2*m_nx);
 		
-		*res2 = (__weight_imagePtr[i] + 6*__lambda1+42*__lambda2) * *x2  + ((s3 + 2*s2 - 12*s1) * __lambda2 - __lambda1 * s1);
+		*res2 = (m_weight_imagePtr[i] + 4*m_lambda1+8*m_lambda2) * *x2  + ((s3 + 2*s2 - 12*s1) * m_lambda2 - m_lambda1 * s1);
 		
 	}
 }
 
-// loest die PDE  (w + __lambda1 * H1 + __lambda2 * H2)*m = f
+// loest die PDE  (w + m_lambda1 * H1 + m_lambda2 * H2)*m = f
 void C2DSolveCG::init()
 {
 	TRACE_FUNCTION; 
 	
 	// set b and scaling
-	for(unsigned long i = 0; i < __count; i++) {
-		__border[i] = (fborder(i, __nx, __ny)? 1 : 0);
+	for(unsigned long i = 0; i < m_count; i++) {
+		m_border[i] = (fborder(i, m_nx, m_ny)? 1 : 0);
 	}
 	
-	for(unsigned long i = 0; i < __count; i++) {
+	for(unsigned long i = 0; i < m_count; i++) {
 		// Wenn Element Randelement ist, setze b entsprechend
-		if (__border[i]) {
-			__b[i] = -__gain_image_ptr[i];
-			__scale[i] = 1.0;
-			__scale2[i] = 0;
-			__v[i] = __gain_image_ptr[i] / __scale[i];
+		if (m_border[i]) {
+			m_b[i] = -m_gain_image_ptr[i];
+			m_scale[i] = 1.0;
+			m_scale2[i] = 0;
+			m_v[i] = m_gain_image_ptr[i] / m_scale[i];
 			continue;
 		}
 		
 		// set b[i]
-		__b[i] = -__fptr[i];
+		m_b[i] = -m_fptr[i];
 		
 		// ziehe Anteile aus Randelementen ab
 		
 		// scaling
-		__scale[i] = __scale2[i] = 1.0 / sqrt(__weight_imagePtr[i] + 6*__lambda1 + 42*__lambda2);
-		__b[i] *= __scale[i];
-		__v[i] = __gain_image_ptr[i] / __scale[i];
+		m_scale[i] = m_scale2[i] = 1.0 / sqrt(m_weight_imagePtr[i] + 4*m_lambda1 + 20*m_lambda2);
+		m_b[i] *= m_scale[i];
+		m_v[i] = m_gain_image_ptr[i] / m_scale[i];
 	}
 }
 
 
 void C2DSolveCG::get_solution(C2DFImage& m) {
 
-	C2DFImage::iterator __gain_image_ptr = m.begin();
-	for(unsigned long i = 0; i < __count; i++, ++__gain_image_ptr)
-		*__gain_image_ptr = (float)__v[i] * __scale[i];
+	C2DFImage::iterator m_gain_image_ptr = m.begin();
+	for(unsigned long i = 0; i < m_count; i++, ++m_gain_image_ptr)
+		*m_gain_image_ptr = (float)m_v[i] * m_scale[i];
 }
 
 
@@ -320,8 +320,8 @@ void C2DSolveCG::add_to_solution(C2DFImage *e) {
 
   C2DFImage::iterator eptr = e->begin();
 
-  for(unsigned long i = 0; i < __count; i++)
-    __v[i] += eptr[i] / __scale[i];
+  for(unsigned long i = 0; i < m_count; i++)
+    m_v[i] += eptr[i] / m_scale[i];
 }
 
 NS_MIA_END

@@ -36,6 +36,7 @@ SET(MIA2D_SRC_BASE
   fatcost.cc
   fftkernel.cc
   fuzzyseg.cc
+  fuzzyClusterSolverSOR.cc
   fuzzyClusterSolverCG.cc
   fullcost.cc
   filterchain.cc
@@ -111,6 +112,7 @@ SET(MIA2D_HEADERS_BASE
   filterchain.hh
   fftkernel.hh
   fuzzyseg.hh
+  fuzzyClusterSolverSOR.hh
   fuzzyClusterSolverCG.hh
   ground_truth_evaluator.hh
   groundtruthproblem.hh

@@ -18,21 +18,33 @@
  *
  */
 
-#include <mia/2d/2dimageio.hh>
+#ifndef mia_2d_fuzzyclustersolver_sor_hh
+#define mia_2d_fuzzyclustersolver_sor_hh
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <mia/2d.hh>
+#include <cstdio>
+#include <stdexcept>
+#include <string>
 
 NS_MIA_BEGIN
 
-/**
-   This function runs a fuzzy c-means segmentation with B-field correction in the input data set. 
-   \param[in] src the input image 
-   \param[in] noOfClasses number of segmentation classes
-   \param[in] residuum limit for optimization 
-   \param[out] classes probability images after segmentation 
-   \returns the B-field corrected image 
- */
-EXPORT_2D P2DImage fuzzy_segment_2d(const C2DImage& src, size_t noOfClasses, float residuum, 
-				    C2DImageVector& classes, P2DImage& gain);
+class C2DFuzzyClusterSolver {
+public: 
+	C2DFuzzyClusterSolver(const C2DFImage& weight, double lambda1, double lambda2, int max_iter); 
+
+	void solve(const C2DFImage& force, C2DFImage& gain); 
+private: 
+	
+	const C2DFImage& m_weight; 
+	double m_lambda1;
+	double m_lambda2; 
+	int m_max_iter; 
+}; 
 
 NS_MIA_END
 
-
+#endif
