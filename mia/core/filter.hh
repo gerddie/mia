@@ -94,7 +94,7 @@ public:
 	result_type filter(const D& image) const;
 
 	/** run the filter from a pointer type 
-	   \param image must be of a type D that has Binder trait defined. 
+	   \param pimage must be of a type D that has Binder trait defined. 
 	 */ 
 	result_type filter(std::shared_ptr<D> pimage) const;
 private:
