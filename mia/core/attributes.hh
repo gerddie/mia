@@ -242,7 +242,14 @@ public:
 	*/
 	const PAttribute get_attribute(const std::string& key) const;
 
+	/**
+	   \returns the begin iterator to the attributes 
+	 */
 	CAttributeMap::const_iterator begin_attributes() const; 
+	
+	/**
+	   \returns the end iterator to the attributes 
+	*/
 	CAttributeMap::const_iterator end_attributes() const; 
 
 	/**
