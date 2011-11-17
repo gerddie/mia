@@ -1,5 +1,5 @@
 
-\documentclass[english, 10pt, a4paper,headsepline,openany]{scrbook}
+\documentclass[english, 10pt, a4paper,headsepline,openany]{book}
 \usepackage[T1]{fontenc}
 \usepackage[latin1]{inputenc}
 \usepackage[left=2cm,right=1cm,top=2cm,bottom=2cm,twoside]{geometry}
@@ -18,7 +18,7 @@
 \usepackage{tabularx}
 \usepackage{rotating}
 \usepackage{colortbl}
-\newcommand{\has}{\cellcolor[gray]{0.5}}
+\newcommand{\has}{\cellcolor[gray]{0.5}X}
 
 \include{version}
 \include{definitions}
@@ -101,13 +101,13 @@ In order to use MIA, on these platforms the software is best installed from sour
 To do so, your software environment has to meet the following pre-requisites: 
 
 \begin{enumerate}
-\item You need a ANSI-compatible C++ compiler that supports some features of the new C++0x standard 
-       (most likely dubbed C++2011) -- GNU g++ (>=4.5) \url{http://gcc.gnu.org} is known to work. 
-\item Intel Threading Building Blocks for Open Source \url{http://threadingbuildingblocks.org/}
+\item You need a ANSI-compatible C++ compiler that supports some features of the C++2011 standard 
+        -- GNU g++ ($\ge 4.5$) \url{http://gcc.gnu.org} is known to work. 
+\item Intel Threading Building Blocks for Open Source ($\ge 3.0$) \url{http://threadingbuildingblocks.org/} 
 \item CMake \url{http://www.cmake.org}
-\item The BOOST >= 1.40 \url{http://www.boost.org} library
+\item The BOOST >= 1.46.1 \url{http://www.boost.org} library
 \item gsl The GNU Scientific Library \url{http://www.gnu.org/software/gsl/}
-\item A library that provides the CBLAS interface.
+\item A library that provides the CBLAS interface, e.g. ATLAS \url{http://math-atlas.sourceforge.net/}.
 \item The Intel Threading Building Blocks \url{http://threadingbuildingblocks.org/}
 \end{enumerate}
 
@@ -147,8 +147,8 @@ If all of the above pre-requisites are met, the installation of MIA boils down t
 \lstset{language=bash}
 \begin{lstlisting}
   tar -zxvf mia-2.0.X.tgz
-  mkdir build-mia
-  cd build-mia
+  mkdir build
+  cd build
   cmake -DCMAKE_INSTALL_PREFIX=<path to install> ../mia-2.0.X
   make
   make install
@@ -158,6 +158,21 @@ In order to test some of the components, you may run ``make test''.
 \subsection{MS Windows} 
 
 Currently broken, may work with cygwin. 
+
+\subsection{Creating the documentation} 
+
+In order to create the documentation, a working installation of Doxygen \url{http://www.doxygen.org/}, 
+  LaTeX \url{http://www.latex-project.org/}, and Python \url{http://www.python.org/} is required. 
+
+With these pre-requisites, the documentation, including this document and the library reference, 
+  can be build after configuring the build environment of MIA as given above by running: 
+\lstset{language=bash}
+\begin{lstlisting}
+  cd build/doc 
+  make doc 
+\end{lstlisting}
+ 
+The equivalent of this document is created as \emph{userguide.pdf}. 
 
 \chapter{User Reference}
 

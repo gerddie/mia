@@ -67,12 +67,11 @@ IF (PDFLATEX_COMPILER)
    ADD_CUSTOM_TARGET(user_guide_plugins  echo "creating plug-in documentation")
    if (PYTHONINTERP_FOUND)
      ADD_CUSTOM_COMMAND(SOURCE COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/extract_docu.py 
-
-       ARGS  ${CMAKE_CURRENT_SOURCE_DIR}/.. programs.tex plugins.tex
+       ARGS  ${PROJECT_SOURCE_DIR} programs.tex plugins.tex
        TARGET user_guide_plugins
        OUTPUTS programs.tex plugins.tex)
    else(PYTHONINTERP_FOUND)
-     ADD_CUSTOM_COMMAND(SOURCE COMMAND echo "Needs python to create documentation" | tee programs.tex >plugins.tex
+     ADD_CUSTOM_COMMAND(SOURCE COMMAND echo "Needs python 2 to create documentation" | tee programs.tex >plugins.tex
        TARGET user_guide_plugins
        OUTPUTS plugins.tex)
    endif(PYTHONINTERP_FOUND)

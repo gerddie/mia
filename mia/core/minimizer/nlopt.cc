@@ -33,11 +33,11 @@
                         \cite{johnson11}. 
 			A wide range of optimizers is supported - for details please see the original source.  
 			The naming scheme for the algoritm identifier is xy-name with 
-			\begin {itemize}
+			\begin{itemize}
 			\item x g=global, l=local
 			\item y n=no derivative used, d=derivative used
 			\item name the name of the algorithm including further specifications. 
-			\end {itemize}
+			\end{itemize}
    \plugtabstart
    opt & string & main minimization algorithm &  not given\\
    local-opt & string & secondary minimization algorithm (some of the main algorithms need this, 
