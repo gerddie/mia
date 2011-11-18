@@ -73,11 +73,11 @@ void CMirrorOnBoundary::do_set_width(int width)
 	m_width2 = 2*width - 2; 
 }
 
-void CMirrorOnBoundary::test_supported(int npoles) const
+void CMirrorOnBoundary::test_supported(int /*npoles*/) const
 {
 }
 
-void CMirrorOnBoundary::do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const
+void CMirrorOnBoundary::do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& /*weights*/) const
 {
 	for (size_t k = 0; k < index.size(); k++) {
 		int idx = (index[k] < 0) ? -index[k] : index[k]; 
@@ -271,7 +271,7 @@ void CRepeatBoundary::do_set_width(int width)
 	maxv = _mm_set1_epi16 (m_widthm1);
 }
 
-void CRepeatBoundary::do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& weights) const
+void CRepeatBoundary::do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& /*weights*/) const
 {
 	for (size_t k = 0; k < index.size(); k++) {
 		if (index[k] < 0) 

@@ -18,33 +18,39 @@
  *
  */
 
-#include <mia/2d/2dfilter.hh>
-#include <mia/2d/2dimageio.hh>
 
-NS_BEGIN(mask_2dimage_filter)
-
-
-class C2DMask: public mia::C2DFilter {
-public:
-	C2DMask(const mia::C2DImageDataKey& mask_image);
-
-	template <typename T>
-	C2DMask::result_type operator () (const mia::T2DImage<T>& data) const;
-private:
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
-
-	mia::C2DImageDataKey m_image_key;
-};
+#ifndef mia_core_sparse_solver_hh
+#define mia_core_sparse_solver_hh
 
 
-class C2DMaskImageFilterFactory: public mia::C2DFilterPlugin {
-public:
-	C2DMaskImageFilterFactory();
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
-private:
-	std::string m_mask_filename;
-	bool m_invert;
-};
+#include <mia/core/defines.hh>
 
-NS_END
+NS_MIA_BEGIN
+
+/**
+   \brief solver for sparse systems of equations 
+
+   This is the templatex base class for solvers for systems of equations 
+   Ax=b if A where the multiplication Ax can be expressed as a convolution 
+   operation with a N dimansional operator. 
+   \tparam the field this solver works on. 
+ */
+template <typename Field> 
+class TSparseSolver {
+public: 
+	typedef typename Field::iterator field_iterator;  
+	typedef typename Field::const_iterator const_field_iterator;  
+
+	class A_mult_x {
+	public: 
+		virtual T operator (const_field_iterator ix) const = 0;
+	}; 
+
+	virtual ~TSparseSolver() {}; 
+
+	virtual int solve(const Field& b, Field& x, const A_mult_x& mult) const = 0; 
+}; 
+
+NS_MIA_END
+
+#endif

@@ -18,33 +18,33 @@
  *
  */
 
-#include <mia/2d/2dfilter.hh>
-#include <mia/2d/2dimageio.hh>
+#ifndef mia_2d_fuzzyclustersolver_sor_hh
+#define mia_2d_fuzzyclustersolver_sor_hh
 
-NS_BEGIN(mask_2dimage_filter)
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
+#include <mia/2d.hh>
+#include <cstdio>
+#include <stdexcept>
+#include <string>
 
-class C2DMask: public mia::C2DFilter {
-public:
-	C2DMask(const mia::C2DImageDataKey& mask_image);
+NS_MIA_BEGIN
 
-	template <typename T>
-	C2DMask::result_type operator () (const mia::T2DImage<T>& data) const;
-private:
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
+class C2DFuzzyClusterSolver {
+public: 
+	C2DFuzzyClusterSolver(const C2DFImage& weight, double lambda1, double lambda2, int max_iter); 
 
-	mia::C2DImageDataKey m_image_key;
-};
+	void solve(const C2DFImage& force, C2DFImage& gain); 
+private: 
+	
+	const C2DFImage& m_weight; 
+	double m_lambda1;
+	double m_lambda2; 
+	int m_max_iter; 
+}; 
 
+NS_MIA_END
 
-class C2DMaskImageFilterFactory: public mia::C2DFilterPlugin {
-public:
-	C2DMaskImageFilterFactory();
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
-private:
-	std::string m_mask_filename;
-	bool m_invert;
-};
-
-NS_END
+#endif

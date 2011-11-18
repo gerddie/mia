@@ -24,6 +24,7 @@
 #include <mia/2d/2DImage.hh>
 #include <mia/core/factory.hh>
 #include <mia/core/filter.hh>
+#include <mia/internal/filter_chain.hh>
 
 NS_MIA_BEGIN
 
@@ -51,7 +52,11 @@ typedef std::shared_ptr<C2DFilter > P2DFilter;
 */
 typedef THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> > C2DFilterPluginHandler;
 
-
+/**
+   \ingroup filtering 
+   2D filter chain to apply various filters in one run 
+*/
+typedef TFilterChain<C2DFilterPluginHandler> C2DImageFilterChain; 
 /**
    \ingroup filtering 
    

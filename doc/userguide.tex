@@ -1,5 +1,5 @@
 
-\documentclass[english, 10pt, a4paper,headsepline,openany]{scrbook}
+\documentclass[english, 10pt, a4paper,headsepline,openany]{book}
 \usepackage[T1]{fontenc}
 \usepackage[latin1]{inputenc}
 \usepackage[left=2cm,right=1cm,top=2cm,bottom=2cm,twoside]{geometry}
@@ -18,7 +18,7 @@
 \usepackage{tabularx}
 \usepackage{rotating}
 \usepackage{colortbl}
-\newcommand{\has}{\cellcolor[gray]{0.5}}
+\newcommand{\has}{\cellcolor[gray]{0.5}X}
 
 \include{version}
 \include{definitions}
@@ -101,13 +101,13 @@ In order to use MIA, on these platforms the software is best installed from sour
 To do so, your software environment has to meet the following pre-requisites: 
 
 \begin{enumerate}
-\item You need a ANSI-compatible C++ compiler that supports some features of the new C++0x standard 
-       (most likely dubbed C++2011) -- GNU g++ (>=4.5) \url{http://gcc.gnu.org} is known to work. 
-\item Intel Threading Building Blocks for Open Source \url{http://threadingbuildingblocks.org/}
+\item You need a ANSI-compatible C++ compiler that supports some features of the C++2011 standard 
+        -- GNU g++ ($\ge 4.5$) \url{http://gcc.gnu.org} is known to work. 
+\item Intel Threading Building Blocks for Open Source ($\ge 3.0$) \url{http://threadingbuildingblocks.org/} 
 \item CMake \url{http://www.cmake.org}
-\item The BOOST >= 1.40 \url{http://www.boost.org} library
+\item The BOOST >= 1.46.1 \url{http://www.boost.org} library
 \item gsl The GNU Scientific Library \url{http://www.gnu.org/software/gsl/}
-\item A library that provides the CBLAS interface.
+\item A library that provides the CBLAS interface, e.g. ATLAS \url{http://math-atlas.sourceforge.net/}.
 \item The Intel Threading Building Blocks \url{http://threadingbuildingblocks.org/}
 \end{enumerate}
 
@@ -147,8 +147,8 @@ If all of the above pre-requisites are met, the installation of MIA boils down t
 \lstset{language=bash}
 \begin{lstlisting}
   tar -zxvf mia-2.0.X.tgz
-  mkdir build-mia
-  cd build-mia
+  mkdir build
+  cd build
   cmake -DCMAKE_INSTALL_PREFIX=<path to install> ../mia-2.0.X
   make
   make install
@@ -158,6 +158,21 @@ In order to test some of the components, you may run ``make test''.
 \subsection{MS Windows} 
 
 Currently broken, may work with cygwin. 
+
+\subsection{Creating the documentation} 
+
+In order to create the documentation, a working installation of Doxygen \url{http://www.doxygen.org/}, 
+  LaTeX \url{http://www.latex-project.org/}, and Python \url{http://www.python.org/} is required. 
+
+With these pre-requisites, the documentation, including this document and the library reference, 
+  can be build after configuring the build environment of MIA as given above by running: 
+\lstset{language=bash}
+\begin{lstlisting}
+  cd build/doc 
+  make doc 
+\end{lstlisting}
+ 
+The equivalent of this document is created as \emph{userguide.pdf}. 
 
 \chapter{User Reference}
 
@@ -246,6 +261,7 @@ Vista file format         & v   &            &\has&\has &\has &\has &    &\has &
 \end{table}
 
 
+
 %\include{running}
 
 \chapter{Programs}
@@ -273,8 +289,8 @@ If no value type is given, then the option is a flag that defaults to \emph{fals
 All programs support the following options: 
 
 \optiontable{
-\cmdopt{help}{?}{}{Print out some help}
-\cmdopt{usage}{}{}{Print out a short help}
+\cmdopt{help}{h}{}{Print out some help}
+\cmdopt{usage}{?}{}{Print out a short help}
 \cmdopt{version}{v}{}{Print out version information}
 \cmdopt{copyright}{}{}{Print out copyright information}
 \cmdopt{verbose}{V}{string}{set the verbosity of the output out of (debug, message, warning, fail, error, fatal)}
@@ -290,12 +306,12 @@ For all programs, the \texttt{-{}-help} option will print out additional informa
   are required and what are the default values (if set).
 Note, when other options are set alongside the \texttt{-{}-help} option, then for these options, the given value 
   will be shown as default and the \emph{required} tag will not be shown.
-When a program is called with two (ore more) conflicting options then one option takes automatically precedence 
-  as it is documented. 
+When a program is called with two (or more) conflicting options then one option takes automatically 
+  precedence as it is documented. 
 
 \subsection*{An additional note for setting command line options}
 
-Option values, that belong to one option \emph{must not} contain whitespace characters, otherwise, 
+Option values that belong to one option \emph{must not} contain whitespace characters, otherwise, 
   the command line parser will seperate the parts. 
 As an alternative, the command line parameter may be protected by quotes or double quotes. 
 Note, however, when you give free parameters by using ``?'' or ``*'' to use the shell expansion to indicate 
@@ -303,7 +319,7 @@ Note, however, when you give free parameters by using ``?'' or ``*'' to use the 
   take the letters ``?'' and ``*'' literal. 
 Also note, that some options require the use of the charaters ``<'' and ``>''. 
 Since these letters are also interpreted by the shell, the parameters using these characters must be 
-  protected by quotes. 
+  protected by quotes.
 
 \include{programs}
 

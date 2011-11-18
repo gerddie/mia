@@ -35,6 +35,9 @@ SET(MIA2D_SRC_BASE
   interpolator.cc 
   fatcost.cc
   fftkernel.cc
+  fuzzyseg.cc
+  fuzzyClusterSolverSOR.cc
+  fuzzyClusterSolverCG.cc
   fullcost.cc
   filterchain.cc
   model.cc
@@ -108,6 +111,9 @@ SET(MIA2D_HEADERS_BASE
   fullcost.hh
   filterchain.hh
   fftkernel.hh
+  fuzzyseg.hh
+  fuzzyClusterSolverSOR.hh
+  fuzzyClusterSolverCG.hh
   ground_truth_evaluator.hh
   groundtruthproblem.hh
   interpolator.hh

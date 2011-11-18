@@ -1,3 +1,4 @@
+
 /* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
@@ -312,8 +313,8 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	}else{
 		cvmsg() << "No movement component identified\n"; 
 		result = CWaveletSlopeClassifier::wsc_no_movement; 
+		
 	}
-
 
 	vector<int> ri(remaining_indices.size()); 
 	transform(remaining_indices.begin(), remaining_indices.end(), ri.begin(), 
@@ -341,7 +342,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 		     auto rhsgp = rhs->get_gradient_peak(start_movement); 
 		     return lhsgp.second / lhsgp.first > rhsgp.second / rhsgp.first;
 	     });
-
+	
 	
 	sort(remaining_indices.begin(), remaining_indices.begin() + 2, 
 	     [&start_movement](PSlopeStatistics lhs, PSlopeStatistics rhs) 
@@ -359,8 +360,24 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 
 	// that's just assuming, if more then 3 components are 
 	// non-movement, then this dosn't have to be myocardial perfusion 
-	if (remaining_indices.size() > 2)
-		Perfusion_idx = remaining_indices[2]->get_index();
+	if (remaining_indices.size() > 2) {
+		// first we remove the LV and RV curves 
+		
+		auto new_end = 
+			remove_if(remaining_indices.begin(), remaining_indices.end(), 
+				  [&RV_idx, &LV_idx](PSlopeStatistics i) {
+					  return i->get_index() == RV_idx || i->get_index() == LV_idx;
+				  }); 
+		remaining_indices.erase(new_end, remaining_indices.end()); 
+		
+		// we actually re-calculate the level change every time, 
+		// but thes are only 2 or three components enyway 
+		sort(remaining_indices.begin(), remaining_indices.end(), 
+		     [&LV_peak](PSlopeStatistics lhs, PSlopeStatistics rhs) 
+		     { return lhs->get_level_change(LV_peak) > rhs->get_level_change(LV_peak);});
+
+		Perfusion_idx = remaining_indices[0]->get_index(); 
+	}
 
 }
 

@@ -96,6 +96,8 @@ template class THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> >;
 template class TFactoryPluginHandler<C2DFilterPlugin>;
 template class TPluginHandler<C2DFilterPlugin>;
 
+template class TFilterChain<C2DFilterPluginHandler>; 
+
 EXPLICIT_INSTANCE_HANDLER(C2DImageCombiner);
 
 NS_MIA_END

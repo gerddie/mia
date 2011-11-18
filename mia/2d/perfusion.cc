@@ -611,6 +611,12 @@ int C2DPerfusionAnalysis::get_RV_peak_idx() const
 	return impl->m_cls.get_RV_idx();
 }
 
+int C2DPerfusionAnalysis::get_RV_idx() const
+{
+	return impl->m_cls.get_RV_idx();
+}
+
+
 int C2DPerfusionAnalysis::get_LV_peak_time() const
 {
 	return impl->m_cls.get_LV_peak(); 
@@ -619,6 +625,16 @@ int C2DPerfusionAnalysis::get_LV_peak_time() const
 int C2DPerfusionAnalysis::get_LV_peak_idx() const
 {
 	return impl->m_cls.get_LV_idx();
+}
+
+int C2DPerfusionAnalysis::get_LV_idx() const
+{
+	return impl->m_cls.get_LV_idx();
+}
+
+int C2DPerfusionAnalysis::get_perfusion_idx() const
+{
+	return impl->m_cls.get_perfusion_idx();
 }
 
 

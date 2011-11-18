@@ -19,32 +19,29 @@
  */
 
 #include <mia/2d/2dfilter.hh>
-#include <mia/2d/2dimageio.hh>
 
-NS_BEGIN(mask_2dimage_filter)
+NS_BEGIN( tee_2dimage_filter)
 
 
-class C2DMask: public mia::C2DFilter {
+class C2DTee : public mia::C2DFilter {
 public:
-	C2DMask(const mia::C2DImageDataKey& mask_image);
+	C2DTee(const std::string& name);
 
-	template <typename T>
-	C2DMask::result_type operator () (const mia::T2DImage<T>& data) const;
+	template <class T>
+	C2DTee::result_type operator () (const mia::T2DImage<T>& data) const ;
 private:
 	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
-
-	mia::C2DImageDataKey m_image_key;
+	virtual mia::P2DImage do_filter(mia::P2DImage image) const;
+	std::string m_name; 
 };
 
-
-class C2DMaskImageFilterFactory: public mia::C2DFilterPlugin {
+class C2DTeeFilterPluginFactory: public mia::C2DFilterPlugin {
 public:
-	C2DMaskImageFilterFactory();
+	C2DTeeFilterPluginFactory();
+private:
 	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
-private:
-	std::string m_mask_filename;
-	bool m_invert;
+	std::string m_filename; 
 };
 
 NS_END

@@ -18,33 +18,21 @@
  *
  */
 
-#include <mia/2d/2dfilter.hh>
 #include <mia/2d/2dimageio.hh>
 
-NS_BEGIN(mask_2dimage_filter)
+NS_MIA_BEGIN
+
+/**
+   This function runs a fuzzy c-means segmentation with B-field correction in the input data set. 
+   \param[in] src the input image 
+   \param[in] noOfClasses number of segmentation classes
+   \param[in] residuum limit for optimization 
+   \param[out] classes probability images after segmentation 
+   \returns the B-field corrected image 
+ */
+EXPORT_2D P2DImage fuzzy_segment_2d(const C2DImage& src, size_t noOfClasses, float residuum, 
+				    C2DImageVector& classes, P2DImage& gain);
+
+NS_MIA_END
 
 
-class C2DMask: public mia::C2DFilter {
-public:
-	C2DMask(const mia::C2DImageDataKey& mask_image);
-
-	template <typename T>
-	C2DMask::result_type operator () (const mia::T2DImage<T>& data) const;
-private:
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
-
-	mia::C2DImageDataKey m_image_key;
-};
-
-
-class C2DMaskImageFilterFactory: public mia::C2DFilterPlugin {
-public:
-	C2DMaskImageFilterFactory();
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
-private:
-	std::string m_mask_filename;
-	bool m_invert;
-};
-
-NS_END

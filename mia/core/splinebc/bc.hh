@@ -40,7 +40,7 @@ class CMirrorOnBoundary : public CSplineBoundaryCondition {
 public: 
 
 	CMirrorOnBoundary(); 
-	CMirrorOnBoundary(const CMirrorOnBoundary& other) = default; 
+	CMirrorOnBoundary(const CMirrorOnBoundary& /*other*/) = default; 
 	/**
 	   Constructor for the boundary conditions. 
 	   \param width size of the coefficent domain 
@@ -74,7 +74,7 @@ public:
 	   \param width size of the coefficent domain 
 	 */
 	CZeroBoundary(int width); 
-	CZeroBoundary(const CZeroBoundary& other) = default; 
+	CZeroBoundary(const CZeroBoundary& /*other*/) = default; 
 
 	CSplineBoundaryCondition *clone() const; 
 private: 
@@ -100,7 +100,7 @@ public:
 	   \param width size of the coefficent domain 
 	 */
 	CRepeatBoundary(int width); 
-	CRepeatBoundary(const CRepeatBoundary& other) = default; 
+	CRepeatBoundary(const CRepeatBoundary& /*other*/) = default; 
 	
 	CSplineBoundaryCondition *clone() const; 
 private: 

@@ -64,6 +64,7 @@ SET(filters2dNew_base
   scale
   selectbig
   sepconv
+  tee
   thresh
 )
 

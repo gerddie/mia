@@ -133,7 +133,7 @@ void CBSplineKernel1::get_weights(double x, VWeight& weight)const
 
 }
 
-void CBSplineKernel1::get_derivative_weights(double x, VWeight& weight) const
+void CBSplineKernel1::get_derivative_weights(double /*x*/, VWeight& weight) const
 {
 	assert(weight.size() == 2); 
 	

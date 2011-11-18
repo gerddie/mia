@@ -109,14 +109,30 @@ public:
 	void set_approach(size_t approach); 
 
 	/**
-	   \returns the RV peak enhancement index of -1 if it could not be identified
+	   \returns the RV peak enhancement IC index of -1 if it could not be identified
 	 */
-	int get_RV_peak_idx() const; 
+	int get_RV_peak_idx() const __attribute__((deprecated)); 
 	
 	/**
-	   \returns the LV peak enhancement index of -1 if it could not be identified
+	   \returns the RV enhancement IC index of -1 if it could not be identified
+	 */
+	int get_RV_idx() const; 
+	
+	/**
+	   \returns the LV peak enhancement IC index of -1 if it could not be identified
 	*/
-	int get_LV_peak_idx() const; 
+	int get_LV_peak_idx() const __attribute__((deprecated)); 
+	
+        /**
+	   \returns the LV enhancement IC index of -1 if it could not be identified
+	*/
+	int get_LV_idx() const; 
+
+
+        /**
+	   \returns the perfusion enhancement IC index of -1 if it could not be identified
+	*/
+	int get_perfusion_idx() const; 
 
 	/**
 	   Dictionary for segmentation method flags 

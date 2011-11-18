@@ -92,8 +92,14 @@ public:
 	   \param image must be of a type that has Binder trait defined.  
 	 */ 
 	result_type filter(const D& image) const;
+
+	/** run the filter from a pointer type 
+	   \param pimage must be of a type D that has Binder trait defined. 
+	 */ 
+	result_type filter(std::shared_ptr<D> pimage) const;
 private:
 	virtual result_type do_filter(const D& image) const = 0;
+	virtual result_type do_filter(std::shared_ptr<D> image) const;
 };
 
 /**
@@ -521,6 +527,20 @@ typename TImageFilter<D>::result_type
 TImageFilter<D>::filter(const D& image) const
 {
 	return do_filter(image);
+}
+
+template <class D>
+typename TImageFilter<D>::result_type
+TImageFilter<D>::filter(std::shared_ptr<D> pimage) const
+{
+	return do_filter(pimage);
+}
+
+template <class D>
+typename TImageFilter<D>::result_type
+TImageFilter<D>::do_filter(std::shared_ptr<D> pimage) const
+{
+	return do_filter(*pimage); 
 }
 
 NS_MIA_END

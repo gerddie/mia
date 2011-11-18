@@ -40,7 +40,7 @@ static void test_available_filters()
 	BOOST_CHECK_EQUAL(handler.get_plugin_names(),
 			  "adaptmed admean aniso bandpass binarize close convert "
 			  "crop cst dilate downscale erode fft gauss gradnorm mask "
-			  "median mlv ngfnorm noise open sepconv ");
+			  "median mlv ngfnorm noise open sepconv tee ");
 }
 
 

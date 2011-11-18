@@ -74,7 +74,7 @@ public:
 	/**
 	   Default copy constructor 
 	 */
-	CSplineBoundaryCondition(const CSplineBoundaryCondition& other) = default; 
+	CSplineBoundaryCondition(const CSplineBoundaryCondition& /*other*/) = default; 
 
 	/**
 	   Constructor for the boundary conditions. 
