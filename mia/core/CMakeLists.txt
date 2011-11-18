@@ -305,6 +305,7 @@ NEW_TEST(Vector miacore)
 NEW_TEST(watch miacore)
 NEW_TEST(waveletslopeclassifier miacore)
 NEW_TEST(fixedwidthoutput miacore)
+NEW_TEST(sparse_solver miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)
