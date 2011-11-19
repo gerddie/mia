@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE( test_watch )
 	gettimeofday(&tv_start, NULL); 
 	
 	double x = 0.1; 
-	for (long int i = 0; i < 10000000L; ++i) 
+	for (long int i = 0; i < 100000000L; ++i) 
 		x += log(x); 
 	// keep this line, or the compiler will remove the loop above
 	don_t_optimize_x_away(x); 
