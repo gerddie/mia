@@ -27,13 +27,24 @@
 
 NS_MIA_BEGIN
 
+/// base type for the sparse solvers for 2D images 
 typedef TSparseSolver<C2DFImage> C2DImageSparseSolver; 
 
+/// pointer type for the sparse solvers for 2D images 
 typedef std::shared_ptr<C2DImageSparseSolver > P2DImageSparseSolver;
 
-typedef TFactory<C2DImageSparseSolver> C2DImageSparseSolverPlugin; 
+/// Plugin handler for sparse image solver plug-ins 
+typedef THandlerSingleton<TFactoryPluginHandler<TFactory<C2DImageSparseSolver> > > C2DImageSparseSolverPluginHandler;
 
-typedef THandlerSingleton<TFactoryPluginHandler<C2DImageSparseSolverPlugin> > C2DImageSparseSolverPluginHandler;
+/**   
+      \ingroup tests 
+      Class to set up the plug-in search path for spline kernels when running tests
+      in the build tree 
+*/
+struct EXPORT_2D C2DImageSparseSolverTestPath {
+	C2DImageSparseSolverTestPath(); 
+}; 
+
 
 FACTORY_TRAIT(C2DImageSparseSolverPluginHandler); 
 
@@ -57,7 +68,7 @@ FACTORY_TRAIT(C2DImageSolverAmultxPluginHandler);
    \remark maybethis should go into the filter section 
  */
 
-C2DFImage operator * (const C2DImageSolverAmultx& A, const C2DFImage& x); 
+EXPORT_2D C2DFImage operator * (const C2DImageSolverAmultx& A, const C2DFImage& x); 
 
 NS_MIA_END
 

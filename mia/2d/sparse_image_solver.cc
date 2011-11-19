@@ -18,21 +18,22 @@
  *
  */
 
+#include <boost/filesystem.hpp>
 #include <mia/core/export_handler.hh>
 #include <mia/2d/sparse_image_solver.hh>
 #include <mia/core/plugin_base.cxx>
 #include <mia/core/handler.cxx>
+
 
 NS_MIA_BEGIN
 
 template class TSparseSolver<C2DFImage>; 
 EXPLICIT_INSTANCE_HANDLER(C2DImageSparseSolver); 
 
-
 typedef C2DImageSparseSolver::A_mult_x C2DImageSolverAmultx; 
 EXPLICIT_INSTANCE_HANDLER(C2DImageSolverAmultx); 
 
-C2DFImage operator * (const C2DImageSolverAmultx& A, const C2DFImage& X)
+EXPORT_2D C2DFImage operator * (const C2DImageSolverAmultx& A, const C2DFImage& X)
 {
 	assert(A.get_size() == X.get_size());
 
@@ -53,6 +54,16 @@ C2DFImage operator * (const C2DImageSolverAmultx& A, const C2DFImage& X)
 	}
 	copy(ix, X.end(), ir); 
 	return result; 
+}
+
+
+using boost::filesystem::path; 
+using std::list; 
+C2DImageSparseSolverTestPath::C2DImageSparseSolverTestPath() 
+{
+	list< path> sksearchpath; 
+	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/2d/sparsimgsolver"));
+	C2DImageSparseSolverPluginHandler::set_search_path(sksearchpath); 
 }
 
 NS_MIA_END
