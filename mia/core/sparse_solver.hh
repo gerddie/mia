@@ -23,7 +23,7 @@
 #define mia_core_sparse_solver_hh
 
 
-#include <mia/core/defines.hh>
+#include <mia/core/product_base.hh>
 
 NS_MIA_BEGIN
 
@@ -33,23 +33,77 @@ NS_MIA_BEGIN
    This is the templatex base class for solvers for systems of equations 
    Ax=b if A where the multiplication Ax can be expressed as a convolution 
    operation with a N dimansional operator. 
-   \tparam the field this solver works on. 
+   \tparam Field the field this solver works on. The Field type must provide the 
+           types const_iterator and iterator that implement random access iterators. 
  */
-template <typename Field> 
-class TSparseSolver {
+template <typename F> 
+class TSparseSolver : public CProductBase{
 public: 
-	typedef typename Field::iterator field_iterator;  
-	typedef typename Field::const_iterator const_field_iterator;  
+	typedef F Field;
+	
+	typedef F plugin_data; 
 
-	class A_mult_x {
+	typedef TSparseSolver<F> plugin_type; 
+
+	static const char * const type_descr; 
+
+	/// type of the field random access iterator 
+	typedef typename Field::iterator field_iterator;  
+	
+	/// type of the field random access const_iterator 
+	typedef typename Field::const_iterator const_field_iterator;  
+	
+	/// type of the values stored in Field 
+	typedef typename Field::value_type value_type; 
+	
+	/**
+	   A class that implements the multiplication of a cell of the 
+	   matrix A with the vector x. 
+	 */
+	
+	class A_mult_x: public CProductBase {
 	public: 
-		virtual T operator (const_field_iterator ix) const = 0;
+		
+		typedef F plugin_data; 
+		
+		typedef A_mult_x plugin_type; 
+		
+		static const char * const type_descr; 
+		
+		/**
+		   Operator to execute the multiplication 
+		   \param ix is the random access iterator to the 
+                          central value of the input vector that would be 
+		          multiplied by the element on the main diagonal of A 
+		   \returns the result for the cell multiplication 
+		 */
+		virtual value_type operator () (const_field_iterator ix) const = 0;
+
+		/**
+		   Returns the size of the boundary that one has to take into account 
+		 */
+		virtual int get_boundary_size() const = 0; 
 	}; 
 
 	virtual ~TSparseSolver() {}; 
 
-	virtual int solve(const Field& b, Field& x, const A_mult_x& mult) const = 0; 
+
+	/**
+	   Run the solver 
+	   \param rhs the right hand side of teh system of linear equations to be solved 
+	   \param[in,out] at input an initila estimate of the solution, on output the solution 
+	   \param mult the class implementing the multiplication with matrix A
+	   \returns 0 if all went fine and an algorithm specific error value if something went wrong. 
+	*/
+	virtual int solve(const Field& rhs, Field& x, const A_mult_x& mult) const = 0; 
 }; 
+
+template <typename F> 
+const char * const TSparseSolver<F>::type_descr = "sparsesolver"; 
+
+
+template <typename F> 
+const char * const TSparseSolver<F>::A_mult_x::type_descr = "amultx"; 
 
 NS_MIA_END
 

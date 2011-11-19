@@ -50,6 +50,7 @@ SET(MIA2D_SRC_BASE
   rigidregister.cc
   similarity_profile.cc
   shape.cc
+  sparse_image_solver.cc
   timestep.cc
   transform.cc
   transformio.cc
@@ -129,6 +130,7 @@ SET(MIA2D_HEADERS_BASE
   rigidregister.hh
   shape.hh
   similarity_profile.hh
+  sparse_image_solver.hh
   timestep.hh
   transform.hh
   transformmock.hh
