@@ -204,6 +204,7 @@ TEST_2DMIA(similarity_profile mia2dtest)
 TEST_2DMIA(transio mia2d)
 TEST_2DMIA(transform mia2dtest)
 TEST_2DMIA(2dimageio mia2dtest)
+TEST_2DMIA(sparse_image_solver mia2dtest)
 #TEST_2DMIA(fullcost_mi_spline  mia2dtest)
 
 IF(CMAKE_BUILD_TYPE)
@@ -242,15 +243,12 @@ MIA_ADD_LIBRARY(mia2dmyocardperf "${MIA2D_MYOCARDPERF_SRC}" mia2d)
 INSTALL_WITH_EXPORT(mia2dmyocardperf)
 INSTALL(FILES ${MIA2D_MYOCARDPERF_HEADER} DESTINATION ${INCLUDE_INSTALL_PATH}/mia/2d)
 
-
 IF(ITPP_FOUND)
   TEST_2DMIA(ica mia2dmyocardperf)
   TEST_2DMIA(perfusion mia2dmyocardperf)
 ENDIF(ITPP_FOUND)
 
-
 TEST_2DMIA(groundtruthproblem mia2dmyocardperf)
-
 TEST_2DMIA(correlation_weight mia2dmyocardperf)
 
 IF(XMLPP_FOUND)
@@ -272,6 +270,7 @@ ADD_SUBDIRECTORY(fullcost  )
 ADD_SUBDIRECTORY(kernel    )
 ADD_SUBDIRECTORY(model     )
 ADD_SUBDIRECTORY(shapes    )
+#ADD_SUBDIRECTORY(sparseimgsolver )
 ADD_SUBDIRECTORY(timestep  )
 ADD_SUBDIRECTORY(transform )
 ADD_SUBDIRECTORY(transio )

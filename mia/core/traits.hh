@@ -34,7 +34,7 @@ NS_MIA_BEGIN
    A template to get an generic dimension vector 
    \tparam T must be a template that defines a type \a dimsize_type
  */
-template <template <typename> class T>
+template <typename T>
 struct dim_traits {
 	/// the trait 
 	typedef typename T::dimsize_type dimsize_type; 
@@ -47,6 +47,10 @@ struct dim_traits {
 struct vector_dimsize {
 	
 	/// contruct the dimsize object 
+	vector_dimsize():m_n(0) {
+	}
+
+	/// contruct the dimsize object 
 	vector_dimsize(size_t n):m_n(n) {
 	}
 	
@@ -56,13 +60,13 @@ struct vector_dimsize {
 	}
 
 	/// return a read-write reference to the first (and only)dimension
-	T& operator [] (int i)
+	size_t& operator [] (int i)
 	{
 		return m_n; 
 	}
 
 	/// return a read-only  reference to the first (and only)dimension
-	const T& operator [] (int i) const 
+	const size_t& operator [] (int i) const 
 	{
 		return m_n; 
 	}

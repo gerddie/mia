@@ -41,6 +41,7 @@ public:
 
 class CAMultX : public CSolverMock::A_mult_x {
 public: 
+	CAMultX(size_t size);
 	CSolverMock::value_type operator ()(CSolverMock::const_field_iterator ix) const;
 	int get_boundary_size() const; 
 
@@ -48,13 +49,15 @@ public:
 
 BOOST_AUTO_TEST_CASE( test_fixpoint_sparse_solver ) 
 {
-	CAMultX mult; 
 	
-	int boundary = mult.get_boundary_size(); 
 	
 	const vector<double> x = {1,2,3,2,4,3,4,6,4,7,4,3,2,1,5,3,9,1,2}; 
 	vector<double> b(x.size()); 
 	vector<double> y(x.size()); 
+
+	CAMultX mult(x.size()); 
+	const int boundary = mult.get_boundary_size(); 
+	
 	
 	b[0] = x[0]; 
 	b[x.size()-1] = x[x.size()-1]; 
@@ -79,7 +82,12 @@ CSolverMock::value_type CAMultX::operator () (CSolverMock::const_field_iterator 
 {
 	return *ix - 0.2 * (ix[-1] + ix[1]);
 }
-		
+
+CAMultX::CAMultX(size_t size):
+	CSolverMock::A_mult_x(size)
+{
+}
+	
 int CAMultX::get_boundary_size() const
 {
 	return 1; 
@@ -91,17 +99,19 @@ int CSolverMock::solve(const Field& rhs, Field& x, const CSolverMock::A_mult_x& 
 	assert(rhs.size() == x.size()); 
 	
 	Field y(x); 
-	int boundary = mult.get_boundary_size(); 
+	const int boundary = mult.get_boundary_size(); 
 	double res = 0.0; 
 	int iter = 0; 
+	const int size = x.size(); 
 
 	do {
 		res = 0.0; 
 		auto ix = x.begin(); 
 		auto ib = rhs.begin();
 		auto iy = y.begin(); 
-		for (size_t i = 0; i < x.size(); ++i, ++ix, ++ib, ++iy) {
-			if (i >= boundary && i <  x.size() - boundary) { 
+
+		for (int i = 0; i < size; ++i, ++ix, ++ib, ++iy) {
+			if (i >= boundary && i <  size - boundary) { 
 				double d = *ib - mult(ix); 
 				*iy += d;
 				res += d * d; 

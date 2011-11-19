@@ -24,6 +24,7 @@
 
 
 #include <mia/core/product_base.hh>
+#include <mia/core/traits.hh>
 
 NS_MIA_BEGIN
 
@@ -42,6 +43,8 @@ public:
 	typedef F Field;
 	
 	typedef F plugin_data; 
+	
+	typedef typename dim_traits<F>::dimsize_type dimsize_type; 
 
 	typedef TSparseSolver<F> plugin_type; 
 
@@ -58,7 +61,7 @@ public:
 	
 	/**
 	   A class that implements the multiplication of a cell of the 
-	   matrix A with the vector x. 
+	   matrix A with the field x.
 	 */
 	
 	class A_mult_x: public CProductBase {
@@ -70,6 +73,15 @@ public:
 		
 		static const char * const type_descr; 
 		
+		/** standard constructor sets the expected fiels size to zero */
+		A_mult_x():m_size(dimsize_type()){}; 
+
+		/** constructor sets the expected fiels size to given value */
+		A_mult_x(const dimsize_type& size):m_size(size){};
+
+		/** destructor to ensure virtual distruction */
+		virtual ~A_mult_x() {}; 
+
 		/**
 		   Operator to execute the multiplication 
 		   \param ix is the random access iterator to the 
@@ -83,6 +95,17 @@ public:
 		   Returns the size of the boundary that one has to take into account 
 		 */
 		virtual int get_boundary_size() const = 0; 
+		
+		/**
+		   \returns the sizes of the (multidimensional) array that is expected 
+		            by the operator 
+		 */
+		dimsize_type get_size() const {
+			return m_size; 
+		}
+	private: 
+		dimsize_type m_size; 
+		
 	}; 
 
 	virtual ~TSparseSolver() {}; 

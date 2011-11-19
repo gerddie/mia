@@ -48,6 +48,17 @@ typedef THandlerSingleton<TFactoryPluginHandler<C2DImageSolverAmultxPlugin> > C2
 
 FACTORY_TRAIT(C2DImageSolverAmultxPluginHandler); 
 
+
+/**
+   Implement the multiplication of a Matrix with an Image, 
+   \param A the matrix 
+   \param x the input image 
+   \returns A * x, (works like a matrix filter) 
+   \remark maybethis should go into the filter section 
+ */
+
+C2DFImage operator * (const C2DImageSolverAmultx& A, const C2DFImage& x); 
+
 NS_MIA_END
 
 #endif

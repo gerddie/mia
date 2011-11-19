@@ -32,4 +32,27 @@ EXPLICIT_INSTANCE_HANDLER(C2DImageSparseSolver);
 typedef C2DImageSparseSolver::A_mult_x C2DImageSolverAmultx; 
 EXPLICIT_INSTANCE_HANDLER(C2DImageSolverAmultx); 
 
+C2DFImage operator * (const C2DImageSolverAmultx& A, const C2DFImage& X)
+{
+	assert(A.get_size() == X.get_size());
+
+	C2DFImage result(X.get_size()); 
+	long b = A.get_boundary_size(); 
+	long nx = X.get_size().x - 2 * b; 
+	long ny = X.get_size().y - 2 * b; 
+	copy(X.begin(), X.begin() + b * X.get_size().x + b, result.begin()); 
+	auto ir = result.begin() + b * X.get_size().x + b; 
+	auto ix = X.begin() + b * X.get_size().x + b; 
+		
+	for (int y = 0; y < ny; ++y) {
+		int x = 0; 
+		for (; x < nx; ++x, ++ix, ++ir)
+			*ir = A(ix); 
+		for (; x < (int)X.get_size().x; ++x, ++ix, ++ir) 
+			*ir = *ix; 
+	}
+	copy(ix, X.end(), ir); 
+	return result; 
+}
+
 NS_MIA_END
