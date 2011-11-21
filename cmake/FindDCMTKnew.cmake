@@ -39,6 +39,29 @@ FIND_PATH( DCMTK_config_INCLUDE_DIR dcmtk/config/osconfig.h
   ${DCMTK_DIR}/ ${DCMTK_DIR}/include /usr/include
   )
 
+# get version number 
+IF (UNIX) 
+  find_program(DCMDUM_PROG dcmdump)
+  find_program(GREP_PROG grep)
+  find_program(AWK_PROG awk)
+  
+  IF(NOT AWK_PROG OR NOT GREP_PROG) 
+    MESSAGE(ERROR "This is supposed to be a UNIX like system but no 'awk' or no 'grep' was found")
+  ENDIF(NOT AWK_PROG OR NOT GREP_PROG) 
+  
+  IF(DCMDUM_PROG)
+    execute_process( 
+      COMMAND ${DCMDUM_PROG} --version
+      COMMAND ${GREP_PROG} dcmtk
+      COMMAND ${AWK_PROG} "{ print $3 }"
+      OUTPUT_VARIABLE DCMTK_version_string)
+    MESSAGE(STATUS "DCMTK version string " ${DCMTK_version_string})
+    string(REGEX REPLACE "[v.]" "0" DCMTK_version_string2 ${DCMTK_version_string} )
+    string(COMPARE LESS ${DCMTK_version_string2} "030600" VERSION_BEFORE_360)
+  ENDIF(DCMDUM_PROG) 
+ELSE(UNIX)
+ENDIF(UNIX) 
+
 FIND_PACKAGE(ZLIB)
 
 IF (ZLIB_FOUND) 
@@ -53,6 +76,9 @@ IF (ZLIB_FOUND)
 	${DCMTK_DIR}/ofstd/Debug
 	${DCMTK_DIR}/lib
 	)
+      IF(NOT t_${n}) 
+	MESSAGE(ERROR "Required library ${n} not found")
+      ENDIF(NOT t_${n}) 
       SET(files "${files}" "${t_${n}}")
     ENDFOREACH(n)
     SET(${target} "${files}")
@@ -60,13 +86,12 @@ IF (ZLIB_FOUND)
   
   SET(NAMES dcmdata dcmjpeg dcmimgle ofstd ijg12 ijg16 ijg8)
   FIND_DCMTKLIBS(DCMTK_REQUIRED_LIBS "${NAMES}")
-  FIND_DCMTKLIBS(DCMTK_NEW_LIBS oflog)
-  
-  IF(DCMTK_NEW_LIBS)
+  IF(VERSION_BEFORE_360) 
     SET(DCMTK_LIBS ${DCMTK_REQUIRED_LIBS})
-  ELSE(DCMTK_NEW_LIBS)
-    SET(DCMTK_LIBS ${DCMTK_REQUIRED_LIBS} ${DCMTK_NEW_LIBS})
-  ENDIF(DCMTK_NEW_LIBS)
+  ELSE(VERSION_BEFORE_360)
+    FIND_DCMTKLIBS(DCMTK_NEW_LIBS oflog)
+    SET(DCMTK_LIBS ${DCMTK_REQUIRED_LIBS} ${DCMTK_NEW_LIBS})    
+  ENDIF(VERSION_BEFORE_360) 
   
   SET(DCMTK_LIBRARIES ${DCMTK_LIBS} ${ZLIB_LIBRARIES})
 
