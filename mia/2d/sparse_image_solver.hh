@@ -61,14 +61,46 @@ FACTORY_TRAIT(C2DImageSolverAmultxPluginHandler);
 
 
 /**
-   Implement the multiplication of a Matrix with an Image, 
+   Specialize the implementation of a Matrix with an Image, 
    \param A the matrix 
    \param x the input image 
    \returns A * x, (works like a matrix filter) 
    \remark maybethis should go into the filter section 
  */
 
-EXPORT_2D C2DFImage operator * (const C2DImageSolverAmultx& A, const C2DFImage& x); 
+template <typename T>
+struct multiply<T2DImage<T> > {
+	/**
+	   The function to apply the multiplication 
+	   \param[out] result location to store the result, ususally it should be allocated and of the same size like x 
+	   \param[in] A sparse Matrix 
+	   \param[in] the filed to multiply with the matrix 
+	 */
+	static void apply(T2DImage<T>& result, const typename TSparseSolver<T2DImage<T> >::A_mult_x& A, const T2DImage<T>& x);
+}; 
+
+template <typename T>
+void multiply<T2DImage<T> >::apply(T2DImage<T>& result, const typename TSparseSolver<T2DImage<T> >::A_mult_x& A, const T2DImage<T>& X)
+{
+	assert(result.get_size() == X.get_size()); 
+	assert(result.get_size() == A.get_size());
+
+	long b = A.get_boundary_size(); 
+	long nx = X.get_size().x - 2 * b; 
+	long ny = X.get_size().y - 2 * b; 
+	copy(X.begin(), X.begin() + b * X.get_size().x + b, result.begin()); 
+	auto ir = result.begin() + b * X.get_size().x + b; 
+	auto ix = X.begin() + b * X.get_size().x + b; 
+		
+	for (int y = 0; y < ny; ++y) {
+		int x = 0; 
+		for (; x < nx; ++x, ++ix, ++ir)
+			*ir = static_cast<T>(A(ix));
+		for (; x < (int)X.get_size().x; ++x, ++ix, ++ir) 
+			*ir = *ix; 
+	}
+	copy(ix, X.end(), ir); 
+}
 
 NS_MIA_END
 

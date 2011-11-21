@@ -27,7 +27,27 @@
    This test only tests the general idea of the unified solver class, and 
    is a blue-print of how such a thing could be implemented 
 */
+namespace mia {
+template <>
+struct multiply<vector<double> > {
+	static void apply(vector<double>& result, const typename TSparseSolver<vector<double> >::A_mult_x& A, const vector<double>& x)	{
+		assert(result.size() == x.size()); 
+		const int size = result.size(); 
+		const int boundary = A.get_boundary_size(); 
+		
+		auto ir = result.begin(); 
+		auto ix = x.begin(); 
 
+		for (int i = 0; i < size; ++i, ++ix, ++ir) {
+			if (i >= boundary && i <  size - boundary) { 
+				*ir = A(ix); 
+			} else {
+				*ir = *ix; 
+			}
+		}
+	}
+};
+}
 /**
    a simple fix-point iterator
 */
@@ -94,32 +114,31 @@ int CAMultX::get_boundary_size() const
 }
 
 
-int CSolverMock::solve(const Field& rhs, Field& x, const CSolverMock::A_mult_x& mult) const
+
+
+
+
+int CSolverMock::solve(const Field& b, Field& x, const CSolverMock::A_mult_x& A) const
 {
-	assert(rhs.size() == x.size()); 
+	assert(b.size() == x.size()); 
 	
-	Field y(x); 
-	const int boundary = mult.get_boundary_size(); 
+	Field y(x.size()); 
 	double res = 0.0; 
 	int iter = 0; 
-	const int size = x.size(); 
-
+	Field d(x.size()); 
+	
 	do {
 		res = 0.0; 
-		auto ix = x.begin(); 
-		auto ib = rhs.begin();
-		auto iy = y.begin(); 
+		
+		multiply<vector<double> >::apply(y, A, x); 
+		transform(b.begin(), b.end(), y.begin(), d.begin(), 
+			  [](double lhs, double rhs) {return lhs - rhs; }); 
 
-		for (int i = 0; i < size; ++i, ++ix, ++ib, ++iy) {
-			if (i >= boundary && i <  size - boundary) { 
-				double d = *ib - mult(ix); 
-				*iy += d;
-				res += d * d; 
-			} else {
-				*iy = *ib; 
-			}
-		}
-		copy(y.begin(), y.end(), x.begin()); 
+		res = inner_product(d.begin(), d.end(), d.begin(), 0.0); 
+		
+		transform(x.begin(), x.end(), d.begin(), x.begin(), 
+			  [](double lhs, double rhs) {return lhs + rhs; }); 
+
 		cvdebug() << "[" << iter << "] res = " << res << ", x = " << x << "\n"; 
 		++iter; 
 	} while (res > 0.0000001 && iter < 100); 

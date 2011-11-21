@@ -60,13 +60,13 @@ struct vector_dimsize {
 	}
 
 	/// return a read-write reference to the first (and only)dimension
-	size_t& operator [] (int i)
+	size_t& operator [] (int /*i*/)
 	{
 		return m_n; 
 	}
 
 	/// return a read-only  reference to the first (and only)dimension
-	const size_t& operator [] (int i) const 
+	const size_t& operator [] (int /*i*/) const 
 	{
 		return m_n; 
 	}

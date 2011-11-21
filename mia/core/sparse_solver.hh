@@ -40,14 +40,19 @@ NS_MIA_BEGIN
 template <typename F> 
 class TSparseSolver : public CProductBase{
 public: 
+	/// typedef for the field the solver works on 
 	typedef F Field;
 	
+	/// helper typedef for the plug-in handling 
 	typedef F plugin_data; 
 	
+	/// typeef of the dimension type 
 	typedef typename dim_traits<F>::dimsize_type dimsize_type; 
 
+	/// helper for the plug-in handling 
 	typedef TSparseSolver<F> plugin_type; 
-
+	
+	/// plugin type component of plugin path descriptor
 	static const char * const type_descr; 
 
 	/// type of the field random access iterator 
@@ -66,11 +71,13 @@ public:
 	
 	class A_mult_x: public CProductBase {
 	public: 
-		
+		/// helper typedef for the plug-in handling 
 		typedef F plugin_data; 
 		
+		/// helper typedef for the plug-in handling 
 		typedef A_mult_x plugin_type; 
 		
+		/// plugin type component of plugin path descriptor
 		static const char * const type_descr; 
 		
 		/** standard constructor sets the expected fiels size to zero */
@@ -88,6 +95,7 @@ public:
                           central value of the input vector that would be 
 		          multiplied by the element on the main diagonal of A 
 		   \returns the result for the cell multiplication 
+		   \remark No tests are done wether the boundary conditions are actually honoured. 
 		 */
 		virtual value_type operator () (const_field_iterator ix) const = 0;
 
@@ -114,7 +122,7 @@ public:
 	/**
 	   Run the solver 
 	   \param rhs the right hand side of teh system of linear equations to be solved 
-	   \param[in,out] at input an initila estimate of the solution, on output the solution 
+	   \param[in,out] x at input an initial estimate of the solution, on output the solution 
 	   \param mult the class implementing the multiplication with matrix A
 	   \returns 0 if all went fine and an algorithm specific error value if something went wrong. 
 	*/
@@ -127,6 +135,47 @@ const char * const TSparseSolver<F>::type_descr = "sparsesolver";
 
 template <typename F> 
 const char * const TSparseSolver<F>::A_mult_x::type_descr = "amultx"; 
+
+
+/**
+   \brief Class template to implement a matrix - field multiplication. 
+   
+   This class implements the multiplication of a sparse structured matrix by a field representing 
+   the input vector data. This structure is just a stub ans needs to be instanciated for 
+   specific fields. 
+   \tparam F the field that representes the data to be multiplied by the matrix 
+*/
+
+template <typename F>
+struct multiply {
+	/**
+	   The function to apply the multiplication 
+	   \param[out] result location to store the result, ususally it should be allocated and of the same size like x 
+	   \param[in] A sparse Matrix 
+	   \param[in] the filed to multiply with the matrix 
+	 */
+	static void apply(F& result, const typename TSparseSolver<F>::A_mult_x& A, const F& x) {
+		static_assert(sizeof(F)==0, "This operation needs to be specialized");  
+	}
+}; 
+
+
+/**
+   Implement the multiplication of a Matrix with an Image, 
+   \param A the matrix 
+   \param x the input image 
+   \returns A * x, (works like a matrix filter) 
+   \remark maybethis should go into the filter section 
+ */
+
+template <typename F>
+F operator * (const typename TSparseSolver<F>::A_mult_x& A, const F& x)
+{
+	F result(x.get_size()); 
+	multiply<F>::apply(result, A, x); 
+	return result;
+}
+
 
 NS_MIA_END
 
