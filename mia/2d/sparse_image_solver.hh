@@ -74,7 +74,7 @@ struct multiply<T2DImage<T> > {
 	   The function to apply the multiplication 
 	   \param[out] result location to store the result, ususally it should be allocated and of the same size like x 
 	   \param[in] A sparse Matrix 
-	   \param[in] the filed to multiply with the matrix 
+	   \param[in] x the filed to multiply with the matrix 
 	 */
 	static void apply(T2DImage<T>& result, const typename TSparseSolver<T2DImage<T> >::A_mult_x& A, const T2DImage<T>& x);
 }; 

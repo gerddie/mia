@@ -152,7 +152,7 @@ struct multiply {
 	   The function to apply the multiplication 
 	   \param[out] result location to store the result, ususally it should be allocated and of the same size like x 
 	   \param[in] A sparse Matrix 
-	   \param[in] the filed to multiply with the matrix 
+	   \param[in] x the filed to multiply with the matrix 
 	 */
 	static void apply(F& result, const typename TSparseSolver<F>::A_mult_x& A, const F& x) {
 		static_assert(sizeof(F)==0, "This operation needs to be specialized");  
