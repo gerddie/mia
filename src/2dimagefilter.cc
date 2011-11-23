@@ -78,7 +78,8 @@ const SProgramDescrption g_general_help = {
 	"2D image processing", 
 	
 	"This program runs a series filters on a given input image. The filters are given as extra parameters "
-	"on the command line and are run in the order in which they are given.", 
+	"on the command line and are run in the order in which they are given. To obtain a list of available filters "
+	"you may run 'mia-plugin-help filter/2dimage' from the command line", 
 	
 	"Run a kmeans classification of 5 classes on input.png and then a binarization of the 4th class and store the result"
 	" in result.png", 
