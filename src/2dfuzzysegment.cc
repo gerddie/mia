@@ -100,7 +100,8 @@ int do_main( int argc, char *argv[] )
 	string gain_filename;
 	string cls_filename;
 	int    noOfClasses = 3;
-	float  residuum = 0.1;
+	SFuzzySegParams params; 
+
 
 
 	CCmdOptionList options(g_description);
@@ -115,8 +116,9 @@ int do_main( int argc, char *argv[] )
 
 	options.add(make_opt( noOfClasses, "no-of-classes", 'n',
 			      "number of classes"));
-	options.add(make_opt( residuum, "residuum", 'r',
-			      "relative residuum"));
+	options.add(make_opt( params.residuum, "residuum", 'r', "relative residuum"));
+	options.add(make_opt( params.lambda1, "l1", 0, "Penalize magnitude of intensity inhomogeinity correction"));
+	options.add(make_opt( params.lambda2, "l2", 0, "Smoothness of intensity inhomogeinity correction"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
@@ -143,7 +145,7 @@ int do_main( int argc, char *argv[] )
 
 	C2DImageVector classes;
 	P2DImage gain; 
-	P2DImage b0_corrected = fuzzy_segment_2d(**inImage_list->begin(), noOfClasses, residuum, classes, gain);
+	P2DImage b0_corrected = fuzzy_segment_2d(**inImage_list->begin(), noOfClasses, params, classes, gain);
 
 	if (!out_filename.empty()) {
 

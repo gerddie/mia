@@ -48,7 +48,7 @@ typedef vector<C2DFImage*> C2DFImageVec;
 
 class CSegment2d : public TFilter<C2DFImageVec> {
 public:
-	CSegment2d(const unsigned int& nClasses, const float& res);
+	CSegment2d(const unsigned int& nClasses, const SFuzzySegParams& params);
 	~CSegment2d ();
 	P2DImage get_out_image () const;
 	P2DImage get_gain_image () const;
@@ -57,16 +57,13 @@ public:
 	CSegment2d::result_type operator () (const T2DImage<T>& data);
 private:
 	unsigned int m_nClasses;
-	float 	     m_res;
+	SFuzzySegParams m_params; 
 	P2DImage     m_out;
 	P2DImage     m_gain_image;
 
 };
 
 
-/// regularization for the clustring PDE
-#define _LAMBDA1	2e5
-#define _LAMBDA2	2e6
 /// maximum number of iterations for the solver
 #define _MAX_ITER_PDE 	1000
 
@@ -179,7 +176,7 @@ vector<double> Isodata2d (const Data2D& src_image, unsigned int nClasses, unsign
 
 
 // solves the PDE  (W + lambda1 * H1 + lambda2 * H2) = f
-void solvePDE (C2DFImage& weight_image, C2DFImage& force_image, C2DFImage& gain_image, double lambda1, double lambda2, double *firstnormr0, double relres, double min_res)
+void solvePDE (C2DFImage& weight_image, C2DFImage& force_image, C2DFImage& gain_image, const SFuzzySegParams& params, double *firstnormr0, double min_res)
 {
 #if 0 
 
@@ -187,14 +184,14 @@ void solvePDE (C2DFImage& weight_image, C2DFImage& force_image, C2DFImage& gain_
 	solver.solve ( _MAX_ITER_PDE, firstnormr0);
 	solver.get_solution (gain_image);
 #else 
-	C2DFuzzyClusterSolver solver(weight_image,lambda1, lambda2, 1000);
+	C2DFuzzyClusterSolver solver(weight_image,params.lambda1, params.lambda2, 1000);
 	solver.solve (force_image, gain_image);
 #endif 
 }
 
 template <class Data2D>
 int estimateGain (C2DFImage& gain_image, const Data2D& src_image, vector<C2DFImage*>& cls_image,
-		  vector<double> &clCenter, unsigned int classes, double * firstnormr0, float relres, const vector<char>& border)
+		  vector<double> &clCenter, unsigned int classes, double * firstnormr0, const SFuzzySegParams& params)
 {
 
 	const unsigned int nx = src_image.get_size().x;
@@ -243,8 +240,7 @@ int estimateGain (C2DFImage& gain_image, const Data2D& src_image, vector<C2DFIma
 	};
 	// C.Wolters:
 	// now solve system using scaled CG
-	solvePDE(weight_image, force_image, gain_image, _LAMBDA1, _LAMBDA2, firstnormr0,
-		 double(relres), 1);
+	solvePDE(weight_image, force_image, gain_image, params, firstnormr0,1);
 
 	return t;
 
@@ -252,8 +248,9 @@ int estimateGain (C2DFImage& gain_image, const Data2D& src_image, vector<C2DFIma
 
 
 
-CSegment2d::CSegment2d(const unsigned int& nClasses, const float& res):
-	m_nClasses(nClasses), m_res(res)
+CSegment2d::CSegment2d(const unsigned int& nClasses, const SFuzzySegParams& params):
+	m_nClasses(nClasses), 
+	m_params(params)
 {
 }
 
@@ -368,7 +365,7 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 		// estimate gain field
 
 		estimateGain (gain_image, data, cls_image, clCenter, m_nClasses,
-			      &firstnormr0, m_res, border);
+			      &firstnormr0, m_params);
 		if (firstnormr0 < 1000)
 			firstnormr0 = 1.0;
 
@@ -471,11 +468,10 @@ CSegment2d::result_type CSegment2d::operator () (const C2DBitImage& /*data*/) {
 
 
 
-
-EXPORT_2D P2DImage fuzzy_segment_2d(const C2DImage& src, size_t noOfClasses, float residuum, 
+EXPORT_2D P2DImage fuzzy_segment_2d(const C2DImage& src, size_t noOfClasses, const SFuzzySegParams& params, 
 				    C2DImageVector& classes, P2DImage& gain)
 {
-	CSegment2d segment2D (noOfClasses, residuum);
+	CSegment2d segment2D (noOfClasses, params);
 	C2DFImageVec imagesVector = mia::accumulate (segment2D, src);
 
 	for (size_t i=0; i < noOfClasses; i++) {

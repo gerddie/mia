@@ -22,6 +22,17 @@
 
 NS_MIA_BEGIN
 
+struct SFuzzySegParams {
+	float residuum; 
+	float lambda1; 
+	float lambda2;
+	SFuzzySegParams(): 
+		residuum(0.1), 
+		lambda1(2e5), 
+		lambda2(2e6)
+		{}
+}; 
+
 /**
    This function runs a fuzzy c-means segmentation with B-field correction in the input data set. 
    \param[in] src the input image 
@@ -30,7 +41,7 @@ NS_MIA_BEGIN
    \param[out] classes probability images after segmentation 
    \returns the B-field corrected image 
  */
-EXPORT_2D P2DImage fuzzy_segment_2d(const C2DImage& src, size_t noOfClasses, float residuum, 
+EXPORT_2D P2DImage fuzzy_segment_2d(const C2DImage& src, size_t noOfClasses, const SFuzzySegParams& residuum, 
 				    C2DImageVector& classes, P2DImage& gain);
 
 NS_MIA_END
