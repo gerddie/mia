@@ -106,7 +106,7 @@ const SProgramDescrption g_description = {
 
 	"Register the perfusion series given in segment.set by optimizing a spline based " 
         "transformation with a coefficient rate of 16 pixel "
-        "using  a weighted combination of \emph{normalized gradient fields} "
+        "using  a weighted combination of normalized gradient fields "
         "and SSD as cost measure, and penalize the transformation by using divcurl with aweight of 2.0.", 
 
 	"-i segment.set -o registered.set -F spline:rate=16 "

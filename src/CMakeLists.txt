@@ -22,7 +22,6 @@ LINK_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../mia/core)
 LINK_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../mia/2d)
 LINK_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../mia/3d)
 
-
 #basic helpers 
 DEFEXE(filenumberpattern  miacore )
 DEFEXE(cmeans             miacore )

@@ -108,7 +108,7 @@ const SProgramDescrption g_description = {
 	"This program is used Pseudo Ground Thruth for motion compensation "
 	"of series of myocardial perfusion images as decribed in Chao Li and Ying Sun, "
 	"'Nonrigid Registration of Myocardial Perfusion MRI Using Pseudo Ground Truth' , In Proc. "
-	"Medical Image Computing and Computer-Assisted Intervention – MICCAI 2009, 165-172, 2009 ", 
+	"Medical Image Computing and Computer-Assisted Intervention MICCAI 2009, 165-172, 2009 ", 
 
 	"Register the perfusion series given in 'segment.set' by using Pseudo Ground Truth estimation. "
         "Skip two images at the beginning and otherwiese use the default parameters. "

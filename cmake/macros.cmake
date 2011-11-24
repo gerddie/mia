@@ -130,14 +130,30 @@ ENDMACRO(ASSERT_SIZE)
 
 
 MACRO(DEFEXE name deps ) 
-   ADD_EXECUTABLE(mia-${name} ${name}.cc)
-   
-   FOREACH(lib ${deps}) 
-       TARGET_LINK_LIBRARIES(mia-${name} ${lib})
-   ENDFOREACH(lib)
+  ADD_EXECUTABLE(mia-${name} ${name}.cc)
+  
+  FOREACH(lib ${deps}) 
+    TARGET_LINK_LIBRARIES(mia-${name} ${lib})
+  ENDFOREACH(lib)
+  
+  TARGET_LINK_LIBRARIES(mia-${name} ${BASELIBS})
+  INSTALL(TARGETS mia-${name} RUNTIME DESTINATION "bin")
+  
+  ADD_CUSTOM_TARGET(mia-${name}xml)
+  ADD_CUSTOM_TARGET(mia-${name}man ALL)
+  ADD_CUSTOM_COMMAND(SOURCE COMMAND ./mia-${name}
+    ARGS  --help-xml 2>mia-${name}.xml
+    TARGET mia-${name}xml
+    OUTPUTS mia-${name}.xml)
 
-   TARGET_LINK_LIBRARIES(mia-${name} ${BASELIBS})
-   INSTALL(TARGETS mia-${name} RUNTIME DESTINATION "bin")
+
+  ADD_CUSTOM_COMMAND(SOURCE COMMAND ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py
+    ARGS  mia-${name}.xml >mia-${name}.man 
+    TARGET mia-${name}man
+    OUTPUTS mia-${name}.man)
+  add_dependencies(mia-${name}man mia-${name}xml)  
+
+  
 ENDMACRO(DEFEXE)
 
 MACRO(DEFCHKEXE name deps ) 

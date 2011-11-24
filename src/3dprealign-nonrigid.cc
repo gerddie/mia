@@ -135,7 +135,7 @@ const SProgramDescrption g_description = {
 	
 	"Register the image series given by images imageXXXX.v by optimizing a spline based "
 	"transformation with a coefficient rate of 16 pixel ,skipping two images at the "
-	"beginning and using \emph{normalized gradient fields} as initial cost measure "
+	"beginning and using normalized gradient fields as initial cost measure "
 	"and SSD as final measure. Penalize the transformation by using divcurl with aweight of 2.0. "
 	"As optimizer an nlopt based newton method is used.", 
 	

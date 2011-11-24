@@ -80,7 +80,7 @@ const SProgramDescrption g_description = {
 	"segmented regions of an image with respect to the segmentation of a reference frame "
 	"from the same series.", 
 
-	"Evaluate the dice index of segmentation set \emph{segment.set} with reference 30 and " 
+	"Evaluate the dice index of segmentation set segment.set with reference 30 and " 
 	"skipping the first two frames.", 
 	
 	"-i segment.set -r 30 -k 2"

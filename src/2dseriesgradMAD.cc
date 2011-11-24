@@ -91,7 +91,7 @@ const SProgramDescrption g_description = {
 	"Myocardial Perfusion Analysis", 
 
 	"Given a set of images of temporal sucession, evaluates the pixel-wise "
-	"temporal gradient and then its \emph{median average distance} (MAD) "
+	"temporal gradient and then its median average distance (MAD) "
 	"and stores the result in an image. "
 	"Spacial pre-filtering may be applied as given additional plugin(s) (filter/2dimage).", 
 	
