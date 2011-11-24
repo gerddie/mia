@@ -427,7 +427,8 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 		
 		for (unsigned int k = 0; k < m_nClasses; k++)
 			cverb << " [" << k << "] " << clCenter[k];
-		cverb << endl;
+
+		cverb << " dumax=" << dumax << "\n"; 
 		if (dumax < 0.01)
 			break;
 		

@@ -67,9 +67,6 @@ void C2DFuzzyClusterSolver::solve(const C2DFImage& force, C2DFImage& gain)
 				float h = m_lambda1 * m1 + 
 					m_lambda2 * (8 * m1 - 2 * m2 - m3); 
 				float r = omega * (d * *igain - h - *iforce) / d; 
-				cvdebug() << "(" << x << ", " << y << ") r=" << r 
-					  << " d = " << d << ", h = " << h 
-					  << "\n"; 
 				norm += fabs(r); 
 				*igain -= r; 
 				
