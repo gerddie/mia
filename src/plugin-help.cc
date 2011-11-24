@@ -69,9 +69,9 @@ map<string, const CPluginHandlerBase*> collect_handlers()
 	ADD(C2DRegModelPluginHandler::instance);
 	ADD(C2DShapePluginHandler::instance);
 	ADD(C2DStackDistanceTransformIOPluginHandler::instance);
+	ADD(C2DTransformCreatorHandler::instance);
 	ADD(C2DTransformationIOPluginHandler::instance);
 	ADD(C2DVFIOPluginHandler::instance);
-	ADD(C3DFatImageCostPluginHandler::instance);
 	ADD(C3DFilterPluginHandler::instance);
 	ADD(C3DFullCostPluginHandler::instance);
 	ADD(C3DImageCombinerPluginHandler::instance);
@@ -79,6 +79,7 @@ map<string, const CPluginHandlerBase*> collect_handlers()
 	ADD(C3DImageCreatorPluginHandler::instance);
 	ADD(C3DImageIOPluginHandler::instance);
 	ADD(C3DRegModelPluginHandler::instance);
+	ADD(C2DRegTimeStepPluginHandler::instance);
 	ADD(C3DRegTimeStepPluginHandler::instance);
 	ADD(C3DShapePluginHandler::instance);
 	ADD(C3DTransformationIOPluginHandler::instance);
