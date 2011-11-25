@@ -28,9 +28,6 @@
 NS_MIA_USE
 using namespace std;
 
-bool uninstalled = false;
-bool passed = true;
-
 const SProgramDescrption g_general_help = {
 	"Test", 
 	"This program runs plugin-tests.", 
@@ -38,8 +35,12 @@ const SProgramDescrption g_general_help = {
 	NULL
 }; 
 
+bool uninstalled = false;
+bool passed = true;
+
 static void test_plugin(const char *modname)
 {
+	
 
 	cvmsg() << "Testing '" << modname << "'\n";
 	auto_ptr<CPluginModule> module(new CPluginModule(modname));
@@ -59,31 +60,20 @@ static void test_plugin(const char *modname)
 	delete plugin;
 }
 
-int main(int argc, const char *argv[])
+int do_main(int argc, char *argv[])
 {
-	try {
+	
+	CCmdOptionList options(g_general_help);
+	options.add(make_opt( uninstalled, "uninstalled", 'u', "test uninstalled plugin", NULL));
+	if (options.parse(argc, argv, "plugin"))
+		return EXIT_SUCCESS; 
+	
+	for_each(options.get_remaining().begin(),
+		 options.get_remaining().end(), test_plugin);
+	
+	return passed ? EXIT_SUCCESS : EXIT_FAILURE;
 
-		CCmdOptionList options(g_general_help);
-		options.add(make_opt( uninstalled, "uninstalled", 'u', "test uninstalled plugin", NULL));
-		if (options.parse(argc, argv, "plugin"))
-			return EXIT_SUCCESS; 
-
-		for_each(options.get_remaining().begin(),
-			 options.get_remaining().end(), test_plugin);
-
-		return passed ? EXIT_SUCCESS : EXIT_FAILURE;
-	}
-	catch (const runtime_error &e){
-		cerr << argv[0] << " runtime: " << e.what() << endl;
-	}
-	catch (const invalid_argument &e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (const exception& e){
-		cerr << argv[0] << " error: " << e.what() << endl;
-	}
-	catch (...){
-		cerr << argv[0] << " unknown exception" << endl;
-	}
-	return EXIT_FAILURE;
 }
+
+#include <mia/internal/main.hh>
+MIA_MAIN(do_main); 

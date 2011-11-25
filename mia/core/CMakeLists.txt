@@ -260,8 +260,6 @@ IF (NOT WIN32)
 ENDIF (NOT WIN32)
 #CORE_TEST(noisegen)
 
-DEFEXE(plugin_test miacore)
-
 ADD_SUBDIRECTORY(testplug      )
 ADD_SUBDIRECTORY(spacialkernel )
 ADD_SUBDIRECTORY(noise         ) 

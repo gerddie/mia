@@ -151,6 +151,7 @@ MACRO(DEFEXE name deps )
     ARGS  mia-${name}.xml >mia-${name}.man 
     TARGET mia-${name}man
     OUTPUTS mia-${name}.man)
+  add_dependencies(mia-${name}xml mia-${name})  
   add_dependencies(mia-${name}man mia-${name}xml)  
 
   

@@ -33,9 +33,6 @@
 #include <sys/ioctl.h>
 #endif
 
-#ifdef HAVE_LIBXMLPP
-#include <libxml++/libxml++.h>
-#endif
 
 #include <mia/core/tools.hh>
 #include <mia/core/msgstream.hh>
@@ -62,8 +59,11 @@ CCmdOption::CCmdOption(char short_opt, const char *long_opt,
 	m_short_help(short_help),
 	m_flags(flags)
 {
+	TRACE_FUNCTION; 
+	cvdebug() << "Create option '" << long_opt << "'\n"; 
         assert(long_opt);
         assert(long_help);
+
 }
 
 CCmdOption::~CCmdOption()
@@ -91,6 +91,22 @@ void CCmdOption::get_long_help(std::ostream& os) const
 	os << long_help();
 	do_get_long_help(os);
 }
+
+#ifdef HAVE_LIBXMLPP
+string CCmdOption::get_long_help_xml(xmlpp::Element *node) const
+{
+	cvdebug() << "write XML for '" << m_long_opt << "'\n"; 
+	ostringstream shelp; 
+	shelp << long_help();
+	do_get_long_help_xml(shelp, node); 
+	return shelp.str(); 
+}
+
+void CCmdOption::do_get_long_help_xml(std::ostream& os, xmlpp::Element *node) const
+{
+	do_get_long_help(os);
+}
+#endif // HAVE_LIBXMLPP
 
 const char *CCmdOption::long_help() const
 {
@@ -434,7 +450,7 @@ void CCmdOptionListData::print_help_xml(const char *name_help, bool has_addition
 			option->set_attribute("long", opt.get_long_option());
 			option->set_attribute("required", to_string<bool>(opt.is_required())); 
 			option->set_attribute("default", opt.get_value_as_string()); 
-			option->set_child_text(opt.long_help()); 
+			option->set_child_text(opt.get_long_help_xml(nodeRoot));
 
 			
 			if (opt.is_required()) {
@@ -536,8 +552,6 @@ void CCmdOptionListData::print_help(const char *name_help, bool has_additional) 
 				else
 					usage_text << "--" << k->get_long_option() << " <value> ";
 			}
-
-
 		}
 	}
 	if (opt_size > max_opt_width)
