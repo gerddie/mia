@@ -140,21 +140,20 @@ MACRO(DEFEXE name deps )
   INSTALL(TARGETS mia-${name} RUNTIME DESTINATION "bin")
   
   ADD_CUSTOM_TARGET(mia-${name}xml)
-  ADD_CUSTOM_TARGET(mia-${name}man ALL)
+  ADD_CUSTOM_TARGET(mia-${name}man)
   ADD_CUSTOM_COMMAND(SOURCE COMMAND ./mia-${name}
-    ARGS  --help-xml 2>mia-${name}.xml
+    ARGS  --help-xml 2>${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
     TARGET mia-${name}xml
-    OUTPUTS mia-${name}.xml)
-
-
-  ADD_CUSTOM_COMMAND(SOURCE COMMAND ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py
-    ARGS  mia-${name}.xml >mia-${name}.man 
-    TARGET mia-${name}man
-    OUTPUTS mia-${name}.man)
+    OUTPUTS ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml)
   add_dependencies(mia-${name}xml mia-${name})  
-  add_dependencies(mia-${name}man mia-${name}xml)  
-
+  add_dependencies(xmldocs mia-${name}xml)  
+  add_dependencies(manpages mia-${name}man)  
   
+  ADD_CUSTOM_COMMAND(SOURCE COMMAND ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py 
+    ARGS   ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.man 
+    TARGET mia-${name}man 
+    OUTPUTS ${CMAKE_BINARY_DIR}/doc/mia-${name}.man)
+
 ENDMACRO(DEFEXE)
 
 MACRO(DEFCHKEXE name deps ) 

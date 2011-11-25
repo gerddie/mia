@@ -22,7 +22,14 @@ INCLUDE (${CMAKE_ROOT}/Modules/FindLATEX.cmake)
 INCLUDE (${CMAKE_ROOT}/Modules/FindDoxygen.cmake)
 
 
-ADD_CUSTOM_TARGET(doc echo "creating documentation")
+ADD_CUSTOM_TARGET(docs echo "creating documentation")
+add_dependencies(doc docs)  
+
+ADD_CUSTOM_TARGET(xmldocs)
+ADD_CUSTOM_TARGET(manpages)
+add_dependencies(manpages xmldocs)  
+add_dependencies(docs manpages)  
+
 
 IF (DOXYGEN_FOUND)
 

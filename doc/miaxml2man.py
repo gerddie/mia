@@ -1,109 +1,17 @@
 #!/bin/env python 
 
-from lxml import etree
-import re
+import sys
 import time
 import calendar
-import sys
 import string
 import htmlentitydefs
+import re
 
-# supported tags: 
-#   program      main tag 
-#   name         text: program name
-#   section      text: program type
-#   description  text: basic description of the program 
-#   basic_usage  text: generic call 
-#   group        tag name: option group name  
-#     option     tag short: short option 
-#                tag long:  long option 
-#                tag required: 1 if required argument 
-#                tag default: default option value
-#                text: help 
-#  Example       text: example descripton 
-#    Code        text: example text without program name 
+modules = {'miareadxml' : [0, '', 'none://miareadxml.py' ]
+           }
 
 
-class CTextNode: 
-    def __init__(self, node, expect = None):
-        if not expect is None and node.tag != expect:
-            raise ValueError("expected '%s' got '%s'" % (expect, node.tag))
-
-        self.entry = node.tag
-        self.text  = node.text 
-
-class COption(CTextNode):
-    def __init__(self, node):
-        CTextNode.__init__(self, node, "option")
-        
-        self.short = node.get("short")
-        self.long =  node.get("long")
-        self.required = int(node.get("required")) 
-        self.default = node.get("default")
-        
-        
-class CExample(CTextNode):
-    def __init__(self, node):
-        CTextNode.__init__(self, node, "Example")
-        self.code = []
-
-        for child in node:
-            if child.tag == "Code": 
-                self.code.append(CTextNode(child, "Code"))
-            else:
-                print "unexpected subnode '%s' in example"% (child.tag)
-
-
-class CGroup:
-    def __init__(self, node):
-        if node.tag != "group":
-            raise ValueError("expected 'group' got '%s'" % (node.tag))
-
-        self.entry = node.tag
-        self.name  = node.get("name")
-
-        self.options = []
-        for child in node:
-            if child.tag == "option": 
-                self.options.append(COption(child))
-            else:
-                print "unexpected subnode '%s' in 'group'"% (child.tag)
-
-def get_text_element(root, name):
-        xname = etree.SubElement(root, name)
-        if xname is None:
-            raise ValueError("Program description misses the tag %s"% (name))
-        return xname.text
-
-class CDescription: 
-    def __init__(self, node):
-        self.Example = None 
-        self.option_groups = []
-        
-        for n in node:
-            if n.tag == 'name':
-                self.name = n.text
-            elif n.tag == 'section':
-                self.section = n.text
-            elif n.tag == 'description':
-                self.description = n.text
-            elif n.tag == 'basic_usage':
-                self.basic_usage = n.text
-            elif n.tag == 'group': 
-                self.option_groups.append(CGroup(n))
-            elif n.tag == 'Example': 
-                self.Example = CExample(n)
-            else: 
-               print "unknown tag '%s'"% (n.tag)
-        
-def parse_file(xmlpath):
-    file=open(xmlpath, "r")
-    stringstree = file.read()
-    root = etree.XML(stringstree)
-    if root.tag != "program": 
-        raise ValueError("Expected tag 'program' not found. This is not a mia program descripion.")
-    
-    return CDescription(root)
+from miareadxml import parse_file
 
 def get_date_string():
     lt = time.localtime(time.time())
@@ -166,7 +74,7 @@ def write_man_file(descr):
                 print "%s \-\-%s=%s"% (short, o.long, escape_dash(o.default))
             print o.text
     if descr.Example.text is not None and len(descr.Example.text) > 0:
-            print ".SH EXAMPLES"
+            print ".SH EXAMPLE"
             print clean(descr.Example.text)
             for c in descr.Example.code:
                 print ".TP"
