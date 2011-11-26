@@ -34,7 +34,7 @@
    \end{description}
    
    \plugtabstart
-   mbins & uint	    & Number of histogram bins used for the moving image \ \
+   mbins & uint	    & Number of histogram bins used for the moving image \\
    mkernel & string & Spline kernel for moving image parzen hinstogram  \\
    rbins & uint	 & Number of histogram bins used for the reference image \\
    rkernel & string  & Spline kernel for reference image parzen hinstogram \\

@@ -53,7 +53,6 @@ ENDIF (DOXYGEN_FOUND)
 
 
 IF (PDFLATEX_COMPILER)	
-  FIND_PACKAGE(PythonInterp)
    ADD_CUSTOM_TARGET(UserGuide echo "creating user user guide")
    ADD_DEPENDENCIES(doc UserGuide)
 
