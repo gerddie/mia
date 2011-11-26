@@ -50,8 +50,8 @@ static void prepare_plugin_path()
 static void test_3dimage_cost_avail() 
 {
 	const C3DImageCostPluginHandler::Instance& fh = C3DImageCostPluginHandler::instance();
-	BOOST_CHECK(fh.size() == 1); 
-	BOOST_CHECK(fh.get_plugin_names() == "ssd ");
+	BOOST_CHECK(fh.size() == 3); 
+	BOOST_CHECK(fh.get_plugin_names() == "mi ngf ssd ");
 }
 
 static void test_3dimage_cost(const C3DImageCostPluginHandler::value_type& i)
@@ -62,11 +62,5 @@ static void test_3dimage_cost(const C3DImageCostPluginHandler::value_type& i)
 void add_3dimagecost_tests(test_suite* suite)
 {
 	prepare_plugin_path(); 
-
 	suite->add( BOOST_TEST_CASE( &test_3dimage_cost_avail)); 
-
-	suite->add( BOOST_PARAM_TEST_CASE(&test_3dimage_cost, 
-					  C3DImageCostPluginHandler::instance().begin(), 
-					  C3DImageCostPluginHandler::instance().end()
-			    )); 
 }

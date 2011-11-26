@@ -41,7 +41,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DFullCostPluginHandler,PluginTestFixture)
 
 BOOST_FIXTURE_TEST_CASE(test_C3DImageCostPluginHandler,PluginTestFixture) 
 { 
-	set<string> test_data = { "ngf", "ssd"}; 
+	set<string> test_data = { "ngf", "mi", "ssd"};
 	test(C3DImageCostPluginHandler::instance().get_set(), test_data); 
 }
 
