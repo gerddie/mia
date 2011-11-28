@@ -71,9 +71,9 @@ def write_man_file(descr):
                 short = "  "; 
 
             if o.required:
-                print ".IP %s \-\-%s[required]"% (short, o.long)
+                print ".IP \"%s \-\-%s=[required]\""% (short, o.long)
             else:
-                print ".IP %s \-\-%s=%s"% (short, o.long, escape_dash(o.default))
+                print ".IP \"%s \-\-%s=%s\""% (short, o.long, escape_dash(o.default))
             print o.text
         print ".RE"
         
@@ -85,7 +85,10 @@ def write_man_file(descr):
             print p.text
             print ".RS"
             for o in p.params:
-                print ".IP %s:%s" % (o.name, o.type)
+                if o.required:
+                    print ".IP \"%s:%s [required]\"" % (o.name, o.type)
+                else:
+                    print ".IP %s:%s" % (o.name, o.type)
                 print o.text
             print ".RE"
 
@@ -93,7 +96,7 @@ def write_man_file(descr):
             print ".SH EXAMPLE"
             print clean(descr.Example.text)
             for c in descr.Example.code:
-                print ".TP"
+                print ".HP"
                 print "%s %s" % (name, clean(c.text))
     
     print ".SH COPYRIGHT"
