@@ -205,14 +205,8 @@ void TPluginHandler<I>::add_plugin(Interface *p)
 }
 
 template <typename I>
-void TPluginHandler<I>::add_dependend_handlers(HandlerHelpMap& handler_map)const 
+void TPluginHandler<I>::do_add_dependend_handlers(HandlerHelpMap& handler_map)const 
 {
-	// avoid infinite recursion 
-	auto id = get_descriptor(); 
-	if (handler_map.find(id) != handler_map.end()) 
-		return; 
-
-	handler_map[id] = this; 	
 	for (auto p = begin(); p != end(); ++p)
 		p->second->add_dependend_handlers(handler_map); 
 }

@@ -88,10 +88,6 @@ public:
 	/// \returns the plug-in spectific directory part 
 	const std::string get_search_descriptor() const; 
 
-	/** add all plug-in handler that may be called by this plug-in handler
-	    \param [in,out] plug in handler map to add to 
-	 */
-	void add_dependend_handlers(HandlerHelpMap& handler_map) const; 
 protected: 
 	//! \name Constructors
         //@{
@@ -121,6 +117,7 @@ protected:
 private: 
 	void global_searchpath(list< ::boost::filesystem::path>& searchpath); 
 	void initialise(const std::list< ::boost::filesystem::path>& searchpath); 
+	void do_add_dependend_handlers(HandlerHelpMap& handler_map) const; 	
 	
 	std::vector<PPluginModule> m_modules;
 	CPluginMap m_plugins; 

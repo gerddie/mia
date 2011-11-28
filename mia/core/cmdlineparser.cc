@@ -422,7 +422,7 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 {
 	HandlerHelpMap handler_help_map; 
 	if (additional_help) 
-		handler_help_map[additional_help->get_descriptor()] = additional_help; 
+		additional_help->add_dependend_handlers(handler_help_map); 
 		
 	unique_ptr<xmlpp::Document> doc(new xmlpp::Document);
 	

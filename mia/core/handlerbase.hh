@@ -45,6 +45,8 @@ NS_MIA_BEGIN
     
 */
 
+class CPluginHandlerBase; 
+typedef std::map<std::string, const CPluginHandlerBase*> HandlerHelpMap; 
 
 class EXPORT_CORE CPluginHandlerBase  {
  public: 
@@ -83,17 +85,23 @@ class EXPORT_CORE CPluginHandlerBase  {
 	void get_xml_help(xmlpp::Element *root) const; 
 
 	const std::string& get_descriptor() const; 
+
+	/** add all plug-in handler that may be called by this plug-in handler
+	    \param [in,out] plug in handler map to add to 
+	 */
+	void add_dependend_handlers(HandlerHelpMap& handler_map) const;  
 private: 
 	
 	virtual void do_print_short_help(std::ostream& os) const = 0; 
 	virtual void do_print_help(std::ostream& os) const = 0; 
 	virtual void do_get_xml_help(xmlpp::Element *root) const = 0; 
+	virtual void do_add_dependend_handlers(HandlerHelpMap& handler_map) const = 0;  
 	
 	std::string m_descriptor; 
 }; 
 
 
-typedef std::map<std::string, const CPluginHandlerBase*> HandlerHelpMap; 
+
 
 NS_MIA_END
 

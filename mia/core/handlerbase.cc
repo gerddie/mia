@@ -52,4 +52,12 @@ const std::string& CPluginHandlerBase::get_descriptor() const
 	return m_descriptor; 
 }
 
+void CPluginHandlerBase::add_dependend_handlers(HandlerHelpMap& handler_map) const
+{
+	if (handler_map.find(m_descriptor) != handler_map.end()) 
+		return; 
+	handler_map[m_descriptor] = this; 	
+	do_add_dependend_handlers(handler_map);
+}
+
 NS_MIA_END
