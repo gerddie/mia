@@ -22,6 +22,11 @@
 
 NS_MIA_BEGIN
 
+CPluginHandlerBase::CPluginHandlerBase(const std::string& descriptor):
+	m_descriptor(descriptor)
+{
+}
+
 CPluginHandlerBase::~CPluginHandlerBase() 
 {
 	
@@ -40,6 +45,11 @@ void CPluginHandlerBase::print_help(std::ostream& os) const
 void CPluginHandlerBase::get_xml_help(xmlpp::Element *root) const
 {
 	do_get_xml_help(root); 
+}
+
+const std::string& CPluginHandlerBase::get_descriptor() const
+{
+	return m_descriptor; 
 }
 
 NS_MIA_END

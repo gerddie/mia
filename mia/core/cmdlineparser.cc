@@ -250,7 +250,7 @@ struct CCmdOptionListData {
 	CCmdOption *find_option(char key) const;
 
 #ifdef HAVE_LIBXMLPP
-	void print_help_xml(const char *progname, bool has_additional) const; 
+	void print_help_xml(const char *progname, const CPluginHandlerBase *additional_help) const; 
 #endif
 	void print_help(const char *name_help, bool has_additional) const;
 	void print_usage(const char *name_help) const;
@@ -418,9 +418,11 @@ vector<const char *> CCmdOptionListData::has_unset_required_options() const
 
 #ifdef HAVE_LIBXMLPP
 using xmlpp::Element; 
-void CCmdOptionListData::print_help_xml(const char *name_help, bool has_additional) const
+void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHandlerBase *additional_help) const
 {
 	CCmdOption::HandlerHelpMap handler_help_map; 
+	if (additional_help) 
+		handler_help_map[additional_help->get_descriptor()] = additional_help; 
 		
 	unique_ptr<xmlpp::Document> doc(new xmlpp::Document);
 	
@@ -464,13 +466,13 @@ void CCmdOptionListData::print_help_xml(const char *name_help, bool has_addition
 		}
 	}
 	usage_text << "[options]"; 
-	if (has_additional) 
-		usage_text << " &lt;Additional parameters&gt;"; 
+	if (additional_help) 
+		usage_text << " &lt;PLUGINS:" << additional_help->get_descriptor() <<"&gt;"; 
 	basic_usage->set_child_text(usage_text.str()); 
 
 	for (auto h = handler_help_map.begin(); h != handler_help_map.end(); ++h)
-		h->second->get_xml_help(nodeRoot); 
-
+		h->second->get_xml_help(nodeRoot);
+	
 	Element* example = nodeRoot->add_child("Example");
 	example->set_child_text(m_program_example_descr); 
 	Element* example_code = example->add_child("Code"); 
@@ -703,33 +705,36 @@ int CCmdOptionList::handle_shortargs(const char *arg, size_t /*argc*/, const cha
 CCmdOptionList::EHelpRequested
 CCmdOptionList::parse(size_t argc, const char *args[])
 {
-	return do_parse(argc, args, false);
+	return do_parse(argc, args, false, NULL);
 }
 
 
 CCmdOptionList::EHelpRequested
 CCmdOptionList::parse(size_t argc, char *args[])
 {
-	return do_parse(argc, (const char **)args, false);
+	return do_parse(argc, (const char **)args, false, NULL);
 }
 
 
 CCmdOptionList::EHelpRequested
-CCmdOptionList::parse(size_t argc, const char *args[], const string& additional_type)
+CCmdOptionList::parse(size_t argc, const char *args[], const string& additional_type, 
+		      const CPluginHandlerBase *additional_help)
 {
 	m_impl->m_free_parametertype = additional_type; 
-	return do_parse(argc, args, true);
+	return do_parse(argc, args, true, additional_help);
 }
 
 CCmdOptionList::EHelpRequested
-CCmdOptionList::parse(size_t argc, char *args[], const string& additional_type)
+CCmdOptionList::parse(size_t argc, char *args[], const string& additional_type, 
+		      const CPluginHandlerBase *additional_help)
 {
 	m_impl->m_free_parametertype = additional_type; 
-	return do_parse(argc, (const char **)args, true);
+	return do_parse(argc, (const char **)args, true, additional_help);
 }
 
 CCmdOptionList::EHelpRequested
-CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional)
+CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional, 
+			 const CPluginHandlerBase *additional_help)
 {
 
 	size_t idx = 1;
@@ -790,7 +795,7 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional)
 		return hr_help;
 #ifdef HAVE_LIBXMLPP
 	}else if (m_impl->help_xml) {
-		m_impl->print_help_xml(name_help, has_additional);
+		m_impl->print_help_xml(name_help, additional_help);
 		return hr_help_xml;
 #endif 
 	} else if (m_impl->usage) {

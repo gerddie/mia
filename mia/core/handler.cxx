@@ -50,7 +50,8 @@ using namespace std;
 EXPORT_CORE const std::string get_plugin_root(); 
 
 template <typename I> 
-TPluginHandler<I>::TPluginHandler(const std::list<bfs::path>& searchpath)
+TPluginHandler<I>::TPluginHandler(const std::list<bfs::path>& searchpath):
+	CPluginHandlerBase(TPlugin<typename I::PlugData,typename I::PlugType>::search_path().string())
 {
 	if (!searchpath.empty())
 		initialise(searchpath); 

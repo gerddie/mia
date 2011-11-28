@@ -185,7 +185,7 @@ int do_main(int argc, char *argv[])
 				   "give some help about the filter plugins", 
 				   new TPluginHandlerHelpCallback<C2DFifoFilterPluginHandler>)); 
 
-	if (options.parse(argc, argv, "filter") != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "filter", &sfh) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 	vector<const char *> filter_chain = options.get_remaining();

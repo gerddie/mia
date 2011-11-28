@@ -424,7 +424,8 @@ public:
 	    \param args array of arguments strings
 	    \param additional_type will is a help string to describe the type of free parameters
         */
-	EHelpRequested parse(size_t argc, char *args[], const std::string& additional_type) 
+	EHelpRequested parse(size_t argc, char *args[], const std::string& additional_type, 
+		const CPluginHandlerBase *additional_help = NULL) 
 		__attribute__((warn_unused_result));
 
         /** the work routine, can take the arguemnts straight from \a main
@@ -434,7 +435,8 @@ public:
 	    \param args array of arguments strings
 	    \param additional_type will is a help string to describe the type of free parameters
         */
-	EHelpRequested parse(size_t argc, const char *args[], const std::string& additional_type) 
+	EHelpRequested parse(size_t argc, const char *args[], const std::string& additional_type, 
+			     const CPluginHandlerBase *additional_help = NULL) 
 		__attribute__((warn_unused_result));
 
         /** the work routine, can take the arguemnts straight from \a main
@@ -471,7 +473,8 @@ public:
 	 */
 	void set_logstream(std::ostream& os); 
 private:
-	EHelpRequested do_parse(size_t argc, const char *args[], bool has_additional) 
+	EHelpRequested do_parse(size_t argc, const char *args[], bool has_additional, 
+				const CPluginHandlerBase *additional_help) 
 		__attribute__((warn_unused_result));
 	int handle_shortargs(const char *arg, size_t argc, const char *args[]);
 	struct CCmdOptionListData *m_impl;

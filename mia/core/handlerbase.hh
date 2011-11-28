@@ -47,16 +47,21 @@ NS_MIA_BEGIN
 
 class EXPORT_CORE CPluginHandlerBase  {
  public: 
-	CPluginHandlerBase() = default; 
+
+	/**
+	   Constructor 
+	   \param descriptor plugin search  path descriptor, used to identify the plugin type for users
+	*/
+	CPluginHandlerBase(const std::string& descriptor); 
 
 	/**
 	   forbid copying - doxygen should drop these from the documentation 
-	 */
+	*/
 	CPluginHandlerBase(const CPluginHandlerBase& other) = delete; 
 
 	/**
 	   forbid copying - doxygen should drop these from the documentation 
-	 */
+	*/
 	CPluginHandlerBase& operator  = (const CPluginHandlerBase& other) = delete;
 
 	virtual ~CPluginHandlerBase();
@@ -75,12 +80,15 @@ class EXPORT_CORE CPluginHandlerBase  {
 
 
 	void get_xml_help(xmlpp::Element *root) const; 
- private: 
+
+	const std::string& get_descriptor() const; 
+private: 
 	
 	virtual void do_print_short_help(std::ostream& os) const = 0; 
 	virtual void do_print_help(std::ostream& os) const = 0; 
 	virtual void do_get_xml_help(xmlpp::Element *root) const = 0; 
-
+	
+	std::string m_descriptor; 
 }; 
 
 
