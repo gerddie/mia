@@ -139,20 +139,20 @@ MACRO(DEFEXE name deps )
   TARGET_LINK_LIBRARIES(mia-${name} ${BASELIBS})
   INSTALL(TARGETS mia-${name} RUNTIME DESTINATION "bin")
   
-  ADD_CUSTOM_TARGET(mia-${name}xml)
-  ADD_CUSTOM_TARGET(mia-${name}man)
-  ADD_CUSTOM_COMMAND(SOURCE COMMAND ./mia-${name}
-    ARGS  --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
-    TARGET mia-${name}xml
-    OUTPUTS ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml)
-  add_dependencies(mia-${name}xml mia-${name})  
-  add_dependencies(xmldocs mia-${name}xml)  
-  add_dependencies(manpages mia-${name}man)  
+  ADD_CUSTOM_TARGET(mia-${name}.xml)
+  ADD_CUSTOM_COMMAND(TARGET mia-${name}.xml
+    COMMAND ./mia-${name} --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
+    )
+
+  add_dependencies(mia-${name}.xml mia-${name})  
+  add_dependencies(xmldocs mia-${name}.xml)  
   
-  ADD_CUSTOM_COMMAND(SOURCE COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py 
-    ARGS   ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.man 
-    TARGET mia-${name}man 
-    OUTPUTS ${CMAKE_BINARY_DIR}/doc/mia-${name}.man)
+  ADD_CUSTOM_TARGET(mia-${name}.man)  
+  ADD_CUSTOM_COMMAND(TARGET  mia-${name}.man 
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py 
+    ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.man)
+  add_dependencies(mia-${name}.man mia-${name}.xml)    
+  add_dependencies(manpages mia-${name}.man)    
 
 ENDMACRO(DEFEXE)
 

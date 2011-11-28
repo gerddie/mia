@@ -342,7 +342,7 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescrption& description):
 	m_program_group(description.group), 
 	m_program_example_descr(description.example_descr?description.example_descr:"" ),
 	m_program_example_code(description.example_code?description.example_code:""), 
-	m_log(&std::clog)
+	m_log(&std::cout)
 {
 	options[""] = vector<PCmdOption>();
 
