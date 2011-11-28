@@ -292,6 +292,19 @@ void TPluginHandler<I>::do_print_help(std::ostream& os) const
 	}
 }
 
+template <typename I>
+void TPluginHandler<I>::do_get_xml_help(xmlpp::Element *root) const
+{
+	xmlpp::Element* handlerRoot = root->add_child("handler");
+	handlerRoot->set_attribute("name", get_search_descriptor());
+
+	for (const_iterator i = begin(); i != end(); ++i) {
+		xmlpp::Element* pluginRoot = handlerRoot->add_child("plugin");
+		pluginRoot->set_attribute("name", i->first);
+		i->second->get_help_xml(*pluginRoot); 
+	}
+}
+
 
 template <typename T> 
 THandlerSingleton<T>::THandlerSingleton(const std::list<boost::filesystem::path>& searchpath):

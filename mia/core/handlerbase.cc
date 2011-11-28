@@ -37,4 +37,9 @@ void CPluginHandlerBase::print_help(std::ostream& os) const
 	do_print_help(os); 
 }
 
+void CPluginHandlerBase::get_xml_help(xmlpp::Element *root) const
+{
+	do_get_xml_help(root); 
+}
+
 NS_MIA_END

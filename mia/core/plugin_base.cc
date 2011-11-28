@@ -119,6 +119,12 @@ void CPluginBase::get_help(std::ostream& os) const
 	m_parameters.print_help(os);
 }
 
+void CPluginBase::get_help_xml(xmlpp::Element& root) const
+{
+	root.set_child_text(get_descr()); 
+	m_parameters.get_help_xml(root);
+}
+
 
 void CPluginBase::append_interface(CPluginBase *plugin)
 {

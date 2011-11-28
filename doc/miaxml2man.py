@@ -61,18 +61,34 @@ def write_man_file(descr):
     for g in descr.option_groups:
         if len(g.name) > 0:
             print ".SS %s"% (g.name)
+
+        print ".RS"
         for o in g.options:
-            print ".TP"
+
             if len(o.short) > 0:
                 short = "\-" + o.short
             else:
                 short = "  "; 
 
             if o.required:
-                print "%s \-\-%s[required]"% (short, o.long)
+                print ".IP %s \-\-%s[required]"% (short, o.long)
             else:
-                print "%s \-\-%s=%s"% (short, o.long, escape_dash(o.default))
+                print ".IP %s \-\-%s=%s"% (short, o.long, escape_dash(o.default))
             print o.text
+        print ".RE"
+        
+    for h in descr.handlers: 
+        print ".SH PLUGINS: %s" % (h.name)
+        for p in h.plugins:
+            print ".TP"
+            print ".B %s" % p.name
+            print p.text
+            print ".RS"
+            for o in p.params:
+                print ".IP %s:%s" % (o.name, o.type)
+                print o.text
+            print ".RE"
+
     if descr.Example.text is not None and len(descr.Example.text) > 0:
             print ".SH EXAMPLE"
             print clean(descr.Example.text)

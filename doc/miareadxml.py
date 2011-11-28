@@ -68,11 +68,49 @@ def get_text_element(root, name):
             raise ValueError("Program description misses the tag %s"% (name))
         return xname.text
 
+class CParam: 
+    def __init__(self, node):
+        if node.tag != "param":
+            raise ValueError("expected 'param' got '%s'" % (node.tag))
+        self.name = node.get("name")
+        self.type = node.get("type")
+        self.required = int(node.get("required")) 
+        self.text = node.text
+
+class CPlugin: 
+    def __init__(self, node):
+        if node.tag != "plugin":
+            raise ValueError("expected 'plugin' got '%s'" % (node.tag))
+        self.name = node.get("name")
+        self.text = node.text
+
+        self.params = []
+        for child in node:
+            if child.tag == "param": 
+                self.params.append(CParam(child))
+            else:
+                print "unexpected subnode '%s' in 'plugin'"% (child.tag)
+
+class CHandler: 
+    def __init__(self, node):
+        if node.tag != "handler":
+            raise ValueError("expected 'handler' got '%s'" % (node.tag))
+        self.entry = node.tag
+        self.name =  node.get("name")
+        
+        self.plugins = []
+        for child in node:
+            if child.tag == "plugin": 
+                self.plugins.append(CPlugin(child))
+            else:
+                print "unexpected subnode '%s' in 'handler'"% (child.tag)
+        
+
 class CDescription: 
     def __init__(self, node):
         self.Example = None 
         self.option_groups = []
-        
+        self.handlers = []
         for n in node:
             if n.tag == 'name':
                 self.name = n.text
@@ -82,6 +120,8 @@ class CDescription:
                 self.description = n.text
             elif n.tag == 'basic_usage':
                 self.basic_usage = n.text
+            elif n.tag == 'handler':
+                self.handlers.append(CHandler(n))
             elif n.tag == 'group': 
                 self.option_groups.append(CGroup(n))
             elif n.tag == 'Example': 

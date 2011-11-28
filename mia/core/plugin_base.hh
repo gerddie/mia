@@ -105,6 +105,11 @@ public:
 	*/
 	virtual void get_help(std::ostream& os) const;
 
+	/** prints out a help text to the given output stream
+	    \param os
+	*/
+	void get_help_xml(xmlpp::Element& root) const;
+
 	/**
 	   link up another plug-in in order to be able to put several
 	   plug-ins of the same type into the same dynamic library

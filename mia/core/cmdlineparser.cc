@@ -33,7 +33,7 @@
 #include <sys/ioctl.h>
 #endif
 
-
+#include <libxml++/libxml++.h>
 #include <mia/core/tools.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
@@ -92,21 +92,19 @@ void CCmdOption::get_long_help(std::ostream& os) const
 	do_get_long_help(os);
 }
 
-#ifdef HAVE_LIBXMLPP
-string CCmdOption::get_long_help_xml(xmlpp::Element *node) const
+string CCmdOption::get_long_help_xml(HandlerHelpMap& handler_map) const
 {
 	cvdebug() << "write XML for '" << m_long_opt << "'\n"; 
 	ostringstream shelp; 
 	shelp << long_help();
-	do_get_long_help_xml(shelp, node); 
+	do_get_long_help_xml(shelp, handler_map); 
 	return shelp.str(); 
 }
 
-void CCmdOption::do_get_long_help_xml(std::ostream& os, xmlpp::Element *node) const
+void CCmdOption::do_get_long_help_xml(std::ostream& os, HandlerHelpMap& /*handler_map*/) const
 {
 	do_get_long_help(os);
 }
-#endif // HAVE_LIBXMLPP
 
 const char *CCmdOption::long_help() const
 {
@@ -422,6 +420,8 @@ vector<const char *> CCmdOptionListData::has_unset_required_options() const
 using xmlpp::Element; 
 void CCmdOptionListData::print_help_xml(const char *name_help, bool has_additional) const
 {
+	CCmdOption::HandlerHelpMap handler_help_map; 
+		
 	unique_ptr<xmlpp::Document> doc(new xmlpp::Document);
 	
 	Element* nodeRoot = doc->create_root_node("program");
@@ -450,7 +450,7 @@ void CCmdOptionListData::print_help_xml(const char *name_help, bool has_addition
 			option->set_attribute("long", opt.get_long_option());
 			option->set_attribute("required", to_string<bool>(opt.is_required())); 
 			option->set_attribute("default", opt.get_value_as_string()); 
-			option->set_child_text(opt.get_long_help_xml(nodeRoot));
+			option->set_child_text(opt.get_long_help_xml(handler_help_map));
 
 			
 			if (opt.is_required()) {
@@ -467,6 +467,9 @@ void CCmdOptionListData::print_help_xml(const char *name_help, bool has_addition
 	if (has_additional) 
 		usage_text << " &lt;Additional parameters&gt;"; 
 	basic_usage->set_child_text(usage_text.str()); 
+
+	for (auto h = handler_help_map.begin(); h != handler_help_map.end(); ++h)
+		h->second->get_xml_help(nodeRoot); 
 
 	Element* example = nodeRoot->add_child("Example");
 	example->set_child_text(m_program_example_descr); 

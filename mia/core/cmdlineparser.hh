@@ -33,11 +33,7 @@
 #include <mia/core/defines.hh>
 #include <mia/core/dictmap.hh>
 #include <mia/core/flagstring.hh>
-
-#ifdef HAVE_LIBXMLPP
-#include <libxml++/libxml++.h>
-#endif
-
+#include <mia/core/handlerbase.hh>
 
 NS_MIA_BEGIN
 
@@ -87,6 +83,7 @@ struct SProgramDescrption {
 */
 class EXPORT_CORE CCmdOption  {
 public:
+	typedef std::map<std::string, const CPluginHandlerBase*> HandlerHelpMap; 
 
 	/**
 	   Option flags 
@@ -159,9 +156,7 @@ public:
         /// \returns the long help string
 	const char *long_help() const;
 
-#ifdef HAVE_LIBXMLPP
-	std::string get_long_help_xml(xmlpp::Element *node) const; 
-#endif 
+	std::string get_long_help_xml(HandlerHelpMap& handler_map) const; 
 protected:
 
 	/// clear the "required" flag 
@@ -179,9 +174,7 @@ private:
 
 	virtual const std::string do_get_value_as_string() const;
 
-#ifdef HAVE_LIBXMLPP
-	virtual void do_get_long_help_xml(std::ostream& os, xmlpp::Element *node) const; 
-#endif 
+	virtual void do_get_long_help_xml(std::ostream& os, HandlerHelpMap& handler_map) const; 
 
 	char m_short_opt; 
 	const char *m_long_opt;

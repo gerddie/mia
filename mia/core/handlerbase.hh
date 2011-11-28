@@ -23,6 +23,8 @@
 
 #include <mia/core/defines.hh>
 
+#include <libxml++/libxml++.h>
+
 #include <ostream>
 #include <fstream>
 
@@ -70,10 +72,14 @@ class EXPORT_CORE CPluginHandlerBase  {
 	   @param os
 	 */
 	void print_help(std::ostream& os) const; 
+
+
+	void get_xml_help(xmlpp::Element *root) const; 
  private: 
 	
 	virtual void do_print_short_help(std::ostream& os) const = 0; 
 	virtual void do_print_help(std::ostream& os) const = 0; 
+	virtual void do_get_xml_help(xmlpp::Element *root) const = 0; 
 
 }; 
 

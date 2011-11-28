@@ -23,6 +23,7 @@
 #include <algorithm>
 
 #include <mia/core/optparam.hh>
+#include <mia/core/tools.hh>
 
 NS_MIA_BEGIN
 
@@ -77,7 +78,7 @@ void CParamList::check_required() const
 void CParamList::print_help(std::ostream& os) const
 {
 	// this should be sorted somehow ...
-	std::map<std::string, PParameter>::const_iterator i = m_params.begin();
+	auto  i = m_params.begin();
 	while ( i != m_params.end() ) {
 		os  << "\t" << i->first;
 		i->second->descr(os);
@@ -86,5 +87,17 @@ void CParamList::print_help(std::ostream& os) const
 	}
 }
 
+void CParamList::get_help_xml(xmlpp::Element& root)const
+{
+	auto i = m_params.begin();
+	while ( i != m_params.end() ) {
+		xmlpp::Element *p = root.add_child("param"); 
+		p->set_attribute("name", i->first); 
+		p->set_attribute("type", i->second->type()); 
+		p->set_attribute("required" , to_string<bool>(i->second->required_set())); 
+		p->set_child_text(i->second->get_descr()); 
+		++i; 
+	}
+}
 
 NS_MIA_END

@@ -27,7 +27,7 @@ add_dependencies(doc docs)
 
 ADD_CUSTOM_TARGET(xmldocs)
 ADD_CUSTOM_TARGET(manpages)
-add_dependencies(manpages xmldocs)  
+add_dependencies(manpages xmldocs)
 add_dependencies(docs manpages)  
 
 

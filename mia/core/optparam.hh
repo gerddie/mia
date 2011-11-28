@@ -27,7 +27,7 @@
 
 #include <mia/core/parameter.hh>
 #include <mia/core/optionparser.hh>
-
+#include <libxml++/libxml++.h>
 
 
 NS_MIA_BEGIN
@@ -78,6 +78,8 @@ public:
 	   \param os the output stream to write the help to.
 	*/
 	void print_help(std::ostream& os)const;
+
+	void get_help_xml(xmlpp::Element& root)const;  
 private:
 	std::map<std::string, PParameter> m_params;
 };

@@ -346,20 +346,18 @@ ENDIF(WITH_FFTWD)
 
 ####################################################################################
 #
-# add xml library for loading/storing segmentations 
+# add xml library for loading/storing segmentations and document creation  
 #
-OPTION(WITH_XMLPP "Use XML++ for some additional features" ${SEARCH_LIBS_DEFAULT})
-IF(WITH_XMLPP)
-  pkg_check_modules(XMLPP libxml++-2.6)
-  IF (XMLPP_FOUND)
-    INCLUDE_DIRECTORIES(${XMLPP_INCLUDE_DIRS})
-    LINK_DIRECTORIES(${XMLPP_LIBRARY_DIRS})
-    SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} libxml++-2.6")
-    SET(HAVE_LIBXMLPP 1)
-  ELSE(XMLPP_FOUND)
-    SET(HAVE_LIBXMLPP 0)
-  ENDIF (XMLPP_FOUND)
-ENDIF(WITH_XMLPP)
+pkg_check_modules(XMLPP libxml++-2.6 REQUIRED)
+IF (XMLPP_FOUND)
+  INCLUDE_DIRECTORIES(${XMLPP_INCLUDE_DIRS})
+  LINK_DIRECTORIES(${XMLPP_LIBRARY_DIRS})
+  SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} libxml++-2.6")
+  SET(HAVE_LIBXMLPP 1)
+ELSE(XMLPP_FOUND)
+  SET(HAVE_LIBXMLPP 0)
+ENDIF (XMLPP_FOUND)
+
 #
 # end XML 
 # 
