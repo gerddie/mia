@@ -255,8 +255,8 @@ int do_main( int argc, char *argv[] )
 			cvwarn() << "ICA analysis didn't converge, results might by bougus\n";
 	}
 
-	int RV_peak_idx = ica.get_RV_peak_idx(); 
-	int LV_peak_idx = ica.get_LV_peak_idx(); 
+	int RV_peak_idx = ica.get_RV_idx(); 
+	int LV_peak_idx = ica.get_LV_idx(); 
 
 	if (RV_peak_idx < 0 || LV_peak_idx < 0) 
 		throw runtime_error("RV or LV identification failed"); 

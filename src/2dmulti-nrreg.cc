@@ -71,7 +71,7 @@ int do_main(int argc, char **argv)
 					"image interpolator", "interpolator", false)); 
 	options.add(make_opt( epsilon, "epsilon", 'e', "relative accuracy to stop registration at a multi-grid level", NULL, false)); 
 
-	options.parse(argc, argv, "image");
+	options.parse(argc, argv, "cost", &C2DFatImageCostPluginHandler::instance());
 
 	vector<const char *> cost_chain = options.get_remaining(); 
 

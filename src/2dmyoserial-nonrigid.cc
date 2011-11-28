@@ -151,7 +151,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
 
-	if (options.parse(argc, argv, "cost") != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "cost", &C2DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 	

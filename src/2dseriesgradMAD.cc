@@ -236,10 +236,10 @@ int do_main( int argc, char *argv[] )
 				    "Enlarge cropbox by number of pixels"));
 	options.add(make_opt( crop, "crop", 'c', "crop image before running statistics"));
 
-	if (options.parse(argc, argv, "filter") != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "filter", &C2DFilterPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 		
-	C2DFilterChain filter_chain(options.get_remaining());
+	C2DImageFilterChain filter_chain(options.get_remaining());
 
 	cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
 
@@ -262,8 +262,7 @@ int do_main( int argc, char *argv[] )
 		cvdebug() << "Crop with " << crop_descr.str() << "\r";
 
 
-		filter_chain.push_front(C2DFilterPluginHandler::instance().
-					produce(crop_descr.str().c_str()));
+		filter_chain.push_front(crop_descr.str().c_str());
 	}
 
 
@@ -279,7 +278,7 @@ int do_main( int argc, char *argv[] )
 
 		P2DImage in_image = *iimages;
 		if (!filter_chain.empty() )
-			in_image = filter_chain.filter(*in_image);
+			in_image = filter_chain.run(in_image);
 		mia::accumulate(acc, *in_image);
 	}
 

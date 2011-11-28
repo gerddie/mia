@@ -87,7 +87,7 @@ int do_main( int argc, char *argv[] )
 	CCmdOptionList options(g_general_help);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image", CCmdOption::required));
 	
-	if (options.parse(argc, argv, "cost") != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 	
 	

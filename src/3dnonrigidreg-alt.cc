@@ -107,7 +107,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 
-	if (options.parse(argc, argv, "cost") != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "cost", &C3DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 	

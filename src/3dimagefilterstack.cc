@@ -113,7 +113,7 @@ int do_main( int argc, char *argv[] )
 				   "give some help about the filter plugins", 
 				   new TPluginHandlerHelpCallback<C3DFilterPluginHandler>)); 
 
-	if (options.parse(argc, argv, "filter") != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "filter", &filter_plugins) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 

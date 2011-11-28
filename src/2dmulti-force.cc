@@ -71,7 +71,7 @@ int do_main(int argc, char **argv)
 
 	options.add(make_opt( out_filename, "out-file", 'o', "output norm image", CCmdOption::required));
 
-	if (options.parse(argc, argv, "cost") != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "cost", &C2DFatImageCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 

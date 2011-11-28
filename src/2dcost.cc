@@ -73,7 +73,7 @@ int do_main(int argc, char **argv)
 
 	CCmdOptionList options(g_description);
 
-	if (options.parse(argc, argv, "cost") != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "cost", &C2DFatImageCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 

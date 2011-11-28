@@ -132,7 +132,7 @@ int do_main( int argc, char *argv[] )
 			     "This number should be lower or equal to the number of processing cores in the machine"
 			     " (default: automatic estimation)."));  
 
-	if (options.parse(argc, argv, "cost") != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "cost", &C3DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 

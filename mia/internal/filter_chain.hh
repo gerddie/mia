@@ -59,6 +59,19 @@ public:
 	   \returns the filtered data as shared pointer 
 	*/
 	PData run(PData input) const;
+
+	/**
+	   Add a filter at the front of the chain
+	*/
+	void push_front(const char * filter); 
+
+	/**
+	   Add a filter at the end of the chain
+	*/
+	void push_back(const char * filter); 
+
+	/// \returns true if the chain doesn't contain any filters
+	bool empty() const; 
 private: 
 	void init(const char *filters[], int nfilters); 
 	std::vector<PFilter> m_chain; 
@@ -91,6 +104,26 @@ TFilterChain<Handler>::TFilterChain(const char *filters[], int nfilters):
 }
 
 template <typename Handler> 
+void TFilterChain<Handler>::push_front(const char * filter)
+{
+	auto f = Handler::instance().produce(filter); 
+	if (f) 
+		m_chain.insert(m_chain.begin(), f); 
+	else 
+		THROW(invalid_argument, "Can't create filter from " << filter);
+}
+
+template <typename Handler> 
+void TFilterChain<Handler>::push_back(const char * filter)
+{
+	auto f = Handler::instance().produce(filter); 
+	if (f) 
+		m_chain.push_back(f); 
+	else 
+		THROW(invalid_argument, "Can't create filter from " << filter);
+}
+
+template <typename Handler> 
 typename TFilterChain<Handler>::PData 
 TFilterChain<Handler>::run(typename TFilterChain<Handler>::PData input) const
 {
@@ -98,6 +131,12 @@ TFilterChain<Handler>::run(typename TFilterChain<Handler>::PData input) const
 		input = (*i)->filter(input); 
 	}
 	return input; 
+}
+
+template <typename Handler> 
+bool TFilterChain<Handler>::empty() const
+{
+	return m_chain.empty(); 
 }
 
 NS_MIA_END

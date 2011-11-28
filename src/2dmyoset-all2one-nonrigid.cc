@@ -214,7 +214,7 @@ int do_main( int argc, char *argv[] )
 			     " (default: automatic estimation)."));  
 	
 
-	if (options.parse(argc, argv, "cost") != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "cost", &C2DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 	
 	task_scheduler_init init(max_threads);
