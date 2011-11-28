@@ -83,6 +83,11 @@ public:
 	 */
 	void reset(); 
 
+	/**
+	   Interface to add the plug-in handler this parameter calls to translate the input string  
+	   Only for CFactoryParameter this actually does something 
+	   \param[in,out] handler_map the map to store then pointers to handlers used by this parameter 
+	 */
 	virtual void add_dependend_handler(HandlerHelpMap& handler_map) const; 
 protected:
 

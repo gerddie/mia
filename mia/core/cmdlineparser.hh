@@ -155,6 +155,11 @@ public:
         /// \returns the long help string
 	const char *long_help() const;
 
+	/**
+	   Returns help string tailered for the XML help creation system and adds
+	   used plug-in handlers to the helper map
+	   \param[in,out] handler_map the map of possibely recoursively called plug-in handlers 
+	 */
 	std::string get_long_help_xml(HandlerHelpMap& handler_map) const; 
 protected:
 
@@ -422,6 +427,8 @@ public:
 	    \param argc number of arguments
 	    \param args array of arguments strings
 	    \param additional_type will is a help string to describe the type of free parameters
+	    \param additional_help If you use a plug-in handler to process the free parameters then pass the pointer 
+	                 to the according plug-in handler here, so that the help system can create proper documentation 
         */
 	EHelpRequested parse(size_t argc, char *args[], const std::string& additional_type, 
 		const CPluginHandlerBase *additional_help = NULL) 
@@ -433,6 +440,9 @@ public:
 	    \param argc number of arguments
 	    \param args array of arguments strings
 	    \param additional_type will is a help string to describe the type of free parameters
+	    \param additional_help If you use a plug-in handler to process the free parameters then pass the pointer 
+	                 to the according plug-in handler here, so that the help system can create proper documentation 
+
         */
 	EHelpRequested parse(size_t argc, const char *args[], const std::string& additional_type, 
 			     const CPluginHandlerBase *additional_help = NULL) 

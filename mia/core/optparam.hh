@@ -79,7 +79,16 @@ public:
 	*/
 	void print_help(std::ostream& os)const;
 
+	/**
+	   Append the help for this parameter list to the given root node
+	   \param[in,out] root the root node of the XML tree 
+	 */
 	void get_help_xml(xmlpp::Element& root)const;  
+
+	/**
+	   Add all plug-in handlers that may be called by processing this parameter list 
+	   \param[in,out] handler_map the map to add the handlers to
+	 */
 	void add_dependend_handlers(HandlerHelpMap& handler_map)const; 
 private:
 	std::map<std::string, PParameter> m_params;

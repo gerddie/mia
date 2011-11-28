@@ -105,8 +105,8 @@ public:
 	*/
 	virtual void get_help(std::ostream& os) const;
 
-	/** prints out a help text to the given output stream
-	    \param os
+	/** Adds the help for this plug-in to an XML tree 
+	    \param root node to add the help to
 	*/
 	void get_help_xml(xmlpp::Element& root) const;
 
