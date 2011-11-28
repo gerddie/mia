@@ -56,13 +56,13 @@ NS_MIA_BEGIN
 
 C2DImageFullCost::C2DImageFullCost(const std::string& src, 
 				   const std::string& ref, 
-				   const std::string& cost, 
+				   C2DImageCostPluginHandler::ProductPtr cost, 
 				   double weight, 
 				   bool debug):
 	C2DFullCost(weight), 
 	m_src_key(C2DImageIOPluginHandler::instance().load_to_pool(src)), 
 	m_ref_key(C2DImageIOPluginHandler::instance().load_to_pool(ref)), 
-	m_cost_kernel(C2DImageCostPluginHandler::instance().produce(cost)), 
+	m_cost_kernel(cost), 
 	m_debug(debug)
 {
 	assert(m_cost_kernel); 
@@ -205,8 +205,7 @@ private:
 	const std::string do_get_descr() const;
 	std::string m_src_name;
 	std::string m_ref_name;
-	std::string m_cost_kernel;
-	CSplineKernelPluginHandler::ProductPtr m_interpolator;
+	C2DImageCostPluginHandler::ProductPtr m_cost_kernel;
 	bool m_debug; 
 }; 
 
@@ -214,12 +213,11 @@ C2DImageFullCostPlugin::C2DImageFullCostPlugin():
 	C2DFullCostPlugin("image"), 
 	m_src_name("src.@"), 
 	m_ref_name("ref.@"), 
-	m_cost_kernel("ssd"), 
 	m_debug(false)
 {
 	add_parameter("src", new CStringParameter(m_src_name, false, "Study image"));
 	add_parameter("ref", new CStringParameter(m_ref_name, false, "Reference image"));
-	add_parameter("cost", new CStringParameter(m_cost_kernel, false, "Cost function kernel"));
+	add_parameter("cost", new CFactoryParameter<C2DImageCostPluginHandler>(m_cost_kernel, true, "Cost function kernel, see PLUGINS:cost/2d"));
 	add_parameter("debug", new CBoolParameter(m_debug, false, "Save intermediate resuts for debugging")); 
 }
 
@@ -228,9 +226,6 @@ C2DFullCost *C2DImageFullCostPlugin::do_create(float weight) const
 	cvdebug() << "create C2DImageFullCostPlugin with weight= " << weight 
 		  << " src=" << m_src_name << " ref=" << m_ref_name 
 		  << " cost=" << m_cost_kernel << "\n";
-	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(m_interpolator,
-							      *produce_spline_boundary_condition("mirror"), 
-							      *produce_spline_boundary_condition("mirror")));
 	return 	new C2DImageFullCost(m_src_name, m_ref_name, 
 				     m_cost_kernel, weight, m_debug); 
 }

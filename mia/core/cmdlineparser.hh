@@ -83,7 +83,6 @@ struct SProgramDescrption {
 */
 class EXPORT_CORE CCmdOption  {
 public:
-	typedef std::map<std::string, const CPluginHandlerBase*> HandlerHelpMap; 
 
 	/**
 	   Option flags 

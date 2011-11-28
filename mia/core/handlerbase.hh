@@ -27,6 +27,7 @@
 
 #include <ostream>
 #include <fstream>
+#include <map>
 
 NS_MIA_BEGIN
 
@@ -91,6 +92,8 @@ private:
 	std::string m_descriptor; 
 }; 
 
+
+typedef std::map<std::string, const CPluginHandlerBase*> HandlerHelpMap; 
 
 NS_MIA_END
 

@@ -86,6 +86,10 @@ bool CParameter::set(const string& str_value)
 	return do_set(str_value);
 }
 
+void CParameter::add_dependend_handler(HandlerHelpMap& handler_map)const
+{
+}
+
 const char  type_str_uint[5] = "uint";
 const char  type_str_int[4] = "int";
 const char  type_str_float[6] = "float";

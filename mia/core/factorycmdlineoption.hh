@@ -64,8 +64,7 @@ private:
 	virtual size_t do_get_needed_args() const;
 	virtual void do_write_value(std::ostream& os) const;
 	virtual void do_get_long_help(std::ostream& os) const;
-	virtual void do_get_long_help_xml(std::ostream& os, 
-					  CCmdOption::HandlerHelpMap& handler_map) const; 
+	virtual void do_get_long_help_xml(std::ostream& os, HandlerHelpMap& handler_map) const; 
 	virtual const std::string do_get_value_as_string() const;
 
 	typename F::ProductPtr& m_value;
@@ -118,12 +117,11 @@ void TCmdFactoryOption<F>::do_get_long_help(std::ostream& os) const
 }
 
 template <typename F>
-void TCmdFactoryOption<F>::do_get_long_help_xml(std::ostream& os, 
-						CCmdOption::HandlerHelpMap& handler_map) const
+void TCmdFactoryOption<F>::do_get_long_help_xml(std::ostream& os, HandlerHelpMap& handler_map) const
 {
 	os << ";\n give as 'plugin:param1=x,param2=y,...'\n"; 
 	os << "For supported plugins see section 'PLUGINS:" << F::instance().get_search_descriptor() <<"'\n";
-	handler_map[F::instance().get_search_descriptor()] = &F::instance(); 
+	F::instance().add_dependend_handlers(handler_map); 
 }
 
 template <typename F>

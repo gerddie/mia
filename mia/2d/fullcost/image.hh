@@ -32,7 +32,7 @@ class EXPORT C2DImageFullCost : public C2DFullCost {
 public: 
 	C2DImageFullCost(const std::string& src, 
 			 const std::string& ref, 
-			 const std::string& cost, 
+			 C2DImageCostPluginHandler::ProductPtr cost, 
 			 double weight, 
 			 bool debug); 
 private: 

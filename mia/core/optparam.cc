@@ -100,4 +100,10 @@ void CParamList::get_help_xml(xmlpp::Element& root)const
 	}
 }
 
+void CParamList::add_dependend_handlers(HandlerHelpMap& handler_map) const
+{
+	for (auto p = m_params.begin(); p != m_params.end(); ++p) 
+		p->second->add_dependend_handler(handler_map); 
+}
+
 NS_MIA_END

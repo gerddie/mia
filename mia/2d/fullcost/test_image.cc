@@ -88,8 +88,9 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost,  ImagefullcostFixture )
 	
 	BOOST_REQUIRE(save_image("src.@", src)); 
 	BOOST_REQUIRE(save_image("ref.@", ref)); 
+	auto cost_kernel = C2DImageCostPluginHandler::instance().produce("ssd"); 
 
-	C2DImageFullCost cost("src.@", "ref.@", "ssd", 1.0, false); 
+	C2DImageFullCost cost("src.@", "ref.@", cost_kernel, 1.0, false); 
 	cost.reinit(); 
 	cost.set_size(size);
 	
@@ -132,10 +133,8 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_no_translate,  ImagefullcostFixture 
 	BOOST_REQUIRE(save_image("src.@", src)); 
 	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
-	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(produce_spline_kernel("bspline:d=3"), 
-							      *produce_spline_boundary_condition("mirror"), 
-							      *produce_spline_boundary_condition("mirror")));  
-	C2DImageFullCost cost("src.@", "ref.@", "ssd", 1.0, false); 
+	auto cost_kernel = C2DImageCostPluginHandler::instance().produce("ssd"); 
+	C2DImageFullCost cost("src.@", "ref.@", cost_kernel, 1.0, false); 
 	cost.reinit(); 
 	cost.set_size(size);
 	double value = cost.cost_value();
@@ -177,7 +176,8 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2,  ImagefullcostFixture)
 	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(produce_spline_kernel("bspline:d=3"), 
 							      *produce_spline_boundary_condition("mirror"), 
 							      *produce_spline_boundary_condition("mirror")));  
-	C2DImageFullCost cost("src.@", "ref.@", "ssd", 1.0, false); 
+	auto cost_kernel = C2DImageCostPluginHandler::instance().produce("ssd"); 
+	C2DImageFullCost cost("src.@", "ref.@", cost_kernel, 1.0, false); 
 	cost.reinit(); 
 	cost.set_size(size);
 	
@@ -229,7 +229,6 @@ BOOST_FIXTURE_TEST_CASE( test_imagefullcost_2_scaled,  ImagefullcostFixture)
 	BOOST_REQUIRE(save_image("src.@", src)); 
 	BOOST_REQUIRE(save_image("ref.@", ref)); 
 
-	P2DInterpolatorFactory ipf(new C2DInterpolatorFactory(ipf_spline, CSplineKernelPluginHandler::instance().produce("bspline:d=3"))); 
 	C2DImageFullCost cost("src.@", "ref.@", "ssd", ipf, 1.0, false); 
 	cost.reinit(); 
 	cost.set_size(size);

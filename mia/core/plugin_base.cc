@@ -94,6 +94,10 @@ void CPluginBase::check_parameters()
 	}
 }
 
+void CPluginBase::add_dependend_handlers(HandlerHelpMap& handler_map)
+{
+	m_parameters.add_dependend_handlers(handler_map); 
+}
 
 const char *CPluginBase::get_name() const
 {

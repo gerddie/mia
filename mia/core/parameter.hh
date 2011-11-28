@@ -28,6 +28,7 @@
 #include <sstream>
 #include <mia/core/dictmap.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/handlerbase.hh>
 
 
 NS_MIA_BEGIN
@@ -81,6 +82,8 @@ public:
 	   clear the required flag and reset to default value
 	 */
 	void reset(); 
+
+	virtual void add_dependend_handler(HandlerHelpMap& handler_map) const; 
 protected:
 
 	/** the actual (abstract) function to write the description to a stream
@@ -207,6 +210,7 @@ protected:
 	   the implementation of the description-function
 	 */
 	virtual void do_descr(std::ostream& os) const;
+	virtual void add_dependend_handler(HandlerHelpMap& handler_map)const; 
 private:
 	virtual bool do_set(const std::string& str_value);
 	virtual void do_reset();
@@ -352,6 +356,14 @@ void CFactoryParameter<T>::do_reset()
 {
 	m_value = m_default_value;
 }
+
+template <typename T>
+void CFactoryParameter<T>::add_dependend_handler(HandlerHelpMap& handler_map)const
+{
+	cvdebug() << "Add " << T::instance().get_descriptor() << "\n"; 
+	handler_map[T::instance().get_descriptor()] = &T::instance(); 
+}
+
 
 template <typename T>
 CSetParameter<T>::CSetParameter(T& value, const std::set<T>& valid_set, const char *descr):

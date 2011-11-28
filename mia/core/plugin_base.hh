@@ -141,6 +141,13 @@ public:
 	  \returns the module 
 	 */
 	PPluginModule get_module() const;
+
+	/**
+	   Add all plugin handlers that may be called by this plugin 
+	   \param [in,out] handler_map
+	 */
+	void add_dependend_handlers(HandlerHelpMap& handler_map); 
+
 protected:
 	/**
 	   Add a porperty to the map of supported properties

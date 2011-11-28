@@ -80,6 +80,7 @@ public:
 	void print_help(std::ostream& os)const;
 
 	void get_help_xml(xmlpp::Element& root)const;  
+	void add_dependend_handlers(HandlerHelpMap& handler_map)const; 
 private:
 	std::map<std::string, PParameter> m_params;
 };

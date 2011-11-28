@@ -420,7 +420,7 @@ vector<const char *> CCmdOptionListData::has_unset_required_options() const
 using xmlpp::Element; 
 void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHandlerBase *additional_help) const
 {
-	CCmdOption::HandlerHelpMap handler_help_map; 
+	HandlerHelpMap handler_help_map; 
 	if (additional_help) 
 		handler_help_map[additional_help->get_descriptor()] = additional_help; 
 		
