@@ -114,6 +114,7 @@ private:
 
 
 /**
+   \ingroup infrastructure 
    \brief Generic type of a complex paramter 
 
    The (templated) typed parameter. There needs to be defined an
@@ -175,6 +176,15 @@ private:
 
 };
 
+
+/**
+   \ingroup infrastructure 
+   \brief Dictionary paramater
+
+   The (templated) parameter that takes its value froma restricted Dictionary.
+   \tparam the enumerate that is used by the dictionary 
+*/
+
 template <typename T>
 class CDictParameter : public CParameter{
 
@@ -200,6 +210,14 @@ private:
 };
 
 
+/**
+   \ingroup infrastructure 
+   \brief A parameter that get's initialized by a factory 
+
+   This parameter type is used for parameters that are created by a factory 
+   that uses a plug-in handler for instance creation. 
+   \tparam F the plugin handler type used to create the parameter value 
+*/
 template <typename F>
 class CFactoryParameter : public CParameter{
 
@@ -223,6 +241,15 @@ private:
 	typename F::ProductPtr m_default_value; 
 };
 
+/**
+   \ingroup infrastructure 
+   \brief A parameter that can only assume values out ofa limited set 
+
+   This parameter type is used for parameters that that can only assume values out of a 
+   limited set of values. Other than the  CDictParameter this parameter may handle any type 
+   T that can be streamed.  
+   \tparam T the value type of the parameter 
+*/
 
 template <typename T>
 class CSetParameter : public CParameter{
@@ -248,6 +275,14 @@ private:
 
 };
 
+/**
+   \ingroup infrastructure 
+   \brief A parameter that can assume any value of the given value type 
+
+   This parameter type is used for parameters that are only restricted by the value type
+   T that must be streamable.
+   \tparam T type of the parameter value 
+*/
 
 template <typename T>
 class TParameter : public CParameter{
@@ -292,7 +327,7 @@ extern const char  type_str_bool[5];
 
 /// an integer parameter (with range)
 typedef TRangeParameter<int, type_str_int> CIntParameter;
-/// an integer parameter (with range)
+/// an unsigned integer parameter (with range)
 typedef TRangeParameter<unsigned int, type_str_uint> CUIntParameter;
 /// a float parameter (with range)
 typedef TRangeParameter<float, type_str_float> CFloatParameter;
