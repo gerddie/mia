@@ -125,6 +125,7 @@ void CPluginBase::get_help(std::ostream& os) const
 
 void CPluginBase::get_help_xml(xmlpp::Element& root) const
 {
+	cvdebug() << "Get help for " << m_name << "\n"; 
 	root.set_child_text(get_descr()); 
 	m_parameters.get_help_xml(root);
 }

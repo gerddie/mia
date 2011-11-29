@@ -55,8 +55,8 @@ private:
 
 	virtual void prepare_path() const;
 
-	std::string m_kx;
-	std::string m_ky;
+	mia::P1DSpacialKernel m_kx;
+	mia::P1DSpacialKernel m_ky;
 };
 
 class C2DGaussFilterPlugin: public mia::C2DFilterPlugin {

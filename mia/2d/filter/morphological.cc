@@ -175,22 +175,19 @@ C2DDilateFilterFactory::C2DDilateFilterFactory():
 
 C2DMorphFilterFactory::C2DMorphFilterFactory(const char *name):
 	C2DFilterPlugin(name),
-	m_shape_descr("sphere:r=2"),
 	m_hint("black")
 {
-	add_parameter("shape", new CStringParameter(m_shape_descr, false, "structuring element"));
-	add_parameter("hint", new CStringParameter(m_hint, false, "a hint at the main image content (black|white)"));
+	add_parameter("shape", make_param(m_shape, "sphere:r=2", false, "structuring element"));
+	set<string> valid_set; 
+	valid_set.insert("black"); 
+	valid_set.insert("white"); 
+	
+	add_parameter("hint", new CSetParameter<string>(m_hint, valid_set, "a hint at the main image content"));
 }
 
 
 C2DFilter *C2DMorphFilterFactory::do_create()const
 {
-	cvdebug() << "create shape from " << m_shape_descr << '\n';
-	P2DShape shape(C2DShapePluginHandler::instance().produce(m_shape_descr.c_str()));
-
-	if (!shape)
-		throw runtime_error(string("unable to create a shape from '") + m_shape_descr +string("'"));
-
 	bool bhint = true;
 
 	if (m_hint == string("black"))
@@ -199,7 +196,7 @@ C2DFilter *C2DMorphFilterFactory::do_create()const
 		bhint = false;
 	else
 		throw invalid_argument(string("hint '") + m_hint + string("' not supported"));
-	return dodo_create(shape, bhint);
+	return dodo_create(m_shape, bhint);
 }
 
 

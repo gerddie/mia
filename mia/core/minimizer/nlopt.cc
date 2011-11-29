@@ -160,7 +160,7 @@ const TDictMap<nlopt_algorithm>::Table local_optimizer_table[] = {
 	
 	{"ln-bobyqa", NLOPT_LN_BOBYQA, "Derivative-free Bound-constrained Optimization"},
 	{"gn-isres", NLOPT_GN_ISRES, "Improved Stochastic Ranking Evolution Strategy"},
-	
+	{"none", NLOPT_NUM_ALGORITHMS, "don't specify algorithm"}, 
 	{NULL, NLOPT_NUM_ALGORITHMS, ""}, 
 }; 
 
@@ -188,7 +188,7 @@ const nlopt_algorithm g_require_gradient[] = {
 
 
 SOpt::SOpt():
-	algo(NLOPT_NUM_ALGORITHMS), 
+	algo(NLOPT_LD_LBFGS), 
 	local_opt(NLOPT_NUM_ALGORITHMS), 
 	stopval(-HUGE_VAL), 
 	abs_xtol(0.0), 

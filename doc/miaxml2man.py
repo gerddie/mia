@@ -88,7 +88,7 @@ def write_man_file(descr):
                 if o.required:
                     print ".IP \"%s:%s [required]\"" % (o.name, o.type)
                 else:
-                    print ".IP %s:%s" % (o.name, o.type)
+                    print ".IP %s:%s=%s" % (o.name, o.type, o.default)
                 print o.text
             print ".RE"
 

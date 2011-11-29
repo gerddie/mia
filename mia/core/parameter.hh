@@ -19,8 +19,8 @@
  */
 
 
-#ifndef ph_parameters_hh
-#define ph_parameters_hh
+#ifndef mia_core_parameters_hh
+#define mia_core_parameters_hh
 
 #include <string>
 #include <map>
@@ -29,6 +29,7 @@
 #include <mia/core/dictmap.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/handlerbase.hh>
+#include <mia/core/factory_trait.hh>
 
 
 NS_MIA_BEGIN
@@ -58,12 +59,18 @@ public:
 
 	/**
 	   \returns the type string of the parameter
-	*/
+q	*/
 	const char *type() const;
 	/**
 	   \returns the description string of the parameter
 	*/
 	void descr(std::ostream& os) const;
+
+	/**
+	   Write the current value plus information to a stream, 
+	   \param os output stream 
+	 */
+	void value(std::ostream& os) const;
 
 	/**
 	   \returns wheather the required flag is (still) set
@@ -88,7 +95,13 @@ public:
 	   Only for CFactoryParameter this actually does something 
 	   \param[in,out] handler_map the map to store then pointers to handlers used by this parameter 
 	 */
-	virtual void add_dependend_handler(HandlerHelpMap& handler_map) const; 
+	void add_dependend_handler(HandlerHelpMap& handler_map) const; 
+
+	/// \returns the default value of this parameter as a string 
+	std::string get_default_value() const; 
+
+	
+	
 protected:
 
 	/** the actual (abstract) function to write the description to a stream
@@ -103,9 +116,10 @@ private:
 	/** the actual (abstract) function to set the parameter that needs to be overwritten
 	    \param str_value the parameter value as string
 	*/
+	virtual void do_add_dependend_handler(HandlerHelpMap& handler_map) const; 
 	virtual bool do_set(const std::string& str_value) = 0;
 	virtual void do_reset(); 
-
+	virtual std::string do_get_default_value() const = 0; 
 	bool m_required;
 	bool m_is_required; 
 	const char *m_type;
@@ -141,6 +155,7 @@ private:
 	virtual bool do_set(const std::string& str_value);
 	virtual void do_reset();
 	virtual void adjust(T& value);
+	virtual std::string do_get_default_value() const; 
 	T& m_value;
 	T m_default_value; 
 };
@@ -203,6 +218,7 @@ protected:
 private:
 	virtual bool do_set(const std::string& str_value);
 	virtual void do_reset();
+	virtual std::string do_get_default_value() const; 
 	T& m_value;
 	T m_default_value; 
 	const TDictMap<T> m_dict;
@@ -228,15 +244,12 @@ public:
 	   \param descr a description of the parameter
 	 */
 	CFactoryParameter(typename F::ProductPtr& value, bool required, const char *descr);
-protected:
-	/**
-	   the implementation of the description-function
-	 */
-	virtual void do_descr(std::ostream& os) const;
-	virtual void add_dependend_handler(HandlerHelpMap& handler_map)const; 
 private:
+	virtual void do_descr(std::ostream& os) const;
+	virtual void do_add_dependend_handler(HandlerHelpMap& handler_map)const; 
 	virtual bool do_set(const std::string& str_value);
 	virtual void do_reset();
+	virtual std::string do_get_default_value() const; 
 	typename F::ProductPtr& m_value;
 	typename F::ProductPtr m_default_value; 
 };
@@ -269,6 +282,7 @@ protected:
 private:
 	virtual bool do_set(const std::string& str_value);
 	virtual void do_reset();
+	virtual std::string do_get_default_value() const; 
 	T& m_value;
 	T m_default_value; 
 	const std::set<T> m_valid_set;
@@ -302,6 +316,7 @@ protected:
 private:
 	virtual bool do_set(const std::string& str_value);
 	virtual void do_reset();
+	virtual std::string do_get_default_value() const; 
 	T& m_value;
 	T m_default_value; 
 };
@@ -339,6 +354,17 @@ typedef CTParameter<std::string,type_str_string> CStringParameter;
 typedef CTParameter<bool, type_str_bool> CBoolParameter;
 
 
+
+template <typename T> 
+CParameter *make_param(std::shared_ptr<T>& value, const std::string& init,  bool required, const char *descr) 
+{                       
+	typedef typename FactoryTrait<T>::type F;  
+	if (!init.empty()) 
+		value = F::instance().produce(init.c_str()); 
+	return new CFactoryParameter<F>(value, required, descr);
+	
+}
+
 template <typename T>
 CDictParameter<T>::CDictParameter(T& value, const TDictMap<T> dict, const char *descr):
 	CParameter("dict", false, descr),
@@ -352,7 +378,7 @@ template <typename T>
 void CDictParameter<T>::do_descr(std::ostream& os) const
 {
 	for (auto i = m_dict.get_help_begin(); i != m_dict.get_help_end(); ++i) {
-		os << "\n\t  " << i->second.first << ": " << i->second.second; 
+		os << "\n  " << i->second.first << ": " << i->second.second; 
 	}
 }
 
@@ -369,6 +395,11 @@ void CDictParameter<T>::do_reset()
 	m_value = m_default_value;
 }
 
+template <typename T>
+std::string CDictParameter<T>::do_get_default_value() const
+{
+	return m_dict.get_name(m_default_value); 
+}
 
 template <typename T>
 CFactoryParameter<T>::CFactoryParameter(typename T::ProductPtr& value, bool required, const char *descr):
@@ -381,7 +412,7 @@ CFactoryParameter<T>::CFactoryParameter(typename T::ProductPtr& value, bool requ
 template <typename T>
 void CFactoryParameter<T>::do_descr(std::ostream& os) const
 {
-	os << "(default=[" << m_default_value->get_init_string() <<"])"; 
+	os << "See PLUGINS:" << T::instance().get_descriptor(); 
 }
 
 template <typename T>
@@ -398,10 +429,18 @@ void CFactoryParameter<T>::do_reset()
 }
 
 template <typename T>
-void CFactoryParameter<T>::add_dependend_handler(HandlerHelpMap& handler_map)const
+void CFactoryParameter<T>::do_add_dependend_handler(HandlerHelpMap& handler_map)const
 {
-	cvdebug() << "Add " << T::instance().get_descriptor() << "\n"; 
 	handler_map[T::instance().get_descriptor()] = &T::instance(); 
+}
+
+template <typename T>
+std::string CFactoryParameter<T>::do_get_default_value() const
+{
+	if (m_default_value) 
+		return std::string("[") + m_default_value->get_init_string() + std::string("]");
+	else 
+		return std::string("NULL"); 
 }
 
 
@@ -416,6 +455,35 @@ CSetParameter<T>::CSetParameter(T& value, const std::set<T>& valid_set, const ch
 		throw std::invalid_argument("CSetParameter initialized with empty set");
 }
 
+template <typename T> 
+struct __dispatch_param_translate {
+	static std::string apply(T x)  {
+		std::ostringstream s; 
+		s << x; 
+		return s.str(); 
+	}
+}; 
+
+template <> 
+struct __dispatch_param_translate<std::string> {
+	static std::string apply(const std::string& x)  {
+		return x; 
+	}
+}; 
+
+template <> 
+struct __dispatch_param_translate<const char *> {
+	static std::string apply(const char * x)  {
+		return std::string(x); 
+	}
+}; 
+
+template <typename T>
+std::string CSetParameter<T>::do_get_default_value() const
+{
+	return __dispatch_param_translate<T>::apply(m_default_value); 
+}
+
 template <typename T>
 void CSetParameter<T>::do_descr(std::ostream& os) const
 {
@@ -424,7 +492,7 @@ void CSetParameter<T>::do_descr(std::ostream& os) const
 
 	assert ( i != e );
 
-	os << *i;
+	os << "  Supported values are (" << *i;
 	++i;
 
 	while (i != e)
@@ -450,6 +518,8 @@ bool CSetParameter<T>::do_set(const std::string& str_value)
 	m_value = val;
 	return true;
 }
+
+
 
 template <typename T>
 TParameter<T>::TParameter(T& value, bool required, const char *descr):
@@ -482,6 +552,15 @@ void TParameter<T>::do_reset()
 {
 	m_value = m_default_value;
 }
+
+template <typename T>
+std::string TParameter<T>::do_get_default_value() const
+{
+	std::ostringstream s; 
+	s << m_default_value; 
+	return s.str(); 
+}
+
 
 NS_MIA_END
 

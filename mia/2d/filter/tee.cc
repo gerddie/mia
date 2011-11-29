@@ -67,7 +67,7 @@ mia::C2DFilter *C2DTeeFilterPluginFactory::do_create()const
 
 const std::string C2DTeeFilterPluginFactory::do_get_descr()const
 {
-	return "Save the input image to a file and als pass it through to the next filter"; 
+	return "Save the input image to a file and also pass it through to the next filter"; 
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

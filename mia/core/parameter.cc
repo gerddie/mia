@@ -54,12 +54,16 @@ const char *CParameter::type() const
 	return m_type;
 }
 
+void CParameter::value(std::ostream& os) const
+{
+	os << "=" << (m_required ? "[required]" : get_default_value()) 
+	   <<  " ("<< m_type << ")"; 
+}
+
 void CParameter::descr(ostream& os) const
 {
-	os << ":" << m_type << "\t" << m_descr << " ";
+	os << m_descr << " ";
 	do_descr(os);
-	if (m_required)
-		os << "(required)";
 }
 
 const char *CParameter::get_descr() const
@@ -88,6 +92,16 @@ bool CParameter::set(const string& str_value)
 
 void CParameter::add_dependend_handler(HandlerHelpMap& handler_map)const
 {
+	do_add_dependend_handler(handler_map); 
+}
+
+void CParameter::do_add_dependend_handler(HandlerHelpMap& /*handler_map*/)const
+{
+}
+
+std::string CParameter::get_default_value() const
+{
+	return do_get_default_value(); 
 }
 
 const char  type_str_uint[5] = "uint";

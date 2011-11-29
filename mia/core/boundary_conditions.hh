@@ -184,6 +184,9 @@ private:
 typedef THandlerSingleton<TFactoryPluginHandler<CSplineBoundaryConditionPlugin> > CSplineBoundaryConditionPluginHandler;
 
 
+/// make spline boundary conditions parsable by the command line 
+FACTORY_TRAIT(CSplineBoundaryConditionPluginHandler); 
+
 /**   
       \ingroup tests 
       Class to set up the plug-in search path for boundary conditions when running tests

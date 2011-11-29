@@ -74,6 +74,7 @@ class CParam:
             raise ValueError("expected 'param' got '%s'" % (node.tag))
         self.name = node.get("name")
         self.type = node.get("type")
+        self.default = node.get("default")
         self.required = int(node.get("required")) 
         self.text = node.text
 

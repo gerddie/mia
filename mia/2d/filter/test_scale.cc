@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE( test_downscale )
 	fimage.set_pixel_size(C2DFVector(2.0, 3.0));
 
 
-	CScale scaler(C2DBounds(2,2), "bspline:d=3");
+	CScale scaler(C2DBounds(2,2), produce_spline_kernel("bspline:d=3"));
 
 	P2DImage scaled = scaler.filter(fimage);
 
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE( test_downscale_float )
 	fimage.set_pixel_size(C2DFVector(2.0, 3.0));
 
 
-	CScale scaler(C2DBounds(2,2), "bspline:d=3");
+	CScale scaler(C2DBounds(2,2), produce_spline_kernel("bspline:d=3"));
 
 	P2DImage scaled = scaler.filter(fimage);
 
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE( test_noscale )
 	fimage.set_pixel_size(C2DFVector(2.0, 3.0));
 
 
-	CScale scaler(C2DBounds(0,0), "bspline:d=3");
+	CScale scaler(C2DBounds(0,0), produce_spline_kernel("bspline:d=3"));
 
 	P2DImage scaled = scaler.filter(fimage);
 

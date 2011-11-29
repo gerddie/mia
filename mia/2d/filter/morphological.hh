@@ -77,7 +77,7 @@ private:
 
 	virtual void prepare_path() const;
 
-	std::string m_shape_descr;
+	mia::P2DShape m_shape;
 	std::string m_hint;
 };
 

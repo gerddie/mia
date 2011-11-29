@@ -90,10 +90,10 @@ P2DImage C2DThreshNImageFilter::do_filter(const C2DImage& src) const
 
 C2DThreshNImageFilterFactory::C2DThreshNImageFilterFactory():
 	C2DFilterPlugin("thresh"),
-	m_shape("4n"), 
 	m_thresh(5.0)
 {
-	add_parameter("shape", new CStringParameter(m_shape, false, "neighborhood shape"));
+	add_parameter("shape", make_param(m_shape, "4n", false, "neighborhood shape to take into account")); 
+	
 	add_parameter("thresh", new CDoubleParameter(m_thresh, 
 						     -numeric_limits<double>::max(), 
 						     numeric_limits<double>::max(),
@@ -102,8 +102,7 @@ C2DThreshNImageFilterFactory::C2DThreshNImageFilterFactory():
 
 C2DFilter *C2DThreshNImageFilterFactory::do_create()const
 {
-	auto shape = C2DShapePluginHandler::instance().produce(m_shape); 
-	return new C2DThreshNImageFilter(shape, m_thresh);
+	return new C2DThreshNImageFilter(m_shape, m_thresh);
 }
 
 const std::string C2DThreshNImageFilterFactory::do_get_descr() const

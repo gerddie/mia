@@ -66,13 +66,11 @@ struct __adjust<T2DVector<int> > {
 	}
 };
 
-template <>
-struct less_then<T2DVector<int> > {
-	bool operator() (const T2DVector<int>& a, const T2DVector<int>& b) const
-	{
-		return a.x < b.x || (a.x == b.x && a.y < b.y);
-	}
-};
+
+bool less_then<T2DVector<int> >::operator() (const T2DVector<int>& a, const T2DVector<int>& b) const
+{
+	return a.x < b.x || (a.x == b.x && a.y < b.y);
+}
 
 EXPLICIT_INSTANCE_HANDLER(C2DShape); 
 template class TShape<T2DVector, C2DBitImage>;

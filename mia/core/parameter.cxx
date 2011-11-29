@@ -46,9 +46,8 @@ CTParameter<T, TS>::CTParameter(T& value,  bool required, const char *descr):
 }
 
 template <typename T, const char * const TS> 
-void CTParameter<T, TS>::do_descr(std::ostream& os) const
+void CTParameter<T, TS>::do_descr(std::ostream& /*os*/) const
 {
-	os << " (default=" <<  m_value << ") ";
 }
 
 
@@ -82,6 +81,14 @@ void CTParameter<T,TS>::adjust(T& /*value*/)
 
 
 template <typename T, const char * const TS> 
+std::string CTParameter<T,TS>::do_get_default_value() const
+{
+	std::ostringstream s; 
+	s << m_default_value; 
+	return s.str(); 
+}
+
+template <typename T, const char * const TS> 
 TRangeParameter<T,TS>::TRangeParameter(T& value, T min, T max, bool required, const char *descr):
 	CTParameter<T, TS>(value, required, descr),
 	m_min(min), 
@@ -113,5 +120,6 @@ void TRangeParameter<T,TS>::do_descr(std::ostream& os) const
 	CTParameter<T, TS>::do_descr(os); 
 	os << " in [" << m_min << "," << m_max << "] ";
 }
+
 
 NS_MIA_END

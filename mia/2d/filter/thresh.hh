@@ -48,7 +48,7 @@ public:
 private:
 	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr() const;
-	std::string m_shape;
+	mia::P2DShape m_shape;
 	double m_thresh;
 };
 

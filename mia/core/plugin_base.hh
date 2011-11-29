@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef __plugin_base_hh
-#define __plugin_base_hh
+#ifndef mia_core_plugin_base_hh
+#define mia_core_plugin_base_hh
 
 #include <map>
 #include <set>

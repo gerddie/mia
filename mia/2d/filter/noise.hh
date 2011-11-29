@@ -48,7 +48,7 @@ public:
 	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-	std::string m_noise_gen;
+	mia::PNoiseGenerator m_noise_gen;
 	bool m_modulate;
 };
 

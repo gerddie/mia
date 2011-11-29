@@ -40,6 +40,15 @@ typedef TFactory<C2DShape> C2DShapePlugin;
 /// Plug-in handler for the shape plug-ins 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DShapePlugin> > C2DShapePluginHandler;
 
+
+template <>
+struct less_then<T2DVector<int> > {
+	bool operator() (const T2DVector<int>& a, const T2DVector<int>& b) const; 
+};
+
+/// Trait to make the shape definition parsable on the command line  
+FACTORY_TRAIT(C2DShapePluginHandler); 
+
 NS_MIA_END
 
 #endif

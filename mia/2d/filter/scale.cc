@@ -62,9 +62,9 @@ using namespace std;
 using namespace boost;
 namespace bfs= ::boost::filesystem;
 
-CScale::CScale(const C2DBounds& size, const string& kernel):
+CScale::CScale(const C2DBounds& size, PSplineKernel kernel):
 	m_size(size),
-	m_ipf(new C2DInterpolatorFactory(produce_spline_kernel(kernel), 
+	m_ipf(new C2DInterpolatorFactory(kernel, 
 					 *produce_spline_boundary_condition("mirror"), 
 					 *produce_spline_boundary_condition("mirror")))
 {
@@ -127,8 +127,8 @@ CScale::result_type CScale::do_filter(const C2DImage& image) const
 
 C2DScaleFilterPlugin::C2DScaleFilterPlugin():
 	C2DFilterPlugin("scale"),
-	m_s(0,0),
-	m_interp("bspline:d=3")
+	m_s(0,0)
+
 {
 	add_parameter("sx", new CUIntParameter(m_s.x, 0,
 					       numeric_limits<unsigned int>::max(), false,
@@ -139,10 +139,8 @@ C2DScaleFilterPlugin::C2DScaleFilterPlugin():
 					       "target size in y direction, 0: use input size"));
 	
 	add_parameter("s", new C2DBoundsParameter(m_s, false, "target size as 2D vector"));
-
-	
-	add_parameter("interp", new CStringParameter(m_interp, false,
-						     "interpolation method to be used "));
+	add_parameter("interp", make_param(m_interp,"bspline:d=3", false,
+					   "interpolation method to be used "));
 }
 
 
@@ -153,7 +151,7 @@ C2DFilter *C2DScaleFilterPlugin::do_create()const
 
 const string C2DScaleFilterPlugin::do_get_descr()const
 {
-	return "2D image downscaler filter";
+	return "2D image downscale filter";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

@@ -28,7 +28,7 @@ NS_BEGIN(scale_2dimage_filter)
 
 class CScale: public mia::C2DFilter {
 public:
-	CScale(const mia::C2DBounds& size, const std::string& interpolator);
+	CScale(const mia::C2DBounds& size, mia::PSplineKernel kernel);
 
 	~CScale();
 
@@ -51,7 +51,7 @@ public:
 	virtual const std::string do_get_descr()const;
 private:
 	mia::C2DBounds m_s; 
-	std::string m_interp;
+	mia::PSplineKernel m_interp;
 };
 
 NS_END

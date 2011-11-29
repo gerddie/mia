@@ -305,7 +305,7 @@ CAnisoDiff2DImageFilterFactory::CAnisoDiff2DImageFilterFactory():
 	m_maxiter(100),
 	m_epsilon(1.0),
 	m_k ( -1.0),
-	m_edge_stop(),
+	m_edge_stop(psi_tuckey),
 	m_neighbourhood(8)
 {
 

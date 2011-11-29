@@ -87,26 +87,21 @@ P2DImage C2DNoise::do_filter(const C2DImage& image) const
 
 C2DNoiseImageFilterFactory::C2DNoiseImageFilterFactory():
 	C2DFilterPlugin(plugin_name),
-	m_noise_gen("gauss:mu=0,sigma=10"),
 	m_modulate(false)
 
 {
-	add_parameter("g", new CStringParameter(m_noise_gen, false, "noise generator"));
-	add_parameter("mod", new TParameter<bool>(m_modulate,false, "additive or modulated noise"));
+	add_parameter("g", make_param(m_noise_gen, "gauss:mu=0,sigma=10", false, "noise generator"));
+	add_parameter("mod", new CBoolParameter(m_modulate, false, "additive or modulated noise"));
 }
 
 C2DFilter *C2DNoiseImageFilterFactory::do_create()const
 {
-	auto  generator = CNoiseGeneratorPluginHandler::instance().produce(m_noise_gen.c_str());
-	if (!generator)
-		throw invalid_argument(m_noise_gen + " does not describe a noise generator");
-
-	return new C2DNoise(generator, m_modulate);
+	return new C2DNoise(m_noise_gen, m_modulate);
 }
 
 const string C2DNoiseImageFilterFactory::do_get_descr()const
 {
-	return "2D image noise filter";
+	return "2D image noise filter: add additive or modulated noise to an image";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

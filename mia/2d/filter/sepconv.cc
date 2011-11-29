@@ -118,22 +118,15 @@ CSeparableConvolute::result_type CSeparableConvolute::do_filter(const C2DImage& 
 
 
 C2DSeparableConvoluteFilterPlugin::C2DSeparableConvoluteFilterPlugin():
-	C2DFilterPlugin("sepconv"),
-	m_kx("gauss:w=1"),
-	m_ky("gauss:w=1")
+	C2DFilterPlugin("sepconv")
 {
-	add_parameter("kx", new CStringParameter(m_kx, false, "filter kernel in x-direction"));
-	add_parameter("ky", new CStringParameter(m_ky, false, "filter kernel in y-direction"));
+	add_parameter("kx", make_param(m_kx, "gauss:w=1", false, "filter kernel in x-direction"));
+	add_parameter("ky", make_param(m_ky, "gauss:w=1", false, "filter kernel in y-direction"));
 }
 
 C2DFilter *C2DSeparableConvoluteFilterPlugin::do_create()const
 {
-	const C1DSpacialKernelPluginHandler::Instance& skp = C1DSpacialKernelPluginHandler::instance();
-
-	auto kx = skp.produce(m_kx.c_str());
-	auto ky = skp.produce(m_ky.c_str());
-
-	return new CSeparableConvolute(kx, ky);
+	return new CSeparableConvolute(m_kx, m_ky);
 }
 
 const string C2DSeparableConvoluteFilterPlugin::do_get_descr()const

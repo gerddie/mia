@@ -19,15 +19,14 @@
  */
 
 
-#ifndef FACTORY_HH
-#define FACTORY_HH
+#ifndef mia_core_factory_hh
+#define mia_core_factory_hh
 
 #include <iostream>
 #include <memory>
 #include <string>
 #include <mia/core/handler.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/core/plugin_base.hh>
 #include <mia/core/product_base.hh>
 #include <mia/core/optionparser.hh>
 
@@ -136,53 +135,6 @@ private:
 	typename I::Product *produce_raw(const char *plugindescr) const;
 
 }; 
-
-/**
-   \brief Type trait to enable the use of a factory product as command 
-      line option 
-
-   Type trait that enables the use of the factory creation in commen line parsing. 
-   This trait needs to be specialized for all factories that are to be used 
-   utilizing the TCmdFactoryOption interface. 
-   \tparam T a class that can be created by a TFactory through the call to 
-    the method TFactoryPluginHandler::produce(const char *plugindescr) of the 
-    corresponding factory plugin handler. 
-    \sa TCmdFactoryOption
- */
-template <class T> 
-class FactoryTrait {
-	/// the typetrait type if not defined properly 
-	typedef typename T::must_create_trait_using_FACTORY_TRAIT type; 
-}; 
-
-/**
-   \ingroup traits 
-
-   \brief Type trait to enable the use of a factory product as command 
-      line option 
-      
-   This trait specializes FactoryTrait for shared pointers.  
- */
-template <class T> 
-class FactoryTrait<std::shared_ptr<T> >  {
-public: 
-	/// the typetrait type 
-	typedef typename FactoryTrait<T>::type type; 
-}; 
-
-/**
-   \ingroup traits 
-
-   Specialize the FactoryTrait template for the given TFactoryPluginHandler 
-*/
-#define FACTORY_TRAIT(F)			\
-	template <>				\
-	class FactoryTrait< F::Instance::ProductPtr::element_type >  {	\
-	public:					\
-	typedef F type;		\
-	}; 
-
-
 
 /*
   Implementation of the factory
