@@ -108,7 +108,7 @@ C2DFilter *C2DDistanceImageFilterFactory::do_create() const
 
 const string C2DDistanceImageFilterFactory::do_get_descr()const
 {
-	return "2D image distance filter"; 
+	return "2D image distance filter, evaluates the distance map for a binary mask."; 
 }
 	
 extern "C" EXPORT CPluginBase *get_plugin_interface()

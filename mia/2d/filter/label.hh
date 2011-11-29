@@ -28,7 +28,7 @@ NS_BEGIN(label_2dimage_filter)
 
 class CLabel: public mia::C2DFilter {
 public:
-	CLabel(mia::P2DShape& m_mask);
+	CLabel(mia::P2DShape m_mask);
 
 private:
 	void grow_region(const mia::C2DBounds& loc,

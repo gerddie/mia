@@ -89,18 +89,11 @@ void CParamList::print_help(std::ostream& os) const
 
 void CParamList::get_help_xml(xmlpp::Element& root)const
 {
-	auto i = m_params.begin();
-	while ( i != m_params.end() ) {
+	for( auto i = m_params.begin();i != m_params.end(); ++i ) {
 		cvdebug()<< "   param '" << i->first << "'\n"; 
 		xmlpp::Element *p = root.add_child("param"); 
 		p->set_attribute("name", i->first); 
-		p->set_attribute("type", i->second->type()); 
-		p->set_attribute("required", to_string<bool>(i->second->required_set())); 
-		p->set_attribute("default", i->second->get_default_value()); 
-		ostringstream descr; 
-		i->second->descr(descr); 
-		p->set_child_text(descr.str()); 
-		++i; 
+		i->second->get_help_xml(*p); 
 	}
 }
 

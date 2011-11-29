@@ -63,7 +63,7 @@ namespace bfs=boost::filesystem;
 
 
 
-CLabel::CLabel(P2DShape& mask):
+CLabel::CLabel(P2DShape mask):
 	m_mask(mask)
 {
 }
@@ -137,48 +137,25 @@ private:
 	virtual C2DFilter *do_create()const;
 	virtual const string do_get_descr()const;
 
-	virtual bool do_test() const;
-	virtual void prepare_path() const;
-
-
-	string m_mask_descr;
+	P2DShape m_mask;
 
 };
 
 
 C2DLabelFilterPlugin::C2DLabelFilterPlugin():
-	C2DFilterPlugin("label"),
-	m_mask_descr("4n")
+	C2DFilterPlugin("label")
 {
-	add_parameter("n", new CStringParameter(m_mask_descr, false, "neighborhood mask")) ;
+	add_parameter("n", make_param(m_mask, "4n", false, "Neighborhood mask to describe connectivity.")) ;
 }
 
 C2DFilter *C2DLabelFilterPlugin::do_create()const
 {
-	P2DShape mask = C2DShapePluginHandler::instance().produce(m_mask_descr.c_str());
-	if (!mask)
-		return NULL;
-	return new CLabel(mask);
+	return new CLabel(m_mask);
 }
 
 const string C2DLabelFilterPlugin::do_get_descr()const
 {
-	return "a 2D conected component labeler";
-}
-
-void C2DLabelFilterPlugin::prepare_path() const
-{
-	list< bfs::path> kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("..")/bfs::path("shapes"));
-	C2DShapePluginHandler::set_search_path(kernelsearchpath);
-
-}
-
-
-
-bool  C2DLabelFilterPlugin::do_test() const
-{
-	return true;
+	return "Label connected components in a binary 2D image.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

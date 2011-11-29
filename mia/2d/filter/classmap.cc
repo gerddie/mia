@@ -152,16 +152,9 @@ C2DFilter *C2DClassMapFilterImageFilterFactory::create(const CParsedOptions& opt
 	
 const string C2DClassMapFilterImageFilterFactory::do_get_descr()const
 {
-	return "convert an image into the probability map of a given class";
+	return "convert an image into the probability map of a given fuzzy segmentation class.";
 }
 
-#if 0
-bool C2DClassMapFilterImageFilterFactory::do_test() const
-{
-	cvfail() << do_get_descr() <<": NO TEST IMPLEMENTED\n"; 
-	return true; 
-}
-#endif
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {

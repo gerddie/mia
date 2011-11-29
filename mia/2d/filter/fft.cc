@@ -144,8 +144,8 @@ C2DFilter *C2DFilterPluginFactory::do_create()const
 	return new C2DFft(k);
 }
 
-	const string C2DFilterPluginFactory::do_get_descr()const
-	{
+const string C2DFilterPluginFactory::do_get_descr()const
+{
 	return "2D image fft filter";
 }
 

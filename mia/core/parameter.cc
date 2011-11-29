@@ -54,6 +54,17 @@ const char *CParameter::type() const
 	return m_type;
 }
 
+void CParameter::get_help_xml(xmlpp::Element& param) const
+{
+	param.set_attribute("type", m_type); 
+	param.set_attribute("required", to_string<bool>(m_is_required)); 
+	param.set_attribute("default", get_default_value());
+	ostringstream d; 
+	descr(d); 
+	param.set_child_text(d.str());
+	do_get_help_xml(param); 
+}
+
 void CParameter::value(std::ostream& os) const
 {
 	os << "=" << (m_required ? "[required]" : get_default_value()) 

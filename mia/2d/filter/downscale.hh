@@ -26,7 +26,7 @@ NS_BEGIN(downscale_2dimage_filter)
 
 class CDownscale: public mia::C2DFilter {
 public:
-	CDownscale(const mia::C2DBounds& block_size, const std::string& filter);
+	CDownscale(const mia::C2DBounds& block_size, const std::string& smoothing);
 
 	~CDownscale();
 

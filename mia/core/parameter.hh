@@ -32,6 +32,10 @@
 #include <mia/core/factory_trait.hh>
 
 
+namespace xmlpp {
+	class Element; 
+}
+
 NS_MIA_BEGIN
 
 /**
@@ -100,7 +104,7 @@ q	*/
 	/// \returns the default value of this parameter as a string 
 	std::string get_default_value() const; 
 
-	
+	void get_help_xml(xmlpp::Element& root) const;
 	
 protected:
 
@@ -120,6 +124,7 @@ private:
 	virtual bool do_set(const std::string& str_value) = 0;
 	virtual void do_reset(); 
 	virtual std::string do_get_default_value() const = 0; 
+	virtual void do_get_help_xml(xmlpp::Element& self) const;
 	bool m_required;
 	bool m_is_required; 
 	const char *m_type;

@@ -90,7 +90,7 @@ C2DFilter *C2DLabelMapFilterPlugin::do_create() const
 
 const string C2DLabelMapFilterPlugin::do_get_descr()const
 {
-	return "2D image label mapper filter"; 
+	return "2D image filter to remap label id's."; 
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

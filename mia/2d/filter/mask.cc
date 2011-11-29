@@ -114,7 +114,7 @@ C2DFilter *C2DMaskImageFilterFactory::do_create()const
 
 const std::string C2DMaskImageFilterFactory::do_get_descr()const
 {
-	return "2D masking";
+	return "2D masking, one of the two input images must by of type bit.";
 }
 
 
