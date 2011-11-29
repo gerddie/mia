@@ -26,8 +26,9 @@
 
 #include <sstream>
 #include <stdexcept>
-
+#include <mia/core/tools.hh>
 #include <mia/core/msgstream.hh>
+
 NS_MIA_BEGIN
 
 /**
@@ -119,6 +120,14 @@ void TRangeParameter<T,TS>::do_descr(std::ostream& os) const
 {
 	CTParameter<T, TS>::do_descr(os); 
 	os << " in [" << m_min << "," << m_max << "] ";
+}
+
+template <typename T, const char * const TS> 
+void TRangeParameter<T,TS>::do_get_help_xml(xmlpp::Element& self) const
+{
+	auto dict = self.add_child("range"); 
+	dict->set_attribute("min", to_string<T>(m_min)); 
+	dict->set_attribute("max", to_string<T>(m_max)); 
 }
 
 

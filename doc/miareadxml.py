@@ -77,6 +77,80 @@ class CParam:
         self.default = node.get("default")
         self.required = int(node.get("required")) 
         self.text = node.text
+        
+    def print_man(self):
+        print ".I"
+        print self.name
+        if self.required:
+            print "= [required, %s] " % (self.type)
+        else:
+            print "= %s [%s] " % (self.default, self.type)
+        print ".RS 2"
+        print "%s." % (self.text)
+        self.do_print_man()
+        print ".RE"
+
+    def do_print_man(self):
+        print ""
+
+
+class CRangeParam(CParam):
+    def __init__(self, node):
+        CParam.__init__(self,node)
+        self.min = node.get("min")
+        self.max = node.get("max")
+
+    def do_print_man(self):
+        print "in [%s, %s]" % (self.min, self.max)
+        CParam.do_print_man(self)
+
+class CDictParam(CParam):
+    def __init__(self, node):
+        CParam.__init__(self,node)
+        self.dict = {}
+        for n in node:
+            if n.tag == "dict":
+                for v in n:
+                    self.dict[v.get("name")] = v.text
+                    
+    def do_print_man(self):
+        print "Supported values are:"
+        for k in self.dict.keys(): 
+            print ".RS 4"
+            print ".I" 
+            print k
+            print ":%s" % (self.dict[k])
+            print ".RE"
+        CParam.do_print_man(self)
+
+class CSetParam(CParam):
+    def __init__(self, node):
+        CParam.__init__(self,node)
+        self.set = []
+        for n in node:
+            if n.tag == "set":
+                for v in n:
+                    if v.tag == "value":
+                        self.set.append(v.get("name"))
+
+    def do_print_man(self):
+        print "Supported values are:(", 
+        for k in self.set:
+            print "%s, " % (k), 
+        print ")"
+        CParam.do_print_man(self)
+                    
+class CFactoryParam(CParam):
+    def __init__(self, node):
+        CParam.__init__(self,node)
+        self.factory = ""
+        for n in node:
+            if n.tag == "factory":
+                self.factory = n.get("name")
+
+    def do_print_man(self):
+        print "For supported plug-ins see PLUGINS:%s" % (self.factory)
+        CParam.do_print_man(self)
 
 class CPlugin: 
     def __init__(self, node):
@@ -88,7 +162,14 @@ class CPlugin:
         self.params = []
         for child in node:
             if child.tag == "param": 
-                self.params.append(CParam(child))
+                p = {
+                    "range":   lambda n: CRangeParam(n), 
+                    "factory": lambda n: CFactoryParam(n), 
+                    "set":     lambda n: CSetParam(n),
+                    "dict":    lambda n: CDictParam(n),
+                    }.get(child.get("type"), lambda n: CParam(n))(child)
+                
+                self.params.append(p)
             else:
                 print "unexpected subnode '%s' in 'plugin'"% (child.tag)
 

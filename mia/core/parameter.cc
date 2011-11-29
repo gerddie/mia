@@ -20,6 +20,7 @@
 
 
 #include <sstream>
+#include <libxml++/libxml++.h>
 #include <mia/core/parameter.hh>
 #include <mia/core/parameter.cxx>
 
@@ -61,8 +62,12 @@ void CParameter::get_help_xml(xmlpp::Element& param) const
 	param.set_attribute("default", get_default_value());
 	ostringstream d; 
 	descr(d); 
-	param.set_child_text(d.str());
+	param.set_child_text(m_descr);
 	do_get_help_xml(param); 
+}
+
+void CParameter::do_get_help_xml(xmlpp::Element& /*param*/) const
+{
 }
 
 void CParameter::value(std::ostream& os) const

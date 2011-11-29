@@ -80,17 +80,21 @@ def write_man_file(descr):
     for h in descr.handlers: 
         print ".SH PLUGINS: %s" % (h.name)
         for p in h.plugins:
-            print ".TP"
+            print ".TP 10"
             print ".B %s" % p.name
-            print p.text
-            print ".RS"
-            for o in p.params:
-                if o.required:
-                    print ".IP \"%s:%s [required]\"" % (o.name, o.type)
-                else:
-                    print ".IP %s:%s=%s" % (o.name, o.type, o.default)
-                print o.text
-            print ".RE"
+            if len(p.params) > 0: 
+                print "%s, supported parameters are: " % (p.text) 
+                print ".P"
+                for o in p.params:
+                    print ".RS 14"
+                    o.print_man()
+                    print ".RE"
+            else:
+                print p.text
+                print ".P"
+                print ".RS 14"
+                print "(no parameters)"
+                print ".RE"
 
     if descr.Example.text is not None and len(descr.Example.text) > 0:
             print ".SH EXAMPLE"

@@ -191,6 +191,7 @@ protected:
 	void do_descr(std::ostream& os) const;
 private:
 	virtual void adjust(T& value);
+	virtual void do_get_help_xml(xmlpp::Element& self) const;
 	T m_min;
 	T m_max;
 
@@ -224,6 +225,7 @@ private:
 	virtual bool do_set(const std::string& str_value);
 	virtual void do_reset();
 	virtual std::string do_get_default_value() const; 
+	virtual void do_get_help_xml(xmlpp::Element& self) const;
 	T& m_value;
 	T m_default_value; 
 	const TDictMap<T> m_dict;
@@ -255,6 +257,7 @@ private:
 	virtual bool do_set(const std::string& str_value);
 	virtual void do_reset();
 	virtual std::string do_get_default_value() const; 
+	virtual void do_get_help_xml(xmlpp::Element& self) const;
 	typename F::ProductPtr& m_value;
 	typename F::ProductPtr m_default_value; 
 };
@@ -288,6 +291,7 @@ private:
 	virtual bool do_set(const std::string& str_value);
 	virtual void do_reset();
 	virtual std::string do_get_default_value() const; 
+	void do_get_help_xml(xmlpp::Element& self) const; 
 	T& m_value;
 	T m_default_value; 
 	const std::set<T> m_valid_set;
@@ -370,6 +374,31 @@ CParameter *make_param(std::shared_ptr<T>& value, const std::string& init,  bool
 	
 }
 
+//// implementations 
+
+template <typename T> 
+struct __dispatch_param_translate {
+	static std::string apply(T x)  {
+		std::ostringstream s; 
+		s << x; 
+		return s.str(); 
+	}
+}; 
+
+template <> 
+struct __dispatch_param_translate<std::string> {
+	static std::string apply(const std::string& x)  {
+		return x; 
+	}
+}; 
+
+template <> 
+struct __dispatch_param_translate<const char *> {
+	static std::string apply(const char * x)  {
+		return std::string(x); 
+	}
+}; 
+
 template <typename T>
 CDictParameter<T>::CDictParameter(T& value, const TDictMap<T> dict, const char *descr):
 	CParameter("dict", false, descr),
@@ -384,6 +413,17 @@ void CDictParameter<T>::do_descr(std::ostream& os) const
 {
 	for (auto i = m_dict.get_help_begin(); i != m_dict.get_help_end(); ++i) {
 		os << "\n  " << i->second.first << ": " << i->second.second; 
+	}
+}
+
+template <typename T>
+void CDictParameter<T>::do_get_help_xml(xmlpp::Element& self) const
+{
+	auto dict = self.add_child("dict"); 
+	for (auto i = m_dict.get_help_begin(); i != m_dict.get_help_end(); ++i) {
+		auto v = dict->add_child("value"); 
+		v->set_attribute("name", i->second.first);
+		v->set_child_text(i->second.second); 
 	}
 }
 
@@ -417,7 +457,15 @@ CFactoryParameter<T>::CFactoryParameter(typename T::ProductPtr& value, bool requ
 template <typename T>
 void CFactoryParameter<T>::do_descr(std::ostream& os) const
 {
-	os << "See PLUGINS:" << T::instance().get_descriptor(); 
+	os << "For a list of available plug-ins see run 'mia-plugin-help " 
+	   << T::instance().get_descriptor() << "'"; 
+}
+
+template <typename T>
+void CFactoryParameter<T>::do_get_help_xml(xmlpp::Element& self) const
+{
+	auto dict = self.add_child("factory"); 
+	dict->set_attribute("name", T::instance().get_descriptor());
 }
 
 template <typename T>
@@ -460,28 +508,6 @@ CSetParameter<T>::CSetParameter(T& value, const std::set<T>& valid_set, const ch
 		throw std::invalid_argument("CSetParameter initialized with empty set");
 }
 
-template <typename T> 
-struct __dispatch_param_translate {
-	static std::string apply(T x)  {
-		std::ostringstream s; 
-		s << x; 
-		return s.str(); 
-	}
-}; 
-
-template <> 
-struct __dispatch_param_translate<std::string> {
-	static std::string apply(const std::string& x)  {
-		return x; 
-	}
-}; 
-
-template <> 
-struct __dispatch_param_translate<const char *> {
-	static std::string apply(const char * x)  {
-		return std::string(x); 
-	}
-}; 
 
 template <typename T>
 std::string CSetParameter<T>::do_get_default_value() const
@@ -492,8 +518,8 @@ std::string CSetParameter<T>::do_get_default_value() const
 template <typename T>
 void CSetParameter<T>::do_descr(std::ostream& os) const
 {
-	typename std::set<T>::const_iterator i = m_valid_set.begin();
-	typename std::set<T>::const_iterator e = m_valid_set.end();
+	auto i = m_valid_set.begin();
+	auto e = m_valid_set.end();
 
 	assert ( i != e );
 
@@ -503,6 +529,16 @@ void CSetParameter<T>::do_descr(std::ostream& os) const
 	while (i != e)
 	       os << '|' << *i++;
 	os << ')';
+}
+
+template <typename T>
+void CSetParameter<T>::do_get_help_xml(xmlpp::Element& self) const
+{
+	auto set = self.add_child("set"); 
+	for (auto i = m_valid_set.begin(); i != m_valid_set.end(); ++i) {
+		auto v = set->add_child("value"); 
+		v->set_attribute("name", __dispatch_param_translate<T>::apply(*i));   
+	}
 }
 
 template <typename T>
