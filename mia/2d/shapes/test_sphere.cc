@@ -18,28 +18,36 @@
  *
  */
 
+#include <mia/internal/plugintester.hh>
 
-#ifndef _mia_3d_sphere_creator_hh
-#define _mia_3d_sphere_creator_hh
+#include <mia/2d/shapes/sphere.hh>
 
-#include <mia/2d/shape.hh>
+using namespace std; 
+NS_MIA_USE; 
 
-NS_MIA_BEGIN
 
-class CSphere2DShapeFactory: public C2DShapePlugin {
-public:
-	CSphere2DShapeFactory();
-private:
+BOOST_AUTO_TEST_CASE( test_sphere ) 
+{
+	auto shape = BOOST_TEST_create_from_plugin<CSphere2DShapeFactory>("sphere:r=3"); 
+	BOOST_REQUIRE(shape); 
+
+	size_t s = 2 * 3 + 1;
+	size_t r2 = 3*3;
+
+
+	BOOST_CHECK_EQUAL(shape->get_size(), C2DBounds(s,s)); 
+	auto mask = shape->get_mask(); 
 	
-	class CSphere2DShape: public C2DShape {
-	public:
-		CSphere2DShape(float radius);
-	};
-
-	virtual const string do_get_descr() const;
-	virtual C2DShape *do_create()const;
-	float m_r;
-};
-
-NS_MIA_END
-#endif
+	
+	BOOST_CHECK_EQUAL(mask.get_size().x, mask.get_size().y); 
+	BOOST_CHECK_EQUAL(mask.get_size(), C2DBounds(s,s)); 
+	
+	for ( size_t y = 0; y < s; ++y)
+		for ( size_t x = 0; x < s; ++x) {
+			float r_h = (x - 3) * (x - 3) + (y - 3) * (y - 3);
+			if (r_h <= r2) 
+				BOOST_CHECK( mask(x,y)); 
+			else 
+				BOOST_CHECK(!mask(x,y)); 
+		}
+}; 

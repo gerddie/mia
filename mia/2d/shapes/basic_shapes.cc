@@ -27,10 +27,16 @@
 
   \begin{description}
    
-   \item [Plugin:] 4n, 8n 
+   \item [Plugin:] 1n, 4n, 8n 
    \item [Description:] provide the simple neighbourhood shapes, 'o' indicates the center (that belongs to the shape) 
        and 'x' the additional elements. 
    \begin{itemize}
+   \item 1n 
+   \begin{tabular}{|c|}
+   \hline 
+   x \\
+   \hline 
+   \end{tabular}
    \item 4n 
      \begin{tabular}{|c|c|c|}
      \hline 
@@ -63,39 +69,42 @@
 #include <config.h>
 #endif
 
-
 #include <limits>
 #include <mia/2d/shape.hh>
-#include "sphere.hh"
-
+#include <mia/2d/shapes/basic_shapes.hh>
 
 NS_BEGIN(basic_2dshape_creator)
 NS_MIA_USE;
 using namespace std;
 
+C1n2DShape::C1n2DShape()
+{
+	insert(C2DShape::Flat::value_type( 0, 0));
+}	
 
-class C4n2DShape: public C2DShape {
-public:
-	C4n2DShape();
-};
+C1n2DShapeFactory::C1n2DShapeFactory():
+	C2DShapePlugin("1n")
+{
+}	
+
+const string C1n2DShapeFactory::do_get_descr() const
+{
+	return "A shape that only contains the central point";  
+}
+
+C2DShape *C1n2DShapeFactory::do_create()const
+{
+	return new C1n2DShape();
+}
+
 
 C4n2DShape::C4n2DShape()
 {
-	insert(C2DShape::Flat::value_type( 0, 0));
 	insert(C2DShape::Flat::value_type(-1, 0));
 	insert(C2DShape::Flat::value_type( 1, 0));
 	insert(C2DShape::Flat::value_type( 0,-1));
 	insert(C2DShape::Flat::value_type( 0, 1));
 }
-
-class C4n2DShapeFactory: public C2DShapePlugin {
-public:
-	C4n2DShapeFactory();
-private:
-	virtual const string do_get_descr() const;
-	virtual C2DShape *do_create()const;
-	virtual bool do_test() const;
-};
 
 C4n2DShapeFactory::C4n2DShapeFactory():
 	C2DShapePlugin("4n")
@@ -110,33 +119,9 @@ C2DShape *C4n2DShapeFactory::do_create()const
 
 const string C4n2DShapeFactory::do_get_descr()const
 {
-	return string("4n neighborhood 2D shape creator");
+	return string("4n neighborhood 2D shape");
 }
 
-bool C4n2DShapeFactory::do_test()const
-{
-	C4n2DShape shape;
-	C4n2DShape::Mask mask = shape.get_mask();
-
-	if (mask.get_size() != C2DBounds(3,3)) {
-		cvfail() << get_name() << ": wrong mask size\n";
-		assert("size failture");
-	}
-
-	if (! ( mask(1,1) && mask(1,2) && mask(0,1) && mask(1,0) &&
-		mask(0,1) && mask(2,1) ) ||
-	    mask(0,0) || mask(2,0) ||
-	    mask(0,2) || mask(2,2)) {
-		return false;
-	}
-	return true;
-}
-
-
-class C8n2DShape: public C4n2DShape {
-public:
-	C8n2DShape();
-};
 
 C8n2DShape::C8n2DShape()
 {
@@ -145,15 +130,6 @@ C8n2DShape::C8n2DShape()
 	insert(C2DShape::Flat::value_type( 1,-1));
 	insert(C2DShape::Flat::value_type( 1, 1));
 }
-
-class C8n2DShapeFactory: public C2DShapePlugin {
-public:
-	C8n2DShapeFactory();
-private:
-	virtual const string do_get_descr() const;
-	virtual C2DShape *do_create()const;
-	virtual bool  do_test() const;
-};
 
 C8n2DShapeFactory::C8n2DShapeFactory():
 	C2DShapePlugin("8n")
@@ -168,35 +144,15 @@ C2DShape *C8n2DShapeFactory::do_create()const
 
 const string C8n2DShapeFactory::do_get_descr()const
 {
-	return string("8n neighborhood 2D shape creator");
+	return string("8n neighborhood 2D shape");
 }
-
-bool C8n2DShapeFactory::do_test()const
-{
-	C8n2DShape shape;
-	C8n2DShape::Mask mask = shape.get_mask();
-
-	if (mask.get_size() != C2DBounds(3,3)) {
-		cvfail() << get_name() << ": wrong mask size\n";
-		assert(0);
-	}
-
-	if (mask(0,0) && mask(1,0) && mask(2,0) &&
-	    mask(0,1) && mask(1,1) && mask(2,1) &&
-	    mask(0,2) && mask(1,2) && mask(2,2))
-		return true;
-
-	return false;
-}
-
-
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	CPluginBase *n6 = new C4n2DShapeFactory();
-	n6->append_interface(new C8n2DShapeFactory());
-	n6->append_interface(new CSphere2DShapeFactory());
-	return n6;
+	CPluginBase *p = new C1n2DShapeFactory();
+	p->append_interface(new C4n2DShapeFactory());
+	p->append_interface(new C8n2DShapeFactory());
+	return p;
 }
 
 NS_END

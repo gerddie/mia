@@ -19,10 +19,10 @@
 #
 
 SET(shape2d 
-	    2d-shapes
-)
+  basic_shapes
+  sphere
+  )
 
-ADD_LIBRARY(2d-shapes MODULE basic_shapes.cc sphere.cc)
-TARGET_LINK_LIBRARIES(2d-shapes ${MIA2DLIBS})
-SET_TARGET_PROPERTIES(2d-shapes PROPERTIES PREFIX "" SUFFIX ${PLUGSUFFIX})
-INSTALL(TARGETS 2d-shapes LIBRARY DESTINATION "${PLUGIN_INSTALL_PATH}/shape/2dimage")
+PLUGINGROUP_WITH_TEST_AND_PREFIX(2d-shape "${shape2d}" 
+  "${MIA2DLIBS}" "${PLUGIN_INSTALL_PATH}/shape/2dimage" TESTLIBS  mia2dtest)
+

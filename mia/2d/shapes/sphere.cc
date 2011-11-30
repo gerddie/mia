@@ -52,12 +52,7 @@ NS_MIA_BEGIN
 
 using namespace std;
 
-class CSphere2DShape: public C2DShape {
-public:
-	CSphere2DShape(float radius);
-};
-
-CSphere2DShape::CSphere2DShape(float radius)
+CSphere2DShapeFactory::CSphere2DShape::CSphere2DShape(float radius)
 {
 	int hw = static_cast<int>(radius + 1.0);
 	float r2 = radius * radius;
@@ -88,38 +83,6 @@ C2DShape *CSphere2DShapeFactory::do_create()const
 const string CSphere2DShapeFactory::do_get_descr()const
 {
 	return string("spherical shape mask creator");
-}
-
-bool CSphere2DShapeFactory::do_test()const
-{
-	for (size_t l = 1; l < 3; ++l) {
-
-		size_t s = 2 * l +1;
-		size_t r2 = l*l;
-
-		CSphere2DShape shape(l);
-
-		C2DShape::Mask mask = shape.get_mask();
-		if (mask.get_size().x != mask.get_size().y ||
-		    mask.get_size().x != s) {
-			cvfail() << "Sphere shape creator: mask size error\n";
-			return false;
-		}
-
-		for ( size_t y = 0; y < s; ++y)
-			for ( size_t x = 0; x < s; ++x) {
-				float r_h = (x - l) * (x - l) + (y - l) * (y -l);
-				if (mask(x,y) && r_h > r2) {
-					cvfail() << get_name() <<"mask point outside radius\n";
-					return false;
-				}
-				if (!mask(x,y) && r_h <= r2) {
-					cvfail() << get_name() <<"non-mask point inside radius\n";
-					return false;
-				}
-			}
-	}
-	return true;
 }
 
 NS_MIA_END
