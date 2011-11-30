@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/2d/filter/scale.hh>
 
 NS_MIA_USE
@@ -44,9 +44,9 @@ BOOST_AUTO_TEST_CASE( test_downscale )
 	fimage.set_pixel_size(C2DFVector(2.0, 3.0));
 
 
-	CScale scaler(C2DBounds(2,2), produce_spline_kernel("bspline:d=3"));
+	auto  f = BOOST_TEST_create_from_plugin<C2DScaleFilterPlugin>("scale:s=[<2,2>],interp=[bspline:d=3]"); 
 
-	P2DImage scaled = scaler.filter(fimage);
+	P2DImage scaled = f->filter(fimage);
 
 	BOOST_CHECK_EQUAL(scaled->get_size(),C2DBounds(2, 2));
 
@@ -82,9 +82,8 @@ BOOST_AUTO_TEST_CASE( test_downscale_float )
 	fimage.set_pixel_size(C2DFVector(2.0, 3.0));
 
 
-	CScale scaler(C2DBounds(2,2), produce_spline_kernel("bspline:d=3"));
-
-	P2DImage scaled = scaler.filter(fimage);
+	auto  f = BOOST_TEST_create_from_plugin<C2DScaleFilterPlugin>("scale:s=[<2,2>],interp=[bspline:d=3]"); 
+	P2DImage scaled = f->filter(fimage);
 
 	BOOST_CHECK_EQUAL(scaled->get_size(),C2DBounds(2, 2));
 
@@ -112,9 +111,9 @@ BOOST_AUTO_TEST_CASE( test_noscale )
 	fimage.set_pixel_size(C2DFVector(2.0, 3.0));
 
 
-	CScale scaler(C2DBounds(0,0), produce_spline_kernel("bspline:d=3"));
+	auto  f = BOOST_TEST_create_from_plugin<C2DScaleFilterPlugin>("scale:s=[<0,0>],interp=[bspline:d=3]"); 
 
-	P2DImage scaled = scaler.filter(fimage);
+	P2DImage scaled = f->filter(fimage);
 
 	BOOST_CHECK_EQUAL(scaled->get_size(),C2DBounds(4, 4));
 

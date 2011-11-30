@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/2d/filter/selectbig.hh>
 
 NS_MIA_USE
@@ -43,11 +43,11 @@ BOOST_AUTO_TEST_CASE( test_selectbig )
 		1, 0, 0, 0,
 	};
 
-	C2DSelectBig f;
-
+	auto  f = BOOST_TEST_create_from_plugin<C2DSelectBigImageFilterFactory>("selectbig"); 
+	
 	C2DUSImage src(C2DBounds(4,4), input_data);
 
-	P2DImage result_wrap = f.filter(src);
+	P2DImage result_wrap = f->filter(src);
 	const C2DBitImage *result = dynamic_cast<const C2DBitImage *>(result_wrap.get());
 	BOOST_REQUIRE(result);
 
