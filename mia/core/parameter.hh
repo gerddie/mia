@@ -491,7 +491,7 @@ template <typename T>
 std::string CFactoryParameter<T>::do_get_default_value() const
 {
 	if (m_default_value) 
-		return std::string("[") + m_default_value->get_init_string() + std::string("]");
+		return m_default_value->get_init_string();
 	else 
 		return std::string("NULL"); 
 }

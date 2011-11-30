@@ -77,14 +77,19 @@ class CParam:
         self.default = node.get("default")
         self.required = int(node.get("required")) 
         self.text = node.text
+
+        m = re.search('[,=:]', self.default) 
+        # if there is a ',' in the text make clean that it needs to be escaped  
+        if m is not None: 
+            self.default = "[" + self.default + "]"
         
     def print_man(self):
         print ".I"
         print self.name
         if self.required:
-            print "= [required, %s] " % (self.type)
+            print "= (required, %s) " % (self.type)
         else:
-            print "= %s [%s] " % (self.default, self.type)
+            print "= %s (%s) " % (self.default, self.type)
         print ".RS 2"
         print "%s." % (self.text)
         self.do_print_man()
@@ -152,6 +157,7 @@ class CFactoryParam(CParam):
         print "For supported plug-ins see PLUGINS:%s" % (self.factory)
         CParam.do_print_man(self)
 
+       
 class CPlugin: 
     def __init__(self, node):
         if node.tag != "plugin":

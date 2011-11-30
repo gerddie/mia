@@ -71,7 +71,7 @@ def write_man_file(descr):
                 short = "  "; 
 
             if o.required:
-                print ".IP \"%s \-\-%s=[required]\""% (short, o.long)
+                print ".IP \"%s \-\-%s=(required)\""% (short, o.long)
             else:
                 print ".IP \"%s \-\-%s=%s\""% (short, o.long, escape_dash(o.default))
             print o.text
