@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/2d/filter/sepconv.hh>
 
 
@@ -29,42 +29,31 @@ using namespace ::boost::unit_test;
 namespace bfs=::boost::filesystem;
 using namespace SeparableConvolute_2dimage_filter;
 
-BOOST_AUTO_TEST_CASE( test_sepconv )
-{
-	list< bfs::path> kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("..")/bfs::path("..")/bfs::path("core")/bfs::path("spacialkernel"));
-	C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
+C1DSpacialKernelPluginHandlerTestPath spacial_kernel_test_path; 
 
+struct  SepconvTextFixture {
+	SepconvTextFixture(); 
+	
+	void run(const C2DFilter& f) const; 
+	P2DImage image;
+}; 
+
+SepconvTextFixture::SepconvTextFixture()
+{
 	C2DFImage *src = new C2DFImage(C2DBounds(3,3));
 	fill(src->begin(), src->end(), 0);
 	(*src)(1,1) = 16.0f;
+	image.reset(src); 
+}
 
+void SepconvTextFixture::run(const C2DFilter& f) const
+{
 	const float gauss_ref[9] = {
 		1, 2, 1, /**/ 2, 4, 2, /**/ 1, 2, 1
 	};
-
-	vector<float> d1(3);
-	d1[0] = d1[2] = 0;
-	d1[1] = 4;
-
-	P2DImage image(src);
-
-	const C1DSpacialKernelPluginHandler::Instance&  skp = C1DSpacialKernelPluginHandler::instance();
-	auto k1 = skp.produce("gauss:w=1");
-	auto k2 = skp.produce("gauss:w=1");
-
-	CSeparableConvolute sp(k1,k2);
-
-	sp.fold(d1, *k1);
-	cvdebug() << d1[0] << ", " << d1[1] << ", " << d1[2] << "\n";
-
-	BOOST_CHECK_EQUAL(d1[0], 1);
-	BOOST_CHECK_EQUAL(d1[2], 1);
-	BOOST_CHECK_EQUAL(d1[1], 2);
-
-	P2DImage result = sp.filter(*image);
-
-	BOOST_CHECK_EQUAL(result->get_size(), src->get_size());
+	P2DImage result = f.filter(*image);
+	
+	BOOST_CHECK_EQUAL(result->get_size(), image->get_size());
 	C2DFImage *r = dynamic_cast<C2DFImage*>(&*result);
 
 	BOOST_REQUIRE(r);
@@ -74,6 +63,18 @@ BOOST_AUTO_TEST_CASE( test_sepconv )
 		cvdebug() << *i << " vs  " << gauss_ref[j] << "\n";
 		BOOST_CHECK_CLOSE(*i, gauss_ref[j], 0.0001);
 	}
+}
+
+BOOST_FIXTURE_TEST_CASE( test_sepconv, SepconvTextFixture )
+{
+	auto filter = BOOST_TEST_create_from_plugin<C2DSeparableConvoluteFilterPlugin>("sepconv:kx=[gauss:w=1],ky=[gauss:w=1]"); 
+	run(*filter); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_gauss, SepconvTextFixture )
+{
+	auto filter = BOOST_TEST_create_from_plugin<C2DGaussFilterPlugin>("gauss:w=1"); 
+	run(*filter); 
 }
 
 

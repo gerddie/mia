@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/2d/filter/tee.hh>
 #include <mia/core/datapool.hh>
 #include <mia/2d/2dimageio.hh>
@@ -33,13 +33,12 @@ struct TeeFixture {
 	TeeFixture(); 
 	~TeeFixture(); 
 	
-	C2DTee t; 
+
 	C2DUBImage *orig; 
 	P2DImage image; 
 }; 
 
-TeeFixture::TeeFixture():
-	t("test.@")
+TeeFixture::TeeFixture()
 {
 	const unsigned char init[4] = {1,2,3,4}; 
 	orig = new C2DUBImage(C2DBounds(2,2), init); 
@@ -54,7 +53,8 @@ TeeFixture::~TeeFixture()
 
 BOOST_FIXTURE_TEST_CASE( test_2dfilter_tee_shared_ptr, TeeFixture )
 {
-	auto passthrough = t.filter(image); 
+	auto t = BOOST_TEST_create_from_plugin<C2DTeeFilterPluginFactory>("tee:file=test.@");
+	auto passthrough = t->filter(image); 
 	BOOST_CHECK(*image == *passthrough);
 	auto loaded = load_image2d("test.@");
 	BOOST_CHECK(*image == *loaded);
@@ -62,7 +62,8 @@ BOOST_FIXTURE_TEST_CASE( test_2dfilter_tee_shared_ptr, TeeFixture )
 
 BOOST_FIXTURE_TEST_CASE( test_2dfilter_tee, TeeFixture )
 {
-	auto passthrough2 = t.filter(*image); 
+	auto t = BOOST_TEST_create_from_plugin<C2DTeeFilterPluginFactory>("tee:file=test.@");
+	auto passthrough2 = t->filter(*image); 
 	BOOST_CHECK(*image == *passthrough2);
 	auto loaded2 = load_image2d("test.@");
 	BOOST_CHECK(*image == *loaded2);
