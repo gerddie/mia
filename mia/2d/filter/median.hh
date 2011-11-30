@@ -34,9 +34,9 @@ private:
 	int m_hw;
 };
 
-class C2DFilterPluginFactory: public mia::C2DFilterPlugin {
+class C2DMedianFilterPluginFactory: public mia::C2DFilterPlugin {
 public:
-	C2DFilterPluginFactory();
+	C2DMedianFilterPluginFactory();
 private:
 	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;

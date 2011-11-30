@@ -40,6 +40,11 @@ typedef TFactory<C2DShape> C2DShapePlugin;
 /// Plug-in handler for the shape plug-ins 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DShapePlugin> > C2DShapePluginHandler;
 
+class C2DShapePluginHandlerTestPath {
+public: 
+	C2DShapePluginHandlerTestPath(); 
+}; 
+
 
 template <>
 struct less_then<T2DVector<int> > {

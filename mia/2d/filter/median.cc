@@ -123,18 +123,18 @@ P2DImage C2DMedian::do_filter(const C2DImage& image) const
 }
 
 
-C2DFilterPluginFactory::C2DFilterPluginFactory():
+C2DMedianFilterPluginFactory::C2DMedianFilterPluginFactory():
 	C2DFilterPlugin("median")
 {
 	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(), false, "half filter width"));
 }
 
-C2DFilter *C2DFilterPluginFactory::do_create()const
+C2DFilter *C2DMedianFilterPluginFactory::do_create()const
 {
 	return new C2DMedian(m_hw);
 }
 
-const string C2DFilterPluginFactory::do_get_descr()const
+const string C2DMedianFilterPluginFactory::do_get_descr()const
 {
 	return "2D image median filter";
 }
@@ -195,7 +195,7 @@ const string  C2DSaltAndPepperFilterFactory::do_get_descr() const
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	CPluginBase *median = new  C2DFilterPluginFactory();
+	CPluginBase *median = new  C2DMedianFilterPluginFactory();
 	median->append_interface(new C2DSaltAndPepperFilterFactory());
 	return median;
 }

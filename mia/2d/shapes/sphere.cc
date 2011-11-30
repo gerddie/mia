@@ -85,4 +85,10 @@ const string CSphere2DShapeFactory::do_get_descr()const
 	return string("spherical shape mask creator");
 }
 
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new CSphere2DShapeFactory;
+}
+
+
 NS_MIA_END

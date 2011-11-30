@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/2d/filter/median.hh>
 
 NS_MIA_USE
@@ -56,11 +56,11 @@ BOOST_AUTO_TEST_CASE( test_2dfilter_median )
 		for (size_t x = 0; x < size_x; ++x)
 			(*src_img)(x,y) = src[y][x];
 
-	C2DMedian median(1);
+	auto median = BOOST_TEST_create_from_plugin<C2DMedianFilterPluginFactory>("median:w=1"); 
 
 	P2DImage src_wrap(src_img);
 
-	P2DImage res_wrap = median.filter(*src_wrap);
+	P2DImage res_wrap = median->filter(*src_wrap);
 
 	C2DSIImage* res_img = dynamic_cast<C2DSIImage*>(res_wrap.get());
 	BOOST_REQUIRE(res_img);
@@ -89,9 +89,9 @@ BOOST_AUTO_TEST_CASE( test_2dfilter_saltnpepper )
 	C2DFImage input(C2DBounds(3,3));
 
 	copy(input_data, input_data + input.size(), input.begin());
-	C2DSaltAndPepperFilter filter(1, 1000);
+	auto filter = BOOST_TEST_create_from_plugin<C2DSaltAndPepperFilterFactory>("sandp:w=1,thresh=1000"); 
 
-	P2DImage result = filter.filter(input);
+	P2DImage result = filter->filter(input);
 	BOOST_REQUIRE(result->get_size() == input.get_size());
 
 	C2DFImage *presult = dynamic_cast<C2DFImage *>(result.get());

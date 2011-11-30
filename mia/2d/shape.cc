@@ -75,4 +75,15 @@ bool less_then<T2DVector<int> >::operator() (const T2DVector<int>& a, const T2DV
 EXPLICIT_INSTANCE_HANDLER(C2DShape); 
 template class TShape<T2DVector, C2DBitImage>;
 
+
+using boost::filesystem::path; 
+C2DShapePluginHandlerTestPath::C2DShapePluginHandlerTestPath()
+{
+	list< path> sksearchpath; 
+	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/2d/shapes"));
+	C2DShapePluginHandler::set_search_path(sksearchpath); 
+	
+}
+	
+
 NS_MIA_END

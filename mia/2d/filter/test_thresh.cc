@@ -18,9 +18,8 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/2d/filter/thresh.hh>
-#include <mia/2d/shape.hh>
 
 NS_MIA_USE
 using namespace std;
@@ -28,11 +27,12 @@ using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace thresh_2dimage_filter;
 
+C2DShapePluginHandlerTestPath shape_test_path; 
 
 struct ThreshFixture {
 
 	ThreshFixture(); 
-	void run_test(P2DShape neighborhood, const int *test_data); 
+	void run_test(const char *param, const int *test_data); 
 
 	static const int src[]; 
 	static const int ref_4[]; 
@@ -42,16 +42,6 @@ struct ThreshFixture {
 	P2DImage src_img; 
 
 }; 
-
-struct CTest4Shape: public C2DShape {
-	CTest4Shape() {
-		insert(C2DShape::Flat::value_type( 0, 0));
-		insert(C2DShape::Flat::value_type( 1, 0));
-		insert(C2DShape::Flat::value_type( 0, 1));
-		insert(C2DShape::Flat::value_type(-1, 0));
-		insert(C2DShape::Flat::value_type( 0,-1));
-	}
-};
 
 
 const C2DBounds ThreshFixture::size = C2DBounds(7, 5); 
@@ -79,10 +69,11 @@ ThreshFixture::ThreshFixture():
 {
 }
 
-void ThreshFixture::run_test(P2DShape neighborhood, const int *test_data)
+void ThreshFixture::run_test(const char *param, const int *test_data)
 {
-	C2DThreshNImageFilter thresh_4(neighborhood, thresh); 
-	P2DImage result = mia::filter(thresh_4, *src_img); 
+	auto thresh = BOOST_TEST_create_from_plugin<C2DThreshNImageFilterFactory>(param); 
+
+	P2DImage result = thresh->filter(*src_img); 
 	BOOST_REQUIRE(result); 
 	BOOST_REQUIRE(result->get_size() == src_img->get_size()); 
 	
@@ -95,9 +86,7 @@ void ThreshFixture::run_test(P2DShape neighborhood, const int *test_data)
 	
 BOOST_FIXTURE_TEST_CASE( test_thresh_n4, ThreshFixture) 
 {
-	run_test(P2DShape(new CTest4Shape), ref_4);  
-
-
-	
+	run_test("thresh:thresh=5,shape=4n", ref_4);
 }
+
 
