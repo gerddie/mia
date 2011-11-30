@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE (test_labelmap)
 	ref(5,23) = 10; 
 	
 	P2DImage wsrc(src); 
-	
+
 	C2DLabelMapFilter filter(map); 
 	
 	P2DImage wres = filter.filter(*wsrc); 

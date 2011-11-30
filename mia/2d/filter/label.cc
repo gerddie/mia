@@ -130,18 +130,6 @@ CLabel::result_type CLabel::do_filter(const C2DImage& image) const
 }
 
 
-class C2DLabelFilterPlugin: public C2DFilterPlugin {
-public:
-	C2DLabelFilterPlugin();
-private:
-	virtual C2DFilter *do_create()const;
-	virtual const string do_get_descr()const;
-
-	P2DShape m_mask;
-
-};
-
-
 C2DLabelFilterPlugin::C2DLabelFilterPlugin():
 	C2DFilterPlugin("label")
 {

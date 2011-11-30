@@ -83,6 +83,11 @@ typedef TFactory<CNoiseGenerator> CNoiseGeneratorPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<CNoiseGeneratorPlugin> > 
       CNoiseGeneratorPluginHandler;
 
+
+struct CNoiseGeneratorPluginHandlerTestPath {
+	CNoiseGeneratorPluginHandlerTestPath(); 
+}; 
+
 FACTORY_TRAIT(CNoiseGeneratorPluginHandler); 
 
 

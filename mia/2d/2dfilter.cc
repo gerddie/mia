@@ -54,6 +54,7 @@
 #include <mia/core/errormacro.hh>
 #include <mia/core/plugin_base.cxx>
 #include <mia/core/handler.cxx>
+#include <mia/2d/shape.hh>
 
 NS_MIA_BEGIN
 using namespace boost;
@@ -86,6 +87,15 @@ P2DImage  EXPORT_2D run_filter(const C2DImage& image, const char *filter)
 	if (!f)
 		THROW(invalid_argument, "unable to create filter from '" <<filter<<"'");
 	return f->filter(image);
+}
+
+using boost::filesystem::path; 
+C2DFilterPluginHandlerTestPath::C2DFilterPluginHandlerTestPath()
+{
+	C2DShapePluginHandlerTestPath filter_test_path;
+	list< path> sksearchpath; 
+	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/2d/filter"));
+	C2DFilterPluginHandler::set_search_path(sksearchpath); 
 }
 
 template class TImageFilter<C2DImage>;

@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/2d/filter/label.hh>
 
 NS_MIA_USE
@@ -28,14 +28,12 @@ using namespace ::boost::unit_test;
 using namespace label_2dimage_filter;
 namespace bfs=boost::filesystem;
 
-static void do_test_label(const C2DImage& inp, const char* mask_descr, unsigned char *answer)
+static void do_test_label(const C2DImage& inp, const char* filter_descr, unsigned char *answer)
 {
-	P2DShape mask = C2DShapePluginHandler::instance().produce(mask_descr);
-	BOOST_REQUIRE(mask.get());
 
-	CLabel label(mask);
-
-	P2DImage l = label.filter(inp);
+	auto label = BOOST_TEST_create_from_plugin<C2DLabelFilterPlugin>(filter_descr); 
+	
+	P2DImage l = label->filter(inp);
 
 	C2DUBImage *result = dynamic_cast<C2DUBImage *>(l.get());
 	BOOST_REQUIRE(result);
@@ -69,8 +67,8 @@ BOOST_AUTO_TEST_CASE( test_label )
 	C2DBitImage inp(size);
 	copy (input, input+9, inp.begin());
 
-	do_test_label(inp, "4n", answer_4n);
-	do_test_label(inp, "8n", answer_8n);
+	do_test_label(inp, "label:n=4n", answer_4n);
+	do_test_label(inp, "label:n=8n", answer_8n);
 
 
 }

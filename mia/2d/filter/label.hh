@@ -37,4 +37,15 @@ private:
 	mia::P2DShape m_mask;
 };
 
+class C2DLabelFilterPlugin: public mia::C2DFilterPlugin {
+public:
+	C2DLabelFilterPlugin();
+private:
+	virtual mia::C2DFilter *do_create()const;
+	virtual const std::string do_get_descr()const;
+
+	mia::P2DShape m_mask;
+
+};
+
 NS_END

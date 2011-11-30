@@ -92,7 +92,7 @@ CDownscale::~CDownscale()
 template <class T>
 CDownscale::result_type CDownscale::operator () (const T2DImage<T>& src) const
 {
-	cvdebug() << "CDownscale::operator () begin\n";
+	cvdebug() << "CDownscale::operator () begin:\n";
 	T2DImage<T> *fresult = new T2DImage<T>(
 		       C2DBounds((src.get_size().x + m_block_size.x - 1) / m_block_size.x,
 				 (src.get_size().y + m_block_size.y - 1) / m_block_size.y));
@@ -103,8 +103,8 @@ CDownscale::result_type CDownscale::operator () (const T2DImage<T>& src) const
 	C2DBounds Start(m_block_size.x/2,m_block_size.y/2);
 
 	// Put the Blockaverages into the target
-	for (Start.y = 0; Start.y < src.get_size().y; Start.y += m_block_size.y){
-		for (Start.x = 0; Start.x < src.get_size().x; Start.x += m_block_size.x,++i){
+	for (; Start.y < src.get_size().y; Start.y += m_block_size.y){
+		for (Start.x = m_block_size.x/2; Start.x < src.get_size().x; Start.x += m_block_size.x,++i){
 			*i = src(Start);
 		}
 	}

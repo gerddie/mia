@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/2d/filter/mask.hh>
 
 NS_MIA_USE
@@ -104,9 +104,9 @@ BOOST_AUTO_TEST_CASE(test_mask_2d_no_binary)
 	P2DImage src_wrap(src_img);
 	copy(&src[0], &src[15], src_img->begin());
 
-	C2DMask mask_f(C2DImageDataKey("orig.@"));
+	auto f = BOOST_TEST_create_from_plugin<C2DMaskImageFilterFactory>("mask:input=orig.@");
 	save_image("orig.@", src_wrap); 
 
-	BOOST_CHECK_THROW(mask_f.filter(*src_wrap), invalid_argument); 
+	BOOST_CHECK_THROW(f->filter(*src_wrap), invalid_argument); 
 	
 }

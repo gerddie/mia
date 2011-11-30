@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/2d/filter/kmeans.hh>
 
 NS_MIA_USE
@@ -50,9 +50,9 @@ BOOST_AUTO_TEST_CASE( test_2dfilter_kmeans )
 
 	C2DFImage src_img(size, src);
 
-	C2DKMeans kmeans(3);
+	auto kmeans = BOOST_TEST_create_from_plugin<C2DKMeansFilterPluginFactory>("kmeans:c=3");
 
-	P2DImage res_wrap = kmeans.filter(src_img);
+	P2DImage res_wrap = kmeans->filter(src_img);
 
 	C2DUBImage* res_img = dynamic_cast<C2DUBImage*>(res_wrap.get());
 	BOOST_REQUIRE(res_img);

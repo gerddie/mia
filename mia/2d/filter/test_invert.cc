@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/2d/filter/invert.hh>
 
 NS_MIA_USE
@@ -34,9 +34,8 @@ BOOST_AUTO_TEST_CASE( test_invert_float )
 
 	C2DFImage src(C2DBounds(2, 2), src_data);
 
-	C2DImageInvert filter;
-
-	P2DImage res = filter.filter(src);
+	auto filter = BOOST_TEST_create_from_plugin<C2DImageInvertFilterPlugin>("invert");
+	P2DImage res = filter->filter(src);
 
 	BOOST_CHECK_EQUAL(res->get_pixel_type(), it_float);
 

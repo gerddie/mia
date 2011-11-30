@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/2d/filter/mean.hh>
 
 NS_MIA_USE
@@ -55,11 +55,11 @@ BOOST_AUTO_TEST_CASE( test_2dfilter_mean_float )
 		for (size_t x = 0; x < size_x; ++x)
 			(*src_img)(x,y) = src[y][x];
 	
-	C2DMean mean(1);
+	auto mean = BOOST_TEST_create_from_plugin<C2DMeanFilterPlugin>("mean:w=1");
 
 	P2DImage src_wrap(src_img);
 
-	P2DImage res_wrap = mean.filter(*src_wrap);
+	P2DImage res_wrap = mean->filter(*src_wrap);
 
 	C2DFImage* res_img = dynamic_cast<C2DFImage*>(res_wrap.get());
 	BOOST_REQUIRE(res_img);
@@ -100,11 +100,11 @@ BOOST_AUTO_TEST_CASE( test_2dfilter_mean_bool )
 		for (size_t x = 0; x < size_x; ++x)
 			(*src_img)(x,y) = src[y][x];
 	
-	C2DMean mean(1);
+	auto mean = BOOST_TEST_create_from_plugin<C2DMeanFilterPlugin>("mean:w=1");
 
 	P2DImage src_wrap(src_img);
 
-	P2DImage res_wrap = mean.filter(*src_wrap);
+	P2DImage res_wrap = mean->filter(*src_wrap);
 
 	C2DBitImage* res_img = dynamic_cast<C2DBitImage*>(res_wrap.get());
 	BOOST_REQUIRE(res_img);
@@ -147,11 +147,11 @@ BOOST_AUTO_TEST_CASE( test_2dfilter_mean_int )
 		for (size_t x = 0; x < size_x; ++x)
 			(*src_img)(x,y) = src[y][x];
 	
-	C2DMean mean(1);
+	auto mean = BOOST_TEST_create_from_plugin<C2DMeanFilterPlugin>("mean:w=1");
 
 	P2DImage src_wrap(src_img);
 
-	P2DImage res_wrap = mean.filter(*src_wrap);
+	P2DImage res_wrap = mean->filter(*src_wrap);
 
 	C2DUIImage* res_img = dynamic_cast<C2DUIImage*>(res_wrap.get());
 	BOOST_REQUIRE(res_img);

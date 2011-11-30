@@ -298,7 +298,7 @@ void CCmdSetOption::do_write_value(std::ostream& os) const
 {
 	if (m_value.empty()) 
 		if (required)
-			os << "[required] "; 
+			os << "(required) "; 
 		else
 			os << "=NULL ";
 	else 
@@ -313,7 +313,7 @@ void CCmdSetOption::do_get_long_help(std::ostream& os) const
 		os << *i;
 		++i;
 		while ( i != m_set.end() )
-			os << '|' << *i++;
+			os << ',' << *i++;
 		os  << ")";
 	}
 }

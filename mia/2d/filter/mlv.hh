@@ -55,9 +55,9 @@ private:
 };
 
 
-class C2DExtKuwaImageFilterFactory: public mia::C2DFilterPlugin {
+class C2DMLVImageFilterFactory: public mia::C2DFilterPlugin {
 public:
-	C2DExtKuwaImageFilterFactory();
+	C2DMLVImageFilterFactory();
 private:
 	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr() const;

@@ -51,6 +51,7 @@ typename Plugin::UniqueProduct BOOST_TEST_create_from_plugin(const char *param)
 	return typename Plugin::UniqueProduct(plugin.create(param_list.begin()->second, param)); 
 }
 
+
 NS_MIA_END 
 
 const mia::SProgramDescrption description = {

@@ -75,4 +75,12 @@ double CNoiseGenerator::ranf() const
 
 EXPLICIT_INSTANCE_HANDLER(CNoiseGenerator); 
 
+using boost::filesystem::path; 
+CNoiseGeneratorPluginHandlerTestPath::CNoiseGeneratorPluginHandlerTestPath()
+{
+	list< path> sksearchpath; 
+	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/core/noise"));
+	CNoiseGeneratorPluginHandler::set_search_path(sksearchpath); 
+}
+
 NS_MIA_END

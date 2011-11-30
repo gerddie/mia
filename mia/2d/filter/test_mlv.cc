@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/2d/filter/mlv.hh>
 
 NS_MIA_USE
@@ -36,8 +36,9 @@ BOOST_AUTO_TEST_CASE( test_mlv )
 	for (int width = 2; width < 12; ++width) {
 		int w = width / 2;
 		cvdebug() << "test filter of width " << w << "\n";
-
-		C2DMLV filter(w);
+		ostringstream filter_descr; 
+		filter_descr << "mlv:w=" << w; 
+		auto filter = BOOST_TEST_create_from_plugin<C2DMLVImageFilterFactory>(filter_descr.str().c_str()); 
 
 		int isize = 4 * w + 1;
 		int fwidth = 2 * w;
@@ -102,7 +103,7 @@ BOOST_AUTO_TEST_CASE( test_mlv )
 
 
 		P2DImage src_wrap(src);
-		P2DImage res_wrap = filter.filter(*src_wrap);
+		P2DImage res_wrap = filter->filter(*src_wrap);
 		C2DFImage * res = dynamic_cast<C2DFImage *>(res_wrap.get());
 		BOOST_REQUIRE(res);
 

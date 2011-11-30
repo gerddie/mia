@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/2d/filter/noise.hh>
 
 NS_MIA_USE
@@ -26,6 +26,9 @@ using namespace std;
 using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace noise_2dimage_filter;
+
+
+CNoiseGeneratorPluginHandlerTestPath noise_gen_test_path; 
 
 struct CTestNoiseGenerator: public  CNoiseGenerator {
 	CTestNoiseGenerator () :CNoiseGenerator(1){}
@@ -69,6 +72,7 @@ BOOST_FIXTURE_TEST_CASE( test_noise_add, NoiseFixture )
 	unsigned char test_result[4] = { 2, 130, 129, 255 };
 
 	PNoiseGenerator  generator(new CTestNoiseGenerator());
+
 	C2DNoise f(generator, false);
 
 	P2DImage result = f.filter(src_image);
@@ -89,4 +93,11 @@ BOOST_FIXTURE_TEST_CASE( test_noise_modulate, NoiseFixture )
 
 	check(result.get(), test_result);
 
+}
+
+BOOST_AUTO_TEST_CASE( test_noise_create_obj )
+{
+	string init("noise:g=[gauss:mu=1,sigma=10],mod=1"); 
+	auto p = BOOST_TEST_create_from_plugin<C2DNoiseImageFilterFactory>(init.c_str()); 
+	BOOST_CHECK_EQUAL(p->get_init_string(), init); 
 }

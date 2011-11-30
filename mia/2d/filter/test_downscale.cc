@@ -19,7 +19,7 @@
  */
 
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/core/spacial_kernel.hh>
 #include <mia/2d/filter/downscale.hh>
 
@@ -30,21 +30,11 @@ using namespace ::boost::unit_test;
 using namespace downscale_2dimage_filter;
 namespace bfs=::boost::filesystem;
 
-struct C2DDownscaleFixture {
-	C2DDownscaleFixture() {
-		list< bfs::path> kernelsearchpath;
-		kernelsearchpath.push_back(bfs::path("..")/bfs::path("..")/
-					   bfs::path("core")/bfs::path("spacialkernel"));
-		C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
-
-		list< bfs::path> selfpath;
-		selfpath.push_back(bfs::path("."));
-		C2DFilterPluginHandler::set_search_path(selfpath);
-	}
-};
+C1DSpacialKernelPluginHandlerTestPath spacial_kernel_test_path; 
+C2DFilterPluginHandlerTestPath filter_test_path; 
 
 
-BOOST_FIXTURE_TEST_CASE( test_downscale, C2DDownscaleFixture )
+BOOST_AUTO_TEST_CASE( test_downscale )
 {
 	const short init[16] = {
 		0, 0, 1, 1, /**/ 0, 0, 1, 1, /**/ 2, 2, 3, 3, /**/ 2, 2, 3, 3,
@@ -58,9 +48,9 @@ BOOST_FIXTURE_TEST_CASE( test_downscale, C2DDownscaleFixture )
 	P2DImage image(fimage);
 	fimage->set_pixel_size(C2DFVector(2.0, 3.0));
 
-	CDownscale scaler(C2DBounds(2, 2), "gauss");
+	auto filter = BOOST_TEST_create_from_plugin<C2DDownscaleFilterPlugin>("downscale:b=[<2,2>],kernel=gauss");
 
-	P2DImage scaled = filter(scaler, *image);
+	P2DImage scaled = filter->filter(*image);
 	C2DSSImage *fscaled = dynamic_cast<C2DSSImage *>(&*scaled);
 
 	BOOST_CHECK_EQUAL(scaled->get_size(), C2DBounds(2, 2));
@@ -70,4 +60,9 @@ BOOST_FIXTURE_TEST_CASE( test_downscale, C2DDownscaleFixture )
 
 	BOOST_CHECK_EQUAL(fscaled->get_pixel_size(), C2DFVector(1.0f, 1.5f));
 	BOOST_CHECK(equal(fscaled->begin(), fscaled->end(), test));
+
+	cvdebug() << "result="; 
+	for (auto i = fscaled->begin(); i != fscaled->end();++i) 
+		cverb << " " << *i; 
+	cverb << "\n"; 
 }

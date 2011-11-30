@@ -292,19 +292,19 @@ P2DImage C2DMLV::do_filter(const C2DImage& image) const
 	return mia::filter(*this, image);
 }
 
-C2DExtKuwaImageFilterFactory::C2DExtKuwaImageFilterFactory():
+C2DMLVImageFilterFactory::C2DMLVImageFilterFactory():
 	C2DFilterPlugin("mlv"),
 	m_hw(1)
 {
 	add_parameter("w", new CIntParameter(m_hw, 0, numeric_limits<int>::max(), false, "filter width parameter"));
 }
 
-C2DFilter *C2DExtKuwaImageFilterFactory::do_create()const
+C2DFilter *C2DMLVImageFilterFactory::do_create()const
 {
 	return new C2DMLV(m_hw);
 }
 
-const string C2DExtKuwaImageFilterFactory::do_get_descr()const
+const string C2DMLVImageFilterFactory::do_get_descr()const
 {
 	return "2D image mean least variance filter";
 }
@@ -317,7 +317,7 @@ struct FCompare {
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DExtKuwaImageFilterFactory();
+	return new C2DMLVImageFilterFactory();
 }
 
 NS_END

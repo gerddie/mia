@@ -19,7 +19,7 @@
  */
 
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <boost/mpl/vector.hpp>
 #include <boost/test/test_case_template.hpp>
 #include <mia/2d/filter/morphological.hh>
@@ -31,6 +31,8 @@ using namespace std;
 using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace morphological_2dimage_filter;
+
+C2DShapePluginHandlerTestPath shape_test_path; 
 
 struct CTestShape: public C2DShape {
 	CTestShape() {
@@ -225,3 +227,21 @@ BOOST_AUTO_TEST_CASE(test_close_bit)
 	fixture.check(C2DOpenClose(fixture.shape, true, false), test_values);
 	fixture.check(C2DOpenClose(fixture.shape, false, false), test_values);
 }
+
+
+template <typename P>
+void test_create_templ(const string& init)
+{
+	auto m = BOOST_TEST_create_from_plugin<P>(init.c_str()); 
+	BOOST_CHECK_EQUAL(m->get_init_string(), init); 
+}
+
+
+BOOST_AUTO_TEST_CASE(test_creation)
+{
+	test_create_templ<C2DErodeFilterFactory>("erode:shape=4n,hint=white"); 
+	test_create_templ<C2DDilateFilterFactory>("dilate:shape=4n,hint=black"); 
+	test_create_templ<C2DOpenFilterFactory>("open:shape=8n,hint=white");
+	test_create_templ<C2DCloseFilterFactory>("close:shape=4n,hint=white"); 
+}
+

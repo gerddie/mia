@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/internal/autotest.hh>
+#include <mia/internal/plugintester.hh>
 #include <mia/2d/filter/ngfnorm.hh>
 
 NS_MIA_USE
@@ -56,9 +56,9 @@ BOOST_AUTO_TEST_CASE( test_ngfnormimg )
 		*f = src_data[i];
 
 
-	CNgfnorm filter;
+	auto filter = BOOST_TEST_create_from_plugin<C2DNgfnormFilterPlugin>("ngfnorm"); 
 
-	P2DImage res = filter.filter(src);
+	P2DImage res = filter->filter(src);
 
 	BOOST_CHECK_EQUAL(res->get_pixel_type(), it_float);
 
