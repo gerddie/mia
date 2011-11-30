@@ -100,7 +100,7 @@ public:
 	/// \returns an coordinate shifted image of the real mask
 	Mask get_mask()const;
 
-	/// returns the nD size if the mask
+	/// returns the nD size of the mask
 	Size get_size()const;
 
 protected:
