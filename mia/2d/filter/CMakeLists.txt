@@ -62,6 +62,7 @@ SET(filters2dNew_base
   ngfnorm
   noise
   scale
+  seededwatershed
   selectbig
   sepconv
   tee
