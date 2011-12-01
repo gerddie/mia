@@ -56,6 +56,16 @@ struct EXPORT_2D C2DFilterPluginHandlerTestPath {
 	C2DFilterPluginHandlerTestPath(); 
 }; 
 
+
+/**
+   Convenience function to create a filter from its string description
+ */
+inline P2DFilter produce_2dimage_filter(const char* descr) 
+{
+	return C2DFilterPluginHandler::instance().produce(descr); 
+}
+
+
 /**
    \ingroup filtering 
    2D filter chain to apply various filters in one run 
