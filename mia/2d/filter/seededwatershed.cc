@@ -83,6 +83,7 @@ private:
 	const T2DImage<S>& m_seed; 
 	P2DShape m_neighborhood; 
 	C2DUBImage m_visited; 
+	C2DUBImage m_stored; 
 	T2DImage<S>       *m_result;
 	P2DImage m_presult; 
 	priority_queue<PixelWithLocation<S> > m_seeds; 
@@ -95,6 +96,7 @@ TRunSeededWatershed<T,S>::TRunSeededWatershed(const T2DImage<T>& image, const T2
 	m_seed(seed), 
 	m_neighborhood(neighborhood), 
 	m_visited(seed.get_size()),
+	m_stored(seed.get_size()),
 	m_watershed(numeric_limits<S>::max())
 {
 	m_result = new T2DImage<S>(seed.get_size(), image); 
@@ -104,22 +106,28 @@ TRunSeededWatershed<T,S>::TRunSeededWatershed(const T2DImage<T>& image, const T2
 template <typename T, typename S>
 void TRunSeededWatershed<T,S>::add_neighborhood(const PixelWithLocation<S>& pixel)
 {
+	cvmsg() << "add around " << pixel.pos << " label= " << (int)pixel.label << ": "; 
 	PixelWithLocation<S> new_pixel; 
 	new_pixel.label = pixel.label; 
 	bool hit_boundary = false; 
 	for (auto i = m_neighborhood->begin(); i != m_neighborhood->end(); ++i) {
 		C2DBounds new_pos( pixel.pos.x + i->x, pixel.pos.y + i->y); 
-		if (new_pos.x < m_seed.get_size().x && new_pos.y < m_seed.get_size().y) {
+		if (new_pos != pixel.pos && new_pos.x < m_seed.get_size().x && new_pos.y < m_seed.get_size().y) {
 			if (!m_visited(new_pos)) {
-				new_pixel.value = m_image(new_pos); 
-				new_pixel.pos = new_pos; 
-				m_seeds.push(new_pixel); 
+				if (!m_stored(new_pos) ) {
+					new_pixel.value = m_image(new_pos); 
+					new_pixel.pos = new_pos; 
+					m_seeds.push(new_pixel); 
+					m_stored(new_pos) = 1; 
+					cverb << " " << new_pixel.pos; 
+				}
 			}else{
-				hit_boundary |= (*m_result)(new_pos) != pixel.label && 
+				hit_boundary |= (*m_result)(new_pos) != pixel.label &&
 					(*m_result)(new_pos) != m_watershed; 
 			}
 		}
 	}
+	cverb << "\n"; 
 	// set pixel to new label 
 	if (!m_visited(pixel.pos)) {
 		m_visited(pixel.pos) = true; 
@@ -134,14 +142,16 @@ P2DImage TRunSeededWatershed<T,S>::run()
 	auto iv = m_visited.begin(); 
 	auto is = m_seed.begin(), ir = m_result->begin();
 	auto ii = m_image.begin(); 
+	auto ist = m_stored.begin(); 
 	
 	PixelWithLocation<S> pixel; 
 	for (pixel.pos.y = 0; pixel.pos.y < m_seed.get_size().y; ++pixel.pos.y) 
 		for (pixel.pos.x = 0; pixel.pos.x < m_seed.get_size().x; 
-		     ++pixel.pos.x, ++is, ++ir, ++iv, ++ii) {
+		     ++pixel.pos.x, ++is, ++ir, ++iv, ++ii, ++ist) {
 			*ir = *is; 
 			if (*is) {
 				*iv = 1; 
+				*ist; 
 				pixel.value = *ii; 
 				pixel.label = *is; 
 				m_seeds.push(pixel); 

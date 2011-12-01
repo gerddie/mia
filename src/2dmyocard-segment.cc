@@ -121,6 +121,37 @@ int get_myocard_label(const C2DImage& masked_label)
 	return result; 
 }
 
+P2DImage combine(const C2DImage& myocard_seed_mask,const C2DImage& RV_mask, const C2DImage&  LV_mask)
+{
+	const C2DBitImage& msm = dynamic_cast<const C2DBitImage&>(myocard_seed_mask); 
+	const C2DBitImage& rvm = dynamic_cast<const C2DBitImage&>(RV_mask); 
+	const C2DBitImage& lvm = dynamic_cast<const C2DBitImage&>(LV_mask); 
+	
+	C2DUBImage *seed = new C2DUBImage(msm.get_size()); 
+	
+	auto im = msm.begin(); 
+	auto ir = rvm.begin(); 
+	auto il = lvm.begin(); 
+	auto is = seed->begin(); 
+
+	for (size_t y = 0; y < msm.get_size().y; ++y) 
+		for (size_t x = 0; x < msm.get_size().x; ++x, ++im, ++ir, ++il, ++is) {
+			if ( y == 0  || x == 0 || y == msm.get_size().y - 1 || x == msm.get_size().x - 1) {
+				*is = 4; 
+			}else{
+				if (*im) 
+					*is = 1; 
+				else if (*ir)
+					*is = 2; 
+				else if (*il)
+					*is = 3; 
+				else 
+					*is = 0; 
+			}
+		}
+	return P2DImage(seed); 
+}
+
 int do_main( int argc, char *argv[] )
 {
 	// IO parameters 
@@ -297,8 +328,15 @@ int do_main( int argc, char *argv[] )
 	save_image(save_feature + "mean_kmeans.png", mean_feature_kmeans_debug);
 	save_image(save_feature + "myo-mean_kmeans.png", run_filter(*myocard_mean_kmeans, "convert"));
 	
+	// now combine the myocard mask, the LV, RV and add a border label
 
-	return save_image(out_filename, myocard_seed_mask) ?  EXIT_SUCCESS : EXIT_FAILURE; 
+	P2DImage seed = combine(*myocard_seed_mask, *RV_mask, *LV_mask); 
+
+	save_image("seed.@", seed); 
+	
+	auto ws = run_filter(*perf_feature, "sws:seed=seed.@");
+
+	return save_image(out_filename, ws) ?  EXIT_SUCCESS : EXIT_FAILURE; 
 }
 
 #include <mia/internal/main.hh>
