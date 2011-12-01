@@ -39,9 +39,9 @@ BOOST_AUTO_TEST_CASE( test_gradnorm )
 
 	const float ref_data[size * size] = {
 		0, 0, 0, 0,
-		0, sqrt(13.0f/18.0f), sqrt(2.0f/18.0f), 0,
+		sqrt(4.0f/18.0f), sqrt(13.0f/18.0f), sqrt(2.0f/18.0f), 0,
 		0, sqrt(2.0f/18.0f), 1, 0,
-		0, 0, 0, 0,
+		0, sqrt(1.0f/18.0f), sqrt(4.0f/18.0f), 0,
 	};
 
 

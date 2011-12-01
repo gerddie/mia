@@ -41,9 +41,10 @@ BOOST_AUTO_TEST_CASE(check_nfg_n )
 {
 	P2DImage image = create_test_image();
 
-	const float noise_level = 9.0 / 5.0;
+	const float noise_level = 1.0;
 	C2DFVectorfield ngf = get_nfg_n(*image,  noise_level);
 
+	
 
 	C2DFVector center = ngf(1,1);
 
@@ -61,7 +62,7 @@ BOOST_AUTO_TEST_CASE(check_nfg_j)
 {
 	P2DImage image = create_test_image();
 
-	const float jump_level = get_jump_level(*image, 9.0 / 5.0);
+	const float jump_level = get_jump_level(*image, 1.0);
 	C2DFVectorfield ngf = get_nfg_j(*image,  jump_level*jump_level);
 
 	C2DFVector center = ngf(1,1);
@@ -79,7 +80,7 @@ BOOST_AUTO_TEST_CASE(check_nfg_j)
 BOOST_AUTO_TEST_CASE(check_intensity_jump_level)
 {
 	P2DImage image = create_test_image();
-	const float noise_level = 9.0 / 5.0;
+	const float noise_level = 1.0 ;
 
 	BOOST_CHECK_CLOSE(get_jump_level(*image, noise_level), 1.0f, 0.1);
 
@@ -89,7 +90,7 @@ BOOST_AUTO_TEST_CASE(test_get_jump_level2)
 {
 	P2DImage image = create_test_image();
 
-	BOOST_CHECK_CLOSE(get_jump_level(*image), 1.94624734f * 5.0f / 9.0f, 0.1);
+	BOOST_CHECK_CLOSE(get_jump_level(*image), 1.94624734f , 0.1);
 }
 
 BOOST_AUTO_TEST_CASE( check_get_noise_level )
