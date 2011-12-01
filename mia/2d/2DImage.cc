@@ -272,20 +272,37 @@ struct FGradientEvaluator: public TFilter<C2DFVectorfield> {
 	C2DFVectorfield operator ()( const T2DImage<T>& image) const {
 		C2DFVectorfield result(image.get_size());
 		const C2DFVector zero(0.0f, 0.0f);
-		C2DFVectorfield::iterator r = result.begin();
+		auto r = result.begin();
+
+
+		*r++ = zero; 
+		auto ii = image.begin() + 1; 
+		for (size_t x = 1; x < image.get_size().x-1; ++x, ++r, ++ii) {
+			r->y = 0; 
+			r->x = 0.5 * (ii[1] - ii[-1]); 
+		}
+		*r++ = zero; 
+		++ii; 
 
 		size_t idx = image.get_size().x;
-		fill(r, r + image.get_size().x, zero);
-		advance(r, image.get_size().x);
+		const int dx = image.get_size().x; 
 
 		for (size_t y = 1; y < image.get_size().y - 1 ; ++y)
-			for (size_t x = 0; x < image.get_size().x ; ++x, ++r, ++idx) {
+			for (size_t x = 0; x < image.get_size().x ; ++x, ++r, ++idx, ++ii) {
 				if (x > 0 && x < image.get_size().x - 1)
 					*r = image.get_gradient(idx);
-				else
-					*r = zero;
+				else {
+					r->x = 0;
+					r->y = 0.5 * ( ii[dx] - ii[-dx] ); 
+				}
 			}
-		fill(r, r + image.get_size().x, zero);
+		*r++ = zero; 
+		++ii; 
+		for (size_t x = 1; x < image.get_size().x-1; ++x, ++r, ++ii) {
+			r->y = 0; 
+			r->x = 0.5 * (ii[1] - ii[-1]); 
+		}
+		*r++ = zero; 
 		return result;
 	}
 };

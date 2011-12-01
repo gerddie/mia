@@ -112,9 +112,9 @@ BOOST_AUTO_TEST_CASE( check_gradient )
 
 	C2DFVector test_data[16] = {
 		C2DFVector( 0.0f, 0.0f ), C2DFVector( 0.0f, 0.0f ), C2DFVector( 0.0f, 0.0f ), C2DFVector( 0.0f, 0.0f ),
-		C2DFVector( 0.0f, 0.0f ), C2DFVector( 0.5f, 2.0f ), C2DFVector( 1.0f, 1.5f ), C2DFVector( 0.0f, 0.0f ),
-		C2DFVector( 0.0f, 0.0f ), C2DFVector(-1.0f, 2.0f ), C2DFVector(-0.5f, 2.0f ), C2DFVector( 0.0f, 0.0f ),
-		C2DFVector( 0.0f, 0.0f ), C2DFVector( 0.0f, 0.0f ), C2DFVector( 0.0f, 0.0f ), C2DFVector( 0.0f, 0.0f )
+		C2DFVector( 0.0f, 2.5f ), C2DFVector( 0.5f, 2.0f ), C2DFVector( 1.0f, 1.5f ), C2DFVector( 0.0f, 1.5f ),
+		C2DFVector( 0.0f, 1.5f ), C2DFVector(-1.0f, 2.0f ), C2DFVector(-0.5f, 2.0f ), C2DFVector( 0.0f, 2.0f ),
+		C2DFVector( 0.0f, 0.0f ), C2DFVector( 1.0f, 0.0f ), C2DFVector( 1.0f, 0.0f ), C2DFVector( 0.0f, 0.0f )
 	};
 
 	C2DFImage image(C2DBounds(4,4), init_data);
