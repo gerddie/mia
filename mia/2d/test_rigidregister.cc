@@ -242,7 +242,7 @@ BOOST_AUTO_TEST_CASE( test_rigidreg_affine_cost_gradient ) //, RigidRegisterFixt
 
 BOOST_FIXTURE_TEST_CASE( test_rigidreg_rigid_gd, RigidRegisterFixture )
 {
-	auto tr_creator = C2DTransformCreatorHandler::instance().produce("rigid");
+	auto tr_creator = C2DTransformCreatorHandler::instance().produce("rigid:imgboundary=repeat");
 	auto transformation = tr_creator->create(size); 
 	auto params = transformation->get_parameters(); 
 	params[0] = 1.0;
@@ -253,6 +253,6 @@ BOOST_FIXTURE_TEST_CASE( test_rigidreg_rigid_gd, RigidRegisterFixture )
 	// this is a rather high tolerance, especially in light that the 
 	// nm_simplex algorithm passes with a 0.1% tolerance 
 	
-	run(*transformation, "gsl:opt=gd", 5); 
+	run(*transformation, "gsl:opt=gd,iter=1000,tol=0.1", 9); 
 }
 

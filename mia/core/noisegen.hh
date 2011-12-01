@@ -84,7 +84,7 @@ typedef THandlerSingleton<TFactoryPluginHandler<CNoiseGeneratorPlugin> >
       CNoiseGeneratorPluginHandler;
 
 
-struct CNoiseGeneratorPluginHandlerTestPath {
+struct EXPORT_CORE CNoiseGeneratorPluginHandlerTestPath {
 	CNoiseGeneratorPluginHandlerTestPath(); 
 }; 
 

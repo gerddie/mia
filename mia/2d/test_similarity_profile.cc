@@ -69,7 +69,7 @@ SimityProfileFixture::SimityProfileFixture()
 	C2DFullCostPluginHandler::set_search_path(fullcost_plugpath);
 
 
-	cost = C2DFullCostPluginHandler::instance().produce("image");
+	cost = C2DFullCostPluginHandler::instance().produce("image:cost=ssd");
 
 	C2DBounds size(1,1); 
 	float values[40] = {

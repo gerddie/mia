@@ -52,7 +52,7 @@ typedef std::shared_ptr<C2DFilter > P2DFilter;
 */
 typedef THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> > C2DFilterPluginHandler;
 
-struct C2DFilterPluginHandlerTestPath {
+struct EXPORT_2D C2DFilterPluginHandlerTestPath {
 	C2DFilterPluginHandlerTestPath(); 
 }; 
 
