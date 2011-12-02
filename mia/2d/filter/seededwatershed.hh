@@ -27,7 +27,7 @@ sws_2dimage_filter)
 
 class C2DSeededWS : public mia::C2DFilter {
 public:
-	C2DSeededWS(const mia::C2DImageDataKey& mask_image, mia::P2DShape neighborhood);
+	C2DSeededWS(const mia::C2DImageDataKey& mask_image, mia::P2DShape neighborhood, bool with_borders);
 
 	template <class T>
 	typename C2DSeededWS::result_type operator () (const mia::T2DImage<T>& data) const ;
@@ -37,6 +37,7 @@ private:
 	mia::C2DImageDataKey m_label_image_key; 
 	mia::P2DShape m_neighborhood; 
 	mia::P2DFilter m_togradnorm; 
+	bool m_with_borders; 
 };
 
 class C2DSeededWSFilterPlugin: public mia::C2DFilterPlugin {
@@ -47,6 +48,7 @@ private:
 	virtual const std::string do_get_descr()const;
 	std::string m_seed_image_file;
 	mia::P2DShape m_neighborhood; 
+	bool m_with_borders; 
 };
 
 

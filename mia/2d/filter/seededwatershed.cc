@@ -29,12 +29,12 @@ using namespace std;
 
 template <typename  T, typename  S, bool supported>
 struct seeded_ws {
-	static P2DImage apply(const T2DImage<T>& image, const T2DImage<S>& seed, P2DShape neighborhood); 
+	static P2DImage apply(const T2DImage<T>& image, const T2DImage<S>& seed, P2DShape neighborhood, bool with_borders); 
 }; 
 
 template <typename  T, typename  S>
 struct seeded_ws<T,S,false> {
-	static P2DImage apply(const T2DImage<T>& /*image*/, const T2DImage<S>& /*seed*/, P2DShape /*neighborhood*/) {
+	static P2DImage apply(const T2DImage<T>& /*image*/, const T2DImage<S>& /*seed*/, P2DShape /*neighborhood*/, bool /*wb*/) {
 		throw invalid_argument("C2DRunSeededWS: seed data type not supported"); 
 	}
 }; 
@@ -44,18 +44,20 @@ struct seeded_ws<T,S,false> {
 template <typename T> 
 struct dispatch_RunSeededWS : public TFilter<P2DImage> {
 	
-	dispatch_RunSeededWS(P2DShape neighborhood, const T2DImage<T>& image):
+	dispatch_RunSeededWS(P2DShape neighborhood, const T2DImage<T>& image, bool with_borders):
 		m_neighborhood(neighborhood), 
-		m_image(image)
+		m_image(image), 
+		m_with_borders(with_borders)
 		{}
 
 	template <typename  S>
 	P2DImage operator () (const T2DImage<S>& seed) const {
 		const bool supported = is_integral<S>::value && !is_same<S, bool>::value; 
-		return seeded_ws<T,S, supported>::apply(m_image, seed, m_neighborhood); 
+		return seeded_ws<T,S, supported>::apply(m_image, seed, m_neighborhood, m_with_borders); 
 	}
 	P2DShape m_neighborhood; 
 	const T2DImage<T>& m_image; 
+	bool m_with_borders; 
 }; 
 
 
@@ -75,7 +77,7 @@ bool operator < (const PixelWithLocation<L>& lhs, const PixelWithLocation<L>& rh
 template <typename T, typename S>
 class TRunSeededWatershed {
 public: 
-	TRunSeededWatershed(const T2DImage<T>& image, const T2DImage<S>& seed, P2DShape neighborhood); 
+	TRunSeededWatershed(const T2DImage<T>& image, const T2DImage<S>& seed, P2DShape neighborhood, bool with_borders); 
 	P2DImage run(); 
 private: 
 	void add_neighborhood(const PixelWithLocation<S>& pixel); 	
@@ -88,16 +90,18 @@ private:
 	P2DImage m_presult; 
 	priority_queue<PixelWithLocation<S> > m_seeds; 
 	S m_watershed; 
+	bool m_with_borders; 
 }; 
 
 template <typename T, typename S>
-TRunSeededWatershed<T,S>::TRunSeededWatershed(const T2DImage<T>& image, const T2DImage<S>& seed, P2DShape neighborhood):
+TRunSeededWatershed<T,S>::TRunSeededWatershed(const T2DImage<T>& image, const T2DImage<S>& seed, P2DShape neighborhood, bool with_borders):
 	m_image(image), 
 	m_seed(seed), 
 	m_neighborhood(neighborhood), 
 	m_visited(seed.get_size()),
 	m_stored(seed.get_size()),
-	m_watershed(numeric_limits<S>::max())
+	m_watershed(numeric_limits<S>::max()), 
+	m_with_borders(with_borders)
 {
 	m_result = new T2DImage<S>(seed.get_size(), image); 
 	m_presult.reset(m_result); 
@@ -128,7 +132,7 @@ void TRunSeededWatershed<T,S>::add_neighborhood(const PixelWithLocation<S>& pixe
 	// set pixel to new label 
 	if (!m_visited(pixel.pos)) {
 		m_visited(pixel.pos) = true; 
-		(*m_result)(pixel.pos) = hit_boundary ? m_watershed :pixel.label;
+		(*m_result)(pixel.pos) = (m_with_borders && hit_boundary) ? m_watershed : pixel.label;
 	}
 }
 
@@ -164,16 +168,17 @@ P2DImage TRunSeededWatershed<T,S>::run()
 }
 
 template <typename T, typename S, bool supported>
-P2DImage seeded_ws<T,S,supported>::apply(const T2DImage<T>& image, const T2DImage<S>& seed, P2DShape neighborhood) 
+P2DImage seeded_ws<T,S,supported>::apply(const T2DImage<T>& image, const T2DImage<S>& seed, P2DShape neighborhood, bool with_borders) 
 {
-	TRunSeededWatershed<T,S> ws(image, seed, neighborhood); 
+	TRunSeededWatershed<T,S> ws(image, seed, neighborhood, with_borders); 
 	return ws.run(); 
 }
 
 
-C2DSeededWS::C2DSeededWS(const mia::C2DImageDataKey& label_image_key, P2DShape neighborhood):
+C2DSeededWS::C2DSeededWS(const mia::C2DImageDataKey& label_image_key, P2DShape neighborhood, bool with_borders):
 	m_label_image_key(label_image_key), 
-	m_neighborhood(neighborhood)
+	m_neighborhood(neighborhood), 
+	m_with_borders(with_borders)
 	
 {
 	m_togradnorm = produce_2dimage_filter("gradnorm"); 
@@ -195,7 +200,7 @@ typename C2DSeededWS::result_type C2DSeededWS::operator () (const T2DImage<T>& d
 		THROW(invalid_argument, "C2DSeededWS: seed and input differ in size: seed " << seed->get_size() 
 		      << ", input " << data.get_size()); 
 	}
-	dispatch_RunSeededWS<T> ws(m_neighborhood, data); 
+	dispatch_RunSeededWS<T> ws(m_neighborhood, data, m_with_borders); 
 	return mia::filter(ws, *seed); 
 }
 
@@ -207,18 +212,19 @@ P2DImage C2DSeededWS::do_filter(const C2DImage& image) const
 }
 
 C2DSeededWSFilterPlugin::C2DSeededWSFilterPlugin(): 
-	C2DFilterPlugin("sws")
+	C2DFilterPlugin("sws"), 
+	m_with_borders(false)
 {
 	add_parameter("seed", new CStringParameter(m_seed_image_file, true, 
 						   "seed input image containing the lables for the initial regions"));
 	add_parameter("n", make_param(m_neighborhood, "8n", false, "Neighborhood for watershead region growing")); 
+	add_parameter("mark", new CBoolParameter(m_with_borders, false, "Mark the segmented watersheds with a special gray scale value")); 
 }
-
 
 C2DFilter *C2DSeededWSFilterPlugin::do_create()const
 {
 	C2DImageDataKey seed = C2DImageIOPluginHandler::instance().load_to_pool(m_seed_image_file);
-	return new C2DSeededWS(seed, m_neighborhood);
+	return new C2DSeededWS(seed, m_neighborhood, m_with_borders);
 }
 
 const string C2DSeededWSFilterPlugin::do_get_descr()const
