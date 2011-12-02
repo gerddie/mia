@@ -81,6 +81,18 @@ P2DImage  EXPORT_2D run_filter_chain(P2DImage image, size_t nfilters, const char
 	return image;
 }
 
+P2DImage  EXPORT_2D run_filter_chain(P2DImage image, const std::vector<const char *>& filters)
+{
+	const auto& fh = C2DFilterPluginHandler::instance();
+	for (auto fd = filters.begin(); fd != filters.end(); ++fd) {
+		auto f = fh.produce(*fd);
+		if (!f)
+			THROW(invalid_argument, "unable to create filter from '" <<*fd<<"'");
+		image = f->filter(*image);
+	}
+	return image; 
+}
+
 P2DImage  EXPORT_2D run_filter(const C2DImage& image, const char *filter)
 {
 	auto f = C2DFilterPluginHandler::instance().produce(filter);

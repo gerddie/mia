@@ -106,7 +106,6 @@ TRunSeededWatershed<T,S>::TRunSeededWatershed(const T2DImage<T>& image, const T2
 template <typename T, typename S>
 void TRunSeededWatershed<T,S>::add_neighborhood(const PixelWithLocation<S>& pixel)
 {
-	cvmsg() << "add around " << pixel.pos << " label= " << (int)pixel.label << ": "; 
 	PixelWithLocation<S> new_pixel; 
 	new_pixel.label = pixel.label; 
 	bool hit_boundary = false; 
@@ -119,7 +118,6 @@ void TRunSeededWatershed<T,S>::add_neighborhood(const PixelWithLocation<S>& pixe
 					new_pixel.pos = new_pos; 
 					m_seeds.push(new_pixel); 
 					m_stored(new_pos) = 1; 
-					cverb << " " << new_pixel.pos; 
 				}
 			}else{
 				hit_boundary |= (*m_result)(new_pos) != pixel.label &&
@@ -127,7 +125,6 @@ void TRunSeededWatershed<T,S>::add_neighborhood(const PixelWithLocation<S>& pixe
 			}
 		}
 	}
-	cverb << "\n"; 
 	// set pixel to new label 
 	if (!m_visited(pixel.pos)) {
 		m_visited(pixel.pos) = true; 

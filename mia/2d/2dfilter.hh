@@ -84,6 +84,16 @@ P2DImage  EXPORT_2D run_filter_chain(P2DImage image, size_t nfilters, const char
 
 /**
    \ingroup filtering 
+   
+   convenience function: run a filter chain on an image 
+   @param image input image 
+   @param filters vector of strings defining the filter to be applied 
+   @returns the filtered image 
+*/
+P2DImage  EXPORT_2D run_filter_chain(P2DImage image, const std::vector<const char *>& filters);
+
+/**
+   \ingroup filtering 
    convenience function: create and run a filter on an image 
    @param image input image 
    @param filter string defining the filter to be applied 
