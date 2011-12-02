@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(test_mask_2d_additional_is_mask)
 	copy(&mask[0], &mask[15], mask_img->begin());
 	P2DImage pmask(mask_img); 
 
-	C2DMask mask_f(C2DImageDataKey("mask.@"));
+	C2DMask mask_f(C2DImageDataKey("mask.@"), C2DMask::f_zero);
 	save_image("mask.@", pmask); 
 
 	P2DImage res_wrap = mask_f.filter(*src_wrap);
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(test_mask_2d_main_is_mask)
 	copy(&mask[0], &mask[15], mask_img->begin());
 	P2DImage pmask(mask_img); 
 
-	C2DMask mask_f(C2DImageDataKey("orig.@"));
+	C2DMask mask_f(C2DImageDataKey("orig.@"), C2DMask::f_zero);
 	save_image("orig.@", src_wrap); 
 
 	P2DImage res_wrap = mask_f.filter(*pmask);

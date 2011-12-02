@@ -26,7 +26,9 @@ NS_BEGIN(mask_2dimage_filter)
 
 class C2DMask: public mia::C2DFilter {
 public:
-	C2DMask(const mia::C2DImageDataKey& mask_image);
+	enum EFill {f_unknown, f_min, f_zero, f_max}; 
+
+	C2DMask(const mia::C2DImageDataKey& mask_image, EFill fill);
 
 	template <typename T>
 	C2DMask::result_type operator () (const mia::T2DImage<T>& data) const;
@@ -34,6 +36,7 @@ private:
 	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
 
 	mia::C2DImageDataKey m_image_key;
+	EFill m_fill; 
 };
 
 
@@ -44,7 +47,7 @@ public:
 	virtual const std::string do_get_descr()const;
 private:
 	std::string m_mask_filename;
-	bool m_invert;
+	C2DMask::EFill  m_fill; 
 };
 
 NS_END
