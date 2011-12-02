@@ -121,34 +121,41 @@ int get_myocard_label(const C2DImage& masked_label)
 	return result; 
 }
 
-P2DImage combine(const C2DImage& myocard_seed_mask,const C2DImage& RV_mask, const C2DImage&  LV_mask)
+
+
+P2DImage combine_with_boundary(const C2DImageSeries& images)
 {
-	const C2DBitImage& msm = dynamic_cast<const C2DBitImage&>(myocard_seed_mask); 
-	const C2DBitImage& rvm = dynamic_cast<const C2DBitImage&>(RV_mask); 
-	const C2DBitImage& lvm = dynamic_cast<const C2DBitImage&>(LV_mask); 
+	assert(!images.empty()); 
+	assert(images.size() < 254); 
+	C2DBounds size = images[0]->get_size(); 
+
+	unsigned char nimages = static_cast<unsigned char>(images.size()); 
+	unsigned char boundary_label = nimages + 1; 
 	
-	C2DUBImage *seed = new C2DUBImage(msm.get_size()); 
+	cvinfo() << "boundary_label = " << (int)boundary_label << "\n"; 
+
+	vector<C2DBitImage::const_iterator> it(images.size());
+	transform(images.begin(), images.end(), it.begin(), 
+		  [] (P2DImage pimage) { 
+			  return dynamic_cast<C2DBitImage&> (*pimage).begin(); 
+		  });
 	
-	auto im = msm.begin(); 
-	auto ir = rvm.begin(); 
-	auto il = lvm.begin(); 
+	C2DUBImage *seed = new C2DUBImage(size); 
 	auto is = seed->begin(); 
 
-	for (size_t y = 0; y < msm.get_size().y; ++y) 
-		for (size_t x = 0; x < msm.get_size().x; ++x, ++im, ++ir, ++il, ++is) {
-			if ( y == 0  || x == 0 || y == msm.get_size().y - 1 || x == msm.get_size().x - 1) {
-				*is = 4; 
+	for (size_t y = 0; y < size.y; ++y) 
+		for (size_t x = 0; x < size.x; ++x, ++is) {
+			if ( y == 0  || x == 0 || y == size.y - 1 || x == size.x - 1) {
+				*is = boundary_label;
 			}else{
-				if (*im) 
-					*is = 1; 
-				else if (*ir)
-					*is = 2; 
-				else if (*il)
-					*is = 3; 
-				else 
-					*is = 0; 
+				for (unsigned char k = 0; k < nimages; ++k) {
+					if ( *it[k] )
+						*is = k + 1; 
+				}
 			}
+			for_each(it.begin(), it.end(), [](C2DBitImage::const_iterator& i){++i;}); 
 		}
+	
 	return P2DImage(seed); 
 }
 
@@ -157,6 +164,7 @@ int do_main( int argc, char *argv[] )
 	// IO parameters 
 	string in_filename;
 	string out_filename; 
+	string out_filename2; 
 	string save_feature; 
 
 	// this parameter is currently not exported - reading the image data is 
@@ -174,6 +182,7 @@ int do_main( int argc, char *argv[] )
 	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output myocardial mask", CCmdOption::required));
+	options.add(make_opt( out_filename2, "out-file-mean", 'O', "output myocardial mask created from mean"));
 	options.add(make_opt( save_feature, "save-features", 'f', "save ICA features to files with this name base")); 
 
 	options.set_group("ICA");
@@ -240,15 +249,10 @@ int do_main( int argc, char *argv[] )
 
 	cvmsg() << "Using " << test_components << " independend components\n"; 
 	
-	vector<const char *> cavity_segmentation = {
-		"kmeans:c=5", 
-		"binarize:min=4", 
-		"close:shape=[sphere:r=4]", 
-		"label",  
-		"selectbig"
-	}; 
-	C2DImageFilterChain cavity_filters(cavity_segmentation); 
-
+	C2DImageFilterChain cavity_filters({
+			"kmeans:c=3", "binarize:min=2", "close:shape=[sphere:r=4]", 
+				"label",  "selectbig" }); 
+	
 	auto RV_feature = ica->get_feature_image(rv_idx); 
 	auto LV_feature = ica->get_feature_image(lv_idx); 
 	auto perf_feature = ica->get_feature_image(perf_idx); 
@@ -257,9 +261,15 @@ int do_main( int argc, char *argv[] )
 	auto RV_mask = cavity_filters.run(RV_feature); 
 	auto LV_mask = cavity_filters.run(LV_feature); 
 
-	save_image("rv_mask.png", RV_mask); 
-	save_image("lv_mask.png", LV_mask); 
 	
+	C2DImageSeries lv_prep(1); 
+	lv_prep[0] = LV_mask; 
+
+	P2DImage lv_seed = combine_with_boundary(lv_prep); 
+	save_image("lv_seed.@", lv_seed); 
+	LV_mask = run_filter_chain(LV_feature, {"sws:seed=lv_seed.@", "binarize:min=1,max=1"});
+	
+
 	auto RV_LV_bridge_mask = evaluate_bridge_mask(RV_mask, LV_mask); 
 	save_image("bridge.@", RV_LV_bridge_mask); 
 
@@ -267,76 +277,45 @@ int do_main( int argc, char *argv[] )
 	
 	perf_feature = image_subtractor->combine(*perf_feature, *RV_feature); 
 	perf_feature = image_subtractor->combine(*perf_feature, *LV_feature); 
-
-	save_image("perf_mrl.v", perf_feature); 
-
-	vector<const char *> myocard_class = {
-		"kmeans:c=36", 
-		"tee:file=kmeans.@", 
-		"open:shape=4n", 
-		"mask:input=bridge.@"
-	}; 
-	C2DImageFilterChain myocard_class_filters(myocard_class); 
-		
-	auto myocard_kmeans_masked = myocard_class_filters.run(perf_feature);
-	auto myocard_kmeans = load_image2d("kmeans.@"); 
-
-	if (!save_feature.empty()) {
-		auto kmeans_image_debug = run_filter(*myocard_kmeans, "convert"); 
-		save_image(save_feature + "kmeans.png" ,kmeans_image_debug); 
-	}
+	auto mean_perf = image_subtractor->combine(*perf_feature, *mean_feature); 
+	
+	auto myocard_seeds = run_filter_chain(perf_feature, 
+					      {	"convert:repn=ushort", "mask:input=bridge.@", 
+						"kmeans:c=5", "binarize:min=4,max=4", "close:shape=4n" });
 	
 	
-	int myocard_class_label = get_myocard_minclass(*myocard_kmeans_masked); 
-	cvmsg() << "Myocard class id = " << myocard_class_label << "\n"; 
-	if (myocard_class_label > 32) 	myocard_class_label = 32; 
-	if (myocard_class_label < 4) 
-		cverr() << "Myocardial segmentation has probably failed\n"; 
-	
-	ostringstream filter_descr; 
-	filter_descr << "binarize:min=" << myocard_class_label; 
-
-	vector<const char *> next_filters = {
-		"replace", 
-		"label", 
-		"tee:file=label.@",
-		"mask:input=bridge.@", 
-		"selectbig",
-		"mask:input=label.@"
-	}; 
-
-	const string help = filter_descr.str(); 
-	next_filters[0] = help.c_str(); 
-	C2DImageFilterChain myocard_class_filters2(next_filters); 
-	
-	auto myocard_label_mask = myocard_class_filters2.run(myocard_kmeans); 
-
-	int myocard_label = get_myocard_label(*myocard_label_mask); 
-	ostringstream filter_descr2; 
-	filter_descr2 << "binarize:min=" << myocard_label << ",max=" << myocard_label; 
-	
-	// now we have a seed area within the myocardium 
-	auto myocard_seed_mask = run_filter(*load_image2d("label.@"), filter_descr2.str().c_str()); 
 	
 
-	// classify mean image and save it to get some ideas 
-	auto mean_feature_kmeans = run_filter(*mean_feature, "kmeans:c=18"); 
-	
-	auto myocard_mean_kmeans = image_subtractor->combine(*myocard_kmeans, *mean_feature_kmeans); 
-	
-	auto mean_feature_kmeans_debug = run_filter(*mean_feature_kmeans, "convert"); 
-	save_image(save_feature + "mean_kmeans.png", mean_feature_kmeans_debug);
-	save_image(save_feature + "myo-mean_kmeans.png", run_filter(*myocard_mean_kmeans, "convert"));
-	
-	// now combine the myocard mask, the LV, RV and add a border label
+	C2DImageSeries myo_prep(3); 
+	myo_prep[0] = myocard_seeds; 
+	myo_prep[1] = RV_mask; 
+	myo_prep[2] = LV_mask; 
 
-	P2DImage seed = combine(*myocard_seed_mask, *RV_mask, *LV_mask); 
+	P2DImage seed = combine_with_boundary(myo_prep); 
 
 	save_image("seed.@", seed); 
 	
-	auto ws = run_filter(*perf_feature, "sws:seed=seed.@");
+	auto ws_from_perf = run_filter(*perf_feature, "sws:seed=seed.@");
 
-	return save_image(out_filename, ws) ?  EXIT_SUCCESS : EXIT_FAILURE; 
+	
+
+	auto ws_from_perf_minus_mean = run_filter(*mean_perf, "sws:seed=seed.@");
+
+
+	if (!save_feature.empty()) {
+		save_image(save_feature + "-all_seeds.png", run_filter(*myocard_seeds, "convert")); 
+		save_image(save_feature + "-myo-seed.png", seed);
+		save_image(save_feature + "-perf_mrl.v", perf_feature); 
+		save_image(save_feature + "-bridge.png", RV_LV_bridge_mask); 
+		save_image(save_feature + "-lv_mask.png", LV_mask); 
+		save_image(save_feature + "-rv_mask.png", RV_mask); 
+		save_image(save_feature + "_lv_seed.png", LV_mask); 
+	
+	}
+	if (!out_filename2.empty())
+		save_image(out_filename2, ws_from_perf_minus_mean);
+
+	return save_image(out_filename, ws_from_perf) ?  EXIT_SUCCESS : EXIT_FAILURE; 
 }
 
 #include <mia/internal/main.hh>
