@@ -159,6 +159,15 @@ P2DImage combine_with_boundary(const C2DImageSeries& images)
 	return P2DImage(seed); 
 }
 
+P2DImage grow_seed(P2DImage feature, P2DImage seed)
+{
+	C2DImageSeries prep(1); 
+	prep[0] = seed;
+	P2DImage new_seed = combine_with_boundary(prep); 
+	save_image("prep_seed.@", new_seed); 
+	return run_filter_chain(feature, {"sws:seed=prep_seed.@", "binarize:min=1,max=1"});
+}
+
 int do_main( int argc, char *argv[] )
 {
 	// IO parameters 
@@ -258,16 +267,8 @@ int do_main( int argc, char *argv[] )
 	auto perf_feature = ica->get_feature_image(perf_idx); 
 	auto mean_feature = ica->get_feature_image(-1); 
 
-	auto RV_mask = cavity_filters.run(RV_feature); 
-	auto LV_mask = cavity_filters.run(LV_feature); 
-
-	
-	C2DImageSeries lv_prep(1); 
-	lv_prep[0] = LV_mask; 
-
-	P2DImage lv_seed = combine_with_boundary(lv_prep); 
-	save_image("lv_seed.@", lv_seed); 
-	LV_mask = run_filter_chain(LV_feature, {"sws:seed=lv_seed.@", "binarize:min=1,max=1"});
+	auto RV_mask = grow_seed(RV_feature, cavity_filters.run(RV_feature)); 
+	auto LV_mask = grow_seed(LV_feature, cavity_filters.run(LV_feature)); 
 	
 
 	auto RV_LV_bridge_mask = evaluate_bridge_mask(RV_mask, LV_mask); 
@@ -277,10 +278,9 @@ int do_main( int argc, char *argv[] )
 	
 	perf_feature = image_subtractor->combine(*perf_feature, *RV_feature); 
 	perf_feature = image_subtractor->combine(*perf_feature, *LV_feature); 
-	auto mean_perf = image_subtractor->combine(*perf_feature, *mean_feature); 
 	
 	auto myocard_seeds = run_filter_chain(perf_feature, 
-					      {	"convert:repn=ushort", "mask:input=bridge.@", 
+					      {	"mask:input=bridge.@,fill=min", 
 						"kmeans:c=5", "binarize:min=4,max=4", "close:shape=4n" });
 	
 	
@@ -299,7 +299,7 @@ int do_main( int argc, char *argv[] )
 
 	
 
-	auto ws_from_perf_minus_mean = run_filter(*mean_perf, "sws:seed=seed.@");
+	auto ws_from_perf_minus_mean = run_filter(*mean_feature, "sws:seed=seed.@");
 
 
 	if (!save_feature.empty()) {
@@ -313,9 +313,9 @@ int do_main( int argc, char *argv[] )
 	
 	}
 	if (!out_filename2.empty())
-		save_image(out_filename2, ws_from_perf_minus_mean);
+		save_image(out_filename2, run_filter(*ws_from_perf_minus_mean, "convert"));
 
-	return save_image(out_filename, ws_from_perf) ?  EXIT_SUCCESS : EXIT_FAILURE; 
+	return save_image(out_filename, run_filter(*ws_from_perf, "convert")) ?  EXIT_SUCCESS : EXIT_FAILURE; 
 }
 
 #include <mia/internal/main.hh>
