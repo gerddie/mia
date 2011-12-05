@@ -34,7 +34,6 @@ SET (NOTHING
   regiongrow
   rgg
   variation
-  watershed
   wmean
   ws
 )
@@ -67,6 +66,7 @@ SET(filters2dNew_base
   sepconv
   tee
   thresh
+  watershed
 )
 
 SET(filters2dNew ${filters2dNew_base} ${filters2d_fftNew})

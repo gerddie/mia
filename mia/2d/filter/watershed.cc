@@ -18,268 +18,181 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include <type_traits> 
+#include <queue> 
+#include <mia/2d/filter/watershed.hh>
 
-
-#include <queue>
-#include <sstream>
-#include <stdexcept>
-
-#include <boost/type_traits.hpp>
-
-#include <mia/2d/2dfilter.hh>
-#include <libmia/filter.hh>
-
-#include <libmia/probmapio.hh>
-
-namespace watershed_2dimage_filter {
-NS_MIA_USE;
+NS_BEGIN( ws_2dimage_filter)
+using namespace mia; 
 using namespace std; 
 
-static char const *plugin_name = "watershed";
-static const CStringOption param_map("map", "seed class map", "");
-static const CIntOption param_width("w", "window width for variation evaluation", 1,1,1000);
-static const CFloatOption param_thresh("thresh", "threshold for seed probability", 0.9, 0.5, 1.0); 
-static const CFloatOption param_tol("tol", "tolerance for watershed", 0.8, 0.1, 1.2); 
-static const CFloatOption param_steep("p", "decision parameter whether fuzzy segmentation or neighborhood should be used", 1.5, 1, 5.0); 
-static const CIntOption param_class("class", "class to be segmented", 2, 0, 254); 
 
-class C2DWatershedFilter: public C2DFilter {
-	float m_thresh; 
-	float m_tol; 
-	float m_steep; 
-	CProbabilityVector m_pv;
-	size_t m_sclass; 
-public:
-	C2DWatershedFilter(float thresh, float steep, float tol, const CProbabilityVector& pv, size_t sclass):
-		m_thresh(thresh), 
-		m_tol(tol), 
-		m_steep(steep),
-		m_pv(pv), 
-		m_sclass(sclass)
-	{
-	}
+
+C2DWatershed::C2DWatershed(P2DShape neighborhood, bool with_borders):
+	m_neighborhood(neighborhood), 
+	m_with_borders(with_borders)
 	
-	template <typename Data2D, typename Var2D>
-	typename C2DWatershedFilter::result_type operator () (const Data2D& data, const Var2D& var_image) const ;
-
-};
-
-
-class C2DWatershedFilterImageFilter: public C2DImageFilterBase {
-	C2DWatershedFilter m_filter; 
-	C2DFilterPlugin::ProductPtr m_var_evaluator; 
-public:
-	C2DWatershedFilterImageFilter(int hwidth, float thresh, float steep, float tol, const CProbabilityVector& pv, size_t sclass);
-
-	virtual P2DImage do_filter(const C2DImage& image) const;
-};
-
-
-class C2DWatershedFilterImageFilterFactory: public C2DFilterPlugin {
-public: 
-	C2DWatershedFilterImageFilterFactory();
-	virtual C2DFilter *create(const CParsedOptions& options) const;
-	virtual const string do_get_descr()const; 
-private: 
-//	virtual int do_test() const; 
-};
-
-inline void fill(const C2DBounds& p, C2DBitImage& result, queue< C2DBounds >& seedpoints,  const C2DFImage& var_image, 
-		 float var, queue< C2DBounds >& backlog)
 {
-	if (!(p.x < result.get_size().x && p.y < result.get_size().y))
-		return; 
-	
-	if ( !result(p)) {
-		if (var_image(p) >= var) {
-			result(p) = true; 
-			seedpoints.push(p); 
-		}else
-			backlog.push(p); 
-	}
+	m_togradnorm = produce_2dimage_filter("gradnorm"); 
 }
 
-template <typename D, typename V, bool is_integral> 
-struct  dispatch_filter {
-	static P2DImage apply(const D& data, const CProbabilityVector& pv, float steep, 
-				  float thresh, float tol, const V& var_image, size_t sclass) {
-		throw invalid_argument("Non integral data type not supported"); 
-		return P2DImage(); 
-	}
-};
+template <class T>
+void C2DWatershed::grow(const PixelWithLocation& p, C2DUIImage& labels, const T2DImage<T>& data) const 
+{
+	const auto size = data.get_size(); 
+	vector<C2DBounds> backtrack; 
+	priority_queue<C2DBounds> locations; 
+	locations.push(p.pos); 
+	backtrack.push_back(p.pos); 
+	bool backtracked = false; 
 
-template <typename D, typename V> 
-struct  dispatch_filter<D, V, true> {
-	static P2DImage apply(const D& data, const CProbabilityVector& pv, float steep, 
-				  float thresh, float tol, const V& var_image, size_t sclass) {
-		assert(!"The variation image must be of type float");
-		return P2DImage(); 
-	}
-};
-
-template <typename D>
-struct  dispatch_filter<D, C2DFImage, true> {
-	static P2DImage apply(const D& data, const CProbabilityVector& pv, float steep, 
-				  float thresh, float tol, const C2DFImage& var_image, size_t sclass) {
+	float value = p.value; 
+	unsigned int label = labels(p.pos); 
+	while (!locations.empty()) {
+		auto loc = locations.top(); 
+		locations.pop(); 
 		
-		typedef typename D::value_type T; 
-		
-		cvdebug() << "Evaluate seed points\n"; 
-		// create the target image
-		C2DBitImage *result = new C2DBitImage(data.get_size()); 
-		
-		C2DBitImage::iterator r = result->begin(); 
-		typename D::const_iterator i = data.begin(); 
-		
-		queue< C2DBounds > seedpoints;
-		queue< C2DBounds > backlog; 
-		
-		const CDoubleVector& pv_class = pv[sclass]; 
-		
-		// find all points above the given probability threshold and use them as seed points
-		for (size_t y = 0; y < data.get_size().y; ++y)
-			for (size_t x = 0; x < data.get_size().x; ++x, ++r, ++i) {
-				*r = false; 
-				size_t ival = *i; 
-				if ( ival < pv_class.size()) {
-					if (pv_class[ival] > thresh) {
-						*r = true;
-						seedpoints.push(C2DBounds(x,y)); 
-						break; 
+		for (auto i = m_neighborhood->begin(); i != m_neighborhood->end(); ++i) {
+			if (i->x == 0 && i->y == 0) 
+				continue; 
+			C2DBounds new_pos( loc.x + i->x, loc.y + i->y);
+			if (new_pos < size) {
+				if (data(new_pos) == value) {
+					if (!labels(new_pos)) {
+						labels(new_pos) = label; 
+						locations.push(new_pos); 
+						backtrack.push_back(new_pos);
+					}else {
+						if (labels(new_pos) != label) {
+							/* in a perfect world this wouldn't happen, since all the 
+							   seeds are set only for a zero gradient. However, in the discrete 
+							   space it might happen that we hit already labeled pixles. 
+							   Then we should use the backtrack to reset all already set labels,
+							   and continue growing with the new label. 
+							   This, however. should only happen once. 
+							*/
+							label = labels(new_pos); 
+							for_each(backtrack.begin(), backtrack.end(), 
+								 [&label, &labels]( const C2DBounds l) {labels(l) = label;}); 
+							if (backtracked) 
+								cvwarn() << "Backtracking the second time\n"; 
+							backtracked = true; 
+						}
 					}
 				}
 			}
-		// target image contains a seed segmentation
-		
-		vector<int> counter(pv.size());
-		
-		while (!seedpoints.empty()) {
-			
-			// do the watershead segmentation
-			while ( !seedpoints.empty() ) {
-				C2DBounds p = seedpoints.front(); 
-				seedpoints.pop(); 
-				
-				float var = tol * var_image(p); 
+		}
+	}
+}
 
-				
-				fill(C2DBounds(p.x - 1, p.y), *result, seedpoints, var_image, var, backlog); 
-				fill(C2DBounds(p.x + 1, p.y), *result, seedpoints, var_image, var, backlog); 
-				fill(C2DBounds(p.x, p.y - 1), *result, seedpoints, var_image, var, backlog); 
-				fill(C2DBounds(p.x, p.y + 1), *result, seedpoints, var_image, var, backlog); 		
-			}
-			
-			// read all pixels that failed to be assigned to a class
-			cvdebug() << "proceed with backlog\n"; 
-			
-			while ( !backlog.empty() ) {
-				C2DBounds p = backlog.front(); 
-				backlog.pop(); 
-				
-				if ( (*result)(p) ) 
-					continue; 
-				
-				// check whether the point is most probable of class sclass
-				size_t val_p = data(p); 
-				if ( val_p < pv_class.size()) {
-					
-					bool use_val = true; 					
-					float pv_val = pv_class[val_p];
-					for (size_t i = 0; i < pv.size() && use_val; ++i)
-						if (i != sclass && pv[i][val_p] > pv_val)
-							use_val = false;
-					
-					if (use_val) { // store the seed point for the next run
-						(*result)(p) = true; 
-						seedpoints.push(p); 
-					}
+template <class T>
+typename C2DWatershed::result_type C2DWatershed::operator () (const T2DImage<T>& data) const 
+{
+	C2DUIImage labels(data.get_size()); 
+
+	priority_queue<PixelWithLocation> pixels; 
+	PixelWithLocation p; 
+	auto i = data.begin();
+	const auto size = data.get_size(); 
+	
+	// read ans sort all the pixels
+	for(p.pos.y = 0; p.pos.y < size.y; ++p.pos.y )
+		for(p.pos.x = 0; p.pos.x < size.x; ++p.pos.x, ++i ) {
+			p.value = *i; 
+			pixels.push(p); 
+		}
+	
+	long next_label = 1; 
+	while (!pixels.empty()) {
+		auto pixel = pixels.top(); 
+		pixels.pop(); 
+		// this label was set because we grew an initial region
+		if (labels(pixel.pos)) {
+			continue; 
+		}
+
+		unsigned int first_label = 0; 
+		bool is_boundary = false; 
+		// check if neighborhood is already labeled
+		
+		for (auto i = m_neighborhood->begin(); i != m_neighborhood->end() && !is_boundary; ++i) {
+
+			if (i->x == 0 && i->y == 0) 
+				continue; 
+			C2DBounds new_pos( pixel.pos.x + i->x, pixel.pos.y + i->y);
+			if (new_pos < size) {
+				auto l = labels(new_pos); 
+				if ( l ) {
+					if (!first_label)
+						first_label = l; 
+					else 
+						if (first_label != l) 
+							is_boundary = true; 
 				}
-			} // while ( !backlog.empty() )
-		} // while (!seedpoints.empty())
-		return P2DImage(result); 
+			}
+		}
+		if (first_label) {
+			if (!is_boundary)
+				labels(pixel.pos) = first_label; 
+			continue; 
+		}
+		// new label to assign
+		// is a new label is assigned, we have to grow the region of equal gradient values 
+		// to assure we catch the whole bassin 
+		labels(pixel.pos) = next_label++; 
+		grow(pixel, labels, data); 
+
 	}
-};
-
-
-
-
-template <typename  Data2D, typename V>
-typename C2DWatershedFilter::result_type C2DWatershedFilter::operator () (const Data2D& data, const V& var_image) const
-{
-	const bool is_integral = ::boost::is_integral<typename Data2D::value_type>::value; 
-	
-	return dispatch_filter<Data2D, V, is_integral>::apply(data, m_pv, m_steep, m_thresh, 
-											   m_tol, var_image,m_sclass); 
-}
-
-C2DWatershedFilterImageFilter::C2DWatershedFilterImageFilter(int hwidth, float thresh, float steep, 
-							     float tol, const CProbabilityVector& pv, size_t sclass):
-	m_filter(thresh, steep, tol, pv, sclass)
-{
-	C2DImageFilterHandler filter_plugins;
-	stringstream filter_descr; 
-	filter_descr << "variation:w=" << hwidth <<",float=1"; 
-		
-	m_var_evaluator = C2DFilterPlugin::produce(filter_descr.str().c_str(), filter_plugins); 
-	if (!m_var_evaluator)
-		throw runtime_error("unable to create variation filter"); 
-}
-
-P2DImage C2DWatershedFilterImageFilter::do_filter(const C2DImage& image) const
-{
-	P2DImage var_image = m_var_evaluator->filter(image); 
-	return wrap_filter(m_filter,image, var_image); 
-}
-
-C2DWatershedFilterImageFilterFactory::C2DWatershedFilterImageFilterFactory():
-	C2DFilterPlugin(plugin_name)
-{
-	add_help(param_width);
-}
-
-C2DFilter *C2DWatershedFilterImageFilterFactory::create(const CParsedOptions& options) const
-{
-	string map = param_map.get_value(options); 
-	float thresh = param_thresh.get_value(options);
-	float steep = param_steep.get_value(options);
-	float tol = param_tol.get_value(options);
-	int hwidth = param_width.get_value(options); 
-	size_t sclass = param_class.get_value(options);
-	
-	CProbabilityVector pv = load_probability_map(map); 
-	if (pv.empty())
-		throw invalid_argument(string("Unable to load probability map from ") + map); 
-	
-	if (sclass < pv.size())
-		return C2DFilter *new C2DWatershedFilterImageFilter(hwidth, thresh, steep, tol, pv, sclass); 
-	else {
-		stringstream errmsg; 
-		errmsg << "selected class '" << sclass << "' out of probability map range"; 
-		throw invalid_argument(errmsg.str()); 
-		return NUlL;
+	C2DImage *r = NULL; 
+	if (next_label < 255) {
+		C2DUBImage *result = new C2DUBImage(data.get_size(), data); 
+		transform(labels.begin(), labels.end(), result->begin(), 
+			  [](unsigned int p){ return p ? static_cast<unsigned char>(p) : 255; }); 
+		r = result; 
+	}else if (next_label < numeric_limits<unsigned short>::max()) {
+		C2DUSImage *result = new C2DUSImage(data.get_size(), data); 
+		transform(labels.begin(), labels.end(), result->begin(), 
+			  [](unsigned int p){ return p ? static_cast<unsigned short>(p) : numeric_limits<unsigned short>::max(); });
+		r = result; 
+	}else {
+		C2DUIImage * result = new C2DUIImage(data.get_size(), data); 
+		transform(labels.begin(), labels.end(), result->begin(), 
+			  [](unsigned int p){ return p ? p : numeric_limits<unsigned int>::max(); });
+		r = result; 
 	}
-		
+	return P2DImage(r); 
+	
 }
 
-const string C2DWatershedFilterImageFilterFactory::do_get_descr()const
+
+P2DImage C2DWatershed::do_filter(const C2DImage& image) const
 {
-	return "2D image watershead filter with seed"; 
+	P2DImage grad = m_togradnorm->filter(image); 
+	return mia::filter(*this, *grad);
 }
 
-#if 0
-bool C2DWatershedFilterImageFilterFactory::do_test() const
+C2DWatershedFilterPlugin::C2DWatershedFilterPlugin(): 
+	C2DFilterPlugin("ws"), 
+	m_with_borders(false)
 {
-	cvfail() << do_get_descr() <<": NO TEST IMPLEMENTED\n"; 
-	return true; 
+	add_parameter("n", make_param(m_neighborhood, "8n", false, "Neighborhood for watershead region growing")); 
+	add_parameter("mark", new CBoolParameter(m_with_borders, false, "Mark the segmented watersheds with a special gray scale value")); 
 }
-#endif
+
+C2DFilter *C2DWatershedFilterPlugin::do_create()const
+{
+	return new C2DWatershed(m_neighborhood, m_with_borders);
+}
+
+const string C2DWatershedFilterPlugin::do_get_descr()const
+{
+	return "basic 2D watershead segmentation.";
+}
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DWatershedFilterImageFilterFactory(); 
+	return new C2DWatershedFilterPlugin();
 }
 
-} // end namespace watershed_2dimage_filter
+
+NS_END
