@@ -28,22 +28,22 @@ using namespace sws_2dimage_filter;
 
 C2DFilterPluginHandlerTestPath filter_test_path; 
 
+const unsigned char  seed[72] = {
+	1, 0, 0, 0, 0, 0, 0, 0, 4,
+	0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 0, 0, 0, 2, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 3, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0,
+}; 
+
+
 BOOST_AUTO_TEST_CASE ( test_seeded_watershead ) 
 {
 	const C2DBounds size(9,8); 
 	
-	const unsigned char  seed[72] = {
-		1, 0, 0, 0, 0, 0, 0, 0, 4,
-		0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0,
-		1, 0, 0, 0, 2, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 3, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0,
-	}; 
-
-
 	const int image[72] = {
 		1,   1,   1,   3,   4,   5,   5,   5,   5,
 		0,   0,   0,   0,   4,   5,   5,   5,   5,
@@ -71,6 +71,88 @@ BOOST_AUTO_TEST_CASE ( test_seeded_watershead )
 	
 	
 	auto f = BOOST_TEST_create_from_plugin<C2DSeededWSFilterPlugin>("sws:seed=seed.@,n=4n,mark=1"); 
+	save_image("seed.@", seed_image); 
+	
+	auto result = f->filter(*input_image); 
+
+	BOOST_CHECK_EQUAL(result->get_size(), size); 
+	const C2DUBImage& r = dynamic_cast<const C2DUBImage&>(*result); 
+	
+	auto ir = r.begin(); 
+	auto t = test; 
+	for (size_t y = 0; y < size.y; ++y) 
+		for (size_t x = 0; x < size.x; ++x, ++t, ++ir) {
+			BOOST_CHECK_EQUAL(*ir, *t); 
+		}
+	
+	cvdebug() << "result \n"; 
+	ir = r.begin(); 
+	for (size_t y = 0; y < size.y; ++y) {
+		cvdebug() << "line " << y << ":";  
+		for (size_t x = 0; x < size.x; ++x, ++ir) {
+			cverb <<setw(3) << (int)*ir << ", "; 
+		}
+		cverb << "\n"; 
+	}
+	
+	cvdebug() << "test \n"; 
+	t = test; 
+	for (size_t y = 0; y < size.y; ++y) {
+		cvdebug() << "line " << y << ":";  
+		for (size_t x = 0; x < size.x; ++x, ++t) {
+			cverb <<setw(8) << (int)*t << ", "; 
+		}
+		cverb << "\n"; 
+	}
+
+	P2DImage grad = run_filter(*input_image, "gradnorm");
+	const C2DFImage& fgrad = dynamic_cast<const C2DFImage&>(*grad); 
+	
+	cvdebug() << "grad \n"; 
+	auto g = fgrad.begin(); 
+	for (size_t y = 0; y < size.y; ++y) {
+		cvdebug() << "line " << y << ":";  
+		for (size_t x = 0; x < size.x; ++x, ++g) {
+			cverb <<setw(8) << *g << ", "; 
+		}
+		cverb << "\n"; 
+	}
+	
+
+
+}
+ 
+
+BOOST_AUTO_TEST_CASE ( test_seeded_watershead_from_grad ) 
+{
+	const C2DBounds size(9,8); 
+	const float image[72] = {
+		0.0,        0,      0.4,      0.6,      0.4,      0.2,        0,        0,        0, 
+		0.2,      0.2,      0.2,        1,        1, 0.282843,      0.2,      0.2,      0.2, 
+		0.0,        0,        0,      0.8,        1,      0.6,        0,      0.6,      0.6, 
+		0.2,        0,        0,      0.2,  0.72111, 0.894427,      0.2,  0.72111,      0.4, 
+		0.,       0.2,        0,      0.2, 0.447214, 0.824621,      0.4, 0.632456,        0, 
+		0.2,        0,        0,      0.4,  0.72111, 0.282843,      0.4, 0.282843,      0.2, 
+		0.0,        0,        0,      0.6, 0.632456,        0,        0,        0,      0.2, 
+		0.0,        0,        0,      0.6,      0.6,        0,        0,        0,        0
+	}; 
+
+	const unsigned char  test[72] = {
+		1,   1,   1, 255,   4,   4,   4,   4,   4,
+		1,   1,   1,   1, 255,   4,   4,   4,   4,
+		1,   1,   1,   1, 255,   4,   4,   4, 255,
+		1,   1,   1,   1, 255,   4,   4, 255,   3,
+		1,   1,   1, 255,   2, 255, 255,   3,   3,
+		1,   1,   1,   1, 255,   3,   3,   3,   3,
+		1,   1,   1,   1, 255,   3,   3,   3,   3,
+		1,   1,   1,   1, 255,   3,   3,   3,   3,
+	}; 
+
+	P2DImage seed_image(new C2DUBImage(size, seed)); 
+	P2DImage input_image(new C2DFImage(size, image));
+	
+	
+	auto f = BOOST_TEST_create_from_plugin<C2DSeededWSFilterPlugin>("sws:seed=seed.@,n=4n,mark=1,grad=1"); 
 	save_image("seed.@", seed_image); 
 	
 	auto result = f->filter(*input_image); 

@@ -175,13 +175,14 @@ P2DImage seeded_ws<T,S,supported>::apply(const T2DImage<T>& image, const T2DImag
 }
 
 
-C2DSeededWS::C2DSeededWS(const mia::C2DImageDataKey& label_image_key, P2DShape neighborhood, bool with_borders):
+C2DSeededWS::C2DSeededWS(const mia::C2DImageDataKey& label_image_key, P2DShape neighborhood, bool with_borders, bool input_is_gradient):
 	m_label_image_key(label_image_key), 
 	m_neighborhood(neighborhood), 
 	m_with_borders(with_borders)
 	
 {
-	m_togradnorm = produce_2dimage_filter("gradnorm"); 
+	if (!input_is_gradient) 
+		m_togradnorm = produce_2dimage_filter("gradnorm"); 
 }
 
 template <class T>
@@ -207,24 +208,33 @@ typename C2DSeededWS::result_type C2DSeededWS::operator () (const T2DImage<T>& d
 
 P2DImage C2DSeededWS::do_filter(const C2DImage& image) const
 {
-	P2DImage grad = m_togradnorm->filter(image); 
-	return mia::filter(*this, *grad);
+	P2DImage result;  
+	if (m_togradnorm) {
+		P2DImage grad = m_togradnorm->filter(image); 
+		result = mia::filter(*this, *grad);
+	}
+	else
+		result = mia::filter(*this, image);
+	
+	return result;		
 }
 
 C2DSeededWSFilterPlugin::C2DSeededWSFilterPlugin(): 
 	C2DFilterPlugin("sws"), 
-	m_with_borders(false)
+	m_with_borders(false), 
+	m_input_is_gradient(false)
 {
 	add_parameter("seed", new CStringParameter(m_seed_image_file, true, 
 						   "seed input image containing the lables for the initial regions"));
 	add_parameter("n", make_param(m_neighborhood, "8n", false, "Neighborhood for watershead region growing")); 
 	add_parameter("mark", new CBoolParameter(m_with_borders, false, "Mark the segmented watersheds with a special gray scale value")); 
+	add_parameter("grad", new CBoolParameter(m_input_is_gradient, false, "Interpret the input image as gradient. ")); 
 }
 
 C2DFilter *C2DSeededWSFilterPlugin::do_create()const
 {
 	C2DImageDataKey seed = C2DImageIOPluginHandler::instance().load_to_pool(m_seed_image_file);
-	return new C2DSeededWS(seed, m_neighborhood, m_with_borders);
+	return new C2DSeededWS(seed, m_neighborhood, m_with_borders, m_input_is_gradient);
 }
 
 const string C2DSeededWSFilterPlugin::do_get_descr()const
