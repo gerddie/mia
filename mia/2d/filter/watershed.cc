@@ -137,12 +137,13 @@ typename C2DWatershed::result_type C2DWatershed::operator () (const T2DImage<T>&
 			continue; 
 		}
 		// new label to assign
-		// is a new label is assigned, we have to grow the region of equal gradient values 
+		// if a new label is assigned, we have to grow the region of equal gradient values 
 		// to assure we catch the whole bassin 
 		labels(pixel.pos) = next_label++; 
 		grow(pixel, labels, data); 
-
 	}
+	// convert to smalles possible intensity range and convert the boundary label to highest 
+	// intensity value
 	C2DImage *r = NULL; 
 	if (next_label < 255) {
 		C2DUBImage *result = new C2DUBImage(data.get_size(), data); 
