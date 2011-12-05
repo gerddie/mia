@@ -79,12 +79,13 @@ void CParamList::print_help(std::ostream& os) const
 {
 	auto  i = m_params.begin();
 	while ( i != m_params.end() ) {
-		os  << "\t" << i->first;
+		os  << "\n\t" << i->first;
 		i->second->value(os);
-		os << "\n";
+		os << "\n\t\t";
 		i->second->descr(os);
 		++i;
 	}
+	os << "\n"; 
 }
 
 void CParamList::get_help_xml(xmlpp::Element& root)const
