@@ -103,6 +103,8 @@ public:
 	/// returns the nD size of the mask
 	Size get_size()const;
 
+
+	typename Flat::size_type size() const; 
 protected:
 	/// insert another pixel coordinate
 	void insert(const T<int>& p);
