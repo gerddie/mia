@@ -84,7 +84,7 @@ C2DKMeansFilterPluginFactory::C2DKMeansFilterPluginFactory():
 	C2DFilterPlugin("kmeans"),
 	m_classes(3)
 {
-	add_parameter("c", new CIntParameter(m_classes, 0, numeric_limits<unsigned char>::max(),
+	add_parameter("c", new CIntParameter(m_classes, 2, numeric_limits<unsigned char>::max(),
 					     false, "number of classes"));
 }
 
