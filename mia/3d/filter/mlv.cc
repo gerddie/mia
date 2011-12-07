@@ -59,7 +59,7 @@ struct FSquare {
 
 template <typename InputIterator>
 void C3DMLVImageFilter::run_sub(InputIterator begin, InputIterator end, int cy, int cz, C3DFImage& mu, C3DFImage& sigma,
-			 C3DFImage& n, vector<float>& buffer, const vector<float>& eins)const
+			 C3DFImage& n, vector<float>& buffer, int row_length)const
 {
 	transform(begin, end, buffer.begin(), FSquare());
 
@@ -72,8 +72,8 @@ void C3DMLVImageFilter::run_sub(InputIterator begin, InputIterator end, int cy, 
 				transform(buffer.begin(), buffer.end(), sigma.begin_at(x, cy + y, cz + z),
 					  sigma.begin_at(x, cy + y, cz + z), plus<float>());
 
-				transform(eins.begin(), eins.end(), n.begin_at(x, cy + y, cz + z),
-					  n.begin_at(x, cy + y, cz + z), plus<float>());
+				auto in = n.begin_at(x, cy + y, cz + z); 
+				transform(in, in  + row_length, in, [](float x){ return x + 1.0f;}); 
 			}
 }
 
@@ -117,8 +117,6 @@ typename C3DMLVImageFilter::result_type C3DMLVImageFilter::operator () (const T3
 
 	C3DBounds border(2*m_l, 2*m_l, 2*m_l);
 	vector<float> buffer(data.get_size().x);
-	vector<float> eins(data.get_size().x);
-	fill(eins.begin(), eins.end(), 1.0f);
 
 	C3DFImage mu(data.get_size() + border);
 	fill(mu.begin(), mu.end(), 0);
@@ -132,7 +130,7 @@ typename C3DMLVImageFilter::result_type C3DMLVImageFilter::operator () (const T3
 	for (size_t z = 0; z < data.get_size().z; ++z) {
 		for (size_t y = 0; y < data.get_size().y; ++y) {
 			run_sub(data.begin_at(0, y, z), data.begin_at(0, y, z) + data.get_size().x,
-				y, z, mu, sigma, N, buffer, eins);
+				y, z, mu, sigma, N, buffer, data.get_size().x);
 		}
 	}
 

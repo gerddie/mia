@@ -42,7 +42,7 @@ private:
 	template <typename InputIterator>
 	void run_sub(InputIterator begin, InputIterator end,  int cy, int cz,
 		     mia::C3DFImage& mu, mia::C3DFImage& sigma,
-		     mia::C3DFImage& n, std::vector<float>& buffer, const std::vector<float>& eins)const;
+		     mia::C3DFImage& n, std::vector<float>& buffer, int row_length)const;
 
 	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
 
