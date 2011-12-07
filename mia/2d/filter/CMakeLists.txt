@@ -64,6 +64,7 @@ SET(filters2dNew_base
   seededwatershed
   selectbig
   sepconv
+  shaped_mean
   tee
   thresh
   watershed
