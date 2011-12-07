@@ -84,4 +84,10 @@ typename TShape<T,M>::Mask TShape<T,M>::get_mask()const
 	return result; 
 }
 
+template <template <typename> class  T, typename M>
+typename TShape<T,M>::Flat::size_type TShape<T,M>::size() const
+{
+	return m_shape.size(); 
+}
+
 NS_MIA_END

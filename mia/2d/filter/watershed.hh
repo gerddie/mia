@@ -26,7 +26,7 @@ NS_BEGIN(ws_2dimage_filter)
 
 class C2DWatershed : public mia::C2DFilter {
 public:
-	C2DWatershed(mia::P2DShape neighborhood, bool with_borders);
+	C2DWatershed(mia::P2DShape neighborhood, bool with_borders, float treash);
 
 	template <class T>
 	typename C2DWatershed::result_type operator () (const mia::T2DImage<T>& data) const ;
@@ -46,10 +46,10 @@ private:
 			 ( lhs.pos.y > rhs.pos.y || (lhs.pos.y == rhs.pos.y && lhs.pos.x > rhs.pos.x ))); 
 	}
 
-
-	mia::P2DShape m_neighborhood; 
+	std::vector<mia::C2DBounds> m_neighborhood; 
 	mia::P2DFilter m_togradnorm; 
 	bool m_with_borders; 
+	float m_thresh;
 };
 
 class C2DWatershedFilterPlugin: public mia::C2DFilterPlugin {
@@ -60,6 +60,7 @@ private:
 	virtual const std::string do_get_descr()const;
 	mia::P2DShape m_neighborhood; 
 	bool m_with_borders; 
+	float m_thresh; 
 };
 
 
