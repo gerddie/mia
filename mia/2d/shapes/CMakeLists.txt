@@ -21,6 +21,7 @@
 SET(shape2d 
   basic_shapes
   sphere
+  rect
   )
 
 PLUGINGROUP_WITH_TEST_AND_PREFIX(2d-shape "${shape2d}" 
