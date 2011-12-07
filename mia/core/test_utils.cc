@@ -22,11 +22,12 @@
 #include <climits>
 
 #include <mia/internal/autotest.hh>
+#include <mia/core/utils.hh>
 
 #include <cmath>
 
 NS_MIA_USE
-
+using std::numeric_limits; 
 
 
 BOOST_AUTO_TEST_CASE(test_sincos) 
@@ -55,3 +56,51 @@ BOOST_AUTO_TEST_CASE(test_sincos)
 }
 
 
+BOOST_AUTO_TEST_CASE( round_clamped ) 
+{
+ 	double xmax = numeric_limits<double>::max(); 
+
+	BOOST_CHECK_EQUAL(mia_round_clamped<float>(xmax), numeric_limits<float>::max()); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<int>(xmax), 2147483647); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<short>(xmax), 32767); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<char>(xmax), 127); 
+
+	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned int>(xmax), 4294967295u); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned short>(xmax), 65535u); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned char>(xmax), 255u);
+
+	double xmin = -numeric_limits<double>::max(); 
+
+	BOOST_CHECK_EQUAL(mia_round_clamped<float>(xmin), -numeric_limits<float>::max()); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<int>(xmin), -2147483648); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<short>(xmin), -32768); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<char>(xmin), -128); 
+
+	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned int>(xmin), 0u); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned short>(xmin), 0u); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned char>(xmin), 0u);
+
+	
+	double xp = 4.567; 
+
+	BOOST_CHECK_EQUAL(mia_round_clamped<float>(xp), 4.567f); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<int>(xp), 5); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<short>(xp), 5); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<char>(xp), 5); 
+
+	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned int>(xp), 5u); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned short>(xp), 5u); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned char>(xp), 5u);
+
+	double xm = -3.3; 
+
+	BOOST_CHECK_EQUAL(mia_round_clamped<float>(xm), -3.3f); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<int>(xm), -3); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<short>(xm), -3); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<char>(xm), -3); 
+
+	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned int>(xm), 0u); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned short>(xm), 0u); 
+	BOOST_CHECK_EQUAL(mia_round_clamped<unsigned char>(xm), 0u);
+
+}; 
