@@ -134,6 +134,14 @@ struct __round_clamped<float, true> {
 	}
 }; 
 
+template <> 
+struct __round_clamped<bool, false> {
+	static float apply(double x) {
+		return x > 0.5; 
+	}
+}; 
+
+
 template <typename T> 
 struct __round_clamped<T, false> {
 	static T apply(double x) {
