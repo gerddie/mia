@@ -51,6 +51,7 @@ typedef std::shared_ptr<C2DFilter > P2DFilter;
    2D filter plugin handler
 */
 typedef THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> > C2DFilterPluginHandler;
+FACTORY_TRAIT(C2DFilterPluginHandler); 
 
 struct EXPORT_2D C2DFilterPluginHandlerTestPath {
 	C2DFilterPluginHandlerTestPath(); 
