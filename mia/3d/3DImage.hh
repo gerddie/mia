@@ -139,6 +139,8 @@ public:
 	typedef typename T3DDatafield<T>::value_type value_type;
 	typedef typename T3DDatafield<T>::difference_type difference_type;
 	typedef typename T3DDatafield<T>::size_type size_type;
+	typedef typename T3DDatafield<T>::range_iterator range_iterator; 
+	typedef typename T3DDatafield<T>::const_range_iterator const_range_iterator; 
 	/// \endcond
 	
 	/**
@@ -242,6 +244,28 @@ public:
 	const_iterator end()const {
 		return m_image.end();
 	}
+
+	/// forwarding function to access the specified range of the underlying T3DDatafield 
+	range_iterator begin_range(const C3DBounds& begin, const C3DBounds& end) {
+		return m_image.begin_range(begin, end); 
+	}
+	
+	/// forwarding function to access the specified range of the underlying T3DDatafield 
+	range_iterator end_range(const C3DBounds& begin, const C3DBounds& end){
+		return m_image.end_range(begin, end); 
+	}
+
+	/// forwarding function to access the specified range of the underlying T3DDatafield 
+	const_range_iterator begin_range(const C3DBounds& begin, const C3DBounds& end)const {
+		return m_image.begin_range(begin, end); 
+	}
+
+	/// forwarding function to access the specified range of the underlying T3DDatafield 
+	const_range_iterator end_range(const C3DBounds& begin, const C3DBounds& end) const{
+		return m_image.end_range(begin, end); 
+	}
+
+
 
 	/// \returns the all over number of pixels/voxels
 	size_t size() const;

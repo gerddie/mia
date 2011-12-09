@@ -239,6 +239,37 @@ T2DDatafield<T>& T2DDatafield<T>::operator = (const T2DDatafield<T>& org)
 	return *this; 
 }
 
+template <typename T>
+typename T2DDatafield<T>::range_iterator 
+T2DDatafield<T>::begin_range(const C2DBounds& begin, const C2DBounds& end)
+{
+	return range_iterator(begin, get_size(), begin, end, 
+			      begin_at(begin.x, begin.y)); 
+}
+
+template <typename T>
+typename T2DDatafield<T>::range_iterator 
+T2DDatafield<T>::end_range(const C2DBounds& begin, const C2DBounds& end)
+{
+	return range_iterator(end, get_size(), begin, end, 
+			      begin_at(end.x, end.y)); 
+}
+
+template <typename T>
+typename T2DDatafield<T>::const_range_iterator 
+T2DDatafield<T>::begin_range(const C2DBounds& begin, const C2DBounds& end)const
+{
+	return const_range_iterator(begin, get_size(), begin, end, 
+				    begin_at(begin.x, begin.y)); 
+}
+
+template <typename T>
+typename T2DDatafield<T>::const_range_iterator 
+T2DDatafield<T>::end_range(const C2DBounds& begin, const C2DBounds& end)const
+{
+	return const_range_iterator(end, get_size(), begin, end, 
+				    begin_at(end.x, end.y)); 
+}
 
 
 template <class T> 

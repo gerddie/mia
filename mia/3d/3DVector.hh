@@ -324,6 +324,21 @@ inline const T3DVector<T> operator +(const T3DVector<T>& a,const T3DVector<T>& b
 	tmp += b; 
 	return tmp;
 }
+
+/**
+   Add operator for two 3D vectors that hold different data types 
+   Target type is taken from the lhs operator 
+   \tparam type of the vector values 
+   \param a 
+   \param b
+   \returns a+b
+ */
+template <typename  T, typename  S>
+T3DVector<T> operator +(const T3DVector<T>& a, const T3DVector<S>& b)
+{
+	return T3DVector<T>(a.x + b.x, a.y + b.y, a.z + b.z); 
+}
+
 		
 /// vector subtraction
 template <class T> 
@@ -432,7 +447,20 @@ T3DVector<T> T3DVector<T>::_1 = T3DVector<T>(1,1,1);
 template <typename T >
 T3DVector<T> T3DVector<T>::_0 = T3DVector<T>(0,0,0);
 
+template <typename T>
+struct less_then<T3DVector<T> > {
+	bool operator() (const T3DVector<T>& a, const T3DVector<T>& b) const{
+		return a.z < b.z || 
+			(a.z ==  b.z && 
+			 (a.y < b.y || (a.y == b.y && a.x < b.x))); 
+	}
+}; 
+
+
+
 NS_MIA_END
+
+#if 0 
 
 /*
   These template specializations are needed when using the T2DVector template 
@@ -472,6 +500,6 @@ namespace boost {
 }
 
 
-
+#endif 
 
 #endif

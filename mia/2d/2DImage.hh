@@ -126,6 +126,9 @@ public:
 	typedef typename T2DDatafield<T>::value_type value_type;
 	typedef typename T2DDatafield<T>::difference_type difference_type;
 	typedef typename T2DDatafield<T>::size_type size_type;
+	typedef typename T2DDatafield<T>::range_iterator range_iterator; 
+	typedef typename T2DDatafield<T>::const_range_iterator const_range_iterator; 
+
 	/// \endcond
 
 	/**
@@ -237,6 +240,26 @@ public:
 	/// forwarding function to access the underlying T2DDatafield
 	iterator begin_at(size_t x, size_t y) {
 		return m_image.begin_at(x,  y);
+	}
+
+	/// forwarding function to access the specified range of the underlying T2DDatafield 
+	range_iterator begin_range(const C2DBounds& begin, const C2DBounds& end) {
+		return m_image.begin_range(begin, end); 
+	}
+	
+	/// forwarding function to access the specified range of the underlying T2DDatafield 
+	range_iterator end_range(const C2DBounds& begin, const C2DBounds& end){
+		return m_image.end_range(begin, end); 
+	}
+
+	/// forwarding function to access the specified range of the underlying T2DDatafield 
+	const_range_iterator begin_range(const C2DBounds& begin, const C2DBounds& end)const {
+		return m_image.begin_range(begin, end); 
+	}
+
+	/// forwarding function to access the specified range of the underlying T2DDatafield 
+	const_range_iterator end_range(const C2DBounds& begin, const C2DBounds& end) const{
+		return m_image.end_range(begin, end); 
 	}
 
 	/// forwarding function to access the underlying T2DDatafield

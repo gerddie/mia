@@ -69,14 +69,6 @@ struct __adjust<T3DVector<int> > {
 	}
 };
 
-template <>
-struct less_then<T3DVector<int> > {
-	bool operator() (const T3DVector<int>& a, const T3DVector<int>& b) const
-	{
-		return a.x < b.x || (a.x == b.x && (a.y < b.y || ( a.y == b.y && a.z < b.z)))	;
-	}
-};
-
 template class TPlugin<C3DImage, shape_type>;
 template class TFactory<C3DShape>;
 template class THandlerSingleton<TFactoryPluginHandler<C3DShapePlugin> >;

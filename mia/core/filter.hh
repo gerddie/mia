@@ -82,7 +82,12 @@ public:
 	typedef D plugin_data;
 	/// plugin handler helper type 
 	typedef filter_type plugin_type; 
+
+	typedef D Image; 
 	
+	/// pointer type of the data filtered by this filter 
+	typedef std::shared_ptr<TImageFilter<D> > Pointer; 
+
 	/// result type of this filter 
 	typedef typename TFilter< std::shared_ptr<D > >::result_type result_type;
 	
@@ -91,14 +96,14 @@ public:
 	/** run the filter 
 	   \param image must be of a type that has Binder trait defined.  
 	 */ 
-	result_type filter(const D& image) const;
+	result_type filter(const Image& image) const;
 
 	/** run the filter from a pointer type 
 	   \param pimage must be of a type D that has Binder trait defined. 
 	 */ 
 	result_type filter(std::shared_ptr<D> pimage) const;
 private:
-	virtual result_type do_filter(const D& image) const = 0;
+	virtual result_type do_filter(const Image& image) const = 0;
 	virtual result_type do_filter(std::shared_ptr<D> image) const;
 };
 
@@ -116,6 +121,7 @@ private:
 template <class Image>
 class EXPORT_HANDLER TImageFilterPlugin: public TFactory<TImageFilter<Image> > {
 public:
+	typedef typename TFactory<TImageFilter<Image> >::Product Product; 
 	/// Constructor that sets the plug-in name 
 	TImageFilterPlugin(char const * const  name):
 		TFactory<TImageFilter<Image> >(name)

@@ -39,6 +39,21 @@ struct atomic_data {
 template <typename T> 
 const int atomic_data<T>::size = 1; 
 
+/**
+   This struct is a place holder for some templates. The actual template specialization 
+   must implement the operator 
+   bool operator()(T a, T b) const; 
+   that returns true of lhs is smaller then rhs and false otherwise. The operator should implement 
+   a strict weak ordering. 
+   \tparam T the type to compare  
+ */
+
+template <typename T>
+struct less_then {
+	typedef T value_type; 
+};
+
+
 NS_MIA_END
 
 #endif

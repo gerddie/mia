@@ -18,37 +18,34 @@
  *
  */
 
-#ifdef WIN32
-#  define EXPORT_2DDATAFIELD __declspec(dllexport)
-#else
-#  ifdef __GNUC__
-#    define EXPORT_2DDATAFIELD  __attribute__((visibility("default")))
-#  else 
-#    define EXPORT_2DDATAFIELD 
-#  endif 
-#endif
-
 #include <mia/2d/2DDatafield.cxx>
+#include <mia/2d/iterator.cxx>
 #include <mia/core/parameter.cxx>
 
 NS_MIA_BEGIN
 
-template class EXPORT_2DDATAFIELD T2DDatafield<float>;
+#define INSTANCIATE(TYPE) \
+	template class  EXPORT_2D T2DDatafield<TYPE>;			\
+	template class  EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::iterator>; \
+	template class  EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::const_iterator>;
+
+
+INSTANCIATE(float); 
 #ifdef HAVE_INT64
-template class EXPORT_2DDATAFIELD T2DDatafield<mia_int64>;
-template class EXPORT_2DDATAFIELD T2DDatafield<mia_uint64>;
+INSTANCIATE(mia_int64);
+INSTANCIATE(mia_uint64);
 #endif
-template class EXPORT_2DDATAFIELD T2DDatafield<double>;
-template class EXPORT_2DDATAFIELD T2DDatafield<unsigned int>;
-template class EXPORT_2DDATAFIELD T2DDatafield<signed int>;
-template class EXPORT_2DDATAFIELD T2DDatafield<unsigned short>;
-template class EXPORT_2DDATAFIELD T2DDatafield<signed short>;
-template class EXPORT_2DDATAFIELD T2DDatafield<bool>;
-template class EXPORT_2DDATAFIELD T2DDatafield<unsigned char>;
-template class EXPORT_2DDATAFIELD T2DDatafield<signed char>;
+INSTANCIATE(double);
+INSTANCIATE(unsigned int);
+INSTANCIATE(signed int);
+INSTANCIATE(unsigned short);
+INSTANCIATE(signed short);
+INSTANCIATE(bool);
+INSTANCIATE(unsigned char);
+INSTANCIATE(signed char);
 
 extern const char type_str_2dbounds[] = "2DBounds";
-template class EXPORT_2DDATAFIELD  CTParameter<C2DBounds, type_str_2dbounds>;
+template class EXPORT_2D  CTParameter<C2DBounds, type_str_2dbounds>;
 
 NS_MIA_END
 

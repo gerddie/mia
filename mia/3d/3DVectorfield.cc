@@ -23,6 +23,7 @@
 #include <mia/3d/3DDatafield.cxx>
 #include <mia/2d/2DDatafield.cxx>
 #include <mia/3d/iterator.cxx>
+#include <mia/2d/iterator.cxx>
 
 NS_MIA_BEGIN
 
@@ -50,15 +51,20 @@ EXPORT_3D C3DFVectorfield& operator += (C3DFVectorfield& a, const C3DFVectorfiel
 #define INSTANCIATE(TYPE) \
 	template class  EXPORT_3D T3DDatafield<TYPE>;			\
 	template class  EXPORT_3D range3d_iterator<T3DDatafield<TYPE>::iterator>; \
-	template class  EXPORT_3D range3d_iterator<T3DDatafield<TYPE>::const_iterator>;
+	template class  EXPORT_3D range3d_iterator<T3DDatafield<TYPE>::const_iterator>; 
+
+#define INSTANCIATE2D(TYPE)						\
+	template class  EXPORT_3D T2DDatafield<TYPE>;			\
+	template class  EXPORT_3D range2d_iterator<T2DDatafield<TYPE>::iterator>; \
+	template class  EXPORT_3D range2d_iterator<T2DDatafield<TYPE>::const_iterator>;
 
 
-template class EXPORT_3D T2DDatafield<C3DFVector>;
-template class EXPORT_3D T2DDatafield<C3DDVector>;
+INSTANCIATE2D(C3DFVector); 
+INSTANCIATE2D(C3DDVector);
 
 INSTANCIATE(C3DFVector);
 INSTANCIATE(C3DDVector);
-template class T3DVectorfield<C3DFVector>;
+template class EXPORT_3D T3DVectorfield<C3DFVector>;
 template class EXPORT_3D T3DVectorfield<C3DDVector>;
 
 

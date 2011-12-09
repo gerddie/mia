@@ -169,7 +169,6 @@ T mia_round_clamped(double x)
 	return __round_clamped<T, is_floating_point>::apply(x); 
 }
 
-
 NS_MIA_END
 
 #endif

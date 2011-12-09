@@ -28,6 +28,7 @@
 // MIA specific
 #include <mia/2d/defines2d.hh>
 #include <mia/2d/2DVector.hh>
+#include <mia/2d/iterator.hh>
 #include <mia/core/parameter.hh>
 
 #ifndef EXPORT_2DDATAFIELD
@@ -65,6 +66,9 @@ public:
 	typedef typename data_array::value_type value_type;
 	typedef typename data_array::difference_type difference_type;
 	typedef typename data_array::size_type size_type;
+	typedef range2d_iterator<iterator> range_iterator; 
+	typedef range2d_iterator<const_iterator> const_range_iterator; 
+
 	typedef C2DBounds dimsize_type;
 	typedef C2DFVector coord_type;
 	/// \endcond 
@@ -260,6 +264,23 @@ public:
 		advance(b, x + y * m_size.x);
 		return b;
 	}
+
+        /** \returns an read/write forward iterator over a subset of the data. 
+            The functions ensures, that the field uses a single referenced datafield */
+        range_iterator begin_range(const C2DBounds& begin, const C2DBounds& end); 
+
+        /** \returns the end of a read/write forward iterator over a subset of the data. */
+        range_iterator end_range(const C2DBounds& begin, const C2DBounds& end); 
+
+
+        /** \returns an read/write forward iterator over a subset of the data. 
+            The functions ensures, that the field uses a single referenced datafield */
+        const_range_iterator begin_range(const C2DBounds& begin, const C2DBounds& end)const; 
+
+        /** \returns the end of a read/write forward iterator over a subset of the data. */
+        const_range_iterator end_range(const C2DBounds& begin, const C2DBounds& end)const; 
+
+
 private:
 	C2DBounds  m_size;
 	data_pointer m_data;

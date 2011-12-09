@@ -21,47 +21,31 @@
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/shape.hh>
+#include <mia/internal/dimtrait.hh>
 
-NS_BEGIN(ws_2dimage_filter)
+#include <queue>
 
-class C2DWatershed : public mia::C2DFilter {
-public:
-	C2DWatershed(mia::P2DShape neighborhood, bool with_borders, float treash);
+NS_MIA_BEGIN
 
-	template <class T>
-	typename C2DWatershed::result_type operator () (const mia::T2DImage<T>& data) const ;
-private:
-	struct PixelWithLocation {
-		mia::C2DBounds pos; 
-		float value; 
-	}; 
+template <> 
+struct watershed_traits<2> { 
+	typedef P2DShape PNeighbourhood; 
+	typedef C2DBounds Position;
+	typedef C2DFilter CFilter;  
+	typedef C2DFilter::Pointer PFilter; 
+	typedef C2DFilterPlugin CPlugin; 
+	typedef C2DImage CImage;
+	typedef P2DImage PImage;
+	typedef C2DFilterPluginHandler Handler; 
+}; 
+NS_MIA_END
 
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
-	template <class T>
-	void grow(const PixelWithLocation& p, mia::C2DUIImage& labels, const mia::T2DImage<T>& data) const; 
+#include <mia/internal/watershed.hh>
 
-	friend bool operator < (const PixelWithLocation& lhs, const PixelWithLocation& rhs) {
-		return lhs.value > rhs.value|| 
-			( lhs.value ==  rhs.value && 
-			 ( lhs.pos.y > rhs.pos.y || (lhs.pos.y == rhs.pos.y && lhs.pos.x > rhs.pos.x ))); 
-	}
+NS_MIA_BEGIN
 
-	std::vector<mia::C2DBounds> m_neighborhood; 
-	mia::P2DFilter m_togradnorm; 
-	bool m_with_borders; 
-	float m_thresh;
-};
-
-class C2DWatershedFilterPlugin: public mia::C2DFilterPlugin {
-public:
-	C2DWatershedFilterPlugin();
-private:
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
-	mia::P2DShape m_neighborhood; 
-	bool m_with_borders; 
-	float m_thresh; 
-};
+typedef TWatershedFilterPlugin<2> C2DWatershedFilterPlugin; 
+typedef TWatershed<2> C2DWatershed; 
 
 
-NS_END
+NS_MIA_END

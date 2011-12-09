@@ -20,37 +20,35 @@
 
 #include <stdexcept>
 #include <mia/core/errormacro.hh>
-#include <mia/3d/iterator.hh>
+#include <mia/2d/iterator.hh>
 
 NS_MIA_BEGIN
 
 template <typename I> 
-range3d_iterator<I>::range3d_iterator():
-	m_pos(0,0,0), 
-	m_size(0,0,0), 
-	m_begin(0,0,0), 
-	m_end(0,0,0), 
+range2d_iterator<I>::range2d_iterator():
+	m_pos(0,0), 
+	m_size(0,0), 
+	m_begin(0,0), 
+	m_end(0,0), 
 	m_xstride(0),
-	m_ystride(0), 
 	m_boundary(eb_none)
 {
 }
 
 template <typename I> 
-range3d_iterator<I>::range3d_iterator(const C3DBounds& pos):
+range2d_iterator<I>::range2d_iterator(const C2DBounds& pos):
 	m_pos(pos), 
-	m_size(0,0,0), 
-	m_begin(0,0,0), 
-	m_end(0,0,0), 
+	m_size(0,0), 
+	m_begin(0,0), 
+	m_end(0,0), 
 	m_xstride(0),
-	m_ystride(0), 
 	m_boundary(eb_none)
 {
 }
 
 template <typename I> 
-range3d_iterator<I>::range3d_iterator(const C3DBounds& pos, const C3DBounds& size, 
-				      const C3DBounds& begin, const C3DBounds& end, I iterator):
+range2d_iterator<I>::range2d_iterator(const C2DBounds& pos, const C2DBounds& size, 
+				      const C2DBounds& begin, const C2DBounds& end, I iterator):
 	m_pos(pos), 
 	m_size(size), 
 	m_begin(begin), 
@@ -60,7 +58,6 @@ range3d_iterator<I>::range3d_iterator(const C3DBounds& pos, const C3DBounds& siz
 	m_boundary(eb_none)
 {
 	cvdebug() << "m_boundary=" << m_boundary << "\n"; 
-	m_ystride = (m_size.y - (m_end.y - m_begin.y))*m_size.x; 
 	if (m_pos.x == 0)
 		m_boundary |= eb_xlow; 
 	if (m_pos.x == size.x - 1)
@@ -71,17 +68,13 @@ range3d_iterator<I>::range3d_iterator(const C3DBounds& pos, const C3DBounds& siz
 	if (m_pos.y == size.y - 1)
 		m_boundary |= eb_yhigh; 
 
-	if (m_pos.z == 0)
-		m_boundary |= eb_zlow; 
-	if (m_pos.z == size.z - 1)
-		m_boundary |= eb_zhigh; 
 	cvdebug() << "m_boundary=" << m_boundary << "\n"; 
 	
 }
 
 
 template <typename I> 
-range3d_iterator<I>& range3d_iterator<I>::operator = (const range3d_iterator<I>& other)
+range2d_iterator<I>& range2d_iterator<I>::operator = (const range2d_iterator<I>& other)
 {
 	m_pos = other.m_pos; 
 	m_size = other.m_size;  
@@ -89,7 +82,6 @@ range3d_iterator<I>& range3d_iterator<I>::operator = (const range3d_iterator<I>&
 	m_end = other.m_end; 
 	m_iterator = other.m_iterator; 
 	m_xstride = other.m_xstride; 
-	m_ystride = other.m_ystride;
 	m_boundary = other.m_boundary; 
 	return *this; 
 }
@@ -97,22 +89,21 @@ range3d_iterator<I>& range3d_iterator<I>::operator = (const range3d_iterator<I>&
 
 
 template <typename I> 
-range3d_iterator<I>::range3d_iterator(const range3d_iterator<I>& other):
+range2d_iterator<I>::range2d_iterator(const range2d_iterator<I>& other):
 	m_pos(other.m_pos), 
 	m_size(other.m_size), 
 	m_begin(other.m_begin), 
 	m_end(other.m_end), 
 	m_xstride(other.m_xstride),
-	m_ystride(other.m_ystride),
 	m_iterator(other.m_iterator), 
 	m_boundary(other.m_boundary)
 {
 }	
 
 template <typename I> 
-range3d_iterator<I>& range3d_iterator<I>::operator ++()
+range2d_iterator<I>& range2d_iterator<I>::operator ++()
 {
-	DEBUG_ASSERT_RELEASE_THROW(m_pos.x < m_end.x, "range3d_iterator: trying to increment past end");
+	DEBUG_ASSERT_RELEASE_THROW(m_pos.x < m_end.x, "range2d_iterator: trying to increment past end");
 	
 	++m_pos.x;
 	++m_iterator; 
@@ -128,96 +119,79 @@ range3d_iterator<I>& range3d_iterator<I>::operator ++()
 }
 
 template <typename I> 
-void range3d_iterator<I>::increment_y()
+void range2d_iterator<I>::increment_y()
 {
-	if (m_pos.y < m_end.y) {
+	if (m_pos.y < m_end.y - 1) {
 		m_pos.x = m_begin.x; 
 		++m_pos.y; 
-		m_boundary &= ~eb_y;
+		m_boundary &= ~eb_ylow; 
 		std::advance(m_iterator, m_xstride);
-		if (m_pos.y == m_end.y) {
-			increment_z();
-			if (m_pos.y == 0) 
-				m_boundary |= eb_ylow; 
-		} else if (m_pos.y == m_size.y - 1)
+		if (m_pos.y == m_size.y - 1)
 			m_boundary |= eb_yhigh; 
-	} 
-}
-
-template <typename I> 
-void range3d_iterator<I>::increment_z()
-{
-	if (m_pos.z < m_end.z - 1) {
-		m_pos.y = m_begin.y; 
-		++m_pos.z; 
-		m_boundary &= ~eb_zlow; 
-		std::advance(m_iterator, m_ystride);
-		if (m_pos.z == m_size.z - 1)
-			m_boundary |= eb_zhigh; 
-	}else if (m_pos.z == m_end.z - 1) {
+	}else if (m_pos.y == m_end.y - 1) {
 		m_pos = m_end; 
 
 	}
 }
 
 template <typename I> 
-typename range3d_iterator<I>::internal_iterator 
-range3d_iterator<I>::get_point()
+typename range2d_iterator<I>::internal_iterator 
+range2d_iterator<I>::get_point()
 {
 	return m_iterator; 
 }
 
 template <typename I> 
-range3d_iterator<I> range3d_iterator<I>::operator ++(int)
+range2d_iterator<I> range2d_iterator<I>::operator ++(int)
 {
-	range3d_iterator result(*this); 
+	range2d_iterator result(*this); 
 	++result; 
 	return result; 
 }
 
 template <typename I> 
-typename range3d_iterator<I>::reference range3d_iterator<I>::operator *() const
+typename range2d_iterator<I>::reference range2d_iterator<I>::operator *() const
 {
 	return *m_iterator; 
 }
 
 template <typename I> 
-struct __iterator3d_dispatch_operator_for_bool {
-	static typename range3d_iterator<I>::pointer 
-	apply(const typename range3d_iterator<I>::internal_iterator& it) {
+struct __iterator2d_dispatch_operator_for_bool {
+	static typename range2d_iterator<I>::pointer 
+	apply(const typename range2d_iterator<I>::internal_iterator& it) {
 		return it.operator->(); 
 	}
 }; 
 
 template <> 
-struct __iterator3d_dispatch_operator_for_bool<std::vector<bool>::iterator> {
+struct __iterator2d_dispatch_operator_for_bool<std::vector<bool>::iterator> {
 	static std::vector<bool>::iterator::pointer apply(const std::vector<bool>::iterator& ) {
-		throw std::logic_error("You can't use the '->' with a bool 3DDatafield range iterator"); 
+		throw std::logic_error("You can't use the '->' with a bool 2DDatafield range iterator"); 
 	}
 }; 
 
 template <> 
-struct __iterator3d_dispatch_operator_for_bool<std::vector<bool>::const_iterator> {
+struct __iterator2d_dispatch_operator_for_bool<std::vector<bool>::const_iterator> {
 	static std::vector<bool>::const_iterator::pointer apply(const std::vector<bool>::const_iterator& ) {
-		throw std::logic_error("You can't use the '->' with a bool 3DDatafield range iterator"); 
+		throw std::logic_error("You can't use the '->' with a bool 2DDatafield range iterator"); 
 	}
 }; 
 			
 
 template <typename I> 
-typename range3d_iterator<I>::pointer range3d_iterator<I>::operator ->() const
+typename range2d_iterator<I>::pointer range2d_iterator<I>::operator ->() const
 {
-	return __iterator3d_dispatch_operator_for_bool<internal_iterator>::apply(m_iterator);
+	return __iterator2d_dispatch_operator_for_bool<internal_iterator>::apply(m_iterator);
 }
 
 template <typename I> 
-const C3DBounds& range3d_iterator<I>::pos() const
+const C2DBounds& range2d_iterator<I>::pos() const
 {
 	return m_pos; 
 }
 
 template <typename I> 
-int range3d_iterator<I>::get_boundary_flags() const
+int range2d_iterator<I>::get_boundary_flags() const
 {
 	return m_boundary; 
 }

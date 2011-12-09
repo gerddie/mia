@@ -70,8 +70,10 @@ struct PixelWithLocation {
 
 template <typename L>
 bool operator < (const PixelWithLocation<L>& lhs, const PixelWithLocation<L>& rhs) 
-{
-	return lhs.value > rhs.value; 
+{		
+	mia::less_then<C2DBounds> l; 
+	return lhs.value > rhs.value|| 
+		( lhs.value ==  rhs.value && l(rhs.pos, lhs.pos)); 
 }
 
 template <typename T, typename S>
@@ -114,8 +116,8 @@ void TRunSeededWatershed<T,S>::add_neighborhood(const PixelWithLocation<S>& pixe
 	new_pixel.label = pixel.label; 
 	bool hit_boundary = false; 
 	for (auto i = m_neighborhood->begin(); i != m_neighborhood->end(); ++i) {
-		C2DBounds new_pos( pixel.pos.x + i->x, pixel.pos.y + i->y); 
-		if (new_pos != pixel.pos && new_pos.x < m_seed.get_size().x && new_pos.y < m_seed.get_size().y) {
+		C2DBounds new_pos( pixel.pos + *i); 
+		if (new_pos != pixel.pos && new_pos < m_seed.get_size()) {
 			if (!m_visited(new_pos)) {
 				if (!m_stored(new_pos) ) {
 					new_pixel.value = m_image(new_pos); 

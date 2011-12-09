@@ -281,6 +281,20 @@ T2DVector<T> operator +(const T2DVector<T>& a, const T2DVector<T>& b)
 }
 
 /**
+   Add operator for two 2D vectors that hold different data types 
+   Target type is taken from the lhs operator 
+   \tparam type of the vector values 
+   \param a 
+   \param b
+   \returns a+b
+ */
+template <typename  T, typename  S>
+T2DVector<T> operator +(const T2DVector<T>& a, const T2DVector<S>& b)
+{
+	return T2DVector<T>(a.x + b.x, a.y + b.y); 
+}
+
+/**
    Element wise multiplication  operator for two 2D vectors that hold the same data type 
    \tparam type of the vector values 
    \param a 
@@ -399,14 +413,6 @@ bool operator < (const T2DVector<T>& a, const T2DVector<S>& b)
 	return a.x < b.x && a.y < b.y; 
 }
 
-template <typename T>
-struct less_vector2d {
-	bool operator() (const T2DVector<T>& a, const T2DVector<T>& b) 
-	{
-		return a.x < b.x || (a.x == b.x && a.y < b.y); 
-	}
-}; 
-
 template <typename T, template <typename> class Vector> 
 struct cross_product {
 	typedef T return_type; 
@@ -428,6 +434,15 @@ T cross(const T2DVector<T>& a, const T2DVector<T>& b)
 {
 	return cross_product<T, T2DVector>::apply(a,b); 
 }
+
+
+template <typename T>
+struct less_then<T2DVector<T> > {
+	bool operator() (const T2DVector<T>& a, const T2DVector<T>& b) const {
+		return a.y < b.y || (a.y == b.y && a.x < b.x);
+	}
+}; 
+
 
 /// float valued 2D vector
 typedef T2DVector<float>    C2DFVector;

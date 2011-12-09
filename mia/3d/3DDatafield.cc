@@ -29,6 +29,7 @@
 #include <mia/3d/3DDatafield.hh>
 #include <mia/3d/3DDatafield.cxx>
 #include <mia/3d/iterator.cxx>
+#include <mia/2d/iterator.cxx>
 #include <mia/core/parameter.cxx>
 
 NS_MIA_BEGIN
@@ -73,7 +74,9 @@ T3DDatafield<bool>::get_trilin_interpol_val_at(const T3DVector<float >& p) const
 #define INSTANCIATE(TYPE) \
 	template class  EXPORT_3D T3DDatafield<TYPE>;			\
 	template class  EXPORT_3D range3d_iterator<T3DDatafield<TYPE>::iterator>; \
-	template class  EXPORT_3D range3d_iterator<T3DDatafield<TYPE>::const_iterator>;
+	template class  EXPORT_3D range3d_iterator<T3DDatafield<TYPE>::const_iterator>; \
+	template class  EXPORT_3D range2d_iterator<T3DDatafield<TYPE>::iterator>; \
+	template class  EXPORT_3D range2d_iterator<T3DDatafield<TYPE>::const_iterator>;
 
 
 

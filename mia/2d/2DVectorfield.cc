@@ -30,6 +30,7 @@
 
 #include <mia/2d/2DVectorfield.hh>
 #include <mia/2d/2DDatafield.cxx>
+#include <mia/2d/iterator.cxx>
 
 NS_MIA_BEGIN
 
@@ -57,12 +58,15 @@ EXPORT_2D C2DFVectorfield& operator += (C2DFVectorfield& a, const C2DFVectorfiel
 template <typename T>
 const char *T2DVectorfield<T>::data_descr = "2dvf"; 
 
-template class T2DDatafield<C2DFVector>;
-template class EXPORT_2DDATAFIELD T2DDatafield<C2DDVector>;
+#define INSTANCIATE(TYPE) \
+	template class EXPORT_2D T2DDatafield<TYPE>;			\
+	template class EXPORT_2D T2DVectorfield<TYPE>;			\
+	template class EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::iterator>; \
+	template class EXPORT_2D range2d_iterator<T2DDatafield<TYPE>::const_iterator>;
 
-template class T2DVectorfield<C2DFVector>;
-template class EXPORT_2DDATAFIELD T2DVectorfield<C2DDVector>;
 
+INSTANCIATE(C2DFVector);
+INSTANCIATE(C2DDVector);
 
 
 NS_MIA_END

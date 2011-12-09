@@ -62,7 +62,7 @@ private:
 	mia::P2DShape m_neigbourhood; 
 	mutable int   m_last_label;
 	std::set<mia::T2DVector<unsigned short>, 
-		 mia::less_vector2d<unsigned short> > m_joints; 
+		 mia::less_then<mia::T2DVector<unsigned short> > > m_joints; 
 	std::string   m_map_file;
 	bool m_first_pass; 
 

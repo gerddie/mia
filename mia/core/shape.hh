@@ -26,6 +26,7 @@
 
 #include <mia/core/product_base.hh>
 #include <mia/core/type_traits.hh>
+#include <mia/core/utils.hh>
 
 #ifndef EXPORT_SHAPE
 #  ifdef WIN32
@@ -42,10 +43,6 @@ struct EXPORT_CORE shape_type {
 	static  const char * type_descr;
 };
 
-
-template <typename T>
-struct less_then {
-};
 
 
 /**
