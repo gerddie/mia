@@ -50,7 +50,7 @@ BOOST_FIXTURE_TEST_CASE(test_C3DFilterPluginHandler,PluginTestFixture)
 	set<string> test_data = {
 		"binarize", "bandpass", "convert","close", "crop", "dilate", "downscale", "erode", "gauss", "growmask", 
 		"invert", "kmeans",  "label", "mask", "median", "mlv", "open",  "reorient", 
-		"sandp", "scale", "selectbig", "sepconv", "tee" 
+		"sandp", "scale", "selectbig", "sepconv" 
 	}; 
 	test(C3DFilterPluginHandler::instance().get_set(), test_data); 
 }
@@ -246,10 +246,10 @@ BOOST_FIXTURE_TEST_CASE(test_CFFT2DKernelPluginHandler,PluginTestFixture)
 	test(CFFT2DKernelPluginHandler::instance().get_set(), test_data); 
 }
 
-BOOST_FIXTURE_TEST_CASE(test_C2DTransformCreatorHandler,PluginTestFixture) 
+BOOST_FIXTURE_TEST_CASE(test_C2DShapePluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"4n", "8n", "sphere"
+		"4n", "8n", "sphere", "1n", "rectangle", "square"
 	}; 
 
 	test(C2DShapePluginHandler::instance().get_set(), test_data); 
@@ -259,11 +259,11 @@ BOOST_FIXTURE_TEST_CASE(test_C2DFilterPluginHandler,PluginTestFixture)
 {
 	set<string> test_data = {
 		"adaptmed", "admean", "aniso", "bandpass", "binarize", 
-		"convert", "close", "crop", "cst", "dilate", "distance", 
-		"downscale", "erode", "fft", "gauss", "gradnorm", "invert", "kmeans", 
+		"convert", "close", "crop", "dilate", "distance", 
+		"downscale", "erode", "gauss", "gradnorm", "invert", "kmeans", 
 		"label", "labelmap", "mask", "mean", "median", "mlv", 
 		"ngfnorm", "noise", "open", "sandp", "scale", "selectbig", 
-		"sepconv", "thresh"
+		"sepconv", "shmean", "sws", "tee", "thresh", "ws"
 	}; 
 	test(C2DFilterPluginHandler::instance().get_set(), test_data); 
 }
