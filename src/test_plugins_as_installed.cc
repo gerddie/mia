@@ -48,9 +48,9 @@ BOOST_FIXTURE_TEST_CASE(test_C3DImageCostPluginHandler,PluginTestFixture)
 BOOST_FIXTURE_TEST_CASE(test_C3DFilterPluginHandler,PluginTestFixture) 
 {
 	set<string> test_data = {
-		"binarize", "bandpass", "convert","close", "crop", "dilate", "downscale", "erode", "gauss", "growmask", 
-		"invert", "kmeans",  "label", "mask", "median", "mlv", "open",  "reorient", 
-		"sandp", "scale", "selectbig", "sepconv" 
+		"binarize", "bandpass", "convert","close", "crop", "dilate", "downscale", "erode", "gauss", "gradnorm", 
+		"growmask", "invert", "kmeans",  "label", "mask", "median", "mlv", "open",  "reorient", 
+		"sandp", "scale", "selectbig", "sepconv", "ws" 
 	}; 
 	test(C3DFilterPluginHandler::instance().get_set(), test_data); 
 }

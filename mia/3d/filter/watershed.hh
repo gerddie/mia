@@ -18,32 +18,34 @@
  *
  */
 
+#include <mia/3d/3dfilter.hh>
+#include <mia/3d/3dimageio.hh>
+#include <mia/3d/shape.hh>
+#include <mia/internal/dimtrait.hh>
 
-#ifndef mia_3d_shape_hh
-#define mia_3d_shape_hh
-
-#include <mia/core/shape.hh>
-#include <mia/core/factory.hh>
-#include <mia/3d/3DImage.hh>
+#include <queue>
 
 NS_MIA_BEGIN
 
-/// a 3D bit shape for morphological processing \sa TShape
-typedef TShape<T3DVector, C3DBitImage> C3DShape;
-
-/// pointer to a 3D bit shape for morphological processing \sa TShape
-typedef std::shared_ptr<C3DShape > P3DShape;
-
-/// Base class for the 3D shape plug-ins 
-typedef TFactory<C3DShape> C3DShapePlugin;
-
-/// Plugin handler for 3D shapes 
-typedef THandlerSingleton<TFactoryPluginHandler<C3DShapePlugin> > C3DShapePluginHandler;
-
-/// Trait to make the shape definition parsable on the command line  
-FACTORY_TRAIT(C3DShapePluginHandler); 
-
+template <> 
+struct watershed_traits<3> { 
+	typedef P3DShape PNeighbourhood; 
+	typedef C3DBounds Position;
+	typedef C3DFilter CFilter;  
+	typedef C3DFilter::Pointer PFilter; 
+	typedef C3DFilterPlugin CPlugin; 
+	typedef C3DImage CImage;
+	typedef P3DImage PImage;
+	typedef C3DFilterPluginHandler Handler; 
+}; 
 NS_MIA_END
 
-#endif
+#include <mia/internal/watershed.hh>
 
+NS_MIA_BEGIN
+
+typedef TWatershedFilterPlugin<3> C3DWatershedFilterPlugin; 
+typedef TWatershed<3> C3DWatershed; 
+
+
+NS_MIA_END

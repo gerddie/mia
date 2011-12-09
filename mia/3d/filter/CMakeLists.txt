@@ -24,6 +24,7 @@ SET(filters3dNew
   convert 
   crop 
   downscale 
+  gradnorm
   growmask
   invert
   kmeans 
@@ -36,6 +37,7 @@ SET(filters3dNew
   scale
   selectbig
   sepconv 
+  watershed
   )
 
 PLUGINGROUP_WITH_TEST_AND_PREFIX(3d-filter "${filters3dNew}" 

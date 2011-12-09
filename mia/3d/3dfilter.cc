@@ -90,4 +90,10 @@ template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C3DImageCo
 template class TFactoryPluginHandler<C3DImageCombinerPlugin>;
 template class TPluginHandler<C3DImageCombinerPlugin>;
 
+P3DImage  EXPORT_3D run_filter(const C3DImage& image, const char *filter)
+{
+	auto f = C3DFilterPluginHandler::instance().produce_unique(filter);
+	return f->filter(image); 
+}
+
 NS_MIA_END

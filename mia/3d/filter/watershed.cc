@@ -18,32 +18,14 @@
  *
  */
 
+#include <type_traits> 
+#include <queue> 
+#include <mia/3d/filter/watershed.hh>
 
-#ifndef mia_3d_shape_hh
-#define mia_3d_shape_hh
+template class mia::TWatershedFilterPlugin<3>; 
+template class mia::TWatershed<3>; 
 
-#include <mia/core/shape.hh>
-#include <mia/core/factory.hh>
-#include <mia/3d/3DImage.hh>
-
-NS_MIA_BEGIN
-
-/// a 3D bit shape for morphological processing \sa TShape
-typedef TShape<T3DVector, C3DBitImage> C3DShape;
-
-/// pointer to a 3D bit shape for morphological processing \sa TShape
-typedef std::shared_ptr<C3DShape > P3DShape;
-
-/// Base class for the 3D shape plug-ins 
-typedef TFactory<C3DShape> C3DShapePlugin;
-
-/// Plugin handler for 3D shapes 
-typedef THandlerSingleton<TFactoryPluginHandler<C3DShapePlugin> > C3DShapePluginHandler;
-
-/// Trait to make the shape definition parsable on the command line  
-FACTORY_TRAIT(C3DShapePluginHandler); 
-
-NS_MIA_END
-
-#endif
-
+extern "C" EXPORT mia::CPluginBase *get_plugin_interface()
+{
+	return new mia::TWatershedFilterPlugin<3>();
+}

@@ -18,32 +18,26 @@
  *
  */
 
+#include <mia/3d/3dfilter.hh>
+NS_BEGIN(gradnorm_3dimage_filter)
 
-#ifndef mia_3d_shape_hh
-#define mia_3d_shape_hh
+class CGradnorm: public mia::C3DFilter {
+public:
+	CGradnorm();
 
-#include <mia/core/shape.hh>
-#include <mia/core/factory.hh>
-#include <mia/3d/3DImage.hh>
+	template <typename  T>
+	CGradnorm::result_type operator () (const mia::T3DImage<T>& data) const;
 
-NS_MIA_BEGIN
+private:
+	CGradnorm::result_type do_filter(const mia::C3DImage& image) const;
+};
 
-/// a 3D bit shape for morphological processing \sa TShape
-typedef TShape<T3DVector, C3DBitImage> C3DShape;
 
-/// pointer to a 3D bit shape for morphological processing \sa TShape
-typedef std::shared_ptr<C3DShape > P3DShape;
+class C3DGradnormFilterPlugin: public mia::C3DFilterPlugin {
+public:
+	C3DGradnormFilterPlugin();
+	virtual mia::C3DFilter *do_create()const;
+	virtual const std::string do_get_descr()const;
+};
 
-/// Base class for the 3D shape plug-ins 
-typedef TFactory<C3DShape> C3DShapePlugin;
-
-/// Plugin handler for 3D shapes 
-typedef THandlerSingleton<TFactoryPluginHandler<C3DShapePlugin> > C3DShapePluginHandler;
-
-/// Trait to make the shape definition parsable on the command line  
-FACTORY_TRAIT(C3DShapePluginHandler); 
-
-NS_MIA_END
-
-#endif
-
+NS_END

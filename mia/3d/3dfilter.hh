@@ -52,6 +52,10 @@ typedef TImageFilterPlugin<C3DImage> C3DFilterPlugin;
 */
 typedef THandlerSingleton<TFactoryPluginHandler<C3DFilterPlugin> > C3DFilterPluginHandler;
 
+/// Trait to make the filter definition parsable on the command line  
+FACTORY_TRAIT(C3DFilterPluginHandler); 
+
+
 /**   
       \ingroup filtering 
       The 3D filter shared pointer 
@@ -86,6 +90,8 @@ typedef TFactory<C3DImageCombiner> C3DImageCombinerPlugin;
 typedef std::shared_ptr<C3DImageCombiner > P3DImageCombiner;
 typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCombinerPlugin> > C3DImageCombinerPluginHandler;
 
+/// Trait to make the combiner definition parsable on the command line  
+FACTORY_TRAIT(C3DImageCombinerPluginHandler); 
 
 
 /**
@@ -114,6 +120,27 @@ std::vector<P3DFilter> create_filter_chain(const std::vector<S>& chain)
 	}
 	return filters;
 }
+
+
+/**
+   Convenience function to create a filter from its string description
+ */
+inline P3DFilter produce_3dimage_filter(const char* descr) 
+{
+	return C3DFilterPluginHandler::instance().produce(descr); 
+}
+
+
+/**
+   \ingroup filtering 
+   convenience function: create and run a filter on an image 
+   @param image input image 
+   @param filter string defining the filter to be applied 
+   @returns the filtered image 
+*/
+P3DImage  EXPORT_3D run_filter(const C3DImage& image, const char *filter);
+
+
 
 
 NS_MIA_END

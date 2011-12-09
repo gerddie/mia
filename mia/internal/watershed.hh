@@ -31,6 +31,7 @@ template <int dim>
 class TWatershed : public watershed_traits<dim>::CFilter {
 public:
 	typedef typename watershed_traits<dim>::PNeighbourhood  PNeighbourhood; 
+	typedef typename PNeighbourhood::element_type::value_type MPosition; 
 	typedef typename watershed_traits<dim>::Position Position; 
 	typedef typename watershed_traits<dim>::PFilter PFilter; 
 	typedef typename watershed_traits<dim>::CFilter CFilter; 
@@ -60,7 +61,7 @@ private:
 			( lhs.value ==  rhs.value && l(rhs.pos, lhs.pos)); 
 	}
 
-	std::vector<Position> m_neighborhood; 
+	std::vector<MPosition> m_neighborhood; 
 	PFilter m_togradnorm; 
 	bool m_with_borders; 
 	float m_thresh;
@@ -68,13 +69,13 @@ private:
 
 
 template <int dim>
-class TWatershedFilterPlugin: public watershed_traits<2>::CPlugin {
+class TWatershedFilterPlugin: public watershed_traits<dim>::CPlugin {
 public:
 	TWatershedFilterPlugin();
 private:
-	virtual typename watershed_traits<2>::CPlugin::Product *do_create()const;
+	virtual typename watershed_traits<dim>::CPlugin::Product *do_create()const;
 	virtual const std::string do_get_descr()const;
-	typename watershed_traits<2>::PNeighbourhood m_neighborhood; 
+	typename watershed_traits<dim>::PNeighbourhood m_neighborhood; 
 	bool m_with_borders; 
 	float m_thresh; 
 };
@@ -88,7 +89,7 @@ TWatershed<dim>::TWatershed(PNeighbourhood neighborhood, bool with_borders, floa
 {
 	m_neighborhood.reserve(neighborhood->size() - 1);
 	for (auto i = neighborhood->begin(); i != neighborhood->end();++i) 
-		if ( *i != Position::_0 ) 
+		if ( *i != MPosition::_0 ) 
 			m_neighborhood.push_back(*i); 
 		
 	m_togradnorm = Handler::instance().produce("gradnorm"); 
@@ -235,14 +236,14 @@ TWatershedFilterPlugin<dim>::TWatershedFilterPlugin():
 	m_with_borders(false), 
 	m_thresh(0.0)
 {
-	this->add_parameter("n", make_param(m_neighborhood, "8n", false, "Neighborhood for watershead region growing")); 
+	this->add_parameter("n", make_param(m_neighborhood, "sphere:r=1", false, "Neighborhood for watershead region growing")); 
 	this->add_parameter("mark", new mia::CBoolParameter(m_with_borders, false, "Mark the segmented watersheds with a special gray scale value")); 
 	this->add_parameter("thresh", new mia::CFloatParameter(m_thresh, 0, 1.0, false, "Gradient norm threshold. Bassins seperated by gradients "
 						    "with a lower norm will be joined"));  
 }
 
 template <int dim>
-typename watershed_traits<2>::CPlugin::Product *
+typename watershed_traits<dim>::CPlugin::Product *
 TWatershedFilterPlugin<dim>::do_create() const
 {
 	return new TWatershed<dim>(m_neighborhood, m_with_borders, m_thresh);
