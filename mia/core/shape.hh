@@ -103,7 +103,7 @@ public:
 	/// returns the nD size of the mask
 	Size get_size()const;
 
-
+	/// \returns the number of points in the shape definition 
 	typename Flat::size_type size() const; 
 protected:
 	/// insert another pixel coordinate

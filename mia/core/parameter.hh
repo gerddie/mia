@@ -104,6 +104,10 @@ q	*/
 	/// \returns the default value of this parameter as a string 
 	std::string get_default_value() const; 
 
+	/**
+	   Add the help for this parameter to a given XML tree
+	   \param root the root node to add the help entry to. 
+	 */
 	void get_help_xml(xmlpp::Element& root) const;
 	
 protected:
