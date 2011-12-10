@@ -134,7 +134,7 @@ void TWatershed<dim>::grow(const PixelWithLocation& p, Image<unsigned int>& labe
 							for_each(backtrack.begin(), backtrack.end(), 
 								 [&label, &labels]( const Position& l) {labels(l) = label;}); 
 							if (backtracked) 
-								mia::cvwarn() << "Backtracking the second time\n"; 
+								mia::cvinfo() << "Backtracking the second time\n"; 
 							backtracked = true; 
 						}
 					}
@@ -185,7 +185,7 @@ typename TWatershed<dim>::result_type TWatershed<dim>::operator () (const Image<
 						first_label = l; 
 					else 
 						if (first_label != l) 
-							is_boundary = true; 
+							is_boundary = m_with_borders; 
 				}
 			}
 		}
@@ -203,6 +203,7 @@ typename TWatershed<dim>::result_type TWatershed<dim>::operator () (const Image<
 	// convert to smalles possible intensity range and convert the boundary label to highest 
 	// intensity value
 	CImage *r = NULL; 
+	cvmsg() << "Got " << next_label << "distinct bassins\n"; 
 	if (next_label < 255) {
 		Image<unsigned char> *result = new Image<unsigned char>(data.get_size(), data); 
 		transform(labels.begin(), labels.end(), result->begin(), 
