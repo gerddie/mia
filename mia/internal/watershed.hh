@@ -40,7 +40,7 @@ public:
 	typedef typename watershed_traits<dim>::Handler Handler; 
 
 
-	TWatershed(PNeighbourhood neighborhood, bool with_borders, float treash);
+	TWatershed(PNeighbourhood neighborhood, bool with_borders, float treash, bool eval_grad);
 
 	template <template <typename>  class Image, typename T>
 	typename TWatershed<dim>::result_type operator () (const Image<T>& data) const ;
@@ -53,7 +53,7 @@ private:
 	typename TWatershed<dim>::result_type do_filter(const CImage& image) const;
 
 	template <template <typename>  class Image, typename T>
-	void grow(const PixelWithLocation& p, Image<unsigned int>& labels, const Image<T>& data) const;
+	bool grow(const PixelWithLocation& p, Image<unsigned int>& labels, const Image<T>& data) const;
 
 	friend bool operator < (const PixelWithLocation& lhs, const PixelWithLocation& rhs) {
 		mia::less_then<Position> l; 
@@ -78,11 +78,12 @@ private:
 	typename watershed_traits<dim>::PNeighbourhood m_neighborhood; 
 	bool m_with_borders; 
 	float m_thresh; 
+	bool m_eval_grad; 
 };
 
 
 template <int dim>
-TWatershed<dim>::TWatershed(PNeighbourhood neighborhood, bool with_borders, float thresh):
+TWatershed<dim>::TWatershed(PNeighbourhood neighborhood, bool with_borders, float thresh, bool eval_grad):
 	m_with_borders(with_borders), 
 	m_thresh(thresh)
 	
@@ -91,57 +92,129 @@ TWatershed<dim>::TWatershed(PNeighbourhood neighborhood, bool with_borders, floa
 	for (auto i = neighborhood->begin(); i != neighborhood->end();++i) 
 		if ( *i != MPosition::_0 ) 
 			m_neighborhood.push_back(*i); 
-		
-	m_togradnorm = Handler::instance().produce("gradnorm"); 
+
+	if (eval_grad) 
+		m_togradnorm = Handler::instance().produce("gradnorm"); 
 }
+
+static const unsigned int boundary_label = numeric_limits<unsigned int>::max(); 
 
 template <int dim>
 template <template <typename>  class Image, typename T>
-void TWatershed<dim>::grow(const PixelWithLocation& p, Image<unsigned int>& labels, const Image<T>& data) const 
+bool TWatershed<dim>::grow(const PixelWithLocation& p, Image<unsigned int>& labels, const Image<T>& data) const 
 {
 	const auto size = data.get_size(); 
 	std::vector<Position> backtrack; 
 	std::priority_queue<Position, std::vector<Position>, mia::less_then<Position> > locations; 
-	locations.push(p.pos); 
-	backtrack.push_back(p.pos); 
-	bool backtracked = false; 
+	bool has_backtracked = false; 
 
+	backtrack.push_back(p.pos); 
+	
+	std::vector<Position> new_positions; 
+	new_positions.reserve(m_neighborhood.size()); 
+	
+	cvdebug()<< "grow " << p.pos << "\n"; 
 	float value = p.value; 
 	unsigned int label = labels(p.pos); 
+
+	for (auto i = m_neighborhood.begin(); i != m_neighborhood.end(); ++i) {
+		Position new_pos( p.pos + *i);
+		if (new_pos < size && !labels(new_pos) && data(new_pos) <= value) {
+			locations.push(new_pos); 
+			backtrack.push_back(new_pos); 
+		}
+	}
+
 	while (!locations.empty()) {
+		// incoming locations are always un-labelled, and the gradient value is in the equal or below the target value
 		auto loc = locations.top(); 
 		locations.pop(); 
 		
-		for (auto i = m_neighborhood.begin(); i != m_neighborhood.end(); ++i) {
+		new_positions.clear(); 
+
+		cvdebug()<< "**extend*************" << loc << "*******************\n"; 
+		unsigned int first_label = 0; 
+		bool loc_is_boundary = false; 
+
+		for (auto i = m_neighborhood.begin(); i != m_neighborhood.end() && !loc_is_boundary; ++i) {
 			Position new_pos( loc + *i);
-			if (new_pos < size) {
-				// grow only for the same or lower gradient magnitudes, 
-				if (data(new_pos) <= value) {
-					if (!labels(new_pos)) {
-						labels(new_pos) = label; 
-						locations.push(new_pos); 
-						backtrack.push_back(new_pos);
-					}else {
-						if (labels(new_pos) != label) {
-							/* in a perfect world this wouldn't happen, since all the 
-							   seeds are set only for the lowest gradient value. However, in the discrete 
-							   space it might happen that we hit already labeled pixles. 
-							   Then we should use the backtrack to reset all already set labels,
-							   and continue growing with the new label. 
-							   Unfortunately this may leave some holes in the label numbering. 
-							*/
-							label = labels(new_pos); 
-							for_each(backtrack.begin(), backtrack.end(), 
-								 [&label, &labels]( const Position& l) {labels(l) = label;}); 
-							if (backtracked) 
-								mia::cvinfo() << "Backtracking the second time\n"; 
-							backtracked = true; 
-						}
-					}
-				}
+			
+			cvdebug()<< "  check " << new_pos << " @ "; 
+			if (! (new_pos < size) ){
+				cverb << "outside\n"; 
+				continue; 
+			}
+			cverb << data(new_pos); 
+
+			if (data(new_pos) > value) {
+				cverb << " gradient higher\n"; 
+				continue; 
+			}
+			
+			unsigned int new_pos_label = labels(new_pos);
+			if (!new_pos_label) {
+				cverb << " empty, add to queue\n"; 
+				new_positions.push_back(new_pos); 
+				continue; 
+			}
+			
+			// already visited? 
+			if (new_pos_label == label || new_pos_label == boundary_label) {
+				cverb << " already visited\n"; 
+				continue; 
+			}
+			
+			// first label hit 
+			if (!first_label) { 
+				first_label = new_pos_label; 
+				cverb << " set first label: "<< new_pos_label << "\n"; 
+			}else if (first_label != new_pos_label) {
+				// hit two different labels (apart from the original one) 
+				loc_is_boundary = true; 
+				cverb << " boundary\n"; 
+			}else {
+				cverb << " keep first label: "<< first_label << "\n"; 
 			}
 		}
+		if (first_label) {
+			if (!loc_is_boundary) {
+				cvdebug() << "Got non-boundary label " << first_label << "\n"; 
+				labels(loc) = first_label; 
+				backtrack.push_back(loc); 
+				if (first_label != label) {
+
+					// we hit a single label from a lower gradient value, this means 
+					// we are connected to an already labeled basin -> 
+					//   first time = backtrack 
+					//   later = boundary 
+					if (!has_backtracked) {
+						cvdebug() << "Backtrack " << label << " to " << first_label << "\n"; 
+						for_each(backtrack.begin(), backtrack.end(), 
+							 [&first_label, &labels](const Position& p){labels(p) = first_label;}); 
+						label = first_label; 
+						has_backtracked = true; 
+					}else 
+						labels(loc) = boundary_label; 
+				}
+			}else 
+				labels(loc) = boundary_label; 
+		} else { 
+			labels(loc) = label;
+			backtrack.push_back(loc); 
+		}
+		cvdebug() << "Set " << loc << " to " << labels(loc) << "\n"; 
+		
+		if (labels(loc) != boundary_label) {
+			for_each(new_positions.begin(), new_positions.end(), 
+				 [&locations](const Position& p){locations.push(p);}); 
+		}
+
+		// is there a queue that doesn't repeat values? 
+		while (!locations.empty() && locations.top() == loc)
+			locations.pop(); 
+		
 	}
+	return has_backtracked; 
 }
 
 template <int dim>
@@ -155,15 +228,24 @@ typename TWatershed<dim>::result_type TWatershed<dim>::operator () (const Image<
 	PixelWithLocation p; 
 	auto i = data.begin_range(Position::_0, data.get_size());
 	auto e = data.end_range(Position::_0, data.get_size());
-	
+	auto l = labels.begin(); 
+	long next_label = 1; 	
 	while (i != e) {
 		p.pos = i.pos(); 
 		p.value = *i > m_thresh ? *i : m_thresh; 
-		pixels.push(p); 
+		if (p.value <= m_thresh) {
+			if (!*l) {
+				*l = next_label;
+				if (!grow(p, labels, data)) 
+					++next_label; 
+			}
+		}else
+			pixels.push(p); 
 		++i; 
+		++l; 
 	}
 	
-	long next_label = 1; 
+
 	while (!pixels.empty()) {
 		auto pixel = pixels.top(); 
 		pixels.pop(); 
@@ -180,7 +262,7 @@ typename TWatershed<dim>::result_type TWatershed<dim>::operator () (const Image<
 			Position new_pos( pixel.pos + *i);
 			if (new_pos < sizeND) {
 				auto l = labels(new_pos); 
-				if ( l ) {
+				if ( l  && l != boundary_label) {
 					if (!first_label)
 						first_label = l; 
 					else 
@@ -190,15 +272,19 @@ typename TWatershed<dim>::result_type TWatershed<dim>::operator () (const Image<
 			}
 		}
 		if (first_label) {
-			if (!is_boundary)
+			if (!is_boundary) 
 				labels(pixel.pos) = first_label; 
+			else 
+				labels(pixel.pos) = boundary_label; 
+			cvdebug() << " set " << pixel.pos << " with " << data(pixel.pos) << " to "<< labels(pixel.pos) <<"\n"; 
 			continue; 
 		}
 		// new label to assign
 		// if a new label is assigned, we have to grow the region of equal gradient values 
 		// to assure we catch the whole bassin 
-		labels(pixel.pos) = next_label++; 
-		grow(pixel, labels, data); 
+		labels(pixel.pos) = next_label; 
+		if (!grow(pixel, labels, data)) 
+			++next_label; 
 	}
 	// convert to smalles possible intensity range and convert the boundary label to highest 
 	// intensity value
@@ -227,27 +313,29 @@ typename TWatershed<dim>::result_type TWatershed<dim>::operator () (const Image<
 template <int dim>
 typename TWatershed<dim>::result_type TWatershed<dim>::do_filter(const CImage& image) const
 {
-	auto grad = m_togradnorm->filter(image); 
-	return mia::filter(*this, *grad);
+	return m_togradnorm ?  mia::filter(*this, *m_togradnorm->filter(image)):
+		mia::filter(*this, image); 
 }
 
 template <int dim>
 TWatershedFilterPlugin<dim>::TWatershedFilterPlugin(): 
 	watershed_traits<dim>::CPlugin("ws"), 
 	m_with_borders(false), 
-	m_thresh(0.0)
+	m_thresh(0.0), 
+	m_eval_grad(false)
 {
 	this->add_parameter("n", make_param(m_neighborhood, "sphere:r=1", false, "Neighborhood for watershead region growing")); 
 	this->add_parameter("mark", new mia::CBoolParameter(m_with_borders, false, "Mark the segmented watersheds with a special gray scale value")); 
 	this->add_parameter("thresh", new mia::CFloatParameter(m_thresh, 0, 1.0, false, "Gradient norm threshold. Bassins seperated by gradients "
 						    "with a lower norm will be joined"));  
+	this->add_parameter("evalgrad", new mia::CBoolParameter(m_eval_grad, false, "Set to 1 if the input image does not represent a gradient norm image")); 
 }
 
 template <int dim>
 typename watershed_traits<dim>::CPlugin::Product *
 TWatershedFilterPlugin<dim>::do_create() const
 {
-	return new TWatershed<dim>(m_neighborhood, m_with_borders, m_thresh);
+	return new TWatershed<dim>(m_neighborhood, m_with_borders, m_thresh, m_eval_grad);
 }
 
 template <int dim>

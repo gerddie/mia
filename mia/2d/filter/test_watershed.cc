@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE ( test_seeded_watershead )
 	P2DImage input_image(new C2DSIImage(size, image));
 	
 	
-	auto f = BOOST_TEST_create_from_plugin<C2DWatershedFilterPlugin>("ws:n=4n,mark=1"); 
+	auto f = BOOST_TEST_create_from_plugin<C2DWatershedFilterPlugin>("ws:n=4n,mark=1,evalgrad=1"); 
 	
 	auto result = f->filter(*input_image); 
 
