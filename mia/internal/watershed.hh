@@ -293,17 +293,16 @@ typename TWatershed<dim>::result_type TWatershed<dim>::operator () (const Image<
 	if (next_label < 255) {
 		Image<unsigned char> *result = new Image<unsigned char>(data.get_size(), data); 
 		transform(labels.begin(), labels.end(), result->begin(), 
-			  [](unsigned int p){ return p ? static_cast<unsigned char>(p) : 255; }); 
+			  [](unsigned int p){ return (p != boundary_label) ? static_cast<unsigned char>(p) : 255; }); 
 		r = result; 
 	}else if (next_label < std::numeric_limits<unsigned short>::max()) {
 		Image<unsigned short> *result = new Image<unsigned short>(data.get_size(), data); 
 		transform(labels.begin(), labels.end(), result->begin(), 
-			  [](unsigned int p){ return p ? static_cast<unsigned short>(p) : std::numeric_limits<unsigned short>::max(); });
+			  [](unsigned int p){ return (p != boundary_label) ? static_cast<unsigned short>(p) : std::numeric_limits<unsigned short>::max(); });
 		r = result; 
 	}else {
 		Image<unsigned int> * result = new Image<unsigned int>(data.get_size(), data); 
-		transform(labels.begin(), labels.end(), result->begin(), 
-			  [](unsigned int p){ return p ? p : std::numeric_limits<unsigned int>::max(); });
+		copy(labels.begin(), labels.end(), result->begin());
 		r = result; 
 	}
 	return PImage(r); 
