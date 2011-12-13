@@ -53,7 +53,8 @@ NS_MIA_USE;
 using namespace std;
 using namespace boost;
 
-CGradnorm::CGradnorm()
+CGradnorm::CGradnorm(bool normalize):
+	m_normalize(normalize)
 {
 }
 
@@ -84,7 +85,7 @@ CGradnorm::result_type CGradnorm::operator () (const T2DImage<T>& data) const
 		++i;
 	}
 	cvdebug() << "Gradnorm: max = " << max << "\n";
-	if (max > 0) {
+	if (max > 0 && m_normalize) {
 		max = 1.0 / max;
 		transform(result->begin(), result->end(), result->begin(), [max](float x){return x * max;});
 	}
@@ -99,13 +100,15 @@ CGradnorm::result_type CGradnorm::do_filter(const C2DImage& image) const
 
 
 C2DGradnormFilterPlugin::C2DGradnormFilterPlugin():
-	C2DFilterPlugin("gradnorm")
+	C2DFilterPlugin("gradnorm"), 
+	m_normalize(false)
 {
+	add_parameter("normalize", new CBoolParameter(m_normalize, false, "Normalize the gradient norms to range [0,1].")); 
 }
 
 C2DFilter *C2DGradnormFilterPlugin::do_create()const
 {
-	return new CGradnorm();
+	return new CGradnorm(m_normalize);
 }
 
 const string C2DGradnormFilterPlugin::do_get_descr()const

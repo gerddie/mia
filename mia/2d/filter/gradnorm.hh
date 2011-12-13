@@ -23,13 +23,14 @@ NS_BEGIN(gradnorm_2dimage_filter)
 
 class CGradnorm: public mia::C2DFilter {
 public:
-	CGradnorm();
+	CGradnorm(bool normalize);
 
 	template <typename  T>
 	CGradnorm::result_type operator () (const mia::T2DImage<T>& data) const;
 
 private:
 	CGradnorm::result_type do_filter(const mia::C2DImage& image) const;
+	bool m_normalize; 
 };
 
 
@@ -38,6 +39,7 @@ public:
 	C2DGradnormFilterPlugin();
 	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
+	bool m_normalize; 
 };
 
 NS_END

@@ -53,7 +53,51 @@ BOOST_AUTO_TEST_CASE( test_gradnorm )
 
 	P2DImage srcw(src);
 
-	auto filter = BOOST_TEST_create_from_plugin<C2DGradnormFilterPlugin>("gradnorm");	
+	auto filter = BOOST_TEST_create_from_plugin<C2DGradnormFilterPlugin>("gradnorm:normalize=1");	
+
+	P2DImage res = filter->filter(*srcw);
+
+	BOOST_CHECK_EQUAL(res->get_pixel_type(), it_float);
+	BOOST_REQUIRE(res->get_pixel_type() == it_float);
+
+	C2DFImage *resi = dynamic_cast<C2DFImage *>(res.get());
+	BOOST_REQUIRE(resi);
+
+	BOOST_CHECK_EQUAL(resi->get_size(), src->get_size());
+	BOOST_REQUIRE(resi->get_size() == src->get_size());
+
+	f = resi->begin();
+	for (size_t i = 0; i < size*size; ++i, ++f)
+		BOOST_CHECK_CLOSE(1.0 + *f, 1.0 + ref_data[i], 0.1);
+}
+
+
+BOOST_AUTO_TEST_CASE( test_gradnorm_non_normalized )
+{
+	const size_t size = 4;
+	const float src_data[size * size] = {
+		1, 1, 1, 1,
+		2, 3, 4, 2,
+		3, 4, 2, 1,
+		2, 4, 1, 2,
+	};
+
+	const float ref_data[size * size] = {
+		0, 0, 0, 0,
+		1.0f, sqrt(3.25f), sqrt(0.5f), 0,
+		0, sqrt(0.5f), sqrt(4.5f), 0,
+		0, 0.5f, 1.0f, 0,
+	};
+
+	C2DFImage *src = new C2DFImage(C2DBounds(size, size));
+
+	C2DFImage::iterator f = src->begin();
+	for (size_t i = 0; i < size*size; ++i, ++f)
+		*f = src_data[i];
+
+	P2DImage srcw(src);
+
+	auto filter = BOOST_TEST_create_from_plugin<C2DGradnormFilterPlugin>("gradnorm:normalize=0");	
 
 	P2DImage res = filter->filter(*srcw);
 
