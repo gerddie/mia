@@ -174,6 +174,7 @@ int do_main( int argc, char *argv[] )
 	string in_filename;
 	string out_filename; 
 	string out_filename2; 
+	string out_filename3; 
 	string save_feature; 
 
 	// this parameter is currently not exported - reading the image data is 
@@ -192,6 +193,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output myocardial mask", CCmdOption::required));
 	options.add(make_opt( out_filename2, "out-file-mean", 'O', "output myocardial mask created from mean"));
+	options.add(make_opt( out_filename3, "out-file-gradsum", 'G', "output myocardial mask created from mean+perf grad"));
 	options.add(make_opt( save_feature, "save-features", 'f', "save ICA features to files with this name base")); 
 
 	options.set_group("ICA");
@@ -284,6 +286,13 @@ int do_main( int argc, char *argv[] )
 						"kmeans:c=5", "binarize:min=4,max=4", "close:shape=4n" });
 	
 	
+
+	auto evalgrad = produce_2dimage_filter("gradnorm:normalize=1"); 
+	auto perf_grad = evalgrad->filter(*perf_feature); 
+	auto mean_grad = evalgrad->filter(*mean_feature); 
+	
+	auto image_adder = C2DImageCombinerPluginHandler::instance().produce("add"); 
+	auto perf_plus_mean_grad = image_adder->combine(*perf_grad, *mean_grad); 
 	
 
 	C2DImageSeries myo_prep(3); 
@@ -296,24 +305,28 @@ int do_main( int argc, char *argv[] )
 	save_image("seed.@", seed); 
 	
 	auto ws_from_perf = run_filter(*perf_feature, "sws:seed=seed.@");
-
-	
-
 	auto ws_from_perf_minus_mean = run_filter(*mean_feature, "sws:seed=seed.@");
-
+	auto ws_from_perf_plus_mean_grad = run_filter(*perf_plus_mean_grad, "sws:seed=seed.@,grad=1");
 
 	if (!save_feature.empty()) {
-		save_image(save_feature + "-all_seeds.png", run_filter(*myocard_seeds, "convert")); 
+		auto convert_to_ubyte = produce_2dimage_filter("convert"); 
+		save_image(save_feature + "-all_seeds.png", convert_to_ubyte->filter(*myocard_seeds)); 
 		save_image(save_feature + "-myo-seed.png", seed);
 		save_image(save_feature + "-perf_mrl.v", perf_feature); 
 		save_image(save_feature + "-bridge.png", RV_LV_bridge_mask); 
 		save_image(save_feature + "-lv_mask.png", LV_mask); 
 		save_image(save_feature + "-rv_mask.png", RV_mask); 
 		save_image(save_feature + "_lv_seed.png", LV_mask); 
+		save_image(save_feature + "_perf_plus_mean_grad.png", convert_to_ubyte->filter(*perf_plus_mean_grad)); 
 	
 	}
 	if (!out_filename2.empty())
 		save_image(out_filename2, run_filter(*ws_from_perf_minus_mean, "convert"));
+
+	if (!out_filename3.empty()) {
+		
+		save_image(out_filename3, run_filter(*ws_from_perf_plus_mean_grad, "convert"));
+	}
 
 	return save_image(out_filename, run_filter(*ws_from_perf, "convert")) ?  EXIT_SUCCESS : EXIT_FAILURE; 
 }
