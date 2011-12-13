@@ -194,10 +194,10 @@ bool TWatershed<dim>::grow(const PixelWithLocation& p, Image<unsigned int>& labe
 						label = first_label; 
 						has_backtracked = true; 
 					}else 
-						labels(loc) = boundary_label; 
+						labels(loc) = m_with_borders ? boundary_label : label; 
 				}
 			}else 
-				labels(loc) = boundary_label; 
+				labels(loc) = m_with_borders ? boundary_label : label;
 		} else { 
 			labels(loc) = label;
 			backtrack.push_back(loc); 
