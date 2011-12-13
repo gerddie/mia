@@ -35,6 +35,7 @@ SET(filters3dNew
   morphological 
   reorient 
   scale
+  seededwatershed
   selectbig
   sepconv 
   watershed

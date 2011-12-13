@@ -21,37 +21,21 @@
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/shape.hh>
+#include <mia/internal/dimtrait.hh>
+#include <mia/internal/seededwatershed.hh>
 
-NS_BEGIN( 
-sws_2dimage_filter)
+NS_MIA_BEGIN
 
-class C2DSeededWS : public mia::C2DFilter {
-public:
-	C2DSeededWS(const mia::C2DImageDataKey& mask_image, mia::P2DShape neighborhood, 
-		    bool with_borders, bool input_is_gradient);
-
-	template <class T>
-	typename C2DSeededWS::result_type operator () (const mia::T2DImage<T>& data) const ;
-private:
-	virtual mia::P2DImage do_filter(const mia::C2DImage& image) const;
-
-	mia::C2DImageDataKey m_label_image_key; 
-	mia::P2DShape m_neighborhood; 
-	mia::P2DFilter m_togradnorm; 
-	bool m_with_borders; 
-};
-
-class C2DSeededWSFilterPlugin: public mia::C2DFilterPlugin {
-public:
-	C2DSeededWSFilterPlugin();
-private:
-	virtual mia::C2DFilter *do_create()const;
-	virtual const std::string do_get_descr()const;
-	std::string m_seed_image_file;
-	mia::P2DShape m_neighborhood; 
-	bool m_with_borders; 
-	bool m_input_is_gradient; 
-};
+template <> 
+struct watershed_traits<2> { 
+	typedef P2DShape PNeighbourhood; 
+	typedef C2DFilterPluginHandler Handler; 
+	typedef C2DImageIOPluginHandler FileHandler; 
+}; 
 
 
-NS_END
+typedef TSeededWS<2> C2DSeededWS; 
+typedef TSeededWSFilterPlugin<2> C2DSeededWSFilterPlugin;
+
+
+NS_MIA_END

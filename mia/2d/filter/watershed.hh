@@ -30,12 +30,6 @@ NS_MIA_BEGIN
 template <> 
 struct watershed_traits<2> { 
 	typedef P2DShape PNeighbourhood; 
-	typedef C2DBounds Position;
-	typedef C2DFilter CFilter;  
-	typedef C2DFilter::Pointer PFilter; 
-	typedef C2DFilterPlugin CPlugin; 
-	typedef C2DImage CImage;
-	typedef P2DImage PImage;
 	typedef C2DFilterPluginHandler Handler; 
 }; 
 NS_MIA_END

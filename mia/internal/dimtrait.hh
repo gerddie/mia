@@ -54,15 +54,8 @@ struct scale_factor_helpers {
 template <int Dimensions> 
 struct watershed_traits { 
 	typedef dimension_traits_placeholder PNeighbourhood; 
-	typedef dimension_traits_placeholder MPosition; 
-	typedef dimension_traits_placeholder Position;
-	typedef dimension_traits_placeholder CFilter;  
-	typedef dimension_traits_placeholder PFilter; 
-	typedef dimension_traits_placeholder CPlugin; 
-	typedef dimension_traits_placeholder CUBImage; 
-	typedef dimension_traits_placeholder CImage;
-	typedef dimension_traits_placeholder PImage;
 	typedef dimension_traits_placeholder Handler; 
+	typedef dimension_traits_placeholder FileHandler; 
 }; 
 
 

@@ -24,7 +24,6 @@
 
 
 using namespace mia; 
-using namespace sws_2dimage_filter; 
 
 C2DFilterPluginHandlerTestPath filter_test_path; 
 

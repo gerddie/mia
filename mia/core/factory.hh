@@ -102,6 +102,9 @@ protected:
 	TFactoryPluginHandler(const std::list<boost::filesystem::path>& searchpath); 
         //@}
 public: 
+	/// The type of the the object this plug in hander produces 
+	typedef typename I::Product Product; 
+
 	/// The shared pointer type of the the object this plug in hander produces 
 	typedef typename I::SharedProduct ProductPtr; 
 

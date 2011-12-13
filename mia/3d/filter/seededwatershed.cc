@@ -18,28 +18,20 @@
  *
  */
 
-#include <mia/3d/3dfilter.hh>
-#include <mia/3d/3dimageio.hh>
-#include <mia/3d/shape.hh>
-#include <mia/internal/dimtrait.hh>
+#include <type_traits> 
+#include <queue> 
+#include <mia/3d/filter/seededwatershed.hh>
 
-#include <queue>
+NS_MIA_BEGIN 
 
-NS_MIA_BEGIN
-
-template <> 
-struct watershed_traits<3> { 
-	typedef P3DShape PNeighbourhood; 
-	typedef C3DFilterPluginHandler Handler; 
-}; 
-NS_MIA_END
-
-#include <mia/internal/watershed.hh>
-
-NS_MIA_BEGIN
-
-typedef TWatershedFilterPlugin<3> C3DWatershedFilterPlugin; 
-typedef TWatershed<3> C3DWatershed; 
+template class  TSeededWS<3>; 
+template class  TSeededWSFilterPlugin<3>;
 
 
-NS_MIA_END
+extern "C" EXPORT CPluginBase *get_plugin_interface()
+{
+	return new C3DSeededWSFilterPlugin();
+}
+
+
+NS_END

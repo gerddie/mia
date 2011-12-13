@@ -28,16 +28,16 @@
 NS_MIA_BEGIN 
 
 template <int dim>
-class TWatershed : public watershed_traits<dim>::CFilter {
+class TWatershed : public watershed_traits<dim>::Handler::Product {
 public:
 	typedef typename watershed_traits<dim>::PNeighbourhood  PNeighbourhood; 
 	typedef typename PNeighbourhood::element_type::value_type MPosition; 
-	typedef typename watershed_traits<dim>::Position Position; 
-	typedef typename watershed_traits<dim>::PFilter PFilter; 
-	typedef typename watershed_traits<dim>::CFilter CFilter; 
-	typedef typename CFilter::Image CImage; 
-	typedef typename watershed_traits<dim>::PImage PImage; 
 	typedef typename watershed_traits<dim>::Handler Handler; 
+	typedef typename Handler::Product CFilter; 
+	typedef typename CFilter::Pointer PFilter; 
+	typedef typename CFilter::Image CImage; 
+	typedef typename CImage::Pointer PImage; 
+	typedef typename CImage::dimsize_type Position; 
 
 
 	TWatershed(PNeighbourhood neighborhood, bool with_borders, float treash, bool eval_grad);
@@ -69,11 +69,11 @@ private:
 
 
 template <int dim>
-class TWatershedFilterPlugin: public watershed_traits<dim>::CPlugin {
+class TWatershedFilterPlugin: public watershed_traits<dim>::Handler::Interface {
 public:
 	TWatershedFilterPlugin();
 private:
-	virtual typename watershed_traits<dim>::CPlugin::Product *do_create()const;
+	virtual typename watershed_traits<dim>::Handler::Product *do_create()const;
 	virtual const std::string do_get_descr()const;
 	typename watershed_traits<dim>::PNeighbourhood m_neighborhood; 
 	bool m_with_borders; 
@@ -318,7 +318,7 @@ typename TWatershed<dim>::result_type TWatershed<dim>::do_filter(const CImage& i
 
 template <int dim>
 TWatershedFilterPlugin<dim>::TWatershedFilterPlugin(): 
-	watershed_traits<dim>::CPlugin("ws"), 
+	watershed_traits<dim>::Handler::Interface("ws"), 
 	m_with_borders(false), 
 	m_thresh(0.0), 
 	m_eval_grad(false)
@@ -331,7 +331,7 @@ TWatershedFilterPlugin<dim>::TWatershedFilterPlugin():
 }
 
 template <int dim>
-typename watershed_traits<dim>::CPlugin::Product *
+typename watershed_traits<dim>::Handler::Product *
 TWatershedFilterPlugin<dim>::do_create() const
 {
 	return new TWatershed<dim>(m_neighborhood, m_with_borders, m_thresh, m_eval_grad);

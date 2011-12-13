@@ -22,8 +22,7 @@
 #include <mia/3d/3dimageio.hh>
 #include <mia/3d/shape.hh>
 #include <mia/internal/dimtrait.hh>
-
-#include <queue>
+#include <mia/internal/seededwatershed.hh>
 
 NS_MIA_BEGIN
 
@@ -31,15 +30,12 @@ template <>
 struct watershed_traits<3> { 
 	typedef P3DShape PNeighbourhood; 
 	typedef C3DFilterPluginHandler Handler; 
+	typedef C3DImageIOPluginHandler FileHandler; 
 }; 
-NS_MIA_END
 
-#include <mia/internal/watershed.hh>
 
-NS_MIA_BEGIN
-
-typedef TWatershedFilterPlugin<3> C3DWatershedFilterPlugin; 
-typedef TWatershed<3> C3DWatershed; 
+typedef TSeededWS<3> C3DSeededWS; 
+typedef TSeededWSFilterPlugin<3> C3DSeededWSFilterPlugin;
 
 
 NS_MIA_END
