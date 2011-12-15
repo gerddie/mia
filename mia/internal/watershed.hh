@@ -113,7 +113,6 @@ bool TWatershed<dim>::grow(const PixelWithLocation& p, Image<unsigned int>& labe
 	std::vector<Position> new_positions; 
 	new_positions.reserve(m_neighborhood.size()); 
 	
-	cvdebug()<< "grow " << p.pos << "\n"; 
 	float value = p.value; 
 	unsigned int label = labels(p.pos); 
 
@@ -126,59 +125,46 @@ bool TWatershed<dim>::grow(const PixelWithLocation& p, Image<unsigned int>& labe
 	}
 
 	while (!locations.empty()) {
-		// incoming locations are always un-labelled, and the gradient value is in the equal or below the target value
+		// incoming locations are always un-labelled, and the gradient value is equal or below the target value
 		auto loc = locations.top(); 
 		locations.pop(); 
 		
 		new_positions.clear(); 
 
-		cvdebug()<< "**extend*************" << loc << "*******************\n"; 
 		unsigned int first_label = 0; 
 		bool loc_is_boundary = false; 
 
 		for (auto i = m_neighborhood.begin(); i != m_neighborhood.end() && !loc_is_boundary; ++i) {
 			Position new_pos( loc + *i);
 			
-			cvdebug()<< "  check " << new_pos << " @ "; 
-			if (! (new_pos < size) ){
-				cverb << "outside\n"; 
+			if (! (new_pos < size) )
 				continue; 
-			}
+			
 			cverb << data(new_pos); 
 
-			if (data(new_pos) > value) {
-				cverb << " gradient higher\n"; 
+			if (data(new_pos) > value)
 				continue; 
-			}
 			
 			unsigned int new_pos_label = labels(new_pos);
 			if (!new_pos_label) {
-				cverb << " empty, add to queue\n"; 
 				new_positions.push_back(new_pos); 
 				continue; 
 			}
 			
 			// already visited? 
-			if (new_pos_label == label || new_pos_label == boundary_label) {
-				cverb << " already visited\n"; 
+			if (new_pos_label == label || new_pos_label == boundary_label)
 				continue; 
-			}
 			
 			// first label hit 
 			if (!first_label) { 
 				first_label = new_pos_label; 
-				cverb << " set first label: "<< new_pos_label << "\n"; 
 			}else if (first_label != new_pos_label) {
 				// hit two different labels (apart from the original one) 
 				loc_is_boundary = true; 
-				cverb << " boundary\n"; 
-			}else {
-				cverb << " keep first label: "<< first_label << "\n"; 
 			}
 		}
 		if (first_label) {
 			if (!loc_is_boundary) {
-				cvdebug() << "Got non-boundary label " << first_label << "\n"; 
 				labels(loc) = first_label; 
 				backtrack.push_back(loc); 
 				if (first_label != label) {
@@ -188,7 +174,6 @@ bool TWatershed<dim>::grow(const PixelWithLocation& p, Image<unsigned int>& labe
 					//   first time = backtrack 
 					//   later = boundary 
 					if (!has_backtracked) {
-						cvdebug() << "Backtrack " << label << " to " << first_label << "\n"; 
 						for_each(backtrack.begin(), backtrack.end(), 
 							 [&first_label, &labels](const Position& p){labels(p) = first_label;}); 
 						label = first_label; 
@@ -202,7 +187,6 @@ bool TWatershed<dim>::grow(const PixelWithLocation& p, Image<unsigned int>& labe
 			labels(loc) = label;
 			backtrack.push_back(loc); 
 		}
-		cvdebug() << "Set " << loc << " to " << labels(loc) << "\n"; 
 		
 		if (labels(loc) != boundary_label) {
 			for_each(new_positions.begin(), new_positions.end(), 
@@ -224,7 +208,11 @@ typename TWatershed<dim>::result_type TWatershed<dim>::operator () (const Image<
 	auto sizeND =  data.get_size(); 
 	Image<unsigned int> labels(data.get_size()); 
 
-	std::priority_queue<PixelWithLocation> pixels; 
+	// evaluate the real thresh hold based on the actual gradient range 
+	auto gradient_range = std::minmax_element(data.begin(), data.end()); 
+	float thresh = m_thresh * (*gradient_range.second - *gradient_range.first) + *gradient_range.first; 
+	
+	std::priority_queue<PixelWithLocation> pixels;
 	PixelWithLocation p; 
 	auto i = data.begin_range(Position::_0, data.get_size());
 	auto e = data.end_range(Position::_0, data.get_size());
@@ -232,8 +220,8 @@ typename TWatershed<dim>::result_type TWatershed<dim>::operator () (const Image<
 	long next_label = 1; 	
 	while (i != e) {
 		p.pos = i.pos(); 
-		p.value = *i > m_thresh ? *i : m_thresh; 
-		if (p.value <= m_thresh) {
+		p.value = *i > thresh ? *i : thresh; 
+		if (p.value <= thresh) {
 			if (!*l) {
 				*l = next_label;
 				if (!grow(p, labels, data)) 
@@ -289,7 +277,7 @@ typename TWatershed<dim>::result_type TWatershed<dim>::operator () (const Image<
 	// convert to smalles possible intensity range and convert the boundary label to highest 
 	// intensity value
 	CImage *r = NULL; 
-	cvmsg() << "Got " << next_label << "distinct bassins\n"; 
+	cvmsg() << "Got " << next_label << " distinct bassins\n"; 
 	if (next_label < 255) {
 		Image<unsigned char> *result = new Image<unsigned char>(data.get_size(), data); 
 		transform(labels.begin(), labels.end(), result->begin(), 
@@ -298,7 +286,8 @@ typename TWatershed<dim>::result_type TWatershed<dim>::operator () (const Image<
 	}else if (next_label < std::numeric_limits<unsigned short>::max()) {
 		Image<unsigned short> *result = new Image<unsigned short>(data.get_size(), data); 
 		transform(labels.begin(), labels.end(), result->begin(), 
-			  [](unsigned int p){ return (p != boundary_label) ? static_cast<unsigned short>(p) : std::numeric_limits<unsigned short>::max(); });
+			  [](unsigned int p){ return (p != boundary_label) ? static_cast<unsigned short>(p) : 
+					  std::numeric_limits<unsigned short>::max(); });
 		r = result; 
 	}else {
 		Image<unsigned int> * result = new Image<unsigned int>(data.get_size(), data); 
@@ -325,8 +314,9 @@ TWatershedFilterPlugin<dim>::TWatershedFilterPlugin():
 {
 	this->add_parameter("n", make_param(m_neighborhood, "sphere:r=1", false, "Neighborhood for watershead region growing")); 
 	this->add_parameter("mark", new mia::CBoolParameter(m_with_borders, false, "Mark the segmented watersheds with a special gray scale value")); 
-	this->add_parameter("thresh", new mia::CFloatParameter(m_thresh, 0, 1.0, false, "Gradient norm threshold. Bassins seperated by gradients "
-						    "with a lower norm will be joined"));  
+	this->add_parameter("thresh", new mia::CFloatParameter(m_thresh, 0, 1.0, false, "Relative gradient norm threshold. The actual value threshhold value "
+							       "is thresh * (max_grad - min_grad) + min_grad. Bassins seperated by gradients "
+							       "with a lower norm will be joined"));  
 	this->add_parameter("evalgrad", new mia::CBoolParameter(m_eval_grad, false, "Set to 1 if the input image does not represent a gradient norm image")); 
 }
 
