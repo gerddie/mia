@@ -1,0 +1,5 @@
+- join the OptParameter with the command line parameter in order to unify the parameter handling 
+- review the xml output of the help writer to replace the text for plugins by elements 
+- review the xml output to make it possible to link the set-option sets instead of repeating them every time 
+- learn to write a XSL scheme and write one to create the HTML documentation from the help output 
+
