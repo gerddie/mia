@@ -588,13 +588,16 @@ void CSlopeStatisticsImpl::evaluate_gradient_peak(int start_movement) const
 	m_gradient_peak.first = m_series.size(); 
 	m_gradient_peak.second = 0 ;
 
-	const double f1 = 1.0/ 48.0; 
-	const double f2 = 11.0/ 24.0; 
-	size_t end = start_movement > 2 ? start_movement - 2 : m_series.size() - 2; 
+	const double f1 = 1.0/3840.0; 
+	const double f2 = 1416.0/ 23040.0; 
+	const double f3 = 17340.0/ 46080.0; 
 	
-	for (size_t i = 2; i < end; ++i) {
-		const double gradient = f1 * (m_series[i + 2] - m_series[i - 2]) + 
-			f2 * (m_series[i + 1] - m_series[i - 1]); 
+	size_t end = start_movement > 3 ? start_movement - 3 : m_series.size() - 3; 
+	
+	for (size_t i = 3; i < end; ++i) {
+		const double gradient = f1 * (m_series[i + 3] - m_series[i - 3]) + 
+			f2 * (m_series[i + 2] - m_series[i - 2]) + 
+			f3 * (m_series[i + 1] - m_series[i - 1]); 
 		if (m_gradient_peak.second < gradient) {
 			m_gradient_peak.second =  gradient; 
 			m_gradient_peak.first = i; 

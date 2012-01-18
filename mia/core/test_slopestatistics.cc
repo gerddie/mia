@@ -87,10 +87,10 @@ BOOST_AUTO_TEST_CASE( test_perfusion_mean_freq_and_energy )
 BOOST_AUTO_TEST_CASE( test_gradient  )
 {
 	vector<float> curve = {
-		 15, 12, 12,  5,-10, 
-		 -5,  0,  5, 10, -5,
-		 -6, -4,-20,-10, 0, 
-		 10, 20, 20, 19, 10 
+		 15, 12, 12, -15,-10, 
+		 -5,  0,  5, 10, 15,
+		 -6,-30,-20,-10, 0, 
+		 10, 20, 30, 20, 10 
 	};
 	CSlopeStatistics stats(curve, 0);
 

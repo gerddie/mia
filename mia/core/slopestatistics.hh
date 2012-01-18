@@ -102,7 +102,9 @@ public:
 	/// \returns index of the global maximum if the curve is shifted to start at zero and raises first
 	std::pair<size_t, float>  get_perfusion_high_peak() const;
 
-	/// \returns index and value for the maximum gradient of the curve
+	/**\param start_movement indicates the first index where a movement in the series starts. 
+	    The part after this time point will be ignored in the gradinet evaluation
+	    \returns index and value for the maximum gradient of the curve */
 	std::pair<size_t, float>  get_gradient_peak(int start_movement) const;
 
 

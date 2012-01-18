@@ -334,8 +334,10 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	const int start_movement = (ifree_breathing ||  at_begin) ? 0 : (2 * series[0].size()) / 3; 
 	
 	cvinfo() << "set start movement to "  << start_movement << "\n"; 
-	// 
 
+
+	// Properly identifying the RV and LV peak is probably the most difficult task. 
+	// this is one option how to do it ans it seems quite stable, but it is not perfect. 
 	sort(remaining_indices.begin(), remaining_indices.end(), 
 	     [&start_movement](PSlopeStatistics lhs, PSlopeStatistics rhs) {
 		     auto lhsgp = lhs->get_gradient_peak(start_movement); 
