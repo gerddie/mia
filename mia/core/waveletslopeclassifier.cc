@@ -337,7 +337,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 
 
 	// Properly identifying the RV and LV peak is probably the most difficult task. 
-	// this is one option how to do it ans it seems quite stable, but it is not perfect. 
+	// this is one option how to do it and it seems quite stable, but it is not perfect. 
 	sort(remaining_indices.begin(), remaining_indices.end(), 
 	     [&start_movement](PSlopeStatistics lhs, PSlopeStatistics rhs) {
 		     auto lhsgp = lhs->get_gradient_peak(start_movement); 
