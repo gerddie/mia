@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
  * the Point in Polygon code was converted from
  * http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
 
-   Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+   Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
