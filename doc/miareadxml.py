@@ -185,14 +185,17 @@ class CHandler:
             raise ValueError("expected 'handler' got '%s'" % (node.tag))
         self.entry = node.tag
         self.name =  node.get("name")
-        
+
+        self.users = []
         self.plugins = []
+
         for child in node:
             if child.tag == "plugin": 
                 self.plugins.append(CPlugin(child))
             else:
                 print "unexpected subnode '%s' in 'handler'"% (child.tag)
-        
+        def append_user(self, user):
+            self.users.append(user)
 
 class CDescription: 
     def __init__(self, node):
