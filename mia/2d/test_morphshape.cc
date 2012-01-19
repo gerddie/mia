@@ -72,5 +72,37 @@ BOOST_AUTO_TEST_CASE( test_mask_init_add_pixel_errors )
 
 }
 
+BOOST_AUTO_TEST_CASE( test_mask_check_rotate )
+{
+	C2DMorphShape shape; 
+	C2DMorphShape::value_type pixel1(1,0); 
+	C2DMorphShape::value_type pixel2(-1,1); 
+	C2DMorphShape::value_type pixel3( 0,1); 
+
+	C2DMorphShape::value_type pixel1r90(0, -1); 
+	C2DMorphShape::value_type pixel2r90(1,1); 
+	C2DMorphShape::value_type pixel3r90(1,0); 
+
+	shape.add_pixel(pixel1, false); 
+	shape.add_pixel(pixel2, true); 
+	shape.add_pixel(pixel3, true);
+	
+	auto rshape = shape.rotate_by_90(); 
+
+	auto fg  = rshape.get_foreground_mask(); 
+
+	BOOST_CHECK_EQUAL(fg.size(), 2u); 
+	BOOST_CHECK(fg.has_location(pixel2r90)); 
+	BOOST_CHECK(fg.has_location(pixel3r90)); 
+
+
+	auto bg  = rshape.get_background_mask(); 
+	
+	BOOST_CHECK_EQUAL(bg.size(), 1u); 	
+	BOOST_CHECK(bg.has_location(pixel1r90)); 
+
+}
+
+
 
 
