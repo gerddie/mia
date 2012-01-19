@@ -80,5 +80,19 @@ C2DShapePluginHandlerTestPath::C2DShapePluginHandlerTestPath()
 	
 }
 	
+P2DShape rotate_90_degree(const C2DShape& shape)
+{
+	P2DShape result(new C2DShape); 
+	
+	for (auto p = shape.begin(); p != shape.end(); ++p) {
+		C2DShape::value_type r; 
+
+		r.x = p->y; 
+		r.y = -p->x; 
+
+		result->insert(r); 
+	}
+	return result; 
+}
 
 NS_MIA_END

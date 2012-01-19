@@ -19,49 +19,50 @@
  */
 
 
-#include <boost/test/parameterized_test.hpp>
-#include <boost/test/unit_test.hpp>
+#include <mia/internal/autotest.hh>
 
 #include <mia/2d/shape.hh>
+#include <mia/core/test_helpers.hh>
+#include <mia/2d/imagetest.hh>
 
 NS_MIA_USE
 using namespace std; 
 using namespace boost;
-namespace bfs=::boost::filesystem; 
 
-static void setup_filter_search_path()
+C2DShapePluginHandlerTestPath test_path; 
+
+
+BOOST_AUTO_TEST_CASE( test_2dshape_handler ) 
 {
-	list< bfs::path> searchpath; 
-	if (bfs::path::default_name_check_writable())
-		bfs::path::default_name_check(bfs::portable_posix_name); 
-
-	searchpath.push_back(bfs::path("2d") / bfs::path("shapes")); 
-	searchpath.push_back(bfs::path("shapes")); 
-
-
-	C2DShapePluginHandler::set_search_path(searchpath);
-}
-
-static void test_2dshape(const C2DShapePluginHandler::value_type& i) 
-{
-	BOOST_CHECK_MESSAGE(i.second->test(true), i.second->get_long_name()); 
+	set<string> test_data = { 
+		"1n", "4n", "8n", "sphere","rectangle", "square"
+	}; 
+	test_plugin_names_and_count<C2DShapePluginHandler>(test_data); 
 }
 
 
-static void test_2dshape_handler() 
+
+BOOST_AUTO_TEST_CASE( test_shape_rotate_rotation_symetrics ) 
 {
-	BOOST_CHECK(C2DShapePluginHandler::instance().size() == 3); 
+	set<string> test_data = { 
+		"1n", "4n", "8n", "sphere:r=3","square"
+	};
+
+	for (auto s = test_data.begin(); s != test_data.end(); ++s) {
+		auto shape = produce_2d_shape(*s);
+		P2DShape rshape = rotate_90_degree(*shape);
+		test_image_equal(rshape->get_mask(), shape->get_mask());
+	}
+	
 }
 
-
-void add_2dshape_plugin_tests( boost::unit_test::test_suite* suite)
+BOOST_AUTO_TEST_CASE( test_shape_rotate_nonsymetric ) 
 {
-	setup_filter_search_path(); 
+	auto initial_shape = produce_2d_shape("rectangle:height=2,width=4"); 
+	auto test_shape = produce_2d_shape("rectangle:height=4,width=2");
 
-	suite->add( BOOST_TEST_CASE(&test_2dshape_handler)); 
-
-	suite->add( BOOST_PARAM_TEST_CASE(&test_2dshape, 
-					  C2DShapePluginHandler::instance().begin(), 
-					  C2DShapePluginHandler::instance().end()
-			    )); 
+	P2DShape rshape = rotate_90_degree(*initial_shape);
+	
+	test_image_equal(rshape->get_mask(), test_shape->get_mask());
+	
 }

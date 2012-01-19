@@ -18,6 +18,9 @@
  *
  */
 
+#ifndef mia_internal_autotest_hh
+#define mia_internal_autotest_hh
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -61,3 +64,5 @@ main( int argc, char* argv[] )
 	cvdebug() << "Initialize test ...\n"; 
 	return ::boost::unit_test::unit_test_main( &init_unit_test, argc, argv );
 }
+
+#endif 

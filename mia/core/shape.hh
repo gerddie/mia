@@ -102,8 +102,10 @@ public:
 
 	/// \returns the number of points in the shape definition 
 	typename Flat::size_type size() const; 
-protected:
-	/// insert another pixel coordinate
+
+	/** insert another pixel coordinate
+	    \param p the pixel coordinate to be added 
+	 */
 	void insert(const T<int>& p);
 private:
 	Flat m_shape;
