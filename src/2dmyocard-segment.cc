@@ -107,6 +107,43 @@ C2DFImage FAcuumulateGradients::get_result() const
 	return m_sum; 
 }
 
+class FAcuumulateImages: public TFilter<int>  {
+public:
+	FAcuumulateImages(const C2DBounds& size); 
+
+	template <typename T> 
+	int operator () (const T2DImage<T>& image); 
+
+	C2DFImage get_result() const; 
+private: 
+	C2DFImage m_sum; 
+}; 
+
+FAcuumulateImages::FAcuumulateImages(const C2DBounds& size):
+	m_sum(size)
+{
+}
+
+template <typename T> 
+int FAcuumulateImages::operator () (const T2DImage<T>& image)
+{
+	if (m_sum.get_size() != image.get_size()) {
+		THROW(invalid_argument, "Input image has size " << image.get_size() 
+		      << " but expect " << m_sum.get_size()); 
+	}
+
+	transform(m_sum.begin(), m_sum.end(), image.begin(), m_sum.begin(), 
+		  [](float s, T i){return s + i;});
+	return 0;
+}
+
+C2DFImage FAcuumulateImages::get_result() const
+{
+	return m_sum; 
+}
+
+
+
 
 P2DImage evaluate_bridge_mask(P2DImage RV_mask, P2DImage LV_mask)
 {
@@ -230,8 +267,8 @@ int do_main( int argc, char *argv[] )
 	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output myocardial mask", CCmdOption::required));
-	options.add(make_opt( out_filename2, "out-file-mean", 'O', "output myocardial mask created from mean"));
-	options.add(make_opt( out_filename3, "out-file-gradsum", 'G', "output myocardial mask created from mean+perf grad"));
+	options.add(make_opt( out_filename2, "out-file-mean", 'O', "output myocardial mask created from meangrad + perfgrad "));
+	options.add(make_opt( out_filename3, "out-file-gradsum", 'G', "output myocardial mask created from grad sum over all images"));
 	options.add(make_opt( save_feature, "save-features", 'f', "save ICA features to files with this name base")); 
 
 	options.set_group("ICA");
@@ -313,15 +350,30 @@ int do_main( int argc, char *argv[] )
 	auto LV_mask = grow_seed(LV_feature, cavity_filters.run(LV_feature)); 
 	
 
+
 	auto RV_LV_bridge_mask = evaluate_bridge_mask(RV_mask, LV_mask); 
 	save_image("bridge.@", RV_LV_bridge_mask); 
 
 	auto image_subtractor = C2DImageCombinerPluginHandler::instance().produce("sub"); 
+	auto image_adder = C2DImageCombinerPluginHandler::instance().produce("add"); 
+
+	auto perflvsum = image_adder->combine(*perf_feature, *LV_feature);
+	perflvsum = image_adder->combine(*perflvsum, *mean_feature);
+
+	auto evalgrad = produce_2dimage_filter("gradnorm:normalize=1"); 
+	auto gperflvsum = evalgrad->filter(*perflvsum);
+	auto perf_grad = evalgrad->filter(*perf_feature); 
+	auto mean_grad = evalgrad->filter(*mean_feature); 
+	auto perf_plus_mean_grad = image_adder->combine(*perf_grad, *mean_grad); 
+
+	auto gperflvsumpmg = image_adder->combine(*gperflvsum, *mean_grad); 
 	
-	perf_feature = image_subtractor->combine(*perf_feature, *RV_feature); 
-	perf_feature = image_subtractor->combine(*perf_feature, *LV_feature); 
+
 	
-	auto myocard_seeds = run_filter_chain(perf_feature, 
+	auto perf_feature_minus_cavities = image_subtractor->combine(*perf_feature, *RV_feature); 
+	perf_feature_minus_cavities = image_subtractor->combine(*perf_feature_minus_cavities, *LV_feature); 
+	
+	auto myocard_seeds = run_filter_chain(perf_feature_minus_cavities, 
 					      {	"mask:input=bridge.@,fill=min", 
 						"kmeans:c=5", "binarize:min=4,max=4", "close:shape=4n" });
 	
@@ -332,12 +384,11 @@ int do_main( int argc, char *argv[] )
 
 	auto sum_grad = facc.get_result(); 
 				  
-	auto evalgrad = produce_2dimage_filter("gradnorm:normalize=1"); 
-	auto perf_grad = evalgrad->filter(*perf_feature); 
-	auto mean_grad = evalgrad->filter(*mean_feature); 
+
 	
-	auto image_adder = C2DImageCombinerPluginHandler::instance().produce("add"); 
-	auto perf_plus_mean_grad = image_adder->combine(*perf_grad, *mean_grad); 
+
+	
+
 	
 
 	C2DImageSeries myo_prep(3); 
@@ -349,9 +400,10 @@ int do_main( int argc, char *argv[] )
 
 	save_image("seed.@", seed); 
 	
-	auto ws_from_perf = run_filter(*perf_feature, "sws:seed=seed.@");
-	auto ws_from_perf_minus_mean = run_filter(*mean_feature, "sws:seed=seed.@");
+	auto ws_from_perf_minus_cavities = run_filter(*perf_feature_minus_cavities, "sws:seed=seed.@");
 	auto ws_from_sum_grad = run_filter(sum_grad, "sws:seed=seed.@,grad=1");
+
+	auto ws_from_gperflvsumpmg = run_filter(sum_grad, "sws:seed=seed.@,grad=1");
 
 	auto ws_from_perf_plus_mean_grad = run_filter(*perf_plus_mean_grad, "sws:seed=seed.@,grad=1");
 
@@ -364,19 +416,20 @@ int do_main( int argc, char *argv[] )
 		save_image(save_feature + "-lv_mask.png", LV_mask); 
 		save_image(save_feature + "-rv_mask.png", RV_mask); 
 		save_image(save_feature + "_lv_seed.png", LV_mask); 
+		save_image(save_feature + "_perflvsum.png", convert_to_ubyte->filter(*perflvsum)); 
 		save_image(save_feature + "_perf_plus_mean_grad.png", convert_to_ubyte->filter(*perf_plus_mean_grad)); 
 		save_image(save_feature + "_sum_grad.png", convert_to_ubyte->filter(sum_grad));
-	
+		
 	}
 	if (!out_filename2.empty())
-		save_image(out_filename2, run_filter(*ws_from_perf_minus_mean, "convert"));
+		save_image(out_filename2, run_filter(*ws_from_perf_plus_mean_grad, "convert"));
 
 	if (!out_filename3.empty()) {
 		
-		save_image(out_filename3, run_filter(*ws_from_sum_grad, "convert"));
+		save_image(out_filename3, run_filter(*ws_from_gperflvsumpmg, "convert"));
 	}
 
-	return save_image(out_filename, run_filter(*ws_from_perf, "convert")) ?  EXIT_SUCCESS : EXIT_FAILURE; 
+	return save_image(out_filename, run_filter(*ws_from_perf_minus_cavities, "convert")) ?  EXIT_SUCCESS : EXIT_FAILURE; 
 }
 
 #include <mia/internal/main.hh>
