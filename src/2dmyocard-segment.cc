@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,6 +69,44 @@ public:
 private: 
 	FConvert2DImage2float m_converter; 
 }; 
+
+
+class FAcuumulateGradients: public TFilter<int>  {
+public:
+	FAcuumulateGradients(const C2DBounds& size); 
+
+	template <typename T> 
+	int operator () (const T2DImage<T>& image); 
+
+	C2DFImage get_result() const; 
+private: 
+	C2DFImage m_sum; 
+}; 
+
+FAcuumulateGradients::FAcuumulateGradients(const C2DBounds& size):
+	m_sum(size)
+{
+}
+
+template <typename T> 
+int FAcuumulateGradients::operator () (const T2DImage<T>& image)
+{
+	if (m_sum.get_size() != image.get_size()) {
+		THROW(invalid_argument, "Input image has size " << image.get_size() 
+		      << " but expect " << m_sum.get_size()); 
+	}
+	auto vf = get_gradient(image);
+	transform(m_sum.begin(), m_sum.end(), vf.begin(), m_sum.begin(), 
+		  [](float s, const C2DFVector& v){float vn = v.norm(); 
+			  return s > vn ? s : vn;});
+	return 0;
+}
+
+C2DFImage FAcuumulateGradients::get_result() const
+{
+	return m_sum; 
+}
+
 
 P2DImage evaluate_bridge_mask(P2DImage RV_mask, P2DImage LV_mask)
 {
@@ -241,6 +279,8 @@ int do_main( int argc, char *argv[] )
 		rv_idx = ica->get_RV_idx(); 
 		lv_idx = ica->get_LV_idx(); 
 		perf_idx = ica->get_perfusion_idx(); 
+		if (perf_idx >= 0) 
+			components = test_components; 
 		
 	} while (!components && (rv_idx < 0 || lv_idx < 0 || perf_idx < 0) && test_components < 6); 
 
@@ -286,7 +326,12 @@ int do_main( int argc, char *argv[] )
 						"kmeans:c=5", "binarize:min=4,max=4", "close:shape=4n" });
 	
 	
+	FAcuumulateGradients facc(mean_feature->get_size());
+	for_each ( input_images.begin() + skip_images, input_images.end(), 
+		   [&facc](P2DImage img) {mia::accumulate(facc, *img);}); 
 
+	auto sum_grad = facc.get_result(); 
+				  
 	auto evalgrad = produce_2dimage_filter("gradnorm:normalize=1"); 
 	auto perf_grad = evalgrad->filter(*perf_feature); 
 	auto mean_grad = evalgrad->filter(*mean_feature); 
@@ -306,6 +351,8 @@ int do_main( int argc, char *argv[] )
 	
 	auto ws_from_perf = run_filter(*perf_feature, "sws:seed=seed.@");
 	auto ws_from_perf_minus_mean = run_filter(*mean_feature, "sws:seed=seed.@");
+	auto ws_from_sum_grad = run_filter(sum_grad, "sws:seed=seed.@,grad=1");
+
 	auto ws_from_perf_plus_mean_grad = run_filter(*perf_plus_mean_grad, "sws:seed=seed.@,grad=1");
 
 	if (!save_feature.empty()) {
@@ -318,6 +365,7 @@ int do_main( int argc, char *argv[] )
 		save_image(save_feature + "-rv_mask.png", RV_mask); 
 		save_image(save_feature + "_lv_seed.png", LV_mask); 
 		save_image(save_feature + "_perf_plus_mean_grad.png", convert_to_ubyte->filter(*perf_plus_mean_grad)); 
+		save_image(save_feature + "_sum_grad.png", convert_to_ubyte->filter(sum_grad));
 	
 	}
 	if (!out_filename2.empty())
@@ -325,7 +373,7 @@ int do_main( int argc, char *argv[] )
 
 	if (!out_filename3.empty()) {
 		
-		save_image(out_filename3, run_filter(*ws_from_perf_plus_mean_grad, "convert"));
+		save_image(out_filename3, run_filter(*ws_from_sum_grad, "convert"));
 	}
 
 	return save_image(out_filename, run_filter(*ws_from_perf, "convert")) ?  EXIT_SUCCESS : EXIT_FAILURE; 
