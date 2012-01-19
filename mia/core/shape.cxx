@@ -27,7 +27,6 @@
 
 #include <string>
 #include <mia/core/shape.hh>
-#include <mia/core/handler.cxx>
 
 NS_MIA_BEGIN
 
@@ -68,6 +67,12 @@ void TShape<T,M>::insert(const T<int>& p)
 {
 	m_shape.insert(p); 
 	__adjust<T<int> >::apply(m_size,p);
+}
+
+template <template <typename> class  T, typename M>
+bool TShape<T,M>::has_location(const T<int>& p) const
+{
+	return (m_shape.find(p) != m_shape.end()); 
 }
 
 template <template <typename> class  T, typename M>

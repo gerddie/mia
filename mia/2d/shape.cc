@@ -46,6 +46,7 @@
 
 #include <mia/2d/shape.hh>
 #include <mia/core/plugin_base.cxx>
+#include <mia/core/handler.cxx>
 #include <mia/core/shape.cxx>
 
 NS_MIA_BEGIN

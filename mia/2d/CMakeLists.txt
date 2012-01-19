@@ -42,6 +42,7 @@ SET(MIA2D_SRC_BASE
   filterchain.cc
   model.cc
   modelsolverreg.cc
+  morphshape.cc
   multicost.cc
   nfg.cc
   nonrigidregister.cc 
@@ -123,6 +124,7 @@ SET(MIA2D_HEADERS_BASE
   matrix.hh
   model.hh
   modelsolverreg.hh
+  morphshape.hh
   multicost.hh
   nonrigidregister.hh
   nfg.hh
@@ -207,6 +209,7 @@ TEST_2DMIA(similarity_profile mia2dtest)
 TEST_2DMIA(transio mia2d)
 TEST_2DMIA(transform mia2dtest)
 TEST_2DMIA(shape mia2dtest)
+TEST_2DMIA(morphshape mia2dtest)
 TEST_2DMIA(2dimageio mia2dtest)
 TEST_2DMIA(sparse_image_solver mia2dtest)
 #TEST_2DMIA(fullcost_mi_spline  mia2dtest)

@@ -45,6 +45,7 @@
 
 
 #include <mia/3d/shape.hh>
+#include <mia/core/handler.cxx>
 #include <mia/core/plugin_base.cxx>
 #include <mia/core/shape.cxx>
 

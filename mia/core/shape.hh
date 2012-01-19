@@ -107,6 +107,13 @@ public:
 	    \param p the pixel coordinate to be added 
 	 */
 	void insert(const T<int>& p);
+
+	/**
+	   Test if a certain pixel location is set in the shape
+	   \param p the pixel position 
+	   \returns true if the pixel location is part of the shape 
+	 */
+	bool has_location(const T<int>& p) const; 
 private:
 	Flat m_shape;
 	T<int> m_size;
