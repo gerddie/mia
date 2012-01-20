@@ -50,7 +50,8 @@ public:
 
 	/// default constructor
 	C2DMorphShape(); 
-	
+
+
 	/**
 	   Constructor to create the mask from given shapes for background and foreground 
 	   mask locations. Note, that these two masks must not overlap. 

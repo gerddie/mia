@@ -66,6 +66,7 @@ SET(filters2dNew_base
   sepconv
   shaped_mean
   tee
+  thinning 
   thresh
   watershed
 )

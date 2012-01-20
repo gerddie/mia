@@ -47,6 +47,12 @@ C2DMorphShape::C2DMorphShape(P2DShape foreground_mask, P2DShape background_mask)
 	
 void C2DMorphShape::add_pixel(const value_type& pixel, bool foreground)
 {
+	if (!m_background_mask.unique()) 
+		m_background_mask = P2DShape(new C2DShape(*m_background_mask)); 
+	if (!m_foreground_mask.unique()) 
+		m_foreground_mask = P2DShape(new C2DShape(*m_foreground_mask)); 
+
+	
 	if (foreground) {
 		if (m_background_mask->has_location(pixel)) {
 			THROW(invalid_argument, "Pixel location " << pixel << 
@@ -190,10 +196,8 @@ size_t morph_thinning_2d(C2DBitImage& target, const C2DBitImage& source, const C
 			}
 			if (hit) {
 				*res_i = false; 
-				if (*src_i) {
+				if (*src_i)
 					++changed_pixels; 
-					cvdebug() << "delete " << x << ", " << y << "\n"; 
-				}
 			}
 		}
 	return changed_pixels; 

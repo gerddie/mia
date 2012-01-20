@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE( test_thinning )
 	}; 
 
 
-	vector<bool> test_image = {
+	vector<bool> test_image_1 = {
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -199,26 +199,84 @@ BOOST_AUTO_TEST_CASE( test_thinning )
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	}; 
+
+	vector<bool> test_image_2 = {
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 4
+		0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, // 9
+		0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, // 9 
+		0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, // 5
+		0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, // 6
+		0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, // 4
+		0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, // 6
+		0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, // 9
+		0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, // 9 
+		0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, // 6
+		0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 1 = 68
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	}; 
+
+
+	vector<bool> test_image_3 = {
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 4
+		0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, // 9
+		0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, // 9 
+		0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, // 5
+		0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, // 6
+		0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, // 4
+		0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, // 6
+		0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, // 9
+		0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, // 9 
+		0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, // 6
+		0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 1 = 68
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	}; 
 	
 	// the "find singular pixel" shape
-	C2DMorphShape shape; 
+	C2DMorphShape shape1; 
 
-	shape.add_pixel(-1, -1, false); 
-	shape.add_pixel( 0, -1, false); 
-	shape.add_pixel( 1, -1, false); 
-	shape.add_pixel( 0,  0, true); 
-	shape.add_pixel(-1,  1, true); 
-	shape.add_pixel( 0,  1, true); 
-	shape.add_pixel( 1,  1, true); 
+	shape1.add_pixel(-1, -1, false); 
+	shape1.add_pixel( 0, -1, false); 
+	shape1.add_pixel( 1, -1, false); 
+	shape1.add_pixel( 0,  0, true); 
+	shape1.add_pixel(-1,  1, true); 
+	shape1.add_pixel( 0,  1, true); 
+	shape1.add_pixel( 1,  1, true); 
+
+	C2DMorphShape shape2; 
+	shape2.add_pixel( 0, -1, false); 
+	shape2.add_pixel( 1, -1, false); 
+	shape2.add_pixel( 1,  0, false); 
+
+	shape2.add_pixel( 0,  0, true); 
+	shape2.add_pixel(-1,  0, true); 
+	shape2.add_pixel( 0,  1, true); 
+
 
 
 	C2DBitImage source(size, input_image); 
 	C2DBitImage target(size); 
-	C2DBitImage expect(size, test_image); 
+	C2DBitImage expect1(size, test_image_1); 
+	C2DBitImage expect2(size, test_image_2);
+	C2DBitImage expect3(size, test_image_3);
 
-	BOOST_CHECK_EQUAL(morph_thinning_2d(target, source, shape), 9u);
+	BOOST_CHECK_EQUAL(morph_thinning_2d(target, source, shape1), 9u);
 	
-	test_image_equal(target, expect);
+	test_image_equal(target, expect1);
+
+	BOOST_CHECK_EQUAL(morph_thinning_2d(source, target, shape2), 4u);
+	test_image_equal(source, expect2);
+
+	BOOST_CHECK_EQUAL(morph_thinning_2d(target, source,  shape1.rotate_by_90()), 5u);
+	test_image_equal(target, expect3);
+	
 
 
 }
