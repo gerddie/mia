@@ -146,4 +146,57 @@ size_t morph_hit_and_miss_2d(C2DBitImage& target, const C2DBitImage& source, con
 		}
 	return changed_pixels; 
 }
+
+/*
+   - This could be parallized
+   - using abit-image with the infamous vector<bool> implementation is probably a 
+     bad idea. 
+ */
+
+size_t morph_thinning_2d(C2DBitImage& target, const C2DBitImage& source, const C2DMorphShape& shape)
+{
+	assert(target.get_size() == source.get_size()); 
+	
+	size_t changed_pixels = 0; 
+
+	const C2DBounds& size = source.get_size();
+	auto res_i = target.begin();
+	auto src_i = source.begin(); 
+	
+	copy(source.begin(), source.end(), target.begin()); 
+	
+	for (size_t y = 0; y < size.y; ++y)
+		for (size_t x = 0; x < size.x; ++x, ++res_i, ++src_i) {
+			bool hit = true; 
+
+			auto fgi = shape.get_foreground_mask().begin(); 
+			auto fge = shape.get_foreground_mask().end();
+
+			while (hit && fgi != fge) {
+				C2DBounds nl(x + fgi->x, y + fgi->y);
+				if (nl < size)
+					hit &= source(nl); 
+				++fgi; 
+			}
+			
+			auto bgi = shape.get_background_mask().begin(); 
+			auto bge = shape.get_background_mask().end();
+			
+			while (hit && bgi != bge) {
+				C2DBounds nl(x + bgi->x, y + bgi->y);
+				if (nl < size)
+					hit &= !source(nl); 
+				++bgi; 
+			}
+			if (hit) {
+				*res_i = false; 
+				if (*src_i) {
+					++changed_pixels; 
+					cvdebug() << "delete " << x << ", " << y << "\n"; 
+				}
+			}
+		}
+	return changed_pixels; 
+}
+
 NS_MIA_END
