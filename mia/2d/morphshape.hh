@@ -129,6 +129,16 @@ inline P2DMorphShape produce_2d_morphshape(const std::string& descr)
  */
 size_t morph_hit_and_miss_2d(C2DBitImage& target, const C2DBitImage& source, const C2DMorphShape& shape);
 
+/**
+   Implements the thinning transformation on a binary image with a given 
+   morphshape. 
+   \param[in, out] target output bitmap, the image must be allocated and of the same size like the input image
+   \param[in] src input image 
+   \param[in] shape structuring element to be used in the operation 
+   \returns number of set pixels
+ */
+size_t morph_thinning_2d(C2DBitImage& target, const C2DBitImage& source, const C2DMorphShape& shape);
+
 
 NS_MIA_END
 
