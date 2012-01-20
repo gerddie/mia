@@ -64,6 +64,11 @@ void C2DMorphShape::add_pixel(const value_type& pixel, bool foreground)
 	}
 }
 
+void C2DMorphShape::add_pixel(int x, int y, bool foreground)
+{
+	add_pixel(value_type(x,y), foreground);
+}
+
 const C2DShape& C2DMorphShape::get_foreground_mask() const 
 {
 	return *m_foreground_mask; 

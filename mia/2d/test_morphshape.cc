@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE( test_mask_check_rotate )
 	C2DMorphShape::value_type pixel2r90(1,1); 
 	C2DMorphShape::value_type pixel3r90(1,0); 
 
-	shape.add_pixel(pixel1, false); 
+	shape.add_pixel(1, 0, false); 
 	shape.add_pixel(pixel2, true); 
 	shape.add_pixel(pixel3, true);
 	

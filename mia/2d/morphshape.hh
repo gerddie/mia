@@ -68,6 +68,15 @@ public:
 	   and to false if the pixel belongs to the background.
 	 */
 	void add_pixel(const value_type& pixel, bool foreground); 
+
+	/**
+	   Add a pixel to either the foreground or the background mask
+	   \param x x-coordinate of the pixel location 
+	   \param y y-coordinate of the pixel location 
+	   \param foreground set to true if the pixel goes to the foreground mask 
+	   and to false if the pixel belongs to the background.
+	 */
+	void add_pixel(int x, int y, bool foreground); 
 	
 
 	/// \returns the foreground mask 
