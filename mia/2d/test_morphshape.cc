@@ -20,6 +20,7 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/2d/morphshape.hh>
+#include <mia/2d/imagetest.hh>
 
 NS_MIA_USE; 
 
@@ -104,5 +105,54 @@ BOOST_AUTO_TEST_CASE( test_mask_check_rotate )
 }
 
 
+
+BOOST_AUTO_TEST_CASE( test_simple_hit_and_miss ) 
+{
+	const C2DBounds size(9, 7); 
+	
+	vector<bool> input_image = {
+		0, 1, 1, 0, 1, 0, 1, 0, 0, 
+		0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 1, 1, 0, 0,
+		0, 1, 0, 1, 0, 0, 1, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 1, 0,
+		0, 0, 0, 0, 1, 0, 0, 1, 0,
+		0, 1, 0, 0, 0, 0, 0, 0, 0
+	}; 
+
+	vector<bool> test_image = {
+		0, 0, 0, 0, 1, 0, 1, 0, 0, 
+		0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 1, 0, 1, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 1, 0, 0, 0, 0,
+		0, 1, 0, 0, 0, 0, 0, 0, 0
+	}; 
+	
+	// the "find singular pixel" shape
+	C2DMorphShape shape; 
+	shape.add_pixel(C2DMorphShape::value_type(0,0), true); 
+
+	shape.add_pixel(C2DMorphShape::value_type(-1,-1), false); 
+	shape.add_pixel(C2DMorphShape::value_type(-1, 0), false); 
+	shape.add_pixel(C2DMorphShape::value_type(-1, 1), false); 
+	shape.add_pixel(C2DMorphShape::value_type( 0,-1), false); 
+	shape.add_pixel(C2DMorphShape::value_type( 0, 1), false); 
+	shape.add_pixel(C2DMorphShape::value_type( 1,-1), false); 
+	shape.add_pixel(C2DMorphShape::value_type( 1, 0), false); 
+	shape.add_pixel(C2DMorphShape::value_type( 1, 1), false); 
+
+	
+	C2DBitImage source(size, input_image); 
+	C2DBitImage target(size); 
+	C2DBitImage expect(size, test_image); 
+
+	BOOST_CHECK_EQUAL(morph_hit_and_miss_2d(target, source, shape), 7u);
+	
+	test_image_equal(target, expect);
+
+
+}
 
 

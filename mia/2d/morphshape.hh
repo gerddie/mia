@@ -34,8 +34,14 @@ NS_MIA_BEGIN
     like thinning, pruning, corner detection, and the likes.
 */
 
-class C2DMorphShape {
+class C2DMorphShape : public CProductBase{
 public: 
+	typedef C2DImage plugin_data; 
+	
+	typedef C2DMorphShape plugin_type; 
+
+	static const char *type_descr;
+
 	/// The pointer type of the class 
 	typedef std::shared_ptr<C2DMorphShape> Pointer; 
 
@@ -80,6 +86,40 @@ private:
 
 /// The pointer type for the morp shape class. 
 typedef C2DMorphShape::Pointer P2DMorphShape; 
+
+
+/// Base class for Shape generating plug-ins 
+typedef TFactory<C2DMorphShape> C2DMorphShapePlugin;
+
+/// Plug-in handler for the morphshape plug-ins 
+typedef THandlerSingleton<TFactoryPluginHandler<C2DMorphShapePlugin> > C2DMorphShapePluginHandler;
+
+class EXPORT_2D C2DMorphShapePluginHandlerTestPath {
+public: 
+	C2DMorphShapePluginHandlerTestPath(); 
+}; 
+
+/**
+   Convenience function to produce a morphshape from a plugin
+   \param shape_descr the description of the morphshape 
+   \returns the newly created morphshape 
+*/
+
+inline P2DMorphShape produce_2d_morphshape(const std::string& descr) 
+{
+	return C2DMorphShapePluginHandler::instance().produce(descr); 
+}
+
+/**
+   Implements the hit-and-miss transformation on a binary image with a given 
+   morphshape. 
+   \param[in, out] target output bitmap, the image must be allocated and of the same size like the input image
+   \param[in] src input image 
+   \param[in] shape structuring element to be used in the operation 
+   \returns number of set pixels
+ */
+size_t morph_hit_and_miss_2d(C2DBitImage& target, const C2DBitImage& source, const C2DMorphShape& shape);
+
 
 NS_MIA_END
 

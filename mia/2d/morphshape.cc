@@ -20,6 +20,8 @@
 
 #include <mia/2d/morphshape.hh>
 #include <stdexcept>
+#include <mia/core/plugin_base.cxx>
+#include <mia/core/handler.cxx>
 
 NS_MIA_BEGIN
 
@@ -79,5 +81,64 @@ C2DMorphShape C2DMorphShape::rotate_by_90() const
 			     rotate_90_degree(*m_background_mask)); 
 }
 
-NS_MIA_END
+EXPLICIT_INSTANCE_HANDLER(C2DMorphShape);
 
+using boost::filesystem::path; 
+C2DMorphShapePluginHandlerTestPath::C2DMorphShapePluginHandlerTestPath()
+{
+	list< path> sksearchpath; 
+	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/2d/morphshapes"));
+	C2DMorphShapePluginHandler::set_search_path(sksearchpath); 
+	
+}
+
+const char *C2DMorphShape::type_descr = "morphshapes";
+
+
+/*
+   - This could be parallized
+   - using abit-image with the infamous vector<bool> implementation is probably a 
+     bad idea. 
+ */
+
+size_t morph_hit_and_miss_2d(C2DBitImage& target, const C2DBitImage& source, const C2DMorphShape& shape)
+{
+	assert(target.get_size() == source.get_size()); 
+	
+	size_t changed_pixels = 0; 
+
+	const C2DBounds& size = source.get_size();
+	auto res_i = target.begin();
+	auto src_i = source.begin(); 
+	
+	
+	for (size_t y = 0; y < size.y; ++y)
+		for (size_t x = 0; x < size.x; ++x, ++res_i, ++src_i) {
+			bool hit = true; 
+
+			auto fgi = shape.get_foreground_mask().begin(); 
+			auto fge = shape.get_foreground_mask().end();
+
+			while (hit && fgi != fge) {
+				C2DBounds nl(x + fgi->x, y + fgi->y);
+				if (nl < size)
+					hit &= source(nl); 
+				++fgi; 
+			}
+			
+			auto bgi = shape.get_background_mask().begin(); 
+			auto bge = shape.get_background_mask().end();
+			
+			while (hit && bgi != bge) {
+				C2DBounds nl(x + bgi->x, y + bgi->y);
+				if (nl < size)
+					hit &= !source(nl); 
+				++bgi; 
+			}
+			*res_i = hit; 
+			if (hit != *src_i) 
+				++changed_pixels; 
+		}
+	return changed_pixels; 
+}
+NS_MIA_END

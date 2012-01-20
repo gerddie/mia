@@ -66,3 +66,5 @@ BOOST_AUTO_TEST_CASE( test_shape_rotate_nonsymetric )
 	test_image_equal(rshape->get_mask(), test_shape->get_mask());
 	
 }
+
+
