@@ -71,6 +71,18 @@ private:
 }; 
 
 
+class CHasNonzeroPixels: public TFilter<bool>  {
+public: 
+	template <typename T> 
+	bool operator () (const T2DImage<T>& image) const {
+		for (auto i = image.begin(); i != image.end(); ++i) {
+			if (*i) 
+				return true; 
+		}
+		return false; 
+	}
+}; 
+
 class FAcuumulateGradients: public TFilter<int>  {
 public:
 	FAcuumulateGradients(const C2DBounds& size); 
@@ -385,27 +397,55 @@ int do_main( int argc, char *argv[] )
 	auto sum_grad = facc.get_result(); 
 				  
 
-	
-
-	
-
-	
-
 	C2DImageSeries myo_prep(3); 
 	myo_prep[0] = myocard_seeds; 
-	myo_prep[1] = RV_mask; 
-	myo_prep[2] = LV_mask; 
+	myo_prep[1] = LV_mask; 
+	myo_prep[2] = RV_mask; 
+
 
 	P2DImage seed = combine_with_boundary(myo_prep); 
 
 	save_image("seed.@", seed); 
 	
-	auto ws_from_perf_minus_cavities = run_filter(*perf_feature_minus_cavities, "sws:seed=seed.@");
-	auto ws_from_sum_grad = run_filter(sum_grad, "sws:seed=seed.@,grad=1");
-
-	auto ws_from_gperflvsumpmg = run_filter(sum_grad, "sws:seed=seed.@,grad=1");
-
 	auto ws_from_perf_plus_mean_grad = run_filter(*perf_plus_mean_grad, "sws:seed=seed.@,grad=1");
+	
+	
+	C2DImageFilterChain make_circle({"thinning", "pruning", "thinning", "pruning"}); 
+	CHasNonzeroPixels count_pixels; 
+
+	// now run several approaches to get the shape of the myocardium 
+	auto myo_binmask = run_filter(*ws_from_perf_plus_mean_grad, "binarize:min=1,max=1");
+	auto myo_binmask_circle = make_circle.run(myo_binmask); 
+	
+	if (!mia::filter(count_pixels, *myo_binmask_circle)) {
+		cvmsg() << "Try Myocard + LV\n"; 
+		// no circular shape extracted, try something else
+		auto myo_and_lv = run_filter(*ws_from_perf_plus_mean_grad, "binarize:min=1,max=2");
+		// subtract lv mask 
+		auto lv_inverse = run_filter(*LV_mask, "invert");
+		save_image("lv_inverse.@", lv_inverse); 
+		
+		myo_binmask = run_filter(*myo_and_lv, "mask:input=lv_inverse.@,fill=zero");
+		myo_binmask_circle = make_circle.run(myo_binmask);
+		
+		// last try add all non-background pixels and subtract RV and LV cavity 
+		if (!mia::filter(count_pixels, *myo_binmask_circle)) {
+			cvmsg() << "Try all sections\n"; 
+			auto myo_and_lv_rv = run_filter(*ws_from_perf_plus_mean_grad, "binarize:min=1,max=3");
+			auto rv_inverse = run_filter(*RV_mask, "invert");
+			save_image("rv_inverse.@", rv_inverse);
+			myo_binmask = run_filter_chain(myo_and_lv_rv, {"mask:input=rv_inverse.@,fill=zero", 
+						"mask:input=lv_inverse.@,fill=zero"}); 
+			myo_binmask_circle = make_circle.run(myo_binmask);
+
+			if (!save_feature.empty()) {
+				save_image(save_feature + "-myo_and_lv_rv.png", myo_and_lv_rv); 
+				save_image(save_feature + "-lv_iask.png", lv_inverse); 
+				save_image(save_feature + "-rv_iask.png", rv_inverse); 
+
+			}
+		}
+	}
 
 	if (!save_feature.empty()) {
 		auto convert_to_ubyte = produce_2dimage_filter("convert"); 
@@ -419,17 +459,25 @@ int do_main( int argc, char *argv[] )
 		save_image(save_feature + "_perflvsum.png", convert_to_ubyte->filter(*perflvsum)); 
 		save_image(save_feature + "_perf_plus_mean_grad.png", convert_to_ubyte->filter(*perf_plus_mean_grad)); 
 		save_image(save_feature + "_sum_grad.png", convert_to_ubyte->filter(sum_grad));
+		save_image(save_feature + "_myo_circle.png", myo_binmask_circle);
+		save_image(save_feature + "_ws_from_perf_plus_mean_grad.png", ws_from_perf_plus_mean_grad);
+		
 		
 	}
-	if (!out_filename2.empty())
-		save_image(out_filename2, run_filter(*ws_from_perf_plus_mean_grad, "convert"));
 
-	if (!out_filename3.empty()) {
-		
-		save_image(out_filename3, run_filter(*ws_from_gperflvsumpmg, "convert"));
-	}
+	// we didn't get the circle, so bye bye 
+	if (!mia::filter(count_pixels, *myo_binmask_circle))
+		throw runtime_error("Basic estimation of the myocardial shape failed"); 
 
-	return save_image(out_filename, run_filter(*ws_from_perf_minus_cavities, "convert")) ?  EXIT_SUCCESS : EXIT_FAILURE; 
+	// now redo the watershed with the circle shape 
+	myo_prep[0] = myo_binmask_circle; 
+	seed = combine_with_boundary(myo_prep); 
+	save_image("seed.@", seed); 	
+	
+	ws_from_perf_plus_mean_grad = run_filter(*perf_plus_mean_grad, "sws:seed=seed.@,grad=1");
+	myo_binmask = run_filter(*ws_from_perf_plus_mean_grad, "binarize:min=1,max=1");
+	
+	return save_image(out_filename, myo_binmask) ?  EXIT_SUCCESS : EXIT_FAILURE; 
 }
 
 #include <mia/internal/main.hh>
