@@ -23,19 +23,29 @@
 
 NS_BEGIN(thinning_2dimage_filter) 
 
-class C2DThinningImageFilter: public mia::C2DFilter {
-public:
-	C2DThinningImageFilter(int max_iterations);
-
+class C2D2MaskMorphImageFilter: public mia::C2DFilter {
+public: 
+	C2D2MaskMorphImageFilter(int max_iterations); 
+	
 	template <typename T>
 	typename mia::C2DFilter::result_type operator () (const mia::T2DImage<T>& result)const;
-
+protected: 
+	void set_shapes(const mia::C2DMorphShape& s1, const mia::C2DMorphShape& s2); 
+	
 private:
-
+	
 	virtual mia::P2DImage do_filter(const mia::C2DImage& src) const;
 
 	std::vector<mia::C2DMorphShape> m_shape;
 	int m_max_iterations; 
+
+}; 
+
+class C2DThinningImageFilter: public C2D2MaskMorphImageFilter {
+public:
+	C2DThinningImageFilter(int max_iterations);
+
+	
 };
 
 class C2DThinningFilterFactory: public mia::C2DFilterPlugin {
