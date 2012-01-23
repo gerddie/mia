@@ -44,13 +44,27 @@ private:
 class C2DThinningImageFilter: public C2D2MaskMorphImageFilter {
 public:
 	C2DThinningImageFilter(int max_iterations);
-
-	
 };
+
+class C2DPruningImageFilter: public C2D2MaskMorphImageFilter {
+public:
+	C2DPruningImageFilter(int max_iterations);
+};
+
 
 class C2DThinningFilterFactory: public mia::C2DFilterPlugin {
 public:
 	C2DThinningFilterFactory();
+private:
+	virtual mia::C2DFilter *do_create()const;
+	virtual const std::string do_get_descr()const;
+	int m_max_iterations; 
+};
+
+
+class C2DPruningFilterFactory: public mia::C2DFilterPlugin {
+public:
+	C2DPruningFilterFactory();
 private:
 	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;

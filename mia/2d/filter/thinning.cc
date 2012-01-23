@@ -48,6 +48,35 @@ C2DThinningImageFilter::C2DThinningImageFilter(int max_iterations):
 	
 }
 
+C2DPruningImageFilter::C2DPruningImageFilter(int max_iterations):
+	C2D2MaskMorphImageFilter(max_iterations)
+{
+
+	C2DMorphShape s1; 
+	s1.add_pixel(-1, -1, false); 
+	s1.add_pixel( 0, -1, false); 
+	s1.add_pixel( 1, -1, false); 
+	s1.add_pixel(-1,  0, false); 
+	s1.add_pixel( 0,  0, true ); 
+	s1.add_pixel( 1,  0, false); 
+	s1.add_pixel(-1,  1, false); 
+
+	C2DMorphShape s2; 
+	s2.add_pixel(-1, -1, false); 
+	s2.add_pixel( 0, -1, false); 
+	s2.add_pixel( 1, -1, false); 
+
+	s2.add_pixel(-1,  0, false); 
+	s2.add_pixel( 0,  0, true ); 
+	s2.add_pixel( 1,  0, false); 
+
+	s2.add_pixel( 1,  1, false); 
+
+	set_shapes(s1,s2); 
+	
+}
+
+
 C2D2MaskMorphImageFilter::C2D2MaskMorphImageFilter(int max_iterations):
 	m_shape(8), 
 	m_max_iterations(max_iterations)
@@ -82,10 +111,11 @@ struct __dispatch_thinning<C2DBitImage> {
 		C2DBitImage tmp(source.get_size()); 
 
 		changed_pixels += morph_thinning_2d(target, source, shape[0]);
-		
+		cvdebug() << "0: changed_pixels = " <<changed_pixels << "\n"; 
 		for (int i = 1; i < 8; ++i) {
 			copy(target.begin(), target.end(), tmp.begin()); 
 			changed_pixels += morph_thinning_2d(target, tmp, shape[i]);
+			cvdebug() << i << ": changed_pixels = " <<changed_pixels << "\n"; 
 		}
 		
 		return changed_pixels; 
@@ -96,7 +126,7 @@ struct __dispatch_thinning<C2DBitImage> {
 		C2DBitImage *temp2 = new C2DBitImage(image.get_size(), image); 
 
 		int i = 0; 
-		while (run_pass(*temp2, temp1, shapes) && (!m_max_iterations  || i < m_max_iterations)) {
+		while ((!m_max_iterations  || i < m_max_iterations) && run_pass(*temp2, temp1, shapes)) {
 			++i; 
 			copy(temp2->begin(), temp2->end(), temp1.begin()); 
 		}
@@ -135,9 +165,31 @@ const std::string C2DThinningFilterFactory::do_get_descr()const
 	return "Morphological thinning. Thinning until convergence will result in a 8-connected skeleton"; 
 }
 
+
+C2DPruningFilterFactory::C2DPruningFilterFactory():
+	C2DFilterPlugin("pruning"),
+	m_max_iterations(0)
+{
+	add_parameter("iter", new CIntParameter(m_max_iterations, 1, 1000000, false,  
+						"Number of iterations to run, 0=until convergence"));
+}
+
+mia::C2DFilter *C2DPruningFilterFactory::do_create()const
+{
+	return new C2DPruningImageFilter(m_max_iterations);
+}
+
+const std::string C2DPruningFilterFactory::do_get_descr()const
+{
+	return "Morphological pruning. Pruning until convergence will erase all pixels but closed loops.";
+}
+
+
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DThinningFilterFactory(); 
+	auto result = new C2DThinningFilterFactory(); 
+	result->append_interface(new C2DPruningFilterFactory()); 
+	return result; 
 }
 
 
