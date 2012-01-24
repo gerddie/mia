@@ -1,4 +1,3 @@
-
 /* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
@@ -232,7 +231,6 @@ typename TWatershed<dim>::result_type TWatershed<dim>::operator () (const Image<
 		++i; 
 		++l; 
 	}
-	
 
 	while (!pixels.empty()) {
 		auto pixel = pixels.top(); 

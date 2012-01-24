@@ -21,197 +21,121 @@
 #include <queue>
 #include <stdexcept>
 
-#include <boost/type_traits.hpp>
+#include <mia/2d/filter/regiongrow.hh>
 
-#include <mia/2d/2dfilter.hh>
-#include <libmia/filter.hh>
+NS_BEGIN(regiongrow_2d_filter)
+NS_MIA_USE; 
 
-#include <libmia/probmapio.hh>
-
-namespace regiongrow_2dimage_filter {
-NS_MIA_USE;
-using namespace std; 
-
-static char const *plugin_name = "regiongrow";
-static const CStringOption param_map("map", "seed class map", "");
-static const CFloatOption param_thresh("low", "low threshold for acceptance probability", 0.5f, .0f, 1.0f); 
-static const CFloatOption param_seed("seed", "threshold for seed probability", 0.9f, 0.0f, 1.0f); 
-static const CIntOption   param_class("class", "class to be segmented", 2, 0, numeric_limits<int>::max()); 
-
-
-class C2DReagiongrow: public C2DFilter {
-	float m_low; 
-	float m_seed; 
-	CDoubleVector m_pv;
-	vector<T2DVector<int> >  m_env;
-public:
-	C2DReagiongrow(float low, float seed,const CDoubleVector& pv):
-		m_low(low), 
-		m_seed(seed), 
-		m_pv(pv)
-	{
-		m_env.push_back(T2DVector<int>(-1,  0)); 
-		m_env.push_back(T2DVector<int>( 1,  0)); 
-		m_env.push_back(T2DVector<int>( 0, -1)); 
-		m_env.push_back(T2DVector<int>( 0,  1)); 
-	}
-	
-	template <class Data2D>
-	typename C2DReagiongrow::result_type operator () (const Data2D& data) const ;
-
-};
-
-
-class C2DReagiongrowImageFilter: public C2DImageFilterBase {
-	C2DReagiongrow m_filter; 
-public:
-	C2DReagiongrowImageFilter(float low, float seed,const CDoubleVector& pv);
-
-	virtual P2DImage do_filter(const C2DImage& image) const;
-};
-
-
-class C2DReagiongrowImageFilterFactory: public C2DFilterPlugin {
-public: 
-	C2DReagiongrowImageFilterFactory();
-	virtual C2DFilter *create(const CParsedOptions& options) const;
-	virtual const string do_get_descr()const; 
-};
-
-template <typename T, bool is_integral>
-struct FBinarizeRegionGrow {
-	FBinarizeRegionGrow(float thresh, const CDoubleVector& pv):
-		m_thresh(thresh), 
-		m_pv(pv)
-	{
-	}
-	
-	bool operator() (T x) {
-		size_t xi = x; 
-		if (xi < m_pv.size())
-			return m_pv[xi] >= m_thresh; 
-		else
-			return false; 
-	}
-private: 
-	float m_thresh; 
-	const CDoubleVector& m_pv; 
-};
-
-template <typename T>
-struct FBinarizeRegionGrow<T, false> {
-	FBinarizeRegionGrow(float thresh, const CDoubleVector& pv)
-	{
-		throw invalid_argument("Reagiongrow::FBinarizeRegionGrow:only integral valued input images are supported"); 
-	}
-	
-	bool operator()(T x) {
-		throw invalid_argument("Regiongrow::FBinarizeRegionGrow:only integral valued input images are supported"); 
-	}
-};
-
-
-
-template <class Data2D>
-typename C2DReagiongrow::result_type C2DReagiongrow::operator () (const Data2D& data) const
+C2DRegiongrowFilter::C2DRegiongrowFilter(const mia::C2DImageDataKey& seed_image_key, mia::P2DShape neighborhood):
+	m_seed_image_key(seed_image_key)
 {
-	const bool is_integral = ::boost::is_integral<typename Data2D::value_type>::value; 
+	m_neighborhood.reserve(neighborhood->size() - 1);
+	for (auto i = neighborhood->begin(); i != neighborhood->end();++i) 
+		if ( *i != MPosition::_0 ) 
+			m_neighborhood.push_back(*i); 
+}
 	
-	C2DBitImage *result = new C2DBitImage(data.get_size()); 
+struct GrowLocation {
+	C2DBounds pos; 
+	float value; 
+}; 
+
+
+template <typename  T>
+C2DRegiongrowFilter::result_type C2DRegiongrowFilter::operator () (const mia::T2DImage<T>& data) const
+{
+	auto size = data.get_size(); 
+
+	C2DImageIOPlugin::PData in_image_list = m_seed_image_key.get();
 	
-	C2DBitImage low_thresh(data.get_size()); 
+	if (!in_image_list || in_image_list->empty())
+		THROW(invalid_argument, "C2DRegiongrowFilter: Empty image list loaded from pool");
+
+	P2DImage pseed_image = (*in_image_list)[0];
+	if (pseed_image->get_pixel_type() != it_bit)
+		throw invalid_argument("C2DRegiongrowFilter: seed image must be of type 'bit'"); 
+	const C2DBitImage& seed_image = dynamic_cast<const C2DBitImage&>(*pseed_image); 
+
+	if (size != seed_image.get_size()){
+		THROW(invalid_argument, "Input image is of size " << size 
+		      << ", but seed image is " << seed_image.get_size()); 
+	}
 	
-	// find seed segmentation 
-	transform(data.begin(), data.end(), result->begin(), 
-		  FBinarizeRegionGrow<typename Data2D::value_type, is_integral>(m_seed, m_pv)); 
-	
-	// find maximum segmentation
-	transform(data.begin(), data.end(), low_thresh.begin(), 
-		  FBinarizeRegionGrow<typename Data2D::value_type, is_integral>(m_low, m_pv)); 
-	
-	// grow the seed until it hits the low_thresh
-	
-	C2DBitImage::iterator r = result->begin(); 
-	
-	vector<T2DVector<int> >::const_iterator ke = m_env.end(); 
-	
-	queue<C2DBounds> seed_points; 
-	
-	for (size_t y = 0; y < data.get_size().y; ++y)
-		for (size_t x = 0; x < data.get_size().x; ++x, ++r) {
-			if (*r) 
-				seed_points.push(C2DBounds(x,y)); 
+	C2DBitImage *presult = new C2DBitImage(size, data); 
+	P2DImage result(presult); 
+
+	queue<GrowLocation> seeds; 
+	auto i = data.begin_range(Position::_0, size);
+	auto e = data.end_range(Position::_0, size);
+	auto s = seed_image.begin(); 
+	auto r = presult->begin(); 
+
+	// read initial seeds and set initial output 
+	while (i != e) {
+		if (*s) {
+			GrowLocation gloc; 
+			gloc.pos = i.pos();
+			gloc.value = *i; 
+			seeds.push(gloc); 
 		}
-	
-	while (!seed_points.empty()) {
-		C2DBounds p = seed_points.front(); 
-		seed_points.pop(); 
+		++i; ++r, ++s; 
+	}
+
+	while (!seeds.empty()) {
+		auto t = seeds.front(); 
+		seeds.pop(); 
 		
-		vector<T2DVector<int> >::const_iterator kb = m_env.begin(); 
-		while (kb != ke) {
-			size_t ix = kb->x + p.x; 
-			if (ix < data.get_size().x) {
-				size_t iy = kb->y + p.y;
-				if (iy < data.get_size().y) {
-					if (low_thresh(ix,iy) && !(*result)(ix, iy)) {
-						(*result)(ix, iy) = true; 
-						seed_points.push(C2DBounds(ix, iy)); 
-					}
-				}
+		// already visited?  
+		if ((*presult)(t.pos)) 
+			continue;  
+		
+		// set output pixel 
+		(*presult)(t.pos) = true; 
+		for (auto n = m_neighborhood.begin(); n != m_neighborhood.end(); ++n) {
+			GrowLocation gloc; 
+			gloc.pos = Position( t.pos + *n);
+			
+			// inside? 
+			if (gloc.pos < size) {
+				// already visited? 
+				if ((*presult)(gloc.pos)) 
+					continue; 
+			
+				gloc.value = data(gloc.pos); 
+				if (gloc.value >= t.value)
+					seeds.push(gloc); 
 			}
-			++kb; 
 		}
 	}
-	
-	return P2DImage(result); 
+	return result; 
 }
 
-C2DReagiongrowImageFilter::C2DReagiongrowImageFilter(float low, float seed,const CDoubleVector& pv):
-	m_filter(low, seed, pv)
+C2DRegiongrowFilter::result_type C2DRegiongrowFilter::do_filter(const mia::C2DImage& image) const
 {
+	return mia::filter(*this, image); 
 }
 
-P2DImage C2DReagiongrowImageFilter::do_filter(const C2DImage& image) const
+C2DRegiongrowFilterPlugin::C2DRegiongrowFilterPlugin(): 
+	mia::C2DFilterPlugin("regiongrow")
 {
-	return wrap_filter(m_filter,image); 
+	add_parameter("seed", new CStringParameter(m_seed_image, true, "seed image (bit valued)"));
+	add_parameter("n", make_param(m_neighborhood, "8n", false, "Neighborhood shape"));
 }
 
-C2DReagiongrowImageFilterFactory::C2DReagiongrowImageFilterFactory():
-	C2DFilterPlugin(plugin_name)
+mia::C2DFilter *C2DRegiongrowFilterPlugin::do_create()const
 {
-	add_help(param_map);
-	add_help(param_seed);
-	add_help(param_thresh);
+	C2DImageDataKey seed_key = C2DImageIOPluginHandler::instance().load_to_pool(m_seed_image);
+	return new C2DRegiongrowFilter(seed_key, m_neighborhood); 
 }
 
-C2DFilter *C2DReagiongrowImageFilterFactory::create(const CParsedOptions& options) const
+const std::string C2DRegiongrowFilterPlugin::do_get_descr()const
 {
-	string map_name = param_map.get_value(options); 
-	float seed_thresh = param_seed.get_value(options); 
-	float low_thresh = param_thresh.get_value(options); 
-	size_t sclass = param_class.get_value(options); 
-	
-	CProbabilityVector pv = load_probability_map(map_name); 
-	if (pv.empty())
-		throw invalid_argument(string("Unable to load probability map from ") + map_name); 
-	
-	if (sclass >= pv.size()) {
-		stringstream errmsg; 
-		errmsg << "selected class '" << sclass << "' out of probability map range"; 
-		throw invalid_argument(errmsg.str()); 
-		return NULL;
-	}
-	
-	return new C2DReagiongrowImageFilter(low_thresh, seed_thresh, pv[sclass]);
-}
-
-const string C2DReagiongrowImageFilterFactory::do_get_descr()const
-{
-	return "2D region growing with probability based stopping funtion"; 
+	return "Region growing startin from a seed until only along increasing gradients";  
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DReagiongrowImageFilterFactory(); 
+	return new C2DRegiongrowFilterPlugin();
 }
-} // end namespace regiongrow_2dimage_filter
+
+NS_END

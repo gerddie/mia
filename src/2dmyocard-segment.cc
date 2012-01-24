@@ -110,11 +110,48 @@ int FAcuumulateGradients::operator () (const T2DImage<T>& image)
 	auto vf = get_gradient(image);
 	transform(m_sum.begin(), m_sum.end(), vf.begin(), m_sum.begin(), 
 		  [](float s, const C2DFVector& v){float vn = v.norm(); 
-			  return s > vn ? s : vn;});
+			  return s + vn;});
 	return 0;
 }
 
 C2DFImage FAcuumulateGradients::get_result() const
+{
+	return m_sum; 
+}
+
+
+class FMaxGradients: public TFilter<int>  {
+public:
+	FMaxGradients(const C2DBounds& size); 
+
+	template <typename T> 
+	int operator () (const T2DImage<T>& image); 
+
+	C2DFImage get_result() const; 
+private: 
+	C2DFImage m_sum; 
+}; 
+
+FMaxGradients::FMaxGradients(const C2DBounds& size):
+	m_sum(size)
+{
+}
+
+template <typename T> 
+int FMaxGradients::operator () (const T2DImage<T>& image)
+{
+	if (m_sum.get_size() != image.get_size()) {
+		THROW(invalid_argument, "Input image has size " << image.get_size() 
+		      << " but expect " << m_sum.get_size()); 
+	}
+	auto vf = get_gradient(image);
+	transform(m_sum.begin(), m_sum.end(), vf.begin(), m_sum.begin(), 
+		  [](float s, const C2DFVector& v){float vn = v.norm(); 
+			  return s > vn ? s : vn;});
+	return 0;
+}
+
+C2DFImage FMaxGradients::get_result() const
 {
 	return m_sum; 
 }
@@ -390,13 +427,6 @@ int do_main( int argc, char *argv[] )
 						"kmeans:c=5", "binarize:min=4,max=4", "close:shape=4n" });
 	
 	
-	FAcuumulateGradients facc(mean_feature->get_size());
-	for_each ( input_images.begin() + skip_images, input_images.end(), 
-		   [&facc](P2DImage img) {mia::accumulate(facc, *img);}); 
-
-	auto sum_grad = facc.get_result(); 
-				  
-
 	C2DImageSeries myo_prep(3); 
 	myo_prep[0] = myocard_seeds; 
 	myo_prep[1] = LV_mask; 
@@ -447,8 +477,8 @@ int do_main( int argc, char *argv[] )
 		}
 	}
 
+	auto convert_to_ubyte = produce_2dimage_filter("convert"); 
 	if (!save_feature.empty()) {
-		auto convert_to_ubyte = produce_2dimage_filter("convert"); 
 		save_image(save_feature + "-all_seeds.png", convert_to_ubyte->filter(*myocard_seeds)); 
 		save_image(save_feature + "-myo-seed.png", seed);
 		save_image(save_feature + "-perf_mrl.v", perf_feature); 
@@ -457,10 +487,11 @@ int do_main( int argc, char *argv[] )
 		save_image(save_feature + "-rv_mask.png", RV_mask); 
 		save_image(save_feature + "_lv_seed.png", LV_mask); 
 		save_image(save_feature + "_perflvsum.png", convert_to_ubyte->filter(*perflvsum)); 
+		save_image(save_feature + "_mean_grad.png", convert_to_ubyte->filter(*mean_grad)); 
+		save_image(save_feature + "_perf_grad.png", convert_to_ubyte->filter(*perf_grad)); 
 		save_image(save_feature + "_perf_plus_mean_grad.png", convert_to_ubyte->filter(*perf_plus_mean_grad)); 
-		save_image(save_feature + "_sum_grad.png", convert_to_ubyte->filter(sum_grad));
 		save_image(save_feature + "_myo_circle.png", myo_binmask_circle);
-		save_image(save_feature + "_ws_from_perf_plus_mean_grad.png", ws_from_perf_plus_mean_grad);
+		save_image(save_feature + "_ws_from_perf_plus_mean_grad.png", convert_to_ubyte->filter(*ws_from_perf_plus_mean_grad));
 		
 		
 	}
@@ -474,10 +505,30 @@ int do_main( int argc, char *argv[] )
 	seed = combine_with_boundary(myo_prep); 
 	save_image("seed.@", seed); 	
 	
-	ws_from_perf_plus_mean_grad = run_filter(*perf_plus_mean_grad, "sws:seed=seed.@,grad=1");
-	myo_binmask = run_filter(*ws_from_perf_plus_mean_grad, "binarize:min=1,max=1");
+	auto ws_from_mean_grad = run_filter(*mean_grad, "sws:seed=seed.@,grad=1");
+	auto ws_from_perf_grad = run_filter(*perf_grad, "sws:seed=seed.@,grad=1");
+	auto from_mean_binmask = run_filter(*ws_from_mean_grad, "binarize:min=1,max=1");
+
+
+	auto from_perf_binmask = run_filter_chain(ws_from_perf_grad, {"binarize:min=1,max=2", "open:shape=[sphere:r=5]"});
+	save_image("mask.@", from_mean_binmask); 
+	auto LV_and_myocard_mask = run_filter(*from_perf_binmask, "mask:input=mask.@");
 	
-	return save_image(out_filename, myo_binmask) ?  EXIT_SUCCESS : EXIT_FAILURE; 
+	// LV_and_myocard_mask can be used to restrict the search to the LV and directly attached tissue
+	// to do so a gradient based region growing will be done -i.e. grow from the circle as long 
+	// as the gradient increased and we are inside the mask. 
+//	auto grad_help = 
+
+
+	if (!save_feature.empty()) {
+		save_image(save_feature + "_ws_from_mean_grad.png", convert_to_ubyte->filter(*ws_from_mean_grad));
+		save_image(save_feature + "_ws_from_perf_grad.png", convert_to_ubyte->filter(*ws_from_perf_grad));
+		save_image(save_feature + "_mask_from_mean_grad.png", from_mean_binmask);
+		save_image(save_feature + "_mask_from_perf_grad.png", from_perf_binmask);
+	}
+	
+
+	return save_image(out_filename, LV_and_myocard_mask) ?  EXIT_SUCCESS : EXIT_FAILURE; 
 }
 
 #include <mia/internal/main.hh>

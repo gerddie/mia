@@ -18,17 +18,7 @@
  *
  */
 
-#include <queue>
-#include <stdexcept>
-#include <boost/type_traits.hpp>
 
-#include <mia/2d/2dfilter.hh>
-#include <libmia/filter.hh>
-
-#include <libmia/probmapio.hh>
-#include "rgg_tools.hh"	
-
-namespace rgg_2dimage_filter {
 
 	
 NS_MIA_USE;

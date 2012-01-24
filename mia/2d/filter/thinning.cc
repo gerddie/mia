@@ -52,6 +52,8 @@ C2DPruningImageFilter::C2DPruningImageFilter(int max_iterations):
 	C2D2MaskMorphImageFilter(max_iterations)
 {
 
+	cvdebug() << "Initialize pruning with " << max_iterations << " iterations\n"; 
+
 	C2DMorphShape s1; 
 	s1.add_pixel(-1, -1, false); 
 	s1.add_pixel( 0, -1, false); 
@@ -129,6 +131,7 @@ struct __dispatch_thinning<C2DBitImage> {
 		while ((!m_max_iterations  || i < m_max_iterations) && run_pass(*temp2, temp1, shapes)) {
 			++i; 
 			copy(temp2->begin(), temp2->end(), temp1.begin()); 
+			cvdebug() << "run pass " << i << " of " << m_max_iterations << "\n"; 
 		}
 		return P2DImage(temp2); 
 	}

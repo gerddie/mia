@@ -60,6 +60,7 @@ SET(filters2dNew_base
   morphological
   ngfnorm
   noise
+  regiongrow
   scale
   seededwatershed
   selectbig
