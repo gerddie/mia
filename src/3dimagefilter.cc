@@ -77,7 +77,7 @@ mia-3dimagefilter -i image.v -o filtered.v mlv:w=2 \
 using namespace std;
 NS_MIA_USE;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 
 	"3D image processing", 
 	

@@ -60,7 +60,7 @@ NS_MIA_USE;
 using namespace std;
 
 
-const SProgramDescrption g_general_help = {
+const SProgramDescription g_general_help = {
 	"2D image processing", 
 	
 	"This progranm is used to evaluate some statistics of an image. " 

@@ -63,7 +63,7 @@ NS_MIA_USE
 using namespace std;
 using namespace boost;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"3D image processing", 
 	
 	"Transform a 3D image by applying a given 3D transformation that is defined "

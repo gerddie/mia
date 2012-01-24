@@ -73,7 +73,7 @@ mia-2dseriessmoothgradMAD -i segment.set -o mincorr.exr -k 2
 
 NS_MIA_USE;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Myocardial Perfusion Analysis", 
 	
 	"Given a set of images of temporal sucession, this program evaluates the "

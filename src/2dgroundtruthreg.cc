@@ -42,7 +42,7 @@
 using namespace std;
 using namespace mia;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Myocardial Perfusion Analysis", 
 	
 	"This program is used Pseudo Ground Thruth for motion compensation "

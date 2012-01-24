@@ -40,7 +40,7 @@ const char *g_program_example_descr =
 	"Print out the help about the 2D filter plugins .\n"; 
 const char *g_program_example_code = "filter/2d"; 
 
-const SProgramDescrption description = {
+const SProgramDescription description = {
 	g_program_group, 
 	g_general_help, 
 	g_program_example_descr, 

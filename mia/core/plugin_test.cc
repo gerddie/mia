@@ -28,7 +28,7 @@
 NS_MIA_USE
 using namespace std;
 
-const SProgramDescrption g_general_help = {
+const SProgramDescription g_general_help = {
 	"Test", 
 	"This program runs plugin-tests.", 
 	NULL, 

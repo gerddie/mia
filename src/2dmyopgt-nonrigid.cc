@@ -102,7 +102,7 @@ mia-2dmyopgt-nonrigid  -i segment.set -o registered.set -k 2
 using namespace std;
 using namespace mia;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Myocardial Perfusion Analysis", 
 	
 	"This program is used Pseudo Ground Thruth for motion compensation "

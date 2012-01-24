@@ -72,7 +72,7 @@ using xmlpp::DomParser;
 using namespace mia; 
 using namespace std; 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Myocardial Perfusion Analysis", 
 	
 	"This program is used to evaluate the per-frame dice index of "

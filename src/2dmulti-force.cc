@@ -41,7 +41,7 @@ using namespace boost;
 using namespace std;
 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Miscellaneous", 
 	
 	"This program evaluates the 2D image cost force norm image of a given cost function set. "

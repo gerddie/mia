@@ -107,7 +107,7 @@ mia-2dseriessmoothgradMAD -i <input set> -o <output image> [options] [<filter>] 
 using namespace std;
 using namespace mia;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Myocardial Perfusion Analysis", 
 	
 	"Given a set of images of temporal sucession, evaluate the temporal "

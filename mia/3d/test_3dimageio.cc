@@ -49,7 +49,7 @@ using namespace std;
 using namespace boost::unit_test;
 namespace bfs=::boost::filesystem;
 
-const SProgramDescrption g_general_help = {
+const SProgramDescription g_general_help = {
 	"Tests", 
 	"Run various test for 3D image IO.", 
 	NULL, 

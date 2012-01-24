@@ -65,7 +65,7 @@ mia-3dgetslice -i image.v -o coronal -t png -n 5 -s 120
 
 using namespace mia;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Miscellaneous programs", 
 	
 	"This program is used to extract 2D slices from a 3D data set and store them "

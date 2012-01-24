@@ -87,7 +87,7 @@ NS_MIA_USE;
 using namespace std; 
 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Miscellaneous programs", 
 	"This Program reads a histogram from stdin and evaluates a "
 	"cmeans classification of the intensity values into the given number of classes.", 

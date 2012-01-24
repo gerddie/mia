@@ -59,7 +59,7 @@ using namespace std;
 using namespace boost;
 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Miscellaneous programs", 
 	
 	"This program evauates the cost function as given on the command line.", 

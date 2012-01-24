@@ -125,7 +125,7 @@ private:
 	FConvert2DImage2float m_converter; 
 }; 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	// .g_program_group =  
 	"Myocardial Perfusion Analysis", 
 	

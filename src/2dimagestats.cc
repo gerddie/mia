@@ -60,7 +60,7 @@ mia-2dimagestats -i input.v -t 5 -g 0.1
 NS_MIA_USE;
 using namespace std;
 
-const SProgramDescrption g_general_help = {
+const SProgramDescription g_general_help = {
 	"Miscellaneous", 
 	
 	"This progranm is used to evaluate some statistics of an image. " 

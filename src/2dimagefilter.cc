@@ -74,7 +74,7 @@ NS_MIA_USE;
 using namespace std;
 
 
-const SProgramDescrption g_general_help = {
+const SProgramDescription g_general_help = {
 	"2D image processing", 
 	
 	"This program runs a series filters on a given input image. The filters are given as extra parameters "

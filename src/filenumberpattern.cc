@@ -80,7 +80,7 @@ mia-filenumberpattern -i image0000.exr
 using namespace std;
 using namespace mia;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Miscellaneous programs", 
 	"This program is used to extract a extract the number pattern for "
 	"file012312.ext type file names.", 

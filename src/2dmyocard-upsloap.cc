@@ -43,7 +43,7 @@
 #include <mia/2d/transformfactory.hh>
 NS_MIA_USE;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Myocardial Perfusion Analysis", 
 
 	"This program is work in progress", 

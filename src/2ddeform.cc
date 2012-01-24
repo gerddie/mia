@@ -64,7 +64,7 @@ using namespace std;
 
 typedef std::shared_ptr<C2DFVectorfield > P2DFVectorfield;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"2D image registration", 
 	"This program is used to deeform a 2D image usinga deformation vector field. "
 	"Input image and deformation field must be of the same size. The transformation "

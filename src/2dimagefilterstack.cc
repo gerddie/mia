@@ -83,7 +83,7 @@ size_t log10(size_t x)
 	return result;
 }
 
-const SProgramDescrption g_general_help = {
+const SProgramDescription g_general_help = {
 	"2D image processing", 
 	
 	"This program runs a series filters on a series of consecutive numbered input image. "

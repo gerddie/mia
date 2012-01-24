@@ -91,7 +91,7 @@ mia-2dstackfilter -i image0000.exr -o filtered -t exr mlv:w=2
 using namespace std;
 using namespace mia;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"2D image stack processing", 
 	
 	"This program is used to filter and convert a series of 2D gray scale images in a "

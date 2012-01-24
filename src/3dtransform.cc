@@ -65,7 +65,7 @@ mia-3dtransform -i input.v -t trans.v  -o output.v  -p nn
 NS_MIA_USE
 using namespace std;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"3D image processing", 
 
 	"Transform a 3D image by applying a given 3D transformation.", 

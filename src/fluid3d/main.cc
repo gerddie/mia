@@ -88,7 +88,7 @@ mia-fluid3d -i test.v -r ref.v -o regfield.v -s 16
 using namespace mia;
 using namespace std;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Image Registration", 
 	
 	"This program is used for non-rigid registration based on fluid dynamics. "

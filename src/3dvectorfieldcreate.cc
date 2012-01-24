@@ -78,7 +78,7 @@ mia-3dvectorfieldcreate -o field.v -s "<128,128,128>" -t 2 -f 3.0
 
 NS_MIA_USE; 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Miscellaneous programs", 
 	
 	"This program is used to create a file containing a 3D vector field.", 

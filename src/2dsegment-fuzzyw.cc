@@ -38,7 +38,7 @@
 using namespace mia;
 using namespace std; 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"2D image processing", 
 	
 	"This program is a  implementation of a fuzzy c-means segmentation algorithm",

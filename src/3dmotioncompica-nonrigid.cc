@@ -121,7 +121,7 @@ using namespace mia;
 
 namespace bfs=boost::filesystem; 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"3D registration of series of images", 
 	
 	"for motion compensation in 3D images. "

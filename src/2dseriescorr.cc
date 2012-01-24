@@ -81,7 +81,7 @@ mia-2dseriescorr -i image0000.png -k 2 -e 30 -z horizontal.exr \
 NS_MIA_USE;
 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Myocardial Perfusion Analysis", 
 
 	"Given a set of images of temporal sucession, evaluates images that represent "

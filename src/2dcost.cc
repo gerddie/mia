@@ -60,7 +60,7 @@ using namespace boost;
 using namespace std;
 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"2D image registration", 
 	"This program is used to evaluate the cost between two images by using a given cost function.", 
 	NULL, 

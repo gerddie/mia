@@ -88,7 +88,7 @@ inline bool am_big_endian()
 }
 
  
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Image conversion", 
 	
 	"This program is used to convert raw data into 3D volumes."

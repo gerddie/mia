@@ -49,7 +49,7 @@ private:
 
 };
 
-const SProgramDescrption general_help = {
+const SProgramDescription general_help = {
 	"Test", 
 	"This program tests the command line parser.", 
 	NULL, 
@@ -336,7 +336,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors2, CmdlineParserFixture )
 				   == CCmdOptionList::hr_no), invalid_argument); 
 }
 
-const SProgramDescrption general_help_test = {
+const SProgramDescription general_help_test = {
 	"Test", 
 	"This program tests the command line parser.", 
 	"Example text", 

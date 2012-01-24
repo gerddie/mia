@@ -237,7 +237,7 @@ struct CCmdOptionListData {
 	bool copyright;
 	vstream::Level verbose;
 
-	CCmdOptionListData(const SProgramDescrption& description); 
+	CCmdOptionListData(const SProgramDescription& description); 
 
 	void add(PCmdOption opt);
 	void add(const string& group, PCmdOption opt);
@@ -330,7 +330,7 @@ const char *g_basic_copyright =
 	"under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later). "
 	"For more information run the program with the option '--copyright'.\n"; 
 
-CCmdOptionListData::CCmdOptionListData(const SProgramDescrption& description):
+CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	help(false),
 	help_xml(false), 
 	usage(false),
@@ -644,7 +644,7 @@ void CCmdOptionListData::print_usage(const char *name) const
 	*m_log << '\n';
 }
 
-CCmdOptionList::CCmdOptionList(const SProgramDescrption& description):
+CCmdOptionList::CCmdOptionList(const SProgramDescription& description):
 	m_impl(new CCmdOptionListData(description))
 {
 }	

@@ -78,7 +78,7 @@ using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Myocardial Perfusion Analysis", 
 
 	"This program is used to evaluate the Hausdorff distance between each frame "

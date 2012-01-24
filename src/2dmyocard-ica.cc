@@ -99,7 +99,7 @@ mia-2dmyocard-ica  -i imageXXXX.exr -o ref -k 2 -C 5 -m -n
 
 NS_MIA_USE;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Myocardial Perfusion Analysis", 
 
 	"This program is used to run a ICA on a series of myocardial perfusion images to create "

@@ -66,7 +66,7 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Miscellaneous programs", 
 	
 	"This program is used to create an image comprising the pixel-wise norm "

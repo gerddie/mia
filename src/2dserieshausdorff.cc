@@ -75,7 +75,7 @@ using namespace mia;
 using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Myocardial Perfusion Analysis", 
 
 	"Get the per-slice Hausdorff distance of a segmentation with respect to a given reference segmentation set.", 

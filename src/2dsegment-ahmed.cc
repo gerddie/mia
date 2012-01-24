@@ -52,7 +52,7 @@ using namespace std;
 
 typedef vector<C2DFImage> C2DFImageVec;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"2D image processing", 
 	
 	"This program implements and enhances the paper:"

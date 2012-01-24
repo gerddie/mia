@@ -63,7 +63,7 @@ mia-3dimageaddattributes -i 3d.v -o attr3d.v -a 2d.v
 using namespace std;
 NS_MIA_USE;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Miscellaneous programs", 
 	
 	"This program appends all the meta-data attributes found in a 2D input image "

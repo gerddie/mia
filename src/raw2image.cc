@@ -69,7 +69,7 @@ NS_MIA_USE;
 using namespace std;
 using namespace boost;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Image conversion", 
 	
 	"This program is used to convert raw data to a 2D file format.", 

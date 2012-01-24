@@ -87,7 +87,7 @@ mia-2dseriesgradMAD -i segment.set -o mad.exr -c -e 3
 using namespace std;
 using namespace mia;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Myocardial Perfusion Analysis", 
 
 	"Given a set of images of temporal sucession, evaluates the pixel-wise "

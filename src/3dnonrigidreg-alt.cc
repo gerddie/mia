@@ -77,7 +77,7 @@ mia-3dnonrigidreg -o reg.vf -l 2 -f spline:rate=3  \
 NS_MIA_USE;
 using namespace std;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"3D image registration", 
 	
 	"This program runs a non-rigid registration based on the given cost criteria "

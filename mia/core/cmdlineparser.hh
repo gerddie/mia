@@ -58,7 +58,7 @@ typedef std::map<std::string,  CCmdOption *> CLongoptionMap;
 /**
     Data structure to provied help information oabout the program 
  */
-struct SProgramDescrption {
+struct SProgramDescription {
 	
 	/// group ths program belongs to
 	const char *group; 
@@ -405,7 +405,7 @@ public:
 
 	   \param description give a description of the program 
         */
-	CCmdOptionList(const SProgramDescrption& description); 
+	CCmdOptionList(const SProgramDescription& description); 
 
         /// cleanup
 	~CCmdOptionList();

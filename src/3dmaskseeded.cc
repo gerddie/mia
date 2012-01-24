@@ -75,7 +75,7 @@ mia-3dmaskseeded -i image.v -o masked.v -s "<10,23,21>" -n 18n
 using namespace std;
 NS_MIA_USE;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"3D image processing", 
 	
 	

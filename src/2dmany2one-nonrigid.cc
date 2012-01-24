@@ -98,7 +98,7 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 
-const SProgramDescrption g_general_help = {
+const SProgramDescription g_general_help = {
 	// .g_program_group =  
 	"Myocardial Perfusion Analysis", 
 	

@@ -54,7 +54,7 @@ typename Plugin::UniqueProduct BOOST_TEST_create_from_plugin(const char *param)
 
 NS_MIA_END 
 
-const mia::SProgramDescrption description = {
+const mia::SProgramDescription description = {
 	"Tests", 
 	"This program runs a set of tests for a plug-in.", 
 	"", 

@@ -96,7 +96,7 @@ mia-2dseries2dordermedian -i segment.set -o gradmedian.exr -g 1 \
 using namespace std;
 using namespace mia;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Myocardial Perfusion Analysis", 
 
 	"This program evaluates the pixel-wise median of the absolute values of the gauss filtered "

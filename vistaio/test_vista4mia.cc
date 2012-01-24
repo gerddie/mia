@@ -336,7 +336,7 @@ bool init_unit_test_suite( )
 	return true;
 }
 
-const SProgramDescrption description = {
+const SProgramDescription description = {
 	"Tests", 
 	"This program runs a set of tests.", 
 	NULL, 

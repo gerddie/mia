@@ -76,7 +76,7 @@ using namespace std;
 NS_MIA_USE
 
 
-const SProgramDescrption g_general_help = {
+const SProgramDescription g_general_help = {
 	"Miscellaneous programs", 
 	"This program evaluate the average or maximum distance of a mask "
 	"given by a binary image to an image representing a distance map "

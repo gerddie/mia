@@ -65,7 +65,7 @@ using namespace std;
 using boost::any_cast; 
 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"2D image processing", 
 	
 	"Combine two image by a given operation.", 

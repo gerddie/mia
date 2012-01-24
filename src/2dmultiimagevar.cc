@@ -63,7 +63,7 @@ NS_MIA_USE;
 using namespace std;
 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Miscellaneous", 
 	
 	"This program evaluates the pixel-wise accumulated intensity variation a set of image given on the command line. "

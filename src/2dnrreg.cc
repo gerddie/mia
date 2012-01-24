@@ -75,7 +75,7 @@ NS_MIA_USE
 using namespace boost; 
 using namespace std; 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"2D Image Registration", 
 
 	"This program is used to run a model based non-rigid registration of two 2D images. "

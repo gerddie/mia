@@ -84,7 +84,7 @@ mia-3dnonrigidreg -i test.v -r ref.v -o reg.v -l 2 \
 NS_MIA_USE;
 using namespace std;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"3D image registration", 
 	
 	"This program implements the registration of two gray scale 3D images.", 

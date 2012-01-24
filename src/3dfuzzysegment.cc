@@ -77,7 +77,7 @@ mia-fuzzysegment3d -i input.v -c 5 -o b0.v -c cls.v
 NS_MIA_USE
 using namespace std;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"3D image processing", 
 	
 	"This program runs a combined fuzzy c-means clustering and B-field correction "

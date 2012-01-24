@@ -42,7 +42,7 @@
 
 NS_MIA_USE; 
 
-const SProgramDescrption description = {
+const SProgramDescription description = {
 	"Tests", 
 	"This program runs a set of tests.", 
 	"", 

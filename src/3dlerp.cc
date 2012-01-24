@@ -78,7 +78,7 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"3D image processing", 
 	"merge two images by linear combination.", 
 	"Combine image inputA.v and inputB.v by using position coordinates 4, 7, and 9 and write the result to output.v", 

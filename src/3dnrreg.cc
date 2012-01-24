@@ -75,7 +75,7 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Obsolete", 
 	
 	"This program implements 3D gray scale image registration but "

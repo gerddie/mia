@@ -85,7 +85,7 @@ NS_MIA_USE
 using namespace std;
 namespace bfs = ::boost::filesystem;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"3D image processing", 
 	
 	"This program is used to extract the brain from T1 MR images. "

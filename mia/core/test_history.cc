@@ -42,7 +42,7 @@ NS_MIA_USE
 static const char *revision = "$Revision: 937 $:";
 
 
-const SProgramDescrption g_general_help = {
+const SProgramDescription g_general_help = {
 	"Test", 
 	"This program tests the history entries.", 
 	NULL, 

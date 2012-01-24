@@ -35,7 +35,7 @@ using namespace std;
 NS_MIA_USE; 
 using namespace gsl; 
 
-const SProgramDescrption g_general_help = {
+const SProgramDescription g_general_help = {
 	"Miscellaneous programs", 
 	"This program runs the a column-wise discret wavelet forward transform on "
 	"the data given by an input text file.", 

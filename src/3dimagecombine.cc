@@ -66,7 +66,7 @@ mia-3dimagecombine -1 l1.v -2 l2.v -c map.txt -c labelxmap
 using namespace std;
 NS_MIA_USE;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"3D image processing", 
 	 
 	"This program is used to combine two images using a given image combiner plug-in (combiner/3dimage).", 

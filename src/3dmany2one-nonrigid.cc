@@ -96,7 +96,7 @@ using namespace mia;
 
 namespace bfs=boost::filesystem; 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"3D registration of series of images", 
 	
 	"This program runs the non-rigid registration of an perfusion image series. "

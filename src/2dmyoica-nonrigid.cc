@@ -137,7 +137,7 @@ const char *g_program_example_descr =
 const char *g_program_example_code = 
 	"  -i segment.set -o registered.set -k 2"; 
 
-const SProgramDescrption description = {
+const SProgramDescription description = {
 	g_program_group, 
 	g_general_help, 
 	g_program_example_descr, 

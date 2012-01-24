@@ -86,7 +86,7 @@ using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Myocardial Perfusion Analysis", 
 	
 	"This program move the segmentation(s) of an image series by using a shift "

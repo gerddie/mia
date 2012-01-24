@@ -80,7 +80,7 @@ size_t log10(size_t x)
 	return result;
 }
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"3D image processing", 
 	
 	"This program is used to filter and convert a consecutive numbered series "

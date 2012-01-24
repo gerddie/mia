@@ -76,7 +76,7 @@ mia-multihisto -i input0000.exr -o histo.txt --min 0 --max 256 --bins 64
 NS_MIA_USE;
 using namespace std;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"2D image stack processing", 
 	
 	"This program evaluates the histogram over a series of 2D images", 

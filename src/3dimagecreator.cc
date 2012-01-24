@@ -67,7 +67,7 @@ NS_MIA_USE
 using namespace boost;
 using namespace std;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Miscellaneous programs", 
 	
 	"This program creates a 3D image that contains an object created by one of the object "  

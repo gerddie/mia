@@ -64,7 +64,7 @@ using namespace std;
 NS_MIA_USE;
 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Miscellaneous programs", 
 	
 	"This program is used to select one 2D images from a multi-image file.", 

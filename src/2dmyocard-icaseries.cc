@@ -101,7 +101,7 @@ mia-2dmyocard-icaseries  -i segment.set -r ref -o ref -k 2 -C 5
 NS_MIA_USE;
 namespace bfs=boost::filesystem; 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Myocardial Perfusion Analysis", 
 
 	"This program is used to run a ICA on a series of myocardial perfusion "

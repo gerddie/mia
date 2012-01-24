@@ -84,7 +84,7 @@ mia-fluid2d -i test.v -r ref.v -o regfield.v -s 16
 
 NS_MIA_USE;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Image Registration", 
 	
 	"This program is used for non-rigid registration based on fluid dynamics. "

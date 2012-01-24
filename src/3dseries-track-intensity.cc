@@ -68,7 +68,7 @@ mia-3dseries-track-intensity -i images0000.v -o curves.txt "<12,13,14>" "<222,11
 using namespace std;
 using namespace mia;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Analysis of image series", 
 	
 	"This program tracks the intensity of a pixel at the given coordinates.", 

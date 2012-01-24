@@ -57,7 +57,7 @@ mia-3dfield2norm -i field.v -o norm.v
 
 NS_MIA_USE;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Miscellaneous programs", 
 	
 	"This program converts a 3d vector field to an image of its voxel-wise norm.", 

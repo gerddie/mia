@@ -81,7 +81,7 @@ namespace bfs=boost::filesystem;
 using namespace std; 
 NS_MIA_USE; 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Myocardial Perfusion Analysis", 
 
 	"This program takes all image files that are given as free parameters on the command line "

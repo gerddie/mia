@@ -79,7 +79,7 @@ mia-2dnonrigidreg -i test.v -r ref.v -o reg.v -l 2 \
 NS_MIA_USE;
 using namespace std;
 
-const SProgramDescrption g_general_help = {
+const SProgramDescription g_general_help = {
 	"Image Registration", 
 	
 	"This program runs registration of two images optimizing a transformation of the given transformation model "

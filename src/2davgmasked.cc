@@ -70,7 +70,7 @@ NS_MIA_USE
 using namespace std;
 using namespace boost;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"2D image processing", 
 	"This program is used to evaluate the average intensity and its variation of a series "
 	"of images in a given masked region.", 

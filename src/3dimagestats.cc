@@ -60,7 +60,7 @@ mia-3dimagestats -i input.v -t 5
 NS_MIA_USE;
 using namespace std;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Miscellaneous programs", 
 	
 	"This program is used to evaluate certain image statistics "

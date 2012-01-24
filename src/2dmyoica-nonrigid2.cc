@@ -54,7 +54,7 @@ using namespace mia;
 
 namespace bfs=boost::filesystem; 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Myocardial Perfusion Analysis", 
 	
 	"This program runs the non-rigid registration of an perfusion image series."

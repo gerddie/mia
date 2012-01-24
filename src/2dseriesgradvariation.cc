@@ -84,7 +84,7 @@ mia-2dseriesgradvariation -i segment.set -o gradvar.exr -c -e 3
 using namespace std;
 using namespace mia;
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Myocardial Perfusion Analysis", 
 
 	"Given a set of images of temporal sucession, this program evaluates the "

@@ -35,7 +35,7 @@ extern void add_3ddatafield_tests(test_suite* suite);
 extern void add_3dimage_tests(test_suite* suite);
 extern void add_3dinterpol_tests(test_suite* suite);
 
-const SProgramDescrption g_general_help = {
+const SProgramDescription g_general_help = {
 	"Tests", 
 	"Run various test for 3D data.", 
 	NULL, 

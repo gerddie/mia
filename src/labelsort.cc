@@ -69,7 +69,7 @@ mia-labelsort -i histo.txt  -o map.txt
 NS_MIA_USE; 
 using namespace std; 
 
-const SProgramDescrption g_description = {
+const SProgramDescription g_description = {
 	"Miscellaneous programs", 
 	"This program is used create a mapping based on a histogram that "
 	"puts the intensities with high values at the beginning of the histogram. The main "
