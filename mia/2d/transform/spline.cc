@@ -793,10 +793,9 @@ private:
 
 C2DSplineTransformCreatorPlugin::C2DSplineTransformCreatorPlugin():
 	C2DTransformCreatorPlugin("spline"),
-	m_interpolator(CSplineKernelPluginHandler::instance().produce("bspline:d=3")),
 	m_rate(10)
 {
-	add_parameter("kernel", new CFactoryParameter<CSplineKernelPluginHandler>(m_interpolator, false, 
+	add_parameter("kernel", new CFactoryParameter<CSplineKernelPluginHandler>(m_interpolator, "bspline:d=3", false, 
 										  "transformation spline kernel"));
 	add_parameter("rate",   new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
 						    "isotropic coefficient rate in pixels"));

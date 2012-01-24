@@ -62,6 +62,7 @@ void CParamList::set(const CParsedOptions& options)
 			throw invalid_argument(msg.str());
 		}
 	}
+	for_each(m_params.begin(), m_params.end(), [](MapValue p){p.second->post_set();}); 
 }
 
 void CParamList::check_required() const

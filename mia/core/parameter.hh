@@ -109,6 +109,14 @@ q	*/
 	   \param root the root node to add the help entry to. 
 	 */
 	void get_help_xml(xmlpp::Element& root) const;
+
+
+	/**
+	   This command is run after the parsing has been done
+	   in most cases it will do nothing, only for factory parameters 
+	   and the like it must set the final parameter value from the init string
+	*/
+	virtual void post_set(); 
 	
 protected:
 
@@ -254,7 +262,7 @@ public:
 	   \param required set to true when the parameter is required 
 	   \param descr a description of the parameter
 	 */
-	CFactoryParameter(typename F::ProductPtr& value, bool required, const char *descr);
+	CFactoryParameter(typename F::ProductPtr& value, const std::string& init, bool required, const char *descr);
 private:
 	virtual void do_descr(std::ostream& os) const;
 	virtual void do_add_dependend_handler(HandlerHelpMap& handler_map)const; 
@@ -263,7 +271,11 @@ private:
 	virtual std::string do_get_default_value() const; 
 	virtual void do_get_help_xml(xmlpp::Element& self) const;
 	typename F::ProductPtr& m_value;
-	typename F::ProductPtr m_default_value; 
+
+	virtual void post_set(); 
+	
+	std::string m_string_value; 
+	std::string m_default_value; 
 };
 
 /**
@@ -372,9 +384,7 @@ template <typename T>
 CParameter *make_param(std::shared_ptr<T>& value, const std::string& init,  bool required, const char *descr) 
 {                       
 	typedef typename FactoryTrait<T>::type F;  
-	if (!init.empty()) 
-		value = F::instance().produce(init.c_str()); 
-	return new CFactoryParameter<F>(value, required, descr);
+	return new CFactoryParameter<F>(value, init, required, descr);
 	
 }
 
@@ -451,10 +461,12 @@ std::string CDictParameter<T>::do_get_default_value() const
 }
 
 template <typename T>
-CFactoryParameter<T>::CFactoryParameter(typename T::ProductPtr& value, bool required, const char *descr):
+CFactoryParameter<T>::CFactoryParameter(typename T::ProductPtr& value,
+					const std::string& init, bool required, const char *descr):
 	CParameter("factory", required, descr),
 	m_value(value),
-	m_default_value(value)
+	m_string_value(init), 
+	m_default_value(init)
 {
 }
 
@@ -475,14 +487,21 @@ void CFactoryParameter<T>::do_get_help_xml(xmlpp::Element& self) const
 template <typename T>
 bool CFactoryParameter<T>::do_set(const std::string& str_value)
 {
-	m_value = T::instance().produce(str_value); 
+	m_string_value = str_value; 
 	return true;
+}
+
+template <typename T>
+void CFactoryParameter<T>::post_set()
+{
+	if (!m_string_value.empty()) 
+		m_value = T::instance().produce(m_string_value);
 }
 
 template <typename T>
 void CFactoryParameter<T>::do_reset()
 {
-	m_value = m_default_value;
+	m_string_value = m_default_value;
 }
 
 template <typename T>
@@ -494,10 +513,7 @@ void CFactoryParameter<T>::do_add_dependend_handler(HandlerHelpMap& handler_map)
 template <typename T>
 std::string CFactoryParameter<T>::do_get_default_value() const
 {
-	if (m_default_value) 
-		return m_default_value->get_init_string();
-	else 
-		return std::string("NULL"); 
+	return m_default_value; 
 }
 
 

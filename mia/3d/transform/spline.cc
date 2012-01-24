@@ -1123,12 +1123,11 @@ private:
 
 C3DSplineTransformCreatorPlugin::C3DSplineTransformCreatorPlugin():
 	C3DTransformCreatorPlugin("spline"),
-	m_kernel(produce_spline_kernel("bspline:d=3")),
 	m_rate(10), 
 	m_debug(false)
 {
 	add_parameter("interp",
-		      new CFactoryParameter<CSplineKernelPluginHandler>(m_kernel, false, "image interpolator kernel"));
+		      new CFactoryParameter<CSplineKernelPluginHandler>(m_kernel, "bspline:d=3", false, "image interpolator kernel"));
 	add_parameter("rate",
 		      new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
 					  "isotropic coefficient rate in pixels"));

@@ -70,6 +70,11 @@ void CParameter::do_get_help_xml(xmlpp::Element& /*param*/) const
 {
 }
 
+void CParameter::post_set()
+{
+
+}
+
 void CParameter::value(std::ostream& os) const
 {
 	os << "=" << (m_required ? "[required]" : get_default_value()) 
