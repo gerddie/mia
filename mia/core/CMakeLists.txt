@@ -25,6 +25,7 @@ SET(MIACORE_SRC_BASE
   cost.cc 
   combiner.cc
   cmdlineparser.cc
+  cmdoption.cc
   creator.cc
   datapool.cc
   dlloader.cc
@@ -54,6 +55,7 @@ SET(MIACORE_SRC_BASE
   noisegen.cc 
   optionparser.cc 
   optparam.cc 
+  paramoption.cc  
   parameter.cc  
   pixeltype.cc 
   plugin_base.cc  
@@ -84,6 +86,7 @@ SET(MIACORE_HEADER_BASE
   boundary_conditions.hh
   callback.hh
   cmdlineparser.hh
+  cmdoption.hh
   cost.hh
   cost.cxx
   combiner.hh
@@ -126,6 +129,7 @@ SET(MIACORE_HEADER_BASE
   optionparser.hh
   optparam.hh
   parameter.cxx parameter.hh
+  paramoption.hh
   pixeltype.hh
   plugin_base.cxx plugin_base.hh
   probmap.hh
