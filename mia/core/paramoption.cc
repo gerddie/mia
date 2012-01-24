@@ -22,7 +22,7 @@
 
 NS_MIA_BEGIN
 
-CParamOption::CParamOption(char short_opt, char *long_opt, CParameter *param):
+CParamOption::CParamOption(char short_opt, const char *long_opt, CParameter *param):
 	CCmdOption(short_opt, long_opt, param->get_descr(), 
 		   long_opt, 
 		   param->required_set() ? CCmdOption::required : CCmdOption::not_required), 

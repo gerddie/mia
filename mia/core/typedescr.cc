@@ -25,4 +25,16 @@ NS_MIA_BEGIN
 
 const char *timestep_type::type_descr = "timestep";
 
+DECLARE_TYPE_DESCR(short); 
+DECLARE_TYPE_DESCR(int); 
+DECLARE_TYPE_DESCR(long); 
+DECLARE_TYPE_DESCR(float); 
+DECLARE_TYPE_DESCR(double); 
+DECLARE_TYPE_DESCR(bool); 
+
+DECLARE_TYPE_DESCR2(unsigned short, "ushort"); 
+DECLARE_TYPE_DESCR2(unsigned int, "uint"); 
+DECLARE_TYPE_DESCR2(unsigned long, "ulong");
+DECLARE_TYPE_DESCR2(std::string, "string");
+
 NS_MIA_END

@@ -33,6 +33,7 @@ NS_MIA_BEGIN
    on the command line (contraty to just setting a flag). 
 */
 class CParamOption : public CCmdOption {
+public: 
 	/**
 	   Conrtructor to create the command line option. 
 	   \param short_option the single letter option value, can be zero for none 
@@ -40,7 +41,7 @@ class CParamOption : public CCmdOption {
 	   \param param the actual parameter, this value must be allocated by calling \a new, 
 	   destruction is taken care of by this class. 
 	 */
-	CParamOption(char short_option, char *long_opt, CParameter *param);
+	CParamOption(char short_option, const char *long_opt, CParameter *param);
 	
 private:
 	virtual void post_set(); 

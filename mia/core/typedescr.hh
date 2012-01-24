@@ -24,6 +24,7 @@
 
 
 #include <mia/core/defines.hh>
+#include <string>
 
 NS_MIA_BEGIN
 
@@ -36,6 +37,32 @@ struct EXPORT_CORE timestep_type {
 	static const char *type_descr;
 };
 
+template <typename T> 
+struct __type_descr {
+	static const char * const name; 
+}; 
+
+#define DEFINE_TYPE_DESCR(type)			\
+	template <>				\
+	struct __type_descr<type> {		\
+		static const char * const name; \
+	}
+
+#define DECLARE_TYPE_DESCR(type) const char * const __type_descr<type>::name = #type;
+#define DECLARE_TYPE_DESCR2(type, name) const char * const __type_descr<type>::name = name;
+	
+
+
+DEFINE_TYPE_DESCR(short); 
+DEFINE_TYPE_DESCR(int); 
+DEFINE_TYPE_DESCR(long); 
+DEFINE_TYPE_DESCR(unsigned int);
+DEFINE_TYPE_DESCR(unsigned short);
+DEFINE_TYPE_DESCR(unsigned long);
+DEFINE_TYPE_DESCR(float); 
+DEFINE_TYPE_DESCR(double); 
+DEFINE_TYPE_DESCR(bool); 
+DEFINE_TYPE_DESCR(std::string); 
 
 NS_MIA_END
 

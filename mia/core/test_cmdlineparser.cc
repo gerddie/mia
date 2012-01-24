@@ -90,7 +90,7 @@ BOOST_FIXTURE_TEST_CASE( test_string_vector_option, CmdlineParserFixture )
 {
 	const char *str_value = "string,list";
 	vector<string> value;
-	PCmdOption popt(make_opt(value, "string", 's', "a string option", "string"));
+	PCmdOption popt(make_opt(value, "string", 's', "a string option"));
 	try {
 		popt->set_value(str_value);
 		BOOST_REQUIRE(value.size() == 2);
@@ -107,7 +107,7 @@ BOOST_FIXTURE_TEST_CASE( test_float_vector_option, CmdlineParserFixture )
 {
 	const char *str_value = "1.2,1.4";
 	vector<float> value;
-	PCmdOption popt(make_opt(value, "float", 's', "a float vector option", "float"));
+	PCmdOption popt(make_opt(value, "float", 's', "a float vector option"));
 	try {
 		popt->set_value(str_value);
 		BOOST_REQUIRE(value.size() == 2);
@@ -123,7 +123,7 @@ BOOST_FIXTURE_TEST_CASE( test_float_vector_option, CmdlineParserFixture )
 BOOST_FIXTURE_TEST_CASE( test_string_option, CmdlineParserFixture )
 {
 	string value = "string with spaces";
-	PCmdOption popt(make_opt(value, "string", 's', "a string option", "string"));
+	PCmdOption popt(make_opt(value, "string", 's', "a string option"));
 
 	const char *str_value = "let there be spaces";
 	try {
@@ -139,7 +139,7 @@ BOOST_FIXTURE_TEST_CASE( test_string_option, CmdlineParserFixture )
 BOOST_FIXTURE_TEST_CASE( test_float_option, CmdlineParserFixture )
 {
 	float value = 10;
-	PCmdOption popt(make_opt(value, "float", 'f', "a float option", "float"));
+	PCmdOption popt(make_opt(value, "float", 'f', "a float option"));
 	const char *str_value = "12.2";
 	try {
 		popt->set_value(str_value);
@@ -164,7 +164,7 @@ BOOST_FIXTURE_TEST_CASE( test_float_option, CmdlineParserFixture )
 BOOST_FIXTURE_TEST_CASE( test_int_option, CmdlineParserFixture )
 {
 	int value = 10;
-	PCmdOption popt(make_opt(value, "int", 'i', "a int option", "int"));
+	PCmdOption popt(make_opt(value, "int", 'i', "a int option"));
 	const char *str_value = "12";
 	try {
 		popt->set_value(str_value);
@@ -277,15 +277,15 @@ BOOST_FIXTURE_TEST_CASE( test_parser, CmdlineParserFixture )
 
 	CCmdOptionList olist(general_help);
 
-	olist.add(make_opt(int_value1,  "int1", 'i',"a int option", "int1"));
-	olist.add(make_opt(int_value2, "int2",  'k', "another int option", "int2"));
-	olist.add(make_opt(int_value3,  "int-3", 0, "yet another int option", "int3"));
-	olist.add(make_opt(float_value, "float", 'f', "a float option", "float"));
-	olist.add(make_opt(s,  "string", 's',"a string option", "string"));
-	olist.add(make_opt(bingo,  "bingo", 'b', "a bool option", "bool"));
-	olist.add(make_opt(bingo2,  "bingo2", '2', "another bool option", "bool"));
-	olist.add(make_opt(usval,  "ushort", 'u', "a short int option", "ushort"));
-	olist.add(make_opt(vector_value,  "vector-string", 'S', "a vector of strings", "vstring"));
+	olist.add(make_opt(int_value1,  "int1", 'i',"a int option"));
+	olist.add(make_opt(int_value2, "int2",  'k', "another int option"));
+	olist.add(make_opt(int_value3,  "int-3", 0, "yet another int option"));
+	olist.add(make_opt(float_value, "float", 'f', "a float option"));
+	olist.add(make_opt(s,  "string", 's',"a string option"));
+	olist.add(make_opt(bingo,  "bingo", 'b', "a bool option"));
+	olist.add(make_opt(bingo2,  "bingo2", '2', "another bool option"));
+	olist.add(make_opt(usval,  "ushort", 'u', "a short int option"));
+	olist.add(make_opt(vector_value,  "vector-string", 'S', "a vector of strings"));
 
 	BOOST_CHECK_EQUAL(olist.parse(options.size(), (const char**)&options[0], "remaining"),  CCmdOptionList::hr_no);
 
@@ -316,7 +316,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors1, CmdlineParserFixture )
 	bool dummy; 
 
 	CCmdOptionList olist(general_help);
-	olist.add(make_opt(bool_value, "bool", 'H', "a bool option", "bool"));
+	olist.add(make_opt(bool_value, "bool", 'H', "a bool option"));
 
 	BOOST_CHECK_THROW(dummy = (olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no), invalid_argument); 
 }
@@ -330,7 +330,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors2, CmdlineParserFixture )
 	bool bool_value = false;
 	bool dummy; 
 	CCmdOptionList olist(general_help);
-	olist.add(make_opt(bool_value, "bool", 'H', "a bool option", "bool"));
+	olist.add(make_opt(bool_value, "bool", 'H', "a bool option"));
 
 	BOOST_CHECK_THROW(dummy = (olist.parse(options.size(), &options[0]) 
 				   == CCmdOptionList::hr_no), invalid_argument); 

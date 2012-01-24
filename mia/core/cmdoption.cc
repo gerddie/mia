@@ -23,8 +23,6 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdoption.hh>
 
-
-
 using std::ostream; 
 using std::string; 
 using std::ostringstream; 

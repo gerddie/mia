@@ -137,23 +137,20 @@ int main(int argc, const char *argv[])
 {
 
 	CCmdOptionList options(g_general_help);
-	options.add(make_opt( options::some_single_string, "string", 's', 
-				    "some string option", "oldstring", CCmdOption::required ));
-	options.add(make_opt( options::some_float, "float", 'f', "some float option", "-1.0", 
-				    CCmdOption::required ));
-	options.add(make_opt( options::some_int, "int", 'i', "some int option", "-1", CCmdOption::required));
-	options.add(make_opt( options::true_bool, "tbool", 't', "true_bool",NULL));
-	options.add(make_opt( options::internal, "internal", 'l', "internal test option", NULL ));
-	options.add(make_opt( options::dict_val, the_dict, "dict", 'd', "other vector of strings", "testa",
-				    CCmdOption::required));
+	options.add(make_opt( options::some_single_string, "string", 's', "some string option",  CCmdOption::required ));
+	options.add(make_opt( options::some_float, "float", 'f', "some float option",CCmdOption::required ));
+	options.add(make_opt( options::some_int, "int", 'i', "some int option", CCmdOption::required));
+	options.add(make_opt( options::true_bool, "tbool", 't', "true_bool"));
+	options.add(make_opt( options::internal, "internal", 'l', "internal test option" ));
+	options.add(make_opt( options::dict_val, the_dict, "dict", 'd', "other vector of strings",CCmdOption::required));
 #ifdef OPT_CAN_VECTOR
-	options.add(make_opt( options::series_of_strings, "vstring", 'v', "a vector of strings", "", 
+	options.add(make_opt( options::series_of_strings, "vstring", 'v', "a vector of strings", 
 				    CCmdOption::required));
-	options.add(make_opt( options::other_series_of_strings, "ovstring", 'o', "other vector of strings", "",
+	options.add(make_opt( options::other_series_of_strings, "ovstring", 'o', "other vector of strings",
 				    CCmdOption::required));
-	options.add(make_opt( options::series_of_int, "vint", 'u', "a vector of int", "",
+	options.add(make_opt( options::series_of_int, "vint", 'u', "a vector of int", 
 				    CCmdOption::required));
-	options.add(make_opt( options::series_of_float, "vfloat", 'a', "a vector of float", "",
+	options.add(make_opt( options::series_of_float, "vfloat", 'a', "a vector of float",
 				    CCmdOption::required));
 #endif
 

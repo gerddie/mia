@@ -125,18 +125,16 @@ std::string CParameter::get_default_value() const
 	return do_get_default_value(); 
 }
 
-const char  type_str_uint[5] = "uint";
-const char  type_str_int[4] = "int";
-const char  type_str_float[6] = "float";
-const char  type_str_double[7] = "double";
-const char  type_str_string[7] = "string";
-const char  type_str_bool[5] = "bool";
+template class TRangeParameter<unsigned short>;
+template class TRangeParameter<unsigned int>;
+template class TRangeParameter<unsigned long>;
+template class TRangeParameter<short>;
+template class TRangeParameter<int>;
+template class TRangeParameter<long>;
+template class TRangeParameter<float>;
+template class TRangeParameter<double>; 
+template class CTParameter<string>;
+template class CTParameter<bool>;
 
-template class TRangeParameter<unsigned int, type_str_uint>;
-template class TRangeParameter<int, type_str_int>;
-template class TRangeParameter<float, type_str_float>;
-template class CTParameter<string,type_str_string>;
-template class CTParameter<bool, type_str_bool>;
-template class TRangeParameter<double, type_str_double>; 
 
 NS_MIA_END

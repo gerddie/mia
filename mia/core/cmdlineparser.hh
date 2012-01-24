@@ -31,6 +31,7 @@
 #include <string>
 #include <iterator>
 #include <mia/core/cmdoption.hh>
+#include <mia/core/paramoption.hh>
 #include <mia/core/dictmap.hh>
 #include <mia/core/flagstring.hh>
 #include <mia/core/handlerbase.hh>
@@ -588,29 +589,6 @@ void TCmdDictOption<T>::do_get_long_help( std::ostream& os ) const
 	}
 }
 
-
-
-/**
-   Convinience function: Create a standard option
-   \param value value variable to hold the parsed option value - pass in the default value -
-   exception: \a bool values always default to \a false
-   \param long_opt long option name (must not be NULL)
-   \param short_opt short option name (or 0)
-   \param long_help long help string (must not be NULL)
-   \param short_help short help string
-   \param flags add flags like whether the optionis required to be set 
-   \returns the option warped into a \a boost::shared_ptr
-*/
-template <typename T>
-PCmdOption make_opt(T& value, const char *long_opt, char short_opt, 
-		    const char *long_help,
-		    const char *short_help, CCmdOption::Flags flags = CCmdOption::not_required)
-{
-	return PCmdOption(new TCmdOption<T>(value, short_opt, long_opt, long_help, 
-					    short_help, flags ));
-}
-
-
 /**
    Convinience function: Create a standard option
    \param value value variable to hold the parsed option value - pass in the default value -
@@ -625,8 +603,8 @@ template <typename T>
 PCmdOption make_opt(T& value, const char *long_opt, char short_opt, 
 		    const char *help, CCmdOption::Flags flags = CCmdOption::not_required)
 {
-	return PCmdOption(new TCmdOption<T>(value, short_opt, long_opt, help, 
-					    long_opt, flags ));
+	return PCmdOption(new CParamOption( short_opt, long_opt, 
+					    new CTParameter<T>(value, flags == CCmdOption::required, help))); 
 }
 
 /**

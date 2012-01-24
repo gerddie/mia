@@ -152,7 +152,7 @@ private:
    \a operator  &lt;&lt; (istream& is, T& x) for the \a do_set method to work.
 */
 
-template <typename T, const char * const type>
+template <typename T>
 class EXPORT_CORE CTParameter : public CParameter {
 
 public:
@@ -184,8 +184,8 @@ private:
    to a value outside the range, the set method will throw an \a invalid_argument exception
 */
 
-template <typename T, const char * const type>
-class EXPORT_CORE TRangeParameter : public CTParameter<T, type> {
+template <typename T>
+class EXPORT_CORE TRangeParameter : public CTParameter<T> {
 
 public:
 	/** Constructor
@@ -366,17 +366,17 @@ extern const char  type_str_string[7];
 extern const char  type_str_bool[5];
 
 /// an integer parameter (with range)
-typedef TRangeParameter<int, type_str_int> CIntParameter;
+typedef TRangeParameter<int> CIntParameter;
 /// an unsigned integer parameter (with range)
-typedef TRangeParameter<unsigned int, type_str_uint> CUIntParameter;
+typedef TRangeParameter<unsigned int> CUIntParameter;
 /// a float parameter (with range)
-typedef TRangeParameter<float, type_str_float> CFloatParameter;
+typedef TRangeParameter<float> CFloatParameter;
 /// a double parameter (with range)
-typedef TRangeParameter<double, type_str_double> CDoubleParameter;
+typedef TRangeParameter<double> CDoubleParameter;
 /// an string parameter
-typedef CTParameter<std::string,type_str_string> CStringParameter;
+typedef CTParameter<std::string> CStringParameter;
 /// boolean parameter
-typedef CTParameter<bool, type_str_bool> CBoolParameter;
+typedef CTParameter<bool> CBoolParameter;
 
 
 
