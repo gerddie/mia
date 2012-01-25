@@ -102,8 +102,6 @@ int do_main( int argc, char *argv[] )
 	PMinimizer minimizer;
 	PMinimizer refinement_minimizer;
 	C2DTransformCreatorHandler::ProductPtr transform_creator; 
-	if (!transform_creator && transform_creator->get_init_string() != string("spline"))
-		cverr() << "something's wrong\n"; 
 
 	size_t mg_levels = 3;
 
