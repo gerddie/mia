@@ -394,12 +394,7 @@ size_t C2DMyocardPeriodicRegistration::get_ref_idx()const
 
 
 C2DMyocardPeriodicRegistration::RegistrationParams::RegistrationParams():
-	minimizer(CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.01")), 
 	divcurlweight(5),
-	pass1_cost(C2DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=ds]")), 
-	pass2_cost(C2DFullCostPluginHandler::instance().produce("image:cost=ssd")), 
-	series_select_cost(C2DFullCostPluginHandler::instance().produce("image:cost=[ngf:eval=ds]")),
-	transform_creator(C2DTransformCreatorHandler::instance().produce("spline")),
 	mg_levels(3),
 	max_candidates(20), 
 	save_ref(false)
@@ -439,7 +434,7 @@ int do_main( int argc, char *argv[] )
 				   "Skip images at the begin of the series")); 
 	options.add(make_opt(params.max_candidates, "max-candidates", 0, 
 				   "maximum number of candidates for global reference image")); 
-	options.add(make_opt(params.series_select_cost, "cost-series", 'S',
+	options.add(make_opt(params.series_select_cost, "image:cost=[ngf:eval=ds]", "cost-series", 'S',
 				   "Const function to use for the analysis of the series")); 
 	options.add(make_opt(reference_index_file, "ref-idx", 0, 
 				   "save reference index number to this file"));  
@@ -448,20 +443,20 @@ int do_main( int argc, char *argv[] )
 	options.set_group("\nRegistration"); 
 
 
-	options.add(make_opt( params.minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( params.refinement_minimizer, "refiner", 'R', "optimizer used for additional minimization"));
+	options.add(make_opt( params.minimizer, "gsl:opt=gd,step=0.01", "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( params.refinement_minimizer, "", "refiner", 'R', "optimizer used for additional minimization"));
 	options.add(make_opt( params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));
 
 	options.add(make_opt( params.divcurlweight, "divcurl", 'd', 
 				    "divcurl regularization weight"));
 
-	options.add(make_opt( params.transform_creator, "transForm", 'f', 
+	options.add(make_opt( params.transform_creator, "spline", "transForm", 'f', 
 				    "transformation type"));
 
-	options.add(make_opt(params.pass1_cost, "cost-subset", '1', 
+	options.add(make_opt(params.pass1_cost, "image:cost=[ngf:eval=ds]", "cost-subset", '1', 
 				   "Cost function for registration during the subset registration")); 
 
-	options.add(make_opt(params.pass2_cost, "cost-final", '2', 
+	options.add(make_opt(params.pass2_cost, "image:cost=ssd", "cost-final", '2', 
 				   "Cost function for registration during the final registration")); 
 	
 

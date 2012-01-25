@@ -172,13 +172,12 @@ int do_main( int argc, char *argv[] )
 	size_t skip_images = 0; 
 
 	// registration parameters
-	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1");
+	PMinimizer minimizer;
 	double c_rate = 32; 
 	double c_rate_divider = 4; 
 	double divcurlweight = 20.0; 
 	double divcurlweight_divider = 4.0; 
 	double imageweight = 1.0; 
-	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 	size_t mg_levels = 3; 
 	size_t current_pass = 0; 
 	size_t max_pass = 4; 
@@ -196,7 +195,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels")); 
 
 	options.set_group("\nRegistration"); 
-	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( c_rate, "start-c-rate", 'a', 
 				    "start coefficinet rate in spines, gets divided by --c-rate-divider with every pass"));
 	options.add(make_opt( c_rate_divider, "c-rate-divider", 0, 

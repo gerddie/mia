@@ -97,7 +97,7 @@ int do_main(int argc, char **argv)
 	string regmodel("navier");
 	string timestep("fluid");
 	int start_size = 16;
-	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
+	PSplineKernel interpolator_kernel;
 	int max_iter = 200;
 	float epsilon = 0.01;
 	bool save_steps = false;
@@ -113,7 +113,7 @@ int do_main(int argc, char **argv)
 	options.add(make_opt( start_size, "mgsize", 's', "multigrid start size"));
 	options.add(make_opt( max_iter, "max-iter", 'n', ",maximum number of iterations"));
 	options.add(make_opt( cost_function, "cost", 'c', "cost function"));
-	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
+	options.add(make_opt( interpolator_kernel, "bspline:d=3", "interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( epsilon, "epsilon", 'e', "relative accuracy to stop registration"
 				    " at a multi-grid level"));
 	options.add(make_opt( save_steps, "save-steps", 0, "save the steps of the registration in images"));

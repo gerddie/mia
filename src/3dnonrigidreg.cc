@@ -105,13 +105,11 @@ int do_main( int argc, char *argv[] )
 	string out_filename;
 	string trans_filename;
 	string transform_type("spline");
-	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1"); 
+	PMinimizer minimizer; 
 	int max_threads = tbb::task_scheduler_init::automatic;
 
 	cvdebug() << "auto transform_creator\n"; 
-	auto transform_creator = C3DTransformCreatorHandler::instance().produce("spline:rate=10"); 
-	if (!transform_creator && transform_creator->get_init_string() != string("spline:rate=10"))
-		cverr() << "something's wrong\n"; 
+	P3DTransformationFactory transform_creator; 
 
 	size_t mg_levels = 3;
 
@@ -124,8 +122,8 @@ int do_main( int argc, char *argv[] )
 	
 	options.set_group("Registration"); 
 	options.add(make_opt( mg_levels, "levels", 'l', "multi-resolution levels"));
-	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
+	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( transform_creator, "spline:rate=10", "transForm", 'f', "transformation type"));
 
 	options.set_group("Processing"); 
 	options.add(make_opt(max_threads, "threads", 'T', "Maxiumum number of threads to use for running the registration," 

@@ -99,10 +99,9 @@ int do_main( int argc, char *argv[] )
 	string out_filename;
 	string trans_filename;
 	string transform_type("spline");
-	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1");
+	PMinimizer minimizer;
 	PMinimizer refinement_minimizer;
-	cvdebug() << "auto transform_creator\n"; 
-	auto transform_creator = C2DTransformCreatorHandler::instance().produce("spline"); 
+	C2DTransformCreatorHandler::ProductPtr transform_creator; 
 	if (!transform_creator && transform_creator->get_init_string() != string("spline"))
 		cverr() << "something's wrong\n"; 
 
@@ -114,11 +113,11 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( out_filename, "out", 'o', "registered output image", CCmdOption::required));
 	options.add(make_opt( trans_filename, "trans", 't', "output transformation"));
 	options.add(make_opt( mg_levels, "levels", 'l', "multi-resolution levels"));
-	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( refinement_minimizer, "refiner", 'R',
+	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( refinement_minimizer, "", "refiner", 'R',
 			      "optimizer used for refinement after the main optimizer was called"));
 	
-	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
+	options.add(make_opt( transform_creator, "spline", "transForm", 'f', "transformation type"));
 
 	if (options.parse(argc, argv, "cost", &C2DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

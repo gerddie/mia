@@ -207,7 +207,7 @@ int do_main(int argc, char *argv[])
 
     	TFluidRegParams params;
 	
-	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
+	PSplineKernel interpolator_kernel;
 
 	params.InitialStepsize = MAX_STEP;
 	params.Lambda = LAMBDA;
@@ -243,7 +243,7 @@ int do_main(int argc, char *argv[])
 	options.add(make_opt( STARTSIZE, "start-size", 's', "initial multigrided size" ));
 	options.add(make_opt( method, g_method_dict, "method", 'm',  "method for solving PDE"));
 	options.add(make_opt( params.InitialStepsize, "step", 0, "Initial stepsize"));
-	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
+	options.add(make_opt( interpolator_kernel, "bspline:d=3", "interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( params.Overrelaxation, "relax", 0, "overrelaxation factor vor method sor"));
 	options.add(make_opt( params.maxiter, "maxiter", 0, "maxium iterations"));
 	options.add(make_opt( params.factor, "epsilon", 0, "truncation condition"));

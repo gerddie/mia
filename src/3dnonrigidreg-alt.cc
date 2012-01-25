@@ -95,18 +95,15 @@ int do_main( int argc, char *argv[] )
 {
 	string trans_filename;
 	size_t mg_levels = 3;
-	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1"); 
-	auto transform_creator = C3DTransformCreatorHandler::instance().produce("spline:rate=10"); 
-	if (!transform_creator && transform_creator->get_init_string() != string("spline:rate=10"))
-		cverr() << "something's wrong\n"; 
-
+	PMinimizer minimizer; 
+	P3DTransformationFactory transform_creator; 
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( trans_filename, "out-transform", 'o', "output transformation", CCmdOption::required));
 	options.add(make_opt( mg_levels, "levels", 'l', "multi-resolution levels"));
-	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
-
+	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( transform_creator, "spline:rate=10", "transForm", 'f', "transformation type"));
+	
 	if (options.parse(argc, argv, "cost", &C3DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 

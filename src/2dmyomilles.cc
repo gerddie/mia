@@ -174,8 +174,8 @@ int do_main( int argc, char *argv[] )
 	
 	// registration parameters
 	string cost_function("ssd"); 
-	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=simplex,step=1.0");
-	auto transform_creator = C2DTransformCreatorHandler::instance().produce("rigid"); 
+	PMinimizer minimizer;
+	P2DTransformationFactory transform_creator; 
 	size_t mg_levels = 3; 
 	
 	// ICA parameters 
@@ -201,8 +201,8 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images")); 
 
 	options.add(make_opt( cost_function, "cost", 'c', "registration criterion")); 
-	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
+	options.add(make_opt( minimizer, "gsl:opt=simplex,step=1.0", "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( transform_creator, "rigid", "transForm", 'f', "transformation type"));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 

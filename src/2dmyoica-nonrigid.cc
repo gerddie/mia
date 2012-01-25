@@ -265,9 +265,9 @@ int do_main( int argc, char *argv[] )
 	bool override_src_imagepath = true;
 
 	// registration parameters
-	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1");
+	PMinimizer minimizer;
 	PMinimizer refinement_minimizer;
-	auto imagecost = C2DFullCostPluginHandler::instance().produce("image:weight=1,cost=ssd");
+	P2DFullCost imagecost;
 	double c_rate = 32; 
 	double c_rate_divider = 4; 
 	double divcurlweight = 20.0; 
@@ -312,7 +312,7 @@ int do_main( int argc, char *argv[] )
 
 	
 	options.set_group("Registration"); 
-	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( refinement_minimizer, "refiner", 'R',
 			      "optimizer used for refinement after the main optimizer was called"));
 	options.add(make_opt( c_rate, "start-c-rate", 'a', 
@@ -325,7 +325,7 @@ int do_main( int argc, char *argv[] )
 				    " --divcurl-divider with every pass")); 
 	options.add(make_opt( divcurlweight_divider, "divcurl-divider", 0,
 				    "divcurl weight scaling with each new pass")); 
-	options.add(make_opt( imagecost, "imagecost", 'w', "image cost")); 
+	options.add(make_opt( imagecost, "image:weight=1,cost=ssd", "imagecost", 'w', "image cost")); 
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 

@@ -53,6 +53,7 @@ const SProgramDescription g_description = {
 	"Register the perfusion series given by images imageXXXX.exr by using Pseudo Ground Truth estimation. "
         "Skip two images at the beginning and otherwiese use the default parameters. "
 	"Store the result images to  'regXXXX.exr'.", 
+
 	
 	"-i imageXXXX.exr -o regXXXX.exr -k 2"
 };

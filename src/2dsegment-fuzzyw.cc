@@ -74,7 +74,6 @@ private:
 }; 
 
 CSegment2DFuzzy::Params::Params():
-	neighbourhood_filter(produce_2dimage_filter("shmean:shape=8n")),
 	p(2), 
 	alpha(0.7), 
 	epsilon(0.01)
@@ -370,7 +369,7 @@ int do_main(int argc, char *argv[])
 	opts.set_group("Segmentation");
 	opts.add(make_opt( n_classes, "no-of-classes", 'n', "number of classes to segment"));
 	opts.add(make_opt( params.class_centres, "class-centres", 'C', "initial class centers"));
-	opts.add(make_opt( params.neighbourhood_filter, "neighborhood", 'N', "neighborhood filter for B-field correction"));
+	opts.add(make_opt( params.neighbourhood_filter, "shmean:shape=8n", "neighborhood", 'N', "neighborhood filter for B-field correction"));
 	opts.add(make_opt( params.alpha, "alpha", 'a', "weight of neighborhood filter for B-field correction"));
 	opts.add(make_opt( params.p, "fuzziness", 'p', 
 			   " parameter describing the fuzzyness of mattar distinction")); 

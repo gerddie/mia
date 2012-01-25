@@ -181,11 +181,10 @@ int do_main( int argc, char *argv[] )
 	string registered_filebase("reg");
 	string out_filename;
 	
-	auto transform_creator = C2DTransformCreatorHandler::instance().produce("spline"); 
+	P2DTransformationFactory transform_creator; 
 	
 	// registration parameters
 	string minimizer("gsl:opt=gd,step=0.1");
-	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
 	size_t mg_levels = 3; 
 	int reference_param = -1; 
 	int skip = 0; 
@@ -205,7 +204,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( skip, "skip", 'k', "Skip images at the beginning of the series"));
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
-	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
+	options.add(make_opt( transform_creator, "spline", "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
 
 	options.set_group("Processing"); 
