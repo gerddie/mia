@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(test_float_vector_option)
 {
 	C2DFVector v(1,2);
 
-	PCmdOption popt(make_opt(v,  "2dvector", 'f', "a float 2d vector option", "2vector"));
+	PCmdOption popt(make_opt(v,  "2dvector", 'f', "a float 2d vector option"));
 	const char *str_value = "<1.2,3.4>";
 
 	popt->set_value(str_value);
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(test_size_vector_option)
 {
 	C2DBounds v(1,2);
 
-	PCmdOption popt(make_opt(v,  "2dbounds", 'f', "a 2d size option", "2dbounds"));
+	PCmdOption popt(make_opt(v,  "2dbounds", 'f', "a 2d size option"));
 	const char *str_value = "<12,34>";
 
 	popt->set_value(str_value);

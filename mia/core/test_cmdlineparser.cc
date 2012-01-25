@@ -128,8 +128,8 @@ BOOST_FIXTURE_TEST_CASE( test_string_option, CmdlineParserFixture )
 	const char *str_value = "let there be spaces";
 	try {
 		popt->set_value(str_value);
-		BOOST_CHECK(value == string(str_value));
-		BOOST_CHECK(popt->get_value_as_string() == string(str_value));
+		BOOST_CHECK_EQUAL(value, string(str_value));
+		BOOST_CHECK_EQUAL(popt->get_value_as_string(), string(str_value));
 	}
 	catch (invalid_argument& x) {
 		BOOST_FAIL(x.what());

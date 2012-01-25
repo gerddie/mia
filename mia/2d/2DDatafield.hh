@@ -30,6 +30,7 @@
 #include <mia/2d/2DVector.hh>
 #include <mia/2d/iterator.hh>
 #include <mia/core/parameter.hh>
+#include <mia/core/typedescr.hh>
 
 #ifndef EXPORT_2DDATAFIELD
 /// define used export 2D symbols 
@@ -322,12 +323,11 @@ typedef T2DDatafield<signed char>  C2DSBDatafield;
 /// 2D scalar field that holds bool values
 typedef T2DDatafield<bool>  C2DBitDatafield;
 
-
-/// template parameters string for C2DBoundsParameter
-extern const char type_str_2dbounds[]; 
-
 /// Parameter type for 2D size definitions 
-typedef  CTParameter<C2DBounds, type_str_2dbounds> C2DBoundsParameter;
+typedef  CTParameter<C2DBounds> C2DBoundsParameter;
+
+DEFINE_TYPE_DESCR(C2DBounds); 
+DEFINE_TYPE_DESCR(C2DFVector); 
 
 NS_MIA_END
 

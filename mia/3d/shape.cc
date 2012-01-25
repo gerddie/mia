@@ -77,5 +77,12 @@ template class TFactoryPluginHandler<C3DShapePlugin>;
 template class TPluginHandler<C3DShapePlugin>;
 template class TShape<T3DVector, C3DBitImage>;
 
+using boost::filesystem::path; 
+C3DShapePluginHandlerTestPath::C3DShapePluginHandlerTestPath()
+{
+	list< path> sksearchpath; 
+	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/3d/shapes"));
+	C3DShapePluginHandler::set_search_path(sksearchpath); 
+}
 
 NS_MIA_END

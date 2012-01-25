@@ -104,7 +104,7 @@ static void test_float_vector_option()
 {
 	C3DFVector v(1,2,3);
 
-	PCmdOption popt(make_opt(v,  "3dvector", 'f', "a float 3d vector option", "3dvector"));
+	PCmdOption popt(make_opt(v,  "3dvector", 'f', "a float 3d vector option"));
 	const char *str_value = "<1.2,3.4,8.2>";
 	try {
 		popt->set_value(str_value);
@@ -128,7 +128,7 @@ void test_size_vector_option()
 {
 	C3DBounds v(1,2,3);
 
-	PCmdOption popt(make_opt(v,  "3dbounds", 'f', "a 3d size option", "3dbounds"));
+	PCmdOption popt(make_opt(v,  "3dbounds", 'f', "a 3d size option"));
 	const char *str_value = "<12,34,256>";
 	try {
 		cvdebug() << "initialising from '" << str_value<< "'\n";

@@ -70,6 +70,13 @@ q	*/
 	*/
 	void descr(std::ostream& os) const;
 
+
+	/**
+	   Get the curent parameter value as string 
+	   \retruns the current parameter value 
+	 */
+	std::string get_value_as_string() const;
+
 	/**
 	   Write the current value plus information to a stream, 
 	   \param os output stream 
@@ -132,10 +139,11 @@ private:
 	/** the actual (abstract) function to set the parameter that needs to be overwritten
 	    \param str_value the parameter value as string
 	*/
-	virtual void do_add_dependend_handler(HandlerHelpMap& handler_map) const; 
+	virtual void do_add_dependend_handler(HandlerHelpMap& handler_map) const;
 	virtual bool do_set(const std::string& str_value) = 0;
-	virtual void do_reset(); 
-	virtual std::string do_get_default_value() const = 0; 
+	virtual void do_reset();
+	virtual std::string do_get_default_value() const = 0;
+	virtual std::string do_get_value_as_string() const = 0;
 	virtual void do_get_help_xml(xmlpp::Element& self) const;
 	bool m_required;
 	bool m_is_required; 
@@ -173,6 +181,7 @@ private:
 	virtual void do_reset();
 	virtual void adjust(T& value);
 	virtual std::string do_get_default_value() const; 
+	virtual std::string do_get_value_as_string() const;
 	T& m_value;
 	T m_default_value; 
 };
@@ -237,6 +246,7 @@ private:
 	virtual bool do_set(const std::string& str_value);
 	virtual void do_reset();
 	virtual std::string do_get_default_value() const; 
+	virtual std::string do_get_value_as_string() const;
 	virtual void do_get_help_xml(xmlpp::Element& self) const;
 	T& m_value;
 	T m_default_value; 
@@ -269,6 +279,7 @@ private:
 	virtual bool do_set(const std::string& str_value);
 	virtual void do_reset();
 	virtual std::string do_get_default_value() const; 
+	virtual std::string do_get_value_as_string() const;
 	virtual void do_get_help_xml(xmlpp::Element& self) const;
 	typename F::ProductPtr& m_value;
 
@@ -307,6 +318,7 @@ private:
 	virtual bool do_set(const std::string& str_value);
 	virtual void do_reset();
 	virtual std::string do_get_default_value() const; 
+	virtual std::string do_get_value_as_string() const;
 	void do_get_help_xml(xmlpp::Element& self) const; 
 	T& m_value;
 	T m_default_value; 
@@ -342,28 +354,10 @@ private:
 	virtual bool do_set(const std::string& str_value);
 	virtual void do_reset();
 	virtual std::string do_get_default_value() const; 
+	virtual std::string do_get_value_as_string() const; 
 	T& m_value;
 	T m_default_value; 
 };
-
-
-/// template parameter string for unsigned int parameter type 
-extern const char  type_str_uint[5];
-
-/// template parameter string for int parameter type 
-extern const char  type_str_int[4];
-
-/// template parameter string for float parameter type 
-extern const char  type_str_float[6];
-
-/// template parameter string for double parameter type 
-extern const char  type_str_double[7];
-
-/// template parameter string for string parameter type 
-extern const char  type_str_string[7];
-
-/// template parameter string for boolean parameter type 
-extern const char  type_str_bool[5];
 
 /// an integer parameter (with range)
 typedef TRangeParameter<int> CIntParameter;
@@ -461,6 +455,12 @@ std::string CDictParameter<T>::do_get_default_value() const
 }
 
 template <typename T>
+std::string CDictParameter<T>::do_get_value_as_string() const
+{
+	return m_dict.get_name(m_value); 
+}
+
+template <typename T>
 CFactoryParameter<T>::CFactoryParameter(typename T::ProductPtr& value,
 					const std::string& init, bool required, const char *descr):
 	CParameter("factory", required, descr),
@@ -516,6 +516,12 @@ std::string CFactoryParameter<T>::do_get_default_value() const
 	return m_default_value; 
 }
 
+template <typename T>
+std::string CFactoryParameter<T>::do_get_value_as_string() const
+{
+	return m_string_value; 
+}
+
 
 template <typename T>
 CSetParameter<T>::CSetParameter(T& value, const std::set<T>& valid_set, const char *descr):
@@ -533,6 +539,12 @@ template <typename T>
 std::string CSetParameter<T>::do_get_default_value() const
 {
 	return __dispatch_param_translate<T>::apply(m_default_value); 
+}
+
+template <typename T>
+std::string CSetParameter<T>::do_get_value_as_string() const
+{
+	return __dispatch_param_translate<T>::apply(m_value);
 }
 
 template <typename T>
@@ -622,6 +634,11 @@ std::string TParameter<T>::do_get_default_value() const
 	return s.str(); 
 }
 
+template <typename T>
+std::string TParameter<T>::do_get_value_as_string() const
+{
+	return __dispatch_param_translate<T>::apply(m_value);	
+}
 
 NS_MIA_END
 

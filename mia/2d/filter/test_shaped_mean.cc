@@ -27,6 +27,8 @@ using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace shapedmean_2dimage_filter;
 
+C2DShapePluginHandlerTestPath shape_plugin_path; 
+
 BOOST_AUTO_TEST_CASE( test_2dfilter_mean_float_8n )
 {
 	const size_t size_x = 7;

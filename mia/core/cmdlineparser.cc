@@ -176,18 +176,14 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 
 	set_current_group(g_help_optiongroup);
 	add(make_opt(verbose, g_verbose_dict, "verbose",  'V', 
-		     "verbosity of output, print messages of given level and higher priorities. Supported priorities starting at lowest level are:",
-		     CCmdOption::not_required));
-	add(make_opt(copyright,  "copyright", 0, "print copyright information", 
-		     CCmdOption::not_required));
-	add(make_opt(help,  "help", 'h', "print this help", 
-		     CCmdOption::not_required));
+		     "verbosity of output, print messages of given level and higher priorities."
+		     " Supported priorities starting at lowest level are:"));
+	add(make_opt(copyright,  "copyright", 0, "print copyright information"));
+	add(make_opt(help,  "help", 'h', "print this help"));
 #ifdef HAVE_LIBXMLPP
-	add(make_opt(help_xml,  "help-xml", 0, "print help formatted as XML", 
-		     CCmdOption::not_required));
+	add(make_opt(help_xml,  "help-xml", 0, "print help formatted as XML"));
 #endif
-	add(make_opt(usage,  "usage", '?', "print a short help", 
-		     CCmdOption::not_required));
+	add(make_opt(usage,  "usage", '?', "print a short help"));
 	set_current_group("");
 }
 

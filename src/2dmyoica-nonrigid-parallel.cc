@@ -340,15 +340,15 @@ int do_main( int argc, char *argv[] )
 				    "file name base for registered fiels")); 
 	
 	options.add(make_opt( cropped_filename, "save-cropped", 0, 
-				    "save cropped set to this file", NULL)); 
+				    "save cropped set to this file")); 
 	options.add(make_opt( save_crop_feature, "save-feature", 0, 
 				    "save segmentation feature images"
-				    " and initial ICA mixing matrix", NULL)); 
+				    " and initial ICA mixing matrix")); 
 
 	options.add(make_opt( save_ref_filename, "save-refs", 0, 
-				    "save reference images", NULL)); 
+				    "save reference images")); 
 	options.add(make_opt( save_reg_filename, "save-regs", 0, 
-				    "save intermediate registered images", NULL)); 
+				    "save intermediate registered images")); 
 
 
 	
@@ -369,12 +369,12 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
 	options.set_group("ICA"); 
-	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
-	options.add(make_opt( normalize, "normalize", 0, "normalized ICs", NULL));
+	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
+	options.add(make_opt( normalize, "normalize", 0, "normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
-				    "don't strip the mean from the mixing curves", NULL));
+				    "don't strip the mean from the mixing curves"));
 	options.add(make_opt( box_scale, "segscale", 's', 
-				    "segment and scale the crop box around the LV (0=no segmentation)", "segscale"));
+				    "segment and scale the crop box around the LV (0=no segmentation)"));
 	options.add(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
 				    "e.g. because as they are of other modalities")); 
 	options.add(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 

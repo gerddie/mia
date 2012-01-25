@@ -43,6 +43,12 @@ typedef THandlerSingleton<TFactoryPluginHandler<C3DShapePlugin> > C3DShapePlugin
 /// Trait to make the shape definition parsable on the command line  
 FACTORY_TRAIT(C3DShapePluginHandler); 
 
+class EXPORT_3D C3DShapePluginHandlerTestPath {
+public: 
+	C3DShapePluginHandlerTestPath(); 
+}; 
+
+
 NS_MIA_END
 
 #endif

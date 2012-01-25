@@ -32,6 +32,7 @@
 #include <mia/2d/2DDatafield.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/parameter.hh>
+#include <mia/core/typedescr.hh>
 
 NS_MIA_BEGIN
 
@@ -445,12 +446,10 @@ typedef T3DDatafield<unsigned char>  C3DUBDatafield;
 	/// a data field of float values
 typedef T3DDatafield<bool>  C3DBitDatafield;
 
-/// template parameter name for C3DBoundsParameter
-extern const char type_str_3dbounds[]; 
-
 /// 3D size parameter type 
-typedef  CTParameter<C3DBounds, type_str_3dbounds> C3DBoundsParameter;
-
+typedef  CTParameter<C3DBounds> C3DBoundsParameter;
+DEFINE_TYPE_DESCR(C3DBounds); 
+DEFINE_TYPE_DESCR(C3DFVector); 
 
 // some implementations
 

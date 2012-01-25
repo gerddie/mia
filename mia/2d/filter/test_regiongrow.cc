@@ -25,7 +25,9 @@
 using namespace mia;
 using namespace regiongrow_2d_filter;
 
-BOOST_AUTO_TEST_CASE ( test_seeded_watershead ) 
+C2DShapePluginHandlerTestPath shape_plugin_path; 
+
+BOOST_AUTO_TEST_CASE ( test_regiongrow ) 
 {
 	const C2DBounds size(11, 10); 
 	

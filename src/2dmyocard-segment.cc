@@ -321,10 +321,10 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( save_feature, "save-features", 'f', "save ICA features to files with this name base")); 
 
 	options.set_group("ICA");
-	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation testing 4 and 5", NULL));
-	options.add(make_opt( normalize, "normalize", 0, "normalized ICs", NULL));
+	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation testing 4 and 5"));
+	options.add(make_opt( normalize, "normalize", 0, "normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
-				    "don't strip the mean from the mixing curves", NULL));
+				    "don't strip the mean from the mixing curves"));
 	options.add(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
 				    "as they are of other modalities")); 
 	options.add(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 

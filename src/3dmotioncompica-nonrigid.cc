@@ -283,12 +283,11 @@ int do_main( int argc, char *argv[] )
 				    "input images (file pattern)", CCmdOption::required));
 	options.add(make_opt( registered_filebase, "out-file", 'o', "output images (file name pattern)"));
 	
-	options.add(make_opt( save_ref_filename, "save-refs", 0, 
-				    "save reference images", NULL)); 
+	options.add(make_opt( save_ref_filename, "save-refs", 0, "save reference images")); 
 	options.add(make_opt( save_reg_filename, "save-regs", 0, 
-				    "save intermediate registered images", NULL)); 
-	options.add(make_opt( save_mixing_matrix, "save-coeffs", 0, "save mixing matrix", NULL)); 
-	options.add(make_opt( save_features, "save-features", 0, "save feature images", NULL)); 
+				    "save intermediate registered images")); 
+	options.add(make_opt( save_mixing_matrix, "save-coeffs", 0, "save mixing matrix")); 
+	options.add(make_opt( save_features, "save-features", 0, "save feature images")); 
 
 
 	options.set_group("Registration"); 
@@ -308,10 +307,10 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
 	options.set_group("ICA"); 
-	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
-	options.add(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
+	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
+	options.add(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
-				    "don't strip the mean from the mixing curves", NULL));
+				    "don't strip the mean from the mixing curves"));
 	options.add(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "
 				    "e.g. because as they are of other modalities")); 
 	options.add(make_opt( max_ica_iterations, "max-ica-iter", 'm', "maximum number of iterations in ICA")); 

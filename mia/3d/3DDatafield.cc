@@ -95,8 +95,10 @@ INSTANCIATE(unsigned char );
 INSTANCIATE(signed char);
 INSTANCIATE(bool);
 
-extern const char type_str_3dbounds[] = "3DBounds";
-template class EXPORT_3D  CTParameter<C3DBounds, type_str_3dbounds>;
+DECLARE_TYPE_DESCR2(C3DBounds, "3dbounds"); 
+DECLARE_TYPE_DESCR2(C3DFVector, "3dfvector"); 
+template class EXPORT_3D  CTParameter<C3DBounds>;
+template class EXPORT_2D  CTParameter<C3DFVector>;
 
 NS_MIA_END
 

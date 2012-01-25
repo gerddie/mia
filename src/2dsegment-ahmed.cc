@@ -448,11 +448,10 @@ int do_main(int argc, char *argv[])
 	CCmdOptionList opts(g_description);
 	opts.add(make_opt( in_filename, "in-file", 'i', "image to be segmented", CCmdOption::required )); 
 	opts.add(make_opt( cls_filename, "out-file", 'o', "class probability images", CCmdOption::required )); 
-	opts.add(make_opt( n_classes, "no-of-classes", 'a', "number of classes", "3"));
+	opts.add(make_opt( n_classes, "no-of-classes", 'a', "number of classes"));
 	opts.add(make_opt( bg_correct, "bias-correct", 'b', "apply bias field correction"));
 	opts.add(make_opt( initial_class_centres, "class-centres", 'c', "initial class centers"));
-	opts.add(make_opt( spread, "spread", 's', 
-			      "spread parameter describing the strength of mattar distinction", "64.0")); 
+	opts.add(make_opt( spread, "spread", 's', "spread parameter describing the strength of mattar distinction")); 
 	
 	if (opts.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

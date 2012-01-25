@@ -162,13 +162,13 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
 	options.add(make_opt( reference_filename, "references", 'r', "file name base for refernces files")); 
 	options.add(make_opt( cropped_filename, "save-cropped", 'c', "save cropped set to this file")); 
-	options.add(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images", NULL)); 
+	options.add(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images")); 
 	
 	options.set_group("ICA");
-	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
-	options.add(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs", NULL));
+	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
+	options.add(make_opt( no_normalize, "no-normalize", 0, "don't normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
-				    "don't strip the mean from the mixing curves", NULL));
+				    "don't strip the mean from the mixing curves"));
 	options.add(make_opt( box_scale, "segscale", 's', 
 				    "segment and scale the crop box around the LV (0=no segmentation)"));
 	options.add(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "

@@ -197,23 +197,22 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( registered_filebase, "registered", 'r', "file name base for registered files")); 
 	options.add(make_opt( ref_filebase, "save-references", 0, "save reference images to this file base")); 
 	
-	options.add(make_opt( cropped_filename, "save-cropped", 0, "save cropped set to this file", NULL)); 
-	options.add(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images", NULL)); 
+	options.add(make_opt( cropped_filename, "save-cropped", 0, "save cropped set to this file")); 
+	options.add(make_opt( save_crop_feature, "save-feature", 0, "save segmentation feature images")); 
 
 	options.add(make_opt( cost_function, "cost", 'c', "registration criterion")); 
 	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 
-	options.add(make_opt( pass, "passes", 'P', "registration passes", "passes")); 
+	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
 
-	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation", NULL));
-	options.add(make_opt( normalize, "no-normalize", 0, "don't normalized ICs", NULL));
+	options.add(make_opt( components, "components", 'C', "ICA components 0 = automatic estimation"));
+	options.add(make_opt( normalize, "no-normalize", 0, "don't normalized ICs"));
 	options.add(make_opt( no_meanstrip, "no-meanstrip", 0, 
-				    "don't strip the mean from the mixing curves", NULL));
-	options.add(make_opt( use_guess_model, "guess", 'g', "use initial guess for myocardial perfusion", 
-				    NULL)); 
+				    "don't strip the mean from the mixing curves"));
+	options.add(make_opt( use_guess_model, "guess", 'g', "use initial guess for myocardial perfusion")); 
 	options.add(make_opt( box_scale, "segscale", 's', 
 				    "segment and scale the crop box around the LV (0=no segmentation)"));
 	options.add(make_opt( skip_images, "skip", 'k', "skip images at the beginning of the series "

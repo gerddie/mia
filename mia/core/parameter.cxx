@@ -52,22 +52,37 @@ void CTParameter<T>::do_descr(std::ostream& /*os*/) const
 {
 }
 
+template <typename T>
+struct __dispatch_parameter_do_set {
+	static bool apply (const std::string& str_value, T& value) {
+		char c; 
+		std::istringstream s(str_value); 
+		s >> value; 
+		if (s.fail()) 
+			THROW(std::invalid_argument, "Value '" << str_value << "' not allowed"); 
+		while (!s.eof() && s.peek() == ' ') 
+			s >> c; 
+		if (!s.eof()) 
+			THROW(std::invalid_argument, "Value '" << str_value << "' not allowed"); 
+		return true; 
+	}
+};  
+
+template <>
+struct __dispatch_parameter_do_set<std::string> {
+	static bool apply (const std::string& str_value, std::string& value) {
+		value = str_value;
+		return true; 
+	}
+}; 
+
 
 template <typename T> 
 bool CTParameter<T>::do_set(const std::string& str_value)
 {
-	char c; 
-	std::istringstream s(str_value); 
-	s >> m_value; 
-	if (s.fail()) 
-		throw std::invalid_argument(errmsg(str_value)); 
-	while (!s.eof() && s.peek() == ' ') 
-		s >> c; 
-	if (!s.eof()) 
-		throw std::invalid_argument(errmsg(str_value)); 
-	
+	bool retval = __dispatch_parameter_do_set<T>::apply(str_value, m_value); 
 	adjust(m_value); 
-	return true; 
+	return retval; 
 }
 
 template <typename T>
@@ -81,6 +96,13 @@ void CTParameter<T>::adjust(T& /*value*/)
 {
 }
 
+template <typename T> 
+std::string CTParameter<T>::do_get_value_as_string() const
+{
+	std::ostringstream s; 
+	s << m_value; 
+	return s.str(); 
+}
 
 template <typename T> 
 std::string CTParameter<T>::do_get_default_value() const

@@ -75,6 +75,11 @@ void CParameter::post_set()
 
 }
 
+std::string CParameter::get_value_as_string() const
+{
+	return do_get_value_as_string(); 
+}
+
 void CParameter::value(std::ostream& os) const
 {
 	os << "=" << (m_required ? "[required]" : get_default_value()) 

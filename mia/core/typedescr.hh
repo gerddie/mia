@@ -49,7 +49,7 @@ struct __type_descr {
 	}
 
 #define DECLARE_TYPE_DESCR(type) const char * const __type_descr<type>::name = #type;
-#define DECLARE_TYPE_DESCR2(type, name) const char * const __type_descr<type>::name = name;
+#define DECLARE_TYPE_DESCR2(type, n) const char * const __type_descr<type>::name = n;
 	
 
 

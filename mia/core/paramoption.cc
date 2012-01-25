@@ -19,8 +19,10 @@
  */
 
 #include <mia/core/paramoption.hh>
+#include <sstream>
 
 NS_MIA_BEGIN
+using std::ostringstream; 
 
 CParamOption::CParamOption(char short_opt, const char *long_opt, CParameter *param):
 	CCmdOption(short_opt, long_opt, param->get_descr(), 
@@ -38,13 +40,17 @@ void CParamOption::do_get_long_help(std::ostream& os) const
 
 bool CParamOption::do_set_value(const char *str_value)
 {
-	bool result =  m_param->set(str_value);
-	return result; 
+	return  m_param->set(str_value);
 }
 
 size_t CParamOption::do_get_needed_args() const
 {
 	return 1; 
+}
+
+const std::string CParamOption::do_get_value_as_string() const
+{
+	return m_param->get_value_as_string();
 }
 
 void CParamOption::do_write_value(std::ostream& os) const

@@ -607,6 +607,21 @@ PCmdOption make_opt(T& value, const char *long_opt, char short_opt,
 					    new CTParameter<T>(value, flags == CCmdOption::required, help))); 
 }
 
+template <typename T>
+PCmdOption make_opt(std::vector<T>& value, const char *long_opt, char short_opt, 
+		    const char *help, CCmdOption::Flags flags = CCmdOption::not_required)
+{
+	return PCmdOption(new TCmdOption<std::vector<T> >(value, short_opt, long_opt, help, 
+							  long_opt, flags ));
+}
+
+inline PCmdOption make_opt(bool& value, const char *long_opt, char short_opt, const char *help)
+{
+	return PCmdOption(new TCmdOption<bool>(value, short_opt, long_opt, help, 
+					       long_opt, CCmdOption::not_required ));
+}
+
+
 /**
    Convinience function: Create a table lookup option
    \param[in,out] value variable to hold the parsed and translated option value

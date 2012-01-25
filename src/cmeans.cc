@@ -425,13 +425,13 @@ int do_main(int argc, char *argv[])
 	options.add(make_opt( in_filename, "in-file", 'i', "input file name containing the histogram")); 
 	options.add(make_opt( out_filename, "out-file", 'o', "output file name to store probabilities")); 
 	
-	options.add(make_opt( nclasses, "nclasses", 'n', "number of classes to partition into","3")); 
-	options.add(make_opt( max_iter, "max-iter", 'm', "maximum number of iterations", "100")); 
+	options.add(make_opt( nclasses, "nclasses", 'n', "number of classes to partition into")); 
+	options.add(make_opt( max_iter, "max-iter", 'm', "maximum number of iterations")); 
 	options.add(make_opt( even_start, "even-start", 'e', "start with centers evenly distributed over the histogram")); 
-	options.add(make_opt( class_centers, "class-centers", 'c', "initial class centers", "")); 
+	options.add(make_opt( class_centers, "class-centers", 'c', "initial class centers")); 
 	options.add(make_opt( auto_k, "auto", 'a', "atomatic adaption of variance (experimental)")); 
 	options.add(make_opt( cut_histo,"cut-histo", 't', "cut empty histogram at the end "));
-	options.add(make_opt( k, "variance", 'k', "variance parameter", "256")); 
+	options.add(make_opt( k, "variance", 'k', "variance parameter")); 
 	options.add(make_opt( self_test, "self-test", 0, "run self test"));
 	
 
