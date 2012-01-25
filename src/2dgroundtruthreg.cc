@@ -83,7 +83,6 @@ SPGTParams::SPGTParams():
 }
 	
 SRegistrationParams::SRegistrationParams():
-	minimizer(CMinimizerPluginHandler::instance().produce("gsl:opt=gd,step=0.1")), 
 	c_rate(32), 
 	divcurlweight(20.0), 
 	imageweight(1.0), 
@@ -154,7 +153,7 @@ int do_main( int argc, char *argv[] )
 	double c_rate_divider = 4; 
 	double divcurlweight_divider = 4.0; 
 
-	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
+	PSplineKernel interpolator_kernel;
 
 	CCmdOptionList options(g_description);
 	options.set_group("\nFile-IO"); 
@@ -178,8 +177,8 @@ int do_main( int argc, char *argv[] )
 	
 	options.set_group("\nRegistration"); 
 	
-	options.add(make_opt( reg_params.minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( interpolator_kernel ,"interpolator", 'p', "image interpolator kernel"));
+	options.add(make_opt( reg_params.minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( interpolator_kernel, "bspline:d=3","interpolator", 'p', "image interpolator kernel"));
 	options.add(make_opt( reg_params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));
 	
 	options.add(make_opt( reg_params.divcurlweight, "divcurl", 'd', 

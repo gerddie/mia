@@ -79,6 +79,8 @@ struct CCmdOptionListData {
 	CCmdOption *find_option(const char *key) const;
 	CCmdOption *find_option(char key) const;
 
+	void post_set(); 
+
 #ifdef HAVE_LIBXMLPP
 	void print_help_xml(const char *progname, const CPluginHandlerBase *additional_help) const; 
 #endif
@@ -230,6 +232,12 @@ CHistoryRecord CCmdOptionListData::get_values() const
 	return result;
 }
 
+void CCmdOptionListData::post_set()
+{
+	for(auto o_i = options.begin(); o_i != options.end(); ++o_i)
+		for(auto g_i = o_i->second.begin(); g_i != o_i->second.end(); ++g_i) 
+			(*g_i)->post_set(); 
+}
 
 vector<const char *> CCmdOptionListData::has_unset_required_options() const  
 {
@@ -613,6 +621,8 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional,
 
 	}
 
+	m_impl->post_set(); 
+	
 	const char *name_help = strrchr(args[0], '/'); 
 	name_help  = name_help ? name_help + 1 : args[0]; 
 

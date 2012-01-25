@@ -21,7 +21,7 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/core/product_base.hh>
-#include <mia/core/factorycmdlineoption.hh>
+#include <mia/core/cmdlineparser.hh>
 #include <mia/core/handler.hh>
 #include <mia/core/factory.hh>
 #include <mia/core/handler.cxx>
@@ -76,31 +76,61 @@ BOOST_AUTO_TEST_CASE( test_a_factory_option )
 {
 
 	CFactoryHandlerMock::ProductPtr product; 
-	PCmdOption option = make_opt(product, "lala", 'l',"Some help", "help"); 
+
+	
+	PCmdOption option = make_opt(product, "lola", "lala", 'l', "Some help"); 
 	
 	option->set_value("lala"); 
+	option->post_set(); 
+	
+	BOOST_REQUIRE(product); 
+	BOOST_CHECK_EQUAL(product->get_init_string(), "lala"); 
+	
+	//option->set_value(NULL); 
+	//	BOOST_CHECK(!product); 
+
+	BOOST_CHECK_EQUAL(option->get_value_as_string(), "lala"); 
+}
+
+const SProgramDescription general_help = {
+	"Test", 
+	"This program tests the command line parser.", 
+	NULL, 
+	NULL
+}; 
+
+
+BOOST_AUTO_TEST_CASE( test_a2_factory_option )
+{
+
+	CFactoryHandlerMock::ProductPtr product; 
+	PCmdOption option = make_opt(product, "lala", "lila", 'l',"Some help"); 
+	
+	CCmdOptionList olist(general_help); 
+	olist.add(option); 
+	
+	vector<const char *> cmdline(1); 
+	cmdline[0] = "testprogram"; 
+	BOOST_CHECK_EQUAL(olist.parse(cmdline.size(), &cmdline[0]), CCmdOptionList::hr_no);
+	BOOST_REQUIRE(product); 
 	
 	BOOST_CHECK_EQUAL(product->get_init_string(), "lala"); 
 	
 	//option->set_value(NULL); 
 	//	BOOST_CHECK(!product); 
 
-	stringstream test; 
-	option->write_value(test); 
-	BOOST_CHECK_EQUAL(test.str(), "=lala"); 
+	BOOST_CHECK_EQUAL(option->get_value_as_string(), "lala"); 
 }
 
 BOOST_AUTO_TEST_CASE( test_another_factory_option )
 {
 
+
 	auto product = 	CFactoryHandlerMock::instance().produce("lala"); 
 	BOOST_CHECK_EQUAL(product->get_init_string(), "lala"); 
 	
-	PCmdOption option = make_opt(product, "lala", 'l',"Some help", "help"); 
-	
-	stringstream test; 
-	option->write_value(test); 
-	BOOST_CHECK_EQUAL(test.str(), "=lala"); 
+	PCmdOption option = make_opt(product, "lola", "lala", 'l',"Some help"); 
+	BOOST_CHECK_EQUAL(option->get_value_as_string(), "lala"); 
 }
 
 NS_MIA_END

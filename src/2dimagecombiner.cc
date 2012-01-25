@@ -82,7 +82,7 @@ int do_main( int argc, char *argv[] )
 	string in2_filename;
 	string out_filename;
 
-	auto combiner = C2DImageCombinerPluginHandler::instance().produce("absdiff");
+	C2DImageCombinerPluginHandler::ProductPtr combiner;
 
 	stringstream combiner_names;
 
@@ -93,7 +93,7 @@ int do_main( int argc, char *argv[] )
 				    "second input image to be combined", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o',
 				    "output image(s) that have been filtered", CCmdOption::required));
-	options.add(make_opt( combiner, "operation", 'p', "operation to be applied"));
+	options.add(make_opt( combiner, "absdiff", "operation", 'p', "operation to be applied"));
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 

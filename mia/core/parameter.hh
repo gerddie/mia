@@ -519,9 +519,11 @@ std::string CFactoryParameter<T>::do_get_default_value() const
 template <typename T>
 std::string CFactoryParameter<T>::do_get_value_as_string() const
 {
-	return m_string_value; 
+	if (m_value) 
+		return m_value->get_init_string(); 
+	else 
+		return m_string_value; 
 }
-
 
 template <typename T>
 CSetParameter<T>::CSetParameter(T& value, const std::set<T>& valid_set, const char *descr):

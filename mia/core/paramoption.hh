@@ -44,7 +44,7 @@ public:
 	CParamOption(char short_option, const char *long_opt, CParameter *param);
 	
 private:
-	virtual void post_set(); 
+	virtual void do_post_set(); 
 
 	virtual const std::string do_get_value_as_string() const; 
 	virtual void do_get_long_help(std::ostream& os) const;

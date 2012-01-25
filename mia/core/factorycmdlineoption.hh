@@ -172,6 +172,10 @@ PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *long_opt, ch
 */
 template <typename T>
 PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *long_opt, char short_opt,
+		    const char *long_help, CCmdOption::Flags flags= CCmdOption::not_required) __attribute__ ((deprecated)); 
+
+template <typename T>
+PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *long_opt, char short_opt,
 		    const char *long_help, CCmdOption::Flags flags= CCmdOption::not_required)
 {
 	typedef typename FactoryTrait<T>::type F;  

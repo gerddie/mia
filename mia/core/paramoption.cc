@@ -58,7 +58,7 @@ void CParamOption::do_write_value(std::ostream& os) const
 	m_param->value(os);
 }
 
-void CParamOption::post_set()
+void CParamOption::do_post_set()
 {
 	m_param->post_set();
 }

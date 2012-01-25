@@ -95,7 +95,7 @@ int do_main(int argc, char *argv[])
 				    CCmdOption::required));
 	options.add(make_opt( size, "size", 's', "size of the object"));
 	options.add(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type "));
-	options.add(make_opt( creator,  "object", 'j', "object to be created", CCmdOption::required));
+	options.add(make_opt( creator, "", "object", 'j', "object to be created", CCmdOption::required));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
