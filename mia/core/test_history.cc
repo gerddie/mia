@@ -142,7 +142,7 @@ int main(int argc, const char *argv[])
 	options.add(make_opt( options::some_int, "int", 'i', "some int option", CCmdOption::required));
 	options.add(make_opt( options::true_bool, "tbool", 't', "true_bool"));
 	options.add(make_opt( options::internal, "internal", 'l', "internal test option" ));
-	options.add(make_opt( options::dict_val, the_dict, "dict", 'd', "other vector of strings",CCmdOption::required));
+	options.add(make_opt( options::dict_val, the_dict, "dict", 'd', "other vector of strings"));
 #ifdef OPT_CAN_VECTOR
 	options.add(make_opt( options::series_of_strings, "vstring", 'v', "a vector of strings", 
 				    CCmdOption::required));

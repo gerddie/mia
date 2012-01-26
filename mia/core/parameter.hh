@@ -236,7 +236,7 @@ public:
 	   \param dict dictionary for parameter translation
 	   \param descr a description of the parameter
 	 */
-	CDictParameter(T& value, const TDictMap<T> dict, const char *descr);
+	CDictParameter(T& value, const TDictMap<T> dict, const char *descr, bool required);
 protected:
 	/**
 	   the implementation of the description-function
@@ -308,7 +308,7 @@ public:
 	   \param valid_set dictionary for parameter translation
 	   \param descr a description of the parameter
 	 */
-	CSetParameter(T& value, const std::set<T>& valid_set, const char *descr);
+	CSetParameter(T& value, const std::set<T>& valid_set, const char *descr, bool required = false);
 protected:
 	/**
 	   the implementation of the description-function
@@ -408,8 +408,8 @@ struct __dispatch_param_translate<const char *> {
 }; 
 
 template <typename T>
-CDictParameter<T>::CDictParameter(T& value, const TDictMap<T> dict, const char *descr):
-	CParameter("dict", false, descr),
+CDictParameter<T>::CDictParameter(T& value, const TDictMap<T> dict, const char *descr, bool required = false):
+	CParameter("dict", required, descr),
 	m_value(value),
 	m_default_value(value),
 	m_dict(dict)
@@ -420,7 +420,7 @@ template <typename T>
 void CDictParameter<T>::do_descr(std::ostream& os) const
 {
 	for (auto i = m_dict.get_help_begin(); i != m_dict.get_help_end(); ++i) {
-		os << "\n\t\t  " << i->second.first << ": " << i->second.second; 
+		os << "\n  " << i->second.first << ": " << i->second.second; 
 	}
 }
 
@@ -526,8 +526,8 @@ std::string CFactoryParameter<T>::do_get_value_as_string() const
 }
 
 template <typename T>
-CSetParameter<T>::CSetParameter(T& value, const std::set<T>& valid_set, const char *descr):
-	CParameter("set", false, descr),
+CSetParameter<T>::CSetParameter(T& value, const std::set<T>& valid_set, const char *descr, bool required):
+	CParameter("set", required, descr),
 	m_value(value),
 	m_default_value(value),
 	m_valid_set(valid_set)

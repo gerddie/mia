@@ -204,7 +204,7 @@ BOOST_FIXTURE_TEST_CASE( test_dict_option, CmdlineParserFixture )
 
 	CCmdOptionList olist(general_help);
 
-	olist.add(make_opt(value, map, "dict", 'd', "a dictmap option", "dict"));
+	olist.add(make_opt(value, map, "dict", 'd', "a dictmap option"));
 	vector<const char *> options;
 
 	options.push_back("self");
@@ -378,10 +378,13 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 			  "Basic usage:\n    test-program [options]\n\n"
 			  "The program supports the following command line options:\n\n"
 			  "Help & Info              \n"
-			  "  -V --verbose=warning  verbosity of output, "
-			  "print messages of given \n"
+			  "  -V --verbose=warning (dict) \n"  
+			  "                        verbosity of output, print messages of given \n"
 			  "                        level and higher priorities. Supported \n"
-			  "                        priorities starting at lowest level are:\n"
+			  "                        priorities starting at lowest level \n"
+			  "                        are:verbosity of output, print messages of \n"
+			  "                        given level and higher priorities. Supported \n"
+			  "                        priorities starting at lowest level are: \n"
 			  "                          trace: Function call trace\n"
 			  "                          debug: Debug output\n"
 			  "                          info: Low level messages\n"

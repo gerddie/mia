@@ -96,7 +96,7 @@ public:
 	    \param flags support options like required 
         */
 	TCmdOption(T& val, char short_opt, const char *long_opt, const char *long_help,
-                   const char *short_help, CCmdOption::Flags flags = CCmdOption::not_required);
+                   const char *short_help, bool flags = false);
 
 private:
 
@@ -107,42 +107,6 @@ private:
 	virtual const std::string do_get_value_as_string() const;
 	T& m_value;
 };
-
-/** \brief A command line option that uses a dictionary to map strings to values. 
-
-    Command line option that translates a set of string values to corresponding 
-    values of type \a T given in a table \a TDictMap<T>. 
-    If a string is passed to the option that is not defined in the table,
-    it will throw a \a std::invalid_argument exception.
-*/
-
-template <typename T>
-class TCmdDictOption: public  CCmdOption{
-
-public:
-        /** Constructor of the command option
-	    \param[in,out] val variable to hold the parsed option value - pass in the default value -
-	    \param map the lookup table for the option
-	    \param short_opt short option name (or 0)
-	    \param long_opt long option name (must not be NULL)
-	    \param long_help long help string (must not be NULL)
-	    \param short_help short help string
-	    \param flags set whether the option is required or not 
-	    the option is really set
-	*/
-	TCmdDictOption(T& val, const TDictMap<T>& map, char short_opt, const char *long_opt,
-                       const char *long_help, const char *short_help, Flags flags = not_required);
-private:
-	virtual bool do_set_value(const char *str_value);
-	virtual size_t do_get_needed_args() const;
-	virtual void do_write_value(std::ostream& os) const;
-	virtual void do_get_long_help(std::ostream& os) const;
-	virtual const std::string do_get_value_as_string() const;
-
-	T& m_value;
-	const TDictMap<T> m_map;
-};
-
 
 /** 
     \brief Command line option that translates a string to a set of flags.
@@ -162,7 +126,7 @@ public:
 	    the option is really set
 	*/
 	CCmdFlagOption(int& val, const CFlagString& map, char short_opt, const char *long_opt,
-                       const char *long_help, const char *short_help, Flags flags = not_required);
+                       const char *long_help, const char *short_help, bool flags = false);
 private:
 	virtual bool do_set_value(const char *str_value);
 	virtual size_t do_get_needed_args() const;
@@ -173,39 +137,6 @@ private:
 	const CFlagString m_map;
 };
 
-/** \brief A command line option that supports a limited set of values interpreted as strings. 
-    
-    Command line option that supports only a limited number of values 
-    (given and interpreted as strings)
-    If the string given to the option is not element of the set of allowed values, 
-    the \a set_value method will throw a \a std::invalid_argument exception.
-*/
-class EXPORT_CORE CCmdSetOption: public CCmdOption{
-public:
-         /** Constructor of the command option
-	     \param[in,out] val variable to hold the parsed option value - pass in the default value -
-	     \param set the set of allowed values for the option
-	     \param short_opt short option name (or 0)
-	     \param long_opt long option name (must not be NULL)
-	     \param long_help long help string (must not be NULL)
-	     \param short_help short help string
-	     \param flags if this is set to true, extra checking will be done weather
-	     the option is really set
-         */
-
-	CCmdSetOption(std::string& val, const std::set<std::string>& set, char short_opt, 
-		      const char *long_opt, const char *long_help, 
-		      const char *short_help, Flags flags = not_required);
-private:
-	virtual bool do_set_value(const char *str_value);
-	virtual size_t do_get_needed_args() const;
-	virtual void do_write_value(std::ostream& os) const;
-	virtual void do_get_long_help(std::ostream& os) const;
-	virtual const std::string do_get_value_as_string() const;
-
-	std::string& m_value;
-	const std::set<std::string> m_set;
-};
 
 /**
    \brief A command line option that will appear in the help group 
@@ -506,7 +437,7 @@ struct __dispatch_opt<std::string> {
 template <typename T>
 TCmdOption<T>::TCmdOption(T& val, char short_opt, const char *long_opt, const char *long_help,
                         const char *short_help, 
-			  CCmdOption::Flags flags):
+			  bool flags):
         CCmdOption(short_opt, long_opt, long_help, short_help, flags),
         m_value(val)
 {
@@ -543,52 +474,6 @@ template <typename T>
         return __dispatch_opt<T>::get_as_string(m_value);
 }
 
-//
-// Implementation of the dictionary option
-//
-
-template <typename T>
-TCmdDictOption<T>::TCmdDictOption( T& val, const TDictMap<T>& map, char short_opt, 
-				   const char *long_opt, const char *long_help,
-                                   const char *short_help, Flags flags ) :
-                CCmdOption( short_opt, long_opt, long_help, short_help, flags ),
-                m_value( val ),
-m_map( map ) {}
-
-template <typename T>
-bool TCmdDictOption<T>::do_set_value( const char *svalue )
-{
-        m_value = m_map.get_value( svalue );
-        return true;
-}
-
-template <typename T>
-size_t TCmdDictOption<T>::do_get_needed_args() const
-{
-        return 1;
-}
-
-template <typename T>
-void TCmdDictOption<T>::do_write_value( std::ostream& os ) const
-{
-        os << "=" << m_map.get_name( m_value );
-}
-
-template <typename T>
-const std::string TCmdDictOption<T>::do_get_value_as_string() const
-{
-        return m_map.get_name( m_value );
-}
-
-template <typename T>
-void TCmdDictOption<T>::do_get_long_help( std::ostream& os ) const
-{
-        const std::set<std::string> names_help = m_map.get_name_set();
-	for (auto i = m_map.get_help_begin(); i != m_map.get_help_end(); ++i) {
-		os << "\n  " << i->second.first << ": " << i->second.second; 
-	}
-}
-
 /**
    Convinience function: Create a standard option
    \param value value variable to hold the parsed option value - pass in the default value -
@@ -601,7 +486,7 @@ void TCmdDictOption<T>::do_get_long_help( std::ostream& os ) const
 */
 template <typename T>
 PCmdOption make_opt(T& value, const char *long_opt, char short_opt, 
-		    const char *help, CCmdOption::Flags flags = CCmdOption::not_required)
+		    const char *help, bool flags = false)
 {
 	return PCmdOption(new CParamOption( short_opt, long_opt, 
 					    new CTParameter<T>(value, flags == CCmdOption::required, help))); 
@@ -609,7 +494,7 @@ PCmdOption make_opt(T& value, const char *long_opt, char short_opt,
 
 template <typename T>
 PCmdOption make_opt(std::vector<T>& value, const char *long_opt, char short_opt, 
-		    const char *help, CCmdOption::Flags flags = CCmdOption::not_required)
+		    const char *help, bool flags = false)
 {
 	return PCmdOption(new TCmdOption<std::vector<T> >(value, short_opt, long_opt, help, 
 							  long_opt, flags ));
@@ -618,48 +503,24 @@ PCmdOption make_opt(std::vector<T>& value, const char *long_opt, char short_opt,
 inline PCmdOption make_opt(bool& value, const char *long_opt, char short_opt, const char *help)
 {
 	return PCmdOption(new TCmdOption<bool>(value, short_opt, long_opt, help, 
-					       long_opt, CCmdOption::not_required ));
-}
-
-
-/**
-   Convinience function: Create a table lookup option
-   \param[in,out] value variable to hold the parsed and translated option value
-   \param map the lookup table for the option
-   \param long_opt long option name (must not be NULL)
-   \param short_opt short option name (or 0)
-   \param long_help long help string (must not be NULL)
-   \param short_help short help string
-   \param flags add flags like whether the optionis required to be set 
-   \returns the option warped into a \a boost::shared_ptr
- */
-
-template <typename T>
-PCmdOption make_opt(T& value, const TDictMap<T>& map, const char *long_opt, char short_opt,
-		    const char *long_help, const char *short_help, 
-		    CCmdOption::Flags flags = CCmdOption::not_required)
-{
-	return PCmdOption(new TCmdDictOption<T>(value, map, short_opt, long_opt,
-                          long_help, short_help, flags ));
+					       long_opt, false ));
 }
 
 /**
    Convinience function: Create a table lookup option
-   \param[in,out] value variable to hold the parsed and translated option value
+   \param[in,out] value variable to hold the parsed and translated option value. At entry, the 
+             value must be set to a valid dictionary entry. 
    \param map the lookup table for the option
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
    \param help help string (must not be NULL)
-   \param flags add flags like whether the optionis required to be set 
    \returns the option warped into a \a boost::shared_ptr
  */
 
 template <typename T>
-PCmdOption make_opt(T& value, const TDictMap<T>& map, const char *long_opt, char short_opt,
-		    const char *help, CCmdOption::Flags flags = CCmdOption::not_required)
+PCmdOption make_opt(T& value, const TDictMap<T>& map, const char *long_opt, char short_opt, const char *help)
 {
-	return PCmdOption(new TCmdDictOption<T>(value, map, short_opt, long_opt,
-						help, long_opt, flags ));
+	return PCmdOption(new CParamOption( short_opt, long_opt, new CDictParameter<T>(value, map, help)));
 }
 
 
@@ -678,7 +539,7 @@ PCmdOption make_opt(T& value, const TDictMap<T>& map, const char *long_opt, char
 PCmdOption  EXPORT_CORE make_opt(int& value, const CFlagString& map, const char *long_opt,
 				 char short_opt, const char *long_help, 
 				 const char *short_help, 
-				 CCmdOption::Flags flags = CCmdOption::not_required);
+				 bool flags = false);
 
 
 /**
@@ -694,24 +555,29 @@ PCmdOption  EXPORT_CORE make_opt(int& value, const CFlagString& map, const char 
  */
 PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>& set,
                                 const char *long_opt, char short_opt, const char *long_help,
-                                const char *short_help, CCmdOption::Flags flags);
+                                const char *short_help, bool flags) __attribute__((deprecated));
 
 
 
 /**
    Convinience function: Create a set restricted option
    \param[in,out] value variable to hold the parsed and translated option value
-   \param set the set of allowed values
+   \param valid_set the set of allowed values
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
    \param help long help string (must not be NULL)
    \param flags add flags like whether the optionis required to be set 
    \returns the option warped into a \a boost::shared_ptr
  */
-PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>& set,
+template <typename T> 
+PCmdOption EXPORT_CORE make_opt(T& value, const std::set<T>& valid_set,
                                 const char *long_opt, char short_opt, 
 				const char *help, 
-				CCmdOption::Flags flags = CCmdOption::not_required);
+				bool required = false)
+{
+	return PCmdOption(new CParamOption( short_opt, long_opt, 
+					    new  CSetParameter<T>(value, valid_set, help, required))); 
+}
 
 
 /**
@@ -727,12 +593,11 @@ PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>&
 */
 template <typename T>
 PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *default_value, const char *long_opt, 
-		    char short_opt,  const char *help, CCmdOption::Flags flags= CCmdOption::not_required)
+		    char short_opt,  const char *help, bool required = false)
 {
 	typedef typename FactoryTrait<T>::type F;  
 	return PCmdOption(new CParamOption( short_opt, long_opt, 
-					    new CFactoryParameter<F>(value, default_value, 
-								     flags == CCmdOption::required, help))); 
+					    new CFactoryParameter<F>(value, default_value, required, help))); 
 }
 
 

@@ -103,58 +103,6 @@ void CCmdOptionListData::set_logstream(ostream& os)
 	m_log  = &os; 
 }
 
-CCmdSetOption::CCmdSetOption(std::string& val, const std::set<std::string>& set, 
-			     char short_opt, const char *long_opt, const char *long_help,
-			     const char *short_help, Flags flags):
-	CCmdOption(short_opt, long_opt, long_help, short_help,  flags),
-	m_value(val),
-	m_set(set)
-{
-}
-
-
-bool CCmdSetOption::do_set_value(const char *str_value)
-{
-	if (m_set.find(str_value) == m_set.end())
-		return false;
-	m_value = str_value;
-	return true;
-}
-
-size_t CCmdSetOption::do_get_needed_args() const
-{
-	return 1;
-}
-
-void CCmdSetOption::do_write_value(std::ostream& os) const
-{
-	if (m_value.empty()) 
-		if (required)
-			os << "(required) "; 
-		else
-			os << "=NULL ";
-	else 
-		os << "=" << m_value;
-}
-
-void CCmdSetOption::do_get_long_help(std::ostream& os) const
-{
-	if (m_set.size() > 0) {
-		os << "\n(" ;
-		std::set<std::string>::const_iterator i = m_set.begin();
-		os << *i;
-		++i;
-		while ( i != m_set.end() )
-			os << ',' << *i++;
-		os  << ")";
-	}
-}
-
-const std::string CCmdSetOption::do_get_value_as_string() const
-{
-	return m_value;
-}
-
 const char *g_help_optiongroup="Help & Info"; 
 const char *g_basic_copyright = 
 	"This software is copyright (c) Gert Wollny et al. "
@@ -323,7 +271,7 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
  */
 void CCmdOptionListData::print_help(const char *name_help, bool has_additional) const
 {
-	const size_t max_opt_width = 30;
+	const size_t max_opt_width = 23;
 	
 	size_t max_width = 70;
 #ifdef HAVE_SYS_IOCTL_H
@@ -683,24 +631,6 @@ CCmdOptionList::~CCmdOptionList()
 	delete m_impl;
 }
 
-PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>& set,
-				const char *long_opt, char short_opt,
-				const char *long_help, const char *short_help, 
-				CCmdOption::Flags flags)
-{
-	return PCmdOption(new CCmdSetOption(value, set, short_opt, long_opt, 
-					    long_help, short_help, flags ));
-}
-
-PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>& set,
-                                const char *long_opt, char short_opt, 
-				const char *long_help, 
-				CCmdOption::Flags flags)
-{
-	return PCmdOption(new CCmdSetOption(value, set, short_opt, long_opt, 
-					    long_help, long_opt, flags ));
-}
-
 
 CHistoryRecord CCmdOptionList::get_values() const
 {
@@ -708,7 +638,7 @@ CHistoryRecord CCmdOptionList::get_values() const
 }
 
 CHelpOption::CHelpOption(Callback *cb, char short_opt, const char *long_opt, const char *long_help):
-	CCmdOption(short_opt, long_opt, long_help, NULL, not_required), 
+	CCmdOption(short_opt, long_opt, long_help, NULL, false), 
 	m_callback(cb)
 {
 }
@@ -738,7 +668,7 @@ void CHelpOption::do_write_value(std::ostream& /*os*/) const
 CCmdFlagOption::CCmdFlagOption(int& val, const CFlagString& map, char short_opt, 
 			       const char *long_opt, const char *long_help, 
 			       const char *short_help, 
-			       CCmdOption::Flags flags):
+			       bool flags):
 	CCmdOption(short_opt, long_opt, long_help,short_help, flags),
 	m_value(val),
 	m_map(map)
@@ -774,7 +704,7 @@ size_t CCmdFlagOption::do_get_needed_args() const
 
 PCmdOption EXPORT_CORE make_opt(int& value, const CFlagString& map, const char *long_opt, 
 				char short_opt,const char *long_help, 
-				const char *short_help, CCmdOption::Flags flags)
+				const char *short_help, bool flags)
 {
 	return PCmdOption(new CCmdFlagOption(value, map, short_opt, long_opt,
                           long_help, short_help, flags ));
@@ -786,5 +716,45 @@ PCmdOption EXPORT_CORE make_help_opt(const char *long_opt, char short_opt,
 {
 	return PCmdOption(new CHelpOption(cb, short_opt, long_opt, long_help));
 }
+
+//
+// Implementation of the standard option that holds a value
+//
+#if 0
+CBooleanCmdOption::CBooleanCmdOption(T& val, char short_opt, const char *long_opt, const char *long_help):
+        CCmdOption(short_opt, long_opt, long_help, short_help, flags), 
+	m_value(val)
+{
+	m_value = false; 
+}
+
+
+bool CBooleanCmdOption::do_set_value(const char *svalue)
+{
+	m_value = true;
+	return true; 
+}
+
+
+size_t CBooleanCmdOption::do_get_needed_args() const
+{
+        return 0;
+}
+
+
+void CBooleanCmdOption::do_get_long_help(std::ostream& /*os*/) const
+{
+}
+
+
+void CBooleanCmdOption::do_write_value(std::ostream& /*os*/) const
+{
+}
+
+const std::string CBooleanCmdOption::do_get_value_as_string() const
+{
+	return m_value ? "true" : "false";
+}
+#endif 
 
 NS_MIA_END

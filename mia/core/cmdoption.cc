@@ -31,12 +31,12 @@ using std::invalid_argument;
 NS_MIA_BEGIN
 
 CCmdOption::CCmdOption(char short_opt, const char *long_opt, 
-		       const char *long_help, const char *short_help, Flags flags):
+		       const char *long_help, const char *short_help, bool required):
 	m_short_opt(short_opt), 
 	m_long_opt(long_opt),
 	m_long_help(long_help), 
 	m_short_help(short_help),
-	m_flags(flags)
+	m_flags(required)
 {
 	TRACE_FUNCTION; 
 	cvdebug() << "Create option '" << long_opt << "'\n"; 
@@ -102,12 +102,12 @@ const char *CCmdOption::get_long_option() const
 
 void CCmdOption::clear_required()
 {
-	m_flags = static_cast<CCmdOption::Flags>(m_flags & (~required)); 
+	m_flags = false; 
 }
 
 bool CCmdOption::is_required() const
 {
-	return (m_flags & required ) == required; 
+	return m_flags; 
 }
 
 void CCmdOption::get_opt_help(std::ostream& os) const

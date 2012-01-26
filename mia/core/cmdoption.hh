@@ -52,19 +52,18 @@ public:
 	/**
 	   Option flags 
 	*/
-	enum Flags {
-		not_required = 0, /**< option not required */
-		required = 1      /**< option required     */
-	}; 
+	static const bool not_required = false; 
+	static const bool required = true; 
+	
         /** The constructor
 	    \param short_opt the short option character 
 	    \param long_opt the long option name
 	    \param long_help a long help string
 	    \param short_help help to print out when only usage information is requested 
-	    \param flags option flags 
+	    \param required set to true if the option must be set by the user 
         */
 	CCmdOption(char short_opt, const char *long_opt, const char *long_help, 
-		   const char *short_help, Flags flags);
+		   const char *short_help, bool required);
 
         /// ensure virtual destruction
 	virtual ~CCmdOption();
@@ -152,7 +151,7 @@ private:
 	const char *m_long_opt;
 	const char *m_long_help;
 	const char *m_short_help;
-	Flags m_flags;
+	bool m_flags;
 };
 
 /// a shared pointer definition of the Option
