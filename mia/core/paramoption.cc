@@ -25,7 +25,7 @@ NS_MIA_BEGIN
 using std::ostringstream; 
 
 CParamOption::CParamOption(char short_opt, const char *long_opt, CParameter *param):
-	CCmdOption(short_opt, long_opt, param->get_descr(), 
+	CCmdOption(short_opt, long_opt, "", 
 		   long_opt, 
 		   param->required_set() ? CCmdOption::required : CCmdOption::not_required), 
 	m_param(param)

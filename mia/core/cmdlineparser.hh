@@ -515,8 +515,7 @@ inline PCmdOption make_opt(bool& value, const char *long_opt, char short_opt, co
    \param short_opt short option name (or 0)
    \param help help string (must not be NULL)
    \returns the option warped into a \a boost::shared_ptr
- */
-
+*/
 template <typename T>
 PCmdOption make_opt(T& value, const TDictMap<T>& map, const char *long_opt, char short_opt, const char *help)
 {
