@@ -100,7 +100,6 @@ SET(MIACORE_HEADER_BASE
   errormacro.hh
   export_handler.hh
   factory.hh
-  factorycmdlineoption.hh
   fatcost.hh fatcost.cxx
   file.hh
   filetools.hh
