@@ -80,7 +80,6 @@ mia-3dmany2one-nonrigid  -i segment.set -o registered.set -F spline:rate=16 \
 #include <mia/core/msgstream.hh>
 #include <mia/core/threadedmsg.hh>
 #include <mia/core/cmdlineparser.hh>
-#include <mia/core/factorycmdlineoption.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/3d/nonrigidregister.hh>
 #include <mia/3d/transformfactory.hh>

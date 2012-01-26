@@ -99,7 +99,6 @@ mia-3dmotioncompica-nonrigid  -i imagesXXXX.v -o  registered%04d.v  -k 2 -C 3 -t
 #include <mia/core/msgstream.hh>
 #include <mia/core/threadedmsg.hh>
 #include <mia/core/cmdlineparser.hh>
-#include <mia/core/factorycmdlineoption.hh>
 #include <mia/core/filetools.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
@@ -108,7 +107,6 @@ mia-3dmotioncompica-nonrigid  -i imagesXXXX.v -o  registered%04d.v  -k 2 -C 3 -t
 #include <mia/3d/3dimageio.hh>
 #include <mia/3d/3dfilter.hh>
 #include <mia/3d/ica.hh>
-#include <mia/3d/transformfactory.hh>
 
 #include <tbb/task_scheduler_init.h>
 #include <tbb/parallel_for.h>

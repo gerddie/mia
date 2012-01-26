@@ -103,7 +103,6 @@ mia-2dmyomilles  -i segment.set -o affine.set -F affine -P 3
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/core/factorycmdlineoption.hh>
 
 using namespace std;
 using namespace mia;

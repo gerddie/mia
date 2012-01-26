@@ -80,7 +80,6 @@ mia-2dmany2one-nonrigid  -i segment.set -o registered.set -F spline:rate=16 \
 #include <mia/core/msgstream.hh>
 #include <mia/core/threadedmsg.hh>
 #include <mia/core/cmdlineparser.hh>
-#include <mia/core/factorycmdlineoption.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/transformfactory.hh>
@@ -104,7 +103,9 @@ const SProgramDescription g_general_help = {
 	
 	// .g_general_help = 
 	"This program runs the non-rigid motion compensation of an perfusion image series. "
-	"The motion compensation is run by registering all images to one common reference.\n",
+	"The motion compensation is run by registering all images to one common reference. "
+	"Since the registration is run in parallel, the cost function plugin referencing the "
+	"cost function input image is created on the fly and must not be given on the command line.\n", 
 	
 	//.g_program_example_descr = 
 	"Register the perfusion series given in 'segment.set' to reference image 30. " 
@@ -125,8 +126,12 @@ C2DFullCostList create_costs(const std::vector<const char *>& costs, int idx)
 	for (auto c = costs.begin(); c != costs.end(); ++c) {
 		string cc(*c); 
 
-		if (cc.find("image") == 0) 
+		if (cc.find("image") == 0) {
+			if (cc.find("src") != string::npos  || cc.find("ref") != string::npos) {
+				THROW(invalid_argument, "image cost functions '"<< cc <<"' must not set the 'src' or 'ref' parameter explicitely");
+			}
 			cc.append(cost_descr.str()); 
+		}
 		cvdebug() << "create cost:"  << *c << " as " << cc << "\n"; 
 		auto imagecost = C2DFullCostPluginHandler::instance().produce(cc);
 		result.push(imagecost); 
@@ -181,7 +186,7 @@ int do_main( int argc, char *argv[] )
 	string in_filename;
 	string registered_filebase("reg%04d.v");
 	                        
-	auto transform_creator = C2DTransformCreatorHandler::instance().produce("spline"); 
+	P2DTransformationFactory transform_creator; 
 
 	// registration parameters
 	string minimizer("gsl:opt=gd,step=0.1");

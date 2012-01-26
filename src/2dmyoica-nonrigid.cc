@@ -102,7 +102,6 @@ mia-2dmyoica-nonrigid  -i segment.set -o registered.set -k 2
 #include <mia/internal/main.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
-#include <mia/core/factorycmdlineoption.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
 #include <mia/core/bfsv23dispatch.hh>
@@ -313,7 +312,7 @@ int do_main( int argc, char *argv[] )
 	
 	options.set_group("Registration"); 
 	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( refinement_minimizer, "refiner", 'R',
+	options.add(make_opt( refinement_minimizer, "", "refiner", 'R',
 			      "optimizer used for refinement after the main optimizer was called"));
 	options.add(make_opt( c_rate, "start-c-rate", 'a', 
 				    "start coefficinet rate in spines,"

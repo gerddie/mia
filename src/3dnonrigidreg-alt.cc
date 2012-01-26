@@ -72,7 +72,6 @@ mia-3dnonrigidreg -o reg.vf -l 2 -f spline:rate=3  \
 #include <mia/core/minimizer.hh>
 #include <mia/3d/transformfactory.hh>
 #include <mia/3d/transformio.hh>
-#include <mia/core/factorycmdlineoption.hh>
 
 NS_MIA_USE;
 using namespace std;

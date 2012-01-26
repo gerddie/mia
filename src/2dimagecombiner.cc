@@ -57,7 +57,6 @@ mia-2dimagecombiner -1 l1.png -2 l2.png -c result.png -c add
 #include <mia/core.hh>
 #include <mia/2d.hh>
 #include <mia/2d/2dfilter.hh>
-#include <mia/core/factorycmdlineoption.hh>
 #include <mia/internal/main.hh>
 
 NS_MIA_USE;

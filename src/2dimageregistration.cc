@@ -73,7 +73,6 @@ mia-2dnonrigidreg -i test.v -r ref.v -o reg.v -l 2 \
 #include <sstream>
 #include <mia/core.hh>
 #include <mia/2d.hh>
-#include <mia/core/factorycmdlineoption.hh>
 #include <mia/internal/main.hh>
 
 NS_MIA_USE;

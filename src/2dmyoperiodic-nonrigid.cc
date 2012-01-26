@@ -96,7 +96,6 @@ mia-2dmyoperiodic-nonrigid  -i segment.set -o registered.set -k 2 -F spline:rate
 #include <mia/core/msgstream.hh>
 #include <mia/core/fullstats.hh>
 #include <mia/core/cmdlineparser.hh>
-#include <mia/core/factorycmdlineoption.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/nonrigidregister.hh>
@@ -414,8 +413,6 @@ int do_main( int argc, char *argv[] )
 	// this parameter is currently not exported - reading the image data is 
 	// therefore done from the path given in the segmentation set 
 	bool override_src_imagepath = true;
-	auto interpolator_kernel = produce_spline_kernel("bspline:d=3");
-
 	C2DMyocardPeriodicRegistration::RegistrationParams params;
 
 	CCmdOptionList options(g_general_help);

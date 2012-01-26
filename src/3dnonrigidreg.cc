@@ -79,7 +79,6 @@ mia-3dnonrigidreg -i test.v -r ref.v -o reg.v -l 2 \
 #include <mia/core/minimizer.hh>
 #include <mia/3d/transformfactory.hh>
 #include <mia/3d/transformio.hh>
-#include <mia/core/factorycmdlineoption.hh>
 
 NS_MIA_USE;
 using namespace std;
@@ -104,7 +103,6 @@ int do_main( int argc, char *argv[] )
 	string ref_filename;
 	string out_filename;
 	string trans_filename;
-	string transform_type("spline");
 	PMinimizer minimizer; 
 	int max_threads = tbb::task_scheduler_init::automatic;
 

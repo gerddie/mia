@@ -40,7 +40,6 @@
 
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
-#include <mia/core/factorycmdlineoption.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
 #include <mia/core/bfsv23dispatch.hh>

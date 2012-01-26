@@ -29,7 +29,6 @@
 
 #include <mia/core/histogram.hh>
 #include <mia/core/cmdlineparser.hh>
-#include <mia/core/factorycmdlineoption.hh>
 #include <mia/2d.hh>
 
 #include <memory>

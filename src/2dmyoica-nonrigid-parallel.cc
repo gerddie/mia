@@ -102,7 +102,6 @@ mia-2dmyoica-nonrigid  -i segment.set -o registered.set -k 2
 #include <mia/core/msgstream.hh>
 #include <mia/core/threadedmsg.hh>
 #include <mia/core/cmdlineparser.hh>
-#include <mia/core/factorycmdlineoption.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/minimizer.hh>
 #include <mia/core/bfsv23dispatch.hh>

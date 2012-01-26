@@ -80,7 +80,6 @@ mia-3drigidreg -i test.v -r ref.v -o reg.v -l 2 -f affine -c ssd
 #include <mia/3d.hh>
 #include <mia/3d/rigidregister.hh>
 #include <mia/3d/transformio.hh>
-#include <mia/core/factorycmdlineoption.hh>
 
 NS_MIA_USE;
 using namespace std;
@@ -105,8 +104,8 @@ int do_main( int argc, char *argv[] )
 	string ref_filename;
 	string out_filename;
 	string trans_filename;
-	auto transform_creator = C3DTransformCreatorHandler::instance().produce("rigid"); 
-	auto minimizer = CMinimizerPluginHandler::instance().produce("gsl:opt=simplex,step=1.0"); 
+	P3DTransformationFactory transform_creator; 
+	PMinimizer minimizer; 
 
 	size_t mg_levels = 3;
 
@@ -117,8 +116,8 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( trans_filename, "trans", 't', "transformation output file name"));
 	options.add(make_opt( cost_function, "cost", 'c', "cost function")); 
 	options.add(make_opt( mg_levels, "levels", 'l', "multigrid levels"));
-	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
-	options.add(make_opt( transform_creator, "transForm", 'f', "transformation type"));
+	options.add(make_opt( minimizer, "gsl:opt=simplex,step=1.0", "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( transform_creator, "rigid",  "transForm", 'f', "transformation type"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

@@ -110,7 +110,6 @@ mia-3dprealign-nonrigid  -i imageXXXX.v -o registered -t vista -k 2 \
 #include <mia/core/msgstream.hh>
 #include <mia/core/fullstats.hh>
 #include <mia/core/cmdlineparser.hh>
-#include <mia/core/factorycmdlineoption.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/filetools.hh>
 #include <mia/3d/3dimageio.hh>
@@ -442,7 +441,7 @@ int do_main( int argc, char *argv[] )
 				   "Skip images at the begin of the series")); 
 	options.add(make_opt(params.max_candidates, "max-candidates", 0, 
 				   "maximum number of candidates for global reference image")); 
-	options.add(make_opt(params.series_select_cost, "cost-series", 'S',
+	options.add(make_opt(params.series_select_cost, "image:cost=[ngf:eval=ds]", "cost-series", 'S',
 				   "Const function to use for the analysis of the series")); 
 	options.add(make_opt(reference_index_file, "ref-idx", 0, 
 				   "save reference index number to this file"));  
@@ -451,19 +450,19 @@ int do_main( int argc, char *argv[] )
 	options.set_group("\nRegistration"); 
 
 
-	options.add(make_opt( params.minimizer, "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( params.minimizer, "gsl:opt=gd,step=0.01", "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( params.mg_levels, "mr-levels", 'l', "multi-resolution levels"));
 
 	options.add(make_opt( params.divcurlweight, "divcurl", 'd', 
 				    "divcurl regularization weight"));
 
-	options.add(make_opt( params.transform_creator, "transForm", 'f', 
+	options.add(make_opt( params.transform_creator, "spline", "transForm", 'f', 
 				    "transformation type"));
 
-	options.add(make_opt(params.pass1_cost, "cost-subset", '1', 
+	options.add(make_opt(params.pass1_cost, "image:cost=[ngf:eval=ds]", "cost-subset", '1', 
 				   "Cost function for registration during the subset registration")); 
 
-	options.add(make_opt(params.pass2_cost, "cost-final", '2', 
+	options.add(make_opt(params.pass2_cost, "image:cost=ssd", "cost-final", '2', 
 				   "Cost function for registration during the final registration")); 
 	
 

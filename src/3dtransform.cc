@@ -57,7 +57,6 @@ mia-3dtransform -i input.v -t trans.v  -o output.v  -p nn
 
 #define VSTREAM_DOMAIN "mia-3dtransform"
 #include <mia/core/cmdlineparser.hh>
-#include <mia/core/factorycmdlineoption.hh>
 #include <mia/3d/transformio.hh>
 #include <mia/3d/3dimageio.hh>
 
@@ -89,8 +88,7 @@ int do_main(int argc, char **argv)
 
 	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "reference image", CCmdOption::required));
-	options.add(make_opt( trans_filename, "transformation", 't', "transformation file", 
-			      CCmdOption::required));
+	options.add(make_opt( trans_filename, "transformation", 't', "transformation file", CCmdOption::required));
 	options.add(make_opt( interpolator_kernel, "interpolator", 'p', "override the interpolator provided by the transformation"));
 	options.add(make_opt( interpolator_bc, "boundary", 'b', "override the boundary conditions provided by the transformation."
 			      " This is only used if the interpolator is overridden."));
