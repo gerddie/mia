@@ -52,7 +52,7 @@ mia-2dcost ssd:src=image1.v,ref=image2.v,weight=0.1 \
 #include <mia/2d.hh>
 #include <sstream>
 #include <iomanip>
-#include <mia/2d/fatcost.hh>
+#include <mia/2d/multicost.hh>
 #include <mia/internal/main.hh>
 
 NS_MIA_USE
@@ -63,8 +63,8 @@ using namespace std;
 const SProgramDescription g_description = {
 	"2D image registration", 
 	"This program is used to evaluate the cost between two images by using a given cost function.", 
-	NULL, 
-	NULL
+	"Evaluate the SSD cost function between image1.png and image2.png", 
+	"image:src=image1.png,ref=image2.png,cost=ssd"
 }; 
 
 // set op the command line parameters and run the registration
@@ -73,7 +73,7 @@ int do_main(int argc, char **argv)
 
 	CCmdOptionList options(g_description);
 
-	if (options.parse(argc, argv, "cost", &C2DFatImageCostPluginHandler::instance()) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "cost", &C2DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 
@@ -84,18 +84,11 @@ int do_main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-
-	C2DImageFatCostList cost_list;
-	for(vector<const char *>::const_iterator i = cost_chain.begin(); i != cost_chain.end(); ++i) {
-		P2DImageFatCost c = C2DFatImageCostPluginHandler::instance().produce(*i);
-		if (c)
-			cost_list.push_back(c);
+	C2DFullCostList cost_list;
+	for(auto i = cost_chain.begin(); i != cost_chain.end(); ++i) {
+		cost_list.push(produce_2dfullcost(*i)); 
 	}
-	if (cost_list.empty()) {
-		cerr << "Could not create a single cost function\n";
-		return EXIT_FAILURE;
-	}
-	cout << cost_list.value() << "\n";
+	cout << cost_list.cost_value() << "\n";
 
 	return EXIT_SUCCESS;
 }
