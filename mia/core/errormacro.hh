@@ -40,6 +40,8 @@
 	} while (0)
 
 #ifdef NDEBUG
+
+// throw if compiled in release mode but assert if compiled in debug mode
 #define DEBUG_ASSERT_RELEASE_THROW(cond, msg) \
 	if (!cond)		   \
 		throw std::logic_error(msg);

@@ -27,6 +27,7 @@
 #include <string>
 #include <mia/core/handler.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/errormacro.hh>
 #include <mia/core/product_base.hh>
 #include <mia/core/optionparser.hh>
 
@@ -219,10 +220,9 @@ typename I::Product *TFactoryPluginHandler<I>::produce_raw(char const *params)co
 	cvdebug() << "TFactoryPluginHandler<>::produce: Create plugin from '" << factory_name << "'\n"; 
 
 	auto factory = this->plugin(factory_name.c_str());
-	if (factory) 
-		return factory->create(param_list.begin()->second,params);
-	else 
-		return NULL; 
+	DEBUG_ASSERT_RELEASE_THROW(factory, "A plug-in was not found but 'this->plugin' did not throw");
+	return factory->create(param_list.begin()->second,params);
+
 }
 
 template <typename I>
