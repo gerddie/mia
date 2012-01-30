@@ -88,6 +88,10 @@ int do_main(int argc, char **argv)
 	for(auto i = cost_chain.begin(); i != cost_chain.end(); ++i) {
 		cost_list.push(produce_2dfullcost(*i)); 
 	}
+	auto size = C2DBounds::_0; 
+	cost_list.reinit(); 
+	cost_list.get_full_size(size); 
+	cost_list.set_size(size); 
 	cout << cost_list.cost_value() << "\n";
 
 	return EXIT_SUCCESS;
