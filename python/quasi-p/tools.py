@@ -34,10 +34,6 @@ from subprocess import call
 
 from optparse import OptionParser
 
-cost_fkt = "mia-2dcost image:src=%s,ref=%s,cost=[%s]"
-reg_cmd="mia-2dimageregistration"
-
-
 class SelfcostElement:
     def __init__(self, file, value, nr):
         self.file = file
@@ -52,20 +48,28 @@ class SelfcostElement:
         return 0
 
 def get_cost(src, ref, mode):
-    command = cost_fkt % (src, ref, mode)
+    """Calls the external program mia-2dcost to evaluate the image similarity/cost"""
+    command = "mia-2dcost image:src=%s,ref=%s,cost=[%s]" % (src, ref, mode)
     cs = Popen(command, shell=True, stdout=PIPE)
     retval = cs.communicate()
     token = split(retval[0])
     return atof(token[0])
     
 def get_intensity_deviation(src):
+    """Calls the external program mia-2dimagestats to evaluate the intensity deviation"""
     command =  "mia-2dimagestats -i %s" % (src)
     cs = Popen(command, shell=True, stdout=PIPE)
     retval = cs.communicate()
     token = split(retval[0])
-    return atof(token[0])
+    return atof(token[1])
 
 def get_ref_candidates(nr_files, skip, file_descr):
+    """ 
+    Evaluate the intensity deviation of each image and sort the reference candidate 
+    images according to this value. Return the first 20 images with the highest 
+    intensity deviation as candidates for global references 
+    """
+
     costs = []
     for k in range(nr_files)[skip:]:
         f = file_descr % (k)
@@ -115,7 +119,7 @@ def get_costs_and_reference(options):
 def create_registration_command(cost, src_id, ref_id, ref_descr, options):
     """ Function to create the image registration command """
     result = []
-    result.append(reg_cmd)
+    result.append("mia-2dimageregistration")
     
     src_file_descr = os.path.join(options.source, options.file_descr)
 
@@ -151,7 +155,7 @@ def create_registration_command(cost, src_id, ref_id, ref_descr, options):
 
 
 def get_subsequence(skip, nr_files, reference, max_values):
-    """ The rather crude approach to estimate the pre-aligned subset."""
+    """ The approach to estimate the pre-aligned subset based on the similarity profile."""
 
     sub_sequence = []
 
@@ -191,6 +195,7 @@ def get_subsequence(skip, nr_files, reference, max_values):
 
 
 def generate_reference_image(lower_bound, upper_bound, i, options):
+    """ call an external program to generate a linearly interpolated image based on time indices."""
     cmd = []
     cmd.append("mia-2dlerp")
     cmd.append("-1")

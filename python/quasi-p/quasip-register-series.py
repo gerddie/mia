@@ -20,6 +20,7 @@
 
 
 ####################################################################################
+#
 # This code requires python 2.X, the packages numpy, optpars, subprocess, string, 
 # os, and sys to run and MIA needs to be properly installed.
 #  
@@ -31,17 +32,23 @@
 #   IEEE Transactions on Medical Imaging, 29(8), 2010,
 #
 # for details of the algorithm. 
-
-# 
-# EXMAPLE: 
-#   
-# 
-# for this example to work, MIA must be installed with OpenEXR support 
 #
-#####################################################################################
+# 
+# EXMAPLE: Run the quasi-periodic motion compensation algorithm over 60 images 
+# named dataXXXX.exr in path datapath/, skip the first 20 images for reference 
+# image search, and the first 2 images during registration
+# weight the divcurl cost by value 10.0 and use the default parameters for 
+# everything else.  The registered images are saved to outpath/regXXXX.exr. 
+#
+#   ./quasip-register-series.py -s datapath/ -n 60 -k 20 -K 2 -o outpath -w 10.0
+# 
+# for this example to work, MIA must be installed with OpenEXR support. 
+#
+# The algorithm is also implemented as program  mia-2dmyoperiodic-nonrigid
+#
+####################################################################################
 
 modules = {'tools' : [0, '', 'none://tools.py' ]}
-
 
 import os
 import sys
