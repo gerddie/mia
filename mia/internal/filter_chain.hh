@@ -22,6 +22,9 @@
 #include <mia/core/filter.hh>
 #include <mia/core/factory.hh>
 
+#ifndef mia_internal_filter_chain_hh
+#define mia_internal_filter_chain_hh
+
 NS_MIA_BEGIN
 
 /**
@@ -47,11 +50,18 @@ public:
 	*/
 	TFilterChain(const char *filters[], int nfilters); 
 
+
 	/**
 	   The filter chain constrctor 
 	   \param filters a vector of strings describing the filters 
 	*/
-	TFilterChain(std::vector<const char *> filters); 
+	TFilterChain(std::vector<const char *> filters);
+
+	/**
+	   The filter chain constrctor 
+	   \param filters a vector of strings describing the filters 
+	*/
+	TFilterChain(std::vector<std::string> filters);
 	
 	/**
 	   Runs the filter chain. the input data will not be changed. 
@@ -88,13 +98,6 @@ void TFilterChain<Handler>::init(const char *filters[], int nfilters)
 	}
 }
 
-template <typename Handler> 
-TFilterChain<Handler>::TFilterChain(std::vector<const char *> filters):
-	m_chain(filters.size())
-{
-	init(&filters[0], filters.size()); 
-}
-
 
 template <typename Handler> 
 TFilterChain<Handler>::TFilterChain(const char *filters[], int nfilters):
@@ -102,6 +105,23 @@ TFilterChain<Handler>::TFilterChain(const char *filters[], int nfilters):
 {
 	init(filters, nfilters); 
 }
+
+template <typename Handler> 
+TFilterChain<Handler>::TFilterChain(std::vector<std::string> filters):
+	m_chain(filters.size())
+{
+	std::transform(filters.begin(), filters.end(), m_chain.begin(), 
+		       [](const std::string& s){ return Handler::instance().produce(s); }); 
+}
+
+template <typename Handler> 
+TFilterChain<Handler>::TFilterChain(std::vector<const char *> filters):
+	m_chain(filters.size())
+{
+	std::transform(filters.begin(), filters.end(), m_chain.begin(), 
+		       [](const char *s){ return Handler::instance().produce(s); }); 
+}
+
 
 template <typename Handler> 
 void TFilterChain<Handler>::push_front(const char * filter)
@@ -140,3 +160,5 @@ bool TFilterChain<Handler>::empty() const
 }
 
 NS_MIA_END
+
+#endif 

@@ -77,6 +77,8 @@ C3DImageCombiner::result_type C3DImageCombiner::combine( const C3DImage& a,
 	return do_combine(a,b);
 }
 
+template class TFilterChain<C3DFilterPluginHandler>; 
+
 template class TImageFilter<C3DImage>;
 template class TImageFilterPlugin<C3DImage>;
 template class TPlugin<C3DImage, filter_type>;

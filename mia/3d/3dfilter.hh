@@ -28,6 +28,7 @@
 #include <mia/core/factory.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/spacial_kernel.hh>
+#include <mia/internal/filter_chain.hh>
 
 NS_MIA_BEGIN
 
@@ -120,6 +121,12 @@ std::vector<P3DFilter> create_filter_chain(const std::vector<S>& chain)
 	}
 	return filters;
 }
+
+/**
+   \ingroup filtering 
+   3D filter chain to apply various filters in one run 
+*/
+typedef TFilterChain<C3DFilterPluginHandler> C3DImageFilterChain; 
 
 
 /**

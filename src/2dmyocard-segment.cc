@@ -386,9 +386,10 @@ int do_main( int argc, char *argv[] )
 
 	cvmsg() << "Using " << test_components << " independend components\n"; 
 	
-	C2DImageFilterChain cavity_filters({
-			"kmeans:c=3", "binarize:min=2", "close:shape=[sphere:r=4]", 
-				"label",  "selectbig" }); 
+	vector<const char*> cavity_filters_descr = {
+		"kmeans:c=3", "binarize:min=2", "close:shape=[sphere:r=4]", 
+		"label",  "selectbig" }; 
+	C2DImageFilterChain cavity_filters(cavity_filters_descr); 
 	
 	auto RV_feature = ica->get_feature_image(rv_idx); 
 	auto LV_feature = ica->get_feature_image(lv_idx); 
@@ -439,8 +440,8 @@ int do_main( int argc, char *argv[] )
 	
 	auto ws_from_perf_plus_mean_grad = run_filter(*perf_plus_mean_grad, "sws:seed=seed.@,grad=1");
 	
-	
-	C2DImageFilterChain make_circle({"thinning", "pruning", "thinning", "pruning"}); 
+	vector<const char*> make_circle_descr =  {"thinning", "pruning", "thinning", "pruning"}; 
+	C2DImageFilterChain make_circle(make_circle_descr); 
 	CHasNonzeroPixels count_pixels; 
 
 	// now run several approaches to get the shape of the myocardium 

@@ -107,7 +107,6 @@ const SProgramDescription g_description = {
 int do_main( int argc, char *argv[] )
 {
 
-	const char *b0poolkey = "b0.@";
 	string in_filename;
 	string out_filename;
 	int    noOfClasses = 3;
@@ -132,26 +131,22 @@ int do_main( int argc, char *argv[] )
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
-	auto& imageio = C3DImageIOPluginHandler::instance();
-	auto inImage_list = imageio.load(in_filename);
+	if (wmclass >= noOfClasses)
+		throw invalid_argument("number of classes should be smaller then number of classes");
 
-	if (!inImage_list.get() || !inImage_list->size() ) {
+	auto inImage = load_image3d(in_filename);
+	if (!inImage) {
 		string not_found = ("No supported data found in ") + in_filename;
 		throw runtime_error(not_found);
 	}
 
-	if (wmclass >= noOfClasses)
-		throw invalid_argument("number of classes should be smaller then number of classes");
-
-	// segment image
-	if (inImage_list->size() > 1)
-		cvwarn() << "Only segmenting first input image\n";
-
 	C3DImageVector classes;
 
-	P3DImage b0_corrected = fuzzy_segment_3d(**inImage_list->begin(), noOfClasses, residuum, classes);
-	CDatapool::instance().add(b0poolkey, create_image3d_vector(b0_corrected));
-
+	P3DImage b0_corrected = fuzzy_segment_3d(*inImage, noOfClasses, residuum, classes);
+	
+	const char *b0poolkey = "b0.@";
+	// send image to data pool for later re-use. 
+	save_image(b0poolkey, b0_corrected); 
 
 	P3DImage result = classes[wmclass];
 
@@ -171,6 +166,7 @@ int do_main( int argc, char *argv[] )
 	filter_chain.push_back("open:shape=[sphere:r=3]");
 	filter_chain.push_back(string("mask:input=") + b0poolkey);
 
+
 	vector<P3DFilter> filters = create_filter_chain(filter_chain);
 
 	for (auto f = filters.begin(); f != filters.end(); ++f) {
@@ -179,18 +175,11 @@ int do_main( int argc, char *argv[] )
 
 
 	if (!out_filename.empty()) {
-
-		// save corrected image to out-file
-		C3DImageIOPluginHandler::Instance::Data out_list;
-
-		out_list.push_back(result);
-		if ( !imageio.save(out_filename, out_list) ){
-
+		if ( !save_image(out_filename, result) ){
 			string not_save = ("unable to save result to ") + out_filename;
 			throw runtime_error(not_save);
 
 		};
-
 	};
 
 	return EXIT_SUCCESS;
