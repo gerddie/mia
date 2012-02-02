@@ -49,7 +49,7 @@ def clean (text):
 
 def write_man_file(descr):
     name = escape_dash(descr.name)
-    print ".TH %s 1 \"%s\" \"git-head\"  \"USER COMMANDS\"" %(name, get_date_string())
+    print ".TH %s 1 \"%s\" \"git-head\"  \"USER COMMANDS\"" %(descr.name, get_date_string())
     print ".SH NAME"
     print name
     print ".SH SYNOPSIS"
@@ -75,6 +75,13 @@ def write_man_file(descr):
             else:
                 print ".IP \"%s \-\-%s=%s\""% (short, o.long, escape_dash(o.default))
             print o.text
+            if len(o.dict) > 0:
+                for k in o.dict.keys(): 
+                    print ".RS 10"
+                    print ".I" 
+                    print k
+                    print "- %s" % (o.dict[k])
+                    print ".RE"
         print ".RE"
         
     for h in descr.handlers: 

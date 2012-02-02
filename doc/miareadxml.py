@@ -33,7 +33,12 @@ class COption(CTextNode):
         self.long =  node.get("long")
         self.required = int(node.get("required")) 
         self.default = node.get("default")
-        
+        self.type = node.get("type")
+        self.dict = {}
+        for child in node:
+            if child.tag == "dict": 
+                for v in child:
+                    self.dict[v.get("name")] = v.text
         
 class CExample(CTextNode):
     def __init__(self, node):
@@ -124,7 +129,7 @@ class CDictParam(CParam):
             print ".RS 4"
             print ".I" 
             print k
-            print ":%s" % (self.dict[k])
+            print "- %s" % (self.dict[k])
             print ".RE"
         CParam.do_print_man(self)
 

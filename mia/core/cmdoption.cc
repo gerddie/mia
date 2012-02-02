@@ -71,16 +71,16 @@ void CCmdOption::get_long_help(std::ostream& os) const
 	do_get_long_help(os);
 }
 
-string CCmdOption::get_long_help_xml(HandlerHelpMap& handler_map) const
+string CCmdOption::get_long_help_xml(xmlpp::Element& parent, HandlerHelpMap& handler_map) const
 {
 	cvdebug() << "write XML for '" << m_long_opt << "'\n"; 
 	ostringstream shelp; 
 	shelp << long_help();
-	do_get_long_help_xml(shelp, handler_map); 
+	do_get_long_help_xml(shelp, parent, handler_map); 
 	return shelp.str(); 
 }
 
-void CCmdOption::do_get_long_help_xml(std::ostream& os, HandlerHelpMap& /*handler_map*/) const
+void CCmdOption::do_get_long_help_xml(std::ostream& os, xmlpp::Element& /*parent*/, HandlerHelpMap& /*handler_map*/) const
 {
 	do_get_long_help(os);
 }

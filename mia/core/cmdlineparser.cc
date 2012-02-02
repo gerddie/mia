@@ -80,10 +80,7 @@ struct CCmdOptionListData {
 	CCmdOption *find_option(char key) const;
 
 	void post_set(); 
-
-#ifdef HAVE_LIBXMLPP
 	void print_help_xml(const char *progname, const CPluginHandlerBase *additional_help) const; 
-#endif
 	void print_help(const char *name_help, bool has_additional) const;
 	void print_usage(const char *name_help) const;
 
@@ -130,9 +127,7 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 		     " Supported priorities starting at lowest level are:"));
 	add(make_opt(copyright,  "copyright", 0, "print copyright information"));
 	add(make_opt(help,  "help", 'h', "print this help"));
-#ifdef HAVE_LIBXMLPP
 	add(make_opt(help_xml,  "help-xml", 0, "print help formatted as XML"));
-#endif
 	add(make_opt(usage,  "usage", '?', "print a short help"));
 	set_current_group("");
 }
@@ -198,7 +193,6 @@ vector<const char *> CCmdOptionListData::has_unset_required_options() const
 }
 
 
-#ifdef HAVE_LIBXMLPP
 using xmlpp::Element; 
 void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHandlerBase *additional_help) const
 {
@@ -234,7 +228,7 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 			option->set_attribute("long", opt.get_long_option());
 			option->set_attribute("required", to_string<bool>(opt.is_required())); 
 			option->set_attribute("default", opt.get_value_as_string()); 
-			option->set_child_text(opt.get_long_help_xml(handler_help_map));
+			option->set_child_text(opt.get_long_help_xml(*option, handler_help_map));
 
 			
 			if (opt.is_required()) {
@@ -264,7 +258,6 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 	*m_log << doc->write_to_string_formatted();
 	*m_log << "\n"; 
 }
-#endif 
 
 /**
    This help printing is a mess ...

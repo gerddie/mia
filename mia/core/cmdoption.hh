@@ -26,6 +26,7 @@
 #include <iostream>
 #include <mia/core/defines.hh>
 #include <mia/core/handlerbase.hh>
+#include <libxml++/libxml++.h>
 
 NS_MIA_BEGIN
 
@@ -124,7 +125,7 @@ public:
 	   used plug-in handlers to the helper map
 	   \param[in,out] handler_map the map of possibely recoursively called plug-in handlers 
 	 */
-	std::string get_long_help_xml(HandlerHelpMap& handler_map) const; 
+	std::string get_long_help_xml(xmlpp::Element& parent, HandlerHelpMap& handler_map) const; 
 
 	void post_set(); 
 protected:
@@ -145,7 +146,7 @@ private:
 	virtual const std::string do_get_value_as_string() const;
 	virtual	void do_post_set(); 
 
-	virtual void do_get_long_help_xml(std::ostream& os, HandlerHelpMap& handler_map) const; 
+	virtual void do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, HandlerHelpMap& handler_map) const; 
 
 	char m_short_opt; 
 	const char *m_long_opt;

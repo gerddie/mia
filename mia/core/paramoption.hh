@@ -47,6 +47,7 @@ private:
 	virtual void do_post_set(); 
 
 	virtual const std::string do_get_value_as_string() const; 
+	virtual void do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, HandlerHelpMap& handler_map) const; 
 	virtual void do_get_long_help(std::ostream& os) const;
 	virtual bool do_set_value(const char *str_value);
 	virtual size_t do_get_needed_args() const;

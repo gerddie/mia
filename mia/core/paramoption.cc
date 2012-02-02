@@ -63,4 +63,11 @@ void CParamOption::do_post_set()
 	m_param->post_set();
 }
 
+void CParamOption::do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, HandlerHelpMap& handler_map) const
+{
+	m_param->add_dependend_handler(handler_map); 
+	m_param->get_help_xml(parent);
+	os << m_param->get_descr(); 
+}
+
 NS_MIA_END
