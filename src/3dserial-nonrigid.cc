@@ -93,7 +93,7 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_general_help = {
-	"3D image registration ", 
+	"3D image registration", 
 	
 	"This program runs the image registration of a consecutively numbered image series. "
 	"The registration is run in a serial manner, this is, only images in "

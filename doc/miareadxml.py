@@ -13,6 +13,7 @@ import re
 #                tag required: 1 if required argument 
 #                tag default: default option value
 #                text: help 
+#       dict          
 #  Example       text: example descripton 
 #    Code        text: example text without program name 
 
@@ -198,8 +199,8 @@ class CHandler:
             if child.tag == "plugin": 
                 self.plugins.append(CPlugin(child))
             else:
-                print "unexpected subnode '%s' in 'handler'"% (child.tag)
-        def append_user(self, user):
+                print "unexpected subnode '%s' in 'handler'" % (child.tag)
+    def append_user(self, user):
             self.users.append(user)
 
 class CDescription: 
@@ -230,6 +231,6 @@ def parse_file(xmlpath):
     stringstree = file.read()
     root = etree.XML(stringstree)
     if root.tag != "program": 
-        raise ValueError("Expected tag 'program' not found. This is not a mia program descripion.")
+        raise ValueError("Expected tag 'program' not found. '"+xmlpath+"' is not a mia program descripion.")
     
     return CDescription(root)
