@@ -113,7 +113,7 @@ def get_program(program):
             section.append(get_bridgehead(g.name))
             
         if len(g.options) > 0:
-            varlist = etree.Element("variablelist")
+            varlist = etree.Element("variablelist", spacing="compact")
             for o in g.options:
                 varlist.append(get_option_descr(o))
             section.append(varlist)
