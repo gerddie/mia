@@ -15,7 +15,9 @@ modules = {'miareadxml' : [0, '', 'none://miareadxml.py' ],
 
 
 from miareadxml import parse_file
+from miawritprogram import make_sec_ancor
 from miawritprogram import get_section
+from miawritprogram import get_plugins
 from miawritprogram import xml_namespace
 from miawritprogram import xmlns
 from miawritprogram import NSMAP
@@ -31,10 +33,6 @@ def get_date_string():
     lt = time.localtime(time.time())
     return "%d %s %d"% (lt.tm_mday, calendar.month_name[lt.tm_mon], lt.tm_year)
 
-
-def make_ancor(text):
-   """remove spaces and hyphens from the input string""" 
-   return re.sub("[ -]", "", text)
 
 class CPatternCollector:
    def __init__(self, pattern):
@@ -86,6 +84,7 @@ prog_xml.set(xmlns + "id", "Programs")
 title = create_text_node("title", "Program Reference")
 prog_xml.append(title)
 
+
 for s in program_sections.keys(): 
     prog_xml.append(get_section(s, program_sections[s]))
 
@@ -96,12 +95,18 @@ prog_file.close()
 
 
 
-#plug_xml = etree.Element("chapter", id="plugins")
-#title = create_text_node("title", "Plugin Reference")
-#plug_xml.append(title)
-#
-#for s in plugin_types.keys(): 
-#   plug_xml.append(get_plugins(s, program_sections[s]))
+plug_xml = etree.Element("chapter", id="plugins", nsmap=NSMAP)
+title = create_text_node("title", "Plugin Reference")
+plug_xml.append(title)
+
+for s in plugin_types.keys(): 
+   plug_xml.append(get_plugins(s, plugin_types[s]))
+
+
+plugins_xml = etree.tostring(plug_xml, pretty_print=True)
+plug_file = open("plugins.xml", "w")
+plug_file.write(plugins_xml)
+plug_file.close()
 
 
 

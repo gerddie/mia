@@ -1,5 +1,6 @@
 <!DOCTYPE book [
 <!ENTITY programs SYSTEM "program.xml">
+<!ENTITY plugins SYSTEM "plugins.xml">
 <!ENTITY programintro SYSTEM "program_intro.xml">
 ]>
 <book xmlns="http://docbook.org/ns/docbook" version="5.0">
@@ -21,4 +22,5 @@
   
   <toc></toc>
   &programs;
+  &plugins; 
 </book>

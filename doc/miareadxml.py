@@ -18,6 +18,11 @@ import re
 #    Code        text: example text without program name 
 
 
+def make_sec_ancor(key, text):
+   """remove spaces and hyphens from the input string""" 
+   return key + re.sub("[ -/]", "", text)
+
+
 class CTextNode: 
     def __init__(self, node, expect = None):
         if not expect is None and node.tag != expect:
@@ -104,6 +109,23 @@ class CParam:
     def do_print_man(self):
         print ""
 
+    def print_xml_help(self, root):
+        row = etree.SubElement(root, "row")
+        e = etree.SubElement(row, "entry", align="center", valign="top")
+        e.text = self.name 
+        e = etree.SubElement(row, "entry", align="center", valign="top")
+        e.text = self.type
+        e = etree.SubElement(row, "entry", align="center", valign="top")
+        if self.required: 
+            e.text = "(required)"
+        else:
+            e.text = self.default
+        
+        self.do_print_xml_help_description(row)
+        
+    def do_print_xml_help_description(self, row):
+        e = etree.SubElement(row, "entry", align="left", valign="top")
+        e.text = self.text
 
 class CRangeParam(CParam):
     def __init__(self, node):
@@ -114,6 +136,11 @@ class CRangeParam(CParam):
     def do_print_man(self):
         print "in [%s, %s]" % (self.min, self.max)
         CParam.do_print_man(self)
+
+    def do_print_xml_help_description(self, row):
+        e = etree.SubElement(row, "entry", align="left", valign="top")
+        e.text = p.test + " in [%s, %s]" % (self.min, self.max)
+
 
 class CDictParam(CParam):
     def __init__(self, node):
@@ -134,6 +161,25 @@ class CDictParam(CParam):
             print ".RE"
         CParam.do_print_man(self)
 
+    def do_print_xml_help_description(self, row):
+        e = etree.SubElement(row, "entry")
+        table = etree.SubElement(e, "informaltable") 
+        tgroup = etree.SubElement(table, "tgroup", cols="2")
+        colspec = etree.SubElement(tgroup, "colspec", colname="sc0")
+        colspec = etree.SubElement(tgroup, "colspec", colname="sc1")
+        tbody = etree.SubElement(tgroup, "tbody")
+        
+        subrow = etree.SubElement(tbody, "row")
+        e = etree.SubElement(subrow, "entry", align="left", valign="top", namest="sc0", nameend="sc1")
+        e.text = self.text 
+        for d in self.dict.keys(): 
+            subrow = etree.SubElement(tbody, "row")
+            e = etree.SubElement(subrow, "entry", align="left", valign="top")
+            e.text = d + ":"
+            e = etree.SubElement(subrow, "entry", align="left", valign="top")
+            e.text = self.dict[d]
+        return e
+
 class CSetParam(CParam):
     def __init__(self, node):
         CParam.__init__(self,node)
@@ -150,6 +196,15 @@ class CSetParam(CParam):
             print "%s, " % (k), 
         print ")"
         CParam.do_print_man(self)
+
+    def do_print_xml_help_description(self, row):
+        e = etree.SubElement(row, "entry", align="left", valign="top")
+        str_list = [self.text, " Supported values are:("]
+
+        for k in self.set:
+            str_list.append("%s, " % (k))
+        str_list.append(")")
+        e.text = ''.join(str_list)
                     
 class CFactoryParam(CParam):
     def __init__(self, node):
@@ -163,6 +218,10 @@ class CFactoryParam(CParam):
         print "For supported plug-ins see PLUGINS:%s" % (self.factory)
         CParam.do_print_man(self)
 
+    def do_print_xml_help_description(self, row):
+        e = etree.SubElement(row, "entry", align="left", valign="top")
+        e.text = self.text + ". For supported plug-ins see "
+        etree.SubElement(e, "xref", linkend=make_sec_ancor("Sec", self.factory))
        
 class CPlugin: 
     def __init__(self, node):

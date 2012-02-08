@@ -7,7 +7,7 @@ NSMAP={"xml" : xml_namespace }
 
 def make_sec_ancor(key, text):
    """remove spaces and hyphens from the input string""" 
-   return key + re.sub("[ -]", "", text)
+   return key + re.sub("[ -/]", "", text)
 
 def make_section_root_node(tag, name):
     secid = make_sec_ancor("Sec", name)
@@ -21,7 +21,7 @@ def make_section_root_node(tag, name):
 
 def get_text_node(tag, renderas, text):
     node = etree.Element(tag)
-    node.set(xmlns + "renderas", renderas)
+    node.set("renderas", renderas)
     node.text = text
     return node
 
@@ -31,7 +31,7 @@ def get_text_node_simple(tag,  text):
     return node
 
 def get_bridgehead(text):
-    return get_text_node("bridgehead", "sect5", text)
+    return get_text_node("bridgehead", "sect4", text)
    
 def get_synopsis(program):
     synopsis = etree.Element("cmdsynopsis")
@@ -54,8 +54,8 @@ def get_synopsis(program):
     # currently missing are the free parameters 
     return synopsis
 
-def get_dict_table(dictionary):
-    entry = etree.Element("informaltable", frame="none")
+def get_dict_table(dictionary, tabletype):
+    entry = etree.Element(tabletype, frame="none")
     tgroup = etree.Element("tgroup", cols="2", colsep="0", rowsep ="0")
     colspec = etree.Element("colspec", colname="c1")
     tgroup.append(colspec)
@@ -93,7 +93,7 @@ def get_option_descr(option):
     item =  etree.Element("listitem")
     para = get_text_node_simple("para", option.text)
     if len(option.dict) > 0:
-        opttable = get_dict_table(option.dict)
+        opttable = get_dict_table(option.dict, "informaltable")
         para.append(opttable)
     item.append(para)
     entry.append(item)
@@ -139,11 +139,45 @@ def get_section(name, sect):
     for program in sect:
         section.append(get_program(program))
     return section
-                      
+
+
+def get_plugin(plugin):
+   result = etree.Element("para")
+   node = get_bridgehead(plugin.name)
+   result.append(node)
+   node = etree.SubElement(result, "para")
+   node.text = plugin.text + ". Supported parameters are:"
+
+   param_list = plugin.params
+   
+   if len(param_list) > 0:
+      table = etree.SubElement(result, "informaltable", frame="all")
+      tgroup = etree.SubElement(table, "tgroup", cols="3", colsep="0", rowsep ="0")
+      colspec = etree.SubElement(tgroup, "colspec", colname="c1", colwidth="10%")
+      colspec = etree.SubElement(tgroup, "colspec", colname="c2", colwidth="10%")
+      colspec = etree.SubElement(tgroup, "colspec", colname="c3", colwidth="10%")
+      colspec = etree.SubElement(tgroup, "colspec", colname="c4", colwidth="70%")
+      thead = etree.SubElement(tgroup, "thead")
+      row = etree.SubElement(thead, "row"); 
+      e = etree.SubElement(row, "entry", align="center", valign="top")
+      e.text = "Name"
+      e = etree.SubElement(row, "entry", align="center", valign="top")
+      e.text = "Type"
+      e = etree.SubElement(row, "entry", align="center", valign="top")
+      e.text = "Default"
+      e = etree.SubElement(row, "entry", align="center", valign="top")
+      e.text = "Description"
     
-    
-    
+      tbody = etree.SubElement(tgroup, "tbody")
+      
+      for p in param_list: 
+         p.print_xml_help(tbody)
+            
+   return result
 
-
-
-
+def get_plugins(name, handler):
+   print name
+   section = make_section_root_node("section", name)
+   for p in handler.plugins:
+      section.append(get_plugin(p))
+   return section
