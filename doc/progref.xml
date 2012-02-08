@@ -1,0 +1,24 @@
+<!DOCTYPE book [
+<!ENTITY programs SYSTEM "program.xml">
+<!ENTITY programintro SYSTEM "program_intro.xml">
+]>
+<book xmlns="http://docbook.org/ns/docbook" version="5.0">
+  <info> 
+    <title>Mia Program Reference</title>
+    <date>31.01.2012 </date>
+    <author>
+    <firstname>Gert</firstname><surname>Wollny</surname></author>
+    <abstract>
+      <para>Abstract</para>
+    </abstract>
+  </info>
+  
+  <chapter>
+    <title>Introduction</title>
+    <para>In this document you will find descriptions for all the programs and plug-ins currently included in the MIA software package. 
+    This document is maintained by Gert Wollny &lt;gw.fossdev@gmail.com&gt;. Additions, hints, modifications, and corrections are welcome.</para>
+  </chapter>
+  
+  <toc></toc>
+  &programs;
+</book>

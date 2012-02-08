@@ -1,20 +1,27 @@
 from lxml import etree
 import re
 
+xml_namespace = "http://docbook.org/ns/docbook"
+xmlns = "{%s}" % xml_namespace
+NSMAP={"xml" : xml_namespace }
+
 def make_sec_ancor(key, text):
    """remove spaces and hyphens from the input string""" 
    return key + re.sub("[ -]", "", text)
 
 def make_section_root_node(tag, name):
     secid = make_sec_ancor("Sec", name)
-    section = etree.Element(tag, id=secid, xreflabel=name)
+    section = etree.Element(tag)
+    section.set(xmlns + "id", secid)
+    section.set("xreflabel", name)
     title = etree.Element("title")
     title.text = name
     section.append(title)
     return section
 
 def get_text_node(tag, renderas, text):
-    node = etree.Element(tag, renderas=renderas)
+    node = etree.Element(tag)
+    node.set(xmlns + "renderas", renderas)
     node.text = text
     return node
 
@@ -49,7 +56,12 @@ def get_synopsis(program):
 
 def get_dict_table(dictionary):
     entry = etree.Element("informaltable", frame="none")
-    tgroup = etree.Element("tgroup", cols="2", colsep="0", rowsep="0")
+    tgroup = etree.Element("tgroup", cols="2", colsep="0", rowsep ="0")
+    colspec = etree.Element("colspec", colname="c1")
+    tgroup.append(colspec)
+    colspec = etree.Element("colspec", colname="c2")
+    tgroup.append(colspec)
+
     tbody = etree.Element("tbody")
     for d in dictionary.keys(): 
         row = etree.Element("row")
@@ -89,7 +101,7 @@ def get_option_descr(option):
                 
 
 def get_program(program):
-    section = make_section_root_node("sect2", program.name)
+    section = make_section_root_node("section", program.name)
     section.append(get_bridgehead("Sysnopis:"))
     section.append(get_synopsis(program))
     section.append(get_bridgehead("Description:"))
@@ -123,7 +135,7 @@ def get_program(program):
     return section 
 
 def get_section(name, sect):
-    section = make_section_root_node("sect1", name)
+    section = make_section_root_node("section", name)
     for program in sect:
         section.append(get_program(program))
     return section

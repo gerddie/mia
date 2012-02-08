@@ -16,6 +16,9 @@ modules = {'miareadxml' : [0, '', 'none://miareadxml.py' ],
 
 from miareadxml import parse_file
 from miawritprogram import get_section
+from miawritprogram import xml_namespace
+from miawritprogram import xmlns
+from miawritprogram import NSMAP
 
 
 def create_text_node(tag, text):
@@ -78,7 +81,8 @@ for d in descriptions:
 
 
 #Now convert to linuxdoc format - these are also XML files 
-prog_xml = etree.Element("chapter", id="programs")
+prog_xml = etree.Element("chapter", nsmap=NSMAP)
+prog_xml.set(xmlns + "id", "Programs")
 title = create_text_node("title", "Program Reference")
 prog_xml.append(title)
 
