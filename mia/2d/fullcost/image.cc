@@ -217,7 +217,7 @@ C2DImageFullCostPlugin::C2DImageFullCostPlugin():
 {
 	add_parameter("src", new CStringParameter(m_src_name, false, "Study image"));
 	add_parameter("ref", new CStringParameter(m_ref_name, false, "Reference image"));
-	add_parameter("cost", new CFactoryParameter<C2DImageCostPluginHandler>(m_cost_kernel, "ssd", false, "Cost function kernel, see PLUGINS:cost/2d"));
+	add_parameter("cost", new CFactoryParameter<C2DImageCostPluginHandler>(m_cost_kernel, "ssd", false, "Cost function kernel"));
 	add_parameter("debug", new CBoolParameter(m_debug, false, "Save intermediate resuts for debugging")); 
 }
 
