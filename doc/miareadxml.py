@@ -23,6 +23,10 @@ def make_sec_ancor(key, text):
    return key + re.sub("[ -/]", "", text)
 
 
+def escape_dash(text): 
+    return re.sub(r'-', r'\-', text) 
+
+
 class CTextNode: 
     def __init__(self, node, expect = None):
         if not expect is None and node.tag != expect:
@@ -40,12 +44,55 @@ class COption(CTextNode):
         self.required = int(node.get("required")) 
         self.default = node.get("default")
         self.type = node.get("type")
-        self.dict = {}
-        for child in node:
-            if child.tag == "dict": 
-                for v in child:
-                    self.dict[v.get("name")] = v.text
-        
+
+    def print_man(self):
+       if len(self.short) > 0:
+          short = "\-" + self.short
+       else:
+          short = "  "; 
+
+       if self.required:
+          print ".IP \"%s \-\-%s=(required)\""% (short, self.long)
+       else:
+          print ".IP \"%s \-\-%s=%s\""% (short, self.long, escape_dash(self.default))
+          print self.text, 
+          self.do_print_man()
+       
+
+    def do_print_man(self):
+       print "" 
+
+
+class CDictOption(COption):
+    def __init__(self, node):
+       COption.__init__(self, node)
+       self.dict = {}
+       for child in node.iter("dict"):
+          for v in child:
+                self.dict[v.get("name")] = v.text
+
+    def do_print_man(self):
+       if len(self.dict) > 0:
+          print "" 
+          for k in self.dict.keys(): 
+             print ".RS 10"
+             print ".I" 
+             print k
+             print "- %s" % (self.dict[k])
+             print ".RE"
+
+
+
+class CFactoryOption(COption):
+    def __init__(self, node):
+       COption.__init__(self, node)
+       self.factory = "unknown/factory"
+       for child in node.iter("factory"):
+          self.factory = child.get("name")
+
+    def do_print_man(self):
+       print " For supported plugins see PLUGINS:%s" % (self.factory)
+
 class CExample(CTextNode):
     def __init__(self, node):
         CTextNode.__init__(self, node, "Example")
@@ -69,7 +116,11 @@ class CGroup:
         self.options = []
         for child in node:
             if child.tag == "option": 
-                self.options.append(COption(child))
+               p = {
+                    "factory": lambda n: CFactoryOption(n), 
+                    "dict":    lambda n: CDictOption(n),
+                    }.get(child.get("type"), lambda n: COption(n))(child)
+               self.options.append(p)
             else:
                 print "unexpected subnode '%s' in 'group'"% (child.tag)
 

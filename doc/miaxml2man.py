@@ -64,24 +64,7 @@ def write_man_file(descr):
 
         print ".RS"
         for o in g.options:
-
-            if len(o.short) > 0:
-                short = "\-" + o.short
-            else:
-                short = "  "; 
-
-            if o.required:
-                print ".IP \"%s \-\-%s=(required)\""% (short, o.long)
-            else:
-                print ".IP \"%s \-\-%s=%s\""% (short, o.long, escape_dash(o.default))
-            print o.text
-            if len(o.dict) > 0:
-                for k in o.dict.keys(): 
-                    print ".RS 10"
-                    print ".I" 
-                    print k
-                    print "- %s" % (o.dict[k])
-                    print ".RE"
+            o.print_man()
         print ".RE"
         
     for h in descr.handlers: 
