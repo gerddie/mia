@@ -25,6 +25,7 @@
 
 #include <mia/core/defines.hh>
 #include <string>
+#include <vector>
 
 NS_MIA_BEGIN
 
@@ -63,6 +64,18 @@ DEFINE_TYPE_DESCR(float);
 DEFINE_TYPE_DESCR(double); 
 DEFINE_TYPE_DESCR(bool); 
 DEFINE_TYPE_DESCR(std::string); 
+
+
+DEFINE_TYPE_DESCR(std::vector<short>); 
+DEFINE_TYPE_DESCR(std::vector<int>); 
+DEFINE_TYPE_DESCR(std::vector<long>); 
+DEFINE_TYPE_DESCR(std::vector<unsigned int>);
+DEFINE_TYPE_DESCR(std::vector<unsigned short>);
+DEFINE_TYPE_DESCR(std::vector<unsigned long>);
+DEFINE_TYPE_DESCR(std::vector<float>); 
+DEFINE_TYPE_DESCR(std::vector<double>); 
+DEFINE_TYPE_DESCR(std::vector<bool>); 
+DEFINE_TYPE_DESCR(std::vector<std::string>); 
 
 NS_MIA_END
 

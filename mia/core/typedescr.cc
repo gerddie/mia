@@ -37,4 +37,16 @@ DECLARE_TYPE_DESCR2(unsigned int, "uint");
 DECLARE_TYPE_DESCR2(unsigned long, "ulong");
 DECLARE_TYPE_DESCR2(std::string, "string");
 
+DECLARE_TYPE_DESCR2(std::vector<short>, "vshort"); 
+DECLARE_TYPE_DESCR2(std::vector<int>, "vint"); 
+DECLARE_TYPE_DESCR2(std::vector<long>, "vlong"); 
+DECLARE_TYPE_DESCR2(std::vector<unsigned int>, "vuint");
+DECLARE_TYPE_DESCR2(std::vector<unsigned short>,  "vushort");
+DECLARE_TYPE_DESCR2(std::vector<unsigned long>, "vulong");
+DECLARE_TYPE_DESCR2(std::vector<float>, "vfloat"); 
+DECLARE_TYPE_DESCR2(std::vector<double>, "vdouble"); 
+DECLARE_TYPE_DESCR2(std::vector<bool>, "vbool"); 
+DECLARE_TYPE_DESCR2(std::vector<std::string>, "vstring"); 
+
+
 NS_MIA_END

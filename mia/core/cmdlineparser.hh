@@ -31,6 +31,7 @@
 #include <string>
 #include <iterator>
 #include <mia/core/cmdoption.hh>
+#include <mia/core/typedescr.hh>
 #include <mia/core/paramoption.hh>
 #include <mia/core/dictmap.hh>
 #include <mia/core/flagstring.hh>
@@ -99,7 +100,7 @@ public:
                    const char *short_help, bool flags = false);
 
 private:
-
+	virtual void do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, HandlerHelpMap& handler_map) const; 
 	virtual bool do_set_value(const char *str_value);
 	virtual size_t do_get_needed_args() const;
 	virtual void do_write_value(std::ostream& os) const;
@@ -467,9 +468,15 @@ void TCmdOption<T>::do_write_value(std::ostream& os) const
         __dispatch_opt<T>::apply( os, m_value, is_required());
 }
 
+template <typename T>
+void TCmdOption<T>::do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, HandlerHelpMap& /*handler_map*/) const
+{
+	do_get_long_help(os);
+	parent.set_attribute("type", __type_descr<T>::name);
+}
 
 template <typename T>
-        const std::string TCmdOption<T>::do_get_value_as_string() const
+const std::string TCmdOption<T>::do_get_value_as_string() const
 {
         return __dispatch_opt<T>::get_as_string(m_value);
 }
