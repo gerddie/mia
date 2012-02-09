@@ -71,11 +71,12 @@ for d in descriptions:
       program_sections[d.section] = []
    program_sections[d.section].append(d)
 
-   for h in d.handlers:
-      if not plugin_types.has_key(h.name):
-         plugin_types[h.name] = h
-      plugin_types[h.name].append_user(d.name)
-   
+   for h in d.handlers.keys():
+      k = d.handlers[h].name
+      if not plugin_types.has_key(k):
+         plugin_types[k] = d.handlers[h]
+      else:
+         plugin_types[k].merge_users(d.handlers[h].users)
 
 
 #Now convert to linuxdoc format - these are also XML files 

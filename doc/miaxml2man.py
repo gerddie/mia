@@ -67,7 +67,8 @@ def write_man_file(descr):
             o.print_man()
         print ".RE"
         
-    for h in descr.handlers: 
+    for k in descr.handlers.keys(): 
+        h = descr.handlers[k]
         print ".SH PLUGINS: %s" % (h.name)
         for p in h.plugins:
             print ".TP 10"

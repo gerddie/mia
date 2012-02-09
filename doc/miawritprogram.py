@@ -1,13 +1,18 @@
 from lxml import etree
 import re
 
-xml_namespace = "http://docbook.org/ns/docbook"
-xmlns = "{%s}" % xml_namespace
-NSMAP={"xml" : xml_namespace }
 
-def make_sec_ancor(key, text):
-   """remove spaces and hyphens from the input string""" 
-   return key + re.sub("[ -/]", "", text)
+
+
+modules = {'miareadxml' : [0, '', 'none://miareadxml.py' ]}
+
+from miareadxml import get_text_node_simple
+from miareadxml import get_dict_table
+from miareadxml import make_sec_ancor
+from miareadxml import xml_namespace
+from miareadxml import xmlns
+
+NSMAP={"xml" : xml_namespace }
 
 def make_section_root_node(tag, name):
     secid = make_sec_ancor("Sec", name)
@@ -25,13 +30,9 @@ def get_text_node(tag, renderas, text):
     node.text = text
     return node
 
-def get_text_node_simple(tag,  text):
-    node = etree.Element(tag)
-    node.text = text
-    return node
 
 def get_bridgehead(text):
-    return get_text_node("bridgehead", "sect4", text)
+    return get_text_node("bridgehead", "sect3", text)
    
 def get_synopsis(program):
     synopsis = etree.Element("cmdsynopsis")
@@ -47,56 +48,23 @@ def get_synopsis(program):
                 synopsis.append(node)
     
     # add standard option hint 
-    node = etree.Element("arg")
+    node = etree.SubElement(synopsis, "arg", rep="repeat")
     node.append(get_text_node_simple("replaceable",  "options"))
-    synopsis.append(node)
     
-    # currently missing are the free parameters 
+    #add free parameter if exists
+    if not program.FreeParams is None:
+           node = etree.SubElement(synopsis, "arg", rep="repeat")
+           plugin = etree.SubElement(node, "replaceable")
+           etree.SubElement(plugin, "xref", linkend=make_sec_ancor("SecPlugintype", program.FreeParams))
+    
     return synopsis
 
-def get_dict_table(dictionary, tabletype):
-    entry = etree.Element(tabletype, frame="none")
-    tgroup = etree.Element("tgroup", cols="2", colsep="0", rowsep ="0")
-    colspec = etree.Element("colspec", colname="c1")
-    tgroup.append(colspec)
-    colspec = etree.Element("colspec", colname="c2")
-    tgroup.append(colspec)
-
-    tbody = etree.Element("tbody")
-    for d in dictionary.keys(): 
-        row = etree.Element("row")
-        e = etree.Element("entry", align="left", valign="top")
-        e.text = d + ":"
-        row.append(e)
-        e = etree.Element("entry", align="left", valign="top")
-        e.text = dictionary[d]
-        row.append(e)
-        tbody.append(row)
-    tgroup.append(tbody)
-    entry.append(tgroup)
-    return entry
-    
+   
 def get_option_descr(option):
     entry = etree.Element("varlistentry")
+
+    option.write_xml(entry)
     
-    # create the terminal text 
-    termtext = "-"
-    if len(option.short) > 0: 
-        termtext = termtext + option.short + ", -"
-    termtext = termtext + "-" + option.long + "="
-    if option.required: 
-        termtext = termtext + "(required)"
-    elif len(option.default)>0:
-        termtext = termtext + option.default
-    
-    entry.append(get_text_node_simple("term",  termtext))
-    item =  etree.Element("listitem")
-    para = get_text_node_simple("para", option.text)
-    if len(option.dict) > 0:
-        opttable = get_dict_table(option.dict, "informaltable")
-        para.append(opttable)
-    item.append(para)
-    entry.append(item)
     return entry
                 
 
@@ -142,42 +110,21 @@ def get_section(name, sect):
 
 
 def get_plugin(plugin):
-   result = etree.Element("para")
-   node = get_bridgehead(plugin.name)
-   result.append(node)
-   node = etree.SubElement(result, "para")
-   node.text = plugin.text + ". Supported parameters are:"
-
-   param_list = plugin.params
-   
-   if len(param_list) > 0:
-      table = etree.SubElement(result, "informaltable", frame="all")
-      tgroup = etree.SubElement(table, "tgroup", cols="3", colsep="0", rowsep ="0")
-      colspec = etree.SubElement(tgroup, "colspec", colname="c1", colwidth="10%")
-      colspec = etree.SubElement(tgroup, "colspec", colname="c2", colwidth="10%")
-      colspec = etree.SubElement(tgroup, "colspec", colname="c3", colwidth="10%")
-      colspec = etree.SubElement(tgroup, "colspec", colname="c4", colwidth="70%")
-      thead = etree.SubElement(tgroup, "thead")
-      row = etree.SubElement(thead, "row"); 
-      e = etree.SubElement(row, "entry", align="center", valign="top")
-      e.text = "Name"
-      e = etree.SubElement(row, "entry", align="center", valign="top")
-      e.text = "Type"
-      e = etree.SubElement(row, "entry", align="center", valign="top")
-      e.text = "Default"
-      e = etree.SubElement(row, "entry", align="center", valign="top")
-      e.text = "Description"
-    
-      tbody = etree.SubElement(tgroup, "tbody")
-      
-      for p in param_list: 
-         p.print_xml_help(tbody)
-            
+   result = etree.Element("para", role="plugin")
+   plugin.write_xml(result)
    return result
 
 def get_plugins(name, handler):
    print name
-   section = make_section_root_node("section", name)
+   section = make_section_root_node("section", "Plugin type: " + name)
+   head = get_bridgehead("Plugin consumers:")
+   section.append(head)
+   para = etree.SubElement(section, "para", role="consumer")
+   for u in handler.users:
+      etree.SubElement(para, "xref", linkend=u)
+
+   head = get_bridgehead("Plugins:")
+   section.append(head)
    for p in handler.plugins:
       section.append(get_plugin(p))
    return section

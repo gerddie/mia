@@ -1,0 +1,25 @@
+<style type="text/css">
+  h5 {
+  margin-left: 1%;
+  }
+  pre.screen {
+  margin-left: 2%;
+  }
+  div.variablelist {
+  margin-left: 2%;
+  }
+  span.term {
+  font-style: italic
+  }
+  div.cmdsynopsis {
+  margin-left: 2%;
+  }
+  p.consumer {
+      margin-left: 2%;
+  }
+  p.plugindescr {
+      margin-left: 3%;
+  }
+
+</style>
+
