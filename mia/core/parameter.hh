@@ -507,7 +507,12 @@ void CFactoryParameter<T>::do_reset()
 template <typename T>
 void CFactoryParameter<T>::do_add_dependend_handler(HandlerHelpMap& handler_map)const
 {
-	handler_map[T::instance().get_descriptor()] = &T::instance(); 
+	// add recursively all dependent handlers 
+	if (handler_map.find(T::instance().get_descriptor()) ==  handler_map.end()){
+		handler_map[T::instance().get_descriptor()] = &T::instance(); 
+		for (auto i = T::instance().begin(); i != T::instance().end(); ++i) 
+			i->second->add_dependend_handlers(handler_map); 
+	}
 }
 
 template <typename T>

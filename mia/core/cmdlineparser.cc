@@ -241,6 +241,12 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 			}
 		}
 	}
+	if (additional_help) {
+		Element* free_parameters = nodeRoot->add_child("freeparams"); 
+		free_parameters->set_attribute("name", additional_help->get_descriptor()); 
+		free_parameters->set_attribute("type", "factory"); 
+	}
+		
 	usage_text << "[options]"; 
 	if (additional_help) 
 		usage_text << " &lt;PLUGINS:" << additional_help->get_descriptor() <<"&gt;"; 
