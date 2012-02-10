@@ -257,7 +257,7 @@ private:
 
 /**
    \ingroup infrastructure 
-   \brief A parameter that get's initialized by a factory 
+   \brief A parameter that get's initialized by a factory to a shared or unique pointer 
 
    This parameter type is used for parameters that are created by a factory 
    that uses a plug-in handler for instance creation. 
@@ -273,6 +273,8 @@ public:
 	   \param descr a description of the parameter
 	 */
 	CFactoryParameter(typename F::ProductPtr& value, const std::string& init, bool required, const char *descr);
+
+	CFactoryParameter(typename F::UniqueProduct& value, const std::string& init, bool required, const char *descr);
 private:
 	virtual void do_descr(std::ostream& os) const;
 	virtual void do_add_dependend_handler(HandlerHelpMap& handler_map)const; 
@@ -281,13 +283,23 @@ private:
 	virtual std::string do_get_default_value() const; 
 	virtual std::string do_get_value_as_string() const;
 	virtual void do_get_help_xml(xmlpp::Element& self) const;
-	typename F::ProductPtr& m_value;
+
+	typename F::ProductPtr dummy_shared_value; 
+	typename F::UniqueProduct dummy_unique_value; 
+
+	typename F::ProductPtr& m_shared_value;
+	typename F::UniqueProduct& m_unique_value;
 
 	virtual void post_set(); 
 	
 	std::string m_string_value; 
 	std::string m_default_value; 
+	bool m_unique; 
+
+	
 };
+
+
 
 /**
    \ingroup infrastructure 
@@ -382,6 +394,14 @@ CParameter *make_param(std::shared_ptr<T>& value, const std::string& init,  bool
 	
 }
 
+template <typename T> 
+CParameter *make_param(std::unique_ptr<T>& value, const std::string& init,  bool required, const char *descr) 
+{                       
+	typedef typename FactoryTrait<T>::type F;  
+	return new CFactoryParameter<F>(value, init, required, descr);
+	
+}
+
 //// implementations 
 
 template <typename T> 
@@ -464,11 +484,26 @@ template <typename T>
 CFactoryParameter<T>::CFactoryParameter(typename T::ProductPtr& value,
 					const std::string& init, bool required, const char *descr):
 	CParameter("factory", required, descr),
-	m_value(value),
+	m_shared_value(value),
+	m_unique_value(dummy_unique_value),
 	m_string_value(init), 
-	m_default_value(init)
+	m_default_value(init), 
+	m_unique(false)
 {
 }
+
+template <typename F>
+CFactoryParameter<F>::CFactoryParameter(typename F::UniqueProduct& value, const std::string& init, bool required, const char *descr):
+	CParameter("factory", required, descr),
+	m_shared_value(dummy_shared_value),
+	m_unique_value(value),
+	m_string_value(init), 
+	m_default_value(init), 
+	m_unique(true) 
+{
+}
+
+	
 
 template <typename T>
 void CFactoryParameter<T>::do_descr(std::ostream& os) const
@@ -494,8 +529,12 @@ bool CFactoryParameter<T>::do_set(const std::string& str_value)
 template <typename T>
 void CFactoryParameter<T>::post_set()
 {
-	if (!m_string_value.empty()) 
-		m_value = T::instance().produce(m_string_value);
+	if (!m_string_value.empty()) {
+		if (m_unique)
+			m_unique_value = T::instance().produce_unique(m_string_value);
+		else
+			m_shared_value = T::instance().produce(m_string_value);
+	}
 }
 
 template <typename T>
@@ -524,10 +563,11 @@ std::string CFactoryParameter<T>::do_get_default_value() const
 template <typename T>
 std::string CFactoryParameter<T>::do_get_value_as_string() const
 {
-	if (m_value) 
-		return m_value->get_init_string(); 
-	else 
-		return m_string_value; 
+	if (m_unique && m_unique_value) 
+		return m_unique_value->get_init_string(); 
+	if (!m_unique && m_shared_value) 
+		return m_shared_value->get_init_string(); 
+	return m_string_value; 
 }
 
 template <typename T>

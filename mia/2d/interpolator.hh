@@ -202,6 +202,13 @@ public:
         /**
 	   Construct the factory the interpolation  kernel and according boundary conditions 
 	   \param kernel  interpolation kernel
+	   \param boundary_conditions prototype boundary condition 
+	*/
+	C2DInterpolatorFactory(PSplineKernel kernel, const CSplineBoundaryCondition& boundary_conditions);
+
+        /**
+	   Construct the factory the interpolation  kernel and according boundary conditions 
+	   \param kernel  interpolation kernel
 	   \param boundary_conditions description of the boundary conditions 
 	*/
 	C2DInterpolatorFactory(PSplineKernel kernel, const std::string& boundary_conditions);

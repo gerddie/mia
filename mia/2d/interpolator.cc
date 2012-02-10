@@ -48,6 +48,13 @@ C2DInterpolatorFactory::C2DInterpolatorFactory(const std::string& kernel, const 
 {
 }
 
+C2DInterpolatorFactory::C2DInterpolatorFactory(PSplineKernel kernel, const CSplineBoundaryCondition& bc):
+	m_kernel(kernel), 
+	m_xbc(bc.clone()),
+	m_ybc(bc.clone())
+{
+}
+
 C2DInterpolatorFactory::C2DInterpolatorFactory(PSplineKernel kernel, 
 					       const CSplineBoundaryCondition& xbc, const CSplineBoundaryCondition& ybc):
 	m_kernel(kernel), 

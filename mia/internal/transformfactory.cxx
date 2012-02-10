@@ -20,6 +20,7 @@
 
 #include <mia/core/plugin_base.cxx>
 #include <mia/core/handler.cxx>
+#include <mia/core/parameter.hh>
 
 NS_MIA_BEGIN
 
@@ -52,19 +53,17 @@ void TTransformCreator<T>::add_property(const char *property)
 
 template <typename T> 
 TTransformCreatorPlugin<T>::TTransformCreatorPlugin(const char *const name):
-	TFactory<TTransformCreator<T> >(name), 
-	m_image_interpolator("bspline:d=3"),
-	m_image_boundary("mirror")
+	TFactory<TTransformCreator<T> >(name)
 {
-	this->add_parameter("imgkernel", new CStringParameter(m_image_interpolator, false, "image interpolator kernel")); 
-	this->add_parameter("imgboundary", new CStringParameter(m_image_boundary, false, "image interpolation boundary conditions")); 
+	this->add_parameter("imgkernel", make_param(m_image_interpolator, "bspline:d=3", false, "image interpolator kernel"));
+	this->add_parameter("imgboundary", make_param<CSplineBoundaryCondition>(m_image_boundary, "mirror", false, "image interpolation boundary conditions")); 
 }
 
 template <typename T> 
 typename TTransformCreatorPlugin<T>::Product *
 TTransformCreatorPlugin<T>::do_create() const
 {
-	InterpolatorFactory ipf(m_image_interpolator, m_image_boundary); 
+	InterpolatorFactory ipf(m_image_interpolator, *m_image_boundary); 
 	return do_create(ipf); 
 }
 

@@ -71,6 +71,14 @@ C3DInterpolatorFactory::C3DInterpolatorFactory(PSplineKernel kernel, const std::
 {
 }
 
+C3DInterpolatorFactory::C3DInterpolatorFactory(PSplineKernel kernel, const CSplineBoundaryCondition& bc):
+	m_kernel(kernel), 
+	m_xbc(bc.clone()),  
+	m_ybc(bc.clone()),  
+	m_zbc(bc.clone())
+{
+}
+
 C3DInterpolatorFactory::C3DInterpolatorFactory(PSplineKernel kernel, 
 					       const CSplineBoundaryCondition& xbc,  
 					       const CSplineBoundaryCondition& ybc, 

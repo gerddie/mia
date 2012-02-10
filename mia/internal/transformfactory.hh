@@ -22,9 +22,12 @@
 #define mia_internal_transformfactory_hh
 
 #include <set>
-#include <mia/2d/transform.hh>
+#include <mia/core/transformation.hh>
 #include <mia/core/factory.hh>
+#include <mia/core/splinekernel.hh>
+#include <mia/core/boundary_conditions.hh>
 #include <mia/core/import_handler.hh>
+#include <mia/core/parameter.hh>
 
 NS_MIA_BEGIN
 
@@ -104,8 +107,8 @@ private:
 	virtual Product *do_create() const __attribute__((warn_unused_result));
 	virtual Product *do_create(const InterpolatorFactory& factory) const __attribute__((warn_unused_result)) = 0 ;
 
-	std::string m_image_interpolator; 
-	std::string m_image_boundary; 
+	PSplineKernel m_image_interpolator; 
+	PSplineBoundaryCondition m_image_boundary; 
 }; 
 
 

@@ -606,6 +606,26 @@ PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *default_valu
 					    new CFactoryParameter<F>(value, default_value, required, help))); 
 }
 
+/**
+   Create a command line option that uses a TFactoryPluginHandler to create 
+   the actual value.
+   \tparam T the non-pointer type of the value
+   \param[in,out] value the ProductPtr of the factory
+   \param default_value default value if parameter is not given
+   \param long_opt long option name
+   \param short_opt short option char, set to 0 of none givn
+   \param long_help the help string for thie option
+   \param flags set whether command line option must be set
+*/
+template <typename T>
+PCmdOption make_opt(typename std::unique_ptr<T>& value, const char *default_value, const char *long_opt, 
+		    char short_opt,  const char *help, bool required = false)
+{
+	typedef typename FactoryTrait<T>::type F;  
+	return PCmdOption(new CParamOption( short_opt, long_opt, 
+					    new CFactoryParameter<F>(value, default_value, required, help))); 
+}
+
 
 /**
    Create a command line help option 

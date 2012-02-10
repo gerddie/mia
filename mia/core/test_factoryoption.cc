@@ -122,6 +122,29 @@ BOOST_AUTO_TEST_CASE( test_a2_factory_option )
 	BOOST_CHECK_EQUAL(option->get_value_as_string(), "lala"); 
 }
 
+BOOST_AUTO_TEST_CASE( test_a2_factory_option_unique )
+{
+
+	CFactoryHandlerMock::UniqueProduct product; 
+	PCmdOption option = make_opt(product, "lala", "lila", 'l',"Some help"); 
+	
+	CCmdOptionList olist(general_help); 
+	olist.add(option); 
+	
+	vector<const char *> cmdline(1); 
+	cmdline[0] = "testprogram"; 
+	BOOST_CHECK_EQUAL(olist.parse(cmdline.size(), &cmdline[0]), CCmdOptionList::hr_no);
+	BOOST_REQUIRE(product); 
+	
+	BOOST_CHECK_EQUAL(product->get_init_string(), "lala"); 
+	
+	//option->set_value(NULL); 
+	//	BOOST_CHECK(!product); 
+
+	BOOST_CHECK_EQUAL(option->get_value_as_string(), "lala"); 
+}
+
+
 BOOST_AUTO_TEST_CASE( test_another_factory_option )
 {
 
