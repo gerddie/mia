@@ -84,21 +84,34 @@ BOOST_FIXTURE_TEST_CASE(test_rigid_creator, HandlerTestFixture)
 }
 
 
-#if 0
 
-BOOST_FIXTURE_TEST_CASE(test_spline_creator, HandlerTestFixture)
+BOOST_FIXTURE_TEST_CASE(test_spline_creator_isotropic, HandlerTestFixture)
 {
 	const C3DTransformCreatorHandler::Instance& handler =
 		C3DTransformCreatorHandler::instance();
 	P3DTransformationFactory spline_creater =
-		handler.produce("spline:interp=[bspline:d=4],rate=4");
-	P3DTransformation transform = spline_creater->create(C3DBounds(16,32));
-	BOOST_CHECK_EQUAL(transform->get_size(), C3DBounds(16,32));
+		handler.produce("spline:kernel=[bspline:d=4],rate=4");
+	P3DTransformation transform = spline_creater->create(C3DBounds(16,32,32));
+	BOOST_CHECK_EQUAL(transform->get_size(), C3DBounds(16,32,32));
 
 	// +4 because we add a boundary of 2 rows/columns for a spline of degree 4
-	BOOST_CHECK_EQUAL(transform->degrees_of_freedom(), static_cast<size_t>((4+4) * (8+4) * 2));
+	BOOST_CHECK_EQUAL(transform->degrees_of_freedom(), static_cast<size_t>((4+4) * (8+4)* (8+4) * 3));
 }
 
+BOOST_FIXTURE_TEST_CASE(test_spline_creator_anisotropic, HandlerTestFixture)
+{
+	const C3DTransformCreatorHandler::Instance& handler =
+		C3DTransformCreatorHandler::instance();
+	P3DTransformationFactory spline_creater =
+		handler.produce("spline:kernel=[bspline:d=4],anisorate=[<2,4,8>]");
+	P3DTransformation transform = spline_creater->create(C3DBounds(16,32,32));
+	BOOST_CHECK_EQUAL(transform->get_size(), C3DBounds(16,32,32));
+
+	// +4 because we add a boundary of 2 rows/columns for a spline of degree 4
+	BOOST_CHECK_EQUAL(transform->degrees_of_freedom(), static_cast<size_t>((8+4) * (8+4)* (4+4) * 3));
+}
+
+#if 0
 BOOST_FIXTURE_TEST_CASE(test_vf_creator, HandlerTestFixture)
 {
 	const C3DTransformCreatorHandler::Instance& handler =

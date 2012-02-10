@@ -1133,7 +1133,7 @@ C3DSplineTransformCreatorPlugin::C3DSplineTransformCreatorPlugin():
 	add_parameter("rate",
 		      new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
 					  "isotropic coefficient rate in pixels"));
-	add_parameter("vrate",
+	add_parameter("anisorate",
 		      new C3DFVectorParameter(m_rate3d, false,"anisotropic coefficient rate in pixels, nonpositive values "
 							 "will be overwritten by the 'rate' value."));
 

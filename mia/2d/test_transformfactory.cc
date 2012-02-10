@@ -82,7 +82,7 @@ BOOST_FIXTURE_TEST_CASE(test_spline_creator_anisotropic, HandlerTestFixture)
 	const C2DTransformCreatorHandler::Instance& handler =
 		C2DTransformCreatorHandler::instance();
 	P2DTransformationFactory spline_creater =
-		handler.produce("spline:kernel=[bspline:d=4],rate2d=[<2,4>]");
+		handler.produce("spline:kernel=[bspline:d=4],anisorate=[<2,4>]");
 	P2DTransformation transform = spline_creater->create(C2DBounds(16,32));
 	BOOST_CHECK_EQUAL(transform->get_size(), C2DBounds(16,32));
 

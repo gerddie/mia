@@ -801,7 +801,7 @@ C2DSplineTransformCreatorPlugin::C2DSplineTransformCreatorPlugin():
 										  "transformation spline kernel."));
 	add_parameter("rate",   new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
 						    "isotropic coefficient rate in pixels"));
-	add_parameter("rate2d",   new C2DFVectorParameter(m_rate2d, false, "anisotropic coefficient rate in pixels, nonpositive values "
+	add_parameter("anisorate",   new C2DFVectorParameter(m_rate2d, false, "anisotropic coefficient rate in pixels, nonpositive values "
 							 "will be overwritten by the 'rate' value."));
 
 }
