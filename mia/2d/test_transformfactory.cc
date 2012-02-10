@@ -64,7 +64,7 @@ BOOST_FIXTURE_TEST_CASE(test_affine_creator, HandlerTestFixture)
 	BOOST_CHECK_EQUAL(transform->get_size(), C2DBounds(10,20));
 }
 
-BOOST_FIXTURE_TEST_CASE(test_spline_creator, HandlerTestFixture)
+BOOST_FIXTURE_TEST_CASE(test_spline_creator_isotropic, HandlerTestFixture)
 {
 	const C2DTransformCreatorHandler::Instance& handler =
 		C2DTransformCreatorHandler::instance();
@@ -76,6 +76,20 @@ BOOST_FIXTURE_TEST_CASE(test_spline_creator, HandlerTestFixture)
 	// +4 because we add a boundary of 2 rows/columns for a spline of degree 4
 	BOOST_CHECK_EQUAL(transform->degrees_of_freedom(), static_cast<size_t>((4+4) * (8+4) * 2));
 }
+
+BOOST_FIXTURE_TEST_CASE(test_spline_creator_anisotropic, HandlerTestFixture)
+{
+	const C2DTransformCreatorHandler::Instance& handler =
+		C2DTransformCreatorHandler::instance();
+	P2DTransformationFactory spline_creater =
+		handler.produce("spline:kernel=[bspline:d=4],rate2d=[<2,4>]");
+	P2DTransformation transform = spline_creater->create(C2DBounds(16,32));
+	BOOST_CHECK_EQUAL(transform->get_size(), C2DBounds(16,32));
+
+	// +4 because we add a boundary of 2 rows/columns for a spline of degree 4
+	BOOST_CHECK_EQUAL(transform->degrees_of_freedom(), static_cast<size_t>((8+4) * (8+4) * 2));
+}
+
 
 BOOST_FIXTURE_TEST_CASE(test_vf_creator, HandlerTestFixture)
 {
