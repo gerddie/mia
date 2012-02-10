@@ -788,22 +788,32 @@ public:
 	const std::string do_get_descr() const;
 private:
 	PSplineKernel m_interpolator;
-	float m_rate;
+	float m_rate; 
+	C2DFVector m_rate2d;
 };
 
 C2DSplineTransformCreatorPlugin::C2DSplineTransformCreatorPlugin():
 	C2DTransformCreatorPlugin("spline"),
-	m_rate(10)
+	m_rate(10), 
+	m_rate2d(0, 0)
 {
 	add_parameter("kernel", new CFactoryParameter<CSplineKernelPluginHandler>(m_interpolator, "bspline:d=3", false, 
-										  "transformation spline kernel"));
+										  "transformation spline kernel."));
 	add_parameter("rate",   new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
 						    "isotropic coefficient rate in pixels"));
+	add_parameter("rate2d",   new C2DFVectorParameter(m_rate2d, false, "anisotropic coefficient rate in pixels, nonpositive values "
+							 "will be overwritten by the 'rate' value."));
+
 }
 
 C2DTransformCreator *C2DSplineTransformCreatorPlugin::do_create(const C2DInterpolatorFactory& ipf) const
 {
-	return new C2DSplineTransformCreator(m_interpolator, C2DFVector(m_rate, m_rate), ipf);
+	C2DFVector rate2d = m_rate2d; 
+	if (rate2d.x <= 0) 
+		rate2d.x = m_rate; 
+	if (rate2d.y <= 0) 
+		rate2d.y = m_rate; 
+	return new C2DSplineTransformCreator(m_interpolator, rate2d, ipf);
 }
 
 bool C2DSplineTransformCreatorPlugin::do_test() const

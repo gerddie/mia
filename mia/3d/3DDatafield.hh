@@ -448,6 +448,8 @@ typedef T3DDatafield<bool>  C3DBitDatafield;
 
 /// 3D size parameter type 
 typedef  CTParameter<C3DBounds> C3DBoundsParameter;
+
+typedef  CTParameter<C3DFVector> C3DFVectorParameter;
 DEFINE_TYPE_DESCR(C3DBounds); 
 DEFINE_TYPE_DESCR(C3DFVector); 
 

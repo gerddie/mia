@@ -326,6 +326,8 @@ typedef T2DDatafield<bool>  C2DBitDatafield;
 /// Parameter type for 2D size definitions 
 typedef  CTParameter<C2DBounds> C2DBoundsParameter;
 
+/// Parameter type for 2D vector
+typedef CTParameter<C2DFVector> C2DFVectorParameter; 
 DEFINE_TYPE_DESCR(C2DBounds); 
 DEFINE_TYPE_DESCR(C2DFVector); 
 

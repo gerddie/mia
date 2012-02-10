@@ -1118,19 +1118,25 @@ public:
 private:
 	PSplineKernel m_kernel;
 	float m_rate;
+	C3DFVector m_rate3d;
 	bool m_debug; 
 };
 
 C3DSplineTransformCreatorPlugin::C3DSplineTransformCreatorPlugin():
 	C3DTransformCreatorPlugin("spline"),
 	m_rate(10), 
+	m_rate3d(0,0,0), 
 	m_debug(false)
 {
-	add_parameter("interp",
-		      new CFactoryParameter<CSplineKernelPluginHandler>(m_kernel, "bspline:d=3", false, "image interpolator kernel"));
+	add_parameter("kernel",
+		      new CFactoryParameter<CSplineKernelPluginHandler>(m_kernel, "bspline:d=3", false, "transformation spline kernel"));
 	add_parameter("rate",
 		      new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
 					  "isotropic coefficient rate in pixels"));
+	add_parameter("vrate",
+		      new C3DFVectorParameter(m_rate3d, false,"anisotropic coefficient rate in pixels, nonpositive values "
+							 "will be overwritten by the 'rate' value."));
+
 	add_parameter("debug",
 		      new CBoolParameter(m_debug, false, "enable additional debuging output"));
 
@@ -1139,7 +1145,17 @@ C3DSplineTransformCreatorPlugin::C3DSplineTransformCreatorPlugin():
 C3DTransformCreator *C3DSplineTransformCreatorPlugin::do_create(const C3DInterpolatorFactory& ipf) const
 {
 	TRACE_FUNCTION;
-	return new C3DSplinebigTransformCreator(m_kernel, C3DFVector(m_rate, m_rate, m_rate), ipf, m_debug);
+
+	C3DFVector rate3d = m_rate3d; 
+	
+	if (rate3d.x <= 0) 
+		rate3d.x = m_rate; 
+	if (rate3d.y <= 0) 
+		rate3d.y = m_rate; 
+	if (rate3d.z <= 0) 
+		rate3d.z = m_rate; 
+
+	return new C3DSplinebigTransformCreator(m_kernel, rate3d, ipf, m_debug);
 }
 
 bool C3DSplineTransformCreatorPlugin::do_test() const
