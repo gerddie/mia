@@ -50,10 +50,10 @@ typedef std::map<std::string,  CCmdOption *> CLongoptionMap;
 class EXPORT_CORE CCmdOption  {
 public:
 
-	/**
-	   Option flags 
-	*/
+	/// readability constant to show that an option is not required 
 	static const bool not_required = false; 
+	
+	/// readability constant to show that an option is required 
 	static const bool required = true; 
 	
         /** The constructor
@@ -123,10 +123,16 @@ public:
 	/**
 	   Returns help string tailered for the XML help creation system and adds
 	   used plug-in handlers to the helper map
+	   \param parent the parent xml node to which to add documentation 
 	   \param[in,out] handler_map the map of possibely recoursively called plug-in handlers 
+	   \returns the text relate to the help 
+	   \remark the text should probably be added to the parent node instead. 
 	 */
 	std::string get_long_help_xml(xmlpp::Element& parent, HandlerHelpMap& handler_map) const; 
 
+	/** This function must be called after the parameter was set through a string in order to handle 
+	    complex initialization like done for factory based command line parameters 
+	 */
 	void post_set(); 
 protected:
 

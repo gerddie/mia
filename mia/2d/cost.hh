@@ -35,6 +35,8 @@ typedef TFactory<C2DImageCost> C2DImageCostPlugin;
 /// the 2D image cost function plugin handler 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DImageCostPlugin> > C2DImageCostPluginHandler;
 
+FACTORY_TRAIT(C2DImageCostPluginHandler);
+
 /// pointer type of simple 2D image cost functions 
 typedef std::shared_ptr<C2DImageCost > P2DImageCost;
 

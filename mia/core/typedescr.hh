@@ -38,44 +38,63 @@ struct EXPORT_CORE timestep_type {
 	static const char *type_descr;
 };
 
+
+/*
+  \brief Type description template
+  This template is used to create a type description for command line and plug-in parameters. 
+  It needs to be specialized for each type that is used in the command line parser or spline parameter parser 
+  \tparam T the type to be described 
+*/
 template <typename T> 
 struct __type_descr {
-	static const char * const name; 
+	static const char * const value; 
 }; 
 
-#define DEFINE_TYPE_DESCR(type)			\
+/**
+   A macro to make the declaration of the __type_descr specialization 
+ */
+#define DECLARE_TYPE_DESCR(type)			\
 	template <>				\
 	struct __type_descr<type> {		\
-		static const char * const name; \
+		static const char * const value; \
 	}
+/**
+   A macro to define the value of the  of the __type_descr specialization directly based on the type name 
+   \param type the type to be specialized 
+*/
+#define DEFINE_TYPE_DESCR(type) const char * const __type_descr<type>::value = #type;
 
-#define DECLARE_TYPE_DESCR(type) const char * const __type_descr<type>::name = #type;
-#define DECLARE_TYPE_DESCR2(type, n) const char * const __type_descr<type>::name = n;
+/**
+   A macro to define the value of the  of the __type_descr specialization that takes a special name
+   \param type the type to be specialized 
+   \param string to represent the type 
+ */
+#define DEFINE_TYPE_DESCR2(type, n) const char * const __type_descr<type>::value = n;
 	
 
 
-DEFINE_TYPE_DESCR(short); 
-DEFINE_TYPE_DESCR(int); 
-DEFINE_TYPE_DESCR(long); 
-DEFINE_TYPE_DESCR(unsigned int);
-DEFINE_TYPE_DESCR(unsigned short);
-DEFINE_TYPE_DESCR(unsigned long);
-DEFINE_TYPE_DESCR(float); 
-DEFINE_TYPE_DESCR(double); 
-DEFINE_TYPE_DESCR(bool); 
-DEFINE_TYPE_DESCR(std::string); 
+DECLARE_TYPE_DESCR(short); 
+DECLARE_TYPE_DESCR(int); 
+DECLARE_TYPE_DESCR(long); 
+DECLARE_TYPE_DESCR(unsigned int);
+DECLARE_TYPE_DESCR(unsigned short);
+DECLARE_TYPE_DESCR(unsigned long);
+DECLARE_TYPE_DESCR(float); 
+DECLARE_TYPE_DESCR(double); 
+DECLARE_TYPE_DESCR(bool); 
+DECLARE_TYPE_DESCR(std::string); 
 
 
-DEFINE_TYPE_DESCR(std::vector<short>); 
-DEFINE_TYPE_DESCR(std::vector<int>); 
-DEFINE_TYPE_DESCR(std::vector<long>); 
-DEFINE_TYPE_DESCR(std::vector<unsigned int>);
-DEFINE_TYPE_DESCR(std::vector<unsigned short>);
-DEFINE_TYPE_DESCR(std::vector<unsigned long>);
-DEFINE_TYPE_DESCR(std::vector<float>); 
-DEFINE_TYPE_DESCR(std::vector<double>); 
-DEFINE_TYPE_DESCR(std::vector<bool>); 
-DEFINE_TYPE_DESCR(std::vector<std::string>); 
+DECLARE_TYPE_DESCR(std::vector<short>); 
+DECLARE_TYPE_DESCR(std::vector<int>); 
+DECLARE_TYPE_DESCR(std::vector<long>); 
+DECLARE_TYPE_DESCR(std::vector<unsigned int>);
+DECLARE_TYPE_DESCR(std::vector<unsigned short>);
+DECLARE_TYPE_DESCR(std::vector<unsigned long>);
+DECLARE_TYPE_DESCR(std::vector<float>); 
+DECLARE_TYPE_DESCR(std::vector<double>); 
+DECLARE_TYPE_DESCR(std::vector<bool>); 
+DECLARE_TYPE_DESCR(std::vector<std::string>); 
 
 NS_MIA_END
 

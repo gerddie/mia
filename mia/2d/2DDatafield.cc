@@ -44,8 +44,8 @@ INSTANCIATE(bool);
 INSTANCIATE(unsigned char);
 INSTANCIATE(signed char);
 
-DECLARE_TYPE_DESCR2(C2DBounds, "2dbounds"); 
-DECLARE_TYPE_DESCR2(C2DFVector, "2dfvector"); 
+DEFINE_TYPE_DESCR2(C2DBounds, "2dbounds"); 
+DEFINE_TYPE_DESCR2(C2DFVector, "2dfvector"); 
 template class EXPORT_2D  CTParameter<C2DFVector>;
 template class EXPORT_2D  CTParameter<C2DBounds>;
 

@@ -40,7 +40,7 @@ NS_MIA_BEGIN
 
 template <typename T> 
 CTParameter<T>::CTParameter(T& value,  bool required, const char *descr):
-	CParameter(__type_descr<T>::name, required, descr),
+	CParameter(__type_descr<T>::value, required, descr),
 	m_value(value), 
 	m_default_value(value)
 {
@@ -119,7 +119,7 @@ TRangeParameter<T>::TRangeParameter(T& value, T min, T max, bool required, const
 	m_max(max)
 {
 	if (m_min > m_max) 
-		THROW(std::invalid_argument, "Parameter '"<<descr<<"' TRangeParameter<T,"<< __type_descr<T>::name << ">: min(" 
+		THROW(std::invalid_argument, "Parameter '"<<descr<<"' TRangeParameter<T,"<< __type_descr<T>::value << ">: min(" 
 		      << m_min <<") > max ("<< m_max << ")  not allowed"); 
 }
 

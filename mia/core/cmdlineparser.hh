@@ -472,7 +472,7 @@ template <typename T>
 void TCmdOption<T>::do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, HandlerHelpMap& /*handler_map*/) const
 {
 	do_get_long_help(os);
-	parent.set_attribute("type", __type_descr<T>::name);
+	parent.set_attribute("type", __type_descr<T>::value);
 }
 
 template <typename T>
@@ -603,7 +603,7 @@ PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *default_valu
 {
 	typedef typename FactoryTrait<T>::type F;  
 	return PCmdOption(new CParamOption( short_opt, long_opt, 
-					    new CFactoryParameter<F>(value, default_value, required, help))); 
+					    new TFactoryParameter<F>(value, default_value, required, help))); 
 }
 
 /**
@@ -623,7 +623,7 @@ PCmdOption make_opt(typename std::unique_ptr<T>& value, const char *default_valu
 {
 	typedef typename FactoryTrait<T>::type F;  
 	return PCmdOption(new CParamOption( short_opt, long_opt, 
-					    new CFactoryParameter<F>(value, default_value, required, help))); 
+					    new TFactoryParameter<F>(value, default_value, required, help))); 
 }
 
 

@@ -83,6 +83,7 @@ public:
 	/// plugin handler helper type 
 	typedef filter_type plugin_type; 
 
+	/// defines the image type handled by the image filter 
 	typedef D Image; 
 	
 	/// pointer type of the data filtered by this filter 

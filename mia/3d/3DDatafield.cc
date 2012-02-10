@@ -95,8 +95,8 @@ INSTANCIATE(unsigned char );
 INSTANCIATE(signed char);
 INSTANCIATE(bool);
 
-DECLARE_TYPE_DESCR2(C3DBounds, "3dbounds"); 
-DECLARE_TYPE_DESCR2(C3DFVector, "3dfvector"); 
+DEFINE_TYPE_DESCR2(C3DBounds, "3dbounds"); 
+DEFINE_TYPE_DESCR2(C3DFVector, "3dfvector"); 
 template class EXPORT_3D  CTParameter<C3DBounds>;
 template class EXPORT_2D  CTParameter<C3DFVector>;
 

@@ -76,7 +76,7 @@ C2DFatImageCostPlugin::C2DFatImageCostPlugin(const char *name):
 	TRACE("C2DFatImageCostPlugin::C2DFatImageCostPlugin");
 	add_parameter("src", new CStringParameter(m_src_name, true, "study image"));
 	add_parameter("ref", new CStringParameter(m_ref_name, true, "reference image"));
-	add_parameter("interp", new CFactoryParameter<CSplineKernelPluginHandler>(m_interpolator, "bspline:d=3", false, "image interpolator kernel"));
+	add_parameter("interp", make_param(m_interpolator, "bspline:d=3", false, "image interpolator kernel"));
 	add_parameter("weight", new CFloatParameter(m_weight, 1e-10f, 1e+10f,
 						    false, "weight of cost function"));
 }

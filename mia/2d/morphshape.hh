@@ -36,10 +36,13 @@ NS_MIA_BEGIN
 
 class C2DMorphShape : public CProductBase{
 public: 
+	/// helper type for plug-in handling 
 	typedef C2DImage plugin_data; 
 	
+	/// helper type for plug-in handling 
 	typedef C2DMorphShape plugin_type; 
 
+	/// helper string for plug-in handling 
 	static const char *type_descr;
 
 	/// The pointer type of the class 

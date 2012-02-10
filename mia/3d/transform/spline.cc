@@ -1128,8 +1128,7 @@ C3DSplineTransformCreatorPlugin::C3DSplineTransformCreatorPlugin():
 	m_rate3d(0,0,0), 
 	m_debug(false)
 {
-	add_parameter("kernel",
-		      new CFactoryParameter<CSplineKernelPluginHandler>(m_kernel, "bspline:d=3", false, "transformation spline kernel"));
+	add_parameter("kernel", make_param(m_kernel, "bspline:d=3", false, "transformation spline kernel"));
 	add_parameter("rate",
 		      new CFloatParameter(m_rate, 1, numeric_limits<float>::max(), false,
 					  "isotropic coefficient rate in pixels"));

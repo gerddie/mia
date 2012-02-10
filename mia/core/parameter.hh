@@ -73,7 +73,7 @@ q	*/
 
 	/**
 	   Get the curent parameter value as string 
-	   \retruns the current parameter value 
+	   \returns the current parameter value 
 	 */
 	std::string get_value_as_string() const;
 
@@ -235,6 +235,7 @@ public:
 	   \param value reference to the parameter handled by this parameter object
 	   \param dict dictionary for parameter translation
 	   \param descr a description of the parameter
+	   \param required set if this parameter must be set by the end user 
 	 */
 	CDictParameter(T& value, const TDictMap<T> dict, const char *descr, bool required);
 protected:
@@ -264,17 +265,34 @@ private:
    \tparam F the plugin handler type used to create the parameter value 
 */
 template <typename F>
-class CFactoryParameter : public CParameter{
+class TFactoryParameter : public CParameter{
 
 public:
-	/** Constructor
-	   \param value reference to the parameter handled by this parameter object
-	   \param required set to true when the parameter is required 
-	   \param descr a description of the parameter
+	/** Constructor if the parameter tales a shared pointer 
+	    The constructor should take an empty F::ProductPtr and add the default value as initializer string init
+	    in order to avoid calling the plug-in hanlder for creation before the true desired value of the parameter is known. 
+	    
+	    \param value reference to the shared pointer parameter handled by this parameter object
+	    \param init an init string used as the default parameter to create the value 
+	    \param required set to true when the parameter is required 
+	    \param descr a description of the parameter
+	    \remark Don't call this constructor directly and use one of the make_param variants. It automatically takes care 
+	    of the type instanciation and pointer variant handiong. 
 	 */
-	CFactoryParameter(typename F::ProductPtr& value, const std::string& init, bool required, const char *descr);
+	TFactoryParameter(typename F::ProductPtr& value, const std::string& init, bool required, const char *descr);
 
-	CFactoryParameter(typename F::UniqueProduct& value, const std::string& init, bool required, const char *descr);
+	/** Constructor if the parameter tales a unique pointer 
+	    The constructor should take an empty F::ProductPtr and add the default value as initializer string init
+	    in order to avoid calling the plug-in hanlder for creation before the true desired value of the parameter is known. 
+	    \param value reference to the to the unique pointer parameter handled by this parameter object
+	    \param init an init string used as the default parameter to create the value 
+	    \param required set to true when the parameter is required 
+	    \param descr a description of the parameter
+
+	    \remark Don't call this constructor directly and use one of the make_param variants. It automatically takes care 
+	    of the type instanciation and pointer variant handiong. 
+	 */
+	TFactoryParameter(typename F::UniqueProduct& value, const std::string& init, bool required, const char *descr);
 private:
 	virtual void do_descr(std::ostream& os) const;
 	virtual void do_add_dependend_handler(HandlerHelpMap& handler_map)const; 
@@ -319,6 +337,7 @@ public:
 	   \param value reference to the parameter handled by this parameter object
 	   \param valid_set dictionary for parameter translation
 	   \param descr a description of the parameter
+	   \param required boolean to indicate whether the user must set the parameter 
 	 */
 	CSetParameter(T& value, const std::set<T>& valid_set, const char *descr, bool required = false);
 protected:
@@ -384,21 +403,42 @@ typedef CTParameter<std::string> CStringParameter;
 /// boolean parameter
 typedef CTParameter<bool> CBoolParameter;
 
+/*    \ingroup infrastructure 
+      Creates a TFactoryParameter accurding to the given parameters. The advantage over calling the 
+      TactoryParameter cunstructor is, that type deduction is done automatically. 
+      \tparam the type of the factory created parameter value 
+      \param value the shared_ptr value to be set through this parameter. Best is to pass an empty shared pointer and 
+      leave the initialization to the parameter handling 
+      \param init the default initialization string for the parameter, pass "" if there is no default. 
+      \param required set to true if the user must set this parameter 
+      \param descr a help description of the parameter 
+ */
 
 
 template <typename T> 
 CParameter *make_param(std::shared_ptr<T>& value, const std::string& init,  bool required, const char *descr) 
 {                       
 	typedef typename FactoryTrait<T>::type F;  
-	return new CFactoryParameter<F>(value, init, required, descr);
+	return new TFactoryParameter<F>(value, init, required, descr);
 	
 }
+
+/*    \ingroup infrastructure 
+      Creates a TFactoryParameter accurding to the given parameters. The advantage over calling the 
+      TactoryParameter cunstructor is, that type deduction is done automatically. 
+      \tparam the type of the factory created parameter value 
+      \param value the unique_ptr value to be set through this parameter. Best is to pass an empty unique pointer and 
+      leave the initialization to the parameter handling 
+      \param init the default initialization string for the parameter, pass "" if there is no default. 
+      \param required set to true if the user must set this parameter 
+      \param descr a help description of the parameter 
+*/
 
 template <typename T> 
 CParameter *make_param(std::unique_ptr<T>& value, const std::string& init,  bool required, const char *descr) 
 {                       
 	typedef typename FactoryTrait<T>::type F;  
-	return new CFactoryParameter<F>(value, init, required, descr);
+	return new TFactoryParameter<F>(value, init, required, descr);
 	
 }
 
@@ -480,8 +520,8 @@ std::string CDictParameter<T>::do_get_value_as_string() const
 	return m_dict.get_name(m_value); 
 }
 
-template <typename T>
-CFactoryParameter<T>::CFactoryParameter(typename T::ProductPtr& value,
+template <typename F>
+TFactoryParameter<F>::TFactoryParameter(typename F::ProductPtr& value,
 					const std::string& init, bool required, const char *descr):
 	CParameter("factory", required, descr),
 	m_shared_value(value),
@@ -493,7 +533,7 @@ CFactoryParameter<T>::CFactoryParameter(typename T::ProductPtr& value,
 }
 
 template <typename F>
-CFactoryParameter<F>::CFactoryParameter(typename F::UniqueProduct& value, const std::string& init, bool required, const char *descr):
+TFactoryParameter<F>::TFactoryParameter(typename F::UniqueProduct& value, const std::string& init, bool required, const char *descr):
 	CParameter("factory", required, descr),
 	m_shared_value(dummy_shared_value),
 	m_unique_value(value),
@@ -506,28 +546,28 @@ CFactoryParameter<F>::CFactoryParameter(typename F::UniqueProduct& value, const 
 	
 
 template <typename T>
-void CFactoryParameter<T>::do_descr(std::ostream& os) const
+void TFactoryParameter<T>::do_descr(std::ostream& os) const
 {
 	os << "For a list of available plug-ins see run 'mia-plugin-help " 
 	   << T::instance().get_descriptor() << "'"; 
 }
 
 template <typename T>
-void CFactoryParameter<T>::do_get_help_xml(xmlpp::Element& self) const
+void TFactoryParameter<T>::do_get_help_xml(xmlpp::Element& self) const
 {
 	auto dict = self.add_child("factory"); 
 	dict->set_attribute("name", T::instance().get_descriptor());
 }
 
 template <typename T>
-bool CFactoryParameter<T>::do_set(const std::string& str_value)
+bool TFactoryParameter<T>::do_set(const std::string& str_value)
 {
 	m_string_value = str_value; 
 	return true;
 }
 
 template <typename T>
-void CFactoryParameter<T>::post_set()
+void TFactoryParameter<T>::post_set()
 {
 	if (!m_string_value.empty()) {
 		if (m_unique)
@@ -538,13 +578,13 @@ void CFactoryParameter<T>::post_set()
 }
 
 template <typename T>
-void CFactoryParameter<T>::do_reset()
+void TFactoryParameter<T>::do_reset()
 {
 	m_string_value = m_default_value;
 }
 
 template <typename T>
-void CFactoryParameter<T>::do_add_dependend_handler(HandlerHelpMap& handler_map)const
+void TFactoryParameter<T>::do_add_dependend_handler(HandlerHelpMap& handler_map)const
 {
 	// add recursively all dependent handlers 
 	if (handler_map.find(T::instance().get_descriptor()) ==  handler_map.end()){
@@ -555,13 +595,13 @@ void CFactoryParameter<T>::do_add_dependend_handler(HandlerHelpMap& handler_map)
 }
 
 template <typename T>
-std::string CFactoryParameter<T>::do_get_default_value() const
+std::string TFactoryParameter<T>::do_get_default_value() const
 {
 	return m_default_value; 
 }
 
 template <typename T>
-std::string CFactoryParameter<T>::do_get_value_as_string() const
+std::string TFactoryParameter<T>::do_get_value_as_string() const
 {
 	if (m_unique && m_unique_value) 
 		return m_unique_value->get_init_string(); 
