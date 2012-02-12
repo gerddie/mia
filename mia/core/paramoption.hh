@@ -32,7 +32,7 @@ NS_MIA_BEGIN
    This command line option handles a parameter that is set to a certain value given 
    on the command line (contraty to just setting a flag). 
 */
-class CParamOption : public CCmdOption {
+class EXPORT_CORE CParamOption : public CCmdOption {
 public: 
 	/**
 	   Conrtructor to create the command line option. 

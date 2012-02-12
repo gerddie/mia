@@ -56,7 +56,7 @@ inline P2DShape produce_2d_shape(const std::string& descr)
 	return C2DShapePluginHandler::instance().produce(descr); 
 }
 
-P2DShape rotate_90_degree(const C2DShape& shape); 
+P2DShape EXPORT_2D rotate_90_degree(const C2DShape& shape); 
 
 /// Trait to make the shape definition parsable on the command line  
 FACTORY_TRAIT(C2DShapePluginHandler); 

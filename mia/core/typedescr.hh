@@ -41,8 +41,9 @@ struct EXPORT_CORE timestep_type {
 
 /*
   \brief Type description template
-  This template is used to create a type description for command line and plug-in parameters. 
-  It needs to be specialized for each type that is used in the command line parser or spline parameter parser 
+  This template is used to create a type description for command line and 
+  plug-in parameters. It needs to be specialized for each type that is used 
+  in the command line parser or spline parameter parser 
   \tparam T the type to be described 
 */
 template <typename T> 
@@ -55,17 +56,19 @@ struct __type_descr {
  */
 #define DECLARE_TYPE_DESCR(type)			\
 	template <>				\
-	struct __type_descr<type> {		\
+	struct EXPORT_CORE __type_descr<type> {		\
 		static const char * const value; \
 	}
 /**
-   A macro to define the value of the  of the __type_descr specialization directly based on the type name 
+   A macro to define the value of the  of the __type_descr specialization directly 
+   based on the type name 
    \param type the type to be specialized 
 */
 #define DEFINE_TYPE_DESCR(type) const char * const __type_descr<type>::value = #type;
 
 /**
-   A macro to define the value of the  of the __type_descr specialization that takes a special name
+   A macro to define the value of the  of the __type_descr specialization that takes 
+   a special name
    \param type the type to be specialized 
    \param string to represent the type 
  */

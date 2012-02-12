@@ -62,7 +62,7 @@ struct EXPORT_CORE cost_type {
 */
 
 template <typename T, typename V>
-class TCost : public CProductBase{
+class EXPORT_HANDLER TCost : public CProductBase{
 public:
 	/// typedef for generic programming: The data type used by the cost function 
 	typedef T Data;

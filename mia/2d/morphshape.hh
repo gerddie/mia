@@ -34,7 +34,7 @@ NS_MIA_BEGIN
     like thinning, pruning, corner detection, and the likes.
 */
 
-class C2DMorphShape : public CProductBase{
+class EXPORT_2D C2DMorphShape : public CProductBase{
 public: 
 	/// helper type for plug-in handling 
 	typedef C2DImage plugin_data; 
@@ -131,7 +131,7 @@ inline P2DMorphShape produce_2d_morphshape(const std::string& descr)
    \param[in] shape structuring element to be used in the operation 
    \returns number of set pixels
  */
-size_t morph_hit_and_miss_2d(C2DBitImage& target, const C2DBitImage& source, const C2DMorphShape& shape);
+size_t EXPORT_2D morph_hit_and_miss_2d(C2DBitImage& target, const C2DBitImage& source, const C2DMorphShape& shape);
 
 /**
    Implements the thinning transformation on a binary image with a given 
@@ -141,7 +141,7 @@ size_t morph_hit_and_miss_2d(C2DBitImage& target, const C2DBitImage& source, con
    \param[in] shape structuring element to be used in the operation 
    \returns number of set pixels
  */
-size_t morph_thinning_2d(C2DBitImage& target, const C2DBitImage& source, const C2DMorphShape& shape);
+size_t EXPORT_2D morph_thinning_2d(C2DBitImage& target, const C2DBitImage& source, const C2DMorphShape& shape);
 
 
 NS_MIA_END

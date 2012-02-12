@@ -364,7 +364,7 @@ struct __dispatch_opt< std::vector<T> > {
 		if (value.empty() && required)
 			os << "[required] "; 
 		else {
-			for (typename std::vector<T>::const_iterator i = value.begin(); i != value.end(); ++i) {
+			for (auto i = value.begin(); i != value.end(); ++i) {
 				if (i != value.begin())
 					os << ",";
 				os << *i;
@@ -375,7 +375,7 @@ struct __dispatch_opt< std::vector<T> > {
 
         static const std::string get_as_string(const std::vector<T>& value) {
                 std::ostringstream os;
-		for (typename std::vector<T>::const_iterator i = value.begin(); i != value.end(); ++i) {
+		for (auto i = value.begin(); i != value.end(); ++i) {
 			if (i != value.begin())
 				os << ",";
 			os << *i;
@@ -436,9 +436,8 @@ struct __dispatch_opt<std::string> {
 // Implementation of the standard option that holds a value
 //
 template <typename T>
-TCmdOption<T>::TCmdOption(T& val, char short_opt, const char *long_opt, const char *long_help,
-                        const char *short_help, 
-			  bool flags):
+TCmdOption<T>::TCmdOption(T& val, char short_opt, const char *long_opt, 
+			  const char *long_help, const char *short_help, bool flags):
         CCmdOption(short_opt, long_opt, long_help, short_help, flags),
         m_value(val)
 {
@@ -469,7 +468,8 @@ void TCmdOption<T>::do_write_value(std::ostream& os) const
 }
 
 template <typename T>
-void TCmdOption<T>::do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, HandlerHelpMap& /*handler_map*/) const
+void TCmdOption<T>::do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, 
+					 HandlerHelpMap& /*handler_map*/) const
 {
 	do_get_long_help(os);
 	parent.set_attribute("type", __type_descr<T>::value);
@@ -598,7 +598,7 @@ PCmdOption EXPORT_CORE make_opt(T& value, const std::set<T>& valid_set,
    \param flags set whether command line option must be set
 */
 template <typename T>
-PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *default_value, const char *long_opt, 
+PCmdOption EXPORT_CORE make_opt(typename std::shared_ptr<T>& value, const char *default_value, const char *long_opt, 
 		    char short_opt,  const char *help, bool required = false)
 {
 	typedef typename FactoryTrait<T>::type F;  
