@@ -34,6 +34,7 @@
 
 
 #include <mia/core.hh>
+#include <mia/core/meanvar.hh>
 #include <mia/core/bfsv23dispatch.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dfilter.hh>
@@ -41,6 +42,8 @@
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/transformfactory.hh>
+#include <mia/2d/2DDatafield.cxx>
+
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
@@ -54,10 +57,17 @@ const SProgramDescription g_description = {
 
 namespace bfs=boost::filesystem; 
 
+template <typename T> 
+struct void_destructor {
+	virtual void operator () (T *) {
+	}
+}; 
+
+
 class C2DFImage2PImage {
 public: 
-	P2DImage operator () (const C2DFImage& image) const {
-		return P2DImage(new C2DFImage(image)); 
+	P2DImage operator () (C2DFImage& image) const {
+		return P2DImage(&image, void_destructor<C2DFImage>()); 
 	}
 }; 
 
@@ -69,6 +79,108 @@ public:
 private: 
 	FConvert2DImage2float m_converter; 
 }; 
+
+
+class CEvaluateSeriesCorrelationToMask: public TFilter<bool> {
+public: 
+	CEvaluateSeriesCorrelationToMask(const C2DBitImage& mask, size_t len); 
+	
+	template <typename T> 
+	bool operator () (const T2DImage<T>& image); 
+
+
+	template <typename Iterator>
+	C2DFImage get_correlation_image(Iterator begin, Iterator end); 	
+
+
+private: 
+	C2DBounds m_size; 
+	const C2DBitImage& m_mask; 
+
+	int m_mask_points; 
+	vector<float> m_mask_mean_series; 
+	T2DDatafield< vector<float> > m_series; 
+}; 
+
+
+CEvaluateSeriesCorrelationToMask::CEvaluateSeriesCorrelationToMask(const C2DBitImage& mask, size_t len):
+	m_size(mask.get_size()), 
+	m_mask(mask), 
+	m_mask_points(0), 
+	m_series(mask.get_size())
+{
+	m_mask_mean_series.reserve(len); 
+
+	// count the mask pixels
+	for_each(mask.begin(), mask.end(), [&m_mask_points](bool pixel){if (pixel) ++m_mask_points; }); 
+	
+
+	// fill the image representation of the series 
+	for_each(m_series.begin(), m_series.end(), [&len](vector<float>& v){v.reserve(len);}); 
+	
+	if (!m_mask_points) 
+		throw invalid_argument("CEvaluateSeriesCorrelationToMask: got empty mask"); 
+	
+
+}
+
+template <typename T> 
+bool CEvaluateSeriesCorrelationToMask::operator () (const T2DImage<T>& image)
+{
+	float mask_mean = 0.0; 
+	if (image.get_size() != m_size) {
+		THROW(invalid_argument, "CEvaluateSeriesCorrelationToMask: got image of size " << image.get_size()
+		      << " but expected " << m_size); 
+	}
+
+	auto ii = image.begin(); 
+	auto ie = image.end(); 
+	
+	auto im = m_mask.begin(); 
+	auto is = m_series.begin(); 
+
+	while (ii != ie) {
+		if (*im)
+			mask_mean += *ii; 
+		is->push_back(*ii); 
+		++im; 
+		++is; 
+		++ii; 
+	}
+	m_mask_mean_series.push_back(mask_mean / m_mask_points); 
+	return true; 
+}
+
+float correlation(const vector<float>& x, const vector<float>& y) 
+{
+	assert(x.size() == y.size()); 
+	assert(x.size() > 1); 
+
+	float sxx = inner_product(x.begin(),x.end(),x.begin(),0.0f); 
+	float syy = inner_product(y.begin(),y.end(),y.begin(),0.0f); 
+	float sxy = inner_product(y.begin(),y.end(),x.begin(),0.0f); 
+	float sx = accumulate(x.begin(),x.end(), 0.0f); 
+	float sy = accumulate(y.begin(),y.end(), 0.0f); 
+
+	auto value = (x.size() * sxy - sx * sy) / 
+		(sqrt(x.size() * sxx - sx *sx) * sqrt(x.size() * syy - sy *sy)); 
+	return value; 
+}
+
+template <typename Iterator>
+C2DFImage CEvaluateSeriesCorrelationToMask::get_correlation_image(Iterator begin, Iterator end) 
+{
+
+	CEvaluateSeriesCorrelationToMask *self = this; 
+	for_each(begin, end, [&self](P2DImage x) {mia::accumulate(*self, *x);});
+	
+	C2DFImage result(m_size); 
+
+	transform(m_series.begin(), m_series.end(), result.begin(), 
+		  [&m_mask_mean_series](const vector<float>& v){ return correlation(m_mask_mean_series, v); });
+	return result; 
+}
+
 
 
 class CHasNonzeroPixels: public TFilter<bool>  {
@@ -246,6 +358,13 @@ int get_myocard_label(const C2DImage& masked_label)
 }
 
 
+template <typename Iterator1, typename Iterator2, typename Function>
+void for_each_pair(Iterator1 begin1, Iterator1 end1, Iterator2 begin2, Function f)
+{
+	while (begin1 != end1)
+		f(*begin1++, *begin2++); 
+}
+
 
 P2DImage combine_with_boundary(const C2DImageSeries& images)
 {
@@ -400,7 +519,6 @@ int do_main( int argc, char *argv[] )
 	auto LV_mask = grow_seed(LV_feature, cavity_filters.run(LV_feature)); 
 	
 
-
 	auto RV_LV_bridge_mask = evaluate_bridge_mask(RV_mask, LV_mask); 
 	save_image("bridge.@", RV_LV_bridge_mask); 
 
@@ -427,7 +545,12 @@ int do_main( int argc, char *argv[] )
 					      {	"mask:input=bridge.@,fill=min", 
 						"kmeans:c=5", "binarize:min=4,max=4", "close:shape=4n" });
 	
-	
+
+	auto LV_bit_mask = dynamic_cast<const C2DBitImage&>(*LV_mask); 
+	CEvaluateSeriesCorrelationToMask correval_lv(LV_bit_mask, input_images.size() - skip_images); 
+	C2DFImage LV_corr_image = correval_lv.get_correlation_image(input_images.begin() + skip_images, input_images.end()); 
+
+
 	C2DImageSeries myo_prep(3); 
 	myo_prep[0] = myocard_seeds; 
 	myo_prep[1] = LV_mask; 
@@ -497,15 +620,67 @@ int do_main( int argc, char *argv[] )
 		
 	}
 
+	auto circlemask_bit = dynamic_cast<const C2DBitImage&>(*myo_binmask_circle); 
+	CEvaluateSeriesCorrelationToMask correval_myo(circlemask_bit, input_images.size() - skip_images); 
+	C2DFImage corr_myo_image = correval_myo.get_correlation_image(input_images.begin() + skip_images, input_images.end()); 
+	
+	// find the lowest correlation image in the circular mask
+	vector<float> mask_corrs; 
+	for_each_pair(corr_myo_image.begin(), corr_myo_image.end(), circlemask_bit.begin(), 
+		      [&mask_corrs](float c, bool m){
+			      if (m) 
+				      mask_corrs.push_back(c); 
+		      });
+	
+	auto mv_mask_corrs = mean_var(mask_corrs.begin(), mask_corrs.end()); 
+	
+
+	
+
+
+
+	cvmsg() << "Mask corr = " << mv_mask_corrs.first << " (" << mv_mask_corrs.second << "\n"; 
+	stringstream corr_binarize; 
+	corr_binarize << "binarize:min=" << mv_mask_corrs.first - mv_mask_corrs.second; 
+	P2DImage corr_mask = run_filter(corr_myo_image, corr_binarize.str().c_str()); 
+	
+	vector<const char*> make_circle_descr_corr =  {"close:shape=[sphere:r=3]", "thinning", "pruning", 
+						       "thinning", "pruning", "label:n=8n", "selectbig",}; 
+	C2DImageFilterChain make_circle_corr(make_circle_descr_corr); 
+	auto circle_corr = make_circle_corr.run(corr_mask); 
+	
+
+	if (!save_feature.empty()) {
+		save_image(save_feature + "-corr-LV-mask.v",P2DImage(&LV_corr_image, void_destructor<C2DFImage>())); 
+		save_image(save_feature + "-corr-myomask.v",P2DImage(&corr_myo_image, void_destructor<C2DFImage>())); 
+		save_image(save_feature + "-corr.png", convert_to_ubyte->filter(corr_myo_image)); 
+		save_image(save_feature + "-corr-mycard.png", corr_mask); 
+		save_image(save_feature + "-corr-circle.png", circle_corr); 
+	}
+	
+
+
 	// we didn't get the circle, so bye bye 
 	if (!mia::filter(count_pixels, *myo_binmask_circle))
 		throw runtime_error("Basic estimation of the myocardial shape failed"); 
 
-	// now redo the watershed with the circle shape 
+
+	// now do a watershed to enlarge the LV seed 
+	C2DImageSeries LV_prep(2); 
+	LV_prep[0] = LV_mask; 
+	LV_prep[1] = myo_binmask_circle; 
+	P2DImage LV_seed = combine_with_boundary(LV_prep); 
+	
+	save_image("lv_seed.@", LV_seed); 
+	auto ws_LV_cavity_from_corr = run_filter(LV_corr_image, "sws:seed=lv_seed.@,grad=0");
+	myo_prep[1] = run_filter(*ws_LV_cavity_from_corr, "binarize:min=1,max=1");
+
+	// now redo the watershed with the circle shape and the new LV mask 
 	myo_prep[0] = myo_binmask_circle; 
 	seed = combine_with_boundary(myo_prep); 
 	save_image("seed.@", seed); 	
 	
+	auto ws_from_corr      = run_filter(corr_myo_image, "sws:seed=seed.@,grad=0");
 	auto ws_from_mean_grad = run_filter(*mean_grad, "sws:seed=seed.@,grad=1");
 	auto ws_from_perf_grad = run_filter(*perf_grad, "sws:seed=seed.@,grad=1");
 	auto from_mean_binmask = run_filter(*ws_from_mean_grad, "binarize:min=1,max=1");
@@ -522,6 +697,7 @@ int do_main( int argc, char *argv[] )
 
 
 	if (!save_feature.empty()) {
+		save_image(save_feature + "_ws_from_corr.png", convert_to_ubyte->filter(*ws_from_corr));
 		save_image(save_feature + "_ws_from_mean_grad.png", convert_to_ubyte->filter(*ws_from_mean_grad));
 		save_image(save_feature + "_ws_from_perf_grad.png", convert_to_ubyte->filter(*ws_from_perf_grad));
 		save_image(save_feature + "_mask_from_mean_grad.png", from_mean_binmask);
