@@ -609,7 +609,6 @@ int do_main( int argc, char *argv[] )
 		save_image(save_feature + "-bridge.png", RV_LV_bridge_mask); 
 		save_image(save_feature + "-lv_mask.png", LV_mask); 
 		save_image(save_feature + "-rv_mask.png", RV_mask); 
-		save_image(save_feature + "_lv_seed.png", LV_mask); 
 		save_image(save_feature + "_perflvsum.png", convert_to_ubyte->filter(*perflvsum)); 
 		save_image(save_feature + "_mean_grad.png", convert_to_ubyte->filter(*mean_grad)); 
 		save_image(save_feature + "_perf_grad.png", convert_to_ubyte->filter(*perf_grad)); 
@@ -673,7 +672,7 @@ int do_main( int argc, char *argv[] )
 	
 	save_image("lv_seed.@", LV_seed); 
 	auto ws_LV_cavity_from_corr = run_filter(LV_corr_image, "sws:seed=lv_seed.@,grad=0");
-	myo_prep[1] = run_filter(*ws_LV_cavity_from_corr, "binarize:min=1,max=1");
+	myo_prep[1] = LV_seed = run_filter(*ws_LV_cavity_from_corr, "binarize:min=1,max=1");
 
 	// now redo the watershed with the circle shape and the new LV mask 
 	myo_prep[0] = myo_binmask_circle; 
@@ -702,6 +701,7 @@ int do_main( int argc, char *argv[] )
 		save_image(save_feature + "_ws_from_perf_grad.png", convert_to_ubyte->filter(*ws_from_perf_grad));
 		save_image(save_feature + "_mask_from_mean_grad.png", from_mean_binmask);
 		save_image(save_feature + "_mask_from_perf_grad.png", from_perf_binmask);
+		save_image(save_feature + "_lv_seed.png", LV_seed); 
 	}
 	
 
