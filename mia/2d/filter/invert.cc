@@ -45,7 +45,7 @@
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/filter/invert.hh>
-#include <mia/internal/invert.cxx>
+#include <mia/template/invert.cxx>
 
 NS_MIA_BEGIN
 template class EXPORT mia::TInvert<mia::C2DImage>;

@@ -24,7 +24,7 @@
 #include <mia/2d/2DImage.hh>
 #include <mia/core/factory.hh>
 #include <mia/core/filter.hh>
-#include <mia/internal/filter_chain.hh>
+#include <mia/template/filter_chain.hh>
 
 NS_MIA_BEGIN
 

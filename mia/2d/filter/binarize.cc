@@ -40,7 +40,7 @@
    
 
 #include <mia/2d/filter/binarize.hh>
-#include <mia/internal/binarize.cxx>
+#include <mia/template/binarize.cxx>
 
 NS_MIA_BEGIN
 template class EXPORT mia::TBinarize<mia::C2DImage>;

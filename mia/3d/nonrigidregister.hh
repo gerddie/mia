@@ -26,7 +26,7 @@
 #include <mia/3d/multicost.hh>
 #include <mia/3d/transformfactory.hh>
 #include <mia/3d/trait.hh>
-#include <mia/internal/nonrigidregister.hh>
+#include <mia/template/nonrigidregister.hh>
 
 
 NS_MIA_BEGIN

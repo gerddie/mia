@@ -25,7 +25,7 @@
 #include <mia/3d/3dimageio.hh>
 #include <mia/3d/transformfactory.hh>
 #include <mia/3d/nonrigidregister.hh>
-#include <mia/internal/nonrigidregister.cxx>
+#include <mia/template/nonrigidregister.cxx>
 
 NS_MIA_BEGIN
 

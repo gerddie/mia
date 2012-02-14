@@ -36,7 +36,7 @@
 #include <mia/core/export_handler.hh>
 #include <mia/3d/fullcost.hh>
 
-#include <mia/internal/fullcost.cxx>
+#include <mia/template/fullcost.cxx>
 #include <mia/core/plugin_base.cxx>
 #include <mia/core/handler.cxx>
 

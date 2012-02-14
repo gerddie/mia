@@ -23,7 +23,7 @@
 
 
 #include <mia/2d/fullcost.hh>
-#include <mia/internal/divcurl.hh>
+#include <mia/template/divcurl.hh>
 
 
 NS_MIA_BEGIN

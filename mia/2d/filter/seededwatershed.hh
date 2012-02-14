@@ -21,8 +21,8 @@
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/shape.hh>
-#include <mia/internal/dimtrait.hh>
-#include <mia/internal/seededwatershed.hh>
+#include <mia/template/dimtrait.hh>
+#include <mia/template/seededwatershed.hh>
 
 NS_MIA_BEGIN
 

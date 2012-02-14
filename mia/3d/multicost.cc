@@ -19,7 +19,7 @@
  */
 
 #include <mia/3d/multicost.hh>
-#include <mia/internal/multicost.cxx>
+#include <mia/template/multicost.cxx>
 
 NS_MIA_BEGIN
 template class TFullCostList<C3DTransformation>; 

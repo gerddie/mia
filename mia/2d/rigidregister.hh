@@ -26,9 +26,6 @@
 #include <mia/2d/transform.hh>
 #include <mia/2d/transformfactory.hh>
 
-//#include <mia/internal/rigidregister.hh>
-
-
 NS_MIA_BEGIN
 
 /**

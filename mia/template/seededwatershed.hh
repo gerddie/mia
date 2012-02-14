@@ -22,7 +22,7 @@
 #define mia_internal_seededwatershed_hh
 
 #include <queue>
-#include <mia/internal/dimtrait.hh>
+#include <mia/template/dimtrait.hh>
 
 NS_MIA_BEGIN
 

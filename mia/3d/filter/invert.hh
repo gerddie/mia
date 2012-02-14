@@ -22,7 +22,7 @@
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/3d/3dfilter.hh>
-#include <mia/internal/invert.hh>
+#include <mia/template/invert.hh>
 
 
 NS_MIA_BEGIN

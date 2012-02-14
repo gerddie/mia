@@ -20,7 +20,7 @@
 
 #include <boost/lambda/lambda.hpp>
 #include <mia/2d/multicost.hh>
-#include <mia/internal/multicost.cxx>
+#include <mia/template/multicost.cxx>
 
 NS_MIA_BEGIN
 template class TFullCostList<C2DTransformation>; 

@@ -53,7 +53,7 @@
 
 
 #include <mia/2d/filter/convert.hh>
-#include <mia/internal/convert.cxx>
+#include <mia/template/convert.cxx>
 
 NS_MIA_BEGIN
 template class EXPORT mia::TConvert<mia::C2DImage>;

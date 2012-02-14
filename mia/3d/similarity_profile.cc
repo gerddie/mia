@@ -23,7 +23,7 @@
 #include <stdexcept>
 #include <mia/3d/3dimageio.hh>
 #include <mia/3d/similarity_profile.hh>
-#include <mia/internal/similarity_profile.cxx>
+#include <mia/template/similarity_profile.cxx>
 
 NS_MIA_BEGIN
 template class TSimilarityProfile<3>;

@@ -22,8 +22,8 @@
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/3d/3dfilter.hh>
-#include <mia/internal/bandpass.hh>
-#include <mia/internal/bandpass.cxx>
+#include <mia/template/bandpass.hh>
+#include <mia/template/bandpass.cxx>
 
 NS_MIA_BEGIN
 

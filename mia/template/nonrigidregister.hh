@@ -22,9 +22,9 @@
 #define mia_internal_nonrigidregister_hh
 
 #include <mia/core/minimizer.hh>
-#include <mia/internal/multicost.hh>
-#include <mia/internal/transformfactory.hh>
-#include <mia/internal/dimtrait.hh>
+#include <mia/template/multicost.hh>
+#include <mia/template/transformfactory.hh>
+#include <mia/template/dimtrait.hh>
 #include <mia/core/import_handler.hh>
 
 NS_MIA_BEGIN

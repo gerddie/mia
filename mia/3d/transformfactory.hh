@@ -24,7 +24,7 @@
 
 #include <set>
 #include <mia/3d/transform.hh>
-#include <mia/internal/transformfactory.hh>
+#include <mia/template/transformfactory.hh>
 
 NS_MIA_BEGIN
 

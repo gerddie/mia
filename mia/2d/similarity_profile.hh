@@ -23,7 +23,7 @@
 
 #include <mia/core/fft1d_r2c.hh>
 #include <mia/2d/trait.hh>
-#include <mia/internal/similarity_profile.hh>
+#include <mia/template/similarity_profile.hh>
 
 NS_MIA_BEGIN
 typedef TSimilarityProfile<2> C2DSimilarityProfile; 

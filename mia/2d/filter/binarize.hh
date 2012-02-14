@@ -22,7 +22,7 @@
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/2dfilter.hh>
-#include <mia/internal/binarize.hh>
+#include <mia/template/binarize.hh>
 
 NS_MIA_BEGIN
 

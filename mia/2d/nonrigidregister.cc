@@ -24,7 +24,7 @@
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/internal/nonrigidregister.cxx>
+#include <mia/template/nonrigidregister.cxx>
 
 NS_MIA_BEGIN
 

@@ -21,7 +21,7 @@
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/shape.hh>
-#include <mia/internal/dimtrait.hh>
+#include <mia/template/dimtrait.hh>
 
 #include <queue>
 
@@ -34,7 +34,7 @@ struct watershed_traits<2> {
 }; 
 NS_MIA_END
 
-#include <mia/internal/watershed.hh>
+#include <mia/template/watershed.hh>
 
 NS_MIA_BEGIN
 

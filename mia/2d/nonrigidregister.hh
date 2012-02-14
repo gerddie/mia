@@ -26,7 +26,7 @@
 #include <mia/2d/transformfactory.hh>
 #include <mia/core/export_handler.hh>
 #include <mia/2d/trait.hh>
-#include <mia/internal/nonrigidregister.hh>
+#include <mia/template/nonrigidregister.hh>
 
 
 NS_MIA_BEGIN

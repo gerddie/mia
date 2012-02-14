@@ -55,7 +55,7 @@
 #include <boost/lambda/lambda.hpp>
 #include <mia/2d/fullcost/divcurl.hh>
 
-#include <mia/internal/divcurl.cxx>
+#include <mia/template/divcurl.cxx>
 NS_MIA_BEGIN
 
 template class TDivcurlFullCostPlugin<C2DTransformation>; 

@@ -24,7 +24,7 @@
 #include <mia/2d/cost.hh>
 
 #define NS mia_2dcost_mi
-#include <mia/internal/mi.hh>
+#include <mia/template/mi.hh>
 
 NS_BEGIN(NS)
 

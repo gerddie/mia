@@ -22,7 +22,7 @@
 #define mia_2d_trait_hh
 
 
-#include <mia/internal/dimtrait.hh>
+#include <mia/template/dimtrait.hh>
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/multicost.hh>
 #include <mia/2d/2dfilter.hh>

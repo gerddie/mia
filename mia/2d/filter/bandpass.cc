@@ -42,7 +42,7 @@
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/filter/bandpass.hh>
-#include <mia/internal/bandpass.cxx>
+#include <mia/template/bandpass.cxx>
 
 
 NS_MIA_BEGIN

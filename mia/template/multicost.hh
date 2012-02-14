@@ -21,7 +21,7 @@
 #ifndef mia_internal_multicost_hh
 #define mia_internal_multicost_hh
 
-#include <mia/internal/fullcost.hh>
+#include <mia/template/fullcost.hh>
 
 NS_MIA_BEGIN
 

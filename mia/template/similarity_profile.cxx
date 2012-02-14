@@ -20,7 +20,7 @@
 
 #include <cassert>
 #include <stdexcept>
-#include <mia/internal/similarity_profile.hh>
+#include <mia/template/similarity_profile.hh>
 
 NS_MIA_BEGIN
 

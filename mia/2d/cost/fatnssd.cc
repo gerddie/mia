@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/internal/normalize.hh>
+#include <mia/template/normalize.hh>
 #include <mia/2d/cost/fatnssd.hh>
 
 using namespace std;

@@ -22,7 +22,7 @@
 #include <mia/3d/cost.hh>
 
 #define NS ssd_3dimage_cost
-#include <mia/internal/ssd.hh>
+#include <mia/template/ssd.hh>
 
 NS_BEGIN(NS);
 

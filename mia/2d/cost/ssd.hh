@@ -28,7 +28,7 @@
 
 #define NS mia_2dcost_ssd
 
-#include <mia/internal/ssd.hh>
+#include <mia/template/ssd.hh>
 
 NS_BEGIN(mia_2dcost_ssd)
 

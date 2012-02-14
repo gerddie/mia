@@ -20,7 +20,7 @@
 
 
 #include <mia/3d/fullcost.hh>
-#include <mia/internal/multicost.hh>
+#include <mia/template/multicost.hh>
 
 NS_MIA_BEGIN
 

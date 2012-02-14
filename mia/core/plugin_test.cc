@@ -75,5 +75,5 @@ int do_main(int argc, char *argv[])
 
 }
 
-#include <mia/internal/main.hh>
+#include <mia/template/main.hh>
 MIA_MAIN(do_main); 

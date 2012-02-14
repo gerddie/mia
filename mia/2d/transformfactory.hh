@@ -24,7 +24,7 @@
 #include <set>
 #include <mia/2d/transform.hh>
 #include <mia/core/export_handler.hh>
-#include <mia/internal/transformfactory.hh>
+#include <mia/template/transformfactory.hh>
 #include <mia/core/factory.hh>
 
 NS_MIA_BEGIN

@@ -20,7 +20,7 @@
 
 #include <mia/core/export_handler.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/internal/transformfactory.cxx>
+#include <mia/template/transformfactory.cxx>
 
 NS_MIA_BEGIN
 

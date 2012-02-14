@@ -51,7 +51,7 @@
 
 
 #include <mia/3d/fullcost/divcurl.hh>
-#include <mia/internal/divcurl.cxx>
+#include <mia/template/divcurl.cxx>
 
 NS_MIA_BEGIN
 
