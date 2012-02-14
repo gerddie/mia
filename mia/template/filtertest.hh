@@ -49,7 +49,7 @@ public:
 		
 		// test attribute transfer 
 		auto result_attr = result->get_attribute("test_attr"); 
-		BOOST_CHECK(result_attr); 
+		BOOST_REQUIRE(result_attr); 
 		BOOST_CHECK_EQUAL(*result_attr, *m_attr); 
 
 

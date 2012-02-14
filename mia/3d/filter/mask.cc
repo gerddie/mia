@@ -79,21 +79,28 @@ struct __dispatch_mask {
 
 class C3DMaskDispatch : public TFilter< P3DImage > {
 public:
-	C3DMaskDispatch(const C3DBitImage *mask):
-		m_mask(mask)
+	C3DMaskDispatch(const C3DBitImage *mask, bool use_data_attr):
+		m_mask(mask), 
+		m_use_data_attr(use_data_attr)
 		{
 		}
 
 	template <typename T>
 	C3DMaskDispatch::result_type operator () (const mia::T3DImage<T>& data) const 	{
+		
+		T3DImage<T> *result; 
+		if (m_use_data_attr) 
+			result = new T3DImage<T>(data.get_size(),data);
+		else 
+			result = new T3DImage<T>(data.get_size(),*m_mask);
 
-		T3DImage<T> * result = new T3DImage<T>(data.get_size(), data);
 		transform(m_mask->begin(), m_mask->end(), data.begin(),  result->begin(),
 			  __ifthenelse<T>());
 		return C3DMask::result_type(result);
 	}
 private:
 	const C3DBitImage *m_mask;
+	bool m_use_data_attr; 
 };
 
 
@@ -104,7 +111,7 @@ struct __dispatch_mask<bool> {
 			throw invalid_argument("Mask: input image and mask must be of same size");
 		}
 
-		C3DMaskDispatch m(mask);
+		C3DMaskDispatch m(mask, false);
 		return mia::filter(m, data);
 	}
 };
@@ -121,7 +128,7 @@ C3DMask::result_type C3DMask::operator () (const T3DImage<T>& data) const
 
 	if (image->get_pixel_type() == it_bit) {
 		const C3DBitImage *mask = dynamic_cast<const C3DBitImage*>(image.get());
-		C3DMaskDispatch m(mask);
+		C3DMaskDispatch m(mask, true);
 		return m(data);
 	} else {
 		return __dispatch_mask<T>::apply(&data, *image);
