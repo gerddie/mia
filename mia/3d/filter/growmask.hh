@@ -50,7 +50,7 @@ public:
 	virtual bool do_test()const {return true;};
 private:
 	std::string m_ref_filename;
-	std::string m_shape_descr;
+	mia::P3DShape m_shape;
 	float m_min;
 };
 

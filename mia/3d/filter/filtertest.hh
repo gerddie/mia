@@ -43,7 +43,7 @@ struct FilterTestFixtureBase {
 		BOOST_REQUIRE(r->get_size()== test_size); 
 		
 		const T *t = test_data; 
-		typename mia::T3DImage<T>::const_iterator i = r->begin(); 
+		auto i = r->begin(); 
 		for (size_t z = 0; z < test_size.z; ++z) 
 			for (size_t y = 0; y < test_size.y; ++y) 
 				for (size_t x = 0; x < test_size.x; ++x, ++t, ++i) {

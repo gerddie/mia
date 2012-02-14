@@ -18,7 +18,8 @@
  *
  */
 
-#include <mia/3d/filter/filtertest.hh>
+#include <mia/internal/plugintester.hh>
+#include <mia/template/filtertest.hh>
 #include <mia/3d/filter/growmask.hh>
 namespace bfs=boost::filesystem;
 
@@ -28,26 +29,38 @@ using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace growmask_3dimage_filter;
 
+C3DShapePluginHandlerTestPath shape_path; 
 
-struct GrowMaskFixture: public FilterTestFixtureBase {
+template <typename T> 
+struct void_destructor {
+	/// skip deleting the pointer 
+	virtual void operator () (T *) {
+	}
+}; 
 
-	GrowMaskFixture();
-	P3DImage    ref;
-	C3DBitImage mask;
-
-};
 
 const size_t nx = 5;
 const size_t ny = 4;
 const size_t nz = 3;
 
-GrowMaskFixture::GrowMaskFixture():
-	FilterTestFixtureBase(C3DBounds(nx,ny,nz)),
-	mask(size)
+BOOST_FIXTURE_TEST_CASE( test_grow_mask, TFiltertestFixture<T3DImage> )
 {
-	list< bfs::path> kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("..")/bfs::path("shapes"));
-	C3DShapePluginHandler::set_search_path(kernelsearchpath);
+	bool result_mask[nx * ny * nz] = {
+		0, 1, 1, 0, 1,
+		1, 1, 0, 1, 0,
+		1, 1, 1, 1, 0,
+		1, 1, 1, 0, 0,
+
+		0, 1, 1, 0, 1,
+		1, 1, 1, 0, 1,
+		1, 1, 0, 1, 0,
+		1, 1, 1, 0, 0,
+
+		0, 1, 1, 1, 1,
+		1, 1, 1, 0, 1,
+		1, 1, 0, 1, 0,
+		1, 1, 1, 1, 0
+	};
 
 
 	unsigned short init_ref[nx * ny * nz] = {
@@ -83,40 +96,17 @@ GrowMaskFixture::GrowMaskFixture():
 		0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0
 	};
-
-	ref.reset(new C3DUSImage(size, init_ref));
-
-	CDatapool::instance().add("reference.datapool", create_image3d_vector(ref));
-
-	copy(init_mask, init_mask + nx * ny * nz, mask.begin());
-}
-
-
-BOOST_FIXTURE_TEST_CASE( test_grow_mask, GrowMaskFixture )
-{
-	bool result_mask[nx * ny * nz] = {
-		0, 1, 1, 0, 1,
-		1, 1, 0, 1, 0,
-		1, 1, 1, 1, 0,
-		1, 1, 1, 0, 0,
-
-		0, 1, 1, 0, 1,
-		1, 1, 1, 0, 1,
-		1, 1, 0, 1, 0,
-		1, 1, 1, 0, 0,
-
-		0, 1, 1, 1, 1,
-		1, 1, 1, 0, 1,
-		1, 1, 0, 1, 0,
-		1, 1, 1, 1, 0
-	};
-
-	P3DShape shape(C3DShapePluginHandler::instance().produce("6n"));
-	C3DGrowmask f(C3DImageDataKey("reference.datapool"), shape, 1);
-
-	P3DImage result = f.filter(mask);
-
-	check_mask_result(result, result_mask, size);
+	
+	C3DBounds size(nx,ny,nz); 
+	C3DUSImage ref(size, init_ref); 
+	P3DImage pref(&ref, void_destructor<C3DImage>()); 
+	
+	CDatapool::instance().add("ref.datapool", create_image3d_vector(pref));
+	
+	auto filter = BOOST_TEST_create_from_plugin<C3DGrowmaskImageFilterFactory>("growmask:ref=ref.datapool,shape=6n,min=1"); 
+	
+	run(size, init_mask, size, result_mask, *filter); 
+	
 }
 
 

@@ -21,7 +21,7 @@
 #ifndef mia_test_testhelpers_hh
 #define mia_test_testhelpers_hh
 
-#include <typetraits>
+#include <type_traits>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 
@@ -30,14 +30,14 @@ namespace miatest {
 namespace impl {
 
 template <typename T, bool is_integral> 
-struct __test_equal_or_close {
+struct test_equal_or_close {
 	static void apply(T value, T expect, double, double) {
 		BOOST_CHECK_EQUAL(value, expect); 
 	}
 }; 
 
 template <typename T> 
-struct __test_equal_or_close<T, true> {
+struct test_equal_or_close<T, false> {
 	static void apply(T value, T expect, double reltol, double abstol) {
 		// handle the check against zero case: 
 		if (fabs(expect) > 1e-8) 
@@ -66,10 +66,10 @@ struct __test_equal_or_close<T, true> {
    \param abstol  absolute tolerance to use if the type T is floating point and \a expect is smaller then 1e-8
 */
 
-template <typename T> 
-void equal_or_close(T value, T expect, double reltol = 0.1, double abstol=1e-12) 
+template <typename T, typename E> 
+void equal_or_close(T value, E expect, double reltol = 0.1, double abstol=1e-12) 
 {
-	impl::test_equal_or_close<T, std::is_integral<T> >::apple(*i, *t, reltol, abstol);
+	impl::test_equal_or_close<E, std::is_integral<E>::value >::apply(value, expect, reltol, abstol);
 }
 
 }

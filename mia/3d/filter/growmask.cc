@@ -136,11 +136,10 @@ P3DImage C3DGrowmask::do_filter(const C3DImage& image) const
 /* The factory constructor initialises the plugin name, and takes care that the plugin help will show its parameters */
 C3DGrowmaskImageFilterFactory::C3DGrowmaskImageFilterFactory():
 	C3DFilterPlugin("growmask"),
-	m_shape_descr("6n"),
 	m_min(1.0)
 {
 	add_parameter("ref", new CStringParameter(m_ref_filename, true, "reference image for mask region growing"));
-	add_parameter("shape", new CStringParameter(m_shape_descr, true, "neighborhood mask"));
+	add_parameter("shape", make_param(m_shape, "6n", false, "neighborhood mask"));
 	add_parameter("min", new CFloatParameter(m_min, -numeric_limits<float>::max(),
 						 numeric_limits<float>::max(), false,
 						 "lower threshold for mask growing"));
@@ -149,13 +148,9 @@ C3DGrowmaskImageFilterFactory::C3DGrowmaskImageFilterFactory():
 /* The factory create function creates and returns the filter with the given options*/
 C3DFilter *C3DGrowmaskImageFilterFactory::do_create()const
 {
-	// create neigborhood shape
-
-	P3DShape shape(C3DShapePluginHandler::instance().produce(m_shape_descr.c_str()));
-
 	// load reference image
 	C3DImageDataKey ref_data = C3DImageIOPluginHandler::instance().load_to_pool(m_ref_filename);
-	return new C3DGrowmask(ref_data,shape, m_min);
+	return new C3DGrowmask(ref_data,m_shape, m_min);
 }
 
 /* This function sreturns a short description of the filter */
