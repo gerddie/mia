@@ -81,7 +81,9 @@ const SProgramDescription g_description = {
 	"2D image processing", 
 	
 	"This program runs a combined fuzzy c-means clustering and B-field correction "
-	"to facilitate a fuzzy segmentation of 2D image", 
+	"to facilitate a fuzzy segmentation of 2D image. cf D.L. Pham and J.L.Prince, "
+	"\"An adaptive fuzzy C-means algorithm for image segmentation in the presence "
+	"of intensity inhomogeneities\", Pat. Rec. Let., 20:57-68,1999", 
 	
 	"Run a 5-class segmentation over input image input.v and store the class "
 	"probability images in cls.v and the B0-field corrected image in b0.v.", 
