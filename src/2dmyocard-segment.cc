@@ -40,6 +40,7 @@
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/ica.hh>
 #include <mia/2d/SegSetWithImages.hh>
+#include <mia/2d/fuzzyseg.hh>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/2DDatafield.cxx>
@@ -339,35 +340,6 @@ P2DImage evaluate_bridge_mask(P2DImage RV_mask, P2DImage LV_mask)
 	return run_filter(*closed, "selectbig");
 }
 
-int  get_myocard_minclass(const C2DImage& masked_label)
-{
-	const auto& label = dynamic_cast<const C2DUBImage&>(masked_label); 
-	int result = 0; 
-	for (auto l = label.begin(); l != label.end(); ++l) {
-		if ( *l > result)
-			result = *l; 
-	}
-	return result; 
-}
-
-
-int get_myocard_label(const C2DImage& masked_label)
-{
-	const auto& label = dynamic_cast<const C2DUBImage&>(masked_label); 
-	int result = 0; 
-	for (auto l = label.begin(); l != label.end(); ++l) {
-		if (*l) {
-			if (!result) 
-				result = *l; 
-			else {
-				assert(result == *l); 
-			}
-		}
-	}
-	return result; 
-}
-
-
 template <typename Iterator1, typename Iterator2, typename Function>
 void for_each_pair(Iterator1 begin1, Iterator1 end1, Iterator2 begin2, Function f)
 {
@@ -375,7 +347,10 @@ void for_each_pair(Iterator1 begin1, Iterator1 end1, Iterator2 begin2, Function 
 		f(*begin1++, *begin2++); 
 }
 
-
+/*
+   Combine input mask ad add use distinct label for each mask. 
+   In addition add the boundary of the image as an additional label 
+*/
 P2DImage combine_with_boundary(const C2DImageSeries& images)
 {
 	assert(!images.empty()); 
@@ -427,6 +402,39 @@ P2DImage evaluate_cavity(P2DImage feature, const C2DImageFilterChain& seed_chain
 	save_image("prep_seed.@", new_seed); 
 	return run_filter_chain(feature, {"sws:seed=prep_seed.@", "binarize:min=1,max=1"});
 }
+
+class FMeanVar: public TFilter<pair<double, double> > {
+public: 
+	FMeanVar(double thresh): m_thresh(thresh){}; 
+	
+	template <typename Image> 
+	pair<double, double> operator () (const Image& image) const {
+		pair<double, double> result; 
+		int n = 0; 
+		auto begin = image.begin(); 
+		auto end = image.end(); 
+		while (begin != end)  {
+			const double help = *begin; 
+			if (help != 0.0) {
+				result.first += help; 
+				result.second += help * help; 
+				++n; 
+			}
+			++begin; 
+		}
+
+		if (n > 0)
+			result.first /= n; 
+		
+		if (n > 1) 
+			result.second = sqrt((result.second - n * result.first * result.first) / (n - 1));
+		else 
+			result.second = 0.0; 
+		return result; 
+	}
+private: 
+	double m_thresh; 
+}; 
 
 int do_main( int argc, char *argv[] )
 {
@@ -652,6 +660,7 @@ int do_main( int argc, char *argv[] )
 	// of the myocardium
 	// 
 	myo_prep[1] = LV_seed = run_filter(*ws_LV_cavity_from_corr, "binarize:min=1,max=1");
+	save_image("lv_seed2.@", LV_seed); 
 	myo_prep[0] = myo_binmask_circle; 
 
 	seed = combine_with_boundary(myo_prep); 
@@ -688,6 +697,11 @@ int do_main( int argc, char *argv[] )
 	P2DImage from_perf_binmask; 
 	int max_class = 3; 
 
+	C2DImageFilterChain final_mask_chain({"binarize:min=1,max=2", 
+				"open:shape=[sphere:r=5]", 
+				"mask:input=outer_mask.@,inverse=0", "open", "label", "selectbig", 
+				"close:shape=[sphere:r=3]"}); 
+
 	do  {
 		// first create the background mask by binarizing the k-means classification 
 		stringstream mask_binarize; 
@@ -698,10 +712,7 @@ int do_main( int argc, char *argv[] )
 		// from the  watershed based on the perfusion we create a mask consisting on the 
 		// LV and perfusion label, combine it with the above RV-peak enhancement background mask 
 		// and clean this mask 
-		from_perf_binmask = run_filter_chain(ws_from_perf_grad, {"binarize:min=1,max=2", 
-					"open:shape=[sphere:r=5]", 
-					"mask:input=outer_mask.@,inverse=0", "open", "label", "selectbig", 
-					"close:shape=[sphere:r=3]"}); 
+		from_perf_binmask = final_mask_chain.run(ws_from_perf_grad); 
 		save_image("mask.@", from_mean_binmask); 	
 
 		// evaluate the myocardium mask by combining the watershed segmentation obtained from 
@@ -726,12 +737,11 @@ int do_main( int argc, char *argv[] )
 		
 		save_image(save_feature+"-2-RV_peak_image.png", convert_to_ubyte->filter(*RV_peak_image)); 
 		save_image(save_feature+"-2-RV_peak_kmeans.png", convert_to_ubyte->filter(*outer_mask_kmeans)); 
-		save_image(save_feature+"-2-outer_mask.png", outer_mask); 
-		save_image(save_feature+"-2-from_perf_binmask.png",  from_perf_binmask); 
+		save_image(save_feature+"-2a-outer_mask.png", outer_mask); 
+		save_image(save_feature+"-2a-from_perf_binmask.png",  from_perf_binmask); 
+		save_image(save_feature+"-2a-myomask-using-kmeans.png",  final_myocard_mask); 
 		
 	}
-
-
 	return save_image(out_filename, final_myocard_mask) ?  EXIT_SUCCESS : EXIT_FAILURE; 
 }
 
