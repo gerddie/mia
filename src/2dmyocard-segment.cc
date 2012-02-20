@@ -279,9 +279,9 @@ C2DFImage FMaxGradients::get_result() const
 	return m_sum; 
 }
 
-class FAcuumulateImages: public TFilter<int>  {
+class FMaxIntensity: public TFilter<int>  {
 public:
-	FAcuumulateImages(const C2DBounds& size); 
+	FMaxIntensity(const C2DBounds& size); 
 
 	template <typename T> 
 	int operator () (const T2DImage<T>& image); 
@@ -291,13 +291,13 @@ private:
 	C2DFImage m_sum; 
 }; 
 
-FAcuumulateImages::FAcuumulateImages(const C2DBounds& size):
+FMaxIntensity::FMaxIntensity(const C2DBounds& size):
 	m_sum(size)
 {
 }
 
 template <typename T> 
-int FAcuumulateImages::operator () (const T2DImage<T>& image)
+int FMaxIntensity::operator () (const T2DImage<T>& image)
 {
 	if (m_sum.get_size() != image.get_size()) {
 		THROW(invalid_argument, "Input image has size " << image.get_size() 
@@ -305,11 +305,11 @@ int FAcuumulateImages::operator () (const T2DImage<T>& image)
 	}
 
 	transform(m_sum.begin(), m_sum.end(), image.begin(), m_sum.begin(), 
-		  [](float s, T i){return s + i;});
+		  [](float s, T i){return s > i ? s : i;});
 	return 0;
 }
 
-C2DFImage FAcuumulateImages::get_result() const
+C2DFImage FMaxIntensity::get_result() const
 {
 	return m_sum; 
 }
@@ -441,8 +441,7 @@ int do_main( int argc, char *argv[] )
 	// IO parameters 
 	string in_filename;
 	string out_filename; 
-	string out_filename2; 
-	string out_filename3; 
+	string seg_helper; 
 	string save_feature; 
 
 	// this parameter is currently not exported - reading the image data is 
@@ -460,8 +459,7 @@ int do_main( int argc, char *argv[] )
 	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output myocardial mask", CCmdOption::required));
-	options.add(make_opt( out_filename2, "out-file-mean", 'O', "output myocardial mask created from meangrad + perfgrad "));
-	options.add(make_opt( out_filename3, "out-file-gradsum", 'G', "output myocardial mask created from grad sum over all images"));
+	options.add(make_opt( seg_helper, "seg-helper", 'O', "output a segmentation helper  "));
 	options.add(make_opt( save_feature, "save-features", 'f', "save ICA features to files with this name base")); 
 
 	options.set_group("ICA");
@@ -511,6 +509,8 @@ int do_main( int argc, char *argv[] )
 		
 	} while (!components && (rv_idx < 0 || lv_idx < 0 || perf_idx < 0) && test_components < 6); 
 
+	auto convert_to_ubyte = produce_2dimage_filter("convert");
+	
 	if (!save_feature.empty()) {
 		ica->save_coefs(save_feature + ".txt"); 
 		ica->save_feature_images(save_feature); 
@@ -603,7 +603,6 @@ int do_main( int argc, char *argv[] )
 	}
 
 	if (!save_feature.empty()) {
-		auto convert_to_ubyte = produce_2dimage_filter("convert");
 		save_image(save_feature+"-0-RV.png", convert_to_ubyte->filter(*RV_feature)); 
 		save_image(save_feature+"-0-LV.png", convert_to_ubyte->filter(*LV_feature)); 
 		save_image(save_feature+"-0-perf.png", convert_to_ubyte->filter(*perf_feature)); 
@@ -695,7 +694,7 @@ int do_main( int argc, char *argv[] )
 	P2DImage test_mask; 
 	P2DImage outer_mask; 
 	P2DImage from_perf_binmask; 
-	int max_class = 3; 
+	int max_class = 2; 
 
 	C2DImageFilterChain final_mask_chain({"binarize:min=1,max=2", 
 				"open:shape=[sphere:r=5]", 
@@ -725,7 +724,7 @@ int do_main( int argc, char *argv[] )
 	}while(!mia::filter(count_pixels, *test_mask) && max_class < 6); 
 
 	if (!save_feature.empty()) {
-		auto convert_to_ubyte = produce_2dimage_filter("convert");
+
 
 		save_image(save_feature+"-2-LV-corr.png", convert_to_ubyte->filter(LV_corr_image)); 
 		save_image(save_feature+"-2-LV_cavity_from_corr.png", LV_seed);
@@ -742,6 +741,7 @@ int do_main( int argc, char *argv[] )
 		save_image(save_feature+"-2a-myomask-using-kmeans.png",  final_myocard_mask); 
 		
 	}
+
 	return save_image(out_filename, final_myocard_mask) ?  EXIT_SUCCESS : EXIT_FAILURE; 
 }
 
