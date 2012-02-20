@@ -56,7 +56,7 @@ void C2DFuzzyClusterSolver::solve(const C2DFImage& force, C2DFImage& gain)
 			
 			for(size_t x = 2; x < size.x - 2; ++x, ++igain, ++iforce, ++iweight) {
 				float d = *iweight + lambda; 
-				if ( fabs(d) < 1e-5) 
+				if ( fabs(d) < 1e-8) 
 					continue; 
 
 				float m1 = igain[-dx] + igain[-1] + igain[1] + igain[dx];  

@@ -343,12 +343,12 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 			
 		for(auto sp = data.begin(); sp != data.end(); ++sp) {
 			double pixVal = *sp;
-			if (pixVal == 0)
-				continue;
+			//if (pixVal == 0)
+			//	continue;
 			double sum = 0;
 			for (unsigned int k = 0; k < m_nClasses; k++)  {
 				dist = pixVal - clCenter[k];
-				u[k] = dist? 1/(dist*dist): HUGE;
+				u[k] = dist? 1/(dist*dist): 1e+32;
 				sum += u[k];
 			};
 				
@@ -380,8 +380,8 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 			for (unsigned int x = 0; x < nx; x++, sp++)  {
 				// get Value
 				double pixVal = *sp;
-				if (pixVal == 0)
-					continue;
+				//if (pixVal == 0)
+				//	continue;
 				double sum = 0;
 				// get difference from gain-field
 				double gainVal = gain_image(x, y);
@@ -410,8 +410,8 @@ CSegment2d::result_type CSegment2d::operator () (const T2DImage<T>& data)
 			for (unsigned int y = 0; y < ny; y++)  {
 				for (unsigned int x = 0; x < nx; x++, sp++)  {
 					double pixVal = *sp;
-					if (pixVal == 0)
-						continue;
+					//if (pixVal == 0)
+					//	continue;
 					double gainVal = gain_image(x, y);
 					double uj      = (*cls_image[k])(x, y);
 					nom += uj*uj*gainVal*pixVal;
