@@ -75,7 +75,7 @@ int do_main(int argc, char **argv)
 		return EXIT_SUCCESS; 
 
 
-	vector<const char *> cost_chain = options.get_remaining();
+	auto cost_chain = options.get_remaining();
 
 	if (cost_chain.empty()) {
 		cerr << "require cost functions given as extra parameters\n";
@@ -83,7 +83,7 @@ int do_main(int argc, char **argv)
 	}
 
 	C2DImageFatCostList cost_list;
-	for(vector<const char *>::const_iterator i = cost_chain.begin(); i != cost_chain.end(); ++i) {
+	for(auto i = cost_chain.begin(); i != cost_chain.end(); ++i) {
 		P2DImageFatCost c = C2DFatImageCostPluginHandler::instance().produce(*i);
 		if (c)
 			cost_list.push_back(c);

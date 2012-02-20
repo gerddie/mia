@@ -78,16 +78,19 @@ class CHistAccumulator : public TFilter<bool> {
 public:
 	CHistAccumulator(float min, float max, size_t bins, float thresh):
 		m_histo(THistogramFeeder<float>(min, max, bins)),
-		m_thresh(thresh)
+		m_thresh(thresh), 
+		m_max(0)
 	{
 	}
 
 	template <typename T>
 	bool operator () (const T2DImage<T>& image) {
-		for (typename T2DImage<T>::const_iterator i = image.begin();
-		     i != image.end(); ++i)
+		for (auto i = image.begin(); i != image.end(); ++i) {
 			if (*i > m_thresh)
 				m_histo.push(*i);
+			if (*i > m_max) 
+				m_max = *i; 
+		}
 		return true;
 	}
 
@@ -105,11 +108,14 @@ private:
 	void print_stats(const THistogram<THistogramFeeder<float > >& tmp)const
 	{
 		cout   <<  tmp.average() << " " << tmp.deviation()  <<  " "
-		       << tmp.median() << " " << tmp.MAD() << '\n';
+		       << tmp.median() << " " << tmp.MAD() 
+		       << " " << m_max 
+		       << '\n';
 	}
 
 	THistogram<THistogramFeeder<float > > m_histo;
 	float m_thresh;
+	float m_max; 
 };
 
 

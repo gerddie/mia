@@ -289,7 +289,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser, CmdlineParserFixture )
 
 	BOOST_CHECK_EQUAL(olist.parse(options.size(), (const char**)&options[0], "remaining"),  CCmdOptionList::hr_no);
 
-	for( vector<const char *>::const_iterator i = olist.get_remaining().begin(); i != olist.get_remaining().end(); ++i)
+	for(auto i = olist.get_remaining().begin(); i != olist.get_remaining().end(); ++i)
 		BOOST_MESSAGE(*i);
 
 	BOOST_CHECK_EQUAL(int_value1,12);

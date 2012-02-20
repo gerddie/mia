@@ -77,7 +77,7 @@ int do_main(int argc, char **argv)
 		return EXIT_SUCCESS; 
 
 
-	vector<const char *> cost_chain = options.get_remaining();
+	auto cost_chain = options.get_remaining();
 
 	if (cost_chain.empty()) {
 		cvfatal() << "require cost functions given as extra parameters\n";

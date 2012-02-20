@@ -58,8 +58,7 @@ void CHistory::append(const string& me, const string& version, const CCmdOptionL
 
 	if (!options.get_remaining().empty()) {
 		stringstream extra_str;
-		for (vector<const char *>::const_iterator i = options.get_remaining().begin();
-		     i != options.get_remaining().end(); ++i)
+		for (auto i = options.get_remaining().begin();   i != options.get_remaining().end(); ++i)
 			extra_str << *i << " ";
 		record["EXTRA"] = extra_str.str();
 	}

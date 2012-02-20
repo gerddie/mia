@@ -122,7 +122,7 @@ int do_main( int argc, char *argv[] )
 	bool want_help = false; 
 	std::vector<P2DFilter> filters(filter_chain.size());
 	transform(filter_chain.begin(), filter_chain.end(), filters.begin(),
-		  [&filter_plugins, &want_help](const char * name) {
+		  [&filter_plugins, &want_help](const string& name) {
 			  auto filter =  filter_plugins.produce(name); 
 			  if (!filter) {
 				  if (name == plugin_help) 

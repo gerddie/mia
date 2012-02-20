@@ -109,7 +109,7 @@ const SProgramDescription g_description = {
 	"-i segment.set -o registered.set -F spline:rate=16 image:cost=mi,weight=2.0 divcurl:weight=2.0"
 }; 
 
-C2DFullCostList create_costs(const std::vector<const char *>& costs, int idx)
+C2DFullCostList create_costs(const vector<string>& costs, int idx)
 {
 	stringstream cost_descr; 
 	cost_descr << ",src=src" << idx << ".@,ref=ref" << idx << ".@"; 
@@ -132,7 +132,7 @@ struct SeriesRegistration {
 	CSegSetWithImages& input_set; 
 	C2DImageSeries& input_images; 
 	string minimizer; 
-	const std::vector<const char *>& costs; 
+	const vector<string>& costs; 
 	size_t mg_levels; 
 	P2DTransformationFactory transform_creator; 
 	int reference; 
@@ -140,7 +140,7 @@ struct SeriesRegistration {
 	SeriesRegistration(CSegSetWithImages& _input_set, 
 			   C2DImageSeries& _input_images, 
 			   const string& _minimizer, 
-			   const std::vector<const char *>& _costs, 
+			   const vector<string>& _costs, 
 			   size_t _mg_levels, 
 			   P2DTransformationFactory _transform_creator, 
 			   int _reference

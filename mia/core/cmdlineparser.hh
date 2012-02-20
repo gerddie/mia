@@ -272,7 +272,7 @@ public:
 	EHelpRequested parse(size_t argc, const char *args[]) __attribute__((warn_unused_result));
 	
 		/// \returns a vector of the remaining arguments
-	const std::vector<const char *>& get_remaining() const;
+	const std::vector<std::string>& get_remaining() const;
 
         /** \returns the values of all arguments as a history record to support tracking
 	    of changes on data worked on by \a mia

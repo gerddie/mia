@@ -469,14 +469,11 @@ int do_main( int argc, char *argv[] )
 	transform(input_images.begin() + skip_images, input_images.end(), 
 		  series.begin(), Convert2Float()); 
 	
-	
 	int rv_idx = -1; 
 	int lv_idx = -1; 
 	int perf_idx = -1; 
 
-	
 	unique_ptr<C2DPerfusionAnalysis> ica; 
-	
 	int test_components = components ? components - 1 : 3; 
 	do {
 		++test_components; 
@@ -515,10 +512,9 @@ int do_main( int argc, char *argv[] )
 
 	cvmsg() << "Using " << test_components << " independend components\n"; 
 	
-	vector<const char*> cavity_filters_descr = {
+	C2DImageFilterChain cavity_filters({
 		"kmeans:c=3", "binarize:min=2", "close:shape=[sphere:r=4]", 
-		"label",  "selectbig" }; 
-	C2DImageFilterChain cavity_filters(cavity_filters_descr); 
+		"label",  "selectbig" }); 
 	
 	auto RV_feature = ica->get_feature_image(rv_idx); 
 	auto LV_feature = ica->get_feature_image(lv_idx); 
@@ -552,7 +548,7 @@ int do_main( int argc, char *argv[] )
 	perf_feature_minus_cavities = image_subtractor->combine(*perf_feature_minus_cavities, *LV_feature); 
 	
 	auto myocard_seeds = run_filter_chain(perf_feature_minus_cavities, 
-					      {	"mask:input=bridge.@,fill=min", 
+					      {	"mask:input=bridge.@,fill=min,inverse=0", 
 							      "kmeans:c=5","tee:file=feature_bridge_kmeans.@",
 							      "binarize:min=4,max=4", "close:shape=4n" });
 	
@@ -568,73 +564,34 @@ int do_main( int argc, char *argv[] )
 	myo_prep[1] = LV_mask; 
 	myo_prep[2] = RV_mask; 
 
-
 	P2DImage seed = combine_with_boundary(myo_prep); 
 
 	save_image("seed.@", seed); 
-	auto ws_from_perf_plus_mean_grad = run_filter(*mean_grad, "sws:seed=seed.@,grad=1");
-	//auto ws_from_perf_plus_mean_grad = run_filter(*perf_plus_mean_grad, "sws:seed=seed.@,grad=1");
+	save_image("RV_mask.@", RV_mask); 
+	save_image("LV_mask.@", LV_mask); 
 	
-	vector<const char*> make_circle_descr =  {"thinning", "pruning", "thinning", "pruning"}; 
-	C2DImageFilterChain make_circle(make_circle_descr); 
+	C2DImageFilterChain make_circle({"binarize:min=1,max=2", 
+				"mask:input=LV_mask.@,inverse=1", 
+				"thinning", "pruning", "thinning", "pruning"}); 
 	CHasNonzeroPixels count_pixels; 
 
-	// now run several approaches to get the shape of the myocardium 
-	auto myo_binmask = run_filter(*ws_from_perf_plus_mean_grad, "binarize:min=1,max=1");
-	auto myo_binmask_circle = make_circle.run(myo_binmask); 
+	vector<P2DImage> test_images = {mean_grad, perf_grad, perf_plus_mean_grad}; 
+	bool circle_pixels = 0; 
 	
-	if (!mia::filter(count_pixels, *myo_binmask_circle)) {
-		cvmsg() << "Try Myocard + LV\n"; 
-		// no circular shape extracted, try something else
-		auto myo_and_lv = run_filter(*ws_from_perf_plus_mean_grad, "binarize:min=1,max=2");
-		// subtract lv mask 
-		auto lv_inverse = run_filter(*LV_mask, "invert");
-		save_image("lv_inverse.@", lv_inverse); 
-		
-		myo_binmask = run_filter(*myo_and_lv, "mask:input=lv_inverse.@,fill=zero");
-		myo_binmask_circle = make_circle.run(myo_binmask);
-		
-		// last try add all non-background pixels and subtract RV and LV cavity 
-		if (!mia::filter(count_pixels, *myo_binmask_circle)) {
-			cvmsg() << "Try all sections\n"; 
-			auto myo_and_lv_rv = run_filter(*ws_from_perf_plus_mean_grad, "binarize:min=1,max=3");
-			auto rv_inverse = run_filter(*RV_mask, "invert");
-			save_image("rv_inverse.@", rv_inverse);
-			myo_binmask = run_filter_chain(myo_and_lv_rv, {"mask:input=rv_inverse.@,fill=zero", 
-						"mask:input=lv_inverse.@,fill=zero"}); 
-			myo_binmask_circle = make_circle.run(myo_binmask);
+	P2DImage ws_from_mean_grad_1; 
+	P2DImage myo_binmask_circle; 
+	
 
-			if (!save_feature.empty()) {
-				save_image(save_feature + "-myo_and_lv_rv.png", myo_and_lv_rv); 
-				save_image(save_feature + "-lv_iask.png", lv_inverse); 
-				save_image(save_feature + "-rv_iask.png", rv_inverse); 
-
-			}
-		}
+	for(auto ti = test_images.begin(); !circle_pixels && ti != test_images.end(); ++ti) {
+		ws_from_mean_grad_1 = run_filter(**ti, "sws:seed=seed.@,grad=1");
+		myo_binmask_circle = make_circle.run(ws_from_mean_grad_1); 
+		circle_pixels = mia::filter(count_pixels, *myo_binmask_circle); 
 	}
+	// we didn't get the circle, so bye bye 
+	if (!circle_pixels)
+		throw runtime_error("Basic estimation of the myocardial shape failed"); 
 
 	auto convert_to_ubyte = produce_2dimage_filter("convert"); 
-	if (!save_feature.empty()) {
-		auto feature_bridge_kmeans = load_image2d("feature_bridge_kmeans.@"); 
-		auto feature_bridge_seed = load_image2d("bridge.@"); 
-		save_image(save_feature + "-bridge-seed.png", convert_to_ubyte->filter(*feature_bridge_seed)); 
-		save_image(save_feature + "-bridge-kmeans.png", convert_to_ubyte->filter(*feature_bridge_kmeans)); 
-		save_image(save_feature + "-all_seeds.png", convert_to_ubyte->filter(*myocard_seeds)); 
-		save_image(save_feature + "-myo-seed.png", seed);
-		save_image(save_feature + "-perf_mrl.v", perf_feature); 
-		save_image(save_feature + "-bridge.png", RV_LV_bridge_mask); 
-		save_image(save_feature + "-lv_mask.png", LV_mask); 
-		save_image(save_feature + "-rv_mask.png", RV_mask); 
-		save_image(save_feature + "-lv_corr.png", convert_to_ubyte->filter(LV_corr_image));
-		save_image(save_feature + "-perflvsum.png", convert_to_ubyte->filter(*perflvsum)); 
-		save_image(save_feature + "-mean_grad.png", convert_to_ubyte->filter(*mean_grad)); 
-		save_image(save_feature + "-perf_grad.png", convert_to_ubyte->filter(*perf_grad)); 
-		save_image(save_feature + "-perf_plus_mean_grad.png", convert_to_ubyte->filter(*perf_plus_mean_grad)); 
-		save_image(save_feature + "-myo_circle.png", myo_binmask_circle);
-		save_image(save_feature + "-ws_from_perf_plus_mean_grad.png", convert_to_ubyte->filter(*ws_from_perf_plus_mean_grad));
-		
-		
-	}
 
 	auto circlemask_bit = dynamic_cast<const C2DBitImage&>(*myo_binmask_circle); 
 	CEvaluateSeriesCorrelationToMask correval_myo(circlemask_bit, input_images.size() - skip_images); 
@@ -651,34 +608,14 @@ int do_main( int argc, char *argv[] )
 	auto mv_mask_corrs = mean_var(mask_corrs.begin(), mask_corrs.end()); 
 	
 
-	
-
-
-
 	cvmsg() << "Mask corr = " << mv_mask_corrs.first << " (" << mv_mask_corrs.second << "\n"; 
 	stringstream corr_binarize; 
 	corr_binarize << "binarize:min=" << mv_mask_corrs.first - mv_mask_corrs.second; 
 	P2DImage corr_mask = run_filter(corr_myo_image, corr_binarize.str().c_str()); 
 	
-	vector<const char*> make_circle_descr_corr =  {"close:shape=[sphere:r=3]", "thinning", "pruning", 
-						       "thinning", "pruning", "label:n=8n", "selectbig",}; 
-	C2DImageFilterChain make_circle_corr(make_circle_descr_corr); 
+	C2DImageFilterChain make_circle_corr({"close:shape=[sphere:r=3]", "thinning", "pruning", 
+						       "thinning", "pruning", "label:n=8n", "selectbig"}); 
 	auto circle_corr = make_circle_corr.run(corr_mask); 
-	
-
-	if (!save_feature.empty()) {
-		save_image(save_feature + "-corr-LV-mask.v",P2DImage(&LV_corr_image, void_destructor<C2DFImage>())); 
-		save_image(save_feature + "-corr-myomask.v",P2DImage(&corr_myo_image, void_destructor<C2DFImage>())); 
-		save_image(save_feature + "-corr.png", convert_to_ubyte->filter(corr_myo_image)); 
-		save_image(save_feature + "-corr-mycard.png", corr_mask); 
-		save_image(save_feature + "-corr-circle.png", circle_corr); 
-	}
-	
-
-	// we didn't get the circle, so bye bye 
-	if (!mia::filter(count_pixels, *myo_binmask_circle))
-		throw runtime_error("Basic estimation of the myocardial shape failed"); 
-
 
 	// now do a watershed to enlarge the LV seed 
 	C2DImageSeries LV_prep(2); 
@@ -688,20 +625,18 @@ int do_main( int argc, char *argv[] )
 	
 	save_image("lv_seed.@", LV_seed); 
 	save_image("lv_mask.@", LV_mask); 
-	auto ws_LV_cavity_from_corr = run_filter(LV_corr_image, "sws:seed=lv_seed.@,grad=0");
-	myo_prep[1] = LV_seed = run_filter(*ws_LV_cavity_from_corr, "binarize:min=1,max=1");
 
 	// now redo the watershed with the circle shape and the new LV mask 
+	auto ws_LV_cavity_from_corr = run_filter(LV_corr_image, "sws:seed=lv_seed.@,grad=0");
+	myo_prep[1] = LV_seed = run_filter(*ws_LV_cavity_from_corr, "binarize:min=1,max=1");
 	myo_prep[0] = myo_binmask_circle; 
+
 	seed = combine_with_boundary(myo_prep); 
 	save_image("seed.@", seed); 	
 	
-	auto ws_from_corr      = run_filter(corr_myo_image, "sws:seed=seed.@,grad=0");
 	auto ws_from_mean_grad = run_filter(*mean_grad, "sws:seed=seed.@,grad=1");
 	auto ws_from_perf_grad = run_filter(*perf_grad, "sws:seed=seed.@,grad=1");
 	auto from_mean_binmask = run_filter(*ws_from_mean_grad, "binarize:min=1,max=1");
-	auto ws_from_perf_plus_mean_grad2 = run_filter(*perf_plus_mean_grad, "sws:seed=seed.@,grad=1");
-	
 	
 	// final step, clean out the fat at the outer border of the myocardium 
 	auto rv_peak_index = ica->get_RV_peak_time(); 
@@ -725,28 +660,14 @@ int do_main( int argc, char *argv[] )
 		
 		from_perf_binmask = run_filter_chain(ws_from_perf_grad, {"binarize:min=1,max=2", 
 					"open:shape=[sphere:r=5]", 
-					"mask:input=outer_mask.@", "label", "selectbig", "close:shape=[sphere:r=4]"}); 
+					"mask:input=outer_mask.@,inverse=0", "open", "label", "selectbig", 
+					"close:shape=[sphere:r=3]"}); 
 		
 		save_image("mask.@", from_mean_binmask); 	
-		LV_and_myocard_mask = run_filter(*from_perf_binmask, "mask:input=mask.@");
+		LV_and_myocard_mask = run_filter(*from_perf_binmask, "mask:input=mask.@,inverse=0");
 		test_mask = make_circle.run(LV_and_myocard_mask); 
 		max_class++; 	
 	}while(!mia::filter(count_pixels, *test_mask) && max_class < 6); 
-
-	if (!save_feature.empty()) {
-		save_image(save_feature + "-ws_from_corr.png", convert_to_ubyte->filter(*ws_from_corr));
-		save_image(save_feature + "-ws_from_mean_grad.png", convert_to_ubyte->filter(*ws_from_mean_grad));
-		save_image(save_feature + "-ws_from_perf_grad.png", convert_to_ubyte->filter(*ws_from_perf_grad));
-		save_image(save_feature + "-mask_from_mean_grad.png", from_mean_binmask);
-		save_image(save_feature + "-mask_from_perf_grad.png", from_perf_binmask);
-		save_image(save_feature + "-lv_seed.png", LV_seed); 
-		save_image(save_feature + "-ws_from_perf_plus_mean_grad2.png", 
-			   convert_to_ubyte->filter(*ws_from_perf_plus_mean_grad2));
-		
-		save_image(save_feature + "-outer_mask.png", outer_mask); 
-		save_image(save_feature + "-RV-peak.png", convert_to_ubyte->filter(*RV_peak_image));
-		save_image(save_feature + "-outer-mask-kmeans.png", convert_to_ubyte->filter(*outer_mask_kmeans)); 
-	}
 
 	return save_image(out_filename, LV_and_myocard_mask) ?  EXIT_SUCCESS : EXIT_FAILURE; 
 }

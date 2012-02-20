@@ -115,7 +115,7 @@ int do_main( int argc, char *argv[] )
 		return EXIT_SUCCESS; 
 
 
-	vector<const char *> filter_chain = options.get_remaining();
+	auto filter_chain = options.get_remaining();
 
 	cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
 	cvdebug() << "supported filters: " << filter_plugins.get_plugin_names() << "\n";

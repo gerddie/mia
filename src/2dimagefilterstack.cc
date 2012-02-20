@@ -122,7 +122,7 @@ int do_main( int argc, char *argv[] )
 		return EXIT_SUCCESS; 
 		
 		
-	vector<const char *> filter_chain = options.get_remaining();
+	auto filter_chain = options.get_remaining();
 		
 	cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
 	cvdebug() << "supported filters: " << filter_plugins.get_plugin_names() << "\n";
@@ -188,12 +188,11 @@ int do_main( int argc, char *argv[] )
 			if (use_src_format)
 				out_type = in_image_list->get_source_format();
 
-			vector<const char *>::const_iterator filter_name = filter_chain.begin();
+			auto filter_name = filter_chain.begin();
 
 			for (auto f = filters.begin(); f != filters.end(); ++f, ++filter_name) {
 				cvdebug() << "Run filter: " << *filter_name << "\n";
-				for (C2DImageVector::iterator i = in_image_list->begin();
-				     i != in_image_list->end(); ++i) {
+				for (auto i = in_image_list->begin();  i != in_image_list->end(); ++i) {
 					*i = (*f)->filter(**i);
 				}
 			}

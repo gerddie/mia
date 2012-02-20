@@ -59,7 +59,7 @@ struct CCmdOptionListData {
 	typedef map<string, COptionsGroup > COptionsMap;
 	COptionsMap options;
 	COptionsMap::iterator current_group;
-	vector<const char *> remaining;
+	vector<string> remaining;
 
 	bool help;
 	bool help_xml; 
@@ -620,7 +620,7 @@ void CCmdOptionList::set_logstream(std::ostream& os)
 	m_impl->set_logstream(os); 
 }
 
-const vector<const char *>& CCmdOptionList::get_remaining() const
+const vector<string>& CCmdOptionList::get_remaining() const
 {
 	return m_impl->remaining;
 }

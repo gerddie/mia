@@ -188,7 +188,7 @@ int do_main(int argc, char *argv[])
 	if (options.parse(argc, argv, "filter", &sfh) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
-	vector<const char *> filter_chain = options.get_remaining();
+	auto filter_chain = options.get_remaining();
 
 	if (filter_chain.empty()) {
 		cvwarn() << "No filters given, will only copy files ";
@@ -196,7 +196,7 @@ int do_main(int argc, char *argv[])
 
 	// now start the fun part
 	//first count the number of slices
-	vector<const char *>::const_iterator i = filter_chain.begin();
+	auto i = filter_chain.begin();
 
 	auto filter = sfh.produce(*i);
 	++i;

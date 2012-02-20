@@ -55,12 +55,6 @@ public:
 	   The filter chain constrctor 
 	   \param filters a vector of strings describing the filters 
 	*/
-	TFilterChain(std::vector<const char *> filters);
-
-	/**
-	   The filter chain constrctor 
-	   \param filters a vector of strings describing the filters 
-	*/
 	TFilterChain(std::vector<std::string> filters);
 	
 	/**
@@ -113,15 +107,6 @@ TFilterChain<Handler>::TFilterChain(std::vector<std::string> filters):
 	std::transform(filters.begin(), filters.end(), m_chain.begin(), 
 		       [](const std::string& s){ return Handler::instance().produce(s); }); 
 }
-
-template <typename Handler> 
-TFilterChain<Handler>::TFilterChain(std::vector<const char *> filters):
-	m_chain(filters.size())
-{
-	std::transform(filters.begin(), filters.end(), m_chain.begin(), 
-		       [](const char *s){ return Handler::instance().produce(s); }); 
-}
-
 
 template <typename Handler> 
 void TFilterChain<Handler>::push_front(const char * filter)

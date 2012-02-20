@@ -160,11 +160,11 @@ int do_main( int argc, char *argv[] )
 
 	char new_line = cverb.show_debug() ? '\n' : '\r';
 
-	vector<const char *> input_images = options.get_remaining();
+	auto input_images = options.get_remaining();
 
 	C3DImageCollector ic(input_images.size());
 
-	for (vector<const char *>::const_iterator  i = input_images.begin(); i != input_images.end(); ++i) {
+	for (auto  i = input_images.begin(); i != input_images.end(); ++i) {
 
 		cvmsg() << "Load " << *i << new_line;
 		C2DImageIOPluginHandler::Instance::PData  in_image_list = image2dio.load(*i);

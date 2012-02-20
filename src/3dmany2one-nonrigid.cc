@@ -113,7 +113,7 @@ const SProgramDescription g_description = {
 	
 }; 
 
-C3DFullCostList create_costs(const std::vector<const char *>& costs, int idx)
+C3DFullCostList create_costs(const std::vector<string>& costs, int idx)
 {
 	stringstream cost_descr; 
 	cost_descr << ",src=src" << idx << ".@,ref=ref" << idx << ".@"; 
@@ -135,14 +135,14 @@ C3DFullCostList create_costs(const std::vector<const char *>& costs, int idx)
 struct SeriesRegistration {
 	C3DImageSeries&  input_images; 
 	string minimizer; 
-	const std::vector<const char *>& costs; 
+	const std::vector<string>& costs; 
 	size_t mg_levels; 
 	P3DTransformationFactory transform_creator; 
 	int reference; 
 	
 	SeriesRegistration(C3DImageSeries&  _input_images, 
 			   const string& _minimizer, 
-			   const std::vector<const char *>& _costs, 
+			   const std::vector<string>& _costs, 
 			   size_t _mg_levels, 
 			   P3DTransformationFactory _transform_creator, 
 			   int _reference):

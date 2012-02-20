@@ -117,7 +117,7 @@ const SProgramDescription g_general_help = {
 	"  -i segment.set -o registered.set -k 2 -r 30 mi divcurl:weight=5"
 }; 
 
-C2DFullCostList create_costs(const std::vector<const char *>& costs, int idx)
+C2DFullCostList create_costs(const std::vector<string>& costs, int idx)
 {
 	stringstream cost_descr; 
 	cost_descr << ",src=src" << idx << ".@,ref=ref" << idx << ".@"; 
@@ -143,14 +143,14 @@ C2DFullCostList create_costs(const std::vector<const char *>& costs, int idx)
 struct SeriesRegistration {
 	C2DImageSeries&  input_images; 
 	string minimizer; 
-	const std::vector<const char *>& costs; 
+	const std::vector<string>& costs; 
 	size_t mg_levels; 
 	P2DTransformationFactory transform_creator; 
 	int reference; 
 	
 	SeriesRegistration(C2DImageSeries&  _input_images, 
 			   const string& _minimizer, 
-			   const std::vector<const char *>& _costs, 
+			   const std::vector<string>& _costs, 
 			   size_t _mg_levels, 
 			   P2DTransformationFactory _transform_creator, 
 			   int _reference):

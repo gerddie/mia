@@ -137,11 +137,11 @@ int do_main( int argc, char *argv[] )
 	if (options.get_remaining().empty())
 		throw runtime_error("no input images given ...");
 
-	vector<const char *> input_images = options.get_remaining();
+	auto input_images = options.get_remaining();
 
 	CVarAccumulator ic;
 
-	for (vector<const char *>::const_iterator  i = input_images.begin(); i != input_images.end(); ++i) {
+	for (auto  i = input_images.begin(); i != input_images.end(); ++i) {
 		cvmsg() << "Load " << *i << "\r";
 		auto in_image_list = imageio.load(*i);
 		if (in_image_list.get() && in_image_list->size()) {
