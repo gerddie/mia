@@ -24,6 +24,7 @@
 #include <mia/core/ioplugin.cxx>
 #include <mia/core/iohandler.cxx>
 #include <mia/core/errormacro.hh>
+#include <mia/core/tools.hh>
 
 NS_MIA_BEGIN
 
@@ -75,6 +76,11 @@ bool  EXPORT_2D save_image(const std::string& filename, P2DImage image)
 	C2DImageIOPluginHandler::Instance::Data out_image_list;
 	out_image_list.push_back(image);
 	return C2DImageIOPluginHandler::instance().save(filename, out_image_list);
+}
+
+bool  EXPORT_2D save_image(const std::string& filename, C2DImage& image)
+{
+	return save_image(filename, P2DImage(&image, void_destructor<C2DImage>())); 
 }
 
 C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string>& filenames, 

@@ -36,6 +36,7 @@
 #include <mia/core.hh>
 #include <mia/core/meanvar.hh>
 #include <mia/core/bfsv23dispatch.hh>
+#include <mia/core/tools.hh>
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/ica.hh>
@@ -58,11 +59,6 @@ const SProgramDescription g_description = {
 
 namespace bfs=boost::filesystem; 
 
-template <typename T> 
-struct void_destructor {
-	virtual void operator () (T *) {
-	}
-}; 
 
 
 class C2DFImage2PImage {

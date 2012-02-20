@@ -120,6 +120,15 @@ inline P2DImage load_image<P2DImage>(const std::string& filename)
 bool  EXPORT_2D save_image(const std::string& filename, P2DImage image);
 
 /**
+   Convenience function to save one 2D image to a file 
+   @param filename 
+   @param image 
+   @returns true if saving was  successfull
+ */
+bool  EXPORT_2D save_image(const std::string& filename, C2DImage& image);
+
+
+/**
    Convenience function to load a series of images and group them into sets based 
    on the acuisition parameters if available. 
    If these parameters are not available, then the order of the input files is used
