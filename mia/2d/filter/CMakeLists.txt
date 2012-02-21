@@ -66,6 +66,7 @@ SET(filters2dNew_base
   selectbig
   sepconv
   shaped_mean
+  sortlabel
   tee
   thinning 
   thresh
