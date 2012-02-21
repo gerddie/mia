@@ -110,13 +110,7 @@ double mean_frame_border_distance(const C2DDImage& distance, const C2DBitImage& 
 
 C2DBitImage get_boundary(const C2DUBImage& mask) 
 {
-	const char *filters[2] = {
-		"binarize:min=1", 
-		"close:shape=8n"
-	}; 
-
-	
-	auto orig_mask = run_filter_chain(P2DImage(mask.clone()), 2, filters); 
+	auto orig_mask = run_filter_chain(P2DImage(mask.clone()), {"binarize:min=1", "close:shape=8n"}); 
 	auto enlarged_mask = run_filter(*orig_mask, "dilate:shape=8n");
 	
 	const C2DBitImage& om = dynamic_cast<const C2DBitImage&>(*orig_mask); 
