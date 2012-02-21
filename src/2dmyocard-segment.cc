@@ -432,6 +432,21 @@ private:
 	double m_thresh; 
 }; 
 
+static void create_and_save_evaluation_shapes(const string& save_feature, P2DImage final_myocard_mask)
+{
+	auto inverse_labeled =  run_filter_chain(final_myocard_mask, {"invert", "label", "sort-label"});
+	auto label1 = run_filter(inverse_labeled, "binarize:min=1,max=1"); 
+	auto label2 = run_filter(inverse_labeled, "binarize:min=2,max=2");
+	
+	// the "outside" label must have the pixel (0,0) set 
+	auto label1_bit = dynamic_cast<const C2DBitImage&>( *label1 ); 
+	if ( !label1_bit(0,0) ) 
+		swap(label1, label2); 
+	
+	save_image(save_feature+"-2-LV-endo.png", label2); 
+	save_image(save_feature+"-2-LV-exo.png", run_filter(label1, "invert")); 
+}
+
 int do_main( int argc, char *argv[] )
 {
 	// IO parameters 
@@ -505,7 +520,7 @@ int do_main( int argc, char *argv[] )
 		
 	} while (!components && (rv_idx < 0 || lv_idx < 0 || perf_idx < 0) && test_components < 6); 
 
-	auto convert_to_ubyte = produce_2dimage_filter("convert");
+	auto conv2ubyte = produce_2dimage_filter("convert");
 	
 	if (!save_feature.empty()) {
 		ica->save_coefs(save_feature + ".txt"); 
@@ -599,18 +614,18 @@ int do_main( int argc, char *argv[] )
 	}
 
 	if (!save_feature.empty()) {
-		save_image(save_feature+"-0-RV.png", convert_to_ubyte->filter(*RV_feature)); 
-		save_image(save_feature+"-0-LV.png", convert_to_ubyte->filter(*LV_feature)); 
-		save_image(save_feature+"-0-perf.png", convert_to_ubyte->filter(*perf_feature)); 
-		save_image(save_feature+"-0-mean.png", convert_to_ubyte->filter(*mean_feature)); 
+		save_image(save_feature+"-0-RV.png", conv2ubyte->filter(*RV_feature)); 
+		save_image(save_feature+"-0-LV.png", conv2ubyte->filter(*LV_feature)); 
+		save_image(save_feature+"-0-perf.png", conv2ubyte->filter(*perf_feature)); 
+		save_image(save_feature+"-0-mean.png", conv2ubyte->filter(*mean_feature)); 
 		
 		save_image(save_feature+"-1-RV_mask.png", RV_mask); 
 		save_image(save_feature+"-1-LV_mask.png", LV_mask); 
 		save_image(save_feature+"-1-RV-LV_bridge.png", RV_LV_bridge_mask); 
 		save_image(save_feature+"-1-myocard_seed.png", myocard_seeds); 
-		save_image(save_feature+"-1-ws-seed.png", convert_to_ubyte->filter(*seed)); 
+		save_image(save_feature+"-1-ws-seed.png", conv2ubyte->filter(*seed)); 
 		
-		save_image(save_feature+"-1-ws.png", convert_to_ubyte->filter(*ws_from_mean_grad_1)); 
+		save_image(save_feature+"-1-ws.png", conv2ubyte->filter(*ws_from_mean_grad_1)); 
 		save_image(save_feature+"-1-circle.png",  myo_binmask_circle); 
 	}
 
@@ -632,10 +647,11 @@ int do_main( int argc, char *argv[] )
 	// evaluate the average time-intensity curve for the given LV mask 
 	auto LV_bit_mask = dynamic_cast<const C2DBitImage&>(*LV_mask); 
 	
-	// evaluate a correlation image representing the correlation of each pixel w.r.t. the average time-intensity 
-	// curve above 
+	// evaluate a correlation image representing the correlation of each pixel 
+	// w.r.t. the average time-intensity curve above 
 	CEvaluateSeriesCorrelationToMask correval_lv(LV_bit_mask, input_images.size() - skip_images); 
-	C2DFImage LV_corr_image = correval_lv.get_correlation_image(input_images.begin() + skip_images, input_images.end()); 
+	C2DFImage LV_corr_image = correval_lv.get_correlation_image(input_images.begin() + skip_images, 
+								    input_images.end()); 
 	
 	// 
 	// now do a two-class watershed to improve the LV segmentation
@@ -719,19 +735,21 @@ int do_main( int argc, char *argv[] )
 		max_class++; 	
 	}while(!mia::filter(count_pixels, *test_mask) && max_class < 6); 
 
+	
+
 	if (!save_feature.empty()) {
+		create_and_save_evaluation_shapes(save_feature, final_myocard_mask); 
 
-
-		save_image(save_feature+"-2-LV-corr.png", convert_to_ubyte->filter(LV_corr_image)); 
+		save_image(save_feature+"-2-LV-corr.png", conv2ubyte->filter(LV_corr_image)); 
 		save_image(save_feature+"-2-LV_cavity_from_corr.png", LV_seed);
-		save_image(save_feature+"-2-seed.png", convert_to_ubyte->filter(*seed));
-		save_image(save_feature+"-2-ws_from_mean_grad.png",  convert_to_ubyte->filter(*ws_from_mean_grad)); 
+		save_image(save_feature+"-2-seed.png", conv2ubyte->filter(*seed));
+		save_image(save_feature+"-2-ws_from_mean_grad.png",  conv2ubyte->filter(*ws_from_mean_grad)); 
 		save_image(save_feature+"-2-myocard-from_mean_binmask.png", from_mean_binmask); 
-		save_image(save_feature+"-2-ws_from_perf_grad.png", convert_to_ubyte->filter(*ws_from_perf_grad));
+		save_image(save_feature+"-2-ws_from_perf_grad.png", conv2ubyte->filter(*ws_from_perf_grad));
 		
 		
-		save_image(save_feature+"-2-RV_peak_image.png", convert_to_ubyte->filter(*RV_peak_image)); 
-		save_image(save_feature+"-2-RV_peak_kmeans.png", convert_to_ubyte->filter(*outer_mask_kmeans)); 
+		save_image(save_feature+"-2-RV_peak_image.png", conv2ubyte->filter(*RV_peak_image)); 
+		save_image(save_feature+"-2-RV_peak_kmeans.png", conv2ubyte->filter(*outer_mask_kmeans)); 
 		save_image(save_feature+"-2a-outer_mask.png", outer_mask); 
 		save_image(save_feature+"-2a-from_perf_binmask.png",  from_perf_binmask); 
 		save_image(save_feature+"-2a-myomask-using-kmeans.png",  final_myocard_mask); 
