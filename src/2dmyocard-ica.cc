@@ -289,22 +289,13 @@ P2DFilter create_LV_cropper(P2DImage rvlv_feature,
 					      C2DBounds& crop_start
 					      )
 {
-	const char *kmeans_filter_chain[] = {
-		"close:shape=[sphere:r=2]",
-		"open:shape=[sphere:r=2]"
-	};
+	C2DImageFilterChain kmeans_filter_chain({"close:shape=[sphere:r=2]",
+				"open:shape=[sphere:r=2]"}); 
 
-	const char *RV_filter_chain[] = {
-		"label",
-		"selectbig"
-	};
+	C2DImageFilterChain RV_filter_chain({"label","selectbig"});
+	C2DImageFilterChain LVcandidate_filter_chain({"binarize:min=0,max=0","label"});
 
-	const char *LVcandidate_filter_chain[] = {
-		"binarize:min=0,max=0",
-		"label",
-	};
-
-	P2DImage pre_kmeans = run_filter_chain(rvlv_feature, 2, kmeans_filter_chain);
+	P2DImage pre_kmeans = kmeans_filter_chain.run(rvlv_feature);
 
 	P2DImage RV;
 	P2DImage kmeans;
@@ -319,7 +310,7 @@ P2DFilter create_LV_cropper(P2DImage rvlv_feature,
 		kfb << "binarize:min="<<2*nc<<",max="<<2*nc;
 		P2DImage kmeans_binarized = run_filter(*kmeans, kfb.str().c_str());
 
-		RV = run_filter_chain(kmeans_binarized, 2, RV_filter_chain);
+		RV = RV_filter_chain.run(kmeans_binarized);
 
 
 		npixels = ::mia::filter(GetRegionSize(), *RV);
@@ -330,7 +321,7 @@ P2DFilter create_LV_cropper(P2DImage rvlv_feature,
 		return P2DFilter();
 
 
-	P2DImage LV_candidates = run_filter_chain(kmeans, 2, LVcandidate_filter_chain);
+	P2DImage LV_candidates = LVcandidate_filter_chain.run(kmeans);
 
 	C2DFVector RV_center = ::mia::filter(GetRegionCenter(), *RV);
 	int label = ::mia::filter(GetClosestRegionLabel(RV_center), *LV_candidates);
