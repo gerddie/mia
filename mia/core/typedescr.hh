@@ -75,7 +75,8 @@ struct __type_descr {
 #define DEFINE_TYPE_DESCR2(type, n) const char * const __type_descr<type>::value = n;
 	
 
-
+DECLARE_TYPE_DESCR(signed char); 
+DECLARE_TYPE_DESCR(unsigned char); 
 DECLARE_TYPE_DESCR(short); 
 DECLARE_TYPE_DESCR(int); 
 DECLARE_TYPE_DESCR(long); 

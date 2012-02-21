@@ -25,12 +25,16 @@ NS_MIA_BEGIN
 
 const char *timestep_type::type_descr = "timestep";
 
+
 DEFINE_TYPE_DESCR(short); 
 DEFINE_TYPE_DESCR(int); 
 DEFINE_TYPE_DESCR(long); 
 DEFINE_TYPE_DESCR(float); 
 DEFINE_TYPE_DESCR(double); 
 DEFINE_TYPE_DESCR(bool); 
+
+DEFINE_TYPE_DESCR2(signed char, "sbyte"); 
+DEFINE_TYPE_DESCR2(unsigned char, "ubyte"); 
 
 DEFINE_TYPE_DESCR2(unsigned short, "ushort"); 
 DEFINE_TYPE_DESCR2(unsigned int, "uint"); 
