@@ -81,7 +81,8 @@ typedef TFilterChain<C2DFilterPluginHandler> C2DImageFilterChain;
    @param filters array of strings defining the filter to be applied 
    @returns the filtered image 
 */
-P2DImage  EXPORT_2D run_filter_chain(P2DImage image, size_t nfilters, const char *filters[]);
+P2DImage  EXPORT_2D run_filter_chain(P2DImage image, size_t nfilters, const char *filters[])
+	__attribute__((deprecated));
 
 /**
    \ingroup filtering 
@@ -101,6 +102,18 @@ P2DImage  EXPORT_2D run_filter_chain(P2DImage image, const std::vector<const cha
    @returns the filtered image 
 */
 P2DImage  EXPORT_2D run_filter(const C2DImage& image, const char *filter);
+
+/**
+   \ingroup filtering 
+   convenience function: create and run a filter on an image 
+   @param image input image 
+   @param filter string defining the filter to be applied 
+   @returns the filtered image 
+*/
+inline P2DImage  EXPORT_2D run_filter(P2DImage image, const char *filter)
+{
+	return run_filter(*image, filter); 
+}
 
 
 /**

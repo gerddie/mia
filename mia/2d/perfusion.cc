@@ -419,21 +419,14 @@ P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_delta(P2DImage rvlv_f
 								 const string& save_features)const 
 {
 	P2DFilter result; 
-	const char *kmeans_filter_chain[] = {
-		"close:shape=[sphere:r=2]",
-		"open:shape=[sphere:r=2]"
-	};
+	C2DImageFilterChain kmeans_filter_chain({"close:shape=[sphere:r=2]",
+				"open:shape=[sphere:r=2]"});
 
-	const char *RV_filter_chain[] = {
-		"label",
-		"selectbig"
-	};
+	C2DImageFilterChain RV_filter_chain({"label", "selectbig"});
 
-	const char *LVcandidate_filter_chain[] = {
-		"binarize:min=0,max=0",
-		"label",
-	};
-	P2DImage pre_kmeans = run_filter_chain(rvlv_feature, 2, kmeans_filter_chain);
+	C2DImageFilterChain  LVcandidate_filter_chain({"binarize:min=0,max=0","label"}); 
+	
+	P2DImage pre_kmeans = kmeans_filter_chain.run(rvlv_feature);
 
 	P2DImage RV;
 	P2DImage kmeans;
@@ -454,7 +447,7 @@ retry:
 			kfb << "binarize:min="<<2*nc<<",max="<<2*nc;
 			P2DImage kmeans_binarized = run_filter(*kmeans, kfb.str().c_str());
 			
-			RV = run_filter_chain(kmeans_binarized, 2, RV_filter_chain);
+			RV = RV_filter_chain.run(kmeans_binarized);
 			
 			npixels = ::mia::filter(GetRegionSize(1), *RV);
 			
@@ -471,7 +464,7 @@ retry:
 		
 		RV_center = ::mia::filter(GetRegionCenter(), *RV);
 
-		LV_candidates = run_filter_chain(kmeans, 2, LVcandidate_filter_chain);
+		LV_candidates = LVcandidate_filter_chain.run(kmeans);
 		
 		
 		label = ::mia::filter(GetClosestRegionLabel(RV_center), *LV_candidates);
@@ -525,17 +518,14 @@ P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_features(float LV_mas
 								    C2DBounds& crop_start, 
 								    const string& save_features)const 
 {
-	const char *segment_filter_chain[] = {
-		"close:shape=[sphere:r=2]",
-		"open:shape=[sphere:r=2]",
-		"kmeans:c=7",
-		"binarize:min=6,max=6", 
-		"label"
-	};
-
-	P2DImage RV_candidates = run_filter_chain(m_ica->get_feature_image(m_cls.get_RV_idx()),
-						  sizeof(segment_filter_chain)/sizeof(const char*), 
-						  segment_filter_chain);
+	C2DImageFilterChain  segment_filter_chain({
+			"close:shape=[sphere:r=2]",
+				"open:shape=[sphere:r=2]",
+				"kmeans:c=7",
+				"binarize:min=6,max=6", 
+				"label"	});
+	
+	P2DImage RV_candidates = segment_filter_chain.run(m_ica->get_feature_image(m_cls.get_RV_idx())); 
 	
 	P2DImage RV = run_filter(*RV_candidates, "selectbig"); 
 	size_t npixels = ::mia::filter(GetRegionSize(1), *RV);
@@ -545,10 +535,7 @@ P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_features(float LV_mas
 
 	C2DFVector RV_center = ::mia::filter(GetRegionCenter(), *RV);
 
-	P2DImage LV_candidates = run_filter_chain(m_ica->get_feature_image(m_cls.get_LV_idx()),
-						  sizeof(segment_filter_chain)/sizeof(const char*), 
-						  segment_filter_chain);
-
+	P2DImage LV_candidates = segment_filter_chain.run(m_ica->get_feature_image(m_cls.get_LV_idx()));
 
 	int label = ::mia::filter(GetClosestRegionLabel(RV_center), *LV_candidates);
 	size_t lv_pixels = ::mia::filter(GetRegionSize(label), *LV_candidates);
