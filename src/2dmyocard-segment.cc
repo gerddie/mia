@@ -443,8 +443,19 @@ static void create_and_save_evaluation_shapes(const string& save_feature, P2DIma
 	if ( !label1_bit(0,0) ) 
 		swap(label1, label2); 
 	
-	save_image(save_feature+"-2-LV-endo.png", label2); 
+	save_image(save_feature+"-2-LV-endo.png", label2);
 	save_image(save_feature+"-2-LV-exo.png", run_filter(label1, "invert")); 
+
+	save_image("LV-endo.@", label2);
+	auto endo_line = run_filter_chain(label2, {"dilate:shape=4n", "mask:input=LV-endo.@,inverse=1"}); 
+	save_image(save_feature+"-2-LV-endo-line.png", endo_line);
+	save_image(save_feature+"-2-LV-endo-distance.v", run_filter(endo_line, "distance"));
+
+	save_image("LV-exo.@", label1);
+	auto exo_line = run_filter_chain(label1, {"dilate:shape=4n", "mask:input=LV-exo.@,inverse=1"}); 
+	save_image(save_feature+"-2-LV-exo-line.png", exo_line);
+	save_image(save_feature+"-2-LV-exo-distance.v", run_filter(exo_line, "distance"));
+	
 }
 
 int do_main( int argc, char *argv[] )
@@ -694,6 +705,7 @@ int do_main( int argc, char *argv[] )
 		throw runtime_error("For some reason the RV peak index could not be identified"); 
 	auto RV_peak_image = input_images[rv_peak_index]; 
 
+
 	// now we try to get a good segmentation of the fat and subsequently of the 
 	// myocardium 
 	// we cluster the RV feature image by using a 10-class k-means, 
@@ -753,7 +765,10 @@ int do_main( int argc, char *argv[] )
 		save_image(save_feature+"-2a-outer_mask.png", outer_mask); 
 		save_image(save_feature+"-2a-from_perf_binmask.png",  from_perf_binmask); 
 		save_image(save_feature+"-2a-myomask-using-kmeans.png",  final_myocard_mask); 
-		
+
+		auto lv_peak_index = ica->get_LV_peak_time(); 
+		if (lv_peak_index >= 0) 
+			save_image(save_feature+"-2-LV-peak.png", run_filter(*input_images[lv_peak_index], "convert:map=linear,b=20"));
 	}
 
 	return save_image(out_filename, final_myocard_mask) ?  EXIT_SUCCESS : EXIT_FAILURE; 
