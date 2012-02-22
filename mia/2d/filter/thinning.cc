@@ -42,6 +42,7 @@ C2DThinningImageFilter::C2DThinningImageFilter(int max_iterations):
 	s2.add_pixel( 1,  0, false); 
 	s2.add_pixel( 0,  0, true); 
 	s2.add_pixel(-1,  0, true); 
+	s2.add_pixel(-1,  1, true); 
 	s2.add_pixel( 0,  1, true); 
 
 	set_shapes(s1,s2); 
