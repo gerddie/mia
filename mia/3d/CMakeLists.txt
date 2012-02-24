@@ -21,6 +21,7 @@
 SET(MIA3D_SRC 
   cost.cc
   creator.cc
+  critical_point.cc
   2dimagefifofilter.cc
   3DDatafield.cc
   3DImage.cc
@@ -57,6 +58,7 @@ SET(MIA3D_SRC
 SET(MIA3D_HEADERS
 	cost.hh
 	creator.hh
+	critical_point.hh
 	defines3d.hh
 	3DDatafield.hh 3DDatafield.cxx
 	3DVectorfield.hh
@@ -173,6 +175,7 @@ TEST_3D(transio transio)
 TEST_3D(landmark landmark)
 TEST_3D(quaternion quaternion)
 TEST_3D(ppmatrix ppmatrix)
+TEST_3D(matrix matrix)
 TEST_3D(fullcost fullcost)
 TEST_3D(iterator iterator)
 TEST_3D(stackdisttrans stackdisttrans)
