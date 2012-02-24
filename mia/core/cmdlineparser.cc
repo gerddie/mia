@@ -39,10 +39,13 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/fixedwidthoutput.hh>
 
+
 extern void print_full_copyright(const char *name);
 
 
 NS_MIA_BEGIN
+extern char const *get_revision(); 
+
 using std::ostream;
 using std::ostringstream;
 using std::string;
@@ -64,6 +67,7 @@ struct CCmdOptionListData {
 	bool help;
 	bool help_xml; 
 	bool usage;
+	bool version; 
 	bool copyright;
 	vstream::Level verbose;
 
@@ -83,6 +87,7 @@ struct CCmdOptionListData {
 	void print_help_xml(const char *progname, const CPluginHandlerBase *additional_help) const; 
 	void print_help(const char *name_help, bool has_additional) const;
 	void print_usage(const char *name_help) const;
+	void print_version(const char *name_help) const;
 
 	vector<const char *> has_unset_required_options() const; 
 	void set_logstream(std::ostream& os); 
@@ -111,6 +116,7 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	help(false),
 	help_xml(false), 
 	usage(false),
+	version(false), 
 	copyright(false),
 	verbose(vstream::ml_warning), 
 	m_general_help(description.description), 
@@ -129,6 +135,7 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	add(make_opt(help,  "help", 'h', "print this help"));
 	add(make_opt(help_xml,  "help-xml", 0, "print help formatted as XML"));
 	add(make_opt(usage,  "usage", '?', "print a short help"));
+	add(make_opt(version,  "version", 0, "print the version number and exit"));
 	set_current_group("");
 }
 
@@ -425,6 +432,12 @@ void CCmdOptionListData::print_usage(const char *name) const
 	*m_log << '\n';
 }
 
+void CCmdOptionListData::print_version(const char *name_help) const
+{
+	*m_log << name_help << " revision:" << get_revision() << "\n\n"; 
+	*m_log << g_basic_copyright << "\n"; 
+}
+
 CCmdOptionList::CCmdOptionList(const SProgramDescription& description):
 	m_impl(new CCmdOptionListData(description))
 {
@@ -584,6 +597,9 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional,
 	} else if (m_impl->usage) {
 		m_impl->print_usage(name_help);
 		return hr_usage;
+	} else if (m_impl->version) {
+		m_impl->print_version(name_help);
+		return hr_version;
 	} else if (m_impl->copyright) {
 		::print_full_copyright(name_help);
 		return hr_copyright;

@@ -205,6 +205,7 @@ public:
 		hr_help,      /**< standard help output has been requested */
 		hr_help_xml,  /**< XML-formatted help has been requested */
 		hr_usage,     /**< a short usage description has been requested */ 
+		hr_version,   /**< The version information has been requested */ 
 		hr_copyright  /**< The long copyright information has been requested */
 	};
 
