@@ -1,5 +1,5 @@
 #
-# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,9 +31,7 @@
 # directories and compiled libraries if you've just compiled it in the
 # source tree. Just set it to the root of the tree where you extracted
 # the source.
-#
-# Written for VXL by Amitha Perera.
-# 
+
 
 FIND_PATH( DCMTK_config_INCLUDE_DIR dcmtk/config/osconfig.h
   ${DCMTK_DIR}/ ${DCMTK_DIR}/include /usr/include

@@ -26,18 +26,32 @@ SET(PYTHON_SRC mia_python.cc)
 #    )
 
 
-FIND_PACKAGE( Boost 1.36.1 COMPONENTS python)
 FIND_PACKAGE( PythonLibs )
 
 if ( PYTHONLIBS_FOUND )
   FIND_PACKAGE(PythonInterp)
 
+   
   INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
   ADD_LIBRARY(mia MODULE ${PYTHON_SRC})
   SET_TARGET_PROPERTIES(mia PROPERTIES PREFIX "")
+
+  # not sure  is this is really needed now, 
+  # better interface will be with numpy
+  FIND_PACKAGE( Boost 1.46.1 COMPONENTS python)
   TARGET_LINK_LIBRARIES(mia ${mia3d}  ${Boost_PYTHON_LIBRARY} ${PYTHON_LIBRARIES} )
 
-#  if (PYTHONINTERP_FOUND)
-#    ADD_TEST(mia-python ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_mia.py)
-#  endif(PYTHONINTERP_FOUND)
+  #
+  #
+  #
+  EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import numpy; print numpy.get_include()"
+    OUTPUT_VARIABLE NUMPY_INCLUDE_PATH
+    RESULT_VARIABLE NUMPY_ERR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+  IF(NUMPY_ERR) 
+    MESSAGE(ERROR "This code requires numpy to be installed")
+  ENDIF(NUMPY_ERR)
+  INCLUDE_DIRECTORIES(${NUMPY_INCLUDE_PATH})
+  MESSAGE(STATUS "numpy include path ${NUMPY_INCLUDE_PATH}")
 endif ( PYTHONLIBS_FOUND )
