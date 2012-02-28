@@ -40,7 +40,7 @@ typedef tbb::recursive_mutex::scoped_lock CRecursiveScopedLock;
     Normally a product cache is disabled, because most programs don't make use of the 
     same filters over and over again.  
 */
-class CProductCache {
+class EXPORT_CORE CProductCache {
 public: 
 	/**
 	   This constructor registers the cache in the global product cache map
@@ -76,7 +76,7 @@ private:
 
  */
 template <typename Handler> 
-class TProductCache: public CProductCache {
+class EXPORT_CORE TProductCache: public CProductCache {
 public: 
 	typedef typename Handler::ProductPtr ProductPtr; 
 	
@@ -116,7 +116,7 @@ private:
 
 */
 
-class CProductCacheHandler {
+class EXPORT_CORE CProductCacheHandler {
 public: 
 	/// \returns an instance of the cache handler 
 	static CProductCacheHandler& instance(); 
