@@ -48,18 +48,21 @@ public:
 	*/
 	CProductCache(const std::string& name); 
 
-	/// enable this product cache 
-	void enable(); 
-
-	/// disable this product cache 
-	void disable(); 
-
+	/** enable or disable the cache accululation according to the given flag
+	    If the flag is set to true, then all newly created objects will be added 
+	    to  the cache, if it is set to false, all objects that are in the cache may be 
+	    reused, but no new ones are added to the cache. 
+	    If you want to truely not use uncached values, you must clear the cache by calling clear()
+	    and disable it. 
+	    \param enable 
+	 */
+	void enable_write(bool enable); 
+	
+	/// clear the cache 
+	void clear(); 
+protected: 
 	/// \returns whether this cache is enabled 
 	bool is_enabled() const; 
-	
-	/// clear teh cache 
-	void clear(); 
-	
 private: 
 	virtual void do_clear() = 0; 
 	bool m_enabled; 
@@ -149,12 +152,10 @@ TProductCache<Handler>::TProductCache():
 template <typename Handler> 
 typename Handler::ProductPtr TProductCache<Handler>::get(const std::string& name) const
 {
-	if (is_enabled()) {
-		CRecursiveScopedLock lock(m_cache_mutex);
-		auto i = m_cache.find(name); 
-		if (i != m_cache.end())
-			return i->second; 
-	}
+	CRecursiveScopedLock lock(m_cache_mutex);
+	auto i = m_cache.find(name); 
+	if (i != m_cache.end())
+		return i->second; 
 	return ProductPtr(); 
 }
 	

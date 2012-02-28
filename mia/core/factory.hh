@@ -30,6 +30,7 @@
 #include <mia/core/errormacro.hh>
 #include <mia/core/product_base.hh>
 #include <mia/core/optionparser.hh>
+#include <mia/core/productcache.hh>
 
 #include <mia/core/import_handler.hh>
 
@@ -77,7 +78,7 @@ public:
 	virtual Product *create(const CParsedOptions& options, char const *params) __attribute__((warn_unused_result));
 	
 private:
-	virtual bool do_test() const; 
+	virtual bool do_test() const __attribute__((deprecated)); 
 	virtual Product *do_create() const __attribute__((warn_unused_result)) = 0 ;
 	CMutex m_mutex; 
 };
@@ -112,32 +113,44 @@ public:
 	/// The unique pointer type of the the object this plug in hander produces 
 	typedef typename I::UniqueProduct UniqueProduct; 
 
-	/**
-	   Create an object according to the given description. If creation fails, an empty 
-	   pointer is returned. if plugindescr is set to "help" then print out some help.  
-	   
-	 */
-	ProductPtr produce(const char *plugindescr) const;
-
-	/// \overload produce(const char *plugindescr)
-	ProductPtr produce(const std::string& params)const {
-		return produce(params.c_str()); 
+        /**
+	   Create an object according to the given description. If creation fails, the function 
+	   will throw an invalid_argument exception 
+	   \param plugindescr the description of the plug-in 
+	   \returns a shared pointer containing the product of the plug-in according to the description 
+	*/
+	ProductPtr produce(const std::string& plugindescr)const;  
+	
+	/// \overload produce(const std::string& plugindescr)
+	ProductPtr produce(const char *plugindescr) const{
+		return produce(std::string(plugindescr)); 
 	}
-	/**
-	   Create an object according to the given description. If creation fails, an empty 
-	   pointer is returned. if plugindescr is set to "help" then print out some help.  
-	   
-	 */
-	UniqueProduct produce_unique(const char *plugindescr) const;
 
-	/// \overload produce(const char *plugindescr)
-	UniqueProduct produce_unique(const std::string& params)const {
-		return produce_unique(params.c_str()); 
+	/**
+	   Create an object according to the given description. If creation fails, the function 
+	   will throw an invalid_argument exception 
+	   \param plugindescr the description of the plug-in 
+	   \returns a unique pointer of the product of the plug-in according to the description 
+	*/
+
+	UniqueProduct produce_unique(const std::string& plugindescr)const; 
+		
+	/// \overload produce(const std::string& plugindescr)
+	UniqueProduct produce_unique(const char *plugindescr) const{
+		return produce_unique(std::string(plugindescr)); 
 	}
+
+	/**
+	   Sets whether the created shared pointer products should be cached. 
+	   Unique products will never be cached. 
+	   \param enable 
+	 */
+	void set_caching(bool enable); 
 
 private: 
-	typename I::Product *produce_raw(const char *plugindescr) const;
+	typename I::Product *produce_raw(const std::string& plugindescr) const;
 
+	mutable TProductCache<TFactoryPluginHandler<I> > m_cache; 
 }; 
 
 /*
@@ -185,23 +198,34 @@ TFactoryPluginHandler<I>::TFactoryPluginHandler(const std::list<boost::filesyste
 }
 
 template <typename  I>
-typename TFactoryPluginHandler<I>::ProductPtr 
-TFactoryPluginHandler<I>::produce(const char *plugindescr) const
+void TFactoryPluginHandler<I>::set_caching(bool enable)
 {
-	return ProductPtr(this->produce_raw(plugindescr)); 
+	m_cache.enable_write(enable); 
+}
+
+template <typename  I>
+typename TFactoryPluginHandler<I>::ProductPtr 
+TFactoryPluginHandler<I>::produce(const std::string& plugindescr) const
+{
+	auto result = m_cache.get(plugindescr);
+	if (!result) {
+		result.reset(this->produce_raw(plugindescr)); 
+		m_cache.add(plugindescr, result); 
+	}
+	return result; 
 }
 
 template <typename  I>
 typename TFactoryPluginHandler<I>::UniqueProduct
-TFactoryPluginHandler<I>::produce_unique(const char *plugindescr) const
+TFactoryPluginHandler<I>::produce_unique(const std::string& plugindescr) const
 {
 	return UniqueProduct(this->produce_raw(plugindescr)); 
 }
 	
 template <typename  I>
-typename I::Product *TFactoryPluginHandler<I>::produce_raw(char const *params)const
+typename I::Product *TFactoryPluginHandler<I>::produce_raw(const std::string& params)const
 {
-	assert(params); 
+	assert(!params.empty()); 
 	CComplexOptionParser param_list(params);
 		
 	if (param_list.size() < 1) 
@@ -221,7 +245,7 @@ typename I::Product *TFactoryPluginHandler<I>::produce_raw(char const *params)co
 
 	auto factory = this->plugin(factory_name.c_str());
 	DEBUG_ASSERT_RELEASE_THROW(factory, "A plug-in was not found but 'this->plugin' did not throw");
-	return factory->create(param_list.begin()->second,params);
+	return factory->create(param_list.begin()->second,params.c_str());
 
 }
 

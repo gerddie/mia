@@ -29,16 +29,10 @@ CProductCache::CProductCache(const std::string& name):m_enabled(false)
 	CProductCacheHandler::instance().register_cache(name, this); 
 }
 
-void CProductCache::enable()
+void CProductCache::enable_write(bool enable)
 {
 	tbb::spin_mutex::scoped_lock lock(m_enable_mutex);
-	m_enabled = true; 
-}
-
-void CProductCache::disable()
-{
-	tbb::spin_mutex::scoped_lock lock(m_enable_mutex);
-	m_enabled = false; 
+	m_enabled = enable; 
 }
 
 bool CProductCache::is_enabled() const

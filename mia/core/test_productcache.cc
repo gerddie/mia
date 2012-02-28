@@ -71,7 +71,7 @@ MyProductCache the_cache;
 BOOST_AUTO_TEST_CASE(test_basic_cache_enabled) 
 {
 	the_cache.clear(); 
-	the_cache.enable(); 
+	the_cache.enable_write(true); 
 
 	BOOST_CHECK(!the_cache.get("1")); 
 
@@ -82,6 +82,9 @@ BOOST_AUTO_TEST_CASE(test_basic_cache_enabled)
 	BOOST_CHECK(one); 
 	BOOST_CHECK_EQUAL(*one, 1); 
 
+	the_cache.enable_write(false); 
+	BOOST_CHECK(the_cache.get("1"));
+
 	the_cache.clear(); 
 	BOOST_CHECK(!the_cache.get("1")); 
 
@@ -90,7 +93,7 @@ BOOST_AUTO_TEST_CASE(test_basic_cache_enabled)
 BOOST_AUTO_TEST_CASE(test_basic_cache_disabled) 
 {
 	the_cache.clear(); 
-	the_cache.disable(); 
+	the_cache.enable_write(false); 
 
 	BOOST_CHECK(!the_cache.get("1")); 
 
@@ -105,7 +108,7 @@ BOOST_AUTO_TEST_CASE(test_basic_cache_disabled)
 BOOST_AUTO_TEST_CASE(test_basic_cache_enabled_global_clear) 
 {
 	the_cache.clear(); 
-	the_cache.enable(); 
+	the_cache.enable_write(true); 
 
 	BOOST_CHECK(!the_cache.get("1")); 
 
@@ -197,7 +200,7 @@ void CacheReadTest::operator() ( const blocked_range<int>& range ) const
 BOOST_AUTO_TEST_CASE( test_cache_parallel_access )
 {
 	the_cache.clear(); 
-	the_cache.enable(); 
+	the_cache.enable_write(true); 
 
 
 	task_scheduler_init init;
