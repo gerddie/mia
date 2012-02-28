@@ -573,7 +573,7 @@ PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>&
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
    \param help long help string (must not be NULL)
-   \param flags add flags like whether the optionis required to be set 
+   \param required set  true if the optionis required to be set 
    \returns the option warped into a \a boost::shared_ptr
  */
 template <typename T> 
@@ -595,8 +595,8 @@ PCmdOption EXPORT_CORE make_opt(T& value, const std::set<T>& valid_set,
    \param default_value default value if parameter is not given
    \param long_opt long option name
    \param short_opt short option char, set to 0 of none givn
-   \param long_help the help string for thie option
-   \param flags set whether command line option must be set
+   \param help the help string for thie option
+   \param required set  true if the optionis required to be set 
 */
 template <typename T>
 PCmdOption EXPORT_CORE make_opt(typename std::shared_ptr<T>& value, const char *default_value, const char *long_opt, 
@@ -615,8 +615,8 @@ PCmdOption EXPORT_CORE make_opt(typename std::shared_ptr<T>& value, const char *
    \param default_value default value if parameter is not given
    \param long_opt long option name
    \param short_opt short option char, set to 0 of none givn
-   \param long_help the help string for thie option
-   \param flags set whether command line option must be set
+   \param help the help string for thie option
+   \param required set  true if the optionis required to be set 
 */
 template <typename T>
 PCmdOption make_opt(typename std::unique_ptr<T>& value, const char *default_value, const char *long_opt, 

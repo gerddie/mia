@@ -25,6 +25,8 @@
 #include <mia/core/errormacro.hh>
 
 NS_MIA_BEGIN
+
+typedef tbb::recursive_mutex::scoped_lock CRecursiveScopedLock; 
 using namespace std;
 CDatapool::CDatapool()
 {
@@ -32,7 +34,7 @@ CDatapool::CDatapool()
 
 boost::any CDatapool::get(const std::string& key) const
 {
-	CScopedLock lock(m_mutex);
+	CRecursiveScopedLock lock(m_mutex);
 	Anymap::const_iterator i = get_iterator(key);
 	m_usage[key] = true;
 
@@ -41,7 +43,7 @@ boost::any CDatapool::get(const std::string& key) const
 
 boost::any CDatapool::get_and_remove(const std::string& key)
 {
-	CScopedLock lock(m_mutex);
+	CRecursiveScopedLock lock(m_mutex);
 	Anymap::const_iterator i = get_iterator(key);
 	boost::any retval = i->second;
 	m_map.erase(key);
@@ -51,29 +53,29 @@ boost::any CDatapool::get_and_remove(const std::string& key)
 
 void CDatapool::add(const std::string& key, boost::any value)
 {
-	CScopedLock lock(m_mutex);
+	CRecursiveScopedLock lock(m_mutex);
 	m_usage[key] = false;
 	m_map[key] = value;
 }
 
-CMutex CDatapool::m_mutex; 
+tbb::recursive_mutex CDatapool::m_mutex; 
 
 CDatapool& CDatapool::instance()
 {
-	CScopedLock lock(m_mutex);
+	CRecursiveScopedLock lock(m_mutex);
 	static CDatapool pool;
 	return pool;
 }
 
 bool CDatapool::has_key(const std::string& key) const
 {
-	CScopedLock lock(m_mutex);
+	CRecursiveScopedLock lock(m_mutex);
 	return m_map.find(key) != m_map.end();
 }
 
 bool CDatapool::has_unused_data() const
 {
-	CScopedLock lock(m_mutex);
+	CRecursiveScopedLock lock(m_mutex);
 	bool result = false;
 	for (Usagemap::const_iterator u = m_usage.begin();
 	     u != m_usage.end(); ++u) {
@@ -96,6 +98,17 @@ CDatapool::const_iterator CDatapool::get_iterator(const std::string& key) const
 		throw invalid_argument(msg.str());
 	}
 	return i;
+}
+
+
+void CDatapool::clear()
+{
+	CRecursiveScopedLock lock(m_mutex);
+	if (has_unused_data()) 
+		cvmsg() << "CDatapool: The data pool holds data that was never used\n"; 
+
+	m_map.clear(); 
+	m_usage.clear(); 
 }
 
 NS_MIA_END

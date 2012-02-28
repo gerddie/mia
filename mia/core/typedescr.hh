@@ -70,9 +70,9 @@ struct __type_descr {
    A macro to define the value of the  of the __type_descr specialization that takes 
    a special name
    \param type the type to be specialized 
-   \param string to represent the type 
+   \param name string to represent the type 
  */
-#define DEFINE_TYPE_DESCR2(type, n) const char * const __type_descr<type>::value = n;
+#define DEFINE_TYPE_DESCR2(type, name) const char * const __type_descr<type>::value = name;
 	
 
 DECLARE_TYPE_DESCR(signed char); 

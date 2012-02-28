@@ -87,6 +87,16 @@ BOOST_AUTO_TEST_CASE( test_pool_has_key )
 	BOOST_CHECK(!CDatapool::instance().has_key("unknown"));
 }
 
+BOOST_AUTO_TEST_CASE( test_pool_clear )
+{
+	CDatapool::instance().add("param1", 10);
+	BOOST_CHECK(CDatapool::instance().has_key("param1"));
+	BOOST_CHECK(!CDatapool::instance().has_key("unknown"));
+	
+	CDatapool::instance().clear(); 
+	BOOST_CHECK(!CDatapool::instance().has_key("param1"));
+}
+
 struct PoolAccessTest {
 	std::atomic<int> *n_errors; 
 	PoolAccessTest(std::atomic<int> *_nerr); 

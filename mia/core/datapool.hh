@@ -27,6 +27,8 @@
 #include <boost/any.hpp>
 
 #include <mia/core/defines.hh>
+#include <tbb/recursive_mutex.h>
+
 
 NS_MIA_BEGIN
 
@@ -84,6 +86,11 @@ public:
 	   \returns true if the pool has some data that was not uses
 	*/
 	bool has_unused_data() const;
+
+	/**
+	   Remove all stored data from the pool. 
+	 */
+	void clear();
 private:
 
 	CDatapool();
@@ -94,7 +101,7 @@ private:
 	Anymap m_map;
 	typedef std::map<std::string,bool> Usagemap;
 	mutable Usagemap m_usage;
-	static CMutex m_mutex; 
+	static tbb::recursive_mutex m_mutex; 
 };
 
 NS_MIA_END
