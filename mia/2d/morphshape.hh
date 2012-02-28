@@ -114,7 +114,7 @@ public:
 
 /**
    Convenience function to produce a morphshape from a plugin
-   \param shape_descr the description of the morphshape 
+   \param descr the description of the morphshape 
    \returns the newly created morphshape 
 */
 
@@ -127,7 +127,7 @@ inline P2DMorphShape produce_2d_morphshape(const std::string& descr)
    Implements the hit-and-miss transformation on a binary image with a given 
    morphshape. 
    \param[in, out] target output bitmap, the image must be allocated and of the same size like the input image
-   \param[in] src input image 
+   \param[in] source input image 
    \param[in] shape structuring element to be used in the operation 
    \returns number of set pixels
  */
@@ -137,7 +137,7 @@ size_t EXPORT_2D morph_hit_and_miss_2d(C2DBitImage& target, const C2DBitImage& s
    Implements the thinning transformation on a binary image with a given 
    morphshape. 
    \param[in, out] target output bitmap, the image must be allocated and of the same size like the input image
-   \param[in] src input image 
+   \param[in] source input image 
    \param[in] shape structuring element to be used in the operation 
    \returns number of set pixels
  */

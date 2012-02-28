@@ -39,6 +39,7 @@ struct SFuzzySegParams {
    \param[in] noOfClasses number of segmentation classes
    \param[in] residuum limit for optimization 
    \param[out] classes probability images after segmentation 
+   \param[out] gain multiplicative gain field 
    \returns the B-field corrected image 
  */
 EXPORT_2D P2DImage fuzzy_segment_2d(const C2DImage& src, size_t noOfClasses, const SFuzzySegParams& residuum, 
