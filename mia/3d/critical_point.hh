@@ -181,10 +181,10 @@ public:
 	   \param portrait_ phase portrait of critical point
 	   \param eval1 first eigenvalue (always real)
 	   \param eval2 second real eigenvalue or real part of conjugated complex ones
-	   \param eval2 third real eigenvalue or imaginary part of conjugated complex ones
+	   \param eval3 third real eigenvalue or imaginary part of conjugated complex ones
 	   \param evec1 first eigenvector (always real)
 	   \param evec2 second real eigenvector or real part of conjugated complex ones
-	   \param evec2 third real eigenvector or imaginary part of conjugated complex ones
+	   \param evec3 third real eigenvector or imaginary part of conjugated complex ones
 	   \param type how to interpret the second and third eigenvalues/-vectors
 	 */
 	C3DCriticalPointEigen(const C3DFVector& location_,

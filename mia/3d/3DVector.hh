@@ -54,10 +54,10 @@ public:
 	typedef T value_type; 
 
 	/// standart constructor 
-	T3DVector():x(0),y(0),z(0){};
+	T3DVector():x(T()),y(T()),z(T()){};
 	
 	/// create a zero-vector, \a dim must be 3
-	explicit T3DVector(int dim):x(0),y(0),z(0){
+	explicit T3DVector(int dim):x(T()),y(T()),z(T()){
 		assert(dim == 3);
 	}
 	

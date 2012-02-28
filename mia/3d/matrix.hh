@@ -27,30 +27,92 @@
 
 NS_MIA_BEGIN
 
+/**
+   \brief a simple 3x3 matrix 
+   
+   This si a simple implementation of a 3x3 matrix that supports the evaluation of certain 
+   properties and operations with vectors 
+
+   \tparam T the data type of the elements of the matrix 
+ */
+
 template <typename T> 
 struct T3DMatrix: public T3DVector< T3DVector<T> > {
 	
 	T3DMatrix() = default; 
 	T3DMatrix(const T3DMatrix<T>& o) = default; 
 
+
+	/**
+	   Create a diagonal matrix 
+	   \param value the value to set the diagonal elements to 
+	   \returns a diagonal matrix with the gibe diagonal 
+	*/
 	static T3DMatrix<T> diagonal(T value); 
+
+	/**
+	   Create a diagonal matrix 
+	   \param values the values to set the diagonal elements to a(0,0) = values.x, a(1,1) = values.y, ...
+	   \returns a diagonal matrix with the gibe diagonal 
+	*/
 	static T3DMatrix<T> diagonal(const T3DVector<T>& values); 
 
+
+	/**
+	   Construct a matrix by copying from a differenty typed matrix 
+	   \tparam I the element type of the original matrix 
+	   \param o the matrix to be copied 
+	 */
 	template <typename I>
 	T3DMatrix(const T3DMatrix<I>& o); 
-	T3DMatrix(const T3DVector< T3DVector<T> >& o); 
+	
+
+	/**
+	   Construct the matrix by giving a 3D vector of 3D vectors 
+	   \remark This is needed to make transparent use of the T3DVector operators 
+	   \param other  the input matrix 
+	*/
+	T3DMatrix(const T3DVector< T3DVector<T> >& other); 
+
+
+	/**
+	   Construct the matrix by giving the rows as 3D vectors 
+	   \param x 1st row 
+	   \param y 2st row 
+	   \param z 3rd row 
+	*/
 	T3DMatrix(const T3DVector< T >& x, const T3DVector< T >& y, const T3DVector< T >& z ); 
 	
-	T3DMatrix<T>& operator = (const T3DMatrix<T>& o);
+	/**
+	   inplace subtract 
+	   \param other 
+	   \returns 
+	 */
+	T3DMatrix<T>& operator -= (const T3DMatrix<T>& other);
 	
-	T3DMatrix<T>& operator -= (const T3DMatrix<T>& o);
-	
+
+	/**
+	   print the matrix to an ostream 
+	   \param os the output stream 
+	*/
 	void print( std::ostream& os) const; 
 
+
+	/**
+	   \returns the transposed of this matrix 
+	 */
 	T3DMatrix<T>  transposed()const; 
 
+
+	/**
+	   \returns the determinat of the matrix 
+	 */
 	T get_det()  const; 
 	
+
+	/**
+	   \returns the rank of the matrix 
+	 */
 	int get_rank()const;
 	
 	/** calculated the eigenvalues of the matrix using the caracteristic polynome, and
@@ -66,17 +128,23 @@ struct T3DMatrix: public T3DVector< T3DVector<T> > {
 
 	/** Calculate the eigenvector to a given eigenvalues. If the eigenvalue is complex, the 
 	    matrix has to be propagated to a complex one using the type converting copy constructor
-	    \param ev the eigenvalue
-	    \retval result the respective eigenvector
+	    \param[in] ev the eigenvalue
+	    \param[out] v the estimated eigenvector 
 	    \returns 0 eigenvector is valid
 	             2 no eigenvector found
 	 */
 	int get_eigenvector(float ev, C3DFVector& v)const; 
 
 
+	/// The unity matrix 
 	static const T3DMatrix _1; 
 
 }; 
+
+
+/// a simple 3x3 matrix 
+typedef T3DMatrix<float> C3DFMatrix; 
+
 
 template <typename T> 
 const T3DMatrix<T> T3DMatrix<T>::_1(T3DVector< T >(1,0,0), 
@@ -108,8 +176,8 @@ T3DMatrix<T>::T3DMatrix(const T3DMatrix<I>& o):
 }
 
 template <typename T> 
-T3DMatrix<T>::T3DMatrix(const T3DVector< T3DVector<T> >& o):
-	T3DVector<T3DVector<T> >(o.x, o.y, o.z)
+T3DMatrix<T>::T3DMatrix(const T3DVector< T3DVector<T> >& other):
+	T3DVector<T3DVector<T> >(other.x, other.y, other.z)
 {
 }
 
@@ -129,15 +197,6 @@ std::ostream& operator << (std::ostream& os, const T3DMatrix<T>& m)
 {
 	m.print(os); 
 	return os; 
-}
-
-template <typename T> 
-T3DMatrix<T>& T3DMatrix<T>::operator = (const T3DMatrix<T>& o)
-{
-	this->x = o.x; 
-	this->y = o.y; 
-	this->z = o.z; 
-	return *this; 
 }
 
 template <typename T> 
@@ -285,8 +344,8 @@ int T3DMatrix<T>::get_eigenvalues(C3DFVector& result)const
     \param a11
     \param a12
     \param b1
-    \param a2
-    \param a2
+    \param a21
+    \param a22
     \param b2    
     \param x1
     \param x2
@@ -318,8 +377,6 @@ int T3DMatrix<T>::get_eigenvector(float ev, C3DFVector& v)const
 	if (ev == 0.0) {
 		return 1;
 	}
-	
-	
 	
 	T3DMatrix<T> M = *this - T3DMatrix<T>::diagonal(ev);
 
@@ -393,8 +450,6 @@ int T3DMatrix<T>::get_eigenvector(float ev, C3DFVector& v)const
 	return 0;
 }
 
-/// a simple 3x3 matrix 
-typedef T3DMatrix<float> C3DFMatrix; 
 
 
 
