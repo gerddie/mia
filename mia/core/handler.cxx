@@ -96,7 +96,7 @@ void TPluginHandler<I>::global_searchpath(list<bfs::path>& searchpath)
 }
 
 template <typename I>
-const std::string TPluginHandler<I>::get_search_descriptor() const
+const std::string TPluginHandler<I>::get_search_descriptor() 
 {
 	return TPlugin<typename I::PlugData,typename I::PlugType>::search_path().string(); 
 }

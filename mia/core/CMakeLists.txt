@@ -60,6 +60,7 @@ SET(MIACORE_SRC_BASE
   pixeltype.cc 
   plugin_base.cc  
   product_base.cc
+  productcache.cc
   property_flags.cc
   probmap.cc
   regmodel.cc
@@ -134,6 +135,7 @@ SET(MIACORE_HEADER_BASE
   probmap.hh
   property_flags.hh
   product_base.hh
+  productcache.hh
   regmodel.hh
   scaler1d.hh
   shape.hh shape.cxx
@@ -270,6 +272,7 @@ ADD_SUBDIRECTORY(minimizer     )
 ADD_SUBDIRECTORY(splinekernel  ) 
 ADD_SUBDIRECTORY(splinebc  ) 
 
+NEW_TEST(Vector miacore)
 NEW_TEST(attributes miacore)
 NEW_TEST(boundary_conditions  miacore)
 NEW_TEST(callback miacore)
@@ -278,36 +281,36 @@ NEW_TEST(datapool miacore)
 NEW_TEST(delayedparameter miacore)
 NEW_TEST(factoryoption miacore)
 NEW_TEST(fatcost  miacore)
+NEW_TEST(fftslopeclassifier miacore)
 NEW_TEST(filetools miacore)
+NEW_TEST(fixedwidthoutput miacore)
 NEW_TEST(flagstring  miacore)
 NEW_TEST(fullstats miacore)
 NEW_TEST(histogram miacore)
 NEW_TEST(index miacore)
-NEW_TEST(iohandler miacore)
 NEW_TEST(interpolator1d miacore)
+NEW_TEST(iohandler miacore)
 NEW_TEST(kmeans miacore)
 NEW_TEST(labelmap miacore)
 NEW_TEST(meanvar  miacore)
 NEW_TEST(minimizer miacore)
+NEW_TEST(productcache  miacore)
 NEW_TEST(property_flags  miacore)
 NEW_TEST(scaler1d miacore)
-NEW_TEST(slopestatistics miacore)
-NEW_TEST(fftslopeclassifier miacore)
-NEW_TEST(slopeclassifier miacore)
-NEW_TEST(statistics miacore)
-NEW_TEST(splineparzenmi miacore)
 NEW_TEST(seriesstats miacore)
+NEW_TEST(shape miacore)
 NEW_TEST(simpson miacore)
+NEW_TEST(slopeclassifier miacore)
+NEW_TEST(slopestatistics miacore)
+NEW_TEST(sparse_solver miacore)
 NEW_TEST(splinekernel miacore)
+NEW_TEST(splineparzenmi miacore)
+NEW_TEST(statistics miacore)
 NEW_TEST(threadedmsg miacore)
 NEW_TEST(tools miacore)
 NEW_TEST(utils miacore)
-NEW_TEST(Vector miacore)
 NEW_TEST(watch miacore)
 NEW_TEST(waveletslopeclassifier miacore)
-NEW_TEST(fixedwidthoutput miacore)
-NEW_TEST(sparse_solver miacore)
-NEW_TEST(shape miacore)
 
 IF(ITPP_FOUND)
   NEW_TEST(ica miacore)

@@ -86,7 +86,7 @@ public:
 	const_iterator end()const; 
 
 	/// \returns the plug-in spectific directory part 
-	const std::string get_search_descriptor() const; 
+	static const std::string get_search_descriptor(); 
 
 protected: 
 	//! \name Constructors
