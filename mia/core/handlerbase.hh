@@ -55,7 +55,7 @@ class EXPORT_CORE CPluginHandlerBase  {
 	   Constructor 
 	   \param descriptor plugin search  path descriptor, used to identify the plugin type for users
 	*/
-	CPluginHandlerBase(const std::string& descriptor); 
+	CPluginHandlerBase(const std::string& descriptor, const std::string& help); 
 
 	/**
 	   forbid copying - doxygen should drop these from the documentation 
@@ -81,9 +81,13 @@ class EXPORT_CORE CPluginHandlerBase  {
 	 */
 	void print_help(std::ostream& os) const; 
 
-
+	/**
+	   Add the help for all plug-ins to the xml tree 
+	   \param root toot element the documentation is added to 
+	 */
 	void get_xml_help(xmlpp::Element *root) const; 
 
+	/// \returns the plug-in handler descriptor
 	const std::string& get_descriptor() const; 
 
 	/** add all plug-in handler that may be called by this plug-in handler
@@ -98,6 +102,7 @@ private:
 	virtual void do_add_dependend_handlers(HandlerHelpMap& handler_map) const = 0;  
 	
 	std::string m_descriptor; 
+	std::string m_help; 
 }; 
 
 
