@@ -22,9 +22,8 @@
 
 NS_MIA_BEGIN
 
-CPluginHandlerBase::CPluginHandlerBase(const std::string& descriptor, const std::string& help):
-	m_descriptor(descriptor), 
-	m_help(help)
+CPluginHandlerBase::CPluginHandlerBase(const std::string& descriptor):
+	m_descriptor(descriptor)
 {
 }
 
@@ -47,7 +46,6 @@ void CPluginHandlerBase::get_xml_help(xmlpp::Element *root) const
 {
 	xmlpp::Element* handlerRoot = root->add_child("handler");
 	handlerRoot->set_attribute("name", get_descriptor());
-	handlerRoot->set_child_text(m_help);
 	do_get_xml_help(handlerRoot); 
 }
 

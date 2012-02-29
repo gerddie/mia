@@ -51,7 +51,7 @@ EXPORT_CORE const std::string get_plugin_root();
 
 template <typename I> 
 TPluginHandler<I>::TPluginHandler(const std::list<bfs::path>& searchpath):
-	CPluginHandlerBase(TPlugin<typename I::PlugData,typename I::PlugType>::search_path().string(), "")
+	CPluginHandlerBase(TPlugin<typename I::PlugData,typename I::PlugType>::search_path().string())
 {
 	if (!searchpath.empty())
 		initialise(searchpath); 
@@ -298,6 +298,7 @@ void TPluginHandler<I>::do_print_help(std::ostream& os) const
 template <typename I>
 void TPluginHandler<I>::do_get_xml_help(xmlpp::Element *handlerRoot) const
 {
+	handlerRoot->set_child_text(m_help);
 	for (const_iterator i = begin(); i != end(); ++i) {
 		xmlpp::Element* pluginRoot = handlerRoot->add_child("plugin");
 		pluginRoot->set_attribute("name", i->first);

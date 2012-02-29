@@ -50,4 +50,7 @@ template class TIOPluginHandler<CTestIOPlugin>;
 template class THandlerSingleton<TIOPluginHandler<CTestIOPlugin> >;
 template class TIOHandlerSingleton<TIOPluginHandler<CTestIOPlugin> >;
 
+template<> const char * const 
+TPluginHandler<CTestIOPlugin>::m_help = "These are some dummy plug-ins for IO handler testing."; 
+
 NS_MIA_END

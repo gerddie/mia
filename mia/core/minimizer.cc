@@ -167,6 +167,8 @@ int CMinimizer::run(CDoubleVector& x)
 	return do_run(x); 
 }
 
+template<> const char * const 
+TPluginHandler<TFactory<CMinimizer>>::m_help = "These plug-ins provide optimizers of many-to-one functions"; 
 
 EXPLICIT_INSTANCE_HANDLER(CMinimizer);
 
