@@ -139,9 +139,14 @@ bool C2DFifoFilterPlugin::call_test(const CImageStack& in_data, const CImageStac
 template class TPlugin<image2d_stack, filter_type>;
 template class TFifoFilter<P2DImage>;
 template class TFactory<C2DImageFifoFilter>;
-template class TFactoryPluginHandler<TFactory<C2DImageFifoFilter> >;
+template class TFactoryPluginHandler<C2DFifoFilterPlugin>;
 //template class TPluginHandler<TFactory<C2DImageFifoFilter, image2d_stack, filter_type> >;
 template class TPluginHandler<C2DFifoFilterPlugin>;
 template class THandlerSingleton<TFactoryPluginHandler<C2DFifoFilterPlugin> >;
+
+template <> const char *  const 
+TPluginHandler<C2DFifoFilterPlugin>::m_help =  
+   "These plug-ins implement filters for the FIFO-like processing of stacks of images.";
+
 
 NS_MIA_END

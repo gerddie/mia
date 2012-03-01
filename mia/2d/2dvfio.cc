@@ -61,4 +61,9 @@ template class THandlerSingleton<TIOPluginHandler<C2DVFIOPlugin> >;
 template class TIOPluginHandler<C2DVFIOPlugin>;
 template class TPluginHandler<C2DVFIOPlugin>;
 
+template <> const char *  const 
+TPluginHandler<C2DVFIOPlugin>::m_help =  
+   "These plug-ins handle loading and storing of the supported 2D vector field file types.";
+
+
 NS_MIA_END

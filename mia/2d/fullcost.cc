@@ -58,4 +58,9 @@ C2DFullCostPluginHandlerTestPath::C2DFullCostPluginHandlerTestPath()
 	C2DFullCostPluginHandler::set_search_path(cost_plugpath);
 }
 
+template <> const char *  const 
+TPluginHandler<C2DFullCostPlugin>::m_help =  
+   "These plug-ins define cost functions that arise in image registration and similar tasks.";
+
+
 NS_MIA_END

@@ -39,5 +39,9 @@ C3DTransformCreatorHandlerTestPath::C3DTransformCreatorHandlerTestPath()
 
 EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C3DTransformCreator, C3DTransformCreatorPlugin); 
 
+template <> const char *  const 
+TPluginHandler<C3DTransformCreatorPlugin>::m_help =  
+   "These plug-ins define creators for 3D transformations.";
+
 
 NS_MIA_END

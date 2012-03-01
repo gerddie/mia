@@ -92,17 +92,6 @@ C2DMorphShape C2DMorphShape::rotate_by_90() const
 			     rotate_90_degree(*m_background_mask)); 
 }
 
-EXPLICIT_INSTANCE_HANDLER(C2DMorphShape);
-
-using boost::filesystem::path; 
-C2DMorphShapePluginHandlerTestPath::C2DMorphShapePluginHandlerTestPath()
-{
-	list< path> sksearchpath; 
-	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/2d/morphshapes"));
-	C2DMorphShapePluginHandler::set_search_path(sksearchpath); 
-	
-}
-
 const char *C2DMorphShape::type_descr = "morphshapes";
 
 

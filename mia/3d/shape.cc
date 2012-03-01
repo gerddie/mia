@@ -85,4 +85,9 @@ C3DShapePluginHandlerTestPath::C3DShapePluginHandlerTestPath()
 	C3DShapePluginHandler::set_search_path(sksearchpath); 
 }
 
+template <> const char *  const 
+TPluginHandler<TFactory<C3DShape>>::m_help =  "These plug-ins define 3D structuring elements "
+				"to describe neighborhoods for morphological and other filters."; 
+
+
 NS_MIA_END

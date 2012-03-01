@@ -52,7 +52,7 @@ const SProgramDescription description = {
 map<string, const CPluginHandlerBase*> collect_handlers()
 {
 #define ADD(Handler) \
-	result[Handler ().get_search_descriptor()] =&Handler ();
+	result[Handler ().get_descriptor()] =&Handler ();
 
 	map<string, const CPluginHandlerBase*> result; 
 

@@ -91,4 +91,12 @@ template class TCST2DKernel<C2DFImage>;
 EXPLICIT_INSTANCE_HANDLER(CCST2DVectorKernel);
 EXPLICIT_INSTANCE_HANDLER(CCST2DImageKernel);
 
+template <> const char *  const 
+TPluginHandler<TFactory<CCST2DImageKernel>>::m_help =  "These plug-ins define kernels for 2D processing of images "
+							"in the Cosine transformed space.";
+
+template <> const char *  const 
+TPluginHandler<TFactory<CCST2DVectorKernel>>::m_help =  "These plug-ins define kernels for 2D processing of vector fields "
+							"in the Cosine transformed space.";
+
 NS_MIA_END

@@ -188,4 +188,9 @@ template class TPluginHandler<C3DFatImageCostPlugin>;
 template class TFactoryPluginHandler<C3DFatImageCostPlugin>;
 template class THandlerSingleton<C3DFatImageCostPluginHandlerImpl>;
 
+template <> const char *  const 
+TPluginHandler<C3DFatImageCostPlugin>::m_help =  
+   "These plug-ins implement image similarity measures (obsolete).";
+
+
 NS_MIA_END

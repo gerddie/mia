@@ -120,4 +120,9 @@ float *CFFT2DKernel::prepare(const C2DBounds& size)
 
 EXPLICIT_INSTANCE_HANDLER(CFFT2DKernel);
 
+template <> const char *  const 
+TPluginHandler<TFactory<CFFT2DKernel>>::m_help =  "These plug-ins define kernels for 2D processing "
+				"in the Fourier transformed space.";
+
+
 NS_MIA_END

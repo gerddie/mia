@@ -86,11 +86,23 @@ template class THandlerSingleton<TFactoryPluginHandler<C3DFilterPlugin> >;
 template class TFactoryPluginHandler<C3DFilterPlugin>;
 template class TPluginHandler<C3DFilterPlugin>;
 
+template<> const  char * const 
+TPluginHandler<C3DFilterPlugin>::m_help = 
+   "These plug-ins provide 3D image filters. Unless otherwise noted, "
+   "they take a gray scale image of abitrary pixel type as input, "
+   "process it and hand it to the next filter in the pipeline." 
+; 
+
 template class EXPORT_HANDLER TPlugin<C3DImage, combiner_type>;
 template class EXPORT_HANDLER TFactory<C3DImageCombiner>;
 template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C3DImageCombinerPlugin> >;
 template class TFactoryPluginHandler<C3DImageCombinerPlugin>;
 template class TPluginHandler<C3DImageCombinerPlugin>;
+
+template<> const  char * const 
+TPluginHandler<TFactory<C3DImageCombiner>>::m_help = 
+    "These plug-ins provide 3D image combiners that merge two gray scale image."; 
+
 
 P3DImage  EXPORT_3D run_filter(const C3DImage& image, const char *filter)
 {

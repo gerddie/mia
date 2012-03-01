@@ -42,6 +42,11 @@ template class TIOHandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> >;
 template class TIOPluginHandler<C3DImageIOPlugin>;
 template class TPluginHandler<C3DImageIOPlugin>;
 
+template <> const char *  const 
+TPluginHandler<C3DImageIOPlugin>::m_help =  
+   "These plug-ins handle loading and storing of 3D images to the supported image file types.";
+
+
 P3DImageVector EXPORT_3D create_image3d_vector(P3DImage image)
 {
 	P3DImageVector result(new C3DImageVector);
@@ -74,6 +79,8 @@ C3DImageIOPluginHandlerTestPath::C3DImageIOPluginHandlerTestPath()
 	C3DImageIOPluginHandler::set_search_path(searchpath);
 	
 }
+
+
 
 NS_MIA_END
 
