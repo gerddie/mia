@@ -100,7 +100,7 @@ public:
 	/**
 	   Add a product pointer to the cache if the cache is enabled
 	   \param name initializer string of the product 
-	   \param the shared pointer of the product 
+	   \param product the shared pointer of the product to be added 
 	 */
 	void add(const std::string& name, ProductPtr product); 
 private: 
