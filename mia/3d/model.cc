@@ -48,4 +48,9 @@ template class THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin> >;
 template class TFactoryPluginHandler<C3DRegModelPlugin>;
 template class TPluginHandler<C3DRegModelPlugin>;
 
+template <> const char *  const 
+TPluginHandler<C3DRegModelPlugin>::m_help =  
+   "These plug-ins define different models for time-marching non-linear image registration algorithms.";
+
+
 NS_MIA_END

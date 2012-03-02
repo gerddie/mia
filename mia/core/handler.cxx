@@ -95,11 +95,6 @@ void TPluginHandler<I>::global_searchpath(list<bfs::path>& searchpath)
 	}	
 }
 
-template <typename I>
-const std::string TPluginHandler<I>::get_search_descriptor() 
-{
-	return TPlugin<typename I::PlugData,typename I::PlugType>::search_path().string(); 
-}
 
 template <typename I>
 void TPluginHandler<I>::initialise(const list<bfs::path>& searchpath)
@@ -301,11 +296,9 @@ void TPluginHandler<I>::do_print_help(std::ostream& os) const
 }
 
 template <typename I>
-void TPluginHandler<I>::do_get_xml_help(xmlpp::Element *root) const
+void TPluginHandler<I>::do_get_xml_help(xmlpp::Element *handlerRoot) const
 {
-	xmlpp::Element* handlerRoot = root->add_child("handler");
-	handlerRoot->set_attribute("name", get_search_descriptor());
-
+	handlerRoot->set_child_text(m_help);
 	for (const_iterator i = begin(); i != end(); ++i) {
 		xmlpp::Element* pluginRoot = handlerRoot->add_child("plugin");
 		pluginRoot->set_attribute("name", i->first);

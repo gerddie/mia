@@ -44,7 +44,9 @@ void CPluginHandlerBase::print_help(std::ostream& os) const
 
 void CPluginHandlerBase::get_xml_help(xmlpp::Element *root) const
 {
-	do_get_xml_help(root); 
+	xmlpp::Element* handlerRoot = root->add_child("handler");
+	handlerRoot->set_attribute("name", get_descriptor());
+	do_get_xml_help(handlerRoot); 
 }
 
 const std::string& CPluginHandlerBase::get_descriptor() const

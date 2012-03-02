@@ -155,5 +155,8 @@ PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& de
 }
 
 
+template<> 
+const char * const TPluginHandler<CSplineBoundaryConditionPlugin>::m_help = "These plug-ins provide various boundary "
+			       "conditions for spline based interpolation."; 
 
 NS_MIA_END

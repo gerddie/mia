@@ -64,4 +64,9 @@ template class THandlerSingleton<TIOPluginHandler<C3DVFIOPlugin> >;
 template class TIOPluginHandler<C3DVFIOPlugin>;
 template class TPluginHandler<C3DVFIOPlugin>;
 
+template <> const char *  const 
+TPluginHandler<C3DVFIOPlugin>::m_help =  
+   "These plug-ins implement loading and saving of vector fields to certain file formats.";
+
+
 NS_MIA_END

@@ -56,5 +56,10 @@ C2DImageCostPluginHandlerTestPath::C2DImageCostPluginHandlerTestPath()
 
 }
 
+template <> const char *  const 
+TPluginHandler<TFactory<C2DImageCost>>::m_help =  
+   "These plug-ins define cost function kernels that evaluate the similarity between two images.";
+
+
 NS_MIA_END
 

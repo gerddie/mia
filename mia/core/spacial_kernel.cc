@@ -137,4 +137,8 @@ C1DSpacialKernelPluginHandlerTestPath::C1DSpacialKernelPluginHandlerTestPath()
 	C1DSpacialKernelPluginHandler::set_search_path(searchpath); 
 }
 
+template<>  const char * const 
+TPluginHandler<TFactory<C1DFoldingKernel>>::m_help = "These plug-ins provide folding kernel(s) for spacial separable filtering.";
+
+
 NS_MIA_END

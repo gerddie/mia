@@ -71,6 +71,10 @@ struct __adjust<T2DVector<int> > {
 EXPLICIT_INSTANCE_HANDLER(C2DShape); 
 template class TShape<T2DVector, C2DBitImage>;
 
+template <> const char *  const 
+TPluginHandler<TFactory<C2DShape>>::m_help =  "These plug-ins define 2D structuring elements "
+				"to describe neighborhoods for morphological and other filters."; 
+
 
 using boost::filesystem::path; 
 C2DShapePluginHandlerTestPath::C2DShapePluginHandlerTestPath()

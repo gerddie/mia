@@ -49,7 +49,7 @@ NS_MIA_BEGIN
     \tparam I the plugin interface derived from \sa CPluginBase.
 */
 
-template <class I> 
+template <typename I> 
 class  EXPORT_HANDLER TPluginHandler: public CPluginHandlerBase {
 public: 
 	/// typedef for the plug-in interface provided by the class 
@@ -84,9 +84,6 @@ public:
 	
 	/// \returns the behind-end  iterator to the plug-ins
 	const_iterator end()const; 
-
-	/// \returns the plug-in spectific directory part 
-	static const std::string get_search_descriptor(); 
 
 protected: 
 	//! \name Constructors
@@ -125,6 +122,8 @@ private:
 	virtual void do_print_short_help(std::ostream& os) const; 
 	virtual void do_print_help(std::ostream& os) const; 
 	virtual void do_get_xml_help(xmlpp::Element *root) const; 	
+
+	static const char * const m_help; 
 }; 
 
 

@@ -313,5 +313,8 @@ CSplineKernelTestPath::CSplineKernelTestPath()
 	CSplineKernelPluginHandler::set_search_path(sksearchpath); 
 	
 }
+template<>  const char * const 
+TPluginHandler<TFactory<CSplineKernel>>::m_help = "These plug-ins provide various kernels used for spline interpolation.";
+
 
 NS_MIA_END

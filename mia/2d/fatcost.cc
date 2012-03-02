@@ -192,4 +192,8 @@ template class TPluginHandler<C2DFatImageCostPlugin>;
 template class TFactoryPluginHandler<C2DFatImageCostPlugin>;
 template class THandlerSingleton<C2DFatImageCostPluginHandlerImpl>;
 
+template <> const char *  const 
+	TPluginHandler<C2DFatImageCostPlugin>::m_help =  
+       "These plug-ins implement another approach to cost functions (obsolete).";
+
 NS_MIA_END

@@ -66,4 +66,14 @@ C2DImageSparseSolverTestPath::C2DImageSparseSolverTestPath()
 	C2DImageSparseSolverPluginHandler::set_search_path(sksearchpath); 
 }
 
+template <> const char *  const 
+TPluginHandler<TFactory<C2DImageSolverAmultx>>::m_help =  "These plug-ins define the multiplication of a sparse matrix "
+				"with a vector that is used in the sparse image solver class.";
+
+
+template <> const char *  const 
+TPluginHandler<TFactory<C2DImageSparseSolver>>::m_help =  "These plug-ins define the solvers for sparse systems of linear equations that "
+				"arise when solving certain image processing problems.";
+
+
 NS_MIA_END

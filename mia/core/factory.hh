@@ -150,7 +150,7 @@ public:
 private: 
 	typename I::Product *produce_raw(const std::string& plugindescr) const;
 
-	mutable TProductCache<TFactoryPluginHandler<I> > m_cache; 
+	mutable TProductCache<ProductPtr> m_cache; 
 }; 
 
 /*
@@ -193,7 +193,8 @@ typename TFactory<I>::Product *TFactory<I>::create(const CParsedOptions& options
 
 template <typename  I>
 TFactoryPluginHandler<I>::TFactoryPluginHandler(const std::list<boost::filesystem::path>& searchpath):
-	TPluginHandler< I >(searchpath)
+	TPluginHandler< I >(searchpath), 
+	m_cache(this->get_descriptor())
 {
 }
 

@@ -47,7 +47,7 @@ public:
 
 /**
    Convenience function to produce a shape from a plugin
-   \param shape_descr the description of the shape 
+   \param descr the description of the shape 
    \returns the newly created shape 
 */
 

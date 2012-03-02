@@ -68,6 +68,9 @@ public:
 	}
 }; 
 
+template<> const  char * const 
+TPluginHandler<CFactoryMock>::m_help = "just a mock"; 
+
 typedef THandlerSingleton<CFactoryMockPluginHandler> CFactoryHandlerMock; 
 
 FACTORY_TRAIT(CFactoryHandlerMock); 

@@ -131,4 +131,9 @@ template class THandlerSingleton<TFactoryPluginHandler<C3DRegTimeStepPlugin> >;
 template class TFactoryPluginHandler<C3DRegTimeStepPlugin>;
 template class TPluginHandler<C3DRegTimeStepPlugin>;
 
+template <> const char *  const 
+TPluginHandler<C3DRegTimeStepPlugin>::m_help =  
+   "These plug-ins define tifferent types of time-steps for time marching registration algorithms.";
+
+
 NS_MIA_END

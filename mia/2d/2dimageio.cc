@@ -47,6 +47,10 @@ template class TIOHandlerSingleton<C2DImageIOPPH>;
 template class TIOPluginHandler<C2DImageIOPlugin>;
 template class TPluginHandler<C2DImageIOPlugin>;
 
+template <> const char *  const 
+TPluginHandler<C2DImageIOPlugin>::m_help =  
+   "These plug-ins handle loading and storing of 2D images to the supported image file types.";
+
 
 P2DImageVector EXPORT_2D create_image2d_vector(P2DImage image)
 {

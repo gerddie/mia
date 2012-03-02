@@ -413,9 +413,12 @@ ADD_SUBDIRECTORY(vistaio )
 ADD_SUBDIRECTORY(OpenEXR )
 ADD_SUBDIRECTORY(dicom   )
 ADD_SUBDIRECTORY(testdata)
-ADD_SUBDIRECTORY(idl     )
-ADD_SUBDIRECTORY(matlab  )
 ADD_SUBDIRECTORY(python  )
+
+#disabled for thsi release since it doesn't compile 
+#ADD_SUBDIRECTORY(idl     )
+#ADD_SUBDIRECTORY(matlab  )
+
 
 ADD_SUBDIRECTORY(doc)
 ADD_SUBDIRECTORY(src     )

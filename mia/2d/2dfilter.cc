@@ -118,8 +118,21 @@ template class THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> >;
 template class TFactoryPluginHandler<C2DFilterPlugin>;
 template class TPluginHandler<C2DFilterPlugin>;
 
+template<> const  char * const 
+TPluginHandler<C2DFilterPlugin>::m_help = 
+   "These plug-ins provide 2D image filters. Unless otherwise noted, "
+   "they take a gray scale image of abitrary pixel type as input, "
+   "process it and hand it to the next filter in the pipeline." 
+; 
+
+
 template class TFilterChain<C2DFilterPluginHandler>; 
 
 EXPLICIT_INSTANCE_HANDLER(C2DImageCombiner);
+
+template<> const  char * const 
+TPluginHandler<TFactory<C2DImageCombiner>>::m_help = 
+    "These plug-ins provide 2D image combiners that merge two gray scale image."; 
+
 
 NS_MIA_END

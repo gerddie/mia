@@ -55,18 +55,10 @@ ostream& operator << (ostream& os, const Integer& i)
 
 typedef shared_ptr<Integer> CProductMock;  
 
-struct HandlerMock {
-	typedef CProductMock ProductPtr; 
-	static string get_search_descriptor() {
-		return "Integer"; 
-	}
-}; 
 
+typedef TProductCache<CProductMock> MyProductCache; 
 
-
-typedef TProductCache<HandlerMock> MyProductCache; 
-
-MyProductCache the_cache; 
+MyProductCache the_cache("Integer"); 
 
 BOOST_AUTO_TEST_CASE(test_basic_cache_enabled) 
 {

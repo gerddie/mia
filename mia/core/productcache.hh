@@ -31,7 +31,10 @@
 NS_MIA_BEGIN
 typedef tbb::recursive_mutex::scoped_lock CRecursiveScopedLock; 
 
-/** \brief base class for the product cache 
+/** 
+    \ingroup infrastructure 
+
+    \brief base class for the product cache 
     
     This is the base class for all product caches. Product caches are used to 
     store results of the factory plugin handler creation method in order to avoid 
@@ -78,13 +81,12 @@ private:
 template <typename Handler> 
 class EXPORT_CORE TProductCache: public CProductCache {
 public: 
-	typedef typename Handler::ProductPtr ProductPtr; 
-	
+
 
 	/**
 	   Constructor 
 	 */
-	TProductCache(); 
+	TProductCache(const std::string& descriptor); 
 
 
 	/**
@@ -98,7 +100,7 @@ public:
 	/**
 	   Add a product pointer to the cache if the cache is enabled
 	   \param name initializer string of the product 
-	   \param the shared pointer of the product 
+	   \param product the shared pointer of the product to be added 
 	 */
 	void add(const std::string& name, ProductPtr product); 
 private: 
@@ -143,14 +145,14 @@ private:
 
 /////////////////////////
 
-template <typename Handler> 
-TProductCache<Handler>::TProductCache():
-	CProductCache(Handler::get_search_descriptor())
+template <typename ProductPtr> 
+TProductCache<ProductPtr>::TProductCache(const std::string& descriptor):
+	CProductCache(descriptor)
 {
 }
 
-template <typename Handler> 
-typename Handler::ProductPtr TProductCache<Handler>::get(const std::string& name) const
+template <typename ProductPtr> 
+ProductPtr TProductCache<ProductPtr>::get(const std::string& name) const
 {
 	CRecursiveScopedLock lock(m_cache_mutex);
 	auto i = m_cache.find(name); 
@@ -159,8 +161,8 @@ typename Handler::ProductPtr TProductCache<Handler>::get(const std::string& name
 	return ProductPtr(); 
 }
 	
-template <typename Handler> 
-void TProductCache<Handler>::add(const std::string& name, ProductPtr product)
+template <typename ProductPtr> 
+void TProductCache<ProductPtr>::add(const std::string& name, ProductPtr product)
 {
 	if (is_enabled()) {
 		CRecursiveScopedLock lock(m_cache_mutex);
@@ -170,8 +172,8 @@ void TProductCache<Handler>::add(const std::string& name, ProductPtr product)
 	}
 }
 
-template <typename Handler> 
-void TProductCache<Handler>::do_clear()
+template <typename ProductPtr> 
+void TProductCache<ProductPtr>::do_clear()
 {
 	CRecursiveScopedLock lock(m_cache_mutex);
 	m_cache.clear(); 

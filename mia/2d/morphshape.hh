@@ -101,28 +101,6 @@ private:
 typedef C2DMorphShape::Pointer P2DMorphShape; 
 
 
-/// Base class for Shape generating plug-ins 
-typedef TFactory<C2DMorphShape> C2DMorphShapePlugin;
-
-/// Plug-in handler for the morphshape plug-ins 
-typedef THandlerSingleton<TFactoryPluginHandler<C2DMorphShapePlugin> > C2DMorphShapePluginHandler;
-
-class EXPORT_2D C2DMorphShapePluginHandlerTestPath {
-public: 
-	C2DMorphShapePluginHandlerTestPath(); 
-}; 
-
-/**
-   Convenience function to produce a morphshape from a plugin
-   \param descr the description of the morphshape 
-   \returns the newly created morphshape 
-*/
-
-inline P2DMorphShape produce_2d_morphshape(const std::string& descr) 
-{
-	return C2DMorphShapePluginHandler::instance().produce(descr); 
-}
-
 /**
    Implements the hit-and-miss transformation on a binary image with a given 
    morphshape. 

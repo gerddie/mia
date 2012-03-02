@@ -83,4 +83,7 @@ CNoiseGeneratorPluginHandlerTestPath::CNoiseGeneratorPluginHandlerTestPath()
 	CNoiseGeneratorPluginHandler::set_search_path(sksearchpath); 
 }
 
+template<> const char * const 
+TPluginHandler<TFactory<CNoiseGenerator>>::m_help = "These plug-ins provide various noise generators.";
+
 NS_MIA_END

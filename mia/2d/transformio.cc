@@ -33,6 +33,11 @@ template class TIOHandlerSingleton<TIOPluginHandler<C2DTransformationIO> >;
 template class TIOPluginHandler<C2DTransformationIO>;
 template class TPluginHandler<C2DTransformationIO>;
 
+template <> const char *  const 
+	TPluginHandler<C2DTransformationIO>::m_help =  
+       "These plug-ins implement the support for loading and storing 2D transformations to various file types.";
+
+
 NS_MIA_END
 
 

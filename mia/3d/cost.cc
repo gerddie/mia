@@ -52,6 +52,10 @@ template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C3DImageCo
 template class TFactoryPluginHandler<C3DImageCostPlugin>;
 template class TPluginHandler<C3DImageCostPlugin>;
 
+template <> const char *  const 
+TPluginHandler<TFactory<C3DImageCost>>::m_help =  
+   "These plug-ins define cost function kernels that evaluate the similarity between two 3D images.";
+
 using boost::filesystem::path; 
 C3DImageCostPluginHandlerPathInit::C3DImageCostPluginHandlerPathInit()
 {

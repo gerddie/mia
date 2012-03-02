@@ -49,4 +49,9 @@ template class TFullCostPlugin<C3DTransformation>;
 template class TFullCost<C3DTransformation>; 
 
 
+template <> const char *  const 
+TPluginHandler<C3DFullCostPlugin>::m_help =  
+   "These plug-ins define cost functions that arise in image registration and similar tasks.";
+
+
 NS_MIA_END
