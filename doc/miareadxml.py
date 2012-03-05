@@ -85,7 +85,10 @@ class COption(CTextNode):
        if self.required:
           print ".IP \"%s \-\-%s=(required)\""% (short, self.long)
        else:
-          print ".IP \"%s \-\-%s=%s\""% (short, self.long, escape_dash(self.default))
+          if not self.type == "bool":
+             print ".IP \"%s \-\-%s=%s\""% (short, self.long, escape_dash(self.default))
+          else:
+             print ".IP \"%s \-\-%s\""% (short, self.long)
           print self.text, 
           self.do_print_man()
        
@@ -98,11 +101,11 @@ class COption(CTextNode):
        termtext = "-"
        if len(self.short) > 0: 
           termtext = termtext + self.short + ", -"
-       termtext = termtext + "-" + self.long + "="
+       termtext = termtext + "-" + self.long
        if self.required: 
-          termtext = termtext + "(required)"
-       elif len(self.default)>0:
-          termtext = termtext + self.default
+          termtext = termtext + "=(required)"
+       elif len(self.default)>0 and (not self.type == "bool"):
+          termtext = termtext + "=" + self.default
        entry.append(get_text_node_simple("term",  termtext))
        item =  etree.Element("listitem")
        para = get_text_node_simple("para", self.text)
