@@ -76,9 +76,10 @@ private:
 /**
    \brief The type specific product cache 
    
+   \tparam ProductPtr the shared pointer of the product that is actually stored in this cache.
 
  */
-template <typename Handler> 
+template <typename ProductPtr> 
 class EXPORT_CORE TProductCache: public CProductCache {
 public: 
 
