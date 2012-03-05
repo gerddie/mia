@@ -138,6 +138,16 @@ template class TRangeParameter<int>;
 template class TRangeParameter<long>;
 template class TRangeParameter<float>;
 template class TRangeParameter<double>; 
+
+template class CTParameter<unsigned short>;
+template class CTParameter<unsigned int>;
+template class CTParameter<unsigned long>;
+template class CTParameter<short>;
+template class CTParameter<int>;
+template class CTParameter<long>;
+template class CTParameter<float>;
+template class CTParameter<double>; 
+
 template class CTParameter<string>;
 template class CTParameter<bool>;
 
