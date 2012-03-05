@@ -160,6 +160,23 @@ BOOST_FIXTURE_TEST_CASE( test_float_option, CmdlineParserFixture )
 	}
 }
 
+BOOST_FIXTURE_TEST_CASE( test_ranged_float_option, CmdlineParserFixture )
+{
+	float value = 10;
+	PCmdOption popt(make_opt(value, -10, 12, "float", 'f', "a float option"));
+	const char *str_value = "12.2";
+	try {
+		popt->set_value(str_value);
+		BOOST_CHECK(value == 12.0f);
+		BOOST_CHECK(popt->get_value_as_string() == "12");
+	}
+	catch (invalid_argument& x) {
+		BOOST_FAIL(x.what());
+	}
+
+	BOOST_CHECK_THROW(popt->set_value("12.1s"), invalid_argument); 
+}
+
 
 BOOST_FIXTURE_TEST_CASE( test_int_option, CmdlineParserFixture )
 {

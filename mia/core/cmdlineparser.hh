@@ -496,8 +496,29 @@ template <typename T>
 PCmdOption make_opt(T& value, const char *long_opt, char short_opt, 
 		    const char *help, bool flags = false)
 {
-	return PCmdOption(new CParamOption( short_opt, long_opt, 
-					    new CTParameter<T>(value, flags == CCmdOption::required, help))); 
+	return PCmdOption(new CParamOption( short_opt, long_opt, new CTParameter<T>(value, flags, help))); 
+}
+
+/**
+   Convinience function: Create an option of a value that is expecte to be within a given range 
+   If the given value does not fit into the rangem it will be adjusted accordingly 
+   \tparam T type of the value to be parsed, supported are float, double, long, int, short, unsigned long, unsigned int, unsigned short. 
+   \tparam Tmin type of the given minmum of the range, a conversion to type T must exist
+   \tparam Tmax type of the given maximum of the range, a conversion to type T must exist
+   \param value value variable to hold the parsed option value - pass in the default value -
+   \param min start of the value range the option can be set to 
+   \param max end of the value range the option can be set to 
+   \param short_opt short option name (or 0)
+   \param long_opt long option name (must not be NULL)
+   \param help long help string (must not be NULL)
+   \param flags add flags like whether the optionis required to be set 
+   \returns the option warped into a \a boost::shared_ptr
+*/
+template <typename T, typename Tmin, typename Tmax>
+PCmdOption make_opt(T& value, Tmin min, Tmax max,  const char *long_opt, char short_opt, 
+		    const char *help, bool flags = false)
+{
+	return PCmdOption(new CParamOption( short_opt, long_opt, new TRangeParameter<T>(value, min, max, flags, help)));
 }
 
 template <typename T>
