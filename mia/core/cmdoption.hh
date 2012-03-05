@@ -51,10 +51,10 @@ class EXPORT_CORE CCmdOption  {
 public:
 
 	/// readability constant to show that an option is not required 
-	static const bool not_required = false; 
+	static const bool not_required; 
 	
 	/// readability constant to show that an option is required 
-	static const bool required = true; 
+	static const bool required; 
 	
         /** The constructor
 	    \param short_opt the short option character 

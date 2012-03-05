@@ -1,5 +1,5 @@
 #!/bin/bash
-# only use this if we are in a git repository
+#if we are in a git repository, we get the latest revision number 
 
 [ -e ~/.profile ] && . ~/.profile
 
@@ -21,7 +21,9 @@ if [ -d $1/.git ]; then
     else 
 	   mv revision.hh.new revision.hh
     fi 
-elif [ ! -f $1/revision.hh ] ; then 
+elif [ ! -f $1/mia/core/revision.hh ] ; then 
+# if we are not in git then the distribution hopefuilly contains a revision.hh file, if not
+# tell the user 
     echo "WARNING: Unable to obtain revision info from git tree"
     echo "WARNING: Either you're not using a working copy of the git version"
     echo "WARNING: or the git  client is not available"

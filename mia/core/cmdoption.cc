@@ -30,6 +30,9 @@ using std::invalid_argument;
 
 NS_MIA_BEGIN
 
+const bool CCmdOption::not_required = false; 
+const bool CCmdOption::required = true; 
+
 CCmdOption::CCmdOption(char short_opt, const char *long_opt, 
 		       const char *long_help, const char *short_help, bool required):
 	m_short_opt(short_opt), 
