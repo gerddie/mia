@@ -658,6 +658,14 @@ CHelpOption::CHelpOption(Callback *cb, char short_opt, const char *long_opt, con
 {
 }
 
+void CHelpOption::do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, 
+				       HandlerHelpMap& /*handler_map*/) const
+{
+	do_get_long_help(os);
+	parent.set_attribute("type", "bool");
+}
+
+
 void CHelpOption::print(std::ostream& os) const
 {
 	m_callback->print(os);

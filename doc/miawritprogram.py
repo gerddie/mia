@@ -115,7 +115,7 @@ def get_plugin(plugin):
    return result
 
 def get_plugins(name, handler):
-   print name
+#   print name
    section = make_section_root_node("section", "Plugin type: " + name)
    head = get_bridgehead("Plugin consumers:")
    section.append(head)
