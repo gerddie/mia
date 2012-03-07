@@ -104,7 +104,10 @@ def get_program(program):
 
 def get_section(name, sect):
     section = make_section_root_node("section", name)
+    para = etree.SubElement(section, "para", role="sectiontoc")
     for program in sect:
+        subpara = etree.SubElement(para, "para", role="sectiontoc")
+        etree.SubElement(subpara, "xref", linkend=program.anchor)
         section.append(get_program(program))
     return section
 

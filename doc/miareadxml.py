@@ -463,16 +463,17 @@ class CDescription:
                 self.FreeParams = n.get("name")
             else: 
                 print "unknown tag '%s'"% (n.tag)
+        self.anchor = make_sec_ancor("Sec", self.name)
         self.link_handler_consumers()
 
     def link_handler_consumers(self):
         for h in self.handlers.keys():
-            self.handlers[h].append_user(make_sec_ancor("Sec", self.name)) 
+            self.handlers[h].append_user(self.anchor) 
             for p in self.handlers[h].plugins:
                 p.append_to_handler(self.handlers)
         if not  self.FreeParams is None:
             handler = self.handlers[h] 
-            handler.append_user(make_sec_ancor("Sec", self.name))
+            handler.append_user(self.anchor)
 
 def parse_file(xmlpath):
     file=open(xmlpath, "r")

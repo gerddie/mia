@@ -11,6 +11,11 @@
   span.term {
   font-style: italic
   }
+  p.sectiontoc {
+      margin-top:3px;
+      margin-bottom:3px;
+      margin-left: 2%;
+  }
   div.cmdsynopsis {
   margin-left: 2%;
   }
