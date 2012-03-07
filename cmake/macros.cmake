@@ -157,13 +157,21 @@ MACRO(DEFEXE name deps )
     
   add_dependencies(mia-${name}.xml mia-${name})  
   add_dependencies(xmldocs mia-${name}.xml)  
-  
+
+
   ADD_CUSTOM_TARGET(mia-${name}.man)  
-  ADD_CUSTOM_COMMAND(TARGET  mia-${name}.man 
-    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py 
-    ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml | ${GZIP} -9  >${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1.gz)
+  IF(GZIP) 
+    ADD_CUSTOM_COMMAND(TARGET  mia-${name}.man 
+      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py 
+      ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml | ${GZIP} -9  >${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1.gz)
+  ELSE(GZIP) 
+    ADD_CUSTOM_COMMAND(TARGET  mia-${name}.man 
+      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py 
+      ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml >${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1.gz)
+  ENDIF(GZIP)
   add_dependencies(mia-${name}.man mia-${name}.xml manpath)    
   add_dependencies(manpages mia-${name}.man)    
+
 
 ENDMACRO(DEFEXE)
 

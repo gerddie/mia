@@ -24,13 +24,74 @@ ADD_CUSTOM_TARGET(docs echo "creating documentation")
 add_dependencies(doc docs)  
 
 ADD_CUSTOM_TARGET(xmldocs)
-ADD_CUSTOM_TARGET(manpages)
 
-ADD_CUSTOM_TARGET(manpath mkdir -p man)
+IF(CREATE_USERDOC) 
+  #
+  # manpages can be created solely by using python and lxml 
+  #
+  ADD_CUSTOM_TARGET(manpages)
+  ADD_CUSTOM_TARGET(manpath mkdir -p man)
+  add_dependencies(manpages xmldocs)
+  
+  ADD_CUSTOM_TARGET(install-manpages 
+    mkdir -p "${CMAKE_INSTALL_PREFIX}/man/man1"
+    COMMAND cp -r man/* "${CMAKE_INSTALL_PREFIX}/man/man1"
+    DEPENDS manpages)
+  add_dependencies(docs manpages)
+  add_dependencies(install-doc install-manpages)
+  
+  ##################################################################
+  #  for html userref xsltproc and the style sheet is needed 
+  #
 
-add_dependencies(manpages xmldocs)
-add_dependencies(docs manpages)  
+  find_program(XSLTPROC xsltproc)
+  IF(XSLTPROC)
+    FIND_PATH(HTML_CHUNK_FILEPATH chunk.xsl
+      PATHS 
+      /usr/share/sgml/docbook/xsl-stylesheets/html/
+      /usr/share/xml/docbook/stylesheet/docbook-xsl/html/
+      DOC "style sheet for the creation of the user reference"
+      )
+  ENDIF(XSLTPROC)
 
+  IF(HTML_CHUNK_FILEPATH) 
+    #
+    # handle the linking of some files to run the 
+    # 
+    ADD_CUSTOM_TARGET(userref_outdir mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/userref)
+    ADD_CUSTOM_TARGET(userref_css cp  ${CMAKE_CURRENT_SOURCE_DIR}/progref.css 
+      ${CMAKE_CURRENT_BINARY_DIR}/userref/progref.css)
+    ADD_CUSTOM_TARGET(userref_create_xml ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/miaxml2sgml.py) 
+    ADD_CUSTOM_TARGET(userref_link_source ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/progref.xml ${CMAKE_CURRENT_BINARY_DIR}/) 
+    ADD_CUSTOM_TARGET(userref ${XSLTPROC} 
+      --param chunk.section.depth 3 
+      --param chunk.first.sections 1 
+      --stringparam html.stylesheet  progref.css 
+      --output "userref/" 
+      ${HTML_CHUNK_FILEPATH}/chunk.xsl progref.xml) 
+    
+    add_dependencies(userref_create_xml xmldocs)
+    add_dependencies(userref userref_create_xml) 
+    add_dependencies(userref userref_link_source)
+    add_dependencies(userref userref_css)
+    add_dependencies(userref userref_outdir)
+    add_dependencies(docs userref)  
+    
+    ####################################################
+    #
+    # installation of the user reference 
+    
+    
+    ADD_CUSTOM_TARGET(install-userref 
+      mkdir -p "${FULL_DOC_INSTALL_PATH}/userref"
+      COMMAND cp -r userref/* "${FULL_DOC_INSTALL_PATH}/userref"
+      DEPENDS userref)
+    
+    
+    add_dependencies(install-doc install-userref)
+  ENDIF(HTML_CHUNK_FILEPATH) 
+  
+ENDIF(CREATE_USERDOC) 
 
 IF (DOXYGEN_FOUND)
   ADD_CUSTOM_TARGET(LibraryDoc echo "creating user library documentation")
@@ -56,36 +117,4 @@ IF (DOXYGEN_FOUND)
 ENDIF (DOXYGEN_FOUND)
 
 
-# handle the linking of some files to run the 
-# 
-
-ADD_CUSTOM_TARGET(userref_outdir mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/userref)
-ADD_CUSTOM_TARGET(userref_css cp  ${CMAKE_CURRENT_SOURCE_DIR}/progref.css ${CMAKE_CURRENT_BINARY_DIR}/userref/progref.css)
-ADD_CUSTOM_TARGET(userref_create_xml ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/miaxml2sgml.py) 
-ADD_CUSTOM_TARGET(userref_link_source ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/progref.xml ${CMAKE_CURRENT_BINARY_DIR}/) 
-ADD_CUSTOM_TARGET(userref ${CMAKE_CURRENT_SOURCE_DIR}/create_chunked_html.sh) 
-
-add_dependencies(userref_create_xml xmldocs)
-
-add_dependencies(userref userref_create_xml) 
-add_dependencies(userref userref_link_source)
-add_dependencies(userref userref_css)
-add_dependencies(userref userref_outdir)
-add_dependencies(docs userref)  
-
-
-ADD_CUSTOM_TARGET(install-manpages 
-  mkdir -p "${CMAKE_INSTALL_PREFIX}/man/man1"
-  COMMAND cp -r man/* "${CMAKE_INSTALL_PREFIX}/man/man1"
-  DEPENDS manpages)
-
-ADD_CUSTOM_TARGET(install-userref 
-  mkdir -p "${FULL_DOC_INSTALL_PATH}/userref"
-  COMMAND cp -r userref/* "${FULL_DOC_INSTALL_PATH}/userref"
-  DEPENDS userref)
-
-
-add_dependencies(install-doc 
-  install-manpages
-  install-userref)
 

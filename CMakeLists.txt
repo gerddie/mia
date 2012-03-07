@@ -295,12 +295,12 @@ ENDIF(BLAS_LIBRARY)
 
 ##################################################################################
 #
-# Find programs we need 
+# Find gzip for man page compression 
 #
 find_program(GZIP gzip)
-
-
-
+IF(NOT GZIP) 
+  MESSAGE(gzip not found, man pages will not be compressed)
+ENDIF(NOT GZIP) 
 
 ##################################################################################
 #
@@ -428,13 +428,28 @@ ADD_SUBDIRECTORY(OpenEXR )
 ADD_SUBDIRECTORY(dicom   )
 ADD_SUBDIRECTORY(testdata)
 
+##############################################
+#
+# python is needed for creating end-user documentation 
+#
 FIND_PACKAGE(PythonInterp)
-ADD_SUBDIRECTORY(python  )
+IF(PYTHONINTERP_FOUND) 
+  EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import lxml"  RESULT_VARIABLE LXML_ERR)
+  IF(LXML_ERR) 
+    MESSAGE(python found, but no lxml, no user documantation will be created) 
+    SET(CREATE_USERDOC FALSE)
+  ELSE(LXML_ERR)
+    SET(CREATE_USERDOC TRUE)
+  ENDIF(LXML_ERR) 
+ENDIF(PYTHONINTERP_FOUND) 
 
-#disabled for thsi release since it doesn't compile 
+#disabled because currenlty useless 
+#ADD_SUBDIRECTORY(python  )
+
+
+#disabled for this release since it doesn't compile 
 #ADD_SUBDIRECTORY(idl     )
 #ADD_SUBDIRECTORY(matlab  )
-
 
 ADD_SUBDIRECTORY(doc)
 ADD_SUBDIRECTORY(src)
@@ -473,14 +488,15 @@ INSTALL(EXPORT Mia DESTINATION ${CONFIG_INSTALL_PATH})
 #  this is a bit ugly, it assumes that we actually use 'make' to build the package and 
 #  that the make variable  $(MAKE) exists. Cross compiling also doesn't work for documentation creation 
 #
-if("${CMAKE_GENERATOR}" MATCHES Make)
-  ADD_CUSTOM_TARGET(testinstall_for_doc $(MAKE) DESTDIR=${CMAKE_CURRENT_BINARY_DIR}/testinstall install)
-else("${CMAKE_GENERATOR}" MATCHES Make)
-  MESSAGE("Automatic documentation does only work, when you use some 'make' tool as generator "
-    "that supports DESTDIR and uses Makefiles. With your current generator '${CMAKE_GENERATOR}' "
-    "I don't know how to invoke a test installation. You will have to run INSTALL before "
-    "creating the documentation.")
-endif("${CMAKE_GENERATOR}" MATCHES Make)
-
+IF(CREATE_USERDOC) 
+  if("${CMAKE_GENERATOR}" MATCHES Make)
+    ADD_CUSTOM_TARGET(testinstall_for_doc $(MAKE) DESTDIR=${CMAKE_CURRENT_BINARY_DIR}/testinstall install)
+  else("${CMAKE_GENERATOR}" MATCHES Make)
+    MESSAGE("Automatic documentation does only work, when you use some 'make' tool as generator "
+      "that supports DESTDIR and uses Makefiles. With your current generator '${CMAKE_GENERATOR}' "
+      "I don't know how to invoke a test installation. You will have to run INSTALL before "
+      "creating the documentation.")
+  endif("${CMAKE_GENERATOR}" MATCHES Make)
+ENDIF(CREATE_USERDOC)
 
  
