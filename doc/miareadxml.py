@@ -464,7 +464,6 @@ class CDescription:
    def link_handler_consumers(self):
       for h in self.handlers.keys():
          self.handlers[h].append_user(make_sec_ancor("Sec", self.name)) 
-         print self.handlers[h].name, self.name
          for p in self.handlers[h].plugins:
             p.append_to_handler(self.handlers)
       if not  self.FreeParams is None:
