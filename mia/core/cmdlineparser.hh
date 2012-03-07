@@ -175,6 +175,9 @@ private:
 	virtual size_t do_get_needed_args() const;
 	virtual void do_write_value(std::ostream& os) const;
 	virtual void do_get_long_help(std::ostream& os) const;
+	virtual void do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, 
+					  HandlerHelpMap& /*handler_map*/) const; 
+
 };
 
 

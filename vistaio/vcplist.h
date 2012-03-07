@@ -1,6 +1,6 @@
 /*
 *
-* Copyrigh (C) 2004 Max-Planck-Institute of Cognitive Neurosience
+* Copyrigh (C) 2004-2012 Gert Wollny 
 *  
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser Public License as published by
@@ -18,9 +18,6 @@
 */
 /*! \brief storing and loading critical points.
    Declarations for storing/loading critical points in the vista file format.
-
-   \file vcplist.h   
-   \author Gert Wollny <wollny@cns.mpg.de>
  */
 
 #ifndef __VCPEList_h

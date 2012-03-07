@@ -1,5 +1,5 @@
 /*
-** Copyright (c) Leipzig, Madrid 1999-2010
+** Copyright (c) Leipzig, Madrid 1999-2012
 **                    Gert Wollny <wollny@cns.mpg.de>
 **  
 ** This program is free software; you can redistribute it and/or modify

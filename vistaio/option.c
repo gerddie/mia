@@ -1,28 +1,20 @@
 /*
-*
-* Copyrigh (C) 2004 Max-Planck-Institute of Cognitive Neurosience
-*  
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU Lesser Public License as published by
-* the Free Software Foundation; either version 3 of the License, or
-* (at your option) any later version.
-* 
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU Lesser Public License for more details.
-* 
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software 
-* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
-
-/*$Id: option.c 452 2004-10-28 14:50:45Z wollny $ */
-
-/*! \file option.c
- *  \brief routines for parsing and providing help on command line options
- *  \remark adapted for MPI usage, Marc Tittgemeyer & G. Wollny (2004)
- *  \author Arthur Pope, UBC Laboratory for Computational Intelligentce
+ *  Copyright 1993, 1994 University of British Columbia
+ *  Copyright (c) Leipzig, Madrid 2004 - 2012
+ *  Max-Planck-Institute for Human Cognitive and Brain Science	
+ *  Max-Planck-Institute for Evolutionary Anthropology 
+ *  BIT, ETSI Telecomunicacion, UPM
+ *
+ *  Permission to use, copy, modify, distribute, and sell this software and its
+ *  documentation for any purpose is hereby granted without fee, provided that
+ *  the above copyright notice appears in all copies and that both that
+ *  copyright notice and this permission notice appear in supporting
+ *  documentation. UBC makes no representations about the suitability of this
+ *  software for any purpose. It is provided "as is" without express or
+ *  implied warranty.
+ *
+ *  Author: Arthur Pope, UBC Laboratory for Computational Intelligence
+ *  Maintainance and Fixes: Gert Wollny, UPM 
  */
 
 #include <sys/stat.h>
