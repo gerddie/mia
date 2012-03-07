@@ -33,21 +33,26 @@ add_dependencies(docs manpages)
 
 
 IF (DOXYGEN_FOUND)
-
-   ADD_CUSTOM_TARGET(LibraryDoc echo "creating user library documentation")
-   ADD_DEPENDENCIES(docs LibraryDoc)
-
-   IF(DOXYGEN_DOT_FOUND)
-     SET(HAVE_DOT YES)
-   ENDIF(DOXYGEN_DOT_FOUND)
-   CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/reference.dox.cmake 
-                    ${CMAKE_CURRENT_BINARY_DIR}/reference.dox)
-
-   ADD_CUSTOM_COMMAND(SOURCE COMMAND ${DOXYGEN_EXECUTABLE}
-      ARGS  "${CMAKE_CURRENT_BINARY_DIR}/reference.dox"
-         TARGET LibraryDoc
-	OUTPUTS libdoc)
-
+  ADD_CUSTOM_TARGET(LibraryDoc echo "creating user library documentation")
+  ADD_DEPENDENCIES(docs LibraryDoc)
+  
+  IF(DOXYGEN_DOT_FOUND)
+    SET(HAVE_DOT YES)
+  ENDIF(DOXYGEN_DOT_FOUND)
+  CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/reference.dox.cmake 
+    ${CMAKE_CURRENT_BINARY_DIR}/reference.dox)
+  
+  ADD_CUSTOM_COMMAND(SOURCE COMMAND ${DOXYGEN_EXECUTABLE}
+    ARGS  "${CMAKE_CURRENT_BINARY_DIR}/reference.dox"
+    TARGET LibraryDoc
+    OUTPUTS libdoc)
+  
+  ADD_CUSTOM_TARGET(install-libdoc 
+    mkdir -p "${FULL_DOC_INSTALL_PATH}/libdoc"
+    COMMAND cp -r libdoc/html/* "${FULL_DOC_INSTALL_PATH}/libdoc"
+    DEPENDS LibraryDoc)
+  
+  add_dependencies(install-doc install-libdoc)
 ENDIF (DOXYGEN_FOUND)
 
 
@@ -74,4 +79,13 @@ ADD_CUSTOM_TARGET(install-manpages
   COMMAND cp -r man/* "${CMAKE_INSTALL_PREFIX}/man/man1"
   DEPENDS manpages)
 
-add_dependencies(install-doc install-manpages)
+ADD_CUSTOM_TARGET(install-userref 
+  mkdir -p "${FULL_DOC_INSTALL_PATH}/userref"
+  COMMAND cp -r userref/* "${FULL_DOC_INSTALL_PATH}/userref"
+  DEPENDS userref)
+
+
+add_dependencies(install-doc 
+  install-manpages
+  install-userref)
+
