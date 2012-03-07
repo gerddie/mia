@@ -60,7 +60,7 @@ IF(CREATE_USERDOC)
     # 
     ADD_CUSTOM_TARGET(userref_outdir mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/userref)
     ADD_CUSTOM_TARGET(userref_css cp  ${CMAKE_CURRENT_SOURCE_DIR}/progref.css 
-      ${CMAKE_CURRENT_BINARY_DIR}/userref/progref.css)
+      ${CMAKE_CURRENT_BINARY_DIR}/userref/progref.css DEPENDS userref_outdir)
     ADD_CUSTOM_TARGET(userref_create_xml ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/miaxml2sgml.py) 
     ADD_CUSTOM_TARGET(userref_link_source ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/progref.xml ${CMAKE_CURRENT_BINARY_DIR}/) 
     ADD_CUSTOM_TARGET(userref ${XSLTPROC} 

@@ -145,9 +145,10 @@ MACRO(DEFEXE name deps )
   if("${CMAKE_GENERATOR}" MATCHES Make)
     ADD_CUSTOM_COMMAND(TARGET mia-${name}.xml
       COMMAND
-      LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/testinstall${CMAKE_INSTALL_PREFIX}/lib
-      MIA_PLUGIN_PATH=${CMAKE_BINARY_DIR}/testinstall${PLUGIN_SEARCH_PATH}
-      ./mia-${name} --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
+      sh ${CMAKE_SOURCE_DIR}/doc/make-xml.sh ${name}
+          ${CMAKE_BINARY_DIR}/testinstall${CMAKE_INSTALL_PREFIX}/lib
+          ${CMAKE_BINARY_DIR}/testinstall${PLUGIN_SEARCH_PATH} 
+          ${CMAKE_BINARY_DIR}/doc 
       )
   else("${CMAKE_GENERATOR}" MATCHES Make)
     ADD_CUSTOM_COMMAND(TARGET mia-${name}.xml
