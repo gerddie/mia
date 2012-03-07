@@ -420,6 +420,7 @@ class CHandler:
         self.entry = node.tag
         self.name =  node.get("name")
         self.users = set([])
+        self.description = node.text 
         self.plugins = []
 
         for child in node:

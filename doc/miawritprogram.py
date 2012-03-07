@@ -108,6 +108,8 @@ def get_section(name, sect):
     for program in sect:
         subpara = etree.SubElement(para, "para", role="sectiontoc")
         etree.SubElement(subpara, "xref", linkend=program.anchor)
+        descr = etree.SubElement(subpara, "para", role="progdescr")
+        descr.text = program.description
         section.append(get_program(program))
     return section
 
@@ -120,6 +122,8 @@ def get_plugin(plugin):
 def get_plugins(name, handler):
 #   print name
    section = make_section_root_node("section", "Plugin type: " + name)
+   para = etree.SubElement(section, "para", role="plugdescr")
+   para.text = handler.description 
    head = get_bridgehead("Plugin consumers:")
    section.append(head)
    para = etree.SubElement(section, "para", role="consumer")

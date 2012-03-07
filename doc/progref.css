@@ -16,6 +16,17 @@
       margin-bottom:3px;
       margin-left: 2%;
   }
+  p.progdescr{
+      margin-top:3px;
+      margin-bottom:3px;
+      margin-left: 5%;
+  }
+  p.plugdescr{
+      margin-top:3px;
+      margin-bottom:3px;
+      margin-left: 5%;
+  }
+
   div.cmdsynopsis {
   margin-left: 2%;
   }
