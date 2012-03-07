@@ -1,8 +1,8 @@
 #!/bin/sh 
 if [ -e   /usr/share/sgml/docbook/xsl-stylesheets/html/chunk.xsl ]; then 
-    stylsheet=/usr/share/sgml/docbook/xsl-stylesheets/html/chunk.xsl
+    stylesheet=/usr/share/sgml/docbook/xsl-stylesheets/html/chunk.xsl
 elif  [ -e  /usr/share/xml/docbook/xsl-stylesheets/html/chunk.xsl ]; then 
-    stylsheet=/usr/share/sgml/docbook/xsl-stylesheets/html/chunk.xsl
+    stylesheet=/usr/share/xml/docbook/xsl-stylesheets/html/chunk.xsl
 else 
    echo "dockbook stylesheet not found, did you install 'docbook-xsl'?"
    exit 1

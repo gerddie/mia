@@ -462,6 +462,11 @@ INCLUDE(cmake/package.cmake)
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/UseMia.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/UseMia.cmake)
 INSTALL(EXPORT Mia DESTINATION ${CONFIG_INSTALL_PATH})
 
+#######################################
+#
+#  this is a bit ugly, it assumes that we actually use 'make' to build the package and 
+#  that the make variable  $(MAKE) exists. Cross compiling also doesn't work for documentation creation 
+#
 ADD_CUSTOM_TARGET(testinstall_for_doc $(MAKE) DESTDIR=${CMAKE_CURRENT_BINARY_DIR}/testinstall install)
 
 
