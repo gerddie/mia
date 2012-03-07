@@ -411,9 +411,15 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
 ENABLE_TESTING()
 
+IF(ALWAYS_CREATE_DOC)
+  ADD_CUSTOM_TARGET(doc ALL)  
+ELSE(ALWAYS_CREATE_DOC)
+  ADD_CUSTOM_TARGET(doc)  
+  ADD_CUSTOM_TARGET(install-doc)
+ENDIF(ALWAYS_CREATE_DOC)
 
-ADD_CUSTOM_TARGET(doc)
-ADD_CUSTOM_TARGET(install-doc)
+
+
 
 ADD_SUBDIRECTORY(gsl++   )
 ADD_SUBDIRECTORY(mia     )
@@ -467,7 +473,14 @@ INSTALL(EXPORT Mia DESTINATION ${CONFIG_INSTALL_PATH})
 #  this is a bit ugly, it assumes that we actually use 'make' to build the package and 
 #  that the make variable  $(MAKE) exists. Cross compiling also doesn't work for documentation creation 
 #
-ADD_CUSTOM_TARGET(testinstall_for_doc $(MAKE) DESTDIR=${CMAKE_CURRENT_BINARY_DIR}/testinstall install)
+if("${CMAKE_GENERATOR}" MATCHES Make)
+  ADD_CUSTOM_TARGET(testinstall_for_doc $(MAKE) DESTDIR=${CMAKE_CURRENT_BINARY_DIR}/testinstall install)
+else("${CMAKE_GENERATOR}" MATCHES Make)
+  MESSAGE("Automatic documentation does only work, when you use some 'make' tool as generator "
+    "that supports DESTDIR and uses Makefiles. With your current generator '${CMAKE_GENERATOR}' "
+    "I don't know how to invoke a test installation. You will have to run INSTALL before "
+    "creating the documentation.")
+endif("${CMAKE_GENERATOR}" MATCHES Make)
 
 
  

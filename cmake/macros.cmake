@@ -142,13 +142,19 @@ MACRO(DEFEXE name deps )
   ADD_CUSTOM_TARGET(mia-${name}.xml)
   add_dependencies(mia-${name}.xml testinstall_for_doc)
 
-  ADD_CUSTOM_COMMAND(TARGET mia-${name}.xml
-    COMMAND
-    LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/testinstall${CMAKE_INSTALL_PREFIX}/lib
-    MIA_PLUGIN_PATH=${CMAKE_BINARY_DIR}/testinstall${PLUGIN_SEARCH_PATH}
-     ./mia-${name} --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
-    )
-
+  if("${CMAKE_GENERATOR}" MATCHES Make)
+    ADD_CUSTOM_COMMAND(TARGET mia-${name}.xml
+      COMMAND
+      LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/testinstall${CMAKE_INSTALL_PREFIX}/lib
+      MIA_PLUGIN_PATH=${CMAKE_BINARY_DIR}/testinstall${PLUGIN_SEARCH_PATH}
+      ./mia-${name} --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
+      )
+  else("${CMAKE_GENERATOR}" MATCHES Make)
+    ADD_CUSTOM_COMMAND(TARGET mia-${name}.xml
+      COMMAND ./mia-${name} --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
+      )
+  endif("${CMAKE_GENERATOR}" MATCHES Make)
+    
   add_dependencies(mia-${name}.xml mia-${name})  
   add_dependencies(xmldocs mia-${name}.xml)  
   

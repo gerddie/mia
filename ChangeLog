@@ -1,37 +1,9 @@
-	2.0.2-Beta3 
-	
-update copyright information
-add some windows stuff
-added downscaler
-new tests for the datapool interface
-add use of delayed parameters in filter chain
-add a delayed parameter
-add check for unused parameters
-add a data pool
-expose some more parameters to command line 
-add script for conversion of series of 3D images to series of corresponding slices
-copy attribute list when linearily interpolating images
-some initial downscale code
-add upscaling with linear interpolation and NN
-add 3d support programs for stats and linear intensity interpolation
 
-	2.0.2-Beta2
-add some more EXPORT
-Make it compile on Windows again
-remove some explicit dependencies
-add brain masking program
-move clustering code to library
-make test pass for uninstalled library
-refinement of script
-add an image selection tool
-add masking filter
-code cleanups
-add growmask filter
-start implementing a spline based transformation
-test the interpolation of vector fields
-correct test result image
-add swizzling to 3dvectors
-add orientation attribute to 3D images
-add two more conversions
-boost release number 
-	
+	* docu: add support for building all the documentation 
+
+2.0_pre20120305
+
+	* library: correct compile errors with g++4.6
+
+
+2.0_pre20120302 is considered to be the initial release
