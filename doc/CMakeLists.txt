@@ -18,15 +18,16 @@
 #
 #
 
-INCLUDE (${CMAKE_ROOT}/Modules/FindLATEX.cmake)
 INCLUDE (${CMAKE_ROOT}/Modules/FindDoxygen.cmake)
-
 
 ADD_CUSTOM_TARGET(docs echo "creating documentation")
 add_dependencies(doc docs)  
 
 ADD_CUSTOM_TARGET(xmldocs)
 ADD_CUSTOM_TARGET(manpages)
+
+ADD_CUSTOM_TARGET(manpath mkdir -p man)
+
 add_dependencies(manpages xmldocs)
 add_dependencies(docs manpages)  
 
@@ -34,7 +35,7 @@ add_dependencies(docs manpages)
 IF (DOXYGEN_FOUND)
 
    ADD_CUSTOM_TARGET(LibraryDoc echo "creating user library documentation")
-   ADD_DEPENDENCIES(doc LibraryDoc)
+   ADD_DEPENDENCIES(docs LibraryDoc)
 
    IF(DOXYGEN_DOT_FOUND)
      SET(HAVE_DOT YES)
@@ -50,75 +51,27 @@ IF (DOXYGEN_FOUND)
 ENDIF (DOXYGEN_FOUND)
 
 
+# handle the linking of some files to run the 
+# 
+
+ADD_CUSTOM_TARGET(userref_outdir mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/userref)
+ADD_CUSTOM_TARGET(userref_css cp  ${CMAKE_CURRENT_SOURCE_DIR}/progref.css ${CMAKE_CURRENT_BINARY_DIR}/userref/progref.css)
+ADD_CUSTOM_TARGET(userref_create_xml ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/miaxml2sgml.py) 
+ADD_CUSTOM_TARGET(userref_link_source ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/progref.xml ${CMAKE_CURRENT_BINARY_DIR}/) 
+ADD_CUSTOM_TARGET(userref ${CMAKE_CURRENT_SOURCE_DIR}/create_chunked_html.sh) 
+
+add_dependencies(userref_create_xml xmldocs)
+
+add_dependencies(userref userref_create_xml) 
+add_dependencies(userref userref_link_source)
+add_dependencies(userref userref_css)
+add_dependencies(userref userref_outdir)
+add_dependencies(docs userref)  
 
 
-IF (PDFLATEX_COMPILER)	
-   ADD_CUSTOM_TARGET(UserGuide echo "creating user user guide")
-   ADD_DEPENDENCIES(doc UserGuide)
+ADD_CUSTOM_TARGET(install-manpages 
+  mkdir -p "${CMAKE_INSTALL_PREFIX}/man/man1"
+  COMMAND cp -r man/* "${CMAKE_INSTALL_PREFIX}/man/man1"
+  DEPENDS manpages)
 
-   SET(GUIDE_SRC 
-          nonfloat.sty
-          userguide.tex userguide.bib
-	  definitions.tex
-	  matlab.tex
-	  idl.tex
-	  running.tex
-          programs.tex 
-   )
-    
-   CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/version.tex.in 
-                    ${CMAKE_CURRENT_BINARY_DIR}/version.tex)
-
-
-   ADD_CUSTOM_TARGET(user_guide_plugins  echo "creating plug-in documentation")
-   if (PYTHONINTERP_FOUND)
-     ADD_CUSTOM_COMMAND(SOURCE COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/extract_docu.py 
-       ARGS  ${PROJECT_SOURCE_DIR} programs.tex plugins.tex
-       TARGET user_guide_plugins
-       OUTPUTS programs.tex plugins.tex)
-   else(PYTHONINTERP_FOUND)
-     ADD_CUSTOM_COMMAND(SOURCE COMMAND echo "Needs python 2 to create documentation" | tee programs.tex >plugins.tex
-       TARGET user_guide_plugins
-       OUTPUTS plugins.tex)
-   endif(PYTHONINTERP_FOUND)
-   
-   ADD_CUSTOM_TARGET(user_guide_aux  echo "creating userguide step 1")
-
-   ADD_DEPENDENCIES(user_guide_aux user_guide_plugins)
-   ADD_CUSTOM_TARGET(user_guide_bbl  echo "creating userguide step 2")
-   ADD_DEPENDENCIES(user_guide_bbl user_guide_aux)
-
-   ADD_CUSTOM_TARGET(user_guide_3  echo "creating userguide step 3")
-   ADD_DEPENDENCIES(user_guide_3 user_guide_bbl)
-   ADD_DEPENDENCIES(UserGuide user_guide_3)
-
-   IF (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
-         ADD_DEPENDENCIES(user_guide_aux ${GUIDE_SRC} )
-   ELSE (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
-      IF(WIN32)
-	
-      ELSE (WIN32)
-	FOREACH(f ${GUIDE_SRC})
-	   ADD_CUSTOM_TARGET(guide_src${f} ln -sf  ${CMAKE_CURRENT_SOURCE_DIR}/${f} ${CMAKE_CURRENT_BINARY_DIR}/${f})
-	   ADD_DEPENDENCIES(user_guide_aux guide_src${f})
-        ENDFOREACH(f)
-      ENDIF(WIN32)
-   ENDIF (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
-
-   MACRO(pdfcompile file target out)
-      ADD_CUSTOM_COMMAND(SOURCE COMMAND ${PDFLATEX_COMPILER}
-          ARGS  ${file}
-          TARGET ${target}
-	  OUTPUTS ${out})
-   ENDMACRO(pdfcompile)
-
-   pdfcompile(userguide.tex user_guide_aux userguide.aux)
-   pdfcompile(userguide.tex user_guide_3 userguide.aux)
-   pdfcompile(userguide.tex UserGuide userguide.pdf)
-
-   ADD_CUSTOM_COMMAND(SOURCE COMMAND ${BIBTEX_COMPILER}
-          ARGS  userguide
-          TARGET user_guide_bbl
-	  OUTPUTS userguide.bbl)
-
-ENDIF (PDFLATEX_COMPILER)
+add_dependencies(install-doc install-manpages)

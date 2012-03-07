@@ -136,7 +136,8 @@ SET(CONFIG_INSTALL_PATH "${LIB_ROOT_INSTALL_PATH}/config")
 SET(LIB_INCLUDE_INSTALL_PATH "${LIB_ROOT_INSTALL_PATH}/include")
 SET(PLUGIN_INSTALL_PATH "${LIB_ROOT_INSTALL_PATH}/plugins")
 SET(PLUGIN_SEARCH_PATH "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_PATH}")
-SET(DOC_INSTALL_PATH "shared/doc/${PACKAGE_NAME}-${PACKAGE_VERSION}")
+SET(DOC_INSTALL_PATH "share/doc/${PACKAGE_NAME}-${PACKAGE_VERSION}")
+SET(FULL_DOC_INSTALL_PATH "${CMAKE_INSTALL_PREFIX}/${DOC_INSTALL_PATH}")
 SET(BINARY_INSTALL_PATH "bin")
 SET(LIBRARY_INSTALL_PATH "lib")
 SET(INCLUDE_INSTALL_PATH "include/${MIA_NAME}")
@@ -294,6 +295,15 @@ ENDIF(BLAS_LIBRARY)
 
 ##################################################################################
 #
+# Find programs we need 
+#
+find_program(GZIP gzip)
+
+
+
+
+##################################################################################
+#
 # take care of modules loading infrastructure
 #
 IF(NOT WIN32)
@@ -354,8 +364,6 @@ IF (XMLPP_FOUND)
   LINK_DIRECTORIES(${XMLPP_LIBRARY_DIRS})
   SET(PKG_CONFIG_DEPS "${PKG_CONFIG_DEPS} libxml++-2.6")
   SET(HAVE_LIBXMLPP 1)
-ELSE(XMLPP_FOUND)
-  SET(HAVE_LIBXMLPP 0)
 ENDIF (XMLPP_FOUND)
 
 #
@@ -403,9 +411,9 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
 ENABLE_TESTING()
 
-FIND_PACKAGE(PythonInterp)
 
 ADD_CUSTOM_TARGET(doc)
+ADD_CUSTOM_TARGET(install-doc)
 
 ADD_SUBDIRECTORY(gsl++   )
 ADD_SUBDIRECTORY(mia     )
@@ -413,6 +421,8 @@ ADD_SUBDIRECTORY(vistaio )
 ADD_SUBDIRECTORY(OpenEXR )
 ADD_SUBDIRECTORY(dicom   )
 ADD_SUBDIRECTORY(testdata)
+
+FIND_PACKAGE(PythonInterp)
 ADD_SUBDIRECTORY(python  )
 
 #disabled for thsi release since it doesn't compile 
@@ -421,7 +431,7 @@ ADD_SUBDIRECTORY(python  )
 
 
 ADD_SUBDIRECTORY(doc)
-ADD_SUBDIRECTORY(src     )
+ADD_SUBDIRECTORY(src)
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/miacore.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/miacore-${VERSION}.pc)
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/mia2d.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/mia2d-${VERSION}.pc)
@@ -452,3 +462,7 @@ INCLUDE(cmake/package.cmake)
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/UseMia.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/UseMia.cmake)
 INSTALL(EXPORT Mia DESTINATION ${CONFIG_INSTALL_PATH})
 
+ADD_CUSTOM_TARGET(testinstall_for_doc $(MAKE) DESTDIR=${CMAKE_CURRENT_BINARY_DIR}/testinstall install)
+
+
+ 

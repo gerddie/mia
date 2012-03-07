@@ -17,22 +17,3 @@
 #
 #
 #
-
-SET(IMAGES  
-  c.bmp
-  c.png	       
-  c_b.bmp
-  circle.bmp
-  circle.png
-  circle_b.bmp
-)
-
-IF (NOT WIN32) 
-  IF (NOT ${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
-    ADD_CUSTOM_TARGET(file-links ALL)
-    FOREACH(f ${IMAGES})
-      ADD_CUSTOM_TARGET(link_${f} ln -sf  ${CMAKE_CURRENT_SOURCE_DIR}/${f} ${CMAKE_CURRENT_BINARY_DIR}/${f})
-      ADD_DEPENDENCIES(file-links link_${f})
-    ENDFOREACH(f)
-  ENDIF(NOT ${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
-ENDIF(NOT WIN32) 

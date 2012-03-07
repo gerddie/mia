@@ -140,8 +140,12 @@ MACRO(DEFEXE name deps )
   INSTALL(TARGETS mia-${name} RUNTIME DESTINATION "bin")
   
   ADD_CUSTOM_TARGET(mia-${name}.xml)
+  add_dependencies(mia-${name}.xml testinstall_for_doc)
   ADD_CUSTOM_COMMAND(TARGET mia-${name}.xml
-    COMMAND ./mia-${name} --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
+    COMMAND 
+    LD_LIBARAY_PATH="${CMAKE_BINARY_DIR}/testinstall${CMAKE_INSTALL_PREFIX}/lib"
+    MIA_PLUGIN_PATH="${CMAKE_BINARY_DIR}/testinstall${PLUGIN_SEARCH_PATH}" 
+    ./mia-${name} --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
     )
 
   add_dependencies(mia-${name}.xml mia-${name})  
@@ -150,8 +154,8 @@ MACRO(DEFEXE name deps )
   ADD_CUSTOM_TARGET(mia-${name}.man)  
   ADD_CUSTOM_COMMAND(TARGET  mia-${name}.man 
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py 
-    ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.man)
-  add_dependencies(mia-${name}.man mia-${name}.xml)    
+    ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml | ${GZIP} -9  >${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1.gz)
+  add_dependencies(mia-${name}.man mia-${name}.xml manpath)    
   add_dependencies(manpages mia-${name}.man)    
 
 ENDMACRO(DEFEXE)

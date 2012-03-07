@@ -59,24 +59,22 @@ SET(MIA2D_SRC_BASE
   )
 
 
-IF(XMLPP_FOUND)
-  SET(SEG_SRC 
-    SegPoint.cc 
-    SegStar.cc 
-    SegSection.cc 
-    SegFrame.cc 
-    SegSet.cc
-    SegSetWithImages.cc
-    )
-  SET(SEG_HEADER 
-    SegPoint.hh
-    SegStar.hh
-    SegSection.hh
-    SegFrame.hh
-    SegSet.hh
-    SegSetWithImages.hh
-    )
-ENDIF(XMLPP_FOUND)
+SET(SEG_SRC 
+  SegPoint.cc 
+  SegStar.cc 
+  SegSection.cc 
+  SegFrame.cc 
+  SegSet.cc
+  SegSetWithImages.cc
+  )
+SET(SEG_HEADER 
+  SegPoint.hh
+  SegStar.hh
+  SegSection.hh
+  SegFrame.hh
+  SegSet.hh
+  SegSetWithImages.hh
+  )
 
 IF(ITPP_FOUND)
   SET(ITPP_SRC 
@@ -257,12 +255,9 @@ ENDIF(ITPP_FOUND)
 
 TEST_2DMIA(groundtruthproblem mia2dmyocardperf)
 TEST_2DMIA(correlation_weight mia2dmyocardperf)
-
-IF(XMLPP_FOUND)
-  TEST_2DMIA(segmentation mia2dmyocardperf)
-  TEST_2DMIA(segframe mia2dmyocardperf)
-  TEST_2DMIA(segpoint mia2dmyocardperf)
-ENDIF(XMLPP_FOUND)
+TEST_2DMIA(segmentation mia2dmyocardperf)
+TEST_2DMIA(segframe mia2dmyocardperf)
+TEST_2DMIA(segpoint mia2dmyocardperf)
 
 #
 # The plugin directories 

@@ -19,6 +19,7 @@
  */
 
 #include <config.h>
+#include <cstdlib>
 
 #ifdef WIN32
 #include <windows.h>
@@ -220,6 +221,9 @@ EXPORT_CORE const string get_plugin_root()
 const string EXPORT_CORE get_plugin_root()
 {
 	// fixme: this should also go into some config file
+	char *plugin_root = getenv("MIA_PLUGIN_PATH"); 
+	if (plugin_root) 
+		return string(plugin_root); 
 	return string(PLUGIN_SEARCH_PATH);
 }
 #endif
