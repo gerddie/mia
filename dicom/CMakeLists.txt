@@ -23,8 +23,8 @@ OPTION(WITH_DCMTK "enable support for DCMTK DICOM IO" ${SEARCH_LIBS_DEFAULT})
 
 SET(dicom4mia_SOURCES dicom4mia.cc)
 
-SET(image2dio_path ${PLUGIN_INSTALL_PATH}/io/2dimage)
-SET(image3dio_path ${PLUGIN_INSTALL_PATH}/io/3dimage)
+SET(image2dio_path ${PLUGIN_INSTALL_PATH}/2dimage/io)
+SET(image3dio_path ${PLUGIN_INSTALL_PATH}/3dimage/io)
 
 IF (WITH_DCMTK)
   FIND_PACKAGE(DCMTKnew)

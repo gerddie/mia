@@ -39,8 +39,8 @@
 NS_MIA_BEGIN
 using namespace boost;
 
-const char *spacial_kernel_data::data_descr = "spacial";
-const char *kernel_plugin_type::type_descr = "kernel";
+const char *spacial_kernel_data::data_descr = "1d";
+const char *kernel_plugin_type::type_descr = "spacialkernel";
 
 
 C1DFilterKernel::C1DFilterKernel(int fsize):

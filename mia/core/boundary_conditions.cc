@@ -48,8 +48,8 @@ using std::vector;
 using std::invalid_argument; 
 using std::numeric_limits; 
 
-const char * const CSplineBoundaryCondition::type_descr = "1d"; 
-const char * const CSplineBoundaryCondition::data_descr = "splinebc"; 
+const char * const CSplineBoundaryCondition::type_descr = "splinebc"; 
+const char * const CSplineBoundaryCondition::data_descr = "1d"; 
 
 CSplineBoundaryCondition::CSplineBoundaryCondition():
 	m_width(0)

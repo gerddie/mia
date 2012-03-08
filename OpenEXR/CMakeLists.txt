@@ -31,9 +31,9 @@ IF(WITH_OpenEXR)
   
   IF( EXR_LIBRARIES AND EXR_INCLUDE_DIRS )
     
-    SET(image2dio_path ${PLUGIN_INSTALL_PATH}/io/2dimage)
-    SET(image3dio_path ${PLUGIN_INSTALL_PATH}/io/3dimage)
-    SET(vf2dio_path ${PLUGIN_INSTALL_PATH}/io/2dvf)
+    SET(image2dio_path ${PLUGIN_INSTALL_PATH}/2dimage/io)
+    SET(image3dio_path ${PLUGIN_INSTALL_PATH}/3dimage/io)
+    SET(vf2dio_path ${PLUGIN_INSTALL_PATH}/2dvf/io)
     
     SET(EXR_LINK_LIBS ${MIA2DLIBS} ${EXR_LIBRARIES})
 

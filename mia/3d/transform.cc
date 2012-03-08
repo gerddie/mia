@@ -330,6 +330,6 @@ void F3DTransformer<T>::operator() ( const tbb::blocked_range<int>& range ) cons
 }
 
 const char *C3DTransformation::data_descr = "3dtransform";
-const char *C3DTransformation::dim_descr = "3d";
+const char *C3DTransformation::dim_descr = "3dimage";
 
 NS_MIA_END

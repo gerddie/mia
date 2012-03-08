@@ -35,5 +35,5 @@ SET(modelplugins2d
   )
 
 PLUGINGROUP_WITH_TEST_AND_PREFIX(2d-model "${modelplugins2d}" 
-  "${MIA2DLIBS}" "${PLUGIN_INSTALL_PATH}/model/2dimage"
+  "${MIA2DLIBS}" "${PLUGIN_INSTALL_PATH}/2dimage/model"
   )

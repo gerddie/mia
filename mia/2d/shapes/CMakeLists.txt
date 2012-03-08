@@ -25,5 +25,5 @@ SET(shape2d
   )
 
 PLUGINGROUP_WITH_TEST_AND_PREFIX(2d-shape "${shape2d}" 
-  "${MIA2DLIBS}" "${PLUGIN_INSTALL_PATH}/shape/2dimage" TESTLIBS  mia2dtest)
+  "${MIA2DLIBS}" "${PLUGIN_INSTALL_PATH}/2dimage/shape" TESTLIBS  mia2dtest)
 

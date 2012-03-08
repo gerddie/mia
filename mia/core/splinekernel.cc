@@ -64,8 +64,8 @@
 NS_MIA_BEGIN
 using namespace std;
 
-const char *CSplineKernel::type_descr = "1d"; 
-const char *CSplineKernel::data_descr = "splinekernel"; 
+const char *CSplineKernel::type_descr = "splinekernel"; 
+const char *CSplineKernel::data_descr = "1d"; 
 
 CSplineKernel::SCache::SCache(size_t s, const CSplineBoundaryCondition& bc, bool am):
 	x(numeric_limits<double>::quiet_NaN()), 

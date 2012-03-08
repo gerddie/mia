@@ -26,7 +26,7 @@ PLUGIN_GROUP_PRE(
   "3d" 
   "${combiner3d}" 
   "${MIA3DLIBS}" 
-  "${PLUGIN_INSTALL_PATH}/combiner/3dimage"
+  "${PLUGIN_INSTALL_PATH}/3dimage/combiner"
 )
 
 

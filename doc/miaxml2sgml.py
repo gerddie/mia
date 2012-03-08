@@ -101,7 +101,9 @@ plug_xml = etree.Element("chapter", id="plugins", nsmap=NSMAP)
 title = create_text_node("title", "Plugin Reference")
 plug_xml.append(title)
 
-for s in plugin_types.keys(): 
+plugin_types_keys = plugin_types.keys()
+plugin_types_keys.sort()
+for s in plugin_types_keys: 
    plug_xml.append(get_plugins(s, plugin_types[s]))
 
 

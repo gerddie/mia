@@ -21,8 +21,8 @@
 OPTION(WITH_PNG "enable support for PNG" ${SEARCH_LIBS_DEFAULT})
 OPTION(WITH_TIFF "enable support for TIFF" ${SEARCH_LIBS_DEFAULT})
 
-SET(image2dio_path ${PLUGIN_INSTALL_PATH}/io/2dimage)
-SET(vf2dio_path ${PLUGIN_INSTALL_PATH}/io/2dvf)
+SET(image2dio_path ${PLUGIN_INSTALL_PATH}/2dimage/io)
+SET(vf2dio_path ${PLUGIN_INSTALL_PATH}/2dvf/io)
 
 PLUGIN_PRE("2d" bmp "${MIA2DLIBS}" "${image2dio_path}")
 PLUGIN_PRE("2d" raw "${MIA2DLIBS}" "${image2dio_path}")

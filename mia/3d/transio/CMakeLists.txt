@@ -29,5 +29,5 @@ PLUGIN_GROUP_PRE(
   "3d" 
   "${io3dtransform_serialized}" 
   "${SERLIBS}" 
-  "${PLUGIN_INSTALL_PATH}/io/3dtransform"
+  "${PLUGIN_INSTALL_PATH}/3dtransform/io"
 )

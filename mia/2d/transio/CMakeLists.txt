@@ -29,7 +29,7 @@ PLUGIN_GROUP_PRE(
   "2d" 
   "${io2dtransform_serialized}" 
   "${SERLIBS}" 
-  "${PLUGIN_INSTALL_PATH}/io/2dtransform"
+  "${PLUGIN_INSTALL_PATH}/2dtransform/io"
 )
 
 IF(FALSE)
@@ -38,6 +38,6 @@ PLUGIN_GROUP_PRE(
   "2d" 
   "pbs" 
   "${PORT_SERLIBS}" 
-  "${PLUGIN_INSTALL_PATH}/io/2dtransform"
+  "${PLUGIN_INSTALL_PATH}/2dtransform/io"
 )
 ENDIF(FALSE)

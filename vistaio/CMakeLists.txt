@@ -80,16 +80,16 @@ SET(DEPS2D mia2d vista4mia)
 SET(DEPS3D mia3d vista4mia)
 SET(DEPSMESH miamesh vista4mia)
 
-SET(image2dio_path ${PLUGIN_INSTALL_PATH}/io/2dimage)
-SET(image3dio_path ${PLUGIN_INSTALL_PATH}/io/3dimage)
+SET(image2dio_path ${PLUGIN_INSTALL_PATH}/2dimage/io)
+SET(image3dio_path ${PLUGIN_INSTALL_PATH}/3dimage/io)
 
-SET(trans2dio_path ${PLUGIN_INSTALL_PATH}/io/2dtransform)
-SET(trans3dio_path ${PLUGIN_INSTALL_PATH}/io/3dtransform)
+SET(trans2dio_path ${PLUGIN_INSTALL_PATH}/2dtransform/io)
+SET(trans3dio_path ${PLUGIN_INSTALL_PATH}/3dtransform/io)
 
-SET(vf3dio_path ${PLUGIN_INSTALL_PATH}/io/3dvf)
-SET(vf2dio_path ${PLUGIN_INSTALL_PATH}/io/2dvf)
+SET(vf3dio_path ${PLUGIN_INSTALL_PATH}/3dvf/io)
+SET(vf2dio_path ${PLUGIN_INSTALL_PATH}/2dvf/io)
 
-SET(meshio_path ${PLUGIN_INSTALL_PATH}/io/mesh)
+SET(meshio_path ${PLUGIN_INSTALL_PATH}/mesh/io)
 
 PLUGIN(2dvistaio "${DEPS2D}" "${image2dio_path}")
 PLUGIN(3dvistaio "${DEPS3D}" "${image3dio_path}")

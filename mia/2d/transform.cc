@@ -280,6 +280,6 @@ P2DImage C2DTransformation::do_transform(const C2DImage& image, const C2DInterpo
 
 
 const char *C2DTransformation::data_descr = "2dtransform";
-const char *C2DTransformation::dim_descr = "2d"; 
+const char *C2DTransformation::dim_descr = "2dimage"; 
 
 NS_MIA_END
