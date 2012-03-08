@@ -18,45 +18,6 @@
  *
  */
 
-
-/*
-  LatexBeginProgramDescription{Miscellaneous programs}
-
-  \subsection{mia-2dimagecreator}
-  \label{mia-2dimagecreator}
-  
-  \begin{description}
-  \item [Description:] This program creates a 2D image that contains an object created by one of the object  
-     creator plug-ins (section \ref{sec:creator2d}). 
-  
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-2dimagecreator -i <input> -o <output> -n <number> 
-  \end{lstlisting}
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optoutfile
-  \cmdopt{size}{s}{2D vector <uint>}{size of the output image}
-  \optrepn
-  \cmdopt{object}{j}{string}{object to be created (see section \ref{sec:creator2d})}
-  \opttypethreed
-  }
-
-  \item [Example:] Create an image output.v of size $64\times128\times256$ that contains a circle like 
-                   object 
-   \
-  \begin{lstlisting}
-mia-2dimagecreator -o circle.v -j circle:f=2,p=2 -s "<64,128,256>"
-  \end{lstlisting}
-  \end{description}
-
-  LatexEnd
-*/
-
-
-
 #include <boost/algorithm/minmax_element.hpp>
 #include <sstream>
 #include <iomanip>

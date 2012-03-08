@@ -18,51 +18,6 @@
  *
  */
 
-/*
-
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dsegshift}
-  \label{mia-2dsegshift}
-
-  \begin{description} 
-  \item [Description:] 
-	This program move the segmentation(s) of an image series by using a shift 
-          that is equal for all slices. 
-	The program also may remove images from the begin of the series. 
-        The program can be used to correct the segmentation of the images if 
-          the images where cropped.  
-
-  The program is called like 
-  \begin{lstlisting}
-mia-2dsegshift -i <input set> -o <output set> -g <output image name> \
-               -S <shift> 
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdopt{in-file}{i}{string}{input segmentation set}
-  \cmdopt{out-file}{o}{string}{output segmentation set}
-  \cmdopt{image-file}{g}{}{base name of the output image file. The numbering scheme and the file type of the 
-      input images will be preserved.These files will not be touched and 
-      should actually be the result of translation based linear registration.}
-  \cmdopt{shift}{S}{2D-vector <int>}{Actual shift of the segmentation <SX,SY>}
-  \cmdopt{skip}{k}{int}{Remove this number of images from the beginning of the series}
-  }
-  \item [Example:]Shift the segmentations of a set segement.set by -20 pixels in horizontal direction and -30 
-                pixels in vertical direction (as if the images where cropped starting at (20,30) 
-                and store it in translate.set. The shiftes files are named translatedXXXX.png
-  \begin{lstlisting}
-mia-2dsegshift -i segment.set -o translate.set -g translated -S "<20,30>"
-  \end{lstlisting}
-  \item [See also:] \sa{mia-2dsegshiftperslice}
-  \end{description}
-  
-  LatexEnd
-*/
-
-
 #include <iterator>
 #include <algorithm>
 #include <iostream>
@@ -87,7 +42,7 @@ namespace bfs=boost::filesystem;
 
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
+	"Tools for Myocardial Perfusion Analysis", 
 	
 	"This program move the segmentation(s) of an image series by using a shift "
 	"that is equal for all slices. The program also may remove images from the "

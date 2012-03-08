@@ -18,40 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{Miscellaneous programs}
-  
-  \subsection{mia-labelsort}
-  \label{mia-labelsort}
-
-  \begin{description}
-  \item [Description:] This program reads a histogram and sorts the number of pixels for each intensity 
-    ignoring the intensity 0. Then, the program writes out a map that makes it possible to re-color the
-    images so that the intensities with the highest number of pixels have lower intensities. 
-    The histogram must be in the format as written by \emph{mia-multihist} \ref{mia-multihist}. 
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-labelsort -i <input histogram>  -o <output mapping> 
-  \end{lstlisting}
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optoutfile
-  }
-
-  \item [Example:] Evaluate read histogram "histo.txt" and write the mapping file "map.txt"
-   \
-  \begin{lstlisting}
-mia-labelsort -i histo.txt  -o map.txt 
-  \end{lstlisting}
-  \end{description}
-
-  LatexEnd
-*/
-
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

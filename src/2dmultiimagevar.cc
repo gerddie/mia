@@ -18,42 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dmultiimagevar}
-  \label{mia-2dmultiimagevar}
-
-  \begin{description} 
-  \item [Description:] 
-        This program evauates the pixel-wise variation of a series of images of the same size 
-        and stores the result in an image. 
-  
-  The program is called like 
-  \begin{lstlisting}
-mia-2dmyoica-nonrigid -o <output image> <image> <image> [<image>] ... 
-  \end{lstlisting}
-  The output image will have floating point valued pixels. 
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdopt{out-file}{o}{string}{output image}
-  }
-
-  \item [Example:]Evaluate the pixel-wise variation over the image series stored in imagesXXXX.png and
-                 store the result in var.exr. 
-  \begin{lstlisting}
-mia-2dmultiimagevar  -o var.exr images*.png
-  \end{lstlisting}
-  \item [See also:] \sa{mia-2dseriesgradMAD}, \sa{mia-2dseriessmoothgradMAD}, 
-                    \sa{mia-2dseriesgradvariation}
-  \end{description}
-  
-  LatexEnd
-*/
-
-
 #include <cmath>
 #include <mia/core.hh>
 #include <mia/2d.hh>

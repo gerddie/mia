@@ -18,53 +18,6 @@
  *
  */
 
-/*
-
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dseries2sets}
-  \label{mia-2dseries2sets}
-
-  \begin{description} 
-  \item [Description:] 
-     This program takes all image files that are given as free parameters on the command line 
-     and creates segmentation sets based on information found in the images. 
-     Used information is the z-location of the slice and the acquisition number. 
-     The code is taylored to used the according descriptors defined in the DICOM standard.
-     All images with the same slice location will be grouped together in one segmentation 
-     set and ordered according to their aquisition number.
-     Slice locations are rounded to three digits accuracy to make proper comparison 
-       of floating point values feasable. 
-
-  The program is called like 
-  \begin{lstlisting}
-mia-2dseries2sets -o <output directory> [options] <image> [<image>] ...
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdopt{out}{o}{string}{Output directory, must exist and be writable.}
-  \cmdopt{no-copy}{}{}{Don't copy the images to the output directory. 
-                       In this case the created segmentation sets will reference the original files}
-  }
-  The input images are given as free parameters on the command line. 
-  The segmentation sets are named segmentX.set with X starting a zero and larger values correspondent 
-    to larger values in the slice location.
-  If no acquisition numbers can be found in the images then the order in which the files are given at the 
-    command line is used. 
-  If no slice location can be found, a value of 0.0 will be used. 
-
-  \item [Example:]Create the segmentation sets from a series of DICOM images and copy the files to 
-                  the output directory. 
-  \begin{lstlisting}
-mia-2dseries2sets -i /home/user/series /net/dicoms/patient1/series1/{}*.dcm 
-  \end{lstlisting}
-  \end{description}
-  
-  LatexEnd
-*/
-
 #define VSTREAM_DOMAIN "series2set" 
 #include <fstream>
 #include <libxml++/libxml++.h>
@@ -82,7 +35,7 @@ using namespace std;
 NS_MIA_USE; 
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
+	"Tools for Myocardial Perfusion Analysis", 
 
 	"This program takes all image files that are given as free parameters on the command line "
 	"and creates segmentation sets based on information found in the images. "

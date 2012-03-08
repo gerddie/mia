@@ -18,53 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dseriesgradvariation}
-  \label{mia-2dseriesgradvariation}
-
-  \begin{description} 
-  \item [Description:] 
-           Given a set of images of temporal sucession, this program evaluates the 
-	   gradient variation of the pixel-wise time-intensity curves of this series. 
-	   If the input image set provides a segmentation, then this segmentation can 
-	   be used to create a bounding box and restrict evaluation to this box. 
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-2dseriesgradvariation -i <input set> -o <output image> [options]... 
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optoutfile
-  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
-  \cmdopt{crop}{c}{}{Crop the images before further processing. Cropping is done by evaluating a bounding box 
-                         that contains the segmentation given in the images. 
-                         If no segmentation is available then the result is undefined.}
-  \cmdopt{enlarge-boundary}{e}{int}{Enlarge the boundary of the obtained crop-box}
-  }
-
-  \item [Example:]Evaluate the gradient-variation image of the bounding box surrounding the segmentation 
-                  from a series segment.set.  
-		  The bounding box will be enlarged by 3 pixels in all directions.
-		  Store the image in OpenEXR format.  
-   \
-  \begin{lstlisting}
-mia-2dseriesgradvariation -i segment.set -o gradvar.exr -c -e 3 
-  \end{lstlisting}
-  \item [Remark:] The gradient variation image has float-valued pixels and thereby requires an output 
-                  format that supports this pixel type. 
-  \item [See also:] \sa{mia-2dmultiimagevar}, \sa{mia-2dseriesgradMAD}, 
-                    \sa{mia-2dseriessmoothgradMAD}
-  \end{description}
-  
-  LatexEnd
-*/
-
 
 #define VSTREAM_DOMAIN "SERGRADVAR"
 
@@ -85,7 +38,7 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
+	"Tools for Myocardial Perfusion Analysis", 
 
 	"Given a set of images of temporal sucession, this program evaluates the "
 	"gradient variation of the pixel-wise time-intensity curves of this series. "

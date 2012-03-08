@@ -19,51 +19,6 @@
  */
 
 
-/*
-
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dseriescorr}
-  \label{mia-2dseriescorr}
-
-  \begin{description} 
-  \item [Description:] 
-           Given a set of images of temporal sucession, evaluates images that represent 
-           the time-intensity correlation in horizontal and vertical direction as 
-	   well as average correlation of each pixel with its neighbors. 
-	   All input images must be of the same pixel type and size. 
-  The program is called like 
-  \begin{lstlisting}
-mia-2dseriescorr -i <input images> -z <horizontal> \
-      -t <vertical> -a <average> [options]
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdopt{in-base}{i}{string}{Name of one of the input image of the series. 
-      All images need to be numbered consecutivly like imageXXXX.ext with the digits XXXX.}
-  \cmdopt{horizontal}{z}{string}{output file name for horizontal correlation}
-  \cmdopt{vertical}{t}{string}{output file name for vertical correlation}
-  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
-  \cmdopt{end}{e}{int}{Last image index}
-  }
-
-  \item [Example:]Evaluate the time-intensity correaltions for an image series 
-                imageXXXX.png starting at image 2 and stop at image 30. 
-		Store the results in horizontal.exr, and vertical.exr. 
-  \begin{lstlisting}
-mia-2dseriescorr -i image0000.png -k 2 -e 30 -z horizontal.exr \
-                             -t vertical.exr
-  \end{lstlisting}
-  \item [Remark:] The correlations are given as floating point values and thereby 
-                  requires an output format that supports this pixel type. 
-  \end{description}
-  
-  LatexEnd
-*/
-
-
 #define VSTREAM_DOMAIN "2dseriescorr"
 #include <iomanip>
 #include <ostream>
@@ -82,7 +37,7 @@ NS_MIA_USE;
 
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
+	"Tools for Myocardial Perfusion Analysis", 
 
 	"Given a set of images of temporal sucession, evaluates images that represent "
 	"the time-intensity correlation in horizontal and vertical direction as "

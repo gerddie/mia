@@ -18,47 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{2D image processing}
-
-  \subsection{mia-2dimagefilterstack}
-  \label{mia-2dimagefilterstack}
-  
-  \begin{description}
-  \item [Description:] This program is used run the very same set of filters on 
-    the individual images of a series of 2D gray scale images.
-  For available filters see section \ref{sec:filter2d}. 
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-2dimagefilterstack -i <input images> -o <output image basename> \
-                  -t <output file type> [<filter>] ... 
-  \end{lstlisting}
-  with the filters given as extra parameters as additional command line parameters. 
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optoutfile
-  \opttypetwod
-  \opthelpplugin
-  }
-
-  \item [Example:]Run a mean-least-varaiance filter on a series of images that follow the 
-  numbering pattern imageXXXX.exr and store the output in images filteredXXXX.exr 
-   \
-  \begin{lstlisting}
-mia-2dimagefilterstack -i image0000.exr -o filtered -t exr mlv:w=2 
-  \end{lstlisting}
-  \item [Remark:] Note the difference to the program \hyperref[mia-2dstackfilter]{mia-2dstackfilter} 
-                  that runs the filter(s) by combining the images in a 3D manner. 
-  \end{description}
-  
-  LatexEnd
-*/
-
 #include <iostream>
 #include <iomanip>
 #include <string>

@@ -18,50 +18,6 @@
  *
  */
 
-/*
-
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dsegmentcropbox}
-  \label{mia-2dsegmentcropbox}
-
-  \begin{description} 
-  \item [Description:] 
-        This program is used on a segmentation set and evaluates a bounding box 
-          that encloses the segmentation in all slices. 
-	This bounding box is then used to crop the original images, correct 
-          the segmentation and store a new segmentation set with the cropped images. 
-        The cropped images will be of the same type as the original images. 
-	If no segmentation is given in the set, the result is undefined. 
- 
-  The program is called like 
-  \begin{lstlisting}
-mia-2dsegmentcropbox -i <original set> -o <cropped set> [options]
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinset
-  \optoutset
-  \cmdopt{override-imagepath}{p}{}{Instead of using the path of the image files as given in the 
-                                   segmentation set, assume the files are located in the current directory}
-  \cmdopt{cropped-base}{c}{string}{Base name of the cropped images, a number and the file type suffix will be added}
-  \cmdopt{enlarge}{e}{int}{Enlarge the area around the obtained sbounding box by this number of 
-                           pixels in each direction}
-  }
-
-  \item [Example:]Evaluate the optimal cropping for a segmentation set segment.set and enlarge it by 
-                  3 pixels. Store the resulting set in the file cropped.set. 
-  \begin{lstlisting}
-mia-2dsegmentcropbox -i segment.set -o cropped.set -e 3
-  \end{lstlisting}
-  \end{description}
-  
-  LatexEnd
-*/
-
-
 #include <iterator>
 #include <algorithm>
 #include <iostream>
@@ -86,7 +42,7 @@ using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
+	"Tools for Myocardial Perfusion Analysis", 
 
 	"This program is used on a segmentation set and evaluates a bounding box "
 	"that encloses the segmentation in all slices. "
@@ -128,14 +84,15 @@ int do_main(int argc, char *argv[])
 	CCmdOptionList options(g_description);
 	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
 	options.add(make_opt( override_src_imagepath, "override-imagepath", 'p',
-				    "overide image path given in the segmentation set"));
+			      "Instead of using the path of the image files as given in the "
+			      "segmentation set, assume the files are located in the current directory"));
 	options.add(make_opt( out_filename, "out-file", 'o', "output segmentation set", CCmdOption::required));
 	options.add(make_opt( image_name, "cropped-base", 'c', "Base name for the cropped image files"));
 	options.add(make_opt( enlarge_boundary, "enlarge", 'e',
-				    "enlarge boundary by number of pixels"));
+			      "Enlarge the area around the obtained sbounding box by this number of "
+			      "pixels in each direction"));
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
-
 
 	CSegSetWithImages  segset(src_filename, override_src_imagepath);
 	C2DBoundingBox box = segset.get_boundingbox();

@@ -18,41 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{2D image processing}
-
-  \subsection{mia-2dimagecombiner}
-  \label{mia-2dimagecombiner}
-  
-  \begin{description}
-  \item [Description:] This program combines two images $I_1$ and $I_2$ by using one of the 
-                       operations defined in the image combiner plug-ins (section \ref{sec:combiner2d}) and 
-		       writes the resulting image to a file. 
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-2dimagecombiner -1 <input1> -2 <input2> -o <output> -p <operation> 
-  \end{lstlisting}
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdopt{first}{1}{string}{First input image}
-  \cmdopt{second}{2}{string}{Second input image}
-  \optoutfile
-  \cmdopt{combiner}{c}{string}{Image combiner operation (section \ref{sec:combiner2d})} 
-  }
-
-  \item [Example:] Take two images l1.png and l2.png and evaluate the sum of the intensity values. 
-   \
-  \begin{lstlisting}
-mia-2dimagecombiner -1 l1.png -2 l2.png -c result.png -c add
-  \end{lstlisting}
-  \end{description}
-  
-  LatexEnd
-*/
-
 #include <sstream>
 #include <mia/core.hh>
 #include <mia/2d.hh>

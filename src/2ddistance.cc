@@ -18,45 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{2D image processing}
-
-  \subsection{mia-2ddistance}
-  \label{mia-2ddistance}
-  
-  \begin{description}
-  \item [Description:] This program evaluates the maximum or avarage distance of a binary mask 
-                       using a distance map that was evaluated by using the 
-		       \hyperref[filter2d:distance]{distance image filter}. 
-		       The result is written to stdout. 
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-2ddistance -i <mask> -d <distance> [options]
-  \end{lstlisting}
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \cmdopt{distance-file}{d}{string}{Distance map}
-  \cmdopt{scale}{s}{double}{Scale the values of the distance map by dividing by this value}
-  \cmdopt{method}{m}{string}{Method to combine the values of the distance measure. 
-                            Average(avg) and maximum(max) are supported.} 
-  }
-
-  \item [Example:] Evaluate the distances of the pixels in mask.png by using the map distance.v
-                   and return the maximum distance
-   \
-  \begin{lstlisting}
-mia-2ddistance -i mask.png -d distance.v -m max
-  \end{lstlisting}
-  \end{description}
-  
-  LatexEnd
-*/
-
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif

@@ -18,39 +18,6 @@
  *
  */
 
-
-/*
-  LatexBeginProgramDescription{Miscellaneous programs}
-
-  \subsection{mia-3dimageaddattributes}
-  \label{mia-3dimageaddattributes}
-  
-  \begin{description}
-  \item [Description:] This program appends all the meta-data attributes found in a 2D input image 
-    to a 3D image (if the output format supports such attributes). 
-    Attributes that are already present in the 3D image are not overwritten. 
-  \
-  \begin{lstlisting}
-mia-3dimageaddattributes -i <input> -o <output> -a <2D image with attributes>
-  \end{lstlisting}
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \cmdopt{attr}{a}{string}{2D image to get the attributes from}
-  \opttypethreed
-  }
-
-  \item [Example:] Append the attributes found in 2d.v to 3d.v and store the result in attr3d.v 
-   \
-  \begin{lstlisting}
-mia-3dimageaddattributes -i 3d.v -o attr3d.v -a 2d.v 
-  \end{lstlisting}
-  \end{description}
-
-  LatexEnd
-*/
-
 #include <iostream>
 #include <string>
 #include <stdexcept>

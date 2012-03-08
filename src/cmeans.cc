@@ -18,49 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{Miscellaneous programs}
-  
-  \subsection{mia-cmeans}
-  \label{mia-cmeans}
-
-  \begin{description}
-  \item [Description:] This program runs a c-means classification \cite{bezdek91:fuzzy} 
-    based on a histogram and by using an  exponential probability distribution per class. 
-    The histogram should be in the format as written by \emph{mia-multihist} \ref{mia-multihist}. 
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-
-  \end{lstlisting}
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optoutfile
-  \cmdopt{nclasses}{n}{int}{number of classes to partition into}
-  \cmdopt{max-iter}{m}{int}{maximum number of iterations}
-  \cmdopt{even-start}{e}{}{set to start with centers evenly distributed over the histogram}
-  \cmdopt{class-centers}{c}{vector <float>}{initial class centers, giving the class centers supersets 
-  \texttt{-{}-nclasses} and \texttt{-{}-even-start}}
-  \cmdopt{auto}{a}{}{atomatic adaption of variance (experimental)}
-  \cmdopt{cut-histo}{t}{}{cut empty histogram at the end}
-  \cmdopt{variance}{k}{float}{variance parameter}
-  }
-
-  \item [Example:] Evaluate the cmeans classification of histogram histo.dat into three classes by using 
-  initial class centers 0,120, and 150, and use a variance of 0.01. write the output to cmeans.txt 
-   \
-  \begin{lstlisting}
-mia-cmeans -i histo.dat -c 0,120,150 -k 0.01 -o cmeans.txt
-  \end{lstlisting}
-  \end{description}
-
-  LatexEnd
-*/
-
-
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

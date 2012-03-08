@@ -18,43 +18,6 @@
  *
  */
 
-/*
-
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dsegcompare}
-  \label{mia-2dsegcompare}
-
-  \begin{description} 
-  \item [Description:] 
-  Get the section wise per-slice Hausdorff distance of a segmentation with respect to a given reference frame 
-     of the same segmentation set.
-
-  The program is called like 
-  \begin{lstlisting}
-mia-2dsegcompare -i <segmentation set> -r <reference frame> 
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinset
-  \cmdopt{ref-frame}{r}{int}{refernce frame to compare the segmentation to}
-  }
-
-  \item [Example:]Evaluate the Hausdorff distance of the segmentations of set segment.set with 
-                  respect to the segmentation given in frame 20. 
-  \begin{lstlisting}
-mia-2dsegcompare -i segment.set -r 20 
-  \end{lstlisting}
-  \item [See also:] \sa{mia-2dseghausdorff}
-  \end{description}
-  
-  LatexEnd
-*/
-
-
-
 #include <iterator>
 #include <algorithm>
 #include <iostream>
@@ -79,7 +42,7 @@ namespace bfs=boost::filesystem;
 
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
+	"Tools for Myocardial Perfusion Analysis", 
 
 	"This program is used to evaluate the Hausdorff distance between each frame "
 	"of a perfusion time series of the input set to the corresponding frame of the reference set "

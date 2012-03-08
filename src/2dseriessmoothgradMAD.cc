@@ -19,76 +19,6 @@
  */
 
 
-/*
-  LatexBeginProgramSection{Myocardial Perfusion Analysis}
-  \label{sec:2dmyoperf}  
-  
-  The programs in this section are all realted to myocardial perfusion analyis.
-  Most of these programs work on sets of images that are described by a XML-file. 
-  These files holding the names of the images belonging to a perfusion series are
-  either created by running \emph{mia-2dseries2sets}, or by using a GUI that is 
-  currently distributed separately.
-
-  LatexEnd
-
-*/
-
-/*
-
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dseriessmoothgradMAD}
-  \label{mia-2dseriessmoothgradMAD}
-
-  \begin{description} 
-  \item [Description:] 
-           Given a set of images of temporal sucession, this program first 
-             smoothes the pixel-wise time-intensity curves by a Gaussian of given width 
-	     and then evaluates the pixel-wise \emph{median average distance} (MAD) of the 
-             the temporal intensity gradient and stores the result in an image. 
-	   Spacial pre-filtering may be applied as additional plugin(s). 
-
-  The program is called like 
-  \begin{lstlisting}
-mia-2dseriessmoothgradMAD -i <input set> -o <output image> [options] [<filter>] ... 
-  \end{lstlisting}
-  with the filters given as extra parameters as additional command line parameters. 
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optoutfile
-  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
-  \cmdopt{crop}{c}{}{Crop the images before evaluating the MAD. Cropping is done by evaluating a bounding box 
-  that contains the segmentation given in the images. 
-  If no segmentation is available then the result is undefined.}
-  \cmdopt{enlarge-boundary}{e}{int}{Enlarge the boundary of the obtained crop-box}
-  \cmdopt{gauss}{g}{int}{Apply a temporal pixel-wise Gauss filtering of a filter width (2 * value + 1)}
-  }
-
-  Additional 2D filters may be given at the command line to run a slice-wise filtering (section \ref{sec:filter2d}). 
-
-  \item [Example:]Evaluate the MAD-image of the bounding box surrounding the segmentation 
-  from a series segment.set after applying a temporal Gaussian 
-  filter of width 5. No spacial filtering will be applied. 
-  The bounding box will be enlarged by 3 pixels in all directions.
-  Store the image in OpenEXR format.  
-  \begin{lstlisting}
-  mia-2dseriessmoothgradMAD -i segment.set -o mad.exr -g 2 -c -e 3 
-  \end{lstlisting}
-  \item [Remark:] The MAD image has float-valued pixels and thereby requires an output format that supports 
-  this pixel type. 
-  \item [See also:] \sa{mia-2dmultiimagevar}, \sa{mia-2dseriesgradMAD}, 
-  \sa{mia-2dseriesgradvariation}
-
-  \end{description}
-  
-  LatexEnd
-*/
-
-
-
 #define VSTREAM_DOMAIN "SERGRADVAR"
 
 #include <iostream>
@@ -108,7 +38,7 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
+	"Tools for Myocardial Perfusion Analysis", 
 	
 	"Given a set of images of temporal sucession, evaluate the temporal "
 	"pixel-wise gaussian and evaluate pixel-wise its MAD." 

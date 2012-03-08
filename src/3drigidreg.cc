@@ -17,63 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-/*
-  LatexBeginProgramSection{3D image registration}
-  \label{sec:3dreg}
-  
-  These programs run provide types of 3D image registration. 
-
-  LatexEnd
-*/
-
-
-/*
-  LatexBeginProgramDescription{3D image registration}
-  
-  \subsection{mia-3drigidreg}
-  \label{mia-3drigidreg}
-
-  \begin{description}
-  \item [Description:] This program implements the registration of two gray scale 3D images. 
-	The transformation is not penalized, therefore, one should only use translation, rigid, or affine 
-	transformations as target and run mia-3dnonrigidreg of nonrigid registration is to be achieved.
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-3drigidreg -i <input image> -r <reference image> -o <output image> [options]
-  \end{lstlisting}
-  
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optreffile
-  \optoutfile
-  \cmdopt{cost}{c}{string}{Cost function as given in section \ref{sec:cost3d}  }
-  \cmdopt{levels}{l}{int}{multiresolution processing levels }
-  \cmdopt{optimizer}{O}{string}{optimizer as given in section \ref{sec:minimizers}  }
-  \cmdopt{trans}{t}{string}{transformation output file  }
-  \cmdopt{transForm}{f }{string}{transformation type to achieve registration as given in section \ref{sec:3dtransforms} 
-     }
-  }
-
-  \item [Example:]Register image test.v to image ref.v affine and write the registered image to reg.v. 
-  Use two multiresolution levels and ssd as cost function. 
-   \
-  \begin{lstlisting}
-mia-3drigidreg -i test.v -r ref.v -o reg.v -l 2 -f affine -c ssd 
-  \end{lstlisting}
-  \item [Remark:] The implementation allows to use a non-linear transformation, like \emph{spline} as target 
-    transformation, but this is not advisable. 
-  \end{description}
-  LatexEnd
-*/
-
-
-
 #include <sstream>
 #include <mia/core.hh>
 #include <mia/core/minimizer.hh>

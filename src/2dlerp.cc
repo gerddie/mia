@@ -18,48 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{2D image processing}
-
-  \subsection{mia-2dlerp}
-  \label{mia-2dlerp}
-  
-  \begin{description}
-  \item [Description:] This program linearly combines two images $I_1$ and $I_2$ by using time index positions 
-  to estimate the weight. 
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-2dlerp -1 <input1> -2 <input2> -o <output> -p n1,p,n2 ... 
-  \end{lstlisting}
-  with $n_1 \le p \le n_2$ and $n_1 < n_2$. 
-  The voxels of the interpolated image R will have values according to 
-  \begin{equation}
-  R(\vx) := \frac{n_2 - p}{n_2 - n_1} I_1(\vx) + \frac{p - n_1}{n_2 - n_1} I_2(\vx)
-  \end{equation}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdopt{first}{1}{string}{First input image}
-  \cmdopt{second}{2}{string}{Second input image}
-  \optoutfile
-  \cmdopt{positions}{p}{vector<int>}{Image positions in the series: first,interpolant,second} 
-  }
-
-  \item [Example:]Interpolate by using the images a.v and b.v for position 7 
-  assuming that they are in the series position 5 and 10 and write the result to ab.v 
-   \
-  \begin{lstlisting}
-mia-2dlerp -1 a.v -2 b.v -o ab.v -p 5,7,10
-  \end{lstlisting}
-  \end{description}
-  
-  LatexEnd
-*/
-
-
 #include <climits>
 #include <boost/test/unit_test_suite.hpp>
 #include <boost/test/unit_test.hpp>

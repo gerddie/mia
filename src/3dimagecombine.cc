@@ -18,42 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{3D image processing}
-
-  \subsection{mia-3dimagecombine}
-  \label{mia-3dimagecombine}
-  
-  \begin{description}
-  \item [Description:] This program combines two images $I_1$ and $I_2$ by using one of the 
-                       operations defined in the image combiner plug-ins (section \ref{sec:combiner3d}) and 
-		       writes the result to a file. 
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-3dimagecombine -1 <input1> -2 <input2> -o <output> -c <combiner> 
-  \end{lstlisting}
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdopt{first}{1}{string}{First input image}
-  \cmdopt{second}{2}{string}{Second input image}
-  \optoutfile
-  \cmdopt{combiner}{c}{string}{Image combiner operation (section \ref{sec:combiner3d})} 
-  }
-
-  \item [Example:] Take two label images l1.v and l2.v and evaluate the label overlap. 
-   \
-  \begin{lstlisting}
-mia-3dimagecombine -1 l1.v -2 l2.v -c map.txt -c labelxmap 
-  \end{lstlisting}
-  \end{description}
-  
-  LatexEnd
-*/
-
-
 #include <iostream>
 #include <string>
 #include <stdexcept>

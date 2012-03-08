@@ -18,69 +18,6 @@
  *
  */
 
-/*
-
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dsegseriesstats}
-  \label{mia-2dsegseriesstats}
-
-  \begin{description} 
-  \item [Description:] 
-        This program is used evaluate various time-intensity curves over a series of images 
-          given by a segmentation set. 
-        Specifically, the program is taylored to evaluate average intensities and variations 
-          of sections the left ventricle myocardium. 
-	The segmentation set must contain the segmentations for all slices that will be accessed 
-          during evaluation.
-
-  The program is called like 
-  \begin{lstlisting}
-mia-2dsegseriesstats -o <original set> -g <registered set>  \
-                     -c <output time-intensity curves> \
-		     -v <output time-intensity variation curves> [options]
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdopt{original}{o}{string}{original segmentation set}
-  \cmdopt{registered}{g}{string}{registered segmentation set}
-  \cmdopt{reference}{r}{int}{Reference frame to base evaluation on.}
-  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
-  \cmdopt{curves}{c}{string}{Output file to store the time-intensity curves in. The output is a table in 
-                            plain-text format  that contains three columns for each section of the LV myocardium: 
-			    The first column contains the values obtained by using the original segmentation of the 
-			    reference on all images of the original series, the second column containes the 
-			    values obtained by the registered segmentation of the reference on all images 
-                            of the registered series, and the third column contains the values obtained 
-                            by using the segmentations of each slice on the original images. 
-			    }
-  \cmdopt{varcurves}{v}{string}{Output file to store the intensity variations per section. The output format 
-                                is the same as for the option \texttt{-{}-curves}}
-  \cmdopt{nsections}{n}{int}{Number of sections to separate the LV myocardium in. If zero is given, 
-                             then the segmentation is used as is. Otherwise, the LV myocardium is 
-			     divided into n sections that enclose equal angles starting at the 
-                             right ventricle insertion point moving clock-wise using the LV center 
-                             as angular point.}
-  }
-
-  \item [Example:]Evaluate the two curve typed for 12 sections from segemntation sets orig.set 
-                  and reg.set skipping the first 2 frames. 
-                  The output will be written to curves.txt and varcurves.txt respectively. 
-  \begin{lstlisting}
-mia-2dsegseriesstats -i org.set -g reg.set -c curves.txt -v varcurves.txt -n 12 -k 2
-  \end{lstlisting}
-  \item [Remark:] This program is used to validate motion compensation algorhitms. 
-  \item [See also:] \sa{mia-2dmyomilles}, \sa{mia-2dmyoserial-nonrigid}, \sa{mia-2dmyoperiodic-nonrigid}, 
-                    \sa{mia-2dmyoica-nonrigid}, \sa{mia-2dmyopgt-nonrigid}
-  \end{description}
-  
-  LatexEnd
-*/
-
-
-
 #define VSTREAM_DOMAIN "2dmyosegstats"
 
 #include <libxml++/libxml++.h>
@@ -97,14 +34,13 @@ using namespace mia;
 using namespace std; 
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
-
+	"Tools for Myocardial Perfusion Analysis", 
 	
 	"This program is used evaluate various time-intensity curves over a series of images "
 	"given by a segmentation set. Specifically, the program is taylored to evaluate average "
 	"intensities and variations of sections the left ventricle myocardium. "
 	"The segmentation set must contain the segmentations for all slices that will be accessed "
-        "during evaluation.", 
+        "during evaluation. ",
 
 	"Evaluate the two curve typed for 12 sections from segemntation sets orig.set "
 	"and reg.set skipping the first 2 frames. The output will be written to curves.txt "
@@ -173,10 +109,19 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( reg_filename, "registered", 'g', "registered segmentation set", CCmdOption::required));
 	options.add(make_opt( skip, "skip", 'k', "images to skip at the begin of the series, if (k < 0) use RV peak of the registered set if set")); 
 	options.add(make_opt( reference, "reference", 'r', "reference image")); 
-	options.add(make_opt( curves_filename, "curves", 'c', "region average value curves"));
-	options.add(make_opt( varcurves_filename, "varcurves", 'v', "region variation values"));
+	options.add(make_opt( curves_filename, "curves", 'c', "region average value curves, "
+			      "The output files each comprises a table in plain-text format that contains three columns "
+			      "for each section of the LV myocardium: The first column contains the values obtained by "
+			      "using the original segmentation of the reference on all images of the original series, "
+			      "the second column containes the values obtained by the registered segmentation of the "
+			      "reference on all images of the registered series, and the third column contains the "
+			      "values obtained by using the segmentations of each slice on the original images."));
+	options.add(make_opt( varcurves_filename, "varcurves", 'v', "region variation values, same formt as described above. "));
 	options.add(make_opt( n_sections, "nsections", 'n', 
-				    "number of sections to use, 0=use as segmented")); 
+			      "number of sections to use, 0=use as segmented, otherwise Otherwise, the LV myocardium is "
+			      "divided into n sections that enclose equal angles starting at the "
+			      "right ventricle insertion point moving clock-wise using the LV center "
+			      "as angular point.")); 
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

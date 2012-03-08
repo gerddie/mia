@@ -18,63 +18,6 @@
  *
  */
 
-/*
-
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dseries2dordermedian}
-  \label{mia-2dseries2dordermedian}
-
-  \begin{description} 
-  \item [Description:] 
-	This program evaluates the pixel-wise median of the absolute values of the gauss filtered 
-	2nd order temporal derivative of a series of images. In addition, it can be used to 
-	output the time-intensity curve of a given pixel.
-
-  The program is called like 
-  \begin{lstlisting}
-mia-2dseries2dordermedian -i <input set> -o <output image> [options] [<filter>] ... 
-  \end{lstlisting}
-  with the filters given as extra parameters as additional command line parameters. 
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdopt{in-file}{i}{string}{input segmentation set}
-  \optoutfile
-  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
-  \cmdopt{crop}{c}{}{Crop the images before evaluating the MAD. Cropping is done by evaluating a bounding box 
-                         that contains the segmentation given in the images. 
-                         If no segmentation is available then the result is undefined.}
-  \cmdopt{enlarge-boundary}{e}{int}{Enlarge the boundary of the obtained crop-box}
-  \cmdopt{gauss}{g}{int}{Apply a temporal pixel-wise Gauss filtering of a filter width (2 * value + 1)}
-  \cmdopt{itc-file}{}{string}{Output file to write the time-intensity curve for a pixel. 
-                            If given, the file will contain three columns of data: the first corresponds to 
-                            the pixel intensity values, the second to the absolute values of the second 
-			    order derivative of the time-intensity curva \emph{after} smoothing with the Gaussian and 
-			    the third curve contains the absolute values of the second 
-			    order derivative of the time-intensity curva \emph{without} smoothing.}
-  \cmdopt{itc-loc}{}{2D-vector <int>}{location of the pixel for which the time-intensity curve will be evaluated}
-  }
-  In addition, the program supports slice-wise spacial pre-filtering by giving additional filters as free 
-    parameters (section \ref{sec:filter2d}). 
-
-  \item [Example:]Evaluate the median of the 2nd order derivative of the series given in segmentation set 
-                  segment.set after filtering with a Gaussian of width 3. In addition write 
-		  the time intensity curve of pixel <128,64> to curve.txt. 
-  \begin{lstlisting}
-mia-2dseries2dordermedian -i segment.set -o gradmedian.exr -g 1 \
-                          --itc-file curve.txt --itc-loc "<128,64>"
-  \end{lstlisting}
-  \item [Remark:] The gradient median image has float-valued pixels and thereby requires an output format 
-                  that supports this pixel type. 
-  \end{description}
-  
-  LatexEnd
-*/
-
-
-
 
 #define VSTREAM_DOMAIN "SER2DGRADMedian"
 
@@ -97,7 +40,7 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
+	"Tools for Myocardial Perfusion Analysis", 
 
 	"This program evaluates the pixel-wise median of the absolute values of the gauss filtered "
 	"2nd order temporal derivative of a series of images. In addition, it can be used to "

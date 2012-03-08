@@ -19,39 +19,6 @@
  */
 
 
-/*
-  LatexBeginProgramDescription{Miscellaneous programs}
-
-  \subsection{mia-2dforce}
-  \label{mia-2dforce}
-  
-  \begin{description}
-  \item [Description:] This program evauates the voxel-wise gradient force norm 
-   of the given cost funtion and stores it in a float valued image. 
-  \
-  \begin{lstlisting}
-mia-2dforce  -i <test> -r <reference> -c <cost> -o <output>
-  \end{lstlisting}
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optreffile
-  \optoutfile
-  \cmdopt{cost}{c}{string}{Cost function as provided by the cost plug-ins (section \ref{sec:cost2d})} 
-  }
-  
-  \item [Example:] Evaluate the weigtes sum of SSD between src.v and ref.v and store the result 
-                   in forcenorm.v. 
-   \
-  \begin{lstlisting}
-mia-2dforce  -i src.v -r ref.v -c ssd -o forcenorm.v 
-  \end{lstlisting}
-  \end{description}
-  LatexEnd
-*/
-
-
 #include <boost/algorithm/minmax_element.hpp>
 #include <sstream>
 #include <iomanip>

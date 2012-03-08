@@ -18,53 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{3D image registration}
-
-  \subsection{mia-3dnonrigidreg}
-  \label{mia-3dnonrigidreg}
-  
-  \begin{description}
-  \item [Description:] This program implements the non-linear registration of two gray scale 3D images. 
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-3dnonrigidreg-alt -t  \
-               [options] <cost1> [<cost2>] ...
-  \end{lstlisting}
-  
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdopt{out-transform}{o}{string}{transformation output file (required)}
-  \cmdopt{levels}{l}{int}{multiresolution processing levels}
-  \cmdopt{optimizer}{O}{string}{optimizer as given in section \ref{sec:minimizers} }
-  \cmdopt{transForm}{f }{string}{transformation type to achieve registration as given 
-          in section \ref{sec:3dtransforms}}
-  }
-
-  The cost functions are given as extra parameters on the command line. 
-  These may include any combination of the cost functions given in section \ref{sec:3dfullcost}. 
-
-  \item [Example:]Register image test.v to image ref.v by using a spline transformation with a 
-  coefficient rate of 5  and write the registered image to reg.v. 
-  Use two multiresolution levels, ssd as image cost function and divcurl weighted by 10.0 
-   as transformation smoothness penalty. The resulting transformation is saved in reg.vf
-
-  \begin{lstlisting}
-mia-3dnonrigidreg -o reg.vf -l 2 -f spline:rate=3  \
-               image:cost=ssd,src=test.v,ref=ref.v divcurl:weight=10
-  \end{lstlisting}
- 
-  \item [Remark:] The implementation allows to use a linear transformation, like \emph{rigid} as target 
-    transformation supersetting mia-3drigidreg. 
-    Of course giving a transformation penalty wouldn't make sense in such cases.
-  \end{description}
-  LatexEnd
-*/
-
 #include <sstream>
 #include <mia/core.hh>
 #include <mia/3d.hh>

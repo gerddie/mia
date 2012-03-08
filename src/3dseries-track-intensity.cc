@@ -18,40 +18,6 @@
  *
  */
 
-
-/*
-  LatexBeginProgramDescription{Analysis of image series}
-  
-  \subsection{mia-3dseries-track-intensity}
-  \label{mia-3dseries-track-intensity}
-
-  \begin{description} 
-  \item [Description:] 
-     This program tracks the intensity of a pixel at the given coordinates.  
-  
-  The program is called like 
-  \begin{lstlisting}
-mia-3dseries-track-intensity -i <input images> -o out file <point> [<point>] ...
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdgroup{File in- and output} 
-  \cmdopt{in-file}{i}{string}{input images}
-  \cmdopt{out-file}{o}{string}{output file}
-  }
-  The points are given as free parameters. 
-
-  \item [Example:]Evaluate the intensity-time curves at points <12,13,14> and <222,113,214>
-  \begin{lstlisting}
-mia-3dseries-track-intensity -i images0000.v -o curves.txt "<12,13,14>" "<222,113,214>"
-  \end{lstlisting}
-  \end{description}
-  
-  LatexEnd
-*/
-
 #define VSTREAM_DOMAIN "3dseries-track-intensity"
 
 #include <fstream>

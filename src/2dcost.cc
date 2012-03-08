@@ -18,35 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{Miscellaneous programs}
-
-  \subsection{mia-2dcost}
-  \label{mia-2dcost}
-  
-  \begin{description}
-  \item [Description:] This program evauates the cost function as given ba the command line 
-  by using the plug-ins provided through (section \ref{sec:fatcost2d}). 
-  \
-  \begin{lstlisting}
-mia-2dcost  <cost1> [<cost2>] ... 
-  \end{lstlisting}
-  \item [Options:] $\:$
-  
-  The Cost function(s) is(are) given as free parameters.  
-
-  \item [Example:] Evaluate the weigtes sum of SSD and NGF between image1.v and image2.v 
-   \
-  \begin{lstlisting}
-mia-2dcost ssd:src=image1.v,ref=image2.v,weight=0.1 \
-           ngf:src=image1.v,ref=image2.v,weight=1.0 
-  \end{lstlisting}
-  \item [Remark:] The used plug-ins should be replaced by fullcost (section \ref{sec:2dfullcost}).
-  \end{description}
-
-  LatexEnd
-*/
-
 
 #include <mia/core.hh>
 #include <mia/2d.hh>

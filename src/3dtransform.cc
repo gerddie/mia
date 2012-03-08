@@ -18,42 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{3D image processing}
-
-  \subsection{mia-3dtransform}
-  \label{mia-3dtransform}
-  
-  \begin{description}
-  \item [Description:] Transform a 3D image by applying a given 3D transformation.  
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-3dtransform -i <input> -t <transformaton> -o <output>
-  \end{lstlisting}
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optoutfile
-  \cmdopt{transformation}{t}{string}{file name of the transformation}
-  \cmdopt{interpolator}{p}{string}{image interpolation kernel to use instead of those given with the transformation}
-  \cmdopt{boundary}{b}{string}{image interpolation boundary conditions to use to use instead of those given with the transformation. 
-  This value is only used if an alternative interpolator is given.}
-
-  }
-
-  \item [Example:] Transform an image input.v by the transfromation stored in trans.v 
-        by using nearest neighbour interpolation ans store the result in output.v 
-   \
-  \begin{lstlisting}
-mia-3dtransform -i input.v -t trans.v  -o output.v  -p nn 
-  \end{lstlisting}
-  \end{description}
-
-  LatexEnd
-*/
-
 
 #define VSTREAM_DOMAIN "mia-3dtransform"
 #include <mia/core/cmdlineparser.hh>

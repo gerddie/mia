@@ -18,44 +18,6 @@
  *
  */
 
-/*
-
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dsegseries-compdice}
-  \label{mia-2dsegseries-compdice}
-
-  \begin{description} 
-  \item [Description:] 
-        This program is used evaluate the dice index for each frame of two  segmentation sets. The result is printed to stdout. 
-
-  The program is called like 
-  \begin{lstlisting}
-mia-2dsegseries-compdice -i <segmenation set> -r <reference set> 
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdopt{original}{i}{string}{segmentation set}
-  \cmdopt{reference}{r}{int}{Reference frame to base evaluation on.}
-  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
-  }
-
-  \item [Example:]Evaluate the dice index of segmentation set \emph{segment.set} and \emph{reference.set} and 
-                  skip the first two frames. 
-  \begin{lstlisting}
-mia-2dsegseries-compdice -i segment.set -r reference.set -k 2
-  \end{lstlisting}
-  \item [Remark:] This program is used to validate motion compensation algorithms. 
-  \item [See also:] \sa{mia-2dmyomilles}, \sa{mia-2dmyoserial-nonrigid}, \sa{mia-2dmyoperiodic-nonrigid}, 
-                    \sa{mia-2dmyoica-nonrigid}, \sa{mia-2dmyopgt-nonrigid}
-  \end{description}
-  
-  LatexEnd
-*/
-
-
 
 #define VSTREAM_DOMAIN "2dmyoseries-dice"
 
@@ -73,7 +35,7 @@ using namespace mia;
 using namespace std; 
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
+	"Tools for Myocardial Perfusion Analysis", 
 	
 	"This program is used to evaluate the per-frame dice index of "
 	"segmented regions of two image series", 

@@ -18,40 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{Miscellaneous programs}
-
-  \subsection{mia-2dimagestats}
-  \label{mia-2dimagestats}
-  
-  \begin{description}
-  \item [Description:] 	This progranm is used to evaluate some statistics of a image.
-	Output is Mean, Variation, Median, and Median Average Distance of the intensity values.
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-2dimagestats -i <file name>
-  \end{lstlisting}
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \cmdopt{thresh}{t}{float}{Intensity threshold to ignore when evaluating the statistics}
-  \cmdopt{high-thresh}{g}{float}{Percentage of values to ignore at the upper and of the histogram}
-  }
-
-  \item [Example:] Evaluate the statistics of image input.v and ignore all voxels with an intensity 
-  below 5 and 0.1\% of the high end of the histogram
-   \
-  \begin{lstlisting}
-mia-2dimagestats -i input.v -t 5 -g 0.1
-  \end{lstlisting}
-  \end{description}
-
-  LatexEnd
-*/
-
 #include <sstream>
 #include <mia/core.hh>
 #include <mia/2d.hh>

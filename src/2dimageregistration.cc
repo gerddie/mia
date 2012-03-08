@@ -18,57 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{2D image registration}
-
-  \subsection{mia-2dnonrigidreg}
-  \label{mia-2dnonrigidreg}
-
-  \begin{description}
-  \item [Description:] This program implements the non-linear registration of two gray scale 2D images. 
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-2drigidreg -i <input image> -r <reference image> -o <output image> \
-               [options] <cost1> [<cost2>] ...
-  \end{lstlisting}
-  
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optreffile
-  \optoutfile
-  \cmdopt{levels}{l}{int}{multiresolution processing levels }
-  \cmdopt{optimizer}{O}{string}{optimizer as given in section \ref{sec:minimizers}  }
-  \cmdopt{trans}{t}{string}{transformation output file}
-  \cmdopt{transForm}{f }{string}{transformation type to achieve registration as given 
-                                 in section \ref{sec:2dtransforms}}
-  }
-
-  The cost functions are given as extra parameters on the command line. 
-  These may include any combination of the cost functions given in section \ref{sec:2dfullcost}. 
-
-
-  \item [Example:]Register image test.v to image ref.v by using a spline transformation with a 
-  coefficient rate of 5  and write the registered image to reg.v. 
-  Use two multiresolution levels, ssd as image cost function and divcurl weighted by 10.0 
-   as transformation smoothness penalty. 
-   \
-  \begin{lstlisting}
-mia-2dnonrigidreg -i test.v -r ref.v -o reg.v -l 2 \
-                  -f spline:rate=3  image:cost=ssd divcurl:weight=10
-  \end{lstlisting}
- 
-  \item [Remark:] The implementation allows to use a linear transformation, like \emph{rigid} as target 
-    transformation supersetting mia-2drigidreg. 
-    Of course giving a transformation penalty wouldn't make sense in such cases.
-  \end{description}
-  LatexEnd
-*/
-
 
 #include <sstream>
 #include <mia/core.hh>

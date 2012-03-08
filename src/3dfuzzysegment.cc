@@ -19,42 +19,6 @@
  */
 
 /*
-  LatexBeginProgramDescription{3D image processing}
-  
-  \subsection{mia-fuzzysegment3d}
-  \label{mia-fuzzysegment3d}
-
-  \begin{description}
-  \item [Description:] 	This program runs a combined fuzzy c-means clustering and B-field correction 
-  to facilitate a 3D segmentation of 3D image (cf. \cite{pham99fuzzy}). 
-  \
-  \begin{lstlisting}
-mia-fuzzysegment3d -i <input image> -o <output image> ... 
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \cmdopt{b0-file}{o}{string}{file to store the b0-field corrected image}
-  \cmdopt{cls-file}{c}{string}{file to store the class probability images. 
-                The file type must support the storage of multiple images}
-  \cmdopt{no-of-classes}{n}{int}{Number of classes to segment}
-  \cmdopt{residuum}{r}{float}{relative residuum for the B-field correction optimization}
-  }
-
-  \item [Example:]Run a 5-class segmentation over inpt image input.v and store the class probability images in cls.v 
-     and the B0-field corrected image in b0.v 
-   \
-  \begin{lstlisting}
-mia-fuzzysegment3d -i input.v -c 5 -o b0.v -c cls.v   
-  \end{lstlisting}
-  \end{description}
-  
-  LatexEnd
-*/
-
-/*
 \remark The programm was origionall written by D.L. Pham and J.L.Prince, Pat. Rec. Let., 20:57-68,1999.
 \remark The CG optimization was included by Stefan Burckhardt und Carsten Walters
 \author Heike J"anicke and M. Tittgemeyer (tittge@cbs.mpg.de), 2004

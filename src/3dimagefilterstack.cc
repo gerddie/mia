@@ -18,45 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{3D image processing}
-
-  \subsection{mia-3dimagefilterstack}
-  \label{mia-3dimagefilterstack}
-  
-  \begin{description}
-  \item [Description:] This program is used run the very same set of filters on 
-    the individual images of a series of 3D gray scale images.
-  For available filters see section \ref{sec:3dfilters}. 
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-3dimagefilterstack -i <input images> -o <output image basename> \
-                  -t <output file type> [<filter>] ... 
-  \end{lstlisting}
-  with the filters given as extra parameters as additional command line parameters. 
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optoutfile
-  \opttypethreed
-  \opthelpplugin
-  }
-
-  \item [Example:]Run a mean-least-varaiance filter on a series of images that follow the 
-  numbering pattern imageXXXX.hdr and store the output in images filteredXXXX.hdr 
-   \
-  \begin{lstlisting}
-mia-3dimagefilterstack -i image0000.hdr -o filtered -t hdr mlv:w=2 
-  \end{lstlisting}
-  \end{description}
-  
-  LatexEnd
-*/
-
 #include <iostream>
 #include <iomanip>
 #include <string>

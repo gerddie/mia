@@ -18,52 +18,6 @@
  *
  */
 
-
-/*
-  LatexBeginProgramSection{Miscellaneous programs}
-  \label{sec:miscprogs}
-  
-  This is a collection of programs that no not actually work on images but may be 
-  related to image processing. 
-  LatexEnd
-*/
-
-/*
-  LatexBeginProgramDescription{Miscellaneous programs}
-
-  \subsection{mia-filenumberpattern}
-  \label{mia-filenumberpattern}
-  
-  \begin{description}
-  \item [Description:] This program prints out the number pattern in the numbering of series of 
-   files like they are used in the stack image filtering (section \ref{sec:2dstackprograms}). 
-   The files must have a pattern like nameXXXXX.ext with XXXXX being digits. 
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-filenumberpattern -i <file name>
-  \end{lstlisting}
-  and will print out a string of zeros whose length correspond to the number of digits in the file number pattern, 
-   i.e. an input 'image000.ext' will result in '000' to be printed.  
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  }
-
-  \item [Example:] Evaluate the number 
-   \
-  \begin{lstlisting}
-mia-filenumberpattern -i image0000.exr
-  \end{lstlisting}
-  \item [Remark:] It is not required that the given input file actually exists. 
-  \end{description}
-
-  LatexEnd
-*/
-
-
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif

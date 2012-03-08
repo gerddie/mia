@@ -17,61 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-/*
-  LatexBeginProgramSection{2D image stack processing}
-  \label{sec:2dstackprograms}
-  
-  These programs all take a series of consecutively numbered input files of the 
-  same dimensions and size and process it as if it would be a 3D image. 
-  For that reason only filters are supported that can process the the slices in one pass. 
-
-  LatexEnd
-*/
-
-/*
-  LatexBeginProgramDescription{2D image stack processing}
-
-  \subsection{mia-2dstackfilter}
-  \label{mia-2dstackfilter}
-  
-  \begin{description}
-  \item [Description:] This program is used to filter and convert a series of 2D gray scale images in a 
-  3D fashion by running filters as given on the command line. 
-  For available filters see section \ref{sec:fifof}. 
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-2dstackfilter -i <input images> -o <output image basename> \
-                  -t <output file type> [<filter>] ... 
-  \end{lstlisting}
-  with the filters given as extra parameters as additional command line parameters. 
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optoutfile
-  \opttypetwod
-  \opthelpplugin
-  }
-
-  \item [Example:]Run a mean-least-varaiance filter on a series of images that follow the 
-  numbering pattern imageXXXX.exr and store the output in images filteredXXXX.exr 
-   \
-  \begin{lstlisting}
-mia-2dstackfilter -i image0000.exr -o filtered -t exr mlv:w=2 
-  \end{lstlisting}
-  \item [Remark:] Note the difference to the program 
-                  \hyperref[mia-2dimagefilterstack]{mia-2dimagefilterstack} 
-                  that runs the filter(s) on the individual images ina 2D manner. 
-  \end{description}
-  
-  LatexEnd
-*/
-
-
 #define VSTREAM_DOMAIN "2dstackfilter" 
 
 

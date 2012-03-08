@@ -49,11 +49,12 @@
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
+	"Work in progress", 
 
 	"This program is work in progress", 
 	
-	NULL, NULL
+	"Example", 
+	"Example"
 }; 
 
 

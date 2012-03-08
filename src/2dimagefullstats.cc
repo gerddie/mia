@@ -18,37 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{Miscellaneous programs}
-
-  \subsection{mia-2dimagestats}
-  \label{mia-2dimagestats}
-  
-  \begin{description}
-  \item [Description:] This progranm is used to evaluate some statistics of an image.
-	Output is Mean, Variation, Median, Min and Max of the intensity values.
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-2dimagestats -i <file name>
-  \end{lstlisting}
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  }
-
-  \item [Example:] Evaluate the statistics of image input.v.  
-   \
-  \begin{lstlisting}
-mia-2dimagestats -i input.v 
-  \end{lstlisting}
-  \end{description}
-
-  LatexEnd
-*/
-
-
 #include <sstream>
 #include <mia/internal/main.hh>
 #include <mia/core/fullstats.hh>

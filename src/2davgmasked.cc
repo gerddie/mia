@@ -18,42 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{2D image processing}
-
-  \subsection{mia-2davgmasked}
-  \label{mia-2davgmasked}
-  
-  \begin{description}
-  \item [Description:] This program avaluates the average and variation of intensity values 
-                       over an image series within labeled regions and writes the result 
-		       to stdout. 
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-2davgmasked -i <input image> -m <mask>
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \cmdopt{mask}{m}{string}{The masks defining image - must be of pixel type unsigned byte. 
-                           Each distinct value of the mask image comprises an image region 
-			   over which the statistics will be evaluated.}
-  }
-
-  \item [Example:]Evaluate the mean and the variance of images inputXXXX.png using the mask mask.png. 
-   \
-  \begin{lstlisting}
-mia-2davgmasked -i input0000.png -m mask.png 
-  \end{lstlisting}
-  \end{description}
-  
-  LatexEnd
-*/
-
 
 #include <iostream>
 #include <iomanip>

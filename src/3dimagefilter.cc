@@ -18,52 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramSection{3D image processing}
-  \label{sec:3dprograms}
-  
-  These programs all take a single 3d image as input. 
-
-  LatexEnd
-*/
-
-/*
-  LatexBeginProgramDescription{3D image processing}
-
-  \subsection{mia-3dimagefilter}
-  \label{mia-3dimagefilter}
-  
-  \begin{description}
-  \item [Description:] This program is used to filter and convert 3D gray scale images by running 
-  filters as given on the command line. For available filters see section \ref{sec:3dfilters}. 
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-3dimagefilter -i <input image> -o <output image> [<filter>] ... 
-  \end{lstlisting}
-  with the filters given as extra parameters as additional command line parameters. 
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optoutfile
-  \opthelpplugin
-  }
-
-  \item [Example:]Run a mean-least-varaiance filter on input.v, then run a 5-class k-means classification 
-           and binarize by selecting the 4th class.
-   \
-  \begin{lstlisting}
-mia-3dimagefilter -i image.v -o filtered.v mlv:w=2 \
-                                               kmeans:c=5 \
-		                               binarize:min=4,max=4 
-  \end{lstlisting}
-  \end{description}
-  
-  LatexEnd
-*/
 
 #include <iostream>
 #include <string>

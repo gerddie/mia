@@ -18,45 +18,6 @@
  *
  */
 
-/*
-
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dmyoseries-dice}
-  \label{mia-2dmyoseries-dice}
-
-  \begin{description} 
-  \item [Description:] 
-        This program is used evaluate the dice index for each frame of a segmentation set 
-	with reference to a specific frame. The result is printed to stdout. 
-
-  The program is called like 
-  \begin{lstlisting}
-mia-2dmyoseries-dice -i <segmenation set> -r <reference frame> 
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdopt{original}{i}{string}{segmentation set}
-  \cmdopt{reference}{r}{int}{Reference frame to base evaluation on.}
-  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
-  }
-
-  \item [Example:]Evaluate the dice index of segmentation set \emph{segment.set} with reference 30 and 
-                  skipping the first two frames. 
-  \begin{lstlisting}
-mia-2dmyoseries-dice -i segment.set -r 30 -k 2
-  \end{lstlisting}
-  \item [Remark:] This program is used to validate motion compensation algorithms. 
-  \item [See also:] \sa{mia-2dmyoseries-compdice}, 
-  \end{description}
-  
-  LatexEnd
-*/
-
-
-
 #define VSTREAM_DOMAIN "2dmyoseries-dice"
 
 #include <libxml++/libxml++.h>
@@ -74,7 +35,7 @@ using namespace std;
 
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
+	"Tools for Myocardial Perfusion Analysis", 
 
 	"This program is used to evaluate the per-frame dice index of "
 	"segmented regions of an image with respect to the segmentation of a reference frame "

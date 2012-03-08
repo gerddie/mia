@@ -18,40 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{2D image processing}
-
-  \subsection{mia-2ddeform}
-  \label{mia-2ddeform}
-  
-  \begin{description}
-  \item [Description:] Transform a 2D image by applying a given 2D transformation that is defined 
-  by a 2D vector field $\vu$ like $\vx \rightarrow \vx - \vu(\vx)$. 
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-2ddeform -i <input> -t <transformaton> -o <output>
-  \end{lstlisting}
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optoutfile
-  \cmdopt{transformation}{t}{string}{file name of the transformation}
-  \cmdopt{interpolator}{p}{string}{image interpolation kernel to use}
-  }
-
-  \item [Example:] Transform an image input.v by the transformation defined by the vector field field.v 
-        by using bspline interpolation of degree 4 and store the result in output.v 
-   \
-  \begin{lstlisting}
-mia-2dtransform -i input.v -t field.v  -o output.v  -p bspline4 
-  \end{lstlisting}
-  \end{description}
-
-  LatexEnd
-*/
-
 #include <mia/core.hh>
 #include <mia/2d.hh>
 

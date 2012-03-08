@@ -17,41 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-/*
-
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dseries-segdistance}
-  \label{mia-2dseries-segdistance}
-
-  \begin{description} 
-  \item [Description:] 
-  Get the mean distance of a segmentation boundary to the reference boundary. 
-
-  The program is called like 
-  \begin{lstlisting}
-mia-2dseries-segdistance -i <segmentation set> -r <reference frame> 
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinset
-  \cmdopt{ref-frame}{r}{int}{refernce frame to compare the segmentation to}
-  }
-
-  \item [Example:]Evaluate the mean absolute border distanceof the segmentations of set segment.set with 
-                  respect to the segmentation given in frame 20. 
-  \begin{lstlisting}
-mia-2dseries-segdistance -i segment.set -r 20 
-  \end{lstlisting}
-  \item [See also:] \sa{mia-2dsegcompare}
-  \end{description}
-  
-  LatexEnd
-*/
-
 #define VSTREAM_DOMAIN "SEGBORDERDIST" 
 
 #include <iterator>
@@ -77,7 +42,7 @@ using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
+	"Tools for Myocardial Perfusion Analysis", 
 	
 	"Get the mean distance of a segmentation boundary to the reference boundary.", 
 

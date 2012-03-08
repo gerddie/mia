@@ -18,46 +18,6 @@
  *
  */
 
-
-/*
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-
-  \subsection{mia-2dseries-mincorr}
-  \label{mia-2dseries-mincorr}
-  
-  \begin{description} 
-  \item [Description:] 
-           Given a set of images of temporal sucession, this program evaluates the 
-	   minimal correlation of the time-intensity curve between neighboring pixels. 
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-2dseriessmoothgradMAD -i <input set> -o <output image> [options] 
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optoutfile
-  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
-  }
-  \item [Example:]Evaluate the minimal correlation image of a series givemn in  segment.set and 
-		  store the image in OpenEXR format.  
-		  Skip two images at the beginning of the series. 
-   \
-  \begin{lstlisting}
-mia-2dseriessmoothgradMAD -i segment.set -o mincorr.exr -k 2 
-  \end{lstlisting}
-  \item [Remark:] The minimal correlation image has float-valued pixels and thereby requires an output 
-                  format that supports this pixel type. 
-  \end{description}
-  
-  LatexEnd
-*/
-
-
 #define VSTREAM_DOMAIN "2dmyocard"
 #include <iomanip>
 #include <ostream>
@@ -74,7 +34,7 @@ mia-2dseriessmoothgradMAD -i segment.set -o mincorr.exr -k 2
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
+	"Tools for Myocardial Perfusion Analysis", 
 	
 	"Given a set of images of temporal sucession, this program evaluates the "
 	"minimal correlation of the time-intensity curve between neighboring pixels.", 

@@ -18,42 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{Image conversion}
-
-  \subsection{mia-2dto3dimage}
-  \label{mia-2dto3dimage}
-  
-  \begin{description}
-  \item [Description:] This program is used to convert a series of consecutively numbered 
-         2D images into a 3D image. 
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-2dto3dimage -i <2D input file pattern> -o <3D output image>
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optoutfile
-  }
-
-  \item [Example:]Convert a series of images imageXXXX.png to a 3D image 3d.v 
-   \
-  \begin{lstlisting}
-mia-2dto3dimage -i imageXXXX.png -o 3d.v
-  \end{lstlisting}
-  \item [Remark:] All input images must be of the same pixel type and size. 
-  See also \ref{mia-2dto3dimageb}. 
-  \end{description}
-  
-  LatexEnd
-*/
-
-
 #include <iostream>
 #include <iomanip>
 #include <string>

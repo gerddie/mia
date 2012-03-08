@@ -19,40 +19,6 @@
  */
 
 
-/*
-  LatexBeginProgramDescription{Miscellaneous programs}
-
-  \subsection{mia-3dimagestats}
-  \label{mia-3dimagestats}
-  
-  \begin{description}
-  \item [Description:] This program prints out some statistics about the image data. 
-  Currently, this is the average intensity and the intensity variation. 
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-3dimagestats -i <file name>
-  \end{lstlisting}
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \cmdopt{thresh}{t}{float}{Intensity threshold to ignore when evaluating the statistics}
-  }
-
-  \item [Example:] Evaluate the statistics of image input.v and ignore all voxels with an intensity 
-  below 5: 
-   \
-  \begin{lstlisting}
-mia-3dimagestats -i input.v -t 5 
-  \end{lstlisting}
-  \end{description}
-
-  LatexEnd
-*/
-
-
-
 #include <sstream>
 #include <mia/core.hh>
 #include <mia/3d.hh>

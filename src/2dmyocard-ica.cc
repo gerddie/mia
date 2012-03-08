@@ -18,69 +18,6 @@
  *
  */
 
-/*
-
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dmyocard-ica}
-  \label{mia-2dmyocard-ica}
-
-  \begin{description} 
-  \item [Description:] 
-        This program is used to run a ICA on a series of myocardial perfusion images to create 
-        sythetic references that can be used for motion correction by image registration. 
-	If the aim is to run a full motion compensation then it is better to create a 
-	segmentation set and use \sa{mia-2dmyoica-nonrigid} or \sa{mia-2dmyomilles}. 
-	If the input data is given by means of a segmentation set, then on can 
-	also use \sa{mia-2dmyocard-icaseries}
-	The program is essentially used to test different options on how to run the ICA for 
-	reference image creation. 
-  
-  The program is called like 
-  \begin{lstlisting}
-mia-2dmyocard-ica -i <input image pattern> -o <synthetic references> [options]
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdgroup{File in- and output} 
-  \cmdopt{in-base}{i}{string}{input file name showing the numbering pattern}
-  \cmdopt{out-base}{o}{string}{output file base name}
-  \cmdopt{coefs}{}{string}{Stor the coefficients of the mixing matrix in this file}
-  
-  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
-  \cmdopt{end}{e}{int}{Last input file number plus 1}
-  \cmdopt{save-features}{f}{string}{save IC feature image that correspond to identifiable features, 
-                                    may not include all ICs}
-  \cmdopt{all-features}{}{string}{all feature images numbered to image with the given base name}
-
-  \cmdgroup{Independend component analysis} 
-  \cmdopt{components}{C}{int}{Number of  ICA components to be used, 0 = automatic estimation}
-  \cmdopt{ica-normalize}{n}{}{dnormalized ICs}
-  \cmdopt{strip-mean}{m}{}{strip the mean from the mixing curves}
-
-  \cmdopt{strip-periodic}{p}{}{strip only periodic component from reference image creation, otherwise 
-                               the references are created from LV, RV, and perfusion IC.}
-
-  \cmdopt{max-ica-iter}{x}{int}{maximum number of iterations within ICA}
-  \cmdopt{LV-crop-amp}{L}{float}{segment and scale the crop box around the LV (0=no segmentation)}
-  \cmdopt{auto-components}{s}{}{automatic esitmation of number of components based on correlation. 
-                                Implies -m and -n}
-  }
-
-  \item [Example:]Evaluate the synthetic references from images imageXXXX.exr and save them to refXXXX.exr by 
-                  using five independend components, mean stripping, normalizing, and skipping 2 images. 
-  \begin{lstlisting}
-mia-2dmyocard-ica  -i imageXXXX.exr -o ref -k 2 -C 5 -m -n 
-  \end{lstlisting}
-  \item [See also:] \sa{mia-2dmyomilles}, \sa{mia-2dmyoica-nonrigid}, \sa{mia-2dmyocard-icaseries},
-  \end{description}
-  
-  LatexEnd
-*/
-
-
 #define VSTREAM_DOMAIN "2dmyocard"
 #include <iomanip>
 #include <ostream>
@@ -100,7 +37,7 @@ mia-2dmyocard-ica  -i imageXXXX.exr -o ref -k 2 -C 5 -m -n
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
+	"Tools for Myocardial Perfusion Analysis", 
 
 	"This program is used to run a ICA on a series of myocardial perfusion images to create "
         "sythetic references that can be used for motion correction by image registration. "

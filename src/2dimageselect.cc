@@ -19,38 +19,6 @@
  */
 
 
-/*
-  LatexBeginProgramDescription{Miscellaneous programs}
-
-  \subsection{mia-2dimageselect}
-  \label{mia-2dimageselect}
-  
-  \begin{description}
-  \item [Description:] This program selects one image from a multi-image file and writes it to a seperate file. 
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-2dimageselect -i <input> -o <output> -n <number> 
-  \end{lstlisting}
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \cmdopt{number}{n}{int}{Number of image to be selected. Counting begins at zero}
-  \opttypethreed
-  }
-
-  \item [Example:] Store the third image in multiimage.v to image.v: 
-   \
-  \begin{lstlisting}
-mia-2dimageselect -i multiimage.v -o image.v -n 2 
-  \end{lstlisting}
-  \end{description}
-
-  LatexEnd
-*/
-
-
 #include <iostream>
 #include <string>
 #include <stdexcept>

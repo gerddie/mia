@@ -18,47 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{Image conversion}
-  
-  \subsection{mia-raw2image}
-  \label{mia-raw2image}
-
-  \begin{description}
-  \item [Description:] This program is used to convert raw data to a 2D file format. 
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-raw2image -i <input data> -o <output image> -s <size of input> ...
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optoutfile
-  \cmdopt{repn}{r}{string}{input pixel type (Table \ref{tab:pixform})}
-  \cmdopt{big-endian}{b}{}{input data is big endian (default is low endian)}
-  \cmdopt{scale}{f}{2D~vector <float>}{physical voxel size given as 2D vector <SX,SY>}
-  \cmdopt{skip}{k}{int}{skip the given number of bytes from the beginning of the input file}
-  \cmdopt{size}{s}{2D~vector <int>}{size of the input data given as 2D vector <NX,NY>}
-  \cmdopt{type}{t}{string}{override output file type deducted from the output file name}
-  }
-
-  \item [Example:]Convert a data set data.raw of size <10,20> of short integer data with a 
-          pixel size of <1.2, 2.3> to a PNG file image.png
-   \
-  \begin{lstlisting}
-mia-raw2volume -i data.raw -o image.png -s "<10,20>" -k "<1.2,2.3>" -r ushort 
-  \end{lstlisting}
-  \item [Remark:] The output file format must support the provided pixel format. 
-  \end{description}
-  
-  LatexEnd
-*/
-
-
 #include <string>
 #include <sstream>
 
