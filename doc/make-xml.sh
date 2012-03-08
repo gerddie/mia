@@ -1,14 +1,14 @@
 #!/bin/sh 
 
 name="$1"
-ldpath="$2"
-MIA_PLUGIN_PATH="$3"
+TEST_PREFIX="$2"
 outdir="$4"
 
 if [ "x$LD_LIBRARY_PATH" = "x" ] ; then 
-    LD_LIBRARY_PATH=${ldpath}
-else
-    LD_LIBRARY_PATH=${ldpath}:$LD_LIBRARY_PATH
+    LD_LIBRARY_PATH=${TEST_PREFIX}/lib
+else 
+    LD_LIBRARY_PATH=${TEST_PREFIX}/lib:$LD_LIBRARY_PATH
 fi
-echo run "./mia-${name} --help-xml >${outdir}/mia-${name}.xml"
-./mia-${name} --help-xml >${outdir}/mia-${name}.xml
+MIA_PLUGIN_TESTPATH="$3" ${TEST_PREFIX}/bin/mia-${name} --help-xml >${outdir}/mia-${name}.xml.help && \
+   mv  ${outdir}/mia-${name}.xml.help ${outdir}/mia-${name}.xml
+

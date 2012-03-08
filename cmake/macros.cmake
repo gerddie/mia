@@ -133,7 +133,7 @@ MACRO(CREATE_EXE_DOCU name)
   if("${CMAKE_GENERATOR}" MATCHES Make)
     ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
       COMMAND sh ARGS ${CMAKE_SOURCE_DIR}/doc/make-xml.sh ${name}
-      ${CMAKE_BINARY_DIR}/testinstall${CMAKE_INSTALL_PREFIX}/lib
+      ${CMAKE_BINARY_DIR}/testinstall${CMAKE_INSTALL_PREFIX}
       ${CMAKE_BINARY_DIR}/testinstall${PLUGIN_SEARCH_PATH} 
       ${CMAKE_BINARY_DIR}/doc/
       DEPENDS mia-${name} testinstall_for_doc )

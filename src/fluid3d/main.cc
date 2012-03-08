@@ -182,8 +182,6 @@ int do_main(int argc, char *argv[])
 	bool disable_multigrid = false;
 	bool disable_fullres = false;
 
-	cverb.set_verbosity( vstream::ml_message );
-
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-image", 'i', "input image", CCmdOption::required ));
 	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image ", CCmdOption::required ));

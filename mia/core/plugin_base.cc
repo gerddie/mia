@@ -221,7 +221,7 @@ EXPORT_CORE const string get_plugin_root()
 const string EXPORT_CORE get_plugin_root()
 {
 	// fixme: this should also go into some config file
-	char *plugin_root = getenv("MIA_PLUGIN_PATH"); 
+	char *plugin_root = getenv("MIA_PLUGIN_TESTPATH"); 
 	if (plugin_root) 
 		return string(plugin_root); 
 	return string(PLUGIN_SEARCH_PATH);
