@@ -23,8 +23,8 @@ INCLUDE (${CMAKE_ROOT}/Modules/FindDoxygen.cmake)
 ADD_CUSTOM_TARGET(docs echo "creating documentation")
 add_dependencies(doc docs)  
 
-ADD_CUSTOM_TARGET(xmldocs)
-
+ADD_CUSTOM_TARGET(xmldoc)
+ADD_CUSTOM_COMMAND(OUTPUT xmldoc.stamp  COMMAND touch xmldoc.stamp DEPENDS xmldoc)
 
 
 IF(CREATE_USERDOC) 
@@ -59,7 +59,7 @@ IF(CREATE_USERDOC)
       ${CMAKE_CURRENT_BINARY_DIR}/userref/progref.css DEPENDS userref_outdir)
     ADD_CUSTOM_COMMAND(OUTPUT program.xml
       COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_CURRENT_SOURCE_DIR}/miaxml2sgml.py 
-      DEPENDS xmldocs
+      DEPENDS xmldoc.stamp
       )
     ADD_CUSTOM_TARGET(process_xml DEPENDS program.xml)
     ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/progref.xml

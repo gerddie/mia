@@ -146,7 +146,7 @@ MACRO(CREATE_EXE_DOCU name)
       )
   endif("${CMAKE_GENERATOR}" MATCHES Make)
   ADD_CUSTOM_TARGET(mia-${name}-xml DEPENDS ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml)
-  add_dependencies(xmldocs mia-${name}-xml)  
+  add_dependencies(xmldoc mia-${name}-xml)  
 
 
   IF(GZIP) 
