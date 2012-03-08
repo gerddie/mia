@@ -42,7 +42,7 @@ using namespace std;
 namespace bfs = ::boost::filesystem;
 
 const SProgramDescription g_description = {
-	"3D image processing", 
+	"Analysis, filtering, combining, and segmentation of 3D images", 
 	
 	"This program is used to extract the brain from T1 MR images. "
 	"It first runs a combined fuzzy c-means clustering and B-field correction "

@@ -28,13 +28,15 @@ using namespace std;
 
 
 const SProgramDescription g_description = {
-	"Miscellaneous", 
+	"Analysis, filtering, combining, and segmentation of 2D images", 
 	
-	"This program evaluates the pixel-wise accumulated intensity variation a set of image given on the command line. "
+	"This program evaluates the pixel-wise accumulated intensity variation of "
+	"a set of image given on the command line. "
 	"If the input image files contain more then one image all images are used. "
 	"All images must be of the same size.", 
 	
-	"Evaluate the pixel-vise intensity variation of images i1.png, i2.png, i3.png, and i4.png and store the result to var.v.",
+	"Evaluate the pixel-vise intensity variation of images i1.png, i2.png, "
+	"i3.png, and i4.png and store the result to var.v.",
 
 	"-o var.v i1.png i2.png i3.png i4.png"
 }; 

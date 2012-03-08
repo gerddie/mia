@@ -33,7 +33,7 @@ NS_MIA_USE;
 
 
 const SProgramDescription g_description = {
-	"Miscellaneous programs", 
+	"Image conversion", 
 	
 	"This program is used to select one 2D images from a multi-image file.", 
 	

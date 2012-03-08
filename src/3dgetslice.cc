@@ -33,7 +33,7 @@
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Miscellaneous programs", 
+	"Image conversion", 
 	
 	"This program is used to extract 2D slices from a 3D data set and store them "
 	"in separate files. Output files will be numbered according to their slice index.", 

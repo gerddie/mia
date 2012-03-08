@@ -29,7 +29,7 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-	"3D image processing", 
+	"Registration, Comparison, and Transformation of 3D images", 
 
 	"Transform a 3D image by applying a given 3D transformation.", 
 	
@@ -53,9 +53,10 @@ int do_main(int argc, char **argv)
 	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "reference image", CCmdOption::required));
 	options.add(make_opt( trans_filename, "transformation", 't', "transformation file", CCmdOption::required));
-	options.add(make_opt( interpolator_kernel, "interpolator", 'p', "override the interpolator provided by the transformation"));
-	options.add(make_opt( interpolator_bc, "boundary", 'b', "override the boundary conditions provided by the transformation."
-			      " This is only used if the interpolator is overridden."));
+	options.add(make_opt( interpolator_kernel, "interpolator", 'p', 
+			      "override the interpolator provided by the transformation"));
+	options.add(make_opt( interpolator_bc, "boundary", 'b', "override the boundary conditions provided "
+			      "by the transformation. This is only used if the interpolator is also overridden."));
 
 
 

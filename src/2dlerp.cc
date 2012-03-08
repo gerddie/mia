@@ -35,9 +35,10 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"3D image processing", 
-	"merge two images by linear combination.", 
-	"Combine image inputA.v and inputB.v by using position coordinates 4, 7, and 9 and write the result to output.v", 
+	"Analysis, filtering, combining, and segmentation of 2D images", 
+	"Merge two images by pixel-wise linearly combining their intensities.", 
+	"Combine image inputA.v and inputB.v by using position coordinates "
+	"4, 7, and 9 and write the result to output.v", 
 	"-1 inputA.v -2 inputB.v -p 4,7,9 -o output.v"
 }; 
 
@@ -135,11 +136,15 @@ int do_main(int argc, char **argv)
 
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 
-	options.add(make_opt( src1_filename, "first", '1', "first input image ", CCmdOption::required));
-	options.add(make_opt( src2_filename, "second", '2', "second input image ", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output vector field", CCmdOption::required));
+	options.add(make_opt( src1_filename, "first", '1', "first input image ", 
+			      CCmdOption::required));
+	options.add(make_opt( src2_filename, "second", '2', "second input image ", 
+			      CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output vector field", 
+			      CCmdOption::required));
 	options.add(make_opt( positions, "positions", 'p', 
-				    "image series positions (first, target, second)", CCmdOption::required));
+				    "image series positions (first, target, second)", 
+			      CCmdOption::required));
 	options.add(make_opt( self_test, "self-test", 0, "run a self test of the tool"));
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)

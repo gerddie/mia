@@ -30,11 +30,12 @@ using namespace boost;
 
 
 const SProgramDescription g_description = {
-	"Miscellaneous programs", 
+	"Registration, Comparison, and Transformation of 3D images", 
 	
-	"This program evauates the cost function as given on the command line.", 
+	"This program evauates the cost function as given by the free parameters on the command line.", 
 
-	NULL, NULL
+	"", 
+	""
 }; 
 
 // set op the command line parameters and run the registration

@@ -34,8 +34,7 @@ using namespace std;
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	"3D image processing", 
-	
+	"Analysis, filtering, combining, and segmentation of 3D images", 
 	
 	"3D image segmentation based on region growing from a seed point. "
 	"Neighboring points are added, either when their intensity is "

@@ -34,7 +34,7 @@ using namespace std;
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	"Miscellaneous programs", 
+	"Analysis, filtering, combining, and segmentation of 3D images", 
 	
 	"Write the dimensions of the input 3d image to stdout.", 
 	

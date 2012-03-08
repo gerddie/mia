@@ -31,7 +31,7 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Miscellaneous programs", 
+	"Registration, Comparison, and Transformation of 3D images", 
 	
 	"This program is used to create an image comprising the pixel-wise norm "
 	"of the ggradient of a given cost function.", 
@@ -66,13 +66,13 @@ int do_main(int argc, char **argv)
 	string src_filename;
 	string out_filename;
 	string ref_filename;
+	P3DImageCost cost; 
 	string cost_descr("ssd");
 
 	options.add(make_opt( src_filename, "src-file", 'i', "input image", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "reference image", CCmdOption::required));
 	options.add(make_opt( ref_filename, "ref-file", 'r', "output force norm image", CCmdOption::required));
-	options.add(make_opt( cost_descr, "cost", 'c', "cost function to use"));
-
+	options.add(make_opt( cost, "ssd", "cost", 'c', "cost function to use"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
@@ -84,7 +84,6 @@ int do_main(int argc, char **argv)
 
 	PImageVector source    = imageio.load(src_filename);
 	PImageVector ref    = imageio.load(ref_filename);
-	P3DImageCost cost = C3DImageCostPluginHandler::instance().produce(cost_descr.c_str());
 
 	if (!source || source->empty()) {
 		throw invalid_argument(string("no image found in ") + src_filename);

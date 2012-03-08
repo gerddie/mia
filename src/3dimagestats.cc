@@ -27,7 +27,7 @@ NS_MIA_USE;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Miscellaneous programs", 
+	"Analysis, filtering, combining, and segmentation of 3D images", 
 	
 	"This program is used to evaluate certain image statistics "
 	"and print them out on the console.", 

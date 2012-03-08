@@ -31,7 +31,7 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Miscellaneous programs", 
+	"Analysis, filtering, combining, and segmentation of 3D images", 
 	
 	"This program creates a 3D image that contains an object created by one of the object "  
 	"creator plug-ins (creator/3dimage)",

@@ -103,6 +103,7 @@ def get_program(program):
     return section 
 
 def get_section(name, sect):
+    sect = sorted(sect, key=lambda p: p.name )
     section = make_section_root_node("section", name)
     para = etree.SubElement(section, "para", role="sectiontoc")
     for program in sect:

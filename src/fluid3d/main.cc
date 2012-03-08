@@ -19,55 +19,6 @@
  */
 
 
-/*
-  LatexBeginProgramDescription{3D image registration}
-  
-  \subsection{mia-fluid3d}
-  \label{mia-fluid3d}
-  
-  \begin{description}
-  \item [Description:] This program is used for non-rigid registration based on fluid dynamics.
-  It uses SSD as the sole registration criterion. For details please see \cite{wollny02comput}.
-
-  The program is called like 
-  \lstset{language=bash}
-  \begin{lstlisting}
-mia-fluid3d -i <input image> -r <reference image> -o <output image> [options]
-  \end{lstlisting}
-  
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optreffile
-  \cmdopt{out-file}{o}{string}{output file to store the registering transformation}
-  \cmdopt{def-file}{d }{string}{transformation output file}
-  \cmdopt{epsilon}{}{float}{threshhold to stop the registration at a multi-grid level }
-  \cmdopt{interpolator}{p}{string}{image interpolator
-           (bspline2|bspline3|bspline4|bspline5|nn|omoms3|tri) }
-  \cmdopt{lambda}{}{float}{elasticity constant}
-  \cmdopt{maxiter}{}{int}{maxiumum number of iterations to solve the PDE  }
-  \cmdopt{max-threads}{t}{int}{number of threads to use}
-  \cmdopt{method}{m}{string}{solver method to be used for the PDE}
-  \cmdopt{mu}{}{float}{elasticity constant}
-  \cmdopt{relax}{}{float}{relaxation factor for PDE solver }
-  \cmdopt{start-size}{s}{int}{multiresolution start size }
-  \cmdopt{step}{}{float}{initial step size}
-  }
-
-  \item [Example:]Register image test.v to image ref.v and write the deformation vector field regfield.v. 
-  Start registration at the smallest size above 16 pixel. 
-   \lstset{language=bash}
-  \begin{lstlisting}
-mia-fluid3d -i test.v -r ref.v -o regfield.v -s 16 
-  \end{lstlisting}
-  \end{description}
-  LatexEnd
-*/
-
-
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -89,10 +40,12 @@ using namespace mia;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Image Registration", 
+	"Registration, Comparison, and Transformation of 3D images", 
 	
-	"This program is used for non-rigid registration based on fluid dynamics. "
-	"It uses SSD as the sole registration criterion.", 
+	"This program is used for non-rigid registration based on fluid dynamics as described in: "
+	"Wollny, G. and Kruggel, F., 'Computational cost of non-rigid registration algorithms "
+	"based on fluid dynamics', IEEE Transactions on Medical Imaging, 11(8), pp. 946-952, 2002, "
+	"doi:10.1109/TMI.2002.803113. It uses SSD as the sole registration criterion.", 
 	
 	"Register image test.v to image ref.v and write the deformation vector field regfield.v. "
 	"Start registration at the smallest size above 16 pixel.", 

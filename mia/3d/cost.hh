@@ -31,9 +31,12 @@ typedef std::shared_ptr<C3DImageCost > P3DImageCost;
 typedef TFactory<C3DImageCost> C3DImageCostPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin> > C3DImageCostPluginHandler;
 
+FACTORY_TRAIT(C3DImageCostPluginHandler);
+
 struct EXPORT_3D C3DImageCostPluginHandlerPathInit {
 	C3DImageCostPluginHandlerPathInit(); 
 }; 
+
 
 NS_MIA_END
 

@@ -42,7 +42,7 @@ size_t log10(size_t x)
 }
 
 const SProgramDescription g_description = {
-	"3D image processing", 
+	"Analysis, filtering, combining, and segmentation of 3D images", 
 	
 	"This program is used to filter and convert a consecutive numbered series "
 	"gray of scale images. File names must follow the pattern 'dataXXXX.v' "

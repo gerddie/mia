@@ -31,9 +31,9 @@ using namespace std;
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	"3D image processing", 
+	"Analysis, filtering, combining, and segmentation of 3D images", 
 	 
-	"This program is used to combine two images using a given image combiner plug-in (combiner/3dimage).", 
+	"This program is used to combine two images using a given image combiner.", 
 	
 	"Take two label images l1.v and l2.v and evaluate the label overlap.", 
 
@@ -46,7 +46,7 @@ int do_main( int argc, char *argv[] )
 	string in_image1;
 	string in_image2;
 	string out_filename;
-	string combiner_descr;
+	P3DImageCombiner combiner;
 
 	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
 	typedef C3DImageIOPluginHandler::Instance::PData PImageVector;
@@ -54,12 +54,9 @@ int do_main( int argc, char *argv[] )
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_image1, "image1", '1', "input image  1 to be combined", CCmdOption::required));
 	options.add(make_opt( in_image2, "image2", '2', "input image  2 to be combined", CCmdOption::required));
-	options.add(make_opt( combiner_descr, "combiner", 'c', "combiner operation", CCmdOption::required));
+	options.add(make_opt( combiner, "labelxmap", "combiner", 'c', "combiner operation", CCmdOption::required));
 	options.add(make_opt( out_filename, "out", 'o', "output file", CCmdOption::required));
 
-	options.add(make_help_opt( "help-plugins", 0,
-					 "give some help about the filter plugins", 
-					 new TPluginHandlerHelpCallback<C3DImageCombinerPluginHandler>)); 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
@@ -84,8 +81,6 @@ int do_main( int argc, char *argv[] )
 
 	if (image2list->size() > 1)
 		cvwarn() << "only first image in " << in_image2 << "will be used\n";
-
-	P3DImageCombiner combiner =  C3DImageCombinerPluginHandler::instance().produce(combiner_descr.c_str());
 
 	PCombinerResult combination = combiner->combine(**image1list->begin(), **image2list->begin());
 

@@ -30,11 +30,15 @@ NS_MIA_USE;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"3D image registration", 
+	"Registration, Comparison, and Transformation of 3D images", 
 	
 	"This program runs a non-rigid registration based on the given cost criteria "
-	"and a given transformation model. ", 
-
+	"and a given transformation model. Other than mia-3dnonrigidreg it doesn't support "
+	"specific command line parameters to provide the images. Instead the images are specified "
+	"dirctly when defining the cost function. Hence, image registrations can be executed that "
+	"optimize the aligmnet of  more than one image pair at the same time. Note, however, that "
+	"all input images must be of the same dimension (in pixels)", 
+	
 	"Register image test.v to image ref.v by using a spline transformation with a "
 	"coefficient rate of 5  and write the registered image to reg.v. "
 	"Use two multiresolution levels, ssd as image cost function and divcurl weighted by 10.0 "

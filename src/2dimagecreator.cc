@@ -31,7 +31,7 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"2D image processing", 
+	"Analysis, filtering, combining, and segmentation of 2D images", 
 	
 	"This program is used to create test images.", 
 	

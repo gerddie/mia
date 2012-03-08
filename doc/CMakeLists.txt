@@ -24,8 +24,6 @@ ADD_CUSTOM_TARGET(docs echo "creating documentation")
 add_dependencies(doc docs)  
 
 ADD_CUSTOM_TARGET(xmldoc)
-ADD_CUSTOM_COMMAND(OUTPUT xmldoc.stamp  COMMAND touch xmldoc.stamp DEPENDS xmldoc)
-
 
 IF(CREATE_USERDOC) 
 
@@ -57,17 +55,17 @@ IF(CREATE_USERDOC)
     ADD_CUSTOM_TARGET(userref_css 
       cp  ${CMAKE_CURRENT_SOURCE_DIR}/progref.css 
       ${CMAKE_CURRENT_BINARY_DIR}/userref/progref.css DEPENDS userref_outdir)
-    ADD_CUSTOM_COMMAND(OUTPUT program.xml
-      COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_CURRENT_SOURCE_DIR}/miaxml2sgml.py 
-      DEPENDS xmldoc.stamp
+    ADD_CUSTOM_TARGET(process_xml
+      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/miaxml2sgml.py 
+      COMMAND rm -f userref.stamp
+      DEPENDS xmldoc
       )
-    ADD_CUSTOM_TARGET(process_xml DEPENDS program.xml)
     ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/progref.xml
       COMMAND ln ARGS -sf ${CMAKE_CURRENT_SOURCE_DIR}/progref.xml ${CMAKE_CURRENT_BINARY_DIR}/progref.xml) 
 
     ADD_CUSTOM_TARGET(progref_link DEPENDS progref.xml)
       
-    ADD_CUSTOM_COMMAND(OUTPUT  "userref/index.html"
+    ADD_CUSTOM_COMMAND(OUTPUT  "userref.stamp"
       COMMAND  
       ${XSLTPROC} ARGS 
       --param chunk.section.depth 3 
@@ -75,10 +73,10 @@ IF(CREATE_USERDOC)
       --stringparam html.stylesheet  progref.css 
       --output "userref/" 
       ${HTML_CHUNK_FILEPATH}/chunk.xsl progref.xml
-      MAIN_DEPENDENCY program.xml
+      COMMAND touch ARGS userref.stamp
       DEPENDS process_xml userref_css userref_outdir progref_link
       ) 
-    ADD_CUSTOM_TARGET(userref DEPENDS userref/index.html)
+    ADD_CUSTOM_TARGET(userref DEPENDS userref.stamp)
     add_dependencies(docs userref)  
     
     ####################################################

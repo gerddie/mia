@@ -129,17 +129,16 @@ MACRO(ASSERT_SIZE  NAME EXPECTED)
 ENDMACRO(ASSERT_SIZE)
 
 MACRO(CREATE_EXE_DOCU name) 
-
+  
   if("${CMAKE_GENERATOR}" MATCHES Make)
     ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
       COMMAND sh ARGS ${CMAKE_SOURCE_DIR}/doc/make-xml.sh ${name}
-          ${CMAKE_BINARY_DIR}/testinstall${CMAKE_INSTALL_PREFIX}/lib
-          ${CMAKE_BINARY_DIR}/testinstall${PLUGIN_SEARCH_PATH} 
-	  ${CMAKE_BINARY_DIR}/doc/
-	  MAIN_DEPENDENCY mia-${name}
-	  DEPENDS testinstall_for_doc
-      )
-  else("${CMAKE_GENERATOR}" MATCHES Make)
+      ${CMAKE_BINARY_DIR}/testinstall${CMAKE_INSTALL_PREFIX}/lib
+      ${CMAKE_BINARY_DIR}/testinstall${PLUGIN_SEARCH_PATH} 
+      ${CMAKE_BINARY_DIR}/doc/
+      MAIN_DEPENDENCY mia-${name}
+      DEPENDS testinstall_for_doc )
+  else ("${CMAKE_GENERATOR}" MATCHES Make)
     ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
       COMMAND ./mia-${name} ARGS  --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
       MAIN_DEPENDENCY mia-${name}
@@ -147,8 +146,7 @@ MACRO(CREATE_EXE_DOCU name)
   endif("${CMAKE_GENERATOR}" MATCHES Make)
   ADD_CUSTOM_TARGET(mia-${name}-xml DEPENDS ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml)
   add_dependencies(xmldoc mia-${name}-xml)  
-
-
+  
   IF(GZIP) 
     SET(${name}-manfile ${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1.gz)
   ELSE(GZIP) 

@@ -35,7 +35,7 @@ using namespace std;
 using namespace boost;
 
 const SProgramDescription g_description = {
-	"2D image processing", 
+	"Analysis, filtering, combining, and segmentation of 2D images", 
 	"This program is used to evaluate the average intensity and its variation of a series "
 	"of images in a given masked region.", 
 	NULL, 

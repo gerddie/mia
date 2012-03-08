@@ -30,7 +30,7 @@ using boost::any_cast;
 
 
 const SProgramDescription g_description = {
-	"2D image processing", 
+	"Analysis, filtering, combining, and segmentation of 2D images", 
 	
 	"Combine two image by a given operation.", 
 	

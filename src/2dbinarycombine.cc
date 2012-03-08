@@ -95,7 +95,7 @@ const TDictMap<EBinops>::Table g_binops_table[] = {
 const TDictMap<EBinops> g_binops_dict(g_binops_table);
 
 const SProgramDescription g_description = {
-	"2D image processing", 
+	"Analysis, filtering, combining, and segmentation of 2D images", 
 	"This program is used to combine two binary images by some kind of operation.", 
 	NULL, 
 	NULL

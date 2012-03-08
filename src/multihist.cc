@@ -29,7 +29,7 @@ NS_MIA_USE;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"2D image stack processing", 
+	"Filtering of series of 2D images in a 3D fashion (out-of-core)", 
 	
 	"This program evaluates the histogram over a series of 2D images", 
 	

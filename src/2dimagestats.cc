@@ -27,7 +27,7 @@ NS_MIA_USE;
 using namespace std;
 
 const SProgramDescription g_general_help = {
-	"Miscellaneous", 
+	"Analysis, filtering, combining, and segmentation of 2D images", 
 	
 	"This progranm is used to evaluate some statistics of an image. " 
 	"Output is Mean, Variation, Median, and Median Average Distance of the intensity values. "

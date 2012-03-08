@@ -22,7 +22,7 @@
  *
  */
 
-/**
+/*
    This program implements and enhances the paper:
    Mohamed N. Ahmed et. al, "A Modified Fuzzy C-Means Algorithm for Bias Field 
    estimation and Segmentation of MRI Data", IEEE Trans. on Medical Imaging, 
@@ -53,9 +53,9 @@ using namespace std;
 typedef vector<C2DFImage> C2DFImageVec;
 
 const SProgramDescription g_description = {
-	"2D image processing", 
+	"Analysis, filtering, combining, and segmentation of 2D images", 
 	
-	"This program implements and enhances the paper:"
+	"This program implements a variation of the paper:"
 	"Mohamed N. Ahmed et. al, \"A Modified Fuzzy C-Means Algorithm for Bias Field "
 	"estimation and Segmentation of MRI Data\", IEEE Trans. on Medical Imaging, "
 	"Vol. 21, No. 3, March 2002, changes are: p=2, and exp", 

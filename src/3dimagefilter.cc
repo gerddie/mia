@@ -33,7 +33,7 @@ NS_MIA_USE;
 
 const SProgramDescription g_description = {
 
-	"3D image processing", 
+	"Analysis, filtering, combining, and segmentation of 3D images", 
 	
 	"This program is used to filter and convert gray scale 3D images.", 
 

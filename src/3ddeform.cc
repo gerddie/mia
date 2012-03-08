@@ -28,7 +28,7 @@ using namespace std;
 using namespace boost;
 
 const SProgramDescription g_description = {
-	"3D image processing", 
+	"Registration, Comparison, and Transformation of 3D images", 
 	
 	"Transform a 3D image by applying a given 3D transformation that is defined "
 	"by a 3D vector field v according to x:=x-v(x)", 

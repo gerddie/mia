@@ -28,7 +28,7 @@ NS_MIA_USE;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"3D image registration", 
+	"Registration, Comparison, and Transformation of 3D images", 
 	
 	"This program implements the registration of two gray scale 3D images. "
 	"The transformation is not penalized, therefore, one should only use translation, rigid, or affine "
