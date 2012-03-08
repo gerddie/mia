@@ -85,8 +85,9 @@ prog_xml.set(xmlns + "id", "Programs")
 title = create_text_node("title", "Program Reference")
 prog_xml.append(title)
 
-
-for s in program_sections.keys(): 
+program_keys = program_sections.keys()
+program_keys.sort()
+for s in program_keys: 
     prog_xml.append(get_section(s, program_sections[s]))
 
 programs_xml = etree.tostring(prog_xml, pretty_print=True)
