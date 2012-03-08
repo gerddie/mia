@@ -31,7 +31,8 @@ IF(CREATE_USERDOC)
     mkdir -p "${CMAKE_INSTALL_PREFIX}/man/man1/"
     COMMAND cp -r man/* "${CMAKE_INSTALL_PREFIX}/man/man1/"
     DEPENDS manpages)
-  
+
+  add_dependencies(docs manpages)    
   add_dependencies(install-doc install-manpages)
   ##################################################################
   #  for html userref xsltproc and the style sheet is needed 
