@@ -128,6 +128,43 @@ MACRO(ASSERT_SIZE  NAME EXPECTED)
   ENDIF(NOT ${${NAME}_TYPE_SIZE} EQUAL ${EXPECTED})
 ENDMACRO(ASSERT_SIZE)
 
+MACRO(CREATE_EXE_DOCU name) 
+
+  if("${CMAKE_GENERATOR}" MATCHES Make)
+    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
+      COMMAND sh ARGS ${CMAKE_SOURCE_DIR}/doc/make-xml.sh ${name}
+          ${CMAKE_BINARY_DIR}/testinstall${CMAKE_INSTALL_PREFIX}/lib
+          ${CMAKE_BINARY_DIR}/testinstall${PLUGIN_SEARCH_PATH} 
+	  ${CMAKE_BINARY_DIR}/doc/
+	  MAIN_DEPENDENCY mia-${name}
+	  DEPENDS testinstall_for_doc
+      )
+  else("${CMAKE_GENERATOR}" MATCHES Make)
+    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
+      COMMAND ./mia-${name} ARGS  --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
+      MAIN_DEPENDENCY mia-${name}
+      )
+  endif("${CMAKE_GENERATOR}" MATCHES Make)
+  ADD_CUSTOM_TARGET(mia-${name}-xml DEPENDS ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml)
+  add_dependencies(xmldocs mia-${name}-xml)  
+
+
+  IF(GZIP) 
+    SET(${name}-manfile ${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1.gz)
+  ELSE(GZIP) 
+    SET(${name}-manfile ${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1)
+  ENDIF(GZIP) 
+  
+  ADD_CUSTOM_COMMAND(OUTPUT   ${${name}-manfile}
+    COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py 
+    ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml | ${GZIP} -9  >${${name}-manfile}
+    MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
+    DEPENDS mandir
+    )
+  ADD_CUSTOM_TARGET(mia-${name}-man DEPENDS ${${name}-manfile})
+  add_dependencies(manpages mia-${name}-man)    
+ENDMACRO(CREATE_EXE_DOCU)
+
 
 MACRO(DEFEXE name deps ) 
   ADD_EXECUTABLE(mia-${name} ${name}.cc)
@@ -138,42 +175,7 @@ MACRO(DEFEXE name deps )
   
   TARGET_LINK_LIBRARIES(mia-${name} ${BASELIBS})
   INSTALL(TARGETS mia-${name} RUNTIME DESTINATION "bin")
-  
-  ADD_CUSTOM_TARGET(mia-${name}.xml)
-  add_dependencies(mia-${name}.xml testinstall_for_doc)
-
-  if("${CMAKE_GENERATOR}" MATCHES Make)
-    ADD_CUSTOM_COMMAND(TARGET mia-${name}.xml
-      COMMAND
-      sh ${CMAKE_SOURCE_DIR}/doc/make-xml.sh ${name}
-          ${CMAKE_BINARY_DIR}/testinstall${CMAKE_INSTALL_PREFIX}/lib
-          ${CMAKE_BINARY_DIR}/testinstall${PLUGIN_SEARCH_PATH} 
-          ${CMAKE_BINARY_DIR}/doc 
-      )
-  else("${CMAKE_GENERATOR}" MATCHES Make)
-    ADD_CUSTOM_COMMAND(TARGET mia-${name}.xml
-      COMMAND ./mia-${name} --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
-      )
-  endif("${CMAKE_GENERATOR}" MATCHES Make)
-    
-  add_dependencies(mia-${name}.xml mia-${name})  
-  add_dependencies(xmldocs mia-${name}.xml)  
-
-
-  ADD_CUSTOM_TARGET(mia-${name}.man)  
-  IF(GZIP) 
-    ADD_CUSTOM_COMMAND(TARGET  mia-${name}.man 
-      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py 
-      ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml | ${GZIP} -9  >${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1.gz)
-  ELSE(GZIP) 
-    ADD_CUSTOM_COMMAND(TARGET  mia-${name}.man 
-      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py 
-      ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml >${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1.gz)
-  ENDIF(GZIP)
-  add_dependencies(mia-${name}.man mia-${name}.xml manpath)    
-  add_dependencies(manpages mia-${name}.man)    
-
-
+  CREATE_EXE_DOCU(${name})
 ENDMACRO(DEFEXE)
 
 MACRO(DEFCHKEXE name deps ) 
@@ -186,6 +188,7 @@ MACRO(DEFCHKEXE name deps )
    TARGET_LINK_LIBRARIES(mia-${name} ${BASELIBS})
    TARGET_LINK_LIBRARIES(mia-${name} ${BOOST_UNITTEST})
    INSTALL(TARGETS mia-${name} RUNTIME DESTINATION "bin")
+   CREATE_EXE_DOCU(${name})
 ENDMACRO(DEFCHKEXE)
 
 

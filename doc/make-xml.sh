@@ -10,5 +10,5 @@ if [ "x$LD_LIBRARY_PATH" = "x" ] ; then
 else
     LD_LIBRARY_PATH=${ldpath}:$LD_LIBRARY_PATH
 fi
-
+echo run "./mia-${name} --help-xml >${outdir}/mia-${name}.xml"
 ./mia-${name} --help-xml >${outdir}/mia-${name}.xml

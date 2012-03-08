@@ -25,21 +25,16 @@ add_dependencies(doc docs)
 
 ADD_CUSTOM_TARGET(xmldocs)
 
+
+
 IF(CREATE_USERDOC) 
-  #
-  # manpages can be created solely by using python and lxml 
-  #
-  ADD_CUSTOM_TARGET(manpages)
-  ADD_CUSTOM_TARGET(manpath mkdir -p man)
-  add_dependencies(manpages xmldocs)
-  
+
   ADD_CUSTOM_TARGET(install-manpages 
-    mkdir -p "${CMAKE_INSTALL_PREFIX}/man/man1"
-    COMMAND cp -r man/* "${CMAKE_INSTALL_PREFIX}/man/man1"
+    mkdir -p "${CMAKE_INSTALL_PREFIX}/man/man1/"
+    COMMAND cp -r man/* "${CMAKE_INSTALL_PREFIX}/man/man1/"
     DEPENDS manpages)
-  add_dependencies(docs manpages)
-  add_dependencies(install-doc install-manpages)
   
+  add_dependencies(install-doc install-manpages)
   ##################################################################
   #  for html userref xsltproc and the style sheet is needed 
   #
@@ -59,22 +54,31 @@ IF(CREATE_USERDOC)
     # handle the linking of some files to run the 
     # 
     ADD_CUSTOM_TARGET(userref_outdir mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/userref)
-    ADD_CUSTOM_TARGET(userref_css cp  ${CMAKE_CURRENT_SOURCE_DIR}/progref.css 
+    ADD_CUSTOM_TARGET(userref_css 
+      cp  ${CMAKE_CURRENT_SOURCE_DIR}/progref.css 
       ${CMAKE_CURRENT_BINARY_DIR}/userref/progref.css DEPENDS userref_outdir)
-    ADD_CUSTOM_TARGET(userref_create_xml ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/miaxml2sgml.py) 
-    ADD_CUSTOM_TARGET(userref_link_source ln -sf ${CMAKE_CURRENT_SOURCE_DIR}/progref.xml ${CMAKE_CURRENT_BINARY_DIR}/) 
-    ADD_CUSTOM_TARGET(userref ${XSLTPROC} 
+    ADD_CUSTOM_COMMAND(OUTPUT program.xml plugin.xml
+      COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_CURRENT_SOURCE_DIR}/miaxml2sgml.py 
+      DEPENDS xmldocs
+      )
+    ADD_CUSTOM_TARGET(process_xml DEPENDS program.xml plugin.xml)
+    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/progref.xml
+      COMMAND ln ARGS -sf ${CMAKE_CURRENT_SOURCE_DIR}/progref.xml ${CMAKE_CURRENT_BINARY_DIR}/progref.xml) 
+
+    ADD_CUSTOM_TARGET(progref_link DEPENDS progref.xml)
+      
+    ADD_CUSTOM_COMMAND(OUTPUT  "userref/index.html"
+      COMMAND  
+      ${XSLTPROC} ARGS 
       --param chunk.section.depth 3 
       --param chunk.first.sections 1 
       --stringparam html.stylesheet  progref.css 
       --output "userref/" 
-      ${HTML_CHUNK_FILEPATH}/chunk.xsl progref.xml) 
-    
-    add_dependencies(userref_create_xml xmldocs)
-    add_dependencies(userref userref_create_xml) 
-    add_dependencies(userref userref_link_source)
-    add_dependencies(userref userref_css)
-    add_dependencies(userref userref_outdir)
+      ${HTML_CHUNK_FILEPATH}/chunk.xsl progref.xml
+      MAIN_DEPENDENCY program.xml plugin.xml
+      DEPENDS process_xml userref_css userref_outdir progref_link
+      ) 
+    ADD_CUSTOM_TARGET(userref DEPENDS userref/index.html)
     add_dependencies(docs userref)  
     
     ####################################################
