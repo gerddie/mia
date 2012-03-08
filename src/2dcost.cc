@@ -32,9 +32,12 @@ using namespace std;
 
 
 const SProgramDescription g_description = {
-	"2D image registration", 
+	"Registration, Comparison, and Transformation of 2D images", 
+	
 	"This program is used to evaluate the cost between two images by using a given cost function.", 
+	
 	"Evaluate the SSD cost function between image1.png and image2.png", 
+	
 	"image:src=image1.png,ref=image2.png,cost=ssd"
 }; 
 

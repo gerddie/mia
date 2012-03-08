@@ -18,48 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{2D image registration}
-  
-  \subsection{mia-fluid2d}
-  \label{mia-fluid2d}
-  
-  \begin{description}
-  \item [Description:] This program is used for non-rigid registration based on fluid dynamics.
-  It uses SSD as the sole registration criterion. For details please see \cite{wollny02comput}.
-
-  The program is called like 
-  \lstset{language=bash}
-  \begin{lstlisting}
-mia-fluid2d -i <input image> -r <reference image> -o <output image> [options]
-  \end{lstlisting}
-  
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optreffile
-  \cmdopt{out-file}{o}{string}{output file to store the registering transformation}
-  \cmdopt{def-file}{d }{string}{transformation output file}
-
-  \cmdopt{epsilon}{}{float}{threshhold to stop the registration at a multi-grid level }
-  \cmdopt{mgstart}{s}{int}{multiresolution start size }
-  \cmdopt{lambda}{}{float}{elasticity constant}
-  \cmdopt{mu}{}{float}{elasticity constant}
-  \cmdopt{elastic}{}{}{Use linear elastic model instead of fluid one.}
-  }
-
-  \item [Example:]Register image test.v to image ref.v and write the deformation vector field regfield.v. 
-  Start registration at the smallest size above 16 pixel. 
-   \lstset{language=bash}
-  \begin{lstlisting}
-mia-fluid2d -i test.v -r ref.v -o regfield.v -s 16 
-  \end{lstlisting}
-  \end{description}
-  LatexEnd
-*/
-
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -85,7 +43,7 @@ mia-fluid2d -i test.v -r ref.v -o regfield.v -s 16
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	"Image Registration", 
+	"Registration, Comparison, and Transformation of 2D images", 
 	
 	"This program is used for non-rigid registration based on fluid dynamics. "
 	"It uses SSD as the sole registration criterion.", 

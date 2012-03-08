@@ -31,12 +31,16 @@ using namespace std;
 typedef std::shared_ptr<C2DFVectorfield > P2DFVectorfield;
 
 const SProgramDescription g_description = {
-	"2D image registration", 
-	"This program is used to deeform a 2D image usinga deformation vector field. "
+	"Registration, Comparison, and Transformation of 2D images", 
+
+	"This program is used to deform a 2D image usinga deformation vector field. "
 	"Input image and deformation field must be of the same size. The transformation "
 	"formula is 'x -> x - v(x)'", 
-	NULL, 
-	NULL
+
+	"Deform image input.png by using the transformation given in transform.v and "
+	"store the result in deformed.png using linear interpolation", 
+
+	"-i input.png -t transform.v -o deformed.png -p bspline:d=1"
 }; 
 
 int do_main(int argc, char **argv)

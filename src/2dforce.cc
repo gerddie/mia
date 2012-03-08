@@ -32,7 +32,7 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"2D image registration", 
+	"Registration, Comparison, and Transformation of 2D images", 
 	
 	"This image evaluate the force field between two images based on a given cost function.", 
 	

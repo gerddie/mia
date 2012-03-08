@@ -28,10 +28,10 @@ NS_MIA_USE;
 using namespace std;
 
 const SProgramDescription g_general_help = {
-	"Image Registration", 
+	"Registration, Comparison, and Transformation of 2D images", 
 	
 	"This program runs registration of two images optimizing a transformation of the given transformation model "
-	"by optimizing certain cost measures.\n", 
+	"by optimizing certain cost measures that are given as free parameters.", 
 	
 	"Register the image 'moving.png' to the image 'reference.png' by using a rigid transformation model "
         " and ssd as cost function. Write the result to output.png", 

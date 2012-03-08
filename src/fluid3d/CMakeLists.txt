@@ -25,10 +25,10 @@ SET(fluid3d_SOURCES
   vfluid.cc
   )
 
-ADD_EXECUTABLE(mia-fluid3d ${fluid3d_SOURCES})
-CREATE_EXE_DOCU(fluid3d)
-TARGET_LINK_LIBRARIES(mia-fluid3d mia3d)
-INSTALL(TARGETS mia-fluid3d RUNTIME DESTINATION "bin")
+ADD_EXECUTABLE(mia-3dfluid ${fluid3d_SOURCES})
+CREATE_EXE_DOCU(3dfluid)
+TARGET_LINK_LIBRARIES(mia-3dfluid mia3d)
+INSTALL(TARGETS mia-3dfluid RUNTIME DESTINATION "bin")
 
 
 

@@ -18,17 +18,6 @@
  *
  */
 
-
-/*
-  This program implements 2D image cost force evaluation.
-  Depending on the available plug-ins it can accomodate various models and cost-functions.
-  So far input images can be given as PNG, TIF, BMP and OpenEXR (depending on the installed plug-ins)
-  The input images must be of the same dimensions and gray scale (whatever bit-depth).
-  The vector field will be saved as a EXR image with two frames of float values, one for the X
-  and one for the Y values of the vectors.
-  Other vector field output plug-ins might be supported depending on the installed plug-ins.
-*/
-
 #include <mia/core.hh>
 #include <mia/2d.hh>
 #include <mia/internal/main.hh>
@@ -42,7 +31,7 @@ using namespace std;
 
 
 const SProgramDescription g_description = {
-	"Miscellaneous", 
+	"Registration, Comparison, and Transformation of 2D images", 
 	
 	"This program evaluates the 2D image cost force norm image of a given cost function set. "
 	"The input images must be of the same dimensions and gray scale (whatever bit-depth). ", 

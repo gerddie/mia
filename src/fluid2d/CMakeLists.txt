@@ -1,5 +1,5 @@
 #
-# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@
 
 SET(fluid2d_SOURCES main.cc vfluid.cc elast.cc helpers.cc)
 
-ADD_EXECUTABLE(mia-fluid2d ${fluid2d_SOURCES})
-CREATE_EXE_DOCU(fluid2d)
-TARGET_LINK_LIBRARIES(mia-fluid2d mia2d)
-INSTALL(TARGETS mia-fluid2d RUNTIME DESTINATION "bin")
+ADD_EXECUTABLE(mia-2dfluid ${fluid2d_SOURCES})
+CREATE_EXE_DOCU(2dfluid)
+TARGET_LINK_LIBRARIES(mia-2dfluid mia2d)
+INSTALL(TARGETS mia-2dfluid RUNTIME DESTINATION "bin")
 
