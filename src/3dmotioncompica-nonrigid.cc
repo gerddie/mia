@@ -61,7 +61,7 @@ const SProgramDescription g_description = {
 	"and otherwiese use the default parameters. "
 	"Store the result in registeredXXXX.v ", 
 	
-	"-i imagesXXXX.v -o  registered%04d.v  -k 2 -C 4 -t 4 "
+	"-i images0000.v -o  registered%04d.v  -k 2 -C 4 -t 4 "
 	"-O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300"
 }; 
 

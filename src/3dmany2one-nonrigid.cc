@@ -50,12 +50,13 @@ const SProgramDescription g_description = {
 	"This program runs the non-rigid registration of an image series by "
 	"registereing all images to a user-selected reference.",
 
-	"Register the perfusion series given in segment.set by optimizing a spline based " 
+	"Register the images given as numbered files imagesXXXX.v by optimizing a spline based " 
         "transformation with a coefficient rate of 16 pixel "
         "using  a weighted combination of normalized gradient fields "
-        "and SSD as cost measure, and penalize the transformation by using divcurl with aweight of 2.0.", 
+        "and SSD as cost measure, and penalize the transformation by using divcurl with aweight of 2.0. "
+	"Store the resultsing images in registeredXXXX.v.", 
 
-	"-i segment.set -o registered.set -F spline:rate=16 "
+	"-i images0000.v -o  registered%04d.v -F spline:rate=16 "
 	"image:cost=[ngf:eval=ds],weight=2.0 image:cost=ssd,weight=0.1 divcurl:weight=2.0"
 	
 }; 
