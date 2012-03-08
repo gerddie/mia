@@ -57,11 +57,11 @@ IF(CREATE_USERDOC)
     ADD_CUSTOM_TARGET(userref_css 
       cp  ${CMAKE_CURRENT_SOURCE_DIR}/progref.css 
       ${CMAKE_CURRENT_BINARY_DIR}/userref/progref.css DEPENDS userref_outdir)
-    ADD_CUSTOM_COMMAND(OUTPUT program.xml plugin.xml
+    ADD_CUSTOM_COMMAND(OUTPUT program.xml
       COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_CURRENT_SOURCE_DIR}/miaxml2sgml.py 
       DEPENDS xmldocs
       )
-    ADD_CUSTOM_TARGET(process_xml DEPENDS program.xml plugin.xml)
+    ADD_CUSTOM_TARGET(process_xml DEPENDS program.xml)
     ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/progref.xml
       COMMAND ln ARGS -sf ${CMAKE_CURRENT_SOURCE_DIR}/progref.xml ${CMAKE_CURRENT_BINARY_DIR}/progref.xml) 
 
@@ -75,7 +75,7 @@ IF(CREATE_USERDOC)
       --stringparam html.stylesheet  progref.css 
       --output "userref/" 
       ${HTML_CHUNK_FILEPATH}/chunk.xsl progref.xml
-      MAIN_DEPENDENCY program.xml plugin.xml
+      MAIN_DEPENDENCY program.xml
       DEPENDS process_xml userref_css userref_outdir progref_link
       ) 
     ADD_CUSTOM_TARGET(userref DEPENDS userref/index.html)
