@@ -18,56 +18,6 @@
  *
  */
 
-
-/*
-  LatexBeginProgramDescription{2D registration of series of images}
-  
-  \subsection{mia-2dmyoset-all2one-nonrigid}
-  \label{mia-2dmyoset-all2one-nonrigid}
-
-  \begin{description} 
-  \item [Description:] 
-  This program runs the non-rigid registration of an image series. 
-  All images are registered to one refernces as given on the command line. 
-  If no reference is given then the image in the middle of the series is selected. 
-  Registration can be run in parallel.
-  
-  The program is called like 
-  \begin{lstlisting}
-mia-2dmyoset-all2one-nonrigid -i <input set> -o <output set> <cost1> [<cost2>] ...
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdgroup{File in- and output} 
-  \cmdopt{in-file}{i}{string}{input segmentation set}
-  \cmdopt{out-file}{o}{string}{output  segmentation set}
-				 
-  \cmdgroup{Image registration} 
-  \cmdopt{ref}{r}{int}{Reference frame to base the registration on}
-  \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
-  \cmdopt{transForm}{f}{string}{Transformation space as provided by the 
-                                \hyperref[sec:2dtransforms]{transformation plug-ins.}}
-  }
-  The cost functions are given as free parameters on the command line. 
-  For available options see sections \ref{sec:2dfullcost} and \ref{sec:cost2d}. 
-
-  \item [Example:]Register the perfusion series given in segment.set by optimizing a spline based 
-                  transformation with a coefficient rate of 16 pixel 
-		  using  \emph{mutual information} 
-                  and penalize the transformation by using divcurl with aweight of 2.0. 
-  \begin{lstlisting}
-mia-2dmyoset-all2one-nonrigid  -i segment.set -o registered.set -F spline:rate=16 \
-                     image:cost=mi,weight=2.0 divcurl:weight=2.0 
-  \end{lstlisting}
-  \item [See also:] \sa{mia-2dserial-nonrigid}, \sa{mia-2dmyoica-nonrigid}
-  \end{description}
-  
-  LatexEnd
-*/
-
 #define VSTREAM_DOMAIN "2dall2one"
 
 #include <fstream>
@@ -95,12 +45,10 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
+	"Registration of series of 2D images", 
 
-	"This program runs the non-rigid registration of an perfusion image series. "
-	"The registration is run in a serial manner, this is, only images in "
-	"temporal succession are registered, and the obtained transformations "
-	"are applied accumulated to reach full registration.", 
+	"This program runs non-rigid registration of a series of images given in an image set. "
+	"All images are registered to one user defined reference image.", 
 
 	"Register the perfusion series given in segment.set by optimizing a spline based "
 	"transformation with a coefficient rate of 16 pixel "

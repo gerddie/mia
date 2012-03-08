@@ -19,66 +19,6 @@
  */
 
 
-/*
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dmyopgt-nonrigid}
-  \label{mia-2dmyopgt-nonrigid}
-
-  \begin{description} \item [Description:] This program runs the
-  non-linear registration of an perfusion image series as described in
-  \cite{li09}.  According to the paper, a linear registration should
-  be run before this program is applied.
-  
-  The program is called like 
-  \begin{lstlisting}
-mia-2dmyopgt-nonrigid -i <input set> -o <output set> <cost1> [<cost2>] ...
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdgroup{File in- and output} 
-  \cmdopt{in-file}{i}{string}{input segmentation set}
-  \cmdopt{out-file}{o}{string}{output segmentation set}
-  \cmdopt{registered}{r}{string}{File name base for the registered images. Image type and numbering 
-                                 scheme are taken from the input images.}
-				 
-  \cmdgroup{Pseudo Ground Thruth Estimation} 
-  \cmdopt{alpha}{A}{float}{spacial neighborhood penalty weight}
-  \cmdopt{beta}{B}{float}{temporal second derivative penalty weight}
-  \cmdopt{rho-thresh}{C}{float}{crorrelation threshhold for neighborhood analysis}
-
-  \cmdgroup{Image registration} 
-  \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
-  \cmdopt{passes}{P}{int}{Number of registration passes to be run}
-  \cmdopt{start-c-rate}{a}{float}{start coefficinet rate in spines, gets divided by \texttt{-{}-c-rate-divider} 
-                                for each new registration pass}
-  \cmdopt{c-rate-divider}{}{float}{cofficient rate divider for each pass}
-  \cmdopt{start-divcurl}{d}{float}{start divcurl weight, gets divided by \texttt{-{}-divcurl-divider}
-                                for each new registration pass}
-  \cmdopt{ivcurl-divider}{}{float}{divcurl weight scaling with each new pass}
-  \cmdopt{imageweight}{w}{float}{Weight for the image cost function}
-  }
-
-  \item [Example:]Register the perfusion series given in segment.set by using automatic 
-        Pseudo Ground Truth estimation. Skip two images at the beginning and otherwiese 
-	use the default parameters. Store the result in registered.set. 
-  \begin{lstlisting}
-mia-2dmyopgt-nonrigid  -i segment.set -o registered.set -k 2
-  \end{lstlisting}
-
-  \item [Remark:] This program is here for test purpouses only, the algorithm doesn't work very well. 
-                  It should be better to implement the follow-up paper \citet{Li2011}. 
-  \item [See also:] \sa{mia-2dmyomilles}, \sa{mia-2dmyoperiodic-nonrigid}, 
-                    \sa{mia-2dmyoica-nonrigid}, \sa{mia-2dmyoserial-nonrigid},
-		    \sa{mia-2dsegseriesstats}
-  \end{description}
-  
-  LatexEnd
-*/
-
 
 #define VSTREAM_DOMAIN "2dmyopgt"
 #include <iomanip>
@@ -103,12 +43,13 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
+	"Registration of series of 2D images", 
 	
-	"This program is used Pseudo Ground Thruth for motion compensation "
-	"of series of myocardial perfusion images as decribed in Chao Li and Ying Sun, "
+	"This program implements the non-linear registration based on Pseudo Ground Thruth for motion compensation "
+	"of series of myocardial perfusion images given as a data set as decribed in Chao Li and Ying Sun, "
 	"'Nonrigid Registration of Myocardial Perfusion MRI Using Pseudo Ground Truth' , In Proc. "
-	"Medical Image Computing and Computer-Assisted Intervention MICCAI 2009, 165-172, 2009 ", 
+	"Medical Image Computing and Computer-Assisted Intervention MICCAI 2009, 165-172, 2009. "
+	"Note that for this nonlinear motion correction a preceeding linear registration step is usually required.", 
 
 	"Register the perfusion series given in 'segment.set' by using Pseudo Ground Truth estimation. "
         "Skip two images at the beginning and otherwiese use the default parameters. "

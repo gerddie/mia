@@ -122,17 +122,13 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
-	"Myocardial Perfusion Analysis", 
+	"Registration of series of 2D images", 
 
-	"This program runs the non-rigid registration of an perfusion image series."
-	"In each pass, first an ICA analysis is run to estimate and eliminate " 
-	"the periodic movement and create reference images with intensities similar "
-	"to the corresponding original image. Then non-rigid registration is run "
-	"using the an \"ssd + divcurl\" cost model. The B-spline c-rate and the "
-	"divcurl cost weight are changed in each pass according to given parameters."
-	"In the first pass a bounding box around the LV myocardium may be extracted " 
-	"to speed up computation. This version of the program may run all registrations "
-	" in parallel.", 
+	"This program implements the 2D version of the motion compensation algorithm described in "
+	"Wollny G, Kellman P, Santos A, Ledesma-Carbayo M-J, \"Automatic Motion Compensation of "
+	"Free Breathing acquired Myocardial Perfusion Data by using Independent Component Analysis\", "
+	"Medical Image Analysis, 2012, DOI:10.1016/j.media.2012.02.004." 
+	"This version of the program may run all registrations in parallel.", 
 	
 	"Register the perfusion series given in 'segment.set' by using automatic ICA estimation. " 
         "Skip two images at the beginning and otherwiese use the default parameters. "

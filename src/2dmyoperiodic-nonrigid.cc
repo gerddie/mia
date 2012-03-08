@@ -18,72 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dmyoperiodic-nonrigid}
-  \label{mia-2dmyoperiodic-nonrigid}
-
-  \begin{description} 
-  \item [Description:] 
-	This program runs the non-rigid motion compensation of an cardiac 
-        perfusion image series preferable aquired letting the patient breath freely
-	(cf.\citet{wollny10b}). 
-	Note, this is a complete re-write of the software used in that paper, and therefore, 
-        the optimal parameters reported there are not optimal for this implememntations. 
-  
-  The program is called like 
-  \begin{lstlisting}
-mia-2dmyoperiodic-nonrigid -i <input set> -o <output set> [options]
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdgroup{File in- and output} 
-  \cmdopt{in-file}{i}{string}{input segmentation set}
-  \cmdopt{out-file}{o}{string}{output segmentation set}
-  \cmdopt{registered}{r}{string}{File name base for the registered images. Image type and numbering 
-                                 scheme are taken from the input images.}
-  \cmdopt{save-references}{}{string}{Save the synthetic reference images to files with the given name base}
-				 
-  \cmdgroup{Preconditions} 
-  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
-  \cmdopt{max-candidates}{}{int}{Maximum number of candidates for global reference image}
-  \cmdopt{cost-series}{S}{string}{Const function to use for the analysis of the series 
-                                 (see sections \ref{sec:2dfullcost} and \ref{sec:cost2d})}
-  \cmdopt{ref-idx}{}{string}{Save the obtained index of the global reference image to this file}
-
-  \cmdgroup{Image registration} 
-  \cmdopt{cost-subset}{1}{string}{Image similarity measure to optimize during the first registration 
-                                  phase of the algorithm (see section \ref{sec:2dfullcost})}
-  \cmdopt{cost-final}{2}{string}{Image similarity measure to optimize during the second (final) registration 
-                                  phase of the algorithm (see section \ref{sec:2dfullcost})}
-  \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
-  \cmdopt{passes}{P}{int}{Number of ICA+Registration passes to be run}
-  \cmdopt{divcurl}{d}{float}{divcurl regularization weight}
-  \cmdopt{transForm}{f}{string}{Transformation space as provided by the 
-                                \hyperref[sec:2dtransforms]{transformation plug-ins.}}
-  }
-
-  \item [Example:]Register the perfusion series given in segment.set by optimizing a spline based 
-                  transformation with a coefficient rate of 16 pixel ,skipping two images at the 
-		  beginning and using \emph{normalized gradient fields} as initial cost measure 
-                  and SSD as final measure. 
-                  Penalize the transformation by using divcurl with aweight of 2.0. 
-  \begin{lstlisting}
-mia-2dmyoperiodic-nonrigid  -i segment.set -o registered.set -k 2 -F spline:rate=16 -d 2.0 \
-                     -1 image:cost=[ngf:eval=ds] -2 image:cost=ssd
-  \end{lstlisting}
-  \item [See also:] \sa{mia-2dmyomilles}, \sa{mia-2dmyoserial-nonrigid}, 
-                    \sa{mia-2dmyoica-nonrigid}, \sa{mia-2dmyopgt-nonrigid},
-		    \sa{mia-2dsegseriesstats}
-  \end{description}
-  
-  LatexEnd
-*/
-
 #define VSTREAM_DOMAIN "2dmyoperiodic"
 
 #include <fstream>
@@ -112,7 +46,7 @@ namespace bfs=boost::filesystem;
 
 const SProgramDescription g_general_help = {
 	// .g_program_group =  
-	"Myocardial Perfusion Analysis", 
+	"Registration of series of 2D images", 
 	
 	// .g_general_help = 
 	"This program runs the non-rigid registration of an perfusion image series "

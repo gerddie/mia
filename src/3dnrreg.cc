@@ -18,50 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{3D image registration}
-
-  \subsection{mia-3dnrreg}
-  \label{mia-3dnrreg}
-  
-  \begin{description}
-  \item [Description:] This program implements the non-linear registration by using a PDE based 
-  smoothess model of the transformation.
-
-  The program is called like 
-  \
-  \begin{lstlisting}
-mia-3dnrreg -i <input image> -r <reference image> -o <output image> [options]
-  \end{lstlisting}
-  
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \optinfile
-  \optreffile
-  \optoutfile
-  \cmdopt{cost}{c}{string}{Cost function as given in section \ref{sec:cost3d}}
-  \cmdopt{def-file}{d}{string}{transformation output file}
-  \cmdopt{epsilon}{e}{float}{threshhold to stop the registration at a multi-grid level}
-  \cmdopt{interpolator}{p}{string}{image interpolator
-           (bspline2|bspline3|bspline4|bspline5|nn|omoms3|tri)}
-  \cmdopt{maxiter}{n}{int}{maxiumum number of iterations to solve the PDE}
-  \cmdopt{mgsize}{s}{int}{multiresolution start size}
-  \cmdopt{regmodel}{m}{string}{registration PDE model as given in section  \ref{sec:regmodel3d}}
-  \cmdopt{timestep}{t}{string}{transformation time step model as given in section  \ref{sec:timestep3d}}
-  }
-
-  \item [Example:]Register image test.v to image ref.v and write the registered image to reg.v. 
-  Start registration at the smallest size above 16 pixel and ssd as cost function. 
-   \
-  \begin{lstlisting}
-mia-3dnrreg -i test.v -r ref.v -o reg.v -s 16 -c ssd 
-  \end{lstlisting}
-  \item [Remark:] The implementation is currently not well tested and might not do what you expect. 
-  \end{description}
-  LatexEnd
-*/
 
 #include <boost/algorithm/minmax_element.hpp>
 #include <sstream>
@@ -76,7 +32,7 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Obsolete", 
+	"Work in progress", 
 	
 	"This program implements 3D gray scale image registration but "
 	"is currently not funcioning", 

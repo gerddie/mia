@@ -18,58 +18,6 @@
  *
  */
 
-/*
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dmyoserial-nonrigid}
-  \label{mia-2dmyoserial-nonrigid}
-
-  \begin{description} 
-  \item [Description:] 
-	This program runs the non-rigid registration of an perfusion image series. 
-	The registration is run in a serial manner, this is, only images in 
-	temporal succession are registered, and the obtained transformations 
-	are applied accumulated to reach full registration (cf. \citet{wollny10a}). 
-  
-  The program is called like 
-  \begin{lstlisting}
-mia-2dmyoserial-nonrigid -i <input set> -o <output set> <cost1> [<cost2>] ...
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdgroup{File in- and output} 
-  \cmdopt{in-file}{i}{string}{input segmentation set}
-  \cmdopt{out-file}{o}{string}{output segmentation set}
-  \cmdopt{registered}{r}{string}{File name base for the registered images. Image type and numbering 
-                                 scheme are taken from the input images.}
-				 
-  \cmdgroup{Image registration} 
-  \cmdopt{ref}{r}{int}{Reference frame to base the registration on}
-  \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
-  \cmdopt{transForm}{f}{string}{Transformation space as provided by the 
-                                \hyperref[sec:2dtransforms]{transformation plug-ins.}}
-  }
-  The cost functions are given as free parameters on the command line. 
-  For available options see sections \ref{sec:2dfullcost} and \ref{sec:cost2d}. 
-
-  \item [Example:]Register the perfusion series given in segment.set by optimizing a spline based 
-                  transformation with a coefficient rate of 16 pixel 
-                 using  a weighted combination of \emph{normalized gradient fields} 
-                  and SSD as cost measure, and penalize the transformation by using divcurl with aweight of 2.0. 
-  \begin{lstlisting}
-mia-2dmyoserial-nonrigid  -i segment.set -o registered.set -F spline:rate=16 \
-                     image:cost=[ngf:eval=ds],weight=2.0 image:cost=ssd,weight=0.1 divcurl:weight=2.0 
-  \end{lstlisting}
-  \item [See also:] \sa{mia-2dmyomilles}, \sa{mia-2dmyoperiodic-nonrigid}, 
-                    \sa{mia-2dmyoica-nonrigid}, \sa{mia-2dmyopgt-nonrigid},
-		    \sa{mia-2dsegseriesstats}
-  \end{description}
-  
-  LatexEnd
-*/
 
 
 #define VSTREAM_DOMAIN "2dmyoserial"
@@ -95,13 +43,16 @@ namespace bfs=boost::filesystem;
 
 const SProgramDescription g_general_help = {
 	// .g_program_group =  
-	"Myocardial Perfusion Analysis", 
+	"Registration of series of 2D images", 
 	
 	// .g_general_help = 
 	"This program runs the non-rigid motion compensation registration of an perfusion image series. "
 	"The registration is run in a serial manner, this is, only images in "
 	"temporal succession are registered, and the obtained transformations "
-	"are applied accumulated to reach full registration.\n", 
+	"are applied accumulated to reach full registration. "
+	"See e.g. Wollny, G., Ledesma-Carbayo, M.J., Kellman, P., Santos, A. \"A New Similarity Measure "
+	"for Non-Rigid Breathing Motion Compensation of Myocardial Perfusion MRI \". Proc 30th Annual "
+	"International IEEE EMBS Conference, pp. 3389-3392. Vancouver, Aug. 2008, doi:10.1109/IEMBS.2008.4649933,", 
 	
 	//.g_program_example_descr = 
 	"Register the perfusion series given in 'segment.set' to reference image 30. " 

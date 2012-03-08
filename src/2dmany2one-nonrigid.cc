@@ -98,23 +98,17 @@ namespace bfs=boost::filesystem;
 
 
 const SProgramDescription g_general_help = {
-	// .g_program_group =  
-	"Myocardial Perfusion Analysis", 
+	"Registration of series of 2D images", 
 	
-	// .g_general_help = 
-	"This program runs the non-rigid motion compensation of an perfusion image series. "
-	"The motion compensation is run by registering all images to one common reference. "
-	"Since the registration is run in parallel, the cost function plugin referencing the "
-	"cost function input image is created on the fly and must not be given on the command line.\n", 
+	"This program registers all images of a conscutively numbered set of images to one common "
+	"user defined reference.", 
 	
-	//.g_program_example_descr = 
-	"Register the perfusion series given in 'segment.set' to reference image 30. " 
-        "Skip two images at the beginning and using mutual information as cost function, "
+	"Register the image series given by images 'inputXXXX.png' to reference image 30. " 
+	"Skip two images at the beginning and using mutual information as cost function, "
 	"and penalize the transformation by divcurl with weight 5. "
-	"Store the result in 'registered.set'.\n", 
+	"Store the result in 'registeredXXXX.png'.", 
 	
-	//.g_program_example_code = 
-	"  -i segment.set -o registered.set -k 2 -r 30 mi divcurl:weight=5"
+	"  -i input0000.png -o registered%04d.png -k 2 -r 30 mi divcurl:weight=5"
 }; 
 
 C2DFullCostList create_costs(const std::vector<string>& costs, int idx)

@@ -126,7 +126,7 @@ private:
 
 const SProgramDescription g_description = {
 	// .g_program_group =  
-	"Myocardial Perfusion Analysis", 
+	"Registration of series of 2D images", 
 	
 	// .g_general_help = 
 	"This program is use to run a modified version of the ICA based registration approach "

@@ -18,80 +18,6 @@
  *
  */
 
-/*
-
-  LatexBeginProgramDescription{Myocardial Perfusion Analysis}
-  
-  \subsection{mia-2dmyoica-nonrigid}
-  \label{mia-2dmyoica-nonrigid}
-
-  \begin{description} 
-  \item [Description:] 
-        This program is used to run a ICA based non-linear registration approach 
-        for motion compensation in myocardial perfusion imaging described in Wollny at al. 
-        \cite{wollny11bvm}. 
-	Specifically, the non-linear transformation is defined in terms of B-splines that 
-        is regularized by a DivCurl operator that penalizes the gradients of divergence and 
-        curl of the transformation. 
-	In addition, the code supports the automatic extraction of a region of interest 
-        around the left heart ventricle to speed up computation.
-  
-  The program is called like 
-  \begin{lstlisting}
-mia-2dmyoica-nonrigid -i <input set> -o <output set> [options]
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdgroup{File in- and output} 
-  \cmdopt{in-file}{i}{string}{input segmentation set}
-  \cmdopt{out-file}{o}{string}{output segmentation set}
-  \cmdopt{registered}{r}{string}{File name base for the registered images. Image type and numbering 
-                                 scheme are taken from the input images.}
-  \cmdopt{save-cropped}{}{string}{save cropped set to this file, the image files will use the stem of the 
-                                 name as file name base}
-  \cmdopt{save-feature}{}{string}{save segmentation feature images and initial ICA mixing matrix}
-  \cmdopt{save-refs}{}{string}{for each registration pass save the reference images to files with the given name base}
-  \cmdopt{save-regs}{}{string}{for each registration pass save intermediate registered images}
-				 
-  \cmdgroup{Independent component analysis} 
-  \cmdopt{components}{C}{int}{Number of  ICA components to be used, 0 = automatic estimation}
-  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
-  \cmdopt{normalize}{}{}{normalize independent components}
-  \cmdopt{no-meanstrip}{}{}{don't strip the mean from the mixing curves}
-  \cmdopt{segscale}{s}{float}{segment and scale the crop box around the LV (0=no segmentation)}
-  \cmdopt{max-ica-iter}{m}{int}{maximum number of iterations within ICA}
-  \cmdopt{segmethod}{E}{string}{Segmentation method - (delta-feature|delta-peak|features)}
-
-  \cmdgroup{Image registration} 
-  \cmdopt{imagecost}{w}{string}{Image similarity measure used (see section \ref{sec:2dfullcost})}
-  \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
-  \cmdopt{passes}{P}{int}{Number of ICA+Registration passes to be run}
-  \cmdopt{start-c-rate}{a}{float}{start coefficinet rate in spines, gets divided by \texttt{-{}-c-rate-divider} 
-                                for each new registration pass}
-  \cmdopt{c-rate-divider}{}{float}{cofficient rate divider for each pass}
-  \cmdopt{start-divcurl}{d}{float}{start divcurl weight, gets divided by \texttt{-{}-divcurl-divider}
-                                for each new registration pass}
-  \cmdopt{ivcurl-divider}{}{float}{divcurl weight scaling with each new pass}
-  }
-
-  \item [Example:]Register the perfusion series given in segment.set by using automatic ICA estimation. 
-        Skip two images at the beginning and otherwiese use the default parameters. 
-	Store the result in registered.set. 
-  \begin{lstlisting}
-mia-2dmyoica-nonrigid  -i segment.set -o registered.set -k 2
-  \end{lstlisting}
-  \item [See also:] \sa{mia-2dmyomilles}, \sa{mia-2dmyoperiodic-nonrigid}, 
-                    \sa{mia-2dmyoserial-nonrigid}, \sa{mia-2dmyopgt-nonrigid},
-		    \sa{mia-2dsegseriesstats}
-  \end{description}
-  
-  LatexEnd
-*/
-
-
 #define VSTREAM_DOMAIN "2dmyoica"
 
 #include <fstream>
@@ -117,18 +43,12 @@ using namespace mia;
 
 namespace bfs=boost::filesystem; 
 
-const char *g_program_group = "Myocardial Perfusion Analysis"; 
-
+const char *g_program_group = "Registration of series of 2D images"; 
 const char *g_general_help = 
-	"This program runs the non-rigid registration of an perfusion image series. "
-	"In each pass, first an ICA analysis is run to estimate and eliminate " 
-	"the periodic movement and create reference images with intensities similar "
-	"to the corresponding original image. Then non-rigid registration is run "
-	"using the an \"ssd + divcurl\" cost model. The B-spline c-rate and the "
-	"divcurl cost weight are changed in each pass according to given parameters."
-	"In the first pass a bounding box around the LV myocardium may be extracted " 
-	"to speed up computation\n"; 
-
+	"This program implements the 2D version of the motion compensation algorithm described in "
+	"Wollny G, Kellman P, Santos A, Ledesma-Carbayo M-J, \"Automatic Motion Compensation of "
+	"Free Breathing acquired Myocardial Perfusion Data by using Independent Component Analysis\" "
+	"Medical Image Analysis, 2012, DOI:10.1016/j.media.2012.02.004."; 
 const char *g_program_example_descr = 
 	"Register the perfusion series given in 'segment.set' by using automatic ICA estimation. " 
         "Skip two images at the beginning and otherwiese use the default parameters. "
