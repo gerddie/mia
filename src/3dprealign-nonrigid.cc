@@ -18,86 +18,6 @@
  *
  */
 
-
-/*
-    
-  LatexBeginProgramSection{3D registration of series of images}
-
-  The programs in described in this section are to be used for the registration 
-  of series of 3D images. These images have to be given as consecutive numbered 
-   files of the form nameXXXX.ext, with XXXX being digits.  
-
-  LatexEnd
-
-  LatexBeginProgramDescription{3D registration of series of images}
-
-  \subsection{mia-3dprealign-nonrigid}
-  \label{mia-3dprealign-nonrigid}
-  
-  
-
-  \begin{description} 
-  \item [Description:] 
-	This program runs the non-rigid motion compensation of an image series. 
-	The algorithm used is based on \citet{wollny10b}. 
-	First a subset of images is selected that are distributed over time 
-	and exhibit local minimal in the cost funtion regarding one selected reference. 
-	Then these images are registered to this referenec using one cost function.
-	Finally, synthetic references are created from the pre-registered subset and 
-	the remaining images are registered to these references. 
-  
-  The program is called like 
-  \begin{lstlisting}
-mia-3dprealign-nonrigid -i <input set> -o <output set> [options]
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdgroup{File in- and output} 
-  \cmdopt{in-file}{i}{string}{input segmentation set}
-  \cmdopt{out-file}{o}{string}{File name base for the registered images. }
-  \cmdopt{save-references}{}{string}{Save the synthetic reference images to files with the given name base}
-				 
-  \cmdgroup{Preconditions \& Preprocessing} 
-  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
-  \cmdopt{max-candidates}{}{int}{Maximum number of candidates for global reference image}
-  \cmdopt{cost-series}{S}{string}{Const function to use for the analysis of the series 
-                                 (see sections \ref{sec:3dfullcost} and \ref{sec:cost3d})}
-  \cmdopt{ref-idx}{}{string}{Save the obtained index of the global reference image to this file}
-
-  \cmdgroup{Registration} 
-  \cmdopt{cost-subset}{1}{string}{Image similarity measure to optimize during the first registration 
-                                  phase of the algorithm (see section \ref{sec:3dfullcost})}
-  \cmdopt{cost-final}{2}{string}{Image similarity measure to optimize during the second (final) registration 
-                                  phase of the algorithm (see section \ref{sec:3dfullcost})}
-  \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
-  \cmdopt{passes}{P}{int}{Number of ICA+Registration passes to be run}
-  \cmdopt{divcurl}{d}{float}{divcurl regularization weight}
-  \cmdopt{transForm}{f}{string}{Transformation space as provided by the 
-                                \hyperref[sec:3dtransforms]{transformation plug-ins.}}
-  }
-
-  \item [Example:]Register the image series given by images imageXXXX.v by optimizing a spline based 
-                  transformation with a coefficient rate of 16 pixel ,skipping two images at the 
-		  beginning and using \emph{normalized gradient fields} as initial cost measure 
-                  and SSD as final measure. 
-                  Penalize the transformation by using divcurl with aweight of 2.0. 
-		  As optimizer an nlopt based newton method is used. 
-  \begin{lstlisting}
-mia-3dprealign-nonrigid  -i imageXXXX.v -o registered -t vista -k 2 \
-                    -F spline:rate=16 -d 2.0 \
-                    -1 image:cost=[ngf:eval=ds] -2 image:cost=ssd \
-		    -O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300
-  \end{lstlisting}
-  \item [See also:] \sa{mia-3dmany2one-nonrigid}, \sa{mia-3dprealign-nonrigid}, 
-                    \sa{mia-3dmotioncompica-nonrigid}
-  \end{description}
-  
-  LatexEnd
-*/
-
 #define VSTREAM_DOMAIN "3dprealign"
 
 #include <fstream>
@@ -124,11 +44,12 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
-	"3D registration of series of images", 
+	"Registration of series of 3D images", 
 	
 	"This program runs the non-rigid registration of an image series "
-	"The registration algoritm implementes a 3D version of "
-	"G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting "
+	"by first registering an already aligned subset of the images to one reference, "
+	"and then by registering the remaining images by using synthetic references. "
+	"The is a 3D version of G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting "
 	"Quasiperiodicity in Motion Correction of Free-Breathing,\" "
 	"IEEE Transactions on Medical Imaging, 29(8), 2010.", 
 	

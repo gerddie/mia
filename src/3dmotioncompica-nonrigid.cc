@@ -18,77 +18,6 @@
  *
  */
 
-
-/*
-
-  LatexBeginProgramDescription{3D registration of series of images}
-  
-  \subsection{mia-3dmotioncompica-nonrigid}
-  \label{mia-3dmotioncompica-nonrigid}
-
-  \begin{description} 
-  \item [Description:] 
-        This program is used to run a ICA based non-linear registration approach 
-        for motion compensation in 3D images. 
-	Specifically, the non-linear transformation is defined in terms of B-splines that 
-        is regularized by a DivCurl operator that penalizes the gradients of divergence and 
-        curl of the transformation. 
-	The registrations are run in parallel, if more then one processor is available. 
-  
-  The program is called like 
-  \begin{lstlisting}
-mia-3dmotioncompica-nonrigid -i <input images> -o <output set> [options]
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdgroup{File in- and output} 
-  \cmdopt{in-file}{i}{string}{input file name pattern of style nameXXXX.ext with XXXX being digits of consecutive numbers}
-  \cmdopt{out-file}{o}{string}{output file name pattern of style name\%0d.ext to allow ceration of numbered file names}
-  \cmdopt{save-refs}{}{string}{for each registration pass save the reference images to files with the given name base}
-  \cmdopt{save-regs}{}{string}{for each registration pass save intermediate registered images}
-  \cmdopt{save-coeffs}{}{string}{Save the ICA coefficient matrix of the first pass to this file.}
-  \cmdopt{save-features}{}{string}{Save the ICA component images of the first pass to this file.}
-
-				 
-  \cmdgroup{Independent component analysis} 
-  \cmdopt{components}{C}{int}{Number of  ICA components to be used, 0 = automatic estimation}
-  \cmdopt{skip}{k}{int}{Skip a number of frames at the beginning of the series}
-  \cmdopt{no-normalize}{}{}{don't normalized ICs}
-  \cmdopt{no-meanstrip}{}{}{don't strip the mean from the mixing curves}
-  \cmdopt{max-ica-iter}{m}{int}{maximum number of iterations within ICA}
-
-  \cmdgroup{Registration} 
-  \cmdopt{imagecost}{w}{string}{Image similarity measure base part, the name of source and reference images must 
-                               be left alone and will be set by the program internally (see section \ref{sec:3dfullcost})}
-  \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
-  \cmdopt{passes}{P}{int}{Number of ICA+Registration passes to be run}
-  \cmdopt{start-c-rate}{a}{float}{start coefficinet rate in spines, gets divided by \texttt{-{}-c-rate-divider} 
-                                for each new registration pass}
-  \cmdopt{c-rate-divider}{}{float}{cofficient rate divider for each pass}
-  \cmdopt{start-divcurl}{d}{float}{start divcurl weight, gets divided by \texttt{-{}-divcurl-divider}
-                                for each new registration pass}
-  \cmdopt{divcurl-divider}{}{float}{divcurl weight scaling with each new pass}
-  \cmdgroup{Processing} 
-  \cmdopt{threads}{t}{int}{Maximum number of threads to use (default:automatic estimation).}
-  }
-
-  \item [Example:]Register the perfusion series given in images imagesXXXX.v by using 3-class ICA estimation. 
-        Skip two images at the beginning, use at most 4 registration threads, a nlopt based optimizer 
-       and otherwiese use the default parameters. 
-	Store the result in registeredXXXX.v 
-  \begin{lstlisting}
-mia-3dmotioncompica-nonrigid  -i imagesXXXX.v -o  registered%04d.v  -k 2 -C 3 -t 4 \
-                              -O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300
-  \end{lstlisting}
-  \end{description}
-  
-  LatexEnd
-*/
-
-
 #define VSTREAM_DOMAIN "3dmotioncompica"
 
 #include <fstream>
@@ -120,20 +49,19 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
-	"3D registration of series of images", 
+	"Registration of series of 3D images", 
 	
-	"for motion compensation in 3D images. "
-	"Specifically, the non-linear transformation is defined in terms of B-splines that "
-        "is regularized by a DivCurl operator that penalizes the gradients of divergence and "
-        "curl of the transformation. "
-	"The registrations are run in parallel, if more then one processor is available. ", 
-	
-	"Register the perfusion series given in images imagesXXXX.v by using 3-class ICA estimation. "
+	"This program implements a 3D version of the motion compensation algorithm described in "
+	"Wollny G, Kellman P, Santos A, Ledesma-Carbayo M-J, \"Automatic Motion Compensation of "
+	"Free Breathing acquired Myocardial Perfusion Data by using Independent Component Analysis\", "
+	"Medical Image Analysis, 2012, DOI:10.1016/j.media.2012.02.004.", 
+
+	"Register the perfusion series given in images imagesXXXX.v by using 4-class ICA estimation. "
         "Skip two images at the beginning, use at most 4 registration threads, a nlopt based optimizer "
 	"and otherwiese use the default parameters. "
 	"Store the result in registeredXXXX.v ", 
 	
-	"-i imagesXXXX.v -o  registered%04d.v  -k 2 -C 3 -t 4 "
+	"-i imagesXXXX.v -o  registered%04d.v  -k 2 -C 4 -t 4 "
 	"-O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300"
 }; 
 

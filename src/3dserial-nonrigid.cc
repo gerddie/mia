@@ -19,58 +19,6 @@
  */
 
 
-/*
-  LatexBeginProgramDescription{3D registration of series of images}
-  
-  \subsection{mia-3dserial-nonrigid}
-  \label{mia-3dserial-nonrigid}
-
-  \begin{description} 
-  \item [Description:] 
-	This program runs the non-rigid registration of an perfusion image series. 
-	The registration is run in a serial manner, this is, only images in 
-	temporal succession are registered, and the obtained transformations 
-	are applied accumulated to reach full registration (cf. \citet{wollny10a}). 
-  
-  The program is called like 
-  \begin{lstlisting}
-mia-3dserial-nonrigid -i <input set> -o <output set> <cost1> [<cost2>] ...
-  \end{lstlisting}
-
-  \item [Options:] $\:$
-
-  \optiontable{
-  \cmdgroup{File in- and output} 
-  \cmdopt{in-file}{i}{string}{input images}
-  \cmdopt{out-file}{o}{string}{output images}
-				 
-  \cmdgroup{Image registration} 
-  \cmdopt{ref}{r}{int}{Reference frame to base the registration on}
-  \cmdopt{optimizer}{O}{string}{Optimizer as provided by the \hyperref[sec:minimizers]{minimizer plug-ins}}
-  \cmdopt{mg-levels}{l}{int}{Number of multi-resolution levels to be used for image registration}
-  \cmdopt{transForm}{f}{string}{Transformation space as provided by the 
-                                \hyperref[sec:3dtransforms]{transformation plug-ins.}}
-  }
-  The cost functions are given as free parameters on the command line. 
-  For available options see sections \ref{sec:3dfullcost} and \ref{sec:cost3d}. 
-
-  \item [Example:]Register the perfusion series given in segment.set by optimizing a spline based 
-                  transformation with a coefficient rate of 16 pixel 
-                 using  a weighted combination of \emph{normalized gradient fields} 
-                  and SSD as cost measure, and penalize the transformation by using divcurl with aweight of 2.0. 
-  \begin{lstlisting}
-mia-3dserial-nonrigid  -i segment.set -o registered.set -f spline:rate=16 \
-         image:cost=[ngf:eval=ds],weight=2.0 \
-	 image:cost=ssd,weight=0.1 \
-	 divcurl:weight=2.0 
-  \end{lstlisting}
-  \item [See also:] \sa{mia-3dmany2one-nonrigid}, \sa{mia-3dprealign-nonrigid}, 
-                    \sa{mia-3dmotioncompica-nonrigid}
-  \end{description}
-  
-  LatexEnd
-*/
-
 #define VSTREAM_DOMAIN "3dmyoserial"
 
 #include <fstream>
@@ -93,7 +41,7 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_general_help = {
-	"3D image registration", 
+	"Registration of series of 3D images", 
 	
 	"This program runs the image registration of a consecutively numbered image series. "
 	"The registration is run in a serial manner, this is, only images in "
