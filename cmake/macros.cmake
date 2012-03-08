@@ -136,12 +136,11 @@ MACRO(CREATE_EXE_DOCU name)
       ${CMAKE_BINARY_DIR}/testinstall${CMAKE_INSTALL_PREFIX}/lib
       ${CMAKE_BINARY_DIR}/testinstall${PLUGIN_SEARCH_PATH} 
       ${CMAKE_BINARY_DIR}/doc/
-      MAIN_DEPENDENCY mia-${name}
-      DEPENDS testinstall_for_doc )
+      DEPENDS mia-${name} testinstall_for_doc )
   else ("${CMAKE_GENERATOR}" MATCHES Make)
     ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
       COMMAND ./mia-${name} ARGS  --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
-      MAIN_DEPENDENCY mia-${name}
+      DEPENDS mia-${name}
       )
   endif("${CMAKE_GENERATOR}" MATCHES Make)
   ADD_CUSTOM_TARGET(mia-${name}-xml DEPENDS ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml)
