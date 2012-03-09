@@ -48,16 +48,16 @@
 
 NS_MIA_BEGIN
 
+/**
+   @cond INTERNAL 
+*/
 template <typename T>
 struct max_hold_type<T2DVector<T> > {
 	typedef T2DVector<double> type;
-};
 
-class EXPORT_2D C2DInterpolator {
-public:
-	/** a virtual destructor is neccessary for some of the interpolators */
-	virtual  ~C2DInterpolator();
+
 };
+/// @endcond 
 
 /**
    \ingroup interpol 
@@ -69,9 +69,11 @@ public:
    Basic Interpolator type for 2D Data.
 */
 template <typename T>
-class  EXPORT_2D T2DInterpolator : public  C2DInterpolator {
+class  EXPORT_2D T2DInterpolator  {
 public:
 
+	/** a virtual destructor is neccessary for some of the interpolators */
+	virtual  ~T2DInterpolator(){}
 	/**
 	   \param x location of data value to read
 	   \returns interpolated value at location x
@@ -86,11 +88,16 @@ public:
 
 };
 
+/** 
+    @cond INTERNAL 
+*/
 template <class U>
 struct coeff_map<T2DVector<U> > {
 	typedef T2DVector<U> value_type;
 	typedef C2DDVector   coeff_type;
 };
+
+/// @endcond 
 
 /**
    \ingroup interpol 

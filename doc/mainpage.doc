@@ -38,14 +38,6 @@
    
   A file may contain more then one class and additional functions. 
     
-  \section refactor_sec Planned refactoring and changes
-    
-  - Registration algorithms should make it possible to select a lowest resolution directly in  
-    multi resolution processing 
-
-  - All factory plugin handlers should provide a helper function that eliminates the need to use 
-       the actual class name plus instance 
-
 
 
     \defgroup infrastructure Infrastructure 

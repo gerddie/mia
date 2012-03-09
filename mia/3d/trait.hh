@@ -29,6 +29,11 @@
 #include <mia/3d/interpolator.hh>
 
 NS_MIA_BEGIN
+
+/**
+   @cond INTERNAL 
+   Trait used for the non-linear registration 
+*/
 template <>
 struct dimension_traits<3> {
 	typedef C3DTransformation Transformation; 
@@ -46,5 +51,7 @@ struct dimension_traits<3> {
 	typedef C3DInterpolatorFactory InterpolatorFactory; 
 	
 }; 
+/// @endcond 
+
 NS_MIA_END
 #endif

@@ -29,6 +29,11 @@
 #include <mia/2d/interpolator.hh>
 
 NS_MIA_BEGIN
+
+/**
+   @cond INTERNAL 
+   Trait used for the non-linear registration 
+*/
 template <>
 struct dimension_traits<2> {
 	typedef C2DTransformation Transformation; 
@@ -46,5 +51,6 @@ struct dimension_traits<2> {
 	typedef C2DInterpolatorFactory InterpolatorFactory; 
 	
 }; 
+/// @endcond 
 NS_MIA_END
 #endif

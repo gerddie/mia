@@ -105,9 +105,10 @@ typedef std::map<std::string, C2DImageSeriesGroup> C2DImageGroupedSeries;
 
 
 /**
-\brief This is the template version of a 2D image that is used for holding real data.
+   \ingroup classes
+   \brief This is the template version of a 2D image that is used for holding real data.
 
-The purpouse of this class is to hold actual pixel data and provide access to it.
+   The purpouse of this class is to hold actual pixel data and provide access to it.
 */
 
 template <typename T>
@@ -297,6 +298,10 @@ private:
 	T2DDatafield<T> m_image;
 };
 
+/**
+   \ingroup test 
+   \brief a class to print out the intensity values of two images to compare them 
+*/
 class CImageComparePrinter: public TFilter<int> {
 public:
 	template <typename T, typename S>
@@ -311,11 +316,14 @@ public:
 	}
 };
 
-
+/**
+   @cond INTERNAL 
+*/
 template <typename S> 
 struct plugin_data_type<T2DImage<S> > {
 	typedef C2DImage type; 
 }; 
+/// @endcond
 
 /**
    Evaluate if two images are equal in size, pixel type and all its pixels. 

@@ -74,12 +74,20 @@ private:
 	size_t m_n; 
 }; 
 
+
+/**
+   @cond INTERNAL 
+   \ingroup traits
+   \brief A trait to obtain the dimension of a 1D vector 
+
+   \tparam T template parameter for the std::vector
+ */
 template <typename T>
 struct dim_traits<std::vector<T> > {
 	typedef vector_dimsize dimsize_type; 
 }; 
 
-
+/// @endcond 
 
 NS_MIA_END
 

@@ -23,10 +23,14 @@
 
 NS_MIA_BEGIN
 
+///   @cond INTERNAL 
 struct dimension_traits_placeholder {
 	typedef std::shared_ptr<dimension_traits_placeholder> Pointer;
 }; 
 
+/**
+   \brief Trait used for the non-linear registration 
+*/
 template <int Dimensions> 
 struct dimension_traits {
 	typedef dimension_traits_placeholder Transformation; 
@@ -51,13 +55,16 @@ struct scale_factor_helpers {
 	static DIntVector shift(const DIntVector& x); 
 }; 
 
+/**
+   \brief Trait used for the watershed algorithms 
+*/
 template <int Dimensions> 
 struct watershed_traits { 
 	typedef dimension_traits_placeholder PNeighbourhood; 
 	typedef dimension_traits_placeholder Handler; 
 	typedef dimension_traits_placeholder FileHandler; 
 }; 
-
+/// @endcond 
 
 NS_MIA_END
 

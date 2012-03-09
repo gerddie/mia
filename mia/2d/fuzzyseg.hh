@@ -34,7 +34,11 @@ struct SFuzzySegParams {
 }; 
 
 /**
-   This function runs a fuzzy c-means segmentation with B-field correction in the input data set. 
+   This function runs a fuzzy c-means segmentation with B-field correction in the input data set 
+   according to D.L. Pham and J.L.Prince, 
+   "An adaptive fuzzy C-means algorithm for image segmentation in the presence
+   of intensity inhomogeneities", Pat. Rec. Let., 20:57-68,1999
+
    \param[in] src the input image 
    \param[in] noOfClasses number of segmentation classes
    \param[in] residuum limit for optimization 
@@ -42,7 +46,8 @@ struct SFuzzySegParams {
    \param[out] gain multiplicative gain field 
    \returns the B-field corrected image 
  */
-EXPORT_2D P2DImage fuzzy_segment_2d(const C2DImage& src, size_t noOfClasses, const SFuzzySegParams& residuum, 
+EXPORT_2D P2DImage fuzzy_segment_2d(const C2DImage& src, size_t noOfClasses, 
+				    const SFuzzySegParams& residuum, 
 				    C2DImageVector& classes, P2DImage& gain);
 
 NS_MIA_END

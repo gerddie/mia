@@ -31,21 +31,17 @@
 NS_MIA_BEGIN
 
 
-class EXPORT_3D CInterpolator {
-public:
-	/** a virtual destructor is neccessary for some of the interpolators */
-	virtual  ~CInterpolator();
-};
-
 /**
    \ingroup interpol 
    \tparam T data type to be interpolated 
    \brief Basic Interpolator type for 3D Data.
- */
-
+*/
 template <typename T>
-class  EXPORT_3D T3DInterpolator : public  CInterpolator {
+class  EXPORT_3D T3DInterpolator  {
 public:
+	
+	/** a virtual destructor is neccessary for some of the interpolators */
+	virtual  ~T3DInterpolator(){}
 
 	/**
 	   \param x location of data value to read
@@ -55,12 +51,14 @@ public:
 
 };
 
+/**
+   @cond INTERNAL 
+*/
 template <class U>
 struct coeff_map<T3DVector<U> > {
 	typedef T3DVector<U> value_type;
 	typedef C3DDVector   coeff_type;
 };
-
 
 struct CWeightCache {
 	CSplineKernel::SCache x; 
@@ -72,6 +70,7 @@ struct CWeightCache {
 		    const CSplineBoundaryCondition& ybc, 
 		    const CSplineBoundaryCondition& zbc); 
 }; 
+/// @endcond 
 
 /**
    \ingroup interpol 
@@ -79,7 +78,6 @@ struct CWeightCache {
 
    \brief Interpolator that is based on convolution,like b-splines an o-moms.
 */
-
 template <class T>
 class EXPORT_3D T3DConvoluteInterpolator: public T3DInterpolator<T> {
 public:
@@ -91,8 +89,7 @@ public:
 	   Create the interpolator from the input data and a given kernel
 	   \param data
 	   \param kernel
-	 */
-
+	*/
 	T3DConvoluteInterpolator(const T3DDatafield<T>& data, PSplineKernel kernel); 
 	
 	/**
@@ -102,9 +99,7 @@ public:
 	   \param xbc boundary conditions to be applied along the x-axis when interpolating  
 	   \param ybc boundary conditions to be applied along the y-axis when interpolating  
 	   \param zbc boundary conditions to be applied along the z-axis when interpolating  
-	 */
-
-
+	*/
 	T3DConvoluteInterpolator(const T3DDatafield<T>& data, PSplineKernel kernel, 
 				 const CSplineBoundaryCondition& xbc,  
 				 const CSplineBoundaryCondition& ybc, 
@@ -112,7 +107,6 @@ public:
 	
 	/// Standart constructor for factory prototyping
 	~T3DConvoluteInterpolator();
-
 
 	/**
 	   Create the cache structure needed to run the interpolation in a multi-threaded 
@@ -127,7 +121,7 @@ public:
 	   \param cache the cache structure created by calling create_cache()- 
 	   \returns the interpolated value
 	   \remark This method is thread save if the cache structure is thread local 
-	 */
+	*/
 	T  operator () (const C3DFVector& x, CWeightCache& cache) const;
 
 	/**
@@ -135,10 +129,10 @@ public:
 	   \param x
 	   \returns the interpolated value
 	   \remark This method is not thread save
-	 */
+	*/
 	T  operator () (const C3DFVector& x) const;
 
-
+	
 	/// \returns the coefficients 
 	const TCoeff3D& get_coefficients() const {
 		return m_coeff; 

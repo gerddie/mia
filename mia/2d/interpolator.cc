@@ -36,10 +36,6 @@ NS_MIA_BEGIN
 
 using namespace boost;
 
-C2DInterpolator::~C2DInterpolator()
-{
-}
-
 
 C2DInterpolatorFactory::C2DInterpolatorFactory(const std::string& kernel, const std::string& bc):
 	m_kernel(produce_spline_kernel(kernel)), 

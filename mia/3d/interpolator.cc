@@ -40,10 +40,6 @@ NS_MIA_BEGIN
 
 using namespace boost;
 
-CInterpolator::~CInterpolator()
-{
-}
-
 CWeightCache::CWeightCache(int kernel_size, 
 			   const CSplineBoundaryCondition& xbc, 
 			   const CSplineBoundaryCondition& ybc, 

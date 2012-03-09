@@ -29,10 +29,13 @@
 NS_MIA_BEGIN
 
 /** 
+    \ingroup classes
+    
     \brief A class to hold a critical point.
     This class holds a critical point in a 3D vector field 
-    It consists of a localtion \f$ x_0 \in \mathbb{R}^3 \f$, Matrix \f$ A \in \mathbb{R}^{3 \times 3} \f$, and
-    a magnitude \f$ \Gamma \in \mathbb{R} \f$.
+    It consists of a localtion 
+     \f$ x_0 \in \mathbb{R}^3 \f$, Matrix \f$ A \in \mathbb{R}^{3 \times 3} \f$, and
+    a magnitude \f$ \gamma \in \mathbb{R} \f$.
     It is used only as an intermidiate storage. 
 */
 
@@ -40,6 +43,7 @@ NS_MIA_BEGIN
 class C3DCriticalPoint {
 public:
 
+	/// A list of critical points 
 	typedef std::vector< C3DCriticalPoint > List;
 	
 	/** The standart constructor.
@@ -130,7 +134,9 @@ typedef C3DCriticalPoint::List C3DCriticalPointList;
 typedef std::complex<float> fcomplex; 
 typedef T3DVector<fcomplex> C3DCVector; 
 
-/** A class to hold a criticalpoint with eigenvalues and eigenvectors.
+/** 
+    \ingroup classes
+    \brief A class to hold a criticalpoint with eigenvalues and eigenvectors.
  */
 
 class C3DCriticalPointEigen {
