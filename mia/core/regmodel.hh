@@ -30,6 +30,11 @@ struct EXPORT_CORE regmodel_type {
 	static const char *type_descr;
 };
 
+/**
+   @cond INTERNAL 
+   \ingroup traits 
+   \brief a trait to provide some information about the registration objects 
+*/
 template <int Dim> 
 struct RegistrationTraits {
 	typedef void need_to_declare_RegistrationTraits_for_DIM; 
@@ -37,6 +42,7 @@ struct RegistrationTraits {
 	typedef need_to_declare_RegistrationTraits_for_DIM Force; 
 	typedef need_to_declare_RegistrationTraits_for_DIM Transformation; 
 }; 
+/// @endcond 
 
 /**
    \ingroup templates 

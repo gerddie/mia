@@ -167,13 +167,20 @@ typedef std::shared_ptr<C1DFoldingKernel> P1DSpacialKernel;
 /// plugin handler for spaciel filter kernels 
 typedef THandlerSingleton<TFactoryPluginHandler<C1DSpacialKernelPlugin> > C1DSpacialKernelPluginHandler;
 
-
+/** 
+    @cond INTERNAL  
+    \ingroup test 
+    \brief Class to initialiaze the plug-in search path fot testing without installing the plug-ins 
+*/
 class EXPORT_CORE C1DSpacialKernelPluginHandlerTestPath {
 public: 
 	C1DSpacialKernelPluginHandlerTestPath(); 
 }; 
+/// @endcond
 
+/// @cond NEVER
 FACTORY_TRAIT(C1DSpacialKernelPluginHandler); 
+/// @endcond
 
 NS_MIA_END
 

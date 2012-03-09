@@ -75,6 +75,7 @@ EXPORT_CORE extern const TDictMap<EPixelConversion>::Table ConversionTypeTable[]
 EXPORT_CORE extern const TDictMap<EPixelConversion> CPixelConversionDict;
 
 /**
+   @cond INTERNAL 
    A type-traits class to map pixel types to the according pixel type value.
 */
 template <typename T>
@@ -139,6 +140,7 @@ struct pixel_type<double> {
 	enum {value = it_double};
 };
 
+///   @endcond
 
 NS_MIA_END
 

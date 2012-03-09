@@ -57,7 +57,7 @@ TPluginHandler<TFactory<C3DImageCost>>::m_help =
    "These plug-ins define cost function kernels that evaluate the similarity between two 3D images.";
 
 using boost::filesystem::path; 
-C3DImageCostPluginHandlerPathInit::C3DImageCostPluginHandlerPathInit()
+C3DImageCostPluginHandlerTestPath::C3DImageCostPluginHandlerTestPath()
 {
 	list< bfs::path> costsearchpath;
 	costsearchpath.push_back( path(MIA_BUILD_ROOT"/mia/3d/cost") );

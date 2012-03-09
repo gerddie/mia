@@ -460,6 +460,13 @@ const char *TAttribute<T>::typedescr() const
 	return typeid(T).name();
 }
 
+/**
+   @cond INTERNAL 
+   @ingroup traits 
+   
+   A trait to translate between a string and a value  
+   \remark this should replace the parameter translation methods 
+*/
 template <typename T>
 struct dispatch_attr_string {
 	static std::string val2string(const typename ::boost::reference_wrapper<T>::type value) {
@@ -583,6 +590,8 @@ struct dispatch_attr_string<CAttributeMap> {
 		return CAttributeMap();
 	}
 };
+
+/// @endcond
 
 template <typename T>
 std::string TAttribute<T>::do_as_string() const

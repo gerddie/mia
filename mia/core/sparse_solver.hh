@@ -34,9 +34,11 @@ NS_MIA_BEGIN
    This is the templatex base class for solvers for systems of equations 
    Ax=b if A where the multiplication Ax can be expressed as a convolution 
    operation with a N dimansional operator. 
-   \tparam Field the field this solver works on. The Field type must provide the 
-           types const_iterator and iterator that implement random access iterators. 
- */
+   \tparam F the field this solver works on. The Field type must provide the 
+   types const_iterator and iterator that implement random access iterators. 
+   \remark this class is currently not used at all and it may actually be better to 
+   design it to interface with a library like LAPACK etc.
+*/
 template <typename F> 
 class TSparseSolver : public CProductBase{
 public: 
@@ -65,8 +67,10 @@ public:
 	typedef typename Field::value_type value_type; 
 	
 	/**
-	   A class that implements the multiplication of a cell of the 
+	   \brief A class that implements the multiplication of a cell of the 
 	   matrix A with the field x.
+	   
+	   This class defines the (sparse) multiplication of the matrix A with a vector x
 	 */
 	
 	class A_mult_x: public CProductBase {
@@ -95,7 +99,8 @@ public:
                           central value of the input vector that would be 
 		          multiplied by the element on the main diagonal of A 
 		   \returns the result for the cell multiplication 
-		   \remark No tests are done wether the boundary conditions are actually honoured. 
+		   \remark For efficiency no tests are done whether the boundary conditions are actually honoured. 
+		   this is the job of the solver calling the operator 
 		 */
 		virtual value_type operator () (const_field_iterator ix) const = 0;
 

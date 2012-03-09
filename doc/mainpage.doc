@@ -49,24 +49,33 @@
 
 
     \defgroup infrastructure Infrastructure 
+    \brief Classes and functions related to plug-in handling, option parsing, and logging.
+    
     These classes and functions are related to the infrastructure provided by the MIA libraries. 
-    This includes the means for plug-in handling, option parsing, and logging.
+    This includes the means for plug-in handling, option parsing, attributes and logging.
 
-    \defgroup filtering Filtering
+    \defgroup io Classes and functions related to Input/output of files 
+    
+    \defgroup filtering Filtering and combining 
 
-    These classes and functions are related to image filtering. 
+    \brief These classes and functions are related to  filtering and combining of 2D and 3D images. 
 
     \defgroup interpol Interpolation 
 
-    These classes deal with the tasks related to interpolation
+    \brief These classes deal with the tasks related to interpolation
     
     \defgroup registration Image Registration 
 
     \defgroup classes Classes that provide primary funcionality 
-    \defgroup templates Templates that provide primary funcionality 
+
     \defgroup functors Functors
+
     \defgroup helpers Helper classes and functions 
+
+    \defgroup templates Templates that provide primary funcionality 
+
     \defgroup traits Template metaprogramming classes
+
     \defgroup tests Test classes and functions
     
 */

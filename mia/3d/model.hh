@@ -28,6 +28,10 @@
 
 NS_MIA_BEGIN
 
+/**
+   @cond INTERNAL 
+*/
+
 template <> 
 struct RegistrationTraits<3> {
 	typedef C3DImage Data;
@@ -46,6 +50,8 @@ typedef TFactory<C3DRegModel>  C3DRegModelPlugin;
 
 /// the 3D registration model plug-in handler 
 typedef THandlerSingleton< TFactoryPluginHandler<C3DRegModelPlugin> > C3DRegModelPluginHandler;
+
+/// @endcond 
 
 NS_MIA_END
 

@@ -40,10 +40,16 @@ typedef TFactory<C2DShape> C2DShapePlugin;
 /// Plug-in handler for the shape plug-ins 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DShapePlugin> > C2DShapePluginHandler;
 
+/** 
+    @cond INTERNAL  
+    \ingroup test 
+    \brief Class to initialiaze the plug-in search path fot testing without installing the plug-ins 
+*/
 class EXPORT_2D C2DShapePluginHandlerTestPath {
 public: 
 	C2DShapePluginHandlerTestPath(); 
 }; 
+/// @endcond 
 
 /**
    Convenience function to produce a shape from a plugin
@@ -58,8 +64,10 @@ inline P2DShape produce_2d_shape(const std::string& descr)
 
 P2DShape EXPORT_2D rotate_90_degree(const C2DShape& shape); 
 
-/// Trait to make the shape definition parsable on the command line  
+/// @cond NEVER 
+// Trait to make the shape definition parsable on the command line  
 FACTORY_TRAIT(C2DShapePluginHandler); 
+/// @endcond 
 
 NS_MIA_END
 

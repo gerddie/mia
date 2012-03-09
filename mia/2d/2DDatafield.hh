@@ -329,8 +329,10 @@ typedef  CTParameter<C2DBounds> C2DBoundsParameter;
 /// Parameter type for 2D vector
 typedef CTParameter<C2DFVector> C2DFVectorParameter; 
 
+/// @cond NEVER 
 DECLARE_TYPE_DESCR(C2DBounds);
 DECLARE_TYPE_DESCR(C2DFVector); 
+/// @endcond
 
 NS_MIA_END
 

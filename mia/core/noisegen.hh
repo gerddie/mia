@@ -83,12 +83,19 @@ typedef TFactory<CNoiseGenerator> CNoiseGeneratorPlugin;
 typedef THandlerSingleton<TFactoryPluginHandler<CNoiseGeneratorPlugin> > 
       CNoiseGeneratorPluginHandler;
 
-
+/** 
+    @cond INTERNAL  
+    \ingroup test 
+    \brief Class to initialiaze the plug-in search path fot testing without installing the plug-ins 
+*/
 struct EXPORT_CORE CNoiseGeneratorPluginHandlerTestPath {
 	CNoiseGeneratorPluginHandlerTestPath(); 
 }; 
+/// @endcond 
 
+/// @cond never
 FACTORY_TRAIT(CNoiseGeneratorPluginHandler); 
+/// @endcond 
 
 
 NS_MIA_END

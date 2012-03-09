@@ -31,7 +31,8 @@
 NS_MIA_BEGIN
 
 /**
-   A helper class to make it possible to store a non-pointer object or a pointer that must not be freed 
+   \ingroup helpers
+   \brief A helper class to make it possible to store a non-pointer object or a pointer that must not be freed 
    in a shared pointer 
    \tparam the type type be stored 
 */

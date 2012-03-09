@@ -305,13 +305,31 @@ private:
 
 // implementation of template classes and functions
 
-
-// standard handler for option <-> "value" translators
+/**
+   @cond INTERNAL 
+   @ingroup traits 
+   @brief Dispatcher to handle the translation of strings to values 
+   
+   Dispatch the translation between a string and value. The standard case assumes that 
+   we have exactly one value to translate and that the type T supports the stream in-and 
+   output operators << and >> 
+   \tparam the type to be translated 
+   \remark most of this is now obsolete since for most types the TParamater class and its 
+   derivatives/instanciantions are used 
+*/
 template <typename T>
 struct __dispatch_opt {
+	/**
+	   Handle the standard initialization, normally do nothing
+	*/
         static void init(T& /*value*/){
-
         }
+
+	/**
+	   Translate a string to a value by using the >> operator
+	   \param[in] svalue the value as string 
+	   \param[out] value 
+	*/
         static bool  apply(const char *svalue, T& value) {
                 std::istringstream sval(svalue);
 
@@ -322,13 +340,25 @@ struct __dispatch_opt {
                 }
                 return sval.eof();
         }
-        static size_t size(const T /*value*/) {
+	/// \returns the number of string elements are expected, in the standard case that is one 
+	static size_t size(const T /*value*/) {
                 return 1;
         }
+	
+	/**
+	   Translate the value to a string for the help output by using the operator << and adding "=" at the beginning 
+	   \param os the output stream 
+	   \param value the value 
+	 */
         static void apply(std::ostream& os, const T& value, bool /*required*/) {
                 os << "=" << value << " ";
         }
 
+	/**
+	   translate the value to a string by using the operator >>
+	   \param value the value 
+	   \returns the string representation of the value 
+	*/
         static const std::string get_as_string(const T& value) {
                 std::ostringstream os;
                 os << value;
@@ -336,7 +366,11 @@ struct __dispatch_opt {
         }
 };
 
-// standard handler for option <-> "vector of values" translators
+/**
+   @ingroup traits 
+   @brief Dispatcher to handle the translation of vectors of to and from a string 
+   \remark this specialization is still used, since no vector patameter type is defined with TParameter
+*/
 template <typename T>
 struct __dispatch_opt< std::vector<T> > {
         static void init(std::vector<T>& /*value*/){
@@ -388,7 +422,14 @@ struct __dispatch_opt< std::vector<T> > {
         }
 };
 
-// handler for option <-> "bool values" translators
+/**
+   @ingroup traits 
+   @brief Dispatcher to handle the translation for boolen values 
+   
+   \todo This dispatcher is not really translating anything, since boolean values are flags. 
+   which means, that now, since most other types are handled by TParameter, boolean command line parameters (flags) 
+   should be implemented as a differently. 
+*/
 template <>
 struct __dispatch_opt<bool> {
         static void init(bool& value) {
@@ -409,7 +450,14 @@ struct __dispatch_opt<bool> {
 };
 
 
-// handler for option <-> "string values" translators
+/**
+   @ingroup traits 
+   @brief Dispatcher to handle the translation for string values 
+   
+   \todo This dispatcher is not really translating anything, since strings are just copied
+   which means, that now, since most other types are handled by TParameter, string command line parameters 
+   should be implemented a differently.
+*/
 template <>
 struct __dispatch_opt<std::string> {
 	static void init(std::string& /*value*/) {
@@ -434,6 +482,7 @@ struct __dispatch_opt<std::string> {
                 return value;
         }
 };
+/// @endcond 
 
 
 //

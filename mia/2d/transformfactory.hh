@@ -42,21 +42,32 @@ typedef TTransformCreatorPlugin<C2DTransformation>  C2DTransformCreatorPlugin;
 /// The plugin handler to manage the transformation creators
 typedef THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin> > C2DTransformCreatorHandler;
 
+
+/** 
+    @cond INTERNAL  
+    \ingroup test 
+    \brief Class to initialiaze the plug-in search path fot testing without installing the plug-ins 
+*/
 struct EXPORT_2D C2DTransformCreatorHandlerTestPath {
 	C2DTransformCreatorHandlerTestPath(); 
 private: 
 	CSplineKernelTestPath spktp; 
 }; 
+/// @endcond 
 
-
+/**
+   Produce a transformation creator from a string 
+   \param descr description of the transformation type
+   \returns the creator for the transformation type 
+ */
 inline P2DTransformationFactory produce_2dtransform_factory(const std::string& descr) 
 {
 	return C2DTransformCreatorHandler::instance().produce(descr); 
 }
 
-
+/// @cond NEVER  
 FACTORY_TRAIT(C2DTransformCreatorHandler); 
-
+/// @endcond 
 NS_MIA_END
 
 

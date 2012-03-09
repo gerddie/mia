@@ -99,16 +99,6 @@ FMeanVariance::result_type FMeanVariance::operator()( const T& data) const
 	return result; 
 }
 
-struct __deltaabs {
-	__deltaabs(double d):m_d(d){}; 
-	double operator ()(double x) const {
-		return abs(x - m_d); 
-	}
-private: 
-	double m_d; 
-}; 
-
-
 template <typename T> 
 FMedianMAD::result_type FMedianMAD::operator()( const T& data) const
 {
@@ -118,7 +108,8 @@ FMedianMAD::result_type FMedianMAD::operator()( const T& data) const
 	FMedianMAD::result_type result; 
 	result.first = median(buffer); 
 
-	transform(buffer.begin(), buffer.end(), buffer.begin(), __deltaabs(result.first)); 
+	transform(buffer.begin(), buffer.end(), buffer.begin(), 
+		  [&result](double x) {return abs(x - result.first);});
 	result.second = median(buffer); 
 	return result; 
 }

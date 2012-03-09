@@ -444,6 +444,9 @@ CParameter *make_param(std::unique_ptr<T>& value, const std::string& init,  bool
 
 //// implementations 
 
+/** @cond INTERNAL 
+ */
+
 template <typename T> 
 struct __dispatch_param_translate {
 	static std::string apply(T x)  {
@@ -466,6 +469,8 @@ struct __dispatch_param_translate<const char *> {
 		return std::string(x); 
 	}
 }; 
+
+/// @endcond 
 
 template <typename T>
 CDictParameter<T>::CDictParameter(T& value, const TDictMap<T> dict, const char *descr, bool required = false):

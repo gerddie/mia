@@ -42,15 +42,21 @@ typedef TTransformCreatorPlugin<C3DTransformation>  C3DTransformCreatorPlugin;
 /// Transform creator plugin handler 
 typedef THandlerSingleton<TFactoryPluginHandler<C3DTransformCreatorPlugin> > C3DTransformCreatorHandler;
 
-/// trait to make the transform creator comman-line parseble
-FACTORY_TRAIT(C3DTransformCreatorHandler); 
-
+/** 
+    @cond INTERNAL 
+    @ingroup test 
+    @brief class to initialize the plug-in path for tests on the uninstalled library 
+*/
 struct C3DTransformCreatorHandlerTestPath {
 	C3DTransformCreatorHandlerTestPath(); 
 private: 
 	CSplineKernelTestPath spktp; 
 }; 
+/// @endcond
 
+/// @cond NEVER 
+FACTORY_TRAIT(C3DTransformCreatorHandler); 
+/// @endcond
 
 NS_MIA_END
 

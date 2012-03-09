@@ -53,35 +53,28 @@ typedef TImageFilterPlugin<C3DImage> C3DFilterPlugin;
 */
 typedef THandlerSingleton<TFactoryPluginHandler<C3DFilterPlugin> > C3DFilterPluginHandler;
 
-/// Trait to make the filter definition parsable on the command line  
-FACTORY_TRAIT(C3DFilterPluginHandler); 
-
-
 /**   
       \ingroup filtering 
       The 3D filter shared pointer 
 */
 typedef std::shared_ptr<C3DFilter> P3DFilter; 
 
-/**   
-      \ingroup tests 
-      Class to set up the plug-in search path for filters when running tests
-      in the build tree 
+/**
+   \ingroup filtering 
+   \brief Base class for plug-ins that combine two 3D images in certain ways
+   
+   This class is the base class for all combiners that are used to combine two 3D images.  
+   The result of the combination can be anything derived from CCombinerResult. 
 */
-class EXPORT_3D C3DFilterPluginHandlerTestPath {
-public: 
-	C3DFilterPluginHandlerTestPath(); 
-private: 
-	C1DSpacialKernelPluginHandlerTestPath spk_path; 
-}; 
-
 class EXPORT_3D C3DImageCombiner : public TFilter< PCombinerResult >, public CProductBase {
 public:
 	typedef C3DImage plugin_data; 
 	typedef combiner_type plugin_type; 
 	
 	virtual ~C3DImageCombiner();
-
+	/**
+	   Combine two images and and store it in a CCombinerResult return a shared pointer pointer to the result.
+	 */
 	result_type combine( const C3DImage& a, const C3DImage& b) const;
 private:
 	virtual result_type do_combine( const C3DImage& a, const C3DImage& b) const = 0;
@@ -91,8 +84,29 @@ typedef TFactory<C3DImageCombiner> C3DImageCombinerPlugin;
 typedef std::shared_ptr<C3DImageCombiner > P3DImageCombiner;
 typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCombinerPlugin> > C3DImageCombinerPluginHandler;
 
-/// Trait to make the combiner definition parsable on the command line  
+
+/** 
+    @cond INTERNAL 
+    @ingroup test 
+    @brief class to initialize the plug-in path for tests on the uninstalled library 
+*/
+class EXPORT_3D C3DFilterPluginHandlerTestPath {
+public: 
+	C3DFilterPluginHandlerTestPath(); 
+private: 
+	C1DSpacialKernelPluginHandlerTestPath spk_path; 
+}; 
+/// @endcond 
+
+
+
+
+
+
+/// @cond NEVER 
+FACTORY_TRAIT(C3DFilterPluginHandler); 
 FACTORY_TRAIT(C3DImageCombinerPluginHandler); 
+/// @endcond 
 
 
 /**

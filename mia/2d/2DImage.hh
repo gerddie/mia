@@ -382,6 +382,8 @@ typedef T2DImage<float> C2DFImage;
 typedef T2DImage<double> C2DDImage;
 
 /**
+   @cond INTERNAL 
+   @ingroup traits 
    \brief Helper class for 2D filter application 
    
    This class specializes the __bind_all template for 2D images 
@@ -420,6 +422,7 @@ struct dispatch_attr_string<C2DFVector> {
 		return value;
 	}
 };
+/// @endcond 
 
 /**
    \brief functor to convert an image with an abitrary pixel type to single floating point pixels 

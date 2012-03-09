@@ -28,6 +28,9 @@
 
 NS_MIA_BEGIN
 
+/**
+   @cond INTERNAL 
+*/
 template <> 
 struct RegistrationTraits<2> {
 	typedef C2DImage Data;
@@ -40,6 +43,8 @@ typedef TRegModel<2> C2DRegModel;
 typedef std::shared_ptr<C2DRegModel > P2DRegModel;
 typedef TFactory<C2DRegModel>  C2DRegModelPlugin;
 typedef THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin> > C2DRegModelPluginHandler;
+
+/// @endcond 
 
 NS_MIA_END
 

@@ -47,13 +47,24 @@ struct EXPORT_3D io_3dimage_data {
 };
 
 typedef TIOPlugin<io_3dimage_data> C3DImageIOPlugin;
+/**
+   \ingroup io
+   Handler for the plug-ins that store and load 3D images. It also provides the 
+   interface to load and store data. 
+*/
 typedef TIOHandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> > C3DImageIOPluginHandler;
 typedef C3DImageIOPluginHandler::Instance::DataKey C3DImageDataKey;
 typedef C3DImageIOPluginHandler::Instance::PData P3DImageVector;
 
+/** 
+    @cond INTERNAL 
+    @ingroup test 
+    @brief class to initialize the plug-in path for tests on the uninstalled library 
+*/
 struct EXPORT_3D C3DImageIOPluginHandlerTestPath {
 	C3DImageIOPluginHandlerTestPath(); 
 }; 
+/// @endcond
 
 /** convenience function to create an image vector from a single image 
     \param image 
@@ -63,6 +74,7 @@ struct EXPORT_3D C3DImageIOPluginHandlerTestPath {
 P3DImageVector EXPORT_3D create_image3d_vector(P3DImage image);
 
 /**
+   \ingroup io
    convenience function to load a single image from a file.  
    \throws std::invalid_argument if the image could not be loaded 
    \param filename input file 
@@ -73,6 +85,7 @@ P3DImage  EXPORT_3D load_image3d(const std::string& filename);
 
 
 /**
+   \ingroup io
    convenience function to load a single image from a file.  
    \throws std::invalid_argument if the image could not be loaded 
    \param filename input file 
@@ -85,6 +98,7 @@ inline P3DImage  EXPORT_3D load_image<P3DImage>(const std::string& filename)
 }
 
 /**
+   \ingroup io
    convenience function to save a single image to a file.  
    \param filename input file 
    \param image image to be saved 

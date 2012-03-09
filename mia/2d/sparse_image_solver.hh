@@ -37,6 +37,7 @@ typedef std::shared_ptr<C2DImageSparseSolver > P2DImageSparseSolver;
 typedef THandlerSingleton<TFactoryPluginHandler<TFactory<C2DImageSparseSolver> > > C2DImageSparseSolverPluginHandler;
 
 /**   
+      @cond INTERNAL 
       \ingroup tests 
       Class to set up the plug-in search path for spline kernels when running tests
       in the build tree 
@@ -45,23 +46,25 @@ struct EXPORT_2D C2DImageSparseSolverTestPath {
 	C2DImageSparseSolverTestPath(); 
 }; 
 
+/// @endcond 
 
-FACTORY_TRAIT(C2DImageSparseSolverPluginHandler); 
-
-
+/// base class for the Matrix-Vector multiplication 
 typedef C2DImageSparseSolver::A_mult_x C2DImageSolverAmultx; 
 
+/// pointer type for the Matrix-Vector multiplication 
 typedef std::shared_ptr<C2DImageSolverAmultx> P2DImageSolverAmultx;
 
+/// plug-in base for the Matrix-Vector multiplication 
 typedef TFactory<C2DImageSolverAmultx> C2DImageSolverAmultxPlugin;
 
+/// plug-in handler  for the Matrix-Vector multiplication 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DImageSolverAmultxPlugin> > C2DImageSolverAmultxPluginHandler;
 
-FACTORY_TRAIT(C2DImageSolverAmultxPluginHandler); 
 
 
 /**
-   Specialize the implementation of a Matrix with an Image, 
+   \ingroup traits 
+   Specialize the implementation of multiplying a Matrix with an Image, 
    \param A the matrix 
    \param x the input image 
    \returns A * x, (works like a matrix filter) 
@@ -101,6 +104,12 @@ void multiply<T2DImage<T> >::apply(T2DImage<T>& result, const typename TSparseSo
 	}
 	copy(ix, X.end(), ir); 
 }
+
+/// @cond NEVER 
+FACTORY_TRAIT(C2DImageSparseSolverPluginHandler); 
+FACTORY_TRAIT(C2DImageSolverAmultxPluginHandler); 
+/// @endcond 
+
 
 NS_MIA_END
 

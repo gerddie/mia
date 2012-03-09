@@ -81,6 +81,12 @@ void sincosf(float x, float *sin, float *cos);
 void sincos(double x, double *sin, double *cos); 
 #endif
 
+/**
+   @cond INTERNAL 
+   \ingroup traits 
+   \brief trait to handle rounding of a double to different output types 
+*/ 
+
 template <typename T, bool is_float> 
 struct __round {
 
@@ -96,6 +102,7 @@ struct __round<T, false> {
 	}
 };
 
+/// @endcond 
 
 /**
    \ingroup helpers 
@@ -113,7 +120,11 @@ T mia_round(double x)
 	return __round<T, is_floating_point>::apply(x); 
 }
 
-
+/**
+   @cond INTERNAL 
+   \ingroup traits 
+   \brief trait to handle rounding of a double to different output types with clamping to the output range 
+*/ 
 
 template <typename T, bool is_float> 
 struct __round_clamped {
@@ -152,6 +163,8 @@ struct __round_clamped<T, false> {
 		return static_cast<T>(yy);
 	}
 };
+
+/// @endcond 
 
 /**
    \ingroup helpers 

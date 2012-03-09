@@ -31,10 +31,16 @@
 
 NS_MIA_BEGIN
 
+/** @cond INTERNAL
+    \brief type for combiner plug-in path handling 
+ */
 struct EXPORT_CORE combiner_type {
 	static const char *type_descr;
 };
 
+/** 
+    \brief type for combiner plug-in path handling 
+*/
 struct EXPORT_CORE filter_type {
 	static const char *type_descr;
 };
@@ -42,6 +48,7 @@ struct EXPORT_CORE filter_type {
 #define DC(T, D) dynamic_cast<const T&>(D)
 #define DV(T, D) dynamic_cast<T&>(D)
 
+/// @endcond 
 
 /**
    \ingroup filtering 
@@ -134,7 +141,11 @@ private:
 	};
 };
 
-
+/**
+   @cond INTERNAL 
+   \ingroup traits
+   \brief helper class to get the type names of a templated derived class for all supported pixel types 
+*/
 template <template <class> class  D>
 struct __bind_all {
 	typedef D<bool> Dbool;
@@ -152,9 +163,8 @@ struct __bind_all {
 	typedef D<double> Ddouble;
 };
 
-
 /**
-   \ingroup traits 
+   \ingroup traits
 
    \brief a trait to define types for images of all pixel types that are derived 
    from a common base class. 
@@ -167,6 +177,7 @@ struct __bind_all {
 template <typename B>
 struct Binder {
 };
+/// @endcond 
 
 
 /**

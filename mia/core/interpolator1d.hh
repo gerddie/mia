@@ -215,17 +215,26 @@ T1DInterpolator<T> *C1DInterpolatorFactory::create(const std::vector<T>& src) co
 	return new T1DConvoluteInterpolator<T>(src, m_kernel, *m_bc);
 }
 
-
-
+/**
+   @cond INTERNAL 
+   @ingroup traits 
+   \brief a trait to update the minimum and maxmimum values based on some input 
+*/
 template <typename T>
 struct __dispatch_min_max {
 	static void apply(const T i, T& min, T &max);
 };
 
+/**
+   @ingroup traits 
+   \brief a trait to copy some data
+*/
 template <typename I, typename O>
 struct __dispatch_copy {
 	static void apply(const I& input, O& output);
 };
+
+/// @endcond
 
 NS_MIA_END
 

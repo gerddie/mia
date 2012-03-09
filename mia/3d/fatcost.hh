@@ -33,6 +33,7 @@ NS_MIA_BEGIN
 class C3DImageFatCost;
 typedef std::shared_ptr<C3DImageFatCost > P3DImageFatCost;
 
+///   \brief Obsolete, to be removed 
 class EXPORT_3D C3DImageFatCost: public TFatCost<C3DTransformation, C3DFVectorfield> {
 public:
 	typedef  C3DImage plugin_data; 
@@ -47,6 +48,7 @@ private:
 	virtual P3DImageFatCost cloned(P3DImage src, P3DImage ref) const = 0;
 };
 
+///   \brief Obsolete, to be removed 
 class EXPORT_3D C3DFatImageCostPlugin: public TFactory<C3DImageFatCost> {
 public:
 	C3DFatImageCostPlugin(const char *name);
@@ -62,6 +64,7 @@ private:
 	PSplineKernel m_interpolator;
 };
 
+///   \brief Obsolete, to be removed 
 class EXPORT_3D C3DImageFatCostList : public std::vector<P3DImageFatCost> {
 public:
 	double value() const;
@@ -75,6 +78,7 @@ public:
 	void transform(const C3DTransformation& transform);
 };
 
+///   \brief Obsolete, to be removed 
 class EXPORT_3D C3DFatImageCostPluginHandlerImpl: public TFactoryPluginHandler<C3DFatImageCostPlugin> {
 public:
 	C3DFatImageCostPluginHandlerImpl(const std::list<boost::filesystem::path>& searchpath);
@@ -82,6 +86,7 @@ public:
 					P3DInterpolatorFactory ipf, float weight) const;
 };
 
+///   \brief Obsolete, to be removed 
 typedef THandlerSingleton<C3DFatImageCostPluginHandlerImpl> C3DFatImageCostPluginHandler;
 
 NS_MIA_END

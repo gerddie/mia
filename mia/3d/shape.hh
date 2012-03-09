@@ -40,14 +40,22 @@ typedef TFactory<C3DShape> C3DShapePlugin;
 /// Plugin handler for 3D shapes 
 typedef THandlerSingleton<TFactoryPluginHandler<C3DShapePlugin> > C3DShapePluginHandler;
 
-/// Trait to make the shape definition parsable on the command line  
-FACTORY_TRAIT(C3DShapePluginHandler); 
 
+/** 
+    @cond INTERNAL  
+    \ingroup test 
+    \brief Class to initialiaze the plug-in search path fot testing without installing the plug-ins 
+*/
 class EXPORT_3D C3DShapePluginHandlerTestPath {
 public: 
 	C3DShapePluginHandlerTestPath(); 
 }; 
+/// @endcond 
 
+
+/// @cond never
+FACTORY_TRAIT(C3DShapePluginHandler); 
+/// @endcond 
 
 NS_MIA_END
 

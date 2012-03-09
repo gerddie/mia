@@ -64,32 +64,47 @@ public:
 	template <typename OS>
 	static void set_master_stream(OS& master); 
 private: 
+	template <typename OS, typename placeholder> friend struct __dispatch_set_master_stream; 
 	
 	static void do_set_master_stream(std::ostream& master); 
 	
-	template <typename OS, typename stupid>
-	struct __dispatch_set_master_stream {
-		static void apply(OS &os); 
-	}; 
 	
-	template <typename OS, typename stupid> friend struct  __dispatch_set_master_stream; 
+
 	std::ostream& m_old; 
+
 }; 
 
-//  Some logic to tell the user that passing a CThreadMsgStream as master stream is not possible 
-template <typename OS, typename stupid>
-void CThreadMsgStream::__dispatch_set_master_stream<OS, stupid>::apply(OS& master)
-{
-	CThreadMsgStream::do_set_master_stream(master); 
-}
+/** 
+    @cond INTERNAL
+    
+    \ingroup traits
+    \brief Structure to ensure the sane initialization of CThreadMsgStream
+    
+    This structure is used to capture and report an error when a developer tries 
+    to use a CThreadMsgStream as master stream.
+    
+    \tparam OS the output stream type to be used as master stream 
+    \tparam placeholder additional type to make sure the static_assert is only triggered if 
+    OS==CThreadMsgStream
+    
+*/
+template <typename OS, typename placeholder>
+struct __dispatch_set_master_stream {
+	static void apply(OS &master){
+		CThreadMsgStream::do_set_master_stream(master); 
+	}
+	
+}; 
 
-template <typename stupid>
-struct CThreadMsgStream::__dispatch_set_master_stream<CThreadMsgStream, stupid> {
-	static void apply(CThreadMsgStream& master)
-	{
-		static_assert(sizeof(stupid) == 0, "CThreadMsgStream can't be used as master stream because it would deadlock."); 
+template <typename placeholder>
+struct __dispatch_set_master_stream<CThreadMsgStream, placeholder> {
+	static void apply(CThreadMsgStream& /*master*/){
+		static_assert(sizeof(placeholder) == 0, 
+			      "CThreadMsgStream can't be used as master stream because it would deadlock."); 
 	}
 }; 
+
+/// @endcond 
 
 template <typename OS>
 void CThreadMsgStream::set_master_stream(OS& master)

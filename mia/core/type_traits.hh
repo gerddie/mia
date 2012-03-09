@@ -25,16 +25,33 @@
 
 NS_MIA_BEGIN
 
+/// @cond INTERNAL 
+
+/**
+   @ingroup traits 
+   @brief A trait to derive the actual type handled by a plug-in based on some 
+   possibly unrelated type 
+*/
 template <typename T> 
 struct plugin_data_type {
 	typedef T type; 
 }; 
 
+/**
+   @ingroup traits 
+   @brief This trait provides information about the number of (equal typed) elements a type holds 
+   and the element type. 
+   @tparam T the type to provide information about 
+   
+   In the standard version, the element type is the same as the template parameter 
+   and the number of elements is one. 
+*/
 template <typename T> 
 struct atomic_data {
 	typedef T type; 
 	static const int size; 
 }; 
+
 
 template <typename T> 
 const int atomic_data<T>::size = 1; 
@@ -54,6 +71,7 @@ struct less_then {
 	typedef T value_type; 
 };
 
+/// @endcond 
 
 NS_MIA_END
 

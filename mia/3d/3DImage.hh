@@ -356,9 +356,24 @@ typedef T3DImage<mia_uint64> C3DULImage;
 typedef T3DImage<float> C3DFImage;
 typedef T3DImage<double> C3DDImage;
 
+/**
+   @cond INTERNAL 
+   @ingroup traits 
+*/
+
 template <>
 struct Binder<C3DImage> {
 	typedef __bind_all<T3DImage> Derived;
+};
+
+/// @endcond
+
+template <typename T>
+class EXPORT_3D C3DValueAttributeTranslator: public CAttrTranslator {
+public:
+	static  void register_for(const std::string& key);
+private:
+	PAttribute do_from_string(const std::string& value) const;
 };
 
 
@@ -379,13 +394,6 @@ private:
 	T3DVector<T> m_value;
 };
 
-template <typename T>
-class EXPORT_3D C3DValueAttributeTranslator: public CAttrTranslator {
-public:
-	static  void register_for(const std::string& key);
-private:
-	PAttribute do_from_string(const std::string& value) const;
-};
 
 typedef C3DValueAttribute<float> CVoxelAttribute;
 typedef C3DValueAttributeTranslator<float> CVoxelAttributeTranslator;

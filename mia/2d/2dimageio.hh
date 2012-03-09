@@ -32,7 +32,8 @@
 NS_MIA_BEGIN
 
 /**
-   Vector of 2D images to 
+   \ingroup Infrastructure
+   \brief Vector of 2D images to load and store series of images to one file 
  */
 class EXPORT_2D C2DImageVector: public C2DImageSeries,
 				public CIOData {
@@ -43,14 +44,19 @@ public:
 };
 
 
+/// @cond INTERNAL 
 class EXPORT_2D io_2dimage_type {
 public:
 	typedef  C2DImageVector type;
 	static const char *data_descr;
 };
+/// @endcond
 
 /// Base type for 2D image IO plugins 
 typedef TIOPlugin<io_2dimage_type> C2DImageIOPlugin;
+
+
+/// @cond INTERNAL 
 
 class EXPORT_2D C2DImageIOPPH: public TIOPluginHandler<C2DImageIOPlugin> {
 public:
@@ -59,8 +65,12 @@ public:
 protected:
 	C2DImageIOPPH(const std::list< ::boost::filesystem::path>& searchpath);
 };
+/// @endcond
 
-/** The 2D image IO plugin handler that also provides the interface to 
+
+/** 
+    \ingroup io
+    The 2D image IO plugin handler that also provides the interface to 
     load and store 2D images. 
  */
 typedef TIOHandlerSingleton< C2DImageIOPPH > C2DImageIOPluginHandler;
@@ -75,12 +85,18 @@ typedef C2DImageIOPluginHandler::Instance::DataKey C2DImageDataKey;
  */
 typedef C2DImageIOPluginHandler::Instance::PData P2DImageVector;
 
+/** 
+    @cond INTERNAL  
+    \ingroup test 
+    \brief Class to initialiaze the plug-in search path fot testing without installing the plug-ins 
+*/
 struct EXPORT_2D C2DImageIOPluginHandlerTestPath {
 	C2DImageIOPluginHandlerTestPath(); 
 }; 
-
+/// @endcond 
 
 /**
+   \ingroup convenience 
    Convenience function to create a vector of images wrapping one image
    \param image 
    \returns the vector containing the image 
@@ -92,6 +108,7 @@ P2DImageVector EXPORT_2D create_image2d_vector(P2DImage image);
 
 
 /**
+   \ingroup io
    Convenience function to load one 2D image from a file 
    @param filename 
    @returns image 
@@ -100,6 +117,7 @@ P2DImageVector EXPORT_2D create_image2d_vector(P2DImage image);
 P2DImage EXPORT_2D  load_image2d(const std::string& filename);
 
 /**
+   \ingroup io
    Convenience function to load one 2D image from a file 
    @param filename 
    @returns image 
@@ -111,6 +129,7 @@ inline P2DImage load_image<P2DImage>(const std::string& filename)
 }
 
 /**
+   \ingroup io
    Convenience function to save one 2D image to a file 
    @param filename 
    @param image 
@@ -120,6 +139,7 @@ inline P2DImage load_image<P2DImage>(const std::string& filename)
 bool  EXPORT_2D save_image(const std::string& filename, P2DImage image);
 
 /**
+   \ingroup io
    Convenience function to save one 2D image to a file 
    @param filename 
    @param image 
@@ -129,6 +149,7 @@ bool  EXPORT_2D save_image(const std::string& filename, C2DImage& image);
 
 
 /**
+   \ingroup io
    Convenience function to load a series of images and group them into sets based 
    on the acuisition parameters if available. 
    If these parameters are not available, then the order of the input files is used

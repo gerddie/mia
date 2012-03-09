@@ -28,25 +28,50 @@
 
 NS_MIA_BEGIN
 
+/**
+   \ingroup registration 
+   \brief Base class for the full cost functions 
+   
+   This typedef is the base class of the full-cost cost funtions. 
+*/
 typedef TFullCost<C2DTransformation> C2DFullCost; 
+
+/// Pointer type for the full-cost function types 
 typedef C2DFullCost::Pointer P2DFullCost; 
 
+/// Plug-in type for 2D full cost plug-ins 
 typedef TFullCostPlugin<C2DTransformation> C2DFullCostPlugin; 
+
+/// plugin-handler for the full-cost plug-ins 
 typedef THandlerSingleton<TFactoryPluginHandler<C2DFullCostPlugin> > C2DFullCostPluginHandler;
 
-struct EXPORT_2D C2DFullCostPluginHandlerTestPath {
-	C2DFullCostPluginHandlerTestPath(); 
-private: 
-	C2DImageCostPluginHandlerTestPath cost_path_init; 
-};
-
+/**
+   \ingroup convine 
+   Function to create a full-cost object from a string description
+   \param descr 
+   \returns the full-cost object 
+*/
 inline P2DFullCost produce_2dfullcost(const std::string& descr) 
 {
 	return C2DFullCostPluginHandler::instance().produce(descr); 
 }
 
+/** 
+    @cond INTERNAL  
+    \ingroup test 
+    \brief Class to initialiaze the plug-in search path fot testing without installing the plug-ins 
+*/
+struct EXPORT_2D C2DFullCostPluginHandlerTestPath {
+	C2DFullCostPluginHandlerTestPath(); 
+private: 
+	C2DImageCostPluginHandlerTestPath cost_path_init; 
+};
+/// @endcond 
 
+
+/// @cond NEVER 
 FACTORY_TRAIT(C2DFullCostPluginHandler); 
+/// @endcond 
 
 NS_MIA_END
 

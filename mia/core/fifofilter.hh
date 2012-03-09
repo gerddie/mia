@@ -180,12 +180,23 @@ private:
 }; 
 
 
+/** @cond INTERNAL
+   \ingroup traits 
+   \brief create a dynamically allocated copy from a statically allocated object 
+
+   This traits creates a dynamically allocated copy of the input data and stores it in s std::shared_ptr. 
+   You might want to provide a specialization for cases where the type T doesn't support the copy 
+   constructor and provides a clone() function instead,
+   \remark - one could add a general trait for this case
+*/
 template <typename T> 
 struct __copy_create_ptr {
 	static std::shared_ptr<T > apply (typename ::boost::call_traits<T>::param_type x){
 		return std::shared_ptr<T >(new T(x)); 
 	}
 }; 
+
+/// @endcond 
 
 NS_MIA_END
 

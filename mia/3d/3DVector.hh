@@ -37,7 +37,10 @@
 NS_MIA_BEGIN
 
 /**
-   A simple 3D vector type. 
+   \brief A simple 3D vector type. 
+
+   This class is the template for a 3D vector that provides support for some common operators. 
+   \tparam T element type 
 */
 
 template < class T > 
@@ -249,6 +252,7 @@ public:
 };
 
 
+/// @cond NEVER  
 template <typename T> 
 struct atomic_data<T3DVector<T> > {
 	typedef T type; 
@@ -257,6 +261,8 @@ struct atomic_data<T3DVector<T> > {
 
 template <typename T> 
 const int atomic_data<T3DVector<T> >::size = 3; 
+/// @endcond 
+
 
 /**
    Cross product of two 3D vectors 

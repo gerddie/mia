@@ -34,20 +34,18 @@ NS_MIA_BEGIN
 
 
 
+class CPluginHandlerBase; 
+typedef std::map<std::string, const CPluginHandlerBase*> HandlerHelpMap; 
+
 /** 
     \ingroup infrastructure 
     
     \brief The base class for all plugin handlers
 
-    This clas provides aome basic funcionallity that is common to all plugin handlers. 
+    This clas provides some basic funcionallity that is common to all plugin handlers. 
     In addition, the copy constructor and assigment operator are deleted in order to forbit copying 
     of instances of this class. 
-    
 */
-
-class CPluginHandlerBase; 
-typedef std::map<std::string, const CPluginHandlerBase*> HandlerHelpMap; 
-
 class EXPORT_CORE CPluginHandlerBase  {
  public: 
 

@@ -217,6 +217,23 @@ PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& de
 EXPORT_CORE PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& descr, int width); 
 
 
+/// @cond INTERNAL 
+
+/**
+   \ingroup traits 
+   \brief This trait handles dispatching the pre-filtering of coefficients
+   
+   This trait handles dispatching the pre-filtering of coefficients based on the number of 
+   elements a coefficient holds. If the number of components is one, then the filtering can be called directly, 
+   otherwise the data needs to be copied element-wiese  to and from a temporary array. 
+   This is required to make the actual filtering template-free and, hence make it possible to call it as a virtual function. 
+
+   \tparam T the data type of the coefficients, if the type holds more than one element, it must support the operator []
+   for element indexing. 
+   \tparam size the number of scalar elements the type holds 
+   \remark performance wise it could be better to copy the data to a flat array and add a stride parametsr to the 
+   filter algorithm
+*/
 template <typename T, int size>
 struct __dispatch_filter_line {
 	static void apply(const CSplineBoundaryCondition& bc, std::vector<T>& coeff, const std::vector<double>& poles); 
@@ -236,19 +253,20 @@ void __dispatch_filter_line<T, size>::apply(const CSplineBoundaryCondition& bc, 
 	}
 }
 
+/**
+   \ingroup traits 
+   \brief This trait handles dispatching the pre-filtering of coefficients in the one-element case 
+
+*/ 
 template <typename T>
 struct __dispatch_filter_line<T,1> {
-	static void apply(const CSplineBoundaryCondition& bc, std::vector<T>& coeff, const std::vector<double>& poles); 
+	static void apply(const CSplineBoundaryCondition& bc, std::vector<T>& coeff, const std::vector<double>& poles) {
+		bc.template_filter_line(coeff, poles); 
+	}
 }; 
 
-template <typename T>
-void __dispatch_filter_line<T, 1>::apply(const CSplineBoundaryCondition& bc, std::vector<T>& coeff, 
-					 const std::vector<double>& poles) 
-{
-	bc.template_filter_line(coeff, poles); 
-}
+/// @endcond 
 
-////
 template <typename T> 
 void CSplineBoundaryCondition::filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const
 {

@@ -32,10 +32,10 @@ NS_MIA_BEGIN
 
 
 /**
-   \brief Image cost function base that handles resizing and transformations of the images 
+   \brief Obsolete, to be removed 
    
    Image cost function class that handles the multiresolution part on its own. 
-   \todo This class should probably removed and C2DFullcost be used. 
+   \remark This class should be removed and C2DFullcost be used. 
  */
 
 class EXPORT_2D C2DImageFatCost: public TFatCost<C2DTransformation, C2DFVectorfield> {
@@ -66,10 +66,11 @@ private:
 	virtual Pointer cloned(P2DImage src, P2DImage ref) const __attribute__((warn_unused_result))  = 0;
 };
 
-/// Short for the C2DImageFatCost pointer type 
+///   \brief Obsolete, to be removed 
 typedef C2DImageFatCost::Pointer P2DImageFatCost; 
 
 /**
+   \brief Obsolete, to be removed 
    The base plugin interface for the creation of the C2DImageFatCost cost function 
    @todo should be superseded by the CFullcostPlugin 
  */
@@ -107,6 +108,7 @@ private:
 
 
 /**
+   \brief Obsolete, to be removed 
    A list of cost functions of type C2DImageFatCost. 
    This class is used to combine different image cost functions 
  */
@@ -142,6 +144,7 @@ public:
 	void transform(const C2DTransformation& transform);
 };
 
+///  brief Obsolete, to be removed 
 class EXPORT_2D C2DFatImageCostPluginHandlerImpl: public TFactoryPluginHandler<C2DFatImageCostPlugin> {
 public:
 	C2DFatImageCostPluginHandlerImpl(const std::list<boost::filesystem::path>& searchpath);
@@ -150,6 +153,7 @@ public:
 					float weight) const;
 };
 
+///   \brief Obsolete, to be removed 
 typedef THandlerSingleton<C2DFatImageCostPluginHandlerImpl> C2DFatImageCostPluginHandler;
 
 NS_MIA_END

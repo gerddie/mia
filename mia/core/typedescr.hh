@@ -29,6 +29,8 @@
 
 NS_MIA_BEGIN
 
+/// @cond INTERNAL 
+
 /**
    \ingroup helpers 
    Template type parameter for time-step plugins 
@@ -38,13 +40,13 @@ struct EXPORT_CORE timestep_type {
 	static const char *type_descr;
 };
 
-
-/*
-  \brief Type description template
-  This template is used to create a type description for command line and 
-  plug-in parameters. It needs to be specialized for each type that is used 
-  in the command line parser or spline parameter parser 
-  \tparam T the type to be described 
+/**
+   \ingroup traits 
+   \brief Type description template
+   This template is used to create a type description for command line and 
+   plug-in parameters. It needs to be specialized for each type that is used 
+   in the command line parser or spline parameter parser 
+   \tparam T the type to be described 
 */
 template <typename T> 
 struct __type_descr {
@@ -73,7 +75,11 @@ struct __type_descr {
    \param name string to represent the type 
  */
 #define DEFINE_TYPE_DESCR2(type, name) const char * const __type_descr<type>::value = name;
-	
+
+
+/// @endcond 	
+
+/// @cond NEVER 
 
 DECLARE_TYPE_DESCR(signed char); 
 DECLARE_TYPE_DESCR(unsigned char); 
@@ -99,6 +105,8 @@ DECLARE_TYPE_DESCR(std::vector<float>);
 DECLARE_TYPE_DESCR(std::vector<double>); 
 DECLARE_TYPE_DESCR(std::vector<bool>); 
 DECLARE_TYPE_DESCR(std::vector<std::string>); 
+
+/// @endcond 
 
 NS_MIA_END
 

@@ -51,12 +51,19 @@ typedef std::shared_ptr<C2DFilter > P2DFilter;
    2D filter plugin handler
 */
 typedef THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> > C2DFilterPluginHandler;
-FACTORY_TRAIT(C2DFilterPluginHandler); 
 
+/** @cond INTERNAL  
+    \ingroup test 
+    \brief Class to initialiaze the plug-in search path fot testing without installing the plug-ins 
+*/
 struct EXPORT_2D C2DFilterPluginHandlerTestPath {
 	C2DFilterPluginHandlerTestPath(); 
 }; 
+/// @endcond 
 
+/// @cond NEVER 
+FACTORY_TRAIT(C2DFilterPluginHandler); 
+/// @endcond 
 
 /**
    Convenience function to create a filter from its string description

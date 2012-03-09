@@ -321,24 +321,36 @@ struct EXPORT_CORE CSplineKernelTestPath {
 	CSplineKernelTestPath(); 
 }; 
 
-
+/**
+   @cond INTERNAL 
+   @ingroup traits 
+   @brief helper to determain the besr accuracy scalar type that type T can be converted to 
+*/
 template <typename T>
 struct max_hold_type {
 	typedef double type;
 };
 
+/**
+   @ingroup traits 
+   @brief trait to obtaine the type the spline coefficients are best represented in
+*/
 template <class T>
 struct coeff_map {
 	typedef T     value_type;
 	typedef double coeff_type;
 };
-
+/**
+   @ingroup traits 
+   @brief specialization that marks that float should not be translated to double float
+*/
 template <>
 struct coeff_map<float> {
 	typedef float value_type;
 	typedef float coeff_type;
 };
 
+/// @endcond 
 
 inline size_t CSplineKernel::size()const
 {
@@ -366,20 +378,6 @@ inline size_t CSplineKernel::size()const
 */
 double  EXPORT_CORE integrate2(const CSplineKernel& spline, double s1, double s2, int d1, int d2, double n, double x0, double L);
 
-
-template <typename A>
-struct FMultBy {
-	FMultBy(double f):
-		m_f(f)
-	{
-	}
-	void operator()(A& value)
-	{
-		value *= m_f; 
-	}
-private: 
-	double m_f; 
-};
 
 NS_MIA_END
 

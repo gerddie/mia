@@ -30,7 +30,7 @@ using namespace mia;
 using ssd_3dimage_fatcost::CFatSSD3DImageCost; 
 
 CSplineKernelTestPath init_path; 
-C3DImageCostPluginHandlerPathInit init_cost_path; 
+C3DImageCostPluginHandlerTestPath init_cost_path; 
 
 BOOST_AUTO_TEST_CASE ( test_fatssd ) 
 {
