@@ -37,14 +37,30 @@ struct RegistrationTraits<2> {
 	typedef C2DFVectorfield Force; 
 	typedef C2DFVectorfield Transformation; 
 }; 
-
-
-typedef TRegModel<2> C2DRegModel;
-typedef std::shared_ptr<C2DRegModel > P2DRegModel;
-typedef TFactory<C2DRegModel>  C2DRegModelPlugin;
-typedef THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin> > C2DRegModelPluginHandler;
-
 /// @endcond 
+
+/**
+   \ingroup registration 
+   \brief the 2D time-marching registration model 
+   
+   The 2D time-marching registration model 
+*/
+typedef TRegModel<2> C2DRegModel;
+
+/// Pointer type for the registration model 
+typedef std::shared_ptr<C2DRegModel > P2DRegModel;
+
+/**
+   \ingroup infrastructure 
+   Plugin for the 2D registration model. 
+*/
+typedef TFactory<C2DRegModel>  C2DRegModelPlugin;
+
+/**
+   \ingroup infrastructure 
+   Plugin handler for the 2D registration model. 
+*/
+typedef THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin> > C2DRegModelPluginHandler;
 
 NS_MIA_END
 

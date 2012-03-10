@@ -22,17 +22,14 @@
 #ifndef mia_core_register_hh
 #define mia_core_register_hh
 
+/// @cond NEVER 
 template typename <template <typename, typename> class Optimizer>
 class TRegister {
 public: 
 	typedef typename Optimizer::Cost::Transform Transform; 
 	typedef typename Optimizer::Cost::Force     Force;
 	typedef typename Optimizer::Cost::Transform::Data Data; 
-
-	
-	
-
-
 }; 
+/// @endcond 
 
 #endif

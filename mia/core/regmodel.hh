@@ -45,13 +45,13 @@ struct RegistrationTraits {
 /// @endcond 
 
 /**
-   \ingroup templates 
+   \ingroup registration 
    \brief Base class for PDE model based registrations
    
-   Base class template for PDE based image registration models.
-   The template parameters are 
+   Generic base class template for PDE based image registration models.
+   
    \tparam Dim dimension of registration model 
- */
+*/
 template <int Dim>
 class TRegModel :public CProductBase {
 public:
@@ -79,13 +79,13 @@ public:
 	   \param[in,out] x estimated transformation direction that can be further optimized 
 	   by a line search 
 	   \remark the naming needs to be reviewed,  
-	 */
+	*/
 	void solve (const Force& b, Transformation& x) const;
-
+	
 	/**
 	   \returns the scaling applied to the gradient force 
 	   \remark why is this needed? 
-	 */
+	*/
 	float get_force_scale() const;
 private:
 	virtual void do_solve(const Force& b, Transformation& x) const = 0;

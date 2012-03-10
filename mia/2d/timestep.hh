@@ -27,7 +27,9 @@
 #include <mia/2d/transform.hh>
 
 NS_MIA_BEGIN
+
 /**
+   \ingroup registration
    \brief The time step class for time-marching registration algorithms
 
    Registration time step for  a time-marching registration algorithm like 
@@ -37,7 +39,6 @@ NS_MIA_BEGIN
    advances the registration transformation towards a minimum.  
   
 */
-
 class EXPORT_2D C2DRegTimeStep : public CProductBase {
 public:
 	/// plugin search path data component helper
@@ -59,13 +60,16 @@ public:
 
 	/**
 	   Evaluate the pertuberation of the vector field in combination with the next 
-	   transformation to be applied. What actually happens here depends on the time step model. 
-	   \param[in,out] io vector field resulting from the solution of the PDE, may be overwritted by 
-	   its pertuberated version 
+	   transformation to be applied. What actually happens here depends on the 
+	   time step model. 
+	   
+	   \param[in,out] io vector field resulting from the solution of the PDE, 
+	   may be overwritted by its pertuberated version 
 	   \param shift current transformation 
 	   \returns the norm of the maxium transformation over the transformation domain 
 	 */
-	float calculate_pertuberation(C2DFVectorfield& io, const C2DTransformation& shift) const;
+	float calculate_pertuberation(C2DFVectorfield& io, 
+				      const C2DTransformation& shift) const;
 
 	/**
 	   Depending on the time step model, a regridding may be used  - specifically this 
@@ -75,44 +79,54 @@ public:
 	   \param delta time step 
 	   \returns true if regridding is necessary, false if not
 	 */
-	bool regrid_requested(const C2DTransformation& b, const C2DFVectorfield& v, float delta) const;
+	bool regrid_requested(const C2DTransformation& b, const C2DFVectorfield& v, 
+			      float delta) const;
 
 	/**
-	   Decrease the time step by dividing by 2.0. - if the time step falls below the appointed minimum
-	   it will be adjusted accordingly 
-	   \returns true if the time-step was decreased, and false if the time step was already at the minimum 
+	   Decrease the time step by dividing by 2.0. - if the time step falls 
+	   below the appointed minimum  it will be adjusted accordingly 
+	   \returns true if the time-step was decreased, and false if the time 
+	   step was already at the minimum 
 	 */
 	bool decrease();
 
 	/// increase thetime step by multiplying with 1.5
 	void increase();
 
-	/** evaluate the time step based on the maximum shift resulting from \a calculate_pertuberation */
+	/** evaluate the time step based on the maximum shift resulting from 
+	    \a calculate_pertuberation 
+	    \param maxshift maximum shift allowed for all pixles 
+	    \returns the time step delta to be used  
+	*/
 	float get_delta(float maxshift) const;
 
 	/** \returns true if the time step model supports regridding and false if not */
 	bool has_regrid () const;
 
 private:
-	virtual float do_calculate_pertuberation(C2DFVectorfield& io, const C2DTransformation& shift) const = 0;
-	virtual bool do_regrid_requested (const C2DTransformation& b, const C2DFVectorfield& v,
-					  float delta) const = 0;
-
+	virtual float do_calculate_pertuberation(C2DFVectorfield& io, 
+						 const C2DTransformation& shift) const = 0;
+	virtual bool do_regrid_requested (const C2DTransformation& b, 
+					  const C2DFVectorfield& v, float delta) const = 0;
+	
 	virtual bool do_has_regrid () const = 0;
-
-
+	
 	float m_min;
 	float m_max;
 	float m_current;
 	float m_step;
 };
+
 /// pointer type for the 2D registration time step 
 typedef std::shared_ptr<C2DRegTimeStep > P2DRegTimeStep;
 
 /**
-   Time step model plugin class. 
-*/
+   \ingroup infrastructur 
+   \brief Plug-in to create the time step evaluation 
 
+   Plug-in to create the time step evaluation in time-marching registration 
+   algorithms.  
+*/
 class EXPORT_2D C2DRegTimeStepPlugin : public TFactory<C2DRegTimeStep>
 {
 public:
@@ -132,8 +146,12 @@ private:
 	float m_max;
 };
 
-/** Time step model plugin handler */
-typedef THandlerSingleton<TFactoryPluginHandler<C2DRegTimeStepPlugin> > C2DRegTimeStepPluginHandler;
+/** 
+    \ingroup infrastructur 
+    Time step model plugin handler 
+*/
+typedef THandlerSingleton<TFactoryPluginHandler<C2DRegTimeStepPlugin> > 
+         C2DRegTimeStepPluginHandler;
 
 NS_MIA_END
 

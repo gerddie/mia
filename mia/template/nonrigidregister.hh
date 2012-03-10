@@ -34,18 +34,17 @@ struct TNonrigidRegisterImpl;
 
 /**
    \ingroup registration
-
    \brief Class for image registration. 
    \tparam dim dimension of the input data 
 
-   The registration approach of this class lies in the optimization of a weighted sum of cost functions. 
-   These cost functions may include image based cost functions, penalty functions on the transformation, 
-   and others. The registration makes use of a multi-resolution scheme and support various transformation 
-   models.  All cost functions implement the CXDFullCost interface. 
+   The registration approach of this class lies in the optimization of a weighted sum of cost 
+   functions. These cost functions may include image based cost functions, penalty functions 
+   on the transformation,  and others. The registration makes use of a multi-resolution scheme 
+   and support various transformation models.  All cost functions implement the 
+   CXDFullCost interface. 
    
    \todo the class name is misleading, depending on the given transformation, linear and non-linear 
-         registration can be achieved 
-
+   registration can be achieved 
 */
 
 template <int dim> 

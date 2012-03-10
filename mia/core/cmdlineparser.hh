@@ -50,7 +50,8 @@ typedef std::pair<std::string, CHistoryRecord> CHistoryEntry;
 
 
 /**
-    Data structure to provied help information oabout the program 
+   \ingroup infrastructure 
+   Data structure to provied help information oabout the program 
  */
 struct SProgramDescription {
 	
@@ -69,6 +70,7 @@ struct SProgramDescription {
 
 
 /** 
+    \ingroup infrastructure 
     \brief Templated version based on CCmdOptionValue for values that can be converted to 
     and from strings by stream operators 
 
@@ -110,6 +112,7 @@ private:
 };
 
 /** 
+    \ingroup infrastructure 
     \brief Command line option that translates a string to a set of flags.
 */
 
@@ -140,6 +143,7 @@ private:
 
 
 /**
+   \ingroup infrastructure 
    \brief A command line option that will appear in the help group 
    and exits the program after printing the help. 
 
@@ -150,9 +154,16 @@ private:
 class EXPORT_CORE CHelpOption: public CCmdOption {
 public:
 
-	
+	/**
+	   \ingroup infrastructure 
+	   \brief Interface for the callback to print the help assositated with the given option.
+	 */
 	class Callback {
 	public:
+		/**
+		   Interface to print the help 
+		   \param os output stream to print to
+		*/
 		virtual void print(std::ostream& os) const = 0;
 	};
 
@@ -180,8 +191,11 @@ private:
 
 };
 
-
-
+/**
+    \ingroup infrastructure 
+    \brief Help callback to print the help for the given plug-in 
+  
+*/
 template <typename PluginHandler>
 class TPluginHandlerHelpCallback: public CHelpOption::Callback {
 	void print(std::ostream& os) const{
@@ -240,8 +254,9 @@ public:
 	    \param argc number of arguments
 	    \param args array of arguments strings
 	    \param additional_type will is a help string to describe the type of free parameters
-	    \param additional_help If you use a plug-in handler to process the free parameters then pass the pointer 
-	                 to the according plug-in handler here, so that the help system can create proper documentation 
+	    \param additional_help If you use a plug-in handler to process the free parameters 
+	    then pass the pointer to the according plug-in handler here, so that the help 
+	    system can create proper documentation 
         */
 	EHelpRequested parse(size_t argc, char *args[], const std::string& additional_type, 
 		const CPluginHandlerBase *additional_help = NULL) 
@@ -253,8 +268,9 @@ public:
 	    \param argc number of arguments
 	    \param args array of arguments strings
 	    \param additional_type will is a help string to describe the type of free parameters
-	    \param additional_help If you use a plug-in handler to process the free parameters then pass the pointer 
-	                 to the according plug-in handler here, so that the help system can create proper documentation 
+	    \param additional_help If you use a plug-in handler to process the free 
+	    parameters then pass the pointer to the according plug-in handler here, 
+	    so that the help system can create proper documentation 
 
         */
 	EHelpRequested parse(size_t argc, const char *args[], const std::string& additional_type, 
@@ -275,7 +291,7 @@ public:
         */
 	EHelpRequested parse(size_t argc, const char *args[]) __attribute__((warn_unused_result));
 	
-		/// \returns a vector of the remaining arguments
+	/// \returns a vector of the remaining arguments
 	const std::vector<std::string>& get_remaining() const;
 
         /** \returns the values of all arguments as a history record to support tracking
@@ -570,7 +586,8 @@ template <typename T, typename Tmin, typename Tmax>
 PCmdOption make_opt(T& value, Tmin min, Tmax max,  const char *long_opt, char short_opt, 
 		    const char *help, bool flags = false)
 {
-	return PCmdOption(new CParamOption( short_opt, long_opt, new TRangeParameter<T>(value, min, max, flags, help)));
+	return PCmdOption(new CParamOption( short_opt, long_opt, 
+					    new TRangeParameter<T>(value, min, max, flags, help)));
 }
 
 template <typename T>
@@ -598,9 +615,11 @@ inline PCmdOption make_opt(bool& value, const char *long_opt, char short_opt, co
    \returns the option warped into a \a boost::shared_ptr
 */
 template <typename T>
-PCmdOption make_opt(T& value, const TDictMap<T>& map, const char *long_opt, char short_opt, const char *help)
+PCmdOption make_opt(T& value, const TDictMap<T>& map, 
+		    const char *long_opt, char short_opt, const char *help)
 {
-	return PCmdOption(new CParamOption( short_opt, long_opt, new CDictParameter<T>(value, map, help)));
+	return PCmdOption(new CParamOption( short_opt, long_opt, 
+					    new CDictParameter<T>(value, map, help)));
 }
 
 
