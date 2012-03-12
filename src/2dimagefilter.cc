@@ -60,44 +60,21 @@ int do_main( int argc, char *argv[] )
 		return EXIT_SUCCESS; 
 
 
-	auto filter_chain = options.get_remaining();
-
 	cvdebug() << "IO supported types: " << imageio.get_plugin_names() << "\n";
 	cvdebug() << "supported filters: " << filter_plugins.get_plugin_names() << "\n";
 
-	if ( filter_chain.empty() )
-		cvwarn() << "no filters given, just copy\n";
-
-
 	//CHistory::instance().append(argv[0], "unknown", options);
-
-	bool want_help = false; 
-	std::vector<P2DFilter> filters(filter_chain.size());
-	transform(filter_chain.begin(), filter_chain.end(), filters.begin(),
-		  [&filter_plugins, &want_help](const string& name) {
-			  auto filter =  filter_plugins.produce(name); 
-			  if (!filter) {
-				  if (name == plugin_help) 
-					  want_help = true; 
-				  else 
-					  THROW(invalid_argument, "Filter '" << name << "' not found"); 
-			  }
-			  return filter; 
-		  }
-		); 
-		
+	
+	const C2DImageFilterChain filter_chain(options.get_remaining()); 
 	auto in_image_list = imageio.load(in_filename);
 	if (!in_image_list || in_image_list->empty()) {
 		THROW(invalid_argument, "No images found in " << in_filename); 
 	}
 	
-	for (auto f = filters.begin(); f != filters.end(); ++f) {
-		cvmsg() << "Run filter: " << (*f)->get_init_string() << "\n";
-		
-		transform(in_image_list->begin(), in_image_list->end(), in_image_list->begin(),
-			  [f](const P2DImage& img){return  (*f)->filter(*img);}); 
-	}
 	
+	transform(in_image_list->begin(), in_image_list->end(), in_image_list->begin(),
+		  [&filter_chain](const P2DImage& img){return  filter_chain.run(img);});
+
 	if ( !imageio.save(out_filename, *in_image_list) ){
 		THROW(runtime_error, "Unable to save result to " << out_filename);
 	};
