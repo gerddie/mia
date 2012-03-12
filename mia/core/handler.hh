@@ -124,6 +124,7 @@ private:
 	virtual void do_get_xml_help(xmlpp::Element *root) const; 	
 
 	static const char * const m_help; 
+
 }; 
 
 

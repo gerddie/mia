@@ -31,7 +31,7 @@
 #include <mia/core/product_base.hh>
 #include <mia/core/optionparser.hh>
 #include <mia/core/productcache.hh>
-
+#include <mia/core/traits.hh>
 #include <mia/core/import_handler.hh>
 
 NS_MIA_BEGIN
@@ -151,6 +151,7 @@ private:
 	typename I::Product *produce_raw(const std::string& plugindescr) const;
 
 	mutable TProductCache<ProductPtr> m_cache; 
+
 }; 
 
 /*
@@ -196,11 +197,13 @@ TFactoryPluginHandler<I>::TFactoryPluginHandler(const std::list<boost::filesyste
 	TPluginHandler< I >(searchpath), 
 	m_cache(this->get_descriptor())
 {
+	set_caching(__cache_policy<I>::apply()); 
 }
 
 template <typename  I>
 void TFactoryPluginHandler<I>::set_caching(bool enable)
 {
+	cvdebug() << this->get_descriptor() << ":Set cache policy to " << enable << "\n"; 
 	m_cache.enable_write(enable); 
 }
 
@@ -212,7 +215,8 @@ TFactoryPluginHandler<I>::produce(const std::string& plugindescr) const
 	if (!result) {
 		result.reset(this->produce_raw(plugindescr)); 
 		m_cache.add(plugindescr, result); 
-	}
+	}else
+		cvdebug() << "Use cached '" << plugindescr << "'\n"; 
 	return result; 
 }
 

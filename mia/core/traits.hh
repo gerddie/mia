@@ -87,6 +87,19 @@ struct dim_traits<std::vector<T> > {
 	typedef vector_dimsize dimsize_type; 
 }; 
 
+/**
+   \ingroup traits
+   \brief A trait to set the Factory plugin handler cache policy 
+
+   \tparam T factory plug-in to set the trait for
+ */
+
+template <typename T>
+struct __cache_policy {
+	static  bool apply() {
+		return false; 
+	}
+}; 
 /// @endcond 
 
 NS_MIA_END
