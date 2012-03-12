@@ -302,8 +302,6 @@ double  EXPORT_CORE integrate2(const CSplineKernel& spline, double s1, double s2
 	return sum * n;
 }
 
-EXPLICIT_INSTANCE_HANDLER(CSplineKernel); 
-
 using boost::filesystem::path; 
 CSplineKernelTestPath::CSplineKernelTestPath()
 {
@@ -316,5 +314,7 @@ CSplineKernelTestPath::CSplineKernelTestPath()
 template<>  const char * const 
 TPluginHandler<TFactory<CSplineKernel>>::m_help = "These plug-ins provide various kernels used for spline interpolation.";
 
+
+EXPLICIT_INSTANCE_HANDLER(CSplineKernel); 
 
 NS_MIA_END

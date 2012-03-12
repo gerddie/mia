@@ -326,6 +326,13 @@ struct EXPORT_CORE CSplineKernelTestPath {
    @ingroup traits 
    @brief helper to determain the besr accuracy scalar type that type T can be converted to 
 */
+template <>
+struct __cache_policy<CSplineKernelPlugin> {
+	static  bool apply() {
+		return true; 
+	}
+}; 
+
 template <typename T>
 struct max_hold_type {
 	typedef double type;
