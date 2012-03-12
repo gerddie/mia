@@ -4,7 +4,10 @@
   }
   pre.screen {
   margin-left: 2%;
+  margin-right: 2%;
+  background-color:#E0E0E0;
   }
+  
   div.variablelist {
   margin-left: 2%;
   }

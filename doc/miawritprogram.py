@@ -92,9 +92,8 @@ def get_program(program):
             section.append(get_text_node_simple("para", program.Example.text))
             for c in program.Example.code:
                 if not c.text is None: 
-                    screen = etree.Element("screen")
+                    screen = etree.SubElement(section, "screen")
                     screen.text = program.name + " " + c.text
-                    section.append(screen)
         else:
             print "%s doesn't provide example text" % (program.name) 
     else:
