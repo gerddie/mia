@@ -1,50 +1,54 @@
 <?xml version="1.0"?>
 <outline>
-  <section name="Analysis, filtering, combining, and segmentation of 2D images">
-    <text>The programs in this section are dedicated to basic 2D image processing tasks, like filtering, 
-    combining pairs of images, creating test images, and evaluating statistics.
-    </text>
-  </section>
-  <section name="Analysis, filtering, combining, and segmentation of 3D images">
-    <text>The programs in this section are dedicated to basic 3D image processing tasks, like filtering, 
-    combining pairs of images, creating test images, and evaluating statistics.
-    </text>
-  </section>
-  <section name="Filtering of series of 2D images in a 3D fashion (out-of-core)">
-    <text>
-      The programs in this section are dedicated to processing series of 2D images in a 3D fashion out-of-core. 
-      This is intended for large images that would not fit into the main memory if processing was to be done 
-      as a true 3D images. 
-      As a result, only spacial, non-iterative filters are supported.  
-    </text>
-  </section>
-  <section name="Help">
-  </section>
-  <section name="Image conversion">
-    <text>
-      The programs in this section are used to convert bewteen the supported image file formats, to combine 
-      2D images to a 3D representation extract 2D slices from 3D images.
-      Note, that for the conversion between pixel formats the programs <link>mia-2dimagefilter</link>, and 
-      <link>mia-3dimagefilter<link>,
-      in conjunction with the corresponding 
-      <link>convert:2dimage/filter</link> and 
-      <link>convert:3dimage/filter<link> have to be used.
-    </text>
-  </section>
-  <section name="Miscellaneous programs">
-  </section>
-  <section name="Registration of series of 2D images">
-  </section>
-  <section name="Registration of series of 3D images">
-  </section>
-  <section name="Registration, Comparison, and Transformation of 2D images">
-  </section>
-  <section name="Registration, Comparison, and Transformation of 3D images">
-  </section>
-  <section name="Tools for Myocardial Perfusion Analysis">
-  </section>
-  <section name="Tools for the Analysis of 3D image series">
-  </section>
-  <section name="Work in progress">
-  </section>
+<section name="Analysis, filtering, combining, and segmentation of 2D images">
+  <description>The programs in this section are dedicated to basic 2D image processing tasks, like filtering by invoking 
+  plug-ins (<link key="SecPlugintype">2dimage/filter</link>), 
+  combining pairs of images (<link key="SecPlugintype">2dimage/combiner</link>), 
+  creating test images (<link key="SecPlugintype">2dimage/creator</link>), and evaluating some statistics.
+  </description>
+</section>
+<section name="Analysis, filtering, combining, and segmentation of 3D images">
+  <description>The programs in this section are dedicated to basic 3D image processing tasks, like filtering by invoking 
+  plug-ins (<link key="SecPlugintype">3dimage/filter</link>), 
+  combining pairs of images (<link key="SecPlugintype">3dimage/combiner</link>), 
+  creating test images (<link key="SecPlugintype">3dimage/creator</link>), and evaluating some statistics.
+  </description>
+</section>
+<section name="Filtering of series of 2D images in a 3D fashion (out-of-core)">
+  <description>
+    The programs in this section are dedicated to processing series of 2D images in a 3D fashion out-of-core. 
+    This is intended for large images that would not fit into the main memory if processing was to be done 
+    as a true 3D images. 
+    As a result, only spacial, non-iterative filters are supported.  
+  </description>
+</section>
+<section name="Help">
+</section>
+<section name="Image conversion">
+  <description>
+    The programs in this section are used to convert beteeen the supported image file formats, to combine 
+    2D images to a 3D representation, or to extract 2D slices from 3D images.
+    Note, that for the conversion between pixel formats the programs <link key="Sec">mia-2dimagefilter</link>, and 
+    <link key="Sec">mia-3dimagefilter</link>,
+    in conjunction with the corresponding plug-in 
+    <link key="pluginconvert">2dimage/filter</link>, respective 
+    <link key="pluginconvert">3dimage/filter</link> have to be used.
+  </description>
+</section>
+<section name="Miscellaneous programs">
+</section>
+<section name="Registration of series of 2D images">
+</section>
+<section name="Registration of series of 3D images">
+</section>
+<section name="Registration, Comparison, and Transformation of 2D images">
+</section>
+<section name="Registration, Comparison, and Transformation of 3D images">
+</section>
+<section name="Tools for Myocardial Perfusion Analysis">
+</section>
+<section name="Tools for the Analysis of 3D image series">
+</section>
+<section name="Work in progress">
+</section>
 </outline>

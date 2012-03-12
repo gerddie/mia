@@ -47,41 +47,30 @@ const SProgramDescription g_description = {
 
 int do_main(int argc, char *argv[])
 {
-	string object("sphere");
+	C3DImageCreatorPluginHandler::ProductPtr object_creator;
 	string out_filename;
 	EPixelType pixel_type = it_ubyte;
 	C3DBounds size(128,128,128);
 
-	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
-	const C3DImageCreatorPluginHandler::Instance& creator_ph = C3DImageCreatorPluginHandler::instance();
 	CCmdOptionList options(g_description);
 
 	options.add(make_opt( out_filename, "out-file", 'o', "output file for create object", CCmdOption::required));
 	options.add(make_opt( size, "size", 's', "size of the object"));
 	options.add(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type "));
-	options.add(make_opt( object,  "object", 'j', "object to be created"));
+	options.add(make_opt( object_creator, "sphere", "object", 'j', "object to be created"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 
-	auto creator = creator_ph.produce(object.c_str());
-	if (!creator) {
-		std::stringstream error;
-		error << "Creator " << object << " not found";
-		throw invalid_argument(error.str());
-	}
-	P3DImage image = (*creator)(size, pixel_type);
+	P3DImage image = (*object_creator)(size, pixel_type);
 	if (!image) {
 		std::stringstream error;
-		error << "Creator " << object << " could not create object of size " << size 
+		error << "Creator '" << object_creator->get_init_string() << "' could not create object of size " << size 
 		      << " and type " << CPixelTypeDict.get_name(pixel_type);
 		throw invalid_argument(error.str());
 	}
-
-	C3DImageVector out_images;
-	out_images.push_back(image);
-	return !imageio.save(out_filename, out_images);
+	return !save_image(out_filename, image);
 }
 
 

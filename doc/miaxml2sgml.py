@@ -24,9 +24,9 @@ from miawritprogram import NSMAP
 
 
 def create_text_node(tag, text):
-   node = etree.Element(tag)
-   node.text = text
-   return node
+    node = etree.Element(tag)
+    node.text = text
+    return node
 
 
 def get_date_string():
@@ -35,20 +35,46 @@ def get_date_string():
 
 
 class CPatternCollector:
-   def __init__(self, pattern):
-      self.pattern = pattern
-      self.files=[]
-
+    def __init__(self, pattern):
+        self.pattern = pattern
+        self.files=[]
+        
       
 def collect_files(arg, dirname, names):
     for f in names:
         if fnmatch(f, arg.pattern):
             arg.files.append(dirname + "/" + f)
-   
+            
 def find_files(root, pattern): 
-   arg = CPatternCollector(pattern)
-   walk(root, collect_files, arg)
-   return arg.files 
+    arg = CPatternCollector(pattern)
+    walk(root, collect_files, arg)
+    return arg.files 
+
+class CProgramSection:
+    def __init__(self, node=None, name=None):
+        self.programs=[]
+        if node is not None: 
+            self.name=node.get("name")
+            self.description = node.iter("description")
+        else:
+            self.name=name
+
+        
+
+def read_section_file(filename):
+    file=open(filename, "r")
+    stringstree = file.read()
+    root = etree.XML(stringstree)
+
+    program_sections = {}
+
+    if root.tag != "outline": 
+        raise ValueError("Expected tag 'outline' not found. sections.xml is not the expected file.")
+    for n in root:
+        section = CProgramSection(node=n)
+        program_sections[section.name] = section
+    return program_sections
+    
 
 # read all xml files 
 files = find_files(".", "mia-*.xml")
@@ -61,15 +87,17 @@ for f in files:
     except ValueError as e:
         print e
 
-program_sections = {}
+program_sections = read_section_file("sections.xml")
 plugin_types = {}
+
+
 
 
 #sort the descriptions 
 for d in descriptions:
    if not program_sections.has_key(d.section):
-      program_sections[d.section] = []
-   program_sections[d.section].append(d)
+      program_sections[d.section] = CProgramSection(name=d.section)
+   program_sections[d.section].programs.append(d)
 
    for h in d.handlers.keys():
       k = d.handlers[h].name
@@ -79,16 +107,21 @@ for d in descriptions:
          plugin_types[k].merge_users(d.handlers[h].users)
 
 
+
+
 #Now convert to linuxdoc format - these are also XML files 
 prog_xml = etree.Element("chapter", nsmap=NSMAP)
 prog_xml.set(xmlns + "id", "Programs")
 title = create_text_node("title", "Program Reference")
 prog_xml.append(title)
 
-program_keys = program_sections.keys()
-program_keys.sort()
-for s in program_keys: 
+section_keys = program_sections.keys()
+section_keys.sort()
+for s in section_keys: 
     prog_xml.append(get_section(s, program_sections[s]))
+
+
+
 
 programs_xml = etree.tostring(prog_xml, pretty_print=True)
 prog_file = open("program.xml", "w")

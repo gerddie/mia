@@ -63,8 +63,14 @@ IF(CREATE_USERDOC)
       )
     ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/progref.xml
       COMMAND ln ARGS -sf ${CMAKE_CURRENT_SOURCE_DIR}/progref.xml ${CMAKE_CURRENT_BINARY_DIR}/progref.xml) 
+    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/sections.xml
+      COMMAND ln ARGS -sf ${CMAKE_CURRENT_SOURCE_DIR}/sections.xml ${CMAKE_CURRENT_BINARY_DIR}/sections.xml) 
 
-    ADD_CUSTOM_TARGET(progref_link DEPENDS progref.xml)
+
+    ADD_CUSTOM_TARGET(progref_link 
+      DEPENDS 
+      ${CMAKE_CURRENT_BINARY_DIR}/progref.xml 
+      ${CMAKE_CURRENT_BINARY_DIR}/sections.xml)
       
     ADD_CUSTOM_COMMAND(OUTPUT  "userref.stamp"
       COMMAND  

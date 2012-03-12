@@ -102,10 +102,25 @@ def get_program(program):
 
     return section 
 
+def translate_descr(section, description):
+    descrpara = etree.SubElement(section, "para", role="sectiondescr")
+    for d in description:
+        para = etree.SubElement(descrpara, "para", role="sectiondescr")
+        para.text = d.text
+        for l in d.iter("link"):
+            link = etree.SubElement(para, "xref", linkend=make_sec_ancor(l.get("key"), l.text))
+            link.tail = l.tail
+    return descrpara
+
 def get_section(name, sect):
-    sect = sorted(sect, key=lambda p: p.name )
+    print name 
     section = make_section_root_node("section", name)
+    if sect.description is not None:
+        descr = translate_descr(section, sect.description)
+
     para = etree.SubElement(section, "para", role="sectiontoc")
+        
+    sect = sorted(sect.programs, key=lambda p: p.name )
     for program in sect:
         subpara = etree.SubElement(para, "para", role="sectiontoc")
         etree.SubElement(subpara, "xref", linkend=program.anchor)
