@@ -38,6 +38,11 @@
 <section name="Miscellaneous programs">
 </section>
 <section name="Registration of series of 2D images">
+  <description>
+    These programs are mostly tailored for the use of motion compensation in series of myocardial perfusion images and are thought to 
+    be used in conjunction with the tools for analyis of image series in the section 
+    <link key="Sec">Tools for Myocardial Perfusion Analysis</link>.
+  </description>
 </section>
 <section name="Registration of series of 3D images">
 </section>
