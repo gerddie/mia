@@ -26,6 +26,7 @@ SET(MIACORE_SRC_BASE
   combiner.cc
   cmdlineparser.cc
   cmdoption.cc
+  cmdstringoption.cc
   creator.cc
   datapool.cc
   dlloader.cc
@@ -87,6 +88,7 @@ SET(MIACORE_HEADER_BASE
   boundary_conditions.hh
   callback.hh
   cmdlineparser.hh
+  cmdstringoption.hh
   cmdoption.hh
   cost.hh
   cost.cxx

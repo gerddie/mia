@@ -138,13 +138,19 @@ protected:
 
 	/// clear the "required" flag 
 	void clear_required(); 
+	
+	/** 
+	    write the long help string to a stream 
+	    \param os the output stream 
+	*/
+	virtual void do_get_long_help(std::ostream& os) const;
 private:
 	const char *get_short_help() const;
 
 	virtual void do_add_option(CShortoptionMap& sm, CLongoptionMap& lm);
 	virtual void do_print_short_help(std::ostream& os) const;
 	virtual void do_get_opt_help(std::ostream& os) const;
-	virtual void do_get_long_help(std::ostream& os) const = 0;
+
 	virtual bool do_set_value(const char *str_value) = 0;
 	virtual size_t do_get_needed_args() const;
 	virtual void do_write_value(std::ostream& os) const = 0;

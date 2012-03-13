@@ -106,7 +106,6 @@ private:
 	virtual bool do_set_value(const char *str_value);
 	virtual size_t do_get_needed_args() const;
 	virtual void do_write_value(std::ostream& os) const;
-	virtual void do_get_long_help(std::ostream& os) const;
 	virtual const std::string do_get_value_as_string() const;
 	T& m_value;
 };
@@ -526,11 +525,6 @@ size_t TCmdOption<T>::do_get_needed_args() const
 }
 
 template <typename T>
-void TCmdOption<T>::do_get_long_help(std::ostream& /*os*/) const
-{
-}
-
-template <typename T>
 void TCmdOption<T>::do_write_value(std::ostream& os) const
 {
         __dispatch_opt<T>::apply( os, m_value, is_required());
@@ -642,19 +636,18 @@ PCmdOption  EXPORT_CORE make_opt(int& value, const CFlagString& map, const char 
 
 
 /**
-   Convinience function: Create a set restricted option
+   Convinience function: Create a string option 
    \param[in,out] value variable to hold the parsed and translated option value
-   \param set the set of allowed values
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
    \param long_help long help string (must not be NULL)
-   \param short_help short help string
-   \param flags add flags like whether the optionis required to be set 
+   \param required set to true if the option is required to be set 
+   \param plugin_hint if the string will later be used to create an object by using plug-in then pass 
+	   a pointer to the corresponding plug-in handler to give a hint the help system about this connection.
    \returns the option warped into a \a boost::shared_ptr
  */
-PCmdOption EXPORT_CORE make_opt(std::string& value, const std::set<std::string>& set,
-                                const char *long_opt, char short_opt, const char *long_help,
-                                const char *short_help, bool flags) __attribute__((deprecated));
+PCmdOption EXPORT_CORE make_opt(std::string& value, const char *long_opt, char short_opt, const char *long_help, 
+				bool required = false, const CPluginHandlerBase *plugin_hint = NULL); 
 
 
 

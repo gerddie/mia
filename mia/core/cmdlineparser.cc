@@ -36,6 +36,7 @@
 #include <libxml++/libxml++.h>
 #include <mia/core/tools.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/cmdstringoption.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/fixedwidthoutput.hh>
 
@@ -738,6 +739,13 @@ PCmdOption EXPORT_CORE make_help_opt(const char *long_opt, char short_opt,
 				     const char *long_help, CHelpOption::Callback *cb)
 {
 	return PCmdOption(new CHelpOption(cb, short_opt, long_opt, long_help));
+}
+
+PCmdOption EXPORT_CORE make_opt(std::string& value, const char *long_opt, char short_opt, const char *long_help, 
+				bool required, const CPluginHandlerBase *plugin_hint)
+{
+	return PCmdOption(new CCmdStringOption(value, short_opt, long_opt, long_help, 
+					       required, plugin_hint)); 
 }
 
 //
