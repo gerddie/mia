@@ -28,8 +28,8 @@ ADD_CUSTOM_TARGET(xmldoc)
 IF(CREATE_USERDOC) 
 
   ADD_CUSTOM_TARGET(install-manpages 
-    mkdir -p "${CMAKE_INSTALL_PREFIX}/man/man1/"
-    COMMAND cp -r man/* "${CMAKE_INSTALL_PREFIX}/man/man1/"
+    mkdir -p $(DESTDIR)/"${CMAKE_INSTALL_PREFIX}/share/man/man1/"
+    COMMAND cp man/* $(DESTDIR)/"${CMAKE_INSTALL_PREFIX}/share/man/man1/"
     DEPENDS manpages)
 
   add_dependencies(docs manpages)    
@@ -66,7 +66,6 @@ IF(CREATE_USERDOC)
     ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/sections.xml
       COMMAND ln ARGS -sf ${CMAKE_CURRENT_SOURCE_DIR}/sections.xml ${CMAKE_CURRENT_BINARY_DIR}/sections.xml) 
 
-
     ADD_CUSTOM_TARGET(progref_link 
       DEPENDS 
       ${CMAKE_CURRENT_BINARY_DIR}/progref.xml 
@@ -92,8 +91,8 @@ IF(CREATE_USERDOC)
     
     
     ADD_CUSTOM_TARGET(install-userref 
-      mkdir -p "${FULL_DOC_INSTALL_PATH}/userref"
-      COMMAND cp -r userref/* "${FULL_DOC_INSTALL_PATH}/userref"
+      mkdir -p $(DESTDIR)/"${FULL_DOC_INSTALL_PATH}/userref"
+      COMMAND cp -r userref/* $(DESTDIR)/"${FULL_DOC_INSTALL_PATH}/userref"
       DEPENDS userref)
     
     
@@ -118,8 +117,8 @@ IF (DOXYGEN_FOUND)
     OUTPUTS libdoc)
   
   ADD_CUSTOM_TARGET(install-libdoc 
-    mkdir -p "${FULL_DOC_INSTALL_PATH}/libdoc"
-    COMMAND cp -r libdoc/html/* "${FULL_DOC_INSTALL_PATH}/libdoc"
+    mkdir -p $(DESTDIR)/"${FULL_DOC_INSTALL_PATH}/libdoc"
+    COMMAND cp libdoc/html/* $(DESTDIR)/"${FULL_DOC_INSTALL_PATH}/libdoc"
     DEPENDS LibraryDoc)
   
   add_dependencies(install-doc install-libdoc)
