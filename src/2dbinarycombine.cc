@@ -96,6 +96,7 @@ const TDictMap<EBinops> g_binops_dict(g_binops_table);
 
 const SProgramDescription g_description = {
 	"Analysis, filtering, combining, and segmentation of 2D images", 
+	"Combine two binary masks.", 
 	"This program is used to combine two binary images by some kind of operation.", 
 	NULL, 
 	NULL

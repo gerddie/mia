@@ -30,6 +30,8 @@ using namespace std;
 const SProgramDescription g_description = {
 	"Registration, Comparison, and Transformation of 3D images", 
 	
+	"Linear registration of 3D images.", 
+	
 	"This program implements the registration of two gray scale 3D images. "
 	"The transformation is not penalized, therefore, one should only use translation, rigid, or affine "
 	"transformations as target and run mia-3dnonrigidreg of nonrigid registration is to be achieved.", 

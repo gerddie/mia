@@ -39,6 +39,8 @@ NS_MIA_USE;
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 
 
+	"Run an ICA analysis on a series of 2D images", 
+
 	"This program is used to run a ICA on a series of myocardial perfusion images to create "
         "sythetic references that can be used for motion correction by image registration. "
 	"If the aim is to run a full motion compensation then it is better to create a "

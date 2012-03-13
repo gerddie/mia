@@ -36,6 +36,7 @@ using namespace mia;
 
 const SProgramDescription g_description = {
 	"Miscellaneous programs", 
+	"File name number pattern analysis", 
 	"This program is used to extract a extract the number pattern for "
 	"file012312.ext type file names.", 
 	NULL, 

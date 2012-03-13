@@ -35,8 +35,10 @@ NS_MIA_USE;
 
 const SProgramDescription g_description = {
 	"Analysis, filtering, combining, and segmentation of 3D images", 
+
+	"Print the dimensions of a 3D image.", 
 	
-	"Write the dimensions of the input 3d image to stdout.", 
+	"Write the dimensions of the input 3D image to stdout.", 
 	
 	"Print out the size of image.v.", 
 	

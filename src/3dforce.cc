@@ -33,6 +33,8 @@ using namespace std;
 const SProgramDescription g_description = {
 	"Registration, Comparison, and Transformation of 3D images", 
 	
+	"Evaluate the registration force between two 3D images.", 
+	
 	"This program is used to create an image comprising the pixel-wise norm "
 	"of the ggradient of a given cost function.", 
 

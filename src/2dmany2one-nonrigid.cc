@@ -49,6 +49,8 @@ namespace bfs=boost::filesystem;
 const SProgramDescription g_general_help = {
 	"Registration of series of 2D images", 
 	
+	"Registration of a series of 2D images", 
+	
 	"This program registers all images of a conscutively numbered set of images to one common "
 	"user defined reference.", 
 	

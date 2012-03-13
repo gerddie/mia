@@ -39,6 +39,8 @@ using namespace std;
 
 const SProgramDescription g_description = {
 	"Analysis, filtering, combining, and segmentation of 2D images", 
+
+	"Run a fuzzy c-means segmentation of a 2D image.", 	
 	
 	"This program is a  implementation of a fuzzy c-means segmentation algorithm",
 	

@@ -41,6 +41,8 @@ using namespace std;
 
 const SProgramDescription g_description = {
 	"Registration, Comparison, and Transformation of 3D images", 
+
+	"Fluid dynamic 3D registration", 
 	
 	"This program is used for non-rigid registration based on fluid dynamics as described in: "
 	"Wollny, G. and Kruggel, F., 'Computational cost of non-rigid registration algorithms "

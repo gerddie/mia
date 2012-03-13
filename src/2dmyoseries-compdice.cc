@@ -36,6 +36,8 @@ using namespace std;
 
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 
+
+	"Evaluate the dice index between segmentations.", 
 	
 	"This program is used to evaluate the per-frame dice index of "
 	"segmented regions of two image series", 

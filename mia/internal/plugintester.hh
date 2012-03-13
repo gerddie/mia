@@ -56,6 +56,7 @@ NS_MIA_END
 
 const mia::SProgramDescription description = {
 	"Tests", 
+	"Unit test", 
 	"This program runs a set of tests for a plug-in.", 
 	"", 
 	""

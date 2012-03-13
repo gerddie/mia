@@ -34,6 +34,7 @@ using namespace std;
 
 const SProgramDescription g_description = {
 	"Registration, Comparison, and Transformation of 3D images", 
+	"Non-linear registration of 3D images", 
 	
 	"This program implements the registration of two gray scale 3D images.", 
 	

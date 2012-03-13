@@ -28,6 +28,8 @@ using namespace std;
 
 const SProgramDescription g_general_help = {
 	"Analysis, filtering, combining, and segmentation of 2D images", 
+
+	"Evaluate some statistics of a 2D image.", 
 	
 	"This progranm is used to evaluate some statistics of an image. " 
 	"Output is Mean, Variation, Median, and Median Average Distance of the intensity values. "

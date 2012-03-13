@@ -37,11 +37,12 @@ using namespace std;
 
 const SProgramDescription g_description = {
 	"Miscellaneous programs", 
+	"Create sorted histogram mapping", 
 	"This program is used create a mapping based on a histogram that "
 	"puts the intensities with high values at the beginning of the histogram. The main "
 	"use case will be to sort labels of connected components in out-of-core image processing.", 
-	NULL, 
-	NULL
+	"", 
+	""
 }; 
 
 typedef pair<double, size_t> CEntry; 

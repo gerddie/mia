@@ -39,6 +39,8 @@ using namespace mia;
 
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 
+
+	"Evaluate pixel-wise time-intensity gradient of a 2D image series.", 
 	
 	"Given a set of images of temporal sucession, evaluate the temporal "
 	"pixel-wise gaussian and evaluate pixel-wise its MAD." 

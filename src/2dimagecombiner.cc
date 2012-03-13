@@ -32,6 +32,8 @@ using boost::any_cast;
 const SProgramDescription g_description = {
 	"Analysis, filtering, combining, and segmentation of 2D images", 
 	
+	"Combine two 2D images.", 
+	
 	"Combine two image by a given operation.", 
 	
 	"Combine image A.exr and image B.exr  by adding the intensity values and save the output to sum.exr.", 

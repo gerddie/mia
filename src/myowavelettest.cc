@@ -39,6 +39,7 @@ using namespace gsl;
 
 const SProgramDescription g_general_help = {
 	"Miscellaneous programs", 
+	"Wavelet based curve analysis", 
 	"This program runs the wavelet based slope-statistics on the mixing matrix \n"
 	"of a ICA perfusion series.", 
 	NULL, 

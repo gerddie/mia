@@ -454,6 +454,8 @@ class CDescription:
                 self.name = n.text
             elif n.tag == 'section':
                 self.section = n.text
+            elif n.tag == 'whatis':
+                self.whatis = n.text
             elif n.tag == 'description':
                 self.description = n.text
             elif n.tag == 'basic_usage':

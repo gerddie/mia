@@ -43,6 +43,8 @@ namespace bfs=boost::filesystem;
 
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 
+
+	"Translate a segmentation by the given amount.", 
 	
 	"This program move the segmentation(s) of an image series by using a shift "
 	"that is given on a per-slice base. The program can be used to correct the "

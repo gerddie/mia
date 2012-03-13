@@ -39,7 +39,7 @@ NS_MIA_USE;
 
 const SProgramDescription g_description = {
 	"Miscellaneous programs", 
-	
+	"3D vector field creation.", 
 	"This program is used to create a file containing a 3D vector field.", 
 	
 	"Create a field of type 2 with fun 3.0 and size 128x128x128.", 

@@ -30,6 +30,8 @@ using namespace std;
 const SProgramDescription g_description = {
 	"Analysis, filtering, combining, and segmentation of 2D images", 
 	
+	"Evaluate the intensity variation of pixels in a series of images.", 
+	
 	"This program evaluates the pixel-wise accumulated intensity variation of "
 	"a set of image given on the command line. "
 	"If the input image files contain more then one image all images are used. "

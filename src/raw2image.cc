@@ -31,6 +31,8 @@ using namespace boost;
 const SProgramDescription g_description = {
 	"Image conversion", 
 	
+	"Convert raw data into a 2D image", 
+	
 	"This program is used to convert raw data to a 2D file format.", 
 	
 	"Convert a data set data.raw of size <10,20> of short integer data with a "

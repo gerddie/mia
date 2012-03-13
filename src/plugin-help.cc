@@ -42,6 +42,7 @@ const char *g_program_example_code = "filter/2d";
 
 const SProgramDescription description = {
 	g_program_group, 
+	"Print help about plug-in groups", 
 	g_general_help, 
 	g_program_example_descr, 
 	g_program_example_code

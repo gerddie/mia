@@ -29,6 +29,8 @@ using namespace std;
 
 const SProgramDescription g_general_help = {
 	"Registration, Comparison, and Transformation of 2D images", 
+
+	"Run a 2d image registration.", 
 	
 	"This program runs registration of two images optimizing a transformation of the given transformation model "
 	"by optimizing certain cost measures that are given as free parameters.", 

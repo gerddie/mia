@@ -37,10 +37,11 @@ using namespace gsl;
 
 const SProgramDescription g_general_help = {
 	"Miscellaneous programs", 
+	"Column wise wavelet transform", 
 	"This program runs the a column-wise discret wavelet forward transform on "
 	"the data given by an input text file.", 
-	NULL, 
-	NULL
+	"", 
+	""
 }; 
 
 const TDictMap<EWaveletType>::Table wavelet_dict[] = {

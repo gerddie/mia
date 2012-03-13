@@ -93,8 +93,9 @@ struct CCmdOptionListData {
 	vector<const char *> has_unset_required_options() const; 
 	void set_logstream(std::ostream& os); 
 	
+	string m_program_group; 
+	string m_short_descr; 
 	string m_general_help; 
-	string m_program_group;  
 	string m_program_example_descr;
 	string m_program_example_code; 
 	string m_free_parametertype; 
@@ -120,12 +121,15 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	version(false), 
 	copyright(false),
 	verbose(vstream::ml_warning), 
-	m_general_help(description.description), 
-	m_program_group(description.group), 
-	m_program_example_descr(description.example_descr?description.example_descr:"" ),
-	m_program_example_code(description.example_code?description.example_code:""), 
 	m_log(&std::cout)
 {
+	assert(description.size() > 4); 
+	m_program_group.assign(description[pdi_group]);  
+	m_short_descr.assign(description[pdi_short]); 
+	m_general_help.assign(description[pdi_description]);  
+	m_program_example_descr.assign(description[pdi_example_descr]?description[pdi_example_descr]:""); 
+	m_program_example_code.assign(description[pdi_example_code]?description[pdi_example_code]:""); 
+	
 	options[""] = vector<PCmdOption>();
 
 	set_current_group(g_help_optiongroup);
@@ -219,6 +223,9 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 	Element* description = nodeRoot->add_child("description"); 
 	description->set_child_text(m_general_help); 
 	Element* basic_usage = nodeRoot->add_child("basic_usage"); 
+	Element*  short_descr = nodeRoot->add_child("whatis"); 
+	short_descr->set_child_text(m_short_descr); 
+
 	ostringstream usage_text; 
 	usage_text << " " << name_help << " "; 
 
@@ -237,7 +244,6 @@ void CCmdOptionListData::print_help_xml(const char *name_help, const CPluginHand
 			option->set_attribute("required", to_string<bool>(opt.is_required())); 
 			option->set_attribute("default", opt.get_value_as_string()); 
 			option->set_child_text(opt.get_long_help_xml(*option, handler_help_map));
-
 			
 			if (opt.is_required()) {
 				if (opt.get_short_option())

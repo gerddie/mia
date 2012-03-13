@@ -55,6 +55,8 @@ typedef vector<C2DFImage> C2DFImageVec;
 const SProgramDescription g_description = {
 	"Analysis, filtering, combining, and segmentation of 2D images", 
 	
+	"Run a fuzzy c-means segmentation of a 2D image.", 	
+	
 	"This program implements a variation of the paper:"
 	"Mohamed N. Ahmed et. al, \"A Modified Fuzzy C-Means Algorithm for Bias Field "
 	"estimation and Segmentation of MRI Data\", IEEE Trans. on Medical Imaging, "

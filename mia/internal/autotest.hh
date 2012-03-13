@@ -44,6 +44,7 @@ NS_MIA_USE;
 
 const SProgramDescription description = {
 	"Tests", 
+	"Unit test.", 
 	"This program runs a set of tests.", 
 	"", 
 	""

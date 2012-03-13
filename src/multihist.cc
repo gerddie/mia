@@ -31,6 +31,8 @@ using namespace std;
 const SProgramDescription g_description = {
 	"Filtering of series of 2D images in a 3D fashion (out-of-core)", 
 	
+	"histogram of a series of 2D images", 
+	
 	"This program evaluates the histogram over a series of 2D images", 
 	
 	"Evaluate the histogram over all consecutively numbered images that follow the "

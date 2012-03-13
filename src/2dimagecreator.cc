@@ -33,6 +33,8 @@ using namespace std;
 const SProgramDescription g_description = {
 	"Analysis, filtering, combining, and segmentation of 2D images", 
 	
+	"Create a synthetic 2D image.", 
+	
 	"This program is used to create test images.", 
 	
 	"Create a 2D image containing a lattic with standard parameters of size <64,128> and pixel type"

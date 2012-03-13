@@ -27,6 +27,8 @@ NS_MIA_USE;
 
 const SProgramDescription g_description = {
 	"Miscellaneous programs", 
+
+	"Evaluate the norm image of a 3D vector field.", 
 	
 	"This program converts a 3d vector field to an image of its voxel-wise norm.", 
 

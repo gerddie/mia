@@ -38,6 +38,8 @@ using namespace mia;
 
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 
+	
+	"Evaluate the time-intensity gradient MAD in a series of images.", 
 
 	"Given a set of images of temporal sucession, evaluates the pixel-wise "
 	"temporal gradient and then its median average distance (MAD) "

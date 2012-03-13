@@ -44,6 +44,8 @@ namespace bfs=boost::filesystem;
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 
 
+	"Evaluate the Hausdorff distance between segmentations.",
+	
 	"This program is used to evaluate the Hausdorff distance between each frame "
 	"of a perfusion time series of the input set to the corresponding frame of the reference set "
 	"and prints the result to stdout.", 

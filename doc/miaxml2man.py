@@ -51,7 +51,8 @@ def write_man_file(descr):
     name = escape_dash(descr.name)
     print ".TH %s 1 \"%s\" \"git-head\"  \"USER COMMANDS\"" %(descr.name, get_date_string())
     print ".SH NAME"
-    print name
+    print name, 
+    print "\- %s" % (clean(descr.whatis))
     print ".SH SYNOPSIS"
     print ".B %s"% (clean(descr.basic_usage))
     print ".SH DESCRIPTION"

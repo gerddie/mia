@@ -46,6 +46,7 @@ using namespace std;
 
 const SProgramDescription g_description = {
 	"Miscellaneous programs", 
+	"C-means classification of a histogram.", 
 	"This Program reads a histogram from stdin and evaluates a "
 	"cmeans classification of the intensity values into the given number of classes.", 
 	NULL, 

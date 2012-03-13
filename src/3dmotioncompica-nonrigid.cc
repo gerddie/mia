@@ -50,6 +50,8 @@ namespace bfs=boost::filesystem;
 
 const SProgramDescription g_description = {
 	"Registration of series of 3D images", 
+
+	"Non-linear registration of a series of 3D images.",
 	
 	"This program implements a 3D version of the motion compensation algorithm described in "
 	"Wollny G, Kellman P, Santos A, Ledesma-Carbayo M-J, \"Automatic Motion Compensation of "

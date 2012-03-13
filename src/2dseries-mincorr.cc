@@ -35,6 +35,8 @@ NS_MIA_USE;
 
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 
+
+	"Evaluate minimal correlation of time-intensity curves.", 
 	
 	"Given a set of images of temporal sucession, this program evaluates the "
 	"minimal correlation of the time-intensity curve between neighboring pixels.", 

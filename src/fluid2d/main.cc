@@ -45,6 +45,8 @@ NS_MIA_USE;
 const SProgramDescription g_description = {
 	"Registration, Comparison, and Transformation of 2D images", 
 	
+	"Fluid dynamic 2D registration", 
+	
 	"This program is used for non-rigid registration based on fluid dynamics. "
 	"It uses SSD as the sole registration criterion.", 
 	

@@ -36,6 +36,7 @@ using namespace std;
 
 const SProgramDescription g_description = {
 	"Analysis, filtering, combining, and segmentation of 2D images", 
+	"Linearly combine two 2D images.", 
 	"Merge two images by pixel-wise linearly combining their intensities.", 
 	"Combine image inputA.v and inputB.v by using position coordinates "
 	"4, 7, and 9 and write the result to output.v", 

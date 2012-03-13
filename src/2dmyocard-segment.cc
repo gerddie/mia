@@ -50,6 +50,7 @@ NS_MIA_USE;
 
 const SProgramDescription g_description = {
 	"Work in progress", 
+	"Work in progress", 
 
 	"This program is work in progress", 
 	

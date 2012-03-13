@@ -45,6 +45,8 @@ using namespace mia;
 const SProgramDescription g_description = {
 	"Registration of series of 2D images", 
 	
+	"Run a registration of a series of 2D images.", 
+	
 	"This program implements the non-linear registration based on Pseudo Ground Thruth for motion compensation "
 	"of series of myocardial perfusion images given as a data set as decribed in Chao Li and Ying Sun, "
 	"'Nonrigid Registration of Myocardial Perfusion MRI Using Pseudo Ground Truth' , In Proc. "

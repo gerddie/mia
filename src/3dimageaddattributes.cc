@@ -32,7 +32,9 @@ NS_MIA_USE;
 
 const SProgramDescription g_description = {
 	"Miscellaneous programs", 
-	
+
+	"Add attributes to the meta data of a 3D image.", 
+
 	"This program appends all the meta-data attributes found in a 2D input image "
 	"to a 3D image (if the output format supports such attributes). "
 	"Attributes that are already present in the 3D image are not overwritten.", 

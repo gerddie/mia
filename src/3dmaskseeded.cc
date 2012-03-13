@@ -35,6 +35,8 @@ NS_MIA_USE;
 
 const SProgramDescription g_description = {
 	"Analysis, filtering, combining, and segmentation of 3D images", 
+
+	"Mask an area by seeded region growing", 
 	
 	"3D image segmentation based on region growing from a seed point. "
 	"Neighboring points are added, either when their intensity is "

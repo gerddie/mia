@@ -39,6 +39,7 @@ NS_MIA_USE
 
 const SProgramDescription g_general_help = {
 	"Analysis, filtering, combining, and segmentation of 2D images", 
+	"Distance between binary masks.", 
 	"This program evaluate the average or maximum distance of a mask "
 	"given by a binary image to an image representing a distance map "
 	"and prints the result to stdout. The distance map can be obtained by "

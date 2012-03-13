@@ -33,6 +33,8 @@ using namespace std;
 
 const SProgramDescription g_description = {
 	"Registration, Comparison, and Transformation of 2D images", 
+
+	"Evaluate the similarity between two 2D images.", 
 	
 	"This program is used to evaluate the cost between two images by using a given cost function.", 
 	

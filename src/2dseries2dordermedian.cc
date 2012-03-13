@@ -42,6 +42,8 @@ using namespace mia;
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 
 
+	"Evaluate time-intensity median 2nd order derivative of a series.", 
+
 	"This program evaluates the pixel-wise median of the absolute values of the gauss filtered "
 	"2nd order temporal derivative of a series of images. In addition, it can be used to "
 	"output the time-intensity curve of a given pixel."

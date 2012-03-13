@@ -33,6 +33,7 @@ typedef std::shared_ptr<C2DFVectorfield > P2DFVectorfield;
 const SProgramDescription g_description = {
 	"Registration, Comparison, and Transformation of 2D images", 
 
+	"Transform a 2D image by means of a vector field.", 
 	"This program is used to deform a 2D image usinga deformation vector field. "
 	"Input image and deformation field must be of the same size. The transformation "
 	"formula is 'x -> x - v(x)'", 

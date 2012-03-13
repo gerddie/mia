@@ -35,6 +35,8 @@ using namespace boost;
 
 const SProgramDescription g_description = {
 	"Image conversion", 
+
+	"Combine a series of 2D images to a volume.", 
 	
 	"This program is used to convert a series 2D images into a 3D image. "
 	"The 2D images are read as additional command line parameters and the slice "

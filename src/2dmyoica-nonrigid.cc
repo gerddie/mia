@@ -45,7 +45,7 @@ namespace bfs=boost::filesystem;
 
 const char *g_program_group = "Registration of series of 2D images"; 
 const char *g_general_help = 
-	"This program implements the 2D version of the motion compensation algorithm described in "
+	"This program implements the motion compensation algorithm described in "
 	"Wollny G, Kellman P, Santos A, Ledesma-Carbayo M-J, \"Automatic Motion Compensation of "
 	"Free Breathing acquired Myocardial Perfusion Data by using Independent Component Analysis\" "
 	"Medical Image Analysis, 2012, DOI:10.1016/j.media.2012.02.004."; 
@@ -58,6 +58,7 @@ const char *g_program_example_code =
 
 const SProgramDescription description = {
 	g_program_group, 
+	"Run a registration of a series of 2D images.", 
 	g_general_help, 
 	g_program_example_descr, 
 	g_program_example_code

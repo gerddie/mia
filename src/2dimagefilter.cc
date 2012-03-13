@@ -28,6 +28,8 @@ using namespace std;
 
 const SProgramDescription g_general_help = {
 	"Analysis, filtering, combining, and segmentation of 2D images", 
+
+	"Run filters on a 2D image.", 
 	
 	"This program runs a series filters on a given input image. The filters are given as extra parameters "
 	"on the command line and are run in the order in which they are given. To obtain a list of available filters "

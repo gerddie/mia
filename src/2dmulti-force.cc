@@ -32,6 +32,8 @@ using namespace std;
 
 const SProgramDescription g_description = {
 	"Registration, Comparison, and Transformation of 2D images", 
+
+	"Registration force between two images", 
 	
 	"This program evaluates the 2D image cost force norm image of a given cost function set. "
 	"The input images must be of the same dimensions and gray scale (whatever bit-depth). ", 

@@ -44,6 +44,8 @@ size_t log10(size_t x)
 
 const SProgramDescription g_general_help = {
 	"Analysis, filtering, combining, and segmentation of 2D images", 
+
+	"Run filters on a series of 2D images.", 
 	
 	"This program runs a series filters on a series of consecutive numbered input image. "
 	"The filters are given as extra parameters "

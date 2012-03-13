@@ -40,6 +40,8 @@ using namespace mia;
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 
 
+	"Evaluate the time-intensity gradient variation in a series of images.", 
+	
 	"Given a set of images of temporal sucession, this program evaluates the "
 	"gradient variation of the pixel-wise time-intensity curves of this series. "
 	"If the input image set provides a segmentation, then this segmentation can "

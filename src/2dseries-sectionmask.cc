@@ -44,6 +44,7 @@ namespace bfs=boost::filesystem;
 
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 
+	"Evaluate masks from a segmentation.", 
 
 	"Evaluate the masks for the sections of a segmented frame.", 
 

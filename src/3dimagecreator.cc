@@ -33,6 +33,8 @@ using namespace std;
 const SProgramDescription g_description = {
 	"Analysis, filtering, combining, and segmentation of 3D images", 
 	
+	"Create a synthetic 3D image.", 
+	
 	"This program creates a 3D image that contains an object created by one of the object "  
 	"creator plug-ins (creator/3dimage)",
 	

@@ -43,6 +43,8 @@ namespace bfs=boost::filesystem;
 const SProgramDescription g_general_help = {
 	"Registration of series of 3D images", 
 	
+	"Serial registration of 3D images.", 
+	
 	"This program runs the image registration of a consecutively numbered image series. "
 	"The registration is run in a serial manner, this is, only images in "
 	"temporal succession (i.e. consecutive numbers) are registered, and the obtained transformations "

@@ -36,6 +36,7 @@ using namespace mia;
 
 const SProgramDescription g_description = {
 	"Tools for the Analysis of 3D image series",
+	"Track intensities of pixels in series of 3D images.", 
 	
 	"This program tracks the intensity of a pixel at the given coordinates.", 
 

@@ -44,6 +44,8 @@ namespace bfs=boost::filesystem;
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 
 
+	"Evaluate a crop-box around a manual segmentation.", 	
+	
 	"This program is used on a segmentation set and evaluates a bounding box "
 	"that encloses the segmentation in all slices. "
 	"This bounding box is then used to crop the original images, correct "

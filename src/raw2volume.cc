@@ -38,8 +38,10 @@ inline bool am_big_endian()
  
 const SProgramDescription g_description = {
 	"Image conversion", 
+
+	"Convert raw data into a 3D image", 
 	
-	"This program is used to convert raw data into 3D volumes."
+	"This program is used to convert raw data into 3D images "
 	"with apropriate metadata.", 
 	
 	"pixel size of <1.2, 2.3, 3.4> to an Analyze file image.hdr", 

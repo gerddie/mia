@@ -40,6 +40,7 @@ NS_MIA_USE
 
 const SProgramDescription g_general_help = {
 	"Analysis, filtering, combining, and segmentation of 2D images", 
+	"Evaluate the dice index between two binary 2D images.", 
 	"This program evaluate the dice index of two binary masks given as binary images. "
 	"The result is written to stdout.", 
 	"Evaluate the dice index of maks1.png and mask2.png", 

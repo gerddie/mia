@@ -46,6 +46,8 @@ namespace bfs=boost::filesystem;
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 
 
+	"Run an ICA analysis on a series of 2D images", 
+
 	"This program is used to run a ICA on a series of myocardial perfusion "
 	"images given in a segmentation set in order to create sythetic references "
 	"that can be used for motion correction by image registration. "

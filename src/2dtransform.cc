@@ -30,6 +30,8 @@ using namespace std;
 
 const SProgramDescription g_description = {
 	"Registration, Comparison, and Transformation of 2D images", 
+
+	"Transform a 2D image.", 
 	
 	"This program is used to deform a 2D image using a given transformation.", 
 

@@ -37,6 +37,8 @@ using namespace std;
 const SProgramDescription g_description = {
 	"2D image registration", 
 
+	"2D image registration", 
+	
 	"This program implements 2D gray scale image registration. "
 	"Depending on the available plug-ins it can accomodate various models and cost-functions. "
 	"So far input images can be given as PNG, TIF, BMP and OpenEXR (depending on the installed plug-ins). "

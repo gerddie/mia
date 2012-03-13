@@ -53,20 +53,12 @@ typedef std::pair<std::string, CHistoryRecord> CHistoryEntry;
    \ingroup infrastructure 
    Data structure to provied help information oabout the program 
  */
-struct SProgramDescription {
-	
-	/// group ths program belongs to
-	const char *group; 
-	
-	/// a basic description of the program 
-	const char *description; 
-	
-	/// an example of the usage (description)
-	const char *example_descr; 
-	
-	/// an example of the usage (sell code) 
-	const char *example_code; 
-}; 
+typedef std::vector<const char *>  SProgramDescription; 
+const int pdi_group = 0; 
+const int pdi_short = 1; 
+const int pdi_description = 2; 
+const int pdi_example_descr = 3; 
+const int pdi_example_code = 4; 
 
 
 /** 

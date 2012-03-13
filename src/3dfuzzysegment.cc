@@ -43,6 +43,8 @@ using namespace std;
 
 const SProgramDescription g_description = {
 	"Analysis, filtering, combining, and segmentation of 3D images", 
+
+	"Fuzzy c-means segmentation of a 3D image.", 
 	
 	"This program runs a combined fuzzy c-means clustering and B-field correction "
 	"to facilitate a 3D segmentation of 3D image", 

@@ -42,6 +42,8 @@ namespace bfs=boost::filesystem;
 
 const SProgramDescription g_description = {
 	"Registration of series of 2D images", 
+
+	"Run a registration of a series of 2D images.", 
 	
 	"This program runs the non-rigid registration of an perfusion image series."
 	"In each pass, first an ICA analysis is run to estimate and eliminate " 

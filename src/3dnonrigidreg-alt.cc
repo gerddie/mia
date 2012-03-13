@@ -31,6 +31,7 @@ using namespace std;
 
 const SProgramDescription g_description = {
 	"Registration, Comparison, and Transformation of 3D images", 
+	"Non-linear registration of 3D images.",
 	
 	"This program runs a non-rigid registration based on the given cost criteria "
 	"and a given transformation model. Other than mia-3dnonrigidreg it doesn't support "

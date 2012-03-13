@@ -33,6 +33,8 @@ using namespace std;
 
 const SProgramDescription g_description = {
 	"Registration, Comparison, and Transformation of 2D images", 
+
+	"Registering force between two 2D images.", 
 	
 	"This image evaluate the force field between two images based on a given cost function.", 
 	

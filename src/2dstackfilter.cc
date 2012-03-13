@@ -38,6 +38,8 @@ using namespace mia;
 
 const SProgramDescription g_description = {
 	"Filtering of series of 2D images in a 3D fashion (out-of-core)", 
+
+	"Filter a series of 2D images in a 3D fashion.", 
 	
 	"This program is used to filter and convert a series of 2D gray scale images in a "
 	"3D fashion by running filters (filter/2dimage) as given on the command line.",

@@ -59,7 +59,8 @@ private:
 const SProgramDescription g_description = {
 	// .g_program_group =  
 	"Registration of series of 2D images", 
-	
+
+	"Run a registration of a series of 2D images.", 	
 	// .g_general_help = 
 	"This program is use to run a modified version of the ICA based registration approach "
 	"described in Milles et al. 'Fully Automated Motion Correction in First-Pass Myocardial Perfusion "

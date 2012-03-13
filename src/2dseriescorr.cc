@@ -39,6 +39,8 @@ NS_MIA_USE;
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 
 
+	"Evaluate the time-intensity correlation in a series of images.", 
+	
 	"Given a set of images of temporal sucession, evaluates images that represent "
 	"the time-intensity correlation in horizontal and vertical direction as "
 	"well as average correlation of each pixel with its neighbors. "

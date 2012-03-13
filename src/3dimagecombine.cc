@@ -32,6 +32,7 @@ NS_MIA_USE;
 
 const SProgramDescription g_description = {
 	"Analysis, filtering, combining, and segmentation of 3D images", 
+	"Combine two 3D images.", 
 	 
 	"This program is used to combine two images using a given image combiner.", 
 	

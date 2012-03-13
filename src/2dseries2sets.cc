@@ -37,6 +37,8 @@ NS_MIA_USE;
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 
 
+	"Combine images of a series to sets.", 
+
 	"This program takes all image files that are given as free parameters on the command line "
 	"and creates segmentation sets based on information found in the images. "
 	"Used information is the z-location of the slice and the acquisition number. "

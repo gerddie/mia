@@ -28,6 +28,8 @@ using namespace std;
 
 const SProgramDescription g_description = {
 	"Analysis, filtering, combining, and segmentation of 3D images", 
+
+	"Evaluate some image statistics.",
 	
 	"This program is used to evaluate certain image statistics "
 	"and print them out on the console.", 

@@ -44,6 +44,8 @@ namespace bfs=boost::filesystem;
 const SProgramDescription g_general_help = {
 	// .g_program_group =  
 	"Registration of series of 2D images", 
+
+	"Run a serial registration of a series of 2D images.", 
 	
 	// .g_general_help = 
 	"This program runs the non-rigid motion compensation registration of an perfusion image series. "

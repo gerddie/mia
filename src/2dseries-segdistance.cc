@@ -43,6 +43,7 @@ namespace bfs=boost::filesystem;
 
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 
+	"Evaluate mean distance between segmentations.", 
 	
 	"Get the mean distance of a segmentation boundary to the reference boundary.", 
 

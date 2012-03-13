@@ -31,6 +31,8 @@ using namespace boost;
 
 const SProgramDescription g_description = {
 	"Registration, Comparison, and Transformation of 3D images", 
+
+	"Evaluate similarity of two 3D images.", 
 	
 	"This program evauates the cost function as given by the free parameters on the command line.", 
 

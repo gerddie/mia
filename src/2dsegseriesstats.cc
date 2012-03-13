@@ -35,6 +35,8 @@ using namespace std;
 
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 
+
+	"Evaluate time-intensity curves in masked regions of image series.", 	
 	
 	"This program is used evaluate various time-intensity curves over a series of images "
 	"given by a segmentation set. Specifically, the program is taylored to evaluate average "

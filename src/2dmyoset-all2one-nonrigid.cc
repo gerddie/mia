@@ -46,6 +46,8 @@ namespace bfs=boost::filesystem;
 
 const SProgramDescription g_description = {
 	"Registration of series of 2D images", 
+	
+	"Non-linear registration of a series of 2D images.", 
 
 	"This program runs non-rigid registration of a series of images given in an image set. "
 	"All images are registered to one user defined reference image.", 
