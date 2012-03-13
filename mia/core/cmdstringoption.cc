@@ -63,16 +63,14 @@ void CCmdStringOption::do_write_value(std::ostream& os) const
 
 void CCmdStringOption::do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, HandlerHelpMap& handler_map) const
 {
-	parent.set_attribute("type", __type_descr<string>::value);
 	if (m_plugin_hint) {
-		if (handler_map.find(m_plugin_hint->get_descriptor()) ==  handler_map.end()){
-			handler_map[m_plugin_hint->get_descriptor()] = m_plugin_hint; 
-			m_plugin_hint->add_dependend_handlers(handler_map); 
-		}
-		os << "The string value will be used to construct a plug-in descriptor.";
-		auto dict = parent.add_child("factory");
-		dict->set_attribute("name", m_plugin_hint->get_descriptor());
-	}
+		m_plugin_hint->add_dependend_handlers(handler_map); 
+		os << " The string value will be used to construct a plug-in.";
+		auto factory = parent.add_child("factory");
+		factory->set_attribute("name", m_plugin_hint->get_descriptor());
+		parent.set_attribute("type", "factory");
+	}else
+		parent.set_attribute("type", __type_descr<string>::value);
 }
 
 

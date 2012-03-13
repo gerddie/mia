@@ -97,6 +97,7 @@ void CPluginBase::check_parameters()
 
 void CPluginBase::add_dependend_handlers(HandlerHelpMap& handler_map)
 {
+	cvdebug() << "Add dependend handler for plugin '" << m_name << "'\n"; 
 	m_parameters.add_dependend_handlers(handler_map); 
 }
 

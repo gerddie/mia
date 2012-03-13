@@ -152,6 +152,11 @@ class CFactoryOption(COption):
         self.factory = "unknown/factory"
         for child in node.iter("factory"):
             self.factory = child.get("name")
+            if child.tail is not None:
+                if self.text is not None: 
+                    self.text = self.text + child.tail
+                else:
+                    self.text = child.tail
 
     def do_print_man(self):
         print " For supported plugins see PLUGINS:%s" % (self.factory)

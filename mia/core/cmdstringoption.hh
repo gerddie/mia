@@ -37,7 +37,7 @@ class EXPORT_CORE CCmdStringOption : public CCmdOption {
  public:
 	/**
 	   Construct a string option 
-	   \param[in,out] At input the default value, at output the value read from the command line 
+	   \param[in,out] value at input the default value, at output the value read from the command line 
 	   \param short_opt the one letter command line option 
 	   \param long_opt the long command line option 
 	   \param long_help the full help string that describes the option completely 

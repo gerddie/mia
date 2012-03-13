@@ -275,18 +275,23 @@ int do_main( int argc, char *argv[] )
 
 	
 	options.set_group("Registration"); 
-	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization.", CCmdOption::not_required, 
+			      &CMinimizerPluginHandler::instance()));
 	options.add(make_opt( c_rate, "start-c-rate", 'a', 
 				    "start coefficinet rate in spines,"
-				    " gets divided by --c-rate-divider with every pass"));
+				    " gets divided by --c-rate-divider with every pass."));
 	options.add(make_opt( c_rate_divider, "c-rate-divider", 0, 
-				    "cofficient rate divider for each pass"));
+				    "Cofficient rate divider for each pass."));
 	options.add(make_opt( divcurlweight, "start-divcurl", 'd',
-				    "start divcurl weight, gets divided by"
-				    " --divcurl-divider with every pass")); 
+				    "Start divcurl weight, gets divided by"
+				    " --divcurl-divider with every pass.")); 
 	options.add(make_opt( divcurlweight_divider, "divcurl-divider", 0,
-				    "divcurl weight scaling with each new pass")); 
-	options.add(make_opt( imagecost, "imagecost", 'w', "image cost")); 
+				    "Divcurl weight scaling with each new pass.")); 
+
+	// why do I allow to set this parameter, it should always be image:cost=ssd  
+	options.add(make_opt( imagecost, "imagecost", 'w',
+			      "image cost, do not specify the src and ref parameters, these will be set by the program.",
+			      CCmdOption::not_required, &C2DFullCostPluginHandler::instance())); 
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 
