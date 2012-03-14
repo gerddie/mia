@@ -95,9 +95,9 @@ def get_program(program):
                     screen = etree.SubElement(section, "screen")
                     screen.text = program.name + " " + c.text
         else:
-            print "%s doesn't provide example text" % (program.name) 
+            print "Warning: %s doesn't provide example text" % (program.name) 
     else:
-        print "%s doesn't provide an example" % (program.name) 
+        print "Warning: %s doesn't provide an example" % (program.name) 
 
     return section 
 
@@ -112,10 +112,11 @@ def translate_descr(section, description):
     return descrpara
 
 def get_section(name, sect):
-    print name 
     section = make_section_root_node("section", name)
     if sect.description is not None:
         descr = translate_descr(section, sect.description)
+    else:
+        print "Warning: Section ", name, " doesn't have a description"
 
     para = etree.SubElement(section, "para", role="sectiontoc")
         

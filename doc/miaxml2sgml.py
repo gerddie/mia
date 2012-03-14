@@ -58,8 +58,7 @@ class CProgramSection:
             self.description = node.iter("description")
         else:
             self.name=name
-
-        
+            self.description = None
 
 def read_section_file(filename):
     file=open(filename, "r")
@@ -97,6 +96,7 @@ plugin_types = {}
 for d in descriptions:
    if not program_sections.has_key(d.section):
       program_sections[d.section] = CProgramSection(name=d.section)
+      print "Warning: Program '%s' is listed in section '%s', but this section is not described in doc/sections.xml" % (d.name, d.section)
    program_sections[d.section].programs.append(d)
 
    for h in d.handlers.keys():
