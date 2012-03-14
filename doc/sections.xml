@@ -1,29 +1,5 @@
 <?xml version="1.0"?>
 <outline>
-<section name="Analysis, filtering, combining, and segmentation of 2D images">
-  <description>The programs in this section are dedicated to basic 2D image processing tasks, like filtering by invoking 
-  plug-ins (<link key="SecPlugintype">2dimage/filter</link>), 
-  combining pairs of images (<link key="SecPlugintype">2dimage/combiner</link>), 
-  creating test images (<link key="SecPlugintype">2dimage/creator</link>), and evaluating some statistics.
-  </description>
-</section>
-<section name="Analysis, filtering, combining, and segmentation of 3D images">
-  <description>The programs in this section are dedicated to basic 3D image processing tasks, like filtering by invoking 
-  plug-ins (<link key="SecPlugintype">3dimage/filter</link>), 
-  combining pairs of images (<link key="SecPlugintype">3dimage/combiner</link>), 
-  creating test images (<link key="SecPlugintype">3dimage/creator</link>), and evaluating some statistics.
-  </description>
-</section>
-<section name="Filtering of series of 2D images in a 3D fashion (out-of-core)">
-  <description>
-    The programs in this section are dedicated to processing series of 2D images in a 3D fashion out-of-core. 
-    This is intended for large images that would not fit into the main memory if processing was to be done 
-    as a true 3D images. 
-    As a result, only spacial, non-iterative filters are supported.  
-  </description>
-</section>
-<section name="Help">
-</section>
 <section name="Image conversion">
   <description>
     The programs in this section are used to convert beteeen the supported image file formats, to combine 
@@ -35,25 +11,72 @@
     <link key="pluginconvert">3dimage/filter</link> have to be used.
   </description>
 </section>
-<section name="Miscellaneous programs">
+<section name="Analysis, filtering, combining, and segmentation of 2D images">
+  <description>The programs in this section are dedicated to basic 2D image processing tasks, like filtering by invoking 
+  plug-ins (<link key="SecPlugintype">2dimage/filter</link>), 
+  combining pairs of images (<link key="SecPlugintype">2dimage/combiner</link>), 
+  creating test images (<link key="SecPlugintype">2dimage/creator</link>), and evaluating some statistics.
+  </description>
+</section>
+<section name="Registration, Comparison, and Transformation of 2D images">
+  <description>
+    The programs in this section relate to the alignment, transformation and comparison of pairs of 2D images.
+  </description>
 </section>
 <section name="Registration of series of 2D images">
   <description>
-    These programs are mostly tailored for the use of motion compensation in series of myocardial perfusion images and are thought to 
-    be used in conjunction with the tools for analyis of image series in the section 
+    These programs are mostly tailored for the use of motion compensation in series of myocardial perfusion 
+    images and are thought to be used in conjunction with the tools for analyis of image series in the section 
     <link key="Sec">Tools for Myocardial Perfusion Analysis</link>.
   </description>
 </section>
-<section name="Registration of series of 3D images">
+<section name="Tools for Myocardial Perfusion Analysis">
+  <description>
+    These programs provide various means to evaluate statistics and comparisons for series of images that stem from 
+    myocardial perfusion imaging.
+  </description>
 </section>
-<section name="Registration, Comparison, and Transformation of 2D images">
+<section name="Processing of series of 2D images in a 3D fashion (out-of-core)">
+  <description>
+    The programs in this section are dedicated to processing series of 2D images in a 3D fashion out-of-core. 
+    This is intended for large images that would not fit into the main memory if processing was to be done 
+    as a true 3D images. 
+    As a result, only spacial, non-iterative operators are supported. 
+  </description>
+</section>
+<section name="Analysis, filtering, combining, and segmentation of 3D images">
+  <description>The programs in this section are dedicated to basic 3D image processing tasks, like filtering by invoking 
+  plug-ins (<link key="SecPlugintype">3dimage/filter</link>), 
+  combining pairs of images (<link key="SecPlugintype">3dimage/combiner</link>), 
+  creating test images (<link key="SecPlugintype">3dimage/creator</link>), and evaluating some statistics.
+  </description>
 </section>
 <section name="Registration, Comparison, and Transformation of 3D images">
+  <description>
+    The programs in this section relate to the alignment, transformation and comparison of pairs of 3D images.
+  </description>
 </section>
-<section name="Tools for Myocardial Perfusion Analysis">
+<section name="Registration of series of 3D images">
+  <description>
+    Thr programs in this section target the registration of series of images to a common reference, like it is the 
+    case with motion compensation.
+  </description>
 </section>
 <section name="Tools for the Analysis of 3D image series">
 </section>
+<section name="Miscellaneous programs">
+  <description>
+    Thr Programs in this section do not fit in any of the other categories.
+  </description>
+</section>
+<section name="Help">
+  <description>
+    Programs listed in this section are for obtaining specific help.
+  </description>
+</section>
 <section name="Work in progress">
+  <description>
+    The programs in this section constitute experimental code.
+  </description>
 </section>
 </outline>

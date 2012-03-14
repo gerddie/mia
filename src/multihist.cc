@@ -29,7 +29,7 @@ NS_MIA_USE;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Filtering of series of 2D images in a 3D fashion (out-of-core)", 
+	"Processing of series of 2D images in a 3D fashion (out-of-core)", 
 	
 	"histogram of a series of 2D images", 
 	

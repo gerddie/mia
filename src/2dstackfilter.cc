@@ -37,7 +37,7 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Filtering of series of 2D images in a 3D fashion (out-of-core)", 
+	"Processing of series of 2D images in a 3D fashion (out-of-core)", 
 
 	"Filter a series of 2D images in a 3D fashion.", 
 	
@@ -56,7 +56,7 @@ public:
 	C2DStackSaver(string const & fnamebase, size_t start_num, size_t end_num, size_t fwidth,
 		      string const& filetype, C2DImageIOPluginHandler::Instance const& ifh, time_t start_time);
 private:
-	virtual void do_push(::boost::call_traits<P2DImage>::param_type x);
+	virtual void do_push(::boost::call_traits<P2DImage>::param_type image);
 
 	string m_fnamebase;
 	size_t m_start_num;
@@ -137,14 +137,11 @@ int do_main(int argc, char *argv[])
 
 	auto filter_chain = options.get_remaining();
 
-	if (filter_chain.empty()) {
-		cvwarn() << "No filters given, will only copy files ";
-	}
+	if (filter_chain.empty()) 
+		throw invalid_argument("No filters given, bailing out.");
 
-	// now start the fun part
-	//first count the number of slices
+
 	auto i = filter_chain.begin();
-
 	auto filter = sfh.produce(*i);
 	++i;
 	while ( i != filter_chain.end()) {
@@ -163,21 +160,16 @@ int do_main(int argc, char *argv[])
 	size_t format_width = 0;
 
 
-
 	string src_basename = get_filename_pattern_and_range(in_filename, start_filenum,
 							     end_filenum, format_width);
-	       
 	if (start_filenum >= end_filenum)
 		throw invalid_argument(string("no files match pattern ") + src_basename);
 
-
-	std::shared_ptr<C2DStackSaver >
+	std::shared_ptr<C2DStackSaver>
 		endchain(new C2DStackSaver(out_filename, start_filenum, end_filenum, format_width,
 					   out_type, imageio, time(NULL)));
 
 	filter->append_filter(endchain);
-
-
 	//		char new_line = cverb.show_debug() ? '\n' : '\r';
 
 	cvmsg() << "will filter " << end_filenum - start_filenum << " images\n";

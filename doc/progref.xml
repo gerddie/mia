@@ -3,23 +3,33 @@
 <!ENTITY plugins SYSTEM "plugins.xml">
 <!ENTITY programintro SYSTEM "program_intro.xml">
 ]>
-<book xmlns="http://docbook.org/ns/docbook" version="5.0">
+<book xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink">
   <info> 
     <title>Mia Program Reference</title>
     <date>31.01.2012 </date>
     <author>
     <firstname>Gert</firstname><surname>Wollny</surname></author>
     <abstract>
-      <para>Abstract</para>
+      <para>
+	This reference document contains desctriptions for the command line tools and plug-ins 
+	provided by the MIA toolkit.  
+	To learn more about MIA please visit the web site <link xlink:href='http://mia.sourceforge.net'>http://mia.sourceforge.net</link>
+      </para>
     </abstract>
   </info>
   
   <chapter>
     <title>Introduction</title>
-    <para>In this document you will find descriptions for all the programs and plug-ins currently included in the MIA software package. 
-    This document is maintained by Gert Wollny &lt;gw.fossdev@gmail.com&gt;. Additions, hints, modifications, and corrections are welcome.</para>
+    <para>
+      In this document you will find descriptions for all the programs and plug-ins currently included 
+      in the MIA software package.  This document is maintained by Gert Wollny &lt;gw.fossdev@gmail.com&gt;. 
+      Additions, hints, modifications, and corrections are welcome.
+    </para>
+    <para>
+      The documentation provided here can always be recreated from the source distribution of the MIA toolkit, 
+      provided that you work on a platform on which the platform can be compiled and you use a Make based build system. 
+    </para>
   </chapter>
-  
   <toc></toc>
   &programs;
   &plugins; 
