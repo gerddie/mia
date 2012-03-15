@@ -57,7 +57,7 @@ IF(CREATE_USERDOC)
       cp  ${CMAKE_CURRENT_SOURCE_DIR}/progref.css 
       ${CMAKE_CURRENT_BINARY_DIR}/userref/progref.css DEPENDS userref_outdir)
     ADD_CUSTOM_TARGET(process_xml
-      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/miaxml2sgml.py 
+      COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/miaxml2sgml.py ${CMAKE_CURRENT_SOURCE_DIR}
       COMMAND rm -f userref.stamp
       DEPENDS xmldoc
       )
@@ -68,8 +68,7 @@ IF(CREATE_USERDOC)
 
     ADD_CUSTOM_TARGET(progref_link 
       DEPENDS 
-      ${CMAKE_CURRENT_BINARY_DIR}/progref.xml 
-      ${CMAKE_CURRENT_BINARY_DIR}/sections.xml)
+      ${CMAKE_CURRENT_BINARY_DIR}/progref.xml)
       
     ADD_CUSTOM_COMMAND(OUTPUT  "userref.stamp"
       COMMAND  

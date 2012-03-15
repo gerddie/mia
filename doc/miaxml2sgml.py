@@ -104,6 +104,8 @@ def read_section_file(filename):
     return program_sections
     
 
+rootpath = sys.argv[1]
+
 #
 # read all xml files created by the command line tools 
 #
@@ -122,7 +124,7 @@ for f in files:
 # Read the program section description, this also provides the general structure  
 # of the program reference
 #
-program_sections = read_section_file("sections.xml")
+program_sections = read_section_file(rootpath + "/sections.xml")
 index = len(program_sections)
 
 #
