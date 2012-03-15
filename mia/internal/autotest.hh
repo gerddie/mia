@@ -46,8 +46,8 @@ const SProgramDescription description = {
 	"Tests", 
 	"Unit test.", 
 	"This program runs a set of tests.", 
-	"", 
-	""
+	"Example text", 
+	"Example"
 };
 
 

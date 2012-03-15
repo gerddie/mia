@@ -51,6 +51,7 @@ namespace bfs=::boost::filesystem;
 
 const SProgramDescription g_general_help = {
 	"Tests", 
+	"test 3D image io", 
 	"Run various test for 3D image IO.", 
 	NULL, 
 	NULL

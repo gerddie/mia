@@ -51,6 +51,7 @@ private:
 
 const SProgramDescription general_help = {
 	"Test", 
+	"program tests", 
 	"This program tests the command line parser.", 
 	NULL, 
 	NULL
@@ -355,6 +356,7 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors2, CmdlineParserFixture )
 
 const SProgramDescription general_help_test = {
 	"Test", 
+	"Short descr",
 	"This program tests the command line parser.", 
 	"Example text", 
 	"Example command"

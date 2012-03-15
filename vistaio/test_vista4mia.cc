@@ -338,6 +338,7 @@ bool init_unit_test_suite( )
 
 const SProgramDescription description = {
 	"Tests", 
+	"Vista tests", 
 	"This program runs a set of tests.", 
 	NULL, 
 	NULL

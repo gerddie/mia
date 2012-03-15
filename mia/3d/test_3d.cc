@@ -37,6 +37,7 @@ extern void add_3dinterpol_tests(test_suite* suite);
 
 const SProgramDescription g_general_help = {
 	"Tests", 
+	"3D tests", 
 	"Run various test for 3D data.", 
 	NULL, 
 	NULL

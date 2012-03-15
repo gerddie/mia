@@ -97,6 +97,7 @@ BOOST_AUTO_TEST_CASE( test_a_factory_option )
 
 const SProgramDescription general_help = {
 	"Test", 
+	"Short, descr", 
 	"This program tests the command line parser.", 
 	NULL, 
 	NULL

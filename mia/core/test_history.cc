@@ -44,9 +44,10 @@ static const char *revision = "$Revision: 937 $:";
 
 const SProgramDescription g_general_help = {
 	"Test", 
+	"Short help", 
 	"This program tests the history entries.", 
-	NULL, 
-	NULL
+	"Example text", 
+	"Example"
 }; 
 
 
