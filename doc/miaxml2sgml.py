@@ -85,9 +85,8 @@ class CProgramSection:
             self.description = node.iter("description")
         else:
             self.name=name
+            self.description = None
 
-        
-# um global variable ...
 def read_section_file(filename):
     file=open(filename, "r")
     stringstree = file.read()
@@ -134,6 +133,7 @@ for d in descriptions:
    if not program_sections.has_key(d.section):
       program_sections[d.section] = CProgramSection(name=d.section, idx=index)
       index = index + 1
+      print "Warning: Program '%s' is listed in section '%s', but this section is not described in doc/sections.xml" % (d.name, d.section)
    program_sections[d.section].programs.append(d)
 
    for h in d.handlers.keys():
