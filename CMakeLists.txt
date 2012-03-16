@@ -63,7 +63,7 @@ SET(LIBRARY_SOVERSION_INFO "${MIA_CURRENT}")
 SET(LIBRARY_VERSION_INFO "${MIA_CURRENT}.${MIA_AGE}.${MIA_REVISION}")
 
 OPTION(STRICT_DEPENDECIES "require that all requested optinal dependencies are availabe" FALSE)
-#SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS true)
+OPTION(ALWAYS_CREATE_DOC "Create all documentation during the normal build process (normally you need to run 'make doc')" FALSE)
 
 
 INCLUDE (CheckIncludeFiles)
@@ -419,8 +419,7 @@ ADD_CUSTOM_TARGET(plugin_test_links DEPENDS plugin_test_linkdir)
 IF(ALWAYS_CREATE_DOC)
   ADD_CUSTOM_TARGET(doc ALL)  
 ELSE(ALWAYS_CREATE_DOC)
-  ADD_CUSTOM_TARGET(doc DEPENDS)  
-  ADD_CUSTOM_TARGET(install-doc)
+  ADD_CUSTOM_TARGET(doc)  
 ENDIF(ALWAYS_CREATE_DOC)
 
 

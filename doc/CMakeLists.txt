@@ -27,17 +27,14 @@ ADD_CUSTOM_TARGET(xmldoc)
 
 IF(CREATE_USERDOC) 
 
-  ADD_CUSTOM_TARGET(install-manpages 
-    mkdir -p $(DESTDIR)/"${CMAKE_INSTALL_PREFIX}/share/man/man1/"
-    COMMAND cp man/* $(DESTDIR)/"${CMAKE_INSTALL_PREFIX}/share/man/man1/"
-    DEPENDS manpages)
-
   add_dependencies(docs manpages)    
-  add_dependencies(install-doc install-manpages)
+  IF(ALWAYS_CREATE_DOC) 
+    INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/man/ DESTINATION share/man/man1/)
+  ENDIF(ALWAYS_CREATE_DOC) 
+
   ##################################################################
   #  for html userref xsltproc and the style sheet is needed 
   #
-
   find_program(XSLTPROC xsltproc)
   IF(XSLTPROC)
     FIND_PATH(HTML_CHUNK_FILEPATH chunk.xsl
@@ -47,7 +44,7 @@ IF(CREATE_USERDOC)
       DOC "style sheet for the creation of the user reference"
       )
   ENDIF(XSLTPROC)
-
+  
   IF(HTML_CHUNK_FILEPATH) 
     #
     # handle the linking of some files to run the 
@@ -87,15 +84,9 @@ IF(CREATE_USERDOC)
     ####################################################
     #
     # installation of the user reference 
-    
-    
-    ADD_CUSTOM_TARGET(install-userref 
-      mkdir -p $(DESTDIR)/"${FULL_DOC_INSTALL_PATH}/userref"
-      COMMAND cp -r userref/* $(DESTDIR)/"${FULL_DOC_INSTALL_PATH}/userref"
-      DEPENDS userref)
-    
-    
-    add_dependencies(install-doc install-userref)
+    IF(ALWAYS_CREATE_DOC) 
+      INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/userref DESTINATION ${DOC_INSTALL_PATH}/)
+    ENDIF(ALWAYS_CREATE_DOC)     
   ENDIF(HTML_CHUNK_FILEPATH) 
   
 ENDIF(CREATE_USERDOC) 
@@ -115,12 +106,10 @@ IF (DOXYGEN_FOUND)
     TARGET LibraryDoc
     OUTPUTS libdoc)
   
-  ADD_CUSTOM_TARGET(install-libdoc 
-    mkdir -p $(DESTDIR)/"${FULL_DOC_INSTALL_PATH}/libdoc"
-    COMMAND cp libdoc/html/* $(DESTDIR)/"${FULL_DOC_INSTALL_PATH}/libdoc"
-    DEPENDS LibraryDoc)
+  IF(ALWAYS_CREATE_DOC) 
+    INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/libdoc/html/ DESTINATION ${DOC_INSTALL_PATH}/libdoc/)
+  ENDIF(ALWAYS_CREATE_DOC)     
   
-  add_dependencies(install-doc install-libdoc)
 ENDIF (DOXYGEN_FOUND)
 
 

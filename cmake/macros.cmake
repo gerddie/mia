@@ -67,7 +67,7 @@ MACRO(PLUGIN_PRE prefix plugin libs install_path)
   DEFPLUGIN(${name} ${plugin}.cc "${libs}")
   INSTALL(TARGETS ${name} LIBRARY DESTINATION ${install_path})
   ADD_CUSTOM_TARGET(${name}_test_link ln -sf "${CMAKE_CURRENT_BINARY_DIR}/${name}.mia" 
-    ${PLUGIN_TEST_ROOT}/${install_path}/ DEPENDS ${prefix}_testdir)
+    ${PLUGIN_TEST_ROOT}/${install_path}/ DEPENDS ${prefix}_testdir ${name})
   ADD_DEPENDENCIES(plugin_test_links ${name}_test_link)
 ENDMACRO(PLUGIN_PRE)
 
@@ -105,7 +105,7 @@ MACRO(PLUGIN_GROUP_PRE prefix plugins libs install_path)
     SET(name ${prefix}-${p})
     INSTALL(TARGETS ${name} LIBRARY DESTINATION ${install_path})
     ADD_CUSTOM_TARGET(${name}_test_link ln -sf "${CMAKE_CURRENT_BINARY_DIR}/${name}.mia" 
-      ${PLUGIN_TEST_ROOT}/${install_path}/ DEPENDS ${prefix}_testdir)
+      ${PLUGIN_TEST_ROOT}/${install_path}/ DEPENDS ${prefix}_testdir ${name})
     ADD_DEPENDENCIES(plugin_test_links ${name}_test_link)
   ENDFOREACH(p)
   IF(WARN_OLD_PLUGINSTYLE)
@@ -155,15 +155,11 @@ MACRO(CREATE_EXE_DOCU name)
   ADD_CUSTOM_TARGET(mia-${name}-xml DEPENDS ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml)
   add_dependencies(xmldoc mia-${name}-xml)  
   
-  IF(GZIP) 
-    SET(${name}-manfile ${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1.gz)
-  ELSE(GZIP) 
-    SET(${name}-manfile ${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1)
-  ENDIF(GZIP) 
+  SET(${name}-manfile ${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1)
   
   ADD_CUSTOM_COMMAND(OUTPUT   ${${name}-manfile}
     COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py 
-    ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml | ${GZIP} -9  >${${name}-manfile}
+    ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml >${${name}-manfile}
     MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
     DEPENDS mandir
     )
