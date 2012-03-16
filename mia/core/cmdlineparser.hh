@@ -31,6 +31,7 @@
 #include <string>
 #include <iterator>
 #include <mia/core/cmdoption.hh>
+#include <mia/core/cmdoption.hh>
 #include <mia/core/typedescr.hh>
 #include <mia/core/paramoption.hh>
 #include <mia/core/dictmap.hh>
@@ -584,11 +585,7 @@ PCmdOption make_opt(std::vector<T>& value, const char *long_opt, char short_opt,
 							  long_opt, flags ));
 }
 
-inline PCmdOption make_opt(bool& value, const char *long_opt, char short_opt, const char *help)
-{
-	return PCmdOption(new TCmdOption<bool>(value, short_opt, long_opt, help, 
-					       long_opt, false ));
-}
+PCmdOption make_opt(bool& value, const char *long_opt, char short_opt, const char *help); 
 
 /**
    Convinience function: Create a table lookup option

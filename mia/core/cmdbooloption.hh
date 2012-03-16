@@ -17,9 +17,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef mia_core_cmdstringoption_hh
-#define mia_core_cmdstringoption_hh
 
+#ifndef mia_core_cmdbooloption_hh
+#define mia_core_cmdbooloption_hh
 
 #include <mia/core/cmdoption.hh>
 
@@ -28,37 +28,31 @@ NS_MIA_BEGIN
 /**
     \ingroup infrastructure 
 
-    \brief The command line option that expects a string 
+    \brief The command line option that sets a flag to true when given 
 
-    This command line option expects  a string a parameter. 
-    It supports giving a hint to the help system that the actual string will be used for 
-    to construct a plug-in based object. 
+    This command line option expects no parameter. If given the associated boolen value 
+    will be set to true. Therefore, at initialization this boolean value is always forces 
+    to be set to false.  
 
 */
-class EXPORT_CORE CCmdStringOption : public CCmdOption {
+class EXPORT_CORE CCmdBoolOption : public CCmdOption {
  public:
 	/**
-	   Construct a string option 
+	   Construct a bool option 
 	   \param[in,out] value at input the default value, at output the value read from the command line 
 	   \param short_opt the one letter command line option 
 	   \param long_opt the long command line option 
-	   \param long_help the full help string that describes the option completely 
-	   \param required  set to true if the parameter must be given by the user 
-	   \param plugin_hint if the string will later be used to create an object by using plug-in then pass 
-	   a pointer to the corresponding plug-in handler to give a hint the help system about this connection.
-	 */
-	CCmdStringOption(std::string& value, char short_opt, const char *long_opt, const char *long_help, 
-			 bool required, const CPluginHandlerBase *plugin_hint);
+	   \param long_help the full help bool that describes the option completely 
+	*/
+	CCmdBoolOption(bool& value, char short_opt, const char *long_opt, const char *long_help);
  private: 
 	bool do_set_value(const char *str_value);
 	void do_write_value(std::ostream& os) const;
 	void do_get_long_help_xml(std::ostream& os, xmlpp::Element& parent, HandlerHelpMap& handler_map) const; 
 	const std::string do_get_value_as_string() const; 
+	size_t do_get_needed_args() const;
 
-
-	std::string& m_value; 
-	const CPluginHandlerBase *m_plugin_hint; 
-	
+	bool& m_value; 
 }; 
 NS_MIA_END
 

@@ -27,6 +27,7 @@ SET(MIACORE_SRC_BASE
   cmdlineparser.cc
   cmdoption.cc
   cmdstringoption.cc
+  cmdbooloption.cc
   creator.cc
   datapool.cc
   dlloader.cc
@@ -89,6 +90,7 @@ SET(MIACORE_HEADER_BASE
   callback.hh
   cmdlineparser.hh
   cmdstringoption.hh
+  cmdbooloption.hh
   cmdoption.hh
   cost.hh
   cost.cxx

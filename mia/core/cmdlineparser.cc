@@ -37,6 +37,7 @@
 #include <mia/core/tools.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdstringoption.hh>
+#include <mia/core/cmdbooloption.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/fixedwidthoutput.hh>
 
@@ -753,6 +754,12 @@ PCmdOption EXPORT_CORE make_opt(std::string& value, const char *long_opt, char s
 	return PCmdOption(new CCmdStringOption(value, short_opt, long_opt, long_help, 
 					       required, plugin_hint)); 
 }
+
+PCmdOption EXPORT_CORE make_opt(bool& value, const char *long_opt, char short_opt, const char *help)
+{
+	return PCmdOption(new CCmdBoolOption(value, short_opt, long_opt, help ));
+}
+
 
 //
 // Implementation of the standard option that holds a value
