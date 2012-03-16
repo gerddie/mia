@@ -139,12 +139,9 @@ ENDMACRO(ASSERT_SIZE)
 MACRO(CREATE_EXE_DOCU name) 
   
   ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
-    COMMAND sh ARGS ${CMAKE_SOURCE_DIR}/doc/make-xml.sh 
-    ${name}
-    ${CMAKE_BINARY_DIR} 
-    ${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH}
-    ${CMAKE_BINARY_DIR}/doc/
-    COMMAND rm ARGS -f ${CMAKE_SOURCE_DIR}/doc/userref.stamp
+    COMMAND MIA_PLUGIN_TESTPATH=${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH} 
+    ./mia-${name} --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
+    COMMAND rm -f ${CMAKE_SOURCE_DIR}/doc/userref.stamp
     DEPENDS mia-${name} plugin_test_links )
   list(APPEND XMLDOC "${CMAKE_BINARY_DIR}/doc/mia-${name}.xml")
   
