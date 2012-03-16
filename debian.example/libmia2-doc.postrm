@@ -1,0 +1,7 @@
+if { -e /usr/share/doc/mia-2.0/libdoc/jquery.js ]; then 
+   rm /usr/share/doc/mia-2.0/libdoc/jquery.js
+fi 
+
+#DEBHELPER#
+
+

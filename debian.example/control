@@ -1,0 +1,66 @@
+Source: mia
+Priority: extra
+Maintainer: Gert Wollny <gw.fossdev@gmail.com>
+Build-Depends: debhelper (>= 8.0.0), cmake (>= 2.8),  libboost-dev (>= 1.46.1),  libxml++2.6-dev (>= 2.34.1), libitpp-dev (>= 4.2), libtbb-dev (>= 3.0),  libopenexr-dev (>= 1.6.1), libpng-dev,  libdcmtk2-dev (>= 3.6.0), libtiff4-dev (>= 3.9.5), nlopt-dev (>= 2.2.4), libgsl0-dev (>= 1.14),  libblas-dev 
+Standards-Version: 3.9.2
+Section: libs
+Homepage: http://mia.sourceforge.net
+
+
+Package: libmia2-dev
+Section: libdevel
+Architecture: any
+Recommends: libmia2-doc
+Depends: libmia2 (= ${binary:Version}),  libxml++2.6-dev (>= 2.34.1), libitpp-dev (>= 4.2), libtbb-dev (>= 3.0), libgsl0-dev (>= 1.14)
+Description: development files for the MIA2 library
+ These are the development files for the MIA2 gray scale image
+ processing library.
+
+Package: libmia2-doc
+Section: doc
+Architecture: all
+Enhances: libmia2-dev 
+Depends: libjs-jquery
+Description: developers documentation for the MIA2 library
+ This is the Doxygen generated documentation for the MIA2 gray scale image
+ processing library.
+
+Package: libmia2
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, nlopt2 (>= 2.2.4),  libopenexr6 (>= 1.6.1)
+Description: library for 2D and 3D gray scale image processing.
+ This package includes the library and the plug-ins of the MIA2 library
+
+Package: libmia2-dbg
+Section: debug
+Architecture: any
+Depends: libmia2 (= ${binary:Version}), ${misc:Depends}
+Description: debugging versions of the MIA2 library.
+ This package includes the debugging info for the MIA2 library
+
+
+Package: mia2-bin
+Section: science
+Architecture: any
+Recommends: mia2-doc
+Depends: libmia2 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Description: command line tools for gray scale image processing
+ This package comprises various command line tools for 2D and 3D gray scale
+ image processing.
+
+Package: mia2-doc
+Section: doc
+Architecture: all
+Enhances: mia2-bin
+Description: cross-referenzed documentation of the MIA command line tools.
+ Cross referenced documentation of the command line tools of  MIA, the
+ gray scale image processing tool kit.
+
+
+Package: mia2-bin-dbg
+Section: debug
+Architecture: any
+Depends: mia2-bin (= ${binary:Version})
+Description: debug versions for the Command line tools of MIA2.
+ This package contains the debug information for the MIA2 programs
