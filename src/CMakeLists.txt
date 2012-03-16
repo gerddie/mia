@@ -19,6 +19,8 @@
 #
 ADD_CUSTOM_TARGET(manpages)
 
+SET(XMLDOC)
+
 ADD_CUSTOM_TARGET(mandir COMMAND mkdir -p ${CMAKE_BINARY_DIR}/doc/man)
 
 LINK_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../mia/core)
@@ -26,11 +28,11 @@ LINK_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../mia/2d)
 LINK_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../mia/3d)
 
 #basic helpers 
-DEFEXE(filenumberpattern  miacore )
-DEFEXE(cmeans             miacore )
-DEFEXE(labelsort          miacore )
-DEFEXE(wavelettrans       miacore )
-DEFEXE(myowavelettest     miacore )
+DEFEXE(filenumberpattern  miacore  )
+DEFEXE(cmeans             miacore  )
+DEFEXE(labelsort          miacore  )
+DEFEXE(wavelettrans       miacore  )
+DEFEXE(myowavelettest     miacore  )
 
 #2D programs 
 DEFEXE(2dimagefilter      mia2d )
@@ -46,7 +48,7 @@ DEFEXE(2ddeform           mia2d )
 DEFEXE(2dtransform        mia2d )
 DEFEXE(2dforce            mia2d )
 DEFEXE(2davgmasked        mia2d )
-DEFEXE(2dimageregistration mia2d)
+DEFEXE(2dimageregistration mia2d )
 DEFEXE(2dimageselect      mia2d )
 DEFEXE(2dimagecombine-dice mia2d )
 DEFEXE(2dfuzzysegment     mia2d )
@@ -144,3 +146,11 @@ ENDIF(ITPP_FOUND)
 
 ADD_SUBDIRECTORY(fluid2d  )
 ADD_SUBDIRECTORY(fluid3d  )
+
+ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/program.xml 
+  COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_SOURCE_DIR}/doc/miaxml2sgml.py ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc
+  DEPENDS ${XMLDOC}
+  )
+    
+ADD_CUSTOM_TARGET(process_xml DEPENDS ${CMAKE_BINARY_DIR}/doc/program.xml)
+

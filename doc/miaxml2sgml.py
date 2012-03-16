@@ -105,11 +105,11 @@ def read_section_file(filename):
     
 
 rootpath = sys.argv[1]
-
+outpath = sys.argv[2]
 #
 # read all xml files created by the command line tools 
 #
-files = find_files(".", "mia-*.xml")
+files = find_files(outpath, "mia-*.xml")
 descriptions=[]
 
 for f in files:
@@ -170,7 +170,7 @@ for i in sorted_sections_keys:
     prog_xml.append(get_section(s, program_sections[s]))
 
 programs_xml = etree.tostring(prog_xml, pretty_print=True)
-prog_file = open("program.xml", "w")
+prog_file = open(outpath + "/program.xml", "w")
 prog_file.write(programs_xml)
 prog_file.close()
 
@@ -184,7 +184,7 @@ for s in plugin_types_keys:
    plug_xml.append(get_plugins(s, plugin_types[s]))
 
 plugins_xml = etree.tostring(plug_xml, pretty_print=True)
-plug_file = open("plugins.xml", "w")
+plug_file = open(outpath + "/plugins.xml", "w")
 plug_file.write(plugins_xml)
 plug_file.close()
 

@@ -138,22 +138,17 @@ ENDMACRO(ASSERT_SIZE)
 
 MACRO(CREATE_EXE_DOCU name) 
   
-  if("${CMAKE_GENERATOR}" MATCHES Make)
-    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
-      COMMAND sh ARGS ${CMAKE_SOURCE_DIR}/doc/make-xml.sh 
-      ${name}
-      ${CMAKE_BINARY_DIR} 
-      ${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH}
-      ${CMAKE_BINARY_DIR}/doc/
-      DEPENDS mia-${name} plugin_test_links )
-  else ("${CMAKE_GENERATOR}" MATCHES Make)
-    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
-      COMMAND ./mia-${name} ARGS  --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
-      DEPENDS mia-${name}
-      )
-  endif("${CMAKE_GENERATOR}" MATCHES Make)
+  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
+    COMMAND sh ARGS ${CMAKE_SOURCE_DIR}/doc/make-xml.sh 
+    ${name}
+    ${CMAKE_BINARY_DIR} 
+    ${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH}
+    ${CMAKE_BINARY_DIR}/doc/
+    COMMAND rm ARGS -f ${CMAKE_SOURCE_DIR}/doc/userref.stamp
+    DEPENDS mia-${name} plugin_test_links )
+  list(APPEND XMLDOC "${CMAKE_BINARY_DIR}/doc/mia-${name}.xml")
+  
   ADD_CUSTOM_TARGET(mia-${name}-xml DEPENDS ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml)
-  add_dependencies(xmldoc mia-${name}-xml)  
   
   SET(${name}-manfile ${CMAKE_BINARY_DIR}/doc/man/mia-${name}.1)
   
@@ -161,14 +156,14 @@ MACRO(CREATE_EXE_DOCU name)
     COMMAND ${PYTHON_EXECUTABLE} ARGS ${CMAKE_SOURCE_DIR}/doc/miaxml2man.py 
     ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml >${${name}-manfile}
     MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
-    DEPENDS mandir
+    DEPENDS mandir mia-${name}-xml
     )
   ADD_CUSTOM_TARGET(mia-${name}-man DEPENDS ${${name}-manfile})
   add_dependencies(manpages mia-${name}-man)    
 ENDMACRO(CREATE_EXE_DOCU)
 
 
-MACRO(DEFEXE name deps ) 
+MACRO(DEFEXE name deps) 
   ADD_EXECUTABLE(mia-${name} ${name}.cc)
   
   FOREACH(lib ${deps}) 
@@ -180,7 +175,7 @@ MACRO(DEFEXE name deps )
   CREATE_EXE_DOCU(${name})
 ENDMACRO(DEFEXE)
 
-MACRO(DEFCHKEXE name deps ) 
+MACRO(DEFCHKEXE name deps) 
    ADD_EXECUTABLE(mia-${name} ${name}.cc)
    
    FOREACH(lib ${deps}) 
