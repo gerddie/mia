@@ -43,8 +43,8 @@ IF(WITH_OpenEXR)
     
     INCLUDE_DIRECTORIES(${EXR_INCLUDE_DIRS})
     
-    PLUGIN(2dimgexr    "${DEPS2D}" "${image2dio_path}")
-    PLUGIN(2dvfexr     "${DEPS2D}" "${vf2dio_path}")
+    PLUGIN_PRE(2d-imageio 2dimgexr "${DEPS2D}" "${image2dio_path}")
+    PLUGIN_PRE(2d-vfio    2dvfexr  "${DEPS2D}" "${vf2dio_path}")
     
     # test programs 
     ADD_EXECUTABLE(test-openexr test_openexr.cc)

@@ -27,3 +27,11 @@ ADD_LIBRARY(3d-shapes MODULE basic_shapes.cc sphere.cc)
 TARGET_LINK_LIBRARIES(3d-shapes ${MIA3DLIBS})
 SET_TARGET_PROPERTIES(3d-shapes PROPERTIES PREFIX "" SUFFIX ${PLUGSUFFIX})
 INSTALL(TARGETS 3d-shapes LIBRARY DESTINATION "${PLUGIN_INSTALL_PATH}/3dimage/shape")
+
+ADD_CUSTOM_TARGET(3d-shapes_testdir mkdir -p ${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH}/3dimage/shape)
+ADD_CUSTOM_TARGET(3d-shapes_test_link 
+  ln -sf "${CMAKE_CURRENT_BINARY_DIR}/3d-shapes.mia" ${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH}/3dimage/shape/ 
+  DEPENDS 3d-shapes_testdir)
+
+ADD_DEPENDENCIES(plugin_test_links 3d-shapes_test_link)
+

@@ -103,14 +103,24 @@ MACRO(PLUGIN_WITH_TEST_AND_PREFIX prefix plugname libs install_path)
   CREATE_PLUGIN_COMMON(${name} ${plugname}.cc "${libs}")
   CREATE_PLUGIN_MODULE(${name})
   CREATE_PLUGIN_TEST(${name} test_${plugname}.cc TESTLIBS "${PLUGIN_TESTLIBS}")
+  ADD_CUSTOM_TARGET(${name}_test_link ln -sf "${CMAKE_CURRENT_BINARY_DIR}/${name}.mia" 
+    ${PLUGIN_TEST_ROOT}/${install_path}/ DEPENDS ${prefix}_testdir)
+  ADD_DEPENDENCIES(plugin_test_links ${name}_test_link)
   INSTALL(TARGETS ${name} LIBRARY DESTINATION ${install_path})
 ENDMACRO(PLUGIN_WITH_TEST_AND_PREFIX  prefix plugname file libs)
 
 MACRO(PLUGINGROUP_WITH_TEST_AND_PREFIX prefix plugins libs install_path)
   PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
+  ADD_CUSTOM_TARGET(${prefix}_testdir mkdir -p ${PLUGIN_TEST_ROOT}/${install_path})
   FOREACH(p ${plugins})
     set(plugname ${prefix}-${p})
     PLUGIN_WITH_TEST(${plugname} ${p}.cc "${libs}" TESTLIBS "${PLUGIN_TESTLIBS}")
     INSTALL(TARGETS ${plugname} LIBRARY DESTINATION ${install_path})
+    ADD_CUSTOM_TARGET(${plugname}_test_link ln -sf "${CMAKE_CURRENT_BINARY_DIR}/${plugname}.mia" 
+      ${PLUGIN_TEST_ROOT}/${install_path}/ DEPENDS ${prefix}_testdir)
+    ADD_DEPENDENCIES(plugin_test_links ${plugname}_test_link)
   ENDFOREACH(p)
 ENDMACRO(PLUGINGROUP_WITH_TEST_AND_PREFIX)
+
+
+

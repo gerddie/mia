@@ -91,13 +91,13 @@ SET(vf2dio_path ${PLUGIN_INSTALL_PATH}/2dvf/io)
 
 SET(meshio_path ${PLUGIN_INSTALL_PATH}/mesh/io)
 
-PLUGIN(2dvistaio "${DEPS2D}" "${image2dio_path}")
-PLUGIN(3dvistaio "${DEPS3D}" "${image3dio_path}")
-PLUGIN(2dvfvistaio "${DEPS2D}" "${vf2dio_path}")
-PLUGIN(3dvfvistaio "${DEPS3D}" "${vf3dio_path}")
-PLUGIN(vistamesh "${DEPSMESH}" "${meshio_path}")
-PLUGIN(2dtrans "${DEPS2D}" "${trans2dio_path}")
-PLUGIN(3dtrans "${DEPS3D}" "${trans3dio_path}")
+PLUGIN_PRE(2d-imageio 2dvistaio "${DEPS2D}" "${image2dio_path}")
+PLUGIN_PRE(3d-imageio 3dvistaio "${DEPS3D}" "${image3dio_path}")
+PLUGIN_PRE(2d-vfio 2dvfvistaio "${DEPS2D}" "${vf2dio_path}")
+PLUGIN_PRE(3d-vfio 3dvfvistaio "${DEPS3D}" "${vf3dio_path}")
+PLUGIN_PRE(3d-mesh vistamesh "${DEPSMESH}" "${meshio_path}")
+PLUGIN_PRE(2d-transformio 2dtrans "${DEPS2D}" "${trans2dio_path}")
+PLUGIN_PRE(3d-transformio 3dtrans "${DEPS3D}" "${trans3dio_path}")
 
 
 ADD_EXECUTABLE(test-vista4mia  test_vista4mia.cc)

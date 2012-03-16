@@ -23,7 +23,7 @@ SET(creator2d
 )
 
 PLUGIN_GROUP_PRE(
-  "2d" 
+  "2d-creator" 
   "${creator2d}" 
   "${MIA2DLIBS}" 
   "${PLUGIN_INSTALL_PATH}/2dimage/creator"

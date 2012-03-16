@@ -18,53 +18,19 @@
  *
  */
 
-
-/*
-  LatexBeginPluginDescription{3D image creators}
-
-  \subsection{Lattice Creator}
-  \label{creator3d:lattic}
-   
-  \begin{description}
-   
-  \item [Plugin:] lattic
-  \item [Description:] Creates an image with a lattic that has smooth boundaried 
-   
-   \plugtabstart
-   fx & float & lattic pattern frequency & 16.0 \\
-   fy & float & lattic pattern frequency & 16.0 \\
-   fz & float & lattic pattern frequency & 16.0 \\
-   \plugtabend
-   
-   \end{description}
-
-
-  LatexEnd
-*/
-
-#define VSTREAM_DOMAIN "CREATOR LATTIC"
 #ifdef _MSC_VER
 #define _USE_MATH_DEFINES
 #endif
 #include <cmath>
 #include <limits>
 #include <mia/core/type_traits.hh>
-#include <mia/3d/creator.hh>
 #include <mia/3d/3dfilter.hh>
+#include <mia/3d/creator/lattic.hh>
 
 NS_BEGIN(creator_lattic_3d);
 using namespace mia;
 using namespace std;
 using namespace boost;
-
-class C3DLatticCreator	: public C3DImageCreator {
-public:
-	C3DLatticCreator(const C3DFVector& freq);
-	virtual P3DImage operator () (const C3DBounds& size, EPixelType type) const;
-private:
- 	C3DFImage do_create(const C3DBounds& size) const;
-	C3DFVector m_freq; 
-};
 
 C3DLatticCreator::C3DLatticCreator(const C3DFVector& freq):
 	m_freq(2*M_PI/ freq.x,2*M_PI/ freq.y, 2*M_PI/ freq.z)
@@ -128,17 +94,6 @@ C3DFImage C3DLatticCreator::do_create(const C3DBounds& size) const
 	return  hresult;
 }
 
-
-class C3DLatticCreatorPlugin : public  C3DImageCreatorPlugin {
-public:
-	C3DLatticCreatorPlugin();
-private:
-	virtual C3DImageCreator *do_create()const;
-	virtual const string do_get_descr()const;
-	virtual bool do_test() const;
-	C3DFVector m_freq;
-};
-
 C3DLatticCreatorPlugin::C3DLatticCreatorPlugin():
 	C3DImageCreatorPlugin("lattic"),
 	m_freq(16.0, 16.0, 16.0)
@@ -156,12 +111,6 @@ C3DImageCreator *C3DLatticCreatorPlugin::do_create()const
 const string C3DLatticCreatorPlugin::do_get_descr()const
 {
 	return "3D lattic creation program";
-}
-
-bool C3DLatticCreatorPlugin::do_test() const
-{
-	cvwarn() << "no test implemented\n";
-	return true;
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

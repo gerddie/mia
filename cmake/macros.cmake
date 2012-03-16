@@ -63,9 +63,12 @@ MACRO(PLUGIN plugin libs install_path)
 ENDMACRO(PLUGIN)
 
 MACRO(PLUGIN_PRE prefix plugin libs install_path)
-	DEFPLUGIN(${prefix}-${plugin} ${plugin}.cc "${libs}")
-        INSTALL(TARGETS ${prefix}-${plugin}
-		LIBRARY DESTINATION ${install_path})
+  SET(name ${prefix}-${plugin})
+  DEFPLUGIN(${name} ${plugin}.cc "${libs}")
+  INSTALL(TARGETS ${name} LIBRARY DESTINATION ${install_path})
+  ADD_CUSTOM_TARGET(${name}_test_link ln -sf "${CMAKE_CURRENT_BINARY_DIR}/${name}.mia" 
+    ${PLUGIN_TEST_ROOT}/${install_path}/ DEPENDS ${prefix}_testdir)
+  ADD_DEPENDENCIES(plugin_test_links ${name}_test_link)
 ENDMACRO(PLUGIN_PRE)
 
 
@@ -97,8 +100,13 @@ ENDMACRO(PLUGIN_GROUP_PRE_NOINST)
 
 MACRO(PLUGIN_GROUP_PRE prefix plugins libs install_path)
   PLUGIN_GROUP_PRE_NOINST(${prefix}  "${plugins}" "${libs}")
+  ADD_CUSTOM_TARGET(${prefix}_testdir mkdir -p ${PLUGIN_TEST_ROOT}/${install_path})
   FOREACH(p ${plugins})
-    INSTALL(TARGETS ${prefix}-${p} LIBRARY DESTINATION ${install_path})
+    SET(name ${prefix}-${p})
+    INSTALL(TARGETS ${name} LIBRARY DESTINATION ${install_path})
+    ADD_CUSTOM_TARGET(${name}_test_link ln -sf "${CMAKE_CURRENT_BINARY_DIR}/${name}.mia" 
+      ${PLUGIN_TEST_ROOT}/${install_path}/ DEPENDS ${prefix}_testdir)
+    ADD_DEPENDENCIES(plugin_test_links ${name}_test_link)
   ENDFOREACH(p)
   IF(WARN_OLD_PLUGINSTYLE)
     MESSAGE("Plugins '${plugins}' with target '${install_path}' use old interface")
@@ -132,11 +140,12 @@ MACRO(CREATE_EXE_DOCU name)
   
   if("${CMAKE_GENERATOR}" MATCHES Make)
     ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
-      COMMAND sh ARGS ${CMAKE_SOURCE_DIR}/doc/make-xml.sh ${name}
-      ${CMAKE_BINARY_DIR}/testinstall${CMAKE_INSTALL_PREFIX}
-      ${CMAKE_BINARY_DIR}/testinstall${PLUGIN_SEARCH_PATH} 
+      COMMAND sh ARGS ${CMAKE_SOURCE_DIR}/doc/make-xml.sh 
+      ${name}
+      ${CMAKE_BINARY_DIR} 
+      ${PLUGIN_TEST_ROOT}/${PLUGIN_INSTALL_PATH}
       ${CMAKE_BINARY_DIR}/doc/
-      DEPENDS mia-${name} testinstall_for_doc )
+      DEPENDS mia-${name} plugin_test_links )
   else ("${CMAKE_GENERATOR}" MATCHES Make)
     ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/doc/mia-${name}.xml
       COMMAND ./mia-${name} ARGS  --help-xml >${CMAKE_BINARY_DIR}/doc/mia-${name}.xml

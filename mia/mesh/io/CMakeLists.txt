@@ -25,7 +25,7 @@ SET(iomesh
 )
 
 PLUGIN_GROUP_PRE(
-  "mesh" 
+  "3d-mesh" 
   "${iomesh}" 
   "${MIAMESHLIBS}" 
   "${PLUGIN_INSTALL_PATH}/mesh/io"

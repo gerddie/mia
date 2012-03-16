@@ -19,31 +19,6 @@
  */
 
 
-/* 
-   LatexBeginPluginDescription{3D image combiners}
-   
-   \subsection{Label cross-reference combiner}
-   \label{combiners3d:labelxmap}
-   
-   \begin{description}
-   
-   \item [Plugin:] labelxmap
-   \item [Description:] Takes two images of integral pixel values of the same size and evaluates 
-                      teh overlap count of the combinations of intensities. 
-   \item [Input:] Two integral valued gray scale images. 
-   \item [Output:] A map that gives the number of overlapping voxels for each pair of non-zero 
-                intensity values. 
-   \item [Remark:] I really don't remember what this is used for.
-   This plug-in doesn't take any additional parameters. 
-
-   \end{description}
-
-   LatexEnd  
- */
-
-
-
-
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -54,7 +29,7 @@
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/file.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/combiner/labelxmap.hh>
 
 
 NS_BEGIN(labelxmap_3dimage_filter)
@@ -63,42 +38,10 @@ NS_MIA_USE;
 using namespace std;
 using namespace boost;
 
-typedef pair<size_t, size_t> XLabel;
-
-
-struct LessXLabel {
-	bool operator () (const XLabel& a, const XLabel& b)const
-	{
-		return a.first < b.first || (a.first == b.first && a.second < b.second);
-	}
-};
-
-class CXLabelResult: public CCombinerResult {
-	friend bool operator == (const CXLabelResult& a, const CXLabelResult& b);
-public:
-	void add(size_t a , size_t b);
-private:
-	virtual void do_save(const std::string& fname) const;
-	typedef map<XLabel, size_t, LessXLabel> CLabelMap;
-	CLabelMap m_map;
-};
-
 bool operator == (const CXLabelResult& a, const CXLabelResult& b)
 {
 	return a.m_map == b.m_map;
 }
-
-
-class CLabelXMap: public C3DImageCombiner {
-public:
-	template <typename T, typename S>
-	C3DImageCombiner::result_type operator () ( const T3DImage<T>& a, const T3DImage<S>& b) const;
-private:
-	virtual PCombinerResult do_combine( const C3DImage& a, const C3DImage& b) const;
-
-
-
-};
 
 void CXLabelResult::add(size_t a , size_t b)
 {
@@ -172,16 +115,6 @@ C3DImageCombiner::result_type CLabelXMap::operator () ( const T3DImage<T>& a, co
 	return xmap<U,V,is_integral>::apply(a.begin(), a.end(), b.begin());
 }
 
-class CLabelXMapPlugin: public C3DImageCombinerPlugin {
-public:
-	CLabelXMapPlugin();
-private:
-	virtual C3DImageCombiner *do_create()const;
-	virtual const string do_get_descr() const;
-	virtual bool do_test() const;
-
-};
-
 CLabelXMapPlugin::CLabelXMapPlugin():
 	C3DImageCombinerPlugin("labelxmap")
 {
@@ -197,61 +130,6 @@ const string CLabelXMapPlugin::do_get_descr() const
 	return "generate a label reference mapping";
 }
 
-bool CLabelXMapPlugin::do_test() const
-{
-	CLabelXMap xmap;
-
-	const int init_data1[10]   = {0, 0, 1, 2, 3, 4, 2, 1, 2, 0};
-	const short init_data2[10] = {1, 0, 2, 1, 2, 3, 4, 2, 1, 1};
-
-	CXLabelResult right_answer;
-
-	right_answer.add(1,2);
-	right_answer.add(1,2);
-	right_answer.add(2,1);
-	right_answer.add(2,1);
-	right_answer.add(3,2);
-	right_answer.add(4,3);
-	right_answer.add(2,4);
-
-
-
-	P3DImage image(new C3DUSImage(C3DBounds(1,1,1)));
-	P3DImage fimage(new C3DFImage(C3DBounds(10,1,1)));
-
-	P3DImage int_image(new C3DSIImage(C3DBounds(10,1,1), init_data1));
-	P3DImage short_image(new C3DSSImage(C3DBounds(10,1,1), init_data2));
-
-	bool success = true;
-	try {
-		xmap.combine( *image, *short_image);
-		cvfail() << "combining image of different size should throw";
-		success = false;
-	}
-	catch (invalid_argument& x) {
-		cvdebug() << "Caught " << x.what() << "\n";
-	}
-
-	try {
-		xmap.combine( *fimage, *short_image);
-		cvfail() << "combining images of different type should throw\n";
-		success = false;
-	}
-	catch (invalid_argument& x) {
-		cvdebug() << "Caught " << x.what() << "\n";
-	}
-
-	C3DImageCombiner::result_type result = xmap.combine( *int_image, *short_image);
-
-	CXLabelResult *xlr = dynamic_cast<CXLabelResult *>(result.get());
-	if (!xlr) {
-		cvfail() << "return type\n";
-		return false;
-	}
-
-	return success && (*xlr == right_answer);
-
-}
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {

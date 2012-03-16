@@ -26,7 +26,7 @@ SET(io3dimage
 )
 
 PLUGIN_GROUP_PRE(
-  "3d" 
+  "3d-imageio" 
   "${io3dimage}" 
   "${MIA3DLIBS}" 
   "${PLUGIN_INSTALL_PATH}/3dimage/io"
@@ -38,7 +38,7 @@ SET(io3vf
 )
 
 PLUGIN_GROUP_PRE(
-  "3d" 
+  "3d-vfio" 
   "${io3vf}" 
   "${MIA3DLIBS}" 
   "${PLUGIN_INSTALL_PATH}/3dvf/io"

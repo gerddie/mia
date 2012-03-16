@@ -37,8 +37,8 @@ IF (WITH_DCMTK)
     SET(DCMTK_LINK_LIBS_3D dicom4mia mia3d)
     NEW_TEST(dicom4mia dicom4mia)
 
-    PLUGIN_WITH_TEST_AND_PREFIX("2d" dcm2d "${DCMTK_LINK_LIBS_2D}" "${image2dio_path}")
-    PLUGIN_WITH_TEST_AND_PREFIX("3d" dcm3d "${DCMTK_LINK_LIBS_3D}" "${image3dio_path}")
+    PLUGIN_WITH_TEST_AND_PREFIX("2d-imageio" dcm2d "${DCMTK_LINK_LIBS_2D}" "${image2dio_path}")
+    PLUGIN_WITH_TEST_AND_PREFIX("3d-imageio" dcm3d "${DCMTK_LINK_LIBS_3D}" "${image3dio_path}")
     INCLUDE_DIRECTORIES(${DCMTK_INCLUDE_DIR})
 
   ELSEIF(STRICT_DEPENDECIES)

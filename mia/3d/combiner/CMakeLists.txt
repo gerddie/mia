@@ -22,8 +22,8 @@ SET(combiner3d
 	labelxmap
 )
 
-PLUGIN_GROUP_PRE(
-  "3d" 
+PLUGINGROUP_WITH_TEST_AND_PREFIX(
+  "3d-combiner" 
   "${combiner3d}" 
   "${MIA3DLIBS}" 
   "${PLUGIN_INSTALL_PATH}/3dimage/combiner"

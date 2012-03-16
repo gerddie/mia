@@ -18,17 +18,28 @@
  *
  */
 
-#ifndef mia_3d_creator_hh
-#define mia_3d_creator_hh
+#include <mia/3d/creator.hh>
 
-#include <mia/core/creator.hh>
-#include <mia/3d/3DImage.hh>
 
-NS_MIA_BEGIN
+NS_BEGIN(creator_lattic_3d);
 
-/// define all that is necessary for the 2D image creator plugin and its handling 
-DEFINE_Image_Creator(C3DImage);
+class C3DLatticCreator	: public mia::C3DImageCreator {
+public:
+	C3DLatticCreator(const mia::C3DFVector& freq);
+	virtual mia::P3DImage operator () (const mia::C3DBounds& size, mia::EPixelType type) const;
+private:
+ 	mia::C3DFImage do_create(const mia::C3DBounds& size) const;
+	mia::C3DFVector m_freq; 
+};
 
-NS_MIA_END
+class C3DLatticCreatorPlugin : public  mia::C3DImageCreatorPlugin {
+public:
+	C3DLatticCreatorPlugin();
+private:
+	virtual mia::C3DImageCreator *do_create()const;
+	virtual const std::string do_get_descr()const;
+	mia::C3DFVector m_freq;
+};
 
-#endif
+
+NS_END

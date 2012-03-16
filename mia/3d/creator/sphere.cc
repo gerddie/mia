@@ -19,54 +19,17 @@
  */
 
 
-/*
-  LatexBeginPluginDescription{3D image creators}
-
-  \subsection{Sphere Creator}
-  \label{creator3d:sphere}
-   
-  \begin{description}
-   
-  \item [Plugin:] sphere
-  \item [Description:] Creates an image with a filled distorted sphere-like shape. The shape and filling 
-       patternare given by the parameters. 
-   
-   \plugtabstart
-   f & float & spherical change frequency & 1.0 \\
-   p & float & spherical shape parameter (2.0 = circle)& 2.0 \\
-   \plugtabend
-   
-   \end{description}
-
-
-  LatexEnd
-*/
-
-
-#define VSTREAM_DOMAIN "SHAPE SPHERE"
 #ifdef _MSC_VER
 #define _USE_MATH_DEFINES
 #endif
 #include <cmath>
 #include <limits>
 #include <mia/core/type_traits.hh>
-#include <mia/3d/creator.hh>
+#include <mia/3d/creator/sphere.hh>
 
 NS_BEGIN(creator_sphere_3d);
 using namespace mia;
 using namespace std;
-using namespace boost;
-
-class C3DSphereCreator	: public C3DImageCreator {
-public:
-	C3DSphereCreator(float f, float p);
-	virtual P3DImage operator () (const C3DBounds& size, EPixelType type) const;
-private:
-	template <typename T>
- 	P3DImage do_create(const C3DBounds& size) const;
-	float m_f;
-	double m_p;
-};
 
 C3DSphereCreator::C3DSphereCreator(float f, float p):
 	m_f(f),
@@ -149,18 +112,6 @@ P3DImage C3DSphereCreator::do_create(const C3DBounds& size) const
 	return  P3DImage(result);
 }
 
-
-class C3DSphereCreatorPlugin : public  C3DImageCreatorPlugin {
-public:
-	C3DSphereCreatorPlugin();
-private:
-	virtual C3DImageCreator *do_create()const;
-	virtual const string do_get_descr()const;
-	virtual bool do_test() const;
-	float m_f;
-	float m_p;
-};
-
 C3DSphereCreatorPlugin::C3DSphereCreatorPlugin():
 	C3DImageCreatorPlugin("sphere"),
 	m_f(2.0),
@@ -178,12 +129,6 @@ C3DImageCreator *C3DSphereCreatorPlugin::do_create()const
 const string C3DSphereCreatorPlugin::do_get_descr()const
 {
 	return "3D sphere creation program";
-}
-
-bool C3DSphereCreatorPlugin::do_test() const
-{
-	cvwarn() << "no test implemented\n";
-	return true;
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

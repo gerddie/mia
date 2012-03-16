@@ -26,7 +26,7 @@ SET(io2dtransform_serialized
 SET(SERLIBS mia2d ${Boost_SERIALIZATION_LIBRARY})
 
 PLUGIN_GROUP_PRE(
-  "2d" 
+  "2d-transformio" 
   "${io2dtransform_serialized}" 
   "${SERLIBS}" 
   "${PLUGIN_INSTALL_PATH}/2dtransform/io"

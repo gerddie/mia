@@ -18,17 +18,19 @@
  *
  */
 
-#ifndef mia_3d_creator_hh
-#define mia_3d_creator_hh
+#include <mia/internal/plugintester.hh> 
+#include <mia/3d/creator/lattic.hh>
 
-#include <mia/core/creator.hh>
-#include <mia/3d/3DImage.hh>
+using namespace creator_lattic_3d;
+using namespace mia;
 
-NS_MIA_BEGIN
+BOOST_AUTO_TEST_CASE ( test_sphere ) 
+{
+	C3DBounds size(10,20,30); 
+	auto f = BOOST_TEST_create_from_plugin<C3DLatticCreatorPlugin>("lattic:fx=2,fy=3,fz=4");
+	
+	auto image = (*f)(size, it_float); 
+	BOOST_CHECK_EQUAL(image->get_size(), size); 
+	
 
-/// define all that is necessary for the 2D image creator plugin and its handling 
-DEFINE_Image_Creator(C3DImage);
-
-NS_MIA_END
-
-#endif
+}

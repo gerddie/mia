@@ -18,17 +18,30 @@
  *
  */
 
-#ifndef mia_3d_creator_hh
-#define mia_3d_creator_hh
+#include <mia/3d/creator.hh>
 
-#include <mia/core/creator.hh>
-#include <mia/3d/3DImage.hh>
+NS_BEGIN(creator_sphere_3d);
 
-NS_MIA_BEGIN
+class C3DSphereCreator	: public mia::C3DImageCreator {
+public:
+	C3DSphereCreator(float f, float p);
+	virtual mia::P3DImage operator () (const mia::C3DBounds& size, mia::EPixelType type) const;
+private:
+	template <typename T>
+ 	mia::P3DImage do_create(const mia::C3DBounds& size) const;
+	float m_f;
+	double m_p;
+};
 
-/// define all that is necessary for the 2D image creator plugin and its handling 
-DEFINE_Image_Creator(C3DImage);
 
-NS_MIA_END
+class C3DSphereCreatorPlugin : public  mia::C3DImageCreatorPlugin {
+public:
+	C3DSphereCreatorPlugin();
+private:
+	virtual mia::C3DImageCreator *do_create()const;
+	virtual const std::string do_get_descr()const;
+	float m_f;
+	float m_p;
+};
 
-#endif
+NS_END
