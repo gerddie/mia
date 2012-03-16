@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE( test_watch )
 	gettimeofday(&tv_end, NULL); 
 	double test_time = (tv_end.tv_sec - tv_start.tv_sec) + (tv_end.tv_usec - tv_start.tv_usec) / 1e+6; 
 
-	BOOST_CHECK_CLOSE(end - start, test_time, 1); 
+	BOOST_CHECK_CLOSE(end - start, test_time, 5); 
 	
 #else 
 	      cvwarn() << "Watch is a stub on WIN32\n"; 
