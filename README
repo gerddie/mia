@@ -1,58 +1,7 @@
-INSTALLATION
+MIA is a collection of libraries and command line tools for the processing 
+of gray scale images.
 
-REQUIREMENTS: 
-  cmake >= 2.6.0
-  BOOST >= 1.40.0
-  gsl++ >= 0.0.1 (git repository at mia.git.sorceforge.net:/gitroot/mia/gslpp
-  ANSI C++ compiler that supports the auto keyword of the 
-            upcoming standard C++0x 
-	GNU g++ >= 4.4 (tested) 
-        MS Visual C++ 2010 (not tested) 
-        
-SUPPORTED Platforms: 
+For details, help, etc see 
+http://mia.sourceforge.net
 
-OPTIONAL:
-  libTIFF 
-  libpng 
-  OpenEXR 
-  MatLab (7.1)
-  IDL ( >= 6.0)
-  fftw 
-  libxml++-2.6  
-  it++-4.0.7
-  dcmtk
-  python 
-  nfft 
-  pwpdf 
-  
-
-COMPILE: 
-on MAC OSX, LINUX, (and UNIX): 
-  cmake -DCMAKE_INSTALL_PREFIX=<install path> <path to mia2 source root>
-  make 
-
-  TESTING: 
-    make test 
-
-  INSTALLATION:
-    make install 
-
-
-on MS Windows: 
-  cmake  -DCMAKE_INSTALL_PREFIX=<install path> -G "NMake Makefiles" <path to mia2 source root>
-  nmake 
-or 
-  CMakeSetup + Compile in Visual Studio
-
-  
-
-
-Specifics about using MIA with matlab on GCC compiled systems: 
-
-To use MIA with MatLab, it needs to be compiled with the same C++ ABI 
-  version Matlab was compiled with. 
-Specificall, MIA and BOOST should link to the very same version of libstdc++.
-In case of MatLab 7.1 this is libstdc++.so.5. 
-One also should remove the libraries libstdc++.so.* and libgcc_s.so.*  that are provided 
-by MatLab and use the system wide ones - these libraries usually reside in 
-<MatLab-ROOT>/sys/os/<YourOS>/
+ 
