@@ -29,8 +29,7 @@
 
 /** 
     \ingroup helpers
-
-    helper macro to create exceptions using stream output for its message 
+    \brief  helper macro to create exceptions using stream output for its message 
  */
 #define THROW(EXCEPTION, MESSAGE)		\
 	do {					\

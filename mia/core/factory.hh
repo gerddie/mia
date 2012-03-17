@@ -38,7 +38,7 @@ NS_MIA_BEGIN
 
 
 /** 
-   \ingroup infrastructure 
+    \ingroup plugin
 
     @brief This is tha base of all plugins that create "things", like filters, cost functions 
     time step operatores and the like. 
@@ -51,14 +51,14 @@ class EXPORT_HANDLER TFactory:
 	public TPlugin<typename P::plugin_data, typename P::plugin_type> {
 public: 
 
-	/// typedef to give the output type a nice name 
+	/// typedef to describe the product of the factory 
 	typedef P Product; 
 	
-	/// typedef to give the output pointer type a nice name 
+	/// typedef for the shared version of the product 
 	typedef std::shared_ptr<P > SharedProduct; 
 
 
-	/// typedef to give the output pointer type a nice name 
+	/// typedef for the unique version of the product 
 	typedef std::unique_ptr<P > UniqueProduct; 
 	
 	/** initialise the plugin by the names 
@@ -85,7 +85,7 @@ private:
 
 
 /**
-   \ingroup infrastructure 
+    \ingroup plugin
 
    @brief the Base class for all plugn handlers that deal with factory plugins.  
    
@@ -261,19 +261,28 @@ bool TFactory<I>::do_test() const
 	return false; 
 }
 
-/// Do some explicit instanciation for a plugin based on TFactory 
+/**     
+	\ingroup plugin
+	Do some explicit instanciation for a plugin based on TFactory 
+*/
 #define EXPLICIT_INSTANCE_PLUGIN(T) \
 	template class TPlugin<T::plugin_data, T::plugin_type>; \
 	template class TFactory<T>;					
 
-/// Do some explicit instanciation for a plugin based on TFactoryPluginHandler
+/**     
+	\ingroup plugin
+	Do some explicit instanciation for a plugin based on TFactoryPluginHandler
+*/
 #define EXPLICIT_INSTANCE_PLUGIN_HANDLER(P) \
 	template class TPluginHandler<P>;			\
 	template class TFactoryPluginHandler<P>;		\
 	template class THandlerSingleton<TFactoryPluginHandler<P> >;
 
-/** Do some explicit instanciation for the plugin classe and the handler of 
-    a plugin based on TFactoryPluginHandler */
+/** 
+    \ingroup plugin
+    Do some explicit instanciation for the plugin classe and the handler of 
+    a plugin based on TFactoryPluginHandler 
+*/
 #define EXPLICIT_INSTANCE_HANDLER(T) \
 	template class TPlugin<T::plugin_data, T::plugin_type>; \
 	template class TFactory<T>;					\
@@ -281,7 +290,8 @@ bool TFactory<I>::do_test() const
 	template class TFactoryPluginHandler<TFactory<T> >;		\
 	template class THandlerSingleton<TFactoryPluginHandler<TFactory<T> > >;
 
-/**
+/** 
+    \ingroup plugin
    Do an explicit instanciation of plug-in classes and handlers for plugins that are 
    explicitely derived from TFactory.  
  */

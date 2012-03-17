@@ -42,7 +42,7 @@ NS_MIA_BEGIN
 EXPORT_CORE extern const std::string plugin_help;
 
 /**
-   \ingroup infrastructure 
+    \ingroup plugin
    \brief The base class for all plug-ins.
 
    The base class for all plug-ins. It supports handling parameters 
@@ -189,7 +189,7 @@ private:
 
 
 /** 
-   \ingroup infrastructure 
+    \ingroup plugin
 
    \brief The generic base for all plug-ins 
    

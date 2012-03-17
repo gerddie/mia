@@ -41,7 +41,7 @@ NS_MIA_BEGIN
 
 
 /** 
-    \ingroup infrastructure 
+    \ingroup plugin
     
     \brief The basic %template of all plugin handlers
 
@@ -129,8 +129,8 @@ private:
 
 
 /**
-    \ingroup infrastructure 
-
+   \ingroup plugin
+   
    \brief the singleton that a plug-in handler really is 
    
    Class to make a singleton out of a plugin handler by deriving from it.

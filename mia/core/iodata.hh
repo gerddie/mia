@@ -27,7 +27,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup infrastructure 
+   \ingroup io 
 
    \brief helper class to derive from for data that can be loaded and stored to a disk. 
 

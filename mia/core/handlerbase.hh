@@ -35,16 +35,25 @@ NS_MIA_BEGIN
 
 
 class CPluginHandlerBase; 
+
+/**
+   \ingroup plugin
+   \brief A map that is used to collect the plug-in handlers used in a program 
+   
+   This map is used to collect that plug-in handlers that are used by the 
+   TFactoryParameter in order to obtain a list of plug.in dependecies for the 
+   program help. 
+*/
 typedef std::map<std::string, const CPluginHandlerBase*> HandlerHelpMap; 
 
 /** 
-    \ingroup infrastructure 
-    
-    \brief The base class for all plugin handlers
-
-    This clas provides some basic funcionallity that is common to all plugin handlers. 
-    In addition, the copy constructor and assigment operator are deleted in order to forbit copying 
-    of instances of this class. 
+   \ingroup plugin
+   
+   \brief The base class for all plugin handlers
+   
+   This clas provides some basic funcionallity that is common to all plugin handlers. 
+   In addition, the copy constructor and assigment operator are deleted in order to forbit copying 
+   of instances of this class. 
 */
 class EXPORT_CORE CPluginHandlerBase  {
  public: 

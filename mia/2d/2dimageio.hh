@@ -151,7 +151,7 @@ bool  EXPORT_2D save_image(const std::string& filename, C2DImage& image);
 /**
    \ingroup io
    Convenience function to load a series of images and group them into sets based 
-   on the acuisition parameters if available. 
+   on the acquisition parameters if available.
    If these parameters are not available, then the order of the input files is used
    to sort the files but no grouping takes place. 
    \param filenames list of file names 

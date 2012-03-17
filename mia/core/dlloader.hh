@@ -26,7 +26,7 @@
 
 NS_MIA_BEGIN
 /**  
-     \ingroup infrastructure 
+     \ingroup plugin
      \brief Portabe Dynamic Link Library Loader
      
      This class provides a portable way to load dynamic link libraries. 

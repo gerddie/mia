@@ -29,7 +29,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup infrastructure 
+   \ingroup logging
    \brief This class is used to handle syncronizized output of logging output in a multi-threaded environment
 
    This class is used to syncronize the output of the logging stream cverb and its

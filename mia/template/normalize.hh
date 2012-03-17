@@ -20,18 +20,23 @@
 
 #include <cmath>
 #include <iostream>
-#include <boost/shared_ptr.hpp>
-#include <boost/lambda/if.hpp>
+#include <memory>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 
 NS_MIA_BEGIN
 
+/**
+   \cond INTERNAL 
+   \ingroup traits
+   if the compiler wants to instanciate this functions, A and B are different types
+   the compiler will 
+*/
+
 template <typename A, typename B> 
 void __assert_type_equal (A& a, B& b) 
 {
-// if the compiler wants to instanciate this functions, A and B are different types
-	BOOST_STATIC_ASSERT(sizeof(A) == 0); 
+	static_assert(sizeof(A) == 0); 
 }
 
 template <typename A> 
@@ -57,17 +62,6 @@ struct __eval {
 }; 
 
 
-struct __lambda_doesnt_work {
-	__lambda_doesnt_work(float _t, float _f): 
-		t(_t), f(_f) {}; 
-	float operator ()(bool b) const {
-		return b ? t : f; 
-	}
-private: 
-	float t,f; 
-}; 
-
-
 template <template <typename> class  Data> 
 struct __eval<Data, bool> {
 	static Data<float> *apply(const Data<bool> &input, double m, double v) {
@@ -83,6 +77,15 @@ struct __eval<Data, bool> {
 }; 
 
 
+
+/**
+   \ingroup templates 
+   \brief Generic filter to normalize an image 
+
+   Generic implementation of a filter that normalizes an Image to have a zero-mean intensity 
+   and an intensity variation of one. 
+   \tparam the image type 
+ */
 template <class Image> 
 struct FNormalizer: public TFilter<Image *>
 {
@@ -112,6 +115,18 @@ struct FNormalizer: public TFilter<Image *>
 	}
 }; 
 
+/// @endcond
+
+/**
+   \ingroup templates 
+   \brief a normalizer for image intensities 
+   
+   The intensities of the input image are normalized to have a zero mean and a deviation of one. 
+   The output image is of the same dimensions as the input image and has pixel type float. 
+   \tparam Image the image type 
+   \param image the input image 
+   \returns the normalized image 
+ */
 template <class Image>
 std::shared_ptr<Image > normalize(const Image& image)
 {

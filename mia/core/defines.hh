@@ -89,7 +89,7 @@ enum EInterpolationFactory {
 
 NS_MIA_END
 
-/// suffix for plug-ins 
+/// \brief suffix for plug-ins 
 #define MIA_MODULE_SUFFIX "mia"
 
 #ifndef __GNUC__

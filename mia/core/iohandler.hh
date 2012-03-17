@@ -29,7 +29,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup infrastructure 
+   \ingroup plugin
 
    \brief Template for all plug-in handlers that are responsible for data IO 
    
@@ -152,15 +152,15 @@ private:
 }; 
 
 /**
-   \ingroup infrastructure 
-   
-   \brief Singleton of the IO plugin handler 
-
-   This makes a singleton from the IO plugin handler. This specification is needed 
-   to enable tests on plugin loading, where the search path has to be changed to 
-   the location of the uninstalled plug-ins. 
-   \tparam T must be some instanciation of TIOPluginHandler. 
-   \remark why is this not templated over the plugin interface I like above? 
+    \ingroup plugin
+    
+    \brief Singleton of the IO plugin handler 
+    
+    This makes a singleton from the IO plugin handler. This specification is needed 
+    to enable tests on plugin loading, where the search path has to be changed to 
+    the location of the uninstalled plug-ins. 
+    \tparam T must be some instanciation of TIOPluginHandler. 
+    \remark why is this not templated over the plugin interface I like above? 
 */
 template <typename T>
 class EXPORT_HANDLER TIOHandlerSingleton : public THandlerSingleton<T> {

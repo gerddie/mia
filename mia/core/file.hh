@@ -34,7 +34,7 @@ NS_MIA_BEGIN
 typedef FILE * PFILE;
 
 /**
-   \ingroup helpers
+   \ingroup io
    
    \brief A wrapper for the \a cstdio file type that closes the file  automatically when 
    the scope is left. 
@@ -70,7 +70,7 @@ private:
 
 
 /** 
-   \ingroup helpers
+   \ingroup io
    
    \brief A stdio FILE for opening a file for reading. 
    
@@ -94,7 +94,7 @@ public:
 };
 
 /** 
-    \ingroup helpers
+   \ingroup io
     \brief A stdio FILE for opening a file for writing. 
     
     A simple wrapper for the stdio FILE type that handles opening and closing for

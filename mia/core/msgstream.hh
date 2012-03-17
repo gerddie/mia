@@ -38,7 +38,7 @@ NS_MIA_BEGIN
 #endif
 
 /**
-   \ingroup infrastructure 
+   \ingroup logging
    \brief A output stream to enable certain levels of verbosity 
 
    This class impelemtns a std::ostream like class to output messages during run-time, 
@@ -149,10 +149,14 @@ private:
 
 };
 
-/// Dictonary for the verbosity command line option 
+/** 
+    \ingroup logging
+    \brief Dictonary for the verbosity of the logging as used by --verbose comand line option 
+*/
 extern EXPORT_CORE const TDictMap<vstream::Level> g_verbose_dict;
 
 /**
+   \ingroup logging
  * @param verbose: verbose state
  *
  *  Set the cverb ostream in a verbose/non verbose mode depending on the
@@ -191,8 +195,9 @@ inline CDebugSink& cvdebug()
 
 #else
 
-/** Short for debug output in non-debug build output send to this will 
-    be ignored. 
+/** 
+    \ingroup logging
+    \brief  Short for debug output in non-debug build output send to this will be ignored. 
 */
 inline vstream& cvdebug()
 {
@@ -233,7 +238,8 @@ private:
 #endif
 
 /**
-   Informal output that may be of interest to understand problems with a program
+   \ingroup logging
+   \brief \a  informal output that may be of interest to understand problems with a program
    and are of higher priority then debugging output. 
  */
 inline vstream& cvinfo()
@@ -261,47 +267,65 @@ inline void vstream::flush()
 
 // some inlines
 
-///  direct output to this stream adapter to print out fatalities in the code 
+/**
+   \ingroup logging
+   \brief direct output to this stream adapter to print out \a fatalities in the code 
+*/
 inline vstream& cvfatal()
 {
 	vstream::instance() << vstream::ml_fatal << VSTREAM_DOMAIN << ":";
 	return vstream::instance();
 }
 
-///  direct output to this stream adapter to print out failtures in tests beyond BOOST_FAIL
+/**
+   \ingroup logging
+   \brief direct output to this stream adapter to print out \a failtures in tests beyond BOOST_FAIL
+*/
 inline vstream& cvfail()
 {
 	vstream::instance() << vstream::ml_fail << VSTREAM_DOMAIN << ":";
 	return vstream::instance();
 }
 
-/// send errors to this stream adapter 
+/**
+   \ingroup logging
+   \brief send errors to this stream adapter 
+*/
 inline vstream& cverr()
 {
 	vstream::instance() << vstream::ml_error << VSTREAM_DOMAIN << ":";
 	return vstream::instance();
 }
 
-/// send warnings to this stream adapter 
+/**
+   \ingroup logging
+   \brief send \a warnings to this stream adapter 
+*/
 inline vstream& cvwarn()
 {
 	vstream::instance() << vstream::ml_warning << VSTREAM_DOMAIN << ":";
 	return vstream::instance();
 }
 
-/// send messages to this stream adapter 
+/**
+   \ingroup logging
+   \brief send \a messages to this stream adapter 
+*/
 inline vstream& cvmsg()
 {
 	vstream::instance() << vstream::ml_message << VSTREAM_DOMAIN << ":";
 	return vstream::instance();
 }
 
-/// define a shortcut to the raw output stream 
+/**
+   \ingroup logging
+   \brief define a shortcut to the raw output stream 
+*/
 #define cverb ::mia::vstream::instance()
 
 /**
-   \ingroup infrastructure 
-   Impelment the direct streaming of std::vectors. 
+   \ingroup logging
+   \brief implements the direct streaming of std::vectors. 
 */
 template <typename T> 
 vstream& operator << (vstream& os, const std::vector<T>& v) {

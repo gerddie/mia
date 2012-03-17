@@ -44,7 +44,13 @@
     
     
     \defgroup cmdline Command line and parameter parsing 
-    These classes and functions relate to the parsing of the command line and the parameter parsing for plug-ins 
+    \brief These classes and functions relate to the parsing of the command line and the parameter parsing for plug-ins 
+
+    \defgroup plugin Plug-in handling 
+    \brief Classes and functions that implement the plug-in infrastructure
+
+    \defgroup logging Logging and debugguing 
+    \brief Classes and functions that are used for textual output 
 
     \defgroup infrastructure Infrastructure 
     \brief Classes and functions related to plug-in handling, option parsing, and logging.

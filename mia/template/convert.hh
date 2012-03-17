@@ -28,6 +28,9 @@
 NS_MIA_BEGIN
 
 /*
+  \ingroup templates 
+  \brief Generic pixel conversion for images 
+  
   This class implements the image pixel type conversion. 
   Various mappings are supported and defined as  EPixelConversion. 
   \tparam Image the image type that must provide STL-like iterators. 
@@ -67,6 +70,10 @@ private:
 	float m_b; 
 };
 
+/*
+  \ingroup templates 
+  \brief Generic plug-in for pixel conversion image filters 
+*/
 template <class Image>	
 class TConvertFilterPlugin: public TImageFilterPlugin<Image> {
 public: 
@@ -82,6 +89,10 @@ private:
 
 };
 
+/**
+   \cond INTERNAL
+   \ingroup traits 
+*/
 
 template <typename  T, bool is_float>
 struct __mia_round  {
@@ -117,6 +128,8 @@ struct get_minmax {
 		return __dispatch_minmax<T, std::is_floating_point<T>::value >::apply(); 
 	}
 };
+
+/// @endcond INTERNAL 
 
 NS_MIA_END
 

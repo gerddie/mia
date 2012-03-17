@@ -29,13 +29,19 @@
 
 NS_MIA_BEGIN
 
+/**
+   \cond INTERNAL 
+   \ingroup plugin
+
+*/
 struct EXPORT_CORE io_plugin_type {
 	static  const char *type_descr;
 
 };
+/// \endcond 
 
 /**
-   \ingroup infrastructure 
+   \ingroup plugin
 
    \brief The templatex basis class of all IO plug-ins.
 

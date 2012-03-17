@@ -33,19 +33,19 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup infrastructure 
+   \ingroup io
 
    \brief temporary data storage to avoid storing on disk
 
    This class implements a data storage pool as a singelton
    that can be used to store some
-   data temporarly like it would be stored on disk.
+   data temporarly like if it would be stored on disk.
    Each IO plugin automatically defines an interface to store in and load
    from this pool. The extension, by which this behaviour is triggered is ".@".
 
    \todo add delete key function,
    \todo add automatic key generation
-   \todo all plugins that load data should load to the pool first to enable
+   \todo (maybe) all plugins that load data should load to the pool first to enable
    loading from temporarly generated data
 */
 

@@ -33,13 +33,15 @@ using namespace std;
 /// definition of the Plugin interface loading function
 class CPluginBase;
 
-/**    \ingroup infrastructure 
-    C function type that is provided by the plug-ins as entry point 
+/**   
+      \ingroup plugin
+      C function type that is provided by the plug-ins as entry point 
 */
 typedef  CPluginBase* (*FPluginInterface)(void);
 
 /** 
-   \ingroup infrastructure 
+   \ingroup plugin
+   
    \brief  The plugin module loading class. 
    
    This class handles the loading of shared object modules and hides all the 
