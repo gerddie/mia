@@ -51,8 +51,18 @@ typedef std::pair<std::string, CHistoryRecord> CHistoryEntry;
 
 
 /**
-   \ingroup infrastructure 
-   Data structure to provied help information oabout the program 
+   \ingroup cmdline
+   \brief the vector that holds a basic program description 
+   
+   Vector of strings to provied information about the program
+   At least five values must be given: 
+   (1) the program section, 
+   (2) A short description of the program - this will become the whatis entry in the man page, 
+   (3) A long description of the program 
+   (4) A text describing an example usage 
+   (5) The actual exampel call without the program name. 
+   This information is used by the auto-help system to create man-pages and a cross-referenced
+   help of all the programs. 
  */
 typedef std::vector<const char *>  SProgramDescription; 
 const int pdi_group = 0; 
@@ -63,7 +73,7 @@ const int pdi_example_code = 4;
 
 
 /** 
-    \ingroup infrastructure 
+    \ingroup cmdline
     \brief Templated version based on CCmdOptionValue for values that can be converted to 
     and from strings by stream operators 
 
@@ -104,7 +114,7 @@ private:
 };
 
 /** 
-    \ingroup infrastructure 
+    \ingroup cmdline
     \brief Command line option that translates a string to a set of flags.
 */
 
@@ -135,7 +145,7 @@ private:
 
 
 /**
-   \ingroup infrastructure 
+   \ingroup cmdline
    \brief A command line option that will appear in the help group 
    and exits the program after printing the help. 
 
@@ -147,7 +157,7 @@ class EXPORT_CORE CHelpOption: public CCmdOption {
 public:
 
 	/**
-	   \ingroup infrastructure 
+	   \ingroup cmdline
 	   \brief Interface for the callback to print the help assositated with the given option.
 	 */
 	class Callback {
@@ -184,7 +194,7 @@ private:
 };
 
 /**
-    \ingroup infrastructure 
+    \ingroup cmdline
     \brief Help callback to print the help for the given plug-in 
   
 */
@@ -197,6 +207,7 @@ class TPluginHandlerHelpCallback: public CHelpOption::Callback {
 
 
 /**
+   \ingroup cmdline
    \brief The class to hold the list of options
 
    This class holds all the user defined and default command line option, 
@@ -538,14 +549,20 @@ const std::string TCmdOption<T>::do_get_value_as_string() const
 }
 
 /**
-   Convinience function: Create a standard option
-   \param value value variable to hold the parsed option value - pass in the default value -
-   exception: \a bool values always defaults to \a false
+   \ingroup cmdline
+   \brief Create a standard option that sets a value of the give type 
+   
+   Create a standard option that translates a string given on the command line into a value. 
+   The translation back-end is implemented with CTParameter. 
+   
+   \tparam T the type of thevalue, it must support to be read from (operator >>) and written (operator  << ) to a stream, 
+   as the back-end uses these opterator to translate. 
+   \param[in,out] value at input the default value, at output the parsed value if it was given. 
    \param short_opt short option name (or 0)
    \param long_opt long option name (must not be NULL)
    \param help long help string (must not be NULL)
    \param flags add flags like whether the optionis required to be set 
-   \returns the option warped into a \a boost::shared_ptr
+   \returns the option warped into a boost::shared_ptr
 */
 template <typename T>
 PCmdOption make_opt(T& value, const char *long_opt, char short_opt, 
@@ -555,8 +572,10 @@ PCmdOption make_opt(T& value, const char *long_opt, char short_opt,
 }
 
 /**
-   Convinience function: Create an option of a value that is expecte to be within a given range 
-   If the given value does not fit into the rangem it will be adjusted accordingly 
+   \ingroup cmdline
+   \brief Create an option of a scalar value that is expecte to be within a given range 
+   
+   If the given value does not fit into the range it will be adjusted accordingly 
    \tparam T type of the value to be parsed, supported are float, double, long, int, short, unsigned long, unsigned int, unsigned short. 
    \tparam Tmin type of the given minmum of the range, a conversion to type T must exist
    \tparam Tmax type of the given maximum of the range, a conversion to type T must exist
@@ -577,18 +596,53 @@ PCmdOption make_opt(T& value, Tmin min, Tmax max,  const char *long_opt, char sh
 					    new TRangeParameter<T>(value, min, max, flags, help)));
 }
 
+/**
+   \ingroup cmdline
+   \brief Create an option to set a vector of values, 
+   
+   The parameters on the command line will be separated by ',' and without spaces (or protected from the shell by usinh "". 
+   If the vetcor comes with a pre-allocated size, then the numer of given values must correspond to this size, 
+   Otherwise the size of the vector is deducted from the given command line parameter,. 
+   \tparam T type of the value hold by the vector
+   \param[in,out] value at input: if not empty, number of expected values and their defaults, at output: the values given on the command line
+   \param long_opt long option name (must not be NULL)
+   \param short_opt short option name (or 0)
+   \param help help string (must not be NULL)
+   \param required  set to true if the option is required to be set 
+   \remark be aware that localization of the decimal separator of floating point values is not supported, 
+   it is always the full stop ".". 
+*/
+
 template <typename T>
 PCmdOption make_opt(std::vector<T>& value, const char *long_opt, char short_opt, 
-		    const char *help, bool flags = false)
+		    const char *help, bool required = false)
 {
 	return PCmdOption(new TCmdOption<std::vector<T> >(value, short_opt, long_opt, help, 
-							  long_opt, flags ));
+							  long_opt, required ));
 }
+
+/**
+   \ingroup cmdline
+   \brief Create an option that represents a flag. 
+   
+   It is always assumed to be not set  if the according option is not given at the command line 
+   \param[out] value the boolean that carries the result 
+   \param long_opt long option name (must not be NULL)
+   \param short_opt short option name (or 0)
+   \param help help string (must not be NULL)
+   \returns the option warped into a \a boost::shared_ptr
+
+*/
 
 PCmdOption make_opt(bool& value, const char *long_opt, char short_opt, const char *help); 
 
 /**
-   Convinience function: Create a table lookup option
+   \ingroup cmdline
+   \brief Create a table lookup option
+   
+   Create an option that uses a table to translate between the string given on the command line and 
+   the actual value. 
+   \tparam T the type of the value 
    \param[in,out] value variable to hold the parsed and translated option value. At entry, the 
              value must be set to a valid dictionary entry. 
    \param map the lookup table for the option
@@ -607,8 +661,11 @@ PCmdOption make_opt(T& value, const TDictMap<T>& map,
 
 
 /**
-   Convinience function: Create a flag lookup option
-   \param[in,out] value variable to hold the parsed and translated option value
+   \ingroup cmdline
+   \brief Create a flag lookup option
+   
+   \param[in,out] value at input it holds the default value, at output, if the command line option was givem 
+   this value is replaced by the parsed and translated option value, 
    \param map the lookup table for the option flags
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
@@ -616,17 +673,22 @@ PCmdOption make_opt(T& value, const TDictMap<T>& map,
    \param short_help short help string
    \param flags add flags like whether the optionis required to be set 
    \returns the option warped into a \a boost::shared_ptr
+   \remark Probably unnecessary 
  */
 
-PCmdOption  EXPORT_CORE make_opt(int& value, const CFlagString& map, const char *long_opt,
+PCmdOption   make_opt(int& value, const CFlagString& map, const char *long_opt,
 				 char short_opt, const char *long_help, 
 				 const char *short_help, 
 				 bool flags = false);
 
 
 /**
-   Convinience function: Create a string option 
-   \param[in,out] value variable to hold the parsed and translated option value
+   \ingroup cmdline
+   \brief Create an option to set a string 
+
+   Create an option that holds a string 
+   \param[in,out] value at input it holds the default value, at output, if the command line option was givem 
+   this value is replaced by the parsed and translated option value, 
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
    \param long_help long help string (must not be NULL)
@@ -635,14 +697,19 @@ PCmdOption  EXPORT_CORE make_opt(int& value, const CFlagString& map, const char 
 	   a pointer to the corresponding plug-in handler to give a hint the help system about this connection.
    \returns the option warped into a \a boost::shared_ptr
  */
-PCmdOption EXPORT_CORE make_opt(std::string& value, const char *long_opt, char short_opt, const char *long_help, 
+PCmdOption  make_opt(std::string& value, const char *long_opt, char short_opt, const char *long_help, 
 				bool required = false, const CPluginHandlerBase *plugin_hint = NULL); 
 
 
 
 /**
-   Convinience function: Create a set restricted option
-   \param[in,out] value variable to hold the parsed and translated option value
+   \ingroup cmdline
+   \brief Create an oüption that only takes values from a pre-defined set 
+   
+   Create an option that can only take values from a given set.  
+   \tparam T the type of the value to be set
+   \param[in,out] value at input it holds the default value, at output, if the command line option was givem 
+   this value is replaced by the parsed and translated option value, 
    \param valid_set the set of allowed values
    \param long_opt long option name (must not be NULL)
    \param short_opt short option name (or 0)
@@ -651,7 +718,7 @@ PCmdOption EXPORT_CORE make_opt(std::string& value, const char *long_opt, char s
    \returns the option warped into a \a boost::shared_ptr
  */
 template <typename T> 
-PCmdOption EXPORT_CORE make_opt(T& value, const std::set<T>& valid_set,
+PCmdOption  make_opt(T& value, const std::set<T>& valid_set,
                                 const char *long_opt, char short_opt, 
 				const char *help, 
 				bool required = false)
@@ -662,18 +729,26 @@ PCmdOption EXPORT_CORE make_opt(T& value, const std::set<T>& valid_set,
 
 
 /**
-   Create a command line option that uses a TFactoryPluginHandler to create 
-   the actual value.
+   \ingroup cmdline
+   \brief Create a command line option that creates uses a factory to create an object based on the given description 
+
+   Create a command line option that creates uses a factory to create the value based on the command line arguments given,  
    \tparam T the non-pointer type of the value
-   \param[in,out] value the ProductPtr of the factory
+   \param[out] value at output, if the command line option was givem 
+   this value is replaced by the parsed and translated option value. If not given but the default_values was given 
+   then this default initializer is used to create the actual value. 
+   If no default value was givem and the option is not given at the command line, then the value is not touched. 
    \param default_value default value if parameter is not given
    \param long_opt long option name
    \param short_opt short option char, set to 0 of none givn
    \param help the help string for thie option
    \param required set  true if the optionis required to be set 
+   \remark although passing in an initialized pointer and and empty default_value would act like the the initializer string 
+   was used for the pointer, it is better to pass an empty shared pointer in order to avoid unnecessary initializations 
+   of the pointer is later overwritten.
 */
 template <typename T>
-PCmdOption EXPORT_CORE make_opt(typename std::shared_ptr<T>& value, const char *default_value, const char *long_opt, 
+PCmdOption make_opt(typename std::shared_ptr<T>& value, const char *default_value, const char *long_opt, 
 		    char short_opt,  const char *help, bool required = false)
 {
 	typedef typename FactoryTrait<T>::type F;  
@@ -682,15 +757,22 @@ PCmdOption EXPORT_CORE make_opt(typename std::shared_ptr<T>& value, const char *
 }
 
 /**
-   Create a command line option that uses a TFactoryPluginHandler to create 
-   the actual value.
+   \ingroup cmdline
+   \brief Create a command line option that creates uses a factory to create an object based on the given description 
+   
+   Create a command line option that uses a TFactoryPluginHandler to create the actual value hold by a std::unique_ptr.
    \tparam T the non-pointer type of the value
-   \param[in,out] value the ProductPtr of the factory
+   \param[out] value at output, if the command line option was given 
+   this value is replaced by the parsed and translated option value. If not given but the default_values was given 
+   then this default initializer is used to create the actual value. 
    \param default_value default value if parameter is not given
    \param long_opt long option name
    \param short_opt short option char, set to 0 of none givn
    \param help the help string for thie option
    \param required set  true if the optionis required to be set 
+   \remark although passing in an initialized pointer and and empty default_value would act like the the initializer string 
+   was used for the pointer, it is better to pass an empty shared pointer in order to avoid unnecessary initializations 
+   of the pointer is later overwritten.
 */
 template <typename T>
 PCmdOption make_opt(typename std::unique_ptr<T>& value, const char *default_value, const char *long_opt, 
@@ -703,13 +785,16 @@ PCmdOption make_opt(typename std::unique_ptr<T>& value, const char *default_valu
 
 
 /**
-   Create a command line help option 
+   \ingroup cmdline
+   \brief Create a command line help option 
+   
+   Create a command line hoption that is used to print out some help. 
    \param long_opt long option name
    \param short_opt short option char, set to 0 of none givn
    \param long_help the help string for thie option
    \param cb a call back that us used to write the help 
 */
-PCmdOption EXPORT_CORE make_help_opt(const char *long_opt, char short_opt, 
+PCmdOption  make_help_opt(const char *long_opt, char short_opt, 
 				     const char *long_help, CHelpOption::Callback* cb); 
 
 NS_MIA_END

@@ -384,6 +384,7 @@ class CPlugin:
         self.text = node.text
         self.handlername = handlername
         self.ancor = make_sec_ancor("plugin"+self.name, self.handlername)
+        self.altancor = self.ancor + "alt"
 
         self.params = []
         for child in node:
@@ -404,10 +405,16 @@ class CPlugin:
             p.append_to_handler(handlers, self.ancor)
 
 
-    def write_xml(self, parent):
-        head = etree.SubElement(parent, "bridgehead", renderas="sect4", xreflabel=self.name+":"+self.handlername)
-        head.set(xmlns+"id", self.ancor)
-        head.text = self.name 
+    def write_xml(self, page):
+        parent = etree.SubElement(page, "sect4",  xreflabel=self.name+":"+self.handlername)
+        parent.set(xmlns+"id", self.ancor)
+        
+        head = etree.SubElement(parent, "title",)
+        head.text = self.name        
+        
+        altancor = etree.SubElement(parent, "titleabbrev")
+        altancor.set(xmlns+"id", self.altancor)
+        altancor.text = self.name 
 
         node = etree.SubElement(parent, "para", role="plugindescr")
         param_list = self.params

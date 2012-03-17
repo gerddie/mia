@@ -26,6 +26,10 @@
   Names of classes start with a capital "C" like CSegSet, or CSplineKernel. 
   Classes and structures that work as functors are named starting with a capital "F", e.g. FMeanValue. 
   Names of PODs (plain old data structures) begin with a "S".
+  Exceptions to this rule will be renamed in time. 
+
+  Classes and structures that start with two underscores, like __type_descr are traits, or other classes that are used 
+  for template meta programming, i.e. the type based dispaching of function class.
 
   \section naming_sec File names
   
@@ -34,11 +38,13 @@
   files use the suffic ".cxx". 
   
   File names do not necessarily correspond directly to classes defined and implemented in these files,
-       but usually hint at the funcionallity provided. 
+  but usually hint at the funcionallity provided. 
    
-  A file may contain more then one class and additional functions. 
+  A file may contain more then one class and additional functions that are closely linked.
     
-
+    
+    \defgroup cmdline Command line and parameter parsing 
+    These classes and functions relate to the parsing of the command line and the parameter parsing for plug-ins 
 
     \defgroup infrastructure Infrastructure 
     \brief Classes and functions related to plug-in handling, option parsing, and logging.

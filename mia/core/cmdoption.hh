@@ -40,12 +40,12 @@ typedef std::map<std::string,  CCmdOption *> CLongoptionMap;
 
 
 /** 
-    \ingroup infrastructure 
-
-    \brief The base class for all command line options. 
-
-    The base class of all possible command line options. It defines the interface
-    of the options as well as some basic functionality to create help strings. 
+   \ingroup cmdline
+   
+   \brief The base class for all command line options. 
+   
+   The base class of all possible command line options. It defines the interface
+   of the options as well as some basic functionality to create help strings. 
 */
 class EXPORT_CORE CCmdOption  {
 public:

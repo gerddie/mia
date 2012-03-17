@@ -140,14 +140,18 @@ def get_plugins(name, handler):
    section = make_section_root_node("section", "Plugin type: " + name)
    para = etree.SubElement(section, "para", role="plugdescr")
    para.text = handler.description 
+   head = get_bridgehead("Plugins:")
+   section.append(head)
+   plugshort = etree.SubElement(section, "para", role="pluginlist")
+   
+   for p in handler.plugins:
+       etree.SubElement(plugshort, "xref", linkend=p.ancor, endterm=p.altancor )
+       section.append(get_plugin(p))
+      
    head = get_bridgehead("Plugin consumers:")
    section.append(head)
    para = etree.SubElement(section, "para", role="consumer")
    for u in handler.users:
       etree.SubElement(para, "xref", linkend=u)
 
-   head = get_bridgehead("Plugins:")
-   section.append(head)
-   for p in handler.plugins:
-      section.append(get_plugin(p))
    return section

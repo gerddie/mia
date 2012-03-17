@@ -39,7 +39,7 @@ namespace xmlpp {
 NS_MIA_BEGIN
 
 /**
-   \ingroup infrastructure 
+   \ingroup cmdline
 
    \brief The base class for parameters used in complex options 
 
@@ -153,7 +153,7 @@ private:
 
 
 /**
-   \ingroup infrastructure 
+   \ingroup cmdline
    \brief Generic type of a complex paramter 
 
    The (templated) typed parameter. There needs to be defined an
@@ -187,6 +187,7 @@ private:
 };
 
 /**
+   \ingroup cmdline
    \brief Scalar parameter with an expected value range 
 
    A scalar parameter that supports a bracketing range. If the user tries to set the parameter
@@ -220,7 +221,7 @@ private:
 
 
 /**
-   \ingroup infrastructure 
+   \ingroup cmdline
    \brief Dictionary paramater
 
    The (templated) parameter that takes its value froma restricted Dictionary.
@@ -257,7 +258,7 @@ private:
 
 
 /**
-   \ingroup infrastructure 
+   \ingroup cmdline
    \brief A parameter that get's initialized by a factory to a shared or unique pointer 
 
    This parameter type is used for parameters that are created by a factory 
@@ -320,8 +321,8 @@ private:
 
 
 /**
-   \ingroup infrastructure 
-   \brief A parameter that can only assume values out ofa limited set 
+   \ingroup cmdline
+   \brief A parameter that can only assume values out of a limited set 
 
    This parameter type is used for parameters that that can only assume values out of a 
    limited set of values. Other than the  CDictParameter this parameter may handle any type 
@@ -358,7 +359,7 @@ private:
 };
 
 /**
-   \ingroup infrastructure 
+   \ingroup cmdline
    \brief A parameter that can assume any value of the given value type 
 
    This parameter type is used for parameters that are only restricted by the value type
@@ -403,7 +404,10 @@ typedef CTParameter<std::string> CStringParameter;
 /// boolean parameter
 typedef CTParameter<bool> CBoolParameter;
 
-/*    \ingroup infrastructure 
+/**    
+      \ingroup cmdline
+      \brief create a factory parameter that initializes to a std::shared_ptr
+      
       Creates a TFactoryParameter accurding to the given parameters. The advantage over calling the 
       TactoryParameter cunstructor is, that type deduction is done automatically. 
       \tparam the type of the factory created parameter value 
@@ -423,9 +427,12 @@ CParameter *make_param(std::shared_ptr<T>& value, const std::string& init,  bool
 	
 }
 
-/*    \ingroup infrastructure 
+/**    
+      \ingroup cmdline
+      \brief create a factory parameter that initializes to a std::unique_ptr
+      
       Creates a TFactoryParameter accurding to the given parameters. The advantage over calling the 
-      TactoryParameter cunstructor is, that type deduction is done automatically. 
+      TactoryParameter cunstructor is that type deduction is done automatically. 
       \tparam the type of the factory created parameter value 
       \param value the unique_ptr value to be set through this parameter. Best is to pass an empty unique pointer and 
       leave the initialization to the parameter handling 

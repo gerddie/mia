@@ -26,7 +26,7 @@
 NS_MIA_BEGIN
 
 /**
-    \ingroup infrastructure 
+    \ingroup cmdline
 
     \brief The command line option that sets a flag to true when given 
 
