@@ -27,7 +27,9 @@
 NS_MIA_BEGIN
 
 
-/** \brief a class for advanced morphological filter masks
+/** 
+    @ingroup misc 
+    \brief a class for advanced morphological filter masks
 
     This class provides the base for masks that support \a foregound, \a background and 
     \a don't \a care pixels. Such masks are used in more advanced morphological filters 

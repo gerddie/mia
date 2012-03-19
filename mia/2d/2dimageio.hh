@@ -58,6 +58,11 @@ typedef TIOPlugin<io_2dimage_type> C2DImageIOPlugin;
 
 /// @cond INTERNAL 
 
+/**
+   \ingroup io 
+   \brief Handler class for the image IO 
+ */
+
 class EXPORT_2D C2DImageIOPPH: public TIOPluginHandler<C2DImageIOPlugin> {
 public:
 	typedef TIOPluginHandler<C2DImageIOPlugin>::CSuffixmap CSuffixmap;

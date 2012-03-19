@@ -30,6 +30,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup registration
    \brief Precomputed Matrix for the DivCurl regularization. 
    
    This class stores the precomputed matrix for the divcurl regislarization 

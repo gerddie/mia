@@ -27,6 +27,8 @@
 
 NS_MIA_BEGIN
 
+///  @cond DOC_PLUGINS 
+
 template <typename Transform> 
 class EXPORT TDivCurlFullCost : public TFullCost<Transform> {
 public: 
@@ -55,5 +57,6 @@ private:
 }; 
 
 NS_MIA_END
+///  @endcond
 
 #endif

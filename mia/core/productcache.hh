@@ -32,7 +32,7 @@ NS_MIA_BEGIN
 typedef tbb::recursive_mutex::scoped_lock CRecursiveScopedLock; 
 
 /** 
-    \ingroup infrastructure 
+    \ingroup plugin
 
     \brief base class for the product cache 
     

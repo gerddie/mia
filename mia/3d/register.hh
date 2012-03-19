@@ -33,6 +33,7 @@ NS_MIA_BEGIN
 typedef std::shared_ptr< C3DFVectorfield > P3DFVectorfield;
 
 /**
+   \ingroup registration
    \brief A 3D non-rigid image registration class. 
 
    A 3D non-rigid image registration class. 

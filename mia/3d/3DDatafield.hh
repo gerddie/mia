@@ -37,6 +37,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup basic 
    \brief A templated class of a 3D data field.
 */
 template <class T>

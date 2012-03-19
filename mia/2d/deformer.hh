@@ -29,6 +29,8 @@ NS_MIA_BEGIN
 
 
 /**
+   @ingroup filtering
+   
    Deform an image by using a dense vector field as transformation. 
    \remark obsolete-should be done by using C2DTransform 
  */

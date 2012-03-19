@@ -28,6 +28,13 @@
 
 NS_MIA_BEGIN
 
+/**
+   @ingroup test 
+   @brief a Fixture to do general plug.in testing 
+
+   This filter test class runs given filter and tests whether the 
+   expected result is obtained and a test attribute is passed on. 
+*/
 template <template <class> class Image> 
 class TFiltertestFixture {
 	typedef typename Image<int>::dimsize_type dimsize_type; 
@@ -37,8 +44,16 @@ public:
 	{
 	}
 
-	
-
+	/**
+	   @tparam the filter to test 
+	   @tparam the input pixel type 
+	   @tparam the expected output pixel type 
+	   @param in_size  size of the input image 
+	   @param init_data input data array 
+	   @param out_size size of the expected output image 
+	   @param test_data expected data 
+	   @param f filter to run 
+	*/
 	template <typename Filter, typename IN, typename OUT> 
 	void run(const dimsize_type& in_size, const IN *init_data, 
 		 const dimsize_type& out_size, const OUT *test_data, const Filter& f) {

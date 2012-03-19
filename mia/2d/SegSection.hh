@@ -31,6 +31,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup perf 
    \brief Segmentation class to represent a section of the LV myocardium 
 
    Structure to save the segmentation of a section of the myocardium. 

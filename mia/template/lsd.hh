@@ -28,6 +28,7 @@
 
 NS_BEGIN(NS)
 
+///  @cond DOC_PLUGINS 
 struct valpos {
 	double val; 
 	int pos; 
@@ -239,4 +240,5 @@ const std::string TLSDImageCostPlugin<CP,C>::do_get_descr()const
 	return "Least-Squares Distance measure"; 
 }
 
+///  @endcond
 NS_END

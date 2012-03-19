@@ -27,6 +27,9 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup test 
+   \brief test if two images are equal and report the results by using BOOST_TEST methods. 
+
    Test if two images are ove equal size, equal pixel type and if their 
    pixel values are equal if the pixel type is integral, or close 
    if the pixel type is floating point. 

@@ -31,11 +31,62 @@
 
 NS_MIA_BEGIN
 
+/**
+   @ingroup registration 
+   @brief evaluate an approximation of the noise level of an image
+   @param image the input image 
+   @return the noise level 
+ */
 EXPORT_3D float get_noise_level(const C3DImage& image);
+
+/**
+   @ingroup registration 
+   @brief evaluate the noise-vs-gradient jump level for the normalized gradient field evaluation 
+   @param image the input image 
+   @return the jump level 
+ */
 EXPORT_3D float get_jump_level(const C3DImage& image);
+
+/**
+   @ingroup registration 
+   @brief evaluate the noise-vs-gradient jump level for the normalized gradient field evaluation 
+   @param image the input image 
+   @param noise_level 
+   @return the jump level 
+ */
 EXPORT_3D float get_jump_level(const C3DImage& image, float noise_level);
+
+/**
+   @ingroup registration 
+   @brief evaluate normalized gradiend field of an image 
+
+   Evaluate the normalized gradient field of an image using a pre-defined noise level 
+   @param image the input image 
+   @param noise_level 
+   @return the normalized gradient field 
+ */
 EXPORT_3D C3DFVectorfield get_nfg_n(const C3DImage& image,  float noise_level);
+
+/**
+   @ingroup registration 
+   @brief evaluate normalized gradiend field of an image 
+
+   Evaluate the normalized gradient field of an image using a pre-defined squared jump-level 
+   @param image the input image 
+   @param jump_level2
+   @return the normalized gradient field 
+ */
 EXPORT_3D C3DFVectorfield get_nfg_j(const C3DImage& image,  float jump_level2);
+
+/**
+   @ingroup registration 
+   @brief evaluate normalized gradiend field of an image 
+
+   Evaluate the normalized gradient field of an image. Noise level and jump level 
+   are estimated. 
+   @param image the input image 
+   @return the normalized gradient field 
+ */
 EXPORT_3D C3DFVectorfield get_nfg(const C3DImage& image);
 
 NS_MIA_END

@@ -33,6 +33,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup misc
    \brief A distance transform that stores distances to a 3D binary mask given as slices.  
 
    This class implements a 3D distance transform that makes it possible to 

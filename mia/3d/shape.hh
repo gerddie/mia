@@ -28,16 +28,28 @@
 
 NS_MIA_BEGIN
 
-/// a 3D bit shape for morphological processing \sa TShape
+/**
+   @ingroup misc 
+   @brief a 3D bit shape for morphological processing \sa TShape
+*/
 typedef TShape<T3DVector, C3DBitImage> C3DShape;
 
-/// pointer to a 3D bit shape for morphological processing \sa TShape
+/**
+   @ingroup misc 
+   @brief pointer to a 3D bit shape for morphological processing \sa TShape
+*/
 typedef std::shared_ptr<C3DShape > P3DShape;
 
-/// Base class for the 3D shape plug-ins 
+/**
+   @ingroup misc 
+   @brief Base class for the 3D shape plug-ins 
+*/
 typedef TFactory<C3DShape> C3DShapePlugin;
 
-/// Plugin handler for 3D shapes 
+/**
+   @ingroup misc 
+   @brief Plugin handler for 3D shapes 
+*/
 typedef THandlerSingleton<TFactoryPluginHandler<C3DShapePlugin> > C3DShapePluginHandler;
 
 

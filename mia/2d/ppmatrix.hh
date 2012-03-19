@@ -28,6 +28,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup registration 
    @brief Precomputed matrix for the DivCurl regularization. 
 
    Precomputed Matrix for the DivCurl regularization. 

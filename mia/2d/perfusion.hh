@@ -31,6 +31,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup perf 
    @brief A class to run an ICA on a heart perfusion series
 
    This class provides the tools for ICA based 2D perfusion image series. This class is specifically 

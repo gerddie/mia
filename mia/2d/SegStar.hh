@@ -27,6 +27,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup perf 
    \brief Helper class for the segmentation of the left heart ventricle myocardium 
 
    This class implements the segmentation helper that defines the

@@ -27,6 +27,13 @@
 
 NS_MIA_BEGIN
 
+/**
+   @ingroup basic 
+   @brief a 3D vector field 
+   
+   This class provides a field of 3D vectors,  
+*/
+
 template <typename T>
 class T3DVectorfield: public T3DDatafield<T>, public CAttributedData {
 public:
@@ -40,12 +47,26 @@ public:
 	{
 	}
 };
-
+/**
+   @ingroup basic 
+   @brief a 3D field of floating point single accuracy 3D vectors 
+*/
 typedef T3DVectorfield<C3DFVector>  C3DFVectorfield;
-typedef T3DVectorfield<C3DDVector>  C3DDVectorfield;
+
+/**
+   @ingroup basic 
+   @brief a 3D field of floating point single accuracy 3D vectors 
+*/
 typedef std::shared_ptr<C3DFVectorfield > P3DFVectorfield;
 
 /**
+   @ingroup basic 
+   @brief a 3D field of floating point double accuracy 3D vectors 
+*/
+typedef T3DVectorfield<C3DDVector>  C3DDVectorfield;
+
+/**
+   @ingroup basic 
    Concat two vector fields assuming these define transformations 
    A(x) = x - a(x) and B(x) = x - b(x), hence c(x) = a(x-b(x)) + b(x) 
    \param[in,out] lhs left input vector field and output 

@@ -29,6 +29,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup perf 
    \brief A class to represent one segmented frame in a heart perfusion series 
    
    This class implements the frame of a myocardial segmentation consisting of 

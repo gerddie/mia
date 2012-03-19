@@ -47,7 +47,9 @@ using namespace std;
 */
 extern bool fborder (long index, long nx, long ny);
 
-/*! \brief solve_sCG -- a class providing a CG solver
+/*! 
+  @ingroup filtering
+  \brief solve_sCG -- a class providing a CG solver
 
 	This contains basic solver functions based on CG schemes
 

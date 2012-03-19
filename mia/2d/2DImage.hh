@@ -34,7 +34,8 @@ NS_MIA_BEGIN
 #define ATTR_IMAGE_KMEANS_CLASSES "kmeans"
 
 /**
-\brief This is the base class for 2D images that can hold generic pixel data
+   \ingroup basic
+   \brief This is the base class for 2D images that can hold generic pixel data
 
 This class is the abstract base class for 2D images that can be passed around
 without the program knowing, what actual pixel type an image holds.
@@ -105,7 +106,7 @@ typedef std::map<std::string, C2DImageSeriesGroup> C2DImageGroupedSeries;
 
 
 /**
-   \ingroup classes
+   \ingroup basic 
    \brief This is the template version of a 2D image that is used for holding real data.
 
    The purpouse of this class is to hold actual pixel data and provide access to it.

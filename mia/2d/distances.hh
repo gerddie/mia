@@ -27,6 +27,8 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup misc 
+   
    Evaluate the distance between a point and a löine segment 
    @param point the point 
    @param a start of line segment 

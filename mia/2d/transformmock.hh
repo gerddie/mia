@@ -26,6 +26,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup test 
    @brief This class mocks a transformation by implementing all the pure virtual 
    methods of the \a C2DTransformation interface. 
 

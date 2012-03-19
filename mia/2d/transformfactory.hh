@@ -29,17 +29,25 @@
 
 NS_MIA_BEGIN
 
-/** The base class for 2D transformation creators 
+/** 
+    @ingroup registration
+    \brief The base class for 2D transformation creators 
     \remark should the name be C2DTransformFactory? 
 */ 
 typedef TTransformCreator<C2DTransformation>  C2DTransformCreator; 
 
-/// Pointer type to the transformation factory
+/** 
+    @ingroup registration
+    \brief Pointer type to the transformation factory
+*/
 typedef std::shared_ptr<C2DTransformCreator > P2DTransformationFactory;
 
 typedef TTransformCreatorPlugin<C2DTransformation>  C2DTransformCreatorPlugin; 
 
-/// The plugin handler to manage the transformation creators
+/** 
+    @ingroup registration
+    \brief The plugin handler to manage the transformation creators
+*/
 typedef THandlerSingleton<TFactoryPluginHandler<C2DTransformCreatorPlugin> > C2DTransformCreatorHandler;
 
 

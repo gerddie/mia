@@ -72,7 +72,7 @@ private:
 };
 
 /** 
-    \ingroup infrastructure 
+    \ingroup plugin
     Shared pointer type of the CPluginModule 
 */
 typedef std::shared_ptr<CPluginModule > PPluginModule;

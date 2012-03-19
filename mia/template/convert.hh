@@ -27,7 +27,9 @@
 
 NS_MIA_BEGIN
 
+///  @cond DOC_PLUGINS 
 /*
+
   \ingroup templates 
   \brief Generic pixel conversion for images 
   
@@ -88,6 +90,8 @@ private:
 	float m_b; 
 
 };
+
+/// @endcond DOC_PLUGINS 
 
 /**
    \cond INTERNAL

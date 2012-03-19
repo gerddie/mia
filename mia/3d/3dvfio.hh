@@ -31,7 +31,8 @@
 NS_MIA_BEGIN
 
 /**
-   An interface class to put vector fields into something, IO plugins can understand.
+   @ingroup io 
+   @brief An interface class to wrap a vector field into something, IO plugins can understand.
 */
 
 class EXPORT_3D C3DIOVectorfield: public C3DFVectorfield, public CIOData {
@@ -52,17 +53,23 @@ public:
 
 };
 
-///@cond LAZY 
+///@cond INTERNAL  
 struct io_3dvf_data {
 	typedef  C3DIOVectorfield type;
 	static const char *data_descr;
 };
 ///@endcond 
 
-/// Base class for vector field IO plug-ins 
+/**
+   @ingroup io 
+   @brief Base class for vector field IO plug-ins 
+*/
 typedef TIOPlugin<io_3dvf_data> C3DVFIOPlugin;
 
-/// Plug-in handler for vector field IO 
+/**
+   @ingroup io 
+   @brief Plug-in handler for vector field IO 
+*/
 typedef THandlerSingleton<TIOPluginHandler<C3DVFIOPlugin> > C3DVFIOPluginHandler;
 
 NS_MIA_END

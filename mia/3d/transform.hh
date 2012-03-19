@@ -37,10 +37,14 @@ NS_MIA_BEGIN
 
 class C3DTransformation;
 
-/// pointer type for a 3D transformation 
+/**
+   \ingroup registration 
+   \brief pointer type for a 3D transformation 
+*/
 typedef std::shared_ptr<C3DTransformation > P3DTransformation;
 
 /**
+   \ingroup registration 
    @brief This is the generic base class for 3D transformations.
 
    This class defines the interface for 3D transformations. Most methods are pure abstract 
@@ -376,7 +380,8 @@ private:
 
 
 /**
-   Compare two transformation iterators
+   \ingroup registration 
+   \brief Compare two transformation iterators
    @param a
    @param b
    @returns \a true if iterators are not equal, \a false otherwise 

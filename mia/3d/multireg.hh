@@ -30,8 +30,14 @@
 
 NS_MIA_BEGIN
 
-typedef std::shared_ptr<C3DFVectorfield > P3DFVectorfield;
 /**
+   @ingroup basic 
+   @brief pointer type for a 3D vector field 
+*/
+typedef std::shared_ptr<C3DFVectorfield > P3DFVectorfield;
+
+/**
+   @ingroup registration 
    \brief A 3D non-rigid image registration class. 
    
    Initialise it with the desired parameters and call it with the

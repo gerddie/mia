@@ -32,7 +32,8 @@ NS_MIA_BEGIN
 
 /**
    @cond INTERNAL 
-   Trait used for the non-linear registration 
+   \ingroup traits 
+   \brief Trait used for the non-linear registration 
 */
 template <>
 struct dimension_traits<2> {

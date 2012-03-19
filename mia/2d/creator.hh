@@ -22,7 +22,10 @@
 #include <mia/2d/2DImage.hh>
 
 NS_MIA_BEGIN
-
+/**
+   @ingroup filtering
+   @brief The 2D specialization of the TImageCreator template 
+*/
 DEFINE_Image_Creator(C2DImage)
 
 NS_MIA_END

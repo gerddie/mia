@@ -40,6 +40,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup basic
    \brief A class to hold data on a regular 2D grid 
    
    This class is the base for all kind of 2D data that is stored over a regular grid. 

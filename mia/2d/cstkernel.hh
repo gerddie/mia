@@ -40,6 +40,7 @@ struct EXPORT_2D cst2d_kernel {
 };
 
 /**
+   @ingroup filtering
    @brief Base class for cos/sin transformation filters 
 
    This class defines the interface for filter that uses cosinus and sinus transforms to move 

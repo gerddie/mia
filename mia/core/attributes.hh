@@ -39,8 +39,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup infrastructure 
-
+   \ingroup basic
    \brief The class of all attributes of data that is considered to ve meta-data. 
    
    CAttribute is the base class used for generric attributes of images and similar
@@ -107,7 +106,7 @@ struct pattr_less {
 };
 
 /** 
-    \ingroup infrastructure 
+   \ingroup basic
 
     \brief Class of an attribute that holds data of type  \a T
 
@@ -152,7 +151,7 @@ private:
 };
 
 /**
-   \ingroup infrastructure 
+   \ingroup basic
     
    Helper function to get the value of an attribute. Thr function throws a bad_cast exception,
    if the attribute doesn't hold a value ofthe requested type T
@@ -166,41 +165,77 @@ T EXPORT_CORE get_attribute_as(const CAttribute& attr) {
 	return a;
 }
 
-/// an integer attribute
+/** 
+    \ingroup basic 
+    \brief an integer attribute
+*/
 typedef TAttribute<int> CIntAttribute;
 
-/// a vector of integers attribute
+/** 
+    \ingroup basic 
+    \brief a vector of integers attribute
+*/
 typedef TAttribute<std::vector<int> > CVIntAttribute;
 
-/// a float attribute
+/** 
+    \ingroup basic 
+    \brief a float attribute
+*/
 typedef TAttribute<float> CFloatAttribute;
 
-/// a vector of floats attribute
+/** 
+    \ingroup basic 
+    brief a vector of floats attribute
+*/
 typedef TAttribute<std::vector<float> > CVFloatAttribute;
 
-/// a double attribute
+/** 
+    \ingroup basic 
+    \brief a double attribute
+*/
 typedef TAttribute<double> CDoubleAttribute;
-/// a vector of doubles attribute
+
+/** 
+    \ingroup basic 
+    \brief a vector of doubles attribute
+*/
 typedef TAttribute<std::vector<double> > CVDoubleAttribute;
 
 
-/// a string attribute
+/** 
+    \ingroup basic 
+    \brief a string attribute
+*/
 typedef TAttribute<std::string> CStringAttribute;
-/// a vector of strings attribute
+
+/** 
+    \ingroup basic 
+    \brief a vector of strings attribute
+*/
 typedef TAttribute<std::vector<std::string> > CVStringAttribute;
 
-/// A name:attribute map
+/** 
+    \ingroup basic 
+    \brief A name:attribute map
+*/
 typedef std::map<std::string, PAttribute> CAttributeMap;
 
-/// providing the possibility to nest attribute lists
+/** 
+    \ingroup basic 
+    \brief providing the possibility to nest attribute lists
+*/
 typedef TAttribute<CAttributeMap> CAttributeList;
 
-/// another pointer-usage easy maker
+/** 
+    \ingroup basic 
+    \brief another pointer-usage easy maker
+*/
 typedef std::shared_ptr<CAttributeMap > PAttributeMap;
 
 
 /**
-   Facility to write an attribute map to a stream
+   \ingroup basic 
+   \brief Facility to write an attribute map to a stream
    \param os output stream
    \param data map of values
    \returns a reference to the output stream
@@ -208,9 +243,8 @@ typedef std::shared_ptr<CAttributeMap > PAttributeMap;
 EXPORT_CORE  std::ostream& operator << (std::ostream& os, const CAttributeMap& data);
 
 
-/**
-    \ingroup infrastructure 
-    
+/** 
+    \ingroup basic 
     \brief A collection of attributes 
     
     This is the base class for all data that uses attributes. It provides all the needed functions to store 
@@ -303,8 +337,12 @@ private:
 };
 
 
-/** Compare two attribute data instances \a a  and \a b
-    \returns \a true, if \a a and \a b hold the same set of attributes with the same values,
+
+/**
+   \ingroup basic 
+
+   \brief Compare two attribute data instances \a a  and \a b
+   \returns \a true, if \a a and \a b hold the same set of attributes with the same values,
              \a false otherwise
 */
 
@@ -312,8 +350,7 @@ EXPORT_CORE bool operator == (const CAttributeMap& am, const CAttributeMap& bm);
 
 
 /**
-    \ingroup infrastructure 
-    
+   \ingroup basic 
    @brief A class to translate an attribute from a string.
    
    This class is the base class to translate attributes from their typed value to a string and back. 
@@ -342,7 +379,7 @@ protected:
 };
 
 /**
-    \ingroup infrastructure 
+   \ingroup basic 
     
    \brief A singelton class to translate strings to attributes based on keys.
    
@@ -380,8 +417,8 @@ private:
 
 
 /**
-    \ingroup helpers 
-    
+   \ingroup basic 
+   
    convenience function to set an attribute in an attribute map:
    \remark review its use
    \tparam type of the attribute value to be added
@@ -398,7 +435,7 @@ void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& key
 }
 
 /**
-   \ingroup helpers 
+   \ingroup basic 
    convenience function to set an string attribute from a C-string in an attribute map:
    \tparam type of the attribute value to be added
    \param attributes map to set the value in
@@ -410,14 +447,14 @@ void EXPORT_CORE add_attribute(CAttributeMap& attributes, const std::string& key
 
 
 /** 
-    \ingroup infrastructure 
-  
-    \brief Generic string vs. attribute translator singleton
+   \ingroup basic 
+   
+   \brief Generic string vs. attribute translator singleton
 
-    This class defines a generic translator between strings and a specific attribute type.
-    All translaters are registered to a global map of type CStringAttrTranslatorMap
-    that selects the conversion  based on a key. The global map is implemented as a singleton
-    can be accessed via CStringAttrTranslatorMap::instance()
+   This class defines a generic translator between strings and a specific attribute type.
+   All translaters are registered to a global map of type CStringAttrTranslatorMap
+   that selects the conversion  based on a key. The global map is implemented as a singleton
+   can be accessed via CStringAttrTranslatorMap::instance()
  */
 template <typename T>
 class EXPORT_CORE TTranslator: public CAttrTranslator {

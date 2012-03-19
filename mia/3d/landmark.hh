@@ -30,7 +30,8 @@
 NS_MIA_BEGIN
 
 /**
-   \brief named a 3D landmark
+   @ingroup basic 
+   \brief a named 3D landmark
 
    This class provides the basis for named a 3D landmark 
  */

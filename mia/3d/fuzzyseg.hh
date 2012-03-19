@@ -23,6 +23,9 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup filtering 
+   @brief Fuzzy c-means segmentation with gain field estimation 
+   
    This function runs a fuzzy c-means segmentation with B-field correction in the input data set. 
    \param[in] src the input image 
    \param[in] noOfClasses number of segmentation classes

@@ -26,6 +26,10 @@
 #include <mia/template/similarity_profile.hh>
 
 NS_MIA_BEGIN
+/**
+   @ingroup perf 
+   @brief Image series similarity profile 
+ */
 typedef TSimilarityProfile<2> C2DSimilarityProfile; 
 NS_MIA_END
 

@@ -32,6 +32,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup basic 
    Basic image orientations based on the head 
  */
 enum E3DImageOrientation {ior_axial, /**< look from above or below at the head */  
@@ -41,7 +42,8 @@ enum E3DImageOrientation {ior_axial, /**< look from above or below at the head *
 };
 
 /**
-   Stream operator to write orientation orient to stream os 
+   \ingroup basic 
+   @brief Stream operator to write orientation orient to stream os 
    \param orient
    \param os
    \returns os 
@@ -49,17 +51,24 @@ enum E3DImageOrientation {ior_axial, /**< look from above or below at the head *
 EXPORT_3D  std::ostream& operator << (std::ostream& os, E3DImageOrientation orient);
 
 /**
-   Stream operator to read orientation orient from  stream is 
+   \ingroup basic 
+   @brief Stream operator to read orientation orient from  stream is 
    \param orient
    \param is
    \returns is 
  */
 EXPORT_3D  std::istream& operator >> (std::istream& is, E3DImageOrientation& orient);
 
-/// attribute for 3D image orientation 
+/**
+   @ingroup basic 
+   @brief attribute for 3D image orientation 
+*/
 typedef TAttribute<E3DImageOrientation> C3DImageOrientation;
 
-/// translator for 3D image orientations to and from strings 
+/**
+   @ingroup basic 
+   @brief translator for 3D image orientations to and from strings 
+*/ 
 typedef TTranslator<E3DImageOrientation> COrientationTranslator;
 
 NS_MIA_END

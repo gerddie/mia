@@ -33,7 +33,7 @@ struct EXPORT_CORE creator_type {
 };
 
 /**
-   \ingroup templates 
+   \ingroup filtering 
 
    \brief The base class for generic image creation 
 

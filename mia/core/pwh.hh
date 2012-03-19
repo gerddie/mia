@@ -29,13 +29,18 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup classes
+   @cond NOT_EXPOSED 
+   
+   \ingroup registration 
    \brief This class implements a 1D histogram using Parzen Windows. 
 
    This class uses NFFT to implement the Parzen windows probability estimation. 
    Input samples are given once with a fixed operation range and the number 
    of output samples used to interpolate the histogram 
-   Then the histogram values itself are evaluated using cubic B-Splines 
+   Then the histogram values itself are evaluated using cubic B-Splines. 
+   
+   @remark Usually this class is not compiled in 
+   
  */
 
 class CParzenWindowHistogram {
@@ -62,6 +67,8 @@ public:
 private: 
 	struct CParzenWindowHistogramImpl *impl; 
 }; 
+
+/// @endcond
 
 NS_MIA_END
 #endif

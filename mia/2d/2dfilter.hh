@@ -124,6 +124,7 @@ inline P2DImage  EXPORT_2D run_filter(P2DImage image, const char *filter)
 
 
 /**
+   \ingroup filtering 
    \brief 2D Image combiner 
    
    A class to provides the base for operations that combine two images to create a new image

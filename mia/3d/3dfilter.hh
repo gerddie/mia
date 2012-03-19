@@ -35,7 +35,7 @@ NS_MIA_BEGIN
 
 /**
    \ingroup filtering 
-   Base class for 3D image filters. Filters are implemented as plug-ins.
+   @brief Base class for 3D image filters. Filters are implemented as plug-ins.
 
 */
 
@@ -43,19 +43,19 @@ typedef TImageFilter<C3DImage> C3DFilter;
 
 /**   
       \ingroup filtering 
-      The 3D filter plugin type 
+      @brief The 3D filter plugin type 
 */
 typedef TImageFilterPlugin<C3DImage> C3DFilterPlugin;
 
 /**   
       \ingroup filtering 
-      The 3D filter plugin handler
+      @brief The 3D filter plugin handler
 */
 typedef THandlerSingleton<TFactoryPluginHandler<C3DFilterPlugin> > C3DFilterPluginHandler;
 
 /**   
       \ingroup filtering 
-      The 3D filter shared pointer 
+      @brief The 3D filter shared pointer 
 */
 typedef std::shared_ptr<C3DFilter> P3DFilter; 
 
@@ -111,14 +111,14 @@ FACTORY_TRAIT(C3DImageCombinerPluginHandler);
 
 /**
    \ingroup filtering 
-
-   Convenience function to create a filter chain from a series of filter descriptions 
+   @brief Convenience function to create a filter chain from a series of filter descriptions 
    \param chain the descriptions 
    \returns the filter chain as a vector 
+   @remark obsolete, should use C3DImageFilterChain
  */
 
 template <typename S>
-std::vector<P3DFilter> create_filter_chain(const std::vector<S>& chain)
+std::vector<P3DFilter> create_filter_chain(const std::vector<S>& chain) __attribute__((deprecated))
 {
 	std::vector<P3DFilter> filters;
 
@@ -138,7 +138,7 @@ std::vector<P3DFilter> create_filter_chain(const std::vector<S>& chain)
 
 /**
    \ingroup filtering 
-   3D filter chain to apply various filters in one run 
+   @brief 3D filter chain to apply various filters in one run 
 */
 typedef TFilterChain<C3DFilterPluginHandler> C3DImageFilterChain; 
 
@@ -154,7 +154,7 @@ inline P3DFilter produce_3dimage_filter(const char* descr)
 
 /**
    \ingroup filtering 
-   convenience function: create and run a filter on an image 
+   @brief convenience function: create and run a filter on an image 
    @param image input image 
    @param filter string defining the filter to be applied 
    @returns the filtered image 

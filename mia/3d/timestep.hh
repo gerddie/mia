@@ -28,6 +28,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup registration 
    \brief The time-step part of time-marching registration algorithms. 
 
    

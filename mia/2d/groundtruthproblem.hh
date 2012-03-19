@@ -28,6 +28,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup perf 
    \brief a class for the evaluation of a pseudo ground truth of a perfusion series  
 
    This class implements the optimization problem required for Ground Thruth Estimation 

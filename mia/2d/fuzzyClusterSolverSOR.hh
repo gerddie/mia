@@ -33,7 +33,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup classes
+   \ingroup filtering
    \brief A solver for the fuzzy segmentation smoothness constraint 
    
    This is a solver for the smoothness constraint of the fuzzy c-means algorithm 

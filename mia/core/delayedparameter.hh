@@ -33,8 +33,7 @@ NS_MIA_BEGIN
 
 
 /**
-   \ingroup infrastructure 
-
+   \ingroup cmdline 
    \brief A parameter proxy object with a key to identify it.  
 
    This template is used to hold reference to data that may not yet be available and 

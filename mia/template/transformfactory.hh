@@ -32,10 +32,13 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup registration 
+   
    This class is the base class for a Creater of transformations according to a 
    given model. 
    Derived from this class are all the plug-ins that may create transformations 
    of different types. 
+   @tparam Transform the transformation type to be created by this creator   
  */
 template <typename Transform> 
 class EXPORT_HANDLER TTransformCreator: public CProductBase {
@@ -87,6 +90,7 @@ private:
 
 
 /**
+   @ingroup registration 
    \brief Factory class that is used to create the transformation creator 
    \tparam Transform the type of the transformation to be created 
 */ 

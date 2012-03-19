@@ -36,6 +36,7 @@ NS_MIA_BEGIN
 
 
 /**
+   @ingroup registration
    \brief This is the generic base class for 2D transformations.
 
    This class defines the generic interface for a 2D transformation. 
@@ -396,13 +397,19 @@ private:
 
 };
 
-/// Pointer type for the 2D transformation 
+/**
+   @ingroup registration
+   \brief  Pointer type for the 2D transformation 
+*/
 typedef C2DTransformation::Pointer P2DTransformation;
 
 
 
-///Move an 2D transformation iterator forward by using its provided += operator 
-// don't use a reference to the iterator, because we use the created copy as result 
+/**
+   @ingroup registration
+   \brief Move an 2D transformation iterator forward by using its provided += operator 
+   don't use a reference to the iterator, because we use the created copy as result 
+*/
 inline C2DTransformation::const_iterator operator + (C2DTransformation::const_iterator i, size_t delta) 
 {
 	i += delta; 
@@ -423,7 +430,8 @@ inline std::ostream& operator << (std::ostream& os,
 }
 
 /**
-   Compare two transformation iterators
+   @ingroup registration
+   \brief Compare two transformation iterators
    \param a
    \param b
    \returns \a true if iterators are not equal, \a false otherwise 

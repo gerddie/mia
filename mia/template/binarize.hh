@@ -26,6 +26,8 @@
 
 NS_MIA_BEGIN
 
+///  @cond DOC_PLUGINS 
+
 template <class Image>	
 class TBinarize: public TImageFilter<Image> {
 	float m_min; 
@@ -57,6 +59,8 @@ private:
 	float m_max; 
 
 };
+
+///  @endcond DOC_PLUGINS 
 	
 NS_MIA_END
 

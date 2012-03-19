@@ -31,6 +31,7 @@ NS_MIA_BEGIN
 
 
 /**
+   @ingroup registration 
    \brief A 2D non-rigid registration class for time-marching PDE based registration  
 
    The 2D non-rigid image registration class. This class allows the combination of 

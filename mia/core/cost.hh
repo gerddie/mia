@@ -44,7 +44,7 @@ struct EXPORT_CORE cost_type {
 
 
 /**
-   \ingroup templates 
+   \ingroup registration 
 
    \brief The generic cost function interface. 
 

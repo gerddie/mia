@@ -28,8 +28,8 @@ NS_MIA_BEGIN
 
 
 /**
-   \ingroup templates 
-   \brief generic  base class for transformations 
+   \ingroup registration
+   \brief generic base class for transformations 
 
    Template of a generic tranformation function 
    \tparam D data type of the object to be transformed 

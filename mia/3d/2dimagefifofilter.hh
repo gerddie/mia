@@ -54,7 +54,7 @@ struct __copy_create_ptr<C2DImage> {
 /// @endcond 
 
 /**
-   \ingroup Filtering 
+   \ingroup filtering 
    \brief The class to provide filtering of series of 2D images as if they where 3D images 
 
    This class is the base class for filters that run on series of 2D images in a 3D manner 
@@ -108,7 +108,7 @@ protected:
 };
 
 /**
-   \ingroup Infrastructure
+   \ingroup filtering
    \brief The plug-in base class for the FIFO filters 
 */
 class EXPORT_3D C2DFifoFilterPlugin:
@@ -135,10 +135,16 @@ protected:
 		       C2DImageFifoFilter& filter)const ;
 };
 
-/// Pointer type for the FIFO filter 
+/**
+   \ingroup filtering
+   \brief Pointer type for the FIFO filter 
+*/
 typedef TFifoFilter<P2DImage>::Pointer P2DImageFifoFilter;
 
-/// Plugin handler for the FIFO filters 
+/**
+   \ingroup filtering
+   \brief Plugin handler for the FIFO filters 
+*/
 typedef THandlerSingleton<TFactoryPluginHandler<C2DFifoFilterPlugin> > C2DFifoFilterPluginHandler;
 
 NS_MIA_END

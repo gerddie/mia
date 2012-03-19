@@ -52,7 +52,9 @@
 
 NS_MIA_BEGIN
 
-/** \brief A class to deine a triangle mesh with some attributes 
+/** 
+    @ingroup basic 
+    \brief A class to deine a triangle mesh with some attributes 
     
     This class defines the representation of a triangle-mesh.  
 */
@@ -338,34 +340,3 @@ typedef TIOHandlerSingleton<TIOPluginHandler<CMeshIOPlugin> > CMeshIOPluginHandl
 NS_MIA_END
 
 #endif // __TRIANGULARMESH_HH
-
-/* CVS LOG
-
-   $Log$
-   Revision 1.5  2005/06/29 13:22:23  wollny
-   switch to version 0.7
-
-   Revision 1.3  2005/04/01 11:52:13  gerddie
-   adapted to new mesh loading code
-
-   Revision 1.2  2005/04/01 09:56:30  gerddie
-   adapted to new mesh loading code
-
-   Revision 1.1.1.1  2005/03/17 13:44:15  gerddie
-   initial import
-
-   Revision 1.4  2004/09/23 15:02:05  wollny
-   added color_at
-
-   Revision 1.3  2004/08/25 09:08:32  wollny
-   added an emacs style comment to all source files
-
-   Revision 1.2  2004/06/03 09:57:32  wollny
-   Changed (hopefully) all instancable class names to Cxxxxx
-
-   Revision 1.1  2004/03/05 15:15:35  tittge
-   fileIO, triangulaMesh, and 4DVector added
-
-
-*/
-

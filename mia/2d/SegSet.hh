@@ -31,6 +31,7 @@ namespace xmlpp {
 NS_MIA_BEGIN
 
 /**
+   @ingroup perf 
    \brief A set of segmentation of a 2D series of perfusion images 
    
    A set of slices containing segmentation information specifically designed for 

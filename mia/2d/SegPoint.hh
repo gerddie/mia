@@ -32,6 +32,7 @@ namespace xmlpp {
 NS_MIA_BEGIN
 
 /**
+   @ingroup perf 
    \brief a point in a 2D segmentation shape 
 
    Point of a segmentation shape. In addition to be a 2D point it can be 

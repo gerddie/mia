@@ -25,7 +25,8 @@
 NS_MIA_BEGIN
 
 /**
-   A accumulation of cost functions that are weigted against each other 
+   @ingroup registration 
+   @brief An accumulation of cost functions that are weigted against each other 
  */
 typedef TFullCostList<C3DTransformation> C3DFullCostList; 
 

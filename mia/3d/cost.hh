@@ -26,9 +26,28 @@
 
 NS_MIA_BEGIN
 
+/**
+   @ingroup registration 
+   @brief the image-to-image cost function base class 
+*/
 typedef TCost<C3DImage, C3DFVectorfield> C3DImageCost;
+
+/**
+   @ingroup registration 
+   @brief pointer type of the image-to-image cost function base class 
+*/
 typedef std::shared_ptr<C3DImageCost > P3DImageCost;
+
+/**
+   @ingroup registration 
+   @brief plug-in for the image-to-image cost function base class 
+*/
 typedef TFactory<C3DImageCost> C3DImageCostPlugin;
+
+/**
+   @ingroup registration 
+   @brief plug-in handler for the image-to-image cost function base class 
+*/
 typedef THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin> > C3DImageCostPluginHandler;
 
 /** 

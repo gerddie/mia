@@ -28,13 +28,22 @@
 
 NS_MIA_BEGIN
 
-/// Base class for the generic IO of transformations 
+/**
+   \ingroup io
+   \brief Base class for the generic IO of transformations 
+*/
 typedef TIOPlugin<C3DTransformation> C3DTransformationIO; 
 
-/// Plug-in handler for the transformation IO plug-ins 
+/**
+   \ingroup io
+   \brief Plug-in handler for the transformation IO plug-ins 
+*/
 typedef TIOHandlerSingleton< TIOPluginHandler<C3DTransformationIO> > C3DTransformationIOPluginHandler;
 
-/// data key type for temporary storage of 3D transformations \sa CDatapool 
+/**
+   \ingroup io
+   \brief data key type for temporary storage of 3D transformations \sa CDatapool 
+*/
 typedef C3DTransformationIOPluginHandler::Instance::DataKey C3DTransformationDataKey;
 NS_MIA_END
 

@@ -29,6 +29,17 @@ NS_MIA_BEGIN
 
 typedef std::vector<P2DImage> C2DImageStack;
 
+/**
+   @ingroup test 
+   @brief a fixture to test FIFO filtering 
+
+   @tparam A the input data type 
+   @tparam B the extected data type 
+   @param input_data the input data as flat array 
+   @param test_data the expected result data as flat array 
+   @param size the size of the input slices 
+   @param slices the number of slices to process. 
+*/
 struct EXPORT_3D fifof_Fixture  {
 	template <typename A, typename B>
 	void prepare(const A *input_data, const B *test_data, const C2DBounds& size, size_t slices);

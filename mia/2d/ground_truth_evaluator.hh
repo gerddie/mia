@@ -26,6 +26,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup perf 
    \brief Main class for peudo ground truth estimation for perfusion series 
    
    This class implements the Ground Truth Estimation for perfusion series

@@ -28,18 +28,29 @@
 
 NS_MIA_BEGIN
 
-/** base class for the creators of 3D transformations 
+/**
+   \ingroup io
+   \brief base class for the creators of 3D transformations 
     \todo rename this to factory 
  */
 typedef TTransformCreator<C3DTransformation>  C3DTransformCreator; 
 
-/// pointer type of the class for the creators of 3D transformations 
+/**
+   \ingroup io
+   \brief pointer type of the class for the creators of 3D transformations 
+*/
 typedef std::shared_ptr<C3DTransformCreator > P3DTransformationFactory;
 
-/// Base class for the transform creator plugins 
+/**
+   \ingroup io
+   \brief Base class for the transform creator plugins 
+*/
 typedef TTransformCreatorPlugin<C3DTransformation>  C3DTransformCreatorPlugin; 
 
-/// Transform creator plugin handler 
+/**
+   \ingroup io
+   \brief Transform creator plugin handler 
+*/
 typedef THandlerSingleton<TFactoryPluginHandler<C3DTransformCreatorPlugin> > C3DTransformCreatorHandler;
 
 /** 

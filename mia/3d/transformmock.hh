@@ -26,6 +26,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup test 
    \brief A test class to enable running code that needs a transformation 
 
    This class mocks a transformation by implementing all the pure virtual 

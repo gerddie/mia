@@ -37,6 +37,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup basic 
    \brief A simple 3D vector type. 
 
    This class is the template for a 3D vector that provides support for some common operators. 

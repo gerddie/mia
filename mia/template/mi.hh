@@ -29,6 +29,8 @@
 
 NS_BEGIN(NS)
 
+///  @cond DOC_PLUGINS 
+
 template <typename T> 
 class TMIImageCost: public T {
 public: 	
@@ -180,4 +182,5 @@ const std::string TMIImageCostPlugin<CP,C>::do_get_descr() const
 	
 }
 
+///  @endcond
 NS_END

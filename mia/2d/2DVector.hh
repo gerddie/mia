@@ -35,6 +35,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup basic
    \brief a 2D vector 
    
    A 2D vector that provides the usual set of operations required to handle such objects. 

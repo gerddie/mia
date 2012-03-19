@@ -31,7 +31,8 @@ NS_MIA_BEGIN
 
 
 /**
-   A class to interface  images with image IO plugins.
+   @ingroup io 
+   @brief A class to interface  images with image IO plugins.
 */
 class EXPORT_3D C3DImageVector: public std::vector< std::shared_ptr<C3DImage >> ,
 		      public CIOData {
@@ -45,15 +46,28 @@ struct EXPORT_3D io_3dimage_data {
 	typedef  C3DImageVector type;
 	static const char *data_descr;
 };
-
-typedef TIOPlugin<io_3dimage_data> C3DImageIOPlugin;
 /**
-   \ingroup io
-   Handler for the plug-ins that store and load 3D images. It also provides the 
-   interface to load and store data. 
+   @ingroup io 
+   @brief The 3D image io plugin base class 
+*/
+typedef TIOPlugin<io_3dimage_data> C3DImageIOPlugin;
+
+/**
+   @ingroup io
+   @brief Handler for the plug-ins that store and load 3D images. 
 */
 typedef TIOHandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> > C3DImageIOPluginHandler;
+
+/**
+   @ingroup io
+   @brief Data key type used to load and store to the CDatapool 
+*/
 typedef C3DImageIOPluginHandler::Instance::DataKey C3DImageDataKey;
+
+/**
+   @ingroup io
+   @brief pointer type to the images 
+*/
 typedef C3DImageIOPluginHandler::Instance::PData P3DImageVector;
 
 /** 
@@ -66,11 +80,12 @@ struct EXPORT_3D C3DImageIOPluginHandlerTestPath {
 }; 
 /// @endcond
 
-/** convenience function to create an image vector from a single image 
+/** 
+    @ingroup convenience 
+    convenience function to create an image vector from a single image 
     \param image 
     \returns the vector containing the image 
 */ 
-
 P3DImageVector EXPORT_3D create_image3d_vector(P3DImage image);
 
 /**

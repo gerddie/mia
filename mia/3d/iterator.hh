@@ -26,6 +26,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup basic 
    \brief a 3D iterator that knows its position in the 3D grid ans supports iterating over 
    sub-ranges 
    

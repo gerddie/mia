@@ -30,6 +30,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup io 
    \brief a class for the IO of 2D vector fields 
 
    \remark this class is obsolete, new code should use the 2D transformation IO 

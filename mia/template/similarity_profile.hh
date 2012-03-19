@@ -26,6 +26,7 @@
 
 NS_MIA_BEGIN
 /**
+   @ingroup perf 
    \brief A class to evaluate image similarity profiles of image series 
    \tparam dim the dimenstion of the image data to be used 
 

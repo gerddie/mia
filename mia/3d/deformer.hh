@@ -30,6 +30,12 @@
 
 NS_MIA_BEGIN 
 
+/**
+   @ingroup registration 
+   @brief A filter to transform  an image
+   @remark obsolete, should be done by using C3DTransformation
+*/
+
 struct FDeformer3D: public TFilter<P3DImage> {
 	FDeformer3D(const C3DFVectorfield& vf, const C3DInterpolatorFactory& ipfac): 
 		m_vf(vf), 

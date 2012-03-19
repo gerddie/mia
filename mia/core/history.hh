@@ -32,7 +32,7 @@ NS_MIA_BEGIN
 
 
 /** 
-   \ingroup infrastructure 
+   \ingroup basic 
    \brief This class holds the complete history list of a data set. 
    
    \todo Use it. 

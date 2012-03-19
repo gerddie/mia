@@ -48,7 +48,7 @@ struct SIntensityStats {
 }; 
 
 /**
-   \ingroup functors  
+   \ingroup misc 
    \brief Functor to accumulate statistics of data. 
    
    This functior is used to accumulate the statistics over the data various 

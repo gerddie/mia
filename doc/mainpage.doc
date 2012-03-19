@@ -43,45 +43,36 @@
   A file may contain more then one class and additional functions that are closely linked.
     
     
+    \defgroup basic Basic data strctures and functions 
+    \brief Basic data structures for data and meta-data handling 
+
     \defgroup cmdline Command line and parameter parsing 
     \brief These classes and functions relate to the parsing of the command line and the parameter parsing for plug-ins 
+    
+    \defgroup filtering Filtering and combining 
+    \brief These classes and functions are related to  filtering and combining of 2D and 3D images. 
+
+    \defgroup io Input/output of files 
+    \brief Input and output of images 
+
+    \defgroup registration Image Registration and Transformation 
+    \brief Comparison, registration, and transformation of images 
+
+    \defgroup interpol Interpolation 
+    \brief These classes deal with the tasks related to interpolation
+
+    \defgroup logging Logging and debugguing 
+    \brief Classes and functions that are used for textual output 
+	      
+    \defgroup perf Perfusion Analysis 
+    \brief Classes and functions related to the analyis of perfusion data 
 
     \defgroup plugin Plug-in handling 
     \brief Classes and functions that implement the plug-in infrastructure
 
-    \defgroup logging Logging and debugguing 
-    \brief Classes and functions that are used for textual output 
-
-    \defgroup infrastructure Infrastructure 
-    \brief Classes and functions related to plug-in handling, option parsing, and logging.
-    
-    These classes and functions are related to the infrastructure provided by the MIA libraries. 
-    This includes the means for plug-in handling, option parsing, attributes and logging.
-
-    \defgroup io Classes and functions related to Input/output of files 
-    
-    \defgroup filtering Filtering and combining 
-
-    \brief These classes and functions are related to  filtering and combining of 2D and 3D images. 
-
-    \defgroup interpol Interpolation 
-    \brief These classes deal with the tasks related to interpolation
-    
-    \defgroup registration Image Registration 
-
-    \defgroup classes Classes that provide primary funcionality 
-
-    \defgroup functors Functors
-
-    \defgroup helpers Helper classes and functions 
-
-    \defgroup templates Templates that provide primary funcionality 
-
     \defgroup traits Template metaprogramming classes
-
+    
     \defgroup tests Test classes and functions
-
-    \defgroup perf Perfusion Analysis 
 	    	      
     \defgroup misc Uncategorized 
     

@@ -30,7 +30,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup classes
+   \ingroup basic 
 
    \brief a class to real-to-complex 1D FFTs 
 

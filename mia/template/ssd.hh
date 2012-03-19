@@ -28,6 +28,12 @@
 
 NS_BEGIN(NS)
 
+///  @cond DOC_PLUGINS 
+
+/**
+
+   @ingroup registation 
+*/
 template <typename TCost> 
 class TSSDCost: public TCost {
 public: 	
@@ -167,4 +173,5 @@ C *TSSDCostPlugin<CP,C>::do_create() const
 	return new TSSDCost<C>(m_normalize);
 }
 
+/// @endcond 
 NS_END

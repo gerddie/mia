@@ -28,6 +28,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup basic 
    \brief a simple 3x3 matrix 
    
    This si a simple implementation of a 3x3 matrix that supports the evaluation of certain 

@@ -34,7 +34,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup classes
+   \ingroup interpol 
    \brief Class for scaling of one-dimensional arrays. 
    
    Class for scaling of one-dimensional arrays. For downscaling always a gaussian smoothing is used.

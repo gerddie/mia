@@ -34,6 +34,9 @@ struct SFuzzySegParams {
 }; 
 
 /**
+   @ingroup filtering
+   @brief Run a fuzzy c-mean segmentation with gain field correction 
+
    This function runs a fuzzy c-means segmentation with B-field correction in the input data set 
    according to D.L. Pham and J.L.Prince, 
    "An adaptive fuzzy C-means algorithm for image segmentation in the presence

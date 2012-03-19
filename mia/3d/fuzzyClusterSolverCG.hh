@@ -38,7 +38,9 @@ using namespace std;
 
 
 
-/*! \brief function defining field borders
+/*! 
+  @ingroup filtering 
+  \brief function defining field borders
 
     \param index  index running from 0 to NoOfPixels
     \param nx     no of pixels in x
@@ -48,13 +50,15 @@ using namespace std;
 */
 extern bool fborder (long index, long nx, long ny, long nz);
 
-/*! \brief solve_sCG -- a class providing a CG solver
-
-	This contains basic solver functions based on CG schemes
-
-\author Stefan Burckhardt and Carsten Wolters, wolters@mis.mpg.de, 2004
-\remark adapted for libmona by Heike Jaenicke and Marc Tittgemeyer, tittge@cbs.mpg.de, 2004
-\remark adapted for mia2 by Gert Wollny, gw.fossdev@gmail.com 2011 
+/*! 
+  @ingroup filtering 
+  \brief a class providing a CG solver
+  
+  This contains basic solver functions based on CG schemes
+  
+  \author Stefan Burckhardt and Carsten Wolters, wolters@mis.mpg.de, 2004
+  \remark adapted for libmona by Heike Jaenicke and Marc Tittgemeyer, tittge@cbs.mpg.de, 2004
+  \remark adapted for mia2 by Gert Wollny, gw.fossdev@gmail.com 2011 
 */
 
 

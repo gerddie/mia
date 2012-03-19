@@ -30,6 +30,7 @@ NS_MIA_BEGIN
 
 /**
    @cond INTERNAL 
+   @ingroup registration 
 */
 template <> 
 struct RegistrationTraits<2> {
@@ -51,14 +52,14 @@ typedef TRegModel<2> C2DRegModel;
 typedef std::shared_ptr<C2DRegModel > P2DRegModel;
 
 /**
-   \ingroup infrastructure 
-   Plugin for the 2D registration model. 
+   @ingroup registration 
+   @brief Plugin for the 2D registration model. 
 */
 typedef TFactory<C2DRegModel>  C2DRegModelPlugin;
 
 /**
-   \ingroup infrastructure 
-   Plugin handler for the 2D registration model. 
+   @ingroup registration 
+   @brief Plugin handler for the 2D registration model. 
 */
 typedef THandlerSingleton< TFactoryPluginHandler<C2DRegModelPlugin> > C2DRegModelPluginHandler;
 

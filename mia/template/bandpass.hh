@@ -28,6 +28,8 @@
 
 NS_MIA_BEGIN
 
+///  @cond DOC_PLUGINS 
+
 template <class Image> 
 class TBandPass: public TImageFilter<Image> {
 public: 	
@@ -57,5 +59,6 @@ private:
 
 NS_MIA_END
 
+///  @endcond DOC_PLUGINS 
 
 #endif

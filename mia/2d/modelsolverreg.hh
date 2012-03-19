@@ -30,6 +30,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup registration 
    \brief A class for PDE based time-marching non-linear image registration 
 
    Worker class for a PDE model based non-linear registration. 

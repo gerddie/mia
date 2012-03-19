@@ -29,7 +29,7 @@
 NS_MIA_BEGIN
 
 /** 
-    \ingroup classes
+    \ingroup basic 
     
     \brief A class to hold a critical point.
     This class holds a critical point in a 3D vector field 
@@ -37,6 +37,8 @@ NS_MIA_BEGIN
      \f$ x_0 \in \mathbb{R}^3 \f$, Matrix \f$ A \in \mathbb{R}^{3 \times 3} \f$, and
     a magnitude \f$ \gamma \in \mathbb{R} \f$.
     It is used only as an intermidiate storage. 
+
+    @remark partially untested 
 */
 
 
@@ -135,9 +137,11 @@ typedef std::complex<float> fcomplex;
 typedef T3DVector<fcomplex> C3DCVector; 
 
 /** 
-    \ingroup classes
+    \ingroup basic 
     \brief A class to hold a criticalpoint with eigenvalues and eigenvectors.
- */
+    
+    @remark untested 
+*/
 
 class C3DCriticalPointEigen {
 	/// where is the critical point 

@@ -28,6 +28,7 @@
 
 NS_MIA_BEGIN
 
+///  @cond DOC_PLUGINS 
 template <class Image> 
 class TInvert: public TImageFilter<Image> {
 public: 	
@@ -48,6 +49,7 @@ public:
 	virtual const std::string do_get_descr()const; 
 };
 
+///  @endcond 
 NS_MIA_END
 
 

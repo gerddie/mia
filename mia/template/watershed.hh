@@ -26,6 +26,11 @@
 
 NS_MIA_BEGIN 
 
+/**
+   @ingroup filtering 
+   @brief templated version of the standard watershed algorithm 
+   @tparam dim Dimension for the input images 
+*/
 template <int dim>
 class TWatershed : public watershed_traits<dim>::Handler::Product {
 public:
@@ -67,6 +72,11 @@ private:
 };
 
 
+/**
+   @ingroup filtering 
+   @brief plugin for the templated version of the standard watershed algorithm 
+   @tparam dim Dimension for the input images 
+*/
 template <int dim>
 class TWatershedFilterPlugin: public watershed_traits<dim>::Handler::Interface {
 public:

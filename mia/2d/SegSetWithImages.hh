@@ -31,6 +31,7 @@ namespace xmlpp {
 NS_MIA_BEGIN
 
 /**
+   @ingroup perf 
    \brief A set of images and its segmentations, related to heart perfusion analysis  
    
    A set of slices containing segmentationinformation as well as the images. 

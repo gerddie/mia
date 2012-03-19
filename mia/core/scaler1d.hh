@@ -34,7 +34,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup classes
+   \ingroup interpol
    \brief A class for general scaling of one-dimensional arrays. 
 
    Class for general scaling of one-dimensional arrays. kernels are the separable B-spline 

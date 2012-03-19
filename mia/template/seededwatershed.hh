@@ -26,6 +26,8 @@
 
 NS_MIA_BEGIN
 
+///  @cond DOC_PLUGINS 
+
 template <int dim> 
 class TSeededWS : public watershed_traits<dim>::Handler::Product {
 public:
@@ -312,4 +314,5 @@ const std::string TSeededWSFilterPlugin<dim>::do_get_descr()const
 
 NS_MIA_END
 
+///  @endcond
 #endif

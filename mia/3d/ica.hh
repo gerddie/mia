@@ -29,7 +29,10 @@
 
 NS_MIA_BEGIN
 
-/// 3D image series for ICA 
+/**
+   @ingroup perf 
+   @brief 3D image series for ICA 
+*/
 typedef TDataSeriesICA<C3DFImage>  C3DImageSeriesICA;
 
 NS_MIA_END

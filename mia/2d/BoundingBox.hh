@@ -32,6 +32,7 @@ typedef T2DVector<int> C2DIVector;
 
 
 /**
+   @ingroup perf 
    \brief 2D axis orthothogonal bounding box. 
  */
 class  EXPORT_2D C2DBoundingBox {

@@ -27,6 +27,10 @@
 #include <mia/template/similarity_profile.hh>
 
 NS_MIA_BEGIN
+/**
+   @ingroup perf
+   @brief Specialization of the series similarity profiles for 3D images 
+*/
 typedef TSimilarityProfile<3> C3DSimilarityProfile; 
 NS_MIA_END
 

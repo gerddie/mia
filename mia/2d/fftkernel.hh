@@ -38,6 +38,7 @@ struct EXPORT_2D fft2d_kernel_data {
 
 /**
    \cond NEEDS_REHAUL 
+   @ingroup filtering
    \brief Base class for 2D FFT filters. 
 
    This class provides tha basic interface for filters that work within the 

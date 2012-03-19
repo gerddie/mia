@@ -25,6 +25,8 @@
 
 NS_MIA_BEGIN
 /**
+   @ingroup misc 
+   
    Evaluate the angle between rays ray_a and ray_b, returned values are in 
    radians, clockwise. 
    \param ray_a 
@@ -33,6 +35,7 @@ NS_MIA_BEGIN
 float EXPORT_2D angle(const C2DFVector& ray_a, const C2DFVector& ray_b); 
 
 /**
+   @ingroup misc 
    Evaluate the angle between rays s-a and s-b, returned values are in 
    radians, clockwise. 
    \param a 

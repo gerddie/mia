@@ -27,6 +27,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup basic 
    \brief 2D Vector field 
    
    This class provides an  interface to make the IO opf vector fields possible 

@@ -26,6 +26,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup misc 
    \brief A simple 2x2 matrix 
    
    Simple implementation of a 2D Matrix to store 2nd order derivatives. 

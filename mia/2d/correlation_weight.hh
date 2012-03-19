@@ -27,6 +27,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup perf 
    \brief evaluate the correlation between neighboring pixels in an image series  
    
    Evaluate time-intensity correlations of neighboring pixels in a series of images. 

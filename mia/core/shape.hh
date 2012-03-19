@@ -46,7 +46,7 @@ struct EXPORT_CORE shape_type {
 
 
 /**
-   \ingroup templates 
+   \ingroup basic 
    \brief a generic class for morphological shapes 
    
    Pixel representation of shapes and masks around the origin.

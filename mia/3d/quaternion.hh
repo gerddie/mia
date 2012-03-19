@@ -30,6 +30,7 @@
 NS_MIA_BEGIN 
 
 /**
+   \ingroup misc 
    \brief a class to implement a quaternion
 
    This class implements some operations of a quaternion. 

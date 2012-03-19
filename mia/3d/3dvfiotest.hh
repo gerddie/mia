@@ -27,7 +27,11 @@
 #include <boost/test/unit_test_suite.hpp>
 
 NS_MIA_BEGIN
-/// \cond INTERNAL_TEST 
+/** 
+    \cond INTERNAL
+    @ingroup test 
+    
+ */
 void EXPORT_3DTEST add_3dvfio_plugin_tests( boost::unit_test::test_suite* suite);
 /// \endcond 
 NS_MIA_END

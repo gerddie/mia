@@ -26,6 +26,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup misc 
    \brief a 2D iterator that knows its position in the 2D grid ans supports iterating over 
    sub-ranges 
    

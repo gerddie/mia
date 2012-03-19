@@ -34,6 +34,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup basic 
    @brief The generic base type of a 3D image 
    
    The base type of a 3D image with is used to move around the images in the code.
@@ -119,6 +120,7 @@ typedef std::vector<P3DImage> C3DImageSeries;
 typedef std::shared_ptr<C3DImageSeries> P3DImageSeries; 
 
 /**
+   @ingroup basic 
    @brief Specific type of the 3D images that hold real pixel data 
 
    This template defines a 3D image holding a certain type \a T as pixel type. 
@@ -333,6 +335,8 @@ private:
 };
 
 /**
+   @ingroup basic 
+
    Stand alone function to evaluate the gradient of an image using finite differences. 
    The gradient at the boundaries is set to zero. 
    \param image 
@@ -368,6 +372,10 @@ struct Binder<C3DImage> {
 
 /// @endcond
 
+/**
+   @ingroup basic 
+   @brief a translater for 3D vectors to and from a std::string
+*/
 template <typename T>
 class EXPORT_3D C3DValueAttributeTranslator: public CAttrTranslator {
 public:
@@ -376,14 +384,28 @@ private:
 	PAttribute do_from_string(const std::string& value) const;
 };
 
-
+/**
+   @ingroup basic 
+   @brief a 3D vector value used in attributes 
+   @tparam T the data type of the vector elements 
+*/
 template <typename T>
 class EXPORT_3D C3DValueAttribute : public CAttribute {
 public:
-	C3DValueAttribute(const T3DVector<T>& value);
 
+	/**
+	   Constructor to initialize the attribute by using a 3D Vector value 
+	   @param value 
+	 */
+	C3DValueAttribute(const T3DVector<T>& value);
+	
+	/// \returns the value of the attribute as 3D vector 
 	operator T3DVector<T>()const;
 
+	/**
+	   Obtain a run-time unique type description of the value type 
+	   @returns the typeid of the T3DVector<T>
+	 */
 	const char *typedescr() const	{
 		return typeid(T3DVector<T>).name();
 	}
@@ -394,13 +416,29 @@ private:
 	T3DVector<T> m_value;
 };
 
-
+/**
+   @ingroup basic 
+   @brief a 3D floating point vector used for the voxel size attribute 
+*/
 typedef C3DValueAttribute<float> CVoxelAttribute;
+
+/**
+   @ingroup basic 
+   @brief attribute translator for a 3D floating point vector used for the voxel size
+*/
 typedef C3DValueAttributeTranslator<float> CVoxelAttributeTranslator;
+
+/**
+   @ingroup basic 
+   @brief a 3D integer vector
+*/
 typedef C3DValueAttribute<int> C3DIntAttribute;
+
+/**
+   @ingroup basic 
+   @brief attribute translator for a 3D integer vector
+*/
 typedef C3DValueAttributeTranslator<int> C3DIntAttributeTranslator;
-
-
 
 NS_MIA_END
 

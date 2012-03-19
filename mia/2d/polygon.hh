@@ -30,6 +30,7 @@
 NS_MIA_BEGIN
 
 /**
+   @ingroup misc 
    \brief A simple 2D polygon class.  
 
    This class defines a polygon in 2D space and some functions on it. 

@@ -27,6 +27,7 @@
 
 NS_MIA_BEGIN
 /**
+   @ingroup basic 
    \brief A list of named landmarks 
    
    This class implements a list of uniquely named landmarks. 
