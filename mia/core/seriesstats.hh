@@ -27,7 +27,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup helpers 
+   \ingroup misc 
    \brief data structure to store te results of a statistical analyis of images 
  */
 struct SIntensityStats {

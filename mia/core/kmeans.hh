@@ -109,7 +109,7 @@ bool kmeans_step(InputIterator ibegin, InputIterator iend, OutputIterator obegin
 
 
 /**
-   \ingroup helpers 
+   \ingroup misc
 
    Run a kmeans clustering on some input data and store the class centers and the 
    class membership. 

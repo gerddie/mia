@@ -28,7 +28,8 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup helpers 
+   \ingroup misc
+   
    given three points (0.0, y0), (1.0, y,1), (x, y2) evaluate
    \f$ r = arg(min (ax^2 + bx + c)) \forall r \in [min(0.0, x), max(1.0, x)] \f$
  */

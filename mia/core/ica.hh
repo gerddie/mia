@@ -34,7 +34,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup classes
+   \ingroup perf
    \brief class for ICA analysis and use of such data.
    This class implements basic operations for of ICA. It makes use of the ITPP implementation of FastICA.
 */

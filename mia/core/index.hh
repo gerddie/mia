@@ -27,7 +27,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup helpers 
+   \ingroup misc
    
    \brief A class to adress a circulat bufer of a fixed size. 
 

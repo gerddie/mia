@@ -27,6 +27,7 @@
 
 NS_MIA_BEGIN
 /**
+   \ingroup cmdline 
    \brief command line option that handles a parameter 
 
    This command line option handles a parameter that is set to a certain value given 

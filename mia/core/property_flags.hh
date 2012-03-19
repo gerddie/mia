@@ -31,7 +31,7 @@ extern EXPORT_CORE const char *property_gradient;
 
 
 /**
-   \ingroup classes
+   \ingroup cmdline
    \brief This class holds a set of properties. 
    
    This class holds a set of properies that can be compared 

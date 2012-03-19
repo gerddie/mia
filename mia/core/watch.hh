@@ -25,7 +25,8 @@
 #include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
-/** \ingroup helpers
+/** 
+    \ingroup misc
     \brief A class for measuring time. 
     
     This is a class to measure time with  millisecond accuracy. 

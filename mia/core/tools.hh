@@ -31,7 +31,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup helpers
+   \ingroup misc
    \brief A helper class to make it possible to store a non-pointer object or a pointer that must not be freed 
    in a shared pointer 
    \tparam the type type be stored 
@@ -45,7 +45,7 @@ struct void_destructor {
 
 
 /**
-   \ingroup helpers
+   \ingroup misc
    Function to convert a streamable type from a string to a value. 
    The string may contain whitespaces before and after the value but no other characters. 
    \tparam T some type that supports the >> stream operator 
@@ -74,7 +74,7 @@ bool from_string(const char *s, T& result)
 }
 
 /**
-   \ingroup helpers
+   \ingroup misc
    Function to convert a streamable type from a string to a value. 
    The string may contain whitespaces before and after the value but no other characters. 
    \tparam T some type that supports the >> stream operator 
@@ -91,7 +91,7 @@ bool from_string(const std::string& s, T& result)
 
 
 /**
-   \ingroup helpers
+   \ingroup misc
    Function to convert a streamable type from to a string 
    \tparam T some type that supports the << stream operator 
    \param v the value to be converted 

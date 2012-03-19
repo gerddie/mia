@@ -32,14 +32,14 @@ NS_MIA_BEGIN
 
 
 /** 
-    \ingroup infrastructure 
+    \ingroup cmdline
     a map of parsed options as pairs key:value pairs 
 */
 typedef std::map<std::string, std::string> CParsedOptions;
 
 
 /** 
-   \ingroup infrastructure 
+   \ingroup cmdline
    \brief Parser for complex command line options
    
    This is a little parser to parse more complex command line options.

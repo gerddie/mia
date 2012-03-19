@@ -31,13 +31,13 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup helpers 
+   \ingroup misc
    A simple typedef for convenience 
  */
 typedef std::vector<double> CDoubleVector;
 
 /**
-   \ingroup helpers 
+   \ingroup misc 
    \brief A vector of probablility values. 
    
    A vector of probablility values that supports loading and storing 
@@ -85,6 +85,7 @@ EXPORT_CORE bool operator == (const CProbabilityVector& a, const CProbabilityVec
 
 
 /**
+   \ingroup misc 
    \brief A map to change labels. 
    
    This class implements a mapping to change labels stemming from out-of-core 

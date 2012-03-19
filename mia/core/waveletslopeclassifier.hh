@@ -28,7 +28,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup helpers 
+   \ingroup perf
    \brief Curve classifier for heart perfusion data 
    
    Classify a set of curves by using a wavelet analysis. 

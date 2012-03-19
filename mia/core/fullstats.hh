@@ -29,7 +29,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup helpers 
+   \ingroup misc
 
    \brief This class is used to evaluate the statistics of a series of input data. 
    

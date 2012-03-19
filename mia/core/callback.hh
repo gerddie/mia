@@ -28,7 +28,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup helpers 
+   \ingroup misc
    \brief a class to provide a feedback mechanism to show progress 
 
    This class is used as a base class in order to show feedback about the 

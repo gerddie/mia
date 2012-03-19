@@ -57,6 +57,7 @@ template <typename T>
 const int atomic_data<T>::size = 1; 
 
 /**
+   \ingroup misc
    This struct is a place holder for some templates. The actual template specialization 
    must implement the operator 
    bool operator()(T a, T b) const; 

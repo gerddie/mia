@@ -27,7 +27,7 @@
 
 
 /**
-   \ingroup functors 
+   \ingroup misc
    \brief Functor to be called by mia::filter to evaluate mean and variance of 
    a series of data. 
 
@@ -52,7 +52,7 @@ struct  FMeanVariance: public TFilter< pair<double, double> >  {
 }; 
 
 /**
-   \ingroup functors 
+   \ingroup misc
    \brief Functor to be called by mia::filter to evaluate median and median average distance (MAD) of 
    a series of data. 
 */

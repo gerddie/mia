@@ -30,7 +30,7 @@ NS_MIA_BEGIN
 
 
 /**
-   \ingroup helpers 
+   \ingroup misc
 
    Based on an input pattern get a vector of all files that follow the same numbering pattern and
    are all numberd consecutive. Only the part of a numbering scheme is taken into account that
@@ -41,7 +41,7 @@ NS_MIA_BEGIN
 EXPORT_CORE std::vector<std::string> get_consecutive_numbered_files(std::string const& in_filename);
 
 /**
-   \ingroup helpers
+   \ingroup misc
 
    Based on an input pattern get a vector of all files that follow the same numbering pattern and
    are all numberd consecutive. Also obtain the begin and end numbers as well as the width of the
@@ -56,7 +56,7 @@ EXPORT_CORE const std::string get_filename_pattern_and_range(std::string const& 
 
 
 /**
-   \ingroup helpers
+   \ingroup misc
 
    Based on an input pattern obtain a vector of file names that follow the same numbering pattern and
    are all numberd consecutive and are within the given range.
@@ -68,7 +68,7 @@ EXPORT_CORE const std::string get_filename_pattern_and_range(std::string const& 
 EXPORT_CORE std::vector<std::string> get_consecutive_numbered_files_from_pattern(std::string const& in_filename, int start, int end);
 
 /**
-   \ingroup helpers
+   \ingroup misc
 
    split a filename with a number part into a c-format string or a wildcard string
    \param fname input file name
@@ -80,9 +80,9 @@ EXPORT_CORE std::vector<std::string> get_consecutive_numbered_files_from_pattern
 EXPORT_CORE size_t fname_to_cformat(const char *fname, std::string& base, bool wildcard);
 
 /**
-   \ingroup helpers
+   \ingroup misc
 
-   split a file name into directoyr and file
+   split a file name into directory and file
    \remark obsolate - use BOOST functions
 */
 
@@ -90,7 +90,7 @@ EXPORT_CORE void split_dir_fname(const char *in_name, std::string& dir, std::str
 
 
 /**
-   \ingroup helpers
+   \ingroup misc
 
    create a file name from a pattern and a number
    \param cformat format pattern string
@@ -100,7 +100,7 @@ EXPORT_CORE void split_dir_fname(const char *in_name, std::string& dir, std::str
 EXPORT_CORE std::string create_filename(const char *cformat, size_t num);
 
 /**
-   \ingroup helpers
+   \ingroup misc
 
    \param in_filename some filename of the pattern "bla/bla/nameXXXXX.bla" where X are digits
    \returns the number of digits in the filename
@@ -109,7 +109,7 @@ EXPORT_CORE std::string create_filename(const char *cformat, size_t num);
 EXPORT_CORE size_t get_filename_number_pattern_width(std::string const& in_filename);
 
 /**
-   \ingroup helpers
+   \ingroup misc
 
    Split the file name numbering pattern for names (e.g. "lala0000.bla") and get the number 
      of digits 
@@ -121,7 +121,7 @@ EXPORT_CORE size_t get_filename_number_pattern_width(std::string const& in_filen
 EXPORT_CORE size_t get_filename_number_pattern(std::string const& infilename, std::string& base, std::string& suffix);
 
 /**
-   \ingroup helpers
+   \ingroup misc
 
    Split the file name numbering pattern for names (e.g. "lala00210.bla") 
    \param in_filename the input file name 

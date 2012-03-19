@@ -29,6 +29,7 @@
 NS_MIA_BEGIN
 
 /**
+   \ingroup misc
    \brief solver for sparse systems of equations 
 
    This is the templatex base class for solvers for systems of equations 

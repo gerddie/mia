@@ -24,7 +24,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup helpers 
+   \ingroup misc
    Simpson integration of a 1D-function 
    \tparam F a functor that defines the double operator ()(double x). 
    \param from begin of integration interval 

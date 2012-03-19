@@ -25,7 +25,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup helpers 
+   \ingroup misc 
 
    \brief A class to make a const reference not so const 
    

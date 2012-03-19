@@ -32,6 +32,8 @@ NS_MIA_BEGIN
 
 /**
    \cond INTERNAL
+   \ingroup misc
+   
    Helper structure used to initialize std::shared_ptr with the proper 
    delete operator.  
  */
@@ -44,6 +46,8 @@ struct array_destructor {
 }; 
 
 /**
+   \ingroup misc
+   
    Helper structure used to initialize std::shared_ptr with an empty 
    delete operator, i.e. to fake a shared pointer 
  */
@@ -56,7 +60,7 @@ struct array_void_destructor {
 /// \endcond 
 
 /**
-   \ingroup templates
+   \ingroup misc
    \brief A wrapper around the c-array to provide an STL like interface for iterators 
 
    c-array envelope that supports some facilities of STL like vectors and that 
@@ -204,7 +208,11 @@ private:
 }; 
 
 
-/// STL like c-array wrapper for double floating point
+/** 
+    \ingroup misc
+    
+    STL like c-array wrapper for double floating point
+*/
 typedef Vector<double> CDoubleVector; 
 
 NS_MIA_END

@@ -25,6 +25,11 @@
 #include <mia/core/defines.hh>
 
 NS_MIA_BEGIN 
+
+/**
+   \ingroup perf
+   \brief class to store the ICA weight matrix 
+*/
 typedef std::vector<std::vector<float> > CSlopeColumns;
 NS_MIA_END
 

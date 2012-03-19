@@ -29,6 +29,7 @@
 #include <string>
 
 /**
+   \ingroup  test 
    Test help template to check whether a plug-in handler loads a certain set of expected 
    plug-ins. The function uses boost::unittest to handele the testing. 
 

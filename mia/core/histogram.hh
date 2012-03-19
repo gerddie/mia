@@ -36,7 +36,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup helpers 
+   \ingroup misc
    
    \brief A class to normalize and quantizize input data to 
    a given histogram range with its given number of bins. 

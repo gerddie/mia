@@ -30,7 +30,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup helpers 
+   \ingroup misc
    \brief A simple class to add loadind and storeing to a map of labels. 
 */
 class EXPORT_CORE CLabelMap: public std::map<unsigned short,  unsigned short> {

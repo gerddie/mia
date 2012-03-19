@@ -65,7 +65,6 @@
     \brief These classes and functions are related to  filtering and combining of 2D and 3D images. 
 
     \defgroup interpol Interpolation 
-
     \brief These classes deal with the tasks related to interpolation
     
     \defgroup registration Image Registration 
@@ -81,5 +80,9 @@
     \defgroup traits Template metaprogramming classes
 
     \defgroup tests Test classes and functions
+
+    \defgroup perf Perfusion Analysis 
+	    	      
+    \defgroup misc Uncategorized 
     
 */

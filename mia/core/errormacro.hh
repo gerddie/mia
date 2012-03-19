@@ -28,7 +28,7 @@
 #include <stdexcept>
 
 /** 
-    \ingroup helpers
+    \ingroup misc
     \brief  helper macro to create exceptions using stream output for its message 
  */
 #define THROW(EXCEPTION, MESSAGE)		\

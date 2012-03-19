@@ -36,7 +36,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup helper 
+   \ingroup cmdline
    
    \brief A mapper from emums to string values. - usefull for names flags 
 

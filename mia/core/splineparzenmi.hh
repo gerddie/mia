@@ -28,7 +28,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup classes 
+   \ingroup registration
    \brief Implementation of mutual information based on B-splines 
 
 This class implements a spline parzen windows based evaluation of the 

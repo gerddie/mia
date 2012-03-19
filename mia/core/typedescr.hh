@@ -32,7 +32,7 @@ NS_MIA_BEGIN
 /// @cond INTERNAL 
 
 /**
-   \ingroup helpers 
+   \ingroup misc
    Template type parameter for time-step plugins 
  */
 struct EXPORT_CORE timestep_type {

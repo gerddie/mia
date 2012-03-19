@@ -39,7 +39,7 @@
 NS_MIA_BEGIN
 
 /**
-   \ingroup classes
+   \ingroup perf
 
    \brief Templated representation of a ICA series analyis 
 
