@@ -118,7 +118,7 @@ FACTORY_TRAIT(C3DImageCombinerPluginHandler);
  */
 
 template <typename S>
-std::vector<P3DFilter> create_filter_chain(const std::vector<S>& chain) __attribute__((deprecated))
+std::vector<P3DFilter> create_filter_chain(const std::vector<S>& chain)
 {
 	std::vector<P3DFilter> filters;
 
