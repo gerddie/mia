@@ -18,6 +18,7 @@
 #
 #
 
+
 INCLUDE (${CMAKE_ROOT}/Modules/FindDoxygen.cmake)
 
 ADD_CUSTOM_TARGET(docs echo "creating documentation")
@@ -76,6 +77,8 @@ IF(CREATE_USERDOC)
     # installation of the user reference 
     IF(ALWAYS_CREATE_DOC) 
       INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/userref DESTINATION ${DOC_INSTALL_PATH}/)
+      CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/mia2-doc.desktop.cmake ${CMAKE_CURRENT_BINARY_DIR}/mia2-doc.desktop)
+      INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/mia2-doc.desktop DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
     ENDIF(ALWAYS_CREATE_DOC)     
   ENDIF(HTML_CHUNK_FILEPATH) 
   
@@ -98,8 +101,10 @@ IF (DOXYGEN_FOUND)
   
   IF(ALWAYS_CREATE_DOC) 
     INSTALL(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/libdoc/html/ DESTINATION ${DOC_INSTALL_PATH}/libdoc/)
+    CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/libmia2-doc.desktop.cmake ${CMAKE_CURRENT_BINARY_DIR}/libmia2-doc.desktop)
+    INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/libmia2-doc.desktop DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
   ENDIF(ALWAYS_CREATE_DOC)     
-  
+ 
 ENDIF (DOXYGEN_FOUND)
 
 

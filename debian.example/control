@@ -20,7 +20,7 @@ Package: libmia2-doc
 Section: doc
 Architecture: all
 Enhances: libmia2-dev 
-Depends: libjs-jquery
+Suggests: xdg-utils
 Description: developers documentation for the MIA2 library
  This is the Doxygen generated documentation for the MIA2 gray scale image
  processing library.
@@ -53,6 +53,7 @@ Package: mia2-doc
 Section: doc
 Architecture: all
 Enhances: mia2-bin
+Suggests: xdg-utils
 Description: cross-referenzed documentation of the MIA command line tools.
  Cross referenced documentation of the command line tools of  MIA, the
  gray scale image processing tool kit.

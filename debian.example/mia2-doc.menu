@@ -1,0 +1,6 @@
+?package(mia2-doc):needs=x11 \
+	section="Help" \
+	title="MIA User Reference" \
+        longtitle="MIA 2.0 cross referenced documentation of the command line tools" \
+	command="xdg-open /usr/share/doc/mia-2.0/userref/index.html"
+

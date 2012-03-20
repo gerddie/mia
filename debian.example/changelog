@@ -1,3 +1,15 @@
+mia (2.0.0-7) oneiric; urgency=low
+
+  * Add desktop entries 
+
+ -- Gert Wollny <gw.fossdev@gmail.com>  Tue, 20 Mar 2012 18:19:29 +0100
+
+mia (2.0.0-6) oneiric; urgency=low
+
+  * Add menu entries for the documentation 
+
+ -- Gert Wollny <gw.fossdev@gmail.com>  Tue, 20 Mar 2012 14:20:53 +0100
+
 mia (2.0.0-5) oneiric; urgency=low
 
   * Use Doxygen version of the jquery.js lib 
