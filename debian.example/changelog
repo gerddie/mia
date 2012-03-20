@@ -1,5 +1,18 @@
+mia (2.0.0-5) oneiric; urgency=low
+
+  * Use Doxygen version of the jquery.js lib 
+
+ -- Gert Wollny <gw.fossdev@gmail.com>  Tue, 20 Mar 2012 14:20:53 +0100
+
+mia (2.0.0-4) oneiric; urgency=low
+
+  * update build system for documentation 
+  * update library documentation 
+
+ -- Gert Wollny <gw.fossdev@gmail.com>  Tue, 20 Mar 2012 12:27:57 +0100
+
 mia (2.0.0-3) unstable; urgency=low
-  [ wollny ]
+  
   * update dependencies
 
  -- wollny <wollny@erato.die.upm.es>  Fri, 16 Mar 2012 12:17:18 +0100

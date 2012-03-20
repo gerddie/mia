@@ -60,3 +60,16 @@ programs.tex
 test_lsd.oct
 testds.oct
 *.gcov
+
+debian
+*.substvars
+libmia2-dbg/
+libmia2-dev/
+libmia2-doc/
+libmia2/
+mia2-bin-dbg/
+mia2-bin/
+mia2-doc/
+obj-*-linux-gnu
+
+

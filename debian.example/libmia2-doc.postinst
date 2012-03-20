@@ -1,3 +1,0 @@
-ln -s /usr/share/javascript/jquery/jquery.js /usr/share/doc/mia-2.0/libdoc/jquery.js
-
-#DEBHELPER#

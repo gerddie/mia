@@ -1,7 +1,7 @@
-libmia2-dev_2.0.0-3_amd64.deb libdevel extra
-libmia2-doc_2.0.0-3_all.deb doc extra
-libmia2_2.0.0-3_amd64.deb libs extra
-libmia2-dbg_2.0.0-3_amd64.deb debug extra
-mia2-bin_2.0.0-3_amd64.deb science extra
-mia2-doc_2.0.0-3_all.deb doc extra
-mia2-bin-dbg_2.0.0-3_amd64.deb debug extra
+libmia2-dev_2.0.0-5_amd64.deb libdevel extra
+libmia2-doc_2.0.0-5_all.deb doc extra
+libmia2_2.0.0-5_amd64.deb libs extra
+libmia2-dbg_2.0.0-5_amd64.deb debug extra
+mia2-bin_2.0.0-5_amd64.deb science extra
+mia2-doc_2.0.0-5_all.deb doc extra
+mia2-bin-dbg_2.0.0-5_amd64.deb debug extra
