@@ -18,10 +18,8 @@ export DH_ALWAYS_EXCLUDE=jquery.js
 %:
 	dh $@ --parallel
 
-#this override is really ugly and doesn't work with "fakeroot debian/rules binary" 
-override_dh_auto_install:
-	cd obj-$(DEB_BUILD_MULTIARCH) && make doc && make install-doc DESTDIR=`pwd`/../debian/tmp/
-	dh_auto_install	
+override_dh_auto_configure:
+	dh_auto_configure -- -DALWAYS_CREATE_DOC=ON -DVISTAIO_SYSTEM=OFF
 
 override_dh_strip:
 	`pwd`/debian/dh_strip -plibmia2 --dbg-package=libmia2-dbg
