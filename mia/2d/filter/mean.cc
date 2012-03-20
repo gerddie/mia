@@ -18,28 +18,6 @@
  *
  */
 
-/* 
-   LatexBeginPluginDescription{2D image filters}
-   
-   \subsection{Mean filter}
-   \label{filter2d:mean}
-   
-   \begin{description}
-   
-   \item [Plugin:] median
-   \item [Description:] Applies the mean filter. 
-   \item [Input:] Abitrary gray scale or binary image 
-   \item [Output:] The filtered image of the same pixel type and dimension 
-   
-   \plugtabstart
-   w &  int & filter width parameter & 1  \\
-   \plugtabend
-   
-   \end{description}
-
-   LatexEnd  
- */
-
 #include <mia/core/msgstream.hh>
 #include <mia/2d/filter/mean.hh>
 #include <boost/type_traits/is_floating_point.hpp>

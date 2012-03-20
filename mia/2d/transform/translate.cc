@@ -18,25 +18,6 @@
  *
  */
 
-/* 
-  LatexBeginPluginDescription{2D Transformations}
-   
-   \subsection{Translation}
-   \label{transform2d:translate}
-   
-   \begin{description}
-   
-   \item [Plugin:] translate
-   \item [Description:] Translation only.  
-   \item [Degrees of Freedom:] 2
-  
-   \end{description}
-   This plug-in doesn't take parameters 
-
-   LatexEnd  
- */
-
-
 #include <numeric>
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/transform/translate.hh>
@@ -296,7 +277,7 @@ bool C2DTranslateTransformCreatorPlugin::do_test() const
 
 const std::string C2DTranslateTransformCreatorPlugin::do_get_descr() const
 {
-	return "plugin to create a translate only transformations";
+	return "Translation only (two degrees of freedom)";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

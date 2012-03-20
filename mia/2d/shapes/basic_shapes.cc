@@ -18,52 +18,6 @@
  *
  */
 
-/*
-  LatexBeginPluginDescription{2D neighborhood shapes}
-
-
-  \subsection{Basic shapes}
-  \label{shapes2d:basic}
-
-  \begin{description}
-   
-   \item [Plugin:] 1n, 4n, 8n 
-   \item [Description:] provide the simple neighbourhood shapes, 'o' indicates the center (that belongs to the shape) 
-       and 'x' the additional elements. 
-   \begin{itemize}
-   \item 1n 
-   \begin{tabular}{|c|}
-   \hline 
-   x \\
-   \hline 
-   \end{tabular}
-   \item 4n 
-     \begin{tabular}{|c|c|c|}
-     \hline 
-     & x & \\
-     \hline 
-     x & o & x \\
-     \hline 
-     & x & \\
-     \hline 
-     \end{tabular}
-   \item 8n 
-     \begin{tabular}{|c|c|c|}
-     \hline 
-     x & x & x\\
-     \hline 
-     x & o & x \\
-     \hline 
-     x & x & x\\
-     \hline 
-     \end{tabular}
-   \end{itemize}
-   
-   \end{description}
-   These plug-ins don't take parameters. 
-   
-  LatexEnd
-*/
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

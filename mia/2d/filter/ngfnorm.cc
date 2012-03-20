@@ -27,29 +27,6 @@
 #include <mia/2d/filter/ngfnorm.hh>
 
 
-
-/* 
-   LatexBeginPluginDescription{2D image filters}
-   
-   \subsection{Norm of a normalized gradient field of the image}
-   \label{filter2d:ngfnorm}
-   
-   \begin{description}
-   
-   \item [Plugin:] ngfnorm
-   \item [Description:] This filter evaluates the norm of a normalized gradient field of the input image
-   \item [Input:] An abitrary gray scale image. 
-   \item [Input:] The norm of the normalized gradient field of the input image as a single float valued 
-             image of the same dimension as th einput image. 
-   
-   \end{description}
-   This plugin doesn't take parameters. 
-
-   LatexEnd  
- */
-
-
-
 NS_BEGIN(ngfnorm_2dimage_filter)
 
 NS_MIA_USE;

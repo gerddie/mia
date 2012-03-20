@@ -17,30 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-/* 
-   LatexBeginPluginDescription{2D image filters}
-   
-   \subsection{Threshhold filter with neighbourhood preservation}
-   \label{filter2d:thresh}
-   
-   \begin{description}
-   
-   \item [Plugin:] thresh
-   \item [Description:] set a pixel value to zero if all neighborhood values are below a given threshhold 
-   \item [Input:] Abitrary gray scale image 
-   \item [Output:] Filtered gray scale image of the same pixel type and dimension
-
-   \plugtabstart
-   shape &  string & neighbourhood shape as available through the shape plugins \ref{sec:2dshapes} & 4n \\
-   thresh&  float  & threshhold value & 5.0\\\hline
-   \plugtabend
-   
-   \end{description}
-
-   LatexEnd  
- */
-
 #include <limits>
 #include <sstream>
 

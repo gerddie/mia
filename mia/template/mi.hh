@@ -178,7 +178,7 @@ C *TMIImageCostPlugin<CP,C>::do_create() const
 template <typename CP, typename C> 
 const std::string TMIImageCostPlugin<CP,C>::do_get_descr() const
 {
-	return "Spline parzen based mutual information";  
+	return "Spline parzen based mutual information.";  
 	
 }
 

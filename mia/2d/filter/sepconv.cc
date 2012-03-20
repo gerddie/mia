@@ -18,32 +18,6 @@
  *
  */
 
-/* 
-   LatexBeginPluginDescription{2D image filters}
-   
-   \subsection{Spacial separable convolution filter}
-   \label{filter2d:sepconv}
-   
-   \begin{description}
-   
-   \item [Plugin:] sepconv
-   \item [Description:] A 2D image filter that runs separable ove each dimension 
-   \item [Input:] Abitrary gray scale image 
-   \item [Output:] Filtered gray scale image of the same pixel type and dimension
-   
-   \plugtabstart
-   kx &  string & Filter kernel in x-direction as available through the spacial kernel plug-ins \ref{sec:SpacialKernels}
-      & gauss:w=1    \\
-   ky &  string & Filter kernel in y-direction as available through the spacial kernel plug-ins \ref{sec:SpacialKernels}
-      & gauss:w=1    \\\hline 
-   \plugtabend
-   
-   \end{description}
-
-   LatexEnd  
- */
-
-
 #include <mia/2d/filter/sepconv.hh>
 
 NS_BEGIN(SeparableConvolute_2dimage_filter)

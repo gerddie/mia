@@ -18,27 +18,6 @@
  *
  */
 
-/* 
-   LatexBeginPluginDescription{Spacial filter kernels}
-   
-   \subsection{Gauss}
-   \label{skernel:gauss}
-   
-   \begin{description}
-   
-   \item [Plugin:] gauss
-   \item [Description:] The spacial Gauss kernel 
-   
-   \plugtabstart
-   w &  int & half kernel with, the full kernel with is 2*w+1 & 1  \\
-   \plugtabend
-   
-   \end{description}
-
-   LatexEnd  
- */
-
-
 #include <mia/core/spacialkernel/gauss.hh>
 
 NS_MIA_USE

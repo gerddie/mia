@@ -18,34 +18,6 @@
  *
  */
 
-/*
-  LatexBeginPluginDescription{2D image filters}
-
-  \subsection{Anisotropic filtering}
-  \label{filter2d:aniso}
-  
-  \begin{description}
-  
-  \item [Plugin:] aniso
-  \item [Description:] Run a anisotropic filter on the input image 
-  \item [Input:] Abitrary gray scale image 
-  \item [Output:] The filtered image of the same pixel type and dimension 
-  
-  \plugtabstart
-  iter & int & maximum number of iterations & 100 \\
-  epsilon & float & stop iteration if changes fall below this value & 1.0  \\
-  k & float & k the noise threshold ($\le 0$: adaptive) & -1 \\
-  psi & string & Edge stopping funtion (ps1|ps2|tuckey|guess) & - \\
-  n & int & neighbourhood shape (4|8) &  8 \\
-  \plugtabend
-  
-  \item [Remark:] For mor information see \cite{perona90:aniso}. 
-  
-  \end{description}
-
-  LatexEnd
-*/
-
 #include <limits>
 #include <algorithm>
 #include <cmath>

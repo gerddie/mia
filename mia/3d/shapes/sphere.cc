@@ -18,26 +18,6 @@
  *
  */
 
-/*
-  LatexBeginPluginDescription{3D neighborhood shapes}
-
-
-  \subsection{Spherical shape}
-  \label{shapes3d:sphere}
-
-  \begin{description}
-   
-   \item [Plugin:] sphere 
-   \item [Description:] provides a 3D filled sphere. 
-   
-   \end{description}
-   \plugtabstart
-   r &  float & radius of the sphere & 2 \\
-   \plugtabend
-   
-  LatexEnd
-*/
-
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -89,7 +69,7 @@ C3DShape *CSphere3DShapeFactory::do_create()const
 
 const string CSphere3DShapeFactory::do_get_descr()const
 {
-	return string("spherical shape mask creator");
+	return string("Closed spherical shape neighborhood including the pixels within a given radius r.");
 }
 
 bool CSphere3DShapeFactory::do_test()const

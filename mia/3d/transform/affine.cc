@@ -510,7 +510,7 @@ bool C3DAffineTransformCreatorPlugin::do_test() const
 
 const std::string C3DAffineTransformCreatorPlugin::do_get_descr() const
 {
-	return "plugin to create affine transformations";
+	return "Affine transformation (12 degrees of freedom)";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

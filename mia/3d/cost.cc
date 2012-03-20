@@ -18,25 +18,7 @@
  *
  */
 
-
-/*
-  LatexBeginPluginSection{3D image similarity kernels}
-  \label{sec:cost3d}
-  
-  3D image similarity kernels evaluate the according similarity measure between 
-  two images. These kernels may be used standalone, like e.g. in linear registration, 
-  or will be called from generalized image similarity cost plug-ins that also take 
-  care of transforming and scaling the images during the image registration process. 
-
-  In the following $\Omega$ is the image domain, and $S:\Omega\rightarrow \R$ stands  
-  for the study or floating image, and  $R:\Omega\rightarrow \R$ for the reference or fixed image. 
-
-  LatexEnd
-*/
-
-
 #include <mia/core/export_handler.hh>
-
 
 #include <mia/3d/cost.hh>
 #include <mia/core/cost.cxx>
@@ -54,7 +36,10 @@ template class TPluginHandler<C3DImageCostPlugin>;
 
 template <> const char *  const 
 TPluginHandler<TFactory<C3DImageCost>>::m_help =  
-   "These plug-ins define cost function kernels that evaluate the similarity between two 3D images.";
+   "3D image similarity kernels evaluate the according similarity measure between "
+  "two images. These kernels may be used standalone, like e.g. in linear registration, "
+  "or will be called from generalized image similarity cost plug-ins that also take "
+  "care of transforming and scaling the images during the image registration process.";
 
 using boost::filesystem::path; 
 C3DImageCostPluginHandlerTestPath::C3DImageCostPluginHandlerTestPath()

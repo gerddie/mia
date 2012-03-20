@@ -20,46 +20,6 @@
 
 
 
-/* 
-   LatexBeginPluginDescription{Minimizers}
-   
-   \subsection{Minimizers provided by the NLOpt Library}
-   \label{minimizer:nlopt}
-   
-   \begin{description}
-   
-   \item [Plugin:] nlopt
-   \item [Description:] This plugin provides minimizers that are implemented in the NLopt Library
-                        \cite{johnson11}. 
-			A wide range of optimizers is supported - for details please see the original source.  
-			The naming scheme for the algoritm identifier is xy-name with 
-			\begin{itemize}
-			\item x g=global, l=local
-			\item y n=no derivative used, d=derivative used
-			\item name the name of the algorithm including further specifications. 
-			\end{itemize}
-   \plugtabstart
-   opt & string & main minimization algorithm &  not given\\
-   local-opt & string & secondary minimization algorithm (some of the main algorithms need this, 
-                       all parameters that are used for the main algorithm are currently also 
-		       used for the local one &  not given\\
-   stop & double & Stopping criterion: function value falls below this value & -HUGE \\
-   xtola & double & Stopping criterion: the absolute change of all x-values is below this value & 0.0 \\
-   xtolr & double & Stopping criterion: the relative change of all x-values is below this value & 0.0 \\
-   ftola & double & Stopping criterion: the relative change of the objective value is below  this value & 0.0 \\
-   ftolr & double & Stopping criterion: the relative change of all objective value  is below this value & 0.0 \\
-   maxiter & int & Stopping criterion: the maximum number of iterations & 100 \\
-   step & double & Initial step size & 0.0 \\
-   \plugtabend
-   
-   \item [Remark:] The default values for all but the maxiter the stopping criterions correspond to 
-                   "not used". Usually it is only required to set some of the stopping criterions. 
-   \end{description}
-
-   LatexEnd  
- */
-
-
 #include <mia/core/minimizer/nlopt.hh>
 #include <stdexcept>
 
@@ -356,11 +316,11 @@ CNLOptMinimizerPlugin::CNLOptMinimizerPlugin():
 				  " this value")); 
 
 	add_parameter("ftola", new CDoubleParameter(m_options.abs_ftol, 0.0, HUGE_VAL, false, 
-				  "Stopping criterion: the relative change of the objective value is below "
-				  " this value")); 
+				  "Stopping criterion: the absolute change of the objective value is below "
+						    " this value")); 
 	add_parameter("ftolr", new CDoubleParameter(m_options.rel_ftol, 0.0, HUGE_VAL, false, 
-				  "Stopping criterion: the relative change of all objective value  is below "
-				  " this value")); 
+				  "Stopping criterion: the relative change of the objective value is below "
+						    " this value")); 
 
 	add_parameter("maxiter", new CIntParameter(m_options.maxiter, 1, numeric_limits<int>::max(), false, 
 						   "Stopping criterion: the maximum number of iterations")); 

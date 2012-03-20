@@ -19,27 +19,6 @@
  */
 
 
-/* LatexBeginPluginDescription{3D image filters}
-   
-   \subsection{K-means classification}
-   \label{filter3d:kmeans}
-   
-   \begin{description}
-   
-   \item [Plugin:] kmeans
-   \item [Description:] Apply a k-means classification to the image 
-   \item [Input:] A gray scale image of abitrary pixel type. 
-   \item [Output:] The classification image, the class centers are saved as image attribute
-   
-   \plugtabstart
-   c &  int & The number of classes ($\le$ 255) & 5  \\
-   \plugtabend
-
-   \end{description}
-
-   LatexEnd  
- */
-
 #include <limits>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
@@ -96,7 +75,8 @@ C3DFilter *C3DKMeansFilterPluginFactory::do_create()const
 
 const string C3DKMeansFilterPluginFactory::do_get_descr()const
 {
-	return "3D image kmeans filter";
+	return "3D image k-means filter. In the output image the pixel value represents the class "
+		"membership and the class centers are stored as attribute in the image.";
 }
 
 

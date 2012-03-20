@@ -18,18 +18,6 @@
  *
  */
 
-/*
-  LatexBeginPluginSection{3D neighborhood shapes}
-  \label{sec:3dshapes}
-  
-  These 3D shapes define neighbourhoods for a variety of image processing filters, 
-  like, e.g., morphological filters \ref{filter3d:morph}. 
-  Shapes are always binary. 
-  
-  LatexEnd
-*/
-
-
 #include <mia/core/export_handler.hh>
 
 

@@ -18,38 +18,12 @@
  *
  */
 
-/* 
-   LatexBeginPluginDescription{3D image filters}
-   
-   \subsection{Reorient image}
-   \label{filter3d:reorient}
-   
-   \begin{description}
-   
-   \item [Plugin:] reorient
-   \item [Description:] Change the orientation of the 3D image 
-   \item [Input:] An abitary 3D image 
-   \item [Input:] The re-oriented 3D image 
-
-   \plugtabstart
-   map & string & mapping to be applied & xyz \\
-   \plugtabend
-   \end{description}
-
-   LatexEnd  
- */
-
-
 #include <limits>
 #include <stdexcept>
-// boost type trains are needed to check whether we are dealing with an integer pixel valued image
-#include <boost/type_traits.hpp>
 
 // this is for the definition of the 3D image plugin base classes
 #include <mia/3d/filter/reorient.hh>
 
-
-// start a namespace to avoid naming conflicts during runtime
 
 NS_BEGIN(reorient_3dimage_filter)
 

@@ -27,9 +27,7 @@
    \begin{description}
    
    \item [Plugin:] downscale
-   \item [Description:] Downscale the input image by using a given block size to define the 
-            downscale factor. Prior to scaling the image is filtered by a smoothing filter to eliminate 
-	    high frequency data and avoid aliasing artifacts. 
+   \item [Description:] 
    \item [Input:] Abitrary gray scale or binary image 
    \item [Output:] The downscaled image.  
    
@@ -152,7 +150,9 @@ C2DFilter *C2DDownscaleFilterPlugin::do_create()const
 
 const string C2DDownscaleFilterPlugin::do_get_descr()const
 {
-	return "2D image downscaler filter";
+	return "Downscale the input image by using a given block size to define the "
+		"downscale factor. Prior to scaling the image is filtered by a smoothing "
+		"filter to eliminate high frequency data and avoid aliasing artifacts.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

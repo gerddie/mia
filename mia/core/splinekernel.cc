@@ -25,20 +25,6 @@
 
  */
 
-
-/*
-  LatexBeginPluginSection{Spline Interpolation Kernels}
-  \label{sec:splinekernels}
-  
-  These kernels are used for spline based interpolation. 
-  
-  The kernels are created by calling \emph{produce\_spline\_kernel}. 
-  
-  LatexEnd
-*/
-
-
-
 #include <cmath>
 #include <cassert>
 #include <iomanip>
@@ -312,7 +298,8 @@ CSplineKernelTestPath::CSplineKernelTestPath()
 	
 }
 template<>  const char * const 
-TPluginHandler<TFactory<CSplineKernel>>::m_help = "These plug-ins provide various kernels used for spline interpolation.";
+TPluginHandler<TFactory<CSplineKernel>>::m_help = 
+	"These plug-ins provide various kernels that evaluate the wights in spline-based interpolation.";
 
 
 EXPLICIT_INSTANCE_HANDLER(CSplineKernel); 

@@ -18,29 +18,6 @@
  *
  */
 
-/* 
-   LatexBeginPluginDescription{2D image stack filters}
-   
-   \subsection{Median}
-   \label{fifof:median}
-   
-   \begin{description}
-   
-   \item [Plugin:] median
-   \item [Description:] Runs a median filter on the imput images. 
-   \item [Input:] Gray scale or binary images, all of the same size and pixel type  
-   \item [Output:] The filtered image(s) 
-   
-   \plugtabstart
-   w & int & filter width parameter, the actual filter captures a neighborhood of 
-                 $(2 * w + 1) \times (2 * w + 1) \times (2 * w + 1)$ voxels & 1 \\ 
-   \plugtabend
-   
-   \end{description}
-
-   LatexEnd  
- */
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif

@@ -18,28 +18,6 @@
  *
  */
 
-/* 
-   LatexBeginPluginDescription{2D image filters}
-   
-   \subsection{Mean Least Variance filter}
-   \label{filter2d:mlv}
-   
-   \begin{description}
-   
-   \item [Plugin:] mlv
-   \item [Description:] Apply the mean least variance filter. 
-   \item [Input:] Abitrary gray scale or binary image 
-   \item [Output:] The filtered image of the same pixel type and dimension 
-   
-   \plugtabstart
-   w &  int & filter width parameter & 1  \\
-   \plugtabend
-   
-   \end{description}
-
-   LatexEnd  
- */
-
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/filter/mlv.hh>

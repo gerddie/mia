@@ -18,17 +18,6 @@
  *
  */
 
-/*
-  LatexBeginPluginSection{2D Transformations}
-  \label{sec:2dtransforms}
-  
-  2D transformations provide to means to transform images and point sets. They are mostly used 
-  in image registration. 
-  
-  LatexEnd
-*/
-
-
 #include <mia/2d/transform.hh>
 #include <mia/2d/deformer.hh>
 

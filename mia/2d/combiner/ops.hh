@@ -28,7 +28,7 @@
 NS_BEGIN(Combiner2d)
 
 
-template <typename BinaryOP>
+template <typename CombineOP>
 class T2DImageCombiner: public mia::C2DImageCombiner {
 	
 	template <typename F, typename A, typename B>
@@ -41,47 +41,47 @@ class T2DImageCombiner: public mia::C2DImageCombiner {
 }; 
 
 
-#define BINARY_OP(NAME, op) \
+#define COMBINE_OP(NAME, op) \
 	template <typename A, typename B>	\
-	struct __Binary##NAME {					\
+	struct __Combine##NAME {					\
 		typedef decltype(*(A*)0 op *(B*)0) return_type; \
 		static return_type apply(A a, B b) {		\
 			return a op b;				\
 		}						\
 	};							\
 								\
-	class Binary##NAME {					\
+	class Combine##NAME {					\
         public:									\
 	template <typename A, typename B>				\
-	typename __Binary##NAME<A,B>::return_type operator ()(A a, B b)const { \
-		return __Binary##NAME<A,B>::apply(a,b);			\
+	typename __Combine##NAME<A,B>::return_type operator ()(A a, B b)const { \
+		return __Combine##NAME<A,B>::apply(a,b);			\
 	   }								\
 	};								\
-	typedef T2DImageCombiner<Binary##NAME> C2D##NAME##ImageCombiner;
+	typedef T2DImageCombiner<Combine##NAME> C2D##NAME##ImageCombiner;
 
-BINARY_OP(Add,   +)
-BINARY_OP(Sub,   -)
-BINARY_OP(Times, *)
-BINARY_OP(Div,   /)
+COMBINE_OP(Add,   +)
+COMBINE_OP(Sub,   -)
+COMBINE_OP(Times, *)
+COMBINE_OP(Div,   /)
 
 
 template <typename A, typename B>
-struct __BinaryAbsDiff {
+struct __CombineAbsDiff {
 	typedef decltype(*(A*)0 - *(B*)0) return_type; 
 		static return_type apply(A a, B b) {	       
 			return static_cast<double>(a) > static_cast<double>(b) ? (a - b) : (b - a); 
 		}
 };						
 
-class BinaryAbsDiff {							
+class CombineAbsDiff {							
 public:									
 	template <typename A, typename B>
-	typename __BinaryAbsDiff<A,B>::return_type operator ()(A a, B b)const {
-		return __BinaryAbsDiff<A,B>::apply(a,b);
+	typename __CombineAbsDiff<A,B>::return_type operator ()(A a, B b)const {
+		return __CombineAbsDiff<A,B>::apply(a,b);
 	}
 };									\
 
-typedef T2DImageCombiner<BinaryAbsDiff> C2DAbsDiffImageCombiner;
+typedef T2DImageCombiner<CombineAbsDiff> C2DAbsDiffImageCombiner;
 
 NS_END
 

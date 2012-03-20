@@ -27,8 +27,7 @@
    \begin{description}
    
    \item [Plugin:] spline
-   \item [Description:] This plug-in implements a free-form transfromation that can be described by 
-   a set of B-spline coefficients and an underlying B-spline kernel. 
+   \item [Description:] 
    \item [Degrees of Freedom:] depends on the coefficient rate and the size of the domain where the 
       transformation is defined on 
   
@@ -1167,7 +1166,8 @@ bool C3DSplineTransformCreatorPlugin::do_test() const
 
 const std::string C3DSplineTransformCreatorPlugin::do_get_descr() const
 {
-	return "plugin to create spline based transformations";
+	return "Free-form transformation that can be described by a set of B-spline coefficients "
+		"and an underlying B-spline kernel.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

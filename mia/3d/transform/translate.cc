@@ -18,25 +18,6 @@
  *
  */
 
-/* 
-  LatexBeginPluginDescription{3D Transformations}
-   
-   \subsection{Translation}
-   \label{transform3d:translate}
-   
-   \begin{description}
-   
-   \item [Plugin:] translate
-   \item [Description:] Translation only.  
-   \item [Degrees of Freedom:] 3
-  
-   \end{description}
-   This plug-in doesn't take parameters 
-
-   LatexEnd  
- */
-
-
 #include <numeric>
 #include <mia/3d/transformfactory.hh>
 #include <mia/3d/transform/translate.hh>
@@ -324,7 +305,7 @@ bool C3DTranslateTransformCreatorPlugin::do_test() const
 
 const std::string C3DTranslateTransformCreatorPlugin::do_get_descr() const
 {
-	return "plugin to create a translate only transformations";
+	return "Translation (three degrees of freedom)";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

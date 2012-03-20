@@ -18,26 +18,6 @@
  *
  */
 
-/*
-  LatexBeginPluginDescription{2D neighborhood shapes}
-
-
-  \subsection{Spherical shape}
-  \label{shapes2d:sphere}
-
-  \begin{description}
-   
-   \item [Plugin:] sphere 
-   \item [Description:] provide a 2D sphere like shape that includes its interior. 
-   
-   \end{description}
-   \plugtabstart
-   r &  float & radius of the sphere & 2 \\
-   \plugtabend
-   
-  LatexEnd
-*/
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -82,7 +62,7 @@ C2DShape *CSphere2DShapeFactory::do_create()const
 
 const string CSphere2DShapeFactory::do_get_descr()const
 {
-	return string("spherical shape mask creator");
+	return "Closed spherical neighborhood shape of radius r.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

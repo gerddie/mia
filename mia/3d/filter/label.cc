@@ -18,30 +18,6 @@
  *
  */
 
-/* LatexBeginPluginDescription{3D image filters}
-   
-   \subsection{Label connected components}
-   \label{filter3d:label}
-   
-   \begin{description}
-   
-   \item [Plugin:] label
-   \item [Description:] Label connected components 
-   \item [Input:] Binary image 
-   \item [Output:] An image of type unsigned char or unsigned short, depending on the number of components found. 
-                  The first label is 1
-   
-   \plugtabstart
-   shape &  string & neighbourhood shape as provided by the shape plug-ins \ref{sec:3dshapes} & 6n  \\
-   \plugtabend
-   
-   \item [Remark:] A maximum of 65535 labels is supported. 
-
-   \end{description}
-
-   LatexEnd  
- */
-
 
 #include <stdexcept>
 #include <queue>
@@ -138,7 +114,7 @@ C3DFilter *C3DLabelFilterPlugin::do_create()const
 
 const string C3DLabelFilterPlugin::do_get_descr()const
 {
-	return "a 3D conected component labeler";
+	return "A filter to label the  connected components of a binary image.";
 }
 
 bool  C3DLabelFilterPlugin::do_test() const

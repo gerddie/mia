@@ -18,16 +18,6 @@
  *
  */
 
-/*
-  LatexBeginPluginSection{2D image creators}
-  \label{sec:creator2d}
-  
-  These plug-ins create 2D imgages with predefined objects inside. 
-
-  LatexEnd
-
-*/
-
 #include <mia/core/export_handler.hh>
 
 #include <mia/2d/creator.hh>

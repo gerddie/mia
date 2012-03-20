@@ -18,47 +18,6 @@
  *
  */
 
-
-/* 
-   LatexBeginPluginDescription{3D full cost functions}
-   
-   \subsection{Sum of Squared Differences for tagged MRI}
-   \label{cost3d:tagssd}
-   
-   \begin{description}
-   
-   \item [Plugin:] tagssd
-   \item [Description:] Evaluates the Sum of Squared Differences similarity measure by using three tagged image pairs. 
-      The cost function value is evaluated based on all image pairs, but the gradient is composed by composing 
-      its component based on the tag direction. 
-   \begin{equation}
-      F_\text{SSD} (S,R) = \frac{1}{6} \sum_{i=1}^3 \int_{\Omega} \left( S_i(x) - R_i(x) \right)^2 \text{d}x 
-      \partial F_\text{SSD} (S,R) = \left( 
-                                       \begin{array}{l}
-				       (S_0(x) - R_0(x)) \frac{\partial S(x)}{\partial x_0} \
-				       (S_1(x) - R_1(x)) \frac{\partial S(x)}{\partial x_1} \
-				       (S_2(x) - R_2(x)) \frac{\partial S(x)}{\partial x_2}
-				       \end{array}
-				    \right)
-   \end{equation}
-   \item [Studys:] Tagged  gray scale images 
-   \item [References:] Tagged  gray scale images 
-   \end{description}
-
-   \plugtabstart
-   srcx &  string & source image with X-tags & (required)  \\
-   refx &  string & reference image with X-tags & (required)  \\
-   srcy &  string & source image with Y-tags & (required)  \\
-   refy &  string & reference image with Y-tags & (required)  \\
-   srcz &  string & source image with Z-tags & (required)  \\
-   refz &  string & reference image with Z-tags & (required) \\
-   \plugtabend
-   
-
-   LatexEnd  
- */
-
-
 #include <numeric>
 
 #include <mia/core/filter.hh>
@@ -469,7 +428,9 @@ C3DFullCost *C3DTaggedSSDCostPlugin::do_create(float weight) const
 
 const std::string C3DTaggedSSDCostPlugin::do_get_descr() const
 {
-	return "SSD image similarity cost function for tagged MRI"; 
+	return "Evaluates the Sum of Squared Differences similarity measure by using three tagged image pairs. "
+		"The cost function value is evaluated based on all image pairs, but the gradient is composed by composing "
+		"its component based on the tag direction."; 
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

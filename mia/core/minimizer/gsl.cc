@@ -18,47 +18,6 @@
  *
  */
 
-
-/* 
-   LatexBeginPluginDescription{Minimizers}
-   
-   \subsection{Minimizers provided by the GNU Scientific Library}
-   \label{minimizer:gsl}
-   
-   \begin{description}
-   
-   \item [Plugin:] gsl
-   \item [Description:] This plugin provides minimizers that are implemented in the GNU Scientific Library
-                        \cite{galassi09}
-			Currently, the following optimizers are supported: 
-			
-			\begin{tabular}{|c|l|c|}
-			\hline 
-			Name & Description & uses Gradient \\\hline 
-			simplex & The simplex algorithm \cite{nelder65}, currently the 
-			          stopping criterion is set to  $10^{-3}$ & no \\
-			bfgs    &  Broyden-Fletcher-Goldfarb-Shanno (BFGS) algorithm & yes \\
-			bfgs2  &   Alternative Implementation of the BFGS algorithm & yes \\
-			cg-fr &  Fletcher-Reeves conjugate gradient algorithm & yes \\
-			cg-fr &  Polak-Ribiere conjugate gradient algorithm  & yes \\
-			gd & Gradient Descent & yes \\
-			\hline 
-			\end{tabular}
-
-   \plugtabstart
-   opt  & string & Optimization methos (see above) & gd \\
-   tol  & double & Stopping criterion $\in[0.001,10]$;  actual meaning depends on the algorithm & 0.1 \\
-   eps  & double & gradient norm stopping criterion (stop when |g| < eps) $\in [10^{-10}, 10.0]$ & 0.01 \\
-   iter & int & maximum number of iterations & 100 \\
-   step & double & initial step size $\in [0, 10]$ & 0.001 \\
-   \plugtabend
-   
-   \end{description}
-
-   LatexEnd  
- */
-
-
 #include <memory>
 #include <mia/core/minimizer/gsl.hh>
 
@@ -306,7 +265,7 @@ CGSLMinimizerPlugin::CGSLMinimizerPlugin():
 const std::string CGSLMinimizerPlugin::do_get_descr() const
 {
 	return "optimizer plugin based on the multimin optimizers of"
-		"the GNU Scientific Library (GSL)"; 
+		"the GNU Scientific Library (GSL) https://www.gnu.org/software/gsl/"; 
 }
 
 CMinimizer *CGSLMinimizerPlugin::do_create() const

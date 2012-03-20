@@ -18,29 +18,6 @@
  *
  */
 
-/*
-  LatexBeginPluginDescription{2D time steps for model based registration}
-
-  \subsection{Direct step}
-  \label{timestep2d:direct}
-  
-  \begin{description}
-   
-  \item [Plugin:] direct
-  \item [Description:] This time step plug-in implements a direct time-step where 
-  the PDE of the registration model works directly on the transformation field. 
-
-  \plugtabstart
-  min & float & minimum time step allowed ($\ge 0.001$) & 0.1\\
-  max & float & maximum time step allowed ($\ge 0.002$) & 0.1\\
-  \plugtabend
-  
-  \end{description}
-  
-  LatexEnd 
-*/ 
-
-
 #include <mia/2d/timestep/direct.hh>
 
 NS_MIA_USE

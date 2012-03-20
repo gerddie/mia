@@ -19,19 +19,6 @@
  */
 
 
-/*
-  LatexBeginPluginSection{Noise Generators}
-  \label{sec:noisegen}
-  
-  These plug-ins are used to create specific types of random data. 
-  
-  Noise Generators are created by the CNoiseGeneratorPluginHandler singleton.
-
-  LatexEnd
-*/
-
-
-
 #include <mia/core/export_handler.hh>
 
 #define VSTREAM_DOMAIN "NOISE_GENERATOR"

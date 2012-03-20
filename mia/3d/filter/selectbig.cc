@@ -19,29 +19,6 @@
  */
 
 
-/* 
-   LatexBeginPluginDescription{3D image filters}
-   
-   \subsection{Select biggest component}
-   \label{filter3d:selectbig}
-   
-   \begin{description}
-   
-   \item [Plugin:] selectbig
-   \item [Description:] A 3D filter that creats a binary mask representing the intensity with the highest pixel count. 
-   The pixel value 0 will be ignored, and if two intensities have the same pixel count, then the result is undefined. 
-   \item [Input:] An image with integral intensity values, usually this will be the output of the 
-         label filter \ref{filter3d:label}. 
-   \item [Input:] An binary image with a mask that represents the pixels with the highest pixel count. 
-
-   This plug-in takes no parameters. 
-   
-   \end{description}
-
-   LatexEnd  
- */
-
-
 #include <limits>
 #include <stdexcept>
 // boost type trains are needed to check whether we are dealing with an integer pixel valued image
@@ -151,7 +128,9 @@ C3DFilter *C3DSelectBigImageFilterFactory::do_create()const
 /* This function sreturns a short description of the filter */
 const string C3DSelectBigImageFilterFactory::do_get_descr()const
 {
-	return "3D label select biggest component filter";
+	return "A filter that creats a binary mask representing the intensity with the highest pixel count." 
+		"The pixel value 0 will be ignored, and if two intensities have the same pixel count, "
+		"then the result is undefined. The input pixel must have an integral pixel type.";
 }
 
 /*

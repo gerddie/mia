@@ -18,34 +18,6 @@
  *
  */
 
-/*
-  LatexBeginPluginSection{3D image filters}
-  \label{sec:3dfilters}
-  
-  3D image filters take a constant reference to a C3DImage as parameter and 
-  return the result in a shared\_ptr P3DImage. 
-  After constructions, filters work like functions, i.e. the output image is only dependent 
-  on the input image and the construction parameters. 
-  
-  Filters are created by the C3DFilterPluginHandler singleton.
-
-  LatexEnd
-*/
-
-/*
-  LatexBeginPluginSection{3D image combiners}
-  \label{sec:combiner3d}
-  
-  3D image combiners take two constant references to C3DImages as parameters and 
-  combines them in a way that is defined in the plug-in. 
-  The output provides a save function. 
-  After constructions, combiners work like functions, i.e. the output is only dependent 
-  on the input images and the construction parameters. 
-  
-  LatexEnd
-*/
-
-
 #include <mia/core/export_handler.hh>
 
 #include <mia/3d/3dfilter.hh>

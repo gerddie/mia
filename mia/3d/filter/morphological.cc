@@ -18,32 +18,6 @@
  *
  */
 
-/* 
-   LatexBeginPluginDescription{3D image filters}
-   
-   \subsection{Morphological filters}
-   \label{filter3d:morph}
-   
-   \begin{description}
-   
-   \item [Plugin:] dilate, erode, close, open
-   \item [Description:] Apply the according morphological operation using a given structuring element 
-   \item [Input:] Abitrary gray scale or binary image 
-   \item [Output:] The filtered image of the same pixel type and dimension 
-   
-   \plugtabstart
-   shape &  string & definition of the structuring element as provided by the shape plugins \ref{sec:3dshapes} & 
-         sphere:r=2    \\
-   hint  &  string & A hint to speed up the processing of binary images (black|white), should indicate 
-         what kind of pixel is more presnt in the image  & black \\\hline 
-   \plugtabend
-   
-   \end{description}
-
-   LatexEnd  
- */
-
-
 #include <iomanip>
 #include <limits>
 #include <boost/static_assert.hpp>

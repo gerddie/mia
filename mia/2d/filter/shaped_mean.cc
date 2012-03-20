@@ -18,28 +18,6 @@
  *
  */
 
-/* 
-   LatexBeginPluginDescription{2D image filters}
-   
-   \subsection{Shaped Mean filter}
-   \label{filter2d:shmean}
-   
-   \begin{description}
-   
-   \item [Plugin:] shmean
-   \item [Description:] A filterto evauate the mean over a shape  as defined in \ref{shapes2d:sphere}. 
-   \item [Input:] Abitrary gray scale or binary image 
-   \item [Output:] The filtered image of the same pixel type and dimension 
-   
-   \plugtabstart
-   shape & factory & neighborhood shape & 8n \\
-   \plugtabend
-   
-   \end{description}
-
-   LatexEnd  
- */
-
 #include <mia/core/msgstream.hh>
 #include <mia/core/utils.hh>
 #include <mia/2d/filter/shaped_mean.hh>
@@ -123,7 +101,7 @@ C2DFilter *C2DShapedMeanFilterPlugin::do_create()const
 
 const string C2DShapedMeanFilterPlugin::do_get_descr()const
 {
-	return "2D image filter that evaluates the mean over a given shape";
+	return "2D image filter that evaluates the mean over a given neighborhood shape";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

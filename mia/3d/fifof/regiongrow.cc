@@ -27,11 +27,7 @@
    \begin{description}
    
    \item [Plugin:] regiongrow
-   \item [Description:] Run a region-growing filter on a stack of images that comprise 
-         a 3D image.  The region growing is based on class probabilities obtained from 
-	 a c-means classification of the pixel intensities. 
-	 Quasi-3D processing is achieved by holding a number of 3D slices in the working memory 
-	 to allow the region to grow "backwards" in the stack. 
+   \item [Description:]  
    \item [Input:] Gray scale images, all of the same size and pixel type  
    \item [Output:] A binary mask representing the region 
    
@@ -205,7 +201,6 @@ public:
 	C2DRegiongrowFifoFilterPlugin();
 private:
 	virtual const string do_get_descr() const;
-	virtual bool do_test() const;
 	virtual C2DImageFifoFilter *do_create()const;
 
 	string m_map;
@@ -238,13 +233,13 @@ C2DRegiongrowFifoFilterPlugin::C2DRegiongrowFifoFilterPlugin():
 
 const string C2DRegiongrowFifoFilterPlugin::do_get_descr() const
 {
-	return "2D region grow stack filter";
-}
-
-
-bool C2DRegiongrowFifoFilterPlugin::do_test() const
-{
-	return true;
+	return "Run a region-growing filter on a stack of images that comprise "
+		"a 3D image.  The region growing is based on class probabilities obtained from "
+		"a c-means classification of the pixel intensities. One seed thresh is use to initiate "
+		"a region, and another (lower) threshold is used to stop the region growing. "
+		"By holding a number of 3D slices in the working memory to allow the region to grow \""
+		"backwards \" in the stack a Quasi-3D processing is achieved. However, with complex "
+		"structures the region growing may not properly be segmented.";
 }
 
 C2DImageFifoFilter *C2DRegiongrowFifoFilterPlugin::do_create()const

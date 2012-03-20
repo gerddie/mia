@@ -19,16 +19,6 @@
  */
 
 
-/*
-  LatexBeginPluginSection{3D Transformations}
-  \label{sec:3dtransforms}
-  
-  3D transformations provide to means to transform images and point sets. They are mostly used 
-  in image registration. 
-  
-  LatexEnd
-*/
-
 
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>

@@ -18,26 +18,6 @@
  *
  */
 
-/*
-   LatexBeginPluginDescription{2D image filters}
-   
-   \subsection{Bandpass intensity filter}
-   \begin{description}
-   \item [Plugin:]bandpass
-   \item [Description:]An intensity band pass filter - all pixels with intensities
-   outside the given range are set to zero, all other pixels remain the
-   same ($x:=x\in [min,max]\:?\: x\::\:0$
-   \item [Parameters:] min, max
-   
-   \plugtabstart
-   min&  float&  lower bound of the bandpass range &0\\\hline
-   max&  float&  upper bound of the bandpass range &3.40282e+38\\\hline
-   \end{tabular}
-   \end{description}
-   
-  LatexEnd
-*/
-
 #include <limits>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>

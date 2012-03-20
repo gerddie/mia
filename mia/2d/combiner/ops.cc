@@ -19,30 +19,6 @@
  */
 
 
-/* 
-   LatexBeginPluginDescription{2D image combiner}
-   
-   \subsection{Arithmetic image combiners}
-   \label{combiner2d:aritmetic}
-   
-   \begin{description}
-   
-   \item [Plugin:] add, sub, mul, div, absdiff
-   \item [Description:] combine the two images by applying the corresponding arithmetic operaton. 
-   The input images must be of the same size. 
-   \item [Input1:] Abitrary gray scale or binary image 
-   \item [Input2:] Abitrary gray scale or binary image 
-   \item [Output:] The combined image of the pixel type that is deducted from the 
-                   C++ return type for the corresponding operation between the input pixel types.
-   \item [Remark:] No special error handling is implemented for the division by zero.  
-   \end{description}
-   These plug-ins don't take additional parameters
-
-   LatexEnd  
- */
-
-
-#include <boost/lambda/lambda.hpp>
 #include <mia/2d/combiner/ops.hh>
 
 NS_BEGIN(Combiner2d)
@@ -75,11 +51,11 @@ P2DImage T2DImageCombiner<BO>::do_combine( const C2DImage& a, const C2DImage& b)
 	return mia::filter(*this, a, b); 
 }
 
-template class T2DImageCombiner<BinaryAdd>; 
-template class T2DImageCombiner<BinarySub>; 
-template class T2DImageCombiner<BinaryTimes>; 
-template class T2DImageCombiner<BinaryDiv>; 
-template class T2DImageCombiner<BinaryAbsDiff>; 
+template class T2DImageCombiner<CombineAdd>; 
+template class T2DImageCombiner<CombineSub>; 
+template class T2DImageCombiner<CombineTimes>; 
+template class T2DImageCombiner<CombineDiv>; 
+template class T2DImageCombiner<CombineAbsDiff>; 
 
 NS_END
 
@@ -93,19 +69,19 @@ extern const char pl_div[] = "div";
 extern const char pl_absdiff[] = "absdiff"; 
 
 
-template class  T2DImageCombinerPlugin<T2DImageCombiner<BinaryAdd>, pl_add>; 
-template class  T2DImageCombinerPlugin<T2DImageCombiner<BinarySub>, pl_sub>; 
-template class  T2DImageCombinerPlugin<T2DImageCombiner<BinaryTimes>, pl_mul>;
-template class  T2DImageCombinerPlugin<T2DImageCombiner<BinaryDiv>, pl_div>; 
-template class  T2DImageCombinerPlugin<T2DImageCombiner<BinaryAbsDiff>, pl_absdiff>; 
+template class  T2DImageCombinerPlugin<T2DImageCombiner<CombineAdd>, pl_add>; 
+template class  T2DImageCombinerPlugin<T2DImageCombiner<CombineSub>, pl_sub>; 
+template class  T2DImageCombinerPlugin<T2DImageCombiner<CombineTimes>, pl_mul>;
+template class  T2DImageCombinerPlugin<T2DImageCombiner<CombineDiv>, pl_div>; 
+template class  T2DImageCombinerPlugin<T2DImageCombiner<CombineAbsDiff>, pl_absdiff>; 
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	CPluginBase *retval = new T2DImageCombinerPlugin<T2DImageCombiner<BinaryAdd>, pl_add>();
-	retval->append_interface(new T2DImageCombinerPlugin<T2DImageCombiner<BinarySub>, pl_sub>()); 
-	retval->append_interface(new T2DImageCombinerPlugin<T2DImageCombiner<BinaryTimes>, pl_mul>()); 
-	retval->append_interface(new T2DImageCombinerPlugin<T2DImageCombiner<BinaryDiv>, pl_div>()); 
-	retval->append_interface(new T2DImageCombinerPlugin<T2DImageCombiner<BinaryAbsDiff>, pl_absdiff>); 
+	CPluginBase *retval = new T2DImageCombinerPlugin<T2DImageCombiner<CombineAdd>, pl_add>();
+	retval->append_interface(new T2DImageCombinerPlugin<T2DImageCombiner<CombineSub>, pl_sub>()); 
+	retval->append_interface(new T2DImageCombinerPlugin<T2DImageCombiner<CombineTimes>, pl_mul>()); 
+	retval->append_interface(new T2DImageCombinerPlugin<T2DImageCombiner<CombineDiv>, pl_div>()); 
+	retval->append_interface(new T2DImageCombinerPlugin<T2DImageCombiner<CombineAbsDiff>, pl_absdiff>); 
 	return retval;  
 }
 

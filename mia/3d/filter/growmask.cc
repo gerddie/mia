@@ -18,33 +18,6 @@
  *
  */
 
-/* 
-   LatexBeginPluginDescription{3D image filters}
-   
-   \subsection{Region growing based on an initial seed mask}
-   \label{filter3d:growmask}
-   
-   \begin{description}
-   
-   \item [Plugin:] growmask
-   \item [Description:] Use an input binary mask and a reference gray scale image to do region growing 
-                        by adding pixels as long as the have a lower intensity above a given threshold.  
-   \item [Input:] Binary seed mask image.
-   \item [Output:] Binary grown mask image. 
-   
-   \plugtabstart
-   ref & string & reference image for mask region growing, may come from the data pool and must be of the same size 
-	          like the seed mask image &  \\ 
-   shape & string & neighborhood mask as provided by the shape plugins \ref{sec:3dshapes} & 6n \\
-   min & float & lower threshold for mask growing & 1.0 \\
-   \plugtabend
-   
-   \end{description}
-
-   LatexEnd  
- */
-
-
 #include <limits>
 #include <queue>
 #include <stdexcept>
@@ -55,8 +28,6 @@
 #include <mia/3d/filter/growmask.hh>
 #include <mia/3d/3dimageio.hh>
 
-
-// start a namespace to avoid naming conflicts during runtime
 
 NS_BEGIN(growmask_3dimage_filter)
 
@@ -156,7 +127,9 @@ C3DFilter *C3DGrowmaskImageFilterFactory::do_create()const
 /* This function sreturns a short description of the filter */
 const string C3DGrowmaskImageFilterFactory::do_get_descr()const
 {
-	return "3D mask region growing";
+	return "Use an input binary mask and a reference gray scale image to do region growing "
+		"by adding the neighborhood pixels of an already added pixel "
+		"if the have a lower intensity that is above the given threshold.";
 }
 
 /*

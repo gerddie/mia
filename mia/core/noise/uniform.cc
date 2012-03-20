@@ -19,31 +19,6 @@
  */
 
 
-/* 
-   LatexBeginPluginDescription{Noise Generators}
-   
-   \subsection{Uniform noise generator}
-   \label{noise:uniform}
-   
-   \begin{description}
-   
-   \item [Plugin:] uniform
-   \item [Description:] This noise generator creates (pseudo) random values that are uniformly distributed over 
-        a range [a,b]. 
-
-   \plugtabstart
-   a & float & Begin of noise value output range & 0 \\
-   b & float & End of noise value output range & 1 \\
-   seed & unsigned & Seed value for the initialization of the pseudo-number generator, 0 indicates to 
-   use the current system time value returned by the time(NULL) function. & 0 \\
-   \plugtabend
-      
-
-   \end{description}
-
-   LatexEnd 
-*/ 
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif

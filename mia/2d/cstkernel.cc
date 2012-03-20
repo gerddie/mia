@@ -18,17 +18,6 @@
  *
  */
 
-/*
-   LatexBeginPluginSection{2D CST filter kernels}
-   \label {sec:cst2dkern}
-   
-   These are kernels for filters that work in the frequency domain on the 
-   image that was transformed by a cosinus or a sinus transform. 
-
-   \LatexEnd
-*/
-
-
 #include <mia/2d/cstkernel.hh>
 
 #include <mia/core/plugin_base.cxx>

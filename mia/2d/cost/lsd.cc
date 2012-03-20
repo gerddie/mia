@@ -18,29 +18,6 @@
  *
  */
 
-/* 
-   LatexBeginPluginDescription{2D image similarity kernels}
-   
-   \subsection{Least Squares Difference}
-   \label{cost2d:lsd}
-   
-   \begin{description}
-   
-   \item [Plugin:] lsd
-   \item [Description:] Evaluates the Least Squares Difference similarity measure between two images 
-   \cite{heldmann10lsd}
-   \item [Study:] An abitrary gray scale or binary images 
-   \item [Reference:] A gray scale or binary images that should have a limited number of gray scale values 
-                 and a histogram that is not too close to a uniform distribution. 
-   \end{description}
-   
-   This plug-in doesn't take additional parameters. 
-  
-
-   LatexEnd  
- */
-
-
 #include <mia/2d/cost/lsd.hh>
 
 

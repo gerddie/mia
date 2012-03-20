@@ -18,29 +18,6 @@
  *
  */
 
-/*
-  LatexBeginPluginDescription{2D image creators}
-
-  \subsection{Circle creator}
-  \label{creator2d:circle}
-   
-  \begin{description}
-   
-  \item [Plugin:] circle
-  \item [Description:] Creates an image with a filled shape. The filling pattern is 
-         given bythe parameters. 
-   
-   \plugtabstart
-   f & float & spherical change frequency & 1.0 \\
-   p & float & spherical shape parameter (2.0 = circle)& 2.0 \\
-   \plugtabend
-   
-   \end{description}
-
-
-  LatexEnd
-*/
-
 #ifdef _MSC_VER
 #define _USE_MATH_DEFINES
 #endif

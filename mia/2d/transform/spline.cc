@@ -18,32 +18,6 @@
  *
  */
 
-/* 
-  LatexBeginPluginDescription{2D Transformations}
-   
-   \subsection{B-spline based transformation}
-   \label{transform2d:spline}
-   
-   \begin{description}
-   
-   \item [Plugin:] spline
-   \item [Description:] This plug-in implements a free-form transfromation that can be described by 
-   a set of B-spline coefficients and an underlying B-spline kernel. 
-   \item [Degrees of Freedom:] depends on the coefficient rate and the size of the domain where the 
-      transformation is defined on 
-  
-   \end{description}
-
-   \plugtabstart
-   imgkernel & string " & interpolation kernel used to interpolate images when they are transformed & bspline:d=3 \\ 
-   imgboundary& string & interpolation boundary conditions used when transforming an image & mirror \\
-   kernel & string & B-spline kernel (bsplineX, omoms3) with X the degree (2-5) used for evaluating the transformation & bspline;:d=3 \\ 
-   rate   & float  & coefficient rate (currently the same in all dimenions & 10 \\
-   \plugtabend
-
-   LatexEnd  
- */
-
 #include <cstdlib>
 #include <cassert>
 #include <limits>
@@ -822,7 +796,8 @@ bool C2DSplineTransformCreatorPlugin::do_test() const
 
 const std::string C2DSplineTransformCreatorPlugin::do_get_descr() const
 {
-	return "plugin to create spline transformations";
+	return "Free-form transformation that can be described by a set of B-spline coefficients "
+		"and an underlying B-spline kernel.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

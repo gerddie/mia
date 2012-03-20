@@ -18,37 +18,6 @@
  *
  */
 
-/*
-  LatexBeginPluginDescription{3D image filters}
-  
-  \subsection{Median filter}
-  \label{filter3d:mask}
-  
-  \begin{description}
-  
-  \item [Plugin:] mask
-  \item [Description:] Mask an image, one image is taken from the parameters list 
-                   and the other from the normal filter input. 
-		   The image from the parameter list may use a 
-		   \emph{delayed parameter}. i.e. a parameter that will only 
-                   be loaded when filter is called and passed from earlier steps 
-		   of the filter pipeline. 
-		   Both images must be of the same size, one image must by binary. 
-  \item [Input:] Abitrary gray scale or binary image 
-  \item [Output:] The filtered image of the same size. The pixel type is deducted from the 
-                  input image that is not binary. If both images are binary, then the output is 
-		  also binary. 
-  \plugtabstart
-  input & strin& second input image file name, may be of type "*.@" indicating that is stems from the 
-                 internal data pool & none given \\
-  \plugtabend
-  
-  \end{description}
-  
-  LatexEnd  
-*/
-
-
 #include <boost/lambda/if.hpp>
 #include <mia/3d/3dimageio.hh>
 #include <mia/3d/filter/mask.hh>
@@ -154,7 +123,10 @@ C3DFilter *C3DMaskImageFilterFactory::do_create()const
 
 const std::string C3DMaskImageFilterFactory::do_get_descr()const
 {
-	return "3D masking";
+	return "Mask an image, one image is taken from the parameters list "
+                "and the other from the normal filter input. Both images must be of the same dimensions "
+		"and one must be binary. The attributes of the image coming through the filter pipeline "
+		"are preserved. The output pixel type corresponds to the input image that is not binary.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

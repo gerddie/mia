@@ -121,7 +121,7 @@ C2DFilter *C2DCropImageFilterFactory::do_create()const
 
 const string C2DCropImageFilterFactory::do_get_descr()const
 {
-	return "2D image cropping filter";
+	return "Crop a region of an image, the region is always clamped to the original image size.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

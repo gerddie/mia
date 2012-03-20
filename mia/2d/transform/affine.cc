@@ -18,34 +18,6 @@
  *
  */
 
-/* 
-  LatexBeginPluginDescription{2D Transformations}
-  
-   \subsection{Affine}
-   \label{transform2d:affine}
-   
-   \begin{description}
-   
-   \item [Plugin:] affine
-   \item [Description:] Affine-linear transformations - i.e. the transformation cann be described in terms of a 
-   multiplication by a $2\times2$ matrix $A$ and the addition of a translation vector $b$: 
-   \begin{equation}
-   x \rightarrow Ax + b
-   \end{equation}
-   
-   \item [Degrees of Freedom:] 6 
-  
-   \end{description}
-   \plugtabstart
-   imgkernel & string " & interpolation kernel used to interpolate images when they are transformed & bspline:d=3 \\ 
-   imgboundary& string & interpolation boundary conditions used when transforming an image & mirror \\
-   \plugtabend
-
-
-   LatexEnd  
- */
-
-
 #include <fstream>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/transformfactory.hh>
@@ -426,7 +398,7 @@ bool C2DAffineTransformCreatorPlugin::do_test() const
 
 const std::string C2DAffineTransformCreatorPlugin::do_get_descr() const
 {
-	return "plugin to create affine transformations";
+	return "Affine transformation (six degrees of freedom).";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

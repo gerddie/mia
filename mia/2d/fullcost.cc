@@ -60,7 +60,10 @@ C2DFullCostPluginHandlerTestPath::C2DFullCostPluginHandlerTestPath()
 
 template <> const char *  const 
 TPluginHandler<C2DFullCostPlugin>::m_help =  
-   "These plug-ins define cost functions that arise in image registration and similar tasks.";
+	"This class of cost functions evaluates the cost resulting from the "
+	"use of a certain transformation. This may include a penalty term that ensures "
+	"the smoothness of a transformation or the evaluation of a similarity measure "
+	"between a transformed study data set and a refernce data set.";
 
 
 NS_MIA_END

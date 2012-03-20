@@ -18,31 +18,6 @@
  *
  */
 
-/*
-  LatexBeginPluginDescription{2D image filters}
-
-  \subsection{Adaptive mean filter}
-  \label{filter2d:admean}
-  
-  \begin{description}
-  
-  \item [Plugin:] admean
-  \item [Description:] An adaptive mean filter that works like a normal mean filter, if the intensity 
-        variation within the filter mask is lower then the intensity variation in the whole image, 
-	that the uses a special formula if the local variation is higher then the image intensity variation.
-  \item [Input:] Abitrary gray scale image 
-  \item [Output:] The filtered image of the same pixel type and dimension 
-  
-  \plugtabstart
-  w &  int & filter width parameter & 1  \\
-  \plugtabend
-  
-  \end{description}
-
-  LatexEnd
-*/
-
-
 #include <mia/2d/filter/admean.hh>
 
 NS_BEGIN ( admean_2dimage_filter )
@@ -128,7 +103,10 @@ C2DFilter *CAdmean2DImageFilterFactory::do_create()const
 
 const string CAdmean2DImageFilterFactory::do_get_descr() const
 {
-	return "2D adaptive mean filter";
+	return "An adaptive mean filter that works like a normal mean filter, if the intensity "
+		"variation within the filter mask is lower then the intensity variation in the "
+		"whole image, that the uses a special formula if the local variation is higher "
+		"then the image intensity variation.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

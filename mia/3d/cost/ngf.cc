@@ -34,7 +34,7 @@
    \begin{itemize}
    \item cross Cross product based formulation: 
      \begin{equation}
-       F_{\text{ngf}, \times}(\n_S, \n_R) := \frac{1}{2}\int_{\Omega} \left( \n_S(x) \times \n_R(x) \right)^2 \text{d}x
+ 
      \end{equation}
    \item dot Dot product based formulation: 
      \begin{equation}
@@ -272,7 +272,9 @@ bool C3DNFGImageCostPlugin::do_test() const
 
 const string C3DNFGImageCostPlugin::do_get_descr()const
 {
-	return "3D nfg cost function";
+	return "This function evaluates the image similarity based on normalized gradient "
+		"fields. Given normalized gradient fields $\n_S$ of the src image and $\n_R$ "
+		"of the ref image various evaluators are implemented.";
 }
 
 

@@ -18,36 +18,6 @@
  *
  */
 
-/* 
-   LatexBeginPluginDescription{3D image filters}
-   
-   \subsection{Downscale filter}
-   \label{filter3d:downscale}
-   
-   \begin{description}
-   
-   \item [Plugin:] downscale
-   \item [Description:] Downscale the input image by using a given block size to define the 
-            downscale factor. Prior to scaling the image is filtered by a smoothing filter to eliminate 
-	    high frequency data and avoid aliasing artifacts. 
-   \item [Input:] Abitrary gray scale or binary image 
-   \item [Output:] The downscaled image.  
-   
-   \plugtabstart
-   bx & int & downscale factor in x direction & 1  \\
-   by & int & downscale factor in y direction & 1  \\
-   bz & int & downscale factor in z direction & 1  \\
-   b & string & Alternative to define the scaling factors as a 3D vector & <1,1,1>  \\
-   kernel & string & Base type of the smoothing kernel, the filter kernel width is estimated based 
-       on the downscale factors & gauss \\\hline 
-   \plugtabend
-   
-   \end{description}
-
-   LatexEnd  
- */
-
-
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/spacial_kernel.hh>
@@ -168,7 +138,9 @@ bool  C3DDownscaleFilterPlugin::do_test() const
 
 const string C3DDownscaleFilterPlugin::do_get_descr()const
 {
-	return "3D image downscaler filter";
+	return "Downscale the input image by using a given block size to define the "
+		"downscale factor. Prior to scaling the image is filtered by a smoothing filter to eliminate "
+		"high frequency data and avoid aliasing artifacts.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

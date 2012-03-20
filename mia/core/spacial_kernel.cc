@@ -18,16 +18,6 @@
  *
  */
 
-/*
-  LatexBeginPluginSection{Spacial filter kernels}
-  \label{sec:SpacialKernels}
-  
-  These plug-ins provide kernels for 1D separable filtering. 
-  
-  LatexEnd
-*/
-
-
 
 #define VSTREAM_DOMAIN "SPACIAL KERNEL"
 

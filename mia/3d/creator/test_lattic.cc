@@ -20,9 +20,12 @@
 
 #include <mia/internal/plugintester.hh> 
 #include <mia/3d/creator/lattic.hh>
+#include <mia/3d/3dfilter.hh>
 
 using namespace creator_lattic_3d;
 using namespace mia;
+
+C3DFilterPluginHandlerTestPath filter_test_path; 
 
 BOOST_AUTO_TEST_CASE ( test_sphere ) 
 {

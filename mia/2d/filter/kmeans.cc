@@ -95,7 +95,8 @@ C2DFilter *C2DKMeansFilterPluginFactory::do_create()const
 
 const string C2DKMeansFilterPluginFactory::do_get_descr()const
 {
-	return "2D image kmeans filter";
+	return "2D image k-means filter. In the output image the pixel value represents the class "
+		"membership and the class centers are stored as attribute in the image.";
 }
 
 

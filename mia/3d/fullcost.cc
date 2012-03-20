@@ -18,21 +18,6 @@
  *
  */
 
-/*
-  LatexBeginPluginSection{3D full cost functions}
-  \label{sec:3dfullcost}
-  
-  This class of cost functions evaluates the cost resulting from the 
-  use of a certain transformation. This may include a penalty term that ensures 
-  the smoothness of a transformation or the evaluation of a similarity measure 
-  between a transformed study data set and a refernce data set. 
-  
-  These cost functions can be combined and weighted. 
-  
-  LatexEnd
-*/
-
-#include <boost/lambda/lambda.hpp>
 #include <mia/core/export_handler.hh>
 #include <mia/3d/fullcost.hh>
 
@@ -51,7 +36,11 @@ template class TFullCost<C3DTransformation>;
 
 template <> const char *  const 
 TPluginHandler<C3DFullCostPlugin>::m_help =  
-   "These plug-ins define cost functions that arise in image registration and similar tasks.";
+   "This class of cost functions evaluates the cost resulting from the "
+  "use of a certain transformation. This may include a penalty term that ensures "
+  "the smoothness of a transformation or the evaluation of a similarity measure "
+  "between a transformed study data set and a reference data set. "
+  "These cost functions can be combined and weighted.";
 
 
 NS_MIA_END

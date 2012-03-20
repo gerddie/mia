@@ -18,31 +18,6 @@
  *
  */
 
-/* 
-   LatexBeginPluginDescription{2D image stack filters}
-   
-   \subsection{Morphological filters}
-   \label{fifof:morph}
-   
-   \begin{description}
-   
-   \item [Plugin:] close, dilate, erode, open 
-   \item [Description:] Runs the given morphological operation on the imput images. 
-               The number of slices that are hold in the working memory is deducted from 
-	       the given structuring element.
-   \item [Input:] Gray scale or binary images, all of the same size and pixel type  
-   \item [Output:] The filtered image(s) 
-   
-   \plugtabstart
-   shape & string & Structuring element, as provided by by the shape plugins \ref{sec:3dshapes} & 6n \\ 
-   \plugtabend
-   
-   \end{description}
-
-   LatexEnd  
- */
-
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif

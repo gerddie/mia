@@ -18,13 +18,8 @@
  *
  */
 
-/*
-  Normalized gradient field Cost function
-*/
-
 
 /* 
-   LatexBeginPluginDescription{2D image similarity kernels}
    
    \subsection{Normalized Gradient Fields}
    \label{cost2d:ngf}
@@ -68,7 +63,6 @@
 
    For further information see \cite{haber05, wollny08a, wollny10b}. 
 
-   LatexEnd  
  */
 
 
@@ -318,7 +312,8 @@ bool C2DNFGImageCostPlugin::do_test() const
 
 const string C2DNFGImageCostPlugin::do_get_descr()const
 {
-	return "2D nfg cost function";
+	return "This function evaluates the image similarity based on normalized gradient fields. "
+		"Various evaluation kernels are availabe.";
 }
 
 

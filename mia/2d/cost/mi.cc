@@ -18,33 +18,6 @@
  *
  */
 
-/* 
-   LatexBeginPluginDescription{2D image similarity kernels}
-   
-   \subsection{Least Squares Difference}
-   \label{cost2d:lsd}
-   
-   \begin{description}
-   
-   \item [Plugin:] mi
-   \item [Description:] Evaluates the Mutual Information between two images by using splines 
-   \cite{thevenaz00mi}
-   \item [Study:] An abitrary gray scale  image 
-   \item [Reference:] An abitrary gray scale  image.  
-   \end{description}
-   
-   \plugtabstart
-   mbins & uint	    & Number of histogram bins used for the moving image \\
-   mkernel & string & Spline kernel for moving image parzen hinstogram  \\
-   rbins & uint	 & Number of histogram bins used for the reference image \\
-   rkernel & string  & Spline kernel for reference image parzen hinstogram \\
-   \plugtabend
-  
-
-   LatexEnd  
- */
-
-
 #include <mia/2d/cost/mi.hh>
 
 

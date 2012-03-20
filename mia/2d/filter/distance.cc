@@ -18,28 +18,6 @@
  *
  */
 
-/* 
-   LatexBeginPluginDescription{2D image filters}
-   
-   \subsection{Distance transform}
-   \label{filter2d:distance}
-   
-   \begin{description}
-   
-   \item [Plugin:] distance
-   \item [Description:] Apply a distance transform to the input image 
-   \item [Input:] Binary image 
-   \item [Output:] A double float valued image that gives the Euklidian distance 
-                   of each pixel to the shape defined in the input image. 
-		   
-   This plug-in doesn't take further parameters. 
-		   
-   \end{description}
-
-   LatexEnd  
- */
-
-
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/filter/distance.hh>
 

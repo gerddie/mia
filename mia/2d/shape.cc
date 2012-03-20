@@ -18,20 +18,6 @@
  *
  */
 
-/*
-  LatexBeginPluginSection{2D neighborhood shapes}
-  \label{sec:2dshapes}
-  
-  These 2D shapes define neighbourhoods for a variety of image processing filters, 
-  like, e.g., morphological filters \ref{filter2d:morph} or neighborhood aware threshholding \ref{filter2d:thresh}. 
-  Shapes are always binary. 
-  
-  LatexEnd
-*/
-
-
-
-
 #include <mia/core/export_handler.hh>
 #ifdef WIN32
 #  define EXPORT_SHAPE   __declspec(dllexport)

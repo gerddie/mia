@@ -18,32 +18,6 @@
  *
  */
 
-/* 
-   LatexBeginPluginDescription{2D image filters}
-   
-   \subsection{Run a filter in the frequency domain}
-   \label{filter2d:cst}
-   
-   \begin{description}
-   
-   \item [Plugin:] cst
-   \item [Description:] Run a filter in the frequency domain by applying a cosinus or sinus transformation, 
-         running the filter, and applying the backward cosinus or sinus transformation. 
-   \item [Input:] Abitrary gray scale or binary image 
-   \item [Output:] The filtered image of the same pixel type and dimension 
-   
-   \plugtabstart
-   k & string & filter kernel as provided by the 2D cst kernel plugin handler \ref{sec:cst2dkern} &   \\
-   \plugtabend
-   
-   \item [Remark:] Currently, no kernels are implemented. 
-   
-   \end{description}
-
-   LatexEnd  
- */
-
-
 #include <limits>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/filter/cst.hh>
@@ -145,7 +119,8 @@ C2DFilter *C2DFilterPluginFactory::do_create()const
 
 const string C2DFilterPluginFactory::do_get_descr()const
 {
-	return "2D image cosinus/sinus transformation filter";
+	return "Run a filter in the frequency domain by applying a cosinus or sinus transformation, "
+		"running the filter, and applying the backward cosinus or sinus transformation. ";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

@@ -17,27 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-/*
-  LatexBeginPluginDescription{2D time steps for model based registration}
 
-  \subsection{Fluid step}
-  \label{timestep2d:fluid}
-  
-  \begin{description}
-   
-  \item [Plugin:] fluid
-  \item [Description:] This time step plug-in implements a direct time-step where 
-  the PDE of the registration model works on the velocity field. 
-
-  \plugtabstart
-  min & float & minimum time step allowed ($\ge 0.001$) & 0.1\\
-  max & float & maximum time step allowed ($\ge 0.002$) & 0.1\\
-  \plugtabend
-  
-  \end{description}
-  
-  LatexEnd 
-*/ 
 #include <limits>
 #include <mia/2d/timestep/fluid.hh>
 

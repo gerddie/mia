@@ -18,29 +18,6 @@
  *
  */
 
-/* 
-  LatexBeginPluginDescription{3D Transformations}
-   
-   \subsection{Rigid}
-   \label{transform3d:rigid}
-   
-   \begin{description}
-   
-   \item [Plugin:] rigid
-   \item [Description:] Rigid transformations - i.r. rotations and translations are allowed. 
-   \item [Degrees of Freedom:] 6 
-  
-   \end{description}
-   \plugtabstart
-   imgkernel & string " & interpolation kernel used to interpolate images when they are transformed & bspline:d=3 \\ 
-   imgboundary& string & interpolation boundary conditions used when transforming an image & mirror \\
-   \plugtabend
-
-
-   LatexEnd  
- */
-
-
 #include <fstream>
 #include <mia/core/msgstream.hh>
 #include <mia/core/utils.hh>
@@ -472,7 +449,7 @@ bool C3DRigidTransformCreatorPlugin::do_test() const
 
 const std::string C3DRigidTransformCreatorPlugin::do_get_descr() const
 {
-	return "plugin to create rigid transformations";
+	return "Rigid transformation, i.e. rotation and translation (six degrees of freedom).";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

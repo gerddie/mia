@@ -18,19 +18,6 @@
  *
  */
 
-/*
-  LatexBeginPluginSection{Spline Interpolation Boundary Conditions}
-  \label{sec:splinebc}
-  
-  These plug-ins implement various boundary conditions that are used when spline 
-  interpolation is applied. 
-  
-  Specific boundary conditions are created by calling \emph{produce\_spline\_boundary\_condition}. 
-  
-  LatexEnd
-*/
-
-
 #include <limits>
 #include <cassert>
 #include <mia/core/export_handler.hh>

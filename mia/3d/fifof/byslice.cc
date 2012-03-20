@@ -27,9 +27,7 @@
    \begin{description}
    
    \item [Plugin:] byslice
-   \item [Description:] Runs a filter on a per slice basis. 
-      In essence, this is a wrapper that makes it possible to add 2D filters
-      (section \ref{sec:filter2d}) to the stack filter pipeline.
+   \item [Description:] 
    \item [Input:] Gray scale or binary image(s) 
    \item [Output:] The filtered image(s) 
    
@@ -96,7 +94,9 @@ C2DBysliceFifoFilterPlugin::C2DBysliceFifoFilterPlugin():
 
 const string C2DBysliceFifoFilterPlugin::do_get_descr() const
 {
-	return "byslice 2D fifo filter";
+	return "Runs a filter on a per slice basis. In essence, this is a wrapper that "
+		"makes it possible to add pure 2D filters to the stack filter pipeline "
+		"without ducplicating the implementation.";
 }
 
 typedef TFifoFilterSink<C2DImage> C2DImageFifoFilterSink;

@@ -605,7 +605,8 @@ bool C2DGridTransformCreatorPlugin::do_test() const
 
 const std::string C2DGridTransformCreatorPlugin::do_get_descr() const
 {
-	return "plugin to create vectorfield transformations";
+	return "This plug-in implements a transformation that defines a translation for "
+		"each point of the grid defining the domain of the transformation.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

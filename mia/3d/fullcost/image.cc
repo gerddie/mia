@@ -18,36 +18,6 @@
  *
  */
 
-/* 
-   LatexBeginPluginDescription{3D full cost functions}
-
-      
-   \subsection{Image cost function}
-   \label{fullcost3d:image}
-   
-   \begin{description}
-   
-   \item [Plugin:] image
-   \item [Description:] Evaluate the image similarity measure of a cost function 
-
-  
-   \plugtabstart
-   weight &  float & all-over weight of the cost function & 1.0  \\
-   src & string & the study (or floating) image & src.@ \\
-   ref & string & the reference (or fixed) image & ref.@ \\
-   cost & string & Description of the image similarity measure kernel (\ref{sec:cost3d} & ssd \\
-   interp & string & Image interpolator kernel & bspline3 \\
-   debug & bool & Save intermediate resuts for debugging (creates a lot of data)  & false \\
-   \plugtabend
-   
-   \item [Remark:] The default parameters for the src and ref image are used for passing 
-                   the data within the program. Don't change these parameters unless you know
-		   what you are doing.  
-   \end{description}
-
-   LatexEnd
-*/
-
 #include <boost/lambda/lambda.hpp>
 #include <mia/3d/fullcost/image.hh>
 #include <mia/3d/3dfilter.hh>
@@ -226,7 +196,8 @@ C3DFullCost *C3DImageFullCostPlugin::do_create(float weight) const
 
 const std::string C3DImageFullCostPlugin::do_get_descr() const
 {
-	return "image similarity cost function"; 
+	return "Generalized image similarity cost function that also handles multi-resolution processing. "
+		"The actual similarity measure is given es extra parameter.";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

@@ -404,7 +404,7 @@ bool C2DRigidTransformCreatorPlugin::do_test() const
 
 const std::string C2DRigidTransformCreatorPlugin::do_get_descr() const
 {
-	return "plugin to create rigid transformations";
+	return "Rigid transformations (i.e. rotation and translation, three degrees of freedom).";
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

@@ -19,19 +19,6 @@
  */
 
 
-/*
-  LatexBeginPluginSection{3D time steps for model based registration}
-  \label{sec:timestep3d}
-  
-  These plug-ins refer to non-linear registration approaches that use 
-  a PDE based model for the regularization of the transformation.
-  The plug-ins implement different time step models. 
-
-  LatexEnd
-
-*/
-
-
 #define VSTREAM_DOMAIN "3dtimestep"
 #include <mia/core/export_handler.hh>
 #include <mia/3d/timestep.hh>
