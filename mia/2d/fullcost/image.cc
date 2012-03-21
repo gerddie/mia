@@ -149,8 +149,9 @@ void C2DImageFullCost::do_reinit()
 		throw runtime_error("C2DImageFullCost only works with images of equal size"); 
 	
 	if (m_src->get_pixel_size() != m_ref->get_pixel_size()) {
-		cverr() << "C2DImageFullCost: src and reference image are of differnet pixel dimensions."
-			<< "This code doesn't honour this and linear registration should be applied first."; 
+		cvwarn() << "C2DImageFullCost: src and reference image are of differnet pixel dimensions:"
+			<< m_src->get_pixel_size() << " vs " << m_ref->get_pixel_size() 
+			<< " This code doesn't honour this.\n"; 
 	}
 }
 

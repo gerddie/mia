@@ -67,6 +67,7 @@ struct C2DPerfusionAnalysisImpl {
 	size_t m_length; 
 	int m_ica_approach; 
 	bool m_use_guess_model; 
+	CAttributedData m_image_attributes; 
 };
 
 
@@ -162,8 +163,8 @@ P2DImage C2DPerfusionAnalysisImpl::get_rvlv_delta_from_feature(const string& sav
 	
 	P2DImage result = m_ica->get_delta_feature(plus, minus); 
 	if (!save_features.empty()) {
-		save_feature(save_features, "RVic", *m_ica->get_feature_image(m_cls.get_RV_idx())); 
-		save_feature(save_features, "LVic", *m_ica->get_feature_image(m_cls.get_LV_idx())); 
+		save_feature(save_features, "RVic", *get_feature_image(m_cls.get_RV_idx())); 
+		save_feature(save_features, "LVic", *get_feature_image(m_cls.get_LV_idx())); 
 		save_feature(save_features, "RVLVica", *result); 
 	}
 	
@@ -219,8 +220,11 @@ vector<C2DFImage> C2DPerfusionAnalysisImpl::get_references() const
 	vector<C2DFImage> result(m_length); 
 	CICAAnalysis::IndexSet component_set = get_all_without_periodic(); 
 	
-	for (size_t i = 0; i < m_length; ++i) 
+	for (size_t i = 0; i < m_length; ++i) {
 		result[i] = m_ica->get_partial_mix(i, component_set); 
+		result[i].set_attributes(m_image_attributes.begin_attributes(),
+					 m_image_attributes.end_attributes()); 
+	}
 	return result; 
 }
 
@@ -254,6 +258,8 @@ bool C2DPerfusionAnalysisImpl::run_ica(const vector<C2DFImage>& series)
 	if (m_length < m_components) 
 		throw invalid_argument("C2DPerfusionAnalysis::run_ica: input series too short"); 
 
+	m_image_attributes = series[0]; 
+		
 	srand(time(NULL));
 	m_image_size = series[0].get_size(); 
 	bool has_one = false; 
@@ -525,7 +531,7 @@ P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_features(float LV_mas
 				"binarize:min=6,max=6", 
 				"label"	});
 	
-	P2DImage RV_candidates = segment_filter_chain.run(m_ica->get_feature_image(m_cls.get_RV_idx())); 
+	P2DImage RV_candidates = segment_filter_chain.run(get_feature_image(m_cls.get_RV_idx())); 
 	
 	P2DImage RV = run_filter(*RV_candidates, "selectbig"); 
 	size_t npixels = ::mia::filter(GetRegionSize(1), *RV);
@@ -535,14 +541,14 @@ P2DFilter C2DPerfusionAnalysisImpl::create_LV_cropper_from_features(float LV_mas
 
 	C2DFVector RV_center = ::mia::filter(GetRegionCenter(), *RV);
 
-	P2DImage LV_candidates = segment_filter_chain.run(m_ica->get_feature_image(m_cls.get_LV_idx()));
+	P2DImage LV_candidates = segment_filter_chain.run(get_feature_image(m_cls.get_LV_idx()));
 
 	int label = ::mia::filter(GetClosestRegionLabel(RV_center), *LV_candidates);
 	size_t lv_pixels = ::mia::filter(GetRegionSize(label), *LV_candidates);
 
 	if (!save_features.empty()) {
-		save_feature(save_features, "RVic", *m_ica->get_feature_image(m_cls.get_RV_idx())); 
-		save_feature(save_features, "LVic", *m_ica->get_feature_image(m_cls.get_LV_idx())); 
+		save_feature(save_features, "RVic", *get_feature_image(m_cls.get_RV_idx())); 
+		save_feature(save_features, "LVic", *get_feature_image(m_cls.get_LV_idx())); 
 		save_feature(save_features, "RV_candidates", *RV_candidates); 
 		save_feature(save_features, "LV_candidates", *LV_candidates); 
 
@@ -680,16 +686,18 @@ void C2DPerfusionAnalysisImpl::save_feature_images(const string&  base_name)cons
 	for (size_t i = 0; i < m_ica->get_mixing_curves().size(); ++i) {
 		stringstream feat; 
 		feat << "_" << i; 
-		save_feature(base_name, feat.str(), *m_ica->get_feature_image(i)); 
+		save_feature(base_name, feat.str(), *get_feature_image(i)); 
 	}
-	save_feature(base_name, "_mean", m_ica->get_mean_image());
+	save_feature(base_name, "_mean", *get_feature_image(-1));
 }
 
 P2DImage C2DPerfusionAnalysisImpl::get_feature_image(int index) const
 {
-	if (index < 0) 
-		return P2DImage(m_ica->get_mean_image().clone()); 
-	return m_ica->get_feature_image(index); 
+	auto img = (index < 0) ?  P2DImage(m_ica->get_mean_image().clone()):
+		m_ica->get_feature_image(index); 
+	img->set_attributes(m_image_attributes.begin_attributes(),
+			     m_image_attributes.end_attributes()); 
+	return img; 
 }
 
 P2DImage C2DPerfusionAnalysis::get_feature_image(int index) const

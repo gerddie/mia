@@ -452,7 +452,7 @@ struct FConvert2DImage2float: public TFilter<C2DFImage> {
 	 */
 	template <typename T>
 	C2DFImage operator () (const T2DImage<T> &image) const {
-		C2DFImage result(image.get_size());
+		C2DFImage result(image.get_size(), image);
 		copy(image.begin(), image.end(), result.begin());
 		return result;
 	}
