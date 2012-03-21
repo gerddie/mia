@@ -55,7 +55,7 @@ CScale::result_type CScale::operator () (const T3DImage<T>& src) const
 			       m_size.y ? m_size.y : src.get_size().y, 
 			       m_size.z ? m_size.z : src.get_size().z ); 
 	
-	T3DImage<T> *result = new T3DImage<T>(target_size);
+	T3DImage<T> *result = new T3DImage<T>(target_size, src);
 	
 	C1DScalarFixed scaler_x(*m_ipf->get_kernel(), src.get_size().x, target_size.x);
 	C1DScalarFixed scaler_y(*m_ipf->get_kernel(), src.get_size().y, target_size.y);

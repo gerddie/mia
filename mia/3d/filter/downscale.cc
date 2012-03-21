@@ -65,7 +65,7 @@ CDownscale::result_type CDownscale::operator () (const T3DImage<T>& src) const
 	T3DImage<T> *fresult = new T3DImage<T>(
 		       C3DBounds((src.get_size().x + m_block_size.x - 1) / m_block_size.x,
 				 (src.get_size().y + m_block_size.y - 1) / m_block_size.y,
-				 (src.get_size().z + m_block_size.z - 1) / m_block_size.z));
+				 (src.get_size().z + m_block_size.z - 1) / m_block_size.z), src);
 
 	CDownscale::result_type Result(fresult);
 

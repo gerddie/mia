@@ -51,16 +51,15 @@ template <typename T>
 struct __get_big_index<T, true> {
 	static T apply(const T3DImage<T>& data) {
 		map<T, long> values;
-		for (typename T3DImage<T>::const_iterator i = data.begin();
-		     i != data.end(); ++i) {
-			typename map<T, long>::iterator k = values.find(*i);
+		for (auto i = data.begin(); i != data.end(); ++i) {
+			auto k = values.find(*i);
 			if (k == values.end())
 				values[*i] = 1;
 			else
 				++k->second;
 		}
 		values[0] = 0;
-		typename map<T, long>::const_iterator vi = values.begin();
+		auto vi = values.begin();
 		T max_idx = vi->first;
 		long max_cnt = vi->second;
 		++vi;

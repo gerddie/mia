@@ -34,7 +34,7 @@ struct __dispatch_median_3dfilter {
 	static T  apply(const T3DImage<T>& data, int x, int y, int z, int width, vector<T>& target_vector) {
 		int idx = 0;
 
-		typename vector<T>::iterator tend = target_vector.begin();
+		auto tend = target_vector.begin();
 
 		for (int iz = max(0, z - width);
 		     iz < min(z + width + 1, (int)data.get_size().z);  ++iz)
@@ -48,7 +48,7 @@ struct __dispatch_median_3dfilter {
 				}
 
 		if (idx & 1) {
-			typename vector<T>::iterator mid = target_vector.begin() + idx/2;
+			auto mid = target_vector.begin() + idx/2;
 			nth_element(target_vector.begin(), mid, tend);
 			return *mid;
 		} else {
@@ -86,8 +86,7 @@ P3DImage C3DMedianFilter::operator () (const T3DImage<T>& data) const
 {
 	T3DImage<T> *result = new T3DImage<T>(data.get_size(), data);
 
-
-	typename T3DImage<T>::iterator i = result->begin();
+	auto i = result->begin();
 
 	vector<T> target_vector((2 * m_width + 1) * (2 * m_width + 1) * (2 * m_width + 1));
 
