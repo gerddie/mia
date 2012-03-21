@@ -482,5 +482,19 @@ BOOST_AUTO_TEST_CASE( Ensure_some_copy_on_write )
 	BOOST_CHECK(data2.has_attribute("dummy")); 
 }
 
+BOOST_AUTO_TEST_CASE( test_set_some_attribues )
+{
+	CAttributedData data;
+	data.set_attribute("dummy", PAttribute(new CFloatAttribute(2.0f))); 
+	data.set_attribute("dummy2", PAttribute(new CIntAttribute(3))); 
+	
+	CAttributedData data2; 
+	
+	data2.set_attributes(data.begin_attributes(), data.end_attributes()); 
+
+	BOOST_CHECK(data2.has_attribute("dummy")); 
+	BOOST_CHECK(data2.has_attribute("dummy2"));
+}
+
 
 

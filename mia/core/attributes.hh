@@ -294,6 +294,14 @@ public:
 	*/
 	void set_attribute(const std::string& key, PAttribute attr);
 
+
+	/**
+	   Insersts or overwrites the attributes given in the input range 
+	   \param begin 
+	   \param end
+	*/
+	void set_attributes(CAttributeMap::const_iterator begin, CAttributeMap::const_iterator end);
+
 	/**
 	   Set an attribute using one of the defined translators
 	   \param key
