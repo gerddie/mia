@@ -106,7 +106,7 @@ typename C2DMidpoint::result_type C2DMidpoint::operator () (const Data2D& data) 
 {
 	cvdebug() << "C2DMidpoint::operator () begin\n";
 
-	Data2D *result = new Data2D(data.get_size()); 
+	Data2D *result = new Data2D(data.get_size(), data); 
 
 	vector<typename Data2D::value_type> target_vector((2 * m_hw + 1) * 
 							       (2 * m_hw + 1));

@@ -33,14 +33,16 @@ struct STestFicture {
 
 	C2DUBImage *src_image;
 	P2DImage src_wrap;
+	C2DFVector test_pixelsize; 
 };
 
 STestFicture::STestFicture():
 	src_image(new C2DUBImage(C2DBounds(13,17))),
-	src_wrap(src_image)
+	src_wrap(src_image), 
+	test_pixelsize(2,3)
 
 {
-
+	src_image->set_pixel_size(test_pixelsize); 
 	C2DUBImage::iterator i = src_image->begin();
 	for (size_t y = 0; y < src_image->get_size().y; ++y)
 		for (size_t x = 0; x < src_image->get_size().x; ++x, ++i) {
@@ -56,6 +58,7 @@ BOOST_FIXTURE_TEST_CASE(test_crop_identity,  STestFicture)
 	const C2DUBImage *identity_image = dynamic_cast<const C2DUBImage *>(identity_wrap.get());
 	BOOST_REQUIRE(identity_image);
 	BOOST_CHECK(equal(src_image->begin(), src_image->end(), identity_image->begin()));
+	BOOST_CHECK_EQUAL( identity_wrap->get_pixel_size(), test_pixelsize); 
 }
 
 BOOST_FIXTURE_TEST_CASE(test_crop_reduce,  STestFicture)
@@ -77,7 +80,8 @@ BOOST_FIXTURE_TEST_CASE(test_crop_reduce,  STestFicture)
 	for (int y = 0; y < size.y; ++y)
 		for (int x = 0; x < size.x; ++x)
 			BOOST_CHECK_EQUAL((*crop_image)(x,y), (*src_image)(x+b.x, y+b.y));
-
+	
+	BOOST_CHECK_EQUAL( crop_image->get_pixel_size(), test_pixelsize); 
 }
 
 BOOST_FIXTURE_TEST_CASE(test_crop_enlarge,  STestFicture)
@@ -98,5 +102,7 @@ BOOST_FIXTURE_TEST_CASE(test_crop_enlarge,  STestFicture)
 	for (size_t y = 0; y < src_image->get_size().y; ++y)
 		for (size_t x = 0; x < src_image->get_size().x; ++x)
 			BOOST_CHECK_EQUAL((*crop_image)(x-b.x,y-b.y), (*src_image)(x, y));
+
+	BOOST_CHECK_EQUAL( crop_image->get_pixel_size(), test_pixelsize); 
 }
 

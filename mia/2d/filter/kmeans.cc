@@ -18,26 +18,6 @@
  *
  */
 
-/* LatexBeginPluginDescription{2D image filters}
-   
-   \subsection{K-means classification}
-   \label{filter2d:kmeans}
-   
-   \begin{description}
-   
-   \item [Plugin:] kmeans
-   \item [Description:] Apply a k-means classification to the image 
-   \item [Input:] A gray scale image of abitrary pixel type. 
-   \item [Output:] The classification image, the class centers are saved as image attribute
-   
-   \plugtabstart
-   c &  int & The number of classes ($\le$ 255) & 5  \\
-   \plugtabend
-
-   \end{description}
-
-   LatexEnd  
- */
 
 #include <limits>
 #include <mia/core/filter.hh>

@@ -79,7 +79,7 @@ typename C2DMedian::result_type C2DMedian::operator () (const T2DImage<T>& data)
 {
 	cvdebug() << "C2DMedian::operator () begin\n";
 
-	T2DImage<T> *tresult = new T2DImage<T>(data.get_size());
+	T2DImage<T> *tresult = new T2DImage<T>(data.get_size(), data);
 	P2DImage result(tresult);
 
 	vector<T> target_vector((2 * m_hw + 1) * (2 * m_hw + 1));

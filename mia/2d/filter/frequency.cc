@@ -178,7 +178,7 @@ C2DFFT::result_type C2DFFT::operator()(const T2DImage<T>& image)const
 	double factor =1.0/sqrt(image.size()); 
 	cvdebug() << "factor = " << factor << "\n"; 
 	
-	T2DImage<T> *result = new T2DImage<T>(image.get_size());
+	T2DImage<T> *result = new T2DImage<T>(image.get_size(), image);
 	typename T2DImage<T>::iterator r = result->begin(); 
 	cbuffer = m_cbuffer;
 	

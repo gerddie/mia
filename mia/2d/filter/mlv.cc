@@ -165,7 +165,7 @@ C2DMLV::result_type C2DMLV::operator () (const T2DImage<T>& data) const
 {
 	cvdebug() << "C2DMLV::operator () begin\n";
 
-	T2DImage<T> *result = new T2DImage<T>(data.get_size());
+	T2DImage<T> *result = new T2DImage<T>(data.get_size(), data);
 	C2DBounds border(2*m_l, 2*m_l);
 	C2DBounds extsize = data.get_size() + border;
 

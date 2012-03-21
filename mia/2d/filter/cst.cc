@@ -92,7 +92,7 @@ typename C2DCst::result_type C2DCst::operator () (const T2DImage<T>& image) cons
 	cvdebug() << "C2DCST::operator() begin\n";
 
 	m_kernel->prepare(image.get_size());
-	T2DImage<T> *result = new T2DImage<T>(image.get_size());
+	T2DImage<T> *result = new T2DImage<T>(image.get_size(), image);
 
 	__dispatch_fftw<T>::apply(*m_kernel, image, *result);
 

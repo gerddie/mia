@@ -18,33 +18,6 @@
  *
  */
 
-/* 
-   LatexBeginPluginDescription{2D image filters}
-   
-   \subsection{Downscale filter}
-   \label{filter2d:downscale}
-   
-   \begin{description}
-   
-   \item [Plugin:] downscale
-   \item [Description:] 
-   \item [Input:] Abitrary gray scale or binary image 
-   \item [Output:] The downscaled image.  
-   
-   \plugtabstart
-   bx & int & downscale factor in x direction & 1  \\
-   by & int & downscale factor in y direction & 1  \\
-   b & string & Alternative to define the scaling factors as a 2D vector & <1,1>  \\
-   kernel & string & Base type of the smoothing kernel, the filter kernel width is estimated based 
-       on the downscale factors & gauss \\\hline 
-   \plugtabend
-   
-   \end{description}
-
-   LatexEnd  
- */
-
-
 
 #include <limits>
 #include <sstream>
@@ -93,7 +66,7 @@ CDownscale::result_type CDownscale::operator () (const T2DImage<T>& src) const
 	cvdebug() << "CDownscale::operator () begin:\n";
 	T2DImage<T> *fresult = new T2DImage<T>(
 		       C2DBounds((src.get_size().x + m_block_size.x - 1) / m_block_size.x,
-				 (src.get_size().y + m_block_size.y - 1) / m_block_size.y));
+				 (src.get_size().y + m_block_size.y - 1) / m_block_size.y), src);
 
 	CDownscale::result_type Result(fresult);
 

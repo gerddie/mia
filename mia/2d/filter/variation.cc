@@ -86,7 +86,7 @@ private:
 template <class Data2D>
 typename C2DVarFilter::result_type C2DVarFilter::operator () (const Data2D& data) const
 {
-	C2DFImage *fimage = new C2DFImage(data.get_size()); 
+	C2DFImage *fimage = new C2DFImage(data.get_size(), data); 
 	
 	C2DFImage::iterator r = fimage->begin(); 
 	

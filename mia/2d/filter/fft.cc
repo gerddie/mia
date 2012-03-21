@@ -82,7 +82,7 @@ typename C2DFft::result_type C2DFft::operator () (const T2DImage<T>& image) cons
 
 	m_kernel->apply();
 
-	T2DImage<T> *result = new T2DImage<T>(image.get_size());
+	T2DImage<T> *result = new T2DImage<T>(image.get_size(), image);
 
 	const bool is_integral = ::boost::is_integral<T>::value;
 

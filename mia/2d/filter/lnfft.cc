@@ -205,7 +205,7 @@ C2DLnFFT::result_type C2DLnFFT::operator()(const T2DImage<T>& image)const
 	fftw_execute( m_backward_plan); 
 
 	cvdebug() << "C2DLnFFT::operator() back copy\n";
-	T2DImage<T> *result = new T2DImage<T>(image.get_size()); 
+	T2DImage<T> *result = new T2DImage<T>(image.get_size(), image); 
 	
 	
 	const bool is_integral = ::boost::is_integral<T>::value; 

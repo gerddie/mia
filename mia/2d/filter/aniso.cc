@@ -251,7 +251,7 @@ typename C2DAnisoDiff::result_type C2DAnisoDiff::operator () (const T2DImage<T>&
 	const T max_val = numeric_limits<T>::max();
 	const T min_val = numeric_limits<T>::min();
 
-	T2DImage<T> *result = new T2DImage<T>(image.get_size());
+	T2DImage<T> *result = new T2DImage<T>(image.get_size(), image);
 
 	typename T2DImage<T>::iterator di = result->begin();
 	for (C2DFImage::const_iterator wi = dest->begin();

@@ -65,7 +65,7 @@ private:
 template <class Data2D>
 typename C2DWMean::result_type C2DWMean::operator () (const Data2D& data) const
 {
-	Data2D *result = new Data2D(data.get_size()); 
+	Data2D *result = new Data2D(data.get_size(), data); 
 
 
 	typename Data2D::iterator i = result->begin(); 

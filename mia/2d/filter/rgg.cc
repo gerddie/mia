@@ -75,7 +75,7 @@ typename C2DRGG::result_type C2DRGG::operator () (const T2DImage<T>& data) const
 	
 //	const bool is_integral = ::boost::is_integral<T>::value; 
 	
-	C2DUBImage *result = new C2DUBImage(data.get_size()); 
+	C2DUBImage *result = new C2DUBImage(data.get_size(), data); 
 	
 	// find seed segmentation 
 	transform(data.begin(), data.end(), result->begin(), FMapClass(m_seed, m_pv)); 

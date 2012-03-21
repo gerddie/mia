@@ -66,7 +66,7 @@ typename TBinarize<Image>::result_type TBinarize<Image>::operator () (const Data
 {
 	const bool is_integral = ::boost::is_integral<T>::value; 
 	
-	Data<bool> *result = new Data<bool>(data.get_size()); 
+	Data<bool> *result = new Data<bool>(data.get_size(), data); 
 	if (!result) {
 		stringstream err; 
 		err << "binarize: unable to allocate image of size " << data.get_size().x << "x" << data.get_size().y; 

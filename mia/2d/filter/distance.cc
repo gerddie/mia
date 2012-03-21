@@ -31,7 +31,7 @@ template <class T>
 typename C2DDistance::result_type 
 C2DDistance::operator () (const T2DImage<T>& image) const
 {
-	C2DDImage *result = new C2DDImage(image.get_size()); 
+	C2DDImage *result = new C2DDImage(image.get_size(), image); 
 	fill(result->begin(),   result->end(), numeric_limits<C2DDImage::value_type>::max()); 
 	
 	// brute force approach, there is a better way ...

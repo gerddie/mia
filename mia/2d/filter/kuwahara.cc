@@ -117,7 +117,7 @@ typename C2DKuwahara::result_type C2DKuwahara::operator () (const Data2D& data) 
 {
 	cvdebug() << "C2DKuwahara::operator () begin\n";
 
-	Data2D *result = new Data2D(data.get_size()); 
+	Data2D *result = new Data2D(data.get_size(), data); 
 
 	typename Data2D::iterator i = result->begin(); 
 	

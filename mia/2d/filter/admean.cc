@@ -30,7 +30,7 @@ template <class Data2D>
 typename C2DAdmean::result_type C2DAdmean::operator () ( const Data2D& data ) const
 {
 	typedef typename Data2D::value_type out_type; 
-	Data2D *result = new Data2D ( data.get_size() );
+	Data2D *result = new Data2D ( data.get_size(), data );
 
 
 	auto i = result->begin();

@@ -153,7 +153,7 @@ struct  dispatch_filter<T, true> {
 	static P2DImage apply(const T2DImage<T>& data, const CProbabilityVector& pv, float steep, float thresh, float tol, const C2DFImage& var_image) {
 		cvdebug() << "Evaluate seed points\n"; 
 		// create the target image
-		C2DUBImage *result = new C2DUBImage(data.get_size()); 
+		C2DUBImage *result = new C2DUBImage(data.get_size(), data); 
 		
 		C2DUBImage::iterator r = result->begin(); 
 		typename T2DImage<T>::const_iterator i = data.begin(); 

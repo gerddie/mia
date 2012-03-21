@@ -86,14 +86,14 @@ struct __dispatch_filter {
 
 
 		do  {
-			typename vector<typename Data2D::value_type>::iterator tend = target_vector.begin();
+			auto tend = target_vector.begin();
 			int idx = 0;
 			// sub-optimal, eigentlich braucht man nur "auﬂenrum" gehen
 			for (int iy = max(0, y - width);
 			     iy < min(y + width + 1, (int)data.get_size().y);  ++iy)
 				for (int ix = max(0, x - width);
 				     ix < min(x + width + 1, (int)data.get_size().x);  ++ix) {
-					typename Data2D::value_type val = data(ix,iy);
+					auto val = data(ix,iy);
 					if (val < zmin)
 						zmin = val;
 					if (val > zmax)
@@ -103,7 +103,7 @@ struct __dispatch_filter {
 					++idx;
 				}
 
-			typename vector<typename Data2D::value_type>::iterator mid = target_vector.begin();
+			auto  mid = target_vector.begin();
 			advance(mid, idx/2);
 			nth_element(target_vector.begin(), mid, tend);
 			median = *mid;
@@ -149,7 +149,7 @@ typename C2DAdaptMedian::result_type C2DAdaptMedian::operator () (const Data2D& 
 {
 	cvdebug() << "C2DAdaptMedian::operator () begin\n";
 
-	Data2D *result = new Data2D(data.get_size());
+	Data2D *result = new Data2D(data.get_size(), data);
 
 	vector<typename Data2D::value_type> target_vector((2 * m_hw + 1) *
 							       (2 * m_hw + 1));

@@ -78,7 +78,7 @@ typename C2DCrop::result_type C2DCrop::operator () (const Data2D& data) const
 
 	cvdebug() << "new size = (" << s.x << ", " << s.y<< ")\n";
 
-	Data2D *result = new Data2D(s);
+	Data2D *result = new Data2D(s, data);
 
 	if (!result) {
 		throw runtime_error("crop2d: unable to allocate image");

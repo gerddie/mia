@@ -272,14 +272,12 @@ template <typename Data2D>
 struct __dispatch<Data2D, true> {
 	static void apply(Data2D& image, const C2DAnisoDiff& diff) {
 
-		C2DSLImage work_copy(image.get_size());
-		copy(image.begin(), image.end(), work_copy.begin()); 
+		C2DSLImage work_copy(image);
 		
 		diff.work(work_copy); 
 		
-		typename Data2D::iterator di = image.begin();
-		for (C2DSLImage::const_iterator wi = work_copy.begin();
-		     wi != work_copy.end(); ++wi, ++di) {
+		auto di = image.begin();
+		for (auto wi = work_copy.begin(); wi != work_copy.end(); ++wi, ++di) {
 			*di = static_cast<typename Data2D::value_type>((*wi + 8) / 16); 
 		}
 	}

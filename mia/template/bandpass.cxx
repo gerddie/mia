@@ -36,7 +36,7 @@ typename TBandPass<Image>::result_type TBandPass<Image>::operator () (const Data
 
 	typename Data::const_iterator ib = data.begin(); 
 	typename Data::const_iterator ie = data.end(); 
-	Data *result = new Data(data.get_size()); 
+	Data *result = new Data(data.get_size(), data); 
 	typename Data::iterator r = result->begin(); 
 	fill(result->begin(), result->end(), 0); 
 	

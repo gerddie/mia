@@ -68,7 +68,7 @@ private:
 template <class T>
 typename C2DNoise::result_type C2DNoise::operator () (const T2DImage<T>& data) const
 {
-	T2DImage<T> *result = new T2DImage<T>(data.get_size());
+	T2DImage<T> *result = new T2DImage<T>(data.get_size(), data);
 	cvdebug() << "C2DNoise\n";
 	if (m_modulated)
 		transform(data.begin(), data.end(), result->begin(), FNoiseModulator<T>(*m_generator));

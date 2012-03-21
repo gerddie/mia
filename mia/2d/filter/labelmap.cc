@@ -55,7 +55,7 @@ struct dispatch_label_map {
 template <> 
 struct dispatch_label_map<C2DUSImage> {
 	static P2DImage apply(const C2DUSImage& image, const vector<size_t>& lmap){
-		C2DUSImage *result = new C2DUSImage(image.get_size()); 
+		C2DUSImage *result = new C2DUSImage(image.get_size(), image); 
 		transform(image.begin(), image.end(), result->begin(), 
 			  [&lmap](unsigned short x){ return lmap[x]; });
 		return P2DImage(result); 
