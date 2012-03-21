@@ -53,7 +53,6 @@ IF (UNIX)
       COMMAND ${GREP_PROG} dcmtk
       COMMAND ${AWK_PROG} "{ print $3 }"
       OUTPUT_VARIABLE DCMTK_version_string)
-    MESSAGE(STATUS "DCMTK version string " ${DCMTK_version_string})
     string(REGEX REPLACE "[v.]" "0" DCMTK_version_string2 ${DCMTK_version_string} )
     string(COMPARE LESS ${DCMTK_version_string2} "030600" VERSION_BEFORE_360)
   ENDIF(DCMDUM_PROG) 
@@ -100,7 +99,6 @@ IF (ZLIB_FOUND)
       ${DCMTK_config_INCLUDE_DIR}
       ${ZLIB_INCLUDE_DIR}
       )
-
  
   ENDIF( DCMTK_config_INCLUDE_DIR AND DCMTK_LIBS )
 

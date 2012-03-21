@@ -20,7 +20,7 @@
 
 
 #include <config.h>
-#include <miaconfig.h>
+//#include <miaconfig.h>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -597,11 +597,9 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional,
 	if (m_impl->help) {
 		m_impl->print_help(name_help, has_additional);
 		return hr_help;
-#ifdef HAVE_LIBXMLPP
 	}else if (m_impl->help_xml) {
 		m_impl->print_help_xml(name_help, additional_help);
 		return hr_help_xml;
-#endif 
 	} else if (m_impl->usage) {
 		m_impl->print_usage(name_help);
 		return hr_usage;

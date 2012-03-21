@@ -22,7 +22,7 @@
 #ifndef mia_core_cmdlineparser_hh
 #define mia_core_cmdlineparser_hh
 
-#include <miaconfig.h>
+//#include <miaconfig.h>
 #include <vector>
 #include <map>
 #include <memory>

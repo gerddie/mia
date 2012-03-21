@@ -1,5 +1,5 @@
 #
-# Copyright (c) Leipzig, Madrid 1999-2011 Gert Wollny
+# Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -49,7 +49,6 @@ if (TBB_INCLUDE_DIR)
         set (TBB_INCLUDE_DIRS ${TBB_INCLUDE_DIR} CACHE PATH "TBB include directory" FORCE)
         set (TBB_LIBRARY_DIRS ${TBB_LIBRARY_DIR} CACHE PATH "TBB library directory" FORCE)
         mark_as_advanced(TBB_INCLUDE_DIRS TBB_LIBRARY_DIRS TBB_LIBRARIES TBB_DEBUG_LIBRARIES)
-        message(STATUS "Found Intel TBB")
     endif (TBB_LIBRARY)
 endif (TBB_INCLUDE_DIR)
 

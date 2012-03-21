@@ -61,8 +61,8 @@ ENDMACRO(CREATE_PLUGIN_COMMON plugname libs)
 
 MACRO(CREATE_PLUGIN_MODULE plugname)
 #  add_library(${plugname} MODULE NO_SOURCE_FILES)
-  add_library(${plugname} MODULE)
-  MESSAGE("Remark: Ignore this warning, calling ADD_LIBRARY without source files was done intentionally.")
+  add_library(${plugname} MODULE ${CMAKE_SOURCE_DIR}/mia/core/silence_cmake_missing_source_file_warning.c)
+#  MESSAGE("Remark: Ignore this warning, calling ADD_LIBRARY without source files was done intentionally.")
   set_target_properties(${plugname} PROPERTIES 
     PREFIX ""  
     SUFFIX ${PLUGSUFFIX})
