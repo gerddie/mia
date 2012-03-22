@@ -109,9 +109,11 @@ vector<C2DImageVectorWithName> separate_slices(const C2DImageVectorWithName &ima
 
 void mia_copy_file(const bfs::path& infile, const bfs::path& outfile) 
 {
-	ifstream ifs(infile.string().c_str(), ios::in  | ios::binary);
-	ofstream ofs(outfile.string().c_str(),ios::out | ios::binary);
-	ofs << ifs.rdbuf();
+	if (!equivalent(infile, outfile))  {
+		ifstream ifs(infile.string().c_str(), ios::in  | ios::binary);
+		ofstream ofs(outfile.string().c_str(),ios::out | ios::binary);
+		ofs << ifs.rdbuf();
+	}
 }
 
 bool save_series(int index, const C2DImageVectorWithName& series, const string& out_directory, bool no_copy_files) 
