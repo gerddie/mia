@@ -39,7 +39,7 @@ if ( PYTHONLIBS_FOUND )
   # not sure  is this is really needed now, 
   # better interface will be with numpy
   FIND_PACKAGE( Boost 1.46.1 COMPONENTS python)
-  TARGET_LINK_LIBRARIES(mia ${mia3d}  ${Boost_PYTHON_LIBRARY} ${PYTHON_LIBRARIES} )
+  TARGET_LINK_LIBRARIES(mia mia3d  ${PYTHON_LIBRARIES} )
 
   #
   #

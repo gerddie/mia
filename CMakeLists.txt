@@ -446,7 +446,7 @@ IF(PYTHONINTERP_FOUND)
 ENDIF(PYTHONINTERP_FOUND) 
 
 #disabled because currenlty useless 
-#ADD_SUBDIRECTORY(python  )
+ADD_SUBDIRECTORY(python  )
 
 #disabled for this release since it doesn't compile 
 #ADD_SUBDIRECTORY(idl     )

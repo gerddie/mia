@@ -162,6 +162,15 @@ inline P3DFilter produce_3dimage_filter(const char* descr)
 P3DImage  EXPORT_3D run_filter(const C3DImage& image, const char *filter);
 
 
+/**
+   \ingroup filtering 
+   
+   convenience function: run a filter chain on an image 
+   @param image input image 
+   @param filters vector of strings defining the filter to be applied 
+   @returns the filtered image 
+*/
+P3DImage  EXPORT_3D run_filter_chain(P3DImage image, const std::vector<const char *>& filters);
 
 
 NS_MIA_END

@@ -82,4 +82,17 @@ P3DImage  EXPORT_3D run_filter(const C3DImage& image, const char *filter)
 	return f->filter(image); 
 }
 
+P3DImage  EXPORT_3D run_filter_chain(P3DImage image, const std::vector<const char *>& filters)
+{
+	const auto& fh = C3DFilterPluginHandler::instance();
+	for (auto fd = filters.begin(); fd != filters.end(); ++fd) {
+		auto f = fh.produce(*fd);
+		if (!f)
+			THROW(invalid_argument, "unable to create filter from '" <<*fd<<"'");
+		image = f->filter(*image);
+	}
+	return image; 
+}
+
+
 NS_MIA_END
