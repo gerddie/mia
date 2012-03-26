@@ -230,11 +230,20 @@ TFactoryPluginHandler<I>::produce_unique(const std::string& plugindescr) const
 template <typename  I>
 typename I::Product *TFactoryPluginHandler<I>::produce_raw(const std::string& params)const
 {
-	assert(!params.empty()); 
+	if (params.empty()) {
+		THROW(invalid_argument, "Factory " << this->get_descriptor() <<": Empty description string given. "
+		      "Supported plug-ins are '" << this->get_plugin_names() << "'. " 
+		      "Set description to 'help' for more information."); 
+	}
+	
 	CComplexOptionParser param_list(params);
 		
-	if (param_list.size() < 1) 
-		return NULL; 
+	if (param_list.size() < 1) {
+		THROW(invalid_argument, "Factory " << this->get_descriptor()<< ": Description string '"
+		      << params << "' can not be interpreted. "
+		      "Supported plug-ins are '" << this->get_plugin_names() << "'. " 
+		      "Set description to 'help' for more information."); 
+	}
 		
 	cvdebug() << "TFactoryPluginHandler<P>::produce use '" << param_list.begin()->first << "'\n"; 
 	const std::string& factory_name = param_list.begin()->first; 
