@@ -145,7 +145,7 @@ public:
 	   Unique products will never be cached. 
 	   \param enable 
 	 */
-	void set_caching(bool enable); 
+	void set_caching(bool enable) const; 
 
 private: 
 	typename I::Product *produce_raw(const std::string& plugindescr) const;
@@ -201,7 +201,7 @@ TFactoryPluginHandler<I>::TFactoryPluginHandler(const std::list<boost::filesyste
 }
 
 template <typename  I>
-void TFactoryPluginHandler<I>::set_caching(bool enable)
+void TFactoryPluginHandler<I>::set_caching(bool enable) const 
 {
 	cvdebug() << this->get_descriptor() << ":Set cache policy to " << enable << "\n"; 
 	m_cache.enable_write(enable); 

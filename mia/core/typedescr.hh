@@ -19,8 +19,8 @@
  */
 
 
-#ifndef mia_core_model_hh
-#define mia_core_model_hh
+#ifndef mia_core_typedescr_hh
+#define mia_core_typedescr_hh
 
 
 #include <mia/core/defines.hh>

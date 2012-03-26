@@ -105,6 +105,7 @@ SET(MIACORE_HEADER_BASE
   errormacro.hh
   export_handler.hh
   factory.hh
+  factory_trait.hh
   fatcost.hh fatcost.cxx
   file.hh
   filetools.hh
@@ -153,9 +154,11 @@ SET(MIACORE_HEADER_BASE
   streamredir.hh
   typedescr.hh
   traits.hh
+  type_traits.hh
   transformation.hh
   testplugin.hh
   threadedmsg.hh
+  utils.hh
   vector.hh
   watch.hh
   waveletslopeclassifier.hh

@@ -27,9 +27,9 @@
 #include <ostream>
 #include <istream>
 #include <iomanip>
+#include <type_traits>
 
 // MIA specific
-#include <mia/core/defines.hh>
 #include <mia/core/type_traits.hh>
 
 NS_MIA_BEGIN

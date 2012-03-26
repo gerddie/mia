@@ -52,7 +52,6 @@ struct atomic_data {
 	static const int size; 
 }; 
 
-
 template <typename T> 
 const int atomic_data<T>::size = 1; 
 
@@ -68,7 +67,7 @@ const int atomic_data<T>::size = 1;
 
 template <typename T>
 struct less_then {
-	/// type of the values handleb by the operator 
+	/// type of the values handled by the operator 
 	typedef T value_type; 
 };
 
