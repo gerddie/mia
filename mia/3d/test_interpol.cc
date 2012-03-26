@@ -258,9 +258,9 @@ void add_3dinterpol_tests( boost::unit_test::test_suite* suite)
 	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline1>)));
 	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline1>)));
 	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline1>)));
-#ifdef HAVE_INT64
-	suite->add( BOOST_TEST_CASE(( &test_type<mia_int64, bspline1>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<mia_uint64, bspline1>)));
+#ifdef LONG_64BIT
+	suite->add( BOOST_TEST_CASE(( &test_type<signed long, bspline1>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned long, bspline1>)));
 #endif
 	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline1>)));
 	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline1>)));
@@ -270,9 +270,9 @@ void add_3dinterpol_tests( boost::unit_test::test_suite* suite)
 	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline2>)));
 	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline2>)));
 	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline2>)));
-#ifdef HAVE_INT64
-	suite->add( BOOST_TEST_CASE(( &test_type<mia_int64, bspline2>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<mia_uint64, bspline2>)));
+#ifdef LONG_64BIT
+	suite->add( BOOST_TEST_CASE(( &test_type<signed long, bspline2>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned long, bspline2>)));
 #endif
 	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline2>)));
 	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline2>)));
@@ -282,9 +282,9 @@ void add_3dinterpol_tests( boost::unit_test::test_suite* suite)
 	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline3>)));
 	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline3>)));
 	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline3>)));
-#ifdef HAVE_INT64
-	suite->add( BOOST_TEST_CASE(( &test_type<mia_int64, bspline3>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<mia_uint64, bspline3>)));
+#ifdef LONG_64BIT
+	suite->add( BOOST_TEST_CASE(( &test_type<signed long, bspline3>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned long, bspline3>)));
 #endif
 	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline3>)));
 	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline3>)));
@@ -293,9 +293,9 @@ void add_3dinterpol_tests( boost::unit_test::test_suite* suite)
 	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline4>)));
 	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline4>)));
 	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline4>)));
-#ifdef HAVE_INT64
-	suite->add( BOOST_TEST_CASE(( &test_type<mia_int64, bspline4>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<mia_uint64, bspline4>)));
+#ifdef LONG_64BIT
+	suite->add( BOOST_TEST_CASE(( &test_type<signed long, bspline4>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned long, bspline4>)));
 #endif
 	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline4>)));
 	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline4>)));
@@ -305,9 +305,9 @@ void add_3dinterpol_tests( boost::unit_test::test_suite* suite)
 	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline5>)));
 	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline5>)));
 	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline5>)));
-#ifdef HAVE_INT64
-	suite->add( BOOST_TEST_CASE(( &test_type<mia_int64, bspline5>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<mia_uint64, bspline5>)));
+#ifdef LONG_64BIT
+	suite->add( BOOST_TEST_CASE(( &test_type<signed long, bspline5>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned long, bspline5>)));
 #endif
 	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline5>)));
 	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline5>)));
@@ -316,9 +316,9 @@ void add_3dinterpol_tests( boost::unit_test::test_suite* suite)
 	suite->add( BOOST_TEST_CASE(( &test_type<signed char, bspline0>)));
 	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, bspline0>)));
 	suite->add( BOOST_TEST_CASE(( &test_type<signed short, bspline0>)));
-#ifdef HAVE_INT64
-	suite->add( BOOST_TEST_CASE(( &test_type<mia_int64, bspline0>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<mia_uint64, bspline0>)));
+#ifdef LONG_64BIT
+	suite->add( BOOST_TEST_CASE(( &test_type<signed long, bspline0>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned long, bspline0>)));
 #endif
 	suite->add( BOOST_TEST_CASE( (&test_type<float, bspline0>)));
 	suite->add( BOOST_TEST_CASE( (&test_type<double, bspline0>)));
@@ -327,9 +327,9 @@ void add_3dinterpol_tests( boost::unit_test::test_suite* suite)
 	suite->add( BOOST_TEST_CASE(( &test_type<signed char, omomsspl3>)));
 	suite->add( BOOST_TEST_CASE(( &test_type<unsigned short, omomsspl3>)));
 	suite->add( BOOST_TEST_CASE(( &test_type<signed short, omomsspl3>)));
-#ifdef HAVE_INT64
-	suite->add( BOOST_TEST_CASE(( &test_type<mia_int64, omomsspl3>)));
-	suite->add( BOOST_TEST_CASE(( &test_type<mia_uint64, omomsspl3>)));
+#ifdef LONG_64BIT
+	suite->add( BOOST_TEST_CASE(( &test_type<signed long, omomsspl3>)));
+	suite->add( BOOST_TEST_CASE(( &test_type<unsigned long, omomsspl3>)));
 #endif
 	suite->add( BOOST_TEST_CASE( (&test_type<float, omomsspl3>)));
 	suite->add( BOOST_TEST_CASE( (&test_type<double, omomsspl3>)));

@@ -7,10 +7,4 @@
 #define PLUGIN_SEARCH_PATH  "@PLUGIN_SEARCH_PATH@"
 #define PLUGIN_INSTALL_PATH  "@PLUGIN_INSTALL_PATH@"
 
-
-@HAVE_INT64@
-@LONG_IS_INT64@
-#ifdef HAVE_INT64
-typedef signed @INT64@ mia_int64;
-typedef unsigned @INT64@ mia_uint64;
-#endif
+#cmakedefine LONG_64BIT 1 

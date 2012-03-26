@@ -155,9 +155,9 @@ struct __bind_all {
 	typedef D<unsigned short> Dus;
 	typedef D<signed int> Dsi;
 	typedef D<unsigned int> Dui;
-#ifdef HAVE_INT64
-	typedef D<mia_int64> Dsl;
-	typedef D<mia_uint64> Dul;
+#ifdef LONG_64BIT
+	typedef D<signed long> Dsl;
+	typedef D<unsigned long> Dul;
 #endif
 	typedef D<float> Dfloat;
 	typedef D<double> Ddouble;
@@ -210,7 +210,7 @@ static typename F::result_type filter(const F& f, const B& b)
 	case it_ushort:return f(DC(typename D::Dus,b));
 	case it_sint:  return f(DC(typename D::Dsi,b));
 	case it_uint:	 return f(DC(typename D::Dui,b));
-#ifdef HAVE_INT64
+#ifdef LONG_64BIT
 	case it_slong: return f(DC(typename D::Dsl,b));
 	case it_ulong: return f(DC(typename D::Dul,b));
 #endif
@@ -246,7 +246,7 @@ static typename F::result_type filter_inplace(const F& f, B& b)
 	case it_ushort:return f(DV(typename D::Dus,b));
 	case it_sint:  return f(DV(typename D::Dsi,b));
 	case it_uint:	 return f(DV(typename D::Dui,b));
-#ifdef HAVE_INT64
+#ifdef LONG_64BIT
 	case it_slong: return f(DV(typename D::Dsl,b));
 	case it_ulong: return f(DV(typename D::Dul,b));
 #endif
@@ -281,7 +281,7 @@ static typename F::result_type accumulate(F& f, const B& data)
 	case it_ushort:return f(DC(typename D::Dus,data));
 	case it_sint:  return f(DC(typename D::Dsi,data));
 	case it_uint:	 return f(DC(typename D::Dui,data));
-#ifdef HAVE_INT64
+#ifdef LONG_64BIT
 	case it_slong: return f(DC(typename D::Dsl,data));
 	case it_ulong: return f(DC(typename D::Dul,data));
 #endif
@@ -318,7 +318,7 @@ static typename F::result_type filter_equal(const F& f, const B& a, const B& b)
 	case it_ushort:return f( DC(typename D::Dus, a), DC(typename D::Dus,b));
 	case it_sint:  return f( DC(typename D::Dsi, a), DC(typename D::Dsi,b));
 	case it_uint:	 return f( DC(typename D::Dui, a), DC(typename D::Dui,b));
-#ifdef HAVE_INT64
+#ifdef LONG_64BIT
 	case it_slong: return f( DC(typename D::Dsl, a), DC(typename D::Dsl,b));
 	case it_ulong: return f( DC(typename D::Dul, a), DC(typename D::Dul,b));
 #endif
@@ -355,7 +355,7 @@ static void filter_equal_inplace(const F& f, const B& a, B& b)
 	case it_ushort: f( DC(typename D::Dus, a), DV(typename D::Dus,b));break;
 	case it_sint:   f( DC(typename D::Dsi, a), DV(typename D::Dsi,b));break;
 	case it_uint:	 f( DC(typename D::Dui, a), DV(typename D::Dui,b));break;
-#ifdef HAVE_INT64
+#ifdef LONG_64BIT
 	case it_slong:  f( DC(typename D::Dsl, a), DV(typename D::Dsl,b));break;
 	case it_ulong:  f( DC(typename D::Dul, a), DV(typename D::Dul,b));break;
 #endif
@@ -417,7 +417,7 @@ static typename F::result_type _filter(const F& f, const A& a, const B& b)
 	case it_ushort:return f(DC(typename D::Dus,   a), b);
 	case it_sint:  return f(DC(typename D::Dsi,   a), b);
 	case it_uint:	 return f(DC(typename D::Dui,   a), b);
-#ifdef HAVE_INT64
+#ifdef LONG_64BIT
 	case it_slong: return f(DC(typename D::Dsl,   a), b);
 	case it_ulong: return f(DC(typename D::Dul,   a), b);
 #endif
@@ -455,7 +455,7 @@ static typename F::result_type filter(const F& f, const A& a, const B& b)
 	case it_ushort:return _filter(f, a, DC(typename D::Dus,    b));
 	case it_sint:  return _filter(f, a, DC(typename D::Dsi,    b));
 	case it_uint:	 return _filter(f, a, DC(typename D::Dui,    b));
-#ifdef HAVE_INT64
+#ifdef LONG_64BIT
 	case it_slong: return _filter(f, a, DC(typename D::Dsl,    b));
 	case it_ulong: return _filter(f, a, DC(typename D::Dul,    b));
 #endif
@@ -481,7 +481,7 @@ static typename F::result_type _accumulate(F& f, const A& a, const B& b)
 	case it_ushort:return f(DC(typename D::Dus,   a), b);
 	case it_sint:  return f(DC(typename D::Dsi,   a), b);
 	case it_uint:  return f(DC(typename D::Dui,   a), b);
-#ifdef HAVE_INT64
+#ifdef LONG_64BIT
 	case it_slong: return f(DC(typename D::Dsl,   a), b);
 	case it_ulong: return f(DC(typename D::Dul,   a), b);
 #endif
@@ -518,7 +518,7 @@ static typename F::result_type accumulate(F& f, const A& a, const B& b)
 	case it_ushort:return _accumulate(f, a, DC(typename D::Dus,    b));
 	case it_sint:  return _accumulate(f, a, DC(typename D::Dsi,    b));
 	case it_uint:  return _accumulate(f, a, DC(typename D::Dui,    b));
-#ifdef HAVE_INT64
+#ifdef LONG_64BIT
 	case it_slong: return _accumulate(f, a, DC(typename D::Dsl,    b));
 	case it_ulong: return _accumulate(f, a, DC(typename D::Dul,    b));
 #endif

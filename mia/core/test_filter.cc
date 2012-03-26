@@ -109,9 +109,9 @@ void do_test_combiner_call(DualFilter dual)
 	do_test_combiner_call_b<T, unsigned short>(dual);
 	do_test_combiner_call_b<T, signed int>(dual);
 	do_test_combiner_call_b<T, unsigned int>(dual);
-#ifdef HAVE_INT64
-	do_test_combiner_call_b<T, mia_int64>(dual);
-	do_test_combiner_call_b<T, mia_uint64>(dual);
+#ifdef LONG_64BIT
+	do_test_combiner_call_b<T, unsigned long>(dual);
+	do_test_combiner_call_b<T, signed long>(dual);
 #endif
 	do_test_combiner_call_b<T, float>(dual);
 	do_test_combiner_call_b<T, double>(dual);
@@ -132,9 +132,9 @@ BOOST_AUTO_TEST_CASE( test_filter_call)
 	do_test_filter_call<unsigned short>(uni);
 	do_test_filter_call<signed int>(uni);
 	do_test_filter_call<unsigned int>(uni);
-#ifdef HAVE_INT64
-	do_test_filter_call<mia_int64>(uni);
-	do_test_filter_call<mia_uint64>(uni);
+#ifdef LONG_64BIT
+	do_test_filter_call<signed long>(uni);
+	do_test_filter_call<unsigned long>(uni);
 #endif
 	do_test_filter_call<float>(uni);
 	do_test_filter_call<double>(uni);
@@ -151,9 +151,9 @@ BOOST_AUTO_TEST_CASE( test_combiner_call )
 	do_test_combiner_call<unsigned short>(dual);
 	do_test_combiner_call<signed int>(dual);
 	do_test_combiner_call<unsigned int>(dual);
-#ifdef HAVE_INT64
-	do_test_combiner_call<mia_int64>(dual);
-	do_test_combiner_call<mia_uint64>(dual);
+#ifdef LONG_64BIT
+	do_test_combiner_call<signed long>(dual);
+	do_test_combiner_call<unsigned long>(dual);
 #endif
 	do_test_combiner_call<float>(dual);
 	do_test_combiner_call<double>(dual);

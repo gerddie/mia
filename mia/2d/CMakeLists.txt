@@ -210,6 +210,7 @@ TEST_2DMIA(shape mia2dtest)
 TEST_2DMIA(morphshape mia2dtest)
 TEST_2DMIA(2dimageio mia2dtest)
 TEST_2DMIA(sparse_image_solver mia2dtest)
+TEST_2DMIA(filter_cast mia2d)
 #TEST_2DMIA(fullcost_mi_spline  mia2dtest)
 
 IF(CMAKE_BUILD_TYPE)

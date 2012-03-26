@@ -187,9 +187,9 @@ typedef bmpl::list<signed char,
 		   unsigned int,
 		   float,
 		   double
-#ifdef HAVE_INT64
-		   mia_int64,
-		   mia_uint64,
+#ifdef LONG_64BIT
+		   ,signed long
+		   ,unsigned long
 #endif
 		   > test_types;
 

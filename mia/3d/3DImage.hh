@@ -353,9 +353,9 @@ typedef T3DImage<signed short> C3DSSImage;
 typedef T3DImage<unsigned short> C3DUSImage;
 typedef T3DImage<signed int> C3DSIImage;
 typedef T3DImage<unsigned int> C3DUIImage;
-#ifdef HAVE_INT64
-typedef T3DImage<mia_int64> C3DSLImage;
-typedef T3DImage<mia_uint64> C3DULImage;
+#ifdef LONG_64BIT
+typedef T3DImage<signed long> C3DSLImage;
+typedef T3DImage<unsigned long> C3DULImage;
 #endif
 typedef T3DImage<float> C3DFImage;
 typedef T3DImage<double> C3DDImage;

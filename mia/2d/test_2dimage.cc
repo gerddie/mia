@@ -93,9 +93,9 @@ BOOST_AUTO_TEST_CASE( check_data_types )
 	creat_and_check<signed short>(it_sshort);
 	creat_and_check<unsigned int>(it_uint);
 	creat_and_check<signed int>(it_sint);
-#ifdef HAVE_INT64
-	creat_and_check<mia_uint64>(it_ulong);
-	creat_and_check<mia_int64>(it_slong);
+#ifdef LONG_64BIT
+	creat_and_check<unsigned long>(it_ulong);
+	creat_and_check<signed long>(it_slong);
 #endif
 	creat_and_check<float>(it_float);
 	creat_and_check<double>(it_double);

@@ -23,6 +23,7 @@
 #define mia_core_pixeltype_hh
 
 #include <mia/core/dictmap.hh>
+#include <miaconfig.h>
 
 NS_MIA_BEGIN
 
@@ -36,7 +37,7 @@ enum EPixelType {it_bit,  /**< bit/bool pixels */
 		 it_ushort, /**< unsigned short pixels (16-bit) */
 		 it_sint,   /**< signed int pixels (32-bit)*/
 		 it_uint,   /**< unsigned int pixels (32-bit)*/
-#ifdef HAVE_INT64
+#ifdef LONG_64BIT
 		 it_slong,  /**< signed long pixels (64 bit)*/
 		 it_ulong,  /**< unsigned long pixels (64 bit) */
 #endif
@@ -118,14 +119,14 @@ struct pixel_type<unsigned int> {
 	enum {value = it_uint};
 };
 
-#ifdef HAVE_INT64
+#ifdef LONG_64BIT
 template <>
-struct pixel_type<mia_int64> {
+struct pixel_type<signed long> {
 	enum {value = it_slong};
 };
 
 template <>
-struct pixel_type<mia_uint64> {
+struct pixel_type<unsigned long> {
 	enum {value = it_ulong};
 };
 #endif

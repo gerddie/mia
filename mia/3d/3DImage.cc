@@ -275,9 +275,9 @@ template class T3DImage<unsigned short>;
 template class T3DImage<signed int>;
 template class T3DImage<unsigned int>;
 
-#ifdef HAVE_INT64
-template class T3DImage<mia_int64>;
-template class T3DImage<mia_uint64>;
+#ifdef LONG_64BIT
+template class T3DImage<signed long>;
+template class T3DImage<unsigned long>;
 #endif
 
 template class T3DImage<float>;

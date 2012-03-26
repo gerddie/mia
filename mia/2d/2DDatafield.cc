@@ -31,9 +31,10 @@ NS_MIA_BEGIN
 
 
 INSTANCIATE(float); 
-#ifdef HAVE_INT64
-INSTANCIATE(mia_int64);
-INSTANCIATE(mia_uint64);
+
+#ifdef LONG_64BIT
+INSTANCIATE(signed long);
+INSTANCIATE(unsigned long);
 #endif
 INSTANCIATE(double);
 INSTANCIATE(unsigned int);

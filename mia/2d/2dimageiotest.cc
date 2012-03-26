@@ -138,9 +138,9 @@ static P2DImage create_image_of_type(EPixelType type)
 	case it_ushort: return create_image<unsigned short>();
 	case it_sint:   return create_image<signed int>();
 	case it_uint:   return create_image<unsigned int>();
-#ifdef HAVE_INT64
-	case it_slong:  return create_image<mia_int64>();
-	case it_ulong:  return create_image<mia_uint64>();
+#ifdef LONG_64BIT
+	case it_slong:  return create_image<signed long>();
+	case it_ulong:  return create_image<unsigned long>();
 #endif
 	case it_float:  return create_image<float>();
 	case it_double: return create_image<double>();

@@ -376,12 +376,12 @@ typedef T2DImage<signed int> C2DSIImage;
 /// 2D image with unsigned 32 bit integer values 
 typedef T2DImage<unsigned int> C2DUIImage;
 
-#ifdef HAVE_INT64
+#ifdef LONG_64BIT
 /// 2D image with signed 64 bit integer values 
-typedef T2DImage<mia_int64> C2DSLImage;
+typedef T2DImage<signed long> C2DSLImage;
 
 /// 2D image with unsigned 64 bit integer values 
-typedef T2DImage<mia_uint64> C2DULImage;
+typedef T2DImage<unsigned long> C2DULImage;
 #endif
 
 /// 2D image with single precsion floating point values 

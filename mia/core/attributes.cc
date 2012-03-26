@@ -239,12 +239,12 @@ template class EXPORT_CORE  TTranslator<std::vector<double> >;
 template class EXPORT_CORE  TTranslator<float>;
 template class EXPORT_CORE  TTranslator<std::vector<float> >;
 
-#ifdef HAVE_INT64
-template class EXPORT_CORE  TTranslator<mia_uint64>;
-template class EXPORT_CORE  TTranslator<std::vector<mia_uint64> >;
+#ifdef LONG_64BIT
+template class EXPORT_CORE  TTranslator<unsigned long>;
+template class EXPORT_CORE  TTranslator<std::vector<unsigned long> >;
 
-template class EXPORT_CORE  TTranslator<mia_int64>;
-template class EXPORT_CORE  TTranslator<std::vector<mia_int64> >;
+template class EXPORT_CORE  TTranslator<signed long>;
+template class EXPORT_CORE  TTranslator<std::vector<signed long> >;
 #endif
 
 template class EXPORT_CORE  TTranslator<unsigned int>;

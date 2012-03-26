@@ -33,6 +33,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/parameter.hh>
 #include <mia/core/typedescr.hh>
+#include <miaconfig.h>
 
 NS_MIA_BEGIN
 

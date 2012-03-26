@@ -131,11 +131,11 @@ BOOST_AUTO_TEST_CASE( test_translator )
 	check_translate_type("sbyte", (signed char)-120, "-120");
 	check_translate_type("sshort", (signed short)-1231, "-1231");
 	check_translate_type("ushort", (unsigned short)3213, "3213");
-#ifdef HAVE_INT64
+#ifdef LONG_64BIT
 	CULTranslator::register_for("ulong");
 	CSLTranslator::register_for("slong");
-	check_translate_type("slong", (mia_int64)-1212321, "-1212321");
-	check_translate_type("ulong", (mia_uint64)1238763, "1238763");
+	check_translate_type("slong", (signed long)-1212321, "-1212321");
+	check_translate_type("ulong", (unsigned long)1238763, "1238763");
 #endif
 
 }
@@ -175,9 +175,9 @@ typedef bmpl::vector<bool,
 		     unsigned short,
 		     signed int,
 		     unsigned int,
-#ifdef HAVE_INT64
-		     mia_int64,
-		     mia_uint64,
+#ifdef LONG_64BIT
+		     signed long,
+		     unsigned long,
 #endif
 		     float,
 		     double

@@ -30,9 +30,9 @@ const TDictMap<EPixelType>::Table PixelTypeTable[] = {
 	{"ushort",it_ushort, "unsigned 16 bit"},
 	{"sint",  it_sint, "signed 32 bit"},
 	{"uint",  it_uint, "unsigned 32 bit"},
-#ifdef HAVE_INT64
+#ifdef LONG_64BIT
 	{"slong", it_slong, "signed 64 bit"},
-	{"ulong", it_ulong}, "unsigned 64 bit",
+	{"ulong", it_ulong, "unsigned 64 bit"},
 #endif
 	{"float", it_float, "single floating point values (32 bit)"},
 	{"double",it_double, "double floating point values (64 bit)"},

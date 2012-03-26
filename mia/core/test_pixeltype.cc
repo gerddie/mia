@@ -34,7 +34,7 @@ NS_MIA_USE
 BOOST_AUTO_TEST_CASE( test_pixeltype_translation )
 {
 
-#ifdef HAVE_INT64
+#ifdef LONG_64BIT
 	BOOST_CHECK(CPixelTypeDict.get_name_set().size() == 11);
 	BOOST_CHECK(it_none == 11);
 #else
@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE( test_pixeltype_translation )
 	BOOST_CHECK(CPixelTypeDict.get_value("sshort") == it_sshort);
 	BOOST_CHECK(CPixelTypeDict.get_value("uint")   == it_uint);
 	BOOST_CHECK(CPixelTypeDict.get_value("sint")   == it_sint);
-#ifdef HAVE_INT64
+#ifdef LONG_64BIT
 	BOOST_CHECK(CPixelTypeDict.get_value("ulong")  == it_ulong);
 	BOOST_CHECK(CPixelTypeDict.get_value("slong")  == it_slong);
 #endif

@@ -31,6 +31,7 @@
 #include <mia/2d/iterator.hh>
 #include <mia/core/parameter.hh>
 #include <mia/core/typedescr.hh>
+#include <miaconfig.h>
 
 #ifndef EXPORT_2DDATAFIELD
 /// define used export 2D symbols 
@@ -301,12 +302,11 @@ typedef T2DDatafield<unsigned int> C2DUIDatafield;
 /// 2D scalar field that holds signed int values 
 typedef T2DDatafield<signed int>  C2DSIDatafield;
 
-#ifdef HAVE_INT64
-/// 
-typedef T2DDatafield<mia_uint64> C2DULDatafield;
+#ifdef LONG_64BIT
+typedef T2DDatafield<unsigned long> C2DULDatafield;
 
 /// long  instanziation of a 2D data field
-typedef T2DDatafield<mia_int64>  C2DSLDatafield;
+typedef T2DDatafield<signed long>  C2DSLDatafield;
 #endif
 
 /// 2D scalar field that holds unsigned short values 

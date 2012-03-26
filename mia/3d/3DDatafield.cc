@@ -85,9 +85,9 @@ INSTANCIATE(float);
 INSTANCIATE(unsigned int);
 INSTANCIATE(int);
 
-#ifdef HAVE_INT64
-INSTANCIATE(mia_int64);
-INSTANCIATE(mia_uint64);
+#ifdef LONG_64BIT
+INSTANCIATE(signed long);
+INSTANCIATE(unsigned long);
 #endif
 INSTANCIATE(short);
 INSTANCIATE(unsigned short);

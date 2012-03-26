@@ -342,9 +342,9 @@ template class T2DImage<signed short>;
 template class T2DImage<unsigned short>;
 template class T2DImage<signed int>;
 template class T2DImage<unsigned int>;
-#ifdef HAVE_INT64
-template class T2DImage<mia_int64>;
-template class T2DImage<mia_uint64>;
+#ifdef LONG_64BIT
+template class T2DImage<signed long>;
+template class T2DImage<unsigned long>;
 #endif
 template class T2DImage<float>;
 template class T2DImage<double>;
