@@ -67,6 +67,29 @@ void try_parsing_and_setting(const char *options, const params& expect)
 	BOOST_CHECK(expect.nana == read.nana);
 }
 
+void try_parsing_and_setting(const char *options, const params& expect, params read)
+{
+	CParamList pm;
+	pm["kill"] =  CParamList::PParameter(new CBoolParameter(read.kill, false, "a bool value"));
+	pm["min"] =   CParamList::PParameter(new CFloatParameter(read.min, -100, 20, false, "a float value"));
+	pm["max"] =   CParamList::PParameter(new CFloatParameter(read.max, -10, 200, false, "a float value"));
+	pm["nana"] =  CParamList::PParameter(new CStringParameter(read.nana, false, "a string value"));
+	pm["n"] =     CParamList::PParameter(new CIntParameter(read.n, -200, 100, false, "an int value"));
+
+	CComplexOptionParser cpo(options);
+	BOOST_CHECK(cpo.size() == 1);
+	const CParsedOptions& opts = cpo.begin()->second;
+
+	pm.set(opts);
+	pm.check_required();
+
+	BOOST_CHECK(expect.kill == read.kill);
+	BOOST_CHECK(expect.n == read.n);
+	BOOST_CHECK(expect.min == read.min);
+	BOOST_CHECK(expect.max == read.max);
+	BOOST_CHECK(expect.nana == read.nana);
+}
+
 BOOST_AUTO_TEST_CASE(test_sucess1)
 {
 	params p_expect = { true, 5, 1.3, 7.1, "name" };
@@ -117,6 +140,48 @@ BOOST_AUTO_TEST_CASE( test_fail2)
 	catch (invalid_argument& x) {
 		// it should throw ...
 		BOOST_MESSAGE(x.what());
+	}
+}
+
+
+BOOST_AUTO_TEST_CASE( test_reset )
+{
+	params read = { false, 0, 0.0, 0.0, "pong" };
+	params p_expect_keep = { false, 0, 0.0, 0.0, "pong" };
+	params p_expect = { false, 1, 1.1, 3.1, "ping" };
+	try {
+
+		CParamList pm;
+		pm["kill"] =  CParamList::PParameter(new CBoolParameter(read.kill, false, "a bool value"));
+		pm["min"] =   CParamList::PParameter(new CFloatParameter(read.min, -100, 20, false, "a float value"));
+		pm["max"] =   CParamList::PParameter(new CFloatParameter(read.max, -10, 200, false, "a float value"));
+		pm["nana"] =  CParamList::PParameter(new CStringParameter(read.nana, false, "a string value"));
+		pm["n"] =     CParamList::PParameter(new CIntParameter(read.n, -200, 100, false, "an int value"));
+		
+		CComplexOptionParser cpo("plugin:kill=0,min=1.1,nana=ping,max=3.1,n=1");
+		BOOST_CHECK(cpo.size() == 1);
+		const CParsedOptions& opts = cpo.begin()->second;
+		
+		pm.set(opts);
+		
+		BOOST_CHECK_EQUAL(p_expect.kill, read.kill);
+		BOOST_CHECK_EQUAL(p_expect.n, read.n);
+		BOOST_CHECK_EQUAL(p_expect.min, read.min);
+		BOOST_CHECK_EQUAL(p_expect.max, read.max);
+		BOOST_CHECK_EQUAL(p_expect.nana, read.nana);
+		
+		CComplexOptionParser cpo2("plugin");
+		pm.set(cpo2.begin()->second);
+		
+		BOOST_CHECK_EQUAL(p_expect_keep.kill, read.kill);
+		BOOST_CHECK_EQUAL(p_expect_keep.n, read.n);
+		BOOST_CHECK_EQUAL(p_expect_keep.min, read.min);
+		BOOST_CHECK_EQUAL(p_expect_keep.max, read.max);
+		BOOST_CHECK_EQUAL(p_expect_keep.nana, read.nana);
+
+	}
+	catch (invalid_argument& x) {
+		BOOST_FAIL(x.what());
 	}
 }
 

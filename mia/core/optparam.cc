@@ -45,7 +45,7 @@ void CParamList::set(const CParsedOptions& options)
 {
 	
 	typedef std::map<std::string, PParameter>::iterator::value_type MapValue; 
-	for_each(m_params.begin(), m_params.end(), [](MapValue p){p.second.reset();}); 
+	for_each(m_params.begin(), m_params.end(), [](MapValue p){p.second->reset();}); 
 	
 	for (auto i = options.begin();
 	     i != options.end(); ++i) {

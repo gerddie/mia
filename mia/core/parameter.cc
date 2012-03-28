@@ -46,10 +46,6 @@ void CParameter::reset()
 	do_reset(); 
 }
 
-void CParameter::do_reset()
-{	
-}
-
 const char *CParameter::type() const
 {
 	return m_type;

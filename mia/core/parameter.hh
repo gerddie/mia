@@ -141,7 +141,7 @@ private:
 	*/
 	virtual void do_add_dependend_handler(HandlerHelpMap& handler_map) const;
 	virtual bool do_set(const std::string& str_value) = 0;
-	virtual void do_reset();
+	virtual void do_reset() = 0;
 	virtual std::string do_get_default_value() const = 0;
 	virtual std::string do_get_value_as_string() const = 0;
 	virtual void do_get_help_xml(xmlpp::Element& self) const;
@@ -183,7 +183,7 @@ private:
 	virtual std::string do_get_default_value() const; 
 	virtual std::string do_get_value_as_string() const;
 	T& m_value;
-	T m_default_value; 
+	const T m_default_value; 
 };
 
 /**
