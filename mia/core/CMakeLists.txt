@@ -141,6 +141,7 @@ SET(MIACORE_HEADER_BASE
   property_flags.hh
   product_base.hh
   productcache.hh
+  refholder.hh
   regmodel.hh
   scaler1d.hh
   shape.hh shape.cxx
