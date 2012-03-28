@@ -134,6 +134,7 @@ SET(MIA2D_HEADERS_BASE
   similarity_profile.hh
   sparse_image_solver.hh
   timestep.hh
+  trait.hh
   transform.hh
   transformmock.hh
   transformio.hh

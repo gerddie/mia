@@ -78,6 +78,7 @@ SET(MIA3D_HEADERS
 	ica.hh
 	landmark.hh
 	landmarklist.hh
+	matrix.hh
 	model.hh
 	multicost.hh
 	nfg.hh
@@ -89,6 +90,7 @@ SET(MIA3D_HEADERS
 	rigidregister.hh
 	similarity_profile.hh
 	timestep.hh
+	trait.hh
 	transform.hh
 	transformfactory.hh
 	transformio.hh
