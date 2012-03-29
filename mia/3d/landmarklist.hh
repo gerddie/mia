@@ -23,6 +23,7 @@
 #define mia_3d_landmarklist_hh
 
 #include <map> 
+#include <mia/core/iodata.hh>
 #include <mia/3d/landmark.hh>
 
 NS_MIA_BEGIN
@@ -34,7 +35,7 @@ NS_MIA_BEGIN
    
  */
 
-class EXPORT_3D C3DLandmarklist {
+class EXPORT_3D C3DLandmarklist : public CIOData {
 	typedef std::map<std::string, P3DLandmark> CMap; 
 public: 
 
@@ -45,11 +46,28 @@ public:
 	typedef CMap::iterator iterator;  
 
 	/**
+	   \cond INTERNAL 
+	   \brief helper for plugin handling 
+	 */
+	static const char *data_descr;
+
+	/// type helper for plugin handler 
+	typedef C3DLandmarklist type; 
+	/// @endcond 
+
+	typedef std::shared_ptr<C3DLandmarklist> Pointer; 
+
+	/**
 	   Add a Landmark to the list. If the landmark name already exists it is siletly overwritten.  
 	   \param lm the landmark to be added 
 	 */
 	void add(P3DLandmark lm); 
 	
+	
+	/**
+	   \returns a dynamically created copy of the landmark list 
+	 */
+	C3DLandmarklist *clone() const; 
 
 	/**
 	   \returns the landmark with the giben name. If this landmark doesn't exist the function 
@@ -71,6 +89,10 @@ public:
 private: 
 	std::map<std::string, P3DLandmark> m_list; 
 }; 
+
+
+/// Pointer type for land mark list 
+typedef C3DLandmarklist::Pointer P3DLandmarklist; 
 
 NS_MIA_END
 #endif

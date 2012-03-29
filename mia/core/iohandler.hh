@@ -186,6 +186,19 @@ public:
 
 }; 
 
+
+/**
+   \brief Explicitely instanciate all that is needed for an IO plugin 
+   \param IOTYPE data type that is handled by this io handler 
+ */
+#define EXPLICITE_INSTANCEIATE_IO_HANDLER(IOTYPE)			\
+	template class TIOPlugin<IOTYPE>;				\
+	template class THandlerSingleton<TIOPluginHandler<TIOPlugin<IOTYPE>>>;	\
+	template class TIOHandlerSingleton<TIOPluginHandler<TIOPlugin<IOTYPE>>>; \
+	template class TIOPluginHandler<TIOPlugin<IOTYPE>>;		\
+	template class TPluginHandler<TIOPlugin<IOTYPE>>		\
+
+
 /**
    This fakes some load image function 
    \remark what is this for? 

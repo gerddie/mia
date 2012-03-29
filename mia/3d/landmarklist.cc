@@ -27,6 +27,8 @@ NS_MIA_BEGIN
 
 using std::invalid_argument; 
 
+const char *C3DLandmarklist::data_descr = "3dlandmarklist";
+
 void C3DLandmarklist::add(P3DLandmark lm)
 {
 	assert(lm); 
@@ -38,6 +40,11 @@ void C3DLandmarklist::add(P3DLandmark lm)
 		cvdebug() << "C3DLandmarklist: overwrite '" << lm->get_name() << "'\n"; 
 		p->second = lm; 
 	}
+}
+
+C3DLandmarklist *C3DLandmarklist::clone() const
+{
+	return new C3DLandmarklist(*this); 
 }
 
 P3DLandmark C3DLandmarklist::get(const std::string& name) const

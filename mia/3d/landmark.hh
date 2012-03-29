@@ -71,6 +71,8 @@ private:
 	C3DFVector m_position; 
 
 }; 
+
+
 typedef C3DLandmark::Pointer P3DLandmark; 
 
 NS_MIA_END
