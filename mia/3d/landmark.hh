@@ -24,8 +24,10 @@
 
 #include <memory>
 #include <vector>
+#include <boost/filesystem.hpp>
 #include <mia/3d/defines3d.hh>
-#include <mia/3d/3DVector.hh>
+#include <mia/3d/camera.hh>
+#include <mia/2d/2DImage.hh>
 
 NS_MIA_BEGIN
 
@@ -61,15 +63,60 @@ public:
 	/// \returns the position of the landmark 
 	const C3DFVector& get_position() const; 
 
+
+	/// \returns the view camera 
+	const C3DCamera& get_view() const;
+	
+	
+	/// \returns the file name of the picture illustrating the landmark 
+	const std::string& get_picture_file()const; 
+
+	/**
+	   Get the picture illustrating the landmark. If no file name is given in the landmark, then 
+	   an empty 
+	   \param root_path root path for the landmark set, the picture is stored relative to this path  
+	   \returns the picture - if available, otherwise returns an empty pointer
+	*/
+	P2DImage get_picture(const boost::filesystem::path& root_path) const; 
+
+	/// \returns the intensity value expected for this landmark 
+	float get_isovalue()const; 
+	
+
 	/**
 	   (Re-)set the position of the landmark 
 	   \param pos new position 
 	 */
 	void set_position(const C3DFVector& pos); 
+
+	/** set view 
+	    \param view 
+	 */
+	void set_view(const C3DCamera& view); 
+	
+	/**
+	   set picture file name
+	   \param picfile 
+	*/
+	void set_picture_file(const std::string& picfile); 
+
+	/**
+	   set the intensity value that correspondts to this landmark 
+	   \param value 
+	*/
+	void set_isovalue(float value); 
+	
 private: 
+	// required attributes 
 	std::string m_name; 
 	C3DFVector m_position; 
 
+	// additional attributes
+	std::string m_picfile;
+	float m_isovalue; 
+	C3DCamera m_view; 
+	
+	mutable P2DImage m_picture;
 }; 
 
 

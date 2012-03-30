@@ -19,6 +19,7 @@
 #
 
 SET(MIA3D_SRC 
+  camera.cc
   cost.cc
   creator.cc
   critical_point.cc
@@ -57,57 +58,58 @@ SET(MIA3D_SRC
   )
 
 SET(MIA3D_HEADERS
-	cost.hh
-	creator.hh
-	critical_point.hh
-	defines3d.hh
-	3DDatafield.hh 3DDatafield.cxx
-	3DVectorfield.hh
-	3DImage.hh
-	3dfilter.hh
-	3dimageio.hh
-	3dimageiotest.hh
-	3DVector.hh
-	3dvfio.hh
-	3dvfiotest.hh
-	fatcost.hh
-	fullcost.hh
-	fuzzyseg.hh
-	fuzzyClusterSolverCG.hh
-	interpolator.hh interpolator.cxx
-	iterator.hh iterator.cxx
-	ica.hh
-	landmark.hh
-	landmarklist.hh
-	landmarklistio.hh
-	matrix.hh
-	model.hh
-	multicost.hh
-	nfg.hh
-	nonrigidregister.hh
-	orientation.hh
-	ppmatrix.hh
-	quaternion.hh
-	register.hh
-	rigidregister.hh
-	similarity_profile.hh
-	timestep.hh
-	trait.hh
-	transform.hh
-	transformfactory.hh
-	transformio.hh
-	transformmock.hh
-	shape.hh 
-	stackdisttrans.hh
-)
+  camera.hh
+  cost.hh
+  creator.hh
+  critical_point.hh
+  defines3d.hh
+  3DDatafield.hh 3DDatafield.cxx
+  3DVectorfield.hh
+  3DImage.hh
+  3dfilter.hh
+  3dimageio.hh
+  3dimageiotest.hh
+  3DVector.hh
+  3dvfio.hh
+  3dvfiotest.hh
+  fatcost.hh
+  fullcost.hh
+  fuzzyseg.hh
+  fuzzyClusterSolverCG.hh
+  interpolator.hh interpolator.cxx
+  iterator.hh iterator.cxx
+  ica.hh
+  landmark.hh
+  landmarklist.hh
+  landmarklistio.hh
+  matrix.hh
+  model.hh
+  multicost.hh
+  nfg.hh
+  nonrigidregister.hh
+  orientation.hh
+  ppmatrix.hh
+  quaternion.hh
+  register.hh
+  rigidregister.hh
+  similarity_profile.hh
+  timestep.hh
+  trait.hh
+  transform.hh
+  transformfactory.hh
+  transformio.hh
+  transformmock.hh
+  shape.hh 
+  stackdisttrans.hh
+  )
 
 SET(MIA3DTEST_SRC
-	test_3d.cc
-	test_3ddatafield.cc
-	test_3dimage.cc
-	test_3dvector.cc
-	test_interpol.cc
-)
+  test_3d.cc
+  test_3ddatafield.cc
+  test_3dimage.cc
+  test_3dvector.cc
+  test_interpol.cc
+  )
 
 
 
