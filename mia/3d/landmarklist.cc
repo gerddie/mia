@@ -76,4 +76,15 @@ C3DLandmarklist::iterator C3DLandmarklist::end()
 	return m_list.end();
 }
 
+void C3DLandmarklist::set_path(const boost::filesystem::path& path)
+{
+	m_path = path; 
+}
+
+void C3DLandmarklist::set_name(const std::string &name)
+{
+	m_name = name; 
+}
+
+
 NS_MIA_END

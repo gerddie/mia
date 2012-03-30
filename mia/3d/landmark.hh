@@ -47,9 +47,15 @@ public:
 	/**
 	   constructor to initialize the landmark. 
 	   \param name Landmark identifier 
-	   \param position 3D coordinate of the landmark 
+	   \param location 3D coordinate of the landmark 
 	 */
-	C3DLandmark(const std::string& name, const C3DFVector& position); 
+	C3DLandmark(const std::string& name, const C3DFVector& location); 
+
+	/**
+	   constructor to initialize the landmark. 
+	   \param name Landmark identifier 
+	 */
+	C3DLandmark(const std::string& name); 
 
 	/// Standard copy constructor 
 	C3DLandmark(const C3DLandmark& other) = default; 
@@ -60,8 +66,8 @@ public:
 	 */
 	const std::string& get_name() const; 
 
-	/// \returns the position of the landmark 
-	const C3DFVector& get_position() const; 
+	/// \returns the location of the landmark 
+	const C3DFVector& get_location() const; 
 
 
 	/// \returns the view camera 
@@ -84,10 +90,10 @@ public:
 	
 
 	/**
-	   (Re-)set the position of the landmark 
-	   \param pos new position 
+	   (Re-)set the location of the landmark 
+	   \param pos new location 
 	 */
-	void set_position(const C3DFVector& pos); 
+	void set_location(const C3DFVector& pos); 
 
 	/** set view 
 	    \param view 
@@ -105,11 +111,16 @@ public:
 	   \param value 
 	*/
 	void set_isovalue(float value); 
+
+	/// \returns true if the location of the landmark is set
+	bool has_location()const; 
 	
 private: 
 	// required attributes 
 	std::string m_name; 
-	C3DFVector m_position; 
+	bool m_has_location; 
+	C3DFVector m_location; 
+
 
 	// additional attributes
 	std::string m_picfile;

@@ -30,10 +30,11 @@ BOOST_AUTO_TEST_CASE ( test_landmark )
 {
 	string n("name"); 
 	C3DFVector pos(1,2,3); 
-	C3DLandmark lm(n, pos); 
+	C3DLandmark lm(n); 
+	lm.set_location(pos); 
 
 	BOOST_CHECK_EQUAL(n , lm.get_name()); 
-	BOOST_CHECK_EQUAL(pos, lm.get_position()); 
+	BOOST_CHECK_EQUAL(pos, lm.get_location()); 
 
 }
 
@@ -54,10 +55,10 @@ BOOST_AUTO_TEST_CASE ( test_landmark_list )
 	lml.add(lm2); 
 	
 	BOOST_CHECK_THROW(lml.get("name3"), invalid_argument); 
-	BOOST_CHECK_EQUAL(lml.get(n1)->get_position(), pos1); 
-	BOOST_CHECK_EQUAL(lml.get(n2)->get_position(), pos2); 
+	BOOST_CHECK_EQUAL(lml.get(n1)->get_location(), pos1); 
+	BOOST_CHECK_EQUAL(lml.get(n2)->get_location(), pos2); 
 	
 	P3DLandmark lm3(new C3DLandmark(n2, pos1));
 	lml.add(lm3); 
-	BOOST_CHECK_EQUAL(lml.get(n2)->get_position(), pos1); 
+	BOOST_CHECK_EQUAL(lml.get(n2)->get_location(), pos1); 
 }

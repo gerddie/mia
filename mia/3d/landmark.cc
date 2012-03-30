@@ -26,25 +26,41 @@ NS_MIA_BEGIN
 using boost::filesystem::path; 
 using std::string; 
 
-C3DLandmark::C3DLandmark(const string& _name, const C3DFVector& _position):
+C3DLandmark::C3DLandmark(const string& _name):
 	m_name(_name), 
-	m_position(_position) 
+	m_has_location(false) 
 {
 }
+
+C3DLandmark::C3DLandmark(const std::string& name, const C3DFVector& location):
+	m_name(name),
+	m_has_location(true), 
+	m_location(location)
+{
+}
+
 
 const string& C3DLandmark::get_name() const
 {
 	return m_name; 
 }
 
-const C3DFVector& C3DLandmark::get_position() const
+const C3DFVector& C3DLandmark::get_location() const
 {
-	return m_position; 
+	if (!m_has_location) 
+		THROW(runtime_error, "C3DLandmark::get_location: Landmark '" << get_name() << "' has no location"); 
+	return m_location; 
 }
 
-void C3DLandmark::set_position(const C3DFVector& pos)
+bool C3DLandmark::has_location() const 
 {
-	m_position = pos; 
+	return m_has_location; 
+}
+
+void C3DLandmark::set_location(const C3DFVector& pos)
+{
+	m_location = pos; 
+	m_has_location = true;
 }
 
 
