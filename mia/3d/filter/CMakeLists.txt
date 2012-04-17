@@ -34,6 +34,7 @@ SET(filters3dNew
   mlv 
   morphological 
   reorient 
+  resize
   scale
   seededwatershed
   selectbig
