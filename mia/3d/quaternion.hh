@@ -60,7 +60,7 @@ public:
 	/**
 	   Constructor to create a quaternion by directly setting its elements. 
 	 */
-	Quaternion(double  x, double y, double z, double w); 
+	Quaternion(double w, double  x, double y, double z); 
 
 	/**
 	   \param a

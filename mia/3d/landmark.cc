@@ -79,6 +79,11 @@ void C3DLandmark::set_picture_file(const string& picfile)
 	m_picture.reset(); 
 }
 
+const std::string& C3DLandmark::get_picture_file()const
+{
+	return m_picfile; 
+}
+
 void C3DLandmark::set_isovalue(float value)
 {
 	m_isovalue = value; 
@@ -97,6 +102,41 @@ P2DImage C3DLandmark::get_picture(const path& root_path) const
 	}
 	return m_picture; 
 }
+
+void C3DLandmark::print(std::ostream& os) const
+{
+	os << "Landmark{" 
+	   << "   name='" << m_name  << "'\n"
+	   << "   iso=" << m_isovalue << "'\n"
+	   << "   location=";  
+	
+	if (m_has_location) 
+		os << m_location; 
+	else 
+		os << "none"; 
+	os << "\n"; 
+	os << "   view=" << m_view << "\n}";
+}
+
+bool EXPORT_3D operator == (const C3DLandmark& a, const C3DLandmark& b)
+{
+	if (a.get_name() != b.get_name()) 
+		return false; 
+	if (a.get_isovalue() != b.get_isovalue())
+		return false; 
+	if (a.has_location() != b.has_location())
+		return false; 
+
+	if (a.has_location()) {
+		if (a.get_location() != b.get_location()) 
+			return false; 
+	}
+	
+	return a.get_view() == b.get_view(); 
+	
+}
+
+
 NS_MIA_END
 
 

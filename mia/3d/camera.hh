@@ -51,14 +51,24 @@ public:
 
 	/// \returns get the camera zoom 
 	float get_zoom() const; 
+
+	void print(std::ostream& os)const; 
  private: 
 	C3DFVector m_location; 
 	Quaternion m_rotation;
 	float m_zoom; 
-	
-	
+
 
 }; 
+
+bool EXPORT_3D operator == (const C3DCamera& a, const C3DCamera& b); 
+
+inline 
+std::ostream& operator << (std::ostream& os, const C3DCamera& c)
+{
+	c.print(os); 
+	return os; 
+}
 
 NS_MIA_END
 #endif

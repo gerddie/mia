@@ -114,6 +114,8 @@ public:
 
 	/// \returns true if the location of the landmark is set
 	bool has_location()const; 
+
+	void print(std::ostream& os)const; 
 	
 private: 
 	// required attributes 
@@ -130,6 +132,14 @@ private:
 	mutable P2DImage m_picture;
 }; 
 
+bool EXPORT_3D operator == (const C3DLandmark& a, const C3DLandmark& b); 
+
+inline 
+std::ostream& operator << (std::ostream& os, const C3DLandmark& lm) 
+{
+	lm.print(os); 
+	return os; 
+}
 
 typedef C3DLandmark::Pointer P3DLandmark; 
 

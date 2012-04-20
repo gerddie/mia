@@ -91,7 +91,7 @@ bool translate_value(const Glib::ustring& content, Quaternion& result)
 	istringstream shelp(content.raw());
 	double x,y,z,w; 
 	shelp >> x >> y >> z >> w; 
-	result = Quaternion(x,y,z,w); 
+	result = Quaternion(w,x,y,z); 
 	bool good = !shelp.fail();
 	cvdebug() << "Get quaternion from '" << content << ( good ? " success" : " fail") << "\n"; 
 	return good; 
@@ -263,7 +263,7 @@ template <>
 void add_node(Element& parent, const string& name, const Quaternion& value) 
 {
 	ostringstream s;
-	s << value.x() << " " << value.y() << " " << value.z() << " " << value.w();
+	s << value.x() << " " << value.y() << " " << value.z() << " " << value.w() ;
 	auto node = parent.add_child(name);
 	node->set_child_text(s.str());
 }
@@ -292,6 +292,7 @@ bool C3DLMXLandmarklistIOPlugin::do_save(string const&  filename, const C3DLandm
 	unique_ptr<Document> doc(new Document);
 	
 	Element* list = doc->create_root_node("list");
+	add_node(*list, "name", data.get_name()); 
 	
 	for(auto i = data.begin(); i != data.end(); ++i) {
 		auto lmnode = list->add_child("landmark"); 

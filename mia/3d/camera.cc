@@ -48,4 +48,22 @@ float C3DCamera::get_zoom() const
 {
 	return m_zoom; 
 }
+
+bool EXPORT_3D operator == (const C3DCamera& a, const C3DCamera& b)
+{
+	if (a.get_zoom() != b.get_zoom()) 
+		return false; 
+
+	if (a.get_location() != b.get_location()) 
+		return false; 
+	
+	return a.get_rotation() == b.get_rotation(); 
+}
+
+void C3DCamera::print(std::ostream& os)const 
+{
+	os << "Camera{loc=" << m_location << ", zoom=" 
+	   << m_zoom << ", rot=" << m_rotation << "}"; 
+}
+
 NS_MIA_END
