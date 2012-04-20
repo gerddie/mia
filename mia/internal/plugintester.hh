@@ -33,7 +33,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 
-
+#include <miaconfig.h>
 #include <mia/core/factory.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
@@ -65,7 +65,7 @@ const mia::SProgramDescription description = {
 int BOOST_TEST_CALL_DECL
 main( int argc, char* argv[] )
 {
-
+	setenv("MIA_PLUGIN_TESTPATH", MIA_BUILD_ROOT"/plugintest/"PLUGIN_INSTALL_PATH,1);
 #ifdef WIN32
 	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );

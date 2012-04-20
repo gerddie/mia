@@ -716,12 +716,12 @@ typedef TTranslator<std::vector<double> > CVDoubleTranslator;
 typedef TTranslator<float> CFloatTranslator;
 typedef TTranslator<std::vector<float> > CVFloatTranslator;
 
-#ifdef HAVE_INT64
-typedef TTranslator<mia_uint64> CULTranslator;
-typedef TTranslator<std::vector<mia_uint64> > CVULTranslator;
+#ifdef LONG_64BIT
+typedef TTranslator<unsigned long> CULTranslator;
+typedef TTranslator<std::vector<unsigned long> > CVULTranslator;
 
-typedef TTranslator<mia_int64> CSLTranslator;
-typedef TTranslator<std::vector<mia_int64> > CVSLTranslator;
+typedef TTranslator<signed long> CSLTranslator;
+typedef TTranslator<std::vector<signed long> > CVSLTranslator;
 #endif
 
 typedef TTranslator<unsigned int> CUITranslator;

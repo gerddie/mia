@@ -19,6 +19,7 @@
  */
 
 #include <mia/internal/autotest.hh>
+#include <mia/internal/pluginsettest.hh>
 #include <mia/2d/transformio.hh>
 #include <mia/2d/transformfactory.hh>
 #include <boost/static_assert.hpp>
@@ -33,32 +34,9 @@ NS_MIA_USE
 using namespace std; 
 C2DFilterPluginHandlerTestPath filter_test_path; 
 
-static void test_equal(const  set<string>& data, const  set<string>& test) 
-{
-	BOOST_CHECK_EQUAL(data.size(), test.size()); 
-	for (auto p = data.begin(); p != data.end(); ++p) {
-		BOOST_CHECK_MESSAGE(test.find(*p) != test.end(), "unexpected plugin '" << *p << "' found"); 
-	}
-	
-	for (auto p = test.begin(); p != test.end(); ++p)
-		BOOST_CHECK_MESSAGE(data.find(*p) != data.end(), "expected plugin '" << *p << "' not found"); 
-
-}
-
-inline ostream& operator  << (ostream& os, const  set<string>& data) 
-{
-	os << "["; 
-	for(auto i = data.begin(); i != data.end(); ++i) 
-		os << *i << ", "; 
-	os << "]"; 
-	return os; 
-}
-
-
 BOOST_AUTO_TEST_CASE(test_available_filters)
 {
 	const C2DFilterPluginHandler::Instance& handler = C2DFilterPluginHandler::instance(); 
-	cvdebug() << "Found " << handler.size() << " plugins:" << handler.get_plugin_names() <<"\n"; 
 
 	set<string> test_data = {
 		"adaptmed", "admean", "aniso", "bandpass", "binarize", "close", "convert", "crop", 
@@ -66,8 +44,8 @@ BOOST_AUTO_TEST_CASE(test_available_filters)
 		"label", "labelmap", "mask", "mean", "median", "mlv", "ngfnorm", "noise", "open",
 		"pruning", "regiongrow", "sandp", "scale", "selectbig", "sepconv", "shmean", "sort-label", 
 		"sws", "tee", "thinning", "thresh", "ws"}; 
-	
-	test_equal(handler.get_set(), test_data);
+
+	test_availabe_plugins(handler, test_data); 
 }
 
 BOOST_AUTO_TEST_CASE(test_run_filters)

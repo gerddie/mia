@@ -18,19 +18,27 @@
  *
  */
 
-#include <mia/core/export_handler.hh>
-#include <mia/3d/landmarklistio.hh>
-#include <mia/core/ioplugin.cxx>
-#include <mia/core/iohandler.cxx>
+#ifndef mia_internal_pluginsettest_hh
+#define mia_internal_pluginsettest_hh
+
+#include <string>
+#include <set>
+#include <boost/test/unit_test.hpp>
+
+template <typename Hander> 
+void test_availabe_plugins(const  Hander& handler, const  std::set<std::string>& test)
+{
+	auto data = handler.get_set(); 
+	BOOST_CHECK_EQUAL(data.size(), test.size()); 
+	for (auto p = data.begin(); p != data.end(); ++p) {
+		BOOST_CHECK_MESSAGE(test.find(*p) != test.end(), "unexpected plugin '" << *p << "' found"); 
+	}
+	
+	for (auto p = test.begin(); p != test.end(); ++p)
+		BOOST_CHECK_MESSAGE(data.find(*p) != data.end(), "expected plugin '" << *p << "' not found"); 
+
+}
 
 
-NS_MIA_BEGIN
 
-
-EXPLICITE_INSTANCEIATE_IO_HANDLER(C3DLandmarklist); 
-
-template <> const char *  const 
-TPluginHandler<C3DLandmarklistIOPlugin>::m_help =  
-	"Loading and storing of 3D landmark list.";
-
-NS_MIA_END
+#endif 

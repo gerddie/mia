@@ -18,19 +18,18 @@
  *
  */
 
-#include <mia/core/export_handler.hh>
+
+#include <sstream>
+#include <mia/internal/autotest.hh>
+#include <mia/internal/pluginsettest.hh>
 #include <mia/3d/landmarklistio.hh>
-#include <mia/core/ioplugin.cxx>
-#include <mia/core/iohandler.cxx>
 
+NS_MIA_USE
+using namespace std;
 
-NS_MIA_BEGIN
+BOOST_AUTO_TEST_CASE( test_available_plugins ) 
+{
+	set<string> expected_plugins = {"lmx", "datapool"};
+	test_availabe_plugins(C3DImageIOPluginHandler::instance(), expected_plugins); 
+}
 
-
-EXPLICITE_INSTANCEIATE_IO_HANDLER(C3DLandmarklist); 
-
-template <> const char *  const 
-TPluginHandler<C3DLandmarklistIOPlugin>::m_help =  
-	"Loading and storing of 3D landmark list.";
-
-NS_MIA_END

@@ -52,7 +52,7 @@ extern "C" EXPORT CPluginBase *get_plugin_interface()
 }
 
 C3DLMXLandmarklistIOPlugin::C3DLMXLandmarklistIOPlugin():
-C3DLandmarklistIOPlugin("lxm")
+C3DLandmarklistIOPlugin("lmx")
 {
 }
 
@@ -299,5 +299,3 @@ const string C3DLMXLandmarklistIOPlugin::do_get_descr() const
 {
 	return "IO plugin to load and store 3D landmark lists"; 
 }
-
-
