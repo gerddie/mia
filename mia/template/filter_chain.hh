@@ -81,6 +81,64 @@ private:
 	std::vector<PFilter> m_chain; 
 }; 
 
+/**
+   \ingroup filtering 
+   \cond INTERNAL 
+*/
+
+template <typename Handler>
+typename Handler::ProductPtr __get_filter(const Handler& /*h*/, typename Handler::ProductPtr filter) 
+{
+	return filter; 
+}
+
+template <typename Handler>
+typename Handler::ProductPtr __get_filter(const Handler& h, const char *filter) 
+{
+	return h.produce(filter); 
+}
+
+template <typename Handler>
+typename Handler::ProductPtr __get_filter(const Handler& h, const std::string& filter) 
+{
+	return h.produce(filter); 
+}
+
+template <typename PImage, typename Handler, typename T>
+PImage __run_filters(PImage image, const Handler& h, T filter_descr) 
+{
+	auto f = __get_filter(h, filter_descr); 
+	return f->filter(image);
+}
+
+template <typename PImage, typename Handler, typename T, typename... Filters>
+PImage __run_filters(PImage image, const Handler& h, T filter_descr, Filters ...filters) 
+{
+	image = __run_filters(image, h, filter_descr);
+	return __run_filters(image, h, filters...);
+}
+
+/// \endcond 
+
+/**
+   \ingroup filtering 
+   \brief run a chain of filters on an input image 
+   
+   This template is used to run a chain of filters on an input image 
+   The filters can be described by strings, or given as already created filters
+   \tparam PImage the image pointer type of the image to be filtered 
+   \tparam Filters the filter description types or filters 
+  
+*/
+template <typename PImage, typename... Filters>
+PImage run_filters(PImage image, Filters... filters) 
+{
+	typedef std::shared_ptr<TImageFilter<typename PImage::element_type> > PFilter; 
+	typedef typename FactoryTrait<PFilter>::type Handler;
+
+	return __run_filters(image, Handler::instance(), filters...); 
+}
+
 template <typename Handler> 
 void TFilterChain<Handler>::init(const char *filters[], int nfilters)
 {

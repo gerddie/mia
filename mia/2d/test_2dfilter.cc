@@ -18,38 +18,81 @@
  *
  */
 
-#include <boost/test/unit_test_suite.hpp>
-#include <boost/test/unit_test.hpp>
+#include <mia/internal/autotest.hh>
+#include <mia/2d/transformio.hh>
+#include <mia/2d/transformfactory.hh>
+#include <boost/static_assert.hpp>
+#include <ostream>
 
-#include <mia/core/history.hh>
 #include <mia/core/spacial_kernel.hh>
 #include <mia/2d/2dfilter.hh>
 #include <mia/2d/filtertest.hh>
 
+
 NS_MIA_USE
 using namespace std; 
-using namespace boost;
-namespace bfs=::boost::filesystem; 
-using namespace boost::unit_test;
+C2DFilterPluginHandlerTestPath filter_test_path; 
 
-static void test_available_filters()
+static void test_equal(const  set<string>& data, const  set<string>& test) 
 {
-	const C2DFilterPluginHandler::Instance& handler = C2DFilterPluginHandler::instance(); 
-	cvdebug() << "Found " << handler.size() << " plugins:" << handler.get_plugin_names() <<"\n"; 
-	BOOST_CHECK_EQUAL(handler.size(), 22); 
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(),
-			  "adaptmed admean aniso bandpass binarize close convert "
-			  "crop cst dilate downscale erode fft gauss gradnorm mask "
-			  "median mlv ngfnorm noise open sepconv sws tee ");
+	BOOST_CHECK_EQUAL(data.size(), test.size()); 
+	for (auto p = data.begin(); p != data.end(); ++p) {
+		BOOST_CHECK_MESSAGE(test.find(*p) != test.end(), "unexpected plugin '" << *p << "' found"); 
+	}
+	
+	for (auto p = test.begin(); p != test.end(); ++p)
+		BOOST_CHECK_MESSAGE(data.find(*p) != data.end(), "expected plugin '" << *p << "' not found"); 
+
+}
+
+inline ostream& operator  << (ostream& os, const  set<string>& data) 
+{
+	os << "["; 
+	for(auto i = data.begin(); i != data.end(); ++i) 
+		os << *i << ", "; 
+	os << "]"; 
+	return os; 
 }
 
 
-void add_2dimagefilter_tests(test_suite* test)
-{	
+BOOST_AUTO_TEST_CASE(test_available_filters)
+{
+	const C2DFilterPluginHandler::Instance& handler = C2DFilterPluginHandler::instance(); 
+	cvdebug() << "Found " << handler.size() << " plugins:" << handler.get_plugin_names() <<"\n"; 
 
-	imagefiltertest2d_prepare_plugin_path(); 
-	test->add( BOOST_TEST_CASE( &test_available_filters));
-	add_2dfilter_plugin_test(test); 
+	set<string> test_data = {
+		"adaptmed", "admean", "aniso", "bandpass", "binarize", "close", "convert", "crop", 
+		"dilate", "distance", "downscale", "erode", "gauss", "gradnorm", "invert", "kmeans", 
+		"label", "labelmap", "mask", "mean", "median", "mlv", "ngfnorm", "noise", "open",
+		"pruning", "regiongrow", "sandp", "scale", "selectbig", "sepconv", "shmean", "sort-label", 
+		"sws", "tee", "thinning", "thresh", "ws"}; 
+	
+	test_equal(handler.get_set(), test_data);
+}
 
+BOOST_AUTO_TEST_CASE(test_run_filters)
+{
+	C2DBounds size(2,2); 
+	const unsigned int   init_data[] = {1, 10, 100, 200}; 
+	const unsigned short test_data[] = {2, 2, 5, 2}; 
+
+	C2DUIImage *int_image = new C2DUIImage(size, init_data); 
+	P2DImage image(int_image); 
+
+	auto bandpass = produce_2dimage_filter("bandpass:min=1,max=150"); 
+	const string binarize("binarize:min=100,max=200"); 
+
+	auto testimg = run_filters(image, bandpass, binarize, "convert:repn=ushort,map=linear,b=2,a=3"); 
+	auto test_image = dynamic_cast<const C2DUSImage&>(*testimg); 
+	
+	BOOST_CHECK_EQUAL(test_image.get_size(), size); 
+	
+	auto it = test_image.begin(); 
+	auto et = test_image.end(); 
+	auto id = test_data; 
+	while (it != et) {
+		BOOST_CHECK_EQUAL(*it, *id); 
+		++it; ++id; 
+	}
 }
 
