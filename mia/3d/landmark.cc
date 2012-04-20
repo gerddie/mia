@@ -39,6 +39,10 @@ C3DLandmark::C3DLandmark(const std::string& name, const C3DFVector& location):
 {
 }
 
+const C3DCamera& C3DLandmark::get_view() const
+{
+	return m_view; 
+}
 
 const string& C3DLandmark::get_name() const
 {
@@ -78,6 +82,11 @@ void C3DLandmark::set_picture_file(const string& picfile)
 void C3DLandmark::set_isovalue(float value)
 {
 	m_isovalue = value; 
+}
+
+float C3DLandmark::get_isovalue()const
+{
+	return m_isovalue; 
 }
 
 P2DImage C3DLandmark::get_picture(const path& root_path) const

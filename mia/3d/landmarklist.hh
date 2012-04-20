@@ -100,6 +100,14 @@ public:
 	   \param path
 	 */
 	void set_name(const std::string &name); 
+
+	/**
+	   \returns the number of landmarks stored in the list 
+	 */
+	size_t size() const; 
+
+	/// \returns the name of the landmark list 
+	const std::string &get_name() const; 
 private: 
 	std::map<std::string, P3DLandmark> m_list; 
 

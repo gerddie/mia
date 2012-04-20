@@ -61,7 +61,10 @@ bool translate_value(const Glib::ustring& content, Expect& result)
 {
 	istringstream shelp(content.raw()); 
 	shelp >> result; 
-	return !shelp.fail(); 
+	bool good = !shelp.fail();
+	cvdebug() << "Get streamable type from from '" << content << ( good ? " success" : " fail") << "\n"; 
+	return good; 
+
 }
 
 template <> 
@@ -76,7 +79,10 @@ bool translate_value(const Glib::ustring& content, C3DFVector& result)
 {
 	istringstream shelp(content.raw());
 	shelp >> result.x >>  result.y >> result.z; 
-	return !shelp.fail();
+	bool good = !shelp.fail();
+	cvdebug() << "Get 3D vector from '" << content << ( good ? " success" : " fail") << "\n"; 
+	return good; 
+
 }
 
 template <> 
@@ -84,30 +90,39 @@ bool translate_value(const Glib::ustring& content, Quaternion& result)
 {
 	istringstream shelp(content.raw());
 	double x,y,z,w; 
-	shelp >> x >>  y >> z >> w; 
+	shelp >> x >> y >> z >> w; 
 	result = Quaternion(x,y,z,w); 
-	return !shelp.fail();
+	bool good = !shelp.fail();
+	cvdebug() << "Get quaternion from '" << content << ( good ? " success" : " fail") << "\n"; 
+	return good; 
 }
 
 
 template <typename Expect> 
 bool get_single_xml_value(const Node& node, const string& tag, Expect& result) 
 {
+	cvdebug() << "search value for tag '" << tag << "'\n"; 
 	auto children = node.get_children(tag); 
-	if (children.empty()) 
+	if (children.empty()) { 
+		cvdebug() << "  tag not found\n"; 
 		return false; 
+	}
 	if (children.size() > 1) {
 		cvwarn() << "C3DLMXLandmarklistIOPlugin:Tag '" << tag 
 			 << "' specified more then once. Only reading first."; 
 	}
 
 	auto  content = dynamic_cast<Element*>(*children.begin());
-	if (!content) 
+	if (!content) {
+		cvdebug() << "  got empty node\n"; 
 		return false; 
+	}
 	
 	auto text = content->get_child_text(); 
-	if (!text) 
+	if (!text) {
+		cvdebug() << "  no text in node\n"; 
 		return false; 
+	}
 	
 	return translate_value(text->get_content(), result); 
 }
@@ -129,13 +144,14 @@ bool get_single_xml_value(const Node& node, const string& tag, C3DCamera& result
 	Quaternion rotation;
 	float zoom; 
 
+	auto  content = *children.begin();
 	bool camera_complete = 
-		get_single_xml_value(node, "location", location) ||
-		get_single_xml_value(node, "zoom", zoom) ||
-		get_single_xml_value(node, "rotation", rotation); 
+		get_single_xml_value(*content, "location", location) && 
+		get_single_xml_value(*content, "zoom", zoom) && 
+		get_single_xml_value(*content, "rotation", rotation); 
 
 	// work around old style saving that uses 
-	if (get_single_xml_value(node, "distance", distance)) 
+	if (get_single_xml_value(*content, "distance", distance)) 
 		location.z = distance; 
 	
 	if (camera_complete) {

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<list>
+  <name>Some name</name>
+  <landmark>
+    <name>Lip Upper Left</name>
+    <picfile>TemplateLip Upper Left.png</picfile>
+    <isovalue>74.900002</isovalue>
+    <location>1 2 3</location>
+    <camera>
+      <location>-0.11 0.45 0</location>
+      <zoom>0.350000</zoom>
+      <rotation>0.00580358 0.636834 -0.770564 -0.0253555</rotation>
+      <distance>250.000000</distance>
+    </camera>
+  </landmark>
+  <landmark>
+    <name>Mouth Angle Left</name>
+    <picfile>TemplateMouth Angle Left.png</picfile>
+    <isovalue>60.0</isovalue>
+    <camera>
+      <location>-0.12 0.45 0</location>
+      <zoom>0.360000</zoom>
+      <rotation>0.00580357 0.636833 -0.770565 -0.0253556</rotation>
+      <distance>251.000000</distance>
+    </camera>
+  </landmark>
+</list>

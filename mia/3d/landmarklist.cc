@@ -86,5 +86,14 @@ void C3DLandmarklist::set_name(const std::string &name)
 	m_name = name; 
 }
 
+size_t C3DLandmarklist::size() const
+{
+	return m_list.size(); 
+}
+
+const std::string &C3DLandmarklist::get_name() const
+{
+	return m_name; 
+}
 
 NS_MIA_END
