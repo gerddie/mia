@@ -208,7 +208,7 @@ static void add_images(const string& fname, const string& study_id, vector<P2DIm
 			bfs::path f =  di->path();
 			cvdebug() << "read file '" << f << "'\n";
 			CDicomReader reader(f.string().c_str());
-			if (reader.good() && reader.get_attribute(IDStudyID, true) == study_id)
+			if (reader.good() && reader.get_attribute(IDStudyID, false) == study_id)
 				candidates.push_back(reader.get_image());
 		}
 		++di;
@@ -228,7 +228,10 @@ C3DImageIOPlugin::PData CDicom3DImageIOPlugin::do_load(const string& fname) cons
 	P2DImage prototype = reader.get_image();
 	candidates.push_back(prototype);
 
-	string study_id = prototype->get_attribute(IDStudyID)->as_string();
+	// this is not very nice 
+	string study_id;
+	if (prototype->has_attribute(IDStudyID))
+		study_id = prototype->get_attribute(IDStudyID)->as_string();
 	// now read all the slices in the folder that have the same study id
 
 	add_images(fname, study_id, candidates);

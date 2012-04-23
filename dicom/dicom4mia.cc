@@ -50,8 +50,8 @@ typedef struct {
 } SLookupInit;
 
 const SLookupInit lookup_init[] = {
-	{IDStudyDescription, DCM_StudyDescription, false, true},
-	{IDSeriesDescription, DCM_SeriesDescription, false, true},
+	{IDStudyDescription, DCM_StudyDescription, false, false},
+	{IDSeriesDescription, DCM_SeriesDescription, false, false},
 	{IDModality, DCM_Modality, false, true},
 	{IDSeriesNumber, DCM_SeriesNumber, false, true},
 	{IDPatientPosition, DCM_PatientPosition, false, false},
@@ -260,11 +260,13 @@ string CDicomReaderData::getAttribute(const string& key, bool required)
 		dcm.getMetaInfo()->findAndGetOFStringArray(k.first, value):
 		dcm.getDataset()->findAndGetOFStringArray(k.first, value);
 
-	if (success.bad() && required) {
+	if (success.good()) 
+	    return string(value.data());
+
+	if (required) {
 		THROW(runtime_error, "DICOM read: Required value '" << key << "' not found");
 	}
-
-	return string(value.data());
+	return string(); 
 }
 
 template <typename T>

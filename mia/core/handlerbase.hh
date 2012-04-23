@@ -21,13 +21,12 @@
 #ifndef mia_core_handlerbase_hh
 #define mia_core_handlerbase_hh
 
-#include <mia/core/defines.hh>
-
-#include <libxml++/libxml++.h>
-
 #include <ostream>
 #include <fstream>
 #include <map>
+#include <libxml++/libxml++.h>
+
+#include <mia/core/defines.hh>
 
 NS_MIA_BEGIN
 
