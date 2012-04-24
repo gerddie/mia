@@ -101,8 +101,11 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 	int step = 0; 
 	if (cb) 
 		cb->set_range(filenames.size()); 
+
+	cvdebug() << "Load " << filenames.size() << "  images\n"; 
 	for (auto f = filenames.begin(); f != filenames.end(); ++f, ++step) {
 		// give some feedback 
+		cvdebug() << "Load " << *f << "\n"; 
 		if (cb && ! (step & 0x1f) )
 			cb->update(step); 
 		
