@@ -1,0 +1,1 @@
+PLUGIN_WITH_TEST_AND_PREFIX_NOINST(2d-filter "simple" "${MIA2DLIBS}"  TESTLIBS  mia2dtest)

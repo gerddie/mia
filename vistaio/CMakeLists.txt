@@ -38,7 +38,7 @@ IF(USE_SYSTEM_VISTAIO)
   SET(VISTAIO4MIALIBS miacore ${VISTAIO_LIBRARIES})
   MIA_ADD_LIBRARY(vista4mia "${VISTAIO_SRC}" "${VISTAIO4MIALIBS}")
 ELSE(USE_SYSTEM_VISTAIO)
-  MESSAGE(STATUS "using internal version")
+  MESSAGE(STATUS "vistaio: using internal version")
   SET(VISTAIO_SRC 
     alloc.c
     attr.c

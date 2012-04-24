@@ -64,7 +64,7 @@ SET(LIBRARY_VERSION_INFO "${MIA_CURRENT}.${MIA_AGE}.${MIA_REVISION}")
 
 OPTION(STRICT_DEPENDECIES "require that all requested optinal dependencies are availabe" FALSE)
 OPTION(ALWAYS_CREATE_DOC "Create all documentation during the normal build process (normally you need to run 'make doc')" FALSE)
-
+OPTION(BUILD_EXAMPLES "Build example plug-ins and programs" FALSE)
 
 INCLUDE (CheckIncludeFiles)
 INCLUDE (TestBigEndian)
@@ -428,14 +428,16 @@ ELSE(ALWAYS_CREATE_DOC)
 ENDIF(ALWAYS_CREATE_DOC)
 
 
-
-
 ADD_SUBDIRECTORY(gsl++   )
 ADD_SUBDIRECTORY(mia     )
 ADD_SUBDIRECTORY(vistaio )
 ADD_SUBDIRECTORY(OpenEXR )
 ADD_SUBDIRECTORY(dicom   )
 ADD_SUBDIRECTORY(testdata)
+
+IF(BUILD_EXAMPLES)
+  ADD_SUBDIRECTORY(examples)
+ENDIF(BUILD_EXAMPLES)
 
 ##############################################
 #

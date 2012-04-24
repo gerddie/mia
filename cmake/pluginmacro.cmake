@@ -97,6 +97,15 @@ MACRO(PLUGIN_WITH_TEST plugname file libs)
   CREATE_PLUGIN_TEST(${plugname} test_${file} TESTLIBS "${PLUGIN_TESTLIBS}")
 ENDMACRO(PLUGIN_WITH_TEST  plugname file libs)
 
+MACRO(PLUGIN_WITH_TEST_AND_PREFIX_NOINST prefix plugname libs)
+  PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
+  SET(name ${prefix}-${plugname})
+  CREATE_PLUGIN_COMMON(${name} ${plugname}.cc "${libs}")
+  CREATE_PLUGIN_MODULE(${name})
+  CREATE_PLUGIN_TEST(${name} test_${plugname}.cc TESTLIBS "${PLUGIN_TESTLIBS}")
+ENDMACRO(PLUGIN_WITH_TEST_AND_PREFIX_NOINST  prefix  plugname file libs)
+
+
 MACRO(PLUGIN_WITH_TEST_AND_PREFIX prefix plugname libs install_path)
   PARSE_ARGUMENTS(PLUGIN "TESTLIBS" "" ${ARGN})
   SET(name ${prefix}-${plugname})
