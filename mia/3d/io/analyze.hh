@@ -39,6 +39,7 @@ private:
 	virtual bool do_save(const std::string& fname, const Data& data) const;
 	virtual void do_add_suffixes(std::multimap<std::string, std::string>& map) const;
 	virtual const std::string do_get_descr() const;
+	std::string do_get_preferred_suffix() const; 
 
 	void swap_hdr(analyze_dsr& hdr) const;
 

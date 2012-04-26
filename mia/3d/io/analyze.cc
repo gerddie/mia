@@ -611,6 +611,12 @@ void CAnalyze3DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) con
 	map.insert(pair<string,string>(".hdr", get_name()));
 }
 
+std::string CAnalyze3DImageIOPlugin::do_get_preferred_suffix() const
+{
+	return "hdr"; 
+}
+
+
 const string CAnalyze3DImageIOPlugin::do_get_descr() const
 {
 	return "analyze image IO";
