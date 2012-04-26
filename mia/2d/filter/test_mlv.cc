@@ -110,9 +110,20 @@ BOOST_AUTO_TEST_CASE( test_mlv )
 		BOOST_CHECK_EQUAL(res->get_size(), src->get_size());
 		BOOST_REQUIRE(res->get_size() == src->get_size());
 
-		for (C2DFImage::const_iterator ires = res->begin(), iref = ref.begin();
+		for (auto ires = res->begin(), iref = ref.begin();
 		     ires != res->end(); ++ires, ++iref) {
 			BOOST_CHECK_CLOSE(*ires, *iref, 0.1);
+		}		
+		
+		// redo to test 2nd code path 
+		res_wrap = filter->filter(*src_wrap);
+		auto res2 = dynamic_cast<const C2DFImage&>(*res_wrap);
+		for (auto ires = res2.begin(), iref = ref.begin();
+		     ires != res2.end(); ++ires, ++iref) {
+			BOOST_CHECK_CLOSE(*ires, *iref, 0.1);
 		}
+		
+		
+
 	}
 }
