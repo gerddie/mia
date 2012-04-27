@@ -284,7 +284,7 @@ C2DFilter *C2DMLVImageFilterFactory::do_create()const
 
 const string C2DMLVImageFilterFactory::do_get_descr()const
 {
-	return "2D image mean least variance filter";
+	return "Mean of Least Variance 2D image filter";
 }
 
 struct FCompare {

@@ -163,7 +163,7 @@ C3DFilter *C3DMLVImageFilterFactory::do_create()const
 
 const string C3DMLVImageFilterFactory::do_get_descr()const
 {
-	return "Mean Least Variance 3D image filter";
+	return "Mean of Least Variance 3D image filter";
 }
 
 bool  C3DMLVImageFilterFactory::do_test() const

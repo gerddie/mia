@@ -269,7 +269,7 @@ C2DMLVnFifoFilterPlugin::C2DMLVnFifoFilterPlugin():
 
 const string C2DMLVnFifoFilterPlugin::do_get_descr() const
 {
-	return "mean least variance stack filter";
+	return "Mean of Least Variance 2D stack image filter";
 }
 
 bool C2DMLVnFifoFilterPlugin::do_test() const
