@@ -355,39 +355,39 @@ EXPORT_2D C2DFVectorfield get_gradient(const C2DImage& image);
 
 
 
-/// 2D image with binary values 
+/// \brief 2D image with binary values 
 typedef T2DImage<bool> C2DBitImage;
 
-/// 2D image with signed 8 bit integer values 
+/// \brief 2D image with signed 8 bit integer values 
 typedef T2DImage<signed char> C2DSBImage;
 
-/// 2D image with unsigned 8 bit integer values 
+/// \brief 2D image with unsigned 8 bit integer values 
 typedef T2DImage<unsigned char> C2DUBImage;
 
-/// 2D image with signed 16 bit integer values 
+/// \brief 2D image with signed 16 bit integer values 
 typedef T2DImage<signed short> C2DSSImage;
 
-/// 2D image with unsigned 16 bit integer values 
+/// \brief 2D image with unsigned 16 bit integer values 
 typedef T2DImage<unsigned short> C2DUSImage;
 
-/// 2D image with signed 32 bit integer values 
+/// \brief 2D image with signed 32 bit integer values 
 typedef T2DImage<signed int> C2DSIImage;
 
-/// 2D image with unsigned 32 bit integer values 
+/// \brief 2D image with unsigned 32 bit integer values 
 typedef T2DImage<unsigned int> C2DUIImage;
 
 #ifdef LONG_64BIT
-/// 2D image with signed 64 bit integer values 
+/// \brief 2D image with signed 64 bit integer values 
 typedef T2DImage<signed long> C2DSLImage;
 
-/// 2D image with unsigned 64 bit integer values 
+/// \brief 2D image with unsigned 64 bit integer values 
 typedef T2DImage<unsigned long> C2DULImage;
 #endif
 
-/// 2D image with single precsion floating point values 
+/// \brief 2D image with single precsion floating point values 
 typedef T2DImage<float> C2DFImage;
 
-/// 2D image with double  precsion floating point values 
+/// \brief 2D image with double  precsion floating point values 
 typedef T2DImage<double> C2DDImage;
 
 /**
@@ -437,13 +437,15 @@ struct dispatch_attr_string<C2DFVector> {
    \brief functor to convert an image with an abitrary pixel type to single floating point pixels 
    
    This functor provides the often used funcionality to convert a 2D image from 
-   any pixel representation to a single precision floating point representation.  
+   any pixel representation to a pixel type O representation.  
    The data is just copied. 
    For conversion with scaling and proepry clamping you should use the convert filter 
    provided through C2DFilterPluginHandler. 
+   \tparam O output pixel type
    
  */
-struct FConvert2DImage2float: public TFilter<C2DFImage> {
+template <typename O>
+struct FConvert2DImageToPixeltypeO: public TFilter<T2DImage<O> > {
 
 	/**
 	   Operator to do the actual conversion. 
@@ -451,13 +453,15 @@ struct FConvert2DImage2float: public TFilter<C2DFImage> {
 	   \returns the image converted floating point pixel values 
 	 */
 	template <typename T>
-	C2DFImage operator () (const T2DImage<T> &image) const {
-		C2DFImage result(image.get_size(), image);
+	T2DImage<O> operator () (const T2DImage<T> &image) const {
+		T2DImage<O> result(image.get_size(), image);
 		copy(image.begin(), image.end(), result.begin());
 		return result;
 	}
 };
 
+
+typedef FConvert2DImageToPixeltypeO<float> FConvert2DImage2float; 
 
 /// typedef for the C2DFVector to std::string translator 
 typedef TTranslator<C2DFVector> C2DFVectorTranslator;

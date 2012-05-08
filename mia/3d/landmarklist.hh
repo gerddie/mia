@@ -96,8 +96,8 @@ public:
 	void set_path(const boost::filesystem::path& path); 
 
 	/**
-	   Set the root path of the document (used to read the images) 
-	   \param path
+	   Set the name of the landmark list
+	   \param name 
 	 */
 	void set_name(const std::string &name); 
 

@@ -346,18 +346,40 @@ private:
 EXPORT_3D C3DFVectorfield get_gradient(const C3DImage& image);
 
 
+/// \brief 3D image with binary values 
 typedef T3DImage<bool> C3DBitImage;
+
+/// \brief 3D image with signed 8 bit integer values 
 typedef T3DImage<signed char> C3DSBImage;
+
+/// \brief 3D image with unsigned 8 bit integer values 
 typedef T3DImage<unsigned char> C3DUBImage;
+
+/// \brief 3D image with signed 16 bit integer values 
 typedef T3DImage<signed short> C3DSSImage;
+
+/// \brief 3D image with unsigned 16 bit integer values 
 typedef T3DImage<unsigned short> C3DUSImage;
+
+/// \brief 3D image with signed 32 bit integer values 
 typedef T3DImage<signed int> C3DSIImage;
+
+/// \brief 3D image with unsigned 32 bit integer values 
 typedef T3DImage<unsigned int> C3DUIImage;
+
 #ifdef LONG_64BIT
+
+/// \brief 3D image with signed 64 bit integer values 
 typedef T3DImage<signed long> C3DSLImage;
+
+/// \brief 3D image with unsigned 64 bit integer values 
 typedef T3DImage<unsigned long> C3DULImage;
 #endif
+
+/// \brief 3D image with signed 32 bit floating point values 
 typedef T3DImage<float> C3DFImage;
+
+/// \brief 3D image with signed 64 bit floating point values 
 typedef T3DImage<double> C3DDImage;
 
 /**
