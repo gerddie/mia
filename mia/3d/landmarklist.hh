@@ -28,7 +28,6 @@
 #include <mia/core/iodata.hh>
 #include <mia/3d/landmark.hh>
 
-
 NS_MIA_BEGIN
 /**
    @ingroup basic 
@@ -61,7 +60,8 @@ public:
 	typedef std::shared_ptr<C3DLandmarklist> Pointer; 
 
 	/**
-	   Add a Landmark to the list. If the landmark name already exists it is siletly overwritten.  
+	   Add a Landmark to the list. If the landmark name already exists 
+	   it is siletly overwritten.  
 	   \param lm the landmark to be added 
 	 */
 	void add(P3DLandmark lm); 
@@ -73,8 +73,8 @@ public:
 	C3DLandmarklist *clone() const; 
 
 	/**
-	   \returns the landmark with the giben name. If this landmark doesn't exist the function 
-	   throws an invalid_argument exception.  
+	   \returns the landmark with the giben name. If this landmark 
+	   doesn't exist the function throws an invalid_argument exception.  
 	 */
 	P3DLandmark get(const std::string& name) const; 
 
