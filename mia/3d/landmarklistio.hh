@@ -37,13 +37,23 @@ typedef TIOPlugin<C3DLandmarklist> C3DLandmarklistIOPlugin;
    @ingroup io 
    @brief 3D Landmark list IO plugin handler 
 */
-typedef TIOHandlerSingleton<TIOPluginHandler<C3DLandmarklistIOPlugin> > C3DImageIOPluginHandler;
+typedef TIOHandlerSingleton<TIOPluginHandler<C3DLandmarklistIOPlugin> > C3DLandmarklistIOPluginHandler;
+
+/**   
+      \ingroup tests 
+      Class to set up the plug-in search path for landmark list io plug-ins when running tests
+      in the build tree 
+*/
+struct EXPORT_3D C3DLandmarklistIOTestPath {
+	C3DLandmarklistIOTestPath(); 
+}; 
+
 
 /**
    @ingroup io 
    @brief 3D Landmark list data key to load and store to the CDatapool
 */
-typedef C3DImageIOPluginHandler::Instance::DataKey C3DImageDataKey;
+typedef C3DLandmarklistIOPluginHandler::Instance::DataKey C3DLandmarklistDataKey;
 
 NS_MIA_END
 
