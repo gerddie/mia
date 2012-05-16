@@ -306,7 +306,7 @@ void C2DRigidTransformation::translate(const C2DFVectorfield& gradient, CDoubleV
 		for (size_t x = 0; x < m_size.x; ++x, ++g) {
 			r[0] += g->x;
 			r[1] += g->y;
-			r[2] += -y * g->x + x * g->y; 
+			r[2] += -float(y) * g->x + float(x) * g->y; 
 		}
 	}
 	params[0] = r[0];

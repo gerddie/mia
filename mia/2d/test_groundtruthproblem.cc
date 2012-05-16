@@ -80,10 +80,6 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_value, GroundTruthFixture )
 		xp[i] += h;
 		xm[i] -= h;
 
-		// bug in g++ ?
-		BOOST_REQUIRE(xp[i] == x[i] + h);
-		BOOST_REQUIRE(xm[i] == x[i] - h);
-
 		cvdebug() << x[i] << " xm = " << xm[i] << " xp= " << xp[i] << "\n";
 
 		double fp = pgta->f(xp);
@@ -136,9 +132,6 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_all_finite_diff, GroundTruthFixture )
 		xp[i] += h;
 		xm[i] -= h;
 
-		// bug in g++ ?
-		BOOST_REQUIRE(xp[i] == x[i] + h);
-		BOOST_REQUIRE(xm[i] == x[i] - h);
 
 		cvdebug() << x[i] << " xm = " << xm[i] << " xp= " << xp[i] << "\n";
 
@@ -170,9 +163,6 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_spacial_finite_diff, GroundTruthFixt
 		xp[i] += h;
 		xm[i] -= h;
 
-		// bug in g++ ?
-		BOOST_REQUIRE(xp[i] == x[i] + h);
-		BOOST_REQUIRE(xm[i] == x[i] - h);
 
 		cvdebug() << x[i] << " xm = " << xm[i] << " xp= " << xp[i] << "\n";
 
@@ -225,9 +215,6 @@ BOOST_FIXTURE_TEST_CASE( test_gradient_only_temporal_finite_diff, GroundTruthFix
 		xp[i] += h;
 		xm[i] -= h;
 
-		// bug in g++ ?
-		BOOST_REQUIRE(xp[i] == x[i] + h);
-		BOOST_REQUIRE(xm[i] == x[i] - h);
 
 		cvdebug() << x[i] << " xm = " << xm[i] << " xp= " << xp[i] << "\n";
 
