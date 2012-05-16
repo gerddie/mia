@@ -25,9 +25,14 @@ SET(models3d
   naviera
 )
 
-IF (NOT MSVC)
-  SET(models3d ${models3d}   navierasse navierpsse)
-ENDIF (NOT MSVC)
+SET(SSE_MODELS 
+  navierasse navierpsse
+)
+
+# this is not very nice, we assume if it's not 64 bit it doesn't support SSE 
+IF (NOT MSVC AND LONG_64BIT)
+  SET(models3d ${models3d} ${SSE_MODELS})
+ENDIF (NOT MSVC AND LONG_64BIT)
 
 PLUGIN_GROUP_PRE("3d-model" "${models3d}" "${REG3DLIBS}" "${PLUGIN_INSTALL_PATH}/3dimage/model")
 
