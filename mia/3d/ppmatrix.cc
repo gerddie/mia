@@ -28,8 +28,9 @@
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 
-
+#ifdef __SSE2__
 #include <emmintrin.h>
+#endif
 
 using namespace tbb;
 
@@ -378,7 +379,7 @@ double C3DPPDivcurlMatrixImpl::multiply(const Field& coefficients) const
 		result_4 + result_5 + result_6; 
 }
 
-
+#ifdef __SSE2__
 template <typename Vector>
 struct EvaluateGradientAndValue {
 	const T3DDatafield<Vector>& coefficients; 
@@ -522,6 +523,95 @@ struct EvaluateGradientAndValue {
 		}
 	}
 };  
+#else
+template <typename Vector>
+struct EvaluateGradientAndValue {
+	const T3DDatafield<Vector>& coefficients; 
+	CDoubleVector& gradient; 
+	vector<double>& values;
+	const T3DDatafield<SMatrixCell>& P; 
+	C3DBounds size; 
+	int m_ksize; 
+	EvaluateGradientAndValue(const T3DDatafield<Vector>& _coefficients, 
+				 CDoubleVector& _gradient, 
+				 vector<double>& _values,
+				 const T3DDatafield<SMatrixCell>& _P, 
+				 const C3DBounds& _size, 
+				 int ksize
+		):
+		coefficients(_coefficients), 
+		gradient(_gradient), 
+		values(_values), 
+		P(_P), 
+		size(_size), 
+		m_ksize(ksize)
+		{
+		}
+	
+	void operator()( const blocked_range<int>& range ) const {
+		CThreadMsgStream thread_stream;
+		TRACE_FUNCTION; 
+		int nx = size.x; 
+		int ny = size.y; 
+		int nz = size.z; 
+
+		double __attribute__((aligned(16))) result[6]; 
+
+		for (int zi = range.begin(); zi != range.end(); ++zi) {
+			fill(result, result + 6, 0.0);
+			auto ci = coefficients.begin_at(0,0,zi); 	
+			auto gi = gradient.begin() + size.x * size.y * 3 * zi; 
+			
+			for (int yi = 0; yi < ny; ++yi) {
+				for (int xi = 0; xi < nx; ++xi, ++ci, gi+=3) {
+					
+					double __attribute__((aligned(16))) g[3]; 
+					fill(g, g + 3, 0.0);
+					for (int zj = max(0,zi - m_ksize); zj < min(zi + m_ksize, nz); ++zj) {
+						const int dz = zi - zj + m_ksize; 
+						for (int yj = max(0,yi - m_ksize); yj < min(yi + m_ksize, ny); ++yj) {
+							const int dy = yi - yj + m_ksize;
+							const int xstart = max(0,xi - m_ksize);
+							const int xend = min(xi + m_ksize,nx);
+							
+							auto p = P.begin_at(xi - xstart + m_ksize, dy, dz);
+							auto cj = coefficients.begin_at(xstart, yj, zj); 
+							
+							for (int xj = xstart; xj < xend; ++xj, ++cj, --p) {
+								const double cjxpvxx = cj->x * p->vxx; 
+								const double cjypvyy = cj->y * p->vyy; 
+								const double cjzpvzz = cj->z * p->vzz; 
+
+								
+								const double cjypvxy = cj->y * p->vxy; 
+								const double cjxpvxz = cj->x * p->vxz; 
+								const double cjzpvyz = cj->z * p->vyz; 
+								
+								result[0] += ci->x * cjxpvxx; 
+								result[1] += ci->x * cjypvxy; 
+								result[2] += ci->y * cjypvyy; 
+								result[3] += ci->z * cjxpvxz; 
+								result[4] += ci->y * cjzpvyz; 
+								result[5] += ci->z * cjzpvzz; 
+								
+								g[0] += 2 * cjxpvxx + cjypvxy + cj->z * p->vxz; 
+								g[1] += 2 * cjypvyy + cjzpvyz + cj->x * p->vxy; 
+								g[2] += 2 * cjzpvzz + cjxpvxz + cj->y * p->vyz;
+								
+							}
+						}
+					}
+					gi[0] = g[0]; 
+					gi[1] = g[1]; 
+					gi[2] = g[2];
+				}
+			}
+			values[zi] = result[0] + result[1] + result[2] + 
+				result[3] + result[4] + result[5];
+		}
+	}
+};  
+#endif 
 
 
 double C3DPPDivcurlMatrixImpl::evaluate(const T3DDatafield<C3DFVector>& coefficients, 
