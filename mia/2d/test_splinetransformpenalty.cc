@@ -192,9 +192,9 @@ double C2DSplinePenaltyMock::do_value_and_gradient(const C2DFVectorfield&  coeff
 	auto ig = gradient.begin(); 
 
 	while (ic != ec) {
-		*ig = m_scale.x * ic->x; 
+		*ig = -m_scale.x * ic->x; 
 		result += *ig++; 
-		*ig = m_scale.y * ic->y;
+		*ig = -m_scale.y * ic->y;
 		result += *ig++; 
 		++ic; 
 	}
@@ -209,3 +209,4 @@ C2DSplineTransformPenalty *C2DSplinePenaltyMock::do_clone() const
 }
   
 
+CSplineKernelTestPath kernel_test_path; 

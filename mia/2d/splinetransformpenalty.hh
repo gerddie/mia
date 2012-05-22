@@ -80,7 +80,8 @@ public:
 	/**
 	   Evaluate the penalty and the gradient of a spline transformation defined by its coefficients 
 	   \param coefficients the spline transformation coefficients 
-	   \param gradient[out] the gradient of the spline transformation penalty 
+	   \param gradient[out] the weighted gradient of the spline transformation penalty given so that 
+	   coefficients + \delta gradient moves toward the minimum of the penalty term.
 	   \returns the weighted penalty
 	 */
 

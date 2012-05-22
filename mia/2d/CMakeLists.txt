@@ -282,4 +282,4 @@ ADD_SUBDIRECTORY(shapes    )
 ADD_SUBDIRECTORY(timestep  )
 ADD_SUBDIRECTORY(transform )
 ADD_SUBDIRECTORY(transio )
-
+ADD_SUBDIRECTORY(splinepenalty )

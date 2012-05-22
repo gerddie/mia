@@ -62,7 +62,7 @@ double C2DSplineTransformPenalty::value_and_gradient(const C2DFVectorfield&  coe
 
 	double value =  m_weight * do_value_and_gradient(coefficients, gradient); 
 	transform(gradient.begin(), gradient.end(), gradient.begin(), 
-		  [&m_weight](double x) { return m_weight * x;}); 
+		  [&m_weight](double x) { return - m_weight * x;}); 
 	return value; 
 }
 
