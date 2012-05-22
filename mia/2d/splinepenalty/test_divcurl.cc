@@ -125,3 +125,35 @@ BOOST_AUTO_TEST_CASE( test_divcurl_cost_scale_div_weight )
 	BOOST_CHECK_CLOSE(penalty.value(coef), 3 * M_PI, 0.5); 
 
 }
+
+BOOST_AUTO_TEST_CASE( test_divcurl_cost_scale_curl_weight ) 
+{
+	C2DDivcurlSplinePenalty  penalty(1.0, 1.0, 0.5); 
+
+	C2DBounds size(31,31); 
+	C2DFVector range(8,8); 
+	C2DFVectorfield coef(size); 
+	
+	double scale = range.x / (size.x - 1); 
+	double mid = (size.x - 1.0) / 2.0; 
+
+	auto ic = coef.begin(); 
+	for(unsigned int y = 0; y < size.y; ++y) {
+		double fy = (float(y) - mid) * scale; 
+		for(unsigned  x = 0; x < size.x; ++x, ++ic) {
+			double fx = (float(x) - mid) * scale;
+			double v = exp(- fx * fx - fy * fy); 
+			*ic = C2DFVector( fy * v, -fx * v);
+		}
+	}
+	auto kernel = produce_spline_kernel("bspline:d=4"); 
+
+	T2DConvoluteInterpolator<C2DFVector> source(coef, kernel);
+	auto coeff_double = source.get_coefficients(); 
+	transform(coeff_double.begin(), coeff_double.end(), coef.begin(), 
+		  [](const C2DDVector& x) { return C2DFVector(x);}); 
+	
+	penalty.initialize(size, range, kernel); 
+	BOOST_CHECK_CLOSE(penalty.value(coef), 3 * M_PI, 0.5); 
+
+}
