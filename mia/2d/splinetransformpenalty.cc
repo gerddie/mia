@@ -27,6 +27,14 @@
 NS_MIA_BEGIN
 
 
+const char *C2DSplineTransformPenalty::data_descr = "transform";
+const char *C2DSplineTransformPenalty::type_descr = "2dsplinepenalty"; 
+
+C2DSplineTransformPenalty::C2DSplineTransformPenalty(double weight):
+m_weight(weight)
+{
+}
+
 C2DSplineTransformPenalty::~C2DSplineTransformPenalty()
 {
 }
@@ -42,13 +50,20 @@ void C2DSplineTransformPenalty::initialize(const C2DBounds& size, const C2DFVect
 
 double C2DSplineTransformPenalty::value(const C2DFVectorfield&  coefficients) const
 {
-	return do_value(coefficients); 
+	assert(coefficients.get_size() == get_size()); 
+	return m_weight * do_value(coefficients); 
 }
 
 
 double C2DSplineTransformPenalty::value_and_gradient(const C2DFVectorfield&  coefficients, CDoubleVector& gradient) const
 {
-	return do_value_and_gradient(coefficients, gradient); 
+	assert(coefficients.get_size() == get_size()); 
+	assert(coefficients.size() * 2 == gradient.size()); 
+
+	double value =  m_weight * do_value_and_gradient(coefficients, gradient); 
+	transform(gradient.begin(), gradient.end(), gradient.begin(), 
+		  [&m_weight](double x) { return m_weight * x;}); 
+	return value; 
 }
 
 const C2DBounds& C2DSplineTransformPenalty::get_size() const
@@ -61,12 +76,24 @@ const C2DFVector& C2DSplineTransformPenalty::get_range() const
 	return m_range; 
 }
 
-const CSplineKernel& C2DSplineTransformPenalty::get_kernel() const
+PSplineKernel C2DSplineTransformPenalty::get_kernel() const
 {
-	return *m_kernel; 
+	return m_kernel; 
 }
 
-C2DSplineTransformPenaltyPlugin::ProductPtr produce_2d_spline_transform_penalty(const string& descr)
+const double C2DSplineTransformPenalty::get_weight() const
+{
+	return m_weight; 
+}
+
+
+
+C2DSplineTransformPenalty *C2DSplineTransformPenalty::clone() const
+{
+	return do_clone(); 
+}
+
+C2DSplineTransformPenaltyPluginHandler::ProductPtr produce_2d_spline_transform_penalty(const string& descr)
 {
 	return C2DSplineTransformPenaltyPluginHandler::instance().produce(descr); 
 }
