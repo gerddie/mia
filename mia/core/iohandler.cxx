@@ -195,17 +195,21 @@ bool TIOPluginHandler<I>::save(const std::string& fname, const Data& data) const
 
 	p = preferred_plugin_ptr(fname); 
 	// okay, file name didn't help, let's see if the data knows about its input type 
-	if (!p) 
-		p = this->plugin(data.get_source_format().c_str()); 
+	if (!p) {
+		if (!data.get_source_format().empty())
+			p = this->plugin(data.get_source_format().c_str()); 
+	}
 	
-	// todo: no file type given, one should try the best now ... 
+	// todo: no file type given, one should try the best now, like take the 
+	// first file format that supports the data 
 	
 	// bail out with an error
 	if (!p) {
 		stringstream errmsg; 
-		errmsg << "Unable to find an appropriate plugin from "
-		       << "filename = '" << fname 
-		       << "' and source format = '" << data.get_source_format() << "'"; 
+		errmsg << "Unable to find an appropriate plugin to save to file "
+		       << " '" << fname << "' (based on its extension) "; 
+ 		if (!data.get_source_format().empty())
+			errmsg << " or to format = '" << data.get_source_format() << "'";
 		throw invalid_argument(errmsg.str()); 
 	}
 	return p->save(fname, data); 
