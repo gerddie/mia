@@ -301,8 +301,8 @@ public:
 	virtual float get_max_transform() const = 0;
 
 	/**
-	   A transformation is defined on [0,X-1]x[0.Y-1]. 
-	   @returns the upper boundaries (X,Y) of this range 
+	   A transformation is defined on [0,X-1]x[0.Y-1]y[0,Z-1]. 
+	   @returns the upper boundaries (X,Y,Z) of this range 
 	 */
 	virtual const C3DBounds& get_size() const = 0;
 
