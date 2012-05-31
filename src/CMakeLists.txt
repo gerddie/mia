@@ -129,6 +129,8 @@ DEFEXE(3dserial-nonrigid  mia3d )
 DEFEXE(3dmany2one-nonrigid  mia3d )
 DEFEXE(3dprealign-nonrigid mia3d )
 DEFEXE(3dseries-track-intensity mia3d )
+DEFEXE(3dtransform2vf mia3d )
+
 
 DEFEXE(plugin-help miamesh )
 
