@@ -135,17 +135,23 @@ void TFifoFilter<T>::finalize()
 				
 		if (m_chain) 
 			m_chain->push(help); 
+
 	}
+	
+	if (m_read_start > 0) 
+		--m_fill;
 
 	// it makes the test run through, but I'm not sure why 
-	size_t start = m_read_start + 1; 
+	size_t start = 1; 
 	
-	while (m_fill > m_min_fill && m_fill) {
+	cvdebug() << "finalize: fill=" << m_fill << ", min-fill=" << m_min_fill << "\n"; 
+
+	while (m_fill >= m_min_fill && m_fill) {
 
 		shift_buffer(); 
 		
-		m_start_slice = start; 
-		m_end_slice = m_fill; 
+		m_start_slice = m_read_start + start; 
+		m_end_slice = start + m_fill; 
 
 		cvdebug() << "do_filter (finalize 2): slices : [" << m_start_slice << ", "<< m_end_slice 
 			  <<"] fill " << m_fill << "\n"; 

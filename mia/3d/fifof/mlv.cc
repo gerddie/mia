@@ -199,8 +199,9 @@ void C2DMLVnFifoFilter::do_initialize(::boost::call_traits<P2DImage>::param_type
 {
 	TRACE("C2DMLVnFifoFilter::do_initialize");
 
-
 	m_slice_size = x->get_size();
+	cvdebug() << "Input slices are of size " << m_slice_size << "\n"; 
+	
 	C2DBounds size(m_slice_size.x + 2 * m_hw,
 		       m_slice_size.y + 2 * m_hw);
 

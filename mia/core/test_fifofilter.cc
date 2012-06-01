@@ -162,9 +162,12 @@ void CMeanIntFifoFilter::do_push(int c)
 
 BOOST_AUTO_TEST_CASE( test_mean )
 {
+	int test_input[10] = {
+		2, 1, 3, 6, 13, 7, 6, 13, 11, 18
+	}; 
+
 	int test_result[10] = {
-		2, 2, 3, 4, 5,
-		6, 7, 8, 8, 9
+		2, 3, 5, 6, 7, 9, 10 , 11, 12, 14
 	};
 
 	CMeanIntFifoFilter filter(2);
@@ -173,18 +176,15 @@ BOOST_AUTO_TEST_CASE( test_mean )
 
 	filter.append_filter(psink);
 
-	for ( size_t i = 1; i < 11; ++i)
-		filter.push(i);
+	for ( size_t i = 0; i < 10; ++i)
+		filter.push(test_input[i]);
 
 	filter.finalize();
 
 	const vector<int>& result = sink->result();
 	BOOST_CHECK_EQUAL(result.size(), 10u);
-	if (!equal(result.begin(), result.end(), test_result)) {
-		BOOST_MESSAGE("int_ptr_equal() failed");
-		for (size_t i = 0; i < 10; ++i)
-			cvfail() << result[i] << " should be " << test_result[i] << "\n";
-	}
+	for (int i = 0; i < 10; ++i)
+		BOOST_CHECK_EQUAL(result[i], test_result[i]);
 }
 
 
@@ -318,7 +318,7 @@ BOOST_AUTO_TEST_CASE( test_callseries )
 	filter.finalize();
 
 	BOOST_CHECK_EQUAL(filter.get_starts(), "2 2 2 2 3 ");
-	BOOST_CHECK_EQUAL(filter.get_ends(), "4 5 5 5 5 ");
+	BOOST_CHECK_EQUAL(filter.get_ends(),   "4 5 5 5 5 ");
 	BOOST_CHECK_EQUAL(filter.get_callseries(), "bpspspespefspefsefsefsfx");
 
 }
@@ -349,31 +349,27 @@ BOOST_AUTO_TEST_CASE( test_chaining)
 
 BOOST_AUTO_TEST_CASE( test_mean_add )
 {
+	int test_input[10] = {
+		2, 1, 3, 6, 13, 7, 6, 13, 11, 18
+	}; 
+
 	int test_result[10] = {
-		3, 3, 4, 5, 6,
-		7, 8, 9, 9, 10
+		2, 3, 5, 6, 7, 9, 10 , 11, 12, 14
 	};
 
-	CMeanAddIntFifoFilter filter(2);
+	CMeanIntFifoFilter filter(2);
 	CIntFifoFilterSink *sink = new CIntFifoFilterSink();
 	CIntFifoFilter::Pointer psink(sink);
 
-
 	filter.append_filter(psink);
 
-	for ( size_t i = 1; i < 11; ++i)
-		filter.push(i);
+	for ( size_t i = 0; i < 10; ++i)
+		filter.push(test_input[i]);
 
 	filter.finalize();
 
-	const vector< int >& result = sink->result();
+	const vector<int>& result = sink->result();
 	BOOST_CHECK_EQUAL(result.size(), 10u);
-	BOOST_CHECK(equal(result.begin(), result.end(), test_result));
-
-	if (!equal(result.begin(), result.end(), test_result)) {
-		BOOST_FAIL("int_ptr_equal()");
-		for (size_t i = 0; i < 10; ++i)
-			cvfail() << result[i] << " should be " << test_result[i] << "\n";
-	}
-
+	for (int i = 0; i < 10; ++i)
+		BOOST_CHECK_EQUAL(result[i], test_result[i]);
 }

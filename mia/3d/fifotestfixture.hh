@@ -52,7 +52,11 @@ struct EXPORT_3D fifof_Fixture  {
 template <typename A, typename B>
 void fifof_Fixture::prepare(const A *input_data, const B *test_data, const C2DBounds& size, size_t n_slices)
 {
+	m_in_data.clear();
+	m_test_data.clear();
+	
 	size_t slice_size = size.x * size.y;
+	cvdebug() << "the test image size is " << size << "\n"; 
 	for (size_t i = 0; i < n_slices; ++i, input_data += slice_size, test_data += slice_size) {
 		m_in_data.push_back(P2DImage(new T2DImage<A>(size, input_data)));
 		m_test_data.push_back(P2DImage(new T2DImage<B>(size, test_data)));
