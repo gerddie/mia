@@ -65,7 +65,6 @@ private:
 
 	size_t m_hw;
 	size_t m_w;
-	size_t m_read_start;
 	size_t m_start_slice;
 	size_t m_end_slice;
 	size_t m_buf_slice_size;

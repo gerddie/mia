@@ -20,10 +20,13 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/3d/fifotestfixture.hh>
+#include <mia/3d/3dfilter.hh>
 #include <mia/3d/fifof/mlv.hh>
 
 NS_USE(mlv_2dstack_filter);
 NS_MIA_USE;
+
+C3DFilterPluginHandlerTestPath filter3d_plugin_path; 
 
 BOOST_FIXTURE_TEST_CASE( test_fifof_mlv_const, fifof_Fixture )
 {
@@ -80,3 +83,39 @@ BOOST_FIXTURE_TEST_CASE( test_fifof_mlv_const, fifof_Fixture )
 	call_test(f);
 }
 
+BOOST_FIXTURE_TEST_CASE( test_fifof_mlv_variable, fifof_Fixture )
+{
+	// we do the dirty thing here: since the true 3D mlv filter is 
+	// properly tested, we use its result for testing. 
+#ifndef WIN32
+	srand48(0);
+#endif
+	
+	for (int w = 2; w < 5; ++w) {
+		cvdebug() << "test filter of width " << w << "\n";
+
+		stringstream help_filter_descr; 
+		help_filter_descr << "mlv:w=" << w; 
+
+		int isize = 4 * w + 1;
+		C3DBounds size(isize, isize, isize);
+
+		C3DFImage src(size);
+		for (auto i = src.begin(), e = src.end(); i != e; ++i) {
+#ifndef WIN32
+			*i = drand48();
+#else
+			*i = float(rand())/RAND_MAX;
+#endif
+		}
+		
+		auto ref = run_filter(src, help_filter_descr.str().c_str());
+		const C3DFImage& test_data = dynamic_cast<const C3DFImage&>(*ref); 
+		
+		C2DBounds slice_size(isize, isize); 
+		prepare(&src(0,0,0), &test_data(0,0,0), slice_size, isize);
+		C2DMLVnFifoFilter filter(w);
+		call_test(filter);
+	}
+
+}

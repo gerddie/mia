@@ -49,8 +49,7 @@ static void convert(InputIterator a, InputIterator e, OutputIterator o)
 C2DMLVnFifoFilter::C2DMLVnFifoFilter(size_t hwidth):
 	C2DImageFifoFilter(4 * hwidth + 1, 2 * hwidth + 1, 2 * hwidth),
 	m_hw(hwidth),
-	m_w(2 * hwidth + 1),
-	m_read_start(2 * hwidth)
+	m_w(2 * hwidth + 1)
 {
 }
 
