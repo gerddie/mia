@@ -52,7 +52,6 @@ C2DImage *C2DMorphFifoFilter<Compare>::operator()(const T2DImage<T>& input)
 
 	T3DImage<T> *buf = dynamic_cast<T3DImage<T> *> (m_buffer.get());
 	assert(buf);
-
 	copy(input.begin(), input.end(), buf->begin());
 	return NULL;
 }
@@ -63,11 +62,17 @@ C2DImage *C2DMorphFifoFilter<Compare>::operator()(const T3DImage<T>& input) cons
 {
 	TRACE("C2DMorphFifoFilter<Compare>::operator()(const T3DImage<T>& input) const");
 	T2DImage<T> *result = new T2DImage<T>(m_slice_size);
-	size_t read_slice = m_shape->get_size().z / 2;
+	size_t n_slices = get_end() - get_start(); 
+
+	// This needs probably another test with a shape that is bigger then 3x3x3
+	size_t read_slice = (n_slices-1) / 2; 
+
 	const bool is_float = is_floating_point<T>::value;
 	typedef Compare<T, is_float> cmp;
 
-	typename T2DImage<T>::iterator i = result->begin();
+	auto i = result->begin();
+	cvinfo() << "Creating result from slices [" << get_start() 
+		 << ", " << get_end() << "]\n"; 
 
 	C3DShape::const_iterator shape_end = m_shape->end();
 
@@ -83,8 +88,8 @@ C2DImage *C2DMorphFifoFilter<Compare>::operator()(const T3DImage<T>& input) cons
 					if (size_t(shape_i->y + y) < result->get_size().y)
 						if (size_t(shape_i->x + x) < result->get_size().x) {
 							T v = input(shape_i->x + x,
-									shape_i->y + y,
-									shape_i->z + read_slice);
+								    shape_i->y + y,
+								    shape_i->z + read_slice);
 							if (cmp::apply(value, v))
 								 value = v;
 						}
