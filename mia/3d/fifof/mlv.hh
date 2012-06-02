@@ -55,7 +55,6 @@ private:
 
 	std::vector<mia::C2DFImage> m_mu_buffer;
 	std::vector<mia::C2DFImage> m_sigma_buffer;
-	std::vector<mia::C2DFImage> m_n;
 
 	std::vector<float> m_buf1;
 	std::vector<float> m_buf2;

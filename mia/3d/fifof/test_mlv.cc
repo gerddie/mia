@@ -91,7 +91,7 @@ BOOST_FIXTURE_TEST_CASE( test_fifof_mlv_variable, fifof_Fixture )
 	srand48(0);
 #endif
 	
-	for (int w = 1; w < 5; ++w) {
+	for (int w = 1; w < 2; ++w) {
 		cvdebug() << "test filter of width " << w << "\n";
 
 		stringstream help_filter_descr; 
@@ -101,9 +101,10 @@ BOOST_FIXTURE_TEST_CASE( test_fifof_mlv_variable, fifof_Fixture )
 		C3DBounds size(isize, isize, isize);
 
 		C3DFImage src(size);
+		int k = 0; 
 		for (auto i = src.begin(), e = src.end(); i != e; ++i) {
 #ifndef WIN32
-			*i = 2.0; //drand48();
+			*i = exp(1.0 + float(k++) / src.size());
 #else
 			*i = float(rand())/RAND_MAX;
 #endif
@@ -120,3 +121,27 @@ BOOST_FIXTURE_TEST_CASE( test_fifof_mlv_variable, fifof_Fixture )
 	}
 
 }
+
+
+BOOST_FIXTURE_TEST_CASE( test_fifof_mlv_variable_1, fifof_Fixture )
+{
+	int w = 1; 
+	int isize = 4 * w + 1;
+	C3DBounds size(isize, isize, isize);
+	
+	C3DFImage src(size);
+	int k = 0; 
+	for (auto i = src.begin_range(C3DBounds::_0, size), 
+		     e = src.end_range(C3DBounds::_0, size); i != e; ++i)
+		*i = i.pos().norm2(); 
+	
+	auto ref = run_filter(src, "mlv:w=1");
+	const C3DFImage& test_data = dynamic_cast<const C3DFImage&>(*ref); 
+	
+	C2DBounds slice_size(isize, isize); 
+
+	prepare(&src(0,0,0), &test_data(0,0,0), slice_size, isize);
+	C2DMLVnFifoFilter filter(w);
+	call_test(filter);
+}
+

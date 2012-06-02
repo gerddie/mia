@@ -65,9 +65,9 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T3DImage<T>& /*dummy*/) const
 	fill(sigma_buffer.begin(), sigma_buffer.end(), numeric_limits<float>::max());
 
 	for (size_t z = get_start(); z < get_end(); ++z) {
-		for (size_t iy = 0; iy < m_w; ++iy)
-			for (size_t ix = 0; ix < m_w; ++ix) {
-				for (size_t y = 0; y < m_slice_size.y; ++y) {
+		for (size_t y = 0; y < m_slice_size.y; ++y) {
+			for (size_t iy = 0; iy < m_w; ++iy)
+				for (size_t ix = 0; ix < m_w; ++ix) {
 					C3DFImage::const_iterator mu_i = m_mu_buffer[z].begin_at(ix, y + iy);
 					C3DFImage::const_iterator si_i = m_sigma_buffer[z].begin_at(ix, y + iy);
 					C2DFImage::iterator omu_i = mu_result.begin_at(0, y);
@@ -100,20 +100,24 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T3DImage<T>& /*dummy*/) const
 	return result;
 }
 
-static void do_evaluate(C2DFImage::const_iterator ni, C2DFImage::const_iterator ne,
-		     C2DFImage::iterator mu, C2DFImage::iterator sigma)
+template <typename CI, typename I, typename RI>
+static void do_evaluate(float nslices, CI ni, CI ne, I mu, RI sigma)
 {
 	while (ni != ne) {
-		const float n = *ni;
-		const float muq = *mu / *ni;
+		const float n = *ni * nslices;
+		const float muq = *mu / n;
 
-		if (n > 1.0) {
-			*sigma = (*sigma - muq * muq * n) / (n - 1.0f);
-		}else {
-			*sigma = 0.0f;
-		}
+		const float s = (n > 1.0) ? (*sigma - muq * muq * n) / (n - 1.0f) : 0.0f; 
 
-		*mu++ = muq;
+
+		cvdebug() << sigma.pos()  
+			  << ", n= " << n 
+			  << ", " << *mu << "(" << *sigma << ") ->"
+			  <<  muq << "(" << s << ")\n"; 
+		
+		*mu = muq;
+		*sigma = s; 
+		++mu; 
 		++ni;
 		++sigma;
 	}
@@ -122,9 +126,8 @@ static void do_evaluate(C2DFImage::const_iterator ni, C2DFImage::const_iterator 
 template <typename Iterator>
 void rotate(Iterator begin, Iterator end)
 {
-	typename Iterator::value_type help = *(end - 1);
+	auto help = *(end - 1);
 	copy_backward(begin, end - 1, end);
-	*begin = help;
 }
 
 void C2DMLVnFifoFilter::shift_buffer()
@@ -132,16 +135,16 @@ void C2DMLVnFifoFilter::shift_buffer()
 	TRACE_FUNCTION; 
 	rotate(m_mu_buffer.begin(), m_mu_buffer.end());
 	rotate(m_sigma_buffer.begin(),m_sigma_buffer.end());
-	rotate(m_n.begin(), m_n.end());
 }
 
 void C2DMLVnFifoFilter::evaluate(size_t slice)
 {
 	TRACE_FUNCTION; 
-	do_evaluate(m_n[slice].begin(),
-		    m_n[slice].end(),
+	cvdebug() << "Evaluate: " <<slice << " from slices: " << get_start() << ", " << get_end() << "\n";
+	do_evaluate(get_end() - get_start(), 
+		    m_n_template.begin(), m_n_template.end(), 
 		    m_mu_buffer[slice].begin(),
-		    m_sigma_buffer[slice].begin());
+		    m_sigma_buffer[slice].begin_range(C2DBounds::_0, m_sigma_buffer[slice].get_size()));
 
 }
 
@@ -152,38 +155,39 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T2DImage<T>& input)
 {
 	TRACE("C2DMLVnFifoFilter::operator()(const T2DImage<T>& input)(push)");
 
-	fill(m_mu_buffer[0].begin(), m_mu_buffer[0].end(), 0.0);
-	fill(m_sigma_buffer[0].begin(), m_sigma_buffer[0].end(), 0.0);
-	fill(m_n[0].begin(), m_n[0].end(), 0.0);
+	vector<float> mu_help(m_mu_buffer[0].get_size().x); 
+	vector<float> sigma_help(m_mu_buffer[0].get_size().x);
 
 	for (size_t y = 0; y < m_slice_size.y; ++y) {
+		fill(mu_help.begin(), mu_help.end(), 0.0);
+		fill(sigma_help.begin(), sigma_help.end(), 0.0);
+		
 		copy(input.begin_at(0,y), input.begin_at(0,y + 1), m_buf1.begin());
-		transform(m_buf1.begin(), m_buf1.end(), m_buf2.begin(), 
-			  [](float x) {return x * x;}); 
-
-		for (size_t iz = 0; iz < m_w; ++iz)
-			for (size_t iy = 0; iy < m_w; ++iy)
-				for (size_t ix = 0; ix < m_w; ++ix) {
-					transform(m_buf1.begin(), m_buf1.end(),
-						  m_mu_buffer[iz].begin_at(ix, y + iy),
-						  m_mu_buffer[iz].begin_at(ix, y + iy), 
-						  [](float x, float y){return x+y;}); 
-					transform(m_buf2.begin(), m_buf2.end(),
-						  m_sigma_buffer[iz].begin_at(ix, y + iy),
-						  m_sigma_buffer[iz].begin_at(ix, y + iy), 
-						  [](float x, float y){return x+y;}
-						);
-				}
+		transform(m_buf1.begin(), m_buf1.end(), m_buf2.begin(), [](float fx) {return fx * fx;}); 
+		
+		for (size_t ix = 0; ix < m_w; ++ix) {
+			transform(m_buf1.begin(), m_buf1.end(), mu_help.begin() + ix, 
+				  mu_help.begin() + ix, [](float fx, float fy){return fx+fy;}); 
+			transform(m_buf2.begin(), m_buf2.end(), sigma_help.begin() + ix, 
+				  sigma_help.begin() + ix, [](float fx, float fy){return fx+fy;}); 
+		}
+		
+		
+		for (size_t iy = 0; iy < m_w; ++iy) {
+			transform(mu_help.begin(), mu_help.end(),
+				  m_mu_buffer[0].begin_at(0, y + iy),
+				  m_mu_buffer[0].begin_at(0, y + iy), 
+				  [](float fx, float fy){return fx+fy;}); 
+			transform(sigma_help.begin(), sigma_help.end(),
+				  m_sigma_buffer[0].begin_at(0, y + iy),
+				  m_sigma_buffer[0].begin_at(0, y + iy), 
+				  [](float fx, float fy){return fx+fy;}
+				);
+			
+		}
 	}
 
-	C2DFImage::const_iterator ntmpl_b = m_n_template.begin();
-	C2DFImage::const_iterator ntmpl_e = m_n_template.end();
-
-	for (size_t iz = 0; iz < m_w; ++iz) {
-		transform(ntmpl_b, ntmpl_e,
-			  m_n[iz].begin_at(0, 0),
-			  m_n[iz].begin_at(0, 0), [](float x, float y){return x+y;});
-	}
+	
 	return NULL;
 }
 
@@ -192,7 +196,6 @@ void C2DMLVnFifoFilter::post_finalize()
 	TRACE_FUNCTION; 
 	m_mu_buffer.resize(0);
 	m_sigma_buffer.resize(0);
-	m_n.resize(0);
 }
 
 void C2DMLVnFifoFilter::do_initialize(::boost::call_traits<P2DImage>::param_type x)
@@ -209,12 +212,10 @@ void C2DMLVnFifoFilter::do_initialize(::boost::call_traits<P2DImage>::param_type
 
 	m_mu_buffer = vector<C2DFImage>(n_slices);
 	m_sigma_buffer = vector<C2DFImage>(n_slices);
-	m_n = vector<C2DFImage>(n_slices);
 
 	for (size_t i = 0; i < n_slices; ++i) {
 		m_mu_buffer[i] = C2DFImage(size);
 		m_sigma_buffer[i] = C2DFImage(size);
-		m_n[i] = C2DFImage(size);
 	}
 
 	m_buf_slice_size = size.x * size.y;
@@ -224,13 +225,13 @@ void C2DMLVnFifoFilter::do_initialize(::boost::call_traits<P2DImage>::param_type
 	m_prototype.reset(create_buffer(C2DBounds(1,1), 1, x->get_pixel_type()));
 
 
-	m_n_template = C2DFImage(C2DBounds(m_slice_size.x + 2 * m_hw, m_slice_size.y + 2 * m_hw));
+	m_n_template = C2DFImage(size);
 	// create the pattern that is used to update the count
 	// this is the slow version, but we have to do it only once
 	for (size_t y = 0; y < m_slice_size.y; ++y)
 		for (size_t x = 0; x < m_slice_size.x; ++x)
-			for (size_t iy = 0; iy < 2 * m_hw + 1; ++iy)
-				for (size_t ix = 0; ix < 2 * m_hw + 1; ++ix)
+			for (size_t iy = 0; iy < m_w; ++iy)
+				for (size_t ix = 0; ix < m_w; ++ix)
 					m_n_template(x + ix, y + iy) += 1.0;
 }
 
