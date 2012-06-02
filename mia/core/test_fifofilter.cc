@@ -254,7 +254,7 @@ private:
 
 
 CTrackCallersFilter::CTrackCallersFilter():
-	CIntFifoFilter(3, 2, 2)
+	CIntFifoFilter(3, 2, 1)
 {
 }
 
@@ -317,9 +317,10 @@ BOOST_AUTO_TEST_CASE( test_callseries )
 
 	filter.finalize();
 
-	BOOST_CHECK_EQUAL(filter.get_starts(), "2 2 2 2 3 ");
-	BOOST_CHECK_EQUAL(filter.get_ends(),   "4 5 5 5 5 ");
-	BOOST_CHECK_EQUAL(filter.get_callseries(), "bpspspespefspefsefsefsfx");
+	BOOST_CHECK_EQUAL(filter.get_starts(), "1 1 1 0 0 ");
+	BOOST_CHECK_EQUAL(filter.get_ends(),   "3 4 4 3 2 ");
+                                                    
+	BOOST_CHECK_EQUAL(filter.get_callseries(), "bpspespefspefspefeffx");
 
 }
 
@@ -354,10 +355,10 @@ BOOST_AUTO_TEST_CASE( test_mean_add )
 	}; 
 
 	int test_result[10] = {
-		2, 3, 5, 6, 7, 9, 10 , 11, 12, 14
+		3, 4, 6, 7, 8, 10, 11 , 12, 13, 15
 	};
 
-	CMeanIntFifoFilter filter(2);
+	CMeanAddIntFifoFilter filter(2);
 	CIntFifoFilterSink *sink = new CIntFifoFilterSink();
 	CIntFifoFilter::Pointer psink(sink);
 
@@ -373,3 +374,4 @@ BOOST_AUTO_TEST_CASE( test_mean_add )
 	for (int i = 0; i < 10; ++i)
 		BOOST_CHECK_EQUAL(result[i], test_result[i]);
 }
+

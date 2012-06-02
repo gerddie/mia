@@ -32,6 +32,7 @@ using namespace std;
 
 template <typename T> 
 TFifoFilter<T>::TFifoFilter(size_t filter_width, size_t min_fill, size_t read_start):
+	m_filter_width(filter_width),
 	m_buf_size(filter_width + read_start),
 	m_min_fill(min_fill + read_start), 
 	m_read_start(read_start), 
@@ -56,15 +57,15 @@ void TFifoFilter<T>::push(typename ::boost::call_traits<T>::param_type x)
 	++m_fill; 
 
 	cvdebug() << "push: fill : " << m_fill << " ,need "<< m_min_fill <<", max="<< m_buf_size<<"\n"; 
+	m_start_slice = m_read_start; 
+	m_end_slice = m_fill; 
 	
-	if (m_fill > m_read_start)  
+	if (m_fill > m_read_start)
 		evaluate(m_read_start); 
 
 	if (m_fill >= m_min_fill) {
-		m_start_slice = m_read_start; 
-		m_end_slice = m_fill; 
 
-		cvdebug() << "do_filter: slices : [" << m_start_slice << ", "<< m_end_slice 
+		cvinfo() << "do_filter: slices : [" << m_start_slice << ", "<< m_end_slice 
 			  <<"] fill " << m_fill << "\n"; 
 		
 		T help = do_filter(); 
@@ -72,12 +73,12 @@ void TFifoFilter<T>::push(typename ::boost::call_traits<T>::param_type x)
 			m_chain->push(help); 
 	}
 		
-	
 	if (m_fill < m_buf_size) {
 		return; 
 	}
 	--m_fill; 
 }
+
 template <typename T> 
 size_t TFifoFilter<T>::get_buffer_size() const
 {
@@ -118,49 +119,47 @@ template <typename T>
 void TFifoFilter<T>::finalize()
 {
 	TRACE_FUNCTION; 
-	size_t overfill = m_read_start; 
+	// check if the buffer has rows before the standard read start 
+	// if so, move the filter down 
 
-	while (overfill-- > 0) {
-		shift_buffer(); 
-		if (m_fill < m_buf_size) 
-			++m_fill; 
-		evaluate(m_read_start); 
+	while (m_read_start > 0) {
+
+		// use the slices from the new buffer start to the 
+		// buffer fill or filter width (+1 because of the past-end indicator) 
+		--m_read_start; 
 		m_start_slice = m_read_start; 
-		m_end_slice = m_fill; 
-
-		cvdebug() << "do_filter (finalize 1): slices : [" << m_start_slice << ", "<< m_end_slice 
-			  <<"] fill " << m_fill << "\n"; 
+		m_end_slice = min(m_fill, m_filter_width + m_start_slice); 
+		
+		cvinfo() << "finalize 1: " << "slices : [" << m_start_slice << ", " << m_end_slice 
+			 <<"] fill " << m_fill << ", minfill " << m_min_fill << "\n";
+		evaluate(m_read_start); 
 
 		T help = do_filter(); 
 				
 		if (m_chain) 
 			m_chain->push(help); 
 
+		// the minimum fill required to run the filter is now one down 
+		--m_min_fill; 
 	}
+
+	// now process the final slices that are not of full filter width 
+	// from here on, everything that goes beyond the actual filter with is ignored 
+	cvinfo() << "finalize: fill=" << m_fill << ", min-fill=" << m_min_fill << "\n"; 
 	
-	if (m_read_start > 0) 
-		--m_fill;
-
-	// it makes the test run through, but I'm not sure why 
-	size_t start = 1; 
-	
-	cvdebug() << "finalize: fill=" << m_fill << ", min-fill=" << m_min_fill << "\n"; 
-
-	while (m_fill >= m_min_fill && m_fill) {
-
-		shift_buffer(); 
+	m_end_slice = m_end_slice - 1; 
+	m_start_slice = 0; 
+	// as long as there is more data in the buffer that is needed to filter a slice, 
+	// contimue filtering 
+	while (m_end_slice >= m_min_fill && m_end_slice > m_start_slice) {
 		
-		m_start_slice = m_read_start + start; 
-		m_end_slice = start + m_fill; 
-
-		cvdebug() << "do_filter (finalize 2): slices : [" << m_start_slice << ", "<< m_end_slice 
+		cvinfo() << "finalize 2: slices : [" << m_start_slice << ", "<< m_end_slice 
 			  <<"] fill " << m_fill << "\n"; 
 		T help = do_filter(); 
 
 		if (m_chain) 
 			m_chain->push(help); 
-		--m_fill;
-		++start; 
+		--m_end_slice;
 	}
 
 	post_finalize(); 

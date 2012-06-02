@@ -136,13 +136,13 @@ private:
 	*/
 	virtual void evaluate(size_t slice); 
 
-
-	size_t m_buf_size;
-	size_t m_min_fill;
-	size_t m_read_start; 
-	size_t m_fill; 
-	size_t m_start_slice; 
-	size_t m_end_slice; 
+	int m_filter_width; 
+	int m_buf_size;
+	int m_min_fill;
+	int  m_read_start; 
+	int m_fill; 
+	int m_start_slice; 
+	int m_end_slice; 
 	Pointer m_chain; 
 	bool m_initialized; 
 }; 
