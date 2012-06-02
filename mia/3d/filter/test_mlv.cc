@@ -36,11 +36,7 @@ struct FCompare {
 
 BOOST_AUTO_TEST_CASE( test_mlv )
 {
-#ifndef WIN32
-	// the test should always use the same random numbers 
-	srand48(0);
-#endif
-	for (int w = 1; w < 5; ++w) {
+	for (int w = 1; w < 2; ++w) {
 		cvdebug() << "test filter of width " << w << "\n";
 
 		C3DMLVImageFilter filter(w);
@@ -50,12 +46,9 @@ BOOST_AUTO_TEST_CASE( test_mlv )
 		C3DBounds size(isize, isize, isize);
 
 		C3DFImage *src = new C3DFImage(size);
-		for (C3DFImage::iterator i = src->begin(), e = src->end(); i != e; ++i)
-#ifndef WIN32
-			*i = drand48();
-#else
-			*i = float(rand())/RAND_MAX;
-#endif
+		for (auto i = src->begin_range(C3DBounds::_0, size), 
+			     e = src->end_range(C3DBounds::_0, size); i != e; ++i)
+			*i = i.pos().norm2(); 
 
                // create the reference image
 		C3DFImage ref(src->get_size());
@@ -81,6 +74,9 @@ BOOST_AUTO_TEST_CASE( test_mlv )
 							}
 					float m = mu(x,y,z) = sum / n;
 					sigma(x,y,z) = (n > 1) ? (sum2 - n * m * m) / (n - 1) : 0.0f;
+
+					cvdebug() << C3DBounds(x,y,z) << ", n=" << n
+						  << ", " << m << "(" << sigma(x,y,z) << ")\n"; 
 				}
 
 			}
