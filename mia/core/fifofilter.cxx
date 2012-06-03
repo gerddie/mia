@@ -117,7 +117,7 @@ void TFifoFilter<T>::finalize()
 	TRACE_FUNCTION; 
 	size_t overfill = m_read_start; 
 	// prepare all remaining slices 
-	for (int i = 0; i < m_read_start; i++) 
+	for (size_t i = 0; i < m_read_start; i++) 
 		evaluate(i);
 
 	while (overfill-- > 0) {
@@ -143,13 +143,15 @@ void TFifoFilter<T>::finalize()
 
 	cvdebug() << "finalize: fill=" << m_fill << ", min-fill=" << m_min_fill << "\n"; 
 
+	m_end_slice = m_fill + 1; 
+
 	while (m_fill >= m_min_fill && m_fill) {
 
 		shift_buffer(); 
-		
-		m_start_slice = m_read_start; 
-		m_end_slice = m_fill; 
+		if (m_end_slice < m_buf_size) 
+			++m_end_slice; 
 
+		m_start_slice = m_end_slice - m_fill + m_read_start; 
 		cvdebug() << "do_filter (finalize 2): slices : [" << m_start_slice << ", "<< m_end_slice 
 			  <<"] fill " << m_fill << "\n"; 
 		T help = do_filter(); 

@@ -66,8 +66,8 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T3DImage<T>& /*dummy*/) const
 	
 	static int slice = 0; 
 	
-	int start = get_start() + m_w-1; 
-	int end = min(get_end() + m_w, get_buffer_size()); 
+	size_t start = 2 * m_w - 2;
+	size_t end = min(get_end() + m_w, get_buffer_size()); 
 
 	cvdebug() << "Evaluate "<< slice++ << " output " << start << " - " << end << "\n"; 
 	C2DFImage mu_result(m_slice_size);
