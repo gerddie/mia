@@ -56,7 +56,10 @@ void TFifoFilter<T>::push(typename ::boost::call_traits<T>::param_type x)
 	++m_fill; 
 
 	cvdebug() << "push: fill : " << m_fill << " ,need "<< m_min_fill <<", max="<< m_buf_size<<"\n"; 
-	
+
+	if (m_fill > m_read_start)  
+		evaluate(m_read_start); 
+
 	if (m_fill >= m_min_fill) {
 		m_start_slice = m_read_start; 
 		m_end_slice = m_fill; 

@@ -104,24 +104,28 @@ private:
 
 CAddSomeFifoFilter::CAddSomeFifoFilter(int value):
 	CIntFifoFilter(0,1,0),
-	m_value(value)
+	m_value(value), 
+	m_buf(0)
 {
 }
 
 int CAddSomeFifoFilter::do_filter()
 {
+	cvdebug() << "do_filter()" << m_buf << "\n"; 
 	return m_buf;
 }
 
 
 void CAddSomeFifoFilter::do_push(int c)
 {
+	cvdebug() << "do_push()" << m_buf << " -> " << c << "\n"; 
 	m_buf = c;
 }
 
 
 void CAddSomeFifoFilter::evaluate(size_t /*slice*/)
 {
+	cvdebug() << "CAddSomeFifoFilter::evaluate" << "\n"; 
 	m_buf += m_value;
 }
 
@@ -319,7 +323,7 @@ BOOST_AUTO_TEST_CASE( test_callseries )
 
 	BOOST_CHECK_EQUAL(filter.get_starts(), "2 2 2 2 3 ");
 	BOOST_CHECK_EQUAL(filter.get_ends(),   "4 5 5 5 5 ");
-	BOOST_CHECK_EQUAL(filter.get_callseries(), "bpspspespefspefsefsefsfx");
+	BOOST_CHECK_EQUAL(filter.get_callseries(), "bpspspespefspefeesfsfsfx");
 
 }
 
