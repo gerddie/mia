@@ -57,9 +57,6 @@ void TFifoFilter<T>::push(typename ::boost::call_traits<T>::param_type x)
 
 	cvdebug() << "push: fill : " << m_fill << " ,need "<< m_min_fill <<", max="<< m_buf_size<<"\n"; 
 	
-	if (m_fill > m_read_start)  
-		evaluate(m_read_start); 
-
 	if (m_fill >= m_min_fill) {
 		m_start_slice = m_read_start; 
 		m_end_slice = m_fill; 
@@ -119,12 +116,15 @@ void TFifoFilter<T>::finalize()
 {
 	TRACE_FUNCTION; 
 	size_t overfill = m_read_start; 
+	// prepare all remaining slices 
+	for (int i = 0; i < m_read_start; i++) 
+		evaluate(i);
 
 	while (overfill-- > 0) {
 		shift_buffer(); 
 		if (m_fill < m_buf_size) 
 			++m_fill; 
-		evaluate(m_read_start); 
+
 		m_start_slice = m_read_start; 
 		m_end_slice = m_fill; 
 
@@ -141,17 +141,14 @@ void TFifoFilter<T>::finalize()
 	if (m_read_start > 0) 
 		--m_fill;
 
-	// it makes the test run through, but I'm not sure why 
-	size_t start = 1; 
-	
 	cvdebug() << "finalize: fill=" << m_fill << ", min-fill=" << m_min_fill << "\n"; 
 
 	while (m_fill >= m_min_fill && m_fill) {
 
 		shift_buffer(); 
 		
-		m_start_slice = m_read_start + start; 
-		m_end_slice = start + m_fill; 
+		m_start_slice = m_read_start; 
+		m_end_slice = m_fill; 
 
 		cvdebug() << "do_filter (finalize 2): slices : [" << m_start_slice << ", "<< m_end_slice 
 			  <<"] fill " << m_fill << "\n"; 
@@ -160,7 +157,6 @@ void TFifoFilter<T>::finalize()
 		if (m_chain) 
 			m_chain->push(help); 
 		--m_fill;
-		++start; 
 	}
 
 	post_finalize(); 
