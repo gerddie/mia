@@ -58,7 +58,18 @@ int do_main(int argc, char **argv)
 	auto transformation = C3DTransformationIOPluginHandler::instance().load(src_filename);
 
 	C3DIOVectorfield outfield(transformation->get_size());
-	copy(transformation->begin(), transformation->end(), outfield.begin());
+
+	cvdebug() << transformation->get_size() << "\n"; 
+	auto it = transformation->begin(); 
+	auto et = transformation->end(); 
+	auto ivf = outfield.begin_range(C3DBounds::_0, transformation->get_size()); 
+	
+	while (it != et) {
+		*ivf = C3DFVector(ivf.pos()) - *it; 
+		cvdebug() << *ivf << "\n"; 
+		++it; 
+		++ivf; 
+	}
 
 	if (!C3DVFIOPluginHandler::instance().save(out_filename, outfield)){
 		cerr << "Unable to save result vector field to " << out_filename << "\n";
