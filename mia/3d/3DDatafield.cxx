@@ -98,9 +98,9 @@ typename T3DDatafield<T>::value_type
 T3DDatafield<T>::get_trilin_interpol_val_at(const T3DVector<float >& p) const
 {
         // Calculate the coordinates and the distances
-        size_t  x = (size_t )p.x;
-        size_t  y = (size_t )p.y;
-        size_t  z = (size_t )p.z;
+        size_t  x = (size_t)p.x;
+        size_t  y = (size_t)p.y;
+        size_t  z = (size_t)p.z;
         float  fx = p.x-x;
         float  fy = p.y-y;
         float  fz = p.z-z;

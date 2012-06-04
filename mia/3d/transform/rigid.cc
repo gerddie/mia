@@ -93,17 +93,6 @@ C3DRigidTransformation::C3DRigidTransformation(const C3DBounds& size,const C3DFV
 {
 }
 
-bool C3DRigidTransformation::save(const std::string& filename, const std::string& /*type*/) const
-{
-	ofstream file(filename.c_str());
-	file << "Transformation: 3D\n"
-	     << "Matrix: ";
-	for (size_t i = 0; i < 12 ; ++i)
-		file << m_t[i] << " ";
-	file << "\n";
-	return file.good();
-}
-
 size_t C3DRigidTransformation::degrees_of_freedom() const
 {
 	return 6;
