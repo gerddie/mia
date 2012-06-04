@@ -26,6 +26,7 @@
 #include <boost/static_assert.hpp>
 
 CSplineKernelTestPath splinekernel_init_path; 
+C3DTransformCreatorHandlerTestPath transform_creator_test_path; 
 
 NS_MIA_USE; 
 namespace bfs=::boost::filesystem; 
