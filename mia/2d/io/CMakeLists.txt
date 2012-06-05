@@ -18,8 +18,9 @@
 #
 #
 
-OPTION(WITH_PNG "enable support for PNG" ${SEARCH_LIBS_DEFAULT})
-OPTION(WITH_TIFF "enable support for TIFF" ${SEARCH_LIBS_DEFAULT})
+OPTION(WITH_PNG "enable support for PNG gray scale images" ${SEARCH_LIBS_DEFAULT})
+OPTION(WITH_TIFF "enable support for TIFF gray scale images" ${SEARCH_LIBS_DEFAULT})
+OPTION(WITH_JPEG "enable support for JPEG gray scale images" ${SEARCH_LIBS_DEFAULT})
 
 SET(image2dio_path ${PLUGIN_INSTALL_PATH}/2dimage/io)
 SET(vf2dio_path ${PLUGIN_INSTALL_PATH}/2dvf/io)
@@ -51,6 +52,17 @@ IF(WITH_TIFF)
     MESSAGE(FATAL_ERROR "TIFF not found and strict dependencies enabled")
   ENDIF(TIFF_FOUND)
 ENDIF(WITH_TIFF)
+
+IF(WITH_JPEG)
+  FIND_PACKAGE(JPEG)
+  IF(JPEG_FOUND)
+    SET(JPEG_LINK_LIBS ${MIA2DLIBS} ${JPEG_LIBRARIES})
+    PLUGIN_PRE("2d-imageio" jpg "${JPEG_LINK_LIBS}" "${image2dio_path}")
+    INCLUDE_DIRECTORIES(${JPEG_INCLUDE_DIR})
+  ELSEIF(STRICT_DEPENDECIES)
+    MESSAGE(FATAL_ERROR "JPEG not found and strict dependencies enabled")
+  ENDIF(JPEG_FOUND)
+ENDIF(WITH_JPEG)
 
 
 
