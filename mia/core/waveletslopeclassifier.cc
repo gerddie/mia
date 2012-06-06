@@ -184,19 +184,27 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	
 	// first estimate if this is free breathing or breath holding 
 	vector<float> movement_pos(4, 0);
-	for (size_t i = 0; i < series.size(); ++i)
+
+	for (size_t i = 0; i < series.size(); ++i) {
 		movement_pos[vstats[i]->get_level_mean_energy_position()[movement_idx]] += vstats[i]->get_level_coefficient_sums()[movement_idx];
+		
+	}
 	
+	cvinfo() << "Energy sums = " << movement_pos << "\n"; 
+
+
 	cvdebug() << "Movement coeff weights:" << movement_pos << "\n"; 
 	bool ifree_breathing = ((movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_begin]) &&
 				(movement_pos[CSlopeStatistics::ecp_center] > movement_pos[CSlopeStatistics::ecp_end]));
 
-	bool at_begin = (!ifree_breathing) && (movement_pos[CSlopeStatistics::ecp_end] < movement_pos[CSlopeStatistics::ecp_begin]); 
-		
+	// handle free breathing and series that only end with breath holding in the same way 
+	if  ((!ifree_breathing) && (movement_pos[CSlopeStatistics::ecp_end] < movement_pos[CSlopeStatistics::ecp_begin]))
+		ifree_breathing = true; 
+	
 	if (ifree_breathing) 
-		cvmsg() << "Detected free breathing data set\n"; 
+		cvmsg() << "Detected data set with (initial) free breathing.\n"; 
 	else 
-		cvmsg() << "Detected breath holding data set\n"; 
+		cvmsg() << "Detected data set with initial breath holding.\n"; 
 	
 	int low_energy_start_idx = 1; //ifree_breathing ? 0 : 1;
 	
@@ -233,11 +241,13 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 			 << "\n"; 
 
 		is_high_freq[i] = (low_freq < high_freq);
-		if (!at_begin && is_high_freq[i])
+
+		if (is_high_freq[i]) {
 			if (vstats[i]->get_mean_energy_position() == CSlopeStatistics::ecp_begin) {
 				cvinfo() << "c=" << i << ":override motion because we assume it's RV enhacement\n";
 				is_high_freq[i] = false; 
 			}
+		}
 	}
 
 
@@ -331,7 +341,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 		return; 
 	}
 
-	const int start_movement = (ifree_breathing ||  at_begin) ? 0 : (2 * series[0].size()) / 3; 
+	const int start_movement = (ifree_breathing) ? 0 : (2 * series[0].size()) / 3; 
 	
 	cvinfo() << "set start movement to "  << start_movement << "\n"; 
 

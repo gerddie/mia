@@ -490,10 +490,14 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 	m_wt_level_mean_energy_pos.resize(levels); 
 
 
+	float wt_pos_sum = 0.0; 
+
 	for (int l = 0; l < levels; ++l, ncoeffs *= 2) {
 		float peak_level_coeff = 0.0; 
 		m_wt_level_coefficient_sums[l] = 0; 
 		float wt_level_mean_pos = 0; 
+		float wt_level_mean = 0; 
+		float wt_level_sigma = 0; 
 		for (int i = 0; i < ncoeffs; ++i, ++c) {
 			if ( m_wt_peak_coefficient < *c) {
 				m_wt_peak_coefficient = *c; 
@@ -505,6 +509,10 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 			m_wt_energy += *c; 
 			m_wt_level_coefficient_sums[l] += *c; 
 			wt_level_mean_pos += *c * i;
+
+			float fi = 3.0 * float(i) / float(ncoeffs - 1.0); 
+			wt_level_mean += *c * fi;
+			wt_level_sigma += *c * fi * fi;
 		}
 		mean_level += peak_level_coeff * l; 
 		sum_level_peaks += peak_level_coeff; 
@@ -513,17 +521,22 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 			continue; 
 		}
 		
+		if (ncoeffs > 1)
+			wt_pos_sum += wt_level_mean / m_wt_level_coefficient_sums[l]; 
+
 		// evalaute the mean time position of the energy
 		if (ncoeffs == 1)
-			m_wt_level_mean_energy_pos[l] = CSlopeStatistics::ecp_center;
+			m_wt_level_mean_energy_pos[l] = CSlopeStatistics::ecp_none;
 		else if (ncoeffs == 2) {
 			cvdebug() << "ncoeffs = 2: weighted pos = " << wt_level_mean_pos  
 				  << " sum = " << m_wt_level_coefficient_sums[l]
 				  << "\n"; 
-			wt_level_mean_pos /= m_wt_level_coefficient_sums[l];
+			wt_level_mean_pos /= m_wt_level_coefficient_sums[l] / 3.0;
 
-			m_wt_level_mean_energy_pos[l] = (wt_level_mean_pos < 0.5) ? CSlopeStatistics::ecp_begin : 
-				( wt_level_mean_pos == 0.5 ? CSlopeStatistics::ecp_center: CSlopeStatistics::ecp_end );
+			m_wt_level_mean_energy_pos[l] = (wt_level_mean_pos < 1.0) ? CSlopeStatistics::ecp_begin : 
+				( wt_level_mean_pos < 2.0 ? CSlopeStatistics::ecp_center: CSlopeStatistics::ecp_end );
+
+			
 		}else {
 			cvdebug() << "level = " << l 
 				  << " wt_level_mean_pos = " << wt_level_mean_pos 
@@ -532,7 +545,9 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 				  << "\n"; 
 			wt_level_mean_pos /= m_wt_level_coefficient_sums[l] * ncoeffs / 3.0;
 			cvdebug() << "corrected = " << wt_level_mean_pos << "\n"; 
-			if (wt_level_mean_pos <= 1.0 && ncoeffs > 1) {
+
+
+			if (wt_level_mean_pos <= 1.0) {
 				m_wt_level_mean_energy_pos[l] = CSlopeStatistics::ecp_begin;
 			}else if ((wt_level_mean_pos <= 2.0 && ncoeffs > 3) || ncoeffs == 1 ) {
 				m_wt_level_mean_energy_pos[l] = CSlopeStatistics::ecp_center; 
@@ -543,27 +558,14 @@ void CSlopeStatisticsImpl::evaluate_wt() const
 		
 	}
 
-	int at_begin = 0; 
-	int at_center = 0;
-	int at_end = 0; 
-	
-	for (int l = 2; l < levels; ++l) {
-		switch (m_wt_level_mean_energy_pos[l]) {
-		case CSlopeStatistics::ecp_begin: ++at_begin; break; 
-		case CSlopeStatistics::ecp_end: ++at_end; break; 
-		case CSlopeStatistics::ecp_center: ++at_center; break; 
-		default: 
-			cvdebug() << "Level "<< l  << " no movement position\n"; 
-		}	
-	}
-	
-	if ( at_begin > at_center && at_begin > at_end ) 
-		m_energy_pos = CSlopeStatistics::ecp_begin; 
-	else if ( at_end > at_center && at_begin < at_end ) 
-		m_energy_pos = CSlopeStatistics::ecp_end; 
-	else 
-		m_energy_pos = CSlopeStatistics::ecp_center;
-	
+	wt_pos_sum /= levels - 1; 
+
+	cvinfo() << "wt_pos_sum= " << wt_pos_sum << "\n"; 
+
+	m_energy_pos = wt_pos_sum <= 1.0 ? CSlopeStatistics::ecp_begin : 
+		(wt_pos_sum <= 2.0 ? CSlopeStatistics::ecp_center : CSlopeStatistics::ecp_end); 
+
+	cvinfo() << "slope energy peak:" << m_energy_pos << "\n"; 
 	m_wt_mean_wt_level = mean_level / sum_level_peaks; 
 	m_wt_valid = true; 
 }
