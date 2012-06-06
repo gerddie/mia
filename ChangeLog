@@ -1,10 +1,54 @@
+2.0.3
+  * version bump to reflect API changes in 3D transform
+  * add more vector field conversion programs
+  * remove save function and add vector field transformation
+  * add a creator string to the output PNG file
+  * correct bugs in the the fifo filter (thanks Matt Skinner for pointing it out)
+  * add a program to track pixel movement
+  * add a convertor from a 3D transform to an according vector field
+  * correct docu
+  * revise the error message and handling of output file type
+  * properly install miamesh-*.pc
 
-	* docu: update doxygen generated docu 
-	* docu: add support for building all the documentation 
+2.0.2
+  * correct code to work on 32 bit
+  * Correct implementation of landmarklistio test
+  * Add non-SSE implementation of Divcurl
+  * turn off sse implementation on non-64 bit arch
+  * remove some unneeded sse code
+  * update docu
+  * correct bad handling of missing argument in command line parser
+  * add the preferred suffix for analyze files
+  * add infrastruture for axamples and a first example
+  * remove StudyID from required 3D reading parameters, since it may not be available
+  * add loading and saving the landmarks
+  * add run_filters based on variadic templates
+  * add a resize filter that can also enlarge the image and uses the center of the data as reference point
+
+2.0.1
+  * update installation of files
+  * test proper reset of parameters and correct it
+  * add support for 64 bit integer on 64 bit platforms
+  * 2dseries2sets: correct bug that would result in empty files if output directory is the same as location of the input files
+  * correct passing of attributes in filters
+  * add a pc file for the mesh library
+  * correct installation of pkg-config files
+  * correct attribute handling in ICA reference image creation
+  * Add insertion of a range of attributes
+  * update  build system to silence warnings
+  * update icons and desktop files
+  * add menu entries for the documentation
+  * add a specific boolean option
+  * fix race condition in the build process
+  * correct the doc installation path and remove GZIP from man page compression
+  * make watch test more tolerant (still a shaky test that depends on the system load) 
+
+2.0.0
+  * docu: update doxygen generated docu
+  * docu: add support for building all the documentation
 
 2.0_pre20120305
 
-	* library: correct compile errors with g++4.6
-
+  * library: correct compile errors with g++4.6
 
 2.0_pre20120302 is considered to be the initial release
