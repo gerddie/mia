@@ -58,11 +58,7 @@ SET(MIA3D_SRC
   )
 
 SET(MIA3D_HEADERS
-  camera.hh
-  cost.hh
-  creator.hh
-  critical_point.hh
-  defines3d.hh
+  2dimagefifofilter.hh
   3DDatafield.hh 3DDatafield.cxx
   3DVectorfield.hh
   3DImage.hh
@@ -72,7 +68,14 @@ SET(MIA3D_HEADERS
   3DVector.hh
   3dvfio.hh
   3dvfiotest.hh
-  fatcost.hh
+  camera.hh
+  cost.hh
+  creator.hh
+  critical_point.hh
+  defines3d.hh
+  deformer.hh
+  fatcost.hh 
+  fifotestfixture.hh
   fullcost.hh
   fuzzyseg.hh
   fuzzyClusterSolverCG.hh
@@ -85,6 +88,7 @@ SET(MIA3D_HEADERS
   matrix.hh
   model.hh
   multicost.hh
+  multireg.hh
   nfg.hh
   nonrigidregister.hh
   orientation.hh
@@ -92,15 +96,15 @@ SET(MIA3D_HEADERS
   quaternion.hh
   register.hh
   rigidregister.hh
+  shape.hh 
   similarity_profile.hh
+  stackdisttrans.hh
   timestep.hh
   trait.hh
   transform.hh
   transformfactory.hh
   transformio.hh
   transformmock.hh
-  shape.hh 
-  stackdisttrans.hh
   )
 
 SET(MIA3DTEST_SRC

@@ -96,6 +96,7 @@ SET(MIACORE_HEADER_BASE
   cost.cxx
   combiner.hh
   creator.hh
+  cstplan.hh
   datapool.hh
   defines.hh
   delayedparameter.hh
@@ -107,6 +108,7 @@ SET(MIACORE_HEADER_BASE
   factory.hh
   factory_trait.hh
   fatcost.hh fatcost.cxx
+  fifofilter.hh
   file.hh
   filetools.hh
   filter.hh
