@@ -87,6 +87,7 @@ SET(MIACORE_SRC_BASE
 SET(MIACORE_HEADER_BASE
   attributes.hh
   boundary_conditions.hh
+  bfsv23dispatch.hh
   callback.hh
   cmdlineparser.hh
   cmdstringoption.hh
