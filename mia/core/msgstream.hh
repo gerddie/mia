@@ -179,10 +179,10 @@ inline bool vstream::shows(Level l)const
 class CDebugSink {
 public:
 	template <class T>
-	CDebugSink& operator << (const T val) {
+	CDebugSink& operator << (const T /*val*/) {
 		return *this;
 	}
-	CDebugSink & operator<<(std::ostream& (*f)(std::ostream&)) {
+	CDebugSink & operator<<(std::ostream& (* /*f*/)(std::ostream&)) {
 		return *this;
 	}
 };
