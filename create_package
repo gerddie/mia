@@ -1,0 +1,10 @@
+#!/bin/bash 
+name=$1
+version=$2 
+pushd $3
+if [ -d .git ]; then 
+     git archive --format=tar.gz  --prefix=${name}-${version}/ -o $4/${name}-${version}.tar.gz ${version}
+else 
+     echo "Sorry, package creation only works from a git repository, since it uses 'git archive'"
+fi 
+popd
