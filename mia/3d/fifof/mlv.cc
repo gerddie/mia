@@ -109,18 +109,15 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T3DImage<T>& /*dummy*/) const
 }
 
 static void do_evaluate(C2DFImage::const_iterator ni, C2DFImage::const_iterator ne,
-		     C2DFImage::iterator mu, C2DFImage::range_iterator sigma)
+		     C2DFImage::iterator mu, C2DFImage::iterator sigma)
 {
 	while (ni != ne) {
 		const float n = *ni;
 		const float muq = *mu / *ni;
 
-		const float s = (n > 1.0) ? (*sigma - muq * muq * n) / (n - 1.0f) : 0.0f;
-//		cvdebug() << "  mu(sigma) " << sigma.pos() << " " << n << ", " << *mu << ", " << *sigma 
-//			  << "= " << muq << "(" << s << ")\n"; 
+		*sigma = (n > 1.0) ? (*sigma - muq * *mu) / (n - 1.0f) : 0.0f;
 
 		*mu++ = muq;
-		*sigma = s;
 		++sigma; 
 		++ni;
 	}
@@ -157,7 +154,7 @@ void C2DMLVnFifoFilter::evaluate(size_t slice)
 	do_evaluate(m_n[slice].begin(),
 		    m_n[slice].end(),
 		    m_mu[slice].begin(),
-		    m_sigma[slice].begin_range(C2DBounds::_0, m_sigma[slice].get_size()));
+		    m_sigma[slice].begin());
 	m_evaluated[slice] = true; 
 }
 
