@@ -64,7 +64,7 @@ public:
 	C3DDT(); 
 	void initialise(const C2DImage& wimage);
 	
-	void read( const C2DImage& wimage, size_t q); 
+	void read( const C2DImage& wimage, short q); 
 	
 	void get_slice(size_t s, const C2DImage& image, vector<pair<C3DBounds, float> >& result) const; 
 	
@@ -79,14 +79,14 @@ private:
 	void dt2d(C2DFImage& image)const; 
 	
 	struct SParabola {
-		size_t k; 
-		size_t v; 
+		short k; 
+		short v; 
 		float z;
 		float fv; 
 	};
 	
 	C2DBounds _M_size; 
-	vector<size_t> _M_k; 
+	vector<short> _M_k; 
 	vector< vector<SParabola> > _M_zdt;
 };
 
@@ -159,7 +159,7 @@ void C3DDT::initialise(const C2DImage& wimage)
 }
 
 
-void C3DDT::read(const C2DImage& wimage, size_t q)
+void C3DDT::read(const C2DImage& wimage, short q)
 {
 	TRACE_FUNCTION; 
 
@@ -188,18 +188,18 @@ void C3DDT::read(const C2DImage& wimage, size_t q)
 		}
 		++(*k);
 		
-		if (*k > p->size()) {
+		if (*k > (int)p->size()) {
 			cverr() << "k = " << *k << " but p->size() = " << p->size() <<"\n"; 
 			assert(0 && "can't do");
 		}
 		
 
 		SParabola new_p = {*k, q, s, f};
-		if ( *k == p->size() ) {
+		if ( *k == (int)p->size() ) {
 			p->push_back(new_p);
 		}else {
 			(*p)[*k] = new_p; 
-			if (*k < p->size() - 1)
+			if (*k < (int)p->size() - 1)
 				p->resize(*k + 1); 
 		}
 		++si; 
