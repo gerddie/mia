@@ -99,14 +99,12 @@ void C2DLabelStackFilter::grow( int x, int y, C2DBitImage& input, unsigned short
 			unsigned short lold = m_out_buffer(px, py); 
 			if (lold) {
 				if (l != lold) {
-					if (lold > l) 
+					if (lold < l) {
 						m_joints.insert(T2DVector<unsigned short>(l, lold)); 
-					else
+					} else {
 						m_joints.insert(T2DVector<unsigned short>(lold, l)); 
-					// overwrite old label to reduce numbers of lables. 
-					cvdebug () << "overwrite " << lold << " with " << l << "\n"; 
+					}
 					m_out_buffer(px, py) = l; 
-					cvdebug () << "Now at " << m_joints.size() << " joints\n"; 
 				}
 			}else if (input(px, py)) {
 				m_out_buffer(px, py) = l; 

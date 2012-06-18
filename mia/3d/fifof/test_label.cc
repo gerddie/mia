@@ -117,11 +117,11 @@ BOOST_FIXTURE_TEST_CASE( test_fifof_label , fifof_Fixture )
 	BOOST_CHECK_EQUAL(jmap.size(), 2u); 
 
 	auto val_pair = jmap.begin(); 
-	BOOST_CHECK_EQUAL(val_pair->first, 3); 
-	BOOST_CHECK_EQUAL(val_pair->second, 2); 
+	BOOST_CHECK_EQUAL(val_pair->first, 2); 
+	BOOST_CHECK_EQUAL(val_pair->second, 5); 
 	++val_pair; 
-	BOOST_CHECK_EQUAL(val_pair->first, 5); 
-	BOOST_CHECK_EQUAL(val_pair->second, 2); 
+	BOOST_CHECK_EQUAL(val_pair->first, 3); 
+	BOOST_CHECK_EQUAL(val_pair->second, 5); 
 
 }
 
