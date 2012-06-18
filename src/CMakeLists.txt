@@ -101,6 +101,7 @@ DEFCHKEXE(3dlerp mia3d )
 
 DEFEXE(3dimagestats       mia3d )
 DEFEXE(3dcost             mia3d )
+DEFEXE(3ddistance         mia3d )
 DEFEXE(3dimagefilter      mia3d )
 DEFEXE(3dimagecombine     mia3d )
 DEFEXE(3dimagecreator     mia3d )
