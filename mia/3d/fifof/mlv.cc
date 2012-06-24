@@ -211,10 +211,14 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T2DImage<T>& src)
 		}
 		
 		for(size_t iy = 0; iy < m_w; ++iy) {
-			cblas_saxpy(sum_mu_l1.size(), 1.0f, &sum_mu_l1[0],  1, &sum_mu_l2[(y + iy) * temp_size.x], 1); 
-			cblas_saxpy(sum_sigma_l1.size(), 1.0f, &sum_sigma_l1[0],  1, &sum_sigma_l2[(y + iy) * temp_size.x], 1);
+			cblas_saxpy(sum_mu_l1.size(), 1.0f, &sum_mu_l1[0],  1, 
+				    &sum_mu_l2[(y + iy) * temp_size.x], 1); 
+			
+			cblas_saxpy(sum_sigma_l1.size(), 1.0f, &sum_sigma_l1[0],  1, 
+				    &sum_sigma_l2[(y + iy) * temp_size.x], 1);
 		}
 	}
+
 	// update the numbers
 	for (size_t z = 0; z < m_w; ++z) {
 		cblas_saxpy(sum_mu_l2.size(), 1.0f, &sum_mu_l2[0],  1, &m_mu[z](0,0) , 1); 
