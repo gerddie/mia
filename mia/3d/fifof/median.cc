@@ -35,19 +35,26 @@ NS_MIA_USE
 using namespace std;
 template <typename T>
 struct __dispatch_median_3dfilter {
-	static T  apply(const T3DImage<T>& data, int x, int y, int start, int end, int width, vector<T>& target_vector) {
-		int idx = 0;
+	static T  apply(const T3DImage<T>& src, int x, int y, int start, int end, int width, vector<T>& target_vector) {
 
+		size_t xmin = max(x - width, 0); 
+		size_t xmax = min(x + width +1, (int)src.get_size().x); 
+		size_t ymin = max(y - width, 0); 
+		size_t ymax = min(y + width +1, (int)src.get_size().y); 
+		
+		const size_t delta = xmax - xmin; 
+		
 		auto tend = target_vector.begin();
-
-		for (int iz = start; iz < end;  ++iz)
-			for (int iy = max(0, y - width);
-			     iy < min(y + width + 1, (int)data.get_size().y);  ++iy)
-				for (int ix = max(0, x - width);
-				     ix < min(x + width + 1, (int)data.get_size().x);  ++ix) {
-					*tend++ = data(ix,iy,iz);
-					++idx;
-				}
+		for (int z = start; z < end;  ++z) {
+			auto inp_z =  src.begin_at(xmin, ymin, z); 
+			auto inp = inp_z; 
+			
+			for (size_t y = ymin; y < ymax; ++y, inp += src.get_size().x) {
+				copy(inp, inp + delta, tend); 
+				advance(tend, delta);
+			}
+		}
+		int idx = distance(target_vector.begin(), tend); 
 
 		if (idx & 1) {
 			typename vector<T>::iterator mid = target_vector.begin() + idx/2;

@@ -50,6 +50,7 @@ struct SConvert {
 	}
 };
 
+
 template <typename T>
 void CSeparableConvolute::fold(vector<T>& data, const C1DFilterKernel& kernel) const
 {
@@ -59,11 +60,11 @@ void CSeparableConvolute::fold(vector<T>& data, const C1DFilterKernel& kernel) c
 	transform(tmp.begin(), tmp.end(), data.begin(), SConvert<double, T>());
 }
 
+
 template <class T>
 CSeparableConvolute::result_type CSeparableConvolute::operator () (const T3DImage<T>& image) const
 {
-	typedef typename T3DImage<T>::value_type value_type;
-	typedef std::vector<value_type> invec_t;
+	typedef std::vector<T> invec_t;
 
 	T3DImage<T> *data = new T3DImage<T>(image);
 	CSeparableConvolute::result_type result(data);

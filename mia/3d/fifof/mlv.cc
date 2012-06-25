@@ -75,8 +75,6 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T3DImage<T>& /*dummy*/) const
 
 	fill(sigma_buffer.begin(), sigma_buffer.end(), numeric_limits<float>::max());
 
-	int min_n = 100; 
-	
 	for (size_t z = start; z <  end; ++z) {
 		for (size_t y = 0; y < m_slice_size.y; ++y) {
 			for (size_t iy = 0; iy < m_w; ++iy)
@@ -92,16 +90,12 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T3DImage<T>& /*dummy*/) const
 							osi_i[x] = si_i[x];
 							omu_i[x] = mu_i[x];
 						}
-						if (min_n > m_n[z](x+ix, y +iy)) 
-							min_n = m_n[z](x+ix, y +iy);
 					}
 				}
 
 			}
 
 	}
-	cvdebug() << "Minimal n = " << min_n << "\n"; 
-
 	T2DImage<T> *result = new T2DImage<T>(m_slice_size);
 	convert(mu_result.begin(), mu_result.end(), result->begin());
 
@@ -211,10 +205,14 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T2DImage<T>& src)
 		}
 		
 		for(size_t iy = 0; iy < m_w; ++iy) {
-			cblas_saxpy(sum_mu_l1.size(), 1.0f, &sum_mu_l1[0],  1, &sum_mu_l2[(y + iy) * temp_size.x], 1); 
-			cblas_saxpy(sum_sigma_l1.size(), 1.0f, &sum_sigma_l1[0],  1, &sum_sigma_l2[(y + iy) * temp_size.x], 1);
+			cblas_saxpy(sum_mu_l1.size(), 1.0f, &sum_mu_l1[0],  1, 
+				    &sum_mu_l2[(y + iy) * temp_size.x], 1); 
+			
+			cblas_saxpy(sum_sigma_l1.size(), 1.0f, &sum_sigma_l1[0],  1, 
+				    &sum_sigma_l2[(y + iy) * temp_size.x], 1);
 		}
 	}
+
 	// update the numbers
 	for (size_t z = 0; z < m_w; ++z) {
 		cblas_saxpy(sum_mu_l2.size(), 1.0f, &sum_mu_l2[0],  1, &m_mu[z](0,0) , 1); 

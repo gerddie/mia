@@ -56,12 +56,6 @@ BOOST_AUTO_TEST_CASE( test_sepconv )
 
 	CSeparableConvolute sp(k1,k2,k3);
 
-	sp.fold(d1, *k1);
-	cvdebug() << d1[0] << ", " << d1[1] << ", " << d1[2] << "\n";
-	assert(d1[0] == 1);
-	assert(d1[2] == 1);
-	assert(d1[1] == 2);
-
 	P3DImage result = sp.filter(src);
 
 	BOOST_CHECK_EQUAL(result->get_size(), src.get_size());

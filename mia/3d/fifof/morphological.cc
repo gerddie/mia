@@ -263,3 +263,5 @@ extern "C" EXPORT CPluginBase *get_plugin_interface()
 
 
 
+template class C2DMorphFifoFilter<ErodeCompare>; 
+template class C2DMorphFifoFilter<DilateCompare>; 
