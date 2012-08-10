@@ -462,15 +462,15 @@ NS_MIA_END
 
 NS_MIA_BEGIN
 
+template <> const char *  const 
+TPluginHandler<CMeshIOPlugin>::m_help =  
+   "These plug-ins implement loading and saving of simple triangular meshes from and to various file formats.";
+
 template class TIOPlugin<io_mesh_type>;
 template class TPluginHandler<CMeshIOPlugin>;
 template class TIOPluginHandler<CMeshIOPlugin>;
 template class THandlerSingleton<TIOPluginHandler<CMeshIOPlugin> >;
 template class TIOHandlerSingleton<TIOPluginHandler<CMeshIOPlugin> >;
-
-template <> const char *  const 
-TPluginHandler<CMeshIOPlugin>::m_help =  
-   "These plug-ins implement loading and saving of simple triangular meshes from and to various file formats.";
 
 
 NS_MIA_END

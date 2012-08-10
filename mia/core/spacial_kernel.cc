@@ -117,7 +117,7 @@ size_t C1DFoldingKernel::do_size()const
 	return m_mask.size();
 }
 
-EXPLICIT_INSTANCE_HANDLER(C1DFoldingKernel); 
+
 
 using boost::filesystem::path; 
 C1DSpacialKernelPluginHandlerTestPath::C1DSpacialKernelPluginHandlerTestPath()
@@ -130,5 +130,6 @@ C1DSpacialKernelPluginHandlerTestPath::C1DSpacialKernelPluginHandlerTestPath()
 template<>  const char * const 
 TPluginHandler<TFactory<C1DFoldingKernel>>::m_help = "These plug-ins provide folding kernel(s) for spacial separable filtering.";
 
+EXPLICIT_INSTANCE_HANDLER(C1DFoldingKernel); 
 
 NS_MIA_END

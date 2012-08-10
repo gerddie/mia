@@ -30,7 +30,7 @@
 #include <iostream>
 #include <type_traits>
 
-#include <boost/lambda/lambda.hpp>
+//#include <boost/lambda/lambda.hpp>
 #include <mia/core/defines.hh>
 #include <mia/core/type_traits.hh>
 

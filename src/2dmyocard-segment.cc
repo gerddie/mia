@@ -24,7 +24,6 @@
 #include <ostream>
 #include <fstream>
 #include <map>
-#include <boost/lambda/lambda.hpp>
 #include <boost/filesystem.hpp>
 
 
@@ -111,7 +110,7 @@ CEvaluateSeriesCorrelationToMask::CEvaluateSeriesCorrelationToMask(const C2DBitI
 	m_mask_mean_series.reserve(len); 
 
 	// count the mask pixels
-	for_each(mask.begin(), mask.end(), [&m_mask_points](bool pixel){if (pixel) ++m_mask_points; }); 
+	for_each(mask.begin(), mask.end(), [this](bool pixel){if (pixel) ++m_mask_points; }); 
 	
 
 	// fill the image representation of the series 
@@ -176,7 +175,7 @@ C2DFImage CEvaluateSeriesCorrelationToMask::get_correlation_image(Iterator begin
 	C2DFImage result(m_size); 
 
 	transform(m_series.begin(), m_series.end(), result.begin(), 
-		  [&m_mask_mean_series](const vector<float>& v){ return correlation(m_mask_mean_series, v); });
+		  [this](const vector<float>& v){ return correlation(m_mask_mean_series, v); });
 	return result; 
 }
 
@@ -230,7 +229,7 @@ int FAcuumulateGradients::operator () (const T2DImage<T>& image)
 	}
 	auto vf = get_gradient(image);
 	transform(m_sum.begin(), m_sum.end(), vf.begin(), m_sum.begin(), 
-		  [](float s, const C2DFVector& v){float vn = v.norm(); 
+		  [](float s, const C2DFVector& v) -> float {float vn = v.norm(); 
 			  return s + vn;});
 	return 0;
 }
@@ -267,7 +266,7 @@ int FMaxGradients::operator () (const T2DImage<T>& image)
 	}
 	auto vf = get_gradient(image);
 	transform(m_sum.begin(), m_sum.end(), vf.begin(), m_sum.begin(), 
-		  [](float s, const C2DFVector& v){float vn = v.norm(); 
+		  [](float s, const C2DFVector& v) -> float {float vn = v.norm(); 
 			  return s > vn ? s : vn;});
 	return 0;
 }

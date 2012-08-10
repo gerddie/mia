@@ -27,13 +27,6 @@
 
 NS_MIA_BEGIN
 
-template class EXPORT_HANDLER TCost<C3DImage, C3DFVectorfield>;
-template class EXPORT_HANDLER TPlugin<C3DImage, cost_type>;
-template class EXPORT_HANDLER TFactory<C3DImageCost>;
-template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin> >;
-template class TFactoryPluginHandler<C3DImageCostPlugin>;
-template class TPluginHandler<C3DImageCostPlugin>;
-
 template <> const char *  const 
 TPluginHandler<TFactory<C3DImageCost>>::m_help =  
    "3D image similarity kernels evaluate the according similarity measure between "
@@ -49,5 +42,12 @@ C3DImageCostPluginHandlerTestPath::C3DImageCostPluginHandlerTestPath()
 	C3DImageCostPluginHandler::set_search_path(costsearchpath);
 	
 }
+
+template class EXPORT_HANDLER TCost<C3DImage, C3DFVectorfield>;
+template class EXPORT_HANDLER TPlugin<C3DImage, cost_type>;
+template class EXPORT_HANDLER TFactory<C3DImageCost>;
+template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C3DImageCostPlugin> >;
+template class TFactoryPluginHandler<C3DImageCostPlugin>;
+template class TPluginHandler<C3DImageCostPlugin>;
 
 NS_MIA_END

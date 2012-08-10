@@ -166,17 +166,15 @@ C3DImageFatCost *C3DFatImageCostPluginHandlerImpl::create_directly(const std::st
 	return factory->create_directly(src, ref, ipf, weight);
 }
 
-template class TFatCost<C3DTransformation, C3DFVectorfield>;
+template <> const char *  const 
+TPluginHandler<C3DFatImageCostPlugin>::m_help =  
+   "These plug-ins implement image similarity measures (obsolete).";
 
+template class TFatCost<C3DTransformation, C3DFVectorfield>;
 template class TPlugin<C3DImage, fatcost_type>;
 template class TFactory<C3DImageFatCost>;
 template class TPluginHandler<C3DFatImageCostPlugin>;
 template class TFactoryPluginHandler<C3DFatImageCostPlugin>;
 template class THandlerSingleton<C3DFatImageCostPluginHandlerImpl>;
-
-template <> const char *  const 
-TPluginHandler<C3DFatImageCostPlugin>::m_help =  
-   "These plug-ins implement image similarity measures (obsolete).";
-
 
 NS_MIA_END

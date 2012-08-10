@@ -33,7 +33,7 @@ TIOPluginHandler<I>::TIOPluginHandler(const std::list<bfs::path>& searchpath):
 	TPluginHandler<I>(searchpath), 
 	m_pool_plugin(new CDatapoolPlugin())
 {
-	add_plugin(m_pool_plugin); 
+	this->add_plugin(m_pool_plugin); 
 	for (const_iterator i = this->begin(); i != this->end(); ++i) 
 		i->second->add_suffixes(m_suffixmap);
 

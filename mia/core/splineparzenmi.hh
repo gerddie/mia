@@ -177,7 +177,7 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
 	// normalize joined histogram 
 	m_nscale = 1.0/N; 
 	transform(m_joined_histogram.begin(), m_joined_histogram.end(), m_joined_histogram.begin(), 
-		  [m_nscale](double jhvalue){return jhvalue * m_nscale;}); 
+		  [this](double jhvalue){return jhvalue * this->m_nscale;}); 
 	
 	evaluate_histograms();  
 	evaluate_log_cache(); 

@@ -122,7 +122,6 @@ CSplineBoundaryCondition *CSplineBoundaryConditionPlugin::do_create() const
 	return do_create(m_width); 
 }
 
-EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(CSplineBoundaryCondition, CSplineBoundaryConditionPlugin); 
 
 using boost::filesystem::path; 
 CSplineBoundaryConditionTestPath::CSplineBoundaryConditionTestPath()
@@ -145,5 +144,7 @@ PSplineBoundaryCondition produce_spline_boundary_condition(const std::string& de
 template<> 
 const char * const TPluginHandler<CSplineBoundaryConditionPlugin>::m_help = "These plug-ins provide various boundary "
 			       "conditions for spline based interpolation."; 
+
+EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(CSplineBoundaryCondition, CSplineBoundaryConditionPlugin); 
 
 NS_MIA_END

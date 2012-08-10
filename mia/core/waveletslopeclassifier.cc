@@ -349,7 +349,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 	// Properly identifying the RV and LV peak is probably the most difficult task. 
 	// this is one option how to do it and it seems quite stable, but it is not perfect. 
 	sort(remaining_indices.begin(), remaining_indices.end(), 
-	     [&start_movement](PSlopeStatistics lhs, PSlopeStatistics rhs) {
+	     [&start_movement](PSlopeStatistics lhs, PSlopeStatistics rhs) -> bool {
 		     auto lhsgp = lhs->get_gradient_peak(start_movement); 
 		     auto rhsgp = rhs->get_gradient_peak(start_movement); 
 		     return lhsgp.second / lhsgp.first > rhsgp.second / rhsgp.first;
@@ -377,7 +377,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 		
 		auto new_end = 
 			remove_if(remaining_indices.begin(), remaining_indices.end(), 
-				  [&RV_idx, &LV_idx](PSlopeStatistics i) {
+				  [this](PSlopeStatistics i) {
 					  return i->get_index() == RV_idx || i->get_index() == LV_idx;
 				  }); 
 		remaining_indices.erase(new_end, remaining_indices.end()); 
@@ -385,7 +385,7 @@ CWaveletSlopeClassifierImpl::CWaveletSlopeClassifierImpl(const CWaveletSlopeClas
 		// we actually re-calculate the level change every time, 
 		// but thes are only 2 or three components enyway 
 		sort(remaining_indices.begin(), remaining_indices.end(), 
-		     [&LV_peak](PSlopeStatistics lhs, PSlopeStatistics rhs) 
+		     [this](PSlopeStatistics lhs, PSlopeStatistics rhs) 
 		     { return lhs->get_level_change(LV_peak) > rhs->get_level_change(LV_peak);});
 
 		Perfusion_idx = remaining_indices[0]->get_index(); 

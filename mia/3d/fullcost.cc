@@ -27,13 +27,6 @@
 
 NS_MIA_BEGIN
 
-EXPLICIT_INSTANCE_PLUGIN(C3DFullCost);
-EXPLICIT_INSTANCE_PLUGIN_HANDLER(C3DFullCostPlugin); 
-
-template class TFullCostPlugin<C3DTransformation>; 
-template class TFullCost<C3DTransformation>; 
-
-
 template <> const char *  const 
 TPluginHandler<C3DFullCostPlugin>::m_help =  
    "This class of cost functions evaluates the cost resulting from the "
@@ -41,6 +34,12 @@ TPluginHandler<C3DFullCostPlugin>::m_help =
   "the smoothness of a transformation or the evaluation of a similarity measure "
   "between a transformed study data set and a reference data set. "
   "These cost functions can be combined and weighted.";
+
+EXPLICIT_INSTANCE_PLUGIN(C3DFullCost);
+EXPLICIT_INSTANCE_PLUGIN_HANDLER(C3DFullCostPlugin); 
+
+template class TFullCostPlugin<C3DTransformation>; 
+template class TFullCost<C3DTransformation>; 
 
 
 NS_MIA_END

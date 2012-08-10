@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE( test_ngfnormimg )
 	const float noise2 = (51.0f - 29.0f * 29.0f / 24.0f) / 23.0f  *  sum_norm * sum_norm;
 	const float imax = sqrt( (18.0 + noise2) / 18.0);
 
-	const float ref_data[size * size] = {
+	const double ref_data[size * size] = {
 		0, 0, 0, 0,
 		sqrt(4.0 / (4.0 + noise2)) * imax, sqrt(13.0 / (13.0 + noise2)) * imax, sqrt( 2.0 / (2.0 + noise2) ) * imax, 0,
 		0, sqrt( 2.0 / ( 2.0 + noise2)) * imax, 1, 0,

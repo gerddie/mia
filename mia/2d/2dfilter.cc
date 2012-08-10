@@ -79,13 +79,7 @@ C2DFilterPluginHandlerTestPath::C2DFilterPluginHandlerTestPath()
 	C2DFilterPluginHandler::set_search_path(sksearchpath); 
 }
 
-template class TImageFilter<C2DImage>;
-template class TImageFilterPlugin<C2DImage>;
 
-template class TPlugin<C2DImage, filter_type>;
-template class THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> >;
-template class TFactoryPluginHandler<C2DFilterPlugin>;
-template class TPluginHandler<C2DFilterPlugin>;
 
 template<> const  char * const 
 TPluginHandler<C2DFilterPlugin>::m_help = 
@@ -94,14 +88,22 @@ TPluginHandler<C2DFilterPlugin>::m_help =
    "process it and hand it to the next filter in the pipeline." 
 ; 
 
-
-template class TFilterChain<C2DFilterPluginHandler>; 
-
-EXPLICIT_INSTANCE_HANDLER(C2DImageCombiner);
-
 template<> const  char * const 
 TPluginHandler<TFactory<C2DImageCombiner>>::m_help = 
     "These plug-ins provide 2D image combiners that merge two gray scale image."; 
 
+
+template class TImageFilter<C2DImage>;
+template class TImageFilterPlugin<C2DImage>;
+template class TPlugin<C2DImage, filter_type>;
+template class THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> >;
+template class TFactoryPluginHandler<C2DFilterPlugin>;
+template class TPluginHandler<C2DFilterPlugin>;
+template class TFilterChain<C2DFilterPluginHandler>; 
+
+
+
+
+EXPLICIT_INSTANCE_HANDLER(C2DImageCombiner);
 
 NS_MIA_END

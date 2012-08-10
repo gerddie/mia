@@ -136,7 +136,7 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<InputIterator>))
 		THROW(std::invalid_argument, "kmeans: require at least two classes");  
 
 	const size_t nclusters = classes.size(); 
-	const double size = distance(ibegin, iend); 
+	const double size = std::distance(ibegin, iend); 
 	if ( size < nclusters ) 
 		THROW(std::invalid_argument, "kmeans: require at least as many elements as classes");
 

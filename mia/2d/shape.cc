@@ -54,7 +54,7 @@ struct __adjust<T2DVector<int> > {
 };
 
 
-EXPLICIT_INSTANCE_HANDLER(C2DShape); 
+
 template class TShape<T2DVector, C2DBitImage>;
 
 template <> const char *  const 
@@ -85,5 +85,7 @@ P2DShape rotate_90_degree(const C2DShape& shape)
 	}
 	return result; 
 }
+
+EXPLICIT_INSTANCE_HANDLER(C2DShape); 
 
 NS_MIA_END

@@ -29,12 +29,12 @@
 
 NS_MIA_BEGIN
 
-INSTANCIATE_Image_Creator(C3DImage);
 
 template <> const char *  const 
 TPluginHandler<TFactory<TImageCreator<C3DImage>>>::m_help =  
    "These plug-ins implement creators for 3D test images.";
 
+INSTANCIATE_Image_Creator(C3DImage);
 
 NS_MIA_END
 

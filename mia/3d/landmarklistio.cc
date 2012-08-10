@@ -27,8 +27,6 @@
 NS_MIA_BEGIN
 
 
-EXPLICITE_INSTANCEIATE_IO_HANDLER(C3DLandmarklist); 
-
 template <> const char *  const 
 TPluginHandler<C3DLandmarklistIOPlugin>::m_help =  
 	"Loading and storing of 3D landmark list.";
@@ -40,5 +38,7 @@ C3DLandmarklistIOTestPath::C3DLandmarklistIOTestPath()
 	C3DLandmarklistIOPluginHandler::set_search_path(sksearchpath); 
 
 }
+
+EXPLICITE_INSTANCEIATE_IO_HANDLER(C3DLandmarklist); 
 
 NS_MIA_END

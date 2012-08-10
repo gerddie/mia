@@ -45,8 +45,6 @@
 NS_MIA_BEGIN
 namespace bfs=::boost::filesystem; 
 
-EXPLICIT_INSTANCE_PLUGIN(C2DFullCost);
-EXPLICIT_INSTANCE_PLUGIN_HANDLER(C2DFullCostPlugin); 
 
 template class TFullCostPlugin<C2DTransformation>; 
 template class TFullCost<C2DTransformation>; 
@@ -65,5 +63,8 @@ TPluginHandler<C2DFullCostPlugin>::m_help =
 	"the smoothness of a transformation or the evaluation of a similarity measure "
 	"between a transformed study data set and a refernce data set.";
 
+
+EXPLICIT_INSTANCE_PLUGIN(C2DFullCost);
+EXPLICIT_INSTANCE_PLUGIN_HANDLER(C2DFullCostPlugin); 
 
 NS_MIA_END

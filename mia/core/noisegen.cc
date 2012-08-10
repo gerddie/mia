@@ -60,8 +60,6 @@ double CNoiseGenerator::ranf() const
 	return x / RAND_MAX;
 }
 
-EXPLICIT_INSTANCE_HANDLER(CNoiseGenerator); 
-
 using boost::filesystem::path; 
 CNoiseGeneratorPluginHandlerTestPath::CNoiseGeneratorPluginHandlerTestPath()
 {
@@ -72,5 +70,7 @@ CNoiseGeneratorPluginHandlerTestPath::CNoiseGeneratorPluginHandlerTestPath()
 
 template<> const char * const 
 TPluginHandler<TFactory<CNoiseGenerator>>::m_help = "These plug-ins provide various noise generators.";
+
+EXPLICIT_INSTANCE_HANDLER(CNoiseGenerator); 
 
 NS_MIA_END

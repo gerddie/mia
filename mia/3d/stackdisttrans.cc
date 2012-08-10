@@ -246,15 +246,15 @@ void C2DStackDistanceTransform::dt2d(C2DFImage& image)const
 	}
 }
 
+template<> const  char * const 
+TPluginHandler<C2DStackDistanceTransformIO>::m_help = 
+   "These plug-ins provide support for loading and storing the results of a distance transform of a stack of 2D images." 
+; 
+
 template class TIOPlugin<C2DStackDistanceTransform>;
 template class THandlerSingleton<TIOPluginHandler<C2DStackDistanceTransformIO> >;
 template class TIOHandlerSingleton<TIOPluginHandler<C2DStackDistanceTransformIO> >;
 template class TIOPluginHandler<C2DStackDistanceTransformIO>;
 template class TPluginHandler<C2DStackDistanceTransformIO>;
-
-template<> const  char * const 
-TPluginHandler<C2DStackDistanceTransformIO>::m_help = 
-   "These plug-ins provide support for loading and storing the results of a distance transform of a stack of 2D images." 
-; 
 
 NS_MIA_END

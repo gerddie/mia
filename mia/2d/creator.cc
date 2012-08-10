@@ -27,12 +27,11 @@
 
 NS_MIA_BEGIN
 
-INSTANCIATE_Image_Creator(C2DImage)
-
 template <> const char *  const 
 	TPluginHandler<TFactory<TImageCreator<C2DImage>>>::m_help =  
        "These plug-ins define different creator for 2D test images.";
 
+INSTANCIATE_Image_Creator(C2DImage)
 
 NS_MIA_END
 
