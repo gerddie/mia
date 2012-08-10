@@ -18,13 +18,14 @@
  *
  */
 
-#include <atomic>
 #include <mia/internal/autotest.hh>
 #include <mia/core/productcache.hh>
 
 #include <tbb/task_scheduler_init.h>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
+#include <tbb/atomic.h>
+
 using namespace tbb;
 
 
@@ -118,12 +119,12 @@ BOOST_AUTO_TEST_CASE(test_basic_cache_enabled_global_clear)
 
 
 struct CacheAccessTest {
-	std::atomic<int> *n_errors; 
-	CacheAccessTest(std::atomic<int> *_nerr); 
+	tbb::atomic<int> *n_errors; 
+	CacheAccessTest(tbb::atomic<int> *_nerr); 
 	void operator()( const blocked_range<int>& range ) const; 
 }; 
 
-CacheAccessTest::CacheAccessTest(std::atomic<int> *_nerr):
+CacheAccessTest::CacheAccessTest(tbb::atomic<int> *_nerr):
 	n_errors(_nerr)
 { 
 }
@@ -158,12 +159,12 @@ void CacheWriteTest::operator() ( const blocked_range<int>& range ) const
 
 
 struct CacheReadTest {
-	std::atomic<int> *n_errors; 
-	CacheReadTest(std::atomic<int> *_nerr); 
+	tbb::atomic<int> *n_errors; 
+	CacheReadTest(tbb::atomic<int> *_nerr); 
 	void operator()( const blocked_range<int>& range ) const; 
 }; 
 
-CacheReadTest::CacheReadTest(std::atomic<int> *_nerr):
+CacheReadTest::CacheReadTest(tbb::atomic<int> *_nerr):
 	n_errors(_nerr)
 { 
 }
@@ -196,7 +197,8 @@ BOOST_AUTO_TEST_CASE( test_cache_parallel_access )
 
 
 	task_scheduler_init init;
-	std::atomic<int> n_errors(0); 
+	tbb::atomic<int> n_errors; 
+	n_errors = 0; 
 
 	blocked_range<int> range( 0, 1000, 1 ); 
 	CacheAccessTest ptest(&n_errors); 

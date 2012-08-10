@@ -21,7 +21,6 @@
 
 #include <stdexcept>
 #include <climits>
-#include <atomic>
 
 #include <mia/internal/autotest.hh>
 
@@ -35,6 +34,7 @@
 #include <tbb/task_scheduler_init.h>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
+#include <tbb/atomic.h>
 using namespace tbb;
 
 
@@ -98,12 +98,12 @@ BOOST_AUTO_TEST_CASE( test_pool_clear )
 }
 
 struct PoolAccessTest {
-	std::atomic<int> *n_errors; 
-	PoolAccessTest(std::atomic<int> *_nerr); 
+	tbb::atomic<int> *n_errors; 
+	PoolAccessTest(tbb::atomic<int> *_nerr); 
 	void operator()( const blocked_range<int>& range ) const; 
 }; 
 
-PoolAccessTest::PoolAccessTest(std::atomic<int> *_nerr):
+PoolAccessTest::PoolAccessTest(tbb::atomic<int> *_nerr):
 	n_errors(_nerr)
 { 
 }
@@ -129,7 +129,8 @@ void PoolAccessTest::operator() ( const blocked_range<int>& range ) const
 BOOST_AUTO_TEST_CASE( test_pool_parallel_access )
 {
 	task_scheduler_init init;
-	std::atomic<int> n_errors(0); 
+	tbb::atomic<int> n_errors;
+	n_errors = 0; 
 	PoolAccessTest ptest(&n_errors); 
 	
 	blocked_range<int> range( 0, 1000, 1 ); 
@@ -138,12 +139,12 @@ BOOST_AUTO_TEST_CASE( test_pool_parallel_access )
 }
 
 struct PoolWriteLaterReadTest {
-	std::atomic<int> *n_errors; 
-	PoolWriteLaterReadTest(std::atomic<int> *_nerr); 
+	tbb::atomic<int> *n_errors; 
+	PoolWriteLaterReadTest(tbb::atomic<int> *_nerr); 
 	void operator()( const blocked_range<int>& range ) const; 
 }; 
 
-PoolWriteLaterReadTest::PoolWriteLaterReadTest(std::atomic<int> *_nerr):
+PoolWriteLaterReadTest::PoolWriteLaterReadTest(tbb::atomic<int> *_nerr):
 	n_errors(_nerr)
 { 
 }
@@ -173,7 +174,8 @@ void PoolWriteLaterReadTest::operator() ( const blocked_range<int>& range ) cons
 BOOST_AUTO_TEST_CASE( test_pool_parallel_access_2 )
 {
 	task_scheduler_init init;
-	std::atomic<int> n_errors(0); 
+	tbb::atomic<int> n_errors; 
+	n_errors = 0; 
 	PoolWriteLaterReadTest ptest(&n_errors); 
 	
 	blocked_range<int> range( 0, 1000, 5 ); 
