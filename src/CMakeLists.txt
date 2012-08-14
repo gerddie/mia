@@ -134,6 +134,7 @@ DEFEXE(3dtransform2vf mia3d )
 DEFEXE(3dtrackpixelmovement mia3d )
 DEFEXE(3dvf2transform mia3d )
 DEFEXE(3dvfcompare mia3d )
+DEFEXE(3dtransformation-to-strain mia3d)
 
 DEFEXE(plugin-help miamesh )
 
