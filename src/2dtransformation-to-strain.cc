@@ -19,14 +19,13 @@
  */
 
 
-#define VSTREAM_DOMAIN "mia-3dtransformation-to-tensor"
-
+#define VSTREAM_DOMAIN "mia-2dtransformation-to-tensor"
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/file.hh>
-#include <mia/3d/transformio.hh>
-#include <mia/3d/3dimageio.hh>
-#include <mia/3d/3DDatafield.cxx>
+#include <mia/2d/transformio.hh>
+#include <mia/2d/2dimageio.hh>
+#include <mia/2d/2DDatafield.cxx>
 #include <miaconfig.h>
 
 #include <cstring>
@@ -38,10 +37,10 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
+	"Registration, Comparison, and Transformation of 2D images", 
 	"Green strain tensor.", 
 
-	"Evaluate the Green strain tensor corresponding to a given 3Dtransformation.", 
+	"Evaluate the Green strain tensor corresponding to a given 2Dtransformation.", 
 	
 	"Evaluate the Green strain tensor from the transformation stored in trans.v "
         "and save it to output.v",
@@ -64,31 +63,24 @@ int do_main(int argc, char **argv)
 		return EXIT_SUCCESS; 
 
 
-	auto transformation = C3DTransformationIOPluginHandler::instance().load(trans_filename);
+	auto transformation = C2DTransformationIOPluginHandler::instance().load(trans_filename);
 
 	const auto size = transformation->get_size(); 
 
-	vector<float> tensorfield(size.product() * 9);
+	vector<float> tensorfield(size.product() * 4);
 	auto o = tensorfield.begin(); 
 
-	for (unsigned int z = 0; z < size.z; ++z) {
-		cvmsg() << "Processing slice " << z << "\r"; 
-		for (unsigned int y = 0; y < size.y; ++y) 
-			for (unsigned int x = 0; x < size.x; ++x, o += 9) {
-				auto d = transformation->derivative_at(x,y,z); 
-				auto m = d * d.transposed() - C3DFMatrix::_1;
-				
+	for (unsigned int y = 0; y < size.y; ++y) 
+		for (unsigned int x = 0; x < size.x; ++x, o += 9) {
+			auto d = transformation->derivative_at(x,y); 
+			auto m = d * d.transposed() - C2DFMatrix::_1;
+			
 				o[0] = m.x.x; 
 				o[1] = m.x.y; 
-				o[2] = m.x.z; 
-				o[3] = m.y.x; 
-				o[4] = m.y.y; 
-				o[5] = m.y.z; 
-				o[6] = m.z.x; 
-				o[7] = m.z.y; 
-				o[8] = m.z.z;
+				o[2] = m.y.x; 
+				o[3] = m.y.y; 
 			}
-	}
+	
 	cvmsg() << "\ndone\n";
 
 	// save 
@@ -100,10 +92,10 @@ int do_main(int argc, char **argv)
 
 	fprintf(output, "MIA\n"); 
 	fprintf(output, "tensorfield {\n"); 
-	fprintf(output, "  dim=3\n"); 
-	fprintf(output, "  components=9\n");
+	fprintf(output, "  dim=2\n"); 
+	fprintf(output, "  components=4\n");
 	fprintf(output, "  repn=float32\n");
-	fprintf(output, "  size=%d %d %d\n", size.x, size.y, size.z); 
+	fprintf(output, "  size=%d %d\n", size.x, size.y); 
 
 #ifdef WORDS_BIGENDIAN
 	fprintf(output, "  endian=big\n" ); 

@@ -55,7 +55,20 @@ struct T2DMatrix: public T2DVector< T2DVector<T> > {
 	/// element wise subtract operator 
 	T2DMatrix& operator -= (const T2DMatrix<T>& o);
 
+	/**
+	   \returns the transposed of this matrix 
+	 */
+	T2DMatrix<T>  transposed()const; 
+
+
+	static const T2DMatrix _1; 
+
 }; 
+
+template <typename T> 
+const T2DMatrix<T> T2DMatrix<T>::_1(T2DVector< T >(1,0), 
+				    T2DVector< T >(0,1));
+
 
 template <typename T> 
 T2DMatrix<T>::T2DMatrix():
@@ -96,6 +109,13 @@ T2DMatrix<T>& T2DMatrix<T>::operator -= (const T2DMatrix<T>& o)
 	this->x -= o.x; 
 	this->y -= o.y; 
 	return *this; 
+}
+
+template <typename T> 
+T2DMatrix<T>  T2DMatrix<T>::transposed()const
+{
+	return T2DMatrix<T>(T2DVector< T >(this->x.x, this->y.x), 
+			    T2DVector< T >(this->y.y, this->y.y)); 
 }
 
 /**
