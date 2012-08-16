@@ -241,8 +241,6 @@ double CZeroBoundary::initial_anti_coeff(const std::vector<double>& coeff, doubl
 CRepeatBoundary::CRepeatBoundary():
 	m_widthm1(0)
 {
-	zero = _mm_setzero_si128();
-	maxv = _mm_set1_epi16 (m_widthm1);
 }
 
 CSplineBoundaryCondition *CRepeatBoundary::clone ()const
@@ -254,8 +252,6 @@ CRepeatBoundary::CRepeatBoundary(int width):
 	CSplineBoundaryCondition(width), 
 	m_widthm1(width-1)
 {
-	zero = _mm_setzero_si128();
-	maxv = _mm_set1_epi16 (m_widthm1);
 }
 
 void CRepeatBoundary::test_supported(int npoles) const
@@ -268,7 +264,6 @@ void CRepeatBoundary::test_supported(int npoles) const
 void CRepeatBoundary::do_set_width(int width)
 {
 	m_widthm1 = width-1; 
-	maxv = _mm_set1_epi16 (m_widthm1);
 }
 
 void CRepeatBoundary::do_apply(CSplineKernel::VIndex& index, CSplineKernel::VWeight& /*weights*/) const

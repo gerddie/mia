@@ -37,6 +37,17 @@ NS_MIA_BEGIN
 #define VSTREAM_DOMAIN "**"
 #endif
 
+
+template <typename T> 
+std::ostream&  operator << (std::ostream& os, const std::vector<T>& v) 
+{
+	os << "["; 
+	for(auto x: v)
+		os << x << ", "; 
+	os << "]"; 
+	return os; 
+}
+
 /**
    \ingroup logging
    \brief A output stream to enable certain levels of verbosity 
@@ -179,10 +190,10 @@ inline bool vstream::shows(Level l)const
 class CDebugSink {
 public:
 	template <class T>
-	CDebugSink& operator << (const T val) {
+	CDebugSink& operator << (const T /*val*/) {
 		return *this;
 	}
-	CDebugSink & operator<<(std::ostream& (*f)(std::ostream&)) {
+	CDebugSink & operator<<(std::ostream& (* /*f*/)(std::ostream&)) {
 		return *this;
 	}
 };

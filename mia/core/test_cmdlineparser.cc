@@ -18,21 +18,12 @@
  *
  */
 
-
-#ifndef BOOST_TEST_DYN_LINK
-#define BOOST_TEST_DYN_LINK
-#endif
-
-#define BOOST_TEST_MAIN
-#define BOOST_TEST_NO_MAIN
-#include <boost/test/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
-
 #include <stdexcept>
 #include <climits>
 
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/internal/autotest.hh>
 
 NS_MIA_USE
 using namespace std;
@@ -339,6 +330,28 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors1, CmdlineParserFixture )
 	BOOST_CHECK_THROW(dummy = (olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no), invalid_argument); 
 }
 
+BOOST_FIXTURE_TEST_CASE( test_missing_argument_short, CmdlineParserFixture )
+{
+	vector<const char *> options = {"self", "-i"};
+	string test; 
+	
+	CCmdOptionList olist(general_help);
+	olist.add(make_opt(test, "lala", 'i', "a string option"));
+	
+	BOOST_CHECK_THROW( (olist.parse(options.size(), &options[0])== CCmdOptionList::hr_no), invalid_argument); 
+}
+
+BOOST_FIXTURE_TEST_CASE( test_missing_string_argument_long, CmdlineParserFixture )
+{
+	vector<const char *> options = {"self", "--lala"};
+	string test; 
+	
+	CCmdOptionList olist(general_help);
+	olist.add(make_opt(test, "lala", 'i', "a string option"));
+	
+	BOOST_CHECK_THROW( (olist.parse(options.size(), &options[0])== CCmdOptionList::hr_no), invalid_argument); 
+}
+
 
 BOOST_FIXTURE_TEST_CASE( test_parser_errors2, CmdlineParserFixture )
 {
@@ -425,19 +438,5 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 
 	BOOST_CHECK_EQUAL(output.str().size(), test.size()); 
 	BOOST_CHECK_EQUAL(output.str(), test); 
-}
-
-
-
-
-NS_MIA_USE; 
-int BOOST_TEST_CALL_DECL
-main( int argc, char* argv[] )
-{
-#ifdef WIN32
-	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
-	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
-#endif
-	return ::boost::unit_test::unit_test_main( &init_unit_test, argc, argv );
 }
 

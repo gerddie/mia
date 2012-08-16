@@ -36,12 +36,6 @@ C3DImageVector *C3DImageVector::clone() const
 }
 
 
-template class TIOPlugin<io_3dimage_data>;
-template class THandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> >;
-template class TIOHandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> >;
-template class TIOPluginHandler<C3DImageIOPlugin>;
-template class TPluginHandler<C3DImageIOPlugin>;
-
 template <> const char *  const 
 TPluginHandler<C3DImageIOPlugin>::m_help =  
    "These plug-ins handle loading and storing of 3D images to the supported image file types.";
@@ -81,6 +75,11 @@ C3DImageIOPluginHandlerTestPath::C3DImageIOPluginHandlerTestPath()
 }
 
 
+template class TIOPlugin<io_3dimage_data>;
+template class THandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> >;
+template class TIOHandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> >;
+template class TIOPluginHandler<C3DImageIOPlugin>;
+template class TPluginHandler<C3DImageIOPlugin>;
 
 NS_MIA_END
 

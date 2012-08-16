@@ -103,7 +103,7 @@ private:
 int do_main( int argc, char *argv[] )
 {
 	float hmin = 0;
-	float hmax = 65536;
+	float hmax = 65535;
 	size_t bins = 65536;
 
 	string out_filename;

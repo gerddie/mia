@@ -235,7 +235,9 @@ void CBSplineKernel3::get_weights(double x, VWeight&  weight)const
 #ifdef __SSE2__
 	v2df X =_mm_set_pd(x, xm1); 
 
-	const v2df OB6 =  __builtin_ia32_loadupd(oneby6);
+	// this needs to be replaced for clang++
+	const v2df OB6 =  _mm_load_pd(oneby6);
+
 	const v2df X2  = X * X; 
 	const v2df XB6 = X * OB6; 
 	const v2df W03 = X2 * XB6; 

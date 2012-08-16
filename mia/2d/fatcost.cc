@@ -172,17 +172,15 @@ P2DImageFatCost C2DFatImageCostPluginHandlerImpl::create_directly(const std::str
 	return factory->create_directly(src, ref, ipf, weight);
 }
 
-template class TFatCost<C2DTransformation, C2DFVectorfield>;
-
-template class TPlugin<C2DImage, fatcost_type>;
-template class TFactory<C2DImageFatCost>;
-
-template class TPluginHandler<C2DFatImageCostPlugin>;
-template class TFactoryPluginHandler<C2DFatImageCostPlugin>;
-template class THandlerSingleton<C2DFatImageCostPluginHandlerImpl>;
-
 template <> const char *  const 
 	TPluginHandler<C2DFatImageCostPlugin>::m_help =  
        "These plug-ins implement another approach to cost functions (obsolete).";
+
+template class TFatCost<C2DTransformation, C2DFVectorfield>;
+template class TPlugin<C2DImage, fatcost_type>;
+template class TFactory<C2DImageFatCost>;
+template class TPluginHandler<C2DFatImageCostPlugin>;
+template class TFactoryPluginHandler<C2DFatImageCostPlugin>;
+template class THandlerSingleton<C2DFatImageCostPluginHandlerImpl>;
 
 NS_MIA_END

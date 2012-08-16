@@ -28,10 +28,10 @@
 NS_MIA_BEGIN
 
 template class TSparseSolver<C2DFImage>; 
-EXPLICIT_INSTANCE_HANDLER(C2DImageSparseSolver); 
+
 
 typedef C2DImageSparseSolver::A_mult_x C2DImageSolverAmultx; 
-EXPLICIT_INSTANCE_HANDLER(C2DImageSolverAmultx); 
+
 
 EXPORT_2D C2DFImage operator * (const C2DImageSolverAmultx& A, const C2DFImage& X)
 {
@@ -75,5 +75,7 @@ template <> const char *  const
 TPluginHandler<TFactory<C2DImageSparseSolver>>::m_help =  "These plug-ins define the solvers for sparse systems of linear equations that "
 				"arise when solving certain image processing problems.";
 
+EXPLICIT_INSTANCE_HANDLER(C2DImageSparseSolver); 
+EXPLICIT_INSTANCE_HANDLER(C2DImageSolverAmultx); 
 
 NS_MIA_END

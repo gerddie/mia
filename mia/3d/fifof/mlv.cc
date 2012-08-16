@@ -22,6 +22,10 @@
 #include <config.h>
 #endif
 
+extern "C" {
+#include <cblas.h>
+}
+
 #include <iomanip>
 #include <limits>
 
@@ -49,8 +53,7 @@ static void convert(InputIterator a, InputIterator e, OutputIterator o)
 C2DMLVnFifoFilter::C2DMLVnFifoFilter(size_t hwidth):
 	C2DImageFifoFilter(4 * hwidth + 1, 2 * hwidth + 1, 2 * hwidth),
 	m_hw(hwidth),
-	m_w(2 * hwidth + 1),
-	m_read_start(2 * hwidth)
+	m_w(2 * hwidth + 1)
 {
 }
 
@@ -60,17 +63,25 @@ template <typename T>
 C2DImage *C2DMLVnFifoFilter::operator()(const T3DImage<T>& /*dummy*/) const
 {
 	TRACE("C2DMLVnFifoFilter::operator() (pull)");
+	
+	static int slice = 0; 
+	
+	size_t start = 2 * m_w - 2;
+	size_t end = min(get_end() + m_w, get_buffer_size()); 
+
+	cvdebug() << "Evaluate "<< slice++ << " output " << start << " - " << end << "\n"; 
 	C2DFImage mu_result(m_slice_size);
 	C2DFImage sigma_buffer(m_slice_size);
 
 	fill(sigma_buffer.begin(), sigma_buffer.end(), numeric_limits<float>::max());
 
-	for (size_t z = get_start(); z < get_end(); ++z) {
-		for (size_t iy = 0; iy < m_w; ++iy)
-			for (size_t ix = 0; ix < m_w; ++ix) {
-				for (size_t y = 0; y < m_slice_size.y; ++y) {
-					C3DFImage::const_iterator mu_i = m_mu_buffer[z].begin_at(ix, y + iy);
-					C3DFImage::const_iterator si_i = m_sigma_buffer[z].begin_at(ix, y + iy);
+	for (size_t z = start; z <  end; ++z) {
+		for (size_t y = 0; y < m_slice_size.y; ++y) {
+			for (size_t iy = 0; iy < m_w; ++iy)
+				for (size_t ix = 0; ix < m_w; ++ix) {
+					
+					C3DFImage::const_iterator mu_i = m_mu[z].begin_at(ix, y + iy);
+					C3DFImage::const_iterator si_i = m_sigma[z].begin_at(ix, y + iy);
 					C2DFImage::iterator omu_i = mu_result.begin_at(0, y);
 					C2DFImage::iterator osi_i = sigma_buffer.begin_at(0, y);
 
@@ -85,18 +96,8 @@ C2DImage *C2DMLVnFifoFilter::operator()(const T3DImage<T>& /*dummy*/) const
 			}
 
 	}
-
 	T2DImage<T> *result = new T2DImage<T>(m_slice_size);
 	convert(mu_result.begin(), mu_result.end(), result->begin());
-
-#if 0
-				cout << "result:";
-				copy(result->begin(),  result->end(),
-				     ostream_iterator<float>(cout, " "));
-				cout << "\n";
-
-#endif
-
 
 	return result;
 }
@@ -108,15 +109,11 @@ static void do_evaluate(C2DFImage::const_iterator ni, C2DFImage::const_iterator 
 		const float n = *ni;
 		const float muq = *mu / *ni;
 
-		if (n > 1.0) {
-			*sigma = (*sigma - muq * muq * n) / (n - 1.0f);
-		}else {
-			*sigma = 0.0f;
-		}
+		*sigma = (n > 1.0) ? (*sigma - muq * *mu) / (n - 1.0f) : 0.0f;
 
 		*mu++ = muq;
+		++sigma; 
 		++ni;
-		++sigma;
 	}
 }
 
@@ -126,73 +123,115 @@ void rotate(Iterator begin, Iterator end)
 	typename Iterator::value_type help = *(end - 1);
 	copy_backward(begin, end - 1, end);
 	*begin = help;
+
+	fill(begin->begin(), begin->end(), 0.0); 
 }
 
 void C2DMLVnFifoFilter::shift_buffer()
 {
 	TRACE_FUNCTION; 
-	rotate(m_mu_buffer.begin(), m_mu_buffer.end());
-	rotate(m_sigma_buffer.begin(),m_sigma_buffer.end());
+	cvdebug() << "Evaluate shift\n"; 
+	rotate(m_mu.begin(), m_mu.end());
+	rotate(m_sigma.begin(),m_sigma.end());
 	rotate(m_n.begin(), m_n.end());
+	copy_backward(m_evaluated.begin(), m_evaluated.end() - 1, m_evaluated.end());
+	m_evaluated[0] = false; 
 }
 
 void C2DMLVnFifoFilter::evaluate(size_t slice)
 {
 	TRACE_FUNCTION; 
+	if (m_evaluated[slice]) 
+		return; 
+
+	cvdebug() << "Evaluate mu(sigma) for  " << slice << "\n"; 
 	do_evaluate(m_n[slice].begin(),
 		    m_n[slice].end(),
-		    m_mu_buffer[slice].begin(),
-		    m_sigma_buffer[slice].begin());
-
+		    m_mu[slice].begin(),
+		    m_sigma[slice].begin());
+	m_evaluated[slice] = true; 
 }
 
 // this operator add the new slice
 
+template <typename In, typename Out>
+bool copy_was_zero(In b, In e, Out o)
+{
+	bool result = true; 
+	while (b != e) {
+		result &= (*b == 0); 
+		*o = *b; 
+		++o; 
+		++b; 
+	}
+	return result; 
+}
+
+
 template <typename T>
-C2DImage *C2DMLVnFifoFilter::operator()(const T2DImage<T>& input)
+C2DImage *C2DMLVnFifoFilter::operator()(const T2DImage<T>& src)
 {
 	TRACE("C2DMLVnFifoFilter::operator()(const T2DImage<T>& input)(push)");
 
-	fill(m_mu_buffer[0].begin(), m_mu_buffer[0].end(), 0.0);
-	fill(m_sigma_buffer[0].begin(), m_sigma_buffer[0].end(), 0.0);
-	fill(m_n[0].begin(), m_n[0].end(), 0.0);
+	cvdebug() << "Evaluate input\n"; 
 
-	for (size_t y = 0; y < m_slice_size.y; ++y) {
-		copy(input.begin_at(0,y), input.begin_at(0,y + 1), m_buf1.begin());
-		transform(m_buf1.begin(), m_buf1.end(), m_buf2.begin(), 
-			  [](float x) {return x * x;}); 
+	
+	C2DBounds temp_size = m_mu[0].get_size(); 
 
-		for (size_t iz = 0; iz < m_w; ++iz)
-			for (size_t iy = 0; iy < m_w; ++iy)
-				for (size_t ix = 0; ix < m_w; ++ix) {
-					transform(m_buf1.begin(), m_buf1.end(),
-						  m_mu_buffer[iz].begin_at(ix, y + iy),
-						  m_mu_buffer[iz].begin_at(ix, y + iy), 
-						  [](float x, float y){return x+y;}); 
-					transform(m_buf2.begin(), m_buf2.end(),
-						  m_sigma_buffer[iz].begin_at(ix, y + iy),
-						  m_sigma_buffer[iz].begin_at(ix, y + iy), 
-						  [](float x, float y){return x+y;}
-						);
-				}
+	vector<float> val(src.get_size().x); 
+	vector<float> val2(src.get_size().x);
+			
+	vector<float> sum_mu_l1(temp_size.x); 
+	vector<float> sum_sigma_l1(temp_size.x);
+
+	vector<float> sum_mu_l2(m_mu[0].size(), 0.0); 
+	vector<float> sum_sigma_l2(m_mu[0].size(), 0.0);
+
+	
+	for (size_t y = 0; y < src.get_size().y; ++y){
+		
+		// copy one input row and check whether it is all zero, if yes, shortcut
+		if (copy_was_zero(src.begin_at(0,y), src.begin_at(0,y) + src.get_size().x, val.begin()))
+			continue; 
+
+		fill(sum_mu_l1.begin(), sum_mu_l1.end(), 0.0); 
+		fill(sum_sigma_l1.begin(), sum_sigma_l1.end(), 0.0); 
+		
+		transform(val.begin(), val.end(), val2.begin(),[](float x) { return  x * x;});
+		
+		for(size_t x = 0; x < m_w; ++x) {
+			cblas_saxpy(src.get_size().x, 1.0f, &val[0],  1, &sum_mu_l1[x], 1); 
+			cblas_saxpy(src.get_size().x, 1.0f, &val2[0], 1, &sum_sigma_l1[x], 1);
+		}
+		
+		for(size_t iy = 0; iy < m_w; ++iy) {
+			cblas_saxpy(sum_mu_l1.size(), 1.0f, &sum_mu_l1[0],  1, 
+				    &sum_mu_l2[(y + iy) * temp_size.x], 1); 
+			
+			cblas_saxpy(sum_sigma_l1.size(), 1.0f, &sum_sigma_l1[0],  1, 
+				    &sum_sigma_l2[(y + iy) * temp_size.x], 1);
+		}
 	}
 
-	C2DFImage::const_iterator ntmpl_b = m_n_template.begin();
-	C2DFImage::const_iterator ntmpl_e = m_n_template.end();
-
-	for (size_t iz = 0; iz < m_w; ++iz) {
-		transform(ntmpl_b, ntmpl_e,
-			  m_n[iz].begin_at(0, 0),
-			  m_n[iz].begin_at(0, 0), [](float x, float y){return x+y;});
+	// update the numbers
+	for (size_t z = 0; z < m_w; ++z) {
+		cblas_saxpy(sum_mu_l2.size(), 1.0f, &sum_mu_l2[0],  1, &m_mu[z](0,0) , 1); 
+		cblas_saxpy(sum_sigma_l2.size(), 1.0f, &sum_sigma_l2[0],  1,&m_sigma[z](0,0) , 1);
+		cblas_saxpy(m_n_template.size(), 1.0f, &m_n_template(0,0), 1, &m_n[z](0,0), 1); 
 	}
+	// the next shift will push this slice out if the input range 
+	// ence we can evaluate the real values here. 
+	evaluate(m_w-1); 
+	
+
 	return NULL;
 }
 
 void C2DMLVnFifoFilter::post_finalize()
 {
 	TRACE_FUNCTION; 
-	m_mu_buffer.resize(0);
-	m_sigma_buffer.resize(0);
+	m_mu.resize(0);
+	m_sigma.resize(0);
 	m_n.resize(0);
 }
 
@@ -200,20 +239,22 @@ void C2DMLVnFifoFilter::do_initialize(::boost::call_traits<P2DImage>::param_type
 {
 	TRACE("C2DMLVnFifoFilter::do_initialize");
 
-
 	m_slice_size = x->get_size();
+	cvdebug() << "Input slices are of size " << m_slice_size << "\n"; 
+	
 	C2DBounds size(m_slice_size.x + 2 * m_hw,
 		       m_slice_size.y + 2 * m_hw);
 
 	size_t n_slices = get_buffer_size();
 
-	m_mu_buffer = vector<C2DFImage>(n_slices);
-	m_sigma_buffer = vector<C2DFImage>(n_slices);
+	m_mu = vector<C2DFImage>(n_slices);
+	m_sigma = vector<C2DFImage>(n_slices);
 	m_n = vector<C2DFImage>(n_slices);
-
+	m_evaluated = vector<bool>(n_slices, false);
+		
 	for (size_t i = 0; i < n_slices; ++i) {
-		m_mu_buffer[i] = C2DFImage(size);
-		m_sigma_buffer[i] = C2DFImage(size);
+		m_mu[i] = C2DFImage(size);
+		m_sigma[i] = C2DFImage(size);
 		m_n[i] = C2DFImage(size);
 	}
 

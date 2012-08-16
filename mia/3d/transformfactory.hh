@@ -58,7 +58,7 @@ typedef THandlerSingleton<TFactoryPluginHandler<C3DTransformCreatorPlugin> > C3D
     @ingroup test 
     @brief class to initialize the plug-in path for tests on the uninstalled library 
 */
-struct C3DTransformCreatorHandlerTestPath {
+struct EXPORT_3D C3DTransformCreatorHandlerTestPath {
 	C3DTransformCreatorHandlerTestPath(); 
 private: 
 	CSplineKernelTestPath spktp; 

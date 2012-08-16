@@ -87,6 +87,7 @@ SET(MIACORE_SRC_BASE
 SET(MIACORE_HEADER_BASE
   attributes.hh
   boundary_conditions.hh
+  bfsv23dispatch.hh
   callback.hh
   cmdlineparser.hh
   cmdstringoption.hh
@@ -96,6 +97,7 @@ SET(MIACORE_HEADER_BASE
   cost.cxx
   combiner.hh
   creator.hh
+  cstplan.hh
   datapool.hh
   defines.hh
   delayedparameter.hh
@@ -107,6 +109,7 @@ SET(MIACORE_HEADER_BASE
   factory.hh
   factory_trait.hh
   fatcost.hh fatcost.cxx
+  fifofilter.hh
   file.hh
   filetools.hh
   filter.hh
@@ -213,16 +216,7 @@ ENDMACRO(CORE_TEST name)
 #
 # create the revision retrival code
 #
-
-IF (UNIX)
-# probably should look for bash first 
-  ADD_CUSTOM_TARGET(revision.hh COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/revision.sh ${CMAKE_SOURCE_DIR})
-ELSEIF (WIN32)
-  ADD_CUSTOM_TARGET(revision.hh COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/revision.bat ${CMAKE_SOURCE_DIR})
-ELSE (UNIX)
-  MESSAGE(FATAL_ERROR "Sorry, don't know how to create revision.hh in the build root directory using your OS") 
-ENDIF (UNIX)
-
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/revision.hh.cmake ${CMAKE_CURRENT_BINARY_DIR}/revision.hh)
 
 
 #

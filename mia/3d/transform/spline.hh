@@ -76,7 +76,6 @@ public:
 
 	bool refine();
 
-	virtual bool save(const std::string& filename, const std::string& type) const;
 	virtual C3DTransformation *invert() const;
 	virtual P3DTransformation do_upscale(const C3DBounds& size) const;
 	virtual void add(const C3DTransformation& a);

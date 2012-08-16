@@ -74,7 +74,7 @@ public:
 		C2DFImage *image = new C2DFImage( m_sum.get_size());
 		P2DImage result(image);
 		transform(m_sum.begin(), m_sum.end(), m_sum2.begin(), image->begin(), 
-			  [m_n](double sum, double sum2){return (sum2 - sum * sum/m_n)/(m_n - 1);}); 
+			  [this](double sum, double sum2){return (sum2 - sum * sum/m_n)/(m_n - 1);}); 
 		transform(image->begin(), image->end(), image->begin(),  
 			  [](double x) {return sqrt(x);}); 
 		return result;

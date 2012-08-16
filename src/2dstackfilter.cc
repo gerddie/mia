@@ -33,6 +33,9 @@
 #include <mia/2d/2dimageio.hh>
 #include <mia/3d/2dimagefifofilter.hh>
 
+#include <tbb/task_scheduler_init.h>
+
+using tbb::task_scheduler_init; 
 using namespace std;
 using namespace mia;
 
@@ -117,6 +120,8 @@ int do_main(int argc, char *argv[])
 	string out_type;
 	vector<int> new_size;
 
+	int max_threads = task_scheduler_init::automatic;
+	
 	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 	const C2DFifoFilterPluginHandler::Instance& sfh = C2DFifoFilterPluginHandler::instance();
 
@@ -132,6 +137,12 @@ int do_main(int argc, char *argv[])
 				   "give some help about the filter plugins", 
 				   new TPluginHandlerHelpCallback<C2DFifoFilterPluginHandler>)); 
 
+	options.set_group("Processing"); 
+	options.add(make_opt(max_threads, "threads", 'T', "Maxiumum number of threads to use for running the registration," 
+			     "This number should be lower or equal to the number of processing cores in the machine"
+			     " (default: automatic estimation)."));  
+
+
 	if (options.parse(argc, argv, "filter", &sfh) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
@@ -140,6 +151,7 @@ int do_main(int argc, char *argv[])
 	if (filter_chain.empty()) 
 		throw invalid_argument("No filters given, bailing out.");
 
+	task_scheduler_init init(max_threads);
 
 	auto i = filter_chain.begin();
 	auto filter = sfh.produce(*i);

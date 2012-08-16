@@ -74,7 +74,7 @@ class Convert2DoubleAndScale: public TFilter<C2DDImage>{
 	C2DDImage operator ()(const T2DImage<T>& image) const {
 		C2DDImage result(image.get_size()); 
 		transform(image.begin(), image.end(),  result.begin(), 
-			  [_M_scale](T x){return x/_M_scale;}); 
+			  [this](T x){return x/_M_scale;}); 
 		return result; 
 	}
 private:

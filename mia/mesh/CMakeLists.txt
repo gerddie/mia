@@ -24,6 +24,8 @@ SET(MIAMESH_SRC
 
 SET(MIAMESH_HEADERS
   triangularMesh.hh
+  triangulate.hh
+  clist.hh
 )
 
 MIA_ADD_LIBRARY(miamesh "${MIAMESH_SRC}" mia3d)

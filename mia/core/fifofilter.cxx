@@ -55,18 +55,23 @@ void TFifoFilter<T>::push(typename ::boost::call_traits<T>::param_type x)
 	do_push(x);
 	++m_fill; 
 
+	cvdebug() << "push: fill : " << m_fill << " ,need "<< m_min_fill <<", max="<< m_buf_size<<"\n"; 
+
 	if (m_fill > m_read_start)  
 		evaluate(m_read_start); 
-
 
 	if (m_fill >= m_min_fill) {
 		m_start_slice = m_read_start; 
 		m_end_slice = m_fill; 
 
+		cvdebug() << "do_filter: slices : [" << m_start_slice << ", "<< m_end_slice 
+			  <<"] fill " << m_fill << "\n"; 
+		
 		T help = do_filter(); 
 		if (m_chain) 
 			m_chain->push(help); 
 	}
+		
 	
 	if (m_fill < m_buf_size) {
 		return; 
@@ -114,34 +119,49 @@ void TFifoFilter<T>::finalize()
 {
 	TRACE_FUNCTION; 
 	size_t overfill = m_read_start; 
+	// prepare all remaining slices 
+	for (size_t i = 0; i < m_read_start; i++) 
+		evaluate(i);
 
 	while (overfill-- > 0) {
 		shift_buffer(); 
-		evaluate(m_read_start); 
+		if (m_fill < m_buf_size) 
+			++m_fill; 
+
 		m_start_slice = m_read_start; 
-		m_end_slice = m_buf_size; 
+		m_end_slice = m_fill; 
+
+		cvdebug() << "do_filter (finalize 1): slices : [" << m_start_slice << ", "<< m_end_slice 
+			  <<"] fill " << m_fill << "\n"; 
+
 		T help = do_filter(); 
-		
+				
 		if (m_chain) 
 			m_chain->push(help); 
+
 	}
-
-	// it makes the test run through, but I'm not sure why 
-	size_t start = m_read_start + 1; 
 	
-	while (m_fill >= m_min_fill && m_fill) {
-		cvdebug() << "finalize: " << m_fill << "("<<m_min_fill <<")\n"; 
-		shift_buffer(); 
-		
-		m_start_slice = start; 
-		m_end_slice = m_buf_size; 
+	if (m_read_start > 0) 
+		--m_fill;
 
+	cvdebug() << "finalize: fill=" << m_fill << ", min-fill=" << m_min_fill << "\n"; 
+
+	m_end_slice = m_fill + 1; 
+
+	while (m_fill >= m_min_fill && m_fill) {
+
+		shift_buffer(); 
+		if (m_end_slice < m_buf_size) 
+			++m_end_slice; 
+
+		m_start_slice = m_end_slice - m_fill + m_read_start; 
+		cvdebug() << "do_filter (finalize 2): slices : [" << m_start_slice << ", "<< m_end_slice 
+			  <<"] fill " << m_fill << "\n"; 
 		T help = do_filter(); 
 
 		if (m_chain) 
 			m_chain->push(help); 
 		--m_fill;
-		++start; 
 	}
 
 	post_finalize(); 

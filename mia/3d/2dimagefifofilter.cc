@@ -136,14 +136,6 @@ bool C2DFifoFilterPlugin::call_test(const CImageStack& in_data, const CImageStac
 }
 
 
-template class TPlugin<image2d_stack, filter_type>;
-template class TFifoFilter<P2DImage>;
-template class TFactory<C2DImageFifoFilter>;
-template class TFactoryPluginHandler<C2DFifoFilterPlugin>;
-//template class TPluginHandler<TFactory<C2DImageFifoFilter, image2d_stack, filter_type> >;
-template class TPluginHandler<C2DFifoFilterPlugin>;
-template class THandlerSingleton<TFactoryPluginHandler<C2DFifoFilterPlugin> >;
-
 template <> const char *  const 
 TPluginHandler<C2DFifoFilterPlugin>::m_help =  
    "These filters work on a stack of 2D images in a 3D manner by interpreting the images of the stack "
@@ -153,5 +145,13 @@ TPluginHandler<C2DFifoFilterPlugin>::m_help =
    "image filter is only applied to a subset of the images at a time which results in a quasi-3D processing " 
   " that may require additional post-processing.";
 
+
+template class TPlugin<image2d_stack, filter_type>;
+template class TFifoFilter<P2DImage>;
+template class TFactory<C2DImageFifoFilter>;
+template class TFactoryPluginHandler<C2DFifoFilterPlugin>;
+//template class TPluginHandler<TFactory<C2DImageFifoFilter, image2d_stack, filter_type> >;
+template class TPluginHandler<C2DFifoFilterPlugin>;
+template class THandlerSingleton<TFactoryPluginHandler<C2DFifoFilterPlugin> >;
 
 NS_MIA_END

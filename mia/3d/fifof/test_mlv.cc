@@ -20,10 +20,13 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/3d/fifotestfixture.hh>
+#include <mia/3d/3dfilter.hh>
 #include <mia/3d/fifof/mlv.hh>
 
 NS_USE(mlv_2dstack_filter);
 NS_MIA_USE;
+
+C3DFilterPluginHandlerTestPath filter3d_plugin_path; 
 
 BOOST_FIXTURE_TEST_CASE( test_fifof_mlv_const, fifof_Fixture )
 {
@@ -80,3 +83,34 @@ BOOST_FIXTURE_TEST_CASE( test_fifof_mlv_const, fifof_Fixture )
 	call_test(f);
 }
 
+BOOST_FIXTURE_TEST_CASE( test_fifof_mlv_variable, fifof_Fixture )
+{
+	srand48(0); 
+	for (int w = 1; w < 2; ++w) {
+		cvdebug() << "test filter of width " << w << "\n";
+
+		stringstream help_filter_descr; 
+		help_filter_descr << "mlv:w=" << w; 
+
+		int isize = 4 * w + 2;
+		int zsize = isize + 20; 
+		C3DBounds size(isize, isize, zsize);
+		C3DBounds mid(2 * w + 1, 2 * w + 1, 2 * w + 11); 
+
+		C3DFImage src(size);
+		for (auto i = src.begin_range(C3DBounds::_0, size), e = src.end_range(C3DBounds::_0, size); 
+		     i != e; ++i) {
+			*i = (i.pos() - mid).norm2(); 
+		}
+		
+		auto ref = run_filter(src, help_filter_descr.str().c_str());
+		const C3DFImage& test_data = dynamic_cast<const C3DFImage&>(*ref); 
+		
+		C2DBounds slice_size(isize, isize); 
+		cvdebug() << "Test image size " << slice_size << " with " << zsize << " slices\n"; 
+		prepare(&src(0,0,0), &test_data(0,0,0), slice_size, zsize);
+		C2DMLVnFifoFilter filter(w);
+		call_test(filter);
+	}
+
+}

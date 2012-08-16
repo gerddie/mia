@@ -153,7 +153,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
 
 	options.set_group("Processing"); 
-	options.add(make_opt(max_threads, "threads", 't', "Maxiumum number of threads to use for running the registration," 
+	options.add(make_opt(max_threads, "threads", 'T', "Maxiumum number of threads to use for running the registration," 
 			     "This number should be lower or equal to the number of processing cores in the machine"
 			     " (default: automatic estimation)."));  
 

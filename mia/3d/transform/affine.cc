@@ -18,33 +18,6 @@
  *
  */
 
-/* 
-  LatexBeginPluginDescription{3D Transformations}
-  
-   \subsection{Affine}
-   \label{transform3d:affine}
-   
-   \begin{description}
-   
-   \item [Plugin:] affine
-   \item [Description:] Affine-linear transformations - i.e. the transformation cann be described in terms of a 
-   multiplication by a $2\times2$ matrix $A$ and the addition of a translation vector $b$: 
-   \begin{equation}
-   x \rightarrow Ax + b
-   \end{equation}
-   
-   \item [Degrees of Freedom:] 12
-  
-   \end{description}
-   \plugtabstart
-   imgkernel & string " & interpolation kernel used to interpolate images when they are transformed & bspline:d=3 \\ 
-   imgboundary& string & interpolation boundary conditions used when transforming an image & mirror \\
-   \plugtabend
-
-
-   LatexEnd  
- */
-
 
 #include <fstream>
 #include <cmath>
@@ -140,17 +113,6 @@ C3DAffineTransformation::C3DAffineTransformation(const C3DBounds& size, std::vec
 	m_t(transform),
 	m_size(size)
 {
-}
-
-bool C3DAffineTransformation::save(const std::string& filename, const std::string& /*type*/) const
-{
-	ofstream file(filename.c_str());
-	file << "Transformation: 3D\n"
-	     << "Matrix: ";
-	for (size_t i = 0; i < 12 ; ++i)
-		file << m_t[i] << " ";
-	file << "\n";
-	return file.good();
 }
 
 size_t C3DAffineTransformation::degrees_of_freedom() const

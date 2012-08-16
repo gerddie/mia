@@ -27,9 +27,6 @@
 
 NS_MIA_BEGIN
 
-template class TTransformCreator<C3DTransformation>; 
-template class TTransformCreatorPlugin<C3DTransformation>; 
-
 C3DTransformCreatorHandlerTestPath::C3DTransformCreatorHandlerTestPath()
 {
 	list< bfs::path> kernelsearchpath;
@@ -37,11 +34,15 @@ C3DTransformCreatorHandlerTestPath::C3DTransformCreatorHandlerTestPath()
 	C3DTransformCreatorHandler::set_search_path(kernelsearchpath);
 }
 
-EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C3DTransformCreator, C3DTransformCreatorPlugin); 
+
 
 template <> const char *  const 
 TPluginHandler<C3DTransformCreatorPlugin>::m_help =  
    "These plug-ins define creators for 3D transformations.";
 
+template class TTransformCreator<C3DTransformation>; 
+template class TTransformCreatorPlugin<C3DTransformation>; 
+
+EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C3DTransformCreator, C3DTransformCreatorPlugin); 
 
 NS_MIA_END

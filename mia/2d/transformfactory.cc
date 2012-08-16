@@ -34,11 +34,11 @@ C2DTransformCreatorHandlerTestPath::C2DTransformCreatorHandlerTestPath()
 	C2DTransformCreatorHandler::set_search_path(kernelsearchpath);
 }
 
-EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C2DTransformCreator, C2DTransformCreatorPlugin); 
 
 template <> const char *  const 
 TPluginHandler<C2DTransformCreatorPlugin>::m_help =  
    "These plug-ins define creators for 2D transformations.";
 
+EXPLICIT_INSTANCE_DERIVED_FACTORY_HANDLER(C2DTransformCreator, C2DTransformCreatorPlugin); 
 
 NS_MIA_END

@@ -36,7 +36,7 @@ struct RegiongrowFixture: public fifof_Fixture {
 
 
 
-BOOST_FIXTURE_TEST_CASE( test_fifof_gauss , RegiongrowFixture )
+BOOST_FIXTURE_TEST_CASE( test_fifof_regiongrow , RegiongrowFixture )
 {
 	const size_t n_slices = 5;
 	const C2DBounds size(3,3);

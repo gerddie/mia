@@ -58,6 +58,8 @@ DEFEXE(2dmultiimagevar    mia2d )
 DEFEXE(2dmulti-force      mia2d )
 DEFEXE(2dimagefullstats   mia2d )
 DEFEXE(2dbinarycombine    mia2d )
+DEFEXE(2dtransformation-to-strain mia2d)
+
 DEFCHKEXE(2dlerp mia2d )
 
 
@@ -101,6 +103,7 @@ DEFCHKEXE(3dlerp mia3d )
 
 DEFEXE(3dimagestats       mia3d )
 DEFEXE(3dcost             mia3d )
+DEFEXE(3ddistance         mia3d )
 DEFEXE(3dimagefilter      mia3d )
 DEFEXE(3dimagecombine     mia3d )
 DEFEXE(3dimagecreator     mia3d )
@@ -129,6 +132,11 @@ DEFEXE(3dserial-nonrigid  mia3d )
 DEFEXE(3dmany2one-nonrigid  mia3d )
 DEFEXE(3dprealign-nonrigid mia3d )
 DEFEXE(3dseries-track-intensity mia3d )
+DEFEXE(3dtransform2vf mia3d )
+DEFEXE(3dtrackpixelmovement mia3d )
+DEFEXE(3dvf2transform mia3d )
+DEFEXE(3dvfcompare mia3d )
+DEFEXE(3dtransformation-to-strain mia3d)
 
 DEFEXE(plugin-help miamesh )
 

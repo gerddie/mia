@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!-- 
+     This is the scheme describing the storing of 
+     manual segmentations of the myocardial perfusion series. 
+     
+     Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
+     
+     This program is free software; you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation; either version 3 of the License, or
+     (at your option) any later version.
+     
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+     
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, write to the Free Software
+     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+     -->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!-- definition of attributes -->
+  <xs:attribute name="x" type="xs:decimal"/>
+  <xs:attribute name="y" type="xs:decimal"/>
+  <xs:attribute name="r" type="xs:decimal"/>
+  <xs:attribute name="size" type="xs:decimal"/>
+  <xs:attribute name="value" type="xs:integer"/>
+  <xs:attribute name="version" type="xs:integer"/>
+  <xs:attribute name="brightness" type="xs:decimal"/>
+  <xs:attribute name="contrast" type="xs:decimal"/>
+  <xs:attribute name="quality" type="xs:decimal"/>
+  <xs:attribute name="image" type="xs:string"/>
+  <xs:attribute name="color" type="xs:string"/>
+  <xs:attribute name="open" type="xs:boolean"/>
+  
+  <!-- complex elements -->
+  <xs:element name="point">
+    <xs:complexType>
+      <xs:attribute ref="x" use="required"/>
+      <xs:attribute ref="y" use="required"/>
+      <xs:attribute ref="size"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="star">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="point" minOccurs="3" maxOccurs="3" /> 
+      </xs:sequence>
+      <xs:attribute ref="x" use="required"/>
+      <xs:attribute ref="y" use="required"/>
+      <xs:attribute ref="r" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="section">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="point" minOccurs="3" maxOccurs="unbounded"/> 
+      </xs:sequence>
+      <xs:attribute ref="color" use="required"/>
+      <xs:attribute ref="open"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="frame">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="star" minOccurs="0" maxOccurs="1"/> 
+        <xs:element ref="section" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute ref="image" use="required"/>
+      <xs:attribute ref="quality"/>
+      <xs:attribute ref="brightness"/>
+      <xs:attribute ref="contrast"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="RVpeak">
+    <xs:complexType>
+      <xs:attribute ref="value"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="LVpeak">
+    <xs:complexType>
+      <xs:attribute ref="value"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="description">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="RVpeak" maxOccurs="1" />
+        <xs:element ref="LVpeak" maxOccurs="1" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="workset">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="description" maxOccurs="1" />
+        <xs:element ref="frame" maxOccurs="unbounded"/> 
+      </xs:sequence>
+      <xs:attribute ref="version"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

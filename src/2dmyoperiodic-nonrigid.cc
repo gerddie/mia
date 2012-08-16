@@ -87,7 +87,7 @@ struct FAddWeighted: public TFilter<P2DImage> {
 		if (a.get_size() != b.get_size()) {
 			throw invalid_argument("input images cann not be combined because they differ in size");
 		}
-		T2DImage<T> *result = new T2DImage<T>(a.get_size());
+		T2DImage<T> *result = new T2DImage<T>(a.get_size(), a);
 		auto r = result->begin();
 		auto e = result->end();
 

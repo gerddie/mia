@@ -58,13 +58,6 @@ struct __adjust<T3DVector<int> > {
 	}
 };
 
-template class TPlugin<C3DImage, shape_type>;
-template class TFactory<C3DShape>;
-template class THandlerSingleton<TFactoryPluginHandler<C3DShapePlugin> >;
-template class TFactoryPluginHandler<C3DShapePlugin>;
-template class TPluginHandler<C3DShapePlugin>;
-template class TShape<T3DVector, C3DBitImage>;
-
 using boost::filesystem::path; 
 C3DShapePluginHandlerTestPath::C3DShapePluginHandlerTestPath()
 {
@@ -77,5 +70,12 @@ template <> const char *  const
 TPluginHandler<TFactory<C3DShape>>::m_help =  "These plug-ins define 3D structuring elements "
 				"to describe neighborhoods for morphological and other filters."; 
 
+
+template class TPlugin<C3DImage, shape_type>;
+template class TFactory<C3DShape>;
+template class THandlerSingleton<TFactoryPluginHandler<C3DShapePlugin> >;
+template class TFactoryPluginHandler<C3DShapePlugin>;
+template class TPluginHandler<C3DShapePlugin>;
+template class TShape<T3DVector, C3DBitImage>;
 
 NS_MIA_END

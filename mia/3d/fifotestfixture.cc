@@ -38,9 +38,10 @@ void fifof_Fixture::call_test(C2DImageFifoFilter& filter)const
 	C2DImageFifoFilterSink::Pointer sink(new C2DImageFifoFilterSink());
 	filter.append_filter(sink);
 
-	for (C2DImageStack::const_iterator i = m_in_data.begin();
-	     i != m_in_data.end(); ++i)
+	for (auto i = m_in_data.begin();  i != m_in_data.end(); ++i) {
+		cvdebug() << "push test image of size " << (*i)->get_size() << "\n"; 
 		filter.push(*i);
+	}
 
 	filter.finalize();
 	C2DImageFifoFilterSink::result_type r = sink->result();

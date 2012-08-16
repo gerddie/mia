@@ -100,9 +100,7 @@ typedef struct {float x,y,z,a; } float4;
 
 #ifdef __POWERPC__
 typedef vector float v4sf;
-#else
-
-#if 1 // def __ICC
+#elif __SSE__ 
 typedef __m128 v4sf;
 #define sse_addps   _mm_add_ps
 #define sse_mulps   _mm_mul_ps
@@ -117,21 +115,10 @@ typedef __m128 v4sf;
 #define SSE_HINT_T2 _MM_HINT_T2
 #define SSE_HINT_NTA _MM_HINT_NTA
 
-#else //!__ICC
-typedef __m128 v4sf __attribute__ ((vector_size (16)));
-#define sse_addps  __builtin_ia32_addps
-#define sse_mulps  __builtin_ia32_mulps
-#define sse_shufps __builtin_ia32_shufps
-#define sse_subps  __builtin_ia32_subps
-#define sse_addss  __builtin_ia32_addss
-#define sse_sqrtss __builtin_ia32_sqrtss
-#define sse_prefetch(ADR,DUMMY,HINT)  __builtin_prefetch(ADR,DUMMY,HINT)
-#define SSE_HINT_T0 1
-#define SSE_HINT_T1 2
-#define SSE_HINT_T2 3
-#define SSE_HINT_NTA 0
-#endif //__ICC
+#else 
+typedef float4 v4sf; 
 #endif //__POWERPC__
+
 typedef union {
 	float4 mem;
 	v4sf   xmm;
@@ -399,7 +386,7 @@ inline static float  solve_at(const xchg& b, xchg *v, const xchg& param, const i
 }
 
 #else
-#error compile with SSE (>=Pentium 3) or ALTIVEC (PowerPC > G4) support
+#error need SSE or ALTIVEC support 
 #endif
 
 void C3DNavierRegModel::do_solve(const C3DFVectorfield& b, C3DFVectorfield& v) const

@@ -41,11 +41,6 @@ C2DImageIOPPH::C2DImageIOPPH(const std::list< ::boost::filesystem::path>& search
 	C2DFVectorTranslator::register_for("pixel");
 }
 
-template class TIOPlugin<io_2dimage_type>;
-template class THandlerSingleton<C2DImageIOPPH>;
-template class TIOHandlerSingleton<C2DImageIOPPH>;
-template class TIOPluginHandler<C2DImageIOPlugin>;
-template class TPluginHandler<C2DImageIOPlugin>;
 
 template <> const char *  const 
 TPluginHandler<C2DImageIOPlugin>::m_help =  
@@ -205,4 +200,11 @@ EXPORT_2D const char * IDSmallestImagePixelValue = "SmallestImagePixelValue";
 EXPORT_2D const char * IDLargestImagePixelValue = "LargestImagePixelValue";
 EXPORT_2D const char * IDStudyID = "StudyID";
 EXPORT_2D const char * IDProtocolName = "ProtocolName"; 
+
+template class TIOPlugin<io_2dimage_type>;
+template class THandlerSingleton<C2DImageIOPPH>;
+template class TIOHandlerSingleton<C2DImageIOPPH>;
+template class TIOPluginHandler<C2DImageIOPlugin>;
+template class TPluginHandler<C2DImageIOPlugin>;
+
 NS_MIA_END

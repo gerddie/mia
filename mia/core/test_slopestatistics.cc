@@ -259,9 +259,11 @@ BOOST_FIXTURE_TEST_CASE( test_wavelet_statistics_baseline, WaveletFixture )
 		0.910862f, 
 		1, 
 		1, 
-		{0.57569, 1.26270, 1.61808, 1.08937, 2.30959, 4.21920 }, 
-		{CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_end, CSlopeStatistics::ecp_center, 
-		 CSlopeStatistics::ecp_begin, CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center }, 
+		vector<float>({0.57569f, 1.26270f, 1.61808f, 1.08937f, 2.30959f, 4.21920f }), 
+		vector<CSlopeStatistics::EEnergyCenterpos>(
+			{CSlopeStatistics::ecp_none, CSlopeStatistics::ecp_end, 
+					CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_begin, 
+					CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center }), 
 		CSlopeStatistics::ecp_center
 	}; 
 	check(curve, e); 
@@ -334,10 +336,12 @@ BOOST_FIXTURE_TEST_CASE( test_wavelet_statistics_RV, WaveletFixture )
 		12.3495f, 
 		3, 
 		1, 
-		{6.9179, 12.1628, 18.4302, 30.5213, 9.1098, 7.6350}, 
-		{CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_end, CSlopeStatistics::ecp_begin, 
-		 CSlopeStatistics::ecp_begin, CSlopeStatistics::ecp_begin, CSlopeStatistics::ecp_center }, 
-		CSlopeStatistics::ecp_begin
+		vector<float>({6.9179, 12.1628, 18.4302, 30.5213, 9.1098, 7.6350}), 
+		vector<CSlopeStatistics::EEnergyCenterpos>(
+			{CSlopeStatistics::ecp_none, CSlopeStatistics::ecp_center, 
+					CSlopeStatistics::ecp_begin, CSlopeStatistics::ecp_begin, 
+					CSlopeStatistics::ecp_begin, CSlopeStatistics::ecp_center }), 
+		CSlopeStatistics::ecp_center
 
 	}; 
 	check(curve, e); 
@@ -410,9 +414,10 @@ BOOST_FIXTURE_TEST_CASE( test_wavelet_statistics_perf, WaveletFixture )
 		13.8267f, 
 		1, 
 		1, 
-		{5.9352,  18.0967,  8.2709,    5.0151,    4.6476,    6.4534 }, 
-		{CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_end, CSlopeStatistics::ecp_center, 
-		 CSlopeStatistics::ecp_begin, CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center }, 
+		vector<float>({5.9352,  18.0967,  8.2709,    5.0151,    4.6476,    6.4534 }), 
+		vector<CSlopeStatistics::EEnergyCenterpos>({CSlopeStatistics::ecp_none, CSlopeStatistics::ecp_end, 
+					CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_begin, 
+					CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center }), 
 		CSlopeStatistics::ecp_center
 		
 	}; 
@@ -486,9 +491,10 @@ BOOST_FIXTURE_TEST_CASE( test_wavelet_statistics_mov, WaveletFixture )
 		6.11027f, 
 		5, 
 		17, 
-		{ 2.3575, 4.6265,  6.2766,   10.5313,   41.1598,   76.7153  }, 
-		{CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_end, CSlopeStatistics::ecp_center, 
-		 CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center }, 
+		vector<float>({ 2.3575, 4.6265,  6.2766,   10.5313,   41.1598,   76.7153  }), 
+		vector<CSlopeStatistics::EEnergyCenterpos>({CSlopeStatistics::ecp_none, CSlopeStatistics::ecp_end, 
+					CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center, 
+					CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center }), 
 		CSlopeStatistics::ecp_center
 
 	}; 
@@ -562,9 +568,10 @@ BOOST_FIXTURE_TEST_CASE( test_wavelet_statistics_LV, WaveletFixture )
 		12.9188f, 
 		2,
 		1, 
-		{6.6206, 7.5725, 24.8336, 16.9259,  6.4489, 6.6958}, 
-		{CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_end, CSlopeStatistics::ecp_center, 
-		 CSlopeStatistics::ecp_begin, CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center }, 
+		vector<float>({6.6206, 7.5725, 24.8336, 16.9259,  6.4489, 6.6958}), 
+		vector<CSlopeStatistics::EEnergyCenterpos>({CSlopeStatistics::ecp_none, CSlopeStatistics::ecp_center, 
+					CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_begin, 
+					CSlopeStatistics::ecp_center, CSlopeStatistics::ecp_center }), 
 		CSlopeStatistics::ecp_center
 	}; 
 	check(curve, e); 

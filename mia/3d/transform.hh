@@ -232,13 +232,6 @@ public:
 	 */
 	virtual void reinit() const;
 
-	/**
-	   Save the transformation to some file
-	   @param filename name of the file to save to
-	   @param type file type description
-	   @returns \a true if saving was successfull and \a false if not
-	 */
-	virtual bool save(const std::string& filename, const std::string& type) const = 0;
 
 	/**
 	   Transforation upscaling to new image size
@@ -301,8 +294,8 @@ public:
 	virtual float get_max_transform() const = 0;
 
 	/**
-	   A transformation is defined on [0,X-1]x[0.Y-1]. 
-	   @returns the upper boundaries (X,Y) of this range 
+	   A transformation is defined on [0,X-1]x[0.Y-1]y[0,Z-1]. 
+	   @returns the upper boundaries (X,Y,Z) of this range 
 	 */
 	virtual const C3DBounds& get_size() const = 0;
 

@@ -356,16 +356,6 @@ void C3DSplineTransformation::set_parameters(const CDoubleVector& params)
 	}
 }
 
-bool C3DSplineTransformation::save(const std::string& /*filename*/,
-				   const std::string& /*type*/) const
-{
-	TRACE_FUNCTION;
-	FUNCTION_NOT_TESTED;
-	assert(!"not implemented");
-	return false;
-}
-
-
 bool C3DSplineTransformation::refine()
 {
 	TRACE_FUNCTION;

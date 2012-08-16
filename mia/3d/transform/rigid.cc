@@ -93,17 +93,6 @@ C3DRigidTransformation::C3DRigidTransformation(const C3DBounds& size,const C3DFV
 {
 }
 
-bool C3DRigidTransformation::save(const std::string& filename, const std::string& /*type*/) const
-{
-	ofstream file(filename.c_str());
-	file << "Transformation: 3D\n"
-	     << "Matrix: ";
-	for (size_t i = 0; i < 12 ; ++i)
-		file << m_t[i] << " ";
-	file << "\n";
-	return file.good();
-}
-
 size_t C3DRigidTransformation::degrees_of_freedom() const
 {
 	return 6;
@@ -322,9 +311,9 @@ void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleV
 				r[0] += g->x;
 				r[1] += g->y;
 				r[2] += g->z;
-				r[3] += -z * g->y + y * g->z; 
-				r[4] += -z * g->x + x * g->z; 
-				r[5] += -y * g->x + x * g->y; 
+				r[3] += -float(z) * g->y + float(y) * g->z; 
+				r[4] += -float(z) * g->x + float(x) * g->z; 
+				r[5] += -float(y) * g->x + float(x) * g->y; 
 			}
 	copy(r.begin(), r.end(), params.begin()); 
 }

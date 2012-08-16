@@ -135,12 +135,6 @@ C3DTransformation *C3DTranslateTransformation::invert() const
 	return result; 
 }
 
-bool C3DTranslateTransformation::save(const std::string& /*filename*/, const std::string& /*type*/) const
-{
-	assert(0 && "not implemented");
-
-}
-
 P3DTransformation C3DTranslateTransformation::do_upscale(const C3DBounds& size) const
 {
 

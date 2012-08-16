@@ -180,7 +180,7 @@ void MyFCM::filter_neighborhood(C2DFImage& deltasq)
 	const C2DFImage& h2 = dynamic_cast<const C2DFImage&>(*h); 
 	
 	transform(h2.begin(), h2.end(), deltasq.begin(), deltasq.begin(),
-		  [&m_alpha](float m, float D){return (D + m_alpha * m);});
+		  [this](float m, float D){return (D + m_alpha * m);});
 }
 
 void MyFCM::estimate_prob(const vector<C2DFImage>& deltasq)
@@ -258,7 +258,7 @@ void MyFCM::run()
 			
 			// evaluate D_{ik} = \| \y_k - \beta_k - v_i \|^2  -> deltasq
 			transform(corrected.begin(), corrected.end(), deltasq[i].begin(), 
-				  [&vi](float x){
+				  [&vi](float x) -> float {
 					  const float value = x - vi; 
 					  return value * value; 
 				  }); 
@@ -283,7 +283,7 @@ void MyFCM::run()
 		if (m_p != 2.0) {
 			for (int i = 0; i < nclasses; ++i) {
 				transform(m_probs[i].begin(),  m_probs[i].end(), deltasq[i].begin(), 
-					  [&m_p](float x) { return pow(x, m_p);}); 
+					  [this](float x) { return pow(x, m_p);}); 
 			}
 		} else {
 			for (int i = 0; i < nclasses; ++i) {

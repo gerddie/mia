@@ -34,7 +34,8 @@
 NS_MIA_USE
 using namespace std;
 using namespace boost;
-using namespace morphological_fifof;
+
+namespace morphological_fifof {
 
 template <template <typename, bool> class Compare>
 C2DMorphFifoFilter<Compare>::C2DMorphFifoFilter(P3DShape shape):
@@ -261,5 +262,6 @@ extern "C" EXPORT CPluginBase *get_plugin_interface()
 	return p;
 }
 
-
-
+template class C2DMorphFifoFilter<ErodeCompare>; 
+template class C2DMorphFifoFilter<DilateCompare>; 
+}

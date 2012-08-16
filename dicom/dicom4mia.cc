@@ -60,7 +60,7 @@ const SLookupInit lookup_init[] = {
 	{IDSmallestImagePixelValue, DCM_SmallestImagePixelValue, false, false},
 	{IDLargestImagePixelValue, DCM_LargestImagePixelValue, false, false},
 	{IDInstanceNumber, DCM_InstanceNumber, false, true},
-	{IDStudyID, DCM_StudyID, false, true},
+	{IDStudyID, DCM_StudyID, false, false},
 	{IDImageType, DCM_ImageType, false, true},
 	{IDSliceLocation, DCM_SliceLocation, false, true},
 	{IDPatientOrientation, DCM_PatientOrientation, false, false},

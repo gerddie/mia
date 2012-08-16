@@ -73,4 +73,5 @@ mia2-doc/
 obj-*-linux-gnu
 Notes
 \#*\#
+.emacs.desktop
 

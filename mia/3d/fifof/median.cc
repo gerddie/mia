@@ -25,27 +25,36 @@
 #include <iomanip>
 #include <limits>
 #include <mia/3d/fifof/median.hh>
+#include <tbb/parallel_for.h>
+#include <tbb/blocked_range.h>
+using namespace tbb;
 
 NS_BEGIN(median_2dstack_filter)
 
 NS_MIA_USE
 using namespace std;
-
-template < typename T>
+template <typename T>
 struct __dispatch_median_3dfilter {
-	static T  apply(const T3DImage<T>& data, int x, int y, int start, int end, int width, vector<T>& target_vector) {
-		int idx = 0;
+	static T  apply(const T3DImage<T>& src, int x, int y, int start, int end, int width, vector<T>& target_vector) {
 
-		typename vector<T>::iterator tend = target_vector.begin();
-
-		for (int iz = start; iz < end;  ++iz)
-			for (int iy = max(0, y - width);
-			     iy < min(y + width + 1, (int)data.get_size().y);  ++iy)
-				for (int ix = max(0, x - width);
-				     ix < min(x + width + 1, (int)data.get_size().x);  ++ix) {
-					*tend++ = data(ix,iy,iz);
-					++idx;
-				}
+		size_t xmin = max(x - width, 0); 
+		size_t xmax = min(x + width +1, (int)src.get_size().x); 
+		size_t ymin = max(y - width, 0); 
+		size_t ymax = min(y + width +1, (int)src.get_size().y); 
+		
+		const size_t delta = xmax - xmin; 
+		
+		auto tend = target_vector.begin();
+		for (int z = start; z < end;  ++z) {
+			auto inp_z =  src.begin_at(xmin, ymin, z); 
+			auto inp = inp_z; 
+			
+			for (size_t y = ymin; y < ymax; ++y, inp += src.get_size().x) {
+				copy(inp, inp + delta, tend); 
+				advance(tend, delta);
+			}
+		}
+		int idx = distance(target_vector.begin(), tend); 
 
 		if (idx & 1) {
 			typename vector<T>::iterator mid = target_vector.begin() + idx/2;
@@ -60,7 +69,7 @@ struct __dispatch_median_3dfilter {
 
 template <>
 struct __dispatch_median_3dfilter<C3DBitImage> {
-	static C3DBitImage::value_type apply(C3DBitImage& data, int x, int y, int start, int end, int width,
+	static C3DBitImage::value_type apply(const C3DBitImage& data, int x, int y, int start, int end, int width,
 					     vector<C3DBitImage::value_type>& /*target_vector*/) {
 		int trues = 0;
 		int falses = 0;
@@ -79,24 +88,50 @@ struct __dispatch_median_3dfilter<C3DBitImage> {
 };
 
 template <typename T>
+struct MedianRowThread {
+	mutable vector<T> target_vector; 
+	T2DImage<T> *return_image; 
+	const T3DImage<T>& input_image; 
+	size_t nx; 
+	int sz; 
+	int ez; 
+	int hwidth; 
+
+	MedianRowThread(T2DImage<T> *ri, const T3DImage<T>& ii, size_t _nx, int _sz, int _se, int hw):
+		target_vector((2*hw+1) * (2*hw+1) * (2*hw+1)), 
+		return_image(ri), 
+		input_image(ii), 
+		nx(_nx), 
+		sz(_sz), 
+		ez(_se), 
+		hwidth(hw)
+		{
+		}
+	void operator()( const blocked_range<int>& range ) const {
+		for( int y=range.begin(); y!=range.end(); ++y ) {
+		auto i = return_image->begin_at(0, y);
+		
+		for (size_t x = 0; x < nx; ++x, ++i)
+			*i = __dispatch_median_3dfilter<T>::apply(input_image, x, y,
+								  sz,
+								  ez,
+								  hwidth, target_vector);
+		
+		}
+	}
+	
+}; 
+
+
+template <typename T>
 C2DImage *C2DMedianFifoFilter::operator()(const T3DImage<T>& buffer) const {
 
 	cvdebug() << "filter z range: " << get_start() << ":" << get_end() << "\n";
 
 	T2DImage<T> *retval = new T2DImage<T>(m_slice_size);
-	// do the actual filtering
 
-
-	vector<T> target_vector((2 * m_hw + 1) * (2 * m_hw + 1) * (2 * m_hw + 1));
-
-	typename T2DImage<T>::iterator i = retval->begin();
-
-	for (size_t y = 0; y < m_slice_size.y; ++y)
-		for (size_t x = 0; x < m_slice_size.x; ++x, ++i)
-			*i = __dispatch_median_3dfilter<T>::apply(buffer, x, y,
-								  get_start(),
-								  get_end(),
-								  m_hw, target_vector);
+	MedianRowThread<T> row_thread(retval, buffer, m_slice_size.x, get_start(), get_end(), m_hw); 
+	parallel_for(blocked_range<int>( 0, m_slice_size.y), row_thread);
 
 	return retval;
 }

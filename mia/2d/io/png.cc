@@ -355,6 +355,13 @@ CPngImageSaver::result_type CPngImageSaver::operator ()(const T2DImage<T>& image
 
 
 	vector<png_text>  text_ptr;
+	
+	png_text p; 
+
+	p.key = strdup("Creator");
+	p.text = strdup("MIA 2.0 png image io plugin");
+	p.compression = PNG_TEXT_COMPRESSION_NONE;
+	text_ptr.push_back(p); 
 
 	for (auto iattr = image.begin_attributes(); iattr != image.end_attributes(); ++iattr) {
 		png_text p; 

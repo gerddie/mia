@@ -508,7 +508,7 @@ struct __dispatch_save {
 		const C3DFVector voxel = image.get_voxel_size();
 		fprintf(f, "SPACING %20.10g %20.10g %20.10g \n", voxel.x, voxel.y, voxel.z);
 		fprintf(f, "ORIGIN  0 0 0\n");
-		fprintf(f, "POINT_DATA "FORMAT_SIZE_T"\n", image.size());
+		fprintf(f, "POINT_DATA " FORMAT_SIZE_T "\n", image.size());
 		fprintf(f, "SCALARS scalars %s 1\n", data_type_name<T>::get());
 		return fwrite(&image(0,0,0), sizeof(T), image.size(), f) == image.size();
 	}

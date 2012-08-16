@@ -106,7 +106,7 @@ bool C3DImageCreator::operator() ( const T2DImage<T>& image)
 		m_result.reset(target);
 		m_z = 0;
 		m_pixel_size = image.get_pixel_size();
-		m_slice_pos = image.get_attribute_as<float>(IDSliceLocation);
+		m_slice_pos = image.template get_attribute_as<float>(IDSliceLocation);
 		m_result->delete_attribute("pixel");
 	}else {
 		target = dynamic_cast<T3DImage<T> *>(m_result.get());
@@ -116,7 +116,7 @@ bool C3DImageCreator::operator() ( const T2DImage<T>& image)
 		if (m_size2d != image.get_size()) {
 			THROW(invalid_argument, "Series input images have different slice size");
 		}
-		float new_slice_pos = image.get_attribute_as<float>(IDSliceLocation);
+		float new_slice_pos = image.template get_attribute_as<float>(IDSliceLocation);
 		m_delta_z = new_slice_pos - m_slice_pos;
 		m_slice_pos = new_slice_pos;
 	}

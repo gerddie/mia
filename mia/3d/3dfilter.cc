@@ -49,14 +49,6 @@ C3DImageCombiner::result_type C3DImageCombiner::combine( const C3DImage& a,
 	return do_combine(a,b);
 }
 
-template class TFilterChain<C3DFilterPluginHandler>; 
-
-template class TImageFilter<C3DImage>;
-template class TImageFilterPlugin<C3DImage>;
-template class TPlugin<C3DImage, filter_type>;
-template class THandlerSingleton<TFactoryPluginHandler<C3DFilterPlugin> >;
-template class TFactoryPluginHandler<C3DFilterPlugin>;
-template class TPluginHandler<C3DFilterPlugin>;
 
 template<> const  char * const 
 TPluginHandler<C3DFilterPlugin>::m_help = 
@@ -64,12 +56,6 @@ TPluginHandler<C3DFilterPlugin>::m_help =
    "they take a gray scale image of abitrary pixel type as input, "
    "process it and hand it to the next filter in the pipeline." 
 ; 
-
-template class EXPORT_HANDLER TPlugin<C3DImage, combiner_type>;
-template class EXPORT_HANDLER TFactory<C3DImageCombiner>;
-template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C3DImageCombinerPlugin> >;
-template class TFactoryPluginHandler<C3DImageCombinerPlugin>;
-template class TPluginHandler<C3DImageCombinerPlugin>;
 
 template<> const  char * const 
 TPluginHandler<TFactory<C3DImageCombiner>>::m_help = 
@@ -93,6 +79,19 @@ P3DImage  EXPORT_3D run_filter_chain(P3DImage image, const std::vector<const cha
 	}
 	return image; 
 }
+
+template class TFilterChain<C3DFilterPluginHandler>; 
+template class TImageFilter<C3DImage>;
+template class TImageFilterPlugin<C3DImage>;
+template class TPlugin<C3DImage, filter_type>;
+template class THandlerSingleton<TFactoryPluginHandler<C3DFilterPlugin> >;
+template class TFactoryPluginHandler<C3DFilterPlugin>;
+template class TPluginHandler<C3DFilterPlugin>;
+template class EXPORT_HANDLER TPlugin<C3DImage, combiner_type>;
+template class EXPORT_HANDLER TFactory<C3DImageCombiner>;
+template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C3DImageCombinerPlugin> >;
+template class TFactoryPluginHandler<C3DImageCombinerPlugin>;
+template class TPluginHandler<C3DImageCombinerPlugin>;
 
 
 NS_MIA_END

@@ -27,17 +27,19 @@
 NS_MIA_USE
 using namespace std;
 
+C3DLandmarklistIOTestPath test_path; 
+
 BOOST_AUTO_TEST_CASE( test_available_plugins ) 
 {
 	set<string> expected_plugins = {"lmx", "datapool"};
-	test_availabe_plugins(C3DImageIOPluginHandler::instance(), expected_plugins); 
+	test_availabe_plugins(C3DLandmarklistIOPluginHandler::instance(), expected_plugins); 
 }
 
 BOOST_AUTO_TEST_CASE( test_load_landmarklist_lmx ) 
 {
         string filename(MIA_SOURCE_ROOT"/testdata/landmarks.lmx");
 
-	auto list = C3DImageIOPluginHandler::instance().load(filename); 
+	auto list = C3DLandmarklistIOPluginHandler::instance().load(filename); 
 	
 	BOOST_REQUIRE(list); 
 	BOOST_CHECK_EQUAL(list->size(), 2u); 
@@ -88,9 +90,9 @@ BOOST_AUTO_TEST_CASE( test_save_load_landmarklist_lmx )
 	lm2->set_view(C3DCamera(C3DFVector(4,1,2), Quaternion(2,1,2, 1.5), 3.0)); 
 	list.add(lm2);
 	
-	BOOST_CHECK(C3DImageIOPluginHandler::instance().save("lmtest.lmx", list));
+	BOOST_CHECK(C3DLandmarklistIOPluginHandler::instance().save("lmtest.lmx", list));
 	
-	auto loaded_list = C3DImageIOPluginHandler::instance().load("lmtest.lmx");
+	auto loaded_list = C3DLandmarklistIOPluginHandler::instance().load("lmtest.lmx");
 	
 	BOOST_REQUIRE(loaded_list->size() == 2u); 
 	BOOST_CHECK_EQUAL(loaded_list->get_name(), "name"); 

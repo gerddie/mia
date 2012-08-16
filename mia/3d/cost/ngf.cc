@@ -19,49 +19,6 @@
  */
 
 
-/* 
-   LatexBeginPluginDescription{3D image similarity kernels}
-   
-   \subsection{Normalized Gradient Fields}
-   \label{cost3d:ngf}
-   
-   \begin{description}
-   
-   \item [Plugin:] ngf
-   \item [Description:] This function evaluates the image similarity based on normalized gradient 
-                        fields. Given normalized gradient fields $\n_S$ of the study image and $\n_R$
-			of the reference image various evaluators are implemented: 
-   \begin{itemize}
-   \item cross Cross product based formulation: 
-     \begin{equation}
- 
-     \end{equation}
-   \item dot Dot product based formulation: 
-     \begin{equation}
-        F_{\text{ngf}, \cdot}(\n_S, \n_R) := \frac{1}{2}\int_{\Omega} \left( \n_S(x) \cdot \n_R(x) \right)^2 \text{d}x
-      \end{equation}
-   \item ds 
-     \begin{equation}
-   	F_{\text{ngf}, \cdot\Delta} := \frac{1}{2}  \int_\Omega  
-	\left( \| \n_R(x)\|^2 -
-        \frac{<\n_R(x),\n_S(x)>^2}{\|\n_R(x)\|\|\n_S(x)\|} \right)^2  \text{d}x,
-      \end{equation}
-   \end{itemize}
-
-   \item [Study:] An abitrary gray scale or binary images 
-   \item [Reference:] An abitrary gray scale or binary images 
-   
-   \end{description}
-   
-   \plugtabstart
-   eval &  strimng & Evaluator (cross|dot|ds) & ds  \\
-   \plugtabend
-
-   For further information see \cite{haber05, wollny08a, wollny10b}. 
-
-   LatexEnd  
- */
-
 
 #include <mia/3d/cost/ngf.hh>
 #include <mia/3d/nfg.hh>
@@ -197,7 +154,7 @@ double C3DNFGImageCost::do_value(const mia::C3DImage& a, const mia::C3DImage& /*
 	const C3DFVectorfield ng_a = get_nfg(a);
 	const double sum = inner_product(ng_a.begin(), ng_a.end(), m_ng_ref.begin(), 0.0, 
 					 [](double x, double y) {return x + y;},
-					 [m_evaluator](const C3DFVector ix, const C3DFVector iy) {
+					 [this](const C3DFVector ix, const C3DFVector iy) {
 						 return m_evaluator->cost(ix, iy); 
 					 }); 
 	return 0.5 * sum;

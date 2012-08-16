@@ -160,7 +160,7 @@ void  C2DRegiongrowFifoFilter::grow()
 {
 	queue<C3DBounds> seeds;
 	C3DBitImage::const_iterator i = m_out_buffer.begin();
-
+	
 	for (size_t z = 0; z < get_end(); ++z)
 		for (size_t y = 0; y < m_slice_size.y; ++y)
 			for (size_t x = 0; x < m_slice_size.x; ++x, ++i) {

@@ -96,7 +96,7 @@ public:
 	void set_path(const boost::filesystem::path& path); 
 
 	/**
-	   Set the name of the landmark list 
+	   Set the name of the landmark list
 	   \param name 
 	 */
 	void set_name(const std::string &name); 

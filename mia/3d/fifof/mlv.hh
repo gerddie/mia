@@ -53,9 +53,10 @@ private:
 
 	mia::C2DBounds m_slice_size;
 
-	std::vector<mia::C2DFImage> m_mu_buffer;
-	std::vector<mia::C2DFImage> m_sigma_buffer;
+	std::vector<mia::C2DFImage> m_mu;
+	std::vector<mia::C2DFImage> m_sigma;
 	std::vector<mia::C2DFImage> m_n;
+	std::vector<bool> m_evaluated;
 
 	std::vector<float> m_buf1;
 	std::vector<float> m_buf2;
@@ -65,7 +66,6 @@ private:
 
 	size_t m_hw;
 	size_t m_w;
-	size_t m_read_start;
 	size_t m_start_slice;
 	size_t m_end_slice;
 	size_t m_buf_slice_size;
