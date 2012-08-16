@@ -198,7 +198,7 @@ double C2DSplinePenaltyMock::do_value_and_gradient(const C2DFVectorfield&  coeff
 		result += *ig++; 
 		++ic; 
 	}
-	return result; 
+	return -result; 
 }
 
 C2DSplineTransformPenalty *C2DSplinePenaltyMock::do_clone() const
