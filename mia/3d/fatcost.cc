@@ -150,7 +150,7 @@ void C3DImageFatCostList::transform(const C3DTransformation& transform)
 }
 
 
-C3DFatImageCostPluginHandlerImpl::C3DFatImageCostPluginHandlerImpl(const std::list<boost::filesystem::path>& searchpath)
+C3DFatImageCostPluginHandlerImpl::C3DFatImageCostPluginHandlerImpl(const CPathNameArray& searchpath)
 	:TFactoryPluginHandler<C3DFatImageCostPlugin>(searchpath)
 {
 }

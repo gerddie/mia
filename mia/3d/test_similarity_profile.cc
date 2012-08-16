@@ -51,19 +51,19 @@ BOOST_FIXTURE_TEST_CASE (test_C3DSimilarityProfile_ref10, SimityProfileFixture)
 
 SimityProfileFixture::SimityProfileFixture()
 {
-	list< bfs::path> cost_plugpath;
+	CPathNameArray cost_plugpath;
 	cost_plugpath.push_back(bfs::path("cost"));
 	C3DImageCostPluginHandler::set_search_path(cost_plugpath);
 
-	list< bfs::path> filter_plugpath;
+	CPathNameArray filter_plugpath;
 	filter_plugpath.push_back(bfs::path("filter"));
 	C3DFilterPluginHandler::set_search_path(filter_plugpath);
 
-	list< bfs::path> io_plugpath;
+	CPathNameArray io_plugpath;
 	io_plugpath.push_back(bfs::path("io"));
 	C3DImageIOPluginHandler::set_search_path(io_plugpath);
 
-	list< bfs::path> fullcost_plugpath;
+	CPathNameArray fullcost_plugpath;
 	fullcost_plugpath.push_back(bfs::path("fullcost"));
 	C3DFullCostPluginHandler::set_search_path(fullcost_plugpath);
 

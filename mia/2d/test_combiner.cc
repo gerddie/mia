@@ -33,7 +33,7 @@ namespace bfs=boost::filesystem;
 
 BOOST_AUTO_TEST_CASE( test_load_plugins ) 
 {	
-	list< bfs::path> plugpath;
+	CPathNameArray plugpath;
 	plugpath.push_back(bfs::path("combiner"));
 	C2DImageCombinerPluginHandler::set_search_path(plugpath);
 

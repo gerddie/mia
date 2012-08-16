@@ -125,7 +125,7 @@ protected:
 	/**
 	   constructor that is provided with a list of plugin search path. 
 	 */
-	TIOPluginHandler(const std::list< ::boost::filesystem::path>& searchpath); 
+	TIOPluginHandler(const CPathNameArray& searchpath); 
 
 private: 	
 	// a map of plugins 
@@ -172,7 +172,7 @@ public:
 	   Constructor used to override the plugin search path for testing 
 	   \param searchpath 
 	 */
-	TIOHandlerSingleton(const std::list<boost::filesystem::path>& searchpath):
+	TIOHandlerSingleton(const CPathNameArray& searchpath):
 		THandlerSingleton<T>(searchpath)
 		{
 		}
@@ -204,7 +204,7 @@ public:
    \remark what is this for? 
 */
 template <typename T>
-T load_image(const std::string& filename)
+T load_image(const std::string& filename UNUSED)
 {
 	return T(); 
 }

@@ -81,7 +81,7 @@ public:
 ///   \brief Obsolete, to be removed 
 class EXPORT_3D C3DFatImageCostPluginHandlerImpl: public TFactoryPluginHandler<C3DFatImageCostPlugin> {
 public:
-	C3DFatImageCostPluginHandlerImpl(const std::list<boost::filesystem::path>& searchpath);
+	C3DFatImageCostPluginHandlerImpl(const CPathNameArray& searchpath);
 	C3DImageFatCost *create_directly(const std::string& plugin, P3DImage src, P3DImage ref,
 					P3DInterpolatorFactory ipf, float weight) const;
 };

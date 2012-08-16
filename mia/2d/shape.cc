@@ -65,8 +65,7 @@ TPluginHandler<TFactory<C2DShape>>::m_help =  "These plug-ins define 2D structur
 using boost::filesystem::path; 
 C2DShapePluginHandlerTestPath::C2DShapePluginHandlerTestPath()
 {
-	list< path> sksearchpath; 
-	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/2d/shapes"));
+	CPathNameArray sksearchpath({path(MIA_BUILD_ROOT"/mia/2d/shapes")});
 	C2DShapePluginHandler::set_search_path(sksearchpath); 
 	
 }

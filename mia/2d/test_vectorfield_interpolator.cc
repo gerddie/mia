@@ -50,7 +50,7 @@ struct FieldSplineFixture {
 
 		std::shared_ptr<T2DInterpolator<C2DFVector>  > source(ipf.create(field));
 
-		list< bfs::path> kernelsearchpath;
+		CPathNameArray kernelsearchpath;
 		kernelsearchpath.push_back(bfs::path("../core/spacialkernel"));
 		C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
 

@@ -126,9 +126,7 @@ CSplineBoundaryCondition *CSplineBoundaryConditionPlugin::do_create() const
 using boost::filesystem::path; 
 CSplineBoundaryConditionTestPath::CSplineBoundaryConditionTestPath()
 {
-	list< path> sksearchpath; 
-	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/core/splinebc"));
-	CSplineBoundaryConditionPluginHandler::set_search_path(sksearchpath); 
+	CSplineBoundaryConditionPluginHandler::set_search_path({path(MIA_BUILD_ROOT"/mia/core/splinebc")}); 
 	
 }
 

@@ -183,9 +183,7 @@ BOOST_AUTO_TEST_CASE ( test_histogram_gauss_noise )
 
 	vector<double> data;
 
-	list< bfs::path> noisesearchpath;
-	noisesearchpath.push_back(bfs::path("noise"));
-	CNoiseGeneratorPluginHandler::set_search_path(noisesearchpath);
+	CNoiseGeneratorPluginHandler::set_search_path({bfs::path("noise")});
 
 	const CNoiseGeneratorPluginHandler::Instance&  ngp = CNoiseGeneratorPluginHandler::instance();
 

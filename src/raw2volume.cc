@@ -95,7 +95,8 @@ void handle_endian(I b, I e)
 			++b;
 		}
 		break;
-		// default:
+	default: // just to silence the warning
+		return; 
 	}
 }
 

@@ -135,8 +135,6 @@ P3DTransformation C3DRigidRegisterImpl::run(P3DImage src, P3DImage ref) const
 
 	P3DTransformation transform;
 
-	C3DBounds global_size = src->get_size();
-
 	int x_shift = m_mg_levels + 1;
 	int y_shift = m_mg_levels + 1;
 	int z_shift = m_mg_levels + 1;

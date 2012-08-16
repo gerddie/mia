@@ -80,8 +80,8 @@ public:
 	/**
 	   Evaluate the penalty and the gradient of a spline transformation defined by its coefficients 
 	   \param coefficients the spline transformation coefficients 
-	   \param gradient[out] the weighted gradient of the spline transformation penalty given so that 
-	   coefficients + \delta gradient moves toward the minimum of the penalty term.
+	   \param[out] gradient the weighted gradient of the spline transformation penalty given so that 
+	   coefficients + \f$\delta\f$ gradient moves toward the minimum of the penalty term.
 	   \returns the weighted penalty
 	 */
 
@@ -97,7 +97,7 @@ protected:
 	
 	PSplineKernel get_kernel() const;        
 
-	const double get_weight() const; 
+	double get_weight() const; 
 
 private:
 

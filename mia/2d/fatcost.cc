@@ -155,7 +155,7 @@ void C2DImageFatCostList::transform(const C2DTransformation& transform)
 }
 
 
-C2DFatImageCostPluginHandlerImpl::C2DFatImageCostPluginHandlerImpl(const std::list<boost::filesystem::path>& searchpath)
+C2DFatImageCostPluginHandlerImpl::C2DFatImageCostPluginHandlerImpl(const CPathNameArray& searchpath)
 	:TFactoryPluginHandler<C2DFatImageCostPlugin>(searchpath)
 {
 }

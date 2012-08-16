@@ -53,6 +53,7 @@ using namespace boost;
 using namespace boost::unit_test;
 namespace bfs = ::boost::filesystem;
 
+CSplineBoundaryConditionTestPath sbc_test_path; 
 CSplineKernelTestPath init_path; 
 
 template <typename T>
@@ -158,7 +159,7 @@ void check_translation()
 
 static void handler_setup()
 {
-	std::list< bfs::path> searchpath;
+	CPathNameArray searchpath;
 	searchpath.push_back(bfs::path("."));
 
 	C2DImageIOPluginHandler::set_search_path(searchpath);
@@ -170,10 +171,10 @@ static void handler_setup()
 	C2DTransformationIOPluginHandler::set_search_path(searchpath);
 	C3DTransformationIOPluginHandler::set_search_path(searchpath);
 
-	std::list< bfs::path> tc2_searchpath; 
+	CPathNameArray tc2_searchpath; 
 	tc2_searchpath.push_back(bfs::path("../mia/2d/transform"));
 
-	std::list< bfs::path> tc3_searchpath; 
+	CPathNameArray tc3_searchpath; 
 	tc3_searchpath.push_back(bfs::path("../mia/3d/transform"));
 
 	C2DTransformCreatorHandler::set_search_path(tc2_searchpath);

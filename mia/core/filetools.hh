@@ -25,9 +25,13 @@
 #include <vector>
 
 #include <mia/core/defines.hh>
+#include <boost/filesystem/path.hpp>
 
 NS_MIA_BEGIN
 
+typedef std::vector<boost::filesystem::path> CPathNameArray; 
+
+CPathNameArray find_files(const CPathNameArray& searchpath, const std::string& pattern); 
 
 /**
    \ingroup misc

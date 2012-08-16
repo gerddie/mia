@@ -110,7 +110,7 @@ const string C2DSeparableConvoluteFilterPlugin::do_get_descr()const
 
 void C2DSeparableConvoluteFilterPlugin::prepare_path() const
 {
-	list< bfs::path> kernelsearchpath;
+	CPathNameArray kernelsearchpath;
 	kernelsearchpath.push_back(bfs::path("..")/bfs::path("..")/bfs::path("core")/bfs::path("spacialkernel"));
 	C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
 }

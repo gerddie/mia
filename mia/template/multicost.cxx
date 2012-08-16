@@ -19,7 +19,6 @@
  */
 
 #include <sstream>
-#include <boost/lambda/lambda.hpp>
 
 NS_MIA_BEGIN
 
@@ -69,7 +68,7 @@ double TFullCostList<T>::do_evaluate(const T& t, CDoubleVector& gradient) const
 		msg << h << "("<< (*i)->get_init_string() << ") "; 
 		result += h; 
 		transform(gradient.begin(), gradient.end(), tmp.begin(), gradient.begin(), 
-			  boost::lambda::_1 + boost::lambda::_2); 
+			  [](double x, double y){return x+y;}); 
 	}
 	cvinfo() << msg.str() << " = " << result << "\n"; 
 	return result; 

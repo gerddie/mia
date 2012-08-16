@@ -95,6 +95,9 @@ NS_MIA_END
 #ifndef __GNUC__
 // remove the __attribute__ syntax if the compiler is not GCC compatible 
 #  define __attribute__(x) 
+#  define UNUSED 
+#else 
+#  define UNUSED __attribute__((unused))
 #endif
 
 #ifdef miacore_EXPORTS

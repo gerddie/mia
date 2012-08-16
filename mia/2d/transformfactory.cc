@@ -29,8 +29,7 @@ template class TTransformCreatorPlugin<C2DTransformation>;
 
 C2DTransformCreatorHandlerTestPath::C2DTransformCreatorHandlerTestPath()
 {
-	list< bfs::path> kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path(MIA_BUILD_ROOT"/mia/2d/transform"));
+	CPathNameArray kernelsearchpath({bfs::path(MIA_BUILD_ROOT"/mia/2d/transform")});
 	C2DTransformCreatorHandler::set_search_path(kernelsearchpath);
 }
 

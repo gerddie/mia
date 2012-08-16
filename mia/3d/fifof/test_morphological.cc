@@ -38,7 +38,7 @@ struct MorpologicalFilter_Fixture: public fifof_Fixture  {
 
 MorpologicalFilter_Fixture::MorpologicalFilter_Fixture()
 {
-	list< bfs::path> searchpath;
+	CPathNameArray searchpath;
 	searchpath.push_back(bfs::path("..")/bfs::path("shapes"));
 	C3DShapePluginHandler::set_search_path(searchpath);
 	m_shape = C3DShapePluginHandler::instance().produce("6n");

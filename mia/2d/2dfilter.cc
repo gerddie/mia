@@ -74,8 +74,7 @@ using boost::filesystem::path;
 C2DFilterPluginHandlerTestPath::C2DFilterPluginHandlerTestPath()
 {
 	C2DShapePluginHandlerTestPath filter_test_path;
-	list< path> sksearchpath; 
-	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/2d/filter"));
+	CPathNameArray sksearchpath({path(MIA_BUILD_ROOT"/mia/2d/filter")});
 	C2DFilterPluginHandler::set_search_path(sksearchpath); 
 }
 

@@ -147,7 +147,7 @@ public:
 ///  brief Obsolete, to be removed 
 class EXPORT_2D C2DFatImageCostPluginHandlerImpl: public TFactoryPluginHandler<C2DFatImageCostPlugin> {
 public:
-	C2DFatImageCostPluginHandlerImpl(const std::list<boost::filesystem::path>& searchpath);
+	C2DFatImageCostPluginHandlerImpl(const CPathNameArray& searchpath);
 	P2DImageFatCost create_directly(const std::string& plugin, P2DImage src, P2DImage ref,
 					P2DInterpolatorFactory ipf,
 					float weight) const;

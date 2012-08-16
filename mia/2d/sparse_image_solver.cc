@@ -61,8 +61,7 @@ using boost::filesystem::path;
 using std::list; 
 C2DImageSparseSolverTestPath::C2DImageSparseSolverTestPath() 
 {
-	list< path> sksearchpath; 
-	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/2d/sparsimgsolver"));
+	CPathNameArray sksearchpath({path(MIA_BUILD_ROOT"/mia/2d/sparsimgsolver")});
 	C2DImageSparseSolverPluginHandler::set_search_path(sksearchpath); 
 }
 

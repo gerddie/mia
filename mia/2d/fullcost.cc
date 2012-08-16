@@ -51,8 +51,7 @@ template class TFullCost<C2DTransformation>;
 
 C2DFullCostPluginHandlerTestPath::C2DFullCostPluginHandlerTestPath()
 {
-	list< bfs::path> cost_plugpath;
-	cost_plugpath.push_back(bfs::path("fullcost"));
+	CPathNameArray cost_plugpath({bfs::path("fullcost")});
 	C2DFullCostPluginHandler::set_search_path(cost_plugpath);
 }
 

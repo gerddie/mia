@@ -32,7 +32,7 @@ void SetPluginpath()
 {
 	static bool run = false;
 	if (!run) {
-		list< bfs::path> kernelsearchpath;
+		CPathNameArray kernelsearchpath;
 		kernelsearchpath.push_back(bfs::path("..")/bfs::path("shapes"));
 		C3DShapePluginHandler::set_search_path(kernelsearchpath);
 		run = true;

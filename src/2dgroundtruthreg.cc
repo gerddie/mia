@@ -25,7 +25,6 @@
 #include <map>
 #include <ctime>
 #include <cstdlib>
-#include <boost/lambda/lambda.hpp>
 #include <mia/core.hh>
 
 #include <libxml++/libxml++.h>

@@ -62,7 +62,7 @@ double C2DSplineTransformPenalty::value_and_gradient(const C2DFVectorfield&  coe
 
 	double value =  m_weight * do_value_and_gradient(coefficients, gradient); 
 	transform(gradient.begin(), gradient.end(), gradient.begin(), 
-		  [&m_weight](double x) { return - m_weight * x;}); 
+		  [this](double x) { return - m_weight * x;}); 
 	return value; 
 }
 
@@ -81,7 +81,7 @@ PSplineKernel C2DSplineTransformPenalty::get_kernel() const
 	return m_kernel; 
 }
 
-const double C2DSplineTransformPenalty::get_weight() const
+double C2DSplineTransformPenalty::get_weight() const
 {
 	return m_weight; 
 }
@@ -98,12 +98,12 @@ C2DSplineTransformPenaltyPluginHandler::ProductPtr produce_2d_spline_transform_p
 	return C2DSplineTransformPenaltyPluginHandler::instance().produce(descr); 
 }
 
-EXPLICIT_INSTANCE_HANDLER(C2DSplineTransformPenalty);
 
 template<> const  char * const 
 TPluginHandler<TFactory<C2DSplineTransformPenalty>>::m_help = 
     "These plug-ins provides penalty terms to enforce smoothness of spline based 2D transformation.";
 
+EXPLICIT_INSTANCE_HANDLER(C2DSplineTransformPenalty);
 
 
 NS_MIA_END

@@ -252,7 +252,7 @@ struct FTaggedSSDAccumulator :public TFilter<bool> {
 		assert(src.size() == ref.size()); 
 		m_value += std::inner_product (src.begin(), src.end(), ref.begin(), 0.0, 
 					       [](double x, double y) { return x + y;}, 
-					       [](double x, double y) { double d = x - y; return d*d; }); 
+					       [](double x, double y) -> double { double d = x - y; return d*d; }); 
 		return true; 
 	}; 
 	double get_value() const {

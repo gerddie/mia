@@ -19,7 +19,6 @@
  */
 
 #include <boost/algorithm/minmax_element.hpp>
-#include <boost/lambda/lambda.hpp>
 #include <mia/core/msgstream.hh>
 
 NS_MIA_BEGIN
@@ -44,7 +43,8 @@ typename TInvert<Image>::result_type TInvert<Image>::operator () (const Data& da
 	
 	Data *result = new Data(data.get_size(), data); 
 
-	transform(ib, ie, result->begin(), *src_minmax.second - ::boost::lambda::_1 + *src_minmax.first); 
+	transform(ib, ie, result->begin(), [src_minmax](typename Data::value_type x){
+			return *src_minmax.second - x + *src_minmax.first;}); 
 
 	return typename TInvert::result_type(result);
 }

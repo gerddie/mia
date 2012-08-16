@@ -20,7 +20,6 @@
 
 #include <cmath>
 #include <limits>
-#include <boost/lambda/lambda.hpp>
 #include <mia/core/spacial_kernel.hh>
 
 NS_BEGIN(gauss_1d_folding_kernel)

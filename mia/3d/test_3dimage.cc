@@ -26,12 +26,15 @@
 #include <mia/3d/3DImage.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/boundary_conditions.hh>
 
 
 
 NS_MIA_USE
 using namespace boost;
 using namespace std;
+
+CSplineBoundaryConditionTestPath sbc_test_path; 
 
 class CCopyFilter: public TFilter<std::shared_ptr<C3DImage>  > {
 public:

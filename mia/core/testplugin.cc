@@ -58,7 +58,7 @@ CTestPlugin::CTestPlugin(const char *name):
 {
 }
 
-CTestPluginHandlerImpl::CTestPluginHandlerImpl(const std::list<boost::filesystem::path>& searchpath):
+CTestPluginHandlerImpl::CTestPluginHandlerImpl(const CPathNameArray& searchpath):
 	TPluginHandler<CTestPlugin>(searchpath)
 {
 }

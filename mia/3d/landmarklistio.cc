@@ -33,7 +33,7 @@ TPluginHandler<C3DLandmarklistIOPlugin>::m_help =
 
 C3DLandmarklistIOTestPath::C3DLandmarklistIOTestPath() 
 {
-	list< boost::filesystem::path> sksearchpath; 
+	CPathNameArray sksearchpath; 
 	sksearchpath.push_back( boost::filesystem::path(MIA_BUILD_ROOT"/mia/3d/lmio"));
 	C3DLandmarklistIOPluginHandler::set_search_path(sksearchpath); 
 

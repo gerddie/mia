@@ -30,7 +30,7 @@ CSplineKernelTestPath spline_kernel_set_test_path;
 
 BOOST_AUTO_TEST_CASE( test_2dimage_cost_avail )
 {
-	list< bfs::path> searchpath; 
+	CPathNameArray searchpath; 
 	
 	searchpath.push_back(bfs::path("cost")); 
 

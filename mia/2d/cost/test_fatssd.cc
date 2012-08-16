@@ -33,7 +33,7 @@ CSplineKernelTestPath spline_kernel_path_init;
 struct C2DSSDFixture {
 	C2DSSDFixture() {
 		cvdebug() << "Init fixture\n";
-		list< bfs::path> plugpath;
+		CPathNameArray plugpath;
 		plugpath.push_back(bfs::path("./"));
 		C2DImageCostPluginHandler::set_search_path(plugpath);
 	}

@@ -33,7 +33,7 @@ using namespace boost;
 using boost::filesystem::path; 
 C3DFilterPluginHandlerTestPath::C3DFilterPluginHandlerTestPath()
 {
-	list< path> searchpath; 
+	CPathNameArray searchpath; 
 	searchpath.push_back( path(MIA_BUILD_ROOT"/mia/3d/filter"));
 	C3DFilterPluginHandler::set_search_path(searchpath); 
 }

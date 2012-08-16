@@ -61,7 +61,7 @@ struct __adjust<T3DVector<int> > {
 using boost::filesystem::path; 
 C3DShapePluginHandlerTestPath::C3DShapePluginHandlerTestPath()
 {
-	list< path> sksearchpath; 
+	CPathNameArray sksearchpath; 
 	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/3d/shapes"));
 	C3DShapePluginHandler::set_search_path(sksearchpath); 
 }

@@ -54,10 +54,7 @@ const char *minimizer_property = "CMinimizerMock";
 
 BOOST_AUTO_TEST_CASE( test_load_minimizer_plugins )	
 {
-	list< bfs::path> searchpath; 
-
-	searchpath.push_back( bfs::path("minimizer"));
-	
+	CPathNameArray  searchpath({bfs::path("minimizer")}); 
 	CMinimizerPluginHandler::set_search_path(searchpath); 
 
 	const CMinimizerPluginHandler::Instance& handler = CMinimizerPluginHandler::instance();

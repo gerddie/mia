@@ -76,7 +76,7 @@ bool  C2DSSDFatImageCostPlugin::do_test() const
 void C2DSSDFatImageCostPlugin::prepare_path() const
 {
 	TRACE("C2DSSDFatImageCostPlugin::prepare_path");
-	list< bfs::path> costsearchpath;
+	CPathNameArray costsearchpath;
 	costsearchpath.push_back( bfs::path("."));
 	C2DImageCostPluginHandler::set_search_path(costsearchpath);
 

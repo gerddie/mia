@@ -113,11 +113,11 @@ const C2DTransformCreatorHandler::Instance& PrepareTransIOTests::transform_handl
 
 PrepareTransIOTests::PrepareTransIOTests()
 {
-	list< bfs::path> transformio_plugpath;
+	CPathNameArray transformio_plugpath; 
 	transformio_plugpath.push_back(bfs::path("transio"));
 	C2DTransformationIOPluginHandler::set_search_path(transformio_plugpath);
 	
-	list< bfs::path> transform_searchpath;
+	CPathNameArray transform_searchpath;
 	transform_searchpath.push_back(bfs::path("transform"));
 	C2DTransformCreatorHandler::set_search_path(transform_searchpath);
 

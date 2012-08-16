@@ -37,7 +37,7 @@ TPluginHandler<TFactory<C3DImageCost>>::m_help =
 using boost::filesystem::path; 
 C3DImageCostPluginHandlerTestPath::C3DImageCostPluginHandlerTestPath()
 {
-	list< bfs::path> costsearchpath;
+	CPathNameArray costsearchpath;
 	costsearchpath.push_back( path(MIA_BUILD_ROOT"/mia/3d/cost") );
 	C3DImageCostPluginHandler::set_search_path(costsearchpath);
 	

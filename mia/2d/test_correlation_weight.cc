@@ -153,7 +153,7 @@ namespace bfs=boost::filesystem;
 
 FixPluginpath::FixPluginpath()
 {
-	list< bfs::path> minimizerpath;
+	CPathNameArray minimizerpath;
 	minimizerpath.push_back(bfs::path("../core/minimizer"));
 	CMinimizerPluginHandler::set_search_path(minimizerpath); 
 }

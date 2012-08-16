@@ -101,7 +101,7 @@ protected:
 	*/
 
 	
-	TFactoryPluginHandler(const std::list<boost::filesystem::path>& searchpath); 
+	TFactoryPluginHandler(const CPathNameArray& searchpath); 
         //@}
 public: 
 	/// The type of the the object this plug in hander produces 
@@ -193,7 +193,7 @@ typename TFactory<I>::Product *TFactory<I>::create(const CParsedOptions& options
 }
 
 template <typename  I>
-TFactoryPluginHandler<I>::TFactoryPluginHandler(const std::list<boost::filesystem::path>& searchpath):
+TFactoryPluginHandler<I>::TFactoryPluginHandler(const CPathNameArray& searchpath):
 	TPluginHandler< I >(searchpath), 
 	m_cache(this->get_descriptor())
 {

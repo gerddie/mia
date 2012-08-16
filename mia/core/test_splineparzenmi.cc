@@ -121,8 +121,7 @@ SplineMutualInformationFixture::SplineMutualInformationFixture():
         moving(moving_init_data, moving_init_data + size), 
         bins(64)
 {        
-	list< bfs::path> sksearchpath; 
-	sksearchpath.push_back( bfs::path("splinekernel"));
+	CPathNameArray sksearchpath({bfs::path("splinekernel")});
 	CSplineKernelPluginHandler::set_search_path(sksearchpath); 
 
         rkernel = CSplineKernelPluginHandler::instance().produce("bspline:d=0");  

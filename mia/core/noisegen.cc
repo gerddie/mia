@@ -63,9 +63,7 @@ double CNoiseGenerator::ranf() const
 using boost::filesystem::path; 
 CNoiseGeneratorPluginHandlerTestPath::CNoiseGeneratorPluginHandlerTestPath()
 {
-	list< path> sksearchpath; 
-	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/core/noise"));
-	CNoiseGeneratorPluginHandler::set_search_path(sksearchpath); 
+	CNoiseGeneratorPluginHandler::set_search_path({path(MIA_BUILD_ROOT"/mia/core/noise")}); 
 }
 
 template<> const char * const 

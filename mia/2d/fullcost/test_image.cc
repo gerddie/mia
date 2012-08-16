@@ -40,15 +40,15 @@ CSplineKernelTestPath init_splinekernel_path;
 
 struct InitSplinekernelTestPath {
 	InitSplinekernelTestPath() {
-		list< bfs::path> cost_plugpath;
+		CPathNameArray cost_plugpath;
 		cost_plugpath.push_back(bfs::path("../cost"));
 		C2DImageCostPluginHandler::set_search_path(cost_plugpath);
 		
-		list< bfs::path> filter_plugpath;
+		CPathNameArray filter_plugpath;
 		filter_plugpath.push_back(bfs::path("../filter"));
 		C2DFilterPluginHandler::set_search_path(filter_plugpath);
 		
-		list< bfs::path> io_plugpath;
+		CPathNameArray io_plugpath;
 		io_plugpath.push_back(bfs::path("../io"));
 		C2DImageIOPluginHandler::set_search_path(io_plugpath);
 		
