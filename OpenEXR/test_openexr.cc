@@ -37,7 +37,7 @@ struct PathInitFixture {
 
 PathInitFixture::PathInitFixture()
 {
-	std::list< bfs::path> searchpath;
+	CPathNameArray searchpath;
 	searchpath.push_back(bfs::path("."));
 
 	C2DImageIOPluginHandler::set_search_path(searchpath);

@@ -41,19 +41,13 @@ struct DummyPluginFixture {
 
 DummyPluginFixture::DummyPluginFixture()
 {
-	std::list<bfs::path> searchpath;
-	searchpath.push_back(bfs::path("testplug"));
-	CTestIOPluginHandler::set_search_path(searchpath);
+	CTestIOPluginHandler::set_search_path({bfs::path("testplug")});
 }
 
 
 BOOST_FIXTURE_TEST_CASE(  test_dummy_io, DummyPluginFixture )
 {
-	std::list<bfs::path> searchpath;
-
-	searchpath.push_back(bfs::path("testplug"));
-
-	CTestIOPluginHandler::set_search_path(searchpath);
+	CTestIOPluginHandler::set_search_path({bfs::path("testplug")});
 
 	const CTestIOPluginHandler::Instance&  handler = CTestIOPluginHandler::instance();
 

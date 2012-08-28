@@ -43,9 +43,7 @@ struct InterpolatorIDFixture  {
 
 struct Initialiaze {
 	Initialiaze() {
-		list< bfs::path> sksearchpath; 
-		sksearchpath.push_back( bfs::path("splinekernel"));
-		CSplineKernelPluginHandler::set_search_path(sksearchpath); 
+		CSplineKernelPluginHandler::set_search_path({bfs::path("splinekernel")}); 
 	}
 }; 
 

@@ -61,7 +61,7 @@ public:
 
 class CFactoryMockPluginHandler : public TFactoryPluginHandler<CFactoryMock> {
 public: 
-	CFactoryMockPluginHandler(const std::list<boost::filesystem::path>& searchpath):
+	CFactoryMockPluginHandler(const CPathNameArray& searchpath):
 		TFactoryPluginHandler<CFactoryMock>(searchpath)
 	{
 		add_plugin(new CFactoryMock()); 

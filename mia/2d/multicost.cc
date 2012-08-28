@@ -18,7 +18,6 @@
  *
  */
 
-#include <boost/lambda/lambda.hpp>
 #include <mia/2d/multicost.hh>
 #include <mia/template/multicost.cxx>
 

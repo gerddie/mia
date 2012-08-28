@@ -322,12 +322,11 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors1, CmdlineParserFixture )
 	options.push_back("self1");
 	options.push_back("-H2u16");
 	bool bool_value = false;
-	bool dummy; 
 
 	CCmdOptionList olist(general_help);
 	olist.add(make_opt(bool_value, "bool", 'H', "a bool option"));
 
-	BOOST_CHECK_THROW(dummy = (olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no), invalid_argument); 
+	BOOST_CHECK_THROW((olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no), invalid_argument); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_missing_argument_short, CmdlineParserFixture )
@@ -359,12 +358,11 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors2, CmdlineParserFixture )
 	options.push_back("self1");
 	options.push_back("-H2u16");
 	bool bool_value = false;
-	bool dummy; 
+
 	CCmdOptionList olist(general_help);
 	olist.add(make_opt(bool_value, "bool", 'H', "a bool option"));
 
-	BOOST_CHECK_THROW(dummy = (olist.parse(options.size(), &options[0]) 
-				   == CCmdOptionList::hr_no), invalid_argument); 
+	BOOST_CHECK_THROW((olist.parse(options.size(), &options[0]) == CCmdOptionList::hr_no), invalid_argument); 
 }
 
 const SProgramDescription general_help_test = {

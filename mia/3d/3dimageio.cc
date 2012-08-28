@@ -68,7 +68,7 @@ bool EXPORT_3D  save_image(const std::string& filename, P3DImage image)
 
 C3DImageIOPluginHandlerTestPath::C3DImageIOPluginHandlerTestPath()
 {
-	std::list< bfs::path> searchpath;
+	CPathNameArray searchpath;
 	searchpath.push_back(bfs::path(MIA_BUILD_ROOT"/mia/3d/io"));
 	C3DImageIOPluginHandler::set_search_path(searchpath);
 	

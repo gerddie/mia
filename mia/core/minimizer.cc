@@ -20,7 +20,6 @@
 
 #include <stdexcept>
 #include <sstream>
-#include <boost/lambda/lambda.hpp>
 #include <algorithm>
 #include <mia/core/minimizer.hh>
 #include <mia/core/errormacro.hh>

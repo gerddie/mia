@@ -38,10 +38,7 @@ namespace bfs = ::boost::filesystem;
 
 BOOST_AUTO_TEST_CASE( test_dummy_plugin_handler )
 {
-	std::list<bfs::path> searchpath;
-	searchpath.push_back(bfs::path("testplug"));
-
-	CTestPluginHandler::set_search_path(searchpath);
+	CTestPluginHandler::set_search_path({bfs::path("testplug")});
 
 	const CTestPluginHandler::Instance& handler = CTestPluginHandler::instance();
 

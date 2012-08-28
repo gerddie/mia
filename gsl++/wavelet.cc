@@ -31,7 +31,7 @@ using std::copy;
 namespace gsl {
 
 
-class C1DWaveletImpl {
+struct C1DWaveletImpl {
 public:
 	C1DWaveletImpl(EWaveletType wt, size_t k); 
 

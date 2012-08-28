@@ -47,8 +47,7 @@ template class EXPORT_HANDLER TCost<C2DImage, C2DFVectorfield>;
 
 C2DImageCostPluginHandlerTestPath::C2DImageCostPluginHandlerTestPath()
 {
-	list< bfs::path> cost_kernel_plugpath;
-	cost_kernel_plugpath.push_back(bfs::path("cost"));
+	CPathNameArray cost_kernel_plugpath({bfs::path("cost")});
 	C2DImageCostPluginHandler::set_search_path(cost_kernel_plugpath);
 
 }

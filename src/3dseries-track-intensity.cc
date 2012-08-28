@@ -112,7 +112,7 @@ int do_main( int argc, char *argv[] )
 
 	vector<C3DBounds> points(points_descr.size()); 
 	transform(points_descr.begin(), points_descr.end(), points.begin(), 
-		  [](const string& s) {
+		  [] (const string& s) -> C3DBounds {
 			  istringstream v(s); 
 			  C3DBounds result; 
 			  v >> result; 

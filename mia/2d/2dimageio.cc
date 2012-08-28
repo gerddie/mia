@@ -35,7 +35,7 @@ C2DImageVector *C2DImageVector::clone() const
 	return new C2DImageVector(*this);
 }
 
-C2DImageIOPPH::C2DImageIOPPH(const std::list< ::boost::filesystem::path>& searchpath):
+C2DImageIOPPH::C2DImageIOPPH(const CPathNameArray& searchpath):
 	TIOPluginHandler<C2DImageIOPlugin>(searchpath)
 {
 	C2DFVectorTranslator::register_for("pixel");
@@ -182,8 +182,7 @@ C2DImageGroupedSeries  EXPORT_2D load_image_series(const std::vector<std::string
 
 C2DImageIOPluginHandlerTestPath::C2DImageIOPluginHandlerTestPath()
 {
-	std::list< bfs::path> searchpath;
-	searchpath.push_back(bfs::path("."));
+	CPathNameArray searchpath({bfs::path(".")});
 	C2DImageIOPluginHandler::set_search_path(searchpath);
 }
 

@@ -28,7 +28,7 @@ NS_MIA_USE;
 
 struct RegiongrowFixture: public fifof_Fixture {
 	RegiongrowFixture() {
-		list< bfs::path> searchpath;
+		CPathNameArray searchpath;
 		searchpath.push_back(bfs::path("..")/bfs::path("shapes"));
 		C3DShapePluginHandler::set_search_path(searchpath);
 	}

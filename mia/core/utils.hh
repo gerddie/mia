@@ -22,7 +22,6 @@
 #ifndef __MIA_TOOLS_HH
 #define __MIA_TOOLS_HH 1
 
-#include <list>
 #include <limits>
 #include <string>
 #include <sstream>
@@ -48,7 +47,7 @@ public:
 	~CCWDSaver();
 };
 
-#ifndef WIN32
+#if 0
 /**
    \ingroup misc
    \brief a functor to search  for files 

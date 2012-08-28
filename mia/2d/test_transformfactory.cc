@@ -40,7 +40,7 @@ struct HandlerTestFixture {
 HandlerTestFixture::HandlerTestFixture()
 {
 
-	list< bfs::path> kernelsearchpath;
+	CPathNameArray kernelsearchpath;
 	kernelsearchpath.push_back(bfs::path("transform"));
 	C2DTransformCreatorHandler::set_search_path(kernelsearchpath);
 }

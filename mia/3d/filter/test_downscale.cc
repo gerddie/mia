@@ -32,11 +32,11 @@ using namespace downscale_3dimage_filter;
 
 BOOST_AUTO_TEST_CASE( test_downscale )
 {
-	list< bfs::path> kernelsearchpath;
+	CPathNameArray kernelsearchpath;
 	kernelsearchpath.push_back(bfs::path("..")/bfs::path("..")/bfs::path("core")/bfs::path("spacialkernel"));
 	C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
 
-	list< bfs::path> filtersearchpath;
+	CPathNameArray filtersearchpath;
 	filtersearchpath.push_back(bfs::path("."));
 	C3DFilterPluginHandler::set_search_path(filtersearchpath);
 

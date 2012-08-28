@@ -326,7 +326,7 @@ void MyFCM::run()
 		delta_cls = inner_product(old_class_centres.begin(), old_class_centres.end(), 
 					  m_class_centres.begin(), 0.0f, 
 					  [](float x, float y) {return x + y;}, 
-					  [](float x, float y) {float d = x-y; return d * d; });
+					  [](float x, float y) -> float {float d = x-y; return d * d; });
 		cvmsg() << "Class centers = " << m_class_centres << ", delta = " << delta_cls << "\n"; 
 		old_class_centres = m_class_centres; 
 		--maxiter; 

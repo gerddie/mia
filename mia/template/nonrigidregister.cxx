@@ -20,7 +20,6 @@
 
 #define VSTREAM_DOMAIN "NR-REG"
 
-#include <boost/lambda/lambda.hpp>
 #include <iomanip>
 
 NS_MIA_BEGIN

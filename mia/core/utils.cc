@@ -71,7 +71,7 @@ CCWDSaver::~CCWDSaver()
 	delete[] cwd;
 }
 
-#ifndef WIN32
+#if 0
 static bool scan_dir(const std::string& path, const std::string& pattern, std::list<std::string>& list)
 {
 	class TFindRegExp {

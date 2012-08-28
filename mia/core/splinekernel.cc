@@ -291,10 +291,7 @@ double  EXPORT_CORE integrate2(const CSplineKernel& spline, double s1, double s2
 using boost::filesystem::path; 
 CSplineKernelTestPath::CSplineKernelTestPath()
 {
-	CSplineBoundaryConditionTestPath bcpath;
-	list< path> sksearchpath; 
-	sksearchpath.push_back( path(MIA_BUILD_ROOT"/mia/core/splinekernel"));
-	CSplineKernelPluginHandler::set_search_path(sksearchpath); 
+	CSplineKernelPluginHandler::set_search_path({path(MIA_BUILD_ROOT"/mia/core/splinekernel")}); 
 	
 }
 template<>  const char * const 

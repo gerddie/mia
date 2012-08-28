@@ -30,12 +30,12 @@ namespace bfs=::boost::filesystem;
 
 struct GaussFixture: public fifof_Fixture {
 	GaussFixture() {
-		list< bfs::path> kernelsearchpath;
+		CPathNameArray kernelsearchpath;
 		kernelsearchpath.push_back(bfs::path("..")/bfs::path("..")/
 					   bfs::path("core")/bfs::path("spacialkernel"));
 		C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
 
-		list< bfs::path> selfpath;
+		CPathNameArray selfpath;
 		selfpath.push_back(bfs::path("..")/bfs::path("..")/
 				   bfs::path("2d")/bfs::path("filter"));
 		C2DFilterPluginHandler::set_search_path(selfpath);

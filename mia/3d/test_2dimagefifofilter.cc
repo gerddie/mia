@@ -37,7 +37,7 @@ namespace bfs=::boost::filesystem;
 
 BOOST_AUTO_TEST_CASE( test_found_filters )
 {
-	list< bfs::path> searchpath;
+	CPathNameArray searchpath;
 	searchpath.push_back( bfs::path("fifof"));
 	C2DFifoFilterPluginHandler::set_search_path(searchpath);
 	BOOST_CHECK_EQUAL(C2DFifoFilterPluginHandler::instance().size(), 10u);

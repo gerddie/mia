@@ -27,8 +27,9 @@
 #include <vector>
 #include <ostream>
 #include <boost/any.hpp>
-#include <boost/filesystem/path.hpp>
+
 #include <mia/core/utils.hh>
+#include <mia/core/filetools.hh>
 
 #include <mia/core/defines.hh>
 #include <mia/core/module.hh>
@@ -93,7 +94,7 @@ protected:
 	  
 	*/
 
-	TPluginHandler(const std::list<boost::filesystem::path>& searchpath); 
+	TPluginHandler(const CPathNameArray& searchpath); 
         //@}
 
 	/** find a plugin by name. If the plug-in is not available, the method throws an 
@@ -112,8 +113,8 @@ protected:
 
 
 private: 
-	void global_searchpath(list< ::boost::filesystem::path>& searchpath); 
-	void initialise(const std::list< ::boost::filesystem::path>& searchpath); 
+	void global_searchpath(CPathNameArray& searchpath); 
+	void initialise(const CPathNameArray& searchpath); 
 	void do_add_dependend_handlers(HandlerHelpMap& handler_map) const; 	
 	
 	std::vector<PPluginModule> m_modules;
@@ -144,7 +145,7 @@ public:
 	   Set the plugin search path for the plug-in - throws "runtime_error" if the 
 	   plugin handler is already instanciated. 
 	 */
-	static void set_search_path(const std::list<boost::filesystem::path>& searchpath);
+	static void set_search_path(const CPathNameArray& searchpath);
 	
 	/// The instance of the plugin handler 
 	typedef T Instance;
@@ -164,14 +165,14 @@ protected:
 	    \remark why not private?  
 	*/
 	
-	THandlerSingleton(const std::list<boost::filesystem::path>& searchpath); 
+	THandlerSingleton(const CPathNameArray& searchpath); 
 	THandlerSingleton(); 
 
 	/** This mutex ensures that each Singleton is indeed only created once and 
 	    no race condition happens within a multi-threaded environmnet */ 
 	static CMutex m_creation_mutex; 
 private: 
-	static std::list<boost::filesystem::path> m_searchpath; 
+	static CPathNameArray m_searchpath; 
 	static bool m_is_created; 
 	
 }; 

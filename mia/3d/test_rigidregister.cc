@@ -41,24 +41,24 @@ CSplineKernelTestPath splinekernel_init_path;
 class PluginPathInitFixture {
 protected:
 	PluginPathInitFixture() {
-		list< bfs::path> costsearchpath;
+		CPathNameArray costsearchpath;
 		costsearchpath.push_back(bfs::path("cost"));
 		C3DImageCostPluginHandler::set_search_path(costsearchpath);
 
-		list< bfs::path> transsearchpath;
+		CPathNameArray transsearchpath;
 		transsearchpath.push_back(bfs::path("transform"));
 		C3DTransformCreatorHandler::set_search_path(transsearchpath);
 
-		list< bfs::path> kernelsearchpath;
+		CPathNameArray kernelsearchpath;
 		kernelsearchpath.push_back(bfs::path("..")/
 					   bfs::path("core")/bfs::path("spacialkernel"));
 		C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
 
-		list< bfs::path> filterpath;
+		CPathNameArray filterpath;
 		filterpath.push_back(bfs::path("filter"));
 		C3DFilterPluginHandler::set_search_path(filterpath);
 		
-		list< bfs::path> minimizerpath;
+		CPathNameArray minimizerpath;
 		minimizerpath.push_back(bfs::path("../core/minimizer"));
 		CMinimizerPluginHandler::set_search_path(minimizerpath); 
 

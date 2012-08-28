@@ -18,26 +18,31 @@
  *
  */
 
-#include <stdexcept>
-#include <climits>
+#include <mia/2d/splinetransformpenalty.hh>
+#include <mia/2d/ppmatrix.hh>
 
-#include <mia/internal/autotest.hh>
-#include <boost/filesystem/path.hpp>
-#include <mia/2d/2dfilter.hh>
+NS_BEGIN(divcurl_splinepenalty)
+
+class C2DDivcurlSplinePenalty: public mia::C2DSplineTransformPenalty {
+public: 
+	
+	C2DDivcurlSplinePenalty(double weight, double div_weight, double curl_weight);
+	
+private: 
+	void do_initialize(); 
+	
+	double do_value(const mia::C2DFVectorfield&  coefficients) const; 
+	
+	double do_value_and_gradient(const mia::C2DFVectorfield&  coefficients, mia::CDoubleVector& gradient) const;
+	
+	mia::C2DSplineTransformPenalty *do_clone() const;
+
+	double m_div_weight; 
+	double m_curl_weight; 
+
+	std::unique_ptr<mia::C2DPPDivcurlMatrix> m_ppmatrix;
+
+}; 
 
 
-NS_MIA_USE
-using namespace boost;
-using namespace std;
-namespace bfs=boost::filesystem; 
-
-BOOST_AUTO_TEST_CASE( test_load_plugins ) 
-{	
-	CPathNameArray plugpath;
-	plugpath.push_back(bfs::path("combiner"));
-	C2DImageCombinerPluginHandler::set_search_path(plugpath);
-
-	const C2DImageCombinerPluginHandler::Instance& handler = C2DImageCombinerPluginHandler::instance(); 
-	BOOST_CHECK_EQUAL(handler.size(), 5u); 
-	BOOST_CHECK_EQUAL(handler.get_plugin_names(), "absdiff add div mul sub ");
-}
+NS_END

@@ -31,7 +31,7 @@ using namespace sepconv_3dimage_filter;
 BOOST_AUTO_TEST_CASE( test_sepconv )
 {
 
-	list< bfs::path> kernelsearchpath;
+	CPathNameArray kernelsearchpath;
 	kernelsearchpath.push_back(bfs::path("..")/bfs::path("..")/bfs::path("core")/bfs::path("spacialkernel"));
 	C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
 

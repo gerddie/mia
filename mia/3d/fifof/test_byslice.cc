@@ -34,12 +34,12 @@ void init_path()
 	if (run) 
 		return; 
 	
-	list< bfs::path> kernelsearchpath;
+	CPathNameArray kernelsearchpath;
 	kernelsearchpath.push_back(bfs::path("..")/bfs::path("..")/
 				   bfs::path("core")/bfs::path("spacialkernel"));
 	C1DSpacialKernelPluginHandler::set_search_path(kernelsearchpath);
 	
-	list< bfs::path> filter2dpath;
+	CPathNameArray filter2dpath;
 	filter2dpath.push_back(bfs::path("../../2d/filter"));
 	C2DFilterPluginHandler::set_search_path(filter2dpath);
 	run = true; 

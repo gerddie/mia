@@ -122,9 +122,7 @@ size_t C1DFoldingKernel::do_size()const
 using boost::filesystem::path; 
 C1DSpacialKernelPluginHandlerTestPath::C1DSpacialKernelPluginHandlerTestPath()
 {
-	list< path> searchpath; 
-	searchpath.push_back( path(MIA_BUILD_ROOT"/mia/core/spacialkernel"));
-	C1DSpacialKernelPluginHandler::set_search_path(searchpath); 
+	C1DSpacialKernelPluginHandler::set_search_path({path(MIA_BUILD_ROOT"/mia/core/spacialkernel")}); 
 }
 
 template<>  const char * const 

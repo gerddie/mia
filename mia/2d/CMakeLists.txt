@@ -52,6 +52,7 @@ SET(MIA2D_SRC_BASE
   similarity_profile.cc
   shape.cc
   sparse_image_solver.cc
+  splinetransformpenalty.cc
   timestep.cc
   transform.cc
   transformio.cc
@@ -133,6 +134,7 @@ SET(MIA2D_HEADERS_BASE
   shape.hh
   similarity_profile.hh
   sparse_image_solver.hh
+  splinetransformpenalty.hh
   timestep.hh
   trait.hh
   transform.hh
@@ -213,6 +215,7 @@ TEST_2DMIA(morphshape mia2dtest)
 TEST_2DMIA(2dimageio mia2dtest)
 TEST_2DMIA(sparse_image_solver mia2dtest)
 TEST_2DMIA(filter_cast mia2d)
+TEST_2DMIA(splinetransformpenalty mia2d)
 #TEST_2DMIA(fullcost_mi_spline  mia2dtest)
 
 IF(CMAKE_BUILD_TYPE)
@@ -279,4 +282,4 @@ ADD_SUBDIRECTORY(shapes    )
 ADD_SUBDIRECTORY(timestep  )
 ADD_SUBDIRECTORY(transform )
 ADD_SUBDIRECTORY(transio )
-
+ADD_SUBDIRECTORY(splinepenalty )

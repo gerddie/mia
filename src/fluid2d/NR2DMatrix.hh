@@ -66,7 +66,7 @@ template <class vector> vector TNR2DMatrix::operator *(const vector& v)const
 	
 	vector Result(v); // Copy so we have already the mult with main diag  
 	
-	for (int i= 0; i< internalDim; i++) {
+	for (unsigned int i= 0; i< internalDim; i++) {
 		float xz = 0;
 		float yz = 0;
 		

@@ -32,7 +32,7 @@ namespace bfs=boost::filesystem;
 
 void C2DMorphFilterFactory::prepare_path() const
 {
-	list< bfs::path> kernelsearchpath;
+	CPathNameArray kernelsearchpath;
 	kernelsearchpath.push_back(bfs::path("..")/bfs::path("shapes"));
 	C2DShapePluginHandler::set_search_path(kernelsearchpath);
 }

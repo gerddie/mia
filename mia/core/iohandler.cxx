@@ -29,7 +29,7 @@ NS_MIA_BEGIN
 namespace bfs = ::boost::filesystem; 
 
 template <class I> 
-TIOPluginHandler<I>::TIOPluginHandler(const std::list<bfs::path>& searchpath):
+TIOPluginHandler<I>::TIOPluginHandler(const CPathNameArray& searchpath):
 	TPluginHandler<I>(searchpath), 
 	m_pool_plugin(new CDatapoolPlugin())
 {

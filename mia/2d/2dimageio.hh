@@ -68,7 +68,7 @@ public:
 	typedef TIOPluginHandler<C2DImageIOPlugin>::CSuffixmap CSuffixmap;
 	typedef TIOPluginHandler<C2DImageIOPlugin>::PData PData;
 protected:
-	C2DImageIOPPH(const std::list< ::boost::filesystem::path>& searchpath);
+	C2DImageIOPPH(const CPathNameArray& searchpath);
 };
 /// @endcond
 

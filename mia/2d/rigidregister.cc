@@ -124,8 +124,6 @@ P2DTransformation C2DRigidRegisterImpl::run(P2DImage src, P2DImage ref) const
 
 	P2DTransformation transform;
 
-	C2DBounds global_size = src->get_size();
-
 	int x_shift = m_mg_levels + 1;
 	int y_shift = m_mg_levels + 1;
 

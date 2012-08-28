@@ -60,7 +60,7 @@ protected:
 	/**
 	   Constructor to use a specialized search path 
 	 */
-	CTestPluginHandlerImpl(const std::list<boost::filesystem::path>& searchpath);
+	CTestPluginHandlerImpl(const CPathNameArray& searchpath);
 public:
 
 	/**

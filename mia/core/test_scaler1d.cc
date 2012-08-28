@@ -113,8 +113,7 @@ Scaler1DFixture::Scaler1DFixture():
 	data(256)
 {
 
-	list< bfs::path> sksearchpath; 
-	sksearchpath.push_back( bfs::path("splinekernel"));
+	CPathNameArray  sksearchpath({bfs::path("splinekernel")});
 	CSplineKernelPluginHandler::set_search_path(sksearchpath); 
 
 	for(size_t x = 0; x < 256; ++x)

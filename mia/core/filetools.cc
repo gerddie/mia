@@ -27,6 +27,7 @@
 #include <boost/filesystem/operations.hpp> // includes boost/filesystem/path.hpp
 #include <boost/filesystem/fstream.hpp>    // ditto
 #include <mia/core/bfsv23dispatch.hh>
+#include <boost/regex.hpp>
 
 #include <mia/core/msgstream.hh>
 #include <mia/core/filetools.hh>
@@ -41,6 +42,7 @@ NS_MIA_BEGIN
 using namespace std;
 using namespace mia;
 
+
 namespace bfs = ::boost::filesystem;
 
 #ifndef MAX_PATH
@@ -48,6 +50,36 @@ namespace bfs = ::boost::filesystem;
 #endif
 
 
+CPathNameArray find_files(const CPathNameArray& searchpath, const std::string& pattern)
+{
+	boost::regex pat_expr(pattern);
+	CPathNameArray result; 
+
+	// search through all the path to find the plugins
+	for (auto dir = searchpath.begin(); dir != searchpath.end(); ++dir){
+
+		cvdebug() << "Looking for " << dir->string() << "\n"; 
+
+		if (bfs::exists(*dir) && bfs::is_directory(*dir)) {
+			// if we cant save the old directory something is terribly wrong
+			bfs::directory_iterator di(*dir); 
+			bfs::directory_iterator dend;
+			
+			cvdebug() << "TPluginHandler<I>::initialise: scan '"<<dir->string() <<"'\n"; 
+
+			while (di != dend) {
+				cvdebug() << "    candidate:'" << di->path().string() << "'"; 
+				if (boost::regex_match(di->path().string(), pat_expr)) {
+					result.push_back(*di); 
+					cverb << " add\n";
+				}else
+					cverb << " discard\n";
+				++di; 
+			}
+		}
+	}
+	return result; 
+}
 
 EXPORT_CORE vector<string> get_consecutive_numbered_files_from_pattern(string const& in_filename, int start, int end)
 {
