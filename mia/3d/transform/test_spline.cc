@@ -499,8 +499,25 @@ BOOST_FIXTURE_TEST_CASE( test_splines_update, TransformSplineFixture )
 BOOST_FIXTURE_TEST_CASE( test_splines_gridpoint_derivative, TransformSplineFixture )
 {
 
-//		range(50, 80, 30),
+	C3DFMatrix dv =  stransf.derivative_at(33,29,10);
 	C3DFVector x(33,29,10);
+
+	BOOST_CHECK_CLOSE(dv.x.x, 1.0f - dfx_x(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.y.x,      - dfx_y(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.z.x,      - dfx_z(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.x.y,      - dfy_x(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.z.y,      - dfy_z(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.x.z,      - dfz_x(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.y.z,      - dfz_y(x), 0.2);
+	BOOST_CHECK_CLOSE(dv.z.z, 1.0f - dfz_z(x), 0.2);
+
+}
+
+BOOST_FIXTURE_TEST_CASE( test_splines_abitrary_derivative, TransformSplineFixture )
+{
+
+	C3DFVector x(33.7, 29.8, 10.1);
 	C3DFMatrix dv =  stransf.derivative_at(x);
 	
 
@@ -515,6 +532,7 @@ BOOST_FIXTURE_TEST_CASE( test_splines_gridpoint_derivative, TransformSplineFixtu
 	BOOST_CHECK_CLOSE(dv.z.z, 1.0f - dfz_z(x), 0.2);
 
 }
+
 
 BOOST_FIXTURE_TEST_CASE( test_splines_gridpoint_derivative_out_of_range, TransformSplineFixture )
 {
