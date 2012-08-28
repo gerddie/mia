@@ -96,7 +96,6 @@ int do_main( int argc, char *argv[] )
 	if (GlobalSize != Reference->get_size())
 		throw std::invalid_argument("Images have different size");
 
-	unique_ptr<C3DInterpolatorFactory>   ipfactory(create_3dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
 	C3DNonrigidRegister nrr(costs, minimizer,  transform_creator, mg_levels);
 	P3DTransformation transform = nrr.run(Model, Reference);
 	P3DImage result = (*transform)(*Model);
