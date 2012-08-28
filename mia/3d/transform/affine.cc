@@ -250,6 +250,14 @@ P3DTransformation C3DAffineTransformation::do_upscale(const C3DBounds& size) con
 	return P3DTransformation(result);
 }
 
+
+C3DFMatrix C3DAffineTransformation::derivative_at(const C3DFVector& PARAM_UNUSED(x)) const
+{
+	return C3DFMatrix(C3DFVector(m_t[0], m_t[1], m_t[2]),
+			  C3DFVector(m_t[4], m_t[5], m_t[6]),
+			  C3DFVector(m_t[8], m_t[9], m_t[10]));
+}
+
 C3DFMatrix C3DAffineTransformation::derivative_at(int /*x*/, int /*y*/, int /*z*/) const
 {
 	return C3DFMatrix(C3DFVector(m_t[0], m_t[1], m_t[2]),

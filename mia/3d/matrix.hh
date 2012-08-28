@@ -140,6 +140,9 @@ struct T3DMatrix: public T3DVector< T3DVector<T> > {
 	/// The unity matrix 
 	static const T3DMatrix _1; 
 
+	/// The zero matrix 
+	static const T3DMatrix _0; 
+
 }; 
 
 
@@ -151,6 +154,9 @@ template <typename T>
 const T3DMatrix<T> T3DMatrix<T>::_1(T3DVector< T >(1,0,0), 
 				 T3DVector< T >(0,1,0),
 				 T3DVector< T >(0,0,1));
+
+template <typename T> 
+const T3DMatrix<T> T3DMatrix<T>::_0;
 
 
 template <typename T> 

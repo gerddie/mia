@@ -97,6 +97,11 @@ NS_MIA_END
 #  define __attribute__(x) 
 #endif
 
+#ifndef PARAM_UNUSED
+#define PARAM_UNUSED(x) x __attribute__((unused))
+#endif 
+
+
 #ifdef miacore_EXPORTS
 /// Macro to manage Visual C++ style dllimport/dllexport 
 #  define EXPORT_CORE DO_EXPORT

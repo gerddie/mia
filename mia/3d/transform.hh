@@ -273,6 +273,14 @@ public:
 	virtual C3DFMatrix derivative_at(int x, int y, int z) const = 0;
 
 	/**
+	   evaluate the derivative (Jacobian matrix) of the transformation at the given
+	   coordinates
+	   @param x
+	   @returns 3x3 matrix of the derivative
+	 */
+	virtual C3DFMatrix derivative_at(const C3DFVector& x) const = 0;
+
+	/**
 	   Translate the input gradient to a vector field in the space of the transformation field
 	   \remark this is too specialized and needs to be replaced by something
 	 */

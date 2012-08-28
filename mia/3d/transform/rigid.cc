@@ -209,7 +209,17 @@ P3DTransformation C3DRigidTransformation::do_upscale(const C3DBounds& size) cons
 	return P3DTransformation(new C3DRigidTransformation(size, new_trans, m_rotation, get_interpolator_factory()));
 }
 
-C3DFMatrix C3DRigidTransformation::derivative_at(int /*x*/, int /*y*/, int /* y */) const
+C3DFMatrix C3DRigidTransformation::derivative_at(const C3DFVector& PARAM_UNUSED(x)) const
+{
+	if (!m_matrix_valid)
+		evaluate_matrix();
+	return C3DFMatrix(
+		C3DFVector(m_t[0], m_t[4], m_t[8]), 
+		C3DFVector(m_t[1], m_t[5], m_t[9]), 
+		C3DFVector(m_t[2], m_t[6], m_t[10]));
+}
+
+C3DFMatrix C3DRigidTransformation::derivative_at(int PARAM_UNUSED(x), int PARAM_UNUSED(y), int PARAM_UNUSED(z)) const
 {
 	if (!m_matrix_valid)
 		evaluate_matrix();

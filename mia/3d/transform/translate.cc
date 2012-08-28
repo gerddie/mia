@@ -147,9 +147,9 @@ P3DTransformation C3DTranslateTransformation::do_upscale(const C3DBounds& size) 
 }
 
 
-void C3DTranslateTransformation::add(const C3DTransformation& /*a*/)
+void C3DTranslateTransformation::add(const C3DTransformation& PARAM_UNUSED(a))
 {
-	assert(0 && "not implemented");
+	assert(0 && "C3DTranslateTransformation::add not supported");
 }
 
 void C3DTranslateTransformation::translate(const C3DFVectorfield& gradient, CDoubleVector& params) const
@@ -168,14 +168,20 @@ size_t C3DTranslateTransformation::degrees_of_freedom() const
 	return 3;
 }
 
-void C3DTranslateTransformation::update(float /*step*/, const C3DFVectorfield& /*a*/)
+void C3DTranslateTransformation::update(float PARAM_UNUSED(step), const C3DFVectorfield& PARAM_UNUSED(a))
 {
-	assert(0 && "not implemented");
+	assert(0 && "C3DTranslateTransformation::update not supported");
 }
 
-C3DFMatrix C3DTranslateTransformation::derivative_at(int /*x*/, int /*y*/, int /*z*/) const
+C3DFMatrix C3DTranslateTransformation::derivative_at(const C3DFVector& PARAM_UNUSED(x)) const
 {
-	return C3DFMatrix();
+	return C3DFMatrix::_0;
+}
+
+C3DFMatrix C3DTranslateTransformation::derivative_at(int PARAM_UNUSED(x), int PARAM_UNUSED(y), 
+						     int PARAM_UNUSED(z)) const
+{
+	return C3DFMatrix::_0;
 }
 
 CDoubleVector C3DTranslateTransformation::get_parameters() const

@@ -83,7 +83,7 @@ public:
 	virtual void update(float step, const C3DFVectorfield& a);
 	virtual void translate(const C3DFVectorfield& gradient, CDoubleVector& params) const;
 	virtual C3DFMatrix derivative_at(int x, int y, int z) const;
-	C3DFMatrix derivative_at(const C3DFVector& x) const; 
+	virtual C3DFMatrix derivative_at(const C3DFVector& x) const; 
 	virtual float get_max_transform() const;
 	virtual CDoubleVector get_parameters() const;
 	virtual void set_parameters(const CDoubleVector& params);

@@ -104,38 +104,85 @@ size_t C3DGridTransformation::degrees_of_freedom() const
 	return 3 * m_field.size();
 }
 
+C3DFMatrix C3DGridTransformation::derivative_at(const  C3DFVector& x) const
+{
+	
+	C3DFMatrix result = C3DFMatrix::_1; 
+
+	const int ix = static_cast<int>(floor(x.x)); 
+	const int iy = static_cast<int>(floor(x.y)); 
+	const int iz = static_cast<int>(floor(x.z)); 
+
+	const int sx = m_field.get_size().x;
+	const int sy = m_field.get_size().y;
+	const int sz = m_field.get_size().z;
+	
+	if (ix > 0 && ix < sx - 2 && 
+	    iy > 0 && iy < sy - 2 && 
+	    iz > 0 && iz < sz - 2) {
+		
+		const float dx = x.x - ix; 
+		const float dy = x.y - ix; 
+		const float dz = x.z - ix; 
+		
+		const float fx = 1.0 - dx; 
+		const float fy = 1.0 - dy; 
+		const float fz = 1.0 - dz; 
+		
+		C3DFMatrix m[8]; 
+		m[0] = field_derivative_at(ix    , iy    , iz    );
+		m[1] = field_derivative_at(ix + 1, iy    , iz    );
+		m[2] = field_derivative_at(ix    , iy + 1, iz    );
+		m[3] = field_derivative_at(ix + 1, iy + 1, iz    );
+		m[4] = field_derivative_at(ix    , iy    , iz + 1);
+		m[5] = field_derivative_at(ix + 1, iy    , iz + 1);
+		m[6] = field_derivative_at(ix    , iy + 1, iz + 1);
+		m[7] = field_derivative_at(ix + 1, iy + 1, iz + 1);
+
+		result -= 
+			fz * (
+				fy * (fx * m[1] + dx * m[0]) + 
+				dy * (fx * m[2] + dx * m[3])) + 
+			dz * (
+				fy * (fx * m[4] + dx * m[5]) + 
+				dy * (fx * m[6] + dx * m[7])); 
+	}
+	return result; 
+}
 
 C3DFMatrix C3DGridTransformation::derivative_at(int x, int y, int z) const
 {
-	C3DFMatrix result(C3DFVector(1.0, 0, 0), C3DFVector(0, 1.0, 0), C3DFVector(0, 0, 1.0));
-	result -= field_derivative_at(x,y,z);
-	return result;
+	const int sx = m_field.get_size().x;
+	const int sy = m_field.get_size().y;
+	const int sz = m_field.get_size().z;
+
+	C3DFMatrix result = C3DFMatrix::_1; 
+	if (z >= 0 && z < sz && 
+	    y >= 0 && y < sy && 
+	    x >= 0 && x < sx) {
+		result -= field_derivative_at(x,y,z);
+	}
+	return result; 
 }
 
 C3DFMatrix C3DGridTransformation::field_derivative_at(int x, int y, int z) const
 {
 	C3DFMatrix result;
-
+	
 	const int sx = m_field.get_size().x;
 	const int sy = m_field.get_size().y;
 	const int sz = m_field.get_size().z;
 	const int sxy = sx * sy; 
 
-	if (z >= 0 && z < sz ) {
-		if (y >= 0 && y < sy ) {
-			if (x >= 0 && x < sx ) {
-				C3DFVectorfield::const_pointer center = &m_field[(z * sy + y) * sx  + x];
-				if (x > 0 && x < sx - 1) {
-					result.x = (center[ 1] - center[-1]) * 0.5f;
-				}
-				if (y > 0 && y < sy - 1 ) {
-					result.y = (center[ sx] - center[-sx]) * 0.5f;
-				}
-				if (z > 0 && z < sz - 1 ) {
-					result.z = (center[ sxy] - center[-sxy]) * 0.5f;
-				}
-			}
-		}
+	C3DFVectorfield::const_pointer center = &m_field[(z * sy + y) * sx  + x];
+	if (x > 0 && x < sx - 1) {
+		result.x = (center[ 1] - center[-1]) * 0.5f;
+	}
+	if (y > 0 && y < sy - 1 ) {
+		result.y = (center[ sx] - center[-sx]) * 0.5f;
+	}
+	if (z > 0 && z < sz - 1 ) {
+		result.z = (center[ sxy] - center[-sxy]) * 0.5f;
 	}
 	return result;
 }
@@ -324,11 +371,11 @@ float C3DGridTransformation::pertuberate(C3DFVectorfield& v) const
 
 double C3DGridTransformation::get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const
 {
-	assert(0 && "not implemented"); }
+	assert(0 && "C3DGridTransformation::get_divcurl_cost not implemented"); }
 
 double C3DGridTransformation::get_divcurl_cost(double wd, double wr) const
 {
-	assert(0 && "not implemented"); }
+	assert(0 && "C3DGridTransformation::get_divcurl_cost not implemented"); }
 
 
 float C3DGridTransformation::get_jacobian(const C3DFVectorfield& v, float delta) const
