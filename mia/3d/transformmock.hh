@@ -44,6 +44,7 @@ struct  EXPORT_3D C3DTransformMock: public C3DTransformation {
 	virtual void update(float step, const C3DFVectorfield& a);
 	virtual size_t degrees_of_freedom() const;
 	virtual void set_identity();
+	virtual C3DFMatrix derivative_at(const C3DFVector& x) const;
 	virtual C3DFMatrix derivative_at(int x, int y, int z) const;
 	virtual void translate(const C3DFVectorfield& gradient, CDoubleVector& params) const;
 	virtual float get_max_transform() const;
