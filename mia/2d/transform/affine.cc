@@ -225,7 +225,13 @@ P2DTransformation C2DAffineTransformation::do_upscale(const C2DBounds& size) con
 	return P2DTransformation(result);
 }
 
-C2DFMatrix C2DAffineTransformation::derivative_at(int /*x*/, int /*y*/) const
+C2DFMatrix C2DAffineTransformation::derivative_at(const C2DFVector& PARAM_UNUSED(x)) const
+{
+	return C2DFMatrix(C2DFVector(m_t[0], m_t[1]),
+			  C2DFVector(m_t[3], m_t[4]));
+}
+
+C2DFMatrix C2DAffineTransformation::derivative_at(int PARAM_UNUSED(x), int PARAM_UNUSED(y)) const
 {
 	return C2DFMatrix(C2DFVector(m_t[0], m_t[1]),
 			  C2DFVector(m_t[3], m_t[4]));

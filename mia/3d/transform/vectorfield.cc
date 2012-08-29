@@ -141,7 +141,7 @@ C3DFMatrix C3DGridTransformation::derivative_at(const  C3DFVector& x) const
 
 		result -= 
 			fz * (
-				fy * (fx * m[1] + dx * m[0]) + 
+				fy * (fx * m[0] + dx * m[1]) + 
 				dy * (fx * m[2] + dx * m[3])) + 
 			dz * (
 				fy * (fx * m[4] + dx * m[5]) + 

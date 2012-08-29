@@ -76,6 +76,7 @@ public:
 	virtual size_t degrees_of_freedom() const;
 	virtual void update(float step, const C2DFVectorfield& a);
 	virtual void translate(const C2DFVectorfield& gradient, CDoubleVector& params) const;
+	C2DFMatrix derivative_at(const C2DFVector& x) const;
 	virtual C2DFMatrix derivative_at(int x, int y) const;
 	virtual float get_max_transform() const;
 	virtual CDoubleVector get_parameters() const;
@@ -90,8 +91,10 @@ public:
 
 	C2DFVector on_grid(const mia::C2DBounds& x) const; 
 
+
 private:
-	C2DFMatrix derivative_at(const C2DFVector& x) const; 
+	C2DFMatrix do_derivative_at(const C2DFVector& x) const;
+	
 	typedef std::vector<std::pair<int, std::vector<float> > > CSplineDerivativeRow; 
 	CSplineDerivativeRow get_derivative_row(size_t nin, size_t nout, double scale) const; 
 

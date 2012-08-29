@@ -89,8 +89,6 @@ BOOST_FIXTURE_TEST_CASE(test_gridtransform_basic_props, GridTransformFixture)
 
 BOOST_FIXTURE_TEST_CASE(test_gridtransform_derivative, GridTransformFixture)
 {
-
-
 	for (size_t y = 0; y < size.y; ++y)
 		for (size_t x = 0; x < size.x; ++x) {
 			C2DFMatrix dv =  field.derivative_at(x, y);
@@ -110,6 +108,19 @@ BOOST_FIXTURE_TEST_CASE(test_gridtransform_derivative, GridTransformFixture)
 			}
 		}
 
+}
+
+
+BOOST_FIXTURE_TEST_CASE(test_gridtransform_derivative_at, GridTransformFixture)
+{
+	const float x = 200.3;  
+	const float y = 68.2;
+	
+	C2DFMatrix dv =  field.derivative_at(C2DFVector(x,y));
+	BOOST_CHECK_CLOSE(dv.x.x, 1.0f - dfx_x(x, y), 1);
+	BOOST_CHECK_CLOSE(dv.x.y, -dfy_x(x, y), 1);
+	BOOST_CHECK_CLOSE(dv.y.x, -dfx_y(x, y), 1);
+	BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(x, y), 1);
 }
 
 BOOST_FIXTURE_TEST_CASE(test_gridtransform_set_identity, GridTransformFixture)

@@ -297,6 +297,14 @@ public:
 
 	/**
 	   evaluate the derivative (Jacobian matrix) of the transformation at the given
+	   coordinate
+	   \param x
+	   \returns 2x2 matrix of the derivative
+	 */
+	virtual C2DFMatrix derivative_at(const C2DFVector& x) const = 0;
+
+	/**
+	   evaluate the derivative (Jacobian matrix) of the transformation at the given
 	   grid coordinates
 	   \param x
 	   \param y

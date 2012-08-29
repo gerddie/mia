@@ -128,9 +128,9 @@ P2DTransformation C2DTranslateTransformation::do_upscale(const C2DBounds& size) 
 }
 
 
-void C2DTranslateTransformation::add(const C2DTransformation& /*a*/)
+void C2DTranslateTransformation::add(const C2DTransformation& PARAM_UNUSED(a))
 {
-	assert(0 && "not implemented");
+	assert(0 && "C2DTranslateTransformation::add not implemented");
 }
 
 void C2DTranslateTransformation::translate(const C2DFVectorfield& gradient, CDoubleVector& params) const
@@ -148,14 +148,19 @@ size_t C2DTranslateTransformation::degrees_of_freedom() const
 	return 2;
 }
 
-void C2DTranslateTransformation::update(float /*step*/, const C2DFVectorfield& /*a*/)
+void C2DTranslateTransformation::update(float PARAM_UNUSED(step), const C2DFVectorfield& PARAM_UNUSED(a))
 {
-	assert(0 && "not implemented");
+	assert(0 && "C2DTranslateTransformation::update not implemented");
 }
 
-C2DFMatrix C2DTranslateTransformation::derivative_at(int /*x*/, int /*y*/) const
+C2DFMatrix C2DTranslateTransformation::derivative_at(const C2DFVector& PARAM_UNUSED(x)) const
 {
-	return C2DFMatrix();
+	return C2DFMatrix::_1;
+}
+
+C2DFMatrix C2DTranslateTransformation::derivative_at(int PARAM_UNUSED(x), int PARAM_UNUSED(y)) const
+{
+	return C2DFMatrix::_1;
 }
 
 CDoubleVector C2DTranslateTransformation::get_parameters() const

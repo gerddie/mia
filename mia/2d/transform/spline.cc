@@ -355,6 +355,20 @@ void C2DSplineTransformation::update(float step, const C2DFVectorfield& a)
 
 C2DFMatrix C2DSplineTransformation::derivative_at(const C2DFVector& x) const
 {
+	TRACE_FUNCTION;
+	assert(m_interpolator_valid); 
+	const C2DFVector l = scale(x);
+	C2DFMatrix d = do_derivative_at(l);
+	d.x.x = 1.0f - d.x.x * m_scale.x;
+	d.x.y =      - d.x.y * m_scale.x;
+	d.y.x =      - d.y.x * m_scale.y;
+	d.y.y = 1.0f - d.y.y * m_scale.y;
+	return d;
+
+}
+
+C2DFMatrix C2DSplineTransformation::do_derivative_at(const C2DFVector& x) const
+{
 	std::vector<double> xweights(m_kernel->size()); 
 	std::vector<double> yweights(m_kernel->size()); 
 	size_t startx = m_kernel->get_start_idx_and_value_weights(x.x, xweights); 
@@ -391,15 +405,7 @@ C2DFMatrix C2DSplineTransformation::derivative_at(const C2DFVector& x) const
 C2DFMatrix C2DSplineTransformation::derivative_at(int x, int y) const
 {
 	TRACE_FUNCTION;
-	assert(m_interpolator_valid);
-	const C2DFVector l = scale(C2DFVector(x,y));
-	C2DFMatrix d = derivative_at(l);
-	cvdebug() << C2DFVector(x,y) << ":" << l << " = [" <<  d.x << d.y << "]\n"; 
-	d.x.x = 1.0f - d.x.x * m_scale.x;
-	d.x.y =      - d.x.y * m_scale.x;
-	d.y.x =      - d.y.x * m_scale.y;
-	d.y.y = 1.0f - d.y.y * m_scale.y;
-	return d;
+	return derivative_at(C2DFVector(x,y));
 }
 
 void C2DSplineTransformation::set_identity()

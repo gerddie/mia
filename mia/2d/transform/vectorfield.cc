@@ -144,6 +144,37 @@ C2DFMatrix C2DGridTransformation::derivative_at(int x, int y) const
 	return result;
 }
 
+C2DFMatrix C2DGridTransformation::derivative_at(const C2DFVector& x) const
+{
+	C2DFMatrix result = C2DFMatrix::_1; 
+
+	const int ix = static_cast<int>(floor(x.x)); 
+	const int iy = static_cast<int>(floor(x.y)); 
+
+	const int sx = m_field.get_size().x;
+	const int sy = m_field.get_size().y;
+	
+	if (ix > 0 && ix < sx - 2 && 
+	    iy > 0 && iy < sy - 2) {
+		
+		const float dx = x.x - ix; 
+		const float dy = x.y - iy; 
+		
+		const float fx = 1.0 - dx; 
+		const float fy = 1.0 - dy; 
+		
+		C2DFMatrix m[4]; 
+		m[0] = field_derivative_at(ix    , iy    );
+		m[1] = field_derivative_at(ix + 1, iy    );
+		m[2] = field_derivative_at(ix    , iy + 1);
+		m[3] = field_derivative_at(ix + 1, iy + 1);
+
+		result -= fy * (fx * m[0] + dx * m[1]) + 
+			dy * (fx * m[2] + dx * m[3]);  
+	}
+	return result; 
+}
+
 C2DFMatrix C2DGridTransformation::field_derivative_at(int x, int y) const
 {
 	C2DFMatrix result;

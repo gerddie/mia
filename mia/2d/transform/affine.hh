@@ -80,6 +80,7 @@ public:
 	virtual void translate(const C2DFVectorfield& gradient, CDoubleVector& params) const;
 	virtual size_t degrees_of_freedom() const;
 	virtual void update(float step, const C2DFVectorfield& a);
+	virtual C2DFMatrix derivative_at(const C2DFVector& x) const;
 	virtual C2DFMatrix derivative_at(int x, int y) const;
 	virtual CDoubleVector get_parameters() const;
 	virtual void set_parameters(const CDoubleVector& params);

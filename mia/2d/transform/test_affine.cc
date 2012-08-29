@@ -229,6 +229,7 @@ struct AffineGrad2ParamFixtureAffine : public ipfFixture {
 
 	C2DBounds size;
 	C2DAffineTransformation trans;
+	C2DFMatrix test_matrix; 
 };
 
 BOOST_FIXTURE_TEST_CASE (test_grad2param_translation, AffineGrad2ParamFixtureAffine)
@@ -283,6 +284,25 @@ BOOST_FIXTURE_TEST_CASE (test_upscale, AffineGrad2ParamFixtureAffine)
 
 }
 
+BOOST_FIXTURE_TEST_CASE (test_derivative_at_gridpoint, AffineGrad2ParamFixtureAffine)
+{
+
+	auto jac = trans.derivative_at(1,1); 
+	BOOST_CHECK_CLOSE(jac.x.x, test_matrix.x.x, 0.1); 
+	BOOST_CHECK_CLOSE(jac.x.y, test_matrix.x.y, 0.1); 
+	BOOST_CHECK_CLOSE(jac.y.x, test_matrix.y.x, 0.1); 
+	BOOST_CHECK_CLOSE(jac.y.y, test_matrix.y.y, 0.1); 
+}
+
+BOOST_FIXTURE_TEST_CASE (test_derivative_at, AffineGrad2ParamFixtureAffine)
+{
+	auto jac = trans.derivative_at(C2DFVector(1.1,1.2)); 
+	BOOST_CHECK_CLOSE(jac.x.x, test_matrix.x.x, 0.1); 
+	BOOST_CHECK_CLOSE(jac.x.y, test_matrix.x.y, 0.1); 
+	BOOST_CHECK_CLOSE(jac.y.x, test_matrix.y.x, 0.1); 
+	BOOST_CHECK_CLOSE(jac.y.y, test_matrix.y.y, 0.1); 
+}
+
 AffineGrad2ParamFixtureAffine::AffineGrad2ParamFixtureAffine():
 	size(2,2),
 	trans(size, ipf)
@@ -290,6 +310,13 @@ AffineGrad2ParamFixtureAffine::AffineGrad2ParamFixtureAffine():
 	trans.translate(-1, -3);
 	trans.rotate(1.0);
 	trans.scale(0.69314718, -0.69314718);
+
+	test_matrix.x.x = cos(1.0) * exp( 0.69314718 ); 
+	test_matrix.x.y = -sin(1.0) * exp( 0.69314718 ); 
+
+	test_matrix.y.x =  sin(1.0) * exp( -0.69314718 ); 
+	test_matrix.y.y =  cos(1.0) * exp( -0.69314718 ); 
+	
 }
 
 

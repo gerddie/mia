@@ -51,6 +51,24 @@ BOOST_FIXTURE_TEST_CASE(test_transform, TranslateTransformFixture)
 	BOOST_CHECK_CLOSE(r.y,  5, 0.1);
 }
 
+BOOST_FIXTURE_TEST_CASE(test_transform_derivative_at_gridpoint, TranslateTransformFixture)
+{
+	auto jac = transf.derivative_at(3, 4); 
+	BOOST_CHECK_EQUAL(jac.x.x, 1.0f); 
+	BOOST_CHECK_EQUAL(jac.y.y, 1.0f); 
+	BOOST_CHECK_EQUAL(jac.x.y, 0.0f); 
+	BOOST_CHECK_EQUAL(jac.y.x, 0.0f); 
+}
+
+BOOST_FIXTURE_TEST_CASE(test_transform_derivative, TranslateTransformFixture)
+{
+	auto jac = transf.derivative_at(C2DFVector(3.1, 4.2));
+	BOOST_CHECK_EQUAL(jac.x.x, 1.0f); 
+	BOOST_CHECK_EQUAL(jac.y.y, 1.0f); 
+	BOOST_CHECK_EQUAL(jac.x.y, 0.0f); 
+	BOOST_CHECK_EQUAL(jac.y.x, 0.0f); 
+}
+
 BOOST_FIXTURE_TEST_CASE(test_upscale, TranslateTransformFixture)
 {
 	C2DBounds new_size(10,12);

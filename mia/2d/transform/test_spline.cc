@@ -394,6 +394,17 @@ BOOST_FIXTURE_TEST_CASE( test_splines_gridpoint_derivative, TransformSplineFixtu
 	BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(x.x, x.y), 0.2);
 }
 
+BOOST_FIXTURE_TEST_CASE( test_splines_derivative, TransformSplineFixture )
+{
+	C2DFVector x(20.4,41.7);
+	C2DFMatrix dv =  stransf.derivative_at(x);
+
+	BOOST_CHECK_CLOSE(dv.x.x, 1.0f - dfx_x(x.x, x.y), 0.2);
+	BOOST_CHECK_CLOSE(dv.y.x,      - dfx_y(x.x, x.y), 0.2);
+	BOOST_CHECK_CLOSE(dv.x.y,      - dfy_x(x.x, x.y), 0.2);
+	BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(x.x, x.y), 0.2);
+}
+
 
 BOOST_FIXTURE_TEST_CASE( test_splines_set_identity, TransformSplineFixture )
 {

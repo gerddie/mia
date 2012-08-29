@@ -62,12 +62,16 @@ struct T2DMatrix: public T2DVector< T2DVector<T> > {
 
 
 	static const T2DMatrix _1; 
+	static const T2DMatrix _0; 
 
 }; 
 
 template <typename T> 
 const T2DMatrix<T> T2DMatrix<T>::_1(T2DVector< T >(1,0), 
 				    T2DVector< T >(0,1));
+
+template <typename T> 
+const T2DMatrix<T> T2DMatrix<T>::_0;
 
 
 template <typename T> 
