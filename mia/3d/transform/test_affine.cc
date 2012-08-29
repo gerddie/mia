@@ -91,6 +91,21 @@ BOOST_FIXTURE_TEST_CASE(derivative_TranslateTransFixture, TranslateTransFixture)
 
 }
 
+BOOST_FIXTURE_TEST_CASE(derivative_TranslateTransFixture_off_grid, TranslateTransFixture)
+{
+	C3DFMatrix d = 	rtrans.derivative_at(C3DFVector(10.1,10.2,10.3));
+	BOOST_CHECK_EQUAL(d.x.x, 1.0f);
+	BOOST_CHECK_EQUAL(d.x.y, 0.0f);
+	BOOST_CHECK_EQUAL(d.x.z, 0.0f);
+	BOOST_CHECK_EQUAL(d.y.x, 0.0f);
+	BOOST_CHECK_EQUAL(d.y.y, 1.0f);
+	BOOST_CHECK_EQUAL(d.y.z, 0.0f);
+	BOOST_CHECK_EQUAL(d.z.x, 0.0f);
+	BOOST_CHECK_EQUAL(d.z.y, 0.0f);
+	BOOST_CHECK_EQUAL(d.z.z, 1.0f);
+
+}
+
 
 BOOST_FIXTURE_TEST_CASE(test_affine3d, ipfFixture)
 {

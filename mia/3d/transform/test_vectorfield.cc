@@ -186,8 +186,8 @@ BOOST_FIXTURE_TEST_CASE(test_gridtransform_derivative_at_centered, GridTransform
 	BOOST_CHECK_CLOSE(dv.x.z,      - dfz_x(v), 1);
 	BOOST_CHECK_CLOSE(dv.y.x,      - dfx_y(v), 1);
 	BOOST_CHECK_CLOSE(dv.y.y, 1.0f - dfy_y(v), 1);
-	BOOST_CHECK_CLOSE(dv.y.z,      - dfz_y(v), 1);
 	BOOST_CHECK_CLOSE(dv.z.x,      - dfx_z(v), 1);
+	BOOST_CHECK_CLOSE(dv.y.z,      - dfz_y(v), 1);
 	BOOST_CHECK_CLOSE(dv.z.y,      - dfy_z(v), 1);
 	BOOST_CHECK_CLOSE(dv.z.z, 1.0f - dfz_z(v), 1);
 	
