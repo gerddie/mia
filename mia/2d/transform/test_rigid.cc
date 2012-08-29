@@ -132,10 +132,10 @@ struct RotateTransFixture : public ipfFixture {
 	RotateTransFixture():
 		size(60, 80),
 		rtrans(size, ipf),
-		rot_cos(cos(M_PI / 4.0)),
-		rot_sin(sin(M_PI / 4.0))
+		rot_cos(cos(M_PI / 3.0)),
+		rot_sin(sin(M_PI / 3.0))
 	{
-		rtrans.rotate(M_PI / 4.0);
+		rtrans.rotate(M_PI / 3.0);
 
 	}
 	C2DBounds size;
@@ -152,7 +152,7 @@ BOOST_FIXTURE_TEST_CASE(basics_RotateTransFixture, RotateTransFixture)
 	C2DFVector r  = rtrans(x);
 
 	BOOST_CHECK_CLOSE(r.x, (rot_cos * x.x - rot_sin* x.y), 0.1);
-	BOOST_CHECK_CLOSE(r.y, (rot_cos * x.x + rot_sin* x.y), 0.1);
+	BOOST_CHECK_CLOSE(r.y, (rot_sin * x.x + rot_cos* x.y), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(max_RotateTransFixture, RotateTransFixture)
@@ -160,6 +160,26 @@ BOOST_FIXTURE_TEST_CASE(max_RotateTransFixture, RotateTransFixture)
 	C2DFVector x(60, 80);
 	BOOST_CHECK_CLOSE(rtrans.get_max_transform(), (x - rtrans(x)).norm(), 0.1);
 }
+
+
+BOOST_FIXTURE_TEST_CASE(test_transform_derivative_at_gridpoint, RotateTransFixture)
+{
+	auto jac = rtrans.derivative_at(3, 4); 
+	BOOST_CHECK_CLOSE(jac.x.x,  rot_cos, 0.1); 
+	BOOST_CHECK_CLOSE(jac.y.y,  rot_cos, 0.1); 
+	BOOST_CHECK_CLOSE(jac.x.y, -rot_sin, 0.1); 
+	BOOST_CHECK_CLOSE(jac.y.x,  rot_sin, 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_transform_derivative, RotateTransFixture)
+{
+	auto jac = rtrans.derivative_at(C2DFVector(3.1, 4.2));
+	BOOST_CHECK_CLOSE(jac.x.x,  rot_cos, 0.1); 
+	BOOST_CHECK_CLOSE(jac.y.y,  rot_cos, 0.1); 
+	BOOST_CHECK_CLOSE(jac.x.y, -rot_sin, 0.1); 
+	BOOST_CHECK_CLOSE(jac.y.x,  rot_sin, 0.1);
+}
+
 
 BOOST_FIXTURE_TEST_CASE(set_identity_RotateTransFixture, RotateTransFixture)
 {
