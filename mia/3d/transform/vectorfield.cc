@@ -122,8 +122,8 @@ C3DFMatrix C3DGridTransformation::derivative_at(const  C3DFVector& x) const
 	    iz > 0 && iz < sz - 2) {
 		
 		const float dx = x.x - ix; 
-		const float dy = x.y - ix; 
-		const float dz = x.z - ix; 
+		const float dy = x.y - iy; 
+		const float dz = x.z - iz; 
 		
 		const float fx = 1.0 - dx; 
 		const float fy = 1.0 - dy; 
