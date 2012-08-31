@@ -25,6 +25,7 @@
 #include <ostream>
 #include <mia/3d/defines3d.hh>
 #include <mia/3d/3DVector.hh>
+#include <mia/3d/matrix.hh>
 
 
 NS_MIA_BEGIN 
@@ -32,16 +33,17 @@ NS_MIA_BEGIN
 /**
    \ingroup misc 
    \brief a class to implement a quaternion
-
+   
    This class implements some operations of a quaternion. 
+
 */
 
 class EXPORT_3D Quaternion {
 
 public: 
-	/**
+        /**
 	   The standard constructor that sets all values of the quaternion to zero. 
-	 */
+	*/
 	Quaternion(); 
 
 	/**
@@ -56,6 +58,14 @@ public:
 	   \param rot 
 	*/
 	Quaternion(const C3DDVector& rot); 
+
+	/**
+	   This constructor creates a quaternion from a 3x3 rotation matrix. 
+	   If mat3x3 is not a true rotation matrix, then this evaluates the 
+	   rotation quaternion that best resembles the matrix transformation.
+	   \param max3x3
+	*/
+	Quaternion(const C3DFMatrix& mat3x3); 
 
 	/**
 	   Constructor to create a quaternion by directly setting its elements. 
@@ -133,6 +143,8 @@ public:
 	/// \returns the z- or $x_3$ component of the quaternion 
 	double z() const; 
 
+	const C3DFMatrix get_rotation_matrix() const; 
+
 private:
 	C3DDVector m_v; 
 	double m_w; 
@@ -141,7 +153,7 @@ private:
 template <typename T> 
 T3DVector<T> Quaternion::rotate(const T3DVector<T>& x) const
 {
-	
+	assert(0 && "not yet implemented"); 
 }
 
 

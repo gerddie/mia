@@ -18,19 +18,72 @@
  *
  */
 
+#include <gsl/gsl_math.h>
+#include <gsl/gsl_eigen.h>
+
 
 #include <mia/3d/quaternion.hh>
 #include <mia/core/utils.hh>
 #include <mia/core/msgstream.hh>
 #include <vector>
+#include <memory>
 
 
 NS_MIA_BEGIN 
 using std::swap; 
+using std::unique_ptr; 
 
 Quaternion::Quaternion():
 	m_w(0.0)
 {
+}
+
+Quaternion::Quaternion(const C3DFMatrix& m)
+{
+	double data[16] = {
+		(m.x.x - m.y.y - m.z.z) / 3.0, 
+		(m.y.x + m.x.y) / 3.0, 
+		(m.z.x + m.x.z) / 3.0, 
+		(m.y.z - m.z.y) / 3.0, 
+
+		(m.y.x + m.x.y) / 3.0, 
+		(m.y.y - m.x.x - m.z.z) / 3.0, 
+		(m.y.z + m.z.y) / 3.0, 
+		(m.z.x - m.x.z) / 3.0, 
+
+		(m.z.x + m.x.z) / 3.0, 
+		(m.y.z + m.z.y) / 3.0, 
+		(m.z.z - m.x.x - m.y.y) / 3.0, 
+		(m.z.y - m.y.z) / 3.0, 
+
+		(m.y.z - m.z.y) / 3.0, 
+		(m.z.x - m.x.z) / 3.0, 
+		(m.z.y - m.y.z) / 3.0, 
+		(m.z.z + m.x.x + m.y.y) / 3.0
+	}; 
+	
+	gsl_matrix_view gslm  = gsl_matrix_view_array (data, 4, 4);
+	
+	
+	auto gsl_vector_delete = [](gsl_vector * p) { gsl_vector_free(p); };
+	unique_ptr<gsl_vector, decltype(gsl_vector_delete)> eval(gsl_vector_alloc (4), gsl_vector_delete ); 
+
+	auto gsl_matrix_delete = [](gsl_matrix * p) { gsl_matrix_free(p); };
+	unique_ptr<gsl_matrix, decltype(gsl_matrix_delete)> evec(gsl_matrix_alloc (4, 4), gsl_matrix_delete );
+
+	auto gsl_eigen_symmv_delete = [](gsl_eigen_symmv_workspace * p) { gsl_eigen_symmv_free(p); };
+	unique_ptr<gsl_eigen_symmv_workspace, decltype(gsl_eigen_symmv_delete)> ws(gsl_eigen_symmv_alloc (4), gsl_eigen_symmv_delete);
+
+	gsl_eigen_symmv (&gslm.matrix, eval.get(), evec.get(), ws.get());
+	
+	gsl_eigen_symmv_sort (eval.get(), evec.get(), GSL_EIGEN_SORT_ABS_ASC);
+	
+
+	m_w = gsl_matrix_get(evec.get(), 0, 3); 
+	m_v.x = gsl_matrix_get(evec.get(), 1, 3); 
+	m_v.y = gsl_matrix_get(evec.get(), 2, 3); 
+	m_v.z = gsl_matrix_get(evec.get(), 3, 3);
+
 }
 
 Quaternion::Quaternion(const C3DDVector& rot):
@@ -97,6 +150,26 @@ Quaternion Quaternion::inverse() const
 	return Quaternion(m_w, -m_v.x, -m_v.y, -m_v.z); 
 }
 
+
+const C3DFMatrix Quaternion::get_rotation_matrix() const
+{
+	const double a2 = m_w   * m_w;
+	const double b2 = m_v.x * m_v.x;
+	const double c2 = m_v.y * m_v.y;
+	const double d2 = m_v.z * m_v.z;
+
+	const double bc = 2.0 * m_v.x * m_v.y; 
+	const double ad = 2.0 * m_w * m_v.z; 
+	const double bd = 2.0 * m_v.x * m_v.z; 
+	const double ac = 2.0 * m_w * m_v.y; 
+	const double cd = 2.0 * m_v.y * m_v.z; 
+	const double ab = 2.0 * m_w * m_v.x; 
+	
+	return result(C3DFVector(a2 + b2 - c2 - d2, bc - ac, bd + ac), 
+		      C3DFVector(bc + ad, a2 - b2 + c2 - d2, cd - ab), 
+		      C3DFVector(bd - ac, cd + ab, a2 - b2 - c2 + d2));
+	
+}
 
 void Quaternion::print(std::ostream& os) const
 {

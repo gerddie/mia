@@ -83,6 +83,7 @@ BOOST_FIXTURE_TEST_CASE( test_quaternion_prod, QuaternionFixture)
 	BOOST_CHECK_EQUAL(q1, prod); 
 }
 
+
 static void CHECK_Quaternion_CLOSE(const Quaternion& a, const Quaternion& b, double tol)
 {
 	BOOST_CHECK_CLOSE(a.w(), b.w(), tol); 
@@ -113,6 +114,17 @@ BOOST_FIXTURE_TEST_CASE( test_from_euler, QuaternionFixture)
 	CHECK_Quaternion_CLOSE(qy, Quaternion(sqrt(3.0)/2.0, 0, 0.5, 0),0.1); 
 	
 }
+
+BOOST_AUTO_TEST_CASE(test_get_3x3matrix )
+{
+	
+}
+
+BOOST_AUTO_TEST_CASE(test_from_3x3matrix )
+{
+
+}
+
 
 #if 0
 BOOST_FIXTURE_TEST_CASE( test_euler, QuaternionFixture) 
