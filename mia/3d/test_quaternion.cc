@@ -115,9 +115,36 @@ BOOST_FIXTURE_TEST_CASE( test_from_euler, QuaternionFixture)
 	
 }
 
-BOOST_AUTO_TEST_CASE(test_get_3x3matrix )
+struct QuaternionMatrixEqualFixture {
+	void check(const C3DDVector& euler, const C3DFMatrix& m); 
+}; 
+
+BOOST_FIXTURE_TEST_CASE(test_get_3x3matrix_rotz, QuaternionMatrixEqualFixture )
 {
-	
+	C3DDVector rotz(0.0, 0.0, M_PI/3.0); 
+	check(rotz, C3DFMatrix(C3DFVector(0.5, -sqrt(3.0)/2.0, 0), 
+			       C3DFVector(sqrt(3.0)/2.0, 0.5, 0), 
+			       C3DFVector(0.0, 0.0, 1.0)
+		      )
+		);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_get_3x3matrix_roty, QuaternionMatrixEqualFixture )
+{
+
+	C3DDVector roty(0.0, M_PI/3.0, 0.0); 
+	check(roty, C3DFMatrix(C3DFVector( 0.5,            0,  sqrt(3.0)/2.0), 
+			       C3DFVector( 0.0,          1.0,            0.0), 
+			       C3DFVector(-sqrt(3.0)/2.0,  0,            0.5)));
+
+}
+BOOST_FIXTURE_TEST_CASE(test_get_3x3matrix_rotx, QuaternionMatrixEqualFixture )
+{
+
+	C3DDVector rotx(M_PI/3.0, 0.0, 0.0); 
+	check(rotx, C3DFMatrix(C3DFVector(1.0, 0.0,  0.0), 
+			       C3DFVector(0, 0.5,  -sqrt(3.0)/2.0), 
+			       C3DFVector(0, sqrt(3.0)/2.0, 0.5)));
 }
 
 BOOST_AUTO_TEST_CASE(test_from_3x3matrix )
@@ -153,5 +180,25 @@ QuaternionFixture::QuaternionFixture():
 {
 }
 
+
+void QuaternionMatrixEqualFixture::check(const C3DDVector& euler, const C3DFMatrix& t)
+{
+
+	Quaternion q(euler); 
+	C3DFMatrix m = q.get_rotation_matrix(); 	
+
+	BOOST_CHECK_CLOSE(m.x.x, t.x.x, 0.1); 
+	BOOST_CHECK_CLOSE(m.x.y, t.x.y, 0.1); 
+	BOOST_CHECK_CLOSE(m.x.z, t.x.z, 0.1); 
+
+	BOOST_CHECK_CLOSE(m.y.x, t.y.x, 0.1); 
+	BOOST_CHECK_CLOSE(m.y.y, t.y.y, 0.1); 
+	BOOST_CHECK_CLOSE(m.y.z, t.y.z, 0.1); 
+
+	BOOST_CHECK_CLOSE(m.z.x, t.z.x, 0.1); 
+	BOOST_CHECK_CLOSE(m.z.y, t.z.y, 0.1); 
+	BOOST_CHECK_CLOSE(m.z.z, t.z.z, 0.1); 
+
+}
 
 

@@ -165,9 +165,9 @@ const C3DFMatrix Quaternion::get_rotation_matrix() const
 	const double cd = 2.0 * m_v.y * m_v.z; 
 	const double ab = 2.0 * m_w * m_v.x; 
 	
-	return result(C3DFVector(a2 + b2 - c2 - d2, bc - ac, bd + ac), 
-		      C3DFVector(bc + ad, a2 - b2 + c2 - d2, cd - ab), 
-		      C3DFVector(bd - ac, cd + ab, a2 - b2 - c2 + d2));
+	return C3DFMatrix(C3DFVector(a2 + b2 - c2 - d2, bc - ad, bd + ac), 
+			  C3DFVector(bc + ad, a2 - b2 + c2 - d2, cd - ab), 
+			  C3DFVector(bd - ac, cd + ab, a2 - b2 - c2 + d2));
 	
 }
 
