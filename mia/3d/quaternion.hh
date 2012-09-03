@@ -61,7 +61,7 @@ public:
 
 	/**
 	   This constructor creates a quaternion from a 3x3 rotation matrix. 
-	   If mat3x3 is not a true rotation matrix, then this evaluates the 
+	   If mat3x3 is not a true rotation matrix, then this constructor evaluates the 
 	   rotation quaternion that best resembles the matrix transformation.
 	   \param max3x3
 	*/

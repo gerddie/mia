@@ -147,8 +147,70 @@ BOOST_FIXTURE_TEST_CASE(test_get_3x3matrix_rotx, QuaternionMatrixEqualFixture )
 			       C3DFVector(0, sqrt(3.0)/2.0, 0.5)));
 }
 
-BOOST_AUTO_TEST_CASE(test_from_3x3matrix )
+BOOST_AUTO_TEST_CASE(test_from_3x3matrix_z )
 {
+	C3DDVector rotz(0.0, 0.0, M_PI/3.0); 
+	
+	C3DFMatrix m(C3DFVector(0.5, -sqrt(3.0)/2.0, 0), 
+		     C3DFVector(sqrt(3.0)/2.0, 0.5, 0), 
+		     C3DFVector(0.0, 0.0, 1.0)
+		); 
+	
+	
+	Quaternion a(m); 
+	Quaternion b(rotz);
+
+	cvdebug() << a << ", " << b << "\n"; 
+
+	BOOST_CHECK_CLOSE(a.w(), b.w(), 0.1); 
+	BOOST_CHECK_CLOSE(a.x(), b.x(), 0.1); 
+	BOOST_CHECK_CLOSE(a.y(), b.y(), 0.1); 
+	BOOST_CHECK_CLOSE(a.z(), b.z(), 0.1); 
+
+
+	cvdebug() << "From Matrix:" << a.get_rotation_matrix() << "\n"; 
+
+	cvdebug() << "From Quaternion:" << b.get_rotation_matrix() << "\n"; 
+	
+
+
+}
+
+BOOST_AUTO_TEST_CASE(test_from_3x3matrix_y )
+{
+	
+	C3DDVector roty(0.0, M_PI/3.0, 0.0); 
+	C3DFMatrix m(C3DFVector( 0.5,            0,  sqrt(3.0)/2.0), 
+		     C3DFVector( 0.0,          1.0,            0.0), 
+		     C3DFVector(-sqrt(3.0)/2.0,  0,            0.5));
+
+	
+	Quaternion a(m); 
+	Quaternion b(roty);
+
+	BOOST_CHECK_CLOSE(a.w(), b.w(), 0.1); 
+	BOOST_CHECK_CLOSE(a.x(), b.x(), 0.1); 
+	BOOST_CHECK_CLOSE(a.y(), b.y(), 0.1); 
+	BOOST_CHECK_CLOSE(a.z(), b.z(), 0.1); 
+
+}
+
+BOOST_AUTO_TEST_CASE(test_from_3x3matrix_x )
+{
+	
+	C3DDVector rotx(M_PI/3.0, 0.0, 0.0); 
+	C3DFMatrix m(C3DFVector(1.0, 0.0,  0.0), 
+		     C3DFVector(0, 0.5,  -sqrt(3.0)/2.0), 
+		     C3DFVector(0, sqrt(3.0)/2.0, 0.5));
+
+	
+	Quaternion a(m); 
+	Quaternion b(rotx);
+
+	BOOST_CHECK_CLOSE(a.w(), b.w(), 0.1); 
+	BOOST_CHECK_CLOSE(a.x(), b.x(), 0.1); 
+	BOOST_CHECK_CLOSE(a.y(), b.y(), 0.1); 
+	BOOST_CHECK_CLOSE(a.z(), b.z(), 0.1); 
 
 }
 

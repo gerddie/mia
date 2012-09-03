@@ -40,28 +40,28 @@ Quaternion::Quaternion():
 
 Quaternion::Quaternion(const C3DFMatrix& m)
 {
-	double data[16] = {
-		(m.x.x - m.y.y - m.z.z) / 3.0, 
-		(m.y.x + m.x.y) / 3.0, 
-		(m.z.x + m.x.z) / 3.0, 
-		(m.y.z - m.z.y) / 3.0, 
-
-		(m.y.x + m.x.y) / 3.0, 
-		(m.y.y - m.x.x - m.z.z) / 3.0, 
-		(m.y.z + m.z.y) / 3.0, 
-		(m.z.x - m.x.z) / 3.0, 
-
-		(m.z.x + m.x.z) / 3.0, 
-		(m.y.z + m.z.y) / 3.0, 
-		(m.z.z - m.x.x - m.y.y) / 3.0, 
-		(m.z.y - m.y.z) / 3.0, 
-
-		(m.y.z - m.z.y) / 3.0, 
-		(m.z.x - m.x.z) / 3.0, 
-		(m.z.y - m.y.z) / 3.0, 
-		(m.z.z + m.x.x + m.y.y) / 3.0
-	}; 
+	const double m00 = (m.x.x - m.y.y - m.z.z) / 3.0; 
+	const double m01 = (m.y.x + m.x.y) / 3.0; 
+	const double m02 = (m.z.x + m.x.z) / 3.0; 
+	const double m03 = (m.z.y - m.y.z) / 3.0; 
 	
+
+	const double m11 = (m.y.y - m.x.x - m.z.z) / 3.0; 
+	const double m12 = (m.z.y + m.y.z) / 3.0; 
+	const double m13 = (m.x.z - m.z.x) / 3.0; 
+
+	const double m22 = (m.z.z - m.x.x - m.y.y) / 3.0; 
+	const double m23 = (m.y.x - m.x.y) / 3.0; 
+	
+	const double m33 = (m.z.z + m.x.x + m.y.y) / 3.0; 
+	
+	double data[16] = {
+		m00, m01, m02, m03, 
+		m01, m11, m12, m13, 
+		m02, m12, m22, m23, 
+		m03, m13, m23, m33
+	}; 
+
 	gsl_matrix_view gslm  = gsl_matrix_view_array (data, 4, 4);
 	
 	
@@ -75,14 +75,28 @@ Quaternion::Quaternion(const C3DFMatrix& m)
 	unique_ptr<gsl_eigen_symmv_workspace, decltype(gsl_eigen_symmv_delete)> ws(gsl_eigen_symmv_alloc (4), gsl_eigen_symmv_delete);
 
 	gsl_eigen_symmv (&gslm.matrix, eval.get(), evec.get(), ws.get());
-	
-	gsl_eigen_symmv_sort (eval.get(), evec.get(), GSL_EIGEN_SORT_ABS_ASC);
-	
 
-	m_w = gsl_matrix_get(evec.get(), 0, 3); 
-	m_v.x = gsl_matrix_get(evec.get(), 1, 3); 
-	m_v.y = gsl_matrix_get(evec.get(), 2, 3); 
-	m_v.z = gsl_matrix_get(evec.get(), 3, 3);
+	gsl_eigen_symmv_sort (eval.get(), evec.get(), GSL_EIGEN_SORT_ABS_ASC);
+
+	for(int i = 0; i < 4; ++i) {
+		cvdebug() << "eval [" << i << "] = " << gsl_vector_get(eval.get(), i) << "\n"; 
+		cvdebug() << "evec [" << i << "] = "; 
+		for (int j = 0; j < 4; ++j) {
+			cverb << gsl_matrix_get(evec.get(), j, i) << ", "; 
+		}
+		cverb << "\n\n"; 
+	}
+
+	m_v.x = gsl_matrix_get(evec.get(), 0, 3); 
+	m_v.y = gsl_matrix_get(evec.get(), 1, 3); 
+	m_v.z = gsl_matrix_get(evec.get(), 2, 3);
+	m_w   = gsl_matrix_get(evec.get(), 3, 3); 
+
+	// technically, this is not necessary, but for testing it is better 
+	if (m_w < 0.0) {
+		m_v *= -1.0f; 
+		m_w = -m_w; 
+	}
 
 }
 
