@@ -35,7 +35,6 @@ C2DMorphShape::C2DMorphShape(P2DShape foreground_mask, P2DShape background_mask)
 	m_foreground_mask(foreground_mask), 
 	m_background_mask(background_mask)
 {
-	auto not_found = m_background_mask->end(); 
 	for (auto f = m_foreground_mask->begin(); f != m_foreground_mask->end(); ++f) {
 		if (m_background_mask->has_location(*f)) {
 			throw invalid_argument("C2DMorphShape: background and foreground mask overlap"); 
