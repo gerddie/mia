@@ -53,6 +53,13 @@ typedef TTransformCreatorPlugin<C3DTransformation>  C3DTransformCreatorPlugin;
 */
 typedef THandlerSingleton<TFactoryPluginHandler<C3DTransformCreatorPlugin> > C3DTransformCreatorHandler;
 
+
+inline P3DTransformationFactory produce_3dtransformation_creator(const std::string& descr) 
+{
+	return C3DTransformCreatorHandler::instance().produce(descr); 
+}
+
+
 /** 
     @cond INTERNAL 
     @ingroup test 
