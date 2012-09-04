@@ -46,8 +46,8 @@ bool C3DImageFullCost::do_has(const char *property) const
 double C3DImageFullCost::do_value(const C3DTransformation& t) const
 {
 	TRACE_FUNCTION; 
-	assert(m_src); 
-	P3DImage temp  = t(*m_src);
+	assert(m_src_scaled); 
+	P3DImage temp  = t(*m_src_scaled);
 	const double result = m_cost_kernel->value(*temp); 
 	cvdebug() << "C3DImageFullCost::value = " << result << "\n"; 
 	return result; 
@@ -56,8 +56,8 @@ double C3DImageFullCost::do_value(const C3DTransformation& t) const
 double C3DImageFullCost::do_value() const
 {
 	TRACE_FUNCTION; 
-	assert(m_src); 
-	const double result = m_cost_kernel->value(*m_src); 
+	assert(m_src_scaled); 
+	const double result = m_cost_kernel->value(*m_src_scaled); 
 	cvdebug() << "C3DImageFullCost::value = " << result << "\n"; 
 	return result; 
 }
@@ -66,9 +66,9 @@ double C3DImageFullCost::do_value() const
 double C3DImageFullCost::do_evaluate(const C3DTransformation& t, CDoubleVector& gradient) const
 {
 	TRACE_FUNCTION; 
-	assert(m_src); 
+	assert(m_src_scaled); 
 	
-	P3DImage temp  = t(*m_src);
+	P3DImage temp  = t(*m_src_scaled);
 
 	if (m_debug) {
 		// not thread save 
