@@ -235,7 +235,6 @@ P3DFVectorfield C3DImageRegister::operator () (const C3DImage& source, const C3D
 void C3DImageRegister::reg_level_regrid_opt(const C3DImage& source, const C3DImage& reference, C3DFVectorfield& result)
 
 {
-	double cost_value;
 	size_t iter = 0;
 	size_t inertia = 5;
 	bool better = false;
