@@ -69,24 +69,9 @@ double C3DImageFullCost::do_evaluate(const C3DTransformation& t, CDoubleVector& 
 	assert(m_src_scaled); 
 	
 	P3DImage temp  = t(*m_src_scaled);
-
-	if (m_debug) {
-		// not thread save 
-		static int idx = 0; 
-		static auto  toubyte_converter = 
-			C3DFilterPluginHandler::instance().produce("convert:repn=ubyte"); 
-		stringstream fname; 
-		fname << "test" << setw(5) << setfill('0') << idx << ".v"; 
-		save_image(fname.str(), temp); 
-		idx++;
-	}
-	
 	C3DFVectorfield force(get_current_size()); 
-
  	m_cost_kernel->evaluate_force(*temp, 1.0, force); 
-
 	t.translate(force, gradient); 
-
 	double result = m_cost_kernel->value(*temp); 
 	cvdebug() << "Image cost =" << result << "\n"; 
 	return result; 
