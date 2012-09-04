@@ -23,9 +23,60 @@
 #define mia_core_errormacro_hh
 
 
+#include <iostream>
 #include <sstream>
 #include <cassert>
 #include <stdexcept>
+#include <mia/core/defines.hh>
+
+
+NS_MIA_BEGIN
+
+template <typename V>
+void __append_message(std::ostream& os, const V& v)
+{
+	os << v; 
+}
+
+inline void __append_message(std::ostream& PARAM_UNUSED(os))
+{
+}
+
+template <typename V, typename... T>
+void __append_message(std::ostream& os, const V& v, T ...t)
+{
+	os << v; 
+	::mia::__append_message(os, t...); 
+}
+
+template <typename... T>
+const std::string __create_message(T ...t)
+{
+	std::stringstream msg; 
+	::mia::__append_message(msg, t...); 
+	return msg.str(); 
+}
+
+
+template <typename E, typename... T>
+E Except( T ...t )
+{
+	return E(::mia::__create_message(t...)); 
+}
+
+
+#ifdef NDEBUG
+#define mia_assert(cond, msg...)
+#else 
+#define mia_assert(cond, msg...)					\
+	if (!cond) {							\
+		std::cerr << "Assertion failed: \'" #cond  << "\' " <<	\
+			__FILE__ << ":" << __LINE__ << " "		\
+			  << ::mia::__create_message(msg) << "\n";		\
+			abort();					\
+	}
+#endif 
+
 
 /** 
     \ingroup misc
@@ -41,12 +92,15 @@
 #ifdef NDEBUG
 
 // throw if compiled in release mode but assert if compiled in debug mode
-#define DEBUG_ASSERT_RELEASE_THROW(cond, msg) \
-	if (!cond)		   \
-		throw std::logic_error(msg);
+#define DEBUG_ASSERT_RELEASE_THROW(cond, msg... )	\
+	if (!cond) {					\
+		throw Except<std::logic_error>(msg));	\
+	}
 #else
-#define DEBUG_ASSERT_RELEASE_THROW(cond, msg) \
-	assert(cond && msg); 
+#define DEBUG_ASSERT_RELEASE_THROW(cond, msg... )	\
+	mia_assert(cond && msg); 
 #endif 
+
+NS_MIA_END
 
 #endif
