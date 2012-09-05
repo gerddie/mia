@@ -277,12 +277,12 @@ double  C2DRegProblem::do_f(const CDoubleVector& x)
 
 void   C2DRegProblem::do_df(const CDoubleVector& , CDoubleVector&  )
 {
-	assert(0 && "C2DRegProblem::do_df should not be called from a gradient free minimizer"); 
+	assert(0 && "C2DRegProblem::do_df must not be called from a gradient free minimizer"); 
 }
 
 double  C2DRegProblem::do_fdf(const CDoubleVector& , CDoubleVector&  )
 {
-	assert(0 && "C2DRegProblem::do_fdf should not be called from a gradient free minimizer"); 
+	assert(0 && "C2DRegProblem::do_fdf must not be called from a gradient free minimizer"); 
 }
 
 size_t C2DRegProblem::do_size() const

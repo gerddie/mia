@@ -122,6 +122,7 @@ EXPORT_2D float get_noise_level(const C2DImage& image)
 
 EXPORT_2D C2DFVectorfield get_nfg_j(const C2DImage& image,  float jump_level2)
 {
+	// jump level is a squared value 
 	assert(jump_level2 >= 0.0f);
 
 	C2DFVectorfield gradient = get_gradient(image);

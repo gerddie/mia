@@ -22,7 +22,6 @@
 #include <mia/internal/pluginsettest.hh>
 #include <mia/2d/transformio.hh>
 #include <mia/2d/transformfactory.hh>
-#include <boost/static_assert.hpp>
 #include <ostream>
 
 #include <mia/core/spacial_kernel.hh>

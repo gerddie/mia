@@ -96,7 +96,7 @@ const char *C2DMorphShape::type_descr = "morphshapes";
 
 /*
    - This could be parallized
-   - using abit-image with the infamous vector<bool> implementation is probably a 
+   - using a bit-image with the infamous vector<bool> implementation is probably a 
      bad idea. 
  */
 
@@ -143,7 +143,7 @@ size_t morph_hit_and_miss_2d(C2DBitImage& target, const C2DBitImage& source, con
 
 /*
    - This could be parallized
-   - using abit-image with the infamous vector<bool> implementation is probably a 
+   - using a bit-image with the infamous vector<bool> implementation is probably a 
      bad idea. 
  */
 
