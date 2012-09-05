@@ -40,9 +40,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
 
-NS_MIA_USE; 
-
-const SProgramDescription description = {
+const mia::SProgramDescription description = {
 	"Tests", 
 	"Unit test.", 
 	"This program runs a set of tests.", 
@@ -61,9 +59,9 @@ main( int argc, char* argv[] )
 	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
 #endif
-	if (CCmdOptionList(description).parse(argc, argv, "boost-test-option") != CCmdOptionList::hr_no) 
+	if (mia::CCmdOptionList(description).parse(argc, argv, "boost-test-option") != mia::CCmdOptionList::hr_no) 
 		return 0; 
-	cvdebug() << "Initialize test ...\n"; 
+	mia::cvdebug() << "Initialize test ...\n"; 
 	return ::boost::unit_test::unit_test_main( &init_unit_test, argc, argv );
 }
 

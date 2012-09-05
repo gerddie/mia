@@ -73,7 +73,8 @@ C2DFullCostList create_costs(const std::vector<string>& costs, int idx)
 
 		if (cc.find("image") == 0) {
 			if (cc.find("src") != string::npos  || cc.find("ref") != string::npos) {
-				THROW(invalid_argument, "image cost functions '"<< cc <<"' must not set the 'src' or 'ref' parameter explicitely");
+				throw Except<invalid_argument>( "image cost functions '", cc, 
+								"' must not set the 'src' or 'ref' parameter explicitely");
 			}
 			cc.append(cost_descr.str()); 
 		}
@@ -182,7 +183,7 @@ int do_main( int argc, char *argv[] )
 		string src_name = create_filename(src_basename.c_str(), i);
 		P2DImage image = load_image<P2DImage>(src_name);
 		if (!image)
-			THROW(runtime_error, "image " << src_name << " not found");
+			throw Except<runtime_error>( "image '", src_name, "' not found");
 
 		cvdebug() << "read '" << src_name << "\n";
 		input_images->push_back(image);

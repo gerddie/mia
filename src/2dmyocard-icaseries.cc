@@ -41,6 +41,8 @@
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/transformfactory.hh>
 NS_MIA_USE;
+using namespace std; 
+
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
@@ -196,7 +198,7 @@ int do_main( int argc, char *argv[] )
 		if (outfile.good())
 			outfile << test_cropset->write_to_string_formatted();
 		else 
-			THROW(runtime_error, "unable to save to '" << cropped_filename << "'"); 
+			throw Except<runtime_error>( "unable to save to '", cropped_filename, "'"); 
 	}
 	
 	//
@@ -213,7 +215,7 @@ int do_main( int argc, char *argv[] )
 		if (outfile2.good())
 			outfile2 << test_regset->write_to_string_formatted();
 		else 
-			THROW(runtime_error, "unable to save to '" << cropped_filename << "'"); 
+			throw Except<runtime_error>( "unable to save to '", cropped_filename, "'"); 
 	}
 	return EXIT_SUCCESS; 
 

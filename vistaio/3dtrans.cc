@@ -32,7 +32,7 @@
 NS_BEGIN(vista_3dtrans_io)
 
 NS_MIA_USE
-
+using namespace std; 
 
 class C3DVistaTransformationIO: public C3DTransformationIO {
 public: 	

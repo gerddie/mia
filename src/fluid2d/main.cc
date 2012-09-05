@@ -41,6 +41,8 @@
 #include "elast.hh"
 
 NS_MIA_USE;
+using namespace std; 
+
 
 const SProgramDescription g_description = {
 	"Registration, Comparison, and Transformation of 2D images", 
@@ -198,7 +200,7 @@ int do_main(int argc, char *argv[])
 	if (!out_filename.empty()) {
 		C2DIOVectorfield outfield(transform);
 		if (!C2DVFIOPluginHandler::instance().save(out_filename, outfield)){
-			THROW(runtime_error, "Unable to save result field to '" << out_filename << "'");
+			throw Except<runtime_error>("Unable to save result field to '", out_filename, "'");
 		}
 	}
 
@@ -206,7 +208,7 @@ int do_main(int argc, char *argv[])
 		FDeformer2D deformer(transform, *ipfactory);
 		P2DImage result = ::mia::filter(deformer, *Model);
 		if (!save_image(def_filename, result))
-			THROW(runtime_error, "Unable to save result to '" << def_filename << "'");
+			throw Except<runtime_error>("Unable to save result to '", def_filename, "'");
 	}
 
 	return EXIT_SUCCESS;

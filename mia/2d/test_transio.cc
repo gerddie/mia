@@ -23,6 +23,8 @@
 #include <mia/2d/transformfactory.hh>
 
 NS_MIA_USE; 
+using std::stringstream; 
+
 namespace bfs=::boost::filesystem; 
 
 CSplineKernelTestPath spline_kernel_path_init; 

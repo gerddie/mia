@@ -25,6 +25,7 @@
 
 NS_BEGIN(regiongrow_2d_filter)
 NS_MIA_USE; 
+using namespace std; 
 
 C2DRegiongrowFilter::C2DRegiongrowFilter(const mia::C2DImageDataKey& seed_image_key, mia::P2DShape neighborhood):
 	m_seed_image_key(seed_image_key)
@@ -49,17 +50,16 @@ C2DRegiongrowFilter::result_type C2DRegiongrowFilter::operator () (const mia::T2
 	C2DImageIOPlugin::PData in_image_list = m_seed_image_key.get();
 	
 	if (!in_image_list || in_image_list->empty())
-		THROW(invalid_argument, "C2DRegiongrowFilter: Empty image list loaded from pool");
+		throw Except<invalid_argument>( "C2DRegiongrowFilter: Empty image list loaded from pool");
 
 	P2DImage pseed_image = (*in_image_list)[0];
 	if (pseed_image->get_pixel_type() != it_bit)
 		throw invalid_argument("C2DRegiongrowFilter: seed image must be of type 'bit'"); 
 	const C2DBitImage& seed_image = dynamic_cast<const C2DBitImage&>(*pseed_image); 
 
-	if (size != seed_image.get_size()){
-		THROW(invalid_argument, "Input image is of size " << size 
-		      << ", but seed image is " << seed_image.get_size()); 
-	}
+	if (size != seed_image.get_size())
+		throw Except<invalid_argument>( "Input image is of size ", size, 
+						", but seed image is ", seed_image.get_size());
 	
 	C2DBitImage *presult = new C2DBitImage(size, data); 
 	P2DImage result(presult); 

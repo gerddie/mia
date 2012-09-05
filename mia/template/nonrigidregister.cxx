@@ -72,7 +72,7 @@ public:
 
 	void reset_counters(); 
 	
-	typedef shared_ptr<TNonrigRegGradientProblem<dim> > PNonrigRegGradientProblem; 
+	typedef std::shared_ptr<TNonrigRegGradientProblem<dim> > PNonrigRegGradientProblem; 
 private:
 	double  do_f(const CDoubleVector& x);
 	void    do_df(const CDoubleVector& x, CDoubleVector&  g);
@@ -171,7 +171,7 @@ public:
 
 		// I want a conversion filter, that makes the images together zero mean 
 		// and diversion 1
-		stringstream filter_descr; 
+		std::stringstream filter_descr; 
 		filter_descr << "convert:repn=float,map=linear,b=" << -mean/sigma << ",a=" << 1.0/sigma; 
 		cvinfo() << "Will convert using the filter:" << filter_descr.str() << "\n"; 
 		
@@ -234,7 +234,7 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
                 BlockSize.fill(1 << shift);
 		cvinfo() << "Blocksize = " << BlockSize  << "\n";
 
-		stringstream downscale_descr;
+		std::stringstream downscale_descr;
 		downscale_descr << "downscale:b=[" << BlockSize<<"]";
 		auto downscaler = FilterPluginHandler::instance().produce(downscale_descr.str().c_str());
 
@@ -304,8 +304,8 @@ TNonrigidRegisterImpl<dim>::run() const
 	m_costs.reinit(); 
 	Size global_size; 
 	if (!m_costs.get_full_size(global_size))
-		throw invalid_argument("Nonrigidregister: the given combination of cost functions doesn't"
-				       "agree on the size of the registration problem"); 
+		throw std::invalid_argument("Nonrigidregister: the given combination of cost functions doesn't"
+					    "agree on the size of the registration problem"); 
 
 	int shift = m_mg_levels;
 
@@ -378,10 +378,10 @@ double  TNonrigRegGradientProblem<dim>::do_f(const CDoubleVector& x)
 	
 	char endline = (cverb.get_level() < vstream::ml_message) ? '\n' : '\r'; 
 	m_func_evals++; 
-	cvmsg() << "Cost[fg="<<setw(4)<<m_grad_evals 
-		<< ",fe="<<setw(4)<<m_func_evals<<"]=" 
-		<< setw(20) << setprecision(12) << result 
-		<< "ratio:" << setw(20) << setprecision(12) 
+	cvmsg() << "Cost[fg=" << std::setw(4) << m_grad_evals 
+		<< ",fe=" << std::setw(4) << m_func_evals<<"]=" 
+		<< std::setw(20) << std::setprecision(12) << result 
+		<< "ratio:" << std::setw(20) << std::setprecision(12) 
 		<< result / m_start_cost  << endline; 
 	return result; 
 }
@@ -406,7 +406,7 @@ template <int dim>
 double  TNonrigRegGradientProblem<dim>::evaluate_fdf(const CDoubleVector& x, CDoubleVector&  g)
 {
 	m_transf.set_parameters(x);
-	fill(g.begin(), g.end(), 0.0); 
+	std::fill(g.begin(), g.end(), 0.0); 
 	double result = m_costs.evaluate(m_transf, g);
 
 	if (!m_func_evals && !m_grad_evals) 
@@ -414,10 +414,10 @@ double  TNonrigRegGradientProblem<dim>::evaluate_fdf(const CDoubleVector& x, CDo
 
 	char endline = (cverb.get_level() < vstream::ml_message) ? '\n' : '\r'; 
 
-	cvmsg() << "Cost[fg="<<setw(4)<<m_grad_evals 
-		<< ",fe="<<setw(4)<<m_func_evals<<"]= with " 
-		<< setw(20) << setprecision(12) << result 
-		<< " ratio:" << setw(20) << setprecision(12) << result / m_start_cost <<  endline; 
+	cvmsg() << "Cost[fg="<<std::setw(4)<<m_grad_evals 
+		<< ",fe="<<std::setw(4)<<m_func_evals<<"]= with " 
+		<< std::setw(20) << std::setprecision(12) << result 
+		<< " ratio:" << std::setw(20) << std::setprecision(12) << result / m_start_cost <<  endline; 
 	return result; 
 }
 

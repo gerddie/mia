@@ -24,9 +24,9 @@
 #include <mia/3d/3dfilter.hh>
 #include <mia/3d/fullcost/taggedssd.hh>
 
-NS_MIA_USE
 NS_BEGIN(taggedssd_3d)
-
+NS_MIA_USE
+using namespace std; 
 
 C3DTaggedSSDCost::C3DTaggedSSDCost(const std::string& src_x, 
 				   const std::string& ref_x, 

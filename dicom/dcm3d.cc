@@ -111,10 +111,10 @@ bool C3DImageCreator::operator() ( const T2DImage<T>& image)
 	}else {
 		target = dynamic_cast<T3DImage<T> *>(m_result.get());
 		if (!target) {
-			THROW(invalid_argument, "Series input images have different pixel type");
+			throw invalid_argument("Series input images have different pixel type");
 		}
 		if (m_size2d != image.get_size()) {
-			THROW(invalid_argument, "Series input images have different slice size");
+			throw invalid_argument("Series input images have different slice size");
 		}
 		float new_slice_pos = image.template get_attribute_as<float>(IDSliceLocation);
 		m_delta_z = new_slice_pos - m_slice_pos;
@@ -301,8 +301,7 @@ bool CSliceSaver::operator () ( const T3DImage<T>& image) const
 bool CDicom3DImageIOPlugin::do_save(const string& fname, const Data& data) const
 {
 	if (data.empty())
-		THROW(runtime_error, "CDicom3DImageIOPlugin: '" << fname
-		      << "', no images to save");
+		throw Except<runtime_error>( "CDicom3DImageIOPlugin: '", fname, "', no images to save");
 
 
 	CSliceSaver saver(fname);

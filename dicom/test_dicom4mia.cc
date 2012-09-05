@@ -30,6 +30,8 @@
 #include <dicom/dicom4mia.hh>
 
 using namespace std;
+using namespace mia;
+
 BOOST_AUTO_TEST_CASE(test_read_dicom_attributes)
 {
         string filename(MIA_SOURCE_ROOT"/testdata/test.dcm");

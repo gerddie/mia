@@ -73,7 +73,7 @@ int do_main( int argc, char *argv[] )
 
 	auto output = combiner->combine(*image1, *image2); 
 	if (!save_image(out_filename, output)) 
-		THROW(runtime_error, "unable to save result in '" << out_filename << "'");
+		throw Except<runtime_error>( "unable to save result in '", out_filename, "'");
 	
 	return EXIT_SUCCESS;
 }

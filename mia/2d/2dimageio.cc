@@ -60,7 +60,7 @@ P2DImage  EXPORT_2D load_image2d(const std::string& filename)
 		C2DImageIOPluginHandler::instance().load(filename);
 
 	if (!in_image_list || in_image_list->empty()) {
-		THROW(runtime_error, filename << " no image  found");
+		throw Except<runtime_error>( filename, " no image  found");
 	}
 	if (in_image_list->size() > 1) {
 		cvwarn() << "load_image2d:'" << filename

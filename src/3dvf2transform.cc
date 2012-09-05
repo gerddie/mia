@@ -86,7 +86,7 @@ int do_main(int argc, char **argv)
 	transform->set_parameters(buffer); 
 	
 	if (!C3DTransformationIOPluginHandler::instance().save(out_filename, *transform)) 
-		THROW(runtime_error, "Unable to save transformation to '" << out_filename << "'"); 
+		throw Except<runtime_error>( "Unable to save transformation to '", out_filename, "'"); 
 	
 	return EXIT_SUCCESS;	
 }

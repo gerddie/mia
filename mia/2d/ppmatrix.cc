@@ -27,6 +27,7 @@
 
 
 NS_MIA_BEGIN
+using namespace std; 
 
 class C2DPPDivcurlMatrixImpl {
 public: 

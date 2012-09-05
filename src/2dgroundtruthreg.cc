@@ -203,8 +203,8 @@ int do_main( int argc, char *argv[] )
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
 	
 	if (skip >= input_set.get_frames().size()) {
-		THROW(invalid_argument, "Try to skip " << skip 
-		      << " images, but input set has only " << input_set.get_frames().size() << " images.");  
+		throw Except<invalid_argument>("Try to skip ", skip, 
+					       " images, but input set has only ", input_set.get_frames().size(), " images.");
 	}
 	
 	// create ground thruth evaluator 

@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE( check_gradient )
 	BOOST_CHECK(equal(gradient.begin(), gradient.end(), test_data));
 
 	C2DFVector g = image.get_gradient(C2DFVector(1.25,1.75));
-	cvdebug() << g << "vs." << C2DFVector( -0.5f, 1.96875f ) << endl;
+	cvdebug() << g << "vs." << C2DFVector( -0.5f, 1.96875f ) << "\n";
 	BOOST_CHECK( g == C2DFVector( -0.5f, 1.96875f ));
 
 }

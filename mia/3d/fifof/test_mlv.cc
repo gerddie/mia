@@ -24,7 +24,9 @@
 #include <mia/3d/fifof/mlv.hh>
 
 NS_USE(mlv_2dstack_filter);
-NS_MIA_USE;
+NS_MIA_USE; 
+using namespace std; 
+
 
 C3DFilterPluginHandlerTestPath filter3d_plugin_path; 
 

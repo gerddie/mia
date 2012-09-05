@@ -68,12 +68,12 @@ C2DImageIOPlugin::PData CDicom2DImageIOPlugin::do_load(const string& fname) cons
 bool CDicom2DImageIOPlugin::do_save(const string& fname, const Data& data) const
 {
 	if (data.empty())
-		THROW(runtime_error, "CDicom2DImageIOPlugin: '" << fname
-		      << "', no images to save");
+		throw Except<runtime_error>("CDicom2DImageIOPlugin: '", fname, 
+					    "', no images to save");
 
 	if (data.size() > 1)
-		THROW(runtime_error, "CDicom2DImageIOPlugin: '" << fname
-		      << "' DICOM writer only supports one image per file");
+		throw Except<runtime_error>("CDicom2DImageIOPlugin: '", fname, 
+					    "' DICOM writer only supports one image per file");
 
 	CDicomWriter writer(**data.begin());
 	return writer.write(fname.c_str());

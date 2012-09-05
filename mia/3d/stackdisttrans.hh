@@ -125,7 +125,7 @@ private:
 	
 	float d(float fq, float q, float fv, float v)const; 
 	
-	void dt1d(vector<float>& f, float scale)const; 
+	void dt1d(std::vector<float>& f, float scale)const; 
 	void dt2d(C2DFImage& image)const; 
 	
 	struct SParabola {
@@ -137,8 +137,8 @@ private:
 	
 	C2DBounds m_size; 
 	C3DFVector m_voxel_size; 
-	vector<int> m_k; 
-	vector< vector<SParabola> > m_zdt;
+	std::vector<int> m_k; 
+	std::vector< std::vector<SParabola> > m_zdt;
 	
 };
 

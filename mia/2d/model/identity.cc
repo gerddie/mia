@@ -24,6 +24,7 @@
 
 using namespace identity_regmodel;
 using namespace mia; 
+using namespace std; 
 
 void C2DIdentityRegModel::do_solve(const mia::C2DFVectorfield& b, mia::C2DFVectorfield& v) const
 {

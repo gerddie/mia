@@ -46,6 +46,7 @@
 #include <mia/2d/2DDatafield.cxx>
 
 NS_MIA_USE;
+using namespace std; 
 
 const SProgramDescription g_description = {
 	"Work in progress", 
@@ -127,8 +128,8 @@ bool CEvaluateSeriesCorrelationToMask::operator () (const T2DImage<T>& image)
 {
 	float mask_mean = 0.0; 
 	if (image.get_size() != m_size) {
-		THROW(invalid_argument, "CEvaluateSeriesCorrelationToMask: got image of size " << image.get_size()
-		      << " but expected " << m_size); 
+		throw Except<invalid_argument>( "CEvaluateSeriesCorrelationToMask: got image of size ", image.get_size(), 
+						" but expected ", m_size); 
 	}
 
 	auto ii = image.begin(); 
@@ -224,8 +225,8 @@ template <typename T>
 int FAcuumulateGradients::operator () (const T2DImage<T>& image)
 {
 	if (m_sum.get_size() != image.get_size()) {
-		THROW(invalid_argument, "Input image has size " << image.get_size() 
-		      << " but expect " << m_sum.get_size()); 
+		throw Except<invalid_argument>( "Input image has size ", image.get_size(), 
+						" but expect ", m_sum.get_size()); 
 	}
 	auto vf = get_gradient(image);
 	transform(m_sum.begin(), m_sum.end(), vf.begin(), m_sum.begin(), 
@@ -261,8 +262,8 @@ template <typename T>
 int FMaxGradients::operator () (const T2DImage<T>& image)
 {
 	if (m_sum.get_size() != image.get_size()) {
-		THROW(invalid_argument, "Input image has size " << image.get_size() 
-		      << " but expect " << m_sum.get_size()); 
+		throw Except<invalid_argument>( "Input image has size ", image.get_size(), 
+						" but expect ", m_sum.get_size()); 
 	}
 	auto vf = get_gradient(image);
 	transform(m_sum.begin(), m_sum.end(), vf.begin(), m_sum.begin(), 
@@ -297,8 +298,8 @@ template <typename T>
 int FMaxIntensity::operator () (const T2DImage<T>& image)
 {
 	if (m_sum.get_size() != image.get_size()) {
-		THROW(invalid_argument, "Input image has size " << image.get_size() 
-		      << " but expect " << m_sum.get_size()); 
+		throw Except<invalid_argument>( "Input image has size ", image.get_size(), 
+						" but expect ", m_sum.get_size()); 
 	}
 
 	transform(m_sum.begin(), m_sum.end(), image.begin(), m_sum.begin(), 

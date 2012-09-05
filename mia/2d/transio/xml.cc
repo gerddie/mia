@@ -26,6 +26,7 @@
 #include <iostream>
 
 NS_MIA_BEGIN
+using namespace std; 
 
 namespace bs=boost::serialization; 
 

@@ -35,6 +35,7 @@
 #include <mia/core/slopeclassifier.hh>
 
 NS_MIA_USE;
+using namespace std; 
 
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 
@@ -102,7 +103,7 @@ void save_feature_image_unnamed(const string& base, int id, size_t max_comp,
 	stringstream fname;
 	fname << base << "-" << "-" << max_comp <<  id << ".exr";
 	if (!save_image(fname.str(), ica.get_feature_image(id)))
-		THROW(runtime_error, "unable to save " << fname.str() << "\n");
+		throw Except<runtime_error>( "unable to save ", fname.str(), "\n");
 
 }
 
@@ -115,12 +116,12 @@ void save_feature_image(const string& base, const string& descr, int id, size_t 
 		fname << base << "-" << descr << "-" << max_comp << ".exr";
 		cvinfo() << "save id=" << id << " as feature '" << descr << "'\n";
 		if (!save_image(fname.str(), ica.get_feature_image(id)))
-			THROW(runtime_error, "unable to save " << fname.str() << "\n");
+			throw Except<runtime_error>( "unable to save ", fname.str(), "\n");
 	}else{
 		fname << base << "-" << descr << "-" << max_comp << ".exr";
 		P2DImage image(ica.get_mean_image().clone());
 		if (!save_image(fname.str(), image))
-			THROW(runtime_error, "unable to save " << fname.str() << "\n");
+			throw Except<runtime_error>( "unable to save ", fname.str(), "\n");
 	}
 }
 
@@ -129,7 +130,7 @@ void save_feature_image(const string& base, const string& descr, size_t max_comp
 	stringstream fname;
 	fname << base << "-" << descr << "-" << max_comp << ".exr";
 	if (!save_image(fname.str(), image))
-		THROW(runtime_error, "unable to save " << fname.str() << "\n");
+		throw Except<runtime_error>( "unable to save '", fname.str(), "'");
 }
 
 void save_feature_image_png(const string& base, const string& descr, P2DImage image)
@@ -137,7 +138,7 @@ void save_feature_image_png(const string& base, const string& descr, P2DImage im
 	stringstream fname;
 	fname << base << "-" << descr << ".png";
 	if (!save_image(fname.str(), image))
-		THROW(runtime_error, "unable to save " << fname.str() << "\n");
+		throw Except<runtime_error>( "unable to save ", fname.str(), "\n");
 }
 
 
@@ -153,7 +154,7 @@ void save_coefs(const string&  coefs_name, const C2DImageSeriesICA& ica)
 		coef_file << "\n";
 	}
 	if (!coef_file.good())
-		THROW(runtime_error, "unable to save coefficients to " << coefs_name);
+		throw Except<runtime_error>( "unable to save coefficients to '", coefs_name, "'");
 }
 
 CICAAnalysis::IndexSet get_all_without_periodic(const CSlopeClassifier::Columns& curves, bool strip_mean)
@@ -185,7 +186,7 @@ public:
 				}
 			}
 		if (!n)
-			THROW(invalid_argument, "GetRegionCenter: provided an empty region");
+			throw Except<invalid_argument>( "GetRegionCenter: provided an empty region");
 		return result / float(n);
 	};
 };
@@ -405,7 +406,7 @@ int do_main( int argc, char *argv[] )
 		end_filenum = last;
 
 	if (start_filenum + components >= end_filenum) {
-		THROW(invalid_argument, "require at least " << components << " images");
+		throw Except<invalid_argument>( "require at least ", components, " images");
 	}
 
 	// load images
@@ -415,7 +416,7 @@ int do_main( int argc, char *argv[] )
 		string src_name = create_filename(src_basename.c_str(), i);
 		P2DImage image = load_image<P2DImage>(src_name);
 		if (!image)
-			THROW(runtime_error, "image " << src_name << " not found");
+			throw Except<runtime_error>( "image ", src_name, " not found");
 
 		cvdebug() << "read '" << src_name << "\n";
 		series.push_back(::mia::filter(converter, *image));
@@ -501,17 +502,17 @@ int do_main( int argc, char *argv[] )
 				reference = cropper->filter(*reference);
 				P2DImage crop_source = cropper->filter(*load_image2d(src_name));
 				if (!save_image(scrop_name.str(), crop_source))
-					THROW(runtime_error, "unable to save " << scrop_name.str() << "\n");
+					throw Except<runtime_error>( "unable to save ", scrop_name.str(), "\n");
 			}else  {
 				if (!save_image(scrop_name.str(), load_image2d(src_name)))
-					THROW(runtime_error, "unable to save " << scrop_name.str() << "\n");
+					throw Except<runtime_error>( "unable to save ", scrop_name.str(), "\n");
 			}
 		}
 		stringstream fname;
 		fname << out_name << setw(format_width) << setfill('0') << i << "." << out_type;
 
 		if (!save_image(fname.str(), reference))
-			THROW(runtime_error, "unable to save " << fname.str() << "\n");
+			throw Except<runtime_error>( "unable to save ", fname.str(), "\n");
 		cvdebug() << "wrote '" << fname.str() << "\n";
 	}
 

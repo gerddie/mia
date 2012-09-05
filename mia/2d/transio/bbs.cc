@@ -35,6 +35,8 @@ NS_MIA_BEGIN
 
 namespace bs=boost::serialization; 
 
+using namespace std; 
+
 class C2DBBSTransformationIO: public C2DTransformationIO {
 public: 	
 	C2DBBSTransformationIO(); 

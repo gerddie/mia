@@ -57,7 +57,7 @@ public:
 	void set_images(const C2DImageSeries& series); 
 	
 	/// save the images to their give file names with the given directory as root @param root 
-	void save_images(const string& root) const; 
+	void save_images(const std::string& root) const; 
 	
 	/** Run acropping on the inout images and correct the segmentation information accordingly 
 	    \param start upper left corner of the cropping reagion 

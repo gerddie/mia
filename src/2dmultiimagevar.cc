@@ -57,7 +57,7 @@ public:
 			m_sum = C2DDImage(image.get_size(), image);
 			m_sum2 = C2DDImage(image.get_size());
 		}else if (image.get_size() != m_sum.get_size()) {
-			THROW(invalid_argument, "input images differ in size");
+			throw Except<invalid_argument>( "input images differ in size");
 		}
 
 		transform(image.begin(), image.end(), m_sum.begin(), m_sum.begin(), 

@@ -399,8 +399,8 @@ int do_main( int argc, char *argv[] )
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
 	C2DImageSeries in_images = input_set.get_images(); 
 	if (skip >= in_images.size()) {
-		THROW(invalid_argument, "Try to skip " << skip 
-		      << " images, but input set has only " << in_images.size() << " images.");  
+		throw Except<invalid_argument>( "Try to skip ", skip, " images, "
+						"but input set has only ", in_images.size(), " images.");  
 	}
 
 	C2DImageSeries series(in_images.begin() + skip, in_images.end()); 

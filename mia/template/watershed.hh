@@ -106,7 +106,7 @@ TWatershed<dim>::TWatershed(PNeighbourhood neighborhood, bool with_borders, floa
 		m_togradnorm = Handler::instance().produce("gradnorm"); 
 }
 
-static const unsigned int boundary_label = numeric_limits<unsigned int>::max(); 
+static const unsigned int boundary_label = std::numeric_limits<unsigned int>::max(); 
 
 template <int dim>
 template <template <typename>  class Image, typename T>
@@ -288,14 +288,14 @@ typename TWatershed<dim>::result_type TWatershed<dim>::operator () (const Image<
 	cvmsg() << "Got " << next_label << " distinct bassins\n"; 
 	if (next_label < 255) {
 		Image<unsigned char> *result = new Image<unsigned char>(data.get_size(), data); 
-		transform(labels.begin(), labels.end(), result->begin(), 
-			  [](unsigned int p){ return (p != boundary_label) ? static_cast<unsigned char>(p) : 255; }); 
+		std::transform(labels.begin(), labels.end(), result->begin(), 
+			       [](unsigned int p)-> unsigned char { return (p != boundary_label) ? static_cast<unsigned char>(p) : 255; }); 
 		r = result; 
 	}else if (next_label < std::numeric_limits<unsigned short>::max()) {
 		Image<unsigned short> *result = new Image<unsigned short>(data.get_size(), data); 
-		transform(labels.begin(), labels.end(), result->begin(), 
-			  [](unsigned int p){ return (p != boundary_label) ? static_cast<unsigned short>(p) : 
-					  std::numeric_limits<unsigned short>::max(); });
+		std::transform(labels.begin(), labels.end(), result->begin(), 
+			       [](unsigned int p)-> unsigned short { return (p != boundary_label) ? static_cast<unsigned short>(p) : 
+					       std::numeric_limits<unsigned short>::max(); });
 		r = result; 
 	}else {
 		Image<unsigned int> * result = new Image<unsigned int>(data.get_size(), data); 

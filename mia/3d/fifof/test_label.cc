@@ -26,6 +26,7 @@
 
 NS_MIA_USE; 
 
+using namespace std; 
 using namespace label_2dstack_filter; 
 namespace bfs=::boost::filesystem;
 

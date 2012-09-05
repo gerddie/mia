@@ -500,10 +500,9 @@ int CCmdOptionList::handle_shortargs(const char *arg, size_t remaining_args, con
 		}else {
 			cvdebug() << "remaining_args = " << remaining_args << ", but " << nargs << " needed\n"; 
 			if (remaining_args < nargs ) {
-				THROW(invalid_argument, "Option -" << opt->get_short_option() 
-				      << ": requires " 
-				      << nargs << " arguments, but only " << remaining_args
-				      << " remaining.");
+				throw Except<invalid_argument>("Option -", opt->get_short_option(), 
+							       ": requires ", nargs, " arguments, but only ", 
+							       remaining_args, " remaining.");
 			}
 			opt->set_value(args[0]);
 			return nargs;
@@ -578,10 +577,10 @@ CCmdOptionList::do_parse(size_t argc, const char *args[], bool has_additional,
 				// currently only one argument value is supported
 				assert(nargs <= 1); 
 				if (remaining_args < nargs ) {
-					THROW(invalid_argument, "Option --" << opt->get_long_option() 
-					      << ": requires " 
-					      << nargs << " arguments, but only " << remaining_args
-					      << " remaining.");
+					throw Except<invalid_argument>("Option --" , opt->get_long_option() 
+					      , ": requires " 
+					      , nargs , " arguments, but only " , remaining_args
+					      , " remaining.");
 				}
 				
 				opt->set_value(args[idx]);

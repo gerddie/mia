@@ -68,7 +68,7 @@ C2DTransformation *C2DAffineTransformation::invert()const
 {
 	const double det = m_t[0] * m_t[4] - m_t[1] * m_t[3]; 
 	if (fabs(det) < 1e-6) 
-		THROW(invalid_argument, "C2DAffineTransformation::invert(): Matrix is singular"); 
+		throw invalid_argument("C2DAffineTransformation::invert(): Matrix is singular"); 
 	
 	const double inv_det = 1.0 / det; 
 

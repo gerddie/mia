@@ -159,8 +159,8 @@ int do_main( int argc, char *argv[] )
 
 	for (unsigned int i = 1; i < vx.size(); ++i) 
 		if (table[i].size() != (unsigned)nrows) {
-			THROW(runtime_error, "bogus input table, expect " << nrows  << ", but column " 
-			      << i << " has " << table[i].size() << " rows"); 
+			throw Except<runtime_error>( "bogus input table, expect " , nrows  , ", but column " 
+			      , i , " has " , table[i].size() , " rows"); 
 		}
 	
 	// run the wavelet tranform for each column 

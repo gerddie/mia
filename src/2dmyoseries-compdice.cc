@@ -95,8 +95,8 @@ int do_main( int argc, char *argv[] )
 		throw invalid_argument("Both series must contain the same number of frames"); 
 	
 	if (skip  >= original_frames.size())
-		THROW(invalid_argument, "skip ("<< skip <<") must be smaller then number of availabe frames("
-		      << original_frames.size() << ")"); 
+		throw Except<invalid_argument>( "skip (", skip, ") must be smaller then number of availabe frames(", 
+						original_frames.size(), ")"); 
 	
 
 

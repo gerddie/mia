@@ -133,7 +133,7 @@ int do_main( int argc, char *argv[] )
 		P2DImage result = binary_op(img1, img2, op); 
 			
 		if ( !save_image(out_filename, result) ){
-			THROW(runtime_error, "cannot save result to " << out_filename); 
+			throw Except<runtime_error>( "cannot save result to ", out_filename); 
 		}
 			
 	}catch (bad_cast& x) {

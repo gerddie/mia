@@ -328,8 +328,7 @@ CBMP2DImageIO::PData CBMP2DImageIO::do_load(string const& filename)const
 
 	read = fread(&info_header, sizeof(BMPInfoHeader), 1, f);
 	if (read != 1) {
-                THROW(runtime_error, "CBMP2DImageIO::load: unable to read info header from '"
-                << filename << "'");
+                throw Except<runtime_error>("CBMP2DImageIO::load: unable to read info header from '", filename, "'");
         }
 
 	cvdebug() << "read info header";

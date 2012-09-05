@@ -88,7 +88,7 @@ private:
         virtual CPlan *do_prepare(fftwf_r2r_kind fw_kind, const std::vector<int>& size) = 0;
 
 	fftwf_r2r_kind m_forward;
-	auto_ptr<CPlan> m_plan;
+	std::unique_ptr<CPlan> m_plan;
 };
 
 /**

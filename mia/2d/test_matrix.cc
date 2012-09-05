@@ -21,6 +21,8 @@
 #include <mia/internal/autotest.hh>
 #include <mia/2d/matrix.hh>
 
+using namespace mia; 
+
 struct MatrixFixture {
 
 	MatrixFixture();

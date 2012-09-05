@@ -32,7 +32,7 @@
 NS_BEGIN(vista_2dtrans_io)
 
 NS_MIA_USE
-
+using namespace std; 
 
 class C2DVistaTransformationIO: public C2DTransformationIO {
 public: 	

@@ -173,7 +173,7 @@ P3DLandmark C3DLMXLandmarklistIOPlugin::get_landmark(const Node& node) const
 	C3DFVector location;
 	
 	if (!get_single_xml_value(node, "name", name))
-		THROW(runtime_error, "C3DLMXLandmarklistIOPlugin: Bogus file, landmark doesn't have a name"); 
+		throw Except<runtime_error>("C3DLMXLandmarklistIOPlugin: Bogus file, landmark doesn't have a name"); 
 
 	P3DLandmark lm = make_shared<C3DLandmark>(name); 
 	

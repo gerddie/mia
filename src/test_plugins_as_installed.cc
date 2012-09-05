@@ -24,6 +24,7 @@
 
 
 using namespace std; 
+using namespace mia; 
 
 struct PluginTestFixture {
 	

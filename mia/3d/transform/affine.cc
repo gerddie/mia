@@ -73,7 +73,7 @@ C3DTransformation *C3DAffineTransformation::invert()const
 		m_t[ 8] * (m_t[1] * m_t[6] - m_t[2] * m_t[5]); 
 	
 	if (std::fabs(det) < 1e-8) 
-		THROW(invalid_argument, "C3DAffineTransformation::invert(): Matrix is singular"); 
+		throw invalid_argument("C3DAffineTransformation::invert(): Matrix is numerically singular"); 
 	
 	const double inv_det = 1.0 / det; 
 

@@ -187,7 +187,7 @@ typename TFactory<I>::Product *TFactory<I>::create(const CParsedOptions& options
 			msg << "    " << i->first << "=" << i->second << "\n";
 		}
 		cverr() << msg.str(); 
-		throw logic_error("Probably a race condition"); 
+		throw std::logic_error("Probably a race condition"); 
 
 	}
 }
@@ -231,17 +231,17 @@ template <typename  I>
 typename I::Product *TFactoryPluginHandler<I>::produce_raw(const std::string& params)const
 {
 	if (params.empty()) {
-		THROW(invalid_argument, "Factory " << this->get_descriptor() <<": Empty description string given. "
-		      "Supported plug-ins are '" << this->get_plugin_names() << "'. " 
-		      "Set description to 'help' for more information."); 
+		throw Except<std::invalid_argument>("Factory ", this->get_descriptor(), ": Empty description string given. "
+						    "Supported plug-ins are '", this->get_plugin_names(), "'. " 
+						    "Set description to 'help' for more information."); 
 	}
 	
 	CComplexOptionParser param_list(params);
 		
 	if (param_list.size() < 1) {
-		THROW(invalid_argument, "Factory " << this->get_descriptor()<< ": Description string '"
-		      << params << "' can not be interpreted. "
-		      "Supported plug-ins are '" << this->get_plugin_names() << "'. " 
+		throw Except<std::invalid_argument>( "Factory " , this->get_descriptor(), ": Description string '"
+		      , params , "' can not be interpreted. "
+		      "Supported plug-ins are '" , this->get_plugin_names() , "'. " 
 		      "Set description to 'help' for more information."); 
 	}
 		

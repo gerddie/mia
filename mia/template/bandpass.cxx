@@ -61,12 +61,12 @@ template <class Image>
 TBandPassFilterPlugin<Image>::TBandPassFilterPlugin():
 	TImageFilterPlugin<Image>("bandpass"), 
 	m_min(0), 
-	m_max(numeric_limits<float>::max())
+	m_max(std::numeric_limits<float>::max())
 {
-	this->add_parameter("min", new CFloatParameter(m_min, -numeric_limits<float>::max(), 
-						       numeric_limits<float>::max(), false, "minimum of the band")); 
-	this->add_parameter("max", new CFloatParameter(m_max, -numeric_limits<float>::max(), 
-						       numeric_limits<float>::max(), false, "maximum of the band")); 
+	this->add_parameter("min", new CFloatParameter(m_min, -std::numeric_limits<float>::max(), 
+						       std::numeric_limits<float>::max(), false, "minimum of the band")); 
+	this->add_parameter("max", new CFloatParameter(m_max, -std::numeric_limits<float>::max(), 
+						       std::numeric_limits<float>::max(), false, "maximum of the band")); 
 }
 
 template <class Image> 

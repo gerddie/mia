@@ -45,7 +45,7 @@ public:
 	   that describe the filters to be chained up. 
 	   @param descr 
 	*/
-	C2DFilterChain(const vector<const char *>& descr) __attribute__((deprecated));
+	C2DFilterChain(const std::vector<const char *>& descr) __attribute__((deprecated));
 	
 	/**
 	   Adds a filter at the begin of the chain. 

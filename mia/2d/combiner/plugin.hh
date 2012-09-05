@@ -48,7 +48,7 @@ Combiner *T2DImageCombinerPlugin<Combiner, name>::do_create()const
 template <typename Combiner, const char name[]> 
 const std::string T2DImageCombinerPlugin<Combiner, name>::do_get_descr() const
 {
-	return string("Image combiner '") +  string(name) + string("'"); 
+	return std::string("Image combiner '") +  std::string(name) + std::string("'"); 
 }
 
 

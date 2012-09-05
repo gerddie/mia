@@ -124,7 +124,7 @@ int do_main(int argc, char *argv[])
 		throw invalid_argument("The requested reference frame is larger then the size of the set."); 
 	
 	if (skip >= (int)src_frames.size()) 
-		THROW(invalid_argument, "Try to skip " << skip << " frames, but series has only " << src_frames.size()); 
+		throw Except<invalid_argument>( "Try to skip ", skip, " frames, but series has only ", src_frames.size()); 
 
 	auto isrc_frame = src_frames.begin() + skip;
 	auto esrc_frame = src_frames.end();

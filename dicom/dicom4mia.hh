@@ -70,7 +70,7 @@ private:
 	void add_attribute(C2DImage& image, const char *key, bool required) const;
 
 	struct CDicomReaderData *impl;
-	string m_filename;
+	std::string m_filename;
 
 };
 

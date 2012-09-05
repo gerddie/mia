@@ -18,11 +18,12 @@
  *
  */
 
-#include <boost/lambda/lambda.hpp>
 #include <mia/3d/fullcost/image.hh>
 #include <mia/3d/3dfilter.hh>
 
 NS_MIA_BEGIN
+
+using namespace std; 
 
 C3DImageFullCost::C3DImageFullCost(const std::string& src, 
 				   const std::string& ref, 

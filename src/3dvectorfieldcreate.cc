@@ -36,6 +36,7 @@
 
 
 NS_MIA_USE; 
+using namespace std; 
 
 const SProgramDescription g_description = {
 	"Miscellaneous programs", 
@@ -152,7 +153,7 @@ int do_main(int argc, char *argv[])
 	}
 	
 	if (!C3DVFIOPluginHandler::instance().save(out_filename, Field)){
-		THROW(runtime_error, "Unable to save result vector field to " << out_filename << "\n"); 
+		throw Except<runtime_error>( "Unable to save result vector field to ", out_filename, "\n"); 
 	}
 	return EXIT_SUCCESS;	
 

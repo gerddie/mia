@@ -218,7 +218,7 @@ static typename F::result_type filter(const F& f, const B& b)
 	case it_double:return f(DC(typename D::Ddouble,b));
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
 
@@ -254,7 +254,7 @@ static typename F::result_type filter_inplace(const F& f, B& b)
 	case it_double:return f(DV(typename D::Ddouble,b));
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
 
@@ -289,7 +289,7 @@ static typename F::result_type accumulate(F& f, const B& data)
 	case it_double:return f(DC(typename D::Ddouble,data));
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
 
@@ -326,7 +326,7 @@ static typename F::result_type filter_equal(const F& f, const B& a, const B& b)
 	case it_double:return f( DC(typename D::Ddouble, a), DC(typename D::Ddouble,b));
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
 
@@ -363,7 +363,7 @@ static void filter_equal_inplace(const F& f, const B& a, B& b)
 	case it_double: f( DC(typename D::Ddouble, a), DV(typename D::Ddouble,b));break;
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
 
@@ -399,7 +399,7 @@ static typename F::result_type filter_and_output(const F& f, const B& a, O& b)
 	case it_double: return f(DC(typename D::Ddouble, a), b);break;
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter_and_output: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter_and_output: unsupported pixel type in image");
 	}
 }
 
@@ -425,7 +425,7 @@ static typename F::result_type _filter(const F& f, const A& a, const B& b)
 	case it_double:return f(DC(typename D::Ddouble,a), b);
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
 /// \endcond
@@ -463,7 +463,7 @@ static typename F::result_type filter(const F& f, const A& a, const B& b)
 	case it_double:return _filter(f, a, DC(typename D::Ddouble,b));
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
 
@@ -489,7 +489,7 @@ static typename F::result_type _accumulate(F& f, const A& a, const B& b)
 	case it_double:return f(DC(typename D::Ddouble,a), b);
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::filter: unsupported pixel type in image");
+		throw std::invalid_argument("mia::filter: unsupported pixel type in image");
 	}
 }
 /// \endcond
@@ -526,7 +526,7 @@ static typename F::result_type accumulate(F& f, const A& a, const B& b)
 	case it_double:return _accumulate(f, a, DC(typename D::Ddouble,b));
 	default:
 		assert(!"unsupported pixel type in image");
-		throw invalid_argument("mia::accumulate: unsupported pixel type in image");
+		throw std::invalid_argument("mia::accumulate: unsupported pixel type in image");
 	}
 }
 

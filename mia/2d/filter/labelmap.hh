@@ -24,7 +24,7 @@
 NS_BEGIN(labelmap_2dimage_filter)
       
 class C2DLabelMapFilter: public mia::C2DFilter {
-	mia::vector<size_t>  m_map;
+	std::vector<size_t>  m_map;
 public:
 	C2DLabelMapFilter(const mia::CLabelMap& lmap); 
 	

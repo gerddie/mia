@@ -62,7 +62,7 @@ void CJpeg2DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
 
 METHODDEF(void) mia_jpeg_error_exit (j_common_ptr /*cinfo*/)
 {
-	THROW(runtime_error, "Jpeg::load: error reading from input file"); 
+	throw Except<runtime_error>("Jpeg::load: error reading from input file"); 
 }
 
 
@@ -70,7 +70,7 @@ C2DImageIOPlugin::PData CJpeg2DImageIOPlugin::do_load(const string& fname) const
 {
 	CInputFile f(fname);
 	if (!f)
-		THROW(runtime_error, "CPNG2DImageIO::save:unable to open input file '" << fname <<"'");
+		throw Except<runtime_error>("CPNG2DImageIO::save:unable to open input file '", fname, "'");
 
 	struct jpeg_decompress_struct cdecompress_info;
 	struct jpeg_error_mgr jerr;
@@ -91,8 +91,8 @@ C2DImageIOPlugin::PData CJpeg2DImageIOPlugin::do_load(const string& fname) const
 	// only one component? 
 	if (cdecompress_info.output_components != 1) {
 		jpeg_destroy_decompress(&cdecompress_info);
-		THROW(runtime_error, fname << ":MIA only supports gray scale images, but got an image with "
-		      << cdecompress_info.output_components << " color components\n");
+		throw Except<runtime_error>(":MIA only supports gray scale images, but got an image with ", 
+					    cdecompress_info.output_components, " color components.");
 	}
 
 
@@ -166,7 +166,7 @@ bool CJpeg2DImageIOPlugin::do_save(const string& fname, const C2DImageVector& da
 
 	COutputFile f(fname);
 	if (!f)
-		THROW(runtime_error, "CPNG2DImageIO::save:unable to open output file '" << fname <<"'");
+		throw Except<runtime_error>("CPNG2DImageIO::save:unable to open output file '", fname, "'");
 
 	return do_save_jpeg(f, *image); 
 	

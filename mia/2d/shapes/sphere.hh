@@ -36,7 +36,7 @@ private:
 		CSphere2DShape(float radius);
 	};
 
-	virtual const string do_get_descr() const;
+	virtual const std::string do_get_descr() const;
 	virtual C2DShape *do_create()const;
 	float m_r;
 };

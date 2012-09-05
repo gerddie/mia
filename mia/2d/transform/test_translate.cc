@@ -24,6 +24,7 @@
 #include <mia/2d/transform/translate.hh>
 
 NS_MIA_USE
+using namespace std; 
 
 CSplineKernelTestPath init_path; 
 

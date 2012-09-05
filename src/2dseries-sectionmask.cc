@@ -81,11 +81,11 @@ int do_main(int argc, char *argv[])
 
 	const CSegSet::Frames& src_frames = src_segset.get_frames();
 	if (frame >= src_frames.size())
-		THROW(invalid_argument,"Requested frame "<< frame << " out of range (" << src_frames.size() << ")");
+		throw Except<invalid_argument>("Requested frame ", frame, " out of range (", src_frames.size(), ")");
 
 	auto mask = src_frames[frame].get_section_masks(); 
 	if (!save_image(out_filename, mask)) 
-		THROW(runtime_error, "Unable to save mask image to '" << out_filename << "'"); 
+		throw Except<runtime_error>( "Unable to save mask image to '", out_filename, "'"); 
 	
 	return EXIT_SUCCESS;
 

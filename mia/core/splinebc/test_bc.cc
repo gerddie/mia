@@ -29,6 +29,9 @@
 #include <gsl++/matrix.hh>
 
 NS_MIA_USE
+using std::vector; 
+using std::setprecision; 
+using std::invalid_argument; 
 
 CSplineKernelTestPath kernel_test_path; 
 

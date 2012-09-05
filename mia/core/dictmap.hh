@@ -160,7 +160,7 @@ const char *TDictMap<T>::get_name(T value) const
 	
 	if (i == m_back_table.end()) {
 		if (!m_last_is_default || (m_default != value)) 
-			THROW(std::invalid_argument, "TDictMap<T>::get_name: unknown value"<< value << " provided"); 
+			throw Except<std::invalid_argument>("TDictMap<T>::get_name: unknown value ", value, " provided"); 
 		else
 			return "(default)"; 
 	}

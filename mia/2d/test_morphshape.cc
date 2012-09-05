@@ -22,7 +22,8 @@
 #include <mia/2d/morphshape.hh>
 #include <mia/2d/imagetest.hh>
 
-NS_MIA_USE; 
+using namespace mia; 
+using namespace std; 
 
 BOOST_AUTO_TEST_CASE( test_simple_foreground_shape )
 {

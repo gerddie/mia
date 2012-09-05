@@ -34,6 +34,7 @@
 #include <mia/3d/3dimageio.hh>
 
 NS_MIA_USE
+using namespace std; 
 namespace bfs=boost::filesystem;
 
 CSplineKernelTestPath splinekernel_init_path; 

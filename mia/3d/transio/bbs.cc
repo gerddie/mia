@@ -34,7 +34,7 @@
 #include <iostream>
 
 NS_MIA_BEGIN
-
+using namespace std; 
 namespace bs=boost::serialization; 
 
 class C3DBBSTransformationIO: public C3DTransformationIO {

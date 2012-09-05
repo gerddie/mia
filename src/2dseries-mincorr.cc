@@ -32,6 +32,7 @@
 #include <mia/2d/SegSetWithImages.hh>
 
 NS_MIA_USE;
+using namespace std;
 
 const SProgramDescription g_description = {
 	"Tools for Myocardial Perfusion Analysis", 

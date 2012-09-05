@@ -34,18 +34,17 @@ typename TInvert<Image>::result_type TInvert<Image>::operator () (const Data& da
 {
 	TRACE("TInvert::operator()"); 
 	// maintain range 
-	typedef typename Data::const_iterator const_iterator; 
 
-	const_iterator ib = data.begin(); 
-	const_iterator ie = data.end(); 
+	auto  ib = data.begin(); 
+	auto  ie = data.end(); 
 
-	pair<const_iterator, const_iterator> src_minmax = ::boost::minmax_element(ib, ie); 
+	auto src_minmax = ::boost::minmax_element(ib, ie); 
 	
 	Data *result = new Data(data.get_size(), data); 
 
-	transform(ib, ie, result->begin(), [src_minmax](typename Data::value_type x){
+	std::transform(ib, ie, result->begin(), [src_minmax](typename Data::value_type x){
 			return *src_minmax.second - x + *src_minmax.first;}); 
-
+	
 	return typename TInvert::result_type(result);
 }
 

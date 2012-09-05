@@ -26,6 +26,8 @@
 
 NS_MIA_BEGIN
 
+using std::invalid_argument; 
+
 C1DInterpolator::~C1DInterpolator()
 {
 }

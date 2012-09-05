@@ -28,7 +28,7 @@
 #include <mia/3d/3dimageio.hh>
 
 NS_MIA_BEGIN
-using namespace boost;
+using namespace std;
 
 
 // an image copy operator that keeps the type of the internal images

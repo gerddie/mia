@@ -52,6 +52,8 @@
 
 NS_MIA_BEGIN
 
+using std::invalid_argument; 
+
 CMirrorOnBoundary::CMirrorOnBoundary():
 	m_width2(0)
 {
@@ -168,7 +170,8 @@ void CZeroBoundary::test_supported(int npoles) const
 	 */
 
 	if (npoles > 1) {
-		THROW(invalid_argument, "Currently, zero-boundary not supported for splines with more then one pole");  
+		throw Except<invalid_argument>( "CZeroBoundary: Got ", npoles, ", but currently, "
+						"zero-boundary are not supported for splines with more then one pole");  
 	}
 }
 
@@ -257,7 +260,8 @@ CRepeatBoundary::CRepeatBoundary(int width):
 void CRepeatBoundary::test_supported(int npoles) const
 {
 	if (npoles > 1) {
-		THROW(invalid_argument, "Currently, repeat-boundary not supported for splines woth more then one pole");  
+		throw Except<invalid_argument>( "CRepeatBoundary:Got ", npoles, "poles, but currently, repeat-boundary is"
+						"not supported for splines with more then one pole");
 	}
 }
 

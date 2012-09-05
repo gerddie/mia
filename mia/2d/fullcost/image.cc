@@ -22,6 +22,7 @@
 #include <mia/2d/2dfilter.hh>
 
 NS_MIA_BEGIN
+using namespace std; 
 
 C2DImageFullCost::C2DImageFullCost(const std::string& src, 
 				   const std::string& ref, 

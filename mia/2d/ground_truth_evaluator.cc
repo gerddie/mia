@@ -138,8 +138,8 @@ template <typename T>
 void DataCopy::operator() (const T2DImage<T>& image)
 {
 	if (image.size() != m_slice_size)
-		THROW(invalid_argument, __FILE__ << ": unexpected input image pixel number "
-		      << image.size() << ", expect " << m_slice_size);
+		throw Except<invalid_argument>("C2DGroundTruthEvaluator/DataCopy: unexpected input image pixel number ", 
+					       image.size(), ", expect ", m_slice_size);
 
 	assert(i_target != m_target.end());
 

@@ -29,6 +29,9 @@
 
 using namespace mia; 
 using namespace mia::bsplinekernel;
+using std::vector; 
+using std::invalid_argument; 
+
 namespace bmpl=boost::mpl;
 
 CSplineBoundaryConditionTestPath bc_path; 

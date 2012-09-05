@@ -103,7 +103,7 @@ private:
 	void init_grid()const; 
 	C2DFVector interpolate(const C2DFVector& x) const; 
 
-	void run_downscaler(C1DScalarFixed& scaler, vector<double>& out_buffer)const; 
+	void run_downscaler(C1DScalarFixed& scaler, std::vector<double>& out_buffer)const; 
 	virtual C2DTransformation *do_clone() const;
 	C2DBounds m_range;
 	C2DFVector m_target_c_rate;

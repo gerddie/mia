@@ -31,7 +31,8 @@
 #include <mia/2d/2dfilter.hh>
 
 
-NS_MIA_USE
+using namespace mia; 
+using namespace std; 
 namespace bfs=boost::filesystem;
 
 CSplineKernelTestPath init_splinekernel_path; 

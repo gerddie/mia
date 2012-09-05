@@ -59,11 +59,11 @@ struct __dispatch_parameter_do_set {
 		std::istringstream s(str_value); 
 		s >> value; 
 		if (s.fail()) 
-			THROW(std::invalid_argument, "Value '" << str_value << "' not allowed"); 
+			throw Except<std::invalid_argument>("Value '", str_value, "' not allowed"); 
 		while (!s.eof() && s.peek() == ' ') 
 			s >> c; 
 		if (!s.eof()) 
-			THROW(std::invalid_argument, "Value '" << str_value << "' not allowed"); 
+			throw Except<std::invalid_argument>("Value '", str_value, "' not allowed"); 
 		return true; 
 	}
 };  
@@ -119,8 +119,8 @@ TRangeParameter<T>::TRangeParameter(T& value, T min, T max, bool required, const
 	m_max(max)
 {
 	if (m_min > m_max) 
-		THROW(std::invalid_argument, "Parameter '"<<descr<<"' TRangeParameter<T,"<< __type_descr<T>::value << ">: min(" 
-		      << m_min <<") > max ("<< m_max << ")  not allowed"); 
+		throw Except<std::invalid_argument>("Parameter '",descr,"' TRangeParameter<T,", __type_descr<T>::value , ">: min(" 
+						    , m_min ,") > max (", m_max , ")  not allowed"); 
 }
 
 template <typename T> 

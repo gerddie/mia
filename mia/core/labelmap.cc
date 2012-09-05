@@ -37,8 +37,7 @@ CLabelMap::CLabelMap(std::istream& is)
 	string header; 
 	is >> header; 
 	if (header != l_header) 
-		THROW(invalid_argument, 
-		      "C2DLabelMapImageFilterFactory: input does not contain a label map"); 
+		throw Except<invalid_argument>("C2DLabelMapImageFilterFactory: input does not contain a label map"); 
 	
 	int n; 
 	is >> n; 
@@ -51,11 +50,11 @@ CLabelMap::CLabelMap(std::istream& is)
 		k++; 
 	}
 	if (is.fail()) 
-		THROW(invalid_argument, "C2DLabelMapImageFilterFactory: bogus label map"); 
+		throw Except<invalid_argument>("C2DLabelMapImageFilterFactory: bogus label map"); 
 	
 	if (k < n) 
-	    THROW(invalid_argument, "C2DLabelMapImageFilterFactory: expected " << n 
-		  << " records but got only "<< k); 
+		throw Except<invalid_argument>("C2DLabelMapImageFilterFactory: expected ", n,  
+					       " records but got only ", k);
 	
 }
 

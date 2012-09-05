@@ -27,16 +27,16 @@
 #include <mia/2d/2dimageio.hh>
 #include <libxml++/libxml++.h>
 
-
-namespace bfs=boost::filesystem;
-C2DImageIOPluginHandlerTestPath test_imageio_path; 
-C2DTransformCreatorHandlerTestPath test_transform_creator_path; 
-
-NS_MIA_USE
+using namespace mia; 
 using namespace std;
 using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace xmlpp;
+namespace bfs=boost::filesystem;
+
+C2DImageIOPluginHandlerTestPath test_imageio_path; 
+C2DTransformCreatorHandlerTestPath test_transform_creator_path; 
+
 
 
 

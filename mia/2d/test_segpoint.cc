@@ -22,6 +22,8 @@
 #include <mia/2d/transformfactory.hh>
 #include <mia/2d/SegPoint.hh>
 
+using namespace mia;
+
 namespace bfs=boost::filesystem;
 
 CSplineKernelTestPath spline_kernel_path_init; 

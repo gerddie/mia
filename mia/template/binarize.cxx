@@ -28,13 +28,13 @@ NS_MIA_BEGIN
 template <typename T, bool is_integral>
 struct FBinarize {
 	FBinarize(float fmin, float fmax): 
-		m_min(numeric_limits<T>::min()), 
-		m_max(numeric_limits<T>::max()){
+		m_min(std::numeric_limits<T>::min()), 
+		m_max(std::numeric_limits<T>::max()){
 		if (fmin > m_min)
-			m_min = static_cast<T>(fmin < numeric_limits<T>::max() ? fmin : numeric_limits<T>::max()); 
+			m_min = static_cast<T>(fmin < std::numeric_limits<T>::max() ? fmin : std::numeric_limits<T>::max()); 
 		
 		if (fmax < m_max)
-			m_max = static_cast<T>(fmax > numeric_limits<T>::min() ? fmax : numeric_limits<T>::min()); 
+			m_max = static_cast<T>(fmax > std::numeric_limits<T>::min() ? fmax : std::numeric_limits<T>::min()); 
 	}
 	
 	bool operator ()(T x)const {
@@ -67,13 +67,10 @@ typename TBinarize<Image>::result_type TBinarize<Image>::operator () (const Data
 	const bool is_integral = ::boost::is_integral<T>::value; 
 	
 	Data<bool> *result = new Data<bool>(data.get_size(), data); 
-	if (!result) {
-		stringstream err; 
-		err << "binarize: unable to allocate image of size " << data.get_size().x << "x" << data.get_size().y; 
-		throw runtime_error(err.str()); 
-	}
+	if (!result)
+		throw Except<std::runtime_error>("binarize: unable to allocate image of size ", data.get_size()); 
 	
-	transform(data.begin(), data.end(), result->begin(), 
+	std::transform(data.begin(), data.end(), result->begin(), 
 		  FBinarize<T, is_integral>(m_min, m_max)); 
 	
 	return result_type(result); 
@@ -94,9 +91,9 @@ TBinarizeImageFilterFactory<Image>::TBinarizeImageFilterFactory():
 	m_min(0), 
 	m_max(std::numeric_limits<float>::max())
 {
-	this->add_parameter("min", new CFloatParameter(m_min, 0, numeric_limits<float>::max(), 
+	this->add_parameter("min", new CFloatParameter(m_min, 0, std::numeric_limits<float>::max(), 
 						 false, "minimum of accepted range")); 
-	this->add_parameter("max", new CFloatParameter(m_max, 0, numeric_limits<float>::max(), 
+	this->add_parameter("max", new CFloatParameter(m_max, 0, std::numeric_limits<float>::max(), 
 						 false, "maximum of accepted range")); 
 
 }

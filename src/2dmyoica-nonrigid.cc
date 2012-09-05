@@ -316,7 +316,7 @@ int do_main( int argc, char *argv[] )
 		if (outfile.good())
 			outfile << test_cropset->write_to_string_formatted();
 		else 
-			THROW(runtime_error, "unable to save to '" << cropped_filename << "'"); 
+			throw Except<runtime_error>( "unable to save to '", cropped_filename, "'"); 
 
 	}
 

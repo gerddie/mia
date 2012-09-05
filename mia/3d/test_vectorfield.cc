@@ -28,6 +28,10 @@
 #include <mia/core.hh>
 #include <mia/3d/3DVectorfield.hh>
 
+NS_MIA_USE; 
+using namespace std; 
+
+
 struct C3DVectorfieldFixture {
 	C3DVectorfieldFixture(); 
 	C3DBounds size; 

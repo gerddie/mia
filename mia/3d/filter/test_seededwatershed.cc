@@ -24,6 +24,7 @@
 
 
 using namespace mia; 
+using namespace std; 
 
 C3DFilterPluginHandlerTestPath filter_test_path; 
 C3DShapePluginHandlerTestPath shape_test_path; 

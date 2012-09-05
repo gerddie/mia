@@ -33,6 +33,7 @@
 #endif
 
 using namespace tbb;
+using namespace std; 
 
 NS_MIA_BEGIN
 

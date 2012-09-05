@@ -24,6 +24,7 @@
 #include <mia/core/cmdlineparser.hh>
 
 NS_MIA_USE;
+using namespace std; 
 
 const SProgramDescription g_description = {
 	"Miscellaneous programs", 

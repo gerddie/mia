@@ -28,7 +28,7 @@
 #include <mia/3d/3DDatafield.hh>
 
 NS_MIA_USE
-
+using namespace std; 
 
 static void test_3ddatafield()
 {

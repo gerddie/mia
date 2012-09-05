@@ -209,7 +209,7 @@ int do_main( int argc, char *argv[] )
 		C2DBounds crop_start; 
 		auto cropper = ica.get_crop_filter(box_scale, crop_start, segmethod, save_crop_feature); 
 		if (!cropper) {
-			THROW(runtime_error, "Cropping was requested, but segmentation failed"); 
+			throw Except<runtime_error>( "Cropping was requested, but segmentation failed"); 
 		}
 		
 		for(auto i = input_images.begin(); i != input_images.end(); ++i)
@@ -240,7 +240,7 @@ int do_main( int argc, char *argv[] )
 		if (outfile.good())
 			outfile << test_cropset->write_to_string_formatted();
 		else 
-			THROW(runtime_error, "unable to save to '" << cropped_filename << "'"); 
+			throw Except<runtime_error>( "unable to save to '", cropped_filename, "'"); 
 
 	}
 	
