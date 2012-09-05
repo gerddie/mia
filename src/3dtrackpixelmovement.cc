@@ -165,7 +165,7 @@ vector< C3DTrackPoint > load_trackpoints(const string& in_filename)
 	ifstream input(in_filename.c_str()); 
 
 	if (input.bad()) 
-		throw Except<runtime_error>( "Unable to open file '", in_filename, "' for reading");
+		throw create_exception<runtime_error>( "Unable to open file '", in_filename, "' for reading");
 
 	while (input.good()) {
 		string input_line; 
@@ -228,13 +228,13 @@ int do_main( int argc, char *argv[] )
 	// write the trackpoints 
 	ofstream output(out_filename.c_str()); 
 	if (!output.good()) 
-		throw Except<runtime_error>( "Unable to open file '", out_filename, "' for writing "); 
+		throw create_exception<runtime_error>( "Unable to open file '", out_filename, "' for writing "); 
 
 	for_each(trackpoints.begin(), trackpoints.end(), 
 		 [&output](const C3DTrackPoint& tp) { output << tp << "\n";}); 
 
 	if (!output.good()) 
-		throw Except<runtime_error>( "Error writing to '", out_filename, "'"); 
+		throw create_exception<runtime_error>( "Error writing to '", out_filename, "'"); 
 
 	
 	return EXIT_SUCCESS;	

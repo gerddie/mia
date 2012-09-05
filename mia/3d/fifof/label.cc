@@ -128,7 +128,7 @@ void C2DLabelStackFilter::label_new_regions(C2DBitImage& input)
 				if (m_last_label < numeric_limits<unsigned short>::max()) 
 					*usi = m_last_label++;
 				else 
-					throw Except<invalid_argument>("C2DLabelStackFilter: number of connected components is about to "
+					throw create_exception<invalid_argument>("C2DLabelStackFilter: number of connected components is about to "
 								       "exeed the  supported limit of ",
 								       numeric_limits<unsigned short>::max(), 
 								       ", sorry can't continue\n");
@@ -224,7 +224,7 @@ void C2DLabelStackFilter::post_finalize()
 		ofstream outfile(m_map_file.c_str(), ios_base::out );
 		m_target.save(outfile); 
 		if (!outfile.good()) {
-			throw Except<runtime_error>("C2DLabelStackFilter: failed to save labale join map to '", 
+			throw create_exception<runtime_error>("C2DLabelStackFilter: failed to save labale join map to '", 
 						    m_map_file, "'"); 
 		}
 	}

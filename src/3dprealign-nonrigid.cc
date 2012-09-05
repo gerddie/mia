@@ -403,14 +403,14 @@ int do_main( int argc, char *argv[] )
 		string src_name = create_filename(src_basename.c_str(), i);
 		P3DImage image = load_image<P3DImage>(src_name);
 		if (!image)
-			throw Except<runtime_error>( "image ", src_name, " not found");
+			throw create_exception<runtime_error>( "image ", src_name, " not found");
 
 		cvdebug() << "read '" << src_name << "\n";
 		in_images.push_back(image);
 	}
 
 	if (skip >= in_images.size()) {
-		throw Except<invalid_argument>( "Try to skip ",  skip, " images, but input set has only ", 
+		throw create_exception<invalid_argument>( "Try to skip ",  skip, " images, but input set has only ", 
 						in_images.size(), " images.");  
 	}
 

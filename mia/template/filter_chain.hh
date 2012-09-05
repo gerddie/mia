@@ -145,7 +145,7 @@ void TFilterChain<Handler>::init(const char *filters[], int nfilters)
 	for(int i = 0; i < nfilters; ++i) {
 		m_chain[i] = Handler::instance().produce(filters[i]); 
 		if (!m_chain[i]) {
-			throw Except<std::invalid_argument>( "Can't create filter from '", filters[i], "'"); 
+			throw create_exception<std::invalid_argument>( "Can't create filter from '", filters[i], "'"); 
 		}
 	}
 }
@@ -173,7 +173,7 @@ void TFilterChain<Handler>::push_front(const char * filter)
 	if (f) 
 		m_chain.insert(m_chain.begin(), f); 
 	else 
-		throw Except<std::invalid_argument>( "Can't create filter from '", filter, "'"); 
+		throw create_exception<std::invalid_argument>( "Can't create filter from '", filter, "'"); 
 }
 
 template <typename Handler> 
@@ -183,7 +183,7 @@ void TFilterChain<Handler>::push_back(const char * filter)
 	if (f) 
 		m_chain.push_back(f); 
 	else 
-		throw Except<std::invalid_argument>( "Can't create filter from '", filter, "'"); 
+		throw create_exception<std::invalid_argument>( "Can't create filter from '", filter, "'"); 
 }
 
 template <typename Handler> 

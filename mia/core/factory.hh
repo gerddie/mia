@@ -231,7 +231,7 @@ template <typename  I>
 typename I::Product *TFactoryPluginHandler<I>::produce_raw(const std::string& params)const
 {
 	if (params.empty()) {
-		throw Except<std::invalid_argument>("Factory ", this->get_descriptor(), ": Empty description string given. "
+		throw create_exception<std::invalid_argument>("Factory ", this->get_descriptor(), ": Empty description string given. "
 						    "Supported plug-ins are '", this->get_plugin_names(), "'. " 
 						    "Set description to 'help' for more information."); 
 	}
@@ -239,7 +239,7 @@ typename I::Product *TFactoryPluginHandler<I>::produce_raw(const std::string& pa
 	CComplexOptionParser param_list(params);
 		
 	if (param_list.size() < 1) {
-		throw Except<std::invalid_argument>( "Factory " , this->get_descriptor(), ": Description string '"
+		throw create_exception<std::invalid_argument>( "Factory " , this->get_descriptor(), ": Description string '"
 		      , params , "' can not be interpreted. "
 		      "Supported plug-ins are '" , this->get_plugin_names() , "'. " 
 		      "Set description to 'help' for more information."); 

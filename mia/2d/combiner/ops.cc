@@ -46,7 +46,7 @@ template <typename BO>
 P2DImage T2DImageCombiner<BO>::do_combine( const C2DImage& a, const C2DImage& b) const
 {
 	if (a.get_size() != b.get_size()) {
-		throw Except<invalid_argument>("C2DAddImageCombiner: input images have different size: ", 
+		throw create_exception<invalid_argument>("C2DAddImageCombiner: input images have different size: ", 
 					       a.get_size(), " vs. ", b.get_size());
 	}
 	return mia::filter(*this, a, b); 

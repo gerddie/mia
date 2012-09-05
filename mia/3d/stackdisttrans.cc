@@ -140,7 +140,7 @@ C2DStackDistanceTransform::get_slice(size_t s, const C2DImage& image) const
 	auto src = dynamic_cast<const C2DBitImage&>(image); 
 
 	if (src.get_size() != m_size) {
-		throw Except<invalid_argument>( "input image nr ", s, "has a dffernt size ", src.get_size(), 
+		throw create_exception<invalid_argument>( "input image nr ", s, "has a dffernt size ", src.get_size(), 
 						" then reference ", m_size); 
 	}
 

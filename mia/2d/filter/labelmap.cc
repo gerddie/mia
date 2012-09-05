@@ -81,7 +81,7 @@ C2DFilter *C2DLabelMapFilterPlugin::do_create() const
 	ifstream is(m_map.c_str()); 
 
 	if (!is.good())
-		throw Except<runtime_error>("C2DLabelMapFilterPlugin::load_label_map:"
+		throw create_exception<runtime_error>("C2DLabelMapFilterPlugin::load_label_map:"
 					    "Unable to open file '", m_map, "'"); 
 	
 	CLabelMap map(is);

@@ -99,7 +99,7 @@ int do_main( int argc, char *argv[] )
 	auto original_frames = original.get_frames(); 
 	
 	if (reference < real_skip || reference >= original_frames.size())
-		throw Except<invalid_argument>( "reference frame must be larger then skip=", 
+		throw create_exception<invalid_argument>( "reference frame must be larger then skip=", 
 						skip, " and smaller then the length of the series ", original_frames.size()); 
 	
 

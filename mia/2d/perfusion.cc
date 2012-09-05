@@ -415,7 +415,7 @@ void C2DPerfusionAnalysisImpl::save_coefs(const string&  coefs_name) const
 		coef_file << "\n";
 	}
 	if (!coef_file.good())
-		throw Except<runtime_error>("unable to save coefficients to '", coefs_name, "'");
+		throw create_exception<runtime_error>("unable to save coefficients to '", coefs_name, "'");
 }
 
 

@@ -203,7 +203,7 @@ int do_main( int argc, char *argv[] )
 	CSegSetWithImages  input_set(in_filename, override_src_imagepath);
 	
 	if (skip >= input_set.get_frames().size()) {
-		throw Except<invalid_argument>("Try to skip ", skip, 
+		throw create_exception<invalid_argument>("Try to skip ", skip, 
 					       " images, but input set has only ", input_set.get_frames().size(), " images.");
 	}
 	

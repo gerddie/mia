@@ -137,13 +137,13 @@ int do_main( int argc, char *argv[] )
 	P2DImage avgcorr = acc.get_avg_corr();
 
 	if (!save_image(out_hor_name, hor))
-		throw Except<runtime_error>( "unable to save horizontal correlation to '", out_hor_name,"'");
+		throw create_exception<runtime_error>( "unable to save horizontal correlation to '", out_hor_name,"'");
 
 	if (!save_image(out_ver_name, ver))
-		throw Except<runtime_error>( "unable to save vertical correlation to '", out_ver_name, "'");
+		throw create_exception<runtime_error>( "unable to save vertical correlation to '", out_ver_name, "'");
 
 	if (!save_image(out_name, avgcorr))
-		throw Except<runtime_error>( "unable to save average correlation to '", out_name, "'");
+		throw create_exception<runtime_error>( "unable to save average correlation to '", out_name, "'");
 
 
 	
@@ -168,7 +168,7 @@ template <typename T>
 bool FCorrelationAccumulator::operator ()(const T2DImage<T>& image)
 {
 	if (image.get_size() != size)
-		throw Except<invalid_argument>( "Input image size ",  size,  " expected, but got ", image.get_size());
+		throw create_exception<invalid_argument>( "Input image size ",  size,  " expected, but got ", image.get_size());
 	// sum x
 	transform(image.begin(), image.end(), sx.begin(), sx.begin(), 
 		  [](T x, double y){return x + y;}); 
@@ -209,7 +209,7 @@ P2DImage FCorrelationAccumulator::get_horizontal_corr() const
 void FCorrelationAccumulator::evaluate_hor()const
 {
 	if (!len)
-		throw Except<invalid_argument>( "No input images");
+		throw create_exception<invalid_argument>( "No input images");
 
 	
 	corr_hor = new C2DFImage(C2DBounds(size.x-1, size.y));
@@ -251,7 +251,7 @@ P2DImage FCorrelationAccumulator::get_vertical_corr() const
 void FCorrelationAccumulator::evaluate_ver()const
 {
 	if (!len)
-		throw Except<invalid_argument>( "No input images");
+		throw create_exception<invalid_argument>( "No input images");
 	
 	corr_ver = new C2DFImage(C2DBounds(size.x, size.y-1));
 	pcorr_ver.reset(corr_ver); 

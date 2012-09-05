@@ -404,7 +404,7 @@ extern "C" void EXPORT initmia() {
 	
 	/* initialize exception object */
 	d=PyModule_GetDict(m) ; /* get module dictionary */
-	MiaError=PyErr_NewException("mia.error",NULL,NULL) ;
+	MiaError=PyErr_Newcreate_exceptionion("mia.error",NULL,NULL) ;
 	PyDict_SetItemString(d,"error",MiaError) ;
 	
 	import_array() ;

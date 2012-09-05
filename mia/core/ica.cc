@@ -217,7 +217,7 @@ vector<float> CICAAnalysis::get_feature_row(size_t row) const
 		return result;
 	}
 
-	throw Except<invalid_argument>("CICAAnalysis::get_feature_row: requested row ", row, " out of range");
+	throw create_exception<invalid_argument>("CICAAnalysis::get_feature_row: requested row ", row, " out of range");
 
 }
 
@@ -229,7 +229,7 @@ std::vector<float> CICAAnalysis::get_mix_series(size_t colm)const
 		impl->get_mixing_curve(colm, result);
 		return result;
 	}
-	throw Except<invalid_argument>("CICAAnalysis::get_mix_series: requested series ", colm, " out of range");
+	throw create_exception<invalid_argument>("CICAAnalysis::get_mix_series: requested series ", colm, " out of range");
 }
 
 void CICAAnalysis::set_mixing_series(size_t index, const std::vector<float>& filtered_series)
@@ -325,7 +325,7 @@ std::vector<float> CICAAnalysis::get_mix(size_t idx)const
 		return result;
 	}
 
-	throw Except<invalid_argument>("CICAAnalysis::get_mix: requested idx ", idx, " out of range: ", impl->m_rows);
+	throw create_exception<invalid_argument>("CICAAnalysis::get_mix: requested idx ", idx, " out of range: ", impl->m_rows);
 }
 
 std::vector<float> CICAAnalysis::get_delta_feature(const IndexSet& plus, const IndexSet& minus)const
@@ -351,7 +351,7 @@ std::vector<float> CICAAnalysis::get_partial_mix(size_t idx, const IndexSet& cps
 {
 	TRACE_FUNCTION;
 	if (idx >=  impl->m_rows) {
-		throw Except<invalid_argument>("CICAAnalysis::get_mix: requested idx ", idx, 
+		throw create_exception<invalid_argument>("CICAAnalysis::get_mix: requested idx ", idx, 
 					       " out of range: ", impl->m_rows);
 
 	} else {
@@ -378,7 +378,7 @@ std::vector<float> CICAAnalysis::get_incomplete_mix(size_t idx, const std::set<s
 		return result;
 	}
 
-	throw Except<invalid_argument>("CICAAnalysis::get_mix: requested idx ", idx, 
+	throw create_exception<invalid_argument>("CICAAnalysis::get_mix: requested idx ", idx, 
 				       " out of range: ", impl->m_rows);
 }
 
@@ -423,7 +423,7 @@ void CICAAnalysisImpl::check_set(const CICAAnalysis::IndexSet& s) const
 	for (CICAAnalysis::IndexSet::const_iterator is = s.begin();
 	     is != s.end(); ++is) {
 		if (*is >= m_ncomponents) {
-			throw Except<invalid_argument>("CICAAnalysis: request component index ",  *is , 
+			throw create_exception<invalid_argument>("CICAAnalysis: request component index ",  *is , 
 						       " but only up to index ", m_ncomponents - 1, 
 						       " available\n");
 		}

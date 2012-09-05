@@ -317,7 +317,7 @@ template <typename T>
 CPngImageSaver::result_type CPngImageSaver::operator ()(const T2DImage<T>& image)const
 {
 	if (!pixel_trait<T>::supported ) {
-		throw Except<invalid_argument>("Input pixel format '", typeid(T).name(), 
+		throw create_exception<invalid_argument>("Input pixel format '", typeid(T).name(), 
 					       "' not supported by png writer");
 	}
 

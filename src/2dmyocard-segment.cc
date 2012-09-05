@@ -128,7 +128,7 @@ bool CEvaluateSeriesCorrelationToMask::operator () (const T2DImage<T>& image)
 {
 	float mask_mean = 0.0; 
 	if (image.get_size() != m_size) {
-		throw Except<invalid_argument>( "CEvaluateSeriesCorrelationToMask: got image of size ", image.get_size(), 
+		throw create_exception<invalid_argument>( "CEvaluateSeriesCorrelationToMask: got image of size ", image.get_size(), 
 						" but expected ", m_size); 
 	}
 
@@ -225,7 +225,7 @@ template <typename T>
 int FAcuumulateGradients::operator () (const T2DImage<T>& image)
 {
 	if (m_sum.get_size() != image.get_size()) {
-		throw Except<invalid_argument>( "Input image has size ", image.get_size(), 
+		throw create_exception<invalid_argument>( "Input image has size ", image.get_size(), 
 						" but expect ", m_sum.get_size()); 
 	}
 	auto vf = get_gradient(image);
@@ -262,7 +262,7 @@ template <typename T>
 int FMaxGradients::operator () (const T2DImage<T>& image)
 {
 	if (m_sum.get_size() != image.get_size()) {
-		throw Except<invalid_argument>( "Input image has size ", image.get_size(), 
+		throw create_exception<invalid_argument>( "Input image has size ", image.get_size(), 
 						" but expect ", m_sum.get_size()); 
 	}
 	auto vf = get_gradient(image);
@@ -298,7 +298,7 @@ template <typename T>
 int FMaxIntensity::operator () (const T2DImage<T>& image)
 {
 	if (m_sum.get_size() != image.get_size()) {
-		throw Except<invalid_argument>( "Input image has size ", image.get_size(), 
+		throw create_exception<invalid_argument>( "Input image has size ", image.get_size(), 
 						" but expect ", m_sum.get_size()); 
 	}
 

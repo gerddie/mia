@@ -153,7 +153,7 @@ int do_main(int argc, char *argv[])
 	}
 	
 	if (!C3DVFIOPluginHandler::instance().save(out_filename, Field)){
-		throw Except<runtime_error>( "Unable to save result vector field to ", out_filename, "\n"); 
+		throw create_exception<runtime_error>( "Unable to save result vector field to ", out_filename, "\n"); 
 	}
 	return EXIT_SUCCESS;	
 

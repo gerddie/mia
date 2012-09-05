@@ -231,11 +231,11 @@ void C3DDT::get_slice(size_t s, const C2DImage& image, vector<pair<C3DBounds, fl
 	
 	const C2DBitImage *src = dynamic_cast<const C2DBitImage*>(&image);
 	if (!src) {
-		throw Except<invalid_argument>( "input image ", s, "not of type bit"); 
+		throw create_exception<invalid_argument>( "input image ", s, "not of type bit"); 
 	}
 	
 	if (src->get_size() != _M_size) {
-		throw Except<invalid_argument>( "input image ", s, "has a dffernt size then reference"); 
+		throw create_exception<invalid_argument>( "input image ", s, "has a dffernt size then reference"); 
 	}
 	
 	C2DFImage slice_tmp(_M_size); 

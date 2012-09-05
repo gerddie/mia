@@ -165,7 +165,7 @@ int do_main( int argc, char *argv[] )
 
 	auto input_files =  options.get_remaining();
 	if (input_files.empty()) {
-		throw Except<invalid_argument>( "no input files given"); 
+		throw create_exception<invalid_argument>( "no input files given"); 
 	}
 
 	C2DImageVectorWithName images;

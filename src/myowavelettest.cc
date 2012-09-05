@@ -111,7 +111,7 @@ int do_main( int argc, char *argv[] )
 
 	for (size_t i = 1; i < vx.size(); ++i) 
 		if (table[i].size() != nrows) {
-			throw Except<runtime_error>( "bogus input table, expect " , nrows  , ", but column " 
+			throw create_exception<runtime_error>( "bogus input table, expect " , nrows  , ", but column " 
 			      , i , " has " , table[i].size() , " rows"); 
 		}
 

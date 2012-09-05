@@ -133,13 +133,13 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<InputIterator>))
 	       std::vector<double>& classes)
 {
 	if (classes.size() < 2)
-		throw Except<std::invalid_argument>("kmeans: requested ", classes.size(), 
+		throw create_exception<std::invalid_argument>("kmeans: requested ", classes.size(), 
 						    "class(es), required are at least two");
 	
 	const size_t nclusters = classes.size(); 
 	const double size = std::distance(ibegin, iend); 
 	if ( size < nclusters ) 
-		throw Except<std::invalid_argument>("kmeans: insufficient input: want ", nclusters , 
+		throw create_exception<std::invalid_argument>("kmeans: insufficient input: want ", nclusters , 
 						    " classes, but git only ",  size, " input elements"); 
 
 	double sum = std::accumulate(ibegin, iend, 0.0); 

@@ -167,7 +167,7 @@ int do_main( int argc, char *argv[] )
 
 	// sanity check 
 	if (input_images.size() < 5 + skip_images) {
-		throw Except<invalid_argument>( "input set has only ", input_images.size(), " frames, but at least ", 
+		throw create_exception<invalid_argument>( "input set has only ", input_images.size(), " frames, but at least ", 
 						5 + skip_images, " frames are required for the registration to make sense"); 
 	}
 	

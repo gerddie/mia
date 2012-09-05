@@ -210,7 +210,7 @@ void CSegFrame::load_image() const
 {
 	m_image = load_image2d(m_filename); 
 	if (!m_image) 
-		throw Except<runtime_error>( "unable to find image file '", m_filename, "'");
+		throw create_exception<runtime_error>( "unable to find image file '", m_filename, "'");
 }
 
 C2DUBImage CSegFrame::get_section_masks() const
@@ -286,7 +286,7 @@ CSegFrame::SectionsStats CSegFrame::get_stats(const C2DUBImage& mask) const
 	if (!m_image)
 		load_image(); 
 	if (mask.get_size() != m_image->get_size()) 
-		throw Except<invalid_argument>( "Mask image ",mask.get_size(), " and data image ", 
+		throw create_exception<invalid_argument>( "Mask image ",mask.get_size(), " and data image ", 
 						m_image->get_size(), " are of different size");
 	
 	return ::mia::filter(EvalMaskStat(mask), *m_image);  
@@ -299,7 +299,7 @@ CSegFrame::SectionsStats CSegFrame::get_stats(size_t n_sections) const
 	if (!m_image) {
 		m_image = load_image2d(m_filename); 
 		if (!m_image) 
-			throw Except<runtime_error>( "unable to find image file '", m_filename, "'");
+			throw create_exception<runtime_error>( "unable to find image file '", m_filename, "'");
 	}
 	C2DUBImage mask = get_section_masks(n_sections); 
 	return get_stats(mask); 

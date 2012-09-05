@@ -71,7 +71,7 @@ const std::string __create_message(T ...t)
     \param ...t the arguments used to create the exception message
 */
 template <typename E, typename... T>
-E Except( T ...t )
+E create_exception( T ...t )
 {
 	return E(::mia::__create_message(t...)); 
 }
@@ -87,7 +87,7 @@ E Except( T ...t )
  */ 
 #define DEBUG_ASSERT_RELEASE_THROW(cond, msg... )	\
 	if (!(cond)) {					\
-		throw ::mia::Except<std::logic_error>(msg);	\
+		throw ::mia::create_exception<std::logic_error>(msg);	\
 	}
 #else
 #define DEBUG_ASSERT_RELEASE_THROW(cond, msg... )			\

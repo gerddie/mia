@@ -50,7 +50,7 @@ C2DRegiongrowFilter::result_type C2DRegiongrowFilter::operator () (const mia::T2
 	C2DImageIOPlugin::PData in_image_list = m_seed_image_key.get();
 	
 	if (!in_image_list || in_image_list->empty())
-		throw Except<invalid_argument>( "C2DRegiongrowFilter: Empty image list loaded from pool");
+		throw create_exception<invalid_argument>( "C2DRegiongrowFilter: Empty image list loaded from pool");
 
 	P2DImage pseed_image = (*in_image_list)[0];
 	if (pseed_image->get_pixel_type() != it_bit)
@@ -58,7 +58,7 @@ C2DRegiongrowFilter::result_type C2DRegiongrowFilter::operator () (const mia::T2
 	const C2DBitImage& seed_image = dynamic_cast<const C2DBitImage&>(*pseed_image); 
 
 	if (size != seed_image.get_size())
-		throw Except<invalid_argument>( "Input image is of size ", size, 
+		throw create_exception<invalid_argument>( "Input image is of size ", size, 
 						", but seed image is ", seed_image.get_size());
 	
 	C2DBitImage *presult = new C2DBitImage(size, data); 

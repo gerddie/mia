@@ -77,7 +77,7 @@ std::string TIOPluginHandler<I>::get_preferred_suffix(const std::string& type) c
 {
 	auto plugin = this->plugin(type.c_str());
 	if ( !plugin ) {
-		throw Except<std::invalid_argument>("Plug-in '", type, "' not available"); 
+		throw create_exception<std::invalid_argument>("Plug-in '", type, "' not available"); 
 	}
 	return plugin->get_preferred_suffix(); 
 }
@@ -97,7 +97,7 @@ TIOPluginHandler<I>::preferred_plugin(const std::string& fname) const
 	auto p = m_suffixmap.find(fsuffix);
 	if (p != m_suffixmap.end())
 		return *this->plugin(p->second.c_str());
-	throw Except<std::invalid_argument>("No plugin from '", I::PlugType::type_descr , "/" ,  
+	throw create_exception<std::invalid_argument>("No plugin from '", I::PlugType::type_descr , "/" ,  
 					    I::PlugData::data_descr, "' corresponds to suffix '",  
 					    fsuffix, "' supported suffixes:", get_supported_suffixes()); 
 }

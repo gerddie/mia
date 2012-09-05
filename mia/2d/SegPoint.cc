@@ -60,11 +60,11 @@ CSegPoint2D::CSegPoint2D(const Node& node)
 		throw runtime_error("SegSection:Point attribute x or y not found");
 	
 	if (!from_string(ax->get_value(), x)) 
-		throw Except<runtime_error>( "CSegPoint2D: x attribute '", 
+		throw create_exception<runtime_error>( "CSegPoint2D: x attribute '", 
 					     ax->get_value(), "' is not a floating point value"); 
 
 	if (!from_string(ay->get_value(), y)) 
-		throw Except<runtime_error>( "CSegPoint2D: y attribute '", 
+		throw create_exception<runtime_error>( "CSegPoint2D: y attribute '", 
 					     ay->get_value(), "' is not a floating point value");
 }
 

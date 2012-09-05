@@ -301,7 +301,7 @@ bool CSliceSaver::operator () ( const T3DImage<T>& image) const
 bool CDicom3DImageIOPlugin::do_save(const string& fname, const Data& data) const
 {
 	if (data.empty())
-		throw Except<runtime_error>( "CDicom3DImageIOPlugin: '", fname, "', no images to save");
+		throw create_exception<runtime_error>( "CDicom3DImageIOPlugin: '", fname, "', no images to save");
 
 
 	CSliceSaver saver(fname);

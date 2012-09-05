@@ -109,7 +109,7 @@ void segment_and_crop_input(CSegSetWithImages&  input_set,
 	auto cropper = ica.get_crop_filter(box_scale, crop_start, 
 					   segmethod, save_crop_feature); 
 	if (!cropper)
-		throw Except<runtime_error>( "Cropping was requested, but segmentation failed"); 
+		throw create_exception<runtime_error>( "Cropping was requested, but segmentation failed"); 
 	C2DImageSeries input_images = input_set.get_images(); 
 	for(auto i = input_images.begin(); i != input_images.end(); ++i)
 		*i = cropper->filter(**i); 
@@ -295,7 +295,7 @@ int do_main( int argc, char *argv[] )
 		if (outfile.good())
 			outfile << test_cropset->write_to_string_formatted();
 		else 
-			throw Except<runtime_error>( "unable to save to '", cropped_filename, "'"); 
+			throw create_exception<runtime_error>( "unable to save to '", cropped_filename, "'"); 
 
 	}
 	vector<P2DTransformation> transformations; 

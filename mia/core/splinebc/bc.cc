@@ -170,7 +170,7 @@ void CZeroBoundary::test_supported(int npoles) const
 	 */
 
 	if (npoles > 1) {
-		throw Except<invalid_argument>( "CZeroBoundary: Got ", npoles, ", but currently, "
+		throw create_exception<invalid_argument>( "CZeroBoundary: Got ", npoles, ", but currently, "
 						"zero-boundary are not supported for splines with more then one pole");  
 	}
 }
@@ -260,7 +260,7 @@ CRepeatBoundary::CRepeatBoundary(int width):
 void CRepeatBoundary::test_supported(int npoles) const
 {
 	if (npoles > 1) {
-		throw Except<invalid_argument>( "CRepeatBoundary:Got ", npoles, "poles, but currently, repeat-boundary is"
+		throw create_exception<invalid_argument>( "CRepeatBoundary:Got ", npoles, "poles, but currently, repeat-boundary is"
 						"not supported for splines with more then one pole");
 	}
 }

@@ -94,7 +94,7 @@ int do_main(int argc, char **argv)
 	// save 
 	COutputFile output(out_filename); 
 	if (!output) 
-		throw Except<runtime_error>( "Unable to open '", out_filename, "' for writing:", strerror(errno)); 
+		throw create_exception<runtime_error>( "Unable to open '", out_filename, "' for writing:", strerror(errno)); 
 	
 
 	fprintf(output, "MIA\n"); 
@@ -112,7 +112,7 @@ int do_main(int argc, char **argv)
 	fprintf(output, "}\n\xC" );
 
 	if (fwrite(&tensorfield[0], sizeof(float),  tensorfield.size(), output) != tensorfield.size()) {
-		throw Except<runtime_error>( "Unable to write data to '", out_filename, "':",   strerror(errno)); 
+		throw create_exception<runtime_error>( "Unable to write data to '", out_filename, "':",   strerror(errno)); 
 	}
 	
 	return EXIT_SUCCESS;

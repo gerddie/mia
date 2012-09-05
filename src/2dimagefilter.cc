@@ -70,7 +70,7 @@ int do_main( int argc, char *argv[] )
 	const C2DImageFilterChain filter_chain(options.get_remaining()); 
 	auto in_image_list = imageio.load(in_filename);
 	if (!in_image_list || in_image_list->empty()) {
-		throw Except<invalid_argument>( "No images found in ", in_filename); 
+		throw create_exception<invalid_argument>( "No images found in ", in_filename); 
 	}
 	
 	
@@ -78,7 +78,7 @@ int do_main( int argc, char *argv[] )
 		  [&filter_chain](const P2DImage& img){return  filter_chain.run(img);});
 
 	if ( !imageio.save(out_filename, *in_image_list) ){
-		throw Except<runtime_error>( "Unable to save result to ", out_filename);
+		throw create_exception<runtime_error>( "Unable to save result to ", out_filename);
 	};
 	return EXIT_SUCCESS;
 

@@ -30,7 +30,7 @@ using namespace std;
 template <typename T>
 struct CSortLabel_dispatch {
 	static P2DImage apply(const T2DImage<T>& /*image*/) {
-		throw Except<invalid_argument>("Unsupported input label type ", __type_descr<T>::value);  
+		throw create_exception<invalid_argument>("Unsupported input label type ", __type_descr<T>::value);  
 	}
 }; 
 

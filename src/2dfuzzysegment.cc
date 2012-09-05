@@ -133,7 +133,7 @@ int do_main( int argc, char *argv[] )
 
 	if (!gain_filename.empty()) {
 		if (!save_image(gain_filename, gain)) 
-			throw Except<runtime_error>( "unable to save gain field to '", gain_filename, "'"); 
+			throw create_exception<runtime_error>( "unable to save gain field to '", gain_filename, "'"); 
 	}
 	
 	return EXIT_SUCCESS;

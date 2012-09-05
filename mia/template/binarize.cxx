@@ -68,7 +68,7 @@ typename TBinarize<Image>::result_type TBinarize<Image>::operator () (const Data
 	
 	Data<bool> *result = new Data<bool>(data.get_size(), data); 
 	if (!result)
-		throw Except<std::runtime_error>("binarize: unable to allocate image of size ", data.get_size()); 
+		throw create_exception<std::runtime_error>("binarize: unable to allocate image of size ", data.get_size()); 
 	
 	std::transform(data.begin(), data.end(), result->begin(), 
 		  FBinarize<T, is_integral>(m_min, m_max)); 

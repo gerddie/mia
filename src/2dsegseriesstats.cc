@@ -144,9 +144,9 @@ int do_main( int argc, char *argv[] )
 	
 	
 	if (original_frames.size() != registered_frames.size()) 
-		throw Except<invalid_argument>( "original and reference series must have same size"); 
+		throw create_exception<invalid_argument>( "original and reference series must have same size"); 
 	if (reference < skip || reference >= static_cast<long>(original_frames.size()))
-		throw Except<invalid_argument>( "reference frame must be larger then skip=", 
+		throw create_exception<invalid_argument>( "reference frame must be larger then skip=", 
 						skip, " and smaller then the length of the series ", original_frames.size()); 
 	
 	vector<vector<SResult> > curves; 
@@ -161,7 +161,7 @@ int do_main( int argc, char *argv[] )
 
 		if (stats_unregistered.size() != stats_registered.size() ||
 		    stats_registered.size() != stats_handsegmented.size()) {
-			throw Except<runtime_error>( "Frame ", i, " is not properly segmented,", 
+			throw create_exception<runtime_error>( "Frame ", i, " is not properly segmented,", 
 						     " got org:", stats_unregistered.size(), 
 						     " reg:", stats_registered.size(), 
 						     " hand:", stats_handsegmented.size());  
@@ -186,11 +186,11 @@ int do_main( int argc, char *argv[] )
 	
 	if (!curves_filename.empty()) 
 		if (!normalize_and_save_curves(curves, curves_filename)) 
-			throw Except<runtime_error>( "Unable to write '", curves_filename, "'"); 
+			throw create_exception<runtime_error>( "Unable to write '", curves_filename, "'"); 
 
 	if (!varcurves_filename.empty()) 
 		if (!normalize_and_save_curves(varcurves, varcurves_filename)) 
-			throw Except<runtime_error>( "Unable to write '", varcurves_filename, "'"); 
+			throw create_exception<runtime_error>( "Unable to write '", varcurves_filename, "'"); 
 	
 	return EXIT_SUCCESS; 
 }
