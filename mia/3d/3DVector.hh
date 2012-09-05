@@ -30,7 +30,6 @@
 #include <iostream>
 #include <type_traits>
 
-//#include <boost/lambda/lambda.hpp>
 #include <mia/core/defines.hh>
 #include <mia/core/type_traits.hh>
 
@@ -467,46 +466,5 @@ struct less_then<T3DVector<T> > {
 
 NS_MIA_END
 
-#if 0 
-
-/*
-  These template specializations are needed when using the T2DVector template 
-  in a boost lambda expression that uses ::boost::lambda::_1 
-  \todo add more operations 
- */
-namespace boost { 
-	namespace lambda {
-		
-		template<class Act> 
-		struct plain_return_type_2<arithmetic_action<Act>, mia::C3DFVector, mia::C3DFVector > {
-			typedef mia::C3DFVector type;
-		};
-		template<> 
-		struct plain_return_type_2<arithmetic_action<multiply_action>, mia::C3DFVector, float> {
-			typedef mia::C3DFVector type;
-		};
-		template<> 
-		struct plain_return_type_2<arithmetic_action<multiply_action>, float, mia::C3DFVector> {
-			typedef mia::C3DFVector type;
-		};
-
-		template<class Act> 
-		struct plain_return_type_2<arithmetic_action<Act>, mia::C3DDVector, mia::C3DDVector > {
-			typedef mia::C3DDVector type;
-		};
-		template<> 
-		struct plain_return_type_2<arithmetic_action<multiply_action>, mia::C3DDVector, float> {
-			typedef mia::C3DDVector type;
-		};
-		template<> 
-		struct plain_return_type_2<arithmetic_action<multiply_action>, float, mia::C3DDVector> {
-			typedef mia::C3DDVector type;
-		};
-
-	}
-}
-
-
-#endif 
 
 #endif

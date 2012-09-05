@@ -24,11 +24,9 @@
 #include <ostream>
 #include <fstream>
 #include <map>
-#include <boost/lambda/lambda.hpp>
 #include <boost/filesystem.hpp>
 
 
-//#include <mia/core/fft1d_r2c.hh>
 #include <queue>
 #include <libxml++/libxml++.h>
 

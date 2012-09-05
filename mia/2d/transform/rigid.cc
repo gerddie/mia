@@ -19,29 +19,6 @@
  */
 
 
-/* 
-  LatexBeginPluginDescription{2D Transformations}
-   
-   \subsection{Rigid}
-   \label{transform2d:rigid}
-   
-   \begin{description}
-   
-   \item [Plugin:] rigid
-   \item [Description:] Rigid transformations - i.r. rotations and translations are allowed. 
-   \item [Degrees of Freedom:] 3 
-  
-   \end{description}
-   \plugtabstart
-   imgkernel & string " & interpolation kernel used to interpolate images when they are transformed & bspline:d=3 \\ 
-   imgboundary& string & interpolation boundary conditions used when transforming an image & mirror \\
-   \plugtabend
-
-
-   LatexEnd  
- */
-
-
 #include <fstream>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/transformfactory.hh>

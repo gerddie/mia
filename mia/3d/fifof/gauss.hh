@@ -30,8 +30,6 @@
 #include <numeric>
 
 #include <boost/cast.hpp>
-#include <boost/lambda/lambda.hpp>
-
 
 #include <mia/core/spacial_kernel.hh>
 #include <mia/2d/2dfilter.hh>
