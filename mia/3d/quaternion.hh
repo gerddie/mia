@@ -82,17 +82,6 @@ public:
 	/// \returns the Euler angles that correspond to the rotation described by this quaternion 
 	C3DDVector get_euler_angles() const;
 
-
-	/**
-	   Evaluate the rotation of a point by this quaternion 
-	   \tparam value type of the vector elements 
-	   \param x input coordinates
-	   \returns rotated point coordinates 
-	 */
-	template <typename T> 
-	T3DVector<T> rotate(const T3DVector<T>& x) const; 
-
-
 	/**
 	   in-place adding  
 	   \param other 
@@ -137,12 +126,6 @@ private:
 	C3DDVector m_v; 
 	double m_w; 
 }; 
-
-template <typename T> 
-T3DVector<T> Quaternion::rotate(const T3DVector<T>& x) const
-{
-	
-}
 
 
 bool EXPORT_3D operator == (const Quaternion& a, const Quaternion& b); 

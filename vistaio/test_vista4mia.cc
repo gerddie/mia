@@ -247,7 +247,7 @@ static void test_2dtransform_io()
 		
 		stringstream fname; 
 		fname << transforms[t] << "." << "v2dt"; 
-		cvdebug() << "store to '" << fname << "'\n"; 
+		cvdebug() << "store to '" << fname.str() << "'\n"; 
 		BOOST_CHECK(C2DTransformationIOPluginHandler::instance().save(fname.str(), *tr)); 
 		
 		auto t_loaded = C2DTransformationIOPluginHandler::instance().load(fname.str()); 
@@ -294,7 +294,7 @@ static void test_3dtransform_io()
 		
 		stringstream fname; 
 		fname << transforms[t] << "." << "v3dt"; 
-		cvdebug() << "store to '" << fname << "'\n"; 
+		cvdebug() << "store to '" << fname.str() << "'\n"; 
 		BOOST_CHECK(C3DTransformationIOPluginHandler::instance().save(fname.str(), *tr)); 
 		
 		auto t_loaded = C3DTransformationIOPluginHandler::instance().load(fname.str()); 

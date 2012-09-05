@@ -87,7 +87,7 @@ E Except( T ...t )
  */ 
 #define DEBUG_ASSERT_RELEASE_THROW(cond, msg... )	\
 	if (!(cond)) {					\
-		throw Except<std::logic_error>(msg));	\
+		throw ::mia::Except<std::logic_error>(msg);	\
 	}
 #else
 #define DEBUG_ASSERT_RELEASE_THROW(cond, msg... )			\

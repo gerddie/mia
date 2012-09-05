@@ -40,7 +40,7 @@ double TFullCost<T>::evaluate(const T& t, CDoubleVector& gradient) const
 	assert(m_current_size == t.get_size()); 
 	
 	double result = m_weight * do_evaluate(t, gradient); 
-	transform(gradient.begin(), gradient.end(), gradient.begin(), 
+	std::transform(gradient.begin(), gradient.end(), gradient.begin(), 
 		  [this](typename CDoubleVector::value_type& v) { return m_weight * v;}); 
 	return result; 
 }
