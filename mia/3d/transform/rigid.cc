@@ -302,7 +302,8 @@ C3DFVector C3DRigidTransformation::operator () (const C3DFVector& x) const
 
 float C3DRigidTransformation::get_jacobian(const C3DFVectorfield& /*v*/, float /*delta*/) const
 {
-	assert(!"not implemented");
+	// a rigid transformation doesn't introduce a volume change
+	return 1.0; 
 }
 
 void C3DRigidTransformation::translate(const C3DFVectorfield& gradient, CDoubleVector& params) const
@@ -403,7 +404,7 @@ C3DTransformation::const_iterator C3DRigidTransformation::end_range(const C3DBou
 
 float C3DRigidTransformation::pertuberate(C3DFVectorfield& /*v*/) const
 {
-	assert(!"not implemented");
+	DEBUG_ASSERT_RELEASE_THROW(false, "C3DAffineTransformation doesn't implement pertuberate."); 
 }
 
 class C3DRigidTransformCreator: public C3DTransformCreator {

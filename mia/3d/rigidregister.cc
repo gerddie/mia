@@ -310,12 +310,12 @@ double  C3DRegProblem::do_f(const CDoubleVector& x)
 
 void   C3DRegProblem::do_df(const CDoubleVector& , CDoubleVector&  )
 {
-	assert(0 && "C2DRegProblem::do_df should not be called from a gradient free minimizer"); 
+	DEBUG_ASSERT_RELEASE_THROW(false, "C3DRegProblem doesn't provide a gradient."); 
 }
 
 double  C3DRegProblem::do_fdf(const CDoubleVector& , CDoubleVector&  )
 {
-	assert(0 && "C2DRegProblem::do_fdf should not be called from a gradient free minimizer"); 
+	DEBUG_ASSERT_RELEASE_THROW(false, "C3DRegProblem doesn't provide a gradient."); 
 }
 
 size_t C3DRegProblem::do_size() const

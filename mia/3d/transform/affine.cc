@@ -327,7 +327,7 @@ C3DFVector C3DAffineTransformation::operator () (const C3DFVector& x) const
 
 float C3DAffineTransformation::get_jacobian(const C3DFVectorfield& /*v*/, float /*delta*/) const
 {
-	assert(!"not implemented");
+	DEBUG_ASSERT_RELEASE_THROW(false, "C3DAffineTransformation doesn't implement a jacobian."); 
 }
 
 void C3DAffineTransformation::translate(const C3DFVectorfield& gradient, CDoubleVector& params) const
@@ -435,7 +435,7 @@ C3DTransformation::const_iterator C3DAffineTransformation::end_range(const C3DBo
 
 float C3DAffineTransformation::pertuberate(C3DFVectorfield& /*v*/) const
 {
-	assert(!"not implemented");
+	DEBUG_ASSERT_RELEASE_THROW(false, "C3DAffineTransformation doesn't implement pertuberate."); 
 }
 
 class C3DAffineTransformCreator: public C3DTransformCreator {

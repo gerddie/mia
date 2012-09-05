@@ -371,11 +371,13 @@ float C3DGridTransformation::pertuberate(C3DFVectorfield& v) const
 
 double C3DGridTransformation::get_divcurl_cost(double wd, double wr, CDoubleVector& gradient) const
 {
-	assert(0 && "C3DGridTransformation::get_divcurl_cost not implemented"); }
+	DEBUG_ASSERT_RELEASE_THROW(false, "C3DGridTransformation::get_divcurl_cost not implemented."); 
+}
 
 double C3DGridTransformation::get_divcurl_cost(double wd, double wr) const
 {
-	assert(0 && "C3DGridTransformation::get_divcurl_cost not implemented"); }
+	DEBUG_ASSERT_RELEASE_THROW(false, "C3DGridTransformation::get_divcurl_cost not implemented."); 
+}
 
 
 float C3DGridTransformation::get_jacobian(const C3DFVectorfield& v, float delta) const

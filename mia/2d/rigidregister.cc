@@ -230,7 +230,7 @@ C2DRegFakeGradientProblem::C2DRegFakeGradientProblem(const C2DImage& model,
 	add(property_gradient); 
 }
 
-void    C2DRegFakeGradientProblem::do_df(const CDoubleVector& x, CDoubleVector&  g)
+void C2DRegFakeGradientProblem::do_df(const CDoubleVector& x, CDoubleVector&  g)
 {
 	CDoubleVector x_tmp(x.size());
 	copy(x.begin(), x.end(), x_tmp.begin()); 
@@ -277,12 +277,12 @@ double  C2DRegProblem::do_f(const CDoubleVector& x)
 
 void   C2DRegProblem::do_df(const CDoubleVector& , CDoubleVector&  )
 {
-	assert(0 && "C2DRegProblem::do_df must not be called from a gradient free minimizer"); 
+	DEBUG_ASSERT_RELEASE_THROW(false, "C2DRegProblem doesn't provide a gradient."); 
 }
 
 double  C2DRegProblem::do_fdf(const CDoubleVector& , CDoubleVector&  )
 {
-	assert(0 && "C2DRegProblem::do_fdf must not be called from a gradient free minimizer"); 
+	DEBUG_ASSERT_RELEASE_THROW(false, "C2DRegProblem doesn't provide a gradient."); 
 }
 
 size_t C2DRegProblem::do_size() const

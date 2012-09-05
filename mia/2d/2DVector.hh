@@ -31,6 +31,7 @@
 
 // MIA specific
 #include <mia/core/type_traits.hh>
+#include <mia/core/errormacro.hh>
 
 NS_MIA_BEGIN
 
@@ -159,7 +160,7 @@ public:
 		case 0:return x; 
 		case 1:return y; 
 		default: {
-			assert(!"access to value outside of range"); 
+			DEBUG_ASSERT_RELEASE_THROW(false, "access to value at (", i, ") outside of range (0-1)"); 
 		}
 		}
 	}
@@ -172,7 +173,7 @@ public:
 		case 0:return x; 
 		case 1:return y; 
 		default: {
-			assert(!"access to value outside of range"); 
+			DEBUG_ASSERT_RELEASE_THROW(false, "access to value at (", i, ") outside of range (0-1)");
 		}
 		}
 	}
