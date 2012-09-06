@@ -89,10 +89,11 @@ SET(MIACORE_HEADER_BASE
   boundary_conditions.hh
   bfsv23dispatch.hh
   callback.hh
-  cmdlineparser.hh
-  cmdstringoption.hh
   cmdbooloption.hh
+  cmdlineparser.hh
   cmdoption.hh
+  cmdstringoption.hh
+  combiner.hh
   cost.hh
   cost.cxx
   combiner.hh
@@ -109,13 +110,13 @@ SET(MIACORE_HEADER_BASE
   factory.hh
   factory_trait.hh
   fatcost.hh fatcost.cxx
+  fft1d_r2c.hh
+  fftslopeclassifier.hh
   fifofilter.hh
   file.hh
   filetools.hh
   filter.hh
   fixedwidthoutput.hh
-  fft1d_r2c.hh
-  fftslopeclassifier.hh
   flagstring.hh
   fullstats.hh
   handlerbase.hh
@@ -128,6 +129,7 @@ SET(MIACORE_HEADER_BASE
   iodata.hh
   iohandler.cxx iohandler.hh
   ioplugin.cxx ioplugin.hh
+  kmaens.hh
   labelmap.hh
   meanvar.hh
   mitestimages.hh
@@ -155,14 +157,15 @@ SET(MIACORE_HEADER_BASE
   slopevector.hh
   splineparzenmi.hh
   spacial_kernel.hh
+  sparse_solver.hh
   sqmin.hh
   streamredir.hh
-  typedescr.hh
-  traits.hh
-  type_traits.hh
-  transformation.hh
   testplugin.hh
   threadedmsg.hh
+  traits.hh
+  transformation.hh
+  typedescr.hh
+  type_traits.hh
   utils.hh
   vector.hh
   watch.hh
@@ -193,6 +196,7 @@ IF(ITPP_FOUND)
     )
   SET(ITPP_HEADER 
     ica.hh
+    ica_template.hh ica_template.cxx
     )
 ENDIF(ITPP_FOUND)
 
