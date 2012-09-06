@@ -129,7 +129,7 @@ SET(MIACORE_HEADER_BASE
   iodata.hh
   iohandler.cxx iohandler.hh
   ioplugin.cxx ioplugin.hh
-  kmaens.hh
+  kmeans.hh
   labelmap.hh
   meanvar.hh
   mitestimages.hh
