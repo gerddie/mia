@@ -224,41 +224,35 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 		ref_name = ref_ss.str(); 
 	}
 
+
+	save_image(src_name, src);
+	save_image(ref_name, ref);
+	m_costs.reinit(); 
+	
+	Size global_size; 
+	if (!m_costs.get_full_size(global_size))
+		throw std::invalid_argument("Nonrigidregister: the given combination of cost functions doesn't"
+					    "agree on the size of the registration problem"); 
+	
 	do {
 
-		// this should be replaced by a per-dimension shift that honours a minimum size of the 
-		// downscaled images -  this is especially important in 3D
 		shift--;
 
-		Size BlockSize; 
-                BlockSize.fill(1 << shift);
-		cvinfo() << "Blocksize = " << BlockSize  << "\n";
+		int scale_factor = 1 << shift; 
+		Size local_size = global_size / scale_factor; 
 
-		std::stringstream downscale_descr;
-		downscale_descr << "downscale:b=[" << BlockSize<<"]";
-		auto downscaler = FilterPluginHandler::instance().produce(downscale_descr.str().c_str());
 
-		PImage src_scaled = shift ? downscaler->filter(*src) : src;
-		PImage ref_scaled = shift ? downscaler->filter(*ref) : ref;
+		if (transform) {
+			cvinfo() << "Upscale transform\n"; 
+			transform = transform->upscale(local_size);
+			cvinfo() << "done\n"; 
+		}else{
+			cvinfo() << "Create transform\n"; 
+			transform = m_transform_creator->create(local_size);
+			cvinfo() << "done\n"; 
+		}
 
-		if (transform)
-			transform = transform->upscale(src_scaled->get_size());
-		else
-			transform = m_transform_creator->create(src_scaled->get_size());
-
-		/**
-		   This code is somewhat ugly, it stored the images in the internal buffer 
-		   and then it forces the cost function to reload the images
-		   However, currently the downscaling does not support a specific target size
-		 */
-		save_image(src_name, src_scaled);
-		save_image(ref_name, ref_scaled);
-		m_costs.reinit(); 
-		
-		// currently this call does nothing, however it should replace the three lines above 
-		// and the cost function should handle the image scaling 
-
-		m_costs.set_size(src_scaled->get_size()); 
+		m_costs.set_size(local_size); 
 		
 		std::shared_ptr<TNonrigRegGradientProblem<dim> > 
 			gp(new TNonrigRegGradientProblem<dim>( m_costs, *transform));
@@ -266,7 +260,8 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 		m_minimizer->set_problem(gp);
 
 		auto x = transform->get_parameters();
-		cvmsg() << "Registration at " << src_scaled->get_size() << " with " << x.size() <<  " parameters\n";
+		cvmsg() << "Registration at " << local_size << " with " << x.size() <<  " parameters\n";
+
 		m_minimizer->run(x);
 		if (m_refinement_minimizer) {
 			m_refinement_minimizer->set_problem(gp);
@@ -276,11 +271,15 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 		transform->set_parameters(x);
 	
 		// run the registration at refined splines 
+
+
+		cvwarn() << "Cost value before refine:" << m_costs.cost_value(*transform) << "\n"; 
 		if (transform->refine()) {
+			cvwarn() << "Cost value after refine:" << m_costs.cost_value(*transform) << "\n"; 
 			gp->reset_counters(); 
 			m_minimizer->set_problem(gp);
 			x = transform->get_parameters();
-			cvmsg() << "Registration at " << src_scaled->get_size() << " with " << x.size() <<  " parameters\n";
+			cvmsg() << "Registration at " << local_size << " with " << x.size() <<  " parameters\n";
 			m_minimizer->run(x);
 			if (m_refinement_minimizer) {
 				m_refinement_minimizer->set_problem(gp);
@@ -317,10 +316,15 @@ TNonrigidRegisterImpl<dim>::run() const
 		int scale_factor = 1 << shift; 
 		Size local_size = global_size / scale_factor; 
 		
-		if (transform)
+		if (transform) {
+			cvinfo() << "Upscale transform\n"; 
 			transform = transform->upscale(local_size);
-		else
+			cvinfo() << "done\n"; 
+		}else{
+			cvinfo() << "Create transform\n"; 
 			transform = m_transform_creator->create(local_size);
+			cvinfo() << "done\n"; 
+		}
 
 		m_costs.set_size(local_size); 
 		
@@ -330,7 +334,7 @@ TNonrigidRegisterImpl<dim>::run() const
 		m_minimizer->set_problem(gp);
 
 		auto x = transform->get_parameters();
-		cvmsg() << "Registration at " << local_size << " with " << x.size() <<  " parameters\n";
+
 		m_minimizer->run(x);
 		cvmsg() << "\ndone\n";
 		transform->set_parameters(x);
