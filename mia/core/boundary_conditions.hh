@@ -278,13 +278,10 @@ void CSplineBoundaryCondition::filter_line(std::vector<T>& coeff, const std::vec
 template <typename T> 
 void CSplineBoundaryCondition::template_filter_line(std::vector<T>& coeff, const std::vector<double>& poles) const
 {
-	std::vector<double> temp(coeff.size()); 
-	std::copy(coeff.begin(), coeff.end(), temp.begin()); 
+	std::vector<double> temp(coeff.begin(), coeff.end()); 
 	filter_line(temp, poles); 
 	std::transform(temp.begin(), temp.end(), coeff.begin(), [](double x) {return static_cast<T>(x);});
 }
-
-
 
 NS_MIA_END
 #endif
