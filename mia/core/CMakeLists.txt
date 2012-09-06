@@ -129,6 +129,7 @@ SET(MIACORE_HEADER_BASE
   iohandler.cxx iohandler.hh
   ioplugin.cxx ioplugin.hh
   labelmap.hh
+  meanvar.hh
   mitestimages.hh
   module.hh
   msgstream.hh
