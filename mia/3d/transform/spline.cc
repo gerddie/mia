@@ -18,32 +18,6 @@
  *
  */
 
-/* 
-  LatexBeginPluginDescription{3D Transformations}
-   
-   \subsection{B-spline based transformation}
-   \label{transform3d:spline}
-   
-   \begin{description}
-   
-   \item [Plugin:] spline
-   \item [Description:] 
-   \item [Degrees of Freedom:] depends on the coefficient rate and the size of the domain where the 
-      transformation is defined on 
-  
-   \end{description}
-
-   \plugtabstart
-   imgkernel & string " & interpolation kernel used to interpolate images when they are transformed & bspline:d=3 \\ 
-   imgboundary& string & interpolation boundary conditions used when transforming an image & mirror \\
-   interp & string & interpolating B-spline kernel (bsplineX, omoms3) with X the degree (2-5)& bspline3 \\ 
-   rate   & float  & coefficient rate (currently the same in all dimenions & 10 \\
-   \plugtabend
-
-   LatexEnd  
- */
-
-
 #include <cstdlib>
 #include <cassert>
 #include <limits>
@@ -570,7 +544,6 @@ void C3DSplineTransformation::init_grid()const
 	TRACE_FUNCTION; 
 	CScopedLock lock(m_mutex); 
 	if (!m_grid_valid) {
-		cvdebug() << "initialize grid\n"; 
 		if (!m_current_grid || (m_current_grid->get_size() != m_range)) {
 			cvdebug() << "initialize grid field\n"; 
 			m_current_grid.reset(new C3DFVectorfield(m_range)); 
@@ -599,7 +572,6 @@ void C3DSplineTransformation::init_grid()const
 			auto w = m_x_weights[x]; 
 			int start = m_x_indices[x];
 			
-			cvdebug() << "x = " << x << "\n"; 
 			idxx.new_start(start); 
 			
 			// fill with slices 
@@ -627,7 +599,6 @@ void C3DSplineTransformation::init_grid()const
 		for(size_t y = 0; y < m_range.y; ++y) {
 			auto w = m_y_weights[y]; 
 			int start = m_y_indices[y];
-			cvdebug() << "y = " << y << "\n"; 
 			
 			idxy.new_start(start); 
 			
