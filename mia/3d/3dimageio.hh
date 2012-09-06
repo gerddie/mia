@@ -123,6 +123,16 @@ inline P3DImage  EXPORT_3D load_image<P3DImage>(const std::string& filename)
 bool  EXPORT_3D save_image(const std::string& filename, P3DImage image);
 
 
+/**
+   \ingroup io
+   Convenience function to save one 3D image to a file 
+   @param filename 
+   @param image 
+   @returns true if saving was  successfull
+ */
+bool  EXPORT_3D save_image(const std::string& filename, C3DImage& image);
+
+
 NS_MIA_END
 
 #endif

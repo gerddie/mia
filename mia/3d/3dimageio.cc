@@ -25,6 +25,7 @@
 #include <mia/core/errormacro.hh>
 #include <mia/core/ioplugin.cxx>
 #include <mia/core/iohandler.cxx>
+#include <mia/core/tools.hh>
 
 NS_MIA_BEGIN
 
@@ -65,6 +66,11 @@ bool EXPORT_3D  save_image(const std::string& filename, P3DImage image)
 	return C3DImageIOPluginHandler::instance().save(filename, out_images);
 }
 
+
+bool  EXPORT_3D save_image(const std::string& filename, C3DImage& image)
+{
+      return save_image(filename, P3DImage(&image, void_destructor<C3DImage>())); 
+}
 
 C3DImageIOPluginHandlerTestPath::C3DImageIOPluginHandlerTestPath()
 {
