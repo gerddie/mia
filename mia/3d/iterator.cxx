@@ -171,7 +171,7 @@ template <typename I>
 range3d_iterator<I> range3d_iterator<I>::operator ++(int)
 {
 	range3d_iterator result(*this); 
-	++result; 
+	++(*this); 
 	return result; 
 }
 
