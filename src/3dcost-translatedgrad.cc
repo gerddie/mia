@@ -53,6 +53,7 @@ int do_main(int argc, char **argv)
 	string out_filename;
 
 	string grad_image_filename;
+	string cost_grad_filename;
 
 	
 
@@ -64,6 +65,7 @@ int do_main(int argc, char **argv)
 	options.add(make_opt( ref_filename, "ref-file", 'r', "reference image ", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output vector field ", CCmdOption::required));
 	options.add(make_opt( grad_image_filename, "gradimg-file", 'g', "norm image of the spline transformed gradient"));
+	options.add(make_opt( cost_grad_filename, "cost-gradimg-file", 'C', "norm image of the cost gradient"));
 
 	options.add(make_opt( transform_creator, "spline:rate=5", "transForm", 'f', "Transformation the gradient relates to"));
 	options.add(make_opt( cost, "ssd", "cost", 'c', "cost function to use"));
@@ -94,20 +96,43 @@ int do_main(int argc, char **argv)
 	if (!C3DTransformationIOPluginHandler::instance().save(out_filename, *t)) 
 		throw create_exception<runtime_error>("Grad can not be saved to  '", out_filename, "'");
 
-	if (!grad_image_filename.empty()) {
+	if (!cost_grad_filename.empty()) {
 		C3DFImage image(forcefield.get_size()); 
-
 		float maxnorm = 0.0; 
-		transform(t->begin(), t->end(), image.begin(), 
+		transform(forcefield.begin(), forcefield.end(), image.begin(), 
 			  [&maxnorm](const C3DFVector& x)->float{
 				  float n = x.norm();
 				  if (maxnorm < n)
 					  maxnorm = n; 
 				  return n; 
 			  }); 
-		float imn = 1.0/ maxnorm; 
-		transform(image.begin(), image.end(), image.begin(), [imn](float x) {return imn * x;}); 
+//		float imn = 1.0/ maxnorm; 
+//		transform(image.begin(), image.end(), image.begin(), [imn](float x) {return imn * x;}); 
+		save_image(cost_grad_filename, image); 
+
+		cvmsg() << "max gradient norm before translation = " << maxnorm << "\n"; 
+	}
+
+	if (!grad_image_filename.empty()) {
+		C3DFImage image(forcefield.get_size()); 
+
+		float maxnorm = 0.0; 
+		auto ti = t->begin();
+		auto te = t->end(); 
+		auto ii = image.begin_range(C3DBounds::_0, forcefield.get_size()); 
+		
+		while ( ti != te )  { 
+			const C3DFVector d = *ti - C3DFVector(ii.pos()); 
+			*ii = d.norm(); 
+			if (maxnorm < *ii) 
+				maxnorm = *ii; 
+			++ii; 
+			++ti; 
+		}
+//		float imn = 1.0/ maxnorm; 
+//		transform(image.begin(), image.end(), image.begin(), [imn](float x) {return imn * x;}); 
 		save_image(grad_image_filename, image); 
+		cvmsg() << "max gradient norm after translation = " << maxnorm << "\n"; 
 		
 	}
 	

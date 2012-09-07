@@ -912,9 +912,9 @@ BOOST_FIXTURE_TEST_CASE (test_spline_Gradient, TransformGradientFixture)
 
 
 
-	for (size_t z = 0; z < t.get_coeff_size().z; z += 1)
-		for(size_t y = 0; y < t.get_coeff_size().y; y +=1)
-			for(size_t x = 0; x < t.get_coeff_size().x; x+=1) {
+	for (size_t z = 0; z < t.get_coeff_size().z; z += 4)
+		for(size_t y = 0; y < t.get_coeff_size().y; y +=4)
+			for(size_t x = 0; x < t.get_coeff_size().x; x+=4) {
 				auto ofs = 3 * ((z * t.get_coeff_size().y + y) * t.get_coeff_size().x + x); 
 				auto itrg =  trgrad.begin() + ofs; 
 				auto iparam = params.begin() + ofs;
