@@ -33,17 +33,14 @@ NS_MIA_USE;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-	"Non-linear registration of 3D images", 
-	
-	"This program implements the registration of two gray scale 3D images.", 
-	
-	"Register image test.v to image ref.v by using a spline transformation with a "
-	"coefficient rate of 5  and write the registered image to reg.v. "
-	"Use two multiresolution levels, ssd as image cost function and divcurl weighted by 10.0 "
-	"as transformation smoothness penalty. ",
-	
-	"-i test.v -r ref.v -o reg.v -l 2 -f spline:rate=3  image:cost=ssd divcurl:weight=10"
+        {pdi_group, "Registration, Comparison, and Transformation of 3D images"}, 
+	{pdi_short, "Non-linear registration of 3D images"}, 
+	{pdi_description, "This program implements the registration of two gray scale 3D images."}, 
+	{pdi_example_descr, "Register image test.v to image ref.v by using a spline transformation with a "
+	 "coefficient rate of 5  and write the registered image to reg.v. "
+	 "Use two multiresolution levels, ssd as image cost function and divcurl weighted by 10.0 "
+	 "as transformation smoothness penalty. "}, 
+	{pdi_example_code, "-i test.v -r ref.v -o reg.v -l 2 -f spline:rate=3  image:cost=ssd divcurl:weight=10"}
 };
 
 int do_main( int argc, char *argv[] )

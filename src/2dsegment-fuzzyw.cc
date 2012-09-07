@@ -38,17 +38,14 @@ using namespace mia;
 using namespace std; 
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-
-	"Run a fuzzy c-means segmentation of a 2D image.", 	
-	
-	"This program is a  implementation of a fuzzy c-means segmentation algorithm",
-	
-	"Run a 5-class segmentation over inpt image input.v and store the class "
-	"probability images in cls.v.", 
-	
-	"-i input.v -a 5 -o cls.v"
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "Run a fuzzy c-means segmentation of a 2D image."}, 	
+	{pdi_description, "This program is a  implementation of a fuzzy c-means segmentation algorithm"},
+	{pdi_example_descr, "Run a 5-class segmentation over inpt image input.v and store the class "
+	 "probability images in cls.v."}, 
+	{pdi_example_code, "-i input.v -a 5 -o cls.v"}
 }; 
+
 
 class CSegment2DFuzzy: public TFilter<P2DImage> {
 public: 

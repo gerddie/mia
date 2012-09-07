@@ -95,11 +95,12 @@ const TDictMap<EBinops>::Table g_binops_table[] = {
 const TDictMap<EBinops> g_binops_dict(g_binops_table);
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-	"Combine two binary masks.", 
-	"This program is used to combine two binary images by some kind of operation.", 
-	NULL, 
-	NULL
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "Combine two binary images."}, 
+	{pdi_description, "This program is used to combine two binary images by some kind of operation."}, 
+	{pdi_example_descr, "Combine the binary images b1.png and b2.png by using the 'nor' operation " 
+	 "and store the result in b1nor2.png."}, 
+	{pdi_example_code, "-1 b1.png -2 b2.png -p nor -o b1nor2.png"}
 }; 
 
 int do_main( int argc, char *argv[] )

@@ -338,11 +338,9 @@ bool init_unit_test_suite( )
 }
 
 const SProgramDescription description = {
-	"Tests", 
-	"Vista tests", 
-	"This program runs a set of tests.", 
-	NULL, 
-	NULL
+        {pdi_group, "Tests"}, 
+	{pdi_short, "Vista tests"}, 
+	{pdi_description, "This program runs a set of tests."}
 };
 
 int BOOST_TEST_CALL_DECL

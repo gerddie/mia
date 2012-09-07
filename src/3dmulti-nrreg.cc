@@ -41,16 +41,12 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"3D image registration", 
-
-	"Non-linear registration of  3D images.",
-	
-	"This program implements 3D gray scale image registration "
+        {pdi_group, "3D image registration"}, 
+	{pdi_short, "Non-linear registration of  3D images."}, 
+	{pdi_description, "This program implements 3D gray scale image registration "
 	"by optimizing a dense vector field that defines a transformation for each pixel. "
 	"The input images must be of the same size and dimensions. "
-	"The registration can be achieved by optimizing a combined cost function. ", 
-
-	NULL, NULL
+	"The registration can be achieved by optimizing a combined cost function. "}
 }; 
 	
 // set op the command line parameters and run the registration

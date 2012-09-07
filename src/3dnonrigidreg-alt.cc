@@ -30,23 +30,26 @@ NS_MIA_USE;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-	"Non-linear registration of 3D images.",
-	
-	"This program runs a non-rigid registration based on the given cost criteria "
-	"and a given transformation model. Other than mia-3dnonrigidreg it doesn't support "
-	"specific command line parameters to provide the images. Instead the images are specified "
-	"dirctly when defining the cost function. Hence, image registrations can be executed that "
-	"optimize the aligmnet of  more than one image pair at the same time. Note, however, that "
-	"all input images must be of the same dimension (in pixels)", 
-	
-	"Register image test.v to image ref.v by using a spline transformation with a "
-	"coefficient rate of 5  and write the registered image to reg.v. "
-	"Use two multiresolution levels, ssd as image cost function and divcurl weighted by 10.0 "
-	"as transformation smoothness penalty. The resulting transformation is saved in reg.vf.",
+	{pdi_group,  "Registration, Comparison, and Transformation of 3D images"}, 
 
-	"-o reg.vf -l 2 -f spline:rate=3 image:cost=ssd,src=test.v,ref=ref.v divcurl:weight=10"
+	{pdi_short,  "Non-linear registration of 3D images."},
+	
+	{pdi_description, "This program runs a non-rigid registration based on the given cost criteria "
+	 "and a given transformation model. Other than mia-3dnonrigidreg it doesn't support "
+	 "specific command line parameters to provide the images. Instead the images are specified "
+	 "dirctly when defining the cost function. Hence, image registrations can be executed that "
+	 "optimize the aligmnet of  more than one image pair at the same time. Note, however, that "
+	 "all input images must be of the same dimension (in pixels)"}, 
+	
+	{pdi_example_descr,
+	 "Register image test.v to image ref.v by using a spline transformation with a "
+	 "coefficient rate of 5  and write the registered image to reg.v. "
+	 "Use two multiresolution levels, ssd as image cost function and divcurl weighted by 10.0 "
+	 "as transformation smoothness penalty. The resulting transformation is saved in reg.vf."},
+
+	{pdi_example_code, "-o reg.vf -l 2 -f spline:rate=3 image:cost=ssd,src=test.v,ref=ref.v divcurl:weight=10"}
 };
+
 
 int do_main( int argc, char *argv[] )
 {

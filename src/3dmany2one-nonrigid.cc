@@ -45,23 +45,24 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
-	"Registration of series of 3D images", 
+	{pdi_group, "Registration of series of 3D images"}, 
 
-	"Registration of series of 3D images", 	
+	{pdi_short, "Registration of series of 3D images"},
 	
-	"This program runs the non-rigid registration of an image series by "
-	"registereing all images to a user-selected reference.",
-
-	"Register the images given as numbered files imagesXXXX.v by optimizing a spline based " 
+	{pdi_description, "This program runs the non-rigid registration of an image series by "
+	 "registereing all images to a user-selected reference."},
+	
+	{pdi_example_descr,"Register the images given as numbered files imagesXXXX.v by optimizing a spline based " 
         "transformation with a coefficient rate of 16 pixel "
         "using  a weighted combination of normalized gradient fields "
         "and SSD as cost measure, and penalize the transformation by using divcurl with aweight of 2.0. "
-	"Store the resultsing images in registeredXXXX.v.", 
-
-	"-i images0000.v -o  registered%04d.v -F spline:rate=16 "
-	"image:cost=[ngf:eval=ds],weight=2.0 image:cost=ssd,weight=0.1 divcurl:weight=2.0"
+	 "Store the resultsing images in registeredXXXX.v."}, 
+	 
+	{pdi_example_code, "-i images0000.v -o  registered%04d.v -F spline:rate=16 "
+	 "image:cost=[ngf:eval=ds],weight=2.0 image:cost=ssd,weight=0.1 divcurl:weight=2.0"}
 	
 }; 
+
 
 C3DFullCostList create_costs(const std::vector<string>& costs, int idx)
 {

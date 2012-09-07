@@ -40,16 +40,14 @@ using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
-
-	"Evaluate Hausdorff distance between segmentation sets.", 
-
-	"Get the per-slice Hausdorff distance of a segmentation with respect to a given reference segmentation set.", 
-	
-	"Evaluate the per-frame Hausdorff distance of the segmentations of set segment.set with "
-        "respect to the segmentation set reference.set skipping two images at the beginning.",
-	
-	" -i segment.set -r reference.set -k 2"
+        {pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
+	{pdi_short, "Evaluate Hausdorff distance between segmentation sets."}, 
+	{pdi_description, "Get the per-slice Hausdorff distance of a segmentation with "
+	 "respect to a given reference segmentation set."}, 
+	{pdi_example_descr, "Evaluate the per-frame Hausdorff distance of the segmentations "
+	 "of set segment.set with respect to the segmentation set reference.set skipping "
+	 "two images at the beginning."}, 
+	{pdi_example_code, " -i segment.set -r reference.set -k 2"}
 }; 
 
 int do_main(int argc, char *argv[])

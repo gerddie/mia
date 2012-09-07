@@ -37,21 +37,17 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
-	
-	"Evaluate the time-intensity gradient MAD in a series of images.", 
-
-	"Given a set of images of temporal sucession, evaluates the pixel-wise "
-	"temporal gradient and then its median average distance (MAD) "
-	"and stores the result in an image. "
-	"Spacial pre-filtering may be applied as given additional plugin(s) (filter/2dimage).", 
-	
-	"Evaluate the MAD-image of the bounding box surrounding the segmentation "
-	"from a series segment.set. No spacial filtering will be applied. "
-	"The bounding box will be enlarged by 3 pixels in all directions. "
-	"Store the image in OpenEXR format.", 
-	
-	" -i segment.set -o mad.exr -c -e 3"
+        {pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
+	{pdi_short, "Evaluate the time-intensity gradient MAD in a series of images."}, 
+	{pdi_description, "Given a set of images of temporal sucession, evaluates the "
+	 "pixel-wise temporal gradient and then its median average distance (MAD) "
+	 "and stores the result in an image. Spacial pre-filtering may be applied "
+	 "as given additional plugin(s) (filter/2dimage)."}, 
+	{pdi_example_descr, "Evaluate the MAD-image of the bounding box surrounding "
+	 "the segmentation from a series segment.set. No spacial filtering will be "
+	 "applied. The bounding box will be enlarged by 3 pixels in all directions. "
+	 "Store the image in OpenEXR format."}, 
+	{pdi_example_code, " -i segment.set -o mad.exr -c -e 3"}
 }; 
 
 template <typename T>

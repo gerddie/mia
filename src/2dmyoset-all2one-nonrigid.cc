@@ -45,18 +45,15 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
-	"Registration of series of 2D images", 
-	
-	"Non-linear registration of a series of 2D images.", 
-
-	"This program runs non-rigid registration of a series of images given in an image set. "
-	"All images are registered to one user defined reference image.", 
-
-	"Register the perfusion series given in segment.set by optimizing a spline based "
-	"transformation with a coefficient rate of 16 pixel "
-	"using Mutual Information and penalize the transformation by using divcurl with aweight of 2.0.", 
-
-	"-i segment.set -o registered.set -F spline:rate=16 image:cost=mi,weight=2.0 divcurl:weight=2.0"
+        {pdi_group, "Registration of series of 2D images"}, 
+	{pdi_short, "Non-linear registration of a series of 2D images."}, 
+	{pdi_description, "This program runs non-rigid registration of a series of "
+	 "images given in an image set. All images are registered to one user defined reference image."}, 
+	{pdi_example_descr, "Register the perfusion series given in segment.set by optimizing a "
+	 "spline based transformation with a coefficient rate of 16 pixel using Mutual Information "
+	 "and penalize the transformation by using divcurl with aweight of 2.0."}, 
+	{pdi_example_code, "-i segment.set -o registered.set -F spline:rate=16 "
+	 "image:cost=mi,weight=2.0 divcurl:weight=2.0"}
 }; 
 
 C2DFullCostList create_costs(const vector<string>& costs, int idx)

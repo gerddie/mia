@@ -31,23 +31,17 @@ using namespace boost;
 using namespace std; 
 
 const SProgramDescription g_description = {
-	"2D Image Registration", 
-
-	"Non-linear registration of two 2D images.", 
-
-	"This program is used to run a model based non-rigid registration of two 2D images. "
+        {pdi_group, "2D Image Registration"}, 
+	{pdi_short, "Non-linear registration of two 2D images."}, 
+	{pdi_description, "This program is used to run a model based non-rigid registration of two 2D images. "
 	"Optimization is done using a time marching algorithm. "
-	"Remark: The implementation currently only supports a per pixel transformation and "
-	"it is not well tested.", 
-	
-	"Register image test.v to image ref.v and write the registered image to reg.v. "
-	"Start registration at the smallest size above 16 pixel and ssd as cost function.", 
-	
-	"-i test.v -r ref.v -o reg.v -s 16 -c ssd", 
+	 "Remark: The implementation currently only supports a per pixel transformation and "
+	 "it is not well tested."}, 
+	{pdi_example_descr, "Register image test.v to image ref.v and write the registered image to reg.v. "
+	 "Start registration at the smallest size above 16 pixel and ssd as cost function."}, 
+	{pdi_example_code, "-i test.v -r ref.v -o reg.v -s 16 -c ssd"}
 	
 }; 
-
-
 
 // set op the command line parameters and run the registration 
 int do_main(int argc, char **argv)

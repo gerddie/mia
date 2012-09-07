@@ -32,16 +32,13 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-	"Evaluate the cost gradient between two images and convert it to a spline representation.", 
-
-	"Evaluate the cost gradient between two images and evaluate the "
-	"transformation related gradient for it based on the given transformation model.", 
-	
-	"Evaluate the SSD cost between src.v and ref.v and store the gradient gradient corresponding to "
-	"a spline transformation in grad.v3dt.",
-	
-	"-i src.v -o grad.v3dt -f spline:rate=8 -c ssd"
+        {pdi_group, "Registration, Comparison, and Transformation of 3D images"}, 
+	{pdi_short, "Evaluate the cost gradient between two images and convert it to a spline representation."}, 
+	{pdi_description, "Evaluate the cost gradient between two images and evaluate the "
+	 "transformation related gradient for it based on the given transformation model."}, 
+	{pdi_example_descr, "Evaluate the SSD cost between src.v and ref.v and store the "
+	 "gradient gradient corresponding to a spline transformation in grad.v3dt."}, 
+	{pdi_example_code, "-i src.v -o grad.v3dt -f spline:rate=8 -c ssd"}
 }; 
 
 int do_main(int argc, char **argv)

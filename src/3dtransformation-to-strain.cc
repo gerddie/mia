@@ -38,15 +38,15 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-	"Green strain tensor.", 
+	{pdi_group, "Registration, Comparison, and Transformation of 3D images"}, 
+	{pdi_short,"Green strain tensor."}, 
 
-	"Evaluate the Green strain tensor corresponding to a given 3Dtransformation.", 
+	{pdi_description,"Evaluate the Green strain tensor corresponding to a given 3Dtransformation."}, 
 	
-	"Evaluate the Green strain tensor from the transformation stored in trans.v "
-        "and save it to output.v",
+	{pdi_example_descr,"Evaluate the Green strain tensor from the transformation stored in trans.v "
+	 "and save it to output.v"},
 	
-	"-i  trans.v  -o output.v"
+	{pdi_example_code,"-i  trans.v  -o output.v"}
 	
 }; 
 

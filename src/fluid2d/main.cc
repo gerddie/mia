@@ -45,17 +45,13 @@ using namespace std;
 
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 2D images", 
-	
-	"Fluid dynamic 2D registration", 
-	
-	"This program is used for non-rigid registration based on fluid dynamics. "
-	"It uses SSD as the sole registration criterion.", 
-	
-	"Register image test.v to image ref.v and write the deformation vector field regfield.v. "
-	"Start registration at the smallest size above 16 pixel.", 
-	
-	"-i test.v -r ref.v -o regfield.v -s 16"
+        {pdi_group, "Registration, Comparison, and Transformation of 2D images"}, 
+	{pdi_short, "Fluid dynamic 2D registration"}, 
+	{pdi_description, "This program is used for non-rigid registration based on fluid dynamics. "
+	"It uses SSD as the sole registration criterion."}, 
+	{pdi_example_descr, "Register image test.v to image ref.v and write the deformation "
+	 "vector field regfield.v. Start registration at the smallest size above 16 pixel."}, 
+	{pdi_example_code, "-i test.v -r ref.v -o regfield.v -s 16"}
 }; 
 
 inline void register_level(const C2DImage& ModelScale, const C2DImage& RefScale, C2DFVectorfield& Shift,

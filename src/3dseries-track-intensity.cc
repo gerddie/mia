@@ -35,16 +35,24 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Tools for the Analysis of 3D image series",
-	"Track intensities of pixels in series of 3D images.", 
+	{pdi_group,
+	 "Tools for the Analysis of 3D image series"},
+
+	{pdi_short,
+	 "Track intensities of pixels in series of 3D images."}, 
 	
-	"This program tracks the intensity of a pixel at the given coordinates.", 
 
-	"Evaluate the intensity-time curves at points <12,13,14> and <222,113,214>", 
+	{pdi_description,
+	 "This program tracks the intensity of a pixel at the given coordinates."}, 
 
-	"-i images0000.v -o curves.txt '<12,13,14>' '<222,113,214>'"
+	{pdi_example_descr,
+	 "Evaluate the intensity-time curves at points <12,13,14> and <222,113,214>"}, 
+
+
+	{pdi_example_code,
+	 "-i images0000.v -o curves.txt '<12,13,14>' '<222,113,214>'"}
 }; 
-	
+
 
 class FIntensityGetter: public TFilter<void> { 
 public: 

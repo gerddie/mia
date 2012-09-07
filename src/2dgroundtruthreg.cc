@@ -42,21 +42,18 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Registration of series of 2D images", 
-	"Registration of a series of 2D images", 
-	
-	"This program implements the non-linear registration based on Pseudo Ground Thruth for motion compensation "
-	"of series of myocardial perfusion images as decribed in Chao Li and Ying Sun, "
-	"'Nonrigid Registration of Myocardial Perfusion MRI Using Pseudo Ground Truth' , In Proc. "
-	"Medical Image Computing and Computer-Assisted Intervention MICCAI 2009, 165-172, 2009. "
-	"Note that for this nonlinear motion correction a preceeding linear registration step is usually required.", 
-
-	"Register the perfusion series given by images imageXXXX.exr by using Pseudo Ground Truth estimation. "
-        "Skip two images at the beginning and otherwiese use the default parameters. "
-	"Store the result images to  'regXXXX.exr'.", 
-
-	
-	"-i imageXXXX.exr -o regXXXX.exr -k 2"
+        {pdi_group, "Registration of series of 2D images"}, 
+	{pdi_short, "Registration of a series of 2D images"}, 
+	{pdi_description, "This program implements the non-linear registration based on Pseudo "
+	 "Ground Thruth for motion compensation of series of myocardial perfusion images as "
+	 "decribed in Chao Li and Ying Sun, 'Nonrigid Registration of Myocardial Perfusion "
+	 "MRI Using Pseudo Ground Truth' , In Proc. Medical Image Computing and Computer-Assisted "
+	 "Intervention MICCAI 2009, 165-172, 2009. Note that for this nonlinear motion correction "
+	 "a preceeding linear registration step is usually required."}, 
+	{pdi_example_descr, "Register the perfusion series given by images imageXXXX.exr by using "
+	 "Pseudo Ground Truth estimation. Skip two images at the beginning and otherwiese use the "
+	 "default parameters. Store the result images to  'regXXXX.exr'."}, 
+	{pdi_example_code, "-i imageXXXX.exr -o regXXXX.exr -k 2"}
 };
 
 

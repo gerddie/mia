@@ -49,12 +49,11 @@ using namespace std;
 using namespace boost::unit_test;
 namespace bfs=::boost::filesystem;
 
+
 const SProgramDescription g_general_help = {
-	"Tests", 
-	"test 3D image io", 
-	"Run various test for 3D image IO.", 
-	NULL, 
-	NULL
+        {pdi_group, "Tests"}, 
+	{pdi_short, "test 3D image IO"}, 
+	{pdi_description, "Run various test for 3D image IO."}
 }; 
 
 

@@ -54,12 +54,13 @@ typename Plugin::UniqueProduct BOOST_TEST_create_from_plugin(const char *param)
 
 NS_MIA_END 
 
+
 const mia::SProgramDescription description = {
-	"Tests", 
-	"Unit test", 
-	"This program runs a set of tests for a plug-in.", 
-	"", 
-	""
+	{mia::pdi_group, "Test"}, 
+	{mia::pdi_short, "Unit test for a plug-in."}, 
+	{mia::pdi_description,"This program runs a set of tests."}, 
+	{mia::pdi_example_descr, "Example text"}, 
+	{mia::pdi_example_code, ""}
 };
 
 int BOOST_TEST_CALL_DECL

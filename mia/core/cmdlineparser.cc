@@ -1,3 +1,4 @@
+
 /* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
@@ -57,6 +58,15 @@ using std::map;
 using std::unique_ptr; 
 
 
+#define ENTRY(X) {X, #X }
+const std::map<EProgramDescriptionEntry, const char *> g_DescriptionEntryNames = {
+	ENTRY(pdi_group), 
+	ENTRY(pdi_short), 
+	ENTRY(pdi_description), 
+	ENTRY(pdi_example_descr),
+	ENTRY(pdi_example_code)
+}; 
+
 struct CCmdOptionListData {
 	CShortoptionMap short_map;
 	CLongoptionMap  long_map;
@@ -93,6 +103,9 @@ struct CCmdOptionListData {
 
 	vector<const char *> has_unset_required_options() const; 
 	void set_logstream(std::ostream& os); 
+	string set_description_value(EProgramDescriptionEntry entry, 
+				     const SProgramDescription& description); 
+
 	
 	string m_program_group; 
 	string m_short_descr; 
@@ -108,9 +121,23 @@ void CCmdOptionListData::set_logstream(ostream& os)
 	m_log  = &os; 
 }
 
+string CCmdOptionListData::set_description_value(EProgramDescriptionEntry entry, 
+						 const SProgramDescription& description)
+{
+	auto id = description.find(entry); 
+	if (id != description.end()) 
+		return string( id->second);
+	else {
+		auto ed = g_DescriptionEntryNames.find(entry); 
+		assert(ed != g_DescriptionEntryNames.end()); 
+		cvwarn() << "Description value '" <<  ed->second << "' not set\n"; 
+		return string(""); 
+	}
+}
+
 const char *g_help_optiongroup="Help & Info"; 
 const char *g_basic_copyright = 
-	"This software is copyright (c) Gert Wollny et al. "
+	"This software is Copyright (c) 1999-2012 Leipzig, Germany and Madrid, Spain. "
 	"It comes with  ABSOLUTELY NO WARRANTY and you may redistribute it "
 	"under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later). "
 	"For more information run the program with the option '--copyright'.\n"; 
@@ -124,12 +151,12 @@ CCmdOptionListData::CCmdOptionListData(const SProgramDescription& description):
 	verbose(vstream::ml_warning), 
 	m_log(&std::cout)
 {
-	assert(description.size() > 4); 
-	m_program_group.assign(description[pdi_group]);  
-	m_short_descr.assign(description[pdi_short]); 
-	m_general_help.assign(description[pdi_description]);  
-	m_program_example_descr.assign(description[pdi_example_descr]?description[pdi_example_descr]:""); 
-	m_program_example_code.assign(description[pdi_example_code]?description[pdi_example_code]:""); 
+
+	m_program_group = set_description_value(pdi_group, description); 
+	m_short_descr = set_description_value(pdi_short, description); 
+	m_general_help = set_description_value(pdi_description, description);  
+	m_program_example_descr = set_description_value(pdi_example_descr, description); 
+	m_program_example_code = set_description_value(pdi_example_code, description); 
 	
 	options[""] = vector<PCmdOption>();
 

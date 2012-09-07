@@ -32,15 +32,13 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 2D images", 
-
-	"Registering force between two 2D images.", 
-	
-	"This image evaluate the force field between two images based on a given cost function.", 
-	
-	"Evaluate the force between test.v and reference.v by using SSD ans save the norm of the force to forcenorm.v", 
-	
-	"-i test.v -r reference.v -c ssd -o forcenorm.v"
+        {pdi_group, "Registration, Comparison, and Transformation of 2D images"}, 
+	{pdi_short, "Registering force between two 2D images."}, 
+	{pdi_description, "This image evaluate the force field between two images "
+	 "based on a given cost function."}, 
+	{pdi_example_descr, "Evaluate the force between test.v and reference.v by "
+	 "using SSD ans save the norm of the force to forcenorm.v"}, 
+	{pdi_example_code, "-i test.v -r reference.v -c ssd -o forcenorm.v"}
 }; 
 
 typedef std::shared_ptr<C2DFVectorfield > P2DFVectorfield;

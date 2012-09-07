@@ -53,19 +53,15 @@ using namespace std;
 typedef vector<C2DFImage> C2DFImageVec;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-	
-	"Run a fuzzy c-means segmentation of a 2D image.", 	
-	
-	"This program implements a variation of the paper:"
-	"Mohamed N. Ahmed et. al, \"A Modified Fuzzy C-Means Algorithm for Bias Field "
-	"estimation and Segmentation of MRI Data\", IEEE Trans. on Medical Imaging, "
-	"Vol. 21, No. 3, March 2002, changes are: p=2, and exp", 
-	
-	"Run a 5-class segmentation over inpt image input.v and store the class "
-	"probability images in cls.v.", 
-	
-	"-i input.v -a 5 -o cls.v"
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "Run a fuzzy c-means segmentation of a 2D image."}, 
+	{pdi_description, "This program implements a variation of the paper:"
+	 "Mohamed N. Ahmed et. al, \"A Modified Fuzzy C-Means Algorithm for Bias Field "
+	 "estimation and Segmentation of MRI Data\", IEEE Trans. on Medical Imaging, "
+	 "Vol. 21, No. 3, March 2002, changes are: p=2, and exp"}, 
+	{pdi_example_descr, "Run a 5-class segmentation over input image input.v and store the class "
+	 "probability images in cls.v." }, 
+	{pdi_example_code, "-i input.v -a 5 -o cls.v"}
 }; 
 
 

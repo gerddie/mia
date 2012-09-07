@@ -40,21 +40,22 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
-
-	"Evaluate time-intensity median 2nd order derivative of a series.", 
-
-	"This program evaluates the pixel-wise median of the absolute values of the gauss filtered "
-	"2nd order temporal derivative of a series of images. In addition, it can be used to "
-	"output the time-intensity curve of a given pixel."
-	"The program supports slice-wise spacial pre-filtering by giving additional filters as free "
-	"parameters (filter/2dimage).", 
-
-	"Evaluate the median of the 2nd order derivative of the series given in segmentation set "
-	"segment.set after filtering with a Gaussian of width 3. In addition write "
-	"the time intensity curve of pixel <128,64> to curve.txt.", 
+	{pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
 	
-	"-i segment.set -o gradmedian.exr -g 1 --itc-file curve.txt --itc-loc \"<128,64>\""
+	{pdi_short, "Evaluate time-intensity median 2nd order derivative of a series."}, 
+
+	{pdi_description,"This program evaluates the pixel-wise median of the absolute values of the gauss filtered "
+	 "2nd order temporal derivative of a series of images. In addition, it can be used to "
+	 "output the time-intensity curve of a given pixel."
+	 "The program supports slice-wise spacial pre-filtering by giving additional filters as free "
+	 "parameters (filter/2dimage)."}, 
+
+	{pdi_example_descr,"Evaluate the median of the 2nd order derivative of the series given in segmentation set "
+	 "segment.set after filtering with a Gaussian of width 3. In addition write "
+	 "the time intensity curve of pixel <128,64> to curve.txt."}, 
+	
+
+	 {pdi_example_code, "-i segment.set -o gradmedian.exr -g 1 --itc-file curve.txt --itc-loc \"<128,64>\""}
 }; 
 
 template <typename T>

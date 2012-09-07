@@ -42,23 +42,18 @@ using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
-
-	"Evaluate a crop-box around a manual segmentation.", 	
-	
-	"This program is used on a segmentation set and evaluates a bounding box "
-	"that encloses the segmentation in all slices. "
-	"This bounding box is then used to crop the original images, correct "
-        "the segmentation and store a new segmentation set with the cropped images. "
-        "The cropped images will be of the same type as the original images. "
-	"If no segmentation is given in the set, the result is undefined.", 
-
-	"Evaluate the optimal cropping for a segmentation set segment.set and enlarge it by "
-	"3 pixels. Store the resulting set in the file cropped.set.", 
-	
-	"-i segment.set -o cropped.set -e 3"
+        {pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
+	{pdi_short, "Evaluate a crop-box around a manual segmentation."}, 
+	{pdi_description, "This program is used on a segmentation set and evaluates a bounding box "
+	 "that encloses the segmentation in all slices. "
+	 "This bounding box is then used to crop the original images, correct "
+	 "the segmentation and store a new segmentation set with the cropped images. "
+	 "The cropped images will be of the same type as the original images. "
+	 "If no segmentation is given in the set, the result is undefined."}, 
+	{pdi_example_descr, "Evaluate the optimal cropping for a segmentation set segment.set and enlarge it by "
+	 "3 pixels. Store the resulting set in the file cropped.set."}, 
+	{pdi_example_code, "-i segment.set -o cropped.set -e 3"}
 }; 
-
 
 
 struct 	CSegFrameCropper {

@@ -37,22 +37,22 @@ NS_MIA_USE;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
+	{pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
 
-	"Evaluate the time-intensity correlation in a series of images.", 
+	{pdi_short, "Evaluate the time-intensity correlation in a series of images."}, 
 	
-	"Given a set of images of temporal sucession, evaluates images that represent "
-	"the time-intensity correlation in horizontal and vertical direction as "
-	"well as average correlation of each pixel with its neighbors. "
-	"All input images must be of the same pixel type and size.", 
+	{pdi_description, "Given a set of images of temporal sucession, evaluates images that represent "
+	 "the time-intensity correlation in horizontal and vertical direction as "
+	 "well as average correlation of each pixel with its neighbors. "
+	 "All input images must be of the same pixel type and size."}, 
 
-	"Evaluate the time-intensity correaltions for an image series "
-	"imageXXXX.png starting at image 2 and stop at image 30. "
-	"Store the results in horizontal.exr, and vertical.exr.", 
 	
-	"-i image0000.png -k 2 -e 30 -z horizontal.exr -t vertical.exr"
+	{pdi_example_descr,"Evaluate the time-intensity correaltions for an image series "
+	 "imageXXXX.png starting at image 2 and stop at image 30. "
+	 "Store the results in horizontal.exr, and vertical.exr."}, 
+	
+	{pdi_example_code,	"-i image0000.png -k 2 -e 30 -z horizontal.exr -t vertical.exr"}
 }; 
-
 
 struct FCorrelationAccumulator : public TFilter<bool> {
 

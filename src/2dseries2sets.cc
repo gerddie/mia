@@ -35,24 +35,20 @@ using namespace std;
 NS_MIA_USE; 
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
+	{pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
+	{pdi_short, "Combine images of a series to sets."}, 
+	{pdi_description, "This program takes all image files that are given as free parameters "
+	 "on the command line and creates segmentation sets based on information found in the images. "
+	 "Used information is the z-location of the slice and the acquisition number. "
+	 "The code is taylored to used the according descriptors defined in the DICOM standard. "
+	 "All images with the same slice location will be grouped together in one segmentation "
+	 "set and ordered according to their aquisition number. "
+	 "Slice locations are rounded to three digits accuracy to make proper comparison "
+	 "of floating point values feasable."}, 
+	{pdi_example_descr, "Create the segmentation sets from a series of DICOM images and "
+	 "copy the files to the output directory (copying is the default)."}, 
+	{pdi_example_code, "-o /home/user/series /net/dicoms/patient1/series1/*.dcm"}
 
-	"Combine images of a series to sets.", 
-
-	"This program takes all image files that are given as free parameters on the command line "
-	"and creates segmentation sets based on information found in the images. "
-	"Used information is the z-location of the slice and the acquisition number. "
-	"The code is taylored to used the according descriptors defined in the DICOM standard. "
-	"All images with the same slice location will be grouped together in one segmentation "
-	"set and ordered according to their aquisition number. "
-	"Slice locations are rounded to three digits accuracy to make proper comparison "
-	"of floating point values feasable.", 
-
-	"Create the segmentation sets from a series of DICOM images and copy the files to "
-        "the output directory (copying is the default).", 
-	
-	"-o /home/user/series /net/dicoms/patient1/series1/*.dcm"
-	
 }; 
 
 

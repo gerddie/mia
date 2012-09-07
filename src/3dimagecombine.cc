@@ -31,15 +31,13 @@ using namespace std;
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 3D images", 
-	"Combine two 3D images.", 
-	 
-	"This program is used to combine two images using a given image combiner.", 
-	
-	"Take two label images l1.v and l2.v and evaluate the label overlap.", 
-
-	"-1 l1.v -2 l2.v -c map.txt -c labelxmap" 
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images" }, 
+	{pdi_short, "Combine two 3D images."}, 
+	{pdi_description, "This program is used to combine two images using a given image combiner."}, 
+	{pdi_example_descr, "Take two label images l1.v and l2.v and evaluate the label overlap."}, 
+	{pdi_example_code, "-1 l1.v -2 l2.v -c map.txt -c labelxmap"}
 };  
+
 
 int do_main( int argc, char *argv[] )
 {

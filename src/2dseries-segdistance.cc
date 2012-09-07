@@ -42,18 +42,14 @@ using xmlpp::DomParser;
 namespace bfs=boost::filesystem;
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
-	"Evaluate mean distance between segmentations.", 
-	
-	"Get the mean distance of a segmentation boundary to the reference boundary.", 
-
-	"Evaluate the mean absolute border distanceof the segmentations of set segment.set with "
-	"respect to the segmentation given in frame 20.", 
-	
-	" -i segment.set -r 20"
+        {pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
+	{pdi_short, "Evaluate mean distance between segmentations."}, 
+	{pdi_description, "Get the mean distance of a segmentation boundary to the reference boundary."}, 
+	{pdi_example_descr, "Evaluate the mean absolute border distanceof the segmentations "
+	 "of set segment.set with respect to the segmentation given in frame 20."}, 
+	{pdi_example_code, " -i segment.set -r 20"}
 }; 
 	
-
 
 double mean_frame_border_distance(const C2DDImage& distance, const C2DBitImage& mask) 
 {

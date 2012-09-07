@@ -34,23 +34,19 @@ using namespace std;
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 3D images", 
-
-	"Mask an area by seeded region growing", 
-	
-	"3D image segmentation based on region growing from a seed point. "
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
+	{pdi_short, "Mask an area by seeded region growing"}, 
+	{pdi_description, "3D image segmentation based on region growing from a seed point. "
 	"Neighboring points are added, either when their intensity is "
 	"equal or higher than that of the seed point, or of the intensity "
 	"is lower or equal then that of the neighoring point. "
 	"After region growing is finished, this mask is used to zero out "
-	"the region in the original image yielding the resulting image. ", 
-	
-	"Run a region growing on input.v starting at point <10,23,21> and "
-	"use the 18n neighbourhood.", 
-	
-	"-i image.v -o masked.v -s '<10,23,21>' -n 18n" 
-}; 
+	"the region in the original image yielding the resulting image. "}, 
+	{pdi_example_descr, "Run a region growing on input.v starting at point <10,23,21> and "
+	"use the 18n neighbourhood."}, 
+	{pdi_example_code, "-i image.v -o masked.v -s '<10,23,21>' -n 18n"}
 
+}; 
 
 
 class FMask : public TFilter <P3DImage> {

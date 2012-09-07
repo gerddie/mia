@@ -41,13 +41,12 @@
 #include <mia/core/cmdlineparser.hh>
 
 const mia::SProgramDescription description = {
-	"Tests", 
-	"Unit test.", 
-	"This program runs a set of tests.", 
-	"Example text", 
-	"Example"
+	{mia::pdi_group, "Test"}, 
+	{mia::pdi_short, "Unit test."}, 
+	{mia::pdi_description,"This program runs a set of tests."}, 
+	{mia::pdi_example_descr, "Example text"}, 
+	{mia::pdi_example_code, ""}
 };
-
 
 
 int BOOST_TEST_CALL_DECL

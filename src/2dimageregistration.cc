@@ -28,17 +28,15 @@ NS_MIA_USE;
 using namespace std;
 
 const SProgramDescription g_general_help = {
-	"Registration, Comparison, and Transformation of 2D images", 
-
-	"Run a 2d image registration.", 
+        {pdi_group, "Registration, Comparison, and Transformation of 2D images"}, 
+	{pdi_short, "Run a 2d image registration."}, 
+	{pdi_description, "This program runs registration of two images optimizing a transformation of "
+	 "the given transformation model by optimizing certain cost measures that are given as free parameters."}, 
 	
-	"This program runs registration of two images optimizing a transformation of the given transformation model "
-	"by optimizing certain cost measures that are given as free parameters.", 
+	{pdi_example_descr,"Register the image 'moving.png' to the image 'reference.png' by using a "
+	 "rigid transformation model  and ssd as cost function. Write the result to output.png"}, 
 	
-	"Register the image 'moving.png' to the image 'reference.png' by using a rigid transformation model "
-        " and ssd as cost function. Write the result to output.png", 
-	
-	"  -i moving.png -r reference.png -o output.png -f rigid image:cost=ssd"
+	{pdi_example_code, "  -i moving.png -r reference.png -o output.png -f rigid image:cost=ssd"}
 }; 
 
 int do_main( int argc, char *argv[] )

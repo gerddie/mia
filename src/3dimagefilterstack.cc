@@ -42,19 +42,20 @@ size_t log10(size_t x)
 }
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 3D images", 
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
 
-	"Filter a series of 3D images.", 
+	{pdi_short, "Filter a series of 3D images."}, 
 
-	"This program is used to filter and convert a consecutive numbered series "
-	"gray of scale images. File names must follow the pattern 'dataXXXX.v' "
-	"(X being digits), i.e. the numbering comes right before the dot. ", 
-	
-	"Run a mean-least-varaiance filter on a series of images that follow the " 
-	"numbering pattern imageXXXX.hdr and store the output in images filteredXXXX.hdr", 
-	
-	"-i image0000.hdr -o filtered -t hdr mlv:w=2"
+	{pdi_description, "This program is used to filter and convert a consecutive numbered series "
+	 "gray of scale images. File names must follow the pattern 'dataXXXX.v' "
+	 "(X being digits), i.e. the numbering comes right before the dot. "}, 
+
+	{pdi_example_descr, "Run a mean-least-varaiance filter on a series of images that follow the " 
+	 "numbering pattern imageXXXX.hdr and store the output in images filteredXXXX.hdr"}, 
+
+	{pdi_example_code, "-i image0000.hdr -o filtered -t hdr mlv:w=2"}
 }; 
+
 
 int do_main( int argc, char *argv[] )
 {

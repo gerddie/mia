@@ -35,18 +35,18 @@ inline bool am_big_endian()
 #endif
 }
 
- 
-const SProgramDescription g_description = {
-	"Image conversion", 
 
-	"Convert raw data into a 3D image", 
+const SProgramDescription g_description = {
+	{pdi_group, "Image conversion"}, 
+
+	{pdi_short, "Convert raw data into a 3D image"}, 
 	
-	"This program is used to convert raw data into 3D images "
-	"with apropriate metadata.", 
+	{pdi_description,"This program is used to convert raw data into 3D images "
+	 "with apropriate metadata."}, 
 	
-	"pixel size of <1.2, 2.3, 3.4> to an Analyze file image.hdr", 
+	{pdi_example_descr, "pixel size of <1.2, 2.3, 3.4> to an Analyze file image.hdr"}, 
 	
-	"-i data.raw -o image.hdr -s \"<10,20,30>\" -k \"<1.2,2.3,3.4>\" -r ushort"
+	{pdi_example_code, "-i data.raw -o image.hdr -s \"<10,20,30>\" -k \"<1.2,2.3,3.4>\" -r ushort"}
 }; 
 
 template <typename I>

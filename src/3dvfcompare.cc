@@ -28,14 +28,11 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-	"Compare two Vectorfields.", 
-
-	"Compare two vector fields and print out the difference norm per pixel.", 
-	
-	"Compare vector fields vf1.v and vf2.v and print out all differences above 0.01.",
-	
-	"-1 vf1.v -2 vf2.v -d 0.01"
+	{pdi_group, "Registration, Comparison, and Transformation of 3D images" }, 
+	{pdi_short, "Compare two Vectorfields."}, 
+	{pdi_description, "Compare two vector fields and print out the difference norm per pixel."}, 
+	{pdi_example_descr, "Compare vector fields vf1.v and vf2.v and print out all differences above 0.01."}, 
+	{pdi_example_code, "-1 vf1.v -2 vf2.v -d 0.01"}
 }; 
 
 int do_main(int argc, char **argv)

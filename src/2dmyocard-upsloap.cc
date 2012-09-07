@@ -42,16 +42,13 @@
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	"Work in progress", 
-
-	"Work in progress.", 
-	
-	"This program is work in progress", 
-	
-	"Example", 
-	
-	"Example"
+        {pdi_group, "Work in progress"}, 
+	{pdi_short, "Work in progress."}, 
+	{pdi_description, "This program is work in progress"}, 
+	{pdi_example_descr, "Example"}, 
+	{pdi_example_code, "Example"}
 }; 
+
 
 
 namespace bfs=boost::filesystem; 

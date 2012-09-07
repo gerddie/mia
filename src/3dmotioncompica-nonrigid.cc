@@ -49,23 +49,26 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
-	"Registration of series of 3D images", 
 
-	"Non-linear registration of a series of 3D images.",
-	
-	"This program implements a 3D version of the motion compensation algorithm described in "
+	{pdi_group, "Registration of series of 3D images"}, 
+
+	{pdi_short, "Non-linear registration of a series of 3D images."},
+
+	{pdi_description, "This program implements a 3D version of the motion compensation algorithm described in "
 	"Wollny G, Kellman P, Santos A, Ledesma-Carbayo M-J, \"Automatic Motion Compensation of "
 	"Free Breathing acquired Myocardial Perfusion Data by using Independent Component Analysis\", "
-	"Medical Image Analysis, 2012, DOI:10.1016/j.media.2012.02.004.", 
+	 "Medical Image Analysis, 2012, DOI:10.1016/j.media.2012.02.004."}, 
 
+	{pdi_example_descr,
 	"Register the perfusion series given in images imagesXXXX.v by using 4-class ICA estimation. "
         "Skip two images at the beginning, use at most 4 registration threads, a nlopt based optimizer "
 	"and otherwiese use the default parameters. "
-	"Store the result in registeredXXXX.v ", 
+	 "Store the result in registeredXXXX.v "}, 
 	
-	"-i images0000.v -o  registered%04d.v  -k 2 -C 4 -t 4 "
-	"-O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300"
+	{pdi_example_code, "-i images0000.v -o  registered%04d.v  -k 2 -C 4 -t 4 "
+	 "-O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300"}
 }; 
+
 
 
 class C3DFImage2PImage {

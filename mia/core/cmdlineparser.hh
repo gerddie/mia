@@ -49,13 +49,29 @@ typedef std::map<std::string, std::string> CHistoryRecord;
 /** holds the name of the program and the associated history record */
 typedef std::pair<std::string, CHistoryRecord> CHistoryEntry;
 
+/**
+ \ingroup cmdline
+ \brief program description entry identifiers
+ 
+ These enumerates identify the parts of the program description
+*/
+
+enum EProgramDescriptionEntry {
+	pdi_group = 0, /*<! The group the program belongs to, in the help the program will be described in this section */ 
+	pdi_short = 1,  /*<! A sgort description of the program, this will be the head line in the unix man page. */
+	pdi_description = 2, /*<! The full description of the program */ 
+	pdi_example_descr = 3, /*<! description of the example that follows */
+	pdi_example_code = 4   /*<! The example command line without the program name */
+}; 
+
+extern const std::map<EProgramDescriptionEntry, const char *> g_DescriptionEntryNames; 
 
 /**
    \ingroup cmdline
-   \brief the vector that holds a basic program description 
+   \brief the map that holds a basic program description 
    
-   Vector of strings to provied information about the program
-   At least five values must be given: 
+   Map of strings to provied information about the program
+   The following values should be provied: 
    (1) the program section, 
    (2) A short description of the program - this will become the whatis entry in the man page, 
    (3) A long description of the program 
@@ -64,12 +80,8 @@ typedef std::pair<std::string, CHistoryRecord> CHistoryEntry;
    This information is used by the auto-help system to create man-pages and a cross-referenced
    help of all the programs. 
  */
-typedef std::vector<const char *>  SProgramDescription; 
-const int pdi_group = 0; 
-const int pdi_short = 1; 
-const int pdi_description = 2; 
-const int pdi_example_descr = 3; 
-const int pdi_example_code = 4; 
+typedef std::map<EProgramDescriptionEntry, const char *>  SProgramDescription; 
+
 
 
 /** 

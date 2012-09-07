@@ -35,22 +35,18 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-
-	"A fuzzy c-means segmentation of a 2D image", 
-	
-	"This program runs a combined fuzzy c-means clustering and B-field correction "
-	"to facilitate a fuzzy segmentation of 2D image. cf D.L. Pham and J.L.Prince, "
-	"\"An adaptive fuzzy C-means algorithm for image segmentation in the presence "
-	"of intensity inhomogeneities\", Pat. Rec. Let., 20:57-68,1999", 
-	
-	"Run a 5-class segmentation over input image input.v and store the class "
-	"probability images in cls.v and the B0-field corrected image in b0.v.", 
-	
-	"-i input.v -c 5 -o b0.v -c cls.v"
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "A fuzzy c-means segmentation of a 2D image"}, 
+	{pdi_description, "This program runs a combined fuzzy c-means clustering and "
+	 "B-field correction to facilitate a fuzzy segmentation of 2D image. cf D.L. "
+	 "Pham and J.L.Prince, \"An adaptive fuzzy C-means algorithm for image "
+	 "segmentation in the presence of intensity inhomogeneities\", Pat. Rec. "
+	 "Let., 20:57-68,1999"}, 
+	{pdi_example_descr, "Run a 5-class segmentation over input image input.v "
+	 "and store the class probability images in cls.v and the B0-field corrected "
+	 "image in b0.v."}, 
+	{pdi_example_code, "-i input.v -c 5 -o b0.v -c cls.v"}
 }; 
-
-
 
 int do_main( int argc, char *argv[] )
 {

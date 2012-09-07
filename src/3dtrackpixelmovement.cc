@@ -35,19 +35,17 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Tools for the Analysis of 3D image series",
-	"Track positions in 3D", 
-	"Track the position of a pixel by means of a transformation obtained "
-	"by using image registration. The pixel data is given in CSV format\n"
-	"   id;time;x;y;z;reserved\n\n"
-	"The fields 'time', 'x', 'y', and 'z' are updated, and the fields 'id' and 'reserved' are preserved, "
-	"empty lines are ignored.", 
-	
-	"This program evaluated the changed position of pixels given in input.csv, by using  a "
+        {pdi_group, "Tools for the Analysis of 3D image series"}, 
+	{pdi_short, "Track positions in 3D"}, 
+	{pdi_description, "Track the position of a pixel by means of a transformation obtained "
+	 "by using image registration. The pixel data is given in CSV format\n"
+	 "   id;time;x;y;z;reserved\n\n"
+	 "The fields 'time', 'x', 'y', and 'z' are updated, and the fields 'id' and 'reserved' are preserved, "
+	 "empty lines are ignored."}, 
+	{pdi_example_descr, "This program evaluated the changed position of pixels given in input.csv, by using  a "
 	"time step of 2.0 time units and the transformation change.v3df, and writes the updated "
-	"positions to updated.csv.", 
-
-	"-i input.csv -o output.cvs --time-step 2.0 --transformation change.v3df"
+	"positions to updated.csv."}, 
+	{pdi_example_code, "-i input.csv -o output.cvs --time-step 2.0 --transformation change.v3df"}
 }; 
 
 /**

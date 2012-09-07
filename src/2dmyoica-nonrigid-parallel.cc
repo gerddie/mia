@@ -48,21 +48,20 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
-	"Registration of series of 2D images", 
 
-	"Run a registration of a series of 2D images.", 
+	{pdi_group, "Registration of series of 2D images"}, 
+	{pdi_short, "Run a registration of a series of 2D images."}, 
+	{pdi_description, "This program implements the 2D version of the motion compensation algorithm "
+	 "described in Wollny G, Kellman P, Santos A, Ledesma-Carbayo M-J, \"Automatic Motion "
+	 "Compensation of Free Breathing acquired Myocardial Perfusion Data by using Independent "
+	 "Component Analysis\", Medical Image Analysis, 2012, DOI:10.1016/j.media.2012.02.004." 
+	 "This version of the program may run all registrations in parallel."}, 
 
-	"This program implements the 2D version of the motion compensation algorithm described in "
-	"Wollny G, Kellman P, Santos A, Ledesma-Carbayo M-J, \"Automatic Motion Compensation of "
-	"Free Breathing acquired Myocardial Perfusion Data by using Independent Component Analysis\", "
-	"Medical Image Analysis, 2012, DOI:10.1016/j.media.2012.02.004." 
-	"This version of the program may run all registrations in parallel.", 
-	
-	"Register the perfusion series given in 'segment.set' by using automatic ICA estimation. " 
-        "Skip two images at the beginning and otherwiese use the default parameters. "
-	"Store the result in 'registered.set'.", 
+	{pdi_example_descr, "Register the perfusion series given in 'segment.set' by using automatic "
+	 "ICA estimation. Skip two images at the beginning and otherwiese use the default parameters. "
+	 "Store the result in 'registered.set'."}, 
 
-	"  -i segment.set -o registered.set -k 2"
+	{pdi_example_code, "  -i segment.set -o registered.set -k 2"}
 }; 
 
 class C2DFImage2PImage {

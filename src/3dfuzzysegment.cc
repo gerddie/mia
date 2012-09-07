@@ -42,19 +42,14 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 3D images", 
-
-	"Fuzzy c-means segmentation of a 3D image.", 
-	
-	"This program runs a combined fuzzy c-means clustering and B-field correction "
-	"to facilitate a 3D segmentation of 3D image", 
-	
-	"Run a 5-class segmentation over inpt image input.v and store the class "
-	"probability images in cls.v and the B0-field corrected image in b0.v.", 
-	
-	"-i input.v -c 5 -o b0.v -c cls.v"
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
+	{pdi_short, "Fuzzy c-means segmentation of a 3D image."}, 
+	{pdi_description, "This program runs a combined fuzzy c-means clustering and B-field correction "
+	"to facilitate a 3D segmentation of 3D image"}, 
+	{pdi_example_descr, "Run a 5-class segmentation over inpt image input.v and store the class "
+	"probability images in cls.v and the B0-field corrected image in b0.v."}, 
+	{pdi_example_code, "-i input.v -c 5 -o b0.v -c cls.v"}
 }; 
-
 
 
 int do_main( int argc, char *argv[] )

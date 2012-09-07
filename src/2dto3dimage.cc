@@ -34,18 +34,13 @@ using namespace std;
 using namespace boost;
 
 const SProgramDescription g_description = {
-	"Image conversion", 
-
-	"Combine a series of 2D images to a volume.", 
-	
-	"This program is used to combine a series of 2D images of equal "
-	"size and type images following a certain numbering scheme to a 3D image.", 
-
-	"Convert a series of images imageXXXX.png to a 3D image 3d.v", 
-	
-	"-i imageXXXX.png -o 3d.v"
+	{pdi_group,  "Image conversion"}, 
+	{pdi_short, "Combine a series of 2D images to a volume."}, 
+	{pdi_description, "This program is used to combine a series of 2D images of equal "
+	 "size and type images following a certain numbering scheme to a 3D image."}, 
+	{pdi_example_descr, "Convert a series of images imageXXXX.png to a 3D image 3d.v"}, 
+	{pdi_example_code,"-i imageXXXX.png -o 3d.v"}
 }; 
-
 
 struct C3DImageCollector : public TFilter<bool> {
 

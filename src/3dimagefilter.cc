@@ -32,19 +32,14 @@ using namespace std;
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-
-	"Analysis, filtering, combining, and segmentation of 3D images", 
-
-	"Filter a 3D images.", 
-	
-	"This program is used to filter and convert gray scale 3D images.", 
-
-	"Run a mean-least-varaiance filter on input.v, then run a 5-class k-means classification"
-	"and binarize by selecting the 4th class.", 
-
-	"-i image.v -o filtered.v mlv:w=2 kmeans:c=5 binarize:min=4,max=4" 
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
+	{pdi_short, "Filter a 3D images."}, 
+	{pdi_description, "This program is used to filter and convert gray scale 3D images."}, 
+	{pdi_example_descr, "Run a mean-least-varaiance filter on input.v, then "
+	 "run a 5-class k-means classification and binarize by selecting the 4th class."}, 
+	{pdi_example_code, "-i image.v -o filtered.v mlv:w=2 kmeans:c=5 binarize:min=4,max=4" }
 }; 
-	
+
 
 int do_main( int argc, char *argv[] )
 {

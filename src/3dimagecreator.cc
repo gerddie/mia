@@ -31,22 +31,19 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 3D images", 
-	
-	"Create a synthetic 3D image.", 
-	
-	"This program creates a 3D image that contains an object created by one of the object "  
-	"creator plug-ins (creator/3dimage)",
-	
-	"Create an image output.v of size <64,128,256> that contains a lattic with "
-	"frequencys 8, 16, and 4 in x, y and, z-direction respectively.",
-	
-	"-o lattic.v -j lattic:fx=8,fy=16,fz=4 -s \"<64,128,256>\""
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
+
+	{pdi_short, "Create a synthetic 3D image."}, 
+
+	{pdi_description, "This program creates a 3D image that contains an object created by one of the object "  
+	 "creator plug-ins (creator/3dimage)"},
+
+	{pdi_example_descr, "Create an image output.v of size <64,128,256> that contains a lattic with "
+	 "frequencys 8, 16, and 4 in x, y and, z-direction respectively."},
+
+	{pdi_example_code, "-o lattic.v -j lattic:fx=8,fy=16,fz=4 -s \"<64,128,256>\""}
 }; 
 	
-	
-	
-
 int do_main(int argc, char *argv[])
 {
 	C3DImageCreatorPluginHandler::ProductPtr object_creator;

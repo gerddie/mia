@@ -29,16 +29,12 @@ using namespace std;
 using namespace boost;
 
 const SProgramDescription g_description = {
-	"Image conversion", 
-	
-	"Convert raw data into a 2D image", 
-	
-	"This program is used to convert raw data to a 2D file format.", 
-	
-	"Convert a data set data.raw of size <10,20> of short integer data with a "
-	"pixel size of <1.2, 2.3> to a PNG file image.png", 
-	
-	"-i data.raw -o image.png -s '<10,20>' -k '<1.2,2.3>' -r ushort"
+	{pdi_group, "Image conversion"}, 
+	{pdi_short,  "Convert raw data into a 2D image"}, 
+	{pdi_description, "This program is used to convert raw data to a 2D file format."}, 
+	{pdi_example_descr, "Convert a data set data.raw of size <10,20> of short integer data with a "
+	 "pixel size of <1.2, 2.3> to a PNG file image.png"}, 
+	{pdi_example_code, "-i data.raw -o image.png -s '<10,20>' -k '<1.2,2.3>' -r ushort"}
 }; 
 
 inline bool am_big_endian()

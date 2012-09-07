@@ -38,12 +38,10 @@ NS_MIA_USE;
 using namespace gsl; 
 
 const SProgramDescription g_general_help = {
-	"Miscellaneous programs", 
-	"Wavelet based curve analysis", 
-	"This program runs the wavelet based slope-statistics on the mixing matrix \n"
-	"of a ICA perfusion series.", 
-	NULL, 
-	NULL
+        {pdi_group, "Miscellaneous programs"}, 
+	{pdi_short, "Wavelet based curve analysis"}, 
+	{pdi_description, "This program runs the wavelet based slope-statistics on the mixing matrix "
+	 "of a ICA perfusion series."}
 }; 
 
 const TDictMap<EWaveletType>::Table wavelet_dict[] = {

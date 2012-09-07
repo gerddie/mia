@@ -36,11 +36,9 @@ extern void add_3dimage_tests(test_suite* suite);
 extern void add_3dinterpol_tests(test_suite* suite);
 
 const SProgramDescription g_general_help = {
-	"Tests", 
-	"3D tests", 
-	"Run various test for 3D data.", 
-	NULL, 
-	NULL
+        {pdi_group, "Tests"}, 
+	{pdi_short, "3D tests"}, 
+	{pdi_description, "Run various test for 3D data."}
 }; 
 
 bool init_unit_test_suite( )

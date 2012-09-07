@@ -43,11 +43,11 @@ static const char *revision = "$Revision: 937 $:";
 
 
 const SProgramDescription g_general_help = {
-	"Test", 
-	"Short help", 
-	"This program tests the history entries.", 
-	"Example text", 
-	"Example"
+	{pdi_group,"Test"}, 
+	{pdi_short,"Short help"}, 
+	{pdi_description,"This program tests the history entries."}, 
+	{pdi_example_descr, "Example text"}, 
+	{pdi_example_code, "Example"}
 }; 
 
 

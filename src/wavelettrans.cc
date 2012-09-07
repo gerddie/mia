@@ -36,12 +36,12 @@ NS_MIA_USE;
 using namespace gsl; 
 
 const SProgramDescription g_general_help = {
-	"Miscellaneous programs", 
-	"Column wise wavelet transform", 
-	"This program runs the a column-wise discret wavelet forward transform on "
-	"the data given by an input text file.", 
-	"", 
-	""
+	{pdi_group, "Miscellaneous programs"}, 
+	{pdi_short,"Column wise wavelet transform"}, 
+	{pdi_description,"This program runs the a column-wise discret wavelet forward transform on "
+	 "the data given by an input text file."}, 
+	{pdi_example_descr, ""}, 
+	{pdi_example_code, ""}
 }; 
 
 const TDictMap<EWaveletType>::Table wavelet_dict[] = {

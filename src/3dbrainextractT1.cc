@@ -42,25 +42,23 @@ using namespace std;
 namespace bfs = ::boost::filesystem;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 3D images", 
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
 
-	"Extract the brain from a 3D T1 MRI head image.", 
-	
-	"This program is used to extract the brain from T1 MR images. "
+	{pdi_short, "Extract the brain from a 3D T1 MRI head image."}, 
+
+	{pdi_description, "This program is used to extract the brain from T1 MR images. "
 	"It first runs a combined fuzzy c-means clustering and B-field correction "
 	"to facilitate a 3D segmentation of 3D image. "
 	"Then various fiters are run to obtain a white matter segmentation as initial "
 	"mask that is then used to run a region growing to obtain a mask of the whole brain. "
-	"Finally, this mask is used to extact the brain from the B0 field corrected images.", 
-
-	"Create a mask from the input image by running a 5-class segmentation over inpt image input.v "
-        "and use class 4 as white matter class and store the masked image in masked.v "
-	"and the B0-field corrected image in b0.v", 
+	 "Finally, this mask is used to extact the brain from the B0 field corrected images."}, 
 	
-	"-i input.v -n 5 -w 4 -o masked.v"
+	{pdi_example_descr, "Create a mask from the input image by running a 5-class segmentation over inpt image input.v "
+	 "and use class 4 as white matter class and store the masked image in masked.v "
+	 "and the B0-field corrected image in b0.v"}, 
+
+	{pdi_example_code, "-i input.v -n 5 -w 4 -o masked.v"}
 }; 
-	
-
 
 int do_main( int argc, char *argv[] )
 {

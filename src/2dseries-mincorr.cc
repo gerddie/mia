@@ -35,17 +35,13 @@ NS_MIA_USE;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
-
-	"Evaluate minimal correlation of time-intensity curves.", 
-	
-	"Given a set of images of temporal sucession, this program evaluates the "
-	"minimal correlation of the time-intensity curve between neighboring pixels.", 
-	
-	"Evaluate the minimal correlation image of a series givemn in  segment.set and "
-	"store the image in OpenEXR format. Skip two images at the beginning of the series.", 
-
-	"-i segment.set -o mincorr.exr -k 2"
+        {pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
+	{pdi_short, "Evaluate minimal correlation of time-intensity curves."}, 
+	{pdi_description, "Given a set of images of temporal sucession, this program evaluates the "
+	 "minimal correlation of the time-intensity curve between neighboring pixels."}, 
+	{pdi_example_descr, "Evaluate the minimal correlation image of a series givemn in  segment.set and "
+	 "store the image in OpenEXR format. Skip two images at the beginning of the series."}, 
+	{pdi_example_code, "-i segment.set -o mincorr.exr -k 2"}
 }; 
 
 

@@ -27,18 +27,20 @@ NS_MIA_USE;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 3D images", 
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
 
-	"Evaluate some image statistics.",
+	{pdi_short, "Evaluate some image statistics."},
 	
-	"This program is used to evaluate certain image statistics "
-	"and print them out on the console.", 
-	
-	"Evaluate the statistics of image input.v and ignore all voxels with an intensity "
-	"below 5.", 
+	{pdi_description, "This program is used to evaluate certain image statistics "
+	 "and print them out on the console."}, 
 
-	"-i input.v -t 5"
+	{pdi_example_descr, "Evaluate the statistics of image input.v and ignore all voxels with an intensity "
+	 "below 5."}, 
+
+	{pdi_example_code, "-i input.v -t 5"}
 };
+
+
 
 class CHistAccumulator : public TFilter<bool> {
 public:

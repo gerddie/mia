@@ -35,12 +35,11 @@ using namespace std;
 using namespace boost;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-	"Evaluate average intensities of an image series.", 
-	"This program is used to evaluate the average intensity and its variation of a series "
-	"of images in a given masked region.", 
-	NULL, 
-	NULL
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "Evaluate average intensities of an image series."}, 
+	{pdi_description, "Evaluate average intensities of an image series"
+	 "This program is used to evaluate the average intensity and its variation of a series "
+	 "of images in a given masked region."}, 
 }; 
 
 struct C2DStat : public TFilter<bool> {

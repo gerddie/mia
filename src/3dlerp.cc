@@ -35,11 +35,12 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 3D images", 
-	"Linearly combine two 3D images.", 	
-	"merge two images by linear combination.", 
-	"Combine image inputA.v and inputB.v by using position coordinates 4, 7, and 9 and write the result to output.v", 
-	"-1 inputA.v -2 inputB.v -p 4,7,9 -o output.v"
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
+	{pdi_short, "Linearly combine two 3D images."}, 
+	{pdi_description, "merge two images by linear combination."}, 
+	{pdi_example_descr, "Combine image inputA.v and inputB.v by using position "
+	 "coordinates 4, 7, and 9 and write the result to output.v"}, 
+	{pdi_example_code, "-1 inputA.v -2 inputB.v -p 4,7,9 -o output.v"}
 }; 
 
 struct FAddWeighted: public TFilter<P3DImage> {

@@ -38,24 +38,23 @@ NS_MIA_USE;
 using namespace std; 
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
+	{pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
+	{pdi_short, "Run an ICA analysis on a series of 2D images"}, 
 
-	"Run an ICA analysis on a series of 2D images", 
-
-	"This program is used to run a ICA on a series of myocardial perfusion images to create "
-        "sythetic references that can be used for motion correction by image registration. "
-	"If the aim is to run a full motion compensation then it is better to create a "
-	"segmentation set and use mia-2dmyoica-nonrigid. "
-	"If the input data is given by means of a segmentation set, then on can "
-	"also use mia-2dmyocard-icaseries.\n"
-	"This program is essentially used to test different options on how to run the ICA for" 
-	"reference image creation.", 
-
-	"Evaluate the synthetic references from images imageXXXX.exr and save them to "
-	"refXXXX.exr by using five independend components, mean stripping, normalizing, "
-	"and skipping 2 images.", 
+	{pdi_description, "This program is used to run a ICA on a series of myocardial "
+	 "perfusion images to create sythetic references that can be used for motion correction "
+	 "by image registration. If the aim is to run a full motion compensation then it is "
+	 "better to create a segmentation set and use mia-2dmyoica-nonrigid. If the input data "
+	 "is given by means of a segmentation set, then on can also use mia-2dmyocard-icaseries.\n"
+	 "This program is essentially used to test different options on how to run the ICA for" 
+	 "reference image creation."}, 
 	
-	"-i imageXXXX.exr -o ref -k 2 -C 5 -m -n"
+	{pdi_example_descr, "Evaluate the synthetic references from images imageXXXX.exr and save them to "
+	 "refXXXX.exr by using five independend components, mean stripping, normalizing, "
+	 "and skipping 2 images."}, 
+	
+	
+	{pdi_example_code, "-i imageXXXX.exr -o ref -k 2 -C 5 -m -n"}
 }; 
 
 unique_ptr<C2DImageSeriesICA> get_ica(vector<C2DFImage>& series, bool strip_mean,

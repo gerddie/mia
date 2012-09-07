@@ -30,15 +30,12 @@ using boost::any_cast;
 
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-	
-	"Combine two 2D images.", 
-	
-	"Combine two image by a given operation.", 
-	
-	"Combine image A.exr and image B.exr  by adding the intensity values and save the output to sum.exr.", 
-	
-	"-i A.exr -r B.exr -o sum.exr -p add"
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "Combine two 2D images."}, 
+	{pdi_description, "Combine two image by a given operation."}, 
+	{pdi_example_descr, "Combine image A.exr and image B.exr  by adding the intensity "
+	 "values and save the output to sum.exr."}, 
+	{pdi_example_code, "-i A.exr -r B.exr -o sum.exr -p add"}
 }; 
 
 int do_main( int argc, char *argv[] )

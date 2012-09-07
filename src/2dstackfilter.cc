@@ -40,17 +40,14 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Processing of series of 2D images in a 3D fashion (out-of-core)", 
-
-	"Filter a series of 2D images in a 3D fashion.", 
-	
-	"This program is used to filter and convert a series of 2D gray scale images in a "
-	"3D fashion by running filters (filter/2dimage) as given on the command line.",
-
-	"Run a mean-least-varaiance filter on a series of images that follow the "
-	"numbering pattern imageXXXX.exr and store the output in images filteredXXXX.exr", 
-	
-	"-i image0000.exr -o filtered -t exr mlv:w=2"
+        {pdi_group, "Processing of series of 2D images in a 3D fashion (out-of-core)"}, 
+	{pdi_short, "Filter a series of 2D images in a 3D fashion."}, 
+	{pdi_description, "This program is used to filter and convert a series of 2D "
+	 "gray scale images in a 3D fashion by running filters (filter/2dimage) "
+	 "as given on the command line."}, 
+	{pdi_example_descr, "Run a mean-least-varaiance filter on a series of images that follow the "
+	 "numbering pattern imageXXXX.exr and store the output in images filteredXXXX.exr"}, 
+	{pdi_example_code, "-i image0000.exr -o filtered -t exr mlv:w=2"}
 }; 
 
 class C2DStackSaver: public  TFifoFilter<P2DImage> {

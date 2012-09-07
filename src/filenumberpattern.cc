@@ -34,13 +34,13 @@
 using namespace std;
 using namespace mia;
 
+
+
 const SProgramDescription g_description = {
-	"Miscellaneous programs", 
-	"File name number pattern analysis", 
-	"This program is used to extract a extract the number pattern for "
-	"file012312.ext type file names.", 
-	NULL, 
-	NULL
+	{pdi_group, "Miscellaneous programs"}, 
+	{pdi_short, "File name number pattern analysis"}, 
+	{pdi_description, "This program is used to extract a extract the number pattern for "
+	 "file012312.ext type file names."}
 }; 
 
 int do_main( int argc, char *argv[] )

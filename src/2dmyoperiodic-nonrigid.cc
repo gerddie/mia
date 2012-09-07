@@ -45,28 +45,25 @@ namespace bfs=boost::filesystem;
 
 
 const SProgramDescription g_general_help = {
-	// .g_program_group =  
-	"Registration of series of 2D images", 
-	"Run a registration of a series of 2D images.", 
+        {pdi_group,  "Registration of series of 2D images"}, 
+	{pdi_short, "Run a registration of a series of 2D images."}, 
 	
-	// .g_general_help = 
-	"This program runs the non-rigid registration of an perfusion image series "
-	"preferable aquired letting the patient breath freely. " 
-	"The registration algoritm implementes "
-	"G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting "
-	"Quasiperiodicity in Motion Correction of Free-Breathing,\" "
-	"IEEE Transactions on Medical Imaging, 29(8), 2010\n", 
+	{pdi_description, "This program runs the non-rigid registration of an perfusion image series "
+	 "preferable aquired letting the patient breath freely. " 
+	 "The registration algoritm implementes "
+	 "G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting "
+	 "Quasiperiodicity in Motion Correction of Free-Breathing,\" "
+	 "IEEE Transactions on Medical Imaging, 29(8), 2010\n"}, 
 
-	//.g_program_example_descr = 
-	"Register the perfusion series given in 'segment.set'. " 
-        "Skip two images at the beginning, usa spline transformation of a knot rate 16 pixels, "
-	"and penalize the transformation by divcurl with weight 5. "
-	"Store the result in 'registered.set'.\n", 
+	{pdi_example_descr, "Register the perfusion series given in 'segment.set'. " 
+	 "Skip two images at the beginning, usa spline transformation of a knot rate 16 pixels, "
+	 "and penalize the transformation by divcurl with weight 5. "
+	 "Store the result in 'registered.set'.\n"}, 
 	
-	//.g_program_example_code = 
-	"  -i segment.set -o registered.set -k 2 -d 5 -f spline:rate=16"
+	{pdi_example_code, "  -i segment.set -o registered.set -k 2 -d 5 -f spline:rate=16"}
 }; 
 
+		
 class C2DFImage2PImage {
 public: 
 	P2DImage operator () (const C2DFImage& image) const {

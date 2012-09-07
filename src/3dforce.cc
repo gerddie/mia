@@ -31,16 +31,17 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-	
-	"Evaluate the registration force between two 3D images.", 
-	
-	"This program is used to create an image comprising the pixel-wise norm "
-	"of the ggradient of a given cost function.", 
+	{pdi_group, "Registration, Comparison, and Transformation of 3D images"}, 
 
-	"Evaluate the weigtes sum of SSD between src.v and ref.v and store the result in forcenorm.v.", 
+	{pdi_short, "Evaluate the registration force between two 3D images."}, 
 
-	"-i src.v -r ref.v -c ssd -o forcenorm.v"
+	{pdi_description, "This program is used to create an image comprising the pixel-wise norm "
+	 "of the ggradient of a given cost function."}, 
+
+	{pdi_example_descr, 
+	 "Evaluate the weigtes sum of SSD between src.v and ref.v and store the result in forcenorm.v."}, 
+
+	{pdi_example_code, "-i src.v -r ref.v -c ssd -o forcenorm.v"}
 }; 
 
 

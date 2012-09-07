@@ -41,26 +41,22 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
-	"Registration of series of 2D images", 
-
-	"Run a registration of a series of 2D images.", 
-	
-	"This program runs the non-rigid registration of an perfusion image series."
-	"In each pass, first an ICA analysis is run to estimate and eliminate " 
-	"the periodic movement and create reference images with intensities similar "
-	"to the corresponding original image. Then non-rigid registration is run "
-	"using the an \"ssd + divcurl\" cost model. The B-spline c-rate and the "
-	"divcurl cost weight are changed in each pass according to given parameters."
-	"In the first pass a bounding box around the LV myocardium may be extracted" 
-	"to speed up computation\n"
-	"Special note to this implemnentation: the registration is always run from the "
-	"original images to avoid the accumulation of interpolation errors.", 
-
-	"Register the perfusion series given in 'segment.set' by using automatic ICA estimation. " 
-        "Skip two images at the beginning and otherwiese use the default parameters. "
-	"Store the result in 'registered.set'.", 
-
-	"  -i segment.set -o registered.set -k 2"
+        {pdi_group, "Registration of series of 2D images"}, 
+	{pdi_short, "Run a registration of a series of 2D images."}, 
+	{pdi_description, "This program runs the non-rigid registration of an perfusion image series."
+	 "In each pass, first an ICA analysis is run to estimate and eliminate " 
+	 "the periodic movement and create reference images with intensities similar "
+	 "to the corresponding original image. Then non-rigid registration is run "
+	 "using the an \"ssd + divcurl\" cost model. The B-spline c-rate and the "
+	 "divcurl cost weight are changed in each pass according to given parameters."
+	 "In the first pass a bounding box around the LV myocardium may be extracted" 
+	 "to speed up computation\n"
+	 "Special note to this implemnentation: the registration is always run from the "
+	 "original images to avoid the accumulation of interpolation errors."}, 
+ 	{pdi_example_descr, "Register the perfusion series given in 'segment.set' by "
+	 "using automatic ICA estimation. Skip two images at the beginning and otherwiese "
+	 "use the default parameters. Store the result in 'registered.set'."}, 
+	{pdi_example_code, "  -i segment.set -o registered.set -k 2"}
 }; 
 
 class C2DFImage2PImage {

@@ -33,16 +33,12 @@
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Image conversion", 
-
-	"Extract slices from a 3D image.", 
-	
-	"This program is used to extract 2D slices from a 3D data set and store them "
-	"in separate files. Output files will be numbered according to their slice index.", 
-	
-	"Store 5 coronal slices starting at slice 120 coronalXXXX.png from  image.v.", 
-
-	"-i image.v -o coronal -t png -n 5 -s 120" 
+        {pdi_group, "Image conversion"}, 
+	{pdi_short, "Extract slices from a 3D image."}, 
+	{pdi_description, "This program is used to extract 2D slices from a 3D data set and store them "
+	 "in separate files. Output files will be numbered according to their slice index."}, 
+	{pdi_example_descr, "Store 5 coronal slices starting at slice 120 coronalXXXX.png from  image.v."}, 
+	{pdi_example_code, "-i image.v -o coronal -t png -n 5 -s 120"}
 }; 
 
 enum EDirection {dir_unkown, dir_xy, dir_xz, dir_yz};

@@ -27,18 +27,16 @@ using namespace std;
 
 
 const SProgramDescription g_general_help = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-
-	"Run filters on a 2D image.", 
-	
-	"This program runs a series filters on a given input image. The filters are given as extra parameters "
-	"on the command line and are run in the order in which they are given. To obtain a list of available filters "
-	"you may run 'mia-plugin-help filter/2dimage' from the command line", 
-	
-	"Run a kmeans classification of 5 classes on input.png and then a binarization of the 4th class and store the result"
-	" in result.png", 
-	
-	"-i input.png -o result.png kmeans:c=5 binarize:min=4,max=4"
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "Run filters on a 2D image."}, 
+	{pdi_description, "This program runs a series filters on a given input image. The filters "
+	 "are given as extra parameters on the command line and are run in the order in which they "
+	 "are given. To obtain a list of available filters you may run\n"
+	 "   'mia-plugin-help filter/2dimage'\n"
+	 "from the command line"}, 
+	{pdi_example_descr, "Run a kmeans classification of 5 classes on input.png and then "
+	 "a binarization of the 4th class and store the result in result.png"}, 
+	{pdi_example_code, "-i input.png -o result.png kmeans:c=5 binarize:min=4,max=4"}
 }; 
 
 int do_main( int argc, char *argv[] )

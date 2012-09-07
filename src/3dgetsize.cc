@@ -34,15 +34,11 @@ using namespace std;
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 3D images", 
-
-	"Print the dimensions of a 3D image.", 
-	
-	"Write the dimensions of the input 3D image to stdout.", 
-	
-	"Print out the size of image.v.", 
-	
-	"-i image.v"
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
+	{pdi_short, "Print the dimensions of a 3D image."}, 
+	{pdi_description, "Write the dimensions of the input 3D image to stdout."}, 
+	{pdi_example_descr, "Print out the size of image.v."}, 
+	{pdi_example_code, "-i image.v"}
 }; 
 
 int do_main( int argc, char *argv[] )

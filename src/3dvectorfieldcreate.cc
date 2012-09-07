@@ -39,13 +39,11 @@ NS_MIA_USE;
 using namespace std; 
 
 const SProgramDescription g_description = {
-	"Miscellaneous programs", 
-	"3D vector field creation.", 
-	"This program is used to create a file containing a 3D vector field.", 
-	
-	"Create a field of type 2 with fun 3.0 and size 128x128x128.", 
-	
-	"-o field.v -s '<128,128,128>' -t 2 -f 3.0"
+        {pdi_group, "Miscellaneous programs"}, 
+	{pdi_short, "3D vector field creation."}, 
+	{pdi_description, "This program is used to create a file containing a 3D vector field."}, 
+	{pdi_example_descr, "Create a field of type 2 with fun 3.0 and size 128x128x128."}, 
+	{pdi_example_code, "-o field.v -s '<128,128,128>' -t 2 -f 3.0"}
 }; 
 
 typedef unsigned int uint32; 

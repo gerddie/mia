@@ -43,18 +43,15 @@ size_t log10(size_t x)
 }
 
 const SProgramDescription g_general_help = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-
-	"Run filters on a series of 2D images.", 
-	
-	"This program runs a series filters on a series of consecutive numbered input image. "
-	"The filters are given as extra parameters "
-	"on the command line and are run in the order in which they are given.", 
-	
-	"Run a kmeans classification of 5 classes on images inputXXXX.png (X being digits) "
-	"and then a binarization of the 4th class and store the result in resultXXXX.png", 
-	
-	"-i input0000.png -o result -t png kmeans:c=5 binarize:min=4,max=4" 
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+        {pdi_short,	"Run filters on a series of 2D images."}, 
+	{pdi_description, 	"This program runs a series filters on a series of "
+	 "consecutive numbered input image. The filters are given as extra parameters "
+	 "on the command line and are run in the order in which they are given."}, 
+	{pdi_example_descr, "Run a kmeans classification of 5 classes on images inputXXXX.png "
+	 "(X being digits) and then a binarization of the 4th class and store the result in "
+	 "resultXXXX.png"}, 
+	{pdi_example_code, "-i input0000.png -o result -t png kmeans:c=5 binarize:min=4,max=4"}
 }; 
 
 int do_main( int argc, char *argv[] )

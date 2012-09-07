@@ -34,21 +34,21 @@ using namespace mia;
 using namespace std; 
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
-
-	"Evaluate time-intensity curves in masked regions of image series.", 	
+	{pdi_group,	"Tools for Myocardial Perfusion Analysis"}, 
 	
-	"This program is used evaluate various time-intensity curves over a series of images "
+	{pdi_short, "Evaluate time-intensity curves in masked regions of image series."}, 	
+	
+	{pdi_description, "This program is used evaluate various time-intensity curves over a series of images "
 	"given by a segmentation set. Specifically, the program is taylored to evaluate average "
 	"intensities and variations of sections the left ventricle myocardium. "
 	"The segmentation set must contain the segmentations for all slices that will be accessed "
-        "during evaluation. ",
+	 "during evaluation. "},
 
-	"Evaluate the two curve typed for 12 sections from segemntation sets orig.set "
+	{pdi_example_descr,"Evaluate the two curve typed for 12 sections from segemntation sets orig.set "
 	"and reg.set skipping the first 2 frames. The output will be written to curves.txt "
-	"and varcurves.txt respectively.", 
+	 "and varcurves.txt respectively."}, 
 	
-	"-i org.set -g reg.set -c curves.txt -v varcurves.txt -n 12 -k 2"
+	{pdi_example_code,"-i org.set -g reg.set -c curves.txt -v varcurves.txt -n 12 -k 2"}
 }; 
 
 struct SResult {

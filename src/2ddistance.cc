@@ -38,20 +38,17 @@ NS_MIA_USE
 
 
 const SProgramDescription g_general_help = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-	"Distance between binary masks.", 
-	"This program evaluate the average or maximum distance of a mask "
-	"given by a binary image to an image representing a distance map "
-	"and prints the result to stdout. The distance map can be obtained by "
-	"running the filter 'diatance' on a binary image.", 
-	"Evaluate the maximum distance of mask m.v by using the distance field "
-	"distance.v and scale by factor 2.0. The result is written to stdout", 
-	"-i m.v -d distance.v -s 2.0 -m max", 
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "Distance between binary masks."}, 
+	{pdi_description, "This program evaluate the average or maximum distance of a mask "
+	 "given by a binary image to an image representing a distance map "
+	 "and prints the result to stdout. The distance map can be obtained by "
+	 "running the filter 'diatance' on a binary image."}, 
+	{pdi_example_descr, "Evaluate the maximum distance of mask m.v by using "
+	 "the distance field distance.v and scale by factor 2.0. The result is "
+	 "written to stdout"}, 
+	{pdi_example_code, "-i m.v -d distance.v -s 2.0 -m max"}
 }; 
-
-
-
-
 
 enum EOps {dist_avg, 
 	   dist_max, 

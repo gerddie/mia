@@ -29,16 +29,21 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-	"Transform a 3D image.", 
+	{pdi_group,
+	 "Registration, Comparison, and Transformation of 3D images"}, 
+	 
+	 {pdi_short,
+	  "Transform a 3D image."}, 
 
-	"Transform a 3D image by applying a given 3D transformation.", 
+	  {pdi_description,
+	   "Transform a 3D image by applying a given 3D transformation."}, 
 	
-	"Transform an image input.v by the transfromation stored in trans.v "
-        "by using nearest neighbour interpolation ans store the result in output.v",
+	   {pdi_example_descr,
+	    "Transform an image input.v by the transfromation stored in trans.v "
+	    "by using nearest neighbour interpolation ans store the result in output.v"},
 	
-	"-i input.v -t trans.v  -o output.v  -p bspline:d=0"
-	
+	{pdi_example_code,
+	 "-i input.v -t trans.v  -o output.v  -p bspline:d=0"}
 }; 
 
 int do_main(int argc, char **argv)

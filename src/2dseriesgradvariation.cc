@@ -38,21 +38,22 @@ using namespace std;
 using namespace mia;
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
+	{pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
 
-	"Evaluate the time-intensity gradient variation in a series of images.", 
+	{pdi_short, "Evaluate the time-intensity gradient variation in a series of images."}, 
 	
-	"Given a set of images of temporal sucession, this program evaluates the "
-	"gradient variation of the pixel-wise time-intensity curves of this series. "
-	"If the input image set provides a segmentation, then this segmentation can "
-	"be used to create a bounding box and restrict evaluation to this box. ", 
+	{pdi_description, "Given a set of images of temporal sucession, this program evaluates the "
+	 "gradient variation of the pixel-wise time-intensity curves of this series. "
+	 "If the input image set provides a segmentation, then this segmentation can "
+	 "be used to create a bounding box and restrict evaluation to this box. "}, 
 
-	"Evaluate the gradient-variation image of the bounding box surrounding the segmentation "
-	"from a series 'segment.set'. The bounding box will be enlarged by 3 pixels in all directions. "
-	"Store the image in OpenEXR format.", 
+	{pdi_example_descr, "Evaluate the gradient-variation image of the bounding box surrounding the segmentation "
+	 "from a series 'segment.set'. The bounding box will be enlarged by 3 pixels in all directions. "
+	 "Store the image in OpenEXR format."}, 
 	
-	" -i segment.set -o gradvar.exr -c -e 3"
+	{pdi_example_code,	" -i segment.set -o gradvar.exr -c -e 3"}
 }; 
+
 
 struct C2DVarAccumulator : public TFilter<bool> {
 

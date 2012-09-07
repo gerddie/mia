@@ -47,19 +47,15 @@ namespace bfs=boost::filesystem;
 
 
 const SProgramDescription g_general_help = {
-	"Registration of series of 2D images", 
-	
-	"Registration of a series of 2D images", 
-	
-	"This program registers all images of a conscutively numbered set of images to one common "
-	"user defined reference.", 
-	
-	"Register the image series given by images 'inputXXXX.png' to reference image 30. " 
-	"Skip two images at the beginning and using mutual information as cost function, "
-	"and penalize the transformation by divcurl with weight 5. "
-	"Store the result in 'registeredXXXX.png'.", 
-	
-	"  -i input0000.png -o registered%04d.png -k 2 -r 30 mi divcurl:weight=5"
+        {pdi_group, "Registration of series of 2D images"}, 
+	{pdi_short, "Registration of a series of 2D images"}, 
+	{pdi_description, "This program registers all images of a conscutively numbered set of images to one common "
+	 "user defined reference."}, 
+	{pdi_example_descr, "Register the image series given by images 'inputXXXX.png' to reference image 30. " 
+	 "Skip two images at the beginning and using mutual information as cost function, "
+	 "and penalize the transformation by divcurl with weight 5. "
+	 "Store the result in 'registeredXXXX.png'."}, 
+	{pdi_example_code, "  -i input0000.png -o registered%04d.png -k 2 -r 30 mi divcurl:weight=5"}
 }; 
 
 C2DFullCostList create_costs(const std::vector<string>& costs, int idx)

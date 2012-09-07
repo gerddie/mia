@@ -44,28 +44,23 @@ using namespace mia;
 namespace bfs=boost::filesystem; 
 
 const SProgramDescription g_description = {
-	"Registration of series of 3D images", 
-
-	"Registration of a series of 3D images.",
-
-	"This program runs the non-rigid registration of an image series "
-	"by first registering an already aligned subset of the images to one reference, "
-	"and then by registering the remaining images by using synthetic references. "
-	"The is a 3D version of G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting "
-	"Quasiperiodicity in Motion Correction of Free-Breathing,\" "
-	"IEEE Transactions on Medical Imaging, 29(8), 2010.", 
-	
-	"Register the image series given by images imageXXXX.v by optimizing a spline based "
-	"transformation with a coefficient rate of 16 pixel ,skipping two images at the "
-	"beginning and using normalized gradient fields as initial cost measure "
-	"and SSD as final measure. Penalize the transformation by using divcurl with aweight of 2.0. "
-	"As optimizer an nlopt based newton method is used.", 
-	
-	"mia-3dprealign-nonrigid  -i imageXXXX.v -o registered -t vista -k 2"
-	"-F spline:rate=16 -d 2.0 -1 image:cost=[ngf:eval=ds] -2 image:cost=ssd "
-	"-O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300"
+        {pdi_group, "Registration of series of 3D images"}, 
+	{pdi_short, "Registration of a series of 3D images."}, 
+	{pdi_description, "This program runs the non-rigid registration of an image series "
+	 "by first registering an already aligned subset of the images to one reference, "
+	 "and then by registering the remaining images by using synthetic references. "
+	 "The is a 3D version of G. Wollny, M-J Ledesma-Cabryo, P.Kellman, and A.Santos, \"Exploiting "
+	 "Quasiperiodicity in Motion Correction of Free-Breathing,\" "
+	 "IEEE Transactions on Medical Imaging, 29(8), 2010."}, 
+	{pdi_example_descr, "Register the image series given by images imageXXXX.v by optimizing a spline based "
+	 "transformation with a coefficient rate of 16 pixel ,skipping two images at the "
+	 "beginning and using normalized gradient fields as initial cost measure "
+	 "and SSD as final measure. Penalize the transformation by using divcurl with aweight of 2.0. "
+	 "As optimizer an nlopt based newton method is used."}, 
+	{pdi_example_code, "mia-3dprealign-nonrigid  -i imageXXXX.v -o registered -t vista -k 2"
+	 "-F spline:rate=16 -d 2.0 -1 image:cost=[ngf:eval=ds] -2 image:cost=ssd "
+	 "-O nlopt:opt=ld-var1,xtola=0.001,ftolr=0.001,maxiter=300"}
 }; 
-
 
 class C3DFImage2PImage {
 public: 

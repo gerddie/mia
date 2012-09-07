@@ -40,14 +40,11 @@ private:
 
 };
 
-const SProgramDescription general_help = {
-	"Test", 
-	"program tests", 
-	"This program tests the command line parser.", 
-	NULL, 
-	NULL
-}; 
-
+const SProgramDescription general_help{
+	{pdi_group, "Test"}, 
+	{pdi_short, "program tests"}, 
+	{pdi_description, "This program tests the command line parser."}
+};
 
 BOOST_FIXTURE_TEST_CASE( test_set_option, CmdlineParserFixture )
 {
@@ -366,11 +363,11 @@ BOOST_FIXTURE_TEST_CASE( test_parser_errors2, CmdlineParserFixture )
 }
 
 const SProgramDescription general_help_test = {
-	"Test", 
-	"Short descr",
-	"This program tests the command line parser.", 
-	"Example text", 
-	"Example command"
+	{pdi_group,"Test"}, 
+	{pdi_short,"Short descr"},
+	{pdi_description,"This program tests the command line parser."}, 
+	{pdi_example_descr, "Example text"}, 
+	{pdi_example_code, "Example command"}
 }; 
 
 BOOST_FIXTURE_TEST_CASE( test_parser_usage_output, CmdlineParserFixture )

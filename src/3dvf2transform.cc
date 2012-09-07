@@ -30,17 +30,17 @@ NS_MIA_USE
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-	"Convert a 3D vectorfield from a 3D transformation.", 
+	{pdi_group, "Registration, Comparison, and Transformation of 3D images"}, 
+	{pdi_short, "Convert a 3D vectorfield from a 3D transformation."}, 
 
-	"Creates a 3D transformation from a vector field. The input vector field "
-	"is simply encapsulated into the transformation file format. The boundary "
-	"conditions and the image interpolator kernel can be set at the command line.", 
+	{pdi_description, "Creates a 3D transformation from a vector field. The input vector field "
+	 "is simply encapsulated into the transformation file format. The boundary "
+	 "conditions and the image interpolator kernel can be set at the command line."}, 
 	
-	"Transform the input vector field field.vtk to the transformation trans.v3df and "
-	"specify zero boundary conditions and b-splines of degree 2 for image interpolation.",
+	{pdi_example_descr, "Transform the input vector field field.vtk to the transformation trans.v3df and "
+	 "specify zero boundary conditions and b-splines of degree 2 for image interpolation.",}, 
 	
-	"-i field.vtk -o trans.v3df --imgkernel bspline:d=2 --imgboundary zero"
+	{pdi_example_code, "-i field.vtk -o trans.v3df --imgkernel bspline:d=2 --imgboundary zero"}
 }; 
 
 int do_main(int argc, char **argv)

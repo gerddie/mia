@@ -31,17 +31,14 @@ using namespace boost;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-	
-	"Create a synthetic 2D image.", 
-	
-	"This program is used to create test images.", 
-	
-	"Create a 2D image containing a lattic with standard parameters of size <64,128> and pixel type"
-	" 'float' and save the result to lattic.v", 
-	
-	"-o lattic.v -s '<64,128>' -r float -j lattic"
+        {pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short,  "Create a synthetic 2D image."}, 
+	{pdi_description, "This program is used to create test images."}, 
+	{pdi_example_descr, "Create a 2D image containing a lattic with standard parameters of size "
+	 "<64,128> and pixel type 'float' and save the result to lattic.v"}, 
+	{pdi_example_code, "-o lattic.v -s '<64,128>' -r float -j lattic"}
 }; 
+
 
 int do_main(int argc, char *argv[])
 {

@@ -29,16 +29,16 @@ using namespace std;
 
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 2D images", 
+	{pdi_group, "Registration, Comparison, and Transformation of 2D images"}, 
 
-	"Transform a 2D image.", 
-	
-	"This program is used to deform a 2D image using a given transformation.", 
+	{pdi_short, "Transform a 2D image."}, 
 
-	"Transform an image input.png by the transfromation stored in trans.v "
-        "by using linear interpolation and zero boundary conditions and store the result in output.png", 
-	
-	"-i input.png -t trans.v  -o output.png  -p bspline:d=1 -b zero",
+	{pdi_description, "This program is used to deform a 2D image using a given transformation."}, 
+
+	{pdi_example_descr, "Transform an image input.png by the transfromation stored in trans.v "
+	 "by using linear interpolation and zero boundary conditions and store the result in output.png"}, 
+
+	{pdi_example_code, "-i input.png -t trans.v  -o output.png  -p bspline:d=1 -b zero"},
 	
 };
 

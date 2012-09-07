@@ -35,20 +35,15 @@ using namespace std;
 
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
-
-	"Evaluate the dice index between segmentations.", 
-	
-	"This program is used to evaluate the per-frame dice index of "
-	"segmented regions of an image with respect to the segmentation of a reference frame "
-	"from the same series.", 
-
-	"Evaluate the dice index of segmentation set segment.set with reference 30 and " 
-	"skipping the first two frames.", 
-	
-	"-i segment.set -r 30 -k 2"
+        {pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
+	{pdi_short, "Evaluate the dice index between segmentations."}, 
+	{pdi_description,	"This program is used to evaluate the per-frame dice index of "
+	 "segmented regions of an image with respect to the segmentation of a reference frame "
+	 "from the same series."}, 
+	{pdi_example_descr,	"Evaluate the dice index of segmentation set segment.set with reference 30 and " 
+	 "skipping the first two frames."}, 
+	{pdi_example_code,	"-i segment.set -r 30 -k 2"}
 }; 
-
 
 float dice_value(const C2DUBImage& mask1, const C2DUBImage& mask2) 
 {

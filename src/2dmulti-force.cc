@@ -31,17 +31,14 @@ using namespace std;
 
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 2D images", 
-
-	"Registration force between two images", 
-	
-	"This program evaluates the 2D image cost force norm image of a given cost function set. "
-	"The input images must be of the same dimensions and gray scale (whatever bit-depth). ", 
-	
-	"Evaluate the force normimage weighted sum of costs SSD and NGF of image1.v and image2.v. and store the "
-	"result to force.v.",
-
-	"-o force.v ssd:src=image1.v,ref=image2.v,weight=0.1 ngf:src=image1.v,ref=image2.v,weight=2.0"
+        {pdi_group, "Registration, Comparison, and Transformation of 2D images"}, 
+	{pdi_short, "Registration force between two images"}, 
+	{pdi_description, "This program evaluates the 2D image cost force norm image of a given cost function set. "
+	 "The input images must be of the same dimensions and gray scale (whatever bit-depth)."}, 
+	{pdi_example_descr, "Evaluate the force normimage weighted sum of costs SSD and NGF of "
+	 "image1.v and image2.v. and store the result to force.v."}, 
+	{pdi_example_code, "-o force.v ssd:src=image1.v,ref=image2.v,weight=0.1 "
+	 "ngf:src=image1.v,ref=image2.v,weight=2.0"}
 }; 
 
 struct FGetNorm  {

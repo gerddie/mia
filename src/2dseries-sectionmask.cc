@@ -43,17 +43,13 @@ namespace bfs=boost::filesystem;
 
 
 const SProgramDescription g_description = {
-	"Tools for Myocardial Perfusion Analysis", 
-	"Evaluate masks from a segmentation.", 
-
-	"Evaluate the masks for the sections of a segmented frame.", 
-
-	"Evaluate the mask image from the segmentation of image 20 in segment.set and store it to mask20.png:",
-	
-	"-i segment.set -f 20 -o mask20.png"
+	{pdi_group, "Tools for Myocardial Perfusion Analysis"}, 
+	{pdi_short,"Evaluate masks from a segmentation."}, 
+	{pdi_description, "Evaluate the masks for the sections of a segmented frame."}, 
+	{pdi_example_descr, "Evaluate the mask image from the segmentation of image 20 in segment.set "
+	 "and store it to mask20.png:"},
+	{pdi_example_code, "-i segment.set -f 20 -o mask20.png"}
 }; 
-
-
 
 CSegSet load_segmentation(const string& s)
 {

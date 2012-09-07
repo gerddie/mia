@@ -57,11 +57,11 @@ const char *g_program_example_code =
 	"  -i segment.set -o registered.set -k 2"; 
 
 const SProgramDescription description = {
-	g_program_group, 
-	"Run a registration of a series of 2D images.", 
-	g_general_help, 
-	g_program_example_descr, 
-	g_program_example_code
+        {pdi_group, g_program_group}, 
+	{pdi_short, "Run a registration of a series of 2D images."}, 
+	{pdi_description, g_general_help}, 
+	{pdi_example_descr, g_program_example_descr}, 
+	{pdi_example_code, g_program_example_code}
 }; 
 
 class C2DFImage2PImage {

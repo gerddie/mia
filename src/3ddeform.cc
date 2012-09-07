@@ -28,17 +28,14 @@ using namespace std;
 using namespace boost;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
-	
-	"Transform a 3D image by means of a vector field.", 
-	
-	"Transform a 3D image by applying a given 3D transformation that is defined "
-	"by a 3D vector field v according to x:=x-v(x)", 
-	
-	"Transform an image input.v by the transformation defined by the vector field field.v "
-        "by using bspline interpolation of degree 4 and store the result in output.v", 
-	
-	"-i input.v -t field.v  -o output.v  -p bspline:d=4" 
+        {pdi_group, "Registration, Comparison, and Transformation of 3D images"}, 
+	{pdi_short, "Transform a 3D image by means of a vector field."}, 
+	{pdi_description, "Transform a 3D image by applying a given 3D transformation that is defined "
+	"by a 3D vector field v according to x:=x-v(x)"}, 
+	{pdi_example_descr, "Transform an image input.v by the transformation defined by the vector field field.v "
+        "by using bspline interpolation of degree 4 and store the result in output.v"}, 
+	{pdi_example_code, "-i input.v -t field.v  -o output.v  -p bspline:d=4" }
+
 }; 
 
 typedef std::shared_ptr<C3DFVectorfield > P3DFVectorfield;

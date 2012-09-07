@@ -28,19 +28,25 @@ NS_MIA_USE;
 using namespace std;
 
 const SProgramDescription g_description = {
-	"Registration, Comparison, and Transformation of 3D images", 
+	{pdi_group,
+	 "Registration, Comparison, and Transformation of 3D images"}, 
+	 
+	{pdi_short,
+	 "Linear registration of 3D images."}, 
+
+	{pdi_description,	
+	 "This program implements the registration of two gray scale 3D images. "
+	 "The transformation is not penalized, therefore, one should only use translation, rigid, or affine "
+	 "transformations as target and run mia-3dnonrigidreg of nonrigid registration is to be achieved."}, 
+	 
+	{pdi_example_descr,	
+	 "Register image test.v to image ref.v affine and write the registered image to reg.v. "
+	 "Use two multiresolution levels and ssd as cost function."},
 	
-	"Linear registration of 3D images.", 
-	
-	"This program implements the registration of two gray scale 3D images. "
-	"The transformation is not penalized, therefore, one should only use translation, rigid, or affine "
-	"transformations as target and run mia-3dnonrigidreg of nonrigid registration is to be achieved.", 
-	
-	"Register image test.v to image ref.v affine and write the registered image to reg.v. "
-	"Use two multiresolution levels and ssd as cost function.",
-	
-	"-i test.v -r ref.v -o reg.v -l 2 -f affine -c ssd"
+	{pdi_example_code,
+	 "-i test.v -r ref.v -o reg.v -l 2 -f affine -c ssd"}
 }; 
+
 
 int do_main( int argc, char *argv[] )
 {

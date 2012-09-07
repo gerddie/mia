@@ -27,18 +27,18 @@ NS_MIA_USE;
 using namespace std;
 
 const SProgramDescription g_general_help = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-
-	"Evaluate some statistics of a 2D image.", 
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
 	
-	"This progranm is used to evaluate some statistics of an image. " 
-	"Output is Mean, Variation, Median, and Median Average Distance of the intensity values. "
-	"The program allows to set a lower threshold and to cut off a percentage of the high intensity pixels", 
+	{pdi_short, "Evaluate some statistics of a 2D image."}, 
 	
-	"Evaluate the statistics of image input.png. Don't include the upper 1% of intensities in the statistics. "
-	"The result is written to stdout", 
+	{pdi_description, "This progranm is used to evaluate some statistics of an image. " 
+	 "Output is Mean, Variation, Median, and Median Average Distance of the intensity values. "
+	 "The program allows to set a lower threshold and to cut off a percentage of the high intensity pixels"}, 
+	
+	{pdi_example_descr, "Evaluate the statistics of image input.png. Don't include the upper 1% "
+	 "of intensities in the statistics. The result is written to stdout"},
 
-	"-i input.png -g 1"
+        {pdi_example_code,	"-i input.png -g 1"}
 }; 
 
 

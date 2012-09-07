@@ -39,12 +39,13 @@ NS_MIA_USE
 
 
 const SProgramDescription g_general_help = {
-	"Analysis, filtering, combining, and segmentation of 2D images", 
-	"Evaluate the dice index between two binary 2D images.", 
-	"This program evaluate the dice index of two binary masks given as binary images. "
-	"The result is written to stdout.", 
-	"Evaluate the dice index of maks1.png and mask2.png", 
-	"-1 mask1.png -2 mask2.png", 
+	{pdi_group, "Analysis, filtering, combining, and segmentation of 2D images"}, 
+	{pdi_short, "Evaluate the dice index between two binary 2D images."}, 
+	{pdi_description, "This program evaluate the dice index of two binary masks given as binary images. "
+	 "The result is written to stdout."
+	}, 
+	{pdi_example_descr, "Evaluate the dice index of maks1.png and mask2.png"}, 
+	{pdi_example_code, "-1 mask1.png -2 mask2.png"}
 }; 
 
 template <typename I1, typename I2, typename F>
