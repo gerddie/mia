@@ -138,7 +138,7 @@ string CCmdOptionListData::set_description_value(EProgramDescriptionEntry entry,
 const char *g_help_optiongroup="Help & Info"; 
 const char *g_basic_copyright = 
 	"This software is Copyright (c) 1999-2012 Leipzig, Germany and Madrid, Spain. "
-	"It comes with  ABSOLUTELY NO WARRANTY and you may redistribute it "
+	"It comes with ABSOLUTELY NO WARRANTY and you may redistribute it "
 	"under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (or later). "
 	"For more information run the program with the option '--copyright'.\n"; 
 
