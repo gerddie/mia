@@ -25,6 +25,7 @@
 #include <boost/filesystem.hpp>
 #include <itpp/signal/fastica.h>
 
+#include <mia/core/tools.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
@@ -41,13 +42,6 @@ using namespace mia;
 
 namespace bfs=boost::filesystem; 
 
-
-class C2DFImage2PImage {
-public: 
-	P2DImage operator () (const C2DFImage& image) const {
-		return P2DImage(new C2DFImage(image)); 
-	}
-}; 
 
 class Convert2Float {
 public: 
@@ -191,12 +185,15 @@ int do_main( int argc, char *argv[] )
 		input_set.set_LV_peak(ica.get_LV_peak_time() + skip_images);
 
 
+	auto warp_C2DFmage_in_P2Dimage = [](C2DFImage& img){ 
+		return P2DImage(&img, void_destructor<C2DFImage>());}; 
 	
 	vector<C2DFImage> references_float = ica.get_references();
 	
 	C2DImageSeries references(references_float.size()); 
-	transform(references_float.begin(), references_float.end(), references.begin(), C2DFImage2PImage()); 
-
+	transform(references_float.begin(), references_float.end(), references.begin(), 
+		  warp_C2DFmage_in_P2Dimage );
+	
 	// crop if requested
 	if (box_scale) {
 		C2DBounds crop_start; 
@@ -263,7 +260,7 @@ int do_main( int argc, char *argv[] )
 			references_float = ica2.get_references(); 
 
 			transform(references_float.begin(), references_float.end(), 
-				  references.begin(), C2DFImage2PImage()); 
+				  references.begin(), warp_C2DFmage_in_P2Dimage); 
 
 			if (!ref_filebase.empty())
 				save_references(ref_filebase, current_pass, skip_images, references); 
