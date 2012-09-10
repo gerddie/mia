@@ -113,7 +113,7 @@ std::shared_ptr<C3DImage > read_image_type(CInputFile& in_file, const C3DBounds&
 		throw runtime_error(errmsg.str());
 	}
 	if (fread(&(*image)(0,0,0), sizeof(T), image->size(),  in_file) != image->size()) {
-		throw runtime_error("Unable to read full image");
+		throw runtime_error("Not enough data for specified image size in input file.");
 	}
 
 	image->set_voxel_size(scale);
@@ -174,12 +174,6 @@ int do_main(int argc, char *argv[])
 	CInputFile in_file(in_filename);
 	if ( !in_file )
 		throw runtime_error(string("Unable to open ")+ in_filename);
-
-	if (size.size() != 3)
-		throw invalid_argument("size takes exactly 3 parameters");
-
-	if (scale.size() != 3)
-		throw invalid_argument("scale takes exactly 3 parameters");
 
 	C3DBounds bsize(size);
 	C3DFVector fscale(scale);

@@ -131,7 +131,7 @@ P2DImage read_image_type(CInputFile& in_file, const C2DBounds& size, const C2DFV
 		throw runtime_error(errmsg.str());
 	}
 	if (fread(&(*image)(0,0), sizeof(T), image->size(),  in_file) != image->size()) {
-		throw runtime_error("Unable to read full image");
+		throw runtime_error("Not enough data for specified image size in input file.");
 	}
 
 	image->set_pixel_size(scale);
