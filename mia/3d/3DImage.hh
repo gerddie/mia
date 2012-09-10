@@ -334,6 +334,63 @@ private:
 	T3DDatafield<T> m_image;
 };
 
+
+/**
+   \brief functor to convert an image with an abitrary pixel type to single floating point pixels 
+   
+   This functor provides the often used funcionality to convert a 3D image from 
+   any pixel representation to a pixel type O representation.  
+   The data is just copied. 
+   For conversion with scaling and proepry clamping you should use the convert filter 
+   provided through C3DFilterPluginHandler. 
+   \tparam O output pixel type
+   
+ */
+template <typename O>
+struct FConvert3DImageToPixeltypeO: public TFilter<T3DImage<O> > {
+
+	/**
+	   Operator to do the actual conversion. 
+	   \param image input image 
+	   \returns the image converted floating point pixel values 
+	 */
+	template <typename T>
+	T3DImage<O> operator () (const T3DImage<T> &image) const {
+		T3DImage<O> result(image.get_size(), image);
+		copy(image.begin(), image.end(), result.begin());
+		return result;
+	}
+
+	/**
+	   Operator to do redirect the base class representation through mia::filter
+	   \param image input image 
+	   \returns the image converted floating point pixel values 
+	 */
+
+	T3DImage<O> operator () (const C3DImage &image) const {
+		return filter(*this, image); 
+	}
+
+	/**
+	   Operator to do redirect the pointer representation through mia::filter
+	   \param image input image pointer 
+	   \returns the image converted floating point pixel values 
+	 */
+
+	T3DImage<O> operator () (P3DImage image) const {
+		return filter(*this, *image); 
+	}
+};
+
+/**
+   \brief short name for 3DImage to float pixel repn copy functor
+
+   Since copy-conversion to a floating pixel type image is used often 
+   we provide here a typedef for the functor.  
+*/
+typedef FConvert3DImageToPixeltypeO<float> FCopy3DImageToFloatRepn; 
+
+
 /**
    @ingroup basic 
 

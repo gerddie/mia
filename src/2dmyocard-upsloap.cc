@@ -60,15 +60,6 @@ public:
 	}
 }; 
 
-class Convert2Float {
-public: 
-	C2DFImage operator () (P2DImage image) const  {
-		return ::mia::filter(m_converter, *image); 		
-	}
-private: 
-	FConvert2DImage2float m_converter; 
-}; 
-
 void add_feature_mask(P2DImage feature_image, int id, C2DUBImage& mask) 
 {
 	const char *filters[5] ={

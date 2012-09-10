@@ -78,14 +78,6 @@ public:
 	}
 }; 
 
-class Convert2Float {
-public: 
-	Convert2Float(); 
-	C3DFImage operator () (P3DImage image) const; 
-private: 
-	C3DFilterPluginHandler::ProductPtr m_converter; 
-}; 
-
 
 C3DFullCostList create_costs(double divcurlweight, const string& imagecostbase, int idx)
 {
@@ -276,7 +268,7 @@ int do_main( int argc, char *argv[] )
 	cvmsg() << "skipping " << skip_images << " images\n"; 
 	vector<C3DFImage> series(input_images->size() - skip_images); 
 	transform(input_images->begin() + skip_images, input_images->end(), 
-		  series.begin(), Convert2Float()); 
+		  series.begin(), FCopy3DImageToFloatRepn()); 
 	
 
 	// run ICA
@@ -338,7 +330,7 @@ int do_main( int argc, char *argv[] )
 			save_references(save_reg_filename, current_pass, 0, *input_images); 
 
 		transform(input_images->begin() + skip_images, 
-			  input_images->end(), series.begin(), Convert2Float()); 
+			  input_images->end(), series.begin(), FCopy3DImageToFloatRepn()); 
 
 		
 		
@@ -375,18 +367,6 @@ int do_main( int argc, char *argv[] )
 	
 	return success ? EXIT_SUCCESS : EXIT_FAILURE;
 
-}
-
-Convert2Float::Convert2Float()
-{
-	m_converter = C3DFilterPluginHandler::instance().produce("convert:repn=float,map=copy"); 
-}
-
-inline C3DFImage Convert2Float::operator () (P3DImage image) const
-{
-	auto res = m_converter->filter(*image); 
-	
-	return dynamic_cast<C3DFImage&>(*res); 
 }
 
 

@@ -106,17 +106,6 @@ private:
 	float m_w;
 };
 
-class Convert2Float : public TFilter<C3DFImage>{
-public: 
-	C3DFImage operator () (P3DImage image) const; 
-
-	template <typename T> 
-	C3DFImage operator () (const T3DImage<T> image) const {
-		C3DFImage result(image.get_size()); 
-		copy(image.begin(), image.end(), result.begin()); 
-		return result; 
-	}
-}; 
 
 
 class C3DMyocardPeriodicRegistration {
@@ -436,8 +425,3 @@ int do_main( int argc, char *argv[] )
 
 #include <mia/internal/main.hh>
 MIA_MAIN(do_main)
-
-inline C3DFImage Convert2Float::operator () (P3DImage image) const
-{
-	return ::mia::filter(*this, *image); 
-}
