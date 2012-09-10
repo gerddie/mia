@@ -94,10 +94,11 @@ BOOST_FIXTURE_TEST_CASE( test_string_vector_option, CmdlineParserFixture )
 	}
 }
 
-BOOST_FIXTURE_TEST_CASE( test_float_vector_option, CmdlineParserFixture )
+
+BOOST_FIXTURE_TEST_CASE( test_float_vector_option_expect_two, CmdlineParserFixture )
 {
 	const char *str_value = "1.2,1.4";
-	vector<float> value;
+	vector<float> value(2);
 	PCmdOption popt(make_opt(value, "float", 's', "a float vector option"));
 	try {
 		popt->set_value(str_value);
@@ -109,6 +110,14 @@ BOOST_FIXTURE_TEST_CASE( test_float_vector_option, CmdlineParserFixture )
 	catch (invalid_argument& x) {
 		BOOST_FAIL(x.what());
 	}
+}
+
+BOOST_FIXTURE_TEST_CASE( test_float_vector_option_expect_two_failed, CmdlineParserFixture )
+{
+	const char *str_value = "1.2,1.4,2.3";
+	vector<float> value(2);
+	PCmdOption popt(make_opt(value, "float", 's', "a float vector option"));
+	BOOST_CHECK_THROW(popt->set_value(str_value), invalid_argument); 
 }
 
 BOOST_FIXTURE_TEST_CASE( test_string_option, CmdlineParserFixture )
@@ -126,6 +135,7 @@ BOOST_FIXTURE_TEST_CASE( test_string_option, CmdlineParserFixture )
 		BOOST_FAIL(x.what());
 	}
 }
+
 
 BOOST_FIXTURE_TEST_CASE( test_float_option, CmdlineParserFixture )
 {

@@ -409,16 +409,29 @@ struct __dispatch_opt< std::vector<T> > {
         }
         static bool  apply(const char *svalue, std::vector<T>& value) {
 		std::string h(svalue);
+		unsigned int n = 1; 
 		for(std::string::iterator hb = h.begin(); hb != h.end(); ++hb)
-			if (*hb == ',')
+			if (*hb == ',') {
 				*hb = ' ';
+				++n; 
+			}
+		
 
+		if (!value.empty()) {
+			if (n > value.size()) {
+				throw create_exception<std::invalid_argument>("Expect only ", value.size(),  
+									      " coma separated values, but '", 
+									      svalue, "' provides ", n);
+			}
+		}else{
+			value.resize(n); 
+		}
+		
                 std::istringstream sval(h);
-
+		auto i =  value.begin(); 
 		while (!sval.eof()) {
-			T s;
-			sval >> s;
-			value.push_back(s);
+			sval >> *i;
+			++i; 
 		}
                 return sval.eof();
         }
