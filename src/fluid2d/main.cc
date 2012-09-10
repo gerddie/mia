@@ -58,9 +58,9 @@ inline void register_level(const C2DImage& ModelScale, const C2DImage& RefScale,
 			   float regrid_thresh,float epsilon, int level, bool elast, float lambda, float mu,
 			   C2DInterpolatorFactory& ipfactory)
 {
-	FConvert2DImage2float converter;
-	C2DFImage Model = ::mia::filter(converter, ModelScale);
-	C2DFImage  Ref   = ::mia::filter(converter, RefScale);
+	FCopy2DImageToFloatRepn converter;
+	C2DFImage Model = converter(ModelScale);
+	C2DFImage  Ref   = converter(RefScale);
 
 	if (elast) {
 		cerr << "elastic registration" << endl;

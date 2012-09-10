@@ -28,16 +28,6 @@ using namespace ::boost;
 using namespace ::boost::unit_test;
 using namespace mask_2dimage_filter;
 
-
-template <typename T> 
-struct void_destructor {
-	/// skip deleting the pointer 
-	virtual void operator () (T *) {
-	}
-}; 
-
-
-
 BOOST_AUTO_TEST_CASE(test_mask_2d_additional_is_mask)
 {
 

@@ -108,13 +108,6 @@ private:
 	float m_w;
 };
 
-class Convert2Float {
-public: 
-	C2DFImage operator () (P2DImage image) const; 
-private: 
-	FConvert2DImage2float m_converter; 
-}; 
-
 
 class C2DMyocardPeriodicRegistration {
 public: 
@@ -429,11 +422,6 @@ int do_main( int argc, char *argv[] )
 		outfile << outset->write_to_string_formatted();
 	
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
-}
-
-inline C2DFImage Convert2Float::operator () (P2DImage image) const
-{
-	return ::mia::filter(m_converter, *image); 
 }
 
 #include <mia/internal/main.hh>

@@ -42,14 +42,6 @@ using namespace mia;
 
 namespace bfs=boost::filesystem; 
 
-
-class Convert2Float {
-public: 
-	C2DFImage operator () (P2DImage image) const; 
-private: 
-	FConvert2DImage2float m_converter; 
-}; 
-
 const SProgramDescription g_description = {
         {pdi_group, "Registration of series of 2D images"}, 
 	{pdi_short, "Run a registration of a series of 2D images."}, 
@@ -158,7 +150,7 @@ int do_main( int argc, char *argv[] )
 	cvmsg() << "skipping " << skip_images << " images\n"; 
 	vector<C2DFImage> series(input_images.size() - skip_images); 
 	transform(input_images.begin() + skip_images, input_images.end(), 
-		  series.begin(), Convert2Float()); 
+		  series.begin(), FCopy2DImageToFloatRepn()); 
 	
 	
 	// run ICA
@@ -185,14 +177,12 @@ int do_main( int argc, char *argv[] )
 		input_set.set_LV_peak(ica.get_LV_peak_time() + skip_images);
 
 
-	auto warp_C2DFmage_in_P2Dimage = [](C2DFImage& img){ 
-		return P2DImage(&img, void_destructor<C2DFImage>());}; 
-	
+
 	vector<C2DFImage> references_float = ica.get_references();
 	
 	C2DImageSeries references(references_float.size()); 
 	transform(references_float.begin(), references_float.end(), references.begin(), 
-		  warp_C2DFmage_in_P2Dimage );
+		  FWrapStaticDataInSharedPointer<C2DImage>() );
 	
 	// crop if requested
 	if (box_scale) {
@@ -253,14 +243,14 @@ int do_main( int argc, char *argv[] )
 			ica2.set_max_ica_iterations(max_ica_iterations); 
 	
 		transform(input_images.begin() + skip_images, 
-			  input_images.end(), series.begin(), Convert2Float()); 
+			  input_images.end(), series.begin(), FCopy2DImageToFloatRepn()); 
 		if (!ica2.run(series))
 			ica2.set_approach(FICA_APPROACH_SYMM); 
 		if (ica2.run(series) ) {
 			references_float = ica2.get_references(); 
 
 			transform(references_float.begin(), references_float.end(), 
-				  references.begin(), warp_C2DFmage_in_P2Dimage); 
+				  references.begin(), FWrapStaticDataInSharedPointer<C2DImage>()); 
 
 			if (!ref_filebase.empty())
 				save_references(ref_filebase, current_pass, skip_images, references); 
@@ -294,13 +284,6 @@ int do_main( int argc, char *argv[] )
 	
 	return outfile.good() ? EXIT_SUCCESS : EXIT_FAILURE;
 
-}
-
-
-
-inline C2DFImage Convert2Float::operator () (P2DImage image) const
-{
-	return ::mia::filter(m_converter, *image); 
 }
 
 

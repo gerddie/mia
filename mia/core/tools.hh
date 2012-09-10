@@ -25,6 +25,7 @@
 #include <sstream>
 #include <string>
 #include <boost/call_traits.hpp>
+#include <memory>
 #include <mia/core/defines.hh>
 #include <mia/core/errormacro.hh>
 
@@ -42,6 +43,25 @@ struct void_destructor {
 	virtual void operator () (T *) {
 	}
 }; 
+
+
+/**
+   \brief functor to wrap statically allocated data a shared pointer representation 
+
+   This functor wraps a statically allocated data into a std::shared_ptr. 
+   The data must not be constant and it well not be freed when the shared_ptr is destoyed. 
+   The functor is designed to be usable by the std::transform function. 
+
+   \tparam Data the data type to be wrapped into the shared pointer; 
+*/
+template <typename Data>
+class FWrapStaticDataInSharedPointer {
+public: 
+	typedef std::shared_ptr<Data> PData;
+	PData operator () (Data& d) const {
+		return PData(&d, void_destructor<Data>());
+	}
+};
 
 
 /**

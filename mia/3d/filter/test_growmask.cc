@@ -31,14 +31,6 @@ using namespace growmask_3dimage_filter;
 
 C3DShapePluginHandlerTestPath shape_path; 
 
-template <typename T> 
-struct void_destructor {
-	/// skip deleting the pointer 
-	virtual void operator () (T *) {
-	}
-}; 
-
-
 const size_t nx = 5;
 const size_t ny = 4;
 const size_t nz = 3;

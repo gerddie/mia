@@ -26,6 +26,7 @@
 #include <mia/core/pixeltype.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
+#include <mia/core/tools.hh>
 #include <mia/core/type_traits.hh>
 #include <mia/2d/2DVectorfield.hh>
 
@@ -353,7 +354,19 @@ inline bool operator != (const C2DImage& a, const C2DImage& b)
  */
 EXPORT_2D C2DFVectorfield get_gradient(const C2DImage& image);
 
+/**
+   \brief functor to copy an image into paointer representation 
 
+   This functor copies a 2D image into a P2DImage representation 
+   that is used in filters and cost functions. 
+*/
+class CopyC2DImageToP2DImage {
+public: 
+	template <typename T>
+	P2DImage operator () (const T2DImage<T>& image) const {
+		return P2DImage(new T2DImage<T>(image)); 
+	}
+};
 
 /// \brief 2D image with binary values 
 typedef T2DImage<bool> C2DBitImage;
@@ -458,10 +471,36 @@ struct FConvert2DImageToPixeltypeO: public TFilter<T2DImage<O> > {
 		copy(image.begin(), image.end(), result.begin());
 		return result;
 	}
+
+	/**
+	   Operator to do redirect the base class representation through mia::filter
+	   \param image input image 
+	   \returns the image converted floating point pixel values 
+	 */
+
+	T2DImage<O> operator () (const C2DImage &image) const {
+		return filter(*this, image); 
+	}
+
+	/**
+	   Operator to do redirect the pointer representation through mia::filter
+	   \param image input image pointer 
+	   \returns the image converted floating point pixel values 
+	 */
+
+	T2DImage<O> operator () (P2DImage image) const {
+		return filter(*this, *image); 
+	}
 };
 
 
-typedef FConvert2DImageToPixeltypeO<float> FConvert2DImage2float; 
+/**
+   \brief short name for 2DImage to float pixel repn copy functor
+
+   Since copy-conversion to a floating pixel type image is used often 
+   we provide here a typedef for the functor.  
+*/
+typedef FConvert2DImageToPixeltypeO<float> FCopy2DImageToFloatRepn; 
 
 /// typedef for the C2DFVector to std::string translator 
 typedef TTranslator<C2DFVector> C2DFVectorTranslator;

@@ -62,20 +62,6 @@ const SProgramDescription g_description = {
 	{pdi_example_code, "-i segment.set -r ref -o ref -k 2 -C 5"}
 }; 
 
-class C2DFImage2PImage {
-public: 
-	P2DImage operator () (const C2DFImage& image) const {
-		return P2DImage(new C2DFImage(image)); 
-	}
-}; 
-
-class Convert2Float {
-public: 
-	C2DFImage operator () (P2DImage image) const; 
-private: 
-	FConvert2DImage2float m_converter; 
-}; 
-
 int do_main( int argc, char *argv[] )
 {
 	// IO parameters 
@@ -130,7 +116,7 @@ int do_main( int argc, char *argv[] )
 	
 	vector<C2DFImage> series(input_images.size() - skip_images); 
 	transform(input_images.begin() + skip_images, input_images.end(), 
-		  series.begin(), Convert2Float()); 
+		  series.begin(), FCopy2DImageToFloatRepn()); 
 	
 
 	// run ICA
@@ -150,7 +136,7 @@ int do_main( int argc, char *argv[] )
 	
 	C2DImageSeries references(references_float.size() + skip_images); 
 	transform(references_float.begin(), references_float.end(), 
-		  references.begin() + skip_images, C2DFImage2PImage()); 
+		  references.begin() + skip_images, FWrapStaticDataInSharedPointer<C2DImage>()); 
 	copy(input_images.begin(), input_images.begin() + skip_images, references.begin()); 
 
 	// crop if requested
@@ -217,10 +203,6 @@ int do_main( int argc, char *argv[] )
 
 };
 
-inline C2DFImage Convert2Float::operator () (P2DImage image) const
-{
-	return ::mia::filter(m_converter, *image); 
-}
 
 #include <mia/internal/main.hh>
 MIA_MAIN(do_main); 

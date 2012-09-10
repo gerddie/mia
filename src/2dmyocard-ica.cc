@@ -410,7 +410,7 @@ int do_main( int argc, char *argv[] )
 
 	// load images
 	vector<C2DFImage> series;
-	FConvert2DImage2float converter;
+	FCopy2DImageToFloatRepn converter;
 	for (size_t i = start_filenum; i < end_filenum; ++i) {
 		string src_name = create_filename(src_basename.c_str(), i);
 		P2DImage image = load_image<P2DImage>(src_name);
@@ -418,7 +418,7 @@ int do_main( int argc, char *argv[] )
 			throw create_exception<runtime_error>( "image ", src_name, " not found");
 
 		cvdebug() << "read '" << src_name << "\n";
-		series.push_back(::mia::filter(converter, *image));
+		series.push_back(converter(*image));
 	}
 
 

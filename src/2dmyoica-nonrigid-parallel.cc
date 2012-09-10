@@ -64,20 +64,6 @@ const SProgramDescription g_description = {
 	{pdi_example_code, "  -i segment.set -o registered.set -k 2"}
 }; 
 
-class C2DFImage2PImage {
-public: 
-	P2DImage operator () (const C2DFImage& image) const {
-		return P2DImage(new C2DFImage(image)); 
-	}
-}; 
-
-class Convert2Float {
-public: 
-	C2DFImage operator () (P2DImage image) const; 
-private: 
-	FConvert2DImage2float m_converter; 
-}; 
-
 
 C2DFullCostList create_costs(double divcurlweight, const string& imagecostbase, int idx)
 {
@@ -327,7 +313,7 @@ int do_main( int argc, char *argv[] )
 	cvmsg() << "skipping " << skip_images << " images\n"; 
 	vector<C2DFImage> series(input_images.size() - skip_images); 
 	transform(input_images.begin() + skip_images, input_images.end(), 
-		  series.begin(), Convert2Float()); 
+		  series.begin(), FCopy2DImageToFloatRepn()); 
 	
 
 	// run ICA
@@ -350,7 +336,8 @@ int do_main( int argc, char *argv[] )
 	vector<C2DFImage> references_float = ica->get_references(); 
 	
 	C2DImageSeries references(references_float.size()); 
-	transform(references_float.begin(), references_float.end(), references.begin(), C2DFImage2PImage()); 
+	transform(references_float.begin(), references_float.end(), references.begin(), 
+		  FWrapStaticDataInSharedPointer<C2DImage>()); 
 
 	// crop if requested
 	if (box_scale) {
@@ -400,7 +387,7 @@ int do_main( int argc, char *argv[] )
 			ica2.set_max_ica_iterations(max_ica_iterations); 
 	
 		transform(input_set.get_images().begin() + skip_images, 
-			  input_set.get_images().end(), series.begin(), Convert2Float()); 
+			  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
 
 		if (!ica2.run(series)) {
 			ica2.set_approach(FICA_APPROACH_SYMM); 
@@ -414,7 +401,7 @@ int do_main( int argc, char *argv[] )
 			c_rate /= c_rate_divider; 
 		references_float = ica2.get_references(); 
 		transform(references_float.begin(), references_float.end(), 
-			  references.begin(), C2DFImage2PImage()); 
+			  references.begin(), FWrapStaticDataInSharedPointer<C2DImage>()); 
 		do_continue =  (!pass || current_pass < pass) && ica2.has_movement(); 
 		
 		// run one more pass if the limit is not reached and no movement identified
@@ -428,7 +415,7 @@ int do_main( int argc, char *argv[] )
 		ica_final.set_max_ica_iterations(max_ica_iterations); 
 	
 	transform(input_set.get_images().begin() + skip_images, 
-		  input_set.get_images().end(), series.begin(), Convert2Float()); 
+		  input_set.get_images().end(), series.begin(), FCopy2DImageToFloatRepn()); 
 	
 	if (!ica_final.run(series)) {
 			ica_final.set_approach(FICA_APPROACH_SYMM); 
@@ -462,10 +449,6 @@ int do_main( int argc, char *argv[] )
 
 
 
-inline C2DFImage Convert2Float::operator () (P2DImage image) const
-{
-	return ::mia::filter(m_converter, *image); 
-}
 
 #include <mia/internal/main.hh>
 MIA_MAIN(do_main); 

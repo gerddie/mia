@@ -58,23 +58,6 @@ const SProgramDescription g_description = {
 
 namespace bfs=boost::filesystem; 
 
-class C2DFImage2PImage {
-public: 
-	P2DImage operator () (C2DFImage& image) const {
-		return P2DImage(&image, void_destructor<C2DFImage>()); 
-	}
-}; 
-
-class Convert2Float {
-public: 
-	C2DFImage operator () (P2DImage image) const  {
-		return ::mia::filter(m_converter, *image); 		
-	}
-private: 
-	FConvert2DImage2float m_converter; 
-}; 
-
-
 class CEvaluateSeriesCorrelationToMask: public TFilter<bool> {
 public: 
 	CEvaluateSeriesCorrelationToMask(const C2DBitImage& mask, size_t len); 
@@ -499,7 +482,7 @@ int do_main( int argc, char *argv[] )
 	
 	vector<C2DFImage> series(input_images.size() - skip_images); 
 	transform(input_images.begin() + skip_images, input_images.end(), 
-		  series.begin(), Convert2Float()); 
+		  series.begin(), FCopy2DImageToFloatRepn()); 
 	
 	int rv_idx = -1; 
 	int lv_idx = -1; 
