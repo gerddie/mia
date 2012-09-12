@@ -41,7 +41,7 @@ public:
 private: 
 	virtual double do_value(const Data& a, const Data& b) const; 
 	virtual double do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const; 
-
+	virtual void post_set_reference(const Data& ref); 
 	mutable mia::CSplineParzenMI m_parzen_mi; 
 
 };
@@ -118,6 +118,11 @@ double TMIImageCost<T>::do_evaluate_force(const Data& a, const Data& b, float sc
 	return filter(ef, a, b); 
 }
 
+template <typename T> 
+void TMIImageCost<T>::post_set_reference(const Data& ref)
+{
+	m_parzen_mi.reset(); 
+}
 
 /**
    This is the plug-in declaration - the actual plugin needs to define the 

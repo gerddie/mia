@@ -424,7 +424,7 @@ typename THistogram<Feeder>::range_type
 THistogram<Feeder>::get_reduced_range(double remove) const
 {
 	assert(remove >= 0.0 && remove < 49.0); 
-	long remove_count = static_cast<long>(remove * m_n / 100); 
+	long remove_count = static_cast<long>(remove * m_n / 100.0); 
 
 	range_type result(m_feeder.value(0), m_feeder.value(m_histogram.size() - 1)); 
 
@@ -437,11 +437,11 @@ THistogram<Feeder>::get_reduced_range(double remove) const
 		
 		result.first = m_feeder.value(low_end - 1); 
 					    
-		long  high_end = m_histogram.size() - 1;
+		long  high_end = m_histogram.size();
 		long counted_pixels_high = 0; 
-		while (counted_pixels_high < remove_count && high_end >=0)
-			counted_pixels_high += m_histogram[high_end--];
-	
+		while (counted_pixels_high < remove_count && high_end > 0)
+			counted_pixels_high += m_histogram[--high_end];
+		cvdebug() << " int range = " <<  low_end - 1 << ", " << high_end << " removing " << remove_count << " pixels at each end\n";
 		result.second = m_feeder.value(high_end);
 	}
 	return result; 

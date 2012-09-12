@@ -54,8 +54,17 @@ CSplineParzenMI::CSplineParzenMI(size_t rbins, PSplineKernel rkernel,
 	TRACE_FUNCTION; 
 	assert(m_ref_bins > 0); 
 	assert(m_mov_bins > 0); 
-        
+        reset(); 
 }	
+
+void CSplineParzenMI::reset()
+{
+	// invalidate ranges 
+	m_ref_max = -1.0; 
+	m_ref_min =  1.0; 
+	m_mov_max = -1.0; 
+	m_mov_min =  1.0; 
+}
 
 void CSplineParzenMI::evaluate_histograms()
 {

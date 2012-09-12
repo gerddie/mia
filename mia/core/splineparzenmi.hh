@@ -88,6 +88,11 @@ public:
 	   @returns gradient 
 	 */
 	double get_gradient(double moving, double reference) const; 
+
+	/**
+	   reset the ranges to force a new evaluation
+	*/
+	void reset(); 
 private: 
        
 	double scale_moving(double x) const; 
@@ -137,25 +142,29 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
 {
 	std::fill(m_joined_histogram.begin(), m_joined_histogram.end(), 0.0); 
 
-        auto mov_range = get_reduced_range(mov_begin, mov_end); 
-        if (mov_range.second  ==  mov_range.first) 
-                throw std::invalid_argument("relevant moving image intensity range is zero"); 
-        
-        m_mov_min = mov_range.first; 
-        m_mov_max = mov_range.second;
+	if (m_mov_max < m_mov_min) {
+		// (re)evaluate the ranges 
+		auto mov_range = get_reduced_range(mov_begin, mov_end); 
+		if (mov_range.second  ==  mov_range.first) 
+			throw std::invalid_argument("relevant moving image intensity range is zero"); 
+		m_mov_min = mov_range.first; 
+		m_mov_max = mov_range.second;
+		m_mov_scale = (m_mov_bins - 1) / (m_mov_max - m_mov_min); 
+		cvdebug() << "Mov Range = [" << m_mov_min << ", " << m_mov_max << "]\n"; 
+	}
 
-        auto ref_range = get_reduced_range(ref_begin, ref_end); 
-        if (ref_range.second  ==  ref_range.first) 
-                throw std::invalid_argument("relevant reference image intensity range is zero"); 
-        
-        m_ref_min = ref_range.first; 
-        m_ref_max = ref_range.second; 
 
-	m_ref_scale = (m_ref_bins - 1) / (m_ref_max - m_ref_min); 
-	m_mov_scale = (m_mov_bins - 1) / (m_mov_max - m_mov_min); 
+	if (m_ref_max < m_ref_min) {
+		auto ref_range = get_reduced_range(ref_begin, ref_end); 
+		if (ref_range.second  ==  ref_range.first) 
+			throw std::invalid_argument("relevant reference image intensity range is zero"); 
+		
+		m_ref_min = ref_range.first; 
+		m_ref_max = ref_range.second; 
+		m_ref_scale = (m_ref_bins - 1) / (m_ref_max - m_ref_min); 
+		cvdebug() << "Ref Range = [" << m_ref_min << ", " << m_ref_max << "]\n"; 
+	}
 
-        cvdebug() << "Mov Range = [" << m_mov_min << ", " << m_mov_max << "]\n"; 
-        cvdebug() << "Ref Range = [" << m_ref_min << ", " << m_ref_max << "]\n"; 
        
 	std::vector<double> mweights(m_mov_kernel->size()); 
         std::vector<double> rweights(m_ref_kernel->size()); 
@@ -200,6 +209,9 @@ std::pair<double,double> CSplineParzenMI::get_reduced_range(Iterator begin, Iter
 	THistogram<Feeder> h(Feeder(*range.first, *range.second, 4096));
 	h.push_range(begin, end); 
 	auto reduced_range = h.get_reduced_range(m_cut_histogram); 
+	cvinfo() << "CSplineParzenMI: reduce range by "<< m_cut_histogram
+		<<"% from [" << *range.first << ", " << *range.second 
+		<< "] to [" << reduced_range.first << ", " << reduced_range.second << "\n"; 
 	return std::pair<double,double>(reduced_range.first, reduced_range.second); 
        
 }
