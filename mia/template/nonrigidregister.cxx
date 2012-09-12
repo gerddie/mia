@@ -273,9 +273,7 @@ TNonrigidRegisterImpl<dim>::run(PImage src, PImage ref) const
 		// run the registration at refined splines 
 
 
-		cvwarn() << "Cost value before refine:" << m_costs.cost_value(*transform) << "\n"; 
 		if (transform->refine()) {
-			cvwarn() << "Cost value after refine:" << m_costs.cost_value(*transform) << "\n"; 
 			gp->reset_counters(); 
 			m_minimizer->set_problem(gp);
 			x = transform->get_parameters();

@@ -48,9 +48,11 @@ public:
 	   @param rkernel B-spline kernel for filling and evaluating reference intensities 
 	   @param mbins number of bins in moving intensity range
 	   @param mkernel B-spline kernel for filling and evaluating moving intensities
+	   @param cut_high the percentage of the histogram to clamp at the lower and upper 
+	   end in order to eliminate outliers [0.0, 0.1] 
 	*/
 	CSplineParzenMI(size_t rbins, PSplineKernel rkernel,
-			size_t mbins, PSplineKernel mkernel); 
+			size_t mbins, PSplineKernel mkernel, double cut_high); 
 	
 
 	/**
@@ -109,13 +111,16 @@ private:
         double m_mov_max;
 	double m_mov_min;
         double m_mov_scale; 
-	
+
+		
 	std::vector<double> m_joined_histogram; 
 	std::vector<double> m_ref_histogram; 
 	std::vector<double> m_mov_histogram; 
 
 	std::vector<std::vector<double> > m_pdfLogCache; 
+	double  m_cut_high; 
 	double m_nscale; 
+
 };   
 
 template <typename MovIterator, typename RefIterator>
@@ -134,6 +139,8 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
         
         m_mov_min = *mov_range.first; 
         m_mov_max = *mov_range.second;
+
+
         
         auto ref_range = std::minmax_element(ref_begin, ref_end); 
         if (*ref_range.second  ==  *ref_range.first) 

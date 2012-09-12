@@ -35,7 +35,7 @@ using std::vector;
 using std::invalid_argument; 
 
 CSplineParzenMI::CSplineParzenMI(size_t rbins, PSplineKernel rkernel,
-				 size_t mbins, PSplineKernel mkernel):
+				 size_t mbins, PSplineKernel mkernel, double cut_high):
 
 	m_ref_bins(rbins), 
 	m_ref_kernel(rkernel), 
@@ -48,7 +48,8 @@ CSplineParzenMI::CSplineParzenMI(size_t rbins, PSplineKernel rkernel,
 	m_joined_histogram(m_ref_real_bins * m_mov_real_bins, 0.0), 
 	m_ref_histogram(m_ref_real_bins, 0.0),
 	m_mov_histogram(m_mov_real_bins, 0.0),
-	m_pdfLogCache(m_ref_real_bins,vector<double>(m_mov_real_bins, 0.0))
+	m_pdfLogCache(m_ref_real_bins,vector<double>(m_mov_real_bins, 0.0)), 
+	m_cut_high(cut_high)
 {
 	TRACE_FUNCTION; 
 	assert(m_ref_bins > 0); 
