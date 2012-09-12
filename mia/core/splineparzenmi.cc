@@ -35,7 +35,7 @@ using std::vector;
 using std::invalid_argument; 
 
 CSplineParzenMI::CSplineParzenMI(size_t rbins, PSplineKernel rkernel,
-				 size_t mbins, PSplineKernel mkernel, double cut_high):
+				 size_t mbins, PSplineKernel mkernel, double cut_histogram):
 
 	m_ref_bins(rbins), 
 	m_ref_kernel(rkernel), 
@@ -49,7 +49,7 @@ CSplineParzenMI::CSplineParzenMI(size_t rbins, PSplineKernel rkernel,
 	m_ref_histogram(m_ref_real_bins, 0.0),
 	m_mov_histogram(m_mov_real_bins, 0.0),
 	m_pdfLogCache(m_ref_real_bins,vector<double>(m_mov_real_bins, 0.0)), 
-	m_cut_high(cut_high)
+	m_cut_histogram(cut_histogram)
 {
 	TRACE_FUNCTION; 
 	assert(m_ref_bins > 0); 
@@ -98,8 +98,6 @@ void CSplineParzenMI::evaluate_log_cache()
 
 double CSplineParzenMI::scale_moving(double x) const 
 {
-        // technically, this clamping of values should not be necessary, 
-        // 
         if (x > m_mov_max) 
                 x = m_mov_max; 
         else if (x < m_mov_min)
@@ -109,7 +107,6 @@ double CSplineParzenMI::scale_moving(double x) const
 
 double CSplineParzenMI::scale_reference(double x) const 
 {
-
         if (x > m_ref_max) 
                 x = m_ref_max; 
         else if (x < m_ref_min)

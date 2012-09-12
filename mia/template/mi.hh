@@ -37,7 +37,7 @@ public:
 	typedef typename T::Data Data; 
 	typedef typename T::Force Force; 
 
-	TMIImageCost(size_t fbins, mia::PSplineKernel fkernel, size_t rbins, mia::PSplineKernel rkernel); 
+	TMIImageCost(size_t fbins, mia::PSplineKernel fkernel, size_t rbins, mia::PSplineKernel rkernel, double cut); 
 private: 
 	virtual double do_value(const Data& a, const Data& b) const; 
 	virtual double do_evaluate_force(const Data& a, const Data& b, float scale, Force& force) const; 
@@ -64,8 +64,8 @@ struct FEvalMI : public mia::TFilter<double> {
 
 
 template <typename T> 
-TMIImageCost<T>::TMIImageCost(size_t rbins, mia::PSplineKernel rkernel, size_t mbins, mia::PSplineKernel mkernel):
-	m_parzen_mi(rbins, rkernel, mbins,  mkernel)
+TMIImageCost<T>::TMIImageCost(size_t rbins, mia::PSplineKernel rkernel, size_t mbins, mia::PSplineKernel mkernel, double cut):
+	m_parzen_mi(rbins, rkernel, mbins,  mkernel, cut)
 	
 {
 	this->add(::mia::property_gradient);
@@ -133,8 +133,9 @@ private:
 	const std::string do_get_descr() const; 
 	unsigned int m_rbins;  
 	unsigned int m_mbins;  
-	std::string m_mkernel; 
-	std::string m_rkernel;
+	mia::PSplineKernel m_mkernel; 
+	mia::PSplineKernel m_rkernel;
+	float m_histogram_cut; 
 };
 
 
@@ -146,8 +147,7 @@ TMIImageCostPlugin<CP,C>::TMIImageCostPlugin():
 	CP("mi"), 
 	m_rbins(64), 
 	m_mbins(64), 
-	m_mkernel("bspline:d=3"), 
-	m_rkernel("bspline:d=0")
+	m_histogram_cut(5)
 {
 	TRACE("TMIImageCostPlugin<CP,C>::TMIImageCostPlugin()"); 
 	this->add_property(::mia::property_gradient); 
@@ -157,11 +157,15 @@ TMIImageCostPlugin<CP,C>::TMIImageCostPlugin():
 	this->add_parameter("mbins", new mia::CUIntParameter(m_mbins, 1, 256, false, 
 				     "Number of histogram bins used for the moving image")); 
 	
-	this->add_parameter("rkernel", new mia::CStringParameter(m_rkernel, false, 
-				     "Spline kernel for reference image parzen hinstogram")); 
+	this->add_parameter("rkernel", mia::make_param(m_rkernel, "bspline:d=0", false, 
+						  "Spline kernel for reference image parzen hinstogram")); 
+	
+	this->add_parameter("mkernel", mia::make_param(m_mkernel, "bspline:d=3", false, 
+						  "Spline kernel for moving image parzen hinstogram"));  
 
-	this->add_parameter("mkernel", new mia::CStringParameter(m_mkernel, false, 
-				     "Spline kernel for moving image parzen hinstogram")); 
+	this->add_parameter("cut", new mia::CFloatParameter(m_histogram_cut, 0.0f, 40.0f, false, 
+							    "Percentage of pixels to cut at high and low "
+							    "intensities to remove outliers")); 
 }
 
 /**
@@ -170,9 +174,7 @@ TMIImageCostPlugin<CP,C>::TMIImageCostPlugin():
 template <typename CP, typename C> 
 C *TMIImageCostPlugin<CP,C>::do_create() const
 {
-	auto mkernel = mia::produce_spline_kernel(m_mkernel); 
-	auto rkernel = mia::produce_spline_kernel(m_rkernel); 
-	return new TMIImageCost<C>(m_rbins, rkernel, m_mbins,  mkernel); 
+	return new TMIImageCost<C>(m_rbins, m_rkernel, m_mbins,  m_mkernel, m_histogram_cut); 
 }
 
 template <typename CP, typename C> 

@@ -140,5 +140,5 @@ MIFixture::MIFixture():
 		ig->y = grady[i];
 	}
 	cost.reset(new 	C2DMIImageCost(8, produce_spline_kernel("bspline:d=0"), 
-				       8, produce_spline_kernel("bspline:d=3"))); 
+				       8, produce_spline_kernel("bspline:d=3"), 0)); 
 }

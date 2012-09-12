@@ -24,6 +24,7 @@
 #include <boost/concept/requires.hpp>
 #include <boost/concept_check.hpp>
 #include <mia/core/splinekernel.hh>
+#include <mia/core/histogram.hh>
 
 NS_MIA_BEGIN
 
@@ -48,11 +49,11 @@ public:
 	   @param rkernel B-spline kernel for filling and evaluating reference intensities 
 	   @param mbins number of bins in moving intensity range
 	   @param mkernel B-spline kernel for filling and evaluating moving intensities
-	   @param cut_high the percentage of the histogram to clamp at the lower and upper 
-	   end in order to eliminate outliers [0.0, 0.1] 
+	   @param cut_histogram the percentage of the histogram to clamp at the lower and upper 
+	   end in order to eliminate outliers [0, 40] 
 	*/
 	CSplineParzenMI(size_t rbins, PSplineKernel rkernel,
-			size_t mbins, PSplineKernel mkernel, double cut_high); 
+			size_t mbins, PSplineKernel mkernel, double cut_histogram); 
 	
 
 	/**
@@ -118,9 +119,12 @@ private:
 	std::vector<double> m_mov_histogram; 
 
 	std::vector<std::vector<double> > m_pdfLogCache; 
-	double  m_cut_high; 
+	double  m_cut_histogram; 
 	double m_nscale; 
 
+	
+	template <typename Iterator>
+	std::pair<double,double> get_reduced_range(Iterator begin, Iterator end)const; 
 };   
 
 template <typename MovIterator, typename RefIterator>
@@ -133,21 +137,19 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
 {
 	std::fill(m_joined_histogram.begin(), m_joined_histogram.end(), 0.0); 
 
-        auto mov_range = std::minmax_element(mov_begin, mov_end); 
-        if (*mov_range.second  ==  *mov_range.first) 
-                throw std::invalid_argument("Moving image intensity range is zero"); 
+        auto mov_range = get_reduced_range(mov_begin, mov_end); 
+        if (mov_range.second  ==  mov_range.first) 
+                throw std::invalid_argument("relevant moving image intensity range is zero"); 
         
-        m_mov_min = *mov_range.first; 
-        m_mov_max = *mov_range.second;
+        m_mov_min = mov_range.first; 
+        m_mov_max = mov_range.second;
 
-
+        auto ref_range = get_reduced_range(ref_begin, ref_end); 
+        if (ref_range.second  ==  ref_range.first) 
+                throw std::invalid_argument("relevant reference image intensity range is zero"); 
         
-        auto ref_range = std::minmax_element(ref_begin, ref_end); 
-        if (*ref_range.second  ==  *ref_range.first) 
-                throw std::invalid_argument("Reference image intensity range is zero"); 
-        
-        m_ref_min = *ref_range.first; 
-        m_ref_max = *ref_range.second; 
+        m_ref_min = ref_range.first; 
+        m_ref_max = ref_range.second; 
 
 	m_ref_scale = (m_ref_bins - 1) / (m_ref_max - m_ref_min); 
 	m_mov_scale = (m_mov_bins - 1) / (m_mov_max - m_mov_min); 
@@ -190,6 +192,17 @@ BOOST_CONCEPT_REQUIRES( ((::boost::ForwardIterator<MovIterator>))
 	evaluate_log_cache(); 
 }
 
+template <typename Iterator>
+std::pair<double,double> CSplineParzenMI::get_reduced_range(Iterator begin, Iterator end)const
+{
+        auto range = std::minmax_element(begin, end); 	
+	typedef THistogramFeeder<typename Iterator::value_type> Feeder; 
+	THistogram<Feeder> h(Feeder(*range.first, *range.second, 4096));
+	h.push_range(begin, end); 
+	auto reduced_range = h.get_reduced_range(m_cut_histogram); 
+	return std::pair<double,double>(reduced_range.first, reduced_range.second); 
+       
+}
 
 NS_MIA_END
 #endif

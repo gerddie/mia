@@ -161,6 +161,7 @@ BOOST_AUTO_TEST_CASE( test_histogram_cut_5)
 	const size_t nsamples = 100;
 
 	THistogram<THistogramFeeder<double> > h(THistogramFeeder<double>(1,100,100));
+
 	for (size_t i = 0; i < nsamples; ++i)
 		h.push(i+1);
 
