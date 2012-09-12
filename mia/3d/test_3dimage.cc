@@ -112,45 +112,62 @@ static void check_gradient()
 		2, 5, 6, 3, /**/ 4, 1, 2, 3, /**/ 6, 4, 4, 1, /**/ 1, 5, 3, 3,
 	};
 
-	const C3DFVector vf[8] = {
-		C3DFVector(-1.0f, 2.5f,-1.5f), C3DFVector(-0.5f, 2.0f, 0.0f), 
-		C3DFVector(2.5f, 0.0f, 0.5f),  C3DFVector(-1.5f, 0.5f, 2.0f),
-		C3DFVector( 2.5f, 0.5f,-1.0f), C3DFVector( 0.5f, 2.0f, 0.5f), 
-		C3DFVector(1.5f, 0.5f,-2.0f), C3DFVector( 2.0f,-1.0f,-1.0f)
+	const C3DFVector vf[64] = {
+
+		C3DFVector(0.0f, 0.0f, 0.0f), C3DFVector( 1.0f, 0.0f, 0.0f), C3DFVector( 1.0f, 0.0f, 0.0f), C3DFVector(0.0f, 0.0f, 0.0f),
+		C3DFVector(0.0f, 2.0f, 0.0f), C3DFVector( 1.5f, 1.0f, 0.0f), C3DFVector( 1.5f, 0.0f, 0.0f), C3DFVector(0.0f,-1.0f, 0.0f),
+		C3DFVector(0.0f,-2.0f, 0.0f), C3DFVector(-1.0f, 0.5f, 0.0f), C3DFVector(-1.0f, 0.5f, 0.0f), C3DFVector(0.0f, 0.0f, 0.0f),
+		C3DFVector(0.0f, 0.0f, 0.0f), C3DFVector( 4.0f, 0.0f, 0.0f), C3DFVector( 1.0f, 0.0f, 0.0f), C3DFVector(0.0f, 0.0f, 0.0f),
+
+		C3DFVector(0.0f, 0.0f, 2.0f), C3DFVector( 0.0f, 0.0f, 1.0f), C3DFVector(-0.5f, 0.0f, 0.0f), C3DFVector(0.0f, 0.0f,-1.0f),
+		C3DFVector(0.0f,-0.5f,-1.0f), C3DFVector(-1.0f, 2.5f,-1.5f), C3DFVector(-0.5f, 2.0f, 0.0f), C3DFVector(0.0f, 1.5f,-2.5f),
+		C3DFVector(0.0f,-0.5f,-0.5f), C3DFVector( 2.5f, 0.0f, 0.5f), C3DFVector(-1.5f, 0.5f, 2.0f), C3DFVector(0.0f, 2.0f, 3.5f),
+		C3DFVector(0.0f, 0.0f, 1.5f), C3DFVector( 0.0f, 0.0f,-1.5f), C3DFVector( 1.5f, 0.0f,-1.5f), C3DFVector(0.0f, 0.0f,-3.5f),
+		
+		C3DFVector(0.0f, 0.0f, 0.0f), C3DFVector(-1.0f, 0.0f, 1.0f), C3DFVector(-1.0f, 0.0f, 2.0f), C3DFVector(0.0f, 0.0f, 0.5f),
+		C3DFVector(0.0f,-0.5f, 0.5f), C3DFVector( 2.5f, 0.5f,-1.0f), C3DFVector( 0.5f, 2.0f, 0.5f), C3DFVector(0.0f, 3.5f, 0.5f),
+		C3DFVector(0.0f, 0.5f, 2.5f), C3DFVector( 1.5f, 0.5f,-2.0f), C3DFVector( 2.0f,-1.0f,-1.0f), C3DFVector(0.0f,-1.0f,-2.0f),
+		C3DFVector(0.0f, 0.0f,-0.5f), C3DFVector( 1.0f, 0.0f, 1.0f), C3DFVector(-1.0f, 0.0f, 0.5f), C3DFVector(0.0f, 0.0f,-1.5f),
+
+		C3DFVector(0.0f, 0.0f, 0.0f), C3DFVector( 2.0f, 0.0f, 0.0f), C3DFVector(-1.0f, 0.0f, 0.0f), C3DFVector(0.0f, 0.0f, 0.0f),
+		C3DFVector(0.0f, 2.0f, 0.0f), C3DFVector(-1.0f,-0.5f, 0.0f), C3DFVector( 1.0f,-1.0f, 0.0f), C3DFVector(0.0f,-1.0f, 0.0f),
+		C3DFVector(0.0f,-1.5f, 0.0f), C3DFVector(-1.0f, 2.0f, 0.0f), C3DFVector(-1.5f, 0.5f, 0.0f), C3DFVector(0.0f, 0.0f, 0.0f),
+		C3DFVector(0.0f, 0.0f, 0.0f), C3DFVector( 1.0f, 0.0f, 0.0f), C3DFVector(-1.0f, 0.0f, 0.0f), C3DFVector(0.0f, 0.0f, 0.0f),
+
 	};
 
 	C3DBounds size(4,4,4);
-	C3DFImage *image = new C3DFImage(size, init_data);
-	std::shared_ptr<C3DImage > pimage(image);
+	C3DFImage image(size, init_data);
 
-	C3DFVectorfield gradient = get_gradient(*pimage);
+	C3DFVectorfield gradient = get_gradient(image);
 
-	BOOST_CHECK_EQUAL(gradient(1,1,1), vf[0]);
-	BOOST_CHECK_EQUAL(gradient(2,1,1), vf[1]);
-	BOOST_CHECK_EQUAL(gradient(1,2,1), vf[2]);
-	BOOST_CHECK_EQUAL(gradient(2,2,1), vf[3]);
-	BOOST_CHECK_EQUAL(gradient(1,1,2), vf[4]);
-	BOOST_CHECK_EQUAL(gradient(2,1,2), vf[5]);
-	BOOST_CHECK_EQUAL(gradient(1,2,2), vf[6]);
-	BOOST_CHECK_EQUAL(gradient(2,2,2), vf[7]);
-
-	C3DFVector g1= image->data().get_gradient<float>(C3DFVector(1.5, 1.5, 1.5));
+	auto ig = gradient.begin_range(C3DBounds::_0, image.get_size()); 
+	auto eg = gradient.end_range(C3DBounds::_0, image.get_size()); 
+	const C3DFVector * v = vf; 
+	while (ig != eg) {
+		BOOST_CHECK_EQUAL(*ig, *v);
+		cvdebug() << ig.pos() << ": got " << *ig << " expect:" << *v << "\n"; 
+		++ig; 
+		++v; 
+	}
+	
+	C3DFVector g1= image.data().get_gradient<float>(C3DFVector(1.5, 1.5, 1.5));
 	float gx1 =
-		((vf[0].x * 0.5 + vf[1].x * 0.5) * 0.5 +
-		 (vf[2].x * 0.5 + vf[3].x * 0.5) * 0.5) * 0.5 +
-		((vf[4].x * 0.5 + vf[5].x * 0.5) * 0.5 +
-		 (vf[6].x * 0.5 + vf[7].x * 0.5) * 0.5) * 0.5;
+		((vf[21].x * 0.5 + vf[22].x * 0.5) * 0.5 +
+		 (vf[25].x * 0.5 + vf[26].x * 0.5) * 0.5) * 0.5 +
+		((vf[37].x * 0.5 + vf[38].x * 0.5) * 0.5 +
+		 (vf[41].x * 0.5 + vf[42].x * 0.5) * 0.5) * 0.5;
 	cvdebug() << gx1  << " vs. " <<  g1 << "\n";
 
 	BOOST_CHECK_CLOSE(gx1, g1.x, 0.0001);
 
-	C3DFVector g = image->data().get_gradient<float>(C3DFVector(1.2, 1.7, 1.4));
+	C3DFVector g = image.data().get_gradient<float>(C3DFVector(1.2, 1.7, 1.4));
 
 	float gx =
-		((vf[0].x * 0.8f + vf[1].x * 0.2f) * 0.3f +
-		 (vf[2].x * 0.8f + vf[3].x * 0.2f) * 0.7f) * 0.6f +
-		((vf[4].x * 0.8f + vf[5].x * 0.2f) * 0.3f +
-		 (vf[6].x * 0.8f + vf[7].x * 0.2f) * 0.7f) * 0.4f;
+		((vf[21].x * 0.8f + vf[22].x * 0.2f) * 0.3f +
+		 (vf[25].x * 0.8f + vf[26].x * 0.2f) * 0.7f) * 0.6f +
+		((vf[37].x * 0.8f + vf[38].x * 0.2f) * 0.3f +
+		 (vf[41].x * 0.8f + vf[42].x * 0.2f) * 0.7f) * 0.4f;
 	cvdebug() << gx  << " vs. " <<  g << "\n";
 	BOOST_CHECK_CLOSE(gx, g.x, 0.0001);
 

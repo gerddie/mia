@@ -56,7 +56,7 @@ bool init_unit_test_suite( )
 int BOOST_TEST_CALL_DECL
 main( int argc, char* argv[] )
 {
-	if (CCmdOptionList(g_general_help).parse(argc, (const char**)argv) != CCmdOptionList::hr_no) 
+	if (CCmdOptionList(g_general_help).parse(argc, (const char**)argv, "boost-test-option") != CCmdOptionList::hr_no) 
 		return 0; 
 	return ::boost::unit_test::unit_test_main( &init_unit_test_suite, argc, argv );
 }

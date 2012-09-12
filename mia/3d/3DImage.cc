@@ -234,23 +234,105 @@ struct FGetGradient3D: public TFilter< C3DFVectorfield> {
 	C3DFVectorfield operator () ( const T3DImage<T>& image) const {
 
 		C3DFVectorfield result(image.get_size());
-		fill(result.begin(), result.end(), C3DFVector()); 
+
 		size_t slice_size = image.get_size().x * image.get_size().y; 
 		size_t row_size = image.get_size().x; 
 		
-		auto v = result.begin() + slice_size + row_size + 1; 
-		auto i = image.begin() + slice_size + row_size + 1; 
+		auto v = result.begin(); 
+		auto i = image.begin(); 
+
+		++i; 
+		*v++ = C3DFVector(); 
+
+		for (size_t x = 1; x < image.get_size().x - 1; ++x, ++v, ++i)
+			*v = C3DFVector( 0.5 * (i[1] - i[-1]), 0.0f, 0.0f);
 		
-		for (size_t z = 1; z < image.get_size().z - 1; ++z, 
-			     i += 2*row_size, v += 2*row_size) {
-			for (size_t y = 1; y < image.get_size().y - 1; ++y, i += 2, v += 2 ) {
+		++i; 
+		*v++ = C3DFVector(); 
+
+		for (size_t y = 1; y < image.get_size().y - 1; ++y ) {
+			*v = C3DFVector( 0.0f, 0.5 * (i[row_size] - i[-row_size]), 0.0f);
+			++i; ++v; 
+			for (size_t x = 1; x < image.get_size().x - 1; ++x, ++v, ++i) {
+				*v = C3DFVector( 0.5 * (i[1] - i[-1]), 
+						 0.5 * (i[row_size] - i[-row_size]), 0.0f); 
+			}
+			*v = C3DFVector( 0.0f, 0.5 * (i[row_size] - i[-row_size]), 0.0f);
+			++i; ++v; 
+		}
+
+		++i; 
+		*v++ = C3DFVector(); 
+
+		for (size_t x = 1; x < image.get_size().x - 1; ++x, ++v, ++i)
+			*v = C3DFVector( 0.5 * (i[1] - i[-1]), 0.0f, 0.0f);
+		
+		++i; 
+		*v++ = C3DFVector(); 
+		
+		for (size_t z = 1; z < image.get_size().z - 1; ++z) {
+			*v = C3DFVector(0.0, 0.0, 0.5 * (i[slice_size] - i[-slice_size]));
+			++i; ++v;
+			
+			for (size_t x = 1; x < image.get_size().x - 1; ++x, ++v, ++i)
+				*v = C3DFVector( 0.5 * (i[1] - i[-1]), 0.0f, 0.5 * (i[slice_size] - i[-slice_size]));
+			
+			*v = C3DFVector(0.0, 0.0, 0.5 * (i[slice_size] - i[-slice_size]));
+			++i; ++v;
+
+			for (size_t y = 1; y < image.get_size().y - 1; ++y ) {
+				*v = C3DFVector( 0.0f, 0.5 * (i[row_size] - i[-row_size]), 
+						 0.5 * (i[slice_size] - i[-slice_size]));
+				++i; ++v; 
 				for (size_t x = 1; x < image.get_size().x - 1; ++x, ++v, ++i) {
 					*v = C3DFVector( 0.5 * (i[1] - i[-1]), 
 							 0.5 * (i[row_size] - i[-row_size]), 
 							 0.5 * (i[slice_size] - i[-slice_size])); 
 				}
+				*v = C3DFVector( 0.0f, 0.5 * (i[row_size] - i[-row_size]), 
+						 0.5 * (i[slice_size] - i[-slice_size]));
+				++i; ++v; 
 			}
+			*v = C3DFVector(0.0, 0.0, 0.5 * (i[slice_size] - i[-slice_size]));
+			++i; ++v;
+			
+			for (size_t x = 1; x < image.get_size().x - 1; ++x, ++v, ++i)
+				*v = C3DFVector( 0.5 * (i[1] - i[-1]), 0.0f, 0.5 * (i[slice_size] - i[-slice_size]));
+			
+			*v = C3DFVector(0.0, 0.0, 0.5 * (i[slice_size] - i[-slice_size]));
+			++i; ++v;
 		}
+		
+		++i; 
+		*v++ = C3DFVector(); 
+
+		for (size_t x = 1; x < image.get_size().x - 1; ++x, ++v, ++i)
+			*v = C3DFVector( 0.5 * (i[1] - i[-1]), 0.0f, 0.0f);
+		
+		++i; 
+		*v++ = C3DFVector(); 
+
+		for (size_t y = 1; y < image.get_size().y - 1; ++y ) {
+			*v = C3DFVector( 0.0f, 0.5 * (i[row_size] - i[-row_size]), 0.0f);
+			++i; ++v; 
+			for (size_t x = 1; x < image.get_size().x - 1; ++x, ++v, ++i) {
+				*v = C3DFVector( 0.5 * (i[1] - i[-1]), 
+						 0.5 * (i[row_size] - i[-row_size]), 0.0f); 
+			}
+			*v = C3DFVector( 0.0f, 0.5 * (i[row_size] - i[-row_size]), 0.0f);
+			++i; ++v; 
+		}
+		
+		++i; 
+		*v++ = C3DFVector(); 
+
+		for (size_t x = 1; x < image.get_size().x - 1; ++x, ++v, ++i)
+			*v = C3DFVector( 0.5 * (i[1] - i[-1]), 0.0f, 0.0f);
+		
+		++i; 
+		*v++ = C3DFVector(); 
+
+		
 		return result;
 	}
 };
