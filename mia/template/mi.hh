@@ -64,7 +64,8 @@ struct FEvalMI : public mia::TFilter<double> {
 
 
 template <typename T> 
-TMIImageCost<T>::TMIImageCost(size_t rbins, mia::PSplineKernel rkernel, size_t mbins, mia::PSplineKernel mkernel, double cut):
+TMIImageCost<T>::TMIImageCost(size_t rbins, mia::PSplineKernel rkernel, size_t mbins, 
+			      mia::PSplineKernel mkernel, double cut):
 	m_parzen_mi(rbins, rkernel, mbins,  mkernel, cut)
 	
 {
@@ -152,7 +153,7 @@ TMIImageCostPlugin<CP,C>::TMIImageCostPlugin():
 	CP("mi"), 
 	m_rbins(64), 
 	m_mbins(64), 
-	m_histogram_cut(5)
+	m_histogram_cut(0.0)
 {
 	TRACE("TMIImageCostPlugin<CP,C>::TMIImageCostPlugin()"); 
 	this->add_property(::mia::property_gradient); 
