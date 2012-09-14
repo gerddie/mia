@@ -162,6 +162,7 @@ SET(MIACORE_HEADER_BASE
   streamredir.hh
   testplugin.hh
   threadedmsg.hh
+  tools.hh
   traits.hh
   transformation.hh
   typedescr.hh
