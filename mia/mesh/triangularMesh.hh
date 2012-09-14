@@ -297,7 +297,7 @@ void colorize_mesh(CTriangleMesh  *mesh, const Deformation& deform)
 	CTriangleMesh::const_normal_iterator nb = cmesh.normals_begin();
 
 	while (sb != se)
-		*sb++ = dot(*nb++ * deform.apply(*vb++));
+		*sb++ = dot(*nb++, deform.apply(*vb++));
 
 }
 
