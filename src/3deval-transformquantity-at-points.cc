@@ -22,6 +22,9 @@
 
 #include <fstream>
 #include <ostream>
+#include <cstring>
+#include <cerrno>
+#include <iterator>
 
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
@@ -38,8 +41,6 @@
 #include <mia/3d/3DDatafield.cxx>
 #include <miaconfig.h>
 
-#include <cstring>
-#include <cerrno>
 
 using namespace std;
 using namespace mia;
@@ -47,7 +48,8 @@ using namespace mia;
 const SProgramDescription g_description = {
 	{pdi_group,"Tools for the Analysis of 3D image series"},
 	{pdi_short, "Evaluate derivative of a transformation"}, 
-	{pdi_description,"Get derivative a transformation obtained by by using image registration for any given positions in 3D. "
+	{pdi_description,"Get derivative a transformation obtained by by using image registration for "
+	 "any given positions in 3D. "
 	 "The position data is given in CSV format:\n"
 	 "   id;time;x;y;z;reserved\n"
 	 "The output data will be stored in a binary file with an ascii header describing the data. "
@@ -55,21 +57,20 @@ const SProgramDescription g_description = {
 	 "MIA\n" 
 	 "tensorfield {\n"
 	 "  dim=3\n"
-	 "  components=9\n"
+	 "  components=13\n"
+	 "  component_description=vector3,scalar,matrix3x3\n"
 	 "  elements=20\n"
 	 "  interpretation=strain\n"
-	 "  pointsfile=input-points.csv\n"
+	 "  style=sparse\n"
 	 "  repn=float32\n"
 	 "  size=1000 1000 200\n"
 	 "  endian=low\n" 
 	 "}\n\n"
 	 "This header is terninted by '^L', i.e. a page feed, hence, wenn running 'more <file>', the first page will "
 	 "only display this header without the following binary data. "
-	 "The header has to be interpreted like follows: three-dimensional data, each entry consists of nine values "
-	 "(matrices are stored in row major format), and in total there are 20 data records in the file. "
-	 "The data records represent strain tensors, and the points data "
-	 "is stored in the file 'input-points.csv' (note, that the file does not carry information about the point "
-	 "locations of the stored data, so the points location file is needed for a proper interpretation of the data). "
+	 "The header has to be interpreted like follows: three-dimensional data, each entry consists of 13 values "
+	 "the values etry consists of a 3D vector, a scalar, and a 3x3 matrix (saved in row-major format)."
+	 "The data records represent strain tensors, and only a sparse set of points is given. "
 	 "The values are given as single floating point (32 bit). "
 	 "The original transformation field corresponds to images of "
 	 "1000x1000x200 voxels and the binary data is stored in low endian format." 
@@ -90,20 +91,62 @@ const TDictMap<EQuantity> tqmap(table);
 
 
 struct FQuantityEvaluator {
-	virtual void apply(C3DFMatrix& m) const = 0; 
+	FQuantityEvaluator(const C3DTransformation& t):
+		m_t(t) {}; 
+	virtual C3DFMatrix operator ()(const C3DFVector& p) const = 0; 
+	virtual C3DFMatrix operator ()(const C3DBounds& p) const = 0; 
+protected: 
+	const C3DTransformation& m_t; 
 }; 
 
 struct FDerivativeEvaluator : public FQuantityEvaluator {
-	virtual void apply(C3DFMatrix& MIA_PARAM_UNUSED(m)) const {
+	FDerivativeEvaluator(const C3DTransformation& t):
+		FQuantityEvaluator(t){}
+	
+	virtual C3DFMatrix operator ()(const C3DFVector& p) const {
+		return m_t.derivative_at(p);
+	}
+	virtual C3DFMatrix operator ()(const C3DBounds& p) const {
+		return m_t.derivative_at(p.x, p.y, p.z);
 	}
 }; 
 
 struct FStrainEvaluator : public FQuantityEvaluator {
-	virtual void  apply(C3DFMatrix& m) const {
-		m = m * m.transposed() - C3DFMatrix::_1;
+	FStrainEvaluator(const C3DTransformation& t):
+		FQuantityEvaluator(t){}
+	
+	virtual C3DFMatrix  operator ()(const C3DFVector& p) const {
+		auto m = m_t.derivative_at(p);
+		return m * m.transposed() - C3DFMatrix::_1;
+	}
+	virtual C3DFMatrix operator ()(const C3DBounds& p) const {
+		auto m = m_t.derivative_at(p.x, p.y, p.z);
+		return m * m.transposed() - C3DFMatrix::_1;	
 	}
 }; 
- 
+
+// ensure the data type is packed tightly  
+#pragma pack(4)
+struct SSparseStracPoint {
+	C3DFVector pos; 
+	float time; 
+	C3DFMatrix tensor; 
+	SSparseStracPoint(const C3DFVector& _pos, float _time, const C3DFMatrix& _tensor):
+		pos(pos), time(_time), tensor(_tensor){
+	}
+}; 
+#pragma pack()
+
+struct FQuantityEvaluatorSparse {
+	FQuantityEvaluatorSparse(const FQuantityEvaluator& qe):
+		m_qe(qe) {
+	}
+	SSparseStracPoint operator ()(const C3DTrackPoint& p) const {
+		return SSparseStracPoint(p.get_pos(), p.get_time(), m_qe(p.get_pos())); 
+	}					
+protected: 
+	const FQuantityEvaluator& m_qe; 
+}; 
 
 int do_main( int argc, char *argv[] )
 {
@@ -119,7 +162,7 @@ int do_main( int argc, char *argv[] )
 	
 	options.set_group("\nFile-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', 
-				    "input point set", CCmdOption::required));
+				    "input point set"));
 	options.add(make_opt( out_filename, "out-file", 'o', 
 				    "output strains file", CCmdOption::required)); 
 
@@ -138,74 +181,97 @@ int do_main( int argc, char *argv[] )
 	// read the transformation 
 	auto t = C3DTransformationIOPluginHandler::instance().load(trans_filename);
 
-	// read the trackpoints 
-	vector< C3DTrackPoint > trackpoints = load_trackpoints(in_filename); 
 	
 	unique_ptr<FQuantityEvaluator> qe;
 	switch (quantity) {
 	case tq_derivative:
-		qe.reset(new FDerivativeEvaluator()); 
+		qe.reset(new FDerivativeEvaluator(*t)); 
 		break;
 	case tq_strain: 
-		qe.reset(new FStrainEvaluator()); 
+		qe.reset(new FStrainEvaluator(*t)); 
 		break; 
 	default: 
 		throw invalid_argument("Unknown quantity evaluator specified"); 
 	}
-	
-	vector<float> tensorfield(trackpoints.size() * 9);
-	auto o = tensorfield.begin(); 
-	
-	for(auto p = trackpoints.begin(); p!=trackpoints.end(); ++p, o+=9){
-		
-		auto m = t->derivative_at(p->get_pos());
-	        qe->apply(m); 
-		
-		o[0] = m.x.x; 
-		o[1] = m.x.y; 
-		o[2] = m.x.z; 
-		o[3] = m.y.x; 
-		o[4] = m.y.y; 
-		o[5] = m.y.z; 
-		o[6] = m.z.x; 
-		o[7] = m.z.y; 
-		o[8] = m.z.z;
-	}
 
-	//Write the tensors as the given format...
+
+	// this splitting off of the saving is ugly, could be solved by template specialization 
 	COutputFile output(out_filename); 
 	if (!output) 
-		throw create_exception<runtime_error>("Unable to open '", out_filename, "' for writing:", 
-							      strerror(errno));
+		throw create_exception<runtime_error>("Unable to open '", out_filename, "' for writing:",  strerror(errno)); 
 	
-
+	
 	fprintf(output, "MIA\n"); 
 	fprintf(output, "tensorfield {\n"); 
 	fprintf(output, "  dim=3\n"); 
-	fprintf(output, "  components=9\n");
-	fprintf(output, "  elements=%ld\n", trackpoints.size()); 
         fprintf(output, "  interpretation=%s", tqmap.get_name(quantity)); 
-        fprintf(output, "  pointsfile=%s", in_filename.c_str());
 	fprintf(output, "  repn=float32\n");
-	
-	// do we really need this? 
 	const auto size = t->get_size(); 
 	fprintf(output, "  size=%d %d %d\n", size.x, size.y, size.z); 
 
-	#ifdef WORDS_BIGENDIAN
+#ifdef WORDS_BIGENDIAN
 	fprintf(output, "  endian=big\n" ); 
-	#else
+#else
 	fprintf(output, "  endian=low\n" ); 
-	#endif
-	fprintf(output, "}\n\xC" );
+#endif
 
-	if (fwrite(&tensorfield[0], sizeof(float),  tensorfield.size(), output) != tensorfield.size()) {
-		throw create_exception<runtime_error>("Unable to write data to '", out_filename, "':", 
-						      strerror(errno));
-	}
+	int element_size = 0; 
+	string components; 
+	string style;  
 	
-	return EXIT_SUCCESS;	
+	if (in_filename.empty()) {
+		auto size = t->get_size(); 
+		vector <C3DFMatrix> tensorfield(size.product());
+		auto iout = tensorfield.begin(); 
+		
+		C3DBounds pos; 
+		for (pos.z = 0; pos.z < size.z; ++pos.z)
+			for (pos.y = 0; pos.y < size.y; ++pos.y)
+				for (pos.x = 0; pos.x < size.x; ++pos.x, ++iout)
+					*iout = (*qe)(pos);
+		
+		element_size = sizeof(C3DFMatrix)/sizeof(float);
+		components.assign("matrix3x3"); 
+		style.assign("grid"); 
 
+		fprintf(output, "  components=%d\n", element_size); 
+		fprintf(output, "  component_description=%s\n", components.c_str()); 
+		fprintf(output, "  elements=%ld\n", tensorfield.size()); 
+		fprintf(output, "  components=%d\n", element_size); 
+		fprintf(output, "  style=%s\n", style.c_str()); 
+		fprintf(output, "}\n" );
+		
+		if (fwrite(&tensorfield[0], element_size,  tensorfield.size(), output) != tensorfield.size())
+			throw create_exception<runtime_error>("Unable to write data to '", out_filename, "':", 
+							      strerror(errno));
+
+	}else{
+		vector< C3DTrackPoint > trackpoints = load_trackpoints(in_filename); 
+		vector<SSparseStracPoint> tensorfield; 
+		tensorfield.reserve(trackpoints.size()); 
+		
+		FQuantityEvaluatorSparse translater(*qe); 
+		transform(trackpoints.begin(), trackpoints.end(), back_inserter(tensorfield), translater); 
+		
+		element_size = sizeof(SSparseStracPoint)/sizeof(float); 
+		components.assign("vector3,scalar,matrix3x3"); 
+		style.assign("sparse"); 
+
+	
+		fprintf(output, "  components=%d\n", element_size); 
+		fprintf(output, "  component_description=%s\n", components.c_str()); 
+		fprintf(output, "  elements=%ld\n", tensorfield.size()); 
+		fprintf(output, "  components=%d\n", element_size); 
+		fprintf(output, "  style=%s\n", style.c_str()); 
+		fprintf(output, "}\n" );
+		
+		if (fwrite(&tensorfield[0], element_size,  tensorfield.size(), output) != tensorfield.size())
+			throw create_exception<runtime_error>("Unable to write data to '", out_filename, "':", 
+							      strerror(errno));
+						      
+	}
+
+	return EXIT_SUCCESS;	
 }
 
 MIA_MAIN(do_main);
