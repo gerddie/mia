@@ -48,10 +48,34 @@ const SProgramDescription g_description = {
 	{pdi_group,"Tools for the Analysis of 3D image series"},
 	{pdi_short, "Evaluate derivative of a transformation"}, 
 	{pdi_description,"Get derivative a transformation obtained by by using image registration for any given positions in 3D. "
-		 "The position data is given in CSV format:\n"
-		 "   id;time;x;y;z;reserved\n\n"}, 
-	{pdi_example_descr,"Derivative of the transformation change.v3df for each selected point are "
-		 "evaluated and written to output.s "}, 
+	 "The position data is given in CSV format:\n"
+	 "   id;time;x;y;z;reserved\n"
+	 "The output data will be stored in a binary file with an ascii header describing the data. "
+	 "An example header is given below:\n\n"
+	 "MIA\n" 
+	 "tensorfield {\n"
+	 "  dim=3\n"
+	 "  components=9\n"
+	 "  elements=20\n"
+	 "  interpretation=strain\n"
+	 "  pointsfile=input-points.csv\n"
+	 "  repn=float32\n"
+	 "  size=1000 1000 200\n"
+	 "  endian=low\n" 
+	 "}\n\n"
+	 "This header is terninted by '^L', i.e. a page feed, hence, wenn running 'more <file>', the first page will "
+	 "only display this header without the following binary data. "
+	 "The header has to be interpreted like follows: three-dimensional data, each entry consists of nine values "
+	 "(matrices are stored in row major format), and in total there are 20 data records in the file. "
+	 "The data records represent strain tensors, and the points data "
+	 "is stored in the file 'input-points.csv' (note, that the file does not carry information about the point "
+	 "locations of the stored data, so the points location file is needed for a proper interpretation of the data). "
+	 "The values are given as single floating point (32 bit). "
+	 "The original transformation field corresponds to images of "
+	 "1000x1000x200 voxels and the binary data is stored in low endian format." 
+	}, 
+	{pdi_example_descr,"Derivative of the transformation change.v3df for each  point given in input.csv are "
+	 "evaluated and written to output.s."}, 
 	{pdi_example_code,"-i input.csv -o output.s --transformation change.v3df"}
 }; 
 
@@ -87,7 +111,6 @@ int do_main( int argc, char *argv[] )
 	string in_filename;
 	string out_filename;
 	string trans_filename; 
-	float time_step = 1.0; 
 	
         EQuantity quantity = tq_strain;
 
@@ -107,9 +130,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( quantity, tqmap, "quantity", 'q', 
 			      "Specify the quantity to be evaluated at the given points")); 
 	
-	options.add(make_opt( time_step, "time-step", 'T', 
-			      "time step to use for the position update")); 
-	
+
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
