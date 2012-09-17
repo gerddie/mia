@@ -429,19 +429,19 @@ THistogram<Feeder>::get_reduced_range(double remove) const
 	range_type result(m_feeder.value(0), m_feeder.value(m_histogram.size() - 1)); 
 
 	if (remove_count > 0)  {
-		size_t low_end = 0;
+		long low_end = -1;
 		long counted_pixels_low = 0; 
 		
-		while (counted_pixels_low < remove_count && low_end < m_histogram.size())
-			counted_pixels_low += m_histogram[low_end++];
+		while (counted_pixels_low < remove_count && low_end < (long)m_histogram.size())
+			counted_pixels_low += m_histogram[++low_end];
 		
-		result.first = m_feeder.value(low_end - 1); 
+		result.first = m_feeder.value(low_end); 
 					    
 		long  high_end = m_histogram.size();
 		long counted_pixels_high = 0; 
-		while (counted_pixels_high < remove_count && high_end > 0)
+		while (counted_pixels_high <= remove_count && high_end > 0)
 			counted_pixels_high += m_histogram[--high_end];
-		cvdebug() << " int range = " <<  low_end - 1 << ", " << high_end << " removing " << remove_count << " pixels at each end\n";
+		cvdebug() << " int range = " <<  low_end << ", " << high_end << " removing " << remove_count << " pixels at each end\n";
 		result.second = m_feeder.value(high_end);
 	}
 	return result; 
