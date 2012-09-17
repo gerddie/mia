@@ -95,6 +95,14 @@ inline std::ostream& operator << (std::ostream& os,  C3DTrackPoint tp)
 }
 
 
+/**
+   Load the trackpoints from an input file 
+   \param in_filename input file name in csv format 
+   \returns the list of track points 
+ */
+
+std::vector< C3DTrackPoint > load_trackpoints(const std::string& in_filename); 
+
 NS_MIA_END
 
 #endif 

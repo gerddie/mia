@@ -21,10 +21,7 @@
 #include <mia/3d/trackpoint.hh>
 
 NS_MIA_BEGIN
-using std::istringstream; 
-using std::string; 
-using std::ostream; 
-using std::getline; 
+using namespace std; 
 
 C3DTrackPoint::C3DTrackPoint(int id, float time, const C3DFVector& pos, const std::string& reserved):
 	m_id(id), 
@@ -118,6 +115,37 @@ float C3DTrackPoint::get_time() const
 const std::string&  C3DTrackPoint::get_reserved() const
 {
 	return m_reserved;
+}
+
+/**
+   Load the trackpoints from an input file 
+   \param in_filename input file name in csv format 
+   \returns the list of track points 
+*/
+vector< C3DTrackPoint > load_trackpoints(const string& in_filename)
+{
+	vector< C3DTrackPoint > result;
+
+	ifstream input(in_filename.c_str()); 
+
+	if (input.bad()) 
+		throw create_exception<runtime_error>("Unable to open file '", in_filename, "' for reading");
+
+	while (input.good()) {
+		string input_line; 
+		getline(input, input_line);
+		if (input_line.empty())
+			break; 
+		
+		if (input.good()) {
+			C3DTrackPoint pt; 
+			if (pt.read(input_line)) 
+				result.push_back(pt); 
+			else 
+				cverr() << "Bogus input line '" << input_line << "' ignored\n";
+		}
+	}
+	return result; 
 }
 
 

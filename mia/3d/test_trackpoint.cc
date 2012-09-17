@@ -131,8 +131,4 @@ BOOST_AUTO_TEST_CASE ( test_move )
 	BOOST_CHECK_CLOSE(p.z, -1.6, 0.1); 
 
 	
-	
-	
-	
-	
 }
