@@ -27,6 +27,9 @@
 using namespace std; 
 using namespace mia; 
 
+C3DTransformCreatorHandlerTestPath test_creator_path; 
+
+
 const char test_input[] = 
 	"1;12;10;5;12;some text\n"
 	"2;13;7;5;2;other text\n"

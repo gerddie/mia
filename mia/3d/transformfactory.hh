@@ -74,6 +74,7 @@ struct EXPORT_3D C3DTransformCreatorHandlerTestPath {
 	C3DTransformCreatorHandlerTestPath(); 
 private: 
 	CSplineKernelTestPath spktp; 
+	CSplineBoundaryConditionTestPath spctp;
 }; 
 /// @endcond
 
