@@ -424,6 +424,18 @@ BOOST_FIXTURE_TEST_CASE( test_wavelet_statistics_perf, WaveletFixture )
 	check(curve, e); 
 }
 
+BOOST_AUTO_TEST_CASE( test_slope_level_change )
+{
+	vector<float> curve = {
+		0, 0, 0, 1, 0, 1, 1, 2, 2, 3, 
+		4, 5, 6, 7, 7, 7, 7, 7, 7
+	};
+	CSlopeStatistics ss(curve, 1); 
+	BOOST_CHECK_CLOSE(ss.get_level_change(10), (6 * 7 + 6+ 5)/ 8.0 - 1.0, 0.001); 
+
+}
+
+
 BOOST_FIXTURE_TEST_CASE( test_wavelet_statistics_mov, WaveletFixture )
 {
 	vector<float> curve = {
