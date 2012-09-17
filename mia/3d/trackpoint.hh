@@ -36,6 +36,17 @@ NS_MIA_BEGIN
 class C3DTrackPoint {
 public: 
 	C3DTrackPoint(); 
+
+	/**
+	   Initialize a new tracking point
+	   \param id 
+	   \param time 
+	   \param pos 
+	   \param reserved 
+	 */
+
+
+	C3DTrackPoint(int id, float time, const C3DFVector& pos, const std::string& reserved); 
 	
 	/**
 	   Read the point from an input line. The point must be of format 

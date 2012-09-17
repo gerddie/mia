@@ -26,6 +26,15 @@ using std::string;
 using std::ostream; 
 using std::getline; 
 
+C3DTrackPoint::C3DTrackPoint(int id, float time, const C3DFVector& pos, const std::string& reserved):
+	m_id(id), 
+	m_time(time), 
+	m_pos(pos), 
+	m_reserved(reserved)
+{
+}
+
+
 
 C3DTrackPoint::C3DTrackPoint():m_id(-1), 
 	m_time(0.0)
