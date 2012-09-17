@@ -21,6 +21,7 @@
 
 #include <mia/internal/autotest.hh>
 #include <mia/3d/trackpoint.hh>
+#include <mia/3d/transformfactory.hh>
 #include <sstream>
 
 using namespace std; 
@@ -92,4 +93,46 @@ BOOST_AUTO_TEST_CASE ( test_write_points )
 			  "7;12;2.1;3;4.2\n"
 		);
 
+}
+
+BOOST_AUTO_TEST_CASE ( test_move ) 
+{
+	C3DTrackPoint tp0(5, 10.0, C3DFVector(1,0,0), "a string"); 
+
+	auto tc = produce_3dtransform_creator("vf"); 
+
+	auto t = tc->create(C3DBounds(2,1,1)); 
+	
+	auto params = t->get_parameters(); 
+	
+	BOOST_REQUIRE(params.size() == 6); 
+
+	params[0] = 2.0; 
+	params[1] = -1.0; 
+	params[2] = 4.0; 
+	params[3] = 1.0;
+	
+	t->set_parameters(params); 
+	
+	tp0.move(1, *t); 
+	
+	BOOST_CHECK_EQUAL(tp0.get_time(), 11.0); 
+	BOOST_CHECK_EQUAL(tp0.get_pos(), C3DFVector(0,0,0)); 
+	
+	tp0.move(0.4, *t); 
+
+	BOOST_CHECK_CLOSE(tp0.get_time(), 11.4, 0.1); 
+
+	const C3DFVector& p = tp0.get_pos(); 
+	
+
+	BOOST_CHECK_CLOSE(p.x, -0.8, 0.1); 
+	BOOST_CHECK_CLOSE(p.y,  0.4, 0.1); 
+	BOOST_CHECK_CLOSE(p.z, -1.6, 0.1); 
+
+	
+	
+	
+	
+	
 }
