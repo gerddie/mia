@@ -50,6 +50,7 @@ SET(MIA3D_SRC
   rigidregister.cc
   timestep.cc
   similarity_profile.cc
+  trackpoint.cc
   transform.cc
   transformfactory.cc
   transformio.cc
@@ -100,6 +101,7 @@ SET(MIA3D_HEADERS
   similarity_profile.hh
   stackdisttrans.hh
   timestep.hh
+  trackpoint.hh
   trait.hh
   transform.hh
   transformfactory.hh
@@ -191,6 +193,7 @@ TEST_3D(fullcost fullcost)
 TEST_3D(iterator iterator)
 TEST_3D(stackdisttrans stackdisttrans)
 TEST_3D(similarity_profile similarity_profile)
+TEST_3D(trackpoint similarity_profile)
 #
 # installation 
 #
