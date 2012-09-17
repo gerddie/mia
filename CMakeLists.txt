@@ -63,7 +63,7 @@ SET(LIBRARY_SOVERSION_INFO "${MIA_CURRENT}")
 SET(LIBRARY_VERSION_INFO "${MIA_CURRENT}.${MIA_AGE}.${MIA_REVISION}")
 
 OPTION(STRICT_DEPENDECIES "require that all requested optinal dependencies are availabe" FALSE)
-OPTION(ALWAYS_CREATE_DOC "Create all documentation during the normal build process (normally you need to run 'make doc')" FALSE)
+OPTION(ALWAYS_CREATE_DOC "Create all documentation during the normal build process (normally you need to run 'make doc')" TRUE)
 OPTION(BUILD_EXAMPLES "Build example plug-ins and programs" FALSE)
 
 INCLUDE (CheckIncludeFiles)

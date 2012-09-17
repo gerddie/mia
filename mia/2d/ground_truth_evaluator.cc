@@ -117,7 +117,7 @@ void C2DGroundTruthEvaluatorImpl::run(const std::vector<P2DImage>& originals,
 	// copy back the result
 	auto igt = output.begin();
 	for(size_t i = 0; i < originals.size(); ++i) {
-		C2DFImage *image = new C2DFImage(originals[0]->get_size());
+		C2DFImage *image = new C2DFImage(originals[0]->get_size(), *originals[i]);
 		copy(igt, igt + slice_size, image->begin());
 		estimate[i] = P2DImage(image);
 		igt += slice_size;
@@ -138,8 +138,9 @@ template <typename T>
 void DataCopy::operator() (const T2DImage<T>& image)
 {
 	if (image.size() != m_slice_size)
-		throw create_exception<invalid_argument>("C2DGroundTruthEvaluator/DataCopy: unexpected input image pixel number ", 
-					       image.size(), ", expect ", m_slice_size);
+		throw create_exception<invalid_argument>("C2DGroundTruthEvaluator/DataCopy: "
+							 "unexpected input image pixel number ", 
+							 image.size(), ", expect ", m_slice_size);
 
 	assert(i_target != m_target.end());
 

@@ -87,9 +87,9 @@ template class TPlugin<C3DImage, filter_type>;
 template class THandlerSingleton<TFactoryPluginHandler<C3DFilterPlugin> >;
 template class TFactoryPluginHandler<C3DFilterPlugin>;
 template class TPluginHandler<C3DFilterPlugin>;
-template class EXPORT_HANDLER TPlugin<C3DImage, combiner_type>;
-template class EXPORT_HANDLER TFactory<C3DImageCombiner>;
-template class EXPORT_HANDLER THandlerSingleton<TFactoryPluginHandler<C3DImageCombinerPlugin> >;
+template class TPlugin<C3DImage, combiner_type>;
+template class TFactory<C3DImageCombiner>;
+template class THandlerSingleton<TFactoryPluginHandler<C3DImageCombinerPlugin> >;
 template class TFactoryPluginHandler<C3DImageCombinerPlugin>;
 template class TPluginHandler<C3DImageCombinerPlugin>;
 

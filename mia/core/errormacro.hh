@@ -38,7 +38,7 @@ void __append_message(std::ostream& os, const V& v)
 	os << v; 
 }
 
-inline void __append_message(std::ostream& PARAM_UNUSED(os))
+inline void __append_message(std::ostream& MIA_PARAM_UNUSED(os))
 {
 }
 

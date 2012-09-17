@@ -128,7 +128,7 @@ P2DTransformation C2DTranslateTransformation::do_upscale(const C2DBounds& size) 
 }
 
 
-void C2DTranslateTransformation::add(const C2DTransformation& PARAM_UNUSED(a))
+void C2DTranslateTransformation::add(const C2DTransformation& MIA_PARAM_UNUSED(a))
 {
 	assert(0 && "C2DTranslateTransformation::add not implemented");
 }
@@ -148,17 +148,17 @@ size_t C2DTranslateTransformation::degrees_of_freedom() const
 	return 2;
 }
 
-void C2DTranslateTransformation::update(float PARAM_UNUSED(step), const C2DFVectorfield& PARAM_UNUSED(a))
+void C2DTranslateTransformation::update(float MIA_PARAM_UNUSED(step), const C2DFVectorfield& MIA_PARAM_UNUSED(a))
 {
 	assert(0 && "C2DTranslateTransformation::update not implemented");
 }
 
-C2DFMatrix C2DTranslateTransformation::derivative_at(const C2DFVector& PARAM_UNUSED(x)) const
+C2DFMatrix C2DTranslateTransformation::derivative_at(const C2DFVector& MIA_PARAM_UNUSED(x)) const
 {
 	return C2DFMatrix::_1;
 }
 
-C2DFMatrix C2DTranslateTransformation::derivative_at(int PARAM_UNUSED(x), int PARAM_UNUSED(y)) const
+C2DFMatrix C2DTranslateTransformation::derivative_at(int MIA_PARAM_UNUSED(x), int MIA_PARAM_UNUSED(y)) const
 {
 	return C2DFMatrix::_1;
 }

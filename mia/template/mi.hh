@@ -120,7 +120,7 @@ double TMIImageCost<T>::do_evaluate_force(const Data& a, const Data& b, float sc
 }
 
 template <typename T> 
-void TMIImageCost<T>::post_set_reference(const Data& ref)
+void TMIImageCost<T>::post_set_reference(const Data& MIA_PARAM_UNUSED(ref))
 {
 	m_parzen_mi.reset(); 
 }

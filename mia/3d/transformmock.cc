@@ -74,7 +74,7 @@ void C3DTransformMock::set_identity()
 {
 }
 
-C3DFMatrix C3DTransformMock::derivative_at(const C3DFVector& PARAM_UNUSED(x)) const
+C3DFMatrix C3DTransformMock::derivative_at(const C3DFVector& MIA_PARAM_UNUSED(x)) const
 {
 	return C3DFMatrix(C3DFVector(1.0, 2.0, 3.0), 
 			  C3DFVector(4.0, 5.0, 6.0), 

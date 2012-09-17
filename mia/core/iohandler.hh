@@ -204,7 +204,7 @@ public:
    \remark what is this for? 
 */
 template <typename T>
-T load_image(const std::string& filename UNUSED)
+T load_image(const std::string& MIA_PARAM_UNUSED(filename))
 {
 	return T(); 
 }

@@ -251,7 +251,7 @@ P3DTransformation C3DAffineTransformation::do_upscale(const C3DBounds& size) con
 }
 
 
-C3DFMatrix C3DAffineTransformation::derivative_at(const C3DFVector& PARAM_UNUSED(x)) const
+C3DFMatrix C3DAffineTransformation::derivative_at(const C3DFVector& MIA_PARAM_UNUSED(x)) const
 {
 	return C3DFMatrix(C3DFVector(m_t[0], m_t[1], m_t[2]),
 			  C3DFVector(m_t[4], m_t[5], m_t[6]),

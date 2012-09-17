@@ -204,7 +204,7 @@ P2DTransformation C2DRigidTransformation::do_upscale(const C2DBounds& size) cons
 	return P2DTransformation(new C2DRigidTransformation(size, new_trans, m_rotation, get_interpolator_factory()));
 }
 
-C2DFMatrix C2DRigidTransformation::derivative_at(const C2DFVector& PARAM_UNUSED(x)) const
+C2DFMatrix C2DRigidTransformation::derivative_at(const C2DFVector& MIA_PARAM_UNUSED(x)) const
 {
 	if (!m_matrix_valid)
 		evaluate_matrix(); 
@@ -213,7 +213,7 @@ C2DFMatrix C2DRigidTransformation::derivative_at(const C2DFVector& PARAM_UNUSED(
 			  C2DFVector(m_t[3], m_t[4]));
 }
 
-C2DFMatrix C2DRigidTransformation::derivative_at(int PARAM_UNUSED(x), int PARAM_UNUSED(y)) const
+C2DFMatrix C2DRigidTransformation::derivative_at(int MIA_PARAM_UNUSED(x), int MIA_PARAM_UNUSED(y)) const
 {
 	if (!m_matrix_valid)
 		evaluate_matrix(); 

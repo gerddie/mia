@@ -152,7 +152,7 @@ void CFFT1D_R2CImpl::forward(vector<CFFT1D_R2C::Real>::const_iterator in_begin,
 }
 
 void CFFT1D_R2CImpl::backward(vector<CFFT1D_R2C::Complex>::const_iterator in_begin,
-			      vector<CFFT1D_R2C::Complex>::const_iterator PARAM_UNUSED(in_end),
+			      vector<CFFT1D_R2C::Complex>::const_iterator MIA_PARAM_UNUSED(in_end),
 			      vector<CFFT1D_R2C::Real>::iterator out_begin) const
 {
 	assert((size_t)distance(in_begin, in_end) == m_out_size);
