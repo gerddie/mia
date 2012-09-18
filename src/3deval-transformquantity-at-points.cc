@@ -56,15 +56,15 @@ const SProgramDescription g_description = {
 	 "An example header is given below:\n\n"
 	 "MIA\n" 
 	 "tensorfield {\n"
-	 "  dim=3\n"
-	 "  components=13\n"
-	 "  component_description=vector3,scalar,matrix3x3\n"
-	 "  elements=20\n"
-	 "  interpretation=strain\n"
-	 "  style=sparse\n"
-	 "  repn=float32\n"
-	 "  size=1000 1000 200\n"
-	 "  endian=low\n" 
+	 "  dim=3          #number of dimensions of the data\n"
+	 "  components=13  #number of components per element\n"
+	 "  component_description=vector3,scalar,matrix3x3 #interpretation of components \n"
+	 "  elements=20    #number of elements in file\n"
+	 "  interpretation=strain #interpretation of elements (strain|derivative)\n"
+	 "  style=sparse   #storage style (sparse|grid) \n"
+	 "  repn=float32   #representation of values \n"
+	 "  size=1000 1000 200 #grid size of the transformation\n"
+	 "  endian=low     #endianess of binary data (low|big) \n" 
 	 "}\n\n"
 	 "This header is terninted by '^L', i.e. a page feed, hence, wenn running 'more <file>', the first page will "
 	 "only display this header without the following binary data. "
@@ -132,7 +132,7 @@ struct SSparseStracPoint {
 	float time; 
 	C3DFMatrix tensor; 
 	SSparseStracPoint(const C3DFVector& _pos, float _time, const C3DFMatrix& _tensor):
-		pos(pos), time(_time), tensor(_tensor){
+		pos(_pos), time(_time), tensor(_tensor){
 	}
 }; 
 #pragma pack()
@@ -162,17 +162,18 @@ int do_main( int argc, char *argv[] )
 	
 	options.set_group("\nFile-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', 
-				    "input point set"));
+			      "input point set, if this parameter is given a sparse evaluation "
+			      "of the quantity will be done, otherwise the quantity is evalutated "
+			      "for each grid point of the transformation range."));
 	options.add(make_opt( out_filename, "out-file", 'o', 
-				    "output strains file", CCmdOption::required)); 
-
+			      "output strains file, for a format description see above.", CCmdOption::required)); 
+	
 	options.add(make_opt( trans_filename, "transformation", 't', 
-				    "transformation describing the monitored change", CCmdOption::required)); 
+				    "transformation of which the quantity will be evaluated.", CCmdOption::required)); 
 
 	options.set_group("\nParameters"); 
 	options.add(make_opt( quantity, tqmap, "quantity", 'q', 
 			      "Specify the quantity to be evaluated at the given points")); 
-	
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
