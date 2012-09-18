@@ -114,6 +114,13 @@ public:
 	   @param color color to use 
 	 */
 	void draw(C2DUBImage& output, unsigned char color)const; 
+
+	/**
+	   Draw the binary shape to a 2D image by xor-ing with what is already in there 
+	   @param output image to draw to 
+	*/
+	void draw_xor(C2DUBImage& output)const; 
+
 private:
 	std::string m_id;
 	Points m_points;

@@ -39,7 +39,8 @@ using namespace xmlpp;
 namespace bfs=boost::filesystem; 
 
 CSegFrame::CSegFrame():
-	m_has_star(false)
+	m_has_star(false), 
+	m_version(0)
 {
 }
 
@@ -50,7 +51,8 @@ CSegFrame::CSegFrame(const string& image, const CSegStar& star, const Sections& 
 	m_filename(image), 
 	m_quality(0),
 	m_brightness(0), 
-	m_contrast(0)
+	m_contrast(0), 
+	m_version(0)
 
 {
 }
@@ -60,7 +62,8 @@ CSegFrame::CSegFrame(const Node& node, int version):
 	m_has_star(false), 
 	m_quality(0),
 	m_brightness(0), 
-	m_contrast(0)
+	m_contrast(0), 
+	m_version(version)
 {
 	TRACE("CSegFrame::CSegFrame"); 
 	const Element& elm = dynamic_cast<const Element&>(node); 
@@ -88,7 +91,11 @@ CSegFrame::CSegFrame(const Node& node, int version):
 			cvinfo() << "ignoring unsuported element '" << (*i)->get_name() << "'\n"; 
 		}
 	}
+	
 	if (version > 1) {
+		if (version == 2 && m_sections.size() > 2)
+			cvwarn() << "CSegFrame: gor a version 2 segmentation, but more then two sections, this may be bogus\n";
+			
 		read_attribute_from_node(elm, "quality", m_quality);  
 		read_attribute_from_node(elm, "brightness", m_brightness);  
 		read_attribute_from_node(elm, "contrast", m_contrast);  
@@ -217,10 +224,17 @@ float CSegFrame::get_hausdorff_distance(const CSegFrame& other) const
 C2DUBImage CSegFrame::get_section_masks(const C2DBounds& size) const 
 {
 	C2DUBImage result(size); 
-	unsigned char idx = 1; 
-	for (auto i = m_sections.begin(); 
-	     i != m_sections.end(); ++i, ++idx)
-		i->draw(result, idx); 
+	if (m_version == 2) {
+		// in version 2 all sections are xor-ed,
+		for (auto i = m_sections.begin(); 
+		     i != m_sections.end(); ++i)
+			i->draw_xor(result); 
+	}else {
+		unsigned char idx = 1; 
+		for (auto i = m_sections.begin(); 
+		     i != m_sections.end(); ++i, ++idx)
+			i->draw(result, idx); 
+	}
 	return result; 
 }
 

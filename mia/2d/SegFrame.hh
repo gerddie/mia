@@ -194,6 +194,7 @@ private:
 	float m_quality; 
 	float m_brightness; 
 	float m_contrast; 
+	int m_version; 
 };
 
 NS_MIA_END
