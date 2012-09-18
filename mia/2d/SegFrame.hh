@@ -64,7 +64,7 @@ public:
 	   Construct the segmentation frame from a XML root node
 	   \param node
 	 */
-	CSegFrame(const xmlpp::Node& node);
+	CSegFrame(const xmlpp::Node& node, int version);
 
 	/// \returns the file name of the corresponding image 
 	const std::string& get_imagename() const;
@@ -102,7 +102,7 @@ public:
 	   Append the segmentation frame to a XML node 
 	   @param node parent node to append the frame description to 
 	 */
-	void write(xmlpp::Node& node) const;
+	void write(xmlpp::Node& node, int version) const;
 
 	/**
 	   Shift the segmentation frame and change the file name to the new name 
@@ -190,6 +190,10 @@ private:
 	Sections m_sections;
 	std::string m_filename;
 	mutable P2DImage m_image; 
+
+	float m_quality; 
+	float m_brightness; 
+	float m_contrast; 
 };
 
 NS_MIA_END

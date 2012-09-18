@@ -47,12 +47,20 @@ CSegFrame::CSegFrame(const string& image, const CSegStar& star, const Sections& 
 	m_has_star(true),
 	m_star(star), 
 	m_sections(sections),  
-	m_filename(image) 
+	m_filename(image), 
+	m_quality(0),
+	m_brightness(0), 
+	m_contrast(0)
+
 {
 }
 
-CSegFrame::CSegFrame(const Node& node):
-	m_has_star(false)
+
+CSegFrame::CSegFrame(const Node& node, int version):
+	m_has_star(false), 
+	m_quality(0),
+	m_brightness(0), 
+	m_contrast(0)
 {
 	TRACE("CSegFrame::CSegFrame"); 
 	const Element& elm = dynamic_cast<const Element&>(node); 
@@ -68,18 +76,22 @@ CSegFrame::CSegFrame(const Node& node):
 	
 	Node::NodeList nodes = elm.get_children(); 
 	
-	for (auto i = nodes.begin(); 
-	     i != nodes.end(); ++i) {
+	for (auto i = nodes.begin(); i != nodes.end(); ++i) {
 
 		if ((*i)->get_name() == "star") {
 			m_star = CSegStar(**i); 
 			m_has_star = true; 
 		}
 		else if ((*i)->get_name() == "section") {
-			m_sections.push_back(CSegSection(**i)); 
+			m_sections.push_back(CSegSection(**i, version)); 
 		}else {
 			cvinfo() << "ignoring unsuported element '" << (*i)->get_name() << "'\n"; 
 		}
+	}
+	if (version > 1) {
+		read_attribute_from_node(elm, "quality", m_quality);  
+		read_attribute_from_node(elm, "brightness", m_brightness);  
+		read_attribute_from_node(elm, "contrast", m_contrast);  
 	}
 }
 
@@ -122,16 +134,22 @@ const CSegStar& CSegFrame::get_star() const
 }
 
 
-void CSegFrame::write(Node& node) const
+void CSegFrame::write(Node& node, int version) const
 {
 	Element* self = node.add_child("frame"); 
 	self->set_attribute("image", m_filename); 	
+
+	if (version > 1) {
+		self->set_attribute("quality", to_string<float>(m_quality)); 	
+		self->set_attribute("brightness", to_string<float>(m_brightness)); 	
+		self->set_attribute("contrast", to_string<float>(m_contrast)); 	
+	}
 	
 	if (m_has_star) 
 		m_star.write(*self);
 	for (auto i = m_sections.begin(); 
 	     i != m_sections.end(); ++i) {
-		i->write(*self); 
+		i->write(*self, version); 
 	}
 }
 

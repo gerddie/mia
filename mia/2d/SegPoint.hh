@@ -81,6 +81,26 @@ public:
 	void inv_transform(const C2DTransformation& t); 
 };
 
+
+template <typename T>
+void read_attribute_from_node(const xmlpp::Element& elm, const std::string& key, T& out_value, bool required = false)
+{
+	auto attr = elm.get_attribute(key);
+	if (!attr) {
+		if (required) 
+			throw create_exception<std::runtime_error>( elm.get_name(), ":required attribute '", key, "' not found"); 
+		else 
+			return; 
+	}
+	
+	if (!from_string(attr->get_value(), out_value)) 
+		throw create_exception<std::runtime_error>( elm.get_name(), ":attribute '", key, "' has bogus value '", 
+						       attr->get_value(), "'");
+}
+
+
+void read_attribute_from_node(const xmlpp::Element& elm, const std::string& key, bool& out_value, bool required = false); 
+
 NS_MIA_END
 
 #endif

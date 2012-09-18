@@ -134,6 +134,7 @@ private:
 	Frames m_frames;
 	int m_RV_peak; 
 	int m_LV_peak; 
+	int m_version; 
 };
 
 

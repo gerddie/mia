@@ -219,11 +219,11 @@ BOOST_AUTO_TEST_CASE(segment_section_write)
 	for (size_t i = 0; i  < size; ++i)
 		points.push_back(CSegPoint2D(x_init[i], y_init[i]));
 
-	CSegSection section("white", points);
+	CSegSection section("white", points, 1);
 
 	xmlpp::Document document;
 	xmlpp::Element* nodeRoot = document.create_root_node("test");
-	section.write(*nodeRoot);
+	section.write(*nodeRoot, 1);
 
 	const string xmldoc = document.write_to_string();
 	const string testdoc(testsection_init);
@@ -458,7 +458,7 @@ void SectionTestRead::init(const char *init_str)
 	const xmlpp::Element *root = document->get_root_node ();
 	const xmlpp::Node::NodeList nodes = root->get_children();
 	BOOST_CHECK_EQUAL(nodes.size(),1u);
-	section = CSegSection(**nodes.begin());
+	section = CSegSection(**nodes.begin(), 1);
 
 }
 

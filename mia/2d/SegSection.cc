@@ -28,17 +28,19 @@
 NS_MIA_BEGIN
 using namespace std;
 
-CSegSection::CSegSection()
+CSegSection::CSegSection():
+	m_is_open(false)
 {
 }
 
-CSegSection::CSegSection(const string& id, const Points& points):
+CSegSection::CSegSection(const string& id, const Points& points, bool is_open):
 	m_id(id),
-	m_points(points)
+	m_points(points), 
+	m_is_open(is_open)
 {
 }
 
-CSegSection::CSegSection(xmlpp::Node& node)
+CSegSection::CSegSection(xmlpp::Node& node, int version)
 {
 	TRACE("CSegSection::CSegSection");
 
@@ -53,6 +55,10 @@ CSegSection::CSegSection(xmlpp::Node& node)
 
 	for (auto i = points.begin(); i != points.end(); ++i)
 		m_points.push_back(CSegPoint2D(**i));
+
+	if (version > 1) {
+		read_attribute_from_node(elm, "open", m_is_open);  
+	}
 }
 
 const string& CSegSection::get_id() const
@@ -90,10 +96,14 @@ void CSegSection::inv_transform(const C2DTransformation& t)
 }
 
 
-void CSegSection::write(xmlpp::Node& node) const
+void CSegSection::write(xmlpp::Node& node, int version) const
 {
 	xmlpp::Element* nodeChild = node.add_child("section");
 	nodeChild->set_attribute("color", m_id);
+
+	if (version > 1) {
+		nodeChild->set_attribute("open", m_is_open ? "true" : "false");
+	}
 
 	Points::const_iterator ip = m_points.begin();
 	Points::const_iterator ep = m_points.end();

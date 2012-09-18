@@ -30,6 +30,25 @@ NS_MIA_BEGIN
 using namespace xmlpp;
 using namespace std;
 
+void read_attribute_from_node(const Element& elm, const std::string& key, bool& out_value, bool required)
+{
+	auto attr = elm.get_attribute(key);
+	if (!attr) {
+		if (required) 
+			throw create_exception<runtime_error>( elm.get_name(), ":required attribute '", key, "' not found"); 
+		else
+			return; 
+	}
+	
+	if (attr->get_value() == string("false")) 
+		out_value = false; 
+	else if (attr->get_value() == string("true")) 
+		out_value = true; 
+	else 
+		throw create_exception<runtime_error>( elm.get_name(), ":attribute '", key, "' has bogus value '", 
+						       attr->get_value(), "'");
+}
+
 CSegPoint2D::CSegPoint2D()
 {
 }

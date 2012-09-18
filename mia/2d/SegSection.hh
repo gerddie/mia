@@ -53,20 +53,20 @@ public:
 	   @param id ID of the section (and color identifier) 
 	   @param points the points that define a closed polynom representing the shape 
 	 */
-	CSegSection(const std::string& id, const Points& points);
+	CSegSection(const std::string& id, const Points& points, bool is_open);
 
 	/**
 	   Constructor to create a segmentation shape based on a XML sub tree 
 	   @param node root of the XML sub tree 
 	*/
-	CSegSection(xmlpp::Node& node);
+	CSegSection(xmlpp::Node& node, int version);
 
 	/**
 	   Store the segmented section into a XML sub-tree 
 	   @param node parent node to which the subtree should be added 
 	*/
 
-	void write(xmlpp::Node& node) const;
+	void write(xmlpp::Node& node, int version) const;
 
 	/// \returns the ID of the section 
 	const std::string& get_id() const;
@@ -117,6 +117,7 @@ public:
 private:
 	std::string m_id;
 	Points m_points;
+	bool m_is_open; 
 };
 
 NS_MIA_END

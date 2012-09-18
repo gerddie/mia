@@ -33,13 +33,15 @@ using namespace xmlpp;
 
 CSegSet::CSegSet():
 	m_RV_peak(-1),
-	m_LV_peak(-1)
+	m_LV_peak(-1), 
+	m_version(1)
 {
 }
 
 CSegSet::CSegSet(const std::string& src_filename):
 	m_RV_peak(-1),
-	m_LV_peak(-1)
+	m_LV_peak(-1), 
+	m_version(1)
 {
 	DomParser parser;
 	parser.set_substitute_entities(); //We just want the text to be resolved/unescaped automatically.
@@ -54,7 +56,8 @@ CSegSet::CSegSet(const std::string& src_filename):
 
 CSegSet::CSegSet(const xmlpp::Document& doc):
 	m_RV_peak(-1),
-	m_LV_peak(-1)
+	m_LV_peak(-1), 
+	m_version(1)
 {
 	TRACE("CSegSet::CSegSet");
 	read(doc);
@@ -103,7 +106,7 @@ xmlpp::Document *CSegSet::write() const
 	LVPeak->set_attribute("value", to_string<int>(m_LV_peak));
 
 	for(Frames::const_iterator i = m_frames.begin(); i != m_frames.end(); ++i) {
-		i->write(*nodeRoot);
+		i->write(*nodeRoot, m_version);
 	}
 
 	return doc;
@@ -117,12 +120,21 @@ void CSegSet::read(const xmlpp::Document& node)
 				       root->get_name());
 	}
 
+	// without attribute its version 1, otherwise read the version. 
+	const Attribute *attr = root->get_attribute("version"); 
+	if (attr) {
+		if (!from_string(attr->get_value(), m_version)) 
+			throw create_exception<invalid_argument>("bogus version '", 
+								 attr->get_value(), 
+								 "' in segmentation set"); 
+	}
+
 	auto frames = root->get_children("frame");
 	auto i = frames.begin();
 	auto e = frames.end();
 
 	while (i != e) {
-		m_frames.push_back(CSegFrame(**i));
+		m_frames.push_back(CSegFrame(**i, m_version));
 		++i;
 	}
 
