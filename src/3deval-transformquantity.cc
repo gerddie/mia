@@ -66,9 +66,8 @@ const SProgramDescription g_description = {
 	 "  size=1000 1000 200 #grid size of the transformation\n"
 	 "  endian=low     #endianess of binary data (low|big) \n" 
 	 "}\n\n"
-	 "This header is terninted by '^L', i.e. a page feed, hence, wenn running 'more <file>', the first page will "
-	 "only display this header without the following binary data. "
-	 "The header has to be interpreted like follows: three-dimensional data, each entry consists of 13 values "
+	 
+	 "This example header has to be interpreted like follows: three-dimensional data, each entry consists of 13 values "
 	 "the values etry consists of a 3D vector, a scalar, and a 3x3 matrix (saved in row-major format)."
 	 "The data records represent strain tensors, and only a sparse set of points is given. "
 	 "The values are given as single floating point (32 bit). "
