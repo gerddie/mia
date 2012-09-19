@@ -93,6 +93,7 @@ extern const char *testset_init2;
 extern const char *testset_init3;
 extern const char *testset_bboxtest;
 extern const char *testset_shift_and_rename;
+extern const char *testset_version_2; 
 
 struct SegStarFixture {
 	void init(const char *init_str);
@@ -440,6 +441,58 @@ BOOST_FIXTURE_TEST_CASE( test_segset_shift_and_rename, SegSetReadFixture )
 	}
 }
 
+BOOST_FIXTURE_TEST_CASE( test_segset_version_2_read, SegSetReadFixture )
+{
+	init(testset_version_2);
+
+	const auto& frames = segset.get_frames();
+	BOOST_CHECK_EQUAL(frames.size(), 1u);
+	
+	BOOST_CHECK_EQUAL(segset.get_LV_peak(), 2);
+	BOOST_CHECK_EQUAL(segset.get_RV_peak(), 1);
+	
+	const auto& frame = frames[0]; 
+	BOOST_CHECK_EQUAL(frame.get_imagename(), "moved0000.png");
+
+	BOOST_CHECK_EQUAL(frame.get_star().m_radius, 21);
+	BOOST_CHECK_EQUAL(frame.get_star().m_center.y, 128); 
+	BOOST_CHECK_EQUAL(frame.get_star().m_center.x, 112); 
+
+	BOOST_CHECK_EQUAL(frame.get_quality(), 4); 
+	BOOST_CHECK_EQUAL(frame.get_brightness(), 0.625); 
+	BOOST_CHECK_EQUAL(frame.get_contrast(), 1.5); 
+
+	const auto& sections = frame.get_sections(); 
+	BOOST_CHECK_EQUAL(sections.size(), 2u); 
+
+	const auto& sec1 = sections[0]; 
+	BOOST_CHECK(sec1.is_open()); 
+	BOOST_CHECK_EQUAL(sec1.get_points().size(), 3u); 
+	
+	float test_x = 2.1; 
+	float test_y = 1.1; 
+
+	for (auto i = sec1.get_points().begin(); i != sec1.get_points().end(); ++i, test_x += 1.0, test_y += 1.0){
+		BOOST_CHECK_EQUAL(i->x, test_x); 
+		BOOST_CHECK_EQUAL(i->y, test_y);
+	}
+
+	const auto& sec2 = sections[1]; 
+	BOOST_CHECK(!sec2.is_open()); 
+	BOOST_CHECK_EQUAL(sec2.get_points().size(), 3u); 
+	
+	test_x = 2.25; 
+	test_y = 1.2; 
+
+	for (auto i = sec2.get_points().begin(); i != sec2.get_points().end(); ++i, test_x += 1.0, test_y += 1.0){
+		BOOST_CHECK_EQUAL(i->x, test_x); 
+		BOOST_CHECK_EQUAL(i->y, test_y);
+	}
+		
+	
+}
+
+
 
 void SegSetReadFixture::init(const char *data)
 {
@@ -663,5 +716,27 @@ const char *testset_shift_and_rename =
       "<point y=\"104.72\" x=\"118.52\"/>"
       "<point y=\"111.44\" x=\"104.44\"/>"
       "<point y=\"114.96\" x=\"97.08\"/>"
+    "</section>"
+  "</frame></workset>\n";
+
+
+const char *testset_version_2 =
+"<?xml version=\"1.0\"?>\n<workset version=\"2\">"
+	"<description><RVpeak value=\"1\"/><LVpeak value=\"2\"/></description>"
+  "<frame image=\"moved0000.png\"  quality=\"4\" brightness=\"0.625\" contrast=\"1.5\">"
+      "<star y=\"128\" x=\"112\" r=\"21\">"
+        "<point y=\"20\" x=\"10\"/>"
+	"<point y=\"10\" x=\"20\"/>"
+	"<point y=\"4\" x=\"0\"/>"
+      "</star>"
+    "<section color=\"white\" open=\"true\">"
+      "<point y=\"1.1\" x=\"2.1\"/>"
+      "<point y=\"2.1\" x=\"3.1\"/>"
+      "<point y=\"3.1\" x=\"4.1\"/>"
+    "</section>"
+    "<section color=\"green\" open=\"false\">"
+      "<point y=\"1.2\" x=\"2.25\"/>"
+      "<point y=\"2.2\" x=\"3.25\"/>"
+      "<point y=\"3.2\" x=\"4.25\"/>"
     "</section>"
   "</frame></workset>\n";

@@ -342,4 +342,20 @@ size_t CSegFrame::get_nsections() const
 	return m_sections.size(); 
 }
 
+float CSegFrame::get_quality() const
+{
+	return m_quality; 
+}
+
+float CSegFrame::get_brightness() const
+{
+	return m_brightness; 
+}
+
+float CSegFrame::get_contrast() const
+{
+	return m_contrast; 
+}
+
+
 NS_MIA_END

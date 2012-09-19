@@ -195,4 +195,9 @@ void CSegSection::draw(C2DUBImage& mask, unsigned char color)const
 	draw_private(mask, m_points, color_draw); 
 }
 
+bool CSegSection::is_open() const
+{
+	return m_is_open; 
+}
+
 NS_MIA_END

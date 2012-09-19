@@ -182,6 +182,22 @@ public:
 	   \returns number of segmented sections 
 	 */
 	size_t get_nsections() const; 
+
+	/**
+	   \returns slice quality rating 
+	 */
+	float get_quality() const; 
+
+	/**
+	   \returns proposed brightness correction 
+	 */
+	float get_brightness() const; 
+	
+         /**
+	    \returns proposed contrast correction 
+	 */
+	float get_contrast() const; 
+	
 private:
 	void load_image() const; 
 

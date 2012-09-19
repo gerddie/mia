@@ -121,6 +121,9 @@ public:
 	*/
 	void draw_xor(C2DUBImage& output)const; 
 
+	/// \returns whether the curve is open (true) or closed (false). 
+	bool is_open() const; 
+
 private:
 	std::string m_id;
 	Points m_points;
