@@ -24,7 +24,7 @@ ADD_CUSTOM_TARGET(2d-rgbimageio_testdir mkdir -p ${PLUGIN_TEST_ROOT}/${rgbimage2
 
 PLUGIN_PRE("2d-rgbimageio" bmp "${MIA2DLIBS}" "${rgbimage2dio_path}")
 
-IF (FALSE)
+
 
 IF(PNG_FOUND)
   SET(PNG_LINK_LIBS ${MIA2DLIBS} ${PNG_LIBRARIES})
@@ -32,6 +32,7 @@ IF(PNG_FOUND)
   INCLUDE_DIRECTORIES(${PNG_PNG_INCLUDE_DIR})
 ENDIF(PNG_FOUND)
 
+IF (FALSE)
 IF(TIFF_FOUND)
   SET(TIFF_LINK_LIBS ${MIA2DLIBS} ${TIFF_LIBRARIES})
   PLUGIN_PRE("2d-rgbimageio" tiff "${TIFF_LINK_LIBS}" "${rgbimage2dio_path}")
