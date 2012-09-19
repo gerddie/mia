@@ -48,6 +48,7 @@ SET(MIA2D_SRC_BASE
   nonrigidregister.cc 
   polygon.cc
   ppmatrix.cc
+  rgbimageio.cc
   rigidregister.cc
   similarity_profile.cc
   shape.cc
@@ -130,6 +131,7 @@ SET(MIA2D_HEADERS_BASE
   perfusion.hh
   polygon.hh
   ppmatrix.hh
+  rgbimageio.hh
   rigidregister.hh
   shape.hh
   similarity_profile.hh
