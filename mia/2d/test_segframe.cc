@@ -280,7 +280,7 @@ BOOST_FIXTURE_TEST_CASE(test_frame_get_mask_different, FrameTestRead)
 	}
 
 	CSegFrame::Sections sections; 
-	sections.push_back(CSegSection("test", points, 1));
+	sections.push_back(CSegSection("test", points, false));
 	
 	CSegFrame frame("testimage.@", star, sections);
 
