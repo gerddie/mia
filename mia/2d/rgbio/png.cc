@@ -202,7 +202,7 @@ bool CPNG2DImageIOPlugin::do_save(const string& fname, const CRGB2DImage& image)
 
 
 	png_set_IHDR(png_ptr, info_ptr, image.get_size().x, image.get_size().y,
-		     24, PNG_COLOR_TYPE_RGB,
+		     8, PNG_COLOR_TYPE_RGB,
 		     PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 
 
