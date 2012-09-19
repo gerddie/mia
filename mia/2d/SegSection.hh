@@ -52,20 +52,23 @@ public:
 	   Constructor to create a segmentation shape and naming it 
 	   @param id ID of the section (and color identifier) 
 	   @param points the points that define a closed polynom representing the shape 
+	   @param is_open describes if points should be interpreted as polygon 
+	   (i.e. the last point connects to the first), or as poly-line only.
 	 */
 	CSegSection(const std::string& id, const Points& points, bool is_open);
 
 	/**
 	   Constructor to create a segmentation shape based on a XML sub tree 
 	   @param node root of the XML sub tree 
+	   \param version segmentation set version the node stems from. 
 	*/
 	CSegSection(xmlpp::Node& node, int version);
 
 	/**
 	   Store the segmented section into a XML sub-tree 
 	   @param node parent node to which the subtree should be added 
+	   \param version segmentation set version the node stems from. 
 	*/
-
 	void write(xmlpp::Node& node, int version) const;
 
 	/// \returns the ID of the section 

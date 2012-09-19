@@ -63,6 +63,7 @@ public:
 	/**
 	   Construct the segmentation frame from a XML root node
 	   \param node
+	   \param version segmentation set version the node stems from. 
 	 */
 	CSegFrame(const xmlpp::Node& node, int version);
 
@@ -101,6 +102,7 @@ public:
 	/**
 	   Append the segmentation frame to a XML node 
 	   @param node parent node to append the frame description to 
+	   @param version segmentation set file version that should be used to save the data
 	 */
 	void write(xmlpp::Node& node, int version) const;
 
