@@ -441,7 +441,7 @@ BOOST_FIXTURE_TEST_CASE( test_segset_shift_and_rename, SegSetReadFixture )
 	}
 }
 
-BOOST_FIXTURE_TEST_CASE( test_segset_version_2_read, SegSetReadFixture )
+BOOST_FIXTURE_TEST_CASE( test_segset_version_2_read_write, SegSetReadFixture )
 {
 	init(testset_version_2);
 
@@ -488,8 +488,12 @@ BOOST_FIXTURE_TEST_CASE( test_segset_version_2_read, SegSetReadFixture )
 		BOOST_CHECK_EQUAL(i->x, test_x); 
 		BOOST_CHECK_EQUAL(i->y, test_y);
 	}
-		
-	
+
+	unique_ptr<xmlpp::Document> document(segset.write());
+	const string xmldoc = document->write_to_string();
+	const string testdoc(testset_version_2);
+	BOOST_CHECK_EQUAL(xmldoc.size(), testdoc.size());
+	BOOST_CHECK_EQUAL(xmldoc, testdoc);
 }
 
 
