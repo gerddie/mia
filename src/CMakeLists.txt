@@ -99,6 +99,8 @@ IF(ITPP_FOUND)
   DEFEXE(2dmyoica-nonrigid2     mia2dmyocardperf )
 ENDIF(ITPP_FOUND)
 
+DEFEXE(2dgrayimage-combine-to-rgb mia2d)
+
 DEFCHKEXE(3dlerp mia3d )
 
 DEFEXE(3dimagestats       mia3d )
