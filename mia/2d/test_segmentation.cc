@@ -727,7 +727,7 @@ const char *testset_shift_and_rename =
 const char *testset_version_2 =
 "<?xml version=\"1.0\"?>\n<workset version=\"2\">"
 	"<description><RVpeak value=\"1\"/><LVpeak value=\"2\"/></description>"
-  "<frame image=\"moved0000.png\"  quality=\"4\" brightness=\"0.625\" contrast=\"1.5\">"
+  "<frame image=\"moved0000.png\" quality=\"4\" brightness=\"0.625\" contrast=\"1.5\">"
       "<star y=\"128\" x=\"112\" r=\"21\">"
         "<point y=\"20\" x=\"10\"/>"
 	"<point y=\"10\" x=\"20\"/>"

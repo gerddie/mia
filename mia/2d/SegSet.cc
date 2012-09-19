@@ -99,6 +99,10 @@ xmlpp::Document *CSegSet::write() const
 	xmlpp::Document *doc = new xmlpp::Document;
 	xmlpp::Element* nodeRoot = doc->create_root_node("workset");
 
+	if (m_version > 1) {
+		nodeRoot->set_attribute("version", to_string<int>(m_version));
+	}
+
 	Element* description = nodeRoot->add_child("description"); 
 	Element* RVPeak = description->add_child("RVpeak"); 
 	RVPeak->set_attribute("value", to_string<int>(m_RV_peak));
