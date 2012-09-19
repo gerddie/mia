@@ -40,7 +40,8 @@ CSegSection::CSegSection(const string& id, const Points& points, bool is_open):
 {
 }
 
-CSegSection::CSegSection(xmlpp::Node& node, int version)
+CSegSection::CSegSection(xmlpp::Node& node, int version):
+	m_is_open(false)
 {
 	TRACE("CSegSection::CSegSection");
 
@@ -185,12 +186,16 @@ void draw_private(C2DUBImage& mask, const CSegSection::Points& points,  const FD
 
 void CSegSection::draw_xor(C2DUBImage& mask)const
 {
+	if (m_is_open) 
+		throw invalid_argument("CSegSection: Section not closed, hence no filled polygon can be drawn"); 
 	auto xor_draw = [](unsigned char& pixel) { pixel ^= 1 ;}; 
 	draw_private(mask, m_points, xor_draw); 
 }
 
 void CSegSection::draw(C2DUBImage& mask, unsigned char color)const
 {
+	if (m_is_open) 
+		throw invalid_argument("CSegSection: Section not closed, hence no filled polygon can be drawn"); 
 	auto color_draw = [color](unsigned char& pixel) { pixel = color;};
 	draw_private(mask, m_points, color_draw); 
 }

@@ -497,6 +497,96 @@ BOOST_FIXTURE_TEST_CASE( test_segset_version_2_read_write, SegSetReadFixture )
 }
 
 
+BOOST_FIXTURE_TEST_CASE( test_segset_version_2_draw, SegSetReadFixture )
+{
+
+	const char *testset_version_2_draw =
+		"<?xml version=\"1.0\"?>\n<workset version=\"2\">"
+		"<description><RVpeak value=\"1\"/><LVpeak value=\"2\"/></description>"
+		"<frame image=\"moved0000.png\" quality=\"4\" brightness=\"0.625\" contrast=\"1.5\">"
+		"<star y=\"128\" x=\"112\" r=\"21\">"
+		"<point y=\"20\" x=\"10\"/>"
+		"<point y=\"10\" x=\"20\"/>"
+		"<point y=\"4\" x=\"0\"/>"
+		"</star>"
+		"<section color=\"white\" open=\"false\">"
+		"<point y=\"1\" x=\"2\"/>"
+		"<point y=\"9\" x=\"2\"/>"
+		"<point y=\"9\" x=\"8\"/>"
+		"<point y=\"1\" x=\"8\"/>"
+		"</section>"
+		"<section color=\"blue\" open=\"false\">"
+		"<point y=\"3\" x=\"4\"/>"
+		"<point y=\"7\" x=\"4\"/>"
+		"<point y=\"7\" x=\"6\"/>"
+		"<point y=\"3\" x=\"6\"/>"
+		"</section>"
+		"</frame></workset>\n";
+	
+	init(testset_version_2_draw);
+
+	const auto& frames = segset.get_frames();
+	BOOST_REQUIRE(frames.size() > 0); 
+
+	C2DUBImage mask = frames[0].get_section_masks(C2DBounds(12,13)); 
+	vector<unsigned char> test_image = {
+		0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,1,1,1,1,1,1,0,0,0,0,
+		0,0,1,1,1,1,1,1,0,0,0,0,
+		0,0,1,1,0,0,1,1,0,0,0,0,
+		0,0,1,1,0,0,1,1,0,0,0,0,
+		0,0,1,1,0,0,1,1,0,0,0,0,
+		0,0,1,1,0,0,1,1,0,0,0,0,
+		0,0,1,1,1,1,1,1,0,0,0,0,
+		0,0,1,1,1,1,1,1,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,0
+	};
+
+	auto m = mask.begin(); 
+	auto t = test_image.begin(); 
+	for (int y = 0; y < 12; ++y) 
+		for (int x = 0; x < 12; ++x, ++m, ++t) {
+			if (*m != *t) 
+				cvdebug() << "(" << x << ", " << y << ")=" << (int)*m << "!=" << (int)*t << "\n"; 
+			BOOST_CHECK_EQUAL(*m, *t); 
+		}
+}
+
+BOOST_FIXTURE_TEST_CASE( test_segset_version_2_draw_fail, SegSetReadFixture )
+{
+
+	const char *testset_version_2_draw =
+		"<?xml version=\"1.0\"?>\n<workset version=\"2\">"
+		"<description><RVpeak value=\"1\"/><LVpeak value=\"2\"/></description>"
+		"<frame image=\"moved0000.png\" quality=\"4\" brightness=\"0.625\" contrast=\"1.5\">"
+		"<star y=\"128\" x=\"112\" r=\"21\">"
+		"<point y=\"20\" x=\"10\"/>"
+		"<point y=\"10\" x=\"20\"/>"
+		"<point y=\"4\" x=\"0\"/>"
+		"</star>"
+		"<section color=\"white\" open=\"true\">"
+		"<point y=\"1\" x=\"2\"/>"
+		"<point y=\"9\" x=\"2\"/>"
+		"<point y=\"9\" x=\"8\"/>"
+		"<point y=\"1\" x=\"8\"/>"
+		"</section>"
+		"<section color=\"blue\" open=\"false\">"
+		"<point y=\"3\" x=\"4\"/>"
+		"<point y=\"7\" x=\"4\"/>"
+		"<point y=\"7\" x=\"6\"/>"
+		"<point y=\"3\" x=\"6\"/>"
+		"</section>"
+		"</frame></workset>\n";
+	
+	init(testset_version_2_draw);
+
+	const auto& frames = segset.get_frames();
+	// one section is not closed, and can, therefore, not be drawn properly 
+	BOOST_CHECK_THROW(frames[0].get_section_masks(C2DBounds(12,13)), invalid_argument); 
+}
 
 void SegSetReadFixture::init(const char *data)
 {
@@ -744,3 +834,6 @@ const char *testset_version_2 =
       "<point y=\"3.2\" x=\"4.25\"/>"
     "</section>"
   "</frame></workset>\n";
+
+
+
