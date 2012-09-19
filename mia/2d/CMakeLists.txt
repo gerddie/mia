@@ -267,6 +267,39 @@ TEST_2DMIA(segmentation mia2dmyocardperf)
 TEST_2DMIA(segframe mia2dmyocardperf)
 TEST_2DMIA(segpoint mia2dmyocardperf)
 
+
+#
+#  image IO options 
+#
+OPTION(WITH_PNG "enable support for PNG gray scale images IO and RGB saving" ${SEARCH_LIBS_DEFAULT})
+OPTION(WITH_TIFF "enable support for TIFF gray scale images IO and RGB saving" ${SEARCH_LIBS_DEFAULT})
+OPTION(WITH_JPEG "enable support for JPEG gray scale images IO and RGB saving" ${SEARCH_LIBS_DEFAULT})
+
+IF (WITH_PNG)
+  IF(STRICT_DEPENDECIES)
+    FIND_PACKAGE(PNG REQUIRED)
+  ELSE(STRICT_DEPENDECIES)
+    FIND_PACKAGE(PNG)
+  ENDIF(STRICT_DEPENDECIES)
+ENDIF(WITH_PNG)
+
+IF(WITH_TIFF)
+  IF(STRICT_DEPENDECIES)
+    FIND_PACKAGE(TIFF REQUIRED)
+  ELSE(STRICT_DEPENDECIES)
+    FIND_PACKAGE(TIFF)
+  ENDIF(STRICT_DEPENDECIES)
+ENDIF(WITH_TIFF)
+
+
+IF(WITH_JPEG)
+  IF(STRICT_DEPENDECIES)
+    FIND_PACKAGE(JPEG REQUIRED)
+  ELSE(STRICT_DEPENDECIES)
+    FIND_PACKAGE(JPEG)
+  ENDIF(STRICT_DEPENDECIES)
+ENDIF(WITH_JPEG)
+
 #
 # The plugin directories 
 #
@@ -279,6 +312,7 @@ ADD_SUBDIRECTORY(fft       )
 ADD_SUBDIRECTORY(fullcost  )
 ADD_SUBDIRECTORY(kernel    )
 ADD_SUBDIRECTORY(model     )
+ADD_SUBDIRECTORY(rgbio     )
 ADD_SUBDIRECTORY(shapes    )
 #ADD_SUBDIRECTORY(sparseimgsolver )
 ADD_SUBDIRECTORY(timestep  )
