@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#define VSTREAM_DOMAIN "3dvistaio"
 
 #include <sstream>
 #include <cassert>
@@ -76,6 +77,7 @@ void CVista3DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
 template <typename T>
 P3DImage read_image(VImage image)
 {
+	cvdebug() << "Read  image of type '" << CPixelTypeDict.get_name(pixel_type<T>::value)<< "'\n"; 
 	typedef typename vista_repnkind<T>::type O;
 	T3DImage<T> *result = new T3DImage<T>(C3DBounds(VImageNColumns(image), VImageNRows(image), VImageNBands(image)));
 	P3DImage presult(result);
@@ -122,11 +124,10 @@ CVista3DImageIOPlugin::PData  CVista3DImageIOPlugin::do_load(const string& fname
 	if (!nimages)
 		return CVista3DImageIOPlugin::PData();
 
-
 	CVista3DImageIOPlugin::PData result(new CVista3DImageIOPlugin::Data());
-
 	for (int i = 0; i < nimages; ++i) {
 
+		cvdebug() << "Read image no " << i << "\n"; 
 		P3DImage r = copy_from_vista(images[i]);
 		result->push_back(r);
 
@@ -134,7 +135,6 @@ CVista3DImageIOPlugin::PData  CVista3DImageIOPlugin::do_load(const string& fname
 	}
 
 	VFree(images);
-
 	VDestroyAttrList (attr_list);
 
 	return result;

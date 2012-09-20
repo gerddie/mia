@@ -51,11 +51,13 @@ P3DImageVector EXPORT_3D create_image3d_vector(P3DImage image)
 
 P3DImage  EXPORT_3D load_image3d(const std::string& filename)
 {
-	C3DImageIOPluginHandler::Instance::PData  in_image_list = C3DImageIOPluginHandler::instance().load(filename);
+	cvdebug() << "Load 3D images from '" << filename <<"'\n"; 
+	auto in_image_list = C3DImageIOPluginHandler::instance().load(filename);
 	if (in_image_list.get() && !in_image_list->empty())
 		return (*in_image_list)[0];
 	else
 		throw create_exception<runtime_error>( "load_image3d: unable to load 3D image from '", filename, "'");
+
 }
 
 bool EXPORT_3D  save_image(const std::string& filename, P3DImage image)

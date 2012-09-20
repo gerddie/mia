@@ -109,6 +109,7 @@ P3DImage  EXPORT_3D load_image3d(const std::string& filename);
 template <> 
 inline P3DImage  EXPORT_3D load_image<P3DImage>(const std::string& filename)
 {
+	cvdebug() << "Load image " << filename << "\n"; 
 	return load_image3d(filename); 
 }
 
