@@ -206,7 +206,8 @@ public:
 template <typename T>
 T load_image(const std::string& MIA_PARAM_UNUSED(filename))
 {
-	return T(); 
+	static_assert(sizeof(T) == 0, "The call to load_image must be resolved to a template specialization"); 
+
 }
 
 NS_MIA_END
