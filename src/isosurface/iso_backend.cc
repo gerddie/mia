@@ -1,4 +1,5 @@
-/*
+/* -*- mia-c++ -*- 
+**
 ** Copyright (C) 1999 Max-Planck-Institute of Cognitive Neurosience
 **                    Gert Wollny <wollnyAtcbs.mpg.de>
 **  
@@ -54,14 +55,14 @@ static void iso_func_b(gdouble ** f, GtsCartesianGrid g, guint z, gpointer data)
 
 	cvmsg() << "extracting slice ..."<< z +1 <<" of " << g.nz << "\r";
 	
-	if (z == 0 || z == image->get_size().z + 1) {
+	if (z == 0 || z == image->get_size().z+1) {
 		for (size_t y = 0; y < g.ny; ++y)
 			for (size_t x = 0; x < g.nx; ++x)
 				f[x][y] = 0;
 		return; 
 	}
 		
-	const double *p = &(*image)(0,0,z);
+	const double *p = &(*image)(0,0,z-1);
 	size_t x,y; 
 
 	
@@ -85,6 +86,7 @@ typedef struct {
 	guint nold;
 	GTimer* timer;
 	GTimer* total_timer;
+	const char *cost_name; 
 } stop_info_t;
 
 
@@ -139,10 +141,11 @@ static gboolean stop_nedges_verbose (gdouble cost, guint number, stop_info_t *st
 		secs1 = floor (remaining - 3600.*hours1 - 60. * mins1);
 
 		fprintf (stderr, 
-			 "\rCost: %10.5f "
+			 "\rCost (%s): %10.5f "
 			 "Edges: %10u %3.0f%% %6.0f edges/s "
 			 "Elapsed: %02.0f:%02.0f:%02.0f "
 			 "Remaining: %02.0f:%02.0f:%02.0f",
+			 stop_info->cost_name, 
 			 cost,
 			 number, 
 			 100.*(stop_info->nmax - number)/(stop_info->nmax - stop_info->max_edges),
@@ -196,12 +199,13 @@ static int stop_nfaces_verbose(gdouble cost, guint nedges, stop_info_t *stop_inf
 		hours1 = floor (remaining/3600.);
 		mins1 = floor ((remaining - 3600.*hours1)/60.);
 		secs1 = floor (remaining - 3600.*hours1 - 60.*mins1);
-
+		
 		fprintf (stderr, 
-			 "\rCost: %10.5f "
+			 "\rCost(%s): %10.5f "
 			 "Faces: %10u %3.0f%% %6.0f faces/s "
 			 "Elapsed: %02.0f:%02.0f:%02.0f "
 			 "Remaining: %02.0f:%02.0f:%02.0f",
+			 stop_info->cost_name, 
 			 cost,
 			 number, 
 			 100.*(stop_info->nmax - number)/(stop_info->nmax - stop_info->max_faces),
@@ -229,7 +233,8 @@ static int stop_cost_verbose(gdouble cost, guint nedges, gdouble *max_cost)
 	g_return_val_if_fail (max_cost != NULL, TRUE);
 	
 	if (!hide--) {
-		cvmsg()  << "\rCost: "<< cost << " Edges: "<< nedges;
+		cvmsg()  << "\rCost(volume change): "<< std::setw(10) 
+			 << cost << " Edges: "<< std::setw(10) << nedges;
 		hide = 200; 
 	}
 	
@@ -303,19 +308,17 @@ GtsSurface *iso_surface(const C3DImage& src, gfloat iso_value, gint max_edges, g
 			gfloat coarsen_method_factor)
 {
 	bool verbose = cverb.get_level() <= vstream::ml_message;
-
 	
-	cvmsg()  << "verbose = " << verbose << " " << cverb.get_level() << '\n'; 
      	stop_info_t stop_info ={ NULL, -1, -1,0,0, NULL, NULL};
 	gdouble fold = M_PI/180.;
 	GtsVolumeOptimizedParams params = { 0.5, 0.5, 0. };
 	
 	stop_info.max_faces = max_faces; 
 	stop_info.max_edges = max_edges; 
-
+	stop_info.cost_name = "volume change"; 
 	
 	stop_info.surface = extract_surface(src, iso_value, bordered);
-
+	
 	
 	if (!stop_info.surface) {
 		cverr()<<"Unable to generate surface" << '\n'; 
@@ -333,7 +336,8 @@ GtsSurface *iso_surface(const C3DImage& src, gfloat iso_value, gint max_edges, g
 		
 		stop_info_first.surface = stop_info.surface; 
 		stop_info_first.max_edges = int(coarsen_method_factor * stop_info.max_edges);
-
+		stop_info_first.cost_name = "edge length"; 
+	
 		gts_surface_coarsen(stop_info.surface,NULL,
 				    (gpointer)&params,
 				    NULL,
@@ -358,7 +362,8 @@ GtsSurface *iso_surface(const C3DImage& src, gfloat iso_value, gint max_edges, g
 
 		stop_info_first.surface = stop_info.surface; 
 		stop_info_first.max_faces  = int(coarsen_method_factor * stop_info.max_faces);
-		
+		stop_info_first.cost_name = "edge length"; 
+				
 		gts_surface_coarsen(stop_info.surface,NULL,(gpointer)&params,
 				    NULL,(gpointer)&params,
 				    verbose ? (GtsStopFunc)stop_nfaces_verbose: (GtsStopFunc)stop_nfaces,
@@ -383,12 +388,12 @@ GtsSurface *iso_surface(const C3DImage& src, gfloat iso_value, gint max_edges, g
 				    &max_cost,
 				    fold);
 	}
-
+	
 	if (verbose)
 		gts_surface_print_stats(stop_info.surface, stderr);
 	
 	return stop_info.surface;
-}
+	}
 
 
 

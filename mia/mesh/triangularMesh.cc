@@ -139,43 +139,40 @@ void CTriangleMeshData::evaluate_normals()
 
 	cvdebug() << "Mesh has " << ctriangles.size() << " triangles\n";
 	// run overall triangles
-	CTriangleMesh::const_triangle_iterator t = ctriangles.begin();
-	CTriangleMesh::const_triangle_iterator et = ctriangles.end();
+	auto t = ctriangles.begin();
+	auto et = ctriangles.end();
 
+	int i = 0; 
 	while (t != et) {
 		C3DFVector e1 = (*m_vertices)[t->x] - (*m_vertices)[t->y];
 		C3DFVector e2 = (*m_vertices)[t->z] - (*m_vertices)[t->y];
 		C3DFVector e3 = (*m_vertices)[t->z] - (*m_vertices)[t->x];
 		C3DFVector help_normal = e2 ^ e1;
-		if (help_normal.norm2() == 0 && errors < 10) {
-			cverr() <<"CTriangleMeshData::evaluate_normals(): triangle "<< *t << " has zero normal\n";
-			++errors;
-			continue;
+		if (help_normal.norm2() > 0) {
+			float weight1 = acos((dot(e1,e2)) / (e1.norm() * e2.norm()));
+			float weight2 = acos((dot(e3,e2)) / (e3.norm() * e2.norm()));
+			(*m_normals)[t->y] += weight1 * help_normal;
+			(*m_normals)[t->z] += weight2 * help_normal;
+			
+			float weight3 = M_PI - weight1  - weight2;
+			
+			(*m_normals)[t->x] += weight3 * help_normal;
+		}else {
+			cverr() <<"CTriangleMeshData::evaluate_normals(): triangle " << i << ":" << *t << " with corners [" 
+				<< e1 << e2 << e3 << "] has zero normal\n";
 		}
-		float weight1 = acos((dot(e1,e2)) / (e1.norm() * e2.norm()));
-		float weight2 = acos((dot(e3,e2)) / (e3.norm() * e2.norm()));
-		(*m_normals)[t->y] += weight1 * help_normal;
-		(*m_normals)[t->z] += weight2 * help_normal;
-
-		float weight3 = M_PI - weight1  - weight2;
-
-		(*m_normals)[t->x] += weight3 * help_normal;
 		++t;
+		++i; 
 	}
 
 	// normalize the normals
-	CTriangleMesh::normal_iterator bn = m_normals->begin();
-	CTriangleMesh::normal_iterator en = m_normals->end();
-
-	while (bn != en) {
-		float norm = (*bn).norm();
-		if (norm > 0)
-			*bn /= norm;
-		++bn;
-	}
+	for_each(m_normals->begin(), m_normals->end(), 
+		 [](C3DFVector& n) -> void {
+			 float norm = n.norm();
+			 if (norm > 0)
+				 n /= norm;
+		 }); 
 }
-// void CTriangleMeshData::evaluate_normals()
-//
 
 
 CTriangleMesh::CTriangleMesh(const CTriangleMesh& orig):

@@ -76,15 +76,46 @@ CTriangleMesh *gts_to_mona_mesh(GtsSurface *surface)
 	int n_vertices = gts_surface_vertex_number(surface);
 	int n_faces = gts_surface_face_number(surface);
 	
-	auto vertices  = CTriangleMesh::PVertexfield(new  CTriangleMesh::CVertexfield(n_vertices));
-	auto triangles = CTriangleMesh::PTrianglefield(new  CTriangleMesh::CTrianglefield(n_faces));
+	CTriangleMesh::CVertexfield vinitial(n_vertices);
+
 	
-	vertex_data_t vdata = {vertices->begin(), 0};
+	vertex_data_t vdata = {vinitial.begin(), 0};
 	
 	gts_surface_foreach_vertex(surface, (GtsFunc)copy_vertices,&vdata);
-	auto ti = triangles->begin();
+
+	CTriangleMesh::CTrianglefield initriangles(n_faces); 
+	auto ti = initriangles.begin();
 	
 	gts_surface_foreach_face(surface, (GtsFunc)copy_triangles,&ti);
+	
+	auto vertices  = CTriangleMesh::PVertexfield(new  CTriangleMesh::CVertexfield);
+	vertices->reserve(n_vertices); 
+
+	vector<int> remap(n_vertices); 
+	auto r = remap.begin(); 
+	for (auto v = vinitial.begin(); v != vinitial.end(); ++v, ++r) {
+		auto ov = find(vertices->begin(), vertices->end(), *v); 
+		if (ov != vertices->end()) {
+			cvdebug() << "found duplicate vertex\n"; 
+			*r = distance(vertices->begin(), ov);
+		}else {
+			*r = vertices->size(); 
+			vertices->push_back(*v); 
+		}
+	}
+	
+	
+	auto triangles = CTriangleMesh::PTrianglefield(new  CTriangleMesh::CTrianglefield);
+	triangles->reserve(n_faces); 
+	
+	for_each(initriangles.begin(), initriangles.end(), 
+		 [&remap, &triangles](CTriangleMesh::triangle_type& t) -> void {
+			  t.x = remap[t.x]; 
+			  t.y = remap[t.y]; 
+			  t.z = remap[t.z]; 
+			  if (t.x != t.y && t.x != t.z && t.y != t.z) 
+				  triangles->push_back(t); 
+		  }); 
 	
 	return new CTriangleMesh(triangles, vertices, NULL, NULL, NULL);
 }
