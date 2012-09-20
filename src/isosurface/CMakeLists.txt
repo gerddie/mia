@@ -36,7 +36,7 @@ IF(GTS_FOUND)
 
   # add the ISO-surface program 
   ADD_EXECUTABLE(mia-3dextract-isosurface ${isosurface_SOURCES})
-  CREATE_EXE_DOCU(mia-3dextract-isosurface)
+  CREATE_EXE_DOCU(3dextract-isosurface)
   INCLUDE_DIRECTORIES(${GTS_INCLUDE_DIRS})
   TARGET_LINK_LIBRARIES(mia-3dextract-isosurface miamesh ${GTS_LIBRARIES})
   INSTALL(TARGETS mia-3dextract-isosurface RUNTIME DESTINATION "bin")

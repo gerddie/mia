@@ -391,27 +391,6 @@ GtsSurface *iso_surface(const C3DImage& src, gfloat iso_value, gint max_edges, g
 }
 
 
-/*
-  $Log$
-  Revision 1.5  2005/07/04 08:28:20  tittge
-  adjusted to libmona-0.7
-
-  Revision 1.2  2005/06/02 13:38:23  gerddie
-  adapt code to new plugin handling
-
-  Revision 1.1.1.1  2005/03/17 13:46:56  gerddie
-  initial checkin
-
-  Revision 1.4  2005/01/25 14:13:40  wollny
-  3dvector attribute support
-
-  Revision 1.3  2005/01/19 15:22:07  wollny
-  cvs logging + license
-
-*/
-
-
-
 
 
 

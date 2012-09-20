@@ -25,6 +25,8 @@
 
 #include <mia/mesh/triangularMesh.hh>
 #include <mia/3d/3DImage.hh>
+#include <mia/3d/3dimageio.hh>
+
 #include <mia/core/cmdlineparser.hh>
 #include <mia/internal/main.hh>
 #include <gts.h>
@@ -42,11 +44,12 @@ CTriangleMesh *gts_to_mona_mesh(GtsSurface *surface);
 
 const SProgramDescription g_description = {
         {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
-	{pdi_short, "Extrct an ist-surface froma a 3D image."}, 
+	{pdi_short, "Extract an ist-surface froma a 3D image."}, 
 	{pdi_description, "This program is used to extract an iso-surface from the input gray scale "
 	 "image by using marching thetrahedra."},
-	{pdi_example_descr, ""}, 
-	{pdi_example_code, "" }
+	{pdi_example_descr, "Extract the surface corresponding to the value 30 and stop optimizing "
+		 "when the mesh consists of less than 100000 triangles."}, 
+	{pdi_example_code, "-i image.v -o mesh.vmesh -s 30 -f 100000"  }
 }; 
 
 
@@ -84,8 +87,11 @@ int do_main (int argc, char * argv[])
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no) 
 		return EXIT_SUCCESS; 
 	
-		
-	auto image = load_image<P3DImage>(in_filename); 
+	
+        auto image = load_image<P3DImage>(in_filename); 
+	if (!image) 
+		throw create_exception<invalid_argument>("No image data found in '", in_filename, "'"); 
+	
 	GtsSurface *surface = iso_surface(*image, iso_value, max_edges, max_faces, 
 					  max_cost, use_border, factor);
 
