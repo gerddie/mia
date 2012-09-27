@@ -104,13 +104,14 @@ int do_main( int argc, char *argv[] )
 	
 	size_t n_sections = 0; 
 	int skip = 2; 
-	int reference = 20; 
+	int reference = -1; 
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( org_filename, "original", 'o', "original segmentation set", CCmdOption::required));
 	options.add(make_opt( reg_filename, "registered", 'g', "registered segmentation set", CCmdOption::required));
 	options.add(make_opt( skip, "skip", 'k', "images to skip at the begin of the series, if (k < 0) use RV peak of the registered set if set")); 
-	options.add(make_opt( reference, "reference", 'r', "reference image")); 
+	options.add(make_opt( reference, "reference", 'r', "reference frame for automatic curve extraction. If it is set to -1, the LV peak "
+			      "found in the registered set will be used. if this value is also -1 (i.e. not identified), the lastframe will be used.")); 
 	options.add(make_opt( curves_filename, "curves", 'c', "region average value curves, "
 			      "The output files each comprises a table in plain-text format that contains three columns "
 			      "for each section of the LV myocardium: The first column contains the values obtained by "
@@ -151,6 +152,12 @@ int do_main( int argc, char *argv[] )
 	
 	vector<vector<SResult> > curves; 
 	vector<vector<SResult> > varcurves; 
+
+	if (reference == -1) {
+		reference = registered.get_LV_peak(); 
+		if (reference == -1)
+			reference = registered.get_frames().size() - 1;
+	}
 	
 	C2DUBImage org_mask = original_frames[reference].get_section_masks(n_sections); 
 	C2DUBImage reg_mask = registered_frames[reference].get_section_masks(n_sections); 
