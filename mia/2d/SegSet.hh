@@ -129,11 +129,27 @@ public:
 	   \\returns the frame number of the LV peak enhancement (-1 if not set)
 	*/
 	int get_LV_peak() const; 
+
+	/**
+	   \\returns the frame number of the image that should be used as reference frame 
+	   for time-intensity analysis after motion compensation - if the used motion compensation 
+	   algorithm provides some (like quasiperiodic, one2many, or serial do). Returns -1 if no values is given. 
+	*/
+	int get_prefered_reference() const; 
+
+
+	/**
+	   Set the prefered reference frame for this segmentation set. 
+	   \param value 
+	 */
+	void  get_prefered_reference(int value); 
+
 private:
 	void read(const xmlpp::Document& node);
 	Frames m_frames;
 	int m_RV_peak; 
 	int m_LV_peak; 
+	int m_prefered_reference; 
 	int m_version; 
 };
 

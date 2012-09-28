@@ -450,6 +450,7 @@ BOOST_FIXTURE_TEST_CASE( test_segset_version_2_read_write, SegSetReadFixture )
 	
 	BOOST_CHECK_EQUAL(segset.get_LV_peak(), 2);
 	BOOST_CHECK_EQUAL(segset.get_RV_peak(), 1);
+	BOOST_CHECK_EQUAL(segset.get_prefered_reference(), 0);
 	
 	const auto& frame = frames[0]; 
 	BOOST_CHECK_EQUAL(frame.get_imagename(), "moved0000.png");
@@ -502,7 +503,7 @@ BOOST_FIXTURE_TEST_CASE( test_segset_version_2_draw, SegSetReadFixture )
 
 	const char *testset_version_2_draw =
 		"<?xml version=\"1.0\"?>\n<workset version=\"2\">"
-		"<description><RVpeak value=\"1\"/><LVpeak value=\"2\"/></description>"
+		"<description><RVpeak value=\"1\"/><LVpeak value=\"2\"/><PreferedRef value=\"0\"/></description>"
 		"<frame image=\"moved0000.png\" quality=\"4\" brightness=\"0.625\" contrast=\"1.5\">"
 		"<star y=\"128\" x=\"112\" r=\"21\">"
 		"<point y=\"20\" x=\"10\"/>"
@@ -560,7 +561,7 @@ BOOST_FIXTURE_TEST_CASE( test_segset_version_2_draw_fail, SegSetReadFixture )
 
 	const char *testset_version_2_draw =
 		"<?xml version=\"1.0\"?>\n<workset version=\"2\">"
-		"<description><RVpeak value=\"1\"/><LVpeak value=\"2\"/></description>"
+		"<description><RVpeak value=\"1\"/><LVpeak value=\"2\"/><PreferedRef value=\"0\"/></description>"
 		"<frame image=\"moved0000.png\" quality=\"4\" brightness=\"0.625\" contrast=\"1.5\">"
 		"<star y=\"128\" x=\"112\" r=\"21\">"
 		"<point y=\"20\" x=\"10\"/>"
@@ -669,7 +670,7 @@ const char *testsection_init2 = "<?xml version=\"1.0\"?>\n<test><section color=\
 
 
 const char *testset_init = "<?xml version=\"1.0\"?>\n<workset>"
-	"<description><RVpeak value=\"0\"/><LVpeak value=\"1\"/></description>"
+	"<description><RVpeak value=\"0\"/><LVpeak value=\"1\"/><PreferedRef value=\"1\"/></description>"
 	"<frame image=\"image.png\">"
 	"<star y=\"118\" x=\"109\" r=\"21\">"
 	"<point y=\"20\" x=\"10\"/>"
@@ -707,7 +708,7 @@ const char *testset_init = "<?xml version=\"1.0\"?>\n<workset>"
 	"</workset>\n";
 
 const char *testset_init2 = "<?xml version=\"1.0\"?>\n<workset>"
-	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/></description>"
+	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/><PreferedRef value=\"-1\"/></description>"
 	"<frame image=\"image.png\">"
 	"<star y=\"118\" x=\"109\" r=\"21\">"
 	"<point y=\"20\" x=\"10\"/>"
@@ -725,7 +726,7 @@ const char *testset_init2 = "<?xml version=\"1.0\"?>\n<workset>"
 	"</workset>\n";
 
 const char *testset_init3 = "<?xml version=\"1.0\"?>\n<workset>"
-	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/></description>"
+	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/><PreferedRef value=\"-1\"/></description>"
 	" <frame image=\"image.png\">"
 	"  <star y=\"118\" x=\"109\" r=\"21\">"
 	"   <point y=\"20\" x=\"10\"/>"
@@ -745,8 +746,9 @@ const char *testset_init3 = "<?xml version=\"1.0\"?>\n<workset>"
 const char *testset_bboxtest =
 "<?xml version=\"1.0\"?>\n<workset>"
   "<description>"
-	"<RVpeak value=\"-1\"/>"
-	"<LVpeak value=\"-1\"/>"
+	"<RVpeak value=\"2\"/>"
+	"<LVpeak value=\"3\"/>"
+	"<PreferedRef value=\"1\"/>"
   "</description>"
   "<frame image=\"data0000.png\">"
       "<star y=\"118\" x=\"109\" r=\"21\">"
@@ -782,7 +784,7 @@ const char *testset_bboxtest =
 
 const char *testset_shift_and_rename =
 "<?xml version=\"1.0\"?>\n<workset>"
-	"<description><RVpeak value=\"-1\"/><LVpeak value=\"-1\"/></description>"
+	"<description><RVpeak value=\"2\"/><LVpeak value=\"3\"/><PreferedRef value=\"1\"/></description>"
   "<frame image=\"moved0000.png\">"
       "<star y=\"128\" x=\"112\" r=\"21\">"
         "<point y=\"20\" x=\"10\"/>"
@@ -816,7 +818,7 @@ const char *testset_shift_and_rename =
 
 const char *testset_version_2 =
 "<?xml version=\"1.0\"?>\n<workset version=\"2\">"
-	"<description><RVpeak value=\"1\"/><LVpeak value=\"2\"/></description>"
+	"<description><RVpeak value=\"1\"/><LVpeak value=\"2\"/><PreferedRef value=\"0\"/></description>"
   "<frame image=\"moved0000.png\" quality=\"4\" brightness=\"0.625\" contrast=\"1.5\">"
       "<star y=\"128\" x=\"112\" r=\"21\">"
         "<point y=\"20\" x=\"10\"/>"

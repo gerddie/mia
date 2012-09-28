@@ -34,13 +34,15 @@ using namespace xmlpp;
 CSegSet::CSegSet():
 	m_RV_peak(-1),
 	m_LV_peak(-1), 
+	m_prefered_reference(-1), 
 	m_version(1)
 {
 }
 
 CSegSet::CSegSet(const std::string& src_filename):
 	m_RV_peak(-1),
-	m_LV_peak(-1), 
+	m_LV_peak(-1),
+	m_prefered_reference(-1), 
 	m_version(1)
 {
 	DomParser parser;
@@ -57,6 +59,7 @@ CSegSet::CSegSet(const std::string& src_filename):
 CSegSet::CSegSet(const xmlpp::Document& doc):
 	m_RV_peak(-1),
 	m_LV_peak(-1), 
+	m_prefered_reference(-1), 
 	m_version(1)
 {
 	TRACE("CSegSet::CSegSet");
@@ -108,6 +111,9 @@ xmlpp::Document *CSegSet::write() const
 	RVPeak->set_attribute("value", to_string<int>(m_RV_peak));
 	Element* LVPeak = description->add_child("LVpeak"); 
 	LVPeak->set_attribute("value", to_string<int>(m_LV_peak));
+	Element* PreferedRef = description->add_child("PreferedRef"); 
+	PreferedRef->set_attribute("value", to_string<int>(m_prefered_reference));
+
 
 	for(Frames::const_iterator i = m_frames.begin(); i != m_frames.end(); ++i) {
 		i->write(*nodeRoot, m_version);
@@ -169,7 +175,19 @@ void CSegSet::read(const xmlpp::Document& node)
 						 <<"' to an integer; ignoring\n"; 
 					m_LV_peak = -1; 
 				}
-		} else {
+		} else if ((*i)->get_name() == "PreferedRef") {
+			const Element& elm = dynamic_cast<const Element&>(**i); 
+			const Attribute *attr = elm.get_attribute("value"); 
+			if (!attr)
+				cvwarn() << "CSegFrame: PreferedRef without attribute"; 
+			else 	
+				if (!from_string(attr->get_value(), m_prefered_reference)) {
+					cvwarn() << "Could't convert PreferedRef attribute '" << attr->get_value() 
+						 <<"' to an integer; ignoring\n"; 
+					m_prefered_reference = -1; 
+				}
+		}
+		else {
 			cvinfo() << "Ignoring unknown element '" << (*i)->get_name() << "'\n"; 
 		}
 	}
@@ -177,9 +195,9 @@ void CSegSet::read(const xmlpp::Document& node)
 
 CSegSet  CSegSet::shift_and_rename(size_t skip, const C2DFVector&  shift, const std::string& new_filename_base) const
 {
-	CSegSet result;
-	auto iframe = get_frames().begin();
-	auto eframe = get_frames().end();
+	CSegSet result(*this);
+	auto iframe = result.get_frames().begin();
+	auto eframe = result.get_frames().end();
 
 	while (skip-- && iframe != eframe)
 		++iframe;
@@ -189,10 +207,8 @@ CSegSet  CSegSet::shift_and_rename(size_t skip, const C2DFVector&  shift, const 
 		split_filename_number_pattern(iframe->get_imagename(), base, suffix, number);
 		stringstream fname;
 		fname << new_filename_base << number << suffix;
-		CSegFrame rframe = *iframe;
+		CSegFrame& rframe = *iframe;
 		rframe.shift(shift, fname.str());
-
-		result.add_frame(rframe);
 		++iframe;
 	}
 	return result;
@@ -223,6 +239,16 @@ void CSegSet::set_LV_peak(int peak)
 int CSegSet::get_LV_peak() const
 {
 	return m_LV_peak; 
+}
+
+int CSegSet::get_prefered_reference() const
+{
+	return m_prefered_reference; 
+}
+
+void  CSegSet::get_prefered_reference(int value)
+{
+	m_prefered_reference = value; 
 }
 
 NS_MIA_END
