@@ -246,7 +246,7 @@ int CSegSet::get_prefered_reference() const
 	return m_prefered_reference; 
 }
 
-void  CSegSet::get_prefered_reference(int value)
+void  CSegSet::set_prefered_reference(int value)
 {
 	m_prefered_reference = value; 
 }

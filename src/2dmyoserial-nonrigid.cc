@@ -78,6 +78,7 @@ int do_main( int argc, char *argv[] )
 	PMinimizer minimizer;
 	size_t mg_levels = 3; 
 	int reference_param = -1; 
+	int skip = 0; 
 	
 	CCmdOptionList options(g_general_help);
 	
@@ -95,6 +96,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( transform_creator, "spline", "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
+	options.add(make_opt( skip, "skip", 'k', "skip registration of these images at the beginning of the series")); 
 
 	if (options.parse(argc, argv, "cost", &C2DFullCostPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
@@ -133,7 +135,7 @@ int do_main( int argc, char *argv[] )
 
 	
 	// run forward registrations 
-	for (size_t i = 0; i < reference; ++i) {
+	for (size_t i = skip; i < reference; ++i) {
 		P2DTransformation transform = nrr.run(input_images[i], input_images[i+1]);
 		for (size_t j = 0; j <=i ; ++j) {
 			input_images[j] = (*transform)(*input_images[j]);
@@ -155,6 +157,8 @@ int do_main( int argc, char *argv[] )
 	input_set.set_images(input_images); 
 	input_set.rename_base(registered_filebase); 
 	input_set.save_images(out_filename); 
+	
+	input_set.set_prefered_reference(reference); 
 	
 	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );

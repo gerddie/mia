@@ -416,6 +416,7 @@ int do_main( int argc, char *argv[] )
 			frames[i + skip].inv_transform(*transforms[i]);
 	}
 	
+	input_set.set_prefered_reference(mpr.get_ref_idx() + skip); 
 	unique_ptr<xmlpp::Document> outset(input_set.write());
 	ofstream outfile(out_filename.c_str(), ios_base::out );
 	if (outfile.good())

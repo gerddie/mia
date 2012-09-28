@@ -142,7 +142,7 @@ public:
 	   Set the prefered reference frame for this segmentation set. 
 	   \param value 
 	 */
-	void  get_prefered_reference(int value); 
+	void  set_prefered_reference(int value); 
 
 private:
 	void read(const xmlpp::Document& node);

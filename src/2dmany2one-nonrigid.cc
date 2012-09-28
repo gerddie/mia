@@ -134,6 +134,7 @@ int do_main( int argc, char *argv[] )
 	string minimizer("gsl:opt=gd,step=0.1");
 	size_t mg_levels = 3; 
 	int reference_param = -1; 
+	int skip = 0; 
 
 	int max_threads = task_scheduler_init::automatic;
 	
@@ -151,6 +152,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( transform_creator, "spline", "transForm", 'f', "transformation type"));
 	options.add(make_opt( reference_param, "ref", 'r', "reference frame (-1 == use image in the middle)")); 
+	options.add(make_opt( skip, "skip", 'k', "skip registration of these images at the beginning of the series")); 
 
 	options.set_group("Processing"); 
 	options.add(make_opt(max_threads, "threads", 'T', "Maxiumum number of threads to use for running the registration," 
