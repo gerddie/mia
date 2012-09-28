@@ -143,6 +143,12 @@ int do_main( int argc, char *argv[] )
 	auto original_frames = original.get_frames(); 
 	auto registered_frames = registered.get_frames(); 
 	
+
+	if (reference == -1) {
+		reference = registered.get_LV_peak(); 
+		if (reference == -1)
+			reference = registered.get_frames().size() - 1;
+	}
 	
 	if (original_frames.size() != registered_frames.size()) 
 		throw create_exception<invalid_argument>( "original and reference series must have same size"); 
@@ -153,11 +159,6 @@ int do_main( int argc, char *argv[] )
 	vector<vector<SResult> > curves; 
 	vector<vector<SResult> > varcurves; 
 
-	if (reference == -1) {
-		reference = registered.get_LV_peak(); 
-		if (reference == -1)
-			reference = registered.get_frames().size() - 1;
-	}
 	
 	C2DUBImage org_mask = original_frames[reference].get_section_masks(n_sections); 
 	C2DUBImage reg_mask = registered_frames[reference].get_section_masks(n_sections); 
