@@ -145,9 +145,12 @@ int do_main( int argc, char *argv[] )
 	
 
 	if (reference == -1) {
-		reference = registered.get_LV_peak(); 
-		if (reference == -1)
-			reference = registered.get_frames().size() - 1;
+		reference = registered.get_prefered_reference(); 
+		if (reference == -1) {
+			reference = registered.get_LV_peak(); 
+			if (reference == -1)
+				reference = registered.get_frames().size() - 1;
+		}
 	}
 	
 	if (original_frames.size() != registered_frames.size()) 
