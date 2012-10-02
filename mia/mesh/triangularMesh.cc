@@ -119,17 +119,17 @@ void ensure_single_refered(std::shared_ptr<T >& data)
 void CTriangleMeshData::evaluate_normals()
 {
 	assert(m_vertices && m_triangles);
-	cvdebug() << "CTriangleMeshData::evaluate_normals()\n";
+	cvdebug() << "CTriangleMeshData::evaluate_normals() from " << m_vertices->size() << " vertices\n";
 
 	int errors = 0;
-	if (!m_normals)
+	if (!m_normals || m_normals->empty() )
 		// if no normals are available yet, created them
 		m_normals.reset(new CTriangleMesh::CNormalfield(m_vertices->size()));
 	else
 		// before overwriting the normales, make sure we work on this set
 		ensure_single_refered(m_normals);
 	// zero out normals
-	m_normals->clear();
+	fill(m_normals->begin(), m_normals->end(), C3DFVector::_0); 
 
 	// the writable iterators, index operators  do check against multiple referencing of the data.
 	// We only need read access, therefore a const reference makes sure,
@@ -165,12 +165,14 @@ void CTriangleMeshData::evaluate_normals()
 		++i; 
 	}
 
+	cvdebug() << "normalize " << m_normals->size() << " normals\n"; 
 	// normalize the normals
 	for_each(m_normals->begin(), m_normals->end(), 
 		 [](C3DFVector& n) -> void {
 			 float norm = n.norm();
-			 if (norm > 0)
+			 if (norm > 0) {
 				 n /= norm;
+			 }
 		 }); 
 }
 
