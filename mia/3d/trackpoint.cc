@@ -19,134 +19,36 @@
  */
 
 #include <mia/3d/trackpoint.hh>
+#include <mia/template/cvd_io_trait.hh>
+#include <mia/template/trackpoint.cxx>
+
 
 NS_MIA_BEGIN
 using namespace std; 
 
-C3DTrackPoint::C3DTrackPoint(int id, float time, const C3DFVector& pos, const std::string& reserved):
-	m_id(id), 
-	m_time(time), 
-	m_pos(pos), 
-	m_reserved(reserved)
-{
-}
-
-
-
-C3DTrackPoint::C3DTrackPoint():m_id(-1), 
-	m_time(0.0)
-{
-}
-
-bool C3DTrackPoint::read(string& istr)
-{
-	
-	istringstream is(istr); 
-
-	char c; 
-	is >> m_id; 
-	
-	// was only whitespaces 
-	if (is.eof()) 
-		return false; 
-	is >> c; 
-	if (c != ';') 
-		return false; 
-	is >> m_time; 
-	is >> c; 
-	if (c != ';') 
-		return false; 
-
-	is >> m_pos.x; 
-	is >> c; 
-	if (c != ';') 
-		return false;
-
-	is >> m_pos.y; 
-	is >> c; 
-	if (c != ';') 
-		return false; 
-	
-	is >> m_pos.z;
-	if (is.eof()) 
-		return true;
-	is >> c; 
-	if (c != ';') 
-		return false; 
-
-	// read the remaining fields as one string 
-	getline(is, m_reserved); 
-	return true; 
-}
-
-void C3DTrackPoint::print(ostream& os) const
-{
-	os << m_id << ";" << m_time << ";"; 
-	os << m_pos.x << ";" << m_pos.y << ";" << m_pos.z; 
-	
-	if (!m_reserved.empty())
-		os << ";" << m_reserved;
-}
-
-void C3DTrackPoint::move(float timestep, const C3DTransformation& t)
-{
-	m_pos -= timestep * t.apply(m_pos);
-	m_time += timestep; 
-}
-
-
-const C3DFVector&  C3DTrackPoint::get_pos() const
-{
-	return m_pos; 
-}
-
-
-int C3DTrackPoint::get_id() const
-{
-	return m_id; 
-}
-
-
-float C3DTrackPoint::get_time() const
-{
-	return m_time; 
-}
-
-const std::string&  C3DTrackPoint::get_reserved() const
-{
-	return m_reserved;
-}
-
-/**
-   Load the trackpoints from an input file 
-   \param in_filename input file name in csv format 
-   \returns the list of track points 
-*/
-vector< C3DTrackPoint > load_trackpoints(const string& in_filename)
-{
-	vector< C3DTrackPoint > result;
-
-	ifstream input(in_filename.c_str()); 
-
-	if (input.bad()) 
-		throw create_exception<runtime_error>("Unable to open file '", in_filename, "' for reading");
-
-	while (input.good()) {
-		string input_line; 
-		getline(input, input_line);
-		if (input_line.empty())
-			break; 
+template <> 
+struct NDVectorIOcvd<C3DFVector>{
+	static bool read(istream& is, C3DFVector& value) {
+		char c; 
+		is >> value.x; 
+		is >> c; 
+		if (c != ';') 
+			return false;
 		
-		if (input.good()) {
-			C3DTrackPoint pt; 
-			if (pt.read(input_line)) 
-				result.push_back(pt); 
-			else 
-				cverr() << "Bogus input line '" << input_line << "' ignored\n";
-		}
+		is >> value.y; 
+		is >> c; 
+		if (c != ';') 
+			return false; 
+		
+		is >> value.z;
+		return true; 
 	}
-	return result; 
-}
+	
+	static void write(ostream& os, const C3DFVector& value){
+		os << value.x << ";" << value.y << ";" << value.z; 
+	}
+}; 
 
+template class  TTrackPoint<C3DTransformation>; 
 
 NS_MIA_END

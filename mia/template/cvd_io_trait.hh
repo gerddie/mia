@@ -1,6 +1,6 @@
 /* -*- mia-c++  -*-
  *
- * Copyright (c) Leipzig, Madrid 1999-2012 David Paster, Gert Wollny
+ * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,27 +18,29 @@
  *
  */
 
-#ifndef mia_3d_trackpoint_hh
-#define mia_3d_trackpoint_hh
+#ifndef mia_template_cvd_io_trait_hh
+#define mia_template_cvd_io_trait_hh
 
-#include <mia/3d/transform.hh>
-#include <mia/template/trackpoint.hh>
+#include <mia/core/defines.hh>
+#include <istream>
+#include <ostream> 
 
 NS_MIA_BEGIN
 
-
-
 /**
-   \brief Class to track pixel movement based on a transformation
-
-   This class holds the information to track a single pixel in 3D space 
-   over time and with a given transformation.  
-*/
-
-typedef TTrackPoint<C3DTransformation>  C3DTrackPoint; 
-
-
+   \ingroup traits
+   \brief Structure to read and write ND vectors to and from cvd files
+ */
+template <typename T> 
+struct NDVectorIOcvd {
+	static bool read(std::istream& is, T& value) {
+		static_assert(sizeof(T) == 0, "NDVectorIOcvd::read needs specialization"); 
+		return false; 
+	}
+	static void write(std::ostream& os, const T& value){
+		static_assert(sizeof(T) == 0, "NDVectorIOcvd::read needs specialization"); 
+	}
+}; 
 NS_MIA_END
 
 #endif 
-

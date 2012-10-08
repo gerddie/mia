@@ -246,7 +246,7 @@ int do_main( int argc, char *argv[] )
 							      strerror(errno));
 
 	}else{
-		vector< C3DTrackPoint > trackpoints = load_trackpoints(in_filename); 
+		vector< C3DTrackPoint > trackpoints = C3DTrackPoint::load_trackpoints(in_filename); 
 		vector<SSparseStracPoint> tensorfield; 
 		tensorfield.reserve(trackpoints.size()); 
 		

@@ -56,6 +56,7 @@ public:
 	/// @cond LAZY 
 	typedef C3DBounds Size; 
 	typedef C3DImage Data;
+	typedef C3DFVector Vector;
 	typedef C3DInterpolatorFactory InterpolatorFactory;
 	typedef C3DTransformation type; 
 	typedef std::shared_ptr<C3DTransformation> Pointer; 

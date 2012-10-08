@@ -51,6 +51,9 @@ public:
 	/// generic name for the size type used by this transformation  
 	typedef C2DBounds Size; 
 
+	/// generic name for the vector type used by this transformation  
+	typedef C2DFVector Vector;
+
 	/// generic name for the interpolation factory used by this transformation  
 	typedef C2DInterpolatorFactory InterpolatorFactory;
 

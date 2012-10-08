@@ -82,7 +82,7 @@ int do_main( int argc, char *argv[] )
 	auto t = C3DTransformationIOPluginHandler::instance().load(trans_filename);
 
 	// read the trackpoints 
-	vector< C3DTrackPoint > trackpoints = load_trackpoints(in_filename); 
+	vector< C3DTrackPoint > trackpoints = C3DTrackPoint::load_trackpoints(in_filename); 
 
 	// transform the trackpoints 
 	for_each(trackpoints.begin(), trackpoints.end(), 

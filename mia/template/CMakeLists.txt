@@ -5,6 +5,7 @@ binarize.cxx
 binarize.hh
 convert.cxx
 convert.hh
+cvd_io_trait.hh
 dimtrait.hh
 divcurl.cxx
 divcurl.hh
@@ -26,6 +27,8 @@ similarity_profile.hh
 ssd.hh
 transformfactory.cxx
 transformfactory.hh
+trackpoint.hh
+trackpoint.cxx
 watershed.hh)
 
 INSTALL(FILES ${MIA_TEMPLATES} DESTINATION ${INCLUDE_INSTALL_PATH}/mia/template)
