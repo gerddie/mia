@@ -55,6 +55,7 @@ SET(MIA2D_SRC_BASE
   sparse_image_solver.cc
   splinetransformpenalty.cc
   timestep.cc
+  trackpoint.cc
   transform.cc
   transformio.cc
   transformfactory.cc
@@ -139,6 +140,7 @@ SET(MIA2D_HEADERS_BASE
   splinetransformpenalty.hh
   timestep.hh
   trait.hh
+  trackpoint.hh
   transform.hh
   transformmock.hh
   transformio.hh
@@ -219,6 +221,7 @@ TEST_2DMIA(sparse_image_solver mia2dtest)
 TEST_2DMIA(filter_cast mia2d)
 TEST_2DMIA(splinetransformpenalty mia2d)
 #TEST_2DMIA(fullcost_mi_spline  mia2dtest)
+TEST_2DMIA(trackpoint mia2d)
 
 IF(CMAKE_BUILD_TYPE)
   SET(CONFIG ${CMAKE_BUILD_TYPE})

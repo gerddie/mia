@@ -60,7 +60,7 @@ typedef THandlerSingleton<TFactoryPluginHandler<C3DTransformCreatorPlugin> > C3D
    \returns the transformation creator 
  */
 inline 
-P3DTransformationFactory produce_3dtransform_creator(const std::string& descr) 
+P3DTransformationFactory produce_3dtransform_factory(const std::string& descr) 
 {
 	return C3DTransformCreatorHandler::instance().produce(descr); 
 }
