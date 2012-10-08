@@ -100,6 +100,8 @@ IF(ITPP_FOUND)
 ENDIF(ITPP_FOUND)
 
 DEFEXE(2dgrayimage-combine-to-rgb mia2d)
+DEFEXE(2deval-transformquantity mia2d)
+
 
 DEFCHKEXE(3dlerp mia3d )
 
