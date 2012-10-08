@@ -389,9 +389,22 @@ P3DTransformation C3DSplineTransformation::do_upscale(const C3DBounds& size) con
 
 void C3DSplineTransformation::add(const C3DTransformation& a)
 {
+	// it is very likely that this is not correct, especially if a is not a spline transformation 
 	TRACE_FUNCTION;
-	assert(a.get_size() == get_size());
 
+	if (degrees_of_freedom() < a.degrees_of_freedom()) {
+		throw create_exception<invalid_argument>("C3DSplineTransformation::add: trying to add a transformation "
+							 "with a more degrees of freedom (", a.degrees_of_freedom(), 
+							 " versus ", degrees_of_freedom(), ")"); 
+	}
+	if (a.get_size() != get_size()) {
+		throw create_exception<invalid_argument>("C3DSplineTransformation::add: trying to add a transformation "
+							 "with domain ", a.get_size(), 
+							 " to a transformation with domain ", get_size());
+	}
+	
+	cvwarn() << "Adding to a spline transformation is probably not very accurate\n"; 
+	
 	reinit();
 	a.reinit();
 	

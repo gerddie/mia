@@ -72,8 +72,25 @@ const C3DBounds& C3DGridTransformation::get_size() const
 
 void C3DGridTransformation::add(const C3DTransformation& a)
 {
-	const C3DGridTransformation& other = dynamic_cast<const C3DGridTransformation&>(a);
-	m_field += other.m_field;
+	if (a.get_size() != get_size()) {
+		throw create_exception<invalid_argument>("C3DGridTransformation::add: trying to add a transformation "
+							 "with domain ", a.get_size(), 
+							 " to a transformation with domain ", get_size());
+	}
+
+
+	C3DFVectorfield help(m_field);
+	C3DFVectorfield::iterator i = m_field.begin();
+	auto u = a.begin();
+
+	for (size_t z = 0; z < a.get_size().z; ++z)  {
+		for (size_t y = 0; y < a.get_size().y; ++y)  {
+			for (size_t x = 0; x < a.get_size().x; ++x, ++i, ++u)  {
+				C3DFVector xi = C3DFVector(x, y, z) - *u;
+				*i = help.get_interpol_val_at(*u) +  xi ;
+			}
+		}
+	}
 }
 
 void C3DGridTransformation::update(float step, const C3DFVectorfield& a)
