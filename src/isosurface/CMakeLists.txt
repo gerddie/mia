@@ -18,8 +18,8 @@
 #
 #
 
-SET(isosurface_SOURCES 
-  iso.cc  iso_backend.cc  mesh_convert.cc
+SET(miagts_SOURCES 
+  iso_backend.cc  mesh_convert.cc
   )
 
 OPTION(WITH_GTS "Use the GNU Triangulated Surfaces Library for some mesh realted features" ${SEARCH_LIBS_DEFAULT})
@@ -33,13 +33,21 @@ IF(WITH_GTS)
 ENDIF(WITH_GTS) 
 
 IF(GTS_FOUND) 
-
-  # add the ISO-surface program 
-  ADD_EXECUTABLE(mia-3dextract-isosurface ${isosurface_SOURCES})
-  CREATE_EXE_DOCU(3dextract-isosurface)
   INCLUDE_DIRECTORIES(${GTS_INCLUDE_DIRS})
-  TARGET_LINK_LIBRARIES(mia-3dextract-isosurface miamesh ${GTS_LIBRARIES})
-  INSTALL(TARGETS mia-3dextract-isosurface RUNTIME DESTINATION "bin")
+  set( miagts_DEPS miamesh ${GTS_LIBRARIES})
+  MIA_ADD_LIBRARY(miagts "${miagts_SOURCES}" "${miagts_DEPS}")
+  INSTALL_WITH_EXPORT(miagts)
+
+  # add the ISO-surface programs 
+  ADD_EXECUTABLE(mia-3disosurface-from-volume iso.cc)
+  CREATE_EXE_DOCU(3disosurface-from-volume)
+  TARGET_LINK_LIBRARIES(mia-3disosurface-from-volume miagts)
+  INSTALL(TARGETS mia-3disosurface-from-volume RUNTIME DESTINATION "bin")
+
+  ADD_EXECUTABLE(mia-3disosurface-from-stack iso_from_slices.cc)
+  CREATE_EXE_DOCU(3disosurface-from-stack)
+  TARGET_LINK_LIBRARIES(mia-3disosurface-from-stack miagts)
+  INSTALL(TARGETS mia-3disosurface-from-stack RUNTIME DESTINATION "bin")
 
   # add GTS IO plug-in
   
