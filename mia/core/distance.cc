@@ -61,10 +61,9 @@ void EXPORT_CORE distance_transform_inplace(vector<float>& r)
 
 	k = 0;
 	for (size_t q = 0; q < f.size(); ++q) {
-		while (z[k+1] < q) {
-			cvdebug() << "k=" << k << ", q="<< q << ", z[k+1]=" << z[k+1] << "\n"; 
+		while (z[k+1] < q)
 			++k;
-		}
+
 		float delta = float(q) - v[k]; 
 		r[q] = delta * delta +  f[v[k]];
 	}
