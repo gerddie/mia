@@ -34,7 +34,7 @@ inline float d(float fp, float p, float fq, float q)
 	return  ( fp  - fq + p * p - q * q) / (p - q) * 0.5; 
 }
 
-void distance_transform_inplace(vector<float>& r)
+void EXPORT_CORE distance_transform_inplace(vector<float>& r)
 {
 	TRACE_FUNCTION; 
 	vector<float> f(r); 

@@ -18,13 +18,22 @@
  *
  */
 
-#ifndef mia_2d_distances_hh
-#define mia_2d_distances_hh
 
-#include <mia/2d/2DVector.hh>
-#include <mia/2d/defines2d.hh>
+
+#ifndef mia_2d_distance_hh
+#define mia_2d_distance_hh
+
+#include <vector>
+#include <mia/2d/2DImage.hh>
 
 NS_MIA_BEGIN
+
+/**
+   This function evaluates the 2D distance to a functions defined over a 2D grid  
+   \param[in] f the squared values of the function to evaluate the distance to 
+   \returns distances to the function for each grid point
+*/
+C2DFImage EXPORT_2D distance_transform(const C2DImage& f); 
 
 /**
    @ingroup misc 
@@ -39,7 +48,6 @@ NS_MIA_BEGIN
 float EXPORT_2D distance_point_line(const C2DFVector& point,
 				    const C2DFVector& a,
 				    const C2DFVector& b);
-
 
 
 NS_MIA_END

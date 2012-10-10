@@ -31,7 +31,7 @@ SET(MIA2D_SRC_BASE
   correlation_weight.cc 
   creator.cc
   cstkernel.cc 
-  distances.cc
+  distance.cc
   interpolator.cc 
   fatcost.cc
   fftkernel.cc
@@ -109,7 +109,7 @@ SET(MIA2D_HEADERS_BASE
   cstkernel.hh 
   defines2d.hh
   deformer.hh
-  distances.hh
+  distance.hh
   fatcost.hh
   fullcost.hh
   filterchain.hh
@@ -195,7 +195,7 @@ TEST_2DMIA(2dfilter mia2dtest)
 TEST_2DMIA(2dparam mia2dtest)
 TEST_2DMIA(2dvector mia2dtest)
 TEST_2DMIA(boundingbox mia2dtest)
-TEST_2DMIA(distances mia2dtest)
+TEST_2DMIA(distance mia2dtest)
 TEST_2DMIA(fullcost mia2dtest)
 TEST_2DMIA(interpol mia2dtest)
 TEST_2DMIA(matrix mia2dtest)

@@ -20,9 +20,12 @@
 
 #include <cassert>
 #include <mia/core/msgstream.hh>
-#include <mia/2d/distances.hh>
+#include <mia/core/distance.hh>
+#include <mia/2d/distance.hh>
 
 NS_MIA_BEGIN
+using std::vector;
+using std::copy;
 
 float EXPORT_2D distance_point_line(const C2DFVector& point,
 				    const C2DFVector& a,
@@ -53,23 +56,24 @@ float EXPORT_2D distance_point_line(const C2DFVector& point,
 struct FDistanceTransform : public TFilter<C2DFImage> {
 	template <typename T> 
 	C2DFImage operator()( const T2DImage<T>& image) const {
-		
-		C2DFImage result(image.get_size(), image); 
+
+		C2DFImage result(image.get_size(), image);
 		vector<float> buffer(image.get_size().x); 
+		vector<T> in_buffer(image.get_size().x); 
 		for (size_t y = 0; y < image.get_size().y; ++y) {
-			image.get_data_line_x(y, buffer);
-			dt1d(buffer); 
-			image.put_data_line_x(y, buffer);
+			image.get_data_line_x(y, in_buffer);
+                        copy(in_buffer.begin(), in_buffer.end(), buffer.begin()); 
+			distance_transform_inplace(buffer); 
+			result.put_data_line_x(y, buffer);
 		}
 		buffer.resize(image.get_size().y); 
 		for (size_t x = 0; x < image.get_size().x; ++x) {
-			image.get_data_line_y(x, buffer);
-			dt1d(buffer); 
-			image.put_data_line_y(x, buffer);
+			result.get_data_line_y(x, buffer);
+			distance_transform_inplace(buffer); 
+			result.put_data_line_y(x, buffer);
 		}
-		
+		return result; 
 	}; 
-
 }; 
 
 
@@ -77,19 +81,8 @@ C2DFImage EXPORT_2D distance_transform(const C2DImage& f)
 {
 
 	TRACE_FUNCTION; 
-	vector<float> buffer(f.get_size().x); 
-	for (size_t y = 0; y < image.get_size().y; ++y) {
-		image.get_data_line_x(y, buffer);
-		dt1d(buffer); 
-		image.put_data_line_x(y, buffer);
-	}
-	buffer.resize(image.get_size().y); 
-	for (size_t x = 0; x < image.get_size().x; ++x) {
-		image.get_data_line_y(x, buffer);
-		dt1d(buffer); 
-		image.put_data_line_y(x, buffer);
-	}
-
+	FDistanceTransform df; 
+	return mia::filter(df, f); 
 }
 
 NS_MIA_END

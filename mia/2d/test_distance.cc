@@ -19,7 +19,7 @@
  */
 
 #include <mia/internal/autotest.hh>
-#include <mia/2d/distances.hh>
+#include <mia/2d/distance.hh>
 
 
 NS_MIA_USE
@@ -86,3 +86,27 @@ void PointLineDistanceFixture::check_point(const C2DFVector& point, float result
 	BOOST_CHECK_CLOSE(distance_point_line(point, a, b) + 1.0f, result + 1.0f, 0.1f);
 }
 
+
+
+BOOST_AUTO_TEST_CASE( test_distance_from_inf ) 
+{
+	float in_2d[16] =  { 1, 1, 1, 0, 
+			     1, 1, 1, 1, 
+			     1, 1, 0, 1, 
+			     1, 1, 1, 1 }; 
+	float out_2d[16] = { 8, 4, 1, 0, 
+			     5, 2, 1, 1, 
+			     4, 1, 0, 1, 
+			     5, 2, 1, 2 }; 
+	
+
+	C2DFImage src_img(C2DBounds(4,4)); 
+	
+	transform(&in_2d[0], &in_2d[16],src_img.begin(), [](float x){return numeric_limits<float>::max() * x;}); 
+	
+	C2DFImage result =  distance_transform(src_img); 
+
+	float *o = out_2d; 
+	for(auto i = result.begin(); i != result.end(); ++i, ++o )
+		BOOST_CHECK_CLOSE(*i, *o, 0.1); 
+}

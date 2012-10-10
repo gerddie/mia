@@ -36,7 +36,7 @@ NS_MIA_BEGIN
    at output it contains the distances 
  */
 
-void distance_transform_inplace(std::vector<float>& r); 
+void EXPORT_CORE distance_transform_inplace(std::vector<float>& r); 
 
 NS_MIA_END
 
