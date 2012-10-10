@@ -30,6 +30,7 @@ SET(MIACORE_SRC_BASE
   cmdbooloption.cc
   creator.cc
   datapool.cc
+  distance.cc
   dlloader.cc
   dummyhandler.cc
   fatcost.cc
@@ -103,6 +104,7 @@ SET(MIACORE_HEADER_BASE
   defines.hh
   delayedparameter.hh
   dictmap.hh
+  distance.hh
   dlloader.hh
   dummyhandler.hh
   errormacro.hh
@@ -285,6 +287,7 @@ NEW_TEST(callback miacore)
 NEW_TEST(cmdlineparser miacore)
 NEW_TEST(datapool miacore)
 NEW_TEST(delayedparameter miacore)
+NEW_TEST(distance miacore)
 NEW_TEST(factoryoption miacore)
 NEW_TEST(fatcost  miacore)
 NEW_TEST(fftslopeclassifier miacore)
