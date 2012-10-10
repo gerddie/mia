@@ -110,3 +110,31 @@ BOOST_AUTO_TEST_CASE( test_distance_from_inf )
 	for(auto i = result.begin(); i != result.end(); ++i, ++o )
 		BOOST_CHECK_CLOSE(*i, *o, 0.1); 
 }
+
+
+BOOST_AUTO_TEST_CASE( test_distance_from_func)
+{
+	float in_2d[16] =  { 4, 3, 1, 0, 
+			     2, 2, 5, 7, 
+			     4, 3, 0, 2, 
+			     5, 6, 2, 1 }; 
+
+	float out_2d[16] = { 5, 2, 1, 0, 
+			     4, 2, 1, 1, 
+			     4, 1, 0, 1, 
+			     5, 2, 1, 1 }; 
+	
+
+	C2DFImage src_img(C2DBounds(4,4)); 
+	
+	transform(&in_2d[0], &in_2d[16],src_img.begin(), [](float x){return x* x;}); 
+	
+	C2DFImage result =  distance_transform(src_img); 
+
+	int k = 0; 
+	for(auto i = result.begin(); i != result.end(); ++i, ++k ) {
+		BOOST_CHECK_CLOSE(*i, out_2d[k], 0.1); 
+		cvdebug() << "k=" << k << ", " << *i << ", " << out_2d[k] << "\n"; 
+		
+	}
+}
