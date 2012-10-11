@@ -78,7 +78,6 @@ struct TransformSplineFixture {
 		}
 
 		stransf.set_coefficients(help2); 
-		stransf.reinit();
 	}
 	C2DBounds size;
 	C2DFVectorfield field;
