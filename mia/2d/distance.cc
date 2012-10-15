@@ -53,6 +53,7 @@ float EXPORT_2D distance_point_line(const C2DFVector& point,
 		return sqrt(npoint);
 }
 
+
 struct FDistanceTransform : public TFilter<C2DFImage> {
 	template <typename T> 
 	C2DFImage operator()( const T2DImage<T>& image) const {

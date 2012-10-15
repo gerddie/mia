@@ -30,6 +30,7 @@ SET(MIA3D_SRC
   3dfilter.cc
   3dimageio.cc
   3dvfio.cc
+  distance.cc
   fatcost.cc
   fullcost.cc
   fuzzyseg.cc
@@ -75,6 +76,7 @@ SET(MIA3D_HEADERS
   critical_point.hh
   defines3d.hh
   deformer.hh
+  distance.hh
   fatcost.hh 
   fifotestfixture.hh
   fullcost.hh
@@ -194,6 +196,7 @@ TEST_3D(iterator iterator)
 TEST_3D(stackdisttrans stackdisttrans)
 TEST_3D(similarity_profile similarity_profile)
 TEST_3D(trackpoint similarity_profile)
+TEST_3D(distance distance)
 #
 # installation 
 #

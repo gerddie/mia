@@ -19,49 +19,126 @@
  */
 
 #include <mia/internal/autotest.hh>
+#include <mia/core/distance.hh>
 #include <mia/3d/distance.hh>
+
+using namespace mia; 
+
 
 BOOST_AUTO_TEST_CASE( test_distance_full3d_inf ) 
 {
-	float src[64] = {
-		0, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,  1, 1, 1, 1, 
-		1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 0, 1,  1, 1, 1, 1, 
-		1, 1, 1, 1,   1, 0, 1, 1,   1, 1, 1, 1,  1, 1, 1, 1
-		1, 1, 1, 1,   1, 1, 1, 1,   1, 0, 1, 1,  1, 1, 1, 1
+	bool src[64] = {
+		1, 0, 0, 0,   
+		0, 0, 0, 0,   
+		0, 0, 0, 0,  
+		0, 0, 0, 0, 
+		
+		0, 0, 0, 0,   
+		0, 0, 0, 0,   
+		0, 0, 1, 0,  
+		0, 0, 0, 0, 
+
+		0, 0, 0, 0,   
+		0, 1, 0, 0,   
+		0, 0, 0, 0,  
+		0, 0, 0, 0,
+		
+		0, 0, 0, 0,   
+		0, 0, 0, 0,   
+		0, 1, 0, 0,  
+		0, 0, 0, 0
 	}; 
 	
 	float test[64] = {
-		0, 1, 4, 9,   
-		1, 2, 2,10,  
+		0, 1, 4, 6,   
+		1, 2, 2, 3,
 		4, 2, 1, 2,  
-		9,10, 2,18, 
+		6, 3, 2, 3, 
 
-		1, 2, 1, 1,   
+		1, 2, 3, 5,   
 		2, 1, 1, 2,   
 		3, 1, 0, 1,  
-		6, 2, 1, 2, 
+		5, 2, 1, 2, 
 		
-		2, 1, 2, 6,   
+		2, 1, 2, 5,   
 		1, 0, 1, 3,   
 		2, 1, 1, 2,  
-		5, 4, 2, 3, 
+		3, 2, 2, 3, 
 
-		5, 4, 5, 8,   
+		3, 2, 3, 6,   
 		2, 1, 2, 5,   
 		1, 0, 1, 4,  
 		2, 1, 2, 5
-	}
+	}; 
 	
 	C3DFImage src_img(C3DBounds(4,4,4)); 
 	
-	transform(&src[0], &src[16], src_img.begin(), [](float x){return numeric_limits<float>::max() * x;}); 
+	distance_transform_prepare(&src[0], &src[64], src_img.begin()); 
 	
 	C3DFImage result =  distance_transform(src_img); 
 
 	int k = 0; 
 	for(auto i = result.begin(); i != result.end(); ++i, ++k ) {
 		BOOST_CHECK_CLOSE(*i, test[k], 0.1); 
-		cvdebug() << "k=" << k << ", " << *i << ", " << test[k] << "\n"; 
 	}
+}
 
+
+BOOST_AUTO_TEST_CASE( test_distance_full3d_func ) 
+{
+	float src[64] = {
+		1, 2, 4, 5,   
+		5, 4, 3, 2,   
+		3, 2, 2, 3,  
+		4, 5, 3, 1, 
+		
+		1, 4, 5, 2,   
+		1, 2, 3, 3,   
+		2, 3, 1, 4,  
+		4, 4, 3, 4, 
+
+		3, 2, 1, 1,   
+		2, 1, 4, 3,   
+		0, 3, 2, 1,  
+		5, 4, 4, 2,
+		
+		7, 8, 1, 2,   
+		6, 5, 4, 3,   
+		4, 1, 4, 2,  
+		5, 5, 4, 3
+	}; 
+	
+	float test[64] = {
+		1, 2, 5, 5,   
+		2, 3, 3, 4,   
+		3, 3, 2, 2,  
+	        5, 4, 2, 1, 
+		
+		1, 2, 2, 2,   
+		1, 2, 2, 3,   
+		1, 2, 1, 2,  
+		2, 3, 2, 2, 
+
+		2, 2, 1, 1,   
+		1, 1, 2, 2,   
+		0, 1, 2, 1,  
+		1, 2, 3, 2,
+		
+		4, 2, 1, 2,   
+		2, 2, 2, 3,   
+		1, 1, 2, 2,  
+		2, 2, 3, 3
+	}; 
+	
+	C3DFImage src_img(C3DBounds(4,4,4)); 
+	
+	distance_transform_prepare(&src[0], &src[64], src_img.begin()); 
+	
+	C3DFImage result =  distance_transform(src_img); 
+
+	int k = 0; 
+	for(auto i = result.begin(); i != result.end(); ++i, ++k ) {
+		cvdebug() << "k=" << k << ":" << *i << ", vs " << test[k] << "\n"; 
+		BOOST_CHECK_CLOSE(*i, test[k], 0.1); 
+	}
 }

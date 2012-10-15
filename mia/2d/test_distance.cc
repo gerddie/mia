@@ -19,6 +19,7 @@
  */
 
 #include <mia/internal/autotest.hh>
+#include <mia/core/distance.hh>
 #include <mia/2d/distance.hh>
 
 
@@ -90,10 +91,11 @@ void PointLineDistanceFixture::check_point(const C2DFVector& point, float result
 
 BOOST_AUTO_TEST_CASE( test_distance_from_inf ) 
 {
-	float in_2d[16] =  { 1, 1, 1, 0, 
-			     1, 1, 1, 1, 
-			     1, 1, 0, 1, 
-			     1, 1, 1, 1 }; 
+	bool in_2d[16] =  { 0, 0, 0, 1, 
+			     0, 0, 0, 0, 
+			     0, 0, 1, 0, 
+			     0, 0, 0, 0
+ }; 
 	float out_2d[16] = { 8, 4, 1, 0, 
 			     5, 2, 1, 1, 
 			     4, 1, 0, 1, 
@@ -102,7 +104,7 @@ BOOST_AUTO_TEST_CASE( test_distance_from_inf )
 
 	C2DFImage src_img(C2DBounds(4,4)); 
 	
-	transform(&in_2d[0], &in_2d[16],src_img.begin(), [](float x){return numeric_limits<float>::max() * x;}); 
+	distance_transform_prepare(&in_2d[0], &in_2d[16],src_img.begin()); 
 	
 	C2DFImage result =  distance_transform(src_img); 
 
@@ -126,8 +128,8 @@ BOOST_AUTO_TEST_CASE( test_distance_from_func)
 	
 
 	C2DFImage src_img(C2DBounds(4,4)); 
-	
-	transform(&in_2d[0], &in_2d[16],src_img.begin(), [](float x){return x* x;}); 
+
+	distance_transform_prepare(&in_2d[0], &in_2d[16],src_img.begin()); 
 	
 	C2DFImage result =  distance_transform(src_img); 
 

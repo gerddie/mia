@@ -21,6 +21,7 @@
 #ifndef mia_3d_distance_hh
 #define mia_3d_distance_hh
 
+#include <mia/core/iodata.hh>
 #include <mia/3d/3DImage.hh>
 
 
@@ -40,7 +41,9 @@ class C3DDistance : public CIOData {
 		
 	void push_slice(int z, const C2DImage& slice); 
 
-	float get_distance_at(int x, int y, int z) const;
+	float get_distance_at(const C3DFVector& p) const;
+
+	C2DFImage get_distance_slice(int z) const; 
 private: 
 	struct C3DDistanceImpl *impl; 
 }; 

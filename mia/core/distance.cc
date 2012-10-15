@@ -28,6 +28,7 @@
 NS_MIA_BEGIN
 using  std::vector; 
 using  std::numeric_limits; 
+using  std::transform; 
 
 inline float d(float fp, float p, float fq, float q)
 {
@@ -68,6 +69,5 @@ void EXPORT_CORE distance_transform_inplace(vector<float>& r)
 		r[q] = delta * delta +  f[v[k]];
 	}
 }
-
 
 NS_MIA_END
