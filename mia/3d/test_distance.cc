@@ -54,6 +54,28 @@ BOOST_FIXTURE_TEST_CASE( test_distance_full3d_inf, Distance3DInfFixture )
 }
 
 
+BOOST_FIXTURE_TEST_CASE( test_distance_per_slice3d_inf, Distance3DInfFixture ) 
+{
+	C3DDistance slice_based_distance; 
+	
+	C2DFImage slice(C2DBounds(4,4)); 
+	
+	for (int i = 0; i < 4; ++i) {
+		distance_transform_prepare(&src_init[16 * i], &src_init[16 * (i+1)], slice.begin());
+		slice_based_distance.push_slice(i, slice); 
+	}
+
+
+	int k = 0; 
+	for (int i = 0; i< 4; ++i) {
+		auto out_slice = slice_based_distance.get_distance_slice(i);
+		for(auto i = out_slice.begin(); i != out_slice.end(); ++i, ++k ) {
+			BOOST_CHECK_CLOSE(*i, test_val[k], 0.1); 
+		}
+	}
+}
+
+
 BOOST_FIXTURE_TEST_CASE( test_distance_full3d_func,  Distance3DFuncFixture ) 
 {
 	C3DFImage src_img(C3DBounds(4,4,4)); 

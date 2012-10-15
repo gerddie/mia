@@ -77,7 +77,7 @@ C3DFImage EXPORT_3D distance_transform(const C3DImage& f)
 
 
 struct C3DDistanceImpl{
-	C3DDistanceImpl(const C2DBounds& size); 
+	C3DDistanceImpl(const C2DImage& slice); 
 	
 	void push_slice(int z, const C2DImage& slice); 
 	
@@ -86,10 +86,10 @@ struct C3DDistanceImpl{
 	C2DFImage get_distance_slice(int z) const; 
 	
 	struct SParabola {
-		int k; 
-		int q; 
-		float z;
-		float fq; 
+		int q;
+		int v;
+		float z; 
+		float fv;
 	};
 
 	C2DBounds m_size; 
@@ -107,19 +107,21 @@ struct C3DDistanceImpl{
 		void set_slice(int z); 
 
 	private:
-		template <typename T> 
-		float get_initial_distance(T value) {
-			return value; 
-		}
-		
-		float get_initial_distance(bool value) {
-			return value ? 0.0f : numeric_limits<float>::max();
-		}
-		       
 		vector<int>& m_k; 
 		vector< vector<SParabola> >& m_zdt;
 		int m_q; 
 	}; 
+
+	struct FPushFirstSlice: public TFilter<void> {
+		FPushFirstSlice(vector< vector<SParabola> >& zdt):
+			m_zdt(zdt){
+		}
+
+		template <typename T> 
+		void operator ()(const T2DImage<T>& f); 
+		vector< vector<SParabola> >& m_zdt;
+	}; 
+
 	FSlicePusher m_pusher; 
 }; 
 
@@ -136,23 +138,24 @@ void C3DDistanceImpl::FSlicePusher::set_slice(int z)
 template <typename T> 
 void C3DDistanceImpl::FSlicePusher::operator ()(const T2DImage<T>& func)
 {
-	assert(m_q >= 0); 
+	assert(m_q > 0); 
 	
 	auto si = func.begin(); 
 	auto ei = func.end(); 
 	auto k = m_k.begin(); 
 	auto p = m_zdt.begin(); 
-	
+
+
 	while (si != ei) {
-		const float f = get_initial_distance(*si);
+		const float fq = *si;
 		
 		SParabola& parabola = (*p)[*k];
 		
-		float s  = d (f, m_q, parabola.fq, parabola.q);
+		float s  = d (fq, m_q, parabola.fv, parabola.v);
 		while (s <= parabola.z) {
 			--(*k);
 			parabola = (*p)[*k]; 
-			s  = d (f, m_q, parabola.fq, parabola.q);
+			s  = d (fq, m_q, parabola.fv, parabola.v);
 		}
 		++(*k);
 		
@@ -161,7 +164,7 @@ void C3DDistanceImpl::FSlicePusher::operator ()(const T2DImage<T>& func)
 			assert(0 && "can't do");
 		}
 		
-		SParabola new_p = {*k, m_q, s, f};
+		SParabola new_p = {*k, m_q, s, fq};
 		if ( *k == (int)p->size() ) {
 			p->push_back(new_p);
 		}else {
@@ -178,6 +181,22 @@ void C3DDistanceImpl::FSlicePusher::operator ()(const T2DImage<T>& func)
 	m_q = -1; 
 }
 
+template <typename T> 
+void C3DDistanceImpl::FPushFirstSlice::operator ()(const T2DImage<T>& func)
+{
+	auto si = func.begin(); 
+	auto ei = func.end(); 
+	auto p = m_zdt.begin(); 
+	while (si != ei) {
+		SParabola parabola{ 0, 0, -numeric_limits<float>::max(), static_cast<float>(*si)}; 
+		p->push_back(parabola); 
+		++si; 
+		++p; 
+	}
+	
+}
+
+
 
 C3DDistance::C3DDistance():
 	impl(NULL)
@@ -192,9 +211,12 @@ C3DDistance::~C3DDistance()
 
 void C3DDistance::push_slice(int z, const C2DImage& slice)
 {
-	if (!impl)
-		impl = new C3DDistanceImpl(slice.get_size()); 
-	impl->push_slice(z, slice); 
+	if (z == 0)
+		impl = new C3DDistanceImpl(slice); 
+	else {
+		assert(impl); 
+		impl->push_slice(z, slice); 
+	}
 }
 
 float C3DDistance::get_distance_at(const C3DFVector& p) const
@@ -204,12 +226,14 @@ float C3DDistance::get_distance_at(const C3DFVector& p) const
 }
 
 
-C3DDistanceImpl::C3DDistanceImpl(const C2DBounds& size):
-	m_size(size), 
-	m_k(size.product(), 0), 
-	m_zdt(size.x * size.y, vector<SParabola>(1, SParabola{0, 0, -numeric_limits<float>::max(), numeric_limits<float>::max()})), 
+C3DDistanceImpl::C3DDistanceImpl(const C2DImage& slice):
+	m_size(slice.get_size()), 
+	m_k(m_size.product(), 0), 
+	m_zdt(m_size.product()), 
 	m_pusher(m_k, m_zdt)
 {
+	FPushFirstSlice pfs(m_zdt);
+	mia::accumulate(pfs, slice); 
 }
 	
 	
@@ -256,7 +280,7 @@ float C3DDistanceImpl::get_distance_at(const C3DFVector& p) const
 			++k; 
 		}
 		float delta = p.z - zdt[k].q; 
-		distance = delta_x * delta_x + delta_y * delta_y + delta * delta + zdt[k].fq;
+		distance = delta_x * delta_x + delta_y * delta_y + delta * delta + zdt[k].fv;
 	}
 	
 	while (distance > search_radius) {
@@ -284,7 +308,7 @@ C2DFImage C3DDistanceImpl::get_distance_slice(int z) const
 		}
 		
 		float delta = float(z) - (*p)[k].q; 
-		*i = delta * delta + (*p)[k].fq;
+		*i = delta * delta + (*p)[k].fv;
 		++i; 
 		++p; 
 	}

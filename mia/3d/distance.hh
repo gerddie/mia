@@ -31,7 +31,7 @@ C3DFImage EXPORT_3D distance_transform(const C3DImage& f);
 
 
 class C3DDistance : public CIOData {
-	
+public: 
 	C3DDistance(); 
 
 	~C3DDistance(); 
