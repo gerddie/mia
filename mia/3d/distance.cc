@@ -138,18 +138,28 @@ void C3DDistanceImpl::FSlicePusher::set_slice(int z)
 template <typename T> 
 void C3DDistanceImpl::FSlicePusher::operator ()(const T2DImage<T>& func)
 {
+	static const float far = numeric_limits<float>::max() / 4.0f; 
+
 	assert(m_q > 0); 
 	
 	auto si = func.begin(); 
 	auto ei = func.end(); 
 	auto k = m_k.begin(); 
 	auto p = m_zdt.begin(); 
-
+	cvdebug() << "Start slice " << m_q << "\n"; 
 
 	while (si != ei) {
 		const float fq = *si;
 		
 		SParabola& parabola = (*p)[*k];
+
+		cvdebug() << "f= "<<fq 
+			  << ", k=" << *k 
+			  << ", mq=" << m_q
+			  << ", fv=" << parabola.fv 
+			  << ", pv=" << parabola.v
+			  << ", z=" <<parabola.z
+			  <<"\n"; 
 		
 		float s  = d (fq, m_q, parabola.fv, parabola.v);
 		while (s <= parabola.z) {
@@ -170,10 +180,13 @@ void C3DDistanceImpl::FSlicePusher::operator ()(const T2DImage<T>& func)
 		}else {
 			(*p)[*k] = new_p;
 			if (*k < (int)p->size() - 1) {
+				cvinfo() << "C3DDistance::FSlicePusher: reducing from " << p->size() << " to " << *k << "\n"; 
 				cvinfo() << "C3DDistance::FSlicePusher::operator: reducing column size should not happen\n"; 
+				
 				p->resize(*k + 1); 
 			}
 		}
+
 		++si; 
 		++k; 
 		++p; 
