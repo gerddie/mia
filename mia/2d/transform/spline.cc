@@ -108,7 +108,7 @@ C2DSplineTransformation::C2DSplineTransformation(const C2DBounds& range, PSpline
 	m_xbc->set_width(m_coefficients.get_size().x); 
 	m_ybc->set_width(m_coefficients.get_size().y); 
 
-	reinit();
+	init_grid(); 
 }
 
 void C2DSplineTransformation::set_coefficients_and_prefilter(const C2DFVectorfield& field)
@@ -141,10 +141,7 @@ void C2DSplineTransformation::set_coefficients(const C2DFVectorfield& field)
 	m_xbc->set_width(field.get_size().x); 
 	m_ybc->set_width(field.get_size().y); 
 
-/*
-	m_target_c_rate.x = float(m_range.x) / (field.get_size().x - m_enlarge);
-	m_target_c_rate.y = float(m_range.y) / (field.get_size().y - m_enlarge);
-*/
+	init_grid(); 
 }
 
 void C2DSplineTransformation::reinit() const
@@ -166,6 +163,7 @@ void C2DSplineTransformation::reinit() const
 
 C2DFVector C2DSplineTransformation::interpolate(const C2DFVector& x) const 
 {
+	TRACE_FUNCTION;
 	std::vector<double> xweights(m_kernel->size()); 
 	std::vector<double> yweights(m_kernel->size()); 
 	size_t startx = m_kernel->get_start_idx_and_value_weights(x.x, xweights); 
@@ -188,6 +186,7 @@ C2DFVector C2DSplineTransformation::interpolate(const C2DFVector& x) const
 
 C2DFVector C2DSplineTransformation::apply(const C2DFVector& x) const
 {
+	TRACE_FUNCTION;
 	assert(m_interpolator_valid);
 	return interpolate(scale(x));
 }
@@ -242,6 +241,7 @@ void C2DSplineTransformation::set_parameters(const CDoubleVector& params)
 		f->y = *r++;
 	}
 	m_interpolator_valid = false; 
+	reinit(); 
 }
 
 bool C2DSplineTransformation::save(const std::string& /*filename*/) const
@@ -290,6 +290,7 @@ bool C2DSplineTransformation::refine()
 	set_coefficients(coeffs);
 	reinit();
 	m_grid_valid = false; 
+	init_grid(); 
 	return true; 
 }
 
@@ -440,6 +441,7 @@ float C2DSplineTransformation::get_max_transform() const
 void C2DSplineTransformation::init_grid()const
 {
 	TRACE_FUNCTION; 
+	reinit(); 
 	if (!m_grid_valid) {
 		cvdebug() << "really run C2DSplineTransformation::init_grid\n"; 
 		cvdebug() << "Range = " << m_range << "\n"; 
