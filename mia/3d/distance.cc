@@ -263,6 +263,7 @@ void C3DDistanceImpl::push_slice(int z, const C2DImage& slice)
 float C3DDistanceImpl::get_distance_at(const C3DFVector& p) const
 {
 	FUNCTION_NOT_TESTED; 
+
 	float distance = numeric_limits<float>::max(); 
 	float search_radius = 0; 
 	
@@ -283,28 +284,22 @@ float C3DDistanceImpl::get_distance_at(const C3DFVector& p) const
 	if (center_y < 0)
 		center_y = 0;
 
-	int delta_x = p.x + 0.5 - center_x; 
-	int delta_y = p.y + 0.5 - center_y;
-
-	// search closest z-value 
-	int center_idx = center_y * m_size.x + center_x; 
-
-	auto& zdt = m_zdt[center_idx];
-	if (zdt.size() > 1) {
-		size_t k = 0; 
-		while ( k < zdt.size() - 1 && zdt[ k + 1 ].z  < center_z) {
-			++k; 
-		}
-		float delta = p.z - zdt[k].v; 
-		distance = delta_x * delta_x + delta_y * delta_y + delta * delta + zdt[k].fv;
-	}
+	int max_delta_x = m_size.x - center_x; 
+	if (max_delta_x < center_x) 
+		max_delta_x = center_x; 
 	
-	while (distance > search_radius) {
-		
-		
-		
+	int max_delta_y = m_size.y - center_y; 
+	if (max_delta_y < center_y) 
+		max_delta_y = center_y; 
 
-	}
+	const float possible_search_radius = max_delta_x * max_delta_y;
+
+	do {
+		// run a circular search ...
+		
+		
+	} while (distance > search_radius && search_radius < possible_search_radius); 
+		
 	return distance; 
 }
 
