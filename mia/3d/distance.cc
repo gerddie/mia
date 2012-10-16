@@ -138,7 +138,6 @@ void C3DDistanceImpl::FSlicePusher::set_slice(int z)
 template <typename T> 
 void C3DDistanceImpl::FSlicePusher::operator ()(const T2DImage<T>& func)
 {
-	static const float far = numeric_limits<float>::max() / 4.0f; 
 
 	assert(m_q > 0); 
 	
@@ -151,42 +150,47 @@ void C3DDistanceImpl::FSlicePusher::operator ()(const T2DImage<T>& func)
 	while (si != ei) {
 		const float fq = *si;
 		
-		SParabola& parabola = (*p)[*k];
+		// if the function is at inf, there is no contribution
+		if (fq < numeric_limits<float>::max()) {
+			SParabola& parabola = (*p)[*k];
+			cvdebug() << "f= "<<fq 
+				  << ", k=" << *k 
+				  << ", mq=" << m_q
+				  << ", fv=" << parabola.fv 
+				  << ", pv=" << parabola.v
+				  << ", z=" <<parabola.z
+				  << ", p.size()=" << p->size()
+				  <<"\n"; 
+			
+			float s  = d (fq, m_q, parabola.fv, parabola.v);
+			while (s <= parabola.z) {
+				--(*k);
+				parabola = (*p)[*k]; 
+				s  = d (fq, m_q, parabola.fv, parabola.v);
+			}
+			++(*k);
+			
+			if (*k > (int)p->size()) {
+				cverr() << "k = " << *k << " but column p->size() = " << p->size() <<"\n"; 
+				assert(0 && "can't do");
+			}
+			
+			SParabola new_p = {*k, m_q, s, fq};
 
-		cvdebug() << "f= "<<fq 
-			  << ", k=" << *k 
-			  << ", mq=" << m_q
-			  << ", fv=" << parabola.fv 
-			  << ", pv=" << parabola.v
-			  << ", z=" <<parabola.z
-			  <<"\n"; 
-		
-		float s  = d (fq, m_q, parabola.fv, parabola.v);
-		while (s <= parabola.z) {
-			--(*k);
-			parabola = (*p)[*k]; 
-			s  = d (fq, m_q, parabola.fv, parabola.v);
-		}
-		++(*k);
-		
-		if (*k > (int)p->size()) {
-			cverr() << "k = " << *k << " but column p->size() = " << p->size() <<"\n"; 
-			assert(0 && "can't do");
-		}
-		
-		SParabola new_p = {*k, m_q, s, fq};
-		if ( *k == (int)p->size() ) {
-			p->push_back(new_p);
-		}else {
-			(*p)[*k] = new_p;
-			if (*k < (int)p->size() - 1) {
-				cvinfo() << "C3DDistance::FSlicePusher: reducing from " << p->size() << " to " << *k << "\n"; 
-				cvinfo() << "C3DDistance::FSlicePusher::operator: reducing column size should not happen\n"; 
-				
-				p->resize(*k + 1); 
+			if ( *k == (int)p->size() ) {
+				cvdebug() << "add parbola at " << *k << " {q=" << m_q << ", z=" << s << ", fq=" << fq << "}\n"; 
+				p->push_back(new_p);
+			}else {
+				cvdebug() << "set parbola at " << *k << " {q=" << m_q << ", z=" << s << ", fq=" << fq << "}\n"; 
+				(*p)[*k] = new_p;
+				if (*k < (int)p->size() - 1) {
+					cvinfo() << "C3DDistance::FSlicePusher: reducing from " << p->size() << " to " << *k << "\n"; 
+					cvinfo() << "C3DDistance::FSlicePusher::operator: reducing column size should not happen\n"; 
+					
+					p->resize(*k + 1); 
+				}
 			}
 		}
-
 		++si; 
 		++k; 
 		++p; 
@@ -252,7 +256,6 @@ C3DDistanceImpl::C3DDistanceImpl(const C2DImage& slice):
 	
 void C3DDistanceImpl::push_slice(int z, const C2DImage& slice)
 {
-	FUNCTION_NOT_TESTED; 
 	m_pusher.set_slice(z); 
 	mia::accumulate(m_pusher, slice); 
 }
@@ -292,7 +295,7 @@ float C3DDistanceImpl::get_distance_at(const C3DFVector& p) const
 		while ( k < zdt.size() - 1 && zdt[ k + 1 ].z  < center_z) {
 			++k; 
 		}
-		float delta = p.z - zdt[k].q; 
+		float delta = p.z - zdt[k].v; 
 		distance = delta_x * delta_x + delta_y * delta_y + delta * delta + zdt[k].fv;
 	}
 	
@@ -307,7 +310,6 @@ float C3DDistanceImpl::get_distance_at(const C3DFVector& p) const
 
 C2DFImage C3DDistanceImpl::get_distance_slice(int z) const
 {
-	FUNCTION_NOT_TESTED; 
 	C2DFImage result(m_size); 
 	auto i = result.begin(); 
 	auto e = result.end(); 
@@ -319,9 +321,10 @@ C2DFImage C3DDistanceImpl::get_distance_slice(int z) const
 		while ( k < p->size() - 1 && (*p)[ k + 1 ].z  < z) {
 			++k; 
 		}
-		
-		float delta = float(z) - (*p)[k].q; 
+		float delta = float(z) - (*p)[k].v; 
 		*i = delta * delta + (*p)[k].fv;
+		cvdebug() << "get parbola at " << k << " {q=" << (*p)[k].q << ", z=" << (*p)[k].z << ", fq=" << (*p)[k].fv << "}\n"; 
+		cvdebug() << "z=" << z << ", pk.q=" << (*p)[k].q << ",k= " << k << ", dist=" << *i << "\n"; 
 		++i; 
 		++p; 
 	}
