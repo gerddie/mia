@@ -48,8 +48,6 @@ C3DFImage EXPORT_3D distance_transform(const C3DImage& f);
    the distance at certain points. 
 
 */
-
-
 class C3DDistance : public CIOData {
 public: 
 
@@ -64,14 +62,27 @@ public:
 	C3DDistance& operator =(const C3DDistance& other) = delete;
 		
 	/**
-	   Add another z-slice to the distance transform. 
-	   
+	   Add another z-slice to the distance transform. Note, the slices have to be 
+	   added in the order of increasing z. 
+	   Thr input data should be prepared using the distance_transform_prepare function. 
+	   \param z current z-position 
+	   \param slice of the function to measure the distance to 
 	*/
 	
 	void push_slice(int z, const C2DImage& slice); 
 
+	/**
+	   Evaluate the distance of a point to the input function 
+	   \param p point 
+	   \returns the squared Euclidian distance of the point to the function 
+	 */
 	float get_distance_at(const C3DFVector& p) const;
 
+	/**
+	   Evaluate the distance of a slice to the represented input function 
+	   \param z the slice to evaluate the distance to 
+	   \returns a 2D data field of the squared distances
+	*/
 	C2DFImage get_distance_slice(int z) const; 
 private: 
 	struct C3DDistanceImpl *impl; 
