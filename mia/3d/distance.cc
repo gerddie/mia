@@ -86,7 +86,6 @@ struct C3DDistanceImpl{
 	C2DFImage get_distance_slice(int z) const; 
 	
 	struct SParabola {
-		int q;
 		int v;
 		float z; 
 		float fv;
@@ -177,7 +176,7 @@ void C3DDistanceImpl::FSlicePusher::operator ()(const T2DImage<T>& func)
 				assert(0 && "can't do");
 			}
 			
-			SParabola new_p = {*k, m_q, s, fq};
+			SParabola new_p = {m_q, s, fq};
 
 			if ( *k == (int)p->size() ) {
 				cvdebug() << "add parbola at " << *k << " {q=" << m_q << ", z=" << s << ", fq=" << fq << "}\n"; 
@@ -207,7 +206,7 @@ void C3DDistanceImpl::FPushFirstSlice::operator ()(const T2DImage<T>& func)
 	auto ei = func.end(); 
 	auto p = m_zdt.begin(); 
 	while (si != ei) {
-		SParabola parabola{ 0, 0, -numeric_limits<float>::max(), static_cast<float>(*si)}; 
+		SParabola parabola{0, -numeric_limits<float>::max(), static_cast<float>(*si)}; 
 		p->push_back(parabola); 
 		++si; 
 		++p; 
@@ -268,7 +267,7 @@ float C3DDistanceImpl::get_local_distance(unsigned int x, unsigned  int y, const
 		return numeric_limits<float>::max(); 
 
 	auto&  zdt = m_zdt[y * m_size.x + x]; 
-	int k = 0; 
+	unsigned int k = 0; 
 	while ( k < zdt.size() - 1 && zdt[ k + 1 ].z  < p.z) {
 		++k;
 	}
@@ -281,7 +280,6 @@ float C3DDistanceImpl::get_local_distance(unsigned int x, unsigned  int y, const
 float C3DDistanceImpl::get_distance_at(const C3DFVector& p) const
 {
 	float distance = numeric_limits<float>::max(); 
-	float search_radius = 0; 
 	
 	int center_x = (int)(p.x + 0.5); 
 	int center_y = (int)(p.y + 0.5);
@@ -307,9 +305,7 @@ float C3DDistanceImpl::get_distance_at(const C3DFVector& p) const
 	if (max_delta_y < center_y) 
 		max_delta_y = center_y; 
 
-	const float possible_search_radius = max_delta_x * max_delta_y;
-
-	const int max_line = std::max(max_delta_y, max_delta_x) + 1; 
+	const int max_line = sqrt(max_delta_y * max_delta_y +  max_delta_x * max_delta_x) + 1; 
 
 	
 	int x = center_x; 
@@ -401,8 +397,8 @@ C2DFImage C3DDistanceImpl::get_distance_slice(int z) const
 		}
 		float delta = float(z) - (*p)[k].v; 
 		*i = delta * delta + (*p)[k].fv;
-		cvdebug() << "get parbola at " << k << " {q=" << (*p)[k].q << ", z=" << (*p)[k].z << ", fq=" << (*p)[k].fv << "}\n"; 
-		cvdebug() << "z=" << z << ", pk.q=" << (*p)[k].q << ",k= " << k << ", dist=" << *i << "\n"; 
+		cvdebug() << "get parbola at " << k << " {z=" << (*p)[k].z << ", fq=" << (*p)[k].fv << "}\n"; 
+		cvdebug() << "z=" << z << ", k= " << k << ", dist=" << *i << "\n"; 
 		++i; 
 		++p; 
 	}

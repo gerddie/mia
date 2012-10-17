@@ -30,6 +30,10 @@ NS_MIA_BEGIN
 
 /**
    This function evaluates the 2D distance to a functions defined over a 2D grid  
+   If the input function is given as raw data that is not the result of another 
+   call to this distance transform function, then one should call 
+   distance_transform_prepare to properly prepare the data for the distance transform. 
+
    \param[in] f the squared values of the function to evaluate the distance to 
    \returns distances to the function for each grid point
 */

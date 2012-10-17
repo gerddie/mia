@@ -159,7 +159,6 @@ BOOST_FIXTURE_TEST_CASE( test_distance_per_slice3d_func, Distance3DFuncFixture )
 	}
 }
 
-
 const bool Distance3DInfFixture::src_init[] = {
 		1, 0, 0, 0,   0, 0, 0, 0,   0, 0, 0, 0,  0, 0, 0, 0,    
 		0, 0, 0, 0,   0, 0, 0, 0,   0, 0, 1, 0,  0, 0, 0, 0, 
