@@ -121,6 +121,8 @@ struct C3DDistanceImpl{
 		void operator ()(const T2DImage<T>& f); 
 		vector< vector<SParabola> >& m_zdt;
 	}; 
+private: 
+	float get_local_distance(unsigned int x, unsigned  int y, const C3DFVector& p)const; 
 
 	FSlicePusher m_pusher; 
 }; 
@@ -259,17 +261,30 @@ void C3DDistanceImpl::push_slice(int z, const C2DImage& slice)
 	m_pusher.set_slice(z); 
 	mia::accumulate(m_pusher, slice); 
 }
+
+float C3DDistanceImpl::get_local_distance(unsigned int x, unsigned  int y, const C3DFVector& p)const 
+{
+	if (x >= m_size.x || y >= m_size.y) 
+		return numeric_limits<float>::max(); 
+
+	auto&  zdt = m_zdt[y * m_size.x + x]; 
+	int k = 0; 
+	while ( k < zdt.size() - 1 && zdt[ k + 1 ].z  < p.z) {
+		++k;
+	}
+	const float delta = p.z - zdt[k].v; 
+	const float dx = p.x - x; 
+	const float dy = p.y - y; 
+	return dx * dx + dy * dy + delta * delta + zdt[k].fv;
+}
 	
 float C3DDistanceImpl::get_distance_at(const C3DFVector& p) const
 {
-	FUNCTION_NOT_TESTED; 
-
 	float distance = numeric_limits<float>::max(); 
 	float search_radius = 0; 
 	
 	int center_x = (int)(p.x + 0.5); 
 	int center_y = (int)(p.y + 0.5);
-	int center_z = (int)(p.z + 0.5);
 
 	// limit search to support range 
 	if (center_x >= (int)m_size.x - 1)
@@ -294,11 +309,79 @@ float C3DDistanceImpl::get_distance_at(const C3DFVector& p) const
 
 	const float possible_search_radius = max_delta_x * max_delta_y;
 
-	do {
-		// run a circular search ...
-		
-		
-	} while (distance > search_radius && search_radius < possible_search_radius); 
+	const int max_line = std::max(max_delta_y, max_delta_x) + 1; 
+
+	
+	int x = center_x; 
+	int y = center_y; 
+	float d = get_local_distance(x, y, p); 
+	if (d < distance) 
+		distance = d; 
+
+	// This breaking condition is sub-optimal, it should actually break at distance > r^2, since distance is squared, 
+	// but because we move on a grid, this doesn't work properly. 
+	// In other words: the search could be optimized by refining this breaking condition. 
+	for ( int r = 1; r < max_line && distance > r; ++r) {
+		for (int d_outer = 0; (d_outer < r); ++d_outer) {
+			const int d_inner = sqrt(r * r - d_outer * d_outer);
+			x = center_x + d_outer; 
+			y = center_y + d_inner; 
+			d= get_local_distance(x, y, p); 
+			if (d < distance) 
+				distance = d; 
+			
+			x = center_x + d_outer; 
+			y = center_y - d_inner; 
+			d = get_local_distance(x, y, p); 
+			if (d < distance) 
+				distance = d; 
+			
+			if (d_outer != 0) {
+				x = center_x - d_outer; 
+				y = center_y + d_inner; 
+				d= get_local_distance(x, y, p); 
+				if (d < distance) 
+					distance = d; 
+				
+				x = center_x - d_outer; 
+				y = center_y - d_inner; 
+				d = get_local_distance(x, y, p); 
+				if (d < distance) 
+					distance = d; 
+			}
+			
+			if (d_inner != d_outer) {
+			
+				x = center_x + d_inner; 
+				y = center_y + d_outer; 
+				d = get_local_distance(x, y, p); 
+				if (d < distance) 
+					distance = d; 
+				
+			
+				x = center_x - d_inner; 
+				y = center_y + d_outer; 
+				d = get_local_distance(x, y, p); 
+				if (d < distance) 
+					distance = d; 
+
+				if (d_outer != 0) {
+					x = center_x + d_inner; 
+					y = center_y - d_outer; 
+					d = get_local_distance(x, y, p); 
+					if (d < distance) 
+						distance = d; 
+					
+					
+					x = center_x - d_inner; 
+					y = center_y - d_outer; 
+					d = get_local_distance(x, y, p); 
+					if (d < distance) 
+						distance = d; 
+				}
+			}
+		}
+	}
 		
 	return distance; 
 }

@@ -76,6 +76,51 @@ BOOST_FIXTURE_TEST_CASE( test_distance_per_slice3d_inf, Distance3DInfFixture )
 	}
 }
 
+BOOST_FIXTURE_TEST_CASE( test_distance_per_slice3d_direct, Distance3DInfFixture ) 
+{
+	C3DDistance slice_based_distance; 
+	
+	C2DFImage slice(C2DBounds(4,4)); 
+	
+	for (int i = 0; i < 4; ++i) {
+		distance_transform_prepare(&src_init[16 * i], &src_init[16 * (i+1)], slice.begin());
+		slice_based_distance.push_slice(i, slice); 
+	}
+
+	int k = 0; 
+	for (int z = 0; z < 4; ++z) 
+		for (int y = 0; y < 4; ++y) 
+			for (int x = 0; x < 4; ++x, ++k) {
+				C3DFVector p(x,y,z); 
+				
+				auto d = slice_based_distance.get_distance_at(p); 
+				cvdebug() << "p=" << p << ":" << d << ", vs " << test_val[k] << "\n"; 
+				BOOST_CHECK_CLOSE(d, test_val[k], 0.1); 
+				
+				
+			}
+
+}
+
+
+BOOST_FIXTURE_TEST_CASE( test_distance_per_slice3d_direct_3_3_3, Distance3DInfFixture ) 
+{
+	C3DDistance slice_based_distance; 
+	
+	C2DFImage slice(C2DBounds(4,4)); 
+	
+	for (int i = 0; i < 4; ++i) {
+		distance_transform_prepare(&src_init[16 * i], &src_init[16 * (i+1)], slice.begin());
+		slice_based_distance.push_slice(i, slice); 
+	}
+
+	C3DFVector p(3,3,3); 
+	auto d = slice_based_distance.get_distance_at(p); 
+	cvdebug() << "p=" << p << ":" << d << ", vs " << test_val[3*16 + 3 *4 + 3] << "\n"; 
+	BOOST_CHECK_CLOSE(d, test_val[3*16 + 3 *4 + 3], 0.1); 
+
+}
+
 
 BOOST_FIXTURE_TEST_CASE( test_distance_full3d_func,  Distance3DFuncFixture ) 
 {
