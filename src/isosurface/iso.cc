@@ -43,7 +43,7 @@ GtsSurface *iso_surface(const C3DImage& src, gfloat iso_value, gint max_edges, g
 CTriangleMesh *gts_to_mona_mesh(GtsSurface *surface);
 
 const SProgramDescription g_description = {
-        {pdi_group, "Analysis, filtering, combining, and segmentation of 3D images"}, 
+        {pdi_group, "Creation, analysis, and filtering of triangular 3D meshes"}, 
 	{pdi_short, "Extract an ist-surface froma a 3D image."}, 
 	{pdi_description, "This program is used to extract an iso-surface from the input gray scale "
 	 "image by using marching thetrahedra."},

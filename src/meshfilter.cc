@@ -27,7 +27,7 @@ using namespace std;
 
 
 const SProgramDescription g_general_help = {
-        {pdi_group, "Analysis and filtering of triangular 3D meshes"}, 
+        {pdi_group, "Creation, analysis, and filtering of triangular 3D meshes"}, 
 	{pdi_short, "Run filters on a 3D mesh."}, 
 	{pdi_description, "This program runs a series filters on a given input mesh. The filters "
 	 "are given as extra parameters on the command line and are run in the order in which they "
