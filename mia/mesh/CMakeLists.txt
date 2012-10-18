@@ -20,11 +20,13 @@
 
 SET(MIAMESH_SRC
   triangularMesh.cc
+  filter.cc
 ) 
 
 SET(MIAMESH_HEADERS
   triangularMesh.hh
   triangulate.hh
+  filter.hh
   clist.hh
 )
 
@@ -46,6 +48,7 @@ INSTALL(FILES ${MIAMESH_HEADERS} DESTINATION ${INCLUDE_INSTALL_PATH}/mia/mesh)
 SET(MIAMESHLIBS miamesh)
 
 ADD_SUBDIRECTORY(io)
+ADD_SUBDIRECTORY(filter)
 
 
 TEST_MESH(triangulate)

@@ -38,9 +38,9 @@ NS_MIA_BEGIN
   \tparam Image the image type that must provide STL-like iterators. 
  */
 template <class Image>	
-class TConvert: public TImageFilter<Image> {
+class TConvert: public TDataFilter<Image> {
 public: 	
-	typedef typename TImageFilter<Image>::result_type result_type; 
+	typedef typename TDataFilter<Image>::result_type result_type; 
 	
 	/**
 	   Create the conversion filter with the parameters
@@ -77,11 +77,11 @@ private:
   \brief Generic plug-in for pixel conversion image filters 
 */
 template <class Image>	
-class TConvertFilterPlugin: public TImageFilterPlugin<Image> {
+class TConvertFilterPlugin: public TDataFilterPlugin<Image> {
 public: 
 	TConvertFilterPlugin();
 private: 
-	virtual TImageFilter<Image> *do_create()const;
+	virtual TDataFilter<Image> *do_create()const;
 	virtual const std::string do_get_descr()const; 
 	
 	EPixelType m_pixeltype; 

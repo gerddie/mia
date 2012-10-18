@@ -449,6 +449,15 @@ CParameter *make_param(std::unique_ptr<T>& value, const std::string& init,  bool
 	
 }
 
+
+template <typename T> 
+CParameter *make_param(T& value, bool required, const char *descr) 
+{                       
+	return new TParameter<T>(value, required, descr);
+}
+
+
+
 //// implementations 
 
 /** @cond INTERNAL 

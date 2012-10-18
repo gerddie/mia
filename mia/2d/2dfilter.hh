@@ -32,13 +32,13 @@ NS_MIA_BEGIN
       \ingroup filtering 
       2D image filter 
 */
-typedef TImageFilter<C2DImage> C2DFilter;
+typedef TDataFilter<C2DImage> C2DFilter;
 
 /**
    \ingroup filtering 
    2D image filter plugin 
 */
-typedef TImageFilterPlugin<C2DImage> C2DFilterPlugin;
+typedef TDataFilterPlugin<C2DImage> C2DFilterPlugin;
 
 /**   
       \ingroup filtering 

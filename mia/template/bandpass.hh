@@ -31,9 +31,9 @@ NS_MIA_BEGIN
 ///  @cond DOC_PLUGINS 
 
 template <class Image> 
-class TBandPass: public TImageFilter<Image> {
+class TBandPass: public TDataFilter<Image> {
 public: 	
-	typedef typename TImageFilter<Image>::result_type result_type; 
+	typedef typename TDataFilter<Image>::result_type result_type; 
 	TBandPass(float min, float max); 
 
 	template <class  T>
@@ -47,10 +47,10 @@ private:
 };
 
 template <class Image> 
-class TBandPassFilterPlugin: public TImageFilterPlugin<Image>  {
+class TBandPassFilterPlugin: public TDataFilterPlugin<Image>  {
 public: 
 	TBandPassFilterPlugin();
-	virtual TImageFilter<Image> *do_create()const;
+	virtual TDataFilter<Image> *do_create()const;
 	virtual const std::string do_get_descr()const; 
 private: 
 	float m_min; 

@@ -59,7 +59,7 @@ typename TBandPass<Image>::result_type TBandPass<Image>::do_filter(const Image& 
 
 template <class Image> 
 TBandPassFilterPlugin<Image>::TBandPassFilterPlugin():
-	TImageFilterPlugin<Image>("bandpass"), 
+	TDataFilterPlugin<Image>("bandpass"), 
 	m_min(0), 
 	m_max(std::numeric_limits<float>::max())
 {
@@ -70,7 +70,7 @@ TBandPassFilterPlugin<Image>::TBandPassFilterPlugin():
 }
 
 template <class Image> 
-TImageFilter<Image> *TBandPassFilterPlugin<Image>::do_create()const
+TDataFilter<Image> *TBandPassFilterPlugin<Image>::do_create()const
 {
 	return new TBandPass<Image>(m_min, m_max); 
 }

@@ -201,7 +201,7 @@ typename TConvert<Image>::result_type TConvert<Image>::do_filter(const Image& im
 
 template <class Image>
 TConvertFilterPlugin<Image>::TConvertFilterPlugin():
-	TImageFilterPlugin<Image>("convert"), 
+	TDataFilterPlugin<Image>("convert"), 
 	m_pixeltype(it_ubyte), 
 	m_convert(pc_opt),  
 	m_a(1.0), 
@@ -219,7 +219,7 @@ TConvertFilterPlugin<Image>::TConvertFilterPlugin():
 }
 
 template <class Image>
-TImageFilter<Image> *TConvertFilterPlugin<Image>::do_create()const
+TDataFilter<Image> *TConvertFilterPlugin<Image>::do_create()const
 {
 	if (m_pixeltype == it_bit)
 		throw std::invalid_argument("TConvert: for conversion to bit images you better use the 'binarize' filter"); 

@@ -39,13 +39,13 @@ NS_MIA_BEGIN
 
 */
 
-typedef TImageFilter<C3DImage> C3DFilter;
+typedef TDataFilter<C3DImage> C3DFilter;
 
 /**   
       \ingroup filtering 
       @brief The 3D filter plugin type 
 */
-typedef TImageFilterPlugin<C3DImage> C3DFilterPlugin;
+typedef TDataFilterPlugin<C3DImage> C3DFilterPlugin;
 
 /**   
       \ingroup filtering 

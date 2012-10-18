@@ -121,7 +121,6 @@ void CTriangleMeshData::evaluate_normals()
 	assert(m_vertices && m_triangles);
 	cvdebug() << "CTriangleMeshData::evaluate_normals() from " << m_vertices->size() << " vertices\n";
 
-	int errors = 0;
 	if (!m_normals || m_normals->empty() )
 		// if no normals are available yet, created them
 		m_normals.reset(new CTriangleMesh::CNormalfield(m_vertices->size()));
@@ -188,6 +187,11 @@ CTriangleMesh::CTriangleMesh( PTrianglefield triangles,  PVertexfield vertices,
 			      PColorfield colors,
 			      PScalefield scale):
 	data(new CTriangleMeshData(triangles, vertices, normals, colors, scale))
+{
+}
+
+CTriangleMesh::CTriangleMesh(int n_vertices, int n_triangles):
+	data(new CTriangleMeshData(n_vertices, n_triangles))
 {
 }
 
@@ -453,7 +457,9 @@ void CTriangleMesh::evaluate_normals()
 	data->evaluate_normals();
 }
 
-const char *io_mesh_type::data_descr = "mesh";
+
+
+const char *CTriangleMesh::data_descr = "mesh";
 NS_MIA_END
 
 #include <mia/core/ioplugin.cxx>
@@ -465,7 +471,7 @@ template <> const char *  const
 TPluginHandler<CMeshIOPlugin>::m_help =  
    "These plug-ins implement loading and saving of simple triangular meshes from and to various file formats.";
 
-template class TIOPlugin<io_mesh_type>;
+template class TIOPlugin<CTriangleMesh>;
 template class TPluginHandler<CMeshIOPlugin>;
 template class TIOPluginHandler<CMeshIOPlugin>;
 template class THandlerSingleton<TIOPluginHandler<CMeshIOPlugin> >;

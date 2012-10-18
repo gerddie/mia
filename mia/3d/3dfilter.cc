@@ -81,8 +81,8 @@ P3DImage  EXPORT_3D run_filter_chain(P3DImage image, const std::vector<const cha
 }
 
 template class TFilterChain<C3DFilterPluginHandler>; 
-template class TImageFilter<C3DImage>;
-template class TImageFilterPlugin<C3DImage>;
+template class TDataFilter<C3DImage>;
+template class TDataFilterPlugin<C3DImage>;
 template class TPlugin<C3DImage, filter_type>;
 template class THandlerSingleton<TFactoryPluginHandler<C3DFilterPlugin> >;
 template class TFactoryPluginHandler<C3DFilterPlugin>;

@@ -82,7 +82,7 @@ struct TFilter {
 
 
 template <class D>
-class EXPORT_HANDLER TImageFilter: public TFilter< std::shared_ptr<D > >, public CProductBase {
+class EXPORT_HANDLER TDataFilter: public TFilter< std::shared_ptr<D > >, public CProductBase {
 public:
 
 	/// plugin handler helper type 
@@ -94,12 +94,12 @@ public:
 	typedef D Image; 
 	
 	/// pointer type of the data filtered by this filter 
-	typedef std::shared_ptr<TImageFilter<D> > Pointer; 
+	typedef std::shared_ptr<TDataFilter<D> > Pointer; 
 
 	/// result type of this filter 
 	typedef typename TFilter< std::shared_ptr<D > >::result_type result_type;
 	
-	virtual ~TImageFilter();
+	virtual ~TDataFilter();
 
 	/** run the filter 
 	   \param image must be of a type that has Binder trait defined.  
@@ -127,16 +127,16 @@ private:
  */
 
 template <class Image>
-class EXPORT_HANDLER TImageFilterPlugin: public TFactory<TImageFilter<Image> > {
+class EXPORT_HANDLER TDataFilterPlugin: public TFactory<TDataFilter<Image> > {
 public:
-	typedef typename TFactory<TImageFilter<Image> >::Product Product; 
+	typedef typename TFactory<TDataFilter<Image> >::Product Product; 
 	/// Constructor that sets the plug-in name 
-	TImageFilterPlugin(char const * const  name):
-		TFactory<TImageFilter<Image> >(name)
+	TDataFilterPlugin(char const * const  name):
+		TFactory<TDataFilter<Image> >(name)
 	{}
 private:
 	virtual bool do_test() const {
-		cvwarn() << "TImageFilterPlugin::do_test is obsolete, use individual tests for the plugins\n";
+		cvwarn() << "TDataFilterPlugin::do_test is obsolete, use individual tests for the plugins\n";
 		return true;
 	};
 };
@@ -536,27 +536,27 @@ static typename F::result_type accumulate(F& f, const A& a, const B& b)
 
 
 template <class D>
-TImageFilter<D>::~TImageFilter()
+TDataFilter<D>::~TDataFilter()
 {
 }
 
 template <class D>
-typename TImageFilter<D>::result_type
-TImageFilter<D>::filter(const D& image) const
+typename TDataFilter<D>::result_type
+TDataFilter<D>::filter(const D& image) const
 {
 	return do_filter(image);
 }
 
 template <class D>
-typename TImageFilter<D>::result_type
-TImageFilter<D>::filter(std::shared_ptr<D> pimage) const
+typename TDataFilter<D>::result_type
+TDataFilter<D>::filter(std::shared_ptr<D> pimage) const
 {
 	return do_filter(pimage);
 }
 
 template <class D>
-typename TImageFilter<D>::result_type
-TImageFilter<D>::do_filter(std::shared_ptr<D> pimage) const
+typename TDataFilter<D>::result_type
+TDataFilter<D>::do_filter(std::shared_ptr<D> pimage) const
 {
 	return do_filter(*pimage); 
 }

@@ -87,7 +87,7 @@ typename TBinarize<Image>::result_type TBinarize<Image>::do_filter(const Image& 
 
 template <class Image>
 TBinarizeImageFilterFactory<Image>::TBinarizeImageFilterFactory():
-	TImageFilterPlugin<Image>("binarize"), 
+	TDataFilterPlugin<Image>("binarize"), 
 	m_min(0), 
 	m_max(std::numeric_limits<float>::max())
 {
@@ -99,7 +99,7 @@ TBinarizeImageFilterFactory<Image>::TBinarizeImageFilterFactory():
 }
 
 template <class Image> 
-TImageFilter<Image> *TBinarizeImageFilterFactory<Image>::do_create()const
+TDataFilter<Image> *TBinarizeImageFilterFactory<Image>::do_create()const
 {
 	return new TBinarize<Image>(m_min, m_max); 
 }

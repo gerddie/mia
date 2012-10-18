@@ -92,8 +92,8 @@ TPluginHandler<TFactory<C2DImageCombiner>>::m_help =
     "These plug-ins provide 2D image combiners that merge two gray scale image."; 
 
 
-template class TImageFilter<C2DImage>;
-template class TImageFilterPlugin<C2DImage>;
+template class TDataFilter<C2DImage>;
+template class TDataFilterPlugin<C2DImage>;
 template class TPlugin<C2DImage, filter_type>;
 template class THandlerSingleton<TFactoryPluginHandler<C2DFilterPlugin> >;
 template class TFactoryPluginHandler<C2DFilterPlugin>;

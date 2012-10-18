@@ -62,7 +62,14 @@ NS_MIA_BEGIN
 class EXPORT_MESH CTriangleMesh: public CIOData {
 
 public:
+	/** The type description provides information about the data type that is
+	    used by the plug-in system */
+        static const char *data_descr;
 
+	typedef CTriangleMesh type; 
+
+
+	typedef std::shared_ptr<CTriangleMesh> Pointer; 
 
 	/// these are some flags to indicate, which data is actually available
 	enum EData {ed_none = 0,
@@ -270,7 +277,7 @@ private:
 };
 
 /// Pointer type of the CTriangle mesh class
-typedef std::shared_ptr<CTriangleMesh > PTriangleMesh;
+typedef CTriangleMesh::Pointer PTriangleMesh;
 
 /** This function is used to generate  the deformation scale of a mesh as the
     scalar product of the surface normal and a deformation field.
@@ -325,13 +332,9 @@ CTriangleMesh colorize_mesh(const CTriangleMesh& mesh, const Deformation& deform
    void distance_transform(CTriangleMesh *mesh, const CTriangleMesh& reference);
 */
 
-struct io_mesh_type {
-    typedef CTriangleMesh type;
-    static const char *data_descr;
-};
 
 /// IO plugin for triangular meshes
-typedef TIOPlugin<io_mesh_type> CMeshIOPlugin;
+typedef TIOPlugin<CTriangleMesh> CMeshIOPlugin;
 
 /// Plug-in handler for triangulat mesh IO 
 typedef TIOHandlerSingleton<TIOPluginHandler<CMeshIOPlugin> > CMeshIOPluginHandler;

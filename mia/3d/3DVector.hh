@@ -166,6 +166,13 @@ public:
 		x = T(x * a); y = T(y * a); z = T(z * a);
 		return *this;
 	}
+
+	/// inplace component wise multiplication 
+	T3DVector<T>& operator *=(const T3DVector<T>& a){
+		x = T(x * a.x); y = T(y * a.y); z = T(z * a.z);
+		return *this;
+	}
+
 	
 	/// inplace divisison by a scalar 
 	T3DVector<T>& operator /=(const double a){

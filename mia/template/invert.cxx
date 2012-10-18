@@ -57,12 +57,12 @@ typename TInvert<Image>::result_type TInvert<Image>::do_filter(const Image& imag
 
 template <class Image> 
 TInvertFilterPlugin<Image>::TInvertFilterPlugin():
-	TImageFilterPlugin<Image>("invert")
+	TDataFilterPlugin<Image>("invert")
 {
 }
 
 template <class Image> 
-TImageFilter<Image> *TInvertFilterPlugin<Image>::do_create()const
+TDataFilter<Image> *TInvertFilterPlugin<Image>::do_create()const
 {
 	return new TInvert<Image>(); 
 }
