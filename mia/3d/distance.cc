@@ -267,6 +267,9 @@ float C3DDistanceImpl::get_local_distance(unsigned int x, unsigned  int y, const
 		return numeric_limits<float>::max(); 
 
 	auto&  zdt = m_zdt[y * m_size.x + x]; 
+	if (zdt.size() == 1 && zdt[0].fv == numeric_limits<float>::max()) 
+		return numeric_limits<float>::max(); 
+
 	unsigned int k = 0; 
 	while ( k < zdt.size() - 1 && zdt[ k + 1 ].z  < p.z) {
 		++k;
@@ -379,7 +382,7 @@ float C3DDistanceImpl::get_distance_at(const C3DFVector& p) const
 		}
 	}
 		
-	return distance; 
+	return sqrt(distance); 
 }
 
 C2DFImage C3DDistanceImpl::get_distance_slice(int z) const

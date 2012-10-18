@@ -74,7 +74,7 @@ public:
 	/**
 	   Evaluate the distance of a point to the input function 
 	   \param p point 
-	   \returns the squared Euclidian distance of the point to the function 
+	   \returns the Euclidian distance of the point to the function 
 	 */
 	float get_distance_at(const C3DFVector& p) const;
 

@@ -94,8 +94,8 @@ BOOST_FIXTURE_TEST_CASE( test_distance_per_slice3d_direct, Distance3DInfFixture 
 				C3DFVector p(x,y,z); 
 				
 				auto d = slice_based_distance.get_distance_at(p); 
-				cvdebug() << "p=" << p << ":" << d << ", vs " << test_val[k] << "\n"; 
-				BOOST_CHECK_CLOSE(d, test_val[k], 0.1); 
+				cvdebug() << "p=" << p << ":" << d << ", vs " << sqrt(test_val[k]) << "\n"; 
+				BOOST_CHECK_CLOSE(d, sqrt(test_val[k]), 0.1); 
 				
 				
 			}
@@ -116,8 +116,8 @@ BOOST_FIXTURE_TEST_CASE( test_distance_per_slice3d_direct_3_3_3, Distance3DInfFi
 
 	C3DFVector p(3,3,3); 
 	auto d = slice_based_distance.get_distance_at(p); 
-	cvdebug() << "p=" << p << ":" << d << ", vs " << test_val[3*16 + 3 *4 + 3] << "\n"; 
-	BOOST_CHECK_CLOSE(d, test_val[3*16 + 3 *4 + 3], 0.1); 
+	cvdebug() << "p=" << p << ":" << d << ", vs " << sqrt(test_val[3*16 + 3 *4 + 3]) << "\n"; 
+	BOOST_CHECK_CLOSE(d, sqrt(test_val[3*16 + 3 *4 + 3]), 0.1); 
 
 }
 
