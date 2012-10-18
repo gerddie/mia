@@ -145,6 +145,7 @@ DEFEXE(3dcost-translatedgrad mia3d)
 
 DEFEXE(plugin-help miamesh )
 DEFEXE(distance-mesh2mask miamesh )
+DEFEXE(meshfilter miamesh )
 
 ADD_EXECUTABLE(mia-test-plugins-as-installed test_plugins_as_installed.cc)  
 TARGET_LINK_LIBRARIES(mia-test-plugins-as-installed miamesh)
