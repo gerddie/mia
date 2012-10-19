@@ -30,6 +30,8 @@
     <link key="Sec">Tools for Myocardial Perfusion Analysis</link>.
   </description>
 </section>
+<section name="Tools for the Analysis of 2D image series">
+</section>
 <section name="Tools for Myocardial Perfusion Analysis">
   <description>
     These programs provide various means to evaluate statistics and comparisons for series of images that stem from 
@@ -68,6 +70,8 @@
   <description>
     Thr Programs in this section do not fit in any of the other categories.
   </description>
+</section>
+<section name="Creation, analysis, and filtering of triangular 3D meshes">
 </section>
 <section name="Help">
   <description>
