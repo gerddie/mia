@@ -77,7 +77,7 @@ template <typename T>
 struct __dispatch<T, dir_xz> {
 	static size_t get_end(size_t start, size_t n, const C3DBounds& size) {
 		size_t end = n > 0 ? start + n : start + size.y;
-		return ( end < size.z ) ? end : size.y;
+		return ( end < size.y ) ? end : size.y;
 	}
 	static T2DImage<T> get_slice(size_t i, const T3DImage<T>& image) {
 		return image.get_data_plane_xz(i);
@@ -88,7 +88,7 @@ template <typename T>
 struct __dispatch<T, dir_yz> {
 	static size_t get_end(size_t start, size_t n, const C3DBounds& size) {
 		size_t end = n > 0 ? start + n : start + size.x;
-		return ( end < size.z ) ? end : size.x;
+		return ( end < size.x ) ? end : size.x;
 	}
 	static T2DImage<T> get_slice(size_t i, const T3DImage<T>& image) {
 		return image.get_data_plane_yz(i);
