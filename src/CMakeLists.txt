@@ -97,6 +97,8 @@ IF(ITPP_FOUND)
   DEFEXE(2dmyoica-nonrigid      mia2dmyocardperf )
   DEFEXE(2dmyoica-nonrigid-parallel      mia2dmyocardperf )
   DEFEXE(2dmyoica-nonrigid2     mia2dmyocardperf )
+  SET(PERF_AND_3D_LIBS mia3d mia2dmyocardperf) 
+  DEFEXE(2dseriestovolume  "${PERF_AND_3D_LIBS}")
 ENDIF(ITPP_FOUND)
 
 DEFEXE(2dgrayimage-combine-to-rgb mia2d)
