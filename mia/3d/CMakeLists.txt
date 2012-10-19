@@ -36,6 +36,7 @@ SET(MIA3D_SRC
   fuzzyseg.cc
   fuzzyClusterSolverCG.cc
   ica.cc
+  imagecollect.cc
   interpolator.cc
   landmark.cc
   landmarklist.cc
@@ -85,6 +86,7 @@ SET(MIA3D_HEADERS
   interpolator.hh interpolator.cxx
   iterator.hh iterator.cxx
   ica.hh
+  imagecollect.hh
   landmark.hh
   landmarklist.hh
   landmarklistio.hh
@@ -197,6 +199,7 @@ TEST_3D(stackdisttrans stackdisttrans)
 TEST_3D(similarity_profile similarity_profile)
 TEST_3D(trackpoint similarity_profile)
 TEST_3D(distance distance)
+TEST_3D(imagecollect imagecollect)
 #
 # installation 
 #
