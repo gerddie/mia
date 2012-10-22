@@ -110,7 +110,7 @@ bool fork_and_run_check(const char *me)
 		       "-u", vint,
 		       "-a", vfloat,
 #endif
-		       "-V", "debug",
+		       "-V", "message",
 		       "--internal",
 		       NULL);
 		cvfail() << "unable to start myself" << endl;
