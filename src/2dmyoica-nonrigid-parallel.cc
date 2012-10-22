@@ -329,6 +329,16 @@ int do_main( int argc, char *argv[] )
 			box_scale = false; 
 
 	}		
+
+	if( input_set.get_RV_peak() < 0)  {
+		if (ica->get_RV_peak_time() > 0)
+			input_set.set_RV_peak(ica->get_RV_peak_time() + skip_images); 
+	}
+	if( input_set.get_LV_peak() < 0) {
+		if (ica->get_LV_peak_time() > 0) 
+			input_set.set_LV_peak(ica->get_LV_peak_time() + skip_images);
+	}
+
 	if (!save_crop_feature.empty())
 		ica->save_feature_images(save_crop_feature);
 	
@@ -421,10 +431,6 @@ int do_main( int argc, char *argv[] )
 			ica_final.set_approach(FICA_APPROACH_SYMM); 
 			ica_final.run(series); 
 	}
-	if( input_set.get_RV_peak() < 0) 
-		input_set.set_RV_peak(ica_final.get_RV_peak_time() + skip_images); 
-	if( input_set.get_LV_peak() < 0) 
-		input_set.set_LV_peak(ica_final.get_LV_peak_time() + skip_images);
 
 	if (!save_crop_feature.empty()) {
 		stringstream cfile; 
