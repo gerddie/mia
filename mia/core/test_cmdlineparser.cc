@@ -421,8 +421,10 @@ BOOST_FIXTURE_TEST_CASE( test_parser_help_output, CmdlineParserFixture )
 			  "                        verbosity of output, print messages of given \n"
 			  "                        level and higher priorities. Supported \n"
 			  "                        priorities starting at lowest level are: \n"
+#ifndef NDEBUG 
 			  "                          trace: Function call trace\n"
 			  "                          debug: Debug output\n"
+#endif 
 			  "                          info: Low level messages\n"
 			  "                          message: Normal messages\n"
 			  "                          warning: Warnings\n"
