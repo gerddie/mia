@@ -106,9 +106,10 @@ def write_man_file(descr):
             else:
                 print p.text
                 print ".P"
-                print ".RS 14"
-                print "(no parameters)"
-                print ".RE"
+                if not p.no_params_info: 
+                    print ".RS 14"
+                    print "(no parameters)"
+                    print ".RE"
 
     if descr.Example.text is not None and len(descr.Example.text) > 0:
             print ".SH EXAMPLE"
