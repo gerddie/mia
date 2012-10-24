@@ -460,7 +460,7 @@ void CVFF3DImageIO::do_add_suffixes(multimap<string, string>& map) const
 
 const string  CVFF3DImageIO::do_get_descr()const
 {
-	return string("VFF Sun raster format image input/output support");
+	return string("VFF Sun raster format");
 }
 
 NS_END

@@ -565,7 +565,7 @@ void CVtk3DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
 
 const string  CVtk3DImageIOPlugin::do_get_descr() const
 {
-	return string("VTK image input/output support");
+	return string("Kitware Inc Visualization Toolkit image");
 }
 
 

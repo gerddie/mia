@@ -72,6 +72,7 @@ private:
 	virtual PData do_load(const string&  filename) const;
 	virtual bool do_save(const string& fname, const Data& data) const;
 	virtual void do_add_suffixes(multimap<string, string>& map) const;
+	std::string do_get_preferred_suffix() const; 
 	virtual const string do_get_descr() const;
 };
 
@@ -571,9 +572,14 @@ void CInria3DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
 	map.insert(pair<string,string>(".inr", get_name()));
 }
 
+std::string CInria3DImageIOPlugin::do_get_preferred_suffix() const
+{
+	return "inr"; 
+}
+
 const string  CInria3DImageIOPlugin::do_get_descr() const
 {
-	return string("INRIA image input/output support");
+	return string("INRIA image");
 }
 
 

@@ -619,7 +619,7 @@ std::string CAnalyze3DImageIOPlugin::do_get_preferred_suffix() const
 
 const string CAnalyze3DImageIOPlugin::do_get_descr() const
 {
-	return "analyze image IO";
+	return "Analyze 7.5 image";
 }
 
 NS_END
