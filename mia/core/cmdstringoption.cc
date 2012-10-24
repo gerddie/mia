@@ -73,6 +73,12 @@ void CCmdStringOption::do_get_long_help_xml(std::ostream& os, xmlpp::Element& pa
 		parent.set_attribute("type", __type_descr<string>::value);
 }
 
+void CCmdStringOption::do_get_long_help(std::ostream& os) const
+{
+	if (m_plugin_hint)
+		m_plugin_hint->print_help(os); 
+}
+
 
 NS_MIA_END
 

@@ -175,6 +175,15 @@ TIOPluginHandler<I>::load_to_pool(const std::string& fname) const
 }
 
 
+template <typename T>
+void  TIOPluginHandler<T>::do_print_help(std::ostream& os) const
+{
+	os << "Supported file types:\n"; 
+	for (auto i = this->begin(); i != this->end(); ++i) {
+		os << "  ." << i->second->get_preferred_suffix() << ":" << i->second->get_descr() << "\n"; 
+	}
+}
+
 
 /// \returns a reference to the only instance of the plugin handler 
 template <typename T>
@@ -185,6 +194,7 @@ const T& TIOHandlerSingleton<T>::instance()
 	static TIOHandlerSingleton<T> me; 
 	return me; 
 }
+	
 
 
 template <class I> 
@@ -227,6 +237,12 @@ void TIOPluginHandler<I>::CDatapoolPlugin::do_add_suffixes(
 {
 	cvdebug() << "Add pair" << "'.@' -> '" << this->get_name() << "'\n"; 
 	map.insert(pair<string,string>(".@", this->get_name())); 
+}
+
+template <class I> 
+std::string TIOPluginHandler<I>::CDatapoolPlugin::do_get_preferred_suffix() const
+{
+	return "@"; 
 }
 
 template <class I> 

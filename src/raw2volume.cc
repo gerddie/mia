@@ -160,7 +160,7 @@ int do_main(int argc, char *argv[])
 	CCmdOptionList options(g_description);
 
 	options.add(make_opt( in_filename, "in-file", 'i', "input file name", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required, &imageio));
 	options.add(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type "));
 	options.add(make_opt( high_endian, "big-endian", 'b', "input data is big endian"));
 	options.add(make_opt( scale, "scale", 'f', "scale of input voxels <FX,FY,FZ>"));

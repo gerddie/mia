@@ -135,6 +135,9 @@ private:
 	// list of supported compressd file suffixes
 	std::set<std::string> m_compress_sfx; 
 
+
+	// print out info about the available plug-ins 
+	void do_print_help(std::ostream& os) const;
 	/**
 	   Private plugin to handle the virtual data pool IO  
 	 */
@@ -147,6 +150,8 @@ private:
 		bool do_save(const std::string& fname, 
 			     const typename Interface::Data& data) const; 
 		const std::string do_get_descr() const;
+		std::string do_get_preferred_suffix() const; 
+			
 	}; 
 	CDatapoolPlugin *m_pool_plugin; 
 }; 
