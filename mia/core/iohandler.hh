@@ -170,9 +170,7 @@ private:
 */
 template <typename T>
 class EXPORT_HANDLER TIOHandlerSingleton : public THandlerSingleton<T> {
-public: 
-	/// inherit the suffix map of the handler class 
-	typedef typename T::CSuffixmap CSuffixmap; 
+	
 	
 	/**
 	   Constructor used to override the plugin search path for testing 
@@ -180,12 +178,18 @@ public:
 	 */
 	TIOHandlerSingleton(const CPathNameArray& searchpath):
 		THandlerSingleton<T>(searchpath)
-		{
-		}
+	{
+		TRACE_FUNCTION; 
+	}
 
 	TIOHandlerSingleton()
-		{
-		}
+	{
+		TRACE_FUNCTION; 
+	}
+
+public: 
+/// inherit the suffix map of the handler class 
+	typedef typename T::CSuffixmap CSuffixmap; 
 
 	/// \returns a reference to the only instance of the plugin handler 
 	static const T& instance(); 

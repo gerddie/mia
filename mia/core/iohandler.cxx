@@ -33,6 +33,7 @@ TIOPluginHandler<I>::TIOPluginHandler(const CPathNameArray& searchpath):
 	TPluginHandler<I>(searchpath), 
 	m_pool_plugin(new CDatapoolPlugin())
 {
+	TRACE_FUNCTION; 
 	this->add_plugin(m_pool_plugin); 
 	for (const_iterator i = this->begin(); i != this->end(); ++i) 
 		i->second->add_suffixes(m_suffixmap);

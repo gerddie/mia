@@ -53,6 +53,7 @@ template <typename I>
 TPluginHandler<I>::TPluginHandler(const CPathNameArray& searchpath):
 	CPluginHandlerBase(TPlugin<typename I::PlugData,typename I::PlugType>::search_path().string())
 {
+	TRACE_FUNCTION; 
 	if (!searchpath.empty())
 		initialise(searchpath); 
 	else{
@@ -65,6 +66,7 @@ TPluginHandler<I>::TPluginHandler(const CPathNameArray& searchpath):
 template <typename I>
 void TPluginHandler<I>::global_searchpath(CPathNameArray& searchpath)
 {
+	TRACE_FUNCTION; 
 	bfs::path type_path = TPlugin<typename I::PlugData,typename I::PlugType>::search_path();
 	
 	cvdebug() << "Add plugin searchpath\n"; 
@@ -99,6 +101,7 @@ void TPluginHandler<I>::global_searchpath(CPathNameArray& searchpath)
 template <typename I>
 void TPluginHandler<I>::initialise(const CPathNameArray& searchpath)
 {
+	TRACE_FUNCTION; 
 	// create the pattern match
 	stringstream pattern; 
 
