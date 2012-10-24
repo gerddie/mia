@@ -336,9 +336,11 @@ int do_main( int argc, char *argv[] )
 	CCmdOptionList options(g_description);
 	
 	options.set_group("\nFile-IO");
-	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input images following the naming pattern nameXXXX.ext", 
+			      CCmdOption::required, &C3DImageIOPluginHandler::instance()));
 	options.add(make_opt( registered_filebase, "out-file", 'o', 
-				    "file name base for registered fiels")); 
+			      "file name base for registered files given as C-format string", 
+			      CCmdOption::required, &C3DImageIOPluginHandler::instance())); 
 	options.add(make_opt(params.save_ref,"save-references", 0, 
 				   "Save synthetic references to files refXXXX.v")); 
 

@@ -22,11 +22,7 @@
 /*
   This program implements 3D gray scale image registration.
   Depending on the available plug-ins it can accomodate various models and cost-functions.
-  So far input images can be given as PNG, TIF, BMP and OpenEXR (depending on the installed plug-ins)
   The input images must be of the same dimensions and gray scale (whatever bit-depth).
-  The vector field will be saved as a EXR image with two frames of float values, one for the X
-  and one for the Y values of the vectors.
-  Other vector field output plug-ins might be supported depending on the installed plug-ins.
 */
 
 #include <mia/core.hh>
@@ -62,7 +58,8 @@ int do_main(int argc, char **argv)
 	int max_iter = 200;
 	float epsilon = 0.01;
 
-	options.add(make_opt( out_filename, "out-file", 'o', "output vector field", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output vector field", 
+			      CCmdOption::required));
 	options.add(make_opt( regmodel, "regmodel", 'm', "registration model"));
 	options.add(make_opt( timestep, "timestep", 't', "time setp"));
 	options.add(make_opt( start_size, "mgsize", 's', "multigrid start size"));

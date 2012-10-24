@@ -56,14 +56,21 @@ int do_main( int argc, char *argv[] )
 	cvdebug() << "auto transform_creator\n"; 
 	P3DTransformationFactory transform_creator; 
 
+
+	const auto& image3dio =  C3DImageIOPluginHandler::instance(); 
+	const auto& transform3dio =  C3DTransformationIOPluginHandler::instance(); 
 	size_t mg_levels = 3;
 
 	CCmdOptionList options(g_description);
 	options.set_group("IO"); 
-	options.add(make_opt( src_filename, "in", 'i', "test image", CCmdOption::required));
-	options.add(make_opt( ref_filename, "ref", 'r', "reference image", CCmdOption::required));
-	options.add(make_opt( out_filename, "out", 'o', "registered output image", CCmdOption::required));
-	options.add(make_opt( trans_filename, "trans", 't', "output transformation"));
+	options.add(make_opt( src_filename, "in", 'i', "test image", 
+			      CCmdOption::required, &image3dio));
+	options.add(make_opt( ref_filename, "ref", 'r', "reference image", 
+			      CCmdOption::required, &image3dio));
+	options.add(make_opt( out_filename, "out", 'o', "registered output image", 
+			      CCmdOption::required, &image3dio));
+	options.add(make_opt( trans_filename, "trans", 't', "output transformation", 
+			      CCmdOption::not_required, &transform3dio));
 	
 	options.set_group("Registration"); 
 	options.add(make_opt( mg_levels, "levels", 'l', "multi-resolution levels"));

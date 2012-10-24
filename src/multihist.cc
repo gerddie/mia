@@ -111,8 +111,10 @@ int do_main( int argc, char *argv[] )
 	string out_filename;
 	string in_filename;
 		
+	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+
 	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required, &imageio));
 	options.add(make_opt( out_filename, "out", 'o', "output file name", CCmdOption::required));
 	options.add(make_opt( hmin, "min", 0, "minimum of histogram range"));
 	options.add(make_opt( hmax, "max", 0, "maximum of histogram range"));
@@ -122,7 +124,7 @@ int do_main( int argc, char *argv[] )
 		return EXIT_SUCCESS; 
 
 
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+
 
 	size_t start_filenum = 0;
 	size_t end_filenum  = 0;

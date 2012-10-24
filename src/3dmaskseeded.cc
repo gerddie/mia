@@ -133,30 +133,27 @@ int do_main(int argc, char *argv[] )
 	string in_filename;
 	string out_filename;
 	C3DBounds seed_point(0,0,0);
-	string shape_descr("6n");
+	P3DShape shape; 
 
 	const C3DImageIOPluginHandler::Instance& imageio =
 		C3DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-file", 'i',
-				    "input image(s) to be filtered", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o',
-				    "output image(s) that have been filtered", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
+			      CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output image(s) that have been filtered", 
+			      CCmdOption::required, &imageio));
 	options.add(make_opt( seed_point, "seed", 's', "seed point"));
 
-	options.add(make_opt( shape_descr, "neighborhood", 'n', "neighborhood shape"));
+	options.add(make_opt( shape, "6n", "neighborhood", 'n', "neighborhood shape"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 
-
-
 	C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(in_filename);
 
 	if (in_image_list.get() && in_image_list->size()) {
-		P3DShape shape(C3DShapePluginHandler::instance().produce(shape_descr.c_str()));
 		FMask mask(seed_point, shape);
 
 		for (C3DImageIOPluginHandler::Instance::Data::iterator i = in_image_list->begin();

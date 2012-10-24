@@ -68,7 +68,8 @@ int do_main( int argc, char *argv[] )
 				    "output point set", CCmdOption::required)); 
 
 	options.add(make_opt( trans_filename, "transformation", 't', 
-				    "transformation describing the monitored change", CCmdOption::required)); 
+			      "transformation describing the monitored change", 
+			      CCmdOption::required, &C3DTransformationIOPluginHandler::instance())); 
 
         options.set_group("\nParameters"); 
         options.add(make_opt( time_step, "time-step", 'T', 
