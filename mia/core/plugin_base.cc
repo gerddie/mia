@@ -129,9 +129,13 @@ void CPluginBase::get_help_xml(xmlpp::Element& root) const
 {
 	cvdebug() << "Get help for " << m_name << "\n"; 
 	root.set_child_text(get_descr()); 
-	m_parameters.get_help_xml(root);
+	do_get_help_xml(root); 
 }
 
+void CPluginBase::do_get_help_xml(xmlpp::Element& root) const
+{
+	m_parameters.get_help_xml(root);
+}
 
 void CPluginBase::append_interface(CPluginBase *plugin)
 {

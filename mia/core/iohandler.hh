@@ -138,6 +138,7 @@ private:
 
 	// print out info about the available plug-ins 
 	void do_print_help(std::ostream& os) const;
+
 	/**
 	   Private plugin to handle the virtual data pool IO  
 	 */

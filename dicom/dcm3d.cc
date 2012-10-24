@@ -150,6 +150,12 @@ static P3DImage get_3dimage(CImageInstances& slices)
 	return creator.get_image();
 }
 
+std::string CDicom3DImageIOPlugin::do_get_preferred_suffix() const
+{
+	return "dcm"; 
+}
+
+
 C3DImageIOPlugin::PData CDicom3DImageIOPlugin::get_images(const vector<P2DImage>& candidates) const
 {
 	TRACE_FUNCTION;
@@ -319,7 +325,7 @@ bool CDicom3DImageIOPlugin::do_save(const string& fname, const Data& data) const
 
 const string CDicom3DImageIOPlugin::do_get_descr() const
 {
-	return "3D image io for DICOM";
+	return "Dicom image series as 3D";
 }
 
 

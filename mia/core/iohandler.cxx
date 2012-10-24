@@ -109,6 +109,7 @@ TIOPluginHandler<I>::get_supported_filetype_map() const
 	return m_suffixmap; 
 }
 
+
 template <class I> 
 const std::string TIOPluginHandler<I>::get_supported_suffixes() const
 {
@@ -178,9 +179,9 @@ TIOPluginHandler<I>::load_to_pool(const std::string& fname) const
 template <typename T>
 void  TIOPluginHandler<T>::do_print_help(std::ostream& os) const
 {
-	os << "Supported file types:\n"; 
+	os << ". Supported file types based on prefered extension are:\n"; 
 	for (auto i = this->begin(); i != this->end(); ++i) {
-		os << "  ." << i->second->get_preferred_suffix() << ":" << i->second->get_descr() << "\n"; 
+		os << "  '." << i->second->get_preferred_suffix() << "': " << i->second->get_descr() << "\n"; 
 	}
 }
 
@@ -270,7 +271,7 @@ bool TIOPluginHandler<I>::CDatapoolPlugin::do_save(const std::string& fname,
 template <class I> 
 const std::string TIOPluginHandler<I>::CDatapoolPlugin::do_get_descr() const
 {
-	return "virtual IO to and from data pool"; 
+	return "Virtual IO to and from the internal data pool"; 
 }
 
 

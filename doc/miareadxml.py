@@ -385,7 +385,7 @@ class CPlugin:
         self.handlername = handlername
         self.ancor = make_sec_ancor("plugin"+self.name, self.handlername)
         self.altancor = self.ancor + "alt"
-
+        self.no_params_info = False
         self.params = []
         for child in node:
             if child.tag == "param": 
@@ -397,6 +397,9 @@ class CPlugin:
                    }.get(child.get("type"), lambda n: CParam(n))(child)
 
                 self.params.append(p)
+            elif child.tag == "noparam": 
+                self.no_params_info = True
+                break
             else:
                 print "unexpected subnode '%s' in 'plugin'"% (child.tag)
 
@@ -419,30 +422,33 @@ class CPlugin:
         node = etree.SubElement(parent, "para", role="plugindescr")
         param_list = self.params
 
-        if len(param_list) > 0:
-            node.text = self.text + ". Supported parameters are:"
-            table = etree.SubElement(node, "informaltable", frame="all", role="pluginparms", pgwide="1")
-            tgroup = etree.SubElement(table, "tgroup", cols="3", colsep="0", rowsep ="0")
-            colspec = etree.SubElement(tgroup, "colspec", colname="c1", colwidth="10%")
-            colspec = etree.SubElement(tgroup, "colspec", colname="c2", colwidth="10%")
-            colspec = etree.SubElement(tgroup, "colspec", colname="c3", colwidth="10%")
-            colspec = etree.SubElement(tgroup, "colspec", colname="c4", colwidth="70%")
-            thead = etree.SubElement(tgroup, "thead")
-            row = etree.SubElement(thead, "row"); 
-            e = etree.SubElement(row, "entry", align="center", valign="top")
-            e.text = "Name"
-            e = etree.SubElement(row, "entry", align="center", valign="top")
-            e.text = "Type"
-            e = etree.SubElement(row, "entry", align="center", valign="top")
-            e.text = "Default"
-            e = etree.SubElement(row, "entry", align="center", valign="top")
-            e.text = "Description"
-            tbody = etree.SubElement(tgroup, "tbody")
-
-            for p in param_list: 
-                p.print_xml_help(tbody)
+        if not self.no_params_info: 
+            if len(param_list) > 0:
+                node.text = self.text + ". Supported parameters are:"
+                table = etree.SubElement(node, "informaltable", frame="all", role="pluginparms", pgwide="1")
+                tgroup = etree.SubElement(table, "tgroup", cols="3", colsep="0", rowsep ="0")
+                colspec = etree.SubElement(tgroup, "colspec", colname="c1", colwidth="10%")
+                colspec = etree.SubElement(tgroup, "colspec", colname="c2", colwidth="10%")
+                colspec = etree.SubElement(tgroup, "colspec", colname="c3", colwidth="10%")
+                colspec = etree.SubElement(tgroup, "colspec", colname="c4", colwidth="70%")
+                thead = etree.SubElement(tgroup, "thead")
+                row = etree.SubElement(thead, "row"); 
+                e = etree.SubElement(row, "entry", align="center", valign="top")
+                e.text = "Name"
+                e = etree.SubElement(row, "entry", align="center", valign="top")
+                e.text = "Type"
+                e = etree.SubElement(row, "entry", align="center", valign="top")
+                e.text = "Default"
+                e = etree.SubElement(row, "entry", align="center", valign="top")
+                e.text = "Description"
+                tbody = etree.SubElement(tgroup, "tbody")
+                
+                for p in param_list: 
+                    p.print_xml_help(tbody)
+            else:
+                node.text = self.text + ". (This plug-in doesn't take parameters)"
         else:
-            node.text = self.text + "(This plug-in doesn't take parameters)"
+            node.text = self.text
 
 class CHandler: 
     def __init__(self, node):

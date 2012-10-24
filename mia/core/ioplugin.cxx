@@ -56,6 +56,12 @@ bool TIOPlugin<D>::save(const std::string& fname, const Data& data) const
 	return do_save(fname, data);
 }
 
+template <typename D> 
+void TIOPlugin<D>::do_get_help_xml(xmlpp::Element& root) const
+{
+	//flag that docu should not print help about non-existent parameters 
+	root.add_child("noparam"); 
+}
 
 template <typename D> 
 const typename TIOPlugin<D>::PixelTypeSet& TIOPlugin<D>::supported_pixel_types() const

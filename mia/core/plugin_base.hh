@@ -163,6 +163,8 @@ private:
 
 	virtual const std::string do_get_descr() const = 0;
 
+	virtual void do_get_help_xml(xmlpp::Element& root) const;
+
 	// plugin name 
 	const char *m_name;
 

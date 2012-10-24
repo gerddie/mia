@@ -181,7 +181,7 @@ bool CVista3DImageIOPlugin::do_save(const string& fname, const C3DImageVector& d
 
 const string CVista3DImageIOPlugin::do_get_descr() const
 {
-	return "a 3dimage io plugin for vista images";
+	return "Vista 3D";
 }
 
 std::string CVista3DImageIOPlugin::do_get_preferred_suffix() const

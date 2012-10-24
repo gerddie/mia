@@ -128,6 +128,9 @@ private:
 	 */
 	virtual PData do_load(const std::string& fname) const = 0;
 
+	void do_get_help_xml(xmlpp::Element& root) const; 
+
+
 	/**
 	   Interface function that needs to be impemented ina a derived class:
 	   \param fname
