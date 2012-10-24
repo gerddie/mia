@@ -46,14 +46,14 @@ int do_main( int argc, char *argv[])
 	string out_filename;
 	size_t num = 0;
 
-	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
+	const auto& imageio = C3DImageIOPluginHandler::instance();
 
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i',
-				    "input images", CCmdOption::required));
+			      "input images", CCmdOption::required, &imageio));
 	options.add(make_opt( out_filename, "out-file", 'o',
-				    "output image", CCmdOption::required));
+				    "output image", CCmdOption::required, &imageio));
 	options.add(make_opt( num, "number", 'n',  "image number to be selected"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
@@ -61,7 +61,7 @@ int do_main( int argc, char *argv[])
 
 
 	// read image
-	C3DImageIOPluginHandler::Instance::PData  in_image_list = imageio.load(in_filename);
+	auto  in_image_list = imageio.load(in_filename);
 	if (!in_image_list) {
 		stringstream msg;
 		msg << "No images found in '" << in_filename <<"'";
@@ -75,12 +75,9 @@ int do_main( int argc, char *argv[])
 		throw invalid_argument(msg.str());
 	}
 
-	C3DImageIOPluginHandler::Instance::Data out_image_list;
-	out_image_list.push_back( (*in_image_list)[num]);
 
-	if ( !imageio.save(out_filename, out_image_list) ){
-		string not_save = ("unable to save result to ") + out_filename;
-		throw runtime_error(not_save);
+	if ( !save_image(out_filename, (*in_image_list)[num]) ){
+		throw create_exception<runtime_error>("unable to save result to '", out_filename, "'");
 	};
 
 	return EXIT_SUCCESS;

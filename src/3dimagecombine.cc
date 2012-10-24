@@ -47,14 +47,16 @@ int do_main( int argc, char *argv[] )
 	string out_filename;
 	P3DImageCombiner combiner;
 
-	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
+	const auto& imageio = C3DImageIOPluginHandler::instance();
 	typedef C3DImageIOPluginHandler::Instance::PData PImageVector;
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( in_image1, "image1", '1', "input image  1 to be combined", CCmdOption::required));
-	options.add(make_opt( in_image2, "image2", '2', "input image  2 to be combined", CCmdOption::required));
+	options.add(make_opt( in_image1, "image1", '1', "input image  1 to be combined", 
+			      CCmdOption::required, &imageio));
+	options.add(make_opt( in_image2, "image2", '2', "input image  2 to be combined", 
+			      CCmdOption::required, &imageio));
 	options.add(make_opt( combiner, "labelxmap", "combiner", 'c', "combiner operation", CCmdOption::required));
-	options.add(make_opt( out_filename, "out", 'o', "output file", CCmdOption::required));
+	options.add(make_opt( out_filename, "out", 'o', "output file", CCmdOption::required, &imageio));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

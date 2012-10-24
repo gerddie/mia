@@ -142,14 +142,14 @@ int do_main( int argc, char *argv[] )
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', 
-			      "input image(s) to be filtered", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', 
-			      "output image(s) that have been filtered", CCmdOption::required));
-	options.add(make_opt( out_type, imageio2d.get_set(), "type", 't',
-			      "output file type"));
+			      "input image(s) to be filtered", 
+			      CCmdOption::required, &C3DImageIOPluginHandler::instance()));
+	options.add(make_opt( out_filename, "out-file", 'o', "output image(s) base name, give without "
+			      "extension since this will be based on the '--type' option", 
+			      CCmdOption::required));
+	options.add(make_opt( out_type, imageio2d.get_set(), "type", 't', "output file type"));
 	options.add(make_opt( start_slice, "start", 's',"start slice number"));
-	options.add(make_opt( slice_number, "number", 'n',
-			      "number of slices (all=0)"));
+	options.add(make_opt( slice_number, "number", 'n', "number of slices (all=0)"));
 	options.add(make_opt( direction, GDirectionmap, "dir", 'd', 
 			      "slice direction (xy=axial, xz=coronal, yz=saggital)"));
 

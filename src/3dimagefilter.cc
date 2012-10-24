@@ -46,21 +46,20 @@ int do_main( int argc, char *argv[] )
 	string in_filename;
 	string out_filename;
 
-	const C3DFilterPluginHandler::Instance& filter_plugins = C3DFilterPluginHandler::instance();
-	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
+	const auto& filter_plugins = C3DFilterPluginHandler::instance();
+	const auto& imageio = C3DImageIOPluginHandler::instance();
 
 	stringstream filter_names;
 
 	filter_names << "filters in the order to be applied (out of: " << filter_plugins.get_plugin_names() << ")";
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-file", 'i',
-				    "input image(s) to be filtered", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o',
-				    "output image(s) that have been filtered", CCmdOption::required));
-	options.add(make_help_opt( "help-plugins", 0,
-					 "give some help about the filter plugins", 
-					 new TPluginHandlerHelpCallback<C3DFilterPluginHandler>)); 
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
+			      CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output image(s) that have been filtered", 
+			      CCmdOption::required, &imageio));
+	options.add(make_help_opt( "help-plugins", 0, "give some help about the filter plugins", 
+				   new TPluginHandlerHelpCallback<C3DFilterPluginHandler>)); 
 
 	if (options.parse(argc, argv, "filter", &filter_plugins) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

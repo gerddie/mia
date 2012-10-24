@@ -145,11 +145,11 @@ int do_main(int argc, char **argv)
 
 	vector<float> positions;
 
-	const C3DImageIOPluginHandler::Instance& imageio = C3DImageIOPluginHandler::instance();
+	const auto& imageio = C3DImageIOPluginHandler::instance();
 
-	options.add(make_opt( src1_filename, "first", '1', "first input image ", CCmdOption::required));
-	options.add(make_opt( src2_filename, "second", '2', "second input image ", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output vector field", CCmdOption::required));
+	options.add(make_opt( src1_filename, "first", '1', "first input image ", CCmdOption::required, &imageio));
+	options.add(make_opt( src2_filename, "second", '2', "second input image ", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output vector field", CCmdOption::required, &imageio));
 	options.add(make_opt( positions, "positions", 'p', 
 				    "image series positions (first, target, second)", CCmdOption::required));
 	options.add(make_opt( self_test, "self-test", 0, "run a self test of the tool"));
@@ -186,7 +186,8 @@ int do_main(int argc, char **argv)
 
 
 	if (source1->size() != source2->size())
-		cvwarn() << "Number of images differ, only combining first " << (source1->size() < source2->size() ? source1->size() : source2->size()) << "images\n";
+		cvwarn() << "Number of images differ, only combining first " << 
+			(source1->size() < source2->size() ? source1->size() : source2->size()) << "images\n";
 
 	if (source1->size() <= source2->size())
 		transform( source1->begin(), source1->end(), source2->begin(), source1->begin(), FFilter<FAddWeighted>(FAddWeighted(w)));

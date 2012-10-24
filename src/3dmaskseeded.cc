@@ -135,8 +135,7 @@ int do_main(int argc, char *argv[] )
 	C3DBounds seed_point(0,0,0);
 	P3DShape shape; 
 
-	const C3DImageIOPluginHandler::Instance& imageio =
-		C3DImageIOPluginHandler::instance();
+	const auto& imageio = C3DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
@@ -156,13 +155,10 @@ int do_main(int argc, char *argv[] )
 	if (in_image_list.get() && in_image_list->size()) {
 		FMask mask(seed_point, shape);
 
-		for (C3DImageIOPluginHandler::Instance::Data::iterator i = in_image_list->begin();
-		     i != in_image_list->end(); ++i)
+		for (auto i = in_image_list->begin();     i != in_image_list->end(); ++i)
 			*i = mia::filter(mask,**i);
-		if ( !imageio.save(out_filename, *in_image_list) ){
-			string not_save = ("unable to save result to ") + out_filename;
-			throw runtime_error(not_save);
-		};
+		if ( !imageio.save(out_filename, *in_image_list) )
+			throw create_exception<runtime_error>("unable to save result to '",out_filename, "'");
 	}
 	return EXIT_SUCCESS;
 }
