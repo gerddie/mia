@@ -119,7 +119,7 @@ C3DSeparableConvoluteFilterPlugin::C3DSeparableConvoluteFilterPlugin():
 {
 	add_parameter("kx", make_param(m_kx, "gauss:w=1", false, "filter kernel in x-direction"));
 	add_parameter("ky", make_param(m_ky, "gauss:w=1", false, "filter kernel in y-direction"));
-	add_parameter("kz", make_param(m_ky, "gauss:w=1", false, "filter kernel in z-direction"));
+	add_parameter("kz", make_param(m_kz, "gauss:w=1", false, "filter kernel in z-direction"));
 }
 
 C3DFilter *C3DSeparableConvoluteFilterPlugin::do_create()const
