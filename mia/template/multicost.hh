@@ -48,6 +48,8 @@ public:
 	   \param cost a shared pointer to the new cost measure. 
 	 */
 	void push(typename TFullCost<Transform>::Pointer cost); 
+
+	
 private: 
 	bool do_has(const char *property) const;
 

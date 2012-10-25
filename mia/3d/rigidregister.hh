@@ -46,7 +46,6 @@ public:
 	   @param cost cost function model
 	   @param minimizer GSL provided minimizer
 	   @param transform_creator string describing which transformation is supported
-	   @param ipf interpolator
 	   @param mg_levels number of multi-resolution levels to be used 
 	 */
 

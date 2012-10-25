@@ -29,6 +29,7 @@
 #include <mia/3d/transform.hh>
 
 NS_MIA_BEGIN
+#if 0 
 
 class C3DImageFatCost;
 typedef std::shared_ptr<C3DImageFatCost > P3DImageFatCost;
@@ -39,7 +40,7 @@ public:
 	typedef  C3DImage plugin_data; 
 	typedef  fatcost_type plugin_type; 
 
-	C3DImageFatCost(P3DImage src, P3DImage ref, float weight);
+	C3DImageFatCost(P3DImage src, P3DImage ref, float weight)__attribute__((deprecated));
 
 	P3DImageFatCost get_downscaled(const C3DBounds& scale) const;
 
@@ -89,6 +90,7 @@ public:
 ///   \brief Obsolete, to be removed 
 typedef THandlerSingleton<C3DFatImageCostPluginHandlerImpl> C3DFatImageCostPluginHandler;
 
+#endif 
 NS_MIA_END
 
 
