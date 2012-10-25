@@ -406,12 +406,12 @@ class CIOParam(CParam):
                 self.factory = n.get("name")
 
     def do_print_man(self):
-        print "For supported plug-ins see PLUGINS:%s" % (self.factory)
+        print "For supported file types see PLUGINS:%s" % (self.factory)
         CParam.do_print_man(self)
 
     def do_print_xml_help_description(self, row):
         e = etree.SubElement(row, "entry", align="left", valign="top")
-        e.text = self.text + ". For supported plug-ins see "
+        e.text = self.text + ". For supported file types see "
         etree.SubElement(e, "xref", linkend=make_sec_ancor("SecPlugintype", self.factory))
 
 

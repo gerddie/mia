@@ -150,6 +150,8 @@ public:
 private: 
 	std::string get_handler_type_string_and_help(std::ostream& os) const; 
 	
+	std::string do_get_handler_type_string() const; 
+	
 	typename I::Product *produce_raw(const std::string& plugindescr) const;
 
 	mutable TProductCache<ProductPtr> m_cache; 
@@ -233,6 +235,12 @@ template <typename  I>
 std::string TFactoryPluginHandler<I>::get_handler_type_string_and_help(std::ostream& os) const
 {
 	os << " The string value will be used to construct a plug-in."; 
+	return do_get_handler_type_string(); 
+}
+
+template <typename  I>
+std::string TFactoryPluginHandler<I>::do_get_handler_type_string() const
+{
 	return "factory"; 
 }
 	

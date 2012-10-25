@@ -126,6 +126,59 @@ std::string CParameter::get_default_value() const
 	return do_get_default_value(); 
 }
 
+
+CStringParameter::CStringParameter(std::string& value, bool required, const char *descr, 
+				   const CPluginHandlerBase *plugin_hint):
+	CParameter(__type_descr<std::string>::value, required, descr),
+	m_value(value), 
+	m_default_value(value), 
+	m_plugin_hint(plugin_hint)
+{
+	
+}
+
+void CStringParameter::do_reset()
+{
+	m_value = m_default_value; 
+}
+
+bool CStringParameter::do_set(const std::string& str_value)
+{
+	m_value = str_value; 
+	return true; 
+}
+std::string CStringParameter::do_get_default_value() const
+{
+	return m_default_value; 
+}
+std::string CStringParameter::do_get_value_as_string() const
+{
+	return m_value; 
+}
+
+
+void CStringParameter::do_descr(std::ostream& os) const
+{
+	if (m_plugin_hint) 
+		m_plugin_hint->print_help(os); 
+}
+
+void CStringParameter::do_get_help_xml(xmlpp::Element& self) const
+{
+	if (m_plugin_hint)  {
+		auto type = m_plugin_hint->get_handler_type_string(); 
+		auto dict = self.add_child(type); 
+		dict->set_attribute("name", m_plugin_hint->get_descriptor());
+		self.set_attribute("type", type); 
+	}
+}
+
+void CStringParameter::do_add_dependend_handler(HandlerHelpMap& handler_map)const
+{
+	if (m_plugin_hint)
+		m_plugin_hint->add_dependend_handlers(handler_map); 
+}
+
 template class TRangeParameter<unsigned short>;
 template class TRangeParameter<unsigned int>;
 template class TRangeParameter<unsigned long>;

@@ -30,13 +30,6 @@ using namespace std;
 using namespace boost;
 namespace bfs=boost::filesystem;
 
-void C2DMorphFilterFactory::prepare_path() const
-{
-	CPathNameArray kernelsearchpath;
-	kernelsearchpath.push_back(bfs::path("..")/bfs::path("shapes"));
-	C2DShapePluginHandler::set_search_path(kernelsearchpath);
-}
-
 C2DDilate::C2DDilate(P2DShape shape, bool hint):
 	m_shape(shape),
 	m_more_dark(hint)

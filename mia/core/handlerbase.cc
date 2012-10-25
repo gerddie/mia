@@ -70,9 +70,20 @@ void CPluginHandlerBase::get_string_help_description_xml(std::ostream& os, xmlpp
 	parent->set_attribute("type", type);
 }
 
-std::string CPluginHandlerBase::get_handler_type_string_and_help(std::ostream& os) const
+std::string CPluginHandlerBase::get_handler_type_string_and_help(std::ostream& MIA_PARAM_UNUSED(os)) const
 {
-	return "base"; 
+	return do_get_handler_type_string(); 
 }
+
+std::string CPluginHandlerBase::get_handler_type_string() const
+{
+	return do_get_handler_type_string(); 
+}
+
+std::string CPluginHandlerBase::do_get_handler_type_string() const
+{
+	return "io";
+}
+
 
 NS_MIA_END
