@@ -52,7 +52,7 @@ public:
 
 	C3DRigidRegister(P3DImageCost cost, PMinimizer minimizer,
 			 P3DTransformationFactory transform_creator,
-			 const C3DInterpolatorFactory& ipf,  size_t mg_levels);
+			 size_t mg_levels);
 
 	
 	~C3DRigidRegister();
