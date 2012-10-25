@@ -43,16 +43,17 @@ const SProgramDescription g_description = {
 
 int do_main(int argc, char **argv)
 {
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 	CCmdOptionList options(g_description);
 	string src_filename;
 	string out_filename;
 	string vf_filename;
 	PSplineKernel interpolator_kernel;
 
-	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "reference image", CCmdOption::required));
+	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "transformed  image", CCmdOption::required, &imageio));
 	options.add(make_opt( vf_filename, "transformation", 't', "transformation vector field", 
-				    CCmdOption::required));
+			      CCmdOption::required, &C2DVFIOPluginHandler::instance()));
 	options.add(make_opt( interpolator_kernel ,"bspline:d=3", "interpolator", 'p', "image interpolator kernel"));
 
 
@@ -60,12 +61,9 @@ int do_main(int argc, char **argv)
 		return EXIT_SUCCESS; 
 
 
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
 
-	typedef C2DImageIOPluginHandler::Instance::PData PImageVector;
-	typedef C2DVFIOPluginHandler::Instance::PData P2DVF;
-	PImageVector source    = imageio.load(src_filename);
-	P2DVF transformation   = C2DVFIOPluginHandler::instance().load(vf_filename);
+	auto  source    = imageio.load(src_filename);
+	auto  transformation   = C2DVFIOPluginHandler::instance().load(vf_filename);
 
 	if (!source || source->size() < 1) {
 		cerr << "no image found in " << src_filename << "\n";
@@ -82,8 +80,7 @@ int do_main(int argc, char **argv)
 	FDeformer2D deformer(*transformation,*ipf);
 
 
-	for (C2DImageIOPluginHandler::Instance::Data::iterator i = source->begin();
-	     i != source->end(); ++i)
+	for (auto i = source->begin();  i != source->end(); ++i)
 		*i = filter(deformer, **i);
 
 	if ( !imageio.save(out_filename, *source) ){

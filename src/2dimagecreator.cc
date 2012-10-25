@@ -48,11 +48,11 @@ int do_main(int argc, char *argv[])
 	EPixelType pixel_type = it_ubyte;
 	C2DBounds size(128,128);
 
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 	CCmdOptionList options(g_description);
 
 	options.add(make_opt( out_filename, "out-file", 'o', "output file for create object", 
-				    CCmdOption::required));
+			      CCmdOption::required, &imageio));
 	options.add(make_opt( size, "size", 's', "size of the object"));
 	options.add(make_opt( pixel_type, CPixelTypeDict, "repn", 'r',"input pixel type "));
 	options.add(make_opt( creator, "", "object", 'j', "object to be created", CCmdOption::required));

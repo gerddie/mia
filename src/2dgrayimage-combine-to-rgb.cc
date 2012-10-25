@@ -84,12 +84,17 @@ int do_main( int argc, char *argv[] )
 	string green_filename;
 	string out_filename;
 
-	CCmdOptionList options(g_general_help);
-	options.add(make_opt( blue_filename, "blue", 'b', "input image for blue channel"));
-	options.add(make_opt( green_filename, "green", 'g', "input image for green channel"));
-	options.add(make_opt( red_filename, "red", 'r', "input image for red channel"));
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 
-	options.add(make_opt( out_filename, "out-file", 'o', "combined output image", CCmdOption::required));
+	CCmdOptionList options(g_general_help);
+	options.add(make_opt( blue_filename, "blue", 'b', "input image for blue channel", 
+			      CCmdOption::not_required, &imageio));
+	options.add(make_opt( green_filename, "green", 'g', "input image for green channel", 
+			      CCmdOption::not_required, &imageio));
+	options.add(make_opt( red_filename, "red", 'r', "input image for red channel", 
+			      CCmdOption::not_required, &imageio));
+
+	options.add(make_opt( out_filename, "out-file", 'o', "combined output image", CCmdOption::required, &imageio));
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS;

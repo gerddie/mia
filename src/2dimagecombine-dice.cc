@@ -83,12 +83,13 @@ float get_dice_index(const C2DBitImage& mask1, const C2DBitImage& mask2)
 int do_main( int argc, char *argv[] )
 {
 
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 	string in_filename1;
 	string in_filename2;
 	
 	CCmdOptionList options(g_general_help);
-	options.add(make_opt( in_filename1, "in-file-1", '1', "input image 1", CCmdOption::required)); 
-	options.add(make_opt( in_filename2, "in-file-2", '2', "input image 1", CCmdOption::required)); 
+	options.add(make_opt( in_filename1, "in-file-1", '1', "input image 1", CCmdOption::required, &imageio)); 
+	options.add(make_opt( in_filename2, "in-file-2", '2', "input image 1", CCmdOption::required, &imageio)); 
 
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)

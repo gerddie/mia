@@ -138,14 +138,15 @@ int do_main( int argc, char *argv[] )
 	
 	
 	TDictMap<EOps> combine_option(combine_option_table); 
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_general_help);
-	options.add(make_opt( in_filename, "in-file", 'i', "input image", CCmdOption::required)); 
-	options.add(make_opt( dist_filename, "distance-file", 'd', "distance field image", CCmdOption::required)); 
+	options.add(make_opt( in_filename, "in-file", 'i', "input image", 
+			      CCmdOption::required, &imageio)); 
+	options.add(make_opt( dist_filename, "distance-file", 'd', "distance field image (floating point)", 
+			      CCmdOption::required, &imageio)); 
 	options.add(make_opt( scale, "scale", 's', "distance scaling factor")); 
 	options.add(make_opt( method, combine_option, "method", 'm', "distance measuring method")); 
-	
-
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

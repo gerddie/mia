@@ -67,9 +67,11 @@ int do_main( int argc, char *argv[] )
 		
 	
 	CCmdOptionList options(g_general_help);
-	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name base", CCmdOption::required));
-	options.add(make_opt( out_type, imageio.get_set(), "type", 't',"output file type", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name base, the file type is set "
+			      " accurding to the 'type' option", CCmdOption::required, &imageio));
+	options.add(make_opt( out_type, imageio.get_supported_suffix_set(), "type", 't',"output file type, if "
+			      "not given the input type is used"));
 		
 	options.set_group(g_help_optiongroup); 
 	options.add(make_help_opt( "help-filters", 0,

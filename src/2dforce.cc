@@ -69,23 +69,23 @@ int do_main(int argc, char **argv)
 	string ref_filename;
 	string cost_descr("ssd");
 
-	options.add(make_opt( src_filename, "src-file", 'i', "input image", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output force norm image", CCmdOption::required));
-	options.add(make_opt( ref_filename, "ref-file", 'r', "reference image", CCmdOption::required));
-	options.add(make_opt( cost_descr, "cost", 'c', "cost function to use", CCmdOption::required));
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 
+	options.add(make_opt( src_filename, "src-file", 'i', "input image", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output force norm image", CCmdOption::required, &imageio));
+	options.add(make_opt( ref_filename, "ref-file", 'r', "reference image", CCmdOption::required, &imageio));
+	options.add(make_opt( cost_descr, "cost", 'c', "cost function to use", CCmdOption::required));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+	
 
-	typedef C2DImageIOPluginHandler::Instance::PData PImageVector;
 
-	P2DImageCost cost = C2DImageCostPluginHandler::instance().produce(cost_descr.c_str());
-	PImageVector source    = imageio.load(src_filename);
-	PImageVector ref    = imageio.load(ref_filename);
+	auto  cost = C2DImageCostPluginHandler::instance().produce(cost_descr.c_str());
+	auto  source    = imageio.load(src_filename);
+	auto  ref    = imageio.load(ref_filename);
 
 
 	if (!source || source->empty()) {
@@ -106,11 +106,9 @@ int do_main(int argc, char **argv)
 
 	cvmsg() << "max norm: " << vnorm.get_max() << "\n";
 
-	C2DImageIOPluginHandler::Instance::Data vout;
-	vout.push_back(result);
-
-	imageio.save(out_filename, vout);
-
+	if (!save_image(out_filename, result)) 
+		throw create_exception<runtime_error>("Unable to save result to '", out_filename, "'"); 
+	
 	return EXIT_SUCCESS;
 }
 

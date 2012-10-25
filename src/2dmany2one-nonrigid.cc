@@ -144,7 +144,7 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( in_filename, "in-file", 'i', 
 				    "input perfusion data set", CCmdOption::required));
 	options.add(make_opt( registered_filebase, "out-file", 'o', 
-				    "file name for registered fiels")); 
+				    "file name for registered images, numbering and pattern are deducted from the input data")); 
 	
 	
 	options.set_group("\nRegistration"); 

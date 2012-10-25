@@ -59,17 +59,20 @@ int do_main( int argc, char *argv[] )
 	int    noOfClasses = 3;
 	SFuzzySegParams params; 
 
+	const auto& imageio = C2DImageIOPluginHandler::instance();
+
 
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i',
-			      "input image(s) to be segmenetd", CCmdOption::required));
+			      "input image(s) to be segmenetd", CCmdOption::required, &imageio));
 	options.add(make_opt( cls_filename, "cls-file", 'c',
-			      "output class probability images", CCmdOption::required));
-	options.add(make_opt( out_filename, "b0-file", 'o',
-			      "image corrected for intensity non-uniformity" ));
-	options.add(make_opt( gain_filename, "gain-file", 'g',
-			      "gain field (floating point valued)" ));
+			      "output class probability images (floating point values and multi-image)", 
+			      CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "b0-file", 'o', "image corrected for intensity non-uniformity", 
+			      CCmdOption::not_required, &imageio ));
+	options.add(make_opt( gain_filename, "gain-file", 'g', "gain field (floating point valued)", 
+			      CCmdOption::required, &imageio ));
 
 	options.add(make_opt( noOfClasses, "no-of-classes", 'n',
 			      "number of classes"));
@@ -86,8 +89,6 @@ int do_main( int argc, char *argv[] )
 	if ( in_filename.empty() )
 		throw runtime_error("'--cls-file' ('c') option required\n");
 
-	const C2DImageIOPluginHandler::Instance&
-		imageio = C2DImageIOPluginHandler::instance();
 
 	C2DImageIOPluginHandler::Instance::PData inImage_list = imageio.load(in_filename);
 

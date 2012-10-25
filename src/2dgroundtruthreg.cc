@@ -158,7 +158,7 @@ int do_main( int argc, char *argv[] )
 	options.set_group("\nFile-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', "output perfusion data set", CCmdOption::required));
-	options.add(make_opt( registered_filebase, "registered", 'r', "file name base for registered fiels")); 
+	options.add(make_opt( registered_filebase, "registered", 'r', "file name base for registered files")); 
 
 	options.set_group("\nPreconditions"); 
 	options.add(make_opt( skip, "skip", 's', "skip images at beginning of series"));
