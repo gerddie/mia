@@ -55,10 +55,6 @@ public:
 	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-
-	virtual bool  do_test() const;
-	void prepare_path() const;
-
 	std::string m_kx;
 	std::string m_ky;
 	std::string m_kz;
@@ -71,7 +67,6 @@ public:
 	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-	virtual bool do_test() const;
 	int m_w;
 };
 

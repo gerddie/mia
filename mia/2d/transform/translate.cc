@@ -261,7 +261,6 @@ class C2DTranslateTransformCreatorPlugin: public C2DTransformCreatorPlugin {
 public:
 	C2DTranslateTransformCreatorPlugin();
 	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
-	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
 
@@ -273,11 +272,6 @@ C2DTranslateTransformCreatorPlugin::C2DTranslateTransformCreatorPlugin():
 C2DTransformCreator *C2DTranslateTransformCreatorPlugin::do_create(const C2DInterpolatorFactory& ipf) const
 {
 	return new C2DTranslateTransformCreator(ipf);
-}
-
-bool C2DTranslateTransformCreatorPlugin::do_test() const
-{
-	return true;
 }
 
 const std::string C2DTranslateTransformCreatorPlugin::do_get_descr() const

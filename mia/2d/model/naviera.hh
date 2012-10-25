@@ -58,7 +58,6 @@ public:
 	mia::C2DRegModel *do_create()const;
 
 private:
-	bool do_test() const;
 	const std::string do_get_descr()const;
 
 	float m_mu;

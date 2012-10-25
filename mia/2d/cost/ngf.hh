@@ -114,7 +114,6 @@ public:
 private:
 	virtual mia::C2DImageCost *do_create()const;
 
-	bool do_test() const;
 	const std::string do_get_descr()const;
 	std::string m_kernel;
 };

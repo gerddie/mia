@@ -63,7 +63,6 @@ public:
 private:
 	virtual C3DImageFatCost *do_create(P3DImage src, P3DImage ref, 
 					   P3DInterpolatorFactory ipf, float weight)const;
-	bool  do_test() const;
 	const string do_get_descr()const;
 
 };
@@ -78,27 +77,6 @@ C3DImageFatCost *C3DSSDFatImageCostPlugin::do_create(P3DImage src, P3DImage ref,
 						     P3DInterpolatorFactory /*ipf*/, float weight)const
 {
 	return new CFatSSD3DImageCost(src, ref, weight);
-}
-
-bool  C3DSSDFatImageCostPlugin::do_test() const
-{
-	C3DBounds size(8,16,7);
-	vector<float> init_test(8 * 16 * 7, 1.0);
-	vector<float> init_ref (8 * 16 * 7, 2.0);
-
-	P3DImage test_image(new C3DFImage(size, &init_test[0]));
-	P3DImage ref_image(new C3DFImage(size, &init_ref[0]));
-
-	P3DInterpolatorFactory ipf(create_3dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
-	CFatSSD3DImageCost cost(test_image, ref_image, 1.0);
-	double scale = 1.0; 
-
-	if (scale * cost.value() > 8 * 16 * 7 * 1.001 * 0.5 || scale * cost.value() <  8 * 16 * 7 *0.999 * 0.5 ) {
-		cvfail() << "C3DSSDFatImageCostPlugin\n";
-		return false;
-	}
-
-	return true;
 }
 
 const string C3DSSDFatImageCostPlugin::do_get_descr()const

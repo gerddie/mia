@@ -73,42 +73,6 @@ const string CUniformNoiseGeneratorFactory::do_get_descr()const
 	return "Uniform noise generator using C stdlib rand()";
 }
 
-bool CUniformNoiseGeneratorFactory::do_test()const
-{
-	const double a = 1.0;
-	const double b = 2.0;
-
-	CUniformNoiseGenerator ng(1, a, b);
-
-	double sum1 = 0.0;
-	double sum2 = 0.0;
-	const size_t n = 10000000;
-
-	size_t k = n;
-	while (k--) {
-		double val = ng();
-		sum1 += val;
-		sum2 += val * val;
-	}
-
-	cvdebug() << sum1 << " (" << sum2 << ")\n";
-
-	sum1 /= n;
-	sum2 = sqrt(( sum2 - n * sum1 * sum1) / (n-1));
-
-	cvdebug() << sum1 << " (" << sum2 << ")\n";
-	double mu = (b+a) * 0.5;
-	double sigma = sqrt((b-a) * (b-a) / 12.0);
-
-	if (fabs(mu - sum1) > 0.01 || fabs(sigma  - sum2) > 0.01) {
-		cvfail() << "averaging at " << sum1 << " should be " << mu << " sigma " << sum2 << " should be " << sigma << "\n";
-		return -1;
-	}
-
-	return 1;
-}
-
-
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
 	return new CUniformNoiseGeneratorFactory();

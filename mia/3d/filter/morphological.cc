@@ -31,12 +31,6 @@ using namespace boost;
 namespace bfs=boost::filesystem;
 
 
-void C3DMorphFilterFactory::prepare_path() const
-{
-
-}
-
-
 C3DDilate::C3DDilate(P3DShape shape, bool hint):
 	m_shape(shape),
 	m_more_dark(hint)
@@ -188,12 +182,6 @@ const string C3DDilateFilterFactory::do_get_descr()const
 	return "3d image stack dilate filter";
 }
 
-bool  C3DDilateFilterFactory::do_test() const
-{
-	return false;
-}
-
-
 C3DErode::C3DErode(P3DShape shape, bool hint):
 	m_shape(shape),
 	m_more_dark(hint)
@@ -317,11 +305,6 @@ const string C3DErodeFilterFactory::do_get_descr()const
 	return "3d image stack erode filter";
 }
 
-bool C3DErodeFilterFactory::do_test() const
-{
-	return false;
-}
-
 C3DOpenClose::C3DOpenClose(P3DShape shape, bool hint, bool open):
 	m_erode(shape, hint),
 	m_dilate(shape, hint),
@@ -356,12 +339,6 @@ const string C3DOpenFilterFactory::do_get_descr()const
 	return "morphological open";
 }
 
-bool C3DCloseFilterFactory::do_test() const
-{
-	cvwarn() << "C3DOpenFilterFactory not tested\n";
-	return true;
-}
-
 C3DCloseFilterFactory::C3DCloseFilterFactory():
 	C3DMorphFilterFactory("close")
 {
@@ -375,12 +352,6 @@ C3DFilter *C3DCloseFilterFactory::dodo_create(P3DShape shape, bool hint)const
 const string C3DCloseFilterFactory::do_get_descr()const
 {
 	return "morphological close";
-}
-
-bool C3DOpenFilterFactory::do_test() const
-{
-	cvwarn() << "C3DOpenFilterFactory not tested\n";
-	return true;
 }
 
 

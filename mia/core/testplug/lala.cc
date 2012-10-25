@@ -32,7 +32,6 @@ private:
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
-	bool do_test()const;
 	std::string do_get_preferred_suffix() const; 
 };
 
@@ -65,11 +64,6 @@ const string CLalaIOPlugin::do_get_descr() const
 std::string CLalaIOPlugin::do_get_preferred_suffix() const
 {
 	return "hey"; 
-}
-
-bool CLalaIOPlugin::do_test()const
-{
-	return true;
 }
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()

@@ -383,7 +383,6 @@ class C2DAffineTransformCreatorPlugin: public C2DTransformCreatorPlugin {
 public:
 	C2DAffineTransformCreatorPlugin();
 	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
-	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
 
@@ -395,11 +394,6 @@ C2DAffineTransformCreatorPlugin::C2DAffineTransformCreatorPlugin():
 C2DTransformCreator *C2DAffineTransformCreatorPlugin::do_create(const C2DInterpolatorFactory& ipf) const
 {
 	return new C2DAffineTransformCreator(ipf);
-}
-
-bool C2DAffineTransformCreatorPlugin::do_test() const
-{
-	return true;
 }
 
 const std::string C2DAffineTransformCreatorPlugin::do_get_descr() const

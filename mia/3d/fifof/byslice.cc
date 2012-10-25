@@ -80,7 +80,6 @@ public:
 private:
 
 	virtual const string do_get_descr() const;
-	virtual bool do_test() const;
 	virtual C2DImageFifoFilter *do_create()const;
 
 	string m_filter;
@@ -97,12 +96,6 @@ const string C2DBysliceFifoFilterPlugin::do_get_descr() const
 	return "Runs a filter on a per slice basis. In essence, this is a wrapper that "
 		"makes it possible to add pure 2D filters to the stack filter pipeline "
 		"without ducplicating the implementation.";
-}
-
-typedef TFifoFilterSink<C2DImage> C2DImageFifoFilterSink;
-bool C2DBysliceFifoFilterPlugin::do_test() const
-{
-	return true;
 }
 
 C2DImageFifoFilter *C2DBysliceFifoFilterPlugin::do_create()const

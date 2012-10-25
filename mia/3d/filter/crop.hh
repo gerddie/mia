@@ -42,7 +42,6 @@ public:
 	C3DCropImageFilterFactory();
 	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
-	virtual bool do_test()const {return true;};
 private:
 	mia::C3DBounds m_begin;
 	mia::C3DBounds m_end;

@@ -45,8 +45,6 @@ public:
 
 	/// \returns the plugin search path for testing 
 	static ::boost::filesystem::path search_path();
-private:
-	virtual bool do_test() const = 0;
 };
 
 

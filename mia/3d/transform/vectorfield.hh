@@ -135,7 +135,6 @@ class C3DGridTransformCreatorPlugin: public C3DTransformCreatorPlugin {
 public:
 	C3DGridTransformCreatorPlugin();
 	virtual C3DTransformCreator *do_create(const C3DInterpolatorFactory& ipf) const;
-	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
 

@@ -129,15 +129,11 @@ class PRIVATE C2DMorphFifoFilterPlugin : public C2DMorphFifoFilterPluginBase {
 class PRIVATE C2DDilateFifoFilterPlugin : public C2DMorphFifoFilterPlugin<DilateCompare> {
 public:
 	C2DDilateFifoFilterPlugin();
-private:
-	virtual bool do_test() const;
 };
 
 class PRIVATE C2DErodeFifoFilterPlugin : public C2DMorphFifoFilterPlugin<ErodeCompare> {
 public:
 	C2DErodeFifoFilterPlugin();
-private:
-	virtual bool do_test() const;
 
 };
 
@@ -146,8 +142,6 @@ public:
 	C2DOpenFifoFilterPlugin();
 private:
 	virtual mia::C2DImageFifoFilter *do_create()const;
-	virtual bool do_test() const;
-
 };
 
 class PRIVATE C2DCloseFifoFilterPlugin : public C2DMorphFifoFilterPluginBase {
@@ -155,8 +149,6 @@ public:
 	C2DCloseFifoFilterPlugin();
 private:
 	virtual mia::C2DImageFifoFilter *do_create()const;
-	virtual bool do_test() const;
-
 };
 
 NS_END

@@ -33,7 +33,6 @@ private:
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
-	bool do_test()const;
 };
 
 CLoloIOPlugin::CLoloIOPlugin():
@@ -60,11 +59,6 @@ bool CLoloIOPlugin::do_save(const string& /*fname*/, const Data& /*data*/) const
 const string CLoloIOPlugin::do_get_descr() const
 {
 	return "a dummy plugin to test io-plugin handling";
-}
-
-bool CLoloIOPlugin::do_test()const
-{
-	return true;
 }
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()

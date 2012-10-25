@@ -168,7 +168,6 @@ SET(MIA2DLIBS mia2d  ${LIBS})
 SET(mia2dtestsrc 
   2dimageiotest.cc 
   2dvfiotest.cc 
-  filtertest.cc 
   imagetest.cc
   transformmock.cc
   )

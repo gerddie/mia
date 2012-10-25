@@ -76,8 +76,6 @@ public:
 	C2DImageLnFFTFilterFactory();
 	virtual C2DFilter *create(const CParsedOptions& options) const;
 	virtual const string do_get_descr()const; 
-private: 
-	virtual int do_test() const; 
 };
 
 

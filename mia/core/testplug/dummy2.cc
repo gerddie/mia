@@ -28,7 +28,6 @@ public:
 	CDummy2();
 private:
   	virtual const std::string do_get_descr() const;
-	virtual bool do_test() const;
 };
 
 CDummy2::CDummy2():
@@ -41,17 +40,11 @@ const std::string CDummy2::do_get_descr() const
   return "test module with no data";
 }
 
-bool CDummy2::do_test() const
-{
-	return false;
-}
-
 class CDummy3 :public CTestPlugin {
 public:
 	CDummy3();
 private:
   	virtual const std::string do_get_descr() const;
-	virtual bool do_test() const;
 };
 
 CDummy3::CDummy3():
@@ -63,11 +56,6 @@ CDummy3::CDummy3():
 const std::string CDummy3::do_get_descr() const
 {
   return "test module with no data";
-}
-
-bool CDummy3::do_test() const
-{
-	return false;
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

@@ -112,7 +112,6 @@ private:
 	mia::C2DImageFatCost *do_create(mia::P2DImage src, mia::P2DImage ref, 
 					mia::P2DInterpolatorFactory ipf, float weight)const;
 
-	bool do_test() const;
 	const std::string do_get_descr()const;
 	std::string m_type;
 };

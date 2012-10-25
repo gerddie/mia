@@ -126,16 +126,6 @@ C3DFilter *C3DDownscaleFilterPlugin::do_create()const
 	return new CDownscale(m_b, m_filter);
 }
 
-void C3DDownscaleFilterPlugin::prepare_path() const
-{
-}
-
-
-bool  C3DDownscaleFilterPlugin::do_test() const
-{
-	return false;
-}
-
 const string C3DDownscaleFilterPlugin::do_get_descr()const
 {
 	return "Downscale the input image by using a given block size to define the "

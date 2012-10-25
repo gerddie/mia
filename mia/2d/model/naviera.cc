@@ -225,13 +225,6 @@ C2DRegModel *C2DNavierRegModelPlugin::do_create()const
 	return new C2DNavierRegModel(m_mu, m_lambda, m_maxiter, m_omega, m_epsilon);
 }
 
-bool C2DNavierRegModelPlugin::do_test() const
-{
-	// dummy, real test is done in test_naviera.cc
-
-	return true;
-}
-
 const string C2DNavierRegModelPlugin::do_get_descr()const
 {
 	return "navier-stokes based registration model using a Gauss-Southwell relaxation as solver";

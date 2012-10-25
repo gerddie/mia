@@ -470,11 +470,6 @@ C3DTransformCreator *C3DGridTransformCreatorPlugin::do_create(const C3DInterpola
 	return new C3DGridTransformCreator(ipf);
 }
 
-bool C3DGridTransformCreatorPlugin::do_test() const
-{
-	return true;
-}
-
 const std::string C3DGridTransformCreatorPlugin::do_get_descr() const
 {
 	return "This plug-in implements a transformation that defines a translation for "

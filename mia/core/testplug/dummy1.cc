@@ -29,7 +29,6 @@ public:
 	CDummy1();
 private:
 	virtual const string do_get_descr() const;
-	virtual bool do_test() const;
 };
 
 CDummy1::CDummy1():
@@ -42,11 +41,6 @@ const string CDummy1::do_get_descr() const
 	return "test module with no data";
 }
 
-
-bool CDummy1::do_test() const
-{
-	return true;
-}
 
 
 extern "C" EXPORT  CPluginBase *get_plugin_interface()

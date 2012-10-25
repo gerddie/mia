@@ -44,8 +44,6 @@ public:
 private:
 	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
-
-	virtual bool do_test() const;
 	std::string m_mask_descr;
 };
 

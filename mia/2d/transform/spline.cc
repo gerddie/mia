@@ -766,7 +766,6 @@ class C2DSplineTransformCreatorPlugin: public C2DTransformCreatorPlugin {
 public:
 	C2DSplineTransformCreatorPlugin();
 	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
-	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 private:
 	PSplineKernel m_interpolator;
@@ -795,11 +794,6 @@ C2DTransformCreator *C2DSplineTransformCreatorPlugin::do_create(const C2DInterpo
 	if (rate2d.y <= 0) 
 		rate2d.y = m_rate; 
 	return new C2DSplineTransformCreator(m_interpolator, rate2d, ipf);
-}
-
-bool C2DSplineTransformCreatorPlugin::do_test() const
-{
-	return true;
 }
 
 const std::string C2DSplineTransformCreatorPlugin::do_get_descr() const

@@ -30,7 +30,6 @@ public:
 private:
 	virtual const std::string do_get_descr() const;
 	virtual C3DShape *do_create()const;
-	virtual bool do_test() const;
 	float m_r;
 };
 NS_MIA_END

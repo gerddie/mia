@@ -179,19 +179,9 @@ C2DDilateFifoFilterPlugin::C2DDilateFifoFilterPlugin():
 {
 }
 
-bool C2DDilateFifoFilterPlugin::do_test() const
-{
-	return true; 
-}
-
 C2DErodeFifoFilterPlugin::C2DErodeFifoFilterPlugin():
 	C2DMorphFifoFilterPlugin<ErodeCompare>("erode")
 {
-}
-
-bool C2DErodeFifoFilterPlugin::do_test() const
-{
-	return true; 
 }
 
 
@@ -200,10 +190,6 @@ C2DOpenFifoFilterPlugin::C2DOpenFifoFilterPlugin():
 {
 }
 
-bool C2DOpenFifoFilterPlugin::do_test() const
-{
-	return true; 
-}
 
 C2DImageFifoFilter *C2DOpenFifoFilterPlugin::do_create()const
 {
@@ -226,11 +212,6 @@ C2DImageFifoFilter *C2DOpenFifoFilterPlugin::do_create()const
 C2DCloseFifoFilterPlugin::C2DCloseFifoFilterPlugin():
 	C2DMorphFifoFilterPluginBase("close")
 {
-}
-
-bool C2DCloseFifoFilterPlugin::do_test() const
-{
-	return true; 
 }
 
 C2DImageFifoFilter *C2DCloseFifoFilterPlugin::do_create()const

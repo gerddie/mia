@@ -222,11 +222,6 @@ C3DImageCost *C3DNFGImageCostPlugin::do_create()const
 	return new C3DNFGImageCost(eval);
 }
 
-bool C3DNFGImageCostPlugin::do_test() const
-{
-	return true;
-}
-
 const string C3DNFGImageCostPlugin::do_get_descr()const
 {
 	return "This function evaluates the image similarity based on normalized gradient "

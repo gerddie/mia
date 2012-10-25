@@ -145,19 +145,6 @@ void CPluginBase::append_interface(CPluginBase *plugin)
 		m_next_interface = plugin;
 }
 
-bool CPluginBase::test(bool uninstalled) const
-{
-	TRACE("CPluginBase::test");
-	if (uninstalled)
-		prepare_path();
-	return do_test();
-}
-
-void CPluginBase::prepare_path() const
-{
-	// normally empty
-}
-
 CPluginBase *CPluginBase::next_interface()
 {
 	return m_next_interface;

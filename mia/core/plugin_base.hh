@@ -126,9 +126,6 @@ public:
 	bool has_property(const char *property) const;
 
 
-	/// \remark obsolete function 
-	bool test(bool uninstalled) const;
-
 	/** set the shared modules containing the code of this plugin 
 	   This enshures that the modules is not unloaded while the plug-in 
 	   still exists and needs to call its destructor whos code resides 
@@ -156,11 +153,6 @@ protected:
 	void add_property(const char *property);
 
 private:
-	/// \remark obsolete test path, needs to be cleaned up 
-	virtual bool do_test() const = 0;
-	
-	virtual void prepare_path() const;
-
 	virtual const std::string do_get_descr() const = 0;
 
 	virtual void do_get_help_xml(xmlpp::Element& root) const;

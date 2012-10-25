@@ -136,16 +136,6 @@ C3DFilter *C3DSeparableConvoluteFilterPlugin::do_create()const
 	return new CSeparableConvolute(kx, ky, kz);
 }
 
-void C3DSeparableConvoluteFilterPlugin::prepare_path() const
-{
-}
-
-
-bool C3DSeparableConvoluteFilterPlugin::do_test() const
-{
-	return false;
-}
-
 const string C3DSeparableConvoluteFilterPlugin::do_get_descr()const
 {
 	return "3D image intensity separaple convolution filter";
@@ -174,13 +164,6 @@ const string C3DGaussFilterPlugin::do_get_descr()const
 {
 	return "isotropic 3D gauss filter";
 }
-
-bool C3DGaussFilterPlugin::do_test() const
-{
-	cvwarn() << "no test!";
-	return true;
-}
-
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {

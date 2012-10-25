@@ -429,7 +429,6 @@ class C3DRigidTransformCreatorPlugin: public C3DTransformCreatorPlugin {
 public:
 	C3DRigidTransformCreatorPlugin();
 	virtual C3DTransformCreator *do_create(const C3DInterpolatorFactory& ipf) const;
-	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
 
@@ -441,11 +440,6 @@ C3DRigidTransformCreatorPlugin::C3DRigidTransformCreatorPlugin():
 C3DTransformCreator *C3DRigidTransformCreatorPlugin::do_create(const C3DInterpolatorFactory& ipf) const
 {
 	return new C3DRigidTransformCreator(ipf);
-}
-
-bool C3DRigidTransformCreatorPlugin::do_test() const
-{
-	return true;
 }
 
 const std::string C3DRigidTransformCreatorPlugin::do_get_descr() const

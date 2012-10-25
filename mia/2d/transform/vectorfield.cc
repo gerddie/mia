@@ -592,7 +592,6 @@ class C2DGridTransformCreatorPlugin: public C2DTransformCreatorPlugin {
 public:
 	C2DGridTransformCreatorPlugin();
 	virtual C2DTransformCreator *do_create(const C2DInterpolatorFactory& ipf) const;
-	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
 
@@ -604,11 +603,6 @@ C2DGridTransformCreatorPlugin::C2DGridTransformCreatorPlugin():
 C2DTransformCreator *C2DGridTransformCreatorPlugin::do_create(const C2DInterpolatorFactory& ipf) const
 {
 	return new C2DGridTransformCreator(ipf);
-}
-
-bool C2DGridTransformCreatorPlugin::do_test() const
-{
-	return true;
 }
 
 const std::string C2DGridTransformCreatorPlugin::do_get_descr() const

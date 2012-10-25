@@ -68,10 +68,6 @@ C2DImageFatCost *C2DSSDFatImageCostPlugin::do_create(P2DImage src, P2DImage ref,
 	return new CFatSSD2DImageCost(src, ref, weight);
 }
 
-bool  C2DSSDFatImageCostPlugin::do_test() const
-{
-	return true;
-}
 
 void C2DSSDFatImageCostPlugin::prepare_path() const
 {

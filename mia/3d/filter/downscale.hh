@@ -49,9 +49,6 @@ public:
 	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-
-	virtual bool  do_test() const;
-	void prepare_path() const;
 	mia::C3DBounds m_b;
 	std::string m_filter;
 };

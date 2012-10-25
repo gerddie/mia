@@ -78,7 +78,6 @@ public:
 	virtual Product *create(const CParsedOptions& options, char const *params) __attribute__((warn_unused_result));
 	
 private:
-	virtual bool do_test() const __attribute__((deprecated)); 
 	virtual Product *do_create() const __attribute__((warn_unused_result)) = 0 ;
 	CMutex m_mutex; 
 };
@@ -271,13 +270,6 @@ typename I::Product *TFactoryPluginHandler<I>::produce_raw(const std::string& pa
 	DEBUG_ASSERT_RELEASE_THROW(factory, "A plug-in was not found but 'this->plugin' did not throw");
 	return factory->create(param_list.begin()->second,params.c_str());
 
-}
-
-template <typename I>
-bool TFactory<I>::do_test() const
-{
-	cvfail() << "do_test() is obsolete\n"; 
-	return false; 
 }
 
 /**     

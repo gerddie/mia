@@ -284,7 +284,6 @@ class C3DTranslateTransformCreatorPlugin: public C3DTransformCreatorPlugin {
 public:
 	C3DTranslateTransformCreatorPlugin();
 	virtual C3DTransformCreator *do_create(const C3DInterpolatorFactory& ipf) const;
-	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
 
@@ -297,12 +296,6 @@ C3DTransformCreator *C3DTranslateTransformCreatorPlugin::do_create(const C3DInte
 {
 	return new C3DTranslateTransformCreator(ipf);
 }
-
-bool C3DTranslateTransformCreatorPlugin::do_test() const
-{
-	return true;
-}
-
 const std::string C3DTranslateTransformCreatorPlugin::do_get_descr() const
 {
 	return "Translation (three degrees of freedom)";

@@ -166,12 +166,6 @@ const string C3DMLVImageFilterFactory::do_get_descr()const
 	return "Mean of Least Variance 3D image filter";
 }
 
-bool  C3DMLVImageFilterFactory::do_test() const
-{
-	return false;
-}
-
-
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
 	return new C3DMLVImageFilterFactory();

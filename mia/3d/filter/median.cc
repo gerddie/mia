@@ -108,11 +108,6 @@ P3DImage C3DMedianFilter::do_filter(const C3DImage& image) const
 	return mia::filter(*this, image);
 }
 
-bool  C3DMedianFilterFactory::do_test() const
-{
-	return false;
-}
-
 C3DMedianFilterFactory::C3DMedianFilterFactory():
 	C3DFilterPlugin("median"),
 	m_hw(1)
@@ -183,12 +178,6 @@ const string  C3DSaltAndPepperFilterFactory::do_get_descr() const
 {
 	return "salt and pepper  3d filter";
 }
-
-bool  C3DSaltAndPepperFilterFactory::do_test() const
-{
-	return false;
-}
-
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {

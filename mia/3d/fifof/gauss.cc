@@ -52,7 +52,6 @@ public:
 private:
 
 	virtual const string do_get_descr() const;
-	virtual bool do_test() const;
 	virtual C2DImageFifoFilter *do_create()const;
 
 	mutable int m_hw;
@@ -164,12 +163,6 @@ C2DGaussStackFilterFactory::C2DGaussStackFilterFactory():
 const string C2DGaussStackFilterFactory::do_get_descr() const
 {
 	return "Gauss 2D fifo filter";
-}
-
-
-bool C2DGaussStackFilterFactory::do_test() const
-{
-	return true;
 }
 
 C2DImageFifoFilter *C2DGaussStackFilterFactory::do_create()const

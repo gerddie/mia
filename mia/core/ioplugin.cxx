@@ -77,13 +77,6 @@ void TIOPlugin<D>::add_supported_type(EPixelType t)
 	m_typeset.insert(t); 
 }
 
-// io plugins are not tested internally
-template <typename D> 
-bool TIOPlugin<D>::do_test() const
-{
-	return true; 
-}
-
 template <typename D> 
 std::string TIOPlugin<D>::get_preferred_suffix() const
 {

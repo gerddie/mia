@@ -58,7 +58,6 @@ public:
 	C2DFluidRegTimeStepPlugin();
 private:
 	C2DRegTimeStep *do_create()const;
-	bool do_test() const;
 	const string do_get_descr()const;
 };
 
@@ -71,11 +70,6 @@ C2DFluidRegTimeStepPlugin::C2DFluidRegTimeStepPlugin():
 C2DRegTimeStep *C2DFluidRegTimeStepPlugin::do_create()const
 {
 	return new C2DFluidRegTimeStep(get_min_timestep(), get_max_timestep());
-}
-
-bool C2DFluidRegTimeStepPlugin::do_test() const
-{
-	return true;
 }
 
 const string C2DFluidRegTimeStepPlugin::do_get_descr()const

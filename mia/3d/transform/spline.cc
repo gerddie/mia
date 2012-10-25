@@ -1085,7 +1085,6 @@ class C3DSplineTransformCreatorPlugin: public C3DTransformCreatorPlugin {
 public:
 	C3DSplineTransformCreatorPlugin();
 	virtual C3DTransformCreator *do_create(const C3DInterpolatorFactory& ipf) const;
-	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 private:
 	PSplineKernel m_kernel;
@@ -1127,14 +1126,6 @@ C3DTransformCreator *C3DSplineTransformCreatorPlugin::do_create(const C3DInterpo
 		rate3d.z = m_rate; 
 
 	return new C3DSplinebigTransformCreator(m_kernel, rate3d, ipf, m_debug);
-}
-
-bool C3DSplineTransformCreatorPlugin::do_test() const
-{
-	TRACE_FUNCTION;
-	FUNCTION_NOT_TESTED;
-
-	return true;
 }
 
 const std::string C3DSplineTransformCreatorPlugin::do_get_descr() const

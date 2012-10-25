@@ -242,7 +242,6 @@ public:
 private:
 
 	virtual const string do_get_descr() const;
-	virtual bool do_test() const;
 	virtual C2DImageFifoFilter *do_create()const;
 
 	string m_neighborhood;
@@ -262,11 +261,6 @@ C2DLabelFifoFilterPlugin::C2DLabelFifoFilterPlugin():
 const string C2DLabelFifoFilterPlugin::do_get_descr() const
 {
 	return "Stack Label filter";
-}
-
-bool C2DLabelFifoFilterPlugin::do_test() const
-{
-	return true;
 }
 
 C2DImageFifoFilter *C2DLabelFifoFilterPlugin::do_create()const

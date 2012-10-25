@@ -41,9 +41,6 @@ public:
 private:
 	virtual mia::C2DFatImageCostPlugin::ProductPtr do_create(mia::P2DImage src,
 								 mia::P2DImage ref,  mia::P2DInterpolatorFactory ipf, float weight)const;
-	bool  do_test() const;
-	void prepare_path() const;
-
 	const std::string do_get_descr()const;
 
 };

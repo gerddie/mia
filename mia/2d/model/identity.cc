@@ -38,7 +38,6 @@ public:
 	C2DRegModel *do_create()const;
 
 private:
-	bool do_test() const;
 	const string do_get_descr()const;
 };
 
@@ -50,11 +49,6 @@ C2DIdentityRegModelPlugin::C2DIdentityRegModelPlugin():
 C2DRegModel *C2DIdentityRegModelPlugin::do_create()const
 {
 	return new C2DIdentityRegModel();
-}
-
-bool C2DIdentityRegModelPlugin::do_test() const
-{
-	return true;
 }
 
 const string C2DIdentityRegModelPlugin::do_get_descr()const

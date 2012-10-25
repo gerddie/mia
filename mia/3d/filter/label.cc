@@ -117,11 +117,6 @@ const string C3DLabelFilterPlugin::do_get_descr()const
 	return "A filter to label the  connected components of a binary image.";
 }
 
-bool  C3DLabelFilterPlugin::do_test() const
-{
-	return true;
-}
-
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
 	return new C3DLabelFilterPlugin();

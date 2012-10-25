@@ -380,71 +380,12 @@ inline float  C3DNavierRegModel::solve_at(const C3DFVector& b, C3DFVectorfield::
 }
 
 
-
-bool  C3DNavierRegModel::test_kernel()
-{
-
-	// assume mu = 1, lambda = 2
-	//float a_b = 0.4f;
-	//float a   = 0.1f;
-	//float b_4 = 0.075;
-
-
-	C3DBounds size(3,3,3);
-	size_t mid_index = 1 + size.x + size.x * size.y;
-	m_dx = size.x;
-	m_dxy = size.x * size.y;
-
-	C3DFVectorfield v(size);
-
-	C3DFVector b(1.0, 2.0, 3.0);
-
-	for (size_t z = 0; z < size.z; ++z)
-		for (size_t y = 0; y < size.y; ++y)
-			for (size_t x = 0; x < size.x; ++x)
-				v(x,y,z) = C3DFVector(y * x, 2 * z * y, 3 * x * z);
-
-	C3DFVectorfield::iterator vi = v.begin() + mid_index;
-
-	const C3DFVector q_test( 0.75, 0.25, 0.5);
-	const C3DFVector q_eval = get_q(vi);
-
-	cvdebug() << q_eval << " vs. " << q_test << "\n";
-	assert( (q_eval - q_test).norm() < 0.00001);
-
-	// test p eval
-	const C3DFVector p_test( 2.0, 4.0f, 6.0f);
-	const C3DFVector p_eval = get_p(b, vi);
-
-	cvdebug() << p_eval << " vs. " << p_test << "\n";
-	assert( (p_eval - p_test).norm() < 0.00001);
-
-	// test q eval
-
-	C3DFVector test0(1.75, 2.25, 3.5);
-
-	C3DFVector test(2.75, 4.25, 6.5);
-
-	float res = solve_at(b, vi);
-	cvdebug() << res << " vs. " << test0.norm() <<"\n";
-	cvdebug() << v(1,1,1) << " vs. " << test <<"\n";
-
-
-#ifdef __POWERPC__
-	return (fabs(res - test0.norm()) < 0.1) && (test - v(1,1,1)).norm() < 0.0001;
-#else
-	return (fabs(res - test0.norm()) < 0.0001) && (test - v(1,1,1)).norm() < 0.0001;
-#endif
-
-}
-
 class C3DNavierRegModelPlugin: public C3DRegModelPlugin {
 public:
 	C3DNavierRegModelPlugin();
 	C3DRegModel *do_create()const;
 
 private:
-	bool  do_test() const;
 	const string do_get_descr()const;
 
 	float m_mu;
@@ -475,13 +416,6 @@ C3DNavierRegModelPlugin::C3DNavierRegModelPlugin():
 C3DRegModel *C3DNavierRegModelPlugin::do_create()const
 {
 	return new C3DNavierRegModel(m_mu, m_lambda, m_maxiter, m_epsilon);
-}
-
-bool  C3DNavierRegModelPlugin::do_test() const
-{
-	C3DNavierRegModel model(1.0, 2.0, 10, 0.001);
-
-	return model.test_kernel();
 }
 
 const string C3DNavierRegModelPlugin::do_get_descr()const

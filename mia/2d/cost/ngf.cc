@@ -305,11 +305,6 @@ C2DImageCost *C2DNFGImageCostPlugin::do_create()const
 	return new C2DNFGImageCost(eval);
 }
 
-bool C2DNFGImageCostPlugin::do_test() const
-{
-	return true;
-}
-
 const string C2DNFGImageCostPlugin::do_get_descr()const
 {
 	return "This function evaluates the image similarity based on normalized gradient fields. "

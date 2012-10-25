@@ -134,11 +134,6 @@ public:
 	TDataFilterPlugin(char const * const  name):
 		TFactory<TDataFilter<Image> >(name)
 	{}
-private:
-	virtual bool do_test() const {
-		cvwarn() << "TDataFilterPlugin::do_test is obsolete, use individual tests for the plugins\n";
-		return true;
-	};
 };
 
 /**

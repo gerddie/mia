@@ -196,7 +196,6 @@ public:
 private:
 	virtual C3DImageFatCost *do_create(P3DImage src, P3DImage ref, 
 					   P3DInterpolatorFactory ipf, float weight)const;
-	bool do_test() const;
 	const string do_get_descr()const;
 	string m_type;
 };
@@ -237,12 +236,6 @@ C3DImageFatCost *C3DNFGFatImageCostPlugin::do_create(P3DImage src, P3DImage ref,
 		throw invalid_argument(string("C3DNFGFatImageCostPlugin: unknown cost sub-type '")+m_type+"'");
 	}
 	return new CFatNFG3DImageCost(src, ref, weight, eval);
-}
-
-bool C3DNFGFatImageCostPlugin::do_test() const
-{
-	return true; 
-
 }
 
 const string C3DNFGFatImageCostPlugin::do_get_descr()const

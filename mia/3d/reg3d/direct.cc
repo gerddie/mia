@@ -75,7 +75,6 @@ public:
 	C3DDirectRegTimeStepPlugin();
 private:
 	C3DRegTimeStep *do_create()const;
-	bool  do_test() const;
 	const string do_get_descr()const;
 };
 
@@ -89,21 +88,6 @@ C3DRegTimeStep *C3DDirectRegTimeStepPlugin::do_create()const
 {
 	cverr() << get_name() << ": This time step code is currently not working properly\n";
 	return new C3DDirectRegTimeStep(get_min_timestep(), get_max_timestep());
-}
-
-bool C3DDirectRegTimeStepPlugin::do_test() const
-{
-	C3DDirectRegTimeStep plugin(0.5f, 1.5f);
-
-	C3DFVectorfield infield(C3DBounds(1,1,1));
-	C3DFVectorfield outfield(C3DBounds(1,1,1));
-
-	infield(0,0,0) = C3DFVector(3.0, 4.0, 2.0);
-	outfield(0,0,0) =  C3DFVector(1.0, 2.0, 3.0);
-
-	plugin.apply(infield, outfield, 0.2f);
-	cvdebug() << outfield(0,0,0) << "\n";
-	return (outfield(0,0,0) == C3DFVector(1.6f, 2.8f, 3.4f));
 }
 
 const string C3DDirectRegTimeStepPlugin::do_get_descr()const

@@ -139,8 +139,6 @@ private:
 	 */
 	virtual bool do_save(const std::string& fname, const typename D::type& data) const = 0;
 
-	virtual bool do_test() const;
-
 	virtual std::string do_get_preferred_suffix() const; 
 
 };

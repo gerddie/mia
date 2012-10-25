@@ -41,9 +41,6 @@ public:
 	virtual mia::C1DFoldingKernel *do_create() const;
 	virtual const std::string do_get_descr()const;
 private:
-
-	virtual bool do_test() const;
-
 	int m_w;
 };
 

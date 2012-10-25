@@ -459,7 +459,6 @@ class C3DAffineTransformCreatorPlugin: public C3DTransformCreatorPlugin {
 public:
 	C3DAffineTransformCreatorPlugin(); 
 	virtual C3DTransformCreator *do_create(const C3DInterpolatorFactory& ipf) const;
-	virtual bool do_test() const;
 	const std::string do_get_descr() const;
 };
 
@@ -471,11 +470,6 @@ C3DAffineTransformCreatorPlugin::C3DAffineTransformCreatorPlugin():
 C3DTransformCreator *C3DAffineTransformCreatorPlugin::do_create(const C3DInterpolatorFactory& ipf) const
 {
 	return new C3DAffineTransformCreator(ipf);
-}
-
-bool C3DAffineTransformCreatorPlugin::do_test() const
-{
-	return true;
 }
 
 const std::string C3DAffineTransformCreatorPlugin::do_get_descr() const

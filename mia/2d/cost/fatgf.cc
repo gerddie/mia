@@ -191,7 +191,6 @@ public:
 private: 
 	virtual C2DFatImageCostPlugin::ProductPtr do_create(P2DImage src, 
 							    P2DImage ref, float weight)const;
-	bool do_test() const; 
 	const string do_get_descr()const; 
 	string m_type; 
 }; 
@@ -233,48 +232,6 @@ C2DFatImageCostPlugin::ProductPtr C2DGFFatImageCostPlugin::do_create(P2DImage sr
 	return C2DFatImageCostPlugin::ProductPtr(new CFatGF2DImageCost(src, ref, weight, eval)); 
 }
 	
-bool C2DGFFatImageCostPlugin::do_test() const
-{
-
-	bool success = true; 
-
-	const C2DBounds size(7,7); 
-	float init_ref[49] = { -1, 0, 1, 2, 1, 0, -1, 
-			       0, 1, 2, 3, 2, 1,  0, 
-			       1, 2, 3, 4, 3, 2,  1,  
-			       2, 3, 4, 5, 4, 3,  2,  
-			       1, 2, 3, 4, 3, 2,  1,  
-			       0, 1, 2, 3, 2, 1,  0, 
-			       -1, 0, 1, 2, 1, 0, -1 
-	};
-	
-	float init_src[49] = { 	 1, 1, 1, 1, 1, 1, 1,
-				 1, 1, 1, 1, 3, 1, 1,
-				 1, 1, 1, 3, 5, 3, 1,
-				 1, 1, 1, 1, 3, 1, 1,
-				 1, 1, 1, 1, 1, 1, 1, 
-				 1, 1, 1, 1, 1, 1, 1,
-				 1, 1, 1, 1, 1, 1, 1 
- 	}; 
-
-	P2DImage src(new C2DFImage(size, init_src)); 
-	P2DImage ref(new C2DFImage(size, init_ref)); 
-	
-	C2DFVectorfield force_self(size);
-
-	CFatGF2DImageCost cost_self(ref, ref, 1.0, PEvaluator(new FDeltaScalar())); 
-	double cost_value_self = cost_self.evaluate_force(force_self); 
-	if (fabs(cost_value_self) > 0.01) {
-		cvfail() << "cost with myself is " << cost_value_self << " expect 0.0\n"; 
-		success = false; 
-	}
-
-	
-
-	return success; 
-
-}
-
 const string C2DGFFatImageCostPlugin::do_get_descr()const
 {
 	return "2D gradient field cost function";
