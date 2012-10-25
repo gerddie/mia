@@ -147,7 +147,10 @@ public:
 	 */
 	void set_caching(bool enable) const; 
 
+
 private: 
+	std::string get_handler_type_string_and_help(std::ostream& os) const; 
+	
 	typename I::Product *produce_raw(const std::string& plugindescr) const;
 
 	mutable TProductCache<ProductPtr> m_cache; 
@@ -225,6 +228,13 @@ typename TFactoryPluginHandler<I>::UniqueProduct
 TFactoryPluginHandler<I>::produce_unique(const std::string& plugindescr) const
 {
 	return UniqueProduct(this->produce_raw(plugindescr)); 
+}
+
+template <typename  I>
+std::string TFactoryPluginHandler<I>::get_handler_type_string_and_help(std::ostream& os) const
+{
+	os << " The string value will be used to construct a plug-in."; 
+	return "factory"; 
 }
 	
 template <typename  I>

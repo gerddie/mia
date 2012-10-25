@@ -74,6 +74,12 @@ TIOPluginHandler<I>::preferred_plugin_ptr(const std::string& fname) const
 }
 
 template <class I> 
+std::string TIOPluginHandler<I>::get_handler_type_string_and_help(std::ostream& MIA_PARAM_UNUSED(os)) const
+{
+	return "io"; 
+}
+
+template <class I> 
 std::string TIOPluginHandler<I>::get_preferred_suffix(const std::string& type) const
 {
 	auto plugin = this->plugin(type.c_str());

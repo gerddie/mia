@@ -165,6 +165,25 @@ class CDictOption(COption):
             parent.append(opttable)
 
 
+class CIOOption(COption):
+    def __init__(self, node):
+        COption.__init__(self, node)
+        self.factory = "unknown/io"
+        for child in node.iter("io"):
+            self.factory = child.get("name")
+            if child.tail is not None:
+                if self.text is not None: 
+                    self.text = self.text + child.tail
+                else:
+                    self.text = child.tail
+
+    def do_print_man(self):
+        print " For supported file types see PLUGINS:%s" % (self.factory)
+
+    def do_write_xml(self, parent):
+        parent.text = parent.text + ". For supported file types see "
+        etree.SubElement(parent, "xref", linkend=make_sec_ancor("SecPlugintype", self.factory))
+        
 class CFactoryOption(COption):
     def __init__(self, node):
         COption.__init__(self, node)
@@ -209,9 +228,10 @@ class CGroup:
         for child in node:
             if child.tag == "option": 
                 p = {
-                     "factory": lambda n: CFactoryOption(n), 
-                     "dict":    lambda n: CDictOption(n),
-                     }.get(child.get("type"), lambda n: COption(n))(child)
+                    "io": lambda n: CIOOption(n), 
+                    "factory": lambda n: CFactoryOption(n), 
+                    "dict":    lambda n: CDictOption(n),
+                    }.get(child.get("type"), lambda n: COption(n))(child)
                 self.options.append(p)
             else:
                 print "unexpected subnode '%s' in 'group'"% (child.tag)
@@ -376,6 +396,31 @@ class CFactoryParam(CParam):
         else:
             raise RuntimeError("Handler %s is used by plugin %s, but is not available" % (self.factory, link))
 
+
+class CIOParam(CParam):
+    def __init__(self, node):
+        CParam.__init__(self,node)
+        self.factory = ""
+        for n in node:
+            if n.tag == "io":
+                self.factory = n.get("name")
+
+    def do_print_man(self):
+        print "For supported plug-ins see PLUGINS:%s" % (self.factory)
+        CParam.do_print_man(self)
+
+    def do_print_xml_help_description(self, row):
+        e = etree.SubElement(row, "entry", align="left", valign="top")
+        e.text = self.text + ". For supported plug-ins see "
+        etree.SubElement(e, "xref", linkend=make_sec_ancor("SecPlugintype", self.factory))
+
+
+    def append_to_handler(self, handlers, link):
+        if handlers.has_key(self.factory):
+            handlers[self.factory].append_user(link)
+        else:
+            raise RuntimeError("Handler %s is used by plugin %s, but is not available" % (self.factory, link))
+
 class CPlugin: 
     def __init__(self, node, handlername):
         if node.tag != "plugin":
@@ -391,7 +436,8 @@ class CPlugin:
             if child.tag == "param": 
                 p = {
                    "range":   lambda n: CRangeParam(n), 
-                   "factory": lambda n: CFactoryParam(n), 
+                   "factory": lambda n: CFactoryParam(n),
+                   "io":      lambda n: CIOParam(n), 
                    "set":     lambda n: CSetParam(n),
                    "dict":    lambda n: CDictParam(n),
                    }.get(child.get("type"), lambda n: CParam(n))(child)

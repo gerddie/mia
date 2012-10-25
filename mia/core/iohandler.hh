@@ -142,6 +142,8 @@ private:
 	// print out info about the available plug-ins 
 	void do_print_help(std::ostream& os) const;
 
+	std::string get_handler_type_string_and_help(std::ostream& os) const; 
+
 	/**
 	   Private plugin to handle the virtual data pool IO  
 	 */
