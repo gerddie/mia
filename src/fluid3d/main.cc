@@ -181,9 +181,16 @@ int do_main(int argc, char *argv[])
 	bool disable_fullres = false;
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( in_filename, "in-image", 'i', "input image", CCmdOption::required ));
-	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image ", CCmdOption::required ));
-	options.add(make_opt( out_filename, "out-deformation", 'o', "output vector field", CCmdOption::required ));
+
+	const auto& imageio = C3DImageIOPluginHandler::instance();
+
+	options.set_group("File-IO"); 
+	options.add(make_opt( in_filename, "in-image", 'i', "input image", CCmdOption::required, &imageio ));
+	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image ", CCmdOption::required, &imageio ));
+	options.add(make_opt( out_filename, "out-deformation", 'o', "output vector field", 
+			      CCmdOption::required, &C3DVFIOPluginHandler::instance()));
+
+	options.set_group("Registration parameters"); 
 	options.add(make_opt( disable_multigrid, "disable-multigrid", 0, "disable multi-grid processing"));
 	options.add(make_opt( disable_fullres, "disable-fullres", 0,
 			      "disable processing on the full resolution image"));

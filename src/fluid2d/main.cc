@@ -106,15 +106,21 @@ int do_main(int argc, char *argv[])
 	bool elastic;
 	float mu = 1.0;
 	float lambda = 1.0;
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_description);
+	
+	options.set_group("File-IO"); 
 	options.add(make_opt( src_filename, "in-image", 'i', "input (model) image to be registered", 
-			      CCmdOption::required));
+			      CCmdOption::required, &imageio));
 	options.add(make_opt( ref_filename, "ref-image", 'r', "reference image", 
-			      CCmdOption::required));
-	options.add(make_opt( out_filename, "out", 'o', "output vector field"));
-	options.add(make_opt( def_filename, "deformed-image", 'd', "deformed registered image"));
+			      CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out", 'o', "output vector field", 
+			      CCmdOption::not_required, &C2DVFIOPluginHandler::instance()));
+	options.add(make_opt( def_filename, "deformed-image", 'd', "deformed registered image", 
+			      CCmdOption::not_required, &imageio));
 
+	options.set_group("Registration parameters"); 
 	options.add(make_opt( grid_start, "mgstart", 'm', "multigrid start size"));
 	options.add(make_opt( epsilon, "epsilon", 'e', "optimization breaking condition"));
 	options.add(make_opt( mu, "mu", 0, "elasticity parameter"));

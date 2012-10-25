@@ -66,11 +66,13 @@ int do_main (int argc, char * argv[])
 	gint max_edges = -1; 
 	gfloat  max_cost = 0.1; 
 	gfloat factor = 4.0; 
+	const auto& imageio = C3DImageIOPluginHandler::instance();
+	const auto& meshio = CMeshIOPluginHandler::instance(); 
 
 	CCmdOptionList options(g_description);
 	options.set_group("File-IO"); 
-	options.add(make_opt(  in_filename, "in-image", 'i', "input image", CCmdOption::required )); 
-	options.add(make_opt(  out_filename, "out-image", 'o', "output mesh", CCmdOption::required )); 
+	options.add(make_opt(  in_filename, "in-image", 'i', "input image", CCmdOption::required, &imageio )); 
+	options.add(make_opt(  out_filename, "out-image", 'o', "output mesh", CCmdOption::required, &meshio )); 
 
 	options.set_group("Image options"); 
 	options.add(make_opt(  iso_value, "iso-value", 's', "iso-value of iso surface to be extracted")); 
