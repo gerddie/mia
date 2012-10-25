@@ -118,7 +118,8 @@ C2DRegiongrowFilter::result_type C2DRegiongrowFilter::do_filter(const mia::C2DIm
 C2DRegiongrowFilterPlugin::C2DRegiongrowFilterPlugin(): 
 	mia::C2DFilterPlugin("regiongrow")
 {
-	add_parameter("seed", new CStringParameter(m_seed_image, true, "seed image (bit valued)"));
+	add_parameter("seed", new CStringParameter(m_seed_image, true, "seed image (bit valued)", 
+						   &C2DImageIOPluginHandler::instance()));
 	add_parameter("n", make_param(m_neighborhood, "8n", false, "Neighborhood shape"));
 }
 

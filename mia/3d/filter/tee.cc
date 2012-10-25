@@ -18,61 +18,61 @@
  *
  */
 
-#include <mia/2d/filter/tee.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/3d/filter/tee.hh>
+#include <mia/3d/3dimageio.hh>
 
-NS_BEGIN( tee_2dimage_filter)
+NS_BEGIN( tee_3dimage_filter)
 
 NS_MIA_USE; 
 
-C2DTee::C2DTee(const std::string& name):
+C3DTee::C3DTee(const std::string& name):
 	m_name(name)
 {
 }
 
 template <class T>
-C2DTee::result_type C2DTee::operator () (const T2DImage<T>& data) const
+C3DTee::result_type C3DTee::operator () (const T3DImage<T>& data) const
 {
 	TRACE_FUNCTION; 
-	P2DImage result(new T2DImage<T>(data)); 
+	P3DImage result(new T3DImage<T>(data)); 
 	save_image(m_name, result); 
 	return result; 
 }
 
 
-mia::P2DImage C2DTee::do_filter(const mia::C2DImage& image) const
+mia::P3DImage C3DTee::do_filter(const mia::C3DImage& image) const
 {
 	return mia::filter(*this, image); 
 	
 }
 
-mia::P2DImage C2DTee::do_filter(mia::P2DImage image) const
+mia::P3DImage C3DTee::do_filter(mia::P3DImage image) const
 {
 	save_image(m_name, image); 
 	return image; 
 }
 
 
-C2DTeeFilterPluginFactory::C2DTeeFilterPluginFactory(): 
-	C2DFilterPlugin("tee")
+C3DTeeFilterPluginFactory::C3DTeeFilterPluginFactory(): 
+	C3DFilterPlugin("tee")
 {
 	add_parameter("file", new CStringParameter(m_filename, true,
 						   "name of the output file to save the image too.", 
-						   &C2DImageIOPluginHandler::instance()));
+						   &C3DImageIOPluginHandler::instance()));
 }
 
-mia::C2DFilter *C2DTeeFilterPluginFactory::do_create()const
+mia::C3DFilter *C3DTeeFilterPluginFactory::do_create()const
 {
-	return new C2DTee(m_filename); 
+	return new C3DTee(m_filename); 
 }
 
-const std::string C2DTeeFilterPluginFactory::do_get_descr()const
+const std::string C3DTeeFilterPluginFactory::do_get_descr()const
 {
 	return "Save the input image to a file and also pass it through to the next filter"; 
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()
 {
-	return new C2DTeeFilterPluginFactory();
+	return new C3DTeeFilterPluginFactory();
 }
 NS_END

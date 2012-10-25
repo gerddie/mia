@@ -18,35 +18,30 @@
  *
  */
 
-#ifndef mia_3d_filter_label_hh
-#define mia_3d_filter_label_hh
-
 #include <mia/3d/3dfilter.hh>
-#include <mia/3d/shape.hh>
+
+NS_BEGIN( tee_3dimage_filter)
 
 
-NS_BEGIN(label_3dimage_filter)
-
-class CLabel: public mia::C3DFilter {
+class C3DTee : public mia::C3DFilter {
 public:
-	CLabel(mia::P3DShape m_mask);
+	C3DTee(const std::string& name);
 
+	template <class T>
+	C3DTee::result_type operator () (const mia::T3DImage<T>& data) const ;
 private:
-	void grow_region(const mia::C3DBounds& loc, const mia::C3DBitImage& input,
-			 mia::C3DUSImage& result, unsigned short label)const;
-	CLabel::result_type do_filter(const mia::C3DImage& image) const;
-	mia::P3DShape m_mask;
+	virtual mia::P3DImage do_filter(const mia::C3DImage& image) const;
+	virtual mia::P3DImage do_filter(mia::P3DImage image) const;
+	std::string m_name; 
 };
 
-class C3DLabelFilterPlugin: public mia::C3DFilterPlugin {
+class C3DTeeFilterPluginFactory: public mia::C3DFilterPlugin {
 public:
-	C3DLabelFilterPlugin();
+	C3DTeeFilterPluginFactory();
 private:
 	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
-	mia::P3DShape m_mask;
+	std::string m_filename; 
 };
 
 NS_END
-
-#endif

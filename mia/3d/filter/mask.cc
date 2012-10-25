@@ -111,7 +111,8 @@ mia::P3DImage C3DMask::do_filter(const mia::C3DImage& image) const
 C3DMaskImageFilterFactory::C3DMaskImageFilterFactory():
 	C3DFilterPlugin("mask")
 {
-	add_parameter("input", new CStringParameter(m_mask_filename, true, "second input image file name"));
+	add_parameter("input", new CStringParameter(m_mask_filename, true, "second input image file name", 
+			      &C3DImageIOPluginHandler::instance()));
 }
 
 C3DFilter *C3DMaskImageFilterFactory::do_create()const

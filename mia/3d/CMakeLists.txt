@@ -31,7 +31,6 @@ SET(MIA3D_SRC
   3dimageio.cc
   3dvfio.cc
   distance.cc
-#  fatcost.cc
   fullcost.cc
   fuzzyseg.cc
   fuzzyClusterSolverCG.cc
@@ -78,7 +77,6 @@ SET(MIA3D_HEADERS
   defines3d.hh
   deformer.hh
   distance.hh
-#  fatcost.hh 
   fifotestfixture.hh
   fullcost.hh
   fuzzyseg.hh

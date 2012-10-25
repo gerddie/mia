@@ -55,9 +55,9 @@ public:
 	virtual mia::C3DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
 private:
-	std::string m_kx;
-	std::string m_ky;
-	std::string m_kz;
+	mia::P1DSpacialKernel m_kx;
+	mia::P1DSpacialKernel m_ky;
+	mia::P1DSpacialKernel m_kz;
 };
 
 

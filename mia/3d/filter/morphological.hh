@@ -76,7 +76,7 @@ private:
 	virtual mia::C3DFilter *do_create()const;
 	virtual mia::C3DFilter *dodo_create(mia::P3DShape shape, bool hint) const = 0;
 
-	std::string m_shape_descr;
+	mia::P3DShape m_shape;
 	std::string m_hint;
 };
 

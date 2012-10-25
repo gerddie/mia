@@ -39,6 +39,7 @@ SET(filters3dNew
   seededwatershed
   selectbig
   sepconv 
+  tee
   watershed
   )
 
