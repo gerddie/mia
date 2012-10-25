@@ -76,14 +76,18 @@ private:
 int do_main( int argc, char *argv[] )
 {
 
+
 	string src_filename;
 	string ref_filename;	
 	string out_filename;
 
+	const auto& meshio = CMeshIOPluginHandler::instance(); 
+	const auto& imageio = C2DImageIOPluginHandler::instance(); 
+
 	CCmdOptionList options(g_description);
-	options.add(make_opt( src_filename, "in-mesh", 'i', "input mesh", CCmdOption::required));
-	options.add(make_opt( ref_filename, "ref-mask", 'r', "reference binary mask", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-mesh", 'o', "output mesh", CCmdOption::required));
+	options.add(make_opt( src_filename, "in-mesh", 'i', "input mesh", CCmdOption::required, &meshio));
+	options.add(make_opt( ref_filename, "ref-mask", 'r', "reference binary mask", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-mesh", 'o', "output mesh", CCmdOption::required, &meshio));
 	
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
@@ -106,7 +110,7 @@ int do_main( int argc, char *argv[] )
 		mia::accumulate(acc, *in_image); 
 	}
 	cvmsg() << "\n";
-	auto in_mesh = CMeshIOPluginHandler::instance().load(src_filename); 
+	auto in_mesh = meshio.load(src_filename); 
 	
 	auto iv = in_mesh->vertices_begin(); 
 	auto ev = in_mesh->vertices_end(); 
@@ -122,10 +126,11 @@ int do_main( int argc, char *argv[] )
 	}
 	cvmsg() << "\n";
 	
-	return CMeshIOPluginHandler::instance().save(out_filename, *in_mesh)? EXIT_SUCCESS : EXIT_FAILURE; 
+	if (!meshio.save(out_filename, *in_mesh))
+		throw create_exception<runtime_error>("Unabel to save mesh to '", out_filename, "'");
 	
-	
-	
+	return EXIT_SUCCESS; 
 }
+
 #include <mia/internal/main.hh>
 MIA_MAIN(do_main); 

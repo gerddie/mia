@@ -50,7 +50,7 @@ const SProgramDescription g_description = {
 
 int do_main( int argc, char *argv[] )
 {
-	string cost_function("ssd"); 
+	P3DImageCost cost_function; 
 	string src_filename;
 	string ref_filename;
 	string out_filename;
@@ -61,11 +61,12 @@ int do_main( int argc, char *argv[] )
 	size_t mg_levels = 3;
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( src_filename, "in", 'i', "test image", CCmdOption::required));
-	options.add(make_opt( ref_filename, "ref", 'r', "reference image", CCmdOption::required));
-	options.add(make_opt( out_filename, "out", 'o', "registered output image", CCmdOption::required));
-	options.add(make_opt( trans_filename, "trans", 't', "transformation output file name"));
-	options.add(make_opt( cost_function, "cost", 'c', "cost function")); 
+	options.add(make_opt( src_filename, "in", 'i', "test image", CCmdOption::required, &C3DImageIOPluginHandler::instance()));
+	options.add(make_opt( ref_filename, "ref", 'r', "reference image", CCmdOption::required, &C3DImageIOPluginHandler::instance()));
+	options.add(make_opt( out_filename, "out", 'o', "registered output image", CCmdOption::required, &C3DImageIOPluginHandler::instance()));
+	options.add(make_opt( trans_filename, "trans", 't', "transformation output file name", 
+			      CCmdOption::not_required, &C3DTransformationIOPluginHandler::instance() ));
+	options.add(make_opt( cost_function, "ssd", "cost", 'c', "cost function")); 
 	options.add(make_opt( mg_levels, "levels", 'l', "multigrid levels"));
 	options.add(make_opt( minimizer, "gsl:opt=simplex,step=1.0", "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( transform_creator, "rigid",  "transForm", 'f', "transformation type"));
@@ -88,10 +89,7 @@ int do_main( int argc, char *argv[] )
 		throw std::invalid_argument("Images have different size");
 	}
 
-	auto cost = C3DImageCostPluginHandler::instance().produce(cost_function);
-	unique_ptr<C3DInterpolatorFactory>   ipfactory(create_3dinterpolation_factory(ip_bspline3, bc_mirror_on_bounds));
-
-	C3DRigidRegister rr(cost, minimizer,  transform_creator, *ipfactory, mg_levels);
+	C3DRigidRegister rr(cost_function, minimizer,  transform_creator, mg_levels);
 
 	P3DTransformation transform = rr.run(Model, Reference);
 	P3DImage result = (*transform)(*Model);

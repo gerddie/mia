@@ -45,7 +45,6 @@ const SProgramDescription g_description = {
 
 int do_main( int argc, char *argv[] )
 {
-	string cost_function("ssd"); 
 	string src_filename;
 	string ref_filename;
 	string out_filename;

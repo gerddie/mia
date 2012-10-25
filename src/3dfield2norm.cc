@@ -47,8 +47,8 @@ int do_main(int argc, char *argv[])
 	
 	CCmdOptionList options(g_description);
 	
-	options.add(make_opt( src_filename, "in", 'i', "input vector field", CCmdOption::required));
-	options.add(make_opt( out_filename, "out", 'o', "output image", CCmdOption::required));
+	options.add(make_opt( src_filename, "in", 'i', "input vector field", CCmdOption::required, &C3DVFIOPluginHandler::instance()));
+	options.add(make_opt( out_filename, "out", 'o', "output image", CCmdOption::required, &C3DImageIOPluginHandler::instance()));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

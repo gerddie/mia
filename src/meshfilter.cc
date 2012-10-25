@@ -46,10 +46,11 @@ int do_main( int argc, char *argv[] )
 	string out_filename;
 
 	const auto& filter_plugins = CMeshFilterPluginHandler::instance();
+	const auto& meshio = CMeshIOPluginHandler::instance(); 
 
 	CCmdOptionList options(g_general_help);
-	options.add(make_opt( in_filename, "in-file", 'i', "input mesh to be filtered", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output mesh that have been filtered", CCmdOption::required));
+	options.add(make_opt( in_filename, "in-file", 'i', "input mesh to be filtered", CCmdOption::required, &meshio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output mesh that have been filtered", CCmdOption::required, &meshio));
 	options.set_group(g_help_optiongroup); 
 	options.add(make_help_opt( "help-filters", 0,
 				   "give some help about the filter plugins", 
@@ -62,16 +63,15 @@ int do_main( int argc, char *argv[] )
 	//CHistory::instance().append(argv[0], "unknown", options);
 	
 	const CMeshFilterChain filter_chain(options.get_remaining()); 
-	auto mesh = CMeshIOPluginHandler::instance().load(in_filename); 
-	if (!mesh) {
-		throw create_exception<invalid_argument>( "No mesh found in ", in_filename); 
-	}
+	auto mesh = meshio.load(in_filename); 
+	if (!mesh) 
+		throw create_exception<invalid_argument>( "No mesh found in '", in_filename, "'"); 
 	
 	auto out_mesh = filter_chain.run(mesh);
 
-	if ( !CMeshIOPluginHandler::instance().save(out_filename, *out_mesh) ){
-		throw create_exception<runtime_error>( "Unable to save result to ", out_filename);
-	};
+	if ( !meshio.save(out_filename, *out_mesh) )
+		throw create_exception<runtime_error>( "Unable to save result to '", out_filename, "'");
+
 	return EXIT_SUCCESS;
 
 }

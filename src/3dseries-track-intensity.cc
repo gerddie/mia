@@ -104,9 +104,9 @@ int do_main( int argc, char *argv[] )
 	
 	options.set_group("\nFile-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', 
-				    "input perfusion data set", CCmdOption::required));
+			      "input perfusion data set", CCmdOption::required, &C3DImageIOPluginHandler::instance()));
 	options.add(make_opt( out_filename, "out-file", 'o', 
-				    "file name for output intensity slopes")); 
+			      "file name for output intensity slopes")); 
 	
 	
 	if (options.parse(argc, argv, "points") != CCmdOptionList::hr_no)

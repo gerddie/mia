@@ -138,7 +138,7 @@ int do_main( int argc, char *argv[] )
 	size_t slice_number = 0;
 	EDirection direction = dir_xy;
 
-	const C2DImageIOPluginHandler::Instance& imageio2d = C2DImageIOPluginHandler::instance();
+	const auto& imageio2d = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', 
