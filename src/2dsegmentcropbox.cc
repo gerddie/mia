@@ -84,7 +84,8 @@ int do_main(int argc, char *argv[])
 			      "Instead of using the path of the image files as given in the "
 			      "segmentation set, assume the files are located in the current directory"));
 	options.add(make_opt( out_filename, "out-file", 'o', "output segmentation set", CCmdOption::required));
-	options.add(make_opt( image_name, "cropped-base", 'c', "Base name for the cropped image files"));
+	options.add(make_opt( image_name, "cropped-base", 'c', "Base name for the cropped image files, the file "
+			      "type and numbering will be based on the input image file type and numbering."));
 	options.add(make_opt( enlarge_boundary, "enlarge", 'e',
 			      "Enlarge the area around the obtained sbounding box by this number of "
 			      "pixels in each direction"));

@@ -355,14 +355,16 @@ int do_main(int argc, char *argv[])
 
 	CSegment2DFuzzy::Params params; 
 	unsigned int n_classes = 3; 
-
+	const auto& image2dio = C2DImageIOPluginHandler::instance();
 	
 	CCmdOptionList opts(g_description);
 	opts.set_group("File I/O"); 
-	opts.add(make_opt( in_filename, "in-file", 'i', "image to be segmented", CCmdOption::required )); 
-	opts.add(make_opt( cls_filename, "cls-file", 'c', "class probability images", CCmdOption::required )); 
-	opts.add(make_opt( out_filename, "out-file", 'o', "B-field corrected image")); 
-	opts.add(make_opt( gain_filename, "gain-log-file", 'g', "Logarithmic gain field")); 
+	opts.add(make_opt( in_filename, "in-file", 'i', "image to be segmented", CCmdOption::required , &image2dio)); 
+	opts.add(make_opt( cls_filename, "cls-file", 'c', "class probability images, the image type must "
+			   "support multiple images and floating point values", CCmdOption::required, &image2dio )); 
+	opts.add(make_opt( out_filename, "out-file", 'o', "B-field corrected image", CCmdOption::not_required , &image2dio)); 
+	opts.add(make_opt( gain_filename, "gain-log-file", 'g', "Logarithmic gain field, the image type must "
+			   "support floating point values",CCmdOption::not_required , &image2dio)); 
 	
 	opts.set_group("Segmentation");
 	opts.add(make_opt( n_classes, "no-of-classes", 'n', "number of classes to segment"));
@@ -396,9 +398,6 @@ int do_main(int argc, char *argv[])
 				 << "The number of classes resulting from the given centres takes precedence\n"; 
 		}
 	}
-
-
-	
 	
 	// initialize the functor
 	CSegment2DFuzzy segment(params);

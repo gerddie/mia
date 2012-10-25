@@ -47,14 +47,13 @@ int do_main( int argc, char *argv[])
 	string out_filename;
 	size_t num = 0;
 
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
-
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i',
-				    "input images", CCmdOption::required));
+				    "input images", CCmdOption::required, &imageio));
 	options.add(make_opt( out_filename, "out-file", 'o',
-				    "output image", CCmdOption::required));
+				    "output image", CCmdOption::required, &imageio));
 	options.add(make_opt( num, "number", 'n',  "image number to be selected"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)

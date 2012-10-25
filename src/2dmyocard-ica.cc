@@ -360,14 +360,15 @@ int do_main( int argc, char *argv[] )
 	bool auto_comp = false;
 	int max_iterations = 0;
 
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+	const auto& imageio = C2DImageIOPluginHandler::instance();
 	
 	CCmdOptionList options(g_description); 
-	options.add(make_opt( src_name, "in-base", 'i', "input file name base"));
+	options.add(make_opt( src_name, "in-base", 'i', "input file name ofolloing pattern nameXXXX.ext X=numbers" , 
+			      CCmdOption::required, &imageio));
 	options.add(make_opt( coefs_name, "coefs", 0, "output mixing coefficients to this file"));
 	options.add(make_opt( out_name, "out-base", 'o', "output file name base"));
 
-	options.add(make_opt( out_type, imageio.get_set(), "type", 't',
+	options.add(make_opt( out_type, imageio.get_supported_suffix_set(), "type", 't',
 				    "output file type"));
 
 	options.add(make_opt( first, "skip", 'k', "skip images at beginning of series"));

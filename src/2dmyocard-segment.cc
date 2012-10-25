@@ -443,7 +443,6 @@ int do_main( int argc, char *argv[] )
 	// IO parameters 
 	string in_filename;
 	string out_filename; 
-	string seg_helper; 
 	string save_feature; 
 
 	// this parameter is currently not exported - reading the image data is 
@@ -457,11 +456,13 @@ int do_main( int argc, char *argv[] )
 	size_t skip_images = 2; 
 	size_t max_ica_iterations = 400; 
 
+	const auto& imageio = C2DImageIOPluginHandler::instance();
+
 	CCmdOptionList options(g_description);
 	options.set_group("File-IO"); 
 	options.add(make_opt( in_filename, "in-file", 'i', "input perfusion data set", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output myocardial mask", CCmdOption::required));
-	options.add(make_opt( seg_helper, "seg-helper", 'O', "output a segmentation helper  "));
+	options.add(make_opt( out_filename, "out-file", 'o', "output myocardial mask", 
+			      CCmdOption::required, &imageio));
 	options.add(make_opt( save_feature, "save-features", 'f', "save ICA features to files with this name base")); 
 
 	options.set_group("ICA");

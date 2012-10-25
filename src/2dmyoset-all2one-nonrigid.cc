@@ -145,7 +145,8 @@ int do_main( int argc, char *argv[] )
 				    "input perfusion data set", CCmdOption::required));
 	options.add(make_opt( out_filename, "out-file", 'o', 
 				    "output perfusion data set", CCmdOption::required));
-	options.add(make_opt( registered_filebase, "out-filebase", 0, "file name for registered fiels")); 
+	options.add(make_opt( registered_filebase, "out-filebase", 0, "file name basae for registered files, file "
+			      "Wtype is deducted from the image file type in the input data set.")); 
 
 	options.set_group("\nRegistration"); 
 	options.add(make_opt( skip, "skip", 'k', "Skip images at the beginning of the series"));
