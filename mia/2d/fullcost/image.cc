@@ -186,8 +186,10 @@ C2DImageFullCostPlugin::C2DImageFullCostPlugin():
 	m_ref_name("ref.@"), 
 	m_debug(false)
 {
-	add_parameter("src", new CStringParameter(m_src_name, false, "Study image"));
-	add_parameter("ref", new CStringParameter(m_ref_name, false, "Reference image"));
+	add_parameter("src", new CStringParameter(m_src_name, false, "Study image", 
+			      &C2DImageIOPluginHandler::instance()));
+	add_parameter("ref", new CStringParameter(m_ref_name, false, "Reference image", 
+			      &C2DImageIOPluginHandler::instance()));
 	add_parameter("cost", make_param(m_cost_kernel, "ssd", false, "Cost function kernel"));
 	add_parameter("debug", new CBoolParameter(m_debug, false, "Save intermediate resuts for debugging")); 
 }
