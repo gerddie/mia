@@ -51,25 +51,22 @@ int do_main(int argc, char **argv)
 	string interpolator_kernel;
 	string interpolator_bc("mirror");
 
-	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output image", CCmdOption::required));
+	const auto& imageio = C2DImageIOPluginHandler::instance();
+
+	options.add(make_opt( src_filename, "in-file", 'i', "input image", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output image", CCmdOption::required, &imageio));
 	options.add(make_opt( trans_filename, "transformation", 't', "transformation file name", 
-				    CCmdOption::required));
+			      CCmdOption::required, &C2DTransformationIOPluginHandler::instance()));
 
 	options.add(make_opt( interpolator_kernel, "interpolator", 'p', "override the interpolator provided by the transformation"));
 	options.add(make_opt( interpolator_bc, "boundary", 'b', "override the boundary conditions provided by the transformation."
 			      " This is only used if the interpolator is overridden."));
 	
-
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
-
-	typedef C2DImageIOPluginHandler::Instance::PData PImageVector;
-	typedef C2DVFIOPluginHandler::Instance::PData P3DVF;
-	PImageVector source    = imageio.load(src_filename);
+	auto source    = imageio.load(src_filename);
 	auto transformation   = C2DTransformationIOPluginHandler::instance().load(trans_filename);
 
 	if (!source || source->size() < 1) {
@@ -90,8 +87,7 @@ int do_main(int argc, char **argv)
 		transformation->set_interpolator_factory(ipf); 
 	}
 	
-	for (C2DImageIOPluginHandler::Instance::Data::iterator i = source->begin();
-	     i != source->end(); ++i)
+	for (auto i = source->begin();  i != source->end(); ++i)
 		*i = (*transformation)(**i);
 	
 	if ( !imageio.save(out_filename, *source) ){

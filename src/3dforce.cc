@@ -70,7 +70,6 @@ int do_main(int argc, char **argv)
 	string out_filename;
 	string ref_filename;
 	P3DImageCost cost; 
-	string cost_descr("ssd");
 
 	const auto& imageio = C3DImageIOPluginHandler::instance();
 

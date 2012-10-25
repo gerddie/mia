@@ -41,7 +41,6 @@ const SProgramDescription g_general_help = {
 
 int do_main( int argc, char *argv[] )
 {
-	string cost_function("ssd"); 
 	string src_filename;
 	string ref_filename;
 	string out_filename;
@@ -52,12 +51,14 @@ int do_main( int argc, char *argv[] )
 	C2DTransformCreatorHandler::ProductPtr transform_creator; 
 
 	size_t mg_levels = 3;
+	const auto& imageio = C2DImageIOPluginHandler::instance(); 
 
 	CCmdOptionList options(g_general_help);
-	options.add(make_opt( src_filename, "in", 'i', "test image", CCmdOption::required));
-	options.add(make_opt( ref_filename, "ref", 'r', "reference image", CCmdOption::required));
-	options.add(make_opt( out_filename, "out", 'o', "registered output image", CCmdOption::required));
-	options.add(make_opt( trans_filename, "trans", 't', "output transformation"));
+	options.add(make_opt( src_filename, "in", 'i', "test image", CCmdOption::required, &imageio));
+	options.add(make_opt( ref_filename, "ref", 'r', "reference image", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out", 'o', "registered output image", CCmdOption::required, &imageio));
+	options.add(make_opt( trans_filename, "trans", 't', "output transformation", 
+			      CCmdOption::required, &C2DTransformationIOPluginHandler::instance()));
 	options.add(make_opt( mg_levels, "levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( refinement_minimizer, "", "refiner", 'R',

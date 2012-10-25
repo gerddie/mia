@@ -53,12 +53,12 @@ int do_main(int argc, char **argv)
 	string trans_filename;
 	string out_filename;
 
-	options.add(make_opt( trans_filename, "in-file", 'i', "input transformation", CCmdOption::required));
+	options.add(make_opt( trans_filename, "in-file", 'i', "input transformation", 
+			      CCmdOption::required, &C2DTransformationIOPluginHandler::instance()));
 	options.add(make_opt( out_filename, "out-file", 'o', "output Green's strain tensor", CCmdOption::required));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
-
 
 	auto transformation = C2DTransformationIOPluginHandler::instance().load(trans_filename);
 

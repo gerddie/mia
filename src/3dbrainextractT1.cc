@@ -72,10 +72,12 @@ int do_main( int argc, char *argv[] )
 	string growshape("18n");
 	float  wmclassprob = 0.7;
 
+	const auto& imageio = C3DImageIOPluginHandler::instance(); 
+	
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i',
-			      "input image(s) to be segmented", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "brain mask", CCmdOption::required ));
+			      "input image(s) to be segmented", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "brain mask", CCmdOption::required, &imageio));
 	options.add(make_opt( noOfClasses, "no-of-classes", 'n', "number of classes"));
 	options.add(make_opt( wmclass,     "wm-class",      'w', "index of white matter"));
 	options.add(make_opt( wmclassprob, "wm-prob", 'p',

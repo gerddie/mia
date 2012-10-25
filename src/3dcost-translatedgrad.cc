@@ -57,20 +57,22 @@ int do_main(int argc, char **argv)
 	P3DImageCost cost; 
 	P3DTransformationFactory transform_creator; 
 	
+	const auto & imageio  = C3DImageIOPluginHandler::instance(); 
 	
-	options.add(make_opt( src_filename, "in-file", 'i', "input image ", CCmdOption::required));
-	options.add(make_opt( ref_filename, "ref-file", 'r', "reference image ", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output vector field ", CCmdOption::required));
-	options.add(make_opt( grad_image_filename, "gradimg-file", 'g', "norm image of the spline transformed gradient"));
-	options.add(make_opt( cost_grad_filename, "cost-gradimg-file", 'C', "norm image of the cost gradient"));
+	options.add(make_opt( src_filename, "in-file", 'i', "input image ", CCmdOption::required, &imageio));
+	options.add(make_opt( ref_filename, "ref-file", 'r', "reference image ", CCmdOption::required, &imageio));
+	options.add(make_opt( out_filename, "out-file", 'o', "output vector field ", 
+			      CCmdOption::required, &C3DTransformationIOPluginHandler::instance()));
+	options.add(make_opt( grad_image_filename, "gradimg-file", 'g', "norm image of the spline transformed gradient", 
+			    CCmdOption::not_required, &imageio));
+	options.add(make_opt( cost_grad_filename, "cost-gradimg-file", 'C', "norm image of the cost gradient", 
+			      CCmdOption::not_required, &imageio));
 
 	options.add(make_opt( transform_creator, "spline:rate=5", "transForm", 'f', "Transformation the gradient relates to"));
 	options.add(make_opt( cost, "ssd", "cost", 'c', "cost function to use"));
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
-
-	typedef C3DImageIOPluginHandler::Instance::PData PImageVector;
 
 	auto source = load_image<P3DImage>(src_filename);
 	auto ref    = load_image<P3DImage>(ref_filename);

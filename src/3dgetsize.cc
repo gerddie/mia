@@ -44,11 +44,11 @@ const SProgramDescription g_description = {
 int do_main( int argc, char *argv[] )
 {
 	string in_filename;
-	const C3DImageIOPluginHandler::Instance& imageio3d = C3DImageIOPluginHandler::instance();
+	const auto& imageio3d = C3DImageIOPluginHandler::instance();
 	
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input image(s) to be filtered", 
-			      CCmdOption::required));
+			      CCmdOption::required, &imageio3d));
 	
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

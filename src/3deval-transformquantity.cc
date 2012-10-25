@@ -167,8 +167,8 @@ int do_main( int argc, char *argv[] )
 	options.add(make_opt( out_filename, "out-file", 'o', 
 			      "output strains file, for a format description see above.", CCmdOption::required)); 
 	
-	options.add(make_opt( trans_filename, "transformation", 't', 
-				    "transformation of which the quantity will be evaluated.", CCmdOption::required)); 
+	options.add(make_opt( trans_filename, "transformation", 't', "transformation of which the quantity will be evaluated.", 
+			      CCmdOption::required, &C3DTransformationIOPluginHandler::instance())); 
 
 	options.set_group("\nParameters"); 
 	options.add(make_opt( quantity, tqmap, "quantity", 'q', 
