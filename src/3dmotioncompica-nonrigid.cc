@@ -200,32 +200,36 @@ int do_main( int argc, char *argv[] )
 	int max_threads = task_scheduler_init::automatic;
 
 	CCmdOptionList options(g_description);
+	const auto& image3dio = C3DImageIOPluginHandler::instance(); 
 	
 	options.set_group("File-IO"); 
-	options.add(make_opt( in_filename, "in-file", 'i', 
-				    "input images (file pattern)", CCmdOption::required));
-	options.add(make_opt( registered_filebase, "out-file", 'o', "output images (file name pattern)"));
+	options.add(make_opt( in_filename, "in-file", 'i', "input images of consecutively numbered filed (nameXXXX.ext)", 
+			      CCmdOption::required, &image3dio));
+	options.add(make_opt( registered_filebase, "out-file", 'o', "output image name (as C format string including a %04d "
+			      "in order to define the file numbering)", 
+			      CCmdOption::required, &image3dio));
 	
-	options.add(make_opt( save_ref_filename, "save-refs", 0, "save reference images")); 
-	options.add(make_opt( save_reg_filename, "save-regs", 0, 
-				    "save intermediate registered images")); 
-	options.add(make_opt( save_mixing_matrix, "save-coeffs", 0, "save mixing matrix")); 
-	options.add(make_opt( save_features, "save-features", 0, "save feature images")); 
-
+	options.add(make_opt( save_ref_filename, "save-refs", 0, "save reference images, the given string is used as file name base"
+			      ", the number pattern follows the input images, and the output format is always 'vista'")); 
+	options.add(make_opt( save_reg_filename, "save-regs", 0, "save intermediate registered images, the given string is used as file name base"
+			      ", the number pattern follows the input images, and the output format is always 'vista'")); 
+	options.add(make_opt( save_mixing_matrix, "save-coeffs", 0, "save mixing matrix to a text file")); 
+	options.add(make_opt( save_features, "save-features", 0, "save feature images as PNG")); 
 
 	options.set_group("Registration"); 
-	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization"));
+	options.add(make_opt( minimizer, "optimizer", 'O', "Optimizer used for minimization", 
+			      CCmdOption::not_required, &CMinimizerPluginHandler::instance()));
 	options.add(make_opt( c_rate, "start-c-rate", 'a', 
-				    "start coefficinet rate in spines,"
-				    " gets divided by --c-rate-divider with every pass"));
+			      "start coefficinet rate in spines,"
+			      " gets divided by --c-rate-divider with every pass"));
 	options.add(make_opt( c_rate_divider, "c-rate-divider", 0, 
-				    "cofficient rate divider for each pass"));
+			      "cofficient rate divider for each pass"));
 	options.add(make_opt( divcurlweight, "start-divcurl", 'd',
-				    "start divcurl weight, gets divided by"
-				    " --divcurl-divider with every pass")); 
+			      "start divcurl weight, gets divided by"
+			      " --divcurl-divider with every pass")); 
 	options.add(make_opt( divcurlweight_divider, "divcurl-divider", 0,
-				    "divcurl weight scaling with each new pass")); 
-	options.add(make_opt( imagecost, "imagecost", 'w', "image cost")); 
+			      "divcurl weight scaling with each new pass")); 
+	options.add(make_opt( imagecost, "imagecost", 'w', "image cost", CCmdOption::not_required, &C3DFullCostPluginHandler::instance())); 
 	options.add(make_opt( mg_levels, "mg-levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( pass, "passes", 'P', "registration passes")); 
 

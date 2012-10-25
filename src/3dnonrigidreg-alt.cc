@@ -58,8 +58,11 @@ int do_main( int argc, char *argv[] )
 	PMinimizer minimizer; 
 	P3DTransformationFactory transform_creator; 
 
+	const auto& transform3dio =  C3DTransformationIOPluginHandler::instance(); 
+
 	CCmdOptionList options(g_description);
-	options.add(make_opt( trans_filename, "out-transform", 'o', "output transformation", CCmdOption::required));
+	options.add(make_opt( trans_filename, "out-transform", 'o', "output transformation", 
+			      CCmdOption::required, &transform3dio));
 	options.add(make_opt( mg_levels, "levels", 'l', "multi-resolution levels"));
 	options.add(make_opt( minimizer, "gsl:opt=gd,step=0.1", "optimizer", 'O', "Optimizer used for minimization"));
 	options.add(make_opt( transform_creator, "spline:rate=10", "transForm", 'f', "transformation type"));
@@ -78,7 +81,9 @@ int do_main( int argc, char *argv[] )
 	C3DNonrigidRegister nrr(costs, minimizer,  transform_creator, mg_levels);
 	P3DTransformation transform = nrr.run();
 
-	return C3DTransformationIOPluginHandler::instance().save(trans_filename, *transform); 
+	if (! transform3dio.save(trans_filename, *transform) )
+		throw create_exception<runtime_error>("Unable to save obtained transformation to '", trans_filename, "'");
+	return EXIT_SUCCESS; 
 }
 
 
