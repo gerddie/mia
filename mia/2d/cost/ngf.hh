@@ -23,7 +23,6 @@
 
 #include <mia/core/msgstream.hh>
 #include <mia/2d/cost.hh>
-#include <mia/2d/fatcost.hh>
 #include <mia/2d/nfg.hh>
 #include <mia/2d/2DDatafield.hh>
 #include <mia/2d/2dimageio.hh>

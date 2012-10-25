@@ -25,7 +25,6 @@
 #include <mia/2d/2dimageio.hh>
 #include <mia/2d/interpolator.hh>
 #include <mia/2d/cost.hh>
-#include <mia/2d/fatcost.hh>
 #include <mia/2d/fullcost.hh>
 #include <mia/2d/fftkernel.hh>
 #include <mia/2d/cstkernel.hh>

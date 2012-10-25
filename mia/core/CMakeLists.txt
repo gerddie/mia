@@ -33,7 +33,6 @@ SET(MIACORE_SRC_BASE
   distance.cc
   dlloader.cc
   dummyhandler.cc
-  fatcost.cc
   file.cc 
   filetools.cc 
   filter.cc
@@ -111,7 +110,6 @@ SET(MIACORE_HEADER_BASE
   export_handler.hh
   factory.hh
   factory_trait.hh
-  fatcost.hh fatcost.cxx
   fft1d_r2c.hh
   fftslopeclassifier.hh
   fifofilter.hh
@@ -289,7 +287,6 @@ NEW_TEST(datapool miacore)
 NEW_TEST(delayedparameter miacore)
 NEW_TEST(distance miacore)
 NEW_TEST(factoryoption miacore)
-NEW_TEST(fatcost  miacore)
 NEW_TEST(fftslopeclassifier miacore)
 NEW_TEST(filetools miacore)
 NEW_TEST(fixedwidthoutput miacore)

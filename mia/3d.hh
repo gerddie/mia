@@ -28,7 +28,6 @@
 #include <mia/3d/cost.hh>
 #include <mia/3d/creator.hh>
 #include <mia/3d/fullcost.hh>
-#include <mia/3d/fatcost.hh>
 #include <mia/3d/interpolator.hh>
 #include <mia/3d/model.hh>
 #include <mia/3d/transformfactory.hh>
