@@ -194,7 +194,7 @@ int do_main( int argc, char *argv[] )
 
 	CCmdOptionList options(g_description);
 	options.add(make_opt( in_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required, &imageio));
 	options.add(make_opt( skip, "skip", 'k', "Skip files at the beginning"));
 	options.add(make_opt( enlarge_boundary,  "enlarge-boundary", 'e', "Enlarge cropbox by number of pixels"));
 	options.add(make_opt( crop, "crop", 'c', "crop image before running statistics"));

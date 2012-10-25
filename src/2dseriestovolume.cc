@@ -60,8 +60,10 @@ int do_main(int argc, char *argv[])
 	size_t skip = 0; 
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", CCmdOption::required));
-	options.add(make_opt( out_filename, "out-file", 'o', "output 3D image ", CCmdOption::required));
+	options.add(make_opt( src_filename, "in-file", 'i', "input segmentation set", 
+			      CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output 3D image ", 
+			      CCmdOption::required, &C3DImageIOPluginHandler::instance()));
 	options.add(make_opt( skip, "skip", 'k', "number of frames to skip at the beginning of the series."));
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 

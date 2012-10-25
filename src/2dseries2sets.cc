@@ -155,7 +155,7 @@ int do_main( int argc, char *argv[] )
 				    CCmdOption::required));
 	options.add(make_opt( no_copy_images, "no-copy", 0, "don't copy image files to output directory"));
 
-	if (options.parse(argc, argv, "image") != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "image", &C2DImageIOPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 

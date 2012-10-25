@@ -89,8 +89,9 @@ int do_main( int argc, char *argv[] )
 
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( src_name, "in", 'i', "input segmentation set"));
-	options.add(make_opt( out_name, "out", 'o', "output image of minimal correlation"));
+	options.add(make_opt( src_name, "in", 'i', "input segmentation set", CCmdOption::required));
+	options.add(make_opt( out_name, "out", 'o', "output image of minimal correlation", 
+			      CCmdOption::required,  &C2DImageIOPluginHandler::instance()));
 	options.add(make_opt( skip, "skip", 'k', "skip images at beginning of series"));
 
 	if (options.parse(argc, argv) != CCmdOptionList::hr_no)

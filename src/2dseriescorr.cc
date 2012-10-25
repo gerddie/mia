@@ -93,13 +93,16 @@ int do_main( int argc, char *argv[] )
 	size_t first =  2;
 	size_t last  = 60;
 
-
+	const auto& image2dio = C2DImageIOPluginHandler::instance();
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( src_name, "in-base", 'i', "input file name base"));
-	options.add(make_opt( src_name, "outname", 'o', "output file name to save the avarage per-pixel correlation"));
-	options.add(make_opt( out_hor_name, "horizontal", 'z', "horiZontal correlation output file name"));
-	options.add(make_opt( out_ver_name, "vertical", 't', "verTical  correlation output file name"));
+	options.add(make_opt( src_name, "in-base", 'i', "input file name base", CCmdOption::required, &image2dio));
+	options.add(make_opt( src_name, "outname", 'o', "output file name to save the avarage per-pixel correlation", 
+			      CCmdOption::required, &image2dio));
+	options.add(make_opt( out_hor_name, "horizontal", 'z', "horiZontal correlation output file name", 
+			    CCmdOption::not_required, &image2dio));
+	options.add(make_opt( out_ver_name, "vertical", 't', "verTical  correlation output file name", 
+			      CCmdOption::not_required, &image2dio));
 	options.add(make_opt( first, "skip", 'k', "skip images at beginning of series"));
 	options.add(make_opt( last, "end", 'e', "last image in series"));
 
