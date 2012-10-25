@@ -112,9 +112,9 @@ class PRIVATE C2DMorphFifoFilterPluginBase : public mia::C2DFifoFilterPlugin {
  protected:
 	C2DMorphFifoFilterPluginBase(const char *name);
 	virtual const std::string do_get_descr() const;
-	const std::string& get_shape_descr() const;
+	mia::P3DShape get_shape() const;
  private:
-	std::string m_shape_descr;
+	mia::P3DShape m_shape;
 };
 
 template <template <typename, bool> class Compare>

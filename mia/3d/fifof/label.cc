@@ -244,16 +244,15 @@ private:
 	virtual const string do_get_descr() const;
 	virtual C2DImageFifoFilter *do_create()const;
 
-	string m_neighborhood;
+	mia::P2DShape m_neighbourhood; 
 	string m_mapfile;
 };
 
 C2DLabelFifoFilterPlugin::C2DLabelFifoFilterPlugin():
-	C2DFifoFilterPlugin("label"),
-	m_neighborhood("4n")
+	C2DFifoFilterPlugin("label")
 {
-	add_parameter("n", new CStringParameter(m_neighborhood, false, 
-						"2D neighborhood shape to define connectedness"));
+	add_parameter("n", make_param(m_neighbourhood, "4n", false, 
+				      "2D neighbourhood shape to define connectedness"));
 	add_parameter("map", new CStringParameter(m_mapfile, true, 
 						  "Mapfile to save label numbers that are joined"));
 }
@@ -265,8 +264,7 @@ const string C2DLabelFifoFilterPlugin::do_get_descr() const
 
 C2DImageFifoFilter *C2DLabelFifoFilterPlugin::do_create()const
 {
-	auto shape = C2DShapePluginHandler::instance().produce(m_neighborhood); 
-	return new C2DLabelStackFilter(m_mapfile, shape);
+	return new C2DLabelStackFilter(m_mapfile, m_neighbourhood);
 }
 
 extern "C" EXPORT CPluginBase *get_plugin_interface()

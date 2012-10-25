@@ -82,7 +82,7 @@ BOOST_FIXTURE_TEST_CASE( test_fifof_byslice_median , fifof_Fixture )
 	};
 
 	prepare(input_data, test_data, size, n_slices);
-	C2DBysliceFifoFilter f("median:w=1");
+	C2DBysliceFifoFilter f(produce_2dimage_filter("median:w=1"));
 
 	call_test(f);
 }

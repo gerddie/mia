@@ -43,7 +43,7 @@ public:
 private:
 	virtual mia::C2DFilter *do_create()const;
 	virtual const std::string do_get_descr()const;
-	std::string m_kernel;
+	mia::PFFT2DKernel  m_kernel;
 };
 
 NS_END

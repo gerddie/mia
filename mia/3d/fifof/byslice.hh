@@ -35,13 +35,13 @@ NS_BEGIN(byslice_2dstack_filter)
 
 class C2DBysliceFifoFilter : public mia::C2DImageFifoFilter {
 public:
-	C2DBysliceFifoFilter(std::string filter);
+	C2DBysliceFifoFilter(mia::P2DFilter filter);
 private:
 	void do_push(::boost::call_traits<mia::P2DImage>::param_type x);
 	mia::P2DImage do_filter();
 
 	mia::P2DImage m_last_image;
-	mia::C2DFilterPluginHandler::ProductPtr m_filter; 
+	mia::P2DFilter m_filter; 
 };
 
 NS_END
