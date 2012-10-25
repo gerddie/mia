@@ -33,7 +33,7 @@ SET(MIA2D_SRC_BASE
   cstkernel.cc 
   distance.cc
   interpolator.cc 
-  fatcost.cc
+#  fatcost.cc
   fftkernel.cc
   fuzzyseg.cc
   fuzzyClusterSolverSOR.cc
@@ -41,7 +41,7 @@ SET(MIA2D_SRC_BASE
   fullcost.cc
   filterchain.cc
   model.cc
-  modelsolverreg.cc
+#  modelsolverreg.cc
   morphshape.cc
   multicost.cc
   nfg.cc
@@ -110,7 +110,7 @@ SET(MIA2D_HEADERS_BASE
   defines2d.hh
   deformer.hh
   distance.hh
-  fatcost.hh
+#  fatcost.hh
   fullcost.hh
   filterchain.hh
   fftkernel.hh
@@ -124,7 +124,7 @@ SET(MIA2D_HEADERS_BASE
   iterator.cxx
   matrix.hh
   model.hh
-  modelsolverreg.hh
+#  modelsolverreg.hh
   morphshape.hh
   multicost.hh
   nonrigidregister.hh
@@ -199,7 +199,7 @@ TEST_2DMIA(distance mia2dtest)
 TEST_2DMIA(fullcost mia2dtest)
 TEST_2DMIA(interpol mia2dtest)
 TEST_2DMIA(matrix mia2dtest)
-TEST_2DMIA(modelsolverreg mia2dtest)
+#TEST_2DMIA(modelsolverreg mia2dtest)
 TEST_2DMIA(nfg mia2dtest)
 TEST_2DMIA(cost mia2dtest)
 TEST_2DMIA(iterator mia2dtest)

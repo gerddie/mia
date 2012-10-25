@@ -30,6 +30,7 @@
 
 NS_MIA_BEGIN
 
+#if 0 
 
 /**
    \brief Obsolete, to be removed 
@@ -155,6 +156,7 @@ public:
 
 ///   \brief Obsolete, to be removed 
 typedef THandlerSingleton<C2DFatImageCostPluginHandlerImpl> C2DFatImageCostPluginHandler;
+#endif 
 
 NS_MIA_END
 

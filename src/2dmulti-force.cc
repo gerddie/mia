@@ -55,11 +55,12 @@ int do_main(int argc, char **argv)
 	CCmdOptionList options(g_description);
 	string out_filename;
 
-	const C2DImageIOPluginHandler::Instance& imageio = C2DImageIOPluginHandler::instance();
+	const auto& imageio = C2DImageIOPluginHandler::instance();
+	const auto& costcreator = C2DFullCostPluginHandler::instance(); 
 
-	options.add(make_opt( out_filename, "out-file", 'o', "output norm image", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output norm image", CCmdOption::required, &imageio));
 
-	if (options.parse(argc, argv, "cost", &C2DFatImageCostPluginHandler::instance()) != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "cost", &costcreator) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 
 
@@ -72,15 +73,10 @@ int do_main(int argc, char **argv)
 
 	C2DImageFatCostList cost_list;
 	for(auto i = cost_chain.begin(); i != cost_chain.end(); ++i) {
-		P2DImageFatCost c = C2DFatImageCostPluginHandler::instance().produce(*i);
-		if (c)
-			cost_list.push_back(c);
+		P2DImageFatCost c = costcreator.produce(*i);
+		assert(c); 
+		cost_list.push_back(c);
 	}
-	if (cost_list.empty()) {
-		cerr << "Could not create a single cost function\n";
-		return EXIT_FAILURE;
-	}
-
 
 	C2DFVectorfield force(cost_list.get_size());
 
