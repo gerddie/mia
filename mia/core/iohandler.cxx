@@ -112,6 +112,15 @@ TIOPluginHandler<I>::get_supported_filetype_map() const
 
 
 template <class I> 
+const std::set<std::string> TIOPluginHandler<I>::get_supported_suffix_set() const
+{
+	std::set<std::string> result; 
+	for (auto i = m_suffixmap.begin(); i != m_suffixmap.end(); ++i)
+		result.insert(i->first); 
+	return result; 
+}
+
+template <class I> 
 const std::string TIOPluginHandler<I>::get_supported_suffixes() const
 {
 	std::stringstream result; 

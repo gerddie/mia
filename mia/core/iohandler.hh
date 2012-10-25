@@ -113,6 +113,9 @@ public:
 	/// @ returns a string containing the supported file type suffixes
 	const std::string get_supported_suffixes() const; 
 
+	/// @ returns a saet containing the supported file type suffixes
+	const std::set<std::string> get_supported_suffix_set() const; 
+
 	/**
 	   Translate the file type decriptor to the file suffix. 
 	   \param type type descriptor (plugin name);

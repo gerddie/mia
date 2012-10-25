@@ -51,9 +51,10 @@ int do_main( int argc, char *argv[] )
 	string out_filename;
 
 	CCmdOptionList options(g_description);
-	options.add(make_opt( out_filename, "out-file", 'o', "output file name", CCmdOption::required));
+	options.add(make_opt( out_filename, "out-file", 'o', "output file name", 
+			      CCmdOption::required, &C3DImageIOPluginHandler::instance()));
 
-	if (options.parse(argc, argv, "sliceimage") != CCmdOptionList::hr_no)
+	if (options.parse(argc, argv, "sliceimage", &C2DImageIOPluginHandler::instance()) != CCmdOptionList::hr_no)
 		return EXIT_SUCCESS; 
 		
 	if (options.get_remaining().empty())
