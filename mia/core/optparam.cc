@@ -91,6 +91,7 @@ void CParamList::print_help(std::ostream& os) const
 
 void CParamList::get_help_xml(xmlpp::Element& root)const
 {
+	TRACE_FUNCTION; 
 	for( auto i = m_params.begin();i != m_params.end(); ++i ) {
 		cvdebug()<< "   param '" << i->first << "'\n"; 
 		xmlpp::Element *p = root.add_child("param"); 
@@ -101,6 +102,7 @@ void CParamList::get_help_xml(xmlpp::Element& root)const
 
 void CParamList::add_dependend_handlers(HandlerHelpMap& handler_map) const
 {
+	TRACE_FUNCTION; 
 	for (auto p = m_params.begin(); p != m_params.end(); ++p) 
 		p->second->add_dependend_handler(handler_map); 
 }

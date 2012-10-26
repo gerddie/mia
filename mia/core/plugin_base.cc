@@ -97,6 +97,7 @@ void CPluginBase::check_parameters()
 
 void CPluginBase::add_dependend_handlers(HandlerHelpMap& handler_map)
 {
+	TRACE_FUNCTION; 
 	cvdebug() << "Add dependend handler for plugin '" << m_name << "'\n"; 
 	m_parameters.add_dependend_handlers(handler_map); 
 }
@@ -134,6 +135,7 @@ void CPluginBase::get_help_xml(xmlpp::Element& root) const
 
 void CPluginBase::do_get_help_xml(xmlpp::Element& root) const
 {
+	TRACE_FUNCTION; 
 	m_parameters.get_help_xml(root);
 }
 

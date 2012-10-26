@@ -331,9 +331,10 @@ const T& THandlerSingleton<T>::instance()
 		CScopedLock lock(m_initialization_mutex);
 		m_creation_mutex.unlock();
 		if (!m_is_initialized) {
+			m_is_initialized = true; 
 			cvdebug() << "not yet initialized: second check passed\n"; 
 			me.initialise(m_searchpath);
-			m_is_initialized = true; 
+
 		}
 	}
 	return me; 

@@ -148,6 +148,7 @@ void TRangeParameter<T>::do_descr(std::ostream& os) const
 template <typename T> 
 void TRangeParameter<T>::do_get_help_xml(xmlpp::Element& self) const
 {
+	TRACE_FUNCTION; 
 	auto dict = self.add_child("range"); 
 	dict->set_attribute("min", to_string<T>(m_min)); 
 	dict->set_attribute("max", to_string<T>(m_max)); 

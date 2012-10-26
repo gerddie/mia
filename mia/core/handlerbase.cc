@@ -19,6 +19,7 @@
  */
 
 #include <mia/core/handlerbase.hh>
+#include <mia/core/msgstream.hh>
 
 NS_MIA_BEGIN
 
@@ -39,6 +40,7 @@ void CPluginHandlerBase::print_short_help(std::ostream& os) const
 
 void CPluginHandlerBase::print_help(std::ostream& os) const
 {
+	TRACE_FUNCTION; 
 	do_print_help(os); 
 }
 
@@ -56,8 +58,10 @@ const std::string& CPluginHandlerBase::get_descriptor() const
 
 void CPluginHandlerBase::add_dependend_handlers(HandlerHelpMap& handler_map) const
 {
+	TRACE_FUNCTION; 
 	if (handler_map.find(m_descriptor) != handler_map.end()) 
 		return; 
+        cvdebug() << "Add '"  << m_descriptor << "' to dependend handlers\n"; 
 	handler_map[m_descriptor] = this; 	
 	do_add_dependend_handlers(handler_map);
 }
