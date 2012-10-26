@@ -85,7 +85,6 @@ C3DImageIOPluginHandlerTestPath::C3DImageIOPluginHandlerTestPath()
 
 template class TIOPlugin<io_3dimage_data>;
 template class THandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> >;
-template class TIOHandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> >;
 template class TIOPluginHandler<C3DImageIOPlugin>;
 template class TPluginHandler<C3DImageIOPlugin>;
 

@@ -38,7 +38,7 @@ typedef TIOPlugin<C3DTransformation> C3DTransformationIO;
    \ingroup io
    \brief Plug-in handler for the transformation IO plug-ins 
 */
-typedef TIOHandlerSingleton< TIOPluginHandler<C3DTransformationIO> > C3DTransformationIOPluginHandler;
+typedef THandlerSingleton< TIOPluginHandler<C3DTransformationIO> > C3DTransformationIOPluginHandler;
 
 /**
    \ingroup io

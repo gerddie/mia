@@ -65,7 +65,6 @@ template <> const char *  const
 
 template class TIOPlugin<CRGB2DImage>;
 template class THandlerSingleton<TIOPluginHandler<C2DRGBImageIOPlugin> >;
-template class TIOHandlerSingleton<TIOPluginHandler<C2DRGBImageIOPlugin> >;
 template class TIOPluginHandler<C2DRGBImageIOPlugin>;
 template class TPluginHandler<C2DRGBImageIOPlugin>;
 

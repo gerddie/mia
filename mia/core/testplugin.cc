@@ -28,6 +28,8 @@
 #  endif
 #endif
 
+#define VSTREAM_DOMAIN "testplugin"
+
 #include <mia/core/testplugin.hh>
 #include <mia/core/handler.cxx>
 #include <mia/core/plugin_base.cxx>
@@ -58,8 +60,7 @@ CTestPlugin::CTestPlugin(const char *name):
 {
 }
 
-CTestPluginHandlerImpl::CTestPluginHandlerImpl(const CPathNameArray& searchpath):
-	TPluginHandler<CTestPlugin>(searchpath)
+CTestPluginHandlerImpl::CTestPluginHandlerImpl()
 {
 }
 

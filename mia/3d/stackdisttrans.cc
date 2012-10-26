@@ -254,7 +254,6 @@ TPluginHandler<C2DStackDistanceTransformIO>::m_help =
 
 template class TIOPlugin<C2DStackDistanceTransform>;
 template class THandlerSingleton<TIOPluginHandler<C2DStackDistanceTransformIO> >;
-template class TIOHandlerSingleton<TIOPluginHandler<C2DStackDistanceTransformIO> >;
 template class TIOPluginHandler<C2DStackDistanceTransformIO>;
 template class TPluginHandler<C2DStackDistanceTransformIO>;
 

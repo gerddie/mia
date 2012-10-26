@@ -68,7 +68,7 @@ public:
 	typedef TIOPluginHandler<C2DImageIOPlugin>::CSuffixmap CSuffixmap;
 	typedef TIOPluginHandler<C2DImageIOPlugin>::PData PData;
 protected:
-	C2DImageIOPPH(const CPathNameArray& searchpath);
+	C2DImageIOPPH();
 };
 /// @endcond
 
@@ -78,7 +78,7 @@ protected:
     The 2D image IO plugin handler that also provides the interface to 
     load and store 2D images. 
  */
-typedef TIOHandlerSingleton< C2DImageIOPPH > C2DImageIOPluginHandler;
+typedef THandlerSingleton< C2DImageIOPPH > C2DImageIOPluginHandler;
 
 /** The type for virtual storage access for images 
     \sa CDatapool

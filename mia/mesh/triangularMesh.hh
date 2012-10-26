@@ -337,7 +337,7 @@ CTriangleMesh colorize_mesh(const CTriangleMesh& mesh, const Deformation& deform
 typedef TIOPlugin<CTriangleMesh> CMeshIOPlugin;
 
 /// Plug-in handler for triangulat mesh IO 
-typedef TIOHandlerSingleton<TIOPluginHandler<CMeshIOPlugin> > CMeshIOPluginHandler;
+typedef THandlerSingleton<TIOPluginHandler<CMeshIOPlugin> > CMeshIOPluginHandler;
 
 
 NS_MIA_END

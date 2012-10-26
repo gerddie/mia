@@ -58,7 +58,7 @@ protected:
 	/**
 	   Constructor to use a specialized search path 
 	 */
-	CTestPluginHandlerImpl(const CPathNameArray& searchpath);
+	CTestPluginHandlerImpl();
 public:
 
 	/**

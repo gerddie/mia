@@ -61,8 +61,7 @@ public:
 
 class CFactoryMockPluginHandler : public TFactoryPluginHandler<CFactoryMock> {
 public: 
-	CFactoryMockPluginHandler(const CPathNameArray& searchpath):
-		TFactoryPluginHandler<CFactoryMock>(searchpath)
+	CFactoryMockPluginHandler()
 	{
 		add_plugin(new CFactoryMock()); 
 	}

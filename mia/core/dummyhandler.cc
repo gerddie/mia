@@ -51,7 +51,6 @@ TPluginHandler<CTestIOPlugin>::m_help = "These are some dummy plug-ins for IO ha
 template class TPluginHandler<CTestIOPlugin>;
 template class TIOPluginHandler<CTestIOPlugin>;
 template class THandlerSingleton<TIOPluginHandler<CTestIOPlugin> >;
-template class TIOHandlerSingleton<TIOPluginHandler<CTestIOPlugin> >;
 
 
 NS_MIA_END
