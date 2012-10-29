@@ -168,6 +168,8 @@ CAnalyze3DImageIOPlugin::CAnalyze3DImageIOPlugin():
 	add_supported_type(it_sint);
 	add_supported_type(it_float);
 	add_supported_type(it_double);
+	add_suffix(".hdr");
+	add_suffix(".HDR");
 }
 
 template <typename T>
@@ -604,11 +606,6 @@ bool CAnalyze3DImageIOPlugin::do_save(const string& fname, const Data& data) con
 	if (fwrite(&hdr, 1, sizeof(hdr), hdr_file) != sizeof(hdr))
 		throw runtime_error(string("Analyze: error writing header '") + fname);
 	return true;
-}
-
-void CAnalyze3DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".hdr", get_name()));
 }
 
 std::string CAnalyze3DImageIOPlugin::do_get_preferred_suffix() const

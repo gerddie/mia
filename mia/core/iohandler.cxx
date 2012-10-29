@@ -254,14 +254,7 @@ TIOPluginHandler<I>::CDatapoolPlugin::CDatapoolPlugin():
 	Interface("datapool")
 {
 	this->add_property("pool-placeholder"); 
-}
-
-template <class I> 
-void TIOPluginHandler<I>::CDatapoolPlugin::do_add_suffixes(
-        typename TIOPluginHandler<I>::CSuffixmap& map) const
-{
-	cvdebug() << "Add pair" << "'.@' -> '" << this->get_name() << "'\n"; 
-	map.insert(pair<string,string>(".@", this->get_name())); 
+	this->add_suffix(".@"); 
 }
 
 template <class I> 

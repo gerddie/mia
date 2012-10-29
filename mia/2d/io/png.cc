@@ -41,7 +41,6 @@ class CPNG2DImageIOPlugin : public C2DImageIOPlugin {
 public:
 	CPNG2DImageIOPlugin();
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
@@ -54,12 +53,8 @@ CPNG2DImageIOPlugin::CPNG2DImageIOPlugin():
 	add_supported_type(it_ubyte);
 	add_supported_type(it_ushort);
 	add_property(io_plugin_property_has_attributes);
-}
-
-void CPNG2DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".png", get_name()));
-	map.insert(pair<string,string>(".PNG", get_name()));
+	add_suffix(".png");
+	add_suffix(".PNG");
 }
 
 template <typename T>

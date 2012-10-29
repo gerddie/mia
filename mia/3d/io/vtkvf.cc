@@ -76,7 +76,6 @@ private:
 
 	virtual PData do_load(const string&  filename) const;
 	virtual bool do_save(const string& fname, const Data& data) const;
-	virtual void do_add_suffixes(multimap<string, string>& map) const;
 	virtual const string do_get_descr() const;
 	void load_line(char *buf, CInputFile& f, const string& filename) const;
 };
@@ -91,6 +90,7 @@ CVtk3DVFIOPlugin::CVtk3DVFIOPlugin():
 	C3DVFIOPlugin("vtk")
 {
 	add_supported_type(it_float);
+	add_suffix(".vtk");
 }
 
 
@@ -423,10 +423,6 @@ bool CVtk3DVFIOPlugin::do_save(string const&  filename, const C3DIOVectorfield& 
 
 }
 
-void CVtk3DVFIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".vtk", get_name()));
-}
 
 const string  CVtk3DVFIOPlugin::do_get_descr() const
 {

@@ -52,14 +52,10 @@ CDicom3DImageIOPlugin::CDicom3DImageIOPlugin():
 	TTranslator<int>::register_for("SeriesNumber");
 	TTranslator<int>::register_for("AcquisitionNumber");
 	TTranslator<int>::register_for("InstanceNumber");
-}
+	add_suffix(".dcm");
+	add_suffix(".DCM");
 
-void CDicom3DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".dcm", get_name()));
-	map.insert(pair<string,string>(".DCM", get_name()));
 }
-
 
 struct attr_less {
 	bool operator()(const PAttribute& a, const PAttribute& b) {

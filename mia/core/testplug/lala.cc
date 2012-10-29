@@ -28,7 +28,6 @@ class CLalaIOPlugin : public CTestIOPlugin {
 public:
 	CLalaIOPlugin();
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
@@ -38,11 +37,7 @@ private:
 CLalaIOPlugin::CLalaIOPlugin():
 	CTestIOPlugin("la")
 {
-}
-
-void CLalaIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".la", get_name()));
+	add_suffix(".la"); 
 }
 
 CLalaIOPlugin::PData  CLalaIOPlugin::do_load(const string& /*fname*/) const

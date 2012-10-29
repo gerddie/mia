@@ -154,7 +154,6 @@ private:
 	public: 
 		CDatapoolPlugin(); 
 	private: 
-		void do_add_suffixes(typename TIOPluginHandler<I>::CSuffixmap& map) const; 
 		PData do_load(const std::string& fname) const;
 		bool do_save(const std::string& fname, 
 			     const typename Interface::Data& data) const; 

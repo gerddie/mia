@@ -36,9 +36,11 @@ TIOPlugin<D>::TIOPlugin(const char *name):
 
 
 template <typename D> 
-void TIOPlugin<D>::add_suffixes(std::multimap<std::string, std::string>& map) const
+void TIOPlugin<D>::add_suffixes(std::multimap<std::string, std::string>& map)const 
 {
-	do_add_suffixes(map); 
+	for (auto s = m_suffixes.begin(); s != m_suffixes.end(); ++s) 
+		map.insert(std::pair<std::string, std::string>(*s, this->get_name())); 
+
 }
 
 template <typename D> 
@@ -75,6 +77,18 @@ template <typename D>
 void TIOPlugin<D>::add_supported_type(EPixelType t)
 {
 	m_typeset.insert(t); 
+}
+
+template <typename D> 
+void TIOPlugin<D>::add_suffix(const std::string& suffix)
+{
+	m_suffixes.insert(suffix); 
+}
+
+template <typename D> 
+const typename TIOPlugin<D>::SuffixSet& TIOPlugin<D>::get_suffixes() const
+{
+	return m_suffixes; 
 }
 
 template <typename D> 
