@@ -432,6 +432,8 @@ class CPlugin:
         self.altancor = self.ancor + "alt"
         self.no_params_info = False
         self.params = []
+        self.supported_types = None
+        self.suffixes = None
         for child in node:
             if child.tag == "param": 
                 p = {
@@ -445,7 +447,10 @@ class CPlugin:
                 self.params.append(p)
             elif child.tag == "noparam": 
                 self.no_params_info = True
-                break
+            elif child.tag == "datatypes":
+                self.supported_types = child.text
+            elif child.tag == "suffixes":
+                self.suffixes = child.text
             else:
                 print "unexpected subnode '%s' in 'plugin'"% (child.tag)
 
@@ -495,6 +500,14 @@ class CPlugin:
                 node.text = self.text + ". (This plug-in doesn't take parameters)"
         else:
             node.text = self.text
+
+        if self.suffixes is not None:
+            suffixes = etree.SubElement(node, "para", role="pluginsubdescr")
+            suffixes.text = "Supported file extensions:" + self.suffixes
+
+        if self.supported_types is not None:
+            datatypes = etree.SubElement(node, "para", role="pluginsubdescr")
+            datatypes.text = "Supported data types:" + self.supported_types
 
 class CHandler: 
     def __init__(self, node):

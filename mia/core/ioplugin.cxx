@@ -63,6 +63,21 @@ void TIOPlugin<D>::do_get_help_xml(xmlpp::Element& root) const
 {
 	//flag that docu should not print help about non-existent parameters 
 	root.add_child("noparam"); 
+
+	if (!m_suffixes.empty()) {
+		auto suffix_docu = root.add_child("suffixes");
+		std::stringstream str; 
+		for (auto s = m_suffixes.begin(); s != m_suffixes.end(); ++s) 
+			str << "'" << *s << "' "; 
+		suffix_docu->set_child_text(str.str()); 
+	}
+	if (!m_typeset.empty()) {
+		auto type_docu = root.add_child("datatypes");
+		std::stringstream str; 
+		for (auto s = m_typeset.begin(); s != m_typeset.end(); ++s) 
+			str << CPixelTypeDict.get_name(*s) << " ";
+		type_docu->set_child_text(str.str()); 
+	}
 }
 
 template <typename D> 
