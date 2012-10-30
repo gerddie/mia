@@ -89,7 +89,7 @@ typedef mia::TIOPlugin<CRGB2DImage> C2DRGBImageIOPlugin;
    @ingroup io 
    \brief The 2D RGB image plugin handler 
 */
-typedef mia::TIOHandlerSingleton< mia::TIOPluginHandler<C2DRGBImageIOPlugin> > C2DRGBImageIOPluginPluginHandler;
+typedef mia::THandlerSingleton< mia::TIOPluginHandler<C2DRGBImageIOPlugin> > C2DRGBImageIOPluginPluginHandler;
 
 /**
    @ingroup io 

@@ -128,9 +128,11 @@ protected:
 	/**
 	   constructor that is provided with a list of plugin search path. 
 	 */
-	TIOPluginHandler(const CPathNameArray& searchpath); 
+	TIOPluginHandler(); 
 
 private: 	
+
+	void do_initialise(); 
 	// a map of plugins 
 
 	CSuffixmap m_suffixmap; 
@@ -152,7 +154,6 @@ private:
 	public: 
 		CDatapoolPlugin(); 
 	private: 
-		void do_add_suffixes(typename TIOPluginHandler<I>::CSuffixmap& map) const; 
 		PData do_load(const std::string& fname) const;
 		bool do_save(const std::string& fname, 
 			     const typename Interface::Data& data) const; 
@@ -164,53 +165,12 @@ private:
 }; 
 
 /**
-    \ingroup plugin
-    
-    \brief Singleton of the IO plugin handler 
-    
-    This makes a singleton from the IO plugin handler. This specification is needed 
-    to enable tests on plugin loading, where the search path has to be changed to 
-    the location of the uninstalled plug-ins. 
-    \tparam T must be some instanciation of TIOPluginHandler. 
-    \remark why is this not templated over the plugin interface I like above? 
-*/
-template <typename T>
-class EXPORT_HANDLER TIOHandlerSingleton : public THandlerSingleton<T> {
-	
-	
-	/**
-	   Constructor used to override the plugin search path for testing 
-	   \param searchpath 
-	 */
-	TIOHandlerSingleton(const CPathNameArray& searchpath):
-		THandlerSingleton<T>(searchpath)
-	{
-		TRACE_FUNCTION; 
-	}
-
-	TIOHandlerSingleton()
-	{
-		TRACE_FUNCTION; 
-	}
-
-public: 
-/// inherit the suffix map of the handler class 
-	typedef typename T::CSuffixmap CSuffixmap; 
-
-	/// \returns a reference to the only instance of the plugin handler 
-	static const T& instance(); 
-
-}; 
-
-
-/**
    \brief Explicitely instanciate all that is needed for an IO plugin 
    \param IOTYPE data type that is handled by this io handler 
  */
 #define EXPLICITE_INSTANCEIATE_IO_HANDLER(IOTYPE)			\
 	template class TIOPlugin<IOTYPE>;				\
 	template class THandlerSingleton<TIOPluginHandler<TIOPlugin<IOTYPE>>>;	\
-	template class TIOHandlerSingleton<TIOPluginHandler<TIOPlugin<IOTYPE>>>; \
 	template class TIOPluginHandler<TIOPlugin<IOTYPE>>;		\
 	template class TPluginHandler<TIOPlugin<IOTYPE>>		\
 

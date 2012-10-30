@@ -65,7 +65,6 @@ private:
 	PTriangleMesh load_ascii(istream& f)const;
 	bool read_vertex(CVertexMap& vmap, unsigned int& index, istream& f)const;
 	bool save_ascii(ostream& of, const CTriangleMesh& data)const;
-	virtual void do_add_suffixes(std::multimap<std::string, std::string>& map) const;
 };
 
 
@@ -87,6 +86,9 @@ const string end_loop("endloop");
 CSTLMeshIO::CSTLMeshIO():
 	CMeshIOPlugin(format)
 {
+	add_suffix(".stl");
+	add_suffix(".STL");
+
 }
 
 bool CSTLMeshIO::read_vertex(CVertexMap& vmap, unsigned int& index, istream& f)const
@@ -285,12 +287,6 @@ bool CSTLMeshIO::do_save(string const &  filename, const CTriangleMesh& data)con
 const string CSTLMeshIO::do_get_descr()const
 {
 	return "STL mesh io plugin";
-}
-
-void CSTLMeshIO::do_add_suffixes(std::multimap<std::string, std::string>& map) const
-{
-	map.insert(pair<string,string>(".stl", get_name()));
-	map.insert(pair<string,string>(".STL", get_name()));
 }
 
 NS_END

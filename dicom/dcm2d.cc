@@ -43,12 +43,8 @@ CDicom2DImageIOPlugin::CDicom2DImageIOPlugin():
 	TTranslator<int>::register_for("SeriesNumber");
 	TTranslator<int>::register_for("AcquisitionNumber");
 	TTranslator<int>::register_for("InstanceNumber");
-}
-
-void CDicom2DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".dcm", get_name()));
-	map.insert(pair<string,string>(".DCM", get_name()));
+	add_suffix(".dcm");
+	add_suffix(".DCM");
 }
 
 C2DImageIOPlugin::PData CDicom2DImageIOPlugin::do_load(const string& fname) const

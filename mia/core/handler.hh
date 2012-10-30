@@ -94,7 +94,7 @@ protected:
 	  
 	*/
 
-	TPluginHandler(const CPathNameArray& searchpath); 
+	TPluginHandler(); 
         //@}
 
 	/** find a plugin by name. If the plug-in is not available, the method throws an 
@@ -111,10 +111,12 @@ protected:
 	 */
 	void add_plugin(Interface *plugin); 
 
+	void initialise(CPathNameArray searchpath); 
 
 private: 
+	virtual void do_initialise(); 
 	void global_searchpath(CPathNameArray& searchpath); 
-	void initialise(const CPathNameArray& searchpath); 
+
 	void do_add_dependend_handlers(HandlerHelpMap& handler_map) const; 	
 	
 	std::vector<PPluginModule> m_modules;
@@ -161,19 +163,20 @@ public:
 protected:
 	/** initialize the handler singleton with a specific plugin search path 
 	    (used for running tests) 
-	    \param searchpath
 	    \remark why not private?  
 	*/
 	
-	THandlerSingleton(const CPathNameArray& searchpath); 
 	THandlerSingleton(); 
 
 	/** This mutex ensures that each Singleton is indeed only created once and 
 	    no race condition happens within a multi-threaded environmnet */ 
 	static CMutex m_creation_mutex; 
+
 private: 
 	static CPathNameArray m_searchpath; 
 	static bool m_is_created; 
+	static CMutex m_initialization_mutex;
+	static bool m_is_initialized; 
 	
 }; 
 

@@ -49,9 +49,9 @@ template<> const char * const
 TPluginHandler<CTestIOPlugin>::m_help = "These are some dummy plug-ins for IO handler testing."; 
 
 template class TPluginHandler<CTestIOPlugin>;
+template class TIOPlugin<test_io_data>; 
 template class TIOPluginHandler<CTestIOPlugin>;
 template class THandlerSingleton<TIOPluginHandler<CTestIOPlugin> >;
-template class TIOHandlerSingleton<TIOPluginHandler<CTestIOPlugin> >;
 
 
 NS_MIA_END

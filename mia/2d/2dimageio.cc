@@ -35,8 +35,7 @@ C2DImageVector *C2DImageVector::clone() const
 	return new C2DImageVector(*this);
 }
 
-C2DImageIOPPH::C2DImageIOPPH(const CPathNameArray& searchpath):
-	TIOPluginHandler<C2DImageIOPlugin>(searchpath)
+C2DImageIOPPH::C2DImageIOPPH()
 {
 	C2DFVectorTranslator::register_for("pixel");
 }
@@ -202,7 +201,6 @@ EXPORT_2D const char * IDProtocolName = "ProtocolName";
 
 template class TIOPlugin<io_2dimage_type>;
 template class THandlerSingleton<C2DImageIOPPH>;
-template class TIOHandlerSingleton<C2DImageIOPPH>;
 template class TIOPluginHandler<C2DImageIOPlugin>;
 template class TPluginHandler<C2DImageIOPlugin>;
 

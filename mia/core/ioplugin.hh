@@ -67,6 +67,8 @@ public:
 	/// the type for the supported pixel types of this IO handler 
 	typedef  std::set<EPixelType> PixelTypeSet;
 
+	typedef  std::set<std::string> SuffixSet;
+
 
 	/**
 	   Constructor of the Plugin
@@ -102,6 +104,7 @@ public:
 	const PixelTypeSet& supported_pixel_types() const;
 
 
+
 	/**
 	   Translate the file type decriptor to the file suffix. 
 	   \returns preferred suffix of the file type 
@@ -110,17 +113,15 @@ public:
 	std::string get_preferred_suffix() const; 
 protected:
 
+	void add_suffix(const std::string& suffix);  
+	const SuffixSet& get_suffixes() const; 
+
 	/// add pixel type t to the list of supported types
 	void add_supported_type(EPixelType t);
 private:
 	PixelTypeSet m_typeset;
 
-	/**
-	   Interface function that needs to be impemented ina a derived class:
-	   Set the suffixes handled by this plug-in
-	   \param map suffix:plugin map to add to
-	*/
-	virtual void do_add_suffixes(std::multimap<std::string, std::string>& map) const = 0;
+	SuffixSet m_suffixes; 
 
 	/**
 	   Interface function that needs to be impemented ina a derived class:

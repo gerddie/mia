@@ -110,6 +110,22 @@ def write_man_file(descr):
                     print ".RS 14"
                     print "(no parameters)"
                     print ".RE"
+                    
+            if p.suffixes is not None:
+                print ".RS 14"
+                print "Recognized file extensions: ", p.suffixes
+                print ".RE"
+                print " "
+
+            if p.supported_types is not None:
+                print ".RS 14"
+                print "Supported element types: "
+                print ".RS 2"
+                print p.supported_types
+                print ".RE"
+                print " "
+                print ".RE"
+
 
     if descr.Example.text is not None and len(descr.Example.text) > 0:
             print ".SH EXAMPLE"

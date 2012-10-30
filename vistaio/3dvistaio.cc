@@ -43,7 +43,6 @@ class CVista3DImageIOPlugin : public C3DImageIOPlugin {
 public:
 	CVista3DImageIOPlugin();
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
@@ -62,17 +61,11 @@ CVista3DImageIOPlugin::CVista3DImageIOPlugin():
 	add_supported_type(it_double);
 	add_property(io_plugin_property_multi_record);
 	add_property(io_plugin_property_has_attributes);
+	add_suffix(".v");
+	add_suffix(".V");
+	add_suffix(".vista");
+	add_suffix(".VISTA");
 }
-
-void CVista3DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".v", get_name()));
-	map.insert(pair<string,string>(".V", get_name()));
-	map.insert(pair<string,string>(".vista", get_name()));
-	map.insert(pair<string,string>(".VISTA", get_name()));
-
-}
-
 
 template <typename T>
 P3DImage read_image(VImage image)

@@ -34,7 +34,6 @@ class C2DXMLTransformationIO: public C2DTransformationIO {
 public: 	
 	C2DXMLTransformationIO(); 
 private: 
-	virtual void do_add_suffixes(std::multimap<std::string, std::string>& map) const;
 	virtual PData do_load(const std::string& fname) const;
 	virtual bool do_save(const std::string& fname, const C2DTransformation& data) const;
 	const string do_get_descr() const;
@@ -44,12 +43,9 @@ private:
 C2DXMLTransformationIO::C2DXMLTransformationIO():
 	C2DTransformationIO("xml")
 {
+	add_suffix(".x2dt");
 }
 
-void C2DXMLTransformationIO::do_add_suffixes(std::multimap<std::string, std::string>& map) const
-{
-	map.insert(pair<string,string>(".x2dt", get_name()));
-}
 
 P2DTransformation C2DXMLTransformationIO::do_load(const std::string& fname) const
 {

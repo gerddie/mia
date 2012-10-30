@@ -166,7 +166,7 @@ inline bool operator == (const C2DStackDistanceTransform::DistanceFromPoint& lhs
 typedef TIOPlugin<C2DStackDistanceTransform> C2DStackDistanceTransformIO; 
 
 /// Plug-in handler for the transformation IO plug-ins 
-typedef TIOHandlerSingleton< TIOPluginHandler<C2DStackDistanceTransformIO> > C2DStackDistanceTransformIOPluginHandler;
+typedef THandlerSingleton< TIOPluginHandler<C2DStackDistanceTransformIO> > C2DStackDistanceTransformIOPluginHandler;
 
 /// data key type for temporary storage of 3D transformations \sa CDatapool 
 typedef C2DStackDistanceTransformIOPluginHandler::Instance::DataKey C2DStackDistanceTransformIODataKey;

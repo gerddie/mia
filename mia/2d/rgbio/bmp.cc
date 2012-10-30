@@ -66,7 +66,6 @@ public:
 	} BMPInfoHeader;
 #pragma pack (8)
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const CRGB2DImage& data) const;
 	const string do_get_descr() const;
@@ -93,13 +92,10 @@ CBMPRGB2DImageIO::CBMPRGB2DImageIO():
 	add_supported_type(it_ushort);
 	add_supported_type(it_ubyte);
 	add_supported_type(it_bit);
+	add_suffix(".bmp");
+	add_suffix(".BMP");
 }
 
-void CBMPRGB2DImageIO::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".bmp", get_name()));
-	map.insert(pair<string,string>(".BMP", get_name()));
-}
 
 #ifdef WORDS_BIGENDIAN
 void endian_adapt_header(CBMPRGB2DImageIO::BMPHeader& header)

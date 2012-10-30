@@ -475,7 +475,7 @@ template class TIOPlugin<CTriangleMesh>;
 template class TPluginHandler<CMeshIOPlugin>;
 template class TIOPluginHandler<CMeshIOPlugin>;
 template class THandlerSingleton<TIOPluginHandler<CMeshIOPlugin> >;
-template class TIOHandlerSingleton<TIOPluginHandler<CMeshIOPlugin> >;
+
 
 
 NS_MIA_END

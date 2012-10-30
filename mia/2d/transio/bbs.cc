@@ -41,7 +41,6 @@ class C2DBBSTransformationIO: public C2DTransformationIO {
 public: 	
 	C2DBBSTransformationIO(); 
 private: 
-	virtual void do_add_suffixes(std::multimap<std::string, std::string>& map) const;
 	virtual PData do_load(const std::string& fname) const;
 	virtual bool do_save(const std::string& fname, const C2DTransformation& data) const;
 	const string do_get_descr() const;
@@ -51,11 +50,7 @@ private:
 C2DBBSTransformationIO::C2DBBSTransformationIO():
 	C2DTransformationIO("bbs")
 {
-}
-
-void C2DBBSTransformationIO::do_add_suffixes(std::multimap<std::string, std::string>& map) const
-{
-	map.insert(pair<string,string>(".bbs", get_name()));
+	add_suffix(".bbs");
 }
 
 P2DTransformation C2DBBSTransformationIO::do_load(const std::string& fname) const

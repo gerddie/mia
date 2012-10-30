@@ -1,3 +1,4 @@
+
 /* -*- mia-c++  -*-
  *
  * Copyright (c) Leipzig, Madrid 1999-2012 Gert Wollny
@@ -84,6 +85,14 @@ public:
 	*/
 	const char *get_name(T value) const; 
 	
+
+	/**
+	   \param value
+	   \returns corresponding flag 
+	   \remark throws std::invalid_argument if the value is unknown 
+	*/
+	const char *get_help(T value) const; 
+
 	/// \returns a set of all available names
 	const std::set<std::string> get_name_set() const; 
 
@@ -156,7 +165,7 @@ T TDictMap<T>::get_value(const char *name) const
 template <typename T>
 const char *TDictMap<T>::get_name(T value) const
 {
-	typename TBackMap::const_iterator i = m_back_table.find(value); 
+	auto i = m_back_table.find(value); 
 	
 	if (i == m_back_table.end()) {
 		if (!m_last_is_default || (m_default != value)) 
@@ -165,6 +174,15 @@ const char *TDictMap<T>::get_name(T value) const
 			return "(default)"; 
 	}
 	return i->second.c_str();
+}
+
+template <typename T>
+const char *TDictMap<T>::get_help(T value) const
+{
+	auto i = m_help.find(value); 
+	if (i == m_help.end()) 
+		throw create_exception<std::invalid_argument>("TDictMap<T>::get_help: unknown value ", value, " provided"); 
+	return i->second.second.c_str();
 }
 
 template <typename T>

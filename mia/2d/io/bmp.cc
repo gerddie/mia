@@ -74,7 +74,6 @@ public:
 	} BMPInfoHeader;
 #pragma pack (8)
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
@@ -100,12 +99,9 @@ CBMP2DImageIO::CBMP2DImageIO():
 	add_supported_type(it_ushort);
 	add_supported_type(it_ubyte);
 	add_supported_type(it_bit);
-}
+	add_suffix(".bmp");
+	add_suffix(".BMP");
 
-void CBMP2DImageIO::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".bmp", get_name()));
-	map.insert(pair<string,string>(".BMP", get_name()));
 }
 
 template <class Iterator>

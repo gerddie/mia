@@ -95,12 +95,11 @@ class EXPORT_HANDLER TFactoryPluginHandler: public  TPluginHandler< I > {
 protected: 
 	//! \name Constructors
         //@{
-        /*! \brief Initializes the plugin handler based on a given plugin search path list 
-	  \param searchpath list of directories to search for plugins 
+        /*! \brief Initializes the plugin handler 
 	*/
 
 	
-	TFactoryPluginHandler(const CPathNameArray& searchpath); 
+	TFactoryPluginHandler(); 
         //@}
 public: 
 	/// The type of the the object this plug in hander produces 
@@ -197,8 +196,7 @@ typename TFactory<I>::Product *TFactory<I>::create(const CParsedOptions& options
 }
 
 template <typename  I>
-TFactoryPluginHandler<I>::TFactoryPluginHandler(const CPathNameArray& searchpath):
-	TPluginHandler< I >(searchpath), 
+TFactoryPluginHandler<I>::TFactoryPluginHandler():
 	m_cache(this->get_descriptor())
 {
 	set_caching(__cache_policy<I>::apply()); 

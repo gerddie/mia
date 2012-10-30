@@ -29,24 +29,30 @@ NS_MIA_BEGIN
 namespace bfs = ::boost::filesystem; 
 
 template <class I> 
-TIOPluginHandler<I>::TIOPluginHandler(const CPathNameArray& searchpath):
-	TPluginHandler<I>(searchpath), 
+TIOPluginHandler<I>::TIOPluginHandler():
 	m_pool_plugin(new CDatapoolPlugin())
 {
 	TRACE_FUNCTION; 
+}
+
+template <typename I>
+void TIOPluginHandler<I>::do_initialise()
+{
 	this->add_plugin(m_pool_plugin); 
 	for (const_iterator i = this->begin(); i != this->end(); ++i) 
 		i->second->add_suffixes(m_suffixmap);
-
+	
 	m_compress_sfx.insert(".Z"); 
 	m_compress_sfx.insert(".gz"); 
 	m_compress_sfx.insert(".bz2"); 
 }
 
+
 template <class I> 
 const typename TIOPluginHandler<I>::Interface *
 TIOPluginHandler<I>::preferred_plugin_ptr(const std::string& fname) const
 {
+	TRACE_FUNCTION; 
 	// get the suffix - if there is a Z, gz, or bz2, include it in the suffix
 	bfs::path fpath(fname);
 	std::string fsuffix = __bfs_get_extension(fpath); 
@@ -89,6 +95,7 @@ std::string TIOPluginHandler<I>::do_get_handler_type_string() const
 template <class I> 
 std::string TIOPluginHandler<I>::get_preferred_suffix(const std::string& type) const
 {
+	TRACE_FUNCTION; 
 	auto plugin = this->plugin(type.c_str());
 	if ( !plugin ) {
 		throw create_exception<std::invalid_argument>("Plug-in '", type, "' not available"); 
@@ -100,6 +107,7 @@ template <class I>
 const typename TIOPluginHandler<I>::Interface&
 TIOPluginHandler<I>::preferred_plugin(const std::string& fname) const
 {
+	TRACE_FUNCTION; 
 	// get the suffix - if there is a Z, gz, or bz2, include it in the suffix
 	bfs::path fpath(fname);
 	auto fsuffix = __bfs_get_extension(fpath); 
@@ -127,6 +135,7 @@ TIOPluginHandler<I>::get_supported_filetype_map() const
 template <class I> 
 const std::set<std::string> TIOPluginHandler<I>::get_supported_suffix_set() const
 {
+	TRACE_FUNCTION; 
 	std::set<std::string> result; 
 	for (auto i = m_suffixmap.begin(); i != m_suffixmap.end(); ++i)
 		result.insert(i->first); 
@@ -136,6 +145,7 @@ const std::set<std::string> TIOPluginHandler<I>::get_supported_suffix_set() cons
 template <class I> 
 const std::string TIOPluginHandler<I>::get_supported_suffixes() const
 {
+	TRACE_FUNCTION; 
 	std::stringstream result; 
 	for (auto i = m_suffixmap.begin(); i != m_suffixmap.end(); ++i)
 		result << i->first << ' '; 
@@ -146,6 +156,7 @@ template <class I>
 typename TIOPluginHandler<I>::PData
 TIOPluginHandler<I>::load(const std::string& fname) const
 {
+	TRACE_FUNCTION; 
 	const Interface *pp = preferred_plugin_ptr(fname); 
 	if (pp) {
 		PData retval = pp->load(fname); 
@@ -165,6 +176,7 @@ template <class I>
 typename TIOPluginHandler<I>::DataKey
 TIOPluginHandler<I>::load_to_pool(const std::string& fname) const
 {
+	TRACE_FUNCTION; 
 	TDelayedParameter<PData> result(fname); 
 	
 	// load to pool reuses available copies. 
@@ -209,21 +221,10 @@ void  TIOPluginHandler<T>::do_print_help(std::ostream& os) const
 }
 
 
-/// \returns a reference to the only instance of the plugin handler 
-template <typename T>
-const T& TIOHandlerSingleton<T>::instance()
-{
-	CScopedLock lock(THandlerSingleton<T>::m_creation_mutex); 
-	TRACE_FUNCTION; 
-	static TIOHandlerSingleton<T> me; 
-	return me; 
-}
-	
-
-
 template <class I> 
 bool TIOPluginHandler<I>::save(const std::string& fname, const Data& data) const
 {
+	TRACE_FUNCTION; 
 	const I* p = NULL; 
 
 	p = preferred_plugin_ptr(fname); 
@@ -253,14 +254,7 @@ TIOPluginHandler<I>::CDatapoolPlugin::CDatapoolPlugin():
 	Interface("datapool")
 {
 	this->add_property("pool-placeholder"); 
-}
-
-template <class I> 
-void TIOPluginHandler<I>::CDatapoolPlugin::do_add_suffixes(
-        typename TIOPluginHandler<I>::CSuffixmap& map) const
-{
-	cvdebug() << "Add pair" << "'.@' -> '" << this->get_name() << "'\n"; 
-	map.insert(pair<string,string>(".@", this->get_name())); 
+	this->add_suffix(".@"); 
 }
 
 template <class I> 

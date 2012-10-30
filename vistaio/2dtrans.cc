@@ -38,7 +38,6 @@ class C2DVistaTransformationIO: public C2DTransformationIO {
 public: 	
 	C2DVistaTransformationIO(); 
 private: 
-	virtual void do_add_suffixes(std::multimap<std::string, std::string>& map) const;
 	virtual PData do_load(const std::string& fname) const;
 	virtual bool do_save(const std::string& fname, const C2DTransformation& data) const;
 	const string do_get_descr() const;
@@ -48,11 +47,7 @@ private:
 C2DVistaTransformationIO::C2DVistaTransformationIO():
 	C2DTransformationIO("vista")
 {
-}
-
-void C2DVistaTransformationIO::do_add_suffixes(std::multimap<std::string, std::string>& map) const
-{
-	map.insert(pair<string,string>(".v2dt", get_name()));
+	add_suffix(".v2dt");
 }
 
 P2DTransformation C2DVistaTransformationIO::do_load(const std::string& fname) const

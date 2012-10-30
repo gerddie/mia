@@ -39,7 +39,6 @@ class CVista2DVFIOPlugin : public C2DVFIOPlugin {
 public:
 	CVista2DVFIOPlugin();
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
@@ -49,14 +48,11 @@ CVista2DVFIOPlugin::CVista2DVFIOPlugin():
 	C2DVFIOPlugin("vista")
 {
 	add_supported_type(it_float);
-}
+	add_suffix(".v");
+	add_suffix(".vf");
+	add_suffix(".V");
+	add_suffix(".VF");
 
-void CVista2DVFIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".v", get_name()));
-	map.insert(pair<string,string>(".vf", get_name()));
-	map.insert(pair<string,string>(".V", get_name()));
-	map.insert(pair<string,string>(".VF", get_name()));
 }
 
 CVista2DVFIOPlugin::PData  CVista2DVFIOPlugin::do_load(const string& fname) const

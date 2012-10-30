@@ -45,7 +45,6 @@ class CEXR2DImageIOPlugin : public C2DImageIOPlugin {
 public:
 	CEXR2DImageIOPlugin();
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
@@ -56,14 +55,10 @@ CEXR2DImageIOPlugin::CEXR2DImageIOPlugin():
 {
 	add_supported_type(it_float);
 	add_supported_type(it_uint);
-}
+	add_suffix(".exr");
+	add_suffix(".EXR");
 
-void CEXR2DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".exr", get_name()));
-	map.insert(pair<string,string>(".EXR", get_name()));
 }
-
 
 CEXR2DImageIOPlugin::PData  CEXR2DImageIOPlugin::do_load(const string& filename) const
 {

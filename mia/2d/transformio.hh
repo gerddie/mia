@@ -41,7 +41,7 @@ typedef TIOPlugin<C2DTransformation> C2DTransformationIO;
    @ingroup io 
    \brief The 2D transformationb plugin handler 
 */
-typedef TIOHandlerSingleton< TIOPluginHandler<C2DTransformationIO> > C2DTransformationIOPluginHandler;
+typedef THandlerSingleton< TIOPluginHandler<C2DTransformationIO> > C2DTransformationIOPluginHandler;
 
 /**
    @ingroup io 

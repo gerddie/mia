@@ -531,6 +531,7 @@ void CDictParameter<T>::do_descr(std::ostream& os) const
 template <typename T>
 void CDictParameter<T>::do_get_help_xml(xmlpp::Element& self) const
 {
+	TRACE_FUNCTION; 
 	auto dict = self.add_child("dict"); 
 	for (auto i = m_dict.get_help_begin(); i != m_dict.get_help_end(); ++i) {
 		auto v = dict->add_child("value"); 

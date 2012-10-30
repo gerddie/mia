@@ -39,7 +39,6 @@ public:
 private:
 	virtual P3DLandmarklist do_load(string const&  filename)const;
 	virtual bool do_save(string const&  filename, const C3DLandmarklist& data) const;
-	virtual void do_add_suffixes(multimap<string, string>& map) const;
 	virtual const string do_get_descr() const;
 
 	P3DLandmark get_landmark(const Node& node) const ; 
@@ -54,6 +53,7 @@ extern "C" EXPORT CPluginBase *get_plugin_interface()
 C3DLMXLandmarklistIOPlugin::C3DLMXLandmarklistIOPlugin():
 C3DLandmarklistIOPlugin("lmx")
 {
+	add_suffix(".lmx"); 
 }
 
 template <typename Expect> 
@@ -305,11 +305,6 @@ bool C3DLMXLandmarklistIOPlugin::do_save(string const&  filename, const C3DLandm
 	else 
 		cvdebug() << "Unable to open file '" << filename << "'\n"; 
 	return outfile.good();
-}
-
-void C3DLMXLandmarklistIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".lmx", get_name()));
 }
 
 const string C3DLMXLandmarklistIOPlugin::do_get_descr() const

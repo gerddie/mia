@@ -38,7 +38,6 @@ class CJpeg2DImageIOPlugin : public C2DImageIOPlugin {
 public:
 	CJpeg2DImageIOPlugin();
 private:
-	void do_add_suffixes(multimap<string, string>& map) const;
 	PData do_load(const string& fname) const;
 	bool do_save(const string& fname, const Data& data) const;
 	const string do_get_descr() const;
@@ -50,14 +49,11 @@ CJpeg2DImageIOPlugin::CJpeg2DImageIOPlugin():
 	C2DImageIOPlugin("jpg")
 {
 	add_supported_type(it_ubyte);
-}
+	add_suffix(".jpg");
+	add_suffix(".JPG");
+	add_suffix(".jpeg");
+	add_suffix(".JPEG");
 
-void CJpeg2DImageIOPlugin::do_add_suffixes(multimap<string, string>& map) const
-{
-	map.insert(pair<string,string>(".jpg", get_name()));
-	map.insert(pair<string,string>(".JPG", get_name()));
-	map.insert(pair<string,string>(".jpeg", get_name()));
-	map.insert(pair<string,string>(".JPEG", get_name()));
 }
 
 METHODDEF(void) mia_jpeg_error_exit (j_common_ptr /*cinfo*/)

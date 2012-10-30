@@ -29,7 +29,6 @@ public:
 	typedef mia::C2DImageIOPlugin::PData PData;
 
 private:
-	void do_add_suffixes(std::multimap<std::string, std::string>& map) const;
 	PData do_load(const std::string& fname) const;
 	bool do_save(const std::string& fname, const Data& data) const;
 	const std::string do_get_descr() const;

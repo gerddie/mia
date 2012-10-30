@@ -56,7 +56,7 @@ typedef TIOPlugin<io_3dimage_data> C3DImageIOPlugin;
    @ingroup io
    @brief Handler for the plug-ins that store and load 3D images. 
 */
-typedef TIOHandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> > C3DImageIOPluginHandler;
+typedef THandlerSingleton<TIOPluginHandler<C3DImageIOPlugin> > C3DImageIOPluginHandler;
 
 /**
    @ingroup io
