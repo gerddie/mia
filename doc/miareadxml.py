@@ -503,11 +503,15 @@ class CPlugin:
 
         if self.suffixes is not None:
             suffixes = etree.SubElement(node, "para", role="pluginsubdescr")
-            suffixes.text = "Supported file extensions:" + self.suffixes
+            suf = etree.SubElement(suffixes, "emphasis")
+            suf.text = "Recognized file extensions: "
+            suf.tail =  self.suffixes
 
         if self.supported_types is not None:
             datatypes = etree.SubElement(node, "para", role="pluginsubdescr")
-            datatypes.text = "Supported data types:" + self.supported_types
+            data = etree.SubElement(datatypes, "emphasis")
+            data.text = "Supported element types: "
+            data.tail = self.supported_types
 
 class CHandler: 
     def __init__(self, node):

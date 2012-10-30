@@ -58,6 +58,17 @@ bool TIOPlugin<D>::save(const std::string& fname, const Data& data) const
 	return do_save(fname, data);
 }
 
+template <typename I, typename T>
+std::string get_values_as_string(I begin, I end, T translate)
+{
+	assert(begin != end); 
+	std::stringstream str; 
+	str << translate(*begin++); 
+	while (begin != end) 
+		str << ", " << translate(*begin++); 
+	return str.str(); 
+}
+
 template <typename D> 
 void TIOPlugin<D>::do_get_help_xml(xmlpp::Element& root) const
 {
@@ -66,17 +77,15 @@ void TIOPlugin<D>::do_get_help_xml(xmlpp::Element& root) const
 
 	if (!m_suffixes.empty()) {
 		auto suffix_docu = root.add_child("suffixes");
-		std::stringstream str; 
-		for (auto s = m_suffixes.begin(); s != m_suffixes.end(); ++s) 
-			str << "'" << *s << "' "; 
-		suffix_docu->set_child_text(str.str()); 
+		auto s = get_values_as_string(m_suffixes.begin(), m_suffixes.end(),
+					      [](const std::string& s){return s;}); 
+		suffix_docu->set_child_text(s); 
 	}
 	if (!m_typeset.empty()) {
 		auto type_docu = root.add_child("datatypes");
-		std::stringstream str; 
-		for (auto s = m_typeset.begin(); s != m_typeset.end(); ++s) 
-			str << CPixelTypeDict.get_name(*s) << " ";
-		type_docu->set_child_text(str.str()); 
+		auto s = get_values_as_string(m_typeset.begin(), m_typeset.end(),
+					      [](EPixelType pt){return CPixelTypeDict.get_help(pt);}); 
+		type_docu->set_child_text(s); 
 	}
 }
 
