@@ -26,14 +26,20 @@ using namespace std;
 
 
 static const TDictMap<EMeshScaleStrategy>::Table table[] = {
-	{ "iso-linear", mss_iso_linear, "Scale and shirt the mesh by scaling it isotropically as given by parameter 'isoscale' and "
+	{ "iso-linear", mss_iso_linear, "Scale and shirt the mesh by scaling it "
+	  "isotropically as given by parameter 'isoscale' and "
 	  "apply a shift as given by parameter 'shift'"},
-	{ "aniso-linear", mss_aniso_linear, "Scale and shirt the mesh by scaling it anisotropically as given by parameter 'anisoscale' and "
+	{ "aniso-linear", mss_aniso_linear, "Scale and shirt the mesh by scaling "
+	  "it anisotropically as given by parameter 'anisoscale' and "
 	  "apply a shift as given by parameter 'shift'"},
-	{ "iso-fitbox", mss_iso_fitbox, "Fit the mesh into the given box by shifting it and apply isotropic scaling. "
-	  "The box is given by the parameters 'box-start' for upper, left, frontal corner, and 'box-end' for the lower, right back corner"}, 
-	{ "aniso-fitbox", mss_stretch_fitbox, "Fit the mesh into the given box by shifting it and apply anisotropic scaling. "
-	  "The box is given by the parameters 'box-start' for upper, left, frontal corner, and 'box-end' for the lower, right back corner"},
+	{ "iso-fitbox", mss_iso_fitbox, "Fit the mesh into the given box by shifting"
+	  " it and apply isotropic scaling. "
+	  "The box is given by the parameters 'box-start' for upper, left, frontal "
+	  "corner, and 'box-end' for the lower, right back corner"}, 
+	{ "aniso-fitbox", mss_stretch_fitbox, "Fit the mesh into the given box by "
+	  "shifting it and apply anisotropic scaling. "
+	  "The box is given by the parameters 'box-start' for upper, left, frontal "
+	  "corner, and 'box-end' for the lower, right back corner"},
 	{NULL, mss_undefined, NULL}
 }; 
 

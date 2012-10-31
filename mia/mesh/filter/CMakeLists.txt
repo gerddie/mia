@@ -20,6 +20,7 @@
 
 SET(filtersMesh
   scale
+  vtxsort
   )
 
 PLUGINGROUP_WITH_TEST_AND_PREFIX(mesh-filter "${filtersMesh}" 
