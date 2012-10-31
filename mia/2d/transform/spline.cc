@@ -244,14 +244,6 @@ void C2DSplineTransformation::set_parameters(const CDoubleVector& params)
 	reinit(); 
 }
 
-bool C2DSplineTransformation::save(const std::string& /*filename*/) const
-{
-	TRACE_FUNCTION;
-	assert(!"not implemented");
-	return false;
-}
-
-
 bool C2DSplineTransformation::refine()
 {
 	TRACE_FUNCTION;

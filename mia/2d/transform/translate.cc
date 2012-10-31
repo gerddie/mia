@@ -111,12 +111,6 @@ C2DTransformation *C2DTranslateTransformation::invert() const
 	return result; 
 }
 
-bool C2DTranslateTransformation::save(const std::string& /*filename*/) const
-{
-	assert(0 && "not implemented");
-
-}
-
 P2DTransformation C2DTranslateTransformation::do_upscale(const C2DBounds& size) const
 {
 

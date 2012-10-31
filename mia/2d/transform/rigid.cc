@@ -97,17 +97,6 @@ C2DRigidTransformation::C2DRigidTransformation(const C2DBounds& size,const C2DFV
 {
 }
 
-bool C2DRigidTransformation::save(const std::string& filename) const
-{
-	ofstream file(filename.c_str());
-	file << "Transformation: 2D\n"
-	     << "Matrix: ";
-	for (size_t i = 0; i < 6 ; ++i)
-		file << m_t[i] << " ";
-	file << "\n";
-	return file.good();
-}
-
 size_t C2DRigidTransformation::degrees_of_freedom() const
 {
 	return 3;

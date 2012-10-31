@@ -263,13 +263,6 @@ public:
 	virtual void reinit() const;
 
 	/**
-	   Save the transformation to some file
-	   \param filename name of the file to save to
-	   \returns \a true if saving was successfull and \a false if not
-	 */
-	virtual bool save(const std::string& filename) const = 0;
-
-	/**
 	   Transforation upscaling to new image size
 	   \param size new size of the transformation
 	   \returns shared pointer to upscaled transformation
@@ -450,6 +443,7 @@ inline std::ostream& operator << (std::ostream& os,
 */
 EXPORT_2D bool operator != (const C2DTransformation::const_iterator& a, 
 			    const C2DTransformation::const_iterator& b); 
+
 
 NS_MIA_END
 

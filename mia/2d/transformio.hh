@@ -48,6 +48,44 @@ typedef THandlerSingleton< TIOPluginHandler<C2DTransformationIO> > C2DTransforma
    \brief The data key type for the CDatapool storage 
 */
 typedef C2DTransformationIOPluginHandler::Instance::DataKey C2DTransformationDataKey;
+
+
+/**
+   \ingroup io 
+   \brief convenienance function to load a transformation 
+   \param file file name to load the transformation from
+   \returns the loaded transformation or an empty std::shared_ptr 
+*/
+inline P2DTransformation load_2dtransform(const std::string& file)
+{
+	return C2DTransformationIOPluginHandler::instance().load(file); 
+}
+
+/**
+   \ingroup io 
+   \brief specialized version to load a transformation 
+   \param file file name to load the transformation from
+   \returns the loaded transformation or an empty std::shared_ptr 
+ */
+template <>
+inline P2DTransformation load_transform<P2DTransformation>(const std::string& file)
+{
+	return load_2dtransform(file); 
+}
+
+
+/**
+   \ingroup io 
+   \brief convenienance function to save a transformation 
+   \param file file name to store the transformation in 
+   \param transform the transformation to be stored
+*/
+inline bool save_transform(const std::string& file, const C2DTransformation& transform)
+{
+	return C2DTransformationIOPluginHandler::instance().save(file, transform); 
+}
+
+
 NS_MIA_END
 
 
