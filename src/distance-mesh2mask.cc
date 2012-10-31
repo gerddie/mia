@@ -43,7 +43,7 @@ using namespace std;
 NS_MIA_USE;
 
 const SProgramDescription g_description = {
-        {pdi_group, "Processing of series of 2D images in a 3D fashion (out-of-core)"}, 
+        {pdi_group, "Creation, analysis, and filtering of triangular 3D meshes"}, 
 	{pdi_short, "Evaluate the distance between a binary shape given as reference and a mesh."}, 
 	{pdi_description, "This program takes a binary masks and a triangular mesh as input and "
 		 "evaluates the distance of the mesh vertices to the binary mask"

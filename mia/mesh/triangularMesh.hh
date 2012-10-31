@@ -124,10 +124,10 @@ public:
 	CTriangleMesh(const CTriangleMesh& orig);
 
 	/** contruct an mesh with uninitialized data
-	    \param n_vertices number of vertices
 	    \param n_triangles number of triangles
+	    \param n_vertices number of vertices
 	*/
-	CTriangleMesh(int n_vertices, int n_triangles);
+	CTriangleMesh(int n_triangles, int n_vertices);
 
 	/** creates a new mesh from given input data
 	    \param triangles the triangle data (required)

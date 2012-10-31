@@ -190,8 +190,8 @@ CTriangleMesh::CTriangleMesh( PTrianglefield triangles,  PVertexfield vertices,
 {
 }
 
-CTriangleMesh::CTriangleMesh(int n_vertices, int n_triangles):
-	data(new CTriangleMeshData(n_vertices, n_triangles))
+CTriangleMesh::CTriangleMesh(int n_triangles, int n_vertices):
+	data(new CTriangleMeshData(n_triangles, n_vertices))
 {
 }
 

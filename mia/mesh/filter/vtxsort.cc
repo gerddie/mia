@@ -56,7 +56,7 @@ PTriangleMesh CVtxSortMeshFilter::do_filter(const CTriangleMesh& mesh) const
 		     return lhs.product < rhs.product; 
 	     }); 
 
-	PTriangleMesh result(new CTriangleMesh(mesh.vertices_size(), mesh.triangle_size())); 
+	PTriangleMesh result(new CTriangleMesh(mesh.triangle_size(), mesh.vertices_size())); 
 	
 	vector<unsigned int> reindex(mesh.vertices_size()); 
 
