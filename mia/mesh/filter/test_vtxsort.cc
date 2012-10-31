@@ -39,12 +39,12 @@ protected:
 BOOST_FIXTURE_TEST_CASE( test_simple_mesh_z_order, MeshVtxsortFixture) 
 {
 	auto testv = CTriangleMesh::PVertexfield(new CTriangleMesh::CVertexfield({
-				C3DFVector(2,4,1), C3DFVector(2,1,3), 
-					C3DFVector(2,1,4), C3DFVector(1,1,8)})); 
+				C3DFVector(3,4,1), C3DFVector(5,3,3), 
+					C3DFVector(2,1,4), C3DFVector(1,5,8)})); 
 
 	auto testt = CTriangleMesh::PTrianglefield(new CTriangleMesh::CTrianglefield({
 				Triangle(3,1,0), Triangle(1,0,2), 
-					Triangle(3,0,2), Triangle(0,2,3)})); 
+					Triangle(3,0,2), Triangle(3,2,1)})); 
 	
 	CTriangleMesh test(testt, testv); 
 
@@ -54,15 +54,70 @@ BOOST_FIXTURE_TEST_CASE( test_simple_mesh_z_order, MeshVtxsortFixture)
 	test_expected(*filtered_mesh, test);
 }
 
+
+BOOST_FIXTURE_TEST_CASE( test_simple_mesh_y_order, MeshVtxsortFixture) 
+{
+	auto testv = CTriangleMesh::PVertexfield(new CTriangleMesh::CVertexfield({
+				C3DFVector(2,1,4), C3DFVector(5,3,3), C3DFVector(3,4,1), C3DFVector(1,5,8)
+					})); 
+	
+	auto testt = CTriangleMesh::PTrianglefield(new CTriangleMesh::CTrianglefield({
+				Triangle(3,1,2), Triangle(1,2,0), Triangle(3,2,0), Triangle(3,0,1)
+					})); 
+	
+	CTriangleMesh test(testt, testv); 
+	
+	auto scale = BOOST_TEST_create_from_plugin<CVtxSortMeshFilterPlugin>("vtxsort:dir=[<0,1,0>]");
+	auto filtered_mesh = scale->filter(mesh); 
+	
+	test_expected(*filtered_mesh, test);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_simple_mesh_x_order, MeshVtxsortFixture) 
+{
+	auto testv = CTriangleMesh::PVertexfield(new CTriangleMesh::CVertexfield({
+				C3DFVector(1,5,8), C3DFVector(2,1,4), C3DFVector(3,4,1), C3DFVector(5,3,3)
+					})); 
+
+	auto testt = CTriangleMesh::PTrianglefield(new CTriangleMesh::CTrianglefield({
+				Triangle(0,3,2), Triangle(3,2,1), Triangle(0,2,1), Triangle(0,1,3) 
+					})); 
+	
+	CTriangleMesh test(testt, testv); 
+
+	auto scale = BOOST_TEST_create_from_plugin<CVtxSortMeshFilterPlugin>("vtxsort:dir=[<1,0,0>]");
+	auto filtered_mesh = scale->filter(mesh); 
+	
+	test_expected(*filtered_mesh, test);
+}
+
+BOOST_FIXTURE_TEST_CASE( test_simple_mesh_comb, MeshVtxsortFixture) 
+{
+	auto testv = CTriangleMesh::PVertexfield(new CTriangleMesh::CVertexfield({
+				C3DFVector(1,5,8), C3DFVector(2,1,4), C3DFVector(3,4,1),  C3DFVector(5,3,3), 
+					})); 
+
+	auto testt = CTriangleMesh::PTrianglefield(new CTriangleMesh::CTrianglefield({
+				Triangle(0,3,2), Triangle(3,2,1), Triangle(0,2,1), Triangle(0,1,3) 
+					})); 
+	
+	CTriangleMesh test(testt, testv); 
+
+	auto scale = BOOST_TEST_create_from_plugin<CVtxSortMeshFilterPlugin>("vtxsort:dir=[<2,-1,-2>]");
+	auto filtered_mesh = scale->filter(mesh); 
+	
+	test_expected(*filtered_mesh, test);
+}
+
 MeshVtxsortFixture::MeshVtxsortFixture():mesh(4,4)
 {
 	
 	CTriangleMesh::CVertexfield vertices{
-		C3DFVector(1,1,8), C3DFVector(2,1,3), C3DFVector(2,4,1), C3DFVector(2,1,4)}; 
+		C3DFVector(1,5,8), C3DFVector(5,3,3), C3DFVector(3,4,1), C3DFVector(2,1,4)}; 
 	
 	typedef T3DVector<unsigned int> Triangle; 
 	CTriangleMesh::CTrianglefield triangles{
-		Triangle(0,1,2), Triangle(1,2,3), Triangle(0,2,3), Triangle(2,3,0)}; 
+		Triangle(0,1,2), Triangle(1,2,3), Triangle(0,2,3), Triangle(0,3,1)}; 
 	copy(vertices.begin(), vertices.end(), mesh.vertices_begin()); 
 	copy(triangles.begin(), triangles.end(), mesh.triangles_begin());
 }
