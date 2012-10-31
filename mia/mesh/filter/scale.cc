@@ -53,6 +53,7 @@ CScaleMeshFilter::CScaleMeshFilter(EMeshScaleStrategyInternal strategy, const C3
 
 PTriangleMesh CScaleMeshFilter::scale(const CTriangleMesh& mesh, const C3DFVector& scale, const C3DFVector& shift) const
 {
+	cvdebug() << "scale by " << scale << " and shift by " << shift << "\n"; 
 	PTriangleMesh result(mesh.clone()); 
 	for_each(result->vertices_begin(), result->vertices_end(), [scale, shift](C3DFVector& v)->void {
 			v *= scale; 
