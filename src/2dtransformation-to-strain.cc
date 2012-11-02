@@ -24,8 +24,8 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/file.hh>
 #include <mia/2d/transformio.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2DDatafield.cxx>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/datafield.cxx>
 #include <miaconfig.h>
 
 #include <cstring>

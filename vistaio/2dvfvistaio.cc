@@ -24,7 +24,7 @@
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/2d/2dvfio.hh>
+#include <mia/2d/vfio.hh>
 
 #include <vistaio/vista4mia.hh>
 

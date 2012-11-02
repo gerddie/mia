@@ -21,7 +21,7 @@
 #ifndef mia_2d_filterchain_hh
 #define mia_2d_filterchain_hh
 
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <list>
 
 NS_MIA_BEGIN

@@ -24,8 +24,8 @@
 #include <mia/core/msgstream.hh>
 #include <mia/2d/cost.hh>
 #include <mia/2d/nfg.hh>
-#include <mia/2d/2DDatafield.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/datafield.hh>
+#include <mia/2d/imageio.hh>
 
 
 NS_BEGIN(nfg_2dimage_cost)

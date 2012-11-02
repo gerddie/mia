@@ -19,7 +19,7 @@
  */
 
 #include <mia/2d/fullcost/image.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 
 NS_MIA_BEGIN
 using namespace std; 

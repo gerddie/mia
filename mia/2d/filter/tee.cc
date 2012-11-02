@@ -19,7 +19,7 @@
  */
 
 #include <mia/2d/filter/tee.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 NS_BEGIN( tee_2dimage_filter)
 

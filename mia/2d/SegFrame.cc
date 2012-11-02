@@ -24,7 +24,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/bfsv23dispatch.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/angle.hh>
 
 #include <libxml++/libxml++.h>

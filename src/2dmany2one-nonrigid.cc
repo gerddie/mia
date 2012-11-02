@@ -32,7 +32,7 @@
 #include <mia/core/errormacro.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/internal/main.hh>
 
 #include <tbb/task_scheduler_init.h>

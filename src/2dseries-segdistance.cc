@@ -33,8 +33,8 @@
 #include <mia/core.hh>
 #include <mia/internal/main.hh>
 #include <mia/2d/SegSetWithImages.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 
 using namespace std;
 using namespace mia;

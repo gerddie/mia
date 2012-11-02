@@ -22,7 +22,7 @@
 #define mia_2d_cost_hh
 
 #include <mia/core/cost.hh>
-#include <mia/2d/2DImage.hh>
+#include <mia/2d/image.hh>
 
 NS_MIA_BEGIN
 

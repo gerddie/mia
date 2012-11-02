@@ -26,7 +26,7 @@
 
 
 #include <mia/3d/3dimageio.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/core.hh>
 
 

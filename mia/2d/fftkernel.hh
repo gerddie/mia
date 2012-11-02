@@ -28,7 +28,7 @@
 #include <mia/core/factory.hh>
 #include <mia/core/spacial_kernel.hh>
 #include <mia/2d/defines2d.hh>
-#include <mia/2d/2DVector.hh>
+#include <mia/2d/vector.hh>
 
 NS_MIA_BEGIN
 

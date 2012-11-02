@@ -21,8 +21,8 @@
 #ifndef mia_2d_hh
 #define mia_2d_hh
 
-#include <mia/2d/2dfilter.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/filter.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/interpolator.hh>
 #include <mia/2d/cost.hh>
 #include <mia/2d/fullcost.hh>
@@ -39,6 +39,6 @@
 
 #include <mia/2d/creator.hh>
 //#include <mia/2d/register.hh>
-#include <mia/2d/2dvfio.hh>
+#include <mia/2d/vfio.hh>
 
 #endif

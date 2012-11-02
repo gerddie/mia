@@ -30,7 +30,7 @@
 #include <ctime>
 
 #include <mia/core.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/3d/2dimagefifofilter.hh>
 
 #include <tbb/task_scheduler_init.h>

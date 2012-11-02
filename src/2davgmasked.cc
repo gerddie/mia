@@ -26,7 +26,7 @@
 #include <stdexcept>
 
 #include <mia/core.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 
 

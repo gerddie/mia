@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/filter/mask.hh>
 
 NS_BEGIN(mask_2dimage_filter)

@@ -24,7 +24,7 @@
 
 #include <mia/3d/3DVectorfield.hh>
 #include <mia/3d/orientation.hh>
-#include <mia/2d/2DImage.hh>
+#include <mia/2d/image.hh>
 
 #include <mia/core/attributes.hh>
 #include <mia/core/pixeltype.hh>

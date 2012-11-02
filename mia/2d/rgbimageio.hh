@@ -22,7 +22,7 @@
 #define mia_2drgbimageio_hh
 
 #include <vector>
-#include <mia/2d/2DVector.hh>
+#include <mia/2d/vector.hh>
 #include <mia/core/iodata.hh>
 #include <mia/core/ioplugin.hh>
 #include <mia/core/iohandler.hh>

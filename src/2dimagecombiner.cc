@@ -21,7 +21,7 @@
 #include <sstream>
 #include <mia/core.hh>
 #include <mia/2d.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <mia/internal/main.hh>
 
 NS_MIA_USE;

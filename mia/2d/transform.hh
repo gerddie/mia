@@ -29,7 +29,7 @@
 #include <mia/core/transformation.hh>
 #include <mia/core/filter.hh>
 #include <mia/2d/matrix.hh>
-#include <mia/2d/2DImage.hh>
+#include <mia/2d/image.hh>
 #include <mia/2d/interpolator.hh>
 
 NS_MIA_BEGIN

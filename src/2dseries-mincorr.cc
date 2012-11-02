@@ -27,7 +27,7 @@
 #include <queue>
 
 #include <mia/internal/main.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/correlation_weight.hh>
 #include <mia/2d/SegSetWithImages.hh>
 

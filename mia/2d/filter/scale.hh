@@ -20,7 +20,7 @@
 
 #include <memory>
 #include <mia/core/filter.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/interpolator.hh>
 
 NS_BEGIN(scale_2dimage_filter)

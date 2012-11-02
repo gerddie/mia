@@ -21,7 +21,7 @@
 #define VSTREAM_DOMAIN "rigidreg"
 
 #include <mia/2d/rigidregister.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/transformfactory.hh>
 #include <mia/core/filter.hh>
 

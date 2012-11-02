@@ -20,12 +20,12 @@
 
 SET(MIA2D_SRC_BASE
   angle.cc
-  2DDatafield.cc
-  2DVectorfield.cc
-  2dfilter.cc
-  2DImage.cc
-  2dimageio.cc
-  2dvfio.cc
+  datafield.cc
+  vectorfield.cc
+  filter.cc
+  image.cc
+  imageio.cc
+  vfio.cc
   BoundingBox.cc
   cost.cc
   correlation_weight.cc 
@@ -94,14 +94,14 @@ SET(MIA2D_SRC ${MIA2D_SRC_BASE} ${MIA2D_FFTW_CODE})
 
 SET(MIA2D_HEADERS_BASE
   angle.hh
-  2DDatafield.hh 2DDatafield.cxx
-  2dfilter.hh
-  2DImage.hh
-  2dimageio.hh
-  2dimageiotest.hh
-  2DVector.hh
-  2DVectorfield.hh
-  2dvfio.hh
+  datafield.hh datafield.cxx
+  filter.hh
+  image.hh
+  imageio.hh
+  imageiotest.hh
+  vector.hh
+  vectorfield.hh
+  vfio.hh
   BoundingBox.hh
   cost.hh
   correlation_weight.hh 
@@ -166,8 +166,8 @@ SET(MIA2DLIBS mia2d  ${LIBS})
 # because it doesen't resolve all
 # symbols, and in Windows, this is not supported# 
 SET(mia2dtestsrc 
-  2dimageiotest.cc 
-  2dvfiotest.cc 
+  imageiotest.cc 
+  vfiotest.cc 
   imagetest.cc
   transformmock.cc
   )
@@ -188,11 +188,11 @@ MACRO(TEST_2DMIA file libs)
 ENDMACRO(TEST_2DMIA file)
 
 TEST_2DMIA(angle mia2d)
-TEST_2DMIA(2ddatafield mia2dtest)
-TEST_2DMIA(2dimage mia2dtest)
-TEST_2DMIA(2dfilter mia2dtest)
-TEST_2DMIA(2dparam mia2dtest)
-TEST_2DMIA(2dvector mia2dtest)
+TEST_2DMIA(datafield mia2dtest)
+TEST_2DMIA(image mia2dtest)
+TEST_2DMIA(filter mia2dtest)
+TEST_2DMIA(param mia2dtest)
+TEST_2DMIA(vector mia2dtest)
 TEST_2DMIA(boundingbox mia2dtest)
 TEST_2DMIA(distance mia2dtest)
 TEST_2DMIA(fullcost mia2dtest)
@@ -215,7 +215,7 @@ TEST_2DMIA(transio mia2d)
 TEST_2DMIA(transform mia2dtest)
 TEST_2DMIA(shape mia2dtest)
 TEST_2DMIA(morphshape mia2dtest)
-TEST_2DMIA(2dimageio mia2dtest)
+TEST_2DMIA(imageio mia2dtest)
 TEST_2DMIA(sparse_image_solver mia2dtest)
 TEST_2DMIA(filter_cast mia2d)
 TEST_2DMIA(splinetransformpenalty mia2d)

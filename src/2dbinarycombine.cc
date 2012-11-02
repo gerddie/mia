@@ -30,7 +30,7 @@
 #include <mia/core/errormacro.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/cmdlineparser.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 
 using namespace std;

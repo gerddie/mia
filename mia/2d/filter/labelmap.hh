@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <mia/core/labelmap.hh>
 
 NS_BEGIN(labelmap_2dimage_filter)

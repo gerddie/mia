@@ -29,8 +29,8 @@
 #include <stdexcept>
 //#include <boost/algorithm/minmax_element.hpp>
 
-#include <mia/2d/2dfilter.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/filter.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/core.hh>
 

@@ -28,8 +28,8 @@
 #include <mia/core/factory.hh>
 #include <mia/core/spacial_kernel.hh>
 #include <mia/core/cstplan.hh>
-#include <mia/2d/2DDatafield.hh>
-#include <mia/2d/2DImage.hh>
+#include <mia/2d/datafield.hh>
+#include <mia/2d/image.hh>
 
 NS_MIA_BEGIN
 

@@ -22,7 +22,7 @@
 #define mia_2d_ica_hh
 
 #include <mia/core/ica_template.hh>
-#include <mia/2d/2DImage.hh>
+#include <mia/2d/image.hh>
 #include <vector>
 
 

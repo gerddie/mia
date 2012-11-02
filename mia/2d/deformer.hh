@@ -21,8 +21,8 @@
 #ifndef mia_2d_deformer_hh
 #define mia_2d_deformer_hh
 
-#include <mia/2d/2DImage.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/image.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/interpolator.hh>
 
 NS_MIA_BEGIN 

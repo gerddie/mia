@@ -21,9 +21,9 @@
 #include <mia/internal/autotest.hh>
 #include <boost/filesystem/convenience.hpp>
 #include <boost/filesystem/path.hpp>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dimageiotest.hh>
-#include <mia/2d/2dvfio.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/imageiotest.hh>
+#include <mia/2d/vfio.hh>
 
 NS_MIA_USE
 using namespace std;

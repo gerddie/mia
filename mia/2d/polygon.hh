@@ -22,7 +22,7 @@
 #define mia_2d_polygon_hh
 
 #include <vector>
-#include <mia/2d/2DVector.hh>
+#include <mia/2d/vector.hh>
 #include <mia/2d/defines2d.hh>
 
 

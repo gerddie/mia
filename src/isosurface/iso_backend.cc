@@ -21,7 +21,7 @@
 
 #include <gts.h>
 #include <mia/3d/3DImage.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/core/filter.hh>
 
 using namespace mia; 

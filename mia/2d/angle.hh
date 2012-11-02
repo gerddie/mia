@@ -21,7 +21,7 @@
 #ifndef mia_2d_angle_hh
 #define mia_2d_angle_hh
 #include <mia/2d/defines2d.hh>
-#include <mia/2d/2DVector.hh>
+#include <mia/2d/vector.hh>
 
 NS_MIA_BEGIN
 /**

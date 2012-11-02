@@ -25,7 +25,7 @@ namespace xmlpp {
 	class Node;
 };
 
-#include <mia/2d/2DVector.hh>
+#include <mia/2d/vector.hh>
 #include <mia/2d/defines2d.hh>
 #include <mia/2d/transform.hh>
 

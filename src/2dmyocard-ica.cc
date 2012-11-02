@@ -29,8 +29,8 @@
 #include <mia/core/fft1d_r2c.hh>
 #include <queue>
 
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/ica.hh>
 #include <mia/core/slopeclassifier.hh>
 

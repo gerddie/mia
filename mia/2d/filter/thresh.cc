@@ -20,7 +20,7 @@
 #include <limits>
 #include <sstream>
 
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/filter/thresh.hh>
 
 NS_BEGIN(thresh_2dimage_filter)

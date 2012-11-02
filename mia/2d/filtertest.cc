@@ -26,7 +26,7 @@
 
 #include <mia/core/spacial_kernel.hh>
 #include <mia/2d/filtertest.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 
 
 

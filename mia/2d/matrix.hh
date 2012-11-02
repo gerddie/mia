@@ -21,7 +21,7 @@
 #ifndef __mia_2d_matrix_hh
 #define __mia_2d_matrix_hh
 
-#include <mia/2d/2DVector.hh>
+#include <mia/2d/vector.hh>
 
 NS_MIA_BEGIN
 

@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 
 namespace harmmean_2dimage_filter {
 NS_MIA_USE;

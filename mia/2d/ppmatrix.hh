@@ -22,7 +22,7 @@
 #define mia_2d_ppmatrix_hh
 
 #include <mia/2d/interpolator.hh>
-#include <mia/2d/2DDatafield.hh>
+#include <mia/2d/datafield.hh>
 #include <mia/core/vector.hh>
 
 NS_MIA_BEGIN

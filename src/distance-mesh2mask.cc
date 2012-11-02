@@ -33,7 +33,7 @@
 #include <dlfcn.h>
 
 #include <mia/core/cmdlineparser.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 #include <mia/core/distance.hh>
 #include <mia/3d/distance.hh>
 #include <mia/mesh/triangularMesh.hh>

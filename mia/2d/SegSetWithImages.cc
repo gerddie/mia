@@ -22,8 +22,8 @@
 #include <boost/filesystem.hpp>
 #include <mia/core/errormacro.hh>
 #include <mia/2d/SegSetWithImages.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 
 
 

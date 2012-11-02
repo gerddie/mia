@@ -36,7 +36,7 @@
 #include <dcmtk/dcmnet/diutil.h>
 #include <dcmtk/dcmjpeg/djdecode.h>
 
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 NS_MIA_BEGIN
 

@@ -22,7 +22,7 @@
 #define mia_2d_SegSetWithImages_hh
 
 #include <mia/2d/SegSet.hh>
-#include <mia/2d/2DImage.hh>
+#include <mia/2d/image.hh>
 
 namespace xmlpp {
 	class Document;

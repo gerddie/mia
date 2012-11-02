@@ -28,7 +28,7 @@
 #include <mia/2d/transformfactory.hh>
 #include <mia/core/spacial_kernel.hh>
 #include <mia/core/minimizer.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 
 
 using namespace mia; 

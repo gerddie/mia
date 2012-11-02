@@ -27,7 +27,7 @@
 #include <boost/filesystem.hpp>
 #include <mia/3d/defines3d.hh>
 #include <mia/3d/camera.hh>
-#include <mia/2d/2DImage.hh>
+#include <mia/2d/image.hh>
 
 NS_MIA_BEGIN
 

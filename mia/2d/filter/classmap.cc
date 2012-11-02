@@ -24,7 +24,7 @@
 
 #include <stdexcept>
 #include <boost/type_traits.hpp>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <libmia/filter.hh>
 
 

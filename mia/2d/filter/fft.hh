@@ -20,7 +20,7 @@
 
 #include <limits>
 #include <mia/core/filter.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/fftkernel.hh>
 
 NS_BEGIN(fft_2dimage_filter)

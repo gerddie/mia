@@ -21,7 +21,7 @@
 
 #include <mia/3d/3DVectorfield.hh>
 #include <mia/3d/3DDatafield.cxx>
-#include <mia/2d/2DDatafield.cxx>
+#include <mia/2d/datafield.cxx>
 #include <mia/3d/iterator.cxx>
 #include <mia/2d/iterator.cxx>
 

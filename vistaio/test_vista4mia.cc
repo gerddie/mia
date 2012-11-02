@@ -27,10 +27,10 @@
 #include <boost/test/unit_test_suite.hpp>
 #include <boost/test/unit_test.hpp>
 
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dimageiotest.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/imageiotest.hh>
 
-#include <mia/2d/2dvfio.hh>
+#include <mia/2d/vfio.hh>
 #include <mia/2d/transformio.hh>
 #include <mia/2d/transformfactory.hh>
 

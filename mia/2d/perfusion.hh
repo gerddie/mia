@@ -24,8 +24,8 @@
 #include <vector>
 #include <mia/core/dictmap.hh>
 #include <mia/core/waveletslopeclassifier.hh>
-#include <mia/2d/2DImage.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/image.hh>
+#include <mia/2d/filter.hh>
 
 
 NS_MIA_BEGIN

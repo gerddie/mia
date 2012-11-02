@@ -30,8 +30,8 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/internal/main.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/2d/2dfilter.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/filter.hh>
+#include <mia/2d/imageio.hh>
 
 using namespace std;
 NS_MIA_USE

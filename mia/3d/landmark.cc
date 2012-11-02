@@ -19,7 +19,7 @@
  */
 
 #include <mia/3d/landmark.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 NS_MIA_BEGIN
 

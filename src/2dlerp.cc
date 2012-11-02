@@ -26,7 +26,7 @@
 #include <mia/core.hh>
 #include <mia/internal/main.hh>
 #include <mia/2d.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <sstream>
 #include <iomanip>
 

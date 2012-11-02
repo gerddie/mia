@@ -23,7 +23,7 @@
 
 #include <mia/core/factory.hh>
 #include <mia/core/sparse_solver.hh>
-#include <mia/2d/2DImage.hh>
+#include <mia/2d/image.hh>
 
 NS_MIA_BEGIN
 

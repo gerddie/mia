@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 NS_BEGIN(gradnorm_2dimage_filter)
 
 class CGradnorm: public mia::C2DFilter {

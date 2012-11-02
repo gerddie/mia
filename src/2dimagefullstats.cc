@@ -22,7 +22,7 @@
 #include <mia/internal/main.hh>
 #include <mia/core/fullstats.hh>
 #include <mia/core/cmdlineparser.hh>
-#include <mia/2d/2dimageio.hh>
+#include <mia/2d/imageio.hh>
 
 
 NS_MIA_USE;

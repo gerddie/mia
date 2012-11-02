@@ -32,7 +32,7 @@
 #include <boost/cast.hpp>
 
 #include <mia/core/spacial_kernel.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <mia/3d/2dimagefifofilter.hh>
 
 NS_BEGIN(gauss_2dstack_filter)

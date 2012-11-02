@@ -26,7 +26,7 @@
 #endif
 
 #include <memory>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/filter.hh>
 #include <mia/3d/2dimagefifofilter.hh>
 
 NS_BEGIN(byslice_2dstack_filter)

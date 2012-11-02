@@ -31,8 +31,8 @@
 #include <mia/core.hh>
 
 #include <mia/core/errormacro.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/ground_truth_evaluator.hh>
 #include <mia/2d/nonrigidregister.hh>
 #include <mia/2d/SegSetWithImages.hh>

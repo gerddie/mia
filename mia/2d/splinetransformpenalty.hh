@@ -23,7 +23,7 @@
 #define mia_2d_splinetransformpenalty_hh
 
 #include <mia/2d/interpolator.hh>
-#include <mia/2d/2DDatafield.hh>
+#include <mia/2d/datafield.hh>
 #include <mia/core/vector.hh>
 #include <mia/core/product_base.hh>
 

@@ -21,7 +21,7 @@
 #ifndef mia_2d_iterator_hh
 #define mia_2d_iterator_hh
 
-#include <mia/2d/2DVector.hh>
+#include <mia/2d/vector.hh>
 
 NS_MIA_BEGIN
 

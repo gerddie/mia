@@ -29,7 +29,7 @@
 #include <mia/3d/3DVector.hh>
 #include <mia/3d/defines3d.hh>
 #include <mia/3d/iterator.hh>
-#include <mia/2d/2DDatafield.hh>
+#include <mia/2d/datafield.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/parameter.hh>
 #include <mia/core/typedescr.hh>

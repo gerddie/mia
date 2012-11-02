@@ -22,7 +22,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/2d/transform/vectorfield.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/2d/2dvfio.hh>
+#include <mia/2d/vfio.hh>
 
 NS_MIA_BEGIN
 using namespace std;

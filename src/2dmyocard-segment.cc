@@ -36,14 +36,14 @@
 #include <mia/core/meanvar.hh>
 #include <mia/core/bfsv23dispatch.hh>
 #include <mia/core/tools.hh>
-#include <mia/2d/2dimageio.hh>
-#include <mia/2d/2dfilter.hh>
+#include <mia/2d/imageio.hh>
+#include <mia/2d/filter.hh>
 #include <mia/2d/ica.hh>
 #include <mia/2d/SegSetWithImages.hh>
 #include <mia/2d/fuzzyseg.hh>
 #include <mia/2d/perfusion.hh>
 #include <mia/2d/transformfactory.hh>
-#include <mia/2d/2DDatafield.cxx>
+#include <mia/2d/datafield.cxx>
 
 NS_MIA_USE;
 using namespace std; 
