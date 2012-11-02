@@ -32,7 +32,7 @@
 #include <set>
 #include <limits>
 
-//#include <mia/3d/3DDatafield.cxx>
+//#include <mia/3d/datafield.cxx>
 
 #ifdef __POWERPC__
 #include <altivec.h>

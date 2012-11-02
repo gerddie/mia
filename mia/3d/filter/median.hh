@@ -21,7 +21,7 @@
 #ifndef mia_3d_filter_median_hh
 #define mia_3d_filter_median_hh
 
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 
 NS_BEGIN(median_3dimage_filter)
 

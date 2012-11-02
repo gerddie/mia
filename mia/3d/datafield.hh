@@ -26,7 +26,7 @@
 #include <cmath>
 #include <cassert>
 
-#include <mia/3d/3DVector.hh>
+#include <mia/3d/vector.hh>
 #include <mia/3d/defines3d.hh>
 #include <mia/3d/iterator.hh>
 #include <mia/2d/datafield.hh>

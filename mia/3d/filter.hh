@@ -23,7 +23,7 @@
 
 #include <boost/any.hpp>
 
-#include <mia/3d/3DImage.hh>
+#include <mia/3d/image.hh>
 #include <mia/core/combiner.hh>
 #include <mia/core/factory.hh>
 #include <mia/core/filter.hh>

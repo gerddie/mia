@@ -23,7 +23,7 @@
 #define __mia_2dfifofilterstack_hh
 
 #include <mia/2d/image.hh>
-#include <mia/3d/3DImage.hh>
+#include <mia/3d/image.hh>
 #include <mia/core/factory.hh>
 #include <mia/core/fifofilter.hh>
 #include <mia/core/filter.hh>

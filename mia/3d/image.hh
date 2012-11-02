@@ -22,7 +22,7 @@
 #ifndef mia_3d_3dimage_hh
 #define mia_3d_3dimage_hh
 
-#include <mia/3d/3DVectorfield.hh>
+#include <mia/3d/vectorfield.hh>
 #include <mia/3d/orientation.hh>
 #include <mia/2d/image.hh>
 

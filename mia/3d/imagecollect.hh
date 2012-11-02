@@ -22,7 +22,7 @@
 #ifndef mia_3d_imagecollect_hh
 #define mia_3d_imagecollect_hh
 
-#include <mia/3d/3DImage.hh>
+#include <mia/3d/image.hh>
 #include <mia/core/filter.hh>
 
 NS_MIA_BEGIN

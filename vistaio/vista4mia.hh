@@ -22,7 +22,7 @@
 #include <sstream>
 #include <iterator>
 #include <mia/core.hh>
-#include <mia/3d/3DVector.hh>
+#include <mia/3d/vector.hh>
 #include <vistaio/vistaio.h>
 
 #ifdef WIN32

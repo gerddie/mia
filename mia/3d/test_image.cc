@@ -23,7 +23,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 
-#include <mia/3d/3DImage.hh>
+#include <mia/3d/image.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
 #include <mia/core/boundary_conditions.hh>

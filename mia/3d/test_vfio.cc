@@ -27,8 +27,8 @@
 #include <boost/filesystem/convenience.hpp>
 #include <boost/filesystem/path.hpp>
 
-#include <mia/3d/3dvfio.hh>
-#include <mia/3d/3dvfiotest.hh>
+#include <mia/3d/vfio.hh>
+#include <mia/3d/vfiotest.hh>
 
 NS_MIA_USE
 using namespace boost; 

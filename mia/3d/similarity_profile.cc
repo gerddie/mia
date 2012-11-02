@@ -21,7 +21,7 @@
 
 #include <cassert>
 #include <stdexcept>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 #include <mia/3d/similarity_profile.hh>
 #include <mia/template/similarity_profile.cxx>
 

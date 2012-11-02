@@ -25,7 +25,7 @@
 
 
 #include <mia/core.hh>
-#include <mia/3d/3DDatafield.hh>
+#include <mia/3d/datafield.hh>
 
 NS_MIA_USE
 using namespace std; 

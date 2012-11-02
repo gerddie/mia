@@ -40,8 +40,8 @@
 #include <boost/filesystem/convenience.hpp>
 #include <boost/filesystem/path.hpp>
 
-#include <mia/3d/3dimageio.hh>
-#include <mia/3d/3dimageiotest.hh>
+#include <mia/3d/imageio.hh>
+#include <mia/3d/imageiotest.hh>
 
 NS_MIA_USE
 using namespace boost;

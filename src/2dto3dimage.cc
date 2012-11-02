@@ -27,7 +27,7 @@
 #include <mia/core.hh>
 #include <mia/2d/filter.hh>
 #include <mia/2d/imageio.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 #include <mia/3d/imagecollect.hh>
 
 NS_MIA_USE

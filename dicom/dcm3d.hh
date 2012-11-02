@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 NS_BEGIN(IMAGEIO_3D_DICOM)
 

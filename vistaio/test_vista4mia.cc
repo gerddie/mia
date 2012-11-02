@@ -38,11 +38,11 @@
 #include <mia/3d/transformfactory.hh>
 
 
-#include <mia/3d/3dimageio.hh>
-#include <mia/3d/3dimageiotest.hh>
+#include <mia/3d/imageio.hh>
+#include <mia/3d/imageiotest.hh>
 
-#include <mia/3d/3dvfio.hh>
-#include <mia/3d/3dvfiotest.hh>
+#include <mia/3d/vfio.hh>
+#include <mia/3d/vfiotest.hh>
 
 #include "vista4mia.hh"
 

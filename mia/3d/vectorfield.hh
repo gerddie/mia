@@ -23,7 +23,7 @@
 #define mia_3d_3dvectorfield_hh
 
 #include <mia/core/attributes.hh>
-#include <mia/3d/3DDatafield.hh>
+#include <mia/3d/datafield.hh>
 
 NS_MIA_BEGIN
 

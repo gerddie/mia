@@ -21,7 +21,7 @@
 #ifndef mia_3d_filter_mlv_hh
 #define mia_3d_filter_mlv_hh
 
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 
 NS_BEGIN(mlv_3dimage_filter)
 

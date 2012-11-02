@@ -18,7 +18,7 @@
  *
  */
 
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 
 NS_BEGIN(crop_3d_filter)
 

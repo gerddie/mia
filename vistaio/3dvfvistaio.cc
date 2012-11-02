@@ -24,8 +24,8 @@
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/3d/3dvfio.hh>
-#include <mia/3d/3DImage.hh>
+#include <mia/3d/vfio.hh>
+#include <mia/3d/image.hh>
 
 #include <vistaio/vista4mia.hh>
 

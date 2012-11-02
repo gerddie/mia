@@ -37,8 +37,8 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/file.hh>
 #include <mia/3d/transformio.hh>
-#include <mia/3d/3dimageio.hh>
-#include <mia/3d/3DDatafield.cxx>
+#include <mia/3d/imageio.hh>
+#include <mia/3d/datafield.cxx>
 #include <miaconfig.h>
 
 

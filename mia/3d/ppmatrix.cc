@@ -22,7 +22,7 @@
 
 #include <cmath>
 #include <mia/3d/ppmatrix.hh>
-#include <mia/3d/3DDatafield.cxx>
+#include <mia/3d/datafield.cxx>
 #include <mia/core/threadedmsg.hh>
 
 #include <tbb/parallel_for.h>

@@ -19,7 +19,7 @@
  */
 
 
-#include <mia/3d/3DImage.hh>
+#include <mia/3d/image.hh>
 
 /*
   This code implements the functions needed to support the NFG cost function.

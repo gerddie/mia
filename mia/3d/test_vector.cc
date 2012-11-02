@@ -26,7 +26,7 @@
 
 
 #include <mia/core.hh>
-#include <mia/3d/3DVector.hh>
+#include <mia/3d/vector.hh>
 
 using namespace std;
 NS_MIA_USE

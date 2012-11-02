@@ -31,7 +31,7 @@
 #include <mia/core/iodata.hh>
 #include <mia/core/ioplugin.hh>
 #include <mia/core/iohandler.hh>
-#include <mia/3d/3DVector.hh>
+#include <mia/3d/vector.hh>
 
 #ifdef WIN32
 #  ifdef miamesh_EXPORTS

@@ -44,7 +44,7 @@
 #include <limits>
 #include <cstdlib>
 
-//#include <mia/3d/3DDatafield.cxx>
+//#include <mia/3d/datafield.cxx>
 
 #include <mia/3d/model.hh>
 

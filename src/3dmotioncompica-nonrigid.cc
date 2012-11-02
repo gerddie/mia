@@ -33,8 +33,8 @@
 #include <mia/core/minimizer.hh>
 #include <mia/core/bfsv23dispatch.hh>
 #include <mia/3d/nonrigidregister.hh>
-#include <mia/3d/3dimageio.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/imageio.hh>
+#include <mia/3d/filter.hh>
 #include <mia/3d/ica.hh>
 
 #include <tbb/task_scheduler_init.h>

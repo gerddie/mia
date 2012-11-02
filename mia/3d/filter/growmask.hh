@@ -18,9 +18,9 @@
  *
  */
 
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 #include <mia/3d/shape.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 NS_BEGIN(growmask_3dimage_filter)
 

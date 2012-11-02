@@ -32,7 +32,7 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/filetools.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 #include <mia/3d/nonrigidregister.hh>
 #include <mia/3d/transformfactory.hh>
 #include <mia/3d/fullcost.hh>

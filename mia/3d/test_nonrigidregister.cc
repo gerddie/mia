@@ -27,8 +27,8 @@
 #include <mia/core/datapool.hh>
 #include <mia/core/spacial_kernel.hh>
 #include <mia/3d/nonrigidregister.hh>
-#include <mia/3d/3dimageio.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/imageio.hh>
+#include <mia/3d/filter.hh>
 #include <mia/3d/cost.hh>
 
 NS_MIA_USE

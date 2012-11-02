@@ -33,7 +33,7 @@
 #include <mia/core/file.hh>
 #include <mia/core/filter.hh>
 #include <mia/core/msgstream.hh>
-#include <mia/3d/3dvfio.hh>
+#include <mia/3d/vfio.hh>
 
 NS_BEGIN(vtkvf_3dimage_io)
 

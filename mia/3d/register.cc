@@ -25,7 +25,7 @@
 
 #include <mia/core/sqmin.hh>
 #include <mia/3d/register.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 NS_MIA_BEGIN
 using namespace std;

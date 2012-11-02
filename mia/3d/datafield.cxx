@@ -25,7 +25,7 @@
 #include <cstring>
 #include <mia/core/msgstream.hh>
 #include <mia/2d/datafield.hh>
-#include <mia/3d/3DDatafield.hh>
+#include <mia/3d/datafield.hh>
 
 
 NS_MIA_BEGIN

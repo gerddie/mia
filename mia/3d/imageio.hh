@@ -25,7 +25,7 @@
 #include <vector>
 #include <mia/core/ioplugin.hh>
 #include <mia/core/iohandler.hh>
-#include <mia/3d/3DImage.hh>
+#include <mia/3d/image.hh>
 
 NS_MIA_BEGIN
 

@@ -23,7 +23,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/2d/filter.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 
 
 using namespace std;

@@ -22,7 +22,7 @@
 #include <mia/core/cmdlineparser.hh>
 #include <mia/3d/transformio.hh>
 #include <mia/3d/transformfactory.hh>
-#include <mia/3d/3dvfio.hh>
+#include <mia/3d/vfio.hh>
 #include <mia/internal/main.hh>
 
 

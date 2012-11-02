@@ -20,7 +20,7 @@
 /* $Id: iso_backend.cc 954 2006-07-13 12:47:09Z write1 $ */
 
 #include <gts.h>
-#include <mia/3d/3DImage.hh>
+#include <mia/3d/image.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/core/filter.hh>
 

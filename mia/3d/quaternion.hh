@@ -24,7 +24,7 @@
 
 #include <ostream>
 #include <mia/3d/defines3d.hh>
-#include <mia/3d/3DVector.hh>
+#include <mia/3d/vector.hh>
 
 
 NS_MIA_BEGIN 

@@ -26,7 +26,7 @@
 
 // this is for the definition of the 3D image plugin base classes
 #include <mia/3d/filter/growmask.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 
 NS_BEGIN(growmask_3dimage_filter)

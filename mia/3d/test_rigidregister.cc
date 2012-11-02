@@ -30,8 +30,8 @@
 #include <mia/3d/transformfactory.hh>
 #include <mia/core/spacial_kernel.hh>
 #include <mia/core/minimizer.hh>
-#include <mia/3d/3dfilter.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/filter.hh>
+#include <mia/3d/imageio.hh>
 
 NS_MIA_USE
 using namespace std; 

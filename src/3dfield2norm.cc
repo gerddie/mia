@@ -19,8 +19,8 @@
  */
 
 
-#include <mia/3d/3dimageio.hh>
-#include <mia/3d/3dvfio.hh>
+#include <mia/3d/imageio.hh>
+#include <mia/3d/vfio.hh>
 #include <mia/core/cmdlineparser.hh>
 
 NS_MIA_USE;

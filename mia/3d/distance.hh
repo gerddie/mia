@@ -22,7 +22,7 @@
 #define mia_3d_distance_hh
 
 #include <mia/core/iodata.hh>
-#include <mia/3d/3DImage.hh>
+#include <mia/3d/image.hh>
 
 
 NS_MIA_BEGIN

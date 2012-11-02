@@ -22,7 +22,7 @@
 #define VSTREAM_DOMAIN "mia-3dtransform"
 #include <mia/core/cmdlineparser.hh>
 #include <mia/3d/transformio.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 
 
 NS_MIA_USE

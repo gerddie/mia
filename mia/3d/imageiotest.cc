@@ -29,8 +29,8 @@
 
 #include <mia/core/msgstream.hh>
 #include <mia/core/history.hh>
-#include <mia/3d/3dimageio.hh>
-#include <mia/3d/3dimageiotest.hh>
+#include <mia/3d/imageio.hh>
+#include <mia/3d/imageiotest.hh>
 #include <mia/core/filter.hh>
 
 NS_MIA_BEGIN

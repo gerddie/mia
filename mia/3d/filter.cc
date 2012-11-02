@@ -20,7 +20,7 @@
 
 #include <mia/core/export_handler.hh>
 
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 #include <mia/core/combiner.hh>
 #include <mia/core/plugin_base.cxx>
 #include <mia/core/handler.cxx>

@@ -22,9 +22,9 @@
 #define mia_3d_hh
 
 #include <mia/3d/2dimagefifofilter.hh>
-#include <mia/3d/3dimageio.hh>
-#include <mia/3d/3dvfio.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/imageio.hh>
+#include <mia/3d/vfio.hh>
+#include <mia/3d/filter.hh>
 #include <mia/3d/cost.hh>
 #include <mia/3d/creator.hh>
 #include <mia/3d/fullcost.hh>

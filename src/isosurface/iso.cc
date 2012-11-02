@@ -24,8 +24,8 @@
 
 
 #include <mia/mesh/triangularMesh.hh>
-#include <mia/3d/3DImage.hh>
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/image.hh>
+#include <mia/3d/imageio.hh>
 
 #include <mia/core/cmdlineparser.hh>
 #include <mia/internal/main.hh>

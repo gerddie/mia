@@ -22,7 +22,7 @@
 #define VSTREAM_DOMAIN "rigidreg"
 
 #include <mia/3d/rigidregister.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 #include <mia/3d/transformfactory.hh>
 #include <mia/core/filter.hh>
 

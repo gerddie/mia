@@ -33,7 +33,7 @@
 
 
 #include <mia/3d/fuzzyseg.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 #include <mia/core/cmdlineparser.hh>
 #include <mia/core/datapool.hh>
 

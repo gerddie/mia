@@ -24,7 +24,7 @@
 
 #include <mia/core/shape.hh>
 #include <mia/core/factory.hh>
-#include <mia/3d/3DImage.hh>
+#include <mia/3d/image.hh>
 
 NS_MIA_BEGIN
 

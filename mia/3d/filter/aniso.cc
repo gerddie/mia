@@ -21,7 +21,7 @@
 #include <mia/core/msgstream.hh>
 #include <mia/core/disctmap.hh>
 #include <mia/core/histogram.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 
 NS_MIA_USE
 using namespace std;

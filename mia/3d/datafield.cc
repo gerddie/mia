@@ -26,8 +26,8 @@
 #endif
 
 
-#include <mia/3d/3DDatafield.hh>
-#include <mia/3d/3DDatafield.cxx>
+#include <mia/3d/datafield.hh>
+#include <mia/3d/datafield.cxx>
 #include <mia/3d/iterator.cxx>
 #include <mia/2d/iterator.cxx>
 #include <mia/core/parameter.cxx>

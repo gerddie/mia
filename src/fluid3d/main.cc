@@ -28,8 +28,8 @@
 #include <list>
 #include <string>
 #include <mia/core.hh>
-#include <mia/3d/3dimageio.hh>
-#include <mia/3d/3dvfio.hh>
+#include <mia/3d/imageio.hh>
+#include <mia/3d/vfio.hh>
 #include <mia/internal/main.hh>
 
 #include "vfluid.hh"

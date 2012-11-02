@@ -22,7 +22,7 @@
 #define mia_3d_filter_morphological_hh
 
 
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 #include <mia/3d/shape.hh>
 
 NS_BEGIN(morph_3dimage_filter)

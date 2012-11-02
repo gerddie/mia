@@ -32,7 +32,7 @@
 
 #include <mia/core.hh>
 #include <mia/core/errormacro.hh>
-#include <mia/3d/3dvfio.hh>
+#include <mia/3d/vfio.hh>
 
 
 NS_MIA_USE; 

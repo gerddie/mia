@@ -23,7 +23,7 @@
 #define mia_3d_ica_hh
 
 #include <mia/core/ica_template.hh>
-#include <mia/3d/3DImage.hh>
+#include <mia/3d/image.hh>
 #include <vector>
 
 

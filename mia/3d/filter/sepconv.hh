@@ -23,7 +23,7 @@
 #define mia_3d_filter_sepconv_hh
 
 #include <mia/core/spacial_kernel.hh>
-#include <mia/3d/3dfilter.hh>
+#include <mia/3d/filter.hh>
 
 NS_BEGIN(sepconv_3dimage_filter)
 

@@ -24,7 +24,7 @@
 #define mia_3d_ppmatrix_hh
 
 #include <mia/3d/interpolator.hh>
-#include <mia/3d/3DDatafield.hh>
+#include <mia/3d/datafield.hh>
 #include <mia/core/vector.hh>
 
 NS_MIA_BEGIN

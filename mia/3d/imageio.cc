@@ -21,7 +21,7 @@
 #include <mia/core/export_handler.hh>
 
 
-#include <mia/3d/3dimageio.hh>
+#include <mia/3d/imageio.hh>
 #include <mia/core/errormacro.hh>
 #include <mia/core/ioplugin.cxx>
 #include <mia/core/iohandler.cxx>

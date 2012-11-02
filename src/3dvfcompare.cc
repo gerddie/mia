@@ -20,7 +20,7 @@
 
 #define VSTREAM_DOMAIN "mia-3dtransform"
 #include <mia/core/cmdlineparser.hh>
-#include <mia/3d/3dvfio.hh>
+#include <mia/3d/vfio.hh>
 #include <mia/internal/main.hh>
 
 

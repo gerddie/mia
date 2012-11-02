@@ -26,7 +26,7 @@
 #include <vector>
 #include <mia/core/ioplugin.hh>
 #include <mia/core/iohandler.hh>
-#include <mia/3d/3DVectorfield.hh>
+#include <mia/3d/vectorfield.hh>
 
 NS_MIA_BEGIN
 

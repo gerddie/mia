@@ -19,7 +19,7 @@
  */
 
 #include <mia/core/filter.hh>
-#include <mia/3d/3DImage.hh>
+#include <mia/3d/image.hh>
 
 
 NS_MIA_BEGIN

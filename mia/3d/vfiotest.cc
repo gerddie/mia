@@ -27,8 +27,8 @@
 
 #include <mia/core/msgstream.hh>
 #include <mia/core/history.hh>
-#include <mia/3d/3dvfio.hh>
-#include <mia/3d/3dvfiotest.hh>
+#include <mia/3d/vfio.hh>
+#include <mia/3d/vfiotest.hh>
 
 NS_MIA_BEGIN
 using namespace boost;

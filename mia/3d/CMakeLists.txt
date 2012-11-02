@@ -24,12 +24,12 @@ SET(MIA3D_SRC
   creator.cc
   critical_point.cc
   2dimagefifofilter.cc
-  3DDatafield.cc
-  3DImage.cc
-  3DVectorfield.cc
-  3dfilter.cc
-  3dimageio.cc
-  3dvfio.cc
+  datafield.cc
+  image.cc
+  vectorfield.cc
+  filter.cc
+  imageio.cc
+  vfio.cc
   distance.cc
   fullcost.cc
   fuzzyseg.cc
@@ -61,15 +61,15 @@ SET(MIA3D_SRC
 
 SET(MIA3D_HEADERS
   2dimagefifofilter.hh
-  3DDatafield.hh 3DDatafield.cxx
-  3DVectorfield.hh
-  3DImage.hh
-  3dfilter.hh
-  3dimageio.hh
-  3dimageiotest.hh
-  3DVector.hh
-  3dvfio.hh
-  3dvfiotest.hh
+  datafield.hh datafield.cxx
+  vectorfield.hh
+  image.hh
+  filter.hh
+  imageio.hh
+  imageiotest.hh
+  vector.hh
+  vfio.hh
+  vfiotest.hh
   camera.hh
   cost.hh
   creator.hh
@@ -113,9 +113,9 @@ SET(MIA3D_HEADERS
 
 SET(MIA3DTEST_SRC
   test_3d.cc
-  test_3ddatafield.cc
-  test_3dimage.cc
-  test_3dvector.cc
+  test_datafield.cc
+  test_image.cc
+  test_vector.cc
   test_interpol.cc
   )
 
@@ -142,8 +142,8 @@ SET(MIA3DLIBS mia3d  ${LIBS})
 #
 
 SET(mia3dtestsrc 
-  3dimageiotest.cc 
-  3dvfiotest.cc 
+  imageiotest.cc 
+  vfiotest.cc 
   fifotestfixture.cc
   transformmock.cc
   )
@@ -163,8 +163,8 @@ ADD_EXECUTABLE(test-3d ${MIA3DTEST_SRC})
 SET_TARGET_PROPERTIES(test-3d PROPERTIES COMPILE_FLAGS -DBOOST_TEST_DYN_LINK)
 TARGET_LINK_LIBRARIES(test-3d mia3dtest ${MIA3DLIBS} ${BOOST_UNITTEST})
 
-ADD_EXECUTABLE(test-3dimageio test_3dimageio.cc)
-TARGET_LINK_LIBRARIES(test-3dimageio mia3dtest ${MIA3DLIBS} ${BOOST_UNITTEST})
+ADD_EXECUTABLE(test-3d-imageio test_imageio.cc)
+TARGET_LINK_LIBRARIES(test-3d-imageio mia3dtest ${MIA3DLIBS} ${BOOST_UNITTEST})
 
 SET(TEST_3D test-3d)
 
@@ -175,7 +175,7 @@ ELSE (WIN32)
   ADD_TEST(3d-imageio test-3dimageio)
 ENDIF(WIN32)
 
-TEST_3D(2dimagefifofilter 2dimagefifofilter)
+TEST_3D(2dimagefifofilter imagefifofilter)
 TEST_3D(nfg nfg)
 TEST_3D(vectorfield vectorfield)
 TEST_3D(orientation orientation)

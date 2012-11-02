@@ -33,7 +33,7 @@
 #include <mia/core.hh>
 #include <mia/2d/imageio.hh>
 #include <mia/3d/2dimagefifofilter.hh>
-#include <mia/3d/3DVector.hh>
+#include <mia/3d/vector.hh>
 
 
 using namespace std;
