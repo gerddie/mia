@@ -673,7 +673,7 @@ P3DFVectorfield fluid_transform(const TFluidRegParams& params,TLinEqnSolver *sol
 		while (x_shift || y_shift || z_shift){ // do while there is a downscaling
 
 			C3DBounds BlockSize(1 << x_shift, 1 << y_shift, 1 << z_shift);
-			cvmsg() << "Blocksize = " << BlockSize.x << "x"<< BlockSize.y << "\n";
+			cvmsg() << "Blocksize = " << BlockSize << "\n";
 
 			stringstream downscale_descr;
 			downscale_descr << "downscale:bx=" << BlockSize.x

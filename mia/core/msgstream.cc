@@ -71,7 +71,11 @@ vstream& vstream::operator << (Level l)
 	if (m_message_level >= m_output_level) {
 
 		switch (m_message_level) {
-		case ml_debug:  *m_output << "DEBUG:"; break;
+		case ml_debug:  
+#ifndef NDEBUG			
+			*m_output << "DEBUG:"; 
+#endif 
+			break;
 		case ml_info:  *m_output << "INFO:"; break;
 		case ml_message:break;
 		case ml_warning:*m_output << "WARNING:"; break;

@@ -201,6 +201,7 @@ public:
 inline CDebugSink& cvdebug()
 {
 	static CDebugSink sink;
+	vstream::instance() << vstream::ml_debug; 
 	return sink;
 }
 

@@ -361,16 +361,17 @@ int TSORASolver::solve(const C3DFVectorfield& b,C3DFVectorfield *xvf)
 		hardcode = d_xy + size.x + 1;
 		for (size_t  z = 1; z < size.z-1; z++) {
 			for (size_t  y = 1; y < size.y - 1; y++){
-				for (size_t  x = 1; x < size.x - 1; x++,hardcode++){
+				auto ixvf =  &(*xvf)[hardcode]; 
+				for (size_t  x = 1; x < size.x - 1; x++,hardcode++, ++ixvf){
 					float  step;
 					if ((*update_needed)[hardcode]) {
 						C3DFVector bv = b[hardcode];
 #ifndef USE_OLD
 						residua[hardcode] = step =
-							solve_at(&(*xvf)[hardcode],bv);
+							solve_at(ixvf,bv);
 #else
 						residua[hardcode] = step =
-							solve_at_old(&(*xvf)[hardcode],bv);
+							solve_at_old(ixvf,bv);
 #endif
 					}else
 						step = residua[hardcode];
